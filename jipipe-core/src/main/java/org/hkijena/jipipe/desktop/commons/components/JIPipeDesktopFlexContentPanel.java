@@ -16,7 +16,7 @@ package org.hkijena.jipipe.desktop.commons.components;
 import org.apache.commons.lang3.ArrayUtils;
 import org.hkijena.jipipe.desktop.commons.components.ribbon.JIPipeDesktopRibbon;
 import org.hkijena.jipipe.desktop.commons.components.tabs.JIPipeDesktopTabPane;
-import org.hkijena.jipipe.utils.AutoResizeSplitPane;
+import org.hkijena.jipipe.utils.JIPipeDesktopSplitPane;
 import org.hkijena.jipipe.utils.UIUtils;
 
 import javax.swing.*;
@@ -104,7 +104,7 @@ public class JIPipeDesktopFlexContentPanel extends JPanel {
         }
         JComponent centerPanel;
         if (sideBar != null && sideBarVisible) {
-            centerPanel = new AutoResizeSplitPane(AutoResizeSplitPane.LEFT_RIGHT, contentPanel, sideBar, new AutoResizeSplitPane.DynamicSidebarRatio(450, false));
+            centerPanel = new JIPipeDesktopSplitPane(JIPipeDesktopSplitPane.LEFT_RIGHT, contentPanel, sideBar, new JIPipeDesktopSplitPane.DynamicSidebarRatio(450, false));
         } else {
             centerPanel = contentPanel;
         }

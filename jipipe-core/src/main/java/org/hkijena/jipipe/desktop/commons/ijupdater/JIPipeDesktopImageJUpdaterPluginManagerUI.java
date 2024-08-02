@@ -24,7 +24,7 @@ import org.hkijena.jipipe.desktop.app.JIPipeDesktopWorkbench;
 import org.hkijena.jipipe.desktop.app.JIPipeDesktopWorkbenchPanel;
 import org.hkijena.jipipe.desktop.app.running.JIPipeDesktopRunExecuteUI;
 import org.hkijena.jipipe.desktop.commons.components.JIPipeDesktopMessagePanel;
-import org.hkijena.jipipe.utils.AutoResizeSplitPane;
+import org.hkijena.jipipe.utils.JIPipeDesktopSplitPane;
 import org.hkijena.jipipe.utils.CoreImageJUtils;
 import org.hkijena.jipipe.utils.NetworkUtils;
 import org.hkijena.jipipe.utils.UIUtils;
@@ -110,9 +110,9 @@ public class JIPipeDesktopImageJUpdaterPluginManagerUI extends JIPipeDesktopWork
 
         updateSiteListUI = new JIPipeDesktopImageJUpdaterUpdateSiteListUI(this);
 
-        JSplitPane splitPane = new AutoResizeSplitPane(JSplitPane.HORIZONTAL_SPLIT,
+        JSplitPane splitPane = new JIPipeDesktopSplitPane(JSplitPane.HORIZONTAL_SPLIT,
                 updateSiteListUI,
-                upgraderPanel, AutoResizeSplitPane.RATIO_1_TO_3);
+                upgraderPanel, JIPipeDesktopSplitPane.RATIO_1_TO_3);
         add(splitPane, BorderLayout.CENTER);
     }
 

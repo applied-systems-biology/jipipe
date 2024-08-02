@@ -32,7 +32,7 @@ import org.hkijena.jipipe.plugins.forms.FormsPlugin;
 import org.hkijena.jipipe.plugins.forms.datatypes.FormData;
 import org.hkijena.jipipe.plugins.forms.datatypes.ParameterFormData;
 import org.hkijena.jipipe.plugins.parameters.library.markup.MarkdownText;
-import org.hkijena.jipipe.utils.AutoResizeSplitPane;
+import org.hkijena.jipipe.utils.JIPipeDesktopSplitPane;
 import org.hkijena.jipipe.utils.UIUtils;
 import org.jdesktop.swingx.JXTable;
 
@@ -180,7 +180,7 @@ public class FormsDialog extends JFrame {
         iterationStepTableUI = new JIPipeDesktopSimpleDataBatchTableUI(iterationStepList);
         iterationStepTableUI.getTable().setDefaultRenderer(Integer.class, new DataBatchStatusTableCellRenderer(iterationStepStatuses));
         iterationStepTableUI.getTable().setDefaultRenderer(String.class, new DataBatchStatusTableCellRenderer(iterationStepStatuses));
-        JSplitPane splitPane = new AutoResizeSplitPane(JSplitPane.HORIZONTAL_SPLIT, iterationStepTableUI, tabPane, AutoResizeSplitPane.RATIO_1_TO_3);
+        JSplitPane splitPane = new JIPipeDesktopSplitPane(JSplitPane.HORIZONTAL_SPLIT, iterationStepTableUI, tabPane, JIPipeDesktopSplitPane.RATIO_1_TO_3);
         contentPanel.add(splitPane, BorderLayout.CENTER);
 
         initializeBottomBar(contentPanel);

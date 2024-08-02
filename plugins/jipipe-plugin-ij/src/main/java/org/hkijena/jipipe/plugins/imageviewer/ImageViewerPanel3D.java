@@ -52,7 +52,7 @@ import org.hkijena.jipipe.plugins.imageviewer.utils.viewer3d.universe.CustomImag
 import org.hkijena.jipipe.plugins.imageviewer.utils.viewer3d.universe.CustomInteractiveBehavior;
 import org.hkijena.jipipe.plugins.parameters.library.markup.MarkdownText;
 import org.hkijena.jipipe.plugins.settings.JIPipeFileChooserApplicationSettings;
-import org.hkijena.jipipe.utils.AutoResizeSplitPane;
+import org.hkijena.jipipe.utils.JIPipeDesktopSplitPane;
 import org.hkijena.jipipe.utils.BufferedImageUtils;
 import org.hkijena.jipipe.utils.StringUtils;
 import org.hkijena.jipipe.utils.UIUtils;
@@ -339,9 +339,9 @@ public class ImageViewerPanel3D extends JPanel implements JIPipeDesktopWorkbench
             remove(currentContentPanel);
         }
         if (enableSideBarButton.isSelected()) {
-            JSplitPane splitPane = new AutoResizeSplitPane(JSplitPane.HORIZONTAL_SPLIT,
+            JSplitPane splitPane = new JIPipeDesktopSplitPane(JSplitPane.HORIZONTAL_SPLIT,
                     viewerPanel,
-                    tabPane, new AutoResizeSplitPane.DynamicSidebarRatio(450, false));
+                    tabPane, new JIPipeDesktopSplitPane.DynamicSidebarRatio(450, false));
             add(splitPane, BorderLayout.CENTER);
             currentContentPanel = splitPane;
         } else {

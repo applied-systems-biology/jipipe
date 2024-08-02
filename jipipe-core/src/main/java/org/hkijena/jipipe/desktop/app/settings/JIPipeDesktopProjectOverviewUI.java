@@ -27,7 +27,7 @@ import org.hkijena.jipipe.desktop.commons.components.markup.JIPipeDesktopHTMLEdi
 import org.hkijena.jipipe.desktop.commons.components.markup.JIPipeDesktopMarkdownReader;
 import org.hkijena.jipipe.desktop.commons.components.tabs.JIPipeDesktopTabPane;
 import org.hkijena.jipipe.plugins.parameters.library.markup.MarkdownText;
-import org.hkijena.jipipe.utils.AutoResizeSplitPane;
+import org.hkijena.jipipe.utils.JIPipeDesktopSplitPane;
 import org.hkijena.jipipe.utils.SizeFitMode;
 import org.hkijena.jipipe.utils.StringUtils;
 import org.hkijena.jipipe.utils.UIUtils;
@@ -61,7 +61,7 @@ public class JIPipeDesktopProjectOverviewUI extends JIPipeDesktopProjectWorkbenc
     private JButton copyCitationButton;
     private JButton copyDependencyCitationsButton;
     private JButton showAcknowledgedAuthorsButton;
-    private AutoResizeSplitPane splitPane;
+    private JIPipeDesktopSplitPane splitPane;
 
     /**
      * Creates a new instance
@@ -221,7 +221,7 @@ public class JIPipeDesktopProjectOverviewUI extends JIPipeDesktopProjectWorkbenc
                 JIPipeDesktopTabPane.CloseMode.withoutCloseButton,
                 JIPipeDesktopTabPane.SingletonTabMode.Present);
 
-        splitPane = new AutoResizeSplitPane(JSplitPane.HORIZONTAL_SPLIT, descriptionReaderScrollPane, tabPane, new AutoResizeSplitPane.DynamicSidebarRatio(600, false));
+        splitPane = new JIPipeDesktopSplitPane(JSplitPane.HORIZONTAL_SPLIT, descriptionReaderScrollPane, tabPane, new JIPipeDesktopSplitPane.DynamicSidebarRatio(600, false));
         add(splitPane, BorderLayout.CENTER);
 
         tabPane.getTabbedPane().addChangeListener(e -> {
@@ -248,10 +248,10 @@ public class JIPipeDesktopProjectOverviewUI extends JIPipeDesktopProjectWorkbenc
     }
 
     private void initializeRuntimePartitionsPanel() {
-        AutoResizeSplitPane splitPane = new AutoResizeSplitPane(AutoResizeSplitPane.TOP_BOTTOM,
+        JIPipeDesktopSplitPane splitPane = new JIPipeDesktopSplitPane(JIPipeDesktopSplitPane.TOP_BOTTOM,
                 new JIPipeDesktopRuntimePartitionListEditor(getDesktopProjectWorkbench()),
                 new JIPipeDesktopMarkdownReader(false, MarkdownText.fromPluginResource("documentation/project-info-runtime-partitions.md")),
-                AutoResizeSplitPane.RATIO_3_TO_1);
+                JIPipeDesktopSplitPane.RATIO_3_TO_1);
         runtimePartitionsPanel.add(splitPane, BorderLayout.CENTER);
     }
 

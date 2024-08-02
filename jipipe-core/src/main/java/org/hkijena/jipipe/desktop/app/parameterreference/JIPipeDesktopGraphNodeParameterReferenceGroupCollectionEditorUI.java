@@ -30,7 +30,7 @@ import org.hkijena.jipipe.desktop.commons.components.JIPipeDesktopParameterAcces
 import org.hkijena.jipipe.desktop.commons.components.markup.JIPipeDesktopMarkdownReader;
 import org.hkijena.jipipe.desktop.commons.components.pickers.JIPipeDesktopPickNodeDialog;
 import org.hkijena.jipipe.plugins.parameters.library.markup.MarkdownText;
-import org.hkijena.jipipe.utils.AutoResizeSplitPane;
+import org.hkijena.jipipe.utils.JIPipeDesktopSplitPane;
 import org.hkijena.jipipe.utils.UIUtils;
 
 import javax.swing.*;
@@ -91,12 +91,12 @@ public class JIPipeDesktopGraphNodeParameterReferenceGroupCollectionEditorUI ext
     private void initialize() {
         setLayout(new BorderLayout());
 
-        AutoResizeSplitPane splitPane = new AutoResizeSplitPane(AutoResizeSplitPane.LEFT_RIGHT, AutoResizeSplitPane.RATIO_1_TO_3);
+        JIPipeDesktopSplitPane splitPane = new JIPipeDesktopSplitPane(JIPipeDesktopSplitPane.LEFT_RIGHT, JIPipeDesktopSplitPane.RATIO_1_TO_3);
         initializeLeftPanel(splitPane);
         splitPane.setRightComponent(rightPanel);
     }
 
-    private void initializeLeftPanel(AutoResizeSplitPane splitPane) {
+    private void initializeLeftPanel(JIPipeDesktopSplitPane splitPane) {
         add(splitPane, BorderLayout.CENTER);
 
         JPanel leftPanel = new JPanel(new BorderLayout());

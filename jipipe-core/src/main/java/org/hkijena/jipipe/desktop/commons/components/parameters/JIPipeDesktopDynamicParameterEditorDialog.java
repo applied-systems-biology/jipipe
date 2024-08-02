@@ -27,7 +27,7 @@ import org.hkijena.jipipe.plugins.parameters.library.markup.HTMLText;
 import org.hkijena.jipipe.plugins.parameters.library.markup.MarkdownText;
 import org.hkijena.jipipe.plugins.parameters.library.primitives.StringParameterSettings;
 import org.hkijena.jipipe.plugins.parameters.library.references.JIPipeParameterTypeInfoRef;
-import org.hkijena.jipipe.utils.AutoResizeSplitPane;
+import org.hkijena.jipipe.utils.JIPipeDesktopSplitPane;
 import org.hkijena.jipipe.utils.StringUtils;
 import org.hkijena.jipipe.utils.UIUtils;
 
@@ -76,7 +76,7 @@ public class JIPipeDesktopDynamicParameterEditorDialog extends JDialog implement
         setIconImage(UIUtils.getJIPipeIcon128());
         getContentPane().setLayout(new BorderLayout());
 
-        AutoResizeSplitPane splitPane = new AutoResizeSplitPane(AutoResizeSplitPane.LEFT_RIGHT, AutoResizeSplitPane.RATIO_1_TO_3);
+        JIPipeDesktopSplitPane splitPane = new JIPipeDesktopSplitPane(JIPipeDesktopSplitPane.LEFT_RIGHT, JIPipeDesktopSplitPane.RATIO_1_TO_3);
         getContentPane().add(splitPane, BorderLayout.CENTER);
 
         initializeListPanel(splitPane);
@@ -107,7 +107,7 @@ public class JIPipeDesktopDynamicParameterEditorDialog extends JDialog implement
         }
     }
 
-    private void initializeListPanel(AutoResizeSplitPane splitPane) {
+    private void initializeListPanel(JIPipeDesktopSplitPane splitPane) {
         JPanel listPanel = new JPanel(new BorderLayout());
 
         JToolBar toolBar = new JToolBar();

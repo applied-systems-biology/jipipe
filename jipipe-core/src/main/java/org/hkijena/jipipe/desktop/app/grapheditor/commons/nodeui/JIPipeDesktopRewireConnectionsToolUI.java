@@ -21,7 +21,7 @@ import org.hkijena.jipipe.desktop.app.grapheditor.commons.JIPipeDesktopGraphCanv
 import org.hkijena.jipipe.desktop.app.grapheditor.commons.properties.JIPipeDesktopDataSlotListCellRenderer;
 import org.hkijena.jipipe.desktop.commons.components.JIPipeDesktopFormPanel;
 import org.hkijena.jipipe.desktop.commons.components.search.JIPipeDesktopSearchTextField;
-import org.hkijena.jipipe.utils.AutoResizeSplitPane;
+import org.hkijena.jipipe.utils.JIPipeDesktopSplitPane;
 import org.hkijena.jipipe.utils.StringUtils;
 import org.hkijena.jipipe.utils.UIUtils;
 
@@ -63,7 +63,7 @@ public class JIPipeDesktopRewireConnectionsToolUI extends JDialog {
         setContentPane(new JPanel(new BorderLayout()));
         setDefaultCloseOperation(WindowConstants.DISPOSE_ON_CLOSE);
 
-        AutoResizeSplitPane splitPane = new AutoResizeSplitPane(AutoResizeSplitPane.LEFT_RIGHT, AutoResizeSplitPane.RATIO_1_TO_1);
+        JIPipeDesktopSplitPane splitPane = new JIPipeDesktopSplitPane(JIPipeDesktopSplitPane.LEFT_RIGHT, JIPipeDesktopSplitPane.RATIO_1_TO_1);
         JIPipeDesktopFormPanel connectionsList = new JIPipeDesktopFormPanel(JIPipeDesktopFormPanel.WITH_SCROLLING);
         JIPipeDesktopFormPanel alternativesPanel = new JIPipeDesktopFormPanel(JIPipeDesktopFormPanel.NONE);
 

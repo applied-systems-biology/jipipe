@@ -22,7 +22,7 @@ import org.hkijena.jipipe.desktop.commons.components.JIPipeDesktopParameterPanel
 import org.hkijena.jipipe.desktop.commons.components.JIPipeDesktopParameterAccessTreeUI;
 import org.hkijena.jipipe.desktop.commons.components.JIPipeDesktopReadonlyCopyableTextField;
 import org.hkijena.jipipe.plugins.parameters.library.markup.MarkdownText;
-import org.hkijena.jipipe.utils.AutoResizeSplitPane;
+import org.hkijena.jipipe.utils.JIPipeDesktopSplitPane;
 import org.hkijena.jipipe.utils.StringUtils;
 import org.hkijena.jipipe.utils.UIUtils;
 import org.hkijena.jipipe.utils.json.JsonUtils;
@@ -80,9 +80,9 @@ public class JIPipeDesktopParameterExplorerWindow extends JFrame implements JIPi
 
         this.parameterTreeUI = new JIPipeDesktopParameterAccessTreeUI(parameterTree);
 
-        JSplitPane splitPane = new AutoResizeSplitPane(JSplitPane.HORIZONTAL_SPLIT,
+        JSplitPane splitPane = new JIPipeDesktopSplitPane(JSplitPane.HORIZONTAL_SPLIT,
                 parameterTreeUI,
-                contentPanel, AutoResizeSplitPane.RATIO_1_TO_3);
+                contentPanel, JIPipeDesktopSplitPane.RATIO_1_TO_3);
         getContentPane().add(splitPane, BorderLayout.CENTER);
 
         formPanel = new JIPipeDesktopFormPanel(null, JIPipeDesktopFormPanel.WITH_SCROLLING | JIPipeDesktopFormPanel.WITH_DOCUMENTATION | JIPipeDesktopFormPanel.DOCUMENTATION_BELOW);

@@ -21,7 +21,7 @@ import org.hkijena.jipipe.desktop.app.JIPipeDesktopWorkbenchPanel;
 import org.hkijena.jipipe.desktop.commons.components.JIPipeDesktopFormPanel;
 import org.hkijena.jipipe.desktop.commons.components.JIPipeDesktopParameterPanel;
 import org.hkijena.jipipe.plugins.parameters.library.markup.MarkdownText;
-import org.hkijena.jipipe.utils.AutoResizeSplitPane;
+import org.hkijena.jipipe.utils.JIPipeDesktopSplitPane;
 import org.hkijena.jipipe.utils.UIUtils;
 
 import javax.swing.*;
@@ -54,7 +54,7 @@ public class JIPipeDesktopApplicationSettingsUI extends JIPipeDesktopWorkbenchPa
     private void initialize() {
         setLayout(new BorderLayout());
         tree.setCellRenderer(new SettingsCategoryNodeRenderer());
-        JSplitPane splitPane = new AutoResizeSplitPane(JSplitPane.HORIZONTAL_SPLIT, new JScrollPane(tree), new JPanel(), AutoResizeSplitPane.RATIO_1_TO_3);
+        JSplitPane splitPane = new JIPipeDesktopSplitPane(JSplitPane.HORIZONTAL_SPLIT, new JScrollPane(tree), new JPanel(), JIPipeDesktopSplitPane.RATIO_1_TO_3);
         add(splitPane, BorderLayout.CENTER);
 
         Map<String, List<JIPipeApplicationSettingsSheet>> byCategory =

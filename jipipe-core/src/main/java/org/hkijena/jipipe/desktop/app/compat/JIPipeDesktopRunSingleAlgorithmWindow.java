@@ -30,7 +30,7 @@ import org.hkijena.jipipe.desktop.commons.components.renderers.JIPipeNodeInfoLis
 import org.hkijena.jipipe.desktop.commons.components.search.JIPipeDesktopSearchTextField;
 import org.hkijena.jipipe.desktop.commons.components.tabs.JIPipeDesktopTabPane;
 import org.hkijena.jipipe.plugins.settings.JIPipeRuntimeApplicationSettings;
-import org.hkijena.jipipe.utils.AutoResizeSplitPane;
+import org.hkijena.jipipe.utils.JIPipeDesktopSplitPane;
 import org.hkijena.jipipe.utils.UIUtils;
 import org.hkijena.jipipe.utils.scripting.MacroUtils;
 import org.scijava.Context;
@@ -106,7 +106,7 @@ public class JIPipeDesktopRunSingleAlgorithmWindow extends JFrame implements JIP
         tabPane = new JIPipeDesktopTabPane(true, JIPipeDesktopTabPane.TabPlacement.Top);
         setContentPane(tabPane);
 
-        AutoResizeSplitPane splitPane = new AutoResizeSplitPane(JSplitPane.HORIZONTAL_SPLIT, listPanel, settingsContainer, AutoResizeSplitPane.RATIO_1_TO_3);
+        JIPipeDesktopSplitPane splitPane = new JIPipeDesktopSplitPane(JSplitPane.HORIZONTAL_SPLIT, listPanel, settingsContainer, JIPipeDesktopSplitPane.RATIO_1_TO_3);
         contentPanel.add(splitPane, BorderLayout.CENTER);
 
         initializeMenu();

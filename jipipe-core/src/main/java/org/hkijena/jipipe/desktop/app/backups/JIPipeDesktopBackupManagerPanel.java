@@ -28,7 +28,7 @@ import org.hkijena.jipipe.desktop.commons.components.JIPipeDesktopFormPanel;
 import org.hkijena.jipipe.desktop.commons.components.search.JIPipeDesktopSearchTextField;
 import org.hkijena.jipipe.plugins.settings.JIPipeBackupApplicationSettings;
 import org.hkijena.jipipe.plugins.settings.JIPipeFileChooserApplicationSettings;
-import org.hkijena.jipipe.utils.AutoResizeSplitPane;
+import org.hkijena.jipipe.utils.JIPipeDesktopSplitPane;
 import org.hkijena.jipipe.utils.StringUtils;
 import org.hkijena.jipipe.utils.UIUtils;
 
@@ -114,7 +114,7 @@ public class JIPipeDesktopBackupManagerPanel extends JIPipeDesktopWorkbenchPanel
                 }
             }
         });
-        add(new AutoResizeSplitPane(AutoResizeSplitPane.LEFT_RIGHT, new JScrollPane(backupTree), propertiesPanel, new AutoResizeSplitPane.DynamicSidebarRatio(350, false)));
+        add(new JIPipeDesktopSplitPane(JIPipeDesktopSplitPane.LEFT_RIGHT, new JScrollPane(backupTree), propertiesPanel, new JIPipeDesktopSplitPane.DynamicSidebarRatio(350, false)));
 
         limitToCurrentProjectFilter.addActionListener(e -> refreshTree());
         searchTextField.addActionListener(e -> refreshTree());

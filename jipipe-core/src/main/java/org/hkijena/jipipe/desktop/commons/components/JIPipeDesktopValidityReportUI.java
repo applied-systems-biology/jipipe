@@ -18,7 +18,7 @@ import org.hkijena.jipipe.desktop.app.JIPipeDesktopWorkbench;
 import org.hkijena.jipipe.desktop.app.JIPipeDesktopWorkbenchPanel;
 import org.hkijena.jipipe.desktop.commons.components.markup.JIPipeDesktopMarkdownReader;
 import org.hkijena.jipipe.plugins.parameters.library.markup.MarkdownText;
-import org.hkijena.jipipe.utils.AutoResizeSplitPane;
+import org.hkijena.jipipe.utils.JIPipeDesktopSplitPane;
 import org.hkijena.jipipe.utils.UIUtils;
 
 import javax.swing.*;
@@ -103,8 +103,8 @@ public class JIPipeDesktopValidityReportUI extends JIPipeDesktopWorkbenchPanel {
 
         // Create split pane if needed
         if (withHelp) {
-            splitPane = new AutoResizeSplitPane(JSplitPane.HORIZONTAL_SPLIT, new JLabel(),
-                    new JIPipeDesktopMarkdownReader(false, helpDocument), AutoResizeSplitPane.RATIO_3_TO_1);
+            splitPane = new JIPipeDesktopSplitPane(JSplitPane.HORIZONTAL_SPLIT, new JLabel(),
+                    new JIPipeDesktopMarkdownReader(false, helpDocument), JIPipeDesktopSplitPane.RATIO_3_TO_1);
             add(splitPane, BorderLayout.CENTER);
         }
     }

@@ -19,7 +19,7 @@ import org.hkijena.jipipe.desktop.commons.components.markup.JIPipeDesktopMarkdow
 import org.hkijena.jipipe.desktop.commons.components.search.JIPipeDesktopSearchTextField;
 import org.hkijena.jipipe.plugins.parameters.library.markup.MarkdownText;
 import org.hkijena.jipipe.plugins.settings.JIPipeFileChooserApplicationSettings;
-import org.hkijena.jipipe.utils.AutoResizeSplitPane;
+import org.hkijena.jipipe.utils.JIPipeDesktopSplitPane;
 import org.hkijena.jipipe.utils.UIUtils;
 import org.hkijena.jipipe.utils.ui.BusyCursor;
 
@@ -62,7 +62,7 @@ public abstract class JIPipeDesktopCompendiumUI<T> extends JPanel {
         JPanel listPanel = new JPanel(new BorderLayout());
         markdownReader = new JIPipeDesktopMarkdownReader(true);
 
-        splitPane = new AutoResizeSplitPane(JSplitPane.HORIZONTAL_SPLIT, listPanel, markdownReader, AutoResizeSplitPane.RATIO_1_TO_3);
+        splitPane = new JIPipeDesktopSplitPane(JSplitPane.HORIZONTAL_SPLIT, listPanel, markdownReader, JIPipeDesktopSplitPane.RATIO_1_TO_3);
 
         initializeToolbar(listPanel);
         initializeList(listPanel);

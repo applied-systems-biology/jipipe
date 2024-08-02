@@ -20,7 +20,7 @@ import org.hkijena.jipipe.api.project.JIPipeProject;
 import org.hkijena.jipipe.api.run.JIPipeGraphRun;
 import org.hkijena.jipipe.desktop.app.JIPipeDesktopProjectWorkbench;
 import org.hkijena.jipipe.desktop.app.JIPipeDesktopProjectWorkbenchPanel;
-import org.hkijena.jipipe.utils.AutoResizeSplitPane;
+import org.hkijena.jipipe.utils.JIPipeDesktopSplitPane;
 import org.hkijena.jipipe.utils.UIUtils;
 
 import javax.swing.*;
@@ -59,8 +59,8 @@ public class JIPipeDesktopResultUI extends JIPipeDesktopProjectWorkbenchPanel {
         setLayout(new BorderLayout());
         algorithmTree = new JIPipeDesktopResultAlgorithmTree(getDesktopProjectWorkbench(), project, storagePath);
 
-        splitPane = new AutoResizeSplitPane(JSplitPane.HORIZONTAL_SPLIT, algorithmTree,
-                new JPanel(), AutoResizeSplitPane.RATIO_1_TO_3);
+        splitPane = new JIPipeDesktopSplitPane(JSplitPane.HORIZONTAL_SPLIT, algorithmTree,
+                new JPanel(), JIPipeDesktopSplitPane.RATIO_1_TO_3);
         add(splitPane, BorderLayout.CENTER);
 
         algorithmTree.getTree().addTreeSelectionListener(e -> updateSelection());

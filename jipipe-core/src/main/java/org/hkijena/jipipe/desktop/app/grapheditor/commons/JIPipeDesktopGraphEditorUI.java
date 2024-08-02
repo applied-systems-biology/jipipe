@@ -210,10 +210,148 @@ public abstract class JIPipeDesktopGraphEditorUI extends JIPipeDesktopWorkbenchP
         add(dockPanel, BorderLayout.CENTER);
 
         initializeEditingToolbar();
+        initializeCommonToolbar();
+    }
+
+    private void initializeCommonToolbar() {
+        toolBar.add(Box.createHorizontalGlue());
+        if (getHistoryJournal() != null) {
+            JButton undoButton = new JButton(UIUtils.getIconFromResources("actions/undo.png"));
+            undoButton.setToolTipText("<html>Undo<br><i>Ctrl-Z</i></html>");
+            UIUtils.makeButtonFlatWithSize(undoButton, 32, 3);
+            undoButton.addActionListener(e -> undo());
+            toolBar.add(undoButton);
+
+            JButton redoButton = new JButton(UIUtils.getIconFromResources("actions/edit-redo.png"));
+            redoButton.setToolTipText("<html>Redo<br><i>Ctrl-Shift-Z</i></html>");
+            UIUtils.makeButtonFlatWithSize(redoButton, 32, 3);
+            redoButton.addActionListener(e -> redo());
+            toolBar.add(redoButton);
+
+            toolBar.addSeparator();
+        }
+        initializeCommonToolbarLayout();
+        initializeCommonToolbarExport();
+        toolBar.addSeparator();
+        initializeCommonToolbarZoom();
+        toolBar.add(Box.createHorizontalStrut(8));
+    }
+
+    private void initializeCommonToolbarLayout() {
+
+        JPopupMenu layoutMenu = new JPopupMenu();
+
+        JButton layoutButton = new JButton(UIUtils.getIconFromResources("actions/sidebar.png"));
+        UIUtils.makeButtonFlatWithSize(layoutButton, 32, 3);
+        toolBar.add(layoutButton);
+
+        UIUtils.addReloadablePopupMenuToButton(layoutButton, layoutMenu, () -> {
+            layoutMenu.removeAll();
+
+            JMenuItem autoLayoutItem = new JMenuItem("Auto-layout all nodes", UIUtils.getIconFromResources("actions/distribute-unclump.png"));
+            autoLayoutItem.addActionListener(e -> {
+                if (getHistoryJournal() != null) {
+                    getHistoryJournal().snapshot("Auto-layout", "Apply auto-layout", getCompartment(), UIUtils.getIconFromResources("actions/distribute-unclump.png"));
+                }
+                canvasUI.autoLayoutAll();
+            });
+            layoutMenu.add(autoLayoutItem);
+
+            JCheckBoxMenuItem layoutOnConnectItem = new JCheckBoxMenuItem("Layout nodes on connect",
+                    UIUtils.getIconFromResources("actions/connector-avoid.png"),
+                    JIPipeGraphEditorUIApplicationSettings.getInstance().isLayoutAfterConnect());
+            layoutOnConnectItem.setToolTipText("Auto-layout layout on making data slot connections");
+            layoutOnConnectItem.addActionListener(e -> {
+                JIPipeGraphEditorUIApplicationSettings.getInstance().setLayoutAfterConnect(layoutOnConnectItem.isSelected());
+            });
+
+            layoutMenu.add(layoutOnConnectItem);
+
+            JCheckBoxMenuItem layoutOnAlgorithmFinderItem = new JCheckBoxMenuItem("Layout nodes on 'Find matching node'",
+                    UIUtils.getIconFromResources("actions/connector-avoid.png"),
+                    JIPipeGraphEditorUIApplicationSettings.getInstance().isLayoutAfterAlgorithmFinder());
+            layoutOnAlgorithmFinderItem.setToolTipText("Auto-layout layout on utilizing the 'Find matching node' feature");
+            layoutOnAlgorithmFinderItem.addActionListener(e -> {
+                JIPipeGraphEditorUIApplicationSettings.getInstance().setLayoutAfterAlgorithmFinder(layoutOnAlgorithmFinderItem.isSelected());
+            });
+            layoutMenu.add(layoutOnAlgorithmFinderItem);
+        });
+
+    }
+
+    private void initializeCommonToolbarExport() {
+        JButton snapshotButton = new JButton(UIUtils.getIconFromResources("actions/camera.png"));
+        UIUtils.makeButtonFlatWithSize(snapshotButton, 32, 3);
+        JPopupMenu popupMenu = UIUtils.addPopupMenuToButton(snapshotButton);
+
+        JMenuItem exportToClipboardItem = new JMenuItem("Copy snapshot to clipboard", UIUtils.getIconFromResources("actions/edit-copy.png"));
+        exportToClipboardItem.addActionListener(e -> createScreenshotClipboard());
+        popupMenu.add(exportToClipboardItem);
+        JMenuItem exportAsPngItem = new JMenuItem("Export as *.png", UIUtils.getIconFromResources("actions/viewimage.png"));
+        exportAsPngItem.addActionListener(e -> createScreenshotPNG());
+        popupMenu.add(exportAsPngItem);
+        JMenuItem exportAsSvgItem = new JMenuItem("Export as *.svg", UIUtils.getIconFromResources("actions/viewimage.png"));
+        exportAsSvgItem.addActionListener(e -> createScreenshotSVG());
+        popupMenu.add(exportAsSvgItem);
+
+        toolBar.add(snapshotButton);
+    }
+
+    private void initializeCommonToolbarZoom() {
+
+        JPanel zoomPanel = new JPanel(new BorderLayout());
+        zoomPanel.setBorder(UIUtils.createControlBorder());
+        zoomPanel.setPreferredSize(new Dimension(100, 32));
+        zoomPanel.setMaximumSize(new Dimension(100, 32));
+
+        JButton zoomOutButton = new JButton(UIUtils.getIconFromResources("actions/square-minus.png"));
+        UIUtils.makeButtonFlat25x25(zoomOutButton);
+        zoomOutButton.setToolTipText("<html>Zoom out<br><i>Ctrl-NumPad -</i></html>");
+        zoomOutButton.addActionListener(e -> canvasUI.zoomOut());
+        zoomPanel.add(zoomOutButton, BorderLayout.WEST);
+
+        JButton zoomButton = new JButton((int) (canvasUI.getZoom() * 100) + "%");
+        zoomButton.setToolTipText("<html>Change zoom<br>Reset zoom: <i>Ctrl-NumPad 0</i></html>");
+        canvasUI.getZoomChangedEventEmitter().subscribeLambda((emitter, event) -> {
+            zoomButton.setText((int) (canvasUI.getZoom() * 100) + "%");
+        });
+        zoomButton.setBorder(null);
+        JPopupMenu zoomMenu = UIUtils.addPopupMenuToButton(zoomButton);
+        for (double zoom = 0.1; zoom <= 3; zoom += 0.25) {
+            JMenuItem changeZoomItem = new JMenuItem((int) (zoom * 100) + "%", UIUtils.getIconFromResources("actions/zoom.png"));
+            double finalZoom = zoom;
+            changeZoomItem.addActionListener(e -> canvasUI.setZoom(finalZoom));
+            zoomMenu.add(changeZoomItem);
+        }
+        zoomMenu.addSeparator();
+        zoomMenu.add(UIUtils.createMenuItem("Reset zoom", "Resets the zoom to 100%",
+                UIUtils.getIconFromResources("actions/edit-reset.png"), () -> canvasUI.setZoom(1)));
+        JMenuItem changeZoomToItem = new JMenuItem("Set zoom value ...");
+        changeZoomToItem.addActionListener(e -> {
+            String zoomInput = JOptionPane.showInputDialog(this, "Please enter a new zoom value (in %)", (int) (canvasUI.getZoom() * 100) + "%");
+            if (!StringUtils.isNullOrEmpty(zoomInput)) {
+                zoomInput = zoomInput.replace("%", "");
+                try {
+                    int percentage = Integer.parseInt(zoomInput);
+                    canvasUI.setZoom(percentage / 100.0);
+                } catch (NumberFormatException ex) {
+                    ex.printStackTrace();
+                }
+            }
+        });
+        zoomMenu.add(changeZoomToItem);
+        zoomPanel.add(zoomButton, BorderLayout.CENTER);
+
+        JButton zoomInButton = new JButton(UIUtils.getIconFromResources("actions/square-plus.png"));
+        UIUtils.makeButtonFlat25x25(zoomInButton);
+        zoomInButton.setToolTipText("<html>Zoom in<br><i>Ctrl-NumPad +</i></html>");
+        zoomInButton.addActionListener(e -> canvasUI.zoomIn());
+        zoomPanel.add(zoomInButton, BorderLayout.EAST);
+
+        toolBar.add(zoomPanel);
     }
 
     private void initializeEditingToolbar() {
-        toolBar.add(Box.createHorizontalStrut(8));
         for (Class<? extends JIPipeGraphEditorTool> klass : JIPipe.getInstance().getGraphEditorToolRegistry().getRegisteredTools()) {
             JIPipeGraphEditorTool tool = (JIPipeGraphEditorTool) ReflectionUtils.newInstance(klass);
             if (tool.supports(this)) {
@@ -307,227 +445,6 @@ public abstract class JIPipeDesktopGraphEditorUI extends JIPipeDesktopWorkbenchP
     public Set<JIPipeDesktopGraphNodeUI> getSelection() {
         return canvasUI.getSelection();
     }
-
-//    /**
-//     * Reloads the menu bar
-//     */
-//    public void reloadMenuBar() {
-//        menuBar.removeAll();
-//        initializeCommonActions();
-//    }
-//
-//    /**
-//     * Initializes the tool bar
-//     */
-//    protected void initializeCommonActions() {
-//        menuBar.add(Box.createHorizontalGlue());
-//        menuBar.add(Box.createHorizontalStrut(8));
-//
-//        menuBar.add(nodeDatabaseSearchBox);
-//        nodeDatabaseSearchBox.setVisible(graphUISettings.getSearchSettings().isEnableSearch());
-//        menuBar.add(Box.createHorizontalStrut(8));
-//        menuBar.add(Box.createVerticalStrut(42));
-//
-//        List<JIPipeDesktopGraphEditorToolBarButtonExtension> graphEditorToolBarButtonExtensions = JIPipe.getCustomMenus().graphEditorToolBarButtonExtensionsFor(this);
-//        for (JIPipeDesktopGraphEditorToolBarButtonExtension extension : graphEditorToolBarButtonExtensions) {
-//            UIUtils.makeButtonFlat25x25(extension);
-//            menuBar.add(extension);
-//        }
-//
-//        if (!graphEditorToolBarButtonExtensions.isEmpty())
-//            menuBar.add(new JSeparator(JSeparator.VERTICAL));
-//
-//        if (getHistoryJournal() != null) {
-//            JButton undoButton = new JButton(UIUtils.getIconFromResources("actions/undo.png"));
-//            undoButton.setToolTipText("<html>Undo<br><i>Ctrl-Z</i></html>");
-//            UIUtils.makeButtonFlat25x25(undoButton);
-//            undoButton.addActionListener(e -> undo());
-//            menuBar.add(undoButton);
-//
-//            JButton redoButton = new JButton(UIUtils.getIconFromResources("actions/edit-redo.png"));
-//            redoButton.setToolTipText("<html>Redo<br><i>Ctrl-Shift-Z</i></html>");
-//            UIUtils.makeButtonFlat25x25(redoButton);
-//            redoButton.addActionListener(e -> redo());
-//            menuBar.add(redoButton);
-//        }
-//
-//        initializeCenterViewCommand(graphMenu);
-//        initializeToggleHideEdgesCommand(graphMenu);
-//        initializeExportMenu(graphMenu);
-//        initializeLayoutMenu(graphMenu);
-//        initializeSearchMenu(graphMenu);
-//
-//        menuBar.add(UIUtils.createVerticalSeparator());
-//
-//        initializeZoomMenu();
-//
-//        menuBar.add(UIUtils.createVerticalSeparator());
-//
-//        graphMenu.setIcon(UIUtils.getIconFromResources("actions/bars.png"));
-//        menuBar.add(graphMenu);
-//    }
-
-//    private void initializeToggleHideEdgesCommand(JMenu graphMenu) {
-//        JCheckBoxMenuItem toggle = new JCheckBoxMenuItem("Auto-mute edges", canvasUI.isAutoMuteEdges());
-//        toggle.addActionListener(e -> {
-//            canvasUI.setAutoMuteEdges(toggle.getState());
-//            canvasUI.repaint(50);
-//        });
-//        graphMenu.add(toggle);
-//    }
-//
-//    private void initializeZoomMenu() {
-//        JButton zoomOutButton = new JButton(UIUtils.getIconFromResources("actions/square-minus.png"));
-//        UIUtils.makeButtonFlat25x25(zoomOutButton);
-//        zoomOutButton.setToolTipText("<html>Zoom out<br><i>Ctrl-NumPad -</i></html>");
-//        zoomOutButton.addActionListener(e -> canvasUI.zoomOut());
-//        menuBar.add(zoomOutButton);
-//
-//        JButton zoomButton = new JButton((int) (canvasUI.getZoom() * 100) + "%");
-//        zoomButton.setToolTipText("<html>Change zoom<br>Reset zoom: <i>Ctrl-NumPad 0</i></html>");
-//        canvasUI.getZoomChangedEventEmitter().subscribeLambda((emitter, event) -> {
-//            zoomButton.setText((int) (canvasUI.getZoom() * 100) + "%");
-//        });
-//        zoomButton.setBorder(null);
-//        JPopupMenu zoomMenu = UIUtils.addPopupMenuToButton(zoomButton);
-//        for (double zoom = 0.1; zoom <= 3; zoom += 0.25) {
-//            JMenuItem changeZoomItem = new JMenuItem((int) (zoom * 100) + "%", UIUtils.getIconFromResources("actions/zoom.png"));
-//            double finalZoom = zoom;
-//            changeZoomItem.addActionListener(e -> canvasUI.setZoom(finalZoom));
-//            zoomMenu.add(changeZoomItem);
-//        }
-//        zoomMenu.addSeparator();
-//        zoomMenu.add(UIUtils.createMenuItem("Reset zoom", "Resets the zoom to 100%",
-//                UIUtils.getIconFromResources("actions/edit-reset.png"), () -> canvasUI.setZoom(1)));
-//        JMenuItem changeZoomToItem = new JMenuItem("Set zoom value ...");
-//        changeZoomToItem.addActionListener(e -> {
-//            String zoomInput = JOptionPane.showInputDialog(this, "Please enter a new zoom value (in %)", (int) (canvasUI.getZoom() * 100) + "%");
-//            if (!StringUtils.isNullOrEmpty(zoomInput)) {
-//                zoomInput = zoomInput.replace("%", "");
-//                try {
-//                    int percentage = Integer.parseInt(zoomInput);
-//                    canvasUI.setZoom(percentage / 100.0);
-//                } catch (NumberFormatException ex) {
-//                    ex.printStackTrace();
-//                }
-//            }
-//        });
-//        zoomMenu.add(changeZoomToItem);
-//        menuBar.add(zoomButton);
-//
-//        JButton zoomInButton = new JButton(UIUtils.getIconFromResources("actions/square-plus.png"));
-//        UIUtils.makeButtonFlat25x25(zoomInButton);
-//        zoomInButton.setToolTipText("<html>Zoom in<br><i>Ctrl-NumPad +</i></html>");
-//        zoomInButton.addActionListener(e -> canvasUI.zoomIn());
-//        menuBar.add(zoomInButton);
-//    }
-//
-//    private void initializeSearchMenu(JMenu graphMenu) {
-//        JMenu searchMenu = new JMenu("Search");
-//        searchMenu.setIcon(UIUtils.getIconFromResources("actions/search.png"));
-//        graphMenu.add(searchMenu);
-//
-//        JMenuItem searchEnabledItem = new JCheckBoxMenuItem("Enable search");
-//        searchEnabledItem.setSelected(graphUISettings.getSearchSettings().isEnableSearch());
-//        searchEnabledItem.addActionListener(e -> {
-//            graphUISettings.getSearchSettings().setEnableSearch(searchEnabledItem.isSelected());
-//            if (!JIPipe.NO_SETTINGS_AUTOSAVE) {
-//                JIPipe.getInstance().getApplicationSettingsRegistry().save();
-//            }
-//            nodeDatabaseSearchBox.setVisible(graphUISettings.getSearchSettings().isEnableSearch());
-//            menuBar.revalidate();
-//        });
-//        searchMenu.add(searchEnabledItem);
-//
-//        JMenuItem searchFindNewNodes = new JCheckBoxMenuItem("Search can create new nodes");
-//        searchFindNewNodes.setSelected(graphUISettings.getSearchSettings().isSearchFindNewNodes());
-//        searchFindNewNodes.addActionListener(e -> {
-//            graphUISettings.getSearchSettings().setSearchFindNewNodes(searchFindNewNodes.isSelected());
-//            if (!JIPipe.NO_SETTINGS_AUTOSAVE) {
-//                JIPipe.getInstance().getApplicationSettingsRegistry().save();
-//            }
-//            nodeDatabaseSearchBox.setAllowNew(searchFindNewNodes.isSelected());
-//        });
-//        searchMenu.add(searchFindNewNodes);
-//
-//        JMenuItem searchFindExistingNodes = new JCheckBoxMenuItem("Search can find existing nodes");
-//        searchFindExistingNodes.setSelected(graphUISettings.getSearchSettings().isSearchFindExistingNodes());
-//        searchFindExistingNodes.addActionListener(e -> {
-//            graphUISettings.getSearchSettings().setSearchFindExistingNodes(searchFindExistingNodes.isSelected());
-//            if (!JIPipe.NO_SETTINGS_AUTOSAVE) {
-//                JIPipe.getInstance().getApplicationSettingsRegistry().save();
-//            }
-//            nodeDatabaseSearchBox.setAllowExisting(searchFindExistingNodes.isSelected());
-//        });
-//        searchMenu.add(searchFindExistingNodes);
-//    }
-//
-//    private void initializeExportMenu(JMenu graphMenu) {
-//        JMenu exportAsImageMenu = new JMenu("Export as image");
-//        exportAsImageMenu.setIcon(UIUtils.getIconFromResources("actions/document-export.png"));
-//        graphMenu.add(exportAsImageMenu);
-//
-//        JMenuItem exportToClipboardItem = new JMenuItem("Copy snapshot to clipboard", UIUtils.getIconFromResources("actions/edit-copy.png"));
-//        exportToClipboardItem.addActionListener(e -> createScreenshotClipboard());
-//        exportAsImageMenu.add(exportToClipboardItem);
-//        JMenuItem exportAsPngItem = new JMenuItem("Export as *.png", UIUtils.getIconFromResources("actions/viewimage.png"));
-//        exportAsPngItem.addActionListener(e -> createScreenshotPNG());
-//        exportAsImageMenu.add(exportAsPngItem);
-//        JMenuItem exportAsSvgItem = new JMenuItem("Export as *.svg", UIUtils.getIconFromResources("actions/viewimage.png"));
-//        exportAsSvgItem.addActionListener(e -> createScreenshotSVG());
-//        exportAsImageMenu.add(exportAsSvgItem);
-//    }
-//
-//    private void initializeCenterViewCommand(JMenu graphMenu) {
-//        JMenuItem centerViewButton = new JMenuItem("Center view to nodes");
-//        centerViewButton.setIcon(UIUtils.getIconFromResources("actions/view-restore.png"));
-//        centerViewButton.addActionListener(e -> {
-//            if (getHistoryJournal() != null) {
-//                getHistoryJournal().snapshot("Center view to nodes",
-//                        "Apply center view to nodes",
-//                        getCompartment(),
-//                        UIUtils.getIconFromResources("actions/view-restore.png"));
-//            }
-//            canvasUI.crop(true);
-//        });
-//        graphMenu.add(centerViewButton);
-//    }
-//
-//    private void initializeLayoutMenu(JMenu graphMenu) {
-//
-//        JMenu layoutMenu = new JMenu("Layout");
-//        layoutMenu.setIcon(UIUtils.getIconFromResources("actions/distribute-randomize.png"));
-//        graphMenu.add(layoutMenu);
-//
-//        JMenuItem autoLayoutItem = new JMenuItem("Auto-layout all nodes", UIUtils.getIconFromResources("actions/distribute-unclump.png"));
-//        autoLayoutItem.addActionListener(e -> {
-//            if (getHistoryJournal() != null) {
-//                getHistoryJournal().snapshot("Auto-layout", "Apply auto-layout", getCompartment(), UIUtils.getIconFromResources("actions/distribute-unclump.png"));
-//            }
-//            canvasUI.autoLayoutAll();
-//        });
-//        autoLayoutItem.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_L, KeyEvent.CTRL_MASK | KeyEvent.SHIFT_MASK));
-//        layoutMenu.add(autoLayoutItem);
-//
-//        JCheckBoxMenuItem layoutOnConnectItem = new JCheckBoxMenuItem("Layout nodes on connect",
-//                UIUtils.getIconFromResources("actions/connector-avoid.png"),
-//                JIPipeGraphEditorUIApplicationSettings.getInstance().isLayoutAfterConnect());
-//        layoutOnConnectItem.setToolTipText("Auto-layout layout on making data slot connections");
-//        layoutOnConnectItem.addActionListener(e -> {
-//            JIPipeGraphEditorUIApplicationSettings.getInstance().setLayoutAfterConnect(layoutOnConnectItem.isSelected());
-//        });
-//
-//        layoutMenu.add(layoutOnConnectItem);
-//
-//        JCheckBoxMenuItem layoutOnAlgorithmFinderItem = new JCheckBoxMenuItem("Layout nodes on 'Find matching node'",
-//                UIUtils.getIconFromResources("actions/connector-avoid.png"),
-//                JIPipeGraphEditorUIApplicationSettings.getInstance().isLayoutAfterAlgorithmFinder());
-//        layoutOnAlgorithmFinderItem.setToolTipText("Auto-layout layout on utilizing the 'Find matching node' feature");
-//        layoutOnAlgorithmFinderItem.addActionListener(e -> {
-//            JIPipeGraphEditorUIApplicationSettings.getInstance().setLayoutAfterAlgorithmFinder(layoutOnAlgorithmFinderItem.isSelected());
-//        });
-//        layoutMenu.add(layoutOnAlgorithmFinderItem);
-//    }
 
     public void createScreenshotClipboard() {
         BufferedImage screenshot = canvasUI.createScreenshotPNG();

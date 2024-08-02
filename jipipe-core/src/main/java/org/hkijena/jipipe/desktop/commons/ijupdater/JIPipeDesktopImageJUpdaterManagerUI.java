@@ -20,7 +20,7 @@ import org.hkijena.jipipe.desktop.app.JIPipeDesktopWorkbench;
 import org.hkijena.jipipe.desktop.app.JIPipeDesktopWorkbenchPanel;
 import org.hkijena.jipipe.desktop.commons.components.search.JIPipeDesktopSearchTextField;
 import org.hkijena.jipipe.desktop.commons.components.search.JIPipeDesktopSearchTextFieldTableRowFilter;
-import org.hkijena.jipipe.utils.AutoResizeSplitPane;
+import org.hkijena.jipipe.utils.JIPipeDesktopSplitPane;
 import org.hkijena.jipipe.utils.UIUtils;
 import org.jdesktop.swingx.JXTable;
 
@@ -169,9 +169,9 @@ public class JIPipeDesktopImageJUpdaterManagerUI extends JIPipeDesktopWorkbenchP
             add(toolBar, BorderLayout.NORTH);
             optionPanel.removeAll();
             optionPanel.add(content, BorderLayout.CENTER);
-            JSplitPane splitPane = new AutoResizeSplitPane(JSplitPane.HORIZONTAL_SPLIT,
+            JSplitPane splitPane = new JIPipeDesktopSplitPane(JSplitPane.HORIZONTAL_SPLIT,
                     tablePanel,
-                    optionPanel, AutoResizeSplitPane.RATIO_3_TO_1);
+                    optionPanel, JIPipeDesktopSplitPane.RATIO_3_TO_1);
             add(splitPane, BorderLayout.CENTER);
         }
         revalidate();

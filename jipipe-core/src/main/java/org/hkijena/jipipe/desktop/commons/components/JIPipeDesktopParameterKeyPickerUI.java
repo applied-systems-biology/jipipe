@@ -23,8 +23,7 @@ import org.hkijena.jipipe.api.parameters.JIPipeParameterTree;
 import org.hkijena.jipipe.api.parameters.JIPipeParameterTypeInfo;
 import org.hkijena.jipipe.api.project.JIPipeProject;
 import org.hkijena.jipipe.desktop.commons.components.search.JIPipeDesktopSearchTextField;
-import org.hkijena.jipipe.utils.AutoResizeSplitPane;
-import org.hkijena.jipipe.utils.StringUtils;
+import org.hkijena.jipipe.utils.JIPipeDesktopSplitPane;
 import org.hkijena.jipipe.utils.UIUtils;
 
 import javax.swing.*;
@@ -203,10 +202,10 @@ public class JIPipeDesktopParameterKeyPickerUI extends JPanel {
         treeComponent.setCellRenderer(new ParameterTreeCellRenderer());
         treePanel.add(new JScrollPane(treeComponent), BorderLayout.CENTER);
 
-        add(new AutoResizeSplitPane(AutoResizeSplitPane.LEFT_RIGHT,
+        add(new JIPipeDesktopSplitPane(JIPipeDesktopSplitPane.LEFT_RIGHT,
                 nodePanel,
                 treePanel,
-                new AutoResizeSplitPane.DynamicSidebarRatio(300, true)));
+                new JIPipeDesktopSplitPane.DynamicSidebarRatio(300, true)));
     }
 
     /**

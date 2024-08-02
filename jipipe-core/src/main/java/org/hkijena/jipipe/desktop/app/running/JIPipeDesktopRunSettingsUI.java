@@ -34,7 +34,7 @@ import org.hkijena.jipipe.desktop.commons.components.markup.JIPipeDesktopMarkdow
 import org.hkijena.jipipe.desktop.commons.components.tabs.JIPipeDesktopTabPane;
 import org.hkijena.jipipe.plugins.parameters.library.markup.MarkdownText;
 import org.hkijena.jipipe.plugins.settings.JIPipeRuntimeApplicationSettings;
-import org.hkijena.jipipe.utils.AutoResizeSplitPane;
+import org.hkijena.jipipe.utils.JIPipeDesktopSplitPane;
 import org.hkijena.jipipe.utils.ResourceUtils;
 import org.hkijena.jipipe.utils.StringUtils;
 import org.hkijena.jipipe.utils.UIUtils;
@@ -107,7 +107,7 @@ public class JIPipeDesktopRunSettingsUI extends JIPipeDesktopProjectWorkbenchPan
         messagePanel.addMessage(JIPipeDesktopMessagePanel.MessageType.Error, "There are errors in your project that prevent a run", false, false, runButton);
         reportPanel.add(messagePanel, BorderLayout.NORTH);
 
-        JSplitPane splitPane = new AutoResizeSplitPane(JSplitPane.HORIZONTAL_SPLIT, reportPanel, help, AutoResizeSplitPane.RATIO_3_TO_1);
+        JSplitPane splitPane = new JIPipeDesktopSplitPane(JSplitPane.HORIZONTAL_SPLIT, reportPanel, help, JIPipeDesktopSplitPane.RATIO_3_TO_1);
         panel.add(splitPane, BorderLayout.CENTER);
 
         add(panel, BorderLayout.CENTER);
@@ -128,8 +128,8 @@ public class JIPipeDesktopRunSettingsUI extends JIPipeDesktopProjectWorkbenchPan
 
         removeAll();
 
-        AutoResizeSplitPane splitPane = new AutoResizeSplitPane(AutoResizeSplitPane.LEFT_RIGHT, new AutoResizeSplitPane.DynamicSidebarRatio(600, false));
-        AutoResizeSplitPane splitPane1 = new AutoResizeSplitPane(AutoResizeSplitPane.TOP_BOTTOM, AutoResizeSplitPane.RATIO_1_TO_1);
+        JIPipeDesktopSplitPane splitPane = new JIPipeDesktopSplitPane(JIPipeDesktopSplitPane.LEFT_RIGHT, new JIPipeDesktopSplitPane.DynamicSidebarRatio(600, false));
+        JIPipeDesktopSplitPane splitPane1 = new JIPipeDesktopSplitPane(JIPipeDesktopSplitPane.TOP_BOTTOM, JIPipeDesktopSplitPane.RATIO_1_TO_1);
         JIPipeDesktopTabPane tabPane = new JIPipeDesktopTabPane(true, JIPipeDesktopTabPane.TabPlacement.Left);
         JPanel centerPanel = new JPanel(new BorderLayout());
         centerPanel.add(tabPane, BorderLayout.CENTER);

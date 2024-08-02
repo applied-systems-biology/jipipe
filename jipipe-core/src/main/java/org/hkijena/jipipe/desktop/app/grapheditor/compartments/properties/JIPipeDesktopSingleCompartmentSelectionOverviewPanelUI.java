@@ -34,7 +34,7 @@ import org.hkijena.jipipe.desktop.commons.components.ribbon.JIPipeDesktopLargeBu
 import org.hkijena.jipipe.desktop.commons.components.ribbon.JIPipeDesktopLargeToggleButtonRibbonAction;
 import org.hkijena.jipipe.desktop.commons.components.ribbon.JIPipeDesktopRibbon;
 import org.hkijena.jipipe.plugins.settings.JIPipeGraphEditorUIApplicationSettings;
-import org.hkijena.jipipe.utils.AutoResizeSplitPane;
+import org.hkijena.jipipe.utils.JIPipeDesktopSplitPane;
 import org.hkijena.jipipe.utils.StringUtils;
 import org.hkijena.jipipe.utils.UIUtils;
 
@@ -71,7 +71,7 @@ public class JIPipeDesktopSingleCompartmentSelectionOverviewPanelUI extends JIPi
     private void initialize() {
         setLayout(new BorderLayout());
 
-        AutoResizeSplitPane splitPane = new AutoResizeSplitPane(AutoResizeSplitPane.TOP_BOTTOM, AutoResizeSplitPane.RATIO_1_TO_3);
+        JIPipeDesktopSplitPane splitPane = new JIPipeDesktopSplitPane(JIPipeDesktopSplitPane.TOP_BOTTOM, JIPipeDesktopSplitPane.RATIO_1_TO_3);
         add(splitPane, BorderLayout.CENTER);
 
         splitPane.setTopComponent(new JIPipeDesktopGraphEditorMinimap(parentPanel.getGraphEditorUI()));

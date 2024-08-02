@@ -36,7 +36,7 @@ public class JIPipeCropViewGraphEditorTool implements JIPipeGraphEditorTool {
 
     @Override
     public Icon getIcon() {
-        return UIUtils.getIconFromResources("actions/view-restore.png");
+        return UIUtils.getIconFromResources("actions/zoom-original.png");
     }
 
     @Override

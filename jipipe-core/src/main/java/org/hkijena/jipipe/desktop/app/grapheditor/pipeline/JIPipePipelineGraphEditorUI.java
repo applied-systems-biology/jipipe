@@ -359,7 +359,7 @@ public class JIPipePipelineGraphEditorUI extends JIPipeDesktopGraphEditorUI {
 
         getDockPanel().addDockPanel("MINIMAP",
                 "Minimap",
-                UIUtils.getIcon32FromResources("actions/document-preview.png"),
+                UIUtils.getIcon32FromResources("actions/zoom.png"),
                 JIPipeDesktopDockPanel.PanelLocation.TopLeft,
                 true,
                 new JIPipeDesktopGraphEditorMinimap(this));
@@ -393,20 +393,9 @@ public class JIPipePipelineGraphEditorUI extends JIPipeDesktopGraphEditorUI {
                 JIPipeDesktopDockPanel.PanelLocation.BottomRight,
                 false,
                 new JIPipeDesktopRunnableQueuePanelUI());
-
-//        bottomPanel.addTab("Add nodes", UIUtils.getIcon32FromResources("actions/node-add.png"),
-//                new NodeToolBox(getDesktopWorkbench(), true), JIPipeDesktopTabPane.CloseMode.withoutCloseButton);
 //
 //        bottomPanel.addTab("Templates", UIUtils.getIcon32FromResources("actions/star.png"),
 //                new NodeTemplateBox(getDesktopWorkbench(), true, getCanvasUI(), null), JIPipeDesktopTabPane.CloseMode.withoutCloseButton);
-//
-//        bottomPanel.addTab("Bookmarks", UIUtils.getIcon32FromResources("actions/bookmarks.png"),
-//                new JIPipeDesktopBookmarkListPanel(getDesktopWorkbench(), getGraph(), this, null), JIPipeDesktopTabPane.CloseMode.withoutCloseButton);
-//
-//        bottomPanel.addTab("History",
-//                UIUtils.getIcon32FromResources("actions/edit-undo-history.png"),
-//                new JIPipeDesktopHistoryJournalUI(getHistoryJournal()),
-//                JIPipeDesktopTabPane.CloseMode.withoutCloseButton);
     }
 
     @Override

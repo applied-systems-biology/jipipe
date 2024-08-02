@@ -106,7 +106,7 @@ public class JIPipeCompartmentsGraphEditorUI extends JIPipeDesktopGraphEditorUI 
 
         getDockPanel().addDockPanel("MINIMAP",
                 "Minimap",
-                UIUtils.getIcon32FromResources("actions/document-preview.png"),
+                UIUtils.getIcon32FromResources("actions/zoom.png"),
                 JIPipeDesktopDockPanel.PanelLocation.TopLeft,
                 true,
                 new JIPipeDesktopGraphEditorMinimap(this));

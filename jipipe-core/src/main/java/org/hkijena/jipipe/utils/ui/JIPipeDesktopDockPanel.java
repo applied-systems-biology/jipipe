@@ -2,7 +2,7 @@ package org.hkijena.jipipe.utils.ui;
 
 import com.google.common.collect.ImmutableList;
 import org.hkijena.jipipe.desktop.commons.components.JIPipeDesktopVerticalToolBar;
-import org.hkijena.jipipe.utils.AutoResizeSplitPane;
+import org.hkijena.jipipe.utils.JIPipeDesktopSplitPane;
 import org.hkijena.jipipe.utils.UIUtils;
 
 import javax.swing.*;
@@ -39,6 +39,8 @@ public class JIPipeDesktopDockPanel extends JPanel {
     private final Map<String, JToggleButton> floatingPanelToggles = new HashMap<>();
     private boolean floatingLeft = false;
     private boolean floatingRight = false;
+    private final JIPipeDesktopSplitPane leftSplitPane = new JIPipeDesktopSplitPane(JSplitPane.VERTICAL_SPLIT, new JIPipeDesktopSplitPane.FixedRatio(0.33, true));
+    private final JIPipeDesktopSplitPane rightSplitPane = new JIPipeDesktopSplitPane(JSplitPane.VERTICAL_SPLIT, new JIPipeDesktopSplitPane.FixedRatio(0.66, true));
 
     public JIPipeDesktopDockPanel() {
         super(new BorderLayout());
@@ -205,21 +207,40 @@ public class JIPipeDesktopDockPanel extends JPanel {
 
         if(leftContent.size() >= 2) {
             // create split pane
-            leftFloatingPanelContent = new AutoResizeSplitPane(AutoResizeSplitPane.TOP_BOTTOM, leftContent.get(0), leftContent.get(1), 0.5);
+            leftSplitPane.setLeftComponent(leftContent.get(0));
+            leftSplitPane.setRightComponent(leftContent.get(1));
+            leftFloatingPanelContent = leftSplitPane;
         }
         else if(leftContent.size() == 1) {
             // use directly
             leftFloatingPanelContent = leftContent.get(0);
+            leftSplitPane.setLeftComponent(new JPanel());
+            leftSplitPane.setRightComponent(new JPanel());
+        }
+        else {
+            leftSplitPane.setLeftComponent(new JPanel());
+            leftSplitPane.setRightComponent(new JPanel());
         }
 
         if(rightContent.size() >= 2) {
             // create split pane
-            rightFloatingPanelContent = new AutoResizeSplitPane(AutoResizeSplitPane.TOP_BOTTOM, rightContent.get(0), rightContent.get(1), 0.5);
+            rightSplitPane.setLeftComponent(rightContent.get(0));
+            rightSplitPane.setRightComponent(rightContent.get(1));
+            rightFloatingPanelContent = rightSplitPane;
         }
         else if(rightContent.size() == 1) {
             // use directly
             rightFloatingPanelContent = rightContent.get(0);
+            rightSplitPane.setLeftComponent(new JPanel());
+            rightSplitPane.setRightComponent(new JPanel());
         }
+        else {
+            rightSplitPane.setLeftComponent(new JPanel());
+            rightSplitPane.setRightComponent(new JPanel());
+        }
+
+        leftSplitPane.applyRatio();
+        rightSplitPane.applyRatio();
 
         // Rebuild panel
         if(leftFloatingPanelContent != null) {
@@ -366,6 +387,7 @@ public class JIPipeDesktopDockPanel extends JPanel {
         if(floatingPanels.remove(id) != null) {
             updateToolbars();
             updateContent();
+            updateSizes();
         }
     }
 
@@ -389,6 +411,7 @@ public class JIPipeDesktopDockPanel extends JPanel {
         floatingPanels.put(id, panel);
         updateToolbars();
         updateContent();
+        updateSizes();
     }
 
     public enum PanelLocation {
@@ -461,6 +484,7 @@ public class JIPipeDesktopDockPanel extends JPanel {
         if(found) {
             updateToolbars();
             updateContent();
+            updateSizes();
         }
     }
 

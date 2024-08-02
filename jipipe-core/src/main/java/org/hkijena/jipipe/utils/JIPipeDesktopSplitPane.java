@@ -14,6 +14,7 @@
 package org.hkijena.jipipe.utils;
 
 import javax.swing.*;
+import javax.swing.plaf.basic.BasicSplitPaneUI;
 import java.awt.*;
 import java.awt.event.ComponentAdapter;
 import java.awt.event.ComponentEvent;
@@ -23,7 +24,7 @@ import java.util.function.Function;
 /**
  * A split pane that automatically resizes itself to a ratio
  */
-public class AutoResizeSplitPane extends JSplitPane {
+public class JIPipeDesktopSplitPane extends JSplitPane {
 
     public static final int LEFT_RIGHT = JSplitPane.HORIZONTAL_SPLIT;
 
@@ -34,33 +35,39 @@ public class AutoResizeSplitPane extends JSplitPane {
     public static final double RATIO_1_TO_1 = 0.5;
 
     private Ratio ratio = new FixedRatio();
+    private boolean updating = false;
 
-    public AutoResizeSplitPane(int newOrientation, double ratio) {
+    public JIPipeDesktopSplitPane(int newOrientation, double ratio) {
         super(newOrientation);
+        setUI(new CustomSplitPaneUI());
         setRatio(new FixedRatio(ratio));
         initialize();
     }
 
-    public AutoResizeSplitPane(int newOrientation, Component newLeftComponent, Component newRightComponent, double ratio) {
+    public JIPipeDesktopSplitPane(int newOrientation, Component newLeftComponent, Component newRightComponent, double ratio) {
         super(newOrientation, newLeftComponent, newRightComponent);
+        setUI(new CustomSplitPaneUI());
         setRatio(new FixedRatio(ratio));
         initialize();
     }
 
-    public AutoResizeSplitPane(int newOrientation, Ratio ratio) {
+    public JIPipeDesktopSplitPane(int newOrientation, Ratio ratio) {
         super(newOrientation);
+        setUI(new CustomSplitPaneUI());
         setRatio(ratio);
         initialize();
     }
 
-    public AutoResizeSplitPane(int newOrientation, Component newLeftComponent, Component newRightComponent, Ratio ratio) {
+    public JIPipeDesktopSplitPane(int newOrientation, Component newLeftComponent, Component newRightComponent, Ratio ratio) {
         super(newOrientation, newLeftComponent, newRightComponent);
+        setUI(new CustomSplitPaneUI());
         setRatio(ratio);
         initialize();
     }
 
     private void initialize() {
-        setDividerSize(3);
+        setDividerSize(4);
+        setContinuousLayout(true);
 
         addComponentListener(new ComponentAdapter() {
             @Override
@@ -83,18 +90,26 @@ public class AutoResizeSplitPane extends JSplitPane {
 
     public void setRatio(Ratio ratio) {
         this.ratio = ratio;
-        setResizeWeight(ratio.apply(getWidth()));
+        setResizeWeight(ratio.apply(getMaximumDividerLocation()));
         applyRatio();
     }
 
     public void applyRatio() {
-        setDividerLocation(ratio.apply(getWidth()));
+        try {
+            updating = true;
+            setDividerLocation(ratio.apply(getMaximumDividerLocation()));
+        }
+        finally {
+            updating = false;
+        }
     }
 
     /**
      * Interface that takes the component width as input and returns the ratio
      */
     public interface Ratio extends Function<Integer, Double> {
+
+        void onUpdated(JIPipeDesktopSplitPane splitPane, int dividerLocation);
 
     }
 
@@ -103,9 +118,15 @@ public class AutoResizeSplitPane extends JSplitPane {
      */
     public static class FixedRatio implements Ratio {
         private double ratio = 0.5;
+        private boolean canUpdate = false;
 
         public FixedRatio(double ratio) {
             this.ratio = ratio;
+        }
+
+        public FixedRatio(double ratio, boolean canUpdate) {
+            this.ratio = ratio;
+            this.canUpdate = canUpdate;
         }
 
         public FixedRatio() {
@@ -122,6 +143,14 @@ public class AutoResizeSplitPane extends JSplitPane {
 
         public void setRatio(double ratio) {
             this.ratio = ratio;
+        }
+
+        @Override
+        public void onUpdated(JIPipeDesktopSplitPane splitPane, int dividerLocation) {
+            if(canUpdate) {
+                ratio = Math.max(0.01, Math.min(0.99, 1.0 * dividerLocation / splitPane.getMaximumDividerLocation()));
+//                System.out.println("New ratio is " + ratio);
+            }
         }
     }
 
@@ -159,6 +188,26 @@ public class AutoResizeSplitPane extends JSplitPane {
 
         public void setResizeLeftSidebar(boolean resizeLeftSidebar) {
             this.resizeLeftSidebar = resizeLeftSidebar;
+        }
+
+        @Override
+        public void onUpdated(JIPipeDesktopSplitPane splitPane, int dividerLocation) {
+
+        }
+    }
+
+    public static class CustomSplitPaneUI extends BasicSplitPaneUI {
+        public CustomSplitPaneUI() {
+        }
+
+        @Override
+        protected void finishDraggingTo(int location) {
+            super.finishDraggingTo(location);
+
+            JIPipeDesktopSplitPane splitPane = (JIPipeDesktopSplitPane) getSplitPane();
+            if(!splitPane.updating) {
+                splitPane.ratio.onUpdated(splitPane, splitPane.getDividerLocation());
+            }
         }
     }
 

@@ -16,7 +16,7 @@ package org.hkijena.jipipe.desktop.app.running;
 import org.hkijena.jipipe.api.run.JIPipeRunnableLogEntry;
 import org.hkijena.jipipe.desktop.app.JIPipeDesktopProjectWorkbench;
 import org.hkijena.jipipe.desktop.app.JIPipeDesktopProjectWorkbenchPanel;
-import org.hkijena.jipipe.utils.AutoResizeSplitPane;
+import org.hkijena.jipipe.utils.JIPipeDesktopSplitPane;
 import org.hkijena.jipipe.utils.StringUtils;
 import org.hkijena.jipipe.utils.UIUtils;
 
@@ -26,7 +26,7 @@ import java.awt.*;
 public class JIPipeDesktopLogViewer extends JIPipeDesktopProjectWorkbenchPanel implements JIPipeDesktopRunnableLogsCollection.LogClearedEventListener, JIPipeDesktopRunnableLogsCollection.LogEntryAddedEventListener, JIPipeDesktopRunnableLogsCollection.LogUpdatedEventListener {
     private final JList<JIPipeRunnableLogEntry> logEntryJList = new JList<>();
     private JIPipeRunnableLogEntry currentlyDisplayedLog;
-    private AutoResizeSplitPane splitPane;
+    private JIPipeDesktopSplitPane splitPane;
 
     public JIPipeDesktopLogViewer(JIPipeDesktopProjectWorkbench workbenchUI) {
         super(workbenchUI);
@@ -64,10 +64,10 @@ public class JIPipeDesktopLogViewer extends JIPipeDesktopProjectWorkbenchPanel i
                 () -> JIPipeDesktopRunnableLogsCollection.getInstance().markAllAsRead()));
 
         // Split pane
-        splitPane = new AutoResizeSplitPane(JSplitPane.HORIZONTAL_SPLIT,
+        splitPane = new JIPipeDesktopSplitPane(JSplitPane.HORIZONTAL_SPLIT,
                 leftPanel,
                 new JPanel(),
-                new AutoResizeSplitPane.DynamicSidebarRatio(450, true));
+                new JIPipeDesktopSplitPane.DynamicSidebarRatio(450, true));
         add(splitPane, BorderLayout.CENTER);
     }
 

@@ -78,7 +78,7 @@ public class JIPipeDesktopWelcomePanel extends JIPipeDesktopProjectWorkbenchPane
 
     private void initialize() {
         setLayout(new BorderLayout());
-        AutoResizeSplitPane splitPane = new AutoResizeSplitPane(AutoResizeSplitPane.LEFT_RIGHT, AutoResizeSplitPane.RATIO_1_TO_3);
+        JIPipeDesktopSplitPane splitPane = new JIPipeDesktopSplitPane(JIPipeDesktopSplitPane.LEFT_RIGHT, JIPipeDesktopSplitPane.RATIO_1_TO_3);
 
         initializeRecentProjectsAndTemplates(splitPane);
         initializeHero(splitPane);
@@ -86,7 +86,7 @@ public class JIPipeDesktopWelcomePanel extends JIPipeDesktopProjectWorkbenchPane
         add(splitPane, BorderLayout.CENTER);
     }
 
-    private void initializeHero(AutoResizeSplitPane splitPane) {
+    private void initializeHero(JIPipeDesktopSplitPane splitPane) {
         BufferedImage backgroundImage;
         try {
             if (UIUtils.DARK_THEME) {
@@ -279,7 +279,7 @@ public class JIPipeDesktopWelcomePanel extends JIPipeDesktopProjectWorkbenchPane
         heroPanel.add(logoPanel);
     }
 
-    private void initializeRecentProjectsAndTemplates(AutoResizeSplitPane splitPane) {
+    private void initializeRecentProjectsAndTemplates(JIPipeDesktopSplitPane splitPane) {
         JIPipeDesktopTabPane tabPane = new JIPipeDesktopTabPane(true, JIPipeDesktopTabPane.TabPlacement.Left);
 
         // Recent projects list

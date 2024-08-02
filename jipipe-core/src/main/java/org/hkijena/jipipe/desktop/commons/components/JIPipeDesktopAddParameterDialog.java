@@ -22,7 +22,7 @@ import org.hkijena.jipipe.desktop.commons.components.renderers.JIPipeParameterTy
 import org.hkijena.jipipe.desktop.commons.components.search.JIPipeDesktopSearchTextField;
 import org.hkijena.jipipe.plugins.parameters.library.markup.HTMLText;
 import org.hkijena.jipipe.plugins.parameters.library.markup.MarkdownText;
-import org.hkijena.jipipe.utils.AutoResizeSplitPane;
+import org.hkijena.jipipe.utils.JIPipeDesktopSplitPane;
 import org.hkijena.jipipe.utils.StringUtils;
 import org.hkijena.jipipe.utils.UIUtils;
 
@@ -94,14 +94,14 @@ public class JIPipeDesktopAddParameterDialog extends JIPipeDesktopWorkbenchPanel
     private void initialize() {
         setLayout(new BorderLayout());
 
-        AutoResizeSplitPane splitPane = new AutoResizeSplitPane(AutoResizeSplitPane.LEFT_RIGHT, AutoResizeSplitPane.RATIO_1_TO_3);
+        JIPipeDesktopSplitPane splitPane = new JIPipeDesktopSplitPane(JIPipeDesktopSplitPane.LEFT_RIGHT, JIPipeDesktopSplitPane.RATIO_1_TO_3);
         initializeDataTypeSelection(splitPane);
         initializeFormPanel(splitPane);
         initializeButtonPanel();
         add(splitPane, BorderLayout.CENTER);
     }
 
-    private void initializeFormPanel(AutoResizeSplitPane splitPane) {
+    private void initializeFormPanel(JIPipeDesktopSplitPane splitPane) {
         // Create form located at the bottom
         final MarkdownText documentation = new MarkdownText("# Creating parameters\n\n" +
                 "Please select the parameter type on the left-hand list and at least provide a unique identifier. Optionally, you can also input a name and a description.");
@@ -110,7 +110,7 @@ public class JIPipeDesktopAddParameterDialog extends JIPipeDesktopWorkbenchPanel
 
     }
 
-    private void initializeDataTypeSelection(AutoResizeSplitPane splitPane) {
+    private void initializeDataTypeSelection(JIPipeDesktopSplitPane splitPane) {
         JPanel dataTypeSelectionPanel = new JPanel(new BorderLayout());
 
         JToolBar toolBar = new JToolBar();

@@ -24,7 +24,7 @@ import org.hkijena.jipipe.desktop.commons.components.JIPipeDesktopAddAlgorithmSl
 import org.hkijena.jipipe.desktop.commons.components.JIPipeDesktopEditAlgorithmSlotPanel;
 import org.hkijena.jipipe.desktop.commons.components.markup.JIPipeDesktopMarkdownReader;
 import org.hkijena.jipipe.plugins.parameters.library.markup.MarkdownText;
-import org.hkijena.jipipe.utils.AutoResizeSplitPane;
+import org.hkijena.jipipe.utils.JIPipeDesktopSplitPane;
 import org.hkijena.jipipe.utils.UIUtils;
 
 import javax.swing.*;
@@ -65,7 +65,7 @@ public class JIPipeDesktopGraphNodeSlotEditorUI extends JPanel implements JIPipe
         JIPipeDesktopMarkdownReader helpPanel = new JIPipeDesktopMarkdownReader(false);
         helpPanel.setDocument(MarkdownText.fromPluginResource("documentation/algorithm-slots.md", new HashMap<>()));
         JScrollPane scrollPane = new JScrollPane(slotTree);
-        JSplitPane splitPane = new AutoResizeSplitPane(JSplitPane.VERTICAL_SPLIT, scrollPane, helpPanel, AutoResizeSplitPane.RATIO_3_TO_1);
+        JSplitPane splitPane = new JIPipeDesktopSplitPane(JSplitPane.VERTICAL_SPLIT, scrollPane, helpPanel, JIPipeDesktopSplitPane.RATIO_3_TO_1);
         add(splitPane, BorderLayout.CENTER);
 
         initializeToolbar();

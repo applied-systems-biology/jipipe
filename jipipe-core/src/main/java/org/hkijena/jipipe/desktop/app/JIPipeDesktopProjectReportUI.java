@@ -38,7 +38,7 @@ import org.hkijena.jipipe.desktop.commons.components.JIPipeDesktopParameterPanel
 import org.hkijena.jipipe.desktop.commons.components.markup.JIPipeDesktopMarkdownReader;
 import org.hkijena.jipipe.plugins.parameters.library.markup.MarkdownText;
 import org.hkijena.jipipe.plugins.parameters.library.primitives.list.StringList;
-import org.hkijena.jipipe.utils.AutoResizeSplitPane;
+import org.hkijena.jipipe.utils.JIPipeDesktopSplitPane;
 import org.hkijena.jipipe.utils.StringUtils;
 import org.hkijena.jipipe.utils.UIUtils;
 
@@ -64,10 +64,10 @@ public class JIPipeDesktopProjectReportUI extends JIPipeDesktopProjectWorkbenchP
 
     private void initialize() {
         setLayout(new BorderLayout());
-        AutoResizeSplitPane splitPane = new AutoResizeSplitPane(AutoResizeSplitPane.LEFT_RIGHT,
+        JIPipeDesktopSplitPane splitPane = new JIPipeDesktopSplitPane(JIPipeDesktopSplitPane.LEFT_RIGHT,
                 new JIPipeDesktopParameterPanel(getDesktopWorkbench(), reportSettings, new MarkdownText(), JIPipeDesktopParameterPanel.WITH_SEARCH_BAR | JIPipeDesktopParameterPanel.NO_GROUP_HEADERS | JIPipeDesktopParameterPanel.DOCUMENTATION_BELOW),
                 markdownReader,
-                AutoResizeSplitPane.RATIO_1_TO_3);
+                JIPipeDesktopSplitPane.RATIO_1_TO_3);
         add(splitPane, BorderLayout.CENTER);
 
         JButton refreshButton = new JButton("Refresh", UIUtils.getIconFromResources("actions/view-refresh.png"));

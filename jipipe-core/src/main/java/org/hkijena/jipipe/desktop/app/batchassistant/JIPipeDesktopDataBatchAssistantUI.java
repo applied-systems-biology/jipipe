@@ -46,7 +46,7 @@ import org.hkijena.jipipe.desktop.commons.components.JIPipeDesktopMessagePanel;
 import org.hkijena.jipipe.desktop.commons.components.JIPipeDesktopParameterPanel;
 import org.hkijena.jipipe.plugins.batchassistant.DataBatchStatusData;
 import org.hkijena.jipipe.plugins.strings.StringData;
-import org.hkijena.jipipe.utils.AutoResizeSplitPane;
+import org.hkijena.jipipe.utils.JIPipeDesktopSplitPane;
 import org.hkijena.jipipe.utils.UIUtils;
 import org.hkijena.jipipe.utils.data.Store;
 import org.hkijena.jipipe.utils.data.WeakStore;
@@ -73,8 +73,8 @@ public class JIPipeDesktopDataBatchAssistantUI extends JIPipeDesktopProjectWorkb
     private final JIPipeDesktopDataBatchAssistantBatchPanel batchPanel;
     private final JIPipeDesktopDataBatchAssistantInputPreviewPanel inputPreviewPanel;
     private final JIPipeRunnableQueue calculatePreviewQueue = new JIPipeRunnableQueue("Data batch preview calculation");
-    AutoResizeSplitPane splitPane1 = new AutoResizeSplitPane(JSplitPane.VERTICAL_SPLIT, 0.5);
-    AutoResizeSplitPane splitPane2 = new AutoResizeSplitPane(JSplitPane.VERTICAL_SPLIT, 0.4);
+    JIPipeDesktopSplitPane splitPane1 = new JIPipeDesktopSplitPane(JSplitPane.VERTICAL_SPLIT, 0.5);
+    JIPipeDesktopSplitPane splitPane2 = new JIPipeDesktopSplitPane(JSplitPane.VERTICAL_SPLIT, 0.4);
     private JIPipeGraphNode batchesNodeCopy;
     private boolean autoRefresh = true;
 

@@ -28,7 +28,7 @@ import org.hkijena.jipipe.desktop.commons.components.markup.JIPipeDesktopMarkdow
 import org.hkijena.jipipe.plugins.expressions.*;
 import org.hkijena.jipipe.plugins.expressions.ui.JIPipeExpressionDesktopParameterEditorUI;
 import org.hkijena.jipipe.plugins.parameters.library.markup.MarkdownText;
-import org.hkijena.jipipe.utils.AutoResizeSplitPane;
+import org.hkijena.jipipe.utils.JIPipeDesktopSplitPane;
 import org.hkijena.jipipe.utils.UIUtils;
 import org.hkijena.jipipe.utils.json.JsonUtils;
 
@@ -104,9 +104,9 @@ public class ExpressionTesterUI extends JIPipeDesktopWorkbenchPanel {
         JIPipeDesktopMarkdownReader helpReader = new JIPipeDesktopMarkdownReader(true, new MarkdownText(helpText.toString()));
 
         // Add everything into a split panel
-        JSplitPane splitPane = new AutoResizeSplitPane(JSplitPane.HORIZONTAL_SPLIT,
+        JSplitPane splitPane = new JIPipeDesktopSplitPane(JSplitPane.HORIZONTAL_SPLIT,
                 centerPanel,
-                helpReader, AutoResizeSplitPane.RATIO_3_TO_1);
+                helpReader, JIPipeDesktopSplitPane.RATIO_3_TO_1);
         add(splitPane, BorderLayout.CENTER);
     }
 

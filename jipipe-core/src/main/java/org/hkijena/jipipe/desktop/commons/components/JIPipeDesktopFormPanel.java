@@ -20,7 +20,7 @@ import org.hkijena.jipipe.desktop.commons.components.markup.JIPipeDesktopMarkdow
 import org.hkijena.jipipe.desktop.commons.components.tabs.JIPipeDesktopTabPane;
 import org.hkijena.jipipe.desktop.commons.theme.JIPipeDesktopModernMetalTheme;
 import org.hkijena.jipipe.plugins.parameters.library.markup.MarkdownText;
-import org.hkijena.jipipe.utils.AutoResizeSplitPane;
+import org.hkijena.jipipe.utils.JIPipeDesktopSplitPane;
 import org.hkijena.jipipe.utils.ColorUtils;
 import org.hkijena.jipipe.utils.StringUtils;
 import org.hkijena.jipipe.utils.UIUtils;
@@ -180,7 +180,7 @@ public class JIPipeDesktopFormPanel extends JPanel {
             if ((flags & DOCUMENTATION_NO_UI) != DOCUMENTATION_NO_UI) {
                 this.documentationHasUI = true;
                 boolean documentationBelow = (flags & DOCUMENTATION_BELOW) == DOCUMENTATION_BELOW;
-                AutoResizeSplitPane splitPane = new AutoResizeSplitPane(documentationBelow ? JSplitPane.VERTICAL_SPLIT : JSplitPane.HORIZONTAL_SPLIT, content, helpComponent, AutoResizeSplitPane.RATIO_3_TO_1);
+                JIPipeDesktopSplitPane splitPane = new JIPipeDesktopSplitPane(documentationBelow ? JSplitPane.VERTICAL_SPLIT : JSplitPane.HORIZONTAL_SPLIT, content, helpComponent, JIPipeDesktopSplitPane.RATIO_3_TO_1);
                 add(splitPane, BorderLayout.CENTER);
             } else {
                 this.documentationHasUI = false;

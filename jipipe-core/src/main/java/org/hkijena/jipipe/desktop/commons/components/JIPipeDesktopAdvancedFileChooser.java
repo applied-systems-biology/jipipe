@@ -18,7 +18,7 @@ import org.apache.commons.lang3.SystemUtils;
 import org.hkijena.jipipe.JIPipe;
 import org.hkijena.jipipe.plugins.parameters.library.filesystem.FileChooserBookmark;
 import org.hkijena.jipipe.plugins.settings.JIPipeFileChooserApplicationSettings;
-import org.hkijena.jipipe.utils.AutoResizeSplitPane;
+import org.hkijena.jipipe.utils.JIPipeDesktopSplitPane;
 import org.hkijena.jipipe.utils.StringUtils;
 import org.hkijena.jipipe.utils.UIUtils;
 import sun.awt.shell.ShellFolder;
@@ -89,9 +89,9 @@ public class JIPipeDesktopAdvancedFileChooser extends JPanel implements Property
         JPanel contentPanel = new JPanel(new BorderLayout());
         linkPanel = new JIPipeDesktopFormPanel(null, JIPipeDesktopFormPanel.WITH_SCROLLING);
 
-        AutoResizeSplitPane splitPane = new AutoResizeSplitPane(JSplitPane.HORIZONTAL_SPLIT,
+        JIPipeDesktopSplitPane splitPane = new JIPipeDesktopSplitPane(JSplitPane.HORIZONTAL_SPLIT,
                 linkPanel,
-                contentPanel, AutoResizeSplitPane.RATIO_1_TO_3);
+                contentPanel, JIPipeDesktopSplitPane.RATIO_1_TO_3);
         add(splitPane, BorderLayout.CENTER);
 
         JPanel toolBarPanel = new JPanel(new BorderLayout());

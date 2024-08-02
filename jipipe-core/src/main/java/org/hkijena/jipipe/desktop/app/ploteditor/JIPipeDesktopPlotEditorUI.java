@@ -45,7 +45,7 @@ import org.hkijena.jipipe.plugins.settings.JIPipeFileChooserApplicationSettings;
 import org.hkijena.jipipe.plugins.tables.datatypes.DoubleArrayTableColumn;
 import org.hkijena.jipipe.plugins.tables.datatypes.StringArrayTableColumn;
 import org.hkijena.jipipe.plugins.tables.datatypes.TableColumn;
-import org.hkijena.jipipe.utils.AutoResizeSplitPane;
+import org.hkijena.jipipe.utils.JIPipeDesktopSplitPane;
 import org.hkijena.jipipe.utils.ReflectionUtils;
 import org.hkijena.jipipe.utils.StringUtils;
 import org.hkijena.jipipe.utils.UIUtils;
@@ -138,7 +138,7 @@ public class JIPipeDesktopPlotEditorUI extends JIPipeDesktopWorkbenchPanel imple
         openButton.addActionListener(e -> openPlot());
         plotReader.getToolBar().add(openButton, 0);
 
-        splitPane = new AutoResizeSplitPane(JSplitPane.HORIZONTAL_SPLIT, plotReader, sideBar, new AutoResizeSplitPane.DynamicSidebarRatio());
+        splitPane = new JIPipeDesktopSplitPane(JSplitPane.HORIZONTAL_SPLIT, plotReader, sideBar, new JIPipeDesktopSplitPane.DynamicSidebarRatio());
         add(splitPane, BorderLayout.CENTER);
     }
 

@@ -31,7 +31,7 @@ import org.hkijena.jipipe.desktop.commons.components.renderers.JIPipeDesktopNode
 import org.hkijena.jipipe.desktop.commons.components.search.JIPipeDesktopSearchTextField;
 import org.hkijena.jipipe.desktop.commons.components.window.JIPipeDesktopAlwaysOnTopToggle;
 import org.hkijena.jipipe.plugins.parameters.library.markup.MarkdownText;
-import org.hkijena.jipipe.utils.AutoResizeSplitPane;
+import org.hkijena.jipipe.utils.JIPipeDesktopSplitPane;
 import org.hkijena.jipipe.utils.StringUtils;
 import org.hkijena.jipipe.utils.UIUtils;
 
@@ -114,7 +114,7 @@ public class NodeToolBox extends JIPipeDesktopWorkbenchPanel {
         algorithmList.setTransferHandler(new NodeToolBoxTransferHandler());
         JScrollPane scrollPane = new JScrollPane(algorithmList);
 
-        AutoResizeSplitPane splitPane = new AutoResizeSplitPane(JSplitPane.VERTICAL_SPLIT, scrollPane, documentationReader, AutoResizeSplitPane.RATIO_3_TO_1);
+        JIPipeDesktopSplitPane splitPane = new JIPipeDesktopSplitPane(JSplitPane.VERTICAL_SPLIT, scrollPane, documentationReader, JIPipeDesktopSplitPane.RATIO_3_TO_1);
         add(splitPane, BorderLayout.CENTER);
     }
 

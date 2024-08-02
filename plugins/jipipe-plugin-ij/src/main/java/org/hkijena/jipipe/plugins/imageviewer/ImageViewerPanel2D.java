@@ -499,9 +499,9 @@ public class ImageViewerPanel2D extends JPanel implements JIPipeDesktopWorkbench
             remove(currentContentPanel);
         }
         if (enableSideBarButton.isSelected()) {
-            JSplitPane splitPane = new AutoResizeSplitPane(JSplitPane.HORIZONTAL_SPLIT,
+            JSplitPane splitPane = new JIPipeDesktopSplitPane(JSplitPane.HORIZONTAL_SPLIT,
                     viewerPanel,
-                    tabPane, new AutoResizeSplitPane.DynamicSidebarRatio(450, false));
+                    tabPane, new JIPipeDesktopSplitPane.DynamicSidebarRatio(450, false));
             add(splitPane, BorderLayout.CENTER);
             currentContentPanel = splitPane;
         } else {

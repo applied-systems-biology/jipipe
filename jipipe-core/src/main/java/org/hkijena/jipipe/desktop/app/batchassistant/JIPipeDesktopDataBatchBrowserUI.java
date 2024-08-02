@@ -20,7 +20,7 @@ import org.hkijena.jipipe.desktop.app.JIPipeDesktopWorkbench;
 import org.hkijena.jipipe.desktop.app.JIPipeDesktopWorkbenchPanel;
 import org.hkijena.jipipe.desktop.app.datatable.JIPipeDesktopExtendedDataTableUI;
 import org.hkijena.jipipe.desktop.app.datatable.JIPipeDesktopExtendedMultiDataTableUI;
-import org.hkijena.jipipe.utils.AutoResizeSplitPane;
+import org.hkijena.jipipe.utils.JIPipeDesktopSplitPane;
 import org.hkijena.jipipe.utils.data.OwningStore;
 
 import javax.swing.*;
@@ -53,8 +53,8 @@ public class JIPipeDesktopDataBatchBrowserUI extends JIPipeDesktopWorkbenchPanel
         setLayout(new BorderLayout());
         tree = new JIPipeDesktopDataBatchTree(getDesktopWorkbench(), iterationStep);
 
-        splitPane = new AutoResizeSplitPane(JSplitPane.VERTICAL_SPLIT, tree,
-                new JPanel(), AutoResizeSplitPane.RATIO_1_TO_3);
+        splitPane = new JIPipeDesktopSplitPane(JSplitPane.VERTICAL_SPLIT, tree,
+                new JPanel(), JIPipeDesktopSplitPane.RATIO_1_TO_3);
         add(splitPane, BorderLayout.CENTER);
 
         tree.getTree().addTreeSelectionListener(e -> showCurrentlySelectedNode());
