@@ -32,7 +32,7 @@ import org.hkijena.jipipe.api.parameters.JIPipeParameterCollection;
 import org.hkijena.jipipe.api.validation.JIPipeValidationReport;
 import org.hkijena.jipipe.api.validation.contexts.UnspecifiedValidationReportContext;
 import org.hkijena.jipipe.desktop.app.JIPipeDesktopWorkbench;
-import org.hkijena.jipipe.desktop.commons.components.JIPipeDesktopParameterPanel;
+import org.hkijena.jipipe.desktop.commons.components.JIPipeDesktopParameterFormPanel;
 import org.hkijena.jipipe.plugins.parameters.library.markup.MarkdownText;
 import org.hkijena.jipipe.utils.ParameterUtils;
 import org.hkijena.jipipe.utils.PathUtils;
@@ -79,8 +79,8 @@ public abstract class JIPipeSerializedParameterCollectionData extends AbstractJI
     @Override
     public void display(String displayName, JIPipeDesktopWorkbench desktopWorkbench, JIPipeDataSource source) {
         JIPipeData copy = duplicate(new JIPipeProgressInfo());
-        JIPipeDesktopParameterPanel.showDialog(desktopWorkbench, (JIPipeParameterCollection) copy, new MarkdownText(""), displayName,
-                JIPipeDesktopParameterPanel.WITH_SEARCH_BAR | JIPipeDesktopParameterPanel.WITH_SCROLLING | JIPipeDesktopParameterPanel.WITH_DOCUMENTATION);
+        JIPipeDesktopParameterFormPanel.showDialog(desktopWorkbench, (JIPipeParameterCollection) copy, new MarkdownText(""), displayName,
+                JIPipeDesktopParameterFormPanel.WITH_SEARCH_BAR | JIPipeDesktopParameterFormPanel.WITH_SCROLLING | JIPipeDesktopParameterFormPanel.WITH_DOCUMENTATION);
     }
 
     @Override

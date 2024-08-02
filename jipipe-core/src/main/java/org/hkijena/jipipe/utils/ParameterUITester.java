@@ -19,7 +19,7 @@ import org.hkijena.jipipe.api.parameters.JIPipeMutableParameterAccess;
 import org.hkijena.jipipe.api.parameters.JIPipeParameterTypeInfo;
 import org.hkijena.jipipe.desktop.app.JIPipeDesktopWorkbench;
 import org.hkijena.jipipe.desktop.app.JIPipeDesktopWorkbenchPanel;
-import org.hkijena.jipipe.desktop.commons.components.JIPipeDesktopParameterPanel;
+import org.hkijena.jipipe.desktop.commons.components.JIPipeDesktopParameterFormPanel;
 
 import java.awt.*;
 
@@ -43,10 +43,10 @@ public class ParameterUITester extends JIPipeDesktopWorkbenchPanel {
 
     private void initialize() {
         setLayout(new BorderLayout());
-        JIPipeDesktopParameterPanel panel = new JIPipeDesktopParameterPanel(getDesktopWorkbench(),
+        JIPipeDesktopParameterFormPanel panel = new JIPipeDesktopParameterFormPanel(getDesktopWorkbench(),
                 parameterCollection,
                 null,
-                JIPipeDesktopParameterPanel.WITH_DOCUMENTATION | JIPipeDesktopParameterPanel.WITH_SCROLLING | JIPipeDesktopParameterPanel.WITH_SEARCH_BAR);
+                JIPipeDesktopParameterFormPanel.WITH_DOCUMENTATION | JIPipeDesktopParameterFormPanel.WITH_SCROLLING | JIPipeDesktopParameterFormPanel.WITH_SEARCH_BAR);
         add(panel, BorderLayout.CENTER);
     }
 

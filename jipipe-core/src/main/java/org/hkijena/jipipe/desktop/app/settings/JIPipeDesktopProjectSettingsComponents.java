@@ -24,7 +24,7 @@ import org.hkijena.jipipe.api.settings.JIPipeDefaultProjectSettingsSheetCategory
 import org.hkijena.jipipe.api.settings.JIPipeProjectSettingsSheet;
 import org.hkijena.jipipe.desktop.app.JIPipeDesktopWorkbench;
 import org.hkijena.jipipe.desktop.commons.components.JIPipeDesktopFormPanel;
-import org.hkijena.jipipe.desktop.commons.components.JIPipeDesktopParameterPanel;
+import org.hkijena.jipipe.desktop.commons.components.JIPipeDesktopParameterFormPanel;
 import org.hkijena.jipipe.plugins.parameters.library.markup.MarkdownText;
 import org.hkijena.jipipe.utils.UIUtils;
 
@@ -123,10 +123,10 @@ public class JIPipeDesktopProjectSettingsComponents {
                 contentPanel.add(UIUtils.createInfoLabel("No settings available", "There are no settings within the category '" + node.label + "'"), BorderLayout.CENTER);
             } else if (node.sheets.size() == 1) {
                 JIPipeProjectSettingsSheet sheet = node.sheets.get(0);
-                JIPipeDesktopParameterPanel parameterPanel = new JIPipeDesktopParameterPanel(workbench,
+                JIPipeDesktopParameterFormPanel parameterPanel = new JIPipeDesktopParameterFormPanel(workbench,
                         sheet,
                         MarkdownText.fromPluginResource("documentation/project-settings.md", new HashMap<>()),
-                        JIPipeDesktopParameterPanel.WITH_SCROLLING | JIPipeDesktopParameterPanel.WITH_DOCUMENTATION | JIPipeDesktopParameterPanel.DOCUMENTATION_NO_UI | JIPipeDesktopParameterPanel.WITH_SEARCH_BAR);
+                        JIPipeDesktopParameterFormPanel.WITH_SCROLLING | JIPipeDesktopParameterFormPanel.WITH_DOCUMENTATION | JIPipeDesktopParameterFormPanel.DOCUMENTATION_NO_UI | JIPipeDesktopParameterFormPanel.WITH_SEARCH_BAR);
                 contentPanel.add(parameterPanel, BorderLayout.CENTER);
             } else {
                 JIPipeDesktopFormPanel formPanel = new JIPipeDesktopFormPanel(JIPipeDesktopFormPanel.WITH_SCROLLING);

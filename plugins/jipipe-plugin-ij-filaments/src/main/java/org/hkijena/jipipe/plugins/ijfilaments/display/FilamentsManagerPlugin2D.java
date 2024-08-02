@@ -21,7 +21,7 @@ import org.hkijena.jipipe.api.data.storage.JIPipeZIPReadDataStorage;
 import org.hkijena.jipipe.api.data.storage.JIPipeZIPWriteDataStorage;
 import org.hkijena.jipipe.desktop.app.tableeditor.JIPipeDesktopTableEditor;
 import org.hkijena.jipipe.desktop.commons.components.JIPipeDesktopFormPanel;
-import org.hkijena.jipipe.desktop.commons.components.JIPipeDesktopParameterPanel;
+import org.hkijena.jipipe.desktop.commons.components.JIPipeDesktopParameterFormPanel;
 import org.hkijena.jipipe.desktop.commons.components.ribbon.JIPipeDesktopRibbon;
 import org.hkijena.jipipe.desktop.commons.components.ribbon.JIPipeDesktopSmallButtonRibbonAction;
 import org.hkijena.jipipe.desktop.commons.components.ribbon.JIPipeDesktopSmallToggleButtonRibbonAction;
@@ -235,7 +235,7 @@ public class FilamentsManagerPlugin2D extends JIPipeImageViewerPlugin2D {
     }
 
     private void openDrawingSettings() {
-        JIPipeDesktopParameterPanel.showDialog(getDesktopWorkbench(), getViewerPanel(), filamentsDrawer, new MarkdownText("# Filaments display settings\n\nPlease use the settings on the left to modify how filaments are visualized."), "Filaments display settings", JIPipeDesktopParameterPanel.DEFAULT_DIALOG_FLAGS);
+        JIPipeDesktopParameterFormPanel.showDialog(getDesktopWorkbench(), getViewerPanel(), filamentsDrawer, new MarkdownText("# Filaments display settings\n\nPlease use the settings on the left to modify how filaments are visualized."), "Filaments display settings", JIPipeDesktopParameterFormPanel.DEFAULT_DIALOG_FLAGS);
         uploadSliceToCanvas();
     }
 

@@ -19,7 +19,7 @@ import org.hkijena.jipipe.api.parameters.JIPipeParameterTree;
 import org.hkijena.jipipe.desktop.api.JIPipeDesktopParameterEditorUI;
 import org.hkijena.jipipe.desktop.app.JIPipeDesktopWorkbench;
 import org.hkijena.jipipe.desktop.commons.components.JIPipeDesktopFormPanel;
-import org.hkijena.jipipe.desktop.commons.components.JIPipeDesktopParameterPanel;
+import org.hkijena.jipipe.desktop.commons.components.JIPipeDesktopParameterFormPanel;
 import org.hkijena.jipipe.desktop.commons.components.JIPipeDesktopPickDynamicEnumValueDialog;
 import org.hkijena.jipipe.desktop.commons.components.markup.JIPipeDesktopMarkdownReader;
 import org.hkijena.jipipe.plugins.imagejalgorithms.ImageJAlgorithmsPlugin;
@@ -31,7 +31,7 @@ import javax.swing.*;
 import java.awt.*;
 
 public class OMEAccessorDesktopParameterEditorUI extends JIPipeDesktopParameterEditorUI {
-    private JIPipeDesktopParameterPanel parameterPanel;
+    private JIPipeDesktopParameterFormPanel parameterPanel;
     private JButton currentTemplateButton;
 
     /**
@@ -77,8 +77,8 @@ public class OMEAccessorDesktopParameterEditorUI extends JIPipeDesktopParameterE
 
         formPanel.addWideToForm(templatePanel);
 
-        parameterPanel = new JIPipeDesktopParameterPanel(getDesktopWorkbench(), new JIPipeDummyParameterCollection(), new MarkdownText(),
-                JIPipeDesktopParameterPanel.NO_GROUP_HEADERS | JIPipeDesktopParameterPanel.WITH_DOCUMENTATION | JIPipeDesktopParameterPanel.DOCUMENTATION_NO_UI);
+        parameterPanel = new JIPipeDesktopParameterFormPanel(getDesktopWorkbench(), new JIPipeDummyParameterCollection(), new MarkdownText(),
+                JIPipeDesktopParameterFormPanel.NO_GROUP_HEADERS | JIPipeDesktopParameterFormPanel.WITH_DOCUMENTATION | JIPipeDesktopParameterFormPanel.DOCUMENTATION_NO_UI);
         formPanel.addWideToForm(parameterPanel);
     }
 

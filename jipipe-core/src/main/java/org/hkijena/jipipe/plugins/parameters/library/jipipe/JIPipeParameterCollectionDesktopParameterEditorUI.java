@@ -18,14 +18,14 @@ import org.hkijena.jipipe.api.parameters.JIPipeParameterCollection;
 import org.hkijena.jipipe.api.parameters.JIPipeParameterTree;
 import org.hkijena.jipipe.desktop.api.JIPipeDesktopParameterEditorUI;
 import org.hkijena.jipipe.desktop.app.JIPipeDesktopWorkbench;
-import org.hkijena.jipipe.desktop.commons.components.JIPipeDesktopParameterPanel;
+import org.hkijena.jipipe.desktop.commons.components.JIPipeDesktopParameterFormPanel;
 import org.hkijena.jipipe.utils.UIUtils;
 
 import java.awt.*;
 
 public class JIPipeParameterCollectionDesktopParameterEditorUI extends JIPipeDesktopParameterEditorUI {
 
-    private JIPipeDesktopParameterPanel parameterPanel;
+    private JIPipeDesktopParameterFormPanel parameterPanel;
     private boolean isReloading;
 
     /**
@@ -43,7 +43,7 @@ public class JIPipeParameterCollectionDesktopParameterEditorUI extends JIPipeDes
     private void initialize() {
         setLayout(new BorderLayout());
         setBorder(UIUtils.createControlBorder());
-        parameterPanel = new JIPipeDesktopParameterPanel(getDesktopWorkbench(), null, null, JIPipeDesktopParameterPanel.NO_GROUP_HEADERS);
+        parameterPanel = new JIPipeDesktopParameterFormPanel(getDesktopWorkbench(), null, null, JIPipeDesktopParameterFormPanel.NO_GROUP_HEADERS);
         add(parameterPanel, BorderLayout.CENTER);
     }
 

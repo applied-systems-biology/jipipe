@@ -14,14 +14,11 @@
 package org.hkijena.jipipe.plugins.parameters.library.table;
 
 import org.hkijena.jipipe.JIPipe;
-import org.hkijena.jipipe.api.nodes.JIPipeGraph;
 import org.hkijena.jipipe.api.nodes.JIPipeGraphNode;
 import org.hkijena.jipipe.api.parameters.*;
 import org.hkijena.jipipe.desktop.api.JIPipeDesktopParameterEditorUI;
-import org.hkijena.jipipe.desktop.app.JIPipeDesktopProjectWorkbench;
 import org.hkijena.jipipe.desktop.app.JIPipeDesktopWorkbench;
 import org.hkijena.jipipe.desktop.app.grapheditor.commons.JIPipeDesktopGraphCanvasUI;
-import org.hkijena.jipipe.desktop.app.grapheditor.commons.JIPipeDesktopGraphEditorUI;
 import org.hkijena.jipipe.desktop.commons.components.*;
 import org.hkijena.jipipe.desktop.commons.components.ribbon.JIPipeDesktopLargeButtonRibbonAction;
 import org.hkijena.jipipe.desktop.commons.components.ribbon.JIPipeDesktopRibbon;
@@ -209,7 +206,7 @@ public class ParameterTableEditorWindow extends JFrame {
                     ParameterTableCellAccess access = new ParameterTableCellAccess(getParameterAccess(), parameterTable,
                             selectedRows[0], selectedColumns[0]);
                     JIPipeDesktopParameterEditorUI editor = JIPipe.getParameterTypes().createEditorFor(getDesktopWorkbench(), new JIPipeParameterTree(access), access);
-                    palettePanel.addWideToForm(editor, JIPipeDesktopParameterPanel.generateParameterDocumentation(access, null));
+                    palettePanel.addWideToForm(editor, JIPipeDesktopParameterFormPanel.generateParameterDocumentation(access, null));
                 } else {
                     palettePanel.addGroupHeader("Edit multiple parameters", UIUtils.getIconFromResources("actions/document-edit.png"));
                     List<JIPipeParameterAccess> accessList = new ArrayList<>();
@@ -219,7 +216,7 @@ public class ParameterTableEditorWindow extends JFrame {
                     }
                     JIPipeMultiParameterAccess multiParameterAccess = new JIPipeMultiParameterAccess(accessList);
                     JIPipeDesktopParameterEditorUI editor = JIPipe.getParameterTypes().createEditorFor(getDesktopWorkbench(), new JIPipeParameterTree(multiParameterAccess), multiParameterAccess);
-                    palettePanel.addWideToForm(editor, JIPipeDesktopParameterPanel.generateParameterDocumentation(multiParameterAccess, null));
+                    palettePanel.addWideToForm(editor, JIPipeDesktopParameterFormPanel.generateParameterDocumentation(multiParameterAccess, null));
                 }
 
                 JTextField keyInfo = UIUtils.createReadonlyBorderlessTextField(parameterTable.getColumnInfo(selectedColumns[0]).getKey());

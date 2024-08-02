@@ -42,39 +42,39 @@ import java.util.stream.Collectors;
 /**
  * UI around a {@link JIPipeParameterCollection}
  */
-public class JIPipeDesktopParameterPanel extends JIPipeDesktopFormPanel implements Contextual, Disposable,
+public class JIPipeDesktopParameterFormPanel extends JIPipeDesktopFormPanel implements Contextual, Disposable,
         JIPipeParameterCollection.ParameterStructureChangedEventListener, JIPipeParameterCollection.ParameterUIChangedEventListener {
     /**
-     * Flag for {@link JIPipeDesktopParameterPanel}. Makes that no group headers are created.
+     * Flag for {@link JIPipeDesktopParameterFormPanel}. Makes that no group headers are created.
      * This includes dynamic parameter group headers that contain buttons for modification.
      */
-    public static final int NO_GROUP_HEADERS = 64;
+    public static final int NO_GROUP_HEADERS = 256;
     /**
-     * Flag for {@link JIPipeDesktopParameterPanel}. Makes that group headers without name or description or special functionality (like
+     * Flag for {@link JIPipeDesktopParameterFormPanel}. Makes that group headers without name or description or special functionality (like
      * dynamic parameters) are not shown. Overridden by NO_GROUP_HEADERS.
      */
-    public static final int NO_EMPTY_GROUP_HEADERS = 128;
+    public static final int NO_EMPTY_GROUP_HEADERS = 512;
 
     /**
      * With this flag, the parameter collection is always traversed, even if the provided parameter collection was already traversed
      */
-    public static final int FORCE_TRAVERSE = 256;
+    public static final int FORCE_TRAVERSE = 1024;
 
     /**
      * With this flag, there will be a search bar for parameters.
      * {@link JIPipeGeneralUIApplicationSettings}.isShowParameterSearchBar() will override this setting
      */
-    public static final int WITH_SEARCH_BAR = 512;
+    public static final int WITH_SEARCH_BAR = 2048;
 
     /**
      * With this flag, parameters that do not show a label are not put below anymore
      */
-    public static final int WITHOUT_LABEL_SEPARATION = 1024;
+    public static final int WITHOUT_LABEL_SEPARATION = 4096;
 
     /**
      * With this flag, collapsing is disabled
      */
-    public static final int WITHOUT_COLLAPSE = 2048;
+    public static final int WITHOUT_COLLAPSE = 8192;
 
 
     /**
@@ -106,7 +106,7 @@ public class JIPipeDesktopParameterPanel extends JIPipeDesktopFormPanel implemen
      * @param documentation       Optional documentation
      * @param flags               Flags
      */
-    public JIPipeDesktopParameterPanel(JIPipeDesktopWorkbench desktopWorkbench, JIPipeParameterCollection displayedParameters, JIPipeParameterTree parentTree, MarkdownText documentation, int flags) {
+    public JIPipeDesktopParameterFormPanel(JIPipeDesktopWorkbench desktopWorkbench, JIPipeParameterCollection displayedParameters, JIPipeParameterTree parentTree, MarkdownText documentation, int flags) {
         super(documentation, flags | WITH_LIMIT_WIDTH);
         this.parentTree = parentTree;
         this.noGroupHeaders = (flags & NO_GROUP_HEADERS) == NO_GROUP_HEADERS;
@@ -133,7 +133,7 @@ public class JIPipeDesktopParameterPanel extends JIPipeDesktopFormPanel implemen
      * @param documentation       Optional documentation
      * @param flags               Flags
      */
-    public JIPipeDesktopParameterPanel(JIPipeDesktopWorkbench desktopWorkbench, JIPipeParameterCollection displayedParameters, MarkdownText documentation, int flags) {
+    public JIPipeDesktopParameterFormPanel(JIPipeDesktopWorkbench desktopWorkbench, JIPipeParameterCollection displayedParameters, MarkdownText documentation, int flags) {
         this(desktopWorkbench, displayedParameters, null, documentation, flags);
     }
 
@@ -160,7 +160,7 @@ public class JIPipeDesktopParameterPanel extends JIPipeDesktopFormPanel implemen
     public static boolean showDialog(JIPipeDesktopWorkbench workbench, Component parent, JIPipeParameterCollection parameterCollection, MarkdownText defaultDocumentation, String title, int flags) {
         JDialog dialog = new JDialog(SwingUtilities.getWindowAncestor(parent));
         dialog.setIconImage(UIUtils.getJIPipeIcon128());
-        JIPipeDesktopParameterPanel parameterPanel = new JIPipeDesktopParameterPanel(workbench, parameterCollection, defaultDocumentation, flags);
+        JIPipeDesktopParameterFormPanel parameterPanel = new JIPipeDesktopParameterFormPanel(workbench, parameterCollection, defaultDocumentation, flags);
 
         JPanel panel = new JPanel(new BorderLayout(8, 8));
         panel.setBorder(BorderFactory.createEmptyBorder(4, 4, 4, 4));

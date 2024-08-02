@@ -18,7 +18,7 @@ import org.hkijena.jipipe.api.parameters.JIPipeParameterAccess;
 import org.hkijena.jipipe.api.parameters.JIPipeParameterTree;
 import org.hkijena.jipipe.desktop.api.JIPipeDesktopParameterEditorUI;
 import org.hkijena.jipipe.desktop.app.JIPipeDesktopWorkbench;
-import org.hkijena.jipipe.desktop.commons.components.JIPipeDesktopParameterPanel;
+import org.hkijena.jipipe.desktop.commons.components.JIPipeDesktopParameterFormPanel;
 import org.hkijena.jipipe.utils.UIUtils;
 
 import javax.swing.*;
@@ -34,7 +34,7 @@ public class MarginDesktopParameterEditorUI extends JIPipeDesktopParameterEditor
 
     private final Map<Anchor, JToggleButton> anchorSelectionMap = new HashMap<>();
     private boolean skipNextReload = false;
-    private JIPipeDesktopParameterPanel parameterPanel;
+    private JIPipeDesktopParameterFormPanel parameterPanel;
 
     /**
      * @param workbench       workbench
@@ -59,7 +59,7 @@ public class MarginDesktopParameterEditorUI extends JIPipeDesktopParameterEditor
         JPanel content = new JPanel(new BorderLayout());
         initializeAnchorSelection(content);
 
-        parameterPanel = new JIPipeDesktopParameterPanel(getDesktopWorkbench(), null, null, JIPipeDesktopParameterPanel.NO_EMPTY_GROUP_HEADERS);
+        parameterPanel = new JIPipeDesktopParameterFormPanel(getDesktopWorkbench(), null, null, JIPipeDesktopParameterFormPanel.NO_EMPTY_GROUP_HEADERS);
         content.add(parameterPanel, BorderLayout.CENTER);
 
         add(content, BorderLayout.CENTER);

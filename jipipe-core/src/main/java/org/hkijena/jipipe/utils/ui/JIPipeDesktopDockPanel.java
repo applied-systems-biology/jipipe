@@ -31,7 +31,7 @@ public class JIPipeDesktopDockPanel extends JPanel {
     private int floatingMarginTop = 8;
     private int floatingMarginBottom = 8;
     private int leftFloatingSize = 350;
-    private int rightFloatingSize = 350;
+    private int rightFloatingSize = 500;
     private int minimumFloatingSize = 50;
     private JComponent leftFloatingPanelContent;
     private JComponent rightFloatingPanelContent;

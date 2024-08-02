@@ -21,7 +21,7 @@ import org.hkijena.jipipe.api.events.JIPipeEventEmitter;
 import org.hkijena.jipipe.api.validation.JIPipeValidationReport;
 import org.hkijena.jipipe.api.validation.contexts.UnspecifiedValidationReportContext;
 import org.hkijena.jipipe.desktop.api.JIPipeDesktopParameterEditorUI;
-import org.hkijena.jipipe.desktop.commons.components.JIPipeDesktopParameterPanel;
+import org.hkijena.jipipe.desktop.commons.components.JIPipeDesktopParameterFormPanel;
 import org.hkijena.jipipe.utils.ParameterUtils;
 import org.hkijena.jipipe.utils.json.JsonUtils;
 
@@ -169,7 +169,7 @@ public interface JIPipeParameterCollection {
      * @param parameterEditorUI the currently handled parameter editor
      * @param menu              the menu
      */
-    default void installUIParameterOptions(JIPipeDesktopParameterPanel parameterPanel, JIPipeDesktopParameterEditorUI parameterEditorUI, JPopupMenu menu) {
+    default void installUIParameterOptions(JIPipeDesktopParameterFormPanel parameterPanel, JIPipeDesktopParameterEditorUI parameterEditorUI, JPopupMenu menu) {
 
     }
 
@@ -182,7 +182,7 @@ public interface JIPipeParameterCollection {
      * @param parameterEditorUI the currently handled parameter editor
      * @return the component to be inserted into the parameter panel
      */
-    default JComponent installUIOverrideParameterEditor(JIPipeDesktopParameterPanel parameterPanel, JIPipeDesktopParameterEditorUI parameterEditorUI) {
+    default JComponent installUIOverrideParameterEditor(JIPipeDesktopParameterFormPanel parameterPanel, JIPipeDesktopParameterEditorUI parameterEditorUI) {
         return parameterEditorUI;
     }
 

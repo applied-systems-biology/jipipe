@@ -31,7 +31,7 @@ import org.hkijena.jipipe.api.validation.contexts.CustomValidationReportContext;
 import org.hkijena.jipipe.api.validation.contexts.UnspecifiedValidationReportContext;
 import org.hkijena.jipipe.desktop.app.JIPipeDesktopWorkbench;
 import org.hkijena.jipipe.desktop.app.JIPipeDesktopWorkbenchPanel;
-import org.hkijena.jipipe.desktop.commons.components.JIPipeDesktopParameterPanel;
+import org.hkijena.jipipe.desktop.commons.components.JIPipeDesktopParameterFormPanel;
 import org.hkijena.jipipe.desktop.commons.components.JIPipeDesktopPlotDisplayComponent;
 import org.hkijena.jipipe.desktop.commons.components.JIPipeDesktopUserFriendlyErrorUI;
 import org.hkijena.jipipe.desktop.commons.components.tabs.JIPipeDesktopTabPane;
@@ -114,10 +114,10 @@ public class JIPipeDesktopPlotEditorUI extends JIPipeDesktopWorkbenchPanel imple
 
         // Create settings panel
         sideBar.addTab("Settings", UIUtils.getIconFromResources("actions/configure.png"),
-                new JIPipeDesktopParameterPanel(getDesktopWorkbench(),
+                new JIPipeDesktopParameterFormPanel(getDesktopWorkbench(),
                         this,
                         null,
-                        JIPipeDesktopParameterPanel.WITH_DOCUMENTATION | JIPipeDesktopParameterPanel.DOCUMENTATION_BELOW | JIPipeDesktopParameterPanel.WITH_SCROLLING),
+                        JIPipeDesktopParameterFormPanel.WITH_DOCUMENTATION | JIPipeDesktopParameterFormPanel.DOCUMENTATION_BELOW | JIPipeDesktopParameterFormPanel.WITH_SCROLLING),
                 JIPipeDesktopTabPane.CloseMode.withoutCloseButton,
                 false);
         sideBar.addTab("Series", UIUtils.getIconFromResources("actions/stock_select-column.png"),

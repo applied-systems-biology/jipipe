@@ -15,7 +15,7 @@ package org.hkijena.jipipe.plugins.imageviewer.plugins3d;
 
 import org.hkijena.jipipe.JIPipe;
 import org.hkijena.jipipe.desktop.commons.components.JIPipeDesktopFormPanel;
-import org.hkijena.jipipe.desktop.commons.components.JIPipeDesktopParameterPanel;
+import org.hkijena.jipipe.desktop.commons.components.JIPipeDesktopParameterFormPanel;
 import org.hkijena.jipipe.plugins.imageviewer.JIPipeImageViewer;
 import org.hkijena.jipipe.plugins.imageviewer.JIPipeImageViewerPlugin3D;
 import org.hkijena.jipipe.utils.UIUtils;
@@ -43,7 +43,7 @@ public class RenderSettingsPlugin3D extends JIPipeImageViewerPlugin3D {
         JButton saveAsDefaultButton = new JButton("Save as default", UIUtils.getIconFromResources("actions/filesave.png"));
         saveAsDefaultButton.addActionListener(e -> saveImageRenderSettingsAsDefault());
         groupHeaderPanel.addToTitlePanel(saveAsDefaultButton);
-        JIPipeDesktopParameterPanel parameterPanel = new JIPipeDesktopParameterPanel(getDesktopWorkbench(), getViewerPanel3D().getImage3DRendererSettings(), null, JIPipeDesktopParameterPanel.NO_GROUP_HEADERS);
+        JIPipeDesktopParameterFormPanel parameterPanel = new JIPipeDesktopParameterFormPanel(getDesktopWorkbench(), getViewerPanel3D().getImage3DRendererSettings(), null, JIPipeDesktopParameterFormPanel.NO_GROUP_HEADERS);
         formPanel.addWideToForm(parameterPanel);
     }
 

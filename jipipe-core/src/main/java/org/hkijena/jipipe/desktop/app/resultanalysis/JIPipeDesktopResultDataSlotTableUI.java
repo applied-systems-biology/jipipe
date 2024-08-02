@@ -30,7 +30,7 @@ import org.hkijena.jipipe.desktop.app.resultanalysis.renderers.*;
 import org.hkijena.jipipe.desktop.app.tableeditor.JIPipeDesktopTableEditor;
 import org.hkijena.jipipe.desktop.commons.components.JIPipeDesktopDataPreviewControlUI;
 import org.hkijena.jipipe.desktop.commons.components.JIPipeDesktopFormPanel;
-import org.hkijena.jipipe.desktop.commons.components.JIPipeDesktopParameterPanel;
+import org.hkijena.jipipe.desktop.commons.components.JIPipeDesktopParameterFormPanel;
 import org.hkijena.jipipe.desktop.commons.components.ribbon.JIPipeDesktopLargeButtonRibbonAction;
 import org.hkijena.jipipe.desktop.commons.components.ribbon.JIPipeDesktopRibbon;
 import org.hkijena.jipipe.desktop.commons.components.ribbon.JIPipeDesktopSmallButtonRibbonAction;
@@ -123,7 +123,7 @@ public class JIPipeDesktopResultDataSlotTableUI extends JIPipeDesktopProjectWork
             }
         });
 
-        rowUIList = new JIPipeDesktopFormPanel(null, JIPipeDesktopParameterPanel.WITH_SCROLLING);
+        rowUIList = new JIPipeDesktopFormPanel(null, JIPipeDesktopParameterFormPanel.WITH_SCROLLING);
         add(rowUIList, BorderLayout.SOUTH);
 
 

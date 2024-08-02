@@ -19,7 +19,7 @@ import org.hkijena.jipipe.api.parameters.JIPipeParameterTree;
 import org.hkijena.jipipe.desktop.api.JIPipeDesktopParameterEditorUI;
 import org.hkijena.jipipe.desktop.app.JIPipeDesktopWorkbench;
 import org.hkijena.jipipe.desktop.commons.components.JIPipeDesktopDocumentChangeListener;
-import org.hkijena.jipipe.desktop.commons.components.JIPipeDesktopParameterPanel;
+import org.hkijena.jipipe.desktop.commons.components.JIPipeDesktopParameterFormPanel;
 import org.hkijena.jipipe.plugins.parameters.library.markup.MarkdownText;
 import org.hkijena.jipipe.utils.UIUtils;
 import org.jdesktop.swingx.JXTextField;
@@ -81,11 +81,11 @@ public class JIPipeAuthorMetadataDesktopParameterEditorUI extends JIPipeDesktopP
         editButton.setToolTipText("Shows the full editor");
         editButton.addActionListener(e -> {
             JIPipeAuthorMetadata parameter = getParameter(JIPipeAuthorMetadata.class);
-            JIPipeDesktopParameterPanel.showDialog(getDesktopWorkbench(),
+            JIPipeDesktopParameterFormPanel.showDialog(getDesktopWorkbench(),
                     parameter,
                     new MarkdownText("# Edit author\n\nUse this editor to update additional author properties."),
                     "Edit author",
-                    JIPipeDesktopParameterPanel.WITH_DOCUMENTATION | JIPipeDesktopParameterPanel.WITH_SEARCH_BAR | JIPipeDesktopParameterPanel.WITH_SCROLLING);
+                    JIPipeDesktopParameterFormPanel.WITH_DOCUMENTATION | JIPipeDesktopParameterFormPanel.WITH_SEARCH_BAR | JIPipeDesktopParameterFormPanel.WITH_SCROLLING);
             reload();
         });
         add(editButton);

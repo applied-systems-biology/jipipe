@@ -43,7 +43,7 @@ import org.hkijena.jipipe.desktop.app.JIPipeDesktopProjectWorkbenchPanel;
 import org.hkijena.jipipe.desktop.app.running.JIPipeDesktopRunnableQueueButton;
 import org.hkijena.jipipe.desktop.commons.components.JIPipeDesktopFormPanel;
 import org.hkijena.jipipe.desktop.commons.components.JIPipeDesktopMessagePanel;
-import org.hkijena.jipipe.desktop.commons.components.JIPipeDesktopParameterPanel;
+import org.hkijena.jipipe.desktop.commons.components.JIPipeDesktopParameterFormPanel;
 import org.hkijena.jipipe.plugins.batchassistant.DataBatchStatusData;
 import org.hkijena.jipipe.plugins.strings.StringData;
 import org.hkijena.jipipe.utils.JIPipeDesktopSplitPane;
@@ -282,10 +282,10 @@ public class JIPipeDesktopDataBatchAssistantUI extends JIPipeDesktopProjectWorkb
     private void initializeParameterPanel() {
         JPanel panel = new JPanel(new BorderLayout());
 
-        JIPipeDesktopParameterPanel parameterPanel = new JIPipeDesktopParameterPanel(getDesktopWorkbench(),
+        JIPipeDesktopParameterFormPanel parameterPanel = new JIPipeDesktopParameterFormPanel(getDesktopWorkbench(),
                 ((JIPipeIterationStepAlgorithm) algorithm).getGenerationSettingsInterface(),
                 null,
-                JIPipeDesktopParameterPanel.WITH_SCROLLING | JIPipeDesktopParameterPanel.WITH_DOCUMENTATION | JIPipeDesktopParameterPanel.DOCUMENTATION_NO_UI | JIPipeDesktopParameterPanel.NO_EMPTY_GROUP_HEADERS);
+                JIPipeDesktopParameterFormPanel.WITH_SCROLLING | JIPipeDesktopParameterFormPanel.WITH_DOCUMENTATION | JIPipeDesktopParameterFormPanel.DOCUMENTATION_NO_UI | JIPipeDesktopParameterFormPanel.NO_EMPTY_GROUP_HEADERS);
         toggleParameterPanelAdvancedMode(parameterPanel, SHOW_ADVANCED_SETTINGS);
 
         JIPipeDesktopFormPanel.GroupHeaderPanel groupHeaderPanel = new JIPipeDesktopFormPanel.GroupHeaderPanel("Settings", UIUtils.getIconFromResources("actions/configure.png"), 4);
@@ -309,7 +309,7 @@ public class JIPipeDesktopDataBatchAssistantUI extends JIPipeDesktopProjectWorkb
         splitPane2.setBottomComponent(panel);
     }
 
-    private void toggleParameterPanelAdvancedMode(JIPipeDesktopParameterPanel parameterPanel, boolean advancedMode) {
+    private void toggleParameterPanelAdvancedMode(JIPipeDesktopParameterFormPanel parameterPanel, boolean advancedMode) {
         boolean containsPinned = parameterPanel.getParameterTree().getParameters().values().stream().anyMatch(JIPipeParameterAccess::isPinned);
         if (containsPinned) {
             parameterPanel.setOnlyPinned(!advancedMode);

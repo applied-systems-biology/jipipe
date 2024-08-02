@@ -22,7 +22,7 @@ import org.hkijena.jipipe.desktop.app.JIPipeDesktopWorkbench;
 import org.hkijena.jipipe.desktop.app.JIPipeDesktopWorkbenchPanel;
 import org.hkijena.jipipe.desktop.app.grapheditor.commons.JIPipeDesktopGraphCanvasUI;
 import org.hkijena.jipipe.desktop.app.grapheditor.commons.JIPipeDesktopGraphEditorUI;
-import org.hkijena.jipipe.desktop.commons.components.JIPipeDesktopParameterPanel;
+import org.hkijena.jipipe.desktop.commons.components.JIPipeDesktopParameterFormPanel;
 import org.hkijena.jipipe.utils.UIUtils;
 import org.scijava.Context;
 import org.scijava.Contextual;
@@ -163,7 +163,7 @@ public abstract class JIPipeDesktopParameterEditorUI extends JIPipeDesktopWorkbe
     }
 
     /**
-     * If true, the {@link JIPipeDesktopParameterPanel} will display a label with the parameter
+     * If true, the {@link JIPipeDesktopParameterFormPanel} will display a label with the parameter
      * name next to this UI.
      *
      * @return if label should be shown
@@ -171,7 +171,7 @@ public abstract class JIPipeDesktopParameterEditorUI extends JIPipeDesktopWorkbe
     public abstract boolean isUILabelEnabled();
 
     /**
-     * If true, the {@link JIPipeDesktopParameterPanel} will render an "important" label if the parameter is marked as important.
+     * If true, the {@link JIPipeDesktopParameterFormPanel} will render an "important" label if the parameter is marked as important.
      *
      * @return if an automatically generated "important" label should be displayed
      */
@@ -181,11 +181,11 @@ public abstract class JIPipeDesktopParameterEditorUI extends JIPipeDesktopWorkbe
 
     /**
      * Returns the "style" of the control.
-     * This is only utilized for the automated ordering within {@link JIPipeDesktopParameterPanel}
+     * This is only utilized for the automated ordering within {@link JIPipeDesktopParameterFormPanel}
      * Controls with the same style are grouped together to ensure a consistent visual style (reduce clutter)
      * Please note that the grouping enforced by isUILabelEnabled() has precedence
      *
-     * @return the UI control style for {@link JIPipeDesktopParameterPanel} (sorting only)
+     * @return the UI control style for {@link JIPipeDesktopParameterFormPanel} (sorting only)
      */
     public int getUIControlStyleType() {
         return CONTROL_STYLE_PANEL;

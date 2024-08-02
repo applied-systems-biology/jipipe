@@ -25,7 +25,7 @@ import org.hkijena.jipipe.api.parameters.JIPipeParameterCollection;
 import org.hkijena.jipipe.api.parameters.JIPipeParameterTree;
 import org.hkijena.jipipe.desktop.app.JIPipeDesktopWorkbench;
 import org.hkijena.jipipe.desktop.app.JIPipeDesktopWorkbenchPanel;
-import org.hkijena.jipipe.desktop.commons.components.JIPipeDesktopParameterPanel;
+import org.hkijena.jipipe.desktop.commons.components.JIPipeDesktopParameterFormPanel;
 import org.hkijena.jipipe.desktop.commons.components.JIPipeDesktopParameterAccessTreeUI;
 import org.hkijena.jipipe.desktop.commons.components.markup.JIPipeDesktopMarkdownReader;
 import org.hkijena.jipipe.desktop.commons.components.pickers.JIPipeDesktopPickNodeDialog;
@@ -302,7 +302,7 @@ public class JIPipeDesktopGraphNodeParameterReferenceGroupCollectionEditorUI ext
         reference.getParameterChangedEventEmitter().subscribeWeak(this);
         reference.getParameterStructureChangedEventEmitter().subscribeWeak(this);
 
-        JIPipeDesktopParameterPanel parameterPanel = new JIPipeDesktopParameterPanel(getDesktopWorkbench(), reference, documentation, JIPipeDesktopParameterPanel.WITH_SCROLLING | JIPipeDesktopParameterPanel.WITH_DOCUMENTATION | JIPipeDesktopParameterPanel.DOCUMENTATION_BELOW);
+        JIPipeDesktopParameterFormPanel parameterPanel = new JIPipeDesktopParameterFormPanel(getDesktopWorkbench(), reference, documentation, JIPipeDesktopParameterFormPanel.WITH_SCROLLING | JIPipeDesktopParameterFormPanel.WITH_DOCUMENTATION | JIPipeDesktopParameterFormPanel.DOCUMENTATION_BELOW);
         rightPanel.add(parameterPanel, BorderLayout.CENTER);
         rightPanel.revalidate();
         rightPanel.repaint();
@@ -314,7 +314,7 @@ public class JIPipeDesktopGraphNodeParameterReferenceGroupCollectionEditorUI ext
         group.getParameterChangedEventEmitter().subscribeWeak(this);
         group.getParameterStructureChangedEventEmitter().subscribeWeak(this);
 
-        JIPipeDesktopParameterPanel parameterPanel = new JIPipeDesktopParameterPanel(getDesktopWorkbench(), group, documentation, JIPipeDesktopParameterPanel.WITH_SCROLLING | JIPipeDesktopParameterPanel.WITH_DOCUMENTATION | JIPipeDesktopParameterPanel.DOCUMENTATION_BELOW);
+        JIPipeDesktopParameterFormPanel parameterPanel = new JIPipeDesktopParameterFormPanel(getDesktopWorkbench(), group, documentation, JIPipeDesktopParameterFormPanel.WITH_SCROLLING | JIPipeDesktopParameterFormPanel.WITH_DOCUMENTATION | JIPipeDesktopParameterFormPanel.DOCUMENTATION_BELOW);
         rightPanel.add(parameterPanel, BorderLayout.CENTER);
 
         JToolBar toolBar = new JToolBar();

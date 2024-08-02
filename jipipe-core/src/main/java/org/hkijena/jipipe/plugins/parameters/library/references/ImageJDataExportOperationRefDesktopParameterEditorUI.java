@@ -20,7 +20,7 @@ import org.hkijena.jipipe.api.parameters.JIPipeParameterAccess;
 import org.hkijena.jipipe.api.parameters.JIPipeParameterTree;
 import org.hkijena.jipipe.desktop.api.JIPipeDesktopParameterEditorUI;
 import org.hkijena.jipipe.desktop.app.JIPipeDesktopWorkbench;
-import org.hkijena.jipipe.desktop.commons.components.JIPipeDesktopParameterPanel;
+import org.hkijena.jipipe.desktop.commons.components.JIPipeDesktopParameterFormPanel;
 import org.hkijena.jipipe.desktop.commons.components.pickers.JIPipeDesktopImageJDataExporterPicker;
 import org.hkijena.jipipe.plugins.parameters.library.markup.MarkdownText;
 import org.hkijena.jipipe.utils.UIUtils;
@@ -77,11 +77,11 @@ public class ImageJDataExportOperationRefDesktopParameterEditorUI extends JIPipe
 
     private void configure() {
         ImageJDataExportOperationRef infoRef = getParameter(ImageJDataExportOperationRef.class);
-        JIPipeDesktopParameterPanel.showDialog(getDesktopWorkbench(),
+        JIPipeDesktopParameterFormPanel.showDialog(getDesktopWorkbench(),
                 infoRef,
                 new MarkdownText(""),
                 "Configure exporter",
-                JIPipeDesktopParameterPanel.WITH_SEARCH_BAR | JIPipeDesktopParameterPanel.WITH_SCROLLING | JIPipeDesktopParameterPanel.WITH_DOCUMENTATION);
+                JIPipeDesktopParameterFormPanel.WITH_SEARCH_BAR | JIPipeDesktopParameterFormPanel.WITH_SCROLLING | JIPipeDesktopParameterFormPanel.WITH_DOCUMENTATION);
     }
 
 

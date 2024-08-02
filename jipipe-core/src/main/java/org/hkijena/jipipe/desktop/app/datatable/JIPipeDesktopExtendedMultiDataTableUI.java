@@ -42,8 +42,6 @@ import org.hkijena.jipipe.desktop.app.resultanalysis.renderers.JIPipeDesktopProj
 import org.hkijena.jipipe.desktop.app.running.JIPipeDesktopRunExecuteUI;
 import org.hkijena.jipipe.desktop.app.tableeditor.JIPipeDesktopTableEditor;
 import org.hkijena.jipipe.desktop.commons.components.JIPipeDesktopDataPreviewControlUI;
-import org.hkijena.jipipe.desktop.commons.components.JIPipeDesktopFormPanel;
-import org.hkijena.jipipe.desktop.commons.components.JIPipeDesktopParameterPanel;
 import org.hkijena.jipipe.desktop.commons.components.renderers.JIPipeDesktopComponentCellRenderer;
 import org.hkijena.jipipe.desktop.commons.components.ribbon.JIPipeDesktopLargeButtonRibbonAction;
 import org.hkijena.jipipe.desktop.commons.components.ribbon.JIPipeDesktopRibbon;
@@ -58,7 +56,6 @@ import org.hkijena.jipipe.plugins.settings.JIPipeFileChooserApplicationSettings;
 import org.hkijena.jipipe.plugins.settings.JIPipeGeneralDataApplicationSettings;
 import org.hkijena.jipipe.plugins.tables.datatypes.AnnotationTableData;
 import org.hkijena.jipipe.utils.StringUtils;
-import org.hkijena.jipipe.utils.TooltipUtils;
 import org.hkijena.jipipe.utils.UIUtils;
 import org.hkijena.jipipe.utils.data.OwningStore;
 import org.hkijena.jipipe.utils.data.Store;

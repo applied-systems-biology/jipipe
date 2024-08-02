@@ -15,7 +15,7 @@ package org.hkijena.jipipe.api.parameters;
 
 import org.hkijena.jipipe.api.JIPipeWorkbench;
 import org.hkijena.jipipe.api.SetJIPipeDocumentation;
-import org.hkijena.jipipe.desktop.commons.components.JIPipeDesktopParameterPanel;
+import org.hkijena.jipipe.desktop.commons.components.JIPipeDesktopParameterFormPanel;
 import org.hkijena.jipipe.utils.ResourceUtils;
 
 import java.lang.annotation.ElementType;
@@ -24,7 +24,7 @@ import java.lang.annotation.RetentionPolicy;
 import java.lang.annotation.Target;
 
 /**
- * An additional action (usually UI action) that is attached to the {@link JIPipeDesktopParameterPanel}.
+ * An additional action (usually UI action) that is attached to the {@link JIPipeDesktopParameterFormPanel}.
  * Annotate a method with this annotation to make it accessible to the UI.
  * Use {@link SetJIPipeDocumentation} to add additional information.
  * The method should take a {@link JIPipeWorkbench} instance as parameter

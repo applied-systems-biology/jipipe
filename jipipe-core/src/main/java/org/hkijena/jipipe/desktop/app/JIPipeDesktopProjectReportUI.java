@@ -34,7 +34,7 @@ import org.hkijena.jipipe.api.project.JIPipeProject;
 import org.hkijena.jipipe.api.run.JIPipeRunnable;
 import org.hkijena.jipipe.api.run.JIPipeRunnableQueue;
 import org.hkijena.jipipe.desktop.app.running.JIPipeDesktopRunnableQueueButton;
-import org.hkijena.jipipe.desktop.commons.components.JIPipeDesktopParameterPanel;
+import org.hkijena.jipipe.desktop.commons.components.JIPipeDesktopParameterFormPanel;
 import org.hkijena.jipipe.desktop.commons.components.markup.JIPipeDesktopMarkdownReader;
 import org.hkijena.jipipe.plugins.parameters.library.markup.MarkdownText;
 import org.hkijena.jipipe.plugins.parameters.library.primitives.list.StringList;
@@ -65,7 +65,7 @@ public class JIPipeDesktopProjectReportUI extends JIPipeDesktopProjectWorkbenchP
     private void initialize() {
         setLayout(new BorderLayout());
         JIPipeDesktopSplitPane splitPane = new JIPipeDesktopSplitPane(JIPipeDesktopSplitPane.LEFT_RIGHT,
-                new JIPipeDesktopParameterPanel(getDesktopWorkbench(), reportSettings, new MarkdownText(), JIPipeDesktopParameterPanel.WITH_SEARCH_BAR | JIPipeDesktopParameterPanel.NO_GROUP_HEADERS | JIPipeDesktopParameterPanel.DOCUMENTATION_BELOW),
+                new JIPipeDesktopParameterFormPanel(getDesktopWorkbench(), reportSettings, new MarkdownText(), JIPipeDesktopParameterFormPanel.WITH_SEARCH_BAR | JIPipeDesktopParameterFormPanel.NO_GROUP_HEADERS | JIPipeDesktopParameterFormPanel.DOCUMENTATION_BELOW),
                 markdownReader,
                 JIPipeDesktopSplitPane.RATIO_1_TO_3);
         add(splitPane, BorderLayout.CENTER);

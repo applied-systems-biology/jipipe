@@ -21,7 +21,7 @@ import org.hkijena.jipipe.desktop.api.nodes.JIPipeDesktopNodeQuickAction;
 import org.hkijena.jipipe.desktop.app.JIPipeDesktopWorkbench;
 import org.hkijena.jipipe.desktop.app.JIPipeDesktopWorkbenchPanel;
 import org.hkijena.jipipe.desktop.app.grapheditor.commons.JIPipeDesktopGraphCanvasUI;
-import org.hkijena.jipipe.desktop.commons.components.JIPipeDesktopParameterPanel;
+import org.hkijena.jipipe.desktop.commons.components.JIPipeDesktopParameterFormPanel;
 import org.hkijena.jipipe.desktop.commons.components.markup.JIPipeDesktopMarkdownReader;
 import org.hkijena.jipipe.plugins.parameters.library.markup.MarkdownText;
 import org.hkijena.jipipe.utils.TooltipUtils;
@@ -47,10 +47,10 @@ public class JIPipeDesktopPipelineParametersPanel extends JIPipeDesktopWorkbench
     private void initialize() {
         setLayout(new BorderLayout());
         // Parameters
-        JIPipeDesktopParameterPanel parametersUI = new JIPipeDesktopParameterPanel(getDesktopWorkbench(),
+        JIPipeDesktopParameterFormPanel parametersUI = new JIPipeDesktopParameterFormPanel(getDesktopWorkbench(),
                 node,
                 TooltipUtils.getAlgorithmDocumentation(node),
-                JIPipeDesktopParameterPanel.WITH_SCROLLING | JIPipeDesktopParameterPanel.WITH_DOCUMENTATION | JIPipeDesktopParameterPanel.DOCUMENTATION_BELOW | JIPipeDesktopParameterPanel.WITH_SEARCH_BAR);
+                JIPipeDesktopParameterFormPanel.WITH_SCROLLING | JIPipeDesktopParameterFormPanel.WITH_DOCUMENTATION | JIPipeDesktopParameterFormPanel.DOCUMENTATION_BELOW | JIPipeDesktopParameterFormPanel.WITH_SEARCH_BAR);
         add(parametersUI, BorderLayout.CENTER);
 
 //        JToolBar toolBar = new JToolBar();
@@ -78,11 +78,11 @@ public class JIPipeDesktopPipelineParametersPanel extends JIPipeDesktopWorkbench
             popupMenu.addSeparator();
 
             popupMenu.add(UIUtils.createMenuItem("Configure", "Configure external parameters", UIUtils.getIconFromResources("actions/configure.png"), () -> {
-                JIPipeDesktopParameterPanel.showDialog(getDesktopWorkbench(),
+                JIPipeDesktopParameterFormPanel.showDialog(getDesktopWorkbench(),
                         ((JIPipeParameterSlotAlgorithm) node).getParameterSlotAlgorithmSettings(),
                         MarkdownText.fromPluginResource("documentation/multi-parameters.md", Collections.emptyMap()),
                         "Configure external parameters",
-                        JIPipeDesktopParameterPanel.DEFAULT_DIALOG_FLAGS);
+                        JIPipeDesktopParameterFormPanel.DEFAULT_DIALOG_FLAGS);
             }));
 
             popupMenu.add(UIUtils.createMenuItem("What is this?", "Shows a help window", UIUtils.getIconFromResources("actions/help.png"), () -> {
@@ -117,11 +117,11 @@ public class JIPipeDesktopPipelineParametersPanel extends JIPipeDesktopWorkbench
             popupMenu.addSeparator();
 
             popupMenu.add(UIUtils.createMenuItem("Configure", "Configure external parameters", UIUtils.getIconFromResources("actions/configure.png"), () -> {
-                JIPipeDesktopParameterPanel.showDialog(getDesktopWorkbench(),
+                JIPipeDesktopParameterFormPanel.showDialog(getDesktopWorkbench(),
                         ((JIPipeAdaptiveParametersAlgorithm) node).getAdaptiveParameterSettings(),
                         MarkdownText.fromPluginResource("documentation/adaptive-parameters.md", Collections.emptyMap()),
                         "Configure external parameters",
-                        JIPipeDesktopParameterPanel.DEFAULT_DIALOG_FLAGS);
+                        JIPipeDesktopParameterFormPanel.DEFAULT_DIALOG_FLAGS);
                 node.getParameterUIChangedEventEmitter().emit(new JIPipeParameterCollection.ParameterUIChangedEvent(node));
             }));
 

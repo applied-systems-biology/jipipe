@@ -172,10 +172,10 @@ public class JIPipeDesktopRunSettingsUI extends JIPipeDesktopProjectWorkbenchPan
 
 
         // General settings tab
-        tabPane.addTab("General", UIUtils.getIcon32FromResources("actions/configure.png"), new JIPipeDesktopParameterPanel(getDesktopProjectWorkbench(),
+        tabPane.addTab("General", UIUtils.getIcon32FromResources("actions/configure.png"), new JIPipeDesktopParameterFormPanel(getDesktopProjectWorkbench(),
                 run.getConfiguration(),
                 new MarkdownText(),
-                JIPipeDesktopParameterPanel.WITH_SCROLLING), JIPipeDesktopTabPane.CloseMode.withoutCloseButton);
+                JIPipeDesktopParameterFormPanel.WITH_SCROLLING), JIPipeDesktopTabPane.CloseMode.withoutCloseButton);
 
         Set<JIPipeGraphNode> algorithmsWithMissingInput = getDesktopProjectWorkbench().getProject().getGraph().getDeactivatedNodes(true);
         if (!algorithmsWithMissingInput.isEmpty()) {

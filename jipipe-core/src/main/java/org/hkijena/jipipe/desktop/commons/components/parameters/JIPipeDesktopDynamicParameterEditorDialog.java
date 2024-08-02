@@ -20,7 +20,7 @@ import org.hkijena.jipipe.api.parameters.*;
 import org.hkijena.jipipe.desktop.app.JIPipeDesktopWorkbench;
 import org.hkijena.jipipe.desktop.app.JIPipeDesktopWorkbenchAccess;
 import org.hkijena.jipipe.desktop.commons.components.JIPipeDesktopFormPanel;
-import org.hkijena.jipipe.desktop.commons.components.JIPipeDesktopParameterPanel;
+import org.hkijena.jipipe.desktop.commons.components.JIPipeDesktopParameterFormPanel;
 import org.hkijena.jipipe.desktop.commons.components.markup.JIPipeDesktopMarkdownReader;
 import org.hkijena.jipipe.desktop.commons.components.pickers.JIPipeDesktopParameterTypeInfoPicker;
 import org.hkijena.jipipe.plugins.parameters.library.markup.HTMLText;
@@ -136,7 +136,7 @@ public class JIPipeDesktopDynamicParameterEditorDialog extends JDialog implement
         if (entry == null) {
             contentPanel.add(new JIPipeDesktopMarkdownReader(false, documentation), BorderLayout.CENTER);
         } else {
-            JIPipeDesktopParameterPanel parameterPanel = new JIPipeDesktopParameterPanel(getDesktopWorkbench(), entry, documentation, JIPipeDesktopFormPanel.WITH_SCROLLING | JIPipeDesktopFormPanel.WITH_DOCUMENTATION | JIPipeDesktopFormPanel.DOCUMENTATION_BELOW);
+            JIPipeDesktopParameterFormPanel parameterPanel = new JIPipeDesktopParameterFormPanel(getDesktopWorkbench(), entry, documentation, JIPipeDesktopFormPanel.WITH_SCROLLING | JIPipeDesktopFormPanel.WITH_DOCUMENTATION | JIPipeDesktopFormPanel.DOCUMENTATION_BELOW);
             contentPanel.add(parameterPanel, BorderLayout.CENTER);
         }
         contentPanel.revalidate();

@@ -31,7 +31,7 @@ import org.hkijena.jipipe.api.run.JIPipeRunnable;
 import org.hkijena.jipipe.desktop.app.JIPipeDesktopDummyWorkbench;
 import org.hkijena.jipipe.desktop.app.tableeditor.JIPipeDesktopTableEditor;
 import org.hkijena.jipipe.desktop.commons.components.JIPipeDesktopFormPanel;
-import org.hkijena.jipipe.desktop.commons.components.JIPipeDesktopParameterPanel;
+import org.hkijena.jipipe.desktop.commons.components.JIPipeDesktopParameterFormPanel;
 import org.hkijena.jipipe.desktop.commons.components.ribbon.JIPipeDesktopRibbon;
 import org.hkijena.jipipe.desktop.commons.components.ribbon.JIPipeDesktopSmallButtonRibbonAction;
 import org.hkijena.jipipe.desktop.commons.components.ribbon.JIPipeDesktopSmallToggleButtonRibbonAction;
@@ -229,7 +229,7 @@ public class FilamentsManagerPlugin3D extends JIPipeImageViewerPlugin3D implemen
     }
 
     private void openDrawingSettings() {
-        JIPipeDesktopParameterPanel.showDialog(getDesktopWorkbench(), getViewerPanel(), filamentsDrawer, new MarkdownText("# Filaments display settings\n\nPlease use the settings on the left to modify how filaments are visualized."), "Filaments display settings", JIPipeDesktopParameterPanel.DEFAULT_DIALOG_FLAGS);
+        JIPipeDesktopParameterFormPanel.showDialog(getDesktopWorkbench(), getViewerPanel(), filamentsDrawer, new MarkdownText("# Filaments display settings\n\nPlease use the settings on the left to modify how filaments are visualized."), "Filaments display settings", JIPipeDesktopParameterFormPanel.DEFAULT_DIALOG_FLAGS);
         rebuildRoiContentLater();
     }
 
@@ -301,7 +301,7 @@ public class FilamentsManagerPlugin3D extends JIPipeImageViewerPlugin3D implemen
     private void openMeasurementSettings() {
         JDialog dialog = new JDialog(SwingUtilities.getWindowAncestor(getViewerPanel()));
         dialog.setTitle("Measurement settings");
-        dialog.setContentPane(new JIPipeDesktopParameterPanel(new JIPipeDesktopDummyWorkbench(), Measurement3DSettings.INSTANCE, null, JIPipeDesktopFormPanel.WITH_SCROLLING));
+        dialog.setContentPane(new JIPipeDesktopParameterFormPanel(new JIPipeDesktopDummyWorkbench(), Measurement3DSettings.INSTANCE, null, JIPipeDesktopFormPanel.WITH_SCROLLING));
         UIUtils.addEscapeListener(dialog);
         dialog.setSize(640, 480);
         dialog.setLocationRelativeTo(getViewerPanel());

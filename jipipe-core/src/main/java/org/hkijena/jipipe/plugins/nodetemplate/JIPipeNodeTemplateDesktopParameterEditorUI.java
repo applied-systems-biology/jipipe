@@ -21,7 +21,7 @@ import org.hkijena.jipipe.api.parameters.JIPipeParameterAccess;
 import org.hkijena.jipipe.api.parameters.JIPipeParameterTree;
 import org.hkijena.jipipe.desktop.api.JIPipeDesktopParameterEditorUI;
 import org.hkijena.jipipe.desktop.app.JIPipeDesktopWorkbench;
-import org.hkijena.jipipe.desktop.commons.components.JIPipeDesktopParameterPanel;
+import org.hkijena.jipipe.desktop.commons.components.JIPipeDesktopParameterFormPanel;
 import org.hkijena.jipipe.plugins.parameters.library.markup.MarkdownText;
 import org.hkijena.jipipe.utils.UIUtils;
 
@@ -57,8 +57,8 @@ public class JIPipeNodeTemplateDesktopParameterEditorUI extends JIPipeDesktopPar
 
     private void editParameters() {
         JIPipeNodeTemplate parameter = new JIPipeNodeTemplate(getParameter(JIPipeNodeTemplate.class));
-        if (JIPipeDesktopParameterPanel.showDialog(getDesktopWorkbench(), parameter, new MarkdownText("# Node templates\n\nUse this user interface to modify node templates."), "Edit template",
-                JIPipeDesktopParameterPanel.WITH_SCROLLING | JIPipeDesktopParameterPanel.WITH_SEARCH_BAR | JIPipeDesktopParameterPanel.WITH_DOCUMENTATION)) {
+        if (JIPipeDesktopParameterFormPanel.showDialog(getDesktopWorkbench(), parameter, new MarkdownText("# Node templates\n\nUse this user interface to modify node templates."), "Edit template",
+                JIPipeDesktopParameterFormPanel.WITH_SCROLLING | JIPipeDesktopParameterFormPanel.WITH_SEARCH_BAR | JIPipeDesktopParameterFormPanel.WITH_DOCUMENTATION)) {
             setParameter(parameter, true);
         }
     }

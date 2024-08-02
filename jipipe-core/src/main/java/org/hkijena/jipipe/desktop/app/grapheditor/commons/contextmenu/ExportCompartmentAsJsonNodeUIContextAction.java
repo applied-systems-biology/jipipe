@@ -17,7 +17,7 @@ import org.hkijena.jipipe.api.compartments.JIPipeExportedCompartment;
 import org.hkijena.jipipe.api.compartments.algorithms.JIPipeProjectCompartment;
 import org.hkijena.jipipe.desktop.app.grapheditor.commons.JIPipeDesktopGraphCanvasUI;
 import org.hkijena.jipipe.desktop.app.grapheditor.commons.nodeui.JIPipeDesktopGraphNodeUI;
-import org.hkijena.jipipe.desktop.commons.components.JIPipeDesktopParameterPanel;
+import org.hkijena.jipipe.desktop.commons.components.JIPipeDesktopParameterFormPanel;
 import org.hkijena.jipipe.plugins.parameters.library.markup.HTMLText;
 import org.hkijena.jipipe.plugins.settings.JIPipeFileChooserApplicationSettings;
 import org.hkijena.jipipe.utils.UIUtils;
@@ -39,9 +39,9 @@ public class ExportCompartmentAsJsonNodeUIContextAction implements NodeUIContext
         JIPipeExportedCompartment exportedCompartment = new JIPipeExportedCompartment(compartment);
         exportedCompartment.getMetadata().setName(compartment.getName());
         exportedCompartment.getMetadata().setDescription(new HTMLText("An exported JIPipe compartment"));
-        JIPipeDesktopParameterPanel metadataEditor = new JIPipeDesktopParameterPanel(canvasUI.getDesktopWorkbench(), exportedCompartment.getMetadata(),
+        JIPipeDesktopParameterFormPanel metadataEditor = new JIPipeDesktopParameterFormPanel(canvasUI.getDesktopWorkbench(), exportedCompartment.getMetadata(),
                 null,
-                JIPipeDesktopParameterPanel.WITH_SCROLLING);
+                JIPipeDesktopParameterFormPanel.WITH_SCROLLING);
 
         if (JOptionPane.showConfirmDialog(canvasUI.getDesktopWorkbench().getWindow(), metadataEditor, "Export compartment",
                 JOptionPane.OK_CANCEL_OPTION, JOptionPane.PLAIN_MESSAGE) == JOptionPane.OK_OPTION) {

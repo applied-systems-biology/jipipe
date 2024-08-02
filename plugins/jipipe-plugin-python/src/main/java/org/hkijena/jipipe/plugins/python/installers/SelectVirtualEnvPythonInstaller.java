@@ -22,7 +22,7 @@ import org.hkijena.jipipe.api.parameters.AbstractJIPipeParameterCollection;
 import org.hkijena.jipipe.api.parameters.JIPipeParameter;
 import org.hkijena.jipipe.api.parameters.JIPipeParameterAccess;
 import org.hkijena.jipipe.desktop.app.JIPipeDesktopWorkbench;
-import org.hkijena.jipipe.desktop.commons.components.JIPipeDesktopParameterPanel;
+import org.hkijena.jipipe.desktop.commons.components.JIPipeDesktopParameterFormPanel;
 import org.hkijena.jipipe.plugins.expressions.JIPipeExpressionEvaluator;
 import org.hkijena.jipipe.plugins.expressions.JIPipeExpressionParameter;
 import org.hkijena.jipipe.plugins.parameters.library.filesystem.PathParameterSettings;
@@ -84,9 +84,9 @@ public class SelectVirtualEnvPythonInstaller extends JIPipeExternalEnvironmentIn
         progressInfo.log("Waiting for user input ...");
         synchronized (lock) {
             SwingUtilities.invokeLater(() -> {
-                boolean result = JIPipeDesktopParameterPanel.showDialog((JIPipeDesktopWorkbench) getWorkbench(), configuration, new MarkdownText("# Python virtual environment\n\n" +
+                boolean result = JIPipeDesktopParameterFormPanel.showDialog((JIPipeDesktopWorkbench) getWorkbench(), configuration, new MarkdownText("# Python virtual environment\n\n" +
                                 "Please choose the directory that contains the virtual environment."), "Select Python virtual environment",
-                        JIPipeDesktopParameterPanel.NO_GROUP_HEADERS | JIPipeDesktopParameterPanel.WITH_SEARCH_BAR | JIPipeDesktopParameterPanel.WITH_DOCUMENTATION | JIPipeDesktopParameterPanel.WITH_SCROLLING);
+                        JIPipeDesktopParameterFormPanel.NO_GROUP_HEADERS | JIPipeDesktopParameterFormPanel.WITH_SEARCH_BAR | JIPipeDesktopParameterFormPanel.WITH_DOCUMENTATION | JIPipeDesktopParameterFormPanel.WITH_SCROLLING);
                 userCancelled.set(!result);
                 windowOpened.set(false);
                 synchronized (lock) {

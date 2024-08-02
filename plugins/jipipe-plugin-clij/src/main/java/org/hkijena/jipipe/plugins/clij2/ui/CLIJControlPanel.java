@@ -19,7 +19,7 @@ import org.hkijena.jipipe.desktop.app.JIPipeDesktopWorkbench;
 import org.hkijena.jipipe.desktop.app.JIPipeDesktopWorkbenchPanel;
 import org.hkijena.jipipe.desktop.commons.components.JIPipeDesktopFormPanel;
 import org.hkijena.jipipe.desktop.commons.components.JIPipeDesktopImageFrameComponent;
-import org.hkijena.jipipe.desktop.commons.components.JIPipeDesktopParameterPanel;
+import org.hkijena.jipipe.desktop.commons.components.JIPipeDesktopParameterFormPanel;
 import org.hkijena.jipipe.desktop.commons.components.markup.JIPipeDesktopMarkdownReader;
 import org.hkijena.jipipe.plugins.clij2.CLIJPluginApplicationSettings;
 import org.hkijena.jipipe.plugins.parameters.library.markup.MarkdownText;
@@ -57,10 +57,10 @@ public class CLIJControlPanel extends JIPipeDesktopWorkbenchPanel {
         setLayout(new BorderLayout());
         JIPipeDesktopMarkdownReader documentation = new JIPipeDesktopMarkdownReader(false, MarkdownText.fromPluginResource("extensions/clij2/introduction.md", new HashMap<>()));
         documentation.getScrollPane().setBorder(null);
-        JIPipeDesktopParameterPanel parameterPanel = new JIPipeDesktopParameterPanel(getDesktopWorkbench(),
+        JIPipeDesktopParameterFormPanel parameterPanel = new JIPipeDesktopParameterFormPanel(getDesktopWorkbench(),
                 CLIJPluginApplicationSettings.getInstance(),
                 null,
-                JIPipeDesktopParameterPanel.WITH_SCROLLING | JIPipeDesktopParameterPanel.WITH_DOCUMENTATION | JIPipeDesktopParameterPanel.WITH_SEARCH_BAR | JIPipeDesktopParameterPanel.DOCUMENTATION_BELOW);
+                JIPipeDesktopParameterFormPanel.WITH_SCROLLING | JIPipeDesktopParameterFormPanel.WITH_DOCUMENTATION | JIPipeDesktopParameterFormPanel.WITH_SEARCH_BAR | JIPipeDesktopParameterFormPanel.DOCUMENTATION_BELOW);
         JSplitPane splitPane = new JSplitPane(JSplitPane.HORIZONTAL_SPLIT,
                 documentation,
                 parameterPanel);

@@ -213,9 +213,9 @@ public class JIPipeDesktopQuickRunSetupUI extends JIPipeDesktopProjectWorkbenchP
         setupPanel.setLayout(new BorderLayout());
 
         currentSettings = new JIPipeDesktopQuickRunSettings(getProject());
-        JIPipeDesktopParameterPanel formPanel = new JIPipeDesktopParameterPanel(getDesktopWorkbench(), currentSettings,
-                MarkdownText.fromPluginResource("documentation/testbench.md", new HashMap<>()), JIPipeDesktopParameterPanel.WITH_SCROLLING |
-                JIPipeDesktopParameterPanel.WITH_DOCUMENTATION | JIPipeDesktopParameterPanel.DOCUMENTATION_BELOW);
+        JIPipeDesktopParameterFormPanel formPanel = new JIPipeDesktopParameterFormPanel(getDesktopWorkbench(), currentSettings,
+                MarkdownText.fromPluginResource("documentation/testbench.md", new HashMap<>()), JIPipeDesktopParameterFormPanel.WITH_SCROLLING |
+                JIPipeDesktopParameterFormPanel.WITH_DOCUMENTATION | JIPipeDesktopParameterFormPanel.DOCUMENTATION_BELOW);
         setupPanel.add(formPanel, BorderLayout.CENTER);
 
         JToolBar toolBar = new JToolBar();

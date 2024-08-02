@@ -27,15 +27,13 @@ import org.hkijena.jipipe.api.validation.contexts.UnspecifiedValidationReportCon
 import org.hkijena.jipipe.desktop.api.JIPipeDesktopParameterEditorUI;
 import org.hkijena.jipipe.desktop.app.JIPipeDesktopWorkbench;
 import org.hkijena.jipipe.desktop.app.running.JIPipeDesktopRunExecuteUI;
-import org.hkijena.jipipe.desktop.commons.components.JIPipeDesktopParameterPanel;
+import org.hkijena.jipipe.desktop.commons.components.JIPipeDesktopParameterFormPanel;
 import org.hkijena.jipipe.utils.ReflectionUtils;
 import org.hkijena.jipipe.utils.StringUtils;
 import org.hkijena.jipipe.utils.UIUtils;
 
 import javax.swing.*;
 import java.awt.*;
-import java.awt.event.MouseAdapter;
-import java.awt.event.MouseEvent;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
@@ -238,11 +236,11 @@ public class JIPipeDesktopExternalEnvironmentParameterEditorUI extends JIPipeDes
         Class<?> fieldClass = getParameterAccess().getFieldClass();
         JIPipeParameterTypeInfo typeInfo = JIPipe.getInstance().getParameterTypeRegistry().getInfoByFieldClass(fieldClass);
         JIPipeEnvironment parameter = (JIPipeEnvironment) typeInfo.duplicate(getParameter(JIPipeEnvironment.class));
-        boolean result = JIPipeDesktopParameterPanel.showDialog(getDesktopWorkbench(),
+        boolean result = JIPipeDesktopParameterFormPanel.showDialog(getDesktopWorkbench(),
                 parameter,
                 null,
                 "Edit environment",
-                JIPipeDesktopParameterPanel.NO_GROUP_HEADERS | JIPipeDesktopParameterPanel.WITH_SEARCH_BAR | JIPipeDesktopParameterPanel.WITH_SCROLLING | JIPipeDesktopParameterPanel.WITH_DOCUMENTATION);
+                JIPipeDesktopParameterFormPanel.NO_GROUP_HEADERS | JIPipeDesktopParameterFormPanel.WITH_SEARCH_BAR | JIPipeDesktopParameterFormPanel.WITH_SCROLLING | JIPipeDesktopParameterFormPanel.WITH_DOCUMENTATION);
         if (result) {
             setParameter(parameter, true);
         }

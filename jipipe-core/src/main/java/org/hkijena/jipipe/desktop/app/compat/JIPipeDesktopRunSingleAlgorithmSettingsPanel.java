@@ -19,7 +19,7 @@ import org.hkijena.jipipe.api.nodes.JIPipeNodeInfo;
 import org.hkijena.jipipe.desktop.app.JIPipeDesktopWorkbench;
 import org.hkijena.jipipe.desktop.app.JIPipeDesktopWorkbenchPanel;
 import org.hkijena.jipipe.desktop.app.documentation.JIPipeDesktopAlgorithmCompendiumUI;
-import org.hkijena.jipipe.desktop.commons.components.JIPipeDesktopParameterPanel;
+import org.hkijena.jipipe.desktop.commons.components.JIPipeDesktopParameterFormPanel;
 import org.hkijena.jipipe.desktop.commons.components.markup.JIPipeDesktopMarkdownReader;
 import org.hkijena.jipipe.desktop.commons.components.tabs.JIPipeDesktopTabPane;
 import org.hkijena.jipipe.utils.TooltipUtils;
@@ -56,10 +56,10 @@ public class JIPipeDesktopRunSingleAlgorithmSettingsPanel extends JIPipeDesktopW
         tabPane.addTab("Data inputs/outputs", UIUtils.getIconFromResources("actions/database.png"), ioEditor, JIPipeDesktopTabPane.CloseMode.withoutCloseButton);
         tabPane.addTab("Parameters",
                 UIUtils.getIconFromResources("actions/configuration.png"),
-                new JIPipeDesktopParameterPanel(getDesktopWorkbench(),
+                new JIPipeDesktopParameterFormPanel(getDesktopWorkbench(),
                         node,
                         TooltipUtils.getAlgorithmDocumentation(node),
-                        JIPipeDesktopParameterPanel.WITH_SEARCH_BAR | JIPipeDesktopParameterPanel.WITH_DOCUMENTATION | JIPipeDesktopParameterPanel.WITH_SCROLLING),
+                        JIPipeDesktopParameterFormPanel.WITH_SEARCH_BAR | JIPipeDesktopParameterFormPanel.WITH_DOCUMENTATION | JIPipeDesktopParameterFormPanel.WITH_SCROLLING),
                 JIPipeDesktopTabPane.CloseMode.withoutCloseButton);
     }
 

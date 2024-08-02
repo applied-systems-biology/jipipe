@@ -22,7 +22,7 @@ import org.hkijena.jipipe.api.data.serialization.JIPipeDataTableMetadata;
 import org.hkijena.jipipe.api.run.JIPipeRunnable;
 import org.hkijena.jipipe.desktop.app.JIPipeDesktopWorkbench;
 import org.hkijena.jipipe.desktop.app.JIPipeDesktopWorkbenchPanel;
-import org.hkijena.jipipe.desktop.commons.components.JIPipeDesktopParameterPanel;
+import org.hkijena.jipipe.desktop.commons.components.JIPipeDesktopParameterFormPanel;
 import org.hkijena.jipipe.plugins.settings.JIPipeDataExporterApplicationSettings;
 import org.hkijena.jipipe.plugins.settings.JIPipeFileChooserApplicationSettings;
 import org.hkijena.jipipe.utils.StringUtils;
@@ -72,7 +72,7 @@ public class JIPipeResultCopyFilesByMetadataExporterRun extends JIPipeDesktopWor
 
         JDialog editorDialog = new JDialog();
         JPanel mainPanel = new JPanel(new BorderLayout());
-        JIPipeDesktopParameterPanel parameterPanel = new JIPipeDesktopParameterPanel(getDesktopWorkbench(), exporter, null, JIPipeDesktopParameterPanel.WITH_SCROLLING | JIPipeDesktopParameterPanel.WITH_DOCUMENTATION);
+        JIPipeDesktopParameterFormPanel parameterPanel = new JIPipeDesktopParameterFormPanel(getDesktopWorkbench(), exporter, null, JIPipeDesktopParameterFormPanel.WITH_SCROLLING | JIPipeDesktopParameterFormPanel.WITH_DOCUMENTATION);
         mainPanel.add(parameterPanel, BorderLayout.CENTER);
         AtomicBoolean confirmation = new AtomicBoolean(false);
 

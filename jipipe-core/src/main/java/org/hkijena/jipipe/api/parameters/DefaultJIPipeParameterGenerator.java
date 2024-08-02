@@ -19,7 +19,7 @@ import org.hkijena.jipipe.api.validation.JIPipeValidationReport;
 import org.hkijena.jipipe.api.validation.JIPipeValidationReportContext;
 import org.hkijena.jipipe.api.validation.contexts.UnspecifiedValidationReportContext;
 import org.hkijena.jipipe.desktop.app.JIPipeDesktopWorkbench;
-import org.hkijena.jipipe.desktop.commons.components.JIPipeDesktopParameterPanel;
+import org.hkijena.jipipe.desktop.commons.components.JIPipeDesktopParameterFormPanel;
 import org.hkijena.jipipe.plugins.parameters.library.markup.MarkdownText;
 import org.hkijena.jipipe.utils.UIUtils;
 
@@ -81,9 +81,9 @@ public abstract class DefaultJIPipeParameterGenerator extends AbstractJIPipePara
 
         private void initialize() {
             getContentPane().setLayout(new BorderLayout());
-            getContentPane().add(new JIPipeDesktopParameterPanel(workbench, generator,
+            getContentPane().add(new JIPipeDesktopParameterFormPanel(workbench, generator,
                     new MarkdownText("# " + generator.getName() + "\n\n" + generator.getDescription()),
-                    JIPipeDesktopParameterPanel.WITH_SEARCH_BAR | JIPipeDesktopParameterPanel.WITH_SCROLLING), BorderLayout.CENTER);
+                    JIPipeDesktopParameterFormPanel.WITH_SEARCH_BAR | JIPipeDesktopParameterFormPanel.WITH_SCROLLING), BorderLayout.CENTER);
 
             JPanel buttonPanel = new JPanel();
             buttonPanel.setLayout(new BoxLayout(buttonPanel, BoxLayout.X_AXIS));

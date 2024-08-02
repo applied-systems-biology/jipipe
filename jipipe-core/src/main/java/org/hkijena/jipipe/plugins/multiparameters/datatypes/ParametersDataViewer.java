@@ -20,7 +20,7 @@ import org.hkijena.jipipe.api.parameters.JIPipeDynamicParameterCollection;
 import org.hkijena.jipipe.desktop.app.JIPipeDesktopWorkbench;
 import org.hkijena.jipipe.desktop.app.JIPipeDesktopWorkbenchPanel;
 import org.hkijena.jipipe.desktop.app.tableeditor.JIPipeDesktopTableEditor;
-import org.hkijena.jipipe.desktop.commons.components.JIPipeDesktopParameterPanel;
+import org.hkijena.jipipe.desktop.commons.components.JIPipeDesktopParameterFormPanel;
 import org.hkijena.jipipe.desktop.commons.components.tabs.JIPipeDesktopTabPane;
 import org.hkijena.jipipe.plugins.parameters.library.markup.MarkdownText;
 import org.hkijena.jipipe.plugins.tables.datatypes.ResultsTableData;
@@ -37,7 +37,7 @@ public class ParametersDataViewer extends JIPipeDesktopWorkbenchPanel {
     private final JIPipeDesktopTabPane tabPane = new JIPipeDesktopTabPane(true, JIPipeDesktopTabPane.TabPlacement.Top);
     private final EditorPane jsonViewer = new EditorPane();
     private final JIPipeDesktopTableEditor tableViewer;
-    private final JIPipeDesktopParameterPanel guiViewer;
+    private final JIPipeDesktopParameterFormPanel guiViewer;
     private ParametersData parametersData;
 
     /**
@@ -46,10 +46,10 @@ public class ParametersDataViewer extends JIPipeDesktopWorkbenchPanel {
     public ParametersDataViewer(JIPipeDesktopWorkbench workbench) {
         super(workbench);
         this.tableViewer = new JIPipeDesktopTableEditor(workbench, new ResultsTableData());
-        this.guiViewer = new JIPipeDesktopParameterPanel(getDesktopWorkbench(),
+        this.guiViewer = new JIPipeDesktopParameterFormPanel(getDesktopWorkbench(),
                 new JIPipeDummyParameterCollection(),
                 new MarkdownText("# Parameters\n\nThis panel displays the parameters. Editing the values has no effect."),
-                JIPipeDesktopParameterPanel.WITH_SEARCH_BAR | JIPipeDesktopParameterPanel.WITH_SCROLLING | JIPipeDesktopParameterPanel.WITH_DOCUMENTATION);
+                JIPipeDesktopParameterFormPanel.WITH_SEARCH_BAR | JIPipeDesktopParameterFormPanel.WITH_SCROLLING | JIPipeDesktopParameterFormPanel.WITH_DOCUMENTATION);
         initialize();
     }
 

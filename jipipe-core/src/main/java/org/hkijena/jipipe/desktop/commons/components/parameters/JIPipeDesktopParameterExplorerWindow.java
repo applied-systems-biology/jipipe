@@ -18,7 +18,7 @@ import org.hkijena.jipipe.api.nodes.JIPipeGraphNode;
 import org.hkijena.jipipe.api.parameters.*;
 import org.hkijena.jipipe.desktop.app.JIPipeDesktopWorkbench;
 import org.hkijena.jipipe.desktop.commons.components.JIPipeDesktopFormPanel;
-import org.hkijena.jipipe.desktop.commons.components.JIPipeDesktopParameterPanel;
+import org.hkijena.jipipe.desktop.commons.components.JIPipeDesktopParameterFormPanel;
 import org.hkijena.jipipe.desktop.commons.components.JIPipeDesktopParameterAccessTreeUI;
 import org.hkijena.jipipe.desktop.commons.components.JIPipeDesktopReadonlyCopyableTextField;
 import org.hkijena.jipipe.plugins.parameters.library.markup.MarkdownText;
@@ -273,7 +273,7 @@ public class JIPipeDesktopParameterExplorerWindow extends JFrame implements JIPi
         JIPipeParameterAccess parameterAccess = (JIPipeParameterAccess) selectedNode.getUserObject();
         JIPipeParameterTypeInfo typeInfo = JIPipe.getParameterTypes().getInfoByFieldClass(parameterAccess.getFieldClass());
 
-        formPanel.getParameterHelp().setDocument(JIPipeDesktopParameterPanel.generateParameterDocumentation(parameterAccess, parameterTree));
+        formPanel.getHelpPanel().showContent(JIPipeDesktopParameterFormPanel.generateParameterDocumentation(parameterAccess, parameterTree));
 
         // Set current value & tester
         currentValue = parameterAccess;

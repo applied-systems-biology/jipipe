@@ -32,7 +32,7 @@ import org.hkijena.jipipe.api.parameters.JIPipeMutableParameterAccess;
 import org.hkijena.jipipe.desktop.app.JIPipeDesktopDummyWorkbench;
 import org.hkijena.jipipe.desktop.commons.components.JIPipeDesktopColorChooserButton;
 import org.hkijena.jipipe.desktop.commons.components.JIPipeDesktopFormPanel;
-import org.hkijena.jipipe.desktop.commons.components.JIPipeDesktopParameterPanel;
+import org.hkijena.jipipe.desktop.commons.components.JIPipeDesktopParameterFormPanel;
 import org.hkijena.jipipe.desktop.commons.components.icons.SolidJIPipeDesktopColorIcon;
 import org.hkijena.jipipe.desktop.commons.components.ribbon.*;
 import org.hkijena.jipipe.plugins.imagejdatatypes.datatypes.ROI2DListData;
@@ -551,7 +551,7 @@ public class MaskDrawerPlugin2D extends JIPipeImageViewerPlugin2D implements Ima
             ((JIPipeMutableParameterAccess) parameterCollection.get("t")).setHidden(true);
         }
 
-        JIPipeDesktopParameterPanel parameterPanel = new JIPipeDesktopParameterPanel(new JIPipeDesktopDummyWorkbench(),
+        JIPipeDesktopParameterFormPanel parameterPanel = new JIPipeDesktopParameterFormPanel(new JIPipeDesktopDummyWorkbench(),
                 parameterCollection,
                 null,
                 JIPipeDesktopFormPanel.WITH_DOCUMENTATION | JIPipeDesktopFormPanel.WITH_SCROLLING);

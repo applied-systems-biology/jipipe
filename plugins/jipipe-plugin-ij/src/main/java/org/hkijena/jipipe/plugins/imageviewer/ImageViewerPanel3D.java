@@ -33,7 +33,7 @@ import org.hkijena.jipipe.desktop.app.JIPipeDesktopWorkbenchAccess;
 import org.hkijena.jipipe.desktop.app.running.JIPipeDesktopRunExecuteUI;
 import org.hkijena.jipipe.desktop.app.running.JIPipeDesktopRunnableQueueButton;
 import org.hkijena.jipipe.desktop.commons.components.JIPipeDesktopFormPanel;
-import org.hkijena.jipipe.desktop.commons.components.JIPipeDesktopParameterPanel;
+import org.hkijena.jipipe.desktop.commons.components.JIPipeDesktopParameterFormPanel;
 import org.hkijena.jipipe.desktop.commons.components.icons.NewThrobberIcon;
 import org.hkijena.jipipe.desktop.commons.components.tabs.JIPipeDesktopTabPane;
 import org.hkijena.jipipe.plugins.imagejdatatypes.datatypes.ImagePlusData;
@@ -403,7 +403,7 @@ public class ImageViewerPanel3D extends JPanel implements JIPipeDesktopWorkbench
                 snapshotSettings.setWidth(canvas.getWidth());
                 snapshotSettings.setHeight(canvas.getHeight());
 
-                if (JIPipeDesktopParameterPanel.showDialog(getDesktopWorkbench(), this, snapshotSettings, new MarkdownText(), "Create snapshot", JIPipeDesktopParameterPanel.WITH_SCROLLING)) {
+                if (JIPipeDesktopParameterFormPanel.showDialog(getDesktopWorkbench(), this, snapshotSettings, new MarkdownText(), "Create snapshot", JIPipeDesktopParameterFormPanel.WITH_SCROLLING)) {
                     ImagePlus imagePlus = universe.takeSnapshot(snapshotSettings.getWidth(), snapshotSettings.getHeight());
                     BufferedImage image = BufferedImageUtils.copyBufferedImageToARGB(imagePlus.getBufferedImage());
                     try {
@@ -424,7 +424,7 @@ public class ImageViewerPanel3D extends JPanel implements JIPipeDesktopWorkbench
             snapshotSettings.setWidth(canvas.getWidth());
             snapshotSettings.setHeight(canvas.getHeight());
 
-            if (JIPipeDesktopParameterPanel.showDialog(getDesktopWorkbench(), this, snapshotSettings, new MarkdownText(), "Create snapshot", JIPipeDesktopParameterPanel.WITH_SCROLLING)) {
+            if (JIPipeDesktopParameterFormPanel.showDialog(getDesktopWorkbench(), this, snapshotSettings, new MarkdownText(), "Create snapshot", JIPipeDesktopParameterFormPanel.WITH_SCROLLING)) {
                 ImagePlus imagePlus = universe.takeSnapshot(snapshotSettings.getWidth(), snapshotSettings.getHeight());
                 BufferedImage image = BufferedImageUtils.copyBufferedImageToARGB(imagePlus.getBufferedImage());
                 CopyImageToClipboard copyImageToClipboard = new CopyImageToClipboard();

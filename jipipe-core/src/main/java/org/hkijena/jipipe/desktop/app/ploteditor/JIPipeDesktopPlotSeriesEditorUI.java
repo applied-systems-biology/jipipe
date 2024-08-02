@@ -15,7 +15,7 @@ package org.hkijena.jipipe.desktop.app.ploteditor;
 
 import org.hkijena.jipipe.desktop.app.JIPipeDesktopWorkbench;
 import org.hkijena.jipipe.desktop.app.JIPipeDesktopWorkbenchPanel;
-import org.hkijena.jipipe.desktop.commons.components.JIPipeDesktopParameterPanel;
+import org.hkijena.jipipe.desktop.commons.components.JIPipeDesktopParameterFormPanel;
 import org.hkijena.jipipe.desktop.commons.theme.JIPipeDesktopModernMetalTheme;
 import org.hkijena.jipipe.utils.UIUtils;
 
@@ -45,10 +45,10 @@ public class JIPipeDesktopPlotSeriesEditorUI extends JIPipeDesktopWorkbenchPanel
     private void initialize() {
         setBorder(UIUtils.createControlBorder());
         setLayout(new BorderLayout());
-        JIPipeDesktopParameterPanel parameterPanel = new JIPipeDesktopParameterPanel(getDesktopWorkbench(),
+        JIPipeDesktopParameterFormPanel parameterPanel = new JIPipeDesktopParameterFormPanel(getDesktopWorkbench(),
                 seriesBuilder,
                 null,
-                JIPipeDesktopParameterPanel.NO_EMPTY_GROUP_HEADERS);
+                JIPipeDesktopParameterFormPanel.NO_EMPTY_GROUP_HEADERS);
         add(parameterPanel, BorderLayout.CENTER);
 
         // Create title panel

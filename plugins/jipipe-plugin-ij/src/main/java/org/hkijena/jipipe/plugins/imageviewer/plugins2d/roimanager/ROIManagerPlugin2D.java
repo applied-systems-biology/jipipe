@@ -25,7 +25,7 @@ import org.hkijena.jipipe.JIPipe;
 import org.hkijena.jipipe.desktop.app.JIPipeDesktopDummyWorkbench;
 import org.hkijena.jipipe.desktop.app.tableeditor.JIPipeDesktopTableEditor;
 import org.hkijena.jipipe.desktop.commons.components.JIPipeDesktopFormPanel;
-import org.hkijena.jipipe.desktop.commons.components.JIPipeDesktopParameterPanel;
+import org.hkijena.jipipe.desktop.commons.components.JIPipeDesktopParameterFormPanel;
 import org.hkijena.jipipe.desktop.commons.components.icons.SolidJIPipeDesktopColorIcon;
 import org.hkijena.jipipe.desktop.commons.components.ribbon.*;
 import org.hkijena.jipipe.desktop.commons.components.tabs.JIPipeDesktopTabPane;
@@ -181,7 +181,7 @@ public class ROIManagerPlugin2D extends JIPipeImageViewerPlugin2D {
         List<ROIEditor> editors = new ArrayList<>();
         for (Roi roi : selected) {
             ROIEditor editor = new ROIEditor(roi);
-            JIPipeDesktopParameterPanel parameterPanel = new JIPipeDesktopParameterPanel(getDesktopWorkbench(), editor, new MarkdownText("# Edit ROI"), JIPipeDesktopParameterPanel.WITH_SEARCH_BAR | JIPipeDesktopFormPanel.WITH_SCROLLING | JIPipeDesktopParameterPanel.WITH_DOCUMENTATION);
+            JIPipeDesktopParameterFormPanel parameterPanel = new JIPipeDesktopParameterFormPanel(getDesktopWorkbench(), editor, new MarkdownText("# Edit ROI"), JIPipeDesktopParameterFormPanel.WITH_SEARCH_BAR | JIPipeDesktopFormPanel.WITH_SCROLLING | JIPipeDesktopParameterFormPanel.WITH_DOCUMENTATION);
             documentTabPane.addTab(roi.getName() + "", UIUtils.getIconFromResources("data-types/roi.png"), parameterPanel, JIPipeDesktopTabPane.CloseMode.withoutCloseButton, true);
             editors.add(editor);
         }
@@ -291,7 +291,7 @@ public class ROIManagerPlugin2D extends JIPipeImageViewerPlugin2D {
     private void openMeasurementSettings() {
         JDialog dialog = new JDialog(SwingUtilities.getWindowAncestor(getViewerPanel()));
         dialog.setTitle("Measurement settings");
-        dialog.setContentPane(new JIPipeDesktopParameterPanel(new JIPipeDesktopDummyWorkbench(), Measurement2DSettings.INSTANCE, null, JIPipeDesktopFormPanel.WITH_SCROLLING));
+        dialog.setContentPane(new JIPipeDesktopParameterFormPanel(new JIPipeDesktopDummyWorkbench(), Measurement2DSettings.INSTANCE, null, JIPipeDesktopFormPanel.WITH_SCROLLING));
         UIUtils.addEscapeListener(dialog);
         dialog.setSize(640, 480);
         dialog.setLocationRelativeTo(getViewerPanel());
@@ -378,7 +378,7 @@ public class ROIManagerPlugin2D extends JIPipeImageViewerPlugin2D {
     }
 
     private void openRoiDrawingSettings() {
-        JIPipeDesktopParameterPanel.showDialog(getDesktopWorkbench(), getViewerPanel(), roiDrawer, new MarkdownText("# ROI display settings\n\nPlease use the settings on the left to modify how ROI are visualized."), "ROI display settings", JIPipeDesktopParameterPanel.DEFAULT_DIALOG_FLAGS);
+        JIPipeDesktopParameterFormPanel.showDialog(getDesktopWorkbench(), getViewerPanel(), roiDrawer, new MarkdownText("# ROI display settings\n\nPlease use the settings on the left to modify how ROI are visualized."), "ROI display settings", JIPipeDesktopParameterFormPanel.DEFAULT_DIALOG_FLAGS);
         uploadSliceToCanvas();
     }
 

@@ -28,7 +28,7 @@ import org.hkijena.jipipe.desktop.app.JIPipeDesktopWorkbench;
 import org.hkijena.jipipe.desktop.app.JIPipeDesktopWorkbenchPanel;
 import org.hkijena.jipipe.desktop.app.grapheditor.commons.JIPipeDesktopGraphCanvasUI;
 import org.hkijena.jipipe.desktop.app.running.JIPipeDesktopRunExecuteUI;
-import org.hkijena.jipipe.desktop.commons.components.JIPipeDesktopParameterPanel;
+import org.hkijena.jipipe.desktop.commons.components.JIPipeDesktopParameterFormPanel;
 import org.hkijena.jipipe.desktop.commons.components.markup.JIPipeDesktopMarkdownReader;
 import org.hkijena.jipipe.desktop.commons.components.search.JIPipeDesktopSearchTextField;
 import org.hkijena.jipipe.desktop.commons.components.window.JIPipeDesktopAlwaysOnTopToggle;
@@ -292,8 +292,8 @@ public class NodeTemplateBox extends JIPipeDesktopWorkbenchPanel implements Node
             return;
         }
         JIPipeNodeTemplate copy = new JIPipeNodeTemplate(template);
-        if (JIPipeDesktopParameterPanel.showDialog(getDesktopWorkbench(), copy, new MarkdownText("# Node templates\n\nUse this user interface to modify node templates."), "Edit template",
-                JIPipeDesktopParameterPanel.WITH_SCROLLING | JIPipeDesktopParameterPanel.WITH_SEARCH_BAR | JIPipeDesktopParameterPanel.WITH_DOCUMENTATION)) {
+        if (JIPipeDesktopParameterFormPanel.showDialog(getDesktopWorkbench(), copy, new MarkdownText("# Node templates\n\nUse this user interface to modify node templates."), "Edit template",
+                JIPipeDesktopParameterFormPanel.WITH_SCROLLING | JIPipeDesktopParameterFormPanel.WITH_SEARCH_BAR | JIPipeDesktopParameterFormPanel.WITH_DOCUMENTATION)) {
             JIPipe.getNodeTemplates().editTemplate(template, copy, project);
         }
     }

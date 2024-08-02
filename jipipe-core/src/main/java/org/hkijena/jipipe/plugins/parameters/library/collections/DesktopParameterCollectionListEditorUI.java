@@ -17,7 +17,7 @@ import org.hkijena.jipipe.api.parameters.*;
 import org.hkijena.jipipe.desktop.api.JIPipeDesktopParameterEditorUI;
 import org.hkijena.jipipe.desktop.app.JIPipeDesktopWorkbench;
 import org.hkijena.jipipe.desktop.commons.components.JIPipeDesktopFormPanel;
-import org.hkijena.jipipe.desktop.commons.components.JIPipeDesktopParameterPanel;
+import org.hkijena.jipipe.desktop.commons.components.JIPipeDesktopParameterFormPanel;
 import org.hkijena.jipipe.plugins.parameters.api.collections.ListParameter;
 import org.hkijena.jipipe.plugins.parameters.api.collections.ListParameterSettings;
 import org.hkijena.jipipe.utils.ReflectionUtils;
@@ -271,7 +271,7 @@ public class DesktopParameterCollectionListEditorUI extends JIPipeDesktopParamet
                 moveEntryUp(entry);
             }));
 
-            JIPipeDesktopParameterPanel ui = new JIPipeDesktopParameterPanel(getDesktopWorkbench(), parameter.get(i), getParameterTree(), null, JIPipeDesktopParameterPanel.NO_EMPTY_GROUP_HEADERS);
+            JIPipeDesktopParameterFormPanel ui = new JIPipeDesktopParameterFormPanel(getDesktopWorkbench(), parameter.get(i), getParameterTree(), null, JIPipeDesktopParameterFormPanel.NO_EMPTY_GROUP_HEADERS);
             ui.setBorder(UIUtils.createControlBorder());
             ui.setOpaque(false);
 

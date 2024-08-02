@@ -24,7 +24,7 @@ import org.hkijena.jipipe.api.nodes.categories.MiscellaneousNodeTypeCategory;
 import org.hkijena.jipipe.api.parameters.AbstractJIPipeParameterCollection;
 import org.hkijena.jipipe.api.parameters.JIPipeParameter;
 import org.hkijena.jipipe.desktop.app.grapheditor.commons.JIPipeDesktopGraphCanvasUI;
-import org.hkijena.jipipe.desktop.commons.components.JIPipeDesktopParameterPanel;
+import org.hkijena.jipipe.desktop.commons.components.JIPipeDesktopParameterFormPanel;
 import org.hkijena.jipipe.plugins.parameters.api.collections.ListParameter;
 import org.hkijena.jipipe.plugins.parameters.library.markup.HTMLText;
 import org.hkijena.jipipe.plugins.parameters.library.markup.MarkdownText;
@@ -124,8 +124,8 @@ public class JIPipeNodeTemplate extends AbstractJIPipeParameterCollection {
         if (result == JOptionPane.CANCEL_OPTION)
             return;
 
-        if (JIPipeDesktopParameterPanel.showDialog(canvasUI.getDesktopWorkbench(), template, new MarkdownText("# Node templates\n\nUse this user interface to modify node templates."), "Create template",
-                JIPipeDesktopParameterPanel.WITH_SCROLLING | JIPipeDesktopParameterPanel.WITH_SEARCH_BAR | JIPipeDesktopParameterPanel.WITH_DOCUMENTATION)) {
+        if (JIPipeDesktopParameterFormPanel.showDialog(canvasUI.getDesktopWorkbench(), template, new MarkdownText("# Node templates\n\nUse this user interface to modify node templates."), "Create template",
+                JIPipeDesktopParameterFormPanel.WITH_SCROLLING | JIPipeDesktopParameterFormPanel.WITH_SEARCH_BAR | JIPipeDesktopParameterFormPanel.WITH_DOCUMENTATION)) {
             if (result == JOptionPane.YES_OPTION) {
                 // Store globally
                 JIPipe.getNodeTemplates().addToGlobal(template);

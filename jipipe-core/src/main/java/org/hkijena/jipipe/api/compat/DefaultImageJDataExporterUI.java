@@ -14,7 +14,7 @@
 package org.hkijena.jipipe.api.compat;
 
 import org.hkijena.jipipe.desktop.app.JIPipeDesktopWorkbench;
-import org.hkijena.jipipe.desktop.commons.components.JIPipeDesktopParameterPanel;
+import org.hkijena.jipipe.desktop.commons.components.JIPipeDesktopParameterFormPanel;
 
 import java.awt.*;
 
@@ -33,6 +33,6 @@ public class DefaultImageJDataExporterUI extends ImageJDataExporterUI {
 
     private void initialize() {
         setLayout(new BorderLayout());
-        add(new JIPipeDesktopParameterPanel(getDesktopWorkbench(), getExporter(), null, JIPipeDesktopParameterPanel.NO_GROUP_HEADERS | JIPipeDesktopParameterPanel.WITHOUT_COLLAPSE));
+        add(new JIPipeDesktopParameterFormPanel(getDesktopWorkbench(), getExporter(), null, JIPipeDesktopParameterFormPanel.NO_GROUP_HEADERS | JIPipeDesktopParameterFormPanel.WITHOUT_COLLAPSE));
     }
 }

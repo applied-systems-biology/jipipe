@@ -21,7 +21,6 @@ import org.hkijena.jipipe.api.nodes.algorithm.JIPipeParameterSlotAlgorithm;
 import org.hkijena.jipipe.api.nodes.iterationstep.JIPipeIterationStepAlgorithm;
 import org.hkijena.jipipe.api.parameters.JIPipeParameterCollection;
 import org.hkijena.jipipe.api.run.JIPipeRunnableQueue;
-import org.hkijena.jipipe.desktop.api.nodes.AddJIPipeDesktopNodeQuickAction;
 import org.hkijena.jipipe.desktop.api.nodes.JIPipeDesktopNodeQuickAction;
 import org.hkijena.jipipe.desktop.app.JIPipeDesktopProjectWorkbench;
 import org.hkijena.jipipe.desktop.app.JIPipeDesktopProjectWorkbenchPanel;
@@ -34,8 +33,7 @@ import org.hkijena.jipipe.desktop.app.grapheditor.commons.properties.JIPipeDeskt
 import org.hkijena.jipipe.desktop.app.history.JIPipeDesktopHistoryJournalUI;
 import org.hkijena.jipipe.desktop.app.quickrun.JIPipeDesktopQuickRunSettings;
 import org.hkijena.jipipe.desktop.app.running.JIPipeDesktopRunnableQueuePanelUI;
-import org.hkijena.jipipe.desktop.commons.components.JIPipeDesktopFormPanel;
-import org.hkijena.jipipe.desktop.commons.components.JIPipeDesktopParameterPanel;
+import org.hkijena.jipipe.desktop.commons.components.JIPipeDesktopParameterFormPanel;
 import org.hkijena.jipipe.desktop.commons.components.markup.JIPipeDesktopMarkdownReader;
 import org.hkijena.jipipe.desktop.commons.components.tabs.JIPipeDesktopTabPane;
 import org.hkijena.jipipe.plugins.nodetemplate.NodeTemplateBox;
@@ -47,8 +45,6 @@ import org.scijava.Disposable;
 
 import javax.swing.*;
 import java.awt.*;
-import java.lang.reflect.InvocationTargetException;
-import java.lang.reflect.Method;
 import java.util.Collections;
 import java.util.List;
 
@@ -145,7 +141,7 @@ public class JIPipeDesktopPipelineSingleAlgorithmSelectionPanelUI extends JIPipe
             if (node instanceof JIPipeIterationStepAlgorithm) {
                 tabbedPane.addTab("Inputs",
                         UIUtils.getIcon32FromResources("actions/package.png"),
-                        new JIPipeDesktopParameterPanel(getDesktopWorkbench(), ((JIPipeIterationStepAlgorithm) node).getGenerationSettingsInterface(), null, JIPipeDesktopParameterPanel.WITH_SEARCH_BAR | JIPipeDesktopParameterPanel.WITH_SCROLLING),
+                        new JIPipeDesktopParameterFormPanel(getDesktopWorkbench(), ((JIPipeIterationStepAlgorithm) node).getGenerationSettingsInterface(), null, JIPipeDesktopParameterFormPanel.WITH_SEARCH_BAR | JIPipeDesktopParameterFormPanel.WITH_SCROLLING),
                         JIPipeDesktopTabPane.CloseMode.withoutCloseButton);
             }
         }
@@ -192,10 +188,10 @@ public class JIPipeDesktopPipelineSingleAlgorithmSelectionPanelUI extends JIPipe
         JPanel panel = new JPanel(new BorderLayout());
 
         // Parameters
-        JIPipeDesktopParameterPanel parametersUI = new JIPipeDesktopParameterPanel(getDesktopProjectWorkbench(),
+        JIPipeDesktopParameterFormPanel parametersUI = new JIPipeDesktopParameterFormPanel(getDesktopProjectWorkbench(),
                 node,
                 TooltipUtils.getAlgorithmDocumentation(node),
-                JIPipeDesktopParameterPanel.WITH_SCROLLING | JIPipeDesktopParameterPanel.WITH_DOCUMENTATION | JIPipeDesktopParameterPanel.DOCUMENTATION_BELOW | JIPipeDesktopParameterPanel.WITH_SEARCH_BAR);
+                JIPipeDesktopParameterFormPanel.WITH_SCROLLING | JIPipeDesktopParameterFormPanel.WITH_DOCUMENTATION | JIPipeDesktopParameterFormPanel.DOCUMENTATION_BELOW | JIPipeDesktopParameterFormPanel.WITH_SEARCH_BAR);
         panel.add(parametersUI, BorderLayout.CENTER);
 
 //        JToolBar toolBar = new JToolBar();
@@ -223,11 +219,11 @@ public class JIPipeDesktopPipelineSingleAlgorithmSelectionPanelUI extends JIPipe
             popupMenu.addSeparator();
 
             popupMenu.add(UIUtils.createMenuItem("Configure", "Configure external parameters", UIUtils.getIconFromResources("actions/configure.png"), () -> {
-                JIPipeDesktopParameterPanel.showDialog(getDesktopWorkbench(),
+                JIPipeDesktopParameterFormPanel.showDialog(getDesktopWorkbench(),
                         ((JIPipeParameterSlotAlgorithm) node).getParameterSlotAlgorithmSettings(),
                         MarkdownText.fromPluginResource("documentation/multi-parameters.md", Collections.emptyMap()),
                         "Configure external parameters",
-                        JIPipeDesktopParameterPanel.DEFAULT_DIALOG_FLAGS);
+                        JIPipeDesktopParameterFormPanel.DEFAULT_DIALOG_FLAGS);
             }));
 
             popupMenu.add(UIUtils.createMenuItem("What is this?", "Shows a help window", UIUtils.getIconFromResources("actions/help.png"), () -> {
@@ -262,11 +258,11 @@ public class JIPipeDesktopPipelineSingleAlgorithmSelectionPanelUI extends JIPipe
             popupMenu.addSeparator();
 
             popupMenu.add(UIUtils.createMenuItem("Configure", "Configure external parameters", UIUtils.getIconFromResources("actions/configure.png"), () -> {
-                JIPipeDesktopParameterPanel.showDialog(getDesktopWorkbench(),
+                JIPipeDesktopParameterFormPanel.showDialog(getDesktopWorkbench(),
                         ((JIPipeAdaptiveParametersAlgorithm) node).getAdaptiveParameterSettings(),
                         MarkdownText.fromPluginResource("documentation/adaptive-parameters.md", Collections.emptyMap()),
                         "Configure external parameters",
-                        JIPipeDesktopParameterPanel.DEFAULT_DIALOG_FLAGS);
+                        JIPipeDesktopParameterFormPanel.DEFAULT_DIALOG_FLAGS);
                 node.getParameterUIChangedEventEmitter().emit(new JIPipeParameterCollection.ParameterUIChangedEvent(node));
             }));
 

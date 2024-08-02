@@ -23,7 +23,7 @@ import org.hkijena.jipipe.desktop.app.JIPipeDesktopWorkbench;
 import org.hkijena.jipipe.desktop.app.grapheditor.commons.JIPipeDesktopGraphCanvasUI;
 import org.hkijena.jipipe.desktop.app.grapheditor.commons.JIPipeDesktopGraphEditorUI;
 import org.hkijena.jipipe.desktop.app.grapheditor.commons.nodeui.JIPipeDesktopGraphNodeUI;
-import org.hkijena.jipipe.desktop.commons.components.JIPipeDesktopParameterPanel;
+import org.hkijena.jipipe.desktop.commons.components.JIPipeDesktopParameterFormPanel;
 import org.hkijena.jipipe.desktop.commons.components.tabs.JIPipeDesktopTabPane;
 import org.hkijena.jipipe.plugins.parameters.library.markup.MarkdownText;
 import org.hkijena.jipipe.utils.UIUtils;
@@ -46,11 +46,11 @@ public class JIPipeDesktopRuntimePartitionListEditor extends JIPipeDesktopProjec
 
     public static void editRuntimePartition(JIPipeDesktopWorkbench workbench, JIPipeRuntimePartition value) {
         JIPipeRuntimePartition copy = new JIPipeRuntimePartition(value);
-        if (JIPipeDesktopParameterPanel.showDialog(workbench,
+        if (JIPipeDesktopParameterFormPanel.showDialog(workbench,
                 copy,
                 MarkdownText.fromPluginResource("documentation/project-info-runtime-partitions-editor.md"),
                 "Edit runtime partition",
-                JIPipeDesktopParameterPanel.DEFAULT_DIALOG_FLAGS)) {
+                JIPipeDesktopParameterFormPanel.DEFAULT_DIALOG_FLAGS)) {
             value.setTo(copy);
 
             // Go and update existing graph editors

@@ -33,7 +33,7 @@ import org.hkijena.jipipe.api.run.JIPipeRunnable;
 import org.hkijena.jipipe.desktop.app.JIPipeDesktopDummyWorkbench;
 import org.hkijena.jipipe.desktop.app.tableeditor.JIPipeDesktopTableEditor;
 import org.hkijena.jipipe.desktop.commons.components.JIPipeDesktopFormPanel;
-import org.hkijena.jipipe.desktop.commons.components.JIPipeDesktopParameterPanel;
+import org.hkijena.jipipe.desktop.commons.components.JIPipeDesktopParameterFormPanel;
 import org.hkijena.jipipe.desktop.commons.components.icons.SolidJIPipeDesktopColorIcon;
 import org.hkijena.jipipe.desktop.commons.components.ribbon.JIPipeDesktopLargeToggleButtonRibbonAction;
 import org.hkijena.jipipe.desktop.commons.components.ribbon.JIPipeDesktopRibbon;
@@ -328,7 +328,7 @@ public class ROIManagerPlugin3D extends JIPipeImageViewerPlugin3D implements JIP
     private void openMeasurementSettings() {
         JDialog dialog = new JDialog(SwingUtilities.getWindowAncestor(getViewerPanel()));
         dialog.setTitle("Measurement settings");
-        dialog.setContentPane(new JIPipeDesktopParameterPanel(new JIPipeDesktopDummyWorkbench(), Measurement3DSettings.INSTANCE, null, JIPipeDesktopFormPanel.WITH_SCROLLING));
+        dialog.setContentPane(new JIPipeDesktopParameterFormPanel(new JIPipeDesktopDummyWorkbench(), Measurement3DSettings.INSTANCE, null, JIPipeDesktopFormPanel.WITH_SCROLLING));
         UIUtils.addEscapeListener(dialog);
         dialog.setSize(640, 480);
         dialog.setLocationRelativeTo(getViewerPanel());

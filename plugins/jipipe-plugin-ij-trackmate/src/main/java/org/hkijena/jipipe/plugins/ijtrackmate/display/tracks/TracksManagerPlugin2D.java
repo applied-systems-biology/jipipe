@@ -26,7 +26,7 @@ import org.hkijena.jipipe.api.data.storage.JIPipeZIPWriteDataStorage;
 import org.hkijena.jipipe.api.nodes.JIPipeGraphNodeRunContext;
 import org.hkijena.jipipe.desktop.app.tableeditor.JIPipeDesktopTableEditor;
 import org.hkijena.jipipe.desktop.commons.components.JIPipeDesktopFormPanel;
-import org.hkijena.jipipe.desktop.commons.components.JIPipeDesktopParameterPanel;
+import org.hkijena.jipipe.desktop.commons.components.JIPipeDesktopParameterFormPanel;
 import org.hkijena.jipipe.desktop.commons.components.ribbon.JIPipeDesktopLargeButtonRibbonAction;
 import org.hkijena.jipipe.desktop.commons.components.ribbon.JIPipeDesktopRibbon;
 import org.hkijena.jipipe.desktop.commons.components.ribbon.JIPipeDesktopSmallButtonRibbonAction;
@@ -289,7 +289,7 @@ public class TracksManagerPlugin2D extends JIPipeImageViewerPlugin2D {
     }
 
     private void openDrawingSettings() {
-        JIPipeDesktopParameterPanel.showDialog(getDesktopWorkbench(), getViewerPanel(), trackDrawer, new MarkdownText("# Track display settings\n\nPlease use the settings on the left to modify how tracks are visualized."), "Track display settings", JIPipeDesktopParameterPanel.DEFAULT_DIALOG_FLAGS);
+        JIPipeDesktopParameterFormPanel.showDialog(getDesktopWorkbench(), getViewerPanel(), trackDrawer, new MarkdownText("# Track display settings\n\nPlease use the settings on the left to modify how tracks are visualized."), "Track display settings", JIPipeDesktopParameterFormPanel.DEFAULT_DIALOG_FLAGS);
         uploadSliceToCanvas();
     }
 

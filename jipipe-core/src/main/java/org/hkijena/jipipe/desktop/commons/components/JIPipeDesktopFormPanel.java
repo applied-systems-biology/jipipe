@@ -93,10 +93,8 @@ public class JIPipeDesktopFormPanel extends JPanel {
 
     private static final int COLUMN_LABELLED_CONTENT = 1;
 
-    private final HoverHelpEventEmitter hoverHelpEventEmitter = new HoverHelpEventEmitter();
+    private final ContextHelpEventEmitter contextHelpEventEmitter = new ContextHelpEventEmitter();
     private final FormPanelContentPanel contentPanel = new FormPanelContentPanel();
-    private final JIPipeDesktopMarkdownReader parameterHelp;
-    private final JLabel parameterHelpDrillDown = new JLabel();
     private final boolean withDocumentation;
     private final boolean documentationHasUI;
     private final List<GroupHeaderPanel> groupHeaderPanels = new ArrayList<>();
@@ -105,12 +103,13 @@ public class JIPipeDesktopFormPanel extends JPanel {
     private int numRows = 0;
     private JScrollPane scrollPane;
     private boolean hasVerticalGlue;
+    private JIPipeDesktopFormHelpPanel helpPanel = new JIPipeDesktopFormHelpPanel();
 
     private JIPipeDesktopFormPanel redirectDocumentationTarget;
 
     private JIPipeDesktopTabPane documentationTabPane;
 
-    private List<FormPanelEntry> entries = new ArrayList<>();
+    private final List<FormPanelEntry> entries = new ArrayList<>();
 
     public JIPipeDesktopFormPanel(int flags) {
         this(null, flags);
@@ -124,25 +123,9 @@ public class JIPipeDesktopFormPanel extends JPanel {
      */
     public JIPipeDesktopFormPanel(MarkdownText document, int flags) {
         this.flags = flags;
+        this.helpPanel.setDefaultContent(document);
         setLayout(new BorderLayout());
         contentPanel.setLayout(new GridBagLayout());
-
-        JPanel helpPanel = new JPanel(new BorderLayout());
-        parameterHelp = new JIPipeDesktopMarkdownReader(false);
-        parameterHelp.setDocument(document);
-        helpPanel.add(parameterHelp, BorderLayout.CENTER);
-
-        JToolBar helpToolbar = new JToolBar();
-        helpToolbar.setFloatable(false);
-
-        JButton switchToDefaultHelpButton = new JButton(UIUtils.getIconFromResources("actions/go-home.png"));
-        UIUtils.makeButtonFlat25x25(switchToDefaultHelpButton);
-        switchToDefaultHelpButton.addActionListener(e -> switchToDefaultHelp());
-        helpToolbar.add(switchToDefaultHelpButton);
-
-        helpToolbar.add(parameterHelpDrillDown);
-
-        helpPanel.add(helpToolbar, BorderLayout.SOUTH);
 
         boolean opaque = (flags & TRANSPARENT_BACKGROUND) != TRANSPARENT_BACKGROUND;
 //        setScrollableWidthHint(ScrollableSizeHint.FIT);
@@ -218,6 +201,14 @@ public class JIPipeDesktopFormPanel extends JPanel {
         this.redirectDocumentationTarget = redirectDocumentationTarget;
     }
 
+    public JIPipeDesktopFormHelpPanel getHelpPanel() {
+        return helpPanel;
+    }
+
+    public void setHelpPanel(JIPipeDesktopFormHelpPanel helpPanel) {
+        this.helpPanel = helpPanel;
+    }
+
     public boolean isWithDocumentation() {
         return withDocumentation;
     }
@@ -226,15 +217,10 @@ public class JIPipeDesktopFormPanel extends JPanel {
         return hasVerticalGlue;
     }
 
-    public HoverHelpEventEmitter getHoverHelpEventEmitter() {
-        return hoverHelpEventEmitter;
+    public ContextHelpEventEmitter getContextHelpEventEmitter() {
+        return contextHelpEventEmitter;
     }
 
-    private void switchToDefaultHelp() {
-        parameterHelp.setDocument(parameterHelp.getDocument());
-        parameterHelpDrillDown.setIcon(null);
-        parameterHelpDrillDown.setText("");
-    }
 
     @Override
     public void setOpaque(boolean isOpaque) {
@@ -247,25 +233,6 @@ public class JIPipeDesktopFormPanel extends JPanel {
 
     public JScrollPane getScrollPane() {
         return scrollPane;
-    }
-
-    public void updateParameterHelpDrillDown() {
-        MarkdownText current = parameterHelp.getTemporaryDocument();
-        if (current == null) {
-            parameterHelpDrillDown.setIcon(null);
-            parameterHelpDrillDown.setText("");
-            return;
-        }
-        if (StringUtils.orElse(current.getMarkdown(), "").startsWith("#")) {
-            String s = current.getMarkdown().split("\n")[0];
-            s = s.substring(s.lastIndexOf('#') + 1);
-            parameterHelpDrillDown.setIcon(UIUtils.getIconFromResources("actions/caret-right.png"));
-            parameterHelpDrillDown.setText(s);
-        } else {
-            parameterHelpDrillDown.setIcon(UIUtils.getIconFromResources("actions/caret-right.png"));
-            parameterHelpDrillDown.setText("...");
-        }
-
     }
 
     /**
@@ -388,9 +355,8 @@ public class JIPipeDesktopFormPanel extends JPanel {
     public void showDocumentation(MarkdownText documentation) {
         if (redirectDocumentationTarget == null) {
             if (withDocumentation && documentationHasUI) {
-                parameterHelp.setTemporaryDocument(documentation);
-                hoverHelpEventEmitter.emit(new HoverHelpEvent(this, documentation));
-                updateParameterHelpDrillDown();
+                helpPanel.showContent(documentation);
+                contextHelpEventEmitter.emit(new ContextHelpEvent(this, documentation));
             } else {
                 // Just popup the documentation
                 JIPipeDesktopMarkdownReader reader = new JIPipeDesktopMarkdownReader(false, documentation);
@@ -566,10 +532,6 @@ public class JIPipeDesktopFormPanel extends JPanel {
         return Collections.unmodifiableList(entries);
     }
 
-    public JIPipeDesktopMarkdownReader getParameterHelp() {
-        return parameterHelp;
-    }
-
     /**
      * Adds a vertical glue component
      *
@@ -620,8 +582,8 @@ public class JIPipeDesktopFormPanel extends JPanel {
         });
     }
 
-    public interface HoverHelpEventListener {
-        void onFormPanelHoverHelp(HoverHelpEvent event);
+    public interface ContextHelpEventListener {
+        void onFormPanelContextHelp(ContextHelpEvent event);
     }
 
     public static class FormPanelEntry {
@@ -781,7 +743,7 @@ public class JIPipeDesktopFormPanel extends JPanel {
     /**
      * Event triggered when the user triggers a hover-help
      */
-    public static class HoverHelpEvent extends AbstractJIPipeEvent {
+    public static class ContextHelpEvent extends AbstractJIPipeEvent {
         private final JIPipeDesktopFormPanel formPanel;
         private final MarkdownText document;
 
@@ -790,7 +752,7 @@ public class JIPipeDesktopFormPanel extends JPanel {
          *
          * @param document the document
          */
-        public HoverHelpEvent(JIPipeDesktopFormPanel formPanel, MarkdownText document) {
+        public ContextHelpEvent(JIPipeDesktopFormPanel formPanel, MarkdownText document) {
             super(formPanel);
             this.formPanel = formPanel;
             this.document = document;
@@ -805,11 +767,11 @@ public class JIPipeDesktopFormPanel extends JPanel {
         }
     }
 
-    public static class HoverHelpEventEmitter extends JIPipeEventEmitter<HoverHelpEvent, HoverHelpEventListener> {
+    public static class ContextHelpEventEmitter extends JIPipeEventEmitter<ContextHelpEvent, ContextHelpEventListener> {
 
         @Override
-        protected void call(HoverHelpEventListener hoverHelpEventListener, HoverHelpEvent event) {
-            hoverHelpEventListener.onFormPanelHoverHelp(event);
+        protected void call(ContextHelpEventListener hoverHelpEventListener, ContextHelpEvent event) {
+            hoverHelpEventListener.onFormPanelContextHelp(event);
         }
     }
 }

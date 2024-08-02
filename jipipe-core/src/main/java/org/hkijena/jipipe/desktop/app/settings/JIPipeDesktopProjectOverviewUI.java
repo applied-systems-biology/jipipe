@@ -22,7 +22,7 @@ import org.hkijena.jipipe.desktop.app.bookmarks.JIPipeDesktopBookmarkListPanel;
 import org.hkijena.jipipe.desktop.app.parameterreference.JIPipeDesktopGraphNodeParameterReferenceGroupCollectionEditorUI;
 import org.hkijena.jipipe.desktop.commons.components.JIPipeDesktopFormPanel;
 import org.hkijena.jipipe.desktop.commons.components.JIPipeDesktopImageFrameComponent;
-import org.hkijena.jipipe.desktop.commons.components.JIPipeDesktopParameterPanel;
+import org.hkijena.jipipe.desktop.commons.components.JIPipeDesktopParameterFormPanel;
 import org.hkijena.jipipe.desktop.commons.components.markup.JIPipeDesktopHTMLEditorKit;
 import org.hkijena.jipipe.desktop.commons.components.markup.JIPipeDesktopMarkdownReader;
 import org.hkijena.jipipe.desktop.commons.components.tabs.JIPipeDesktopTabPane;
@@ -49,8 +49,8 @@ public class JIPipeDesktopProjectOverviewUI extends JIPipeDesktopProjectWorkbenc
 
     private final JIPipeDesktopProjectSettingsComponents projectSettingsComponents;
     private final JPanel runtimePartitionsPanel;
-    private final JIPipeDesktopParameterPanel userParametersPanel;
-    private final JIPipeDesktopParameterPanel userDirectoriesPanel;
+    private final JIPipeDesktopParameterFormPanel userParametersPanel;
+    private final JIPipeDesktopParameterFormPanel userDirectoriesPanel;
 
     private JTextField licenseInfo;
     private JTextField projectName;
@@ -82,18 +82,18 @@ public class JIPipeDesktopProjectOverviewUI extends JIPipeDesktopProjectWorkbenc
         // Project settings
         projectSettingsComponents = new JIPipeDesktopProjectSettingsComponents(getProject(), workbench);
 
-        userParametersPanel = new JIPipeDesktopParameterPanel(getDesktopWorkbench(),
+        userParametersPanel = new JIPipeDesktopParameterFormPanel(getDesktopWorkbench(),
                 getProject().getPipelineParameters(),
                 MarkdownText.fromPluginResource("documentation/project-info-parameters.md", new HashMap<>()),
-                JIPipeDesktopParameterPanel.WITH_SEARCH_BAR | JIPipeDesktopParameterPanel.WITH_SCROLLING
-                        | JIPipeDesktopParameterPanel.NO_EMPTY_GROUP_HEADERS | JIPipeDesktopParameterPanel.WITH_DOCUMENTATION |
-                        JIPipeDesktopParameterPanel.DOCUMENTATION_BELOW);
-        userDirectoriesPanel = new JIPipeDesktopParameterPanel(getDesktopWorkbench(),
+                JIPipeDesktopParameterFormPanel.WITH_SEARCH_BAR | JIPipeDesktopParameterFormPanel.WITH_SCROLLING
+                        | JIPipeDesktopParameterFormPanel.NO_EMPTY_GROUP_HEADERS | JIPipeDesktopParameterFormPanel.WITH_DOCUMENTATION |
+                        JIPipeDesktopParameterFormPanel.DOCUMENTATION_BELOW);
+        userDirectoriesPanel = new JIPipeDesktopParameterFormPanel(getDesktopWorkbench(),
                 getProject().getMetadata().getDirectories(),
                 MarkdownText.fromPluginResource("documentation/project-info-directories.md", new HashMap<>()),
-                JIPipeDesktopParameterPanel.WITH_SEARCH_BAR | JIPipeDesktopParameterPanel.WITH_SCROLLING
-                        | JIPipeDesktopParameterPanel.NO_EMPTY_GROUP_HEADERS | JIPipeDesktopParameterPanel.WITH_DOCUMENTATION |
-                        JIPipeDesktopParameterPanel.DOCUMENTATION_BELOW);
+                JIPipeDesktopParameterFormPanel.WITH_SEARCH_BAR | JIPipeDesktopParameterFormPanel.WITH_SCROLLING
+                        | JIPipeDesktopParameterFormPanel.NO_EMPTY_GROUP_HEADERS | JIPipeDesktopParameterFormPanel.WITH_DOCUMENTATION |
+                        JIPipeDesktopParameterFormPanel.DOCUMENTATION_BELOW);
         runtimePartitionsPanel = new JPanel(new BorderLayout());
 
         initialize();

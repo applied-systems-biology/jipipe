@@ -24,7 +24,7 @@ import org.hkijena.jipipe.api.parameters.JIPipeParameter;
 import org.hkijena.jipipe.desktop.app.JIPipeDesktopDummyWorkbench;
 import org.hkijena.jipipe.desktop.app.tableeditor.JIPipeDesktopTableEditor;
 import org.hkijena.jipipe.desktop.commons.components.JIPipeDesktopFormPanel;
-import org.hkijena.jipipe.desktop.commons.components.JIPipeDesktopParameterPanel;
+import org.hkijena.jipipe.desktop.commons.components.JIPipeDesktopParameterFormPanel;
 import org.hkijena.jipipe.desktop.commons.components.ribbon.JIPipeDesktopLargeButtonRibbonAction;
 import org.hkijena.jipipe.desktop.commons.components.ribbon.JIPipeDesktopRibbon;
 import org.hkijena.jipipe.desktop.commons.components.ribbon.JIPipeDesktopSmallButtonRibbonAction;
@@ -80,7 +80,7 @@ public class MeasurementDrawerPlugin2D extends MaskDrawerPlugin2D implements Mas
     private void showSettings() {
         JDialog dialog = new JDialog(SwingUtilities.getWindowAncestor(getViewerPanel()));
         dialog.setTitle("Measurement settings");
-        dialog.setContentPane(new JIPipeDesktopParameterPanel(new JIPipeDesktopDummyWorkbench(), SETTINGS, null, JIPipeDesktopFormPanel.WITH_SCROLLING));
+        dialog.setContentPane(new JIPipeDesktopParameterFormPanel(new JIPipeDesktopDummyWorkbench(), SETTINGS, null, JIPipeDesktopFormPanel.WITH_SCROLLING));
         UIUtils.addEscapeListener(dialog);
         dialog.setSize(640, 480);
         dialog.setLocationRelativeTo(getViewerPanel());

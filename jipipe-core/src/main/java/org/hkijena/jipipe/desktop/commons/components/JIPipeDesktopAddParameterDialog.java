@@ -105,7 +105,7 @@ public class JIPipeDesktopAddParameterDialog extends JIPipeDesktopWorkbenchPanel
         // Create form located at the bottom
         final MarkdownText documentation = new MarkdownText("# Creating parameters\n\n" +
                 "Please select the parameter type on the left-hand list and at least provide a unique identifier. Optionally, you can also input a name and a description.");
-        JIPipeDesktopParameterPanel parameterPanel = new JIPipeDesktopParameterPanel(getDesktopWorkbench(), currentSettings, documentation, JIPipeDesktopFormPanel.WITH_SCROLLING | JIPipeDesktopFormPanel.WITH_DOCUMENTATION | JIPipeDesktopFormPanel.DOCUMENTATION_BELOW);
+        JIPipeDesktopParameterFormPanel parameterPanel = new JIPipeDesktopParameterFormPanel(getDesktopWorkbench(), currentSettings, documentation, JIPipeDesktopFormPanel.WITH_SCROLLING | JIPipeDesktopFormPanel.WITH_DOCUMENTATION | JIPipeDesktopFormPanel.DOCUMENTATION_BELOW);
         splitPane.setRightComponent(parameterPanel);
 
     }

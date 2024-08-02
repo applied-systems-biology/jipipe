@@ -28,7 +28,7 @@ import org.hkijena.jipipe.desktop.app.grapheditor.pipeline.properties.JIPipeDesk
 import org.hkijena.jipipe.desktop.app.history.JIPipeDesktopHistoryJournalUI;
 import org.hkijena.jipipe.desktop.app.quickrun.JIPipeDesktopQuickRunSettings;
 import org.hkijena.jipipe.desktop.app.running.JIPipeDesktopRunnableQueuePanelUI;
-import org.hkijena.jipipe.desktop.commons.components.JIPipeDesktopParameterPanel;
+import org.hkijena.jipipe.desktop.commons.components.JIPipeDesktopParameterFormPanel;
 import org.hkijena.jipipe.desktop.commons.components.tabs.JIPipeDesktopTabPane;
 import org.hkijena.jipipe.plugins.parameters.library.markup.MarkdownText;
 import org.hkijena.jipipe.utils.UIUtils;
@@ -69,10 +69,10 @@ public class JIPipeDesktopSingleCompartmentSelectionPanelUI extends JIPipeDeskto
     private void initialize() {
         setLayout(new BorderLayout());
 
-        JIPipeDesktopParameterPanel parametersUI = new JIPipeDesktopParameterPanel(getDesktopProjectWorkbench(),
+        JIPipeDesktopParameterFormPanel parametersUI = new JIPipeDesktopParameterFormPanel(getDesktopProjectWorkbench(),
                 compartment,
                 MarkdownText.fromPluginResource("documentation/compartment-graph.md", new HashMap<>()),
-                JIPipeDesktopParameterPanel.WITH_DOCUMENTATION | JIPipeDesktopParameterPanel.DOCUMENTATION_BELOW | JIPipeDesktopParameterPanel.WITH_SCROLLING);
+                JIPipeDesktopParameterFormPanel.WITH_DOCUMENTATION | JIPipeDesktopParameterFormPanel.DOCUMENTATION_BELOW | JIPipeDesktopParameterFormPanel.WITH_SCROLLING);
 
         tabbedPane.registerSingletonTab("OVERVIEW", "Overview", UIUtils.getIcon32FromResources("actions/view-list-details.png"),
                 () -> new JIPipeDesktopSingleCompartmentSelectionOverviewPanelUI(this), JIPipeDesktopTabPane.CloseMode.withoutCloseButton, JIPipeDesktopTabPane.SingletonTabMode.Present);

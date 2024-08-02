@@ -19,7 +19,7 @@ import org.hkijena.jipipe.desktop.api.JIPipeMenuExtensionTarget;
 import org.hkijena.jipipe.desktop.app.JIPipeDesktopProjectWorkbench;
 import org.hkijena.jipipe.desktop.app.JIPipeDesktopWorkbench;
 import org.hkijena.jipipe.desktop.app.running.JIPipeDesktopRunExecuteUI;
-import org.hkijena.jipipe.desktop.commons.components.JIPipeDesktopParameterPanel;
+import org.hkijena.jipipe.desktop.commons.components.JIPipeDesktopParameterFormPanel;
 import org.hkijena.jipipe.plugins.parameters.library.markup.MarkdownText;
 import org.hkijena.jipipe.plugins.settings.JIPipeFileChooserApplicationSettings;
 import org.hkijena.jipipe.utils.UIUtils;
@@ -50,11 +50,11 @@ public class PipelineRenderTool extends JIPipeDesktopMenuExtension {
                 "Please check if you organized your compartments as compact as possible, to minimize computational load of generating a full resolution pipeline.");
         RenderPipelineRunSettings settings = LAST_SETTINGS;
 
-        if (JIPipeDesktopParameterPanel.showDialog(getDesktopWorkbench(),
+        if (JIPipeDesktopParameterFormPanel.showDialog(getDesktopWorkbench(),
                 settings,
                 document,
                 getText(),
-                JIPipeDesktopParameterPanel.WITH_SEARCH_BAR | JIPipeDesktopParameterPanel.WITH_SCROLLING | JIPipeDesktopParameterPanel.WITH_DOCUMENTATION)) {
+                JIPipeDesktopParameterFormPanel.WITH_SEARCH_BAR | JIPipeDesktopParameterFormPanel.WITH_SCROLLING | JIPipeDesktopParameterFormPanel.WITH_DOCUMENTATION)) {
             Path path = JIPipeFileChooserApplicationSettings.saveFile(getDesktopWorkbench().getWindow(), JIPipeFileChooserApplicationSettings.LastDirectoryKey.External, getText(), UIUtils.EXTENSION_FILTER_PNG);
             if (path != null) {
                 JIPipeDesktopRunExecuteUI.runInDialog(getDesktopWorkbench(), getDesktopWorkbench().getWindow(), new RenderPipelineRun(project, path, settings));

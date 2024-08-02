@@ -17,7 +17,7 @@ import org.hkijena.jipipe.api.parameters.JIPipeDummyParameterCollection;
 import org.hkijena.jipipe.api.parameters.JIPipeManualParameterAccess;
 import org.hkijena.jipipe.api.parameters.JIPipeParameterCollection;
 import org.hkijena.jipipe.desktop.api.JIPipeDesktopParameterEditorUI;
-import org.hkijena.jipipe.desktop.commons.components.JIPipeDesktopParameterPanel;
+import org.hkijena.jipipe.desktop.commons.components.JIPipeDesktopParameterFormPanel;
 import org.hkijena.jipipe.plugins.expressions.JIPipeExpressionVariablesInfo;
 import org.hkijena.jipipe.plugins.expressions.JIPipeExpressionParameter;
 import org.hkijena.jipipe.plugins.expressions.AddJIPipeExpressionParameterVariable;
@@ -37,7 +37,7 @@ public interface JIPipeAdaptiveParametersAlgorithm extends JIPipeParameterCollec
     JIPipeAdaptiveParameterSettings getAdaptiveParameterSettings();
 
     @Override
-    default void installUIParameterOptions(JIPipeDesktopParameterPanel parameterPanel, JIPipeDesktopParameterEditorUI parameterEditorUI, JPopupMenu menu) {
+    default void installUIParameterOptions(JIPipeDesktopParameterFormPanel parameterPanel, JIPipeDesktopParameterEditorUI parameterEditorUI, JPopupMenu menu) {
         JIPipeParameterCollection.super.installUIParameterOptions(parameterPanel, parameterEditorUI, menu);
 
         if (getAdaptiveParameterSettings().isEnabled()) {
@@ -64,7 +64,7 @@ public interface JIPipeAdaptiveParametersAlgorithm extends JIPipeParameterCollec
     }
 
     @Override
-    default JComponent installUIOverrideParameterEditor(JIPipeDesktopParameterPanel parameterPanel, JIPipeDesktopParameterEditorUI parameterEditorUI) {
+    default JComponent installUIOverrideParameterEditor(JIPipeDesktopParameterFormPanel parameterPanel, JIPipeDesktopParameterEditorUI parameterEditorUI) {
 
         if (getAdaptiveParameterSettings().isEnabled()) {
             String key = parameterEditorUI.getParameterAccess().getKey();

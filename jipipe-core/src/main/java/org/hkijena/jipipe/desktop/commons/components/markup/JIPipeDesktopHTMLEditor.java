@@ -21,7 +21,7 @@ import org.hkijena.jipipe.desktop.app.JIPipeDesktopWorkbenchPanel;
 import org.hkijena.jipipe.desktop.commons.components.JIPipeDesktopColorChooserButton;
 import org.hkijena.jipipe.desktop.commons.components.JIPipeDesktopDocumentChangeListener;
 import org.hkijena.jipipe.desktop.commons.components.JIPipeDesktopFormPanel;
-import org.hkijena.jipipe.desktop.commons.components.JIPipeDesktopParameterPanel;
+import org.hkijena.jipipe.desktop.commons.components.JIPipeDesktopParameterFormPanel;
 import org.hkijena.jipipe.desktop.commons.components.icons.OverlayJIPipeDesktopColorIcon;
 import org.hkijena.jipipe.plugins.parameters.library.markup.HTMLText;
 import org.hkijena.jipipe.plugins.settings.JIPipeFileChooserApplicationSettings;
@@ -450,7 +450,7 @@ public class JIPipeDesktopHTMLEditor extends JIPipeDesktopWorkbenchPanel {
         parameterCollection.addParameter("url", String.class, "URL", "The URL");
         parameterCollection.addParameter("text", String.class, "Text", "The link text");
         parameterCollection.setAllowUserModification(false);
-        if (JIPipeDesktopParameterPanel.showDialog(getDesktopWorkbench(), parameterCollection, null, "Insert link", JIPipeDesktopFormPanel.WITH_SCROLLING)) {
+        if (JIPipeDesktopParameterFormPanel.showDialog(getDesktopWorkbench(), parameterCollection, null, "Insert link", JIPipeDesktopFormPanel.WITH_SCROLLING)) {
             try {
                 int caretPosition = wysiwygEditorPane.getCaretPosition();
                 HTMLDocument document = (HTMLDocument) wysiwygEditorPane.getDocument();
