@@ -18,7 +18,6 @@ import org.hkijena.jipipe.api.nodes.JIPipeAlgorithm;
 import org.hkijena.jipipe.api.nodes.JIPipeNodeExample;
 import org.hkijena.jipipe.desktop.app.JIPipeDesktopProjectWorkbench;
 import org.hkijena.jipipe.desktop.app.JIPipeDesktopProjectWorkbenchPanel;
-import org.hkijena.jipipe.desktop.commons.components.tabs.JIPipeDesktopTabPane;
 import org.hkijena.jipipe.plugins.nodeexamples.JIPipeNodeExampleListCellRenderer;
 import org.hkijena.jipipe.plugins.nodetemplate.NodeTemplatesRefreshedEvent;
 import org.hkijena.jipipe.plugins.nodetemplate.NodeTemplatesRefreshedEventListener;
@@ -82,7 +81,7 @@ public class JIPipeDesktopNodeExamplesUI extends JIPipeDesktopProjectWorkbenchPa
         algorithm.loadExample(example);
         getDesktopWorkbench().sendStatusBarText("Loaded example '" + example.getNodeTemplate().getName() + "' into " + algorithm.getDisplayName());
         if (dockPanel != null) {
-            dockPanel.activatePanel("PARAMETERS");
+            dockPanel.activatePanel("PARAMETERS", true);
         }
     }
 

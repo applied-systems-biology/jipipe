@@ -35,20 +35,19 @@ import org.hkijena.jipipe.desktop.app.cache.JIPipeDesktopAlgorithmCacheBrowserUI
 import org.hkijena.jipipe.desktop.app.grapheditor.commons.JIPipeDesktopGraphEditorLogPanel;
 import org.hkijena.jipipe.desktop.app.grapheditor.commons.JIPipeDesktopGraphEditorMinimap;
 import org.hkijena.jipipe.desktop.app.grapheditor.commons.JIPipeDesktopGraphEditorUI;
+import org.hkijena.jipipe.desktop.app.grapheditor.commons.JIPipeGraphEditorRunManager;
 import org.hkijena.jipipe.desktop.app.grapheditor.commons.contextmenu.*;
 import org.hkijena.jipipe.desktop.app.grapheditor.commons.nodeui.JIPipeDesktopGraphNodeUI;
 import org.hkijena.jipipe.desktop.app.grapheditor.commons.properties.JIPipeDesktopGraphNodeSlotEditorUI;
 import org.hkijena.jipipe.desktop.app.grapheditor.compartments.contextmenu.clipboard.clipboard.*;
 import org.hkijena.jipipe.desktop.app.grapheditor.groups.JIPipeDesktopNodeGroupUI;
+import org.hkijena.jipipe.desktop.app.grapheditor.pipeline.actions.JIPipeDesktopRunAndShowResultsAction;
 import org.hkijena.jipipe.desktop.app.grapheditor.pipeline.actions.JIPipeDesktopUpdateCacheAction;
 import org.hkijena.jipipe.desktop.app.grapheditor.pipeline.dragdrop.JIPipeCreateNodesFromDraggedDataDragAndDropBehavior;
-import org.hkijena.jipipe.desktop.app.grapheditor.pipeline.properties.JIPipeDesktopNodeExamplesUI;
 import org.hkijena.jipipe.desktop.app.grapheditor.pipeline.properties.JIPipeDesktopPipelineParametersPanel;
 import org.hkijena.jipipe.desktop.app.history.JIPipeDesktopHistoryJournalUI;
-import org.hkijena.jipipe.desktop.app.running.JIPipeDesktopRunnableQueuePanelUI;
 import org.hkijena.jipipe.desktop.commons.components.JIPipeDesktopParameterFormPanel;
 import org.hkijena.jipipe.desktop.commons.components.markup.JIPipeDesktopMarkdownReader;
-import org.hkijena.jipipe.desktop.commons.components.tabs.JIPipeDesktopTabPane;
 import org.hkijena.jipipe.plugins.nodetemplate.NodeTemplateMenu;
 import org.hkijena.jipipe.plugins.nodetoolboxtool.NodeToolBox;
 import org.hkijena.jipipe.plugins.parameters.library.markup.MarkdownText;
@@ -437,7 +436,7 @@ public class JIPipePipelineGraphEditorUI extends JIPipeDesktopGraphEditorUI {
                 getCanvasUI(),
                 node);
         parametersPanel.getParametersUI().getContextHelpEventEmitter().subscribeLambda((source, event) -> {
-            getDockPanel().activatePanel("_HELP");
+            getDockPanel().activatePanel("_HELP", true);
         });
         getDockPanel().addDockPanel("_PARAMETERS",
                 "Parameters",
@@ -480,16 +479,16 @@ public class JIPipePipelineGraphEditorUI extends JIPipeDesktopGraphEditorUI {
                         new JIPipeDesktopParameterFormPanel(getDesktopWorkbench(), ((JIPipeIterationStepAlgorithm) node).getGenerationSettingsInterface(),
                                 null, JIPipeDesktopParameterFormPanel.WITH_SEARCH_BAR | JIPipeDesktopParameterFormPanel.WITH_SCROLLING));
             }
-            if(getDesktopWorkbench() instanceof JIPipeDesktopProjectWorkbench) {
-                getDockPanel().addDockPanel("CACHE_BROWSER",
-                        "Results",
-                        UIUtils.getIcon32FromResources("actions/network-server-database.png"),
-                        JIPipeDesktopDockPanel.PanelLocation.TopRight,
-                        false,
-                        () -> new JIPipeDesktopAlgorithmCacheBrowserUI((JIPipeDesktopProjectWorkbench) getDesktopWorkbench(),
-                                node,
-                                getCanvasUI()));
-            }
+        }
+        if(getDesktopWorkbench() instanceof JIPipeDesktopProjectWorkbench) {
+            getDockPanel().addDockPanel("_RESULTS",
+                    "Results",
+                    UIUtils.getIcon32FromResources("actions/network-server-database.png"),
+                    JIPipeDesktopDockPanel.PanelLocation.TopRight,
+                    false,
+                    () -> new JIPipeDesktopAlgorithmCacheBrowserUI((JIPipeDesktopProjectWorkbench) getDesktopWorkbench(),
+                            node,
+                            getCanvasUI()));
         }
 //        if (getDesktopWorkbench() instanceof JIPipeDesktopProjectWorkbench && node instanceof JIPipeAlgorithm &&
 //                !getDesktopWorkbench().getProject().getNodeExamples(node.getInfo().getId()).isEmpty()) {
@@ -555,6 +554,20 @@ public class JIPipePipelineGraphEditorUI extends JIPipeDesktopGraphEditorUI {
      */
     @Override
     public void onNodeUIActionRequested(JIPipeDesktopGraphNodeUI.NodeUIActionRequestedEvent event) {
+        if (event.getAction() instanceof JIPipeDesktopRunAndShowResultsAction) {
+            selectOnly(event.getUi());
+            JIPipeGraphEditorRunManager runManager = new JIPipeGraphEditorRunManager(getWorkbench().getProject(), getCanvasUI(), event.getUi(), getDockPanel());
+            runManager.run(true,
+                    ((JIPipeDesktopRunAndShowResultsAction) event.getAction()).isStoreIntermediateResults(),
+                    false);
+        } else if (event.getAction() instanceof JIPipeDesktopUpdateCacheAction) {
+            selectOnly(event.getUi());
+            JIPipeGraphEditorRunManager runManager = new JIPipeGraphEditorRunManager(getWorkbench().getProject(), getCanvasUI(), event.getUi(), getDockPanel());
+            runManager.run(false,
+                    ((JIPipeDesktopUpdateCacheAction) event.getAction()).isStoreIntermediateResults(),
+                    ((JIPipeDesktopUpdateCacheAction) event.getAction()).isOnlyPredecessors());
+        }
+
 //        if (event.getAction() instanceof JIPipeDesktopRunAndShowResultsAction) {
 //            disableUpdateOnSelection = true;
 //            selectOnly(event.getUi());

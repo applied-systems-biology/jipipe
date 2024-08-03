@@ -1,5 +1,7 @@
 package org.hkijena.jipipe.utils.ui;
 
+import com.fasterxml.jackson.annotation.JsonGetter;
+import com.fasterxml.jackson.annotation.JsonSetter;
 import com.google.common.collect.ImmutableList;
 import org.hkijena.jipipe.desktop.commons.components.JIPipeDesktopVerticalToolBar;
 import org.hkijena.jipipe.utils.JIPipeDesktopSplitPane;
@@ -42,6 +44,7 @@ public class JIPipeDesktopDockPanel extends JPanel {
     private boolean floatingRight = false;
     private final JIPipeDesktopSplitPane leftSplitPane = new JIPipeDesktopSplitPane(JSplitPane.VERTICAL_SPLIT, new JIPipeDesktopSplitPane.FixedRatio(0.33, true));
     private final JIPipeDesktopSplitPane rightSplitPane = new JIPipeDesktopSplitPane(JSplitPane.VERTICAL_SPLIT, new JIPipeDesktopSplitPane.FixedRatio(0.66, true));
+    private State savedState = new State();
 
     public JIPipeDesktopDockPanel() {
         super(new BorderLayout());
@@ -294,10 +297,10 @@ public class JIPipeDesktopDockPanel extends JPanel {
         button.setToolTipText(panel.getName());
         button.addActionListener(e -> {
             if(button.isSelected()) {
-                activatePanel(panel);
+                activatePanel(panel, true);
             }
             else {
-                deactivatePanel(panel);
+                deactivatePanel(panel, true);
             }
         });
         JPopupMenu popupMenu = UIUtils.addRightClickPopupMenuToButton(button);
@@ -318,31 +321,45 @@ public class JIPipeDesktopDockPanel extends JPanel {
         return button;
     }
 
-    public void deactivatePanel(Panel panel) {
+    public void deactivatePanel(Panel panel, boolean saveState) {
         panel.setVisible(false);
         updateContent();
         updateSizes();
         updateToolbars();
+        if(saveState) {
+            saveState();
+        }
     }
 
-    private void activatePanel(Panel panel) {
+    private void saveState() {
+        savedState = getCurrentState();
+    }
+
+    private void activatePanel(Panel panel, boolean saveState) {
         if(panel.getComponent() == null && panel.getComponentSupplier() != null) {
             panel.setComponent(panel.getComponentSupplier().get());
             panel.setComponentSupplier(null);
         }
 
         // Deactivate all other buttons
+        setPanelVisible(panel);
+
+        updateContent();
+        updateSizes();
+        updateToolbars();
+        if(saveState) {
+            saveState();
+        }
+    }
+
+    private void setPanelVisible(Panel panel) {
         for (Panel otherPanel : getPanelsAtLocation(panel.getLocation())) {
             if(otherPanel != panel) {
                 otherPanel.setVisible(false);
                 floatingPanelToggles.get(otherPanel.getId()).setSelected(false);
             }
         }
-
         panel.setVisible(true);
-        updateContent();
-        updateSizes();
-        updateToolbars();
     }
 
     public boolean isFloatingLeft() {
@@ -413,6 +430,7 @@ public class JIPipeDesktopDockPanel extends JPanel {
     }
 
     public void addDockPanel(String id, String name, Icon icon, PanelLocation location, boolean visible, JComponent component) {
+        visible = tryRestoreVisibilityState(savedState, id, visible);
         removeDockPanel(id);
 
         Panel panel = new Panel(id);
@@ -420,48 +438,69 @@ public class JIPipeDesktopDockPanel extends JPanel {
         panel.setComponent(component);
         panel.setIcon(icon);
         panel.setName(name);
+        floatingPanels.put(id, panel);
 
         if(visible) {
-            String visiblePanelId = getCurrentlyVisiblePanelId(location, true);
-            if(visiblePanelId != null && !id.equals(visiblePanelId)) {
-                floatingPanels.get(visiblePanelId).setVisible(false);
-            }
-            panel.setVisible(true);
+           activatePanel(panel, false);
         }
+        else {
+            updateToolbars();
+        }
+    }
 
-        floatingPanels.put(id, panel);
-        updateToolbars();
-        updateContent();
-        updateSizes();
+    private boolean tryRestoreVisibilityState(State state, String id, boolean defaultValue) {
+        return state.getVisibilities().getOrDefault(id, defaultValue);
     }
 
     public void addDockPanel(String id, String name, Icon icon, PanelLocation location, boolean visible, Supplier<JComponent> component) {
+        visible = tryRestoreVisibilityState(savedState, id, visible);
         removeDockPanel(id);
+
 
         Panel panel = new Panel(id);
         panel.setLocation(location);
         panel.setComponentSupplier(component);
         panel.setIcon(icon);
         panel.setName(name);
+        floatingPanels.put(id, panel);
 
         if(visible) {
-            String visiblePanelId = getCurrentlyVisiblePanelId(location, true);
-            if(visiblePanelId != null && !id.equals(visiblePanelId)) {
-                floatingPanels.get(visiblePanelId).setVisible(false);
-            }
-            panel.setVisible(true);
+            activatePanel(panel, false);
         }
-
-        floatingPanels.put(id, panel);
-        updateToolbars();
-        updateContent();
-        updateSizes();
+        else {
+            updateToolbars();
+        }
     }
 
-    public void activatePanel(String id) {
+    public void restoreState(State state) {
+        for (Panel panel : floatingPanels.values()) {
+            boolean visible = state.getVisibilities().getOrDefault(panel.getId(), panel.isVisible());
+            if(visible) {
+                setPanelVisible(panel);
+            }
+            else {
+                panel.setVisible(false);
+            }
+        }
+        updateToolbars();
+        updateSizes();
+        updateContent();
+    }
+
+    public void activatePanel(String id, boolean saveState) {
         Panel panel = floatingPanels.get(id);
         if(panel != null) {
-            activatePanel(panel);
+            activatePanel(panel, saveState);
+        }
+    }
+
+    public <T extends JComponent> T getPanel(String id, Class<T> klass) {
+        Panel panel = floatingPanels.getOrDefault(id, null);
+        if(panel != null) {
+            return (T) panel.getComponent();
+        }
+        else {
+            return null;
         }
     }
 
@@ -536,6 +575,28 @@ public class JIPipeDesktopDockPanel extends JPanel {
             updateToolbars();
             updateContent();
             updateSizes();
+        }
+    }
+
+    public State getCurrentState() {
+        State state = new State();
+        for (Panel panel : floatingPanels.values()) {
+            state.visibilities.put(panel.getId(), panel.isVisible());
+        }
+        return state;
+    }
+
+    public static class State {
+        private Map<String, Boolean> visibilities = new HashMap<>();
+
+        @JsonGetter("visibilities")
+        public Map<String, Boolean> getVisibilities() {
+            return visibilities;
+        }
+
+        @JsonSetter("visibilities")
+        public void setVisibilities(Map<String, Boolean> visibilities) {
+            this.visibilities = visibilities;
         }
     }
 
