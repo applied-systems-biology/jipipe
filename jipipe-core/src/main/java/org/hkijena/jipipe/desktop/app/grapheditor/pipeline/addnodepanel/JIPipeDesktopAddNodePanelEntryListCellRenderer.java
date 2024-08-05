@@ -35,11 +35,13 @@ public class JIPipeDesktopAddNodePanelEntryListCellRenderer extends JPanel imple
     private JLabel nodeIcon;
     private JLabel nameLabel;
     private JLabel pathLabel;
+    private final JScrollPane scrollPane;
 
     /**
      * Creates a new renderer
      */
-    public JIPipeDesktopAddNodePanelEntryListCellRenderer() {
+    public JIPipeDesktopAddNodePanelEntryListCellRenderer(JScrollPane scrollPane) {
+        this.scrollPane = scrollPane;
         setOpaque(true);
         setBorder(BorderFactory.createCompoundBorder(UIUtils.createEmptyBorder(4),
                 UIUtils.createControlBorder()));
@@ -85,6 +87,10 @@ public class JIPipeDesktopAddNodePanelEntryListCellRenderer extends JPanel imple
     @Override
     public Component getListCellRendererComponent(JList<? extends JIPipeNodeDatabaseEntry> list, JIPipeNodeDatabaseEntry obj, int index, boolean isSelected, boolean cellHasFocus) {
 
+        int availableWidth = scrollPane.getWidth() - list.getInsets().left - list.getInsets().right;
+        setMinimumSize(new Dimension(availableWidth, 16));
+        setMaximumSize(new Dimension(availableWidth, 50));
+        setPreferredSize(new Dimension(availableWidth, 50));
         setFont(list.getFont());
 
         if (obj != null) {
@@ -104,7 +110,7 @@ public class JIPipeDesktopAddNodePanelEntryListCellRenderer extends JPanel imple
 
     private void setTruncatedText(JLabel label, String text, JList<? extends JIPipeNodeDatabaseEntry> list) {
         FontMetrics fm = label.getFontMetrics(label.getFont());
-        int availableWidth = list.getWidth() - list.getInsets().left - list.getInsets().right;
+        int availableWidth = scrollPane.getWidth() - list.getInsets().left - list.getInsets().right;
         label.setText(StringUtils.limitWithEllipsis(text, availableWidth, fm));
     }
 }
