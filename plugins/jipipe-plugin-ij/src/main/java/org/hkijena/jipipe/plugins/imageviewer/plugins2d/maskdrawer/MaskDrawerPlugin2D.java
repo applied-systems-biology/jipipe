@@ -33,7 +33,7 @@ import org.hkijena.jipipe.desktop.app.JIPipeDesktopDummyWorkbench;
 import org.hkijena.jipipe.desktop.commons.components.JIPipeDesktopColorChooserButton;
 import org.hkijena.jipipe.desktop.commons.components.JIPipeDesktopFormPanel;
 import org.hkijena.jipipe.desktop.commons.components.JIPipeDesktopParameterFormPanel;
-import org.hkijena.jipipe.desktop.commons.components.icons.SolidJIPipeDesktopColorIcon;
+import org.hkijena.jipipe.desktop.commons.components.icons.SolidColorIcon;
 import org.hkijena.jipipe.desktop.commons.components.ribbon.*;
 import org.hkijena.jipipe.plugins.imagejdatatypes.datatypes.ROI2DListData;
 import org.hkijena.jipipe.plugins.imagejdatatypes.util.ImageJUtils;
@@ -159,7 +159,7 @@ public class MaskDrawerPlugin2D extends JIPipeImageViewerPlugin2D implements Ima
                 colorButtonGroup,
                 "255",
                 "Sets the currently drawn color to foreground (255)",
-                new SolidJIPipeDesktopColorIcon(16, 16, Color.WHITE, Color.DARK_GRAY),
+                new SolidColorIcon(16, 16, Color.WHITE, Color.DARK_GRAY),
                 this::getCurrentColor,
                 this::setCurrentColor);
         addSelectionButton(MaskColor.Background,
@@ -168,7 +168,7 @@ public class MaskDrawerPlugin2D extends JIPipeImageViewerPlugin2D implements Ima
                 colorButtonGroup,
                 "0",
                 "Sets the currently drawn color to background (0)",
-                new SolidJIPipeDesktopColorIcon(16, 16, Color.BLACK, Color.DARK_GRAY),
+                new SolidColorIcon(16, 16, Color.BLACK, Color.DARK_GRAY),
                 this::getCurrentColor,
                 this::setCurrentColor);
 

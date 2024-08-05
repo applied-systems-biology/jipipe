@@ -16,7 +16,7 @@ package org.hkijena.jipipe.desktop.app.settings;
 import org.hkijena.jipipe.api.grouping.JIPipeGraphWrapperAlgorithm;
 import org.hkijena.jipipe.api.runtimepartitioning.JIPipeRuntimePartition;
 import org.hkijena.jipipe.api.runtimepartitioning.JIPipeRuntimePartitionConfiguration;
-import org.hkijena.jipipe.desktop.commons.components.icons.SolidJIPipeDesktopColorIcon;
+import org.hkijena.jipipe.desktop.commons.components.icons.SolidColorIcon;
 import org.hkijena.jipipe.utils.StringUtils;
 import org.hkijena.jipipe.utils.UIUtils;
 
@@ -26,7 +26,7 @@ import java.awt.*;
 public class JIPipeDesktopRuntimePartitionListCellRenderer extends JPanel implements ListCellRenderer<JIPipeRuntimePartition> {
 
     private final JIPipeRuntimePartitionConfiguration runtimePartitionList;
-    private final SolidJIPipeDesktopColorIcon colorIcon = new SolidJIPipeDesktopColorIcon(12, 44, Color.BLACK, Color.DARK_GRAY);
+    private final SolidColorIcon colorIcon = new SolidColorIcon(12, 44, Color.BLACK, Color.DARK_GRAY);
     private final JLabel nameLabel = new JLabel();
     private final JPanel indicatorPanel = new JPanel();
 

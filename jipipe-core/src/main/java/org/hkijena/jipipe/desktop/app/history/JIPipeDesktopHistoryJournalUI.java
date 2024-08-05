@@ -48,7 +48,7 @@ public class JIPipeDesktopHistoryJournalUI extends JPanel implements JIPipeHisto
         redoButton.addActionListener(e -> getHistoryJournal().redo(null));
         toolBar.add(redoButton);
 
-        JButton selectButton = new JButton("Go to", UIUtils.getIconFromResources("actions/view-calendar-time-spent.png"));
+        JButton selectButton = new JButton("Go to", UIUtils.getIconFromResources("actions/go-jump.png"));
         selectButton.addActionListener(e -> {
             JIPipeHistoryJournalSnapshot snapshot = snapshotJList.getSelectedValue();
             if (snapshot != null && !(snapshot instanceof JIPipeDesktopCurrentStateSnapshot)) {
@@ -63,7 +63,7 @@ public class JIPipeDesktopHistoryJournalUI extends JPanel implements JIPipeHisto
         clearButton.addActionListener(e -> clearSnapshots());
         toolBar.add(clearButton);
 
-        JButton createSnapshotButton = new JButton("Create snapshot", UIUtils.getIconFromResources("actions/filesave.png"));
+        JButton createSnapshotButton = new JButton("Snapshot", UIUtils.getIconFromResources("actions/filesave.png"));
         createSnapshotButton.addActionListener(e -> createSnapshot());
         toolBar.add(createSnapshotButton);
 

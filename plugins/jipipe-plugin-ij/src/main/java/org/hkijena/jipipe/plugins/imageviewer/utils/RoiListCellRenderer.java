@@ -15,7 +15,7 @@ package org.hkijena.jipipe.plugins.imageviewer.utils;
 
 import ij.gui.Roi;
 import org.apache.commons.math3.util.Precision;
-import org.hkijena.jipipe.desktop.commons.components.icons.SolidJIPipeDesktopColorIcon;
+import org.hkijena.jipipe.desktop.commons.components.icons.SolidColorIcon;
 import org.hkijena.jipipe.utils.StringUtils;
 import org.hkijena.jipipe.utils.UIUtils;
 
@@ -24,7 +24,7 @@ import java.awt.*;
 
 public class RoiListCellRenderer extends JPanel implements ListCellRenderer<Roi> {
 
-    private SolidJIPipeDesktopColorIcon strokeFillPreview = new SolidJIPipeDesktopColorIcon(16, 16);
+    private SolidColorIcon strokeFillPreview = new SolidColorIcon(16, 16);
     private JLabel iconLabel = new JLabel();
     private JLabel nameLabel = new JLabel();
     private JLabel infoLabel = new JLabel();

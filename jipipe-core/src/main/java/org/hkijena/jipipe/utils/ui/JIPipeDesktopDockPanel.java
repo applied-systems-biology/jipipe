@@ -305,16 +305,16 @@ public class JIPipeDesktopDockPanel extends JPanel {
         });
         JPopupMenu popupMenu = UIUtils.addRightClickPopupMenuToButton(button);
         popupMenu.add(UIUtils.createMenuItem("Top left", "Move the panel to the top left anchor", UIUtils.getIconFromResources("actions/dock-top-left.png"), () -> {
-            movePanelToLocation(panel, PanelLocation.TopLeft);
+            movePanelToLocation(panel, PanelLocation.TopLeft, true);
         }));
         popupMenu.add(UIUtils.createMenuItem("Bottom left", "Move the panel to the bottom left anchor", UIUtils.getIconFromResources("actions/dock-bottom-left.png"), () -> {
-            movePanelToLocation(panel, PanelLocation.BottomLeft);
+            movePanelToLocation(panel, PanelLocation.BottomLeft, true);
         }));
         popupMenu.add(UIUtils.createMenuItem("Top right", "Move the panel to the top right anchor", UIUtils.getIconFromResources("actions/dock-top-right.png"), () -> {
-            movePanelToLocation(panel, PanelLocation.TopRight);
+            movePanelToLocation(panel, PanelLocation.TopRight, true);
         }));
         popupMenu.add(UIUtils.createMenuItem("Bottom right", "Move the panel to the bottom right anchor", UIUtils.getIconFromResources("actions/dock-bottom-right.png"), () -> {
-            movePanelToLocation(panel, PanelLocation.BottomRight);
+            movePanelToLocation(panel, PanelLocation.BottomRight, true);
         }));
 
         floatingPanelToggles.put(panel.getId(), button);
@@ -384,24 +384,43 @@ public class JIPipeDesktopDockPanel extends JPanel {
         return floatingPanels.values().stream().filter(panel -> panel.getLocation() == location).collect(Collectors.toList());
     }
 
-    private void movePanelToLocation(Panel panel, PanelLocation newLocation) {
+    public void movePanelToLocation(String id, PanelLocation newLocation, boolean saveState) {
+        movePanelToLocation(floatingPanels.get(id), newLocation, saveState);
+    }
+
+    private void movePanelToLocation(Panel panel, PanelLocation newLocation, boolean saveState) {
         PanelLocation oldLocation = panel.getLocation();
         if(oldLocation != null && !oldLocation.equals(newLocation)) {
 
             if(panel.isDisplayed()) {
-                if(getCurrentlyVisiblePanelId(newLocation, false) == null) {
-                    for (Panel otherPanel : getPanelsAtLocation(newLocation)) {
-                        otherPanel.setVisible(false);
-                        floatingPanelToggles.get(otherPanel.getId()).setSelected(false);
-                    }
-                    panel.setVisible(true);
-                }
+                deactivatePanels(newLocation, false);
             }
 
             panel.setLocation(newLocation);
 
             updateToolbars();
             updateContent();
+            updateSizes();
+
+            if(saveState) {
+                saveState();
+            }
+        }
+    }
+
+    /**
+     * Deactivates all panels at a given location
+     * @param location the location
+     * @param saveState save the state
+     */
+    public void deactivatePanels(PanelLocation location, boolean saveState) {
+        for (Panel panel : getPanelsAtLocation(location)) {
+            if(panel.isDisplayed()) {
+                deactivatePanel(panel, false);
+            }
+        }
+        if(saveState) {
+            saveState();
         }
     }
 

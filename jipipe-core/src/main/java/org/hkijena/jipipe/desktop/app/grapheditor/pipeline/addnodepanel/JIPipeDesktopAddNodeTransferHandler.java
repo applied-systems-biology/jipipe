@@ -11,7 +11,7 @@
  * See the LICENSE file provided with the code for the full license.
  */
 
-package org.hkijena.jipipe.plugins.nodetoolboxtool;
+package org.hkijena.jipipe.desktop.app.grapheditor.pipeline.addnodepanel;
 
 import org.hkijena.jipipe.api.nodes.*;
 import org.hkijena.jipipe.api.nodes.database.CreateNewNodeByExampleDatabaseEntry;
@@ -25,7 +25,7 @@ import java.awt.datatransfer.Transferable;
 import java.awt.datatransfer.UnsupportedFlavorException;
 import java.io.IOException;
 
-public class NodeToolBoxTransferHandler extends TransferHandler {
+public class JIPipeDesktopAddNodeTransferHandler extends TransferHandler {
     @Override
     public int getSourceActions(JComponent c) {
         return COPY;

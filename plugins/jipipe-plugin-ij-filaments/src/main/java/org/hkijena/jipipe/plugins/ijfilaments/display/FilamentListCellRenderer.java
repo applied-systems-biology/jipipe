@@ -13,7 +13,7 @@
 
 package org.hkijena.jipipe.plugins.ijfilaments.display;
 
-import org.hkijena.jipipe.desktop.commons.components.icons.SolidJIPipeDesktopColorIcon;
+import org.hkijena.jipipe.desktop.commons.components.icons.SolidColorIcon;
 import org.hkijena.jipipe.plugins.ijfilaments.datatypes.Filaments3DGraphData;
 import org.hkijena.jipipe.utils.UIUtils;
 
@@ -22,7 +22,7 @@ import java.awt.*;
 
 public class FilamentListCellRenderer extends JPanel implements ListCellRenderer<Filaments3DGraphData> {
 
-    private final SolidJIPipeDesktopColorIcon strokeFillPreview = new SolidJIPipeDesktopColorIcon(16, 16);
+    private final SolidColorIcon strokeFillPreview = new SolidColorIcon(16, 16);
     private final JLabel iconLabel = new JLabel();
     private final JLabel nameLabel = new JLabel();
     private final JLabel infoLabel = new JLabel();

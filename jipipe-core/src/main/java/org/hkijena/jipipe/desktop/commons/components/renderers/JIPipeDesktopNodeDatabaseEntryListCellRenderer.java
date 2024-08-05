@@ -18,7 +18,7 @@ import org.hkijena.jipipe.api.nodes.JIPipeNodeMenuLocation;
 import org.hkijena.jipipe.api.nodes.database.CreateNewNodeByExampleDatabaseEntry;
 import org.hkijena.jipipe.api.nodes.database.CreateNewNodeByInfoDatabaseEntry;
 import org.hkijena.jipipe.api.nodes.database.JIPipeNodeDatabaseEntry;
-import org.hkijena.jipipe.desktop.commons.components.icons.SolidJIPipeDesktopColorIcon;
+import org.hkijena.jipipe.desktop.commons.components.icons.SolidColorIcon;
 import org.hkijena.jipipe.desktop.commons.theme.JIPipeDesktopModernMetalTheme;
 import org.hkijena.jipipe.utils.StringUtils;
 
@@ -31,7 +31,7 @@ import java.util.List;
  */
 public class JIPipeDesktopNodeDatabaseEntryListCellRenderer extends JPanel implements ListCellRenderer<JIPipeNodeDatabaseEntry> {
 
-    private SolidJIPipeDesktopColorIcon nodeColor;
+    private SolidColorIcon nodeColor;
     private JLabel nodeIcon;
     private JLabel nameLabel;
     private JLabel pathLabel;
@@ -49,7 +49,7 @@ public class JIPipeDesktopNodeDatabaseEntryListCellRenderer extends JPanel imple
 
     private void initialize() {
         setLayout(new GridBagLayout());
-        nodeColor = new SolidJIPipeDesktopColorIcon(16, 50);
+        nodeColor = new SolidColorIcon(16, 50);
         nodeIcon = new JLabel();
         nameLabel = new JLabel();
         pathLabel = new JLabel();

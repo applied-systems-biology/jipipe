@@ -48,8 +48,6 @@ import java.util.stream.Collectors;
  */
 public class JIPipeCompartmentsGraphEditorUI extends JIPipeDesktopGraphEditorUI {
 
-    private boolean disableUpdateOnSelection = false;
-
     /**
      * @param workbenchUI The workbench UI
      */
@@ -105,8 +103,8 @@ public class JIPipeCompartmentsGraphEditorUI extends JIPipeDesktopGraphEditorUI 
 
     private void initializeDefaultPanels() {
 
-        getDockPanel().addDockPanel("MINIMAP",
-                "Minimap",
+        getDockPanel().addDockPanel(JIPipeDesktopGraphEditorUI.DOCK_MAP,
+                "Overview map",
                 UIUtils.getIcon32FromResources("actions/zoom.png"),
                 JIPipeDesktopDockPanel.PanelLocation.TopLeft,
                 true,
@@ -117,20 +115,20 @@ public class JIPipeCompartmentsGraphEditorUI extends JIPipeDesktopGraphEditorUI 
                 JIPipeDesktopDockPanel.PanelLocation.BottomLeft,
                 true,
                 new JIPipeDesktopMarkdownReader(false, MarkdownText.fromPluginResource("documentation/compartment-graph.md", new HashMap<>())));
-        getDockPanel().addDockPanel("BOOKMARKS",
+        getDockPanel().addDockPanel(JIPipeDesktopGraphEditorUI.DOCK_BOOKMARKS,
                 "Bookmarks",
                 UIUtils.getIcon32FromResources("actions/bookmarks.png"),
                 JIPipeDesktopDockPanel.PanelLocation.BottomLeft,
                 false,
                 new JIPipeDesktopBookmarkListPanel(getDesktopWorkbench(), getGraph(), this, null));
-        getDockPanel().addDockPanel("HISTORY",
+        getDockPanel().addDockPanel(JIPipeDesktopGraphEditorUI.DOCK_HISTORY,
                 "History",
                 UIUtils.getIcon32FromResources("actions/edit-undo-history.png"),
                 JIPipeDesktopDockPanel.PanelLocation.BottomLeft,
                 false,
                 new JIPipeDesktopHistoryJournalUI(getHistoryJournal()));
-        getDockPanel().addDockPanel("PROGRESS",
-                "Current progress",
+        getDockPanel().addDockPanel(JIPipeDesktopGraphEditorUI.DOCK_LOG,
+                "Log",
                 UIUtils.getIcon32FromResources("actions/rabbitvcs-show_log.png"),
                 JIPipeDesktopDockPanel.PanelLocation.BottomRight,
                 false,

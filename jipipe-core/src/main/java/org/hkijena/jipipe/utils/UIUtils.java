@@ -37,7 +37,7 @@ import org.hkijena.jipipe.desktop.app.JIPipeDesktopWorkbench;
 import org.hkijena.jipipe.desktop.commons.components.JIPipeDesktopFormPanel;
 import org.hkijena.jipipe.desktop.commons.components.JIPipeDesktopUserFriendlyErrorUI;
 import org.hkijena.jipipe.desktop.commons.components.JIPipeDesktopValidityReportUI;
-import org.hkijena.jipipe.desktop.commons.components.icons.SolidJIPipeDesktopColorIcon;
+import org.hkijena.jipipe.desktop.commons.components.icons.SolidColorIcon;
 import org.hkijena.jipipe.desktop.commons.components.markup.JIPipeDesktopHTMLEditor;
 import org.hkijena.jipipe.desktop.commons.components.markup.JIPipeDesktopMarkdownReader;
 import org.hkijena.jipipe.desktop.commons.components.window.JIPipeDesktopAlwaysOnTopToggle;
@@ -876,8 +876,8 @@ public class UIUtils {
      * @param color the color
      * @return the icon
      */
-    public static SolidJIPipeDesktopColorIcon getIconFromColor(Color color) {
-        return new SolidJIPipeDesktopColorIcon(16, 16, color);
+    public static SolidColorIcon getIconFromColor(Color color) {
+        return new SolidColorIcon(16, 16, color);
     }
 
     /**

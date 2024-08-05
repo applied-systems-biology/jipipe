@@ -26,7 +26,7 @@ import org.hkijena.jipipe.desktop.app.JIPipeDesktopDummyWorkbench;
 import org.hkijena.jipipe.desktop.app.tableeditor.JIPipeDesktopTableEditor;
 import org.hkijena.jipipe.desktop.commons.components.JIPipeDesktopFormPanel;
 import org.hkijena.jipipe.desktop.commons.components.JIPipeDesktopParameterFormPanel;
-import org.hkijena.jipipe.desktop.commons.components.icons.SolidJIPipeDesktopColorIcon;
+import org.hkijena.jipipe.desktop.commons.components.icons.SolidColorIcon;
 import org.hkijena.jipipe.desktop.commons.components.ribbon.*;
 import org.hkijena.jipipe.desktop.commons.components.tabs.JIPipeDesktopTabPane;
 import org.hkijena.jipipe.plugins.imagejdatatypes.datatypes.ROI2DListData;
@@ -478,7 +478,7 @@ public class ROIManagerPlugin2D extends JIPipeImageViewerPlugin2D {
         }
 
         Color currentStrokeColor = selectedRois.stream().map(Roi::getStrokeColor).filter(Objects::nonNull).findAny().orElse(Color.YELLOW);
-        JMenuItem setLineColorItem = new JMenuItem("Set line color ...", new SolidJIPipeDesktopColorIcon(16, 16, currentStrokeColor));
+        JMenuItem setLineColorItem = new JMenuItem("Set line color ...", new SolidColorIcon(16, 16, currentStrokeColor));
         setLineColorItem.addActionListener(e -> {
             Color value = JColorChooser.showDialog(getViewerPanel(), "Set line color", currentStrokeColor);
             if (value != null) {
@@ -492,7 +492,7 @@ public class ROIManagerPlugin2D extends JIPipeImageViewerPlugin2D {
         menu.add(setLineColorItem);
 
         Color currentFillColor = selectedRois.stream().map(Roi::getFillColor).filter(Objects::nonNull).findAny().orElse(Color.RED);
-        JMenuItem setFillColorItem = new JMenuItem("Set fill color ...", new SolidJIPipeDesktopColorIcon(16, 16, currentFillColor));
+        JMenuItem setFillColorItem = new JMenuItem("Set fill color ...", new SolidColorIcon(16, 16, currentFillColor));
         setFillColorItem.addActionListener(e -> {
             Color value = JColorChooser.showDialog(getViewerPanel(), "Set fill color", currentFillColor);
             if (value != null) {

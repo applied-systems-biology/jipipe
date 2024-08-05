@@ -27,7 +27,7 @@ import org.hkijena.jipipe.desktop.app.JIPipeDesktopWorkbench;
 import org.hkijena.jipipe.desktop.app.JIPipeDesktopWorkbenchPanel;
 import org.hkijena.jipipe.desktop.app.grapheditor.commons.contextmenu.NodeUIContextAction;
 import org.hkijena.jipipe.desktop.app.grapheditor.commons.nodeui.JIPipeDesktopGraphNodeUI;
-import org.hkijena.jipipe.desktop.commons.components.icons.SolidJIPipeDesktopColorIcon;
+import org.hkijena.jipipe.desktop.commons.components.icons.SolidColorIcon;
 import org.hkijena.jipipe.desktop.commons.theme.JIPipeDesktopModernMetalTheme;
 import org.hkijena.jipipe.plugins.settings.JIPipeFileChooserApplicationSettings;
 import org.hkijena.jipipe.plugins.settings.JIPipeGraphEditorUIApplicationSettings;
@@ -59,6 +59,11 @@ public abstract class JIPipeDesktopGraphEditorUI extends JIPipeDesktopWorkbenchP
         JIPipeDesktopGraphCanvasUI.NodeUISelectedEventListener,
         JIPipeDesktopGraphNodeUI.DefaultNodeUIActionRequestedEventListener,
         JIPipeDesktopGraphNodeUI.NodeUIActionRequestedEventListener {
+
+    public static final String DOCK_LOG = "LOG";
+    public static final String DOCK_HISTORY = "HISTORY";
+    public static final String DOCK_BOOKMARKS = "BOOKMARKS";
+    public static final String DOCK_MAP = "MAP";
 
     public static final KeyStroke KEY_STROKE_UNDO = KeyStroke.getKeyStroke(KeyEvent.VK_Z, InputEvent.CTRL_MASK, true);
     public static final KeyStroke KEY_STROKE_REDO = KeyStroke.getKeyStroke(KeyEvent.VK_Z, InputEvent.CTRL_MASK | InputEvent.SHIFT_MASK, true);
@@ -782,7 +787,7 @@ public abstract class JIPipeDesktopGraphEditorUI extends JIPipeDesktopWorkbenchP
      */
     public static class NavigationRenderer extends JPanel implements ListCellRenderer<Object> {
 
-        private final SolidJIPipeDesktopColorIcon icon;
+        private final SolidColorIcon icon;
         private final JLabel actionLabel;
 
         private final JLabel alternativeLabel;
@@ -799,7 +804,7 @@ public abstract class JIPipeDesktopGraphEditorUI extends JIPipeDesktopWorkbenchP
             setBorder(BorderFactory.createEmptyBorder(4, 4, 4, 4));
 
 
-            icon = new SolidJIPipeDesktopColorIcon(16, 50);
+            icon = new SolidColorIcon(16, 50);
             JLabel iconLabel = new JLabel(icon);
             Insets border = new Insets(2, 4, 2, 2);
             add(iconLabel, new GridBagConstraints() {

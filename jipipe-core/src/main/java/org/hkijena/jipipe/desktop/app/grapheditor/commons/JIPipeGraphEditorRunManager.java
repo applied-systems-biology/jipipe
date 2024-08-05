@@ -37,7 +37,7 @@ public class JIPipeGraphEditorRunManager implements JIPipeRunnable.FinishedEvent
         savedState = getDockPanel().getCurrentState();
 
         if(getLogPanel().isAutoShowProgress()) {
-            getDockPanel().activatePanel("PROGRESS", true);
+            getDockPanel().activatePanel(JIPipeDesktopGraphEditorUI.DOCK_LOG, true);
         }
 
         // Validation step
@@ -90,7 +90,7 @@ public class JIPipeGraphEditorRunManager implements JIPipeRunnable.FinishedEvent
     }
 
     private JIPipeDesktopGraphEditorLogPanel getLogPanel() {
-        return getDockPanel().getPanel("PROGRESS", JIPipeDesktopGraphEditorLogPanel.class);
+        return getDockPanel().getPanel(JIPipeDesktopGraphEditorUI.DOCK_LOG, JIPipeDesktopGraphEditorLogPanel.class);
     }
 
     @Override
@@ -116,7 +116,7 @@ public class JIPipeGraphEditorRunManager implements JIPipeRunnable.FinishedEvent
 
             if(getLogPanel().isAutoShowResults()) {
                 canvasUI.selectOnly(nodeUI);
-                getDockPanel().activatePanel("PROGRESS", false);
+                getDockPanel().activatePanel(JIPipeDesktopGraphEditorUI.DOCK_LOG, false);
             }
         }
     }

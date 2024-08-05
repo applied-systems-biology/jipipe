@@ -286,7 +286,7 @@ public class JIPipeDesktopModernMetalTheme extends DefaultMetalTheme {
                 "List.dropCellBackground", OCEAN_DROP,
                 "List.dropLineColor", getPrimary1(),
 
-                "List.selectionBackground", PRIMARY1,
+                "List.selectionBackground", new Color(0xE0EDFA),
 
                 "ProgressBar.background", WHITE,
                 "ProgressBar.foreground", PRIMARY5,

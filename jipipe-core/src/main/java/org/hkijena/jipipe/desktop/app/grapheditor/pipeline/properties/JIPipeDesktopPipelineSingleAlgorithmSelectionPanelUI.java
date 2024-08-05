@@ -37,7 +37,7 @@ import org.hkijena.jipipe.desktop.commons.components.JIPipeDesktopParameterFormP
 import org.hkijena.jipipe.desktop.commons.components.markup.JIPipeDesktopMarkdownReader;
 import org.hkijena.jipipe.desktop.commons.components.tabs.JIPipeDesktopTabPane;
 import org.hkijena.jipipe.plugins.nodetemplate.NodeTemplateBox;
-import org.hkijena.jipipe.plugins.nodetoolboxtool.NodeToolBox;
+import org.hkijena.jipipe.desktop.app.grapheditor.pipeline.addnodepanel.JIPipeDesktopLegacyAddNodePanel;
 import org.hkijena.jipipe.plugins.parameters.library.markup.MarkdownText;
 import org.hkijena.jipipe.utils.TooltipUtils;
 import org.hkijena.jipipe.utils.UIUtils;
@@ -148,7 +148,7 @@ public class JIPipeDesktopPipelineSingleAlgorithmSelectionPanelUI extends JIPipe
 
         // Additional tabs for the help panel
         tabbedPane.addTab("Add nodes", UIUtils.getIcon32FromResources("actions/node-add.png"),
-                new NodeToolBox(getDesktopWorkbench(), true), JIPipeDesktopTabPane.CloseMode.withoutCloseButton);
+                new JIPipeDesktopLegacyAddNodePanel(getDesktopWorkbench(), true), JIPipeDesktopTabPane.CloseMode.withoutCloseButton);
 
         tabbedPane.addTab("Templates", UIUtils.getIcon32FromResources("actions/star.png"),
                 new NodeTemplateBox(getDesktopWorkbench(), true, canvas, Collections.singleton(node)), JIPipeDesktopTabPane.CloseMode.withoutCloseButton);

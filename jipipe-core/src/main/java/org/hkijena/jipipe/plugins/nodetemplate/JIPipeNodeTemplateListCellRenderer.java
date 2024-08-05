@@ -15,7 +15,7 @@ package org.hkijena.jipipe.plugins.nodetemplate;
 
 import org.hkijena.jipipe.api.JIPipeNodeTemplate;
 import org.hkijena.jipipe.api.nodes.JIPipeNodeInfo;
-import org.hkijena.jipipe.desktop.commons.components.icons.SolidJIPipeDesktopColorIcon;
+import org.hkijena.jipipe.desktop.commons.components.icons.SolidColorIcon;
 
 import javax.swing.*;
 import java.awt.*;
@@ -34,7 +34,7 @@ public class JIPipeNodeTemplateListCellRenderer extends JPanel implements ListCe
             new Color(0x4098AA);
 
     private final Set<JIPipeNodeTemplate> projectTemplateList;
-    private SolidJIPipeDesktopColorIcon nodeColor;
+    private SolidColorIcon nodeColor;
     private JLabel nodeIcon;
     private JLabel nameLabel;
     private JLabel nodeNameLabel;
@@ -54,7 +54,7 @@ public class JIPipeNodeTemplateListCellRenderer extends JPanel implements ListCe
 
     private void initialize() {
         setLayout(new GridBagLayout());
-        nodeColor = new SolidJIPipeDesktopColorIcon(16, 40);
+        nodeColor = new SolidColorIcon(16, 40);
         nodeIcon = new JLabel();
         nameLabel = new JLabel();
         nodeNameLabel = new JLabel();

@@ -34,7 +34,7 @@ import org.hkijena.jipipe.desktop.app.JIPipeDesktopDummyWorkbench;
 import org.hkijena.jipipe.desktop.app.tableeditor.JIPipeDesktopTableEditor;
 import org.hkijena.jipipe.desktop.commons.components.JIPipeDesktopFormPanel;
 import org.hkijena.jipipe.desktop.commons.components.JIPipeDesktopParameterFormPanel;
-import org.hkijena.jipipe.desktop.commons.components.icons.SolidJIPipeDesktopColorIcon;
+import org.hkijena.jipipe.desktop.commons.components.icons.SolidColorIcon;
 import org.hkijena.jipipe.desktop.commons.components.ribbon.JIPipeDesktopLargeToggleButtonRibbonAction;
 import org.hkijena.jipipe.desktop.commons.components.ribbon.JIPipeDesktopRibbon;
 import org.hkijena.jipipe.desktop.commons.components.ribbon.JIPipeDesktopSmallButtonRibbonAction;
@@ -456,7 +456,7 @@ public class ROIManagerPlugin3D extends JIPipeImageViewerPlugin3D implements JIP
         }
 
         Color currentFillColor = selectedRois.stream().map(ROI3D::getFillColor).filter(Objects::nonNull).findAny().orElse(Color.RED);
-        JMenuItem setFillColorItem = new JMenuItem("Set fill color ...", new SolidJIPipeDesktopColorIcon(16, 16, currentFillColor));
+        JMenuItem setFillColorItem = new JMenuItem("Set fill color ...", new SolidColorIcon(16, 16, currentFillColor));
         setFillColorItem.addActionListener(e -> {
             Color value = JColorChooser.showDialog(getViewerPanel(), "Set fill color", currentFillColor);
             if (value != null) {

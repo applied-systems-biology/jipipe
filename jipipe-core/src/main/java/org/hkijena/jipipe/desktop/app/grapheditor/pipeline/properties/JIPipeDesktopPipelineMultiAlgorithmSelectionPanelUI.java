@@ -28,7 +28,7 @@ import org.hkijena.jipipe.desktop.app.history.JIPipeDesktopHistoryJournalUI;
 import org.hkijena.jipipe.desktop.commons.components.JIPipeDesktopFormPanel;
 import org.hkijena.jipipe.desktop.commons.components.tabs.JIPipeDesktopTabPane;
 import org.hkijena.jipipe.plugins.nodetemplate.NodeTemplateBox;
-import org.hkijena.jipipe.plugins.nodetoolboxtool.NodeToolBox;
+import org.hkijena.jipipe.desktop.app.grapheditor.pipeline.addnodepanel.JIPipeDesktopLegacyAddNodePanel;
 import org.hkijena.jipipe.utils.JIPipeDesktopSplitPane;
 import org.hkijena.jipipe.utils.UIUtils;
 
@@ -69,7 +69,7 @@ public class JIPipeDesktopPipelineMultiAlgorithmSelectionPanelUI extends JIPipeD
         tabPane.addTab("Selection", UIUtils.getIcon32FromResources("actions/edit-select-all.png"), actionPanel, JIPipeDesktopTabPane.CloseMode.withoutCloseButton);
 
         tabPane.addTab("Add nodes", UIUtils.getIcon32FromResources("actions/node-add.png"),
-                new NodeToolBox(getDesktopWorkbench(), true), JIPipeDesktopTabPane.CloseMode.withoutCloseButton);
+                new JIPipeDesktopLegacyAddNodePanel(getDesktopWorkbench(), true), JIPipeDesktopTabPane.CloseMode.withoutCloseButton);
 
         tabPane.addTab("Templates", UIUtils.getIcon32FromResources("actions/star.png"),
                 new NodeTemplateBox(getDesktopWorkbench(), true, canvas, nodes), JIPipeDesktopTabPane.CloseMode.withoutCloseButton);

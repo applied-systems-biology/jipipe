@@ -22,7 +22,7 @@ import org.hkijena.jipipe.desktop.api.JIPipeDesktopParameterEditorUI;
 import org.hkijena.jipipe.desktop.app.JIPipeDesktopProjectWorkbench;
 import org.hkijena.jipipe.desktop.app.JIPipeDesktopWorkbench;
 import org.hkijena.jipipe.desktop.app.settings.JIPipeDesktopRuntimePartitionListEditor;
-import org.hkijena.jipipe.desktop.commons.components.icons.SolidJIPipeDesktopColorIcon;
+import org.hkijena.jipipe.desktop.commons.components.icons.SolidColorIcon;
 import org.hkijena.jipipe.utils.StringUtils;
 import org.hkijena.jipipe.utils.UIUtils;
 
@@ -133,7 +133,7 @@ public class RuntimePartitionReferenceDesktopParameterEditorUI extends JIPipeDes
         if (getDesktopWorkbench() instanceof JIPipeDesktopProjectWorkbench) {
             int index = parameter.getIndex();
             JIPipeRuntimePartition partition = ((JIPipeDesktopProjectWorkbench) getDesktopWorkbench()).getProject().getRuntimePartitions().get(index);
-            nameLabel.setIcon(partition.getColor().isEnabled() ? new SolidJIPipeDesktopColorIcon(16, 16, partition.getColor().getContent()) : UIUtils.getIconFromResources("actions/runtime-partition.png"));
+            nameLabel.setIcon(partition.getColor().isEnabled() ? new SolidColorIcon(16, 16, partition.getColor().getContent()) : UIUtils.getIconFromResources("actions/runtime-partition.png"));
             nameLabel.setText(index <= 0 ? StringUtils.orElse(partition.getName(), "Default") : StringUtils.orElse(partition.getName(), "Partition " + index));
         } else {
             int index = parameter.getIndex();

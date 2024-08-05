@@ -84,41 +84,6 @@ public class JIPipeCompartmentGraphDragAndDropBehavior implements JIPipeDesktopG
         dtde.rejectDrop();
     }
 
-//    private void processDrop(List<File> files) {
-//        String compartment = canvas.getCompartment();
-//        JIPipeGraph graph = canvas.getGraph();
-//        if (files.size() == 1) {
-//            File selected = files.get(0);
-//            if (selected.isDirectory()) {
-//                FolderDataSource dataSource = JIPipe.createNode("import-folder", FolderDataSource.class);
-//                dataSource.setFolderPath(selected.toPath());
-//                graph.insertNode(dataSource, compartment);
-//            } else {
-//                FileDataSource dataSource = JIPipe.createNode("import-file", FileDataSource.class);
-//                dataSource.setFileName(selected.toPath());
-//                graph.insertNode(dataSource, compartment);
-//            }
-//        } else {
-//            Map<Boolean, List<File>> groupedByType = files.stream().collect(Collectors.groupingBy(File::isDirectory));
-//            for (Map.Entry<Boolean, List<File>> entry : groupedByType.entrySet()) {
-//                if (entry.getKey()) {
-//                    FolderListDataSource dataSource = JIPipe.createNode("import-folder-list", FolderListDataSource.class);
-//                    for (File file : entry.getValue()) {
-//                        dataSource.getFolderPaths().add(file.toPath());
-//                    }
-//                    graph.insertNode(dataSource, compartment);
-//                } else {
-//                    FileListDataSource dataSource = JIPipe.createNode("import-file-list", FileListDataSource.class);
-//                    for (File file : entry.getValue()) {
-//                        dataSource.getFileNames().add(file.toPath());
-//                    }
-//                    graph.insertNode(dataSource, compartment);
-//                }
-//            }
-//
-//        }
-//    }
-
     @Override
     public JIPipeDesktopGraphCanvasUI getCanvas() {
         return canvas;

@@ -18,12 +18,10 @@ import org.hkijena.jipipe.api.JIPipeDocumentation;
 import org.hkijena.jipipe.api.SetJIPipeDocumentation;
 import org.hkijena.jipipe.api.compartments.algorithms.JIPipeProjectCompartmentOutput;
 import org.hkijena.jipipe.api.compartments.algorithms.JIPipeProjectCompartment;
-import org.hkijena.jipipe.api.data.JIPipeData;
 import org.hkijena.jipipe.api.data.JIPipeOutputDataSlot;
 import org.hkijena.jipipe.api.grouping.JIPipeNodeGroup;
 import org.hkijena.jipipe.api.history.JIPipeDedicatedGraphHistoryJournal;
 import org.hkijena.jipipe.api.nodes.*;
-import org.hkijena.jipipe.api.nodes.categories.DataSourceNodeTypeCategory;
 import org.hkijena.jipipe.api.nodes.database.JIPipeNodeDatabaseRole;
 import org.hkijena.jipipe.api.nodes.iterationstep.JIPipeIterationStepAlgorithm;
 import org.hkijena.jipipe.api.parameters.JIPipeContextAction;
@@ -43,13 +41,13 @@ import org.hkijena.jipipe.desktop.app.grapheditor.compartments.contextmenu.clipb
 import org.hkijena.jipipe.desktop.app.grapheditor.groups.JIPipeDesktopNodeGroupUI;
 import org.hkijena.jipipe.desktop.app.grapheditor.pipeline.actions.JIPipeDesktopRunAndShowResultsAction;
 import org.hkijena.jipipe.desktop.app.grapheditor.pipeline.actions.JIPipeDesktopUpdateCacheAction;
+import org.hkijena.jipipe.desktop.app.grapheditor.pipeline.addnodepanel.JIPipeDesktopAddNodePanel;
 import org.hkijena.jipipe.desktop.app.grapheditor.pipeline.dragdrop.JIPipeCreateNodesFromDraggedDataDragAndDropBehavior;
 import org.hkijena.jipipe.desktop.app.grapheditor.pipeline.properties.JIPipeDesktopPipelineParametersPanel;
 import org.hkijena.jipipe.desktop.app.history.JIPipeDesktopHistoryJournalUI;
 import org.hkijena.jipipe.desktop.commons.components.JIPipeDesktopParameterFormPanel;
 import org.hkijena.jipipe.desktop.commons.components.markup.JIPipeDesktopMarkdownReader;
-import org.hkijena.jipipe.plugins.nodetemplate.NodeTemplateMenu;
-import org.hkijena.jipipe.plugins.nodetoolboxtool.NodeToolBox;
+import org.hkijena.jipipe.plugins.nodetemplate.NodeTemplateBox;
 import org.hkijena.jipipe.plugins.parameters.library.markup.MarkdownText;
 import org.hkijena.jipipe.plugins.settings.JIPipeGeneralUIApplicationSettings;
 import org.hkijena.jipipe.utils.*;
@@ -67,8 +65,6 @@ import java.util.stream.Collectors;
  */
 public class JIPipePipelineGraphEditorUI extends JIPipeDesktopGraphEditorUI {
 
-    private boolean disableUpdateOnSelection = false;
-
     /**
      * Creates a project graph compartment editor
      *
@@ -82,176 +78,6 @@ public class JIPipePipelineGraphEditorUI extends JIPipeDesktopGraphEditorUI {
 
         // Set D&D and Copy&Paste behavior
         initializeContextActions();
-    }
-
-    /**
-     * Initializes the "Add nodes" menus
-     *
-     * @param graphEditorUI   the graph editor
-     * @param menuBar         The menu bar where the items are created
-     * @param addedAlgorithms added algorithm types are added to this list
-     */
-    public static void initializeAddNodesMenus(JIPipeDesktopGraphEditorUI graphEditorUI, JMenuBar menuBar, Set<JIPipeNodeInfo> addedAlgorithms) {
-
-        for (JIPipeNodeTypeCategory category : JIPipe.getNodes().getRegisteredCategories().values().stream()
-                .sorted(Comparator.comparing(JIPipeNodeTypeCategory::getUIOrder)).collect(Collectors.toList())) {
-            if (category instanceof DataSourceNodeTypeCategory) {
-                JMenu addDataSourceMenu = new JMenu(category.getName());
-                addDataSourceMenu.setIcon(category.getIcon());
-                initializeAddDataSourceMenu(graphEditorUI, addDataSourceMenu, addedAlgorithms);
-                menuBar.add(addDataSourceMenu);
-            } else if (category.isVisibleInGraphCompartment()) {
-                JMenu menu = new JMenu(category.getName());
-                menu.setIcon(category.getIcon());
-                initializeMenuForCategory(graphEditorUI, menu, category, addedAlgorithms);
-                menuBar.add(menu);
-            }
-        }
-
-        // Add template menu
-        menuBar.add(new NodeTemplateMenu(graphEditorUI.getDesktopWorkbench(), graphEditorUI));
-    }
-
-    /**
-     * Initializes a menu for one algorithm category
-     *
-     * @param graphEditorUI   the graph editor
-     * @param menu            The menu
-     * @param category        The algorithm category
-     * @param addedAlgorithms added algorithm types are added to this list
-     */
-    public static void initializeMenuForCategory(JIPipeDesktopGraphEditorUI graphEditorUI, JMenu menu, JIPipeNodeTypeCategory category, Set<JIPipeNodeInfo> addedAlgorithms) {
-        JIPipeGraph algorithmGraph = graphEditorUI.getGraph();
-        JIPipe registryService = JIPipe.getInstance();
-        Set<JIPipeNodeInfo> algorithmsOfCategory = registryService.getNodeRegistry().getNodesOfCategory(category, true);
-        if (algorithmsOfCategory.isEmpty()) {
-            menu.setVisible(false);
-            return;
-        }
-
-        Map<String, Set<JIPipeNodeInfo>> byMenuPath = JIPipeNodeInfo.groupByMenuPaths(category, algorithmsOfCategory);
-        Map<String, JMenu> menuTree = UIUtils.createMenuTree(menu, byMenuPath.keySet());
-
-        for (Map.Entry<String, Set<JIPipeNodeInfo>> entry : byMenuPath.entrySet()) {
-            JMenu subMenu = menuTree.get(entry.getKey());
-            for (JIPipeNodeInfo info : JIPipeNodeInfo.getSortedList(entry.getValue())) {
-                if (info.isHidden())
-                    continue;
-                if (subMenu.getMenuComponentCount() >= 30) {
-                    JMenu moreMenu = new JMenu("More ...");
-                    subMenu.add(moreMenu);
-                    subMenu = moreMenu;
-                }
-                String name = info.getName();
-                boolean hasAlternativeName = false;
-
-                // Alternative names
-                for (JIPipeNodeMenuLocation location : info.getAliases()) {
-                    if (StringUtils.isNullOrEmpty(location.getAlternativeName()))
-                        continue;
-                    if (Objects.equals(category.getId(), location.getCategory().getId())) {
-                        String locationPath = StringUtils.getCleanedMenuPath(location.getMenuPath());
-                        if (Objects.equals(locationPath, entry.getKey())) {
-                            name = location.getAlternativeName();
-                            hasAlternativeName = true;
-                            break;
-                        }
-                    }
-                }
-
-                JMenuItem addItem = new JMenuItem(name, JIPipe.getNodes().getIconFor(info));
-                addItem.setToolTipText(TooltipUtils.getAlgorithmTooltip(info));
-                boolean finalHasAlternativeName = hasAlternativeName;
-                String finalName = name;
-                addItem.addActionListener(e -> {
-                    if (!JIPipeDesktopProjectWorkbench.canAddOrDeleteNodes(graphEditorUI.getDesktopWorkbench()))
-                        return;
-                    JIPipeGraphNode node = info.newInstance();
-                    if (finalHasAlternativeName) {
-                        node.setCustomName(finalName);
-                    }
-                    graphEditorUI.getCanvasUI().getHistoryJournal().snapshotBeforeAddNode(node, graphEditorUI.getCompartment());
-                    graphEditorUI.getCanvasUI().getScheduledSelection().clear();
-                    graphEditorUI.getCanvasUI().getScheduledSelection().add(node);
-                    algorithmGraph.insertNode(node, graphEditorUI.getCompartment());
-                });
-                addedAlgorithms.add(info);
-                subMenu.add(addItem);
-            }
-        }
-    }
-
-    /**
-     * Initializes a menu that adds data sources
-     *
-     * @param graphEditorUI   the editor
-     * @param menu            the target menu
-     * @param addedAlgorithms added algorithm types are added to this list
-     */
-    public static void initializeAddDataSourceMenu(JIPipeDesktopGraphEditorUI graphEditorUI, JMenu menu, Set<JIPipeNodeInfo> addedAlgorithms) {
-        JIPipeGraph algorithmGraph = graphEditorUI.getGraph();
-        JIPipe registryService = JIPipe.getInstance();
-        Map<String, Set<Class<? extends JIPipeData>>> dataTypesByMenuPaths = JIPipe.getDataTypes().getDataTypesByMenuPaths();
-        Map<String, JMenu> menuTree = UIUtils.createMenuTree(menu, dataTypesByMenuPaths.keySet());
-
-        for (Map.Entry<String, Set<Class<? extends JIPipeData>>> entry : dataTypesByMenuPaths.entrySet()) {
-            JMenu subMenu = menuTree.get(entry.getKey());
-            for (Class<? extends JIPipeData> dataClass : JIPipeData.getSortedList(entry.getValue())) {
-                if (JIPipeData.isHidden(dataClass))
-                    continue;
-                Set<JIPipeNodeInfo> dataSources = registryService.getNodeRegistry().getMenuDataSourcesFor(dataClass);
-                boolean isEmpty = true;
-                Icon icon = registryService.getDatatypeRegistry().getIconFor(dataClass);
-                JMenu dataMenu = new JMenu(JIPipeData.getNameOf(dataClass));
-                dataMenu.setIcon(icon);
-
-                for (JIPipeNodeInfo info : dataSources) {
-                    if (info.isHidden())
-                        continue;
-                    JMenuItem addItem = new JMenuItem(info.getName(), JIPipe.getNodes().getIconFor(info));
-                    addItem.setToolTipText(TooltipUtils.getAlgorithmTooltip(info));
-                    addItem.addActionListener(e -> {
-                        if (!JIPipeDesktopProjectWorkbench.canAddOrDeleteNodes(graphEditorUI.getDesktopWorkbench()))
-                            return;
-                        JIPipeGraphNode node = info.newInstance();
-                        graphEditorUI.getHistoryJournal().snapshotBeforeAddNode(node, graphEditorUI.getCompartment());
-                        algorithmGraph.insertNode(node, graphEditorUI.getCompartment());
-                    });
-                    addedAlgorithms.add(info);
-                    dataMenu.add(addItem);
-                    isEmpty = false;
-                }
-
-                subMenu.add(dataMenu);
-                if (isEmpty)
-                    dataMenu.setVisible(false);
-            }
-        }
-
-        // Remove empty menus
-        boolean changed;
-        Set<JMenuItem> invisible = new HashSet<>();
-        do {
-            changed = false;
-            for (JMenu item : menuTree.values()) {
-                if (invisible.contains(item))
-                    continue;
-                boolean hasVisible = false;
-                for (int i = 0; i < item.getItemCount(); i++) {
-                    if (item.getItem(i).isVisible()) {
-                        hasVisible = true;
-                        break;
-                    }
-                }
-                if (!hasVisible) {
-                    item.setVisible(false);
-                    invisible.add(item);
-                    changed = true;
-                }
-            }
-        }
-        while (changed);
-
     }
 
     private void initializeContextActions() {
@@ -365,8 +191,8 @@ public class JIPipePipelineGraphEditorUI extends JIPipeDesktopGraphEditorUI {
 
     private void initializeDefaultPanels() {
 
-        getDockPanel().addDockPanel("MINIMAP",
-                "Minimap",
+        getDockPanel().addDockPanel(JIPipeDesktopGraphEditorUI.DOCK_MAP,
+                "Overview map",
                 UIUtils.getIcon32FromResources("actions/zoom.png"),
                 JIPipeDesktopDockPanel.PanelLocation.TopLeft,
                 true,
@@ -382,21 +208,26 @@ public class JIPipePipelineGraphEditorUI extends JIPipeDesktopGraphEditorUI {
                 UIUtils.getIcon32FromResources("actions/node-add.png"),
                 JIPipeDesktopDockPanel.PanelLocation.BottomLeft,
                 false,
-                new NodeToolBox(getDesktopWorkbench(), true));
-        getDockPanel().addDockPanel("BOOKMARKS",
+                new JIPipeDesktopAddNodePanel(getDesktopWorkbench()));
+        getDockPanel().addDockPanel("NODE_TEMPLATES", "Node templates",
+                UIUtils.getIcon32FromResources("actions/star3.png"),
+                JIPipeDesktopDockPanel.PanelLocation.BottomLeft,
+                false,
+                new NodeTemplateBox(getDesktopWorkbench(), true, getCanvasUI(), Collections.emptySet()));
+        getDockPanel().addDockPanel(JIPipeDesktopGraphEditorUI.DOCK_BOOKMARKS,
                 "Bookmarks",
                 UIUtils.getIcon32FromResources("actions/bookmarks.png"),
                 JIPipeDesktopDockPanel.PanelLocation.BottomLeft,
                 false,
                 new JIPipeDesktopBookmarkListPanel(getDesktopWorkbench(), getGraph(), this, null));
-        getDockPanel().addDockPanel("HISTORY",
+        getDockPanel().addDockPanel(JIPipeDesktopGraphEditorUI.DOCK_HISTORY,
                 "History",
                 UIUtils.getIcon32FromResources("actions/edit-undo-history.png"),
                 JIPipeDesktopDockPanel.PanelLocation.BottomLeft,
                 false,
                 new JIPipeDesktopHistoryJournalUI(getHistoryJournal()));
-        getDockPanel().addDockPanel("PROGRESS",
-                "Current progress",
+        getDockPanel().addDockPanel(JIPipeDesktopGraphEditorUI.DOCK_LOG,
+                "Log",
                 UIUtils.getIcon32FromResources("actions/rabbitvcs-show_log.png"),
                 JIPipeDesktopDockPanel.PanelLocation.BottomRight,
                 false,
@@ -409,8 +240,6 @@ public class JIPipePipelineGraphEditorUI extends JIPipeDesktopGraphEditorUI {
     @Override
     protected void updateSelection() {
         super.updateSelection();
-        if (disableUpdateOnSelection)
-            return;
 
         getDockPanel().removeDockPanelsIf(p -> p.getId().startsWith("_"));
 

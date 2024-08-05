@@ -11,7 +11,7 @@
  * See the LICENSE file provided with the code for the full license.
  */
 
-package org.hkijena.jipipe.plugins.nodetoolboxtool;
+package org.hkijena.jipipe.desktop.app.grapheditor.pipeline.addnodepanel;
 
 import com.google.common.html.HtmlEscapers;
 import org.hkijena.jipipe.JIPipe;
@@ -38,7 +38,7 @@ import org.hkijena.jipipe.utils.UIUtils;
 import javax.swing.*;
 import java.awt.*;
 
-public class NodeToolBox extends JIPipeDesktopWorkbenchPanel {
+public class JIPipeDesktopLegacyAddNodePanel extends JIPipeDesktopWorkbenchPanel {
 
     private final JIPipeDesktopMarkdownReader documentationReader = new JIPipeDesktopMarkdownReader(false);
     private final JToolBar toolBar = new JToolBar();
@@ -48,7 +48,7 @@ public class NodeToolBox extends JIPipeDesktopWorkbenchPanel {
     private JList<JIPipeNodeDatabaseEntry> algorithmList;
     private JIPipeDesktopSearchTextField searchField;
 
-    public NodeToolBox(JIPipeDesktopWorkbench workbench, boolean isDocked) {
+    public JIPipeDesktopLegacyAddNodePanel(JIPipeDesktopWorkbench workbench, boolean isDocked) {
         super(workbench);
         this.isDocked = isDocked;
         this.database = workbench instanceof JIPipeDesktopProjectWorkbench ?
@@ -58,7 +58,7 @@ public class NodeToolBox extends JIPipeDesktopWorkbenchPanel {
     }
 
     public static void openNewToolBoxWindow(JIPipeDesktopWorkbench workbench, Component parent) {
-        NodeToolBox toolBox = new NodeToolBox(workbench, false);
+        JIPipeDesktopLegacyAddNodePanel toolBox = new JIPipeDesktopLegacyAddNodePanel(workbench, false);
         JFrame window = new JFrame();
         toolBox.getToolBar().add(new JIPipeDesktopAlwaysOnTopToggle(window));
         window.setDefaultCloseOperation(WindowConstants.DISPOSE_ON_CLOSE);
@@ -111,7 +111,7 @@ public class NodeToolBox extends JIPipeDesktopWorkbenchPanel {
             }
         });
         algorithmList.setDragEnabled(true);
-        algorithmList.setTransferHandler(new NodeToolBoxTransferHandler());
+        algorithmList.setTransferHandler(new JIPipeDesktopAddNodeTransferHandler());
         JScrollPane scrollPane = new JScrollPane(algorithmList);
 
         JIPipeDesktopSplitPane splitPane = new JIPipeDesktopSplitPane(JSplitPane.VERTICAL_SPLIT, scrollPane, documentationReader, JIPipeDesktopSplitPane.RATIO_3_TO_1);
@@ -196,9 +196,9 @@ public class NodeToolBox extends JIPipeDesktopWorkbenchPanel {
 
     public static class ReloadListRun extends AbstractJIPipeRunnable {
 
-        private final NodeToolBox toolBox;
+        private final JIPipeDesktopLegacyAddNodePanel toolBox;
 
-        public ReloadListRun(NodeToolBox toolBox) {
+        public ReloadListRun(JIPipeDesktopLegacyAddNodePanel toolBox) {
             this.toolBox = toolBox;
         }
 

@@ -19,7 +19,7 @@ import org.hkijena.jipipe.api.nodes.JIPipeNodeMenuLocation;
 import org.hkijena.jipipe.api.nodes.database.CreateNewNodeByExampleDatabaseEntry;
 import org.hkijena.jipipe.api.nodes.database.CreateNewNodeByInfoDatabaseEntry;
 import org.hkijena.jipipe.api.nodes.database.JIPipeNodeDatabaseEntry;
-import org.hkijena.jipipe.desktop.commons.components.icons.SolidJIPipeDesktopColorIcon;
+import org.hkijena.jipipe.desktop.commons.components.icons.SolidColorIcon;
 import org.hkijena.jipipe.desktop.commons.theme.JIPipeDesktopModernMetalTheme;
 import org.hkijena.jipipe.utils.StringUtils;
 import org.hkijena.jipipe.utils.UIUtils;
@@ -33,7 +33,7 @@ public class JIPipeDesktopNodeDatabaseSearchBoxListCellRenderer extends JPanel i
     public static final Color COLOR_CREATE = new Color(0x5CB85C);
     public static final Color COLOR_NAVIGATE = new Color(0x1c71d8);
 
-    private final SolidJIPipeDesktopColorIcon icon;
+    private final SolidColorIcon icon;
     private final JLabel actionLabel;
 
     private final JLabel alternativeLabel;
@@ -50,7 +50,7 @@ public class JIPipeDesktopNodeDatabaseSearchBoxListCellRenderer extends JPanel i
         setBorder(BorderFactory.createEmptyBorder(4, 4, 4, 4));
 
 
-        icon = new SolidJIPipeDesktopColorIcon(16, 50);
+        icon = new SolidColorIcon(16, 50);
         JLabel iconLabel = new JLabel(icon);
         Insets border = new Insets(2, 4, 2, 2);
         add(iconLabel, new GridBagConstraints() {

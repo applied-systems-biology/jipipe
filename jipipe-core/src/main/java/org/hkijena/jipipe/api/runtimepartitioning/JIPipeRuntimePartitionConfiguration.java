@@ -15,7 +15,7 @@ package org.hkijena.jipipe.api.runtimepartitioning;
 
 import com.fasterxml.jackson.annotation.JsonGetter;
 import com.fasterxml.jackson.annotation.JsonSetter;
-import org.hkijena.jipipe.desktop.commons.components.icons.SolidJIPipeDesktopColorIcon;
+import org.hkijena.jipipe.desktop.commons.components.icons.SolidColorIcon;
 import org.hkijena.jipipe.plugins.expressions.functions.math.RandomFunction;
 import org.hkijena.jipipe.plugins.parameters.library.colors.OptionalColorParameter;
 import org.hkijena.jipipe.utils.StringUtils;
@@ -158,7 +158,7 @@ public class JIPipeRuntimePartitionConfiguration {
 
     public Icon getIcon(JIPipeRuntimePartition runtimePartition) {
         if (runtimePartition.getColor().isEnabled()) {
-            return new SolidJIPipeDesktopColorIcon(16, 16, runtimePartition.getColor().getContent());
+            return new SolidColorIcon(16, 16, runtimePartition.getColor().getContent());
         } else {
             return UIUtils.getIconFromResources("actions/runtime-partition.png");
         }

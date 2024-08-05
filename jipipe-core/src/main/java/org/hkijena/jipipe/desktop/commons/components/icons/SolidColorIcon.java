@@ -18,7 +18,7 @@ import java.awt.*;
 /**
  * Icon that is only one specific color, including border
  */
-public class SolidJIPipeDesktopColorIcon implements JIPipeDesktopColorIcon {
+public class SolidColorIcon implements JIPipeDesktopColorIcon {
     private final int imageWidth;
     private final int imageHeight;
     private final Insets insets;
@@ -28,7 +28,7 @@ public class SolidJIPipeDesktopColorIcon implements JIPipeDesktopColorIcon {
     /**
      * Creates a 16x16 black icon
      */
-    public SolidJIPipeDesktopColorIcon() {
+    public SolidColorIcon() {
         this(16, 16);
     }
 
@@ -38,7 +38,7 @@ public class SolidJIPipeDesktopColorIcon implements JIPipeDesktopColorIcon {
      * @param width  icon width
      * @param height icon height
      */
-    public SolidJIPipeDesktopColorIcon(int width, int height) {
+    public SolidColorIcon(int width, int height) {
         this(width, height, Color.black);
     }
 
@@ -49,7 +49,7 @@ public class SolidJIPipeDesktopColorIcon implements JIPipeDesktopColorIcon {
      * @param imageHeight icon height
      * @param fillColor   fill color
      */
-    public SolidJIPipeDesktopColorIcon(int imageWidth, int imageHeight, Color fillColor) {
+    public SolidColorIcon(int imageWidth, int imageHeight, Color fillColor) {
         this(imageWidth, imageHeight, fillColor, Color.BLACK);
     }
 
@@ -59,7 +59,7 @@ public class SolidJIPipeDesktopColorIcon implements JIPipeDesktopColorIcon {
      * @param fillColor   fill color
      * @param borderColor border color
      */
-    public SolidJIPipeDesktopColorIcon(int width, int height, Color fillColor, Color borderColor) {
+    public SolidColorIcon(int width, int height, Color fillColor, Color borderColor) {
         imageWidth = width;
         imageHeight = height;
 

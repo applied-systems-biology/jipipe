@@ -26,7 +26,7 @@ import org.hkijena.jipipe.desktop.app.batchassistant.JIPipeDesktopDataBatchBrows
 import org.hkijena.jipipe.desktop.app.datatable.JIPipeDesktopSimpleDataBatchTableUI;
 import org.hkijena.jipipe.desktop.commons.components.JIPipeDesktopFormPanel;
 import org.hkijena.jipipe.desktop.commons.components.JIPipeDesktopUserFriendlyErrorUI;
-import org.hkijena.jipipe.desktop.commons.components.icons.SolidJIPipeDesktopColorIcon;
+import org.hkijena.jipipe.desktop.commons.components.icons.SolidColorIcon;
 import org.hkijena.jipipe.desktop.commons.components.tabs.JIPipeDesktopTabPane;
 import org.hkijena.jipipe.plugins.forms.FormsPlugin;
 import org.hkijena.jipipe.plugins.forms.datatypes.FormData;
@@ -52,9 +52,9 @@ public class FormsDialog extends JFrame {
     private final JIPipeDataSlot originalForms;
     private final JIPipeDesktopTabPane tabPane = new JIPipeDesktopTabPane(true, JIPipeDesktopTabPane.TabPlacement.Top);
     private final List<DataBatchStatus> iterationStepStatuses = new ArrayList<>();
-    private final JLabel unvisitedLabel = new JLabel(new SolidJIPipeDesktopColorIcon(16, 16, DataBatchStatusTableCellRenderer.getColorUnvisited()));
-    private final JLabel visitedLabel = new JLabel(new SolidJIPipeDesktopColorIcon(16, 16, DataBatchStatusTableCellRenderer.getColorVisited()));
-    private final JLabel invalidLabel = new JLabel(new SolidJIPipeDesktopColorIcon(16, 16, DataBatchStatusTableCellRenderer.getColorInvalid()));
+    private final JLabel unvisitedLabel = new JLabel(new SolidColorIcon(16, 16, DataBatchStatusTableCellRenderer.getColorUnvisited()));
+    private final JLabel visitedLabel = new JLabel(new SolidColorIcon(16, 16, DataBatchStatusTableCellRenderer.getColorVisited()));
+    private final JLabel invalidLabel = new JLabel(new SolidColorIcon(16, 16, DataBatchStatusTableCellRenderer.getColorInvalid()));
     private final JToggleButton visitedButton = new JToggleButton("Reviewed", UIUtils.getIconFromResources("actions/eye.png"));
     private final MarkdownText documentation;
     private boolean cancelled = false;

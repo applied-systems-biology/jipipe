@@ -17,7 +17,7 @@ import ij.IJ;
 import ij.ImagePlus;
 import ij.process.LUT;
 import org.hkijena.jipipe.desktop.commons.components.JIPipeDesktopPickEnumValueDialog;
-import org.hkijena.jipipe.desktop.commons.components.icons.SolidJIPipeDesktopColorIcon;
+import org.hkijena.jipipe.desktop.commons.components.icons.SolidColorIcon;
 import org.hkijena.jipipe.plugins.imagejdatatypes.datatypes.LUTData;
 import org.hkijena.jipipe.plugins.imagejdatatypes.util.ImageJUtils;
 import org.hkijena.jipipe.plugins.imageviewer.JIPipeImageViewer;
@@ -45,7 +45,7 @@ import java.util.List;
 public abstract class ImageViewerLUTEditor extends JPanel implements ThumbListener {
     private final JIPipeImageViewer imageViewerPanel;
     private final int targetChannel;
-    private final SolidJIPipeDesktopColorIcon changeColorButtonDisplayedColor = new SolidJIPipeDesktopColorIcon(16, 16);
+    private final SolidColorIcon changeColorButtonDisplayedColor = new SolidColorIcon(16, 16);
     private ColorMap lastColorMap = ColorMap.viridis;
     /**
      * The multi-thumb slider to use for the gradient stops

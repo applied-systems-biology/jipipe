@@ -16,7 +16,7 @@ package org.hkijena.jipipe.desktop.commons.components;
 import org.hkijena.jipipe.api.events.AbstractJIPipeEvent;
 import org.hkijena.jipipe.api.events.JIPipeEventEmitter;
 import org.hkijena.jipipe.desktop.commons.components.icons.JIPipeDesktopColorIcon;
-import org.hkijena.jipipe.desktop.commons.components.icons.SolidJIPipeDesktopColorIcon;
+import org.hkijena.jipipe.desktop.commons.components.icons.SolidColorIcon;
 import org.hkijena.jipipe.utils.ColorUtils;
 
 import javax.swing.*;
@@ -27,7 +27,7 @@ import java.util.Objects;
 
 public class JIPipeDesktopColorChooserButton extends JButton implements ActionListener {
     private final ColorChosenEventEmitter colorChosenEventEmitter = new ColorChosenEventEmitter();
-    private JIPipeDesktopColorIcon icon = new SolidJIPipeDesktopColorIcon(16, 16);
+    private JIPipeDesktopColorIcon icon = new SolidColorIcon(16, 16);
     private Color selectedColor = Color.RED;
     private String selectColorPrompt = "Select color";
     private boolean updateWithHexCode = false;
