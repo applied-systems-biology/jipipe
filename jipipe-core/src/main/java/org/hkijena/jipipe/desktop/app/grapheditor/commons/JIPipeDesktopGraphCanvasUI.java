@@ -2792,10 +2792,15 @@ public class JIPipeDesktopGraphCanvasUI extends JLayeredPane implements JIPipeDe
                 JIPipeRuntimePartition sourcePartition = runtimePartitions.get(sourceAlgorithm.getRuntimePartition().getIndex());
                 JIPipeRuntimePartition targetPartition = runtimePartitions.get(targetAlgorithm.getRuntimePartition().getIndex());
                 if (sourcePartition != targetPartition) {
-                    strokePaint = new LinearGradientPaint(sourcePoint.center.x, sourcePoint.center.y,
-                            targetPoint.center.x, targetPoint.center.y,
-                            new float[]{0f, 1f},
-                            new Color[]{sourcePartition.getColor().getContentOrDefault(defaultPaint), targetPartition.getColor().getContentOrDefault(defaultPaint)});
+                    try {
+                        strokePaint = new LinearGradientPaint(sourcePoint.center.x, sourcePoint.center.y,
+                                targetPoint.center.x, targetPoint.center.y,
+                                new float[]{0f, 1f},
+                                new Color[]{sourcePartition.getColor().getContentOrDefault(defaultPaint), targetPartition.getColor().getContentOrDefault(defaultPaint)});
+                    }
+                    catch (Throwable throwable) {
+                        strokePaint = sourcePartition.getColor().getContentOrDefault(defaultPaint);
+                    }
                 } else {
                     strokePaint = sourcePartition.getColor().getContentOrDefault(defaultPaint);
                 }
