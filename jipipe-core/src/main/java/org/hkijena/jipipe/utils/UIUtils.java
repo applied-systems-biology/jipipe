@@ -124,6 +124,8 @@ public class UIUtils {
     public static final Map<String, ImageIcon> ICON_INVERTED_FROM_RESOURCES_CACHE = new HashMap<>();
     public static final Map<String, BufferedImage> IMAGE_FROM_RESOURCES_CACHE = new HashMap<>();
     public static final JMenuItem MENU_ITEM_SEPARATOR = null;
+    public static final Color COLOR_ERROR = new Color(0xa51d2d);
+    public static final Color COLOR_SUCCESS = new Color(0x5CB85C);
     public static boolean DARK_THEME = false;
     private static Theme RSYNTAX_THEME_DEFAULT;
     private static Theme RSYNTAX_THEME_DARK;
@@ -196,7 +198,7 @@ public class UIUtils {
     public static Border createControlErrorBorder() {
         if (CONTROL_ERROR_BORDER == null) {
             CONTROL_ERROR_BORDER = BorderFactory.createCompoundBorder(BorderFactory.createEmptyBorder(1, 1, 1, 1),
-                    new RoundedLineBorder(new Color(0xa51d2d), 1, 5));
+                    new RoundedLineBorder(COLOR_ERROR, 1, 5));
         }
         return CONTROL_ERROR_BORDER;
     }
@@ -212,6 +214,11 @@ public class UIUtils {
             }
         }
         return CONTROL_BORDER;
+    }
+
+    public static Border createControlBorder(Color color) {
+        return BorderFactory.createCompoundBorder(BorderFactory.createEmptyBorder(1, 1, 1, 1),
+                new RoundedLineBorder(color, 1, 5));
     }
 
     public static Border createPanelBorder() {

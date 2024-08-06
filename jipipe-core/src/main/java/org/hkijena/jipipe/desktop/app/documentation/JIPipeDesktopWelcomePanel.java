@@ -22,7 +22,7 @@ import org.hkijena.jipipe.api.registries.JIPipeProjectTemplateRegistry;
 import org.hkijena.jipipe.desktop.app.JIPipeDesktopProjectWindow;
 import org.hkijena.jipipe.desktop.app.JIPipeDesktopProjectWorkbench;
 import org.hkijena.jipipe.desktop.app.JIPipeDesktopProjectWorkbenchPanel;
-import org.hkijena.jipipe.desktop.app.grapheditor.pipeline.JIPipePipelineGraphEditorUI;
+import org.hkijena.jipipe.desktop.app.grapheditor.pipeline.JIPipeDesktopPipelineGraphEditorUI;
 import org.hkijena.jipipe.desktop.app.project.templatedownloader.JIPipeDesktopProjectTemplateDownloaderRun;
 import org.hkijena.jipipe.desktop.app.running.JIPipeDesktopRunExecuteUI;
 import org.hkijena.jipipe.desktop.commons.components.JIPipeDesktopFormPanel;
@@ -173,7 +173,7 @@ public class JIPipeDesktopWelcomePanel extends JIPipeDesktopProjectWorkbenchPane
 
         // Search for a compartment tab
         for (JIPipeDesktopTabPane.DocumentTab tab : documentTabPane.getTabs()) {
-            if (tab.getContent() instanceof JIPipePipelineGraphEditorUI) {
+            if (tab.getContent() instanceof JIPipeDesktopPipelineGraphEditorUI) {
                 documentTabPane.switchToTab(tab);
                 return;
             }

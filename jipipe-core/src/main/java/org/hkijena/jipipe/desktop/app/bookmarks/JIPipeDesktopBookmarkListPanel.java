@@ -25,7 +25,7 @@ import org.hkijena.jipipe.desktop.app.JIPipeDesktopWorkbenchPanel;
 import org.hkijena.jipipe.desktop.app.grapheditor.commons.JIPipeDesktopGraphEditorUI;
 import org.hkijena.jipipe.desktop.app.grapheditor.commons.contextmenu.NodeUIContextAction;
 import org.hkijena.jipipe.desktop.app.grapheditor.commons.nodeui.JIPipeDesktopGraphNodeUI;
-import org.hkijena.jipipe.desktop.app.grapheditor.pipeline.JIPipePipelineGraphEditorUI;
+import org.hkijena.jipipe.desktop.app.grapheditor.pipeline.JIPipeDesktopPipelineGraphEditorUI;
 import org.hkijena.jipipe.desktop.commons.components.tabs.JIPipeDesktopTabPane;
 import org.hkijena.jipipe.utils.UIUtils;
 
@@ -141,7 +141,7 @@ public class JIPipeDesktopBookmarkListPanel extends JIPipeDesktopWorkbenchPanel 
             goToBookmark(node);
             JIPipeProjectCompartment compartment = node.getProjectCompartment();
             JIPipeDesktopTabPane.DocumentTab tab = ((JIPipeDesktopProjectWorkbench) getDesktopWorkbench()).getOrOpenPipelineEditorTab(compartment, true);
-            JIPipePipelineGraphEditorUI editorUI = (JIPipePipelineGraphEditorUI) tab.getContent();
+            JIPipeDesktopPipelineGraphEditorUI editorUI = (JIPipeDesktopPipelineGraphEditorUI) tab.getContent();
             JIPipeDesktopGraphNodeUI ui = editorUI.getCanvasUI().getNodeUIs().getOrDefault(node, null);
             if (ui != null) {
                 entry.run(editorUI.getCanvasUI(), Collections.singleton(ui));
@@ -178,7 +178,7 @@ public class JIPipeDesktopBookmarkListPanel extends JIPipeDesktopWorkbenchPanel 
                 JIPipeProjectCompartment compartment = node.getProjectCompartment();
                 JIPipeDesktopTabPane.DocumentTab tab = ((JIPipeDesktopProjectWorkbench) getDesktopWorkbench()).getOrOpenPipelineEditorTab(compartment, true);
                 SwingUtilities.invokeLater(() -> {
-                    JIPipePipelineGraphEditorUI editorUI = (JIPipePipelineGraphEditorUI) tab.getContent();
+                    JIPipeDesktopPipelineGraphEditorUI editorUI = (JIPipeDesktopPipelineGraphEditorUI) tab.getContent();
                     JIPipeDesktopGraphNodeUI ui = editorUI.getCanvasUI().getNodeUIs().getOrDefault(node, null);
                     if (ui != null) {
                         editorUI.selectOnly(ui);

@@ -47,9 +47,7 @@ import org.hkijena.jipipe.desktop.app.grapheditor.pipeline.properties.JIPipeDesk
 import org.hkijena.jipipe.desktop.app.grapheditor.pipeline.properties.JIPipeDesktopPipelineQuickGuidePanel;
 import org.hkijena.jipipe.desktop.app.history.JIPipeDesktopHistoryJournalUI;
 import org.hkijena.jipipe.desktop.commons.components.JIPipeDesktopParameterFormPanel;
-import org.hkijena.jipipe.desktop.commons.components.markup.JIPipeDesktopMarkdownReader;
 import org.hkijena.jipipe.plugins.nodetemplate.NodeTemplateBox;
-import org.hkijena.jipipe.plugins.parameters.library.markup.MarkdownText;
 import org.hkijena.jipipe.plugins.settings.JIPipeGeneralUIApplicationSettings;
 import org.hkijena.jipipe.utils.*;
 import org.hkijena.jipipe.utils.ui.JIPipeDesktopDockPanel;
@@ -64,7 +62,15 @@ import java.util.stream.Collectors;
 /**
  * Editor for a project graph compartment
  */
-public class JIPipePipelineGraphEditorUI extends JIPipeDesktopGraphEditorUI {
+public class JIPipeDesktopPipelineGraphEditorUI extends JIPipeDesktopGraphEditorUI {
+
+    public static final String DOCK_ADD_NODES = "ADD_NODES";
+    public static final String DOCK_NODE_TEMPLATES = "NODE_TEMPLATES";
+    public static final String DOCK_NODE_CONTEXT_HELP = "_HELP";
+    public static final String DOCK_NODE_CONTEXT_PARAMETERS = "_PARAMETERS";
+    public static final String DOCK_NODE_CONTEXT_SLOT_MANAGER = "_SLOT_MANAGER";
+    public static final String DOCK_NODE_CONTEXT_INPUT_MANAGER = "_INPUT_MANAGER";
+    public static final String DOCK_NODE_CONTEXT_RESULTS = "_RESULTS";
 
     /**
      * Creates a project graph compartment editor
@@ -73,7 +79,7 @@ public class JIPipePipelineGraphEditorUI extends JIPipeDesktopGraphEditorUI {
      * @param algorithmGraph The graph
      * @param compartment    The compartment
      */
-    public JIPipePipelineGraphEditorUI(JIPipeDesktopWorkbench workbenchUI, JIPipeGraph algorithmGraph, UUID compartment) {
+    public JIPipeDesktopPipelineGraphEditorUI(JIPipeDesktopWorkbench workbenchUI, JIPipeGraph algorithmGraph, UUID compartment) {
         super(workbenchUI, algorithmGraph, compartment, algorithmGraph.getProject() != null ? algorithmGraph.getProject().getHistoryJournal() : new JIPipeDedicatedGraphHistoryJournal(algorithmGraph));
         initializeDefaultPanels();
 
@@ -204,13 +210,13 @@ public class JIPipePipelineGraphEditorUI extends JIPipeDesktopGraphEditorUI {
                 JIPipeDesktopDockPanel.PanelLocation.BottomLeft,
                 true,
                 new JIPipeDesktopPipelineQuickGuidePanel(getDesktopWorkbench(), this));
-        getDockPanel().addDockPanel("ADD_NODES",
+        getDockPanel().addDockPanel(DOCK_ADD_NODES,
                 "Add nodes",
                 UIUtils.getIcon32FromResources("actions/node-add.png"),
                 JIPipeDesktopDockPanel.PanelLocation.BottomLeft,
                 false,
                 new JIPipeDesktopAddNodePanel(getDesktopWorkbench(), this));
-        getDockPanel().addDockPanel("NODE_TEMPLATES", "Node templates",
+        getDockPanel().addDockPanel(DOCK_NODE_TEMPLATES, "Node templates",
                 UIUtils.getIcon32FromResources("actions/star3.png"),
                 JIPipeDesktopDockPanel.PanelLocation.BottomLeft,
                 false,
@@ -266,21 +272,21 @@ public class JIPipePipelineGraphEditorUI extends JIPipeDesktopGraphEditorUI {
                 getCanvasUI(),
                 node);
         parametersPanel.getParametersUI().getContextHelpEventEmitter().subscribeLambda((source, event) -> {
-            getDockPanel().activatePanel("_HELP", true);
+            getDockPanel().activatePanel(DOCK_NODE_CONTEXT_HELP, true);
         });
-        getDockPanel().addDockPanel("_PARAMETERS",
+        getDockPanel().addDockPanel(DOCK_NODE_CONTEXT_PARAMETERS,
                 "Parameters",
                 UIUtils.getIcon32FromResources("actions/configure3.png"),
                 JIPipeDesktopDockPanel.PanelLocation.TopRight,
                 true,
                 parametersPanel);
-        getDockPanel().addDockPanel("_HELP",
+        getDockPanel().addDockPanel(DOCK_NODE_CONTEXT_HELP,
                 "Documentation",
                 UIUtils.getIcon32FromResources("actions/help-question.png"),
                 JIPipeDesktopDockPanel.PanelLocation.BottomRight,
                 true,
                 parametersPanel.getParametersUI().getHelpPanel());
-        getDockPanel().addDockPanel("_SLOTS",
+        getDockPanel().addDockPanel(DOCK_NODE_CONTEXT_SLOT_MANAGER,
                 "Slots overview",
                 UIUtils.getIcon32FromResources("actions/labplot-editbreaklayout.png"),
                 JIPipeDesktopDockPanel.PanelLocation.TopRight,
@@ -289,7 +295,7 @@ public class JIPipePipelineGraphEditorUI extends JIPipeDesktopGraphEditorUI {
         if (node instanceof JIPipeIterationStepAlgorithm && getDesktopWorkbench() instanceof JIPipeDesktopProjectWorkbench) {
             if(getDesktopWorkbench().getProject() != null) {
                 getDockPanel().addDockPanel(
-                        "_INPUTS",
+                        DOCK_NODE_CONTEXT_INPUT_MANAGER,
                         "Inputs",
                         UIUtils.getIcon32FromResources("actions/input-management-2.png"),
                         JIPipeDesktopDockPanel.PanelLocation.TopRight,
@@ -301,7 +307,7 @@ public class JIPipePipelineGraphEditorUI extends JIPipeDesktopGraphEditorUI {
             }
             else {
                 getDockPanel().addDockPanel(
-                        "_INPUTS",
+                        DOCK_NODE_CONTEXT_INPUT_MANAGER,
                         "Inputs",
                         UIUtils.getIcon32FromResources("actions/input-management-2.png"),
                         JIPipeDesktopDockPanel.PanelLocation.TopRight,
@@ -311,7 +317,7 @@ public class JIPipePipelineGraphEditorUI extends JIPipeDesktopGraphEditorUI {
             }
         }
         if(getDesktopWorkbench() instanceof JIPipeDesktopProjectWorkbench) {
-            getDockPanel().addDockPanel("_RESULTS",
+            getDockPanel().addDockPanel(DOCK_NODE_CONTEXT_RESULTS,
                     "Results",
                     UIUtils.getIcon32FromResources("actions/network-server-database.png"),
                     JIPipeDesktopDockPanel.PanelLocation.TopRight,

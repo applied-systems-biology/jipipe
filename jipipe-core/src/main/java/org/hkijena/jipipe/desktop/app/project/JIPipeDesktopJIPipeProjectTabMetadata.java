@@ -18,7 +18,7 @@ import com.fasterxml.jackson.annotation.JsonSetter;
 import org.hkijena.jipipe.api.JIPipeMetadataObject;
 import org.hkijena.jipipe.api.compartments.algorithms.JIPipeProjectCompartment;
 import org.hkijena.jipipe.desktop.app.JIPipeDesktopProjectWorkbench;
-import org.hkijena.jipipe.desktop.app.grapheditor.pipeline.JIPipePipelineGraphEditorUI;
+import org.hkijena.jipipe.desktop.app.grapheditor.pipeline.JIPipeDesktopPipelineGraphEditorUI;
 import org.hkijena.jipipe.desktop.commons.components.tabs.JIPipeDesktopTabPane;
 import org.hkijena.jipipe.utils.StringUtils;
 
@@ -50,8 +50,8 @@ public class JIPipeDesktopJIPipeProjectTabMetadata implements JIPipeMetadataObje
             String id = null;
             if (singletonTabId != null) {
                 id = "singleton:" + singletonTabId;
-            } else if (component instanceof JIPipePipelineGraphEditorUI) {
-                JIPipePipelineGraphEditorUI graphCompartmentUI = (JIPipePipelineGraphEditorUI) component;
+            } else if (component instanceof JIPipeDesktopPipelineGraphEditorUI) {
+                JIPipeDesktopPipelineGraphEditorUI graphCompartmentUI = (JIPipeDesktopPipelineGraphEditorUI) component;
                 id = "graph-compartment:" + graphCompartmentUI.getCompartment();
             }
 

@@ -32,7 +32,7 @@ import javax.swing.*;
 public class JIPipeGraphEditorUIApplicationSettings extends JIPipeDefaultApplicationsSettingsSheet {
 
     public static String ID = "org.hkijena.jipipe:graph-editor-ui";
-    private final AlgorithmFinderSettings algorithmFinderSettings = new AlgorithmFinderSettings();
+    private final NodeSearchSettings nodeSearchSettings = new NodeSearchSettings();
     private JIPipepGraphAutoLayoutMethod autoLayout = JIPipepGraphAutoLayoutMethod.MST;
     private boolean switchPanningDirection = false;
     private boolean askOnDeleteNode = true;
@@ -151,10 +151,10 @@ public class JIPipeGraphEditorUIApplicationSettings extends JIPipeDefaultApplica
         this.defaultEdgeVisibility = defaultEdgeVisibility;
     }
 
-    @SetJIPipeDocumentation(name = "Algorithm finder settings", description = "Settings related to the algorithm finder")
+    @SetJIPipeDocumentation(name = "Node search settings", description = "Settings related to the node search")
     @JIPipeParameter("algorithm-finder-settings")
-    public AlgorithmFinderSettings getAlgorithmFinderSettings() {
-        return algorithmFinderSettings;
+    public NodeSearchSettings getNodeSearchSettings() {
+        return nodeSearchSettings;
     }
 
     @SetJIPipeDocumentation(name = "Improve edge drawing", description = "If enabled, edges are drawn with outlines to make them easier distinguishable. " +
@@ -343,9 +343,10 @@ public class JIPipeGraphEditorUIApplicationSettings extends JIPipeDefaultApplica
         return "Configures the pipeline editor UI (e.g., the default view mode)";
     }
 
-    public static class AlgorithmFinderSettings extends AbstractJIPipeParameterCollection {
+    public static class NodeSearchSettings extends AbstractJIPipeParameterCollection {
         private boolean searchFindNewNodes = true;
         private boolean searchFindExistingNodes = true;
+        private boolean showDescriptions = true;
 
         @SetJIPipeDocumentation(name = "Search: Create nodes", description = "If enabled, the search will allow to create new nodes")
         @JIPipeParameter("search-find-new-nodes")
@@ -367,6 +368,17 @@ public class JIPipeGraphEditorUIApplicationSettings extends JIPipeDefaultApplica
         @JIPipeParameter("search-find-existing-nodes")
         public void setSearchFindExistingNodes(boolean searchFindExistingNodes) {
             this.searchFindExistingNodes = searchFindExistingNodes;
+        }
+
+        @SetJIPipeDocumentation(name = "Show node descriptions", description = "If enabled, show node description")
+        @JIPipeParameter("show-node-descriptions")
+        public boolean isShowDescriptions() {
+            return showDescriptions;
+        }
+
+        @JIPipeParameter("show-node-descriptions")
+        public void setShowDescriptions(boolean showDescriptions) {
+            this.showDescriptions = showDescriptions;
         }
     }
 }

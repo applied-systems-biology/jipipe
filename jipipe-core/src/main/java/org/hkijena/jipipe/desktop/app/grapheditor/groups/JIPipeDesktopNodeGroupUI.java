@@ -16,7 +16,7 @@ package org.hkijena.jipipe.desktop.app.grapheditor.groups;
 import org.hkijena.jipipe.api.grouping.JIPipeNodeGroup;
 import org.hkijena.jipipe.desktop.app.JIPipeDesktopWorkbench;
 import org.hkijena.jipipe.desktop.app.JIPipeDesktopWorkbenchPanel;
-import org.hkijena.jipipe.desktop.app.grapheditor.pipeline.JIPipePipelineGraphEditorUI;
+import org.hkijena.jipipe.desktop.app.grapheditor.pipeline.JIPipeDesktopPipelineGraphEditorUI;
 import org.hkijena.jipipe.desktop.commons.components.tabs.JIPipeDesktopTabPane;
 import org.hkijena.jipipe.utils.UIUtils;
 import org.scijava.Disposable;
@@ -27,12 +27,12 @@ import java.util.List;
 
 /**
  * Editor for a {@link JIPipeNodeGroup}
- * Contains a {@link JIPipePipelineGraphEditorUI} instance that allows editing the compartment's content
+ * Contains a {@link JIPipeDesktopPipelineGraphEditorUI} instance that allows editing the compartment's content
  */
 public class JIPipeDesktopNodeGroupUI extends JIPipeDesktopWorkbenchPanel implements Disposable {
 
     private JIPipeNodeGroup nodeGroup;
-    private JIPipePipelineGraphEditorUI graphUI;
+    private JIPipeDesktopPipelineGraphEditorUI graphUI;
 
     /**
      * Creates a new editor
@@ -87,7 +87,7 @@ public class JIPipeDesktopNodeGroupUI extends JIPipeDesktopWorkbenchPanel implem
 
     private void initialize() {
         setLayout(new BorderLayout());
-        graphUI = new JIPipePipelineGraphEditorUI(getDesktopWorkbench(), nodeGroup.getWrappedGraph(), null);
+        graphUI = new JIPipeDesktopPipelineGraphEditorUI(getDesktopWorkbench(), nodeGroup.getWrappedGraph(), null);
         add(graphUI, BorderLayout.CENTER);
     }
 

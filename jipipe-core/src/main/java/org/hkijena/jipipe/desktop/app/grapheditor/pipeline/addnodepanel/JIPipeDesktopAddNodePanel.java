@@ -24,14 +24,19 @@ import org.hkijena.jipipe.desktop.app.JIPipeDesktopProjectWorkbench;
 import org.hkijena.jipipe.desktop.app.JIPipeDesktopWorkbench;
 import org.hkijena.jipipe.desktop.app.JIPipeDesktopWorkbenchPanel;
 import org.hkijena.jipipe.desktop.app.grapheditor.commons.JIPipeDesktopGraphEditorUI;
+import org.hkijena.jipipe.desktop.app.grapheditor.commons.nodeui.JIPipeDesktopGraphNodeUI;
 import org.hkijena.jipipe.desktop.commons.components.layouts.JIPipeDesktopWrapLayout;
 import org.hkijena.jipipe.desktop.commons.components.search.JIPipeDesktopSearchTextField;
+import org.hkijena.jipipe.plugins.settings.JIPipeGraphEditorUIApplicationSettings;
 import org.hkijena.jipipe.utils.StringUtils;
 import org.hkijena.jipipe.utils.TooltipUtils;
 import org.hkijena.jipipe.utils.UIUtils;
+import org.jdesktop.swingx.JXTextField;
 
 import javax.swing.*;
 import java.awt.*;
+import java.awt.event.KeyAdapter;
+import java.awt.event.KeyEvent;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 import java.util.*;
@@ -45,18 +50,21 @@ public class JIPipeDesktopAddNodePanel extends JIPipeDesktopWorkbenchPanel {
     private final JToolBar toolBar = new JToolBar();
     private final JIPipeNodeDatabase database;
     private final JIPipeRunnableQueue queue = new JIPipeRunnableQueue("Node toolbox");
+    private final JIPipeGraphEditorUIApplicationSettings settings;
     private JList<JIPipeNodeDatabaseEntry> algorithmList;
     private JIPipeDesktopSearchTextField searchField;
     private JScrollPane scrollPane;
     private final JPanel mainCategoriesPanel = new JPanel();
     private final JIPipeDesktopGraphEditorUI graphEditorUI;
     private final List<MainCategoryFilter> mainCategoryFilters = new ArrayList<>();
+    private final JToggleButton showNodeDescriptionToggle = new JToggleButton(UIUtils.getIconFromResources("actions/help.png"));
 
     public JIPipeDesktopAddNodePanel(JIPipeDesktopWorkbench workbench, JIPipeDesktopGraphEditorUI graphEditorUI) {
         super(workbench);
         this.database = workbench instanceof JIPipeDesktopProjectWorkbench ?
                 ((JIPipeDesktopProjectWorkbench) workbench).getNodeDatabase() : JIPipeNodeDatabase.getInstance();
         this.graphEditorUI = graphEditorUI;
+        this.settings = JIPipeGraphEditorUIApplicationSettings.getInstance();
         initializeMainCategoryFilters();
         initialize();
         reloadAlgorithmList();
@@ -148,12 +156,39 @@ public class JIPipeDesktopAddNodePanel extends JIPipeDesktopWorkbenchPanel {
 
         searchField = new JIPipeDesktopSearchTextField();
         searchField.addActionListener(e -> reloadAlgorithmList());
+        searchField.getTextField().addKeyListener(new KeyAdapter() {
+            @Override
+            public void keyReleased(KeyEvent e) {
+                super.keyReleased(e);
+                if(e.getKeyCode() == KeyEvent.VK_DOWN) {
+                    algorithmList.requestFocus();
+                }
+                else if(e.getKeyCode() == KeyEvent.VK_ENTER) {
+                    insertFirstAtCursor();
+                    graphEditorUI.getCanvasUI().requestFocus();
+                }
+            }
+        });
         toolBar.add(searchField);
+
+        showNodeDescriptionToggle.setToolTipText("Show node descriptions");
+        showNodeDescriptionToggle.setSelected(settings.getNodeSearchSettings().isShowDescriptions());
+        showNodeDescriptionToggle.addActionListener(e -> {
+            reloadAlgorithmList();
+            settings.getNodeSearchSettings().setShowDescriptions(showNodeDescriptionToggle.isSelected());
+            JIPipe.getSettings().save();
+        });
+
+        toolBar.add(showNodeDescriptionToggle);
+    }
+
+    public boolean isShowDescriptions() {
+        return showNodeDescriptionToggle.isSelected();
     }
 
     private void initializeAlgorithmList() {
         algorithmList = new JList<>();
-        algorithmList.setToolTipText("Drag one or multiple entries from the list into the graph to create nodes.");
+//        algorithmList.setToolTipText("Drag one or multiple entries from the list into the graph to create nodes.");
         algorithmList.setCursor(Cursor.getPredefinedCursor(Cursor.HAND_CURSOR));
         algorithmList.setBorder(UIUtils.createEmptyBorder(8));
         algorithmList.setOpaque(false);
@@ -161,7 +196,7 @@ public class JIPipeDesktopAddNodePanel extends JIPipeDesktopWorkbenchPanel {
         algorithmList.setDragEnabled(true);
         algorithmList.setTransferHandler(new JIPipeDesktopAddNodeTransferHandler());
         scrollPane = new JScrollPane(algorithmList);
-        algorithmList.setCellRenderer(new JIPipeDesktopAddNodePanelEntryListCellRenderer(scrollPane));
+        algorithmList.setCellRenderer(new JIPipeDesktopAddNodePanelEntryListCellRenderer(scrollPane, this));
         scrollPane.setHorizontalScrollBarPolicy(ScrollPaneConstants.HORIZONTAL_SCROLLBAR_NEVER);
         add(scrollPane, new GridBagConstraints(0,
                 5,
@@ -185,10 +220,39 @@ public class JIPipeDesktopAddNodePanel extends JIPipeDesktopWorkbenchPanel {
                 }
             }
         });
+        algorithmList.addKeyListener(new KeyAdapter() {
+            @Override
+            public void keyReleased(KeyEvent e) {
+
+                if(e.getKeyCode() == KeyEvent.VK_ENTER) {
+                    if(algorithmList.getSelectedValue() != null) {
+                        insertAtCursor(algorithmList.getSelectedValue());
+                        graphEditorUI.getCanvasUI().requestFocus();
+                    }
+                }
+                else if(e.getKeyCode() == KeyEvent.VK_UP) {
+                    if(algorithmList.getSelectedIndex() == 0) {
+                        searchField.getTextField().requestFocus();
+                    }
+                }
+
+                super.keyReleased(e);
+            }
+        });
+    }
+
+    private void insertFirstAtCursor() {
+        if(algorithmList.getSelectedValue() != null) {
+            insertAtCursor(algorithmList.getSelectedValue());
+        }
+        else if(algorithmList.getModel().getSize() > 0) {
+            insertAtCursor(algorithmList.getModel().getElementAt(0));
+        }
     }
 
     private void insertAtCursor(JIPipeNodeDatabaseEntry entry) {
-        entry.addToGraph(graphEditorUI.getCanvasUI());
+        JIPipeDesktopGraphNodeUI nodeUI = entry.addToGraph(graphEditorUI.getCanvasUI());
+        graphEditorUI.getCanvasUI().selectOnly(nodeUI);
     }
 
     /**
@@ -214,12 +278,12 @@ public class JIPipeDesktopAddNodePanel extends JIPipeDesktopWorkbenchPanel {
         for (Map.Entry<String, Set<JIPipeNodeInfo>> entry : byMenuPath.entrySet()) {
             JComponent subMenu = menuTree.get(entry.getKey());
 
-            subMenu.addMouseListener(new MouseAdapter() {
-                @Override
-                public void mouseClicked(MouseEvent e) {
-                    System.out.println("clicked " + entry.getKey());
-                }
-            });
+//            subMenu.addMouseListener(new MouseAdapter() {
+//                @Override
+//                public void mouseClicked(MouseEvent e) {
+//                    System.out.println("clicked " + entry.getKey());
+//                }
+//            });
 
             for (JIPipeNodeInfo info : JIPipeNodeInfo.getSortedList(entry.getValue())) {
                 if (info.isHidden())
@@ -340,6 +404,13 @@ public class JIPipeDesktopAddNodePanel extends JIPipeDesktopWorkbenchPanel {
         }
         while (changed);
 
+    }
+
+    public void focusSearchBar() {
+        JXTextField textField = searchField.getTextField();
+        textField.selectAll();
+        textField.grabFocus();
+        textField.requestFocus();
     }
 
     public static class MainCategoryFilter {

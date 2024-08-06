@@ -18,6 +18,8 @@ import org.hkijena.jipipe.utils.StringUtils;
 import org.hkijena.jipipe.utils.UIUtils;
 
 import javax.swing.*;
+import javax.swing.border.Border;
+import javax.swing.border.CompoundBorder;
 import java.awt.*;
 
 /**
@@ -25,19 +27,27 @@ import java.awt.*;
  */
 public class JIPipeDesktopAddNodePanelEntryListCellRenderer extends JPanel implements ListCellRenderer<JIPipeNodeDatabaseEntry> {
 
+    private final Border defaultBorder;
+    private final Border selectedBorder;
     private JLabel nodeIcon;
     private JLabel nameLabel;
+    private JLabel descriptionLabel;
     private JLabel pathLabel;
     private final JScrollPane scrollPane;
+    private final JIPipeDesktopAddNodePanel addNodePanel;
 
     /**
      * Creates a new renderer
      */
-    public JIPipeDesktopAddNodePanelEntryListCellRenderer(JScrollPane scrollPane) {
+    public JIPipeDesktopAddNodePanelEntryListCellRenderer(JScrollPane scrollPane, JIPipeDesktopAddNodePanel addNodePanel) {
         this.scrollPane = scrollPane;
+        this.addNodePanel = addNodePanel;
+        this.defaultBorder = BorderFactory.createCompoundBorder(UIUtils.createEmptyBorder(4),
+                UIUtils.createControlBorder());
+        this.selectedBorder = BorderFactory.createCompoundBorder(UIUtils.createEmptyBorder(4),
+                UIUtils.createControlBorder(UIUtils.COLOR_SUCCESS));
         setOpaque(true);
-        setBorder(BorderFactory.createCompoundBorder(UIUtils.createEmptyBorder(4),
-                UIUtils.createControlBorder()));
+        setBorder(defaultBorder);
         initialize();
     }
 
@@ -45,9 +55,12 @@ public class JIPipeDesktopAddNodePanelEntryListCellRenderer extends JPanel imple
         setLayout(new GridBagLayout());
         nodeIcon = new JLabel();
         nameLabel = new JLabel();
+        descriptionLabel = new JLabel();
+        descriptionLabel.setForeground(Color.GRAY);
+        descriptionLabel.setFont(new Font(Font.DIALOG, Font.PLAIN, 10));
         pathLabel = new JLabel();
         pathLabel.setForeground(Color.GRAY);
-        pathLabel.setFont(new Font(Font.DIALOG, Font.PLAIN, 10));
+        pathLabel.setFont(new Font(Font.DIALOG, Font.ITALIC, 10));
 
         add(nodeIcon, new GridBagConstraints() {
             {
@@ -66,6 +79,15 @@ public class JIPipeDesktopAddNodePanelEntryListCellRenderer extends JPanel imple
                 weightx = 1;
             }
         });
+        add(descriptionLabel, new GridBagConstraints() {
+            {
+                anchor = GridBagConstraints.NORTHWEST;
+                gridx = 1;
+                gridy = 2;
+                fill = HORIZONTAL;
+                weightx = 1;
+            }
+        });
         add(pathLabel, new GridBagConstraints() {
             {
                 anchor = GridBagConstraints.NORTHWEST;
@@ -80,28 +102,40 @@ public class JIPipeDesktopAddNodePanelEntryListCellRenderer extends JPanel imple
     @Override
     public Component getListCellRendererComponent(JList<? extends JIPipeNodeDatabaseEntry> list, JIPipeNodeDatabaseEntry obj, int index, boolean isSelected, boolean cellHasFocus) {
 
+        boolean showDescriptions = addNodePanel.isShowDescriptions();
         int availableWidth = scrollPane.getWidth() - list.getInsets().left - list.getInsets().right;
         setMinimumSize(new Dimension(availableWidth, 16));
-        setMaximumSize(new Dimension(availableWidth, 50));
-        setPreferredSize(new Dimension(availableWidth, 50));
+
+        if(showDescriptions) {
+            setMaximumSize(new Dimension(availableWidth, 75));
+        }
+        else {
+            setMaximumSize(new Dimension(availableWidth, 50));
+        }
+        setPreferredSize(getMaximumSize());
         setFont(list.getFont());
 
         if (obj != null) {
             setTruncatedText(nameLabel, obj.getName(), list);
+            if(showDescriptions) {
+                setTruncatedText(descriptionLabel, obj.getDescriptionPlain(), list);
+            }
+            else {
+                descriptionLabel.setText(null);
+            }
             setTruncatedText(pathLabel, obj.getLocationInfo().replace("\n", " > "), list);
             nodeIcon.setIcon(obj.getIcon());
         }
 
-//        if (isSelected) {
-//            setBackground(UIManager.getColor("List.selectionBackground"));
-//        } else {
-//            setBackground(UIManager.getColor("List.background"));
-//        }
+        setBorder(isSelected ? selectedBorder : defaultBorder);
 
         return this;
     }
 
     private void setTruncatedText(JLabel label, String text, JList<? extends JIPipeNodeDatabaseEntry> list) {
+        if(text.length() > 100) {
+            text = text.substring(0, 100) + " ...";
+        }
         FontMetrics fm = label.getFontMetrics(label.getFont());
         int availableWidth = scrollPane.getWidth() - list.getInsets().left - list.getInsets().right;
         label.setText(StringUtils.limitWithEllipsis(text, availableWidth, fm));

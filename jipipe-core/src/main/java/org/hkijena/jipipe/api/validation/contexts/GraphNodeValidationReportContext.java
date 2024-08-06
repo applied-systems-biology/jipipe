@@ -19,7 +19,7 @@ import org.hkijena.jipipe.api.nodes.JIPipeGraphNode;
 import org.hkijena.jipipe.api.validation.JIPipeValidationReportContext;
 import org.hkijena.jipipe.api.validation.NavigableJIPipeValidationReportContext;
 import org.hkijena.jipipe.desktop.app.JIPipeDesktopProjectWorkbench;
-import org.hkijena.jipipe.desktop.app.grapheditor.pipeline.JIPipePipelineGraphEditorUI;
+import org.hkijena.jipipe.desktop.app.grapheditor.pipeline.JIPipeDesktopPipelineGraphEditorUI;
 import org.hkijena.jipipe.desktop.commons.components.tabs.JIPipeDesktopTabPane;
 import org.hkijena.jipipe.utils.UIUtils;
 
@@ -64,7 +64,7 @@ public class GraphNodeValidationReportContext extends NavigableJIPipeValidationR
             SwingUtilities.invokeLater(() -> {
                 JIPipeDesktopTabPane.DocumentTab pipelineEditorTab = ((JIPipeDesktopProjectWorkbench) workbench).getOrOpenPipelineEditorTab(graphNode.getProjectCompartment(), true);
                 SwingUtilities.invokeLater(() -> {
-                    JIPipePipelineGraphEditorUI ui = (JIPipePipelineGraphEditorUI) pipelineEditorTab.getContent();
+                    JIPipeDesktopPipelineGraphEditorUI ui = (JIPipeDesktopPipelineGraphEditorUI) pipelineEditorTab.getContent();
                     ui.selectOnly(ui.getCanvasUI().getNodeUIs().get(targetNode));
                 });
             });

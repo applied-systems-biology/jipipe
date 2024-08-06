@@ -241,18 +241,18 @@ public class JIPipeDesktopNodeFinderDialogUI extends JDialog {
 
         if (querySlot != null) {
             findExistingNodesToggle.setText("Find existing");
-            findExistingNodesToggle.setSelected(JIPipeGraphEditorUIApplicationSettings.getInstance().getAlgorithmFinderSettings().isSearchFindExistingNodes());
+            findExistingNodesToggle.setSelected(JIPipeGraphEditorUIApplicationSettings.getInstance().getNodeSearchSettings().isSearchFindExistingNodes());
             createNodesToggle.setText("Create new");
-            createNodesToggle.setSelected(JIPipeGraphEditorUIApplicationSettings.getInstance().getAlgorithmFinderSettings().isSearchFindNewNodes());
+            createNodesToggle.setSelected(JIPipeGraphEditorUIApplicationSettings.getInstance().getNodeSearchSettings().isSearchFindNewNodes());
             findExistingNodesToggle.addActionListener(e -> {
-                JIPipeGraphEditorUIApplicationSettings.getInstance().getAlgorithmFinderSettings().setSearchFindExistingNodes(findExistingNodesToggle.isSelected());
+                JIPipeGraphEditorUIApplicationSettings.getInstance().getNodeSearchSettings().setSearchFindExistingNodes(findExistingNodesToggle.isSelected());
                 if (!JIPipe.NO_SETTINGS_AUTOSAVE) {
                     JIPipe.getSettings().save();
                 }
                 reloadList();
             });
             createNodesToggle.addActionListener(e -> {
-                JIPipeGraphEditorUIApplicationSettings.getInstance().getAlgorithmFinderSettings().setSearchFindNewNodes(createNodesToggle.isSelected());
+                JIPipeGraphEditorUIApplicationSettings.getInstance().getNodeSearchSettings().setSearchFindNewNodes(createNodesToggle.isSelected());
                 if (!JIPipe.NO_SETTINGS_AUTOSAVE) {
                     JIPipe.getSettings().save();
                 }

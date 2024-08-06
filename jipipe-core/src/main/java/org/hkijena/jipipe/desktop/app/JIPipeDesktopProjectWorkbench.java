@@ -19,7 +19,6 @@ import org.hkijena.jipipe.api.JIPipeProgressInfo;
 import org.hkijena.jipipe.api.JIPipeWorkbench;
 import org.hkijena.jipipe.api.compartments.algorithms.JIPipeProjectCompartment;
 import org.hkijena.jipipe.api.data.thumbnails.JIPipeThumbnailGenerationQueue;
-import org.hkijena.jipipe.api.grouping.JIPipeNodeGroup;
 import org.hkijena.jipipe.api.nodes.JIPipeGraph;
 import org.hkijena.jipipe.api.nodes.JIPipeGraphNode;
 import org.hkijena.jipipe.api.nodes.database.JIPipeNodeDatabase;
@@ -28,8 +27,6 @@ import org.hkijena.jipipe.api.project.JIPipeArchiveProjectToDirectoryRun;
 import org.hkijena.jipipe.api.project.JIPipeArchiveProjectToZIPRun;
 import org.hkijena.jipipe.api.project.JIPipeProject;
 import org.hkijena.jipipe.api.run.JIPipeRunnableQueue;
-import org.hkijena.jipipe.api.validation.JIPipeValidationReport;
-import org.hkijena.jipipe.api.validation.contexts.UnspecifiedValidationReportContext;
 import org.hkijena.jipipe.desktop.api.JIPipeMenuExtensionTarget;
 import org.hkijena.jipipe.desktop.app.backups.JIPipeDesktopBackupManagerPanel;
 import org.hkijena.jipipe.desktop.app.cache.JIPipeDesktopCacheBrowserUI;
@@ -38,7 +35,7 @@ import org.hkijena.jipipe.desktop.app.documentation.JIPipeDataTypeCompendiumUI;
 import org.hkijena.jipipe.desktop.app.documentation.JIPipeDesktopAlgorithmCompendiumUI;
 import org.hkijena.jipipe.desktop.app.documentation.JIPipeDesktopWelcomePanel;
 import org.hkijena.jipipe.desktop.app.grapheditor.compartments.JIPipeCompartmentsGraphEditorUI;
-import org.hkijena.jipipe.desktop.app.grapheditor.pipeline.JIPipePipelineGraphEditorUI;
+import org.hkijena.jipipe.desktop.app.grapheditor.pipeline.JIPipeDesktopPipelineGraphEditorUI;
 import org.hkijena.jipipe.desktop.app.plugins.JIPipeDesktopPluginValidityCheckerPanel;
 import org.hkijena.jipipe.desktop.app.plugins.pluginsmanager.JIPipeDesktopManagePluginsButton;
 import org.hkijena.jipipe.desktop.app.project.JIPipeDesktopJIPipeProjectTabMetadata;
@@ -57,7 +54,6 @@ import org.hkijena.jipipe.desktop.commons.components.markup.JIPipeDesktopMarkdow
 import org.hkijena.jipipe.desktop.commons.components.tabs.JIPipeDesktopTabPane;
 import org.hkijena.jipipe.desktop.commons.notifications.JIPipeDesktopNotificationButton;
 import org.hkijena.jipipe.desktop.commons.notifications.JIPipeDesktopWorkbenchNotificationInboxUI;
-import org.hkijena.jipipe.plugins.parameters.library.markup.HTMLText;
 import org.hkijena.jipipe.plugins.parameters.library.markup.MarkdownText;
 import org.hkijena.jipipe.plugins.settings.JIPipeFileChooserApplicationSettings;
 import org.hkijena.jipipe.plugins.settings.JIPipeGeneralUIApplicationSettings;
@@ -312,34 +308,34 @@ public class JIPipeDesktopProjectWorkbench extends JPanel implements JIPipeDeskt
     }
 
     /**
-     * Finds open {@link JIPipePipelineGraphEditorUI} tabs
+     * Finds open {@link JIPipeDesktopPipelineGraphEditorUI} tabs
      *
      * @param compartment Targeted compartment
      * @return List of UIs
      */
-    public List<JIPipePipelineGraphEditorUI> findOpenPipelineEditorTabs(JIPipeProjectCompartment compartment) {
-        List<JIPipePipelineGraphEditorUI> result = new ArrayList<>();
+    public List<JIPipeDesktopPipelineGraphEditorUI> findOpenPipelineEditorTabs(JIPipeProjectCompartment compartment) {
+        List<JIPipeDesktopPipelineGraphEditorUI> result = new ArrayList<>();
         for (JIPipeDesktopTabPane.DocumentTab tab : documentTabPane.getTabs()) {
-            if (tab.getContent() instanceof JIPipePipelineGraphEditorUI) {
-                if (Objects.equals(((JIPipePipelineGraphEditorUI) tab.getContent()).getCompartment(), compartment.getProjectCompartmentUUID()))
-                    result.add((JIPipePipelineGraphEditorUI) tab.getContent());
+            if (tab.getContent() instanceof JIPipeDesktopPipelineGraphEditorUI) {
+                if (Objects.equals(((JIPipeDesktopPipelineGraphEditorUI) tab.getContent()).getCompartment(), compartment.getProjectCompartmentUUID()))
+                    result.add((JIPipeDesktopPipelineGraphEditorUI) tab.getContent());
             }
         }
         return result;
     }
 
     /**
-     * Finds open {@link JIPipePipelineGraphEditorUI} tabs
+     * Finds open {@link JIPipeDesktopPipelineGraphEditorUI} tabs
      *
      * @param compartmentUUID Targeted compartment
      * @return List of UIs
      */
-    public List<JIPipePipelineGraphEditorUI> findOpenPipelineEditorTabs(UUID compartmentUUID) {
-        List<JIPipePipelineGraphEditorUI> result = new ArrayList<>();
+    public List<JIPipeDesktopPipelineGraphEditorUI> findOpenPipelineEditorTabs(UUID compartmentUUID) {
+        List<JIPipeDesktopPipelineGraphEditorUI> result = new ArrayList<>();
         for (JIPipeDesktopTabPane.DocumentTab tab : documentTabPane.getTabs()) {
-            if (tab.getContent() instanceof JIPipePipelineGraphEditorUI) {
-                if (Objects.equals(((JIPipePipelineGraphEditorUI) tab.getContent()).getCompartment(), compartmentUUID))
-                    result.add((JIPipePipelineGraphEditorUI) tab.getContent());
+            if (tab.getContent() instanceof JIPipeDesktopPipelineGraphEditorUI) {
+                if (Objects.equals(((JIPipeDesktopPipelineGraphEditorUI) tab.getContent()).getCompartment(), compartmentUUID))
+                    result.add((JIPipeDesktopPipelineGraphEditorUI) tab.getContent());
             }
         }
         return result;
@@ -351,12 +347,12 @@ public class JIPipeDesktopProjectWorkbench extends JPanel implements JIPipeDeskt
      *
      * @param compartment The compartment
      * @param switchToTab If true, switch to the tab
-     * @return the tab. its content is a {@link JIPipePipelineGraphEditorUI}
+     * @return the tab. its content is a {@link JIPipeDesktopPipelineGraphEditorUI}
      */
     public JIPipeDesktopTabPane.DocumentTab getOrOpenPipelineEditorTab(JIPipeProjectCompartment compartment, boolean switchToTab) {
-        List<JIPipePipelineGraphEditorUI> compartmentUIs = findOpenPipelineEditorTabs(compartment);
+        List<JIPipeDesktopPipelineGraphEditorUI> compartmentUIs = findOpenPipelineEditorTabs(compartment);
         if (compartmentUIs.isEmpty()) {
-            JIPipePipelineGraphEditorUI compartmentUI = new JIPipePipelineGraphEditorUI(this, compartment.getRuntimeProject().getGraph(), compartment.getProjectCompartmentUUID());
+            JIPipeDesktopPipelineGraphEditorUI compartmentUI = new JIPipeDesktopPipelineGraphEditorUI(this, compartment.getRuntimeProject().getGraph(), compartment.getProjectCompartmentUUID());
             JIPipeDesktopTabPane.DocumentTab documentTab = documentTabPane.addTab(compartment.getName(),
                     UIUtils.getIconFromResources("actions/graph-compartment.png"),
                     compartmentUI,
@@ -879,8 +875,8 @@ public class JIPipeDesktopProjectWorkbench extends JPanel implements JIPipeDeskt
     }
 
     private void newCompartmentAfterCurrent() {
-        if (documentTabPane.getCurrentContent() instanceof JIPipePipelineGraphEditorUI) {
-            JIPipePipelineGraphEditorUI ui = (JIPipePipelineGraphEditorUI) documentTabPane.getCurrentContent();
+        if (documentTabPane.getCurrentContent() instanceof JIPipeDesktopPipelineGraphEditorUI) {
+            JIPipeDesktopPipelineGraphEditorUI ui = (JIPipeDesktopPipelineGraphEditorUI) documentTabPane.getCurrentContent();
             String compartmentName = UIUtils.getUniqueStringByDialog(this, "Please enter the name of the compartment",
                     "Compartment", s -> project.getCompartments().containsKey(s));
             if (compartmentName != null && !compartmentName.trim().isEmpty()) {
@@ -972,7 +968,7 @@ public class JIPipeDesktopProjectWorkbench extends JPanel implements JIPipeDeskt
      */
     @Override
     public void onProjectCompartmentRemoved(JIPipeProject.CompartmentRemovedEvent event) {
-        for (JIPipePipelineGraphEditorUI compartmentUI : findOpenPipelineEditorTabs(event.getCompartmentUUID())) {
+        for (JIPipeDesktopPipelineGraphEditorUI compartmentUI : findOpenPipelineEditorTabs(event.getCompartmentUUID())) {
             documentTabPane.remove(compartmentUI);
         }
     }

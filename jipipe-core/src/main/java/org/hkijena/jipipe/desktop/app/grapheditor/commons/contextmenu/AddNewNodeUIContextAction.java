@@ -16,7 +16,10 @@ package org.hkijena.jipipe.desktop.app.grapheditor.commons.contextmenu;
 import org.hkijena.jipipe.desktop.app.grapheditor.commons.JIPipeDesktopGraphCanvasUI;
 import org.hkijena.jipipe.desktop.app.grapheditor.commons.nodeui.JIPipeDesktopGraphNodeUI;
 import org.hkijena.jipipe.desktop.app.grapheditor.nodefinder.JIPipeDesktopNodeFinderDialogUI;
+import org.hkijena.jipipe.desktop.app.grapheditor.pipeline.JIPipeDesktopPipelineGraphEditorUI;
+import org.hkijena.jipipe.desktop.app.grapheditor.pipeline.addnodepanel.JIPipeDesktopAddNodePanel;
 import org.hkijena.jipipe.utils.UIUtils;
+import org.hkijena.jipipe.utils.ui.JIPipeDesktopDockPanel;
 
 import javax.swing.*;
 import java.awt.event.KeyEvent;
@@ -30,8 +33,20 @@ public class AddNewNodeUIContextAction implements NodeUIContextAction {
 
     @Override
     public void run(JIPipeDesktopGraphCanvasUI canvasUI, Set<JIPipeDesktopGraphNodeUI> selection) {
-        JIPipeDesktopNodeFinderDialogUI dialogUI = new JIPipeDesktopNodeFinderDialogUI(canvasUI, null);
-        dialogUI.setVisible(true);
+
+
+        if(canvasUI.getGraphEditorUI() instanceof JIPipeDesktopPipelineGraphEditorUI) {
+            JIPipeDesktopDockPanel dockPanel = canvasUI.getGraphEditorUI().getDockPanel();
+            dockPanel.activatePanel(JIPipeDesktopPipelineGraphEditorUI.DOCK_ADD_NODES, true);
+            SwingUtilities.invokeLater(() -> {
+                dockPanel.getPanel(JIPipeDesktopPipelineGraphEditorUI.DOCK_ADD_NODES, JIPipeDesktopAddNodePanel.class).focusSearchBar();
+            });
+        }
+        else {
+            JIPipeDesktopNodeFinderDialogUI dialogUI = new JIPipeDesktopNodeFinderDialogUI(canvasUI, null);
+            dialogUI.setVisible(true);
+        }
+
     }
 
     @Override
