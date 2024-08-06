@@ -34,7 +34,7 @@ import org.hkijena.jipipe.desktop.app.cache.JIPipeDesktopCacheManagerUI;
 import org.hkijena.jipipe.desktop.app.documentation.JIPipeDataTypeCompendiumUI;
 import org.hkijena.jipipe.desktop.app.documentation.JIPipeDesktopAlgorithmCompendiumUI;
 import org.hkijena.jipipe.desktop.app.documentation.JIPipeDesktopWelcomePanel;
-import org.hkijena.jipipe.desktop.app.grapheditor.compartments.JIPipeCompartmentsGraphEditorUI;
+import org.hkijena.jipipe.desktop.app.grapheditor.compartments.JIPipeDesktopCompartmentsGraphEditorUI;
 import org.hkijena.jipipe.desktop.app.grapheditor.pipeline.JIPipeDesktopPipelineGraphEditorUI;
 import org.hkijena.jipipe.desktop.app.plugins.JIPipeDesktopPluginValidityCheckerPanel;
 import org.hkijena.jipipe.desktop.app.plugins.pluginsmanager.JIPipeDesktopManagePluginsButton;
@@ -245,7 +245,7 @@ public class JIPipeDesktopProjectWorkbench extends JPanel implements JIPipeDeskt
         documentTabPane.registerSingletonTab(TAB_COMPARTMENT_EDITOR,
                 "Compartments",
                 UIUtils.getIconFromResources("actions/graph-compartments.png"),
-                () -> new JIPipeCompartmentsGraphEditorUI(this),
+                () -> new JIPipeDesktopCompartmentsGraphEditorUI(this),
                 JIPipeDesktopTabPane.SingletonTabMode.Hidden);
         validityCheckerPanel = new JIPipeDesktopReloadableValidityChecker(this, project);
         documentTabPane.registerSingletonTab(TAB_VALIDITY_CHECK,

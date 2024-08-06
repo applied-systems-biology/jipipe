@@ -28,8 +28,8 @@ import org.hkijena.jipipe.desktop.app.grapheditor.compartments.contextmenu.clipb
 import org.hkijena.jipipe.desktop.app.grapheditor.compartments.contextmenu.clipboard.GraphCompartmentCutNodeUIContextAction;
 import org.hkijena.jipipe.desktop.app.grapheditor.compartments.contextmenu.clipboard.GraphCompartmentPasteNodeUIContextAction;
 import org.hkijena.jipipe.desktop.app.grapheditor.compartments.dragdrop.JIPipeCompartmentGraphDragAndDropBehavior;
+import org.hkijena.jipipe.desktop.app.grapheditor.compartments.properties.JIPipeDesktopCompartmentsQuickGuidePanel;
 import org.hkijena.jipipe.desktop.app.history.JIPipeDesktopHistoryJournalUI;
-import org.hkijena.jipipe.desktop.app.running.JIPipeDesktopRunnableQueuePanelUI;
 import org.hkijena.jipipe.desktop.commons.components.markup.JIPipeDesktopMarkdownReader;
 import org.hkijena.jipipe.plugins.parameters.library.markup.MarkdownText;
 import org.hkijena.jipipe.utils.UIUtils;
@@ -46,12 +46,12 @@ import java.util.stream.Collectors;
 /**
  * Graph editor UI for a project compartment graph
  */
-public class JIPipeCompartmentsGraphEditorUI extends JIPipeDesktopGraphEditorUI {
+public class JIPipeDesktopCompartmentsGraphEditorUI extends JIPipeDesktopGraphEditorUI {
 
     /**
      * @param workbenchUI The workbench UI
      */
-    public JIPipeCompartmentsGraphEditorUI(JIPipeDesktopProjectWorkbench workbenchUI) {
+    public JIPipeDesktopCompartmentsGraphEditorUI(JIPipeDesktopProjectWorkbench workbenchUI) {
         super(workbenchUI, workbenchUI.getProject().getCompartmentGraph(), null, workbenchUI.getProject().getHistoryJournal());
         initializeDefaultPanels();
 
@@ -114,7 +114,7 @@ public class JIPipeCompartmentsGraphEditorUI extends JIPipeDesktopGraphEditorUI 
                 UIUtils.getIcon32FromResources("actions/help-about.png"),
                 JIPipeDesktopDockPanel.PanelLocation.BottomLeft,
                 true,
-                new JIPipeDesktopMarkdownReader(false, MarkdownText.fromPluginResource("documentation/compartment-graph.md", new HashMap<>())));
+                new JIPipeDesktopCompartmentsQuickGuidePanel(getDesktopWorkbench(), this));
         getDockPanel().addDockPanel(JIPipeDesktopGraphEditorUI.DOCK_BOOKMARKS,
                 "Bookmarks",
                 UIUtils.getIcon32FromResources("actions/bookmarks.png"),
