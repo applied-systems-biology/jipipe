@@ -21,6 +21,7 @@ import org.hkijena.jipipe.plugins.parameters.library.markup.HTMLText;
 import javax.swing.*;
 import java.awt.*;
 import java.util.Map;
+import java.util.Set;
 
 public interface JIPipeNodeDatabaseEntry {
 
@@ -40,7 +41,9 @@ public interface JIPipeNodeDatabaseEntry {
 
     Icon getIcon();
 
-    String getCategory();
+    String getLocationInfo();
+
+    Set<String> getCategoryIds();
 
     Map<String, JIPipeDataSlotInfo> getInputSlots();
 

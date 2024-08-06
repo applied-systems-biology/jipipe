@@ -29,7 +29,9 @@ import org.jsoup.Jsoup;
 import javax.swing.*;
 import java.awt.*;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.Map;
+import java.util.Set;
 
 public class CreateNewNodeByExampleDatabaseEntry implements JIPipeNodeDatabaseEntry {
     private final String id;
@@ -39,6 +41,7 @@ public class CreateNewNodeByExampleDatabaseEntry implements JIPipeNodeDatabaseEn
     private final Map<String, JIPipeDataSlotInfo> outputSlots = new HashMap<>();
     private final String descriptionPlain;
     private final JIPipeGraphNode exampleNode;
+    private final Set<String> categoryIds = new HashSet<>();
 
     public CreateNewNodeByExampleDatabaseEntry(String id, JIPipeNodeExample example) {
         this.id = id;
@@ -47,6 +50,14 @@ public class CreateNewNodeByExampleDatabaseEntry implements JIPipeNodeDatabaseEn
         this.descriptionPlain = Jsoup.parse(getDescription().getHtml()).text();
         initializeSlots();
         initializeTokens();
+        initializeCategoryIds();
+    }
+
+    private void initializeCategoryIds() {
+        categoryIds.add(exampleNode.getInfo().getCategory().getId());
+        for (JIPipeNodeMenuLocation alias : exampleNode.getInfo().getAliases()) {
+            categoryIds.add(alias.getCategory().getId());
+        }
     }
 
     private void initializeSlots() {
@@ -107,8 +118,13 @@ public class CreateNewNodeByExampleDatabaseEntry implements JIPipeNodeDatabaseEn
     }
 
     @Override
-    public String getCategory() {
+    public String getLocationInfo() {
         return (example.getNodeInfo().getCategory().getName() + "\n" + example.getNodeInfo().getMenuPath()).trim();
+    }
+
+    @Override
+    public Set<String> getCategoryIds() {
+        return categoryIds;
     }
 
     @Override

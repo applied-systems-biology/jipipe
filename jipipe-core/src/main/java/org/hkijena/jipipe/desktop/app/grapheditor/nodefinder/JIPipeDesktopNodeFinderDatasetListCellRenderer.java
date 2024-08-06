@@ -78,7 +78,7 @@ public class JIPipeDesktopNodeFinderDatasetListCellRenderer extends JPanel imple
         setPreferredSize(new Dimension(list.getWidth() - 16, CELL_HEIGHT));
         iconLabel.setIcon(value.getIcon());
         nameLabel.setText(value.getName());
-        categoryLabel.setText(value.getCategory().trim().replace("\n", " > "));
+        categoryLabel.setText(value.getLocationInfo().trim().replace("\n", " > "));
         descriptionLabel.setText(value.getDescriptionPlain());
 
         if (parent.getQuerySlot() != null) {

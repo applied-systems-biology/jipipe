@@ -25,8 +25,10 @@ import org.jsoup.Jsoup;
 
 import javax.swing.*;
 import java.awt.*;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.Set;
 
 public class ExistingCompartmentDatabaseEntry implements JIPipeNodeDatabaseEntry {
     private final String id;
@@ -100,8 +102,13 @@ public class ExistingCompartmentDatabaseEntry implements JIPipeNodeDatabaseEntry
     }
 
     @Override
-    public String getCategory() {
+    public String getLocationInfo() {
         return "Compartments";
+    }
+
+    @Override
+    public Set<String> getCategoryIds() {
+        return Collections.emptySet();
     }
 
     @Override

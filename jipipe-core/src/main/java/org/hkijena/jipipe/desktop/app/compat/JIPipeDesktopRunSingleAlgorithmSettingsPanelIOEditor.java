@@ -54,9 +54,7 @@ public class JIPipeDesktopRunSingleAlgorithmSettingsPanelIOEditor extends JIPipe
     }
 
     private static JIPipeGraphEditorUIApplicationSettings createSettings() {
-        JIPipeGraphEditorUIApplicationSettings settings = new JIPipeGraphEditorUIApplicationSettings();
-        settings.getSearchSettings().setEnableSearch(false);
-        return settings;
+        return new JIPipeGraphEditorUIApplicationSettings();
     }
 
     private void initialize() {

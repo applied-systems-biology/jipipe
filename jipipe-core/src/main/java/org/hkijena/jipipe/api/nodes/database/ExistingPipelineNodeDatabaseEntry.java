@@ -28,9 +28,7 @@ import org.jsoup.Jsoup;
 
 import javax.swing.*;
 import java.awt.*;
-import java.util.HashMap;
-import java.util.Map;
-import java.util.UUID;
+import java.util.*;
 
 public class ExistingPipelineNodeDatabaseEntry implements JIPipeNodeDatabaseEntry {
     private final String id;
@@ -39,6 +37,7 @@ public class ExistingPipelineNodeDatabaseEntry implements JIPipeNodeDatabaseEntr
     private final Map<String, JIPipeDataSlotInfo> inputSlots = new HashMap<>();
     private final Map<String, JIPipeDataSlotInfo> outputSlots = new HashMap<>();
     private final String descriptionPlain;
+    private final Set<String> categoryIds = new HashSet<>();
 
     public ExistingPipelineNodeDatabaseEntry(String id, JIPipeGraphNode graphNode) {
         this.id = id;
@@ -46,6 +45,14 @@ public class ExistingPipelineNodeDatabaseEntry implements JIPipeNodeDatabaseEntr
         this.descriptionPlain = Jsoup.parse(getDescription().getHtml()).text();
         initializeSlots();
         initializeTokens();
+        initializeCategoryIds();
+    }
+
+    private void initializeCategoryIds() {
+        categoryIds.add(graphNode.getCategory().getId());
+        for (JIPipeNodeMenuLocation alias : graphNode.getInfo().getAliases()) {
+            categoryIds.add(alias.getCategory().getId());
+        }
     }
 
     private void initializeSlots() {
@@ -140,13 +147,18 @@ public class ExistingPipelineNodeDatabaseEntry implements JIPipeNodeDatabaseEntr
     }
 
     @Override
-    public String getCategory() {
+    public String getLocationInfo() {
         UUID uuid = graphNode.getCompartmentUUIDInParentGraph();
         if (uuid == null) {
             return "Nodes";
         } else {
             return "Compartments\n" + graphNode.getCompartmentDisplayName();
         }
+    }
+
+    @Override
+    public Set<String> getCategoryIds() {
+        return categoryIds;
     }
 
     @Override

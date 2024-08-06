@@ -1897,6 +1897,68 @@ public class UIUtils {
         return result;
     }
 
+    public static JMenuItem getMenuItem(JComponent menu, int index) {
+        if(menu instanceof JMenu) {
+            return ((JMenu) menu).getItem(index);
+        }
+        else {
+            return (JMenuItem) menu.getComponent(index);
+        }
+    }
+
+    public static int getMenuItemCount(JComponent menu) {
+        if(menu instanceof JMenu) {
+            return ((JMenu) menu).getItemCount();
+        }
+        else {
+            return menu.getComponentCount();
+        }
+    }
+
+    /**
+     * Creates a hierarchy of menus based on the menu paths vector
+     *
+     * @param rootMenu  the root menu
+     * @param menuPaths strings that have menu items separated by newlines
+     * @return map from menu path to submenu
+     */
+    public static Map<String, JComponent> createMenuTree(JPopupMenu rootMenu, Set<String> menuPaths) {
+        Set<String> decomposedPaths = new HashSet<>();
+        for (String menuPath : menuPaths) {
+            String[] components = menuPath.split("\n");
+            String path = null;
+            for (String component : components) {
+                if (path == null)
+                    path = component;
+                else
+                    path += "\n" + component;
+                decomposedPaths.add(path);
+            }
+        }
+
+        Map<String, JComponent> result = new HashMap<>();
+        List<String> sortedMenuPaths = decomposedPaths.stream().sorted().collect(Collectors.toList());
+        result.put("", rootMenu);
+        for (String menuPath : sortedMenuPaths) {
+            if (menuPath != null && !menuPath.isEmpty()) {
+                if (!menuPath.contains("\n")) {
+                    JMenu menu = new JMenu(menuPath);
+                    rootMenu.add(menu);
+                    result.put(menuPath, menu);
+                } else {
+                    int lastNewLine = menuPath.lastIndexOf("\n");
+                    String parentMenuPath = menuPath.substring(0, lastNewLine);
+                    String lastComponent = menuPath.substring(lastNewLine + 1);
+                    JComponent parentMenu = result.get(parentMenuPath);
+                    JMenu menu = new JMenu(lastComponent);
+                    parentMenu.add(menu);
+                    result.put(menuPath, menu);
+                }
+            }
+        }
+        return result;
+    }
+
     /**
      * Makes a {@link JDialog} close when the escape key is hit
      *

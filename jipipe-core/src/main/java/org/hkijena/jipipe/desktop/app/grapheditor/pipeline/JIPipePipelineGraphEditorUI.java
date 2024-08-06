@@ -208,7 +208,7 @@ public class JIPipePipelineGraphEditorUI extends JIPipeDesktopGraphEditorUI {
                 UIUtils.getIcon32FromResources("actions/node-add.png"),
                 JIPipeDesktopDockPanel.PanelLocation.BottomLeft,
                 false,
-                new JIPipeDesktopAddNodePanel(getDesktopWorkbench(), getCanvasUI()));
+                new JIPipeDesktopAddNodePanel(getDesktopWorkbench(), this));
         getDockPanel().addDockPanel("NODE_TEMPLATES", "Node templates",
                 UIUtils.getIcon32FromResources("actions/star3.png"),
                 JIPipeDesktopDockPanel.PanelLocation.BottomLeft,

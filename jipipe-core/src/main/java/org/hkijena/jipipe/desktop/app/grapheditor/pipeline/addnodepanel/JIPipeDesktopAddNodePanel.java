@@ -13,32 +13,29 @@
 
 package org.hkijena.jipipe.desktop.app.grapheditor.pipeline.addnodepanel;
 
-import com.google.common.html.HtmlEscapers;
 import org.hkijena.jipipe.JIPipe;
 import org.hkijena.jipipe.api.AbstractJIPipeRunnable;
-import org.hkijena.jipipe.api.data.JIPipeDataInfo;
+import org.hkijena.jipipe.api.data.JIPipeData;
 import org.hkijena.jipipe.api.nodes.*;
+import org.hkijena.jipipe.api.nodes.categories.DataSourceNodeTypeCategory;
 import org.hkijena.jipipe.api.nodes.database.*;
 import org.hkijena.jipipe.api.run.JIPipeRunnableQueue;
 import org.hkijena.jipipe.desktop.app.JIPipeDesktopProjectWorkbench;
 import org.hkijena.jipipe.desktop.app.JIPipeDesktopWorkbench;
 import org.hkijena.jipipe.desktop.app.JIPipeDesktopWorkbenchPanel;
-import org.hkijena.jipipe.desktop.app.grapheditor.commons.JIPipeDesktopGraphCanvasUI;
+import org.hkijena.jipipe.desktop.app.grapheditor.commons.JIPipeDesktopGraphEditorUI;
 import org.hkijena.jipipe.desktop.commons.components.layouts.JIPipeDesktopWrapLayout;
-import org.hkijena.jipipe.desktop.commons.components.markup.JIPipeDesktopMarkdownReader;
-import org.hkijena.jipipe.desktop.commons.components.renderers.JIPipeDesktopNodeDatabaseEntryListCellRenderer;
 import org.hkijena.jipipe.desktop.commons.components.search.JIPipeDesktopSearchTextField;
-import org.hkijena.jipipe.desktop.commons.components.window.JIPipeDesktopAlwaysOnTopToggle;
-import org.hkijena.jipipe.plugins.parameters.library.markup.MarkdownText;
-import org.hkijena.jipipe.utils.JIPipeDesktopSplitPane;
 import org.hkijena.jipipe.utils.StringUtils;
+import org.hkijena.jipipe.utils.TooltipUtils;
 import org.hkijena.jipipe.utils.UIUtils;
 
 import javax.swing.*;
 import java.awt.*;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
-import java.util.Comparator;
+import java.util.*;
+import java.util.List;
 
 /**
  * New and improved node tool box
@@ -52,15 +49,53 @@ public class JIPipeDesktopAddNodePanel extends JIPipeDesktopWorkbenchPanel {
     private JIPipeDesktopSearchTextField searchField;
     private JScrollPane scrollPane;
     private final JPanel mainCategoriesPanel = new JPanel();
-    private final JIPipeDesktopGraphCanvasUI canvasUI;
+    private final JIPipeDesktopGraphEditorUI graphEditorUI;
+    private final List<MainCategoryFilter> mainCategoryFilters = new ArrayList<>();
 
-    public JIPipeDesktopAddNodePanel(JIPipeDesktopWorkbench workbench, JIPipeDesktopGraphCanvasUI canvasUI) {
+    public JIPipeDesktopAddNodePanel(JIPipeDesktopWorkbench workbench, JIPipeDesktopGraphEditorUI graphEditorUI) {
         super(workbench);
         this.database = workbench instanceof JIPipeDesktopProjectWorkbench ?
                 ((JIPipeDesktopProjectWorkbench) workbench).getNodeDatabase() : JIPipeNodeDatabase.getInstance();
-        this.canvasUI = canvasUI;
+        this.graphEditorUI = graphEditorUI;
+        initializeMainCategoryFilters();
         initialize();
         reloadAlgorithmList();
+    }
+
+    private void initializeMainCategoryFilters() {
+        JIPipe.getNodes().getRegisteredCategories().values().stream().sorted(Comparator.comparing(JIPipeNodeTypeCategory::getUIOrder)).forEach(category -> {
+            if(category.isVisibleInGraphCompartment()) {
+                JToggleButton categoryButton = new JToggleButton(category.getName(), category.getIcon());
+                categoryButton.setFont(new Font(Font.DIALOG, Font.PLAIN, 11));
+
+                // Add the old menu as popup menu to the categories
+                JPopupMenu popupMenu = UIUtils.addRightClickPopupMenuToButton(categoryButton);
+                if(category instanceof DataSourceNodeTypeCategory) {
+                    initializeAddDataSourceMenu(graphEditorUI, popupMenu, new HashSet<>());
+                }
+                else {
+                    initializeMenuForCategory(graphEditorUI, popupMenu, category, new HashSet<>());
+                }
+
+                MainCategoryFilter currentFilter = new MainCategoryFilter(category, categoryButton);
+                categoryButton.addActionListener(e -> {
+                    if(categoryButton.isSelected()) {
+                        for (MainCategoryFilter filter : mainCategoryFilters) {
+                            if(filter.isSelected() && filter != currentFilter) {
+                                filter.toggleButton.setSelected(false);
+                            }
+                        }
+                    }
+                    updateMainCategoryFilters();
+                    reloadAlgorithmList();
+                });
+               mainCategoryFilters.add(currentFilter);
+            }
+        });
+    }
+
+    private void updateMainCategoryFilters() {
+
     }
 
     private void reloadAlgorithmList() {
@@ -82,13 +117,9 @@ public class JIPipeDesktopAddNodePanel extends JIPipeDesktopWorkbenchPanel {
 
     private void initializeMainCategoryPanel() {
         mainCategoriesPanel.setLayout(new JIPipeDesktopWrapLayout(FlowLayout.LEFT));
-        JIPipe.getNodes().getRegisteredCategories().values().stream().sorted(Comparator.comparing(JIPipeNodeTypeCategory::getUIOrder)).forEach(category -> {
-            if(category.isVisibleInGraphCompartment()) {
-                JButton categoryButton = new JButton(category.getName(), category.getIcon());
-                categoryButton.setFont(new Font(Font.DIALOG, Font.PLAIN, 11));
-                mainCategoriesPanel.add(categoryButton);
-            }
-        });
+        for (MainCategoryFilter filter : mainCategoryFilters) {
+            mainCategoriesPanel.add(filter.toggleButton);
+        }
         add(mainCategoriesPanel, new GridBagConstraints(0,
                 1,
                 1,
@@ -140,7 +171,7 @@ public class JIPipeDesktopAddNodePanel extends JIPipeDesktopWorkbenchPanel {
                 1,
                 GridBagConstraints.NORTHWEST,
                 GridBagConstraints.BOTH,
-                new Insets(8, 8, 8, 8),
+                new Insets(8, 0, 8, 8),
                 0,
                 0));
 
@@ -157,7 +188,176 @@ public class JIPipeDesktopAddNodePanel extends JIPipeDesktopWorkbenchPanel {
     }
 
     private void insertAtCursor(JIPipeNodeDatabaseEntry entry) {
-        entry.addToGraph(canvasUI);
+        entry.addToGraph(graphEditorUI.getCanvasUI());
+    }
+
+    /**
+     * Initializes a menu for one algorithm category
+     *
+     * @param graphEditorUI   the graph editor
+     * @param menu            The menu
+     * @param category        The algorithm category
+     * @param addedAlgorithms added algorithm types are added to this list
+     */
+    public static void initializeMenuForCategory(JIPipeDesktopGraphEditorUI graphEditorUI, JPopupMenu menu, JIPipeNodeTypeCategory category, Set<JIPipeNodeInfo> addedAlgorithms) {
+        JIPipeGraph algorithmGraph = graphEditorUI.getGraph();
+        JIPipe registryService = JIPipe.getInstance();
+        Set<JIPipeNodeInfo> algorithmsOfCategory = registryService.getNodeRegistry().getNodesOfCategory(category, true);
+        if (algorithmsOfCategory.isEmpty()) {
+            menu.setVisible(false);
+            return;
+        }
+
+        Map<String, Set<JIPipeNodeInfo>> byMenuPath = JIPipeNodeInfo.groupByMenuPaths(category, algorithmsOfCategory);
+        Map<String, JComponent> menuTree = UIUtils.createMenuTree(menu, byMenuPath.keySet());
+
+        for (Map.Entry<String, Set<JIPipeNodeInfo>> entry : byMenuPath.entrySet()) {
+            JComponent subMenu = menuTree.get(entry.getKey());
+
+            subMenu.addMouseListener(new MouseAdapter() {
+                @Override
+                public void mouseClicked(MouseEvent e) {
+                    System.out.println("clicked " + entry.getKey());
+                }
+            });
+
+            for (JIPipeNodeInfo info : JIPipeNodeInfo.getSortedList(entry.getValue())) {
+                if (info.isHidden())
+                    continue;
+                if (UIUtils.getMenuItemCount(subMenu) >= 30) {
+                    JMenu moreMenu = new JMenu("More ...");
+                    subMenu.add(moreMenu);
+                    subMenu = moreMenu;
+                }
+                String name = info.getName();
+                boolean hasAlternativeName = false;
+
+                // Alternative names
+                for (JIPipeNodeMenuLocation location : info.getAliases()) {
+                    if (StringUtils.isNullOrEmpty(location.getAlternativeName()))
+                        continue;
+                    if (Objects.equals(category.getId(), location.getCategory().getId())) {
+                        String locationPath = StringUtils.getCleanedMenuPath(location.getMenuPath());
+                        if (Objects.equals(locationPath, entry.getKey())) {
+                            name = location.getAlternativeName();
+                            hasAlternativeName = true;
+                            break;
+                        }
+                    }
+                }
+
+                JMenuItem addItem = new JMenuItem(name, JIPipe.getNodes().getIconFor(info));
+                addItem.setToolTipText(TooltipUtils.getAlgorithmTooltip(info));
+                boolean finalHasAlternativeName = hasAlternativeName;
+                String finalName = name;
+                addItem.addActionListener(e -> {
+                    if (!JIPipeDesktopProjectWorkbench.canAddOrDeleteNodes(graphEditorUI.getDesktopWorkbench()))
+                        return;
+                    JIPipeGraphNode node = info.newInstance();
+                    if (finalHasAlternativeName) {
+                        node.setCustomName(finalName);
+                    }
+                    graphEditorUI.getCanvasUI().getHistoryJournal().snapshotBeforeAddNode(node, graphEditorUI.getCompartment());
+                    graphEditorUI.getCanvasUI().getScheduledSelection().clear();
+                    graphEditorUI.getCanvasUI().getScheduledSelection().add(node);
+                    algorithmGraph.insertNode(node, graphEditorUI.getCompartment());
+                });
+                addedAlgorithms.add(info);
+                subMenu.add(addItem);
+            }
+        }
+    }
+
+    /**
+     * Initializes a menu that adds data sources
+     *
+     * @param graphEditorUI   the editor
+     * @param menu            the target menu
+     * @param addedAlgorithms added algorithm types are added to this list
+     */
+    public static void initializeAddDataSourceMenu(JIPipeDesktopGraphEditorUI graphEditorUI, JPopupMenu menu, Set<JIPipeNodeInfo> addedAlgorithms) {
+        JIPipeGraph algorithmGraph = graphEditorUI.getGraph();
+        JIPipe registryService = JIPipe.getInstance();
+        Map<String, Set<Class<? extends JIPipeData>>> dataTypesByMenuPaths = JIPipe.getDataTypes().getDataTypesByMenuPaths();
+        Map<String, JComponent> menuTree = UIUtils.createMenuTree(menu, dataTypesByMenuPaths.keySet());
+
+        for (Map.Entry<String, Set<Class<? extends JIPipeData>>> entry : dataTypesByMenuPaths.entrySet()) {
+            JComponent subMenu = menuTree.get(entry.getKey());
+            for (Class<? extends JIPipeData> dataClass : JIPipeData.getSortedList(entry.getValue())) {
+                if (JIPipeData.isHidden(dataClass))
+                    continue;
+                Set<JIPipeNodeInfo> dataSources = registryService.getNodeRegistry().getMenuDataSourcesFor(dataClass);
+                boolean isEmpty = true;
+                Icon icon = registryService.getDatatypeRegistry().getIconFor(dataClass);
+                JMenu dataMenu = new JMenu(JIPipeData.getNameOf(dataClass));
+                dataMenu.setIcon(icon);
+
+                for (JIPipeNodeInfo info : dataSources) {
+                    if (info.isHidden())
+                        continue;
+                    JMenuItem addItem = new JMenuItem(info.getName(), JIPipe.getNodes().getIconFor(info));
+                    addItem.setToolTipText(TooltipUtils.getAlgorithmTooltip(info));
+                    addItem.addActionListener(e -> {
+                        if (!JIPipeDesktopProjectWorkbench.canAddOrDeleteNodes(graphEditorUI.getDesktopWorkbench()))
+                            return;
+                        JIPipeGraphNode node = info.newInstance();
+                        graphEditorUI.getHistoryJournal().snapshotBeforeAddNode(node, graphEditorUI.getCompartment());
+                        algorithmGraph.insertNode(node, graphEditorUI.getCompartment());
+                    });
+                    addedAlgorithms.add(info);
+                    dataMenu.add(addItem);
+                    isEmpty = false;
+                }
+
+                subMenu.add(dataMenu);
+                if (isEmpty)
+                    dataMenu.setVisible(false);
+            }
+        }
+
+        // Remove empty menus
+        boolean changed;
+        Set<JComponent> invisible = new HashSet<>();
+        do {
+            changed = false;
+            for (JComponent item : menuTree.values()) {
+                if (invisible.contains(item)) {
+                    continue;
+                }
+                boolean hasVisible = false;
+                for (int i = 0; i < UIUtils.getMenuItemCount(item); i++) {
+                    if (UIUtils.getMenuItem(item, i).isVisible()) {
+                        hasVisible = true;
+                        break;
+                    }
+                }
+                if (!hasVisible) {
+                    item.setVisible(false);
+                    invisible.add(item);
+                    changed = true;
+                }
+            }
+        }
+        while (changed);
+
+    }
+
+    public static class MainCategoryFilter {
+        private final JIPipeNodeTypeCategory category;
+        private final JToggleButton toggleButton;
+
+        public MainCategoryFilter(JIPipeNodeTypeCategory category, JToggleButton toggleButton) {
+            this.category = category;
+            this.toggleButton = toggleButton;
+        }
+
+        public boolean isSelected() {
+            return toggleButton.isSelected();
+        }
+
+        public String getCategoryId() {
+            return category.getId();
+        }
     }
 
     public static class ReloadListRun extends AbstractJIPipeRunnable {
@@ -175,11 +375,25 @@ public class JIPipeDesktopAddNodePanel extends JIPipeDesktopWorkbenchPanel {
 
         @Override
         public void run() {
+
+            String selectedCategoryId = null;
+            for (MainCategoryFilter filter : toolBox.mainCategoryFilters) {
+                if(filter.isSelected()) {
+                    selectedCategoryId = filter.getCategoryId();
+                    break;
+                }
+            }
+
             DefaultListModel<JIPipeNodeDatabaseEntry> model = new DefaultListModel<>();
             for (JIPipeNodeDatabaseEntry entry : toolBox.database.query(toolBox.searchField.getText(),
                     JIPipeNodeDatabaseRole.PipelineNode,
                     false,
                     true)) {
+                if(selectedCategoryId != null) {
+                    if(!entry.getCategoryIds().contains(selectedCategoryId)) {
+                        continue;
+                    }
+                }
                 model.addElement(entry);
             }
             toolBox.algorithmList.setModel(model);

@@ -170,7 +170,12 @@ public class JIPipeNodeDatabase {
 
             rankMap.put(entry, ranking);
         }
-        result.sort(Comparator.comparing(rankMap::get));
+        if(textTokens.isEmpty()) {
+            result.sort(Comparator.comparing(JIPipeNodeDatabaseEntry::getName));
+        }
+        else {
+            result.sort(Comparator.comparing(rankMap::get));
+        }
         return result;
     }
 

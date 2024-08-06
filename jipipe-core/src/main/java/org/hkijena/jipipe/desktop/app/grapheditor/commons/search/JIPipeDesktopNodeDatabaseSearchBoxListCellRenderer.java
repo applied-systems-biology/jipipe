@@ -132,7 +132,7 @@ public class JIPipeDesktopNodeDatabaseSearchBoxListCellRenderer extends JPanel i
 
         algorithmLabel.setText(value.getName());
         algorithmLabel.setIcon(value.getIcon());
-        menuLabel.setText(value.getCategory().replace("\n", " > "));
+        menuLabel.setText(value.getLocationInfo().replace("\n", " > "));
 
         if (value instanceof CreateNewNodeByInfoDatabaseEntry) {
             JIPipeNodeInfo info = ((CreateNewNodeByInfoDatabaseEntry) value).getNodeInfo();

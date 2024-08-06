@@ -13,19 +13,12 @@
 
 package org.hkijena.jipipe.desktop.app.grapheditor.pipeline.addnodepanel;
 
-import org.hkijena.jipipe.api.nodes.JIPipeNodeInfo;
-import org.hkijena.jipipe.api.nodes.JIPipeNodeMenuLocation;
-import org.hkijena.jipipe.api.nodes.database.CreateNewNodeByExampleDatabaseEntry;
-import org.hkijena.jipipe.api.nodes.database.CreateNewNodeByInfoDatabaseEntry;
 import org.hkijena.jipipe.api.nodes.database.JIPipeNodeDatabaseEntry;
-import org.hkijena.jipipe.desktop.commons.components.icons.SolidColorIcon;
-import org.hkijena.jipipe.desktop.commons.theme.JIPipeDesktopModernMetalTheme;
 import org.hkijena.jipipe.utils.StringUtils;
 import org.hkijena.jipipe.utils.UIUtils;
 
 import javax.swing.*;
 import java.awt.*;
-import java.util.List;
 
 /**
  * Renderer for {@link JIPipeNodeDatabaseEntry} (supports only non-existing nodes fully)
@@ -95,7 +88,7 @@ public class JIPipeDesktopAddNodePanelEntryListCellRenderer extends JPanel imple
 
         if (obj != null) {
             setTruncatedText(nameLabel, obj.getName(), list);
-            setTruncatedText(pathLabel, obj.getCategory().replace("\n", " > "), list);
+            setTruncatedText(pathLabel, obj.getLocationInfo().replace("\n", " > "), list);
             nodeIcon.setIcon(obj.getIcon());
         }
 
