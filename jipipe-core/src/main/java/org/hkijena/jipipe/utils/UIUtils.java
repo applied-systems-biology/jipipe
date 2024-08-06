@@ -121,8 +121,8 @@ public class UIUtils {
     public static final FileNameExtensionFilter EXTENSION_FILTER_HDF5 = new FileNameExtensionFilter("HDF5 data (*.hdf5, *.h5)", "hdf5", "h5");
     public static final Insets UI_PADDING = new Insets(4, 4, 4, 4);
     public static final Map<String, ImageIcon> ICON_FROM_RESOURCES_CACHE = new HashMap<>();
-
     public static final Map<String, ImageIcon> ICON_INVERTED_FROM_RESOURCES_CACHE = new HashMap<>();
+    public static final Map<String, BufferedImage> IMAGE_FROM_RESOURCES_CACHE = new HashMap<>();
     public static final JMenuItem MENU_ITEM_SEPARATOR = null;
     public static boolean DARK_THEME = false;
     private static Theme RSYNTAX_THEME_DEFAULT;
@@ -401,6 +401,19 @@ public class UIUtils {
             }
         }
         return theme;
+    }
+
+    public static BufferedImage getImageFromResources(String path) {
+        BufferedImage image = IMAGE_FROM_RESOURCES_CACHE.getOrDefault(path, null);
+        if(image == null) {
+            try {
+                image = ImageIO.read(ResourceUtils.getPluginResource(path));
+                IMAGE_FROM_RESOURCES_CACHE.put(path, image);
+            } catch (IOException e) {
+                throw new RuntimeException(e);
+            }
+        }
+        return image;
     }
 
     public static BufferedImage getExtensionBuilderLogo400() {

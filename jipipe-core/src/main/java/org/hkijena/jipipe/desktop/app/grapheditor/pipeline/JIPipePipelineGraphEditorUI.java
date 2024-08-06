@@ -44,6 +44,7 @@ import org.hkijena.jipipe.desktop.app.grapheditor.pipeline.actions.JIPipeDesktop
 import org.hkijena.jipipe.desktop.app.grapheditor.pipeline.addnodepanel.JIPipeDesktopAddNodePanel;
 import org.hkijena.jipipe.desktop.app.grapheditor.pipeline.dragdrop.JIPipeCreateNodesFromDraggedDataDragAndDropBehavior;
 import org.hkijena.jipipe.desktop.app.grapheditor.pipeline.properties.JIPipeDesktopPipelineParametersPanel;
+import org.hkijena.jipipe.desktop.app.grapheditor.pipeline.properties.JIPipeDesktopPipelineQuickGuidePanel;
 import org.hkijena.jipipe.desktop.app.history.JIPipeDesktopHistoryJournalUI;
 import org.hkijena.jipipe.desktop.commons.components.JIPipeDesktopParameterFormPanel;
 import org.hkijena.jipipe.desktop.commons.components.markup.JIPipeDesktopMarkdownReader;
@@ -202,7 +203,7 @@ public class JIPipePipelineGraphEditorUI extends JIPipeDesktopGraphEditorUI {
                 UIUtils.getIcon32FromResources("actions/help-about.png"),
                 JIPipeDesktopDockPanel.PanelLocation.BottomLeft,
                 true,
-                new JIPipeDesktopMarkdownReader(false, MarkdownText.fromPluginResource("documentation/algorithm-graph.md", new HashMap<>())));
+                new JIPipeDesktopPipelineQuickGuidePanel(getDesktopWorkbench(), this));
         getDockPanel().addDockPanel("ADD_NODES",
                 "Add nodes",
                 UIUtils.getIcon32FromResources("actions/node-add.png"),
