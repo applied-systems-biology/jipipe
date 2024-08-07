@@ -30,6 +30,7 @@ import org.hkijena.jipipe.desktop.app.grapheditor.commons.contextmenu.*;
 import org.hkijena.jipipe.desktop.app.grapheditor.commons.nodeui.JIPipeDesktopGraphNodeUI;
 import org.hkijena.jipipe.desktop.app.grapheditor.commons.properties.JIPipeDesktopGraphEditorErrorPanel;
 import org.hkijena.jipipe.desktop.app.grapheditor.commons.properties.JIPipeDesktopGraphNodeSlotEditorUI;
+import org.hkijena.jipipe.desktop.app.grapheditor.flavors.compartments.actions.JIPipeDesktopCompartmentsGraphEditorRunManager;
 import org.hkijena.jipipe.desktop.app.grapheditor.flavors.compartments.contextmenu.JIPipeDesktopCompartmentsCopyNodeUIContextAction;
 import org.hkijena.jipipe.desktop.app.grapheditor.flavors.compartments.contextmenu.JIPipeDesktopCompartmentsCutNodeUIContextAction;
 import org.hkijena.jipipe.desktop.app.grapheditor.flavors.compartments.contextmenu.JIPipeDesktopCompartmentsPasteNodeUIContextAction;
@@ -37,6 +38,9 @@ import org.hkijena.jipipe.desktop.app.grapheditor.flavors.compartments.dragdrop.
 import org.hkijena.jipipe.desktop.app.grapheditor.flavors.compartments.properties.JIPipeDesktopCompartmentsAddCompartmentsPanel;
 import org.hkijena.jipipe.desktop.app.grapheditor.flavors.compartments.properties.JIPipeDesktopCompartmentsParametersPanel;
 import org.hkijena.jipipe.desktop.app.grapheditor.flavors.compartments.properties.JIPipeDesktopCompartmentsQuickGuidePanel;
+import org.hkijena.jipipe.desktop.app.grapheditor.flavors.pipeline.actions.JIPipeDesktopPipelineGraphEditorRunManager;
+import org.hkijena.jipipe.desktop.app.grapheditor.flavors.pipeline.actions.JIPipeDesktopRunAndShowResultsAction;
+import org.hkijena.jipipe.desktop.app.grapheditor.flavors.pipeline.actions.JIPipeDesktopUpdateCacheAction;
 import org.hkijena.jipipe.desktop.app.history.JIPipeDesktopHistoryJournalUI;
 import org.hkijena.jipipe.desktop.commons.components.tabs.JIPipeDesktopTabPane;
 import org.hkijena.jipipe.utils.UIUtils;
@@ -269,31 +273,19 @@ public class JIPipeDesktopCompartmentsGraphEditorUI extends AbstractJIPipeDeskto
      */
     @Override
     public void onNodeUIActionRequested(JIPipeDesktopGraphNodeUI.NodeUIActionRequestedEvent event) {
-//        if (event.getAction() instanceof JIPipeDesktopRunAndShowResultsAction) {
-//            disableUpdateOnSelection = true;
-//            selectOnly(event.getUi());
-//            JIPipeDesktopSingleCompartmentSelectionPanelUI panel = new JIPipeDesktopSingleCompartmentSelectionPanelUI(this,
-//                    (JIPipeProjectCompartment) event.getUi().getNode());
-//            setPropertyPanel(panel, true);
-//            panel.executeQuickRun(true,
-//                    false,
-//                    true,
-//                    ((JIPipeDesktopRunAndShowResultsAction) event.getAction()).isStoreIntermediateResults(),
-//                    false);
-//            SwingUtilities.invokeLater(() -> disableUpdateOnSelection = false);
-//        } else if (event.getAction() instanceof JIPipeDesktopUpdateCacheAction) {
-//            disableUpdateOnSelection = true;
-//            selectOnly(event.getUi());
-//            JIPipeDesktopSingleCompartmentSelectionPanelUI panel = new JIPipeDesktopSingleCompartmentSelectionPanelUI(this,
-//                    (JIPipeProjectCompartment) event.getUi().getNode());
-//            setPropertyPanel(panel, true);
-//            panel.executeQuickRun(false,
-//                    true,
-//                    false,
-//                    ((JIPipeDesktopUpdateCacheAction) event.getAction()).isStoreIntermediateResults(),
-//                    ((JIPipeDesktopUpdateCacheAction) event.getAction()).isOnlyPredecessors());
-//            SwingUtilities.invokeLater(() -> disableUpdateOnSelection = false);
-//        }
+        if (event.getAction() instanceof JIPipeDesktopRunAndShowResultsAction) {
+            selectOnly(event.getUi());
+            JIPipeDesktopCompartmentsGraphEditorRunManager runManager = new JIPipeDesktopCompartmentsGraphEditorRunManager(getWorkbench().getProject(), getCanvasUI(), event.getUi(), getDockPanel());
+            runManager.run(true,
+                    ((JIPipeDesktopRunAndShowResultsAction) event.getAction()).isStoreIntermediateResults(),
+                    false);
+        } else if (event.getAction() instanceof JIPipeDesktopUpdateCacheAction) {
+            selectOnly(event.getUi());
+            JIPipeDesktopCompartmentsGraphEditorRunManager runManager = new JIPipeDesktopCompartmentsGraphEditorRunManager(getWorkbench().getProject(), getCanvasUI(), event.getUi(), getDockPanel());
+            runManager.run(false,
+                    ((JIPipeDesktopUpdateCacheAction) event.getAction()).isStoreIntermediateResults(),
+                    ((JIPipeDesktopUpdateCacheAction) event.getAction()).isOnlyPredecessors());
+        }
     }
 
     @Override

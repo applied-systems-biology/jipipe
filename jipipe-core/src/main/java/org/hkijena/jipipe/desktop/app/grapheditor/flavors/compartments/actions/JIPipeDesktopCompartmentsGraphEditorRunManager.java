@@ -11,8 +11,10 @@
  * See the LICENSE file provided with the code for the full license.
  */
 
-package org.hkijena.jipipe.desktop.app.grapheditor.flavors.pipeline.actions;
+package org.hkijena.jipipe.desktop.app.grapheditor.flavors.compartments.actions;
 
+import org.hkijena.jipipe.api.compartments.algorithms.JIPipeProjectCompartment;
+import org.hkijena.jipipe.api.compartments.algorithms.JIPipeProjectCompartmentOutput;
 import org.hkijena.jipipe.api.project.JIPipeProject;
 import org.hkijena.jipipe.api.run.JIPipeRunnable;
 import org.hkijena.jipipe.api.run.JIPipeRunnableQueue;
@@ -28,7 +30,9 @@ import org.hkijena.jipipe.desktop.app.quickrun.JIPipeDesktopQuickRunSettings;
 import org.hkijena.jipipe.plugins.settings.JIPipeRuntimeApplicationSettings;
 import org.hkijena.jipipe.utils.ui.JIPipeDesktopDockPanel;
 
-public class JIPipeDesktopPipelineGraphEditorRunManager implements JIPipeRunnable.FinishedEventListener, JIPipeRunnable.InterruptedEventListener {
+import java.util.ArrayList;
+
+public class JIPipeDesktopCompartmentsGraphEditorRunManager implements JIPipeRunnable.FinishedEventListener, JIPipeRunnable.InterruptedEventListener {
     private final JIPipeProject project;
     private final JIPipeDesktopGraphCanvasUI canvasUI;
     private final JIPipeDesktopGraphNodeUI nodeUI;
@@ -36,7 +40,7 @@ public class JIPipeDesktopPipelineGraphEditorRunManager implements JIPipeRunnabl
     private JIPipeRunnable run;
     private JIPipeDesktopDockPanel.State savedState;
 
-    public JIPipeDesktopPipelineGraphEditorRunManager(JIPipeProject project, JIPipeDesktopGraphCanvasUI canvasUI, JIPipeDesktopGraphNodeUI nodeUI, JIPipeDesktopDockPanel dockPanel) {
+    public JIPipeDesktopCompartmentsGraphEditorRunManager(JIPipeProject project, JIPipeDesktopGraphCanvasUI canvasUI, JIPipeDesktopGraphNodeUI nodeUI, JIPipeDesktopDockPanel dockPanel) {
         this.project = project;
         this.canvasUI = canvasUI;
         this.nodeUI = nodeUI;
@@ -52,10 +56,13 @@ public class JIPipeDesktopPipelineGraphEditorRunManager implements JIPipeRunnabl
 
         // Remember the saved state
         savedState = getDockPanel().getCurrentState();
+        JIPipeProjectCompartment compartment = (JIPipeProjectCompartment) nodeUI.getNode();
 
         // Validation step
         JIPipeValidationReport report = new JIPipeValidationReport();
-        getProject().reportValidity(new UnspecifiedValidationReportContext(), report, nodeUI.getNode());
+        for (JIPipeProjectCompartmentOutput compartmentOutput : compartment.getOutputNodes().values()) {
+            getProject().reportValidity(new UnspecifiedValidationReportContext(), report,compartmentOutput);
+        }
         if (!report.isEmpty()) {
             dockPanel.getPanel(AbstractJIPipeDesktopGraphEditorUI.DOCK_ERRORS, JIPipeDesktopGraphEditorErrorPanel.class).setItems(report);
             dockPanel.activatePanel(AbstractJIPipeDesktopGraphEditorUI.DOCK_ERRORS, false);
@@ -86,7 +93,7 @@ public class JIPipeDesktopPipelineGraphEditorRunManager implements JIPipeRunnabl
         }
 
         // Run
-        run = new JIPipeDesktopQuickRun(getProject(), nodeUI.getNode(), settings);
+        run = new JIPipeDesktopQuickRun(getProject(), new ArrayList<>(compartment.getSortedOutputNodes()), settings);
         JIPipeRuntimeApplicationSettings.getInstance().setDefaultQuickRunThreads(settings.getNumThreads());
         JIPipeRunnableQueue.getInstance().enqueue(run);
     }

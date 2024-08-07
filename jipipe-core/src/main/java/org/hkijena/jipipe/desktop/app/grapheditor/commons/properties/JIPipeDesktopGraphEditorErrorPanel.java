@@ -56,4 +56,10 @@ public class JIPipeDesktopGraphEditorErrorPanel extends JIPipeDesktopWorkbenchPa
         errorUI.displayErrors(report);
         errorUI.addVerticalGlue();
     }
+
+    public void setItems(Throwable exception) {
+        errorUI.clear();
+        errorUI.displayErrors(exception);
+        errorUI.addVerticalGlue();
+    }
 }

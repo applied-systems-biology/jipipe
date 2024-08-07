@@ -261,16 +261,6 @@ public class JIPipeDesktopPipelineGraphEditorUI extends AbstractJIPipeDesktopGra
             JIPipeDesktopGraphNodeUI nodeUI = getSelection().iterator().next();
             showSelectedNodeDocks(nodeUI);
         }
-
-//        if (getSelection().isEmpty()) {
-//            setPropertyPanel(defaultPanel, true);
-//        } else if (getSelection().size() == 1) {
-//            JIPipeDesktopGraphNodeUI ui = getSelection().iterator().next();
-//            setPropertyPanel(new JIPipeDesktopPipelineSingleAlgorithmSelectionPanelUI(this, ui.getNode()), true);
-//        } else {
-//            setPropertyPanel(new JIPipeDesktopPipelineMultiAlgorithmSelectionPanelUI((JIPipeDesktopProjectWorkbench) getDesktopWorkbench(), getCanvasUI(),
-//                    getSelection().stream().map(JIPipeDesktopGraphNodeUI::getNode).collect(Collectors.toSet())), true);
-//        }
     }
 
     private void showSelectedNodeDocks(JIPipeDesktopGraphNodeUI nodeUI) {

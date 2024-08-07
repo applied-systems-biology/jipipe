@@ -36,22 +36,21 @@ import java.util.*;
  */
 public class JIPipeDesktopQuickRun extends AbstractJIPipeRunnable implements JIPipeValidatable {
     private final JIPipeProject project;
-    private final JIPipeGraphNode targetNode;
+    private final List<JIPipeGraphNode> targetNodes;
     private final JIPipeDesktopQuickRunSettings settings;
     private JIPipeGraphRun run;
-    private JIPipeGraphNode targetNodeCopy;
+    private List<JIPipeGraphNode> targetNodeCopies = new ArrayList<>();
 
-    /**
-     * @param project    The project
-     * @param targetNode The tested algorithm
-     * @param settings   The settings
-     */
-    public JIPipeDesktopQuickRun(JIPipeProject project, JIPipeGraphNode targetNode, JIPipeDesktopQuickRunSettings settings) {
+    public JIPipeDesktopQuickRun(JIPipeProject project, List<JIPipeGraphNode> targetNodes, JIPipeDesktopQuickRunSettings settings) {
         this.project = project;
-        this.targetNode = targetNode;
+        this.targetNodes = targetNodes;
         this.settings = settings;
 
         initialize();
+    }
+
+    public JIPipeDesktopQuickRun(JIPipeProject project, JIPipeGraphNode targetNode, JIPipeDesktopQuickRunSettings settings) {
+        this(project, Collections.singletonList(targetNode), settings);
     }
 
     private void initialize() {
@@ -70,18 +69,27 @@ public class JIPipeDesktopQuickRun extends AbstractJIPipeRunnable implements JIP
 
         run = new JIPipeGraphRun(project, configuration);
         run.setProgressInfo(getProgressInfo());
-        targetNodeCopy = run.getGraph().getEquivalentNode(targetNode);
-        ((JIPipeAlgorithm) targetNodeCopy).setEnabled(true);
+        for (JIPipeGraphNode targetNode : this.targetNodes) {
+            JIPipeGraphNode equivalentNode = run.getGraph().getEquivalentNode(targetNode);
+            targetNodeCopies.add(equivalentNode);
+            if(equivalentNode instanceof JIPipeAlgorithm) {
+                ((JIPipeAlgorithm) equivalentNode).setEnabled(true);
+            }
+        }
 
         // Disable storing intermediate results
         if (!settings.isStoreIntermediateResults()) {
             HashSet<UUID> disabled = new HashSet<>(run.getGraph().getGraphNodeUUIDs());
-            disabled.remove(targetNodeCopy.getUUIDInParentGraph());
+            for (JIPipeGraphNode targetNodeCopy : targetNodeCopies) {
+                disabled.remove(targetNodeCopy.getUUIDInParentGraph());
+            }
             if (!settings.isStoreIntermediateResults() && settings.isExcludeSelected()) {
-                for (JIPipeDataSlot inputSlot : targetNodeCopy.getInputSlots()) {
-                    for (JIPipeDataSlot sourceSlot : getRun().getGraph().getInputIncomingSourceSlots(inputSlot)) {
-                        JIPipeGraphNode node = sourceSlot.getNode();
-                        disabled.remove(node.getUUIDInParentGraph());
+                for (JIPipeGraphNode targetNodeCopy : targetNodeCopies) {
+                    for (JIPipeDataSlot inputSlot : targetNodeCopy.getInputSlots()) {
+                        for (JIPipeDataSlot sourceSlot : getRun().getGraph().getInputIncomingSourceSlots(inputSlot)) {
+                            JIPipeGraphNode node = sourceSlot.getNode();
+                            disabled.remove(node.getUUIDInParentGraph());
+                        }
                     }
                 }
             }
@@ -94,7 +102,9 @@ public class JIPipeDesktopQuickRun extends AbstractJIPipeRunnable implements JIP
         Set<JIPipeGraphNode> predecessors = new HashSet<>();
         Set<JIPipeGraphNode> handledNodes = new HashSet<>();
         Stack<JIPipeGraphNode> stack = new Stack<>();
-        stack.push(targetNodeCopy);
+        for (JIPipeGraphNode targetNodeCopy : targetNodeCopies) {
+            stack.push(targetNodeCopy);
+        }
         JIPipeProgressInfo progressInfo = new JIPipeProgressInfo();
         while (!stack.isEmpty()) {
             JIPipeGraphNode node = stack.pop();
@@ -143,7 +153,9 @@ public class JIPipeDesktopQuickRun extends AbstractJIPipeRunnable implements JIP
             }
         }
         // To be sure
-        predecessors.remove(targetNodeCopy);
+        for (JIPipeGraphNode targetNodeCopy : targetNodeCopies) {
+            predecessors.remove(targetNodeCopy);
+        }
         return predecessors;
     }
 
@@ -157,8 +169,9 @@ public class JIPipeDesktopQuickRun extends AbstractJIPipeRunnable implements JIP
 
         // Disable all algorithms that are not dependencies of the target algorithm
         Set<JIPipeGraphNode> predecessorAlgorithms = findPredecessorsWithoutCache();
-        if (!settings.isExcludeSelected())
-            predecessorAlgorithms.add(targetNodeCopy);
+        if (!settings.isExcludeSelected()) {
+            predecessorAlgorithms.addAll(targetNodeCopies);
+        }
         for (JIPipeGraphNode node : run.getGraph().getGraphNodes()) {
             if (!predecessorAlgorithms.contains(node)) {
                 if (node instanceof JIPipeAlgorithm) {
@@ -167,11 +180,13 @@ public class JIPipeDesktopQuickRun extends AbstractJIPipeRunnable implements JIP
             }
         }
         if (settings.isExcludeSelected() && !settings.isStoreIntermediateResults()) {
-            for (JIPipeDataSlot inputSlot : targetNodeCopy.getInputSlots()) {
-                for (JIPipeDataSlot sourceSlot : getRun().getGraph().getInputIncomingSourceSlots(inputSlot)) {
-                    JIPipeGraphNode node = sourceSlot.getNode();
-                    if (node instanceof JIPipeAlgorithm) {
-                        ((JIPipeAlgorithm) node).setSkipped(false);
+            for (JIPipeGraphNode targetNodeCopy : targetNodeCopies) {
+                for (JIPipeDataSlot inputSlot : targetNodeCopy.getInputSlots()) {
+                    for (JIPipeDataSlot sourceSlot : getRun().getGraph().getInputIncomingSourceSlots(inputSlot)) {
+                        JIPipeGraphNode node = sourceSlot.getNode();
+                        if (node instanceof JIPipeAlgorithm) {
+                            ((JIPipeAlgorithm) node).setSkipped(false);
+                        }
                     }
                 }
             }
@@ -179,7 +194,9 @@ public class JIPipeDesktopQuickRun extends AbstractJIPipeRunnable implements JIP
 
         // Remove the benched algorithm from cache. This is a workaround.
         if (settings.isLoadFromCache()) {
-            getProject().getCache().softClear(targetNode.getUUIDInParentGraph(), getProgressInfo());
+            for (JIPipeGraphNode targetNode : targetNodes) {
+                getProject().getCache().softClear(targetNode.getUUIDInParentGraph(), getProgressInfo());
+            }
         }
 
         // Run the internal graph runner
@@ -205,14 +222,8 @@ public class JIPipeDesktopQuickRun extends AbstractJIPipeRunnable implements JIP
         return project;
     }
 
-    /**
-     * The node targeted to be executed
-     * In project graph
-     *
-     * @return the target node
-     */
-    public JIPipeGraphNode getTargetNode() {
-        return targetNode;
+    public List<JIPipeGraphNode> getTargetNodes() {
+        return targetNodes;
     }
 
     /**
@@ -233,18 +244,15 @@ public class JIPipeDesktopQuickRun extends AbstractJIPipeRunnable implements JIP
         return run;
     }
 
-    /**
-     * Copy of the targeted node (in the run's graph)
-     *
-     * @return copy of the targeted node
-     */
-    public JIPipeGraphNode getTargetNodeCopy() {
-        return targetNodeCopy;
+    public List<JIPipeGraphNode> getTargetNodeCopies() {
+        return targetNodeCopies;
     }
 
     @Override
     public void reportValidity(JIPipeValidationReportContext reportContext, JIPipeValidationReport report) {
-        targetNodeCopy.reportValidity(reportContext, report);
+        for (JIPipeGraphNode targetNodeCopy : targetNodeCopies) {
+            targetNodeCopy.reportValidity(reportContext, report);
+        }
     }
 
     @Override
