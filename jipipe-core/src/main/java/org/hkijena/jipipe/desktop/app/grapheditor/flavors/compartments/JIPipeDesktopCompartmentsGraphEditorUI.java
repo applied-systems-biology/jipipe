@@ -43,6 +43,7 @@ import org.hkijena.jipipe.desktop.app.grapheditor.flavors.pipeline.actions.JIPip
 import org.hkijena.jipipe.desktop.app.grapheditor.flavors.pipeline.actions.JIPipeDesktopUpdateCacheAction;
 import org.hkijena.jipipe.desktop.app.history.JIPipeDesktopHistoryJournalUI;
 import org.hkijena.jipipe.desktop.commons.components.tabs.JIPipeDesktopTabPane;
+import org.hkijena.jipipe.plugins.parameters.library.pairs.StringAndStringPairParameter;
 import org.hkijena.jipipe.plugins.settings.JIPipeGraphEditorUIApplicationSettings;
 import org.hkijena.jipipe.utils.UIUtils;
 import org.hkijena.jipipe.utils.json.JsonUtils;
@@ -317,6 +318,15 @@ public class JIPipeDesktopCompartmentsGraphEditorUI extends AbstractJIPipeDeskto
     }
 
     @Override
+    protected StringAndStringPairParameter.List getDockStateTemplates() {
+        if(JIPipe.isInstantiated()) {
+            JIPipeGraphEditorUIApplicationSettings.DockLayoutSettings settings = JIPipeGraphEditorUIApplicationSettings.getInstance().getDockLayoutSettings();
+            return settings.getCompartmentsEditorDockLayoutTemplates();
+        }
+        return null;
+    }
+
+    @Override
     protected void restoreDefaultDockState() {
         JIPipeDesktopDockPanel.State state = new JIPipeDesktopDockPanel.State();
         state.setLeftSplitPaneRatio(0.33);
@@ -330,10 +340,10 @@ public class JIPipeDesktopCompartmentsGraphEditorUI extends AbstractJIPipeDeskto
         state.put(DOCK_BOOKMARKS, false, JIPipeDesktopDockPanel.PanelLocation.BottomLeft);
         state.put(DOCK_HISTORY, false, JIPipeDesktopDockPanel.PanelLocation.BottomLeft);
 
-        state.put(DOCK_NODE_CONTEXT_HELP, false, JIPipeDesktopDockPanel.PanelLocation.BottomRight);
+        state.put(DOCK_NODE_CONTEXT_HELP, true, JIPipeDesktopDockPanel.PanelLocation.BottomRight);
         state.put(DOCK_LOG, false, JIPipeDesktopDockPanel.PanelLocation.BottomRight);
         state.put(DOCK_ERRORS, false, JIPipeDesktopDockPanel.PanelLocation.BottomRight);
-        state.put(DOCK_NODE_CONTEXT_PARAMETERS, false, JIPipeDesktopDockPanel.PanelLocation.TopRight);
+        state.put(DOCK_NODE_CONTEXT_PARAMETERS, true, JIPipeDesktopDockPanel.PanelLocation.TopRight);
         state.put(DOCK_NODE_CONTEXT_SLOT_MANAGER, false, JIPipeDesktopDockPanel.PanelLocation.TopRight);
         state.put(DOCK_NODE_CONTEXT_RESULTS, false, JIPipeDesktopDockPanel.PanelLocation.TopRight);
 

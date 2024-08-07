@@ -28,14 +28,19 @@ import org.hkijena.jipipe.desktop.app.JIPipeDesktopWorkbenchPanel;
 import org.hkijena.jipipe.desktop.app.grapheditor.commons.contextmenu.NodeUIContextAction;
 import org.hkijena.jipipe.desktop.app.grapheditor.commons.nodeui.JIPipeDesktopGraphNodeUI;
 import org.hkijena.jipipe.desktop.commons.components.icons.SolidColorIcon;
+import org.hkijena.jipipe.desktop.commons.components.renderers.JIPipeDesktopGenericListCellRenderer;
 import org.hkijena.jipipe.desktop.commons.theme.JIPipeDesktopModernMetalTheme;
+import org.hkijena.jipipe.plugins.parameters.library.pairs.StringAndStringPairParameter;
+import org.hkijena.jipipe.plugins.parameters.library.primitives.list.StringList;
 import org.hkijena.jipipe.plugins.settings.JIPipeFileChooserApplicationSettings;
 import org.hkijena.jipipe.plugins.settings.JIPipeGraphEditorUIApplicationSettings;
 import org.hkijena.jipipe.utils.ReflectionUtils;
 import org.hkijena.jipipe.utils.StringUtils;
 import org.hkijena.jipipe.utils.UIUtils;
+import org.hkijena.jipipe.utils.json.JsonUtils;
 import org.hkijena.jipipe.utils.ui.CopyImageToClipboard;
 import org.hkijena.jipipe.utils.ui.JIPipeDesktopDockPanel;
+import org.hkijena.jipipe.utils.ui.ListSelectionMode;
 import org.jfree.graphics2d.svg.SVGGraphics2D;
 import org.jfree.graphics2d.svg.SVGUtils;
 import org.scijava.Disposable;
@@ -266,7 +271,22 @@ public abstract class AbstractJIPipeDesktopGraphEditorUI extends JIPipeDesktopWo
         UIUtils.addReloadablePopupMenuToButton(layoutButton, layoutMenu, () -> {
             layoutMenu.removeAll();
 
-            layoutMenu.add(UIUtils.createMenuItem("Reset layout", "Resets the layout", UIUtils.getIconFromResources("actions/edit-clear-history.png"), this::restoreDefaultDockState));
+            layoutMenu.add(UIUtils.createMenuItem("Reset layout", "Resets the layout", UIUtils.getIconFromResources("actions/edit-clear-history.png"), () -> {
+                restoreDefaultDockState();
+                saveDockStateToSettings();
+            }));
+
+            if(getDockStateTemplates() != null) {
+
+                for (StringAndStringPairParameter template : getDockStateTemplates()) {
+                    layoutMenu.add(UIUtils.createMenuItem(template.getKey(), "Loads the layout", UIUtils.getIconFromResources("actions/sidebar.png"), () -> restoreDockStateTemplate(template.getValue())));
+                }
+
+                layoutMenu.addSeparator();
+
+                layoutMenu.add(UIUtils.createMenuItem("Save layout ...", "Saves the current layout", UIUtils.getIconFromResources("actions/filesave.png"), this::createDockStateTemplate));
+                layoutMenu.add(UIUtils.createMenuItem("Manage layouts ...", "Manages the list of layouts", UIUtils.getIconFromResources("actions/configure.png"), this::manageDockStateTemplates));
+            }
 
             layoutMenu.addSeparator();
 
@@ -299,6 +319,41 @@ public abstract class AbstractJIPipeDesktopGraphEditorUI extends JIPipeDesktopWo
             layoutMenu.add(layoutOnAlgorithmFinderItem);
         });
 
+    }
+
+    private void restoreDockStateTemplate(String value) {
+        try {
+            JIPipeDesktopDockPanel.State state = JsonUtils.readFromString(value, JIPipeDesktopDockPanel.State.class);
+            getDockPanel().restoreState(state);
+            saveDockStateToSettings();
+        }
+        catch (Throwable e) {
+            e.printStackTrace();
+            JOptionPane.showMessageDialog(this, "Unable to restore template!", "Load template", JOptionPane.ERROR_MESSAGE);
+        }
+    }
+
+    protected abstract StringAndStringPairParameter.List getDockStateTemplates();
+
+    private void manageDockStateTemplates() {
+        List<StringAndStringPairParameter> toDelete = UIUtils.getSelectionByDialog(this,
+                getDockStateTemplates(),
+                Collections.emptyList(),
+                "Delete layout templates",
+                "Please select the layout to delete",
+                new JIPipeDesktopGenericListCellRenderer<>(kv -> new JIPipeDesktopGenericListCellRenderer.RenderedItem(UIUtils.getIconFromResources("actions/sidebar.png"), kv.getKey())),
+                ListSelectionMode.MultipleInterval);
+        getDockStateTemplates().removeAll(toDelete);
+        JIPipe.getSettings().save();
+    }
+
+    private void createDockStateTemplate() {
+        String newValue = StringUtils.nullToEmpty(JOptionPane.showInputDialog(this, "Please input the name of the layout:", "")).trim();
+        if(!StringUtils.isNullOrEmpty(newValue)) {
+            JIPipeDesktopDockPanel.State currentState = getDockPanel().getCurrentState();
+            getDockStateTemplates().add(new StringAndStringPairParameter(newValue, JsonUtils.toJsonString(currentState)));
+            JIPipe.getSettings().save();
+        }
     }
 
     protected abstract void restoreDefaultDockState();

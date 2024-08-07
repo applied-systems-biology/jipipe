@@ -331,9 +331,7 @@ public class JIPipeDesktopDockPanel extends JPanel implements JIPipeDesktopSplit
 
     public void deactivatePanel(Panel panel, boolean saveState) {
         panel.setVisible(false);
-        updateContent();
-        updateSizes();
-        updateToolbars();
+        updateAll();
         if(saveState) {
             saveState();
         }
@@ -353,9 +351,7 @@ public class JIPipeDesktopDockPanel extends JPanel implements JIPipeDesktopSplit
         // Deactivate all other buttons
         setPanelVisible(panel);
 
-        updateContent();
-        updateSizes();
-        updateToolbars();
+        updateAll();
         if(saveState) {
             saveState();
         }
@@ -407,9 +403,7 @@ public class JIPipeDesktopDockPanel extends JPanel implements JIPipeDesktopSplit
 
             panel.setLocation(newLocation);
 
-            updateToolbars();
-            updateContent();
-            updateSizes();
+            updateAll();
 
             if(saveState) {
                 saveState();
@@ -451,9 +445,7 @@ public class JIPipeDesktopDockPanel extends JPanel implements JIPipeDesktopSplit
 
     public void removeDockPanel(String id) {
         if(panels.remove(id) != null) {
-            updateToolbars();
-            updateContent();
-            updateSizes();
+            updateAll();
         }
     }
 
@@ -519,11 +511,11 @@ public class JIPipeDesktopDockPanel extends JPanel implements JIPipeDesktopSplit
             boolean visible = state.getVisibilities().getOrDefault(panel.getId(), panel.isVisible());
             PanelLocation location = state.getLocations().getOrDefault(panel.getId(), panel.getLocation());
             panel.setLocation(location);
-            if(visible) {
+            panel.setVisible(visible);
+        }
+        for (Panel panel : panels.values()) {
+            if(panel.visible) {
                 setPanelVisible(panel);
-            }
-            else {
-                panel.setVisible(false);
             }
         }
         savedState = state;
@@ -535,9 +527,13 @@ public class JIPipeDesktopDockPanel extends JPanel implements JIPipeDesktopSplit
         if(state.rightSplitPaneRatio > 0) {
             ((JIPipeDesktopSplitPane.FixedRatio) rightSplitPane.getRatio()).setRatio(Math.max(0.01, Math.min(0.99, state.rightSplitPaneRatio)));
         }
+        updateAll();
+    }
+
+    private void updateAll() {
         updateToolbars();
-        updateSizes();
         updateContent();
+        updateSizes();
     }
 
     public void activatePanel(String id, boolean saveState) {
@@ -643,9 +639,7 @@ public class JIPipeDesktopDockPanel extends JPanel implements JIPipeDesktopSplit
             }
         }
         if(found) {
-            updateToolbars();
-            updateContent();
-            updateSizes();
+            updateAll();
         }
     }
 
@@ -794,7 +788,7 @@ public class JIPipeDesktopDockPanel extends JPanel implements JIPipeDesktopSplit
         }
 
         public boolean isDisplayed() {
-            return visible && component != null;
+            return visible;
         }
 
         public Supplier<JComponent> getComponentSupplier() {

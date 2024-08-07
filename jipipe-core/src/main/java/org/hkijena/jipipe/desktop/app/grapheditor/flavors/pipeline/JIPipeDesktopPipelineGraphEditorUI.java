@@ -49,6 +49,7 @@ import org.hkijena.jipipe.desktop.app.grapheditor.flavors.groups.JIPipeDesktopNo
 import org.hkijena.jipipe.desktop.app.history.JIPipeDesktopHistoryJournalUI;
 import org.hkijena.jipipe.desktop.commons.components.JIPipeDesktopParameterFormPanel;
 import org.hkijena.jipipe.plugins.nodetemplate.NodeTemplateBox;
+import org.hkijena.jipipe.plugins.parameters.library.pairs.StringAndStringPairParameter;
 import org.hkijena.jipipe.plugins.settings.JIPipeGeneralUIApplicationSettings;
 import org.hkijena.jipipe.plugins.settings.JIPipeGraphEditorUIApplicationSettings;
 import org.hkijena.jipipe.utils.*;
@@ -422,6 +423,15 @@ public class JIPipeDesktopPipelineGraphEditorUI extends AbstractJIPipeDesktopGra
     }
 
     @Override
+    protected StringAndStringPairParameter.List getDockStateTemplates() {
+        if(JIPipe.isInstantiated()) {
+            JIPipeGraphEditorUIApplicationSettings.DockLayoutSettings settings = JIPipeGraphEditorUIApplicationSettings.getInstance().getDockLayoutSettings();
+            return settings.getPipelineEditorDockLayoutTemplates();
+        }
+        return null;
+    }
+
+    @Override
     protected void saveDockStateToSettings() {
         if(JIPipe.isInstantiated()) {
             JIPipeGraphEditorUIApplicationSettings.DockLayoutSettings settings = JIPipeGraphEditorUIApplicationSettings.getInstance().getDockLayoutSettings();
@@ -447,10 +457,11 @@ public class JIPipeDesktopPipelineGraphEditorUI extends AbstractJIPipeDesktopGra
 
         state.put(DOCK_LOG, false, JIPipeDesktopDockPanel.PanelLocation.BottomRight);
         state.put(DOCK_ERRORS, false, JIPipeDesktopDockPanel.PanelLocation.BottomRight);
-        state.put(DOCK_NODE_CONTEXT_PARAMETERS, false, JIPipeDesktopDockPanel.PanelLocation.TopRight);
+        state.put(DOCK_NODE_CONTEXT_PARAMETERS, true, JIPipeDesktopDockPanel.PanelLocation.TopRight);
         state.put(DOCK_NODE_CONTEXT_SLOT_MANAGER, false, JIPipeDesktopDockPanel.PanelLocation.TopRight);
         state.put(DOCK_NODE_CONTEXT_INPUT_MANAGER, false, JIPipeDesktopDockPanel.PanelLocation.TopRight);
         state.put(DOCK_NODE_CONTEXT_RESULTS, false, JIPipeDesktopDockPanel.PanelLocation.TopRight);
+        state.put(DOCK_NODE_CONTEXT_HELP, true, JIPipeDesktopDockPanel.PanelLocation.BottomRight);
 
         getDockPanel().restoreState(state);
     }
