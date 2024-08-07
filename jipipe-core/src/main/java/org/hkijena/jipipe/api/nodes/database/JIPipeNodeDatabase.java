@@ -16,6 +16,10 @@ package org.hkijena.jipipe.api.nodes.database;
 import gnu.trove.map.TObjectDoubleMap;
 import gnu.trove.map.hash.TObjectDoubleHashMap;
 import org.apache.commons.text.similarity.LevenshteinDistance;
+import org.apache.lucene.store.ByteBuffersDirectory;
+import org.apache.lucene.store.Directory;
+import org.apache.lucene.store.MMapDirectory;
+import org.apache.lucene.store.RAMDirectory;
 import org.hkijena.jipipe.JIPipe;
 import org.hkijena.jipipe.api.data.JIPipeData;
 import org.hkijena.jipipe.api.data.JIPipeDataSlotInfo;
@@ -37,6 +41,7 @@ public class JIPipeNodeDatabase {
     private final JIPipeProject project;
     private final JIPipeNodeDatabaseUpdater updater;
     private List<JIPipeNodeDatabaseEntry> entries = new ArrayList<>();
+    private final Directory luceneDirectory = new ByteBuffersDirectory();
 
     public JIPipeNodeDatabase() {
         this(null);
@@ -93,6 +98,10 @@ public class JIPipeNodeDatabase {
     public void rebuildImmediately() {
         queue.cancelAll();
         queue.enqueue(new JIPipeNodeDatabaseBuilderRun(this));
+    }
+
+    public Directory getLuceneDirectory() {
+        return luceneDirectory;
     }
 
     public List<JIPipeNodeDatabaseEntry> getEntries() {
