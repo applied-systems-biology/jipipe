@@ -13,6 +13,9 @@
 
 package org.hkijena.jipipe.utils;
 
+import org.hkijena.jipipe.api.events.AbstractJIPipeEvent;
+import org.hkijena.jipipe.api.events.JIPipeEventEmitter;
+
 import javax.swing.*;
 import javax.swing.plaf.basic.BasicSplitPaneUI;
 import java.awt.*;
@@ -36,6 +39,7 @@ public class JIPipeDesktopSplitPane extends JSplitPane {
 
     private Ratio ratio = new FixedRatio();
     private boolean updating = false;
+    private final RatioUpdatedEventEmitter ratioUpdatedEventEmitter = new RatioUpdatedEventEmitter();
 
     public JIPipeDesktopSplitPane(int newOrientation, double ratio) {
         super(newOrientation);
@@ -82,6 +86,10 @@ public class JIPipeDesktopSplitPane extends JSplitPane {
                 .put(KeyStroke.getKeyStroke(KeyEvent.VK_F6, 0), "none");
         getInputMap(JComponent.WHEN_ANCESTOR_OF_FOCUSED_COMPONENT)
                 .put(KeyStroke.getKeyStroke(KeyEvent.VK_F8, 0), "none");
+    }
+
+    public RatioUpdatedEventEmitter getRatioUpdatedEventEmitter() {
+        return ratioUpdatedEventEmitter;
     }
 
     public Ratio getRatio() {
@@ -207,7 +215,34 @@ public class JIPipeDesktopSplitPane extends JSplitPane {
             JIPipeDesktopSplitPane splitPane = (JIPipeDesktopSplitPane) getSplitPane();
             if(!splitPane.updating) {
                 splitPane.ratio.onUpdated(splitPane, splitPane.getDividerLocation());
+                splitPane.ratioUpdatedEventEmitter.emit(new RatioUpdatedEvent(splitPane, splitPane.ratio));
             }
+        }
+    }
+
+    public static class RatioUpdatedEvent extends AbstractJIPipeEvent {
+
+        private final Ratio ratio;
+
+        public RatioUpdatedEvent(Object source, Ratio ratio) {
+            super(source);
+            this.ratio = ratio;
+        }
+
+        public Ratio getRatio() {
+            return ratio;
+        }
+    }
+
+    public interface RatioUpdatedEventListener {
+        void onSplitPaneRatioUpdated(RatioUpdatedEvent event);
+    }
+
+    public static class RatioUpdatedEventEmitter extends JIPipeEventEmitter<RatioUpdatedEvent, RatioUpdatedEventListener> {
+
+        @Override
+        protected void call(RatioUpdatedEventListener ratioUpdatedEventListener, RatioUpdatedEvent event) {
+            ratioUpdatedEventListener.onSplitPaneRatioUpdated(event);
         }
     }
 

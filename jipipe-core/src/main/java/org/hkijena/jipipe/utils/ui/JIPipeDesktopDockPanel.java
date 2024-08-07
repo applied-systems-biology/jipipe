@@ -21,7 +21,7 @@ import java.util.function.Predicate;
 import java.util.function.Supplier;
 import java.util.stream.Collectors;
 
-public class JIPipeDesktopDockPanel extends JPanel {
+public class JIPipeDesktopDockPanel extends JPanel implements JIPipeDesktopSplitPane.RatioUpdatedEventListener {
 
     private static final int RESIZE_HANDLE_SIZE = 4;
     private final JIPipeDesktopVerticalToolBar leftToolBar = new JIPipeDesktopVerticalToolBar();
@@ -102,6 +102,7 @@ public class JIPipeDesktopDockPanel extends JPanel {
 
 
         });
+        rightSplitPane.getRatioUpdatedEventEmitter().subscribe(this);
     }
 
     private void initializeLeftFloatingPanel() {
@@ -123,6 +124,7 @@ public class JIPipeDesktopDockPanel extends JPanel {
                 updateSizes();
             }
         });
+        leftSplitPane.getRatioUpdatedEventEmitter().subscribe(this);
     }
 
     public void setBackgroundComponent(JComponent component) {
@@ -519,6 +521,12 @@ public class JIPipeDesktopDockPanel extends JPanel {
         savedState = state;
         leftPanelWidth = Math.max(minimumPanelWidth, state.leftPanelWidth);
         rightPanelWidth = Math.max(minimumPanelWidth, state.rightPanelWidth);
+        if(state.leftSplitPaneRatio > 0) {
+            ((JIPipeDesktopSplitPane.FixedRatio) leftSplitPane.getRatio()).setRatio(Math.max(0.01, Math.min(0.99, state.leftSplitPaneRatio)));
+        }
+        if(state.rightSplitPaneRatio > 0) {
+            ((JIPipeDesktopSplitPane.FixedRatio) rightSplitPane.getRatio()).setRatio(Math.max(0.01, Math.min(0.99, state.rightSplitPaneRatio)));
+        }
         updateToolbars();
         updateSizes();
         updateContent();
@@ -543,6 +551,11 @@ public class JIPipeDesktopDockPanel extends JPanel {
 
     public StateSavedEventEmitter getStateSavedEventEmitter() {
         return stateSavedEventEmitter;
+    }
+
+    @Override
+    public void onSplitPaneRatioUpdated(JIPipeDesktopSplitPane.RatioUpdatedEvent event) {
+        saveState();
     }
 
     public enum PanelLocation {
@@ -635,6 +648,8 @@ public class JIPipeDesktopDockPanel extends JPanel {
         }
         state.setLeftPanelWidth(leftPanelWidth);
         state.setRightPanelWidth(rightPanelWidth);
+        state.setLeftSplitPaneRatio(((JIPipeDesktopSplitPane.FixedRatio)leftSplitPane.getRatio()).getRatio());
+        state.setRightSplitPaneRatio(((JIPipeDesktopSplitPane.FixedRatio)rightSplitPane.getRatio()).getRatio());
         return state;
     }
 
@@ -642,6 +657,28 @@ public class JIPipeDesktopDockPanel extends JPanel {
         private Map<String, Boolean> visibilities = new HashMap<>();
         private int leftPanelWidth;
         private int rightPanelWidth;
+        private double leftSplitPaneRatio;
+        private double rightSplitPaneRatio;
+
+        @JsonGetter("left-split-pane-ratio")
+        public double getLeftSplitPaneRatio() {
+            return leftSplitPaneRatio;
+        }
+
+        @JsonSetter("left-split-pane-ratio")
+        public void setLeftSplitPaneRatio(double leftSplitPaneRatio) {
+            this.leftSplitPaneRatio = leftSplitPaneRatio;
+        }
+
+        @JsonGetter("right-split-pane-ratio")
+        public double getRightSplitPaneRatio() {
+            return rightSplitPaneRatio;
+        }
+
+        @JsonSetter("right-split-pane-ratio")
+        public void setRightSplitPaneRatio(double rightSplitPaneRatio) {
+            this.rightSplitPaneRatio = rightSplitPaneRatio;
+        }
 
         @JsonGetter("left-panel-width")
         public int getLeftPanelWidth() {
