@@ -28,7 +28,7 @@ import java.awt.image.BufferedImage;
 public class JIPipeDesktopGraphEditorMinimap extends JIPipeDesktopWorkbenchPanel implements MouseListener, MouseMotionListener, AdjustmentListener, JIPipeDesktopGraphCanvasUI.GraphCanvasUpdatedEventListener {
 
     private static final Color AREA_FILL_COLOR = new Color(0x3365a4e3, true);
-    private final JIPipeDesktopGraphEditorUI graphEditorUI;
+    private final AbstractJIPipeDesktopGraphEditorUI graphEditorUI;
     private BufferedImage graphImage;
     private double scaleFactor;
     private int viewBaseWidth;
@@ -47,7 +47,7 @@ public class JIPipeDesktopGraphEditorMinimap extends JIPipeDesktopWorkbenchPanel
     /**
      * @param graphEditorUI the workbench
      */
-    public JIPipeDesktopGraphEditorMinimap(JIPipeDesktopGraphEditorUI graphEditorUI) {
+    public JIPipeDesktopGraphEditorMinimap(AbstractJIPipeDesktopGraphEditorUI graphEditorUI) {
         super(graphEditorUI.getDesktopWorkbench());
         this.graphEditorUI = graphEditorUI;
         if (JIPipeGeneralUIApplicationSettings.getInstance().getTheme().isDark())

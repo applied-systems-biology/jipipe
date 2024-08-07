@@ -124,7 +124,7 @@ public class JIPipeDesktopGraphCanvasUI extends JLayeredPane implements JIPipeDe
     private static final Color COLOR_EDGE_DEFAULT = new Color(0x3E3E3E);
     private static final Color COLOR_EDGE_CONVERT = new Color(0x2957C2);
     private final JIPipeDesktopWorkbench desktopWorkbench;
-    private final JIPipeDesktopGraphEditorUI graphEditorUI;
+    private final AbstractJIPipeDesktopGraphEditorUI graphEditorUI;
     private final ImageIcon cursorImage = UIUtils.getIconFromResources("actions/target.png");
     private final JIPipeGraph graph;
     private final BiMap<JIPipeGraphNode, JIPipeDesktopGraphNodeUI> nodeUIs = HashBiMap.create();
@@ -190,7 +190,7 @@ public class JIPipeDesktopGraphCanvasUI extends JLayeredPane implements JIPipeDe
      * @param compartmentUUID  The compartment to show
      * @param historyJournal   object that tracks the history of this graph. Set to null to disable the undo feature.
      */
-    public JIPipeDesktopGraphCanvasUI(JIPipeDesktopWorkbench desktopWorkbench, JIPipeDesktopGraphEditorUI graphEditorUI, JIPipeGraph graph, UUID compartmentUUID, JIPipeHistoryJournal historyJournal) {
+    public JIPipeDesktopGraphCanvasUI(JIPipeDesktopWorkbench desktopWorkbench, AbstractJIPipeDesktopGraphEditorUI graphEditorUI, JIPipeGraph graph, UUID compartmentUUID, JIPipeHistoryJournal historyJournal) {
         this.desktopWorkbench = desktopWorkbench;
         this.graphEditorUI = graphEditorUI;
         this.historyJournal = historyJournal;
@@ -370,7 +370,7 @@ public class JIPipeDesktopGraphCanvasUI extends JLayeredPane implements JIPipeDe
         return desktopWorkbench;
     }
 
-    public JIPipeDesktopGraphEditorUI getGraphEditorUI() {
+    public AbstractJIPipeDesktopGraphEditorUI getGraphEditorUI() {
         return graphEditorUI;
     }
 
@@ -1438,6 +1438,10 @@ public class JIPipeDesktopGraphCanvasUI extends JLayeredPane implements JIPipeDe
         } else if (SwingUtilities.isRightMouseButton(mouseEvent)) {
             if (selection.size() <= 1) {
                 selectOnly(ui);
+            }
+            if(graphEditorUI != null && graphEditorUI.getCurrentTool() != graphEditorUI.getDefaultTool()) {
+                graphEditorUI.selectDefaultTool();
+                return;
             }
             openContextMenu(new Point(mouseEvent.getX(), mouseEvent.getY()));
         }

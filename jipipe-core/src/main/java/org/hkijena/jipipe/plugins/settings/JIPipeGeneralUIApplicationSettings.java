@@ -18,14 +18,14 @@ import org.hkijena.jipipe.api.SetJIPipeDocumentation;
 import org.hkijena.jipipe.api.parameters.JIPipeParameter;
 import org.hkijena.jipipe.api.settings.JIPipeDefaultApplicationSettingsSheetCategory;
 import org.hkijena.jipipe.api.settings.JIPipeDefaultApplicationsSettingsSheet;
-import org.hkijena.jipipe.desktop.app.grapheditor.commons.JIPipeDesktopGraphEditorUI;
+import org.hkijena.jipipe.desktop.app.grapheditor.commons.AbstractJIPipeDesktopGraphEditorUI;
 import org.hkijena.jipipe.desktop.commons.theme.JIPipeDesktopUITheme;
 import org.hkijena.jipipe.utils.UIUtils;
 
 import javax.swing.*;
 
 /**
- * All settings for {@link JIPipeDesktopGraphEditorUI}
+ * All settings for {@link AbstractJIPipeDesktopGraphEditorUI}
  */
 public class JIPipeGeneralUIApplicationSettings extends JIPipeDefaultApplicationsSettingsSheet {
 

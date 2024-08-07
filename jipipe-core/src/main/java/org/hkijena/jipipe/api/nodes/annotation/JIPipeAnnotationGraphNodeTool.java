@@ -18,8 +18,8 @@ import org.hkijena.jipipe.api.JIPipeWorkbench;
 import org.hkijena.jipipe.api.grapheditortool.JIPipeToggleableGraphEditorTool;
 import org.hkijena.jipipe.desktop.app.JIPipeDesktopWorkbench;
 import org.hkijena.jipipe.desktop.app.JIPipeDesktopWorkbenchAccess;
+import org.hkijena.jipipe.desktop.app.grapheditor.commons.AbstractJIPipeDesktopGraphEditorUI;
 import org.hkijena.jipipe.desktop.app.grapheditor.commons.JIPipeDesktopGraphCanvasUI;
-import org.hkijena.jipipe.desktop.app.grapheditor.commons.JIPipeDesktopGraphEditorUI;
 
 import javax.swing.*;
 import java.awt.*;
@@ -29,7 +29,7 @@ import java.util.Objects;
 public class JIPipeAnnotationGraphNodeTool<T extends JIPipeAnnotationGraphNode> implements JIPipeToggleableGraphEditorTool, JIPipeDesktopWorkbenchAccess {
     private final Class<T> nodeClass;
     private final JIPipeAnnotationGraphNode nodeInstance;
-    private JIPipeDesktopGraphEditorUI graphEditorUI;
+    private AbstractJIPipeDesktopGraphEditorUI graphEditorUI;
 
     private Point firstPoint;
 
@@ -56,12 +56,12 @@ public class JIPipeAnnotationGraphNodeTool<T extends JIPipeAnnotationGraphNode> 
     }
 
     @Override
-    public JIPipeDesktopGraphEditorUI getGraphEditor() {
+    public AbstractJIPipeDesktopGraphEditorUI getGraphEditor() {
         return graphEditorUI;
     }
 
     @Override
-    public void setGraphEditor(JIPipeDesktopGraphEditorUI graphEditorUI) {
+    public void setGraphEditor(AbstractJIPipeDesktopGraphEditorUI graphEditorUI) {
         this.graphEditorUI = graphEditorUI;
     }
 

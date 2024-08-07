@@ -22,7 +22,7 @@ import org.hkijena.jipipe.api.project.JIPipeProject;
 import org.hkijena.jipipe.desktop.app.JIPipeDesktopProjectWorkbench;
 import org.hkijena.jipipe.desktop.app.JIPipeDesktopWorkbench;
 import org.hkijena.jipipe.desktop.app.JIPipeDesktopWorkbenchAccess;
-import org.hkijena.jipipe.desktop.app.grapheditor.commons.JIPipeDesktopGraphEditorUI;
+import org.hkijena.jipipe.desktop.app.grapheditor.commons.AbstractJIPipeDesktopGraphEditorUI;
 import org.hkijena.jipipe.utils.TooltipUtils;
 import org.hkijena.jipipe.utils.UIUtils;
 
@@ -31,10 +31,10 @@ import java.util.*;
 
 public class NodeTemplateMenu extends JMenu implements JIPipeDesktopWorkbenchAccess, NodeTemplatesRefreshedEventListener {
     private final JIPipeDesktopWorkbench workbench;
-    private final JIPipeDesktopGraphEditorUI graphEditorUI;
+    private final AbstractJIPipeDesktopGraphEditorUI graphEditorUI;
     private final JIPipeProject project;
 
-    public NodeTemplateMenu(JIPipeDesktopWorkbench workbench, JIPipeDesktopGraphEditorUI graphEditorUI) {
+    public NodeTemplateMenu(JIPipeDesktopWorkbench workbench, AbstractJIPipeDesktopGraphEditorUI graphEditorUI) {
         this.workbench = workbench;
         this.graphEditorUI = graphEditorUI;
         if (workbench instanceof JIPipeDesktopProjectWorkbench) {

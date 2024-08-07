@@ -13,7 +13,7 @@
 
 package org.hkijena.jipipe.api.grapheditortool;
 
-import org.hkijena.jipipe.desktop.app.grapheditor.commons.JIPipeDesktopGraphEditorUI;
+import org.hkijena.jipipe.desktop.app.grapheditor.commons.AbstractJIPipeDesktopGraphEditorUI;
 import org.hkijena.jipipe.utils.UIUtils;
 
 import javax.swing.*;
@@ -22,7 +22,7 @@ import java.awt.event.MouseEvent;
 
 public class JIPipeCropViewGraphEditorTool implements JIPipeGraphEditorTool {
 
-    private JIPipeDesktopGraphEditorUI graphEditor;
+    private AbstractJIPipeDesktopGraphEditorUI graphEditor;
 
     @Override
     public String getName() {
@@ -40,12 +40,12 @@ public class JIPipeCropViewGraphEditorTool implements JIPipeGraphEditorTool {
     }
 
     @Override
-    public JIPipeDesktopGraphEditorUI getGraphEditor() {
+    public AbstractJIPipeDesktopGraphEditorUI getGraphEditor() {
         return graphEditor;
     }
 
     @Override
-    public void setGraphEditor(JIPipeDesktopGraphEditorUI graphEditorUI) {
+    public void setGraphEditor(AbstractJIPipeDesktopGraphEditorUI graphEditorUI) {
         this.graphEditor = graphEditorUI;
     }
 

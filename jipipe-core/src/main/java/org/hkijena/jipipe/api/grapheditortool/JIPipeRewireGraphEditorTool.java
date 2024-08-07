@@ -18,8 +18,8 @@ import org.hkijena.jipipe.api.compartments.algorithms.JIPipeProjectCompartmentOu
 import org.hkijena.jipipe.api.data.JIPipeDataSlot;
 import org.hkijena.jipipe.api.nodes.JIPipeGraph;
 import org.hkijena.jipipe.api.nodes.JIPipeGraphEdge;
+import org.hkijena.jipipe.desktop.app.grapheditor.commons.AbstractJIPipeDesktopGraphEditorUI;
 import org.hkijena.jipipe.desktop.app.grapheditor.commons.JIPipeDesktopGraphCanvasUI;
-import org.hkijena.jipipe.desktop.app.grapheditor.commons.JIPipeDesktopGraphEditorUI;
 import org.hkijena.jipipe.desktop.app.grapheditor.commons.nodeui.JIPipeDesktopGraphNodeUI;
 import org.hkijena.jipipe.desktop.app.grapheditor.commons.nodeui.triggers.JIPipeDesktopGraphNodeUISlotActiveArea;
 import org.hkijena.jipipe.utils.PointRange;
@@ -35,7 +35,7 @@ import java.util.UUID;
 
 public class JIPipeRewireGraphEditorTool implements JIPipeToggleableGraphEditorTool {
 
-    private JIPipeDesktopGraphEditorUI graphEditorUI;
+    private AbstractJIPipeDesktopGraphEditorUI graphEditorUI;
     private JIPipeDesktopGraphNodeUISlotActiveArea currentRewireDragSource;
 
     private JIPipeDesktopGraphNodeUISlotActiveArea currentRewireDragTarget;
@@ -61,17 +61,17 @@ public class JIPipeRewireGraphEditorTool implements JIPipeToggleableGraphEditorT
     }
 
     @Override
-    public JIPipeDesktopGraphEditorUI getGraphEditor() {
+    public AbstractJIPipeDesktopGraphEditorUI getGraphEditor() {
         return graphEditorUI;
     }
 
     @Override
-    public void setGraphEditor(JIPipeDesktopGraphEditorUI graphEditorUI) {
+    public void setGraphEditor(AbstractJIPipeDesktopGraphEditorUI graphEditorUI) {
         this.graphEditorUI = graphEditorUI;
     }
 
     @Override
-    public boolean supports(JIPipeDesktopGraphEditorUI graphEditorUI) {
+    public boolean supports(AbstractJIPipeDesktopGraphEditorUI graphEditorUI) {
         return graphEditorUI.getGraph().getAttachment(JIPipeGraphType.class) != JIPipeGraphType.ProjectCompartments;
     }
 

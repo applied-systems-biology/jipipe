@@ -19,7 +19,7 @@ import org.hkijena.jipipe.desktop.api.JIPipeDesktopGraphEditorToolBarButtonExten
 import org.hkijena.jipipe.desktop.api.JIPipeDesktopMenuExtension;
 import org.hkijena.jipipe.desktop.api.JIPipeMenuExtensionTarget;
 import org.hkijena.jipipe.desktop.app.JIPipeDesktopWorkbench;
-import org.hkijena.jipipe.desktop.app.grapheditor.commons.JIPipeDesktopGraphEditorUI;
+import org.hkijena.jipipe.desktop.app.grapheditor.commons.AbstractJIPipeDesktopGraphEditorUI;
 import org.hkijena.jipipe.desktop.app.grapheditor.commons.contextmenu.NodeUIContextAction;
 import org.hkijena.jipipe.utils.ReflectionUtils;
 import org.hkijena.jipipe.utils.StringUtils;
@@ -80,7 +80,7 @@ public class JIPipeCustomMenuRegistry {
         return result;
     }
 
-    public List<JIPipeDesktopGraphEditorToolBarButtonExtension> graphEditorToolBarButtonExtensionsFor(JIPipeDesktopGraphEditorUI graphEditorUI) {
+    public List<JIPipeDesktopGraphEditorToolBarButtonExtension> graphEditorToolBarButtonExtensionsFor(AbstractJIPipeDesktopGraphEditorUI graphEditorUI) {
         List<JIPipeDesktopGraphEditorToolBarButtonExtension> result = new ArrayList<>();
         for (Class<? extends JIPipeDesktopGraphEditorToolBarButtonExtension> extension : registeredGraphEditorToolBarExtensions) {
             JIPipeDesktopGraphEditorToolBarButtonExtension instance = (JIPipeDesktopGraphEditorToolBarButtonExtension) ReflectionUtils.newInstance(extension, graphEditorUI);

@@ -20,8 +20,8 @@ import org.hkijena.jipipe.api.runtimepartitioning.JIPipeRuntimePartition;
 import org.hkijena.jipipe.desktop.app.JIPipeDesktopProjectWorkbench;
 import org.hkijena.jipipe.desktop.app.JIPipeDesktopProjectWorkbenchPanel;
 import org.hkijena.jipipe.desktop.app.JIPipeDesktopWorkbench;
+import org.hkijena.jipipe.desktop.app.grapheditor.commons.AbstractJIPipeDesktopGraphEditorUI;
 import org.hkijena.jipipe.desktop.app.grapheditor.commons.JIPipeDesktopGraphCanvasUI;
-import org.hkijena.jipipe.desktop.app.grapheditor.commons.JIPipeDesktopGraphEditorUI;
 import org.hkijena.jipipe.desktop.app.grapheditor.commons.nodeui.JIPipeDesktopGraphNodeUI;
 import org.hkijena.jipipe.desktop.commons.components.JIPipeDesktopParameterFormPanel;
 import org.hkijena.jipipe.desktop.commons.components.tabs.JIPipeDesktopTabPane;
@@ -55,8 +55,8 @@ public class JIPipeDesktopRuntimePartitionListEditor extends JIPipeDesktopProjec
 
             // Go and update existing graph editors
             for (JIPipeDesktopTabPane.DocumentTab tab : workbench.getDocumentTabPane().getTabs()) {
-                if (tab.getContent() instanceof JIPipeDesktopGraphEditorUI) {
-                    JIPipeDesktopGraphCanvasUI canvasUI = ((JIPipeDesktopGraphEditorUI) tab.getContent()).getCanvasUI();
+                if (tab.getContent() instanceof AbstractJIPipeDesktopGraphEditorUI) {
+                    JIPipeDesktopGraphCanvasUI canvasUI = ((AbstractJIPipeDesktopGraphEditorUI) tab.getContent()).getCanvasUI();
                     for (JIPipeDesktopGraphNodeUI ui : canvasUI.getNodeUIs().values()) {
                         ui.updateView(false, false, false);
                     }

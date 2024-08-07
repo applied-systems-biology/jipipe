@@ -21,6 +21,7 @@ import org.hkijena.jipipe.desktop.app.grapheditor.commons.nodeui.JIPipeDesktopGr
 import org.hkijena.jipipe.utils.UIUtils;
 
 import javax.swing.*;
+import java.awt.event.KeyEvent;
 import java.util.Set;
 
 public class AddNewCompartmentUIContextAction implements NodeUIContextAction {
@@ -61,5 +62,10 @@ public class AddNewCompartmentUIContextAction implements NodeUIContextAction {
     @Override
     public Icon getIcon() {
         return UIUtils.getIconFromResources("actions/add.png");
+    }
+
+    @Override
+    public KeyStroke getKeyboardShortcut() {
+        return KeyStroke.getKeyStroke(KeyEvent.VK_A, KeyEvent.SHIFT_MASK, true);
     }
 }

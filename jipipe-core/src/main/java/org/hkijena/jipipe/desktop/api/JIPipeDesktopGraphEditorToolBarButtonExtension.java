@@ -14,19 +14,19 @@
 package org.hkijena.jipipe.desktop.api;
 
 import org.hkijena.jipipe.api.JIPipeWorkbench;
-import org.hkijena.jipipe.desktop.app.grapheditor.commons.JIPipeDesktopGraphEditorUI;
+import org.hkijena.jipipe.desktop.app.grapheditor.commons.AbstractJIPipeDesktopGraphEditorUI;
 
 import javax.swing.*;
 
 public abstract class JIPipeDesktopGraphEditorToolBarButtonExtension extends JButton {
-    private final JIPipeDesktopGraphEditorUI graphEditorUI;
+    private final AbstractJIPipeDesktopGraphEditorUI graphEditorUI;
 
     /**
      * Creates a new instance
      *
      * @param graphEditorUI the graph editor
      */
-    public JIPipeDesktopGraphEditorToolBarButtonExtension(JIPipeDesktopGraphEditorUI graphEditorUI) {
+    public JIPipeDesktopGraphEditorToolBarButtonExtension(AbstractJIPipeDesktopGraphEditorUI graphEditorUI) {
         this.graphEditorUI = graphEditorUI;
     }
 
@@ -43,7 +43,7 @@ public abstract class JIPipeDesktopGraphEditorToolBarButtonExtension extends JBu
         return graphEditorUI.getDesktopWorkbench();
     }
 
-    public JIPipeDesktopGraphEditorUI getGraphEditorUI() {
+    public AbstractJIPipeDesktopGraphEditorUI getGraphEditorUI() {
         return graphEditorUI;
     }
 }
