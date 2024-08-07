@@ -3,6 +3,8 @@ package org.hkijena.jipipe.utils.ui;
 import com.fasterxml.jackson.annotation.JsonGetter;
 import com.fasterxml.jackson.annotation.JsonSetter;
 import com.google.common.collect.ImmutableList;
+import org.hkijena.jipipe.api.events.AbstractJIPipeEvent;
+import org.hkijena.jipipe.api.events.JIPipeEventEmitter;
 import org.hkijena.jipipe.desktop.commons.components.JIPipeDesktopVerticalToolBar;
 import org.hkijena.jipipe.utils.JIPipeDesktopSplitPane;
 import org.hkijena.jipipe.utils.UIUtils;
@@ -26,25 +28,27 @@ public class JIPipeDesktopDockPanel extends JPanel {
     private final JIPipeDesktopVerticalToolBar rightToolBar = new JIPipeDesktopVerticalToolBar();
     private final JLayeredPane layeredPane = new JLayeredPane();
     private final JPanel layeredPaneBackground = new JPanel(new BorderLayout());
-    private final JPanel leftFloatingPanel = new JPanel(new BorderLayout());
-    private final JPanel rightFloatingPanel = new JPanel(new BorderLayout());
+    private final JPanel leftPanel = new JPanel(new BorderLayout());
+    private final JPanel rightPanel = new JPanel(new BorderLayout());
     private final JPanel leftResizerPanel = new JPanel();
     private final JPanel rightResizerPanel = new JPanel();
-    private int floatingMarginLeftRight = 8;
-    private int floatingMarginTop = 8;
-    private int floatingMarginBottom = 8;
-    private int leftFloatingSize = 350;
-    private int rightFloatingSize = 500;
-    private int minimumFloatingSize = 50;
-    private JComponent leftFloatingPanelContent;
-    private JComponent rightFloatingPanelContent;
-    private final Map<String, Panel> floatingPanels = new LinkedHashMap<>();
-    private final Map<String, JToggleButton> floatingPanelToggles = new HashMap<>();
-    private boolean floatingLeft = false;
-    private boolean floatingRight = false;
+    private int floatingPanelMarginLeftRight = 8;
+    private int floatingPanelMarginTop = 8;
+    private int floatingPanelMarginBottom = 8;
+    private int leftPanelWidth = 350;
+    private int rightPanelWidth = 500;
+    private int minimumPanelWidth = 150;
+    private int minimumBackgroundWidth = 150;
+    private JComponent leftPanelContent;
+    private JComponent rightPanelContent;
+    private final Map<String, Panel> panels = new LinkedHashMap<>();
+    private final Map<String, JToggleButton> panelVisibilityToggles = new HashMap<>();
+    private boolean leftPanelIsFloating = false;
+    private boolean rightPanelIsFloating = false;
     private final JIPipeDesktopSplitPane leftSplitPane = new JIPipeDesktopSplitPane(JSplitPane.VERTICAL_SPLIT, new JIPipeDesktopSplitPane.FixedRatio(0.33, true));
     private final JIPipeDesktopSplitPane rightSplitPane = new JIPipeDesktopSplitPane(JSplitPane.VERTICAL_SPLIT, new JIPipeDesktopSplitPane.FixedRatio(0.66, true));
     private State savedState = new State();
+    private final StateSavedEventEmitter stateSavedEventEmitter = new StateSavedEventEmitter();
 
     public JIPipeDesktopDockPanel() {
         super(new BorderLayout());
@@ -61,8 +65,8 @@ public class JIPipeDesktopDockPanel extends JPanel {
         add(layeredPane, BorderLayout.CENTER);
 
         layeredPane.add(layeredPaneBackground, JLayeredPane.DEFAULT_LAYER);
-        layeredPane.add(leftFloatingPanel, JLayeredPane.PALETTE_LAYER);
-        layeredPane.add(rightFloatingPanel, JLayeredPane.PALETTE_LAYER);
+        layeredPane.add(leftPanel, JLayeredPane.PALETTE_LAYER);
+        layeredPane.add(rightPanel, JLayeredPane.PALETTE_LAYER);
 
         initializeLeftFloatingPanel();
         initializeRightFloatingPanel();
@@ -79,8 +83,8 @@ public class JIPipeDesktopDockPanel extends JPanel {
     }
 
     private void initializeRightFloatingPanel() {
-        rightFloatingPanel.setBorder(UIUtils.createPanelBorder());
-        rightFloatingPanel.add(rightResizerPanel, BorderLayout.WEST);
+        rightPanel.setBorder(UIUtils.createPanelBorder());
+        rightPanel.add(rightResizerPanel, BorderLayout.WEST);
         rightResizerPanel.setCursor(Cursor.getPredefinedCursor(Cursor.MOVE_CURSOR));
         rightResizerPanel.setPreferredSize(new Dimension(RESIZE_HANDLE_SIZE, 64));
         rightResizerPanel.setMinimumSize(new Dimension(RESIZE_HANDLE_SIZE, 32));
@@ -91,7 +95,8 @@ public class JIPipeDesktopDockPanel extends JPanel {
             @Override
             public void mouseDragged(MouseEvent e) {
                 Point convertedPoint = SwingUtilities.convertPoint(rightResizerPanel, e.getPoint(), layeredPane);
-                rightFloatingSize = Math.max(minimumFloatingSize, layeredPane.getWidth() - convertedPoint.x);
+                rightPanelWidth = Math.max(minimumPanelWidth, layeredPane.getWidth() - convertedPoint.x);
+                saveState();
                 updateSizes();
             }
 
@@ -101,8 +106,8 @@ public class JIPipeDesktopDockPanel extends JPanel {
 
     private void initializeLeftFloatingPanel() {
 //        leftFloatingPanel.setOpaque(false);
-        leftFloatingPanel.setBorder(UIUtils.createPanelBorder());
-        leftFloatingPanel.add(leftResizerPanel, BorderLayout.EAST);
+        leftPanel.setBorder(UIUtils.createPanelBorder());
+        leftPanel.add(leftResizerPanel, BorderLayout.EAST);
         leftResizerPanel.setCursor(Cursor.getPredefinedCursor(Cursor.MOVE_CURSOR));
         leftResizerPanel.setPreferredSize(new Dimension(RESIZE_HANDLE_SIZE, 64));
         leftResizerPanel.setMinimumSize(new Dimension(RESIZE_HANDLE_SIZE, 32));
@@ -113,7 +118,8 @@ public class JIPipeDesktopDockPanel extends JPanel {
             @Override
             public void mouseDragged(MouseEvent e) {
                 Point convertedPoint = SwingUtilities.convertPoint(leftResizerPanel, e.getPoint(), layeredPane);
-                leftFloatingSize = Math.max(minimumFloatingSize, convertedPoint.x);
+                leftPanelWidth = Math.max(minimumPanelWidth, convertedPoint.x);
+                saveState();
                 updateSizes();
             }
         });
@@ -131,34 +137,34 @@ public class JIPipeDesktopDockPanel extends JPanel {
 
         int availableWidth = layeredPane.getWidth();
 
-        int leftMarginLeft = floatingLeft ? floatingMarginLeftRight : 0;
-        int leftMarginTop = floatingLeft ? floatingMarginTop : 0;
-        int leftMarginBottom = floatingLeft ? floatingMarginBottom : 0;
-        int rightMarginRight = floatingRight ? floatingMarginLeftRight : 0;
-        int rightMarginTop = floatingRight ? floatingMarginTop : 0;
-        int rightMarginBottom = floatingRight ? floatingMarginBottom : 0;
+        int leftMarginLeft = leftPanelIsFloating ? floatingPanelMarginLeftRight : 0;
+        int leftMarginTop = leftPanelIsFloating ? floatingPanelMarginTop : 0;
+        int leftMarginBottom = leftPanelIsFloating ? floatingPanelMarginBottom : 0;
+        int rightMarginRight = rightPanelIsFloating ? floatingPanelMarginLeftRight : 0;
+        int rightMarginTop = rightPanelIsFloating ? floatingPanelMarginTop : 0;
+        int rightMarginBottom = rightPanelIsFloating ? floatingPanelMarginBottom : 0;
 
 
-        Dimension leftSize = new Dimension(leftFloatingSize, getHeight() - leftMarginTop - leftMarginBottom);
-        Dimension rightSize = new Dimension(rightFloatingSize, getHeight() - rightMarginTop - rightMarginBottom);
+        Dimension leftSize = new Dimension(leftPanelWidth, getHeight() - leftMarginTop - leftMarginBottom);
+        Dimension rightSize = new Dimension(rightPanelWidth, getHeight() - rightMarginTop - rightMarginBottom);
 
-        leftFloatingPanel.setPreferredSize(leftSize);
-        rightFloatingPanel.setPreferredSize(rightSize);
-        leftFloatingPanel.setMaximumSize(leftSize);
-        rightFloatingPanel.setMaximumSize(rightSize);
+        leftPanel.setPreferredSize(leftSize);
+        rightPanel.setPreferredSize(rightSize);
+        leftPanel.setMaximumSize(leftSize);
+        rightPanel.setMaximumSize(rightSize);
 
-        leftFloatingPanel.setBounds(leftMarginLeft, leftMarginTop, leftSize.width, leftSize.height);
-        rightFloatingPanel.setBounds(availableWidth - rightMarginRight - rightFloatingSize - 2, rightMarginTop, rightSize.width, rightSize.height);
+        leftPanel.setBounds(leftMarginLeft, leftMarginTop, leftSize.width, leftSize.height);
+        rightPanel.setBounds(availableWidth - rightMarginRight - rightPanelWidth - 2, rightMarginTop, rightSize.width, rightSize.height);
 
         int backgroundLeft;
         int backgroundWidth;
 
-        if(leftFloatingPanel.isVisible() && rightFloatingPanel.isVisible()) {
-            backgroundLeft = floatingLeft ? 0 : leftSize.width;
-            backgroundWidth = layeredPane.getWidth() - (floatingRight ? 0 : rightSize.width) - backgroundLeft;
+        if(leftPanel.isVisible() && rightPanel.isVisible()) {
+            backgroundLeft = leftPanelIsFloating ? 0 : leftSize.width;
+            backgroundWidth = layeredPane.getWidth() - (rightPanelIsFloating ? 0 : rightSize.width) - backgroundLeft;
         }
-        else if(leftFloatingPanel.isVisible()) {
-            backgroundLeft = floatingLeft ? 0 : leftSize.width;
+        else if(leftPanel.isVisible()) {
+            backgroundLeft = leftPanelIsFloating ? 0 : leftSize.width;
             backgroundWidth = layeredPane.getWidth() - backgroundLeft;
         }
         else {
@@ -166,7 +172,7 @@ public class JIPipeDesktopDockPanel extends JPanel {
             backgroundWidth = layeredPane.getWidth();
         }
 
-        layeredPaneBackground.setBounds(backgroundLeft, 0, backgroundWidth, getHeight());
+        layeredPaneBackground.setBounds(backgroundLeft, 0, Math.max(backgroundWidth, minimumBackgroundWidth), getHeight());
 //        layeredPaneBackground.setBounds(100,100,100,100);
 //        layeredPaneBackground.setBounds(0,0,layeredPane.getWidth(),getHeight());
 
@@ -175,14 +181,14 @@ public class JIPipeDesktopDockPanel extends JPanel {
     }
 
     private void updateContent() {
-        if(leftFloatingPanelContent != null) {
-            leftFloatingPanel.remove(leftFloatingPanelContent);
+        if(leftPanelContent != null) {
+            leftPanel.remove(leftPanelContent);
         }
-        if(rightFloatingPanelContent != null) {
-            rightFloatingPanel.remove(rightFloatingPanelContent);
+        if(rightPanelContent != null) {
+            rightPanel.remove(rightPanelContent);
         }
-        leftFloatingPanelContent = null;
-        rightFloatingPanelContent = null;
+        leftPanelContent = null;
+        rightPanelContent = null;
 
         List<JComponent> leftContent = new ArrayList<>();
         List<JComponent> rightContent = new ArrayList<>();
@@ -216,11 +222,11 @@ public class JIPipeDesktopDockPanel extends JPanel {
             // create split pane
             leftSplitPane.setLeftComponent(leftContent.get(0));
             leftSplitPane.setRightComponent(leftContent.get(1));
-            leftFloatingPanelContent = leftSplitPane;
+            leftPanelContent = leftSplitPane;
         }
         else if(leftContent.size() == 1) {
             // use directly
-            leftFloatingPanelContent = leftContent.get(0);
+            leftPanelContent = leftContent.get(0);
             leftSplitPane.setLeftComponent(new JPanel());
             leftSplitPane.setRightComponent(new JPanel());
         }
@@ -233,11 +239,11 @@ public class JIPipeDesktopDockPanel extends JPanel {
             // create split pane
             rightSplitPane.setLeftComponent(rightContent.get(0));
             rightSplitPane.setRightComponent(rightContent.get(1));
-            rightFloatingPanelContent = rightSplitPane;
+            rightPanelContent = rightSplitPane;
         }
         else if(rightContent.size() == 1) {
             // use directly
-            rightFloatingPanelContent = rightContent.get(0);
+            rightPanelContent = rightContent.get(0);
             rightSplitPane.setLeftComponent(new JPanel());
             rightSplitPane.setRightComponent(new JPanel());
         }
@@ -250,19 +256,19 @@ public class JIPipeDesktopDockPanel extends JPanel {
         rightSplitPane.applyRatio();
 
         // Rebuild panel
-        if(leftFloatingPanelContent != null) {
-            leftFloatingPanel.setVisible(true);
-            leftFloatingPanel.add(leftFloatingPanelContent, BorderLayout.CENTER);
+        if(leftPanelContent != null) {
+            leftPanel.setVisible(true);
+            leftPanel.add(leftPanelContent, BorderLayout.CENTER);
         }
         else {
-            leftFloatingPanel.setVisible(false);
+            leftPanel.setVisible(false);
         }
-        if(rightFloatingPanelContent != null) {
-            rightFloatingPanel.setVisible(true);
-            rightFloatingPanel.add(rightFloatingPanelContent, BorderLayout.CENTER);
+        if(rightPanelContent != null) {
+            rightPanel.setVisible(true);
+            rightPanel.add(rightPanelContent, BorderLayout.CENTER);
         }
         else {
-            rightFloatingPanel.setVisible(false);
+            rightPanel.setVisible(false);
         }
 
         // Revalidate and repaint
@@ -317,7 +323,7 @@ public class JIPipeDesktopDockPanel extends JPanel {
             movePanelToLocation(panel, PanelLocation.BottomRight, true);
         }));
 
-        floatingPanelToggles.put(panel.getId(), button);
+        panelVisibilityToggles.put(panel.getId(), button);
         return button;
     }
 
@@ -333,6 +339,7 @@ public class JIPipeDesktopDockPanel extends JPanel {
 
     private void saveState() {
         savedState = getCurrentState();
+        stateSavedEventEmitter.emit(new StateSavedEvent(this, savedState));
     }
 
     private void activatePanel(Panel panel, boolean saveState) {
@@ -356,36 +363,36 @@ public class JIPipeDesktopDockPanel extends JPanel {
         for (Panel otherPanel : getPanelsAtLocation(panel.getLocation())) {
             if(otherPanel != panel) {
                 otherPanel.setVisible(false);
-                floatingPanelToggles.get(otherPanel.getId()).setSelected(false);
+                panelVisibilityToggles.get(otherPanel.getId()).setSelected(false);
             }
         }
         panel.setVisible(true);
     }
 
-    public boolean isFloatingLeft() {
-        return floatingLeft;
+    public boolean isLeftPanelIsFloating() {
+        return leftPanelIsFloating;
     }
 
-    public void setFloatingLeft(boolean floatingLeft) {
-        this.floatingLeft = floatingLeft;
+    public void setLeftPanelIsFloating(boolean leftPanelIsFloating) {
+        this.leftPanelIsFloating = leftPanelIsFloating;
         updateSizes();
     }
 
-    public boolean isFloatingRight() {
-        return floatingRight;
+    public boolean isRightPanelIsFloating() {
+        return rightPanelIsFloating;
     }
 
-    public void setFloatingRight(boolean floatingRight) {
-        this.floatingRight = floatingRight;
+    public void setRightPanelIsFloating(boolean rightPanelIsFloating) {
+        this.rightPanelIsFloating = rightPanelIsFloating;
         updateSizes();
     }
 
     public List<Panel> getPanelsAtLocation(PanelLocation location) {
-        return floatingPanels.values().stream().filter(panel -> panel.getLocation() == location).collect(Collectors.toList());
+        return panels.values().stream().filter(panel -> panel.getLocation() == location).collect(Collectors.toList());
     }
 
     public void movePanelToLocation(String id, PanelLocation newLocation, boolean saveState) {
-        movePanelToLocation(floatingPanels.get(id), newLocation, saveState);
+        movePanelToLocation(panels.get(id), newLocation, saveState);
     }
 
     private void movePanelToLocation(Panel panel, PanelLocation newLocation, boolean saveState) {
@@ -441,7 +448,7 @@ public class JIPipeDesktopDockPanel extends JPanel {
     }
 
     public void removeDockPanel(String id) {
-        if(floatingPanels.remove(id) != null) {
+        if(panels.remove(id) != null) {
             updateToolbars();
             updateContent();
             updateSizes();
@@ -457,7 +464,7 @@ public class JIPipeDesktopDockPanel extends JPanel {
         panel.setComponent(component);
         panel.setIcon(icon);
         panel.setName(name);
-        floatingPanels.put(id, panel);
+        panels.put(id, panel);
 
         if(visible) {
            activatePanel(panel, false);
@@ -481,7 +488,7 @@ public class JIPipeDesktopDockPanel extends JPanel {
         panel.setComponentSupplier(component);
         panel.setIcon(icon);
         panel.setName(name);
-        floatingPanels.put(id, panel);
+        panels.put(id, panel);
 
         if(visible) {
             activatePanel(panel, false);
@@ -491,8 +498,16 @@ public class JIPipeDesktopDockPanel extends JPanel {
         }
     }
 
+    public State getSavedState() {
+        return savedState;
+    }
+
+    public void setSavedState(State savedState) {
+        this.savedState = savedState;
+    }
+
     public void restoreState(State state) {
-        for (Panel panel : floatingPanels.values()) {
+        for (Panel panel : panels.values()) {
             boolean visible = state.getVisibilities().getOrDefault(panel.getId(), panel.isVisible());
             if(visible) {
                 setPanelVisible(panel);
@@ -501,26 +516,33 @@ public class JIPipeDesktopDockPanel extends JPanel {
                 panel.setVisible(false);
             }
         }
+        savedState = state;
+        leftPanelWidth = Math.max(minimumPanelWidth, state.leftPanelWidth);
+        rightPanelWidth = Math.max(minimumPanelWidth, state.rightPanelWidth);
         updateToolbars();
         updateSizes();
         updateContent();
     }
 
     public void activatePanel(String id, boolean saveState) {
-        Panel panel = floatingPanels.get(id);
+        Panel panel = panels.get(id);
         if(panel != null) {
             activatePanel(panel, saveState);
         }
     }
 
     public <T extends JComponent> T getPanel(String id, Class<T> klass) {
-        Panel panel = floatingPanels.getOrDefault(id, null);
+        Panel panel = panels.getOrDefault(id, null);
         if(panel != null) {
             return (T) panel.getComponent();
         }
         else {
             return null;
         }
+    }
+
+    public StateSavedEventEmitter getStateSavedEventEmitter() {
+        return stateSavedEventEmitter;
     }
 
     public enum PanelLocation {
@@ -530,63 +552,72 @@ public class JIPipeDesktopDockPanel extends JPanel {
         BottomRight
     }
 
-    public int getLeftFloatingSize() {
-        return leftFloatingSize;
+    public int getLeftPanelWidth() {
+        return leftPanelWidth;
     }
 
-    public void setLeftFloatingSize(int leftFloatingSize) {
-        this.leftFloatingSize = leftFloatingSize;
+    public void setLeftPanelWidth(int leftPanelWidth) {
+        this.leftPanelWidth = leftPanelWidth;
         updateSizes();
     }
 
-    public int getRightFloatingSize() {
-        return rightFloatingSize;
+    public int getRightPanelWidth() {
+        return rightPanelWidth;
     }
 
-    public void setRightFloatingSize(int rightFloatingSize) {
-        this.rightFloatingSize = rightFloatingSize;
+    public void setRightPanelWidth(int rightPanelWidth) {
+        this.rightPanelWidth = rightPanelWidth;
         updateSizes();
     }
 
-    public int getMinimumFloatingSize() {
-        return minimumFloatingSize;
+    public int getMinimumPanelWidth() {
+        return minimumPanelWidth;
     }
 
-    public void setMinimumFloatingSize(int minimumFloatingSize) {
-        this.minimumFloatingSize = minimumFloatingSize;
+    public void setMinimumPanelWidth(int minimumPanelWidth) {
+        this.minimumPanelWidth = minimumPanelWidth;
         updateSizes();
     }
 
-    public int getFloatingMarginTop() {
-        return floatingMarginTop;
+    public int getFloatingPanelMarginTop() {
+        return floatingPanelMarginTop;
     }
 
-    public void setFloatingMarginTop(int floatingMarginTop) {
-        this.floatingMarginTop = floatingMarginTop;
+    public void setFloatingPanelMarginTop(int floatingPanelMarginTop) {
+        this.floatingPanelMarginTop = floatingPanelMarginTop;
     }
 
-    public int getFloatingMarginBottom() {
-        return floatingMarginBottom;
+
+    public int getMinimumBackgroundWidth() {
+        return minimumBackgroundWidth;
     }
 
-    public void setFloatingMarginBottom(int floatingMarginBottom) {
-        this.floatingMarginBottom = floatingMarginBottom;
+    public void setMinimumBackgroundWidth(int minimumBackgroundWidth) {
+        this.minimumBackgroundWidth = minimumBackgroundWidth;
     }
 
-    public int getFloatingMarginLeftRight() {
-        return floatingMarginLeftRight;
+    public int getFloatingPanelMarginBottom() {
+        return floatingPanelMarginBottom;
     }
 
-    public void setFloatingMarginLeftRight(int floatingMarginLeftRight) {
-        this.floatingMarginLeftRight = floatingMarginLeftRight;
+    public void setFloatingPanelMarginBottom(int floatingPanelMarginBottom) {
+        this.floatingPanelMarginBottom = floatingPanelMarginBottom;
+    }
+
+    public int getFloatingPanelMarginLeftRight() {
+        return floatingPanelMarginLeftRight;
+    }
+
+    public void setFloatingPanelMarginLeftRight(int floatingPanelMarginLeftRight) {
+        this.floatingPanelMarginLeftRight = floatingPanelMarginLeftRight;
     }
 
     public void removeDockPanelsIf(Predicate<Panel> predicate) {
         boolean found = false;
-        for (Panel panel : ImmutableList.copyOf(floatingPanels.values())) {
+        for (Panel panel : ImmutableList.copyOf(panels.values())) {
             if (predicate.test(panel)) {
-                floatingPanelToggles.remove(panel.getId());
-                floatingPanels.remove(panel.getId());
+                panelVisibilityToggles.remove(panel.getId());
+                panels.remove(panel.getId());
                 found = true;
             }
         }
@@ -599,14 +630,38 @@ public class JIPipeDesktopDockPanel extends JPanel {
 
     public State getCurrentState() {
         State state = new State();
-        for (Panel panel : floatingPanels.values()) {
+        for (Panel panel : panels.values()) {
             state.visibilities.put(panel.getId(), panel.isVisible());
         }
+        state.setLeftPanelWidth(leftPanelWidth);
+        state.setRightPanelWidth(rightPanelWidth);
         return state;
     }
 
     public static class State {
         private Map<String, Boolean> visibilities = new HashMap<>();
+        private int leftPanelWidth;
+        private int rightPanelWidth;
+
+        @JsonGetter("left-panel-width")
+        public int getLeftPanelWidth() {
+            return leftPanelWidth;
+        }
+
+        @JsonSetter("left-panel-width")
+        public void setLeftPanelWidth(int leftPanelWidth) {
+            this.leftPanelWidth = leftPanelWidth;
+        }
+
+        @JsonGetter("right-panel-width")
+        public int getRightPanelWidth() {
+            return rightPanelWidth;
+        }
+
+        @JsonSetter("right-panel-width")
+        public void setRightPanelWidth(int rightPanelWidth) {
+            this.rightPanelWidth = rightPanelWidth;
+        }
 
         @JsonGetter("visibilities")
         public Map<String, Boolean> getVisibilities() {
@@ -686,6 +741,32 @@ public class JIPipeDesktopDockPanel extends JPanel {
 
         public void setComponentSupplier(Supplier<JComponent> componentSupplier) {
             this.componentSupplier = componentSupplier;
+        }
+    }
+
+    public static class StateSavedEvent extends AbstractJIPipeEvent {
+
+        private final State savedState;
+
+        public StateSavedEvent(Object source, State savedState) {
+            super(source);
+            this.savedState = savedState;
+        }
+
+        public State getSavedState() {
+            return savedState;
+        }
+    }
+
+    public interface StateSavedEventListener {
+        void onDockPanelStateSaved(StateSavedEvent event);
+    }
+
+    public static class StateSavedEventEmitter extends JIPipeEventEmitter<StateSavedEvent, StateSavedEventListener> {
+
+        @Override
+        protected void call(StateSavedEventListener stateSavedEventListener, StateSavedEvent event) {
+            stateSavedEventListener.onDockPanelStateSaved(event);
         }
     }
 }

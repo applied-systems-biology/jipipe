@@ -43,7 +43,9 @@ import org.hkijena.jipipe.desktop.app.grapheditor.flavors.pipeline.actions.JIPip
 import org.hkijena.jipipe.desktop.app.grapheditor.flavors.pipeline.actions.JIPipeDesktopUpdateCacheAction;
 import org.hkijena.jipipe.desktop.app.history.JIPipeDesktopHistoryJournalUI;
 import org.hkijena.jipipe.desktop.commons.components.tabs.JIPipeDesktopTabPane;
+import org.hkijena.jipipe.plugins.settings.JIPipeGraphEditorUIApplicationSettings;
 import org.hkijena.jipipe.utils.UIUtils;
+import org.hkijena.jipipe.utils.json.JsonUtils;
 import org.hkijena.jipipe.utils.ui.JIPipeDesktopDockPanel;
 
 import javax.swing.*;
@@ -291,5 +293,25 @@ public class JIPipeDesktopCompartmentsGraphEditorUI extends AbstractJIPipeDeskto
     @Override
     public JIPipeNodeDatabaseRole getNodeDatabaseRole() {
         return JIPipeNodeDatabaseRole.CompartmentNode;
+    }
+
+    @Override
+    protected void restoreDockStateFromSettings() {
+        try {
+            JIPipeGraphEditorUIApplicationSettings.DockLayoutSettings settings = JIPipeGraphEditorUIApplicationSettings.getInstance().getDockLayoutSettings();
+            JIPipeDesktopDockPanel.State state = JsonUtils.readFromString(settings.getCompartmentsEditorDockLayout(), JIPipeDesktopDockPanel.State.class);
+            getDockPanel().restoreState(state);
+        }
+        catch (Throwable ignored) {
+        }
+    }
+
+    @Override
+    protected void saveDockStateToSettings() {
+        if(JIPipe.isInstantiated()) {
+            JIPipeGraphEditorUIApplicationSettings.DockLayoutSettings settings = JIPipeGraphEditorUIApplicationSettings.getInstance().getDockLayoutSettings();
+            settings.setCompartmentsEditorDockLayout(JsonUtils.toJsonString(getDockPanel().getCurrentState()));
+            JIPipe.getSettings().saveLater();
+        }
     }
 }

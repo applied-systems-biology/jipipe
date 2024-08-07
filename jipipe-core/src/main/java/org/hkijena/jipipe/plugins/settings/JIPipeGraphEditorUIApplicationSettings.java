@@ -22,6 +22,7 @@ import org.hkijena.jipipe.api.settings.JIPipeDefaultApplicationSettingsSheetCate
 import org.hkijena.jipipe.api.settings.JIPipeDefaultApplicationsSettingsSheet;
 import org.hkijena.jipipe.desktop.app.grapheditor.commons.AbstractJIPipeDesktopGraphEditorUI;
 import org.hkijena.jipipe.desktop.app.grapheditor.commons.layout.JIPipepGraphAutoLayoutMethod;
+import org.hkijena.jipipe.plugins.parameters.library.primitives.StringParameterSettings;
 import org.hkijena.jipipe.utils.UIUtils;
 
 import javax.swing.*;
@@ -33,6 +34,7 @@ public class JIPipeGraphEditorUIApplicationSettings extends JIPipeDefaultApplica
 
     public static String ID = "org.hkijena.jipipe:graph-editor-ui";
     private final NodeSearchSettings nodeSearchSettings = new NodeSearchSettings();
+    private final DockLayoutSettings dockLayoutSettings = new DockLayoutSettings();
     private JIPipepGraphAutoLayoutMethod autoLayout = JIPipepGraphAutoLayoutMethod.MST;
     private boolean switchPanningDirection = false;
     private boolean askOnDeleteNode = true;
@@ -61,6 +63,12 @@ public class JIPipeGraphEditorUIApplicationSettings extends JIPipeDefaultApplica
 
     public static JIPipeGraphEditorUIApplicationSettings getInstance() {
         return JIPipe.getSettings().getById(ID, JIPipeGraphEditorUIApplicationSettings.class);
+    }
+
+    @SetJIPipeDocumentation(name = "UI Layout", description = "Settings related to the UI layout")
+    @JIPipeParameter("dock-layout")
+    public DockLayoutSettings getDockLayoutSettings() {
+        return dockLayoutSettings;
     }
 
     @SetJIPipeDocumentation(name = "Auto-mute edges by selection", description = "If enabled, all edges that are not part of the selected nodes are muted")
@@ -379,6 +387,35 @@ public class JIPipeGraphEditorUIApplicationSettings extends JIPipeDefaultApplica
         @JIPipeParameter("show-node-descriptions")
         public void setShowDescriptions(boolean showDescriptions) {
             this.showDescriptions = showDescriptions;
+        }
+    }
+
+    public static class DockLayoutSettings extends AbstractJIPipeParameterCollection {
+        private String pipelineEditorDockLayout = "";
+        private String compartmentsEditorDockLayout = "";
+
+        @SetJIPipeDocumentation(name = "UI layout (pipeline editor)", description = "Contains the current UI layout of the pipeline editor. Please do not edit this parameter manually.")
+        @JIPipeParameter("pipeline-editor-dock-layout")
+        @StringParameterSettings(monospace = true, multiline = true, visible = false)
+        public String getPipelineEditorDockLayout() {
+            return pipelineEditorDockLayout;
+        }
+
+        @JIPipeParameter("pipeline-editor-dock-layout")
+        public void setPipelineEditorDockLayout(String pipelineEditorDockLayout) {
+            this.pipelineEditorDockLayout = pipelineEditorDockLayout;
+        }
+
+        @SetJIPipeDocumentation(name = "UI layout (compartment editor)", description = "Contains the current UI layout of the compartments editor. Please do not edit this parameter manually.")
+        @JIPipeParameter("compartments-editor-dock-layout")
+        @StringParameterSettings(monospace = true, multiline = true, visible = false)
+        public String getCompartmentsEditorDockLayout() {
+            return compartmentsEditorDockLayout;
+        }
+
+        @JIPipeParameter("compartments-editor-dock-layout")
+        public void setCompartmentsEditorDockLayout(String compartmentsEditorDockLayout) {
+            this.compartmentsEditorDockLayout = compartmentsEditorDockLayout;
         }
     }
 }

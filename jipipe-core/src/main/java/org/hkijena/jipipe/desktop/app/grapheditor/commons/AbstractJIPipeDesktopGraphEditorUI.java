@@ -58,7 +58,8 @@ public abstract class AbstractJIPipeDesktopGraphEditorUI extends JIPipeDesktopWo
         JIPipeDesktopGraphCanvasUI.NodeSelectionChangedEventListener,
         JIPipeDesktopGraphCanvasUI.NodeUISelectedEventListener,
         JIPipeDesktopGraphNodeUI.DefaultNodeUIActionRequestedEventListener,
-        JIPipeDesktopGraphNodeUI.NodeUIActionRequestedEventListener {
+        JIPipeDesktopGraphNodeUI.NodeUIActionRequestedEventListener,
+        JIPipeDesktopDockPanel.StateSavedEventListener {
 
     public static final String DOCK_LOG = "LOG";
     public static final String DOCK_HISTORY = "HISTORY";
@@ -112,7 +113,12 @@ public abstract class AbstractJIPipeDesktopGraphEditorUI extends JIPipeDesktopWo
             canvasUI.crop(true);
             selectDefaultTool();
         });
+
+        restoreDockStateFromSettings();
     }
+
+    protected abstract void restoreDockStateFromSettings();
+    protected abstract void saveDockStateToSettings();
 
     /**
      * @param workbenchUI    the workbench
@@ -160,6 +166,11 @@ public abstract class AbstractJIPipeDesktopGraphEditorUI extends JIPipeDesktopWo
     public void dispose() {
         graph.getGraphChangedEventEmitter().unsubscribe(this);
         canvasUI.dispose();
+    }
+
+    @Override
+    public void onDockPanelStateSaved(JIPipeDesktopDockPanel.StateSavedEvent event) {
+        saveDockStateToSettings();
     }
 
     public JIPipeGraphEditorUIApplicationSettings getGraphUISettings() {
@@ -210,8 +221,9 @@ public abstract class AbstractJIPipeDesktopGraphEditorUI extends JIPipeDesktopWo
         mainPanel.add(scrollPane, BorderLayout.CENTER);
         mainPanel.add(toolBar, BorderLayout.NORTH);
 
-        dockPanel.setFloatingMarginTop(40);
+        dockPanel.setFloatingPanelMarginTop(40);
         dockPanel.setBackgroundComponent(mainPanel);
+        dockPanel.getStateSavedEventEmitter().subscribe(this);
 
         add(dockPanel, BorderLayout.CENTER);
 

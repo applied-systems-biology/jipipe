@@ -57,6 +57,16 @@ public class JIPipeDesktopRunSingleAlgorithmSettingsPanelIOEditor extends Abstra
         return new JIPipeGraphEditorUIApplicationSettings();
     }
 
+    @Override
+    protected void restoreDockStateFromSettings() {
+
+    }
+
+    @Override
+    protected void saveDockStateToSettings() {
+
+    }
+
     private void initialize() {
         JIPipeDesktopTabPane propertyPanel = new JIPipeDesktopTabPane(true, JIPipeDesktopTabPane.TabPlacement.Top);
         propertyPanel.addTab("Inputs",

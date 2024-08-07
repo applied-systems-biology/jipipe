@@ -27,6 +27,7 @@ import org.hkijena.jipipe.api.settings.JIPipeSettingsSheet;
 import org.hkijena.jipipe.utils.StringUtils;
 import org.hkijena.jipipe.utils.json.JsonUtils;
 
+import javax.swing.*;
 import java.io.BufferedWriter;
 import java.io.FileWriter;
 import java.io.IOException;
@@ -44,9 +45,14 @@ public class JIPipeApplicationSettingsRegistry {
     private final JIPipe jiPipe;
     private final BiMap<String, JIPipeApplicationSettingsSheet> registeredSheets = HashBiMap.create();
     private final Map<Class<? extends JIPipeApplicationSettingsSheet>, JIPipeApplicationSettingsSheet> registeredSheetsByType = new HashMap<>();
+    private final Timer saveLaterTimer;
 
     public JIPipeApplicationSettingsRegistry(JIPipe jiPipe) {
         this.jiPipe = jiPipe;
+        this.saveLaterTimer = new Timer(250, (e) -> {
+            save();
+        });
+        this.saveLaterTimer.setRepeats(false);
     }
 
     /**
@@ -200,4 +206,7 @@ public class JIPipeApplicationSettingsRegistry {
         return jiPipe;
     }
 
+    public void saveLater() {
+        saveLaterTimer.restart();
+    }
 }
