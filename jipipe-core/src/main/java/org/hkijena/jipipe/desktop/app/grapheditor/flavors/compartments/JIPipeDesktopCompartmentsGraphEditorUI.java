@@ -65,6 +65,7 @@ public class JIPipeDesktopCompartmentsGraphEditorUI extends AbstractJIPipeDeskto
     public static final String DOCK_NODE_CONTEXT_PARAMETERS = "_PARAMETERS";
     public static final String DOCK_NODE_CONTEXT_SLOT_MANAGER = "_SLOT_MANAGER";
     public static final String DOCK_NODE_CONTEXT_RESULTS = "_RESULTS";
+    public static final String DOCK_QUICK_GUIDE = "QUICK_GUIDE";
 
     /**
      * @param workbenchUI The workbench UI
@@ -127,7 +128,7 @@ public class JIPipeDesktopCompartmentsGraphEditorUI extends AbstractJIPipeDeskto
                 JIPipeDesktopDockPanel.PanelLocation.TopLeft,
                 true,
                 new JIPipeDesktopGraphEditorMinimap(this));
-        getDockPanel().addDockPanel("QUICK_GUIDE",
+        getDockPanel().addDockPanel(DOCK_QUICK_GUIDE,
                 "Quick guide",
                 UIUtils.getIcon32FromResources("actions/help-about.png"),
                 JIPipeDesktopDockPanel.PanelLocation.BottomLeft,
@@ -313,5 +314,29 @@ public class JIPipeDesktopCompartmentsGraphEditorUI extends AbstractJIPipeDeskto
             settings.setCompartmentsEditorDockLayout(JsonUtils.toJsonString(getDockPanel().getCurrentState()));
             JIPipe.getSettings().saveLater();
         }
+    }
+
+    @Override
+    protected void restoreDefaultDockState() {
+        JIPipeDesktopDockPanel.State state = new JIPipeDesktopDockPanel.State();
+        state.setLeftSplitPaneRatio(0.33);
+        state.setRightSplitPaneRatio(0.66);
+        state.setLeftPanelWidth(350);
+        state.setRightPanelWidth(500);
+
+        state.put(DOCK_MAP, true, JIPipeDesktopDockPanel.PanelLocation.TopLeft);
+        state.put(DOCK_QUICK_GUIDE, true, JIPipeDesktopDockPanel.PanelLocation.BottomLeft);
+        state.put(DOCK_ADD_NODES, false, JIPipeDesktopDockPanel.PanelLocation.BottomLeft);
+        state.put(DOCK_BOOKMARKS, false, JIPipeDesktopDockPanel.PanelLocation.BottomLeft);
+        state.put(DOCK_HISTORY, false, JIPipeDesktopDockPanel.PanelLocation.BottomLeft);
+
+        state.put(DOCK_NODE_CONTEXT_HELP, false, JIPipeDesktopDockPanel.PanelLocation.BottomRight);
+        state.put(DOCK_LOG, false, JIPipeDesktopDockPanel.PanelLocation.BottomRight);
+        state.put(DOCK_ERRORS, false, JIPipeDesktopDockPanel.PanelLocation.BottomRight);
+        state.put(DOCK_NODE_CONTEXT_PARAMETERS, false, JIPipeDesktopDockPanel.PanelLocation.TopRight);
+        state.put(DOCK_NODE_CONTEXT_SLOT_MANAGER, false, JIPipeDesktopDockPanel.PanelLocation.TopRight);
+        state.put(DOCK_NODE_CONTEXT_RESULTS, false, JIPipeDesktopDockPanel.PanelLocation.TopRight);
+
+        getDockPanel().restoreState(state);
     }
 }

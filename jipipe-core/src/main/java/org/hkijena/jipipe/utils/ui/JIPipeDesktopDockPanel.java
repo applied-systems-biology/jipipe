@@ -459,6 +459,7 @@ public class JIPipeDesktopDockPanel extends JPanel implements JIPipeDesktopSplit
 
     public void addDockPanel(String id, String name, Icon icon, PanelLocation location, boolean visible, JComponent component) {
         visible = tryRestoreVisibilityState(savedState, id, visible);
+        location = tryRestoreLocationState(savedState, id, location);
         removeDockPanel(id);
 
         Panel panel = new Panel(id);
@@ -476,12 +477,17 @@ public class JIPipeDesktopDockPanel extends JPanel implements JIPipeDesktopSplit
         }
     }
 
+    private PanelLocation tryRestoreLocationState(State state, String id, PanelLocation location) {
+        return state.getLocations().getOrDefault(id, location);
+    }
+
     private boolean tryRestoreVisibilityState(State state, String id, boolean defaultValue) {
         return state.getVisibilities().getOrDefault(id, defaultValue);
     }
 
     public void addDockPanel(String id, String name, Icon icon, PanelLocation location, boolean visible, Supplier<JComponent> component) {
         visible = tryRestoreVisibilityState(savedState, id, visible);
+        location = tryRestoreLocationState(savedState, id, location);
         removeDockPanel(id);
 
 
@@ -511,6 +517,8 @@ public class JIPipeDesktopDockPanel extends JPanel implements JIPipeDesktopSplit
     public void restoreState(State state) {
         for (Panel panel : panels.values()) {
             boolean visible = state.getVisibilities().getOrDefault(panel.getId(), panel.isVisible());
+            PanelLocation location = state.getLocations().getOrDefault(panel.getId(), panel.getLocation());
+            panel.setLocation(location);
             if(visible) {
                 setPanelVisible(panel);
             }
@@ -645,6 +653,7 @@ public class JIPipeDesktopDockPanel extends JPanel implements JIPipeDesktopSplit
         State state = new State();
         for (Panel panel : panels.values()) {
             state.visibilities.put(panel.getId(), panel.isVisible());
+            state.locations.put(panel.getId(), panel.getLocation());
         }
         state.setLeftPanelWidth(leftPanelWidth);
         state.setRightPanelWidth(rightPanelWidth);
@@ -655,6 +664,7 @@ public class JIPipeDesktopDockPanel extends JPanel implements JIPipeDesktopSplit
 
     public static class State {
         private Map<String, Boolean> visibilities = new HashMap<>();
+        private Map<String, PanelLocation> locations = new HashMap<>();
         private int leftPanelWidth;
         private int rightPanelWidth;
         private double leftSplitPaneRatio;
@@ -708,6 +718,21 @@ public class JIPipeDesktopDockPanel extends JPanel implements JIPipeDesktopSplit
         @JsonSetter("visibilities")
         public void setVisibilities(Map<String, Boolean> visibilities) {
             this.visibilities = visibilities;
+        }
+
+        @JsonGetter("locations")
+        public Map<String, PanelLocation> getLocations() {
+            return locations;
+        }
+
+        @JsonSetter("locations")
+        public void setLocations(Map<String, PanelLocation> locations) {
+            this.locations = locations;
+        }
+
+        public void put(String id, boolean visible, PanelLocation panelLocation) {
+            locations.put(id, panelLocation);
+            visibilities.put(id, visible);
         }
     }
 

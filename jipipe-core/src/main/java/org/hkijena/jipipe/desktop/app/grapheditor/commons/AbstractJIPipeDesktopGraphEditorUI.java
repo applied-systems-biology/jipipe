@@ -266,6 +266,10 @@ public abstract class AbstractJIPipeDesktopGraphEditorUI extends JIPipeDesktopWo
         UIUtils.addReloadablePopupMenuToButton(layoutButton, layoutMenu, () -> {
             layoutMenu.removeAll();
 
+            layoutMenu.add(UIUtils.createMenuItem("Reset layout", "Resets the layout", UIUtils.getIconFromResources("actions/edit-clear-history.png"), this::restoreDefaultDockState));
+
+            layoutMenu.addSeparator();
+
             JMenuItem autoLayoutItem = new JMenuItem("Auto-layout all nodes", UIUtils.getIconFromResources("actions/distribute-unclump.png"));
             autoLayoutItem.addActionListener(e -> {
                 if (getHistoryJournal() != null) {
@@ -296,6 +300,8 @@ public abstract class AbstractJIPipeDesktopGraphEditorUI extends JIPipeDesktopWo
         });
 
     }
+
+    protected abstract void restoreDefaultDockState();
 
     private void initializeCommonToolbarExport() {
         JButton snapshotButton = new JButton(UIUtils.getIconFromResources("actions/camera.png"));

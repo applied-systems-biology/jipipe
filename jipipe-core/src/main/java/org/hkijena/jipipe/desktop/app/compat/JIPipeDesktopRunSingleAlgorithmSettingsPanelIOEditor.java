@@ -92,6 +92,11 @@ public class JIPipeDesktopRunSingleAlgorithmSettingsPanelIOEditor extends Abstra
     }
 
     @Override
+    protected void restoreDefaultDockState() {
+
+    }
+
+    @Override
     public JIPipeNodeDatabaseRole getNodeDatabaseRole() {
         return JIPipeNodeDatabaseRole.PipelineNode;
     }
