@@ -64,6 +64,7 @@ public abstract class AbstractJIPipeDesktopGraphEditorUI extends JIPipeDesktopWo
     public static final String DOCK_HISTORY = "HISTORY";
     public static final String DOCK_BOOKMARKS = "BOOKMARKS";
     public static final String DOCK_MAP = "MAP";
+    public static final String DOCK_ERRORS = "ERRORS";
 
     public static final KeyStroke KEY_STROKE_UNDO = KeyStroke.getKeyStroke(KeyEvent.VK_Z, InputEvent.CTRL_MASK, true);
     public static final KeyStroke KEY_STROKE_REDO = KeyStroke.getKeyStroke(KeyEvent.VK_Z, InputEvent.CTRL_MASK | InputEvent.SHIFT_MASK, true);

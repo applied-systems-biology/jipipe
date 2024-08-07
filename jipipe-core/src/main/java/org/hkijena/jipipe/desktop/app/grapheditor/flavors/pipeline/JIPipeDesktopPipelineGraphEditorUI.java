@@ -33,7 +33,8 @@ import org.hkijena.jipipe.desktop.app.cache.JIPipeDesktopAlgorithmCacheBrowserUI
 import org.hkijena.jipipe.desktop.app.grapheditor.commons.AbstractJIPipeDesktopGraphEditorUI;
 import org.hkijena.jipipe.desktop.app.grapheditor.commons.JIPipeDesktopGraphEditorLogPanel;
 import org.hkijena.jipipe.desktop.app.grapheditor.commons.JIPipeDesktopGraphEditorMinimap;
-import org.hkijena.jipipe.desktop.app.grapheditor.commons.JIPipeGraphEditorRunManager;
+import org.hkijena.jipipe.desktop.app.grapheditor.commons.properties.JIPipeDesktopGraphEditorErrorPanel;
+import org.hkijena.jipipe.desktop.app.grapheditor.flavors.pipeline.actions.JIPipeDesktopPipelineGraphEditorRunManager;
 import org.hkijena.jipipe.desktop.app.grapheditor.commons.contextmenu.*;
 import org.hkijena.jipipe.desktop.app.grapheditor.commons.nodeui.JIPipeDesktopGraphNodeUI;
 import org.hkijena.jipipe.desktop.app.grapheditor.commons.properties.JIPipeDesktopGraphNodeSlotEditorUI;
@@ -239,6 +240,12 @@ public class JIPipeDesktopPipelineGraphEditorUI extends AbstractJIPipeDesktopGra
                 JIPipeDesktopDockPanel.PanelLocation.BottomRight,
                 false,
                 new JIPipeDesktopGraphEditorLogPanel(getDesktopWorkbench()));
+        getDockPanel().addDockPanel(DOCK_ERRORS,
+                "Errors",
+                UIUtils.getIcon32FromResources("actions/dialog-warning-2.png"),
+                JIPipeDesktopDockPanel.PanelLocation.BottomRight,
+                false,
+                new JIPipeDesktopGraphEditorErrorPanel(getDesktopWorkbench(), this));
 //
 //        bottomPanel.addTab("Templates", UIUtils.getIcon32FromResources("actions/star.png"),
 //                new NodeTemplateBox(getDesktopWorkbench(), true, getCanvasUI(), null), JIPipeDesktopTabPane.CloseMode.withoutCloseButton);
@@ -392,45 +399,17 @@ public class JIPipeDesktopPipelineGraphEditorUI extends AbstractJIPipeDesktopGra
     public void onNodeUIActionRequested(JIPipeDesktopGraphNodeUI.NodeUIActionRequestedEvent event) {
         if (event.getAction() instanceof JIPipeDesktopRunAndShowResultsAction) {
             selectOnly(event.getUi());
-            JIPipeGraphEditorRunManager runManager = new JIPipeGraphEditorRunManager(getWorkbench().getProject(), getCanvasUI(), event.getUi(), getDockPanel());
+            JIPipeDesktopPipelineGraphEditorRunManager runManager = new JIPipeDesktopPipelineGraphEditorRunManager(getWorkbench().getProject(), getCanvasUI(), event.getUi(), getDockPanel());
             runManager.run(true,
                     ((JIPipeDesktopRunAndShowResultsAction) event.getAction()).isStoreIntermediateResults(),
                     false);
         } else if (event.getAction() instanceof JIPipeDesktopUpdateCacheAction) {
             selectOnly(event.getUi());
-            JIPipeGraphEditorRunManager runManager = new JIPipeGraphEditorRunManager(getWorkbench().getProject(), getCanvasUI(), event.getUi(), getDockPanel());
+            JIPipeDesktopPipelineGraphEditorRunManager runManager = new JIPipeDesktopPipelineGraphEditorRunManager(getWorkbench().getProject(), getCanvasUI(), event.getUi(), getDockPanel());
             runManager.run(false,
                     ((JIPipeDesktopUpdateCacheAction) event.getAction()).isStoreIntermediateResults(),
                     ((JIPipeDesktopUpdateCacheAction) event.getAction()).isOnlyPredecessors());
         }
-
-//        if (event.getAction() instanceof JIPipeDesktopRunAndShowResultsAction) {
-//            disableUpdateOnSelection = true;
-//            selectOnly(event.getUi());
-//            JIPipeDesktopPipelineSingleAlgorithmSelectionPanelUI panel = new JIPipeDesktopPipelineSingleAlgorithmSelectionPanelUI(this,
-//                    event.getUi().getNode());
-//            setPropertyPanel(panel, true);
-//            panel.executeQuickRun(true,
-//                    false,
-//                    false,
-//                    true,
-//                    ((JIPipeDesktopRunAndShowResultsAction) event.getAction()).isStoreIntermediateResults(),
-//                    false);
-//            SwingUtilities.invokeLater(() -> disableUpdateOnSelection = false);
-//        } else if (event.getAction() instanceof JIPipeDesktopUpdateCacheAction) {
-//            disableUpdateOnSelection = true;
-//            selectOnly(event.getUi());
-//            JIPipeDesktopPipelineSingleAlgorithmSelectionPanelUI panel = new JIPipeDesktopPipelineSingleAlgorithmSelectionPanelUI(this,
-//                    event.getUi().getNode());
-//            setPropertyPanel(panel, true);
-//            panel.executeQuickRun(false,
-//                    true,
-//                    false,
-//                    false,
-//                    ((JIPipeDesktopUpdateCacheAction) event.getAction()).isStoreIntermediateResults(),
-//                    ((JIPipeDesktopUpdateCacheAction) event.getAction()).isOnlyPredecessors());
-//            SwingUtilities.invokeLater(() -> disableUpdateOnSelection = false);
-//        }
     }
 
     @Override

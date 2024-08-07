@@ -28,6 +28,7 @@ import org.hkijena.jipipe.desktop.app.grapheditor.commons.JIPipeDesktopGraphEdit
 import org.hkijena.jipipe.desktop.app.grapheditor.commons.JIPipeDesktopGraphEditorMinimap;
 import org.hkijena.jipipe.desktop.app.grapheditor.commons.contextmenu.*;
 import org.hkijena.jipipe.desktop.app.grapheditor.commons.nodeui.JIPipeDesktopGraphNodeUI;
+import org.hkijena.jipipe.desktop.app.grapheditor.commons.properties.JIPipeDesktopGraphEditorErrorPanel;
 import org.hkijena.jipipe.desktop.app.grapheditor.commons.properties.JIPipeDesktopGraphNodeSlotEditorUI;
 import org.hkijena.jipipe.desktop.app.grapheditor.flavors.compartments.contextmenu.JIPipeDesktopCompartmentsCopyNodeUIContextAction;
 import org.hkijena.jipipe.desktop.app.grapheditor.flavors.compartments.contextmenu.JIPipeDesktopCompartmentsCutNodeUIContextAction;
@@ -150,6 +151,12 @@ public class JIPipeDesktopCompartmentsGraphEditorUI extends AbstractJIPipeDeskto
                 JIPipeDesktopDockPanel.PanelLocation.BottomLeft,
                 false,
                 new JIPipeDesktopCompartmentsAddCompartmentsPanel(getDesktopWorkbench(), this));
+        getDockPanel().addDockPanel(DOCK_ERRORS,
+                "Errors",
+                UIUtils.getIcon32FromResources("actions/dialog-warning-2.png"),
+                JIPipeDesktopDockPanel.PanelLocation.BottomRight,
+                false,
+                new JIPipeDesktopGraphEditorErrorPanel(getDesktopWorkbench(), this));
     }
 
 

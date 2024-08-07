@@ -1,17 +1,34 @@
-package org.hkijena.jipipe.desktop.app.grapheditor.commons;
+/*
+ * Copyright by Zoltán Cseresnyés, Ruman Gerst
+ *
+ * Research Group Applied Systems Biology - Head: Prof. Dr. Marc Thilo Figge
+ * https://www.leibniz-hki.de/en/applied-systems-biology.html
+ * HKI-Center for Systems Biology of Infection
+ * Leibniz Institute for Natural Product Research and Infection Biology - Hans Knöll Institute (HKI)
+ * Adolf-Reichwein-Straße 23, 07745 Jena, Germany
+ *
+ * The project code is licensed under MIT.
+ * See the LICENSE file provided with the code for the full license.
+ */
+
+package org.hkijena.jipipe.desktop.app.grapheditor.flavors.pipeline.actions;
 
 import org.hkijena.jipipe.api.project.JIPipeProject;
 import org.hkijena.jipipe.api.run.JIPipeRunnable;
 import org.hkijena.jipipe.api.run.JIPipeRunnableQueue;
 import org.hkijena.jipipe.api.validation.JIPipeValidationReport;
 import org.hkijena.jipipe.api.validation.contexts.UnspecifiedValidationReportContext;
+import org.hkijena.jipipe.desktop.app.grapheditor.commons.AbstractJIPipeDesktopGraphEditorUI;
+import org.hkijena.jipipe.desktop.app.grapheditor.commons.JIPipeDesktopGraphCanvasUI;
+import org.hkijena.jipipe.desktop.app.grapheditor.commons.JIPipeDesktopGraphEditorLogPanel;
 import org.hkijena.jipipe.desktop.app.grapheditor.commons.nodeui.JIPipeDesktopGraphNodeUI;
+import org.hkijena.jipipe.desktop.app.grapheditor.commons.properties.JIPipeDesktopGraphEditorErrorPanel;
 import org.hkijena.jipipe.desktop.app.quickrun.JIPipeDesktopQuickRun;
 import org.hkijena.jipipe.desktop.app.quickrun.JIPipeDesktopQuickRunSettings;
 import org.hkijena.jipipe.plugins.settings.JIPipeRuntimeApplicationSettings;
 import org.hkijena.jipipe.utils.ui.JIPipeDesktopDockPanel;
 
-public class JIPipeGraphEditorRunManager implements JIPipeRunnable.FinishedEventListener, JIPipeRunnable.InterruptedEventListener {
+public class JIPipeDesktopPipelineGraphEditorRunManager implements JIPipeRunnable.FinishedEventListener, JIPipeRunnable.InterruptedEventListener {
     private final JIPipeProject project;
     private final JIPipeDesktopGraphCanvasUI canvasUI;
     private final JIPipeDesktopGraphNodeUI nodeUI;
@@ -19,7 +36,7 @@ public class JIPipeGraphEditorRunManager implements JIPipeRunnable.FinishedEvent
     private JIPipeRunnable run;
     private JIPipeDesktopDockPanel.State savedState;
 
-    public JIPipeGraphEditorRunManager(JIPipeProject project, JIPipeDesktopGraphCanvasUI canvasUI, JIPipeDesktopGraphNodeUI nodeUI, JIPipeDesktopDockPanel dockPanel) {
+    public JIPipeDesktopPipelineGraphEditorRunManager(JIPipeProject project, JIPipeDesktopGraphCanvasUI canvasUI, JIPipeDesktopGraphNodeUI nodeUI, JIPipeDesktopDockPanel dockPanel) {
         this.project = project;
         this.canvasUI = canvasUI;
         this.nodeUI = nodeUI;
@@ -36,16 +53,17 @@ public class JIPipeGraphEditorRunManager implements JIPipeRunnable.FinishedEvent
         // Remember the saved state
         savedState = getDockPanel().getCurrentState();
 
-        if(getLogPanel().isAutoShowProgress()) {
-            getDockPanel().activatePanel(AbstractJIPipeDesktopGraphEditorUI.DOCK_LOG, true);
-        }
-
         // Validation step
         JIPipeValidationReport report = new JIPipeValidationReport();
         getProject().reportValidity(new UnspecifiedValidationReportContext(), report, nodeUI.getNode());
         if (!report.isEmpty()) {
-            System.err.println("HANDLE ERRORS");
+            dockPanel.getPanel(AbstractJIPipeDesktopGraphEditorUI.DOCK_ERRORS, JIPipeDesktopGraphEditorErrorPanel.class).setItems(report);
+            dockPanel.activatePanel(AbstractJIPipeDesktopGraphEditorUI.DOCK_ERRORS, true);
             return;
+        }
+
+        if(getLogPanel().isAutoShowProgress()) {
+            getDockPanel().activatePanel(AbstractJIPipeDesktopGraphEditorUI.DOCK_LOG, true);
         }
 
         // Generate settings
