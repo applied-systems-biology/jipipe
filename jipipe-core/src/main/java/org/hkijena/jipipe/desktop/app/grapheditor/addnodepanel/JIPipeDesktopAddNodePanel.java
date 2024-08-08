@@ -455,11 +455,10 @@ public class JIPipeDesktopAddNodePanel extends JIPipeDesktopWorkbenchPanel {
             }
 
             DefaultListModel<JIPipeNodeDatabaseEntry> model = new DefaultListModel<>();
-            for (JIPipeNodeDatabaseEntry entry : toolBox.database.getLuceneSearch().query(toolBox.searchField.getText(),
+            for (JIPipeNodeDatabaseEntry entry : toolBox.database.getLegacySearch().query(toolBox.searchField.getText(),
                     JIPipeNodeDatabaseRole.PipelineNode,
                     false,
-                    true,
-                    100)) {
+                    true)) {
                 if(selectedCategoryId != null) {
                     if(!entry.getCategoryIds().contains(selectedCategoryId)) {
                         continue;

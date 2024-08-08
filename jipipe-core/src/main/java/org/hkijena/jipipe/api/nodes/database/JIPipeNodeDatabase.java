@@ -37,7 +37,7 @@ public class JIPipeNodeDatabase {
     private final JIPipeProject project;
     private final JIPipeNodeDatabaseUpdater updater;
     private List<JIPipeNodeDatabaseEntry> entries = new ArrayList<>();
-    private final JIPipeLuceneNodeDatabaseSearch luceneSearch;
+//    private final JIPipeLuceneNodeDatabaseSearch luceneSearch;
     private final JIPipeLegacyNodeDatabaseSearch legacySearch;
 
 
@@ -48,7 +48,7 @@ public class JIPipeNodeDatabase {
     public JIPipeNodeDatabase(JIPipeProject project) {
         this.project = project;
         this.updater = new JIPipeNodeDatabaseUpdater(this);
-        this.luceneSearch = new JIPipeLuceneNodeDatabaseSearch(this);
+//        this.luceneSearch = new JIPipeLuceneNodeDatabaseSearch(this);
         this.legacySearch = new JIPipeLegacyNodeDatabaseSearch(this);
         rebuildImmediately();
     }
@@ -84,11 +84,11 @@ public class JIPipeNodeDatabase {
     public JIPipeNodeDatabaseUpdater getUpdater() {
         return updater;
     }
-
-
-    public JIPipeLuceneNodeDatabaseSearch getLuceneSearch() {
-        return luceneSearch;
-    }
+//
+//
+//    public JIPipeLuceneNodeDatabaseSearch getLuceneSearch() {
+//        return luceneSearch;
+//    }
 
     public JIPipeLegacyNodeDatabaseSearch getLegacySearch() {
         return legacySearch;

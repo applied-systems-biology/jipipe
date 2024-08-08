@@ -85,10 +85,10 @@ public class JIPipeNodeDatabaseBuilderRun extends AbstractJIPipeRunnable {
         }
 
         database.setEntries(newEntries);
-        try {
-            database.getLuceneSearch().rebuildDirectory();
-        } catch (Exception e) {
-            throw new RuntimeException(e);
-        }
+//        try {
+//            database.getLuceneSearch().rebuildDirectory();
+//        } catch (Exception e) {
+//            throw new RuntimeException(e);
+//        }
     }
 }

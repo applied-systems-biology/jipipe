@@ -360,21 +360,21 @@
             <artifactId>OrientationJ</artifactId>
             <scope>runtime</scope>
         </dependency>
-        <dependency>
-            <groupId>org.apache.lucene</groupId>
-            <artifactId>lucene-core</artifactId>
-            <scope>runtime</scope>
-        </dependency>
-        <dependency>
-            <groupId>org.apache.lucene</groupId>
-            <artifactId>lucene-analyzers-common</artifactId>
-            <scope>runtime</scope>
-        </dependency>
-        <dependency>
-            <groupId>org.apache.lucene</groupId>
-            <artifactId>lucene-queryparser</artifactId>
-            <scope>runtime</scope>
-        </dependency>
+<!--        <dependency>-->
+<!--            <groupId>org.apache.lucene</groupId>-->
+<!--            <artifactId>lucene-core</artifactId>-->
+<!--            <scope>runtime</scope>-->
+<!--        </dependency>-->
+<!--        <dependency>-->
+<!--            <groupId>org.apache.lucene</groupId>-->
+<!--            <artifactId>lucene-analyzers-common</artifactId>-->
+<!--            <scope>runtime</scope>-->
+<!--        </dependency>-->
+<!--        <dependency>-->
+<!--            <groupId>org.apache.lucene</groupId>-->
+<!--            <artifactId>lucene-queryparser</artifactId>-->
+<!--            <scope>runtime</scope>-->
+<!--        </dependency>-->
     </dependencies>
 
     <properties>
