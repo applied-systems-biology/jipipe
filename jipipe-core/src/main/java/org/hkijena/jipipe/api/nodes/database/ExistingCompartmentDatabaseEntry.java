@@ -58,8 +58,8 @@ public class ExistingCompartmentDatabaseEntry implements JIPipeNodeDatabaseEntry
     }
 
     @Override
-    public JIPipeNodeDatabaseRole getRole() {
-        return JIPipeNodeDatabaseRole.CompartmentNode;
+    public JIPipeNodeDatabasePipelineVisibility getVisibility() {
+        return JIPipeNodeDatabasePipelineVisibility.Compartments;
     }
 
     @Override

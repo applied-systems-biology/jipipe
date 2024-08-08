@@ -33,12 +33,12 @@ public class JIPipeDesktopAddNodePanelEntryListCellRenderer extends JPanel imple
     private JLabel descriptionLabel;
     private JLabel pathLabel;
     private final JComponent parent;
-    private final JIPipeDesktopAddNodePanel addNodePanel;
+    private final JIPipeDesktopAddNodesPanel addNodePanel;
 
     /**
      * Creates a new renderer
      */
-    public JIPipeDesktopAddNodePanelEntryListCellRenderer(JComponent parent, JIPipeDesktopAddNodePanel addNodePanel) {
+    public JIPipeDesktopAddNodePanelEntryListCellRenderer(JComponent parent, JIPipeDesktopAddNodesPanel addNodePanel) {
         this.parent = parent;
         this.addNodePanel = addNodePanel;
         this.defaultBorder = BorderFactory.createCompoundBorder(UIUtils.createEmptyBorder(4),

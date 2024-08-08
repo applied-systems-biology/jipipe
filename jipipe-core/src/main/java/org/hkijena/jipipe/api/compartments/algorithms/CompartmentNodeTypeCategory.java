@@ -66,12 +66,12 @@ public class CompartmentNodeTypeCategory implements JIPipeNodeTypeCategory {
     }
 
     @Override
-    public boolean isVisibleInGraphCompartment() {
+    public boolean isVisibleInPipeline() {
         return false;
     }
 
     @Override
-    public boolean isVisibleInCompartmentGraph() {
+    public boolean isVisibleInCompartments() {
         return true;
     }
 

@@ -814,7 +814,6 @@ public abstract class AbstractJIPipeDesktopGraphEditorUI extends JIPipeDesktopWo
 
     }
 
-    public abstract JIPipeNodeDatabaseRole getNodeDatabaseRole();
 
 //    @Override
 //    public void onSearchBoxSelectedEvent(JIPipeDesktopNodeDatabaseSearchBox.SelectedEvent event) {

@@ -307,15 +307,15 @@ public class JIPipeDesktopNodeFinderDialogUI extends JDialog {
             } else {
                 nodeDatabase = JIPipeNodeDatabase.getInstance();
             }
-            JIPipeNodeDatabaseRole role;
+            JIPipeNodeDatabasePipelineVisibility role;
             if (canvasUI.getDesktopWorkbench() instanceof JIPipeDesktopProjectWorkbench) {
                 if (canvasUI.getGraph() == ((JIPipeDesktopProjectWorkbench) canvasUI.getDesktopWorkbench()).getProject().getCompartmentGraph()) {
-                    role = JIPipeNodeDatabaseRole.CompartmentNode;
+                    role = JIPipeNodeDatabasePipelineVisibility.Compartments;
                 } else {
-                    role = JIPipeNodeDatabaseRole.PipelineNode;
+                    role = JIPipeNodeDatabasePipelineVisibility.Pipeline;
                 }
             } else {
-                role = JIPipeNodeDatabaseRole.PipelineNode;
+                role = JIPipeNodeDatabasePipelineVisibility.Pipeline;
             }
             boolean allowExisting, allowNew;
             if (querySlot != null) {

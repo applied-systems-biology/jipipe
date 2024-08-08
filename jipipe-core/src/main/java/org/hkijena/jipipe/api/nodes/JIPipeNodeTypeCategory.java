@@ -88,14 +88,14 @@ public interface JIPipeNodeTypeCategory {
      *
      * @return if the category should be visible
      */
-    boolean isVisibleInGraphCompartment();
+    boolean isVisibleInPipeline();
 
     /**
      * If the category should be available in the compartment graph editor
      *
      * @return if the category should be visible
      */
-    boolean isVisibleInCompartmentGraph();
+    boolean isVisibleInCompartments();
 
     /**
      * Returns if the node can be extracted (copied) from the graph

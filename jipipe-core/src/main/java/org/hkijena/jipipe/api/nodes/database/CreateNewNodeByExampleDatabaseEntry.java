@@ -94,8 +94,8 @@ public class CreateNewNodeByExampleDatabaseEntry implements JIPipeNodeDatabaseEn
     }
 
     @Override
-    public JIPipeNodeDatabaseRole getRole() {
-        return JIPipeNodeDatabaseRole.PipelineNode;
+    public JIPipeNodeDatabasePipelineVisibility getVisibility() {
+        return JIPipeNodeDatabasePipelineVisibility.fromCategory(example.getNodeInfo().getCategory());
     }
 
     @Override

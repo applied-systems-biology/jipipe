@@ -31,7 +31,7 @@ public interface JIPipeNodeDatabaseEntry {
 
     boolean exists();
 
-    JIPipeNodeDatabaseRole getRole();
+    JIPipeNodeDatabasePipelineVisibility getVisibility();
 
     String getName();
 

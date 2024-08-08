@@ -68,6 +68,14 @@ public class JIPipeNodeDatabaseBuilderRun extends AbstractJIPipeRunnable {
                     CACHED_GLOBAL_ENTRIES.add(newEntry);
                 }
             }
+
+            // Create compartments
+            {
+                CreateNewCompartmentNodeDatabaseEntry entry = new CreateNewCompartmentNodeDatabaseEntry();
+                CACHED_GLOBAL_ENTRIES.add(entry);
+                newEntries.add(entry);
+            }
+
         } else {
             newEntries.addAll(CACHED_GLOBAL_ENTRIES);
         }

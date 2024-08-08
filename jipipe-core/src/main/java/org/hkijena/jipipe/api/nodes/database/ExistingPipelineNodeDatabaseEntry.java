@@ -80,8 +80,8 @@ public class ExistingPipelineNodeDatabaseEntry implements JIPipeNodeDatabaseEntr
     }
 
     @Override
-    public JIPipeNodeDatabaseRole getRole() {
-        return JIPipeNodeDatabaseRole.PipelineNode;
+    public JIPipeNodeDatabasePipelineVisibility getVisibility() {
+        return JIPipeNodeDatabasePipelineVisibility.fromCategory(graphNode.getCategory());
     }
 
     @Override

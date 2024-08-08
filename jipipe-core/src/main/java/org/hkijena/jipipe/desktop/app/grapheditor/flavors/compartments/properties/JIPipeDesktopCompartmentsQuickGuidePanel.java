@@ -81,6 +81,13 @@ public class JIPipeDesktopCompartmentsQuickGuidePanel extends JIPipeDesktopWorkb
         formPanel.addWideToForm(new JLabel("Right-click slots for settings and information", UIUtils.getIconFromResources("actions/arrow-pointer.png"), JLabel.LEFT));
         formPanel.addWideToForm(new JIPipeDesktopFormPanelImageComponent(UIUtils.getImageFromResources("documentation/graph-editor-overview-edges.png"), true));
 
+        // Data transfer
+        formPanel.addGroupHeader("Transferring data", UIUtils.getIconFromResources("actions/connector-avoid.png"));
+        formPanel.addWideToForm(new JLabel("Click the + button to add a compartment output slot", UIUtils.getIconFromResources("actions/add.png"), JLabel.LEFT));
+        formPanel.addWideToForm(new JLabel("Inside the compartment, add slots to the output nodes via the + button", UIUtils.getIconFromResources("actions/add.png"), JLabel.LEFT));
+        formPanel.addWideToForm(new JLabel("Connect data to the output nodes within the compartment", UIUtils.getIconFromResources("actions/standard-connector.png"), JLabel.LEFT));
+        formPanel.addWideToForm(new JIPipeDesktopFormPanelImageComponent(UIUtils.getImageFromResources("documentation/graph-editor-overview-compartment-outputs.png"), true));
+
         // Running
         formPanel.addGroupHeader("Executing workflows", UIUtils.getIconFromResources("actions/run-build.png"));
         formPanel.addWideToForm(new JLabel("Click the play button to run a specific compartment", UIUtils.getIconFromResources("actions/graph-node.png"), JLabel.LEFT));

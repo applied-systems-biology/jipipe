@@ -25,6 +25,7 @@ import org.hkijena.jipipe.desktop.app.JIPipeDesktopWorkbench;
 import org.hkijena.jipipe.desktop.app.JIPipeDesktopWorkbenchPanel;
 import org.hkijena.jipipe.desktop.app.grapheditor.commons.AbstractJIPipeDesktopGraphEditorUI;
 import org.hkijena.jipipe.desktop.app.grapheditor.commons.nodeui.JIPipeDesktopGraphNodeUI;
+import org.hkijena.jipipe.desktop.app.grapheditor.flavors.compartments.JIPipeDesktopCompartmentsGraphEditorUI;
 import org.hkijena.jipipe.desktop.commons.components.layouts.JIPipeDesktopWrapLayout;
 import org.hkijena.jipipe.desktop.commons.components.search.JIPipeDesktopSearchTextField;
 import org.hkijena.jipipe.plugins.settings.JIPipeGraphEditorUIApplicationSettings;
@@ -45,34 +46,44 @@ import java.util.List;
 /**
  * New and improved node tool box
  */
-public class JIPipeDesktopAddNodePanel extends JIPipeDesktopWorkbenchPanel {
+public class JIPipeDesktopAddNodesPanel extends JIPipeDesktopWorkbenchPanel {
 
     private final JToolBar toolBar = new JToolBar();
     private final JIPipeNodeDatabase database;
     private final JIPipeRunnableQueue queue = new JIPipeRunnableQueue("Node toolbox");
     private final JIPipeGraphEditorUIApplicationSettings settings;
+    private final boolean isCompartmentsEditor;
     private JList<JIPipeNodeDatabaseEntry> algorithmList;
     private JIPipeDesktopSearchTextField searchField;
     private JScrollPane scrollPane;
     private final JPanel mainCategoriesPanel = new JPanel();
     private final AbstractJIPipeDesktopGraphEditorUI graphEditorUI;
     private final List<MainCategoryFilter> mainCategoryFilters = new ArrayList<>();
-    private final JToggleButton showNodeDescriptionToggle = new JToggleButton(UIUtils.getIconFromResources("actions/help.png"));
+    private final JCheckBoxMenuItem showNodeDescriptionToggle = new JCheckBoxMenuItem("Show node descriptions", UIUtils.getIconFromResources("actions/help.png"));
 
-    public JIPipeDesktopAddNodePanel(JIPipeDesktopWorkbench workbench, AbstractJIPipeDesktopGraphEditorUI graphEditorUI) {
+    public JIPipeDesktopAddNodesPanel(JIPipeDesktopWorkbench workbench, AbstractJIPipeDesktopGraphEditorUI graphEditorUI) {
         super(workbench);
         this.database = workbench instanceof JIPipeDesktopProjectWorkbench ?
                 ((JIPipeDesktopProjectWorkbench) workbench).getNodeDatabase() : JIPipeNodeDatabase.getInstance();
         this.graphEditorUI = graphEditorUI;
         this.settings = JIPipeGraphEditorUIApplicationSettings.getInstance();
+        this.isCompartmentsEditor = graphEditorUI instanceof JIPipeDesktopCompartmentsGraphEditorUI;
+
         initializeMainCategoryFilters();
         initialize();
+
         reloadAlgorithmList();
     }
 
     private void initializeMainCategoryFilters() {
+
+        // Compartments have no categories
+        if(isCompartmentsEditor) {
+            return;
+        }
+
         JIPipe.getNodes().getRegisteredCategories().values().stream().sorted(Comparator.comparing(JIPipeNodeTypeCategory::getUIOrder)).forEach(category -> {
-            if(category.isVisibleInGraphCompartment()) {
+            if(category.isVisibleInPipeline()) {
                 JToggleButton categoryButton = new JToggleButton(category.getName(), category.getIcon());
                 categoryButton.setFont(new Font(Font.DIALOG, Font.PLAIN, 11));
 
@@ -119,7 +130,9 @@ public class JIPipeDesktopAddNodePanel extends JIPipeDesktopWorkbenchPanel {
         setLayout(new GridBagLayout());
 
         initializeToolbar();
-        initializeMainCategoryPanel();
+        if(!isCompartmentsEditor) {
+            initializeMainCategoryPanel();
+        }
         initializeAlgorithmList();
     }
 
@@ -171,15 +184,22 @@ public class JIPipeDesktopAddNodePanel extends JIPipeDesktopWorkbenchPanel {
         });
         toolBar.add(searchField);
 
-        showNodeDescriptionToggle.setToolTipText("Show node descriptions");
+        JButton menuButton = new JButton(UIUtils.getIconFromResources("actions/hamburger-menu.png"));
+        UIUtils.makeButtonFlat25x25(menuButton);
+        JPopupMenu menu = UIUtils.addPopupMenuToButton(menuButton);
+        initializeToolbarMenu(menu);
+        toolBar.add(menuButton);
+    }
+
+    private void initializeToolbarMenu(JPopupMenu menu) {
+        showNodeDescriptionToggle.setName("Show node descriptions in the search results, which will take up a bit more vertical space per item");
         showNodeDescriptionToggle.setSelected(settings.getNodeSearchSettings().isShowDescriptions());
         showNodeDescriptionToggle.addActionListener(e -> {
             reloadAlgorithmList();
             settings.getNodeSearchSettings().setShowDescriptions(showNodeDescriptionToggle.isSelected());
             JIPipe.getSettings().save();
         });
-
-        toolBar.add(showNodeDescriptionToggle);
+        menu.add(showNodeDescriptionToggle);
     }
 
     public boolean isShowDescriptions() {
@@ -432,9 +452,9 @@ public class JIPipeDesktopAddNodePanel extends JIPipeDesktopWorkbenchPanel {
 
     public static class ReloadListRun extends AbstractJIPipeRunnable {
 
-        private final JIPipeDesktopAddNodePanel toolBox;
+        private final JIPipeDesktopAddNodesPanel toolBox;
 
-        public ReloadListRun(JIPipeDesktopAddNodePanel toolBox) {
+        public ReloadListRun(JIPipeDesktopAddNodesPanel toolBox) {
             this.toolBox = toolBox;
         }
 
@@ -455,8 +475,9 @@ public class JIPipeDesktopAddNodePanel extends JIPipeDesktopWorkbenchPanel {
             }
 
             DefaultListModel<JIPipeNodeDatabaseEntry> model = new DefaultListModel<>();
+            JIPipeNodeDatabasePipelineVisibility role = toolBox.isCompartmentsEditor ? JIPipeNodeDatabasePipelineVisibility.Compartments : JIPipeNodeDatabasePipelineVisibility.Pipeline;
             for (JIPipeNodeDatabaseEntry entry : toolBox.database.getLegacySearch().query(toolBox.searchField.getText(),
-                    JIPipeNodeDatabaseRole.PipelineNode,
+                    role,
                     false,
                     true)) {
                 if(selectedCategoryId != null) {

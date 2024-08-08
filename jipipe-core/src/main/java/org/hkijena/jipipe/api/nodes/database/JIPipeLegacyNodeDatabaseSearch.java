@@ -101,12 +101,12 @@ public class JIPipeLegacyNodeDatabaseSearch {
         return rank;
     }
 
-    public List<JIPipeNodeDatabaseEntry> query(String text, JIPipeNodeDatabaseRole role, boolean allowExisting, boolean allowNew) {
+    public List<JIPipeNodeDatabaseEntry> query(String text, JIPipeNodeDatabasePipelineVisibility role, boolean allowExisting, boolean allowNew) {
         List<String> textTokens = buildTokens(Collections.singletonList(text));
         List<JIPipeNodeDatabaseEntry> result = new ArrayList<>();
         TObjectDoubleMap<JIPipeNodeDatabaseEntry> rankMap = new TObjectDoubleHashMap<>();
         for (JIPipeNodeDatabaseEntry entry : nodeDatabase.getEntries()) {
-            if (entry.getRole() != role)
+            if (!entry.getVisibility().matches(role))
                 continue;
             if (entry.exists() && !allowExisting)
                 continue;
@@ -130,12 +130,12 @@ public class JIPipeLegacyNodeDatabaseSearch {
         return result;
     }
 
-    public List<JIPipeNodeDatabaseEntry> query(String text, JIPipeNodeDatabaseRole role, boolean allowExisting, boolean allowNew, JIPipeSlotType targetSlotType, Class<? extends JIPipeData> targetDataType) {
+    public List<JIPipeNodeDatabaseEntry> query(String text, JIPipeNodeDatabasePipelineVisibility role, boolean allowExisting, boolean allowNew, JIPipeSlotType targetSlotType, Class<? extends JIPipeData> targetDataType) {
         List<String> textTokens = buildTokens(Collections.singletonList(text));
         List<JIPipeNodeDatabaseEntry> result = new ArrayList<>();
         TObjectDoubleMap<JIPipeNodeDatabaseEntry> rankMap = new TObjectDoubleHashMap<>();
         for (JIPipeNodeDatabaseEntry entry : nodeDatabase.getEntries()) {
-            if (entry.getRole() != role)
+            if (!entry.getVisibility().matches(role))
                 continue;
             if (entry.exists() && !allowExisting)
                 continue;

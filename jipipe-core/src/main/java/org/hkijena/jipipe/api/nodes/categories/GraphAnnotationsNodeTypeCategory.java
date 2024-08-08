@@ -72,13 +72,13 @@ public class GraphAnnotationsNodeTypeCategory implements JIPipeNodeTypeCategory 
     }
 
     @Override
-    public boolean isVisibleInGraphCompartment() {
-        return false;
+    public boolean isVisibleInPipeline() {
+        return true;
     }
 
     @Override
-    public boolean isVisibleInCompartmentGraph() {
-        return false;
+    public boolean isVisibleInCompartments() {
+        return true;
     }
 
     @Override

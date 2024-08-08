@@ -18,7 +18,6 @@ import org.hkijena.jipipe.api.compat.ImageJDataImportOperation;
 import org.hkijena.jipipe.api.history.JIPipeDummyGraphHistoryJournal;
 import org.hkijena.jipipe.api.nodes.JIPipeGraph;
 import org.hkijena.jipipe.api.nodes.JIPipeGraphNode;
-import org.hkijena.jipipe.api.nodes.database.JIPipeNodeDatabaseRole;
 import org.hkijena.jipipe.desktop.app.grapheditor.commons.AbstractJIPipeDesktopGraphEditorUI;
 import org.hkijena.jipipe.desktop.commons.components.JIPipeDesktopFormPanel;
 import org.hkijena.jipipe.desktop.commons.components.tabs.JIPipeDesktopTabPane;
@@ -100,11 +99,6 @@ public class JIPipeDesktopRunSingleAlgorithmSettingsPanelIOEditor extends Abstra
     @Override
     protected void restoreDefaultDockState() {
 
-    }
-
-    @Override
-    public JIPipeNodeDatabaseRole getNodeDatabaseRole() {
-        return JIPipeNodeDatabaseRole.PipelineNode;
     }
 
     public JIPipeDesktopRunSingleAlgorithmSettingsPanel getSettingsPanel() {

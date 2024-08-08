@@ -72,12 +72,12 @@ public class ExportNodeTypeCategory implements JIPipeNodeTypeCategory {
     }
 
     @Override
-    public boolean isVisibleInGraphCompartment() {
+    public boolean isVisibleInPipeline() {
         return true;
     }
 
     @Override
-    public boolean isVisibleInCompartmentGraph() {
+    public boolean isVisibleInCompartments() {
         return false;
     }
 }

@@ -95,8 +95,8 @@ public class CreateNewNodeByInfoDatabaseEntry implements JIPipeNodeDatabaseEntry
     }
 
     @Override
-    public JIPipeNodeDatabaseRole getRole() {
-        return JIPipeNodeDatabaseRole.PipelineNode;
+    public JIPipeNodeDatabasePipelineVisibility getVisibility() {
+        return JIPipeNodeDatabasePipelineVisibility.fromCategory(nodeInfo.getCategory());
     }
 
     @Override
