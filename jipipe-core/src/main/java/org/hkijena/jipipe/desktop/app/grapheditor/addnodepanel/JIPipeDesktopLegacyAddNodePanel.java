@@ -210,7 +210,7 @@ public class JIPipeDesktopLegacyAddNodePanel extends JIPipeDesktopWorkbenchPanel
         @Override
         public void run() {
             DefaultListModel<JIPipeNodeDatabaseEntry> model = new DefaultListModel<>();
-            for (JIPipeNodeDatabaseEntry entry : toolBox.database.query(toolBox.searchField.getText(),
+            for (JIPipeNodeDatabaseEntry entry : toolBox.database.getLegacySearch().query(toolBox.searchField.getText(),
                     JIPipeNodeDatabaseRole.PipelineNode,
                     false,
                     true)) {

@@ -147,6 +147,21 @@
                 <artifactId>OrientationJ</artifactId>
                 <version>ce968334bcd09ce70f54df74e9f7a2fbe5c79cca</version>
             </dependency>
+            <dependency>
+                <groupId>org.apache.lucene</groupId>
+                <artifactId>lucene-core</artifactId>
+                <version>8.11.2</version>
+            </dependency>
+            <dependency>
+                <groupId>org.apache.lucene</groupId>
+                <artifactId>lucene-analyzers-common</artifactId>
+                <version>8.11.2</version>
+            </dependency>
+            <dependency>
+                <groupId>org.apache.lucene</groupId>
+                <artifactId>lucene-queryparser</artifactId>
+                <version>8.11.2</version>
+            </dependency>
         </dependencies>
     </dependencyManagement>
 
@@ -343,6 +358,21 @@
         <dependency>
             <groupId>com.github.Biomedical-Imaging-Group</groupId>
             <artifactId>OrientationJ</artifactId>
+            <scope>runtime</scope>
+        </dependency>
+        <dependency>
+            <groupId>org.apache.lucene</groupId>
+            <artifactId>lucene-core</artifactId>
+            <scope>runtime</scope>
+        </dependency>
+        <dependency>
+            <groupId>org.apache.lucene</groupId>
+            <artifactId>lucene-analyzers-common</artifactId>
+            <scope>runtime</scope>
+        </dependency>
+        <dependency>
+            <groupId>org.apache.lucene</groupId>
+            <artifactId>lucene-queryparser</artifactId>
             <scope>runtime</scope>
         </dependency>
     </dependencies>
