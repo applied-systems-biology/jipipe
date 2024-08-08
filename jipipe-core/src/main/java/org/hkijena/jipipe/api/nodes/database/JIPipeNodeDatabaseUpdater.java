@@ -24,6 +24,7 @@ public class JIPipeNodeDatabaseUpdater implements JIPipeGraph.NodeAddedEventList
 
     public JIPipeNodeDatabaseUpdater(JIPipeNodeDatabase database) {
         this.timer = new Timer(1000, e -> database.rebuildImmediately());
+        this.timer.setRepeats(false);
         this.database = database;
         initialize();
     }
