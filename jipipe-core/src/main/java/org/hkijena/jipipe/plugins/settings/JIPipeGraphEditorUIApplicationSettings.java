@@ -22,8 +22,10 @@ import org.hkijena.jipipe.api.settings.JIPipeDefaultApplicationSettingsSheetCate
 import org.hkijena.jipipe.api.settings.JIPipeDefaultApplicationsSettingsSheet;
 import org.hkijena.jipipe.desktop.app.grapheditor.commons.AbstractJIPipeDesktopGraphEditorUI;
 import org.hkijena.jipipe.desktop.app.grapheditor.commons.layout.JIPipepGraphAutoLayoutMethod;
+import org.hkijena.jipipe.plugins.parameters.api.collections.ListParameterSettings;
 import org.hkijena.jipipe.plugins.parameters.library.pairs.StringAndStringPairParameter;
 import org.hkijena.jipipe.plugins.parameters.library.primitives.StringParameterSettings;
+import org.hkijena.jipipe.plugins.parameters.library.primitives.list.StringList;
 import org.hkijena.jipipe.utils.UIUtils;
 
 import javax.swing.*;
@@ -356,6 +358,24 @@ public class JIPipeGraphEditorUIApplicationSettings extends JIPipeDefaultApplica
         private boolean searchFindNewNodes = true;
         private boolean searchFindExistingNodes = true;
         private boolean showDescriptions = true;
+        private StringList pinnedNodes = new StringList();
+
+        public NodeSearchSettings() {
+            pinnedNodes.add("create-node-custom:jipipe:graph-compartment");
+        }
+
+        @SetJIPipeDocumentation(name = "Pinned nodes", description = "List of pinned node database Ids")
+        @JIPipeParameter("pinned-nodes")
+        @ListParameterSettings(withScrollBar = true)
+        @StringParameterSettings(monospace = true, visible = false)
+        public StringList getPinnedNodes() {
+            return pinnedNodes;
+        }
+
+        @JIPipeParameter("pinned-nodes")
+        public void setPinnedNodes(StringList pinnedNodes) {
+            this.pinnedNodes = pinnedNodes;
+        }
 
         @SetJIPipeDocumentation(name = "Search: Create nodes", description = "If enabled, the search will allow to create new nodes")
         @JIPipeParameter("search-find-new-nodes")

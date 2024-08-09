@@ -15,8 +15,7 @@ package org.hkijena.jipipe.plugins.parameters.library.primitives.list;
 
 import org.hkijena.jipipe.plugins.parameters.api.collections.ListParameter;
 
-import java.util.Arrays;
-import java.util.Collection;
+import java.util.*;
 
 /**
  * A list of {@link String}
@@ -53,5 +52,11 @@ public class StringList extends ListParameter<String> {
     public String addNewInstance() {
         add("");
         return "";
+    }
+
+    public void makeUnique() {
+        Set<String> asSet = new LinkedHashSet<>(this);
+        clear();
+        addAll(asSet);
     }
 }

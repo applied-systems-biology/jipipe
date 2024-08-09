@@ -37,6 +37,7 @@ import org.hkijena.jipipe.utils.UIUtils;
 
 import javax.swing.*;
 import java.awt.*;
+import java.util.Collections;
 
 public class JIPipeDesktopLegacyAddNodePanel extends JIPipeDesktopWorkbenchPanel {
 
@@ -213,7 +214,7 @@ public class JIPipeDesktopLegacyAddNodePanel extends JIPipeDesktopWorkbenchPanel
             for (JIPipeNodeDatabaseEntry entry : toolBox.database.getLegacySearch().query(toolBox.searchField.getText(),
                     JIPipeNodeDatabasePipelineVisibility.Pipeline,
                     false,
-                    true)) {
+                    true, Collections.emptySet())) {
                 model.addElement(entry);
             }
             toolBox.algorithmList.setModel(model);

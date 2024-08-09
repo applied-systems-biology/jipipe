@@ -15,6 +15,7 @@ package org.hkijena.jipipe.api.nodes.database;
 
 import org.hkijena.jipipe.JIPipe;
 import org.hkijena.jipipe.api.AbstractJIPipeRunnable;
+import org.hkijena.jipipe.api.JIPipeNodeTemplate;
 import org.hkijena.jipipe.api.compartments.algorithms.JIPipeProjectCompartment;
 import org.hkijena.jipipe.api.nodes.JIPipeGraphNode;
 import org.hkijena.jipipe.api.nodes.JIPipeNodeExample;
@@ -89,6 +90,16 @@ public class JIPipeNodeDatabaseBuilderRun extends AbstractJIPipeRunnable {
             // Add existing compartments
             for (Map.Entry<UUID, JIPipeProjectCompartment> entry : database.getProject().getCompartments().entrySet()) {
                 newEntries.add(new ExistingCompartmentDatabaseEntry("existing-compartment:" + entry.getKey(), entry.getValue()));
+            }
+        }
+
+        // Create from templates
+        for (JIPipeNodeTemplate template : JIPipe.getNodeTemplates().getAllTemplates(database.getProject())) {
+            try {
+                CreateNewNodesByTemplateDatabaseEntry newEntry = new CreateNewNodesByTemplateDatabaseEntry(template);
+                newEntries.add(newEntry);
+            }
+            catch (Throwable ignored) {
             }
         }
 

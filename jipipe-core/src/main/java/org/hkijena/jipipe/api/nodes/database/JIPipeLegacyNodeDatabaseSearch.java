@@ -101,7 +101,7 @@ public class JIPipeLegacyNodeDatabaseSearch {
         return rank;
     }
 
-    public List<JIPipeNodeDatabaseEntry> query(String text, JIPipeNodeDatabasePipelineVisibility role, boolean allowExisting, boolean allowNew) {
+    public List<JIPipeNodeDatabaseEntry> query(String text, JIPipeNodeDatabasePipelineVisibility role, boolean allowExisting, boolean allowNew, Set<String> pinnedIds) {
         List<String> textTokens = buildTokens(Collections.singletonList(text));
         List<JIPipeNodeDatabaseEntry> result = new ArrayList<>();
         TObjectDoubleMap<JIPipeNodeDatabaseEntry> rankMap = new TObjectDoubleHashMap<>();
@@ -123,9 +123,9 @@ public class JIPipeLegacyNodeDatabaseSearch {
             rankMap.put(entry, ranking);
         }
         if (textTokens.isEmpty()) {
-            result.sort(Comparator.comparing(JIPipeNodeDatabaseEntry::getName));
+            result.sort(Comparator.comparing((JIPipeNodeDatabaseEntry e) -> !pinnedIds.contains(e.getId())).thenComparing(JIPipeNodeDatabaseEntry::getName));
         } else {
-            result.sort(Comparator.comparing(rankMap::get));
+            result.sort(Comparator.comparing((JIPipeNodeDatabaseEntry e) -> !pinnedIds.contains(e.getId())).thenComparing(rankMap::get));
         }
         return result;
     }

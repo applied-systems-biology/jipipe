@@ -20,6 +20,7 @@ import org.hkijena.jipipe.utils.UIUtils;
 import javax.swing.*;
 import javax.swing.border.Border;
 import java.awt.*;
+import java.util.Set;
 
 /**
  * Renderer for {@link JIPipeNodeDatabaseEntry} (supports only non-existing nodes fully)
@@ -32,6 +33,7 @@ public class JIPipeDesktopAddNodePanelEntryListCellRenderer extends JPanel imple
     private JLabel nameLabel;
     private JLabel descriptionLabel;
     private JLabel pathLabel;
+    private JLabel pinLabel;
     private final JComponent parent;
     private final JIPipeDesktopAddNodesPanel addNodePanel;
 
@@ -60,6 +62,7 @@ public class JIPipeDesktopAddNodePanelEntryListCellRenderer extends JPanel imple
         pathLabel = new JLabel();
         pathLabel.setForeground(Color.GRAY);
         pathLabel.setFont(new Font(Font.DIALOG, Font.ITALIC, 10));
+        pinLabel = new JLabel();
 
         add(nodeIcon, new GridBagConstraints() {
             {
@@ -76,6 +79,14 @@ public class JIPipeDesktopAddNodePanelEntryListCellRenderer extends JPanel imple
                 gridy = 0;
                 fill = HORIZONTAL;
                 weightx = 1;
+            }
+        });
+        add(pinLabel, new GridBagConstraints() {
+            {
+                anchor = GridBagConstraints.NORTHWEST;
+                gridx = 2;
+                gridy = 0;
+                fill = NONE;
             }
         });
         add(descriptionLabel, new GridBagConstraints() {
@@ -124,6 +135,15 @@ public class JIPipeDesktopAddNodePanelEntryListCellRenderer extends JPanel imple
             }
             setTruncatedText(pathLabel, obj.getLocationInfo().replace("\n", " > "), list);
             nodeIcon.setIcon(obj.getIcon());
+
+            // Pinned items
+            Set<String> pinnedNodeDatabaseEntries = addNodePanel.getPinnedNodeDatabaseEntries();
+            if(pinnedNodeDatabaseEntries.contains(obj.getId())) {
+                pinLabel.setIcon(UIUtils.getIconInvertedFromResources("actions/window-pin.png"));
+            }
+            else {
+                pinLabel.setIcon(null);
+            }
         }
 
         setBorder(isSelected ? selectedBorder : defaultBorder);

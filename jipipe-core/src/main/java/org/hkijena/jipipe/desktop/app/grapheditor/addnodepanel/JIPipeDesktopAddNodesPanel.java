@@ -18,6 +18,7 @@ import org.hkijena.jipipe.api.AbstractJIPipeRunnable;
 import org.hkijena.jipipe.api.data.JIPipeData;
 import org.hkijena.jipipe.api.nodes.*;
 import org.hkijena.jipipe.api.nodes.categories.DataSourceNodeTypeCategory;
+import org.hkijena.jipipe.api.nodes.categories.MiscellaneousNodeTypeCategory;
 import org.hkijena.jipipe.api.nodes.database.*;
 import org.hkijena.jipipe.api.run.JIPipeRunnableQueue;
 import org.hkijena.jipipe.desktop.app.JIPipeDesktopProjectWorkbench;
@@ -28,6 +29,7 @@ import org.hkijena.jipipe.desktop.app.grapheditor.commons.nodeui.JIPipeDesktopGr
 import org.hkijena.jipipe.desktop.app.grapheditor.flavors.compartments.JIPipeDesktopCompartmentsGraphEditorUI;
 import org.hkijena.jipipe.desktop.commons.components.layouts.JIPipeDesktopWrapLayout;
 import org.hkijena.jipipe.desktop.commons.components.search.JIPipeDesktopSearchTextField;
+import org.hkijena.jipipe.plugins.nodetemplate.NodeTemplatePopupMenu;
 import org.hkijena.jipipe.plugins.settings.JIPipeGraphEditorUIApplicationSettings;
 import org.hkijena.jipipe.utils.StringUtils;
 import org.hkijena.jipipe.utils.TooltipUtils;
@@ -40,8 +42,10 @@ import java.awt.event.KeyAdapter;
 import java.awt.event.KeyEvent;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
+import java.lang.reflect.InvocationTargetException;
 import java.util.*;
 import java.util.List;
+import java.util.stream.Collectors;
 
 /**
  * New and improved node tool box
@@ -59,7 +63,7 @@ public class JIPipeDesktopAddNodesPanel extends JIPipeDesktopWorkbenchPanel {
     private final JPanel mainCategoriesPanel = new JPanel();
     private final AbstractJIPipeDesktopGraphEditorUI graphEditorUI;
     private final List<MainCategoryFilter> mainCategoryFilters = new ArrayList<>();
-    private final JCheckBoxMenuItem showNodeDescriptionToggle = new JCheckBoxMenuItem("Show node descriptions", UIUtils.getIconFromResources("actions/help.png"));
+    private final JCheckBoxMenuItem showNodeDescriptionToggle = new JCheckBoxMenuItem("Show node descriptions");
 
     public JIPipeDesktopAddNodesPanel(JIPipeDesktopWorkbench workbench, AbstractJIPipeDesktopGraphEditorUI graphEditorUI) {
         super(workbench);
@@ -75,6 +79,10 @@ public class JIPipeDesktopAddNodesPanel extends JIPipeDesktopWorkbenchPanel {
         reloadAlgorithmList();
     }
 
+    public Set<String> getPinnedNodeDatabaseEntries() {
+        return new HashSet<>(settings.getNodeSearchSettings().getPinnedNodes());
+    }
+
     private void initializeMainCategoryFilters() {
 
         // Compartments have no categories
@@ -82,18 +90,28 @@ public class JIPipeDesktopAddNodesPanel extends JIPipeDesktopWorkbenchPanel {
             return;
         }
 
-        JIPipe.getNodes().getRegisteredCategories().values().stream().sorted(Comparator.comparing(JIPipeNodeTypeCategory::getUIOrder)).forEach(category -> {
+        List<JIPipeNodeTypeCategory> categories = JIPipe.getNodes().getRegisteredCategories().values().stream().sorted(Comparator.comparing(JIPipeNodeTypeCategory::getUIOrder)).collect(Collectors.toList());
+        categories.add(new TemplatesDummyNodeTypeCategory());
+        categories.add(new PinnedDummyNodeTypeCategory());
+
+        // Inject special categories here
+        for (JIPipeNodeTypeCategory category : categories) {
             if(category.isVisibleInPipeline()) {
                 JToggleButton categoryButton = new JToggleButton(category.getName(), category.getIcon());
                 categoryButton.setFont(new Font(Font.DIALOG, Font.PLAIN, 11));
 
                 // Add the old menu as popup menu to the categories
-                JPopupMenu popupMenu = UIUtils.addRightClickPopupMenuToButton(categoryButton);
-                if(category instanceof DataSourceNodeTypeCategory) {
-                    initializeAddDataSourceMenu(graphEditorUI, popupMenu, new HashSet<>());
+                if(category instanceof TemplatesDummyNodeTypeCategory) {
+                    NodeTemplatePopupMenu popupMenu = new NodeTemplatePopupMenu(getDesktopWorkbench(), graphEditorUI);
+                    UIUtils.addReloadableRightClickPopupMenuToButton(categoryButton, popupMenu, () -> {});
                 }
                 else {
-                    initializeMenuForCategory(graphEditorUI, popupMenu, category, new HashSet<>());
+                    JPopupMenu popupMenu = UIUtils.addRightClickPopupMenuToButton(categoryButton);
+                    if (category instanceof DataSourceNodeTypeCategory) {
+                        initializeAddDataSourceMenu(graphEditorUI, popupMenu, new HashSet<>());
+                    } else {
+                        initializeMenuForCategory(graphEditorUI, popupMenu, category, new HashSet<>());
+                    }
                 }
 
                 MainCategoryFilter currentFilter = new MainCategoryFilter(category, categoryButton);
@@ -105,16 +123,11 @@ public class JIPipeDesktopAddNodesPanel extends JIPipeDesktopWorkbenchPanel {
                             }
                         }
                     }
-                    updateMainCategoryFilters();
                     reloadAlgorithmList();
                 });
-               mainCategoryFilters.add(currentFilter);
+                mainCategoryFilters.add(currentFilter);
             }
-        });
-    }
-
-    private void updateMainCategoryFilters() {
-
+        }
     }
 
     private void reloadAlgorithmList() {
@@ -134,6 +147,51 @@ public class JIPipeDesktopAddNodesPanel extends JIPipeDesktopWorkbenchPanel {
             initializeMainCategoryPanel();
         }
         initializeAlgorithmList();
+        initializeAlgorithmListContextMenu();
+    }
+
+    private void initializeAlgorithmListContextMenu() {
+        JPopupMenu contextMenu = new JPopupMenu();
+        UIUtils.addRightClickPopupMenuToJList(algorithmList, contextMenu, () -> {
+            contextMenu.removeAll();
+
+            Set<String> pinnedNodeDatabaseEntries = getPinnedNodeDatabaseEntries();
+            List<JIPipeNodeDatabaseEntry> selectedValues = algorithmList.getSelectedValuesList();
+            if(!selectedValues.isEmpty()) {
+                contextMenu.add(UIUtils.createMenuItem("Insert at cursor", "Inserts the node at the cursor", UIUtils.getIconFromResources("actions/add.png"), () -> {
+                    insertAtCursor(selectedValues.get(0));
+                }));
+                UIUtils.addSeparatorIfNeeded(contextMenu);
+                if(selectedValues.stream().anyMatch(entry -> !pinnedNodeDatabaseEntries.contains(entry.getId()))) {
+                    contextMenu.add(UIUtils.createMenuItem("Pin", "Adds the item to the list of pinned items", UIUtils.getIconFromResources("actions/window-pin.png"), () -> {
+                        pinNodes(selectedValues);
+                    }));
+                }
+                if(selectedValues.stream().anyMatch(entry -> pinnedNodeDatabaseEntries.contains(entry.getId()))) {
+                    contextMenu.add(UIUtils.createMenuItem("Unpin", "Removes the item from the list of pinned items", UIUtils.getIconFromResources("actions/window-unpin.png"), () -> {
+                        unpinNodes(selectedValues);
+                    }));
+                }
+            }
+        });
+    }
+
+    private void pinNodes(List<JIPipeNodeDatabaseEntry> selectedValues) {
+        for (JIPipeNodeDatabaseEntry entry : selectedValues) {
+            settings.getNodeSearchSettings().getPinnedNodes().add(entry.getId());
+        }
+        settings.getNodeSearchSettings().getPinnedNodes().makeUnique();
+        JIPipe.getSettings().save();
+        reloadAlgorithmList();
+    }
+
+    private void unpinNodes(List<JIPipeNodeDatabaseEntry> selectedValues) {
+        for (JIPipeNodeDatabaseEntry entry : selectedValues) {
+            settings.getNodeSearchSettings().getPinnedNodes().add(entry.getId());
+        }
+        settings.getNodeSearchSettings().getPinnedNodes().makeUnique();
+        JIPipe.getSettings().save();
+        reloadAlgorithmList();
     }
 
     private void initializeMainCategoryPanel() {
@@ -270,8 +328,8 @@ public class JIPipeDesktopAddNodesPanel extends JIPipeDesktopWorkbenchPanel {
     }
 
     private void insertAtCursor(JIPipeNodeDatabaseEntry entry) {
-        JIPipeDesktopGraphNodeUI nodeUI = entry.addToGraph(graphEditorUI.getCanvasUI());
-        graphEditorUI.getCanvasUI().selectOnly(nodeUI);
+        Set<JIPipeDesktopGraphNodeUI> nodeUIs = entry.addToGraph(graphEditorUI.getCanvasUI());
+        graphEditorUI.getCanvasUI().setSelection(nodeUIs);
     }
 
     /**
@@ -474,27 +532,109 @@ public class JIPipeDesktopAddNodesPanel extends JIPipeDesktopWorkbenchPanel {
                 }
             }
 
+            Set<String> pinnedNodeDatabaseEntries = toolBox.getPinnedNodeDatabaseEntries();
             DefaultListModel<JIPipeNodeDatabaseEntry> model = new DefaultListModel<>();
             JIPipeNodeDatabasePipelineVisibility role = toolBox.isCompartmentsEditor ? JIPipeNodeDatabasePipelineVisibility.Compartments : JIPipeNodeDatabasePipelineVisibility.Pipeline;
-            for (JIPipeNodeDatabaseEntry entry : toolBox.database.getLegacySearch().query(toolBox.searchField.getText(),
+            List<JIPipeNodeDatabaseEntry> queryResult = toolBox.database.getLegacySearch().query(toolBox.searchField.getText(),
                     role,
                     false,
-                    true)) {
-                if(selectedCategoryId != null) {
+                    true,
+                    pinnedNodeDatabaseEntries);
+
+            for (JIPipeNodeDatabaseEntry entry : queryResult) {
+                if("jipipe:dummy:templates".equals(selectedCategoryId)) {
+                    if(!(entry instanceof CreateNewNodesByTemplateDatabaseEntry)) {
+                        continue;
+                    }
+                }
+                else if("jipipe:dummy:pinned".equals(selectedCategoryId)) {
+                    if(!pinnedNodeDatabaseEntries.contains(entry.getId())) {
+                        continue;
+                    }
+                }
+                else if(selectedCategoryId != null) {
                     if(!entry.getCategoryIds().contains(selectedCategoryId)) {
                         continue;
                     }
                 }
                 model.addElement(entry);
             }
-            toolBox.algorithmList.setModel(model);
 
+            try {
+                SwingUtilities.invokeAndWait(() -> toolBox.algorithmList.setModel(model));
+            } catch (InterruptedException | InvocationTargetException e) {
+                throw new RuntimeException(e);
+            }
             if (!model.isEmpty()) {
                 SwingUtilities.invokeLater(() -> {
                     toolBox.algorithmList.setSelectedIndex(0);
                     toolBox.scrollPane.getVerticalScrollBar().setValue(0);
                 });
             }
+        }
+    }
+
+    public static class TemplatesDummyNodeTypeCategory extends MiscellaneousNodeTypeCategory {
+        @Override
+        public String getId() {
+            return "jipipe:dummy:templates";
+        }
+
+        @Override
+        public String getName() {
+            return "Templates";
+        }
+
+        @Override
+        public String getDescription() {
+            return "Node templates";
+        }
+
+        @Override
+        public Icon getIcon() {
+            return UIUtils.getIconFromResources("actions/star.png");
+        }
+
+        @Override
+        public boolean isVisibleInPipeline() {
+            return true;
+        }
+
+        @Override
+        public boolean isVisibleInCompartments() {
+            return true;
+        }
+    }
+
+    public static class PinnedDummyNodeTypeCategory extends MiscellaneousNodeTypeCategory {
+        @Override
+        public String getId() {
+            return "jipipe:dummy:pinned";
+        }
+
+        @Override
+        public String getName() {
+            return "";
+        }
+
+        @Override
+        public String getDescription() {
+            return "Pinned nodes";
+        }
+
+        @Override
+        public Icon getIcon() {
+            return UIUtils.getIconFromResources("actions/window-pin.png");
+        }
+
+        @Override
+        public boolean isVisibleInPipeline() {
+            return true;
+        }
+
+        @Override
+        public boolean isVisibleInCompartments() {
+            return true;
         }
     }
 }

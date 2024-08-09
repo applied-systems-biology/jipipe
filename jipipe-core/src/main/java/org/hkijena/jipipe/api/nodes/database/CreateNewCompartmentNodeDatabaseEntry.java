@@ -109,7 +109,7 @@ public class CreateNewCompartmentNodeDatabaseEntry implements JIPipeNodeDatabase
     }
 
     @Override
-    public JIPipeDesktopGraphNodeUI addToGraph(JIPipeDesktopGraphCanvasUI canvasUI) {
+    public Set<JIPipeDesktopGraphNodeUI> addToGraph(JIPipeDesktopGraphCanvasUI canvasUI) {
         JIPipeDesktopCompartmentsGraphEditorUI graphEditorUI = (JIPipeDesktopCompartmentsGraphEditorUI) canvasUI.getGraphEditorUI();
         graphEditorUI.addCompartment();
         return null;

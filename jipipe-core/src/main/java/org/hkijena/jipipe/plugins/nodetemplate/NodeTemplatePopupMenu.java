@@ -29,12 +29,12 @@ import org.hkijena.jipipe.utils.UIUtils;
 import javax.swing.*;
 import java.util.*;
 
-public class NodeTemplateMenu extends JMenu implements JIPipeDesktopWorkbenchAccess, NodeTemplatesRefreshedEventListener {
+public class NodeTemplatePopupMenu extends JPopupMenu implements JIPipeDesktopWorkbenchAccess, NodeTemplatesRefreshedEventListener {
     private final JIPipeDesktopWorkbench workbench;
     private final AbstractJIPipeDesktopGraphEditorUI graphEditorUI;
     private final JIPipeProject project;
 
-    public NodeTemplateMenu(JIPipeDesktopWorkbench workbench, AbstractJIPipeDesktopGraphEditorUI graphEditorUI) {
+    public NodeTemplatePopupMenu(JIPipeDesktopWorkbench workbench, AbstractJIPipeDesktopGraphEditorUI graphEditorUI) {
         this.workbench = workbench;
         this.graphEditorUI = graphEditorUI;
         if (workbench instanceof JIPipeDesktopProjectWorkbench) {
@@ -42,8 +42,6 @@ public class NodeTemplateMenu extends JMenu implements JIPipeDesktopWorkbenchAcc
         } else {
             this.project = null;
         }
-        setText("Templates");
-        setIcon(UIUtils.getIconFromResources("actions/starred.png"));
         reloadTemplateList();
         JIPipe.getNodeTemplates().getNodeTemplatesRefreshedEventEmitter().subscribeWeak(this);
     }
@@ -57,9 +55,9 @@ public class NodeTemplateMenu extends JMenu implements JIPipeDesktopWorkbenchAcc
         removeAll();
         if (!templates.isEmpty()) {
             Map<String, Set<JIPipeNodeTemplate>> byMenuPath = JIPipeNodeTemplate.groupByMenuPaths(templates);
-            Map<String, JMenu> menuTree = UIUtils.createMenuTree(this, byMenuPath.keySet());
+            Map<String, JComponent> menuTree = UIUtils.createMenuTree(this, byMenuPath.keySet());
             for (Map.Entry<String, Set<JIPipeNodeTemplate>> entry : byMenuPath.entrySet()) {
-                JMenu subMenu = menuTree.get(entry.getKey());
+                JComponent subMenu = menuTree.get(entry.getKey());
                 entry.getValue().stream().sorted(Comparator.comparing(JIPipeNodeTemplate::getName)).forEach(template -> {
                     JMenuItem item = new JMenuItem(template.getName(), template.getIconImage());
                     item.setToolTipText("<html>" + TooltipUtils.getAlgorithmTooltip(template, true) + "</html>");

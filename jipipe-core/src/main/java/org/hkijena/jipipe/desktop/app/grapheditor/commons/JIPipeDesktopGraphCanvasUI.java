@@ -3102,6 +3102,22 @@ public class JIPipeDesktopGraphCanvasUI extends JLayeredPane implements JIPipeDe
         }
     }
 
+    public void setSelection(Set<JIPipeDesktopGraphNodeUI> nodeUIs) {
+        clearSelection();
+        if(nodeUIs != null) {
+            for (JIPipeDesktopGraphNodeUI ui : nodeUIs) {
+                selection.add(ui);
+                if (!(ui instanceof JIPipeDesktopAnnotationGraphNodeUI)) {
+                    if (getLayer(ui) < currentNodeLayer) {
+                        setLayer(ui, ++currentNodeLayer);
+                    }
+                }
+            }
+            updateSelection();
+        }
+    }
+
+
     /**
      * Selects only the specified algorithm
      *

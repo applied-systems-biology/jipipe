@@ -53,7 +53,7 @@ public interface JIPipeNodeDatabaseEntry {
 
     Color getBorderColor();
 
-    JIPipeDesktopGraphNodeUI addToGraph(JIPipeDesktopGraphCanvasUI canvasUI);
+    Set<JIPipeDesktopGraphNodeUI> addToGraph(JIPipeDesktopGraphCanvasUI canvasUI);
 
     boolean canAddInputSlots();
 

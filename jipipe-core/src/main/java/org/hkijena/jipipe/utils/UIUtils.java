@@ -412,7 +412,7 @@ public class UIUtils {
 
     public static BufferedImage getImageFromResources(String path) {
         BufferedImage image = IMAGE_FROM_RESOURCES_CACHE.getOrDefault(path, null);
-        if(image == null) {
+        if (image == null) {
             try {
                 image = ImageIO.read(ResourceUtils.getPluginResource(path));
                 IMAGE_FROM_RESOURCES_CACHE.put(path, image);
@@ -581,6 +581,30 @@ public class UIUtils {
             }
         });
         return popupMenu;
+    }
+
+    public static void addRightClickPopupMenuToJList(JList<?> target, JPopupMenu popupMenu, Runnable reloadFunction) {
+        target.addMouseListener(new MouseAdapter() {
+            @Override
+            public void mouseClicked(MouseEvent e) {
+                if (SwingUtilities.isRightMouseButton(e)) {
+                    e.consume();
+                    int i = target.locationToIndex(e.getPoint());
+                    if (i >= 0) {
+                        if (target.getSelectedValuesList().isEmpty()) {
+                            target.addSelectionInterval(i, i);
+                        } else if (!Ints.contains(target.getSelectedIndices(), i)) {
+                            target.clearSelection();
+                            target.addSelectionInterval(i, i);
+                        }
+                    }
+                    reloadFunction.run();
+                    if(popupMenu.getComponentCount() > 0) {
+                        popupMenu.show(target, e.getX(), e.getY());
+                    }
+                }
+            }
+        });
     }
 
     /**
@@ -1918,19 +1942,17 @@ public class UIUtils {
     }
 
     public static JMenuItem getMenuItem(JComponent menu, int index) {
-        if(menu instanceof JMenu) {
+        if (menu instanceof JMenu) {
             return ((JMenu) menu).getItem(index);
-        }
-        else {
+        } else {
             return (JMenuItem) menu.getComponent(index);
         }
     }
 
     public static int getMenuItemCount(JComponent menu) {
-        if(menu instanceof JMenu) {
+        if (menu instanceof JMenu) {
             return ((JMenu) menu).getItemCount();
-        }
-        else {
+        } else {
             return menu.getComponentCount();
         }
     }
@@ -2335,14 +2357,13 @@ public class UIUtils {
     }
 
     public static Border createEmptyBorder(int i) {
-        return BorderFactory.createEmptyBorder(i,i,i,i);
+        return BorderFactory.createEmptyBorder(i, i, i, i);
     }
 
     public static JIPipeDesktopUITheme getTheme() {
-        if(JIPipe.isInstantiated()) {
+        if (JIPipe.isInstantiated()) {
             return JIPipeGeneralUIApplicationSettings.getInstance().getTheme();
-        }
-        else {
+        } else {
             return JIPipeDesktopUITheme.ModernLight;
         }
     }

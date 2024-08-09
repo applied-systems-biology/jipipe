@@ -35,7 +35,9 @@ import javax.swing.*;
 import java.awt.*;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
+import java.util.HashSet;
 import java.util.Map;
+import java.util.Set;
 import java.util.UUID;
 
 public class JIPipeDesktopNodeFinderDialogUI extends JDialog {
@@ -48,6 +50,7 @@ public class JIPipeDesktopNodeFinderDialogUI extends JDialog {
     private final JToggleButton createNodesToggle = new JToggleButton(UIUtils.getIconFromResources("actions/add.png"));
     private final JList<JIPipeNodeDatabaseEntry> nodeList = new JList<>();
     private final JIPipeRunnableQueue queue = new JIPipeRunnableQueue("Node finder");
+    private final JIPipeGraphEditorUIApplicationSettings settings;
     private JIPipeDesktopSearchTextField searchField;
 
     public JIPipeDesktopNodeFinderDialogUI(JIPipeDesktopGraphCanvasUI canvasUI, JIPipeDataSlot querySlot) {
@@ -55,6 +58,7 @@ public class JIPipeDesktopNodeFinderDialogUI extends JDialog {
         this.queryCompartment = canvasUI.getCompartmentUUID();
         this.querySlot = querySlot;
         this.queryGraph = canvasUI.getGraph();
+        this.settings = JIPipeGraphEditorUIApplicationSettings.getInstance();
         initialize();
         reloadList();
     }
@@ -93,6 +97,10 @@ public class JIPipeDesktopNodeFinderDialogUI extends JDialog {
                 }
             }
         });
+    }
+
+    public Set<String> getPinnedNodeDatabaseEntries() {
+        return new HashSet<>(settings.getNodeSearchSettings().getPinnedNodes());
     }
 
     public JIPipeDataSlot getQuerySlot() {
@@ -159,7 +167,7 @@ public class JIPipeDesktopNodeFinderDialogUI extends JDialog {
     }
 
     private void addAndConnectEntry(JIPipeNodeDatabaseEntry entry, JIPipeDataSlotInfo slotInfo) {
-        JIPipeDesktopGraphNodeUI nodeUI = entry.addToGraph(canvasUI);
+        JIPipeDesktopGraphNodeUI nodeUI = entry.addToGraph(canvasUI).iterator().next();
         JIPipeGraphNode node = nodeUI.getNode();
         if (querySlot != null) {
             if (querySlot.isInput()) {
@@ -307,9 +315,12 @@ public class JIPipeDesktopNodeFinderDialogUI extends JDialog {
             } else {
                 nodeDatabase = JIPipeNodeDatabase.getInstance();
             }
+
+            Set<String> pinnedNodeDatabaseEntries = dialogUI.getPinnedNodeDatabaseEntries();
+
             JIPipeNodeDatabasePipelineVisibility role;
             if (canvasUI.getDesktopWorkbench() instanceof JIPipeDesktopProjectWorkbench) {
-                if (canvasUI.getGraph() == ((JIPipeDesktopProjectWorkbench) canvasUI.getDesktopWorkbench()).getProject().getCompartmentGraph()) {
+                if (canvasUI.getGraph() == canvasUI.getDesktopWorkbench().getProject().getCompartmentGraph()) {
                     role = JIPipeNodeDatabasePipelineVisibility.Compartments;
                 } else {
                     role = JIPipeNodeDatabasePipelineVisibility.Pipeline;
@@ -345,7 +356,7 @@ public class JIPipeDesktopNodeFinderDialogUI extends JDialog {
                     model.addElement(entry);
                 }
             } else {
-                for (JIPipeNodeDatabaseEntry entry : nodeDatabase.getLegacySearch().query(dialogUI.searchField.getText(), role, allowExisting, allowNew)) {
+                for (JIPipeNodeDatabaseEntry entry : nodeDatabase.getLegacySearch().query(dialogUI.searchField.getText(), role, allowExisting, allowNew, pinnedNodeDatabaseEntries)) {
                     model.addElement(entry);
                 }
             }

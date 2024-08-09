@@ -142,8 +142,8 @@ public class ExistingPipelineNodeDatabaseEntry implements JIPipeNodeDatabaseEntr
     }
 
     @Override
-    public JIPipeDesktopGraphNodeUI addToGraph(JIPipeDesktopGraphCanvasUI canvasUI) {
-        return canvasUI.getNodeUIs().get(graphNode);
+    public Set<JIPipeDesktopGraphNodeUI> addToGraph(JIPipeDesktopGraphCanvasUI canvasUI) {
+        return Collections.singleton(canvasUI.getNodeUIs().get(graphNode));
     }
 
     @Override

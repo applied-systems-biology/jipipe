@@ -2048,6 +2048,10 @@ public class JIPipeGraph implements JIPipeValidatable, JIPipeFunctionallyCompara
         return null;
     }
 
+    public JIPipeGraph duplicate() {
+        return new JIPipeGraph(this);
+    }
+
     public interface GraphChangedEventListener {
         void onGraphChanged(GraphChangedEvent event);
     }

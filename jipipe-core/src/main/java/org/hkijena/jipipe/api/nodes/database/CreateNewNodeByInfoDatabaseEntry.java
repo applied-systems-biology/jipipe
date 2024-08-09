@@ -25,10 +25,7 @@ import org.jsoup.Jsoup;
 
 import javax.swing.*;
 import java.awt.*;
-import java.util.HashMap;
-import java.util.HashSet;
-import java.util.Map;
-import java.util.Set;
+import java.util.*;
 
 public class CreateNewNodeByInfoDatabaseEntry implements JIPipeNodeDatabaseEntry {
 
@@ -164,13 +161,13 @@ public class CreateNewNodeByInfoDatabaseEntry implements JIPipeNodeDatabaseEntry
     }
 
     @Override
-    public JIPipeDesktopGraphNodeUI addToGraph(JIPipeDesktopGraphCanvasUI canvasUI) {
+    public Set<JIPipeDesktopGraphNodeUI> addToGraph(JIPipeDesktopGraphCanvasUI canvasUI) {
         JIPipeGraphNode node = nodeInfo.newInstance();
         if (canvasUI.getHistoryJournal() != null) {
             canvasUI.getHistoryJournal().snapshotBeforeAddNode(node, canvasUI.getCompartmentUUID());
         }
         canvasUI.getGraph().insertNode(node, canvasUI.getCompartmentUUID());
-        return canvasUI.getNodeUIs().get(node);
+        return Collections.singleton(canvasUI.getNodeUIs().get(node));
     }
 
     @Override

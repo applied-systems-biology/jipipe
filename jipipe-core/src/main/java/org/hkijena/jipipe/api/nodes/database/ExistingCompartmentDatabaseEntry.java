@@ -132,8 +132,8 @@ public class ExistingCompartmentDatabaseEntry implements JIPipeNodeDatabaseEntry
     }
 
     @Override
-    public JIPipeDesktopGraphNodeUI addToGraph(JIPipeDesktopGraphCanvasUI canvasUI) {
-        return canvasUI.getNodeUIs().get(compartment);
+    public Set<JIPipeDesktopGraphNodeUI> addToGraph(JIPipeDesktopGraphCanvasUI canvasUI) {
+        return Collections.singleton(canvasUI.getNodeUIs().get(compartment));
     }
 
     @Override
