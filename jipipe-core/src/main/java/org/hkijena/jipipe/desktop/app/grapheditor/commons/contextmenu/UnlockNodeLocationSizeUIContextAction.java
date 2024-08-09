@@ -55,4 +55,8 @@ public class UnlockNodeLocationSizeUIContextAction implements NodeUIContextActio
         return KeyStroke.getKeyStroke(KeyEvent.VK_L, KeyEvent.CTRL_MASK);
     }
 
+    @Override
+    public boolean showInToolbar() {
+        return true;
+    }
 }

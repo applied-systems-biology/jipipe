@@ -82,11 +82,19 @@ public interface NodeUIContextAction {
     /**
      * Determines if the item should be shown in the multi-node selection panel
      *
+     * @deprecated the multi selection panel was removed
      * @return if the item should be shown in the multi-node selection panel
      */
+    @Deprecated
     default boolean showInMultiSelectionPanel() {
         return true;
     }
+
+    /**
+     * Determines if the item should be displayed in the context toolbar
+     * @return  if the item should be displayed in the context toolbar
+     */
+    default boolean showInToolbar() {return false;}
 
     /**
      * Returns an optional keyboard shortcut. Can be null

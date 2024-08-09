@@ -55,6 +55,11 @@ public class DeleteNodeUIContextAction implements NodeUIContextAction {
     }
 
     @Override
+    public boolean showInToolbar() {
+        return true;
+    }
+
+    @Override
     public String getName() {
         return "Delete";
     }

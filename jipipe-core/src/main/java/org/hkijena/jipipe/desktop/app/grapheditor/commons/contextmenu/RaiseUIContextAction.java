@@ -54,4 +54,9 @@ public class RaiseUIContextAction implements NodeUIContextAction {
     public KeyStroke getKeyboardShortcut() {
         return KeyStroke.getKeyStroke(KeyEvent.VK_PAGE_UP, InputEvent.SHIFT_MASK);
     }
+
+    @Override
+    public boolean showInToolbar() {
+        return true;
+    }
 }

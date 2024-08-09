@@ -16,9 +16,13 @@ package org.hkijena.jipipe.desktop.app.grapheditor.commons.contextmenu;
 import org.hkijena.jipipe.api.JIPipeWorkbench;
 import org.hkijena.jipipe.api.project.JIPipeProject;
 import org.hkijena.jipipe.desktop.app.JIPipeDesktopProjectWorkbench;
+import org.hkijena.jipipe.desktop.app.grapheditor.addnodepanel.JIPipeDesktopAddNodesPanel;
 import org.hkijena.jipipe.desktop.app.grapheditor.commons.JIPipeDesktopGraphCanvasUI;
 import org.hkijena.jipipe.desktop.app.grapheditor.commons.nodeui.JIPipeDesktopGraphNodeUI;
+import org.hkijena.jipipe.desktop.app.grapheditor.flavors.compartments.JIPipeDesktopCompartmentsGraphEditorUI;
+import org.hkijena.jipipe.desktop.app.grapheditor.flavors.pipeline.JIPipeDesktopPipelineGraphEditorUI;
 import org.hkijena.jipipe.utils.UIUtils;
+import org.hkijena.jipipe.utils.ui.JIPipeDesktopDockPanel;
 
 import javax.swing.*;
 import java.awt.event.KeyEvent;
@@ -34,29 +38,22 @@ public class AddNewCompartmentUIContextAction implements NodeUIContextAction {
     public void run(JIPipeDesktopGraphCanvasUI canvasUI, Set<JIPipeDesktopGraphNodeUI> selection) {
         JIPipeWorkbench workbench = canvasUI.getDesktopWorkbench();
         if (workbench instanceof JIPipeDesktopProjectWorkbench) {
-            if (!JIPipeDesktopProjectWorkbench.canAddOrDeleteNodes(workbench))
-                return;
-            JIPipeProject project = ((JIPipeDesktopProjectWorkbench) workbench).getProject();
-            String compartmentName = JOptionPane.showInputDialog(SwingUtilities.getWindowAncestor(canvasUI),
-                    "Please enter the name of the compartment",
-                    "Compartment");
-            if (compartmentName != null && !compartmentName.trim().isEmpty()) {
-                if (canvasUI.getHistoryJournal() != null) {
-                    canvasUI.getHistoryJournal().snapshotBeforeAddCompartment(compartmentName);
-                }
-                project.addCompartment(compartmentName);
-            }
+            JIPipeDesktopDockPanel dockPanel = canvasUI.getGraphEditorUI().getDockPanel();
+            dockPanel.activatePanel(JIPipeDesktopCompartmentsGraphEditorUI.DOCK_ADD_NODES, true);
+            SwingUtilities.invokeLater(() -> {
+                dockPanel.getPanel(JIPipeDesktopCompartmentsGraphEditorUI.DOCK_ADD_NODES, JIPipeDesktopAddNodesPanel.class).focusSearchBar();
+            });
         }
     }
 
     @Override
     public String getName() {
-        return "Add new compartment here ...";
+        return "Add new node here ...";
     }
 
     @Override
     public String getDescription() {
-        return "Adds a new compartment at the specified location";
+        return "Adds a new node at the specified location";
     }
 
     @Override

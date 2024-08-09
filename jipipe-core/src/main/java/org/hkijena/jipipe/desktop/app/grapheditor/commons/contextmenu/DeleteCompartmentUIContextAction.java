@@ -76,4 +76,9 @@ public class DeleteCompartmentUIContextAction implements NodeUIContextAction {
     public KeyStroke getKeyboardShortcut() {
         return KeyStroke.getKeyStroke(KeyEvent.VK_DELETE, 0, true);
     }
+
+    @Override
+    public boolean showInToolbar() {
+        return true;
+    }
 }

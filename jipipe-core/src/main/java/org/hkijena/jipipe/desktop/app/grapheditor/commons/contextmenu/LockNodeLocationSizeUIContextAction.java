@@ -54,4 +54,9 @@ public class LockNodeLocationSizeUIContextAction implements NodeUIContextAction 
     public KeyStroke getKeyboardShortcut() {
         return KeyStroke.getKeyStroke(KeyEvent.VK_L, 0);
     }
+
+    @Override
+    public boolean showInToolbar() {
+        return true;
+    }
 }

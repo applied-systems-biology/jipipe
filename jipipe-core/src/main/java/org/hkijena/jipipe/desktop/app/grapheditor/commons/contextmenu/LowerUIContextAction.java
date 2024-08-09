@@ -54,4 +54,9 @@ public class LowerUIContextAction implements NodeUIContextAction {
     public KeyStroke getKeyboardShortcut() {
         return KeyStroke.getKeyStroke(KeyEvent.VK_PAGE_DOWN, InputEvent.SHIFT_MASK);
     }
+
+    @Override
+    public boolean showInToolbar() {
+        return true;
+    }
 }

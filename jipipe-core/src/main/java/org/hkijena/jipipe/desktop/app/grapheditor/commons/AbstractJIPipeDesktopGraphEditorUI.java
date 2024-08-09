@@ -15,14 +15,13 @@ package org.hkijena.jipipe.desktop.app.grapheditor.commons;
 
 import com.google.common.collect.BiMap;
 import com.google.common.collect.HashBiMap;
-import com.google.common.collect.ImmutableSet;
 import org.hkijena.jipipe.JIPipe;
+import org.hkijena.jipipe.api.grapheditortool.JIPipeActionGraphEditorTool;
 import org.hkijena.jipipe.api.grapheditortool.JIPipeDefaultGraphEditorTool;
 import org.hkijena.jipipe.api.grapheditortool.JIPipeGraphEditorTool;
 import org.hkijena.jipipe.api.grapheditortool.JIPipeToggleableGraphEditorTool;
 import org.hkijena.jipipe.api.history.JIPipeHistoryJournal;
 import org.hkijena.jipipe.api.nodes.*;
-import org.hkijena.jipipe.api.nodes.database.*;
 import org.hkijena.jipipe.desktop.app.JIPipeDesktopWorkbench;
 import org.hkijena.jipipe.desktop.app.JIPipeDesktopWorkbenchPanel;
 import org.hkijena.jipipe.desktop.app.grapheditor.commons.contextmenu.NodeUIContextAction;
@@ -31,7 +30,6 @@ import org.hkijena.jipipe.desktop.commons.components.icons.SolidColorIcon;
 import org.hkijena.jipipe.desktop.commons.components.renderers.JIPipeDesktopGenericListCellRenderer;
 import org.hkijena.jipipe.desktop.commons.theme.JIPipeDesktopModernMetalTheme;
 import org.hkijena.jipipe.plugins.parameters.library.pairs.StringAndStringPairParameter;
-import org.hkijena.jipipe.plugins.parameters.library.primitives.list.StringList;
 import org.hkijena.jipipe.plugins.settings.JIPipeFileChooserApplicationSettings;
 import org.hkijena.jipipe.plugins.settings.JIPipeGraphEditorUIApplicationSettings;
 import org.hkijena.jipipe.utils.ReflectionUtils;
@@ -96,6 +94,8 @@ public abstract class AbstractJIPipeDesktopGraphEditorUI extends JIPipeDesktopWo
     private Set<JIPipeNodeInfo> addableAlgorithms = new HashSet<>();
     private JIPipeToggleableGraphEditorTool currentTool;
     private final JIPipeDesktopDockPanel dockPanel = new JIPipeDesktopDockPanel();
+    private int contextToolbarInsertLocation;
+    private List<JButton> contextToolbarButtons = new ArrayList<>();
 
     /**
      * @param workbenchUI    the workbench
@@ -133,38 +133,6 @@ public abstract class AbstractJIPipeDesktopGraphEditorUI extends JIPipeDesktopWo
      */
     public AbstractJIPipeDesktopGraphEditorUI(JIPipeDesktopWorkbench workbenchUI, JIPipeGraph graph, UUID compartment, JIPipeHistoryJournal historyJournal) {
         this(workbenchUI, graph, compartment, historyJournal, JIPipeGraphEditorUIApplicationSettings.getInstance());
-    }
-
-    public static void installContextActionsInto(JToolBar toolBar, Set<JIPipeDesktopGraphNodeUI> selection, List<NodeUIContextAction> actionList, JIPipeDesktopGraphCanvasUI canvasUI) {
-        JPopupMenu menu = new JPopupMenu();
-        for (NodeUIContextAction action : actionList) {
-            if (action == null) {
-                menu.addSeparator();
-                continue;
-            }
-            if (action.isHidden())
-                continue;
-            boolean matches = action.matches(selection);
-            if (!matches && !action.disableOnNonMatch())
-                continue;
-
-            JMenuItem item = new JMenuItem(action.getName(), action.getIcon());
-            item.setToolTipText(action.getDescription());
-            if (matches)
-                item.addActionListener(e -> action.run(canvasUI, ImmutableSet.copyOf(selection)));
-            else
-                item.setEnabled(false);
-            menu.add(item);
-        }
-
-        if (menu.getComponentCount() > 0) {
-            JButton button = new JButton(UIUtils.getIconFromResources("actions/open-menu.png"));
-            UIUtils.makeButtonFlat25x25(button);
-            button.setToolTipText("Shows the context menu for the selected node. Alternatively, you can also right-click the node");
-            UIUtils.addPopupMenuToButton(button, menu);
-            toolBar.add(Box.createHorizontalStrut(4), 0);
-            toolBar.add(button, 0);
-        }
     }
 
     @Override
@@ -232,12 +200,17 @@ public abstract class AbstractJIPipeDesktopGraphEditorUI extends JIPipeDesktopWo
 
         add(dockPanel, BorderLayout.CENTER);
 
-        initializeEditingToolbar();
+        initializeEditingToolbar(JIPipeToggleableGraphEditorTool.class);
+        toolBar.add(UIUtils.createVerticalSeparator());
+        contextToolbarInsertLocation = toolBar.getComponentCount();
+        toolBar.add(Box.createHorizontalGlue());
+        toolBar.add(UIUtils.createVerticalSeparator());
+        initializeEditingToolbar(JIPipeActionGraphEditorTool.class);
+        toolBar.addSeparator();
         initializeCommonToolbar();
     }
 
     private void initializeCommonToolbar() {
-        toolBar.add(Box.createHorizontalGlue());
         if (getHistoryJournal() != null) {
             JButton undoButton = new JButton(UIUtils.getIconFromResources("actions/undo.png"));
             undoButton.setToolTipText("<html>Undo<br><i>Ctrl-Z</i></html>");
@@ -430,19 +403,23 @@ public abstract class AbstractJIPipeDesktopGraphEditorUI extends JIPipeDesktopWo
         toolBar.add(zoomPanel);
     }
 
-    private void initializeEditingToolbar() {
+    private void initializeEditingToolbar(Class<? extends JIPipeGraphEditorTool> baseClass) {
+        List<JIPipeGraphEditorTool> newTools = new ArrayList<>();
         for (Class<? extends JIPipeGraphEditorTool> klass : JIPipe.getInstance().getGraphEditorToolRegistry().getRegisteredTools()) {
-            JIPipeGraphEditorTool tool = (JIPipeGraphEditorTool) ReflectionUtils.newInstance(klass);
-            if (tool.supports(this)) {
-                tool.setGraphEditor(this);
-                tools.add(tool);
-                toolMap.put(klass, tool);
+            if(baseClass.isAssignableFrom(klass) && !toolMap.containsKey(klass)) {
+                JIPipeGraphEditorTool tool = (JIPipeGraphEditorTool) ReflectionUtils.newInstance(klass);
+                if (tool.supports(this)) {
+                    tool.setGraphEditor(this);
+                    toolMap.put(klass, tool);
+                    newTools.add(tool);
+                }
             }
         }
-        tools.sort(Comparator.comparing(JIPipeGraphEditorTool::getCategory).thenComparing(JIPipeGraphEditorTool::getPriority));
-        for (int i = 0; i < tools.size(); i++) {
-            JIPipeGraphEditorTool tool = tools.get(i);
-            if (i > 0 && !Objects.equals(tool.getCategory(), tools.get(i - 1).getCategory())) {
+        newTools.sort(Comparator.comparing(JIPipeGraphEditorTool::getCategory).thenComparing(JIPipeGraphEditorTool::getPriority));
+        tools.addAll(newTools);
+        for (int i = 0; i < newTools.size(); i++) {
+            JIPipeGraphEditorTool tool = newTools.get(i);
+            if (i > 0 && !Objects.equals(tool.getCategory(), newTools.get(i - 1).getCategory())) {
                 toolBar.addSeparator();
             }
 
@@ -602,6 +579,29 @@ public abstract class AbstractJIPipeDesktopGraphEditorUI extends JIPipeDesktopWo
     }
 
     protected void updateSelection() {
+        updateContextToolbar();
+    }
+
+    private void updateContextToolbar() {
+        for (JButton button : contextToolbarButtons) {
+            toolBar.remove(button);
+        }
+
+        Set<JIPipeDesktopGraphNodeUI> selection = getSelection();
+        for (NodeUIContextAction contextAction : canvasUI.getContextActions()) {
+            if(contextAction != null && contextAction.showInToolbar() && contextAction.matches(selection)) {
+                JButton button = new JButton(contextAction.getIcon());
+                button.setToolTipText("<html><strong>" + contextAction.getName() + "</strong><br/><br/>" + contextAction.getDescription() +
+                        (contextAction.getKeyboardShortcut() != null ? "<br><br>Shortcut: <i><strong>" + UIUtils.keyStrokeToString(contextAction.getKeyboardShortcut()) + "</strong></i>" : "") + "</html>");
+                button.addActionListener(e -> contextAction.run(canvasUI, selection));
+                UIUtils.makeButtonFlatWithSize(button, 32, 3);
+                toolBar.add(button, contextToolbarInsertLocation);
+                contextToolbarButtons.add(button);
+            }
+        }
+
+        toolBar.revalidate();
+        toolBar.repaint();
     }
 
 

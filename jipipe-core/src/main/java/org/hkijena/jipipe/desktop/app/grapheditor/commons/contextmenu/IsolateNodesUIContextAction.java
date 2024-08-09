@@ -76,4 +76,9 @@ public class IsolateNodesUIContextAction implements NodeUIContextAction {
     public KeyStroke getKeyboardShortcut() {
         return KeyStroke.getKeyStroke(KeyEvent.VK_I, KeyEvent.CTRL_DOWN_MASK + KeyEvent.SHIFT_DOWN_MASK);
     }
+
+    @Override
+    public boolean showInToolbar() {
+        return true;
+    }
 }

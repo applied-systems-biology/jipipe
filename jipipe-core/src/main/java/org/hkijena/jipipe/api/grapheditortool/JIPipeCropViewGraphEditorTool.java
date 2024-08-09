@@ -20,7 +20,7 @@ import javax.swing.*;
 import java.awt.event.KeyEvent;
 import java.awt.event.MouseEvent;
 
-public class JIPipeCropViewGraphEditorTool implements JIPipeGraphEditorTool {
+public class JIPipeCropViewGraphEditorTool implements JIPipeActionGraphEditorTool {
 
     private AbstractJIPipeDesktopGraphEditorUI graphEditor;
 

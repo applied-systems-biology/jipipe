@@ -49,4 +49,9 @@ public class AddTemplateContextMenuAction implements NodeUIContextAction {
         return UIUtils.getIconFromResources("actions/star.png");
     }
 
+    @Override
+    public boolean showInToolbar() {
+        return true;
+    }
+
 }
