@@ -22,7 +22,7 @@ import java.util.List;
 
 public class WeightedTokens {
 
-    public static final int WEIGHT_NAME = 3;
+    public static final int WEIGHT_NAME = 8;
     public static final int WEIGHT_MENU = 2;
     public static final int WEIGHT_DESCRIPTION = 1;
 

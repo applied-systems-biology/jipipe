@@ -72,22 +72,19 @@ public class JIPipeLegacyNodeDatabaseSearch {
             return Double.POSITIVE_INFINITY;
         double rank = 0;
         WeightedTokens tokens = entry.getTokens();
-        boolean containsToken = false;
 
-        if(entry.getName().contains("Gauss")) {
-            System.out.println();
-        }
 
         for (int i = 0; i < textTokens.size(); i++) {
             String textToken = textTokens.get(i);
             double textTokenWeight = weight(i, textTokens.size());
             double bestDistanceTokenWeight = 0;
+            boolean foundToken = false;
 
             for (int j = 0; j < tokens.size(); j++) {
                 String token = tokens.getToken(j);
 
                 if(token.toLowerCase().contains(textToken.toLowerCase())) {
-                    containsToken = true;
+                    foundToken = true;
                 }
 
                 int distance = LevenshteinDistance.getDefaultInstance().apply(textToken, token);
@@ -100,6 +97,12 @@ public class JIPipeLegacyNodeDatabaseSearch {
                     }
                 }
             }
+
+            if(!foundToken) {
+                // Reject if text token does not match at all
+                return 0;
+            }
+
             rank -= textTokenWeight * bestDistanceTokenWeight;
         }
 
@@ -108,10 +111,6 @@ public class JIPipeLegacyNodeDatabaseSearch {
             rank *= 1.2 + text.length() / 10.0;
         }
 
-        // Set to zero for no match
-        if(!containsToken) {
-            rank = 0;
-        }
 
         return rank;
     }
