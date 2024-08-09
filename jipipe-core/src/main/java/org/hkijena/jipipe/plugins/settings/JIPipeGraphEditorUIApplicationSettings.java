@@ -359,6 +359,7 @@ public class JIPipeGraphEditorUIApplicationSettings extends JIPipeDefaultApplica
         private boolean searchFindExistingNodes = true;
         private boolean showDescriptions = true;
         private StringList pinnedNodes = new StringList();
+        private boolean showHierarchySelection = true;
 
         public NodeSearchSettings() {
             pinnedNodes.add("create-node-custom:jipipe:graph-compartment");
@@ -408,6 +409,17 @@ public class JIPipeGraphEditorUIApplicationSettings extends JIPipeDefaultApplica
         @JIPipeParameter("show-node-descriptions")
         public void setShowDescriptions(boolean showDescriptions) {
             this.showDescriptions = showDescriptions;
+        }
+
+        @SetJIPipeDocumentation(name = "Show category browser", description = "If enabled, show the category browser")
+        @JIPipeParameter("show-hierarchy-selection")
+        public boolean isShowHierarchySelection() {
+            return showHierarchySelection;
+        }
+
+        @JIPipeParameter("show-hierarchy-selection")
+        public void setShowHierarchySelection(boolean showHierarchySelection) {
+            this.showHierarchySelection = showHierarchySelection;
         }
     }
 

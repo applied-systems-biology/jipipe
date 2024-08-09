@@ -203,6 +203,15 @@ public class UIUtils {
         return CONTROL_ERROR_BORDER;
     }
 
+    public static Color getControlBorderColor() {
+        if (!DARK_THEME) {
+            return JIPipeDesktopModernMetalTheme.MEDIUM_GRAY;
+        }
+        else {
+            return Color.DARK_GRAY;
+        }
+    }
+
     public static Border createControlBorder() {
         if (CONTROL_BORDER == null) {
             if (!DARK_THEME) {
