@@ -96,7 +96,7 @@ public class JIPipeDesktopAddNodesPanel extends JIPipeDesktopWorkbenchPanel {
     private void initializeMainCategoryFilters() {
 
         // Compartments have no categories
-        if(isCompartmentsEditor) {
+        if (isCompartmentsEditor) {
             return;
         }
 
@@ -106,17 +106,17 @@ public class JIPipeDesktopAddNodesPanel extends JIPipeDesktopWorkbenchPanel {
 
         // Inject special categories here
         for (JIPipeNodeTypeCategory category : categories) {
-            if(category.isVisibleInPipeline()) {
+            if (category.isVisibleInPipeline()) {
                 JToggleButton categoryButton = new JToggleButton(category.getName(), category.getIcon());
                 categoryButton.setBorder(UIUtils.createControlBorder());
                 categoryButton.setFont(new Font(Font.DIALOG, Font.PLAIN, 11));
 
                 // Add the old menu as popup menu to the categories
-                if(category instanceof TemplatesDummyNodeTypeCategory) {
+                if (category instanceof TemplatesDummyNodeTypeCategory) {
                     NodeTemplatePopupMenu popupMenu = new NodeTemplatePopupMenu(getDesktopWorkbench(), graphEditorUI);
-                    UIUtils.addReloadableRightClickPopupMenuToButton(categoryButton, popupMenu, () -> {});
-                }
-                else {
+                    UIUtils.addReloadableRightClickPopupMenuToButton(categoryButton, popupMenu, () -> {
+                    });
+                } else {
                     JPopupMenu popupMenu = UIUtils.addRightClickPopupMenuToButton(categoryButton);
                     if (category instanceof DataSourceNodeTypeCategory) {
 
@@ -129,9 +129,9 @@ public class JIPipeDesktopAddNodesPanel extends JIPipeDesktopWorkbenchPanel {
 
                 MainCategoryFilter currentFilter = new MainCategoryFilter(category, categoryButton);
                 categoryButton.addActionListener(e -> {
-                    if(categoryButton.isSelected()) {
+                    if (categoryButton.isSelected()) {
                         for (MainCategoryFilter filter : mainCategoryFilters) {
-                            if(filter.isSelected() && filter != currentFilter) {
+                            if (filter.isSelected() && filter != currentFilter) {
                                 filter.toggleButton.setSelected(false);
                             }
                         }
@@ -146,15 +146,13 @@ public class JIPipeDesktopAddNodesPanel extends JIPipeDesktopWorkbenchPanel {
 
     private void resetSubCategory() {
         MainCategoryFilter selectedMainCategory = getSelectedMainCategory();
-        if(selectedMainCategory != null) {
-            if(selectedMainCategory.getCategoryId().contains("dummy")) {
+        if (selectedMainCategory != null) {
+            if (selectedMainCategory.getCategoryId().contains("dummy")) {
                 currentHierarchyVertex = null;
-            }
-            else {
+            } else {
                 currentHierarchyVertex = selectedMainCategory.getCategory().getName();
             }
-        }
-        else {
+        } else {
             currentHierarchyVertex = null;
         }
         updateSubCategoryPanels();
@@ -166,16 +164,16 @@ public class JIPipeDesktopAddNodesPanel extends JIPipeDesktopWorkbenchPanel {
             List<String> menuComponents = new ArrayList<>();
             menuComponents.add(nodeInfo.getCategory().getName());
             String menuPath = StringUtils.nullToEmpty(nodeInfo.getMenuPath()).trim();
-            if(!StringUtils.isNullOrEmpty(menuPath)) {
+            if (!StringUtils.isNullOrEmpty(menuPath)) {
                 menuComponents.addAll(Arrays.asList(menuPath.split("\n")));
             }
             String next = null;
             for (int end = menuComponents.size() - 1; end >= 0; end--) {
                 String locationId = String.join("\n", menuComponents.subList(0, end + 1));
-                if(!graph.containsVertex(locationId)) {
+                if (!graph.containsVertex(locationId)) {
                     graph.addVertex(locationId);
                 }
-                if(next != null) {
+                if (next != null) {
                     graph.addEdge(locationId, next);
                 }
                 next = locationId;
@@ -196,7 +194,7 @@ public class JIPipeDesktopAddNodesPanel extends JIPipeDesktopWorkbenchPanel {
         setLayout(new GridBagLayout());
 
         initializeToolbar();
-        if(!isCompartmentsEditor) {
+        if (!isCompartmentsEditor) {
             initializeMainCategoryPanel();
             initializeSubCategoryPanel();
         }
@@ -205,16 +203,18 @@ public class JIPipeDesktopAddNodesPanel extends JIPipeDesktopWorkbenchPanel {
     }
 
     private void updateSubCategoryPanels() {
-        if(isCompartmentsEditor) {
+        if (isCompartmentsEditor) {
             return;
         }
         subCategorySelectionPanel.removeAll();
         subCategoryPathPanel.removeAll();
 
         MainCategoryFilter selectedMainCategory = getSelectedMainCategory();
-        if(selectedMainCategory != null && currentHierarchyVertex != null && showHierarchySelectionToggle.isSelected() && mainCategoryHierarchy.containsVertex(currentHierarchyVertex)) {
+        if (selectedMainCategory != null && currentHierarchyVertex != null && showHierarchySelectionToggle.isSelected() && mainCategoryHierarchy.containsVertex(currentHierarchyVertex)) {
             subCategoryPathPanel.setVisible(true);
             subCategorySelectionPanel.setVisible(true);
+
+
 
             // Update current hierarchy
             String[] currentHierarchyPathComponents = currentHierarchyVertex.split("\n");
@@ -222,28 +222,47 @@ public class JIPipeDesktopAddNodesPanel extends JIPipeDesktopWorkbenchPanel {
             for (int i = 0; i < currentHierarchyPathComponents.length; i++) {
                 String component = currentHierarchyPathComponents[i];
                 String fullComponent = String.join("\n", Arrays.asList(currentHierarchyPathComponents).subList(0, i + 1));
-                JButton button = new JButton("/" + component);
-                button.setBorder(null);
-                button.setFont(new Font(Font.DIALOG, Font.PLAIN, 11));
-                button.addActionListener(e -> {
-                  if(mainCategoryHierarchy.containsVertex(fullComponent)) {
-                      currentHierarchyVertex = fullComponent;
-                      updateSubCategoryPanels();
-                      reloadAlgorithmList();
-                  }
+                JButton navigateButton = new JButton(component);
+                navigateButton.setBorder(null);
+                navigateButton.setFont(new Font(Font.DIALOG, Font.PLAIN, 11));
+                navigateButton.addActionListener(e -> {
+                    if (mainCategoryHierarchy.containsVertex(fullComponent)) {
+                        currentHierarchyVertex = fullComponent;
+                        updateSubCategoryPanels();
+                        reloadAlgorithmList();
+                    }
                 });
-                subCategoryPathPanel.add(button);
+                subCategoryPathPanel.add(navigateButton);
+
+                JButton listButton = new JButton(UIUtils.getIcon8FromResources("caret-right.png"));
+                listButton.setBorder(UIUtils.createEmptyBorder(3));
+                subCategoryPathPanel.add(listButton);
+                JPopupMenu goToMenu = UIUtils.addPopupMenuToButton(listButton);
+                List<String> successors = Graphs.successorListOf(mainCategoryHierarchy, fullComponent).stream().sorted(Comparator.naturalOrder()).collect(Collectors.toList());
+                for (String successor : successors) {
+                    String[] successorPathComponents = successor.split("\n");
+                    goToMenu.add(UIUtils.createMenuItem(successorPathComponents[successorPathComponents.length - 1], "Go to sub category",
+                            UIUtils.getIconFromResources("actions/tag.png"), () -> {
+                                if (mainCategoryHierarchy.containsVertex(successor)) {
+                                    currentHierarchyVertex = successor;
+                                    updateSubCategoryPanels();
+                                    reloadAlgorithmList();
+                                }
+                            }));
+                }
+
             }
 
             // Add selection
-            for (String successor : Graphs.successorListOf(mainCategoryHierarchy, currentHierarchyVertex).stream().sorted(Comparator.naturalOrder()).collect(Collectors.toList())) {
+            List<String> currentSuccessors = Graphs.successorListOf(mainCategoryHierarchy, currentHierarchyVertex).stream().sorted(Comparator.naturalOrder()).collect(Collectors.toList());
+            for (String successor : currentSuccessors) {
                 String[] successorPathComponents = successor.split("\n");
                 JButton button = new JButton(successorPathComponents[successorPathComponents.length - 1]);
                 button.setBorder(BorderFactory.createCompoundBorder(BorderFactory.createLineBorder(UIUtils.getControlBorderColor()),
                         UIUtils.createEmptyBorder(1)));
                 button.setFont(new Font(Font.DIALOG, Font.PLAIN, 11));
                 button.addActionListener(e -> {
-                    if(mainCategoryHierarchy.containsVertex(successor)) {
+                    if (mainCategoryHierarchy.containsVertex(successor)) {
                         currentHierarchyVertex = successor;
                         updateSubCategoryPanels();
                         reloadAlgorithmList();
@@ -252,8 +271,7 @@ public class JIPipeDesktopAddNodesPanel extends JIPipeDesktopWorkbenchPanel {
                 subCategorySelectionPanel.add(button);
             }
 
-        }
-        else {
+        } else {
             subCategoryPathPanel.setVisible(false);
             subCategorySelectionPanel.setVisible(false);
         }
@@ -263,8 +281,8 @@ public class JIPipeDesktopAddNodesPanel extends JIPipeDesktopWorkbenchPanel {
 
     private void initializeSubCategoryPanel() {
 
-        subCategoryPathPanel.setBorder(BorderFactory.createMatteBorder(1, 0,0,0, UIUtils.getControlBorderColor()));
-        subCategorySelectionPanel.setBorder(BorderFactory.createMatteBorder(0, 0,1,0, UIUtils.getControlBorderColor()));
+        subCategoryPathPanel.setBorder(BorderFactory.createMatteBorder(1, 0, 1, 0, UIUtils.getControlBorderColor()));
+        subCategorySelectionPanel.setBorder(BorderFactory.createMatteBorder(0, 0, 1, 0, UIUtils.getControlBorderColor()));
 
         subCategoryPathPanel.setLayout(new JIPipeDesktopWrapLayout(FlowLayout.LEFT));
         add(subCategoryPathPanel, new GridBagConstraints(0,
@@ -299,17 +317,17 @@ public class JIPipeDesktopAddNodesPanel extends JIPipeDesktopWorkbenchPanel {
 
             Set<String> pinnedNodeDatabaseEntries = getPinnedNodeDatabaseEntries();
             List<JIPipeNodeDatabaseEntry> selectedValues = algorithmList.getSelectedValuesList();
-            if(!selectedValues.isEmpty()) {
+            if (!selectedValues.isEmpty()) {
                 contextMenu.add(UIUtils.createMenuItem("Insert at cursor", "Inserts the node at the cursor", UIUtils.getIconFromResources("actions/add.png"), () -> {
                     insertAtCursor(selectedValues.get(0));
                 }));
                 UIUtils.addSeparatorIfNeeded(contextMenu);
-                if(selectedValues.stream().anyMatch(entry -> !pinnedNodeDatabaseEntries.contains(entry.getId()))) {
+                if (selectedValues.stream().anyMatch(entry -> !pinnedNodeDatabaseEntries.contains(entry.getId()))) {
                     contextMenu.add(UIUtils.createMenuItem("Pin", "Adds the item to the list of pinned items", UIUtils.getIconFromResources("actions/window-pin.png"), () -> {
                         pinNodes(selectedValues);
                     }));
                 }
-                if(selectedValues.stream().anyMatch(entry -> pinnedNodeDatabaseEntries.contains(entry.getId()))) {
+                if (selectedValues.stream().anyMatch(entry -> pinnedNodeDatabaseEntries.contains(entry.getId()))) {
                     contextMenu.add(UIUtils.createMenuItem("Unpin", "Removes the item from the list of pinned items", UIUtils.getIconFromResources("actions/window-unpin.png"), () -> {
                         unpinNodes(selectedValues);
                     }));
@@ -373,10 +391,9 @@ public class JIPipeDesktopAddNodesPanel extends JIPipeDesktopWorkbenchPanel {
             @Override
             public void keyReleased(KeyEvent e) {
                 super.keyReleased(e);
-                if(e.getKeyCode() == KeyEvent.VK_DOWN) {
+                if (e.getKeyCode() == KeyEvent.VK_DOWN) {
                     algorithmList.requestFocus();
-                }
-                else if(e.getKeyCode() == KeyEvent.VK_ENTER) {
+                } else if (e.getKeyCode() == KeyEvent.VK_ENTER) {
                     insertFirstAtCursor();
                     graphEditorUI.getCanvasUI().requestFocus();
                 }
@@ -441,8 +458,8 @@ public class JIPipeDesktopAddNodesPanel extends JIPipeDesktopWorkbenchPanel {
         algorithmList.addMouseListener(new MouseAdapter() {
             @Override
             public void mouseClicked(MouseEvent e) {
-                if(SwingUtilities.isLeftMouseButton(e)) {
-                    if(e.getClickCount() == 2) {
+                if (SwingUtilities.isLeftMouseButton(e)) {
+                    if (e.getClickCount() == 2) {
                         insertAtCursor(algorithmList.getSelectedValue());
                     }
                 }
@@ -452,14 +469,13 @@ public class JIPipeDesktopAddNodesPanel extends JIPipeDesktopWorkbenchPanel {
             @Override
             public void keyReleased(KeyEvent e) {
 
-                if(e.getKeyCode() == KeyEvent.VK_ENTER) {
-                    if(algorithmList.getSelectedValue() != null) {
+                if (e.getKeyCode() == KeyEvent.VK_ENTER) {
+                    if (algorithmList.getSelectedValue() != null) {
                         insertAtCursor(algorithmList.getSelectedValue());
                         graphEditorUI.getCanvasUI().requestFocus();
                     }
-                }
-                else if(e.getKeyCode() == KeyEvent.VK_UP) {
-                    if(algorithmList.getSelectedIndex() == 0) {
+                } else if (e.getKeyCode() == KeyEvent.VK_UP) {
+                    if (algorithmList.getSelectedIndex() == 0) {
                         searchField.getTextField().requestFocus();
                     }
                 }
@@ -470,10 +486,9 @@ public class JIPipeDesktopAddNodesPanel extends JIPipeDesktopWorkbenchPanel {
     }
 
     private void insertFirstAtCursor() {
-        if(algorithmList.getSelectedValue() != null) {
+        if (algorithmList.getSelectedValue() != null) {
             insertAtCursor(algorithmList.getSelectedValue());
-        }
-        else if(algorithmList.getModel().getSize() > 0) {
+        } else if (algorithmList.getModel().getSize() > 0) {
             insertAtCursor(algorithmList.getModel().getElementAt(0));
         }
     }
@@ -643,7 +658,7 @@ public class JIPipeDesktopAddNodesPanel extends JIPipeDesktopWorkbenchPanel {
 
     private MainCategoryFilter getSelectedMainCategory() {
         for (MainCategoryFilter mainCategoryFilter : mainCategoryFilters) {
-            if(mainCategoryFilter.toggleButton.isSelected()) {
+            if (mainCategoryFilter.toggleButton.isSelected()) {
                 return mainCategoryFilter;
             }
         }
@@ -701,24 +716,22 @@ public class JIPipeDesktopAddNodesPanel extends JIPipeDesktopWorkbenchPanel {
                     pinnedNodeDatabaseEntries);
 
             for (JIPipeNodeDatabaseEntry entry : queryResult) {
-                if("jipipe:dummy:templates".equals(selectedCategoryId)) {
-                    if(!(entry instanceof CreateNewNodesByTemplateDatabaseEntry)) {
+                if ("jipipe:dummy:templates".equals(selectedCategoryId)) {
+                    if (!(entry instanceof CreateNewNodesByTemplateDatabaseEntry)) {
                         continue;
                     }
-                }
-                else if("jipipe:dummy:pinned".equals(selectedCategoryId)) {
-                    if(!pinnedNodeDatabaseEntries.contains(entry.getId())) {
+                } else if ("jipipe:dummy:pinned".equals(selectedCategoryId)) {
+                    if (!pinnedNodeDatabaseEntries.contains(entry.getId())) {
                         continue;
                     }
-                }
-                else if(selectedCategoryId != null) {
-                    if(!entry.getCategoryIds().contains(selectedCategoryId)) {
+                } else if (selectedCategoryId != null) {
+                    if (!entry.getCategoryIds().contains(selectedCategoryId)) {
                         continue;
                     }
                 }
 
-                if(toolBox.currentHierarchyVertex != null) {
-                    if(!entry.getLocationInfo().startsWith(toolBox.currentHierarchyVertex)) {
+                if (toolBox.currentHierarchyVertex != null) {
+                    if (!entry.getLocationInfo().startsWith(toolBox.currentHierarchyVertex)) {
                         continue;
                     }
                 }
