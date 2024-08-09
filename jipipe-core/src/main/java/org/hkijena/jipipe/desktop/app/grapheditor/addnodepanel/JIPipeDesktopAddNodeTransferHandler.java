@@ -13,7 +13,10 @@
 
 package org.hkijena.jipipe.desktop.app.grapheditor.addnodepanel;
 
+import org.hkijena.jipipe.JIPipe;
+import org.hkijena.jipipe.api.compartments.algorithms.JIPipeProjectCompartment;
 import org.hkijena.jipipe.api.nodes.*;
+import org.hkijena.jipipe.api.nodes.database.CreateNewCompartmentNodeDatabaseEntry;
 import org.hkijena.jipipe.api.nodes.database.CreateNewNodeByExampleDatabaseEntry;
 import org.hkijena.jipipe.api.nodes.database.CreateNewNodeByInfoDatabaseEntry;
 import org.hkijena.jipipe.api.nodes.database.JIPipeNodeDatabaseEntry;
@@ -47,6 +50,9 @@ public class JIPipeDesktopAddNodeTransferHandler extends TransferHandler {
                         ((JIPipeAlgorithm) node).loadExample(example);
                     }
                     graph.insertNode(node);
+                }
+                else if(obj instanceof CreateNewCompartmentNodeDatabaseEntry) {
+                    graph.insertNode(JIPipe.createNode(JIPipeProjectCompartment.class));
                 }
             }
             String json = JsonUtils.toJsonString(graph);

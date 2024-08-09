@@ -34,7 +34,7 @@ import org.hkijena.jipipe.desktop.app.grapheditor.flavors.compartments.actions.J
 import org.hkijena.jipipe.desktop.app.grapheditor.flavors.compartments.contextmenu.JIPipeDesktopCompartmentsCopyNodeUIContextAction;
 import org.hkijena.jipipe.desktop.app.grapheditor.flavors.compartments.contextmenu.JIPipeDesktopCompartmentsCutNodeUIContextAction;
 import org.hkijena.jipipe.desktop.app.grapheditor.flavors.compartments.contextmenu.JIPipeDesktopCompartmentsPasteNodeUIContextAction;
-import org.hkijena.jipipe.desktop.app.grapheditor.flavors.compartments.dragdrop.JIPipeDesktopCompartmentsGraphDragAndDropBehavior;
+import org.hkijena.jipipe.desktop.app.grapheditor.flavors.compartments.dragdrop.JIPipeCreateCompartmentNodesFromDraggedDataDragAndDropBehavior;
 import org.hkijena.jipipe.desktop.app.grapheditor.flavors.compartments.properties.JIPipeDesktopCompartmentsParametersPanel;
 import org.hkijena.jipipe.desktop.app.grapheditor.flavors.compartments.properties.JIPipeDesktopCompartmentsQuickGuidePanel;
 import org.hkijena.jipipe.desktop.app.grapheditor.flavors.pipeline.actions.JIPipeDesktopRunAndShowResultsAction;
@@ -73,7 +73,7 @@ public class JIPipeDesktopCompartmentsGraphEditorUI extends AbstractJIPipeDeskto
         super(workbenchUI, workbenchUI.getProject().getCompartmentGraph(), null, workbenchUI.getProject().getHistoryJournal());
         initializeDefaultPanels();
 
-        getCanvasUI().setDragAndDropBehavior(new JIPipeDesktopCompartmentsGraphDragAndDropBehavior());
+        getCanvasUI().setDragAndDropBehavior(new JIPipeCreateCompartmentNodesFromDraggedDataDragAndDropBehavior());
         List<NodeUIContextAction> actions = Arrays.asList(
                 new AddNewCompartmentUIContextAction(),
                 NodeUIContextAction.SEPARATOR,

@@ -41,7 +41,7 @@ import org.hkijena.jipipe.desktop.app.grapheditor.commons.properties.JIPipeDeskt
 import org.hkijena.jipipe.desktop.app.grapheditor.flavors.pipeline.actions.JIPipeDesktopRunAndShowResultsAction;
 import org.hkijena.jipipe.desktop.app.grapheditor.flavors.pipeline.actions.JIPipeDesktopUpdateCacheAction;
 import org.hkijena.jipipe.desktop.app.grapheditor.flavors.pipeline.contextmenu.*;
-import org.hkijena.jipipe.desktop.app.grapheditor.flavors.pipeline.dragdrop.JIPipeCreateNodesFromDraggedDataDragAndDropBehavior;
+import org.hkijena.jipipe.desktop.app.grapheditor.flavors.pipeline.dragdrop.JIPipeCreatePipelineNodesFromDraggedDataDragAndDropBehavior;
 import org.hkijena.jipipe.desktop.app.grapheditor.flavors.pipeline.properties.JIPipeDesktopPipelineParametersPanel;
 import org.hkijena.jipipe.desktop.app.grapheditor.flavors.pipeline.properties.JIPipeDesktopPipelineQuickGuidePanel;
 import org.hkijena.jipipe.desktop.app.grapheditor.flavors.groups.JIPipeDesktopNodeGroupUI;
@@ -92,7 +92,7 @@ public class JIPipeDesktopPipelineGraphEditorUI extends AbstractJIPipeDesktopGra
     }
 
     private void initializeContextActions() {
-        getCanvasUI().setDragAndDropBehavior(new JIPipeCreateNodesFromDraggedDataDragAndDropBehavior());
+        getCanvasUI().setDragAndDropBehavior(new JIPipeCreatePipelineNodesFromDraggedDataDragAndDropBehavior());
         List<NodeUIContextAction> nodeSpecificContextActions = new ArrayList<>();
         if (JIPipeGeneralUIApplicationSettings.getInstance().isAddContextActionsToContextMenu()) {
             for (JIPipeNodeInfo info : JIPipe.getNodes().getRegisteredNodeInfos().values()) {
