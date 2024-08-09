@@ -26,6 +26,7 @@ import org.jsoup.Jsoup;
 import javax.swing.*;
 import java.awt.*;
 import java.util.*;
+import java.util.List;
 
 public class CreateNewNodeByInfoDatabaseEntry implements JIPipeNodeDatabaseEntry {
 
@@ -38,6 +39,7 @@ public class CreateNewNodeByInfoDatabaseEntry implements JIPipeNodeDatabaseEntry
     private final boolean canAddInputSlots;
     private final boolean canAddOutputSlots;
     private final Set<String> categoryIds = new HashSet<>();
+    private final List<String> locationInfos = new ArrayList<>();
 
     public CreateNewNodeByInfoDatabaseEntry(String id, JIPipeNodeInfo nodeInfo) {
         this.id = id;
@@ -51,6 +53,14 @@ public class CreateNewNodeByInfoDatabaseEntry implements JIPipeNodeDatabaseEntry
         initializeSlots();
         initializeTokens();
         initializeCategoryIds();
+        initializeLocationInfos();
+    }
+
+    private void initializeLocationInfos() {
+        locationInfos.add((nodeInfo.getCategory().getName() + "\n" + nodeInfo.getMenuPath()).trim());
+        for (JIPipeNodeMenuLocation alias : nodeInfo.getAliases()) {
+            locationInfos.add((alias.getCategory().getName() + "\n" + alias.getMenuPath()).trim());
+        }
     }
 
     private void initializeCategoryIds() {
@@ -131,8 +141,8 @@ public class CreateNewNodeByInfoDatabaseEntry implements JIPipeNodeDatabaseEntry
     }
 
     @Override
-    public String getLocationInfo() {
-        return (nodeInfo.getCategory().getName() + "\n" + nodeInfo.getMenuPath()).trim();
+    public List<String> getLocationInfos() {
+        return locationInfos;
     }
 
     @Override

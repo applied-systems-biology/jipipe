@@ -29,6 +29,7 @@ import org.jsoup.Jsoup;
 import javax.swing.*;
 import java.awt.*;
 import java.util.*;
+import java.util.List;
 
 public class ExistingPipelineNodeDatabaseEntry implements JIPipeNodeDatabaseEntry {
     private final String id;
@@ -147,12 +148,12 @@ public class ExistingPipelineNodeDatabaseEntry implements JIPipeNodeDatabaseEntr
     }
 
     @Override
-    public String getLocationInfo() {
+    public List<String> getLocationInfos() {
         UUID uuid = graphNode.getCompartmentUUIDInParentGraph();
         if (uuid == null) {
-            return "Nodes";
+            return Collections.singletonList("Nodes");
         } else {
-            return "Compartments\n" + graphNode.getCompartmentDisplayName();
+            return Collections.singletonList("Compartments\n" + graphNode.getCompartmentDisplayName());
         }
     }
 

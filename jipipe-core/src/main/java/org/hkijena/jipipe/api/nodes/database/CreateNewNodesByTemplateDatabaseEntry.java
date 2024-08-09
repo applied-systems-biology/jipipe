@@ -4,7 +4,6 @@ import org.hkijena.jipipe.api.JIPipeNodeTemplate;
 import org.hkijena.jipipe.api.data.JIPipeDataSlotInfo;
 import org.hkijena.jipipe.api.nodes.JIPipeGraph;
 import org.hkijena.jipipe.api.nodes.JIPipeGraphNode;
-import org.hkijena.jipipe.api.nodes.JIPipeNodeMenuLocation;
 import org.hkijena.jipipe.desktop.app.grapheditor.commons.JIPipeDesktopGraphCanvasUI;
 import org.hkijena.jipipe.desktop.app.grapheditor.commons.nodeui.JIPipeDesktopGraphNodeUI;
 import org.hkijena.jipipe.plugins.parameters.library.markup.HTMLText;
@@ -13,6 +12,7 @@ import org.jsoup.Jsoup;
 import javax.swing.*;
 import java.awt.*;
 import java.util.*;
+import java.util.List;
 
 public class CreateNewNodesByTemplateDatabaseEntry implements JIPipeNodeDatabaseEntry {
 
@@ -99,8 +99,8 @@ public class CreateNewNodesByTemplateDatabaseEntry implements JIPipeNodeDatabase
     }
 
     @Override
-    public String getLocationInfo() {
-        return locationInfo;
+    public List<String> getLocationInfos() {
+        return Collections.singletonList(locationInfo);
     }
 
     @Override

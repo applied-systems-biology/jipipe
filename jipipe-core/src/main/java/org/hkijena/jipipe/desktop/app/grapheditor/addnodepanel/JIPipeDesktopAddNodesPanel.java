@@ -31,7 +31,6 @@ import org.hkijena.jipipe.desktop.commons.components.layouts.JIPipeDesktopWrapLa
 import org.hkijena.jipipe.desktop.commons.components.search.JIPipeDesktopSearchTextField;
 import org.hkijena.jipipe.plugins.nodetemplate.NodeTemplatePopupMenu;
 import org.hkijena.jipipe.plugins.settings.JIPipeGraphEditorUIApplicationSettings;
-import org.hkijena.jipipe.utils.ColorUtils;
 import org.hkijena.jipipe.utils.StringUtils;
 import org.hkijena.jipipe.utils.TooltipUtils;
 import org.hkijena.jipipe.utils.UIUtils;
@@ -122,7 +121,7 @@ public class JIPipeDesktopAddNodesPanel extends JIPipeDesktopWorkbenchPanel {
 
                         initializeAddDataSourceMenu(graphEditorUI, popupMenu, new HashSet<>());
                     } else {
-                        initializeHierarchyForCategory(mainCategoryHierarchy, category);
+                        registerMenuComponentsToHierarchyGraph(mainCategoryHierarchy, category);
                         initializeMenuForCategory(graphEditorUI, popupMenu, category, new HashSet<>());
                     }
                 }
@@ -158,26 +157,47 @@ public class JIPipeDesktopAddNodesPanel extends JIPipeDesktopWorkbenchPanel {
         updateSubCategoryPanels();
     }
 
-    private void initializeHierarchyForCategory(DefaultDirectedGraph<String, DefaultEdge> graph, JIPipeNodeTypeCategory category) {
+    private static void registerMenuComponentsToHierarchyGraph(DefaultDirectedGraph<String, DefaultEdge> graph, JIPipeNodeTypeCategory category) {
         Set<JIPipeNodeInfo> algorithmsOfCategory = JIPipe.getNodes().getNodesOfCategory(category, true);
         for (JIPipeNodeInfo nodeInfo : algorithmsOfCategory) {
-            List<String> menuComponents = new ArrayList<>();
-            menuComponents.add(nodeInfo.getCategory().getName());
-            String menuPath = StringUtils.nullToEmpty(nodeInfo.getMenuPath()).trim();
-            if (!StringUtils.isNullOrEmpty(menuPath)) {
-                menuComponents.addAll(Arrays.asList(menuPath.split("\n")));
-            }
-            String next = null;
-            for (int end = menuComponents.size() - 1; end >= 0; end--) {
-                String locationId = String.join("\n", menuComponents.subList(0, end + 1));
-                if (!graph.containsVertex(locationId)) {
-                    graph.addVertex(locationId);
+
+            // Main category
+            {
+                List<String> menuComponents = new ArrayList<>();
+                menuComponents.add(nodeInfo.getCategory().getName());
+                String menuPath = StringUtils.nullToEmpty(nodeInfo.getMenuPath()).trim();
+                if (!StringUtils.isNullOrEmpty(menuPath)) {
+                    menuComponents.addAll(Arrays.asList(menuPath.split("\n")));
                 }
-                if (next != null) {
-                    graph.addEdge(locationId, next);
-                }
-                next = locationId;
+                registerMenuComponentsToHierarchyGraph(graph, menuComponents);
             }
+
+            // Alias categories
+            for (JIPipeNodeMenuLocation alias : nodeInfo.getAliases()) {
+                List<String> menuComponents = new ArrayList<>();
+                menuComponents.add(alias.getCategory().getName());
+                String menuPath = StringUtils.nullToEmpty(alias.getMenuPath()).trim();
+                if (!StringUtils.isNullOrEmpty(menuPath)) {
+                    menuComponents.addAll(Arrays.asList(menuPath.split("\n")));
+                }
+                registerMenuComponentsToHierarchyGraph(graph, menuComponents);
+            }
+
+
+        }
+    }
+
+    private static void registerMenuComponentsToHierarchyGraph(DefaultDirectedGraph<String, DefaultEdge> graph, List<String> menuComponents) {
+        String next = null;
+        for (int end = menuComponents.size() - 1; end >= 0; end--) {
+            String locationId = String.join("\n", menuComponents.subList(0, end + 1));
+            if (!graph.containsVertex(locationId)) {
+                graph.addVertex(locationId);
+            }
+            if (next != null) {
+                graph.addEdge(locationId, next);
+            }
+            next = locationId;
         }
     }
 
@@ -731,7 +751,14 @@ public class JIPipeDesktopAddNodesPanel extends JIPipeDesktopWorkbenchPanel {
                 }
 
                 if (toolBox.currentHierarchyVertex != null) {
-                    if (!entry.getLocationInfo().startsWith(toolBox.currentHierarchyVertex)) {
+                    boolean found = false;
+                    for (String locationInfo : entry.getLocationInfos()) {
+                        if (locationInfo.startsWith(toolBox.currentHierarchyVertex)) {
+                            found = true;
+                            break;
+                        }
+                    }
+                    if(!found) {
                         continue;
                     }
                 }

@@ -23,6 +23,7 @@ import org.hkijena.jipipe.utils.UIUtils;
 import javax.swing.*;
 import java.awt.*;
 import java.util.Collections;
+import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
@@ -79,8 +80,8 @@ public class CreateNewCompartmentNodeDatabaseEntry implements JIPipeNodeDatabase
     }
 
     @Override
-    public String getLocationInfo() {
-        return "";
+    public List<String> getLocationInfos() {
+        return Collections.singletonList("Compartment");
     }
 
     @Override

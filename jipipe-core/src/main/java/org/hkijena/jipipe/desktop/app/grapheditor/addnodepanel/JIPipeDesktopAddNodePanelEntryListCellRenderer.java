@@ -133,7 +133,7 @@ public class JIPipeDesktopAddNodePanelEntryListCellRenderer extends JPanel imple
             else {
                 descriptionLabel.setText(null);
             }
-            setTruncatedText(pathLabel, obj.getLocationInfo().replace("\n", " > "), list);
+            setTruncatedText(pathLabel, obj.getLocationInfos().get(0).replace("\n", " > "), list);
             nodeIcon.setIcon(obj.getIcon());
 
             // Pinned items

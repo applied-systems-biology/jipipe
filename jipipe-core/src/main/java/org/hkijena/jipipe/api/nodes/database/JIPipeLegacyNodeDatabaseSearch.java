@@ -72,6 +72,11 @@ public class JIPipeLegacyNodeDatabaseSearch {
             return Double.POSITIVE_INFINITY;
         double rank = 0;
         WeightedTokens tokens = entry.getTokens();
+        boolean containsToken = false;
+
+        if(entry.getName().contains("Gauss")) {
+            System.out.println();
+        }
 
         for (int i = 0; i < textTokens.size(); i++) {
             String textToken = textTokens.get(i);
@@ -80,6 +85,11 @@ public class JIPipeLegacyNodeDatabaseSearch {
 
             for (int j = 0; j < tokens.size(); j++) {
                 String token = tokens.getToken(j);
+
+                if(token.toLowerCase().contains(textToken.toLowerCase())) {
+                    containsToken = true;
+                }
+
                 int distance = LevenshteinDistance.getDefaultInstance().apply(textToken, token);
                 double tokenWeight = tokens.getWeight(j) - j / 100.0;
                 if (distance >= 0) {
@@ -96,6 +106,11 @@ public class JIPipeLegacyNodeDatabaseSearch {
         // rank exact name matching
         if (entry.getName().toLowerCase().startsWith(text.toLowerCase())) {
             rank *= 1.2 + text.length() / 10.0;
+        }
+
+        // Set to zero for no match
+        if(!containsToken) {
+            rank = 0;
         }
 
         return rank;
@@ -122,15 +137,18 @@ public class JIPipeLegacyNodeDatabaseSearch {
 
             rankMap.put(entry, ranking);
         }
+
         if (textTokens.isEmpty()) {
             result.sort(Comparator.comparing((JIPipeNodeDatabaseEntry e) -> !pinnedIds.contains(e.getId())).thenComparing(JIPipeNodeDatabaseEntry::getName));
         } else {
+            result.removeIf(e -> rankMap.get(e) >= 0);
             result.sort(Comparator.comparing((JIPipeNodeDatabaseEntry e) -> !pinnedIds.contains(e.getId())).thenComparing(rankMap::get));
         }
         return result;
     }
 
     public List<JIPipeNodeDatabaseEntry> query(String text, JIPipeNodeDatabasePipelineVisibility role, boolean allowExisting, boolean allowNew, JIPipeSlotType targetSlotType, Class<? extends JIPipeData> targetDataType) {
+        Set<String> pinnedIds = new HashSet<>(); // TODO: implement pinned Ids
         List<String> textTokens = buildTokens(Collections.singletonList(text));
         List<JIPipeNodeDatabaseEntry> result = new ArrayList<>();
         TObjectDoubleMap<JIPipeNodeDatabaseEntry> rankMap = new TObjectDoubleHashMap<>();
@@ -173,7 +191,14 @@ public class JIPipeLegacyNodeDatabaseSearch {
             result.add(entry);
             rankMap.put(entry, ranking);
         }
-        result.sort(Comparator.comparing(rankMap::get));
+
+        if (textTokens.isEmpty()) {
+            result.sort(Comparator.comparing((JIPipeNodeDatabaseEntry e) -> !pinnedIds.contains(e.getId())).thenComparing(JIPipeNodeDatabaseEntry::getName));
+        } else {
+            result.removeIf(e -> rankMap.get(e) <= 0);
+            result.sort(Comparator.comparing((JIPipeNodeDatabaseEntry e) -> !pinnedIds.contains(e.getId())).thenComparing(rankMap::get));
+        }
+
         return result;
     }
 }

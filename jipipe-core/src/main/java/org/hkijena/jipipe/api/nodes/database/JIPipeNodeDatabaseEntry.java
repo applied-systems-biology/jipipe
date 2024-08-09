@@ -22,6 +22,7 @@ import javax.swing.*;
 import java.awt.*;
 import java.util.Map;
 import java.util.Set;
+import java.util.List;
 
 public interface JIPipeNodeDatabaseEntry {
 
@@ -41,7 +42,7 @@ public interface JIPipeNodeDatabaseEntry {
 
     Icon getIcon();
 
-    String getLocationInfo();
+    List<String> getLocationInfos();
 
     Set<String> getCategoryIds();
 

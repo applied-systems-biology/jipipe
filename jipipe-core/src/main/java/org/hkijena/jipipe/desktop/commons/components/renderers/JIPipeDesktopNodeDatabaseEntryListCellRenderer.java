@@ -106,7 +106,7 @@ public class JIPipeDesktopNodeDatabaseEntryListCellRenderer extends JPanel imple
         if (obj != null) {
             nameLabel.setText(obj.getName());
             nodeColor.setFillColor(obj.getFillColor());
-            pathLabel.setText(obj.getLocationInfo().replace("\n", " > "));
+            pathLabel.setText(obj.getLocationInfos().get(0).replace("\n", " > "));
             nodeIcon.setIcon(obj.getIcon());
         }
 
