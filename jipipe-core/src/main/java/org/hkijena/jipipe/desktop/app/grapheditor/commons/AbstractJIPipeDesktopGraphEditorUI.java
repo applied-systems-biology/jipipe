@@ -62,7 +62,7 @@ public abstract class AbstractJIPipeDesktopGraphEditorUI extends JIPipeDesktopWo
         JIPipeDesktopGraphCanvasUI.NodeUISelectedEventListener,
         JIPipeDesktopGraphNodeUI.DefaultNodeUIActionRequestedEventListener,
         JIPipeDesktopGraphNodeUI.NodeUIActionRequestedEventListener,
-        JIPipeDesktopDockPanel.StateSavedEventListener {
+        JIPipeDesktopDockPanel.StateSavedEventListener, JIPipeDesktopDockPanel.PanelSideVisibilityChangedEventListener {
 
     public static final String DOCK_LOG = "LOG";
     public static final String DOCK_HISTORY = "HISTORY";
@@ -120,6 +120,8 @@ public abstract class AbstractJIPipeDesktopGraphEditorUI extends JIPipeDesktopWo
         });
 
         restoreDockStateFromSettings();
+
+        dockPanel.getPanelSideVisibilityChangedEventEmitter().subscribe(this);
     }
 
     protected abstract void restoreDockStateFromSettings();
@@ -812,6 +814,32 @@ public abstract class AbstractJIPipeDesktopGraphEditorUI extends JIPipeDesktopWo
     @Override
     public void onNodeUIActionRequested(JIPipeDesktopGraphNodeUI.NodeUIActionRequestedEvent event) {
 
+    }
+
+    @Override
+    public void onPanelSideVisibilityChanged(JIPipeDesktopDockPanel.PanelSideVisibilityChangedEvent event) {
+        if(event.getPanelSide() == JIPipeDesktopDockPanel.PanelSide.Right && !event.isVisible()) {
+            JScrollBar horizontalScrollBar = scrollPane.getHorizontalScrollBar();
+            int oldVisibleAmount = horizontalScrollBar.getVisibleAmount();
+            int oldValue = horizontalScrollBar.getValue();
+//            System.out.println("old_value: " + horizontalScrollBar.getValue() + "/" + horizontalScrollBar.getMaximum() + " [" + horizontalScrollBar.getVisibleAmount() + "]");
+            SwingUtilities.invokeLater(() -> {
+//                System.out.println("new_value: " + horizontalScrollBar.getValue() + "/" + horizontalScrollBar.getMaximum() + " [" + horizontalScrollBar.getVisibleAmount() + "]");
+
+                if(horizontalScrollBar.getValue() != oldValue) {
+                    int newVisibleAmount = horizontalScrollBar.getVisibleAmount();
+                    int shift = Math.max(0, newVisibleAmount - oldVisibleAmount);
+
+                    if(shift > 0) {
+                        canvasUI.expandRightBottom(shift, 0);
+                        SwingUtilities.invokeLater(() -> {
+                            horizontalScrollBar.setValue(horizontalScrollBar.getValue() + shift);
+                        });
+                    }
+                }
+
+            });
+        }
     }
 
 

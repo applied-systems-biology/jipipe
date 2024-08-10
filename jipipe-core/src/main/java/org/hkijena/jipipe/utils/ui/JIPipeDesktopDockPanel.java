@@ -49,12 +49,12 @@ public class JIPipeDesktopDockPanel extends JPanel implements JIPipeDesktopSplit
     private final JIPipeDesktopSplitPane rightSplitPane = new JIPipeDesktopSplitPane(JSplitPane.VERTICAL_SPLIT, new JIPipeDesktopSplitPane.FixedRatio(0.66, true));
     private State savedState = new State();
     private final StateSavedEventEmitter stateSavedEventEmitter = new StateSavedEventEmitter();
+    private final PanelSideVisibilityChangedEventEmitter panelSideVisibilityChangedEventEmitter = new PanelSideVisibilityChangedEventEmitter();
 
     public JIPipeDesktopDockPanel() {
         super(new BorderLayout());
         initialize();
-        updateToolbars();
-        updateContent();
+        updateAll();
     }
 
     private void initialize() {
@@ -182,7 +182,7 @@ public class JIPipeDesktopDockPanel extends JPanel implements JIPipeDesktopSplit
         repaint();
     }
 
-    private void updateContent() {
+    private void updateContent(List<PanelSideVisibilityChangedEvent> panelVisibilityChangedEvents) {
         if(leftPanelContent != null) {
             leftPanel.remove(leftPanelContent);
         }
@@ -258,6 +258,8 @@ public class JIPipeDesktopDockPanel extends JPanel implements JIPipeDesktopSplit
         rightSplitPane.applyRatio();
 
         // Rebuild panel
+        boolean oldLeftPanelVisible = leftPanel.isVisible();
+        boolean oldRightPanelVisible = rightPanel.isVisible();
         if(leftPanelContent != null) {
             leftPanel.setVisible(true);
             leftPanel.add(leftPanelContent, BorderLayout.CENTER);
@@ -271,6 +273,13 @@ public class JIPipeDesktopDockPanel extends JPanel implements JIPipeDesktopSplit
         }
         else {
             rightPanel.setVisible(false);
+        }
+
+        if(oldLeftPanelVisible != leftPanel.isVisible()) {
+            panelVisibilityChangedEvents.add(new PanelSideVisibilityChangedEvent(this, PanelSide.Left, leftPanel.isVisible()));
+        }
+        if(oldRightPanelVisible != rightPanel.isVisible()) {
+            panelVisibilityChangedEvents.add(new PanelSideVisibilityChangedEvent(this, PanelSide.Right, rightPanel.isVisible()));
         }
 
         // Revalidate and repaint
@@ -531,9 +540,23 @@ public class JIPipeDesktopDockPanel extends JPanel implements JIPipeDesktopSplit
     }
 
     private void updateAll() {
+        List<PanelSideVisibilityChangedEvent> panelVisibilityChangedEvents = new ArrayList<>();
         updateToolbars();
-        updateContent();
+        updateContent(panelVisibilityChangedEvents);
         updateSizes();
+
+        // Fire all events after updates
+        for (PanelSideVisibilityChangedEvent panelVisibilityChangedEvent : panelVisibilityChangedEvents) {
+            panelSideVisibilityChangedEventEmitter.emit(panelVisibilityChangedEvent);
+        }
+    }
+
+    public boolean isLeftPanelVisible() {
+        return leftPanel.isVisible();
+    }
+
+    public boolean isRightPanelVisible() {
+        return rightPanel.isVisible();
     }
 
     public void activatePanel(String id, boolean saveState) {
@@ -560,6 +583,10 @@ public class JIPipeDesktopDockPanel extends JPanel implements JIPipeDesktopSplit
     @Override
     public void onSplitPaneRatioUpdated(JIPipeDesktopSplitPane.RatioUpdatedEvent event) {
         saveState();
+    }
+
+    public PanelSideVisibilityChangedEventEmitter getPanelSideVisibilityChangedEventEmitter() {
+        return panelSideVisibilityChangedEventEmitter;
     }
 
     public enum PanelLocation {
@@ -823,6 +850,43 @@ public class JIPipeDesktopDockPanel extends JPanel implements JIPipeDesktopSplit
         @Override
         protected void call(StateSavedEventListener stateSavedEventListener, StateSavedEvent event) {
             stateSavedEventListener.onDockPanelStateSaved(event);
+        }
+    }
+
+    public enum PanelSide {
+        Left,
+        Right
+    }
+
+    public static class PanelSideVisibilityChangedEvent extends AbstractJIPipeEvent {
+
+        private final PanelSide panelSide;
+        private final boolean visible;
+
+        public PanelSideVisibilityChangedEvent(Object source, PanelSide panelSide, boolean visible) {
+            super(source);
+            this.panelSide = panelSide;
+            this.visible = visible;
+        }
+
+        public PanelSide getPanelSide() {
+            return panelSide;
+        }
+
+        public boolean isVisible() {
+            return visible;
+        }
+    }
+
+    public interface PanelSideVisibilityChangedEventListener {
+        void onPanelSideVisibilityChanged(PanelSideVisibilityChangedEvent event);
+    }
+
+    public static class PanelSideVisibilityChangedEventEmitter extends JIPipeEventEmitter<PanelSideVisibilityChangedEvent, PanelSideVisibilityChangedEventListener> {
+
+        @Override
+        protected void call(PanelSideVisibilityChangedEventListener panelSideVisibilityChangedEventListener, PanelSideVisibilityChangedEvent event) {
+            panelSideVisibilityChangedEventListener.onPanelSideVisibilityChanged(event);
         }
     }
 }
