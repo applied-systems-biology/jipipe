@@ -778,7 +778,9 @@ public class JIPipe extends AbstractService implements JIPipeService {
         progressInfo.setProgress(1);
         progressInfo.log("Legacy settings conversion ...");
         copyTemplatesFromPropertiesToLegacyProfile(progressInfo.resolve("Legacy conversion"));
-        applyProfileUpgrades(progressInfo.resolve("Preparing profiles"));
+        if(applyProfileUpgrades(progressInfo.resolve("Preparing profiles"))) {
+            applicationSettingsRegistry.reload();
+        }
 
         progressInfo.log("Pre-initialization phase ...");
 
@@ -1050,7 +1052,7 @@ public class JIPipe extends AbstractService implements JIPipeService {
         JIPipeDesktopRunnableLogsCollection.getInstance().markAllAsRead();
     }
 
-    private void applyProfileUpgrades(JIPipeProgressInfo progressInfo) {
+    private boolean applyProfileUpgrades(JIPipeProgressInfo progressInfo) {
         boolean settingsExist = Files.isRegularFile(PathUtils.getJIPipeUserDir().resolve("settings.json"));
         boolean childDirsExist = !PathUtils.listSubDirectories(PathUtils.getJIPipeUserDir()).isEmpty();
 
@@ -1077,7 +1079,7 @@ public class JIPipe extends AbstractService implements JIPipeService {
                 progressInfo.log("Upgrading from profile " + oldProfileDirectory);
                 PathUtils.copyDirectory(oldProfileDirectory, newProfileDirectory, progressInfo.resolve("Copy profile"));
                 progressInfo.log("Profile upgrade successful. Continuing.");
-                return;
+                return true;
             }
 
             // Check if we have a legacy profile that can be upgraded
@@ -1098,9 +1100,11 @@ public class JIPipe extends AbstractService implements JIPipeService {
                 PathUtils.copyDirectory(legacyProfileDirectory, newProfileDirectory, progressInfo.resolve("Copy profile"));
                 progressInfo.log("Profile upgrade successful. Continuing.");
             }
+            return true;
         }
         else {
             progressInfo.log(PathUtils.getJIPipeUserDir() + " already exists. No profile upgrades are needed.");
+            return false;
         }
     }
 
