@@ -779,7 +779,8 @@ public class JIPipe extends AbstractService implements JIPipeService {
         progressInfo.log("Legacy settings conversion ...");
         copyTemplatesFromPropertiesToLegacyProfile(progressInfo.resolve("Legacy conversion"));
         if(applyProfileUpgrades(progressInfo.resolve("Preparing profiles"))) {
-            applicationSettingsRegistry.reload();
+            progressInfo.log("Upgrade was applied. Reloading extension settings.");
+            extensionSettings = JIPipeExtensionApplicationSettings.getInstanceFromRaw();
         }
 
         progressInfo.log("Pre-initialization phase ...");
