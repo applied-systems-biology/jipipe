@@ -25,6 +25,8 @@ import org.hkijena.jipipe.desktop.app.grapheditor.commons.JIPipeDesktopGraphCanv
 import org.hkijena.jipipe.desktop.app.grapheditor.commons.JIPipeDesktopGraphEditorLogPanel;
 import org.hkijena.jipipe.desktop.app.grapheditor.commons.nodeui.JIPipeDesktopGraphNodeUI;
 import org.hkijena.jipipe.desktop.app.grapheditor.commons.properties.JIPipeDesktopGraphEditorErrorPanel;
+import org.hkijena.jipipe.desktop.app.grapheditor.flavors.compartments.JIPipeDesktopCompartmentsGraphEditorUI;
+import org.hkijena.jipipe.desktop.app.grapheditor.flavors.compartments.properties.JIPipeDesktopCompartmentGraphEditorResultsPanel;
 import org.hkijena.jipipe.desktop.app.quickrun.JIPipeDesktopQuickRun;
 import org.hkijena.jipipe.desktop.app.quickrun.JIPipeDesktopQuickRunSettings;
 import org.hkijena.jipipe.plugins.settings.JIPipeRuntimeApplicationSettings;
@@ -127,7 +129,8 @@ public class JIPipeDesktopCompartmentsGraphEditorRunManager implements JIPipeRun
 
             if(getLogPanel().isAutoShowResults()) {
                 canvasUI.selectOnly(nodeUI);
-                getDockPanel().activatePanel("_RESULTS", true);
+                getDockPanel().activatePanel(JIPipeDesktopCompartmentsGraphEditorUI.DOCK_NODE_CONTEXT_RESULTS, true);
+                getDockPanel().getPanel(JIPipeDesktopCompartmentsGraphEditorUI.DOCK_NODE_CONTEXT_RESULTS, JIPipeDesktopCompartmentGraphEditorResultsPanel.class).refreshTables();
             }
         }
     }

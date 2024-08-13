@@ -35,6 +35,7 @@ import org.hkijena.jipipe.desktop.app.grapheditor.flavors.compartments.contextme
 import org.hkijena.jipipe.desktop.app.grapheditor.flavors.compartments.contextmenu.JIPipeDesktopCompartmentsCutNodeUIContextAction;
 import org.hkijena.jipipe.desktop.app.grapheditor.flavors.compartments.contextmenu.JIPipeDesktopCompartmentsPasteNodeUIContextAction;
 import org.hkijena.jipipe.desktop.app.grapheditor.flavors.compartments.dragdrop.JIPipeCreateCompartmentNodesFromDraggedDataDragAndDropBehavior;
+import org.hkijena.jipipe.desktop.app.grapheditor.flavors.compartments.properties.JIPipeDesktopCompartmentGraphEditorResultsPanel;
 import org.hkijena.jipipe.desktop.app.grapheditor.flavors.compartments.properties.JIPipeDesktopCompartmentsParametersPanel;
 import org.hkijena.jipipe.desktop.app.grapheditor.flavors.compartments.properties.JIPipeDesktopCompartmentsQuickGuidePanel;
 import org.hkijena.jipipe.desktop.app.grapheditor.flavors.pipeline.actions.JIPipeDesktopRunAndShowResultsAction;
@@ -220,20 +221,8 @@ public class JIPipeDesktopCompartmentsGraphEditorUI extends AbstractJIPipeDeskto
                     UIUtils.getIcon32FromResources("actions/network-server-database.png"),
                     JIPipeDesktopDockPanel.PanelLocation.TopRight,
                     false,
-                    () -> createResultsDock((JIPipeProjectCompartment) node));
+                    () -> new JIPipeDesktopCompartmentGraphEditorResultsPanel(getProjectWorkbench(), (JIPipeProjectCompartment) node, this));
         }
-    }
-
-    private JComponent createResultsDock(JIPipeProjectCompartment compartment) {
-        JIPipeDesktopTabPane tabPane = new JIPipeDesktopTabPane(true, JIPipeDesktopTabPane.TabPlacement.Bottom);
-        for (JIPipeOutputDataSlot outputSlot : compartment.getOutputSlots()) {
-            JIPipeProjectCompartmentOutput outputNode = compartment.getOutputNode(outputSlot.getName());
-            tabPane.addTab(outputNode.getOutputSlotName(),
-                    UIUtils.getIconFromResources("actions/graph-compartment.png"),
-                    new JIPipeDesktopAlgorithmCacheBrowserUI((JIPipeDesktopProjectWorkbench) getDesktopWorkbench(), outputNode, getCanvasUI()),
-                    JIPipeDesktopTabPane.CloseMode.withoutCloseButton);
-        }
-        return tabPane;
     }
 
     private JIPipeProject getProject() {
