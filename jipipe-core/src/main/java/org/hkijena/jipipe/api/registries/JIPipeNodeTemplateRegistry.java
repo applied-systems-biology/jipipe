@@ -50,6 +50,10 @@ public class JIPipeNodeTemplateRegistry {
         return PathUtils.getJIPipeUserDir().resolve("node-templates");
     }
 
+    public Path getLegacyStoragePath() {
+        return PathUtils.getLegacyJIPipeUserDir().resolve("node-templates");
+    }
+
     public void reloadGlobalTemplates(JIPipeProgressInfo progressInfo) {
         globalTemplates.clear();
         globalTemplatesPaths.clear();

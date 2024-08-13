@@ -777,7 +777,8 @@ public class JIPipe extends AbstractService implements JIPipeService {
         pluginRegistry.load();
         progressInfo.setProgress(1);
         progressInfo.log("Legacy settings conversion ...");
-        tryConvertLegacySettings(progressInfo.resolve("Legacy conversion"));
+        copyTemplatesFromPropertiesToLegacyProfile(progressInfo.resolve("Legacy conversion"));
+        applyProfileUpgrades(progressInfo.resolve("Preparing profiles"));
 
         progressInfo.log("Pre-initialization phase ...");
 
@@ -1049,22 +1050,66 @@ public class JIPipe extends AbstractService implements JIPipeService {
         JIPipeDesktopRunnableLogsCollection.getInstance().markAllAsRead();
     }
 
-    private void tryConvertLegacySettings(JIPipeProgressInfo progressInfo) {
-        Path legacySettingsPath = PathUtils.getImageJDir().resolve("jipipe.properties.json");
-        Path legacyExtensionPath = PathUtils.getImageJDir().resolve("jipipe.extension.json");
-        Path newExtensionPath = PathUtils.getJIPipeUserDir().resolve("plugins.json");
+    private void applyProfileUpgrades(JIPipeProgressInfo progressInfo) {
+        boolean settingsExist = Files.isRegularFile(PathUtils.getJIPipeUserDir().resolve("settings.json"));
+        boolean childDirsExist = !PathUtils.listSubDirectories(PathUtils.getJIPipeUserDir()).isEmpty();
 
-        // Convert legacy extensions
-        if (Files.isRegularFile(legacyExtensionPath) && !Files.isRegularFile(newExtensionPath)) {
-            progressInfo.log("Copying " + legacyExtensionPath + " -> " + newExtensionPath);
-            try {
-                Files.copy(legacyExtensionPath, newExtensionPath);
-                Files.move(legacyExtensionPath, legacyExtensionPath.getParent().resolve("jipipe.extension.json.bak"));
-            } catch (Throwable e) {
-                progressInfo.log("Unable to copy plugin config!");
-                progressInfo.log(ExceptionUtils.getStackTrace(e));
+        if(!settingsExist && !childDirsExist) {
+            // Check for a profile from an older version
+            Path profileBasePath = PathUtils.getJIPipeUserDirBase();
+            PathUtils.createDirectories(profileBasePath);
+
+            // Collect all profile directories
+            String currentVersion = VersionUtils.getJIPipeVersion();
+            Map<String, Path> allProfileDirectories = new HashMap<>();
+            for (Path path : PathUtils.listSubDirectories(profileBasePath)) {
+                if(!Objects.equals(currentVersion, path.getFileName().toString())) {
+                    allProfileDirectories.put(path.getFileName().toString(), path);
+                }
+            }
+
+            // Find the newest version
+            List<String> sortedAllVersions = allProfileDirectories.keySet().stream().sorted(StringUtils::compareVersions).collect(Collectors.toList());
+            if(!sortedAllVersions.isEmpty()) {
+                String previousVersion = sortedAllVersions.get(sortedAllVersions.size() - 1);
+                Path oldProfileDirectory = profileBasePath.resolve(previousVersion);
+                Path newProfileDirectory = profileBasePath.resolve(currentVersion);
+                progressInfo.log("Upgrading from profile " + oldProfileDirectory);
+                PathUtils.copyDirectory(oldProfileDirectory, newProfileDirectory, progressInfo.resolve("Copy profile"));
+                progressInfo.log("Profile upgrade successful. Continuing.");
+                return;
+            }
+
+            // Check if we have a legacy profile that can be upgraded
+            Path legacyProfileDirectory = PathUtils.getLegacyJIPipeUserDir();
+            if(Files.isDirectory(legacyProfileDirectory)) {
+
+                // Delete old 3rd party software
+                progressInfo.log("Removing EasyInstaller directories in " + legacyProfileDirectory);
+                for (Path subDirectory : PathUtils.listSubDirectories(legacyProfileDirectory)) {
+                    if(subDirectory.getFileName().toString().startsWith("easyinstall-")) {
+                        PathUtils.deleteDirectoryRecursively(subDirectory, progressInfo.resolve("Cleanup old 3rd party software"));
+                    }
+                }
+
+                // Copy the profile
+                progressInfo.log("Upgrading from profile " + legacyProfileDirectory);
+                Path newProfileDirectory = profileBasePath.resolve(currentVersion);
+                PathUtils.copyDirectory(legacyProfileDirectory, newProfileDirectory, progressInfo.resolve("Copy profile"));
+                progressInfo.log("Profile upgrade successful. Continuing.");
             }
         }
+        else {
+            progressInfo.log(PathUtils.getJIPipeUserDir() + " already exists. No profile upgrades are needed.");
+        }
+    }
+
+    /**
+     * Copies templates from the old storage inside jipipe.properties.json into the legacy template directory
+     * @param progressInfo the progress info
+     */
+    private void copyTemplatesFromPropertiesToLegacyProfile(JIPipeProgressInfo progressInfo) {
+        Path legacySettingsPath = PathUtils.getImageJDir().resolve("jipipe.properties.json");
 
         // Convert node templates
         if (Files.isRegularFile(legacySettingsPath)) {
@@ -1075,7 +1120,7 @@ public class JIPipe extends AbstractService implements JIPipeService {
                 JsonNode nodeTemplatesListNode = jsonNode.path("node-templates/node-templates");
                 if (!nodeTemplatesListNode.isMissingNode()) {
                     progressInfo.log("Found legacy node templates!");
-                    Path targetDir = nodeTemplateRegistry.getStoragePath();
+                    Path targetDir = nodeTemplateRegistry.getLegacyStoragePath();
                     Files.createDirectories(targetDir);
                     for (JsonNode node : ImmutableList.copyOf(nodeTemplatesListNode.elements())) {
                         Path targetFile = targetDir.resolve(UUID.randomUUID() + ".json");
@@ -1083,8 +1128,6 @@ public class JIPipe extends AbstractService implements JIPipeService {
                         JsonUtils.saveToFile(node, targetFile);
                     }
                 }
-
-                Files.move(legacySettingsPath, legacyExtensionPath.getParent().resolve("jipipe.properties.json.bak"));
             } catch (Throwable e) {
                 progressInfo.log("Unable to copy settings!");
                 progressInfo.log(ExceptionUtils.getStackTrace(e));

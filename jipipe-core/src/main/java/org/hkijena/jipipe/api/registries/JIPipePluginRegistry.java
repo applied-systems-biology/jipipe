@@ -19,16 +19,20 @@ import com.google.common.collect.BiMap;
 import com.google.common.collect.HashBiMap;
 import org.hkijena.jipipe.JIPipe;
 import org.hkijena.jipipe.JIPipeDependency;
+import org.hkijena.jipipe.JIPipeJavaPlugin;
 import org.hkijena.jipipe.JIPipePlugin;
 import org.hkijena.jipipe.api.events.AbstractJIPipeEvent;
 import org.hkijena.jipipe.api.events.JIPipeEventEmitter;
+import org.hkijena.jipipe.plugins.JIPipePrepackagedDefaultJavaPlugin;
 import org.hkijena.jipipe.utils.GraphUtils;
 import org.hkijena.jipipe.utils.PathUtils;
+import org.hkijena.jipipe.utils.ReflectionUtils;
 import org.hkijena.jipipe.utils.VersionUtils;
 import org.hkijena.jipipe.utils.json.JsonUtils;
 import org.jgrapht.alg.cycle.CycleDetector;
 import org.jgrapht.graph.DefaultDirectedGraph;
 import org.jgrapht.graph.DefaultEdge;
+import org.scijava.plugin.PluginInfo;
 
 import java.nio.file.Files;
 import java.nio.file.Path;
@@ -38,19 +42,6 @@ import java.util.*;
  * Registry for managing extensions
  */
 public class JIPipePluginRegistry {
-
-    /**
-     * Standard set of extension IDs (1.74.0+)
-     */
-    public static final String[] STANDARD_PLUGINS = new String[]{"org.hkijena.jipipe:annotations", "org.hkijena.jipipe:filesystem", "org.hkijena.jipipe:forms", "org.hkijena.jipipe:imagej-algorithms",
-            "org.hkijena.jipipe:imagej-integration", "org.hkijena.jipipe:plots", "org.hkijena.jipipe:python", "org.hkijena.jipipe:r", "org.hkijena.jipipe:strings", "org.hkijena.jipipe:table-operations", "org.hkijena.jipipe:tools", "org.hkijena.jipipe:utils", "org.hkijena.jipipe:imagej2", "org.hkijena.jipipe:multi-parameters-algorithms"};
-
-    /**
-     * Standard set of extension IDs (for users updating from 1.73.x or older)
-     */
-    public static final String[] STANDARD_EXTENSIONS_LEGACY = new String[]{"org.hkijena.jipipe:annotations", "org.hkijena.jipipe:filesystem", "org.hkijena.jipipe:forms", "org.hkijena.jipipe:imagej-algorithms",
-            "org.hkijena.jipipe:imagej-integration", "org.hkijena.jipipe:plots", "org.hkijena.jipipe:python", "org.hkijena.jipipe:r", "org.hkijena.jipipe:strings", "org.hkijena.jipipe:table-operations", "org.hkijena.jipipe:tools", "org.hkijena.jipipe:utils", "org.hkijena.jipipe:imagej2", "org.hkijena.jipipe:multi-parameters-algorithms",
-            "org.hkijena.jipipe:cellpose", "org.hkijena.jipipe:clij2-integration", "org.hkijena.jipipe:ij-multi-template-matching", "org.hkijena.jipipe:ij-weka", "org.hkijena.jipipe:omero"};
 
     private final JIPipe jiPipe;
     private final Map<String, JIPipePlugin> knownPlugins = new HashMap<>();
@@ -100,7 +91,18 @@ public class JIPipePluginRegistry {
     }
 
     public void initialize() {
-        settings.getActivatedPlugins().addAll(Arrays.asList(STANDARD_PLUGINS));
+        List<PluginInfo<JIPipeJavaPlugin>> pluginList = jiPipe.getPluginService().getPluginsOfType(JIPipeJavaPlugin.class);
+        for (PluginInfo<JIPipeJavaPlugin> pluginInfo : pluginList) {
+            try {
+                JIPipeJavaPlugin extension = pluginInfo.createInstance();
+                if (extension instanceof JIPipePrepackagedDefaultJavaPlugin && !extension.isCorePlugin()) {
+                    JIPipeDependency dependency = (JIPipeDependency) ReflectionUtils.getDeclaredStaticFieldValue("AS_DEPENDENCY",extension.getClass());
+                    settings.getActivatedPlugins().add(dependency.getDependencyId());
+                }
+            } catch (Throwable e) {
+                throw new RuntimeException("On pre-initializing " + pluginInfo, e);
+            }
+        }
         if (!Files.isRegularFile(getPropertyFile()) && !JIPipe.NO_SETTINGS_AUTOSAVE) {
             save();
         }

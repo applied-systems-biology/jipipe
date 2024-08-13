@@ -36,6 +36,7 @@ import java.util.Arrays;
 import java.util.List;
 import java.util.Set;
 import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 /**
  * Utilities for handling paths
@@ -64,6 +65,8 @@ public class PathUtils {
             throw new RuntimeException(e);
         }
     }
+
+
 
     public static Path resolveAndMakeSubDirectory(Path directory, String name) {
         return resolveAndMakeSubDirectory(directory, Paths.get(name));
@@ -206,8 +209,8 @@ public class PathUtils {
      * @return null if no file was found
      */
     public static Path findFileByExtensionIn(Path folder, String... extensions) {
-        try {
-            return Files.list(folder).filter(p -> Files.isRegularFile(p) && Arrays.stream(extensions).anyMatch(e -> p.toString().endsWith(e))).findFirst().orElse(null);
+        try(Stream<Path> stream = Files.list(folder)) {
+            return stream.filter(p -> Files.isRegularFile(p) && Arrays.stream(extensions).anyMatch(e -> p.toString().endsWith(e))).findFirst().orElse(null);
         } catch (IOException e) {
             return null;
         }
@@ -221,8 +224,8 @@ public class PathUtils {
      * @return null if no file was found
      */
     public static Path findFileByExtensionRecursivelyIn(Path folder, String... extensions) {
-        try {
-            return Files.walk(folder).filter(p -> Files.isRegularFile(p) && Arrays.stream(extensions).anyMatch(e -> p.toString().endsWith(e))).findFirst().orElse(null);
+        try(Stream<Path> stream = Files.walk(folder)) {
+            return stream.filter(p -> Files.isRegularFile(p) && Arrays.stream(extensions).anyMatch(e -> p.toString().endsWith(e))).findFirst().orElse(null);
         } catch (IOException e) {
             return null;
         }
@@ -236,8 +239,22 @@ public class PathUtils {
      * @return null if no file was found
      */
     public static List<Path> findFilesByExtensionIn(Path folder, String... extensions) {
-        try {
-            return Files.list(folder).filter(p -> Files.isRegularFile(p) && (extensions.length == 0 || Arrays.stream(extensions).anyMatch(e -> p.toString().endsWith(e)))).collect(Collectors.toList());
+        try(Stream<Path> stream = Files.list(folder)) {
+            return  stream.filter(p -> Files.isRegularFile(p) && (extensions.length == 0 || Arrays.stream(extensions).anyMatch(e -> p.toString().endsWith(e)))).collect(Collectors.toList());
+        } catch (IOException e) {
+            return new ArrayList<>();
+        }
+    }
+
+    /**
+     * Finds a file in the specified folder with given extension
+     *
+     * @param folder     the path
+     * @return null if no file was found
+     */
+    public static List<Path> listSubDirectories(Path folder) {
+        try(Stream<Path> stream = Files.list(folder)) {
+            return stream.filter(Files::isDirectory).collect(Collectors.toList());
         } catch (IOException e) {
             return new ArrayList<>();
         }
@@ -290,19 +307,52 @@ public class PathUtils {
     }
 
     /**
-     * Gets the JIPipe user-writable directory.
-     * Can be overwritten by setting the JIPIPE_USER_DIR environment variable to deploy JIPipe into a read-only environment
-     *
+     * Gets the legacy user directory.
+     * This will be automatically moved to the correct user directory if needed
+     * @return the legacy user directory
+     */
+    public static Path getLegacyJIPipeUserDir() {
+        Path result = PathUtils.getImageJDir().resolve("jipipe");
+        try {
+            Files.createDirectories(result);
+        } catch (IOException e) {
+            IJ.handleException(e);
+        }
+        return result;
+    }
+
+    /**
+     * Returns the base directory that contains all profiles
+     * @return the base directory
+     */
+    public static Path getJIPipeUserDirBase() {
+        if (SystemUtils.IS_OS_WINDOWS) {
+            return Paths.get(System.getenv("APPDATA")).resolve("JIPipe")
+                    .resolve("profiles");
+        } else if (SystemUtils.IS_OS_LINUX) {
+            if (System.getProperties().containsKey("XDG_DATA_HOME") && !StringUtils.isNullOrEmpty(System.getProperty("XDG_DATA_HOME"))) {
+                return Paths.get(System.getProperty("XDG_DATA_HOME"))
+                        .resolve("JIPipe")
+                        .resolve("profiles");
+            } else {
+                return Paths.get(System.getProperty("user.home")).resolve(".local")
+                        .resolve("share").resolve("JIPipe")
+                        .resolve("profiles");
+            }
+        } else if (SystemUtils.IS_OS_MAC_OSX) {
+            return Paths.get(System.getProperty("user.home")).resolve("Library").resolve("Application Support")
+                    .resolve("JIPipe").resolve("profiles");
+        } else {
+            return getLegacyJIPipeUserDir().resolve("profiles");
+        }
+    }
+
+    /**
+     * Returns the JIPipe user directory
      * @return the JIPipe user directory
      */
     public static Path getJIPipeUserDir() {
-        String environmentVar = System.getenv().getOrDefault("JIPIPE_USER_DIR", null);
-        Path result;
-        if (environmentVar != null) {
-            result = Paths.get(environmentVar);
-        } else {
-            result = PathUtils.getImageJDir().resolve("jipipe");
-        }
+        Path result = getJIPipeUserDirBase().resolve(VersionUtils.getJIPipeVersion());
         try {
             Files.createDirectories(result);
         } catch (IOException e) {
