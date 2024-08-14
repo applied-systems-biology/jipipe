@@ -14,6 +14,7 @@
 package org.hkijena.jipipe.desktop.commons.components.search;
 
 import org.hkijena.jipipe.desktop.commons.components.JIPipeDesktopDocumentChangeListener;
+import org.hkijena.jipipe.utils.ColorUtils;
 import org.hkijena.jipipe.utils.UIUtils;
 import org.jdesktop.swingx.JXTextField;
 
@@ -30,14 +31,40 @@ import java.util.function.Predicate;
  */
 public class JIPipeDesktopSearchTextField extends JPanel implements Predicate<String> {
 
+    public static final int ANIMATION_DELAY = 80;
+    public static final double ANIMATION_SPEED = 0.05;
     private final JXTextField textField = new JXTextField();
     private String[] searchStrings = new String[0];
-    private JPanel buttonPanel = new JPanel();
+    private final JPanel buttonPanel = new JPanel();
+    private double attentionAnimationStatus = 1;
+    private final Timer attentionAnimationTimer;
 
     /**
      * Creates a new instance
      */
     public JIPipeDesktopSearchTextField() {
+        this.attentionAnimationTimer = new Timer(ANIMATION_DELAY, e -> updateAttentionAnimation());
+        this.attentionAnimationTimer.setRepeats(true);
+        this.attentionAnimationTimer.setCoalesce(false);
+        initialize();
+    }
+
+    private void updateAttentionAnimation() {
+        if(!isDisplayable() || attentionAnimationStatus >= 1) {
+            attentionAnimationTimer.stop();
+            setBorder(UIUtils.createControlBorder());
+        }
+        else {
+            Color borderColor = ColorUtils.mix(UIUtils.COLOR_SUCCESS, UIUtils.getControlBorderColor(), attentionAnimationStatus);
+            setBorder(UIUtils.createControlBorder(borderColor));
+            attentionAnimationStatus += ANIMATION_SPEED;
+
+            repaint();
+            getToolkit().sync();
+        }
+    }
+
+    private void initialize() {
         setLayout(new BorderLayout(4, 0));
         setBackground(UIManager.getColor("TextField.background"));
         setBorder(UIUtils.createControlBorder());
@@ -120,5 +147,10 @@ public class JIPipeDesktopSearchTextField extends JPanel implements Predicate<St
                 return false;
         }
         return true;
+    }
+
+    public void grabAttentionAnimation() {
+        attentionAnimationStatus = 0;
+        attentionAnimationTimer.restart();
     }
 }

@@ -674,6 +674,7 @@ public class JIPipeDesktopAddNodesPanel extends JIPipeDesktopWorkbenchPanel {
         textField.selectAll();
         textField.grabFocus();
         textField.requestFocus();
+        searchField.grabAttentionAnimation();
     }
 
     private MainCategoryFilter getSelectedMainCategory() {
@@ -768,8 +769,8 @@ public class JIPipeDesktopAddNodesPanel extends JIPipeDesktopWorkbenchPanel {
 
             try {
                 SwingUtilities.invokeAndWait(() -> toolBox.algorithmList.setModel(model));
-            } catch (InterruptedException | InvocationTargetException e) {
-                throw new RuntimeException(e);
+            } catch (InterruptedException | InvocationTargetException ignored) {
+                return;
             }
             if (!model.isEmpty()) {
                 SwingUtilities.invokeLater(() -> {
