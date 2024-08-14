@@ -56,7 +56,7 @@ public class UnlockNodeLocationSizeUIContextAction implements NodeUIContextActio
     }
 
     @Override
-    public boolean showInToolbar() {
+    public boolean isDisplayedInToolbar() {
         return true;
     }
 }

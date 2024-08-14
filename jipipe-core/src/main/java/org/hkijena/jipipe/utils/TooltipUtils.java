@@ -24,6 +24,7 @@ import org.hkijena.jipipe.api.data.*;
 import org.hkijena.jipipe.api.nodes.*;
 import org.hkijena.jipipe.plugins.parameters.library.markup.MarkdownText;
 
+import javax.swing.*;
 import java.util.Collection;
 import java.util.Set;
 
@@ -33,6 +34,19 @@ import java.util.Set;
 public class TooltipUtils {
     private TooltipUtils() {
 
+    }
+
+    public static String createTooltipWithShortcut(String name, String description, KeyStroke keyStroke) {
+        return "<html>" +
+                "<table>" +
+                "<tr>" +
+                "<td><strong>" + HtmlEscapers.htmlEscaper().escape(name) + "</strong></td>" +
+                "<td><span style=\"color: gray;\"><i>" + (keyStroke != null ? UIUtils.keyStrokeToString(keyStroke) : "") + "</i></span></td>" +
+                "</tr><tr>" +
+                "<td>" + StringUtils.wordWrappedHTMLElement(description, 50)+ "</td>" +
+                "<td></td>" +
+                "</tr>" +
+                "</table></html>";
     }
 
     /**

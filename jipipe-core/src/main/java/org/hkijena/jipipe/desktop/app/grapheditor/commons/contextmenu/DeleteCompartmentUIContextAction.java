@@ -78,7 +78,7 @@ public class DeleteCompartmentUIContextAction implements NodeUIContextAction {
     }
 
     @Override
-    public boolean showInToolbar() {
+    public boolean isDisplayedInToolbar() {
         return true;
     }
 }

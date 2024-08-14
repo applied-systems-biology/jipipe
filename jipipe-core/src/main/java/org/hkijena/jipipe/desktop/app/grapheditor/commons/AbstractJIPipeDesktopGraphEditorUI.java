@@ -34,6 +34,7 @@ import org.hkijena.jipipe.plugins.settings.JIPipeFileChooserApplicationSettings;
 import org.hkijena.jipipe.plugins.settings.JIPipeGraphEditorUIApplicationSettings;
 import org.hkijena.jipipe.utils.ReflectionUtils;
 import org.hkijena.jipipe.utils.StringUtils;
+import org.hkijena.jipipe.utils.TooltipUtils;
 import org.hkijena.jipipe.utils.UIUtils;
 import org.hkijena.jipipe.utils.json.JsonUtils;
 import org.hkijena.jipipe.utils.ui.CopyImageToClipboard;
@@ -437,8 +438,7 @@ public abstract class AbstractJIPipeDesktopGraphEditorUI extends JIPipeDesktopWo
                 JIPipeToggleableGraphEditorTool toggleableGraphEditorTool = (JIPipeToggleableGraphEditorTool) tool;
 
                 JToggleButton button = new JToggleButton(tool.getIcon());
-                button.setToolTipText("<html><strong>" + tool.getName() + "</strong><br/><br/>" + tool.getTooltip() +
-                        (keyBinding != null ? "<br><br>Shortcut: <i><strong>" + UIUtils.keyStrokeToString(keyBinding) + "</strong></i>" : "") + "</html>");
+                button.setToolTipText(TooltipUtils.createTooltipWithShortcut(tool.getName(), tool.getTooltip(), keyBinding));
                 button.addActionListener(e -> selectTool(tool));
                 UIUtils.makeButtonFlatWithSize(button, 32, 3);
                 toolBar.add(button);
@@ -446,8 +446,7 @@ public abstract class AbstractJIPipeDesktopGraphEditorUI extends JIPipeDesktopWo
 
             } else {
                 JButton button = new JButton(tool.getIcon());
-                button.setToolTipText("<html><strong>" + tool.getName() + "</strong><br/><br/>" + tool.getTooltip() +
-                        (keyBinding != null ? "<br><br>Shortcut: <i><strong>" + UIUtils.keyStrokeToString(keyBinding) + "</strong></i>" : "") + "</html>");
+                button.setToolTipText(TooltipUtils.createTooltipWithShortcut(tool.getName(), tool.getTooltip(), keyBinding));
                 button.addActionListener(e -> selectTool(tool));
                 UIUtils.makeButtonFlatWithSize(button, 32, 3);
                 toolBar.add(button);
@@ -584,18 +583,22 @@ public abstract class AbstractJIPipeDesktopGraphEditorUI extends JIPipeDesktopWo
         updateContextToolbar();
     }
 
-    private void updateContextToolbar() {
+    public void updateContextToolbar() {
         for (JButton button : contextToolbarButtons) {
             toolBar.remove(button);
         }
 
         Set<JIPipeDesktopGraphNodeUI> selection = getSelection();
         for (NodeUIContextAction contextAction : canvasUI.getContextActions()) {
-            if(contextAction != null && contextAction.showInToolbar() && contextAction.matches(selection)) {
+            if(contextAction != null && contextAction.isDisplayedInToolbar() && contextAction.matches(selection)) {
                 JButton button = new JButton(contextAction.getIcon());
-                button.setToolTipText("<html><strong>" + contextAction.getName() + "</strong><br/><br/>" + contextAction.getDescription() +
-                        (contextAction.getKeyboardShortcut() != null ? "<br><br>Shortcut: <i><strong>" + UIUtils.keyStrokeToString(contextAction.getKeyboardShortcut()) + "</strong></i>" : "") + "</html>");
-                button.addActionListener(e -> contextAction.run(canvasUI, selection));
+                button.setToolTipText(TooltipUtils.createTooltipWithShortcut(contextAction.getName(), contextAction.getDescription(), contextAction.getKeyboardShortcut()));
+                button.addActionListener(e -> {
+                    contextAction.run(canvasUI, selection);
+                    if(contextAction.isDisplayedInToolbar()) {
+                        updateContextToolbar();
+                    }
+                });
                 UIUtils.makeButtonFlatWithSize(button, 32, 3);
                 toolBar.add(button, contextToolbarInsertLocation);
                 contextToolbarButtons.add(button);

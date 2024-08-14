@@ -94,7 +94,7 @@ public interface NodeUIContextAction {
      * Determines if the item should be displayed in the context toolbar
      * @return  if the item should be displayed in the context toolbar
      */
-    default boolean showInToolbar() {return false;}
+    default boolean isDisplayedInToolbar() {return false;}
 
     /**
      * Returns an optional keyboard shortcut. Can be null
