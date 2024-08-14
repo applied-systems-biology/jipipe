@@ -144,16 +144,23 @@ public class JIPipeDesktopImageJUpdateSitesRepository {
 
             if (!toDeactivate.isEmpty()) {
                 for (UpdateSite updateSite : toDeactivate) {
-                    repository.updateSites.deactivateUpdateSite(updateSite);
+                    if(updateSite != null) {
+                        repository.updateSites.deactivateUpdateSite(updateSite);
+                    }
                 }
             }
 
             if (!toActivate.isEmpty()) {
                 for (UpdateSite updateSite : toActivate) {
-                    try {
-                        repository.updateSites.activateUpdateSite(updateSite, new JIPipeDesktopImageJUpdaterProgressAdapter2(progressInfo));
-                    } catch (ParserConfigurationException | IOException | SAXException e) {
-                        throw new RuntimeException(e);
+                    if(updateSite != null) {
+                        try {
+                            repository.updateSites.activateUpdateSite(updateSite, new JIPipeDesktopImageJUpdaterProgressAdapter2(progressInfo));
+                        } catch (ParserConfigurationException | IOException | SAXException e) {
+                            throw new RuntimeException(e);
+                        }
+                    }
+                    else {
+                        progressInfo.log("Update site is null!");
                     }
                 }
             }
