@@ -51,10 +51,9 @@ import java.io.IOException;
 import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.nio.file.Path;
-import java.util.ArrayList;
-import java.util.HashSet;
+import java.util.*;
 import java.util.List;
-import java.util.Set;
+import java.util.stream.Collectors;
 
 public class NodeTemplateBox extends JIPipeDesktopWorkbenchPanel implements NodeTemplatesRefreshedEventListener {
 
@@ -211,7 +210,8 @@ public class NodeTemplateBox extends JIPipeDesktopWorkbenchPanel implements Node
         if (canvasUI != null) {
             for (JIPipeNodeTemplate nodeTemplate : templateJList.getSelectedValuesList()) {
                 try {
-                    canvasUI.pasteNodes(nodeTemplate.getGraph());
+                    Map<UUID, JIPipeGraphNode> nodeMap = canvasUI.pasteNodes(nodeTemplate.getGraph());
+                    canvasUI.setSelection(nodeMap.values().stream().map(node -> canvasUI.getNodeUIs().get(node)).collect(Collectors.toSet()));
                 } catch (JsonProcessingException e) {
                     IJ.handleException(e);
                 }
