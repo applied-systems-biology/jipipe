@@ -20,6 +20,7 @@ import com.fasterxml.jackson.databind.*;
 import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
 import com.fasterxml.jackson.databind.annotation.JsonSerialize;
 import org.apache.commons.text.WordUtils;
+import org.jsoup.Jsoup;
 
 import java.io.IOException;
 import java.util.Objects;
@@ -29,6 +30,7 @@ import java.util.Objects;
 public class HTMLText {
     private final String html;
     private String body;
+    private String plainText;
 
     public HTMLText() {
         html = "<html><head></head><body></body></html>";
@@ -118,6 +120,18 @@ public class HTMLText {
 
     public MarkdownText toMarkdown() {
         return new MarkdownText(getBody());
+    }
+
+    public String toPlainText() {
+        if(plainText == null) {
+            try {
+                plainText = Jsoup.parse(getHtml()).text();
+            }
+            catch (Throwable ignored) {
+                plainText = getHtml();
+            }
+        }
+        return plainText;
     }
 
     public static class Deserializer extends JsonDeserializer<HTMLText> {

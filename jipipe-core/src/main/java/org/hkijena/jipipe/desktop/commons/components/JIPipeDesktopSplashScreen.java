@@ -16,6 +16,7 @@ package org.hkijena.jipipe.desktop.commons.components;
 import org.hkijena.jipipe.JIPipe;
 import org.hkijena.jipipe.JIPipeJavaPlugin;
 import org.hkijena.jipipe.JIPipeService;
+import org.hkijena.jipipe.desktop.commons.components.icons.SpinnerIcon;
 import org.hkijena.jipipe.utils.ResourceUtils;
 import org.hkijena.jipipe.utils.UIUtils;
 import org.scijava.Context;
@@ -40,10 +41,12 @@ public class JIPipeDesktopSplashScreen extends JWindow implements LogListener, C
     private JPanel poweredByContainer;
     private JPanel poweredByIconContainer;
     private JIPipe jiPipe;
-    private JLabel statusLabel = new JLabel("Please wait ...",
-            UIUtils.getIconFromResources("actions/hourglass-half.png"), JLabel.LEFT);
+    private final SpinnerIcon spinnerIcon;
+    private final JLabel statusLabel;
 
     public JIPipeDesktopSplashScreen() {
+        this.spinnerIcon = new SpinnerIcon(this);
+        this.statusLabel = new JLabel("Please wait ...", spinnerIcon, JLabel.LEFT);
         initialize();
     }
 
@@ -99,6 +102,7 @@ public class JIPipeDesktopSplashScreen extends JWindow implements LogListener, C
             context.inject(this);
         setLocationRelativeTo(null);
         setVisible(true);
+        spinnerIcon.start();
 
         if (context != null) {
             LogService logService = context.getService(LogService.class);
@@ -112,6 +116,7 @@ public class JIPipeDesktopSplashScreen extends JWindow implements LogListener, C
             LogService logService = context.getService(LogService.class);
             logService.removeLogListener(this);
         }
+        spinnerIcon.stop();
         setVisible(false);
         dispose();
         SwingUtilities.invokeLater(() -> this.dispatchEvent(new WindowEvent(this, WindowEvent.WINDOW_CLOSING)));

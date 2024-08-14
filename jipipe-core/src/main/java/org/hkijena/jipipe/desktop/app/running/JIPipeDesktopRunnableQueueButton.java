@@ -20,7 +20,7 @@ import org.hkijena.jipipe.api.run.JIPipeRunnableQueue;
 import org.hkijena.jipipe.api.run.JIPipeRunnableWorker;
 import org.hkijena.jipipe.desktop.app.JIPipeDesktopWorkbench;
 import org.hkijena.jipipe.desktop.app.JIPipeDesktopWorkbenchAccess;
-import org.hkijena.jipipe.desktop.commons.components.icons.JIPipeDesktopRunnableQueueThrobberIcon;
+import org.hkijena.jipipe.desktop.commons.components.icons.JIPipeDesktopRunnableQueueSpinnerIcon;
 import org.hkijena.jipipe.desktop.commons.theme.JIPipeDesktopModernMetalTheme;
 import org.hkijena.jipipe.utils.UIUtils;
 
@@ -36,7 +36,7 @@ public class JIPipeDesktopRunnableQueueButton extends JButton implements JIPipeD
     private final JIPipeRunnableQueue runnerQueue;
     private final JPopupMenu menu = new JPopupMenu();
     private boolean processAlreadyQueued;
-    private JIPipeDesktopRunnableQueueThrobberIcon throbberIcon;
+    private JIPipeDesktopRunnableQueueSpinnerIcon throbberIcon;
     private boolean showProgress;
     private int lastProgress;
     private int lastMaxProgress;
@@ -112,7 +112,7 @@ public class JIPipeDesktopRunnableQueueButton extends JButton implements JIPipeD
         setIcon(UIUtils.getIconFromResources("actions/check-circle.png"));
         UIUtils.setStandardButtonBorder(this);
 
-        throbberIcon = new JIPipeDesktopRunnableQueueThrobberIcon(this, runnerQueue);
+        throbberIcon = new JIPipeDesktopRunnableQueueSpinnerIcon(this, runnerQueue);
         UIUtils.addReloadablePopupMenuToButton(this, menu, this::reloadMenu);
     }
 

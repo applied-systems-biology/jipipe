@@ -89,11 +89,6 @@ public class CreateNewNodesByTemplateDatabaseEntry implements JIPipeNodeDatabase
     }
 
     @Override
-    public String getDescriptionPlain() {
-        return descriptionPlain;
-    }
-
-    @Override
     public Icon getIcon() {
         return template.getIconImage();
     }

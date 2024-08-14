@@ -318,6 +318,10 @@ public class JIPipeNodeTemplate extends AbstractJIPipeParameterCollection {
         return icon;
     }
 
+    public String getLocationInfo() {
+        return ("Templates\n" + String.join("\n", getMenuPath())).trim();
+    }
+
     public static class List extends ListParameter<JIPipeNodeTemplate> {
         /**
          * Creates a new instance

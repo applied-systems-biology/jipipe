@@ -146,10 +146,14 @@ public class NodeTemplateBox extends JIPipeDesktopWorkbenchPanel implements Node
         toolBar.add(searchField);
 
         templateJList = new JList<>();
+        JScrollPane scrollPane = new JScrollPane(templateJList);
         templateJList.setToolTipText("Drag one or multiple entries from the list into the graph to create nodes.");
         templateJList.setCursor(Cursor.getPredefinedCursor(Cursor.HAND_CURSOR));
         templateJList.setBorder(UIUtils.createControlBorder());
-        templateJList.setCellRenderer(new JIPipeNodeTemplateListCellRenderer(projectOwnedTemplates));
+        templateJList.setOpaque(false);
+        templateJList.setBorder(UIUtils.createEmptyBorder(8));
+        templateJList.setCellRenderer(new JIPipeNodeTemplateListCellRenderer(scrollPane, projectOwnedTemplates));
+        scrollPane.setHorizontalScrollBarPolicy(ScrollPaneConstants.HORIZONTAL_SCROLLBAR_NEVER);
         templateJList.setModel(new DefaultListModel<>());
         templateJList.addListSelectionListener(e -> {
             selectNodeTemplate(templateJList.getSelectedValue());
@@ -177,29 +181,30 @@ public class NodeTemplateBox extends JIPipeDesktopWorkbenchPanel implements Node
         });
         templateJList.setDragEnabled(true);
         templateJList.setTransferHandler(new NodeTemplateBoxTransferHandler());
-        JScrollPane scrollPane = new JScrollPane(templateJList);
 
         JIPipeDesktopSplitPane splitPane = new JIPipeDesktopSplitPane(JSplitPane.VERTICAL_SPLIT, scrollPane, documentationReader, JIPipeDesktopSplitPane.RATIO_3_TO_1);
         add(splitPane, BorderLayout.CENTER);
 
-        JButton manageButton = new JButton("Manage", UIUtils.getIconFromResources("actions/wrench.png"));
+        JButton manageButton = new JButton(UIUtils.getIconFromResources("actions/hamburger-menu.png"));
+        UIUtils.makeButtonFlat25x25(manageButton);
         toolBar.add(manageButton);
-
-        if (nodesToAdd != null && !nodesToAdd.isEmpty() && canvasUI != null) {
-            JButton addButton = new JButton("Create", UIUtils.getIconFromResources("actions/add.png"));
-            addButton.addActionListener(e -> addTemplate());
-            toolBar.add(addButton);
-        }
-
         UIUtils.addReloadablePopupMenuToButton(manageButton, manageMenu, this::reloadManageMenu);
 
+//        if (nodesToAdd != null && !nodesToAdd.isEmpty() && canvasUI != null) {
+//            JButton addButton = new JButton("Create", UIUtils.getIconFromResources("actions/add.png"));
+//            addButton.addActionListener(e -> addTemplate());
+//            toolBar.add(addButton);
+//        }
 
-        if (isDocked) {
-            JButton openWindowButton = new JButton(UIUtils.getIconFromResources("actions/open-in-new-window.png"));
-            openWindowButton.setToolTipText("Open in new window");
-            openWindowButton.addActionListener(e -> openNewToolBoxWindow(getDesktopWorkbench()));
-            toolBar.add(openWindowButton);
-        }
+
+
+
+//        if (isDocked) {
+//            JButton openWindowButton = new JButton(UIUtils.getIconFromResources("actions/open-in-new-window.png"));
+//            openWindowButton.setToolTipText("Open in new window");
+//            openWindowButton.addActionListener(e -> openNewToolBoxWindow(getDesktopWorkbench()));
+//            toolBar.add(openWindowButton);
+//        }
     }
 
     private void addSelectedTemplatesToPipeline() {

@@ -22,7 +22,7 @@ import java.awt.*;
 import java.awt.geom.Line2D;
 import java.util.Arrays;
 
-public class NewThrobberIcon implements Icon {
+public class SpinnerIcon implements Icon {
 
     public static final int ANIMATION_DELAY = 80;
     private final Timer timer;
@@ -35,7 +35,7 @@ public class NewThrobberIcon implements Icon {
     private Component parent;
     private int colorShift = 0;
 
-    public NewThrobberIcon(Component parent) {
+    public SpinnerIcon(Component parent) {
         this.parent = parent;
         this.timer = new Timer(ANIMATION_DELAY, e -> updateIcon());
         this.timer.setRepeats(true);
@@ -61,7 +61,7 @@ public class NewThrobberIcon implements Icon {
         JFrame frame = new JFrame();
         JPanel panel = new JPanel(new BorderLayout());
         frame.setContentPane(panel);
-        NewThrobberIcon icon = new NewThrobberIcon(panel);
+        SpinnerIcon icon = new SpinnerIcon(panel);
         icon.start();
         JLabel label = new JLabel(icon);
         panel.add(label, BorderLayout.CENTER);

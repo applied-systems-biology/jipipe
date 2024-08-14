@@ -174,11 +174,6 @@ public class CreateNewNodeByExampleDatabaseEntry implements JIPipeNodeDatabaseEn
     }
 
     @Override
-    public String getDescriptionPlain() {
-        return descriptionPlain;
-    }
-
-    @Override
     public boolean canAddInputSlots() {
         return exampleNode.getSlotConfiguration() instanceof JIPipeMutableSlotConfiguration &&
                 ((JIPipeMutableSlotConfiguration) exampleNode.getSlotConfiguration()).canAddInputSlot();

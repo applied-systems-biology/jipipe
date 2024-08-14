@@ -79,7 +79,7 @@ public class JIPipeDesktopNodeFinderDatasetListCellRenderer extends JPanel imple
         iconLabel.setIcon(value.getIcon());
         nameLabel.setText(value.getName());
         categoryLabel.setText(value.getLocationInfos().get(0).trim().replace("\n", " > "));
-        descriptionLabel.setText(value.getDescriptionPlain());
+        descriptionLabel.setText(value.getDescription().toPlainText());
 
         if (parent.getQuerySlot() != null) {
             if (value.exists()) {

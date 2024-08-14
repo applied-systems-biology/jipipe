@@ -128,7 +128,7 @@ public class JIPipeDesktopAddNodePanelEntryListCellRenderer extends JPanel imple
         if (obj != null) {
             setTruncatedText(nameLabel, obj.getName(), list);
             if(showDescriptions) {
-                setTruncatedText(descriptionLabel, obj.getDescriptionPlain(), list);
+                setTruncatedText(descriptionLabel, obj.getDescription().toPlainText(), list);
             }
             else {
                 descriptionLabel.setText(null);

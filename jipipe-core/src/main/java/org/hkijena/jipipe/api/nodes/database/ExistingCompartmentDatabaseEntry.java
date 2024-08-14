@@ -37,12 +37,10 @@ public class ExistingCompartmentDatabaseEntry implements JIPipeNodeDatabaseEntry
     private final WeightedTokens tokens = new WeightedTokens();
     private final Map<String, JIPipeDataSlotInfo> inputSlots = new HashMap<>();
     private final Map<String, JIPipeDataSlotInfo> outputSlots = new HashMap<>();
-    private final String descriptionPlain;
 
     public ExistingCompartmentDatabaseEntry(String id, JIPipeProjectCompartment compartment) {
         this.id = id;
         this.compartment = compartment;
-        this.descriptionPlain = Jsoup.parse(getDescription().getHtml()).text();
         initializeSlots();
         initializeTokens();
     }
@@ -135,11 +133,6 @@ public class ExistingCompartmentDatabaseEntry implements JIPipeNodeDatabaseEntry
     @Override
     public Set<JIPipeDesktopGraphNodeUI> addToGraph(JIPipeDesktopGraphCanvasUI canvasUI) {
         return Collections.singleton(canvasUI.getNodeUIs().get(compartment));
-    }
-
-    @Override
-    public String getDescriptionPlain() {
-        return descriptionPlain;
     }
 
     @Override

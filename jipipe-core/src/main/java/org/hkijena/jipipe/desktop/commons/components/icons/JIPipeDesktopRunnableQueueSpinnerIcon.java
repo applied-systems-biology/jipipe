@@ -18,13 +18,13 @@ import org.hkijena.jipipe.api.run.JIPipeRunnableQueue;
 
 import java.awt.*;
 
-public class JIPipeDesktopRunnableQueueThrobberIcon extends NewThrobberIcon implements JIPipeRunnable.FinishedEventListener, JIPipeRunnable.StartedEventListener, JIPipeRunnable.InterruptedEventListener {
+public class JIPipeDesktopRunnableQueueSpinnerIcon extends SpinnerIcon implements JIPipeRunnable.FinishedEventListener, JIPipeRunnable.StartedEventListener, JIPipeRunnable.InterruptedEventListener {
 
-    public JIPipeDesktopRunnableQueueThrobberIcon(Component parent) {
+    public JIPipeDesktopRunnableQueueSpinnerIcon(Component parent) {
         this(parent, JIPipeRunnableQueue.getInstance());
     }
 
-    public JIPipeDesktopRunnableQueueThrobberIcon(Component parent, JIPipeRunnableQueue runnerQueue) {
+    public JIPipeDesktopRunnableQueueSpinnerIcon(Component parent, JIPipeRunnableQueue runnerQueue) {
         super(parent);
 
         runnerQueue.getFinishedEventEmitter().subscribeWeak(this);

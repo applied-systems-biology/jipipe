@@ -35,7 +35,6 @@ public class CreateNewNodeByInfoDatabaseEntry implements JIPipeNodeDatabaseEntry
     private final WeightedTokens tokens = new WeightedTokens();
     private final Map<String, JIPipeDataSlotInfo> inputSlots = new HashMap<>();
     private final Map<String, JIPipeDataSlotInfo> outputSlots = new HashMap<>();
-    private final String descriptionPlain;
     private final boolean canAddInputSlots;
     private final boolean canAddOutputSlots;
     private final Set<String> categoryIds = new HashSet<>();
@@ -44,7 +43,6 @@ public class CreateNewNodeByInfoDatabaseEntry implements JIPipeNodeDatabaseEntry
     public CreateNewNodeByInfoDatabaseEntry(String id, JIPipeNodeInfo nodeInfo) {
         this.id = id;
         this.nodeInfo = nodeInfo;
-        this.descriptionPlain = Jsoup.parse(getDescription().getHtml()).text();
         JIPipeGraphNode node = nodeInfo.newInstance();
         this.canAddInputSlots = node.getSlotConfiguration() instanceof JIPipeMutableSlotConfiguration &&
                 ((JIPipeMutableSlotConfiguration) node.getSlotConfiguration()).canAddInputSlot();
@@ -178,11 +176,6 @@ public class CreateNewNodeByInfoDatabaseEntry implements JIPipeNodeDatabaseEntry
         }
         canvasUI.getGraph().insertNode(node, canvasUI.getCompartmentUUID());
         return Collections.singleton(canvasUI.getNodeUIs().get(node));
-    }
-
-    @Override
-    public String getDescriptionPlain() {
-        return descriptionPlain;
     }
 
     @Override

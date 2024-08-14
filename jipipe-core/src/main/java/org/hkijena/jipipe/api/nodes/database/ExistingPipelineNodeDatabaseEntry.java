@@ -37,13 +37,11 @@ public class ExistingPipelineNodeDatabaseEntry implements JIPipeNodeDatabaseEntr
     private final WeightedTokens tokens = new WeightedTokens();
     private final Map<String, JIPipeDataSlotInfo> inputSlots = new HashMap<>();
     private final Map<String, JIPipeDataSlotInfo> outputSlots = new HashMap<>();
-    private final String descriptionPlain;
     private final Set<String> categoryIds = new HashSet<>();
 
     public ExistingPipelineNodeDatabaseEntry(String id, JIPipeGraphNode graphNode) {
         this.id = id;
         this.graphNode = graphNode;
-        this.descriptionPlain = Jsoup.parse(getDescription().getHtml()).text();
         initializeSlots();
         initializeTokens();
         initializeCategoryIds();
@@ -160,11 +158,6 @@ public class ExistingPipelineNodeDatabaseEntry implements JIPipeNodeDatabaseEntr
     @Override
     public Set<String> getCategoryIds() {
         return categoryIds;
-    }
-
-    @Override
-    public String getDescriptionPlain() {
-        return descriptionPlain;
     }
 
     @Override

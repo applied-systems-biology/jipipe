@@ -17,7 +17,7 @@ import org.hkijena.jipipe.api.run.JIPipeRunnable;
 import org.hkijena.jipipe.api.run.JIPipeRunnableQueue;
 import org.hkijena.jipipe.desktop.app.JIPipeDesktopWorkbench;
 import org.hkijena.jipipe.desktop.app.JIPipeDesktopWorkbenchPanel;
-import org.hkijena.jipipe.desktop.commons.components.icons.JIPipeDesktopRunnableQueueThrobberIcon;
+import org.hkijena.jipipe.desktop.commons.components.icons.JIPipeDesktopRunnableQueueSpinnerIcon;
 import org.hkijena.jipipe.desktop.commons.notifications.JIPipeDesktopGenericNotificationButton;
 import org.hkijena.jipipe.utils.UIUtils;
 
@@ -99,7 +99,7 @@ public class JIPipeDesktopRunExecuteUI extends JIPipeDesktopWorkbenchPanel imple
         progressBar.setStringPainted(true);
 
         JLabel throbberLabel = new JLabel();
-        throbberLabel.setIcon(new JIPipeDesktopRunnableQueueThrobberIcon(throbberLabel));
+        throbberLabel.setIcon(new JIPipeDesktopRunnableQueueSpinnerIcon(throbberLabel));
         buttonPanel.add(throbberLabel);
         buttonPanel.add(Box.createHorizontalStrut(8));
 

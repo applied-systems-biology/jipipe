@@ -38,8 +38,6 @@ public interface JIPipeNodeDatabaseEntry {
 
     HTMLText getDescription();
 
-    String getDescriptionPlain();
-
     Icon getIcon();
 
     List<String> getLocationInfos();

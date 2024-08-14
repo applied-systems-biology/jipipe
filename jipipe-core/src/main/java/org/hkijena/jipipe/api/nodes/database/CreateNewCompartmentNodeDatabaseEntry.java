@@ -66,12 +66,7 @@ public class CreateNewCompartmentNodeDatabaseEntry implements JIPipeNodeDatabase
 
     @Override
     public HTMLText getDescription() {
-        return new HTMLText();
-    }
-
-    @Override
-    public String getDescriptionPlain() {
-        return "Creates a new compartment";
+        return new HTMLText("Creates a new compartment");
     }
 
     @Override

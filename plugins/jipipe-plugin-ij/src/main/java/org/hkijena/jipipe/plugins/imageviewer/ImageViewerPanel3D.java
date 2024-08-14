@@ -34,7 +34,7 @@ import org.hkijena.jipipe.desktop.app.running.JIPipeDesktopRunExecuteUI;
 import org.hkijena.jipipe.desktop.app.running.JIPipeDesktopRunnableQueueButton;
 import org.hkijena.jipipe.desktop.commons.components.JIPipeDesktopFormPanel;
 import org.hkijena.jipipe.desktop.commons.components.JIPipeDesktopParameterFormPanel;
-import org.hkijena.jipipe.desktop.commons.components.icons.NewThrobberIcon;
+import org.hkijena.jipipe.desktop.commons.components.icons.SpinnerIcon;
 import org.hkijena.jipipe.desktop.commons.components.tabs.JIPipeDesktopTabPane;
 import org.hkijena.jipipe.plugins.imagejdatatypes.datatypes.ImagePlusData;
 import org.hkijena.jipipe.plugins.imagejdatatypes.util.ImageJUtils;
@@ -86,7 +86,7 @@ public class ImageViewerPanel3D extends JPanel implements JIPipeDesktopWorkbench
     private final JToolBar toolBar = new JToolBar();
     private final JToggleButton enableSideBarButton = new JToggleButton();
     private final JIPipeDesktopTabPane tabPane = new JIPipeDesktopTabPane(true, JIPipeDesktopTabPane.TabPlacement.Right);
-    private final NewThrobberIcon initializationThrobberIcon = new NewThrobberIcon(this);
+    private final SpinnerIcon initializationThrobberIcon = new SpinnerIcon(this);
     private final Timer rebuildImageLaterTimer;
     private final Map<String, JIPipeDesktopFormPanel> formPanels = new HashMap<>();
     private final JIPipeRunnableQueue viewerRunnerQueue = new JIPipeRunnableQueue("3D viewer");
