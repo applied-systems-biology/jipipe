@@ -1066,7 +1066,7 @@ public class JIPipe extends AbstractService implements JIPipeService {
             String currentVersion = VersionUtils.getJIPipeVersion();
             Map<String, Path> allProfileDirectories = new HashMap<>();
             for (Path path : PathUtils.listSubDirectories(profileBasePath)) {
-                if(!Objects.equals(currentVersion, path.getFileName().toString())) {
+                if(!Objects.equals(currentVersion, path.getFileName().toString()) && StringUtils.compareVersions(currentVersion, path.getFileName().toString()) > 0) {
                     allProfileDirectories.put(path.getFileName().toString(), path);
                 }
             }
