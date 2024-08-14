@@ -115,7 +115,15 @@ public class JIPipeDesktopAddNodesPanel extends JIPipeDesktopWorkbenchPanel {
                     NodeTemplatePopupMenu popupMenu = new NodeTemplatePopupMenu(getDesktopWorkbench(), graphEditorUI);
                     UIUtils.addReloadableRightClickPopupMenuToButton(categoryButton, popupMenu, () -> {
                     });
-                } else {
+                }
+                else if(category instanceof PinnedDummyNodeTypeCategory) {
+                    JPopupMenu popupMenu = new JPopupMenu();
+                    UIUtils.addReloadableRightClickPopupMenuToButton(categoryButton, popupMenu, () -> {
+                       popupMenu.removeAll();
+                       initializeMenuForPinned(popupMenu);
+                    });
+                }
+                else {
                     JPopupMenu popupMenu = UIUtils.addRightClickPopupMenuToButton(categoryButton);
                     if (category instanceof DataSourceNodeTypeCategory) {
 
@@ -141,6 +149,27 @@ public class JIPipeDesktopAddNodesPanel extends JIPipeDesktopWorkbenchPanel {
                 mainCategoryFilters.add(currentFilter);
             }
         }
+    }
+
+    private void initializeMenuForPinned(JPopupMenu popupMenu) {
+        Set<String> pinnedNodeDatabaseEntries = getPinnedNodeDatabaseEntries();
+        for (JIPipeNodeDatabaseEntry entry : database.getLegacySearch().query("", isCompartmentsEditor ? JIPipeNodeDatabasePipelineVisibility.Compartments : JIPipeNodeDatabasePipelineVisibility.Pipeline,
+                false, true, new HashSet<>(settings.getNodeSearchSettings().getPinnedNodes()))) {
+            if(pinnedNodeDatabaseEntries.contains(entry.getId())) {
+                if (entry instanceof CreateNewNodeByInfoDatabaseEntry) {
+                    popupMenu.add(UIUtils.createMenuItem(entry.getName(), TooltipUtils.getAlgorithmTooltip(((CreateNewNodeByInfoDatabaseEntry) entry).getNodeInfo(), true),
+                            entry.getIcon(), () -> insertAtCursor(entry)));
+                } else if (entry instanceof CreateNewNodesByTemplateDatabaseEntry) {
+                    popupMenu.add(UIUtils.createMenuItem(entry.getName(), TooltipUtils.getAlgorithmTooltip(((CreateNewNodesByTemplateDatabaseEntry) entry).getTemplate(), true),
+                            entry.getIcon(), () -> insertAtCursor(entry)));
+                } else if (entry instanceof CreateNewNodeByExampleDatabaseEntry) {
+                    popupMenu.add(UIUtils.createMenuItem(entry.getName(), TooltipUtils.getAlgorithmTooltip(((CreateNewNodeByExampleDatabaseEntry) entry).getExample().getNodeInfo(), true),
+                            entry.getIcon(), () -> insertAtCursor(entry)));
+                }
+            }
+        }
+
+//        popupMenu.removeAll();
     }
 
     private void resetSubCategory() {

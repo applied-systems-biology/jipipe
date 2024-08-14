@@ -632,8 +632,10 @@ public class UIUtils {
                 super.mouseClicked(mouseEvent);
                 if (mouseEvent.getButton() == MouseEvent.BUTTON3) {
                     reloadFunction.run();
-                    popupMenu.revalidate();
-                    popupMenu.show(mouseEvent.getComponent(), mouseEvent.getX(), mouseEvent.getY());
+                    if(popupMenu.getComponentCount() > 0) {
+                        popupMenu.revalidate();
+                        popupMenu.show(mouseEvent.getComponent(), mouseEvent.getX(), mouseEvent.getY());
+                    }
                 }
             }
         });
@@ -644,8 +646,10 @@ public class UIUtils {
                         || MouseInfo.getPointerInfo().getLocation().y < target.getLocationOnScreen().y
                         || MouseInfo.getPointerInfo().getLocation().y > target.getLocationOnScreen().y + target.getHeight()) {
                     reloadFunction.run();
-                    popupMenu.revalidate();
-                    popupMenu.show(target, 0, target.getHeight());
+                    if(popupMenu.getComponentCount() > 0) {
+                        popupMenu.revalidate();
+                        popupMenu.show(target, 0, target.getHeight());
+                    }
                 }
             } catch (IllegalComponentStateException e1) {
             }
@@ -2255,6 +2259,8 @@ public class UIUtils {
     }
 
     public static JMenuItem createMenuItem(String label, String description, Icon icon, Runnable action) {
+//        System.out.println(label + " " + description + " " + icon);
+//        description = "";
         JMenuItem item = new JMenuItem(label, icon);
         item.setToolTipText(description);
         item.addActionListener(e -> action.run());
