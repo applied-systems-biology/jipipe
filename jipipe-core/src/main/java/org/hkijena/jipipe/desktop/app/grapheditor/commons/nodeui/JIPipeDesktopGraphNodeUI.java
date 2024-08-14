@@ -369,8 +369,8 @@ public class JIPipeDesktopGraphNodeUI extends JIPipeDesktopWorkbenchPanel implem
                 centerY = getHeight() / 2;
             }
 
-            String nameLabel = node.getName();
-            int centerNativeWidth = (int) Math.round(22 * zoom + 22 * zoom + mainFontMetrics.stringWidth(nameLabel));
+            double nameWidth = getNameWidth(mainFontMetrics);
+            int centerNativeWidth = (int) Math.round(22 * zoom + 22 * zoom + nameWidth);
             double startX = getWidth() / 2.0 - centerNativeWidth / 2.0;
 
             JIPipeDesktopGraphNodeUIRunNodeActiveArea activeArea = new JIPipeDesktopGraphNodeUIRunNodeActiveArea(this);
@@ -1064,20 +1064,7 @@ public class JIPipeDesktopGraphNodeUI extends JIPipeDesktopWorkbenchPanel implem
         }
         {
             String nameLabel = node.getName();
-            double nameWidth;
-
-            if (isDisplayedInForeignCompartment()) {
-                JIPipeProject project = getGraphCanvasUI().getWorkbench().getProject();
-                JIPipeProjectCompartment projectCompartment = project.getCompartments().get(node.getCompartmentUUIDInParentGraph());
-                if (projectCompartment != null) {
-                    nameWidth = Math.max(fontMetrics.stringWidth(nameLabel),
-                            fontMetrics.stringWidth("* " + projectCompartment.getName()));
-                } else {
-                    nameWidth = fontMetrics.stringWidth(nameLabel);
-                }
-            } else {
-                nameWidth = fontMetrics.stringWidth(nameLabel);
-            }
+            double nameWidth = getNameWidth(fontMetrics);
 
             int centerNativeWidth = (int) Math.round((nodeIsRunnable ? 22 : 0) * zoom + 22 * zoom + nameWidth);
             double startX = getWidth() / 2.0 - centerNativeWidth / 2.0;
@@ -1127,6 +1114,25 @@ public class JIPipeDesktopGraphNodeUI extends JIPipeDesktopWorkbenchPanel implem
                 UIUtils.drawStringVerticallyCentered(g2, nameLabel, (int) Math.round(startX + 3 * zoom), centerY, fontMetrics);
             }
         }
+    }
+
+    private double getNameWidth(FontMetrics fontMetrics) {
+        double nameWidth;
+        String nameLabel = node.getName();
+
+        if (isDisplayedInForeignCompartment()) {
+            JIPipeProject project = getGraphCanvasUI().getWorkbench().getProject();
+            JIPipeProjectCompartment projectCompartment = project.getCompartments().get(node.getCompartmentUUIDInParentGraph());
+            if (projectCompartment != null) {
+                nameWidth = Math.max(fontMetrics.stringWidth(nameLabel),
+                        fontMetrics.stringWidth("* " + projectCompartment.getName()));
+            } else {
+                nameWidth = fontMetrics.stringWidth(nameLabel);
+            }
+        } else {
+            nameWidth = fontMetrics.stringWidth(nameLabel);
+        }
+        return nameWidth;
     }
 
     /**
