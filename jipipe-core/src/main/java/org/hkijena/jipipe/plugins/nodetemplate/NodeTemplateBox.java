@@ -146,7 +146,7 @@ public class NodeTemplateBox extends JIPipeDesktopWorkbenchPanel implements Node
 
         templateJList = new JList<>();
         JScrollPane scrollPane = new JScrollPane(templateJList);
-        templateJList.setToolTipText("Drag one or multiple entries from the list into the graph to create nodes.");
+//        templateJList.setToolTipText("Drag one or multiple entries from the list into the graph to create nodes.");
         templateJList.setCursor(Cursor.getPredefinedCursor(Cursor.HAND_CURSOR));
         templateJList.setBorder(UIUtils.createControlBorder());
         templateJList.setOpaque(false);
