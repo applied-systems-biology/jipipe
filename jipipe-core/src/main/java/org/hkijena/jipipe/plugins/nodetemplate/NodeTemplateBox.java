@@ -59,7 +59,7 @@ public class NodeTemplateBox extends JIPipeDesktopWorkbenchPanel implements Node
 
     private final JIPipeProject project;
     private final Set<JIPipeNodeTemplate> projectOwnedTemplates = Sets.newIdentityHashSet();
-    private final JIPipeDesktopMarkdownReader documentationReader = new JIPipeDesktopMarkdownReader(false);
+//    private final JIPipeDesktopMarkdownReader documentationReader = new JIPipeDesktopMarkdownReader(false);
     private final JToolBar toolBar = new JToolBar();
     private final boolean isDocked;
     private final JIPipeDesktopGraphCanvasUI canvasUI;
@@ -154,9 +154,9 @@ public class NodeTemplateBox extends JIPipeDesktopWorkbenchPanel implements Node
         templateJList.setCellRenderer(new JIPipeNodeTemplateListCellRenderer(scrollPane, projectOwnedTemplates));
         scrollPane.setHorizontalScrollBarPolicy(ScrollPaneConstants.HORIZONTAL_SCROLLBAR_NEVER);
         templateJList.setModel(new DefaultListModel<>());
-        templateJList.addListSelectionListener(e -> {
-            selectNodeTemplate(templateJList.getSelectedValue());
-        });
+//        templateJList.addListSelectionListener(e -> {
+//            selectNodeTemplate(templateJList.getSelectedValue());
+//        });
         templateJList.addMouseListener(new MouseAdapter() {
             @Override
             public void mouseClicked(MouseEvent e) {
@@ -181,8 +181,7 @@ public class NodeTemplateBox extends JIPipeDesktopWorkbenchPanel implements Node
         templateJList.setDragEnabled(true);
         templateJList.setTransferHandler(new NodeTemplateBoxTransferHandler());
 
-        JIPipeDesktopSplitPane splitPane = new JIPipeDesktopSplitPane(JSplitPane.VERTICAL_SPLIT, scrollPane, documentationReader, JIPipeDesktopSplitPane.RATIO_3_TO_1);
-        add(splitPane, BorderLayout.CENTER);
+        add(scrollPane, BorderLayout.CENTER);
 
         JButton manageButton = new JButton(UIUtils.getIconFromResources("actions/hamburger-menu.png"));
         UIUtils.makeButtonFlat25x25(manageButton);
@@ -466,18 +465,19 @@ public class NodeTemplateBox extends JIPipeDesktopWorkbenchPanel implements Node
         }
         templateJList.setModel(model);
 
-        if (!model.isEmpty())
+        if (!model.isEmpty()) {
             templateJList.setSelectedIndex(0);
-        else
-            selectNodeTemplate(null);
+        } else {
+//            selectNodeTemplate(null);
+        }
     }
 
-    private void selectNodeTemplate(JIPipeNodeTemplate template) {
-        if (template != null) {
-            documentationReader.setDocument(new MarkdownText("# " + template.getName() + "\n\n" + TooltipUtils.getAlgorithmTooltip(template, false)));
-        } else
-            documentationReader.setDocument(new MarkdownText(""));
-    }
+//    private void selectNodeTemplate(JIPipeNodeTemplate template) {
+//        if (template != null) {
+//            documentationReader.setDocument(new MarkdownText("# " + template.getName() + "\n\n" + TooltipUtils.getAlgorithmTooltip(template, false)));
+//        } else
+//            documentationReader.setDocument(new MarkdownText(""));
+//    }
 
     private List<JIPipeNodeTemplate> getFilteredAndSortedInfos() {
         List<JIPipeNodeTemplate> templates = new ArrayList<>(JIPipe.getNodeTemplates().getGlobalTemplates());
