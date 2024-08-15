@@ -363,19 +363,19 @@ public class JIPipeDesktopDockPanel extends JPanel implements JIPipeDesktopSplit
 
         leftToolBar.removeAll();
         rightToolBar.removeAll();
-        for (Panel panel : getPanelsAtLocation(PanelLocation.TopLeft)) {
+        for (Panel panel : getPanelsAtLocation(PanelLocation.TopLeft).stream().sorted(Comparator.comparing(Panel::getName)).collect(Collectors.toList())) {
             leftToolBar.add(createToggleButton(panel));
         }
         leftToolBar.add(Box.createVerticalGlue());
-        for (Panel panel : getPanelsAtLocation(PanelLocation.BottomLeft)) {
+        for (Panel panel : getPanelsAtLocation(PanelLocation.BottomLeft).stream().sorted(Comparator.comparing(Panel::getName)).collect(Collectors.toList())) {
             leftToolBar.add(createToggleButton(panel));
         }
 
-        for (Panel panel : getPanelsAtLocation(PanelLocation.TopRight)) {
+        for (Panel panel : getPanelsAtLocation(PanelLocation.TopRight).stream().sorted(Comparator.comparing(Panel::getName)).collect(Collectors.toList())) {
             rightToolBar.add(createToggleButton(panel));
         }
         rightToolBar.add(Box.createVerticalGlue());
-        for (Panel panel : getPanelsAtLocation(PanelLocation.BottomRight)) {
+        for (Panel panel : getPanelsAtLocation(PanelLocation.BottomRight).stream().sorted(Comparator.comparing(Panel::getName)).collect(Collectors.toList())) {
             rightToolBar.add(createToggleButton(panel));
         }
     }
