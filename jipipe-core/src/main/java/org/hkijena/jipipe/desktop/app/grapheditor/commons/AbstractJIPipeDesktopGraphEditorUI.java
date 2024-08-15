@@ -96,7 +96,7 @@ public abstract class AbstractJIPipeDesktopGraphEditorUI extends JIPipeDesktopWo
     private JIPipeToggleableGraphEditorTool currentTool;
     private final JIPipeDesktopDockPanel dockPanel = new JIPipeDesktopDockPanel();
     private int contextToolbarInsertLocation;
-    private List<JButton> contextToolbarButtons = new ArrayList<>();
+    private final List<JButton> contextToolbarButtons = new ArrayList<>();
 
     /**
      * @param workbenchUI    the workbench
@@ -200,6 +200,15 @@ public abstract class AbstractJIPipeDesktopGraphEditorUI extends JIPipeDesktopWo
         dockPanel.setFloatingPanelMarginTop(40);
         dockPanel.setBackgroundComponent(mainPanel);
         dockPanel.getStateSavedEventEmitter().subscribe(this);
+        dockPanel.setShowToolbarLabels(graphUISettings.getDockLayoutSettings().isShowToolbarLabels());
+        dockPanel.getParameterChangedEventEmitter().subscribeLambda((emitter, event) -> {
+            if("show-toolbar-labels".equals(event.getKey())) {
+                if(graphUISettings.getDockLayoutSettings().isShowToolbarLabels() != dockPanel.isShowToolbarLabels()) {
+                    graphUISettings.getDockLayoutSettings().setShowToolbarLabels(dockPanel.isShowToolbarLabels());
+                    JIPipe.getSettings().saveLater();
+                }
+            }
+        });
 
         add(dockPanel, BorderLayout.CENTER);
 

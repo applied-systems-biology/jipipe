@@ -5,6 +5,7 @@ import com.fasterxml.jackson.annotation.JsonSetter;
 import com.google.common.collect.ImmutableList;
 import org.hkijena.jipipe.api.events.AbstractJIPipeEvent;
 import org.hkijena.jipipe.api.events.JIPipeEventEmitter;
+import org.hkijena.jipipe.api.parameters.JIPipeParameterCollection;
 import org.hkijena.jipipe.desktop.commons.components.JIPipeDesktopVerticalToolBar;
 import org.hkijena.jipipe.utils.JIPipeDesktopSplitPane;
 import org.hkijena.jipipe.utils.UIUtils;
@@ -50,6 +51,11 @@ public class JIPipeDesktopDockPanel extends JPanel implements JIPipeDesktopSplit
     private State savedState = new State();
     private final StateSavedEventEmitter stateSavedEventEmitter = new StateSavedEventEmitter();
     private final PanelSideVisibilityChangedEventEmitter panelSideVisibilityChangedEventEmitter = new PanelSideVisibilityChangedEventEmitter();
+    private final JIPipeParameterCollection.ParameterChangedEventEmitter parameterChangedEventEmitter = new JIPipeParameterCollection.ParameterChangedEventEmitter();
+    private boolean showToolbarLabels = true;
+    private int toolbarWithLabelsWidth = 92;
+    private int toolbarWithoutLabelsWidth = 42;
+    private final JCheckBoxMenuItem showToolbarLabelsMenuItem = new JCheckBoxMenuItem("Show Toolbar Labels");
 
     public JIPipeDesktopDockPanel() {
         super(new BorderLayout());
@@ -60,6 +66,13 @@ public class JIPipeDesktopDockPanel extends JPanel implements JIPipeDesktopSplit
     private void initialize() {
         add(leftToolBar, BorderLayout.WEST);
         add(rightToolBar, BorderLayout.EAST);
+
+        JPopupMenu toolbarContextMenu = new JPopupMenu();
+        toolbarContextMenu.add(showToolbarLabelsMenuItem);
+        UIUtils.addRightClickPopupMenuToComponent(leftToolBar, toolbarContextMenu);
+
+        showToolbarLabelsMenuItem.setState(showToolbarLabels);
+        showToolbarLabelsMenuItem.addActionListener(e -> { setShowToolbarLabels(showToolbarLabelsMenuItem.getState()); });
 
 //        layeredPane.setLayout(new OverlayLayout(layeredPane));
         add(layeredPane, BorderLayout.CENTER);
@@ -133,6 +146,47 @@ public class JIPipeDesktopDockPanel extends JPanel implements JIPipeDesktopSplit
         revalidate();
         repaint();
         updateSizes();
+    }
+
+    public boolean isShowToolbarLabels() {
+        return showToolbarLabels;
+    }
+
+    public void setShowToolbarLabels(boolean showToolbarLabels) {
+        if(showToolbarLabels != this.showToolbarLabels) {
+            this.showToolbarLabels = showToolbarLabels;
+            updateToolbars();
+            SwingUtilities.invokeLater(() -> {
+                updateSizes();
+                SwingUtilities.invokeLater(this::updateSizes);
+            });
+            parameterChangedEventEmitter.emit(new JIPipeParameterCollection.ParameterChangedEvent(this, "show-toolbar-labels"));
+        }
+        if(showToolbarLabelsMenuItem.getState() != showToolbarLabels) {
+            showToolbarLabelsMenuItem.setState(showToolbarLabels);
+        }
+    }
+
+    public JIPipeParameterCollection.ParameterChangedEventEmitter getParameterChangedEventEmitter() {
+        return parameterChangedEventEmitter;
+    }
+
+    public int getToolbarWithLabelsWidth() {
+        return toolbarWithLabelsWidth;
+    }
+
+    public void setToolbarWithLabelsWidth(int toolbarWithLabelsWidth) {
+        this.toolbarWithLabelsWidth = toolbarWithLabelsWidth;
+        updateAll();
+    }
+
+    public int getToolbarWithoutLabelsWidth() {
+        return toolbarWithoutLabelsWidth;
+    }
+
+    public void setToolbarWithoutLabelsWidth(int toolbarWithoutLabelsWidth) {
+        this.toolbarWithoutLabelsWidth = toolbarWithoutLabelsWidth;
+        updateAll();
     }
 
     private void updateSizes() {
@@ -288,6 +342,25 @@ public class JIPipeDesktopDockPanel extends JPanel implements JIPipeDesktopSplit
     }
 
     private void updateToolbars() {
+
+        // Update toolbar sizes
+        if(showToolbarLabels) {
+            leftToolBar.setMaximumSize(new Dimension(toolbarWithLabelsWidth, Short.MAX_VALUE));
+            rightToolBar.setMaximumSize(new Dimension(toolbarWithLabelsWidth, Short.MAX_VALUE));
+            leftToolBar.setPreferredSize(new Dimension(toolbarWithLabelsWidth, Short.MAX_VALUE));
+            rightToolBar.setPreferredSize(new Dimension(toolbarWithLabelsWidth, Short.MAX_VALUE));
+            leftToolBar.setMinimumSize(new Dimension(toolbarWithLabelsWidth, 32));
+            rightToolBar.setMinimumSize(new Dimension(toolbarWithLabelsWidth, 32));
+        }
+        else {
+            leftToolBar.setMaximumSize(new Dimension(toolbarWithoutLabelsWidth, Short.MAX_VALUE));
+            rightToolBar.setMaximumSize(new Dimension(toolbarWithoutLabelsWidth, Short.MAX_VALUE));
+            leftToolBar.setPreferredSize(new Dimension(toolbarWithoutLabelsWidth, Short.MAX_VALUE));
+            rightToolBar.setPreferredSize(new Dimension(toolbarWithoutLabelsWidth, Short.MAX_VALUE));
+            leftToolBar.setMinimumSize(new Dimension(toolbarWithoutLabelsWidth, 32));
+            rightToolBar.setMinimumSize(new Dimension(toolbarWithoutLabelsWidth, 32));
+        }
+
         leftToolBar.removeAll();
         rightToolBar.removeAll();
         for (Panel panel : getPanelsAtLocation(PanelLocation.TopLeft)) {
@@ -320,6 +393,13 @@ public class JIPipeDesktopDockPanel extends JPanel implements JIPipeDesktopSplit
                 deactivatePanel(panel, true);
             }
         });
+        if(showToolbarLabels) {
+            button.setText(panel.getName());
+            button.setVerticalTextPosition(SwingConstants.BOTTOM);
+            button.setHorizontalTextPosition(SwingConstants.CENTER);
+            button.setFont(new Font(Font.DIALOG, Font.PLAIN, 10));
+            button.setMaximumSize(new Dimension(Short.MAX_VALUE, 64));
+        }
         JPopupMenu popupMenu = UIUtils.addRightClickPopupMenuToButton(button);
         popupMenu.add(UIUtils.createMenuItem("Top left", "Move the panel to the top left anchor", UIUtils.getIconFromResources("actions/dock-top-left.png"), () -> {
             movePanelToLocation(panel, PanelLocation.TopLeft, true);

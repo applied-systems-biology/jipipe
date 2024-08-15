@@ -684,6 +684,25 @@ public class UIUtils {
      * Adds a function that is run before the popup is shown
      *
      * @param target target button
+     */
+    public static void addRightClickPopupMenuToComponent(Component target, JPopupMenu popupMenu) {
+        target.addMouseListener(new MouseAdapter() {
+            @Override
+            public void mouseClicked(MouseEvent mouseEvent) {
+                super.mouseClicked(mouseEvent);
+                if (mouseEvent.getButton() == MouseEvent.BUTTON3) {
+                    popupMenu.revalidate();
+                    popupMenu.show(mouseEvent.getComponent(), mouseEvent.getX(), mouseEvent.getY());
+                }
+            }
+        });
+    }
+
+    /**
+     * Adds an existing popup menu to a button
+     * Adds a function that is run before the popup is shown
+     *
+     * @param target target button
      * @return the popup menu
      */
     public static JPopupMenu addRightClickPopupMenuToButton(AbstractButton target) {

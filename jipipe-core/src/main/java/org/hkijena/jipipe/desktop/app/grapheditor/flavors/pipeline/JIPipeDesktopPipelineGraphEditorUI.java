@@ -287,7 +287,7 @@ public class JIPipeDesktopPipelineGraphEditorUI extends AbstractJIPipeDesktopGra
                 true,
                 parametersPanel.getParametersUI().getHelpPanel());
         getDockPanel().addDockPanel(DOCK_NODE_CONTEXT_SLOT_MANAGER,
-                "Connections overview",
+                "Slots",
                 UIUtils.getIcon32FromResources("actions/labplot-editbreaklayout.png"),
                 JIPipeDesktopDockPanel.PanelLocation.TopRight,
                 false,

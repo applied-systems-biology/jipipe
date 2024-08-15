@@ -428,6 +428,18 @@ public class JIPipeGraphEditorUIApplicationSettings extends JIPipeDefaultApplica
         private String compartmentsEditorDockLayout = "";
         private StringAndStringPairParameter.List pipelineEditorDockLayoutTemplates = new StringAndStringPairParameter.List();
         private StringAndStringPairParameter.List compartmentsEditorDockLayoutTemplates = new StringAndStringPairParameter.List();
+        private boolean showToolbarLabels = true;
+
+        @SetJIPipeDocumentation(name = "Show toolbar labels", description = "Shows labels for the dock items")
+        @JIPipeParameter("show-toolbar-labels")
+        public boolean isShowToolbarLabels() {
+            return showToolbarLabels;
+        }
+
+        @JIPipeParameter("show-toolbar-labels")
+        public void setShowToolbarLabels(boolean showToolbarLabels) {
+            this.showToolbarLabels = showToolbarLabels;
+        }
 
         @SetJIPipeDocumentation(name = "UI layout (pipeline editor)", description = "Contains the current UI layout of the pipeline editor. Please do not edit this parameter manually.")
         @JIPipeParameter("pipeline-editor-dock-layout")
