@@ -9,6 +9,7 @@ import org.hkijena.jipipe.api.parameters.JIPipeParameterCollection;
 import org.hkijena.jipipe.desktop.commons.components.JIPipeDesktopVerticalToolBar;
 import org.hkijena.jipipe.utils.JIPipeDesktopSplitPane;
 import org.hkijena.jipipe.utils.UIUtils;
+import org.jetbrains.annotations.NotNull;
 
 import javax.swing.*;
 import java.awt.*;
@@ -24,6 +25,8 @@ import java.util.stream.Collectors;
 
 public class JIPipeDesktopDockPanel extends JPanel implements JIPipeDesktopSplitPane.RatioUpdatedEventListener {
 
+    public static final int UI_ORDER_PINNED = -100;
+    public static final int UI_ORDER_DEFAULT = 0;
     private static final int RESIZE_HANDLE_SIZE = 4;
     private final JIPipeDesktopVerticalToolBar leftToolBar = new JIPipeDesktopVerticalToolBar();
     private final JIPipeDesktopVerticalToolBar rightToolBar = new JIPipeDesktopVerticalToolBar();
@@ -363,19 +366,19 @@ public class JIPipeDesktopDockPanel extends JPanel implements JIPipeDesktopSplit
 
         leftToolBar.removeAll();
         rightToolBar.removeAll();
-        for (Panel panel : getPanelsAtLocation(PanelLocation.TopLeft).stream().sorted(Comparator.comparing(Panel::getName)).collect(Collectors.toList())) {
+        for (Panel panel : getPanelsAtLocation(PanelLocation.TopLeft).stream().sorted().collect(Collectors.toList())) {
             leftToolBar.add(createToggleButton(panel));
         }
         leftToolBar.add(Box.createVerticalGlue());
-        for (Panel panel : getPanelsAtLocation(PanelLocation.BottomLeft).stream().sorted(Comparator.comparing(Panel::getName)).collect(Collectors.toList())) {
+        for (Panel panel : getPanelsAtLocation(PanelLocation.BottomLeft).stream().sorted().collect(Collectors.toList())) {
             leftToolBar.add(createToggleButton(panel));
         }
 
-        for (Panel panel : getPanelsAtLocation(PanelLocation.TopRight).stream().sorted(Comparator.comparing(Panel::getName)).collect(Collectors.toList())) {
+        for (Panel panel : getPanelsAtLocation(PanelLocation.TopRight).stream().sorted().collect(Collectors.toList())) {
             rightToolBar.add(createToggleButton(panel));
         }
         rightToolBar.add(Box.createVerticalGlue());
-        for (Panel panel : getPanelsAtLocation(PanelLocation.BottomRight).stream().sorted(Comparator.comparing(Panel::getName)).collect(Collectors.toList())) {
+        for (Panel panel : getPanelsAtLocation(PanelLocation.BottomRight).stream().sorted().collect(Collectors.toList())) {
             rightToolBar.add(createToggleButton(panel));
         }
     }
@@ -538,7 +541,7 @@ public class JIPipeDesktopDockPanel extends JPanel implements JIPipeDesktopSplit
         }
     }
 
-    public void addDockPanel(String id, String name, Icon icon, PanelLocation location, boolean visible, JComponent component) {
+    public void addDockPanel(String id, String name, Icon icon, PanelLocation location, boolean visible, int uiOrder, JComponent component) {
         visible = tryRestoreVisibilityState(savedState, id, visible);
         location = tryRestoreLocationState(savedState, id, location);
         removeDockPanel(id);
@@ -548,6 +551,7 @@ public class JIPipeDesktopDockPanel extends JPanel implements JIPipeDesktopSplit
         panel.setComponent(component);
         panel.setIcon(icon);
         panel.setName(name);
+        panel.setUiOrder(uiOrder);
         panels.put(id, panel);
 
         if(visible) {
@@ -566,7 +570,7 @@ public class JIPipeDesktopDockPanel extends JPanel implements JIPipeDesktopSplit
         return state.getVisibilities().getOrDefault(id, defaultValue);
     }
 
-    public void addDockPanel(String id, String name, Icon icon, PanelLocation location, boolean visible, Supplier<JComponent> component) {
+    public void addDockPanel(String id, String name, Icon icon, PanelLocation location, boolean visible, int uiOrder, Supplier<JComponent> component) {
         visible = tryRestoreVisibilityState(savedState, id, visible);
         location = tryRestoreLocationState(savedState, id, location);
         removeDockPanel(id);
@@ -577,6 +581,7 @@ public class JIPipeDesktopDockPanel extends JPanel implements JIPipeDesktopSplit
         panel.setComponentSupplier(component);
         panel.setIcon(icon);
         panel.setName(name);
+        panel.setUiOrder(uiOrder);
         panels.put(id, panel);
 
         if(visible) {
@@ -837,7 +842,7 @@ public class JIPipeDesktopDockPanel extends JPanel implements JIPipeDesktopSplit
         }
     }
 
-    public static class Panel {
+    public static class Panel implements Comparable<Panel> {
         private final String id;
         private Icon icon;
         private JComponent component;
@@ -845,6 +850,15 @@ public class JIPipeDesktopDockPanel extends JPanel implements JIPipeDesktopSplit
         private String name;
         private PanelLocation location;
         private boolean visible;
+        private int uiOrder;
+
+        public int getUiOrder() {
+            return uiOrder;
+        }
+
+        public void setUiOrder(int uiOrder) {
+            this.uiOrder = uiOrder;
+        }
 
         public Panel(String id) {
             this.id = id;
@@ -904,6 +918,15 @@ public class JIPipeDesktopDockPanel extends JPanel implements JIPipeDesktopSplit
 
         public void setComponentSupplier(Supplier<JComponent> componentSupplier) {
             this.componentSupplier = componentSupplier;
+        }
+
+        @Override
+        public int compareTo(@NotNull JIPipeDesktopDockPanel.Panel panel) {
+            int byUIOrder = Integer.compare(uiOrder, panel.getUiOrder());
+            if(byUIOrder == 0) {
+                return name.compareTo(panel.getName());
+            }
+            return byUIOrder;
         }
     }
 

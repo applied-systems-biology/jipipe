@@ -82,13 +82,13 @@ public class JIPipeDesktopRunSingleAlgorithmSettingsPanelIOEditor extends Abstra
                 UIUtils.getIconFromResources("data-types/slot.png"),
                 JIPipeDesktopDockPanel.PanelLocation.TopRight,
                 false,
-                inputsPanel);
+                0, inputsPanel);
         getDockPanel().addDockPanel("Outputs",
                 "Outputs",
                 UIUtils.getIconFromResources("data-types/slot.png"),
                 JIPipeDesktopDockPanel.PanelLocation.TopRight,
                 false,
-                outputsPanel);
+                0, outputsPanel);
     }
 
     @Override
