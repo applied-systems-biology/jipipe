@@ -1077,8 +1077,9 @@ public class JIPipe extends AbstractService implements JIPipeService {
                 String previousVersion = sortedAllVersions.get(sortedAllVersions.size() - 1);
                 Path oldProfileDirectory = profileBasePath.resolve(previousVersion);
                 Path newProfileDirectory = profileBasePath.resolve(currentVersion);
+                Path oldProfileBackupsDirectory = oldProfileDirectory.resolve("backups");
                 progressInfo.log("Upgrading from profile " + oldProfileDirectory);
-                PathUtils.copyDirectory(oldProfileDirectory, newProfileDirectory, progressInfo.resolve("Copy profile"));
+                PathUtils.copyDirectory(oldProfileDirectory, newProfileDirectory, dir -> !dir.equals(oldProfileBackupsDirectory) && !dir.startsWith(oldProfileBackupsDirectory), progressInfo.resolve("Copy profile"));
                 progressInfo.log("Profile upgrade successful. Continuing.");
                 return true;
             }
@@ -1097,8 +1098,9 @@ public class JIPipe extends AbstractService implements JIPipeService {
 
                 // Copy the profile
                 progressInfo.log("Upgrading from profile " + legacyProfileDirectory);
+                Path oldProfileBackupsDirectory = legacyProfileDirectory.resolve("backups");
                 Path newProfileDirectory = profileBasePath.resolve(currentVersion);
-                PathUtils.copyDirectory(legacyProfileDirectory, newProfileDirectory, progressInfo.resolve("Copy profile"));
+                PathUtils.copyDirectory(legacyProfileDirectory, newProfileDirectory, dir -> !dir.equals(oldProfileBackupsDirectory) && !dir.startsWith(oldProfileBackupsDirectory), progressInfo.resolve("Copy profile"));
                 progressInfo.log("Profile upgrade successful. Continuing.");
             }
             return true;

@@ -35,6 +35,7 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Set;
+import java.util.function.Predicate;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
@@ -96,6 +97,50 @@ public class PathUtils {
                     Files.createDirectories(destinationDir);
 
                     return FileVisitResult.CONTINUE;
+                }
+
+                @Override
+                public FileVisitResult visitFile(Path file, BasicFileAttributes attrs) throws IOException {
+                    // Copy the file with attributes
+                    Path relativePath = sourcePath.relativize(file);
+                    Path destinationFile = targetPath.resolve(relativePath);
+
+                    progressInfo.log(file + " --> " + destinationFile);
+                    Files.copy(file, destinationFile, StandardCopyOption.REPLACE_EXISTING, StandardCopyOption.COPY_ATTRIBUTES);
+
+                    return FileVisitResult.CONTINUE;
+                }
+
+                @Override
+                public FileVisitResult visitFileFailed(Path file, IOException exc) throws IOException {
+
+                    progressInfo.log("ERROR: Unable to process " + file);
+                    return FileVisitResult.CONTINUE;
+                }
+            });
+        } catch (IOException e) {
+            throw new RuntimeException(e);
+        }
+    }
+
+    public static void copyDirectory(Path sourcePath, Path targetPath, Predicate<Path> directoryFilter, JIPipeProgressInfo progressInfo) {
+        // Copy the directory with progress logging
+        try {
+            Files.walkFileTree(sourcePath, new SimpleFileVisitor<Path>() {
+                @Override
+                public FileVisitResult preVisitDirectory(Path dir, BasicFileAttributes attrs) throws IOException {
+                    if(directoryFilter.test(dir)) {
+
+                        // Create the corresponding destination directory
+                        Path relativePath = sourcePath.relativize(dir);
+                        Path destinationDir = targetPath.resolve(relativePath);
+                        Files.createDirectories(destinationDir);
+
+                        return FileVisitResult.CONTINUE;
+                    }
+                    else {
+                        return FileVisitResult.SKIP_SUBTREE;
+                    }
                 }
 
                 @Override
