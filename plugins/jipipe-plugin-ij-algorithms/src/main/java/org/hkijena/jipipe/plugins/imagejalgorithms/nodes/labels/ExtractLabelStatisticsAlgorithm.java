@@ -55,7 +55,8 @@ public class ExtractLabelStatisticsAlgorithm extends JIPipeIteratingAlgorithm {
         this.measureInPhysicalUnits = other.measureInPhysicalUnits;
     }
 
-    @SetJIPipeDocumentation(name = "Measurements", description = "The measurements that should be extracted from the labels. Please note that due to technical limitations, some measurements will not work and instead yield measurements over the whole image.")
+    @SetJIPipeDocumentation(name = "Measurements", description = "The measurements that should be extracted from the labels. " +
+            "Please note that due to technical limitations, some measurements will not work and instead yield measurements over the whole image."+ "<br/><br/>" + ImageStatisticsSetParameter.ALL_DESCRIPTIONS)
     @JIPipeParameter(value = "measurements", important = true)
     public ImageStatisticsSetParameter getMeasurements() {
         return measurements;

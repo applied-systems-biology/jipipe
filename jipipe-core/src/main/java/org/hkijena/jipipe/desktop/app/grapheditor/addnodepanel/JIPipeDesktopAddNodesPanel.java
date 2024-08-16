@@ -27,13 +27,17 @@ import org.hkijena.jipipe.desktop.app.JIPipeDesktopWorkbenchPanel;
 import org.hkijena.jipipe.desktop.app.grapheditor.commons.AbstractJIPipeDesktopGraphEditorUI;
 import org.hkijena.jipipe.desktop.app.grapheditor.commons.nodeui.JIPipeDesktopGraphNodeUI;
 import org.hkijena.jipipe.desktop.app.grapheditor.flavors.compartments.JIPipeDesktopCompartmentsGraphEditorUI;
+import org.hkijena.jipipe.desktop.app.grapheditor.flavors.pipeline.JIPipeDesktopPipelineGraphEditorUI;
+import org.hkijena.jipipe.desktop.commons.components.JIPipeDesktopFormHelpPanel;
 import org.hkijena.jipipe.desktop.commons.components.layouts.JIPipeDesktopWrapLayout;
 import org.hkijena.jipipe.desktop.commons.components.search.JIPipeDesktopSearchTextField;
 import org.hkijena.jipipe.plugins.nodetemplate.NodeTemplatePopupMenu;
+import org.hkijena.jipipe.plugins.parameters.library.markup.MarkdownText;
 import org.hkijena.jipipe.plugins.settings.JIPipeGraphEditorUIApplicationSettings;
 import org.hkijena.jipipe.utils.StringUtils;
 import org.hkijena.jipipe.utils.TooltipUtils;
 import org.hkijena.jipipe.utils.UIUtils;
+import org.hkijena.jipipe.utils.ui.JIPipeDesktopDockPanel;
 import org.jdesktop.swingx.JXTextField;
 import org.jgrapht.Graphs;
 import org.jgrapht.graph.DefaultDirectedGraph;
@@ -381,8 +385,39 @@ public class JIPipeDesktopAddNodesPanel extends JIPipeDesktopWorkbenchPanel {
                         unpinNodes(selectedValues);
                     }));
                 }
+                contextMenu.addSeparator();
+                contextMenu.add(UIUtils.createMenuItem("Show documentation", "Displays the documentation of this node", UIUtils.getIconFromResources("actions/help.png"), () -> {
+                    showDocumentation(selectedValues.get(0));
+                }));
             }
         });
+    }
+
+    private void showDocumentation(JIPipeNodeDatabaseEntry entry) {
+        // Create/open the documentation panel
+        JIPipeDesktopFormHelpPanel helpPanel = graphEditorUI.getDockPanel().getPanel(JIPipeDesktopPipelineGraphEditorUI.DOCK_NODE_CONTEXT_HELP, JIPipeDesktopFormHelpPanel.class);
+        if(helpPanel == null) {
+            helpPanel = new JIPipeDesktopFormHelpPanel();
+            graphEditorUI.getDockPanel().addDockPanel(JIPipeDesktopPipelineGraphEditorUI.DOCK_NODE_CONTEXT_HELP,
+                    "Documentation",
+                    UIUtils.getIcon32FromResources("actions/help-question.png"),
+                    JIPipeDesktopDockPanel.PanelLocation.BottomRight,
+                    true,
+                    0, helpPanel);
+        }
+        graphEditorUI.getDockPanel().activatePanel(JIPipeDesktopPipelineGraphEditorUI.DOCK_NODE_CONTEXT_HELP, false);
+        if(entry instanceof CreateNewNodeByInfoDatabaseEntry) {
+            helpPanel.showContent(entry.getName(), TooltipUtils.getAlgorithmDocumentation(((CreateNewNodeByInfoDatabaseEntry) entry).getNodeInfo()));
+        }
+        else if(entry instanceof CreateNewNodeByExampleDatabaseEntry) {
+            helpPanel.showContent(entry.getName(), TooltipUtils.getAlgorithmDocumentation(((CreateNewNodeByExampleDatabaseEntry) entry).getExample().getNodeInfo()));
+        }
+        else if(entry instanceof CreateNewCompartmentNodeDatabaseEntry) {
+            helpPanel.showContent("Graph compartment", TooltipUtils.getAlgorithmDocumentation(JIPipe.getNodes().getInfoById("jipipe:project-compartment")));
+        }
+        else {
+            helpPanel.showContent(entry.getName(), new MarkdownText("# " + entry.getName() + "\n\n" + entry.getDescription().getBody()));
+        }
     }
 
     private void pinNodes(List<JIPipeNodeDatabaseEntry> selectedValues) {

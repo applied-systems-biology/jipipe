@@ -448,7 +448,7 @@ public class FilterLabelsByOverlapAlgorithm extends JIPipeIteratingAlgorithm {
         return labels2Settings;
     }
 
-    @SetJIPipeDocumentation(name = "Overlap filter measurements", description = "Measurements extracted for the overlap filter.")
+    @SetJIPipeDocumentation(name = "Overlap filter measurements", description = "Measurements extracted for the overlap filter."+ "<br/><br/>" + ImageStatisticsSetParameter.ALL_DESCRIPTIONS)
     @JIPipeParameter("overlap-filter-measurements")
     public ImageStatisticsSetParameter getOverlapFilterMeasurements() {
         return overlapFilterMeasurements;

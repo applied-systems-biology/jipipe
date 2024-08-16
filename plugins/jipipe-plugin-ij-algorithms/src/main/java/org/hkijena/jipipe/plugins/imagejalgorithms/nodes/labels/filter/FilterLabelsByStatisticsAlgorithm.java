@@ -164,7 +164,7 @@ public class FilterLabelsByStatisticsAlgorithm extends JIPipeIteratingAlgorithm 
         this.filters = filters;
     }
 
-    @SetJIPipeDocumentation(name = "Measurements", description = "The measurements to calculate.")
+    @SetJIPipeDocumentation(name = "Measurements", description = "The measurements to calculate."+ "<br/><br/>" + ImageStatisticsSetParameter.ALL_DESCRIPTIONS)
     @JIPipeParameter(value = "measurements", important = true)
     public ImageStatisticsSetParameter getMeasurements() {
         return measurements;

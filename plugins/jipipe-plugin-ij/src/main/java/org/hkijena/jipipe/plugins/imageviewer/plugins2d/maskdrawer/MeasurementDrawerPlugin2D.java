@@ -200,7 +200,7 @@ public class MeasurementDrawerPlugin2D extends MaskDrawerPlugin2D implements Mas
         private ImageStatisticsSetParameter statistics = new ImageStatisticsSetParameter();
         private boolean measureInPhysicalUnits = true;
 
-        @SetJIPipeDocumentation(name = "Statistics", description = "The statistics to measure")
+        @SetJIPipeDocumentation(name = "Statistics", description = "The statistics to measure " + "<br/><br/>" + ImageStatisticsSetParameter.ALL_DESCRIPTIONS)
         @JIPipeParameter("statistics")
         public ImageStatisticsSetParameter getStatistics() {
             return statistics;
