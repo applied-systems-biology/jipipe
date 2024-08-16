@@ -52,7 +52,7 @@ public class JIPipeDesktopCompartmentsGraphEditorRunManager extends JIPipeDeskto
     }
 
     @Override
-    protected JIPipeRunnable createRun(boolean saveToDisk, boolean storeIntermediateResults, boolean excludeSelected) {
+    protected JIPipeDesktopQuickRun createRun(boolean saveToDisk, boolean storeIntermediateResults, boolean excludeSelected) {
 
         JIPipeProjectCompartment compartment = (JIPipeProjectCompartment) getNodeUI().getNode();
 
@@ -76,7 +76,7 @@ public class JIPipeDesktopCompartmentsGraphEditorRunManager extends JIPipeDeskto
         }
 
         // Run
-        JIPipeRunnable run = new JIPipeDesktopQuickRun(getProject(), new ArrayList<>(compartment.getSortedOutputNodes()), settings);
+        JIPipeDesktopQuickRun run = new JIPipeDesktopQuickRun(getProject(), new ArrayList<>(compartment.getSortedOutputNodes()), settings);
         JIPipeRuntimeApplicationSettings.getInstance().setDefaultQuickRunThreads(settings.getNumThreads());
         return run;
     }
