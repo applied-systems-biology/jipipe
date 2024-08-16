@@ -22,6 +22,7 @@ import org.hkijena.jipipe.desktop.app.cache.JIPipeDesktopAlgorithmCacheBrowserUI
 import org.hkijena.jipipe.desktop.app.grapheditor.commons.AbstractJIPipeDesktopGraphEditorUI;
 import org.hkijena.jipipe.desktop.app.grapheditor.commons.JIPipeDesktopGraphCanvasUI;
 import org.hkijena.jipipe.desktop.app.grapheditor.commons.JIPipeDesktopGraphEditorLogPanel;
+import org.hkijena.jipipe.desktop.app.grapheditor.commons.JIPipeDesktopGraphEditorRunManager;
 import org.hkijena.jipipe.desktop.app.grapheditor.commons.nodeui.JIPipeDesktopGraphNodeUI;
 import org.hkijena.jipipe.desktop.app.grapheditor.commons.properties.JIPipeDesktopGraphEditorErrorPanel;
 import org.hkijena.jipipe.desktop.app.grapheditor.flavors.pipeline.JIPipeDesktopPipelineGraphEditorUI;
@@ -30,44 +31,19 @@ import org.hkijena.jipipe.desktop.app.quickrun.JIPipeDesktopQuickRunSettings;
 import org.hkijena.jipipe.plugins.settings.JIPipeRuntimeApplicationSettings;
 import org.hkijena.jipipe.utils.ui.JIPipeDesktopDockPanel;
 
-public class JIPipeDesktopPipelineGraphEditorRunManager implements JIPipeRunnable.FinishedEventListener, JIPipeRunnable.InterruptedEventListener {
-    private final JIPipeProject project;
-    private final JIPipeDesktopGraphCanvasUI canvasUI;
-    private final JIPipeDesktopGraphNodeUI nodeUI;
-    private final JIPipeDesktopDockPanel dockPanel;
-    private JIPipeRunnable run;
-    private JIPipeDesktopDockPanel.State savedState;
+public class JIPipeDesktopPipelineGraphEditorRunManager extends JIPipeDesktopGraphEditorRunManager {
 
     public JIPipeDesktopPipelineGraphEditorRunManager(JIPipeProject project, JIPipeDesktopGraphCanvasUI canvasUI, JIPipeDesktopGraphNodeUI nodeUI, JIPipeDesktopDockPanel dockPanel) {
-        this.project = project;
-        this.canvasUI = canvasUI;
-        this.nodeUI = nodeUI;
-        this.dockPanel = dockPanel;
-        JIPipeRunnableQueue.getInstance().getFinishedEventEmitter().subscribe(this);
-        JIPipeRunnableQueue.getInstance().getInterruptedEventEmitter().subscribe(this);
+        super(project, canvasUI, nodeUI, dockPanel);
     }
 
-    public void run(boolean saveToDisk, boolean storeIntermediateResults, boolean excludeSelected) {
-        if(run != null) {
-            throw new IllegalStateException("Already scheduled a run!");
-        }
+    @Override
+    protected void createValidationReport(JIPipeValidationReport report) {
+        getProject().reportValidity(new UnspecifiedValidationReportContext(), report, getNodeUI().getNode());
+    }
 
-        // Remember the saved state
-        savedState = getDockPanel().getCurrentState();
-
-        // Validation step
-        JIPipeValidationReport report = new JIPipeValidationReport();
-        getProject().reportValidity(new UnspecifiedValidationReportContext(), report, nodeUI.getNode());
-        if (!report.isEmpty()) {
-            dockPanel.getPanel(AbstractJIPipeDesktopGraphEditorUI.DOCK_ERRORS, JIPipeDesktopGraphEditorErrorPanel.class).setItems(report);
-            dockPanel.activatePanel(AbstractJIPipeDesktopGraphEditorUI.DOCK_ERRORS, false);
-            return;
-        }
-
-        if(getLogPanel().isAutoShowProgress()) {
-            getDockPanel().activatePanel(AbstractJIPipeDesktopGraphEditorUI.DOCK_LOG, true);
-        }
-
+    @Override
+    protected JIPipeRunnable createRun(boolean saveToDisk, boolean storeIntermediateResults, boolean excludeSelected) {
         // Generate settings
         JIPipeDesktopQuickRunSettings settings;
         if(saveToDisk) {
@@ -88,64 +64,8 @@ public class JIPipeDesktopPipelineGraphEditorRunManager implements JIPipeRunnabl
         }
 
         // Run
-        run = new JIPipeDesktopQuickRun(getProject(), nodeUI.getNode(), settings);
+        JIPipeRunnable run = new JIPipeDesktopQuickRun(getProject(), getNodeUI().getNode(), settings);
         JIPipeRuntimeApplicationSettings.getInstance().setDefaultQuickRunThreads(settings.getNumThreads());
-        JIPipeRunnableQueue.getInstance().enqueue(run);
-    }
-
-    public JIPipeProject getProject() {
-        return project;
-    }
-
-    public JIPipeDesktopGraphCanvasUI getCanvasUI() {
-        return canvasUI;
-    }
-
-    public JIPipeDesktopGraphNodeUI getNodeUI() {
-        return nodeUI;
-    }
-
-    public JIPipeDesktopDockPanel getDockPanel() {
-        return dockPanel;
-    }
-
-    private JIPipeDesktopGraphEditorLogPanel getLogPanel() {
-        return getDockPanel().getPanel(AbstractJIPipeDesktopGraphEditorUI.DOCK_LOG, JIPipeDesktopGraphEditorLogPanel.class);
-    }
-
-    @Override
-    public void onRunnableFinished(JIPipeRunnable.FinishedEvent event) {
-        if(event.getRun() == run) {
-
-            // Restore the saved state
-            getDockPanel().restoreState(savedState);
-
-            if(getLogPanel().isAutoShowResults()) {
-                canvasUI.selectOnly(nodeUI);
-                getDockPanel().activatePanel(JIPipeDesktopPipelineGraphEditorUI.DOCK_NODE_CONTEXT_RESULTS, true);
-                getDockPanel().getPanel(JIPipeDesktopPipelineGraphEditorUI.DOCK_NODE_CONTEXT_RESULTS, JIPipeDesktopAlgorithmCacheBrowserUI.class).refreshTable();
-            }
-        }
-    }
-
-
-    @Override
-    public void onRunnableInterrupted(JIPipeRunnable.InterruptedEvent event) {
-        if(event.getRun() == run) {
-            // Restore the saved state
-            getDockPanel().restoreState(savedState);
-
-            if(getLogPanel().isAutoShowResults()) {
-                canvasUI.selectOnly(nodeUI);
-
-                if(event.getException() != null) {
-                    dockPanel.getPanel(AbstractJIPipeDesktopGraphEditorUI.DOCK_ERRORS, JIPipeDesktopGraphEditorErrorPanel.class).setItems(event.getException());
-                    dockPanel.activatePanel(AbstractJIPipeDesktopGraphEditorUI.DOCK_ERRORS, false);
-                }
-                else {
-                    getDockPanel().activatePanel(AbstractJIPipeDesktopGraphEditorUI.DOCK_LOG, false);
-                }
-            }
-        }
+        return run;
     }
 }
