@@ -68,4 +68,9 @@ public class EnablePassThroughNodeUIContextAction implements NodeUIContextAction
     public KeyStroke getKeyboardShortcut() {
         return KeyStroke.getKeyStroke(KeyEvent.VK_P, InputEvent.CTRL_MASK | InputEvent.SHIFT_MASK, true);
     }
+
+    @Override
+    public boolean isDisplayedInToolbar() {
+        return true;
+    }
 }

@@ -66,4 +66,9 @@ public class DisablePassThroughNodeUIContextAction implements NodeUIContextActio
     public KeyStroke getKeyboardShortcut() {
         return KeyStroke.getKeyStroke(KeyEvent.VK_P, InputEvent.CTRL_MASK, true);
     }
+
+    @Override
+    public boolean isDisplayedInToolbar() {
+        return true;
+    }
 }

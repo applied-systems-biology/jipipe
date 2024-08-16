@@ -66,4 +66,9 @@ public class DisableNodeUIContextAction implements NodeUIContextAction {
     public KeyStroke getKeyboardShortcut() {
         return KeyStroke.getKeyStroke(KeyEvent.VK_E, InputEvent.CTRL_MASK | InputEvent.SHIFT_MASK, true);
     }
+
+    @Override
+    public boolean isDisplayedInToolbar() {
+        return true;
+    }
 }
