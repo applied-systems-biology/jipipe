@@ -25,6 +25,8 @@ import org.hkijena.jipipe.desktop.app.grapheditor.commons.JIPipeDesktopGraphEdit
 import org.hkijena.jipipe.desktop.app.grapheditor.commons.JIPipeDesktopGraphEditorRunManager;
 import org.hkijena.jipipe.desktop.app.grapheditor.commons.nodeui.JIPipeDesktopGraphNodeUI;
 import org.hkijena.jipipe.desktop.app.grapheditor.commons.properties.JIPipeDesktopGraphEditorErrorPanel;
+import org.hkijena.jipipe.desktop.app.grapheditor.flavors.compartments.JIPipeDesktopCompartmentsGraphEditorUI;
+import org.hkijena.jipipe.desktop.app.grapheditor.flavors.compartments.properties.JIPipeDesktopCompartmentGraphEditorResultsPanel;
 import org.hkijena.jipipe.desktop.app.grapheditor.flavors.pipeline.JIPipeDesktopPipelineGraphEditorUI;
 import org.hkijena.jipipe.desktop.app.quickrun.JIPipeDesktopQuickRun;
 import org.hkijena.jipipe.desktop.app.quickrun.JIPipeDesktopQuickRunSettings;
@@ -40,6 +42,12 @@ public class JIPipeDesktopPipelineGraphEditorRunManager extends JIPipeDesktopGra
     @Override
     protected void createValidationReport(JIPipeValidationReport report) {
         getProject().reportValidity(new UnspecifiedValidationReportContext(), report, getNodeUI().getNode());
+    }
+
+    @Override
+    protected void showResults() {
+        getDockPanel().activatePanel(JIPipeDesktopPipelineGraphEditorUI.DOCK_NODE_CONTEXT_RESULTS, true);
+        getDockPanel().getPanel(JIPipeDesktopPipelineGraphEditorUI.DOCK_NODE_CONTEXT_RESULTS, JIPipeDesktopAlgorithmCacheBrowserUI.class).refreshTable();
     }
 
     @Override

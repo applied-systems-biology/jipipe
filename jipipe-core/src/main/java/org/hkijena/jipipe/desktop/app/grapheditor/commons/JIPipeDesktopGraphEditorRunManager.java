@@ -100,11 +100,12 @@ public abstract class JIPipeDesktopGraphEditorRunManager implements JIPipeRunnab
 
             if(getLogPanel().isAutoShowResults()) {
                 canvasUI.selectOnly(nodeUI);
-                getDockPanel().activatePanel(JIPipeDesktopCompartmentsGraphEditorUI.DOCK_NODE_CONTEXT_RESULTS, true);
-                getDockPanel().getPanel(JIPipeDesktopCompartmentsGraphEditorUI.DOCK_NODE_CONTEXT_RESULTS, JIPipeDesktopCompartmentGraphEditorResultsPanel.class).refreshTables();
+                showResults();
             }
         }
     }
+
+    protected abstract void showResults();
 
 
     @Override

@@ -22,6 +22,8 @@ import org.hkijena.jipipe.api.validation.contexts.UnspecifiedValidationReportCon
 import org.hkijena.jipipe.desktop.app.grapheditor.commons.JIPipeDesktopGraphCanvasUI;
 import org.hkijena.jipipe.desktop.app.grapheditor.commons.JIPipeDesktopGraphEditorRunManager;
 import org.hkijena.jipipe.desktop.app.grapheditor.commons.nodeui.JIPipeDesktopGraphNodeUI;
+import org.hkijena.jipipe.desktop.app.grapheditor.flavors.compartments.JIPipeDesktopCompartmentsGraphEditorUI;
+import org.hkijena.jipipe.desktop.app.grapheditor.flavors.compartments.properties.JIPipeDesktopCompartmentGraphEditorResultsPanel;
 import org.hkijena.jipipe.desktop.app.quickrun.JIPipeDesktopQuickRun;
 import org.hkijena.jipipe.desktop.app.quickrun.JIPipeDesktopQuickRunSettings;
 import org.hkijena.jipipe.plugins.settings.JIPipeRuntimeApplicationSettings;
@@ -41,6 +43,12 @@ public class JIPipeDesktopCompartmentsGraphEditorRunManager extends JIPipeDeskto
         for (JIPipeProjectCompartmentOutput compartmentOutput : compartment.getOutputNodes().values()) {
             getProject().reportValidity(new UnspecifiedValidationReportContext(), report,compartmentOutput);
         }
+    }
+
+    @Override
+    protected void showResults() {
+        getDockPanel().activatePanel(JIPipeDesktopCompartmentsGraphEditorUI.DOCK_NODE_CONTEXT_RESULTS, true);
+        getDockPanel().getPanel(JIPipeDesktopCompartmentsGraphEditorUI.DOCK_NODE_CONTEXT_RESULTS, JIPipeDesktopCompartmentGraphEditorResultsPanel.class).refreshTables();
     }
 
     @Override
