@@ -56,6 +56,7 @@ import org.hkijena.jipipe.plugins.tables.datatypes.ResultsTableData;
 import org.hkijena.jipipe.utils.ColorUtils;
 import org.hkijena.jipipe.utils.PathUtils;
 import org.hkijena.jipipe.utils.StringUtils;
+import org.scijava.vecmath.Point2f;
 
 import java.awt.*;
 import java.awt.geom.Point2D;
@@ -290,81 +291,94 @@ public class ROI2DListData extends ArrayList<Roi> implements JIPipeData {
      * @return the mbr
      */
     public static Roi calculateMinimumBoundingRectangle(Roi roi) {
-        roi = new PolygonRoi(roi.getConvexHull(), Roi.POLYGON);
-        int np = roi.getFloatPolygon().npoints;
-        float[] xp = roi.getFloatPolygon().xpoints;
-        float[] yp = roi.getFloatPolygon().ypoints;
+        try {
+            roi = new PolygonRoi(roi.getConvexHull(), Roi.POLYGON);
 
-        double minArea = 2 * roi.getBounds().getWidth() * roi.getBounds().getHeight();
-        double minFD = roi.getBounds().getWidth() + roi.getBounds().getHeight(); // FD now stands for first diameter :)
-        int imin = -1;
-        int i2min = -1;
-        int jmin = -1;
-        double min_hmin = 0;
-        double min_hmax = 0;
-        for (int i = 0; i < np; i++) {
-            double maxLD = 0;
-            int imax = -1;
-            int i2max = -1;
-            int jmax = -1;
-            int i2;
-            if (i < np - 1) i2 = i + 1;
-            else i2 = 0;
+            // Iterate a few times to converge
+            for (int iteration = 0; iteration < 2; iteration++) {
+                int np = roi.getFloatPolygon().npoints;
+                float[] xp = roi.getFloatPolygon().xpoints;
+                float[] yp = roi.getFloatPolygon().ypoints;
 
-            for (int j = 0; j < np; j++) {
-                double d = Math.abs(perpDist(xp[i], yp[i], xp[i2], yp[i2], xp[j], yp[j]));
-                if (maxLD < d) {
-                    maxLD = d;
-                    imax = i;
-                    jmax = j;
-                    i2max = i2;
+                double minArea = 2 * roi.getBounds().getWidth() * roi.getBounds().getHeight();
+                double minFD = roi.getBounds().getWidth() + roi.getBounds().getHeight(); // FD now stands for first diameter :)
+                int imin = -1;
+                int i2min = -1;
+                int jmin = -1;
+                double min_hmin = 0;
+                double min_hmax = 0;
+                for (int i = 0; i < np; i++) {
+                    double maxLD = 0;
+                    int imax = -1;
+                    int i2max = -1;
+                    int jmax = -1;
+                    int i2;
+                    if (i < np - 1) i2 = i + 1;
+                    else i2 = 0;
+
+                    for (int j = 0; j < np; j++) {
+                        double d = Math.abs(perpDist(xp[i], yp[i], xp[i2], yp[i2], xp[j], yp[j]));
+                        if (maxLD < d) {
+                            maxLD = d;
+                            imax = i;
+                            jmax = j;
+                            i2max = i2;
+                        }
+                    }
+
+                    double hmin = 0;
+                    double hmax = 0;
+
+                    for (int k = 0; k < np; k++) { // rotating calipers
+                        double hd = parDist(xp[imax], yp[imax], xp[i2max], yp[i2max], xp[k], yp[k]);
+                        hmin = Math.min(hmin, hd);
+                        hmax = Math.max(hmax, hd);
+                    }
+
+                    double area = maxLD * (hmax - hmin);
+
+                    if (minArea > area) {
+
+                        minArea = area;
+                        minFD = maxLD;
+                        min_hmin = hmin;
+                        min_hmax = hmax;
+
+                        imin = imax;
+                        i2min = i2max;
+                        jmin = jmax;
+                    }
                 }
+
+                double pd = perpDist(xp[imin], yp[imin], xp[i2min], yp[i2min], xp[jmin], yp[jmin]); // signed feret diameter
+                double pairAngle = Math.atan2(yp[i2min] - yp[imin], xp[i2min] - xp[imin]);
+                double minAngle = pairAngle + Math.PI / 2;
+
+                float[] nxp = new float[4];
+                float[] nyp = new float[4];
+
+                nxp[0] = (float) (xp[imin] + Math.cos(pairAngle) * min_hmax);
+                nyp[0] = (float) (yp[imin] + Math.sin(pairAngle) * min_hmax);
+
+                nxp[1] = (float) (nxp[0] + Math.cos(minAngle) * pd);
+                nyp[1] = (float) (nyp[0] + Math.sin(minAngle) * pd);
+
+                nxp[2] = (float) (nxp[1] + Math.cos(pairAngle) * (min_hmin - min_hmax));
+                nyp[2] = (float) (nyp[1] + Math.sin(pairAngle) * (min_hmin - min_hmax));
+
+                nxp[3] = (float) (nxp[2] + Math.cos(minAngle) * -pd);
+                nyp[3] = (float) (nyp[2] + Math.sin(minAngle) * -pd);
+
+                roi = new PolygonRoi(nxp, nyp, 4, Roi.POLYGON);
             }
 
-            double hmin = 0;
-            double hmax = 0;
-
-            for (int k = 0; k < np; k++) { // rotating calipers
-                double hd = parDist(xp[imax], yp[imax], xp[i2max], yp[i2max], xp[k], yp[k]);
-                hmin = Math.min(hmin, hd);
-                hmax = Math.max(hmax, hd);
-            }
-
-            double area = maxLD * (hmax - hmin);
-
-            if (minArea > area) {
-
-                minArea = area;
-                minFD = maxLD;
-                min_hmin = hmin;
-                min_hmax = hmax;
-
-                imin = imax;
-                i2min = i2max;
-                jmin = jmax;
-            }
+            return roi;
+        } catch (Exception ignored) {
+            // Fallback case: standard bounding
+            Rectangle bounds = roi.getBounds();
+            return new PolygonRoi(new float[] { bounds.x, bounds.x + bounds.width, bounds.x + bounds.width, bounds.x },
+                    new float[] { bounds.y, bounds.y, bounds.y + bounds.height, bounds.y + bounds.height }, 4, Roi.POLYGON);
         }
-
-        double pd = perpDist(xp[imin], yp[imin], xp[i2min], yp[i2min], xp[jmin], yp[jmin]); // signed feret diameter
-        double pairAngle = Math.atan2(yp[i2min] - yp[imin], xp[i2min] - xp[imin]);
-        double minAngle = pairAngle + Math.PI / 2;
-
-        float[] nxp = new float[4];
-        float[] nyp = new float[4];
-
-        nxp[0] = (float) (xp[imin] + Math.cos(pairAngle) * min_hmax);
-        nyp[0] = (float) (yp[imin] + Math.sin(pairAngle) * min_hmax);
-
-        nxp[1] = (float) (nxp[0] + Math.cos(minAngle) * pd);
-        nyp[1] = (float) (nyp[0] + Math.sin(minAngle) * pd);
-
-        nxp[2] = (float) (nxp[1] + Math.cos(pairAngle) * (min_hmin - min_hmax));
-        nyp[2] = (float) (nyp[1] + Math.sin(pairAngle) * (min_hmin - min_hmax));
-
-        nxp[3] = (float) (nxp[2] + Math.cos(minAngle) * -pd);
-        nyp[3] = (float) (nyp[2] + Math.sin(minAngle) * -pd);
-
-        return new PolygonRoi(nxp, nyp, 4, Roi.POLYGON);
     }
 
     /**
@@ -1476,21 +1490,7 @@ public class ROI2DListData extends ArrayList<Roi> implements JIPipeData {
                                     } else {
                                         forRoi = new ResultsTableData(rtSys);
                                     }
-                                    if (measurements.getValues().contains(Measurement.StackPosition)) {
-                                        int columnChannel = forRoi.getOrCreateColumnIndex("Ch", false);
-                                        int columnStack = forRoi.getOrCreateColumnIndex("Slice", false);
-                                        int columnFrame = forRoi.getOrCreateColumnIndex("Frame", false);
-                                        for (int row = 0; row < forRoi.getRowCount(); row++) {
-                                            forRoi.setValueAt(roi.getCPosition(), row, columnChannel);
-                                            forRoi.setValueAt(roi.getZPosition(), row, columnStack);
-                                            forRoi.setValueAt(roi.getTPosition(), row, columnFrame);
-                                        }
-                                    }
-                                    if (addNameToTable) {
-                                        for (int row = 0; row < forRoi.getRowCount(); row++) {
-                                            forRoi.setValueAt(roi.getName(), row, "Name");
-                                        }
-                                    }
+                                    calculateAdditionalMeasurements(measurements, addNameToTable, roi, forRoi);
                                     result.addRows(forRoi);
                                 }
                             }
@@ -1514,22 +1514,7 @@ public class ROI2DListData extends ArrayList<Roi> implements JIPipeData {
                 rtSys.reset();
                 aSys.measure();
                 ResultsTableData forRoi = new ResultsTableData(rtSys);
-                if (measurements.getValues().contains(Measurement.StackPosition)) {
-                    int columnChannel = forRoi.getOrCreateColumnIndex("Ch", false);
-                    int columnStack = forRoi.getOrCreateColumnIndex("Slice", false);
-                    int columnFrame = forRoi.getOrCreateColumnIndex("Frame", false);
-                    for (int row = 0; row < forRoi.getRowCount(); row++) {
-                        forRoi.setValueAt(roi.getCPosition(), row, columnChannel);
-                        forRoi.setValueAt(roi.getZPosition(), row, columnStack);
-                        forRoi.setValueAt(roi.getTPosition(), row, columnFrame);
-                    }
-                }
-                if (addNameToTable) {
-                    int columnName = forRoi.getOrCreateColumnIndex("Name", true);
-                    for (int row = 0; row < forRoi.getRowCount(); row++) {
-                        forRoi.setValueAt(roi.getName(), row, columnName);
-                    }
-                }
+                calculateAdditionalMeasurements(measurements, addNameToTable, roi, forRoi);
                 result.addRows(forRoi);
             }
         }
@@ -1547,6 +1532,67 @@ public class ROI2DListData extends ArrayList<Roi> implements JIPipeData {
 //            }
 //        }
         return result;
+    }
+
+    private static void calculateAdditionalMeasurements(ImageStatisticsSetParameter measurements, boolean addNameToTable, Roi roi, ResultsTableData forRoi) {
+        if(measurements.getValues().contains(Measurement.BoundingRectangle) || measurements.getValues().contains(Measurement.ShapeDescriptors)) {
+            // Calculate fitted rotated rectangle
+            Roi mbr = calculateMinimumBoundingRectangle(roi);
+            FloatPolygon fp = mbr.getFloatPolygon();
+            Point2f p1 = new Point2f(fp.xpoints[0], fp.ypoints[0]);
+            Point2f p2 = new Point2f(fp.xpoints[1], fp.ypoints[1]);
+            Point2f p3 = new Point2f(fp.xpoints[2], fp.ypoints[2]);
+            Point2f p4 = new Point2f(fp.xpoints[3], fp.ypoints[3]);
+            float major = Math.max(p1.distance(p2), p2.distance(p3));
+            float minor = Math.min(p1.distance(p2), p2.distance(p3));
+            if(measurements.getValues().contains(Measurement.BoundingRectangle)) {
+                int columnRBWidth = forRoi.getOrCreateColumnIndex("RBWidth", false);
+                int columnRBHeight = forRoi.getOrCreateColumnIndex("RBHeight", false);
+                int columnRBX1 = forRoi.getOrCreateColumnIndex("RBX1", false);
+                int columnRBX2 = forRoi.getOrCreateColumnIndex("RBX2", false);
+                int columnRBX3 = forRoi.getOrCreateColumnIndex("RBX3", false);
+                int columnRBX4 = forRoi.getOrCreateColumnIndex("RBX4", false);
+                int columnRBY1 = forRoi.getOrCreateColumnIndex("RBY1", false);
+                int columnRBY2 = forRoi.getOrCreateColumnIndex("RBY2", false);
+                int columnRBY3 = forRoi.getOrCreateColumnIndex("RBY3", false);
+                int columnRBY4 = forRoi.getOrCreateColumnIndex("RBY4", false);
+                for (int row = 0; row < forRoi.getRowCount(); row++) {
+                    forRoi.setValueAt(major, row, columnRBWidth);
+                    forRoi.setValueAt(minor, row, columnRBHeight);
+                    forRoi.setValueAt(p1.x, row, columnRBX1);
+                    forRoi.setValueAt(p2.x, row, columnRBX2);
+                    forRoi.setValueAt(p3.x, row, columnRBX3);
+                    forRoi.setValueAt(p4.x, row, columnRBX4);
+                    forRoi.setValueAt(p1.y, row, columnRBY1);
+                    forRoi.setValueAt(p2.y, row, columnRBY2);
+                    forRoi.setValueAt(p3.y, row, columnRBY3);
+                    forRoi.setValueAt(p4.y, row, columnRBY4);
+                }
+            }
+            if(measurements.getValues().contains(Measurement.ShapeDescriptors)) {
+                float ar = major / minor;
+                int column = forRoi.getOrCreateColumnIndex("rAR", false);
+                for (int row = 0; row < forRoi.getRowCount(); row++) {
+                    forRoi.setValueAt(ar, row, column);
+                }
+            }
+        }
+        if (measurements.getValues().contains(Measurement.StackPosition)) {
+            int columnChannel = forRoi.getOrCreateColumnIndex("Ch", false);
+            int columnStack = forRoi.getOrCreateColumnIndex("Slice", false);
+            int columnFrame = forRoi.getOrCreateColumnIndex("Frame", false);
+            for (int row = 0; row < forRoi.getRowCount(); row++) {
+                forRoi.setValueAt(roi.getCPosition(), row, columnChannel);
+                forRoi.setValueAt(roi.getZPosition(), row, columnStack);
+                forRoi.setValueAt(roi.getTPosition(), row, columnFrame);
+            }
+        }
+        if (addNameToTable) {
+            int columnName = forRoi.getOrCreateColumnIndex("Name", true);
+            for (int row = 0; row < forRoi.getRowCount(); row++) {
+                forRoi.setValueAt(roi.getName(), row, columnName);
+            }
+        }
     }
 
     /**

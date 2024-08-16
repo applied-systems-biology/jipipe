@@ -122,12 +122,15 @@ public enum Measurement {
                 return "Measures the brightness-weighted average of the x and y coordinates all pixels in the image or selection. " +
                         "They are stored into 'XM' and 'YM' respectively. These coordinates are the first order spatial moments.";
             case BoundingRectangle:
-                return "The smallest rectangle enclosing the selection. " +
-                        "Uses the headings BX, BY, Width and Height, where BX and BY are the coordinates of the upper left corner of the rectangle.";
+                return "The smallest straight rectangle enclosing the selection. " +
+                        "Uses the headings BX, BY, Width and Height, where BX and BY are the coordinates of the upper left corner of the rectangle. " +
+                        "Also includes the fitting of a rotated bounding rectangle RB. " +
+                        "RBWidth, RBHeight are the width and the height. RBX1, RBX2, RBX3, RBX4, and RBY1, RBY2, RBY3, RBY4 are the four corner point's X and Y coordinates respectively.";
             case ShapeDescriptors:
                 return "Measures the following shape descriptors:<br/>" +
                         "<ul><li>Circ. (circularity): 4π*area/perimeter^2. A value of 1.0 indicates a perfect circle. As the value approaches 0.0, it indicates an increasingly elongated shape. Values may not be valid for very small particles.</li>" +
-                        "<li>AR (aspect ratio): major_axis/minor_axis. To show major and minor axis enable 'Fit ellipse'</li>" +
+                        "<li>AR (fitted ellipse aspect ratio): major_axis/minor_axis of the ellipse fitted to the ROI (measurement inherited from ImageJ)</li>" +
+                        "<li>rAR (fitted rectangle aspect ratio): fits a rotated rectangle around the ROI and calculates the aspect ratio (major_axis/minor_axis) of this rectangle</li>" +
                         "<li>Round (roundness): 4*area/(π*major_axis^2), or the inverse of the aspect ratio.</li>" +
                         "<li>Solidity: area/convex area.</li></ul>";
             case IntegratedDensity:

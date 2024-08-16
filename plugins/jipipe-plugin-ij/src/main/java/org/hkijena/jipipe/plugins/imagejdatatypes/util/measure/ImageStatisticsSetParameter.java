@@ -28,7 +28,8 @@ public class ImageStatisticsSetParameter extends DynamicSetParameter<Measurement
 
     public static final String ALL_DESCRIPTIONS = "<p><strong>Area</strong><br/><br/>Measures ROI areas. Area of selection in square pixels. Area is in calibrated units if available. They are stored as 'Area'.</p>" +
             "<br/><p><strong>Area fraction</strong><br/><br/>The percentage of non-zero pixels. Values are stored in '%Area'</p>" +
-            "<br/><p><strong>Bounding rectangle</strong><br/><br/>The smallest rectangle enclosing the selection. Uses the headings BX, BY, Width and Height, where BX and BY are the coordinates of the upper left corner of the rectangle.</p>" +
+            "<br/><p><strong>Bounding rectangle</strong><br/><br/>The smallest straight rectangle enclosing the selection. Uses the headings BX, BY, Width and Height, where BX and BY are the coordinates of the upper left corner of the rectangle. Please note that the rectangle is not rotated</p>" +
+            "<br/><p><strong>Minimum bounding rectangle</strong><br/><br/>(Part of the Bounding rectangle measurements). The smallest rotated rectangle enclosing the selection. RBWidth, RBHeight are the width and the height. RBX1, RBX2, RBX3, RBX4, and RBY1, RBY2, RBY3, RBY4 are the four corner point's X and Y coordinates respectively.</p>" +
             "<br/><p><strong>Center of mass</strong><br/><br/>Measures the brightness-weighted average of the x and y coordinates all pixels in the image or selection. They are stored into 'XM' and 'YM' respectively. These coordinates are the first order spatial moments.</p>" +
             "<br/><p><strong>Centroid</strong><br/><br/>The center point of the selection. This is the average of the x and y coordinates of all of the pixels in the image or selection. Values are stored in 'X' and 'Y' respectively.</p>" +
             "<br/><p><strong>Feret's diameter</strong><br/><br/>The longest distance between any two points along the selection boundary, also known as maximum caliper. Uses the Feret heading. FeretAngle (0-180 degrees) is the angle between the Feret's diameter and a line parallel to the x-axis of the image. " +
@@ -41,7 +42,8 @@ public class ImageStatisticsSetParameter extends DynamicSetParameter<Measurement
             "<br/><p><strong>Pixel values skewness</strong><br/><br/>The third order moment about the mean of grayscale pixel values. Values are stored in 'Skew'.</p><br/><p><strong>Pixel values standard deviation</strong><br/><br/>Measures the standard deviation of greyscale pixel values. They are stored as 'StdDev'.</p>" +
             "<br/><p><strong>Shape descriptors</strong><br/><br/>Measures the following shape descriptors:<br/>" +
             "<ul><li>Circ. (circularity): 4π*area/perimeter^2. A value of 1.0 indicates a perfect circle. As the value approaches 0.0, it indicates an increasingly elongated shape. Values may not be valid for very small particles.</li>" +
-            "<li>AR (aspect ratio): major_axis/minor_axis. To show major and minor axis enable 'Fit ellipse'</li>" +
+            "<li>AR (fitted ellipse aspect ratio): major_axis/minor_axis of the ellipse fitted to the ROI (measurement inherited from ImageJ)</li>" +
+            "<li>rAR (fitted rectangle aspect ratio): fits a rotated rectangle around the ROI and calculates the aspect ratio (major_axis/minor_axis) of this rectangle</li>" +
             "<li>Round (roundness): 4*area/(π*major_axis^2), or the inverse of the aspect ratio.</li>" +
             "<li>Solidity: area/convex area.</li></ul></p>" +
             "<br/><p><strong>Stack position</strong><br/><br/>The current position (channel, slice and frame) in the stack or hyperstack. " +

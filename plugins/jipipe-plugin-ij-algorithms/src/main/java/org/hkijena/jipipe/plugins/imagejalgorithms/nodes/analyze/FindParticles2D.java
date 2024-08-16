@@ -199,8 +199,11 @@ public class FindParticles2D extends JIPipeSimpleIteratingAlgorithm {
                         roi.setImage(roiReferenceImage);
                     }
 
+                    // Use JIPipe-enhanced measurements
+                    ResultsTableData measurements = rois.measure(roiReferenceImage, statisticsParameters, true, measureInPhysicalUnits);
+
                     iterationStep.addOutputData("ROI", rois, annotations, JIPipeTextAnnotationMergeMode.Merge, progressInfo);
-                    iterationStep.addOutputData("Measurements", new ResultsTableData(table), annotations, JIPipeTextAnnotationMergeMode.Merge, progressInfo);
+                    iterationStep.addOutputData("Measurements", measurements, annotations, JIPipeTextAnnotationMergeMode.Merge, progressInfo);
                 }, progressInfo);
             } else {
                 ResultsTableData mergedResultsTable = new ResultsTableData(new ResultsTable());
@@ -241,8 +244,11 @@ public class FindParticles2D extends JIPipeSimpleIteratingAlgorithm {
                         roi.setImage(roiReferenceImage);
                     }
 
+                    // Use JIPipe-enhanced measurements
+                    ResultsTableData measurements = rois.measure(roiReferenceImage, statisticsParameters, true, measureInPhysicalUnits);
+
                     // Merge into one result
-                    mergedResultsTable.addRows(new ResultsTableData(table));
+                    mergedResultsTable.addRows(measurements);
                     mergedROI.mergeWith(rois);
                 }, progressInfo);
 
