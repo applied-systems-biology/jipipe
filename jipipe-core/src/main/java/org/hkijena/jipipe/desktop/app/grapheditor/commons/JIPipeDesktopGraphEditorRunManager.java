@@ -33,6 +33,7 @@ public abstract class JIPipeDesktopGraphEditorRunManager implements JIPipeRunnab
     private JIPipeRunnable run;
     private JIPipeDesktopDockPanel.State savedState;
     private boolean queueMode;
+    private boolean restoreDockStateRequired;
 
     public JIPipeDesktopGraphEditorRunManager(JIPipeProject project, JIPipeDesktopGraphCanvasUI canvasUI, JIPipeDesktopGraphNodeUI nodeUI, JIPipeDesktopDockPanel dockPanel) {
         this.project = project;
@@ -51,6 +52,7 @@ public abstract class JIPipeDesktopGraphEditorRunManager implements JIPipeRunnab
         // Remember the saved state
         savedState = getDockPanel().getCurrentState();
         queueMode = alreadyHasRunEnqueued();
+        restoreDockStateRequired = getLogPanel().isAutoShowProgress() || getLogPanel().isAutoShowResults();
 
         // Validation step
         JIPipeValidationReport report = new JIPipeValidationReport();
@@ -115,7 +117,9 @@ public abstract class JIPipeDesktopGraphEditorRunManager implements JIPipeRunnab
 
             // Restore the saved state
             if(!queueMode) {
-                getDockPanel().restoreState(savedState);
+                if(restoreDockStateRequired) {
+                    getDockPanel().restoreState(savedState);
+                }
 
                 if (getLogPanel().isAutoShowResults()) {
                     canvasUI.selectOnly(nodeUI);
@@ -133,7 +137,9 @@ public abstract class JIPipeDesktopGraphEditorRunManager implements JIPipeRunnab
         if (event.getRun() == run) {
             if(!queueMode) {
                 // Restore the saved state
-                getDockPanel().restoreState(savedState);
+                if(restoreDockStateRequired) {
+                    getDockPanel().restoreState(savedState);
+                }
 
                 if (getLogPanel().isAutoShowResults()) {
                     canvasUI.selectOnly(nodeUI);

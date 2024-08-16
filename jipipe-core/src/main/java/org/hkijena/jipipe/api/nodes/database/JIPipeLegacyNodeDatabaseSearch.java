@@ -194,7 +194,7 @@ public class JIPipeLegacyNodeDatabaseSearch {
         if (textTokens.isEmpty()) {
             result.sort(Comparator.comparing((JIPipeNodeDatabaseEntry e) -> !pinnedIds.contains(e.getId())).thenComparing(JIPipeNodeDatabaseEntry::getName));
         } else {
-            result.removeIf(e -> rankMap.get(e) <= 0);
+            result.removeIf(e -> rankMap.get(e) >= 0);
             result.sort(Comparator.comparing((JIPipeNodeDatabaseEntry e) -> !pinnedIds.contains(e.getId())).thenComparing(rankMap::get));
         }
 
