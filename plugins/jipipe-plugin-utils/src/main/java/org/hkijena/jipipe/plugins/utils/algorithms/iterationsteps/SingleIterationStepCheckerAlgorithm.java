@@ -67,6 +67,7 @@ public class SingleIterationStepCheckerAlgorithm extends JIPipeIteratingAlgorith
         {
             JIPipeExpressionVariablesMap variables = new JIPipeExpressionVariablesMap();
             variables.putAnnotations(iterationStep.getMergedTextAnnotations());
+            getDefaultCustomExpressionVariables().writeToVariables(variables);
             variables.set("iteration_step_index", iterationContext.getCurrentIterationStepIndex());
             variables.set("num_iteration_steps", iterationContext.getNumIterationSteps());
             if (!filter.test(variables)) {
@@ -129,5 +130,10 @@ public class SingleIterationStepCheckerAlgorithm extends JIPipeIteratingAlgorith
     @JIPipeParameter("filter")
     public void setFilter(JIPipeExpressionParameter filter) {
         this.filter = filter;
+    }
+
+    @Override
+    public boolean isEnableDefaultCustomExpressionVariables() {
+        return true;
     }
 }

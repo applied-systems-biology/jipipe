@@ -125,7 +125,7 @@ public enum Measurement {
                 return "The smallest straight rectangle enclosing the selection. " +
                         "Uses the headings BX, BY, Width and Height, where BX and BY are the coordinates of the upper left corner of the rectangle. " +
                         "Also includes the fitting of a rotated bounding rectangle RB. " +
-                        "RBWidth, RBHeight are the width and the height. RBX1, RBX2, RBX3, RBX4, and RBY1, RBY2, RBY3, RBY4 are the four corner point's X and Y coordinates respectively.";
+                        "RBWidth, RBHeight are the width/major axis and the height/minor axis. RBX1, RBX2, RBX3, RBX4, and RBY1, RBY2, RBY3, RBY4 are the four corner point's X and Y coordinates respectively.";
             case ShapeDescriptors:
                 return "Measures the following shape descriptors:<br/>" +
                         "<ul><li>Circ. (circularity): 4π*area/perimeter^2. A value of 1.0 indicates a perfect circle. As the value approaches 0.0, it indicates an increasingly elongated shape. Values may not be valid for very small particles.</li>" +
