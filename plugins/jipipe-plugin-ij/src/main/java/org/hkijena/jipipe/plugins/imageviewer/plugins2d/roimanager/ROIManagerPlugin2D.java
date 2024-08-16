@@ -88,11 +88,11 @@ public class ROIManagerPlugin2D extends JIPipeImageViewerPlugin2D {
         }
         if (getCurrentImagePlus() != null && getCurrentImagePlus().getOverlay() != null) {
             if (getCurrentImagePlus().getRoi() != null) {
-                rois.add(getCurrentImagePlus().getRoi());
+                rois.add((Roi) getCurrentImagePlus().getRoi().clone());
             }
             for (Roi roi : getCurrentImagePlus().getOverlay()) {
-                rois.add(roi);
-                overlayRois.add(roi);
+                rois.add((Roi) roi.clone());
+                overlayRois.add((Roi) roi.clone());
             }
         }
         for (Roi roi : rois) {
