@@ -56,13 +56,11 @@ public class JIPipeDesktopPluginManagerUI extends JIPipeDesktopWorkbenchPanel im
     private final JIPipeDesktopFormPanel propertyPanel = new JIPipeDesktopFormPanel(JIPipeDesktopFormPanel.WITH_SCROLLING);
     private final JCheckBox onlyNewToggle = new JCheckBox("Only new", false);
     private final JIPipeDesktopSearchTextField searchTextField = new JIPipeDesktopSearchTextField();
-    private final JIPipeDesktopImageJUpdateSitesRepository updateSitesRepository;
     private final JPanel managerPanel = new JPanel(new BorderLayout());
     private JScrollPane pluginsListScrollPane;
 
     public JIPipeDesktopPluginManagerUI(JIPipeDesktopWorkbench desktopWorkbench) {
         super(desktopWorkbench);
-        this.updateSitesRepository = new JIPipeDesktopImageJUpdateSitesRepository(this);
         initialize();
         loadAvailablePlugins();
         updatePluginsList();
@@ -261,9 +259,6 @@ public class JIPipeDesktopPluginManagerUI extends JIPipeDesktopWorkbenchPanel im
                 popupMenu.add(UIUtils.createMenuItem("Show info", "Shows information about the update site", UIUtils.getIconFromResources("actions/document-preview.png"), () -> {
                     showImageJUpdateSiteInfo(updateSiteDependency);
                 }));
-                popupMenu.add(UIUtils.createMenuItem("(Re-)install", "(Re-)installs the update site", UIUtils.getIconFromResources("actions/run-build-install.png"), () -> {
-                    installImageJUpdateSite(updateSiteDependency);
-                }));
                 propertyPanel.addToForm(button, new JLabel("ImageJ dependency"));
             }
         } else {
@@ -281,13 +276,6 @@ public class JIPipeDesktopPluginManagerUI extends JIPipeDesktopWorkbenchPanel im
                 JOptionPane.YES_NO_OPTION,
                 JOptionPane.QUESTION_MESSAGE) == JOptionPane.YES_OPTION) {
             JIPipe.exitLater(0);
-        }
-    }
-
-    private void installImageJUpdateSite(JIPipeImageJUpdateSiteDependency updateSiteDependency) {
-        if (JOptionPane.showConfirmDialog(this, "Do you really want to (re-)install the update site '" + updateSiteDependency.getName() + "'?",
-                "Install update site", JOptionPane.YES_NO_OPTION, JOptionPane.QUESTION_MESSAGE) == JOptionPane.YES_OPTION) {
-            switchToRun(new JIPipeDesktopImageJUpdateSitesRepository.ActivateDeactivateRun(updateSitesRepository, Collections.emptyList(), Collections.singletonList(updateSiteDependency.toUpdateSite())));
         }
     }
 
@@ -322,10 +310,6 @@ public class JIPipeDesktopPluginManagerUI extends JIPipeDesktopWorkbenchPanel im
             }
             propertyPanel.addToForm(authorsPanel, new JLabel(label));
         }
-    }
-
-    public JIPipeDesktopImageJUpdateSitesRepository getUpdateSitesRepository() {
-        return updateSitesRepository;
     }
 
     private void revertChanges() {
@@ -369,7 +353,6 @@ public class JIPipeDesktopPluginManagerUI extends JIPipeDesktopWorkbenchPanel im
 
         // Collect ImageJ update sites
         Map<String, JIPipeImageJUpdateSiteDependency> updateSiteDependencies = new HashMap<>();
-        Map<String, JCheckBox> updateSiteCheckBoxes = new HashMap<>();
         for (JIPipePlugin plugin : pluginsToInstall) {
             for (JIPipeImageJUpdateSiteDependency updateSiteDependency : plugin.getAllImageJUpdateSiteDependencies()) {
                 updateSiteDependencies.put(updateSiteDependency.getName(), updateSiteDependency);
@@ -395,23 +378,10 @@ public class JIPipeDesktopPluginManagerUI extends JIPipeDesktopWorkbenchPanel im
             formPanel.addGroupHeader("The following plugins could not be found", UIUtils.getIconFromResources("status/package-broken.png"));
         }
         if (!updateSiteDependencies.isEmpty()) {
-            JIPipeDesktopFormPanel.GroupHeaderPanel groupHeader = formPanel.addGroupHeader("The following ImageJ update sites will be activated", UIUtils.getIconFromResources("apps/imagej.png"));
+            formPanel.addGroupHeader("Please ensure that the following ImageJ update sites (Plugins > ImageJ plugins) are activated", UIUtils.getIconFromResources("emblems/warning.png"));
             for (String name : updateSiteDependencies.keySet()) {
-                JCheckBox checkBox = new JCheckBox(updateSiteDependencies.get(name).getName() + " (" + updateSiteDependencies.get(name).getUrl() + ")");
-                checkBox.setSelected(true);
-                updateSiteCheckBoxes.put(name, checkBox);
-                formPanel.addWideToForm(checkBox);
+                formPanel.addWideToForm(new JLabel(updateSiteDependencies.get(name).getName() + " (" + updateSiteDependencies.get(name).getUrl() + ")", UIUtils.getIconFromResources("apps/imagej.png"), JLabel.LEFT));
             }
-            groupHeader.addToTitlePanel(UIUtils.createButton("Select all", UIUtils.getIconFromResources("actions/edit-select-all.png"), () -> {
-                for (JCheckBox checkBox : updateSiteCheckBoxes.values()) {
-                    checkBox.setSelected(true);
-                }
-            }));
-            groupHeader.addToTitlePanel(UIUtils.createButton("Clear selection", UIUtils.getIconFromResources("actions/edit-select-none.png"), () -> {
-                for (JCheckBox checkBox : updateSiteCheckBoxes.values()) {
-                    checkBox.setSelected(false);
-                }
-            }));
         }
         formPanel.addVerticalGlue();
 
@@ -448,13 +418,7 @@ public class JIPipeDesktopPluginManagerUI extends JIPipeDesktopWorkbenchPanel im
         dialog.setVisible(true);
 
         if (userAccepted.get()) {
-            Set<UpdateSite> updateSites = new HashSet<>();
-            for (Map.Entry<String, JIPipeImageJUpdateSiteDependency> entry : updateSiteDependencies.entrySet()) {
-                if (updateSiteCheckBoxes.get(entry.getKey()).isSelected()) {
-                    updateSites.add(entry.getValue().toUpdateSite());
-                }
-            }
-            switchToRun(new JIPipeDesktopApplyPluginManagerRun(this, pluginsToInstall, pluginsToUninstall, updateSites));
+            switchToRun(new JIPipeDesktopApplyPluginManagerRun(pluginsToInstall, pluginsToUninstall, new HashSet<>(updateSiteDependencies.values())));
         }
     }
 
@@ -521,7 +485,7 @@ public class JIPipeDesktopPluginManagerUI extends JIPipeDesktopWorkbenchPanel im
 
     @Override
     public void onRunnableFinished(JIPipeRunnable.FinishedEvent event) {
-        if (event.getRun() instanceof JIPipeDesktopImageJUpdateSitesRepository.ActivateDeactivateRun || event.getRun() instanceof JIPipeDesktopApplyPluginManagerRun) {
+        if (event.getRun() instanceof JIPipeDesktopApplyPluginManagerRun) {
             switchToManager();
             SHOW_RESTART_PROMPT = true;
             updateSelectionPanel();
@@ -530,7 +494,7 @@ public class JIPipeDesktopPluginManagerUI extends JIPipeDesktopWorkbenchPanel im
 
     @Override
     public void onRunnableInterrupted(JIPipeRunnable.InterruptedEvent event) {
-        if (event.getRun() instanceof JIPipeDesktopImageJUpdateSitesRepository.ActivateDeactivateRun) {
+        if (event.getRun() instanceof JIPipeDesktopApplyPluginManagerRun) {
             switchToManager();
         }
     }

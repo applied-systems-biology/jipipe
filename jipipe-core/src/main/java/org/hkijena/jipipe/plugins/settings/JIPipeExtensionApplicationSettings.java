@@ -33,7 +33,6 @@ import java.util.Map;
  */
 public class JIPipeExtensionApplicationSettings extends JIPipeDefaultApplicationsSettingsSheet {
     public static final String ID = "org.hkijena.jipipe:extensions";
-    private boolean validateImageJDependencies = true;
     private boolean validateNodeTypes = true;
 
     private boolean ignorePreActivationChecks = false;
@@ -73,17 +72,6 @@ public class JIPipeExtensionApplicationSettings extends JIPipeDefaultApplication
             e.printStackTrace();
         }
         return result;
-    }
-
-    @SetJIPipeDocumentation(name = "Validate ImageJ dependencies", description = "If enabled, JIPipe will check if ImageJ dependencies are installed.")
-    @JIPipeParameter("validate-imagej-dependencies")
-    public boolean isValidateImageJDependencies() {
-        return validateImageJDependencies;
-    }
-
-    @JIPipeParameter("validate-imagej-dependencies")
-    public void setValidateImageJDependencies(boolean validateImageJDependencies) {
-        this.validateImageJDependencies = validateImageJDependencies;
     }
 
     @SetJIPipeDocumentation(name = "Validate node types", description = "If enabled, JIPipe will test all node types if they can be initialized and only contain known parameter types.")

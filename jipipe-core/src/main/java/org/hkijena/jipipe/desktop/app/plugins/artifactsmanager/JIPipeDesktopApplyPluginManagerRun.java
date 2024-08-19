@@ -15,27 +15,19 @@ package org.hkijena.jipipe.desktop.app.plugins.artifactsmanager;
 
 import net.imagej.updater.UpdateSite;
 import org.hkijena.jipipe.JIPipe;
+import org.hkijena.jipipe.JIPipeImageJUpdateSiteDependency;
 import org.hkijena.jipipe.JIPipePlugin;
 import org.hkijena.jipipe.api.AbstractJIPipeRunnable;
-import org.hkijena.jipipe.api.notifications.JIPipeNotification;
-import org.hkijena.jipipe.desktop.app.plugins.pluginsmanager.JIPipeDesktopImageJUpdateSitesRepository;
-import org.hkijena.jipipe.desktop.app.plugins.pluginsmanager.JIPipeDesktopPluginManagerUI;
 
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.Objects;
 import java.util.Set;
-import java.util.stream.Collectors;
 
 public class JIPipeDesktopApplyPluginManagerRun extends AbstractJIPipeRunnable {
 
-    private final JIPipeDesktopPluginManagerUI pluginManagerUI;
     private final Set<JIPipePlugin> pluginsToActivate;
     private final Set<JIPipePlugin> pluginsToDeactivate;
-    private final Set<UpdateSite> updateSitesToInstall;
+    private final Set<JIPipeImageJUpdateSiteDependency> updateSitesToInstall;
 
-    public JIPipeDesktopApplyPluginManagerRun(JIPipeDesktopPluginManagerUI pluginManagerUI, Set<JIPipePlugin> pluginsToActivate, Set<JIPipePlugin> pluginsToDeactivate, Set<UpdateSite> updateSitesToInstall) {
-        this.pluginManagerUI = pluginManagerUI;
+    public JIPipeDesktopApplyPluginManagerRun(Set<JIPipePlugin> pluginsToActivate, Set<JIPipePlugin> pluginsToDeactivate, Set<JIPipeImageJUpdateSiteDependency> updateSitesToInstall) {
         this.pluginsToActivate = pluginsToActivate;
         this.pluginsToDeactivate = pluginsToDeactivate;
         this.updateSitesToInstall = updateSitesToInstall;
@@ -64,22 +56,15 @@ public class JIPipeDesktopApplyPluginManagerRun extends AbstractJIPipeRunnable {
             }
         }
 
-        try {
-            // Update sites
-            if (!updateSitesToInstall.isEmpty()) {
-                JIPipeDesktopImageJUpdateSitesRepository.ActivateDeactivateRun run =
-                        new JIPipeDesktopImageJUpdateSitesRepository.ActivateDeactivateRun(pluginManagerUI.getUpdateSitesRepository(),
-                                Collections.emptyList(),
-                                new ArrayList<>(updateSitesToInstall));
-                run.setProgressInfo(getProgressInfo().resolve("Update sites"));
-                run.run();
+        getProgressInfo().log("Any additional items that need to be manually resolved will be displayed here:");
+        if(updateSitesToInstall.isEmpty()) {
+            getProgressInfo().log("-> Nothing to do");
+        }
+        else {
+            for (JIPipeImageJUpdateSiteDependency updateSite : updateSitesToInstall) {
+                getProgressInfo().log("-> TODO: Check if update site " + updateSite.getName() + " is activated");
             }
         }
-        catch (Exception e) {
-            getProgressInfo().getNotifications().push(new JIPipeNotification("jipipe:plugin-manager:install-update-sites:failed",
-                    "Failed to install ImageJ update sites",
-                    "The following ImageJ update sites could not be activated: " + updateSitesToInstall.stream().filter(Objects::nonNull).map(UpdateSite::getName).collect(Collectors.joining(", ")) +
-                    "\n\nPlease install the sites manually via the ImageJ updater (Plugins > ImageJ plugins)"));
-        }
+
     }
 }

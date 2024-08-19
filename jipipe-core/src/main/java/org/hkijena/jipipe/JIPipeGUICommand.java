@@ -21,7 +21,6 @@ import org.hkijena.jipipe.api.validation.contexts.UnspecifiedValidationReportCon
 import org.hkijena.jipipe.desktop.app.JIPipeDesktopDummyWorkbench;
 import org.hkijena.jipipe.desktop.app.JIPipeDesktopProjectWindow;
 import org.hkijena.jipipe.desktop.commons.components.JIPipeDesktopSplashScreen;
-import org.hkijena.jipipe.desktop.commons.ijupdater.JIPipeDesktopImageJUpdaterMissingRegistrationUpdateSiteResolver;
 import org.hkijena.jipipe.desktop.commons.notifications.JIPipeDesktopWorkbenchNotificationInboxUI;
 import org.hkijena.jipipe.plugins.settings.JIPipeExtensionApplicationSettings;
 import org.hkijena.jipipe.plugins.settings.JIPipeNotificationUIApplicationSettings;
@@ -100,12 +99,10 @@ public class JIPipeGUICommand implements Command {
                 JIPipeValidationReport report = new JIPipeValidationReport();
                 issues.reportValidity(new UnspecifiedValidationReportContext(), report);
                 if (!report.isValid()) {
-                    UIUtils.openValidityReportDialog(new JIPipeDesktopDummyWorkbench(), null, report, "JIPipe extension registry", "Issues were detected during the initialization of certain extensions. " +
-                            "Please review the following items. Close the window to ignore the messages and load JIPipe.", false);
+                    UIUtils.openValidityReportDialog(new JIPipeDesktopDummyWorkbench(), null, report, "JIPipe plugins registry", "Issues were detected during the initialization of certain extensions. " +
+                            "Please review the following items. Close the window to ignore the messages and load JIPipe. " +
+                            "Some issues may also be caused by missing/broken ImageJ plugins. You can repair issues related to ImageJ by starting the ImageJ updater (ImageJ: Help > Update, JIPipe: Plugins > ImageJ plugins)", false);
                 }
-            });
-            SwingUtilities.invokeLater(() -> {
-                resolveMissingImageJDependencies(issues);
             });
         }
 
@@ -216,17 +213,6 @@ public class JIPipeGUICommand implements Command {
             }
         }
         return success;
-    }
-
-    private void resolveMissingImageJDependencies(JIPipeRegistryIssues issues) {
-        if (issues.getMissingImageJSites().isEmpty())
-            return;
-        JIPipeDesktopImageJUpdaterMissingRegistrationUpdateSiteResolver resolver = new JIPipeDesktopImageJUpdaterMissingRegistrationUpdateSiteResolver(getContext(), issues);
-        resolver.revalidate();
-        resolver.repaint();
-        resolver.setLocationRelativeTo(null);
-        resolver.setVisible(true);
-
     }
 
     /**

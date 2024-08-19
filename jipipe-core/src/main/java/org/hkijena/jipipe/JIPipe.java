@@ -52,7 +52,6 @@ import org.hkijena.jipipe.api.validation.contexts.UnspecifiedValidationReportCon
 import org.hkijena.jipipe.desktop.api.registries.JIPipeCustomMenuRegistry;
 import org.hkijena.jipipe.desktop.app.JIPipeDesktopProjectWindow;
 import org.hkijena.jipipe.desktop.app.running.JIPipeDesktopRunnableLogsCollection;
-import org.hkijena.jipipe.desktop.commons.ijupdater.JIPipeDesktopImageJUpdaterProgressAdapter;
 import org.hkijena.jipipe.plugins.parameters.library.jipipe.DynamicDataDisplayOperationIdEnumParameter;
 import org.hkijena.jipipe.plugins.parameters.library.jipipe.DynamicDataImportOperationIdEnumParameter;
 import org.hkijena.jipipe.plugins.settings.JIPipeDefaultCacheDisplayApplicationSettings;
@@ -970,19 +969,6 @@ public class JIPipe extends AbstractService implements JIPipeService {
         // Create dependency graph
         progressInfo.log("Creating dependency graph ...");
         pluginRegistry.getDependencyGraph();
-
-        // Check for update sites
-        if (extensionSettings.isValidateImageJDependencies()) {
-            progressInfo.log("Validating ImageJ update site dependencies ...");
-            List<JIPipeDependency> loadedJavaExtensions = new ArrayList<>();
-            for (JIPipeJavaExtensionInitializationInfo initializationInfo : allJavaExtensionsList) {
-                if (initializationInfo.isLoaded()) {
-                    loadedJavaExtensions.add(initializationInfo.getInstance());
-                }
-            }
-            JIPipeProgressInfo dependencyProgress = progressInfo.resolve("ImageJ dependencies").detachProgress();
-            checkUpdateSites(issues, loadedJavaExtensions, new JIPipeDesktopImageJUpdaterProgressAdapter(dependencyProgress), dependencyProgress);
-        }
 
         // Create settings for default importers
         progressInfo.log("Creating dynamic settings ...");

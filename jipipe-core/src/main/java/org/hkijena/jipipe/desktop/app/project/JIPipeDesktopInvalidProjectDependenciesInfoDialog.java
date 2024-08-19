@@ -37,7 +37,6 @@ import java.util.Set;
  * Shown when potential issues are detected with the project
  */
 public class JIPipeDesktopInvalidProjectDependenciesInfoDialog extends JDialog implements JIPipeDesktopWorkbenchAccess {
-    private final Set<JIPipeImageJUpdateSiteDependency> missingUpdateSites;
     private final JIPipeDesktopWorkbench workbench;
     private final Path fileName;
     private final Set<JIPipeDependency> missingDependencySet;
@@ -49,14 +48,12 @@ public class JIPipeDesktopInvalidProjectDependenciesInfoDialog extends JDialog i
      * @param workbench            the workbench
      * @param fileName             the project file or folder. Only for informational purposes
      * @param missingDependencySet the unsatisfied dependencies
-     * @param missingUpdateSites   the missing update sites
      */
-    public JIPipeDesktopInvalidProjectDependenciesInfoDialog(JIPipeDesktopWorkbench workbench, Path fileName, Set<JIPipeDependency> missingDependencySet, Set<JIPipeImageJUpdateSiteDependency> missingUpdateSites) {
+    public JIPipeDesktopInvalidProjectDependenciesInfoDialog(JIPipeDesktopWorkbench workbench, Path fileName, Set<JIPipeDependency> missingDependencySet) {
         super(workbench.getWindow());
         this.workbench = workbench;
         this.fileName = fileName;
         this.missingDependencySet = missingDependencySet;
-        this.missingUpdateSites = missingUpdateSites;
         initialize();
     }
 
@@ -66,11 +63,10 @@ public class JIPipeDesktopInvalidProjectDependenciesInfoDialog extends JDialog i
      * @param workbench          the parent
      * @param fileName           the project file or folder. Only for informational purposes
      * @param dependencySet      the unsatisfied dependencies
-     * @param missingUpdateSites missing update sites
      * @return if loading should be continued anyway
      */
-    public static boolean showDialog(JIPipeDesktopWorkbench workbench, Path fileName, Set<JIPipeDependency> dependencySet, Set<JIPipeImageJUpdateSiteDependency> missingUpdateSites) {
-        JIPipeDesktopInvalidProjectDependenciesInfoDialog dialog = new JIPipeDesktopInvalidProjectDependenciesInfoDialog(workbench, fileName, dependencySet, missingUpdateSites);
+    public static boolean showDialog(JIPipeDesktopWorkbench workbench, Path fileName, Set<JIPipeDependency> dependencySet) {
+        JIPipeDesktopInvalidProjectDependenciesInfoDialog dialog = new JIPipeDesktopInvalidProjectDependenciesInfoDialog(workbench, fileName, dependencySet);
         dialog.setModal(true);
         dialog.pack();
         dialog.setSize(1024, 768);
@@ -97,7 +93,7 @@ public class JIPipeDesktopInvalidProjectDependenciesInfoDialog extends JDialog i
         if (!missingDependencySet.isEmpty()) {
             formPanel.addWideToForm(Box.createVerticalStrut(32));
             formPanel.addWideToForm(UIUtils.createJLabel("Missing JIPipe plugins", 22));
-            formPanel.addWideToForm(UIUtils.createJLabel(missingDependencySet.size() + " plugins are not present/activated. Please click the 'Start plugin manager' button and use the interface to activate the following plugins:", UIUtils.getIconFromResources("emblems/emblem-important-blue.png")));
+            formPanel.addWideToForm(UIUtils.createJLabel(missingDependencySet.size() + " plugins are not present/activated. Please cancel the operation and activate the following plugins via the JIPipe plugin manager:", UIUtils.getIconFromResources("emblems/emblem-important-blue.png")));
 
             for (JIPipeDependency dependency : missingDependencySet) {
                 JPanel dependencyPanel = new JPanel(new GridBagLayout());
@@ -156,16 +152,6 @@ public class JIPipeDesktopInvalidProjectDependenciesInfoDialog extends JDialog i
                 formPanel.addWideToForm(dependencyPanel);
             }
         }
-        if (!missingUpdateSites.isEmpty()) {
-            formPanel.addWideToForm(Box.createVerticalStrut(32));
-            formPanel.addWideToForm(UIUtils.createJLabel("Missing ImageJ update sites", 22));
-            formPanel.addWideToForm(UIUtils.createJLabel(missingUpdateSites.size() + " update sites were found to be not activated. Please click the 'Start ImageJ updater' button and use the interface to activate and install the following update sites:", UIUtils.getIconFromResources("emblems/emblem-important-blue.png")));
-            formPanel.addWideToForm(Box.createVerticalStrut(16));
-            for (JIPipeImageJUpdateSiteDependency siteDependency : missingUpdateSites) {
-                formPanel.addWideToForm(UIUtils.createJLabel("<html><strong>" + siteDependency.getName() + "</strong> (" + siteDependency.getUrl() + ")</html>", UIUtils.getIconFromResources("actions/run-build-install.png")));
-            }
-        }
-
         formPanel.addVerticalGlue();
         getContentPane().add(formPanel, BorderLayout.CENTER);
 
