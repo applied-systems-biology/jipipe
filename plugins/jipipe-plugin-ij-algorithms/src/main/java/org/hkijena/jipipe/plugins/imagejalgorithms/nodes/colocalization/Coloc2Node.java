@@ -37,6 +37,10 @@ import org.hkijena.jipipe.api.nodes.iterationstep.JIPipeIterationContext;
 import org.hkijena.jipipe.api.nodes.iterationstep.JIPipeSingleIterationStep;
 import org.hkijena.jipipe.api.parameters.AbstractJIPipeParameterCollection;
 import org.hkijena.jipipe.api.parameters.JIPipeParameter;
+import org.hkijena.jipipe.api.validation.JIPipeValidationReportEntry;
+import org.hkijena.jipipe.api.validation.JIPipeValidationReportEntryLevel;
+import org.hkijena.jipipe.api.validation.JIPipeValidationRuntimeException;
+import org.hkijena.jipipe.api.validation.contexts.GraphNodeValidationReportContext;
 import org.hkijena.jipipe.plugins.imagejdatatypes.datatypes.ImagePlusData;
 import org.hkijena.jipipe.plugins.imagejdatatypes.datatypes.ROI2DListData;
 import org.hkijena.jipipe.plugins.imagejdatatypes.datatypes.greyscale.ImagePlusGreyscaleData;
@@ -116,6 +120,14 @@ public class Coloc2Node extends JIPipeIteratingAlgorithm {
         ImagePlus channel1Img = iterationStep.getInputData("Channel 1", ImagePlusGreyscaleData.class, progressInfo).getDuplicateImage();
         ImagePlus channel2Img = iterationStep.getInputData("Channel 2", ImagePlusGreyscaleData.class, progressInfo).getDuplicateImage();
         channel2Img = ImageJUtils.convertToSameTypeIfNeeded(channel2Img, channel1Img, true);
+
+        if(!ImageJUtils.imagesHaveSameSize(channel1Img, channel2Img)) {
+            throw new JIPipeValidationRuntimeException(new JIPipeValidationReportEntry(JIPipeValidationReportEntryLevel.Error,
+                    new GraphNodeValidationReportContext(this),
+                    "Input images do not have the same size!",
+                    "All input images in the same batch should have the same width, height, number of slices, number of frames, and number of channels."));
+        }
+
         ImagePlus maskImg = null;
         if (inputMasks) {
             ImagePlusGreyscaleMaskData data = iterationStep.getInputData("Mask", ImagePlusGreyscaleMaskData.class, progressInfo);
@@ -128,6 +140,15 @@ public class Coloc2Node extends JIPipeIteratingAlgorithm {
                 data = new ROI2DListData(data);
                 data.flatten();
                 maskImg = data.toMask(channel1Img, true, false, 1);
+            }
+        }
+
+        if(maskImg != null) {
+            if(!ImageJUtils.imagesHaveSameSize(channel1Img, maskImg)) {
+                throw new JIPipeValidationRuntimeException(new JIPipeValidationReportEntry(JIPipeValidationReportEntryLevel.Error,
+                        new GraphNodeValidationReportContext(this),
+                        "Input images do not have the same size!",
+                        "All input images in the same batch should have the same width, height, number of slices, number of frames, and number of channels."));
             }
         }
 
