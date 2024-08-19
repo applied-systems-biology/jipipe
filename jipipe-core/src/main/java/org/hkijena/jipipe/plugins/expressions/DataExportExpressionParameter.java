@@ -43,8 +43,7 @@ import java.util.stream.Collectors;
 @AddJIPipeExpressionParameterVariable(name = "Data string", description = "String representation of the data (if available)", key = "data_string")
 @AddJIPipeExpressionParameterVariable(name = "Data row", description = "Source row of the data (if available, otherwise -1)", key = "data_row")
 @AddJIPipeExpressionParameterVariable(name = "Data directory", description = "The default data directory (run scratch dir or user-selected directory)", key = "data_dir")
-@AddJIPipeExpressionParameterVariable(name = "Project directory", description = "The project directory (if available; will be the same as the data directory otherwise)", key = "project_dir")
-@AddJIPipeExpressionParameterVariable(name = "Project data directories", description = "The user-configured project data directories as map. Access entries by the key.", key = "project_data_dirs")
+@AddJIPipeExpressionParameterVariable(fromClass = JIPipeProjectDirectoriesVariablesInfo.class)
 @AddJIPipeExpressionParameterVariable(name = "Automatically generated name", description = "A file name that was automatically generated based on annotations", key = "auto_file_name")
 @AddJIPipeDocumentationDescription(description = "This function should return a valid file path string, which can be either hardcoded or built using string or <code>PATH_COMBINE</code> operations.\n\n" +
         "Hard-cording file paths: Just type the path into quotes as shown below " +
