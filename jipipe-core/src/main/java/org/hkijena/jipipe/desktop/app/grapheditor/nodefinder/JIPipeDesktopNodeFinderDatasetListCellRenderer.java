@@ -44,15 +44,18 @@ public class JIPipeDesktopNodeFinderDatasetListCellRenderer extends JPanel imple
     private void initialize() {
         setLayout(new GridBagLayout());
 
-        nameLabel.setFont(new Font(Font.DIALOG, Font.BOLD, 14));
+        nameLabel.setFont(new Font(Font.DIALOG, Font.PLAIN, 12));
 
-        categoryLabel.setFont(new Font(Font.MONOSPACED, Font.PLAIN, 12));
+        descriptionLabel.setFont(new Font(Font.DIALOG, Font.PLAIN, 10));
+        descriptionLabel.setForeground(Color.GRAY);
+
+        categoryLabel.setFont(new Font(Font.DIALOG, Font.ITALIC, 10));
         categoryLabel.setForeground(Color.GRAY);
 
         indicator.setBorder(indicatorBorder);
 
         Insets insets = new Insets(2, 2, 2, 2);
-        add(indicator, new GridBagConstraints(0, 0, 1, 4, 0, 0, GridBagConstraints.NORTHWEST, GridBagConstraints.VERTICAL, insets, 0, 0));
+//        add(indicator, new GridBagConstraints(0, 0, 1, 4, 0, 0, GridBagConstraints.NORTHWEST, GridBagConstraints.VERTICAL, insets, 0, 0));
         add(iconLabel, new GridBagConstraints(1, 0, 1, 1, 0, 0, GridBagConstraints.NORTHWEST, GridBagConstraints.NONE, insets, 0, 0));
         add(nameLabel, new GridBagConstraints(2, 0, 1, 1, 1, 0, GridBagConstraints.NORTHWEST, GridBagConstraints.HORIZONTAL, insets, 0, 0));
         add(categoryLabel, new GridBagConstraints(2, 1, 1, 1, 1, 0, GridBagConstraints.NORTHWEST, GridBagConstraints.HORIZONTAL, insets, 0, 0));
