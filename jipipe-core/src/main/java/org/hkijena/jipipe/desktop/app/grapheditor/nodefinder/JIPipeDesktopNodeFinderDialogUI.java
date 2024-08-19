@@ -227,7 +227,7 @@ public class JIPipeDesktopNodeFinderDialogUI extends JDialog {
             JLabel algorithmNameLabel = new JLabel(queryNode.getName(), JIPipe.getNodes().getIconFor(queryNode.getInfo()), JLabel.LEFT);
             algorithmNameLabel.setToolTipText(TooltipUtils.getAlgorithmTooltip(queryNode.getInfo()));
             infoToolbar.add(algorithmNameLabel);
-            JLabel arrowLabel = new JLabel(UIUtils.getIconFromResources("actions/draw-triangle2.png"));
+            JLabel arrowLabel = new JLabel(UIUtils.getIconFromResources("actions/caret-right.png"));
             infoToolbar.add(arrowLabel);
             JLabel slotNameLabel = new JLabel(querySlot.getName(), JIPipe.getDataTypes().getIconFor(querySlot.getAcceptedDataType()), JLabel.LEFT);
             slotNameLabel.setToolTipText(TooltipUtils.getDataTableTooltip(querySlot));
