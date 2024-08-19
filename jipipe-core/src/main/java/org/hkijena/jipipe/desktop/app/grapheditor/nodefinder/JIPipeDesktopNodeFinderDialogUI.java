@@ -35,6 +35,7 @@ import javax.swing.*;
 import java.awt.*;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
+import java.lang.reflect.InvocationTargetException;
 import java.util.HashSet;
 import java.util.Map;
 import java.util.Set;
@@ -52,6 +53,7 @@ public class JIPipeDesktopNodeFinderDialogUI extends JDialog {
     private final JIPipeRunnableQueue queue = new JIPipeRunnableQueue("Node finder");
     private final JIPipeGraphEditorUIApplicationSettings settings;
     private JIPipeDesktopSearchTextField searchField;
+    private JScrollPane scrollPane;
 
     public JIPipeDesktopNodeFinderDialogUI(JIPipeDesktopGraphCanvasUI canvasUI, JIPipeDataSlot querySlot) {
         this.canvasUI = canvasUI;
@@ -87,7 +89,8 @@ public class JIPipeDesktopNodeFinderDialogUI extends JDialog {
         nodeList.setOpaque(false);
         nodeList.setCellRenderer(new JIPipeDesktopNodeFinderDatasetListCellRenderer(this));
         nodeList.setFixedCellHeight(JIPipeDesktopNodeFinderDatasetListCellRenderer.CELL_HEIGHT);
-        getContentPane().add(new JScrollPane(nodeList), BorderLayout.CENTER);
+        scrollPane = new JScrollPane(nodeList);
+        getContentPane().add(scrollPane, BorderLayout.CENTER);
 
         nodeList.addMouseListener(new MouseAdapter() {
             @Override
@@ -361,7 +364,17 @@ public class JIPipeDesktopNodeFinderDialogUI extends JDialog {
                 }
             }
 
-            dialogUI.nodeList.setModel(model);
+            try {
+                SwingUtilities.invokeAndWait(() -> dialogUI.nodeList.setModel(model));
+            } catch (InterruptedException | InvocationTargetException ignored) {
+                return;
+            }
+            if (!model.isEmpty()) {
+                SwingUtilities.invokeLater(() -> {
+                    dialogUI.nodeList.setSelectedIndex(0);
+                    dialogUI.scrollPane.getVerticalScrollBar().setValue(0);
+                });
+            }
         }
     }
 }
