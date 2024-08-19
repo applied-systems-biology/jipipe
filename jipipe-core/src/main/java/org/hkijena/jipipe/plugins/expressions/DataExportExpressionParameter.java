@@ -150,11 +150,16 @@ public class DataExportExpressionParameter extends JIPipeExpressionParameter {
         Map<String, String> projectDataDirs_ = new HashMap<>();
         for (Map.Entry<String, Path> entry : projectDataDirs.entrySet()) {
             if (!StringUtils.isNullOrEmpty(entry.getKey())) {
+                String value;
                 if (entry.getValue().isAbsolute()) {
-                    projectDataDirs_.put(entry.getKey(), entry.getValue().toString());
+                    value = entry.getValue().toString();
+
                 } else {
-                    projectDataDirs_.put(entry.getKey(), projectDir.resolve(entry.getValue()).toString());
+                    value = projectDir.resolve(entry.getValue()).toString();
                 }
+
+                variables.set("project_data_dir." + entry.getKey(), value );
+                projectDataDirs_.put(entry.getKey(), value);
             }
         }
         variables.set("project_data_dirs", projectDataDirs_);
