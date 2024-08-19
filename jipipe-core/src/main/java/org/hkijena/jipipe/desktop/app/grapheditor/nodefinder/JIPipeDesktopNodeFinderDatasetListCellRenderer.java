@@ -20,6 +20,7 @@ import org.hkijena.jipipe.utils.UIUtils;
 import org.hkijena.jipipe.utils.ui.RoundedLineBorder;
 
 import javax.swing.*;
+import javax.swing.border.Border;
 import java.awt.*;
 
 public class JIPipeDesktopNodeFinderDatasetListCellRenderer extends JPanel implements ListCellRenderer<JIPipeNodeDatabaseEntry> {
@@ -30,14 +31,15 @@ public class JIPipeDesktopNodeFinderDatasetListCellRenderer extends JPanel imple
     private final JLabel categoryLabel = new JLabel();
     private final JLabel descriptionLabel = new JLabel();
     private final JButton addButton = new JButton();
-    private final Color borderColorDefault = UIManager.getColor("Button.borderColor");
-    private final Color borderColorSelected = Color.GRAY;
-    private final RoundedLineBorder border = new RoundedLineBorder(borderColorDefault, 1, 3);
-    private final JPanel indicator = new JPanel();
-    private final RoundedLineBorder indicatorBorder = new RoundedLineBorder(Color.GRAY, 1, 0);
+    private final Border defaultBorder;
+    private final Border selectedBorder;
 
     public JIPipeDesktopNodeFinderDatasetListCellRenderer(JIPipeDesktopNodeFinderDialogUI parent) {
         this.parent = parent;
+        this.defaultBorder = BorderFactory.createCompoundBorder(UIUtils.createEmptyBorder(4),
+                UIUtils.createControlBorder());
+        this.selectedBorder = BorderFactory.createCompoundBorder(UIUtils.createEmptyBorder(4),
+                UIUtils.createControlBorder(UIUtils.COLOR_SUCCESS));
         initialize();
     }
 
@@ -52,8 +54,6 @@ public class JIPipeDesktopNodeFinderDatasetListCellRenderer extends JPanel imple
         categoryLabel.setFont(new Font(Font.DIALOG, Font.ITALIC, 10));
         categoryLabel.setForeground(Color.GRAY);
 
-        indicator.setBorder(indicatorBorder);
-
         Insets insets = new Insets(2, 2, 2, 2);
 //        add(indicator, new GridBagConstraints(0, 0, 1, 4, 0, 0, GridBagConstraints.NORTHWEST, GridBagConstraints.VERTICAL, insets, 0, 0));
         add(iconLabel, new GridBagConstraints(1, 0, 1, 1, 0, 0, GridBagConstraints.NORTHWEST, GridBagConstraints.NONE, insets, 0, 0));
@@ -64,16 +64,12 @@ public class JIPipeDesktopNodeFinderDatasetListCellRenderer extends JPanel imple
         addButton.setOpaque(false);
         addButton.setUI(new JIPipeDesktopRoundedButtonUI(3, JIPipeNotificationAction.Style.Success.getBackground().brighter(), JIPipeNotificationAction.Style.Success.getBackground().darker()));
         addButton.setIcon(UIUtils.getIconFromResources("actions/add.png"));
-        addButton.setFont(new Font(Font.DIALOG, Font.PLAIN, 16));
+//        addButton.setFont(new Font(Font.DIALOG, Font.PLAIN, 12));
 //        addButton.setBackground(JIPipeNotificationAction.Style.Success.getBackground());
 //        addButton.setForeground(JIPipeNotificationAction.Style.Success.getText());
         addButton.setBorder(BorderFactory.createCompoundBorder(new RoundedLineBorder(new Color(0x5CB85C), 1, 3),
                 BorderFactory.createEmptyBorder(3, 3, 3, 3)));
-        add(addButton, new GridBagConstraints(3, 2, 1, 1, 0, 0, GridBagConstraints.NORTHWEST, GridBagConstraints.NONE, new Insets(2, 16, 2, 2), 0, 0));
-
-        setBorder(BorderFactory.createCompoundBorder(BorderFactory.createEmptyBorder(4, 4, 4, 4),
-                BorderFactory.createCompoundBorder(border,
-                        BorderFactory.createEmptyBorder(4, 4, 4, 4))));
+        add(addButton, new GridBagConstraints(3, 0, 1, 1, 0, 0, GridBagConstraints.NORTHWEST, GridBagConstraints.BOTH, new Insets(2, 16, 2, 2), 0, 0));
     }
 
     @Override
@@ -82,31 +78,23 @@ public class JIPipeDesktopNodeFinderDatasetListCellRenderer extends JPanel imple
         iconLabel.setIcon(value.getIcon());
         nameLabel.setText(value.getName());
         categoryLabel.setText(value.getLocationInfos().get(0).trim().replace("\n", " > "));
-        descriptionLabel.setText(value.getDescription().toPlainText());
+        String descriptionText = value.getDescription().toPlainText();
+        if(descriptionText.length() > 200) {
+            descriptionText = descriptionText.substring(0, 200) + " ...";
+        }
+        descriptionLabel.setText(descriptionText);
 
         if (parent.getQuerySlot() != null) {
             if (value.exists()) {
-                indicator.setBackground(value.getFillColor());
-                indicatorBorder.setFill(value.getBorderColor());
-                indicator.setOpaque(true);
                 addButton.setText("Connect");
             } else {
-                indicatorBorder.setFill(value.getFillColor());
-                indicator.setOpaque(false);
                 addButton.setText("Add");
             }
         } else {
-            indicator.setBackground(value.getFillColor());
-            indicatorBorder.setFill(value.getBorderColor());
-            indicator.setOpaque(true);
             addButton.setText("Add");
         }
 
-        if (isSelected) {
-            border.setFill(borderColorSelected);
-        } else {
-            border.setFill(borderColorDefault);
-        }
+        setBorder(isSelected ? selectedBorder : defaultBorder);
 
         return this;
     }
