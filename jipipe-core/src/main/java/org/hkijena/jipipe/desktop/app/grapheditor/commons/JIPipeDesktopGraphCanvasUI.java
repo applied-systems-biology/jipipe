@@ -1439,7 +1439,7 @@ public class JIPipeDesktopGraphCanvasUI extends JLayeredPane implements JIPipeDe
             if (selection.size() <= 1) {
                 selectOnly(ui);
             }
-            if(graphEditorUI != null && graphEditorUI.getCurrentTool() != graphEditorUI.getDefaultTool()) {
+            if (graphEditorUI != null && graphEditorUI.getCurrentTool() != graphEditorUI.getDefaultTool()) {
                 graphEditorUI.selectDefaultTool();
                 return;
             }
@@ -2801,8 +2801,7 @@ public class JIPipeDesktopGraphCanvasUI extends JLayeredPane implements JIPipeDe
                                 targetPoint.center.x, targetPoint.center.y,
                                 new float[]{0f, 1f},
                                 new Color[]{sourcePartition.getColor().getContentOrDefault(defaultPaint), targetPartition.getColor().getContentOrDefault(defaultPaint)});
-                    }
-                    catch (Throwable throwable) {
+                    } catch (Throwable throwable) {
                         strokePaint = sourcePartition.getColor().getContentOrDefault(defaultPaint);
                     }
                 } else {
@@ -3068,6 +3067,21 @@ public class JIPipeDesktopGraphCanvasUI extends JLayeredPane implements JIPipeDe
         return Collections.unmodifiableSet(selection);
     }
 
+    public void setSelection(Set<JIPipeDesktopGraphNodeUI> nodeUIs) {
+        clearSelection();
+        if (nodeUIs != null) {
+            for (JIPipeDesktopGraphNodeUI ui : nodeUIs) {
+                selection.add(ui);
+                if (!(ui instanceof JIPipeDesktopAnnotationGraphNodeUI)) {
+                    if (getLayer(ui) < currentNodeLayer) {
+                        setLayer(ui, ++currentNodeLayer);
+                    }
+                }
+            }
+            updateSelection();
+        }
+    }
+
     /**
      * @return the set of selected nodes
      */
@@ -3101,22 +3115,6 @@ public class JIPipeDesktopGraphCanvasUI extends JLayeredPane implements JIPipeDe
             currentResizeTarget = null;
         }
     }
-
-    public void setSelection(Set<JIPipeDesktopGraphNodeUI> nodeUIs) {
-        clearSelection();
-        if(nodeUIs != null) {
-            for (JIPipeDesktopGraphNodeUI ui : nodeUIs) {
-                selection.add(ui);
-                if (!(ui instanceof JIPipeDesktopAnnotationGraphNodeUI)) {
-                    if (getLayer(ui) < currentNodeLayer) {
-                        setLayer(ui, ++currentNodeLayer);
-                    }
-                }
-            }
-            updateSelection();
-        }
-    }
-
 
     /**
      * Selects only the specified algorithm

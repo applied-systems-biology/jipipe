@@ -51,12 +51,14 @@ public @interface JIPipeExpressionParameterSettings {
 
     /**
      * If true, hide the editor button
+     *
      * @return if the editor button should be hidden
      */
     boolean withoutEditorButton() default false;
 
     /**
      * Allows to set a custom token maker
+     *
      * @return the token maker
      */
     Class<? extends AbstractTokenMaker> tokenMaker() default JIPipeExpressionEvaluatorSyntaxTokenMaker.class;

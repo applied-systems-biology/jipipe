@@ -60,7 +60,7 @@ public class JIPipeDesktopCompartmentsParametersPanel extends JIPipeDesktopProje
                         JIPipeDesktopFormPanel.DOCUMENTATION_EXTERNAL);
         add(parametersUI, BorderLayout.CENTER);
 
-        if(node instanceof JIPipeProjectCompartment) {
+        if (node instanceof JIPipeProjectCompartment) {
             // Edit contents button
             JButton editContentsButton = UIUtils.createButton("Edit contents", UIUtils.getIconFromResources("actions/edit.png"), this::editContents);
             UIUtils.makeButtonHighlightedSuccess(editContentsButton);
@@ -69,7 +69,7 @@ public class JIPipeDesktopCompartmentsParametersPanel extends JIPipeDesktopProje
     }
 
     private void editContents() {
-        getDesktopProjectWorkbench().getOrOpenPipelineEditorTab((JIPipeProjectCompartment)node, true);
+        getDesktopProjectWorkbench().getOrOpenPipelineEditorTab((JIPipeProjectCompartment) node, true);
     }
 
     public JIPipeDesktopParameterFormPanel getParametersUI() {

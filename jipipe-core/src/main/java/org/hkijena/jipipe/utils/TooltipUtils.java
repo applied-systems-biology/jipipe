@@ -43,7 +43,7 @@ public class TooltipUtils {
                 "<td><strong>" + HtmlEscapers.htmlEscaper().escape(name) + "</strong></td>" +
                 "<td><span style=\"color: gray;\"><i>" + (keyStroke != null ? UIUtils.keyStrokeToString(keyStroke) : "") + "</i></span></td>" +
                 "</tr><tr>" +
-                "<td>" + StringUtils.wordWrappedHTMLElement(description, 50)+ "</td>" +
+                "<td>" + StringUtils.wordWrappedHTMLElement(description, 50) + "</td>" +
                 "<td></td>" +
                 "</tr>" +
                 "</table></html>";

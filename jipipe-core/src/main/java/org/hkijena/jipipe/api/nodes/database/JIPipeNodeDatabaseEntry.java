@@ -20,9 +20,9 @@ import org.hkijena.jipipe.plugins.parameters.library.markup.HTMLText;
 
 import javax.swing.*;
 import java.awt.*;
+import java.util.List;
 import java.util.Map;
 import java.util.Set;
-import java.util.List;
 
 public interface JIPipeNodeDatabaseEntry {
 

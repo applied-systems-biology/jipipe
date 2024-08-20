@@ -96,7 +96,7 @@ public class JIPipePluginRegistry {
             try {
                 JIPipeJavaPlugin extension = pluginInfo.createInstance();
                 if (extension instanceof JIPipePrepackagedDefaultJavaPlugin && !extension.isCorePlugin()) {
-                    JIPipeDependency dependency = (JIPipeDependency) ReflectionUtils.getDeclaredStaticFieldValue("AS_DEPENDENCY",extension.getClass());
+                    JIPipeDependency dependency = (JIPipeDependency) ReflectionUtils.getDeclaredStaticFieldValue("AS_DEPENDENCY", extension.getClass());
                     settings.getActivatedPlugins().add(dependency.getDependencyId());
                 }
             } catch (Throwable e) {

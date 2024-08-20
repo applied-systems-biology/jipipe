@@ -35,8 +35,8 @@ import org.hkijena.jipipe.api.nodes.iterationstep.JIPipeSingleIterationStep;
 import org.hkijena.jipipe.api.parameters.JIPipeParameter;
 import org.hkijena.jipipe.api.parameters.JIPipeParameterAccess;
 import org.hkijena.jipipe.api.parameters.JIPipeParameterTree;
-import org.hkijena.jipipe.plugins.expressions.JIPipeExpressionParameter;
 import org.hkijena.jipipe.plugins.expressions.AddJIPipeExpressionParameterVariable;
+import org.hkijena.jipipe.plugins.expressions.JIPipeExpressionParameter;
 import org.hkijena.jipipe.plugins.expressions.JIPipeExpressionVariablesMap;
 import org.hkijena.jipipe.plugins.expressions.OptionalJIPipeExpressionParameter;
 import org.hkijena.jipipe.plugins.expressions.variables.JIPipeTextAnnotationsExpressionParameterVariablesInfo;
@@ -119,13 +119,13 @@ public class LineSegmentsHoughDetection2DAlgorithm extends JIPipeSimpleIterating
         for (int i = 0; i < thetaAngles.size(); i++) {
             final double originalTheta = thetaAngles.get(i);
             double theta = thetaAngles.get(i);
-            while(theta < -90) {
+            while (theta < -90) {
                 theta += 180;
             }
-            while(theta >= 90) {
+            while (theta >= 90) {
                 theta -= 180;
             }
-            if(theta != originalTheta) {
+            if (theta != originalTheta) {
                 progressInfo.log("Fixed input theta angle " + originalTheta + " is set to " + theta);
             }
             thetaAngles.set(i, theta);
@@ -149,7 +149,7 @@ public class LineSegmentsHoughDetection2DAlgorithm extends JIPipeSimpleIterating
                 JIPipeProgressInfo peakIterationProgress = sliceProgress.resolve("Peak iteration", peakIterationIndex, numPeakIterations);
                 HoughLineSegments.HoughResult houghResult = HoughLineSegments.hough(bw, thetaAngles);
 
-                if(houghArray == null) {
+                if (houghArray == null) {
                     houghArray = houghResult.getH().duplicate();
                 }
 
@@ -219,9 +219,9 @@ public class LineSegmentsHoughDetection2DAlgorithm extends JIPipeSimpleIterating
                 }
 
                 // Erase on input
-                if(nmsAlgorithm == HoughLinesNMSAlgorithm.Input) {
+                if (nmsAlgorithm == HoughLinesNMSAlgorithm.Input) {
                     ImagePlus mask = currentIterationROI.toMask(ip.getWidth(), ip.getHeight(), true, false, 1);
-                    if(inputNMSNeighborhoodSize > 0) {
+                    if (inputNMSNeighborhoodSize > 0) {
                         Strel strel = Strel.Shape.DISK.fromRadius(inputNMSNeighborhoodSize);
                         ImageProcessor dilation = strel.dilation(mask.getProcessor());
                         mask.setProcessor(dilation);
@@ -230,7 +230,7 @@ public class LineSegmentsHoughDetection2DAlgorithm extends JIPipeSimpleIterating
                     byte[] maskPixels = (byte[]) mask.getProcessor().getPixels();
                     assert bwPixels.length == maskPixels.length;
                     for (int i = 0; i < bwPixels.length; i++) {
-                        if(Byte.toUnsignedInt(maskPixels[i]) > 0) {
+                        if (Byte.toUnsignedInt(maskPixels[i]) > 0) {
                             bwPixels[i] = 0;
                         }
                     }
@@ -248,7 +248,7 @@ public class LineSegmentsHoughDetection2DAlgorithm extends JIPipeSimpleIterating
             outputROI.addAll(localROI);
 
             // Create fallback hough array
-            if(houghArray == null) {
+            if (houghArray == null) {
                 HoughLineSegments.HoughResult houghResult = HoughLineSegments.hough(bw, thetaAngles);
                 houghArray = houghResult.getH();
             }
@@ -338,13 +338,13 @@ public class LineSegmentsHoughDetection2DAlgorithm extends JIPipeSimpleIterating
 
     @Override
     public boolean isParameterUIVisible(JIPipeParameterTree tree, JIPipeParameterAccess access) {
-        if(nmsAlgorithm == HoughLinesNMSAlgorithm.HoughArray) {
-            if("input-nms-neighborhood-size".equals(access.getKey())) {
+        if (nmsAlgorithm == HoughLinesNMSAlgorithm.HoughArray) {
+            if ("input-nms-neighborhood-size".equals(access.getKey())) {
                 return false;
             }
         }
-        if(nmsAlgorithm == HoughLinesNMSAlgorithm.Input) {
-            if("hough-array-nms-neighborhood-size".equals(access.getKey())) {
+        if (nmsAlgorithm == HoughLinesNMSAlgorithm.Input) {
+            if ("hough-array-nms-neighborhood-size".equals(access.getKey())) {
                 return false;
             }
         }

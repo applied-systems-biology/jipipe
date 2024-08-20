@@ -56,6 +56,6 @@ public class OrientationJStructureTensorParameters extends AbstractJIPipeParamet
     public void setGradient(OrientationJGradientOperator gradient) {
         this.gradient = gradient;
     }
-    
-    
+
+
 }

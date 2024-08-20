@@ -83,7 +83,7 @@ public class ConvertFilamentCyclesToROIAlgorithm extends JIPipeSimpleIteratingAl
         int componentId = 0;
         for (List<FilamentEdge> cycle : cycles) {
 
-            if(cycle.isEmpty()) {
+            if (cycle.isEmpty()) {
                 continue;
             }
 

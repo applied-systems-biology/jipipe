@@ -74,7 +74,7 @@ public class JIPipeCreateCompartmentNodesFromDraggedDataDragAndDropBehavior impl
             boolean accept = false;
             DataFlavor acceptedFlavor = null;
             for (DataFlavor flavor : flavors) {
-               if (flavor.isFlavorTextType()) {
+                if (flavor.isFlavorTextType()) {
                     accept = true;
                     if (acceptedFlavor == null)
                         acceptedFlavor = flavor;
@@ -117,17 +117,15 @@ public class JIPipeCreateCompartmentNodesFromDraggedDataDragAndDropBehavior impl
                 boolean droppedEmptyGraph = false;
                 try {
                     canvas.pasteNodes(text);
-                }
-                catch (NullPointerException ignored) {
+                } catch (NullPointerException ignored) {
                     droppedEmptyGraph = true;
                 }
 
                 // Process the "create compartment" drop
                 JIPipeGraph graph = JsonUtils.getObjectMapper().readValue(text, JIPipeGraph.class);
-                if(graph.getGraphNodes().stream().anyMatch(node -> node instanceof JIPipeProjectCompartment)) {
-                    ((JIPipeDesktopCompartmentsGraphEditorUI)canvas.getGraphEditorUI()).addCompartment();
-                }
-                else if(droppedEmptyGraph) {
+                if (graph.getGraphNodes().stream().anyMatch(node -> node instanceof JIPipeProjectCompartment)) {
+                    ((JIPipeDesktopCompartmentsGraphEditorUI) canvas.getGraphEditorUI()).addCompartment();
+                } else if (droppedEmptyGraph) {
                     throw new NullPointerException("Empty graph dropped");
                 }
             }

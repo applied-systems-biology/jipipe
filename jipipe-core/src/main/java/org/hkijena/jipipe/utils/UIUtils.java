@@ -206,8 +206,7 @@ public class UIUtils {
     public static Color getControlBorderColor() {
         if (!DARK_THEME) {
             return JIPipeDesktopModernMetalTheme.MEDIUM_GRAY;
-        }
-        else {
+        } else {
             return Color.DARK_GRAY;
         }
     }
@@ -608,7 +607,7 @@ public class UIUtils {
                         }
                     }
                     reloadFunction.run();
-                    if(popupMenu.getComponentCount() > 0) {
+                    if (popupMenu.getComponentCount() > 0) {
                         popupMenu.show(target, e.getX(), e.getY());
                     }
                 }
@@ -632,7 +631,7 @@ public class UIUtils {
                 super.mouseClicked(mouseEvent);
                 if (mouseEvent.getButton() == MouseEvent.BUTTON3) {
                     reloadFunction.run();
-                    if(popupMenu.getComponentCount() > 0) {
+                    if (popupMenu.getComponentCount() > 0) {
                         popupMenu.revalidate();
                         popupMenu.show(mouseEvent.getComponent(), mouseEvent.getX(), mouseEvent.getY());
                     }
@@ -646,7 +645,7 @@ public class UIUtils {
                         || MouseInfo.getPointerInfo().getLocation().y < target.getLocationOnScreen().y
                         || MouseInfo.getPointerInfo().getLocation().y > target.getLocationOnScreen().y + target.getHeight()) {
                     reloadFunction.run();
-                    if(popupMenu.getComponentCount() > 0) {
+                    if (popupMenu.getComponentCount() > 0) {
                         popupMenu.revalidate();
                         popupMenu.show(target, 0, target.getHeight());
                     }

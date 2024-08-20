@@ -65,7 +65,7 @@ public class RemoveVertexValueBackupsAlgorithm extends JIPipeSimpleIteratingAlgo
             for (String key : ImmutableList.copyOf(vertex.getValueBackups().keySet())) {
                 variablesMap.put("name", key);
                 variablesMap.put("value", vertex.getValueBackups().get(key));
-                if(backupFilter.test(variablesMap)) {
+                if (backupFilter.test(variablesMap)) {
                     vertex.getValueBackups().remove(key);
                 }
             }

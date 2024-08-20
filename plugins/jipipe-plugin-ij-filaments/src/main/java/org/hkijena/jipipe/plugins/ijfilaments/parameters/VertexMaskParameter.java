@@ -16,7 +16,10 @@ package org.hkijena.jipipe.plugins.ijfilaments.parameters;
 import org.hkijena.jipipe.api.SetJIPipeDocumentation;
 import org.hkijena.jipipe.api.parameters.AbstractJIPipeParameterCollection;
 import org.hkijena.jipipe.api.parameters.JIPipeParameter;
-import org.hkijena.jipipe.plugins.expressions.*;
+import org.hkijena.jipipe.plugins.expressions.AddJIPipeExpressionParameterVariable;
+import org.hkijena.jipipe.plugins.expressions.JIPipeExpressionParameterSettings;
+import org.hkijena.jipipe.plugins.expressions.JIPipeExpressionVariablesMap;
+import org.hkijena.jipipe.plugins.expressions.OptionalJIPipeExpressionParameter;
 import org.hkijena.jipipe.plugins.expressions.custom.JIPipeCustomExpressionVariablesParameterVariablesInfo;
 import org.hkijena.jipipe.plugins.expressions.variables.JIPipeTextAnnotationsExpressionParameterVariablesInfo;
 import org.hkijena.jipipe.plugins.ijfilaments.datatypes.Filaments3DGraphData;
@@ -54,7 +57,7 @@ public class VertexMaskParameter extends AbstractJIPipeParameterCollection {
     }
 
     public Set<FilamentVertex> filter(Filaments3DGraphData graph, Set<FilamentVertex> vertexSet, JIPipeExpressionVariablesMap variables) {
-        if(filter.isEnabled()) {
+        if (filter.isEnabled()) {
             Set<FilamentVertex> matched = new HashSet<>();
             for (FilamentVertex vertex : vertexSet) {
                 // Write variables
@@ -65,8 +68,7 @@ public class VertexMaskParameter extends AbstractJIPipeParameterCollection {
             }
 
             return matched;
-        }
-        else {
+        } else {
             return vertexSet;
         }
     }

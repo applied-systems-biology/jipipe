@@ -53,7 +53,7 @@ public class ConvertROIToFilamentsAlgorithm extends JIPipeSimpleIteratingAlgorit
         for (Roi roi : rois) {
             FloatPolygon polygon = roi.getFloatPolygon();
 
-            if(polygon.npoints <= 1) {
+            if (polygon.npoints <= 1) {
                 continue;
             }
 
@@ -66,17 +66,17 @@ public class ConvertROIToFilamentsAlgorithm extends JIPipeSimpleIteratingAlgorit
                 currentVertex.setNonSpatialLocation(new NonSpatialPoint3d(Math.max(roi.getCPosition() - 1, 0), Math.max(roi.getTPosition() - 1, 0)));
                 filaments.addVertex(currentVertex);
 
-                if(lastVertex != null) {
+                if (lastVertex != null) {
                     filaments.addEdge(lastVertex, currentVertex);
                 }
-                if(firstVertex == null) {
+                if (firstVertex == null) {
                     firstVertex = currentVertex;
                 }
 
                 lastVertex = currentVertex;
 
                 // Connect the last
-                if(i == polygon.npoints - 1) {
+                if (i == polygon.npoints - 1) {
                     filaments.addEdge(lastVertex, firstVertex);
                 }
             }

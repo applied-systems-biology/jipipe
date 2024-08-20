@@ -105,16 +105,13 @@ public class JIPipeDesktopFormPanel extends JPanel {
     private final List<GroupHeaderPanel> groupHeaderPanels = new ArrayList<>();
     private final JPanel staticContentPanel;
     private final int flags;
+    private final List<FormPanelEntry> entries = new ArrayList<>();
     private int numRows = 0;
     private JScrollPane scrollPane;
     private boolean hasVerticalGlue;
     private JIPipeDesktopFormHelpPanel helpPanel = new JIPipeDesktopFormHelpPanel();
-
     private JIPipeDesktopFormPanel redirectDocumentationTarget;
-
     private JIPipeDesktopTabPane documentationTabPane;
-
-    private final List<FormPanelEntry> entries = new ArrayList<>();
 
     public JIPipeDesktopFormPanel(int flags) {
         this(null, flags);
@@ -165,12 +162,11 @@ public class JIPipeDesktopFormPanel extends JPanel {
 
         if ((flags & WITH_DOCUMENTATION) == WITH_DOCUMENTATION) {
             this.withDocumentation = true;
-            if((flags & DOCUMENTATION_EXTERNAL) == DOCUMENTATION_EXTERNAL) {
+            if ((flags & DOCUMENTATION_EXTERNAL) == DOCUMENTATION_EXTERNAL) {
                 // External documentation panel
                 this.documentationHasUI = true;
                 add(content, BorderLayout.CENTER);
-            }
-            else {
+            } else {
                 if ((flags & DOCUMENTATION_NO_UI) != DOCUMENTATION_NO_UI) {
                     this.documentationHasUI = true;
                     boolean documentationBelow = (flags & DOCUMENTATION_BELOW) == DOCUMENTATION_BELOW;

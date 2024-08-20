@@ -27,7 +27,6 @@ import org.hkijena.jipipe.api.nodes.AddJIPipeOutputSlot;
 import org.hkijena.jipipe.api.nodes.JIPipeGraphNodeRunContext;
 import org.hkijena.jipipe.api.nodes.JIPipeNodeInfo;
 import org.hkijena.jipipe.api.nodes.algorithm.JIPipeIteratingAlgorithm;
-import org.hkijena.jipipe.api.nodes.algorithm.JIPipeSimpleIteratingAlgorithm;
 import org.hkijena.jipipe.api.nodes.categories.ImagesNodeTypeCategory;
 import org.hkijena.jipipe.api.nodes.iterationstep.JIPipeIterationContext;
 import org.hkijena.jipipe.api.nodes.iterationstep.JIPipeSingleIterationStep;
@@ -87,13 +86,13 @@ public class MultipleImagesToTableAlgorithm extends JIPipeIteratingAlgorithm {
             inputImages.put(inputSlot.getName(), iterationStep.getInputData(inputSlot, ImagePlusData.class, progressInfo));
         }
 
-        if(inputImages.isEmpty()) {
+        if (inputImages.isEmpty()) {
             progressInfo.log("Nothing to do.");
             return;
         }
 
         // Ensure same size
-        if(!ImageJUtils.imagesHaveSameSize(inputImages.values().stream().map(ImagePlusData::getImage).collect(Collectors.toList()))) {
+        if (!ImageJUtils.imagesHaveSameSize(inputImages.values().stream().map(ImagePlusData::getImage).collect(Collectors.toList()))) {
             throw new IllegalArgumentException("Images do not have the same size.");
         }
 
@@ -180,7 +179,7 @@ public class MultipleImagesToTableAlgorithm extends JIPipeIteratingAlgorithm {
             ColorSpace colorSpace = colorSpaces.get(ipIndex);
             final int[] channelBuffer = imp.isGrayscale() ? new int[0] : new int[colorSpace.getNChannels()];
             final String[] channelNames = imp.isGrayscale() ? new String[0] : new String[colorSpace.getNChannels()];
-            if(!isGreyscale) {
+            if (!isGreyscale) {
                 for (int i = 0; i < colorSpace.getNChannels(); i++) {
                     channelNames[i] = colorSpace.getChannelShortName(i);
                 }

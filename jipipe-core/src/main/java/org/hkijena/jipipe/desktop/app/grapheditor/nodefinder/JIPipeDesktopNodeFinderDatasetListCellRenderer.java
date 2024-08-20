@@ -79,7 +79,7 @@ public class JIPipeDesktopNodeFinderDatasetListCellRenderer extends JPanel imple
         nameLabel.setText(value.getName());
         categoryLabel.setText(value.getLocationInfos().get(0).trim().replace("\n", " > "));
         String descriptionText = value.getDescription().toPlainText();
-        if(descriptionText.length() > 200) {
+        if (descriptionText.length() > 200) {
             descriptionText = descriptionText.substring(0, 200) + " ...";
         }
         descriptionLabel.setText(descriptionText);

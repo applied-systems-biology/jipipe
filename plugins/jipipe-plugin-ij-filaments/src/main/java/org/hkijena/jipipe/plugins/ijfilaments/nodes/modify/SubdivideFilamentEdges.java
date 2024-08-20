@@ -65,26 +65,25 @@ public class SubdivideFilamentEdges extends JIPipeSimpleIteratingAlgorithm {
         Filaments3DGraphData graph = new Filaments3DGraphData(iterationStep.getInputData(getFirstInputSlot(), Filaments3DGraphData.class, progressInfo));
         int numIterations = 0;
         final int maxIterations = maximumNumIterations.orElse(Integer.MAX_VALUE);
-        while(true) {
+        while (true) {
             ++numIterations;
 
             // Find candidate edges
             Set<FilamentEdge> edges = new HashSet<>();
             for (FilamentEdge edge : graph.edgeSet()) {
-                if(maximumLength.isEnabled()) {
+                if (maximumLength.isEnabled()) {
                     double edgeLength = graph.getEdgeLength(edge, true, maximumLength.getContent().getUnit());
-                    if(edgeLength > maximumLength.getContent().getValue()) {
+                    if (edgeLength > maximumLength.getContent().getValue()) {
                         edges.add(edge);
                     }
-                }
-                else {
+                } else {
                     edges.add(edge);
                 }
             }
             progressInfo.log("Iteration " + numIterations + ": Detected " + edges.size() + " edges to split");
 
             // Nothing found -> cancel
-            if(edges.isEmpty()) {
+            if (edges.isEmpty()) {
                 break;
             }
 
@@ -107,7 +106,7 @@ public class SubdivideFilamentEdges extends JIPipeSimpleIteratingAlgorithm {
             }
 
             // Iteration constraint
-            if(numIterations >= maxIterations) {
+            if (numIterations >= maxIterations) {
                 break;
             }
         }
@@ -117,7 +116,7 @@ public class SubdivideFilamentEdges extends JIPipeSimpleIteratingAlgorithm {
     @Override
     public void reportValidity(JIPipeValidationReportContext reportContext, JIPipeValidationReport report) {
         super.reportValidity(reportContext, report);
-        if(!maximumLength.isEnabled() && !maximumNumIterations.isEnabled()) {
+        if (!maximumLength.isEnabled() && !maximumNumIterations.isEnabled()) {
             report.report(new JIPipeValidationReportEntry(JIPipeValidationReportEntryLevel.Error, reportContext, "Subdivide has no critera",
                     "The filament subdivision operator has no stopping criteria and will run infinitely",
                     "Use either the maximum length and/or the maximum number of iterations"));

@@ -59,7 +59,7 @@ public class NodeTemplateBox extends JIPipeDesktopWorkbenchPanel implements Node
 
     private final JIPipeProject project;
     private final Set<JIPipeNodeTemplate> projectOwnedTemplates = Sets.newIdentityHashSet();
-//    private final JIPipeDesktopMarkdownReader documentationReader = new JIPipeDesktopMarkdownReader(false);
+    //    private final JIPipeDesktopMarkdownReader documentationReader = new JIPipeDesktopMarkdownReader(false);
     private final JToolBar toolBar = new JToolBar();
     private final boolean isDocked;
     private final JIPipeDesktopGraphCanvasUI canvasUI;
@@ -193,8 +193,6 @@ public class NodeTemplateBox extends JIPipeDesktopWorkbenchPanel implements Node
 //            addButton.addActionListener(e -> addTemplate());
 //            toolBar.add(addButton);
 //        }
-
-
 
 
 //        if (isDocked) {

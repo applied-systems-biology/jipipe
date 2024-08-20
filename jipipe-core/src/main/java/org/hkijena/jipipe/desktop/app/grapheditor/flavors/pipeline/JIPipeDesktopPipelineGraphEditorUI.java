@@ -260,7 +260,7 @@ public class JIPipeDesktopPipelineGraphEditorUI extends AbstractJIPipeDesktopGra
 
         getDockPanel().removeDockPanelsIf(p -> p.getId().startsWith("_"));
 
-        if(getSelection().size() == 1) {
+        if (getSelection().size() == 1) {
             JIPipeDesktopGraphNodeUI nodeUI = getSelection().iterator().next();
             showSelectedNodeDocks(nodeUI);
         }
@@ -293,19 +293,18 @@ public class JIPipeDesktopPipelineGraphEditorUI extends AbstractJIPipeDesktopGra
                 false,
                 -70, () -> new JIPipeDesktopGraphNodeSlotEditorUI(this, node));
         if (node instanceof JIPipeIterationStepAlgorithm && getDesktopWorkbench() instanceof JIPipeDesktopProjectWorkbench) {
-            if(getDesktopWorkbench().getProject() != null) {
+            if (getDesktopWorkbench().getProject() != null) {
                 getDockPanel().addDockPanel(
                         DOCK_NODE_CONTEXT_INPUT_MANAGER,
                         "Inputs",
                         UIUtils.getIcon32FromResources("actions/input-management-2.png"),
                         JIPipeDesktopDockPanel.PanelLocation.TopRight,
                         false,
-                        -60, () ->  new JIPipeDesktopDataBatchAssistantUI((JIPipeDesktopProjectWorkbench) getDesktopWorkbench(), node, () -> {
+                        -60, () -> new JIPipeDesktopDataBatchAssistantUI((JIPipeDesktopProjectWorkbench) getDesktopWorkbench(), node, () -> {
                             nodeUI.getNodeUIActionRequestedEventEmitter().emit(new JIPipeDesktopGraphNodeUI.NodeUIActionRequestedEvent(nodeUI,
                                     new JIPipeDesktopUpdateCacheAction(false, true)));
                         }));
-            }
-            else {
+            } else {
                 getDockPanel().addDockPanel(
                         DOCK_NODE_CONTEXT_INPUT_MANAGER,
                         "Inputs",
@@ -316,7 +315,7 @@ public class JIPipeDesktopPipelineGraphEditorUI extends AbstractJIPipeDesktopGra
                                 null, JIPipeDesktopParameterFormPanel.WITH_SEARCH_BAR | JIPipeDesktopParameterFormPanel.WITH_SCROLLING));
             }
         }
-        if(node instanceof JIPipeAlgorithm && getDesktopWorkbench() instanceof JIPipeDesktopProjectWorkbench) {
+        if (node instanceof JIPipeAlgorithm && getDesktopWorkbench() instanceof JIPipeDesktopProjectWorkbench) {
             getDockPanel().addDockPanel(DOCK_NODE_CONTEXT_RESULTS,
                     "Results",
                     UIUtils.getIcon32FromResources("actions/network-server-database.png"),
@@ -411,14 +410,13 @@ public class JIPipeDesktopPipelineGraphEditorUI extends AbstractJIPipeDesktopGra
             JIPipeGraphEditorUIApplicationSettings.DockLayoutSettings settings = JIPipeGraphEditorUIApplicationSettings.getInstance().getDockLayoutSettings();
             JIPipeDesktopDockPanel.State state = JsonUtils.readFromString(settings.getPipelineEditorDockLayout(), JIPipeDesktopDockPanel.State.class);
             getDockPanel().restoreState(state);
-        }
-        catch (Throwable ignored) {
+        } catch (Throwable ignored) {
         }
     }
 
     @Override
     protected StringAndStringPairParameter.List getDockStateTemplates() {
-        if(JIPipe.isInstantiated()) {
+        if (JIPipe.isInstantiated()) {
             JIPipeGraphEditorUIApplicationSettings.DockLayoutSettings settings = JIPipeGraphEditorUIApplicationSettings.getInstance().getDockLayoutSettings();
             return settings.getPipelineEditorDockLayoutTemplates();
         }
@@ -427,7 +425,7 @@ public class JIPipeDesktopPipelineGraphEditorUI extends AbstractJIPipeDesktopGra
 
     @Override
     protected void saveDockStateToSettings() {
-        if(JIPipe.isInstantiated()) {
+        if (JIPipe.isInstantiated()) {
             JIPipeGraphEditorUIApplicationSettings.DockLayoutSettings settings = JIPipeGraphEditorUIApplicationSettings.getInstance().getDockLayoutSettings();
             settings.setPipelineEditorDockLayout(JsonUtils.toJsonString(getDockPanel().getSavedState()));
             JIPipe.getSettings().saveLater();

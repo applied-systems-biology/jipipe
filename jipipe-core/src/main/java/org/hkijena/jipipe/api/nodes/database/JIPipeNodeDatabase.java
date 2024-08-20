@@ -13,19 +13,11 @@
 
 package org.hkijena.jipipe.api.nodes.database;
 
-import gnu.trove.map.TObjectDoubleMap;
-import gnu.trove.map.hash.TObjectDoubleHashMap;
-import org.apache.commons.text.similarity.LevenshteinDistance;
-import org.hkijena.jipipe.JIPipe;
-import org.hkijena.jipipe.api.data.JIPipeData;
-import org.hkijena.jipipe.api.data.JIPipeDataSlotInfo;
-import org.hkijena.jipipe.api.data.JIPipeSlotType;
 import org.hkijena.jipipe.api.project.JIPipeProject;
 import org.hkijena.jipipe.api.run.JIPipeRunnableQueue;
-import org.hkijena.jipipe.utils.ReflectionUtils;
-import org.hkijena.jipipe.utils.StringUtils;
 
-import java.util.*;
+import java.util.ArrayList;
+import java.util.List;
 
 /**
  * Allows to query nodes
@@ -36,9 +28,9 @@ public class JIPipeNodeDatabase {
     private final JIPipeRunnableQueue queue = new JIPipeRunnableQueue("Node database");
     private final JIPipeProject project;
     private final JIPipeNodeDatabaseUpdater updater;
-    private List<JIPipeNodeDatabaseEntry> entries = new ArrayList<>();
-//    private final JIPipeLuceneNodeDatabaseSearch luceneSearch;
+    //    private final JIPipeLuceneNodeDatabaseSearch luceneSearch;
     private final JIPipeLegacyNodeDatabaseSearch legacySearch;
+    private List<JIPipeNodeDatabaseEntry> entries = new ArrayList<>();
 
 
     public JIPipeNodeDatabase() {

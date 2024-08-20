@@ -47,11 +47,9 @@ public class JIPipeDesktopAddNodeTransferHandler extends TransferHandler {
                         ((JIPipeAlgorithm) node).loadExample(example);
                     }
                     graph.insertNode(node);
-                }
-                else if(obj instanceof CreateNewNodesByTemplateDatabaseEntry) {
+                } else if (obj instanceof CreateNewNodesByTemplateDatabaseEntry) {
                     graph.mergeWith(((CreateNewNodesByTemplateDatabaseEntry) obj).getTemplate().getGraph());
-                }
-                else if(obj instanceof CreateNewCompartmentNodeDatabaseEntry) {
+                } else if (obj instanceof CreateNewCompartmentNodeDatabaseEntry) {
                     graph.insertNode(JIPipe.createNode(JIPipeProjectCompartment.class));
                 }
             }

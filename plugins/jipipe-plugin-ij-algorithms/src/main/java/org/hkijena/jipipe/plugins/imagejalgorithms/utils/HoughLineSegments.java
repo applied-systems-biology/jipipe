@@ -27,44 +27,14 @@ import org.jgrapht.graph.DefaultUndirectedWeightedGraph;
 import org.jgrapht.graph.DefaultWeightedEdge;
 
 import java.awt.*;
-import java.util.*;
 import java.util.List;
+import java.util.*;
 
 /**
  * Implementation of Octave's Hough Line segments
  * Based on code by Hartmut Gimpel <hg_code@gmx.de>
  */
 public class HoughLineSegments {
-
-    public static class Line {
-        private final Point point1;
-        private final Point point2;
-        private final double theta;
-        private final double rho;
-
-        public Line(Point point1, Point point2, double theta, double rho) {
-            this.point1 = point1;
-            this.point2 = point2;
-            this.theta = theta;
-            this.rho = rho;
-        }
-
-        public Point getPoint1() {
-            return point1;
-        }
-
-        public Point getPoint2() {
-            return point2;
-        }
-
-        public double getTheta() {
-            return theta;
-        }
-
-        public double getRho() {
-            return rho;
-        }
-    }
 
     public static List<Line> houghLineSegments(ImageProcessor BW, List<Double> thetas, List<Double> rhos, List<Point> peaks, double fillGap, double minLength, boolean fastMode, JIPipeProgressInfo progressInfo) {
         if (fillGap <= 0) {
@@ -112,11 +82,10 @@ public class HoughLineSegments {
                 continue;
             }
 
-            if(fastMode) {
+            if (fastMode) {
                 extractLineSegmentsFast(fillGap, minLength, cosTheta, sinTheta, peakPixels, lines, theta_p, rho_p, peakProgress);
-            }
-            else {
-                extractLineSegmentsPrecise(fillGap, minLength, peakPixels, lines, theta_p, rho_p, peakProgress );
+            } else {
+                extractLineSegmentsPrecise(fillGap, minLength, peakPixels, lines, theta_p, rho_p, peakProgress);
             }
         }
 
@@ -164,15 +133,13 @@ public class HoughLineSegments {
             }
 
             // Extract the line
-            if(peakPixels.size() <= 1) {
+            if (peakPixels.size() <= 1) {
                 peakProgress.log("Not enough points");
-            }
-            else if(peakPixels.size() == 2) {
+            } else if (peakPixels.size() == 2) {
                 // Trivial line
                 peakProgress.log("Is trivial line");
                 addLineSegment(lines, peakPixels, minLength, theta_p, rho_p, imageSize, true, peakProgress);
-            }
-            else {
+            } else {
                 peakProgress.log("Has " + peakPixels.size() + " points");
                 // Calculate variance in x values to detect vertical lines
                 extractLineSegmentsWithRegression(minLength, lines, theta_p, rho_p, peakPixels, imageSize, true, peakProgress);
@@ -192,11 +159,10 @@ public class HoughLineSegments {
             Point p1 = peakPixels.get(i);
             for (int j = i + 1; j < peakPixels.size(); j++) {
                 Point p2 = peakPixels.get(j);
-                if(i != j) {
+                if (i != j) {
                     DefaultWeightedEdge edge = graph.addEdge(p1, p2);
                     graph.setEdgeWeight(edge, p1.distance(p2));
-                }
-                else {
+                } else {
                     assert false;
                 }
             }
@@ -208,7 +174,7 @@ public class HoughLineSegments {
 
         peakProgress.log("Filter edges");
         for (DefaultWeightedEdge edge : ImmutableList.copyOf(graph.edgeSet())) {
-            if(graph.getEdgeWeight(edge) > fillGap || !spanningTree.getEdges().contains(edge)) {
+            if (graph.getEdgeWeight(edge) > fillGap || !spanningTree.getEdges().contains(edge)) {
                 graph.removeEdge(edge);
             }
         }
@@ -224,8 +190,7 @@ public class HoughLineSegments {
                 // Trivial line
                 peakProgress.log("Component " + i + " is trivial line");
                 addLineSegment(lines, points, minLength, theta_p, rho_p, null, false, peakProgress);
-            }
-            else {
+            } else {
                 peakProgress.log("Component " + i + " has " + points.size() + " vertices");
                 // Calculate variance in x values to detect vertical lines
                 extractLineSegmentsWithRegression(minLength, lines, theta_p, rho_p, points, null, false, peakProgress);
@@ -314,13 +279,12 @@ public class HoughLineSegments {
             peakProgress.log("Successfully detected line segment " + first + " -> " + last + " with length=" + length);
 
             // Expand if needed
-            if(imageSize != null && expandToImageSize) {
+            if (imageSize != null && expandToImageSize) {
                 extendLine(first, last, imageSize);
             }
 
             lines.add(new Line(first, last, theta, rho));
-        }
-        else {
+        } else {
             peakProgress.log("Rejected line segment " + first + " -> " + last + " with length=" + length + " < " + minLength);
         }
     }
@@ -337,7 +301,6 @@ public class HoughLineSegments {
         int y2 = last.y;
 
 
-
         Point newFirst = null;
         Point newLast = null;
 
@@ -348,7 +311,7 @@ public class HoughLineSegments {
             newFirst = new Point(xmin, y1);
             newLast = new Point(xmax, y1);
         } else {
-            double slope = (double)(y2 - y1) / (x2 - x1);
+            double slope = (double) (y2 - y1) / (x2 - x1);
             double intercept = y1 - slope * x1;
 
             // Intersection with left boundary (x = 0)
@@ -531,6 +494,36 @@ public class HoughLineSegments {
             thetaList.add(t);
         }
         return thetaList;
+    }
+
+    public static class Line {
+        private final Point point1;
+        private final Point point2;
+        private final double theta;
+        private final double rho;
+
+        public Line(Point point1, Point point2, double theta, double rho) {
+            this.point1 = point1;
+            this.point2 = point2;
+            this.theta = theta;
+            this.rho = rho;
+        }
+
+        public Point getPoint1() {
+            return point1;
+        }
+
+        public Point getPoint2() {
+            return point2;
+        }
+
+        public double getTheta() {
+            return theta;
+        }
+
+        public double getRho() {
+            return rho;
+        }
     }
 
     public static class HoughResult {

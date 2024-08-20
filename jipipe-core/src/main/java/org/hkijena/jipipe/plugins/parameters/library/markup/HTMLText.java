@@ -123,11 +123,10 @@ public class HTMLText {
     }
 
     public String toPlainText() {
-        if(plainText == null) {
+        if (plainText == null) {
             try {
                 plainText = Jsoup.parse(getHtml()).text();
-            }
-            catch (Throwable ignored) {
+            } catch (Throwable ignored) {
                 plainText = getHtml();
             }
         }

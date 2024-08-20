@@ -115,10 +115,9 @@ public class DataExportExpressionParameter extends JIPipeExpressionParameter {
                                     "Relative path detected",
                                     JOptionPane.YES_NO_OPTION,
                                     JOptionPane.QUESTION_MESSAGE) == JOptionPane.YES_OPTION) {
-                                if(JIPipeExpressionParameter.isValidVariableName(entry.getKey())) {
+                                if (JIPipeExpressionParameter.isValidVariableName(entry.getKey())) {
                                     return new DataExportExpressionParameter("PATH_COMBINE(project_data_dir." + entry.getKey() + ", \"" + JIPipeExpressionEvaluator.escapeString(userPath.relativize(path).toString().replace('\\', '/')) + "\")");
-                                }
-                                else {
+                                } else {
                                     return new DataExportExpressionParameter("PATH_COMBINE(project_data_dirs @ \"" + JIPipeExpressionEvaluator.escapeString(entry.getKey()) +
                                             "\", \"" + JIPipeExpressionEvaluator.escapeString(userPath.relativize(path).toString().replace('\\', '/')) + "\")");
                                 }
@@ -158,7 +157,7 @@ public class DataExportExpressionParameter extends JIPipeExpressionParameter {
                     value = projectDir.resolve(entry.getValue()).toString();
                 }
 
-                variables.set("project_data_dir." + entry.getKey(), value );
+                variables.set("project_data_dir." + entry.getKey(), value);
                 projectDataDirs_.put(entry.getKey(), value);
             }
         }

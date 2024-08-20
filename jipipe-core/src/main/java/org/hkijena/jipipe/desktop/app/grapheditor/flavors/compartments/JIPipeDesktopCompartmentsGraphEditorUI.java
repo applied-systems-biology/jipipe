@@ -179,7 +179,7 @@ public class JIPipeDesktopCompartmentsGraphEditorUI extends AbstractJIPipeDeskto
         super.updateSelection();
 
         getDockPanel().removeDockPanelsIf(panel -> panel.getId().startsWith("_"));
-        if(getSelection().size() == 1) {
+        if (getSelection().size() == 1) {
             JIPipeDesktopGraphNodeUI nodeUI = getSelection().iterator().next();
             showSelectedNodeDocks(nodeUI);
         }
@@ -212,7 +212,7 @@ public class JIPipeDesktopCompartmentsGraphEditorUI extends AbstractJIPipeDeskto
                 JIPipeDesktopDockPanel.PanelLocation.TopRight,
                 false,
                 0, () -> new JIPipeDesktopGraphNodeSlotEditorUI(this, node));
-        if(node instanceof JIPipeProjectCompartment && !((JIPipeProjectCompartment) node).getOutputNodes().isEmpty()) {
+        if (node instanceof JIPipeProjectCompartment && !((JIPipeProjectCompartment) node).getOutputNodes().isEmpty()) {
             getDockPanel().addDockPanel(DOCK_NODE_CONTEXT_RESULTS,
                     "Results",
                     UIUtils.getIcon32FromResources("actions/network-server-database.png"),
@@ -282,14 +282,13 @@ public class JIPipeDesktopCompartmentsGraphEditorUI extends AbstractJIPipeDeskto
             JIPipeGraphEditorUIApplicationSettings.DockLayoutSettings settings = JIPipeGraphEditorUIApplicationSettings.getInstance().getDockLayoutSettings();
             JIPipeDesktopDockPanel.State state = JsonUtils.readFromString(settings.getCompartmentsEditorDockLayout(), JIPipeDesktopDockPanel.State.class);
             getDockPanel().restoreState(state);
-        }
-        catch (Throwable ignored) {
+        } catch (Throwable ignored) {
         }
     }
 
     @Override
     protected void saveDockStateToSettings() {
-        if(JIPipe.isInstantiated()) {
+        if (JIPipe.isInstantiated()) {
             JIPipeGraphEditorUIApplicationSettings.DockLayoutSettings settings = JIPipeGraphEditorUIApplicationSettings.getInstance().getDockLayoutSettings();
             settings.setCompartmentsEditorDockLayout(JsonUtils.toJsonString(getDockPanel().getCurrentState()));
             JIPipe.getSettings().saveLater();
@@ -298,7 +297,7 @@ public class JIPipeDesktopCompartmentsGraphEditorUI extends AbstractJIPipeDeskto
 
     @Override
     protected StringAndStringPairParameter.List getDockStateTemplates() {
-        if(JIPipe.isInstantiated()) {
+        if (JIPipe.isInstantiated()) {
             JIPipeGraphEditorUIApplicationSettings.DockLayoutSettings settings = JIPipeGraphEditorUIApplicationSettings.getInstance().getDockLayoutSettings();
             return settings.getCompartmentsEditorDockLayoutTemplates();
         }

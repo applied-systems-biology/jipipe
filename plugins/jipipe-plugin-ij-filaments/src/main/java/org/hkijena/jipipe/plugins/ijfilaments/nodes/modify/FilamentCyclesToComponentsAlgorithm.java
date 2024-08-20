@@ -33,7 +33,10 @@ import org.hkijena.jipipe.plugins.parameters.library.primitives.optional.Optiona
 import org.hkijena.jipipe.plugins.parameters.library.primitives.optional.OptionalTextAnnotationNameParameter;
 import org.jgrapht.alg.cycle.PatonCycleBase;
 
-import java.util.*;
+import java.util.IdentityHashMap;
+import java.util.List;
+import java.util.Map;
+import java.util.Set;
 
 @SetJIPipeDocumentation(name = "Filament cycles to components", description = "Finds all cycles in the input filament graph and makes each cycle a component. Unlike 'Split filaments into cycles', this node outputs one filament graph where each component is a cycle.")
 @ConfigureJIPipeNode(nodeTypeCategory = FilamentsNodeTypeCategory.class, menuPath = "Modify")
@@ -76,7 +79,7 @@ public class FilamentCyclesToComponentsAlgorithm extends JIPipeSimpleIteratingAl
 
                 if (copyEdgeSource == null) {
                     copyEdgeSource = new FilamentVertex(edgeSource);
-                    if(cycleIdAnnotation.isEnabled()) {
+                    if (cycleIdAnnotation.isEnabled()) {
                         copyEdgeSource.getMetadata().put(cycleIdAnnotation.getContent(), String.valueOf(componentId));
                     }
                     copyMap.put(edgeSource, copyEdgeSource);
@@ -84,7 +87,7 @@ public class FilamentCyclesToComponentsAlgorithm extends JIPipeSimpleIteratingAl
 
                 if (copyEdgeTarget == null) {
                     copyEdgeTarget = new FilamentVertex(edgeSource);
-                    if(cycleIdAnnotation.isEnabled()) {
+                    if (cycleIdAnnotation.isEnabled()) {
                         copyEdgeTarget.getMetadata().put(cycleIdAnnotation.getContent(), String.valueOf(componentId));
                     }
                     copyMap.put(edgeTarget, copyEdgeTarget);

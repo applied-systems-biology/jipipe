@@ -17,18 +17,16 @@ import javax.swing.*;
 import java.awt.*;
 
 /**
- *  FlowLayout subclass that fully supports wrapping of components.
+ * FlowLayout subclass that fully supports wrapping of components.
  */
-public class JIPipeDesktopWrapLayout extends FlowLayout
-{
+public class JIPipeDesktopWrapLayout extends FlowLayout {
     private Dimension preferredLayoutSize;
 
     /**
      * Constructs a new <code>WrapLayout</code> with a left
      * alignment and a default 5-unit horizontal and vertical gap.
      */
-    public JIPipeDesktopWrapLayout()
-    {
+    public JIPipeDesktopWrapLayout() {
         super();
     }
 
@@ -38,10 +36,10 @@ public class JIPipeDesktopWrapLayout extends FlowLayout
      * The value of the alignment argument must be one of
      * <code>WrapLayout</code>, <code>WrapLayout</code>,
      * or <code>WrapLayout</code>.
+     *
      * @param align the alignment value
      */
-    public JIPipeDesktopWrapLayout(int align)
-    {
+    public JIPipeDesktopWrapLayout(int align) {
         super(align);
     }
 
@@ -52,38 +50,38 @@ public class JIPipeDesktopWrapLayout extends FlowLayout
      * The value of the alignment argument must be one of
      * <code>WrapLayout</code>, <code>WrapLayout</code>,
      * or <code>WrapLayout</code>.
+     *
      * @param align the alignment value
-     * @param hgap the horizontal gap between components
-     * @param vgap the vertical gap between components
+     * @param hgap  the horizontal gap between components
+     * @param vgap  the vertical gap between components
      */
-    public JIPipeDesktopWrapLayout(int align, int hgap, int vgap)
-    {
+    public JIPipeDesktopWrapLayout(int align, int hgap, int vgap) {
         super(align, hgap, vgap);
     }
 
     /**
      * Returns the preferred dimensions for this layout given the
      * <i>visible</i> components in the specified target container.
+     *
      * @param target the component which needs to be laid out
      * @return the preferred dimensions to lay out the
      * subcomponents of the specified container
      */
     @Override
-    public Dimension preferredLayoutSize(Container target)
-    {
+    public Dimension preferredLayoutSize(Container target) {
         return layoutSize(target, true);
     }
 
     /**
      * Returns the minimum dimensions needed to layout the <i>visible</i>
      * components contained in the specified target container.
+     *
      * @param target the component which needs to be laid out
      * @return the minimum dimensions to lay out the
      * subcomponents of the specified container
      */
     @Override
-    public Dimension minimumLayoutSize(Container target)
-    {
+    public Dimension minimumLayoutSize(Container target) {
         Dimension minimum = layoutSize(target, false);
         minimum.width -= (getHgap() + 1);
         return minimum;
@@ -93,14 +91,12 @@ public class JIPipeDesktopWrapLayout extends FlowLayout
      * Returns the minimum or preferred dimension needed to layout the target
      * container.
      *
-     * @param target target to get layout size for
+     * @param target    target to get layout size for
      * @param preferred should preferred size be calculated
      * @return the dimension to layout the target container
      */
-    private Dimension layoutSize(Container target, boolean preferred)
-    {
-        synchronized (target.getTreeLock())
-        {
+    private Dimension layoutSize(Container target, boolean preferred) {
+        synchronized (target.getTreeLock()) {
             //  Each row must fit with the width allocated to the containter.
             //  When the container width = 0, the preferred width of the container
             //  has not yet been calculated so lets ask for the maximum.
@@ -108,8 +104,7 @@ public class JIPipeDesktopWrapLayout extends FlowLayout
             int targetWidth = target.getSize().width;
             Container container = target;
 
-            while (container.getSize().width == 0 && container.getParent() != null)
-            {
+            while (container.getSize().width == 0 && container.getParent() != null) {
                 container = container.getParent();
             }
 
@@ -132,18 +127,15 @@ public class JIPipeDesktopWrapLayout extends FlowLayout
 
             int nmembers = target.getComponentCount();
 
-            for (int i = 0; i < nmembers; i++)
-            {
+            for (int i = 0; i < nmembers; i++) {
                 Component m = target.getComponent(i);
 
-                if (m.isVisible())
-                {
+                if (m.isVisible()) {
                     Dimension d = preferred ? m.getPreferredSize() : m.getMinimumSize();
 
                     //  Can't add the component to current row. Start a new row.
 
-                    if (rowWidth + d.width > maxWidth)
-                    {
+                    if (rowWidth + d.width > maxWidth) {
                         addRow(dim, rowWidth, rowHeight);
                         rowWidth = 0;
                         rowHeight = 0;
@@ -151,8 +143,7 @@ public class JIPipeDesktopWrapLayout extends FlowLayout
 
                     //  Add a horizontal gap for all components after the first
 
-                    if (rowWidth != 0)
-                    {
+                    if (rowWidth != 0) {
                         rowWidth += hgap;
                     }
 
@@ -173,8 +164,7 @@ public class JIPipeDesktopWrapLayout extends FlowLayout
 
             Container scrollPane = SwingUtilities.getAncestorOfClass(JScrollPane.class, target);
 
-            if (scrollPane != null && target.isValid())
-            {
+            if (scrollPane != null && target.isValid()) {
                 dim.width -= (hgap + 1);
             }
 
@@ -190,12 +180,10 @@ public class JIPipeDesktopWrapLayout extends FlowLayout
      *  @param rowWidth the width of the row to add
      *  @param rowHeight the height of the row to add
      */
-    private void addRow(Dimension dim, int rowWidth, int rowHeight)
-    {
+    private void addRow(Dimension dim, int rowWidth, int rowHeight) {
         dim.width = Math.max(dim.width, rowWidth);
 
-        if (dim.height > 0)
-        {
+        if (dim.height > 0) {
             dim.height += getVgap();
         }
 

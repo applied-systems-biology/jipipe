@@ -52,7 +52,7 @@ public class JIPipeDesktopCompartmentGraphEditorResultsPanel extends JIPipeDeskt
 
     public void refreshTables() {
         for (String key : ImmutableList.copyOf(cacheBrowsers.keySet())) {
-            if(!compartment.getOutputNodes().containsKey(key)) {
+            if (!compartment.getOutputNodes().containsKey(key)) {
                 tabPane.forceCloseTab(cacheBrowserTabs.get(key));
                 cacheBrowsers.remove(key);
                 cacheBrowserTabs.remove(key);
@@ -60,7 +60,7 @@ public class JIPipeDesktopCompartmentGraphEditorResultsPanel extends JIPipeDeskt
         }
         for (Map.Entry<String, JIPipeProjectCompartmentOutput> entry : compartment.getOutputNodes().entrySet()) {
             JIPipeDesktopAlgorithmCacheBrowserUI ui = cacheBrowsers.getOrDefault(entry.getKey(), null);
-            if(ui == null) {
+            if (ui == null) {
                 ui = new JIPipeDesktopAlgorithmCacheBrowserUI(getDesktopProjectWorkbench(), entry.getValue(), graphEditorUI.getCanvasUI());
                 cacheBrowsers.put(entry.getKey(), ui);
                 cacheBrowserTabs.put(entry.getKey(),

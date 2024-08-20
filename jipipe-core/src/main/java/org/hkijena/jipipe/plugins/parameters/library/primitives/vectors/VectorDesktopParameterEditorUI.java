@@ -86,7 +86,7 @@ public class VectorDesktopParameterEditorUI extends JIPipeDesktopParameterEditor
             editor.getDocument().addDocumentListener(new JIPipeDesktopDocumentChangeListener() {
                 @Override
                 public void changed(DocumentEvent documentEvent) {
-                    if(!isUpdatingTextBoxes) {
+                    if (!isUpdatingTextBoxes) {
                         writeToParameter();
                     }
                 }
@@ -121,25 +121,22 @@ public class VectorDesktopParameterEditorUI extends JIPipeDesktopParameterEditor
         String sz = StringUtils.nullToEmpty(zEditor.getText()).replace(',', '.').replace(" ", "");
 
         boolean success = true;
-        if(!NumberUtils.isCreatable(sx)) {
+        if (!NumberUtils.isCreatable(sx)) {
             success = false;
             xEditor.setBorder(UIUtils.createControlErrorBorder());
-        }
-        else {
+        } else {
             xEditor.setBorder(UIUtils.createControlBorder());
         }
-        if(!NumberUtils.isCreatable(sy)) {
+        if (!NumberUtils.isCreatable(sy)) {
             success = false;
             yEditor.setBorder(UIUtils.createControlErrorBorder());
-        }
-        else {
+        } else {
             yEditor.setBorder(UIUtils.createControlBorder());
         }
-        if(!NumberUtils.isCreatable(sz)) {
+        if (!NumberUtils.isCreatable(sz)) {
             success = false;
             zEditor.setBorder(UIUtils.createControlErrorBorder());
-        }
-        else {
+        } else {
             zEditor.setBorder(UIUtils.createControlBorder());
         }
 

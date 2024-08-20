@@ -17,8 +17,8 @@ import java.awt.event.ComponentAdapter;
 import java.awt.event.ComponentEvent;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
-import java.util.*;
 import java.util.List;
+import java.util.*;
 import java.util.function.Predicate;
 import java.util.function.Supplier;
 import java.util.stream.Collectors;
@@ -36,6 +36,14 @@ public class JIPipeDesktopDockPanel extends JPanel implements JIPipeDesktopSplit
     private final JPanel rightPanel = new JPanel(new BorderLayout());
     private final JPanel leftResizerPanel = new JPanel();
     private final JPanel rightResizerPanel = new JPanel();
+    private final Map<String, Panel> panels = new LinkedHashMap<>();
+    private final Map<String, JToggleButton> panelVisibilityToggles = new HashMap<>();
+    private final JIPipeDesktopSplitPane leftSplitPane = new JIPipeDesktopSplitPane(JSplitPane.VERTICAL_SPLIT, new JIPipeDesktopSplitPane.FixedRatio(0.33, true));
+    private final JIPipeDesktopSplitPane rightSplitPane = new JIPipeDesktopSplitPane(JSplitPane.VERTICAL_SPLIT, new JIPipeDesktopSplitPane.FixedRatio(0.66, true));
+    private final StateSavedEventEmitter stateSavedEventEmitter = new StateSavedEventEmitter();
+    private final PanelSideVisibilityChangedEventEmitter panelSideVisibilityChangedEventEmitter = new PanelSideVisibilityChangedEventEmitter();
+    private final JIPipeParameterCollection.ParameterChangedEventEmitter parameterChangedEventEmitter = new JIPipeParameterCollection.ParameterChangedEventEmitter();
+    private final JCheckBoxMenuItem showToolbarLabelsMenuItem = new JCheckBoxMenuItem("Show Toolbar Labels");
     private int floatingPanelMarginLeftRight = 8;
     private int floatingPanelMarginTop = 8;
     private int floatingPanelMarginBottom = 8;
@@ -45,20 +53,12 @@ public class JIPipeDesktopDockPanel extends JPanel implements JIPipeDesktopSplit
     private int minimumBackgroundWidth = 150;
     private JComponent leftPanelContent;
     private JComponent rightPanelContent;
-    private final Map<String, Panel> panels = new LinkedHashMap<>();
-    private final Map<String, JToggleButton> panelVisibilityToggles = new HashMap<>();
     private boolean leftPanelIsFloating = false;
     private boolean rightPanelIsFloating = false;
-    private final JIPipeDesktopSplitPane leftSplitPane = new JIPipeDesktopSplitPane(JSplitPane.VERTICAL_SPLIT, new JIPipeDesktopSplitPane.FixedRatio(0.33, true));
-    private final JIPipeDesktopSplitPane rightSplitPane = new JIPipeDesktopSplitPane(JSplitPane.VERTICAL_SPLIT, new JIPipeDesktopSplitPane.FixedRatio(0.66, true));
     private State savedState = new State();
-    private final StateSavedEventEmitter stateSavedEventEmitter = new StateSavedEventEmitter();
-    private final PanelSideVisibilityChangedEventEmitter panelSideVisibilityChangedEventEmitter = new PanelSideVisibilityChangedEventEmitter();
-    private final JIPipeParameterCollection.ParameterChangedEventEmitter parameterChangedEventEmitter = new JIPipeParameterCollection.ParameterChangedEventEmitter();
     private boolean showToolbarLabels = true;
     private int toolbarWithLabelsWidth = 92;
     private int toolbarWithoutLabelsWidth = 42;
-    private final JCheckBoxMenuItem showToolbarLabelsMenuItem = new JCheckBoxMenuItem("Show Toolbar Labels");
 
     public JIPipeDesktopDockPanel() {
         super(new BorderLayout());
@@ -75,7 +75,9 @@ public class JIPipeDesktopDockPanel extends JPanel implements JIPipeDesktopSplit
         UIUtils.addRightClickPopupMenuToComponent(leftToolBar, toolbarContextMenu);
 
         showToolbarLabelsMenuItem.setState(showToolbarLabels);
-        showToolbarLabelsMenuItem.addActionListener(e -> { setShowToolbarLabels(showToolbarLabelsMenuItem.getState()); });
+        showToolbarLabelsMenuItem.addActionListener(e -> {
+            setShowToolbarLabels(showToolbarLabelsMenuItem.getState());
+        });
 
 //        layeredPane.setLayout(new OverlayLayout(layeredPane));
         add(layeredPane, BorderLayout.CENTER);
@@ -156,7 +158,7 @@ public class JIPipeDesktopDockPanel extends JPanel implements JIPipeDesktopSplit
     }
 
     public void setShowToolbarLabels(boolean showToolbarLabels) {
-        if(showToolbarLabels != this.showToolbarLabels) {
+        if (showToolbarLabels != this.showToolbarLabels) {
             this.showToolbarLabels = showToolbarLabels;
             updateToolbars();
             SwingUtilities.invokeLater(() -> {
@@ -165,7 +167,7 @@ public class JIPipeDesktopDockPanel extends JPanel implements JIPipeDesktopSplit
             });
             parameterChangedEventEmitter.emit(new JIPipeParameterCollection.ParameterChangedEvent(this, "show-toolbar-labels"));
         }
-        if(showToolbarLabelsMenuItem.getState() != showToolbarLabels) {
+        if (showToolbarLabelsMenuItem.getState() != showToolbarLabels) {
             showToolbarLabelsMenuItem.setState(showToolbarLabels);
         }
     }
@@ -218,15 +220,13 @@ public class JIPipeDesktopDockPanel extends JPanel implements JIPipeDesktopSplit
         int backgroundLeft;
         int backgroundWidth;
 
-        if(leftPanel.isVisible() && rightPanel.isVisible()) {
+        if (leftPanel.isVisible() && rightPanel.isVisible()) {
             backgroundLeft = leftPanelIsFloating ? 0 : leftSize.width;
             backgroundWidth = layeredPane.getWidth() - (rightPanelIsFloating ? 0 : rightSize.width) - backgroundLeft;
-        }
-        else if(leftPanel.isVisible()) {
+        } else if (leftPanel.isVisible()) {
             backgroundLeft = leftPanelIsFloating ? 0 : leftSize.width;
             backgroundWidth = layeredPane.getWidth() - backgroundLeft;
-        }
-        else {
+        } else {
             backgroundLeft = 0;
             backgroundWidth = layeredPane.getWidth();
         }
@@ -240,10 +240,10 @@ public class JIPipeDesktopDockPanel extends JPanel implements JIPipeDesktopSplit
     }
 
     private void updateContent(List<PanelSideVisibilityChangedEvent> panelVisibilityChangedEvents) {
-        if(leftPanelContent != null) {
+        if (leftPanelContent != null) {
             leftPanel.remove(leftPanelContent);
         }
-        if(rightPanelContent != null) {
+        if (rightPanelContent != null) {
             rightPanel.remove(rightPanelContent);
         }
         leftPanelContent = null;
@@ -253,60 +253,56 @@ public class JIPipeDesktopDockPanel extends JPanel implements JIPipeDesktopSplit
         List<JComponent> rightContent = new ArrayList<>();
 
         for (Panel panel : getPanelsAtLocation(PanelLocation.TopLeft)) {
-            if(panel.isDisplayed()) {
+            if (panel.isDisplayed()) {
                 leftContent.add(panel.getComponent());
                 break;
             }
         }
         for (Panel panel : getPanelsAtLocation(PanelLocation.BottomLeft)) {
-            if(panel.isDisplayed()) {
+            if (panel.isDisplayed()) {
                 leftContent.add(panel.getComponent());
                 break;
             }
         }
         for (Panel panel : getPanelsAtLocation(PanelLocation.TopRight)) {
-            if(panel.isDisplayed()) {
+            if (panel.isDisplayed()) {
                 rightContent.add(panel.getComponent());
                 break;
             }
         }
         for (Panel panel : getPanelsAtLocation(PanelLocation.BottomRight)) {
-            if(panel.isDisplayed()) {
+            if (panel.isDisplayed()) {
                 rightContent.add(panel.getComponent());
                 break;
             }
         }
 
-        if(leftContent.size() >= 2) {
+        if (leftContent.size() >= 2) {
             // create split pane
             leftSplitPane.setLeftComponent(leftContent.get(0));
             leftSplitPane.setRightComponent(leftContent.get(1));
             leftPanelContent = leftSplitPane;
-        }
-        else if(leftContent.size() == 1) {
+        } else if (leftContent.size() == 1) {
             // use directly
             leftPanelContent = leftContent.get(0);
             leftSplitPane.setLeftComponent(new JPanel());
             leftSplitPane.setRightComponent(new JPanel());
-        }
-        else {
+        } else {
             leftSplitPane.setLeftComponent(new JPanel());
             leftSplitPane.setRightComponent(new JPanel());
         }
 
-        if(rightContent.size() >= 2) {
+        if (rightContent.size() >= 2) {
             // create split pane
             rightSplitPane.setLeftComponent(rightContent.get(0));
             rightSplitPane.setRightComponent(rightContent.get(1));
             rightPanelContent = rightSplitPane;
-        }
-        else if(rightContent.size() == 1) {
+        } else if (rightContent.size() == 1) {
             // use directly
             rightPanelContent = rightContent.get(0);
             rightSplitPane.setLeftComponent(new JPanel());
             rightSplitPane.setRightComponent(new JPanel());
-        }
-        else {
+        } else {
             rightSplitPane.setLeftComponent(new JPanel());
             rightSplitPane.setRightComponent(new JPanel());
         }
@@ -317,25 +313,23 @@ public class JIPipeDesktopDockPanel extends JPanel implements JIPipeDesktopSplit
         // Rebuild panel
         boolean oldLeftPanelVisible = leftPanel.isVisible();
         boolean oldRightPanelVisible = rightPanel.isVisible();
-        if(leftPanelContent != null) {
+        if (leftPanelContent != null) {
             leftPanel.setVisible(true);
             leftPanel.add(leftPanelContent, BorderLayout.CENTER);
-        }
-        else {
+        } else {
             leftPanel.setVisible(false);
         }
-        if(rightPanelContent != null) {
+        if (rightPanelContent != null) {
             rightPanel.setVisible(true);
             rightPanel.add(rightPanelContent, BorderLayout.CENTER);
-        }
-        else {
+        } else {
             rightPanel.setVisible(false);
         }
 
-        if(oldLeftPanelVisible != leftPanel.isVisible()) {
+        if (oldLeftPanelVisible != leftPanel.isVisible()) {
             panelVisibilityChangedEvents.add(new PanelSideVisibilityChangedEvent(this, PanelSide.Left, leftPanel.isVisible()));
         }
-        if(oldRightPanelVisible != rightPanel.isVisible()) {
+        if (oldRightPanelVisible != rightPanel.isVisible()) {
             panelVisibilityChangedEvents.add(new PanelSideVisibilityChangedEvent(this, PanelSide.Right, rightPanel.isVisible()));
         }
 
@@ -347,15 +341,14 @@ public class JIPipeDesktopDockPanel extends JPanel implements JIPipeDesktopSplit
     private void updateToolbars() {
 
         // Update toolbar sizes
-        if(showToolbarLabels) {
+        if (showToolbarLabels) {
             leftToolBar.setMaximumSize(new Dimension(toolbarWithLabelsWidth, Short.MAX_VALUE));
             rightToolBar.setMaximumSize(new Dimension(toolbarWithLabelsWidth, Short.MAX_VALUE));
             leftToolBar.setPreferredSize(new Dimension(toolbarWithLabelsWidth, Short.MAX_VALUE));
             rightToolBar.setPreferredSize(new Dimension(toolbarWithLabelsWidth, Short.MAX_VALUE));
             leftToolBar.setMinimumSize(new Dimension(toolbarWithLabelsWidth, 32));
             rightToolBar.setMinimumSize(new Dimension(toolbarWithLabelsWidth, 32));
-        }
-        else {
+        } else {
             leftToolBar.setMaximumSize(new Dimension(toolbarWithoutLabelsWidth, Short.MAX_VALUE));
             rightToolBar.setMaximumSize(new Dimension(toolbarWithoutLabelsWidth, Short.MAX_VALUE));
             leftToolBar.setPreferredSize(new Dimension(toolbarWithoutLabelsWidth, Short.MAX_VALUE));
@@ -386,17 +379,16 @@ public class JIPipeDesktopDockPanel extends JPanel implements JIPipeDesktopSplit
     private JToggleButton createToggleButton(Panel panel) {
         JToggleButton button = new JToggleButton(panel.getIcon());
         button.setSelected(panel.isDisplayed());
-        button.setBorder(BorderFactory.createEmptyBorder(6,6,6,6));
+        button.setBorder(BorderFactory.createEmptyBorder(6, 6, 6, 6));
         button.setToolTipText(panel.getName());
         button.addActionListener(e -> {
-            if(button.isSelected()) {
+            if (button.isSelected()) {
                 activatePanel(panel, true);
-            }
-            else {
+            } else {
                 deactivatePanel(panel, true);
             }
         });
-        if(showToolbarLabels) {
+        if (showToolbarLabels) {
             button.setText(panel.getName());
             button.setVerticalTextPosition(SwingConstants.BOTTOM);
             button.setHorizontalTextPosition(SwingConstants.CENTER);
@@ -424,7 +416,7 @@ public class JIPipeDesktopDockPanel extends JPanel implements JIPipeDesktopSplit
     public void deactivatePanel(Panel panel, boolean saveState) {
         panel.setVisible(false);
         updateAll();
-        if(saveState) {
+        if (saveState) {
             saveState();
         }
     }
@@ -435,7 +427,7 @@ public class JIPipeDesktopDockPanel extends JPanel implements JIPipeDesktopSplit
     }
 
     private void activatePanel(Panel panel, boolean saveState) {
-        if(panel.getComponent() == null && panel.getComponentSupplier() != null) {
+        if (panel.getComponent() == null && panel.getComponentSupplier() != null) {
             panel.setComponent(panel.getComponentSupplier().get());
             panel.setComponentSupplier(null);
         }
@@ -444,14 +436,14 @@ public class JIPipeDesktopDockPanel extends JPanel implements JIPipeDesktopSplit
         setPanelVisible(panel);
 
         updateAll();
-        if(saveState) {
+        if (saveState) {
             saveState();
         }
     }
 
     private void setPanelVisible(Panel panel) {
         for (Panel otherPanel : getPanelsAtLocation(panel.getLocation())) {
-            if(otherPanel != panel) {
+            if (otherPanel != panel) {
                 otherPanel.setVisible(false);
                 panelVisibilityToggles.get(otherPanel.getId()).setSelected(false);
             }
@@ -487,9 +479,9 @@ public class JIPipeDesktopDockPanel extends JPanel implements JIPipeDesktopSplit
 
     private void movePanelToLocation(Panel panel, PanelLocation newLocation, boolean saveState) {
         PanelLocation oldLocation = panel.getLocation();
-        if(oldLocation != null && !oldLocation.equals(newLocation)) {
+        if (oldLocation != null && !oldLocation.equals(newLocation)) {
 
-            if(panel.isDisplayed()) {
+            if (panel.isDisplayed()) {
                 deactivatePanels(newLocation, false);
             }
 
@@ -497,7 +489,7 @@ public class JIPipeDesktopDockPanel extends JPanel implements JIPipeDesktopSplit
 
             updateAll();
 
-            if(saveState) {
+            if (saveState) {
                 saveState();
             }
         }
@@ -505,29 +497,29 @@ public class JIPipeDesktopDockPanel extends JPanel implements JIPipeDesktopSplit
 
     /**
      * Deactivates all panels at a given location
-     * @param location the location
+     *
+     * @param location  the location
      * @param saveState save the state
      */
     public void deactivatePanels(PanelLocation location, boolean saveState) {
         for (Panel panel : getPanelsAtLocation(location)) {
-            if(panel.isDisplayed()) {
+            if (panel.isDisplayed()) {
                 deactivatePanel(panel, false);
             }
         }
-        if(saveState) {
+        if (saveState) {
             saveState();
         }
     }
 
     public String getCurrentlyVisiblePanelId(PanelLocation location, boolean withHidden) {
         for (Panel panel : getPanelsAtLocation(location)) {
-            if(withHidden) {
-                if(panel.isVisible()) {
+            if (withHidden) {
+                if (panel.isVisible()) {
                     return panel.getId();
                 }
-            }
-            else {
-                if(panel.isDisplayed()) {
+            } else {
+                if (panel.isDisplayed()) {
                     return panel.getId();
                 }
             }
@@ -536,7 +528,7 @@ public class JIPipeDesktopDockPanel extends JPanel implements JIPipeDesktopSplit
     }
 
     public void removeDockPanel(String id) {
-        if(panels.remove(id) != null) {
+        if (panels.remove(id) != null) {
             updateAll();
         }
     }
@@ -554,10 +546,9 @@ public class JIPipeDesktopDockPanel extends JPanel implements JIPipeDesktopSplit
         panel.setUiOrder(uiOrder);
         panels.put(id, panel);
 
-        if(visible) {
-           activatePanel(panel, false);
-        }
-        else {
+        if (visible) {
+            activatePanel(panel, false);
+        } else {
             updateToolbars();
         }
     }
@@ -584,10 +575,9 @@ public class JIPipeDesktopDockPanel extends JPanel implements JIPipeDesktopSplit
         panel.setUiOrder(uiOrder);
         panels.put(id, panel);
 
-        if(visible) {
+        if (visible) {
             activatePanel(panel, false);
-        }
-        else {
+        } else {
             updateToolbars();
         }
     }
@@ -608,17 +598,17 @@ public class JIPipeDesktopDockPanel extends JPanel implements JIPipeDesktopSplit
             panel.setVisible(visible);
         }
         for (Panel panel : panels.values()) {
-            if(panel.visible) {
+            if (panel.visible) {
                 setPanelVisible(panel);
             }
         }
         savedState = state;
         leftPanelWidth = Math.max(minimumPanelWidth, state.leftPanelWidth);
         rightPanelWidth = Math.max(minimumPanelWidth, state.rightPanelWidth);
-        if(state.leftSplitPaneRatio > 0) {
+        if (state.leftSplitPaneRatio > 0) {
             ((JIPipeDesktopSplitPane.FixedRatio) leftSplitPane.getRatio()).setRatio(Math.max(0.01, Math.min(0.99, state.leftSplitPaneRatio)));
         }
-        if(state.rightSplitPaneRatio > 0) {
+        if (state.rightSplitPaneRatio > 0) {
             ((JIPipeDesktopSplitPane.FixedRatio) rightSplitPane.getRatio()).setRatio(Math.max(0.01, Math.min(0.99, state.rightSplitPaneRatio)));
         }
         updateAll();
@@ -646,17 +636,16 @@ public class JIPipeDesktopDockPanel extends JPanel implements JIPipeDesktopSplit
 
     public void activatePanel(String id, boolean saveState) {
         Panel panel = panels.get(id);
-        if(panel != null) {
+        if (panel != null) {
             activatePanel(panel, saveState);
         }
     }
 
     public <T extends JComponent> T getPanel(String id, Class<T> klass) {
         Panel panel = panels.getOrDefault(id, null);
-        if(panel != null) {
+        if (panel != null) {
             return (T) panel.getComponent();
-        }
-        else {
+        } else {
             return null;
         }
     }
@@ -672,13 +661,6 @@ public class JIPipeDesktopDockPanel extends JPanel implements JIPipeDesktopSplit
 
     public PanelSideVisibilityChangedEventEmitter getPanelSideVisibilityChangedEventEmitter() {
         return panelSideVisibilityChangedEventEmitter;
-    }
-
-    public enum PanelLocation {
-        TopLeft,
-        BottomLeft,
-        TopRight,
-        BottomRight
     }
 
     public int getLeftPanelWidth() {
@@ -716,7 +698,6 @@ public class JIPipeDesktopDockPanel extends JPanel implements JIPipeDesktopSplit
         this.floatingPanelMarginTop = floatingPanelMarginTop;
     }
 
-
     public int getMinimumBackgroundWidth() {
         return minimumBackgroundWidth;
     }
@@ -750,7 +731,7 @@ public class JIPipeDesktopDockPanel extends JPanel implements JIPipeDesktopSplit
                 found = true;
             }
         }
-        if(found) {
+        if (found) {
             updateAll();
         }
     }
@@ -763,9 +744,29 @@ public class JIPipeDesktopDockPanel extends JPanel implements JIPipeDesktopSplit
         }
         state.setLeftPanelWidth(leftPanelWidth);
         state.setRightPanelWidth(rightPanelWidth);
-        state.setLeftSplitPaneRatio(((JIPipeDesktopSplitPane.FixedRatio)leftSplitPane.getRatio()).getRatio());
-        state.setRightSplitPaneRatio(((JIPipeDesktopSplitPane.FixedRatio)rightSplitPane.getRatio()).getRatio());
+        state.setLeftSplitPaneRatio(((JIPipeDesktopSplitPane.FixedRatio) leftSplitPane.getRatio()).getRatio());
+        state.setRightSplitPaneRatio(((JIPipeDesktopSplitPane.FixedRatio) rightSplitPane.getRatio()).getRatio());
         return state;
+    }
+
+    public enum PanelLocation {
+        TopLeft,
+        BottomLeft,
+        TopRight,
+        BottomRight
+    }
+
+    public enum PanelSide {
+        Left,
+        Right
+    }
+
+    public interface StateSavedEventListener {
+        void onDockPanelStateSaved(StateSavedEvent event);
+    }
+
+    public interface PanelSideVisibilityChangedEventListener {
+        void onPanelSideVisibilityChanged(PanelSideVisibilityChangedEvent event);
     }
 
     public static class State {
@@ -852,16 +853,16 @@ public class JIPipeDesktopDockPanel extends JPanel implements JIPipeDesktopSplit
         private boolean visible;
         private int uiOrder;
 
+        public Panel(String id) {
+            this.id = id;
+        }
+
         public int getUiOrder() {
             return uiOrder;
         }
 
         public void setUiOrder(int uiOrder) {
             this.uiOrder = uiOrder;
-        }
-
-        public Panel(String id) {
-            this.id = id;
         }
 
         public PanelLocation getLocation() {
@@ -892,12 +893,12 @@ public class JIPipeDesktopDockPanel extends JPanel implements JIPipeDesktopSplit
             this.component = component;
         }
 
-        public void setName(String name) {
-            this.name = name;
-        }
-
         public String getName() {
             return name;
+        }
+
+        public void setName(String name) {
+            this.name = name;
         }
 
         public boolean isVisible() {
@@ -923,7 +924,7 @@ public class JIPipeDesktopDockPanel extends JPanel implements JIPipeDesktopSplit
         @Override
         public int compareTo(@NotNull JIPipeDesktopDockPanel.Panel panel) {
             int byUIOrder = Integer.compare(uiOrder, panel.getUiOrder());
-            if(byUIOrder == 0) {
+            if (byUIOrder == 0) {
                 return name.compareTo(panel.getName());
             }
             return byUIOrder;
@@ -944,21 +945,12 @@ public class JIPipeDesktopDockPanel extends JPanel implements JIPipeDesktopSplit
         }
     }
 
-    public interface StateSavedEventListener {
-        void onDockPanelStateSaved(StateSavedEvent event);
-    }
-
     public static class StateSavedEventEmitter extends JIPipeEventEmitter<StateSavedEvent, StateSavedEventListener> {
 
         @Override
         protected void call(StateSavedEventListener stateSavedEventListener, StateSavedEvent event) {
             stateSavedEventListener.onDockPanelStateSaved(event);
         }
-    }
-
-    public enum PanelSide {
-        Left,
-        Right
     }
 
     public static class PanelSideVisibilityChangedEvent extends AbstractJIPipeEvent {
@@ -979,10 +971,6 @@ public class JIPipeDesktopDockPanel extends JPanel implements JIPipeDesktopSplit
         public boolean isVisible() {
             return visible;
         }
-    }
-
-    public interface PanelSideVisibilityChangedEventListener {
-        void onPanelSideVisibilityChanged(PanelSideVisibilityChangedEvent event);
     }
 
     public static class PanelSideVisibilityChangedEventEmitter extends JIPipeEventEmitter<PanelSideVisibilityChangedEvent, PanelSideVisibilityChangedEventListener> {

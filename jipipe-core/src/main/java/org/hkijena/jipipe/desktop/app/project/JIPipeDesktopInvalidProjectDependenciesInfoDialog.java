@@ -16,7 +16,6 @@ package org.hkijena.jipipe.desktop.app.project;
 import net.imagej.ui.swing.updater.ImageJUpdater;
 import org.hkijena.jipipe.JIPipe;
 import org.hkijena.jipipe.JIPipeDependency;
-import org.hkijena.jipipe.JIPipeImageJUpdateSiteDependency;
 import org.hkijena.jipipe.JIPipePlugin;
 import org.hkijena.jipipe.api.JIPipeWorkbench;
 import org.hkijena.jipipe.desktop.app.JIPipeDesktopWorkbench;
@@ -60,9 +59,9 @@ public class JIPipeDesktopInvalidProjectDependenciesInfoDialog extends JDialog i
     /**
      * Shows the dialog
      *
-     * @param workbench          the parent
-     * @param fileName           the project file or folder. Only for informational purposes
-     * @param dependencySet      the unsatisfied dependencies
+     * @param workbench     the parent
+     * @param fileName      the project file or folder. Only for informational purposes
+     * @param dependencySet the unsatisfied dependencies
      * @return if loading should be continued anyway
      */
     public static boolean showDialog(JIPipeDesktopWorkbench workbench, Path fileName, Set<JIPipeDependency> dependencySet) {

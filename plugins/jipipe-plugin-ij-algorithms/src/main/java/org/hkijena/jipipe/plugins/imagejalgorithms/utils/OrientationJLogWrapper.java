@@ -55,7 +55,7 @@ public class OrientationJLogWrapper implements LogAbstract {
 
     @Override
     public void progress(String msg, double value) {
-       progress(msg, (int) value);
+        progress(msg, (int) value);
     }
 
     @Override
@@ -82,8 +82,8 @@ public class OrientationJLogWrapper implements LogAbstract {
     private void sendProgressIfNeeded() {
         long now = System.currentTimeMillis();
         long difference = now - lastReportedTime;
-        if(difference > 1000) {
-            progressInfo.log( "[" + Math.max(0, currentPercentage) + "%] " + StringUtils.nullToEmpty(message));
+        if (difference > 1000) {
+            progressInfo.log("[" + Math.max(0, currentPercentage) + "%] " + StringUtils.nullToEmpty(message));
             lastReportedTime = now;
         }
     }

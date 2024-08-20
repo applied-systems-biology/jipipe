@@ -471,13 +471,12 @@ public class JIPipeProgressInfo implements Cancelable {
     }
 
     public void log(Throwable e) {
-        if(e == null) {
+        if (e == null) {
             return;
         }
         try {
             log(ExceptionUtils.getStackTrace(e));
-        }
-        catch (Throwable ex) {
+        } catch (Throwable ex) {
             log(e.getMessage());
         }
     }

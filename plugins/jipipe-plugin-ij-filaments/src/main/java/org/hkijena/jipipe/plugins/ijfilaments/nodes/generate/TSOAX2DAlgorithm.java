@@ -76,7 +76,7 @@ public class TSOAX2DAlgorithm extends TSOAXAlgorithm {
     @Override
     protected void runIteration(JIPipeSingleIterationStep iterationStep, JIPipeIterationContext iterationContext, JIPipeGraphNodeRunContext runContext, JIPipeProgressInfo progressInfo) {
         ImagePlus img = iterationStep.getInputData(getFirstInputSlot(), ImagePlusGreyscaleData.class, progressInfo).getImage();
-        if(img.getType() == ImagePlus.GRAY32) {
+        if (img.getType() == ImagePlus.GRAY32) {
             progressInfo.log("Received 32-bit image, which is not supported. Converting to 16-bit.");
             img = ImageJUtils.convertToGrayscale16UIfNeeded(img);
         }
@@ -183,7 +183,7 @@ public class TSOAX2DAlgorithm extends TSOAXAlgorithm {
 
         // Output final results
         iterationStep.addOutputData("Snakes", allSnakes, progressInfo);
-        if(!isSplitByTrack()) {
+        if (!isSplitByTrack()) {
             iterationStep.addOutputData("Filaments", allFilaments, progressInfo);
         }
     }

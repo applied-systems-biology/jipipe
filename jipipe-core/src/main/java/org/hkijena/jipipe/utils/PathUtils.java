@@ -68,7 +68,6 @@ public class PathUtils {
     }
 
 
-
     public static Path resolveAndMakeSubDirectory(Path directory, String name) {
         return resolveAndMakeSubDirectory(directory, Paths.get(name));
     }
@@ -129,7 +128,7 @@ public class PathUtils {
             Files.walkFileTree(sourcePath, new SimpleFileVisitor<Path>() {
                 @Override
                 public FileVisitResult preVisitDirectory(Path dir, BasicFileAttributes attrs) throws IOException {
-                    if(directoryFilter.test(dir)) {
+                    if (directoryFilter.test(dir)) {
 
                         // Create the corresponding destination directory
                         Path relativePath = sourcePath.relativize(dir);
@@ -137,8 +136,7 @@ public class PathUtils {
                         Files.createDirectories(destinationDir);
 
                         return FileVisitResult.CONTINUE;
-                    }
-                    else {
+                    } else {
                         return FileVisitResult.SKIP_SUBTREE;
                     }
                 }
@@ -254,7 +252,7 @@ public class PathUtils {
      * @return null if no file was found
      */
     public static Path findFileByExtensionIn(Path folder, String... extensions) {
-        try(Stream<Path> stream = Files.list(folder)) {
+        try (Stream<Path> stream = Files.list(folder)) {
             return stream.filter(p -> Files.isRegularFile(p) && Arrays.stream(extensions).anyMatch(e -> p.toString().endsWith(e))).findFirst().orElse(null);
         } catch (IOException e) {
             return null;
@@ -269,7 +267,7 @@ public class PathUtils {
      * @return null if no file was found
      */
     public static Path findFileByExtensionRecursivelyIn(Path folder, String... extensions) {
-        try(Stream<Path> stream = Files.walk(folder)) {
+        try (Stream<Path> stream = Files.walk(folder)) {
             return stream.filter(p -> Files.isRegularFile(p) && Arrays.stream(extensions).anyMatch(e -> p.toString().endsWith(e))).findFirst().orElse(null);
         } catch (IOException e) {
             return null;
@@ -284,8 +282,8 @@ public class PathUtils {
      * @return null if no file was found
      */
     public static List<Path> findFilesByExtensionIn(Path folder, String... extensions) {
-        try(Stream<Path> stream = Files.list(folder)) {
-            return  stream.filter(p -> Files.isRegularFile(p) && (extensions.length == 0 || Arrays.stream(extensions).anyMatch(e -> p.toString().endsWith(e)))).collect(Collectors.toList());
+        try (Stream<Path> stream = Files.list(folder)) {
+            return stream.filter(p -> Files.isRegularFile(p) && (extensions.length == 0 || Arrays.stream(extensions).anyMatch(e -> p.toString().endsWith(e)))).collect(Collectors.toList());
         } catch (IOException e) {
             return new ArrayList<>();
         }
@@ -294,11 +292,11 @@ public class PathUtils {
     /**
      * Finds a file in the specified folder with given extension
      *
-     * @param folder     the path
+     * @param folder the path
      * @return null if no file was found
      */
     public static List<Path> listSubDirectories(Path folder) {
-        try(Stream<Path> stream = Files.list(folder)) {
+        try (Stream<Path> stream = Files.list(folder)) {
             return stream.filter(Files::isDirectory).collect(Collectors.toList());
         } catch (IOException e) {
             return new ArrayList<>();
@@ -354,6 +352,7 @@ public class PathUtils {
     /**
      * Gets the legacy user directory.
      * This will be automatically moved to the correct user directory if needed
+     *
      * @return the legacy user directory
      */
     public static Path getLegacyJIPipeUserDir() {
@@ -368,6 +367,7 @@ public class PathUtils {
 
     /**
      * Returns the base directory that contains all profiles
+     *
      * @return the base directory
      */
     public static Path getJIPipeUserDirBase() {
@@ -394,6 +394,7 @@ public class PathUtils {
 
     /**
      * Returns the JIPipe user directory
+     *
      * @return the JIPipe user directory
      */
     public static Path getJIPipeUserDir() {

@@ -223,7 +223,7 @@ public class FilamentsDrawer extends AbstractJIPipeParameterCollection {
                 }
 
                 Color edgeColor = edge.getColor();
-                if(overrideEdgeColor.isEnabled())  {
+                if (overrideEdgeColor.isEnabled()) {
                     edgeColor = overrideEdgeColor.getContent();
                 }
                 drawLineOnProcessor(source.getSpatialLocation().getX(), source.getSpatialLocation().getY(), source.getSpatialLocation().getZ(),
@@ -334,7 +334,7 @@ public class FilamentsDrawer extends AbstractJIPipeParameterCollection {
                 }
 
                 Color edgeColor = edge.getColor();
-                if(overrideEdgeColor.isEnabled())  {
+                if (overrideEdgeColor.isEnabled()) {
                     edgeColor = overrideEdgeColor.getContent();
                 }
 

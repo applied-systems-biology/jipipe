@@ -16,7 +16,7 @@ package org.hkijena.jipipe.plugins.parameters.library.primitives.vectors;
 import com.fasterxml.jackson.annotation.JsonGetter;
 import com.fasterxml.jackson.annotation.JsonSetter;
 
-public class Vector2dParameter implements Vector2Parameter{
+public class Vector2dParameter implements Vector2Parameter {
     private double x;
     private double y;
 

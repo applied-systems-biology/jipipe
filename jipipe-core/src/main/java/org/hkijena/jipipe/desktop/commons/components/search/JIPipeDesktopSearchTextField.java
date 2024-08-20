@@ -34,10 +34,10 @@ public class JIPipeDesktopSearchTextField extends JPanel implements Predicate<St
     public static final int ANIMATION_DELAY = 80;
     public static final double ANIMATION_SPEED = 0.05;
     private final JXTextField textField = new JXTextField();
-    private String[] searchStrings = new String[0];
     private final JPanel buttonPanel = new JPanel();
-    private double attentionAnimationStatus = 1;
     private final Timer attentionAnimationTimer;
+    private String[] searchStrings = new String[0];
+    private double attentionAnimationStatus = 1;
 
     /**
      * Creates a new instance
@@ -50,11 +50,10 @@ public class JIPipeDesktopSearchTextField extends JPanel implements Predicate<St
     }
 
     private void updateAttentionAnimation() {
-        if(!isDisplayable() || attentionAnimationStatus >= 1) {
+        if (!isDisplayable() || attentionAnimationStatus >= 1) {
             attentionAnimationTimer.stop();
             setBorder(UIUtils.createControlBorder());
-        }
-        else {
+        } else {
             Color borderColor = ColorUtils.mix(UIUtils.COLOR_SUCCESS, UIUtils.getControlBorderColor(), attentionAnimationStatus);
             setBorder(UIUtils.createControlBorder(borderColor));
             attentionAnimationStatus += ANIMATION_SPEED;

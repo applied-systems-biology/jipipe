@@ -52,10 +52,9 @@ public class JIPipeExpressionDesktopParameterEditorUI extends JIPipeDesktopParam
 
         // Init the token maker
         JIPipeExpressionParameterSettings settings = getParameterAccess().getAnnotationOfType(JIPipeExpressionParameterSettings.class);
-        if(settings != null) {
+        if (settings != null) {
             tokenMaker = (AbstractTokenMaker) ReflectionUtils.newInstance(settings.tokenMaker());
-        }
-        else {
+        } else {
             tokenMaker = new JIPipeExpressionEvaluatorSyntaxTokenMaker();
         }
 
@@ -81,7 +80,7 @@ public class JIPipeExpressionDesktopParameterEditorUI extends JIPipeDesktopParam
 //        optionPanel.add(functionBuilder);
         functionBuilder.addActionListener(e -> editInFunctionBuilder());
 
-        if(settings == null || !settings.withoutEditorButton()) {
+        if (settings == null || !settings.withoutEditorButton()) {
             expressionEditorPanel.add(functionBuilder, BorderLayout.EAST);
         }
 

@@ -98,8 +98,7 @@ public class JIPipeNodeDatabaseBuilderRun extends AbstractJIPipeRunnable {
             try {
                 CreateNewNodesByTemplateDatabaseEntry newEntry = new CreateNewNodesByTemplateDatabaseEntry(template);
                 newEntries.add(newEntry);
-            }
-            catch (Throwable ignored) {
+            } catch (Throwable ignored) {
             }
         }
 

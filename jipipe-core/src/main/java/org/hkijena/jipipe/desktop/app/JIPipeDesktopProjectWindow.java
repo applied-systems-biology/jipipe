@@ -499,7 +499,7 @@ public class JIPipeDesktopProjectWindow extends JFrame {
             Files.copy(tempFile, savePath);
 
             // Everything OK, now set the title
-            if(updateSavePath) {
+            if (updateSavePath) {
                 projectSavePath = savePath;
             }
             updateTitle();

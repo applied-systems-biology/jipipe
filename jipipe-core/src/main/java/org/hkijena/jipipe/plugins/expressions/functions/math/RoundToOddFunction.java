@@ -29,7 +29,7 @@ public class RoundToOddFunction extends ExpressionFunction {
     @Override
     public Object evaluate(List<Object> parameters, JIPipeExpressionVariablesMap variables) {
         int value = (int) Math.round(((Number) parameters.get(0)).doubleValue());
-        if(value % 2 == 0) {
+        if (value % 2 == 0) {
             value++;
         }
         return value;

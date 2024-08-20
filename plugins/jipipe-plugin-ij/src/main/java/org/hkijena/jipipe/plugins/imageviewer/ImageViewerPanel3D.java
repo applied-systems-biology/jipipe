@@ -52,8 +52,8 @@ import org.hkijena.jipipe.plugins.imageviewer.utils.viewer3d.universe.CustomImag
 import org.hkijena.jipipe.plugins.imageviewer.utils.viewer3d.universe.CustomInteractiveBehavior;
 import org.hkijena.jipipe.plugins.parameters.library.markup.MarkdownText;
 import org.hkijena.jipipe.plugins.settings.JIPipeFileChooserApplicationSettings;
-import org.hkijena.jipipe.utils.JIPipeDesktopSplitPane;
 import org.hkijena.jipipe.utils.BufferedImageUtils;
+import org.hkijena.jipipe.utils.JIPipeDesktopSplitPane;
 import org.hkijena.jipipe.utils.StringUtils;
 import org.hkijena.jipipe.utils.UIUtils;
 import org.hkijena.jipipe.utils.ui.CopyImageToClipboard;
@@ -166,11 +166,11 @@ public class ImageViewerPanel3D extends JPanel implements JIPipeDesktopWorkbench
         if (newIndex < 1)
             newIndex += maximum;
         slider.setValue(newIndex);
-    }    private final Timer animationTimer = new Timer(250, e -> animateNextSlice());
+    }
 
     public int getCurrentImageContentsResamplingFactor() {
         return currentImageContentsResamplingFactor;
-    }
+    }    private final Timer animationTimer = new Timer(250, e -> animateNextSlice());
 
     public ImageViewer3DUIApplicationSettings getSettings() {
         return settings;

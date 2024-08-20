@@ -42,10 +42,9 @@ public class JIPipeDesktopQuickRunSettings extends AbstractJIPipeParameterCollec
      * Creates a new instance
      */
     public JIPipeDesktopQuickRunSettings(JIPipeProject project) {
-        if(project != null) {
+        if (project != null) {
             outputPath = project.getTemporaryDirectory("run");
-        }
-        else {
+        } else {
             outputPath = JIPipeRuntimeApplicationSettings.getTemporaryDirectory("run");
         }
     }

@@ -14,8 +14,6 @@
 package org.hkijena.jipipe.plugins.imagejalgorithms.nodes.features;
 
 import ij.ImagePlus;
-import ij.gui.OvalRoi;
-import ij.gui.Roi;
 import ij.process.ImageProcessor;
 import org.hkijena.jipipe.api.ConfigureJIPipeNode;
 import org.hkijena.jipipe.api.JIPipeProgressInfo;
@@ -34,17 +32,13 @@ import org.hkijena.jipipe.api.parameters.AbstractJIPipeParameterCollection;
 import org.hkijena.jipipe.api.parameters.JIPipeParameter;
 import org.hkijena.jipipe.plugins.imagejalgorithms.utils.OrientationJLogWrapper;
 import org.hkijena.jipipe.plugins.imagejalgorithms.utils.OrientationJStructureTensorParameters;
-import org.hkijena.jipipe.plugins.imagejdatatypes.datatypes.ROI2DListData;
 import org.hkijena.jipipe.plugins.imagejdatatypes.datatypes.greyscale.ImagePlusGreyscaleData;
 import org.hkijena.jipipe.plugins.imagejdatatypes.util.ImageJUtils;
 import org.hkijena.jipipe.plugins.imagejdatatypes.util.ImageSliceIndex;
-import org.hkijena.jipipe.plugins.tables.datatypes.ResultsTableData;
 import orientation.*;
 import orientation.imageware.Builder;
 import orientation.imageware.ImageWare;
 
-import java.util.ArrayList;
-import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -142,46 +136,46 @@ public class OrientationFeatures2DAlgorithm extends JIPipeSimpleIteratingAlgorit
             StructureTensor st = new StructureTensor(log, groupImage, params);
             st.run();
 
-            if(outputParameters.outputEnergy) {
+            if (outputParameters.outputEnergy) {
                 energySlices.put(index, groupImage.energy.buildImageStack().getProcessor(1));
             }
-            if(outputParameters.outputCoherency) {
+            if (outputParameters.outputCoherency) {
                 coherencyIndexSlices.put(index, groupImage.coherency.buildImageStack().getProcessor(1));
             }
-            if(outputParameters.outputOrientation) {
+            if (outputParameters.outputOrientation) {
                 orientationSlices.put(index, groupImage.orientation.buildImageStack().getProcessor(1));
             }
-            if(outputParameters.outputGradientX) {
+            if (outputParameters.outputGradientX) {
                 gradientXSlices.put(index, groupImage.gx.buildImageStack().getProcessor(1));
             }
-            if(outputParameters.outputGradientY) {
+            if (outputParameters.outputGradientY) {
                 gradientYSlices.put(index, groupImage.gy.buildImageStack().getProcessor(1));
             }
         }, progressInfo);
 
         // Collect all outputs
 
-        if(!energySlices.isEmpty()) {
+        if (!energySlices.isEmpty()) {
             ImagePlus img = ImageJUtils.mergeMappedSlices(energySlices);
             img.copyScale(inputImage);
             iterationStep.addOutputData("Energy", new ImagePlusGreyscaleData(img), progressInfo);
         }
-        if(!coherencyIndexSlices.isEmpty()) {
+        if (!coherencyIndexSlices.isEmpty()) {
             ImagePlus img = ImageJUtils.mergeMappedSlices(coherencyIndexSlices);
             img.copyScale(inputImage);
             iterationStep.addOutputData("Coherency", new ImagePlusGreyscaleData(img), progressInfo);
         }
-        if(!orientationSlices.isEmpty()) {
+        if (!orientationSlices.isEmpty()) {
             ImagePlus img = ImageJUtils.mergeMappedSlices(orientationSlices);
             img.copyScale(inputImage);
             iterationStep.addOutputData("Orientation", new ImagePlusGreyscaleData(img), progressInfo);
         }
-        if(!gradientXSlices.isEmpty()) {
+        if (!gradientXSlices.isEmpty()) {
             ImagePlus img = ImageJUtils.mergeMappedSlices(gradientXSlices);
             img.copyScale(inputImage);
             iterationStep.addOutputData("Gradient-X", new ImagePlusGreyscaleData(img), progressInfo);
         }
-        if(!gradientYSlices.isEmpty()) {
+        if (!gradientYSlices.isEmpty()) {
             ImagePlus img = ImageJUtils.mergeMappedSlices(gradientYSlices);
             img.copyScale(inputImage);
             iterationStep.addOutputData("Gradient-Y", new ImagePlusGreyscaleData(img), progressInfo);

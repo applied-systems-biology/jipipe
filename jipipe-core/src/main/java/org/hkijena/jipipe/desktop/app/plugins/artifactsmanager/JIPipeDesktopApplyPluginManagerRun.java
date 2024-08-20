@@ -13,7 +13,6 @@
 
 package org.hkijena.jipipe.desktop.app.plugins.artifactsmanager;
 
-import net.imagej.updater.UpdateSite;
 import org.hkijena.jipipe.JIPipe;
 import org.hkijena.jipipe.JIPipeImageJUpdateSiteDependency;
 import org.hkijena.jipipe.JIPipePlugin;
@@ -57,10 +56,9 @@ public class JIPipeDesktopApplyPluginManagerRun extends AbstractJIPipeRunnable {
         }
 
         getProgressInfo().log("Any additional items that need to be manually resolved will be displayed here:");
-        if(updateSitesToInstall.isEmpty()) {
+        if (updateSitesToInstall.isEmpty()) {
             getProgressInfo().log("-> Nothing to do");
-        }
-        else {
+        } else {
             for (JIPipeImageJUpdateSiteDependency updateSite : updateSitesToInstall) {
                 getProgressInfo().log("-> TODO: Check if update site " + updateSite.getName() + " is activated");
             }

@@ -13,10 +13,6 @@
 
 package org.hkijena.jipipe.api;
 
-import gnu.trove.queue.TLongQueue;
-import gnu.trove.stack.TLongStack;
-import gnu.trove.stack.array.TLongArrayStack;
-
 import java.time.Duration;
 import java.util.ArrayDeque;
 import java.util.Queue;
@@ -25,16 +21,17 @@ import java.util.Queue;
  * Allows to provide users with an ETA
  */
 public class JIPipeProgressInfoETA {
+    private final Queue<Long> updateTimes = new ArrayDeque<>();
     private long lastLogTime = System.currentTimeMillis();
     private long lastUpdateTime = System.currentTimeMillis();
     private long elapsedTime = 0;
     private int lastItemIndex = -1;
     private int averageWindow = 5;
     private long logInterval = 60 * 1000;
-    private final Queue<Long> updateTimes = new ArrayDeque<>();
 
     /**
      * Gets the window size for the ETA calculation
+     *
      * @return the window size
      */
     public int getAverageWindow() {
@@ -43,6 +40,7 @@ public class JIPipeProgressInfoETA {
 
     /**
      * Sets the window size for the ETA calculation
+     *
      * @param averageWindow the window size
      */
     public void setAverageWindow(int averageWindow) {
@@ -51,6 +49,7 @@ public class JIPipeProgressInfoETA {
 
     /**
      * Gets the log interval (milliseconds)
+     *
      * @return the log interval (milliseconds)
      */
     public long getLogInterval() {
@@ -59,6 +58,7 @@ public class JIPipeProgressInfoETA {
 
     /**
      * Sets the log interval (milliseconds)
+     *
      * @param logInterval the log interval (milliseconds)
      */
     public void setLogInterval(long logInterval) {
@@ -67,8 +67,9 @@ public class JIPipeProgressInfoETA {
 
     /**
      * Updates the ETA and logs it if needed
+     *
      * @param currentIndex the current index
-     * @param totalItems the total number of items
+     * @param totalItems   the total number of items
      * @param progressInfo the progress info
      */
     public void update(int currentIndex, int totalItems, JIPipeProgressInfo progressInfo) {
@@ -110,13 +111,12 @@ public class JIPipeProgressInfoETA {
             double eta = numItemsToDo * averageTime;
             Duration etaDuration = Duration.ofMillis((long) eta);
             Duration elapsedDuration = Duration.ofMillis(elapsedTime);
-            Duration averageDuration = Duration.ofMillis((long)averageTime);
+            Duration averageDuration = Duration.ofMillis((long) averageTime);
 
             progressInfo.log("Elapsed: " + String.format("%02d:%02d:%02d", elapsedDuration.toHours(), elapsedDuration.toMinutes() % 60, elapsedDuration.getSeconds() % 60) +
                     ", ETA: " + String.format("%02d:%02d:%02d", etaDuration.toHours(), etaDuration.toMinutes() % 60, etaDuration.getSeconds() % 60) +
                     ", Average time per item: " + String.format("%02d:%02d:%02d", averageDuration.toHours(), averageDuration.toMinutes() % 60, averageDuration.getSeconds() % 60));
-        }
-        catch (Throwable e) {
+        } catch (Throwable e) {
             progressInfo.log(e);
         }
 

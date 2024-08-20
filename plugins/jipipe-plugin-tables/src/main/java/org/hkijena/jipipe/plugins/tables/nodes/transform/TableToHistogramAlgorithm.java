@@ -17,12 +17,9 @@ import com.google.common.primitives.Doubles;
 import gnu.trove.list.TDoubleList;
 import gnu.trove.list.array.TDoubleArrayList;
 import gnu.trove.map.TDoubleDoubleMap;
-import gnu.trove.map.TDoubleIntMap;
 import gnu.trove.map.hash.TDoubleDoubleHashMap;
-import gnu.trove.map.hash.TDoubleIntHashMap;
 import gnu.trove.set.TDoubleSet;
 import gnu.trove.set.hash.TDoubleHashSet;
-import org.apache.commons.math3.ml.clustering.KMeansPlusPlusClusterer;
 import org.hkijena.jipipe.api.ConfigureJIPipeNode;
 import org.hkijena.jipipe.api.JIPipeProgressInfo;
 import org.hkijena.jipipe.api.LabelAsJIPipeHidden;
@@ -37,18 +34,19 @@ import org.hkijena.jipipe.api.nodes.iterationstep.JIPipeIterationContext;
 import org.hkijena.jipipe.api.nodes.iterationstep.JIPipeSingleIterationStep;
 import org.hkijena.jipipe.api.parameters.AbstractJIPipeParameterCollection;
 import org.hkijena.jipipe.api.parameters.JIPipeParameter;
-import org.hkijena.jipipe.plugins.expressions.JIPipeExpressionParameter;
 import org.hkijena.jipipe.plugins.expressions.AddJIPipeExpressionParameterVariable;
+import org.hkijena.jipipe.plugins.expressions.JIPipeExpressionParameter;
 import org.hkijena.jipipe.plugins.expressions.JIPipeExpressionVariablesMap;
 import org.hkijena.jipipe.plugins.expressions.TableColumnSourceExpressionParameter;
 import org.hkijena.jipipe.plugins.expressions.variables.JIPipeTextAnnotationsExpressionParameterVariablesInfo;
 import org.hkijena.jipipe.plugins.parameters.library.collections.ParameterCollectionList;
 import org.hkijena.jipipe.plugins.tables.datatypes.ResultsTableData;
 import org.hkijena.jipipe.plugins.tables.datatypes.TableColumn;
-import org.hkijena.jipipe.plugins.tables.nodes.columns.ApplyExpressionToTableByColumnAlgorithm;
-import org.hkijena.jipipe.plugins.tables.parameters.enums.TableColumnGeneratorParameter;
 
-import java.util.*;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 
 @SetJIPipeDocumentation(name = "Table column to histogram", description = "Deprecated. Replace with a new node with the same name. " +
         "Generates a histogram of table column values. Also supports weighting the values via an additional column.")
@@ -163,7 +161,7 @@ public class TableToHistogramAlgorithm extends JIPipeSimpleIteratingAlgorithm {
             double minValue = sortedUniqueFilteredInputColumnValues.min();
             double maxValue = sortedUniqueFilteredInputColumnValues.max();
             double binWidth = (maxValue - minValue) / nBins;
-            
+
             double currentStart = minValue;
             double currentEnd = currentStart + binWidth;
             do {

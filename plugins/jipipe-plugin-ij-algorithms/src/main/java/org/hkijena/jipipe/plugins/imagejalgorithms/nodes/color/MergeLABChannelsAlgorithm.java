@@ -27,7 +27,6 @@ import org.hkijena.jipipe.api.nodes.categories.ImagesNodeTypeCategory;
 import org.hkijena.jipipe.api.nodes.iterationstep.JIPipeIterationContext;
 import org.hkijena.jipipe.api.nodes.iterationstep.JIPipeSingleIterationStep;
 import org.hkijena.jipipe.plugins.imagejdatatypes.datatypes.color.ImagePlusColorLABData;
-import org.hkijena.jipipe.plugins.imagejdatatypes.datatypes.color.ImagePlusColorRGBData;
 import org.hkijena.jipipe.plugins.imagejdatatypes.datatypes.greyscale.ImagePlusGreyscale8UData;
 import org.hkijena.jipipe.plugins.imagejdatatypes.util.ImageJUtils;
 
@@ -41,7 +40,7 @@ public class MergeLABChannelsAlgorithm extends JIPipeIteratingAlgorithm {
 
 
     public MergeLABChannelsAlgorithm(JIPipeNodeInfo info) {
-      super(info);
+        super(info);
     }
 
     public MergeLABChannelsAlgorithm(MergeLABChannelsAlgorithm other) {
@@ -53,7 +52,7 @@ public class MergeLABChannelsAlgorithm extends JIPipeIteratingAlgorithm {
         ImagePlus imageL = iterationStep.getInputData("L", ImagePlusGreyscale8UData.class, progressInfo).getImage();
         ImagePlus imageA = iterationStep.getInputData("A", ImagePlusGreyscale8UData.class, progressInfo).getImage();
         ImagePlus imageB = iterationStep.getInputData("B", ImagePlusGreyscale8UData.class, progressInfo).getImage();
-        if(!ImageJUtils.imagesHaveSameSize(imageL, imageA, imageB)) {
+        if (!ImageJUtils.imagesHaveSameSize(imageL, imageA, imageB)) {
             throw new IllegalArgumentException("Images do not have the same size!");
         }
         ImagePlus output = IJ.createHyperStack("LAB", imageL.getWidth(), imageL.getHeight(), imageL.getNChannels(), imageL.getNSlices(), imageL.getNFrames(), 24);

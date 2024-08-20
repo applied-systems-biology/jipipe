@@ -76,13 +76,13 @@ public abstract class JIPipeDesktopGraphEditorRunManager implements JIPipeRunnab
 
     private boolean alreadyHasRunEnqueued() {
         JIPipeRunnable currentRun = JIPipeRunnableQueue.getInstance().getCurrentRun();
-        if(currentRun instanceof JIPipeDesktopQuickRun) {
-            if(((JIPipeDesktopQuickRun) currentRun).getProject() == project) {
+        if (currentRun instanceof JIPipeDesktopQuickRun) {
+            if (((JIPipeDesktopQuickRun) currentRun).getProject() == project) {
                 return true;
             }
         }
         for (JIPipeRunnableWorker worker : JIPipeRunnableQueue.getInstance().getQueue()) {
-            if(worker.getRun() instanceof JIPipeDesktopQuickRun && ((JIPipeDesktopQuickRun) worker.getRun()).getProject() == project) {
+            if (worker.getRun() instanceof JIPipeDesktopQuickRun && ((JIPipeDesktopQuickRun) worker.getRun()).getProject() == project) {
                 return true;
             }
         }
@@ -116,8 +116,8 @@ public abstract class JIPipeDesktopGraphEditorRunManager implements JIPipeRunnab
         if (event.getRun() == run) {
 
             // Restore the saved state
-            if(!queueMode) {
-                if(restoreDockStateRequired) {
+            if (!queueMode) {
+                if (restoreDockStateRequired) {
                     getDockPanel().restoreState(savedState);
                 }
 
@@ -135,9 +135,9 @@ public abstract class JIPipeDesktopGraphEditorRunManager implements JIPipeRunnab
     @Override
     public void onRunnableInterrupted(JIPipeRunnable.InterruptedEvent event) {
         if (event.getRun() == run) {
-            if(!queueMode) {
+            if (!queueMode) {
                 // Restore the saved state
-                if(restoreDockStateRequired) {
+                if (restoreDockStateRequired) {
                     getDockPanel().restoreState(savedState);
                 }
 

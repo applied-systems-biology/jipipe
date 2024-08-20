@@ -128,10 +128,9 @@ public class JIPipeNodeTemplateListCellRenderer extends JPanel implements ListCe
         int availableWidth = parent.getWidth() - list.getInsets().left - list.getInsets().right;
         setMinimumSize(new Dimension(availableWidth, 16));
 
-        if(showDescriptions) {
+        if (showDescriptions) {
             setMaximumSize(new Dimension(availableWidth, 75));
-        }
-        else {
+        } else {
             setMaximumSize(new Dimension(availableWidth, 50));
         }
         setPreferredSize(getMaximumSize());
@@ -139,15 +138,14 @@ public class JIPipeNodeTemplateListCellRenderer extends JPanel implements ListCe
 
         if (obj != null) {
             setTruncatedText(nameLabel, obj.getName(), list);
-            if(showDescriptions) {
+            if (showDescriptions) {
                 String description = obj.getDescription().toPlainText().trim();
-                if(StringUtils.isNullOrEmpty(description) && obj.getGraph().getGraphNodes().size() == 1) {
+                if (StringUtils.isNullOrEmpty(description) && obj.getGraph().getGraphNodes().size() == 1) {
                     JIPipeGraphNode graphNode = obj.getGraph().getGraphNodes().iterator().next();
                     description = graphNode.getInfo().getDescription().toPlainText();
                 }
                 setTruncatedText(descriptionLabel, description, list);
-            }
-            else {
+            } else {
                 descriptionLabel.setText(null);
             }
             setTruncatedText(pathLabel, obj.getLocationInfo(), list);
@@ -171,7 +169,7 @@ public class JIPipeNodeTemplateListCellRenderer extends JPanel implements ListCe
     }
 
     private void setTruncatedText(JLabel label, String text, JList<?> list) {
-        if(text.length() > 100) {
+        if (text.length() > 100) {
             text = text.substring(0, 100) + " ...";
         }
         FontMetrics fm = label.getFontMetrics(label.getFont());

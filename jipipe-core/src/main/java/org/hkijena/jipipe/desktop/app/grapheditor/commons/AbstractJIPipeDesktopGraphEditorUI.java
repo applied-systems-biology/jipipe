@@ -88,15 +88,15 @@ public abstract class AbstractJIPipeDesktopGraphEditorUI extends JIPipeDesktopWo
     private final Map<Class<? extends JIPipeGraphEditorTool>, JIPipeGraphEditorTool> toolMap = new HashMap<>();
     private final BiMap<JIPipeToggleableGraphEditorTool, JToggleButton> toolToggles = HashBiMap.create();
     private final JToolBar toolBar = new JToolBar();
+    private final JIPipeDesktopDockPanel dockPanel = new JIPipeDesktopDockPanel();
+    private final List<JButton> contextToolbarButtons = new ArrayList<>();
     private JScrollPane scrollPane;
     private Point panningOffset = null;
     private Point panningScrollbarOffset = null;
     private boolean isPanning = false;
     private Set<JIPipeNodeInfo> addableAlgorithms = new HashSet<>();
     private JIPipeToggleableGraphEditorTool currentTool;
-    private final JIPipeDesktopDockPanel dockPanel = new JIPipeDesktopDockPanel();
     private int contextToolbarInsertLocation;
-    private final List<JButton> contextToolbarButtons = new ArrayList<>();
 
     /**
      * @param workbenchUI    the workbench
@@ -125,9 +125,6 @@ public abstract class AbstractJIPipeDesktopGraphEditorUI extends JIPipeDesktopWo
         dockPanel.getPanelSideVisibilityChangedEventEmitter().subscribe(this);
     }
 
-    protected abstract void restoreDockStateFromSettings();
-    protected abstract void saveDockStateToSettings();
-
     /**
      * @param workbenchUI    the workbench
      * @param graph          the algorithm graph
@@ -137,6 +134,10 @@ public abstract class AbstractJIPipeDesktopGraphEditorUI extends JIPipeDesktopWo
     public AbstractJIPipeDesktopGraphEditorUI(JIPipeDesktopWorkbench workbenchUI, JIPipeGraph graph, UUID compartment, JIPipeHistoryJournal historyJournal) {
         this(workbenchUI, graph, compartment, historyJournal, JIPipeGraphEditorUIApplicationSettings.getInstance());
     }
+
+    protected abstract void restoreDockStateFromSettings();
+
+    protected abstract void saveDockStateToSettings();
 
     @Override
     public void dispose() {
@@ -202,8 +203,8 @@ public abstract class AbstractJIPipeDesktopGraphEditorUI extends JIPipeDesktopWo
         dockPanel.getStateSavedEventEmitter().subscribe(this);
         dockPanel.setShowToolbarLabels(graphUISettings.getDockLayoutSettings().isShowToolbarLabels());
         dockPanel.getParameterChangedEventEmitter().subscribeLambda((emitter, event) -> {
-            if("show-toolbar-labels".equals(event.getKey())) {
-                if(graphUISettings.getDockLayoutSettings().isShowToolbarLabels() != dockPanel.isShowToolbarLabels()) {
+            if ("show-toolbar-labels".equals(event.getKey())) {
+                if (graphUISettings.getDockLayoutSettings().isShowToolbarLabels() != dockPanel.isShowToolbarLabels()) {
                     graphUISettings.getDockLayoutSettings().setShowToolbarLabels(dockPanel.isShowToolbarLabels());
                     JIPipe.getSettings().saveLater();
                 }
@@ -261,7 +262,7 @@ public abstract class AbstractJIPipeDesktopGraphEditorUI extends JIPipeDesktopWo
                 saveDockStateToSettings();
             }));
 
-            if(getDockStateTemplates() != null) {
+            if (getDockStateTemplates() != null) {
 
                 for (StringAndStringPairParameter template : getDockStateTemplates()) {
                     layoutMenu.add(UIUtils.createMenuItem(template.getKey(), "Loads the layout", UIUtils.getIconFromResources("actions/sidebar.png"), () -> restoreDockStateTemplate(template.getValue())));
@@ -311,8 +312,7 @@ public abstract class AbstractJIPipeDesktopGraphEditorUI extends JIPipeDesktopWo
             JIPipeDesktopDockPanel.State state = JsonUtils.readFromString(value, JIPipeDesktopDockPanel.State.class);
             getDockPanel().restoreState(state);
             saveDockStateToSettings();
-        }
-        catch (Throwable e) {
+        } catch (Throwable e) {
             e.printStackTrace();
             JOptionPane.showMessageDialog(this, "Unable to restore template!", "Load template", JOptionPane.ERROR_MESSAGE);
         }
@@ -334,7 +334,7 @@ public abstract class AbstractJIPipeDesktopGraphEditorUI extends JIPipeDesktopWo
 
     private void createDockStateTemplate() {
         String newValue = StringUtils.nullToEmpty(JOptionPane.showInputDialog(this, "Please input the name of the layout:", "")).trim();
-        if(!StringUtils.isNullOrEmpty(newValue)) {
+        if (!StringUtils.isNullOrEmpty(newValue)) {
             JIPipeDesktopDockPanel.State currentState = getDockPanel().getCurrentState();
             getDockStateTemplates().add(new StringAndStringPairParameter(newValue, JsonUtils.toJsonString(currentState)));
             JIPipe.getSettings().save();
@@ -418,7 +418,7 @@ public abstract class AbstractJIPipeDesktopGraphEditorUI extends JIPipeDesktopWo
     private void initializeEditingToolbar(Class<? extends JIPipeGraphEditorTool> baseClass) {
         List<JIPipeGraphEditorTool> newTools = new ArrayList<>();
         for (Class<? extends JIPipeGraphEditorTool> klass : JIPipe.getInstance().getGraphEditorToolRegistry().getRegisteredTools()) {
-            if(baseClass.isAssignableFrom(klass) && !toolMap.containsKey(klass)) {
+            if (baseClass.isAssignableFrom(klass) && !toolMap.containsKey(klass)) {
                 JIPipeGraphEditorTool tool = (JIPipeGraphEditorTool) ReflectionUtils.newInstance(klass);
                 if (tool.supports(this)) {
                     tool.setGraphEditor(this);
@@ -599,12 +599,12 @@ public abstract class AbstractJIPipeDesktopGraphEditorUI extends JIPipeDesktopWo
 
         Set<JIPipeDesktopGraphNodeUI> selection = getSelection();
         for (NodeUIContextAction contextAction : canvasUI.getContextActions()) {
-            if(contextAction != null && contextAction.isDisplayedInToolbar() && contextAction.matches(selection)) {
+            if (contextAction != null && contextAction.isDisplayedInToolbar() && contextAction.matches(selection)) {
                 JButton button = new JButton(contextAction.getIcon());
                 button.setToolTipText(TooltipUtils.createTooltipWithShortcut(contextAction.getName(), contextAction.getDescription(), contextAction.getKeyboardShortcut()));
                 button.addActionListener(e -> {
                     contextAction.run(canvasUI, selection);
-                    if(contextAction.isDisplayedInToolbar()) {
+                    if (contextAction.isDisplayedInToolbar()) {
                         updateContextToolbar();
                     }
                 });
@@ -830,7 +830,7 @@ public abstract class AbstractJIPipeDesktopGraphEditorUI extends JIPipeDesktopWo
 
     @Override
     public void onPanelSideVisibilityChanged(JIPipeDesktopDockPanel.PanelSideVisibilityChangedEvent event) {
-        if(event.getPanelSide() == JIPipeDesktopDockPanel.PanelSide.Right && !event.isVisible()) {
+        if (event.getPanelSide() == JIPipeDesktopDockPanel.PanelSide.Right && !event.isVisible()) {
             JScrollBar horizontalScrollBar = scrollPane.getHorizontalScrollBar();
             int oldVisibleAmount = horizontalScrollBar.getVisibleAmount();
             int oldValue = horizontalScrollBar.getValue();
@@ -838,11 +838,11 @@ public abstract class AbstractJIPipeDesktopGraphEditorUI extends JIPipeDesktopWo
             SwingUtilities.invokeLater(() -> {
 //                System.out.println("new_value: " + horizontalScrollBar.getValue() + "/" + horizontalScrollBar.getMaximum() + " [" + horizontalScrollBar.getVisibleAmount() + "]");
 
-                if(horizontalScrollBar.getValue() != oldValue) {
+                if (horizontalScrollBar.getValue() != oldValue) {
                     int newVisibleAmount = horizontalScrollBar.getVisibleAmount();
                     int shift = Math.max(0, newVisibleAmount - oldVisibleAmount);
 
-                    if(shift > 0) {
+                    if (shift > 0) {
                         canvasUI.expandRightBottom(shift, 0);
                         SwingUtilities.invokeLater(() -> {
                             horizontalScrollBar.setValue(horizontalScrollBar.getValue() + shift);

@@ -29,13 +29,13 @@ public class JIPipeDesktopAddNodePanelEntryListCellRenderer extends JPanel imple
 
     private final Border defaultBorder;
     private final Border selectedBorder;
+    private final JComponent parent;
+    private final JIPipeDesktopAddNodesPanel addNodePanel;
     private JLabel nodeIcon;
     private JLabel nameLabel;
     private JLabel descriptionLabel;
     private JLabel pathLabel;
     private JLabel pinLabel;
-    private final JComponent parent;
-    private final JIPipeDesktopAddNodesPanel addNodePanel;
 
     /**
      * Creates a new renderer
@@ -116,10 +116,9 @@ public class JIPipeDesktopAddNodePanelEntryListCellRenderer extends JPanel imple
         int availableWidth = parent.getWidth() - list.getInsets().left - list.getInsets().right;
         setMinimumSize(new Dimension(availableWidth, 16));
 
-        if(showDescriptions) {
+        if (showDescriptions) {
             setMaximumSize(new Dimension(availableWidth, 75));
-        }
-        else {
+        } else {
             setMaximumSize(new Dimension(availableWidth, 50));
         }
         setPreferredSize(getMaximumSize());
@@ -127,10 +126,9 @@ public class JIPipeDesktopAddNodePanelEntryListCellRenderer extends JPanel imple
 
         if (obj != null) {
             setTruncatedText(nameLabel, obj.getName(), list);
-            if(showDescriptions) {
+            if (showDescriptions) {
                 setTruncatedText(descriptionLabel, obj.getDescription().toPlainText(), list);
-            }
-            else {
+            } else {
                 descriptionLabel.setText(null);
             }
             setTruncatedText(pathLabel, obj.getLocationInfos().get(0).replace("\n", " > "), list);
@@ -138,10 +136,9 @@ public class JIPipeDesktopAddNodePanelEntryListCellRenderer extends JPanel imple
 
             // Pinned items
             Set<String> pinnedNodeDatabaseEntries = addNodePanel.getPinnedNodeDatabaseEntries();
-            if(pinnedNodeDatabaseEntries.contains(obj.getId())) {
+            if (pinnedNodeDatabaseEntries.contains(obj.getId())) {
                 pinLabel.setIcon(UIUtils.getIconInvertedFromResources("actions/window-pin.png"));
-            }
-            else {
+            } else {
                 pinLabel.setIcon(null);
             }
         }
@@ -152,7 +149,7 @@ public class JIPipeDesktopAddNodePanelEntryListCellRenderer extends JPanel imple
     }
 
     private void setTruncatedText(JLabel label, String text, JList<? extends JIPipeNodeDatabaseEntry> list) {
-        if(text.length() > 100) {
+        if (text.length() > 100) {
             text = text.substring(0, 100) + " ...";
         }
         FontMetrics fm = label.getFontMetrics(label.getFont());

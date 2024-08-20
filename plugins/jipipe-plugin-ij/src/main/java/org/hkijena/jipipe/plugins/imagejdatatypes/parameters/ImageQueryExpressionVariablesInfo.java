@@ -17,8 +17,8 @@ import ij.ImagePlus;
 import org.hkijena.jipipe.api.JIPipeWorkbench;
 import org.hkijena.jipipe.api.parameters.JIPipeParameterAccess;
 import org.hkijena.jipipe.api.parameters.JIPipeParameterTree;
-import org.hkijena.jipipe.plugins.expressions.JIPipeExpressionVariablesInfo;
 import org.hkijena.jipipe.plugins.expressions.JIPipeExpressionParameterVariableInfo;
+import org.hkijena.jipipe.plugins.expressions.JIPipeExpressionVariablesInfo;
 import org.hkijena.jipipe.plugins.expressions.JIPipeExpressionVariablesMap;
 
 import java.util.HashSet;

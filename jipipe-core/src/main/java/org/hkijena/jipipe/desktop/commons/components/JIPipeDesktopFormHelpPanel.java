@@ -23,13 +23,13 @@ public class JIPipeDesktopFormHelpPanel extends JPanel {
 
     private void initialize() {
         setLayout(new BorderLayout());
-        showDefaultButton.setBorder(BorderFactory.createEmptyBorder(3,3,3,3));
+        showDefaultButton.setBorder(BorderFactory.createEmptyBorder(3, 3, 3, 3));
         showDefaultButton.addActionListener(e -> showDefaultContent());
     }
 
     private void updateContent() {
         removeAll();
-        if(currentContent != null && currentDocumentName != null) {
+        if (currentContent != null && currentDocumentName != null) {
             JToolBar toolBar = new JToolBar();
             toolBar.setFloatable(false);
             toolBar.add(showDefaultButton);
@@ -37,8 +37,7 @@ public class JIPipeDesktopFormHelpPanel extends JPanel {
 
             contentReader.setDocument(currentContent);
             add(contentReader, BorderLayout.CENTER);
-        }
-        else {
+        } else {
             contentReader.setDocument(defaultContent);
             add(contentReader, BorderLayout.CENTER);
         }
@@ -60,7 +59,7 @@ public class JIPipeDesktopFormHelpPanel extends JPanel {
     }
 
     public void showContent(MarkdownText content) {
-        if(content != null) {
+        if (content != null) {
             String name;
             if (StringUtils.orElse(content.getMarkdown(), "").startsWith("#")) {
                 String s = content.getMarkdown().split("\n")[0];
@@ -70,18 +69,16 @@ public class JIPipeDesktopFormHelpPanel extends JPanel {
                 name = "...";
             }
             showContent(name, content);
-        }
-        else {
+        } else {
             showDefaultContent();
         }
     }
 
     public void showContent(String documentName, MarkdownText content) {
-        if(documentName == null || content == null) {
+        if (documentName == null || content == null) {
             this.currentDocumentName = null;
             this.currentContent = null;
-        }
-        else {
+        } else {
             this.currentDocumentName = documentName;
             this.currentContent = content;
         }

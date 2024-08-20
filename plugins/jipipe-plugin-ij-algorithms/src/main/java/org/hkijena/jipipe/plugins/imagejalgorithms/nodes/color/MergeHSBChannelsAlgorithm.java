@@ -15,7 +15,6 @@ package org.hkijena.jipipe.plugins.imagejalgorithms.nodes.color;
 
 import ij.IJ;
 import ij.ImagePlus;
-import ij.process.ImageProcessor;
 import org.hkijena.jipipe.api.ConfigureJIPipeNode;
 import org.hkijena.jipipe.api.JIPipeProgressInfo;
 import org.hkijena.jipipe.api.SetJIPipeDocumentation;
@@ -28,7 +27,6 @@ import org.hkijena.jipipe.api.nodes.categories.ImagesNodeTypeCategory;
 import org.hkijena.jipipe.api.nodes.iterationstep.JIPipeIterationContext;
 import org.hkijena.jipipe.api.nodes.iterationstep.JIPipeSingleIterationStep;
 import org.hkijena.jipipe.plugins.imagejdatatypes.datatypes.color.ImagePlusColorHSBData;
-import org.hkijena.jipipe.plugins.imagejdatatypes.datatypes.color.ImagePlusColorRGBData;
 import org.hkijena.jipipe.plugins.imagejdatatypes.datatypes.greyscale.ImagePlusGreyscale8UData;
 import org.hkijena.jipipe.plugins.imagejdatatypes.util.ImageJUtils;
 
@@ -43,7 +41,7 @@ public class MergeHSBChannelsAlgorithm extends JIPipeIteratingAlgorithm {
 
 
     public MergeHSBChannelsAlgorithm(JIPipeNodeInfo info) {
-      super(info);
+        super(info);
     }
 
     public MergeHSBChannelsAlgorithm(MergeHSBChannelsAlgorithm other) {
@@ -55,7 +53,7 @@ public class MergeHSBChannelsAlgorithm extends JIPipeIteratingAlgorithm {
         ImagePlus imageH = iterationStep.getInputData("H", ImagePlusGreyscale8UData.class, progressInfo).getImage();
         ImagePlus imageS = iterationStep.getInputData("S", ImagePlusGreyscale8UData.class, progressInfo).getImage();
         ImagePlus imageB = iterationStep.getInputData("B", ImagePlusGreyscale8UData.class, progressInfo).getImage();
-        if(!ImageJUtils.imagesHaveSameSize(imageH, imageS, imageB)) {
+        if (!ImageJUtils.imagesHaveSameSize(imageH, imageS, imageB)) {
             throw new IllegalArgumentException("Images do not have the same size!");
         }
         ImagePlus output = IJ.createHyperStack("HSB", imageH.getWidth(), imageH.getHeight(), imageH.getNChannels(), imageH.getNSlices(), imageH.getNFrames(), 24);

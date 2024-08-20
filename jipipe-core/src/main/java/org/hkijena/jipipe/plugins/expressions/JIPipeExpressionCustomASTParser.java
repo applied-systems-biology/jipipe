@@ -6,10 +6,10 @@ import org.hkijena.jipipe.utils.StringUtils;
 import java.util.*;
 
 public class JIPipeExpressionCustomASTParser {
-    
+
     private final Map<String, Integer> operatorPrecedenceMap = new HashMap<>();
     private final Set<String> functions = new HashSet<>();
-    
+
     public JIPipeExpressionCustomASTParser() {
 
     }
@@ -27,22 +27,17 @@ public class JIPipeExpressionCustomASTParser {
     public ASTNode parse(List<String> tokens) {
         List<Token> tokenList = new ArrayList<>(tokens.size());
         for (String token : tokens) {
-            if("(".equals(token) || ")".equals(token)) {
+            if ("(".equals(token) || ")".equals(token)) {
                 tokenList.add(new Token(TokenType.PARENTHESIS, token));
-            }
-            else if(token.equals(",")) {
+            } else if (token.equals(",")) {
                 tokenList.add(new Token(TokenType.COMMA, token));
-            }
-            else if(operatorPrecedenceMap.containsKey(token)) {
+            } else if (operatorPrecedenceMap.containsKey(token)) {
                 tokenList.add(new Token(TokenType.OPERATOR, token));
-            }
-            else if(functions.contains(token)) {
+            } else if (functions.contains(token)) {
                 tokenList.add(new Token(TokenType.FUNCTION, token));
-            }
-            else if(NumberUtils.isCreatable(token)) {
+            } else if (NumberUtils.isCreatable(token)) {
                 tokenList.add(new Token(TokenType.NUMBER, token));
-            }
-            else {
+            } else {
                 tokenList.add(new Token(TokenType.VARIABLE, token));
             }
         }
@@ -106,7 +101,10 @@ public class JIPipeExpressionCustomASTParser {
         return operatorPrecedenceMap.containsKey(value);
     }
 
-    public enum TokenType { NUMBER, VARIABLE, OPERATOR, FUNCTION, PARENTHESIS, COMMA }
+    public enum TokenType {NUMBER, VARIABLE, OPERATOR, FUNCTION, PARENTHESIS, COMMA}
+
+    public interface ASTNode {
+    }
 
     public static class TokenIterator {
         private final List<Token> tokens;
@@ -149,9 +147,6 @@ public class JIPipeExpressionCustomASTParser {
             this.type = type;
             this.value = value;
         }
-    }
-
-    public interface ASTNode {
     }
 
     public static class NumberNode implements ASTNode {

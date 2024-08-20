@@ -64,13 +64,13 @@ public class FlattenRoiAlgorithm extends JIPipeSimpleIteratingAlgorithm {
             int z = roi.getZPosition();
             int c = roi.getCPosition();
             int t = roi.getTPosition();
-            if(flattenZ) {
+            if (flattenZ) {
                 z = 0;
             }
-            if(flattenC) {
+            if (flattenC) {
                 c = 0;
             }
-            if(flattenT) {
+            if (flattenT) {
                 t = 0;
             }
             roi.setPosition(c, z, t);

@@ -62,13 +62,12 @@ public class JIPipeRuntimeApplicationSettings extends JIPipeDefaultApplicationsS
             }
         }
         OptionalPathParameter tempDirectory = getInstance().getTempDirectory();
-        if(tempDirectory.isEnabled()) {
+        if (tempDirectory.isEnabled()) {
             try {
-                if(tempDirectory.getContent().isAbsolute()) {
+                if (tempDirectory.getContent().isAbsolute()) {
                     Files.createDirectories(tempDirectory.getContent());
                     return tempDirectory.getContent();
-                }
-                else {
+                } else {
                     Path absPath = Files.createDirectories(PathUtils.getJIPipeUserDir().resolve(tempDirectory.getContent()));
                     Files.createDirectories(absPath);
                     return absPath;
@@ -82,8 +81,7 @@ public class JIPipeRuntimeApplicationSettings extends JIPipeDefaultApplicationsS
                     throw new RuntimeException(e);
                 }
             }
-        }
-        else {
+        } else {
             try {
                 return Files.createTempDirectory("JIPipe");
             } catch (IOException e) {

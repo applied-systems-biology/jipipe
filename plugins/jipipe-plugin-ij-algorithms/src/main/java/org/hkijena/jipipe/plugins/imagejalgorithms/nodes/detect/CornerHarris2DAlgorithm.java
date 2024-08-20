@@ -32,8 +32,8 @@ import org.hkijena.jipipe.api.nodes.iterationstep.JIPipeIterationContext;
 import org.hkijena.jipipe.api.nodes.iterationstep.JIPipeSingleIterationStep;
 import org.hkijena.jipipe.api.parameters.AbstractJIPipeParameterCollection;
 import org.hkijena.jipipe.api.parameters.JIPipeParameter;
-import org.hkijena.jipipe.plugins.imagejalgorithms.utils.OrientationJStructureTensorParameters;
 import org.hkijena.jipipe.plugins.imagejalgorithms.utils.OrientationJLogWrapper;
+import org.hkijena.jipipe.plugins.imagejalgorithms.utils.OrientationJStructureTensorParameters;
 import org.hkijena.jipipe.plugins.imagejdatatypes.datatypes.ROI2DListData;
 import org.hkijena.jipipe.plugins.imagejdatatypes.datatypes.greyscale.ImagePlusGreyscaleData;
 import org.hkijena.jipipe.plugins.imagejdatatypes.util.ImageJUtils;
@@ -90,6 +90,62 @@ public class CornerHarris2DAlgorithm extends JIPipeSimpleIteratingAlgorithm {
         this.harrisL = other.harrisL;
         this.minLevel = other.minLevel;
         this.radians = other.radians;
+    }
+
+    public static void extractHarris(GroupImage gim, OrientationParameters params, ImageSliceIndex sliceIndex, ResultsTableData table, ROI2DListData overlay) {
+        if (gim == null) {
+            return;
+        }
+        int L = params.harrisL;
+        double min = Math.min(1, Math.max(0, params.harrisMin * 0.01));
+        if (L <= 0) {
+            L = 0;
+        }
+
+        ArrayList<Corner> corners = new ArrayList<Corner>();
+        double v;
+        for (int t = 0; t < gim.nt; t++) {
+            for (int y = 1; y < gim.ny - 1; y++)
+                for (int x = 1; x < gim.nx - 1; x++) {
+                    v = gim.harris.getPixel(x, y, t);
+                    //if ( (v - min) * r > min) {
+                    if (gim.harris.getPixel(x - 1, y, t) < v) {
+                        if (gim.harris.getPixel(x + 1, y, t) < v) {
+                            if (gim.harris.getPixel(x, y - 1, t) < v) {
+                                if (gim.harris.getPixel(x, y + 1, t) < v) {
+                                    corners.add(new Corner(x, y, t, v));
+                                }
+                            }
+                        }
+                    }
+
+                    //}
+                }
+        }
+        Collections.sort(corners);
+
+        if (params.showHarrisTable) {
+            for (int i = 0; i < corners.size() * min; i++) {
+                Corner pt = corners.get(i);
+                table.addAndModifyRow()
+                        .set("X", pt.x)
+                        .set("Y", pt.y)
+                        .set("C", sliceIndex.getC())
+                        .set("Z", sliceIndex.getZ())
+                        .set("T", sliceIndex.getT())
+                        .set("Harris index", pt.getHarrisIndex())
+                        .build();
+            }
+        }
+
+        if (params.showHarrisOverlay) {
+            for (int i = 0; i < corners.size() * min; i++) {
+                Corner pt = corners.get(i);
+                Roi roi = new OvalRoi(pt.x - L / 2, pt.y - L / 2, L, L);
+                roi.setPosition(sliceIndex.getC() + 1, sliceIndex.getZ() + 1, sliceIndex.getT() + 1);
+                overlay.add(roi);
+            }
+        }
     }
 
     private void updateOutputSlots() {
@@ -157,16 +213,16 @@ public class CornerHarris2DAlgorithm extends JIPipeSimpleIteratingAlgorithm {
             // Extract results
             extractHarris(groupImage, params, index, results, overlay);
 
-            if(outputParameters.outputEnergy) {
+            if (outputParameters.outputEnergy) {
                 energySlices.put(index, groupImage.energy.buildImageStack().getProcessor(1));
             }
-            if(outputParameters.outputCoherency) {
+            if (outputParameters.outputCoherency) {
                 coherencyIndexSlices.put(index, groupImage.coherency.buildImageStack().getProcessor(1));
             }
-            if(outputParameters.outputOrientation) {
+            if (outputParameters.outputOrientation) {
                 orientationSlices.put(index, groupImage.orientation.buildImageStack().getProcessor(1));
             }
-            if(outputParameters.outputHarrisIndex) {
+            if (outputParameters.outputHarrisIndex) {
                 harrisIndexSlices.put(index, groupImage.harris.buildImageStack().getProcessor(1));
             }
         }, progressInfo);
@@ -174,83 +230,27 @@ public class CornerHarris2DAlgorithm extends JIPipeSimpleIteratingAlgorithm {
         // Collect all outputs
         iterationStep.addOutputData("Results", results, progressInfo);
         iterationStep.addOutputData("Overlay", overlay, progressInfo);
-        if(!energySlices.isEmpty()) {
+        if (!energySlices.isEmpty()) {
             ImagePlus img = ImageJUtils.mergeMappedSlices(energySlices);
             img.copyScale(inputImage);
             iterationStep.addOutputData("Energy", new ImagePlusGreyscaleData(img), progressInfo);
         }
-        if(!coherencyIndexSlices.isEmpty()) {
+        if (!coherencyIndexSlices.isEmpty()) {
             ImagePlus img = ImageJUtils.mergeMappedSlices(coherencyIndexSlices);
             img.copyScale(inputImage);
             iterationStep.addOutputData("Coherency", new ImagePlusGreyscaleData(img), progressInfo);
         }
-        if(!orientationSlices.isEmpty()) {
+        if (!orientationSlices.isEmpty()) {
             ImagePlus img = ImageJUtils.mergeMappedSlices(orientationSlices);
             img.copyScale(inputImage);
             iterationStep.addOutputData("Orientation", new ImagePlusGreyscaleData(img), progressInfo);
         }
-        if(!harrisIndexSlices.isEmpty()) {
+        if (!harrisIndexSlices.isEmpty()) {
             ImagePlus img = ImageJUtils.mergeMappedSlices(harrisIndexSlices);
             img.copyScale(inputImage);
             iterationStep.addOutputData("Harris-index", new ImagePlusGreyscaleData(img), progressInfo);
         }
 
-    }
-
-    public static void extractHarris(GroupImage gim, OrientationParameters params, ImageSliceIndex sliceIndex, ResultsTableData table, ROI2DListData overlay) {
-        if (gim == null) {
-            return;
-        }
-        int L = params.harrisL;
-        double min = Math.min(1, Math.max(0, params.harrisMin * 0.01));
-        if (L <= 0) {
-            L = 0;
-        }
-
-        ArrayList<Corner> corners = new ArrayList<Corner>();
-        double v;
-        for (int t = 0; t < gim.nt; t++) {
-            for (int y = 1; y < gim.ny - 1; y++)
-                for (int x = 1; x < gim.nx - 1; x++) {
-                    v = gim.harris.getPixel(x, y, t);
-                    //if ( (v - min) * r > min) {
-                    if (gim.harris.getPixel(x - 1, y, t) < v) {
-                        if (gim.harris.getPixel(x + 1, y, t) < v) {
-                            if (gim.harris.getPixel(x, y - 1, t) < v) {
-                                if (gim.harris.getPixel(x, y + 1, t) < v) {
-                                    corners.add(new Corner(x, y, t, v));
-                                }
-                            }
-                        }
-                    }
-
-                    //}
-                }
-        }
-        Collections.sort(corners);
-
-        if (params.showHarrisTable) {
-            for (int i = 0; i < corners.size() * min; i++) {
-                Corner pt = corners.get(i);
-                table.addAndModifyRow()
-                        .set("X", pt.x)
-                        .set("Y", pt.y)
-                        .set("C", sliceIndex.getC())
-                        .set("Z", sliceIndex.getZ())
-                        .set("T", sliceIndex.getT())
-                        .set("Harris index", pt.getHarrisIndex())
-                        .build();
-            }
-        }
-
-        if (params.showHarrisOverlay) {
-            for (int i = 0; i < corners.size() * min; i++) {
-                Corner pt = corners.get(i);
-                Roi roi = new OvalRoi(pt.x - L / 2, pt.y - L / 2, L, L);
-                roi.setPosition(sliceIndex.getC() + 1, sliceIndex.getZ() + 1, sliceIndex.getT() + 1);
-                overlay.add(roi);
-            }
-        }
     }
 
     @SetJIPipeDocumentation(name = "Structure tensor")

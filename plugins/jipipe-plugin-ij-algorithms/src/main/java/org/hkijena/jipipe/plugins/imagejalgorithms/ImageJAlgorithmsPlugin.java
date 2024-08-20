@@ -100,8 +100,8 @@ import org.hkijena.jipipe.plugins.imagejalgorithms.nodes.roi.measure.CountROIAlg
 import org.hkijena.jipipe.plugins.imagejalgorithms.nodes.roi.measure.ExtractROIProfileAlgorithm;
 import org.hkijena.jipipe.plugins.imagejalgorithms.nodes.roi.measure.ExtractRoi2DRelationStatisticsAlgorithm;
 import org.hkijena.jipipe.plugins.imagejalgorithms.nodes.roi.measure.RoiStatisticsAlgorithm;
-import org.hkijena.jipipe.plugins.imagejalgorithms.nodes.roi.merge.MergeRoiListsOrderedAlgorithm;
 import org.hkijena.jipipe.plugins.imagejalgorithms.nodes.roi.merge.FilterAndMergeRoiByStatisticsScriptAlgorithm;
+import org.hkijena.jipipe.plugins.imagejalgorithms.nodes.roi.merge.MergeRoiListsOrderedAlgorithm;
 import org.hkijena.jipipe.plugins.imagejalgorithms.nodes.roi.merge.MergeRoiListsPairwiseOrAlgorithm;
 import org.hkijena.jipipe.plugins.imagejalgorithms.nodes.roi.merge.MergeRoiListsUnorderedAlgorithm;
 import org.hkijena.jipipe.plugins.imagejalgorithms.nodes.roi.modify.*;

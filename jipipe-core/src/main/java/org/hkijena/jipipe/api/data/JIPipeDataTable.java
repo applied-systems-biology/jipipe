@@ -1612,12 +1612,11 @@ public class JIPipeDataTable implements JIPipeData, TableModel {
         }
         long stamp = stampedLock.writeLock();
         try {
-            if(getAcceptedDataType().isAssignableFrom(virtualData.getDataClass())) {
+            if (getAcceptedDataType().isAssignableFrom(virtualData.getDataClass())) {
                 // Trivial conversion (do nothing)
                 dataArray.add(virtualData);
                 virtualData.addUser(this);
-            }
-            else {
+            } else {
                 // Have to convert the data
                 JIPipeData data = virtualData.get();
                 JIPipeData converted = JIPipe.getDataTypes().convert(data, getAcceptedDataType(), progressInfo);

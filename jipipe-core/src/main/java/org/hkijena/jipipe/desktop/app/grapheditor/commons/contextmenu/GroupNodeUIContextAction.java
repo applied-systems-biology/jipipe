@@ -64,27 +64,26 @@ public class GroupNodeUIContextAction implements NodeUIContextAction {
             if (copyNode != null) {
                 for (JIPipeInputDataSlot copyInputSlot : copyNode.getInputSlots()) {
                     // Only create input if there is no internal connection
-                    if(group.getWrappedGraph().getInputIncomingSourceSlots(copyInputSlot).isEmpty()) {
+                    if (group.getWrappedGraph().getInputIncomingSourceSlots(copyInputSlot).isEmpty()) {
                         boolean create = false;
                         if (!copyInputSlot.getInfo().isOptional()) {
                             // Not optional, so create it
                             create = true;
-                        }
-                        else {
+                        } else {
                             JIPipeInputDataSlot originalInputSlot = originalNode.getInputSlot(copyInputSlot.getName());
 
                             // Optional, so only create if the original slot has a source
-                            if(originalInputSlot != null && !originalGraph.getInputIncomingSourceSlots(originalInputSlot).isEmpty()) {
+                            if (originalInputSlot != null && !originalGraph.getInputIncomingSourceSlots(originalInputSlot).isEmpty()) {
                                 create = true;
                             }
                         }
 
-                        if(create) {
+                        if (create) {
                             // Check if we already created the mapped slot
                             String uniqueId = originalNode.getUUIDInParentGraph() + "/" + copyInputSlot.getName();
                             String name = mappedInputs.getOrDefault(uniqueId, null);
 
-                            if(name == null) {
+                            if (name == null) {
                                 String baseName = StringUtils.makeFilesystemCompatible(originalNode.getName());
                                 name = StringUtils.makeUniqueString(baseName + " " + copyInputSlot.getName(), " ", s -> groupInput.getOutputSlotMap().containsKey(s));
                                 JIPipeMutableSlotConfiguration slotConfiguration = (JIPipeMutableSlotConfiguration) groupInput.getSlotConfiguration();
@@ -104,20 +103,20 @@ public class GroupNodeUIContextAction implements NodeUIContextAction {
                 // First output pass -> only outside connections
                 for (JIPipeOutputDataSlot copyOutputSlot : copyNode.getOutputSlots()) {
                     // Only create output if there is no internal connection
-                    if(group.getWrappedGraph().getOutputOutgoingTargetSlots(copyOutputSlot).isEmpty()) {
+                    if (group.getWrappedGraph().getOutputOutgoingTargetSlots(copyOutputSlot).isEmpty()) {
                         JIPipeOutputDataSlot originalOutputSlot = originalNode.getOutputSlot(copyOutputSlot.getName());
                         // Check if this one goes outside
-                        if(originalOutputSlot != null && !originalGraph.getOutputOutgoingTargetSlots(originalOutputSlot).isEmpty()) {
+                        if (originalOutputSlot != null && !originalGraph.getOutputOutgoingTargetSlots(originalOutputSlot).isEmpty()) {
                             outputSlotsToCreate.add(copyOutputSlot);
                         }
                     }
                 }
 
                 // Second outside pass (only if none are found) -> rect to all unconnected outputs
-                if(outputSlotsToCreate.isEmpty()) {
+                if (outputSlotsToCreate.isEmpty()) {
                     for (JIPipeOutputDataSlot copyOutputSlot : copyNode.getOutputSlots()) {
                         // Only create output if there is no internal connection
-                        if(group.getWrappedGraph().getOutputOutgoingTargetSlots(copyOutputSlot).isEmpty()) {
+                        if (group.getWrappedGraph().getOutputOutgoingTargetSlots(copyOutputSlot).isEmpty()) {
                             outputSlotsToCreate.add(copyOutputSlot);
                         }
                     }
@@ -128,7 +127,7 @@ public class GroupNodeUIContextAction implements NodeUIContextAction {
                     String uniqueId = originalNode.getUUIDInParentGraph() + "/" + copyOutputSlot.getName();
                     String name = mappedOutputs.getOrDefault(uniqueId, null);
 
-                    if(name == null) {
+                    if (name == null) {
                         String baseName = StringUtils.makeFilesystemCompatible(originalNode.getName());
                         name = StringUtils.makeUniqueString(baseName + " " + copyOutputSlot.getName(), " ", s -> groupOutput.getOutputSlotMap().containsKey(s));
                         JIPipeMutableSlotConfiguration slotConfiguration = (JIPipeMutableSlotConfiguration) groupOutput.getSlotConfiguration();

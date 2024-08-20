@@ -11,8 +11,8 @@ import org.jsoup.Jsoup;
 
 import javax.swing.*;
 import java.awt.*;
-import java.util.*;
 import java.util.List;
+import java.util.*;
 
 public class CreateNewNodesByTemplateDatabaseEntry implements JIPipeNodeDatabaseEntry {
 
@@ -30,18 +30,17 @@ public class CreateNewNodesByTemplateDatabaseEntry implements JIPipeNodeDatabase
         // Find visibility
         boolean foundPipelineOnly = false;
         for (JIPipeGraphNode graphNode : template.getGraph().getGraphNodes()) {
-               if(!graphNode.getInfo().getCategory().isVisibleInCompartments()) {
-                   foundPipelineOnly = true;
-               }
+            if (!graphNode.getInfo().getCategory().isVisibleInCompartments()) {
+                foundPipelineOnly = true;
+            }
         }
         visibility = foundPipelineOnly ? JIPipeNodeDatabasePipelineVisibility.Pipeline : JIPipeNodeDatabasePipelineVisibility.Both;
         this.descriptionPlain = Jsoup.parse(getDescription().getHtml()).text();
 
         // Build location info
-        if(template.getMenuPath().isEmpty()) {
+        if (template.getMenuPath().isEmpty()) {
             this.locationInfo = "Templates";
-        }
-        else {
+        } else {
             this.locationInfo = "Templates\n" + String.join("\n", template.getMenuPath());
         }
 
@@ -136,7 +135,7 @@ public class CreateNewNodesByTemplateDatabaseEntry implements JIPipeNodeDatabase
         Set<JIPipeDesktopGraphNodeUI> nodeUISet = new HashSet<>();
         for (JIPipeGraphNode value : nodeMap.values()) {
             JIPipeDesktopGraphNodeUI ui = canvasUI.getNodeUIs().get(value);
-            if(ui != null) {
+            if (ui != null) {
                 nodeUISet.add(ui);
             }
         }

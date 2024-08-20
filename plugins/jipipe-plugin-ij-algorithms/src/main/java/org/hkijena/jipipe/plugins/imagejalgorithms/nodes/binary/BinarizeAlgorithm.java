@@ -15,8 +15,6 @@ package org.hkijena.jipipe.plugins.imagejalgorithms.nodes.binary;
 
 import ij.ImagePlus;
 import ij.process.ByteProcessor;
-import ij.process.ShortProcessor;
-import org.hkijena.jipipe.JIPipe;
 import org.hkijena.jipipe.api.ConfigureJIPipeNode;
 import org.hkijena.jipipe.api.JIPipeProgressInfo;
 import org.hkijena.jipipe.api.SetJIPipeDocumentation;
@@ -26,12 +24,9 @@ import org.hkijena.jipipe.api.nodes.categories.ImageJNodeTypeCategory;
 import org.hkijena.jipipe.api.nodes.categories.ImagesNodeTypeCategory;
 import org.hkijena.jipipe.api.nodes.iterationstep.JIPipeIterationContext;
 import org.hkijena.jipipe.api.nodes.iterationstep.JIPipeSingleIterationStep;
-import org.hkijena.jipipe.plugins.imagejalgorithms.nodes.threshold.ManualThreshold8U2DAlgorithm;
-import org.hkijena.jipipe.plugins.imagejdatatypes.datatypes.greyscale.ImagePlusGreyscale8UData;
 import org.hkijena.jipipe.plugins.imagejdatatypes.datatypes.greyscale.ImagePlusGreyscaleData;
 import org.hkijena.jipipe.plugins.imagejdatatypes.datatypes.greyscale.ImagePlusGreyscaleMaskData;
 import org.hkijena.jipipe.plugins.imagejdatatypes.util.ImageJUtils;
-import org.hkijena.jipipe.plugins.parameters.library.ranges.IntNumberRangeParameter;
 
 @SetJIPipeDocumentation(name = "Binarize", description = "Converts a greyscale image into a binary image. All pixels with a value larger than zero are set to 255.")
 @ConfigureJIPipeNode(menuPath = "Threshold", nodeTypeCategory = ImagesNodeTypeCategory.class)
@@ -78,10 +73,9 @@ public class BinarizeAlgorithm extends JIPipeSimpleIteratingAlgorithm {
             byte[] outputPixels = (byte[]) output.getPixels();
             for (int i = 0; i < ip.getPixelCount(); i++) {
                 float v = ip.getf(i);
-                if(invert) {
+                if (invert) {
                     outputPixels[i] = (byte) ((v <= 0) ? 255 : 0);
-                }
-                else {
+                } else {
                     outputPixels[i] = (byte) ((v > 0) ? 255 : 0);
                 }
             }

@@ -28,40 +28,35 @@ public class NaNToNumFunction extends ExpressionFunction {
         super("NAN2D", 2);
     }
 
+    private static @NotNull Object calculateFallback(List<Object> parameters) {
+        Object fallback = parameters.get(1);
+        if (fallback instanceof Number) {
+            return fallback;
+        } else {
+            return StringUtils.parseDouble(fallback.toString());
+        }
+    }
+
     @Override
     public Object evaluate(List<Object> parameters, JIPipeExpressionVariablesMap variables) {
         if (parameters.get(0) instanceof Number) {
             double value = ((Number) parameters.get(0)).doubleValue();
-            if(Double.isNaN(value)) {
+            if (Double.isNaN(value)) {
                 return calculateFallback(parameters);
-            }
-            else {
+            } else {
                 return value;
             }
-        }
-        else {
+        } else {
             try {
                 double value = StringUtils.parseDouble(parameters.get(0).toString());
-                if(Double.isNaN(value)) {
+                if (Double.isNaN(value)) {
                     return calculateFallback(parameters);
-                }
-                else {
+                } else {
                     return value;
                 }
-            }
-            catch (NumberFormatException e) {
+            } catch (NumberFormatException e) {
                 return calculateFallback(parameters);
             }
-        }
-    }
-
-    private static @NotNull Object calculateFallback(List<Object> parameters) {
-        Object fallback = parameters.get(1);
-        if(fallback instanceof Number) {
-            return fallback;
-        }
-        else {
-            return StringUtils.parseDouble(fallback.toString());
         }
     }
 

@@ -249,11 +249,11 @@ public class ConnectVerticesFastAlgorithm extends JIPipeIteratingAlgorithm {
         for (FilamentVertex current : outputData.vertexSet()) {
 
             int currentDegree = outputData.degreeOf(current);
-            if(currentDegree < candidateVertexDegreeLimit.getX() || currentDegree > candidateVertexDegreeLimit.getY()) {
+            if (currentDegree < candidateVertexDegreeLimit.getX() || currentDegree > candidateVertexDegreeLimit.getY()) {
                 continue;
             }
             double currentValue = current.getValue();
-            if(currentValue < candidateVertexValueLimit.getX() || currentValue > candidateVertexValueLimit.getY()) {
+            if (currentValue < candidateVertexValueLimit.getX() || currentValue > candidateVertexValueLimit.getY()) {
                 continue;
             }
 
@@ -271,15 +271,15 @@ public class ConnectVerticesFastAlgorithm extends JIPipeIteratingAlgorithm {
                     if (!connectAcrossT && current.getNonSpatialLocation().getFrame() != other.getNonSpatialLocation().getFrame()) {
                         continue;
                     }
-                    if(outputData.containsEdge(current, other)) {
+                    if (outputData.containsEdge(current, other)) {
                         continue;
                     }
                     int otherDegree = outputData.degreeOf(other);
-                    if(otherDegree < candidateVertexDegreeLimit.getX() || otherDegree > candidateVertexDegreeLimit.getY()) {
+                    if (otherDegree < candidateVertexDegreeLimit.getX() || otherDegree > candidateVertexDegreeLimit.getY()) {
                         continue;
                     }
                     double otherValue = other.getValue();
-                    if(otherValue < candidateVertexValueLimit.getX() || otherValue > candidateVertexValueLimit.getY()) {
+                    if (otherValue < candidateVertexValueLimit.getX() || otherValue > candidateVertexValueLimit.getY()) {
                         continue;
                     }
                     if (progressInfo.isCancelled()) {
@@ -314,14 +314,14 @@ public class ConnectVerticesFastAlgorithm extends JIPipeIteratingAlgorithm {
 
                     // Check length limits
                     double distance = current.getSpatialLocation().distanceTo(other.getSpatialLocation());
-                    if(distance < this.lengthRange.getX() || distance > this.lengthRange.getY()) {
+                    if (distance < this.lengthRange.getX() || distance > this.lengthRange.getY()) {
                         continue;
                     }
 
                     // Check path exists
-                    if(ignoreIfHasPath && outputDataInspector != null) {
+                    if (ignoreIfHasPath && outputDataInspector != null) {
                         GraphPath<FilamentVertex, FilamentEdge> path = outputDataInspector.getPath(current, other);
-                        if(path != null) {
+                        if (path != null) {
                             continue;
                         }
                     }

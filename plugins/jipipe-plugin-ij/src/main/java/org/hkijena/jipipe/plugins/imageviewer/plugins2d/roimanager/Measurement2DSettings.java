@@ -29,7 +29,7 @@ public class Measurement2DSettings extends AbstractJIPipeParameterCollection {
         statistics.setCollapsed(false);
     }
 
-    @SetJIPipeDocumentation(name = "Statistics", description = "The statistics to measure."+ "<br/><br/>" + ImageStatisticsSetParameter.ALL_DESCRIPTIONS)
+    @SetJIPipeDocumentation(name = "Statistics", description = "The statistics to measure." + "<br/><br/>" + ImageStatisticsSetParameter.ALL_DESCRIPTIONS)
     @JIPipeParameter("statistics")
     public ImageStatisticsSetParameter getStatistics() {
         return statistics;

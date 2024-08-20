@@ -72,7 +72,7 @@ public class JIPipeDesktopQuickRun extends AbstractJIPipeRunnable implements JIP
         for (JIPipeGraphNode targetNode : this.targetNodes) {
             JIPipeGraphNode equivalentNode = run.getGraph().getEquivalentNode(targetNode);
             targetNodeCopies.add(equivalentNode);
-            if(equivalentNode instanceof JIPipeAlgorithm) {
+            if (equivalentNode instanceof JIPipeAlgorithm) {
                 ((JIPipeAlgorithm) equivalentNode).setEnabled(true);
             }
         }

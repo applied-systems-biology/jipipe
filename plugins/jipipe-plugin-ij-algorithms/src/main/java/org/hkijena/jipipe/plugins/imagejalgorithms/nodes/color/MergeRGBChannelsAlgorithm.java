@@ -13,43 +13,22 @@
 
 package org.hkijena.jipipe.plugins.imagejalgorithms.nodes.color;
 
-import ij.CompositeImage;
 import ij.IJ;
 import ij.ImagePlus;
-import ij.ImageStack;
-import ij.plugin.CompositeConverter;
-import ij.plugin.RGBStackMerge;
-import ij.plugin.ZProjector;
-import ij.process.ImageProcessor;
 import org.hkijena.jipipe.api.ConfigureJIPipeNode;
 import org.hkijena.jipipe.api.JIPipeProgressInfo;
 import org.hkijena.jipipe.api.SetJIPipeDocumentation;
-import org.hkijena.jipipe.api.data.JIPipeDataSlotInfo;
-import org.hkijena.jipipe.api.data.JIPipeDefaultMutableSlotConfiguration;
-import org.hkijena.jipipe.api.nodes.*;
+import org.hkijena.jipipe.api.nodes.AddJIPipeInputSlot;
+import org.hkijena.jipipe.api.nodes.AddJIPipeOutputSlot;
+import org.hkijena.jipipe.api.nodes.JIPipeGraphNodeRunContext;
+import org.hkijena.jipipe.api.nodes.JIPipeNodeInfo;
 import org.hkijena.jipipe.api.nodes.algorithm.JIPipeIteratingAlgorithm;
-import org.hkijena.jipipe.api.nodes.categories.ImageJNodeTypeCategory;
 import org.hkijena.jipipe.api.nodes.categories.ImagesNodeTypeCategory;
 import org.hkijena.jipipe.api.nodes.iterationstep.JIPipeIterationContext;
 import org.hkijena.jipipe.api.nodes.iterationstep.JIPipeSingleIterationStep;
-import org.hkijena.jipipe.api.parameters.JIPipeParameter;
-import org.hkijena.jipipe.api.parameters.JIPipeParameterAccess;
-import org.hkijena.jipipe.api.validation.JIPipeValidationReport;
-import org.hkijena.jipipe.api.validation.JIPipeValidationReportContext;
-import org.hkijena.jipipe.api.validation.JIPipeValidationReportEntry;
-import org.hkijena.jipipe.api.validation.JIPipeValidationReportEntryLevel;
-import org.hkijena.jipipe.api.validation.contexts.ParameterValidationReportContext;
-import org.hkijena.jipipe.plugins.imagejdatatypes.datatypes.ImagePlusData;
 import org.hkijena.jipipe.plugins.imagejdatatypes.datatypes.color.ImagePlusColorRGBData;
 import org.hkijena.jipipe.plugins.imagejdatatypes.datatypes.greyscale.ImagePlusGreyscale8UData;
-import org.hkijena.jipipe.plugins.imagejdatatypes.datatypes.greyscale.ImagePlusGreyscaleData;
 import org.hkijena.jipipe.plugins.imagejdatatypes.util.ImageJUtils;
-import org.hkijena.jipipe.plugins.parameters.library.graph.InputSlotMapParameterCollection;
-import org.hkijena.jipipe.utils.ColorUtils;
-
-import java.util.HashSet;
-import java.util.Map;
-import java.util.Set;
 
 @SetJIPipeDocumentation(name = "Merge RGB channels", description = "Merges three greyscale images into one RGB image.")
 @ConfigureJIPipeNode(menuPath = "Colors", nodeTypeCategory = ImagesNodeTypeCategory.class)
@@ -61,7 +40,7 @@ public class MergeRGBChannelsAlgorithm extends JIPipeIteratingAlgorithm {
 
 
     public MergeRGBChannelsAlgorithm(JIPipeNodeInfo info) {
-      super(info);
+        super(info);
     }
 
     public MergeRGBChannelsAlgorithm(MergeRGBChannelsAlgorithm other) {
@@ -73,7 +52,7 @@ public class MergeRGBChannelsAlgorithm extends JIPipeIteratingAlgorithm {
         ImagePlus imageR = iterationStep.getInputData("R", ImagePlusGreyscale8UData.class, progressInfo).getImage();
         ImagePlus imageG = iterationStep.getInputData("G", ImagePlusGreyscale8UData.class, progressInfo).getImage();
         ImagePlus imageB = iterationStep.getInputData("B", ImagePlusGreyscale8UData.class, progressInfo).getImage();
-        if(!ImageJUtils.imagesHaveSameSize(imageR, imageG, imageB)) {
+        if (!ImageJUtils.imagesHaveSameSize(imageR, imageG, imageB)) {
             throw new IllegalArgumentException("Images do not have the same size!");
         }
         ImagePlus output = IJ.createHyperStack("RGB", imageR.getWidth(), imageR.getHeight(), imageR.getNChannels(), imageR.getNSlices(), imageR.getNFrames(), 24);

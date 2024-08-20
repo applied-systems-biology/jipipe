@@ -2411,19 +2411,15 @@ public class ImageJUtils {
     }
 
     public static ImageProcessor createProcessor(int width, int height, int bitDepth) {
-        if(bitDepth == 8) {
+        if (bitDepth == 8) {
             return new ByteProcessor(width, height);
-        }
-        else if(bitDepth == 16) {
+        } else if (bitDepth == 16) {
             return new ShortProcessor(width, height);
-        }
-        else if(bitDepth == 32) {
+        } else if (bitDepth == 32) {
             return new FloatProcessor(width, height);
-        }
-        else if(bitDepth == 24) {
+        } else if (bitDepth == 24) {
             return new ColorProcessor(width, height);
-        }
-        else {
+        } else {
             throw new UnsupportedOperationException("Unsupported bitDepth: " + bitDepth);
         }
     }

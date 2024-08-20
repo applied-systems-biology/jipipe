@@ -37,12 +37,12 @@ public class JIPipeDesktopSplashScreen extends JWindow implements LogListener, C
 
     private static final Object instanceLock = new Object();
     private static volatile JIPipeDesktopSplashScreen instance;
+    private final SpinnerIcon spinnerIcon;
+    private final JLabel statusLabel;
     private Context context;
     private JPanel poweredByContainer;
     private JPanel poweredByIconContainer;
     private JIPipe jiPipe;
-    private final SpinnerIcon spinnerIcon;
-    private final JLabel statusLabel;
 
     public JIPipeDesktopSplashScreen() {
         this.spinnerIcon = new SpinnerIcon(this);

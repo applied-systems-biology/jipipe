@@ -21,19 +21,17 @@ public enum JIPipeNodeDatabasePipelineVisibility {
     Both;
 
     public static JIPipeNodeDatabasePipelineVisibility fromCategory(JIPipeNodeTypeCategory category) {
-        if(category.isVisibleInPipeline() && category.isVisibleInCompartments()) {
+        if (category.isVisibleInPipeline() && category.isVisibleInCompartments()) {
             return Both;
-        }
-        else if(category.isVisibleInCompartments()) {
+        } else if (category.isVisibleInCompartments()) {
             return Compartments;
-        }
-        else {
+        } else {
             return Pipeline;
         }
     }
 
     public boolean matches(JIPipeNodeDatabasePipelineVisibility other) {
-        if(this == Both || other == Both) {
+        if (this == Both || other == Both) {
             return true;
         }
         return this == other;

@@ -121,7 +121,7 @@ public class Coloc2Node extends JIPipeIteratingAlgorithm {
         ImagePlus channel2Img = iterationStep.getInputData("Channel 2", ImagePlusGreyscaleData.class, progressInfo).getDuplicateImage();
         channel2Img = ImageJUtils.convertToSameTypeIfNeeded(channel2Img, channel1Img, true);
 
-        if(!ImageJUtils.imagesHaveSameSize(channel1Img, channel2Img)) {
+        if (!ImageJUtils.imagesHaveSameSize(channel1Img, channel2Img)) {
             throw new JIPipeValidationRuntimeException(new JIPipeValidationReportEntry(JIPipeValidationReportEntryLevel.Error,
                     new GraphNodeValidationReportContext(this),
                     "Input images do not have the same size!",
@@ -143,8 +143,8 @@ public class Coloc2Node extends JIPipeIteratingAlgorithm {
             }
         }
 
-        if(maskImg != null) {
-            if(!ImageJUtils.imagesHaveSameSize(channel1Img, maskImg)) {
+        if (maskImg != null) {
+            if (!ImageJUtils.imagesHaveSameSize(channel1Img, maskImg)) {
                 throw new JIPipeValidationRuntimeException(new JIPipeValidationReportEntry(JIPipeValidationReportEntryLevel.Error,
                         new GraphNodeValidationReportContext(this),
                         "Input images do not have the same size!",

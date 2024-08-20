@@ -77,7 +77,7 @@ public class MergeRoiListsPairwiseOrAlgorithm extends JIPipeMergingAlgorithm {
         ROI2DListData result = new ROI2DListData();
         for (Roi roi1 : targetRois) {
             for (Roi roi2 : sourceRois) {
-                if(roi1 != roi2) {
+                if (roi1 != roi2) {
                     ROI2DListData tmp = new ROI2DListData();
                     tmp.add(roi1);
                     tmp.add(roi2);

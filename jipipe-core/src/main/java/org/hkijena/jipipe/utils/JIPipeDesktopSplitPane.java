@@ -36,10 +36,9 @@ public class JIPipeDesktopSplitPane extends JSplitPane {
     public static final double RATIO_3_TO_1 = 0.66;
     public static final double RATIO_1_TO_3 = 0.33;
     public static final double RATIO_1_TO_1 = 0.5;
-
+    private final RatioUpdatedEventEmitter ratioUpdatedEventEmitter = new RatioUpdatedEventEmitter();
     private Ratio ratio = new FixedRatio();
     private boolean updating = false;
-    private final RatioUpdatedEventEmitter ratioUpdatedEventEmitter = new RatioUpdatedEventEmitter();
 
     public JIPipeDesktopSplitPane(int newOrientation, double ratio) {
         super(newOrientation);
@@ -106,8 +105,7 @@ public class JIPipeDesktopSplitPane extends JSplitPane {
         try {
             updating = true;
             setDividerLocation(ratio.apply(getMaximumDividerLocation()));
-        }
-        finally {
+        } finally {
             updating = false;
         }
     }
@@ -119,6 +117,10 @@ public class JIPipeDesktopSplitPane extends JSplitPane {
 
         void onUpdated(JIPipeDesktopSplitPane splitPane, int dividerLocation);
 
+    }
+
+    public interface RatioUpdatedEventListener {
+        void onSplitPaneRatioUpdated(RatioUpdatedEvent event);
     }
 
     /**
@@ -155,7 +157,7 @@ public class JIPipeDesktopSplitPane extends JSplitPane {
 
         @Override
         public void onUpdated(JIPipeDesktopSplitPane splitPane, int dividerLocation) {
-            if(canUpdate) {
+            if (canUpdate) {
                 ratio = Math.max(0.01, Math.min(0.99, 1.0 * dividerLocation / splitPane.getMaximumDividerLocation()));
 //                System.out.println("New ratio is " + ratio);
             }
@@ -213,7 +215,7 @@ public class JIPipeDesktopSplitPane extends JSplitPane {
             super.finishDraggingTo(location);
 
             JIPipeDesktopSplitPane splitPane = (JIPipeDesktopSplitPane) getSplitPane();
-            if(!splitPane.updating) {
+            if (!splitPane.updating) {
                 splitPane.ratio.onUpdated(splitPane, splitPane.getDividerLocation());
                 splitPane.ratioUpdatedEventEmitter.emit(new RatioUpdatedEvent(splitPane, splitPane.ratio));
             }
@@ -232,10 +234,6 @@ public class JIPipeDesktopSplitPane extends JSplitPane {
         public Ratio getRatio() {
             return ratio;
         }
-    }
-
-    public interface RatioUpdatedEventListener {
-        void onSplitPaneRatioUpdated(RatioUpdatedEvent event);
     }
 
     public static class RatioUpdatedEventEmitter extends JIPipeEventEmitter<RatioUpdatedEvent, RatioUpdatedEventListener> {

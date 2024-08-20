@@ -19,6 +19,8 @@ import java.lang.annotation.RetentionPolicy;
 @Retention(RetentionPolicy.RUNTIME)
 public @interface VectorParameterSettings {
     String xLabel() default "X";
+
     String yLabel() default "Y";
+
     String zLabel() default "Z";
 }

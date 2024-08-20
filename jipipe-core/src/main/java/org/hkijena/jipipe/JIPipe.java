@@ -777,7 +777,7 @@ public class JIPipe extends AbstractService implements JIPipeService {
         progressInfo.setProgress(1);
         progressInfo.log("Legacy settings conversion ...");
         copyTemplatesFromPropertiesToLegacyProfile(progressInfo.resolve("Legacy conversion"));
-        if(applyProfileUpgrades(progressInfo.resolve("Preparing profiles"))) {
+        if (applyProfileUpgrades(progressInfo.resolve("Preparing profiles"))) {
             progressInfo.log("Upgrade was applied. Reloading extension settings.");
             extensionSettings = JIPipeExtensionApplicationSettings.getInstanceFromRaw();
         }
@@ -1043,7 +1043,7 @@ public class JIPipe extends AbstractService implements JIPipeService {
         boolean settingsExist = Files.isRegularFile(PathUtils.getJIPipeUserDir().resolve("settings.json"));
         boolean childDirsExist = !PathUtils.listSubDirectories(PathUtils.getJIPipeUserDir()).isEmpty();
 
-        if(!settingsExist && !childDirsExist) {
+        if (!settingsExist && !childDirsExist) {
             // Check for a profile from an older version
             Path profileBasePath = PathUtils.getJIPipeUserDirBase();
             PathUtils.createDirectories(profileBasePath);
@@ -1052,14 +1052,14 @@ public class JIPipe extends AbstractService implements JIPipeService {
             String currentVersion = VersionUtils.getJIPipeVersion();
             Map<String, Path> allProfileDirectories = new HashMap<>();
             for (Path path : PathUtils.listSubDirectories(profileBasePath)) {
-                if(!Objects.equals(currentVersion, path.getFileName().toString()) && StringUtils.compareVersions(currentVersion, path.getFileName().toString()) > 0) {
+                if (!Objects.equals(currentVersion, path.getFileName().toString()) && StringUtils.compareVersions(currentVersion, path.getFileName().toString()) > 0) {
                     allProfileDirectories.put(path.getFileName().toString(), path);
                 }
             }
 
             // Find the newest version
             List<String> sortedAllVersions = allProfileDirectories.keySet().stream().sorted(StringUtils::compareVersions).collect(Collectors.toList());
-            if(!sortedAllVersions.isEmpty()) {
+            if (!sortedAllVersions.isEmpty()) {
                 String previousVersion = sortedAllVersions.get(sortedAllVersions.size() - 1);
                 Path oldProfileDirectory = profileBasePath.resolve(previousVersion);
                 Path newProfileDirectory = profileBasePath.resolve(currentVersion);
@@ -1072,12 +1072,12 @@ public class JIPipe extends AbstractService implements JIPipeService {
 
             // Check if we have a legacy profile that can be upgraded
             Path legacyProfileDirectory = PathUtils.getLegacyJIPipeUserDir();
-            if(Files.isDirectory(legacyProfileDirectory)) {
+            if (Files.isDirectory(legacyProfileDirectory)) {
 
                 // Delete old 3rd party software
                 progressInfo.log("Removing EasyInstaller directories in " + legacyProfileDirectory);
                 for (Path subDirectory : PathUtils.listSubDirectories(legacyProfileDirectory)) {
-                    if(subDirectory.getFileName().toString().startsWith("easyinstall-")) {
+                    if (subDirectory.getFileName().toString().startsWith("easyinstall-")) {
                         PathUtils.deleteDirectoryRecursively(subDirectory, progressInfo.resolve("Cleanup old 3rd party software"));
                     }
                 }
@@ -1090,8 +1090,7 @@ public class JIPipe extends AbstractService implements JIPipeService {
                 progressInfo.log("Profile upgrade successful. Continuing.");
             }
             return true;
-        }
-        else {
+        } else {
             progressInfo.log(PathUtils.getJIPipeUserDir() + " already exists. No profile upgrades are needed.");
             return false;
         }
@@ -1099,6 +1098,7 @@ public class JIPipe extends AbstractService implements JIPipeService {
 
     /**
      * Copies templates from the old storage inside jipipe.properties.json into the legacy template directory
+     *
      * @param progressInfo the progress info
      */
     private void copyTemplatesFromPropertiesToLegacyProfile(JIPipeProgressInfo progressInfo) {

@@ -27,17 +27,12 @@ import org.hkijena.jipipe.api.nodes.iterationstep.JIPipeIterationContext;
 import org.hkijena.jipipe.api.nodes.iterationstep.JIPipeSingleIterationStep;
 import org.hkijena.jipipe.api.parameters.AbstractJIPipeParameterCollection;
 import org.hkijena.jipipe.api.parameters.JIPipeParameter;
-import org.hkijena.jipipe.api.validation.JIPipeValidationReport;
-import org.hkijena.jipipe.api.validation.JIPipeValidationReportContext;
-import org.hkijena.jipipe.api.validation.JIPipeValidationRuntimeException;
-import org.hkijena.jipipe.api.validation.contexts.ParameterValidationReportContext;
-import org.hkijena.jipipe.plugins.expressions.*;
-import org.hkijena.jipipe.plugins.expressions.custom.JIPipeCustomExpressionVariablesParameterVariablesInfo;
+import org.hkijena.jipipe.plugins.expressions.AddJIPipeExpressionParameterVariable;
+import org.hkijena.jipipe.plugins.expressions.JIPipeExpressionParameter;
+import org.hkijena.jipipe.plugins.expressions.JIPipeExpressionVariablesMap;
 import org.hkijena.jipipe.plugins.expressions.variables.JIPipeTextAnnotationsExpressionParameterVariablesInfo;
 import org.hkijena.jipipe.plugins.parameters.library.collections.ParameterCollectionList;
 import org.hkijena.jipipe.plugins.tables.datatypes.*;
-import org.hkijena.jipipe.plugins.tables.parameters.collections.ExpressionTableColumnProcessorParameterList;
-import org.hkijena.jipipe.plugins.tables.parameters.processors.ExpressionTableColumnProcessorParameter;
 import org.hkijena.jipipe.utils.StringUtils;
 
 import java.util.*;
@@ -87,7 +82,7 @@ public class ApplyExpressionToTableByColumnAlgorithm extends JIPipeSimpleIterati
         getDefaultCustomExpressionVariables().writeToVariables(expressionVariables);
 
         // Copy columns
-        if(input != null) {
+        if (input != null) {
             for (int col = 0; col < input.getColumnCount(); col++) {
                 TableColumn column = input.getColumnReference(col);
                 if (column.isNumeric()) {
@@ -99,11 +94,10 @@ public class ApplyExpressionToTableByColumnAlgorithm extends JIPipeSimpleIterati
         }
 
         for (ProcessingItem item : processorParameters.mapToCollection(ProcessingItem.class)) {
-            if(input != null) {
+            if (input != null) {
                 expressionVariables.set("num_rows", input.getRowCount());
                 expressionVariables.set("num_cols", input.getColumnCount());
-            }
-            else {
+            } else {
                 expressionVariables.set("num_rows", 0);
                 expressionVariables.set("num_cols", 0);
             }

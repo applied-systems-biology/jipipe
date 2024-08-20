@@ -41,7 +41,7 @@ public class JIPipeDesktopCompartmentsGraphEditorRunManager extends JIPipeDeskto
     protected void createValidationReport(JIPipeValidationReport report) {
         JIPipeProjectCompartment compartment = (JIPipeProjectCompartment) getNodeUI().getNode();
         for (JIPipeProjectCompartmentOutput compartmentOutput : compartment.getOutputNodes().values()) {
-            getProject().reportValidity(new UnspecifiedValidationReportContext(), report,compartmentOutput);
+            getProject().reportValidity(new UnspecifiedValidationReportContext(), report, compartmentOutput);
         }
     }
 
@@ -58,15 +58,14 @@ public class JIPipeDesktopCompartmentsGraphEditorRunManager extends JIPipeDeskto
 
         // Generate settings
         JIPipeDesktopQuickRunSettings settings;
-        if(saveToDisk) {
+        if (saveToDisk) {
             settings = new JIPipeDesktopQuickRunSettings(getProject());
             settings.setSaveToDisk(true);
             settings.setExcludeSelected(false);
             settings.setLoadFromCache(true);
             settings.setStoreToCache(false);
             settings.setStoreIntermediateResults(storeIntermediateResults);
-        }
-        else {
+        } else {
             settings = new JIPipeDesktopQuickRunSettings(getProject());
             settings.setSaveToDisk(false);
             settings.setExcludeSelected(excludeSelected);

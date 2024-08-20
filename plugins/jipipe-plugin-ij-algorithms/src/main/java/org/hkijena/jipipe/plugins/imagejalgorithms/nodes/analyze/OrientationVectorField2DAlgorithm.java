@@ -15,9 +15,7 @@ package org.hkijena.jipipe.plugins.imagejalgorithms.nodes.analyze;
 
 import ij.ImagePlus;
 import ij.gui.Line;
-import ij.gui.Overlay;
 import ij.gui.Roi;
-import ij.measure.ResultsTable;
 import ij.process.ImageProcessor;
 import org.hkijena.jipipe.api.ConfigureJIPipeNode;
 import org.hkijena.jipipe.api.JIPipeProgressInfo;
@@ -89,98 +87,6 @@ public class OrientationVectorField2DAlgorithm extends JIPipeSimpleIteratingAlgo
         this.gridSize = other.gridSize;
         this.scaleVectorPercentage = other.scaleVectorPercentage;
         this.vectorFieldType = other.vectorFieldType;
-    }
-
-    private void updateOutputSlots() {
-        toggleSlot(OUTPUT_ORIENTATION, outputParameters.outputOrientation);
-        toggleSlot(OUTPUT_ENERGY, outputParameters.outputEnergy);
-        toggleSlot(OUTPUT_COHERENCE, outputParameters.outputCoherency);
-    }
-
-    @Override
-    public void onParameterChanged(ParameterChangedEvent event) {
-        super.onParameterChanged(event);
-
-        if (event.getSource() == outputParameters) {
-            // update slots based on parameters
-            updateOutputSlots();
-        }
-    }
-
-    @Override
-    protected void runIteration(JIPipeSingleIterationStep iterationStep, JIPipeIterationContext iterationContext, JIPipeGraphNodeRunContext runContext, JIPipeProgressInfo progressInfo) {
-        ImagePlus inputImage = iterationStep.getInputData(getFirstInputSlot(), ImagePlusGreyscaleData.class, progressInfo).getImage();
-
-        Map<ImageSliceIndex, ImageProcessor> orientationSlices = new HashMap<>();
-        Map<ImageSliceIndex, ImageProcessor> energySlices = new HashMap<>();
-        Map<ImageSliceIndex, ImageProcessor> coherencyIndexSlices = new HashMap<>();
-        ROI2DListData overlay = new ROI2DListData();
-        ResultsTableData results = new ResultsTableData();
-
-        ImageJUtils.forEachIndexedZCTSliceWithProgress(inputImage, (ip, index, sliceProgress) -> {
-            OrientationJLogWrapper log = new OrientationJLogWrapper(sliceProgress);
-            OrientationParameters params = new OrientationParameters(OrientationService.VECTORFIELD);
-
-            // Pass structure tensor settings
-            params.sigmaST = structureTensorParameters.getLocalWindowSigma();
-            params.gradient = structureTensorParameters.getGradient().getNativeValue();
-
-            // Vector field settings
-            params.vectorGrid = gridSize;
-            params.vectorScale = scaleVectorPercentage;
-            params.vectorType = vectorFieldType.getNativeValue();
-
-            // Enable all outputs
-            params.showVectorOverlay = true;
-            params.showVectorTable = true;
-            params.view[OrientationParameters.TENSOR_ENERGY] = outputParameters.outputEnergy;
-            params.view[OrientationParameters.TENSOR_ORIENTATION] = outputParameters.outputOrientation;
-            params.view[OrientationParameters.TENSOR_COHERENCY] = outputParameters.outputCoherency;
-
-            // Apply algorithm
-            ImageWare source = Builder.create(new ImagePlus("slice", ip));
-            GroupImage groupImage = new GroupImage(log, source, params);
-
-            if (params.gradient == OrientationParameters.HESSIAN) {
-                new Hessian(log, groupImage, params).run();
-            } else {
-                new Gradient(log, groupImage, params).run();
-            }
-
-            StructureTensor st = new StructureTensor(log, groupImage, params);
-            st.run();
-
-            extractVectorField(groupImage, params, overlay, results, index);
-            if (outputParameters.outputEnergy) {
-                energySlices.put(index, groupImage.energy.buildImageStack().getProcessor(1));
-            }
-            if (outputParameters.outputCoherency) {
-                coherencyIndexSlices.put(index, groupImage.coherency.buildImageStack().getProcessor(1));
-            }
-            if (outputParameters.outputOrientation) {
-                orientationSlices.put(index, groupImage.orientation.buildImageStack().getProcessor(1));
-            }
-        }, progressInfo);
-
-        // Collect all outputs
-
-        if (!energySlices.isEmpty()) {
-            ImagePlus img = ImageJUtils.mergeMappedSlices(energySlices);
-            img.copyScale(inputImage);
-            iterationStep.addOutputData("Energy", new ImagePlusGreyscaleData(img), progressInfo);
-        }
-        if (!coherencyIndexSlices.isEmpty()) {
-            ImagePlus img = ImageJUtils.mergeMappedSlices(coherencyIndexSlices);
-            img.copyScale(inputImage);
-            iterationStep.addOutputData("Coherency", new ImagePlusGreyscaleData(img), progressInfo);
-        }
-        if (!orientationSlices.isEmpty()) {
-            ImagePlus img = ImageJUtils.mergeMappedSlices(orientationSlices);
-            img.copyScale(inputImage);
-            iterationStep.addOutputData("Orientation", new ImagePlusGreyscaleData(img), progressInfo);
-        }
-        iterationStep.addOutputData("Results", results, progressInfo);
-        iterationStep.addOutputData("Overlay", overlay, progressInfo);
     }
 
     public static void extractVectorField(GroupImage gim, OrientationParameters params, ROI2DListData overlay, ResultsTableData table, ImageSliceIndex sliceIndex) {
@@ -273,6 +179,98 @@ public class OrientationVectorField2DAlgorithm extends JIPipeSimpleIteratingAlgo
                     overlay.add(roi);
                 }
         }
+    }
+
+    private void updateOutputSlots() {
+        toggleSlot(OUTPUT_ORIENTATION, outputParameters.outputOrientation);
+        toggleSlot(OUTPUT_ENERGY, outputParameters.outputEnergy);
+        toggleSlot(OUTPUT_COHERENCE, outputParameters.outputCoherency);
+    }
+
+    @Override
+    public void onParameterChanged(ParameterChangedEvent event) {
+        super.onParameterChanged(event);
+
+        if (event.getSource() == outputParameters) {
+            // update slots based on parameters
+            updateOutputSlots();
+        }
+    }
+
+    @Override
+    protected void runIteration(JIPipeSingleIterationStep iterationStep, JIPipeIterationContext iterationContext, JIPipeGraphNodeRunContext runContext, JIPipeProgressInfo progressInfo) {
+        ImagePlus inputImage = iterationStep.getInputData(getFirstInputSlot(), ImagePlusGreyscaleData.class, progressInfo).getImage();
+
+        Map<ImageSliceIndex, ImageProcessor> orientationSlices = new HashMap<>();
+        Map<ImageSliceIndex, ImageProcessor> energySlices = new HashMap<>();
+        Map<ImageSliceIndex, ImageProcessor> coherencyIndexSlices = new HashMap<>();
+        ROI2DListData overlay = new ROI2DListData();
+        ResultsTableData results = new ResultsTableData();
+
+        ImageJUtils.forEachIndexedZCTSliceWithProgress(inputImage, (ip, index, sliceProgress) -> {
+            OrientationJLogWrapper log = new OrientationJLogWrapper(sliceProgress);
+            OrientationParameters params = new OrientationParameters(OrientationService.VECTORFIELD);
+
+            // Pass structure tensor settings
+            params.sigmaST = structureTensorParameters.getLocalWindowSigma();
+            params.gradient = structureTensorParameters.getGradient().getNativeValue();
+
+            // Vector field settings
+            params.vectorGrid = gridSize;
+            params.vectorScale = scaleVectorPercentage;
+            params.vectorType = vectorFieldType.getNativeValue();
+
+            // Enable all outputs
+            params.showVectorOverlay = true;
+            params.showVectorTable = true;
+            params.view[OrientationParameters.TENSOR_ENERGY] = outputParameters.outputEnergy;
+            params.view[OrientationParameters.TENSOR_ORIENTATION] = outputParameters.outputOrientation;
+            params.view[OrientationParameters.TENSOR_COHERENCY] = outputParameters.outputCoherency;
+
+            // Apply algorithm
+            ImageWare source = Builder.create(new ImagePlus("slice", ip));
+            GroupImage groupImage = new GroupImage(log, source, params);
+
+            if (params.gradient == OrientationParameters.HESSIAN) {
+                new Hessian(log, groupImage, params).run();
+            } else {
+                new Gradient(log, groupImage, params).run();
+            }
+
+            StructureTensor st = new StructureTensor(log, groupImage, params);
+            st.run();
+
+            extractVectorField(groupImage, params, overlay, results, index);
+            if (outputParameters.outputEnergy) {
+                energySlices.put(index, groupImage.energy.buildImageStack().getProcessor(1));
+            }
+            if (outputParameters.outputCoherency) {
+                coherencyIndexSlices.put(index, groupImage.coherency.buildImageStack().getProcessor(1));
+            }
+            if (outputParameters.outputOrientation) {
+                orientationSlices.put(index, groupImage.orientation.buildImageStack().getProcessor(1));
+            }
+        }, progressInfo);
+
+        // Collect all outputs
+
+        if (!energySlices.isEmpty()) {
+            ImagePlus img = ImageJUtils.mergeMappedSlices(energySlices);
+            img.copyScale(inputImage);
+            iterationStep.addOutputData("Energy", new ImagePlusGreyscaleData(img), progressInfo);
+        }
+        if (!coherencyIndexSlices.isEmpty()) {
+            ImagePlus img = ImageJUtils.mergeMappedSlices(coherencyIndexSlices);
+            img.copyScale(inputImage);
+            iterationStep.addOutputData("Coherency", new ImagePlusGreyscaleData(img), progressInfo);
+        }
+        if (!orientationSlices.isEmpty()) {
+            ImagePlus img = ImageJUtils.mergeMappedSlices(orientationSlices);
+            img.copyScale(inputImage);
+            iterationStep.addOutputData("Orientation", new ImagePlusGreyscaleData(img), progressInfo);
+        }
+        iterationStep.addOutputData("Results", results, progressInfo);
+        iterationStep.addOutputData("Overlay", overlay, progressInfo);
     }
 
     @SetJIPipeDocumentation(name = "Grid size", description = "The grid size")

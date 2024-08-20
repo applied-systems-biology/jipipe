@@ -70,12 +70,12 @@ public class RestoreVertexValueBackupAlgorithm extends JIPipeSimpleIteratingAlgo
         for (FilamentVertex vertex : vertexMask.filter(filaments, filaments.vertexSet(), variablesMap)) {
             String key = backupFilter.queryFirst(vertex.getValueBackups().keySet(), variablesMap);
             Double value = vertex.getValueBackups().getOrDefault(key, null);
-            if(value == null) {
+            if (value == null) {
                 variablesMap.put("current_value", vertex.getValue());
                 value = missingValue.evaluateToDouble(variablesMap);
             }
 
-            if(backupOldValue.isEnabled()) {
+            if (backupOldValue.isEnabled()) {
                 vertex.getValueBackups().put(backupOldValue.getContent(), value);
             }
             vertex.setValue(value);

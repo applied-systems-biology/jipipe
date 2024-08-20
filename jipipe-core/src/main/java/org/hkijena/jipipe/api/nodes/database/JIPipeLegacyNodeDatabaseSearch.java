@@ -83,7 +83,7 @@ public class JIPipeLegacyNodeDatabaseSearch {
             for (int j = 0; j < tokens.size(); j++) {
                 String token = tokens.getToken(j);
 
-                if(token.toLowerCase().contains(textToken.toLowerCase())) {
+                if (token.toLowerCase().contains(textToken.toLowerCase())) {
                     foundToken = true;
                 }
 
@@ -98,7 +98,7 @@ public class JIPipeLegacyNodeDatabaseSearch {
                 }
             }
 
-            if(!foundToken) {
+            if (!foundToken) {
                 // Reject if text token does not match at all
                 return 0;
             }

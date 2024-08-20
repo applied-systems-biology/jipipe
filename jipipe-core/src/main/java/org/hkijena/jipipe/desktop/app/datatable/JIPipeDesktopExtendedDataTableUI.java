@@ -79,9 +79,9 @@ public class JIPipeDesktopExtendedDataTableUI extends JIPipeDesktopWorkbenchPane
     private final boolean updateWithCache;
     private final JIPipeDesktopSearchTextField searchTextField = new JIPipeDesktopSearchTextField();
     private final JIPipeDesktopRibbon ribbon = new JIPipeDesktopRibbon(2);
+    private final JLabel infoLabel = new JLabel();
     private Store<JIPipeDataTable> dataTableStore;
     private JXTable table;
-    private final JLabel infoLabel = new JLabel();
     private JIPipeDesktopExtendedDataTableModel dataTableModel;
     private JScrollPane scrollPane;
 
@@ -517,8 +517,7 @@ public class JIPipeDesktopExtendedDataTableUI extends JIPipeDesktopWorkbenchPane
         JIPipeDataTable dataTable = dataTableStore.get();
         if (dataTable != null) {
             infoLabel.setText(dataTable.getRowCount() + " rows" + (selectedRows.length > 0 ? ", " + selectedRows.length + " selected" : ""));
-        }
-        else {
+        } else {
             infoLabel.setText("No data available");
         }
     }

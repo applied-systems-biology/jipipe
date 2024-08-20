@@ -30,7 +30,6 @@ import org.hkijena.jipipe.api.nodes.categories.TableNodeTypeCategory;
 import org.hkijena.jipipe.api.nodes.iterationstep.JIPipeIterationContext;
 import org.hkijena.jipipe.api.nodes.iterationstep.JIPipeSingleIterationStep;
 import org.hkijena.jipipe.api.parameters.AbstractJIPipeParameterCollection;
-import org.hkijena.jipipe.api.parameters.JIPipeDynamicParameterCollection;
 import org.hkijena.jipipe.api.parameters.JIPipeParameter;
 import org.hkijena.jipipe.plugins.expressions.AddJIPipeExpressionParameterVariable;
 import org.hkijena.jipipe.plugins.expressions.JIPipeExpressionParameter;
@@ -125,8 +124,7 @@ public class TableToHistogram2Algorithm extends JIPipeSimpleIteratingAlgorithm {
             // guaranteed start from min
             if (i == bins - 1) {
                 bin = new HistogramBin(lower, maximum);
-            }
-            else {
+            } else {
                 upper = minimum + (i + 1) * binWidth;
                 bin = new HistogramBin(lower, upper);
                 lower = upper;
@@ -139,7 +137,7 @@ public class TableToHistogram2Algorithm extends JIPipeSimpleIteratingAlgorithm {
             int binIndex = bins - 1;
             double value = inputColumnValues[i];
             double weight = weightColumnValues[i];
-            if(allowedValues.contains(value)) {
+            if (allowedValues.contains(value)) {
                 if (value < maximum) {
                     double fraction = (value - minimum) / (maximum - minimum);
                     if (fraction < 0.0) {
@@ -168,14 +166,13 @@ public class TableToHistogram2Algorithm extends JIPipeSimpleIteratingAlgorithm {
 
         // Calculate cumulative counts
         for (int i = 0; i < binList.size(); i++) {
-            if(i > 0) {
+            if (i > 0) {
                 HistogramBin previousHistogramBin = binList.get(i - 1);
                 HistogramBin currentHistogramBin = binList.get(i);
 
                 currentHistogramBin.setCumulativeCount(previousHistogramBin.getCumulativeCount() + currentHistogramBin.getCount());
                 currentHistogramBin.setCumulativeWeightedCount(previousHistogramBin.getCumulativeWeightedCount() + currentHistogramBin.getWeightedCount());
-            }
-            else {
+            } else {
                 HistogramBin firstHistogramBin = binList.get(i);
                 firstHistogramBin.setCumulativeCount(firstHistogramBin.getCount());
                 firstHistogramBin.setCumulativeWeightedCount(firstHistogramBin.getWeightedCount());

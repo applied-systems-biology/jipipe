@@ -46,7 +46,7 @@ public class JIPipeDesktopFormPanelImageComponent extends JPanel {
     @Override
     public Dimension getPreferredSize() {
         Dimension preferredSize = super.getPreferredSize();
-        if(backgroundImage != null) {
+        if (backgroundImage != null) {
             double width = Math.max(preferredSize.getWidth(), getWidth());
             double factor = width / backgroundImage.getWidth();
 //            System.out.println(preferredSize + " " + getWidth() + " " + factor + " " + backgroundImage.getHeight()  * factor);
