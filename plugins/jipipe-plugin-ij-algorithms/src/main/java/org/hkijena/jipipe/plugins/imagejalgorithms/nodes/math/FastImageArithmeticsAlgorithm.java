@@ -210,7 +210,7 @@ public class FastImageArithmeticsAlgorithm extends JIPipeIteratingAlgorithm {
                         // Text annotation name
                         JIPipeTextAnnotation textAnnotation = textAnnotationMap.getOrDefault(variableNode.getName(), null);
                         if (textAnnotation == null) {
-                            throw new IllegalArgumentException("Unknown text annotation: " + variableNode.getName());
+                            throw new IllegalArgumentException("Unknown text annotation: " + variableNode.getName() + ". If you expected an image input '" + variableNode.getName() + "', please check review the 'Inputs' panel.");
                         }
                         ip = StringUtils.parseDouble(textAnnotation.getValue());
                     }
