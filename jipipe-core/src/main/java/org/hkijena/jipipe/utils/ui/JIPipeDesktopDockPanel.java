@@ -73,6 +73,7 @@ public class JIPipeDesktopDockPanel extends JPanel implements JIPipeDesktopSplit
         JPopupMenu toolbarContextMenu = new JPopupMenu();
         toolbarContextMenu.add(showToolbarLabelsMenuItem);
         UIUtils.addRightClickPopupMenuToComponent(leftToolBar, toolbarContextMenu);
+        UIUtils.addRightClickPopupMenuToComponent(rightToolBar, toolbarContextMenu);
 
         showToolbarLabelsMenuItem.setState(showToolbarLabels);
         showToolbarLabelsMenuItem.addActionListener(e -> {
