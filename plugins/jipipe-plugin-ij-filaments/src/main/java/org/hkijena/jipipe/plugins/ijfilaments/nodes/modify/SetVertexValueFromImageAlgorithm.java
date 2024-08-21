@@ -74,7 +74,7 @@ public class SetVertexValueFromImageAlgorithm extends JIPipeIteratingAlgorithm {
             ImageProcessor ip = ImageJUtils.getSliceZero(intensity, c, z, t);
             double d = ip.getf((int) vertex.getSpatialLocation().getX(), (int) vertex.getSpatialLocation().getY());
             if (backupOldValue.isEnabled()) {
-                vertex.getValueBackups().put(StringUtils.nullToEmpty(backupOldValue.getContent()), d);
+                vertex.getValueBackups().put(StringUtils.nullToEmpty(backupOldValue.getContent()), vertex.getValue());
             }
             vertex.setValue(d);
         }
