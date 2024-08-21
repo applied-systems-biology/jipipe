@@ -42,6 +42,8 @@ public class FilamentVertexVariablesInfo implements JIPipeExpressionVariablesInf
         VARIABLES.add(new JIPipeExpressionParameterVariableInfo("vsx", "Physical voxel size (X)", "Size of a voxel (X)"));
         VARIABLES.add(new JIPipeExpressionParameterVariableInfo("vsy", "Physical voxel size (Y)", "Size of a voxel (Y)"));
         VARIABLES.add(new JIPipeExpressionParameterVariableInfo("vsz", "Physical voxel size (Z)", "Size of a voxel (Z)"));
+        VARIABLES.add(new JIPipeExpressionParameterVariableInfo("", "<Metadata>", "Vertex metadata of given key"));
+        VARIABLES.add(new JIPipeExpressionParameterVariableInfo("", ".value.<Backup>", "Backup vertex value"));
     }
 
     public static void writeToVariables(Filaments3DGraphData graph, FilamentVertex vertex, JIPipeExpressionVariablesMap variables, String prefix) {

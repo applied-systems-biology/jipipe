@@ -46,6 +46,7 @@ public class SetVertexValueFromImageAlgorithm extends JIPipeIteratingAlgorithm {
 
     private final VertexMaskParameter vertexMask;
     private OptionalStringParameter backupOldValue = new OptionalStringParameter("old_value", false);
+    private OptionalStringParameter backupOldValueToMetadata = new OptionalStringParameter("old_value", false);
 
     public SetVertexValueFromImageAlgorithm(JIPipeNodeInfo info) {
         super(info);
@@ -55,7 +56,8 @@ public class SetVertexValueFromImageAlgorithm extends JIPipeIteratingAlgorithm {
 
     public SetVertexValueFromImageAlgorithm(SetVertexValueFromImageAlgorithm other) {
         super(other);
-        this.backupOldValue = other.backupOldValue;
+        this.backupOldValue = new OptionalStringParameter(other.backupOldValue);
+        this.backupOldValueToMetadata = new OptionalStringParameter(other.backupOldValueToMetadata);
         this.vertexMask = new VertexMaskParameter(other.vertexMask);
         registerSubParameter(vertexMask);
     }
@@ -76,13 +78,27 @@ public class SetVertexValueFromImageAlgorithm extends JIPipeIteratingAlgorithm {
             if (backupOldValue.isEnabled()) {
                 vertex.getValueBackups().put(StringUtils.nullToEmpty(backupOldValue.getContent()), vertex.getValue());
             }
+            if(backupOldValueToMetadata.isEnabled()) {
+                vertex.getMetadata().put(StringUtils.nullToEmpty(backupOldValueToMetadata.getContent()), String.valueOf(vertex.getValue()));
+            }
             vertex.setValue(d);
         }
 
         iterationStep.addOutputData(getFirstOutputSlot(), filaments, progressInfo);
     }
 
-    @SetJIPipeDocumentation(name = "Backup old value", description = "If enabled, backup the value to the specified storage")
+    @SetJIPipeDocumentation(name = "Store old value to metadata", description = "If enabled, store the old value to the specified metadata key")
+    @JIPipeParameter("backup-old-value-to-metadata")
+    public OptionalStringParameter getBackupOldValueToMetadata() {
+        return backupOldValueToMetadata;
+    }
+
+    @JIPipeParameter("backup-old-value-to-metadata")
+    public void setBackupOldValueToMetadata(OptionalStringParameter backupOldValueToMetadata) {
+        this.backupOldValueToMetadata = backupOldValueToMetadata;
+    }
+
+    @SetJIPipeDocumentation(name = "Backup old value", description = "If enabled, backup the value to the specified storage. The backup storage is separate from the metadata storage.")
     @JIPipeParameter("backup-old-value")
     @StringParameterSettings(monospace = true)
     public OptionalStringParameter getBackupOldValue() {
