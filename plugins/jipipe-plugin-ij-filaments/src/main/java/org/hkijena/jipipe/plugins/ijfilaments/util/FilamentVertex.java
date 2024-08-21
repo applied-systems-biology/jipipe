@@ -190,7 +190,7 @@ public class FilamentVertex {
     }
 
     public void setMetadata(String key, Object value) {
-        metadata.put(key, StringUtils.nullToEmpty(value));
+        metadata.put(StringUtils.nullToEmpty(key), StringUtils.nullToEmpty(value));
     }
 
     public double getXMin(boolean useThickness) {

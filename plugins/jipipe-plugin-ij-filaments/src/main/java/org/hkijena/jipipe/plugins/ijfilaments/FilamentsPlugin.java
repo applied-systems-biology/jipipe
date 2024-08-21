@@ -203,6 +203,8 @@ public class FilamentsPlugin extends JIPipePrepackagedDefaultJavaPlugin {
         registerNodeType("filaments-subdivide-edges", SubdivideFilamentEdges.class, UIUtils.getIconURLFromResources("actions/connector-ignore.png"));
         registerNodeType("filaments-fix-overlaps-non-branching", FixOverlapsNonBranchingAlgorithm.class, UIUtils.getIconURLFromResources("actions/draw-geometry-line-perpendicular.png"));
         registerNodeType("filaments-cycles-to-components", FilamentCyclesToComponentsAlgorithm.class, UIUtils.getIconURLFromResources("actions/circle-nodes.png"));
+        registerNodeType("filaments-set-metadata-to-component-index", SetFilamentMetadataToComponentIndexAlgorithm.class, UIUtils.getIconURLFromResources("actions/insert-math-expression.png"));
+        registerNodeType("filaments-find-linear-vertex-order", FindLinearFilamentVertexOrderAlgorithm.class, UIUtils.getIconURLFromResources("actions/draw-arrow.png"));
 
         registerNodeType("filaments-measure-vertices", MeasureVerticesAlgorithm.class, UIUtils.getIconURLFromResources("actions/statistics.png"));
         registerNodeType("filaments-measure-edges", MeasureEdgesAlgorithm.class, UIUtils.getIconURLFromResources("actions/statistics.png"));
