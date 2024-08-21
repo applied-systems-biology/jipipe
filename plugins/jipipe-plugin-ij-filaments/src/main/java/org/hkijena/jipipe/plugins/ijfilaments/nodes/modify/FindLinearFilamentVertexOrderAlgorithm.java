@@ -162,7 +162,11 @@ public class FindLinearFilamentVertexOrderAlgorithm extends JIPipeSimpleIteratin
                 }
             } else if (connectedSet.size() >= 2) {
                 List<FilamentVertex> endPoints = connectedSet.stream().filter(vertex -> filaments.degreeOf(vertex) == 1).collect(Collectors.toList());
-                assert endPoints.size() == 2;
+
+                if(endPoints.size() != 2) {
+                    // Not a line
+                    continue;
+                }
 
                 FilamentVertex first = endPoints.get(0);
                 FilamentVertex second = endPoints.get(1);
