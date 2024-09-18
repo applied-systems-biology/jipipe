@@ -721,7 +721,7 @@ public class Filaments3DGraphData extends SimpleGraph<FilamentVertex, FilamentEd
         for (FilamentEdge edge : edgeSet()) {
             FilamentVertex edgeSource = getEdgeSource(edge);
             FilamentVertex edgeTarget = getEdgeTarget(edge);
-            if (vertices.contains(edgeSource) || vertices.contains(edgeTarget)) {
+            if (vertices.contains(edgeSource) && vertices.contains(edgeTarget)) {
                 copy.addEdge(edgeSource, edgeTarget, edge);
             }
         }
