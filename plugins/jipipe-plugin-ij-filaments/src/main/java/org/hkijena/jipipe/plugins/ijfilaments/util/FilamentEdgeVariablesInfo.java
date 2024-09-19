@@ -41,7 +41,7 @@ public class FilamentEdgeVariablesInfo implements JIPipeExpressionVariablesInfo 
         VARIABLES.add(new JIPipeExpressionParameterVariableInfo("source.z", "Source centroid Z", "The Z location of the centroid"));
         VARIABLES.add(new JIPipeExpressionParameterVariableInfo("source.c", "Source centroid channel", "The channel (c) location of the centroid"));
         VARIABLES.add(new JIPipeExpressionParameterVariableInfo("source.t", "Source centroid frame", "The frame (t) location of the centroid"));
-        VARIABLES.add(new JIPipeExpressionParameterVariableInfo("source.thickness", "Source thickness", "The thickness around the centroid"));
+        VARIABLES.add(new JIPipeExpressionParameterVariableInfo("source.radius", "Source radius", "The radius around the centroid"));
         VARIABLES.add(new JIPipeExpressionParameterVariableInfo("source.degree", "Source degree", "The degree (number of edges) of the vertex"));
         VARIABLES.add(new JIPipeExpressionParameterVariableInfo("source.vsx", "Source physical voxel size X", "The size of 1 voxel (X)"));
         VARIABLES.add(new JIPipeExpressionParameterVariableInfo("source.vsy", "Source physical voxel size Y", "The size of 1 voxel (Y)"));
@@ -53,7 +53,7 @@ public class FilamentEdgeVariablesInfo implements JIPipeExpressionVariablesInfo 
         VARIABLES.add(new JIPipeExpressionParameterVariableInfo("target.z", "Target centroid Z", "The Z location of the centroid"));
         VARIABLES.add(new JIPipeExpressionParameterVariableInfo("target.c", "Target centroid channel", "The channel (c) location of the centroid"));
         VARIABLES.add(new JIPipeExpressionParameterVariableInfo("target.t", "Target centroid frame", "The frame (t) location of the centroid"));
-        VARIABLES.add(new JIPipeExpressionParameterVariableInfo("target.thickness", "Target thickness", "The thickness around the centroid"));
+        VARIABLES.add(new JIPipeExpressionParameterVariableInfo("target.radius", "Target radius", "The radius around the centroid"));
         VARIABLES.add(new JIPipeExpressionParameterVariableInfo("target.degree", "Target degree", "The degree (number of edges) of the vertex"));
         VARIABLES.add(new JIPipeExpressionParameterVariableInfo("target.vsx", "Target physical voxel size X", "The size of 1 voxel (X)"));
         VARIABLES.add(new JIPipeExpressionParameterVariableInfo("target.vsy", "Target physical voxel size Y", "The size of 1 voxel (Y)"));
