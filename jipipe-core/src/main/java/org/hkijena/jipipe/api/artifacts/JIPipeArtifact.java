@@ -225,7 +225,11 @@ public class JIPipeArtifact implements Comparable<JIPipeArtifact> {
                 return Integer.parseInt(entry.substring(prefix.length()));
             }
         }
-        return 0;
+        // Handle legacy case
+        if(isRequireGPU() && "cu".equals(prefix)) {
+            return 102; // old artifacts were running on CUDA 10.2
+        }
+        return -1;
     }
 
     public boolean isGPUCompatible(JIPipeArtifactAccelerationPreference accelerationPreference, Vector2iParameter accelerationPreferenceVersions) {
