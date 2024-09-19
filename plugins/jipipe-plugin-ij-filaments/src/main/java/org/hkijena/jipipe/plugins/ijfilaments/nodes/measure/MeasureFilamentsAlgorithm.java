@@ -13,6 +13,7 @@
 
 package org.hkijena.jipipe.plugins.ijfilaments.nodes.measure;
 
+import org.hkijena.jipipe.api.AddJIPipeCitation;
 import org.hkijena.jipipe.api.ConfigureJIPipeNode;
 import org.hkijena.jipipe.api.JIPipeProgressInfo;
 import org.hkijena.jipipe.api.SetJIPipeDocumentation;
@@ -40,8 +41,10 @@ import org.hkijena.jipipe.plugins.tables.datatypes.ResultsTableData;
         "<li>min/max x/y/z (with sphere radius) sphere[min/max][x/y/z]</li>" +
         "<li>centroid x/y/z/c/t</li>" +
         "<li>min/max/avg radius/value</li>" +
-        "</ul>")
+        "</ul>" +
+        "You can learn more about the generated measurements here: https://jipipe.hki-jena.de/documentation/filament-measurements.html")
 @ConfigureJIPipeNode(nodeTypeCategory = FilamentsNodeTypeCategory.class, menuPath = "Measure")
+@AddJIPipeCitation("https://jipipe.hki-jena.de/documentation/filament-measurements.html")
 @AddJIPipeInputSlot(value = Filaments3DGraphData.class, name = "Input", create = true)
 @AddJIPipeOutputSlot(value = ResultsTableData.class, name = "Output", create = true)
 public class MeasureFilamentsAlgorithm extends JIPipeSimpleIteratingAlgorithm {
