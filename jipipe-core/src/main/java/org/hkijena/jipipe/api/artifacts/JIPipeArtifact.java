@@ -17,6 +17,8 @@ import com.fasterxml.jackson.annotation.JsonGetter;
 import com.fasterxml.jackson.annotation.JsonSetter;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.lang3.SystemUtils;
+import org.hkijena.jipipe.plugins.artifacts.JIPipeArtifactAccelerationPreference;
+import org.hkijena.jipipe.plugins.parameters.library.primitives.vectors.Vector2iParameter;
 import org.hkijena.jipipe.utils.VersionUtils;
 import org.jetbrains.annotations.NotNull;
 
@@ -215,5 +217,35 @@ public class JIPipeArtifact implements Comparable<JIPipeArtifact> {
 
     public Path getDefaultInstallationPath(Path localRepositoryPath) {
         return localRepositoryPath.resolve(Paths.get(getGroupId().replace('.', '/'))).resolve(getArtifactId()).resolve(getVersion() + "-" + getClassifier());
+    }
+
+    public int getGPUVersion(String prefix) {
+        for (String entry : getClassifier().split("_")) {
+            if(entry.matches(prefix + "\\d\\d\\d")) {
+                return Integer.parseInt(entry.substring(prefix.length()));
+            }
+        }
+        return 0;
+    }
+
+    public boolean isGPUCompatible(JIPipeArtifactAccelerationPreference accelerationPreference, Vector2iParameter accelerationPreferenceVersions) {
+        int min = accelerationPreferenceVersions.getX();
+        int max = accelerationPreferenceVersions.getY();
+        if(accelerationPreference == JIPipeArtifactAccelerationPreference.CPU) {
+            return true;
+        }
+        else {
+            int gpuVersion = getGPUVersion(accelerationPreference.getPrefix());
+            if(gpuVersion == 0) {
+                return false;
+            }
+            if(min > 0 && gpuVersion < min) {
+                return false;
+            }
+            if(max > 0 && gpuVersion > max) {
+                return false;
+            }
+            return true;
+        }
     }
 }

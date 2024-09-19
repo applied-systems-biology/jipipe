@@ -22,6 +22,8 @@ import org.hkijena.jipipe.api.parameters.JIPipeParameter;
 import org.hkijena.jipipe.api.settings.JIPipeDefaultApplicationSettingsSheetCategory;
 import org.hkijena.jipipe.api.settings.JIPipeDefaultApplicationsSettingsSheet;
 import org.hkijena.jipipe.plugins.parameters.library.primitives.optional.OptionalPathParameter;
+import org.hkijena.jipipe.plugins.parameters.library.primitives.vectors.Vector2iParameter;
+import org.hkijena.jipipe.plugins.parameters.library.primitives.vectors.VectorParameterSettings;
 import org.hkijena.jipipe.utils.UIUtils;
 
 import javax.swing.*;
@@ -30,7 +32,8 @@ public class JIPipeArtifactApplicationSettings extends JIPipeDefaultApplications
     public static final String ID = "org.hkijena.jipipe:artifacts";
 
     private boolean autoDownload = true;
-    private boolean preferGPU = true;
+    private JIPipeArtifactAccelerationPreference accelerationPreference = JIPipeArtifactAccelerationPreference.CPU;
+    private Vector2iParameter accelerationPreferenceVersions = new Vector2iParameter();
     private JIPipeArtifactRepositoryReferenceList repositories = new JIPipeArtifactRepositoryReferenceList();
     private OptionalPathParameter overrideInstallationPath = new OptionalPathParameter();
 
@@ -42,15 +45,32 @@ public class JIPipeArtifactApplicationSettings extends JIPipeDefaultApplications
         return JIPipe.getSettings().getById(ID, JIPipeArtifactApplicationSettings.class);
     }
 
-    @SetJIPipeDocumentation(name = "Prefer GPU versions of artifacts", description = "If enabled, automated matching of artifacts will prefer GPU versions")
-    @JIPipeParameter("prefer-gpu")
-    public boolean isPreferGPU() {
-        return preferGPU;
+    @SetJIPipeDocumentation(name = "Acceleration mode", description = "Determines if JIPipe should prefer artifacts with a specific acceleration type. " +
+            "For maximum compatibility, choose CPU (will run slowest). For Nvidia GPUs, select CUDA. For AMD GPUs select ROCm. " +
+            "If no compatible artifact is found, CPU will be automatically selected.")
+    @JIPipeParameter("acceleration-mode")
+    public JIPipeArtifactAccelerationPreference getAccelerationPreference() {
+        return accelerationPreference;
     }
 
-    @JIPipeParameter("prefer-gpu")
-    public void setPreferGPU(boolean preferGPU) {
-        this.preferGPU = preferGPU;
+    @JIPipeParameter("acceleration-mode")
+    public void setAccelerationPreference(JIPipeArtifactAccelerationPreference accelerationPreference) {
+        this.accelerationPreference = accelerationPreference;
+    }
+
+    @SetJIPipeDocumentation(name = "Acceleration version limits (GPU only)", description = "Determines version limits for GPU acceleration modes. " +
+            "This is important for certain GPUs that will not run GPU accelerated code from older versions. " +
+            "If a value is set to zero, no limit is assigned to the minimum or maximum. " +
+            "Input the three-digit numeric version, for example 112 for CUDA version 11.2")
+    @JIPipeParameter("acceleration-mode-version-limit")
+    @VectorParameterSettings(xLabel = "Min", yLabel = "Max")
+    public Vector2iParameter getAccelerationPreferenceVersions() {
+        return accelerationPreferenceVersions;
+    }
+
+    @JIPipeParameter("acceleration-mode-version-limit")
+    public void setAccelerationPreferenceVersions(Vector2iParameter accelerationPreferenceVersions) {
+        this.accelerationPreferenceVersions = accelerationPreferenceVersions;
     }
 
     @SetJIPipeDocumentation(name = "Auto download", description = "If enabled, automatically download missing artifacts")

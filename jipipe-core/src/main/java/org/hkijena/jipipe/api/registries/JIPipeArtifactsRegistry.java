@@ -21,7 +21,9 @@ import org.hkijena.jipipe.JIPipe;
 import org.hkijena.jipipe.api.JIPipeProgressInfo;
 import org.hkijena.jipipe.api.artifacts.*;
 import org.hkijena.jipipe.api.run.JIPipeRunnableQueue;
+import org.hkijena.jipipe.plugins.artifacts.JIPipeArtifactAccelerationPreference;
 import org.hkijena.jipipe.plugins.artifacts.JIPipeArtifactApplicationSettings;
+import org.hkijena.jipipe.plugins.parameters.library.primitives.vectors.Vector2iParameter;
 import org.hkijena.jipipe.utils.PathUtils;
 import org.hkijena.jipipe.utils.StringUtils;
 import org.hkijena.jipipe.utils.VersionUtils;
@@ -57,22 +59,32 @@ public class JIPipeArtifactsRegistry {
      */
     public static JIPipeArtifact selectPreferredArtifactByClassifier(List<JIPipeArtifact> candidates) {
         JIPipeArtifact bestCandidate = null;
+        JIPipeArtifactAccelerationPreference accelerationPreference = JIPipeArtifactApplicationSettings.getInstance().getAccelerationPreference();
+        Vector2iParameter accelerationPreferenceVersions = JIPipeArtifactApplicationSettings.getInstance().getAccelerationPreferenceVersions();
+        boolean wantsGPU = accelerationPreference != JIPipeArtifactAccelerationPreference.CPU;
+
         for (JIPipeArtifact candidate : candidates) {
             if (candidate.isCompatible()) {
                 if (bestCandidate == null) {
                     bestCandidate = candidate;
                 } else if (bestCandidate.isNative()) {
                     if (candidate.isNative()) {
-                        if (JIPipeArtifactApplicationSettings.getInstance().isPreferGPU() && !bestCandidate.isRequireGPU() && candidate.isRequireGPU()) {
+                        if (wantsGPU && !bestCandidate.isRequireGPU()
+                                && candidate.isRequireGPU()
+                                && candidate.isGPUCompatible(accelerationPreference, accelerationPreferenceVersions)
+                                && candidate.getGPUVersion(accelerationPreference.getPrefix()) > bestCandidate.getGPUVersion(accelerationPreference.getPrefix())) {
                             bestCandidate = candidate;
-                        } else if (!JIPipeArtifactApplicationSettings.getInstance().isPreferGPU() && bestCandidate.isRequireGPU() && !candidate.isRequireGPU()) {
+                        } else if (!wantsGPU && bestCandidate.isRequireGPU() && !candidate.isRequireGPU()) {
                             bestCandidate = candidate;
                         }
                     }
                 } else {
-                    if (JIPipeArtifactApplicationSettings.getInstance().isPreferGPU() && !bestCandidate.isRequireGPU() && candidate.isRequireGPU()) {
+                    if (wantsGPU && !bestCandidate.isRequireGPU()
+                            && candidate.isRequireGPU()
+                            && candidate.isGPUCompatible(accelerationPreference, accelerationPreferenceVersions)
+                            && candidate.getGPUVersion(accelerationPreference.getPrefix()) > bestCandidate.getGPUVersion(accelerationPreference.getPrefix())) {
                         bestCandidate = candidate;
-                    } else if (!JIPipeArtifactApplicationSettings.getInstance().isPreferGPU() && bestCandidate.isRequireGPU() && !candidate.isRequireGPU()) {
+                    } else if (!wantsGPU && bestCandidate.isRequireGPU() && !candidate.isRequireGPU()) {
                         bestCandidate = candidate;
                     }
                 }

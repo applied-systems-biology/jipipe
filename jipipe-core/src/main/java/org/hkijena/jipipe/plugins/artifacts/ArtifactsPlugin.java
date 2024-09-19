@@ -79,6 +79,10 @@ public class ArtifactsPlugin extends JIPipePrepackagedDefaultJavaPlugin {
                 "Artifact repository",
                 "An artifact repository",
                 null);
+        registerEnumParameterType("artifact-acceleration-preference",
+                JIPipeArtifactAccelerationPreference.class,
+                "Artifact acceleration preference",
+                "Select artifacts that match the specified acceleration profile");
         registerApplicationSettingsSheet(new JIPipeArtifactApplicationSettings());
     }
 
