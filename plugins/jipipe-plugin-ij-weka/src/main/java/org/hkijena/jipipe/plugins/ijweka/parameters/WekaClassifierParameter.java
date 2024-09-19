@@ -32,7 +32,7 @@ import java.io.IOException;
 @JsonSerialize(using = WekaClassifierParameter.Serializer.class)
 @JsonDeserialize(using = WekaClassifierParameter.Deserializer.class)
 public class WekaClassifierParameter {
-    private Classifier classifier = new FastRandomForest();
+    private Classifier classifier;
 
 
     public WekaClassifierParameter() {
@@ -40,13 +40,18 @@ public class WekaClassifierParameter {
 
     public WekaClassifierParameter(WekaClassifierParameter other) {
         try {
-            this.classifier = (Classifier) GenericObjectEditor.makeCopy(other.classifier);
+            if(other.classifier != null) {
+                this.classifier = (Classifier) GenericObjectEditor.makeCopy(other.classifier);
+            }
         } catch (Exception e) {
             throw new RuntimeException(e);
         }
     }
 
     public Classifier getClassifier() {
+        if(classifier == null) {
+             classifier = new FastRandomForest();
+        }
         return classifier;
     }
 
@@ -58,7 +63,9 @@ public class WekaClassifierParameter {
         @Override
         public void serialize(WekaClassifierParameter value, JsonGenerator gen, SerializerProvider serializers) throws IOException {
             gen.writeStartObject();
-            gen.writeStringField("serialized-base64", SerializationUtils.objectToBase64(value.classifier));
+            if(value.classifier != null) {
+                gen.writeStringField("serialized-base64", SerializationUtils.objectToBase64(value.classifier));
+            }
             gen.writeEndObject();
         }
     }
@@ -67,9 +74,11 @@ public class WekaClassifierParameter {
         @Override
         public WekaClassifierParameter deserialize(JsonParser p, DeserializationContext ctxt) throws IOException, JsonProcessingException {
             JsonNode node = p.readValueAsTree();
-            String base64 = node.get("serialized-base64").textValue();
             WekaClassifierParameter parameter = new WekaClassifierParameter();
-            parameter.classifier = (Classifier) SerializationUtils.base64ToObject(base64);
+            if(node.has("serialized-base64")) {
+                String base64 = node.get("serialized-base64").textValue();
+                parameter.classifier = (Classifier) SerializationUtils.base64ToObject(base64);
+            }
             return parameter;
         }
     }
