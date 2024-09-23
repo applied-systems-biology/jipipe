@@ -48,10 +48,7 @@ import org.hkijena.jipipe.api.validation.JIPipeValidationRuntimeException;
 import org.hkijena.jipipe.api.validation.contexts.GraphNodeValidationReportContext;
 import org.hkijena.jipipe.api.validation.contexts.UnspecifiedValidationReportContext;
 import org.hkijena.jipipe.plugins.artifacts.JIPipeArtifactApplicationSettings;
-import org.hkijena.jipipe.utils.PathUtils;
-import org.hkijena.jipipe.utils.ReflectionUtils;
-import org.hkijena.jipipe.utils.StringUtils;
-import org.hkijena.jipipe.utils.UIUtils;
+import org.hkijena.jipipe.utils.*;
 import org.hkijena.jipipe.utils.json.JsonUtils;
 import org.jgrapht.graph.DefaultEdge;
 import org.jgrapht.traverse.TopologicalOrderIterator;
@@ -163,7 +160,7 @@ public class JIPipeGraphRun extends AbstractJIPipeRunnable implements JIPipeGrap
                     "\\___/___/_/  /_/ .__/\\__/  \\___/_/  \\_,_/ .__/_//_/ /_/|_|\\_,_/_//_/ /_/|_/\\__/_\\_\\\\__/ \n" +
                     "              /_/                      /_/                                              \n" +
                     "\n");
-            progressInfo.log("JIPipe version: " + StringUtils.orElse(getClass().getPackage().getImplementationVersion(), "Development"));
+            progressInfo.log("JIPipe version: " + VersionUtils.getJIPipeVersion());
             Attributes manifestAttributes = ReflectionUtils.getManifestAttributes();
             if (manifestAttributes != null) {
                 String implementationDateString = manifestAttributes.getValue("Implementation-Date");

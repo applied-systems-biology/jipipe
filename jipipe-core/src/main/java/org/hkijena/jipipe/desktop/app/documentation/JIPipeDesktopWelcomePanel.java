@@ -256,7 +256,7 @@ public class JIPipeDesktopWelcomePanel extends JIPipeDesktopProjectWorkbenchPane
         JIPipeDesktopFormPanel technicalInfo = new JIPipeDesktopFormPanel(null, JIPipeDesktopFormPanel.TRANSPARENT_BACKGROUND);
         technicalInfo.addVerticalGlue();
 
-        technicalInfo.addToForm(UIUtils.createReadonlyBorderlessTextField(StringUtils.orElse(getClass().getPackage().getImplementationVersion(), "Development")), new JLabel("Version"), null);
+        technicalInfo.addToForm(UIUtils.createReadonlyBorderlessTextField(VersionUtils.getJIPipeVersion()), new JLabel("Version"), null);
         Attributes manifestAttributes = ReflectionUtils.getManifestAttributes();
         if (manifestAttributes != null) {
             String implementationDateString = manifestAttributes.getValue("Implementation-Date");
