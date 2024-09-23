@@ -17,6 +17,8 @@ import org.hkijena.jipipe.plugins.core.CorePlugin;
 
 public class VersionUtils {
 
+    public static final String FALLBACK_VERSION = "4.1.0";
+
     /**
      * Returns a version string for a class
      *
@@ -24,16 +26,16 @@ public class VersionUtils {
      * @return the version string or 'Development' if none is available
      */
     public static String getVersionString(Class<?> klass) {
-        return StringUtils.orElse(klass.getPackage().getImplementationVersion(), "Development");
+        return StringUtils.orElse(klass.getPackage().getImplementationVersion(), FALLBACK_VERSION);
     }
 
     /**
      * The current version of JIPipe according to the Maven-proved information
      *
-     * @return the version string or '3.0.0' if none is available
+     * @return the version string or '4.1.0' if none is available
      */
     public static String getJIPipeVersion() {
-        return StringUtils.orElse(CorePlugin.class.getPackage().getImplementationVersion(), "4.0.0");
+        return StringUtils.orElse(CorePlugin.class.getPackage().getImplementationVersion(), FALLBACK_VERSION);
     }
 
     /**

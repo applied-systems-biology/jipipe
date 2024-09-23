@@ -4,12 +4,12 @@
     <parent>
         <artifactId>pom-jipipe</artifactId>
         <groupId>org.hkijena</groupId>
-        <version>4.0.1-SNAPSHOT</version>
+        <version>4.1.0</version>
         <relativePath>../../pom.xml</relativePath>
     </parent>
 
     <artifactId>jipipe-plugin-imp</artifactId>
-    <version>4.0.1-SNAPSHOT</version>
+    <version>4.1.0</version>
 
     <name>jipipe-plugin-imp</name>
     <description>JIPipe Image Manipulation Pipeline</description>
