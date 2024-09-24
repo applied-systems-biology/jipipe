@@ -28,6 +28,7 @@ import org.hkijena.jipipe.api.annotation.JIPipeDataAnnotationMergeMode;
 import org.hkijena.jipipe.api.annotation.JIPipeTextAnnotation;
 import org.hkijena.jipipe.api.annotation.JIPipeTextAnnotationMergeMode;
 import org.hkijena.jipipe.api.data.JIPipeDataSlotInfo;
+import org.hkijena.jipipe.api.data.JIPipeDataSlotRole;
 import org.hkijena.jipipe.api.data.JIPipeInputDataSlot;
 import org.hkijena.jipipe.api.data.JIPipeSlotType;
 import org.hkijena.jipipe.api.data.context.JIPipeDataContext;
@@ -76,7 +77,7 @@ import static org.hkijena.jipipe.plugins.ilastik.utils.ImgUtils.*;
 @AddJIPipeCitation("Autocontext documentation: https://www.ilastik.org/documentation/autocontext/autocontext")
 @ConfigureJIPipeNode(nodeTypeCategory = ImagesNodeTypeCategory.class, menuPath = "Ilastik")
 @AddJIPipeInputSlot(value = ImagePlusData.class, name = "Image", create = true, description = "The image(s) to classify.")
-@AddJIPipeInputSlot(value = IlastikModelData.class, name = "Project", create = true, description = "The Ilastik project. Must support pixel classification.")
+@AddJIPipeInputSlot(value = IlastikModelData.class, name = "Project", create = true, description = "The Ilastik project. Must support pixel classification.", role = JIPipeDataSlotRole.ParametersLooping)
 @AddJIPipeOutputSlot(value = ImagePlusData.class, name = "Probabilities Stage 1", description = "Multi-channel image where pixel values represent the probability that that pixel belongs to the class represented by that channel (Stage 1)")
 @AddJIPipeOutputSlot(value = ImagePlusData.class, name = "Probabilities Stage 2", description = "Multi-channel image where pixel values represent the probability that that pixel belongs to the class represented by that channel (Stage 2)")
 @AddJIPipeOutputSlot(value = ImagePlusData.class, name = "Probabilities All Stages", description = "Contains both \"Probabilities Stage 1\" and \"Probabilities Stage 2\" in a single multi-channel image")

@@ -28,6 +28,7 @@ import org.hkijena.jipipe.api.annotation.JIPipeDataAnnotationMergeMode;
 import org.hkijena.jipipe.api.annotation.JIPipeTextAnnotation;
 import org.hkijena.jipipe.api.annotation.JIPipeTextAnnotationMergeMode;
 import org.hkijena.jipipe.api.data.JIPipeDataSlotInfo;
+import org.hkijena.jipipe.api.data.JIPipeDataSlotRole;
 import org.hkijena.jipipe.api.data.JIPipeInputDataSlot;
 import org.hkijena.jipipe.api.data.JIPipeSlotType;
 import org.hkijena.jipipe.api.data.context.JIPipeDataContext;
@@ -75,7 +76,7 @@ import static org.hkijena.jipipe.plugins.ilastik.utils.ImgUtils.*;
 @AddJIPipeCitation("Pixel classification documentation: https://www.ilastik.org/documentation/pixelclassification/pixelclassification")
 @ConfigureJIPipeNode(nodeTypeCategory = ImagesNodeTypeCategory.class, menuPath = "Ilastik")
 @AddJIPipeInputSlot(value = ImagePlusData.class, name = "Image", create = true, description = "The image(s) to classify.")
-@AddJIPipeInputSlot(value = IlastikModelData.class, name = "Project", create = true, description = "The Ilastik project. Must support pixel classification.")
+@AddJIPipeInputSlot(value = IlastikModelData.class, name = "Project", create = true, description = "The Ilastik project. Must support pixel classification.", role = JIPipeDataSlotRole.ParametersLooping)
 @AddJIPipeOutputSlot(value = ImagePlusData.class, name = "Probabilities", description = "Multi-channel image where pixel values represent the probability that that pixel belongs to the class represented by that channel")
 @AddJIPipeOutputSlot(value = ImagePlusData.class, name = "Simple Segmentation", description = "A single-channel image where the (integer) pixel values indicate the class to which a pixel belongs. " +
         "For this image, every pixel with the same value should belong to the same class of pixels")

@@ -27,10 +27,7 @@ import org.hkijena.jipipe.api.annotation.JIPipeDataAnnotation;
 import org.hkijena.jipipe.api.annotation.JIPipeDataAnnotationMergeMode;
 import org.hkijena.jipipe.api.annotation.JIPipeTextAnnotation;
 import org.hkijena.jipipe.api.annotation.JIPipeTextAnnotationMergeMode;
-import org.hkijena.jipipe.api.data.JIPipeDataSlot;
-import org.hkijena.jipipe.api.data.JIPipeDataSlotInfo;
-import org.hkijena.jipipe.api.data.JIPipeInputDataSlot;
-import org.hkijena.jipipe.api.data.JIPipeSlotType;
+import org.hkijena.jipipe.api.data.*;
 import org.hkijena.jipipe.api.data.context.JIPipeDataContext;
 import org.hkijena.jipipe.api.environments.JIPipeEnvironment;
 import org.hkijena.jipipe.api.nodes.AddJIPipeInputSlot;
@@ -79,7 +76,7 @@ import static org.hkijena.jipipe.plugins.ilastik.utils.ImgUtils.*;
 @AddJIPipeCitation("Object classification documentation: https://www.ilastik.org/documentation/objects/objects")
 @ConfigureJIPipeNode(nodeTypeCategory = ImagesNodeTypeCategory.class, menuPath = "Ilastik")
 @AddJIPipeInputSlot(value = ImagePlusData.class, name = "Image", create = true, description = "The image(s) to classify. Requires a data annotation that contains the segmentation image.")
-@AddJIPipeInputSlot(value = IlastikModelData.class, name = "Project", create = true, description = "The Ilastik project. Must support pixel classification.")
+@AddJIPipeInputSlot(value = IlastikModelData.class, name = "Project", create = true, description = "The Ilastik project. Must support pixel classification.", role = JIPipeDataSlotRole.ParametersLooping)
 @AddJIPipeOutputSlot(value = ImagePlusData.class, name = "Object Predictions", description = "A label image of the object class predictions")
 @AddJIPipeOutputSlot(value = ImagePlusData.class, name = "Object Probabilities", description = "A multi-channel image volume of object prediction probabilities instead of a label image (one channel for each prediction class)")
 @AddJIPipeOutputSlot(value = ImagePlusData.class, name = "Blockwise Object Predictions", description = "A label image of the object class predictions. " +
