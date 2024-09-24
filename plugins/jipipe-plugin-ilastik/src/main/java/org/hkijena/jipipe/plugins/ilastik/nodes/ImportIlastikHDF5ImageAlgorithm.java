@@ -35,10 +35,12 @@ import org.hkijena.jipipe.plugins.expressions.variables.JIPipeTextAnnotationsExp
 import org.hkijena.jipipe.plugins.filesystem.dataypes.FileData;
 import org.hkijena.jipipe.plugins.ilastik.utils.ImgUtils;
 import org.hkijena.jipipe.plugins.ilastik.utils.hdf5.Hdf5;
+import org.hkijena.jipipe.plugins.ilastik.utils.hdf5.IJ1Hdf5;
 import org.hkijena.jipipe.plugins.imagejdatatypes.datatypes.ImagePlusData;
 import org.hkijena.jipipe.plugins.imagejdatatypes.util.CalibrationParameters;
 import org.hkijena.jipipe.plugins.imagejdatatypes.util.ImageJUtils;
 import org.hkijena.jipipe.plugins.parameters.library.primitives.StringParameterSettings;
+import org.hkijena.jipipe.plugins.parameters.library.primitives.optional.OptionalStringParameter;
 
 import java.nio.file.Path;
 
@@ -51,7 +53,7 @@ import static org.hkijena.jipipe.plugins.ilastik.utils.ImgUtils.DEFAULT_AXES;
 public class ImportIlastikHDF5ImageAlgorithm extends JIPipeSimpleIteratingAlgorithm {
     private final CalibrationParameters calibrationParameters;
     private JIPipeExpressionParameter hdf5Path = new JIPipeExpressionParameter("\"exported_data\"");
-    private String axes = ImgUtils.toStringAxes(DEFAULT_AXES);
+    private OptionalStringParameter overrideAxes = new OptionalStringParameter(ImgUtils.toStringAxes(DEFAULT_AXES), false);
 
     public ImportIlastikHDF5ImageAlgorithm(JIPipeNodeInfo info) {
         super(info);
@@ -63,7 +65,7 @@ public class ImportIlastikHDF5ImageAlgorithm extends JIPipeSimpleIteratingAlgori
         super(other);
         this.hdf5Path = new JIPipeExpressionParameter(other.hdf5Path);
         this.calibrationParameters = new CalibrationParameters(other.calibrationParameters);
-        this.axes = other.axes;
+        this.overrideAxes = new OptionalStringParameter(other.overrideAxes);
         registerSubParameter(calibrationParameters);
     }
 
@@ -74,27 +76,28 @@ public class ImportIlastikHDF5ImageAlgorithm extends JIPipeSimpleIteratingAlgori
         variables.putAnnotations(iterationStep.getMergedTextAnnotations());
         String hdf5Path_ = hdf5Path.evaluateToString(variables);
 
-        ImgPlus dataset = Hdf5.readDataset(path.toFile(), hdf5Path_, ImgUtils.toImagejAxes(axes));
-        ImagePlus imagePlus = ImageJFunctions.wrap(dataset, path.getFileName().toString());
+        ImagePlus imagePlus = IJ1Hdf5.readDataset(path, hdf5Path_, overrideAxes.isEnabled() ? ImgUtils.toImagejAxes(overrideAxes.getContent()) : null, progressInfo);
         ImageJUtils.calibrate(imagePlus, calibrationParameters.getCalibrationMode(), calibrationParameters.getCustomMin(), calibrationParameters.getCustomMax());
 
         iterationStep.addOutputData(getFirstOutputSlot(), new ImagePlusData(imagePlus), progressInfo);
     }
 
-    @SetJIPipeDocumentation(name = "Axes", description = "The order of the axes. Allowed values are X, Y, Z, C, and T")
-    @JIPipeParameter("axes")
+    @SetJIPipeDocumentation(name = "Override axes", description = "Allows to override the default axes for reading the values. " +
+            "By default, JIPipe attempts to guess the axes based on the default axis configuration XYCZT. " +
+            "Allowed values are X, Y, Z, C, and T (case-insensitive)")
+    @JIPipeParameter(value = "override-axes")
     @StringParameterSettings(monospace = true)
-    public String getAxes() {
-        return axes;
+    public OptionalStringParameter getOverrideAxes() {
+        return overrideAxes;
     }
 
-    @JIPipeParameter("axes")
-    public void setAxes(String axes) {
-        this.axes = axes;
+    @JIPipeParameter("override-axes")
+    public void setOverrideAxes(OptionalStringParameter overrideAxes) {
+        this.overrideAxes = overrideAxes;
     }
 
     @SetJIPipeDocumentation(name = "HDF5 internal path", description = "Path to the HDF5 data set to import")
-    @JIPipeParameter("hdf5-path")
+    @JIPipeParameter(value = "hdf5-path", important = true)
     @AddJIPipeExpressionParameterVariable(fromClass = JIPipeTextAnnotationsExpressionParameterVariablesInfo.class)
     public JIPipeExpressionParameter getHdf5Path() {
         return hdf5Path;
