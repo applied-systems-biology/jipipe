@@ -89,12 +89,12 @@
             <dependency>
                 <groupId>net.java.dev.jna</groupId>
                 <artifactId>jna-platform</artifactId>
-                <version>4.5.2</version>
+                <version>5.13.0</version>
             </dependency>
             <dependency>
                 <groupId>org.apache.commons</groupId>
                 <artifactId>commons-compress</artifactId>
-                <version>1.20</version>
+                <version>1.23.0</version>
             </dependency>
             <dependency>
                 <groupId>org.apache.poi</groupId>
@@ -115,21 +115,6 @@
                 <groupId>net.java.balloontip</groupId>
                 <artifactId>balloontip</artifactId>
                 <version>1.2.4.1</version>
-            </dependency>
-            <dependency>
-                <groupId>org.apache.lucene</groupId>
-                <artifactId>lucene-core</artifactId>
-                <version>8.11.2</version>
-            </dependency>
-            <dependency>
-                <groupId>org.apache.lucene</groupId>
-                <artifactId>lucene-analyzers-common</artifactId>
-                <version>8.11.2</version>
-            </dependency>
-            <dependency>
-                <groupId>org.apache.lucene</groupId>
-                <artifactId>lucene-queryparser</artifactId>
-                <version>8.11.2</version>
             </dependency>
         </dependencies>
     </dependencyManagement>

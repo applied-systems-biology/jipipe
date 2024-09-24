@@ -358,44 +358,4 @@ public final class IJ1Hdf5 {
 //            }
 //        }
 //    }
-
-    private static <T extends NativeType<T>, A extends ArrayDataAccess<A>>
-    ArrayImg<T, A> readArrayImg(
-            DatasetType type, IHDF5Reader reader, HDF5DataSet dataset, long[] dims) {
-
-        int[] blockDims = Arrays.stream(reversed(dims)).mapToInt(d -> (int) d).toArray();
-        A block = type.readBlock(reader, dataset, blockDims, new long[dims.length]);
-
-        ArrayImg<T, A> arrayImg = new ArrayImg<>(block, dims, new Fraction());
-        type.linkImglib2Type(arrayImg);
-        return arrayImg;
-    }
-
-    private static <T extends NativeType<T>, A extends ArrayDataAccess<A>>
-    CellImg<T, A> readCellImg(
-            DatasetType type,
-            IHDF5Reader reader,
-            HDF5DataSet dataset,
-            long[] dims,
-            int[] blockDims,
-            LongConsumer callback) {
-
-        // Grid is an ND array of blocks (cells), which are themselves ND arrays of pixels.
-        CellGrid grid = new CellGrid(dims, blockDims);
-        List<Cell<A>> cells = new ArrayList<>();
-        long bytes = 0;
-
-        for (GridCoordinates.Block block : new GridCoordinates(grid)) {
-            A data = type.readBlock(reader, dataset, reversed(block.dims), reversed(block.offset));
-            cells.add(new Cell<>(block.dims, block.offset, data));
-            bytes += Arrays.stream(block.dims).reduce(type.size, (l, r) -> l * r);
-            callback.accept(bytes);
-        }
-
-        CellImgFactory<T> factory = new CellImgFactory<T>(type.createVariable(), blockDims);
-        ListImg<Cell<A>> imgOfCells = new ListImg<>(cells, grid.getGridDimensions());
-        CellImg<T, A> cellImg = new CellImg<>(factory, grid, imgOfCells, new Fraction());
-        type.linkImglib2Type(cellImg);
-        return cellImg;
-    }
 }
