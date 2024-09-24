@@ -55,6 +55,7 @@ import org.hkijena.jipipe.plugins.ilastik.environments.OptionalIlastikEnvironmen
 import org.hkijena.jipipe.plugins.ilastik.parameters.IlastikProjectValidationMode;
 import org.hkijena.jipipe.plugins.ilastik.utils.IlastikUtils;
 import org.hkijena.jipipe.plugins.ilastik.utils.hdf5.Hdf5;
+import org.hkijena.jipipe.plugins.ilastik.utils.hdf5.IJ1Hdf5;
 import org.hkijena.jipipe.plugins.imagejdatatypes.datatypes.ImagePlusData;
 import org.hkijena.jipipe.plugins.imagejdatatypes.util.ImageJUtils;
 import org.hkijena.jipipe.plugins.tables.datatypes.ResultsTableData;
@@ -176,13 +177,7 @@ public class IlastikPredictionMapsObjectClassificationAlgorithm extends JIPipeSi
         for (int i = 0; i < projectInputSlot.getRowCount(); i++) {
             JIPipeProgressInfo exportProgress = progressInfo.resolveAndLog("Exporting project", i, projectInputSlot.getRowCount());
             IlastikModelData project = projectInputSlot.getData(i, IlastikModelData.class, exportProgress);
-
-            Path exportedPath = workDirectory.resolve("project_" + i + ".ilp");
-            try {
-                Files.write(exportedPath, project.getData(), StandardOpenOption.CREATE);
-            } catch (IOException e) {
-                throw new RuntimeException(e);
-            }
+            Path exportedPath = project.exportOrGetLink( workDirectory.resolve("project_" + i + ".ilp"));
 
             // Check the project
             if (projectValidationMode != IlastikProjectValidationMode.Ignore) {
@@ -212,10 +207,8 @@ public class IlastikPredictionMapsObjectClassificationAlgorithm extends JIPipeSi
             {
                 JIPipeProgressInfo exportProgress = progressInfo.resolveAndLog("Exporting input image", i, imageInputSlot.getRowCount());
                 ImagePlusData imagePlusData = imageInputSlot.getData(i, ImagePlusData.class, exportProgress);
-                DefaultDataset dataset = new DefaultDataset(JIPipe.getInstance().getContext(), new ImgPlus(ImageJFunctions.wrap(imagePlusData.getImage())));
                 Path exportedPath = workDirectory.resolve("img_" + i + ".h5");
-                Hdf5.writeDataset(exportedPath.toFile(), "data", (ImgPlus) dataset.getImgPlus(), 1, DEFAULT_AXES, value -> {
-                });
+                IJ1Hdf5.writeImage(imagePlusData.getImage(), exportedPath, "data", DEFAULT_AXES, progressInfo);
 
                 exportedImagePaths.add(exportedPath);
                 exportedImageContexts.add(imageInputSlot.getDataContext(i));
@@ -224,10 +217,8 @@ public class IlastikPredictionMapsObjectClassificationAlgorithm extends JIPipeSi
                 JIPipeDataAnnotation dataAnnotation = predictionMapsDataAnnotation.queryFirst(imageInputSlot.getDataAnnotations(i));
                 JIPipeProgressInfo exportProgress = progressInfo.resolveAndLog("Exporting segmentation image", i, imageInputSlot.getRowCount());
                 ImagePlusData imagePlusData = dataAnnotation.getData(ImagePlusData.class, exportProgress);
-                DefaultDataset dataset = new DefaultDataset(JIPipe.getInstance().getContext(), new ImgPlus(ImageJFunctions.wrap(imagePlusData.getImage())));
                 Path exportedPath = workDirectory.resolve("seg_" + i + ".h5");
-                Hdf5.writeDataset(exportedPath.toFile(), "data", (ImgPlus) dataset.getImgPlus(), 1, DEFAULT_AXES, value -> {
-                });
+                IJ1Hdf5.writeImage(imagePlusData.getImage(), exportedPath, "data", DEFAULT_AXES, progressInfo);
                 exportedSegmentationImagePaths.add(exportedPath);
             }
         }
@@ -286,8 +277,7 @@ public class IlastikPredictionMapsObjectClassificationAlgorithm extends JIPipeSi
                         Path outputImagePath = modelResultPath.resolve(exportSource + "__" + FilenameUtils.removeExtension(inputImagePath.getFileName().toString()) + ".h5");
                         imageProgress.log("Extracting result: " + outputImagePath);
 
-                        ImgPlus dataset = Hdf5.readDataset(outputImagePath.toFile(), "exported_data");
-                        ImagePlus imagePlus = ImageJFunctions.wrap(dataset, exportSource);
+                        ImagePlus imagePlus = IJ1Hdf5.readImage(outputImagePath, "exported_data", null, progressInfo);
                         ImageJUtils.calibrate(imagePlus, ImageJCalibrationMode.MinMax, 0, 0);
 
                         outputImageSlot.addData(new ImagePlusData(imagePlus),

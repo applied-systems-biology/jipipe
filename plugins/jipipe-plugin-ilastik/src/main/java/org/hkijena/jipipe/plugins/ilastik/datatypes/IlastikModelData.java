@@ -28,10 +28,7 @@ import org.hkijena.jipipe.utils.PathUtils;
 import org.hkijena.jipipe.utils.StringUtils;
 
 import java.io.IOException;
-import java.nio.file.Files;
-import java.nio.file.Path;
-import java.nio.file.Paths;
-import java.nio.file.StandardOpenOption;
+import java.nio.file.*;
 import java.util.Collections;
 
 @SetJIPipeDocumentation(name = "Ilastik project", description = "An Ilastik project")
@@ -41,24 +38,28 @@ public class IlastikModelData implements JIPipeData {
 
     private final byte[] data;
     private final String name;
+    private final Path linkedPath;
 
-    public IlastikModelData(Path file) {
+    public IlastikModelData(Path file, boolean linked) {
         this.name = file.getFileName().toString();
-        try {
-            data = Files.readAllBytes(file);
-        } catch (IOException e) {
-            throw new RuntimeException(e);
+        if(linked) {
+            data = null;
+            linkedPath = file;
         }
-    }
-
-    public IlastikModelData(byte[] data, String name) {
-        this.data = data;
-        this.name = name;
+        else {
+            linkedPath = null;
+            try {
+                data = Files.readAllBytes(file);
+            } catch (IOException e) {
+                throw new RuntimeException(e);
+            }
+        }
     }
 
     public IlastikModelData(IlastikModelData other) {
         this.data = other.data;
         this.name = other.name;
+        this.linkedPath = other.linkedPath;
     }
 
     public static IlastikModelData importData(JIPipeReadDataStorage storage, JIPipeProgressInfo progressInfo) {
@@ -67,7 +68,7 @@ public class IlastikModelData implements JIPipeData {
             throw new RuntimeException("Unable to find *.ilp file in " + storage.getFileSystemPath());
         }
         progressInfo.log("Importing *.ilp from " + file);
-        return new IlastikModelData(file);
+        return new IlastikModelData(file, false);
     }
 
     public byte[] getData() {
@@ -78,14 +79,30 @@ public class IlastikModelData implements JIPipeData {
         return name;
     }
 
+    public Path getLinkedPath() {
+        return linkedPath;
+    }
+
+    public boolean isLinked() {
+        return linkedPath != null;
+    }
+
     @Override
     public void exportData(JIPipeWriteDataStorage storage, String name, boolean forceName, JIPipeProgressInfo progressInfo) {
-        if (!forceName)
+        if (!forceName) {
             name = this.name;
+        }
         try {
-            if (StringUtils.isNullOrEmpty(name))
+            if (StringUtils.isNullOrEmpty(name)) {
                 name = "project";
-            Files.write(storage.getFileSystemPath().resolve(PathUtils.ensureExtension(Paths.get(name), ".ilp")), data);
+            }
+            Path outputFile = storage.getFileSystemPath().resolve(PathUtils.ensureExtension(Paths.get(name), ".ilp"));
+            if(isLinked()) {
+                Files.copy(linkedPath, outputFile, StandardCopyOption.REPLACE_EXISTING);
+            }
+            else {
+                Files.write(outputFile, data);
+            }
         } catch (IOException e) {
             throw new RuntimeException(e);
         }
@@ -98,20 +115,46 @@ public class IlastikModelData implements JIPipeData {
 
     @Override
     public void display(String displayName, JIPipeDesktopWorkbench desktopWorkbench, JIPipeDataSource source) {
-        // Export project to a tmp file
-        Path outputFile = JIPipeRuntimeApplicationSettings.getTemporaryFile("ilastik", ".ilp");
-        try {
-            Files.write(outputFile, data, StandardOpenOption.CREATE);
-        } catch (Exception e) {
-            IJ.handleException(e);
+        if(isLinked()) {
+            // Open project with Ilastik
+            IlastikPlugin.launchIlastik(desktopWorkbench, Collections.singletonList(linkedPath.toString()));
         }
+        else {
+            // Export project to a tmp file
+            Path outputFile = JIPipeRuntimeApplicationSettings.getTemporaryFile("ilastik", ".ilp");
+            try {
+                Files.write(outputFile, data, StandardOpenOption.CREATE);
+            } catch (Exception e) {
+                IJ.handleException(e);
+            }
 
-        // Open project with Ilastik
-        IlastikPlugin.launchIlastik(desktopWorkbench, Collections.singletonList(outputFile.toString()));
+            // Open project with Ilastik
+            IlastikPlugin.launchIlastik(desktopWorkbench, Collections.singletonList(outputFile.toString()));
+        }
     }
 
     @Override
     public String toString() {
-        return "Ilastik model: " + name + " (" + (data.length / 1024 / 1024) + " MB)";
+        if(isLinked()) {
+            return linkedPath.toString();
+        }
+        else {
+            return "Ilastik model: " + name + " (" + (data.length / 1024 / 1024) + " MB)";
+        }
+
+    }
+
+    public Path exportOrGetLink(Path exportedPath) {
+        if(isLinked()) {
+            return linkedPath;
+        }
+        else {
+            try {
+                Files.write(exportedPath, getData(), StandardOpenOption.CREATE);
+            } catch (IOException e) {
+                throw new RuntimeException(e);
+            }
+            return exportedPath;
+        }
     }
 }

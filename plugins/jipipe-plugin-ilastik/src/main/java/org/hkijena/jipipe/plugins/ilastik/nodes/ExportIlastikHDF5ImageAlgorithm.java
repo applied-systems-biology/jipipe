@@ -38,9 +38,11 @@ import org.hkijena.jipipe.plugins.expressions.variables.JIPipeTextAnnotationsExp
 import org.hkijena.jipipe.plugins.filesystem.dataypes.FileData;
 import org.hkijena.jipipe.plugins.ilastik.utils.ImgUtils;
 import org.hkijena.jipipe.plugins.ilastik.utils.hdf5.Hdf5;
+import org.hkijena.jipipe.plugins.ilastik.utils.hdf5.IJ1Hdf5;
 import org.hkijena.jipipe.plugins.imagejdatatypes.datatypes.ImagePlusData;
 import org.hkijena.jipipe.plugins.imagejdatatypes.datatypes.greyscale.ImagePlusGreyscaleData;
 import org.hkijena.jipipe.plugins.parameters.library.primitives.StringParameterSettings;
+import org.hkijena.jipipe.plugins.parameters.library.primitives.optional.OptionalStringParameter;
 import org.hkijena.jipipe.utils.PathType;
 import org.hkijena.jipipe.utils.PathUtils;
 import org.hkijena.jipipe.utils.UIUtils;
@@ -62,8 +64,7 @@ public class ExportIlastikHDF5ImageAlgorithm extends JIPipeSimpleIteratingAlgori
 
     private JIPipeExpressionParameter hdf5Path = new JIPipeExpressionParameter("\"exported_data\"");
     private DataExportExpressionParameter filePath = new DataExportExpressionParameter();
-
-    private String axes = ImgUtils.toStringAxes(DEFAULT_AXES);
+    private OptionalStringParameter overrideAxes = new OptionalStringParameter(ImgUtils.toStringAxes(DEFAULT_AXES), false);
 
     public ExportIlastikHDF5ImageAlgorithm(JIPipeNodeInfo info) {
         super(info);
@@ -73,7 +74,7 @@ public class ExportIlastikHDF5ImageAlgorithm extends JIPipeSimpleIteratingAlgori
         super(other);
         this.hdf5Path = new JIPipeExpressionParameter(other.hdf5Path);
         this.filePath = new DataExportExpressionParameter(other.filePath);
-        this.axes = other.axes;
+        this.overrideAxes = new OptionalStringParameter(other.overrideAxes);
     }
 
     @Override
@@ -102,11 +103,8 @@ public class ExportIlastikHDF5ImageAlgorithm extends JIPipeSimpleIteratingAlgori
         variables.putAnnotations(iterationStep.getMergedTextAnnotations());
         String hdf5Path_ = hdf5Path.evaluateToString(variables);
 
-        List<AxisType> axisTypeList = ImgUtils.toImagejAxes(axes);
-
-        DefaultDataset dataset = new DefaultDataset(JIPipe.getInstance().getContext(), new ImgPlus(ImageJFunctions.wrap(inputData.getImage())));
-        Hdf5.writeDataset(outputFile.toFile(), hdf5Path_, (ImgPlus) dataset.getImgPlus(), 1, axisTypeList, value -> {
-        });
+        IJ1Hdf5.writeImage(inputData.getImage(), outputFile, hdf5Path_, overrideAxes.isEnabled() ? ImgUtils.toImagejAxes(overrideAxes.getContent()) : null, progressInfo);
+        iterationStep.addOutputData(getFirstOutputSlot(), new FileData(outputFile), progressInfo);
     }
 
     @SetJIPipeDocumentation(name = "HDF5 internal path", description = "Path to the HDF5 data set to export")
@@ -121,16 +119,29 @@ public class ExportIlastikHDF5ImageAlgorithm extends JIPipeSimpleIteratingAlgori
         this.hdf5Path = hdf5Path;
     }
 
-    @SetJIPipeDocumentation(name = "Axes", description = "The order of the axes. Allowed values are X, Y, Z, C, and T")
-    @JIPipeParameter("axes")
+    @SetJIPipeDocumentation(name = "Override axes", description = "Allows to override the default axes for writing the values. " +
+            "By default, JIPipe attempts to guess the axes based on the default axis configuration XYCZT. " +
+            "Allowed values are X, Y, Z, C, and T (case-insensitive)")
+    @JIPipeParameter(value = "override-axes")
     @StringParameterSettings(monospace = true)
-    public String getAxes() {
-        return axes;
+    public OptionalStringParameter getOverrideAxes() {
+        return overrideAxes;
     }
 
-    @JIPipeParameter("axes")
-    public void setAxes(String axes) {
-        this.axes = axes;
+    @JIPipeParameter("override-axes")
+    public void setOverrideAxes(OptionalStringParameter overrideAxes) {
+        this.overrideAxes = overrideAxes;
+    }
+
+    @SetJIPipeDocumentation(name = "File path", description = "Expression that generates the output file path")
+    @JIPipeParameter("file-path")
+    public DataExportExpressionParameter getFilePath() {
+        return filePath;
+    }
+
+    @JIPipeParameter("file-path")
+    public void setFilePath(DataExportExpressionParameter filePath) {
+        this.filePath = filePath;
     }
 
     @AddJIPipeDesktopNodeQuickAction(name = "Configure exported path", description = "Selects where the data should be exported", icon = "actions/document-export.png", buttonIcon = "actions/color-select.png", buttonText = "Select")

@@ -94,8 +94,7 @@ public final class IJ1Hdf5 {
                 .toString()
                 .replace('\\', '/');
 
-        progressInfo.log("Reading HDF5 " + name + " with axes " +
-                axes.stream().map(at -> at.getLabel().substring(0,1)).collect(Collectors.joining("")));
+        progressInfo.log("Reading HDF5 " + name + " with axes " + formatAxes(axes));
 
         try (IHDF5Reader reader = HDF5Factory.openForReading(file.toFile())) {
             HDF5DataSetInformation info = reader.getDataSetInformation(path);
@@ -104,7 +103,7 @@ public final class IJ1Hdf5 {
             if (!(2 <= dims.length && dims.length <= 5)) {
                 throw new IllegalArgumentException(dims.length + "D datasets are not supported");
             }
-            addMissingAxes(axes, dims.length, progressInfo);
+            addMissingAxesForReading(axes, dims.length, progressInfo);
 
             HDF5DataTypeInformation typeInfo = info.getTypeInformation();
             DatasetType type = DatasetType.ofHdf5(typeInfo).orElseThrow(() ->
@@ -171,6 +170,10 @@ public final class IJ1Hdf5 {
         }
     }
 
+    private static String formatAxes(List<AxisType> axes) {
+        return axes.stream().map(at -> at.getLabel().substring(0,1)).collect(Collectors.joining(""));
+    }
+
     public static void writeImage(ImagePlus image, Path file, String path, List<AxisType> axes, JIPipeProgressInfo progressInfo) {
         image = ImageJUtils.convertToGreyscaleIfNeeded(image);
         Objects.requireNonNull(file);
@@ -192,7 +195,9 @@ public final class IJ1Hdf5 {
                 throw new IllegalArgumentException("Axes must contain X and Y if you define them manually");
             }
         }
-        addMissingAxes(axes, image.getNDimensions(), progressInfo);
+        addMissingAxesForWriting(axes, image, progressInfo);
+
+        progressInfo.log("Writing " + image + " to " + file + " path " + path + " with axes " + formatAxes(axes));
 
         // Get the dimension sizes based on the image
         final int dims = axes.size();
@@ -216,11 +221,11 @@ public final class IJ1Hdf5 {
         }
         if(axes.contains(Axes.X)) {
             dimensions[dims - 1 - axes.indexOf(Axes.X)] = width;
-            blockDimensions[dims - 1 - axes.indexOf(Axes.X)] = 1;
+            blockDimensions[dims - 1 - axes.indexOf(Axes.X)] = width;
         }
         if(axes.contains(Axes.Y)) {
             dimensions[dims - 1 - axes.indexOf(Axes.Y)] = height;
-            blockDimensions[dims - 1 - axes.indexOf(Axes.Y)] = 1;
+            blockDimensions[dims - 1 - axes.indexOf(Axes.Y)] = height;
         }
         if(axes.contains(Axes.Z)) {
             dimensions[dims - 1 - axes.indexOf(Axes.Z)] = depth;
@@ -229,7 +234,8 @@ public final class IJ1Hdf5 {
 
         try (IHDF5Writer writer = HDF5Factory.open(file.toFile())) {
             if(image.getBitDepth() == 8) {
-                try (HDF5DataSet dataSet = writer.uint8().createMDArrayAndOpen(path, dimensions, blockDimensions)) {
+                HDF5IntStorageFeatures features = HDF5IntStorageFeatures.build().compress().unsigned().features();
+                try (HDF5DataSet dataSet = writer.uint8().createMDArrayAndOpen(path, dimensions, blockDimensions, features)) {
                     for (int t = 0; t < timePoints; t++) {
                         if(axes.contains(Axes.TIME)) {
                             offsets[dims - 1 - axes.indexOf(Axes.TIME)] = t;
@@ -265,10 +271,6 @@ public final class IJ1Hdf5 {
                 throw new IllegalArgumentException("Unsupported bitdepth " + image.getBitDepth());
             }
         }
-    }
-
-    private static int getAxisIndex(List<AxisType> axes, AxisType type) {
-        return axes.indexOf(type);
     }
 
     public static int datasetTypeToBitDepth(DatasetType type) {
@@ -310,8 +312,8 @@ public final class IJ1Hdf5 {
         return axisSizes;
     }
 
-    private static void addMissingAxes(List<AxisType> axes, int numAxes, JIPipeProgressInfo progressInfo) {
-        String originalAxes = axes.stream().map(AxisType::toString).collect(Collectors.joining(""));
+    private static void addMissingAxesForReading(List<AxisType> axes, int numAxes, JIPipeProgressInfo progressInfo) {
+        String originalAxes = formatAxes(axes);
         boolean changed = false;
         while(axes.size() < numAxes) {
             for(AxisType axisType : ImgUtils.DEFAULT_AXES) {
@@ -323,118 +325,35 @@ public final class IJ1Hdf5 {
             changed = true;
         }
         if(changed) {
-            progressInfo.log("Original axis configuration was \"" + originalAxes + "\" and was changed to " +
-                    axes.stream().map(at -> at.getLabel().substring(0,1)).collect(Collectors.joining("")) + " to fit " + numAxes + " dimensions");
+            progressInfo.log("Original axis configuration was \"" + originalAxes + "\" and was changed to " + formatAxes(axes) + " to fit " + numAxes + " dimensions");
         }
     }
 
-//    /**
-//     * {@link #writeDataset} without compression, axis reordering and callback.
-//     */
-//    public static void writeDataset(
-//            File file, String path,ImagePlus img) {
-//        writeDataset(file, path, img, 0, null, null);
-//    }
-//
-//    /**
-//     * {@link #writeDataset} without axis reordering and callback.
-//     */
-//    public static void writeDataset(
-//            File file, String path,ImagePlus img, int compressionLevel) {
-//        writeDataset(file, path, img, compressionLevel, null, null);
-//    }
-//
-//    /**
-//     * {@link #writeDataset} without callback.
-//     */
-//    public static void writeDataset(
-//            File file, String path,ImagePlus img, int compressionLevel, List<AxisType> axes) {
-//        writeDataset(file, path, img, compressionLevel, axes, null);
-//    }
-//
-//    /**
-//     * Write image contents to HDF5 dataset, creating/overwriting file and dataset if needed.
-//     * <p>
-//     * Only 2D-5D datasets with types enumerated in {@link DatasetType} are supported.
-//     * As a special case, {@link ARGBType} is supported too, but its use is discouraged.
-//     * <p>
-//     * if axes are specified, image will be written in the specified axis order.
-//     * <p>
-//     * If not null, callback will be invoked between block writes (N + 1 invocations for N blocks).
-//     * The callback accepts the total number of bytes written so far.
-//     * This is useful for progress reporting.
-//     */
-//    public static void writeDataset(
-//            File file,
-//            String path,
-//           ImagePlus img,
-//            int compressionLevel,
-//            List<AxisType> axes,
-//            LongConsumer callback) {
-//
-//        Objects.requireNonNull(file);
-//        Objects.requireNonNull(path);
-//        Objects.requireNonNull(img);
-//        if (compressionLevel < 0) {
-//            throw new IllegalArgumentException("Compression level cannot be negative");
-//        }
-//        if (callback == null) {
-//            callback = (a) -> {
-//            };
-//        }
-//
-//        if (!(2 <= img.numDimensions() && img.numDimensions() <= 5)) {
-//            throw new IllegalArgumentException(
-//                    img.numDimensions() + "D datasets are not supported");
-//        }
-//
-//        T imglib2Type = img.firstElement();
-//        if (imglib2Type.getClass() == ARGBType.class) {
-//            Logger.getLogger(IJ1Hdf5.class.getName()).warning("Writing ARGBType images is deprecated");
-//            @SuppressWarnings("unchecked")
-//            ImgPlus<ARGBType> argbImg = (ImgPlus<ARGBType>) img;
-//            writeDataset(file, path, argbToMultiChannel(argbImg), compressionLevel, axes, callback);
-//            return;
-//        }
-//
-//        Img<T> data = axes == null ? img.getImg() : transformDims(img, axesOf(img), axes);
-//        if (axes == null) {
-//            axes = axesOf(img);
-//        }
-//
-//        DatasetType type = DatasetType.ofImglib2(imglib2Type).orElseThrow(() ->
-//                new IllegalArgumentException("Unsupported image type " + imglib2Type.getClass()));
-//
-//        long[] dims = data.dimensionsAsLongArray();
-//        int[] chunkDims = new int[dims.length];
-//        int[] blockDims = new int[dims.length];
-//        outputDims(dims, axes, type, chunkDims, blockDims);
-//
-//        IterableInterval<RandomAccessibleInterval<T>> grid =
-//                Views.flatIterable(Views.tiles(data, blockDims));
-//        Cursor<RandomAccessibleInterval<T>> gridCursor = grid.cursor();
-//        long bytes = 0;
-//
-//        try (IHDF5Writer writer = HDF5Factory.open(file);
-//             HDF5DataSet dataset = type.createDataset(
-//                     writer,
-//                     path,
-//                     reversed(dims),
-//                     reversed(chunkDims),
-//                     compressionLevel)) {
-//
-//            callback.accept(0L);
-//
-//            while (gridCursor.hasNext()) {
-//                RandomAccessibleInterval<T> block = gridCursor.next();
-//                Cursor<T> blockCursor = Views.flatIterable(block).cursor();
-//                long[] currBlockDims = reversed(block.dimensionsAsLongArray());
-//                long[] offset = reversed(block.minAsLongArray());
-//                type.writeCursor(blockCursor, writer, dataset, currBlockDims, offset);
-//
-//                bytes += Arrays.stream(currBlockDims).reduce(type.size, (l, r) -> l * r);
-//                callback.accept(bytes);
-//            }
-//        }
-//    }
+    private static void addMissingAxesForWriting(List<AxisType> axes, ImagePlus image, JIPipeProgressInfo progressInfo) {
+        String originalAxes = formatAxes(axes);
+        boolean changed = false;
+        if(!axes.contains(Axes.X)) {
+            axes.add(Axes.X);
+            changed = true;
+        }
+        if(!axes.contains(Axes.Y)) {
+            axes.add(Axes.Y);
+            changed = true;
+        }
+        if(image.getNChannels() > 1 && !axes.contains(Axes.CHANNEL)) {
+            axes.add(Axes.CHANNEL);
+            changed = true;
+        }
+        if(image.getNSlices() > 1 && !axes.contains(Axes.Z)) {
+            axes.add(Axes.Z);
+            changed = true;
+        }
+        if(image.getNFrames() > 1 && !axes.contains(Axes.TIME)) {
+            axes.add(Axes.TIME);
+            changed = true;
+        }
+        if(changed) {
+            progressInfo.log("Original axis configuration was \"" + originalAxes + "\" and was changed to " + formatAxes(axes) + " to fit " + image + " dimensions");
+        }
+    }
 }
