@@ -13,42 +13,21 @@
 
 package org.hkijena.jipipe.plugins.ilastik.utils.hdf5;
 
+import ch.systemsx.cisd.base.mdarray.MDByteArray;
 import ch.systemsx.cisd.base.mdarray.MDFloatArray;
 import ch.systemsx.cisd.hdf5.*;
 import ij.IJ;
 import ij.ImagePlus;
 import ij.process.ImageProcessor;
-import net.imagej.ImgPlus;
 import net.imagej.axis.Axes;
 import net.imagej.axis.AxisType;
-import net.imglib2.Cursor;
-import net.imglib2.IterableInterval;
-import net.imglib2.RandomAccessibleInterval;
-import net.imglib2.img.Img;
-import net.imglib2.img.array.ArrayImg;
-import net.imglib2.img.basictypeaccess.array.ArrayDataAccess;
-import net.imglib2.img.cell.Cell;
-import net.imglib2.img.cell.CellGrid;
-import net.imglib2.img.cell.CellImg;
-import net.imglib2.img.cell.CellImgFactory;
-import net.imglib2.img.list.ListImg;
-import net.imglib2.type.NativeType;
-import net.imglib2.type.numeric.ARGBType;
-import net.imglib2.util.Fraction;
-import net.imglib2.view.Views;
 import org.hkijena.jipipe.api.JIPipeProgressInfo;
-import org.hkijena.jipipe.plugins.ilastik.utils.GridCoordinates;
 import org.hkijena.jipipe.plugins.ilastik.utils.ImgUtils;
 import org.hkijena.jipipe.plugins.imagejdatatypes.util.ImageJUtils;
-import org.jetbrains.annotations.NotNull;
 
-import java.io.File;
 import java.nio.file.Path;
 import java.util.*;
-import java.util.function.LongConsumer;
-import java.util.logging.Logger;
 import java.util.stream.Collectors;
-import java.util.stream.IntStream;
 
 import static org.hkijena.jipipe.plugins.ilastik.utils.ImgUtils.*;
 
@@ -95,7 +74,7 @@ public final class IJ1Hdf5 {
      * The callback accepts the total number of bytes written so far.
      * This is useful for progress reporting.
      */
-    public static ImagePlus readDataset(
+    public static ImagePlus readImage(
             Path file, String path, List<AxisType> axes, JIPipeProgressInfo progressInfo) {
 
         Objects.requireNonNull(file);
@@ -190,6 +169,106 @@ public final class IJ1Hdf5 {
 
             return result;
         }
+    }
+
+    public static void writeImage(ImagePlus image, Path file, String path, List<AxisType> axes, JIPipeProgressInfo progressInfo) {
+        image = ImageJUtils.convertToGreyscaleIfNeeded(image);
+        Objects.requireNonNull(file);
+        Objects.requireNonNull(path);
+        if(axes == null) {
+            axes = new ArrayList<>();
+
+            // For 2D images, just go with two axes (preconfigured)
+            if(image.getNDimensions() == 2) {
+                progressInfo.log("2D image detected. Setting default axis config to XY");
+                axes.add(Axes.X);
+                axes.add(Axes.Y);
+            }
+
+        }
+        else {
+            axes = axes.stream().distinct().collect(Collectors.toList());
+            if (!(axes.contains(Axes.X) && axes.contains(Axes.Y))) {
+                throw new IllegalArgumentException("Axes must contain X and Y if you define them manually");
+            }
+        }
+        addMissingAxes(axes, image.getNDimensions(), progressInfo);
+
+        // Get the dimension sizes based on the image
+        final int dims = axes.size();
+        int timePoints = image.getNFrames();
+        int channels = image.getNChannels();
+        int depth = image.getNSlices(); // Z-depth
+        int width = image.getWidth();
+        int height = image.getHeight();
+
+        // Map dimensions dynamically according to the axis order
+        long[] dimensions = new long[dims];
+        int[] blockDimensions = new int[dims];
+        long[] offsets = new long[dims];
+        Arrays.fill(blockDimensions, 1);
+
+        if(axes.contains(Axes.TIME)) {
+            dimensions[dims - 1 - axes.indexOf(Axes.TIME)] = timePoints;
+        }
+        if(axes.contains(Axes.CHANNEL)) {
+            dimensions[dims - 1 - axes.indexOf(Axes.CHANNEL)] = channels;
+        }
+        if(axes.contains(Axes.X)) {
+            dimensions[dims - 1 - axes.indexOf(Axes.X)] = width;
+            blockDimensions[dims - 1 - axes.indexOf(Axes.X)] = 1;
+        }
+        if(axes.contains(Axes.Y)) {
+            dimensions[dims - 1 - axes.indexOf(Axes.Y)] = height;
+            blockDimensions[dims - 1 - axes.indexOf(Axes.Y)] = 1;
+        }
+        if(axes.contains(Axes.Z)) {
+            dimensions[dims - 1 - axes.indexOf(Axes.Z)] = depth;
+        }
+        boolean invertXY = axes.indexOf(Axes.X) < axes.indexOf(Axes.Y);
+
+        try (IHDF5Writer writer = HDF5Factory.open(file.toFile())) {
+            if(image.getBitDepth() == 8) {
+                try (HDF5DataSet dataSet = writer.uint8().createMDArrayAndOpen(path, dimensions, blockDimensions)) {
+                    for (int t = 0; t < timePoints; t++) {
+                        if(axes.contains(Axes.TIME)) {
+                            offsets[dims - 1 - axes.indexOf(Axes.TIME)] = t;
+                        }
+                        for (int z = 0; z < depth; z++) {
+                            if(axes.contains(Axes.Z)) {
+                                offsets[dims - 1 - axes.indexOf(Axes.Z)] = z;
+                            }
+                            for (int c = 0; c < channels; c++) {
+                                if(axes.contains(Axes.CHANNEL)) {
+                                    offsets[dims - 1 - axes.indexOf(Axes.CHANNEL)] = c;
+                                }
+
+                                byte[] src = (byte[]) ImageJUtils.getSliceZero(image, c, z, t).getPixels();
+                                byte[] target;
+                                if(!invertXY) {
+                                    target = new byte[src.length];
+                                    for (int i = 0; i < src.length; i++) {
+                                        int x = i % height; // Swapped!
+                                        int y = i / height; // Swapped!
+                                        target[x + y * width] = src[i];
+                                    }
+                                }else {
+                                    target = src;
+                                }
+                                writer.uint8().writeMDArrayBlockWithOffset(dataSet, new MDByteArray(target, blockDimensions), offsets);
+                            }
+                        }
+                    }
+                }
+            }
+            else {
+                throw new IllegalArgumentException("Unsupported bitdepth " + image.getBitDepth());
+            }
+        }
+    }
+
+    private static int getAxisIndex(List<AxisType> axes, AxisType type) {
+        return axes.indexOf(type);
     }
 
     public static int datasetTypeToBitDepth(DatasetType type) {

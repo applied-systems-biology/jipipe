@@ -31,6 +31,7 @@ import org.hkijena.jipipe.plugins.imagejdatatypes.util.ImageJUtils;
 @AddJIPipeInputSlot(value = ImagePlusData.class, name = "Input", create = true)
 @AddJIPipeOutputSlot(value = ImagePlusData.class, name = "Output", create = true)
 @AddJIPipeNodeAlias(nodeTypeCategory = ImageJNodeTypeCategory.class, menuPath = "Image\nColor", aliasName = "Split RGB Channels")
+@AddJIPipeNodeAlias(aliasName = "RGB to greyscale channels (RGB2C)", menuPath = "Colors")
 public class SplitRGBChannelsAlgorithm extends JIPipeSimpleIteratingAlgorithm {
 
     public SplitRGBChannelsAlgorithm(JIPipeNodeInfo info) {
