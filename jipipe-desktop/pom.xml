@@ -4,11 +4,11 @@
     <parent>
         <artifactId>pom-jipipe</artifactId>
         <groupId>org.hkijena</groupId>
-        <version>4.1.0</version>
+        <version>4.1.0-SNAPSHOT</version>
     </parent>
 
     <artifactId>jipipe-desktop</artifactId>
-    <version>4.1.0</version>
+    <version>4.1.0-SNAPSHOT</version>
 
     <name>jipipe-desktop</name>
     <description>JIPipe Desktop App</description>
