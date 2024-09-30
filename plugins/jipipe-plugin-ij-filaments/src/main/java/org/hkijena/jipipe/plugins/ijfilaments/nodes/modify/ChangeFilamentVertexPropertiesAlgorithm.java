@@ -38,6 +38,7 @@ import org.hkijena.jipipe.plugins.ijfilaments.util.FilamentVertex;
 import org.hkijena.jipipe.plugins.ijfilaments.util.FilamentVertexVariablesInfo;
 import org.hkijena.jipipe.plugins.parameters.library.collections.ParameterCollectionList;
 import org.hkijena.jipipe.plugins.parameters.library.quantities.Quantity;
+import org.hkijena.jipipe.utils.ColorUtils;
 
 import java.util.List;
 import java.util.Map;
@@ -55,6 +56,7 @@ public class ChangeFilamentVertexPropertiesAlgorithm extends JIPipeSimpleIterati
     private JIPipeExpressionParameter centroidC = new JIPipeExpressionParameter("default");
     private JIPipeExpressionParameter centroidT = new JIPipeExpressionParameter("default");
     private JIPipeExpressionParameter radius = new JIPipeExpressionParameter("default");
+    private JIPipeExpressionParameter color = new JIPipeExpressionParameter("default");
     private JIPipeExpressionParameter value = new JIPipeExpressionParameter("default");
     private JIPipeExpressionParameter physicalSizeX = new JIPipeExpressionParameter("default");
     private JIPipeExpressionParameter physicalSizeY = new JIPipeExpressionParameter("default");
@@ -81,6 +83,7 @@ public class ChangeFilamentVertexPropertiesAlgorithm extends JIPipeSimpleIterati
         this.physicalSizeZ = new JIPipeExpressionParameter(other.physicalSizeZ);
         this.vertexMask = new VertexMaskParameter(other.vertexMask);
         this.metadata = new ParameterCollectionList(other.metadata);
+        this.color = new JIPipeExpressionParameter(other.color);
         registerSubParameter(vertexMask);
     }
 
@@ -125,6 +128,10 @@ public class ChangeFilamentVertexPropertiesAlgorithm extends JIPipeSimpleIterati
             // Radius
             variables.set("default", vertex.getRadius());
             vertex.setRadius(radius.evaluateToDouble(variables));
+
+            // Color
+            variables.set("default", ColorUtils.colorToHexString(vertex.getColor()));
+            vertex.setColor(radius.evaluateToColor(variables));
 
             // Intensity
             variables.set("default", vertex.getValue());
@@ -270,6 +277,24 @@ public class ChangeFilamentVertexPropertiesAlgorithm extends JIPipeSimpleIterati
 
     @JIPipeParameter("radius")
     public void setRadius(JIPipeExpressionParameter radius) {
+        this.radius = radius;
+    }
+
+    @SetJIPipeDocumentation(name = "Color", description = "The color of the vertex")
+    @JIPipeParameter("color")
+    @AddJIPipeExpressionParameterVariable(name = "Default value", key = "default", description = "The current value")
+    @AddJIPipeExpressionParameterVariable(fromClass = FilamentVertexVariablesInfo.class)
+    @AddJIPipeExpressionParameterVariable(fromClass = JIPipeTextAnnotationsExpressionParameterVariablesInfo.class)
+    @AddJIPipeExpressionParameterVariable(fromClass = JIPipeCustomExpressionVariablesParameterVariablesInfo.class)
+    @AddJIPipeExpressionParameterVariable(key = "metadata", name = "Vertex metadata", description = "A map containing the vertex metadata/properties (string keys, string values)")
+    @AddJIPipeExpressionParameterVariable(name = "metadata.<Metadata key>", description = "Vertex metadata/properties accessible via their string keys")
+    @JIPipeExpressionParameterSettings(hint = "per vertex")
+    public JIPipeExpressionParameter getColor() {
+        return radius;
+    }
+
+    @JIPipeParameter("color")
+    public void setColor(JIPipeExpressionParameter radius) {
         this.radius = radius;
     }
 
