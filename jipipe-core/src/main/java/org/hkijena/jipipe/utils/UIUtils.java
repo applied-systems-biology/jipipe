@@ -1259,6 +1259,8 @@ public class UIUtils {
         contentPanel.add(messagePanel, BorderLayout.NORTH);
 
         JDialog dialog = new JDialog();
+        addEscapeListener(dialog);
+        dialog.setIconImage(getJIPipeIcon128());
         dialog.setTitle(title);
         dialog.setContentPane(contentPanel);
         dialog.setModal(false);
