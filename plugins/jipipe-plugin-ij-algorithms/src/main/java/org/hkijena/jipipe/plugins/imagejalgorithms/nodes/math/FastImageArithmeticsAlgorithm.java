@@ -62,7 +62,7 @@ public class FastImageArithmeticsAlgorithm extends JIPipeIteratingAlgorithm {
 
     public static final Set<String> FUNCTIONS = Sets.newHashSet("MIN", "MAX", "SQR", "SQRT", "EXP", "LN", "LOG", "INVERT", "ABS", "AND", "OR", "XOR", "NOT", "GAMMA", "POW", "MOD",
             "SIN", "SINH", "ASIN", "COS", "COSH", "ACOS", "TAN", "TANH", "ATAN2", "FLOOR", "CEIL", "ROUND", "SIGNUM");
-    public static final Set<String> CONSTANTS = Sets.newHashSet("x", "y", "c", "z", "t", "pi", "e");
+    public static final Set<String> CONSTANTS = Sets.newHashSet("x", "y", "c", "z", "t", "pi", "e", "width", "height", "numZ", "numC", "numT");
     private final JIPipeExpressionCustomASTParser astParser = new JIPipeExpressionCustomASTParser();
     private OptionalBitDepth bitDepth = OptionalBitDepth.Grayscale32f;
     private JIPipeExpressionParameter expression = new JIPipeExpressionParameter("I1 + I2");
@@ -151,12 +151,23 @@ public class FastImageArithmeticsAlgorithm extends JIPipeIteratingAlgorithm {
         ImagePlus referenceImage = inputImagesMap.values().iterator().next();
         int finalTargetBitDepth = targetBitDepth;
         ImagePlus outputImage = ImageJUtils.generateForEachIndexedZCTSlice(referenceImage, (referenceIp, index) ->
-                applyAST(inputImagesMap, astNode, index, referenceImage.getWidth(), referenceImage.getHeight(), finalTargetBitDepth, iterationStep.getMergedTextAnnotations(), progressInfo), progressInfo);
+                applyAST(inputImagesMap,
+                        astNode,
+                        index,
+                        referenceImage.getWidth(),
+                        referenceImage.getHeight(),
+                        referenceImage.getNSlices(),
+                        referenceImage.getNChannels(),
+                        referenceImage.getNFrames(),
+                        finalTargetBitDepth,
+                        iterationStep.getMergedTextAnnotations(),
+                        progressInfo), progressInfo);
 
         iterationStep.addOutputData(getFirstOutputSlot(), new ImagePlusGreyscaleData(outputImage), progressInfo);
     }
 
-    private ImageProcessor applyAST(Map<String, ImagePlus> inputImagesMap, JIPipeExpressionCustomASTParser.ASTNode astNode, ImageSliceIndex index, int width, int height, int bitDepth, Map<String, JIPipeTextAnnotation> textAnnotationMap, JIPipeProgressInfo progressInfo) {
+    private ImageProcessor applyAST(Map<String, ImagePlus> inputImagesMap, JIPipeExpressionCustomASTParser.ASTNode astNode, ImageSliceIndex index, int width, int height, int numZ, int numC, int numT
+            , int bitDepth, Map<String, JIPipeTextAnnotation> textAnnotationMap, JIPipeProgressInfo progressInfo) {
         // Build a DAG
         DefaultDirectedGraph<JIPipeExpressionCustomASTParser.ASTNode, DefaultEdge> flowGraph = new DefaultDirectedGraph<>(DefaultEdge.class);
         addASTNodeToGraph(flowGraph, astNode, null);
@@ -201,6 +212,16 @@ public class FastImageArithmeticsAlgorithm extends JIPipeIteratingAlgorithm {
                         ip = Math.E;
                     } else if ("pi".equals(variableNode.getName())) {
                         ip = Math.PI;
+                    } else if ("width".equals(variableNode.getName())) {
+                        ip = width;
+                    } else if ("height".equals(variableNode.getName())) {
+                        ip = height;
+                    } else if ("numZ".equals(variableNode.getName())) {
+                        ip = numZ;
+                    } else if ("numC".equals(variableNode.getName())) {
+                        ip = numC;
+                    } else if ("numT".equals(variableNode.getName())) {
+                        ip = numT;
                     } else if (inputImagesMap.containsKey(variableNode.getName())) {
                         ip = ImageJUtils.getSliceZero(inputImagesMap.get(variableNode.getName()), index);
                     } else if (variableNode.getName().startsWith("custom.") && getDefaultCustomExpressionVariables().containsKey(variableNode.getName().substring("custom.".length()))) {
@@ -258,6 +279,9 @@ public class FastImageArithmeticsAlgorithm extends JIPipeIteratingAlgorithm {
 
     private Object applyFunction(List<Object> arguments, String functionName, int bitDepth) {
         switch (functionName) {
+            case "IF_ELSE":
+                checkArgumentCount(functionName, arguments, 3);
+                return applyIfElseFunction(arguments.get(0), arguments.get(1), arguments.get(2), bitDepth);
             case "MIN":
                 checkArgumentCount(functionName, arguments, 2);
                 return applyMinFunction(arguments.get(0), arguments.get(1), bitDepth);
@@ -415,6 +439,56 @@ public class FastImageArithmeticsAlgorithm extends JIPipeIteratingAlgorithm {
             return result;
         } else {
             throw new UnsupportedOperationException("Unsupported arguments: " + o1 + " " + o2);
+        }
+    }
+
+    private Object applyIfElseFunction(Object o1, Object o2, Object o3, int bitDepth) {
+        if (o1 instanceof Number && o2 instanceof Number) {
+            return ((Number) o1).doubleValue() > 0 ? o2 : o3;
+        } else if (o1 instanceof Number && o2 instanceof ImageProcessor) {
+            return ((Number) o1).doubleValue() > 0 ? o2 : o3;
+        } else if (o2 instanceof Number && o1 instanceof ImageProcessor && o3 instanceof Number) {
+            float o2_ = ((Number) o2).floatValue();
+            float o3_ = ((Number) o3).floatValue();
+            ImageProcessor o1_ = (ImageProcessor) o1;
+            ImageProcessor result = ImageJUtils.createProcessor(o1_.getWidth(), o1_.getHeight(), o1_.getBitDepth());
+            for (int i = 0; i < o1_.getPixelCount(); i++) {
+                setIpValueSafe(result, i, o1_.getf(i) > 0 ? o2_ : o3_, bitDepth);
+            }
+            return result;
+        }
+        else if (o2 instanceof Number && o1 instanceof ImageProcessor && o3 instanceof ImageProcessor) {
+            float o2_ = ((Number) o2).floatValue();
+            ImageProcessor o3_ = ((ImageProcessor) o3);
+            ImageProcessor o1_ = (ImageProcessor) o1;
+            ImageProcessor result = ImageJUtils.createProcessor(o1_.getWidth(), o1_.getHeight(), o1_.getBitDepth());
+            for (int i = 0; i < o1_.getPixelCount(); i++) {
+                setIpValueSafe(result, i, o1_.getf(i) > 0 ? o2_ : o3_.getf(i), bitDepth);
+            }
+            return result;
+        }
+        else if (o2 instanceof ImageProcessor && o1 instanceof ImageProcessor && o3 instanceof Number) {
+            ImageProcessor o2_ = (ImageProcessor) o2;
+            ImageProcessor o1_ = (ImageProcessor) o1;
+            float o3_ = ((Number) o3).floatValue();
+            ImageProcessor result = ImageJUtils.createProcessor(o1_.getWidth(), o1_.getHeight(), o1_.getBitDepth());
+            for (int i = 0; i < o1_.getPixelCount(); i++) {
+                setIpValueSafe(result, i, o1_.getf(i) > 0 ? o2_.getf(i) : o3_, bitDepth);
+            }
+            return result;
+        }
+        else if (o2 instanceof ImageProcessor && o1 instanceof ImageProcessor && o3 instanceof ImageProcessor) {
+            ImageProcessor o2_ = (ImageProcessor) o2;
+            ImageProcessor o1_ = (ImageProcessor) o1;
+            ImageProcessor o3_ = ((ImageProcessor) o3);
+            ImageProcessor result = ImageJUtils.createProcessor(o1_.getWidth(), o1_.getHeight(), o1_.getBitDepth());
+            for (int i = 0; i < o1_.getPixelCount(); i++) {
+                setIpValueSafe(result, i, o1_.getf(i) > 0 ? o2_.getf(i) : o3_.getf(i), bitDepth);
+            }
+            return result;
+        }
+        else {
+            throw new UnsupportedOperationException("Unsupported arguments: " + o1 + " " + o2 + " " + o3);
         }
     }
 
@@ -1327,6 +1401,7 @@ public class FastImageArithmeticsAlgorithm extends JIPipeIteratingAlgorithm {
             "<ul>" +
             "<li>Input slot names reference the pixel value at the current coordinate</li>" +
             "<li><code>x</code>, <code>y</code>, <code>z</code>, <code>c</code>, <code>t</code> will point to the current location of the pixel</li>" +
+            "<li><code>width</code>, <code>height</code>, <code>numZ</code>, <code>numC</code>, <code>numT</code> contains the size of the input image(s)</li>" +
             "<li>You can use annotations as variables (they will be converted to numerics)</li>" +
             "<li>You can use custom variables (prefix with <code>custom.</code>)</li>" +
             "<li>Numeric constants like <code>0.15</code> can be used</li>" +
@@ -1340,6 +1415,7 @@ public class FastImageArithmeticsAlgorithm extends JIPipeIteratingAlgorithm {
             "<li><code>[] > []</code> returns 255 (8-bit)/65535 (16-bit)/1 (32-bit) if the left operand is more than the right operand</li>" +
             "<li><code>[] <= []</code> returns 255 (8-bit)/65535 (16-bit)/1 (32-bit) if the left operand is less than or equal to the right operand</li>" +
             "<li><code>[] >= []</code> returns 255 (8-bit)/65535 (16-bit)/1 (32-bit) if the left operand is more than or equal to the right operand</li>" +
+            "<li><code>IF_ELSE([], [], [])</code> returns the second operand if the first operand is larger than zero. Otherwise returns the third operand</li>" +
             "<li><code>MIN([], [])</code> to calculate the minimum of the operands</li>" +
             "<li><code>MAX([], [])</code> to calculate the maximum of the operands</li>" +
             "<li><code>SQR([])</code> to calculate the square of the operand</li>" +
