@@ -101,18 +101,22 @@ public class Filaments3DGraphData extends SimpleGraph<FilamentVertex, FilamentEd
 
     private static void calculateNewVertexLocation(double factorX, double factorY, double factorZ, JIPipeExpressionParameter locationMergingFunction, Map<FilamentVertex, Point3d> locationMap, JIPipeExpressionVariablesMap variables, FilamentVertex vertex, Collection<FilamentVertex> group) {
         // Apply average where applicable
+        double x = vertex.getSpatialLocation().getX();
+        double y = vertex.getSpatialLocation().getY();
+        double z = vertex.getSpatialLocation().getZ();
         if (factorX > 0) {
             variables.set("values", group.stream().map(v -> locationMap.get(v).getX()).collect(Collectors.toList()));
-            vertex.getSpatialLocation().setX(locationMergingFunction.evaluateToInteger(variables));
+            x = locationMergingFunction.evaluateToInteger(variables);
         }
         if (factorY > 0) {
             variables.set("values", group.stream().map(v -> locationMap.get(v).getY()).collect(Collectors.toList()));
-            vertex.getSpatialLocation().setY(locationMergingFunction.evaluateToInteger(variables));
+            y = locationMergingFunction.evaluateToInteger(variables);
         }
         if (factorZ > 0) {
             variables.set("values", group.stream().map(v -> locationMap.get(v).getZ()).collect(Collectors.toList()));
-            vertex.getSpatialLocation().setZ(locationMergingFunction.evaluateToInteger(variables));
+            z = locationMergingFunction.evaluateToInteger(variables);
         }
+        vertex.setSpatialLocation(new Point3d(x, y, z));
     }
 
     private static Vector3d getFinalVertexLocationFor3DExport(boolean physicalSizes, Quantity.LengthUnit meshLengthUnit, boolean forceMeshLengthUnit, String consensusUnit, FilamentVertex vertex) {
@@ -568,6 +572,10 @@ public class Filaments3DGraphData extends SimpleGraph<FilamentVertex, FilamentEd
                             group2.add(item);
                         }
                     }
+
+                    // Workaround for IDK why
+                    group2.add(vertex);
+
                     calculateNewVertexLocation(factorX, factorY, factorZ, locationMergingFunction, locationMap, variables, vertex, group2);
                 } else {
                     calculateNewVertexLocation(factorX, factorY, factorZ, locationMergingFunction, locationMap, variables, vertex, group);
