@@ -23,6 +23,7 @@ import org.hkijena.jipipe.api.nodes.JIPipeNodeInfo;
 import org.hkijena.jipipe.api.nodes.algorithm.JIPipeSimpleIteratingAlgorithm;
 import org.hkijena.jipipe.api.nodes.iterationstep.JIPipeIterationContext;
 import org.hkijena.jipipe.api.nodes.iterationstep.JIPipeSingleIterationStep;
+import org.hkijena.jipipe.api.parameters.AbstractJIPipeParameterCollection;
 import org.hkijena.jipipe.api.parameters.JIPipeParameter;
 import org.hkijena.jipipe.plugins.expressions.AddJIPipeExpressionParameterVariable;
 import org.hkijena.jipipe.plugins.expressions.JIPipeExpressionParameter;
@@ -35,8 +36,10 @@ import org.hkijena.jipipe.plugins.ijfilaments.datatypes.Filaments3DGraphData;
 import org.hkijena.jipipe.plugins.ijfilaments.parameters.VertexMaskParameter;
 import org.hkijena.jipipe.plugins.ijfilaments.util.FilamentVertex;
 import org.hkijena.jipipe.plugins.ijfilaments.util.FilamentVertexVariablesInfo;
+import org.hkijena.jipipe.plugins.parameters.library.collections.ParameterCollectionList;
 import org.hkijena.jipipe.plugins.parameters.library.quantities.Quantity;
 
+import java.util.List;
 import java.util.Map;
 
 @SetJIPipeDocumentation(name = "Set filament vertex properties", description = "Allows to override various properties of the filament vertices")
@@ -56,6 +59,7 @@ public class ChangeFilamentVertexPropertiesAlgorithm extends JIPipeSimpleIterati
     private JIPipeExpressionParameter physicalSizeX = new JIPipeExpressionParameter("default");
     private JIPipeExpressionParameter physicalSizeY = new JIPipeExpressionParameter("default");
     private JIPipeExpressionParameter physicalSizeZ = new JIPipeExpressionParameter("default");
+    private ParameterCollectionList metadata = ParameterCollectionList.containingCollection(MetadataEntry.class);
 
     public ChangeFilamentVertexPropertiesAlgorithm(JIPipeNodeInfo info) {
         super(info);
@@ -76,6 +80,7 @@ public class ChangeFilamentVertexPropertiesAlgorithm extends JIPipeSimpleIterati
         this.physicalSizeY = new JIPipeExpressionParameter(other.physicalSizeY);
         this.physicalSizeZ = new JIPipeExpressionParameter(other.physicalSizeZ);
         this.vertexMask = new VertexMaskParameter(other.vertexMask);
+        this.metadata = new ParameterCollectionList(other.metadata);
         registerSubParameter(vertexMask);
     }
 
@@ -87,6 +92,8 @@ public class ChangeFilamentVertexPropertiesAlgorithm extends JIPipeSimpleIterati
         JIPipeExpressionVariablesMap variables = new JIPipeExpressionVariablesMap();
         variables.putAnnotations(iterationStep.getMergedTextAnnotations());
         getDefaultCustomExpressionVariables().writeToVariables(variables);
+
+        List<MetadataEntry> metadataEntries = metadata.mapToCollection(MetadataEntry.class);
 
         for (FilamentVertex vertex : vertexMask.filter(outputData, outputData.vertexSet(), variables)) {
             // Write variables
@@ -134,9 +141,27 @@ public class ChangeFilamentVertexPropertiesAlgorithm extends JIPipeSimpleIterati
             // Physical size Z
             variables.set("default", vertex.getPhysicalVoxelSizeZ().toString());
             vertex.setPhysicalVoxelSizeZ(Quantity.parse(physicalSizeZ.evaluateToString(variables)));
+
+            // Metadata
+            for (MetadataEntry metadataEntry : metadataEntries) {
+                vertex.setMetadata(metadataEntry.getKey(), metadataEntry.getValue().evaluateToString(variables));
+            }
         }
 
         iterationStep.addOutputData(getFirstOutputSlot(), outputData, progressInfo);
+    }
+
+    @SetJIPipeDocumentation(name = "Metadata", description = "Allows to set/override vertex metadata values")
+    @JIPipeParameter("metadata")
+    @AddJIPipeExpressionParameterVariable(fromClass = JIPipeTextAnnotationsExpressionParameterVariablesInfo.class)
+    @AddJIPipeExpressionParameterVariable(fromClass = FilamentVertexVariablesInfo.class)
+    public ParameterCollectionList getMetadata() {
+        return metadata;
+    }
+
+    @JIPipeParameter("metadata")
+    public void setMetadata(ParameterCollectionList metadata) {
+        this.metadata = metadata;
     }
 
     @SetJIPipeDocumentation(name = "Centroid X", description = "The X location of the centroid")
@@ -329,5 +354,34 @@ public class ChangeFilamentVertexPropertiesAlgorithm extends JIPipeSimpleIterati
     @Override
     public boolean isEnableDefaultCustomExpressionVariables() {
         return true;
+    }
+
+    public static class MetadataEntry extends AbstractJIPipeParameterCollection {
+        private String key;
+        private JIPipeExpressionParameter value;
+
+        @SetJIPipeDocumentation(name = "Key")
+        @JIPipeParameter("key")
+        public String getKey() {
+            return key;
+        }
+
+        @JIPipeParameter("key")
+        public void setKey(String key) {
+            this.key = key;
+        }
+
+        @JIPipeParameter("value")
+        @SetJIPipeDocumentation(name = "Value")
+        @AddJIPipeExpressionParameterVariable(fromClass = JIPipeTextAnnotationsExpressionParameterVariablesInfo.class)
+        @AddJIPipeExpressionParameterVariable(fromClass = FilamentVertexVariablesInfo.class)
+        public JIPipeExpressionParameter getValue() {
+            return value;
+        }
+
+        @JIPipeParameter("value")
+        public void setValue(JIPipeExpressionParameter value) {
+            this.value = value;
+        }
     }
 }
