@@ -43,11 +43,11 @@ import org.hkijena.jipipe.utils.ColorUtils;
 import java.util.List;
 import java.util.Map;
 
-@SetJIPipeDocumentation(name = "Set filament vertex properties", description = "Allows to override various properties of the filament vertices")
+@SetJIPipeDocumentation(name = "Set filament vertex properties (Expression)", description = "Allows to override various properties of the filament vertices using expressions")
 @ConfigureJIPipeNode(nodeTypeCategory = FilamentsNodeTypeCategory.class, menuPath = "Modify")
 @AddJIPipeInputSlot(value = Filaments3DGraphData.class, name = "Input", create = true)
 @AddJIPipeOutputSlot(value = Filaments3DGraphData.class, name = "Output", create = true)
-public class ChangeFilamentVertexPropertiesAlgorithm extends JIPipeSimpleIteratingAlgorithm {
+public class ChangeFilamentVertexPropertiesExpressionAlgorithm extends JIPipeSimpleIteratingAlgorithm {
 
     private final VertexMaskParameter vertexMask;
     private JIPipeExpressionParameter centroidX = new JIPipeExpressionParameter("default");
@@ -63,13 +63,13 @@ public class ChangeFilamentVertexPropertiesAlgorithm extends JIPipeSimpleIterati
     private JIPipeExpressionParameter physicalSizeZ = new JIPipeExpressionParameter("default");
     private ParameterCollectionList metadata = ParameterCollectionList.containingCollection(MetadataEntry.class);
 
-    public ChangeFilamentVertexPropertiesAlgorithm(JIPipeNodeInfo info) {
+    public ChangeFilamentVertexPropertiesExpressionAlgorithm(JIPipeNodeInfo info) {
         super(info);
         this.vertexMask = new VertexMaskParameter();
         registerSubParameter(vertexMask);
     }
 
-    public ChangeFilamentVertexPropertiesAlgorithm(ChangeFilamentVertexPropertiesAlgorithm other) {
+    public ChangeFilamentVertexPropertiesExpressionAlgorithm(ChangeFilamentVertexPropertiesExpressionAlgorithm other) {
         super(other);
         this.centroidX = new JIPipeExpressionParameter(other.centroidX);
         this.centroidY = new JIPipeExpressionParameter(other.centroidY);
@@ -290,12 +290,12 @@ public class ChangeFilamentVertexPropertiesAlgorithm extends JIPipeSimpleIterati
     @AddJIPipeExpressionParameterVariable(name = "metadata.<Metadata key>", description = "Vertex metadata/properties accessible via their string keys")
     @JIPipeExpressionParameterSettings(hint = "per vertex")
     public JIPipeExpressionParameter getColor() {
-        return radius;
+        return color;
     }
 
     @JIPipeParameter("color")
-    public void setColor(JIPipeExpressionParameter radius) {
-        this.radius = radius;
+    public void setColor(JIPipeExpressionParameter color) {
+        this.color = color;
     }
 
     @SetJIPipeDocumentation(name = "Value", description = "The value of the vertex")

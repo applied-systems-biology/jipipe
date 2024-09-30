@@ -23,6 +23,7 @@ import org.hkijena.jipipe.api.nodes.JIPipeNodeInfo;
 import org.hkijena.jipipe.api.nodes.algorithm.JIPipeSimpleIteratingAlgorithm;
 import org.hkijena.jipipe.api.nodes.iterationstep.JIPipeIterationContext;
 import org.hkijena.jipipe.api.nodes.iterationstep.JIPipeSingleIterationStep;
+import org.hkijena.jipipe.api.parameters.AbstractJIPipeParameterCollection;
 import org.hkijena.jipipe.api.parameters.JIPipeParameter;
 import org.hkijena.jipipe.plugins.expressions.AddJIPipeExpressionParameterVariable;
 import org.hkijena.jipipe.plugins.expressions.JIPipeExpressionParameter;
@@ -35,29 +36,34 @@ import org.hkijena.jipipe.plugins.ijfilaments.datatypes.Filaments3DGraphData;
 import org.hkijena.jipipe.plugins.ijfilaments.parameters.EdgeMaskParameter;
 import org.hkijena.jipipe.plugins.ijfilaments.util.FilamentEdge;
 import org.hkijena.jipipe.plugins.ijfilaments.util.FilamentEdgeVariablesInfo;
+import org.hkijena.jipipe.plugins.ijfilaments.util.FilamentVertexVariablesInfo;
+import org.hkijena.jipipe.plugins.parameters.library.collections.ParameterCollectionList;
 import org.hkijena.jipipe.utils.ColorUtils;
 
+import java.util.List;
 import java.util.Map;
 
-@SetJIPipeDocumentation(name = "Set filament edge properties", description = "Allows to override various properties of the filament edges")
+@SetJIPipeDocumentation(name = "Set filament edge properties (Expression)", description = "Allows to override various properties of the filament edges using expressions")
 @ConfigureJIPipeNode(nodeTypeCategory = FilamentsNodeTypeCategory.class, menuPath = "Modify")
 @AddJIPipeInputSlot(value = Filaments3DGraphData.class, name = "Input", create = true)
 @AddJIPipeOutputSlot(value = Filaments3DGraphData.class, name = "Output", create = true)
-public class ChangeFilamentEdgePropertiesAlgorithm extends JIPipeSimpleIteratingAlgorithm {
+public class ChangeFilamentEdgePropertiesExpressionAlgorithm extends JIPipeSimpleIteratingAlgorithm {
 
     private final EdgeMaskParameter edgeMask;
     private JIPipeExpressionParameter color = new JIPipeExpressionParameter("default");
+    private ParameterCollectionList metadata = ParameterCollectionList.containingCollection(MetadataEntry.class);
 
-    public ChangeFilamentEdgePropertiesAlgorithm(JIPipeNodeInfo info) {
+    public ChangeFilamentEdgePropertiesExpressionAlgorithm(JIPipeNodeInfo info) {
         super(info);
         this.edgeMask = new EdgeMaskParameter();
         registerSubParameter(edgeMask);
     }
 
-    public ChangeFilamentEdgePropertiesAlgorithm(ChangeFilamentEdgePropertiesAlgorithm other) {
+    public ChangeFilamentEdgePropertiesExpressionAlgorithm(ChangeFilamentEdgePropertiesExpressionAlgorithm other) {
         super(other);
         this.color = new JIPipeExpressionParameter(other.color);
         this.edgeMask = new EdgeMaskParameter(other.edgeMask);
+        this.metadata = new ParameterCollectionList(other.metadata);
         registerSubParameter(edgeMask);
     }
 
@@ -70,6 +76,8 @@ public class ChangeFilamentEdgePropertiesAlgorithm extends JIPipeSimpleIterating
         variables.putAnnotations(iterationStep.getMergedTextAnnotations());
         getDefaultCustomExpressionVariables().writeToVariables(variables);
 
+        List<MetadataEntry> metadataEntries = metadata.mapToCollection(MetadataEntry.class);
+
         for (FilamentEdge edge : edgeMask.filter(outputData, outputData.edgeSet(), variables)) {
             // Write variables
             for (Map.Entry<String, String> entry : edge.getMetadata().entrySet()) {
@@ -80,6 +88,11 @@ public class ChangeFilamentEdgePropertiesAlgorithm extends JIPipeSimpleIterating
             // Color
             variables.set("default", ColorUtils.colorToHexString(edge.getColor()));
             edge.setColor(color.evaluateToColor(variables));
+
+            // Metadata
+            for (MetadataEntry metadataEntry : metadataEntries) {
+                edge.setMetadata(metadataEntry.getKey(), metadataEntry.getValue().evaluateToString(variables));
+            }
         }
 
         iterationStep.addOutputData(getFirstOutputSlot(), outputData, progressInfo);
@@ -103,6 +116,20 @@ public class ChangeFilamentEdgePropertiesAlgorithm extends JIPipeSimpleIterating
         this.color = color;
     }
 
+    @SetJIPipeDocumentation(name = "Metadata", description = "Allows to set/override vertex metadata values")
+    @JIPipeParameter("metadata")
+    @AddJIPipeExpressionParameterVariable(fromClass = FilamentEdgeVariablesInfo.class)
+    @AddJIPipeExpressionParameterVariable(fromClass = JIPipeTextAnnotationsExpressionParameterVariablesInfo.class)
+    @AddJIPipeExpressionParameterVariable(fromClass = JIPipeCustomExpressionVariablesParameterVariablesInfo.class)
+    public ParameterCollectionList getMetadata() {
+        return metadata;
+    }
+
+    @JIPipeParameter("metadata")
+    public void setMetadata(ParameterCollectionList metadata) {
+        this.metadata = metadata;
+    }
+
     @SetJIPipeDocumentation(name = "Edge mask", description = "Allows to only target a specific set of edges.")
     @JIPipeParameter("edge-filter")
     public EdgeMaskParameter getEdgeMask() {
@@ -112,5 +139,35 @@ public class ChangeFilamentEdgePropertiesAlgorithm extends JIPipeSimpleIterating
     @Override
     public boolean isEnableDefaultCustomExpressionVariables() {
         return true;
+    }
+
+    public static class MetadataEntry extends AbstractJIPipeParameterCollection {
+        private String key;
+        private JIPipeExpressionParameter value;
+
+        @SetJIPipeDocumentation(name = "Key")
+        @JIPipeParameter("key")
+        public String getKey() {
+            return key;
+        }
+
+        @JIPipeParameter("key")
+        public void setKey(String key) {
+            this.key = key;
+        }
+
+        @JIPipeParameter("value")
+        @SetJIPipeDocumentation(name = "Value")
+        @AddJIPipeExpressionParameterVariable(fromClass = FilamentEdgeVariablesInfo.class)
+        @AddJIPipeExpressionParameterVariable(fromClass = JIPipeTextAnnotationsExpressionParameterVariablesInfo.class)
+        @AddJIPipeExpressionParameterVariable(fromClass = JIPipeCustomExpressionVariablesParameterVariablesInfo.class)
+        public JIPipeExpressionParameter getValue() {
+            return value;
+        }
+
+        @JIPipeParameter("value")
+        public void setValue(JIPipeExpressionParameter value) {
+            this.value = value;
+        }
     }
 }

@@ -170,8 +170,10 @@ public class FilamentsPlugin extends JIPipePrepackagedDefaultJavaPlugin {
         registerNodeType("filaments-skeleton-to-filaments-2d", SkeletonToFilaments2DAlgorithm.class, UIUtils.getIconURLFromResources("actions/path-mode-spiro.png"));
         registerNodeType("filaments-skeleton-to-filaments-3d", SkeletonToFilaments3DAlgorithm.class, UIUtils.getIconURLFromResources("actions/path-mode-spiro.png"));
 
-        registerNodeType("filaments-set-vertex-properties", ChangeFilamentVertexPropertiesAlgorithm.class, UIUtils.getIconURLFromResources("actions/stock_edit.png"));
-        registerNodeType("filaments-set-edge-properties", ChangeFilamentEdgePropertiesAlgorithm.class, UIUtils.getIconURLFromResources("actions/stock_edit.png"));
+        registerNodeType("filaments-set-vertex-properties", ChangeFilamentVertexPropertiesExpressionAlgorithm.class, UIUtils.getIconURLFromResources("actions/stock_edit.png"));
+        registerNodeType("filaments-set-edge-properties", ChangeFilamentEdgePropertiesExpressionAlgorithm.class, UIUtils.getIconURLFromResources("actions/stock_edit.png"));
+        registerNodeType("filaments-set-vertex-properties-2", ChangeFilamentVertexPropertiesManuallyAlgorithm.class, UIUtils.getIconURLFromResources("actions/stock_edit.png"));
+        registerNodeType("filaments-set-edge-properties-2", ChangeFilamentEdgePropertiesManuallyAlgorithm.class, UIUtils.getIconURLFromResources("actions/stock_edit.png"));
         registerNodeType("filaments-flatten", FlattenFilamentsAlgorithm.class, UIUtils.getIconURLFromResources("actions/layer-flatten-z.png"));
 
         registerNodeType("filaments-filter-vertices-by-properties", FilterFilamentVerticesByProperties.class, UIUtils.getIconURLFromResources("actions/filter.png"));
