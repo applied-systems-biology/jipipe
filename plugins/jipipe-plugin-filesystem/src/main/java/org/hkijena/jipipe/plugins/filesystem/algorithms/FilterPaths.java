@@ -104,7 +104,7 @@ public class FilterPaths extends JIPipeSimpleIteratingAlgorithm {
     }
 
     @JIPipeParameter("filters")
-    @SetJIPipeDocumentation(name = "Filters", description = "Filter expression that is used to filter the paths. Click [X] to see all available variables. " +
+    @SetJIPipeDocumentation(name = "Keep path if ...", description = "Filter expression that is used to filter the paths. Click [X] to see all available variables. " +
             "An example for an expression would be '\".tif\" IN name', which would test if there is '.tif' inside the file name. " +
             "Annotations are available as variables.")
     public PathQueryExpression getFilters() {

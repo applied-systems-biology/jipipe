@@ -108,7 +108,7 @@ public class FilterRoi3DListsAlgorithm extends JIPipeSimpleIteratingAlgorithm {
         this.includeAnnotations = includeAnnotations;
     }
 
-    @SetJIPipeDocumentation(name = "Filter", description = "The filter expression used to test ROI lists. Must return a boolean.")
+    @SetJIPipeDocumentation(name = "Keep 3D ROI list if ...", description = "The filter expression used to test ROI lists. Must return a boolean.")
     @JIPipeParameter("filter")
     @JIPipeExpressionParameterSettings(variableSource = VariablesInfo.class, hint = "per ROI list")
     public JIPipeExpressionParameter getFilter() {

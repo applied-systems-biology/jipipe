@@ -61,7 +61,7 @@ import java.util.stream.Collectors;
 public class FastImageArithmeticsAlgorithm extends JIPipeIteratingAlgorithm {
 
     public static final Set<String> FUNCTIONS = Sets.newHashSet("MIN", "MAX", "SQR", "SQRT", "EXP", "LN", "LOG", "INVERT", "ABS", "AND", "OR", "XOR", "NOT", "GAMMA", "POW", "MOD",
-            "SIN", "SINH", "ASIN", "COS", "COSH", "ACOS", "TAN", "TANH", "ATAN2", "FLOOR", "CEIL", "ROUND", "SIGNUM");
+            "SIN", "SINH", "ASIN", "COS", "COSH", "ACOS", "TAN", "TANH", "ATAN2", "FLOOR", "CEIL", "ROUND", "SIGNUM", "IF_ELSE");
     public static final Set<String> CONSTANTS = Sets.newHashSet("x", "y", "c", "z", "t", "pi", "e", "width", "height", "numZ", "numC", "numT");
     private final JIPipeExpressionCustomASTParser astParser = new JIPipeExpressionCustomASTParser();
     private OptionalBitDepth bitDepth = OptionalBitDepth.Grayscale32f;
@@ -252,7 +252,12 @@ public class FastImageArithmeticsAlgorithm extends JIPipeIteratingAlgorithm {
                     JIPipeExpressionCustomASTParser.FunctionNode functionNode = (JIPipeExpressionCustomASTParser.FunctionNode) nextNode;
 
                     // Calculate output
-                    Object ip = applyFunction(storedData.keySet().stream().map(storedData::get).collect(Collectors.toList()), functionNode.getFunctionName(), bitDepth);
+                    List<Object> arguments = new ArrayList<>();
+                    for (JIPipeExpressionCustomASTParser.ASTNode node : functionNode.getArguments()) {
+                        arguments.add(storedData.get(node));
+                    }
+                    // storedData.keySet().stream().map(storedData::get).collect(Collectors.toList())
+                    Object ip = applyFunction(arguments, functionNode.getFunctionName(), bitDepth);
                     storedData.put(functionNode, ip);
 
                     // Clear inputs
@@ -443,11 +448,12 @@ public class FastImageArithmeticsAlgorithm extends JIPipeIteratingAlgorithm {
     }
 
     private Object applyIfElseFunction(Object o1, Object o2, Object o3, int bitDepth) {
+
         if (o1 instanceof Number && o2 instanceof Number) {
             return ((Number) o1).doubleValue() > 0 ? o2 : o3;
         } else if (o1 instanceof Number && o2 instanceof ImageProcessor) {
             return ((Number) o1).doubleValue() > 0 ? o2 : o3;
-        } else if (o2 instanceof Number && o1 instanceof ImageProcessor && o3 instanceof Number) {
+        } else if (o1 instanceof ImageProcessor && o2 instanceof Number && o3 instanceof Number) {
             float o2_ = ((Number) o2).floatValue();
             float o3_ = ((Number) o3).floatValue();
             ImageProcessor o1_ = (ImageProcessor) o1;
@@ -457,7 +463,7 @@ public class FastImageArithmeticsAlgorithm extends JIPipeIteratingAlgorithm {
             }
             return result;
         }
-        else if (o2 instanceof Number && o1 instanceof ImageProcessor && o3 instanceof ImageProcessor) {
+        else if (o1 instanceof ImageProcessor && o2 instanceof Number && o3 instanceof ImageProcessor) {
             float o2_ = ((Number) o2).floatValue();
             ImageProcessor o3_ = ((ImageProcessor) o3);
             ImageProcessor o1_ = (ImageProcessor) o1;
@@ -467,7 +473,7 @@ public class FastImageArithmeticsAlgorithm extends JIPipeIteratingAlgorithm {
             }
             return result;
         }
-        else if (o2 instanceof ImageProcessor && o1 instanceof ImageProcessor && o3 instanceof Number) {
+        else if (o1 instanceof ImageProcessor && o2 instanceof ImageProcessor && o3 instanceof Number) {
             ImageProcessor o2_ = (ImageProcessor) o2;
             ImageProcessor o1_ = (ImageProcessor) o1;
             float o3_ = ((Number) o3).floatValue();
@@ -477,7 +483,7 @@ public class FastImageArithmeticsAlgorithm extends JIPipeIteratingAlgorithm {
             }
             return result;
         }
-        else if (o2 instanceof ImageProcessor && o1 instanceof ImageProcessor && o3 instanceof ImageProcessor) {
+        else if (o1 instanceof ImageProcessor && o2 instanceof ImageProcessor && o3 instanceof ImageProcessor) {
             ImageProcessor o2_ = (ImageProcessor) o2;
             ImageProcessor o1_ = (ImageProcessor) o1;
             ImageProcessor o3_ = ((ImageProcessor) o3);

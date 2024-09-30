@@ -81,7 +81,7 @@ public class FilterLabelsByExpression3DAlgorithm extends JIPipeSimpleIteratingAl
         iterationStep.addOutputData(getFirstOutputSlot(), new ImagePlus3DGreyscaleData(image), progressInfo);
     }
 
-    @SetJIPipeDocumentation(name = "Filter expression", description = "This filter expression determines which labels are kept. Annotations are available as variables.")
+    @SetJIPipeDocumentation(name = "Keep label if ...", description = "This filter expression determines which labels are kept. Annotations are available as variables.")
     @JIPipeExpressionParameterSettings(variableSource = FilterLabelsByExpression2DAlgorithm.VariablesInfo.class, hint = "per label")
     @JIPipeParameter("expression")
     public JIPipeExpressionParameter getExpression() {
