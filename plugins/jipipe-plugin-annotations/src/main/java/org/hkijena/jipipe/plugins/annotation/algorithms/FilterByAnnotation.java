@@ -39,6 +39,7 @@ import java.util.List;
 public class FilterByAnnotation extends JIPipeAlgorithm {
 
     private AnnotationFilterExpression filter = new AnnotationFilterExpression();
+    private boolean enableFilter = true;
 
     /**
      * @param info algorithm info
@@ -55,6 +56,18 @@ public class FilterByAnnotation extends JIPipeAlgorithm {
     public FilterByAnnotation(FilterByAnnotation other) {
         super(other);
         this.filter = new AnnotationFilterExpression(other.filter);
+        this.enableFilter = other.enableFilter;
+    }
+
+    @SetJIPipeDocumentation(name = "Enable filter", description = "Determines if the filter is enabled")
+    @JIPipeParameter(value = "enable-filter", important = true)
+    public boolean isEnableFilter() {
+        return enableFilter;
+    }
+
+    @JIPipeParameter("enable-filter")
+    public void setEnableFilter(boolean enableFilter) {
+        this.enableFilter = enableFilter;
     }
 
     @Override
@@ -72,7 +85,7 @@ public class FilterByAnnotation extends JIPipeAlgorithm {
             AnnotationFilterExpression expression = filter;
             JIPipeExpressionVariablesMap variables = new JIPipeExpressionVariablesMap();
             getDefaultCustomExpressionVariables().writeToVariables(variables);
-            if (expression.test(annotations, dataString, variables)) {
+            if (!enableFilter || expression.test(annotations, dataString, variables)) {
                 getFirstOutputSlot().addData(inputSlot.getData(row, JIPipeData.class, progressInfo),
                         annotations,
                         JIPipeTextAnnotationMergeMode.Merge,

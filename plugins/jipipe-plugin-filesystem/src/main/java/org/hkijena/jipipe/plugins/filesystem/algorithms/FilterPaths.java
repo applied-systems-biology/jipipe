@@ -52,6 +52,7 @@ public class FilterPaths extends JIPipeSimpleIteratingAlgorithm {
     private boolean outputFiles = true;
     private boolean outputFolders = true;
     private boolean outputNonExisting = true;
+    private boolean enableFilter = true;
 
     /**
      * Instantiates the algorithm
@@ -73,6 +74,18 @@ public class FilterPaths extends JIPipeSimpleIteratingAlgorithm {
         this.outputFolders = other.outputFolders;
         this.outputNonExisting = other.outputNonExisting;
         this.filters = new PathQueryExpression(other.filters);
+        this.enableFilter = other.enableFilter;
+    }
+
+    @SetJIPipeDocumentation(name = "Enable filter", description = "Determines if the filter is enabled")
+    @JIPipeParameter(value = "enable-filter", important = true)
+    public boolean isEnableFilter() {
+        return enableFilter;
+    }
+
+    @JIPipeParameter("enable-filter")
+    public void setEnableFilter(boolean enableFilter) {
+        this.enableFilter = enableFilter;
     }
 
     @Override
@@ -86,9 +99,10 @@ public class FilterPaths extends JIPipeSimpleIteratingAlgorithm {
         PathData inputData = iterationStep.getInputData(getFirstInputSlot(), PathData.class, progressInfo);
         JIPipeOutputDataSlot firstOutputSlot = getFirstOutputSlot();
         Path inputPath = inputData.toPath();
-        if (!canOutput(inputPath))
+        if (!canOutput(inputPath)) {
             return;
-        if (filters.test(inputPath, expressionVariables)) {
+        }
+        if (!enableFilter || filters.test(inputPath, expressionVariables)) {
             iterationStep.addOutputData(firstOutputSlot, inputData, progressInfo);
         }
     }
