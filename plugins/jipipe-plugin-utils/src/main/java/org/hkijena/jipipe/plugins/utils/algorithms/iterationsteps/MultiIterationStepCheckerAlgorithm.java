@@ -48,6 +48,7 @@ import java.util.List;
 public class MultiIterationStepCheckerAlgorithm extends JIPipeMergingAlgorithm {
     private boolean keepOriginalAnnotations = true;
     private JIPipeExpressionParameter filter = new JIPipeExpressionParameter();
+    private boolean enableFilter = true;
     private OptionalTextAnnotationNameParameter iterationStepIndexAnnotation = new OptionalTextAnnotationNameParameter("Iteration step", false);
 
     public MultiIterationStepCheckerAlgorithm(JIPipeNodeInfo info) {
@@ -59,11 +60,23 @@ public class MultiIterationStepCheckerAlgorithm extends JIPipeMergingAlgorithm {
         this.keepOriginalAnnotations = other.keepOriginalAnnotations;
         this.iterationStepIndexAnnotation = new OptionalTextAnnotationNameParameter(other.iterationStepIndexAnnotation);
         this.filter = new JIPipeExpressionParameter(other.filter);
+        this.enableFilter = other.enableFilter;
+    }
+
+    @SetJIPipeDocumentation(name = "Enable filter", description = "Determines if the filter is enabled")
+    @JIPipeParameter(value = "enable-filter", important = true)
+    public boolean isEnableFilter() {
+        return enableFilter;
+    }
+
+    @JIPipeParameter("enable-filter")
+    public void setEnableFilter(boolean enableFilter) {
+        this.enableFilter = enableFilter;
     }
 
     @Override
     protected void runIteration(JIPipeMultiIterationStep iterationStep, JIPipeIterationContext iterationContext, JIPipeGraphNodeRunContext runContext, JIPipeProgressInfo progressInfo) {
-        {
+        if(enableFilter) {
             JIPipeExpressionVariablesMap variables = new JIPipeExpressionVariablesMap();
             variables.putAnnotations(iterationStep.getMergedTextAnnotations());
             variables.set("iteration_step_index", iterationContext.getCurrentIterationStepIndex());
