@@ -121,19 +121,19 @@ public class VectorDesktopParameterEditorUI extends JIPipeDesktopParameterEditor
         String sz = StringUtils.nullToEmpty(zEditor.getText()).replace(',', '.').replace(" ", "");
 
         boolean success = true;
-        if (!NumberUtils.isCreatable(sx)) {
+        if (!StringUtils.isValidDouble(sx)) {
             success = false;
             xEditor.setBorder(UIUtils.createControlErrorBorder());
         } else {
             xEditor.setBorder(UIUtils.createControlBorder());
         }
-        if (!NumberUtils.isCreatable(sy)) {
+        if (!StringUtils.isValidDouble(sy)) {
             success = false;
             yEditor.setBorder(UIUtils.createControlErrorBorder());
         } else {
             yEditor.setBorder(UIUtils.createControlBorder());
         }
-        if (!NumberUtils.isCreatable(sz)) {
+        if (!StringUtils.isValidDouble(sz)) {
             success = false;
             zEditor.setBorder(UIUtils.createControlErrorBorder());
         } else {
@@ -142,13 +142,13 @@ public class VectorDesktopParameterEditorUI extends JIPipeDesktopParameterEditor
 
         if (success) {
             if (getParameterFieldClass() == Vector2dParameter.class) {
-                setParameter(new Vector2dParameter(NumberUtils.createDouble(sx), NumberUtils.createDouble(sy)), false);
+                setParameter(new Vector2dParameter(StringUtils.parseDouble(sx), StringUtils.parseDouble(sy)), false);
             } else if (getParameterFieldClass() == Vector2iParameter.class) {
-                setParameter(new Vector2iParameter(NumberUtils.createDouble(sx).intValue(), NumberUtils.createDouble(sy).intValue()), false);
+                setParameter(new Vector2iParameter(StringUtils.parseInt(sx), StringUtils.parseInt(sy)), false);
             } else if (getParameterFieldClass() == Vector3dParameter.class) {
-                setParameter(new Vector3dParameter(NumberUtils.createDouble(sx), NumberUtils.createDouble(sy), NumberUtils.createDouble(sz)), false);
+                setParameter(new Vector3dParameter(StringUtils.parseDouble(sx), StringUtils.parseDouble(sy), StringUtils.parseDouble(sz)), false);
             } else if (getParameterFieldClass() == Vector3iParameter.class) {
-                setParameter(new Vector3iParameter(NumberUtils.createDouble(sx).intValue(), NumberUtils.createDouble(sy).intValue(), NumberUtils.createDouble(sz).intValue()), false);
+                setParameter(new Vector3iParameter(StringUtils.parseInt(sx), StringUtils.parseInt(sy), StringUtils.parseInt(sz)), false);
             }
         }
     }

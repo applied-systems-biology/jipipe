@@ -92,7 +92,7 @@ public class ChangeFilamentVertexPropertiesManuallyAlgorithm extends JIPipeSimpl
         variables.putAnnotations(iterationStep.getMergedTextAnnotations());
         getDefaultCustomExpressionVariables().writeToVariables(variables);
 
-        for (FilamentVertex vertex : vertexMask.filter(outputData, outputData.vertexSet(), variables)) {
+        for (FilamentVertex vertex : VertexMaskParameter.filter(vertexMask.getFilter(), outputData, outputData.vertexSet(), variables)) {
             // Centroid X
             if(centroidX.isEnabled()) {
                 vertex.getSpatialLocation().setX(centroidX.getContent());

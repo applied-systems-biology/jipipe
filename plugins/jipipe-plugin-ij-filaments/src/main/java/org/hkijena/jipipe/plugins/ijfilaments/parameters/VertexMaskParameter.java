@@ -56,7 +56,10 @@ public class VertexMaskParameter extends AbstractJIPipeParameterCollection {
         this.filter = filter;
     }
 
-    public Set<FilamentVertex> filter(Filaments3DGraphData graph, Set<FilamentVertex> vertexSet, JIPipeExpressionVariablesMap variables) {
+    public static Set<FilamentVertex> filter(OptionalJIPipeExpressionParameter filter, Filaments3DGraphData graph, Set<FilamentVertex> vertexSet, JIPipeExpressionVariablesMap variables) {
+        if(vertexSet == null) {
+            vertexSet = graph.vertexSet();
+        }
         if (filter.isEnabled()) {
             Set<FilamentVertex> matched = new HashSet<>();
             for (FilamentVertex vertex : vertexSet) {

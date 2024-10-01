@@ -61,7 +61,7 @@ public class RemoveVertexValueBackupsAlgorithm extends JIPipeSimpleIteratingAlgo
         Filaments3DGraphData filaments = new Filaments3DGraphData(iterationStep.getInputData("Filaments", Filaments3DGraphData.class, progressInfo));
         JIPipeExpressionVariablesMap variablesMap = new JIPipeExpressionVariablesMap();
         variablesMap.putAnnotations(iterationStep.getMergedTextAnnotations());
-        for (FilamentVertex vertex : vertexMask.filter(filaments, filaments.vertexSet(), variablesMap)) {
+        for (FilamentVertex vertex : VertexMaskParameter.filter(vertexMask.getFilter(),filaments, filaments.vertexSet(), variablesMap)) {
             for (String key : ImmutableList.copyOf(vertex.getValueBackups().keySet())) {
                 variablesMap.put("name", key);
                 variablesMap.put("value", vertex.getValueBackups().get(key));

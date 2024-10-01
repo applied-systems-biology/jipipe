@@ -26,12 +26,18 @@ import org.hkijena.jipipe.api.nodes.algorithm.JIPipeIteratingAlgorithm;
 import org.hkijena.jipipe.api.nodes.iterationstep.JIPipeIterationContext;
 import org.hkijena.jipipe.api.nodes.iterationstep.JIPipeSingleIterationStep;
 import org.hkijena.jipipe.api.parameters.JIPipeParameter;
+import org.hkijena.jipipe.plugins.expressions.AddJIPipeExpressionParameterVariable;
+import org.hkijena.jipipe.plugins.expressions.JIPipeExpressionParameterSettings;
 import org.hkijena.jipipe.plugins.expressions.JIPipeExpressionVariablesMap;
+import org.hkijena.jipipe.plugins.expressions.OptionalJIPipeExpressionParameter;
+import org.hkijena.jipipe.plugins.expressions.custom.JIPipeCustomExpressionVariablesParameterVariablesInfo;
+import org.hkijena.jipipe.plugins.expressions.variables.JIPipeTextAnnotationsExpressionParameterVariablesInfo;
 import org.hkijena.jipipe.plugins.ijfilaments.FilamentsNodeTypeCategory;
 import org.hkijena.jipipe.plugins.ijfilaments.datatypes.Filaments3DGraphData;
 import org.hkijena.jipipe.plugins.ijfilaments.parameters.VertexMaskParameter;
 import org.hkijena.jipipe.plugins.ijfilaments.util.FilamentEdge;
 import org.hkijena.jipipe.plugins.ijfilaments.util.FilamentVertex;
+import org.hkijena.jipipe.plugins.ijfilaments.util.FilamentVertexVariablesInfo;
 import org.hkijena.jipipe.plugins.imagejdatatypes.datatypes.greyscale.ImagePlusGreyscaleMaskData;
 import org.hkijena.jipipe.plugins.imagejdatatypes.util.ImageJUtils;
 import org.hkijena.jipipe.plugins.parameters.library.colors.OptionalColorParameter;
@@ -55,7 +61,8 @@ import java.util.stream.Collectors;
 @AddJIPipeOutputSlot(value = Filaments3DGraphData.class, name = "Output", create = true)
 @AddJIPipeInputSlot(value = ImagePlusGreyscaleMaskData.class, name = "Mask", optional = true, create = true)
 public class ConnectVerticesFastAlgorithm extends JIPipeIteratingAlgorithm {
-    private final VertexMaskParameter vertexMask;
+    private OptionalJIPipeExpressionParameter sourceVertexFilter = new OptionalJIPipeExpressionParameter(false, "");
+    private OptionalJIPipeExpressionParameter targetVertexFilter = new OptionalJIPipeExpressionParameter(false, "");
     private boolean connectAcrossC = false;
     private boolean connectAcrossT = false;
     private boolean enable3D = true;
@@ -67,11 +74,11 @@ public class ConnectVerticesFastAlgorithm extends JIPipeIteratingAlgorithm {
     private Vector2iParameter candidateVertexDegreeLimit = new Vector2iParameter(0, 1);
     private Vector2dParameter candidateVertexValueLimit = new Vector2dParameter(Double.NEGATIVE_INFINITY, Double.POSITIVE_INFINITY);
     private SortOrder limitConnectionsLengthSortOrder = SortOrder.Ascending;
+    private boolean ignoreLimitConnectionsForSource = false;
+    private boolean isIgnoreLimitConnectionsForTarget = false;
 
     public ConnectVerticesFastAlgorithm(JIPipeNodeInfo info) {
         super(info);
-        this.vertexMask = new VertexMaskParameter();
-        registerSubParameter(vertexMask);
     }
 
     public ConnectVerticesFastAlgorithm(ConnectVerticesFastAlgorithm other) {
@@ -83,12 +90,36 @@ public class ConnectVerticesFastAlgorithm extends JIPipeIteratingAlgorithm {
         this.newEdgeColor = new OptionalColorParameter(other.newEdgeColor);
         this.enforceEdgesWithinMask = other.enforceEdgesWithinMask;
         this.limitConnections = new OptionalIntegerParameter(other.limitConnections);
-        this.vertexMask = new VertexMaskParameter(other.vertexMask);
         this.lengthRange = new Vector2dParameter(other.lengthRange);
         this.candidateVertexDegreeLimit = new Vector2iParameter(other.candidateVertexDegreeLimit);
         this.candidateVertexValueLimit = new Vector2dParameter(other.candidateVertexValueLimit);
         this.limitConnectionsLengthSortOrder = other.limitConnectionsLengthSortOrder;
-        registerSubParameter(vertexMask);
+        this.sourceVertexFilter = new OptionalJIPipeExpressionParameter(other.sourceVertexFilter);
+        this.targetVertexFilter = new OptionalJIPipeExpressionParameter(other.targetVertexFilter);
+        this.ignoreLimitConnectionsForSource = other.ignoreLimitConnectionsForSource;
+        this.isIgnoreLimitConnectionsForTarget = other.isIgnoreLimitConnectionsForTarget;
+    }
+
+    @SetJIPipeDocumentation(name = "Bypass connection limit for sources", description = "If enabled, the 'Limit connections' parameter does not apply to source vertices.")
+    @JIPipeParameter("ignore-limit-connections-for-source")
+    public boolean isIgnoreLimitConnectionsForSource() {
+        return ignoreLimitConnectionsForSource;
+    }
+
+    @JIPipeParameter("ignore-limit-connections-for-source")
+    public void setIgnoreLimitConnectionsForSource(boolean ignoreLimitConnectionsForSource) {
+        this.ignoreLimitConnectionsForSource = ignoreLimitConnectionsForSource;
+    }
+
+    @SetJIPipeDocumentation(name = "Bypass connection limit for targets", description = "If enabled, the 'Limit connections' parameter does not apply to target vertices.")
+    @JIPipeParameter("ignore-limit-connections-for-target")
+    public boolean isIgnoreLimitConnectionsForTarget() {
+        return isIgnoreLimitConnectionsForTarget;
+    }
+
+    @JIPipeParameter("ignore-limit-connections-for-target")
+    public void setIgnoreLimitConnectionsForTarget(boolean ignoreLimitConnectionsForTarget) {
+        isIgnoreLimitConnectionsForTarget = ignoreLimitConnectionsForTarget;
     }
 
     @SetJIPipeDocumentation(name = "Candidate vertex value limit", description = "Limits candidate vertices by their value")
@@ -126,7 +157,7 @@ public class ConnectVerticesFastAlgorithm extends JIPipeIteratingAlgorithm {
         this.limitConnectionsLengthSortOrder = limitConnectionsLengthSortOrder;
     }
 
-    @SetJIPipeDocumentation(name = "Limit created edges", description = "If enabled, limit the number of created edges per vertex. Edges are sorted by their length.")
+    @SetJIPipeDocumentation(name = "Limit created edges (source/target)", description = "If enabled, limit the number of created edges per vertex. Edges are sorted by their length.")
     @JIPipeParameter("limit-connections")
     public OptionalIntegerParameter getLimitConnections() {
         return limitConnections;
@@ -183,10 +214,34 @@ public class ConnectVerticesFastAlgorithm extends JIPipeIteratingAlgorithm {
         this.newEdgeColor = newEdgeColor;
     }
 
-    @SetJIPipeDocumentation(name = "Vertex mask", description = "Additional filter applied to the vertices prior to candidate edge selection.")
-    @JIPipeParameter("vertex-filter")
-    public VertexMaskParameter getVertexMask() {
-        return vertexMask;
+    @SetJIPipeDocumentation(name = "Source vertex filter", description = "Allows to pre-select source vertices")
+    @JIPipeParameter("source-vertex-filter")
+    @AddJIPipeExpressionParameterVariable(fromClass = FilamentVertexVariablesInfo.class)
+    @AddJIPipeExpressionParameterVariable(fromClass = JIPipeTextAnnotationsExpressionParameterVariablesInfo.class)
+    @AddJIPipeExpressionParameterVariable(fromClass = JIPipeCustomExpressionVariablesParameterVariablesInfo.class)
+    @JIPipeExpressionParameterSettings(hint = "per vertex")
+    public OptionalJIPipeExpressionParameter getSourceVertexFilter() {
+        return sourceVertexFilter;
+    }
+
+    @JIPipeParameter("source-vertex-filter")
+    public void setSourceVertexFilter(OptionalJIPipeExpressionParameter sourceVertexFilter) {
+        this.sourceVertexFilter = sourceVertexFilter;
+    }
+
+    @SetJIPipeDocumentation(name = "Target vertex filter", description = "Allows to pre-select target vertices")
+    @JIPipeParameter("target-vertex-filter")
+    @AddJIPipeExpressionParameterVariable(fromClass = FilamentVertexVariablesInfo.class)
+    @AddJIPipeExpressionParameterVariable(fromClass = JIPipeTextAnnotationsExpressionParameterVariablesInfo.class)
+    @AddJIPipeExpressionParameterVariable(fromClass = JIPipeCustomExpressionVariablesParameterVariablesInfo.class)
+    @JIPipeExpressionParameterSettings(hint = "per vertex")
+    public OptionalJIPipeExpressionParameter getTargetVertexFilter() {
+        return targetVertexFilter;
+    }
+
+    @JIPipeParameter("target-vertex-filter")
+    public void setTargetVertexFilter(OptionalJIPipeExpressionParameter targetVertexFilter) {
+        this.targetVertexFilter = targetVertexFilter;
     }
 
     @SetJIPipeDocumentation(name = "Connect across channels", description = "If enabled, the algorithm considers also endpoints between different channel planes.")
@@ -243,10 +298,14 @@ public class ConnectVerticesFastAlgorithm extends JIPipeIteratingAlgorithm {
         variables.putAnnotations(iterationStep.getMergedTextAnnotations());
         getDefaultCustomExpressionVariables().writeToVariables(variables);
 
+        progressInfo.log("Filtering connection sources ...");
+        Set<FilamentVertex> sources = VertexMaskParameter.filter(sourceVertexFilter, outputData, null, variables);
+        progressInfo.log("Filtering connection targets ...");
+        Set<FilamentVertex> targets = VertexMaskParameter.filter(targetVertexFilter, outputData, null, variables);
 
         HashSet<EdgeCandidate> candidates = new HashSet<>();
         DijkstraShortestPath<FilamentVertex, FilamentEdge> outputDataInspector = ignoreIfHasPath ? new DijkstraShortestPath<>(outputData) : null;
-        for (FilamentVertex current : outputData.vertexSet()) {
+        for (FilamentVertex current : sources) {
 
             int currentDegree = outputData.degreeOf(current);
             if (currentDegree < candidateVertexDegreeLimit.getX() || currentDegree > candidateVertexDegreeLimit.getY()) {
@@ -260,7 +319,7 @@ public class ConnectVerticesFastAlgorithm extends JIPipeIteratingAlgorithm {
             Vector3d currentV1 = current.getSpatialLocation().toSciJavaVector3d();
 
             outer:
-            for (FilamentVertex other : outputData.vertexSet()) {
+            for (FilamentVertex other : targets) {
                 if (other != current) {
                     if (!enable3D && current.getSpatialLocation().getZ() != other.getSpatialLocation().getZ()) {
                         continue;
@@ -347,6 +406,12 @@ public class ConnectVerticesFastAlgorithm extends JIPipeIteratingAlgorithm {
             if (limitConnections.isEnabled()) {
                 int c1 = connectionCount.getOrDefault(candidate.source, 0);
                 int c2 = connectionCount.getOrDefault(candidate.target, 0);
+                if(ignoreLimitConnectionsForSource) {
+                    c1 = 0;
+                }
+                if(isIgnoreLimitConnectionsForTarget) {
+                    c2 = 0;
+                }
                 if (c1 < limitConnections.getContent() && c2 < limitConnections.getContent()) {
                     connectionCount.put(candidate.source, c1 + 1);
                     connectionCount.put(candidate.target, c2 + 1);

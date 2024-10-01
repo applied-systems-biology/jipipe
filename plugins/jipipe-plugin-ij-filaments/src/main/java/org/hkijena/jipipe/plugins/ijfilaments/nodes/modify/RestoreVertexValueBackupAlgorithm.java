@@ -67,7 +67,7 @@ public class RestoreVertexValueBackupAlgorithm extends JIPipeSimpleIteratingAlgo
         Filaments3DGraphData filaments = new Filaments3DGraphData(iterationStep.getInputData("Filaments", Filaments3DGraphData.class, progressInfo));
         JIPipeExpressionVariablesMap variablesMap = new JIPipeExpressionVariablesMap();
         variablesMap.putAnnotations(iterationStep.getMergedTextAnnotations());
-        for (FilamentVertex vertex : vertexMask.filter(filaments, filaments.vertexSet(), variablesMap)) {
+        for (FilamentVertex vertex : VertexMaskParameter.filter(vertexMask.getFilter(),filaments, filaments.vertexSet(), variablesMap)) {
             String key = backupFilter.queryFirst(vertex.getValueBackups().keySet(), variablesMap);
             Double value = vertex.getValueBackups().getOrDefault(key, null);
             if (value == null) {

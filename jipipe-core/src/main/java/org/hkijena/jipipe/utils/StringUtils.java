@@ -37,6 +37,20 @@ public class StringUtils {
 
     }
 
+    public static boolean isValidDouble(String text) {
+        if (NumberUtils.isCreatable(text)) {
+            return true;
+        }
+        if (StringUtils.isNullOrEmpty(text)) {
+            return false;
+        }
+        return text.toLowerCase().startsWith("-inf") || text.toLowerCase().startsWith("inf") || text.equalsIgnoreCase("nan") || text.equalsIgnoreCase("na");
+    }
+
+    public static boolean isValidInteger(String text) {
+        return NumberUtils.isCreatable(text);
+    }
+
     public static String formatPluralS(int count, String labelSingular) {
         if (count == 1) {
             return count + " " + labelSingular;
@@ -556,6 +570,17 @@ public class StringUtils {
             value = defaultValue;
         }
         return value;
+    }
+
+    public static int parseInt(String str) {
+        double v = parseDouble(str);
+        if(Double.isNaN(v)) {
+            return 0;
+        }
+        if(Double.isInfinite(v)) {
+            return v < 0 ? Integer.MIN_VALUE : Integer.MAX_VALUE;
+        }
+        return (int) v;
     }
 
     public static double parseDouble(String str) {
