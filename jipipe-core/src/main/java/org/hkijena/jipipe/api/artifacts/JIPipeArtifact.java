@@ -24,6 +24,8 @@ import org.jetbrains.annotations.NotNull;
 
 import java.nio.file.Path;
 import java.nio.file.Paths;
+import java.util.Arrays;
+import java.util.stream.Collectors;
 
 public class JIPipeArtifact implements Comparable<JIPipeArtifact> {
     private String groupId;
@@ -42,14 +44,16 @@ public class JIPipeArtifact implements Comparable<JIPipeArtifact> {
     }
 
     public JIPipeArtifact(String fullArtifactId) {
-        String[] component = StringUtils.split(fullArtifactId, ":.");
-        if (component.length < 3) {
+        String[] component = StringUtils.split(fullArtifactId, ":");
+        if (component.length != 2) {
             throw new IllegalArgumentException("Invalid artifact ID: " + fullArtifactId);
         }
-        String[] versionClassifierItems = component[component.length - 1].split("-");
+        String[] versionClassifierItems = component[1].split("-");
+        String[] packagePathItems = component[0].split("\\.");
         this.version = versionClassifierItems[0];
         this.classifier = versionClassifierItems[1];
-        this.artifactId = component[component.length - 2];
+        this.artifactId = packagePathItems[packagePathItems.length - 1];
+        this.groupId = Arrays.stream(packagePathItems, 0, packagePathItems.length - 1).collect(Collectors.joining("."));
     }
 
     @JsonGetter("group-id")
