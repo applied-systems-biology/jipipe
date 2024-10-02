@@ -48,6 +48,14 @@ public class ProcessUtils {
     }
 
     /**
+     * Test for handling quoting in addArgument
+     * @return if should handle quoting
+     */
+    public static boolean shouldHandleQuoting() {
+        return SystemUtils.IS_OS_WINDOWS;
+    }
+
+    /**
      * Gets the process ID of a process
      *
      * @param p the process

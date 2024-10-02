@@ -346,7 +346,7 @@ public class PythonUtils {
         parameters.set("python_executable", environment.getExecutablePath().toString());
         Object evaluationResult = environment.getArguments().evaluate(parameters);
         for (Object item : (Collection<?>) evaluationResult) {
-            commandLine.addArgument(StringUtils.nullToEmpty(item));
+            commandLine.addArgument(StringUtils.nullToEmpty(item), ProcessUtils.shouldHandleQuoting());
         }
 
         ProcessUtils.ExtendedExecutor executor = new ProcessUtils.ExtendedExecutor(ExecuteWatchdog.INFINITE_TIMEOUT, progressInfo);
@@ -417,10 +417,10 @@ public class PythonUtils {
         for (Object item : (Collection<?>) evaluationResult) {
             String arg = StringUtils.nullToEmpty(item);
             if (!StringUtils.isNullOrEmpty(arg))
-                commandLine.addArgument(arg);
+                commandLine.addArgument(arg, ProcessUtils.shouldHandleQuoting());
         }
         for (String argument : arguments) {
-            commandLine.addArgument(argument);
+            commandLine.addArgument(argument, ProcessUtils.shouldHandleQuoting());
         }
 
         ProcessUtils.ExtendedExecutor executor = new ProcessUtils.ExtendedExecutor(ExecuteWatchdog.INFINITE_TIMEOUT, progressInfo);

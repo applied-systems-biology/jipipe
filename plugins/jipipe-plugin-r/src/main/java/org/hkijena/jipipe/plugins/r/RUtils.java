@@ -280,7 +280,7 @@ public class RUtils {
         parameters.set("r_executable", rExecutable.toString());
         Object evaluationResult = environment.getArguments().evaluate(parameters);
         for (Object item : (Collection<?>) evaluationResult) {
-            commandLine.addArgument(StringUtils.nullToEmpty(item));
+            commandLine.addArgument(StringUtils.nullToEmpty(item), ProcessUtils.shouldHandleQuoting());
         }
         progressInfo.log("Running R: " + Arrays.stream(commandLine.toStrings()).map(s -> {
             if (s.contains(" ")) {
