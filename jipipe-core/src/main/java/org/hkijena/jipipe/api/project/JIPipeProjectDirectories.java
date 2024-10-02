@@ -71,6 +71,27 @@ public class JIPipeProjectDirectories extends AbstractJIPipeParameterCollection 
         return result;
     }
 
+    /**
+     * Gets a map of user-defined directories that must exist
+     *
+     * @return the directories
+     */
+    public Map<String, Path> getMandatoryDirectoriesMap(Path projectDir) {
+        Map<String, Path> result = new HashMap<>();
+        for (DirectoryEntry directoryEntry : directories.mapToCollection(DirectoryEntry.class)) {
+            if (directoryEntry.isMustExist() && !StringUtils.isNullOrEmpty(directoryEntry.getKey())) {
+                Path path = directoryEntry.path;
+                if (path != null && !StringUtils.isNullOrEmpty(path.toString())) {
+                    if (projectDir != null && projectDir.isAbsolute() && !path.isAbsolute()) {
+                        path = projectDir.resolve(path);
+                    }
+                }
+                result.put(directoryEntry.key, path);
+            }
+        }
+        return result;
+    }
+
     public void setUserDirectory(String key, Path value) {
         for (JIPipeDynamicParameterCollection parameterCollection : directories) {
             String currentKey = parameterCollection.get("key").get(String.class);
@@ -88,6 +109,7 @@ public class JIPipeProjectDirectories extends AbstractJIPipeParameterCollection 
     public static class DirectoryEntry extends AbstractJIPipeParameterCollection {
         private String key;
         private Path path;
+        private boolean mustExist = true;
 
         public DirectoryEntry() {
         }
@@ -95,6 +117,7 @@ public class JIPipeProjectDirectories extends AbstractJIPipeParameterCollection 
         public DirectoryEntry(DirectoryEntry other) {
             this.key = other.key;
             this.path = other.path;
+            this.mustExist = other.mustExist;
         }
 
         @SetJIPipeDocumentation(name = "Key", description = "The key that will be used to access the directory. Cannot be empty.")
@@ -118,6 +141,17 @@ public class JIPipeProjectDirectories extends AbstractJIPipeParameterCollection 
         @JIPipeParameter("path")
         public void setPath(Path path) {
             this.path = path;
+        }
+
+        @SetJIPipeDocumentation(name = "Check if exists", description = "Indicates that the directory should exist")
+        @JIPipeParameter("must-exist")
+        public boolean isMustExist() {
+            return mustExist;
+        }
+
+        @JIPipeParameter("must-exist")
+        public void setMustExist(boolean mustExist) {
+            this.mustExist = mustExist;
         }
     }
 }

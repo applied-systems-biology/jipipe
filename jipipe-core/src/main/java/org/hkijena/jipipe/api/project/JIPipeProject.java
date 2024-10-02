@@ -249,7 +249,7 @@ public class JIPipeProject implements JIPipeValidatable {
      */
     public void validateUserDirectories(JIPipeNotificationInbox notifications) {
         if (workDirectory != null) {
-            Map<String, Path> directoryMap = metadata.getDirectories().getDirectoryMap(workDirectory);
+            Map<String, Path> directoryMap = metadata.getDirectories().getMandatoryDirectoriesMap(workDirectory);
             for (Map.Entry<String, Path> entry : directoryMap.entrySet()) {
                 if (entry.getValue() == null || !Files.isDirectory(entry.getValue())) {
                     JIPipeNotification notification = new JIPipeNotification("org.hkijena.jipipe.core:invalid-project-user-directory");
