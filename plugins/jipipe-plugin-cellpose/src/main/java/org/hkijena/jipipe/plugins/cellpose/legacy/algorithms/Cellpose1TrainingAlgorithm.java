@@ -172,7 +172,7 @@ public class Cellpose1TrainingAlgorithm extends JIPipeSingleIterationAlgorithm {
         if (overrideEnvironment.isEnabled()) {
             target.add(overrideEnvironment.getContent());
         } else {
-            target.add(CellposePluginApplicationSettings.getInstance().getDefaultCellposeEnvironment());
+            target.add(CellposePluginApplicationSettings.getInstance().getReadOnlyDefaultEnvironment());
         }
     }
 
@@ -567,7 +567,7 @@ public class Cellpose1TrainingAlgorithm extends JIPipeSingleIterationAlgorithm {
 
         // Run the module
         PythonUtils.runPython(arguments.toArray(new String[0]), overrideEnvironment.isEnabled() ? overrideEnvironment.getContent() :
-                CellposePluginApplicationSettings.getInstance().getDefaultCellposeEnvironment(), Collections.emptyList(), Collections.emptyMap(), false, progressInfo);
+                CellposePluginApplicationSettings.getInstance().getReadOnlyDefaultEnvironment(), Collections.emptyList(), Collections.emptyMap(), false, progressInfo);
 
         // Extract the model
         Path modelsPath = trainingDir.resolve("models");

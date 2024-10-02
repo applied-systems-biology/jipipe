@@ -89,7 +89,7 @@ public class FilamentsPlugin extends JIPipePrepackagedDefaultJavaPlugin {
         if (project != null && project.getSettingsSheet(FilamentsPluginProjectSettings.class).getProjectDefaultTSOAXEnvironment().isEnabled()) {
             return project.getSettingsSheet(FilamentsPluginProjectSettings.class).getProjectDefaultTSOAXEnvironment().getContent();
         }
-        return TSOAXApplicationSettings.getInstance().getDefaultEnvironment();
+        return TSOAXApplicationSettings.getInstance().getReadOnlyDefaultEnvironment();
     }
 
     @Override

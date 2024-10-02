@@ -40,8 +40,8 @@ public class FilamentsPluginProjectSettings extends JIPipeDefaultProjectSettings
     }
 
     private void autoConfigureTSOAXEnvironment() {
-        if (TSOAXApplicationSettings.getInstance().getDefaultEnvironment().isLoadFromArtifact()) {
-            List<JIPipeArtifact> artifacts = JIPipe.getArtifacts().queryCachedArtifacts(TSOAXApplicationSettings.getInstance().getDefaultEnvironment().getArtifactQuery().getQuery());
+        if (TSOAXApplicationSettings.getInstance().getReadOnlyDefaultEnvironment().isLoadFromArtifact()) {
+            List<JIPipeArtifact> artifacts = JIPipe.getArtifacts().queryCachedArtifacts(TSOAXApplicationSettings.getInstance().getReadOnlyDefaultEnvironment().getArtifactQuery().getQuery());
             artifacts.removeIf(artifact -> !artifact.isCompatible());
             if (!artifacts.isEmpty()) {
                 JIPipeArtifact target = JIPipeArtifactsRegistry.selectPreferredArtifactByClassifier(artifacts);

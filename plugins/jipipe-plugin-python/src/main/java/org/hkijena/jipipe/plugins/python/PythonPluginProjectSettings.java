@@ -43,8 +43,8 @@ public class PythonPluginProjectSettings extends JIPipeDefaultProjectSettingsShe
     }
 
     private void autoConfigureAdapterLibraryEnvironment() {
-        if (JIPipePythonPluginAdapterApplicationSettings.getInstance().getDefaultPythonAdapterLibraryEnvironment().isLoadFromArtifact()) {
-            List<JIPipeArtifact> artifacts = JIPipe.getArtifacts().queryCachedArtifacts(JIPipePythonPluginAdapterApplicationSettings.getInstance().getDefaultPythonAdapterLibraryEnvironment().getArtifactQuery().getQuery());
+        if (JIPipePythonPluginAdapterApplicationSettings.getInstance().getReadOnlyDefaultEnvironment().isLoadFromArtifact()) {
+            List<JIPipeArtifact> artifacts = JIPipe.getArtifacts().queryCachedArtifacts(JIPipePythonPluginAdapterApplicationSettings.getInstance().getReadOnlyDefaultEnvironment().getArtifactQuery().getQuery());
             artifacts.removeIf(artifact -> !artifact.isCompatible());
             if (!artifacts.isEmpty()) {
                 JIPipeArtifact target = JIPipeArtifactsRegistry.selectPreferredArtifactByClassifier(artifacts);
@@ -60,8 +60,8 @@ public class PythonPluginProjectSettings extends JIPipeDefaultProjectSettingsShe
     }
 
     private void autoConfigureDefaultEnvironment() {
-        if (PythonPluginApplicationSettings.getInstance().getDefaultPythonEnvironment().isLoadFromArtifact()) {
-            List<JIPipeArtifact> artifacts = JIPipe.getArtifacts().queryCachedArtifacts(PythonPluginApplicationSettings.getInstance().getDefaultPythonEnvironment().getArtifactQuery().getQuery());
+        if (PythonPluginApplicationSettings.getInstance().getReadOnlyDefaultEnvironment().isLoadFromArtifact()) {
+            List<JIPipeArtifact> artifacts = JIPipe.getArtifacts().queryCachedArtifacts(PythonPluginApplicationSettings.getInstance().getReadOnlyDefaultEnvironment().getArtifactQuery().getQuery());
             artifacts.removeIf(artifact -> !artifact.isCompatible());
             if (!artifacts.isEmpty()) {
                 JIPipeArtifact target = JIPipeArtifactsRegistry.selectPreferredArtifactByClassifier(artifacts);

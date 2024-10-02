@@ -17,83 +17,82 @@ import com.google.common.collect.ImmutableList;
 import org.hkijena.jipipe.JIPipe;
 import org.hkijena.jipipe.api.SetJIPipeDocumentation;
 import org.hkijena.jipipe.api.environments.ExternalEnvironmentParameterSettings;
-import org.hkijena.jipipe.api.environments.ExternalEnvironmentSettings;
+import org.hkijena.jipipe.api.environments.JIPipeExternalEnvironmentSettings;
 import org.hkijena.jipipe.api.environments.JIPipeEnvironment;
 import org.hkijena.jipipe.api.parameters.JIPipeParameter;
 import org.hkijena.jipipe.api.settings.JIPipeDefaultApplicationSettingsSheetCategory;
 import org.hkijena.jipipe.api.settings.JIPipeDefaultApplicationsSettingsSheet;
-import org.hkijena.jipipe.api.validation.JIPipeValidationReport;
-import org.hkijena.jipipe.api.validation.contexts.UnspecifiedValidationReportContext;
 import org.hkijena.jipipe.plugins.parameters.library.jipipe.JIPipeArtifactQueryParameter;
 import org.hkijena.jipipe.utils.UIUtils;
 
 import javax.swing.*;
 import java.util.List;
 
-public class JIPipePythonPluginAdapterApplicationSettings extends JIPipeDefaultApplicationsSettingsSheet implements ExternalEnvironmentSettings {
+public class JIPipePythonPluginAdapterApplicationSettings extends JIPipeDefaultApplicationsSettingsSheet implements JIPipeExternalEnvironmentSettings {
 
     public static String ID = "org.hkijena.jipipe:python-adapter";
-    private JIPipePythonAdapterLibraryEnvironment defaultPythonAdapterLibraryEnvironment = new JIPipePythonAdapterLibraryEnvironment();
-    private JIPipePythonAdapterLibraryEnvironment.List pythonAdapterPresets = new JIPipePythonAdapterLibraryEnvironment.List();
+    private final JIPipePythonAdapterLibraryEnvironment standardEnvironment = new JIPipePythonAdapterLibraryEnvironment();
+    private OptionalJIPipePythonAdapterLibraryEnvironment defaultEnvironment = new OptionalJIPipePythonAdapterLibraryEnvironment();
+    private JIPipePythonAdapterLibraryEnvironment.List presets = new JIPipePythonAdapterLibraryEnvironment.List();
 
     public JIPipePythonPluginAdapterApplicationSettings() {
-        defaultPythonAdapterLibraryEnvironment.setLoadFromArtifact(true);
-        defaultPythonAdapterLibraryEnvironment.setArtifactQuery(new JIPipeArtifactQueryParameter("org.hkijena.jipipe-python-adapter:*"));
+        preconfigureEnvironment(standardEnvironment);
+        preconfigureEnvironment(defaultEnvironment.getContent());
+    }
+
+    private void preconfigureEnvironment(JIPipePythonAdapterLibraryEnvironment environment) {
+        environment.setLoadFromArtifact(true);
+        environment.setArtifactQuery(new JIPipeArtifactQueryParameter("org.hkijena.jipipe-python-adapter:*"));
     }
 
     public static JIPipePythonPluginAdapterApplicationSettings getInstance() {
         return JIPipe.getSettings().getById(ID, JIPipePythonPluginAdapterApplicationSettings.class);
     }
 
-    /**
-     * Checks the Python settings
-     *
-     * @return if the settings are correct
-     */
-    public static boolean pythonSettingsAreValid() {
-        if (JIPipe.getInstance() != null) {
-            JIPipePythonPluginAdapterApplicationSettings instance = getInstance();
-            JIPipeValidationReport report = new JIPipeValidationReport();
-            instance.getDefaultPythonAdapterLibraryEnvironment().reportValidity(new UnspecifiedValidationReportContext(), report);
-            return report.isValid();
+    public JIPipePythonAdapterLibraryEnvironment getReadOnlyDefaultEnvironment() {
+        if(defaultEnvironment.isEnabled()) {
+            return new JIPipePythonAdapterLibraryEnvironment(defaultEnvironment.getContent());
         }
-        return false;
+        else {
+            return new JIPipePythonAdapterLibraryEnvironment(standardEnvironment);
+        }
     }
 
     @SetJIPipeDocumentation(name = "Python adapter presets", description = "List of presets stored for JIPipe Python adapters")
     @JIPipeParameter("python-adapter-presets")
-    public JIPipePythonAdapterLibraryEnvironment.List getPythonAdapterPresets() {
-        return pythonAdapterPresets;
+    public JIPipePythonAdapterLibraryEnvironment.List getPresets() {
+        return presets;
     }
 
     @JIPipeParameter("python-adapter-presets")
-    public void setPythonAdapterPresets(JIPipePythonAdapterLibraryEnvironment.List pythonAdapterPresets) {
-        this.pythonAdapterPresets = pythonAdapterPresets;
+    public void setPresets(JIPipePythonAdapterLibraryEnvironment.List presets) {
+        this.presets = presets;
     }
 
     @SetJIPipeDocumentation(name = "Default JIPipe Python adapter library", description = "This environment allows you to setup how the JIPipe Python adapter library is supplied. " +
-            "Leave at the default (<code>org.hkijena.jipipe-python-adapter:*</code>) to setup the library automatically.")
+            "Leave at the default (<code>org.hkijena.jipipe-python-adapter:*</code>) to setup the library automatically. " +
+            "If disabled, falls back to <code>org.hkijena.jipipe-python-adapter:*</code>")
     @JIPipeParameter("default-python-adapter-library")
     @ExternalEnvironmentParameterSettings(allowArtifact = true, artifactFilters = {"org.hkijena.jipipe-python-adapter:*"})
-    public JIPipePythonAdapterLibraryEnvironment getDefaultPythonAdapterLibraryEnvironment() {
-        return defaultPythonAdapterLibraryEnvironment;
+    public OptionalJIPipePythonAdapterLibraryEnvironment getDefaultEnvironment() {
+        return defaultEnvironment;
     }
 
     @JIPipeParameter("default-python-adapter-library")
-    public void setDefaultPythonAdapterLibraryEnvironment(JIPipePythonAdapterLibraryEnvironment defaultPythonAdapterLibraryEnvironment) {
-        this.defaultPythonAdapterLibraryEnvironment = defaultPythonAdapterLibraryEnvironment;
+    public void setDefaultEnvironment(OptionalJIPipePythonAdapterLibraryEnvironment defaultEnvironment) {
+        this.defaultEnvironment = defaultEnvironment;
     }
 
     @Override
     public List<JIPipeEnvironment> getPresetsListInterface(Class<?> environmentClass) {
-        return ImmutableList.copyOf(pythonAdapterPresets);
+        return ImmutableList.copyOf(presets);
     }
 
     @Override
     public void setPresetsListInterface(List<JIPipeEnvironment> presets, Class<?> environmentClass) {
-        this.pythonAdapterPresets.clear();
+        this.presets.clear();
         for (JIPipeEnvironment preset : presets) {
-            this.pythonAdapterPresets.add((JIPipePythonAdapterLibraryEnvironment) preset);
+            this.presets.add((JIPipePythonAdapterLibraryEnvironment) preset);
         }
     }
 

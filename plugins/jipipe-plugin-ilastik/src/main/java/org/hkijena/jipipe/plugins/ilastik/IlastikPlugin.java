@@ -99,7 +99,7 @@ public class IlastikPlugin extends JIPipePrepackagedDefaultJavaPlugin {
         if (project != null && project.getSettingsSheet(IlastikPluginProjectSettings.class).getProjectDefaultEnvironment().isEnabled()) {
             return project.getSettingsSheet(IlastikPluginProjectSettings.class).getProjectDefaultEnvironment().getContent();
         }
-        return IlastikPluginApplicationSettings.getInstance().getDefaultEnvironment();
+        return IlastikPluginApplicationSettings.getInstance().getReadOnlyDefaultEnvironment();
     }
 
     public static void launchIlastik(JIPipeDesktopWorkbench workbench, List<String> arguments) {

@@ -20,6 +20,7 @@ import org.hkijena.jipipe.api.parameters.JIPipeParameter;
 import org.hkijena.jipipe.api.settings.JIPipeDefaultApplicationSettingsSheetCategory;
 import org.hkijena.jipipe.api.settings.JIPipeDefaultApplicationsSettingsSheet;
 import org.hkijena.jipipe.plugins.parameters.library.jipipe.JIPipeArtifactQueryParameter;
+import org.hkijena.jipipe.plugins.python.OptionalPythonEnvironment;
 import org.hkijena.jipipe.plugins.python.PythonEnvironment;
 
 import javax.swing.*;
@@ -28,28 +29,44 @@ public class OmniposePluginApplicationSettings extends JIPipeDefaultApplications
 
     public static String ID = "org.hkijena.jipipe:omnipose";
 
-    private PythonEnvironment defaultOmniposeEnvironment = new PythonEnvironment();
+    private final PythonEnvironment standardEnvironment = new PythonEnvironment();
+    private OptionalPythonEnvironment defaultEnvironment = new OptionalPythonEnvironment();
 
     public OmniposePluginApplicationSettings() {
-        defaultOmniposeEnvironment.setLoadFromArtifact(true);
-        defaultOmniposeEnvironment.setArtifactQuery(new JIPipeArtifactQueryParameter("com.github.kevinjohncutler.omnipose:*"));
+        preconfigureEnvironment(standardEnvironment);
+        preconfigureEnvironment(defaultEnvironment.getContent());
+    }
+
+    private void preconfigureEnvironment(PythonEnvironment environment) {
+        environment.setLoadFromArtifact(true);
+        environment.setArtifactQuery(new JIPipeArtifactQueryParameter("com.github.kevinjohncutler.omnipose:*"));
     }
 
     public static OmniposePluginApplicationSettings getInstance() {
         return JIPipe.getSettings().getById(ID, OmniposePluginApplicationSettings.class);
     }
 
+    public PythonEnvironment getReadOnlyDefaultEnvironment() {
+        if(defaultEnvironment.isEnabled()) {
+            return new PythonEnvironment(defaultEnvironment.getContent());
+        }
+        else {
+            return new PythonEnvironment(standardEnvironment);
+        }
+    }
+
     @SetJIPipeDocumentation(name = "Omnipose Python environment", description = "The default Omnipose environment that is associated to newly created projects. " +
-            "Leave at default (<code>com.github.kevinjohncutler.omnipose:*</code>) to automatically select the best available environment from an artifact.")
+            "Leave at default (<code>com.github.kevinjohncutler.omnipose:*</code>) to automatically select the best available environment from an artifact. " +
+            "If disabled, falls back to <code>com.github.kevinjohncutler.omnipose:*</code>.")
     @JIPipeParameter("default-omnipose-environment")
     @ExternalEnvironmentParameterSettings(showCategory = "Omnipose", allowArtifact = true, artifactFilters = {"com.github.kevinjohncutler.omnipose:*"})
-    public PythonEnvironment getDefaultOmniposeEnvironment() {
-        return defaultOmniposeEnvironment;
+    public OptionalPythonEnvironment getDefaultEnvironment() {
+        return defaultEnvironment;
     }
 
     @JIPipeParameter("default-omnipose-environment")
-    public void setDefaultOmniposeEnvironment(PythonEnvironment defaultOmniposeEnvironment) {
-        this.defaultOmniposeEnvironment = defaultOmniposeEnvironment;
+    public void setDefaultEnvironment(OptionalPythonEnvironment defaultEnvironment) {
+        this.defaultEnvironment = defaultEnvironment;
     }
 
     @Override

@@ -24,8 +24,8 @@ public class RPluginProjectSettings extends JIPipeDefaultProjectSettingsSheet {
     }
 
     private void autoConfigureDefaultEnvironment() {
-        if (RPluginApplicationSettings.getInstance().getDefaultEnvironment().isLoadFromArtifact()) {
-            List<JIPipeArtifact> artifacts = JIPipe.getArtifacts().queryCachedArtifacts(RPluginApplicationSettings.getInstance().getDefaultEnvironment().getArtifactQuery().getQuery());
+        if (RPluginApplicationSettings.getInstance().getReadOnlyEnvironment().isLoadFromArtifact()) {
+            List<JIPipeArtifact> artifacts = JIPipe.getArtifacts().queryCachedArtifacts(RPluginApplicationSettings.getInstance().getReadOnlyEnvironment().getArtifactQuery().getQuery());
             artifacts.removeIf(artifact -> !artifact.isCompatible());
             if (!artifacts.isEmpty()) {
                 JIPipeArtifact target = JIPipeArtifactsRegistry.selectPreferredArtifactByClassifier(artifacts);

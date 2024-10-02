@@ -16,7 +16,7 @@ package org.hkijena.jipipe.plugins.processes;
 import com.google.common.collect.ImmutableList;
 import org.hkijena.jipipe.JIPipe;
 import org.hkijena.jipipe.api.SetJIPipeDocumentation;
-import org.hkijena.jipipe.api.environments.ExternalEnvironmentSettings;
+import org.hkijena.jipipe.api.environments.JIPipeExternalEnvironmentSettings;
 import org.hkijena.jipipe.api.environments.JIPipeEnvironment;
 import org.hkijena.jipipe.api.parameters.JIPipeParameter;
 import org.hkijena.jipipe.api.settings.JIPipeDefaultApplicationSettingsSheetCategory;
@@ -26,7 +26,7 @@ import org.hkijena.jipipe.utils.UIUtils;
 import javax.swing.*;
 import java.util.List;
 
-public class JIPipeProcessesPluginApplicationSettings extends JIPipeDefaultApplicationsSettingsSheet implements ExternalEnvironmentSettings {
+public class JIPipeProcessesPluginApplicationSettings extends JIPipeDefaultApplicationsSettingsSheet implements JIPipeExternalEnvironmentSettings {
 
     public static String ID = "org.hkijena.jipipe:processes";
 

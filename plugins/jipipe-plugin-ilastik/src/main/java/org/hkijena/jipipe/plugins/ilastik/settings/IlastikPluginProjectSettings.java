@@ -40,8 +40,8 @@ public class IlastikPluginProjectSettings extends JIPipeDefaultProjectSettingsSh
     }
 
     private void autoConfigureEnvironment() {
-        if (IlastikPluginApplicationSettings.getInstance().getDefaultEnvironment().isLoadFromArtifact()) {
-            List<JIPipeArtifact> artifacts = JIPipe.getArtifacts().queryCachedArtifacts(IlastikPluginApplicationSettings.getInstance().getDefaultEnvironment().getArtifactQuery().getQuery());
+        if (IlastikPluginApplicationSettings.getInstance().getReadOnlyDefaultEnvironment().isLoadFromArtifact()) {
+            List<JIPipeArtifact> artifacts = JIPipe.getArtifacts().queryCachedArtifacts(IlastikPluginApplicationSettings.getInstance().getReadOnlyDefaultEnvironment().getArtifactQuery().getQuery());
             artifacts.removeIf(artifact -> !artifact.isCompatible());
             if (!artifacts.isEmpty()) {
                 JIPipeArtifact target = JIPipeArtifactsRegistry.selectPreferredArtifactByClassifier(artifacts);

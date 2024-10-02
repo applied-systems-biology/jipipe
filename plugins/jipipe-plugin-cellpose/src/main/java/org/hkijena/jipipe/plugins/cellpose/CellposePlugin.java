@@ -80,7 +80,7 @@ public class CellposePlugin extends JIPipePrepackagedDefaultJavaPlugin {
         if (project != null && project.getSettingsSheet(CellposePluginProjectSettings.class).getProjectDefaultEnvironment().isEnabled()) {
             return project.getSettingsSheet(CellposePluginProjectSettings.class).getProjectDefaultEnvironment().getContent();
         }
-        return CellposePluginApplicationSettings.getInstance().getDefaultCellposeEnvironment();
+        return CellposePluginApplicationSettings.getInstance().getReadOnlyDefaultEnvironment();
     }
 
     @Override

@@ -20,7 +20,7 @@ import java.util.List;
 /**
  * A settings page that contains basic settings for all external environments.
  */
-public interface ExternalEnvironmentSettings extends JIPipeParameterCollection {
+public interface JIPipeExternalEnvironmentSettings extends JIPipeParameterCollection {
 
     /**
      * Returns the presets.

@@ -17,7 +17,7 @@ import com.google.common.collect.ImmutableList;
 import org.hkijena.jipipe.JIPipe;
 import org.hkijena.jipipe.api.SetJIPipeDocumentation;
 import org.hkijena.jipipe.api.environments.ExternalEnvironmentParameterSettings;
-import org.hkijena.jipipe.api.environments.ExternalEnvironmentSettings;
+import org.hkijena.jipipe.api.environments.JIPipeExternalEnvironmentSettings;
 import org.hkijena.jipipe.api.environments.JIPipeEnvironment;
 import org.hkijena.jipipe.api.parameters.JIPipeParameter;
 import org.hkijena.jipipe.api.settings.JIPipeDefaultApplicationSettingsSheetCategory;
@@ -28,19 +28,38 @@ import org.hkijena.jipipe.utils.UIUtils;
 import javax.swing.*;
 import java.util.List;
 
-public class PythonPluginApplicationSettings extends JIPipeDefaultApplicationsSettingsSheet implements ExternalEnvironmentSettings {
+public class PythonPluginApplicationSettings extends JIPipeDefaultApplicationsSettingsSheet implements JIPipeExternalEnvironmentSettings {
 
     public static String ID = "org.hkijena.jipipe:python";
-    private PythonEnvironment defaultPythonEnvironment = new PythonEnvironment();
+    private final PythonEnvironment standardEnvironment = new PythonEnvironment();
+    private OptionalPythonEnvironment defaultEnvironment = new OptionalPythonEnvironment();
     private PythonEnvironment.List presets = new PythonEnvironment.List();
 
     public PythonPluginApplicationSettings() {
-        defaultPythonEnvironment.setLoadFromArtifact(true);
-        defaultPythonEnvironment.setArtifactQuery(new JIPipeArtifactQueryParameter("org.python.python_prepackaged:*"));
+        preconfigureEnvironment(standardEnvironment);
+        preconfigureEnvironment(defaultEnvironment.getContent());
+    }
+
+    private void preconfigureEnvironment(PythonEnvironment environment) {
+        environment.setLoadFromArtifact(true);
+        environment.setArtifactQuery(new JIPipeArtifactQueryParameter("org.python.python_prepackaged:*"));
     }
 
     public static PythonPluginApplicationSettings getInstance() {
         return JIPipe.getSettings().getById(ID, PythonPluginApplicationSettings.class);
+    }
+
+    /**
+     * Gets the (standard) default Python environment
+     * @return the default
+     */
+    public PythonEnvironment getReadOnlyDefaultEnvironment() {
+        if(defaultEnvironment.isEnabled()) {
+            return new PythonEnvironment(defaultEnvironment.getContent());
+        }
+        else {
+            return new PythonEnvironment(standardEnvironment);
+        }
     }
 
     @SetJIPipeDocumentation(name = "Presets", description = "List of presets stored for Python environments.")
@@ -55,16 +74,17 @@ public class PythonPluginApplicationSettings extends JIPipeDefaultApplicationsSe
     }
 
     @SetJIPipeDocumentation(name = "Default Python environment", description = "The default Python environment that is associated to newly created projects. " +
-            "Leave at default (<code>org.python.python_prepackaged:*</code>) to automatically select the best available Python environment from an artifact.")
+            "Leave at default (<code>org.python.python_prepackaged:*</code>) to automatically select the best available Python environment from an artifact. " +
+            "If not enabled, will always use <code>org.python.python_prepackaged:*</code>.")
     @JIPipeParameter("default-python-environment")
     @ExternalEnvironmentParameterSettings(allowArtifact = true, artifactFilters = {"org.python.*"})
-    public PythonEnvironment getDefaultPythonEnvironment() {
-        return defaultPythonEnvironment;
+    public OptionalPythonEnvironment getDefaultEnvironment() {
+        return defaultEnvironment;
     }
 
     @JIPipeParameter("default-python-environment")
-    public void setDefaultPythonEnvironment(PythonEnvironment defaultPythonEnvironment) {
-        this.defaultPythonEnvironment = defaultPythonEnvironment;
+    public void setDefaultEnvironment(OptionalPythonEnvironment defaultEnvironment) {
+        this.defaultEnvironment = defaultEnvironment;
     }
 
     @Override

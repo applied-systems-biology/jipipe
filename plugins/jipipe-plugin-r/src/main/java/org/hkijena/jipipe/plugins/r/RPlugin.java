@@ -66,7 +66,7 @@ public class RPlugin extends JIPipePrepackagedDefaultJavaPlugin {
         if (project != null && project.getSettingsSheet(RPluginProjectSettings.class).getProjectDefaultEnvironment().isEnabled()) {
             return project.getSettingsSheet(RPluginProjectSettings.class).getProjectDefaultEnvironment().getContent();
         }
-        return RPluginApplicationSettings.getInstance().getDefaultEnvironment();
+        return RPluginApplicationSettings.getInstance().getReadOnlyEnvironment();
     }
 
     @Override

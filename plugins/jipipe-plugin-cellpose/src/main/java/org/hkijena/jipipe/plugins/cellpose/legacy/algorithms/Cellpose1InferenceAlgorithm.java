@@ -208,7 +208,7 @@ public class Cellpose1InferenceAlgorithm extends JIPipeSingleIterationAlgorithm 
         if (overrideEnvironment.isEnabled()) {
             target.add(overrideEnvironment.getContent());
         } else {
-            target.add(CellposePluginApplicationSettings.getInstance().getDefaultCellposeEnvironment());
+            target.add(CellposePluginApplicationSettings.getInstance().getReadOnlyDefaultEnvironment());
         }
     }
 
@@ -377,7 +377,7 @@ public class Cellpose1InferenceAlgorithm extends JIPipeSingleIterationAlgorithm 
 
         // Run script
         PythonUtils.runPython(code.toString(), overrideEnvironment.isEnabled() ? overrideEnvironment.getContent() :
-                CellposePluginApplicationSettings.getInstance().getDefaultCellposeEnvironment(), Collections.emptyList(), false, progressInfo);
+                CellposePluginApplicationSettings.getInstance().getReadOnlyDefaultEnvironment(), Collections.emptyList(), false, progressInfo);
 
 
         for (int i = 0; i < inputRowList.size(); i++) {

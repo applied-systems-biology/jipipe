@@ -21,7 +21,7 @@ import org.hkijena.jipipe.api.compat.ImageJDataExporterUI;
 import org.hkijena.jipipe.api.compat.ImageJDataImporter;
 import org.hkijena.jipipe.api.compat.ImageJDataImporterUI;
 import org.hkijena.jipipe.api.data.*;
-import org.hkijena.jipipe.api.environments.ExternalEnvironmentSettings;
+import org.hkijena.jipipe.api.environments.JIPipeExternalEnvironmentSettings;
 import org.hkijena.jipipe.api.environments.JIPipeEnvironment;
 import org.hkijena.jipipe.api.environments.JIPipeExternalEnvironmentInstaller;
 import org.hkijena.jipipe.api.grapheditortool.JIPipeGraphEditorTool;
@@ -911,7 +911,7 @@ public abstract class JIPipeDefaultJavaPlugin extends AbstractService implements
      */
     public <T extends JIPipeEnvironment, U extends ListParameter<T>> void registerEnvironment(Class<T> environmentClass,
                                                                                               Class<U> listClass,
-                                                                                              ExternalEnvironmentSettings settings,
+                                                                                              JIPipeExternalEnvironmentSettings settings,
                                                                                               String id,
                                                                                               String name,
                                                                                               String description,

@@ -17,7 +17,7 @@ import com.google.common.collect.HashMultimap;
 import com.google.common.collect.Multimap;
 import org.hkijena.jipipe.JIPipe;
 import org.hkijena.jipipe.api.SetJIPipeDocumentation;
-import org.hkijena.jipipe.api.environments.ExternalEnvironmentSettings;
+import org.hkijena.jipipe.api.environments.JIPipeExternalEnvironmentSettings;
 import org.hkijena.jipipe.api.environments.JIPipeEnvironment;
 import org.hkijena.jipipe.api.environments.JIPipeExternalEnvironmentInstaller;
 import org.hkijena.jipipe.utils.DocumentationUtils;
@@ -32,7 +32,7 @@ import java.util.stream.Collectors;
 public class JIPipeExternalEnvironmentRegistry {
     private final JIPipe jiPipe;
     private final Multimap<Class<? extends JIPipeEnvironment>, InstallerEntry> installers = HashMultimap.create();
-    private final Map<Class<? extends JIPipeEnvironment>, ExternalEnvironmentSettings> settings = new HashMap<>();
+    private final Map<Class<? extends JIPipeEnvironment>, JIPipeExternalEnvironmentSettings> settings = new HashMap<>();
 
     public JIPipeExternalEnvironmentRegistry(JIPipe jiPipe) {
 
@@ -49,7 +49,7 @@ public class JIPipeExternalEnvironmentRegistry {
      * @param environmentClass the environment
      * @param settings         the settings
      */
-    public void registerEnvironment(Class<? extends JIPipeEnvironment> environmentClass, ExternalEnvironmentSettings settings) {
+    public void registerEnvironment(Class<? extends JIPipeEnvironment> environmentClass, JIPipeExternalEnvironmentSettings settings) {
         this.settings.put(environmentClass, settings);
         getJIPipe().getProgressInfo().log("Registered environment " + environmentClass + " with settings class " + settings);
     }
@@ -82,7 +82,7 @@ public class JIPipeExternalEnvironmentRegistry {
      * @param environmentClass the environment class
      * @return settings
      */
-    public ExternalEnvironmentSettings getSettings(Class<?> environmentClass) {
+    public JIPipeExternalEnvironmentSettings getSettings(Class<?> environmentClass) {
         return settings.get(environmentClass);
     }
 
@@ -93,7 +93,7 @@ public class JIPipeExternalEnvironmentRegistry {
      * @return list of presets
      */
     public List<JIPipeEnvironment> getPresets(Class<?> environmentClass) {
-        ExternalEnvironmentSettings settings = getSettings(environmentClass);
+        JIPipeExternalEnvironmentSettings settings = getSettings(environmentClass);
         if (settings == null)
             return Collections.emptyList();
         return settings.getPresetsListInterface(environmentClass).stream()
@@ -107,7 +107,7 @@ public class JIPipeExternalEnvironmentRegistry {
      * @param preset           the preset
      */
     public void addPreset(Class<?> environmentClass, JIPipeEnvironment preset) {
-        ExternalEnvironmentSettings settings = getSettings(environmentClass);
+        JIPipeExternalEnvironmentSettings settings = getSettings(environmentClass);
         List<JIPipeEnvironment> presets = new ArrayList<>(settings.getPresetsListInterface(environmentClass));
         presets.add(preset);
         settings.setPresetsListInterface(presets, environmentClass);

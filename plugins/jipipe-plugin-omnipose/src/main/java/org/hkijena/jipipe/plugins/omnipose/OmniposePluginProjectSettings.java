@@ -25,8 +25,8 @@ public class OmniposePluginProjectSettings extends JIPipeDefaultProjectSettingsS
     }
 
     private void autoConfigureDefaultEnvironment() {
-        if (OmniposePluginApplicationSettings.getInstance().getDefaultOmniposeEnvironment().isLoadFromArtifact()) {
-            List<JIPipeArtifact> artifacts = JIPipe.getArtifacts().queryCachedArtifacts(OmniposePluginApplicationSettings.getInstance().getDefaultOmniposeEnvironment().getArtifactQuery().getQuery());
+        if (OmniposePluginApplicationSettings.getInstance().getReadOnlyDefaultEnvironment().isLoadFromArtifact()) {
+            List<JIPipeArtifact> artifacts = JIPipe.getArtifacts().queryCachedArtifacts(OmniposePluginApplicationSettings.getInstance().getReadOnlyDefaultEnvironment().getArtifactQuery().getQuery());
             artifacts.removeIf(artifact -> !artifact.isCompatible());
             if (!artifacts.isEmpty()) {
                 JIPipeArtifact target = JIPipeArtifactsRegistry.selectPreferredArtifactByClassifier(artifacts);

@@ -71,14 +71,14 @@ public class PythonPlugin extends JIPipePrepackagedDefaultJavaPlugin {
         if (project != null && project.getSettingsSheet(PythonPluginProjectSettings.class).getProjectDefaultEnvironment().isEnabled()) {
             return project.getSettingsSheet(PythonPluginProjectSettings.class).getProjectDefaultEnvironment().getContent();
         }
-        return PythonPluginApplicationSettings.getInstance().getDefaultPythonEnvironment();
+        return PythonPluginApplicationSettings.getInstance().getReadOnlyDefaultEnvironment();
     }
 
     public static JIPipePythonAdapterLibraryEnvironment getAdapterEnvironment(JIPipeProject project) {
         if (project != null && project.getSettingsSheet(PythonPluginProjectSettings.class).getProjectPythonAdapterLibraryEnvironment().isEnabled()) {
             return project.getSettingsSheet(PythonPluginProjectSettings.class).getProjectPythonAdapterLibraryEnvironment().getContent();
         }
-        return JIPipePythonPluginAdapterApplicationSettings.getInstance().getDefaultPythonAdapterLibraryEnvironment();
+        return JIPipePythonPluginAdapterApplicationSettings.getInstance().getReadOnlyDefaultEnvironment();
     }
 
     @Override

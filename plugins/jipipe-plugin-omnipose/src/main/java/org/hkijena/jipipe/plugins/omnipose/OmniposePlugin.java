@@ -73,7 +73,7 @@ public class OmniposePlugin extends JIPipePrepackagedDefaultJavaPlugin {
         if (project != null && project.getSettingsSheet(OmniposePluginProjectSettings.class).getProjectDefaultEnvironment().isEnabled()) {
             return project.getSettingsSheet(OmniposePluginProjectSettings.class).getProjectDefaultEnvironment().getContent();
         }
-        return OmniposePluginApplicationSettings.getInstance().getDefaultOmniposeEnvironment();
+        return OmniposePluginApplicationSettings.getInstance().getReadOnlyDefaultEnvironment();
     }
 
     @Override

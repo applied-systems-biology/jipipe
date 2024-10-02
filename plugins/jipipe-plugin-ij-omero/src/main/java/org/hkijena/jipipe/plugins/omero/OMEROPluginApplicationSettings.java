@@ -15,7 +15,7 @@ package org.hkijena.jipipe.plugins.omero;
 
 import org.hkijena.jipipe.JIPipe;
 import org.hkijena.jipipe.api.SetJIPipeDocumentation;
-import org.hkijena.jipipe.api.environments.ExternalEnvironmentSettings;
+import org.hkijena.jipipe.api.environments.JIPipeExternalEnvironmentSettings;
 import org.hkijena.jipipe.api.environments.JIPipeEnvironment;
 import org.hkijena.jipipe.api.parameters.JIPipeParameter;
 import org.hkijena.jipipe.api.settings.JIPipeDefaultApplicationSettingsSheetCategory;
@@ -26,7 +26,7 @@ import javax.swing.*;
 import java.util.ArrayList;
 import java.util.List;
 
-public class OMEROPluginApplicationSettings extends JIPipeDefaultApplicationsSettingsSheet implements ExternalEnvironmentSettings {
+public class OMEROPluginApplicationSettings extends JIPipeDefaultApplicationsSettingsSheet implements JIPipeExternalEnvironmentSettings {
     public static final String ID = "org.hkijena.jipipe:omero";
 
     private OMEROCredentialsEnvironment defaultCredentials = new OMEROCredentialsEnvironment();

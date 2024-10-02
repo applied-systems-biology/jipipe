@@ -17,7 +17,7 @@ import com.google.common.collect.ImmutableList;
 import org.hkijena.jipipe.JIPipe;
 import org.hkijena.jipipe.api.SetJIPipeDocumentation;
 import org.hkijena.jipipe.api.environments.ExternalEnvironmentParameterSettings;
-import org.hkijena.jipipe.api.environments.ExternalEnvironmentSettings;
+import org.hkijena.jipipe.api.environments.JIPipeExternalEnvironmentSettings;
 import org.hkijena.jipipe.api.environments.JIPipeEnvironment;
 import org.hkijena.jipipe.api.parameters.JIPipeParameter;
 import org.hkijena.jipipe.api.settings.JIPipeDefaultApplicationSettingsSheetCategory;
@@ -28,31 +28,45 @@ import org.hkijena.jipipe.utils.UIUtils;
 import javax.swing.*;
 import java.util.List;
 
-public class RPluginApplicationSettings extends JIPipeDefaultApplicationsSettingsSheet implements ExternalEnvironmentSettings {
+public class RPluginApplicationSettings extends JIPipeDefaultApplicationsSettingsSheet implements JIPipeExternalEnvironmentSettings {
 
     public static String ID = "org.hkijena.jipipe:r";
-    private REnvironment defaultEnvironment = new REnvironment();
+    private final REnvironment standardEnvironment = new REnvironment();
+    private OptionalREnvironment defaultEnvironment = new OptionalREnvironment();
     private REnvironment.List presets = new REnvironment.List();
 
     public RPluginApplicationSettings() {
-        defaultEnvironment.setLoadFromArtifact(true);
-        defaultEnvironment.setArtifactQuery(new JIPipeArtifactQueryParameter("org.r.r_prepackaged:*"));
+        preconfigureEnvironment(standardEnvironment);
+        preconfigureEnvironment(defaultEnvironment.getContent());
+    }
+
+    private void preconfigureEnvironment(REnvironment environment) {
+        environment.setLoadFromArtifact(true);
+        environment.setArtifactQuery(new JIPipeArtifactQueryParameter("org.r.r_prepackaged:*"));
     }
 
     public static RPluginApplicationSettings getInstance() {
         return JIPipe.getSettings().getById(ID, RPluginApplicationSettings.class);
-
     }
 
-    @SetJIPipeDocumentation(name = "R environment", description = "Describes the R environment to use.")
+    public REnvironment getReadOnlyEnvironment() {
+        if(defaultEnvironment.isEnabled()) {
+            return new REnvironment(defaultEnvironment.getContent());
+        }
+        else {
+            return new REnvironment(standardEnvironment);
+        }
+    }
+
+    @SetJIPipeDocumentation(name = "R environment", description = "Describes the R environment to use. If not enabled, falls back to <code>org.r.*</code>.")
     @JIPipeParameter("default-r-environment")
     @ExternalEnvironmentParameterSettings(allowArtifact = true, artifactFilters = {"org.r.*"})
-    public REnvironment getDefaultEnvironment() {
+    public OptionalREnvironment getDefaultEnvironment() {
         return defaultEnvironment;
     }
 
     @JIPipeParameter("default-r-environment")
-    public void setDefaultEnvironment(REnvironment defaultEnvironment) {
+    public void setDefaultEnvironment(OptionalREnvironment defaultEnvironment) {
         this.defaultEnvironment = defaultEnvironment;
     }
 
