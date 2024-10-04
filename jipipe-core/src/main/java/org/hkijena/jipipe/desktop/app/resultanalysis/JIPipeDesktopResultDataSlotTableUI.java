@@ -17,9 +17,9 @@ import org.hkijena.jipipe.JIPipe;
 import org.hkijena.jipipe.api.annotation.JIPipeTextAnnotation;
 import org.hkijena.jipipe.api.data.JIPipeDataInfo;
 import org.hkijena.jipipe.api.data.JIPipeDataSlot;
-import org.hkijena.jipipe.api.data.JIPipeExportedDataAnnotation;
-import org.hkijena.jipipe.api.data.serialization.JIPipeDataTableMetadata;
-import org.hkijena.jipipe.api.data.serialization.JIPipeDataTableMetadataRow;
+import org.hkijena.jipipe.api.data.serialization.JIPipeDataAnnotationInfo;
+import org.hkijena.jipipe.api.data.serialization.JIPipeDataTableInfo;
+import org.hkijena.jipipe.api.data.serialization.JIPipeDataTableRowInfo;
 import org.hkijena.jipipe.api.parameters.JIPipeParameterCollection;
 import org.hkijena.jipipe.api.project.JIPipeProject;
 import org.hkijena.jipipe.api.run.JIPipeRunnableQueue;
@@ -59,7 +59,7 @@ import java.util.HashSet;
 import java.util.Set;
 
 /**
- * UI that displays the {@link JIPipeDataTableMetadata} of an {@link JIPipeDataSlot}
+ * UI that displays the {@link JIPipeDataTableInfo} of an {@link JIPipeDataSlot}
  */
 public class JIPipeDesktopResultDataSlotTableUI extends JIPipeDesktopProjectWorkbenchPanel implements JIPipeParameterCollection.ParameterChangedEventListener {
 
@@ -69,7 +69,7 @@ public class JIPipeDesktopResultDataSlotTableUI extends JIPipeDesktopProjectWork
     private final JIPipeProject project;
     private final Path storagePath;
     private JXTable table;
-    private JIPipeDataTableMetadata dataTable;
+    private JIPipeDataTableInfo dataTable;
     private JIPipeDesktopFormPanel rowUIList;
     private JIPipeDesktopRowDataTableCellRenderer previewRenderer;
     private JIPipeDesktopRowDataAnnotationTableCellRenderer dataAnnotationPreviewRenderer;
@@ -99,8 +99,8 @@ public class JIPipeDesktopResultDataSlotTableUI extends JIPipeDesktopProjectWork
         table.setDefaultRenderer(JIPipeDataInfo.class, new JIPipeDesktopDataInfoCellRenderer());
         previewRenderer = new JIPipeDesktopRowDataTableCellRenderer(getDesktopProjectWorkbench(), slot, table, scrollPane);
         dataAnnotationPreviewRenderer = new JIPipeDesktopRowDataAnnotationTableCellRenderer(getDesktopProjectWorkbench(), slot, table, scrollPane);
-        table.setDefaultRenderer(JIPipeDataTableMetadataRow.class, previewRenderer);
-        table.setDefaultRenderer(JIPipeExportedDataAnnotation.class, dataAnnotationPreviewRenderer);
+        table.setDefaultRenderer(JIPipeDataTableRowInfo.class, previewRenderer);
+        table.setDefaultRenderer(JIPipeDataAnnotationInfo.class, dataAnnotationPreviewRenderer);
         table.setDefaultRenderer(JIPipeTextAnnotation.class, new JIPipeDesktopAnnotationTableCellRenderer());
         table.setAutoResizeMode(JTable.AUTO_RESIZE_OFF);
 
@@ -235,7 +235,7 @@ public class JIPipeDesktopResultDataSlotTableUI extends JIPipeDesktopProjectWork
     private void handleSlotRowDefaultAction(int selectedRow, int selectedColumn) {
         int row = table.getRowSorter().convertRowIndexToModel(selectedRow);
         int dataAnnotationColumn = selectedColumn >= 0 ? dataTable.toDataAnnotationColumnIndex(table.convertColumnIndexToModel(selectedColumn)) : -1;
-        JIPipeDataTableMetadataRow rowInstance = dataTable.getRowList().get(row);
+        JIPipeDataTableRowInfo rowInstance = dataTable.getRowList().get(row);
         JIPipeDesktopResultDataSlotRowUI ui = JIPipe.getDataTypes().getUIForResultSlot(getDesktopProjectWorkbench(), slot, rowInstance);
         ui.handleDefaultActionOrDisplayDataAnnotation(dataAnnotationColumn);
     }
@@ -244,7 +244,7 @@ public class JIPipeDesktopResultDataSlotTableUI extends JIPipeDesktopProjectWork
         rowUIList.clear();
         for (int viewRow : selectedRows) {
             int row = table.getRowSorter().convertRowIndexToModel(viewRow);
-            JIPipeDataTableMetadataRow rowInstance = dataTable.getRowList().get(row);
+            JIPipeDataTableRowInfo rowInstance = dataTable.getRowList().get(row);
             JLabel nameLabel = new JLabel("" + rowInstance.getIndex(), JIPipe.getDataTypes().getIconFor(slot.getAcceptedDataType()), JLabel.LEFT);
             nameLabel.setToolTipText(TooltipUtils.getDataTableTooltip(slot));
             JIPipeDesktopResultDataSlotRowUI rowUI = JIPipe.getDataTypes().getUIForResultSlot(getDesktopProjectWorkbench(), slot, rowInstance);
@@ -253,7 +253,7 @@ public class JIPipeDesktopResultDataSlotTableUI extends JIPipeDesktopProjectWork
     }
 
     private void reloadTable() {
-        dataTable = JIPipeDataTableMetadata.loadFromJson(slot.getSlotStoragePath().resolve("data-table.json"));
+        dataTable = JIPipeDataTableInfo.loadFromJson(slot.getSlotStoragePath().resolve("data-table.json"));
         if (JIPipeGeneralDataApplicationSettings.getInstance().isGenerateResultPreviews())
             table.setRowHeight(JIPipeGeneralDataApplicationSettings.getInstance().getPreviewSize());
         else

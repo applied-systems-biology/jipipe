@@ -13,7 +13,7 @@
 
 package org.hkijena.jipipe.desktop.app.resultanalysis.renderers;
 
-import org.hkijena.jipipe.api.data.serialization.JIPipeDataTableMetadata;
+import org.hkijena.jipipe.api.data.serialization.JIPipeDataTableInfo;
 import org.hkijena.jipipe.utils.UIUtils;
 
 import javax.swing.*;
@@ -24,14 +24,14 @@ import java.awt.*;
  * Renders additional {@link String} columns in a table
  */
 public class JIPipeDesktopDataSlotTableColumnHeaderRenderer implements TableCellRenderer {
-    private JIPipeDataTableMetadata dataTable;
+    private JIPipeDataTableInfo dataTable;
 
     /**
      * Creates a new instance
      *
      * @param dataTable The table
      */
-    public JIPipeDesktopDataSlotTableColumnHeaderRenderer(JIPipeDataTableMetadata dataTable) {
+    public JIPipeDesktopDataSlotTableColumnHeaderRenderer(JIPipeDataTableInfo dataTable) {
         this.dataTable = dataTable;
     }
 
@@ -48,7 +48,7 @@ public class JIPipeDesktopDataSlotTableColumnHeaderRenderer implements TableCell
                     info);
             return defaultRenderer.getTableCellRendererComponent(table, html, isSelected, hasFocus, row, column);
         } else {
-            String info = dataTable.getAnnotationColumns().get(dataTable.toAnnotationColumnIndex(modelColumn));
+            String info = dataTable.getTextAnnotationColumns().get(dataTable.toAnnotationColumnIndex(modelColumn));
             String html = String.format("<html><table><tr><td><img src=\"%s\"/></td><td>%s</tr>",
                     UIUtils.getIconFromResources("data-types/annotation.png"),
                     info);

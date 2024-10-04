@@ -15,8 +15,8 @@ package org.hkijena.jipipe.desktop.app.resultanalysis.renderers;
 
 import org.hkijena.jipipe.JIPipe;
 import org.hkijena.jipipe.api.data.JIPipeDataSlot;
-import org.hkijena.jipipe.api.data.serialization.JIPipeDataTableMetadataRow;
-import org.hkijena.jipipe.api.data.serialization.JIPipeMergedDataTableMetadata;
+import org.hkijena.jipipe.api.data.serialization.JIPipeDataTableRowInfo;
+import org.hkijena.jipipe.api.data.serialization.JIPipeMergedDataTableInfo;
 import org.hkijena.jipipe.desktop.app.JIPipeDesktopProjectWorkbench;
 import org.hkijena.jipipe.desktop.app.resultanalysis.JIPipeDesktopResultDataSlotPreview;
 import org.hkijena.jipipe.plugins.settings.JIPipeGeneralDataApplicationSettings;
@@ -28,11 +28,11 @@ import java.util.ArrayList;
 import java.util.List;
 
 /**
- * Renders data in {@link JIPipeMergedDataTableMetadata}
+ * Renders data in {@link JIPipeMergedDataTableInfo}
  */
 public class JIPipeDesktopRowDataMergedTableCellRenderer implements TableCellRenderer {
 
-    private final JIPipeMergedDataTableMetadata mergedDataTable;
+    private final JIPipeMergedDataTableInfo mergedDataTable;
     private final JScrollPane scrollPane;
     private final JTable table;
     private final JIPipeGeneralDataApplicationSettings dataSettings = JIPipeGeneralDataApplicationSettings.getInstance();
@@ -46,7 +46,7 @@ public class JIPipeDesktopRowDataMergedTableCellRenderer implements TableCellRen
      * @param scrollPane      the scroll pane
      * @param table           the table
      */
-    public JIPipeDesktopRowDataMergedTableCellRenderer(JIPipeDesktopProjectWorkbench workbenchUI, JIPipeMergedDataTableMetadata mergedDataTable, JScrollPane scrollPane, JTable table) {
+    public JIPipeDesktopRowDataMergedTableCellRenderer(JIPipeDesktopProjectWorkbench workbenchUI, JIPipeMergedDataTableInfo mergedDataTable, JScrollPane scrollPane, JTable table) {
         this.workbenchUI = workbenchUI;
         this.mergedDataTable = mergedDataTable;
         this.scrollPane = scrollPane;
@@ -66,8 +66,8 @@ public class JIPipeDesktopRowDataMergedTableCellRenderer implements TableCellRen
 
     @Override
     public Component getTableCellRendererComponent(JTable table, Object value, boolean isSelected, boolean hasFocus, int row, int column) {
-        if (value instanceof JIPipeDataTableMetadataRow) {
-            JIPipeMergedDataTableMetadata model = (JIPipeMergedDataTableMetadata) table.getModel();
+        if (value instanceof JIPipeDataTableRowInfo) {
+            JIPipeMergedDataTableInfo model = (JIPipeMergedDataTableInfo) table.getModel();
             JIPipeDataSlot slot = model.getSlot(table.convertRowIndexToModel(row));
             while (row > previewCache.size() - 1) {
                 previewCache.add(null);
@@ -75,7 +75,7 @@ public class JIPipeDesktopRowDataMergedTableCellRenderer implements TableCellRen
             revalidatePreviewCache();
             JIPipeDesktopResultDataSlotPreview preview = previewCache.get(row);
             if (preview == null) {
-                preview = JIPipe.getDataTypes().getCellRendererFor(workbenchUI, table, slot, (JIPipeDataTableMetadataRow) value, null);
+                preview = JIPipe.getDataTypes().getCellRendererFor(workbenchUI, table, slot, (JIPipeDataTableRowInfo) value, null);
                 previewCache.set(row, preview);
             }
             if (isSelected) {

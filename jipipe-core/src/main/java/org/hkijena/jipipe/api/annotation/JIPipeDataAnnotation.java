@@ -18,6 +18,7 @@ import org.hkijena.jipipe.api.JIPipeProgressInfo;
 import org.hkijena.jipipe.api.data.JIPipeData;
 import org.hkijena.jipipe.api.data.JIPipeDataInfo;
 import org.hkijena.jipipe.api.data.JIPipeDataItemStore;
+import org.hkijena.jipipe.api.data.context.JIPipeDataContext;
 
 public class JIPipeDataAnnotation implements JIPipeAnnotation {
     private final String name;
@@ -62,5 +63,9 @@ public class JIPipeDataAnnotation implements JIPipeAnnotation {
     @Override
     public String toString() {
         return "$" + name + "=" + dataItemStore.getStringRepresentation() + " [" + JIPipeDataInfo.getInstance(getDataClass()).getId() + "]";
+    }
+
+    public JIPipeDataInfo getDataInfo() {
+        return JIPipeDataInfo.getInstance(getDataClass());
     }
 }

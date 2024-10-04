@@ -14,7 +14,7 @@
 package org.hkijena.jipipe.desktop.app.resultanalysis;
 
 import org.hkijena.jipipe.api.data.JIPipeDataSlot;
-import org.hkijena.jipipe.api.data.serialization.JIPipeDataTableMetadataRow;
+import org.hkijena.jipipe.api.data.serialization.JIPipeDataTableRowInfo;
 import org.hkijena.jipipe.desktop.app.JIPipeDesktopProjectWorkbench;
 import org.hkijena.jipipe.desktop.app.JIPipeDesktopProjectWorkbenchPanel;
 
@@ -27,14 +27,14 @@ import java.nio.file.Path;
  */
 public abstract class JIPipeDesktopResultDataSlotRowUI extends JIPipeDesktopProjectWorkbenchPanel {
     private final JIPipeDataSlot slot;
-    private final JIPipeDataTableMetadataRow row;
+    private final JIPipeDataTableRowInfo row;
 
     /**
      * @param workbenchUI The workbench
      * @param slot        The data slow
      * @param row         The slow row
      */
-    public JIPipeDesktopResultDataSlotRowUI(JIPipeDesktopProjectWorkbench workbenchUI, JIPipeDataSlot slot, JIPipeDataTableMetadataRow row) {
+    public JIPipeDesktopResultDataSlotRowUI(JIPipeDesktopProjectWorkbench workbenchUI, JIPipeDataSlot slot, JIPipeDataTableRowInfo row) {
         super(workbenchUI);
         this.slot = slot;
         this.row = row;
@@ -67,7 +67,7 @@ public abstract class JIPipeDesktopResultDataSlotRowUI extends JIPipeDesktopProj
      *
      * @return the data row that is displayed
      */
-    public JIPipeDataTableMetadataRow getRow() {
+    public JIPipeDataTableRowInfo getRow() {
         return row;
     }
 

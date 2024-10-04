@@ -14,8 +14,8 @@
 package org.hkijena.jipipe.desktop.app.resultanalysis;
 
 import org.hkijena.jipipe.api.data.JIPipeDataSlot;
-import org.hkijena.jipipe.api.data.JIPipeExportedDataAnnotation;
-import org.hkijena.jipipe.api.data.serialization.JIPipeDataTableMetadataRow;
+import org.hkijena.jipipe.api.data.serialization.JIPipeDataAnnotationInfo;
+import org.hkijena.jipipe.api.data.serialization.JIPipeDataTableRowInfo;
 import org.hkijena.jipipe.desktop.app.JIPipeDesktopProjectWorkbench;
 import org.hkijena.jipipe.desktop.app.JIPipeDesktopProjectWorkbenchPanel;
 import org.hkijena.jipipe.utils.UIUtils;
@@ -34,8 +34,8 @@ public abstract class JIPipeDesktopResultDataSlotPreview extends JIPipeDesktopPr
 
     private final JTable table;
     private final JIPipeDataSlot slot;
-    private final JIPipeDataTableMetadataRow row;
-    private final JIPipeExportedDataAnnotation dataAnnotation;
+    private final JIPipeDataTableRowInfo row;
+    private final JIPipeDataAnnotationInfo dataAnnotation;
 
     /**
      * Creates a new renderer
@@ -46,7 +46,7 @@ public abstract class JIPipeDesktopResultDataSlotPreview extends JIPipeDesktopPr
      * @param row            the row
      * @param dataAnnotation optional data annotation. if null, the main data is referenced
      */
-    public JIPipeDesktopResultDataSlotPreview(JIPipeDesktopProjectWorkbench workbench, JTable table, JIPipeDataSlot slot, JIPipeDataTableMetadataRow row, JIPipeExportedDataAnnotation dataAnnotation) {
+    public JIPipeDesktopResultDataSlotPreview(JIPipeDesktopProjectWorkbench workbench, JTable table, JIPipeDataSlot slot, JIPipeDataTableRowInfo row, JIPipeDataAnnotationInfo dataAnnotation) {
         super(workbench);
         this.slot = slot;
         this.row = row;
@@ -86,7 +86,7 @@ public abstract class JIPipeDesktopResultDataSlotPreview extends JIPipeDesktopPr
      * @param dataAnnotation optional data annotation
      * @return The display name
      */
-    public static String getDisplayName(JIPipeDesktopProjectWorkbench workbenchUI, JIPipeDataSlot slot, JIPipeDataTableMetadataRow row, JIPipeExportedDataAnnotation dataAnnotation) {
+    public static String getDisplayName(JIPipeDesktopProjectWorkbench workbenchUI, JIPipeDataSlot slot, JIPipeDataTableRowInfo row, JIPipeDataAnnotationInfo dataAnnotation) {
         return getAlgorithmCompartment(workbenchUI, slot) + "/" + getNodeName(slot) + "/" + slot.getName() + "/" + row.getIndex() + (dataAnnotation != null ? "/$" + dataAnnotation.getName() : "");
     }
 
@@ -98,7 +98,7 @@ public abstract class JIPipeDesktopResultDataSlotPreview extends JIPipeDesktopPr
      * @param dataAnnotation optional data annotation name
      * @return The row storage folder
      */
-    public static Path getRowStorageFolder(JIPipeDataSlot slot, JIPipeDataTableMetadataRow row, JIPipeExportedDataAnnotation dataAnnotation) {
+    public static Path getRowStorageFolder(JIPipeDataSlot slot, JIPipeDataTableRowInfo row, JIPipeDataAnnotationInfo dataAnnotation) {
         if (dataAnnotation == null)
             return slot.getSlotStoragePath().resolve("" + row.getIndex());
         else
@@ -122,7 +122,7 @@ public abstract class JIPipeDesktopResultDataSlotPreview extends JIPipeDesktopPr
         return slot;
     }
 
-    public JIPipeDataTableMetadataRow getRow() {
+    public JIPipeDataTableRowInfo getRow() {
         return row;
     }
 
@@ -142,7 +142,7 @@ public abstract class JIPipeDesktopResultDataSlotPreview extends JIPipeDesktopPr
      *
      * @return data annotation or null if the main data is referenced
      */
-    public JIPipeExportedDataAnnotation getDataAnnotation() {
+    public JIPipeDataAnnotationInfo getDataAnnotation() {
         return dataAnnotation;
     }
 }

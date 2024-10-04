@@ -17,7 +17,8 @@ import org.hkijena.jipipe.JIPipe;
 import org.hkijena.jipipe.api.JIPipeProgressInfo;
 import org.hkijena.jipipe.api.annotation.JIPipeTextAnnotation;
 import org.hkijena.jipipe.api.data.*;
-import org.hkijena.jipipe.api.data.serialization.JIPipeDataTableMetadataRow;
+import org.hkijena.jipipe.api.data.serialization.JIPipeDataAnnotationInfo;
+import org.hkijena.jipipe.api.data.serialization.JIPipeDataTableRowInfo;
 import org.hkijena.jipipe.api.data.storage.JIPipeFileSystemReadDataStorage;
 import org.hkijena.jipipe.api.data.storage.JIPipeFileSystemWriteDataStorage;
 import org.hkijena.jipipe.api.run.JIPipeRunnable;
@@ -59,7 +60,7 @@ public class JIPipeDesktopDefaultResultDataSlotRowUI extends JIPipeDesktopResult
      * @param slot        The data slot
      * @param row         The data slow row
      */
-    public JIPipeDesktopDefaultResultDataSlotRowUI(JIPipeDesktopProjectWorkbench workbenchUI, JIPipeDataSlot slot, JIPipeDataTableMetadataRow row) {
+    public JIPipeDesktopDefaultResultDataSlotRowUI(JIPipeDesktopProjectWorkbench workbenchUI, JIPipeDataSlot slot, JIPipeDataTableRowInfo row) {
         super(workbenchUI, slot, row);
         String datatypeId = row.getTrueDataType();
         importOperations = JIPipe.getInstance().getDatatypeRegistry().getSortedImportOperationsFor(datatypeId);
@@ -97,7 +98,7 @@ public class JIPipeDesktopDefaultResultDataSlotRowUI extends JIPipeDesktopResult
             JButton dataAnnotationButton = new JButton("Data annotations ...", UIUtils.getIconFromResources("data-types/data-annotation.png"));
             JPopupMenu menu = UIUtils.addPopupMenuToButton(dataAnnotationButton);
 
-            for (JIPipeExportedDataAnnotation dataAnnotation : getRow().getDataAnnotations()) {
+            for (JIPipeDataAnnotationInfo dataAnnotation : getRow().getDataAnnotations()) {
                 JIPipeDataInfo dataInfo = JIPipeDataInfo.getInstance(dataAnnotation.getTrueDataType());
                 JMenu subMenu = new JMenu(dataAnnotation.getName());
                 subMenu.setIcon(JIPipe.getDataTypes().getIconFor(dataInfo.getDataClass()));
@@ -290,7 +291,7 @@ public class JIPipeDesktopDefaultResultDataSlotRowUI extends JIPipeDesktopResult
         }
     }
 
-    private void runImportOperation(JIPipeDataImportOperation operation, JIPipeExportedDataAnnotation dataAnnotation) {
+    private void runImportOperation(JIPipeDataImportOperation operation, JIPipeDataAnnotationInfo dataAnnotation) {
         try (BusyCursor cursor = new BusyCursor(this)) {
             operation.show(getSlot(),
                     getRow(),

@@ -22,7 +22,8 @@ import org.hkijena.jipipe.JIPipeService;
 import org.hkijena.jipipe.api.JIPipeProgressInfo;
 import org.hkijena.jipipe.api.LabelAsJIPipeHidden;
 import org.hkijena.jipipe.api.data.*;
-import org.hkijena.jipipe.api.data.serialization.JIPipeDataTableMetadataRow;
+import org.hkijena.jipipe.api.data.serialization.JIPipeDataAnnotationInfo;
+import org.hkijena.jipipe.api.data.serialization.JIPipeDataTableRowInfo;
 import org.hkijena.jipipe.api.validation.JIPipeValidationReportEntry;
 import org.hkijena.jipipe.api.validation.JIPipeValidationReportEntryLevel;
 import org.hkijena.jipipe.api.validation.JIPipeValidationRuntimeException;
@@ -513,12 +514,12 @@ public class JIPipeDatatypeRegistry {
      * @param row         table row
      * @return slot UI
      */
-    public JIPipeDesktopResultDataSlotRowUI getUIForResultSlot(JIPipeDesktopProjectWorkbench workbenchUI, JIPipeDataSlot slot, JIPipeDataTableMetadataRow row) {
+    public JIPipeDesktopResultDataSlotRowUI getUIForResultSlot(JIPipeDesktopProjectWorkbench workbenchUI, JIPipeDataSlot slot, JIPipeDataTableRowInfo row) {
         Class<? extends JIPipeData> dataClass = getById(row.getTrueDataType());
         Class<? extends JIPipeDesktopResultDataSlotRowUI> uiClass = resultUIs.getOrDefault(dataClass, null);
         if (uiClass != null) {
             try {
-                return ConstructorUtils.getMatchingAccessibleConstructor(uiClass, JIPipeDesktopProjectWorkbench.class, JIPipeDataSlot.class, JIPipeDataTableMetadataRow.class)
+                return ConstructorUtils.getMatchingAccessibleConstructor(uiClass, JIPipeDesktopProjectWorkbench.class, JIPipeDataSlot.class, JIPipeDataTableRowInfo.class)
                         .newInstance(workbenchUI, slot, row);
             } catch (InstantiationException | IllegalAccessException | InvocationTargetException e) {
                 throw new RuntimeException(e);
@@ -538,13 +539,13 @@ public class JIPipeDatatypeRegistry {
      * @param dataAnnotation the data annotation (optional)
      * @return cell renderer
      */
-    public JIPipeDesktopResultDataSlotPreview getCellRendererFor(JIPipeDesktopProjectWorkbench workbench, JTable table, JIPipeDataSlot slot, JIPipeDataTableMetadataRow row, JIPipeExportedDataAnnotation dataAnnotation) {
+    public JIPipeDesktopResultDataSlotPreview getCellRendererFor(JIPipeDesktopProjectWorkbench workbench, JTable table, JIPipeDataSlot slot, JIPipeDataTableRowInfo row, JIPipeDataAnnotationInfo dataAnnotation) {
         Class<? extends JIPipeData> dataClass = getById(row.getTrueDataType());
         if (JIPipeGeneralDataApplicationSettings.getInstance().isGenerateResultPreviews()) {
             Class<? extends JIPipeDesktopResultDataSlotPreview> rendererClass = resultTableCellUIs.getOrDefault(dataClass, null);
             if (rendererClass != null) {
                 try {
-                    return rendererClass.getConstructor(JIPipeDesktopProjectWorkbench.class, JTable.class, JIPipeDataSlot.class, JIPipeDataTableMetadataRow.class, JIPipeExportedDataAnnotation.class)
+                    return rendererClass.getConstructor(JIPipeDesktopProjectWorkbench.class, JTable.class, JIPipeDataSlot.class, JIPipeDataTableRowInfo.class, JIPipeDataAnnotationInfo.class)
                             .newInstance(workbench, table, slot, row, dataAnnotation);
                 } catch (InstantiationException | IllegalAccessException | InvocationTargetException |
                          NoSuchMethodException e) {

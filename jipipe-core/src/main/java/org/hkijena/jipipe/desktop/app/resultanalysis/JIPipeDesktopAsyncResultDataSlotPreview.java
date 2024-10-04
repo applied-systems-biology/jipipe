@@ -16,7 +16,8 @@ package org.hkijena.jipipe.desktop.app.resultanalysis;
 import org.hkijena.jipipe.JIPipe;
 import org.hkijena.jipipe.api.JIPipeProgressInfo;
 import org.hkijena.jipipe.api.data.*;
-import org.hkijena.jipipe.api.data.serialization.JIPipeDataTableMetadataRow;
+import org.hkijena.jipipe.api.data.serialization.JIPipeDataAnnotationInfo;
+import org.hkijena.jipipe.api.data.serialization.JIPipeDataTableRowInfo;
 import org.hkijena.jipipe.api.data.storage.JIPipeFileSystemReadDataStorage;
 import org.hkijena.jipipe.desktop.app.JIPipeDesktopProjectWorkbench;
 import org.hkijena.jipipe.plugins.settings.JIPipeGeneralDataApplicationSettings;
@@ -49,7 +50,7 @@ public abstract class JIPipeDesktopAsyncResultDataSlotPreview extends JIPipeDesk
      * @param row            the row
      * @param dataAnnotation the data annotation (Optional)
      */
-    public JIPipeDesktopAsyncResultDataSlotPreview(JIPipeDesktopProjectWorkbench workbench, JTable table, JIPipeDataSlot slot, JIPipeDataTableMetadataRow row, JIPipeExportedDataAnnotation dataAnnotation) {
+    public JIPipeDesktopAsyncResultDataSlotPreview(JIPipeDesktopProjectWorkbench workbench, JTable table, JIPipeDataSlot slot, JIPipeDataTableRowInfo row, JIPipeDataAnnotationInfo dataAnnotation) {
         super(workbench, table, slot, row, dataAnnotation);
         initialize();
     }

@@ -20,7 +20,7 @@ import org.hkijena.jipipe.api.data.JIPipeData;
 import org.hkijena.jipipe.api.data.JIPipeDataInfo;
 import org.hkijena.jipipe.api.data.JIPipeDataSlot;
 import org.hkijena.jipipe.api.data.JIPipeDataTable;
-import org.hkijena.jipipe.api.data.serialization.JIPipeDataTableMetadata;
+import org.hkijena.jipipe.api.data.serialization.JIPipeDataTableInfo;
 import org.hkijena.jipipe.api.nodes.JIPipeGraphNode;
 import org.hkijena.jipipe.api.nodes.infos.JIPipeEmptyNodeInfo;
 import org.hkijena.jipipe.api.project.JIPipeProject;
@@ -70,7 +70,7 @@ public class JIPipeDesktopExtendedMultiDataTableModel implements TableModel {
     }
 
     /**
-     * Adds an {@link JIPipeDataTableMetadata}
+     * Adds an {@link JIPipeDataTableInfo}
      *
      * @param project        The project
      * @param dataTableStore The data slot

@@ -15,8 +15,8 @@ package org.hkijena.jipipe.desktop.app.resultanalysis.renderers;
 
 import org.hkijena.jipipe.JIPipe;
 import org.hkijena.jipipe.api.data.JIPipeDataSlot;
-import org.hkijena.jipipe.api.data.serialization.JIPipeDataTableMetadata;
-import org.hkijena.jipipe.api.data.serialization.JIPipeDataTableMetadataRow;
+import org.hkijena.jipipe.api.data.serialization.JIPipeDataTableInfo;
+import org.hkijena.jipipe.api.data.serialization.JIPipeDataTableRowInfo;
 import org.hkijena.jipipe.desktop.app.JIPipeDesktopProjectWorkbench;
 import org.hkijena.jipipe.desktop.app.resultanalysis.JIPipeDesktopResultDataSlotPreview;
 import org.hkijena.jipipe.plugins.settings.JIPipeGeneralDataApplicationSettings;
@@ -28,7 +28,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 /**
- * Renders row data of an {@link JIPipeDataTableMetadata}
+ * Renders row data of an {@link JIPipeDataTableInfo}
  */
 public class JIPipeDesktopRowDataTableCellRenderer implements TableCellRenderer {
 
@@ -66,7 +66,7 @@ public class JIPipeDesktopRowDataTableCellRenderer implements TableCellRenderer 
 
     @Override
     public Component getTableCellRendererComponent(JTable table, Object value, boolean isSelected, boolean hasFocus, int row, int column) {
-        if (value instanceof JIPipeDataTableMetadataRow) {
+        if (value instanceof JIPipeDataTableRowInfo) {
             row = table.convertRowIndexToModel(row);
             while (row > previewCache.size() - 1) {
                 previewCache.add(null);
@@ -74,7 +74,7 @@ public class JIPipeDesktopRowDataTableCellRenderer implements TableCellRenderer 
             revalidatePreviewCache();
             JIPipeDesktopResultDataSlotPreview preview = previewCache.get(row);
             if (preview == null) {
-                preview = JIPipe.getDataTypes().getCellRendererFor(workbenchUI, table, slot, (JIPipeDataTableMetadataRow) value, null);
+                preview = JIPipe.getDataTypes().getCellRendererFor(workbenchUI, table, slot, (JIPipeDataTableRowInfo) value, null);
                 previewCache.set(row, preview);
             }
             if (isSelected) {

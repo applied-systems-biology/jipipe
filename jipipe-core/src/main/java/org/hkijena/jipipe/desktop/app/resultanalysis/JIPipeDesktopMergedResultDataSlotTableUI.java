@@ -18,10 +18,10 @@ import org.hkijena.jipipe.api.annotation.JIPipeTextAnnotation;
 import org.hkijena.jipipe.api.compartments.algorithms.JIPipeProjectCompartment;
 import org.hkijena.jipipe.api.data.JIPipeDataInfo;
 import org.hkijena.jipipe.api.data.JIPipeDataSlot;
-import org.hkijena.jipipe.api.data.JIPipeExportedDataAnnotation;
-import org.hkijena.jipipe.api.data.serialization.JIPipeDataTableMetadata;
-import org.hkijena.jipipe.api.data.serialization.JIPipeDataTableMetadataRow;
-import org.hkijena.jipipe.api.data.serialization.JIPipeMergedDataTableMetadata;
+import org.hkijena.jipipe.api.data.serialization.JIPipeDataAnnotationInfo;
+import org.hkijena.jipipe.api.data.serialization.JIPipeDataTableInfo;
+import org.hkijena.jipipe.api.data.serialization.JIPipeDataTableRowInfo;
+import org.hkijena.jipipe.api.data.serialization.JIPipeMergedDataTableInfo;
 import org.hkijena.jipipe.api.nodes.JIPipeGraphNode;
 import org.hkijena.jipipe.api.parameters.JIPipeParameterCollection;
 import org.hkijena.jipipe.api.project.JIPipeProject;
@@ -72,7 +72,7 @@ public class JIPipeDesktopMergedResultDataSlotTableUI extends JIPipeDesktopProje
     private final JIPipeDesktopSearchTextField searchTextField = new JIPipeDesktopSearchTextField();
     private final JIPipeDesktopRibbon ribbon = new JIPipeDesktopRibbon();
     private JXTable table;
-    private JIPipeMergedDataTableMetadata mergedDataTable;
+    private JIPipeMergedDataTableInfo mergedDataTable;
     private JIPipeDesktopFormPanel rowUIList;
     private JScrollPane scrollPane;
     private JIPipeDesktopRowDataMergedTableCellRenderer previewRenderer;
@@ -222,7 +222,7 @@ public class JIPipeDesktopMergedResultDataSlotTableUI extends JIPipeDesktopProje
 
     private void exportMetadataAsTableEditor() {
         AnnotationTableData tableData = new AnnotationTableData();
-        for (JIPipeDataTableMetadata exportedDataTable : mergedDataTable.getAddedTables()) {
+        for (JIPipeDataTableInfo exportedDataTable : mergedDataTable.getAddedTables()) {
             tableData.addRows(exportedDataTable.toAnnotationTable());
         }
         JIPipeDesktopTableEditor.openWindow(getDesktopWorkbench(), tableData, "Metadata");
@@ -232,7 +232,7 @@ public class JIPipeDesktopMergedResultDataSlotTableUI extends JIPipeDesktopProje
         Path path = JIPipeFileChooserApplicationSettings.saveFile(this, JIPipeFileChooserApplicationSettings.LastDirectoryKey.Projects, "Export as file", UIUtils.EXTENSION_FILTER_CSV, UIUtils.EXTENSION_FILTER_XLSX);
         if (path != null) {
             AnnotationTableData tableData = new AnnotationTableData();
-            for (JIPipeDataTableMetadata exportedDataTable : mergedDataTable.getAddedTables()) {
+            for (JIPipeDataTableInfo exportedDataTable : mergedDataTable.getAddedTables()) {
                 tableData.addRows(exportedDataTable.toAnnotationTable());
             }
             if (UIUtils.EXTENSION_FILTER_XLSX.accept(path.toFile())) {
@@ -246,7 +246,7 @@ public class JIPipeDesktopMergedResultDataSlotTableUI extends JIPipeDesktopProje
     private void handleSlotRowDefaultAction(int selectedRow, int selectedColumn) {
         int multiRow = table.getRowSorter().convertRowIndexToModel(selectedRow);
         int multiDataAnnotationColumn = selectedColumn >= 0 ? mergedDataTable.toDataAnnotationColumnIndex(table.convertColumnIndexToModel(selectedColumn)) : -1;
-        JIPipeDataTableMetadataRow rowInstance = mergedDataTable.getRowList().get(multiRow);
+        JIPipeDataTableRowInfo rowInstance = mergedDataTable.getRowList().get(multiRow);
         JIPipeDataSlot slot = mergedDataTable.getSlot(multiRow);
         JIPipeDesktopResultDataSlotRowUI ui = JIPipe.getDataTypes().getUIForResultSlot(getDesktopProjectWorkbench(), slot, rowInstance);
         int dataAnnotationColumn = -1;
@@ -261,7 +261,7 @@ public class JIPipeDesktopMergedResultDataSlotTableUI extends JIPipeDesktopProje
         rowUIList.clear();
         for (int viewRow : selectedRows) {
             int row = table.getRowSorter().convertRowIndexToModel(viewRow);
-            JIPipeDataTableMetadataRow rowInstance = mergedDataTable.getRowList().get(row);
+            JIPipeDataTableRowInfo rowInstance = mergedDataTable.getRowList().get(row);
             JIPipeDataSlot slot = mergedDataTable.getSlot(row);
             JLabel nameLabel = new JLabel("" + rowInstance.getIndex(), JIPipe.getDataTypes().getIconFor(slot.getAcceptedDataType()), JLabel.LEFT);
             nameLabel.setToolTipText(TooltipUtils.getDataTableTooltip(slot));
@@ -271,9 +271,9 @@ public class JIPipeDesktopMergedResultDataSlotTableUI extends JIPipeDesktopProje
     }
 
     private void reloadTable() {
-        mergedDataTable = new JIPipeMergedDataTableMetadata();
+        mergedDataTable = new JIPipeMergedDataTableInfo();
         for (JIPipeDataSlot slot : this.slots) {
-            JIPipeDataTableMetadata dataTable = JIPipeDataTableMetadata.loadFromJson(slot.getSlotStoragePath().resolve("data-table.json"));
+            JIPipeDataTableInfo dataTable = JIPipeDataTableInfo.loadFromJson(slot.getSlotStoragePath().resolve("data-table.json"));
             mergedDataTable.add(getProject(), slot, dataTable);
         }
         if (JIPipeGeneralDataApplicationSettings.getInstance().isGenerateResultPreviews())
@@ -282,8 +282,8 @@ public class JIPipeDesktopMergedResultDataSlotTableUI extends JIPipeDesktopProje
             table.setRowHeight(25);
         previewRenderer = new JIPipeDesktopRowDataMergedTableCellRenderer(getDesktopProjectWorkbench(), mergedDataTable, scrollPane, table);
         dataAnnotationPreviewRenderer = new JIPipeDesktopRowDataAnnotationMergedTableCellRenderer(getDesktopProjectWorkbench(), mergedDataTable, scrollPane, table);
-        table.setDefaultRenderer(JIPipeDataTableMetadataRow.class, previewRenderer);
-        table.setDefaultRenderer(JIPipeExportedDataAnnotation.class, dataAnnotationPreviewRenderer);
+        table.setDefaultRenderer(JIPipeDataTableRowInfo.class, previewRenderer);
+        table.setDefaultRenderer(JIPipeDataAnnotationInfo.class, dataAnnotationPreviewRenderer);
         table.setModel(mergedDataTable);
         refreshTable();
     }

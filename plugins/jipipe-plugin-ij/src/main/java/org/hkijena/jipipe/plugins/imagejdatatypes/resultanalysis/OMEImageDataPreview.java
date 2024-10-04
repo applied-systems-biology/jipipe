@@ -14,8 +14,8 @@
 package org.hkijena.jipipe.plugins.imagejdatatypes.resultanalysis;
 
 import org.hkijena.jipipe.api.data.JIPipeDataSlot;
-import org.hkijena.jipipe.api.data.JIPipeExportedDataAnnotation;
-import org.hkijena.jipipe.api.data.serialization.JIPipeDataTableMetadataRow;
+import org.hkijena.jipipe.api.data.serialization.JIPipeDataAnnotationInfo;
+import org.hkijena.jipipe.api.data.serialization.JIPipeDataTableRowInfo;
 import org.hkijena.jipipe.desktop.app.JIPipeDesktopProjectWorkbench;
 import org.hkijena.jipipe.desktop.app.resultanalysis.JIPipeDesktopAsyncResultDataSlotPreview;
 
@@ -33,7 +33,7 @@ public class OMEImageDataPreview extends JIPipeDesktopAsyncResultDataSlotPreview
      * @param row            the row
      * @param dataAnnotation optional data annotation
      */
-    public OMEImageDataPreview(JIPipeDesktopProjectWorkbench workbench, JTable table, JIPipeDataSlot slot, JIPipeDataTableMetadataRow row, JIPipeExportedDataAnnotation dataAnnotation) {
+    public OMEImageDataPreview(JIPipeDesktopProjectWorkbench workbench, JTable table, JIPipeDataSlot slot, JIPipeDataTableRowInfo row, JIPipeDataAnnotationInfo dataAnnotation) {
         super(workbench, table, slot, row, dataAnnotation);
     }
 }

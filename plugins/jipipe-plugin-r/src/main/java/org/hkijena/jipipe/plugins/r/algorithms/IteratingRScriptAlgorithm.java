@@ -19,7 +19,7 @@ import org.hkijena.jipipe.api.JIPipeProgressInfo;
 import org.hkijena.jipipe.api.SetJIPipeDocumentation;
 import org.hkijena.jipipe.api.annotation.JIPipeTextAnnotationMergeMode;
 import org.hkijena.jipipe.api.data.*;
-import org.hkijena.jipipe.api.data.serialization.JIPipeDataTableMetadata;
+import org.hkijena.jipipe.api.data.serialization.JIPipeDataTableInfo;
 import org.hkijena.jipipe.api.data.storage.JIPipeFileSystemReadDataStorage;
 import org.hkijena.jipipe.api.data.storage.JIPipeFileSystemWriteDataStorage;
 import org.hkijena.jipipe.api.environments.JIPipeEnvironment;
@@ -196,7 +196,7 @@ public class IteratingRScriptAlgorithm extends JIPipeIteratingAlgorithm implemen
 
         for (JIPipeOutputDataSlot outputSlot : getOutputSlots()) {
             Path storagePath = outputSlotPaths.get(outputSlot.getName());
-            JIPipeDataTableMetadata table = JIPipeDataTableMetadata.loadFromJson(outputSlotPaths.get(outputSlot.getName()).resolve("data-table.json"));
+            JIPipeDataTableInfo table = JIPipeDataTableInfo.loadFromJson(outputSlotPaths.get(outputSlot.getName()).resolve("data-table.json"));
             for (int row = 0; row < table.getRowCount(); row++) {
                 JIPipeDataInfo dataInfo = table.getDataTypeOf(row);
                 Path rowStoragePath = table.getRowStoragePath(storagePath, row);

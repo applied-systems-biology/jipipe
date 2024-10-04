@@ -11,26 +11,25 @@
  * See the LICENSE file provided with the code for the full license.
  */
 
-package org.hkijena.jipipe.api.data;
+package org.hkijena.jipipe.api.data.serialization;
 
 import com.fasterxml.jackson.annotation.JsonGetter;
 import com.fasterxml.jackson.annotation.JsonSetter;
-import org.hkijena.jipipe.api.data.serialization.JIPipeDataTableMetadataRow;
 
 import java.nio.file.Path;
 import java.util.Objects;
 
-public class JIPipeExportedDataAnnotation {
+public class JIPipeDataAnnotationInfo {
     private String name;
     private Path rowStorageFolder;
     private String trueDataType;
-    private JIPipeDataTableMetadataRow tableRow;
+    private JIPipeDataTableRowInfo tableRow;
 
-    public JIPipeExportedDataAnnotation() {
+    public JIPipeDataAnnotationInfo() {
 
     }
 
-    public JIPipeExportedDataAnnotation(String name, Path rowStorageFolder, String trueDataType, JIPipeDataTableMetadataRow tableRow) {
+    public JIPipeDataAnnotationInfo(String name, Path rowStorageFolder, String trueDataType, JIPipeDataTableRowInfo tableRow) {
         this.name = name;
         this.rowStorageFolder = rowStorageFolder;
         this.trueDataType = trueDataType;
@@ -83,7 +82,7 @@ public class JIPipeExportedDataAnnotation {
         this.name = name;
     }
 
-    public boolean nameEquals(JIPipeExportedDataAnnotation annotation) {
+    public boolean nameEquals(JIPipeDataAnnotationInfo annotation) {
         return Objects.equals(getName(), annotation.getName());
     }
 
@@ -91,11 +90,11 @@ public class JIPipeExportedDataAnnotation {
         return Objects.equals(getName(), name);
     }
 
-    public JIPipeDataTableMetadataRow getTableRow() {
+    public JIPipeDataTableRowInfo getTableRow() {
         return tableRow;
     }
 
-    public void setTableRow(JIPipeDataTableMetadataRow tableRow) {
+    public void setTableRow(JIPipeDataTableRowInfo tableRow) {
         this.tableRow = tableRow;
     }
 }

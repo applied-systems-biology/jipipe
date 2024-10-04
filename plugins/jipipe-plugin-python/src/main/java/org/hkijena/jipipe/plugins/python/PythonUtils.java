@@ -21,7 +21,7 @@ import org.hkijena.jipipe.api.JIPipeProgressInfo;
 import org.hkijena.jipipe.api.annotation.JIPipeTextAnnotation;
 import org.hkijena.jipipe.api.annotation.JIPipeTextAnnotationMergeMode;
 import org.hkijena.jipipe.api.data.*;
-import org.hkijena.jipipe.api.data.serialization.JIPipeDataTableMetadata;
+import org.hkijena.jipipe.api.data.serialization.JIPipeDataTableInfo;
 import org.hkijena.jipipe.api.data.storage.JIPipeFileSystemReadDataStorage;
 import org.hkijena.jipipe.api.data.storage.JIPipeFileSystemWriteDataStorage;
 import org.hkijena.jipipe.api.nodes.JIPipeGraphNode;
@@ -253,7 +253,7 @@ public class PythonUtils {
     public static void extractOutputs(JIPipeSingleIterationStep iterationStep, Map<String, Path> outputSlotPaths, List<JIPipeOutputDataSlot> outputSlots, JIPipeTextAnnotationMergeMode annotationMergeStrategy, JIPipeProgressInfo progressInfo) {
         for (JIPipeOutputDataSlot outputSlot : outputSlots) {
             Path storagePath = outputSlotPaths.get(outputSlot.getName());
-            JIPipeDataTableMetadata table = JIPipeDataTableMetadata.loadFromJson(outputSlotPaths.get(outputSlot.getName()).resolve("data-table.json"));
+            JIPipeDataTableInfo table = JIPipeDataTableInfo.loadFromJson(outputSlotPaths.get(outputSlot.getName()).resolve("data-table.json"));
             for (int row = 0; row < table.getRowCount(); row++) {
                 JIPipeDataInfo dataInfo = table.getDataTypeOf(row);
                 Path rowStoragePath = table.getRowStoragePath(storagePath, row);
@@ -266,7 +266,7 @@ public class PythonUtils {
     public static void extractOutputs(JIPipeMultiIterationStep iterationStep, Map<String, Path> outputSlotPaths, List<JIPipeOutputDataSlot> outputSlots, JIPipeTextAnnotationMergeMode annotationMergeStrategy, JIPipeProgressInfo progressInfo) {
         for (JIPipeOutputDataSlot outputSlot : outputSlots) {
             Path storagePath = outputSlotPaths.get(outputSlot.getName());
-            JIPipeDataTableMetadata table = JIPipeDataTableMetadata.loadFromJson(outputSlotPaths.get(outputSlot.getName()).resolve("data-table.json"));
+            JIPipeDataTableInfo table = JIPipeDataTableInfo.loadFromJson(outputSlotPaths.get(outputSlot.getName()).resolve("data-table.json"));
             for (int row = 0; row < table.getRowCount(); row++) {
                 JIPipeDataInfo dataInfo = table.getDataTypeOf(row);
                 Path rowStoragePath = table.getRowStoragePath(storagePath, row);
@@ -279,7 +279,7 @@ public class PythonUtils {
     public static void extractOutputs(Map<String, Path> outputSlotPaths, List<JIPipeOutputDataSlot> outputSlots, JIPipeProgressInfo progressInfo) {
         for (JIPipeOutputDataSlot outputSlot : outputSlots) {
             Path storagePath = outputSlotPaths.get(outputSlot.getName());
-            JIPipeDataTableMetadata table = JIPipeDataTableMetadata.loadFromJson(outputSlotPaths.get(outputSlot.getName()).resolve("data-table.json"));
+            JIPipeDataTableInfo table = JIPipeDataTableInfo.loadFromJson(outputSlotPaths.get(outputSlot.getName()).resolve("data-table.json"));
             for (int row = 0; row < table.getRowCount(); row++) {
                 JIPipeDataInfo dataInfo = table.getDataTypeOf(row);
                 Path rowStoragePath = table.getRowStoragePath(storagePath, row);

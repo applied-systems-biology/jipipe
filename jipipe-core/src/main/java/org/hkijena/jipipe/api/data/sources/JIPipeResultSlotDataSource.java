@@ -15,7 +15,7 @@ package org.hkijena.jipipe.api.data.sources;
 
 import org.hkijena.jipipe.api.data.JIPipeDataSlot;
 import org.hkijena.jipipe.api.data.JIPipeDataSource;
-import org.hkijena.jipipe.api.data.serialization.JIPipeDataTableMetadataRow;
+import org.hkijena.jipipe.api.data.serialization.JIPipeDataTableRowInfo;
 
 import java.nio.file.Path;
 
@@ -24,10 +24,10 @@ import java.nio.file.Path;
  */
 public class JIPipeResultSlotDataSource implements JIPipeDataSource {
     private final JIPipeDataSlot slot;
-    private final JIPipeDataTableMetadataRow row;
+    private final JIPipeDataTableRowInfo row;
     private final Path rowStoragePath;
 
-    public JIPipeResultSlotDataSource(JIPipeDataSlot slot, JIPipeDataTableMetadataRow row, Path rowStoragePath) {
+    public JIPipeResultSlotDataSource(JIPipeDataSlot slot, JIPipeDataTableRowInfo row, Path rowStoragePath) {
         this.slot = slot;
         this.row = row;
         this.rowStoragePath = rowStoragePath;
@@ -37,7 +37,7 @@ public class JIPipeResultSlotDataSource implements JIPipeDataSource {
         return slot;
     }
 
-    public JIPipeDataTableMetadataRow getRow() {
+    public JIPipeDataTableRowInfo getRow() {
         return row;
     }
 

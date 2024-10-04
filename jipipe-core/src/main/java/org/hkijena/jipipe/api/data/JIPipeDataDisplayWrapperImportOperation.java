@@ -17,7 +17,7 @@ import org.hkijena.jipipe.JIPipe;
 import org.hkijena.jipipe.api.AbstractJIPipeRunnable;
 import org.hkijena.jipipe.api.JIPipeProgressInfo;
 import org.hkijena.jipipe.api.annotation.JIPipeTextAnnotationMergeMode;
-import org.hkijena.jipipe.api.data.serialization.JIPipeDataTableMetadataRow;
+import org.hkijena.jipipe.api.data.serialization.JIPipeDataTableRowInfo;
 import org.hkijena.jipipe.api.data.sources.JIPipeDataTableDataSource;
 import org.hkijena.jipipe.api.data.storage.JIPipeFileSystemReadDataStorage;
 import org.hkijena.jipipe.api.run.JIPipeRunnableQueue;
@@ -42,7 +42,7 @@ public class JIPipeDataDisplayWrapperImportOperation implements JIPipeDataImport
     }
 
     @Override
-    public JIPipeData show(JIPipeDataSlot slot, JIPipeDataTableMetadataRow row, String dataAnnotationName, Path rowStorageFolder, String compartmentName, String algorithmName, String displayName, JIPipeDesktopWorkbench workbench, JIPipeProgressInfo progressInfo) {
+    public JIPipeData show(JIPipeDataSlot slot, JIPipeDataTableRowInfo row, String dataAnnotationName, Path rowStorageFolder, String compartmentName, String algorithmName, String displayName, JIPipeDesktopWorkbench workbench, JIPipeProgressInfo progressInfo) {
         ImportDataRun run = new ImportDataRun(rowStorageFolder, slot.getAcceptedDataType(), row);
         JIPipeRunnableQueue.getInstance().getFinishedEventEmitter().subscribeLambdaOnce((emitter, event) -> {
             if (event.getRun() == run) {
@@ -86,10 +86,10 @@ public class JIPipeDataDisplayWrapperImportOperation implements JIPipeDataImport
 
         private final Path rowStorageFolder;
         private final Class<? extends JIPipeData> dataType;
-        private final JIPipeDataTableMetadataRow metadataRow;
+        private final JIPipeDataTableRowInfo metadataRow;
         private JIPipeDataTable outputTable;
 
-        public ImportDataRun(Path rowStorageFolder, Class<? extends JIPipeData> dataType, JIPipeDataTableMetadataRow metadataRow) {
+        public ImportDataRun(Path rowStorageFolder, Class<? extends JIPipeData> dataType, JIPipeDataTableRowInfo metadataRow) {
             this.rowStorageFolder = rowStorageFolder;
             this.dataType = dataType;
             this.outputTable = new JIPipeDataTable(dataType);

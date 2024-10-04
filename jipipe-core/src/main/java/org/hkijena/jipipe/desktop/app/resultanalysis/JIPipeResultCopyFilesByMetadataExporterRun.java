@@ -18,7 +18,7 @@ import org.apache.commons.lang3.exception.ExceptionUtils;
 import org.hkijena.jipipe.api.JIPipeProgressInfo;
 import org.hkijena.jipipe.api.annotation.JIPipeDataByMetadataExporter;
 import org.hkijena.jipipe.api.data.JIPipeDataSlot;
-import org.hkijena.jipipe.api.data.serialization.JIPipeDataTableMetadata;
+import org.hkijena.jipipe.api.data.serialization.JIPipeDataTableInfo;
 import org.hkijena.jipipe.api.run.JIPipeRunnable;
 import org.hkijena.jipipe.desktop.app.JIPipeDesktopWorkbench;
 import org.hkijena.jipipe.desktop.app.JIPipeDesktopWorkbenchPanel;
@@ -136,7 +136,7 @@ public class JIPipeResultCopyFilesByMetadataExporterRun extends JIPipeDesktopWor
                     Files.createDirectories(targetPath);
 
                 // Load the data table
-                JIPipeDataTableMetadata dataTable = JIPipeDataTableMetadata.loadFromJson(slot.getSlotStoragePath().resolve("data-table.json"));
+                JIPipeDataTableInfo dataTable = JIPipeDataTableInfo.loadFromJson(slot.getSlotStoragePath().resolve("data-table.json"));
                 for (int row = 0; row < dataTable.getRowCount(); row++) {
                     JIPipeProgressInfo rowSubStatus = subStatus.resolveAndLog("Row", row, dataTable.getRowCount());
                     String metadataString = exporter.generateName(dataTable, row, existingMetadata);

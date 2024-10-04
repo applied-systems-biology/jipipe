@@ -17,7 +17,6 @@ import org.hkijena.jipipe.api.annotation.JIPipeTextAnnotation;
 import org.hkijena.jipipe.api.compartments.algorithms.JIPipeProjectCompartment;
 import org.hkijena.jipipe.api.data.JIPipeDataInfo;
 import org.hkijena.jipipe.api.data.JIPipeDataSlot;
-import org.hkijena.jipipe.api.data.JIPipeExportedDataAnnotation;
 import org.hkijena.jipipe.api.nodes.JIPipeGraphNode;
 import org.hkijena.jipipe.api.project.JIPipeProject;
 
@@ -30,28 +29,28 @@ import java.util.List;
 import java.util.UUID;
 
 /**
- * Merges multiple {@link JIPipeDataTableMetadata}
+ * Merges multiple {@link JIPipeDataTableInfo}
  */
-public class JIPipeMergedDataTableMetadata implements TableModel {
+public class JIPipeMergedDataTableInfo implements TableModel {
 
-    private ArrayList<JIPipeProjectCompartment> compartmentList = new ArrayList<>();
-    private ArrayList<JIPipeGraphNode> algorithmList = new ArrayList<>();
-    private ArrayList<JIPipeDataTableMetadataRow> rowList = new ArrayList<>();
-    private List<String> annotationColumns = new ArrayList<>();
-    private List<String> dataAnnotationColumns = new ArrayList<>();
-    private ArrayList<JIPipeDataSlot> slotList = new ArrayList<>();
-    private List<JIPipeDataTableMetadata> addedTables = new ArrayList<>();
+    private final ArrayList<JIPipeProjectCompartment> compartmentList = new ArrayList<>();
+    private final ArrayList<JIPipeGraphNode> algorithmList = new ArrayList<>();
+    private final ArrayList<JIPipeDataTableRowInfo> rowList = new ArrayList<>();
+    private final List<String> annotationColumns = new ArrayList<>();
+    private final List<String> dataAnnotationColumns = new ArrayList<>();
+    private final ArrayList<JIPipeDataSlot> slotList = new ArrayList<>();
+    private final List<JIPipeDataTableInfo> addedTables = new ArrayList<>();
 
     /**
-     * Adds an {@link JIPipeDataTableMetadata}
+     * Adds an {@link JIPipeDataTableInfo}
      *
      * @param project  The project
      * @param dataSlot The data slot
      * @param table    The table
      */
-    public void add(JIPipeProject project, JIPipeDataSlot dataSlot, JIPipeDataTableMetadata table) {
+    public void add(JIPipeProject project, JIPipeDataSlot dataSlot, JIPipeDataTableInfo table) {
         addedTables.add(table);
-        for (String annotationColumn : table.getAnnotationColumns()) {
+        for (String annotationColumn : table.getTextAnnotationColumns()) {
             if (!annotationColumns.contains(annotationColumn))
                 annotationColumns.add(annotationColumn);
         }
@@ -63,7 +62,7 @@ public class JIPipeMergedDataTableMetadata implements TableModel {
         JIPipeProjectCompartment compartment = project.getCompartments().get(compartmentUUID);
         JIPipeGraphNode algorithm = dataSlot.getNode();
 
-        for (JIPipeDataTableMetadataRow row : table.getRowList()) {
+        for (JIPipeDataTableRowInfo row : table.getRowList()) {
             slotList.add(dataSlot);
             compartmentList.add(compartment);
             algorithmList.add(algorithm);
@@ -137,9 +136,9 @@ public class JIPipeMergedDataTableMetadata implements TableModel {
         else if (columnIndex == 3)
             return JIPipeDataInfo.class;
         else if (columnIndex == 4)
-            return JIPipeDataTableMetadataRow.class;
+            return JIPipeDataTableRowInfo.class;
         else if (toDataAnnotationColumnIndex(columnIndex) != -1)
-            return JIPipeExportedDataAnnotation.class;
+            return JIPipeDataAnnotationInfo.class;
         else
             return JIPipeTextAnnotation.class;
     }
@@ -209,11 +208,11 @@ public class JIPipeMergedDataTableMetadata implements TableModel {
     /**
      * @return List of rows
      */
-    public List<JIPipeDataTableMetadataRow> getRowList() {
+    public List<JIPipeDataTableRowInfo> getRowList() {
         return rowList;
     }
 
-    public List<JIPipeDataTableMetadata> getAddedTables() {
+    public List<JIPipeDataTableInfo> getAddedTables() {
         return Collections.unmodifiableList(addedTables);
     }
 }

@@ -15,27 +15,47 @@ package org.hkijena.jipipe.api.data.serialization;
 
 import com.fasterxml.jackson.annotation.JsonGetter;
 import com.fasterxml.jackson.annotation.JsonSetter;
+import org.hkijena.jipipe.api.annotation.JIPipeDataAnnotation;
 import org.hkijena.jipipe.api.annotation.JIPipeTextAnnotation;
-import org.hkijena.jipipe.api.data.JIPipeExportedDataAnnotation;
+import org.hkijena.jipipe.api.data.JIPipeDataTable;
 import org.hkijena.jipipe.api.data.context.JIPipeDataContext;
 
+import java.nio.file.Paths;
 import java.util.ArrayList;
 import java.util.List;
 
 /**
  * A row in the table
  */
-public class JIPipeDataTableMetadataRow {
+public class JIPipeDataTableRowInfo {
     private int index;
     private List<JIPipeTextAnnotation> textAnnotations = new ArrayList<>();
-    private List<JIPipeExportedDataAnnotation> dataAnnotations = new ArrayList<>();
+    private List<JIPipeDataAnnotationInfo> dataAnnotations = new ArrayList<>();
     private String trueDataType;
     private JIPipeDataContext dataContext;
 
     /**
      * Creates new instance
      */
-    public JIPipeDataTableMetadataRow() {
+    public JIPipeDataTableRowInfo() {
+    }
+
+    /**
+     * Creates a new instance from an existing row
+     * @param dataTable the data table
+     * @param row the row
+     */
+    public JIPipeDataTableRowInfo(JIPipeDataTable dataTable, int row) {
+        this.index = row;
+        this.trueDataType = dataTable.getDataInfo(row).getId();
+        this.dataContext = dataTable.getDataContext(row);
+        this.textAnnotations = dataTable.getTextAnnotations(row);
+        for (JIPipeDataAnnotation dataAnnotation : dataTable.getDataAnnotations(row)) {
+            this.dataAnnotations.add(new JIPipeDataAnnotationInfo(dataAnnotation.getName(),
+                    Paths.get("data-annotations").resolve("" + row).resolve(dataAnnotation.getName()),
+                    dataAnnotation.getDataInfo().getId(),
+                    this));
+        }
     }
 
     /**
@@ -75,12 +95,12 @@ public class JIPipeDataTableMetadataRow {
     }
 
     @JsonGetter("data-annotations")
-    public List<JIPipeExportedDataAnnotation> getDataAnnotations() {
+    public List<JIPipeDataAnnotationInfo> getDataAnnotations() {
         return dataAnnotations;
     }
 
     @JsonSetter("data-annotations")
-    public void setDataAnnotations(List<JIPipeExportedDataAnnotation> dataAnnotations) {
+    public void setDataAnnotations(List<JIPipeDataAnnotationInfo> dataAnnotations) {
         this.dataAnnotations = dataAnnotations;
     }
 

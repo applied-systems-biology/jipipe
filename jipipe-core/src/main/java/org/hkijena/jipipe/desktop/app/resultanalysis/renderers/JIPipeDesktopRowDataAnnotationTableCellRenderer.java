@@ -15,8 +15,8 @@ package org.hkijena.jipipe.desktop.app.resultanalysis.renderers;
 
 import org.hkijena.jipipe.JIPipe;
 import org.hkijena.jipipe.api.data.JIPipeDataSlot;
-import org.hkijena.jipipe.api.data.JIPipeExportedDataAnnotation;
-import org.hkijena.jipipe.api.data.serialization.JIPipeDataTableMetadata;
+import org.hkijena.jipipe.api.data.serialization.JIPipeDataAnnotationInfo;
+import org.hkijena.jipipe.api.data.serialization.JIPipeDataTableInfo;
 import org.hkijena.jipipe.desktop.app.JIPipeDesktopProjectWorkbench;
 import org.hkijena.jipipe.desktop.app.resultanalysis.JIPipeDesktopResultDataSlotPreview;
 import org.hkijena.jipipe.plugins.settings.JIPipeGeneralDataApplicationSettings;
@@ -30,7 +30,7 @@ import java.util.List;
 import java.util.Map;
 
 /**
- * Renders row data of an {@link JIPipeDataTableMetadata}
+ * Renders row data of an {@link JIPipeDataTableInfo}
  */
 public class JIPipeDesktopRowDataAnnotationTableCellRenderer implements TableCellRenderer {
 
@@ -68,7 +68,7 @@ public class JIPipeDesktopRowDataAnnotationTableCellRenderer implements TableCel
         }
     }
 
-    private JIPipeDesktopResultDataSlotPreview getPreviewComponent(int row, JIPipeExportedDataAnnotation annotation) {
+    private JIPipeDesktopResultDataSlotPreview getPreviewComponent(int row, JIPipeDataAnnotationInfo annotation) {
         List<JIPipeDesktopResultDataSlotPreview> previews = previewCache.getOrDefault(annotation.getName(), null);
         if (previews == null) {
             previews = new ArrayList<>();
@@ -82,8 +82,8 @@ public class JIPipeDesktopRowDataAnnotationTableCellRenderer implements TableCel
 
     @Override
     public Component getTableCellRendererComponent(JTable table, Object value, boolean isSelected, boolean hasFocus, int row, int column) {
-        if (value instanceof JIPipeExportedDataAnnotation) {
-            JIPipeExportedDataAnnotation exportedDataAnnotation = (JIPipeExportedDataAnnotation) value;
+        if (value instanceof JIPipeDataAnnotationInfo) {
+            JIPipeDataAnnotationInfo exportedDataAnnotation = (JIPipeDataAnnotationInfo) value;
 
             row = table.convertRowIndexToModel(row);
             revalidatePreviewCache();

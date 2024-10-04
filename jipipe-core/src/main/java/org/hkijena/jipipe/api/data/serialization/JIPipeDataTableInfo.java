@@ -22,7 +22,6 @@ import org.hkijena.jipipe.api.annotation.JIPipeTextAnnotation;
 import org.hkijena.jipipe.api.data.JIPipeData;
 import org.hkijena.jipipe.api.data.JIPipeDataInfo;
 import org.hkijena.jipipe.api.data.JIPipeDataTable;
-import org.hkijena.jipipe.api.data.JIPipeExportedDataAnnotation;
 import org.hkijena.jipipe.api.validation.JIPipeValidationRuntimeException;
 import org.hkijena.jipipe.plugins.tables.datatypes.AnnotationTableData;
 import org.hkijena.jipipe.plugins.tables.datatypes.ResultsTableData;
@@ -41,13 +40,25 @@ import java.util.stream.Collectors;
  * Contains all metadata exported from an {@link JIPipeDataTable}
  */
 @JsonFormat(shape = JsonFormat.Shape.OBJECT)
-public class JIPipeDataTableMetadata implements TableModel, List<JIPipeDataTableMetadataRow> {
+public class JIPipeDataTableInfo implements TableModel, List<JIPipeDataTableRowInfo> {
     private Class<? extends JIPipeData> acceptedDataType;
-    private List<JIPipeDataTableMetadataRow> rowList = new ArrayList<>();
-    private List<String> annotationColumns;
+    private List<JIPipeDataTableRowInfo> rowList = new ArrayList<>();
+    private List<String> textAnnotationColumns;
     private List<String> dataAnnotationColumns;
 
-    public JIPipeDataTableMetadata() {
+    public JIPipeDataTableInfo() {
+    }
+
+    /**
+     * Converts the data table info an info instance
+     * @param dataTable the data table
+     */
+    public JIPipeDataTableInfo(JIPipeDataTable dataTable) {
+        this.acceptedDataType = dataTable.getAcceptedDataType();
+        for (int i = 0; i < dataTable.getRowCount(); i++) {
+            JIPipeDataTableRowInfo rowInfo = new JIPipeDataTableRowInfo(dataTable, i);
+            rowList.add(rowInfo);
+        }
     }
 
     /**
@@ -56,11 +67,11 @@ public class JIPipeDataTableMetadata implements TableModel, List<JIPipeDataTable
      * @param fileName JSON file
      * @return Loaded table
      */
-    public static JIPipeDataTableMetadata loadFromJson(Path fileName) {
+    public static JIPipeDataTableInfo loadFromJson(Path fileName) {
         try {
-            JIPipeDataTableMetadata result = JsonUtils.getObjectMapper().readerFor(JIPipeDataTableMetadata.class).readValue(fileName.toFile());
-            for (JIPipeDataTableMetadataRow row : result.getRowList()) {
-                for (JIPipeExportedDataAnnotation dataAnnotation : row.getDataAnnotations()) {
+            JIPipeDataTableInfo result = JsonUtils.getObjectMapper().readerFor(JIPipeDataTableInfo.class).readValue(fileName.toFile());
+            for (JIPipeDataTableRowInfo row : result.getRowList()) {
+                for (JIPipeDataAnnotationInfo dataAnnotation : row.getDataAnnotations()) {
                     dataAnnotation.setTableRow(row);
                 }
             }
@@ -106,7 +117,7 @@ public class JIPipeDataTableMetadata implements TableModel, List<JIPipeDataTable
      * @return List of rows
      */
     @JsonGetter("rows")
-    public List<JIPipeDataTableMetadataRow> getRowList() {
+    public List<JIPipeDataTableRowInfo> getRowList() {
         return Collections.unmodifiableList(rowList);
     }
 
@@ -116,9 +127,9 @@ public class JIPipeDataTableMetadata implements TableModel, List<JIPipeDataTable
      * @param rowList Row list
      */
     @JsonSetter("rows")
-    public void setRowList(List<JIPipeDataTableMetadataRow> rowList) {
+    public void setRowList(List<JIPipeDataTableRowInfo> rowList) {
         this.rowList = rowList;
-        this.annotationColumns = null;
+        this.textAnnotationColumns = null;
         this.dataAnnotationColumns = null;
     }
 
@@ -151,20 +162,20 @@ public class JIPipeDataTableMetadata implements TableModel, List<JIPipeDataTable
      */
     public void saveAsCSV(Path fileName) throws IOException {
         ResultsTableData table = new ResultsTableData();
-        for (JIPipeDataTableMetadataRow row : rowList) {
+        for (JIPipeDataTableRowInfo row : rowList) {
             Map<String, Object> tableRow = new HashMap<>();
             tableRow.put("jipipe:data-type", JIPipe.getDataTypes().getIdOf(acceptedDataType));
             tableRow.put("jipipe:true-data-type", row.getTrueDataType());
             tableRow.put("jipipe:index", row.getIndex());
             tableRow.put("jipipe:data-context", JsonUtils.toJsonString(row.getDataContext()));
             for (String dataAnnotationColumn : getDataAnnotationColumns()) {
-                JIPipeExportedDataAnnotation existing = row.getDataAnnotations().stream().filter(t -> t.nameEquals(dataAnnotationColumn)).findFirst().orElse(null);
+                JIPipeDataAnnotationInfo existing = row.getDataAnnotations().stream().filter(t -> t.nameEquals(dataAnnotationColumn)).findFirst().orElse(null);
                 if (existing != null)
                     tableRow.put("$" + dataAnnotationColumn, existing.getRowStorageFolder().toString() + " [" + existing.getTrueDataType() + "]");
                 else
                     tableRow.put("$" + dataAnnotationColumn, "");
             }
-            for (String annotationColumn : getAnnotationColumns()) {
+            for (String annotationColumn : getTextAnnotationColumns()) {
                 JIPipeTextAnnotation existing = row.getTextAnnotations().stream().filter(t -> t.nameEquals(annotationColumn)).findFirst().orElse(null);
                 if (existing != null)
                     tableRow.put(annotationColumn, existing.getValue());
@@ -179,8 +190,8 @@ public class JIPipeDataTableMetadata implements TableModel, List<JIPipeDataTable
     public List<String> getDataAnnotationColumns() {
         if (dataAnnotationColumns == null) {
             Set<String> registeredAnnotations = new HashSet<>();
-            for (JIPipeDataTableMetadataRow row : rowList) {
-                registeredAnnotations.addAll(row.getDataAnnotations().stream().map(JIPipeExportedDataAnnotation::getName).collect(Collectors.toSet()));
+            for (JIPipeDataTableRowInfo row : rowList) {
+                registeredAnnotations.addAll(row.getDataAnnotations().stream().map(JIPipeDataAnnotationInfo::getName).collect(Collectors.toSet()));
             }
             dataAnnotationColumns = new ArrayList<>(registeredAnnotations);
         }
@@ -190,15 +201,15 @@ public class JIPipeDataTableMetadata implements TableModel, List<JIPipeDataTable
     /**
      * @return Additional columns
      */
-    public List<String> getAnnotationColumns() {
-        if (annotationColumns == null) {
+    public List<String> getTextAnnotationColumns() {
+        if (textAnnotationColumns == null) {
             Set<String> registeredAnnotations = new HashSet<>();
-            for (JIPipeDataTableMetadataRow row : rowList) {
+            for (JIPipeDataTableRowInfo row : rowList) {
                 registeredAnnotations.addAll(row.getTextAnnotations().stream().map(JIPipeTextAnnotation::getName).collect(Collectors.toSet()));
             }
-            annotationColumns = new ArrayList<>(registeredAnnotations);
+            textAnnotationColumns = new ArrayList<>(registeredAnnotations);
         }
-        return annotationColumns;
+        return textAnnotationColumns;
     }
 
     @Override
@@ -208,7 +219,7 @@ public class JIPipeDataTableMetadata implements TableModel, List<JIPipeDataTable
 
     @Override
     public int getColumnCount() {
-        return getAnnotationColumns().size() + getDataAnnotationColumns().size() + 3;
+        return getTextAnnotationColumns().size() + getDataAnnotationColumns().size() + 3;
     }
 
     /**
@@ -249,7 +260,7 @@ public class JIPipeDataTableMetadata implements TableModel, List<JIPipeDataTable
         } else if (toDataAnnotationColumnIndex(columnIndex) != -1) {
             return "$" + getDataAnnotationColumns().get(toDataAnnotationColumnIndex(columnIndex));
         } else {
-            return getAnnotationColumns().get(toAnnotationColumnIndex(columnIndex));
+            return getTextAnnotationColumns().get(toAnnotationColumnIndex(columnIndex));
         }
     }
 
@@ -260,9 +271,9 @@ public class JIPipeDataTableMetadata implements TableModel, List<JIPipeDataTable
         else if (columnIndex == 1)
             return JIPipeDataInfo.class;
         else if (columnIndex == 2)
-            return JIPipeDataTableMetadataRow.class;
+            return JIPipeDataTableRowInfo.class;
         else if (toDataAnnotationColumnIndex(columnIndex) != -1)
-            return JIPipeExportedDataAnnotation.class;
+            return JIPipeDataAnnotationInfo.class;
         else
             return JIPipeTextAnnotation.class;
     }
@@ -284,7 +295,7 @@ public class JIPipeDataTableMetadata implements TableModel, List<JIPipeDataTable
             String annotationColumn = dataAnnotationColumns.get(toDataAnnotationColumnIndex(columnIndex));
             return rowList.get(rowIndex).getDataAnnotations().stream().filter(t -> t.nameEquals(annotationColumn)).findFirst().orElse(null);
         } else {
-            String annotationColumn = annotationColumns.get(toAnnotationColumnIndex(columnIndex));
+            String annotationColumn = textAnnotationColumns.get(toAnnotationColumnIndex(columnIndex));
             return rowList.get(rowIndex).getTextAnnotations().stream().filter(t -> t.nameEquals(annotationColumn)).findFirst().orElse(null);
         }
     }
@@ -326,7 +337,7 @@ public class JIPipeDataTableMetadata implements TableModel, List<JIPipeDataTable
     public AnnotationTableData toAnnotationTable() {
         AnnotationTableData output = new AnnotationTableData();
         int outputRow = 0;
-        for (JIPipeDataTableMetadataRow row : getRowList()) {
+        for (JIPipeDataTableRowInfo row : getRowList()) {
             output.addRow();
             for (JIPipeTextAnnotation annotation : row.getTextAnnotations()) {
                 if (annotation != null) {
@@ -356,7 +367,7 @@ public class JIPipeDataTableMetadata implements TableModel, List<JIPipeDataTable
 
     @NotNull
     @Override
-    public Iterator<JIPipeDataTableMetadataRow> iterator() {
+    public Iterator<JIPipeDataTableRowInfo> iterator() {
         return rowList.iterator();
     }
 
@@ -373,10 +384,10 @@ public class JIPipeDataTableMetadata implements TableModel, List<JIPipeDataTable
     }
 
     @Override
-    public boolean add(JIPipeDataTableMetadataRow row) {
+    public boolean add(JIPipeDataTableRowInfo row) {
         rowList.add(row);
         dataAnnotationColumns = null;
-        annotationColumns = null;
+        textAnnotationColumns = null;
         return true;
     }
 
@@ -384,7 +395,7 @@ public class JIPipeDataTableMetadata implements TableModel, List<JIPipeDataTable
     public boolean remove(Object o) {
         if (rowList.remove(o)) {
             dataAnnotationColumns = null;
-            annotationColumns = null;
+            textAnnotationColumns = null;
             return true;
         }
         return false;
@@ -396,18 +407,18 @@ public class JIPipeDataTableMetadata implements TableModel, List<JIPipeDataTable
     }
 
     @Override
-    public boolean addAll(@NotNull Collection<? extends JIPipeDataTableMetadataRow> c) {
+    public boolean addAll(@NotNull Collection<? extends JIPipeDataTableRowInfo> c) {
         rowList.addAll(c);
         dataAnnotationColumns = null;
-        annotationColumns = null;
+        textAnnotationColumns = null;
         return true;
     }
 
     @Override
-    public boolean addAll(int index, @NotNull Collection<? extends JIPipeDataTableMetadataRow> c) {
+    public boolean addAll(int index, @NotNull Collection<? extends JIPipeDataTableRowInfo> c) {
         rowList.addAll(index, c);
         dataAnnotationColumns = null;
-        annotationColumns = null;
+        textAnnotationColumns = null;
         return true;
     }
 
@@ -415,7 +426,7 @@ public class JIPipeDataTableMetadata implements TableModel, List<JIPipeDataTable
     public boolean removeAll(@NotNull Collection<?> c) {
         if (rowList.removeAll(c)) {
             dataAnnotationColumns = null;
-            annotationColumns = null;
+            textAnnotationColumns = null;
             return true;
         }
         return false;
@@ -425,7 +436,7 @@ public class JIPipeDataTableMetadata implements TableModel, List<JIPipeDataTable
     public boolean retainAll(@NotNull Collection<?> c) {
         if (rowList.retainAll(c)) {
             dataAnnotationColumns = null;
-            annotationColumns = null;
+            textAnnotationColumns = null;
             return true;
         }
         return false;
@@ -435,34 +446,34 @@ public class JIPipeDataTableMetadata implements TableModel, List<JIPipeDataTable
     public void clear() {
         rowList.clear();
         dataAnnotationColumns = null;
-        annotationColumns = null;
+        textAnnotationColumns = null;
     }
 
     @Override
-    public JIPipeDataTableMetadataRow get(int index) {
+    public JIPipeDataTableRowInfo get(int index) {
         return rowList.get(index);
     }
 
     @Override
-    public JIPipeDataTableMetadataRow set(int index, JIPipeDataTableMetadataRow element) {
-        JIPipeDataTableMetadataRow result = rowList.set(index, element);
+    public JIPipeDataTableRowInfo set(int index, JIPipeDataTableRowInfo element) {
+        JIPipeDataTableRowInfo result = rowList.set(index, element);
         dataAnnotationColumns = null;
-        annotationColumns = null;
+        textAnnotationColumns = null;
         return result;
     }
 
     @Override
-    public void add(int index, JIPipeDataTableMetadataRow element) {
+    public void add(int index, JIPipeDataTableRowInfo element) {
         rowList.add(index, element);
         dataAnnotationColumns = null;
-        annotationColumns = null;
+        textAnnotationColumns = null;
     }
 
     @Override
-    public JIPipeDataTableMetadataRow remove(int index) {
-        JIPipeDataTableMetadataRow result = rowList.remove(index);
+    public JIPipeDataTableRowInfo remove(int index) {
+        JIPipeDataTableRowInfo result = rowList.remove(index);
         dataAnnotationColumns = null;
-        annotationColumns = null;
+        textAnnotationColumns = null;
         return result;
     }
 
@@ -478,19 +489,19 @@ public class JIPipeDataTableMetadata implements TableModel, List<JIPipeDataTable
 
     @NotNull
     @Override
-    public ListIterator<JIPipeDataTableMetadataRow> listIterator() {
+    public ListIterator<JIPipeDataTableRowInfo> listIterator() {
         return rowList.listIterator();
     }
 
     @NotNull
     @Override
-    public ListIterator<JIPipeDataTableMetadataRow> listIterator(int index) {
+    public ListIterator<JIPipeDataTableRowInfo> listIterator(int index) {
         return rowList.listIterator(index);
     }
 
     @NotNull
     @Override
-    public List<JIPipeDataTableMetadataRow> subList(int fromIndex, int toIndex) {
+    public List<JIPipeDataTableRowInfo> subList(int fromIndex, int toIndex) {
         return rowList.subList(fromIndex, toIndex);
     }
 }

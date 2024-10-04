@@ -19,8 +19,8 @@ import org.hkijena.jipipe.api.JIPipeWorkbench;
 import org.hkijena.jipipe.api.SetJIPipeDocumentation;
 import org.hkijena.jipipe.api.data.JIPipeData;
 import org.hkijena.jipipe.api.data.JIPipeDataTable;
-import org.hkijena.jipipe.api.data.serialization.JIPipeDataTableMetadata;
-import org.hkijena.jipipe.api.data.serialization.JIPipeDataTableMetadataRow;
+import org.hkijena.jipipe.api.data.serialization.JIPipeDataTableInfo;
+import org.hkijena.jipipe.api.data.serialization.JIPipeDataTableRowInfo;
 import org.hkijena.jipipe.api.data.storage.JIPipeFileSystemWriteDataStorage;
 import org.hkijena.jipipe.api.parameters.AbstractJIPipeParameterCollection;
 import org.hkijena.jipipe.api.parameters.JIPipeParameter;
@@ -206,8 +206,8 @@ public class JIPipeDataByMetadataExporter extends AbstractJIPipeParameterCollect
         return metadataString;
     }
 
-    public String generateName(JIPipeDataTableMetadata exportedDataTable, int row, Set<String> existingMetadata) {
-        JIPipeDataTableMetadataRow dataRow = exportedDataTable.getRowList().get(row);
+    public String generateName(JIPipeDataTableInfo exportedDataTable, int row, Set<String> existingMetadata) {
+        JIPipeDataTableRowInfo dataRow = exportedDataTable.getRowList().get(row);
         JIPipeExpressionVariablesMap parameters = new JIPipeExpressionVariablesMap();
         for (JIPipeTextAnnotation annotation : dataRow.getTextAnnotations()) {
             parameters.put(annotation.getName(), annotation.getValue());
@@ -268,8 +268,8 @@ public class JIPipeDataByMetadataExporter extends AbstractJIPipeParameterCollect
         return Paths.get(metadataString).normalize();
     }
 
-    public Path generatePath(JIPipeDataTableMetadata exportedDataTable, int row, Set<String> existingMetadata) {
-        JIPipeDataTableMetadataRow dataRow = exportedDataTable.getRowList().get(row);
+    public Path generatePath(JIPipeDataTableInfo exportedDataTable, int row, Set<String> existingMetadata) {
+        JIPipeDataTableRowInfo dataRow = exportedDataTable.getRowList().get(row);
         JIPipeExpressionVariablesMap parameters = new JIPipeExpressionVariablesMap();
         for (JIPipeTextAnnotation annotation : dataRow.getTextAnnotations()) {
             parameters.put(annotation.getName(), annotation.getValue());

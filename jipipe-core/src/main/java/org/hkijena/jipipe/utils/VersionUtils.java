@@ -17,7 +17,7 @@ import org.hkijena.jipipe.plugins.core.CorePlugin;
 
 public class VersionUtils {
 
-    public static final String FALLBACK_VERSION = "4.2.0";
+    public static final String FALLBACK_VERSION = "5.0.0";
 
     /**
      * Returns a version string for a class

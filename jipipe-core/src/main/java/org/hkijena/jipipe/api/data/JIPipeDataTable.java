@@ -24,8 +24,9 @@ import org.hkijena.jipipe.api.annotation.JIPipeTextAnnotation;
 import org.hkijena.jipipe.api.annotation.JIPipeTextAnnotationMergeMode;
 import org.hkijena.jipipe.api.data.context.JIPipeDataContext;
 import org.hkijena.jipipe.api.data.context.JIPipeMutableDataContext;
-import org.hkijena.jipipe.api.data.serialization.JIPipeDataTableMetadata;
-import org.hkijena.jipipe.api.data.serialization.JIPipeDataTableMetadataRow;
+import org.hkijena.jipipe.api.data.serialization.JIPipeDataAnnotationInfo;
+import org.hkijena.jipipe.api.data.serialization.JIPipeDataTableInfo;
+import org.hkijena.jipipe.api.data.serialization.JIPipeDataTableRowInfo;
 import org.hkijena.jipipe.api.data.storage.JIPipeFileSystemReadDataStorage;
 import org.hkijena.jipipe.api.data.storage.JIPipeReadDataStorage;
 import org.hkijena.jipipe.api.data.storage.JIPipeWriteDataStorage;
@@ -118,19 +119,19 @@ public class JIPipeDataTable implements JIPipeData, TableModel {
      */
     public static JIPipeDataTable importData(JIPipeReadDataStorage storage, JIPipeProgressInfo progressInfo) {
         Path storagePath = storage.getFileSystemPath();
-        JIPipeDataTableMetadata dataTableMetadata = JIPipeDataTableMetadata.loadFromJson(storagePath.resolve("data-table.json"));
+        JIPipeDataTableInfo dataTableMetadata = JIPipeDataTableInfo.loadFromJson(storagePath.resolve("data-table.json"));
         Class<? extends JIPipeData> acceptedDataType = JIPipe.getDataTypes().getById(dataTableMetadata.getAcceptedDataTypeId());
         int rowCount = dataTableMetadata.getRowCount();
         JIPipeDataTable dataTable = new JIPipeDataTable(acceptedDataType);
         for (int i = 0; i < rowCount; i++) {
             JIPipeProgressInfo rowProgress = progressInfo.resolveAndLog("Row", i, rowCount);
-            JIPipeDataTableMetadataRow row = dataTableMetadata.getRowList().get(i);
+            JIPipeDataTableRowInfo row = dataTableMetadata.getRowList().get(i);
             Path rowStorage = storagePath.resolve("" + row.getIndex());
             Class<? extends JIPipeData> rowDataType = JIPipe.getDataTypes().getById(row.getTrueDataType());
             JIPipeData data = JIPipe.importData(new JIPipeFileSystemReadDataStorage(progressInfo, rowStorage), rowDataType, rowProgress);
             dataTable.addData(data, row.getTextAnnotations(), JIPipeTextAnnotationMergeMode.OverwriteExisting, row.getDataContext(), rowProgress);
 
-            for (JIPipeExportedDataAnnotation dataAnnotation : row.getDataAnnotations()) {
+            for (JIPipeDataAnnotationInfo dataAnnotation : row.getDataAnnotations()) {
                 Path dataAnnotationRowStorage = storagePath.resolve(dataAnnotation.getRowStorageFolder());
                 Class<? extends JIPipeData> dataAnnotationDataType = JIPipe.getDataTypes().getById(dataAnnotation.getTrueDataType());
                 JIPipeData dataAnnotationData = JIPipe.importData(new JIPipeFileSystemReadDataStorage(progressInfo, dataAnnotationRowStorage), dataAnnotationDataType, progressInfo);
@@ -1248,7 +1249,7 @@ public class JIPipeDataTable implements JIPipeData, TableModel {
      * @param saveProgress save progress
      */
     public void exportData(JIPipeWriteDataStorage storage, JIPipeProgressInfo saveProgress) {
-        JIPipeDataTableMetadata dataTableMetadata = new JIPipeDataTableMetadata();
+        JIPipeDataTableInfo dataTableMetadata = new JIPipeDataTableInfo();
         dataTableMetadata.setAcceptedDataTypeId(JIPipe.getDataTypes().getIdOf(getAcceptedDataType()));
 
         // Calculate the preview sizes
@@ -1271,7 +1272,7 @@ public class JIPipeDataTable implements JIPipeData, TableModel {
         try {
             int rowCount = getRowCount_();
             for (int row = 0; row < rowCount; ++row) {
-                JIPipeDataTableMetadataRow rowMetadata = new JIPipeDataTableMetadataRow();
+                JIPipeDataTableRowInfo rowMetadata = new JIPipeDataTableRowInfo();
                 rowMetadata.setIndex(row);
                 rowMetadata.setTrueDataType(JIPipe.getDataTypes().getIdOf(getDataItemStore(row).getDataClass()));
                 rowMetadata.setTextAnnotations(getTextAnnotations(row));
@@ -1281,7 +1282,7 @@ public class JIPipeDataTable implements JIPipeData, TableModel {
                 for (JIPipeDataAnnotation dataAnnotation : getDataAnnotations(row)) {
                     JIPipeProgressInfo dataAnnotationProgress = rowProgress.resolveAndLog("Data annotation '" + dataAnnotation.getName() + "'");
                     JIPipeWriteDataStorage dataAnnotationStore = saveDataAnnotationRow_(storage, dataAnnotationProgress, row, previewSizes, rowProgress, dataAnnotation, dataAnnotationColumnNameMapping);
-                    JIPipeExportedDataAnnotation dataAnnotationMetadata = new JIPipeExportedDataAnnotation(dataAnnotation.getName(),
+                    JIPipeDataAnnotationInfo dataAnnotationMetadata = new JIPipeDataAnnotationInfo(dataAnnotation.getName(),
                             dataAnnotationStore.getInternalPath(),
                             JIPipe.getDataTypes().getIdOf(dataAnnotation.getDataClass()),
                             rowMetadata);

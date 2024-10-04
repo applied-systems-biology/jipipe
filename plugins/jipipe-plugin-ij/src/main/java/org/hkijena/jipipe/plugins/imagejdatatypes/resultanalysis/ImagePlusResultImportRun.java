@@ -18,7 +18,7 @@ import org.hkijena.jipipe.api.AbstractJIPipeRunnable;
 import org.hkijena.jipipe.api.JIPipeProgressInfo;
 import org.hkijena.jipipe.api.JIPipeWorkbench;
 import org.hkijena.jipipe.api.data.JIPipeDataSlot;
-import org.hkijena.jipipe.api.data.serialization.JIPipeDataTableMetadataRow;
+import org.hkijena.jipipe.api.data.serialization.JIPipeDataTableRowInfo;
 import org.hkijena.jipipe.api.data.storage.JIPipeFileSystemReadDataStorage;
 import org.hkijena.jipipe.plugins.imagejdatatypes.datatypes.ImagePlusData;
 
@@ -27,7 +27,7 @@ import java.nio.file.Path;
 public class ImagePlusResultImportRun extends AbstractJIPipeRunnable {
 
     private final JIPipeDataSlot slot;
-    private final JIPipeDataTableMetadataRow row;
+    private final JIPipeDataTableRowInfo row;
     private final Path rowStorageFolder;
     private final String compartmentName;
     private final String algorithmName;
@@ -35,7 +35,7 @@ public class ImagePlusResultImportRun extends AbstractJIPipeRunnable {
     private final JIPipeWorkbench workbench;
     private ImagePlus image;
 
-    public ImagePlusResultImportRun(JIPipeDataSlot slot, JIPipeDataTableMetadataRow row, Path rowStorageFolder, String compartmentName, String algorithmName, String displayName, JIPipeWorkbench workbench) {
+    public ImagePlusResultImportRun(JIPipeDataSlot slot, JIPipeDataTableRowInfo row, Path rowStorageFolder, String compartmentName, String algorithmName, String displayName, JIPipeWorkbench workbench) {
         this.slot = slot;
         this.row = row;
         this.rowStorageFolder = rowStorageFolder;
@@ -68,7 +68,7 @@ public class ImagePlusResultImportRun extends AbstractJIPipeRunnable {
         return slot;
     }
 
-    public JIPipeDataTableMetadataRow getRow() {
+    public JIPipeDataTableRowInfo getRow() {
         return row;
     }
 

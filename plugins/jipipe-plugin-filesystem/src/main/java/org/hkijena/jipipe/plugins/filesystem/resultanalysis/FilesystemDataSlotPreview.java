@@ -16,8 +16,8 @@ package org.hkijena.jipipe.plugins.filesystem.resultanalysis;
 import org.hkijena.jipipe.JIPipe;
 import org.hkijena.jipipe.api.JIPipeProgressInfo;
 import org.hkijena.jipipe.api.data.JIPipeDataSlot;
-import org.hkijena.jipipe.api.data.JIPipeExportedDataAnnotation;
-import org.hkijena.jipipe.api.data.serialization.JIPipeDataTableMetadataRow;
+import org.hkijena.jipipe.api.data.serialization.JIPipeDataAnnotationInfo;
+import org.hkijena.jipipe.api.data.serialization.JIPipeDataTableRowInfo;
 import org.hkijena.jipipe.api.data.storage.JIPipeFileSystemReadDataStorage;
 import org.hkijena.jipipe.desktop.app.JIPipeDesktopProjectWorkbench;
 import org.hkijena.jipipe.desktop.app.resultanalysis.JIPipeDesktopResultDataSlotPreview;
@@ -45,7 +45,7 @@ public class FilesystemDataSlotPreview extends JIPipeDesktopResultDataSlotPrevie
      * @param row            the row
      * @param dataAnnotation optional data annotation
      */
-    public FilesystemDataSlotPreview(JIPipeDesktopProjectWorkbench workbench, JTable table, JIPipeDataSlot slot, JIPipeDataTableMetadataRow row, JIPipeExportedDataAnnotation dataAnnotation) {
+    public FilesystemDataSlotPreview(JIPipeDesktopProjectWorkbench workbench, JTable table, JIPipeDataSlot slot, JIPipeDataTableRowInfo row, JIPipeDataAnnotationInfo dataAnnotation) {
         super(workbench, table, slot, row, dataAnnotation);
         initialize();
     }
@@ -57,7 +57,7 @@ public class FilesystemDataSlotPreview extends JIPipeDesktopResultDataSlotPrevie
     }
 
 
-    private Path findListFile(JIPipeDataSlot slot, JIPipeDataTableMetadataRow row) {
+    private Path findListFile(JIPipeDataSlot slot, JIPipeDataTableRowInfo row) {
         Path rowStorageFolder = getRowStorageFolder(slot, row, getDataAnnotation());
         if (Files.isDirectory(rowStorageFolder)) {
             return PathUtils.findFileByExtensionIn(rowStorageFolder, ".json");

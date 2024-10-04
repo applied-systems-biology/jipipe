@@ -15,8 +15,8 @@ package org.hkijena.jipipe.desktop.app.resultanalysis.renderers;
 
 import org.hkijena.jipipe.JIPipe;
 import org.hkijena.jipipe.api.data.JIPipeDataSlot;
-import org.hkijena.jipipe.api.data.JIPipeExportedDataAnnotation;
-import org.hkijena.jipipe.api.data.serialization.JIPipeMergedDataTableMetadata;
+import org.hkijena.jipipe.api.data.serialization.JIPipeDataAnnotationInfo;
+import org.hkijena.jipipe.api.data.serialization.JIPipeMergedDataTableInfo;
 import org.hkijena.jipipe.desktop.app.JIPipeDesktopProjectWorkbench;
 import org.hkijena.jipipe.desktop.app.resultanalysis.JIPipeDesktopResultDataSlotPreview;
 import org.hkijena.jipipe.plugins.settings.JIPipeGeneralDataApplicationSettings;
@@ -30,11 +30,11 @@ import java.util.List;
 import java.util.Map;
 
 /**
- * Renders data in {@link JIPipeMergedDataTableMetadata}
+ * Renders data in {@link JIPipeMergedDataTableInfo}
  */
 public class JIPipeDesktopRowDataAnnotationMergedTableCellRenderer implements TableCellRenderer {
 
-    private final JIPipeMergedDataTableMetadata mergedDataTable;
+    private final JIPipeMergedDataTableInfo mergedDataTable;
     private final JScrollPane scrollPane;
     private final JTable table;
     private final JIPipeGeneralDataApplicationSettings dataSettings = JIPipeGeneralDataApplicationSettings.getInstance();
@@ -48,7 +48,7 @@ public class JIPipeDesktopRowDataAnnotationMergedTableCellRenderer implements Ta
      * @param scrollPane      the scroll pane
      * @param table           the table
      */
-    public JIPipeDesktopRowDataAnnotationMergedTableCellRenderer(JIPipeDesktopProjectWorkbench workbenchUI, JIPipeMergedDataTableMetadata mergedDataTable, JScrollPane scrollPane, JTable table) {
+    public JIPipeDesktopRowDataAnnotationMergedTableCellRenderer(JIPipeDesktopProjectWorkbench workbenchUI, JIPipeMergedDataTableInfo mergedDataTable, JScrollPane scrollPane, JTable table) {
         this.workbenchUI = workbenchUI;
         this.mergedDataTable = mergedDataTable;
         this.scrollPane = scrollPane;
@@ -68,7 +68,7 @@ public class JIPipeDesktopRowDataAnnotationMergedTableCellRenderer implements Ta
         }
     }
 
-    private JIPipeDesktopResultDataSlotPreview getPreviewComponent(int row, JIPipeExportedDataAnnotation annotation) {
+    private JIPipeDesktopResultDataSlotPreview getPreviewComponent(int row, JIPipeDataAnnotationInfo annotation) {
         List<JIPipeDesktopResultDataSlotPreview> previews = previewCache.getOrDefault(annotation.getName(), null);
         if (previews == null) {
             previews = new ArrayList<>();
@@ -82,9 +82,9 @@ public class JIPipeDesktopRowDataAnnotationMergedTableCellRenderer implements Ta
 
     @Override
     public Component getTableCellRendererComponent(JTable table, Object value, boolean isSelected, boolean hasFocus, int row, int column) {
-        if (value instanceof JIPipeExportedDataAnnotation) {
-            JIPipeExportedDataAnnotation dataAnnotation = (JIPipeExportedDataAnnotation) value;
-            JIPipeMergedDataTableMetadata model = (JIPipeMergedDataTableMetadata) table.getModel();
+        if (value instanceof JIPipeDataAnnotationInfo) {
+            JIPipeDataAnnotationInfo dataAnnotation = (JIPipeDataAnnotationInfo) value;
+            JIPipeMergedDataTableInfo model = (JIPipeMergedDataTableInfo) table.getModel();
             JIPipeDataSlot slot = model.getSlot(table.convertRowIndexToModel(row));
 
             revalidatePreviewCache();
