@@ -17,19 +17,19 @@ import org.hkijena.jipipe.api.JIPipeProgressInfo;
 import org.hkijena.jipipe.api.data.JIPipeDataItemStore;
 import org.hkijena.jipipe.api.data.sources.JIPipeDataTableDataSource;
 import org.hkijena.jipipe.desktop.app.JIPipeDesktopWorkbench;
-import org.hkijena.jipipe.desktop.app.cache.JIPipeDesktopCacheDataViewerWindow;
+import org.hkijena.jipipe.desktop.app.cache.JIPipeDesktopLegacyCacheDataViewerWindow;
 import org.hkijena.jipipe.utils.UIUtils;
 
 import javax.swing.*;
 import java.awt.*;
 
-public class CachedParametersDataViewerWindow extends JIPipeDesktopCacheDataViewerWindow {
+public class ParametersLegacyDataViewerWindow extends JIPipeDesktopLegacyCacheDataViewerWindow {
 
     private final JToolBar toolBar = new JToolBar();
     private final ParametersDataViewer viewer;
     private JLabel errorLabel;
 
-    public CachedParametersDataViewerWindow(JIPipeDesktopWorkbench workbench, JIPipeDataTableDataSource dataSource, String displayName) {
+    public ParametersLegacyDataViewerWindow(JIPipeDesktopWorkbench workbench, JIPipeDataTableDataSource dataSource, String displayName) {
         super(workbench, dataSource, displayName);
         this.viewer = new ParametersDataViewer(workbench);
         initialize();

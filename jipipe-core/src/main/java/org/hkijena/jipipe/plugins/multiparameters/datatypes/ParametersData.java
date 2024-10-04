@@ -83,7 +83,7 @@ public class ParametersData implements JIPipeData {
 
     @Override
     public void display(String displayName, JIPipeDesktopWorkbench desktopWorkbench, JIPipeDataSource source) {
-        CachedParametersDataViewerWindow window = new CachedParametersDataViewerWindow(desktopWorkbench, JIPipeDataTableDataSource.wrap(this, source), displayName);
+        ParametersLegacyDataViewerWindow window = new ParametersLegacyDataViewerWindow(desktopWorkbench, JIPipeDataTableDataSource.wrap(this, source), displayName);
         window.setVisible(true);
         SwingUtilities.invokeLater(window::reloadDisplayedData);
     }

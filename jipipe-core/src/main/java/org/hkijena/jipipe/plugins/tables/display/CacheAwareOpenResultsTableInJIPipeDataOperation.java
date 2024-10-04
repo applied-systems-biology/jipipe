@@ -25,7 +25,7 @@ import javax.swing.*;
 public class CacheAwareOpenResultsTableInJIPipeDataOperation implements JIPipeDesktopDataDisplayOperation {
     @Override
     public void display(JIPipeData data, String displayName, JIPipeDesktopWorkbench desktopWorkbench, JIPipeDataSource source) {
-        CachedTableViewerWindow window = new CachedTableViewerWindow(desktopWorkbench, (JIPipeDataTableDataSource) source, displayName, false);
+        TableViewerLegacyCacheDataViewerWindow window = new TableViewerLegacyCacheDataViewerWindow(desktopWorkbench, (JIPipeDataTableDataSource) source, displayName, false);
         window.setVisible(true);
     }
 

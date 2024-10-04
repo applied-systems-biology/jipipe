@@ -35,7 +35,7 @@ import org.hkijena.jipipe.api.data.storage.JIPipeReadDataStorage;
 import org.hkijena.jipipe.api.data.storage.JIPipeWriteDataStorage;
 import org.hkijena.jipipe.desktop.app.JIPipeDesktopWorkbench;
 import org.hkijena.jipipe.plugins.ij3d.IJ3DUtils;
-import org.hkijena.jipipe.plugins.ij3d.display.CachedROIList3DDataViewerWindow;
+import org.hkijena.jipipe.plugins.ij3d.display.ROIList3DDataLegacyCacheDataViewerWindow;
 import org.hkijena.jipipe.plugins.ij3d.utils.ExtendedObject3DVoxels;
 import org.hkijena.jipipe.plugins.ij3d.utils.ROI3DOutline;
 import org.hkijena.jipipe.plugins.imagejdatatypes.datatypes.ROI2DListData;
@@ -124,7 +124,7 @@ public class ROI3DListData extends ArrayList<ROI3D> implements JIPipeData {
 
     @Override
     public void display(String displayName, JIPipeDesktopWorkbench desktopWorkbench, JIPipeDataSource source) {
-        CachedROIList3DDataViewerWindow window = new CachedROIList3DDataViewerWindow(desktopWorkbench, JIPipeDataTableDataSource.wrap(this, source), displayName);
+        ROIList3DDataLegacyCacheDataViewerWindow window = new ROIList3DDataLegacyCacheDataViewerWindow(desktopWorkbench, JIPipeDataTableDataSource.wrap(this, source), displayName);
         window.reloadDisplayedData();
         window.setVisible(true);
         SwingUtilities.invokeLater(() -> window.getImageViewer().switchTo3D());

@@ -16,10 +16,10 @@ package org.hkijena.jipipe.plugins.imp.utils;
 import org.hkijena.jipipe.api.JIPipeProgressInfo;
 import org.hkijena.jipipe.api.data.JIPipeDataItemStore;
 import org.hkijena.jipipe.plugins.imagejdatatypes.datatypes.ROI2DListData;
-import org.hkijena.jipipe.plugins.imagejdatatypes.display.CachedImagePlusDataViewerWindow;
+import org.hkijena.jipipe.plugins.imagejdatatypes.display.ImagePlusDataLegacyCacheDataViewerWindow;
 import org.hkijena.jipipe.plugins.imp.datatypes.ImpImageData;
 
-public class ImpImageDataImageViewerCustomLoader extends CachedImagePlusDataViewerWindow.CustomDataLoader {
+public class ImpImageDataImageViewerCustomLoader extends ImagePlusDataLegacyCacheDataViewerWindow.CustomDataLoader {
     @Override
     public void load(JIPipeDataItemStore virtualData, JIPipeProgressInfo progressInfo) {
         setImagePlus(virtualData.getData(ImpImageData.class, progressInfo).toImagePlus(true, 10));

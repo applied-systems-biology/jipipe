@@ -20,15 +20,15 @@ import org.hkijena.jipipe.api.data.sources.JIPipeDataTableDataSource;
 import org.hkijena.jipipe.desktop.app.JIPipeDesktopWorkbench;
 import org.hkijena.jipipe.plugins.ijtrackmate.datatypes.TrackCollectionData;
 import org.hkijena.jipipe.plugins.ijtrackmate.display.spots.SpotsManagerPlugin2D;
-import org.hkijena.jipipe.plugins.imageviewer.JIPipeImageViewerCacheDataViewerWindow;
+import org.hkijena.jipipe.plugins.imageviewer.ImageLegacyCacheDataViewerWindow;
 import org.hkijena.jipipe.plugins.imageviewer.JIPipeImageViewerPlugin;
 
 import java.util.List;
 import java.util.Map;
 
-public class CachedTracksCollectionDataViewerWindow extends JIPipeImageViewerCacheDataViewerWindow {
+public class TracksCollectionDataLegacyCacheDataViewerWindow extends ImageLegacyCacheDataViewerWindow {
 
-    public CachedTracksCollectionDataViewerWindow(JIPipeDesktopWorkbench workbench, JIPipeDataTableDataSource dataSource, String displayName) {
+    public TracksCollectionDataLegacyCacheDataViewerWindow(JIPipeDesktopWorkbench workbench, JIPipeDataTableDataSource dataSource, String displayName) {
         super(workbench, dataSource, displayName);
     }
 

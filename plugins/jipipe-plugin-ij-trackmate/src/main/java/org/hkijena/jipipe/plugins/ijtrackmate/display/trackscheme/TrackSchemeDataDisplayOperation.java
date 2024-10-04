@@ -25,7 +25,7 @@ import javax.swing.*;
 public class TrackSchemeDataDisplayOperation implements JIPipeDesktopDataDisplayOperation {
     @Override
     public void display(JIPipeData data, String displayName, JIPipeDesktopWorkbench desktopWorkbench, JIPipeDataSource source) {
-        TrackSchemeCachedDataViewerWindow window = new TrackSchemeCachedDataViewerWindow(desktopWorkbench, JIPipeDataTableDataSource.wrap(data, source), displayName);
+        TrackSchemeLegacyCacheDataViewerWindow window = new TrackSchemeLegacyCacheDataViewerWindow(desktopWorkbench, JIPipeDataTableDataSource.wrap(data, source), displayName);
         window.setVisible(true);
     }
 

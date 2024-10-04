@@ -29,6 +29,8 @@ import org.hkijena.jipipe.api.validation.JIPipeValidationReportEntryLevel;
 import org.hkijena.jipipe.api.validation.JIPipeValidationRuntimeException;
 import org.hkijena.jipipe.api.validation.contexts.CustomValidationReportContext;
 import org.hkijena.jipipe.desktop.api.data.JIPipeDesktopDataDisplayOperation;
+import org.hkijena.jipipe.desktop.api.dataviewer.JIPipeDesktopDataViewer;
+import org.hkijena.jipipe.desktop.api.dataviewer.JIPipeDesktopDefaultDataViewer;
 import org.hkijena.jipipe.desktop.app.JIPipeDesktopProjectWorkbench;
 import org.hkijena.jipipe.desktop.app.resultanalysis.JIPipeDesktopDefaultResultDataSlotPreview;
 import org.hkijena.jipipe.desktop.app.resultanalysis.JIPipeDesktopDefaultResultDataSlotRowUI;
@@ -64,6 +66,7 @@ public class JIPipeDatatypeRegistry {
     private final Map<String, JIPipeDependency> registeredDatatypeSources = new HashMap<>();
     private final Graph<JIPipeDataInfo, DataConverterEdge> conversionGraph = new DefaultDirectedGraph<>(DataConverterEdge.class);
     private final DijkstraShortestPath<JIPipeDataInfo, DataConverterEdge> shortestPath = new DijkstraShortestPath<>(conversionGraph);
+    private final Map<Class<? extends JIPipeData>, Class<? extends JIPipeDesktopDataViewer>> defaultDataViewers = new HashMap<>();
     private final URL defaultIconURL;
     private final ImageIcon defaultIcon;
     private final JIPipe jiPipe;
@@ -495,6 +498,39 @@ public class JIPipeDatatypeRegistry {
     public void registerResultTableCellUI(Class<? extends JIPipeData> klass, Class<? extends JIPipeDesktopResultDataSlotPreview> renderer) {
         resultTableCellUIs.put(klass, renderer);
         getJIPipe().getProgressInfo().log("Registered result table cell UI for data type " + klass + " RendererClass=" + renderer);
+    }
+
+    /**
+     * Registers a default data viewer class
+     * @param dataClass the data class
+     * @param dataViewerClass the data viewer class
+     */
+    public void registerDefaultDataViewer(Class<? extends JIPipeData> dataClass, Class<? extends JIPipeDesktopDataViewer> dataViewerClass) {
+        getJIPipe().getProgressInfo().log("Registered default data viewer for data type " + dataClass + " as " + dataViewerClass);
+    }
+
+    /**
+     * Gets the default data viewer
+     * @param dataClass the data class
+     * @return the data viewer
+     */
+    public Class<? extends JIPipeDesktopDataViewer> getDefaultDataViewer(Class<? extends JIPipeData> dataClass) {
+        while(dataClass != JIPipe.class) {
+            Class<? extends JIPipeDesktopDataViewer> result = defaultDataViewers.getOrDefault(dataClass, null);
+            if(result != null) {
+                return result;
+            }
+            else {
+                Class<?> superclass = dataClass.getSuperclass();
+                if(JIPipeData.class.isAssignableFrom(superclass)) {
+                    dataClass = (Class<? extends JIPipeData>) superclass;
+                }
+                else {
+                    break;
+                }
+            }
+        }
+        return JIPipeDesktopDefaultDataViewer.class;
     }
 
     /**

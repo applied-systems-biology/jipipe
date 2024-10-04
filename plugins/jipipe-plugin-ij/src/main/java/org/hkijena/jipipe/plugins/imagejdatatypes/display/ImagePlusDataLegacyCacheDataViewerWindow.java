@@ -21,12 +21,12 @@ import org.hkijena.jipipe.desktop.app.JIPipeDesktopWorkbench;
 import org.hkijena.jipipe.plugins.imagejdatatypes.datatypes.ImagePlusData;
 import org.hkijena.jipipe.plugins.imagejdatatypes.datatypes.OMEImageData;
 import org.hkijena.jipipe.plugins.imagejdatatypes.datatypes.ROI2DListData;
-import org.hkijena.jipipe.plugins.imageviewer.JIPipeImageViewerCacheDataViewerWindow;
+import org.hkijena.jipipe.plugins.imageviewer.ImageLegacyCacheDataViewerWindow;
 
-public class CachedImagePlusDataViewerWindow extends JIPipeImageViewerCacheDataViewerWindow {
+public class ImagePlusDataLegacyCacheDataViewerWindow extends ImageLegacyCacheDataViewerWindow {
     private CustomDataLoader customDataLoader;
 
-    public CachedImagePlusDataViewerWindow(JIPipeDesktopWorkbench workbench, JIPipeDataTableDataSource dataSource, String displayName) {
+    public ImagePlusDataLegacyCacheDataViewerWindow(JIPipeDesktopWorkbench workbench, JIPipeDataTableDataSource dataSource, String displayName) {
         super(workbench, dataSource, displayName);
     }
 

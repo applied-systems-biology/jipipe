@@ -6,18 +6,25 @@ import org.hkijena.jipipe.api.data.browser.JIPipeDataBrowser;
 import org.hkijena.jipipe.api.data.browser.JIPipeLocalDataTableBrowser;
 import org.hkijena.jipipe.api.data.serialization.JIPipeDataTableInfo;
 import org.hkijena.jipipe.api.data.serialization.JIPipeDataTableRowInfo;
+import org.hkijena.jipipe.api.run.JIPipeRunnableQueue;
 import org.hkijena.jipipe.desktop.app.JIPipeDesktopWorkbench;
 import org.hkijena.jipipe.desktop.app.JIPipeDesktopWorkbenchAccess;
+import org.hkijena.jipipe.desktop.app.running.JIPipeDesktopRunnableQueueButton;
 import org.hkijena.jipipe.desktop.commons.components.ribbon.JIPipeDesktopRibbon;
 import org.hkijena.jipipe.desktop.commons.components.ribbon.JIPipeDesktopSmallButtonRibbonAction;
 import org.hkijena.jipipe.plugins.tables.datatypes.ResultsTableData;
 import org.hkijena.jipipe.utils.ReflectionUtils;
 import org.hkijena.jipipe.utils.UIUtils;
 import org.hkijena.jipipe.utils.ui.JIPipeDesktopDockPanel;
+import org.jdesktop.swingx.JXStatusBar;
+import org.jdesktop.swingx.plaf.basic.BasicStatusBarUI;
 import org.scijava.Disposable;
 
 import javax.swing.*;
 import java.awt.*;
+import java.awt.event.ActionEvent;
+import java.awt.event.InputEvent;
+import java.awt.event.KeyEvent;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
@@ -27,6 +34,9 @@ import java.util.concurrent.ExecutionException;
  * Window that displays data using {@link JIPipeDesktopDataViewer}
  */
 public class JIPipeDesktopDataViewerWindow extends JFrame implements JIPipeDesktopWorkbenchAccess, Disposable {
+
+    public static final JIPipeRunnableQueue DOWNLOADER_QUEUE = new JIPipeRunnableQueue("Data download");
+
     private final JIPipeDesktopWorkbench workbench;
     private final JIPipeDesktopRibbon ribbon = new JIPipeDesktopRibbon();
     private final JIPipeDesktopDockPanel dockPanel = new JIPipeDesktopDockPanel();
@@ -38,20 +48,62 @@ public class JIPipeDesktopDataViewerWindow extends JFrame implements JIPipeDeskt
     private int currentDataRow = -1;
     private int currentDataAnnotationColumn = -1;
     private JIPipeDesktopDataViewer currentDataViewer;
+    private final JPanel contentPane = new JPanel(new BorderLayout());
+    private final JXStatusBar statusBar = new JXStatusBar();
 
     public JIPipeDesktopDataViewerWindow(JIPipeDesktopWorkbench workbench) {
         this.workbench = workbench;
         initialize();
+        registerHotkeys();
         onDataChanged();
+    }
+
+    private void registerHotkeys() {
+        InputMap inputMap = contentPane.getInputMap(JComponent.WHEN_IN_FOCUSED_WINDOW);
+        ActionMap actionMap = contentPane.getActionMap();
+
+        actionMap.put("next-row", new AbstractAction() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                goToNextData();
+            }
+        });
+        actionMap.put("previous-row", new AbstractAction() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                goToPreviousData();
+            }
+        });
+
+        inputMap.put(KeyStroke.getKeyStroke(KeyEvent.VK_UP, InputEvent.CTRL_DOWN_MASK), "previous-row");
+        inputMap.put(KeyStroke.getKeyStroke(KeyEvent.VK_DOWN, InputEvent.CTRL_DOWN_MASK), "next-row");
     }
 
     private void initialize() {
         setIconImage(UIUtils.getJIPipeIcon128());
-        getContentPane().setLayout(new BorderLayout());
-        getContentPane().add(ribbon, BorderLayout.NORTH);
-        getContentPane().add(dockPanel, BorderLayout.CENTER);
+        setContentPane(contentPane);
+        contentPane.add(ribbon, BorderLayout.NORTH);
+        contentPane.add(dockPanel, BorderLayout.CENTER);
+        contentPane.add(statusBar, BorderLayout.SOUTH);
+
+        initializeStatusBar();
+
         pack();
         setSize(1280, 800);
+    }
+
+    private void initializeStatusBar() {
+        statusBar.putClientProperty(BasicStatusBarUI.AUTO_ADD_SEPARATOR, false);
+        statusBar.add(Box.createHorizontalGlue(), new JXStatusBar.Constraint(JXStatusBar.Constraint.ResizeBehavior.FILL));
+
+        JIPipeDesktopRunnableQueueButton downloadQueueButton = new JIPipeDesktopRunnableQueueButton(getDesktopWorkbench(), DOWNLOADER_QUEUE);
+        downloadQueueButton.makeFlat();
+        downloadQueueButton.setReadyLabel("Data");
+        downloadQueueButton.setTasksFinishedLabel("Data");
+        statusBar.add(downloadQueueButton);
+        JIPipeDesktopRunnableQueueButton globalQueueButton = new JIPipeDesktopRunnableQueueButton(getDesktopWorkbench());
+        globalQueueButton.makeFlat();
+        statusBar.add(globalQueueButton);
     }
 
     private void onDataChanged() {

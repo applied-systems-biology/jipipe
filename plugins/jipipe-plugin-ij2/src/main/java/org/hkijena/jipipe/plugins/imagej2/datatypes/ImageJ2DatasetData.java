@@ -34,7 +34,7 @@ import org.hkijena.jipipe.api.validation.JIPipeValidationRuntimeException;
 import org.hkijena.jipipe.desktop.app.JIPipeDesktopWorkbench;
 import org.hkijena.jipipe.plugins.imagej2.util.ImageJDataSetDataImageViewerCustomLoader;
 import org.hkijena.jipipe.plugins.imagejdatatypes.datatypes.ImagePlusData;
-import org.hkijena.jipipe.plugins.imagejdatatypes.display.CachedImagePlusDataViewerWindow;
+import org.hkijena.jipipe.plugins.imagejdatatypes.display.ImagePlusDataLegacyCacheDataViewerWindow;
 import org.hkijena.jipipe.utils.PathUtils;
 
 import javax.swing.*;
@@ -100,7 +100,7 @@ public class ImageJ2DatasetData implements JIPipeData {
 
     @Override
     public void display(String displayName, JIPipeDesktopWorkbench desktopWorkbench, JIPipeDataSource source) {
-        CachedImagePlusDataViewerWindow window = new CachedImagePlusDataViewerWindow(desktopWorkbench, JIPipeDataTableDataSource.wrap(this, source), displayName);
+        ImagePlusDataLegacyCacheDataViewerWindow window = new ImagePlusDataLegacyCacheDataViewerWindow(desktopWorkbench, JIPipeDataTableDataSource.wrap(this, source), displayName);
         window.setCustomDataLoader(new ImageJDataSetDataImageViewerCustomLoader());
         window.setVisible(true);
         SwingUtilities.invokeLater(window::reloadDisplayedData);

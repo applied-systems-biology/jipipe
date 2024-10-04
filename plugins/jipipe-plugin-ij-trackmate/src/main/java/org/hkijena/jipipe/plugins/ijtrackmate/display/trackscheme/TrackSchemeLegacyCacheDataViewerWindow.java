@@ -20,7 +20,7 @@ import org.hkijena.jipipe.api.JIPipeProgressInfo;
 import org.hkijena.jipipe.api.data.JIPipeDataItemStore;
 import org.hkijena.jipipe.api.data.sources.JIPipeDataTableDataSource;
 import org.hkijena.jipipe.desktop.app.JIPipeDesktopWorkbench;
-import org.hkijena.jipipe.desktop.app.cache.JIPipeDesktopCacheDataViewerWindow;
+import org.hkijena.jipipe.desktop.app.cache.JIPipeDesktopLegacyCacheDataViewerWindow;
 import org.hkijena.jipipe.desktop.app.cache.JIPipeDesktopCachedDataViewerAnnotationInfoPanel;
 import org.hkijena.jipipe.desktop.commons.components.JIPipeDesktopFlexContentPanel;
 import org.hkijena.jipipe.desktop.commons.components.tabs.JIPipeDesktopTabPane;
@@ -30,13 +30,13 @@ import org.hkijena.jipipe.utils.UIUtils;
 import javax.swing.*;
 import java.awt.*;
 
-public class TrackSchemeCachedDataViewerWindow extends JIPipeDesktopCacheDataViewerWindow {
+public class TrackSchemeLegacyCacheDataViewerWindow extends JIPipeDesktopLegacyCacheDataViewerWindow {
     private final JIPipeDesktopCachedDataViewerAnnotationInfoPanel annotationInfoPanel;
     private final DisplaySettings displaySettings = new DisplaySettings();
 
     private final JIPipeDesktopFlexContentPanel flexContentPanel = new JIPipeDesktopFlexContentPanel();
 
-    public TrackSchemeCachedDataViewerWindow(JIPipeDesktopWorkbench workbench, JIPipeDataTableDataSource dataSource, String displayName) {
+    public TrackSchemeLegacyCacheDataViewerWindow(JIPipeDesktopWorkbench workbench, JIPipeDataTableDataSource dataSource, String displayName) {
         super(workbench, dataSource, displayName);
         this.annotationInfoPanel = new JIPipeDesktopCachedDataViewerAnnotationInfoPanel(workbench);
         initialize();

@@ -15,7 +15,7 @@ package org.hkijena.jipipe.plugins.imageviewer;
 
 import org.hkijena.jipipe.api.data.sources.JIPipeDataTableDataSource;
 import org.hkijena.jipipe.desktop.app.JIPipeDesktopWorkbench;
-import org.hkijena.jipipe.desktop.app.cache.JIPipeDesktopCacheDataViewerWindow;
+import org.hkijena.jipipe.desktop.app.cache.JIPipeDesktopLegacyCacheDataViewerWindow;
 
 import javax.swing.*;
 import java.awt.event.WindowEvent;
@@ -26,13 +26,13 @@ import java.util.List;
 import java.util.Map;
 
 /**
- * A {@link JIPipeDesktopCacheDataViewerWindow} that contains a {@link JIPipeImageViewer}
+ * A {@link JIPipeDesktopLegacyCacheDataViewerWindow} that contains a {@link JIPipeImageViewer}
  */
-public abstract class JIPipeImageViewerCacheDataViewerWindow extends JIPipeDesktopCacheDataViewerWindow implements WindowListener {
+public abstract class ImageLegacyCacheDataViewerWindow extends JIPipeDesktopLegacyCacheDataViewerWindow implements WindowListener {
     private JIPipeImageViewer imageViewer;
     private boolean fitImageTriggered;
 
-    public JIPipeImageViewerCacheDataViewerWindow(JIPipeDesktopWorkbench workbench, JIPipeDataTableDataSource dataSource, String displayName) {
+    public ImageLegacyCacheDataViewerWindow(JIPipeDesktopWorkbench workbench, JIPipeDataTableDataSource dataSource, String displayName) {
         super(workbench, dataSource, displayName);
         initialize();
         addWindowListener(this);
@@ -57,8 +57,8 @@ public abstract class JIPipeImageViewerCacheDataViewerWindow extends JIPipeDeskt
      */
     protected void initializePlugins(List<Class<? extends JIPipeImageViewerPlugin>> plugins, Map<Class<?>, Object> contextObjects) {
         plugins.addAll(JIPipeImageViewer.DEFAULT_PLUGINS);
-        contextObjects.put(JIPipeDesktopCacheDataViewerWindow.class, this);
-        contextObjects.put(JIPipeImageViewerCacheDataViewerWindow.class, this);
+        contextObjects.put(JIPipeDesktopLegacyCacheDataViewerWindow.class, this);
+        contextObjects.put(ImageLegacyCacheDataViewerWindow.class, this);
     }
 
     /**

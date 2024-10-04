@@ -46,7 +46,7 @@ import java.util.function.Function;
 /**
  * Base class for a Window that displays cached data.
  */
-public abstract class JIPipeDesktopCacheDataViewerWindow extends JFrame implements JIPipeCache.ModifiedEventListener {
+public abstract class JIPipeDesktopLegacyCacheDataViewerWindow extends JFrame implements JIPipeCache.ModifiedEventListener {
 
     private final JIPipeDesktopAlwaysOnTopToggle alwaysOnTopToggle = new JIPipeDesktopAlwaysOnTopToggle(this);
     private final JIPipeDesktopWorkbench workbench;
@@ -66,7 +66,7 @@ public abstract class JIPipeDesktopCacheDataViewerWindow extends JFrame implemen
 
     private JLabel standardErrorLabel;
 
-    public JIPipeDesktopCacheDataViewerWindow(JIPipeDesktopWorkbench workbench, JIPipeDataTableDataSource dataSource, String displayName) {
+    public JIPipeDesktopLegacyCacheDataViewerWindow(JIPipeDesktopWorkbench workbench, JIPipeDataTableDataSource dataSource, String displayName) {
         this.workbench = workbench;
         this.dataSource = dataSource;
         this.slotName = dataSource.getDataTable().getLocation(JIPipeDataSlot.LOCATION_KEY_SLOT_NAME, "");

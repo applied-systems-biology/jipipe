@@ -42,7 +42,7 @@ import org.hkijena.jipipe.api.validation.contexts.UnspecifiedValidationReportCon
 import org.hkijena.jipipe.desktop.app.JIPipeDesktopWorkbench;
 import org.hkijena.jipipe.plugins.parameters.library.colors.ColorListParameter;
 import org.hkijena.jipipe.plugins.parameters.library.primitives.optional.OptionalDoubleParameter;
-import org.hkijena.jipipe.plugins.plots.CachedPlotViewerWindow;
+import org.hkijena.jipipe.plugins.plots.PlotViewerLegacyCacheDataViewerWindow;
 import org.hkijena.jipipe.plugins.plots.utils.ColorMap;
 import org.hkijena.jipipe.plugins.plots.utils.ColorMapSupplier;
 import org.hkijena.jipipe.plugins.tables.datatypes.ResultsTableData;
@@ -197,7 +197,7 @@ public abstract class PlotData extends AbstractJIPipeParameterCollection impleme
 
     @Override
     public void display(String displayName, JIPipeDesktopWorkbench desktopWorkbench, JIPipeDataSource source) {
-        CachedPlotViewerWindow window = new CachedPlotViewerWindow(desktopWorkbench, JIPipeDataTableDataSource.wrap(this, source), displayName, true);
+        PlotViewerLegacyCacheDataViewerWindow window = new PlotViewerLegacyCacheDataViewerWindow(desktopWorkbench, JIPipeDataTableDataSource.wrap(this, source), displayName, true);
         window.setVisible(true);
         SwingUtilities.invokeLater(window::reloadDisplayedData);
     }

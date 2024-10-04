@@ -19,7 +19,7 @@ import org.hkijena.jipipe.api.data.JIPipeData;
 import org.hkijena.jipipe.api.data.JIPipeDataItemStore;
 import org.hkijena.jipipe.api.data.sources.JIPipeDataTableDataSource;
 import org.hkijena.jipipe.desktop.app.JIPipeDesktopWorkbench;
-import org.hkijena.jipipe.desktop.app.cache.JIPipeDesktopCacheDataViewerWindow;
+import org.hkijena.jipipe.desktop.app.cache.JIPipeDesktopLegacyCacheDataViewerWindow;
 import org.hkijena.jipipe.utils.UIUtils;
 import org.scijava.ui.swing.script.EditorPane;
 
@@ -29,13 +29,13 @@ import java.awt.*;
 /**
  * Cached viewer for
  */
-public class CachedTextViewerWindow extends JIPipeDesktopCacheDataViewerWindow {
+public class TextLegacyCacheDataViewerWindow extends JIPipeDesktopLegacyCacheDataViewerWindow {
 
     private final JToolBar toolBar = new JToolBar();
     private EditorPane textArea;
     private JLabel errorLabel;
 
-    public CachedTextViewerWindow(JIPipeDesktopWorkbench workbench, JIPipeDataTableDataSource dataSource, String displayName, boolean deferLoading) {
+    public TextLegacyCacheDataViewerWindow(JIPipeDesktopWorkbench workbench, JIPipeDataTableDataSource dataSource, String displayName, boolean deferLoading) {
         super(workbench, dataSource, displayName);
         initialize();
         if (!deferLoading)

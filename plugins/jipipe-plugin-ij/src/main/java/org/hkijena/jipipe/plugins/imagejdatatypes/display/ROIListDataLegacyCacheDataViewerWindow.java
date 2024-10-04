@@ -27,9 +27,9 @@ import org.hkijena.jipipe.plugins.imagejdatatypes.util.ImageJUtils;
 
 import java.awt.*;
 
-public class CachedROIListDataViewerWindow extends CachedImagePlusDataViewerWindow {
+public class ROIListDataLegacyCacheDataViewerWindow extends ImagePlusDataLegacyCacheDataViewerWindow {
 
-    public CachedROIListDataViewerWindow(JIPipeDesktopWorkbench workbench, JIPipeDataTableDataSource dataSource, String displayName) {
+    public ROIListDataLegacyCacheDataViewerWindow(JIPipeDesktopWorkbench workbench, JIPipeDataTableDataSource dataSource, String displayName) {
         super(workbench, dataSource, displayName);
     }
 

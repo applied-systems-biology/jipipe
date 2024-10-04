@@ -19,7 +19,7 @@ import org.hkijena.jipipe.api.data.JIPipeData;
 import org.hkijena.jipipe.api.data.JIPipeDataItemStore;
 import org.hkijena.jipipe.api.data.sources.JIPipeDataTableDataSource;
 import org.hkijena.jipipe.desktop.app.JIPipeDesktopWorkbench;
-import org.hkijena.jipipe.desktop.app.cache.JIPipeDesktopCacheDataViewerWindow;
+import org.hkijena.jipipe.desktop.app.cache.JIPipeDesktopLegacyCacheDataViewerWindow;
 import org.hkijena.jipipe.plugins.ijtrackmate.datatypes.SpotDetectorData;
 import org.hkijena.jipipe.plugins.ijtrackmate.datatypes.SpotTrackerData;
 import org.hkijena.jipipe.utils.UIUtils;
@@ -31,13 +31,13 @@ import java.awt.*;
 /**
  * Cached viewer for
  */
-public class CachedTrackmateAlgorithmViewerWindow extends JIPipeDesktopCacheDataViewerWindow {
+public class TrackmateLegacyCacheDataViewerWindow extends JIPipeDesktopLegacyCacheDataViewerWindow {
 
     private JToolBar toolBar = new JToolBar();
     private EditorPane textArea;
     private JLabel errorLabel;
 
-    public CachedTrackmateAlgorithmViewerWindow(JIPipeDesktopWorkbench workbench, JIPipeDataTableDataSource dataSource, String displayName, boolean deferLoading) {
+    public TrackmateLegacyCacheDataViewerWindow(JIPipeDesktopWorkbench workbench, JIPipeDataTableDataSource dataSource, String displayName, boolean deferLoading) {
         super(workbench, dataSource, displayName);
         initialize();
         if (!deferLoading)

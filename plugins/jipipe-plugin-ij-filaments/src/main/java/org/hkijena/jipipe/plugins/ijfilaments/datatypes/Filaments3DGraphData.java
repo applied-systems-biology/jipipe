@@ -40,7 +40,7 @@ import org.hkijena.jipipe.plugins.expressions.JIPipeExpressionVariablesMap;
 import org.hkijena.jipipe.plugins.ij3d.datatypes.ROI3D;
 import org.hkijena.jipipe.plugins.ij3d.datatypes.ROI3DListData;
 import org.hkijena.jipipe.plugins.ij3d.utils.ExtendedObjectCreator3D;
-import org.hkijena.jipipe.plugins.ijfilaments.display.CachedFilamentsDataViewerWindow;
+import org.hkijena.jipipe.plugins.ijfilaments.display.FilamentsLegacyCacheDataViewerWindow;
 import org.hkijena.jipipe.plugins.ijfilaments.util.*;
 import org.hkijena.jipipe.plugins.imagejdatatypes.datatypes.ROI2DListData;
 import org.hkijena.jipipe.plugins.imagejdatatypes.util.BitDepth;
@@ -177,7 +177,7 @@ public class Filaments3DGraphData extends SimpleGraph<FilamentVertex, FilamentEd
 
     @Override
     public void display(String displayName, JIPipeDesktopWorkbench desktopWorkbench, JIPipeDataSource source) {
-        CachedFilamentsDataViewerWindow window = new CachedFilamentsDataViewerWindow(desktopWorkbench, JIPipeDataTableDataSource.wrap(this, source), displayName);
+        FilamentsLegacyCacheDataViewerWindow window = new FilamentsLegacyCacheDataViewerWindow(desktopWorkbench, JIPipeDataTableDataSource.wrap(this, source), displayName);
         window.setVisible(true);
         SwingUtilities.invokeLater(window::reloadDisplayedData);
     }

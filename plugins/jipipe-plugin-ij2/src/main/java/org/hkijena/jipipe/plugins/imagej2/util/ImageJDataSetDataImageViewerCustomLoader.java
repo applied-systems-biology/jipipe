@@ -17,9 +17,9 @@ import org.hkijena.jipipe.api.JIPipeProgressInfo;
 import org.hkijena.jipipe.api.data.JIPipeDataItemStore;
 import org.hkijena.jipipe.plugins.imagej2.datatypes.ImageJ2DatasetData;
 import org.hkijena.jipipe.plugins.imagejdatatypes.datatypes.ROI2DListData;
-import org.hkijena.jipipe.plugins.imagejdatatypes.display.CachedImagePlusDataViewerWindow;
+import org.hkijena.jipipe.plugins.imagejdatatypes.display.ImagePlusDataLegacyCacheDataViewerWindow;
 
-public class ImageJDataSetDataImageViewerCustomLoader extends CachedImagePlusDataViewerWindow.CustomDataLoader {
+public class ImageJDataSetDataImageViewerCustomLoader extends ImagePlusDataLegacyCacheDataViewerWindow.CustomDataLoader {
     @Override
     public void load(JIPipeDataItemStore virtualData, JIPipeProgressInfo progressInfo) {
         ImageJ2DatasetData data = (ImageJ2DatasetData) virtualData.getData(progressInfo);

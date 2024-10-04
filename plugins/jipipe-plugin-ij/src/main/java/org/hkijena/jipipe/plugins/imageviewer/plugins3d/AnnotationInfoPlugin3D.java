@@ -13,9 +13,10 @@
 
 package org.hkijena.jipipe.plugins.imageviewer.plugins3d;
 
-import org.hkijena.jipipe.desktop.app.cache.JIPipeDesktopCacheDataViewerWindow;
+import org.hkijena.jipipe.desktop.app.cache.JIPipeDesktopLegacyCacheDataViewerWindow;
 import org.hkijena.jipipe.desktop.app.cache.JIPipeDesktopCachedDataViewerAnnotationInfoPanel;
 import org.hkijena.jipipe.desktop.commons.components.JIPipeDesktopFormPanel;
+import org.hkijena.jipipe.plugins.imagejdatatypes.display.ImagePlusDataLegacyCacheDataViewerWindow;
 import org.hkijena.jipipe.plugins.imageviewer.JIPipeImageViewer;
 import org.hkijena.jipipe.plugins.imageviewer.JIPipeImageViewerPlugin3D;
 import org.hkijena.jipipe.utils.UIUtils;
@@ -23,17 +24,17 @@ import org.hkijena.jipipe.utils.UIUtils;
 import javax.swing.*;
 
 /**
- * To be used with {@link org.hkijena.jipipe.plugins.imagejdatatypes.display.CachedImagePlusDataViewerWindow} and other similar implementations that
+ * To be used with {@link ImagePlusDataLegacyCacheDataViewerWindow} and other similar implementations that
  * have access to the cache
  */
 public class AnnotationInfoPlugin3D extends JIPipeImageViewerPlugin3D {
 
-    private final JIPipeDesktopCacheDataViewerWindow cacheDataViewerWindow;
+    private final JIPipeDesktopLegacyCacheDataViewerWindow cacheDataViewerWindow;
     private final JIPipeDesktopCachedDataViewerAnnotationInfoPanel infoPanel;
 
     public AnnotationInfoPlugin3D(JIPipeImageViewer viewerPanel) {
         super(viewerPanel);
-        this.cacheDataViewerWindow = viewerPanel.getContextObject(JIPipeDesktopCacheDataViewerWindow.class);
+        this.cacheDataViewerWindow = viewerPanel.getContextObject(JIPipeDesktopLegacyCacheDataViewerWindow.class);
         this.infoPanel = new JIPipeDesktopCachedDataViewerAnnotationInfoPanel(cacheDataViewerWindow.getWorkbench());
     }
 
@@ -61,7 +62,7 @@ public class AnnotationInfoPlugin3D extends JIPipeImageViewerPlugin3D {
         }
     }
 
-    public JIPipeDesktopCacheDataViewerWindow getCacheDataViewerWindow() {
+    public JIPipeDesktopLegacyCacheDataViewerWindow getCacheDataViewerWindow() {
         return cacheDataViewerWindow;
     }
 }
