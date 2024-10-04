@@ -507,6 +507,7 @@ public class JIPipeDatatypeRegistry {
      */
     public void registerDefaultDataViewer(Class<? extends JIPipeData> dataClass, Class<? extends JIPipeDesktopDataViewer> dataViewerClass) {
         getJIPipe().getProgressInfo().log("Registered default data viewer for data type " + dataClass + " as " + dataViewerClass);
+        defaultDataViewers.put(dataClass, dataViewerClass);
     }
 
     /**
@@ -515,7 +516,7 @@ public class JIPipeDatatypeRegistry {
      * @return the data viewer
      */
     public Class<? extends JIPipeDesktopDataViewer> getDefaultDataViewer(Class<? extends JIPipeData> dataClass) {
-        while(dataClass != JIPipe.class) {
+        while(dataClass != JIPipeData.class) {
             Class<? extends JIPipeDesktopDataViewer> result = defaultDataViewers.getOrDefault(dataClass, null);
             if(result != null) {
                 return result;

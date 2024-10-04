@@ -48,6 +48,7 @@ import org.hkijena.jipipe.desktop.api.JIPipeDesktopGraphEditorToolBarButtonExten
 import org.hkijena.jipipe.desktop.api.JIPipeDesktopMenuExtension;
 import org.hkijena.jipipe.desktop.api.JIPipeDesktopParameterEditorUI;
 import org.hkijena.jipipe.desktop.api.data.JIPipeDesktopDataDisplayOperation;
+import org.hkijena.jipipe.desktop.api.dataviewer.JIPipeDesktopDataViewer;
 import org.hkijena.jipipe.desktop.app.grapheditor.commons.contextmenu.NodeUIContextAction;
 import org.hkijena.jipipe.desktop.app.resultanalysis.JIPipeDesktopResultDataSlotPreview;
 import org.hkijena.jipipe.desktop.app.resultanalysis.JIPipeDesktopResultDataSlotRowUI;
@@ -316,6 +317,16 @@ public abstract class JIPipeDefaultJavaPlugin extends AbstractService implements
                 registerDatatypeDisplayOperation(dataTypeId, (JIPipeDesktopDataDisplayOperation) operation);
             }
         }
+    }
+
+    /**
+     * Registers a default data viewer for the provided data class
+     * Overrides any existing data viewer
+     * @param dataClass the data class
+     * @param dataViewerClass the viewer class
+     */
+    public void registerDefaultDataTypeViewer(Class<? extends JIPipeData> dataClass, Class<? extends JIPipeDesktopDataViewer> dataViewerClass) {
+        registry.getDatatypeRegistry().registerDefaultDataViewer(dataClass, dataViewerClass);
     }
 
     /**

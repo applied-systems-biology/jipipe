@@ -1,5 +1,6 @@
 package org.hkijena.jipipe.desktop.api.dataviewer;
 
+import org.hkijena.jipipe.JIPipe;
 import org.hkijena.jipipe.api.JIPipeWorkbench;
 import org.hkijena.jipipe.api.annotation.JIPipeTextAnnotation;
 import org.hkijena.jipipe.api.data.browser.JIPipeDataBrowser;
@@ -26,6 +27,7 @@ import java.awt.event.ActionEvent;
 import java.awt.event.InputEvent;
 import java.awt.event.KeyEvent;
 import java.io.IOException;
+import java.lang.reflect.InvocationTargetException;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.ExecutionException;
@@ -110,7 +112,13 @@ public class JIPipeDesktopDataViewerWindow extends JFrame implements JIPipeDeskt
         updateWindowTitle();
 
         // Select the viewer
-        Class<? extends JIPipeDesktopDataViewer> viewerClass = JIPipeDesktopDefaultDataViewer.class;
+        Class<? extends JIPipeDesktopDataViewer> viewerClass;
+        if(dataBrowser != null) {
+            viewerClass = JIPipe.getDataTypes().getDefaultDataViewer(dataBrowser.getDataClass());
+        }
+        else {
+            viewerClass = JIPipeDesktopDefaultDataViewer.class;
+        }
         if (currentDataViewer != null && currentDataViewer.getClass() != viewerClass) {
             destroyCurrentViewer();
         }

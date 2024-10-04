@@ -28,6 +28,7 @@ import org.hkijena.jipipe.plugins.filesystem.datasources.*;
 import org.hkijena.jipipe.plugins.filesystem.dataypes.FileData;
 import org.hkijena.jipipe.plugins.filesystem.dataypes.FolderData;
 import org.hkijena.jipipe.plugins.filesystem.dataypes.PathData;
+import org.hkijena.jipipe.plugins.filesystem.desktop.PathDataViewer;
 import org.hkijena.jipipe.plugins.filesystem.resultanalysis.CopyPathDataOperation;
 import org.hkijena.jipipe.plugins.filesystem.resultanalysis.FilesystemDataSlotPreview;
 import org.hkijena.jipipe.plugins.filesystem.resultanalysis.OpenPathDataOperation;
@@ -97,6 +98,9 @@ public class FilesystemPlugin extends JIPipePrepackagedDefaultJavaPlugin {
                 null, FilesystemDataSlotPreview.class, new OpenPathDataOperation(), new CopyPathDataOperation());
         registerDatatype("folder", FolderData.class, ResourceUtils.getPluginResource("icons/data-types/folder.png"),
                 null, FilesystemDataSlotPreview.class, new OpenPathDataOperation(), new CopyPathDataOperation());
+
+        // Register viewer
+        registerDefaultDataTypeViewer(PathData.class, PathDataViewer.class);
 
         // Register conversion between them
         registerDatatypeConversion(new ImplicitPathTypeConverter(PathData.class, FileData.class));

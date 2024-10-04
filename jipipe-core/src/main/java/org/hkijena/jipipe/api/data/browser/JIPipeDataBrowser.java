@@ -22,6 +22,12 @@ public interface JIPipeDataBrowser extends Closeable, AutoCloseable {
     Future<JIPipeData> getData();
 
     /**
+     * The data class
+     * @return the data class
+     */
+    Class<? extends JIPipeData> getDataClass();
+
+    /**
      * Created when the data browser is in some way updated
      */
     class UpdatedEvent extends AbstractJIPipeEvent {

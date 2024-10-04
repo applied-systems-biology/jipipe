@@ -6,6 +6,8 @@ import org.hkijena.jipipe.desktop.commons.components.ribbon.JIPipeDesktopRibbon;
 import org.hkijena.jipipe.utils.ui.JIPipeDesktopDockPanel;
 import org.scijava.Disposable;
 
+import java.awt.*;
+
 /**
  * A viewer for {@link org.hkijena.jipipe.api.data.JIPipeData}
  */
@@ -15,6 +17,7 @@ public abstract class JIPipeDesktopDataViewer extends JIPipeDesktopWorkbenchPane
     public JIPipeDesktopDataViewer(JIPipeDesktopDataViewerWindow dataViewerWindow) {
         super(dataViewerWindow.getDesktopWorkbench());
         this.dataViewerWindow = dataViewerWindow;
+        setLayout(new BorderLayout());
     }
 
     public JIPipeDesktopDataViewerWindow getDataViewerWindow() {

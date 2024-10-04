@@ -32,4 +32,9 @@ public class JIPipeLocalDataBrowser implements JIPipeDataBrowser, Closeable, Aut
     public Future<JIPipeData> getData() {
         return new InstantFuture<>(dataItemStore.getData(JIPipeData.class, new JIPipeProgressInfo()));
     }
+
+    @Override
+    public Class<? extends JIPipeData> getDataClass() {
+        return dataItemStore.getDataClass();
+    }
 }
