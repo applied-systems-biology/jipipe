@@ -16,6 +16,7 @@ package org.hkijena.jipipe.api.data;
 import org.hkijena.jipipe.api.*;
 import org.hkijena.jipipe.api.data.storage.JIPipeWriteDataStorage;
 import org.hkijena.jipipe.api.data.thumbnails.JIPipeThumbnailData;
+import org.hkijena.jipipe.desktop.api.data.JIPipeDesktopDataDisplayOperation;
 import org.hkijena.jipipe.desktop.app.JIPipeDesktopWorkbench;
 import org.hkijena.jipipe.plugins.parameters.library.markup.HTMLText;
 import org.hkijena.jipipe.utils.DocumentationUtils;
@@ -228,7 +229,7 @@ public interface JIPipeData extends Closeable, AutoCloseable {
 
     /**
      * This function should display the data in the GUI.
-     * The UI can handle multiple of such operations via {@link JIPipeDataDisplayOperation} that can be registered separately.
+     * The UI can handle multiple of such operations via {@link JIPipeDesktopDataDisplayOperation} that can be registered separately.
      * This item will always be shown as "Default" in the list of operations.
      *
      * @param displayName      a name that can be used

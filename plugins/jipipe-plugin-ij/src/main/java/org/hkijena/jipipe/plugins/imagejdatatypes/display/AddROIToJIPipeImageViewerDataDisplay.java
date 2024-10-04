@@ -14,7 +14,7 @@
 package org.hkijena.jipipe.plugins.imagejdatatypes.display;
 
 import org.hkijena.jipipe.api.data.JIPipeData;
-import org.hkijena.jipipe.api.data.JIPipeDataDisplayOperation;
+import org.hkijena.jipipe.desktop.api.data.JIPipeDesktopDataDisplayOperation;
 import org.hkijena.jipipe.api.data.JIPipeDataSource;
 import org.hkijena.jipipe.desktop.app.JIPipeDesktopWorkbench;
 import org.hkijena.jipipe.desktop.commons.components.renderers.JIPipeDesktopComponentListCellRenderer;
@@ -29,7 +29,7 @@ import java.util.Collections;
 import java.util.Comparator;
 import java.util.List;
 
-public class AddROIToJIPipeImageViewerDataDisplay implements JIPipeDataDisplayOperation {
+public class AddROIToJIPipeImageViewerDataDisplay implements JIPipeDesktopDataDisplayOperation {
     @Override
     public void display(JIPipeData data, String displayName, JIPipeDesktopWorkbench desktopWorkbench, JIPipeDataSource source) {
         List<JIPipeImageViewer> viewerPanels = new ArrayList<>(JIPipeImageViewer.getOpenViewerPanels());

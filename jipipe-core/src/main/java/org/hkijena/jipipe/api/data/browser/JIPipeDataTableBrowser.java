@@ -6,6 +6,7 @@ import org.hkijena.jipipe.api.events.AbstractJIPipeEvent;
 import org.hkijena.jipipe.api.events.JIPipeEventEmitter;
 
 import java.io.Closeable;
+import java.util.List;
 import java.util.concurrent.Future;
 
 public interface JIPipeDataTableBrowser extends Closeable, AutoCloseable {
@@ -17,10 +18,30 @@ public interface JIPipeDataTableBrowser extends Closeable, AutoCloseable {
     Future<JIPipeDataTable> getDataTable();
 
     /**
-     * Gets the serialized data table info
-     * @return the data table info
+     * Creates a data browser
+     * @param row the row
+     * @return the browser
+     */
+    default JIPipeDataBrowser browse(int row) {
+        return browse(row, null);
+    }
+
+    /**
+     * Creates a data browser (optionally supports a data annotation column)
+     * @param row the row
+     * @param dataAnnotationColumn the data annotation column (null for no column)
+     * @return the browser
+     */
+    JIPipeDataBrowser browse(int row, String dataAnnotationColumn);
+
+    /**
+     * Gets the data table info
+     * @return the info
      */
     Future<JIPipeDataTableInfo> getDataTableInfo();
+
+    /*
+    Future<List<String>> getDataAnnotationColumns();
 
     /**
      * Created when the data table browser is in some way updated

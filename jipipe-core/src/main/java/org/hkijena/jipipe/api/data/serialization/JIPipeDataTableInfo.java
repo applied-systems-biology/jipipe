@@ -504,4 +504,8 @@ public class JIPipeDataTableInfo implements TableModel, List<JIPipeDataTableRowI
     public List<JIPipeDataTableRowInfo> subList(int fromIndex, int toIndex) {
         return rowList.subList(fromIndex, toIndex);
     }
+
+    public JIPipeDataTableRowInfo getRow(int row) {
+        return rowList.get(row);
+    }
 }

@@ -20,6 +20,16 @@ public class JIPipeLocalDataTableBrowser implements JIPipeDataTableBrowser {
     }
 
     @Override
+    public JIPipeDataBrowser browse(int row, String dataAnnotationColumn) {
+        if(dataAnnotationColumn == null) {
+            return new JIPipeLocalDataBrowser(dataTable.getDataItemStore(row));
+        }
+        else {
+            return new JIPipeLocalDataBrowser(dataTable.getDataAnnotationItemStore(row, dataAnnotationColumn));
+        }
+    }
+
+    @Override
     public Future<JIPipeDataTableInfo> getDataTableInfo() {
         return new InstantFuture<>(new JIPipeDataTableInfo(dataTable));
     }

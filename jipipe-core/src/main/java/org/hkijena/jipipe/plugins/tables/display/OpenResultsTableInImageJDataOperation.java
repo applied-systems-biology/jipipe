@@ -15,7 +15,7 @@ package org.hkijena.jipipe.plugins.tables.display;
 
 import org.hkijena.jipipe.api.JIPipeProgressInfo;
 import org.hkijena.jipipe.api.data.JIPipeData;
-import org.hkijena.jipipe.api.data.JIPipeDataDisplayOperation;
+import org.hkijena.jipipe.desktop.api.data.JIPipeDesktopDataDisplayOperation;
 import org.hkijena.jipipe.api.data.JIPipeDataSource;
 import org.hkijena.jipipe.desktop.app.JIPipeDesktopWorkbench;
 import org.hkijena.jipipe.plugins.tables.datatypes.ResultsTableData;
@@ -23,7 +23,7 @@ import org.hkijena.jipipe.utils.UIUtils;
 
 import javax.swing.*;
 
-public class OpenResultsTableInImageJDataOperation implements JIPipeDataDisplayOperation {
+public class OpenResultsTableInImageJDataOperation implements JIPipeDesktopDataDisplayOperation {
 
     @Override
     public String getId() {

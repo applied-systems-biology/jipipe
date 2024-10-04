@@ -750,6 +750,22 @@ public class JIPipeDesktopDockPanel extends JPanel implements JIPipeDesktopSplit
         return state;
     }
 
+    public void removeAllPanels() {
+        boolean found = false;
+        for (Panel panel : ImmutableList.copyOf(panels.values())) {
+            panelVisibilityToggles.remove(panel.getId());
+            panels.remove(panel.getId());
+            found = true;
+        }
+        if (found) {
+            updateAll();
+        }
+    }
+
+    public boolean containsPanel(String id) {
+        return panels.containsKey(id);
+    }
+
     public enum PanelLocation {
         TopLeft,
         BottomLeft,

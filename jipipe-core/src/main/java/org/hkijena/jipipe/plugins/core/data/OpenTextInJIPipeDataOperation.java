@@ -14,14 +14,14 @@
 package org.hkijena.jipipe.plugins.core.data;
 
 import org.hkijena.jipipe.api.data.JIPipeData;
-import org.hkijena.jipipe.api.data.JIPipeDataDisplayOperation;
+import org.hkijena.jipipe.desktop.api.data.JIPipeDesktopDataDisplayOperation;
 import org.hkijena.jipipe.api.data.JIPipeDataSource;
 import org.hkijena.jipipe.desktop.app.JIPipeDesktopWorkbench;
 import org.hkijena.jipipe.utils.UIUtils;
 
 import javax.swing.*;
 
-public class OpenTextInJIPipeDataOperation implements JIPipeDataDisplayOperation {
+public class OpenTextInJIPipeDataOperation implements JIPipeDesktopDataDisplayOperation {
 
     private final String[] extensions;
 

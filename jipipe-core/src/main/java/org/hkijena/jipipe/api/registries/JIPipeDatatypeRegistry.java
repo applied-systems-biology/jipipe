@@ -28,6 +28,7 @@ import org.hkijena.jipipe.api.validation.JIPipeValidationReportEntry;
 import org.hkijena.jipipe.api.validation.JIPipeValidationReportEntryLevel;
 import org.hkijena.jipipe.api.validation.JIPipeValidationRuntimeException;
 import org.hkijena.jipipe.api.validation.contexts.CustomValidationReportContext;
+import org.hkijena.jipipe.desktop.api.data.JIPipeDesktopDataDisplayOperation;
 import org.hkijena.jipipe.desktop.app.JIPipeDesktopProjectWorkbench;
 import org.hkijena.jipipe.desktop.app.resultanalysis.JIPipeDesktopDefaultResultDataSlotPreview;
 import org.hkijena.jipipe.desktop.app.resultanalysis.JIPipeDesktopDefaultResultDataSlotRowUI;
@@ -53,7 +54,7 @@ import java.util.function.Predicate;
  */
 public class JIPipeDatatypeRegistry {
     private final BiMap<String, Class<? extends JIPipeData>> registeredDataTypes = HashBiMap.create();
-    private final Map<String, Map<String, JIPipeDataDisplayOperation>> registeredDisplayOperations = new HashMap<>();
+    private final Map<String, Map<String, JIPipeDesktopDataDisplayOperation>> registeredDisplayOperations = new HashMap<>();
     private final Map<String, Map<String, JIPipeDataImportOperation>> registeredImportOperations = new HashMap<>();
     private final Map<Class<? extends JIPipeData>, URL> iconsURLs = new HashMap<>();
     private final Map<Class<? extends JIPipeData>, ImageIcon> iconInstances = new HashMap<>();
@@ -285,8 +286,8 @@ public class JIPipeDatatypeRegistry {
      * @param dataTypeId data type id. if empty, the operation applies to all data types.
      * @param operation  the operation
      */
-    public void registerDisplayOperation(String dataTypeId, JIPipeDataDisplayOperation operation) {
-        Map<String, JIPipeDataDisplayOperation> existing = registeredDisplayOperations.getOrDefault(dataTypeId, null);
+    public void registerDisplayOperation(String dataTypeId, JIPipeDesktopDataDisplayOperation operation) {
+        Map<String, JIPipeDesktopDataDisplayOperation> existing = registeredDisplayOperations.getOrDefault(dataTypeId, null);
         if (existing == null) {
             existing = new HashMap<>();
             registeredDisplayOperations.put(dataTypeId, existing);
@@ -297,8 +298,8 @@ public class JIPipeDatatypeRegistry {
         getJIPipe().getProgressInfo().log("Registered data display operation id=" + operation.getId() + " for data type " + dataTypeId);
     }
 
-    public Map<String, JIPipeDataDisplayOperation> getAllRegisteredDisplayOperations(String dataTypeId) {
-        Map<String, JIPipeDataDisplayOperation> result = new HashMap<>(registeredDisplayOperations.getOrDefault(dataTypeId, Collections.emptyMap()));
+    public Map<String, JIPipeDesktopDataDisplayOperation> getAllRegisteredDisplayOperations(String dataTypeId) {
+        Map<String, JIPipeDesktopDataDisplayOperation> result = new HashMap<>(registeredDisplayOperations.getOrDefault(dataTypeId, Collections.emptyMap()));
         result.putAll(registeredDisplayOperations.getOrDefault("", Collections.emptyMap()));
         return result;
     }
@@ -328,10 +329,10 @@ public class JIPipeDatatypeRegistry {
      * @param id the id
      * @return list of import operations
      */
-    public List<JIPipeDataDisplayOperation> getSortedDisplayOperationsFor(String id) {
-        List<JIPipeDataDisplayOperation> result = new ArrayList<>(registeredDisplayOperations.getOrDefault(id, Collections.emptyMap()).values());
+    public List<JIPipeDesktopDataDisplayOperation> getSortedDisplayOperationsFor(String id) {
+        List<JIPipeDesktopDataDisplayOperation> result = new ArrayList<>(registeredDisplayOperations.getOrDefault(id, Collections.emptyMap()).values());
         result.addAll(registeredDisplayOperations.getOrDefault("", Collections.emptyMap()).values());
-        result.sort(Comparator.comparing(JIPipeDataDisplayOperation::getOrder));
+        result.sort(Comparator.comparing(JIPipeDesktopDataDisplayOperation::getOrder));
         return result;
     }
 
@@ -580,12 +581,12 @@ public class JIPipeDatatypeRegistry {
     }
 
     /**
-     * Converts all registered {@link JIPipeDataDisplayOperation} entries into {@link JIPipeDataImportOperation}
+     * Converts all registered {@link JIPipeDesktopDataDisplayOperation} entries into {@link JIPipeDataImportOperation}
      */
     public void convertDisplayOperationsToImportOperations() {
-        for (Map.Entry<String, Map<String, JIPipeDataDisplayOperation>> dataTypeEntry : registeredDisplayOperations.entrySet()) {
+        for (Map.Entry<String, Map<String, JIPipeDesktopDataDisplayOperation>> dataTypeEntry : registeredDisplayOperations.entrySet()) {
             String dataTypeId = dataTypeEntry.getKey();
-            for (Map.Entry<String, JIPipeDataDisplayOperation> entry : dataTypeEntry.getValue().entrySet()) {
+            for (Map.Entry<String, JIPipeDesktopDataDisplayOperation> entry : dataTypeEntry.getValue().entrySet()) {
                 JIPipeDataDisplayWrapperImportOperation operation = new JIPipeDataDisplayWrapperImportOperation(entry.getValue());
                 registerImportOperation(dataTypeId, operation);
             }

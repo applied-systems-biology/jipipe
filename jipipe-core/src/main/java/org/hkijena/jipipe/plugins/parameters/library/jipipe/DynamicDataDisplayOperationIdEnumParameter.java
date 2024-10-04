@@ -20,7 +20,7 @@ import com.fasterxml.jackson.databind.*;
 import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
 import com.fasterxml.jackson.databind.annotation.JsonSerialize;
 import org.hkijena.jipipe.JIPipe;
-import org.hkijena.jipipe.api.data.JIPipeDataDisplayOperation;
+import org.hkijena.jipipe.desktop.api.data.JIPipeDesktopDataDisplayOperation;
 import org.hkijena.jipipe.plugins.parameters.api.enums.DynamicEnumParameter;
 import org.hkijena.jipipe.plugins.parameters.api.enums.DynamicEnumParameterSettings;
 
@@ -68,7 +68,7 @@ public class DynamicDataDisplayOperationIdEnumParameter extends DynamicEnumParam
     @Override
     public String renderLabel(String value) {
         if (JIPipe.getInstance() != null && dataTypeId != null) {
-            JIPipeDataDisplayOperation operation = JIPipe.getDataTypes().getAllRegisteredDisplayOperations(dataTypeId).getOrDefault(value, null);
+            JIPipeDesktopDataDisplayOperation operation = JIPipe.getDataTypes().getAllRegisteredDisplayOperations(dataTypeId).getOrDefault(value, null);
             if (operation != null)
                 return operation.getName();
         }
@@ -78,7 +78,7 @@ public class DynamicDataDisplayOperationIdEnumParameter extends DynamicEnumParam
     @Override
     public String renderTooltip(String value) {
         if (JIPipe.getInstance() != null && dataTypeId != null) {
-            JIPipeDataDisplayOperation operation = JIPipe.getDataTypes().getAllRegisteredDisplayOperations(dataTypeId).getOrDefault(value, null);
+            JIPipeDesktopDataDisplayOperation operation = JIPipe.getDataTypes().getAllRegisteredDisplayOperations(dataTypeId).getOrDefault(value, null);
             if (operation != null)
                 return operation.getDescription();
         }
@@ -88,7 +88,7 @@ public class DynamicDataDisplayOperationIdEnumParameter extends DynamicEnumParam
     @Override
     public Icon renderIcon(String value) {
         if (JIPipe.getInstance() != null && dataTypeId != null) {
-            JIPipeDataDisplayOperation operation = JIPipe.getDataTypes().getAllRegisteredDisplayOperations(dataTypeId).getOrDefault(value, null);
+            JIPipeDesktopDataDisplayOperation operation = JIPipe.getDataTypes().getAllRegisteredDisplayOperations(dataTypeId).getOrDefault(value, null);
             if (operation != null)
                 return operation.getIcon();
         }

@@ -14,7 +14,7 @@
 package org.hkijena.jipipe.plugins.filesystem.resultanalysis;
 
 import org.hkijena.jipipe.api.data.JIPipeData;
-import org.hkijena.jipipe.api.data.JIPipeDataDisplayOperation;
+import org.hkijena.jipipe.desktop.api.data.JIPipeDesktopDataDisplayOperation;
 import org.hkijena.jipipe.api.data.JIPipeDataSource;
 import org.hkijena.jipipe.desktop.app.JIPipeDesktopWorkbench;
 import org.hkijena.jipipe.plugins.filesystem.dataypes.PathData;
@@ -25,7 +25,7 @@ import java.awt.*;
 import java.awt.datatransfer.Clipboard;
 import java.awt.datatransfer.StringSelection;
 
-public class CopyPathDataOperation implements JIPipeDataDisplayOperation {
+public class CopyPathDataOperation implements JIPipeDesktopDataDisplayOperation {
 
     @Override
     public String getId() {

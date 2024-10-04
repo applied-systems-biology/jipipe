@@ -14,7 +14,7 @@
 package org.hkijena.jipipe.plugins.imagejdatatypes.resultanalysis;
 
 import org.hkijena.jipipe.api.data.JIPipeData;
-import org.hkijena.jipipe.api.data.JIPipeDataDisplayOperation;
+import org.hkijena.jipipe.desktop.api.data.JIPipeDesktopDataDisplayOperation;
 import org.hkijena.jipipe.api.data.JIPipeDataSource;
 import org.hkijena.jipipe.desktop.app.JIPipeDesktopWorkbench;
 import org.hkijena.jipipe.plugins.filesystem.dataypes.PathData;
@@ -26,7 +26,7 @@ import javax.swing.*;
 import java.io.IOException;
 import java.nio.file.Path;
 
-public class ImportImageJPathDataOperation implements JIPipeDataDisplayOperation {
+public class ImportImageJPathDataOperation implements JIPipeDesktopDataDisplayOperation {
     @Override
     public void display(JIPipeData data, String displayName, JIPipeDesktopWorkbench desktopWorkbench, JIPipeDataSource source) {
         UIUtils.openFileInNative(((PathData) data).toPath());

@@ -11,11 +11,12 @@
  * See the LICENSE file provided with the code for the full license.
  */
 
-package org.hkijena.jipipe.api.data;
+package org.hkijena.jipipe.desktop.api.data;
 
 import org.hkijena.jipipe.JIPipe;
 import org.hkijena.jipipe.api.JIPipeProgressInfo;
 import org.hkijena.jipipe.api.annotation.JIPipeDataAnnotation;
+import org.hkijena.jipipe.api.data.*;
 import org.hkijena.jipipe.api.data.sources.JIPipeDataTableDataSource;
 import org.hkijena.jipipe.desktop.app.JIPipeDesktopWorkbench;
 import org.hkijena.jipipe.plugins.parameters.library.jipipe.DynamicDataDisplayOperationIdEnumParameter;
@@ -30,7 +31,7 @@ import java.util.Objects;
  * An operation that is executed on showing existing data located in memory/cache.
  * This acts as additional entry in the cache browser display menu. Must be registered.
  */
-public interface JIPipeDataDisplayOperation extends JIPipeDataOperation {
+public interface JIPipeDesktopDataDisplayOperation extends JIPipeDataOperation {
 
     /**
      * Shows the data in the UI

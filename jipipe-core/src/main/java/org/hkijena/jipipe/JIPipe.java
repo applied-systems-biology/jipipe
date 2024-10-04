@@ -29,7 +29,7 @@ import org.apache.commons.lang3.reflect.ConstructorUtils;
 import org.hkijena.jipipe.api.JIPipeNodeTemplate;
 import org.hkijena.jipipe.api.JIPipeProgressInfo;
 import org.hkijena.jipipe.api.data.JIPipeData;
-import org.hkijena.jipipe.api.data.JIPipeDataDisplayOperation;
+import org.hkijena.jipipe.desktop.api.data.JIPipeDesktopDataDisplayOperation;
 import org.hkijena.jipipe.api.data.JIPipeDataImportOperation;
 import org.hkijena.jipipe.api.data.JIPipeDataInfo;
 import org.hkijena.jipipe.api.data.storage.JIPipeReadDataStorage;
@@ -1351,7 +1351,7 @@ public class JIPipe extends AbstractService implements JIPipeService {
     private void updateDefaultCacheDisplaySettings() {
         JIPipeDefaultCacheDisplayApplicationSettings settings = applicationSettingsRegistry.getById(JIPipeDefaultCacheDisplayApplicationSettings.ID, JIPipeDefaultCacheDisplayApplicationSettings.class);
         for (String id : datatypeRegistry.getRegisteredDataTypes().keySet()) {
-            List<JIPipeDataDisplayOperation> operations = datatypeRegistry.getSortedDisplayOperationsFor(id);
+            List<JIPipeDesktopDataDisplayOperation> operations = datatypeRegistry.getSortedDisplayOperationsFor(id);
             JIPipeMutableParameterAccess access = (JIPipeMutableParameterAccess) settings.get(id);
 
             Object currentParameterValue = access.get(Object.class);
@@ -1363,7 +1363,7 @@ public class JIPipe extends AbstractService implements JIPipeService {
                 parameter.setValue("jipipe:show");
             }
 
-            for (JIPipeDataDisplayOperation operation : operations) {
+            for (JIPipeDesktopDataDisplayOperation operation : operations) {
                 parameter.getAllowedValues().add(operation.getId());
             }
             if (parameter.getValue() == null || !parameter.getAllowedValues().contains(parameter.getValue())) {

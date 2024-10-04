@@ -14,7 +14,7 @@
 package org.hkijena.jipipe.plugins.ijtrackmate.display.trackscheme;
 
 import org.hkijena.jipipe.api.data.JIPipeData;
-import org.hkijena.jipipe.api.data.JIPipeDataDisplayOperation;
+import org.hkijena.jipipe.desktop.api.data.JIPipeDesktopDataDisplayOperation;
 import org.hkijena.jipipe.api.data.JIPipeDataSource;
 import org.hkijena.jipipe.api.data.sources.JIPipeDataTableDataSource;
 import org.hkijena.jipipe.desktop.app.JIPipeDesktopWorkbench;
@@ -22,7 +22,7 @@ import org.hkijena.jipipe.plugins.ijtrackmate.TrackMatePlugin;
 
 import javax.swing.*;
 
-public class TrackSchemeDataDisplayOperation implements JIPipeDataDisplayOperation {
+public class TrackSchemeDataDisplayOperation implements JIPipeDesktopDataDisplayOperation {
     @Override
     public void display(JIPipeData data, String displayName, JIPipeDesktopWorkbench desktopWorkbench, JIPipeDataSource source) {
         TrackSchemeCachedDataViewerWindow window = new TrackSchemeCachedDataViewerWindow(desktopWorkbench, JIPipeDataTableDataSource.wrap(data, source), displayName);

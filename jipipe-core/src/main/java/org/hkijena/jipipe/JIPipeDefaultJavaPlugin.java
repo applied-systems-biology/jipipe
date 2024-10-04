@@ -47,6 +47,7 @@ import org.hkijena.jipipe.api.validation.JIPipeValidationReportContext;
 import org.hkijena.jipipe.desktop.api.JIPipeDesktopGraphEditorToolBarButtonExtension;
 import org.hkijena.jipipe.desktop.api.JIPipeDesktopMenuExtension;
 import org.hkijena.jipipe.desktop.api.JIPipeDesktopParameterEditorUI;
+import org.hkijena.jipipe.desktop.api.data.JIPipeDesktopDataDisplayOperation;
 import org.hkijena.jipipe.desktop.app.grapheditor.commons.contextmenu.NodeUIContextAction;
 import org.hkijena.jipipe.desktop.app.resultanalysis.JIPipeDesktopResultDataSlotPreview;
 import org.hkijena.jipipe.desktop.app.resultanalysis.JIPipeDesktopResultDataSlotRowUI;
@@ -311,8 +312,8 @@ public abstract class JIPipeDefaultJavaPlugin extends AbstractService implements
             if (operation instanceof JIPipeDataImportOperation) {
                 registerDatatypeImportOperation(dataTypeId, (JIPipeDataImportOperation) operation);
             }
-            if (operation instanceof JIPipeDataDisplayOperation) {
-                registerDatatypeDisplayOperation(dataTypeId, (JIPipeDataDisplayOperation) operation);
+            if (operation instanceof JIPipeDesktopDataDisplayOperation) {
+                registerDatatypeDisplayOperation(dataTypeId, (JIPipeDesktopDataDisplayOperation) operation);
             }
         }
     }
@@ -334,7 +335,7 @@ public abstract class JIPipeDefaultJavaPlugin extends AbstractService implements
      * @param dataTypeId the data type id. it is not required that the data type is registered, yet. If empty, the operations are applying to all data.
      * @param operation  the operation
      */
-    public void registerDatatypeDisplayOperation(String dataTypeId, JIPipeDataDisplayOperation operation) {
+    public void registerDatatypeDisplayOperation(String dataTypeId, JIPipeDesktopDataDisplayOperation operation) {
         registry.getDatatypeRegistry().registerDisplayOperation(dataTypeId, operation);
     }
 

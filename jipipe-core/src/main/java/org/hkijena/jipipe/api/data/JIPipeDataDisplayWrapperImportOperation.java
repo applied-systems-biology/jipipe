@@ -21,6 +21,7 @@ import org.hkijena.jipipe.api.data.serialization.JIPipeDataTableRowInfo;
 import org.hkijena.jipipe.api.data.sources.JIPipeDataTableDataSource;
 import org.hkijena.jipipe.api.data.storage.JIPipeFileSystemReadDataStorage;
 import org.hkijena.jipipe.api.run.JIPipeRunnableQueue;
+import org.hkijena.jipipe.desktop.api.data.JIPipeDesktopDataDisplayOperation;
 import org.hkijena.jipipe.desktop.app.JIPipeDesktopWorkbench;
 import org.scijava.Disposable;
 
@@ -28,16 +29,16 @@ import javax.swing.*;
 import java.nio.file.Path;
 
 /**
- * A {@link JIPipeDataImportOperation} that wraps around a {@link JIPipeDataDisplayOperation}
+ * A {@link JIPipeDataImportOperation} that wraps around a {@link JIPipeDesktopDataDisplayOperation}
  */
 public class JIPipeDataDisplayWrapperImportOperation implements JIPipeDataImportOperation {
-    private final JIPipeDataDisplayOperation displayOperation;
+    private final JIPipeDesktopDataDisplayOperation displayOperation;
 
-    public JIPipeDataDisplayWrapperImportOperation(JIPipeDataDisplayOperation displayOperation) {
+    public JIPipeDataDisplayWrapperImportOperation(JIPipeDesktopDataDisplayOperation displayOperation) {
         this.displayOperation = displayOperation;
     }
 
-    public JIPipeDataDisplayOperation getDisplayOperation() {
+    public JIPipeDesktopDataDisplayOperation getDisplayOperation() {
         return displayOperation;
     }
 
