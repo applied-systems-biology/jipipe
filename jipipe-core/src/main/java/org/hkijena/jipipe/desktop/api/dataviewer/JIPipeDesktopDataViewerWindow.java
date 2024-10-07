@@ -372,7 +372,7 @@ public class JIPipeDesktopDataViewerWindow extends JFrame implements JIPipeDeskt
         @Override
         public void run() {
             try {
-                data = dataBrowser.getData().get();
+                data = dataBrowser.getData(getProgressInfo()).get();
             } catch (InterruptedException | ExecutionException e) {
                 throw new RuntimeException(e);
             }

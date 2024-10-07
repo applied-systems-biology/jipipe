@@ -29,7 +29,7 @@ public class JIPipeLocalDataBrowser implements JIPipeDataBrowser, Closeable, Aut
     }
 
     @Override
-    public Future<JIPipeData> getData() {
+    public Future<JIPipeData> getData(JIPipeProgressInfo progressInfo) {
         return new InstantFuture<>(dataItemStore.getData(JIPipeData.class, new JIPipeProgressInfo()));
     }
 

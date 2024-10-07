@@ -1,5 +1,6 @@
 package org.hkijena.jipipe.api.data.browser;
 
+import org.hkijena.jipipe.api.JIPipeProgressInfo;
 import org.hkijena.jipipe.api.data.JIPipeData;
 import org.hkijena.jipipe.api.events.AbstractJIPipeEvent;
 import org.hkijena.jipipe.api.events.JIPipeEventEmitter;
@@ -17,9 +18,10 @@ public interface JIPipeDataBrowser extends Closeable, AutoCloseable {
 
     /**
      * Gets the store for the fully downloaded data
+     * @param progressInfo the progress info for the download
      * @return the store. can be null
      */
-    Future<JIPipeData> getData();
+    Future<JIPipeData> getData(JIPipeProgressInfo progressInfo);
 
     /**
      * The data class
