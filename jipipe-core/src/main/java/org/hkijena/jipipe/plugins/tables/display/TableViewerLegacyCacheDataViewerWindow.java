@@ -42,29 +42,31 @@ public class TableViewerLegacyCacheDataViewerWindow extends JIPipeDesktopLegacyC
     private void initialize() {
         tableEditor = new JIPipeDesktopTableEditor(getWorkbench(), new ResultsTableData());
         errorLabel = new JLabel(UIUtils.getIconFromResources("emblems/no-data.png"));
-        tableEditor.getToolBar().add(errorLabel, 0);
-
-        annotationInfoPanel = new JIPipeDesktopCachedDataViewerAnnotationInfoPanel(getWorkbench());
-        tableEditor.getSideBar().addTab("Annotations",
-                UIUtils.getIconFromResources("data-types/annotation.png"),
-                annotationInfoPanel,
-                JIPipeDesktopTabPane.CloseMode.withoutCloseButton);
+//        tableEditor.getToolBar().add(errorLabel, 0);
+//
+//        annotationInfoPanel = new JIPipeDesktopCachedDataViewerAnnotationInfoPanel(getWorkbench());
+//        tableEditor.getSideBar().addTab("Annotations",
+//                UIUtils.getIconFromResources("data-types/annotation.png"),
+//                annotationInfoPanel,
+//                JIPipeDesktopTabPane.CloseMode.withoutCloseButton);
 
         setContentPane(tableEditor);
     }
 
     @Override
     public JToolBar getToolBar() {
-        if (tableEditor == null)
-            return null;
-        return tableEditor.getToolBar();
+//        if (tableEditor == null)
+//            return null;
+//        return tableEditor.getToolBar();
+        return null;
     }
 
     @Override
     public JToolBar getPinToolBar() {
-        if (tableEditor == null)
-            return null;
-        return tableEditor.getPinToolBar();
+//        if (tableEditor == null)
+//            return null;
+//        return tableEditor.getPinToolBar();
+        return null;
     }
 
     @Override

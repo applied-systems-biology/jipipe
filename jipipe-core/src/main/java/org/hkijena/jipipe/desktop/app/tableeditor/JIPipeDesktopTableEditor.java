@@ -22,8 +22,8 @@ import org.hkijena.jipipe.api.compat.ImageJExportParameters;
 import org.hkijena.jipipe.api.registries.JIPipeExpressionRegistry;
 import org.hkijena.jipipe.desktop.app.JIPipeDesktopProjectWorkbench;
 import org.hkijena.jipipe.desktop.app.JIPipeDesktopWorkbench;
+import org.hkijena.jipipe.desktop.app.JIPipeDesktopWorkbenchPanel;
 import org.hkijena.jipipe.desktop.app.ploteditor.JIPipeDesktopPlotEditorUI;
-import org.hkijena.jipipe.desktop.commons.components.JIPipeDesktopFlexContentWorkbenchPanel;
 import org.hkijena.jipipe.desktop.commons.components.ribbon.JIPipeDesktopLargeButtonRibbonAction;
 import org.hkijena.jipipe.desktop.commons.components.ribbon.JIPipeDesktopRibbon;
 import org.hkijena.jipipe.desktop.commons.components.ribbon.JIPipeDesktopSmallButtonRibbonAction;
@@ -50,20 +50,22 @@ import java.util.stream.Collectors;
 /**
  * Spreadsheet UI
  */
-public class JIPipeDesktopTableEditor extends JIPipeDesktopFlexContentWorkbenchPanel {
+public class JIPipeDesktopTableEditor extends JIPipeDesktopWorkbenchPanel {
     private static final int MAX_UNDO = 10;
     private final JIPipeTableViewerUIApplicationSettings settings;
     private final Stack<ResultsTableData> undoBuffer = new Stack<>();
     private ResultsTableData tableModel;
     private JXTable jxTable;
     private boolean isRebuildingSelection = false;
+    private final JPanel contentPanel = new JPanel(new BorderLayout());
+    private JIPipeDesktopRibbon ribbon = new JIPipeDesktopRibbon();
 
     /**
      * @param workbench  the workbench
      * @param tableModel the table
      */
     public JIPipeDesktopTableEditor(JIPipeDesktopWorkbench workbench, ResultsTableData tableModel) {
-        super(workbench, WITH_RIBBON);
+        super(workbench);
         if (JIPipe.getInstance() != null) {
             settings = JIPipeTableViewerUIApplicationSettings.getInstance();
         } else {
@@ -112,9 +114,11 @@ public class JIPipeDesktopTableEditor extends JIPipeDesktopFlexContentWorkbenchP
 
     private void initialize() {
         setLayout(new BorderLayout());
+        add(contentPanel, BorderLayout.CENTER);
 
         // Generate ribbon
-        initializeRibbon();
+        ribbon.setNumRows(2);
+        rebuildRibbon();
 
         jxTable = new JXTable();
         jxTable.setModel(tableModel);
@@ -128,22 +132,18 @@ public class JIPipeDesktopTableEditor extends JIPipeDesktopFlexContentWorkbenchP
 
         getContentPanel().add(jxTable.getTableHeader(), BorderLayout.NORTH);
         getContentPanel().add(new JScrollPane(jxTable), BorderLayout.CENTER);
-
-        rebuildLayout();
     }
 
-    private void initializeRibbon() {
-        JIPipeDesktopRibbon ribbon = getRibbon();
-        ribbon.setNumRows(2);
-        initializeTableRibbonTask(ribbon);
-        initializeSelectRibbonTask(ribbon);
-        initializeColumnsRibbonTask(ribbon);
-        initializeRowsRibbonTask(ribbon);
-        initializeViewRibbonTask(ribbon);
+    public void rebuildRibbon() {
+        initializeTableRibbonTask();
+        initializeSelectRibbonTask();
+        initializeColumnsRibbonTask();
+        initializeRowsRibbonTask();
+        initializeViewRibbonTask();
         ribbon.rebuildRibbon();
     }
 
-    private void initializeRowsRibbonTask(JIPipeDesktopRibbon ribbon) {
+    private void initializeRowsRibbonTask() {
         JIPipeDesktopRibbon.Task rowsTask = ribbon.addTask("Rows");
         JIPipeDesktopRibbon.Band addBand = rowsTask.addBand("Add/Delete");
 
@@ -151,7 +151,7 @@ public class JIPipeDesktopTableEditor extends JIPipeDesktopFlexContentWorkbenchP
         addBand.add(new JIPipeDesktopLargeButtonRibbonAction("Delete selection", "Deletes the selected rows", UIUtils.getIcon32FromResources("actions/delete.png"), this::removeSelectedRows));
     }
 
-    private void initializeSelectRibbonTask(JIPipeDesktopRibbon ribbon) {
+    private void initializeSelectRibbonTask() {
         JIPipeDesktopRibbon.Task selectTask = ribbon.addTask("Select");
         JIPipeDesktopRibbon.Band generalBand = selectTask.addBand("General");
         JIPipeDesktopRibbon.Band rowsBand = selectTask.addBand("Rows");
@@ -165,13 +165,13 @@ public class JIPipeDesktopTableEditor extends JIPipeDesktopFlexContentWorkbenchP
         columnsBand.add(new JIPipeDesktopLargeButtonRibbonAction("Select whole column", "Expands the selection to the whole column", UIUtils.getIcon32FromResources("actions/stock_select-column.png"), this::selectWholeColumn));
     }
 
-    private void initializeViewRibbonTask(JIPipeDesktopRibbon ribbon) {
+    private void initializeViewRibbonTask() {
         JIPipeDesktopRibbon.Task viewTask = ribbon.addTask("View");
         JIPipeDesktopRibbon.Band columnBand = viewTask.addBand("Columns");
         columnBand.add(new JIPipeDesktopLargeButtonRibbonAction("Auto-size columns", "Resizes the selected columns, so they fit their contents.", UIUtils.getIcon32FromResources("actions/resizecol.png"), this::autoSizeColumns));
     }
 
-    private void initializeColumnsRibbonTask(JIPipeDesktopRibbon ribbon) {
+    private void initializeColumnsRibbonTask() {
         JIPipeDesktopRibbon.Task columnsTask = ribbon.addTask("Columns");
         JIPipeDesktopRibbon.Band addBand = columnsTask.addBand("Add/Delete");
         JIPipeDesktopRibbon.Band modifyBand = columnsTask.addBand("Modify");
@@ -187,9 +187,9 @@ public class JIPipeDesktopTableEditor extends JIPipeDesktopFlexContentWorkbenchP
         modifyBand.add(new JIPipeDesktopSmallButtonRibbonAction("To numeric column", "Converts the column to a numeric column", UIUtils.getIcon16FromResources("actions/edit-select-number.png"), this::selectedColumnsToNumeric));
     }
 
-    private void initializeTableRibbonTask(JIPipeDesktopRibbon ribbon) {
-        JIPipeDesktopRibbon.Task tableTask = ribbon.addTask("Table");
-        JIPipeDesktopRibbon.Band generalBand = tableTask.addBand("General");
+    private void initializeTableRibbonTask() {
+        JIPipeDesktopRibbon.Task tableTask = ribbon.getOrCreateTask("General");
+        JIPipeDesktopRibbon.Band generalBand = tableTask.addBand("Edit");
         JIPipeDesktopRibbon.Band fileBand = tableTask.addBand("File");
         JIPipeDesktopRibbon.Band importExportBand = tableTask.addBand("Import/Export");
         JIPipeDesktopRibbon.Band dataBand = tableTask.addBand("Data");
@@ -586,6 +586,19 @@ public class JIPipeDesktopTableEditor extends JIPipeDesktopFlexContentWorkbenchP
         jxTable.setModel(new ResultsTableData());
         jxTable.setModel(tableModel);
         SwingUtilities.invokeLater(this::autoSizeColumns);
+    }
+
+    public JPanel getContentPanel() {
+        return contentPanel;
+    }
+
+    public JIPipeDesktopRibbon getRibbon() {
+        return ribbon;
+    }
+
+    public void setRibbon(JIPipeDesktopRibbon ribbon) {
+        this.ribbon = ribbon;
+        rebuildRibbon();
     }
 
     /**

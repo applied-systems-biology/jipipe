@@ -66,10 +66,7 @@ import org.hkijena.jipipe.plugins.imagejdatatypes.datatypes.d5.color.ImagePlus5D
 import org.hkijena.jipipe.plugins.imagejdatatypes.datatypes.d5.greyscale.*;
 import org.hkijena.jipipe.plugins.imagejdatatypes.datatypes.fft.*;
 import org.hkijena.jipipe.plugins.imagejdatatypes.datatypes.greyscale.*;
-import org.hkijena.jipipe.plugins.imagejdatatypes.display.AddROIToActiveJIPipeImageViewerDataDisplay;
-import org.hkijena.jipipe.plugins.imagejdatatypes.display.AddROIToJIPipeImageViewerDataDisplay;
-import org.hkijena.jipipe.plugins.imagejdatatypes.display.AddToROIManagerDataDisplay;
-import org.hkijena.jipipe.plugins.imagejdatatypes.display.OpenInImageJDataDisplay;
+import org.hkijena.jipipe.plugins.imagejdatatypes.display.*;
 import org.hkijena.jipipe.plugins.imagejdatatypes.parameters.OMEColorMode;
 import org.hkijena.jipipe.plugins.imagejdatatypes.parameters.OMETIFFCompression;
 import org.hkijena.jipipe.plugins.imagejdatatypes.resultanalysis.ImageDataPreview;
@@ -486,6 +483,7 @@ public class ImageJDataTypesPlugin extends JIPipePrepackagedDefaultJavaPlugin {
                 new OpenInNativeApplicationDataImportOperation(".csv"));
         registerImageJDataImporter("import-results-table", new ResultsTableDataImageJImporter(), DefaultImageJDataImporterUI.class);
         registerImageJDataExporter("export-results-table", new ResultsTableDataImageJExporter(), DefaultImageJDataExporterUI.class);
+        registerDefaultDataTypeViewer(ResultsTableData.class, ResultsTableDataViewer.class);
 
         // Register FFT data types
         registerImageDataType("imagej-imgplus-fft", ImagePlusFFTData.class, imageImporter, imageExporter, "icons/data-types/imgplus-fft.png");
