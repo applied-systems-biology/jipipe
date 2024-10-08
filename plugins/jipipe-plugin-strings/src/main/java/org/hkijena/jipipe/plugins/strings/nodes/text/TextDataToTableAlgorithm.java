@@ -34,8 +34,8 @@ import org.hkijena.jipipe.plugins.parameters.library.collections.ParameterCollec
 import org.hkijena.jipipe.plugins.parameters.library.collections.ParameterCollectionListTemplate;
 import org.hkijena.jipipe.plugins.strings.StringData;
 import org.hkijena.jipipe.plugins.tables.datatypes.ResultsTableData;
-import org.hkijena.jipipe.plugins.tables.datatypes.StringArrayTableColumn;
-import org.hkijena.jipipe.plugins.tables.datatypes.TableColumn;
+import org.hkijena.jipipe.plugins.tables.datatypes.StringArrayTableColumnData;
+import org.hkijena.jipipe.plugins.tables.datatypes.TableColumnData;
 import org.hkijena.jipipe.plugins.tables.datatypes.TableColumnNormalization;
 import org.hkijena.jipipe.utils.StringUtils;
 
@@ -70,7 +70,7 @@ public class TextDataToTableAlgorithm extends JIPipeSimpleIteratingAlgorithm {
         JIPipeExpressionVariablesMap variables = new JIPipeExpressionVariablesMap();
         variables.putAnnotations(iterationStep.getMergedTextAnnotations());
 
-        List<TableColumn> columns = new ArrayList<>();
+        List<TableColumnData> columns = new ArrayList<>();
 
         for (Entry entry : entries.mapToCollection(Entry.class)) {
 
@@ -81,9 +81,9 @@ public class TextDataToTableAlgorithm extends JIPipeSimpleIteratingAlgorithm {
 
             if (columnValue instanceof Collection) {
                 List<String> values = ((Collection<?>) columnValue).stream().map(StringUtils::nullToEmpty).collect(Collectors.toList());
-                columns.add(TableColumn.fromList(values, columnName));
+                columns.add(TableColumnData.fromList(values, columnName));
             } else {
-                columns.add(new StringArrayTableColumn(new String[]{StringUtils.nullToEmpty(columnValue)}, columnName));
+                columns.add(new StringArrayTableColumnData(new String[]{StringUtils.nullToEmpty(columnValue)}, columnName));
             }
         }
 

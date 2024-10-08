@@ -13,10 +13,10 @@
 
 package org.hkijena.jipipe.plugins.tables;
 
-import org.hkijena.jipipe.plugins.tables.datatypes.TableColumn;
+import org.hkijena.jipipe.plugins.tables.datatypes.TableColumnData;
 
 /**
- * A {@link TableColumn} that carries data and is therefore mutable
+ * A {@link TableColumnData} that carries data and is therefore mutable
  */
-public interface MutableTableColumn extends TableColumn {
+public interface MutableTableColumnData extends TableColumnData {
 }

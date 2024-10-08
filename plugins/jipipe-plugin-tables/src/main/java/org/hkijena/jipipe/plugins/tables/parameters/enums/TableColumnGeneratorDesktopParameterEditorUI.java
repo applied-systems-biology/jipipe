@@ -22,7 +22,7 @@ import org.hkijena.jipipe.desktop.api.JIPipeDesktopParameterEditorUI;
 import org.hkijena.jipipe.desktop.app.JIPipeDesktopWorkbench;
 import org.hkijena.jipipe.desktop.commons.components.renderers.JIPipeDesktopDataInfoListCellRenderer;
 import org.hkijena.jipipe.plugins.tables.ColumnContentType;
-import org.hkijena.jipipe.plugins.tables.datatypes.TableColumn;
+import org.hkijena.jipipe.plugins.tables.datatypes.TableColumnData;
 import org.hkijena.jipipe.utils.UIUtils;
 
 import javax.swing.*;
@@ -100,7 +100,7 @@ public class TableColumnGeneratorDesktopParameterEditorUI extends JIPipeDesktopP
         List<Object> result = new ArrayList<>();
         result.add(null);
         for (Class<? extends JIPipeData> klass : JIPipe.getDataTypes().getRegisteredDataTypes().values()) {
-            if (TableColumn.isGeneratingTableColumn(klass)) {
+            if (TableColumnData.isGeneratingTableColumn(klass)) {
                 result.add(JIPipeDataInfo.getInstance(klass));
             }
         }

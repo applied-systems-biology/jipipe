@@ -39,8 +39,8 @@ import org.hkijena.jipipe.plugins.parameters.library.collections.ParameterCollec
 import org.hkijena.jipipe.plugins.parameters.library.collections.ParameterCollectionListTemplate;
 import org.hkijena.jipipe.plugins.strings.JsonData;
 import org.hkijena.jipipe.plugins.tables.datatypes.ResultsTableData;
-import org.hkijena.jipipe.plugins.tables.datatypes.StringArrayTableColumn;
-import org.hkijena.jipipe.plugins.tables.datatypes.TableColumn;
+import org.hkijena.jipipe.plugins.tables.datatypes.StringArrayTableColumnData;
+import org.hkijena.jipipe.plugins.tables.datatypes.TableColumnData;
 import org.hkijena.jipipe.plugins.tables.datatypes.TableColumnNormalization;
 import org.hkijena.jipipe.utils.StringUtils;
 import org.hkijena.jipipe.utils.json.JsonUtils;
@@ -80,7 +80,7 @@ public class ExtractJsonDataAsTableAlgorithm extends JIPipeSimpleIteratingAlgori
         JIPipeExpressionVariablesMap variables = new JIPipeExpressionVariablesMap();
         variables.putAnnotations(iterationStep.getMergedTextAnnotations());
 
-        List<TableColumn> columns = new ArrayList<>();
+        List<TableColumnData> columns = new ArrayList<>();
 
         for (Entry entry : entries.mapToCollection(Entry.class)) {
             String path = entry.getJsonPath().evaluateToString(variables);
@@ -91,12 +91,12 @@ public class ExtractJsonDataAsTableAlgorithm extends JIPipeSimpleIteratingAlgori
                 JsonNode jsonNode = JsonUtils.readFromString(columnValue, JsonNode.class);
                 if (jsonNode.isArray()) {
                     List<String> values = ImmutableList.copyOf(jsonNode.elements()).stream().map(JsonUtils::toJsonString).collect(Collectors.toList());
-                    columns.add(TableColumn.fromList(values, columnName));
+                    columns.add(TableColumnData.fromList(values, columnName));
                 } else {
-                    columns.add(TableColumn.fromList(Collections.singleton(columnValue), columnName));
+                    columns.add(TableColumnData.fromList(Collections.singleton(columnValue), columnName));
                 }
             } else {
-                columns.add(new StringArrayTableColumn(new String[0], columnName));
+                columns.add(new StringArrayTableColumnData(new String[0], columnName));
             }
         }
 

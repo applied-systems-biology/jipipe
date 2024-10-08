@@ -14,15 +14,15 @@
 package org.hkijena.jipipe.plugins.tables.operations.integrating;
 
 import org.hkijena.jipipe.plugins.tables.SummarizingColumnOperation;
-import org.hkijena.jipipe.plugins.tables.datatypes.DoubleArrayTableColumn;
-import org.hkijena.jipipe.plugins.tables.datatypes.TableColumn;
+import org.hkijena.jipipe.plugins.tables.datatypes.DoubleArrayTableColumnData;
+import org.hkijena.jipipe.plugins.tables.datatypes.TableColumnData;
 
 /**
  * Implements calculating the number of rows
  */
 public class StatisticsCountSummarizingColumnOperation implements SummarizingColumnOperation {
     @Override
-    public TableColumn apply(TableColumn column) {
-        return new DoubleArrayTableColumn(new double[]{column.getRows()}, column.getLabel());
+    public TableColumnData apply(TableColumnData column) {
+        return new DoubleArrayTableColumnData(new double[]{column.getRows()}, column.getLabel());
     }
 }

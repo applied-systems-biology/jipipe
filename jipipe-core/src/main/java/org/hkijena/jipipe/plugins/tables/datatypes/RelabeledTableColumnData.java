@@ -17,11 +17,11 @@ import org.hkijena.jipipe.api.JIPipeProgressInfo;
 import org.hkijena.jipipe.api.data.JIPipeData;
 import org.hkijena.jipipe.api.data.storage.JIPipeWriteDataStorage;
 
-public class RelabeledTableColumn implements TableColumn {
-    private final TableColumn tableColumn;
+public class RelabeledTableColumnData implements TableColumnData {
+    private final TableColumnData tableColumn;
     private String label;
 
-    public RelabeledTableColumn(TableColumn tableColumn, String label) {
+    public RelabeledTableColumnData(TableColumnData tableColumn, String label) {
         this.tableColumn = tableColumn;
         this.label = label;
     }
@@ -33,7 +33,7 @@ public class RelabeledTableColumn implements TableColumn {
 
     @Override
     public JIPipeData duplicate(JIPipeProgressInfo progressInfo) {
-        return new RelabeledTableColumn((TableColumn) tableColumn.duplicate(progressInfo), label);
+        return new RelabeledTableColumnData((TableColumnData) tableColumn.duplicate(progressInfo), label);
     }
 
     @Override

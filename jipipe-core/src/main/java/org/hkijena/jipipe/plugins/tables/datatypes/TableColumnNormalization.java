@@ -37,11 +37,11 @@ public enum TableColumnNormalization {
      * Generates columns that have the same number of true rows
      *
      * @param inputColumns the input columns
-     * @return List of {@link org.hkijena.jipipe.plugins.tables.datatypes.DoubleArrayTableColumn} or {@link org.hkijena.jipipe.plugins.tables.datatypes.StringArrayTableColumn}
+     * @return List of {@link DoubleArrayTableColumnData} or {@link StringArrayTableColumnData}
      */
-    public List<TableColumn> normalize(List<TableColumn> inputColumns, int nRow) {
-        List<TableColumn> result = new ArrayList<>();
-        for (TableColumn inputColumn : inputColumns) {
+    public List<TableColumnData> normalize(List<TableColumnData> inputColumns, int nRow) {
+        List<TableColumnData> result = new ArrayList<>();
+        for (TableColumnData inputColumn : inputColumns) {
             if (inputColumn.isNumeric()) {
                 double[] data = new double[nRow];
                 for (int row = 0; row < nRow; row++) {
@@ -76,7 +76,7 @@ public enum TableColumnNormalization {
                         }
                     }
                 }
-                result.add(new DoubleArrayTableColumn(data, inputColumn.getLabel()));
+                result.add(new DoubleArrayTableColumnData(data, inputColumn.getLabel()));
             } else {
                 String[] data = new String[nRow];
                 for (int row = 0; row < nRow; row++) {
@@ -105,7 +105,7 @@ public enum TableColumnNormalization {
                         }
                     }
                 }
-                result.add(new StringArrayTableColumn(data, inputColumn.getLabel()));
+                result.add(new StringArrayTableColumnData(data, inputColumn.getLabel()));
             }
         }
         return result;
@@ -115,11 +115,11 @@ public enum TableColumnNormalization {
      * Generates columns that have the same number of true rows
      *
      * @param inputColumns the input columns
-     * @return List of {@link org.hkijena.jipipe.plugins.tables.datatypes.DoubleArrayTableColumn} or {@link org.hkijena.jipipe.plugins.tables.datatypes.StringArrayTableColumn}
+     * @return List of {@link DoubleArrayTableColumnData} or {@link StringArrayTableColumnData}
      */
-    public List<TableColumn> normalize(List<TableColumn> inputColumns) {
+    public List<TableColumnData> normalize(List<TableColumnData> inputColumns) {
         int nRow = 0;
-        for (TableColumn column : inputColumns) {
+        for (TableColumnData column : inputColumns) {
             nRow = Math.max(column.getRows(), nRow);
         }
         return normalize(inputColumns, nRow);
@@ -135,8 +135,8 @@ public enum TableColumnNormalization {
     public ResultsTableData normalize(ResultsTableData tableData, int nRow) {
         ResultsTableData copy = new ResultsTableData();
         for (String columnName : tableData.getColumnNames()) {
-            TableColumn columnReference = tableData.getColumnReference(tableData.getColumnIndex(columnName));
-            TableColumn generatedColumn = normalize(Collections.singletonList(columnReference), nRow).get(0);
+            TableColumnData columnReference = tableData.getColumnReference(tableData.getColumnIndex(columnName));
+            TableColumnData generatedColumn = normalize(Collections.singletonList(columnReference), nRow).get(0);
             copy.addColumn(columnName, generatedColumn, true);
         }
         return copy;

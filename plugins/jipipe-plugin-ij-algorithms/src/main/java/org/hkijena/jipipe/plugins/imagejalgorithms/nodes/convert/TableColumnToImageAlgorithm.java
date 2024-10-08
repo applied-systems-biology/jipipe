@@ -31,7 +31,7 @@ import org.hkijena.jipipe.plugins.expressions.JIPipeExpressionVariablesMap;
 import org.hkijena.jipipe.plugins.expressions.TableColumnSourceExpressionParameter;
 import org.hkijena.jipipe.plugins.imagejdatatypes.datatypes.d2.greyscale.ImagePlus2DGreyscale32FData;
 import org.hkijena.jipipe.plugins.tables.datatypes.ResultsTableData;
-import org.hkijena.jipipe.plugins.tables.datatypes.TableColumn;
+import org.hkijena.jipipe.plugins.tables.datatypes.TableColumnData;
 
 @SetJIPipeDocumentation(name = "Table column to image", description = "Converts a selected numeric table column into an image with 1px width and a height based on the number of rows. Opposite operation to 'Image to table column'.")
 @ConfigureJIPipeNode(nodeTypeCategory = TableNodeTypeCategory.class, menuPath = "Convert")
@@ -53,7 +53,7 @@ public class TableColumnToImageAlgorithm extends JIPipeSimpleIteratingAlgorithm 
     @Override
     protected void runIteration(JIPipeSingleIterationStep iterationStep, JIPipeIterationContext iterationContext, JIPipeGraphNodeRunContext runContext, JIPipeProgressInfo progressInfo) {
         ResultsTableData tableData = iterationStep.getInputData(getFirstInputSlot(), ResultsTableData.class, progressInfo);
-        TableColumn tableColumn = selectedColumn.pickOrGenerateColumn(tableData, new JIPipeExpressionVariablesMap());
+        TableColumnData tableColumn = selectedColumn.pickOrGenerateColumn(tableData, new JIPipeExpressionVariablesMap());
         FloatProcessor processor = new FloatProcessor(1, tableColumn.getRows());
         for (int i = 0; i < tableColumn.getRows(); i++) {
             processor.setf(i, (float) tableColumn.getRowAsDouble(i));

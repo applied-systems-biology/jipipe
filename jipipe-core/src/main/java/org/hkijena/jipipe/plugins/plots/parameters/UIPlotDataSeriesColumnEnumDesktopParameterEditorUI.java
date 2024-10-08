@@ -20,19 +20,19 @@ import org.hkijena.jipipe.desktop.app.JIPipeDesktopWorkbench;
 import org.hkijena.jipipe.desktop.app.ploteditor.JIPipeDesktopPlotDataSeriesColumnListCellRenderer;
 import org.hkijena.jipipe.plugins.parameters.api.enums.DynamicEnumParameter;
 import org.hkijena.jipipe.plugins.parameters.api.enums.DynamicEnumParameterSettings;
-import org.hkijena.jipipe.plugins.tables.datatypes.TableColumn;
+import org.hkijena.jipipe.plugins.tables.datatypes.TableColumnData;
 
 import javax.swing.*;
 import java.awt.*;
 import java.util.Objects;
 
 /**
- * Works for {@link TableColumn}.
+ * Works for {@link TableColumnData}.
  * Does not listen to {@link DynamicEnumParameterSettings}
  */
 public class UIPlotDataSeriesColumnEnumDesktopParameterEditorUI extends JIPipeDesktopParameterEditorUI {
 
-    private JComboBox<TableColumn> comboBox;
+    private JComboBox<TableColumnData> comboBox;
 
     /**
      * @param workbench       workbench
@@ -51,7 +51,7 @@ public class UIPlotDataSeriesColumnEnumDesktopParameterEditorUI extends JIPipeDe
 
     @Override
     public void reload() {
-        DynamicEnumParameter<TableColumn> parameter = getParameter(DynamicEnumParameter.class);
+        DynamicEnumParameter<TableColumnData> parameter = getParameter(DynamicEnumParameter.class);
         if (!Objects.equals(parameter.getValue(), comboBox.getSelectedItem()))
             comboBox.setSelectedItem(parameter.getValue());
     }
@@ -59,13 +59,13 @@ public class UIPlotDataSeriesColumnEnumDesktopParameterEditorUI extends JIPipeDe
     private void initialize() {
         setLayout(new BorderLayout());
 
-        DynamicEnumParameter<TableColumn> parameter = getParameter(DynamicEnumParameter.class);
-        TableColumn[] values = parameter.getAllowedValues().toArray(new TableColumn[0]);
+        DynamicEnumParameter<TableColumnData> parameter = getParameter(DynamicEnumParameter.class);
+        TableColumnData[] values = parameter.getAllowedValues().toArray(new TableColumnData[0]);
         comboBox = new JComboBox<>(new DefaultComboBoxModel<>(values));
         comboBox.setRenderer(new JIPipeDesktopPlotDataSeriesColumnListCellRenderer());
         comboBox.setSelectedItem(parameter.getValue());
         comboBox.addActionListener(e -> {
-            parameter.setValue((TableColumn) comboBox.getSelectedItem());
+            parameter.setValue((TableColumnData) comboBox.getSelectedItem());
             setParameter(parameter, false);
         });
         add(comboBox, BorderLayout.CENTER);

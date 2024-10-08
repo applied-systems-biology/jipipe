@@ -42,9 +42,9 @@ import org.hkijena.jipipe.plugins.imagejdatatypes.datatypes.greyscale.ImagePlusG
 import org.hkijena.jipipe.plugins.imagejdatatypes.util.ImageJUtils;
 import org.hkijena.jipipe.plugins.parameters.library.primitives.BooleanParameterSettings;
 import org.hkijena.jipipe.plugins.parameters.library.primitives.StringParameterSettings;
-import org.hkijena.jipipe.plugins.tables.datatypes.FloatArrayTableColumn;
+import org.hkijena.jipipe.plugins.tables.datatypes.FloatArrayTableColumnData;
 import org.hkijena.jipipe.plugins.tables.datatypes.ResultsTableData;
-import org.hkijena.jipipe.plugins.tables.datatypes.TableColumn;
+import org.hkijena.jipipe.plugins.tables.datatypes.TableColumnData;
 import org.hkijena.jipipe.plugins.tables.parameters.enums.TableColumnIntegrationParameter;
 
 import java.util.Arrays;
@@ -151,11 +151,11 @@ public class FastKeyValueThresholdStatisticsGenerator extends JIPipeIteratingAlg
                 }
             }
 
-            TableColumn foregroundColum = new FloatArrayTableColumn(foregrounds.toArray(), "Foreground");
-            TableColumn backgroundColum = new FloatArrayTableColumn(backgrounds.toArray(), "Background");
+            TableColumnData foregroundColum = new FloatArrayTableColumnData(foregrounds.toArray(), "Foreground");
+            TableColumnData backgroundColum = new FloatArrayTableColumnData(backgrounds.toArray(), "Background");
 
-            TableColumn foregroundResult = functionForeground.getOperation().apply(foregroundColum);
-            TableColumn backgroundResult = functionBackground.getOperation().apply(backgroundColum);
+            TableColumnData foregroundResult = functionForeground.getOperation().apply(foregroundColum);
+            TableColumnData backgroundResult = functionBackground.getOperation().apply(backgroundColum);
 
             integratedValuesForeground.put(threshold, foregroundResult.getRows() > 0 ? foregroundResult.getRowAsDouble(0) : Float.NaN);
             integratedValuesBackground.put(threshold, backgroundResult.getRows() > 0 ? backgroundResult.getRowAsDouble(0) : Float.NaN);

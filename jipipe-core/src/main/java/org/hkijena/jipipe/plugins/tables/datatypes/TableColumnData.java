@@ -16,7 +16,7 @@ package org.hkijena.jipipe.plugins.tables.datatypes;
 import org.hkijena.jipipe.api.SetJIPipeDocumentation;
 import org.hkijena.jipipe.api.data.JIPipeData;
 import org.hkijena.jipipe.api.data.JIPipeDataStorageDocumentation;
-import org.hkijena.jipipe.plugins.tables.MutableTableColumn;
+import org.hkijena.jipipe.plugins.tables.MutableTableColumnData;
 import org.hkijena.jipipe.utils.StringUtils;
 
 import java.util.ArrayList;
@@ -30,7 +30,7 @@ import java.util.List;
 @SetJIPipeDocumentation(name = "Table column", description = "A table column")
 @JIPipeDataStorageDocumentation(humanReadableDescription = "This is a generic data type. The storage folder is empty.",
         jsonSchemaURL = "https://jipipe.org/schemas/datatypes/jipipe-empty-data.schema.json")
-public interface TableColumn extends JIPipeData {
+public interface TableColumnData extends JIPipeData {
     /**
      * Returns true if the parameter is a mutable table column.
      * Will return false if the data is not a column
@@ -39,7 +39,7 @@ public interface TableColumn extends JIPipeData {
      * @return if the parameter is a mutable table column
      */
     static boolean isMutableTableColumn(Class<? extends JIPipeData> klass) {
-        return MutableTableColumn.class.isAssignableFrom(klass);
+        return MutableTableColumnData.class.isAssignableFrom(klass);
     }
 
     /**
@@ -50,7 +50,7 @@ public interface TableColumn extends JIPipeData {
      * @return if the parameter is a mutable table column
      */
     static boolean isGeneratingTableColumn(Class<? extends JIPipeData> klass) {
-        return !klass.isInterface() && TableColumn.class.isAssignableFrom(klass) && !MutableTableColumn.class.isAssignableFrom(klass);
+        return !klass.isInterface() && TableColumnData.class.isAssignableFrom(klass) && !MutableTableColumnData.class.isAssignableFrom(klass);
     }
 
     /**
@@ -60,48 +60,48 @@ public interface TableColumn extends JIPipeData {
      * @param rows  the rows
      * @return a new table column that contains the selected rows in the provided order
      */
-    static TableColumn getSlice(TableColumn input, List<Integer> rows) {
+    static TableColumnData getSlice(TableColumnData input, List<Integer> rows) {
         if (input.isNumeric()) {
             double[] values = new double[rows.size()];
             for (int row = 0; row < rows.size(); row++) {
                 int inputRow = rows.get(row);
                 values[row] = input.getRowAsDouble(inputRow);
             }
-            return new DoubleArrayTableColumn(values, input.getLabel());
+            return new DoubleArrayTableColumnData(values, input.getLabel());
         } else {
             String[] values = new String[rows.size()];
             for (int row = 0; row < rows.size(); row++) {
                 int inputRow = rows.get(row);
                 values[row] = input.getRowAsString(inputRow);
             }
-            return new StringArrayTableColumn(values, input.getLabel());
+            return new StringArrayTableColumnData(values, input.getLabel());
         }
     }
 
     /**
      * Creates a new column from a collection.
-     * Returns a {@link DoubleArrayTableColumn} if the list only contains numbers.
-     * Otherwise, returns a {@link StringArrayTableColumn}.
+     * Returns a {@link DoubleArrayTableColumnData} if the list only contains numbers.
+     * Otherwise, returns a {@link StringArrayTableColumnData}.
      *
      * @param rows  the row vales
      * @param label the label
      * @return the column
      */
-    static TableColumn fromList(Collection<?> rows, String label) {
+    static TableColumnData fromList(Collection<?> rows, String label) {
         if (rows.stream().allMatch(o -> o instanceof Number)) {
             double[] arr = new double[rows.size()];
             int i = 0;
             for (Object row : rows) {
                 arr[i++] = ((Number) row).doubleValue();
             }
-            return new DoubleArrayTableColumn(arr, label);
+            return new DoubleArrayTableColumnData(arr, label);
         } else {
             String[] arr = new String[rows.size()];
             int i = 0;
             for (Object row : rows) {
                 arr[i++] = StringUtils.nullToEmpty(row);
             }
-            return new StringArrayTableColumn(arr, label);
+            return new StringArrayTableColumnData(arr, label);
         }
     }
 

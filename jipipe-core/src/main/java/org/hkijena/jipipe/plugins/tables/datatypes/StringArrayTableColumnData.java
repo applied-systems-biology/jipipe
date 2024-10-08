@@ -19,18 +19,18 @@ import org.hkijena.jipipe.api.data.JIPipeData;
 import org.hkijena.jipipe.api.data.JIPipeDataStorageDocumentation;
 import org.hkijena.jipipe.api.data.storage.JIPipeReadDataStorage;
 import org.hkijena.jipipe.api.data.storage.JIPipeWriteDataStorage;
-import org.hkijena.jipipe.plugins.tables.MutableTableColumn;
+import org.hkijena.jipipe.plugins.tables.MutableTableColumnData;
 
 import java.util.Arrays;
 import java.util.Collections;
 
 /**
- * {@link TableColumn} that contains doubles.
+ * {@link TableColumnData} that contains doubles.
  */
 @SetJIPipeDocumentation(name = "String table column", description = "A table column that contains text values")
 @JIPipeDataStorageDocumentation(humanReadableDescription = "Contains a single *.csv file that contains the table data.",
         jsonSchemaURL = "https://jipipe.org/schemas/datatypes/results-table.schema.json")
-public class StringArrayTableColumn implements MutableTableColumn {
+public class StringArrayTableColumnData implements MutableTableColumnData {
 
     private String[] data;
     private String label;
@@ -41,15 +41,15 @@ public class StringArrayTableColumn implements MutableTableColumn {
      * @param data  the data. Can have any size
      * @param label non-empty name
      */
-    public StringArrayTableColumn(String[] data, String label) {
+    public StringArrayTableColumnData(String[] data, String label) {
         this.data = data;
         this.label = label;
     }
 
-    public static StringArrayTableColumn importData(JIPipeReadDataStorage storage, JIPipeProgressInfo progressInfo) {
+    public static StringArrayTableColumnData importData(JIPipeReadDataStorage storage, JIPipeProgressInfo progressInfo) {
         ResultsTableData resultsTableData = ResultsTableData.importData(storage, progressInfo);
-        TableColumn source = resultsTableData.getColumnReference(0);
-        return new StringArrayTableColumn(source.getDataAsString(source.getRows()), source.getLabel());
+        TableColumnData source = resultsTableData.getColumnReference(0);
+        return new StringArrayTableColumnData(source.getDataAsString(source.getRows()), source.getLabel());
     }
 
     @Override
@@ -127,7 +127,7 @@ public class StringArrayTableColumn implements MutableTableColumn {
 
     @Override
     public JIPipeData duplicate(JIPipeProgressInfo progressInfo) {
-        return new StringArrayTableColumn(Arrays.copyOf(data, data.length), label);
+        return new StringArrayTableColumnData(Arrays.copyOf(data, data.length), label);
     }
 
 }

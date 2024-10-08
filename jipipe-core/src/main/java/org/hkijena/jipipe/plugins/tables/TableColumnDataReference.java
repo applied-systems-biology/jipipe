@@ -17,20 +17,20 @@ import org.hkijena.jipipe.api.JIPipeProgressInfo;
 import org.hkijena.jipipe.api.data.JIPipeData;
 import org.hkijena.jipipe.api.data.storage.JIPipeWriteDataStorage;
 import org.hkijena.jipipe.plugins.tables.datatypes.ResultsTableData;
-import org.hkijena.jipipe.plugins.tables.datatypes.TableColumn;
+import org.hkijena.jipipe.plugins.tables.datatypes.TableColumnData;
 
 import java.util.Collections;
 
 /**
  * A table column that references a column within a {@link ResultsTableData}
  */
-public class TableColumnReference implements TableColumn {
+public class TableColumnDataReference implements TableColumnData {
 
     private ResultsTableData source;
     private int sourceColumn;
     private String label;
 
-    public TableColumnReference(ResultsTableData source, int sourceColumn) {
+    public TableColumnDataReference(ResultsTableData source, int sourceColumn) {
         this.source = source;
         this.sourceColumn = sourceColumn;
         this.label = source.getColumnName(sourceColumn);

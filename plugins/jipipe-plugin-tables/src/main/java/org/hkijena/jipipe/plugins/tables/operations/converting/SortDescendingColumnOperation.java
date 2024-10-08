@@ -15,9 +15,9 @@ package org.hkijena.jipipe.plugins.tables.operations.converting;
 
 import org.apache.commons.lang3.ArrayUtils;
 import org.hkijena.jipipe.plugins.tables.ConvertingColumnOperation;
-import org.hkijena.jipipe.plugins.tables.datatypes.DoubleArrayTableColumn;
-import org.hkijena.jipipe.plugins.tables.datatypes.StringArrayTableColumn;
-import org.hkijena.jipipe.plugins.tables.datatypes.TableColumn;
+import org.hkijena.jipipe.plugins.tables.datatypes.DoubleArrayTableColumnData;
+import org.hkijena.jipipe.plugins.tables.datatypes.StringArrayTableColumnData;
+import org.hkijena.jipipe.plugins.tables.datatypes.TableColumnData;
 
 import java.util.Arrays;
 import java.util.Collections;
@@ -27,16 +27,16 @@ import java.util.Collections;
  */
 public class SortDescendingColumnOperation implements ConvertingColumnOperation {
     @Override
-    public TableColumn apply(TableColumn column) {
+    public TableColumnData apply(TableColumnData column) {
         if (column.isNumeric()) {
             double[] data = column.getDataAsDouble(column.getRows());
             Arrays.sort(data);
             ArrayUtils.reverse(data);
-            return new DoubleArrayTableColumn(data, column.getLabel());
+            return new DoubleArrayTableColumnData(data, column.getLabel());
         } else {
             String[] data = column.getDataAsString(column.getRows());
             Arrays.sort(data, Collections.reverseOrder());
-            return new StringArrayTableColumn(data, column.getLabel());
+            return new StringArrayTableColumnData(data, column.getLabel());
         }
     }
 }

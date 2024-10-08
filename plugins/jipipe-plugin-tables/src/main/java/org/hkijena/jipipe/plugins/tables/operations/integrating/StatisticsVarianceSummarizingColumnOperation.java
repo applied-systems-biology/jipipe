@@ -15,8 +15,8 @@ package org.hkijena.jipipe.plugins.tables.operations.integrating;
 
 import org.apache.commons.math3.stat.descriptive.moment.Variance;
 import org.hkijena.jipipe.plugins.tables.SummarizingColumnOperation;
-import org.hkijena.jipipe.plugins.tables.datatypes.DoubleArrayTableColumn;
-import org.hkijena.jipipe.plugins.tables.datatypes.TableColumn;
+import org.hkijena.jipipe.plugins.tables.datatypes.DoubleArrayTableColumnData;
+import org.hkijena.jipipe.plugins.tables.datatypes.TableColumnData;
 
 /**
  * Implements calculating the variance
@@ -26,8 +26,8 @@ public class StatisticsVarianceSummarizingColumnOperation implements Summarizing
     private static final Variance variance = new Variance();
 
     @Override
-    public TableColumn apply(TableColumn column) {
+    public TableColumnData apply(TableColumnData column) {
         double result = variance.evaluate(column.getDataAsDouble(column.getRows()));
-        return new DoubleArrayTableColumn(new double[]{result}, column.getLabel());
+        return new DoubleArrayTableColumnData(new double[]{result}, column.getLabel());
     }
 }

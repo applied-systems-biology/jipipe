@@ -31,7 +31,7 @@ import org.hkijena.jipipe.plugins.ij3d.datatypes.ROI3D;
 import org.hkijena.jipipe.plugins.ij3d.datatypes.ROI3DListData;
 import org.hkijena.jipipe.plugins.imagejdatatypes.datatypes.ROI2DListData;
 import org.hkijena.jipipe.plugins.tables.datatypes.ResultsTableData;
-import org.hkijena.jipipe.plugins.tables.datatypes.TableColumn;
+import org.hkijena.jipipe.plugins.tables.datatypes.TableColumnData;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -62,7 +62,7 @@ public class SetROI3DMetadataFromTableAlgorithm extends JIPipeIteratingAlgorithm
     protected void runIteration(JIPipeSingleIterationStep iterationStep, JIPipeIterationContext iterationContext, JIPipeGraphNodeRunContext runContext, JIPipeProgressInfo progressInfo) {
         ROI3DListData rois = new ROI3DListData(iterationStep.getInputData("ROI", ROI3DListData.class, progressInfo));
         ResultsTableData metadata = iterationStep.getInputData("Metadata", ResultsTableData.class, progressInfo);
-        TableColumn indexColumn = roiIndexColumn.pickOrGenerateColumn(metadata, new JIPipeExpressionVariablesMap());
+        TableColumnData indexColumn = roiIndexColumn.pickOrGenerateColumn(metadata, new JIPipeExpressionVariablesMap());
 
         for (int i = 0; i < indexColumn.getRows(); i++) {
             int roiIndex = (int) indexColumn.getRowAsDouble(i);

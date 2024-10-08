@@ -27,9 +27,9 @@ import org.hkijena.jipipe.api.nodes.iterationstep.JIPipeIterationContext;
 import org.hkijena.jipipe.api.nodes.iterationstep.JIPipeSingleIterationStep;
 import org.hkijena.jipipe.api.parameters.JIPipeParameter;
 import org.hkijena.jipipe.plugins.expressions.StringQueryExpression;
-import org.hkijena.jipipe.plugins.tables.datatypes.DoubleArrayTableColumn;
+import org.hkijena.jipipe.plugins.tables.datatypes.DoubleArrayTableColumnData;
 import org.hkijena.jipipe.plugins.tables.datatypes.ResultsTableData;
-import org.hkijena.jipipe.plugins.tables.datatypes.TableColumn;
+import org.hkijena.jipipe.plugins.tables.datatypes.TableColumnData;
 
 /**
  * Algorithm that removes columns
@@ -69,7 +69,7 @@ public class ColumnToNumericAlgorithm extends JIPipeSimpleIteratingAlgorithm {
         int columnCount = table.getColumnCount();
         for (int col = 0; col < columnCount; col++) {
             String columnName = table.getColumnName(col);
-            TableColumn columnReference = table.getColumnReference(col);
+            TableColumnData columnReference = table.getColumnReference(col);
             if (filters.test(columnName) && !columnReference.isNumeric()) {
                 if (onlyIfPossible) {
                     boolean success = true;
@@ -87,7 +87,7 @@ public class ColumnToNumericAlgorithm extends JIPipeSimpleIteratingAlgorithm {
                 table.removeColumnAt(col);
                 --col;
                 --columnCount;
-                table.addColumn(columnName, new DoubleArrayTableColumn(data, columnName), true);
+                table.addColumn(columnName, new DoubleArrayTableColumnData(data, columnName), true);
             }
         }
         iterationStep.addOutputData(getFirstOutputSlot(), table, progressInfo);

@@ -14,21 +14,21 @@
 package org.hkijena.jipipe.plugins.tables.operations.converting;
 
 import org.hkijena.jipipe.plugins.tables.ConvertingColumnOperation;
-import org.hkijena.jipipe.plugins.tables.datatypes.StringArrayTableColumn;
-import org.hkijena.jipipe.plugins.tables.datatypes.TableColumn;
+import org.hkijena.jipipe.plugins.tables.datatypes.StringArrayTableColumnData;
+import org.hkijena.jipipe.plugins.tables.datatypes.TableColumnData;
 
 /**
  * Sorts the items ascending
  */
 public class ToStringColumnOperation implements ConvertingColumnOperation {
     @Override
-    public TableColumn apply(TableColumn column) {
+    public TableColumnData apply(TableColumnData column) {
         if (!column.isNumeric())
             return column;
         String[] data = new String[column.getRows()];
         for (int row = 0; row < column.getRows(); row++) {
             data[row] = "" + column.getRowAsDouble(row);
         }
-        return new StringArrayTableColumn(data, column.getLabel());
+        return new StringArrayTableColumnData(data, column.getLabel());
     }
 }

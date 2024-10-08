@@ -34,7 +34,7 @@ import org.hkijena.jipipe.plugins.expressions.TableColumnSourceExpressionParamet
 import org.hkijena.jipipe.plugins.imagejalgorithms.nodes.roi.draw.VisualROIProperties;
 import org.hkijena.jipipe.plugins.imagejdatatypes.datatypes.ROI2DListData;
 import org.hkijena.jipipe.plugins.tables.datatypes.ResultsTableData;
-import org.hkijena.jipipe.plugins.tables.datatypes.TableColumn;
+import org.hkijena.jipipe.plugins.tables.datatypes.TableColumnData;
 
 import java.awt.*;
 
@@ -120,11 +120,11 @@ public class TableToRectangularROIAlgorithm extends JIPipeSimpleIteratingAlgorit
         JIPipeExpressionVariablesMap variables = new JIPipeExpressionVariablesMap();
         variables.putAnnotations(iterationStep.getMergedTextAnnotations());
 
-        TableColumn colX1 = columnX1.pickOrGenerateColumn(table, variables);
-        TableColumn colY1 = columnY1.pickOrGenerateColumn(table, variables);
-        TableColumn colZ = columnZ.pickOrGenerateColumn(table, variables);
-        TableColumn colC = columnC.pickOrGenerateColumn(table, variables);
-        TableColumn colT = columnT.pickOrGenerateColumn(table, variables);
+        TableColumnData colX1 = columnX1.pickOrGenerateColumn(table, variables);
+        TableColumnData colY1 = columnY1.pickOrGenerateColumn(table, variables);
+        TableColumnData colZ = columnZ.pickOrGenerateColumn(table, variables);
+        TableColumnData colC = columnC.pickOrGenerateColumn(table, variables);
+        TableColumnData colT = columnT.pickOrGenerateColumn(table, variables);
 
         ensureColumnExists(colX1, table, "X1");
         ensureColumnExists(colY1, table, "Y1");
@@ -134,8 +134,8 @@ public class TableToRectangularROIAlgorithm extends JIPipeSimpleIteratingAlgorit
 
         if (anchor == Anchor.TopLeft || anchor == Anchor.Center) {
 
-            TableColumn colWidth = columnWidth.pickOrGenerateColumn(table, variables);
-            TableColumn colHeight = columnHeight.pickOrGenerateColumn(table, variables);
+            TableColumnData colWidth = columnWidth.pickOrGenerateColumn(table, variables);
+            TableColumnData colHeight = columnHeight.pickOrGenerateColumn(table, variables);
 
             ensureColumnExists(colWidth, table, "Width");
             ensureColumnExists(colHeight, table, "Height");
@@ -160,8 +160,8 @@ public class TableToRectangularROIAlgorithm extends JIPipeSimpleIteratingAlgorit
                 createROI(rois, w, h, x, y, z, c, t, variables);
             }
         } else {
-            TableColumn colX2 = columnX2.pickOrGenerateColumn(table, variables);
-            TableColumn colY2 = columnY2.pickOrGenerateColumn(table, variables);
+            TableColumnData colX2 = columnX2.pickOrGenerateColumn(table, variables);
+            TableColumnData colY2 = columnY2.pickOrGenerateColumn(table, variables);
 
             ensureColumnExists(colX2, table, "X2");
             ensureColumnExists(colY2, table, "Y2");
@@ -216,7 +216,7 @@ public class TableToRectangularROIAlgorithm extends JIPipeSimpleIteratingAlgorit
         rois.add(roi);
     }
 
-    private void ensureColumnExists(TableColumn column, ResultsTableData table, String name) {
+    private void ensureColumnExists(TableColumnData column, ResultsTableData table, String name) {
         if (column == null) {
             throw new JIPipeValidationRuntimeException(new JIPipeValidationReportEntry(JIPipeValidationReportEntryLevel.Error,
                     new GraphNodeValidationReportContext(this),

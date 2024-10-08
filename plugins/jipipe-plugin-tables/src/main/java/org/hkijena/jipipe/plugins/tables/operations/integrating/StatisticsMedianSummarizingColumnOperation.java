@@ -15,8 +15,8 @@ package org.hkijena.jipipe.plugins.tables.operations.integrating;
 
 import org.apache.commons.math3.stat.descriptive.rank.Median;
 import org.hkijena.jipipe.plugins.tables.SummarizingColumnOperation;
-import org.hkijena.jipipe.plugins.tables.datatypes.DoubleArrayTableColumn;
-import org.hkijena.jipipe.plugins.tables.datatypes.TableColumn;
+import org.hkijena.jipipe.plugins.tables.datatypes.DoubleArrayTableColumnData;
+import org.hkijena.jipipe.plugins.tables.datatypes.TableColumnData;
 
 /**
  * Implements calculating the median value
@@ -26,8 +26,8 @@ public class StatisticsMedianSummarizingColumnOperation implements SummarizingCo
     private static final Median median = new Median();
 
     @Override
-    public TableColumn apply(TableColumn column) {
+    public TableColumnData apply(TableColumnData column) {
         double medianResult = median.evaluate(column.getDataAsDouble(column.getRows()));
-        return new DoubleArrayTableColumn(new double[]{medianResult}, column.getLabel());
+        return new DoubleArrayTableColumnData(new double[]{medianResult}, column.getLabel());
     }
 }

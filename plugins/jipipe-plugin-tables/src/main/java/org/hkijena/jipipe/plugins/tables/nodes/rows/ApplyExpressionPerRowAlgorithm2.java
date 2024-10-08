@@ -36,7 +36,7 @@ import org.hkijena.jipipe.plugins.expressions.*;
 import org.hkijena.jipipe.plugins.parameters.library.collections.ParameterCollectionList;
 import org.hkijena.jipipe.plugins.parameters.library.collections.ParameterCollectionListTemplate;
 import org.hkijena.jipipe.plugins.tables.datatypes.ResultsTableData;
-import org.hkijena.jipipe.plugins.tables.datatypes.TableColumn;
+import org.hkijena.jipipe.plugins.tables.datatypes.TableColumnData;
 
 import java.util.*;
 
@@ -67,7 +67,7 @@ public class ApplyExpressionPerRowAlgorithm2 extends JIPipeSimpleIteratingAlgori
         getDefaultCustomExpressionVariables().writeToVariables(variableSet);
         variableSet.set("num_rows", data.getRowCount());
         for (int col = 0; col < data.getColumnCount(); col++) {
-            TableColumn column = data.getColumnReference(col);
+            TableColumnData column = data.getColumnReference(col);
             if (column.isNumeric()) {
                 variableSet.set("all." + column.getLabel(), Doubles.asList(column.getDataAsDouble(column.getRows())));
             } else {

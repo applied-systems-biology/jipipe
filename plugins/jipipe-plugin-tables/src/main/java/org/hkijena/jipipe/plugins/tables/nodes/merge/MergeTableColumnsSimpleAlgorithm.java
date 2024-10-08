@@ -27,7 +27,7 @@ import org.hkijena.jipipe.api.nodes.iterationstep.JIPipeMultiIterationStep;
 import org.hkijena.jipipe.api.parameters.JIPipeParameter;
 import org.hkijena.jipipe.plugins.expressions.StringQueryExpression;
 import org.hkijena.jipipe.plugins.tables.datatypes.ResultsTableData;
-import org.hkijena.jipipe.plugins.tables.datatypes.TableColumn;
+import org.hkijena.jipipe.plugins.tables.datatypes.TableColumnData;
 import org.hkijena.jipipe.plugins.tables.datatypes.TableColumnNormalization;
 import org.hkijena.jipipe.utils.StringUtils;
 
@@ -72,14 +72,14 @@ public class MergeTableColumnsSimpleAlgorithm extends JIPipeMergingAlgorithm {
 
     @Override
     protected void runIteration(JIPipeMultiIterationStep iterationStep, JIPipeIterationContext iterationContext, JIPipeGraphNodeRunContext runContext, JIPipeProgressInfo progressInfo) {
-        List<TableColumn> columnList = new ArrayList<>();
+        List<TableColumnData> columnList = new ArrayList<>();
         List<ResultsTableData> inputTables = iterationStep.getInputData(getFirstInputSlot(), ResultsTableData.class, progressInfo);
         int nRow = 0;
         for (ResultsTableData tableData : inputTables) {
             nRow = Math.max(nRow, tableData.getRowCount());
             for (int col = 0; col < tableData.getColumnCount(); col++) {
                 if (columnFilter.test(tableData.getColumnName(col))) {
-                    TableColumn column = tableData.getColumnReference(col);
+                    TableColumnData column = tableData.getColumnReference(col);
                     columnList.add(column);
                 }
             }
@@ -91,7 +91,7 @@ public class MergeTableColumnsSimpleAlgorithm extends JIPipeMergingAlgorithm {
         Set<String> existing = new HashSet<>();
         ResultsTableData outputData = new ResultsTableData();
         outputData.addRows(nRow);
-        for (TableColumn column : columnList) {
+        for (TableColumnData column : columnList) {
             String name = StringUtils.makeUniqueString(column.getLabel(), ".", existing);
             existing.add(name);
             outputData.addColumn(name, column, true);

@@ -44,7 +44,7 @@ import org.hkijena.jipipe.plugins.imagejdatatypes.util.measure.MeasurementExpres
 import org.hkijena.jipipe.plugins.parameters.library.collections.ParameterCollectionList;
 import org.hkijena.jipipe.plugins.parameters.library.collections.ParameterCollectionListTemplate;
 import org.hkijena.jipipe.plugins.tables.datatypes.ResultsTableData;
-import org.hkijena.jipipe.plugins.tables.datatypes.TableColumn;
+import org.hkijena.jipipe.plugins.tables.datatypes.TableColumnData;
 
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -121,7 +121,7 @@ public class SetRoiMetadataByStatisticsAlgorithm extends JIPipeIteratingAlgorith
 
         // Write statistics into variables
         for (int col = 0; col < statistics.getColumnCount(); col++) {
-            TableColumn column = statistics.getColumnReference(col);
+            TableColumnData column = statistics.getColumnReference(col);
             if (column.isNumeric()) {
                 variableSet.set("all." + column.getLabel(), new ArrayList<>(Doubles.asList(column.getDataAsDouble(column.getRows()))));
             } else {

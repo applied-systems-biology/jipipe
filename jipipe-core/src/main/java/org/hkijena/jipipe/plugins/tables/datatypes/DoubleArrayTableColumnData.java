@@ -19,20 +19,20 @@ import org.hkijena.jipipe.api.data.JIPipeData;
 import org.hkijena.jipipe.api.data.JIPipeDataStorageDocumentation;
 import org.hkijena.jipipe.api.data.storage.JIPipeReadDataStorage;
 import org.hkijena.jipipe.api.data.storage.JIPipeWriteDataStorage;
-import org.hkijena.jipipe.plugins.tables.MutableTableColumn;
+import org.hkijena.jipipe.plugins.tables.MutableTableColumnData;
 
 import java.util.Arrays;
 import java.util.Collections;
 
 /**
- * {@link TableColumn} that contains doubles.
+ * {@link TableColumnData} that contains doubles.
  */
-@SetJIPipeDocumentation(name = "Numeric table column (float)", description = "A table column that contains numbers (64bit floating point)")
+@SetJIPipeDocumentation(name = "Numeric table column", description = "A table column that contains numbers (64bit floating point)")
 @JIPipeDataStorageDocumentation(humanReadableDescription = "Contains a single *.csv file that contains the table data.",
         jsonSchemaURL = "https://jipipe.org/schemas/datatypes/results-table.schema.json")
-public class FloatArrayTableColumn implements MutableTableColumn {
+public class DoubleArrayTableColumnData implements MutableTableColumnData {
 
-    private float[] data;
+    private double[] data;
     private String label;
 
     /**
@@ -41,20 +41,15 @@ public class FloatArrayTableColumn implements MutableTableColumn {
      * @param data  the data. Can have any size
      * @param label non-empty name
      */
-    public FloatArrayTableColumn(float[] data, String label) {
+    public DoubleArrayTableColumnData(double[] data, String label) {
         this.data = data;
         this.label = label;
     }
 
-    public static FloatArrayTableColumn importData(JIPipeReadDataStorage storage, JIPipeProgressInfo progressInfo) {
+    public static DoubleArrayTableColumnData importData(JIPipeReadDataStorage storage, JIPipeProgressInfo progressInfo) {
         ResultsTableData resultsTableData = ResultsTableData.importData(storage, progressInfo);
-        TableColumn source = resultsTableData.getColumnReference(0);
-        double[] dataAsDouble = source.getDataAsDouble(source.getRows());
-        float[] arr = new float[dataAsDouble.length];
-        for (int i = 0; i < dataAsDouble.length; i++) {
-            arr[i] = (float) dataAsDouble[i];
-        }
-        return new FloatArrayTableColumn(arr, source.getLabel());
+        TableColumnData source = resultsTableData.getColumnReference(0);
+        return new DoubleArrayTableColumnData(source.getDataAsDouble(source.getRows()), source.getLabel());
     }
 
     @Override
@@ -69,12 +64,7 @@ public class FloatArrayTableColumn implements MutableTableColumn {
 
     @Override
     public double[] getDataAsDouble(int rows) {
-        double[] o = new double[rows];
-        int ncopy = Math.min(rows, data.length);
-        for (int i = 0; i < ncopy; i++) {
-            o[i] = data[i];
-        }
-        return o;
+        return Arrays.copyOf(data, rows);
     }
 
     @Override
@@ -92,7 +82,7 @@ public class FloatArrayTableColumn implements MutableTableColumn {
         return label;
     }
 
-    public float[] getData() {
+    public double[] getData() {
         return data;
     }
 
@@ -119,7 +109,7 @@ public class FloatArrayTableColumn implements MutableTableColumn {
 
     @Override
     public JIPipeData duplicate(JIPipeProgressInfo progressInfo) {
-        return new FloatArrayTableColumn(Arrays.copyOf(data, data.length), label);
+        return new DoubleArrayTableColumnData(Arrays.copyOf(data, data.length), label);
     }
 
 }

@@ -14,19 +14,19 @@
 package org.hkijena.jipipe.plugins.tables.operations.integrating;
 
 import org.hkijena.jipipe.plugins.tables.SummarizingColumnOperation;
-import org.hkijena.jipipe.plugins.tables.datatypes.DoubleArrayTableColumn;
-import org.hkijena.jipipe.plugins.tables.datatypes.TableColumn;
+import org.hkijena.jipipe.plugins.tables.datatypes.DoubleArrayTableColumnData;
+import org.hkijena.jipipe.plugins.tables.datatypes.TableColumnData;
 
 /**
  * Implements calculating the sum
  */
 public class SumSummarizingColumnOperation implements SummarizingColumnOperation {
     @Override
-    public TableColumn apply(TableColumn column) {
+    public TableColumnData apply(TableColumnData column) {
         double sum = 0;
         for (int i = 0; i < column.getRows(); i++) {
             sum += column.getRowAsDouble(i);
         }
-        return new DoubleArrayTableColumn(new double[]{sum}, column.getLabel());
+        return new DoubleArrayTableColumnData(new double[]{sum}, column.getLabel());
     }
 }

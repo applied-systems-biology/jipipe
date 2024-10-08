@@ -16,9 +16,9 @@ package org.hkijena.jipipe.plugins.tables;
 import org.hkijena.jipipe.api.JIPipeProgressInfo;
 import org.hkijena.jipipe.api.data.JIPipeData;
 import org.hkijena.jipipe.api.data.JIPipeDataConverter;
-import org.hkijena.jipipe.plugins.tables.datatypes.DoubleArrayTableColumn;
+import org.hkijena.jipipe.plugins.tables.datatypes.DoubleArrayTableColumnData;
 import org.hkijena.jipipe.plugins.tables.datatypes.ResultsTableData;
-import org.hkijena.jipipe.plugins.tables.datatypes.TableColumn;
+import org.hkijena.jipipe.plugins.tables.datatypes.TableColumnData;
 
 import java.util.Collections;
 
@@ -28,7 +28,7 @@ import java.util.Collections;
 public class DoubleArrayColumnToTableConverter implements JIPipeDataConverter {
     @Override
     public Class<? extends JIPipeData> getInputType() {
-        return DoubleArrayTableColumn.class;
+        return DoubleArrayTableColumnData.class;
     }
 
     @Override
@@ -38,6 +38,6 @@ public class DoubleArrayColumnToTableConverter implements JIPipeDataConverter {
 
     @Override
     public JIPipeData convert(JIPipeData input, JIPipeProgressInfo progressInfo) {
-        return new ResultsTableData(Collections.singletonList((TableColumn) input));
+        return new ResultsTableData(Collections.singletonList((TableColumnData) input));
     }
 }

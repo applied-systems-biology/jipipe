@@ -15,21 +15,21 @@ package org.hkijena.jipipe.plugins.tables.operations.converting;
 
 import org.apache.commons.lang3.math.NumberUtils;
 import org.hkijena.jipipe.plugins.tables.ConvertingColumnOperation;
-import org.hkijena.jipipe.plugins.tables.datatypes.DoubleArrayTableColumn;
-import org.hkijena.jipipe.plugins.tables.datatypes.TableColumn;
+import org.hkijena.jipipe.plugins.tables.datatypes.DoubleArrayTableColumnData;
+import org.hkijena.jipipe.plugins.tables.datatypes.TableColumnData;
 
 /**
  * Sorts the items ascending
  */
 public class ToNumericColumnOperation implements ConvertingColumnOperation {
     @Override
-    public TableColumn apply(TableColumn column) {
+    public TableColumnData apply(TableColumnData column) {
         if (column.isNumeric())
             return column;
         double[] data = new double[column.getRows()];
         for (int row = 0; row < column.getRows(); row++) {
             data[row] = NumberUtils.createDouble(column.getRowAsString(row));
         }
-        return new DoubleArrayTableColumn(data, column.getLabel());
+        return new DoubleArrayTableColumnData(data, column.getLabel());
     }
 }

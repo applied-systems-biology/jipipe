@@ -28,6 +28,7 @@ import org.hkijena.jipipe.plugins.parameters.library.primitives.list.StringList;
 import org.hkijena.jipipe.plugins.tables.datatypes.*;
 import org.hkijena.jipipe.plugins.tables.display.OpenResultsTableInImageJDataDisplayOperation;
 import org.hkijena.jipipe.plugins.tables.display.OpenResultsTableInJIPipeTabDataDisplayOperation;
+import org.hkijena.jipipe.plugins.tables.display.TableColumnDataViewer;
 import org.hkijena.jipipe.plugins.tables.nodes.*;
 import org.hkijena.jipipe.plugins.tables.nodes.annotations.AddAnnotationColumnsAlgorithm;
 import org.hkijena.jipipe.plugins.tables.nodes.annotations.AnnotateByTablePropertiesAlgorithm;
@@ -139,31 +140,32 @@ public class TablesPlugin extends JIPipePrepackagedDefaultJavaPlugin {
 
     private void registerColumnSources() {
         registerDatatype("table-column-row-index",
-                RowIndexTableColumn.class,
+                RowIndexTableColumnData.class,
                 ResourceUtils.getPluginResource("icons/data-types/table-column.png"));
         registerDatatype("table-column-zero",
-                ZeroTableColumn.class,
+                ZeroTableColumnData.class,
                 ResourceUtils.getPluginResource("icons/data-types/table-column.png"));
     }
 
     private void registerDataTypes() {
         registerDatatype("table-column",
-                TableColumn.class,
+                TableColumnData.class,
                 ResourceUtils.getPluginResource("icons/data-types/table-column.png"),
                 new OpenResultsTableInImageJDataDisplayOperation(),
                 new OpenResultsTableInJIPipeTabDataDisplayOperation());
         registerDatatype("table-column-numeric",
-                DoubleArrayTableColumn.class,
+                DoubleArrayTableColumnData.class,
                 ResourceUtils.getPluginResource("icons/data-types/table-column.png"),
                 new OpenResultsTableInImageJDataDisplayOperation(),
                 new OpenResultsTableInJIPipeTabDataDisplayOperation());
         registerDatatype("table-column-string",
-                StringArrayTableColumn.class,
+                StringArrayTableColumnData.class,
                 ResourceUtils.getPluginResource("icons/data-types/table-column.png"),
                 new OpenResultsTableInImageJDataDisplayOperation(),
                 new OpenResultsTableInJIPipeTabDataDisplayOperation());
         registerDatatypeConversion(new DoubleArrayColumnToTableConverter());
         registerDatatypeConversion(new StringArrayColumnToTableConverter());
+        registerDefaultDataTypeViewer(TableColumnData.class, TableColumnDataViewer.class);
     }
 
     private void registerAlgorithms() {

@@ -30,7 +30,7 @@ import org.hkijena.jipipe.api.validation.JIPipeValidationRuntimeException;
 import org.hkijena.jipipe.plugins.expressions.JIPipeExpressionVariablesMap;
 import org.hkijena.jipipe.plugins.tables.ColumnOperation;
 import org.hkijena.jipipe.plugins.tables.datatypes.ResultsTableData;
-import org.hkijena.jipipe.plugins.tables.datatypes.TableColumn;
+import org.hkijena.jipipe.plugins.tables.datatypes.TableColumnData;
 import org.hkijena.jipipe.plugins.tables.parameters.collections.ConvertingTableColumnProcessorParameterList;
 import org.hkijena.jipipe.plugins.tables.parameters.processors.ConvertingTableColumnProcessorParameter;
 
@@ -74,7 +74,7 @@ public class ConvertColumnsAlgorithm extends JIPipeSimpleIteratingAlgorithm {
     @Override
     protected void runIteration(JIPipeSingleIterationStep iterationStep, JIPipeIterationContext iterationContext, JIPipeGraphNodeRunContext runContext, JIPipeProgressInfo progressInfo) {
         ResultsTableData input = iterationStep.getInputData(getFirstInputSlot(), ResultsTableData.class, progressInfo);
-        Map<String, TableColumn> resultColumns = new HashMap<>();
+        Map<String, TableColumnData> resultColumns = new HashMap<>();
         for (ConvertingTableColumnProcessorParameter processor : processorParameters) {
             String sourceColumn = processor.getInput().queryFirst(input.getColumnNames(), new JIPipeExpressionVariablesMap());
             if (sourceColumn == null) {
@@ -83,9 +83,9 @@ public class ConvertColumnsAlgorithm extends JIPipeSimpleIteratingAlgorithm {
                         "The column filter '" + processor.getInput() + "' tried to find a matching column in " + String.join(", ", input.getColumnNames()) + ". None of the columns matched.",
                         "Please check if the filter is correct.");
             }
-            TableColumn sourceColumnData = input.getColumnReference(input.getColumnIndex(sourceColumn));
+            TableColumnData sourceColumnData = input.getColumnReference(input.getColumnIndex(sourceColumn));
             ColumnOperation columnOperation = ((JIPipeExpressionRegistry.ColumnOperationEntry) processor.getParameter().getValue()).getOperation();
-            TableColumn resultColumn = columnOperation.apply(sourceColumnData);
+            TableColumnData resultColumn = columnOperation.apply(sourceColumnData);
             resultColumns.put(processor.getOutput(), resultColumn);
         }
         if (append) {

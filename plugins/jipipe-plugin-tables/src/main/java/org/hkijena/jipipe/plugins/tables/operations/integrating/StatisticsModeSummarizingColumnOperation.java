@@ -16,8 +16,8 @@ package org.hkijena.jipipe.plugins.tables.operations.integrating;
 import gnu.trove.map.TDoubleIntMap;
 import gnu.trove.map.hash.TDoubleIntHashMap;
 import org.hkijena.jipipe.plugins.tables.SummarizingColumnOperation;
-import org.hkijena.jipipe.plugins.tables.datatypes.DoubleArrayTableColumn;
-import org.hkijena.jipipe.plugins.tables.datatypes.TableColumn;
+import org.hkijena.jipipe.plugins.tables.datatypes.DoubleArrayTableColumnData;
+import org.hkijena.jipipe.plugins.tables.datatypes.TableColumnData;
 
 /**
  * Implements calculating the mode value (most common value)
@@ -25,7 +25,7 @@ import org.hkijena.jipipe.plugins.tables.datatypes.TableColumn;
 public class StatisticsModeSummarizingColumnOperation implements SummarizingColumnOperation {
 
     @Override
-    public TableColumn apply(TableColumn column) {
+    public TableColumnData apply(TableColumnData column) {
         TDoubleIntMap map = new TDoubleIntHashMap();
         for (double v : column.getDataAsDouble(column.getRows())) {
             map.adjustOrPutValue(v, 1, 1);
@@ -39,6 +39,6 @@ public class StatisticsModeSummarizingColumnOperation implements SummarizingColu
                 maxCount = count;
             }
         }
-        return new DoubleArrayTableColumn(new double[]{maxKey}, column.getLabel());
+        return new DoubleArrayTableColumnData(new double[]{maxKey}, column.getLabel());
     }
 }

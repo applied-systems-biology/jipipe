@@ -18,7 +18,7 @@ import com.google.common.collect.Multimap;
 import org.hkijena.jipipe.api.JIPipeProgressInfo;
 import org.hkijena.jipipe.plugins.ijfilaments.datatypes.Filaments3DGraphData;
 import org.hkijena.jipipe.plugins.tables.datatypes.ResultsTableData;
-import org.hkijena.jipipe.plugins.tables.datatypes.TableColumn;
+import org.hkijena.jipipe.plugins.tables.datatypes.TableColumnData;
 import org.hkijena.jipipe.utils.StringUtils;
 
 import java.io.BufferedReader;
@@ -228,7 +228,7 @@ public class TSOAXUtils {
     }
 
     public static Set<Integer> findTrackIds(ResultsTableData snakesResult) {
-        TableColumn trackIdsColumn = snakesResult.getColumnReference("track_ids");
+        TableColumnData trackIdsColumn = snakesResult.getColumnReference("track_ids");
         Set<Integer> knownTrackIds = new HashSet<>();
         for (int i = 0; i < trackIdsColumn.getRows(); i++) {
             String rowAsString = StringUtils.nullToEmpty(trackIdsColumn.getRowAsString(i)).trim();

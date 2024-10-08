@@ -14,22 +14,22 @@
 package org.hkijena.jipipe.plugins.tables.operations.integrating;
 
 import org.hkijena.jipipe.plugins.tables.SummarizingColumnOperation;
-import org.hkijena.jipipe.plugins.tables.datatypes.DoubleArrayTableColumn;
-import org.hkijena.jipipe.plugins.tables.datatypes.StringArrayTableColumn;
-import org.hkijena.jipipe.plugins.tables.datatypes.TableColumn;
+import org.hkijena.jipipe.plugins.tables.datatypes.DoubleArrayTableColumnData;
+import org.hkijena.jipipe.plugins.tables.datatypes.StringArrayTableColumnData;
+import org.hkijena.jipipe.plugins.tables.datatypes.TableColumnData;
 
 /**
  * Implements calculating the sum
  */
 public class GetFirstSummarizingColumnOperation implements SummarizingColumnOperation {
     @Override
-    public TableColumn apply(TableColumn column) {
+    public TableColumnData apply(TableColumnData column) {
         if (column.isNumeric()) {
             double value = column.getRows() > 0 ? column.getRowAsDouble(0) : 0;
-            return new DoubleArrayTableColumn(new double[]{value}, column.getLabel());
+            return new DoubleArrayTableColumnData(new double[]{value}, column.getLabel());
         } else {
             String value = column.getRows() > 0 ? column.getRowAsString(0) : "";
-            return new StringArrayTableColumn(new String[]{value}, column.getLabel());
+            return new StringArrayTableColumnData(new String[]{value}, column.getLabel());
         }
     }
 }

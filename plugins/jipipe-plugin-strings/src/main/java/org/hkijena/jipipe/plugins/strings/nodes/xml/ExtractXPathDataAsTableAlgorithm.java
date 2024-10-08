@@ -38,8 +38,8 @@ import org.hkijena.jipipe.plugins.parameters.library.collections.ParameterCollec
 import org.hkijena.jipipe.plugins.parameters.library.pairs.StringAndStringPairParameter;
 import org.hkijena.jipipe.plugins.strings.XMLData;
 import org.hkijena.jipipe.plugins.tables.datatypes.ResultsTableData;
-import org.hkijena.jipipe.plugins.tables.datatypes.StringArrayTableColumn;
-import org.hkijena.jipipe.plugins.tables.datatypes.TableColumn;
+import org.hkijena.jipipe.plugins.tables.datatypes.StringArrayTableColumnData;
+import org.hkijena.jipipe.plugins.tables.datatypes.TableColumnData;
 import org.hkijena.jipipe.plugins.tables.datatypes.TableColumnNormalization;
 import org.hkijena.jipipe.utils.xml.XmlUtils;
 import org.w3c.dom.Document;
@@ -82,7 +82,7 @@ public class ExtractXPathDataAsTableAlgorithm extends JIPipeSimpleIteratingAlgor
             namespaces.put(parameter.getKey(), parameter.getValue());
         }
 
-        List<TableColumn> columns = new ArrayList<>();
+        List<TableColumnData> columns = new ArrayList<>();
 
         JIPipeExpressionVariablesMap variables = new JIPipeExpressionVariablesMap();
         variables.putAnnotations(iterationStep.getMergedTextAnnotations());
@@ -91,7 +91,7 @@ public class ExtractXPathDataAsTableAlgorithm extends JIPipeSimpleIteratingAlgor
             String columnName = entry.getColumnName().evaluateToString(variables);
 
             List<String> annotationValue = XmlUtils.extractStringListFromXPath(document, path, namespaces);
-            columns.add(new StringArrayTableColumn(annotationValue.toArray(new String[0]), columnName));
+            columns.add(new StringArrayTableColumnData(annotationValue.toArray(new String[0]), columnName));
         }
 
         columns = columnNormalization.normalize(columns);

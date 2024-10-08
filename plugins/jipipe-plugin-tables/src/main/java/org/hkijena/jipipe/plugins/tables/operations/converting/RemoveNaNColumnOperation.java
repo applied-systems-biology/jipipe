@@ -14,21 +14,21 @@
 package org.hkijena.jipipe.plugins.tables.operations.converting;
 
 import org.hkijena.jipipe.plugins.tables.ConvertingColumnOperation;
-import org.hkijena.jipipe.plugins.tables.datatypes.DoubleArrayTableColumn;
-import org.hkijena.jipipe.plugins.tables.datatypes.TableColumn;
+import org.hkijena.jipipe.plugins.tables.datatypes.DoubleArrayTableColumnData;
+import org.hkijena.jipipe.plugins.tables.datatypes.TableColumnData;
 
 /**
  * Sets NaN values to zero
  */
 public class RemoveNaNColumnOperation implements ConvertingColumnOperation {
     @Override
-    public TableColumn apply(TableColumn column) {
+    public TableColumnData apply(TableColumnData column) {
         double[] values = column.getDataAsDouble(column.getRows());
         for (int i = 0; i < values.length; i++) {
             if (Double.isNaN(values[i])) {
                 values[i] = 0;
             }
         }
-        return new DoubleArrayTableColumn(values, column.getLabel());
+        return new DoubleArrayTableColumnData(values, column.getLabel());
     }
 }

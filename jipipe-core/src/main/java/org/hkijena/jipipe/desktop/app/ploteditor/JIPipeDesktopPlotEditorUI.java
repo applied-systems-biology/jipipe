@@ -42,9 +42,9 @@ import org.hkijena.jipipe.plugins.plots.datatypes.PlotData;
 import org.hkijena.jipipe.plugins.plots.datatypes.PlotDataSeries;
 import org.hkijena.jipipe.plugins.plots.datatypes.PlotMetadata;
 import org.hkijena.jipipe.plugins.settings.JIPipeFileChooserApplicationSettings;
-import org.hkijena.jipipe.plugins.tables.datatypes.DoubleArrayTableColumn;
-import org.hkijena.jipipe.plugins.tables.datatypes.StringArrayTableColumn;
-import org.hkijena.jipipe.plugins.tables.datatypes.TableColumn;
+import org.hkijena.jipipe.plugins.tables.datatypes.DoubleArrayTableColumnData;
+import org.hkijena.jipipe.plugins.tables.datatypes.StringArrayTableColumnData;
+import org.hkijena.jipipe.plugins.tables.datatypes.TableColumnData;
 import org.hkijena.jipipe.utils.JIPipeDesktopSplitPane;
 import org.hkijena.jipipe.utils.ReflectionUtils;
 import org.hkijena.jipipe.utils.StringUtils;
@@ -63,7 +63,7 @@ import java.util.*;
  * User interface for displaying and creating plots
  */
 public class JIPipeDesktopPlotEditorUI extends JIPipeDesktopWorkbenchPanel implements JIPipeParameterCollection, JIPipeValidatable, JIPipeParameterCollection.ParameterChangedEventListener {
-    private final BiMap<String, TableColumn> availableData = HashBiMap.create();
+    private final BiMap<String, TableColumnData> availableData = HashBiMap.create();
     private final List<JIPipeDesktopPlotSeriesEditor> seriesBuilders = new ArrayList<>();
     private final JIPipeDesktopTabPane sideBar = new JIPipeDesktopTabPane(false, JIPipeDesktopTabPane.TabPlacement.Right);
     private final ParameterChangedEventEmitter parameterChangedEventEmitter = new ParameterChangedEventEmitter();
@@ -173,8 +173,8 @@ public class JIPipeDesktopPlotEditorUI extends JIPipeDesktopWorkbenchPanel imple
 
     private void installDefaultDataSources() {
         for (Class<? extends JIPipeData> klass : JIPipe.getDataTypes().getRegisteredDataTypes().values()) {
-            if (TableColumn.isGeneratingTableColumn(klass)) {
-                TableColumn dataSource = (TableColumn) ReflectionUtils.newInstance(klass);
+            if (TableColumnData.isGeneratingTableColumn(klass)) {
+                TableColumnData dataSource = (TableColumnData) ReflectionUtils.newInstance(klass);
                 availableData.put(dataSource.getLabel(), dataSource);
             }
         }
@@ -366,20 +366,20 @@ public class JIPipeDesktopPlotEditorUI extends JIPipeDesktopWorkbenchPanel imple
             if (data.length == 0)
                 continue;
 
-            TableColumn dataSource;
+            TableColumnData dataSource;
             int dataType = (int) ReflectionUtils.invokeMethod(data[0], "getType");
             if (dataType == 0) {
                 double[] convertedData = new double[data.length];
                 for (int i = 0; i < data.length; ++i) {
                     convertedData[i] = data[i].getValue();
                 }
-                dataSource = new DoubleArrayTableColumn(convertedData, name);
+                dataSource = new DoubleArrayTableColumnData(convertedData, name);
             } else {
                 String[] convertedData = new String[data.length];
                 for (int i = 0; i < data.length; ++i) {
                     convertedData[i] = data[i].getString();
                 }
-                dataSource = new StringArrayTableColumn(convertedData, name);
+                dataSource = new StringArrayTableColumnData(convertedData, name);
             }
             availableData.put(name, dataSource);
             columnMapping.put(table.getColumnHeading(col), name);
@@ -404,19 +404,19 @@ public class JIPipeDesktopPlotEditorUI extends JIPipeDesktopWorkbenchPanel imple
             String name = seriesName + "/" + model.getColumnName(col);
             name = StringUtils.makeUniqueString(name, " ", s -> availableData.containsKey(s));
 
-            TableColumn dataSource;
+            TableColumnData dataSource;
             if (Number.class.isAssignableFrom(model.getColumnClass(col))) {
                 double[] convertedData = new double[model.getRowCount()];
                 for (int i = 0; i < model.getRowCount(); ++i) {
                     convertedData[i] = (double) model.getValueAt(i, col);
                 }
-                dataSource = new DoubleArrayTableColumn(convertedData, name);
+                dataSource = new DoubleArrayTableColumnData(convertedData, name);
             } else {
                 String[] convertedData = new String[model.getRowCount()];
                 for (int i = 0; i < model.getRowCount(); ++i) {
                     convertedData[i] = "" + model.getValueAt(i, col);
                 }
-                dataSource = new StringArrayTableColumn(convertedData, name);
+                dataSource = new StringArrayTableColumnData(convertedData, name);
             }
             availableData.put(name, dataSource);
             columnMapping.put(model.getColumnName(col), name);
@@ -432,7 +432,7 @@ public class JIPipeDesktopPlotEditorUI extends JIPipeDesktopWorkbenchPanel imple
      *
      * @return the map of available data
      */
-    public Map<String, TableColumn> getAvailableData() {
+    public Map<String, TableColumnData> getAvailableData() {
         return Collections.unmodifiableMap(availableData);
     }
 
@@ -497,8 +497,8 @@ public class JIPipeDesktopPlotEditorUI extends JIPipeDesktopWorkbenchPanel imple
      *
      * @param data data
      */
-    public void removeData(List<TableColumn> data) {
-        for (TableColumn dataSource : data) {
+    public void removeData(List<TableColumnData> data) {
+        for (TableColumnData dataSource : data) {
             if (dataSource.isUserRemovable()) {
                 availableData.inverse().remove(dataSource);
             }

@@ -27,7 +27,7 @@ import org.hkijena.jipipe.api.nodes.iterationstep.JIPipeSingleIterationStep;
 import org.hkijena.jipipe.api.parameters.JIPipeParameter;
 import org.hkijena.jipipe.plugins.expressions.StringQueryExpression;
 import org.hkijena.jipipe.plugins.tables.datatypes.ResultsTableData;
-import org.hkijena.jipipe.plugins.tables.datatypes.StringArrayTableColumn;
+import org.hkijena.jipipe.plugins.tables.datatypes.StringArrayTableColumnData;
 
 /**
  * Algorithm that removes columns
@@ -70,7 +70,7 @@ public class ColumnToStringAlgorithm extends JIPipeSimpleIteratingAlgorithm {
                 table.removeColumnAt(col);
                 --col;
                 --columnCount;
-                table.addColumn(columnName, new StringArrayTableColumn(data, columnName), true);
+                table.addColumn(columnName, new StringArrayTableColumnData(data, columnName), true);
             }
         }
         iterationStep.addOutputData(getFirstOutputSlot(), table, progressInfo);

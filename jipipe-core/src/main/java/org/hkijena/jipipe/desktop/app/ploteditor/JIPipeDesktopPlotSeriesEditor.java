@@ -23,7 +23,7 @@ import org.hkijena.jipipe.plugins.plots.datatypes.PlotColumn;
 import org.hkijena.jipipe.plugins.plots.datatypes.PlotDataSeries;
 import org.hkijena.jipipe.plugins.plots.datatypes.PlotMetadata;
 import org.hkijena.jipipe.plugins.plots.parameters.UIPlotDataSeriesColumnEnum;
-import org.hkijena.jipipe.plugins.tables.datatypes.TableColumn;
+import org.hkijena.jipipe.plugins.tables.datatypes.TableColumnData;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -70,11 +70,11 @@ public class JIPipeDesktopPlotSeriesEditor extends AbstractJIPipeParameterCollec
      *
      * @return map of series column ID to source
      */
-    public Map<String, TableColumn> getSelectedSources() {
-        Map<String, TableColumn> result = new HashMap<>();
+    public Map<String, TableColumnData> getSelectedSources() {
+        Map<String, TableColumnData> result = new HashMap<>();
         for (Map.Entry<String, JIPipeParameterAccess> entry : columnAssignments.getParameters().entrySet()) {
             UIPlotDataSeriesColumnEnum parameter = entry.getValue().get(UIPlotDataSeriesColumnEnum.class);
-            result.put(entry.getKey(), (TableColumn) parameter.getValue());
+            result.put(entry.getKey(), (TableColumnData) parameter.getValue());
         }
         return result;
     }
@@ -100,7 +100,7 @@ public class JIPipeDesktopPlotSeriesEditor extends AbstractJIPipeParameterCollec
      * @param column     the series column
      * @param columnData the assigned data
      */
-    public void assignData(String column, TableColumn columnData) {
+    public void assignData(String column, TableColumnData columnData) {
         JIPipeMutableParameterAccess parameterAccess = columnAssignments.getParameter(column);
         UIPlotDataSeriesColumnEnum parameter = parameterAccess.get(UIPlotDataSeriesColumnEnum.class);
         parameter.setValue(columnData);
@@ -158,8 +158,8 @@ public class JIPipeDesktopPlotSeriesEditor extends AbstractJIPipeParameterCollec
         }
 
         int rows = 0;
-        Map<String, TableColumn> selectedSources = getSelectedSources();
-        for (TableColumn source : selectedSources.values()) {
+        Map<String, TableColumnData> selectedSources = getSelectedSources();
+        for (TableColumnData source : selectedSources.values()) {
             if (source != null)
                 rows = Math.max(rows, source.getRows());
         }
@@ -179,8 +179,8 @@ public class JIPipeDesktopPlotSeriesEditor extends AbstractJIPipeParameterCollec
      */
     public PlotDataSeries buildSeries() {
         int rows = 0;
-        Map<String, TableColumn> selectedSources = getSelectedSources();
-        for (TableColumn source : selectedSources.values()) {
+        Map<String, TableColumnData> selectedSources = getSelectedSources();
+        for (TableColumnData source : selectedSources.values()) {
             rows = Math.max(rows, source.getRows());
         }
         ResultsTable table = new ResultsTable(rows);
@@ -194,7 +194,7 @@ public class JIPipeDesktopPlotSeriesEditor extends AbstractJIPipeParameterCollec
             columnIndices.put(column.name(), columnIndex);
         }
 
-        for (Map.Entry<String, TableColumn> entry : selectedSources.entrySet()) {
+        for (Map.Entry<String, TableColumnData> entry : selectedSources.entrySet()) {
             int columnIndex = columnIndices.get(entry.getKey());
             boolean isNumeric = columnIsNumeric.get(entry.getKey());
             if (!isNumeric) {

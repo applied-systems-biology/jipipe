@@ -112,7 +112,7 @@ public class UnMeltTableAlgorithm extends JIPipeSimpleIteratingAlgorithm {
             values.add(value);
         }
 
-        List<TableColumn> unNormalizedColumns = new ArrayList<>();
+        List<TableColumnData> unNormalizedColumns = new ArrayList<>();
         for (Map.Entry<String, List<Object>> entry : categorizedValues.entrySet()) {
             List<Object> values = entry.getValue();
             if (values.stream().anyMatch(o -> !(o instanceof Number))) {
@@ -120,17 +120,17 @@ public class UnMeltTableAlgorithm extends JIPipeSimpleIteratingAlgorithm {
                 for (int i = 0; i < values.size(); i++) {
                     array[i] = StringUtils.nullToEmpty(values.get(i));
                 }
-                unNormalizedColumns.add(new StringArrayTableColumn(array, entry.getKey()));
+                unNormalizedColumns.add(new StringArrayTableColumnData(array, entry.getKey()));
             } else {
                 double[] array = new double[values.size()];
                 for (int i = 0; i < values.size(); i++) {
                     array[i] = ((Number) values.get(i)).doubleValue();
                 }
-                unNormalizedColumns.add(new DoubleArrayTableColumn(array, entry.getKey()));
+                unNormalizedColumns.add(new DoubleArrayTableColumnData(array, entry.getKey()));
             }
         }
 
-        List<TableColumn> normalizedColumns = columnNormalization.normalize(unNormalizedColumns);
+        List<TableColumnData> normalizedColumns = columnNormalization.normalize(unNormalizedColumns);
         ResultsTableData output = new ResultsTableData(normalizedColumns);
 
 

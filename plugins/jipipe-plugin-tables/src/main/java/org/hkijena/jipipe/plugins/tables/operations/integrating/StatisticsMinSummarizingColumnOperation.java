@@ -14,19 +14,19 @@
 package org.hkijena.jipipe.plugins.tables.operations.integrating;
 
 import org.hkijena.jipipe.plugins.tables.SummarizingColumnOperation;
-import org.hkijena.jipipe.plugins.tables.datatypes.DoubleArrayTableColumn;
-import org.hkijena.jipipe.plugins.tables.datatypes.TableColumn;
+import org.hkijena.jipipe.plugins.tables.datatypes.DoubleArrayTableColumnData;
+import org.hkijena.jipipe.plugins.tables.datatypes.TableColumnData;
 
 /**
  * Implements calculating the min value
  */
 public class StatisticsMinSummarizingColumnOperation implements SummarizingColumnOperation {
     @Override
-    public TableColumn apply(TableColumn column) {
+    public TableColumnData apply(TableColumnData column) {
         double min = Double.POSITIVE_INFINITY;
         for (int i = 0; i < column.getRows(); i++) {
             min = Math.min(column.getRowAsDouble(i), min);
         }
-        return new DoubleArrayTableColumn(new double[]{min}, column.getLabel());
+        return new DoubleArrayTableColumnData(new double[]{min}, column.getLabel());
     }
 }

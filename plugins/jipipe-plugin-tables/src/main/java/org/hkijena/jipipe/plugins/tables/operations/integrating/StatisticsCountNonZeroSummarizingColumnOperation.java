@@ -14,19 +14,19 @@
 package org.hkijena.jipipe.plugins.tables.operations.integrating;
 
 import org.hkijena.jipipe.plugins.tables.SummarizingColumnOperation;
-import org.hkijena.jipipe.plugins.tables.datatypes.DoubleArrayTableColumn;
-import org.hkijena.jipipe.plugins.tables.datatypes.TableColumn;
+import org.hkijena.jipipe.plugins.tables.datatypes.DoubleArrayTableColumnData;
+import org.hkijena.jipipe.plugins.tables.datatypes.TableColumnData;
 
 /**
  * Implements counting non-zero elements
  */
 public class StatisticsCountNonZeroSummarizingColumnOperation implements SummarizingColumnOperation {
     @Override
-    public TableColumn apply(TableColumn column) {
+    public TableColumnData apply(TableColumnData column) {
         double sum = 0;
         for (int i = 0; i < column.getRows(); i++) {
             sum += column.getRowAsDouble(i) != 0 ? 1 : 0;
         }
-        return new DoubleArrayTableColumn(new double[]{sum}, column.getLabel());
+        return new DoubleArrayTableColumnData(new double[]{sum}, column.getLabel());
     }
 }

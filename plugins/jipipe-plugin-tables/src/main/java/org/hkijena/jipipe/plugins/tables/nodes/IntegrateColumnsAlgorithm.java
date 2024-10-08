@@ -32,9 +32,9 @@ import org.hkijena.jipipe.api.validation.JIPipeValidationRuntimeException;
 import org.hkijena.jipipe.api.validation.contexts.ParameterValidationReportContext;
 import org.hkijena.jipipe.plugins.expressions.JIPipeExpressionVariablesMap;
 import org.hkijena.jipipe.plugins.tables.ColumnOperation;
-import org.hkijena.jipipe.plugins.tables.datatypes.RelabeledTableColumn;
+import org.hkijena.jipipe.plugins.tables.datatypes.RelabeledTableColumnData;
 import org.hkijena.jipipe.plugins.tables.datatypes.ResultsTableData;
-import org.hkijena.jipipe.plugins.tables.datatypes.TableColumn;
+import org.hkijena.jipipe.plugins.tables.datatypes.TableColumnData;
 import org.hkijena.jipipe.plugins.tables.parameters.collections.IntegratingTableColumnProcessorParameterList;
 import org.hkijena.jipipe.plugins.tables.parameters.processors.IntegratingTableColumnProcessorParameter;
 
@@ -75,7 +75,7 @@ public class IntegrateColumnsAlgorithm extends JIPipeSimpleIteratingAlgorithm {
     @Override
     protected void runIteration(JIPipeSingleIterationStep iterationStep, JIPipeIterationContext iterationContext, JIPipeGraphNodeRunContext runContext, JIPipeProgressInfo progressInfo) {
         ResultsTableData input = iterationStep.getInputData(getFirstInputSlot(), ResultsTableData.class, progressInfo);
-        List<TableColumn> resultColumns = new ArrayList<>();
+        List<TableColumnData> resultColumns = new ArrayList<>();
         for (IntegratingTableColumnProcessorParameter processor : processorParameters) {
             String sourceColumn = processor.getInput().queryFirst(input.getColumnNames(), new JIPipeExpressionVariablesMap());
             if (sourceColumn == null) {
@@ -84,10 +84,10 @@ public class IntegrateColumnsAlgorithm extends JIPipeSimpleIteratingAlgorithm {
                         "The column filter '" + processor.getInput() + "' tried to find a matching column in " + String.join(", ", input.getColumnNames()) + ". None of the columns matched.",
                         "Please check if the filter is correct.");
             }
-            TableColumn sourceColumnData = input.getColumnReference(input.getColumnIndex(sourceColumn));
+            TableColumnData sourceColumnData = input.getColumnReference(input.getColumnIndex(sourceColumn));
             ColumnOperation columnOperation = ((JIPipeExpressionRegistry.ColumnOperationEntry) processor.getParameter().getValue()).getOperation();
-            TableColumn resultColumn = columnOperation.apply(sourceColumnData);
-            resultColumns.add(new RelabeledTableColumn(resultColumn, processor.getOutput()));
+            TableColumnData resultColumn = columnOperation.apply(sourceColumnData);
+            resultColumns.add(new RelabeledTableColumnData(resultColumn, processor.getOutput()));
         }
 
         // Combine into one table

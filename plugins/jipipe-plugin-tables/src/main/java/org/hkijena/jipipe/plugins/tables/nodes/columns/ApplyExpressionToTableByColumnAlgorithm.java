@@ -72,7 +72,7 @@ public class ApplyExpressionToTableByColumnAlgorithm extends JIPipeSimpleIterati
     @Override
     protected void runIteration(JIPipeSingleIterationStep iterationStep, JIPipeIterationContext iterationContext, JIPipeGraphNodeRunContext runContext, JIPipeProgressInfo progressInfo) {
         ResultsTableData input = iterationStep.getInputData(getFirstInputSlot(), ResultsTableData.class, progressInfo);
-        List<TableColumn> resultColumns = new ArrayList<>();
+        List<TableColumnData> resultColumns = new ArrayList<>();
 
         // Copy annotations
         JIPipeExpressionVariablesMap expressionVariables = new JIPipeExpressionVariablesMap();
@@ -84,7 +84,7 @@ public class ApplyExpressionToTableByColumnAlgorithm extends JIPipeSimpleIterati
         // Copy columns
         if (input != null) {
             for (int col = 0; col < input.getColumnCount(); col++) {
-                TableColumn column = input.getColumnReference(col);
+                TableColumnData column = input.getColumnReference(col);
                 if (column.isNumeric()) {
                     expressionVariables.set(column.getLabel(), Doubles.asList(column.getDataAsDouble(column.getRows())));
                 } else {
@@ -103,9 +103,9 @@ public class ApplyExpressionToTableByColumnAlgorithm extends JIPipeSimpleIterati
             }
             String outputColumnName = item.outputColumnName.evaluateToString(expressionVariables);
             Object result = item.outputColumnValues.evaluate(expressionVariables);
-            TableColumn resultColumn;
+            TableColumnData resultColumn;
             if (result instanceof Number) {
-                resultColumn = new DoubleArrayTableColumn(new double[]{((Number) result).doubleValue()}, outputColumnName);
+                resultColumn = new DoubleArrayTableColumnData(new double[]{((Number) result).doubleValue()}, outputColumnName);
             } else if (result instanceof Collection) {
                 if (((Collection<?>) result).stream().allMatch(v -> v instanceof Number)) {
                     double[] data = new double[((Collection<?>) result).size()];
@@ -114,7 +114,7 @@ public class ApplyExpressionToTableByColumnAlgorithm extends JIPipeSimpleIterati
                         data[i] = ((Number) o).doubleValue();
                         ++i;
                     }
-                    resultColumn = new DoubleArrayTableColumn(data, outputColumnName);
+                    resultColumn = new DoubleArrayTableColumnData(data, outputColumnName);
                 } else {
                     String[] data = new String[((Collection<?>) result).size()];
                     int i = 0;
@@ -122,12 +122,12 @@ public class ApplyExpressionToTableByColumnAlgorithm extends JIPipeSimpleIterati
                         data[i] = StringUtils.nullToEmpty(o);
                         ++i;
                     }
-                    resultColumn = new StringArrayTableColumn(data, outputColumnName);
+                    resultColumn = new StringArrayTableColumnData(data, outputColumnName);
                 }
             } else {
-                resultColumn = new StringArrayTableColumn(new String[]{StringUtils.nullToEmpty(result)}, outputColumnName);
+                resultColumn = new StringArrayTableColumnData(new String[]{StringUtils.nullToEmpty(result)}, outputColumnName);
             }
-            resultColumns.add(new RelabeledTableColumn(resultColumn, outputColumnName));
+            resultColumns.add(new RelabeledTableColumnData(resultColumn, outputColumnName));
         }
 
         // Combine into one table

@@ -38,7 +38,7 @@ import org.hkijena.jipipe.plugins.expressions.TableColumnSourceExpressionParamet
 import org.hkijena.jipipe.plugins.expressions.variables.JIPipeTextAnnotationsExpressionParameterVariablesInfo;
 import org.hkijena.jipipe.plugins.parameters.library.collections.ParameterCollectionList;
 import org.hkijena.jipipe.plugins.tables.datatypes.ResultsTableData;
-import org.hkijena.jipipe.plugins.tables.datatypes.TableColumn;
+import org.hkijena.jipipe.plugins.tables.datatypes.TableColumnData;
 
 import java.util.*;
 
@@ -79,8 +79,8 @@ public class TableToHistogram2Algorithm extends JIPipeSimpleIteratingAlgorithm {
         JIPipeExpressionVariablesMap variables = new JIPipeExpressionVariablesMap();
         variables.putAnnotations(iterationStep.getMergedTextAnnotations());
 
-        TableColumn inputColumn = this.inputColumn.pickOrGenerateColumn(inputTable, variables);
-        TableColumn weightColumn = this.weightColumn.pickOrGenerateColumn(inputTable, variables);
+        TableColumnData inputColumn = this.inputColumn.pickOrGenerateColumn(inputTable, variables);
+        TableColumnData weightColumn = this.weightColumn.pickOrGenerateColumn(inputTable, variables);
 
         double[] inputColumnValues = inputColumn.getDataAsDouble(inputColumn.getRows());
         double[] weightColumnValues = weightColumn.getDataAsDouble(inputColumn.getRows());

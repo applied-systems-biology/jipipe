@@ -25,7 +25,7 @@ import org.hkijena.jipipe.api.nodes.categories.TableNodeTypeCategory;
 import org.hkijena.jipipe.api.nodes.iterationstep.JIPipeIterationContext;
 import org.hkijena.jipipe.api.nodes.iterationstep.JIPipeMultiIterationStep;
 import org.hkijena.jipipe.plugins.tables.datatypes.ResultsTableData;
-import org.hkijena.jipipe.plugins.tables.datatypes.TableColumn;
+import org.hkijena.jipipe.plugins.tables.datatypes.TableColumnData;
 import org.hkijena.jipipe.utils.StringUtils;
 
 import java.util.HashMap;
@@ -36,7 +36,7 @@ import java.util.Map;
  */
 @SetJIPipeDocumentation(name = "Merge columns", description = "Merges multiple table columns into a table.")
 @ConfigureJIPipeNode(nodeTypeCategory = TableNodeTypeCategory.class, menuPath = "Merge")
-@AddJIPipeInputSlot(value = TableColumn.class, name = "Input", create = true)
+@AddJIPipeInputSlot(value = TableColumnData.class, name = "Input", create = true)
 @AddJIPipeOutputSlot(value = ResultsTableData.class, name = "Output", create = true)
 public class MergeColumnsAlgorithm extends JIPipeMergingAlgorithm {
 
@@ -60,8 +60,8 @@ public class MergeColumnsAlgorithm extends JIPipeMergingAlgorithm {
 
     @Override
     protected void runIteration(JIPipeMultiIterationStep iterationStep, JIPipeIterationContext iterationContext, JIPipeGraphNodeRunContext runContext, JIPipeProgressInfo progressInfo) {
-        Map<String, TableColumn> columnMap = new HashMap<>();
-        for (TableColumn tableColumn : iterationStep.getInputData(getFirstInputSlot(), TableColumn.class, progressInfo)) {
+        Map<String, TableColumnData> columnMap = new HashMap<>();
+        for (TableColumnData tableColumn : iterationStep.getInputData(getFirstInputSlot(), TableColumnData.class, progressInfo)) {
             String name = StringUtils.isNullOrEmpty(tableColumn.getLabel()) ? "Column" : tableColumn.getLabel();
             name = StringUtils.makeUniqueString(name, " ", columnMap.keySet());
             columnMap.put(name, tableColumn);

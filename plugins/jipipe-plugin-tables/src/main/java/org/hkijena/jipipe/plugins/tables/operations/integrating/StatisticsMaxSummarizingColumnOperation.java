@@ -14,19 +14,19 @@
 package org.hkijena.jipipe.plugins.tables.operations.integrating;
 
 import org.hkijena.jipipe.plugins.tables.SummarizingColumnOperation;
-import org.hkijena.jipipe.plugins.tables.datatypes.DoubleArrayTableColumn;
-import org.hkijena.jipipe.plugins.tables.datatypes.TableColumn;
+import org.hkijena.jipipe.plugins.tables.datatypes.DoubleArrayTableColumnData;
+import org.hkijena.jipipe.plugins.tables.datatypes.TableColumnData;
 
 /**
  * Implements calculating the max value
  */
 public class StatisticsMaxSummarizingColumnOperation implements SummarizingColumnOperation {
     @Override
-    public TableColumn apply(TableColumn column) {
+    public TableColumnData apply(TableColumnData column) {
         double max = Double.NEGATIVE_INFINITY;
         for (int i = 0; i < column.getRows(); i++) {
             max = Math.max(column.getRowAsDouble(i), max);
         }
-        return new DoubleArrayTableColumn(new double[]{max}, column.getLabel());
+        return new DoubleArrayTableColumnData(new double[]{max}, column.getLabel());
     }
 }

@@ -26,9 +26,9 @@ import org.hkijena.jipipe.api.data.storage.JIPipeWriteDataStorage;
 @SetJIPipeDocumentation(name = "Zero table column", description = "A table column that generates zeros for each row.")
 @JIPipeDataStorageDocumentation(humanReadableDescription = "This is a structural data type. The storage folder is empty.",
         jsonSchemaURL = "https://jipipe.org/schemas/datatypes/jipipe-empty-data.schema.json")
-public class ZeroTableColumn implements TableColumn {
-    public static ZeroTableColumn importData(JIPipeReadDataStorage storage, JIPipeProgressInfo progressInfo) {
-        return new ZeroTableColumn();
+public class ZeroTableColumnData implements TableColumnData {
+    public static ZeroTableColumnData importData(JIPipeReadDataStorage storage, JIPipeProgressInfo progressInfo) {
+        return new ZeroTableColumnData();
     }
 
     @Override
@@ -82,7 +82,7 @@ public class ZeroTableColumn implements TableColumn {
 
     @Override
     public JIPipeData duplicate(JIPipeProgressInfo progressInfo) {
-        return new ZeroTableColumn();
+        return new ZeroTableColumnData();
     }
 
 }

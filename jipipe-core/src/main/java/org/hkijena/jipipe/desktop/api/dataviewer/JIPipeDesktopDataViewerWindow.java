@@ -246,6 +246,11 @@ public class JIPipeDesktopDataViewerWindow extends JFrame implements JIPipeDeskt
                     UIUtils.getIconFromResources("actions/caret-down.png"),
                     this::goToNextData));
         }
+        if(dataBrowser != null) {
+            JIPipeDesktopRibbon.Task exportTask = ribbon.addTask("Export");
+            JIPipeDesktopRibbon.Band dataBand = exportTask.addBand("Data");
+            dataBand.ad
+        }
     }
 
     private void goToRow(int row, int dataAnnotationColumn) {

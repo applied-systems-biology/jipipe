@@ -13,9 +13,9 @@
 
 package org.hkijena.jipipe.desktop.app.ploteditor;
 
-import org.hkijena.jipipe.plugins.tables.datatypes.DoubleArrayTableColumn;
-import org.hkijena.jipipe.plugins.tables.datatypes.StringArrayTableColumn;
-import org.hkijena.jipipe.plugins.tables.datatypes.TableColumn;
+import org.hkijena.jipipe.plugins.tables.datatypes.DoubleArrayTableColumnData;
+import org.hkijena.jipipe.plugins.tables.datatypes.StringArrayTableColumnData;
+import org.hkijena.jipipe.plugins.tables.datatypes.TableColumnData;
 import org.hkijena.jipipe.utils.UIUtils;
 
 import javax.swing.*;
@@ -24,7 +24,7 @@ import java.awt.*;
 /**
  * Renders entries
  */
-public class JIPipeDesktopPlotDataSeriesColumnListCellRenderer extends JLabel implements ListCellRenderer<TableColumn> {
+public class JIPipeDesktopPlotDataSeriesColumnListCellRenderer extends JLabel implements ListCellRenderer<TableColumnData> {
 
     /**
      * Creates a new renderer
@@ -35,14 +35,14 @@ public class JIPipeDesktopPlotDataSeriesColumnListCellRenderer extends JLabel im
     }
 
     @Override
-    public Component getListCellRendererComponent(JList<? extends TableColumn> list, TableColumn value, int index, boolean isSelected, boolean cellHasFocus) {
+    public Component getListCellRendererComponent(JList<? extends TableColumnData> list, TableColumnData value, int index, boolean isSelected, boolean cellHasFocus) {
 
-        if (value instanceof DoubleArrayTableColumn) {
-            DoubleArrayTableColumn data = (DoubleArrayTableColumn) value;
+        if (value instanceof DoubleArrayTableColumnData) {
+            DoubleArrayTableColumnData data = (DoubleArrayTableColumnData) value;
             setText(data.getLabel() + " (" + data.getData().length + " rows)");
             setIcon(UIUtils.getIconFromResources("data-types/results-table.png"));
-        } else if (value instanceof StringArrayTableColumn) {
-            StringArrayTableColumn data = (StringArrayTableColumn) value;
+        } else if (value instanceof StringArrayTableColumnData) {
+            StringArrayTableColumnData data = (StringArrayTableColumnData) value;
             setText(data.getLabel() + " (" + data.getData().length + " rows)");
             setIcon(UIUtils.getIconFromResources("data-types/results-table.png"));
         } else if (value != null) {

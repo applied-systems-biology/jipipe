@@ -14,8 +14,8 @@
 package org.hkijena.jipipe.plugins.tables.operations.converting;
 
 import org.hkijena.jipipe.plugins.tables.ConvertingColumnOperation;
-import org.hkijena.jipipe.plugins.tables.datatypes.DoubleArrayTableColumn;
-import org.hkijena.jipipe.plugins.tables.datatypes.TableColumn;
+import org.hkijena.jipipe.plugins.tables.datatypes.DoubleArrayTableColumnData;
+import org.hkijena.jipipe.plugins.tables.datatypes.TableColumnData;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -25,7 +25,7 @@ import java.util.Map;
  */
 public class FactorizeColumnOperation implements ConvertingColumnOperation {
     @Override
-    public TableColumn apply(TableColumn column) {
+    public TableColumnData apply(TableColumnData column) {
         Map<String, Integer> factors = new HashMap<>();
         for (int i = 0; i < column.getRows(); i++) {
             String v = column.getRowAsString(i);
@@ -38,6 +38,6 @@ public class FactorizeColumnOperation implements ConvertingColumnOperation {
             String v = column.getRowAsString(i);
             result[i] = factors.get(v);
         }
-        return new DoubleArrayTableColumn(result, column.getLabel());
+        return new DoubleArrayTableColumnData(result, column.getLabel());
     }
 }

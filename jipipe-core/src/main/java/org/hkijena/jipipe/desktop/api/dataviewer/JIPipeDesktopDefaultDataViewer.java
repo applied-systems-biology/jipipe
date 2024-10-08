@@ -29,11 +29,6 @@ public class JIPipeDesktopDefaultDataViewer extends JIPipeDesktopDataViewer {
     }
 
     @Override
-    public void rebuildRibbon(JIPipeDesktopRibbon ribbon) {
-
-    }
-
-    @Override
     public void rebuildDock(JIPipeDesktopDockPanel dockPanel) {
         if (getDataBrowser() == null) {
             showError(dockPanel);
@@ -41,15 +36,5 @@ public class JIPipeDesktopDefaultDataViewer extends JIPipeDesktopDataViewer {
             awaitToSwing(getDataBrowser().getDataAsString(), stringField::setText);
             awaitToSwing(getDataBrowser().getDataAsDetailedString(), detailedStringField::setText);
         }
-    }
-
-    @Override
-    public void preOnDataChanged() {
-
-    }
-
-    @Override
-    public void postOnDataChanged() {
-
     }
 }

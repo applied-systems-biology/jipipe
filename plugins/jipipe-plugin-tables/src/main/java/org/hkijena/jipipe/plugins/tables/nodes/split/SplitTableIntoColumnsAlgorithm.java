@@ -31,7 +31,7 @@ import org.hkijena.jipipe.plugins.expressions.StringQueryExpression;
 import org.hkijena.jipipe.plugins.parameters.library.primitives.StringParameterSettings;
 import org.hkijena.jipipe.plugins.parameters.library.primitives.optional.OptionalStringParameter;
 import org.hkijena.jipipe.plugins.tables.datatypes.ResultsTableData;
-import org.hkijena.jipipe.plugins.tables.datatypes.TableColumn;
+import org.hkijena.jipipe.plugins.tables.datatypes.TableColumnData;
 import org.hkijena.jipipe.utils.ResourceUtils;
 import org.hkijena.jipipe.utils.StringUtils;
 
@@ -44,7 +44,7 @@ import java.util.List;
 @SetJIPipeDocumentation(name = "Split table into columns", description = "Splits a table into individual columns")
 @ConfigureJIPipeNode(nodeTypeCategory = TableNodeTypeCategory.class, menuPath = "Split")
 @AddJIPipeInputSlot(value = ResultsTableData.class, name = "Input", create = true)
-@AddJIPipeOutputSlot(value = TableColumn.class, name = "Output", create = true)
+@AddJIPipeOutputSlot(value = TableColumnData.class, name = "Output", create = true)
 public class SplitTableIntoColumnsAlgorithm extends JIPipeSimpleIteratingAlgorithm {
 
     private OptionalStringParameter generatedAnnotation = new OptionalStringParameter();
@@ -76,7 +76,7 @@ public class SplitTableIntoColumnsAlgorithm extends JIPipeSimpleIteratingAlgorit
         ResultsTableData input = iterationStep.getInputData(getFirstInputSlot(), ResultsTableData.class, progressInfo);
         for (String columnName : input.getColumnNames()) {
             if (columnFilter.test(columnName)) {
-                TableColumn column = input.getColumnCopy(input.getColumnIndex(columnName));
+                TableColumnData column = input.getColumnCopy(input.getColumnIndex(columnName));
                 List<JIPipeTextAnnotation> annotations = new ArrayList<>();
                 if (generatedAnnotation.isEnabled() && !StringUtils.isNullOrEmpty(generatedAnnotation.getContent())) {
                     annotations.add(new JIPipeTextAnnotation(generatedAnnotation.getContent(), columnName));

@@ -30,17 +30,17 @@ import org.hkijena.jipipe.api.validation.JIPipeValidationReportContext;
 import org.hkijena.jipipe.api.validation.contexts.ParameterValidationReportContext;
 import org.hkijena.jipipe.plugins.parameters.api.pairs.PairParameterSettings;
 import org.hkijena.jipipe.plugins.parameters.library.pairs.StringQueryExpressionAndStringPairParameter;
-import org.hkijena.jipipe.plugins.tables.datatypes.DoubleArrayTableColumn;
-import org.hkijena.jipipe.plugins.tables.datatypes.StringArrayTableColumn;
-import org.hkijena.jipipe.plugins.tables.datatypes.TableColumn;
+import org.hkijena.jipipe.plugins.tables.datatypes.DoubleArrayTableColumnData;
+import org.hkijena.jipipe.plugins.tables.datatypes.StringArrayTableColumnData;
+import org.hkijena.jipipe.plugins.tables.datatypes.TableColumnData;
 
 /**
  * Algorithm that removes columns
  */
 @SetJIPipeDocumentation(name = "Rename single columns", description = "Renames columns")
 @ConfigureJIPipeNode(nodeTypeCategory = TableNodeTypeCategory.class)
-@AddJIPipeInputSlot(value = TableColumn.class, name = "Input", create = true)
-@AddJIPipeOutputSlot(value = TableColumn.class, name = "Output", create = true)
+@AddJIPipeInputSlot(value = TableColumnData.class, name = "Input", create = true)
+@AddJIPipeOutputSlot(value = TableColumnData.class, name = "Output", create = true)
 public class RenameSingleColumnsAlgorithm extends JIPipeSimpleIteratingAlgorithm {
 
     private StringQueryExpressionAndStringPairParameter.List renamingEntries = new StringQueryExpressionAndStringPairParameter.List();
@@ -66,7 +66,7 @@ public class RenameSingleColumnsAlgorithm extends JIPipeSimpleIteratingAlgorithm
 
     @Override
     protected void runIteration(JIPipeSingleIterationStep iterationStep, JIPipeIterationContext iterationContext, JIPipeGraphNodeRunContext runContext, JIPipeProgressInfo progressInfo) {
-        TableColumn input = iterationStep.getInputData(getFirstInputSlot(), TableColumn.class, progressInfo);
+        TableColumnData input = iterationStep.getInputData(getFirstInputSlot(), TableColumnData.class, progressInfo);
         String name = input.getLabel();
         for (StringQueryExpressionAndStringPairParameter renamingEntry : renamingEntries) {
             if (renamingEntry.getKey().test(name)) {
@@ -76,9 +76,9 @@ public class RenameSingleColumnsAlgorithm extends JIPipeSimpleIteratingAlgorithm
         }
 
         if (input.isNumeric()) {
-            iterationStep.addOutputData(getFirstOutputSlot(), new DoubleArrayTableColumn(input.getDataAsDouble(input.getRows()), name), progressInfo);
+            iterationStep.addOutputData(getFirstOutputSlot(), new DoubleArrayTableColumnData(input.getDataAsDouble(input.getRows()), name), progressInfo);
         } else {
-            iterationStep.addOutputData(getFirstOutputSlot(), new StringArrayTableColumn(input.getDataAsString(input.getRows()), name), progressInfo);
+            iterationStep.addOutputData(getFirstOutputSlot(), new StringArrayTableColumnData(input.getDataAsString(input.getRows()), name), progressInfo);
         }
     }
 

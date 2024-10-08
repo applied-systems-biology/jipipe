@@ -41,7 +41,7 @@ import org.hkijena.jipipe.plugins.expressions.TableColumnSourceExpressionParamet
 import org.hkijena.jipipe.plugins.expressions.variables.JIPipeTextAnnotationsExpressionParameterVariablesInfo;
 import org.hkijena.jipipe.plugins.parameters.library.collections.ParameterCollectionList;
 import org.hkijena.jipipe.plugins.tables.datatypes.ResultsTableData;
-import org.hkijena.jipipe.plugins.tables.datatypes.TableColumn;
+import org.hkijena.jipipe.plugins.tables.datatypes.TableColumnData;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -93,8 +93,8 @@ public class TableToHistogramAlgorithm extends JIPipeSimpleIteratingAlgorithm {
         JIPipeExpressionVariablesMap variables = new JIPipeExpressionVariablesMap();
         variables.putAnnotations(iterationStep.getMergedTextAnnotations());
 
-        TableColumn inputColumn = this.inputColumn.pickOrGenerateColumn(inputTable, variables);
-        TableColumn weightColumn = this.weightColumn.pickOrGenerateColumn(inputTable, variables);
+        TableColumnData inputColumn = this.inputColumn.pickOrGenerateColumn(inputTable, variables);
+        TableColumnData weightColumn = this.weightColumn.pickOrGenerateColumn(inputTable, variables);
 
         // Calculate output column names
         String outputBinMinColumName = outputColumnBinMin.evaluateToString(variables);

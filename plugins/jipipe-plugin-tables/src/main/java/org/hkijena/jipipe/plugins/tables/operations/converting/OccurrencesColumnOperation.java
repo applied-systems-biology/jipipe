@@ -16,15 +16,15 @@ package org.hkijena.jipipe.plugins.tables.operations.converting;
 import com.google.common.collect.HashMultiset;
 import com.google.common.collect.Multiset;
 import org.hkijena.jipipe.plugins.tables.ConvertingColumnOperation;
-import org.hkijena.jipipe.plugins.tables.datatypes.DoubleArrayTableColumn;
-import org.hkijena.jipipe.plugins.tables.datatypes.TableColumn;
+import org.hkijena.jipipe.plugins.tables.datatypes.DoubleArrayTableColumnData;
+import org.hkijena.jipipe.plugins.tables.datatypes.TableColumnData;
 
 /**
  * Converts each entry into a the number of occurrences within the column
  */
 public class OccurrencesColumnOperation implements ConvertingColumnOperation {
     @Override
-    public TableColumn apply(TableColumn column) {
+    public TableColumnData apply(TableColumnData column) {
         Multiset<String> factors = HashMultiset.create();
         for (int i = 0; i < column.getRows(); i++) {
             String v = column.getRowAsString(i);
@@ -35,6 +35,6 @@ public class OccurrencesColumnOperation implements ConvertingColumnOperation {
             String v = column.getRowAsString(i);
             result[i] = factors.count(v);
         }
-        return new DoubleArrayTableColumn(result, column.getLabel());
+        return new DoubleArrayTableColumnData(result, column.getLabel());
     }
 }

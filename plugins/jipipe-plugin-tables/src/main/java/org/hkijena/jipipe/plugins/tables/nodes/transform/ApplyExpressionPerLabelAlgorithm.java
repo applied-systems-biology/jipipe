@@ -38,7 +38,7 @@ import org.hkijena.jipipe.plugins.expressions.TableColumnSourceExpressionParamet
 import org.hkijena.jipipe.plugins.expressions.variables.JIPipeTextAnnotationsExpressionParameterVariablesInfo;
 import org.hkijena.jipipe.plugins.parameters.library.primitives.StringParameterSettings;
 import org.hkijena.jipipe.plugins.tables.datatypes.ResultsTableData;
-import org.hkijena.jipipe.plugins.tables.datatypes.TableColumn;
+import org.hkijena.jipipe.plugins.tables.datatypes.TableColumnData;
 
 import java.util.Arrays;
 import java.util.List;
@@ -80,8 +80,8 @@ public class ApplyExpressionPerLabelAlgorithm extends JIPipeSimpleIteratingAlgor
         TDoubleObjectHashMap<TDoubleList> bucketedValues = new TDoubleObjectHashMap<>();
 
         // Copy the buckets
-        TableColumn keyColumn_ = keyColumn.pickOrGenerateColumn(inputTable, new JIPipeExpressionVariablesMap());
-        TableColumn valueColumn_ = valueColumn.pickOrGenerateColumn(inputTable, new JIPipeExpressionVariablesMap());
+        TableColumnData keyColumn_ = keyColumn.pickOrGenerateColumn(inputTable, new JIPipeExpressionVariablesMap());
+        TableColumnData valueColumn_ = valueColumn.pickOrGenerateColumn(inputTable, new JIPipeExpressionVariablesMap());
 
         for (int row = 0; row < inputTable.getRowCount(); row++) {
             double key = keyColumn_.getRowAsDouble(row);

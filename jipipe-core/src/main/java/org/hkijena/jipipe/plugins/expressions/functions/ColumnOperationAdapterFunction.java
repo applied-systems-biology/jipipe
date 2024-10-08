@@ -18,9 +18,9 @@ import org.hkijena.jipipe.plugins.expressions.JIPipeExpressionVariablesMap;
 import org.hkijena.jipipe.plugins.expressions.ParameterInfo;
 import org.hkijena.jipipe.plugins.tables.ColumnOperation;
 import org.hkijena.jipipe.plugins.tables.SummarizingColumnOperation;
-import org.hkijena.jipipe.plugins.tables.datatypes.DoubleArrayTableColumn;
-import org.hkijena.jipipe.plugins.tables.datatypes.StringArrayTableColumn;
-import org.hkijena.jipipe.plugins.tables.datatypes.TableColumn;
+import org.hkijena.jipipe.plugins.tables.datatypes.DoubleArrayTableColumnData;
+import org.hkijena.jipipe.plugins.tables.datatypes.StringArrayTableColumnData;
+import org.hkijena.jipipe.plugins.tables.datatypes.TableColumnData;
 
 import java.util.ArrayList;
 import java.util.Collection;
@@ -82,7 +82,7 @@ public class ColumnOperationAdapterFunction extends ExpressionFunction {
             for (int i = 0; i < parameters.size(); i++) {
                 arr[i] = ((Number) parameters.get(i)).doubleValue();
             }
-            TableColumn result = columnOperation.apply(new DoubleArrayTableColumn(arr, "x"));
+            TableColumnData result = columnOperation.apply(new DoubleArrayTableColumnData(arr, "x"));
             if (result.getRows() > 1)
                 throw new UnsupportedOperationException("Function returned more than one row!");
             return result.getRowAsDouble(0);
@@ -91,7 +91,7 @@ public class ColumnOperationAdapterFunction extends ExpressionFunction {
             for (int i = 0; i < parameters.size(); i++) {
                 arr[i] = "" + parameters.get(i);
             }
-            TableColumn result = columnOperation.apply(new StringArrayTableColumn(arr, "x"));
+            TableColumnData result = columnOperation.apply(new StringArrayTableColumnData(arr, "x"));
             if (result.getRows() > 1)
                 throw new UnsupportedOperationException("Function returned more than one row!");
             return result.getRowAsString(0);

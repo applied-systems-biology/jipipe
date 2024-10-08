@@ -23,7 +23,7 @@ import org.hkijena.jipipe.desktop.commons.components.tabs.JIPipeDesktopTabPane;
 import org.hkijena.jipipe.plugins.plots.datatypes.PlotDataSeries;
 import org.hkijena.jipipe.plugins.settings.JIPipeFileChooserApplicationSettings;
 import org.hkijena.jipipe.plugins.tables.datatypes.ResultsTableData;
-import org.hkijena.jipipe.plugins.tables.datatypes.TableColumn;
+import org.hkijena.jipipe.plugins.tables.datatypes.TableColumnData;
 import org.hkijena.jipipe.utils.UIUtils;
 
 import javax.swing.*;
@@ -42,7 +42,7 @@ import java.util.stream.Collectors;
 public class JIPipeDesktopPlotAvailableDataManagerUI extends JIPipeDesktopWorkbenchPanel implements JIPipeParameterCollection.ParameterChangedEventListener {
 
     private final JIPipeDesktopPlotEditorUI plotEditor;
-    private JList<TableColumn> dataSourceJList;
+    private JList<TableColumnData> dataSourceJList;
     private JPopupMenu importPopupMenu;
 
     /**
@@ -139,14 +139,14 @@ public class JIPipeDesktopPlotAvailableDataManagerUI extends JIPipeDesktopWorkbe
 
     private void showSelectedData() {
         int rows = 0;
-        for (TableColumn dataSource : dataSourceJList.getSelectedValuesList()) {
+        for (TableColumnData dataSource : dataSourceJList.getSelectedValuesList()) {
             rows = Math.max(dataSource.getRows(), rows);
         }
 
         ResultsTableData tableModel = new ResultsTableData();
         tableModel.addRows(rows);
         for (int sourceColumn = 0; sourceColumn < dataSourceJList.getSelectedValuesList().size(); sourceColumn++) {
-            TableColumn dataSource = dataSourceJList.getSelectedValuesList().get(sourceColumn);
+            TableColumnData dataSource = dataSourceJList.getSelectedValuesList().get(sourceColumn);
             int targetColumn = tableModel.addColumn(dataSource.getLabel(), !dataSource.isNumeric());
             if (dataSource.isNumeric()) {
                 double[] data = dataSource.getDataAsDouble(rows);
@@ -174,10 +174,10 @@ public class JIPipeDesktopPlotAvailableDataManagerUI extends JIPipeDesktopWorkbe
      * Reloads the list of data sources
      */
     public void reloadList() {
-        DefaultListModel<TableColumn> model = (DefaultListModel<TableColumn>) dataSourceJList.getModel();
+        DefaultListModel<TableColumnData> model = (DefaultListModel<TableColumnData>) dataSourceJList.getModel();
         model.clear();
-        for (TableColumn dataSource : plotEditor.getAvailableData().values().stream()
-                .sorted(Comparator.comparing(TableColumn::getLabel)).collect(Collectors.toList())) {
+        for (TableColumnData dataSource : plotEditor.getAvailableData().values().stream()
+                .sorted(Comparator.comparing(TableColumnData::getLabel)).collect(Collectors.toList())) {
             model.addElement(dataSource);
         }
     }

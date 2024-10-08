@@ -14,19 +14,19 @@
 package org.hkijena.jipipe.plugins.tables.operations.converting;
 
 import org.hkijena.jipipe.plugins.tables.ConvertingColumnOperation;
-import org.hkijena.jipipe.plugins.tables.datatypes.DoubleArrayTableColumn;
-import org.hkijena.jipipe.plugins.tables.datatypes.TableColumn;
+import org.hkijena.jipipe.plugins.tables.datatypes.DoubleArrayTableColumnData;
+import org.hkijena.jipipe.plugins.tables.datatypes.TableColumnData;
 
 /**
  * Applies a logarithm (base 10) function
  */
 public class Log10ColumnOperation implements ConvertingColumnOperation {
     @Override
-    public TableColumn apply(TableColumn column) {
+    public TableColumnData apply(TableColumnData column) {
         double[] data = column.getDataAsDouble(column.getRows());
         for (int i = 0; i < data.length; i++) {
             data[i] = Math.log10(data[i]);
         }
-        return new DoubleArrayTableColumn(data, column.getLabel());
+        return new DoubleArrayTableColumnData(data, column.getLabel());
     }
 }

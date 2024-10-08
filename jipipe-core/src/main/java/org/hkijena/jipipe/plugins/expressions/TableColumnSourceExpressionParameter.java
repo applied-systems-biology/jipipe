@@ -25,10 +25,10 @@ import org.hkijena.jipipe.api.validation.JIPipeValidationRuntimeException;
 import org.hkijena.jipipe.api.validation.contexts.UnspecifiedValidationReportContext;
 import org.hkijena.jipipe.plugins.parameters.api.pairs.PairParameter;
 import org.hkijena.jipipe.plugins.parameters.api.pairs.PairParameterSettings;
-import org.hkijena.jipipe.plugins.tables.datatypes.DoubleArrayTableColumn;
+import org.hkijena.jipipe.plugins.tables.datatypes.DoubleArrayTableColumnData;
 import org.hkijena.jipipe.plugins.tables.datatypes.ResultsTableData;
-import org.hkijena.jipipe.plugins.tables.datatypes.StringArrayTableColumn;
-import org.hkijena.jipipe.plugins.tables.datatypes.TableColumn;
+import org.hkijena.jipipe.plugins.tables.datatypes.StringArrayTableColumnData;
+import org.hkijena.jipipe.plugins.tables.datatypes.TableColumnData;
 import org.hkijena.jipipe.utils.StringUtils;
 
 import java.util.ArrayList;
@@ -76,7 +76,7 @@ public class TableColumnSourceExpressionParameter extends PairParameter<TableCol
      * @param variables expression variables
      * @return the column
      */
-    public TableColumn pickOrGenerateColumn(ResultsTableData table, JIPipeExpressionVariablesMap variables) {
+    public TableColumnData pickOrGenerateColumn(ResultsTableData table, JIPipeExpressionVariablesMap variables) {
         variables.set("num_rows", table.getRowCount());
         variables.set("num_cols", table.getColumnCount());
 
@@ -104,7 +104,7 @@ public class TableColumnSourceExpressionParameter extends PairParameter<TableCol
 
             // Write statistics into variables
             for (int col = 0; col < table.getColumnCount(); col++) {
-                TableColumn column = table.getColumnReference(col);
+                TableColumnData column = table.getColumnReference(col);
                 if (column.isNumeric()) {
                     variables.set("all." + column.getLabel(), new ArrayList<>(Doubles.asList(column.getDataAsDouble(column.getRows()))));
                 } else {
@@ -136,13 +136,13 @@ public class TableColumnSourceExpressionParameter extends PairParameter<TableCol
                 for (int row = 0; row < table.getRowCount(); row++) {
                     data[row] = ((Number) rawData[row]).doubleValue();
                 }
-                return new DoubleArrayTableColumn(data, "Generated");
+                return new DoubleArrayTableColumnData(data, "Generated");
             } else {
                 String[] data = new String[table.getRowCount()];
                 for (int row = 0; row < table.getRowCount(); row++) {
                     data[row] = "" + rawData[row];
                 }
-                return new StringArrayTableColumn(data, "Generated");
+                return new StringArrayTableColumnData(data, "Generated");
             }
         }
         throw new JIPipeValidationRuntimeException(new JIPipeValidationReportEntry(JIPipeValidationReportEntryLevel.Error, new UnspecifiedValidationReportContext(), "Could not find column!",

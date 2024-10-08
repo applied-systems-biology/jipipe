@@ -13,19 +13,19 @@
 
 package org.hkijena.jipipe.plugins.tables;
 
-import org.hkijena.jipipe.plugins.tables.datatypes.TableColumn;
+import org.hkijena.jipipe.plugins.tables.datatypes.TableColumnData;
 
 import java.util.function.Function;
 
 /**
- * An operation on a {@link TableColumn}
+ * An operation on a {@link TableColumnData}
  */
-public interface ColumnOperation extends Function<TableColumn, TableColumn> {
+public interface ColumnOperation extends Function<TableColumnData, TableColumnData> {
     /**
      * Applies the operation
      *
      * @param column the column index
      * @return the result column. The column label is the column heading.
      */
-    TableColumn apply(TableColumn column);
+    TableColumnData apply(TableColumnData column);
 }

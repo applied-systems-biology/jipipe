@@ -35,7 +35,7 @@ import org.hkijena.jipipe.plugins.expressions.JIPipeExpressionVariablesMap;
 import org.hkijena.jipipe.plugins.expressions.TableColumnSourceExpressionParameter;
 import org.hkijena.jipipe.plugins.filesystem.dataypes.PathData;
 import org.hkijena.jipipe.plugins.tables.datatypes.AnnotationTableData;
-import org.hkijena.jipipe.plugins.tables.datatypes.TableColumn;
+import org.hkijena.jipipe.plugins.tables.datatypes.TableColumnData;
 
 import java.nio.file.Paths;
 import java.util.ArrayList;
@@ -76,7 +76,7 @@ public class AnnotationTableToPaths extends JIPipeSimpleIteratingAlgorithm {
     @Override
     protected void runIteration(JIPipeSingleIterationStep iterationStep, JIPipeIterationContext iterationContext, JIPipeGraphNodeRunContext runContext, JIPipeProgressInfo progressInfo) {
         AnnotationTableData tableData = iterationStep.getInputData(getFirstInputSlot(), AnnotationTableData.class, progressInfo);
-        TableColumn tableColumn = column.pickOrGenerateColumn(tableData, new JIPipeExpressionVariablesMap());
+        TableColumnData tableColumn = column.pickOrGenerateColumn(tableData, new JIPipeExpressionVariablesMap());
         if (tableColumn == null) {
             throw new JIPipeValidationRuntimeException(new JIPipeValidationReportEntry(JIPipeValidationReportEntryLevel.Error, new GraphNodeValidationReportContext(this),
                     "Could not find column that matches '" + column.toString() + "'!",

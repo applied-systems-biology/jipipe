@@ -39,7 +39,7 @@ import org.hkijena.jipipe.plugins.parameters.library.primitives.FontFamilyParame
 import org.hkijena.jipipe.plugins.parameters.library.primitives.FontStyleParameter;
 import org.hkijena.jipipe.plugins.parameters.library.roi.InnerMargin;
 import org.hkijena.jipipe.plugins.tables.datatypes.ResultsTableData;
-import org.hkijena.jipipe.plugins.tables.datatypes.TableColumn;
+import org.hkijena.jipipe.plugins.tables.datatypes.TableColumnData;
 
 import java.awt.*;
 import java.awt.geom.Rectangle2D;
@@ -118,12 +118,12 @@ public class TableToTextROIAlgorithm extends JIPipeSimpleIteratingAlgorithm {
         JIPipeExpressionVariablesMap variables = new JIPipeExpressionVariablesMap();
         variables.putAnnotations(iterationStep.getMergedTextAnnotations());
 
-        TableColumn colX = columnX.pickOrGenerateColumn(table, variables);
-        TableColumn colY = columnY.pickOrGenerateColumn(table, variables);
-        TableColumn colZ = columnZ.pickOrGenerateColumn(table, variables);
-        TableColumn colC = columnC.pickOrGenerateColumn(table, variables);
-        TableColumn colT = columnT.pickOrGenerateColumn(table, variables);
-        TableColumn colText = columnText.pickOrGenerateColumn(table, variables);
+        TableColumnData colX = columnX.pickOrGenerateColumn(table, variables);
+        TableColumnData colY = columnY.pickOrGenerateColumn(table, variables);
+        TableColumnData colZ = columnZ.pickOrGenerateColumn(table, variables);
+        TableColumnData colC = columnC.pickOrGenerateColumn(table, variables);
+        TableColumnData colT = columnT.pickOrGenerateColumn(table, variables);
+        TableColumnData colText = columnText.pickOrGenerateColumn(table, variables);
 
         ensureColumnExists(colX, table, "X1");
         ensureColumnExists(colY, table, "Y1");
@@ -185,7 +185,7 @@ public class TableToTextROIAlgorithm extends JIPipeSimpleIteratingAlgorithm {
         iterationStep.addOutputData(getFirstOutputSlot(), rois, progressInfo);
     }
 
-    private void ensureColumnExists(TableColumn column, ResultsTableData table, String name) {
+    private void ensureColumnExists(TableColumnData column, ResultsTableData table, String name) {
         if (column == null) {
             throw new JIPipeValidationRuntimeException(new JIPipeValidationReportEntry(JIPipeValidationReportEntryLevel.Error,
                     new GraphNodeValidationReportContext(this),

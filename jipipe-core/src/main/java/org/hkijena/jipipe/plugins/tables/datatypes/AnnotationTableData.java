@@ -34,11 +34,11 @@ public class AnnotationTableData extends ResultsTableData {
     public AnnotationTableData() {
     }
 
-    public AnnotationTableData(Map<String, TableColumn> columns) {
+    public AnnotationTableData(Map<String, TableColumnData> columns) {
         super(columns);
     }
 
-    public AnnotationTableData(Collection<TableColumn> columns) {
+    public AnnotationTableData(Collection<TableColumnData> columns) {
         super(columns);
     }
 

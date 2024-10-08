@@ -83,7 +83,7 @@ public class ApplyExpressionToColumnsAlgorithm extends JIPipeSimpleIteratingAlgo
     @Override
     protected void runIteration(JIPipeSingleIterationStep iterationStep, JIPipeIterationContext iterationContext, JIPipeGraphNodeRunContext runContext, JIPipeProgressInfo progressInfo) {
         ResultsTableData input = iterationStep.getInputData(getFirstInputSlot(), ResultsTableData.class, progressInfo);
-        List<TableColumn> resultColumns = new ArrayList<>();
+        List<TableColumnData> resultColumns = new ArrayList<>();
         JIPipeExpressionVariablesMap expressionVariables = new JIPipeExpressionVariablesMap();
         Map<String, String> annotationsMap = JIPipeTextAnnotation.annotationListToMap(iterationStep.getMergedTextAnnotations().values(), JIPipeTextAnnotationMergeMode.OverwriteExisting);
         expressionVariables.set("annotations", annotationsMap);
@@ -94,7 +94,7 @@ public class ApplyExpressionToColumnsAlgorithm extends JIPipeSimpleIteratingAlgo
             }
         }
         for (int col = 0; col < input.getColumnCount(); col++) {
-            TableColumn column = input.getColumnReference(col);
+            TableColumnData column = input.getColumnReference(col);
             if (column.isNumeric()) {
                 expressionVariables.set(column.getLabel(), Doubles.asList(column.getDataAsDouble(column.getRows())));
             } else {
@@ -120,9 +120,9 @@ public class ApplyExpressionToColumnsAlgorithm extends JIPipeSimpleIteratingAlgo
             expressionVariables.set("num_cols", input.getColumnCount());
             expressionVariables.set("values", values);
             Object result = processor.getParameter().evaluate(expressionVariables);
-            TableColumn resultColumn;
+            TableColumnData resultColumn;
             if (result instanceof Number) {
-                resultColumn = new DoubleArrayTableColumn(new double[]{((Number) result).doubleValue()}, processor.getOutput());
+                resultColumn = new DoubleArrayTableColumnData(new double[]{((Number) result).doubleValue()}, processor.getOutput());
             } else if (result instanceof Collection) {
                 if (((Collection<?>) result).stream().allMatch(v -> v instanceof Number)) {
                     double[] data = new double[((Collection<?>) result).size()];
@@ -131,7 +131,7 @@ public class ApplyExpressionToColumnsAlgorithm extends JIPipeSimpleIteratingAlgo
                         data[i] = ((Number) o).doubleValue();
                         ++i;
                     }
-                    resultColumn = new DoubleArrayTableColumn(data, processor.getOutput());
+                    resultColumn = new DoubleArrayTableColumnData(data, processor.getOutput());
                 } else {
                     String[] data = new String[((Collection<?>) result).size()];
                     int i = 0;
@@ -139,12 +139,12 @@ public class ApplyExpressionToColumnsAlgorithm extends JIPipeSimpleIteratingAlgo
                         data[i] = StringUtils.nullToEmpty(o);
                         ++i;
                     }
-                    resultColumn = new StringArrayTableColumn(data, processor.getOutput());
+                    resultColumn = new StringArrayTableColumnData(data, processor.getOutput());
                 }
             } else {
-                resultColumn = new StringArrayTableColumn(new String[]{StringUtils.nullToEmpty(result)}, processor.getOutput());
+                resultColumn = new StringArrayTableColumnData(new String[]{StringUtils.nullToEmpty(result)}, processor.getOutput());
             }
-            resultColumns.add(new RelabeledTableColumn(resultColumn, processor.getOutput()));
+            resultColumns.add(new RelabeledTableColumnData(resultColumn, processor.getOutput()));
         }
 
         // Combine into one table

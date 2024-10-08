@@ -36,7 +36,7 @@ import org.hkijena.jipipe.plugins.expressions.variables.JIPipeTextAnnotationsExp
 import org.hkijena.jipipe.plugins.imagejdatatypes.datatypes.greyscale.ImagePlusGreyscale32FData;
 import org.hkijena.jipipe.plugins.imagejdatatypes.util.ImageJUtils;
 import org.hkijena.jipipe.plugins.tables.datatypes.ResultsTableData;
-import org.hkijena.jipipe.plugins.tables.datatypes.TableColumn;
+import org.hkijena.jipipe.plugins.tables.datatypes.TableColumnData;
 
 @SetJIPipeDocumentation(name = "Replace label values by table", description = "Replaces label values by a mapping as specified in a table. The table should contain two columns, one for the old label and a second column defining the replacement value.")
 @ConfigureJIPipeNode(menuPath = "Labels", nodeTypeCategory = ImagesNodeTypeCategory.class)
@@ -114,8 +114,8 @@ public class ReplaceLabelsByTableAlgorithm extends JIPipeIteratingAlgorithm {
         ResultsTableData mappingsTable = iterationStep.getInputData("Mappings", ResultsTableData.class, progressInfo);
 
         TFloatFloatMap mapping = new TFloatFloatHashMap();
-        TableColumn mappingOld = oldLabelColumn.pickOrGenerateColumn(mappingsTable, new JIPipeExpressionVariablesMap());
-        TableColumn mappingNew = newLabelColumn.pickOrGenerateColumn(mappingsTable, new JIPipeExpressionVariablesMap());
+        TableColumnData mappingOld = oldLabelColumn.pickOrGenerateColumn(mappingsTable, new JIPipeExpressionVariablesMap());
+        TableColumnData mappingNew = newLabelColumn.pickOrGenerateColumn(mappingsTable, new JIPipeExpressionVariablesMap());
 
         for (int i = 0; i < mappingOld.getRows(); i++) {
             mapping.put((float) mappingOld.getRowAsDouble(i), (float) mappingNew.getRowAsDouble(i));

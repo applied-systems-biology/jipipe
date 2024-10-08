@@ -41,7 +41,7 @@ import org.hkijena.jipipe.plugins.imagejdatatypes.datatypes.greyscale.ImagePlusG
 import org.hkijena.jipipe.plugins.imagejdatatypes.util.ImageJUtils;
 import org.hkijena.jipipe.plugins.parameters.library.primitives.optional.OptionalDataAnnotationNameParameter;
 import org.hkijena.jipipe.plugins.parameters.library.primitives.optional.OptionalTextAnnotationNameParameter;
-import org.hkijena.jipipe.plugins.tables.datatypes.DoubleArrayTableColumn;
+import org.hkijena.jipipe.plugins.tables.datatypes.DoubleArrayTableColumnData;
 import org.hkijena.jipipe.plugins.tables.datatypes.ResultsTableData;
 import org.hkijena.jipipe.utils.StringUtils;
 
@@ -249,8 +249,8 @@ public class ExtractROIProfileAlgorithm extends JIPipeIteratingAlgorithm {
             lengthValues[i] = i * xInc;
         }
 
-        return new ResultsTableData(Arrays.asList(new DoubleArrayTableColumn(lengthValues, "Distance"),
-                new DoubleArrayTableColumn(values, "Intensity")));
+        return new ResultsTableData(Arrays.asList(new DoubleArrayTableColumnData(lengthValues, "Distance"),
+                new DoubleArrayTableColumnData(values, "Intensity")));
     }
 
     private ResultsTableData getRowAverageProfile(Rectangle rect, Calibration cal, ImageProcessor ip) {
@@ -280,8 +280,8 @@ public class ExtractROIProfileAlgorithm extends JIPipeIteratingAlgorithm {
             lengthValues[i] = i * xInc;
         }
 
-        return new ResultsTableData(Arrays.asList(new DoubleArrayTableColumn(lengthValues, "Distance"),
-                new DoubleArrayTableColumn(values, "Intensity")));
+        return new ResultsTableData(Arrays.asList(new DoubleArrayTableColumnData(lengthValues, "Distance"),
+                new DoubleArrayTableColumnData(values, "Intensity")));
     }
 
     private ResultsTableData getColumnAverageProfile(Rectangle rect, Calibration cal, ImageProcessor ip) {
@@ -309,8 +309,8 @@ public class ExtractROIProfileAlgorithm extends JIPipeIteratingAlgorithm {
             lengthValues[i] = i * xInc;
         }
 
-        return new ResultsTableData(Arrays.asList(new DoubleArrayTableColumn(lengthValues, "Distance"),
-                new DoubleArrayTableColumn(values, "Intensity")));
+        return new ResultsTableData(Arrays.asList(new DoubleArrayTableColumnData(lengthValues, "Distance"),
+                new DoubleArrayTableColumnData(values, "Intensity")));
     }
 
     /**
@@ -372,8 +372,8 @@ public class ExtractROIProfileAlgorithm extends JIPipeIteratingAlgorithm {
         }
 
         // Calculate x value
-        return new ResultsTableData(Arrays.asList(new DoubleArrayTableColumn(lengthValues.toArray(), "Distance"),
-                new DoubleArrayTableColumn(values.toArray(), "Intensity")));
+        return new ResultsTableData(Arrays.asList(new DoubleArrayTableColumnData(lengthValues.toArray(), "Distance"),
+                new DoubleArrayTableColumnData(values.toArray(), "Intensity")));
     }
 
     private ResultsTableData getWideLineProfile(ImagePlus imp, int lineWidth, Calibration cal) {
@@ -408,8 +408,8 @@ public class ExtractROIProfileAlgorithm extends JIPipeIteratingAlgorithm {
             lengthValues[i] = i * xInc;
         }
 
-        return new ResultsTableData(Arrays.asList(new DoubleArrayTableColumn(lengthValues, "Distance"),
-                new DoubleArrayTableColumn(values, "Intensity")));
+        return new ResultsTableData(Arrays.asList(new DoubleArrayTableColumnData(lengthValues, "Distance"),
+                new DoubleArrayTableColumnData(values, "Intensity")));
     }
 
     public enum RectangleMode {

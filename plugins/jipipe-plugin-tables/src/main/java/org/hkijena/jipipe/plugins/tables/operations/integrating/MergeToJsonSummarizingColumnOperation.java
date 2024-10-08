@@ -14,9 +14,9 @@
 package org.hkijena.jipipe.plugins.tables.operations.integrating;
 
 import org.hkijena.jipipe.plugins.tables.SummarizingColumnOperation;
-import org.hkijena.jipipe.plugins.tables.datatypes.DoubleArrayTableColumn;
-import org.hkijena.jipipe.plugins.tables.datatypes.StringArrayTableColumn;
-import org.hkijena.jipipe.plugins.tables.datatypes.TableColumn;
+import org.hkijena.jipipe.plugins.tables.datatypes.DoubleArrayTableColumnData;
+import org.hkijena.jipipe.plugins.tables.datatypes.StringArrayTableColumnData;
+import org.hkijena.jipipe.plugins.tables.datatypes.TableColumnData;
 import org.hkijena.jipipe.utils.json.JsonUtils;
 
 import java.util.HashSet;
@@ -27,7 +27,7 @@ import java.util.Set;
  */
 public class MergeToJsonSummarizingColumnOperation implements SummarizingColumnOperation {
     @Override
-    public TableColumn apply(TableColumn column) {
+    public TableColumnData apply(TableColumnData column) {
         Set<Object> values = new HashSet<>();
         for (int i = 0; i < column.getRows(); i++) {
             if (column.isNumeric())
@@ -36,17 +36,17 @@ public class MergeToJsonSummarizingColumnOperation implements SummarizingColumnO
                 values.add(column.getRowAsString(i));
         }
         if (values.size() > 0) {
-            return new StringArrayTableColumn(new String[]{JsonUtils.toJsonString(values)}, column.getLabel());
+            return new StringArrayTableColumnData(new String[]{JsonUtils.toJsonString(values)}, column.getLabel());
         } else if (!values.isEmpty()) {
             if (column.isNumeric())
-                return new DoubleArrayTableColumn(new double[]{column.getRowAsDouble(0)}, column.getLabel());
+                return new DoubleArrayTableColumnData(new double[]{column.getRowAsDouble(0)}, column.getLabel());
             else
-                return new StringArrayTableColumn(new String[]{column.getRowAsString(0)}, column.getLabel());
+                return new StringArrayTableColumnData(new String[]{column.getRowAsString(0)}, column.getLabel());
         } else {
             if (column.isNumeric())
-                return new DoubleArrayTableColumn(new double[]{0}, column.getLabel());
+                return new DoubleArrayTableColumnData(new double[]{0}, column.getLabel());
             else
-                return new StringArrayTableColumn(new String[]{""}, column.getLabel());
+                return new StringArrayTableColumnData(new String[]{""}, column.getLabel());
         }
     }
 }

@@ -43,8 +43,8 @@ import org.hkijena.jipipe.plugins.parameters.library.primitives.optional.Optiona
 import org.hkijena.jipipe.plugins.parameters.library.references.JIPipeDataInfoRef;
 import org.hkijena.jipipe.plugins.parameters.library.references.JIPipeDataParameterSettings;
 import org.hkijena.jipipe.plugins.tables.datatypes.ResultsTableData;
-import org.hkijena.jipipe.plugins.tables.datatypes.TableColumn;
-import org.hkijena.jipipe.plugins.tables.datatypes.ZeroTableColumn;
+import org.hkijena.jipipe.plugins.tables.datatypes.TableColumnData;
+import org.hkijena.jipipe.plugins.tables.datatypes.ZeroTableColumnData;
 import org.hkijena.jipipe.utils.ReflectionUtils;
 
 @SetJIPipeDocumentation(name = "Convert table to image", description = "Converts a table of pixel information into an image")
@@ -101,13 +101,13 @@ public class TableToImageAlgorithm extends JIPipeSimpleIteratingAlgorithm {
         // Standard columns
         TableColumnSourceExpressionParameter xColumnSource = columnAssignment.getValue("x", TableColumnSourceExpressionParameter.class);
         TableColumnSourceExpressionParameter yColumnSource = columnAssignment.getValue("y", TableColumnSourceExpressionParameter.class);
-        TableColumn xColumn = xColumnSource.pickOrGenerateColumn(table, new JIPipeExpressionVariablesMap());
-        TableColumn yColumn = yColumnSource.pickOrGenerateColumn(table, new JIPipeExpressionVariablesMap());
+        TableColumnData xColumn = xColumnSource.pickOrGenerateColumn(table, new JIPipeExpressionVariablesMap());
+        TableColumnData yColumn = yColumnSource.pickOrGenerateColumn(table, new JIPipeExpressionVariablesMap());
 
         // Extended columns
-        TableColumn zColumn = new ZeroTableColumn();
-        TableColumn cColumn = new ZeroTableColumn();
-        TableColumn tColumn = new ZeroTableColumn();
+        TableColumnData zColumn = new ZeroTableColumnData();
+        TableColumnData cColumn = new ZeroTableColumnData();
+        TableColumnData tColumn = new ZeroTableColumnData();
 
         if (typeInfo.numDimensions() > 2) {
             TableColumnSourceExpressionParameter zColumnSource = columnAssignment.getValue("z", TableColumnSourceExpressionParameter.class);
@@ -122,7 +122,7 @@ public class TableToImageAlgorithm extends JIPipeSimpleIteratingAlgorithm {
 
         if (colorSpace instanceof GreyscaleColorSpace) {
             TableColumnSourceExpressionParameter valueColumnSource = columnAssignment.getValue("value", TableColumnSourceExpressionParameter.class);
-            TableColumn valueColumn = valueColumnSource.pickOrGenerateColumn(table, new JIPipeExpressionVariablesMap());
+            TableColumnData valueColumn = valueColumnSource.pickOrGenerateColumn(table, new JIPipeExpressionVariablesMap());
 
             ImageProcessor lastProcessor = null;
             int lastZ = -1;
@@ -152,7 +152,7 @@ public class TableToImageAlgorithm extends JIPipeSimpleIteratingAlgorithm {
             }
         } else {
             int[] buffer = new int[colorSpace.getNChannels()];
-            TableColumn[] channelColumns = new TableColumn[colorSpace.getNChannels()];
+            TableColumnData[] channelColumns = new TableColumnData[colorSpace.getNChannels()];
             for (int i = 0; i < colorSpace.getNChannels(); i++) {
                 channelColumns[i] = columnAssignment.getValue(colorSpace.getChannelName(i), TableColumnSourceExpressionParameter.class).pickOrGenerateColumn(table, new JIPipeExpressionVariablesMap());
             }
@@ -201,7 +201,7 @@ public class TableToImageAlgorithm extends JIPipeSimpleIteratingAlgorithm {
     }
 
     private int findSizeFromTable(ResultsTableData table, TableColumnSourceExpressionParameter columnSource) {
-        TableColumn tableColumn = columnSource.pickOrGenerateColumn(table, new JIPipeExpressionVariablesMap());
+        TableColumnData tableColumn = columnSource.pickOrGenerateColumn(table, new JIPipeExpressionVariablesMap());
         int max = 0;
         for (int i = 0; i < tableColumn.getRows(); i++) {
             max = Math.max(max, (int) tableColumn.getRowAsDouble(i));
