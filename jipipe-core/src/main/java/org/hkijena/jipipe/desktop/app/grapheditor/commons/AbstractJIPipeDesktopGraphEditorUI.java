@@ -239,6 +239,15 @@ public abstract class AbstractJIPipeDesktopGraphEditorUI extends JIPipeDesktopWo
 
             toolBar.addSeparator();
         }
+        {
+            JToggleButton lockAnnotationsToggle = new JToggleButton(UIUtils.getIconFromResources("actions/lock-comments.png"));
+            UIUtils.makeButtonFlatWithSize(lockAnnotationsToggle, 32, 32);
+            lockAnnotationsToggle.setToolTipText("If enabled, you will not be able to accidentally select or modify graph annotations");
+            lockAnnotationsToggle.addActionListener(e -> {
+                canvasUI.setGraphAnnotationsLocked(lockAnnotationsToggle.isSelected());
+            });
+            toolBar.add(lockAnnotationsToggle);
+        }
         initializeCommonToolbarLayout();
         initializeCommonToolbarExport();
         toolBar.addSeparator();

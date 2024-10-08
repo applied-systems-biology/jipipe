@@ -249,7 +249,7 @@ public class JIPipeDesktopDataViewerWindow extends JFrame implements JIPipeDeskt
         if(dataBrowser != null) {
             JIPipeDesktopRibbon.Task exportTask = ribbon.addTask("Export");
             JIPipeDesktopRibbon.Band dataBand = exportTask.addBand("Data");
-            dataBand.ad
+//            dataBand.ad
         }
     }
 
