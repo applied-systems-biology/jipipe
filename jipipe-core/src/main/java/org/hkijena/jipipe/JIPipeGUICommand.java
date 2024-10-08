@@ -89,7 +89,7 @@ public class JIPipeGUICommand implements Command {
         } catch (Exception e) {
             e.printStackTrace();
             if (!extensionSettings.isSilent())
-                UIUtils.openErrorDialog(new JIPipeDesktopDummyWorkbench(), null, e);
+                UIUtils.showErrorDialog(new JIPipeDesktopDummyWorkbench(), null, e);
             return;
         }
 

@@ -1,5 +1,6 @@
 package org.hkijena.jipipe.api.data.browser;
 
+import org.hkijena.jipipe.api.JIPipeProgressInfo;
 import org.hkijena.jipipe.api.data.JIPipeDataTable;
 import org.hkijena.jipipe.api.data.serialization.JIPipeDataTableInfo;
 import org.hkijena.jipipe.api.events.AbstractJIPipeEvent;
@@ -10,12 +11,6 @@ import java.util.List;
 import java.util.concurrent.Future;
 
 public interface JIPipeDataTableBrowser extends Closeable, AutoCloseable {
-
-    /**
-     * Downloads the full data table
-     * @return the data table
-     */
-    Future<JIPipeDataTable> getDataTable();
 
     /**
      * Creates a data browser
@@ -39,6 +34,12 @@ public interface JIPipeDataTableBrowser extends Closeable, AutoCloseable {
      * @return the info
      */
     Future<JIPipeDataTableInfo> getDataTableInfo();
+
+    /**
+     * Gets the whole data table
+     * @return the data table
+     */
+    Future<JIPipeDataTable> getDataTable(JIPipeProgressInfo progressInfo);
 
     /*
     Future<List<String>> getDataAnnotationColumns();

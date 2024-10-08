@@ -72,7 +72,7 @@ public class StringDataViewer extends JIPipeDesktopDataViewer {
             Files.write(outputPath, editorPane.getText().getBytes(StandardCharsets.UTF_8));
             Desktop.getDesktop().open(outputPath.toFile());
         } catch (IOException e) {
-            UIUtils.openErrorDialog(getDesktopWorkbench(), this, e);
+            UIUtils.showErrorDialog(getDesktopWorkbench(), this, e);
         }
     }
 

@@ -1,6 +1,5 @@
 package org.hkijena.jipipe.plugins.filesystem.desktop;
 
-import org.hkijena.jipipe.api.JIPipeProgressInfo;
 import org.hkijena.jipipe.desktop.api.dataviewer.JIPipeDesktopDataViewer;
 import org.hkijena.jipipe.desktop.api.dataviewer.JIPipeDesktopDataViewerWindow;
 import org.hkijena.jipipe.desktop.commons.components.JIPipeDesktopFancyReadOnlyTextField;
@@ -9,7 +8,6 @@ import org.hkijena.jipipe.desktop.commons.components.ribbon.JIPipeDesktopLargeBu
 import org.hkijena.jipipe.desktop.commons.components.ribbon.JIPipeDesktopRibbon;
 import org.hkijena.jipipe.plugins.filesystem.dataypes.PathData;
 import org.hkijena.jipipe.utils.UIUtils;
-import org.hkijena.jipipe.utils.ui.JIPipeDesktopDockPanel;
 
 import javax.swing.*;
 import java.awt.*;
@@ -51,7 +49,7 @@ public class PathDataViewer extends JIPipeDesktopDataViewer {
         try {
             Desktop.getDesktop().open(new File(currentPath).getParentFile());
         } catch (IOException e) {
-            UIUtils.openErrorDialog(getDesktopWorkbench(), this, e);
+            UIUtils.showErrorDialog(getDesktopWorkbench(), this, e);
         }
     }
 
@@ -59,7 +57,7 @@ public class PathDataViewer extends JIPipeDesktopDataViewer {
         try {
             Desktop.getDesktop().open(new File(currentPath));
         } catch (IOException e) {
-            UIUtils.openErrorDialog(getDesktopWorkbench(), this, e);
+            UIUtils.showErrorDialog(getDesktopWorkbench(), this, e);
         }
     }
 

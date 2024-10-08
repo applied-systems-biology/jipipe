@@ -1,5 +1,6 @@
 package org.hkijena.jipipe.api.data.browser;
 
+import org.hkijena.jipipe.api.JIPipeProgressInfo;
 import org.hkijena.jipipe.api.data.JIPipeDataTable;
 import org.hkijena.jipipe.api.data.serialization.JIPipeDataTableInfo;
 import org.hkijena.jipipe.utils.InstantFuture;
@@ -15,7 +16,7 @@ public class JIPipeLocalDataTableBrowser implements JIPipeDataTableBrowser {
     }
 
     @Override
-    public Future<JIPipeDataTable> getDataTable() {
+    public Future<JIPipeDataTable> getDataTable(JIPipeProgressInfo progressInfo) {
         return new InstantFuture<>(dataTable);
     }
 

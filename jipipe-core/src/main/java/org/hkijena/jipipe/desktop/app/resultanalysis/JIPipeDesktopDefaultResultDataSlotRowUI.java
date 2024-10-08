@@ -246,7 +246,7 @@ public class JIPipeDesktopDefaultResultDataSlotRowUI extends JIPipeDesktopResult
                 };
                 JIPipeDesktopRunExecuteUI.runInDialog(getDesktopWorkbench(), getDesktopWorkbench().getWindow(), runnable);
             } catch (Exception e) {
-                UIUtils.openErrorDialog(getDesktopWorkbench(), getDesktopWorkbench().getWindow(), e);
+                UIUtils.showErrorDialog(getDesktopWorkbench(), getDesktopWorkbench().getWindow(), e);
             }
         }
     }

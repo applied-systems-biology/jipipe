@@ -52,7 +52,7 @@ public class CLIJControlPanelJIPipeDesktopMenuExtension extends JIPipeDesktopMen
                     false);
             getDesktopWorkbench().getDocumentTabPane().switchToLastTab();
         } catch (Exception e) {
-            UIUtils.openErrorDialog(getDesktopWorkbench(), this, new JIPipeValidationRuntimeException(
+            UIUtils.showErrorDialog(getDesktopWorkbench(), this, new JIPipeValidationRuntimeException(
                     e,
                     "Could not open CLIJ2 control panel!",
                     "This might indicate that your system is missing an essential library.",

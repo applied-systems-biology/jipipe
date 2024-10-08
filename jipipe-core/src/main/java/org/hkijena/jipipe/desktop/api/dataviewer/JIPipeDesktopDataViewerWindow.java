@@ -5,20 +5,29 @@ import org.hkijena.jipipe.api.AbstractJIPipeRunnable;
 import org.hkijena.jipipe.api.JIPipeWorkbench;
 import org.hkijena.jipipe.api.annotation.JIPipeTextAnnotation;
 import org.hkijena.jipipe.api.data.JIPipeData;
+import org.hkijena.jipipe.api.data.JIPipeDataTable;
 import org.hkijena.jipipe.api.data.browser.JIPipeDataBrowser;
+import org.hkijena.jipipe.api.data.browser.JIPipeDataTableBrowser;
 import org.hkijena.jipipe.api.data.browser.JIPipeLocalDataTableBrowser;
 import org.hkijena.jipipe.api.data.serialization.JIPipeDataTableInfo;
 import org.hkijena.jipipe.api.data.serialization.JIPipeDataTableRowInfo;
+import org.hkijena.jipipe.api.data.storage.JIPipeFileSystemWriteDataStorage;
+import org.hkijena.jipipe.api.data.storage.JIPipeZIPWriteDataStorage;
 import org.hkijena.jipipe.api.run.JIPipeRunnable;
 import org.hkijena.jipipe.api.run.JIPipeRunnableQueue;
 import org.hkijena.jipipe.desktop.app.JIPipeDesktopWorkbench;
 import org.hkijena.jipipe.desktop.app.JIPipeDesktopWorkbenchAccess;
+import org.hkijena.jipipe.desktop.app.running.JIPipeDesktopRunExecuteUI;
 import org.hkijena.jipipe.desktop.app.running.JIPipeDesktopRunnableQueueButton;
+import org.hkijena.jipipe.desktop.commons.components.ribbon.JIPipeDesktopLargeButtonRibbonAction;
 import org.hkijena.jipipe.desktop.commons.components.ribbon.JIPipeDesktopRibbon;
 import org.hkijena.jipipe.desktop.commons.components.ribbon.JIPipeDesktopSmallButtonRibbonAction;
 import org.hkijena.jipipe.desktop.commons.components.window.JIPipeDesktopAlwaysOnTopToggle;
+import org.hkijena.jipipe.plugins.settings.JIPipeFileChooserApplicationSettings;
 import org.hkijena.jipipe.plugins.tables.datatypes.ResultsTableData;
+import org.hkijena.jipipe.utils.PathUtils;
 import org.hkijena.jipipe.utils.ReflectionUtils;
+import org.hkijena.jipipe.utils.StringUtils;
 import org.hkijena.jipipe.utils.UIUtils;
 import org.hkijena.jipipe.utils.ui.JIPipeDesktopDockPanel;
 import org.jdesktop.swingx.JXStatusBar;
@@ -31,6 +40,7 @@ import java.awt.event.ActionEvent;
 import java.awt.event.InputEvent;
 import java.awt.event.KeyEvent;
 import java.io.IOException;
+import java.nio.file.Path;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.ExecutionException;
@@ -249,8 +259,38 @@ public class JIPipeDesktopDataViewerWindow extends JFrame implements JIPipeDeskt
         if(dataBrowser != null) {
             JIPipeDesktopRibbon.Task exportTask = ribbon.addTask("Export");
             JIPipeDesktopRibbon.Band dataBand = exportTask.addBand("Data");
-//            dataBand.ad
+            dataBand.add(new JIPipeDesktopLargeButtonRibbonAction("As files", "Exports the data as file(s) according to a custom-set name", UIUtils.getIcon32FromResources("actions/document-export.png"), this::exportAsFilesCustom));
+            dataBand.add(new JIPipeDesktopLargeButtonRibbonAction("Into directory", "Exports the data as file(s) into a directory using JIPipe's standard naming", UIUtils.getIcon32FromResources("actions/folder-new.png"), this::exportAsFilesIntoDirectory));
+            if(dataTableBrowser != null) {
+                JIPipeDesktopRibbon.Band tableBand = exportTask.addBand("Data table (" + StringUtils.formatPluralS(dataTableInfo.getRowCount(), "row") + ")");
+                tableBand.add(new JIPipeDesktopLargeButtonRibbonAction("As *.zip", "Exports the data table into a *.zip file", UIUtils.getIcon32FromResources("actions/document-export.png"), this::exportDataTableToZip));
+                tableBand.add(new JIPipeDesktopLargeButtonRibbonAction("Into directory", "Exports the data as file(s) into a directory using JIPipe's standard naming", UIUtils.getIcon32FromResources("actions/folder-new.png"), this::exportDataTableToFolder));
+            }
         }
+    }
+
+    private void exportDataTableToFolder() {
+        Path path = JIPipeFileChooserApplicationSettings.saveDirectory(this, JIPipeFileChooserApplicationSettings.LastDirectoryKey.Data, "Export data table into directory");
+        ExportDataTableIntoDirectoryRun run = new ExportDataTableIntoDirectoryRun(dataTableBrowser, path);
+        JIPipeDesktopRunExecuteUI.runInDialog(getDesktopWorkbench(), this, run);
+    }
+
+    private void exportDataTableToZip() {
+        Path path = JIPipeFileChooserApplicationSettings.saveFile(this, JIPipeFileChooserApplicationSettings.LastDirectoryKey.Data, "Export data table", UIUtils.EXTENSION_FILTER_ZIP);
+        ExportDataTableToZipRun run = new ExportDataTableToZipRun(dataTableBrowser, path);
+        JIPipeDesktopRunExecuteUI.runInDialog(getDesktopWorkbench(), this, run);
+    }
+
+    private void exportAsFilesIntoDirectory() {
+        Path path = JIPipeFileChooserApplicationSettings.saveDirectory(this, JIPipeFileChooserApplicationSettings.LastDirectoryKey.Data, "Export data into directory");
+        ExportDataIntoDirectoryRun run = new ExportDataIntoDirectoryRun(dataBrowser, path);
+        JIPipeDesktopRunExecuteUI.runInDialog(getDesktopWorkbench(), this, run);
+    }
+
+    private void exportAsFilesCustom() {
+        Path path = JIPipeFileChooserApplicationSettings.saveFile(this, JIPipeFileChooserApplicationSettings.LastDirectoryKey.Data, "Export data");
+        ExportDataWithCustomNameRun run = new ExportDataWithCustomNameRun(dataBrowser, path);
+        JIPipeDesktopRunExecuteUI.runInDialog(getDesktopWorkbench(), this, run);
     }
 
     private void goToRow(int row, int dataAnnotationColumn) {
@@ -413,6 +453,110 @@ public class JIPipeDesktopDataViewerWindow extends JFrame implements JIPipeDeskt
 
         public int getCurrentDataAnnotationColumn() {
             return currentDataAnnotationColumn;
+        }
+    }
+
+    private static class ExportDataIntoDirectoryRun extends AbstractJIPipeRunnable{
+        private final JIPipeDataBrowser dataBrowser;
+        private final Path path;
+
+        public ExportDataIntoDirectoryRun(JIPipeDataBrowser dataBrowser, Path path) {
+            this.dataBrowser = dataBrowser;
+            this.path = path;
+        }
+
+        @Override
+        public String getTaskLabel() {
+            return "Export data into directory";
+        }
+
+        @Override
+        public void run() {
+            PathUtils.createDirectories(path);
+            try {
+                JIPipeData data = dataBrowser.getData(JIPipeData.class, getProgressInfo().resolve("Download data")).get();
+                data.exportData(new JIPipeFileSystemWriteDataStorage(getProgressInfo(), path), "data", false, getProgressInfo().resolve("Export"));
+            } catch (InterruptedException | ExecutionException e) {
+                throw new RuntimeException(e);
+            }
+        }
+    }
+
+    private static class ExportDataWithCustomNameRun extends AbstractJIPipeRunnable{
+        private final JIPipeDataBrowser dataBrowser;
+        private final Path path;
+
+        public ExportDataWithCustomNameRun(JIPipeDataBrowser dataBrowser, Path path) {
+            this.dataBrowser = dataBrowser;
+            this.path = path;
+        }
+
+        @Override
+        public String getTaskLabel() {
+            return "Export data into directory";
+        }
+
+        @Override
+        public void run() {
+            PathUtils.createDirectories(path.getParent());
+            try {
+                JIPipeData data = dataBrowser.getData(JIPipeData.class, getProgressInfo().resolve("Download data")).get();
+                data.exportData(new JIPipeFileSystemWriteDataStorage(getProgressInfo(), path.getParent()), path.getFileName().toString(), false, getProgressInfo().resolve("Export"));
+            } catch (InterruptedException | ExecutionException e) {
+                throw new RuntimeException(e);
+            }
+        }
+    }
+
+    private static class ExportDataTableIntoDirectoryRun extends AbstractJIPipeRunnable{
+        private final JIPipeDataTableBrowser dataTableBrowser;
+        private final Path path;
+
+        public ExportDataTableIntoDirectoryRun(JIPipeDataTableBrowser dataTableBrowser, Path path) {
+            this.dataTableBrowser = dataTableBrowser;
+            this.path = path;
+        }
+
+        @Override
+        public String getTaskLabel() {
+            return "Export data table into directory";
+        }
+
+        @Override
+        public void run() {
+            PathUtils.createDirectories(path);
+            try {
+                JIPipeDataTable dataTable = dataTableBrowser.getDataTable(getProgressInfo().resolve("Download data table")).get();
+                dataTable.exportData(new JIPipeFileSystemWriteDataStorage(getProgressInfo(), path), "data", false, getProgressInfo().resolve("Export"));
+            } catch (InterruptedException | ExecutionException e) {
+                throw new RuntimeException(e);
+            }
+        }
+    }
+
+    private static class ExportDataTableToZipRun extends AbstractJIPipeRunnable{
+        private final JIPipeDataTableBrowser dataTableBrowser;
+        private final Path path;
+
+        public ExportDataTableToZipRun(JIPipeDataTableBrowser dataTableBrowser, Path path) {
+            this.dataTableBrowser = dataTableBrowser;
+            this.path = path;
+        }
+
+        @Override
+        public String getTaskLabel() {
+            return "Export data table to ZIP";
+        }
+
+        @Override
+        public void run() {
+            PathUtils.createDirectories(path.getParent());
+            try (JIPipeZIPWriteDataStorage storage = new JIPipeZIPWriteDataStorage(getProgressInfo().resolve("Storage"), path)) {
+                JIPipeDataTable dataTable = dataTableBrowser.getDataTable(getProgressInfo().resolve("Download data table")).get();
+                dataTable.exportData(storage, "data", false, getProgressInfo().resolve("Export"));
+            } catch (IOException | InterruptedException | ExecutionException e) {
+                throw new RuntimeException(e);
+            }
         }
     }
 }

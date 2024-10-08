@@ -510,7 +510,7 @@ public class JIPipeDesktopProjectWindow extends JFrame {
             // Remove tmp file
             Files.delete(tempFile);
         } catch (IOException e) {
-            UIUtils.openErrorDialog(getProjectUI(), this, new JIPipeValidationRuntimeException(e,
+            UIUtils.showErrorDialog(getProjectUI(), this, new JIPipeValidationRuntimeException(e,
                     "Error during saving!",
                     "While saving the project into '" + savePath + "'. Any existing file was not changed or overwritten." + " The issue cannot be determined. Please contact the JIPipe authors.",
                     "Please check if you have write access to the temporary directory and the target directory. " +

@@ -187,7 +187,7 @@ public class CLIJControlPanel extends JIPipeDesktopWorkbenchPanel {
             CLIJPluginApplicationSettings.initializeCLIJ(getDesktopWorkbench().getContext(), true);
             getDesktopWorkbench().sendStatusBarText("Re-initialized GPU.");
         } catch (Exception e) {
-            UIUtils.openErrorDialog(getDesktopWorkbench(), this, e);
+            UIUtils.showErrorDialog(getDesktopWorkbench(), this, e);
         } finally {
             refresh();
         }

@@ -29,16 +29,13 @@ import org.hkijena.jipipe.desktop.app.JIPipeDesktopWorkbenchPanel;
 import org.hkijena.jipipe.desktop.app.grapheditor.commons.JIPipeDesktopGraphCanvasUI;
 import org.hkijena.jipipe.desktop.app.running.JIPipeDesktopRunExecuteUI;
 import org.hkijena.jipipe.desktop.commons.components.JIPipeDesktopParameterFormPanel;
-import org.hkijena.jipipe.desktop.commons.components.markup.JIPipeDesktopMarkdownReader;
 import org.hkijena.jipipe.desktop.commons.components.search.JIPipeDesktopSearchTextField;
 import org.hkijena.jipipe.desktop.commons.components.window.JIPipeDesktopAlwaysOnTopToggle;
 import org.hkijena.jipipe.plugins.nodetemplate.templatedownloader.NodeTemplateDownloaderRun;
 import org.hkijena.jipipe.plugins.parameters.library.markup.MarkdownText;
 import org.hkijena.jipipe.plugins.settings.JIPipeFileChooserApplicationSettings;
 import org.hkijena.jipipe.plugins.settings.JIPipeNodeTemplateApplicationSettings;
-import org.hkijena.jipipe.utils.JIPipeDesktopSplitPane;
 import org.hkijena.jipipe.utils.StringUtils;
-import org.hkijena.jipipe.utils.TooltipUtils;
 import org.hkijena.jipipe.utils.UIUtils;
 import org.hkijena.jipipe.utils.json.JsonUtils;
 import org.hkijena.jipipe.utils.search.RankedData;
@@ -309,7 +306,7 @@ public class NodeTemplateBox extends JIPipeDesktopWorkbenchPanel implements Node
             try {
                 Files.write(path, JsonUtils.toPrettyJsonString(templateJList.getSelectedValuesList()).getBytes(StandardCharsets.UTF_8));
             } catch (IOException e) {
-                UIUtils.openErrorDialog(getDesktopWorkbench(), this, e);
+                UIUtils.showErrorDialog(getDesktopWorkbench(), this, e);
             }
         }
     }
@@ -343,7 +340,7 @@ public class NodeTemplateBox extends JIPipeDesktopWorkbenchPanel implements Node
                     JIPipe.getNodeTemplates().addToGlobal(templates);
                 }
             } catch (Exception e) {
-                UIUtils.openErrorDialog(getDesktopWorkbench(), this, e);
+                UIUtils.showErrorDialog(getDesktopWorkbench(), this, e);
             }
         }
     }

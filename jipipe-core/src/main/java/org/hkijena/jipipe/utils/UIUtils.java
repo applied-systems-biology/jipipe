@@ -1225,7 +1225,7 @@ public class UIUtils {
      * @param parent    the parent component
      * @param exception the exception
      */
-    public static void openErrorDialog(JIPipeDesktopWorkbench workbench, Component parent, Exception exception) {
+    public static void showErrorDialog(JIPipeDesktopWorkbench workbench, Component parent, Exception exception) {
         JDialog dialog = new JDialog();
         dialog.setTitle("Error");
         JIPipeDesktopUserFriendlyErrorUI errorUI = new JIPipeDesktopUserFriendlyErrorUI(workbench, null, JIPipeDesktopUserFriendlyErrorUI.WITH_SCROLLING);
