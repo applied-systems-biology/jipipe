@@ -32,6 +32,9 @@ import java.util.function.BiConsumer;
  */
 public class JIPipeProgressInfo implements Cancelable {
 
+    public static final JIPipeProgressInfo SILENT = new JIPipeProgressInfo();
+    public static final JIPipeProgressInfo STDOUT = new JIPipeProgressInfo();
+
     private static final String[] SPINNER_1 = new String[]{"⠋", "⠙", "⠹", "⠸", "⠼", "⠴", "⠦", "⠧", "⠇", "⠏"};
     private final StampedLock stampedLock;
 
@@ -47,6 +50,10 @@ public class JIPipeProgressInfo implements Cancelable {
     private String cancelReason;
     private StatusUpdatedEventEmitter statusUpdatedEventEmitter;
     private JIPipeNotificationInbox notifications = new JIPipeNotificationInbox();
+
+    static {
+        STDOUT.setLogToStdOut(true);
+    }
 
     public JIPipeProgressInfo() {
         this.statusUpdatedEventEmitter = new StatusUpdatedEventEmitter();

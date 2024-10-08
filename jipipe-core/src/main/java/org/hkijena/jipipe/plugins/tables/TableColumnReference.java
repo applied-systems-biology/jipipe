@@ -15,9 +15,7 @@ package org.hkijena.jipipe.plugins.tables;
 
 import org.hkijena.jipipe.api.JIPipeProgressInfo;
 import org.hkijena.jipipe.api.data.JIPipeData;
-import org.hkijena.jipipe.api.data.JIPipeDataSource;
 import org.hkijena.jipipe.api.data.storage.JIPipeWriteDataStorage;
-import org.hkijena.jipipe.desktop.app.JIPipeDesktopWorkbench;
 import org.hkijena.jipipe.plugins.tables.datatypes.ResultsTableData;
 import org.hkijena.jipipe.plugins.tables.datatypes.TableColumn;
 
@@ -103,9 +101,4 @@ public class TableColumnReference implements TableColumn {
         return this;
     }
 
-    @Override
-    public void display(String displayName, JIPipeDesktopWorkbench desktopWorkbench, JIPipeDataSource source) {
-        ResultsTableData data = new ResultsTableData(Collections.singleton(this));
-        data.display(displayName, desktopWorkbench, source);
-    }
 }

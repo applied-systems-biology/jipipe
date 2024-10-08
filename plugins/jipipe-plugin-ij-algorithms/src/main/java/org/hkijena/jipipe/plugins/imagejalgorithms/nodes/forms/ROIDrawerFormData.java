@@ -16,7 +16,6 @@ package org.hkijena.jipipe.plugins.imagejalgorithms.nodes.forms;
 import ij.ImagePlus;
 import org.hkijena.jipipe.api.JIPipeProgressInfo;
 import org.hkijena.jipipe.api.data.JIPipeData;
-import org.hkijena.jipipe.api.data.JIPipeDataSource;
 import org.hkijena.jipipe.api.nodes.iterationstep.JIPipeMultiIterationStep;
 import org.hkijena.jipipe.api.validation.JIPipeValidationReport;
 import org.hkijena.jipipe.api.validation.JIPipeValidationReportContext;
@@ -126,11 +125,6 @@ public class ROIDrawerFormData extends FormData {
         // Initialize the viewer
         getImageViewerPanel();
         return new ROIDrawerFormData(iterationSteps, drawROIAlgorithm);
-    }
-
-    @Override
-    public void display(String displayName, JIPipeDesktopWorkbench desktopWorkbench, JIPipeDataSource source) {
-
     }
 
     @Override

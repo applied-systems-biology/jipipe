@@ -35,14 +35,10 @@ import org.hkijena.jipipe.api.data.thumbnails.JIPipeThumbnailData;
 import org.hkijena.jipipe.api.data.utils.JIPipeWeakDataReferenceData;
 import org.hkijena.jipipe.api.registries.JIPipeDatatypeRegistry;
 import org.hkijena.jipipe.api.validation.JIPipeValidationRuntimeException;
-import org.hkijena.jipipe.desktop.app.JIPipeDesktopWorkbench;
-import org.hkijena.jipipe.desktop.app.datatable.JIPipeDesktopExtendedDataTableUI;
 import org.hkijena.jipipe.plugins.parameters.library.pairs.IntegerAndIntegerPairParameter;
 import org.hkijena.jipipe.plugins.settings.JIPipeGeneralDataApplicationSettings;
 import org.hkijena.jipipe.plugins.tables.datatypes.AnnotationTableData;
 import org.hkijena.jipipe.utils.StringUtils;
-import org.hkijena.jipipe.utils.UIUtils;
-import org.hkijena.jipipe.utils.data.WeakStore;
 
 import javax.swing.*;
 import javax.swing.event.TableModelEvent;
@@ -1725,19 +1721,6 @@ public class JIPipeDataTable implements JIPipeData, TableModel {
     @Override
     public JIPipeData duplicate(JIPipeProgressInfo progressInfo) {
         return new JIPipeDataTable(this, false, new JIPipeProgressInfo());
-    }
-
-    @Override
-    public void display(String displayName, JIPipeDesktopWorkbench desktopWorkbench, JIPipeDataSource source) {
-        JIPipeDesktopExtendedDataTableUI tableUI = new JIPipeDesktopExtendedDataTableUI(desktopWorkbench, new WeakStore<>(this), true);
-        JFrame frame = new JFrame(displayName);
-        frame.setDefaultCloseOperation(WindowConstants.DISPOSE_ON_CLOSE);
-        frame.setIconImage(UIUtils.getJIPipeIcon128());
-        frame.setContentPane(tableUI);
-        frame.pack();
-        frame.setSize(800, 600);
-        frame.setLocationRelativeTo(desktopWorkbench.getWindow());
-        frame.setVisible(true);
     }
 
     @Override

@@ -13,23 +13,17 @@
 
 package org.hkijena.jipipe.plugins.ilastik.datatypes;
 
-import ij.IJ;
 import org.hkijena.jipipe.api.JIPipeProgressInfo;
 import org.hkijena.jipipe.api.SetJIPipeDocumentation;
 import org.hkijena.jipipe.api.data.JIPipeData;
-import org.hkijena.jipipe.api.data.JIPipeDataSource;
 import org.hkijena.jipipe.api.data.JIPipeDataStorageDocumentation;
 import org.hkijena.jipipe.api.data.storage.JIPipeReadDataStorage;
 import org.hkijena.jipipe.api.data.storage.JIPipeWriteDataStorage;
-import org.hkijena.jipipe.desktop.app.JIPipeDesktopWorkbench;
-import org.hkijena.jipipe.plugins.ilastik.IlastikPlugin;
-import org.hkijena.jipipe.plugins.settings.JIPipeRuntimeApplicationSettings;
 import org.hkijena.jipipe.utils.PathUtils;
 import org.hkijena.jipipe.utils.StringUtils;
 
 import java.io.IOException;
 import java.nio.file.*;
-import java.util.Collections;
 
 @SetJIPipeDocumentation(name = "Ilastik project", description = "An Ilastik project")
 @JIPipeDataStorageDocumentation(humanReadableDescription = "A *.ilp project file",
@@ -111,26 +105,6 @@ public class IlastikModelData implements JIPipeData {
     @Override
     public JIPipeData duplicate(JIPipeProgressInfo progressInfo) {
         return new IlastikModelData(this);
-    }
-
-    @Override
-    public void display(String displayName, JIPipeDesktopWorkbench desktopWorkbench, JIPipeDataSource source) {
-        if(isLinked()) {
-            // Open project with Ilastik
-            IlastikPlugin.launchIlastik(desktopWorkbench, Collections.singletonList(linkedPath.toString()));
-        }
-        else {
-            // Export project to a tmp file
-            Path outputFile = JIPipeRuntimeApplicationSettings.getTemporaryFile("ilastik", ".ilp");
-            try {
-                Files.write(outputFile, data, StandardOpenOption.CREATE);
-            } catch (Exception e) {
-                IJ.handleException(e);
-            }
-
-            // Open project with Ilastik
-            IlastikPlugin.launchIlastik(desktopWorkbench, Collections.singletonList(outputFile.toString()));
-        }
     }
 
     @Override

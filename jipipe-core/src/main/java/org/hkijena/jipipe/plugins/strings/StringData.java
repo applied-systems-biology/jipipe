@@ -18,15 +18,11 @@ import org.apache.commons.lang3.CharSetUtils;
 import org.hkijena.jipipe.api.JIPipeProgressInfo;
 import org.hkijena.jipipe.api.SetJIPipeDocumentation;
 import org.hkijena.jipipe.api.data.JIPipeData;
-import org.hkijena.jipipe.api.data.JIPipeDataSource;
 import org.hkijena.jipipe.api.data.JIPipeDataStorageDocumentation;
-import org.hkijena.jipipe.api.data.sources.JIPipeDataTableDataSource;
 import org.hkijena.jipipe.api.data.storage.JIPipeReadDataStorage;
 import org.hkijena.jipipe.api.data.storage.JIPipeWriteDataStorage;
-import org.hkijena.jipipe.desktop.app.JIPipeDesktopWorkbench;
 import org.hkijena.jipipe.utils.PathUtils;
 
-import javax.swing.*;
 import java.io.FileWriter;
 import java.io.IOException;
 import java.nio.file.Files;
@@ -71,13 +67,6 @@ public class StringData implements JIPipeData {
     @Override
     public JIPipeData duplicate(JIPipeProgressInfo progressInfo) {
         return new StringData(data);
-    }
-
-    @Override
-    public void display(String displayName, JIPipeDesktopWorkbench desktopWorkbench, JIPipeDataSource source) {
-        TextLegacyCacheDataViewerWindow window = new TextLegacyCacheDataViewerWindow(desktopWorkbench, JIPipeDataTableDataSource.wrap(this, source), displayName, true);
-        window.setVisible(true);
-        SwingUtilities.invokeLater(window::reloadDisplayedData);
     }
 
     /**

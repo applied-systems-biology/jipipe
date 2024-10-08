@@ -55,6 +55,7 @@ public class JIPipeDesktopDataViewerWindow extends JFrame implements JIPipeDeskt
     private JIPipeDesktopDataViewer currentDataViewer;
     private final JPanel contentPane = new JPanel(new BorderLayout());
     private final JToolBar statusBar = new JToolBar();
+    private final JButton dataTypeInfoButton = new JButton();
 
     public JIPipeDesktopDataViewerWindow(JIPipeDesktopWorkbench workbench) {
         this.workbench = workbench;
@@ -105,7 +106,12 @@ public class JIPipeDesktopDataViewerWindow extends JFrame implements JIPipeDeskt
         statusBar.setBorder(BorderFactory.createMatteBorder(1, 0, 0, 0, UIManager.getColor("MenuBar.borderColor")));
         statusBar.setFloatable(false);
         statusBar.putClientProperty(BasicStatusBarUI.AUTO_ADD_SEPARATOR, false);
+
         statusBar.add(Box.createHorizontalGlue(), new JXStatusBar.Constraint(JXStatusBar.Constraint.ResizeBehavior.FILL));
+
+        dataTypeInfoButton.setBorder(UIUtils.createEmptyBorder(3));
+        statusBar.add(dataTypeInfoButton);
+        statusBar.addSeparator();
 
         JIPipeDesktopRunnableQueueButton downloadQueueButton = new JIPipeDesktopRunnableQueueButton(getDesktopWorkbench(), downloaderQueue);
         downloadQueueButton.makeFlat();
@@ -122,6 +128,7 @@ public class JIPipeDesktopDataViewerWindow extends JFrame implements JIPipeDeskt
 
     private void onDataChanged() {
         updateWindowTitle();
+        updateDataTypeInfoButton();
 
         // Select the viewer
         Class<? extends JIPipeDesktopDataViewer> viewerClass;
@@ -151,7 +158,19 @@ public class JIPipeDesktopDataViewerWindow extends JFrame implements JIPipeDeskt
         // Update the ribbon
         rebuildRibbon();
         currentDataViewer.rebuildRibbon(ribbon);
+        ribbon.rebuildRibbon();
         currentDataViewer.postOnDataChanged();
+    }
+
+    private void updateDataTypeInfoButton() {
+        if(dataBrowser != null) {
+            dataTypeInfoButton.setText(dataBrowser.getDataTypeInfo().getName());
+            dataTypeInfoButton.setIcon(JIPipe.getDataTypes().getIconFor(dataBrowser.getDataClass()));
+        }
+        else {
+            dataTypeInfoButton.setText("No data");
+            dataTypeInfoButton.setIcon(UIUtils.getIconFromResources("emblems/emblem-unavailable.png"));
+        }
     }
 
     private void destroyCurrentViewer() {
@@ -227,9 +246,6 @@ public class JIPipeDesktopDataViewerWindow extends JFrame implements JIPipeDeskt
                     UIUtils.getIconFromResources("actions/caret-down.png"),
                     this::goToNextData));
         }
-
-        ribbon.rebuildRibbon();
-
     }
 
     private void goToRow(int row, int dataAnnotationColumn) {
@@ -372,7 +388,7 @@ public class JIPipeDesktopDataViewerWindow extends JFrame implements JIPipeDeskt
         @Override
         public void run() {
             try {
-                data = dataBrowser.getData(getProgressInfo()).get();
+                data = dataBrowser.getData(JIPipeData.class, getProgressInfo()).get();
             } catch (InterruptedException | ExecutionException e) {
                 throw new RuntimeException(e);
             }

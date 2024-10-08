@@ -18,21 +18,16 @@ import com.fasterxml.jackson.annotation.JsonSetter;
 import org.hkijena.jipipe.api.JIPipeProgressInfo;
 import org.hkijena.jipipe.api.SetJIPipeDocumentation;
 import org.hkijena.jipipe.api.data.JIPipeData;
-import org.hkijena.jipipe.api.data.JIPipeDataSource;
 import org.hkijena.jipipe.api.data.JIPipeDataStorageDocumentation;
 import org.hkijena.jipipe.api.data.storage.JIPipeReadDataStorage;
 import org.hkijena.jipipe.api.data.storage.JIPipeWriteDataStorage;
-import org.hkijena.jipipe.desktop.app.JIPipeDesktopWorkbench;
 import org.hkijena.jipipe.utils.IJLogToJIPipeProgressInfoPump;
 import org.hkijena.jipipe.utils.PathUtils;
 import org.hkijena.jipipe.utils.StringUtils;
 import org.hkijena.jipipe.utils.json.JsonUtils;
 import trainableSegmentation.WekaSegmentation;
-import trainableSegmentation.Weka_Segmentation;
-import weka.core.Instances;
 import weka.gui.GenericObjectEditor;
 
-import javax.swing.*;
 import java.nio.file.Path;
 
 /**
@@ -92,22 +87,6 @@ public class WekaModelData implements JIPipeData {
     @Override
     public JIPipeData duplicate(JIPipeProgressInfo progressInfo) {
         return new WekaModelData(this);
-    }
-
-    @Override
-    public void display(String displayName, JIPipeDesktopWorkbench desktopWorkbench, JIPipeDataSource source) {
-//        JOptionPane.showMessageDialog(workbench.getWindow(), "Visualizing the model is currently not supported.",
-//                "Show Weka model", JOptionPane.ERROR_MESSAGE);
-        final Instances data;
-        if (segmentation.getTraceTrainingData() != null)
-            data = segmentation.getTraceTrainingData();
-        else
-            data = segmentation.getLoadedTrainingData();
-        if (data == null) {
-            JOptionPane.showMessageDialog(desktopWorkbench.getWindow(), "The model has no data to visualize!",
-                    "Show Weka model", JOptionPane.ERROR_MESSAGE);
-        }
-        Weka_Segmentation.displayGraphs(data, segmentation.getClassifier());
     }
 
     @Override

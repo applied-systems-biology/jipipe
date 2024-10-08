@@ -28,14 +28,10 @@ import org.hkijena.jipipe.api.LabelAsJIPipeCommonData;
 import org.hkijena.jipipe.api.LabelAsJIPipeHeavyData;
 import org.hkijena.jipipe.api.SetJIPipeDocumentation;
 import org.hkijena.jipipe.api.data.JIPipeData;
-import org.hkijena.jipipe.api.data.JIPipeDataSource;
 import org.hkijena.jipipe.api.data.JIPipeDataStorageDocumentation;
-import org.hkijena.jipipe.api.data.sources.JIPipeDataTableDataSource;
 import org.hkijena.jipipe.api.data.storage.JIPipeReadDataStorage;
 import org.hkijena.jipipe.api.data.storage.JIPipeWriteDataStorage;
-import org.hkijena.jipipe.desktop.app.JIPipeDesktopWorkbench;
 import org.hkijena.jipipe.plugins.ij3d.IJ3DUtils;
-import org.hkijena.jipipe.plugins.ij3d.display.ROIList3DDataLegacyCacheDataViewerWindow;
 import org.hkijena.jipipe.plugins.ij3d.utils.ExtendedObject3DVoxels;
 import org.hkijena.jipipe.plugins.ij3d.utils.ROI3DOutline;
 import org.hkijena.jipipe.plugins.imagejdatatypes.datatypes.ROI2DListData;
@@ -47,7 +43,6 @@ import org.hkijena.jipipe.utils.UnclosableInputStream;
 import org.hkijena.jipipe.utils.UnclosableOutputStream;
 import org.hkijena.jipipe.utils.json.JsonUtils;
 
-import javax.swing.*;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
@@ -120,14 +115,6 @@ public class ROI3DListData extends ArrayList<ROI3D> implements JIPipeData {
             result.add(new ROI3D(roi3D));
         }
         return result;
-    }
-
-    @Override
-    public void display(String displayName, JIPipeDesktopWorkbench desktopWorkbench, JIPipeDataSource source) {
-        ROIList3DDataLegacyCacheDataViewerWindow window = new ROIList3DDataLegacyCacheDataViewerWindow(desktopWorkbench, JIPipeDataTableDataSource.wrap(this, source), displayName);
-        window.reloadDisplayedData();
-        window.setVisible(true);
-        SwingUtilities.invokeLater(() -> window.getImageViewer().switchTo3D());
     }
 
     @Override

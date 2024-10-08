@@ -21,9 +21,13 @@ import org.hkijena.jipipe.api.JIPipeDataBatchGenerationResult;
 import org.hkijena.jipipe.api.JIPipeProgressInfo;
 import org.hkijena.jipipe.api.annotation.JIPipeTextAnnotation;
 import org.hkijena.jipipe.api.data.*;
+import org.hkijena.jipipe.api.data.browser.JIPipeLocalDataBrowser;
+import org.hkijena.jipipe.api.data.browser.JIPipeLocalDataTableBrowser;
+import org.hkijena.jipipe.api.data.sources.JIPipeDataTableDataSource;
 import org.hkijena.jipipe.api.data.sources.JIPipeWeakDataTableDataSource;
 import org.hkijena.jipipe.api.nodes.iterationstep.JIPipeMultiIterationStep;
 import org.hkijena.jipipe.desktop.api.data.JIPipeDesktopDataDisplayOperation;
+import org.hkijena.jipipe.desktop.api.dataviewer.JIPipeDesktopDataViewerWindow;
 import org.hkijena.jipipe.desktop.app.cache.JIPipeDesktopDataTableRowDisplayUtil;
 import org.hkijena.jipipe.desktop.app.datatracer.JIPipeDesktopDataTracerUI;
 import org.hkijena.jipipe.desktop.commons.theme.JIPipeDesktopModernMetalTheme;
@@ -288,15 +292,18 @@ public class JIPipeDesktopDataBatchAssistantInputPreviewPanelTable extends JPane
             int modelRow = table.convertRowIndexToModel(viewRow);
             Object value = model.getValueAt(modelRow, 0);
             if (value instanceof JIPipeWeakDataTableDataSource) {
-                JIPipeWeakDataTableDataSource dataSource = (JIPipeWeakDataTableDataSource) value;
-                JIPipeDataTable dataTable = dataSource.getDataTable();
+                JIPipeWeakDataTableDataSource source = (JIPipeWeakDataTableDataSource) value;
+                JIPipeDataTable dataTable = source.getDataTable();
                 if (dataTable != null) {
-                    JIPipeData data = dataTable.getData(dataSource.getRow(), JIPipeData.class, new JIPipeProgressInfo());
+                    JIPipeData data = dataTable.getData(source.getRow(), JIPipeData.class, new JIPipeProgressInfo());
                     JIPipeDesktopDataDisplayOperation mainOperation = JIPipeDesktopDataTableRowDisplayUtil.getMainOperation(data.getClass());
                     if (mainOperation != null) {
-                        mainOperation.display(dataTable, dataSource.getRow(), previewPanel.getDesktopWorkbench(), false);
+                        mainOperation.display(dataTable, source.getRow(), previewPanel.getDesktopWorkbench(), false);
                     } else {
-                        data.display(data.toString(), previewPanel.getDesktopWorkbench(), dataSource);
+                        JIPipeDesktopDataViewerWindow window = new JIPipeDesktopDataViewerWindow(previewPanel.getDesktopWorkbench());
+                        window.setLocationRelativeTo(previewPanel.getDesktopWorkbench().getWindow());
+                        window.setVisible(true);
+                        window.browseDataTable(new JIPipeLocalDataTableBrowser(source.getDataTable()), source.getRow(), source.getDataAnnotation(), "Input manager");
                     }
                 }
             }

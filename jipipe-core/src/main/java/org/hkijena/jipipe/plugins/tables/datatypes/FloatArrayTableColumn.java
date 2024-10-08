@@ -16,11 +16,9 @@ package org.hkijena.jipipe.plugins.tables.datatypes;
 import org.hkijena.jipipe.api.JIPipeProgressInfo;
 import org.hkijena.jipipe.api.SetJIPipeDocumentation;
 import org.hkijena.jipipe.api.data.JIPipeData;
-import org.hkijena.jipipe.api.data.JIPipeDataSource;
 import org.hkijena.jipipe.api.data.JIPipeDataStorageDocumentation;
 import org.hkijena.jipipe.api.data.storage.JIPipeReadDataStorage;
 import org.hkijena.jipipe.api.data.storage.JIPipeWriteDataStorage;
-import org.hkijena.jipipe.desktop.app.JIPipeDesktopWorkbench;
 import org.hkijena.jipipe.plugins.tables.MutableTableColumn;
 
 import java.util.Arrays;
@@ -124,9 +122,4 @@ public class FloatArrayTableColumn implements MutableTableColumn {
         return new FloatArrayTableColumn(Arrays.copyOf(data, data.length), label);
     }
 
-    @Override
-    public void display(String displayName, JIPipeDesktopWorkbench desktopWorkbench, JIPipeDataSource source) {
-        ResultsTableData data = new ResultsTableData(Collections.singleton(this));
-        data.display(displayName, desktopWorkbench, source);
-    }
 }

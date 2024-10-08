@@ -29,7 +29,6 @@ import javax.swing.*;
 public class DefaultDataDisplayOperation implements JIPipeDesktopDataDisplayOperation {
     @Override
     public void display(JIPipeData data, String displayName, JIPipeDesktopWorkbench desktopWorkbench, JIPipeDataSource source) {
-//        data.display(displayName, desktopWorkbench, source);
         JIPipeDesktopDataViewerWindow window = new JIPipeDesktopDataViewerWindow(desktopWorkbench);
         window.setLocationRelativeTo(desktopWorkbench.getWindow());
         window.setVisible(true);

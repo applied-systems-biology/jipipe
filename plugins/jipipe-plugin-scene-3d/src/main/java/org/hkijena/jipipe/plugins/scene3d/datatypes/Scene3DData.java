@@ -16,18 +16,10 @@ package org.hkijena.jipipe.plugins.scene3d.datatypes;
 import org.hkijena.jipipe.api.JIPipeProgressInfo;
 import org.hkijena.jipipe.api.LabelAsJIPipeHeavyData;
 import org.hkijena.jipipe.api.SetJIPipeDocumentation;
-import org.hkijena.jipipe.api.data.JIPipeDataSource;
 import org.hkijena.jipipe.api.data.storage.JIPipeReadDataStorage;
 import org.hkijena.jipipe.api.data.utils.JIPipeSerializedJsonObjectData;
-import org.hkijena.jipipe.api.run.JIPipeRunnableQueue;
-import org.hkijena.jipipe.desktop.app.JIPipeDesktopWorkbench;
-import org.hkijena.jipipe.desktop.app.running.JIPipeDesktopRunExecuteUI;
 import org.hkijena.jipipe.plugins.scene3d.model.Scene3DNode;
-import org.hkijena.jipipe.plugins.scene3d.utils.Scene3DToColladaExporter;
-import org.hkijena.jipipe.plugins.settings.JIPipeFileChooserApplicationSettings;
 
-import javax.swing.filechooser.FileNameExtensionFilter;
-import java.nio.file.Path;
 import java.util.*;
 
 @SetJIPipeDocumentation(name = "3D scene", description = "3D objects arranged in a scene")
@@ -48,16 +40,6 @@ public class Scene3DData extends JIPipeSerializedJsonObjectData implements List<
 
     public static Scene3DData importData(JIPipeReadDataStorage storage, JIPipeProgressInfo progressInfo) {
         return JIPipeSerializedJsonObjectData.importData(storage, Scene3DData.class);
-    }
-
-    @Override
-    public void display(String displayName, JIPipeDesktopWorkbench desktopWorkbench, JIPipeDataSource source) {
-        Path outputFile = JIPipeFileChooserApplicationSettings.saveFile(desktopWorkbench.getWindow(), JIPipeFileChooserApplicationSettings.LastDirectoryKey.Data, "Export Collada (*.dae)", new FileNameExtensionFilter("Collada 1.4 (*.dae)", "dae"));
-        if (outputFile != null) {
-            JIPipeRunnableQueue queue = new JIPipeRunnableQueue("Collada export");
-            Scene3DToColladaExporter exporter = new Scene3DToColladaExporter(this, outputFile);
-            JIPipeDesktopRunExecuteUI.runInDialog(desktopWorkbench, desktopWorkbench.getWindow(), exporter, queue);
-        }
     }
 
     @Override

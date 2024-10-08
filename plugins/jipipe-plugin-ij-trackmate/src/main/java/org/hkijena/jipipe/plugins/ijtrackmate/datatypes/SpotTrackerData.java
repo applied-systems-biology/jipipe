@@ -19,21 +19,16 @@ import org.hkijena.jipipe.JIPipe;
 import org.hkijena.jipipe.api.JIPipeProgressInfo;
 import org.hkijena.jipipe.api.SetJIPipeDocumentation;
 import org.hkijena.jipipe.api.data.JIPipeData;
-import org.hkijena.jipipe.api.data.JIPipeDataSource;
 import org.hkijena.jipipe.api.data.JIPipeDataStorageDocumentation;
-import org.hkijena.jipipe.api.data.sources.JIPipeDataTableDataSource;
 import org.hkijena.jipipe.api.data.storage.JIPipeReadDataStorage;
 import org.hkijena.jipipe.api.data.storage.JIPipeWriteDataStorage;
 import org.hkijena.jipipe.api.parameters.JIPipeParameterTypeInfo;
-import org.hkijena.jipipe.desktop.app.JIPipeDesktopWorkbench;
-import org.hkijena.jipipe.plugins.ijtrackmate.display.algorithms.TrackmateLegacyCacheDataViewerWindow;
 import org.hkijena.jipipe.plugins.ijtrackmate.utils.TrackMateUtils;
 import org.hkijena.jipipe.utils.StringUtils;
 import org.hkijena.jipipe.utils.json.JsonUtils;
 import org.scijava.InstantiableException;
 import org.scijava.plugin.PluginInfo;
 
-import javax.swing.*;
 import java.io.IOException;
 import java.nio.file.Paths;
 import java.util.HashMap;
@@ -112,13 +107,6 @@ public class SpotTrackerData implements JIPipeData {
     @Override
     public JIPipeData duplicate(JIPipeProgressInfo progressInfo) {
         return new SpotTrackerData(this);
-    }
-
-    @Override
-    public void display(String displayName, JIPipeDesktopWorkbench desktopWorkbench, JIPipeDataSource source) {
-        TrackmateLegacyCacheDataViewerWindow window = new TrackmateLegacyCacheDataViewerWindow(desktopWorkbench, JIPipeDataTableDataSource.wrap(this, source), displayName, true);
-        window.setVisible(true);
-        SwingUtilities.invokeLater(window::reloadDisplayedData);
     }
 
     @Override

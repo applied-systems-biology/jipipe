@@ -13,18 +13,11 @@
 
 package org.hkijena.jipipe.plugins.forms.datatypes;
 
-import org.hkijena.jipipe.api.JIPipeProgressInfo;
 import org.hkijena.jipipe.api.SetJIPipeDocumentation;
 import org.hkijena.jipipe.api.data.JIPipeData;
-import org.hkijena.jipipe.api.data.JIPipeDataInfo;
-import org.hkijena.jipipe.api.data.JIPipeDataSource;
 import org.hkijena.jipipe.api.parameters.JIPipeParameter;
-import org.hkijena.jipipe.desktop.app.JIPipeDesktopWorkbench;
 import org.hkijena.jipipe.desktop.commons.components.JIPipeDesktopFormPanel;
 import org.hkijena.jipipe.plugins.parameters.library.markup.HTMLText;
-import org.hkijena.jipipe.plugins.parameters.library.markup.MarkdownText;
-
-import javax.swing.*;
 
 /**
  * {@link FormData} that is put into a {@link JIPipeDesktopFormPanel}
@@ -42,24 +35,6 @@ public abstract class ParameterFormData extends FormData {
         this.name = other.name;
         this.description = new HTMLText(other.description);
         this.showName = other.showName;
-    }
-
-    @Override
-    public void display(String displayName, JIPipeDesktopWorkbench desktopWorkbench, JIPipeDataSource source) {
-        JIPipeDesktopFormPanel formPanel = new JIPipeDesktopFormPanel(new MarkdownText("This is a preview of the form."),
-                JIPipeDesktopFormPanel.WITH_DOCUMENTATION | JIPipeDesktopFormPanel.WITH_SCROLLING | JIPipeDesktopFormPanel.DOCUMENTATION_BELOW);
-        ParameterFormData duplicate = (ParameterFormData) duplicate(new JIPipeProgressInfo());
-        if (isShowName()) {
-            formPanel.addToForm(duplicate.getEditor(desktopWorkbench), new JLabel(getName()), description.toMarkdown());
-        } else {
-            formPanel.addWideToForm(duplicate.getEditor(desktopWorkbench), description.toMarkdown());
-        }
-        formPanel.addVerticalGlue();
-        JFrame frame = new JFrame("Preview: " + JIPipeDataInfo.getInstance(getClass()).getName());
-        frame.setContentPane(formPanel);
-        frame.setSize(640, 480);
-        frame.setLocationRelativeTo(desktopWorkbench.getWindow());
-        frame.setVisible(true);
     }
 
     @SetJIPipeDocumentation(name = "Name", description = "Name of the form element. Hidden if 'Show name' is disabled.")

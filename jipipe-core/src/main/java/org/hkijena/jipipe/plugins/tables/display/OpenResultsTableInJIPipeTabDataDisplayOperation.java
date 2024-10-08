@@ -17,6 +17,7 @@ import org.hkijena.jipipe.api.data.JIPipeData;
 import org.hkijena.jipipe.desktop.api.data.JIPipeDesktopDataDisplayOperation;
 import org.hkijena.jipipe.api.data.JIPipeDataSource;
 import org.hkijena.jipipe.desktop.app.JIPipeDesktopWorkbench;
+import org.hkijena.jipipe.plugins.core.data.DefaultDataDisplayOperation;
 import org.hkijena.jipipe.utils.UIUtils;
 
 import javax.swing.*;
@@ -24,7 +25,8 @@ import javax.swing.*;
 public class OpenResultsTableInJIPipeTabDataDisplayOperation implements JIPipeDesktopDataDisplayOperation {
     @Override
     public void display(JIPipeData data, String displayName, JIPipeDesktopWorkbench desktopWorkbench, JIPipeDataSource source) {
-        data.display(displayName, desktopWorkbench, source);
+        DefaultDataDisplayOperation operation = new DefaultDataDisplayOperation();
+        operation.display(data, displayName, desktopWorkbench, source);
     }
 
     @Override

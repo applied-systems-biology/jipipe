@@ -55,7 +55,9 @@ public class JIPipeDesktopDataViewerTextAnnotationsPanel extends JIPipeDesktopWo
         tableContainer.setOpaque(true);
         tableContainer.setBackground(UIManager.getColor("Table.background"));
         table = new JXTable();
-        tableContainer.add(new JScrollPane(table), BorderLayout.CENTER);
+        JScrollPane scrollPane = new JScrollPane(table);
+        scrollPane.getViewport().setBackground(UIManager.getColor("Table.background"));
+        tableContainer.add(scrollPane, BorderLayout.CENTER);
         tableContainer.add(table.getTableHeader(), BorderLayout.NORTH);
         table.setColumnSelectionAllowed(true);
         table.setRowSelectionAllowed(true);

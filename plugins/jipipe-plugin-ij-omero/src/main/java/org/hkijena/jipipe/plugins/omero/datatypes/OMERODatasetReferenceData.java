@@ -19,21 +19,16 @@ import omero.gateway.model.DatasetData;
 import org.hkijena.jipipe.api.JIPipeProgressInfo;
 import org.hkijena.jipipe.api.SetJIPipeDocumentation;
 import org.hkijena.jipipe.api.data.JIPipeData;
-import org.hkijena.jipipe.api.data.JIPipeDataSource;
 import org.hkijena.jipipe.api.data.JIPipeDataStorageDocumentation;
 import org.hkijena.jipipe.api.data.storage.JIPipeReadDataStorage;
 import org.hkijena.jipipe.api.data.storage.JIPipeWriteDataStorage;
-import org.hkijena.jipipe.desktop.app.JIPipeDesktopWorkbench;
 import org.hkijena.jipipe.plugins.omero.OMEROCredentialsEnvironment;
 import org.hkijena.jipipe.plugins.omero.util.OMEROUtils;
 import org.hkijena.jipipe.utils.PathUtils;
 import org.hkijena.jipipe.utils.StringUtils;
 import org.hkijena.jipipe.utils.json.JsonUtils;
 
-import javax.swing.*;
-import java.awt.*;
 import java.io.IOException;
-import java.net.URI;
 import java.nio.file.Path;
 
 @SetJIPipeDocumentation(name = "OMERO Dataset", description = "An OMERO dataset ID")
@@ -109,22 +104,6 @@ public class OMERODatasetReferenceData implements JIPipeData {
     @Override
     public JIPipeData duplicate(JIPipeProgressInfo progressInfo) {
         return new OMERODatasetReferenceData(datasetId);
-    }
-
-    @Override
-    public void display(String displayName, JIPipeDesktopWorkbench desktopWorkbench, JIPipeDataSource source) {
-        if (!StringUtils.isNullOrEmpty(url)) {
-            try {
-                Desktop.getDesktop().browse(URI.create(url));
-            } catch (IOException e) {
-                throw new RuntimeException(e);
-            }
-        } else {
-            JOptionPane.showMessageDialog(desktopWorkbench.getWindow(), "The OMERO dataset with ID=" + datasetId + " is not associated to a webclient URL. " +
-                            "Please configure the OMERO default credentials or 'Override OMERO credentials' with a URL to the webclient.",
-                    "Display OMERO project",
-                    JOptionPane.ERROR_MESSAGE);
-        }
     }
 
     @Override

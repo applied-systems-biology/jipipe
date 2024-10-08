@@ -6,16 +6,26 @@ import org.hkijena.jipipe.api.data.browser.JIPipeDataTableBrowser;
 import org.hkijena.jipipe.desktop.app.JIPipeDesktopProjectWorkbenchPanel;
 import org.hkijena.jipipe.desktop.app.JIPipeDesktopWorkbenchPanel;
 import org.hkijena.jipipe.desktop.commons.components.ribbon.JIPipeDesktopRibbon;
+import org.hkijena.jipipe.utils.UIUtils;
 import org.hkijena.jipipe.utils.ui.JIPipeDesktopDockPanel;
 import org.scijava.Disposable;
 
+import javax.swing.*;
 import java.awt.*;
+import java.util.concurrent.ExecutionException;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
+import java.util.concurrent.Future;
+import java.util.function.Consumer;
 
 /**
  * A viewer for {@link org.hkijena.jipipe.api.data.JIPipeData}
  */
 public abstract class JIPipeDesktopDataViewer extends JIPipeDesktopWorkbenchPanel implements Disposable {
+    public static final String LOADING_PLACEHOLDER_TEXT = "[Please wait ...]";
+    public static final String ERROR_PLACEHOLDER_TEXT = "[Error]";
     private final JIPipeDesktopDataViewerWindow dataViewerWindow;
+    private final ExecutorService executorService = Executors.newSingleThreadExecutor();
 
     public JIPipeDesktopDataViewer(JIPipeDesktopDataViewerWindow dataViewerWindow) {
         super(dataViewerWindow.getDesktopWorkbench());
@@ -41,6 +51,14 @@ public abstract class JIPipeDesktopDataViewer extends JIPipeDesktopWorkbenchPane
      */
     public void rebuildDock(JIPipeDesktopDockPanel dockPanel) {
 
+    }
+
+    protected void showError(JIPipeDesktopDockPanel dockPanel) {
+        JPanel errorPanel = new JPanel(new BorderLayout());
+        errorPanel.add(UIUtils.createInfoLabel("No data to be displayed",
+                "There is no data available",
+                UIUtils.getIcon32FromResources("actions/circle-xmark.png")), BorderLayout.CENTER);
+        dockPanel.setBackgroundComponent(errorPanel);
     }
 
     /**
@@ -81,5 +99,28 @@ public abstract class JIPipeDesktopDataViewer extends JIPipeDesktopWorkbenchPane
      */
     public JIPipeDataTableBrowser getDataTableBrowser() {
         return dataViewerWindow.getDataTableBrowser();
+    }
+
+    @Override
+    public void dispose() {
+        Disposable.super.dispose();
+        executorService.shutdownNow();
+    }
+
+    /**
+     * Gets a future and passes it into Swing.invokeLater
+     * @param future the future
+     * @param consumer the consumer
+     * @param <T> the type
+     */
+    public <T> void awaitToSwing(Future<T> future, Consumer<T> consumer) {
+        executorService.submit(() -> {
+            try {
+                T t = future.get();
+                SwingUtilities.invokeLater(() -> consumer.accept(t));
+            } catch (InterruptedException | ExecutionException e) {
+                throw new RuntimeException(e);
+            }
+        });
     }
 }

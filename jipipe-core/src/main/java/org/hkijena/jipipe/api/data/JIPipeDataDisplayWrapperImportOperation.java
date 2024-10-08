@@ -17,11 +17,14 @@ import org.hkijena.jipipe.JIPipe;
 import org.hkijena.jipipe.api.AbstractJIPipeRunnable;
 import org.hkijena.jipipe.api.JIPipeProgressInfo;
 import org.hkijena.jipipe.api.annotation.JIPipeTextAnnotationMergeMode;
+import org.hkijena.jipipe.api.data.browser.JIPipeLocalDataBrowser;
+import org.hkijena.jipipe.api.data.browser.JIPipeLocalDataTableBrowser;
 import org.hkijena.jipipe.api.data.serialization.JIPipeDataTableRowInfo;
 import org.hkijena.jipipe.api.data.sources.JIPipeDataTableDataSource;
 import org.hkijena.jipipe.api.data.storage.JIPipeFileSystemReadDataStorage;
 import org.hkijena.jipipe.api.run.JIPipeRunnableQueue;
 import org.hkijena.jipipe.desktop.api.data.JIPipeDesktopDataDisplayOperation;
+import org.hkijena.jipipe.desktop.api.dataviewer.JIPipeDesktopDataViewerWindow;
 import org.hkijena.jipipe.desktop.app.JIPipeDesktopWorkbench;
 import org.scijava.Disposable;
 
@@ -49,9 +52,11 @@ public class JIPipeDataDisplayWrapperImportOperation implements JIPipeLegacyData
             if (event.getRun() == run) {
                 JIPipeDataTable outputTable = run.getOutputTable();
                 run.setOutputTable(null);
-                JIPipeData data = outputTable.getData(0, slot.getAcceptedDataType(), progressInfo);
-                JIPipeDataTableDataSource dataSource = new JIPipeDataTableDataSource(outputTable, 0);
-                data.display(displayName, workbench, dataSource);
+                JIPipeDataTableDataSource source = new JIPipeDataTableDataSource(outputTable, 0);
+                JIPipeDesktopDataViewerWindow window = new JIPipeDesktopDataViewerWindow(workbench);
+                window.setLocationRelativeTo(workbench.getWindow());
+                window.setVisible(true);
+                window.browseDataTable(new JIPipeLocalDataTableBrowser(source.getDataTable()), source.getRow(), source.getDataAnnotation(), displayName);
             }
         });
         JIPipeRunnableQueue.getInstance().enqueue(run);
