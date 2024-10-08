@@ -180,6 +180,7 @@ public class JIPipeDesktopGraphCanvasUI extends JLayeredPane implements JIPipeDe
     private Anchor currentResizeOperationAnchor;
     private boolean mouseIsEntered;
     private boolean disposed;
+    private boolean graphAnnotationsLocked;
 
     /**
      * Creates a new UI
@@ -212,7 +213,7 @@ public class JIPipeDesktopGraphCanvasUI extends JLayeredPane implements JIPipeDe
         updateAssets();
     }
 
-    public Map<UUID, JIPipeGraphNode> pasteNodes(String json) throws com.fasterxml.jackson.core.JsonProcessingException {
+    public Map<UUID, JIPipeGraphNode> pasteNodes(String json) throws JsonProcessingException {
         if (!JIPipeDesktopProjectWorkbench.canAddOrDeleteNodes(getDesktopWorkbench()))
             return Collections.emptyMap();
         JIPipeGraph graph = JsonUtils.getObjectMapper().readValue(json, JIPipeGraph.class);
@@ -1424,8 +1425,9 @@ public class JIPipeDesktopGraphCanvasUI extends JLayeredPane implements JIPipeDe
 
         if (ui != null) {
             ui.mouseClicked(mouseEvent);
-            if (mouseEvent.isConsumed())
+            if (mouseEvent.isConsumed()) {
                 return;
+            }
         }
 
         if (SwingUtilities.isLeftMouseButton(mouseEvent) && mouseEvent.getClickCount() == 2) {
@@ -1674,6 +1676,9 @@ public class JIPipeDesktopGraphCanvasUI extends JLayeredPane implements JIPipeDe
             Component component = getComponent(i);
             if (component.getBounds().contains(mouseEvent.getX(), mouseEvent.getY())) {
                 if (component instanceof JIPipeDesktopGraphNodeUI) {
+                    if(graphAnnotationsLocked && ((JIPipeDesktopGraphNodeUI) component).getNode() instanceof JIPipeAnnotationGraphNode) {
+                        continue;
+                    }
                     return (JIPipeDesktopGraphNodeUI) component;
                 }
             }
@@ -1723,6 +1728,9 @@ public class JIPipeDesktopGraphCanvasUI extends JLayeredPane implements JIPipeDe
                 Rectangle selectionRectangle = new Rectangle(x, y, w, h);
                 Set<JIPipeDesktopGraphNodeUI> newSelection = new HashSet<>();
                 for (JIPipeDesktopGraphNodeUI ui : nodeUIs.values()) {
+                    if(graphAnnotationsLocked && ui.getNode() instanceof JIPipeAnnotationGraphNode) {
+                        continue;
+                    }
                     if (selectionRectangle.intersects(ui.getBounds())) {
                         newSelection.add(ui);
                     }
@@ -3533,6 +3541,21 @@ public class JIPipeDesktopGraphCanvasUI extends JLayeredPane implements JIPipeDe
             }
         }
         return visibleNodes;
+    }
+
+    public void setGraphAnnotationsLocked(boolean graphAnnotationsLocked) {
+        this.graphAnnotationsLocked = graphAnnotationsLocked;
+        if(graphAnnotationsLocked) {
+            for (JIPipeDesktopGraphNodeUI nodeUI : ImmutableList.copyOf(selection)) {
+                if(nodeUI.getNode() instanceof JIPipeAnnotationGraphNode) {
+                    removeFromSelection(nodeUI);
+                }
+            }
+        }
+    }
+
+    public boolean isGraphAnnotationsLocked() {
+        return graphAnnotationsLocked;
     }
 
     public enum EdgeMuteMode {
