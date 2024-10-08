@@ -22,7 +22,7 @@ import org.hkijena.jipipe.utils.UIUtils;
 
 import javax.swing.*;
 
-public class AddROIToActiveJIPipeImageViewerDataDisplay implements JIPipeDesktopDataDisplayOperation {
+public class AddROIToActiveJIPipeImageViewerDataDisplayOperation implements JIPipeDesktopDataDisplayOperation {
     @Override
     public void display(JIPipeData data, String displayName, JIPipeDesktopWorkbench desktopWorkbench, JIPipeDataSource source) {
         JIPipeImageViewer viewerPanel = JIPipeImageViewer.getActiveViewerPanel();

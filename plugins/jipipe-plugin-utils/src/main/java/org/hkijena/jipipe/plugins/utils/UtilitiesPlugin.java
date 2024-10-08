@@ -26,8 +26,8 @@ import org.hkijena.jipipe.plugins.JIPipePrepackagedDefaultJavaPlugin;
 import org.hkijena.jipipe.plugins.core.CorePlugin;
 import org.hkijena.jipipe.plugins.core.nodes.JIPipeCommentNode;
 import org.hkijena.jipipe.plugins.filesystem.FilesystemPlugin;
-import org.hkijena.jipipe.plugins.filesystem.resultanalysis.CopyPathDataOperation;
-import org.hkijena.jipipe.plugins.filesystem.resultanalysis.OpenPathDataOperation;
+import org.hkijena.jipipe.plugins.filesystem.resultanalysis.CopyPathDataDisplayOperation;
+import org.hkijena.jipipe.plugins.filesystem.resultanalysis.OpenPathDataDisplayOperation;
 import org.hkijena.jipipe.plugins.multiparameters.MultiParameterAlgorithmsPlugin;
 import org.hkijena.jipipe.plugins.parameters.library.jipipe.PluginCategoriesEnumParameter;
 import org.hkijena.jipipe.plugins.parameters.library.markup.HTMLText;
@@ -48,7 +48,7 @@ import org.hkijena.jipipe.plugins.utils.algorithms.processes.RunProcessMergingAl
 import org.hkijena.jipipe.plugins.utils.contextmenu.ParameterExplorerContextMenuAction;
 import org.hkijena.jipipe.plugins.utils.datatypes.JIPipeOutputData;
 import org.hkijena.jipipe.plugins.utils.datatypes.PathDataToJIPipeOutputConverter;
-import org.hkijena.jipipe.plugins.utils.display.ImportJIPipeProjectDataOperation;
+import org.hkijena.jipipe.plugins.utils.display.ImportJIPipeProjectDataDisplayOperation;
 import org.hkijena.jipipe.utils.JIPipeResourceManager;
 import org.hkijena.jipipe.utils.UIUtils;
 import org.scijava.Context;
@@ -99,7 +99,7 @@ public class UtilitiesPlugin extends JIPipePrepackagedDefaultJavaPlugin {
 
     @Override
     public void register(JIPipe jiPipe, Context context, JIPipeProgressInfo progressInfo) {
-        registerDatatype("jipipe-run-output", JIPipeOutputData.class, UIUtils.getIconURLFromResources("apps/jipipe.png"), new OpenPathDataOperation(), new CopyPathDataOperation(), new ImportJIPipeProjectDataOperation());
+        registerDatatype("jipipe-run-output", JIPipeOutputData.class, UIUtils.getIconURLFromResources("apps/jipipe.png"), new OpenPathDataDisplayOperation(), new CopyPathDataDisplayOperation(), new ImportJIPipeProjectDataDisplayOperation());
         registerDatatypeConversion(new PathDataToJIPipeOutputConverter());
 
         registerNodeType("merge-data-to-table", MergeDataToTableAlgorithm.class, UIUtils.getIconURLFromResources("data-types/data-table.png"));

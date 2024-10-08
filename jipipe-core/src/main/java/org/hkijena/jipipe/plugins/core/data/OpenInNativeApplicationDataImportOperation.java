@@ -15,7 +15,7 @@ package org.hkijena.jipipe.plugins.core.data;
 
 import org.hkijena.jipipe.api.JIPipeProgressInfo;
 import org.hkijena.jipipe.api.data.JIPipeData;
-import org.hkijena.jipipe.api.data.JIPipeDataImportOperation;
+import org.hkijena.jipipe.api.data.JIPipeLegacyDataImportOperation;
 import org.hkijena.jipipe.api.data.JIPipeDataSlot;
 import org.hkijena.jipipe.api.data.serialization.JIPipeDataTableRowInfo;
 import org.hkijena.jipipe.desktop.app.JIPipeDesktopWorkbench;
@@ -26,7 +26,7 @@ import javax.swing.*;
 import java.nio.file.Files;
 import java.nio.file.Path;
 
-public class OpenInNativeApplicationDataImportOperation implements JIPipeDataImportOperation {
+public class OpenInNativeApplicationDataImportOperation implements JIPipeLegacyDataImportOperation {
 
     private final String[] extensions;
     private String name = "Open in native application";

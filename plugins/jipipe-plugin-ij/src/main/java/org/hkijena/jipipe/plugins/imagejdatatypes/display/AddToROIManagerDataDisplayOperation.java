@@ -34,7 +34,7 @@ import java.awt.*;
 import java.util.Map;
 import java.util.Optional;
 
-public class AddToROIManagerDataDisplay implements JIPipeDesktopDataDisplayOperation {
+public class AddToROIManagerDataDisplayOperation implements JIPipeDesktopDataDisplayOperation {
 
     @Override
     public String getId() {

@@ -70,7 +70,7 @@ import org.hkijena.jipipe.plugins.imagejdatatypes.display.*;
 import org.hkijena.jipipe.plugins.imagejdatatypes.parameters.OMEColorMode;
 import org.hkijena.jipipe.plugins.imagejdatatypes.parameters.OMETIFFCompression;
 import org.hkijena.jipipe.plugins.imagejdatatypes.resultanalysis.ImageDataPreview;
-import org.hkijena.jipipe.plugins.imagejdatatypes.resultanalysis.ImportImageJPathDataOperation;
+import org.hkijena.jipipe.plugins.imagejdatatypes.resultanalysis.ImportImageJPathDataDisplayOperation;
 import org.hkijena.jipipe.plugins.imagejdatatypes.resultanalysis.OMEImageDataPreview;
 import org.hkijena.jipipe.plugins.imagejdatatypes.resultanalysis.ROIDataPreview;
 import org.hkijena.jipipe.plugins.imagejdatatypes.settings.ImageViewerUIROI2DDisplayApplicationSettings;
@@ -91,9 +91,9 @@ import org.hkijena.jipipe.plugins.tables.TablesPlugin;
 import org.hkijena.jipipe.plugins.tables.compat.ResultsTableDataImageJExporter;
 import org.hkijena.jipipe.plugins.tables.compat.ResultsTableDataImageJImporter;
 import org.hkijena.jipipe.plugins.tables.datatypes.ResultsTableData;
-import org.hkijena.jipipe.plugins.tables.display.CacheAwareOpenResultsTableInJIPipeDataOperation;
-import org.hkijena.jipipe.plugins.tables.display.OpenResultsTableInImageJDataOperation;
-import org.hkijena.jipipe.plugins.tables.display.OpenResultsTableInJIPipeTabDataOperation;
+import org.hkijena.jipipe.plugins.tables.display.CacheAwareOpenResultsTableInJIPipeDataDisplayOperation;
+import org.hkijena.jipipe.plugins.tables.display.OpenResultsTableInImageJDataDisplayOperation;
+import org.hkijena.jipipe.plugins.tables.display.OpenResultsTableInJIPipeTabDataDisplayOperation;
 import org.hkijena.jipipe.utils.ResourceUtils;
 import org.hkijena.jipipe.utils.UIUtils;
 import org.scijava.Context;
@@ -402,7 +402,7 @@ public class ImageJDataTypesPlugin extends JIPipePrepackagedDefaultJavaPlugin {
                 UIUtils.getIconURLFromResources("data-types/bioformats.png"),
                 null,
                 OMEImageDataPreview.class,
-                new OpenInImageJDataDisplay());
+                new OpenInImageJDataDisplayOperation());
         registerImageJDataImporter("ome-image-from-image-window", new OMEImageFromImageWindowImageJImporter(), ImagePlusWindowImageJImporterUI.class);
         registerImageJDataExporter("ome-image-to-image-window", new OMEImageToImageWindowImageJExporter(), DefaultImageJDataExporterUI.class);
 
@@ -466,9 +466,9 @@ public class ImageJDataTypesPlugin extends JIPipePrepackagedDefaultJavaPlugin {
 
         registerDatatype("imagej-roi", ROI2DListData.class, ResourceUtils.getPluginResource("icons/data-types/roi.png"),
                 null, ROIDataPreview.class,
-                new AddToROIManagerDataDisplay(),
-                new AddROIToActiveJIPipeImageViewerDataDisplay(),
-                new AddROIToJIPipeImageViewerDataDisplay());
+                new AddToROIManagerDataDisplayOperation(),
+                new AddROIToActiveJIPipeImageViewerDataDisplayOperation(),
+                new AddROIToJIPipeImageViewerDataDisplayOperation());
         registerDatatype("imagej-lut", LUTData.class, ResourceUtils.getPluginResource("icons/data-types/lut.png"));
         registerImageJDataImporter("roi-from-roi-manager", new RoiManagerImageJImporter(), RoiManagerImageJImporterUI.class);
         registerImageJDataExporter("roi-to-roi-manager", new RoiManagerImageJExporter(), DefaultImageJDataExporterUI.class);
@@ -477,9 +477,9 @@ public class ImageJDataTypesPlugin extends JIPipePrepackagedDefaultJavaPlugin {
                 ResourceUtils.getPluginResource("icons/data-types/results-table.png"),
                 null,
                 ResultsTableDataPreview.class,
-                new OpenResultsTableInImageJDataOperation(),
-                new OpenResultsTableInJIPipeTabDataOperation(),
-                new CacheAwareOpenResultsTableInJIPipeDataOperation(),
+                new OpenResultsTableInImageJDataDisplayOperation(),
+                new OpenResultsTableInJIPipeTabDataDisplayOperation(),
+                new CacheAwareOpenResultsTableInJIPipeDataDisplayOperation(),
                 new OpenInNativeApplicationDataImportOperation(".csv"));
         registerImageJDataImporter("import-results-table", new ResultsTableDataImageJImporter(), DefaultImageJDataImporterUI.class);
         registerImageJDataExporter("export-results-table", new ResultsTableDataImageJExporter(), DefaultImageJDataExporterUI.class);
@@ -520,8 +520,8 @@ public class ImageJDataTypesPlugin extends JIPipePrepackagedDefaultJavaPlugin {
                 "Order", "Available orders");
 
         // Register additional file importers
-        registerDatatypeOperation("path", new ImportImageJPathDataOperation());
-        registerDatatypeOperation("file", new ImportImageJPathDataOperation());
+        registerDatatypeOperation("path", new ImportImageJPathDataDisplayOperation());
+        registerDatatypeOperation("file", new ImportImageJPathDataDisplayOperation());
 
         registerMenuExtension(BioFormatsConfigTool.class);
 
@@ -577,7 +577,7 @@ public class ImageJDataTypesPlugin extends JIPipePrepackagedDefaultJavaPlugin {
                 ResourceUtils.getPluginResource(iconResource),
                 null,
                 ImageDataPreview.class,
-                new OpenInImageJDataDisplay());
+                new OpenInImageJDataDisplayOperation());
         configureDefaultImageJAdapters(dataClass, imageImporter, imageExporter);
 //        registerImageJDataImporter("import-" + id, new ImagePlusDataFromImageWindowImageJImporter(dataClass), ImagePlusWindowImageJImporterUI.class);
     }

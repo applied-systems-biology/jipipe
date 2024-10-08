@@ -26,8 +26,8 @@ import org.hkijena.jipipe.plugins.parameters.library.jipipe.PluginCategoriesEnum
 import org.hkijena.jipipe.plugins.parameters.library.markup.HTMLText;
 import org.hkijena.jipipe.plugins.parameters.library.primitives.list.StringList;
 import org.hkijena.jipipe.plugins.tables.datatypes.*;
-import org.hkijena.jipipe.plugins.tables.display.OpenResultsTableInImageJDataOperation;
-import org.hkijena.jipipe.plugins.tables.display.OpenResultsTableInJIPipeTabDataOperation;
+import org.hkijena.jipipe.plugins.tables.display.OpenResultsTableInImageJDataDisplayOperation;
+import org.hkijena.jipipe.plugins.tables.display.OpenResultsTableInJIPipeTabDataDisplayOperation;
 import org.hkijena.jipipe.plugins.tables.nodes.*;
 import org.hkijena.jipipe.plugins.tables.nodes.annotations.AddAnnotationColumnsAlgorithm;
 import org.hkijena.jipipe.plugins.tables.nodes.annotations.AnnotateByTablePropertiesAlgorithm;
@@ -150,18 +150,18 @@ public class TablesPlugin extends JIPipePrepackagedDefaultJavaPlugin {
         registerDatatype("table-column",
                 TableColumn.class,
                 ResourceUtils.getPluginResource("icons/data-types/table-column.png"),
-                new OpenResultsTableInImageJDataOperation(),
-                new OpenResultsTableInJIPipeTabDataOperation());
+                new OpenResultsTableInImageJDataDisplayOperation(),
+                new OpenResultsTableInJIPipeTabDataDisplayOperation());
         registerDatatype("table-column-numeric",
                 DoubleArrayTableColumn.class,
                 ResourceUtils.getPluginResource("icons/data-types/table-column.png"),
-                new OpenResultsTableInImageJDataOperation(),
-                new OpenResultsTableInJIPipeTabDataOperation());
+                new OpenResultsTableInImageJDataDisplayOperation(),
+                new OpenResultsTableInJIPipeTabDataDisplayOperation());
         registerDatatype("table-column-string",
                 StringArrayTableColumn.class,
                 ResourceUtils.getPluginResource("icons/data-types/table-column.png"),
-                new OpenResultsTableInImageJDataOperation(),
-                new OpenResultsTableInJIPipeTabDataOperation());
+                new OpenResultsTableInImageJDataDisplayOperation(),
+                new OpenResultsTableInJIPipeTabDataDisplayOperation());
         registerDatatypeConversion(new DoubleArrayColumnToTableConverter());
         registerDatatypeConversion(new StringArrayColumnToTableConverter());
     }

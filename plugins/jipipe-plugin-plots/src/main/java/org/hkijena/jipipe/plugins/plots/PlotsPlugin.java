@@ -19,7 +19,7 @@ import org.hkijena.jipipe.api.JIPipeProgressInfo;
 import org.hkijena.jipipe.api.compat.DataTableImageJDataImporter;
 import org.hkijena.jipipe.api.data.JIPipeData;
 import org.hkijena.jipipe.api.data.JIPipeDataInfo;
-import org.hkijena.jipipe.api.data.JIPipeDataOperation;
+import org.hkijena.jipipe.api.data.JIPipeLegacyDataOperation;
 import org.hkijena.jipipe.plugins.JIPipePrepackagedDefaultJavaPlugin;
 import org.hkijena.jipipe.plugins.core.CorePlugin;
 import org.hkijena.jipipe.plugins.core.data.OpenInNativeApplicationDataImportOperation;
@@ -32,7 +32,7 @@ import org.hkijena.jipipe.plugins.plots.nodes.PlotTables2AlgorithmInfo;
 import org.hkijena.jipipe.plugins.plots.nodes.PlotTablesAlgorithm;
 import org.hkijena.jipipe.plugins.plots.parameters.UIPlotDataSeriesColumnEnum;
 import org.hkijena.jipipe.plugins.plots.parameters.UIPlotDataSeriesColumnEnumDesktopParameterEditorUI;
-import org.hkijena.jipipe.plugins.plots.ui.resultanalysis.OpenPlotInJIPipeDataOperation;
+import org.hkijena.jipipe.plugins.plots.ui.resultanalysis.OpenPlotInJIPipeDataDisplayOperation;
 import org.hkijena.jipipe.plugins.plots.ui.resultanalysis.PlotDataSlotPreview;
 import org.hkijena.jipipe.plugins.plots.utils.ColorMap;
 import org.hkijena.jipipe.plugins.tables.TablesPlugin;
@@ -57,8 +57,8 @@ public class PlotsPlugin extends JIPipePrepackagedDefaultJavaPlugin implements J
     public static final JIPipeDependency AS_DEPENDENCY = new JIPipeMutableDependency("org.hkijena.jipipe:plots",
             JIPipe.getJIPipeVersion(),
             "Standard plots");
-    public static JIPipeDataOperation[] STANDARD_DATA_OPERATIONS = {
-            new OpenPlotInJIPipeDataOperation(),
+    public static JIPipeLegacyDataOperation[] STANDARD_DATA_OPERATIONS = {
+            new OpenPlotInJIPipeDataDisplayOperation(),
             new OpenInNativeApplicationDataImportOperation("Open *.png", "Opens the rendered PNG image", new String[]{".png"}),
             new OpenInNativeApplicationDataImportOperation("Open *.svg", "Opens the rendered SVG image", new String[]{".svg"})
     };

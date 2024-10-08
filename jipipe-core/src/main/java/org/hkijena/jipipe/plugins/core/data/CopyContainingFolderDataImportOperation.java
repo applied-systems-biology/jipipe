@@ -15,7 +15,7 @@ package org.hkijena.jipipe.plugins.core.data;
 
 import org.hkijena.jipipe.api.JIPipeProgressInfo;
 import org.hkijena.jipipe.api.data.JIPipeData;
-import org.hkijena.jipipe.api.data.JIPipeDataImportOperation;
+import org.hkijena.jipipe.api.data.JIPipeLegacyDataImportOperation;
 import org.hkijena.jipipe.api.data.JIPipeDataSlot;
 import org.hkijena.jipipe.api.data.serialization.JIPipeDataTableRowInfo;
 import org.hkijena.jipipe.desktop.app.JIPipeDesktopWorkbench;
@@ -30,7 +30,7 @@ import java.nio.file.Path;
 /**
  * Import operation that copies the containing folder path into the clipboard. Is always added to the menu.
  */
-public class CopyContainingFolderDataImportOperation implements JIPipeDataImportOperation {
+public class CopyContainingFolderDataImportOperation implements JIPipeLegacyDataImportOperation {
 
     @Override
     public String getId() {

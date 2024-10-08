@@ -22,7 +22,7 @@ import org.hkijena.jipipe.plugins.filesystem.FilesystemPlugin;
 import org.hkijena.jipipe.plugins.ij3d.compat.ROI3DImageJExporter;
 import org.hkijena.jipipe.plugins.ij3d.compat.ROI3DImageJImporter;
 import org.hkijena.jipipe.plugins.ij3d.datatypes.ROI3DListData;
-import org.hkijena.jipipe.plugins.ij3d.display.AddROI3DToManagerOperation;
+import org.hkijena.jipipe.plugins.ij3d.display.AddROI3DToManagerDataDisplayOperation;
 import org.hkijena.jipipe.plugins.ij3d.imageviewer.ImageViewerUIROI3DDisplayApplicationSettings;
 import org.hkijena.jipipe.plugins.ij3d.imageviewer.ROIManagerPlugin3D;
 import org.hkijena.jipipe.plugins.ij3d.nodes.ImportROI3DAlgorithm;
@@ -141,7 +141,7 @@ public class IJ3DPlugin extends JIPipePrepackagedDefaultJavaPlugin {
         registerParameterType("ij3d-relation-measurement-set", ROI3DRelationMeasurementSetParameter.class, "3D relation measurements", "A selection of measurements between two 3D objects");
         registerEnumParameterType("ij3d-roi-outline", ROI3DOutline.class, "3D ROI outline", "Outline algorithm for 3D ROI");
 
-        registerDatatype("roi-3d-list", ROI3DListData.class, RESOURCES.getIcon16URLFromResources("data-type-roi3d.png"), new AddROI3DToManagerOperation());
+        registerDatatype("roi-3d-list", ROI3DListData.class, RESOURCES.getIcon16URLFromResources("data-type-roi3d.png"), new AddROI3DToManagerDataDisplayOperation());
         registerImageJDataImporter("import-roi-3d", new ROI3DImageJImporter(), null);
         registerImageJDataExporter("export-roi-3d", new ROI3DImageJExporter(), null);
         registerNodeType("import-roi-3d", ImportROI3DAlgorithm.class);

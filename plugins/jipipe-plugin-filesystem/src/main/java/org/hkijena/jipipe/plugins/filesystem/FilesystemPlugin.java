@@ -29,9 +29,9 @@ import org.hkijena.jipipe.plugins.filesystem.dataypes.FileData;
 import org.hkijena.jipipe.plugins.filesystem.dataypes.FolderData;
 import org.hkijena.jipipe.plugins.filesystem.dataypes.PathData;
 import org.hkijena.jipipe.plugins.filesystem.desktop.PathDataViewer;
-import org.hkijena.jipipe.plugins.filesystem.resultanalysis.CopyPathDataOperation;
+import org.hkijena.jipipe.plugins.filesystem.resultanalysis.CopyPathDataDisplayOperation;
 import org.hkijena.jipipe.plugins.filesystem.resultanalysis.FilesystemDataSlotPreview;
-import org.hkijena.jipipe.plugins.filesystem.resultanalysis.OpenPathDataOperation;
+import org.hkijena.jipipe.plugins.filesystem.resultanalysis.OpenPathDataDisplayOperation;
 import org.hkijena.jipipe.plugins.parameters.library.jipipe.PluginCategoriesEnumParameter;
 import org.hkijena.jipipe.plugins.parameters.library.markup.HTMLText;
 import org.hkijena.jipipe.plugins.parameters.library.primitives.list.StringList;
@@ -93,11 +93,11 @@ public class FilesystemPlugin extends JIPipePrepackagedDefaultJavaPlugin {
     public void register(JIPipe jiPipe, Context context, JIPipeProgressInfo progressInfo) {
         // Register main data types
         registerDatatype("path", PathData.class, ResourceUtils.getPluginResource("icons/data-types/path.png"),
-                null, FilesystemDataSlotPreview.class, new OpenPathDataOperation(), new CopyPathDataOperation());
+                null, FilesystemDataSlotPreview.class, new OpenPathDataDisplayOperation(), new CopyPathDataDisplayOperation());
         registerDatatype("file", FileData.class, ResourceUtils.getPluginResource("icons/data-types/file.png"),
-                null, FilesystemDataSlotPreview.class, new OpenPathDataOperation(), new CopyPathDataOperation());
+                null, FilesystemDataSlotPreview.class, new OpenPathDataDisplayOperation(), new CopyPathDataDisplayOperation());
         registerDatatype("folder", FolderData.class, ResourceUtils.getPluginResource("icons/data-types/folder.png"),
-                null, FilesystemDataSlotPreview.class, new OpenPathDataOperation(), new CopyPathDataOperation());
+                null, FilesystemDataSlotPreview.class, new OpenPathDataDisplayOperation(), new CopyPathDataDisplayOperation());
 
         // Register viewer
         registerDefaultDataTypeViewer(PathData.class, PathDataViewer.class);

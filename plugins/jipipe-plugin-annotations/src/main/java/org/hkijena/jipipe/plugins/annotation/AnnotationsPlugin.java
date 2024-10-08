@@ -26,8 +26,8 @@ import org.hkijena.jipipe.plugins.parameters.library.jipipe.PluginCategoriesEnum
 import org.hkijena.jipipe.plugins.parameters.library.markup.HTMLText;
 import org.hkijena.jipipe.plugins.parameters.library.primitives.list.StringList;
 import org.hkijena.jipipe.plugins.tables.datatypes.AnnotationTableData;
-import org.hkijena.jipipe.plugins.tables.display.OpenResultsTableInImageJDataOperation;
-import org.hkijena.jipipe.plugins.tables.display.OpenResultsTableInJIPipeTabDataOperation;
+import org.hkijena.jipipe.plugins.tables.display.OpenResultsTableInImageJDataDisplayOperation;
+import org.hkijena.jipipe.plugins.tables.display.OpenResultsTableInJIPipeTabDataDisplayOperation;
 import org.hkijena.jipipe.utils.JIPipeResourceManager;
 import org.hkijena.jipipe.utils.ResourceUtils;
 import org.hkijena.jipipe.utils.UIUtils;
@@ -83,8 +83,8 @@ public class AnnotationsPlugin extends JIPipePrepackagedDefaultJavaPlugin {
         registerDatatype("annotation-table",
                 AnnotationTableData.class,
                 ResourceUtils.getPluginResource("icons/data-types/annotation-table.png"),
-                new OpenResultsTableInImageJDataOperation(),
-                new OpenResultsTableInJIPipeTabDataOperation(),
+                new OpenResultsTableInImageJDataDisplayOperation(),
+                new OpenResultsTableInJIPipeTabDataDisplayOperation(),
                 new OpenInNativeApplicationDataImportOperation(".csv"));
         registerDatatypeConversion(new ImplicitResultsTableDataConverter());
     }

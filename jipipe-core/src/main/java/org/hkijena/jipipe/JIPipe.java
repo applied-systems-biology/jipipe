@@ -30,7 +30,7 @@ import org.hkijena.jipipe.api.JIPipeNodeTemplate;
 import org.hkijena.jipipe.api.JIPipeProgressInfo;
 import org.hkijena.jipipe.api.data.JIPipeData;
 import org.hkijena.jipipe.desktop.api.data.JIPipeDesktopDataDisplayOperation;
-import org.hkijena.jipipe.api.data.JIPipeDataImportOperation;
+import org.hkijena.jipipe.api.data.JIPipeLegacyDataImportOperation;
 import org.hkijena.jipipe.api.data.JIPipeDataInfo;
 import org.hkijena.jipipe.api.data.storage.JIPipeReadDataStorage;
 import org.hkijena.jipipe.api.nodes.JIPipeGraphNode;
@@ -1325,7 +1325,7 @@ public class JIPipe extends AbstractService implements JIPipeService {
     private void updateDefaultImporterSettings() {
         JIPipeDefaultResultImporterApplicationSettings settings = applicationSettingsRegistry.getById(JIPipeDefaultResultImporterApplicationSettings.ID, JIPipeDefaultResultImporterApplicationSettings.class);
         for (String id : datatypeRegistry.getRegisteredDataTypes().keySet()) {
-            List<JIPipeDataImportOperation> operations = datatypeRegistry.getSortedImportOperationsFor(id);
+            List<JIPipeLegacyDataImportOperation> operations = datatypeRegistry.getSortedImportOperationsFor(id);
             JIPipeMutableParameterAccess access = (JIPipeMutableParameterAccess) settings.get(id);
 
             Object currentParameterValue = access.get(Object.class);
@@ -1337,7 +1337,7 @@ public class JIPipe extends AbstractService implements JIPipeService {
                 parameter.setValue("jipipe:show");
             }
 
-            for (JIPipeDataImportOperation operation : operations) {
+            for (JIPipeLegacyDataImportOperation operation : operations) {
                 parameter.getAllowedValues().add(operation.getId());
             }
             if (parameter.getValue() == null || !parameter.getAllowedValues().contains(parameter.getValue())) {

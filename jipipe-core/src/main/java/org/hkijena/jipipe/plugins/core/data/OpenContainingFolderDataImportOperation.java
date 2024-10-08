@@ -15,7 +15,7 @@ package org.hkijena.jipipe.plugins.core.data;
 
 import org.hkijena.jipipe.api.JIPipeProgressInfo;
 import org.hkijena.jipipe.api.data.JIPipeData;
-import org.hkijena.jipipe.api.data.JIPipeDataImportOperation;
+import org.hkijena.jipipe.api.data.JIPipeLegacyDataImportOperation;
 import org.hkijena.jipipe.api.data.JIPipeDataSlot;
 import org.hkijena.jipipe.api.data.serialization.JIPipeDataTableRowInfo;
 import org.hkijena.jipipe.desktop.app.JIPipeDesktopWorkbench;
@@ -30,7 +30,7 @@ import java.util.Objects;
 /**
  * Import operation that opens the containing folder. Is always added to the menu.
  */
-public class OpenContainingFolderDataImportOperation implements JIPipeDataImportOperation {
+public class OpenContainingFolderDataImportOperation implements JIPipeLegacyDataImportOperation {
     @Override
     public String getId() {
         return "jipipe:open-folder";

@@ -267,11 +267,11 @@ public abstract class JIPipeDefaultJavaPlugin extends AbstractService implements
      * @param id         Data type id
      * @param dataClass  Data class
      * @param icon       Icon for the data type. Can be null.
-     * @param rowUI      Results analyzer row UI for the data type. Can be null. If null, it will use the default row UI that manages {@link org.hkijena.jipipe.api.data.JIPipeDataImportOperation} instances.
+     * @param rowUI      Results analyzer row UI for the data type. Can be null. If null, it will use the default row UI that manages {@link JIPipeLegacyDataImportOperation} instances.
      * @param cellUI     Results table cell UI. Can be null.
      * @param operations list of operations to register. passed to registerDatatypeOperation.
      */
-    public void registerDatatype(String id, Class<? extends JIPipeData> dataClass, URL icon, Class<? extends JIPipeDesktopResultDataSlotRowUI> rowUI, Class<? extends JIPipeDesktopResultDataSlotPreview> cellUI, JIPipeDataOperation... operations) {
+    public void registerDatatype(String id, Class<? extends JIPipeData> dataClass, URL icon, Class<? extends JIPipeDesktopResultDataSlotRowUI> rowUI, Class<? extends JIPipeDesktopResultDataSlotPreview> cellUI, JIPipeLegacyDataOperation... operations) {
         registry.getDatatypeRegistry().register(id, dataClass, this);
         if (icon != null) {
             registry.getDatatypeRegistry().registerIcon(dataClass, icon);
@@ -293,7 +293,7 @@ public abstract class JIPipeDefaultJavaPlugin extends AbstractService implements
      * @param icon       Icon for the data type. Can be null.
      * @param operations list of operations to register. passed to registerDatatypeOperation.
      */
-    public void registerDatatype(String id, Class<? extends JIPipeData> dataClass, URL icon, JIPipeDataOperation... operations) {
+    public void registerDatatype(String id, Class<? extends JIPipeData> dataClass, URL icon, JIPipeLegacyDataOperation... operations) {
         registry.getDatatypeRegistry().register(id, dataClass, this);
         if (icon != null) {
             registry.getDatatypeRegistry().registerIcon(dataClass, icon);
@@ -308,10 +308,10 @@ public abstract class JIPipeDefaultJavaPlugin extends AbstractService implements
      * @param dataTypeId the data type id. it is not required that the data type is registered, yet. If empty, the operations are applying to all data.
      * @param operations operations
      */
-    public void registerDatatypeOperation(String dataTypeId, JIPipeDataOperation... operations) {
-        for (JIPipeDataOperation operation : operations) {
-            if (operation instanceof JIPipeDataImportOperation) {
-                registerDatatypeImportOperation(dataTypeId, (JIPipeDataImportOperation) operation);
+    public void registerDatatypeOperation(String dataTypeId, JIPipeLegacyDataOperation... operations) {
+        for (JIPipeLegacyDataOperation operation : operations) {
+            if (operation instanceof JIPipeLegacyDataImportOperation) {
+                registerDatatypeImportOperation(dataTypeId, (JIPipeLegacyDataImportOperation) operation);
             }
             if (operation instanceof JIPipeDesktopDataDisplayOperation) {
                 registerDatatypeDisplayOperation(dataTypeId, (JIPipeDesktopDataDisplayOperation) operation);
@@ -336,7 +336,7 @@ public abstract class JIPipeDefaultJavaPlugin extends AbstractService implements
      * @param dataTypeId the data type id. it is not required that the data type is registered, yet. If empty, the operations are applying to all data.
      * @param operation  the operation
      */
-    public void registerDatatypeImportOperation(String dataTypeId, JIPipeDataImportOperation operation) {
+    public void registerDatatypeImportOperation(String dataTypeId, JIPipeLegacyDataImportOperation operation) {
         registry.getDatatypeRegistry().registerImportOperation(dataTypeId, operation);
     }
 

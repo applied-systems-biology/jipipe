@@ -57,7 +57,7 @@ import java.util.function.Predicate;
 public class JIPipeDatatypeRegistry {
     private final BiMap<String, Class<? extends JIPipeData>> registeredDataTypes = HashBiMap.create();
     private final Map<String, Map<String, JIPipeDesktopDataDisplayOperation>> registeredDisplayOperations = new HashMap<>();
-    private final Map<String, Map<String, JIPipeDataImportOperation>> registeredImportOperations = new HashMap<>();
+    private final Map<String, Map<String, JIPipeLegacyDataImportOperation>> registeredImportOperations = new HashMap<>();
     private final Map<Class<? extends JIPipeData>, URL> iconsURLs = new HashMap<>();
     private final Map<Class<? extends JIPipeData>, ImageIcon> iconInstances = new HashMap<>();
     private final Map<Class<? extends JIPipeData>, Class<? extends JIPipeDesktopResultDataSlotRowUI>> resultUIs = new HashMap<>();
@@ -271,8 +271,8 @@ public class JIPipeDatatypeRegistry {
      * @param dataTypeId data type id. if empty, the operation applies to all data types.
      * @param operation  the operation
      */
-    public void registerImportOperation(String dataTypeId, JIPipeDataImportOperation operation) {
-        Map<String, JIPipeDataImportOperation> existing = registeredImportOperations.getOrDefault(dataTypeId, null);
+    public void registerImportOperation(String dataTypeId, JIPipeLegacyDataImportOperation operation) {
+        Map<String, JIPipeLegacyDataImportOperation> existing = registeredImportOperations.getOrDefault(dataTypeId, null);
         if (existing == null) {
             existing = new HashMap<>();
             registeredImportOperations.put(dataTypeId, existing);
@@ -307,8 +307,8 @@ public class JIPipeDatatypeRegistry {
         return result;
     }
 
-    public Map<String, JIPipeDataImportOperation> getAllRegisteredImportOperations(String dataTypeId) {
-        Map<String, JIPipeDataImportOperation> result = new HashMap<>(registeredImportOperations.getOrDefault(dataTypeId, Collections.emptyMap()));
+    public Map<String, JIPipeLegacyDataImportOperation> getAllRegisteredImportOperations(String dataTypeId) {
+        Map<String, JIPipeLegacyDataImportOperation> result = new HashMap<>(registeredImportOperations.getOrDefault(dataTypeId, Collections.emptyMap()));
         result.putAll(registeredImportOperations.getOrDefault("", Collections.emptyMap()));
         return result;
     }
@@ -319,10 +319,10 @@ public class JIPipeDatatypeRegistry {
      * @param id the id
      * @return list of import operations
      */
-    public List<JIPipeDataImportOperation> getSortedImportOperationsFor(String id) {
-        List<JIPipeDataImportOperation> result = new ArrayList<>(registeredImportOperations.getOrDefault(id, Collections.emptyMap()).values());
+    public List<JIPipeLegacyDataImportOperation> getSortedImportOperationsFor(String id) {
+        List<JIPipeLegacyDataImportOperation> result = new ArrayList<>(registeredImportOperations.getOrDefault(id, Collections.emptyMap()).values());
         result.addAll(registeredImportOperations.getOrDefault("", Collections.emptyMap()).values());
-        result.sort(Comparator.comparing(JIPipeDataImportOperation::getOrder));
+        result.sort(Comparator.comparing(JIPipeLegacyDataImportOperation::getOrder));
         return result;
     }
 
@@ -618,7 +618,7 @@ public class JIPipeDatatypeRegistry {
     }
 
     /**
-     * Converts all registered {@link JIPipeDesktopDataDisplayOperation} entries into {@link JIPipeDataImportOperation}
+     * Converts all registered {@link JIPipeDesktopDataDisplayOperation} entries into {@link JIPipeLegacyDataImportOperation}
      */
     public void convertDisplayOperationsToImportOperations() {
         for (Map.Entry<String, Map<String, JIPipeDesktopDataDisplayOperation>> dataTypeEntry : registeredDisplayOperations.entrySet()) {

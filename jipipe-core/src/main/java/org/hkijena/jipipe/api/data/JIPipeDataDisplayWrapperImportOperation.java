@@ -29,9 +29,9 @@ import javax.swing.*;
 import java.nio.file.Path;
 
 /**
- * A {@link JIPipeDataImportOperation} that wraps around a {@link JIPipeDesktopDataDisplayOperation}
+ * A {@link JIPipeLegacyDataImportOperation} that wraps around a {@link JIPipeDesktopDataDisplayOperation}
  */
-public class JIPipeDataDisplayWrapperImportOperation implements JIPipeDataImportOperation {
+public class JIPipeDataDisplayWrapperImportOperation implements JIPipeLegacyDataImportOperation {
     private final JIPipeDesktopDataDisplayOperation displayOperation;
 
     public JIPipeDataDisplayWrapperImportOperation(JIPipeDesktopDataDisplayOperation displayOperation) {

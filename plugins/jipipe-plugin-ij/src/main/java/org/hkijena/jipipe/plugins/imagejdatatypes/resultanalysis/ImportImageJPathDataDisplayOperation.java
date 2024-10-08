@@ -11,47 +11,65 @@
  * See the LICENSE file provided with the code for the full license.
  */
 
-package org.hkijena.jipipe.plugins.tables.display;
+package org.hkijena.jipipe.plugins.imagejdatatypes.resultanalysis;
 
-import org.hkijena.jipipe.api.JIPipeProgressInfo;
 import org.hkijena.jipipe.api.data.JIPipeData;
 import org.hkijena.jipipe.desktop.api.data.JIPipeDesktopDataDisplayOperation;
 import org.hkijena.jipipe.api.data.JIPipeDataSource;
 import org.hkijena.jipipe.desktop.app.JIPipeDesktopWorkbench;
-import org.hkijena.jipipe.plugins.tables.datatypes.ResultsTableData;
+import org.hkijena.jipipe.plugins.filesystem.dataypes.PathData;
+import org.hkijena.jipipe.utils.PathUtils;
 import org.hkijena.jipipe.utils.UIUtils;
+import org.hkijena.jipipe.utils.json.JsonUtils;
 
 import javax.swing.*;
+import java.io.IOException;
+import java.nio.file.Path;
 
-public class OpenResultsTableInImageJDataOperation implements JIPipeDesktopDataDisplayOperation {
-
-    @Override
-    public String getId() {
-        return "jipipe:open-table-in-imagej";
-    }
-
+public class ImportImageJPathDataDisplayOperation implements JIPipeDesktopDataDisplayOperation {
     @Override
     public void display(JIPipeData data, String displayName, JIPipeDesktopWorkbench desktopWorkbench, JIPipeDataSource source) {
-        ((ResultsTableData) data.duplicate(new JIPipeProgressInfo())).getTable().show(displayName);
+        UIUtils.openFileInNative(((PathData) data).toPath());
     }
 
     @Override
     public String getName() {
-        return "Open in ImageJ";
+        return "Import into ImageJ";
     }
 
     @Override
     public String getDescription() {
-        return "Opens the table in ImageJ";
+        return "Opens the path as if opened from the file browser";
     }
 
     @Override
     public int getOrder() {
-        return 100;
+        return 1000;
     }
 
     @Override
     public Icon getIcon() {
         return UIUtils.getIconFromResources("apps/imagej.png");
     }
+
+    private Path getTargetPath(Path rowStorageFolder) {
+        Path listFile = PathUtils.findFileByExtensionIn(rowStorageFolder, ".json");
+        if (listFile != null) {
+            Path fileOrFolderPath;
+            try {
+                PathData pathData = JsonUtils.getObjectMapper().readerFor(PathData.class).readValue(listFile.toFile());
+                fileOrFolderPath = pathData.toPath();
+            } catch (IOException e) {
+                return null;
+            }
+            return fileOrFolderPath;
+        }
+        return null;
+    }
+
+    @Override
+    public String getId() {
+        return "jipipe:import-image-into-imagej";
+    }
+
 }

@@ -31,7 +31,7 @@ import java.util.Objects;
  * An operation that is executed on showing existing data located in memory/cache.
  * This acts as additional entry in the cache browser display menu. Must be registered.
  */
-public interface JIPipeDesktopDataDisplayOperation extends JIPipeDataOperation {
+public interface JIPipeDesktopDataDisplayOperation extends JIPipeLegacyDataOperation {
 
     /**
      * Shows the data in the UI
@@ -42,6 +42,15 @@ public interface JIPipeDesktopDataDisplayOperation extends JIPipeDataOperation {
      * @param source           optional source of the data. Can by null or any kind of object (e.g. {@link JIPipeDataSlot})
      */
     void display(JIPipeData data, String displayName, JIPipeDesktopWorkbench desktopWorkbench, JIPipeDataSource source);
+
+    /**
+     * If true, the information about the row and data annotation is included in the display name
+     *
+     * @return if the display name should include the row and data annotation name
+     */
+    default boolean isIncludeRowInDisplayName() {
+        return true;
+    }
 
 
     /**
@@ -57,10 +66,21 @@ public interface JIPipeDesktopDataDisplayOperation extends JIPipeDataOperation {
         String displayName;
         String nodeName = dataTable.getLocation(JIPipeDataSlot.LOCATION_KEY_NODE_NAME, "");
         String slotName = dataTable.getLocation(JIPipeDataSlot.LOCATION_KEY_SLOT_NAME, "");
-        if (!StringUtils.isNullOrEmpty(nodeName))
-            displayName = nodeName + "/" + slotName + "/" + row;
-        else
-            displayName = slotName + "/" + row;
+
+        if (isIncludeRowInDisplayName()) {
+            if (!StringUtils.isNullOrEmpty(nodeName)) {
+                displayName = nodeName + "/" + slotName + "/" + row;
+            } else {
+                displayName = slotName + "/" + row;
+            }
+        } else {
+
+            if (!StringUtils.isNullOrEmpty(nodeName))
+                displayName = nodeName + "/" + slotName;
+            else
+                displayName = slotName;
+        }
+
         display(data, displayName, desktopWorkbench, new JIPipeDataTableDataSource(dataTable, row));
         if (saveAsDefault && JIPipeGeneralDataApplicationSettings.getInstance().isAutoSaveLastDisplay()) {
             String dataTypeId = JIPipe.getDataTypes().getIdOf(dataTable.getAcceptedDataType());
@@ -88,10 +108,20 @@ public interface JIPipeDesktopDataDisplayOperation extends JIPipeDataOperation {
         String displayName;
         String nodeName = dataTable.getLocation(JIPipeDataSlot.LOCATION_KEY_NODE_NAME, "");
         String slotName = dataTable.getLocation(JIPipeDataSlot.LOCATION_KEY_SLOT_NAME, "");
-        if (!StringUtils.isNullOrEmpty(nodeName))
-            displayName = nodeName + "/" + slotName + "/" + row + "/$" + dataAnnotation.getName();
-        else
-            displayName = slotName + "/" + row + "/$" + dataAnnotation.getName();
+
+        if (isIncludeRowInDisplayName()) {
+            if (!StringUtils.isNullOrEmpty(nodeName)) {
+                displayName = nodeName + "/" + slotName + "/" + row + "/$" + dataAnnotation.getName();
+            } else {
+                displayName = slotName + "/" + row + "/$" + dataAnnotation.getName();
+            }
+        } else {
+            if (!StringUtils.isNullOrEmpty(nodeName)) {
+                displayName = nodeName + "/" + slotName;
+            } else {
+                displayName = slotName + "/";
+            }
+        }
 
         display(data, displayName, desktopWorkbench, new JIPipeDataTableDataSource(dataTable, row, dataAnnotation.getName()));
     }

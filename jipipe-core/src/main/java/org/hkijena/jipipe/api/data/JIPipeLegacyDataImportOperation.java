@@ -23,7 +23,7 @@ import java.nio.file.Path;
  * An operation that is executed on showing existing data located in memory/cache
  * The operations must be registered and will appear if the developer does not override the default importer row UI.
  */
-public interface JIPipeDataImportOperation extends JIPipeDataOperation {
+public interface JIPipeLegacyDataImportOperation extends JIPipeLegacyDataOperation {
     /**
      * Checks if the import is possible
      *

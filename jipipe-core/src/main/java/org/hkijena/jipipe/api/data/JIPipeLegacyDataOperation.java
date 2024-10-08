@@ -18,7 +18,7 @@ import javax.swing.*;
 /**
  * A user-interface operation on data
  */
-public interface JIPipeDataOperation {
+public interface JIPipeLegacyDataOperation {
 
     /**
      * @return Unique ID of this operation

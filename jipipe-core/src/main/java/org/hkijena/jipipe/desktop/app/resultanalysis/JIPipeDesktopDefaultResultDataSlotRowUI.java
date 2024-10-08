@@ -51,7 +51,7 @@ import java.util.UUID;
  */
 public class JIPipeDesktopDefaultResultDataSlotRowUI extends JIPipeDesktopResultDataSlotRowUI {
 
-    private final List<JIPipeDataImportOperation> importOperations;
+    private final List<JIPipeLegacyDataImportOperation> importOperations;
 
     /**
      * Creates a new UI
@@ -67,15 +67,15 @@ public class JIPipeDesktopDefaultResultDataSlotRowUI extends JIPipeDesktopResult
         initialize();
     }
 
-    public static JIPipeDataImportOperation getMainOperation(Class<? extends JIPipeData> dataClass) {
+    public static JIPipeLegacyDataImportOperation getMainOperation(Class<? extends JIPipeData> dataClass) {
         String dataTypeId = JIPipe.getDataTypes().getIdOf(dataClass);
-        List<JIPipeDataImportOperation> importOperations = JIPipe.getInstance().getDatatypeRegistry().getSortedImportOperationsFor(dataTypeId);
+        List<JIPipeLegacyDataImportOperation> importOperations = JIPipe.getInstance().getDatatypeRegistry().getSortedImportOperationsFor(dataTypeId);
         if (!importOperations.isEmpty()) {
-            JIPipeDataImportOperation result = importOperations.get(0);
+            JIPipeLegacyDataImportOperation result = importOperations.get(0);
             DynamicDataImportOperationIdEnumParameter parameter = JIPipeDefaultResultImporterApplicationSettings.getInstance().getValue(dataTypeId, DynamicDataImportOperationIdEnumParameter.class);
             if (parameter != null) {
                 String defaultName = parameter.getValue();
-                for (JIPipeDataImportOperation operation : importOperations) {
+                for (JIPipeLegacyDataImportOperation operation : importOperations) {
                     if (Objects.equals(operation.getId(), defaultName)) {
                         result = operation;
                         break;
@@ -102,8 +102,8 @@ public class JIPipeDesktopDefaultResultDataSlotRowUI extends JIPipeDesktopResult
                 JIPipeDataInfo dataInfo = JIPipeDataInfo.getInstance(dataAnnotation.getTrueDataType());
                 JMenu subMenu = new JMenu(dataAnnotation.getName());
                 subMenu.setIcon(JIPipe.getDataTypes().getIconFor(dataInfo.getDataClass()));
-                List<JIPipeDataImportOperation> importOperations = JIPipe.getInstance().getDatatypeRegistry().getSortedImportOperationsFor(dataInfo.getId());
-                for (JIPipeDataImportOperation importOperation : importOperations) {
+                List<JIPipeLegacyDataImportOperation> importOperations = JIPipe.getInstance().getDatatypeRegistry().getSortedImportOperationsFor(dataInfo.getId());
+                for (JIPipeLegacyDataImportOperation importOperation : importOperations) {
                     JMenuItem item = new JMenuItem(importOperation.getName(), importOperation.getIcon());
                     item.setToolTipText(importOperation.getDescription());
                     item.addActionListener(e -> runImportOperation(importOperation, dataAnnotation));
@@ -165,7 +165,7 @@ public class JIPipeDesktopDefaultResultDataSlotRowUI extends JIPipeDesktopResult
         add(exportButton);
 
         if (!importOperations.isEmpty()) {
-            JIPipeDataImportOperation mainOperation = getMainOperation();
+            JIPipeLegacyDataImportOperation mainOperation = getMainOperation();
             if (mainOperation == null)
                 return;
             JButton mainActionButton = new JButton(mainOperation.getName(), mainOperation.getIcon());
@@ -179,7 +179,7 @@ public class JIPipeDesktopDefaultResultDataSlotRowUI extends JIPipeDesktopResult
                 menuButton.setToolTipText("Shows more actions to display the data. On selecting an entry, " +
                         "it becomes the default action.");
                 JPopupMenu menu = UIUtils.addPopupMenuToButton(menuButton);
-                for (JIPipeDataImportOperation otherSlotAction : importOperations) {
+                for (JIPipeLegacyDataImportOperation otherSlotAction : importOperations) {
                     if (otherSlotAction == mainOperation)
                         continue;
                     JMenuItem item = new JMenuItem(otherSlotAction.getName(), otherSlotAction.getIcon());
@@ -291,7 +291,7 @@ public class JIPipeDesktopDefaultResultDataSlotRowUI extends JIPipeDesktopResult
         }
     }
 
-    private void runImportOperation(JIPipeDataImportOperation operation, JIPipeDataAnnotationInfo dataAnnotation) {
+    private void runImportOperation(JIPipeLegacyDataImportOperation operation, JIPipeDataAnnotationInfo dataAnnotation) {
         try (BusyCursor cursor = new BusyCursor(this)) {
             operation.show(getSlot(),
                     getRow(),
@@ -305,7 +305,7 @@ public class JIPipeDesktopDefaultResultDataSlotRowUI extends JIPipeDesktopResult
         }
     }
 
-    private void runImportOperation(JIPipeDataImportOperation operation) {
+    private void runImportOperation(JIPipeLegacyDataImportOperation operation) {
         try (BusyCursor cursor = new BusyCursor(this)) {
             operation.show(getSlot(),
                     getRow(),
@@ -330,14 +330,14 @@ public class JIPipeDesktopDefaultResultDataSlotRowUI extends JIPipeDesktopResult
         }
     }
 
-    private JIPipeDataImportOperation getMainOperation() {
+    private JIPipeLegacyDataImportOperation getMainOperation() {
         if (!importOperations.isEmpty()) {
-            JIPipeDataImportOperation result = importOperations.get(0);
+            JIPipeLegacyDataImportOperation result = importOperations.get(0);
             String dataTypeId = JIPipe.getDataTypes().getIdOf(getSlot().getAcceptedDataType());
             DynamicDataImportOperationIdEnumParameter parameter = JIPipeDefaultResultImporterApplicationSettings.getInstance().getValue(dataTypeId, DynamicDataImportOperationIdEnumParameter.class);
             if (parameter != null) {
                 String defaultName = parameter.getValue();
-                for (JIPipeDataImportOperation operation : importOperations) {
+                for (JIPipeLegacyDataImportOperation operation : importOperations) {
                     if (Objects.equals(operation.getId(), defaultName)) {
                         result = operation;
                         break;
@@ -354,7 +354,7 @@ public class JIPipeDesktopDefaultResultDataSlotRowUI extends JIPipeDesktopResult
 
     @Override
     public void handleDefaultAction() {
-        JIPipeDataImportOperation mainOperation = getMainOperation();
+        JIPipeLegacyDataImportOperation mainOperation = getMainOperation();
         if (mainOperation != null)
             SwingUtilities.invokeLater(() -> runImportOperation(mainOperation));
     }
@@ -364,7 +364,7 @@ public class JIPipeDesktopDefaultResultDataSlotRowUI extends JIPipeDesktopResult
         if (dataAnnotationColumn >= 0 && dataAnnotationColumn < getRow().getDataAnnotations().size()) {
             String dataTypeId = getRow().getDataAnnotations().get(dataAnnotationColumn).getTrueDataType();
             Class<? extends JIPipeData> dataClass = JIPipe.getDataTypes().getById(dataTypeId);
-            JIPipeDataImportOperation operation = getMainOperation(dataClass);
+            JIPipeLegacyDataImportOperation operation = getMainOperation(dataClass);
             if (operation != null) {
                 SwingUtilities.invokeLater(() -> runImportOperation(operation, getRow().getDataAnnotations().get(dataAnnotationColumn)));
             }

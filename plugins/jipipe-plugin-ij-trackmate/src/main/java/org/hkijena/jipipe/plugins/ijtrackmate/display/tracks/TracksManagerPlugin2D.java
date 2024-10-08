@@ -33,7 +33,7 @@ import org.hkijena.jipipe.desktop.commons.components.ribbon.JIPipeDesktopSmallBu
 import org.hkijena.jipipe.desktop.commons.components.ribbon.JIPipeDesktopSmallToggleButtonRibbonAction;
 import org.hkijena.jipipe.plugins.ijtrackmate.TrackMatePlugin;
 import org.hkijena.jipipe.plugins.ijtrackmate.datatypes.TrackCollectionData;
-import org.hkijena.jipipe.plugins.ijtrackmate.display.trackscheme.TrackSchemeDataDisplayOperation;
+import org.hkijena.jipipe.plugins.ijtrackmate.display.trackscheme.ShowTrackSchemeDataDisplayOperation;
 import org.hkijena.jipipe.plugins.ijtrackmate.nodes.tracks.MeasureEdgesNode;
 import org.hkijena.jipipe.plugins.ijtrackmate.nodes.tracks.MeasureTracksNode;
 import org.hkijena.jipipe.plugins.ijtrackmate.parameters.EdgeFeature;
@@ -184,7 +184,7 @@ public class TracksManagerPlugin2D extends JIPipeImageViewerPlugin2D {
     }
 
     private void openTrackScheme() {
-        TrackSchemeDataDisplayOperation operation = new TrackSchemeDataDisplayOperation();
+        ShowTrackSchemeDataDisplayOperation operation = new ShowTrackSchemeDataDisplayOperation();
         operation.display(tracksCollection, "Track scheme", getDesktopWorkbench(), getDataSource());
     }
 

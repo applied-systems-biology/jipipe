@@ -11,44 +11,49 @@
  * See the LICENSE file provided with the code for the full license.
  */
 
-package org.hkijena.jipipe.plugins.plots.ui.resultanalysis;
+package org.hkijena.jipipe.plugins.utils.display;
 
 import org.hkijena.jipipe.api.data.JIPipeData;
 import org.hkijena.jipipe.desktop.api.data.JIPipeDesktopDataDisplayOperation;
 import org.hkijena.jipipe.api.data.JIPipeDataSource;
+import org.hkijena.jipipe.desktop.app.JIPipeDesktopProjectWindow;
 import org.hkijena.jipipe.desktop.app.JIPipeDesktopWorkbench;
+import org.hkijena.jipipe.plugins.filesystem.dataypes.PathData;
 import org.hkijena.jipipe.utils.UIUtils;
 
 import javax.swing.*;
+import java.nio.file.Path;
 
-public class OpenPlotInJIPipeDataOperation implements JIPipeDesktopDataDisplayOperation {
+public class ImportJIPipeProjectDataDisplayOperation implements JIPipeDesktopDataDisplayOperation {
     @Override
     public void display(JIPipeData data, String displayName, JIPipeDesktopWorkbench desktopWorkbench, JIPipeDataSource source) {
-        data.display(displayName, desktopWorkbench, source);
+        Path folderPath = ((PathData) data).toPath();
+        JIPipeDesktopProjectWindow window = (JIPipeDesktopProjectWindow) desktopWorkbench.getWindow();
+        window.openProject(folderPath, false);
     }
 
     @Override
     public String getId() {
-        return "jipipe:opne-plot-in-jipipe";
+        return "jipipe:open-analysis-output-in-jipipe";
     }
 
     @Override
     public String getName() {
-        return "Open in JIPipe";
+        return "Open analysis output in JIPipe";
     }
 
     @Override
     public String getDescription() {
-        return "Opens the plot in JIPipe";
+        return "Opens the output in the JIPipe GUI";
     }
 
     @Override
     public int getOrder() {
-        return 0;
+        return 500;
     }
 
     @Override
     public Icon getIcon() {
-        return UIUtils.getIconFromResources("apps/jipipe.png");
+        return UIUtils.getIconFromResources("actions/albumfolder-importdir.png");
     }
 }

@@ -11,49 +11,46 @@
  * See the LICENSE file provided with the code for the full license.
  */
 
-package org.hkijena.jipipe.plugins.utils.display;
+package org.hkijena.jipipe.plugins.ijtrackmate.display.trackscheme;
 
 import org.hkijena.jipipe.api.data.JIPipeData;
 import org.hkijena.jipipe.desktop.api.data.JIPipeDesktopDataDisplayOperation;
 import org.hkijena.jipipe.api.data.JIPipeDataSource;
-import org.hkijena.jipipe.desktop.app.JIPipeDesktopProjectWindow;
+import org.hkijena.jipipe.api.data.sources.JIPipeDataTableDataSource;
 import org.hkijena.jipipe.desktop.app.JIPipeDesktopWorkbench;
-import org.hkijena.jipipe.plugins.filesystem.dataypes.PathData;
-import org.hkijena.jipipe.utils.UIUtils;
+import org.hkijena.jipipe.plugins.ijtrackmate.TrackMatePlugin;
 
 import javax.swing.*;
-import java.nio.file.Path;
 
-public class ImportJIPipeProjectDataOperation implements JIPipeDesktopDataDisplayOperation {
+public class ShowTrackSchemeDataDisplayOperation implements JIPipeDesktopDataDisplayOperation {
     @Override
     public void display(JIPipeData data, String displayName, JIPipeDesktopWorkbench desktopWorkbench, JIPipeDataSource source) {
-        Path folderPath = ((PathData) data).toPath();
-        JIPipeDesktopProjectWindow window = (JIPipeDesktopProjectWindow) desktopWorkbench.getWindow();
-        window.openProject(folderPath, false);
+        TrackSchemeLegacyCacheDataViewerWindow window = new TrackSchemeLegacyCacheDataViewerWindow(desktopWorkbench, JIPipeDataTableDataSource.wrap(data, source), displayName);
+        window.setVisible(true);
     }
 
     @Override
     public String getId() {
-        return "jipipe:open-analysis-output-in-jipipe";
+        return "trackmate-track-scheme";
     }
 
     @Override
     public String getName() {
-        return "Open analysis output in JIPipe";
+        return "Track Scheme";
     }
 
     @Override
     public String getDescription() {
-        return "Opens the output in the JIPipe GUI";
+        return "Displays the track scheme of the tracks";
     }
 
     @Override
     public int getOrder() {
-        return 500;
+        return 0;
     }
 
     @Override
     public Icon getIcon() {
-        return UIUtils.getIconFromResources("actions/albumfolder-importdir.png");
+        return TrackMatePlugin.RESOURCES.getIconFromResources("trackscheme.png");
     }
 }

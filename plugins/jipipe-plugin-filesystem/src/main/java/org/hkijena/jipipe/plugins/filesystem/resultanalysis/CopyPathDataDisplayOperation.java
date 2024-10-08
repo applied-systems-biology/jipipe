@@ -11,44 +11,52 @@
  * See the LICENSE file provided with the code for the full license.
  */
 
-package org.hkijena.jipipe.plugins.tables.display;
+package org.hkijena.jipipe.plugins.filesystem.resultanalysis;
 
 import org.hkijena.jipipe.api.data.JIPipeData;
 import org.hkijena.jipipe.desktop.api.data.JIPipeDesktopDataDisplayOperation;
 import org.hkijena.jipipe.api.data.JIPipeDataSource;
 import org.hkijena.jipipe.desktop.app.JIPipeDesktopWorkbench;
+import org.hkijena.jipipe.plugins.filesystem.dataypes.PathData;
 import org.hkijena.jipipe.utils.UIUtils;
 
 import javax.swing.*;
+import java.awt.*;
+import java.awt.datatransfer.Clipboard;
+import java.awt.datatransfer.StringSelection;
 
-public class OpenResultsTableInJIPipeTabDataOperation implements JIPipeDesktopDataDisplayOperation {
-    @Override
-    public void display(JIPipeData data, String displayName, JIPipeDesktopWorkbench desktopWorkbench, JIPipeDataSource source) {
-        data.display(displayName, desktopWorkbench, source);
-    }
+public class CopyPathDataDisplayOperation implements JIPipeDesktopDataDisplayOperation {
 
     @Override
     public String getId() {
-        return "jipipe:open-table-in-jipipe-tab";
+        return "jipipe:copy-path";
     }
 
     @Override
     public String getName() {
-        return "Open in JIPipe (new tab)";
+        return "Copy path";
     }
 
     @Override
     public String getDescription() {
-        return "Opens the table in a new tab inside JIPipe";
+        return "Opens the path as if opened from the file browser";
     }
 
     @Override
     public int getOrder() {
-        return 100;
+        return 1500;
     }
 
     @Override
     public Icon getIcon() {
-        return UIUtils.getIconFromResources("apps/jipipe.png");
+        return UIUtils.getIconFromResources("actions/edit-copy.png");
+    }
+
+    @Override
+    public void display(JIPipeData data, String displayName, JIPipeDesktopWorkbench desktopWorkbench, JIPipeDataSource source) {
+        String string = ((PathData) data).toPath().toString();
+        StringSelection selection = new StringSelection(string);
+        Clipboard clipboard = Toolkit.getDefaultToolkit().getSystemClipboard();
+        clipboard.setContents(selection, selection);
     }
 }

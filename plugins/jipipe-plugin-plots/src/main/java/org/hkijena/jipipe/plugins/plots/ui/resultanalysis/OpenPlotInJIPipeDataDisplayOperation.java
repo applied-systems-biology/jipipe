@@ -11,42 +11,40 @@
  * See the LICENSE file provided with the code for the full license.
  */
 
-package org.hkijena.jipipe.plugins.tables.display;
+package org.hkijena.jipipe.plugins.plots.ui.resultanalysis;
 
 import org.hkijena.jipipe.api.data.JIPipeData;
 import org.hkijena.jipipe.desktop.api.data.JIPipeDesktopDataDisplayOperation;
 import org.hkijena.jipipe.api.data.JIPipeDataSource;
-import org.hkijena.jipipe.api.data.sources.JIPipeDataTableDataSource;
 import org.hkijena.jipipe.desktop.app.JIPipeDesktopWorkbench;
 import org.hkijena.jipipe.utils.UIUtils;
 
 import javax.swing.*;
 
-public class CacheAwareOpenResultsTableInJIPipeDataOperation implements JIPipeDesktopDataDisplayOperation {
+public class OpenPlotInJIPipeDataDisplayOperation implements JIPipeDesktopDataDisplayOperation {
     @Override
     public void display(JIPipeData data, String displayName, JIPipeDesktopWorkbench desktopWorkbench, JIPipeDataSource source) {
-        TableViewerLegacyCacheDataViewerWindow window = new TableViewerLegacyCacheDataViewerWindow(desktopWorkbench, (JIPipeDataTableDataSource) source, displayName, false);
-        window.setVisible(true);
+        data.display(displayName, desktopWorkbench, source);
     }
 
     @Override
     public String getId() {
-        return "jipipe:open-table-in-jipipe-window";
+        return "jipipe:opne-plot-in-jipipe";
     }
 
     @Override
     public String getName() {
-        return "Open in JIPipe (new window)";
+        return "Open in JIPipe";
     }
 
     @Override
     public String getDescription() {
-        return "Opens the table in a new window inside JIPipe. The viewer is aware of the cache.";
+        return "Opens the plot in JIPipe";
     }
 
     @Override
     public int getOrder() {
-        return -100;
+        return 0;
     }
 
     @Override

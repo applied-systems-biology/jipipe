@@ -25,7 +25,7 @@ import org.hkijena.jipipe.plugins.JIPipePrepackagedDefaultJavaPlugin;
 import org.hkijena.jipipe.plugins.core.CorePlugin;
 import org.hkijena.jipipe.plugins.filesystem.FilesystemPlugin;
 import org.hkijena.jipipe.plugins.ijtrackmate.datatypes.*;
-import org.hkijena.jipipe.plugins.ijtrackmate.display.trackscheme.TrackSchemeDataDisplayOperation;
+import org.hkijena.jipipe.plugins.ijtrackmate.display.trackscheme.ShowTrackSchemeDataDisplayOperation;
 import org.hkijena.jipipe.plugins.ijtrackmate.nodes.converters.ConvertSpotsToRoiNode;
 import org.hkijena.jipipe.plugins.ijtrackmate.nodes.converters.ConvertTracksToRoiNode;
 import org.hkijena.jipipe.plugins.ijtrackmate.nodes.converters.SpotsToRoiConverter;
@@ -237,7 +237,7 @@ public class TrackMatePlugin extends JIPipePrepackagedDefaultJavaPlugin {
         registerDatatype("trackmate-spot-tracker", SpotTrackerData.class, RESOURCES.getIcon16URLFromResources("trackmate-tracker.png"));
         registerDatatype("trackmate-model", ModelData.class, RESOURCES.getIcon16URLFromResources("trackmate.png"));
         registerDatatype("trackmate-spot-collection", SpotsCollectionData.class, RESOURCES.getIcon16URLFromResources("trackmate-spots.png"));
-        registerDatatype("trackmate-track-collection", TrackCollectionData.class, RESOURCES.getIcon16URLFromResources("trackmate-tracker.png"), new TrackSchemeDataDisplayOperation());
+        registerDatatype("trackmate-track-collection", TrackCollectionData.class, RESOURCES.getIcon16URLFromResources("trackmate-tracker.png"), new ShowTrackSchemeDataDisplayOperation());
         registerDatatypeConversion(new SpotsToRoiConverter());
     }
 

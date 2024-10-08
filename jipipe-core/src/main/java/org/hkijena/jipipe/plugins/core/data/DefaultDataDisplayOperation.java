@@ -43,6 +43,11 @@ public class DefaultDataDisplayOperation implements JIPipeDesktopDataDisplayOper
     }
 
     @Override
+    public boolean isIncludeRowInDisplayName() {
+        return false;
+    }
+
+    @Override
     public String getId() {
         return "jipipe:show";
     }
