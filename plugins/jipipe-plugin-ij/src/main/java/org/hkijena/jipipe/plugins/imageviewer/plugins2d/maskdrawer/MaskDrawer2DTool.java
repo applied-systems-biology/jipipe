@@ -13,7 +13,7 @@
 
 package org.hkijena.jipipe.plugins.imageviewer.plugins2d.maskdrawer;
 
-import org.hkijena.jipipe.plugins.imageviewer.JIPipeImageViewerPlugin2D;
+import org.hkijena.jipipe.plugins.imageviewer.JIPipeLegacyImageViewerPlugin2D;
 import org.hkijena.jipipe.plugins.imageviewer.utils.viewer2d.ImageViewerPanelCanvas2DTool;
 
 import javax.swing.*;
@@ -21,7 +21,7 @@ import javax.swing.*;
 /**
  * Super class for any tool that can be used in {@link MaskDrawerPlugin2D}
  */
-public abstract class MaskDrawer2DTool extends JIPipeImageViewerPlugin2D implements ImageViewerPanelCanvas2DTool {
+public abstract class MaskDrawer2DTool extends JIPipeLegacyImageViewerPlugin2D implements ImageViewerPanelCanvas2DTool {
     private final MaskDrawerPlugin2D maskDrawerPlugin;
     private final String name;
     private final String description;

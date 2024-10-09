@@ -17,7 +17,7 @@ import ij.ImagePlus;
 import org.hkijena.jipipe.desktop.commons.components.JIPipeDesktopFormPanel;
 import org.hkijena.jipipe.plugins.imagejdatatypes.datatypes.ImagePlusData;
 import org.hkijena.jipipe.plugins.imagejdatatypes.util.ImageJUtils;
-import org.hkijena.jipipe.plugins.imageviewer.JIPipeImageViewer;
+import org.hkijena.jipipe.plugins.imageviewer.JIPipeLegacyImageViewer;
 import org.hkijena.jipipe.plugins.imageviewer.utils.ImageViewerLUTEditor;
 import org.hkijena.jipipe.plugins.imageviewer.utils.viewer3d.ImageViewer3DLUTEditor;
 import org.hkijena.jipipe.utils.UIUtils;
@@ -31,7 +31,7 @@ public class LUTManagerPlugin3D extends GeneralImageViewerPanelPlugin3D {
 
     private final List<ImageViewerLUTEditor> lutEditors = new ArrayList<>();
 
-    public LUTManagerPlugin3D(JIPipeImageViewer viewerPanel) {
+    public LUTManagerPlugin3D(JIPipeLegacyImageViewer viewerPanel) {
         super(viewerPanel);
     }
 

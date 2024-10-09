@@ -61,7 +61,7 @@ import org.hkijena.jipipe.plugins.ij3d.nodes.segmentation.*;
 import org.hkijena.jipipe.plugins.ij3d.utils.*;
 import org.hkijena.jipipe.plugins.imagejalgorithms.ImageJAlgorithmsPlugin;
 import org.hkijena.jipipe.plugins.imagejdatatypes.ImageJDataTypesPlugin;
-import org.hkijena.jipipe.plugins.imageviewer.JIPipeImageViewer;
+import org.hkijena.jipipe.plugins.imageviewer.JIPipeLegacyImageViewer;
 import org.hkijena.jipipe.plugins.multiparameters.MultiParameterAlgorithmsPlugin;
 import org.hkijena.jipipe.plugins.parameters.library.markup.HTMLText;
 import org.hkijena.jipipe.plugins.parameters.library.primitives.list.StringList;
@@ -131,7 +131,7 @@ public class IJ3DPlugin extends JIPipePrepackagedDefaultJavaPlugin {
     public void register(JIPipe jiPipe, Context context, JIPipeProgressInfo progressInfo) {
 
         registerApplicationSettingsSheet(new ImageViewerUIROI3DDisplayApplicationSettings());
-        JIPipeImageViewer.registerDefaultPlugin(ROIManagerPlugin3D.class);
+        JIPipeLegacyImageViewer.registerDefaultPlugin(ROIManagerPlugin3D.class);
 
         registerEnumParameterType("ij3d-measurement", ROI3DMeasurement.class, "3D Measurement", "A 3D object measurement");
         registerEnumParameterType("ij3d-measurement-column", ROI3DMeasurementColumn.class, "3D measurement column", "A 3D object measurement column");

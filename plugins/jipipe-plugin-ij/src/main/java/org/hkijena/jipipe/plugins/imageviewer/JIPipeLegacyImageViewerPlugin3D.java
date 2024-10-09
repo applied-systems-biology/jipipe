@@ -20,13 +20,13 @@ import org.hkijena.jipipe.plugins.imageviewer.utils.viewer3d.universe.CustomImag
 
 import java.util.List;
 
-public abstract class JIPipeImageViewerPlugin3D extends JIPipeImageViewerPlugin {
+public abstract class JIPipeLegacyImageViewerPlugin3D extends JIPipeImageViewerPlugin {
 
-    public JIPipeImageViewerPlugin3D(JIPipeImageViewer viewerPanel) {
+    public JIPipeLegacyImageViewerPlugin3D(JIPipeLegacyImageViewer viewerPanel) {
         super(viewerPanel);
     }
 
-    public ImageViewerPanel3D getViewerPanel3D() {
+    public LegacyImageViewerPanel3D getViewerPanel3D() {
         return getViewerPanel().getImageViewerPanel3D();
     }
 

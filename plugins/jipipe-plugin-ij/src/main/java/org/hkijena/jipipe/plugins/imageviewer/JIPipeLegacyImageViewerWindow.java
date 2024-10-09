@@ -23,17 +23,17 @@ import java.awt.event.WindowEvent;
 import java.awt.event.WindowListener;
 import java.util.Collections;
 
-public class JIPipeImageViewerWindow extends JFrame implements WindowListener, JIPipeDesktopWorkbenchAccess {
+public class JIPipeLegacyImageViewerWindow extends JFrame implements WindowListener, JIPipeDesktopWorkbenchAccess {
     private final JIPipeDesktopWorkbench workbench;
-    private final JIPipeImageViewer viewerPanel;
+    private final JIPipeLegacyImageViewer viewerPanel;
 
-    public JIPipeImageViewerWindow(JIPipeDesktopWorkbench workbench) {
+    public JIPipeLegacyImageViewerWindow(JIPipeDesktopWorkbench workbench) {
         this.workbench = workbench;
-        this.viewerPanel = new JIPipeImageViewer(workbench, JIPipeImageViewer.DEFAULT_PLUGINS, Collections.emptyMap());
+        this.viewerPanel = new JIPipeLegacyImageViewer(workbench, JIPipeLegacyImageViewer.DEFAULT_PLUGINS, Collections.emptyMap());
         initialize();
     }
 
-    public JIPipeImageViewerWindow(JIPipeImageViewer panel) {
+    public JIPipeLegacyImageViewerWindow(JIPipeLegacyImageViewer panel) {
         this.viewerPanel = panel;
         this.workbench = panel.getDesktopWorkbench();
         initialize();
@@ -49,7 +49,7 @@ public class JIPipeImageViewerWindow extends JFrame implements WindowListener, J
         addWindowListener(this);
     }
 
-    public JIPipeImageViewer getViewerPanel() {
+    public JIPipeLegacyImageViewer getViewerPanel() {
         return viewerPanel;
     }
 

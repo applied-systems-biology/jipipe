@@ -41,8 +41,8 @@ import org.hkijena.jipipe.plugins.ijtrackmate.parameters.TrackFeature;
 import org.hkijena.jipipe.plugins.ijtrackmate.settings.ImageViewerUITracksDisplayApplicationSettings;
 import org.hkijena.jipipe.plugins.ijtrackmate.utils.TrackDrawer;
 import org.hkijena.jipipe.plugins.imagejdatatypes.util.ImageSliceIndex;
-import org.hkijena.jipipe.plugins.imageviewer.JIPipeImageViewer;
-import org.hkijena.jipipe.plugins.imageviewer.JIPipeImageViewerPlugin2D;
+import org.hkijena.jipipe.plugins.imageviewer.JIPipeLegacyImageViewer;
+import org.hkijena.jipipe.plugins.imageviewer.JIPipeLegacyImageViewerPlugin2D;
 import org.hkijena.jipipe.plugins.parameters.library.markup.MarkdownText;
 import org.hkijena.jipipe.plugins.settings.JIPipeFileChooserApplicationSettings;
 import org.hkijena.jipipe.plugins.tables.datatypes.ResultsTableData;
@@ -60,7 +60,7 @@ import java.util.List;
 import java.util.*;
 import java.util.stream.Collectors;
 
-public class TracksManagerPlugin2D extends JIPipeImageViewerPlugin2D {
+public class TracksManagerPlugin2D extends JIPipeLegacyImageViewerPlugin2D {
     private final JList<Integer> tracksListControl = new JList<>();
     private final JIPipeDesktopSmallToggleButtonRibbonAction displayTracksViewMenuItem = new JIPipeDesktopSmallToggleButtonRibbonAction("Display tracks", "Determines whether tracks are displayed", UIUtils.getIconFromResources("actions/eye.png"));
     private final List<SelectionContextPanel> selectionContextPanels = new ArrayList<>();
@@ -71,7 +71,7 @@ public class TracksManagerPlugin2D extends JIPipeImageViewerPlugin2D {
     private TrackListCellRenderer tracksListCellRenderer;
     private JPanel mainPanel;
 
-    public TracksManagerPlugin2D(JIPipeImageViewer viewerPanel) {
+    public TracksManagerPlugin2D(JIPipeLegacyImageViewer viewerPanel) {
         super(viewerPanel);
         initializeDefaults();
         initialize();
@@ -472,7 +472,7 @@ public class TracksManagerPlugin2D extends JIPipeImageViewerPlugin2D {
             return tracksManagerPlugin;
         }
 
-        public JIPipeImageViewer getViewerPanel() {
+        public JIPipeLegacyImageViewer getViewerPanel() {
             return tracksManagerPlugin.getViewerPanel();
         }
 

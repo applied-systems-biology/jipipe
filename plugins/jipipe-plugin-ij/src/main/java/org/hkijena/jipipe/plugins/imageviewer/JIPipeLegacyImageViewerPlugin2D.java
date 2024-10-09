@@ -19,13 +19,13 @@ import org.hkijena.jipipe.plugins.imagejdatatypes.util.ImageSliceIndex;
 import java.awt.*;
 import java.awt.image.BufferedImage;
 
-public abstract class JIPipeImageViewerPlugin2D extends JIPipeImageViewerPlugin {
+public abstract class JIPipeLegacyImageViewerPlugin2D extends JIPipeImageViewerPlugin {
 
-    public JIPipeImageViewerPlugin2D(JIPipeImageViewer viewerPanel) {
+    public JIPipeLegacyImageViewerPlugin2D(JIPipeLegacyImageViewer viewerPanel) {
         super(viewerPanel);
     }
 
-    public ImageViewerPanel2D getViewerPanel2D() {
+    public LegacyImageViewerPanel2D getViewerPanel2D() {
         return getViewerPanel().getViewerPanel2D();
     }
 

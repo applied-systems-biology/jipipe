@@ -35,8 +35,8 @@ import org.hkijena.jipipe.plugins.imagejdatatypes.util.ImageJUtils;
 import org.hkijena.jipipe.plugins.imagejdatatypes.util.ImageSliceIndex;
 import org.hkijena.jipipe.plugins.imagejdatatypes.util.ROIEditor;
 import org.hkijena.jipipe.plugins.imagejdatatypes.util.RoiDrawer;
-import org.hkijena.jipipe.plugins.imageviewer.JIPipeImageViewer;
-import org.hkijena.jipipe.plugins.imageviewer.JIPipeImageViewerPlugin2D;
+import org.hkijena.jipipe.plugins.imageviewer.JIPipeLegacyImageViewer;
+import org.hkijena.jipipe.plugins.imageviewer.JIPipeLegacyImageViewerPlugin2D;
 import org.hkijena.jipipe.plugins.imageviewer.utils.RoiListCellRenderer;
 import org.hkijena.jipipe.plugins.parameters.library.markup.MarkdownText;
 import org.hkijena.jipipe.plugins.settings.JIPipeFileChooserApplicationSettings;
@@ -53,7 +53,7 @@ import java.util.List;
 import java.util.*;
 import java.util.stream.Collectors;
 
-public class ROIManagerPlugin2D extends JIPipeImageViewerPlugin2D {
+public class ROIManagerPlugin2D extends JIPipeLegacyImageViewerPlugin2D {
     private final ROI2DListData overlayRois = new ROI2DListData();
     private final JList<Roi> roiListControl = new JList<>();
     private final RoiDrawer roiDrawer = new RoiDrawer();
@@ -67,7 +67,7 @@ public class ROIManagerPlugin2D extends JIPipeImageViewerPlugin2D {
     private boolean filterListOnlySelected = false;
     private JPanel mainPanel;
 
-    public ROIManagerPlugin2D(JIPipeImageViewer viewerPanel) {
+    public ROIManagerPlugin2D(JIPipeLegacyImageViewer viewerPanel) {
         super(viewerPanel);
         loadDefaults();
         initialize();

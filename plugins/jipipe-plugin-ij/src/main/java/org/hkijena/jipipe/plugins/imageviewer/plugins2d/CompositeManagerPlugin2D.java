@@ -14,15 +14,15 @@
 package org.hkijena.jipipe.plugins.imageviewer.plugins2d;
 
 import org.hkijena.jipipe.desktop.commons.components.JIPipeDesktopFormPanel;
-import org.hkijena.jipipe.plugins.imageviewer.ImageViewerPanel2D;
-import org.hkijena.jipipe.plugins.imageviewer.JIPipeImageViewer;
+import org.hkijena.jipipe.plugins.imageviewer.LegacyImageViewerPanel2D;
+import org.hkijena.jipipe.plugins.imageviewer.JIPipeLegacyImageViewer;
 import org.hkijena.jipipe.plugins.imageviewer.utils.viewer2d.ImageViewer2DCompositeLayerEditor;
 import org.hkijena.jipipe.utils.UIUtils;
 
 import javax.swing.*;
 
 public class CompositeManagerPlugin2D extends GeneralImageViewerPanelPlugin2D {
-    public CompositeManagerPlugin2D(JIPipeImageViewer viewerPanel) {
+    public CompositeManagerPlugin2D(JIPipeLegacyImageViewer viewerPanel) {
         super(viewerPanel);
     }
 
@@ -35,7 +35,7 @@ public class CompositeManagerPlugin2D extends GeneralImageViewerPanelPlugin2D {
             compositeToggle.addActionListener(e -> getViewerPanel2D().setComposite(compositeToggle.isSelected()));
             headerPanel.addToTitlePanel(compositeToggle);
 
-            for (ImageViewerPanel2D.CompositeLayer layer : getViewerPanel2D().getOrderedCompositeBlendLayers()) {
+            for (LegacyImageViewerPanel2D.CompositeLayer layer : getViewerPanel2D().getOrderedCompositeBlendLayers()) {
                 ImageViewer2DCompositeLayerEditor layerEditor = new ImageViewer2DCompositeLayerEditor(getViewerPanel2D(), layer.getChannel());
                 formPanel.addWideToForm(layerEditor);
             }

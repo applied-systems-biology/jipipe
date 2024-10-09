@@ -13,8 +13,11 @@
 
 package org.hkijena.jipipe.plugins.imagejdatatypes;
 
+import edu.jhuapl.ses.vtkjavanativelibs.VtkJavaNativeLibraryException;
+import edu.jhuapl.ses.vtkjavanativelibs.VtkNativeLibraries;
 import ome.xml.model.enums.DimensionOrder;
 import org.apache.commons.compress.utils.Sets;
+import org.apache.commons.lang3.exception.ExceptionUtils;
 import org.hkijena.jipipe.JIPipe;
 import org.hkijena.jipipe.JIPipeDependency;
 import org.hkijena.jipipe.JIPipeJavaPlugin;
@@ -94,6 +97,7 @@ import org.hkijena.jipipe.plugins.tables.datatypes.ResultsTableData;
 import org.hkijena.jipipe.plugins.tables.display.CacheAwareOpenResultsTableInJIPipeDataDisplayOperation;
 import org.hkijena.jipipe.plugins.tables.display.OpenResultsTableInImageJDataDisplayOperation;
 import org.hkijena.jipipe.plugins.tables.display.OpenResultsTableInJIPipeTabDataDisplayOperation;
+import org.hkijena.jipipe.utils.PathUtils;
 import org.hkijena.jipipe.utils.ResourceUtils;
 import org.hkijena.jipipe.utils.UIUtils;
 import org.scijava.Context;
@@ -580,6 +584,22 @@ public class ImageJDataTypesPlugin extends JIPipePrepackagedDefaultJavaPlugin {
                 new OpenInImageJDataDisplayOperation());
         configureDefaultImageJAdapters(dataClass, imageImporter, imageExporter);
 //        registerImageJDataImporter("import-" + id, new ImagePlusDataFromImageWindowImageJImporter(dataClass), ImagePlusWindowImageJImporterUI.class);
+    }
+
+
+    @Override
+    public void postprocess(JIPipeProgressInfo progressInfo) {
+        super.postprocess(progressInfo);
+
+        progressInfo.log("Initializing VTK ...");
+        try {
+            VtkNativeLibraries.initialize(PathUtils.createDirectories(PathUtils.getJIPipeUserDir().resolve("contrib").resolve("vtk-native")).toFile());
+            progressInfo.log("Initializing VTK ... successful");
+        } catch (VtkJavaNativeLibraryException e) {
+            progressInfo.log("Initializing VTK ... failed!");
+            progressInfo.log(ExceptionUtils.getStackTrace(e));
+        }
+
     }
 }
 

@@ -51,9 +51,9 @@ import java.nio.file.Path;
 import java.util.List;
 import java.util.*;
 
-public class ImageViewerPanel2D extends JPanel implements JIPipeDesktopWorkbenchAccess {
+public class LegacyImageViewerPanel2D extends JPanel implements JIPipeDesktopWorkbenchAccess {
 
-    private final JIPipeImageViewer imageViewer;
+    private final JIPipeLegacyImageViewer imageViewer;
     private final JButton zoomStatusButton = new JButton();
     private final ImageViewer2DUIApplicationSettings settings;
     private final JLabel stackSliderLabel = new JLabel("Slice (Z)");
@@ -98,7 +98,7 @@ public class ImageViewerPanel2D extends JPanel implements JIPipeDesktopWorkbench
      *
      * @param imageViewer the viewer
      */
-    public ImageViewerPanel2D(JIPipeImageViewer imageViewer) {
+    public LegacyImageViewerPanel2D(JIPipeLegacyImageViewer imageViewer) {
         this.imageViewer = imageViewer;
         this.workbench = imageViewer.getDesktopWorkbench();
         if (JIPipe.getInstance() != null) {
@@ -736,7 +736,7 @@ public class ImageViewerPanel2D extends JPanel implements JIPipeDesktopWorkbench
             scrollValues.put(entry.getKey(), entry.getValue().getScrollPane().getVerticalScrollBar().getValue());
             entry.getValue().clear();
         }
-        for (JIPipeImageViewerPlugin2D plugin : imageViewer.getPlugins2D()) {
+        for (JIPipeLegacyImageViewerPlugin2D plugin : imageViewer.getPlugins2D()) {
             JIPipeDesktopFormPanel formPanel = formPanels.getOrDefault(plugin.getCategory(), null);
             if (formPanel == null) {
                 formPanel = new JIPipeDesktopFormPanel(null, JIPipeDesktopFormPanel.WITH_SCROLLING);
@@ -774,7 +774,7 @@ public class ImageViewerPanel2D extends JPanel implements JIPipeDesktopWorkbench
         return new ImageSliceIndex(channelSlider.getValue() - 1, stackSlider.getValue() - 1, frameSlider.getValue() - 1);
     }
 
-    public JIPipeImageViewer getImageViewer() {
+    public JIPipeLegacyImageViewer getImageViewer() {
         return imageViewer;
     }
 
@@ -808,7 +808,7 @@ public class ImageViewerPanel2D extends JPanel implements JIPipeDesktopWorkbench
 //            System.out.println("bps: " + image.getDisplayRangeMin() + ", " + image.getDisplayRangeMax());
             image.getImage().setPosition(channel, stack, frame);
             this.currentSlice = image.getImage().getProcessor();
-            for (JIPipeImageViewerPlugin2D plugin : imageViewer.getPlugins2D()) {
+            for (JIPipeLegacyImageViewerPlugin2D plugin : imageViewer.getPlugins2D()) {
 //                System.out.println(plugin + ": " + image.getDisplayRangeMin() + ", " + image.getDisplayRangeMax());
                 plugin.onSliceChanged(true);
 //                System.out.println(plugin + "(A): " + image.getDisplayRangeMin() + ", " + image.getDisplayRangeMax());
@@ -838,11 +838,11 @@ public class ImageViewerPanel2D extends JPanel implements JIPipeDesktopWorkbench
                 int cc = layer.getChannel();
 
                 image.getImage().setPosition(cc + 1, z + 1, t + 1);
-                for (JIPipeImageViewerPlugin2D plugin : imageViewer.getPlugins2D()) {
+                for (JIPipeLegacyImageViewerPlugin2D plugin : imageViewer.getPlugins2D()) {
                     plugin.beforeDraw(cc, z, t);
                 }
                 ImageProcessor processor = image.getImage().getProcessor().duplicate();
-                for (JIPipeImageViewerPlugin2D plugin : imageViewer.getPlugins2D()) {
+                for (JIPipeLegacyImageViewerPlugin2D plugin : imageViewer.getPlugins2D()) {
                     processor = plugin.draw(cc, z, t, processor);
                 }
                 if (magnification != 1.0) {
@@ -851,7 +851,7 @@ public class ImageViewerPanel2D extends JPanel implements JIPipeDesktopWorkbench
                 }
                 if (withPostprocessing) {
                     BufferedImage image = BufferedImageUtils.copyBufferedImageToARGB(processor.getBufferedImage());
-                    for (JIPipeImageViewerPlugin2D plugin : imageViewer.getPlugins2D()) {
+                    for (JIPipeLegacyImageViewerPlugin2D plugin : imageViewer.getPlugins2D()) {
                         plugin.postprocessDrawForExport(image, new ImageSliceIndex(cc, z, t), magnification);
                     }
                     processor = new ColorProcessor(image);
@@ -867,11 +867,11 @@ public class ImageViewerPanel2D extends JPanel implements JIPipeDesktopWorkbench
             return bottom;
         } else {
             image.getImage().setPosition(c + 1, z + 1, t + 1);
-            for (JIPipeImageViewerPlugin2D plugin : imageViewer.getPlugins2D()) {
+            for (JIPipeLegacyImageViewerPlugin2D plugin : imageViewer.getPlugins2D()) {
                 plugin.beforeDraw(c, z, t);
             }
             ImageProcessor processor = image.getImage().getProcessor().duplicate();
-            for (JIPipeImageViewerPlugin2D plugin : imageViewer.getPlugins2D()) {
+            for (JIPipeLegacyImageViewerPlugin2D plugin : imageViewer.getPlugins2D()) {
                 processor = plugin.draw(c, z, t, processor);
             }
             if (magnification != 1.0) {
@@ -880,7 +880,7 @@ public class ImageViewerPanel2D extends JPanel implements JIPipeDesktopWorkbench
             }
             if (withPostprocessing) {
                 BufferedImage image = BufferedImageUtils.copyBufferedImageToARGB(processor.getBufferedImage());
-                for (JIPipeImageViewerPlugin2D plugin : imageViewer.getPlugins2D()) {
+                for (JIPipeLegacyImageViewerPlugin2D plugin : imageViewer.getPlugins2D()) {
                     plugin.postprocessDrawForExport(image, new ImageSliceIndex(c, z, t), magnification);
                 }
                 processor = new ColorProcessor(image);
@@ -946,7 +946,7 @@ public class ImageViewerPanel2D extends JPanel implements JIPipeDesktopWorkbench
         }
         this.currentSlice = null;
         this.statisticsMap.clear();
-        for (JIPipeImageViewerPlugin2D plugin : imageViewer.getPlugins2D()) {
+        for (JIPipeLegacyImageViewerPlugin2D plugin : imageViewer.getPlugins2D()) {
             try {
                 plugin.onImageChanged();
             } catch (Throwable e) {

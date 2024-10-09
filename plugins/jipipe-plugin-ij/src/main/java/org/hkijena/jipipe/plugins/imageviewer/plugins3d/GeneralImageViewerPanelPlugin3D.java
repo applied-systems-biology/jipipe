@@ -13,14 +13,14 @@
 
 package org.hkijena.jipipe.plugins.imageviewer.plugins3d;
 
-import org.hkijena.jipipe.plugins.imageviewer.JIPipeImageViewer;
-import org.hkijena.jipipe.plugins.imageviewer.JIPipeImageViewerPlugin3D;
+import org.hkijena.jipipe.plugins.imageviewer.JIPipeLegacyImageViewer;
+import org.hkijena.jipipe.plugins.imageviewer.JIPipeLegacyImageViewerPlugin3D;
 import org.hkijena.jipipe.utils.UIUtils;
 
 import javax.swing.*;
 
-public abstract class GeneralImageViewerPanelPlugin3D extends JIPipeImageViewerPlugin3D {
-    public GeneralImageViewerPanelPlugin3D(JIPipeImageViewer viewerPanel) {
+public abstract class GeneralImageViewerPanelPlugin3D extends JIPipeLegacyImageViewerPlugin3D {
+    public GeneralImageViewerPanelPlugin3D(JIPipeLegacyImageViewer viewerPanel) {
         super(viewerPanel);
     }
 

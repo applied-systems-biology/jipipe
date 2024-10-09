@@ -18,7 +18,7 @@ import ij.process.ImageProcessor;
 import org.hkijena.jipipe.desktop.commons.components.JIPipeDesktopFormPanel;
 import org.hkijena.jipipe.plugins.imagejdatatypes.util.ImageJUtils;
 import org.hkijena.jipipe.plugins.imagejdatatypes.util.ImageSliceIndex;
-import org.hkijena.jipipe.plugins.imageviewer.JIPipeImageViewer;
+import org.hkijena.jipipe.plugins.imageviewer.JIPipeLegacyImageViewer;
 import org.hkijena.jipipe.plugins.imageviewer.utils.viewer2d.ImageViewer2DDisplayRangeControl;
 import org.hkijena.jipipe.utils.ImageJCalibrationMode;
 import org.hkijena.jipipe.utils.UIUtils;
@@ -34,7 +34,7 @@ public class CalibrationPlugin2D extends GeneralImageViewerPanelPlugin2D {
 //    private JComboBox<ImageJCalibrationMode> calibrationModes;
 //    private JToggleButton autoCalibrateButton = new JToggleButton("Keep auto-calibrating", UIUtils.getIconFromResources("actions/view-refresh.png"));
 
-    public CalibrationPlugin2D(JIPipeImageViewer viewerPanel) {
+    public CalibrationPlugin2D(JIPipeLegacyImageViewer viewerPanel) {
         super(viewerPanel);
         initialize();
     }

@@ -26,8 +26,8 @@ import org.hkijena.jipipe.desktop.commons.components.JIPipeDesktopFormPanel;
 import org.hkijena.jipipe.desktop.commons.components.JIPipeDesktopParameterFormPanel;
 import org.hkijena.jipipe.plugins.expressions.JIPipeExpressionVariablesMap;
 import org.hkijena.jipipe.plugins.imagejdatatypes.datatypes.ImagePlusData;
-import org.hkijena.jipipe.plugins.imageviewer.JIPipeImageViewer;
-import org.hkijena.jipipe.plugins.imageviewer.JIPipeImageViewerPlugin3D;
+import org.hkijena.jipipe.plugins.imageviewer.JIPipeLegacyImageViewer;
+import org.hkijena.jipipe.plugins.imageviewer.JIPipeLegacyImageViewerPlugin3D;
 import org.hkijena.jipipe.plugins.imageviewer.utils.viewer3d.Image3DRenderType;
 import org.hkijena.jipipe.plugins.parameters.library.primitives.ranges.IntegerRange;
 import org.hkijena.jipipe.utils.StringUtils;
@@ -41,7 +41,7 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 
-public class SlicerControlsPlugin3D extends JIPipeImageViewerPlugin3D implements JIPipeParameterCollection.ParameterChangedEventListener {
+public class SlicerControlsPlugin3D extends JIPipeLegacyImageViewerPlugin3D implements JIPipeParameterCollection.ParameterChangedEventListener {
 
     private final JIPipeDesktopFormPanel orthoSliceEditor = new JIPipeDesktopFormPanel(JIPipeDesktopFormPanel.NONE);
 
@@ -55,7 +55,7 @@ public class SlicerControlsPlugin3D extends JIPipeImageViewerPlugin3D implements
 
     private JIPipeRunnable currentUpdateRun;
 
-    public SlicerControlsPlugin3D(JIPipeImageViewer viewerPanel) {
+    public SlicerControlsPlugin3D(JIPipeLegacyImageViewer viewerPanel) {
         super(viewerPanel);
         this.multiOrthoSliceEditor = new JIPipeDesktopParameterFormPanel(viewerPanel.getDesktopWorkbench(), multiOrthoSlicerSettings, null, JIPipeDesktopParameterFormPanel.NO_GROUP_HEADERS);
         initializeOrthoSliceEditor();

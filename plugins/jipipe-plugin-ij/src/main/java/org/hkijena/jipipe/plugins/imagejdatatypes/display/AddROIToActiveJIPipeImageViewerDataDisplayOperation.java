@@ -17,7 +17,7 @@ import org.hkijena.jipipe.api.data.JIPipeData;
 import org.hkijena.jipipe.desktop.api.data.JIPipeDesktopDataDisplayOperation;
 import org.hkijena.jipipe.api.data.JIPipeDataSource;
 import org.hkijena.jipipe.desktop.app.JIPipeDesktopWorkbench;
-import org.hkijena.jipipe.plugins.imageviewer.JIPipeImageViewer;
+import org.hkijena.jipipe.plugins.imageviewer.JIPipeLegacyImageViewer;
 import org.hkijena.jipipe.utils.UIUtils;
 
 import javax.swing.*;
@@ -25,7 +25,7 @@ import javax.swing.*;
 public class AddROIToActiveJIPipeImageViewerDataDisplayOperation implements JIPipeDesktopDataDisplayOperation {
     @Override
     public void display(JIPipeData data, String displayName, JIPipeDesktopWorkbench desktopWorkbench, JIPipeDataSource source) {
-        JIPipeImageViewer viewerPanel = JIPipeImageViewer.getActiveViewerPanel();
+        JIPipeLegacyImageViewer viewerPanel = JIPipeLegacyImageViewer.getActiveViewerPanel();
         if (viewerPanel == null) {
             JOptionPane.showMessageDialog(desktopWorkbench.getWindow(), "There is no active JIPipe image viewer.", "Add to active image viewer", JOptionPane.ERROR_MESSAGE);
         } else {

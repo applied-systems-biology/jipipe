@@ -16,7 +16,7 @@ package org.hkijena.jipipe.plugins.imageviewer.plugins2d;
 import ij.process.ColorProcessor;
 import ij.process.ImageProcessor;
 import org.hkijena.jipipe.desktop.commons.components.JIPipeDesktopFormPanel;
-import org.hkijena.jipipe.plugins.imageviewer.JIPipeImageViewer;
+import org.hkijena.jipipe.plugins.imageviewer.JIPipeLegacyImageViewer;
 import org.hkijena.jipipe.plugins.imageviewer.utils.viewer2d.ImageViewerPanelCanvas2D;
 import org.hkijena.jipipe.utils.UIUtils;
 
@@ -27,7 +27,7 @@ public class PixelInfoPlugin2D extends GeneralImageViewerPanelPlugin2D implement
 
     private final JLabel pixelInfoLabel = new JLabel(UIUtils.getIconFromResources("actions/tool-pointer.png"), JLabel.LEFT);
 
-    public PixelInfoPlugin2D(JIPipeImageViewer viewerPanel) {
+    public PixelInfoPlugin2D(JIPipeLegacyImageViewer viewerPanel) {
         super(viewerPanel);
         getViewerPanel2D().getCanvas().getPixelHoverEventEmitter().subscribe(this);
         updatePixelInfo(null);

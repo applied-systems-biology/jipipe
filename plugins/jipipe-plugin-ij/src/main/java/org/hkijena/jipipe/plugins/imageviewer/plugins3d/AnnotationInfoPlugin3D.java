@@ -17,8 +17,8 @@ import org.hkijena.jipipe.desktop.app.cache.JIPipeDesktopLegacyCacheDataViewerWi
 import org.hkijena.jipipe.desktop.app.cache.JIPipeDesktopCachedDataViewerAnnotationInfoPanel;
 import org.hkijena.jipipe.desktop.commons.components.JIPipeDesktopFormPanel;
 import org.hkijena.jipipe.plugins.imagejdatatypes.display.ImagePlusDataLegacyCacheDataViewerWindow;
-import org.hkijena.jipipe.plugins.imageviewer.JIPipeImageViewer;
-import org.hkijena.jipipe.plugins.imageviewer.JIPipeImageViewerPlugin3D;
+import org.hkijena.jipipe.plugins.imageviewer.JIPipeLegacyImageViewer;
+import org.hkijena.jipipe.plugins.imageviewer.JIPipeLegacyImageViewerPlugin3D;
 import org.hkijena.jipipe.utils.UIUtils;
 
 import javax.swing.*;
@@ -27,12 +27,12 @@ import javax.swing.*;
  * To be used with {@link ImagePlusDataLegacyCacheDataViewerWindow} and other similar implementations that
  * have access to the cache
  */
-public class AnnotationInfoPlugin3D extends JIPipeImageViewerPlugin3D {
+public class AnnotationInfoPlugin3D extends JIPipeLegacyImageViewerPlugin3D {
 
     private final JIPipeDesktopLegacyCacheDataViewerWindow cacheDataViewerWindow;
     private final JIPipeDesktopCachedDataViewerAnnotationInfoPanel infoPanel;
 
-    public AnnotationInfoPlugin3D(JIPipeImageViewer viewerPanel) {
+    public AnnotationInfoPlugin3D(JIPipeLegacyImageViewer viewerPanel) {
         super(viewerPanel);
         this.cacheDataViewerWindow = viewerPanel.getContextObject(JIPipeDesktopLegacyCacheDataViewerWindow.class);
         this.infoPanel = new JIPipeDesktopCachedDataViewerAnnotationInfoPanel(cacheDataViewerWindow.getWorkbench());

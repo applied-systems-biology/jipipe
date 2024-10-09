@@ -17,7 +17,7 @@ import ij.ImagePlus;
 import ij.process.ImageProcessor;
 import org.hkijena.jipipe.desktop.commons.components.JIPipeDesktopFormPanel;
 import org.hkijena.jipipe.plugins.imagejdatatypes.util.ImageJUtils;
-import org.hkijena.jipipe.plugins.imageviewer.JIPipeImageViewer;
+import org.hkijena.jipipe.plugins.imageviewer.JIPipeLegacyImageViewer;
 import org.hkijena.jipipe.plugins.imageviewer.utils.viewer3d.ImageViewer3DDisplayRangeControl;
 import org.hkijena.jipipe.utils.ImageJCalibrationMode;
 import org.hkijena.jipipe.utils.UIUtils;
@@ -31,7 +31,7 @@ public class CalibrationPlugin3D extends GeneralImageViewerPanelPlugin3D {
 
     private ImageViewer3DDisplayRangeControl displayRangeCalibrationControl;
 
-    public CalibrationPlugin3D(JIPipeImageViewer viewerPanel) {
+    public CalibrationPlugin3D(JIPipeLegacyImageViewer viewerPanel) {
         super(viewerPanel);
         initialize();
     }

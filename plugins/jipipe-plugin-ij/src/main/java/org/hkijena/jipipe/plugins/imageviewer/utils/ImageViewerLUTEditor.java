@@ -20,7 +20,7 @@ import org.hkijena.jipipe.desktop.commons.components.JIPipeDesktopPickEnumValueD
 import org.hkijena.jipipe.desktop.commons.components.icons.SolidColorIcon;
 import org.hkijena.jipipe.plugins.imagejdatatypes.datatypes.LUTData;
 import org.hkijena.jipipe.plugins.imagejdatatypes.util.ImageJUtils;
-import org.hkijena.jipipe.plugins.imageviewer.JIPipeImageViewer;
+import org.hkijena.jipipe.plugins.imageviewer.JIPipeLegacyImageViewer;
 import org.hkijena.jipipe.plugins.parameters.library.colors.ColorMap;
 import org.hkijena.jipipe.plugins.parameters.library.colors.ColorMapEnumItemInfo;
 import org.hkijena.jipipe.plugins.settings.JIPipeFileChooserApplicationSettings;
@@ -43,7 +43,7 @@ import java.util.List;
  * Based on {@link org.jdesktop.swingx.JXGradientChooser}
  */
 public abstract class ImageViewerLUTEditor extends JPanel implements ThumbListener {
-    private final JIPipeImageViewer imageViewerPanel;
+    private final JIPipeLegacyImageViewer imageViewerPanel;
     private final int targetChannel;
     private final SolidColorIcon changeColorButtonDisplayedColor = new SolidColorIcon(16, 16);
     private ColorMap lastColorMap = ColorMap.viridis;
@@ -57,7 +57,7 @@ public abstract class ImageViewerLUTEditor extends JPanel implements ThumbListen
     private String channelName;
     private LUT cachedLUT;
 
-    public ImageViewerLUTEditor(JIPipeImageViewer imageViewerPanel, int targetChannel) {
+    public ImageViewerLUTEditor(JIPipeLegacyImageViewer imageViewerPanel, int targetChannel) {
         this.imageViewerPanel = imageViewerPanel;
         this.targetChannel = targetChannel;
         this.channelName = "Channel " + (targetChannel + 1);
@@ -420,7 +420,7 @@ public abstract class ImageViewerLUTEditor extends JPanel implements ThumbListen
     }
 
 
-    public JIPipeImageViewer getImageViewerPanel() {
+    public JIPipeLegacyImageViewer getImageViewerPanel() {
         return imageViewerPanel;
     }
 

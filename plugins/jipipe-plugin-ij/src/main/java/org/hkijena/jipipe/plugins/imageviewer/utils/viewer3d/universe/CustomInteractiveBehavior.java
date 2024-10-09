@@ -15,7 +15,7 @@ package org.hkijena.jipipe.plugins.imageviewer.utils.viewer3d.universe;
 
 import ij3d.Content;
 import ij3d.behaviors.InteractiveBehavior;
-import org.hkijena.jipipe.plugins.imageviewer.ImageViewerPanel3D;
+import org.hkijena.jipipe.plugins.imageviewer.LegacyImageViewerPanel3D;
 
 import javax.swing.*;
 import java.awt.event.MouseEvent;
@@ -23,11 +23,11 @@ import java.awt.event.MouseWheelEvent;
 
 public class CustomInteractiveBehavior extends InteractiveBehavior {
 
-    private final ImageViewerPanel3D imageViewerPanel3D;
+    private final LegacyImageViewerPanel3D imageViewerPanel3D;
 
     private long kineticZoomLastTick;
 
-    public CustomInteractiveBehavior(ImageViewerPanel3D imageViewerPanel3D, CustomImage3DUniverse universe) {
+    public CustomInteractiveBehavior(LegacyImageViewerPanel3D imageViewerPanel3D, CustomImage3DUniverse universe) {
         super(universe);
         this.imageViewerPanel3D = imageViewerPanel3D;
     }

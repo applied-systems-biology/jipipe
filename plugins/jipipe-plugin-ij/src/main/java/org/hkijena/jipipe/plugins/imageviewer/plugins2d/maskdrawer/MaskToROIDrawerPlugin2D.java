@@ -20,7 +20,7 @@ import ij.plugin.filter.ParticleAnalyzer;
 import ij.plugin.frame.RoiManager;
 import org.hkijena.jipipe.desktop.commons.components.JIPipeDesktopFormPanel;
 import org.hkijena.jipipe.plugins.imagejdatatypes.datatypes.ROI2DListData;
-import org.hkijena.jipipe.plugins.imageviewer.JIPipeImageViewer;
+import org.hkijena.jipipe.plugins.imageviewer.JIPipeLegacyImageViewer;
 import org.hkijena.jipipe.plugins.imageviewer.plugins2d.roimanager.ROIManagerPlugin2D;
 
 import java.util.Arrays;
@@ -29,7 +29,7 @@ import java.util.Arrays;
  * Mask drawer with function to add ROIs to the ROI manager
  */
 public class MaskToROIDrawerPlugin2D extends MaskDrawerPlugin2D {
-    public MaskToROIDrawerPlugin2D(JIPipeImageViewer viewerPanel) {
+    public MaskToROIDrawerPlugin2D(JIPipeLegacyImageViewer viewerPanel) {
         super(viewerPanel);
         setMaskGenerator(this::generateMask);
     }

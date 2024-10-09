@@ -38,8 +38,8 @@ import org.hkijena.jipipe.desktop.commons.components.ribbon.*;
 import org.hkijena.jipipe.plugins.imagejdatatypes.datatypes.ROI2DListData;
 import org.hkijena.jipipe.plugins.imagejdatatypes.util.ImageJUtils;
 import org.hkijena.jipipe.plugins.imagejdatatypes.util.ImageSliceIndex;
-import org.hkijena.jipipe.plugins.imageviewer.JIPipeImageViewer;
-import org.hkijena.jipipe.plugins.imageviewer.JIPipeImageViewerPlugin2D;
+import org.hkijena.jipipe.plugins.imageviewer.JIPipeLegacyImageViewer;
+import org.hkijena.jipipe.plugins.imageviewer.JIPipeLegacyImageViewerPlugin2D;
 import org.hkijena.jipipe.plugins.imageviewer.plugins2d.roimanager.ROIManagerPlugin2D;
 import org.hkijena.jipipe.plugins.imageviewer.utils.viewer2d.ImageViewerPanelCanvas2D;
 import org.hkijena.jipipe.plugins.imageviewer.utils.viewer2d.ImageViewerPanelCanvas2DTool;
@@ -66,7 +66,7 @@ import java.util.function.Consumer;
 import java.util.function.Function;
 import java.util.function.Supplier;
 
-public class MaskDrawerPlugin2D extends JIPipeImageViewerPlugin2D implements ImageViewerPanelCanvas2D.ToolChangedEventListener {
+public class MaskDrawerPlugin2D extends JIPipeLegacyImageViewerPlugin2D implements ImageViewerPanelCanvas2D.ToolChangedEventListener {
 
     public static final Stroke STROKE_GUIDE_LINE = new BasicStroke(1, BasicStroke.CAP_ROUND, BasicStroke.JOIN_BEVEL, 0, new float[]{1}, 0);
     private final JPanel colorSelectionPanel = new JPanel();
@@ -90,7 +90,7 @@ public class MaskDrawerPlugin2D extends JIPipeImageViewerPlugin2D implements Ima
     private JIPipeDesktopSmallButtonRibbonAction exportToRoiManagerAction;
     private boolean drawCurrentMaskSlicePreview;
 
-    public MaskDrawerPlugin2D(JIPipeImageViewer viewerPanel) {
+    public MaskDrawerPlugin2D(JIPipeLegacyImageViewer viewerPanel) {
         super(viewerPanel);
 //        viewerPanel.setRotationEnabled(false);
         initialize();

@@ -14,11 +14,11 @@
 package org.hkijena.jipipe.plugins.imageviewer.utils.viewer3d;
 
 import ij.ImagePlus;
-import org.hkijena.jipipe.plugins.imageviewer.JIPipeImageViewer;
+import org.hkijena.jipipe.plugins.imageviewer.JIPipeLegacyImageViewer;
 import org.hkijena.jipipe.plugins.imageviewer.utils.ImageViewerLUTEditor;
 
 public class ImageViewer3DLUTEditor extends ImageViewerLUTEditor {
-    public ImageViewer3DLUTEditor(JIPipeImageViewer imageViewerPanel, int targetChannel) {
+    public ImageViewer3DLUTEditor(JIPipeLegacyImageViewer imageViewerPanel, int targetChannel) {
         super(imageViewerPanel, targetChannel);
     }
 

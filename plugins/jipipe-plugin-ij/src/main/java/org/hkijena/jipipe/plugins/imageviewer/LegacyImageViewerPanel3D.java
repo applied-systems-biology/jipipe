@@ -76,8 +76,8 @@ import java.nio.file.Path;
 import java.util.List;
 import java.util.*;
 
-public class ImageViewerPanel3D extends JPanel implements JIPipeDesktopWorkbenchAccess, Disposable, UniverseListener, ComponentListener, JIPipeRunnable.FinishedEventListener {
-    private final JIPipeImageViewer imageViewer;
+public class LegacyImageViewerPanel3D extends JPanel implements JIPipeDesktopWorkbenchAccess, Disposable, UniverseListener, ComponentListener, JIPipeRunnable.FinishedEventListener {
+    private final JIPipeLegacyImageViewer imageViewer;
     private final ImageViewer3DUIApplicationSettings settings;
     private final JPanel rendererStatusPanel = new JPanel(new BorderLayout());
     private final JPanel dataStatusPanel = new JPanel(new BorderLayout());
@@ -111,7 +111,7 @@ public class ImageViewerPanel3D extends JPanel implements JIPipeDesktopWorkbench
     private JIPipeDesktopFormPanel bottomPanel;
     private UpdateLutAndCalibrationRun currentUpdateCalibrationRun;
 
-    public ImageViewerPanel3D(JIPipeImageViewer imageViewer) {
+    public LegacyImageViewerPanel3D(JIPipeLegacyImageViewer imageViewer) {
         this.imageViewer = imageViewer;
         if (JIPipe.getInstance() != null) {
             settings = ImageViewer3DUIApplicationSettings.getInstance();
@@ -454,7 +454,7 @@ public class ImageViewerPanel3D extends JPanel implements JIPipeDesktopWorkbench
         return imageViewer.getWorkbench();
     }
 
-    public JIPipeImageViewer getImageViewer() {
+    public JIPipeLegacyImageViewer getImageViewer() {
         return imageViewer;
     }
 
@@ -481,7 +481,7 @@ public class ImageViewerPanel3D extends JPanel implements JIPipeDesktopWorkbench
             universe.removeAllContents();
         }
         rebuildImageNow();
-        for (JIPipeImageViewerPlugin3D plugin3D : getImageViewer().getPlugins3D()) {
+        for (JIPipeLegacyImageViewerPlugin3D plugin3D : getImageViewer().getPlugins3D()) {
             plugin3D.onImageChanged();
         }
         refreshFormPanel();
@@ -495,10 +495,10 @@ public class ImageViewerPanel3D extends JPanel implements JIPipeDesktopWorkbench
         if (!active) {
             active = true;
             rebuildImageNow();
-            for (JIPipeImageViewerPlugin3D plugin3D : getImageViewer().getPlugins3D()) {
+            for (JIPipeLegacyImageViewerPlugin3D plugin3D : getImageViewer().getPlugins3D()) {
                 plugin3D.onViewerActivated();
             }
-            for (JIPipeImageViewerPlugin3D plugin3D : getImageViewer().getPlugins3D()) {
+            for (JIPipeLegacyImageViewerPlugin3D plugin3D : getImageViewer().getPlugins3D()) {
                 plugin3D.onImageChanged();
             }
             refreshFormPanel();
@@ -519,7 +519,7 @@ public class ImageViewerPanel3D extends JPanel implements JIPipeDesktopWorkbench
             scrollValues.put(entry.getKey(), entry.getValue().getScrollPane().getVerticalScrollBar().getValue());
             entry.getValue().clear();
         }
-        for (JIPipeImageViewerPlugin3D plugin : imageViewer.getPlugins3D()) {
+        for (JIPipeLegacyImageViewerPlugin3D plugin : imageViewer.getPlugins3D()) {
             JIPipeDesktopFormPanel formPanel = formPanels.getOrDefault(plugin.getCategory(), null);
             if (formPanel == null) {
                 formPanel = new JIPipeDesktopFormPanel(null, JIPipeDesktopFormPanel.WITH_SCROLLING);
@@ -679,7 +679,7 @@ public class ImageViewerPanel3D extends JPanel implements JIPipeDesktopWorkbench
                 setRendererStatus(RendererStatus.Initialized);
                 rebuildImageNow();
 
-                for (JIPipeImageViewerPlugin3D plugin3D : getImageViewer().getPlugins3D()) {
+                for (JIPipeLegacyImageViewerPlugin3D plugin3D : getImageViewer().getPlugins3D()) {
                     plugin3D.onViewerUniverseReady();
                 }
 
@@ -715,7 +715,7 @@ public class ImageViewerPanel3D extends JPanel implements JIPipeDesktopWorkbench
             scheduleUpdateLutAndCalibration();
             universe.setAutoAdjustView(false);
 
-            for (JIPipeImageViewerPlugin3D plugin3D : getImageViewer().getPlugins3D()) {
+            for (JIPipeLegacyImageViewerPlugin3D plugin3D : getImageViewer().getPlugins3D()) {
                 plugin3D.onImageContentReady(contents);
             }
         }
@@ -968,11 +968,11 @@ public class ImageViewerPanel3D extends JPanel implements JIPipeDesktopWorkbench
 
     public static class UpdateLutAndCalibrationRun extends AbstractJIPipeRunnable {
 
-        private final JIPipeImageViewer imageViewer;
+        private final JIPipeLegacyImageViewer imageViewer;
 
         private final List<Content> currentImageContents;
 
-        public UpdateLutAndCalibrationRun(JIPipeImageViewer imageViewer, List<Content> currentImageContents) {
+        public UpdateLutAndCalibrationRun(JIPipeLegacyImageViewer imageViewer, List<Content> currentImageContents) {
             this.imageViewer = imageViewer;
             this.currentImageContents = currentImageContents;
         }
@@ -1060,12 +1060,12 @@ public class ImageViewerPanel3D extends JPanel implements JIPipeDesktopWorkbench
 
     public static class UniverseInitializerRun extends AbstractJIPipeRunnable {
 
-        private final ImageViewerPanel3D panel3D;
+        private final LegacyImageViewerPanel3D panel3D;
         private RendererStatus status = RendererStatus.ErrorGeneric;
 
         private CustomImage3DUniverse universe;
 
-        public UniverseInitializerRun(ImageViewerPanel3D panel3D) {
+        public UniverseInitializerRun(LegacyImageViewerPanel3D panel3D) {
             this.panel3D = panel3D;
         }
 
@@ -1096,14 +1096,14 @@ public class ImageViewerPanel3D extends JPanel implements JIPipeDesktopWorkbench
 
     public static class ImageLoaderRun extends AbstractJIPipeRunnable {
 
-        private final ImageViewerPanel3D viewerPanel3D;
+        private final LegacyImageViewerPanel3D viewerPanel3D;
         private final Image3DRenderType renderType;
         private final int resamplingFactor;
         private final List<Content> contents = new ArrayList<>();
         private ImagePlusData imageData;
         private boolean imageWasConvertedTo8Bit;
 
-        public ImageLoaderRun(ImageViewerPanel3D viewerPanel3D, ImagePlusData imageData, Image3DRenderType renderType, int resamplingFactor) {
+        public ImageLoaderRun(LegacyImageViewerPanel3D viewerPanel3D, ImagePlusData imageData, Image3DRenderType renderType, int resamplingFactor) {
             this.viewerPanel3D = viewerPanel3D;
             this.imageData = imageData;
             this.renderType = renderType;
@@ -1131,7 +1131,7 @@ public class ImageViewerPanel3D extends JPanel implements JIPipeDesktopWorkbench
                 return;
             }
             ImagePlus generatedImage = imagePlus;
-            for (JIPipeImageViewerPlugin3D plugin3D : viewerPanel3D.getImageViewer().getPlugins3D()) {
+            for (JIPipeLegacyImageViewerPlugin3D plugin3D : viewerPanel3D.getImageViewer().getPlugins3D()) {
                 generatedImage = plugin3D.preprocess(generatedImage, getProgressInfo().resolveAndLog("Preprocessing with " + plugin3D.getClass().getName()));
             }
             if (generatedImage.getType() != ImagePlus.COLOR_RGB && generatedImage.getType() != ImagePlus.GRAY8) {

@@ -16,7 +16,7 @@ package org.hkijena.jipipe.plugins.imageviewer.plugins3d;
 import ij.ImagePlus;
 import ij3d.Content;
 import org.hkijena.jipipe.desktop.commons.components.JIPipeDesktopFormPanel;
-import org.hkijena.jipipe.plugins.imageviewer.JIPipeImageViewer;
+import org.hkijena.jipipe.plugins.imageviewer.JIPipeLegacyImageViewer;
 import org.hkijena.jipipe.plugins.imageviewer.utils.ImageViewerOpacityLUTEditor;
 import org.hkijena.jipipe.plugins.imageviewer.utils.viewer3d.ImageViewer3DOpacityLUTEditor;
 import org.hkijena.jipipe.utils.UIUtils;
@@ -28,7 +28,7 @@ import java.util.List;
 public class OpacityManagerPlugin3D extends GeneralImageViewerPanelPlugin3D {
     private final List<ImageViewerOpacityLUTEditor> alphaLutEditors = new ArrayList<>();
 
-    public OpacityManagerPlugin3D(JIPipeImageViewer viewerPanel) {
+    public OpacityManagerPlugin3D(JIPipeLegacyImageViewer viewerPanel) {
         super(viewerPanel);
     }
 

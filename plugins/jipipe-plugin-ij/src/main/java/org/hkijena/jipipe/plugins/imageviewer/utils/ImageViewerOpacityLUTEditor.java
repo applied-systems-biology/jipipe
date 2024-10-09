@@ -19,7 +19,7 @@ import ij.process.LUT;
 import org.hkijena.jipipe.desktop.commons.components.icons.SolidColorIcon;
 import org.hkijena.jipipe.plugins.imagejdatatypes.datatypes.LUTData;
 import org.hkijena.jipipe.plugins.imagejdatatypes.util.ImageJUtils;
-import org.hkijena.jipipe.plugins.imageviewer.JIPipeImageViewer;
+import org.hkijena.jipipe.plugins.imageviewer.JIPipeLegacyImageViewer;
 import org.hkijena.jipipe.plugins.settings.JIPipeFileChooserApplicationSettings;
 import org.hkijena.jipipe.utils.ColorUtils;
 import org.hkijena.jipipe.utils.UIUtils;
@@ -39,7 +39,7 @@ import java.util.List;
  * Based on {@link org.jdesktop.swingx.JXGradientChooser}
  */
 public abstract class ImageViewerOpacityLUTEditor extends JPanel implements ThumbListener {
-    private final JIPipeImageViewer imageViewerPanel;
+    private final JIPipeLegacyImageViewer imageViewerPanel;
     private final int targetChannel;
     private final SolidColorIcon changeColorButtonDisplayedColor = new SolidColorIcon(16, 16);
 
@@ -53,7 +53,7 @@ public abstract class ImageViewerOpacityLUTEditor extends JPanel implements Thum
     private String channelName;
     private LUT cachedLUT;
 
-    public ImageViewerOpacityLUTEditor(JIPipeImageViewer imageViewerPanel, int targetChannel) {
+    public ImageViewerOpacityLUTEditor(JIPipeLegacyImageViewer imageViewerPanel, int targetChannel) {
         this.imageViewerPanel = imageViewerPanel;
         this.targetChannel = targetChannel;
         this.channelName = "Channel " + (targetChannel + 1);
@@ -427,7 +427,7 @@ public abstract class ImageViewerOpacityLUTEditor extends JPanel implements Thum
     }
 
 
-    public JIPipeImageViewer getImageViewerPanel() {
+    public JIPipeLegacyImageViewer getImageViewerPanel() {
         return imageViewerPanel;
     }
 

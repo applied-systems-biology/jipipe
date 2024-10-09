@@ -30,7 +30,7 @@ import org.hkijena.jipipe.desktop.commons.components.ribbon.JIPipeDesktopRibbon;
 import org.hkijena.jipipe.desktop.commons.components.ribbon.JIPipeDesktopSmallButtonRibbonAction;
 import org.hkijena.jipipe.plugins.imagejdatatypes.datatypes.ROI2DListData;
 import org.hkijena.jipipe.plugins.imagejdatatypes.util.measure.ImageStatisticsSetParameter;
-import org.hkijena.jipipe.plugins.imageviewer.JIPipeImageViewer;
+import org.hkijena.jipipe.plugins.imageviewer.JIPipeLegacyImageViewer;
 import org.hkijena.jipipe.plugins.settings.JIPipeFileChooserApplicationSettings;
 import org.hkijena.jipipe.plugins.tables.datatypes.ResultsTableData;
 import org.hkijena.jipipe.utils.UIUtils;
@@ -52,7 +52,7 @@ public class MeasurementDrawerPlugin2D extends MaskDrawerPlugin2D implements Mas
     private final JXTable table = new JXTable();
     private ResultsTableData lastMeasurements;
 
-    public MeasurementDrawerPlugin2D(JIPipeImageViewer viewerPanel) {
+    public MeasurementDrawerPlugin2D(JIPipeLegacyImageViewer viewerPanel) {
         super(viewerPanel);
         initialize();
         getMaskChangedEventEmitter().subscribe(this);

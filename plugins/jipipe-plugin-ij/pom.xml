@@ -1,5 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
     <modelVersion>4.0.0</modelVersion>
     <parent>
         <artifactId>pom-jipipe</artifactId>
@@ -78,6 +79,16 @@
         <license.projectName>JIPipe-IJ</license.projectName>
     </properties>
 
+    <dependencyManagement>
+        <dependencies>
+            <dependency>
+                <groupId>edu.jhuapl.ses.vtk</groupId>
+                <artifactId>vtk-java-all</artifactId>
+                <version>9.2.6.0</version>
+            </dependency>
+        </dependencies>
+    </dependencyManagement>
+
     <dependencies>
         <dependency>
             <groupId>org.hkijena</groupId>
@@ -108,6 +119,10 @@
         <dependency>
             <groupId>sc.fiji</groupId>
             <artifactId>3D_Viewer</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>edu.jhuapl.ses.vtk</groupId>
+            <artifactId>vtk-java-all</artifactId>
         </dependency>
     </dependencies>
 

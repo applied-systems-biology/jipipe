@@ -44,8 +44,8 @@ import org.hkijena.jipipe.plugins.ijfilaments.util.FilamentEdge;
 import org.hkijena.jipipe.plugins.ijfilaments.util.FilamentVertex;
 import org.hkijena.jipipe.plugins.ijfilaments.util.FilamentsDrawer;
 import org.hkijena.jipipe.plugins.imagejdatatypes.util.ImageJUtils;
-import org.hkijena.jipipe.plugins.imageviewer.JIPipeImageViewer;
-import org.hkijena.jipipe.plugins.imageviewer.JIPipeImageViewerPlugin3D;
+import org.hkijena.jipipe.plugins.imageviewer.JIPipeLegacyImageViewer;
+import org.hkijena.jipipe.plugins.imageviewer.JIPipeLegacyImageViewerPlugin3D;
 import org.hkijena.jipipe.plugins.imageviewer.utils.viewer3d.Image3DRenderType;
 import org.hkijena.jipipe.plugins.parameters.library.markup.MarkdownText;
 import org.hkijena.jipipe.plugins.settings.JIPipeFileChooserApplicationSettings;
@@ -64,7 +64,7 @@ import java.util.List;
 import java.util.*;
 import java.util.stream.Collectors;
 
-public class FilamentsManagerPlugin3D extends JIPipeImageViewerPlugin3D implements JIPipeRunnable.FinishedEventListener {
+public class FilamentsManagerPlugin3D extends JIPipeLegacyImageViewerPlugin3D implements JIPipeRunnable.FinishedEventListener {
     private final JList<Filaments3DGraphData> filamentsListControl = new JList<>();
     private final JIPipeDesktopSmallToggleButtonRibbonAction displayROIViewMenuItem = new JIPipeDesktopSmallToggleButtonRibbonAction("Display filaments", "Determines whether filaments are displayed", UIUtils.getIconFromResources("actions/eye.png"));
     private final JIPipeDesktopSmallToggleButtonRibbonAction displayROIAsVolumeItem = new JIPipeDesktopSmallToggleButtonRibbonAction("Render as volume", "If enabled, render filaments as volume", UIUtils.getIconFromResources("actions/antivignetting.png"));
@@ -80,7 +80,7 @@ public class FilamentsManagerPlugin3D extends JIPipeImageViewerPlugin3D implemen
 
     private FilamentsDrawer filamentsDrawer = new FilamentsDrawer();
 
-    public FilamentsManagerPlugin3D(JIPipeImageViewer viewerPanel) {
+    public FilamentsManagerPlugin3D(JIPipeLegacyImageViewer viewerPanel) {
         super(viewerPanel);
         loadDefaults();
         initialize();
@@ -546,7 +546,7 @@ public class FilamentsManagerPlugin3D extends JIPipeImageViewerPlugin3D implemen
             return filamentsManagerPlugin3D;
         }
 
-        public JIPipeImageViewer getViewerPanel() {
+        public JIPipeLegacyImageViewer getViewerPanel() {
             return filamentsManagerPlugin3D.getViewerPanel();
         }
 

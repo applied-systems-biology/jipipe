@@ -41,7 +41,7 @@ import java.lang.reflect.Modifier;
 import java.util.List;
 import java.util.*;
 
-public class JIPipeImageViewer extends JPanel implements JIPipeDesktopWorkbenchAccess, Disposable {
+public class JIPipeLegacyImageViewer extends JPanel implements JIPipeDesktopWorkbenchAccess, Disposable {
 
     public static final List<Class<? extends JIPipeImageViewerPlugin>> DEFAULT_PLUGINS = new ArrayList<>(Arrays.asList(CalibrationPlugin2D.class,
             PixelInfoPlugin2D.class,
@@ -58,8 +58,8 @@ public class JIPipeImageViewer extends JPanel implements JIPipeDesktopWorkbenchA
             AnimationSpeedPlugin3D.class,
             SlicerControlsPlugin3D.class,
             AnnotationInfoPlugin3D.class));
-    private static final Set<JIPipeImageViewer> OPEN_PANELS = new HashSet<>();
-    private static JIPipeImageViewer ACTIVE_PANEL = null;
+    private static final Set<JIPipeLegacyImageViewer> OPEN_PANELS = new HashSet<>();
+    private static JIPipeLegacyImageViewer ACTIVE_PANEL = null;
     private final JIPipeDesktopWorkbench workbench;
     private final Map<Class<?>, Object> contextObjects;
     private final JToolBar toolBar = new JToolBar();
@@ -67,15 +67,15 @@ public class JIPipeImageViewer extends JPanel implements JIPipeDesktopWorkbenchA
     private final JPanel toolBarDynamicContent = new JPanel(new BorderLayout());
 
     private final JPanel dynamicContent = new JPanel(new BorderLayout());
-    private final ImageViewerPanel2D imageViewerPanel2D;
+    private final LegacyImageViewerPanel2D imageViewerPanel2D;
 
-    private final ImageViewerPanel3D imageViewerPanel3D;
+    private final LegacyImageViewerPanel3D imageViewerPanel3D;
 
     private final List<JIPipeImageViewerPlugin> plugins = new ArrayList<>();
 
-    private final List<JIPipeImageViewerPlugin2D> plugins2D = new ArrayList<>();
+    private final List<JIPipeLegacyImageViewerPlugin2D> plugins2D = new ArrayList<>();
 
-    private final List<JIPipeImageViewerPlugin3D> plugins3D = new ArrayList<>();
+    private final List<JIPipeLegacyImageViewerPlugin3D> plugins3D = new ArrayList<>();
 
     private final Map<Class<? extends JIPipeImageViewerPlugin>, JIPipeImageViewerPlugin> pluginMap = new HashMap<>();
     private final JButton switchModeButton = new JButton();
@@ -90,11 +90,11 @@ public class JIPipeImageViewer extends JPanel implements JIPipeDesktopWorkbenchA
      *
      * @param workbench the workbench. Use {@link JIPipeDummyWorkbench} if you do not have access to one.
      */
-    public JIPipeImageViewer(JIPipeDesktopWorkbench workbench, List<Class<? extends JIPipeImageViewerPlugin>> pluginTypes, Map<Class<?>, Object> contextObjects) {
+    public JIPipeLegacyImageViewer(JIPipeDesktopWorkbench workbench, List<Class<? extends JIPipeImageViewerPlugin>> pluginTypes, Map<Class<?>, Object> contextObjects) {
         this.workbench = workbench;
         this.contextObjects = contextObjects;
-        imageViewerPanel2D = new ImageViewerPanel2D(this);
-        imageViewerPanel3D = new ImageViewerPanel3D(this);
+        imageViewerPanel2D = new LegacyImageViewerPanel2D(this);
+        imageViewerPanel3D = new LegacyImageViewerPanel3D(this);
         if (JIPipe.isInstantiated()) {
             settings = ImageViewerGeneralUIApplicationSettings.getInstance();
         } else {
@@ -114,11 +114,11 @@ public class JIPipeImageViewer extends JPanel implements JIPipeDesktopWorkbenchA
         }
     }
 
-    public static JIPipeImageViewer getActiveViewerPanel() {
+    public static JIPipeLegacyImageViewer getActiveViewerPanel() {
         return ACTIVE_PANEL;
     }
 
-    public static Set<JIPipeImageViewer> getOpenViewerPanels() {
+    public static Set<JIPipeLegacyImageViewer> getOpenViewerPanels() {
         return OPEN_PANELS;
     }
 
@@ -130,8 +130,8 @@ public class JIPipeImageViewer extends JPanel implements JIPipeDesktopWorkbenchA
      * @param title     the title
      * @return the panel
      */
-    public static JIPipeImageViewer showImage(JIPipeDesktopWorkbench workbench, ImagePlus image, String title) {
-        JIPipeImageViewer dataDisplay = new JIPipeImageViewer(workbench,
+    public static JIPipeLegacyImageViewer showImage(JIPipeDesktopWorkbench workbench, ImagePlus image, String title) {
+        JIPipeLegacyImageViewer dataDisplay = new JIPipeLegacyImageViewer(workbench,
                 Arrays.asList(CalibrationPlugin2D.class,
                         PixelInfoPlugin2D.class,
                         LUTManagerPlugin2D.class,
@@ -142,7 +142,7 @@ public class JIPipeImageViewer extends JPanel implements JIPipeDesktopWorkbenchA
                         CalibrationPlugin3D.class),
                 Collections.emptyMap());
         dataDisplay.setImageData(new ImagePlusData(image));
-        JIPipeImageViewerWindow window = new JIPipeImageViewerWindow(dataDisplay);
+        JIPipeLegacyImageViewerWindow window = new JIPipeLegacyImageViewerWindow(dataDisplay);
         window.setTitle(title);
         window.setVisible(true);
         return dataDisplay;
@@ -151,13 +151,13 @@ public class JIPipeImageViewer extends JPanel implements JIPipeDesktopWorkbenchA
     private void initializePlugins(List<Class<? extends JIPipeImageViewerPlugin>> pluginTypes) {
         for (Class<? extends JIPipeImageViewerPlugin> pluginType : pluginTypes) {
             Object plugin = ReflectionUtils.newInstance(pluginType, this);
-            if (plugin instanceof JIPipeImageViewerPlugin2D) {
-                JIPipeImageViewerPlugin2D plugin2D = (JIPipeImageViewerPlugin2D) plugin;
+            if (plugin instanceof JIPipeLegacyImageViewerPlugin2D) {
+                JIPipeLegacyImageViewerPlugin2D plugin2D = (JIPipeLegacyImageViewerPlugin2D) plugin;
                 plugins.add(plugin2D);
                 plugins2D.add(plugin2D);
                 pluginMap.put(pluginType, plugin2D);
-            } else if (plugin instanceof JIPipeImageViewerPlugin3D) {
-                JIPipeImageViewerPlugin3D plugin3D = (JIPipeImageViewerPlugin3D) plugin;
+            } else if (plugin instanceof JIPipeLegacyImageViewerPlugin3D) {
+                JIPipeLegacyImageViewerPlugin3D plugin3D = (JIPipeLegacyImageViewerPlugin3D) plugin;
                 plugins.add(plugin3D);
                 plugins3D.add(plugin3D);
                 pluginMap.put(pluginType, plugin3D);
@@ -165,11 +165,11 @@ public class JIPipeImageViewer extends JPanel implements JIPipeDesktopWorkbenchA
         }
     }
 
-    public ImageViewerPanel2D getImageViewerPanel2D() {
+    public LegacyImageViewerPanel2D getImageViewerPanel2D() {
         return imageViewerPanel2D;
     }
 
-    public ImageViewerPanel3D getImageViewerPanel3D() {
+    public LegacyImageViewerPanel3D getImageViewerPanel3D() {
         return imageViewerPanel3D;
     }
 
@@ -328,11 +328,11 @@ public class JIPipeImageViewer extends JPanel implements JIPipeDesktopWorkbenchA
         return Collections.unmodifiableList(plugins);
     }
 
-    public List<JIPipeImageViewerPlugin2D> getPlugins2D() {
+    public List<JIPipeLegacyImageViewerPlugin2D> getPlugins2D() {
         return Collections.unmodifiableList(plugins2D);
     }
 
-    public List<JIPipeImageViewerPlugin3D> getPlugins3D() {
+    public List<JIPipeLegacyImageViewerPlugin3D> getPlugins3D() {
         return Collections.unmodifiableList(plugins3D);
     }
 
@@ -417,7 +417,7 @@ public class JIPipeImageViewer extends JPanel implements JIPipeDesktopWorkbenchA
         setImageData(new ImagePlusData(image));
     }
 
-    public ImageViewerPanel2D getViewerPanel2D() {
+    public LegacyImageViewerPanel2D getViewerPanel2D() {
         return imageViewerPanel2D;
     }
 

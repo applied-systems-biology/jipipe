@@ -38,8 +38,8 @@ import org.hkijena.jipipe.plugins.ijtrackmate.parameters.SpotFeature;
 import org.hkijena.jipipe.plugins.ijtrackmate.settings.ImageViewerUISpotsDisplayApplicationSettings;
 import org.hkijena.jipipe.plugins.ijtrackmate.utils.SpotDrawer;
 import org.hkijena.jipipe.plugins.imagejdatatypes.util.ImageSliceIndex;
-import org.hkijena.jipipe.plugins.imageviewer.JIPipeImageViewer;
-import org.hkijena.jipipe.plugins.imageviewer.JIPipeImageViewerPlugin2D;
+import org.hkijena.jipipe.plugins.imageviewer.JIPipeLegacyImageViewer;
+import org.hkijena.jipipe.plugins.imageviewer.JIPipeLegacyImageViewerPlugin2D;
 import org.hkijena.jipipe.plugins.parameters.library.markup.MarkdownText;
 import org.hkijena.jipipe.plugins.settings.JIPipeFileChooserApplicationSettings;
 import org.hkijena.jipipe.plugins.tables.datatypes.ResultsTableData;
@@ -56,7 +56,7 @@ import java.util.List;
 import java.util.*;
 import java.util.stream.Collectors;
 
-public class SpotsManagerPlugin2D extends JIPipeImageViewerPlugin2D {
+public class SpotsManagerPlugin2D extends JIPipeLegacyImageViewerPlugin2D {
     private final JList<Spot> spotsListControl = new JList<>();
     private final JIPipeDesktopSmallToggleButtonRibbonAction displaySpotsViewMenuItem = new JIPipeDesktopSmallToggleButtonRibbonAction("Display spots", "Determines whether spots are displayed", UIUtils.getIconFromResources("actions/eye.png"));
     private final JIPipeDesktopSmallToggleButtonRibbonAction displayLabelsViewMenuItem = new JIPipeDesktopSmallToggleButtonRibbonAction("Display labels", "Determines whether spot labels are displayed", UIUtils.getIconFromResources("actions/tag.png"));
@@ -68,7 +68,7 @@ public class SpotsManagerPlugin2D extends JIPipeImageViewerPlugin2D {
     private SpotListCellRenderer spotsListCellRenderer;
     private JPanel mainPanel;
 
-    public SpotsManagerPlugin2D(JIPipeImageViewer viewerPanel) {
+    public SpotsManagerPlugin2D(JIPipeLegacyImageViewer viewerPanel) {
         super(viewerPanel);
         initializeDefaults();
         initialize();
@@ -452,7 +452,7 @@ public class SpotsManagerPlugin2D extends JIPipeImageViewerPlugin2D {
             return spotsManagerPlugin;
         }
 
-        public JIPipeImageViewer getViewerPanel() {
+        public JIPipeLegacyImageViewer getViewerPanel() {
             return spotsManagerPlugin.getViewerPanel();
         }
 

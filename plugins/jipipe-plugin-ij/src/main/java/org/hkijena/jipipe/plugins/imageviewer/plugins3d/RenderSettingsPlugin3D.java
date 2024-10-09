@@ -16,14 +16,14 @@ package org.hkijena.jipipe.plugins.imageviewer.plugins3d;
 import org.hkijena.jipipe.JIPipe;
 import org.hkijena.jipipe.desktop.commons.components.JIPipeDesktopFormPanel;
 import org.hkijena.jipipe.desktop.commons.components.JIPipeDesktopParameterFormPanel;
-import org.hkijena.jipipe.plugins.imageviewer.JIPipeImageViewer;
-import org.hkijena.jipipe.plugins.imageviewer.JIPipeImageViewerPlugin3D;
+import org.hkijena.jipipe.plugins.imageviewer.JIPipeLegacyImageViewer;
+import org.hkijena.jipipe.plugins.imageviewer.JIPipeLegacyImageViewerPlugin3D;
 import org.hkijena.jipipe.utils.UIUtils;
 
 import javax.swing.*;
 
-public class RenderSettingsPlugin3D extends JIPipeImageViewerPlugin3D {
-    public RenderSettingsPlugin3D(JIPipeImageViewer viewerPanel) {
+public class RenderSettingsPlugin3D extends JIPipeLegacyImageViewerPlugin3D {
+    public RenderSettingsPlugin3D(JIPipeLegacyImageViewer viewerPanel) {
         super(viewerPanel);
     }
 

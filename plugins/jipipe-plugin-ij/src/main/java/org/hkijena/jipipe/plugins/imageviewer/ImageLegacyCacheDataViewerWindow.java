@@ -26,10 +26,10 @@ import java.util.List;
 import java.util.Map;
 
 /**
- * A {@link JIPipeDesktopLegacyCacheDataViewerWindow} that contains a {@link JIPipeImageViewer}
+ * A {@link JIPipeDesktopLegacyCacheDataViewerWindow} that contains a {@link JIPipeLegacyImageViewer}
  */
 public abstract class ImageLegacyCacheDataViewerWindow extends JIPipeDesktopLegacyCacheDataViewerWindow implements WindowListener {
-    private JIPipeImageViewer imageViewer;
+    private JIPipeLegacyImageViewer imageViewer;
     private boolean fitImageTriggered;
 
     public ImageLegacyCacheDataViewerWindow(JIPipeDesktopWorkbench workbench, JIPipeDataTableDataSource dataSource, String displayName) {
@@ -42,7 +42,7 @@ public abstract class ImageLegacyCacheDataViewerWindow extends JIPipeDesktopLega
         List<Class<? extends JIPipeImageViewerPlugin>> plugins = new ArrayList<>();
         Map<Class<?>, Object> contextObjects = new HashMap<>();
         initializePlugins(plugins, contextObjects);
-        imageViewer = new JIPipeImageViewer(getWorkbench(), plugins, contextObjects);
+        imageViewer = new JIPipeLegacyImageViewer(getWorkbench(), plugins, contextObjects);
         setContentPane(imageViewer);
         revalidate();
         repaint();
@@ -50,13 +50,13 @@ public abstract class ImageLegacyCacheDataViewerWindow extends JIPipeDesktopLega
 
     /**
      * Override this method to register plugins and set context objects
-     * By default, it will register {@link JIPipeImageViewer}.DEFAULT_PLUGINS and the window as context object (accessor JIPipeCacheDataViewerWindow)
+     * By default, it will register {@link JIPipeLegacyImageViewer}.DEFAULT_PLUGINS and the window as context object (accessor JIPipeCacheDataViewerWindow)
      *
      * @param plugins        plugins to register
      * @param contextObjects the context objects to register
      */
     protected void initializePlugins(List<Class<? extends JIPipeImageViewerPlugin>> plugins, Map<Class<?>, Object> contextObjects) {
-        plugins.addAll(JIPipeImageViewer.DEFAULT_PLUGINS);
+        plugins.addAll(JIPipeLegacyImageViewer.DEFAULT_PLUGINS);
         contextObjects.put(JIPipeDesktopLegacyCacheDataViewerWindow.class, this);
         contextObjects.put(ImageLegacyCacheDataViewerWindow.class, this);
     }
@@ -76,7 +76,7 @@ public abstract class ImageLegacyCacheDataViewerWindow extends JIPipeDesktopLega
         imageViewer.setError(null);
     }
 
-    public JIPipeImageViewer getImageViewer() {
+    public JIPipeLegacyImageViewer getImageViewer() {
         return imageViewer;
     }
 

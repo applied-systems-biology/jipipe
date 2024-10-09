@@ -25,13 +25,13 @@ import org.scijava.Disposable;
 import javax.swing.*;
 
 public abstract class JIPipeImageViewerPlugin implements JIPipeDesktopWorkbenchAccess, Disposable {
-    private final JIPipeImageViewer viewerPanel;
+    private final JIPipeLegacyImageViewer viewerPanel;
 
-    public JIPipeImageViewerPlugin(JIPipeImageViewer viewerPanel) {
+    public JIPipeImageViewerPlugin(JIPipeLegacyImageViewer viewerPanel) {
         this.viewerPanel = viewerPanel;
     }
 
-    public JIPipeImageViewer getViewerPanel() {
+    public JIPipeLegacyImageViewer getViewerPanel() {
         return viewerPanel;
     }
 

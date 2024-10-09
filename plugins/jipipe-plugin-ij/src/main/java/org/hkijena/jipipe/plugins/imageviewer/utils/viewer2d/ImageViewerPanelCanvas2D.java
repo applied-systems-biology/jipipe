@@ -16,8 +16,8 @@ package org.hkijena.jipipe.plugins.imageviewer.utils.viewer2d;
 import org.hkijena.jipipe.api.events.AbstractJIPipeEvent;
 import org.hkijena.jipipe.api.events.JIPipeEventEmitter;
 import org.hkijena.jipipe.plugins.imagejdatatypes.util.ImageSliceIndex;
-import org.hkijena.jipipe.plugins.imageviewer.ImageViewerPanel2D;
-import org.hkijena.jipipe.plugins.imageviewer.JIPipeImageViewerPlugin2D;
+import org.hkijena.jipipe.plugins.imageviewer.LegacyImageViewerPanel2D;
+import org.hkijena.jipipe.plugins.imageviewer.JIPipeLegacyImageViewerPlugin2D;
 import org.hkijena.jipipe.utils.ui.events.*;
 
 import javax.swing.*;
@@ -32,7 +32,7 @@ import java.awt.image.BufferedImage;
 import java.awt.image.BufferedImageOp;
 
 public class ImageViewerPanelCanvas2D extends JPanel implements MouseListener, MouseMotionListener {
-    private final ImageViewerPanel2D imageViewerPanel;
+    private final LegacyImageViewerPanel2D imageViewerPanel;
     private final ToolChangedEventEmitter toolChangedEventEmitter = new ToolChangedEventEmitter();
     private final PixelHoverEventEmitter pixelHoverEventEmitter = new PixelHoverEventEmitter();
     private final MouseClickedEventEmitter mouseClickedEventEmitter = new MouseClickedEventEmitter();
@@ -54,7 +54,7 @@ public class ImageViewerPanelCanvas2D extends JPanel implements MouseListener, M
     private BufferedImage renderedError = null;
     private ImageViewerPanelCanvas2DTool tool;
 
-    public ImageViewerPanelCanvas2D(ImageViewerPanel2D imageViewerPanel) {
+    public ImageViewerPanelCanvas2D(LegacyImageViewerPanel2D imageViewerPanel) {
         this.imageViewerPanel = imageViewerPanel;
         setLayout(null);
         addMouseListener(this);
@@ -173,7 +173,7 @@ public class ImageViewerPanelCanvas2D extends JPanel implements MouseListener, M
             BufferedImageOp op = new AffineTransformOp(transform, zoom < 1 ? AffineTransformOp.TYPE_BILINEAR : AffineTransformOp.TYPE_NEAREST_NEIGHBOR);
             graphics2D.drawImage(image, op, contentX, contentY);
 //            graphics2D.drawImage(scaledImage, contentX, contentY, null);
-            for (JIPipeImageViewerPlugin2D plugin : imageViewerPanel.getImageViewer().getPlugins2D()) {
+            for (JIPipeLegacyImageViewerPlugin2D plugin : imageViewerPanel.getImageViewer().getPlugins2D()) {
                 plugin.postprocessDraw(graphics2D, new Rectangle(x, y, w, h), imageSliceIndex);
             }
             if (tool != null) {

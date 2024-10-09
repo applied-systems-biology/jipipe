@@ -15,13 +15,13 @@ package org.hkijena.jipipe.plugins.imageviewer.plugins3d;
 
 import ij.ImagePlus;
 import org.hkijena.jipipe.desktop.commons.components.JIPipeDesktopFormPanel;
-import org.hkijena.jipipe.plugins.imageviewer.JIPipeImageViewer;
+import org.hkijena.jipipe.plugins.imageviewer.JIPipeLegacyImageViewer;
 import org.hkijena.jipipe.utils.UIUtils;
 
 import javax.swing.*;
 
 public class AnimationSpeedPlugin3D extends GeneralImageViewerPanelPlugin3D {
-    public AnimationSpeedPlugin3D(JIPipeImageViewer viewerPanel) {
+    public AnimationSpeedPlugin3D(JIPipeLegacyImageViewer viewerPanel) {
         super(viewerPanel);
     }
 
