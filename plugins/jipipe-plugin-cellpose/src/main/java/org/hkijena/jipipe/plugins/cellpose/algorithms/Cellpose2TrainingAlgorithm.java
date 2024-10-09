@@ -27,6 +27,7 @@ import org.hkijena.jipipe.api.data.JIPipeDataSlotRole;
 import org.hkijena.jipipe.api.data.JIPipeInputDataSlot;
 import org.hkijena.jipipe.api.data.JIPipeSlotType;
 import org.hkijena.jipipe.api.data.storage.JIPipeFileSystemWriteDataStorage;
+import org.hkijena.jipipe.api.environments.ExternalEnvironmentParameterSettings;
 import org.hkijena.jipipe.api.environments.JIPipeEnvironment;
 import org.hkijena.jipipe.api.nodes.AddJIPipeInputSlot;
 import org.hkijena.jipipe.api.nodes.AddJIPipeOutputSlot;
@@ -198,6 +199,7 @@ public class Cellpose2TrainingAlgorithm extends JIPipeSingleIterationAlgorithm i
     @SetJIPipeDocumentation(name = "Override Python environment", description = "If enabled, a different Python environment is used for this Node. Otherwise " +
             "the one in the Project > Application settings > Extensions > Cellpose is used.")
     @JIPipeParameter("override-environment")
+    @ExternalEnvironmentParameterSettings(showCategory = "Cellpose", allowArtifact = true, artifactFilters = {"com.github.mouseland.cellpose:*"})
     public OptionalPythonEnvironment getOverrideEnvironment() {
         return overrideEnvironment;
     }
