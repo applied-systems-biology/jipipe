@@ -23,6 +23,7 @@ import java.net.URL;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.Collection;
+import java.util.Random;
 import java.util.function.Predicate;
 
 /**
@@ -32,6 +33,7 @@ public class StringUtils {
 
     public static final char[] INVALID_FILESYSTEM_CHARACTERS = new char[]{'<', '>', ':', '"', '/', '\\', '|', '?', '*', '{', '}'};
     public static final char[] INVALID_JSONIFY_CHARACTERS = new char[]{'<', '>', ':', '"', '/', '\\', '|', '?', '*', '{', '}', ' ', '_'};
+    private static final Random RANDOM = new Random();
 
     private StringUtils() {
 
@@ -209,6 +211,20 @@ public class StringUtils {
         if (text == null)
             text = "";
         return "<html>" + wordWrappedHTMLElement(text, wrapColumn) + "</html>";
+    }
+
+    /**
+     * Generates a random string
+     * @param characters the available characters
+     * @param length the length
+     * @return the string
+     */
+    public static String generateRandomString(String characters, int length) {
+        StringBuilder stringBuilder = new StringBuilder();
+        for (int i = 0; i < length; i++) {
+            stringBuilder.append(characters.charAt(RANDOM.nextInt(characters.length())));
+        }
+        return stringBuilder.toString();
     }
 
     /**

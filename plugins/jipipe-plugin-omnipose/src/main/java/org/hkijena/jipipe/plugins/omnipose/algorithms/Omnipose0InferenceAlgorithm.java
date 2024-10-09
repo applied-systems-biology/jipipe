@@ -238,7 +238,7 @@ public class Omnipose0InferenceAlgorithm extends JIPipeSingleIterationAlgorithm 
                 modelInfo.modelPretrained = true;
                 modelInfo.modelNameOrPath = modelData.getPretrainedModelName();
             } else {
-                Path tempDirectory = PathUtils.createTempDirectory(workDirectory.resolve("models"), "model");
+                Path tempDirectory = PathUtils.createTempSubDirectory(workDirectory.resolve("models"), "model");
                 modelData.exportData(new JIPipeFileSystemWriteDataStorage(modelProgress, tempDirectory), null, false, modelProgress);
                 modelInfo.modelPretrained = false;
                 modelInfo.modelNameOrPath = tempDirectory.resolve(modelData.getMetadata().getName()).toString();
@@ -255,7 +255,7 @@ public class Omnipose0InferenceAlgorithm extends JIPipeSingleIterationAlgorithm 
         for (int i = 0; i < modelInfos.size(); i++) {
             CellposeModelInfo modelInfo = modelInfos.get(i);
             JIPipeProgressInfo modelProgress = progressInfo.resolve("Model", i, modelInfos.size());
-            processModel(PathUtils.createTempDirectory(workDirectory, "run"), modelInfo, iterationStep, iterationContext, runContext, modelProgress);
+            processModel(PathUtils.createTempSubDirectory(workDirectory, "run"), modelInfo, iterationStep, iterationContext, runContext, modelProgress);
         }
 
         // Cleanup

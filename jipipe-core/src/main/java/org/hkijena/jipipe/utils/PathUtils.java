@@ -31,10 +31,8 @@ import java.nio.file.attribute.PosixFilePermission;
 import java.security.DigestInputStream;
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
-import java.util.ArrayList;
-import java.util.Arrays;
+import java.util.*;
 import java.util.List;
-import java.util.Set;
 import java.util.function.Predicate;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
@@ -43,6 +41,10 @@ import java.util.stream.Stream;
  * Utilities for handling paths
  */
 public class PathUtils {
+
+    private static final String RANDOM_TMP_CHARACTERS = "abcdefghijklmnopqrstuvwxyz0123456789";
+    private static final int RANDOM_TMP_LENGTH = 7;
+
     private PathUtils() {
 
     }
@@ -560,15 +562,84 @@ public class PathUtils {
         }
     }
 
-    public static Path createTempDirectory(Path root, String prefix) {
+    /**
+     * Create a unique subdirectory rooted at system-wide temporary directory
+     * @param prefix the prefix (can be null, but not recommended)
+     * @return the temporary directory
+     */
+    public static Path createGlobalTempDirectory(String prefix) {
+        Path rootDir = Paths.get(System.getProperty("java.io.tmpdir"));
+        return createTempSubDirectory(rootDir, prefix);
+    }
+
+    /**
+     * Create a unique subdirectory rooted at the root path
+     * @param root the root directory
+     * @return the temporary directory
+     */
+    public static Path createTempSubDirectory(Path root) {
+        return createTempSubDirectory(root, null);
+    }
+
+    /**
+     * Create a unique subdirectory rooted at the root path
+     * @param root the root directory
+     * @param prefix the prefix (can be null)
+     * @return the temporary directory
+     */
+    public static Path createTempSubDirectory(Path root, String prefix) {
         try {
             Files.createDirectories(root);
-            return Files.createTempDirectory(root, prefix);
+            while(true) {
+                Path path = root.resolve(StringUtils.nullToEmpty(prefix) + StringUtils.generateRandomString(RANDOM_TMP_CHARACTERS, RANDOM_TMP_LENGTH));
+                if(!Files.exists(path)) {
+                    Files.createDirectories(path);
+                    return path;
+                }
+            }
         } catch (IOException e) {
             throw new RuntimeException(e);
         }
     }
 
+    /**
+     * Creates a path to a file that does not exist yet
+     * The file will be located in the system-wide temporary path
+     * @param prefix the file name prefix (can be null)
+     * @param suffix the file name suffix (can be null)
+     * @return the path
+     */
+    public static Path createGlobalTempFilePath(String prefix, String suffix) {
+        Path rootDir = Paths.get(System.getProperty("java.io.tmpdir"));
+        return createSubTempFilePath(rootDir, prefix, suffix);
+    }
+
+    /**
+     * Creates a path to a file that does not exist yet
+     * @param root the root directory
+     * @param prefix the file name prefix (can be null)
+     * @param suffix the file name suffix (can be null)
+     * @return the path
+     */
+    public static Path createSubTempFilePath(Path root, String prefix, String suffix) {
+        try {
+            Files.createDirectories(root);
+            while(true) {
+                Path path = root.resolve(StringUtils.nullToEmpty(prefix) +
+                        StringUtils.generateRandomString(RANDOM_TMP_CHARACTERS, RANDOM_TMP_LENGTH) + StringUtils.nullToEmpty(suffix));
+                if(!Files.exists(path)) {
+                    return path;
+                }
+            }
+        } catch (IOException e) {
+            throw new RuntimeException(e);
+        }
+    }
+
+    /**
+     * Same as Files.createDirectories, but throws a {@link RuntimeException}
+     * @param path the path
+     */
     public static void createDirectories(Path path) {
         try {
             Files.createDirectories(path);
