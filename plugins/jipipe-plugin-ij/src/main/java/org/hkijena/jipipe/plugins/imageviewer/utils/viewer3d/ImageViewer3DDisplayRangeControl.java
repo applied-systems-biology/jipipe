@@ -17,7 +17,7 @@ import ij.ImagePlus;
 import ij.process.ImageStatistics;
 import org.hkijena.jipipe.desktop.commons.theme.JIPipeDesktopModernMetalTheme;
 import org.hkijena.jipipe.plugins.imagejdatatypes.util.ImageJUtils;
-import org.hkijena.jipipe.plugins.imageviewer.plugins3d.CalibrationPlugin3D;
+import org.hkijena.jipipe.plugins.imageviewer.legacy.plugins3d.CalibrationPlugin3D;
 import org.hkijena.jipipe.utils.ImageJCalibrationMode;
 import org.hkijena.jipipe.utils.UIUtils;
 import org.jdesktop.swingx.JXMultiThumbSlider;

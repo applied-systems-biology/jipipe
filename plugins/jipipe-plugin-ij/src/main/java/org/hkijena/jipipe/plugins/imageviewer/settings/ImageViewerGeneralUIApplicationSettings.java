@@ -30,6 +30,7 @@ public class ImageViewerGeneralUIApplicationSettings extends JIPipeDefaultApplic
 
     public static String ID = "image-viewer-ui-general";
     private boolean autoSwitch2D3DViewer = false;
+    private boolean forceLegacyImageViewer = false;
 
     public static ImageViewerGeneralUIApplicationSettings getInstance() {
         return JIPipe.getSettings().getById(ID, ImageViewerGeneralUIApplicationSettings.class);
@@ -44,6 +45,17 @@ public class ImageViewerGeneralUIApplicationSettings extends JIPipeDefaultApplic
     @JIPipeParameter("auto-switch-2d-3d")
     public void setAutoSwitch2D3DViewer(boolean autoSwitch2D3DViewer) {
         this.autoSwitch2D3DViewer = autoSwitch2D3DViewer;
+    }
+
+    @SetJIPipeDocumentation(name = "Force legacy image viewer", description = "If enabled, always use the legacy image viewer instead of the VTK-based one")
+    @JIPipeParameter("force-legacy-image-viewer")
+    public boolean isForceLegacyImageViewer() {
+        return forceLegacyImageViewer;
+    }
+
+    @JIPipeParameter("force-legacy-image-viewer")
+    public void setForceLegacyImageViewer(boolean forceLegacyImageViewer) {
+        this.forceLegacyImageViewer = forceLegacyImageViewer;
     }
 
     @Override

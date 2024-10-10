@@ -21,7 +21,7 @@ import org.hkijena.jipipe.desktop.app.JIPipeDesktopWorkbench;
 import org.hkijena.jipipe.plugins.imagejdatatypes.datatypes.ImagePlusData;
 import org.hkijena.jipipe.plugins.imagejdatatypes.datatypes.OMEImageData;
 import org.hkijena.jipipe.plugins.imagejdatatypes.datatypes.ROI2DListData;
-import org.hkijena.jipipe.plugins.imageviewer.ImageLegacyCacheDataViewerWindow;
+import org.hkijena.jipipe.plugins.imageviewer.legacy.ImageLegacyCacheDataViewerWindow;
 
 public class ImagePlusDataLegacyCacheDataViewerWindow extends ImageLegacyCacheDataViewerWindow {
     private CustomDataLoader customDataLoader;

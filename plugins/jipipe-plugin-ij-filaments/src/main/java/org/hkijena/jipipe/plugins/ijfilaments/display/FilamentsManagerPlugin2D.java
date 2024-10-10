@@ -32,8 +32,8 @@ import org.hkijena.jipipe.plugins.ijfilaments.util.FilamentEdge;
 import org.hkijena.jipipe.plugins.ijfilaments.util.FilamentVertex;
 import org.hkijena.jipipe.plugins.ijfilaments.util.FilamentsDrawer;
 import org.hkijena.jipipe.plugins.imagejdatatypes.util.ImageSliceIndex;
-import org.hkijena.jipipe.plugins.imageviewer.JIPipeLegacyImageViewer;
-import org.hkijena.jipipe.plugins.imageviewer.JIPipeLegacyImageViewerPlugin2D;
+import org.hkijena.jipipe.plugins.imageviewer.legacy.JIPipeDesktopLegacyImageViewer;
+import org.hkijena.jipipe.plugins.imageviewer.legacy.api.JIPipeDesktopLegacyImageViewerPlugin2D;
 import org.hkijena.jipipe.plugins.parameters.library.markup.MarkdownText;
 import org.hkijena.jipipe.plugins.settings.JIPipeFileChooserApplicationSettings;
 import org.hkijena.jipipe.plugins.tables.datatypes.ResultsTableData;
@@ -50,7 +50,7 @@ import java.util.List;
 import java.util.*;
 import java.util.stream.Collectors;
 
-public class FilamentsManagerPlugin2D extends JIPipeLegacyImageViewerPlugin2D {
+public class FilamentsManagerPlugin2D extends JIPipeDesktopLegacyImageViewerPlugin2D {
     private final JList<Filaments3DGraphData> filamentsListControl = new JList<>();
     private final JIPipeDesktopSmallToggleButtonRibbonAction displayFilamentsViewMenuItem = new JIPipeDesktopSmallToggleButtonRibbonAction("Display filaments", "Determines whether filaments are displayed", UIUtils.getIconFromResources("actions/eye.png"));
     private final List<SelectionContextPanel> selectionContextPanels = new ArrayList<>();
@@ -61,7 +61,7 @@ public class FilamentsManagerPlugin2D extends JIPipeLegacyImageViewerPlugin2D {
     private FilamentListCellRenderer filamentListCellRenderer;
     private JPanel mainPanel;
 
-    public FilamentsManagerPlugin2D(JIPipeLegacyImageViewer viewerPanel) {
+    public FilamentsManagerPlugin2D(JIPipeDesktopLegacyImageViewer viewerPanel) {
         super(viewerPanel);
         initializeDefaults();
         initialize();
@@ -409,7 +409,7 @@ public class FilamentsManagerPlugin2D extends JIPipeLegacyImageViewerPlugin2D {
             return filamentsManagerPlugin2D;
         }
 
-        public JIPipeLegacyImageViewer getViewerPanel() {
+        public JIPipeDesktopLegacyImageViewer getViewerPanel() {
             return filamentsManagerPlugin2D.getViewerPanel();
         }
 

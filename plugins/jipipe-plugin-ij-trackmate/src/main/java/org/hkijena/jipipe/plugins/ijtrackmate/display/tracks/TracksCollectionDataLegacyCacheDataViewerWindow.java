@@ -20,8 +20,8 @@ import org.hkijena.jipipe.api.data.sources.JIPipeDataTableDataSource;
 import org.hkijena.jipipe.desktop.app.JIPipeDesktopWorkbench;
 import org.hkijena.jipipe.plugins.ijtrackmate.datatypes.TrackCollectionData;
 import org.hkijena.jipipe.plugins.ijtrackmate.display.spots.SpotsManagerPlugin2D;
-import org.hkijena.jipipe.plugins.imageviewer.ImageLegacyCacheDataViewerWindow;
-import org.hkijena.jipipe.plugins.imageviewer.JIPipeImageViewerPlugin;
+import org.hkijena.jipipe.plugins.imageviewer.legacy.ImageLegacyCacheDataViewerWindow;
+import org.hkijena.jipipe.plugins.imageviewer.legacy.api.JIPipeDesktopLegacyImageViewerPlugin;
 
 import java.util.List;
 import java.util.Map;
@@ -33,7 +33,7 @@ public class TracksCollectionDataLegacyCacheDataViewerWindow extends ImageLegacy
     }
 
     @Override
-    protected void initializePlugins(List<Class<? extends JIPipeImageViewerPlugin>> plugins, Map<Class<?>, Object> contextObjects) {
+    protected void initializePlugins(List<Class<? extends JIPipeDesktopLegacyImageViewerPlugin>> plugins, Map<Class<?>, Object> contextObjects) {
         super.initializePlugins(plugins, contextObjects);
         plugins.add(SpotsManagerPlugin2D.class);
         plugins.add(TracksManagerPlugin2D.class);

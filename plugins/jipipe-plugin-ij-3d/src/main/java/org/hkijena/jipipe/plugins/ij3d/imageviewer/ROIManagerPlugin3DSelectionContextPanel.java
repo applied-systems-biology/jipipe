@@ -15,7 +15,7 @@ package org.hkijena.jipipe.plugins.ij3d.imageviewer;
 
 import org.hkijena.jipipe.plugins.ij3d.datatypes.ROI3D;
 import org.hkijena.jipipe.plugins.ij3d.datatypes.ROI3DListData;
-import org.hkijena.jipipe.plugins.imageviewer.JIPipeLegacyImageViewer;
+import org.hkijena.jipipe.plugins.imageviewer.legacy.JIPipeDesktopLegacyImageViewer;
 
 import javax.swing.*;
 import java.util.List;
@@ -32,7 +32,7 @@ public abstract class ROIManagerPlugin3DSelectionContextPanel extends JPanel {
         return roiManagerPlugin;
     }
 
-    public JIPipeLegacyImageViewer getViewerPanel() {
+    public JIPipeDesktopLegacyImageViewer getViewerPanel() {
         return roiManagerPlugin.getViewerPanel();
     }
 

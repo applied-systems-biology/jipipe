@@ -45,8 +45,8 @@ import org.hkijena.jipipe.plugins.ij3d.datatypes.ROI3DListData;
 import org.hkijena.jipipe.plugins.ij3d.utils.Roi3DDrawer;
 import org.hkijena.jipipe.plugins.imagejalgorithms.parameters.Neighborhood3D;
 import org.hkijena.jipipe.plugins.imagejdatatypes.datatypes.ROI2DListData;
-import org.hkijena.jipipe.plugins.imageviewer.JIPipeLegacyImageViewer;
-import org.hkijena.jipipe.plugins.imageviewer.JIPipeLegacyImageViewerPlugin3D;
+import org.hkijena.jipipe.plugins.imageviewer.legacy.JIPipeDesktopLegacyImageViewer;
+import org.hkijena.jipipe.plugins.imageviewer.legacy.api.JIPipeDesktopLegacyImageViewerPlugin3D;
 import org.hkijena.jipipe.plugins.imageviewer.utils.viewer3d.Image3DRenderType;
 import org.hkijena.jipipe.plugins.settings.JIPipeFileChooserApplicationSettings;
 import org.hkijena.jipipe.plugins.tables.datatypes.ResultsTableData;
@@ -61,7 +61,7 @@ import java.util.List;
 import java.util.*;
 import java.util.stream.Collectors;
 
-public class ROIManagerPlugin3D extends JIPipeLegacyImageViewerPlugin3D implements JIPipeRunnable.FinishedEventListener {
+public class ROIManagerPlugin3D extends JIPipeDesktopLegacyImageViewerPlugin3D implements JIPipeRunnable.FinishedEventListener {
     private final JList<ROI3D> roiListControl = new JList<>();
     private final JIPipeDesktopLargeToggleButtonRibbonAction displayROIViewMenuItem = new JIPipeDesktopLargeToggleButtonRibbonAction("Display ROI", "Determines whether ROI are displayed", UIUtils.getIcon32FromResources("data-types/roi.png"));
     private final JIPipeDesktopSmallToggleButtonRibbonAction displayROIAsVolumeItem = new JIPipeDesktopSmallToggleButtonRibbonAction("Render as volume", "If enabled, render ROI as volume", UIUtils.getIconFromResources("actions/antivignetting.png"));
@@ -76,7 +76,7 @@ public class ROIManagerPlugin3D extends JIPipeLegacyImageViewerPlugin3D implemen
     private ROI3DToContentConverterRun currentRendererRun;
     private Content currentRendereredContent;
 
-    public ROIManagerPlugin3D(JIPipeLegacyImageViewer viewerPanel) {
+    public ROIManagerPlugin3D(JIPipeDesktopLegacyImageViewer viewerPanel) {
         super(viewerPanel);
         loadDefaults();
         initialize();

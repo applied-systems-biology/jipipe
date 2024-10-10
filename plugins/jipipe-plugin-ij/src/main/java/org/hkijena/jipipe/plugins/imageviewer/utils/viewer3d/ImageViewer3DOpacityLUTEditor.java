@@ -13,11 +13,11 @@
 
 package org.hkijena.jipipe.plugins.imageviewer.utils.viewer3d;
 
-import org.hkijena.jipipe.plugins.imageviewer.JIPipeLegacyImageViewer;
+import org.hkijena.jipipe.plugins.imageviewer.legacy.JIPipeDesktopLegacyImageViewer;
 import org.hkijena.jipipe.plugins.imageviewer.utils.ImageViewerOpacityLUTEditor;
 
 public class ImageViewer3DOpacityLUTEditor extends ImageViewerOpacityLUTEditor {
-    public ImageViewer3DOpacityLUTEditor(JIPipeLegacyImageViewer imageViewerPanel, int targetChannel) {
+    public ImageViewer3DOpacityLUTEditor(JIPipeDesktopLegacyImageViewer imageViewerPanel, int targetChannel) {
         super(imageViewerPanel, targetChannel);
     }
 

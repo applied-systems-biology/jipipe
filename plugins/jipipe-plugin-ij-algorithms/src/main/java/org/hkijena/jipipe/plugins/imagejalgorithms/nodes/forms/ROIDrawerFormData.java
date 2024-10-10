@@ -26,12 +26,12 @@ import org.hkijena.jipipe.plugins.forms.datatypes.FormData;
 import org.hkijena.jipipe.plugins.imagejdatatypes.datatypes.ImagePlusData;
 import org.hkijena.jipipe.plugins.imagejdatatypes.datatypes.ROI2DListData;
 import org.hkijena.jipipe.plugins.imagejdatatypes.util.ImageJUtils;
-import org.hkijena.jipipe.plugins.imageviewer.JIPipeLegacyImageViewer;
-import org.hkijena.jipipe.plugins.imageviewer.plugins2d.CalibrationPlugin2D;
-import org.hkijena.jipipe.plugins.imageviewer.plugins2d.LUTManagerPlugin2D;
-import org.hkijena.jipipe.plugins.imageviewer.plugins2d.PixelInfoPlugin2D;
-import org.hkijena.jipipe.plugins.imageviewer.plugins2d.maskdrawer.MaskToROIDrawerPlugin2D;
-import org.hkijena.jipipe.plugins.imageviewer.plugins2d.roimanager.ROIManagerPlugin2D;
+import org.hkijena.jipipe.plugins.imageviewer.legacy.JIPipeDesktopLegacyImageViewer;
+import org.hkijena.jipipe.plugins.imageviewer.legacy.plugins2d.CalibrationPlugin2D;
+import org.hkijena.jipipe.plugins.imageviewer.legacy.plugins2d.LUTManagerPlugin2D;
+import org.hkijena.jipipe.plugins.imageviewer.legacy.plugins2d.PixelInfoPlugin2D;
+import org.hkijena.jipipe.plugins.imageviewer.legacy.plugins2d.maskdrawer.MaskToROIDrawerPlugin2D;
+import org.hkijena.jipipe.plugins.imageviewer.legacy.plugins2d.roimanager.ROIManagerPlugin2D;
 
 import java.awt.*;
 import java.util.Arrays;
@@ -45,7 +45,7 @@ public class ROIDrawerFormData extends FormData {
 
     private final List<JIPipeMultiIterationStep> iterationSteps;
     private final DrawROIAlgorithm drawROIAlgorithm;
-    private JIPipeLegacyImageViewer imageViewerPanel;
+    private JIPipeDesktopLegacyImageViewer imageViewerPanel;
 
     private ROIManagerPlugin2D roiManagerPlugin;
     private MaskToROIDrawerPlugin2D maskDrawerPlugin;
@@ -58,7 +58,7 @@ public class ROIDrawerFormData extends FormData {
     }
 
     private void initializeImageViewer() {
-        imageViewerPanel = new JIPipeLegacyImageViewer(new JIPipeDesktopDummyWorkbench(), Arrays.asList(CalibrationPlugin2D.class,
+        imageViewerPanel = new JIPipeDesktopLegacyImageViewer(new JIPipeDesktopDummyWorkbench(), Arrays.asList(CalibrationPlugin2D.class,
                 PixelInfoPlugin2D.class,
                 LUTManagerPlugin2D.class,
                 ROIManagerPlugin2D.class,
@@ -73,7 +73,7 @@ public class ROIDrawerFormData extends FormData {
         }
     }
 
-    public JIPipeLegacyImageViewer getImageViewerPanel() {
+    public JIPipeDesktopLegacyImageViewer getImageViewerPanel() {
         if (imageViewerPanel == null || maskDrawerPlugin == null) {
             initializeImageViewer();
         }

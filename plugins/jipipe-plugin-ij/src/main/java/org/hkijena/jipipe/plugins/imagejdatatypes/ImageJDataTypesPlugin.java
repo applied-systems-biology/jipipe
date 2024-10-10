@@ -80,8 +80,8 @@ import org.hkijena.jipipe.plugins.imagejdatatypes.util.AVICompression;
 import org.hkijena.jipipe.plugins.imagejdatatypes.util.BitDepth;
 import org.hkijena.jipipe.plugins.imagejdatatypes.util.OptionalBitDepth;
 import org.hkijena.jipipe.plugins.imagejdatatypes.util.ROIElementDrawingMode;
-import org.hkijena.jipipe.plugins.imageviewer.settings.ImageViewer2DUIApplicationSettings;
-import org.hkijena.jipipe.plugins.imageviewer.settings.ImageViewer3DUIApplicationSettings;
+import org.hkijena.jipipe.plugins.imageviewer.settings.LegacyImageViewer2DUIApplicationSettings;
+import org.hkijena.jipipe.plugins.imageviewer.settings.LegacyImageViewer3DUIApplicationSettings;
 import org.hkijena.jipipe.plugins.imageviewer.settings.ImageViewerGeneralUIApplicationSettings;
 import org.hkijena.jipipe.plugins.parameters.library.jipipe.PluginCategoriesEnumParameter;
 import org.hkijena.jipipe.plugins.parameters.library.markup.HTMLText;
@@ -122,7 +122,13 @@ public class ImageJDataTypesPlugin extends JIPipePrepackagedDefaultJavaPlugin {
             JIPipe.getJIPipeVersion(),
             "ImageJ integration");
 
+    private static boolean VTK_AVAILABLE = false;
+
     public ImageJDataTypesPlugin() {
+    }
+
+    public static boolean isVtkAvailable() {
+        return VTK_AVAILABLE;
     }
 
     @Override
@@ -396,8 +402,8 @@ public class ImageJDataTypesPlugin extends JIPipePrepackagedDefaultJavaPlugin {
                 "Determines how ROI elements are drawn");
 
         // Register settings
-        registerApplicationSettingsSheet(new ImageViewer2DUIApplicationSettings());
-        registerApplicationSettingsSheet(new ImageViewer3DUIApplicationSettings());
+        registerApplicationSettingsSheet(new LegacyImageViewer2DUIApplicationSettings());
+        registerApplicationSettingsSheet(new LegacyImageViewer3DUIApplicationSettings());
 
         // Register data types
         registerDatatype("imagej-ome",
@@ -469,9 +475,7 @@ public class ImageJDataTypesPlugin extends JIPipePrepackagedDefaultJavaPlugin {
 
         registerDatatype("imagej-roi", ROI2DListData.class, ResourceUtils.getPluginResource("icons/data-types/roi.png"),
                 null, ROIDataPreview.class,
-                new AddToROIManagerDataDisplayOperation(),
-                new AddROIToActiveJIPipeImageViewerDataDisplayOperation(),
-                new AddROIToJIPipeImageViewerDataDisplayOperation());
+                new AddToROIManagerDataDisplayOperation());
         registerDatatype("imagej-lut", LUTData.class, ResourceUtils.getPluginResource("icons/data-types/lut.png"));
         registerImageJDataImporter("roi-from-roi-manager", new RoiManagerImageJImporter(), RoiManagerImageJImporterUI.class);
         registerImageJDataExporter("roi-to-roi-manager", new RoiManagerImageJExporter(), DefaultImageJDataExporterUI.class);
@@ -595,6 +599,7 @@ public class ImageJDataTypesPlugin extends JIPipePrepackagedDefaultJavaPlugin {
             VTKUtils.VTK_NATIVES_EXTRACT_PATH = PathUtils.createDirectories(PathUtils.getJIPipeUserDir().resolve("contrib").resolve("vtk-native"));
             VTKUtils.loadVtkNativeLibraries();
             progressInfo.log("Initializing VTK ... successful");
+            VTK_AVAILABLE = true;
         } catch (Throwable e) {
             progressInfo.log("Initializing VTK ... failed!");
             progressInfo.log(ExceptionUtils.getStackTrace(e));
