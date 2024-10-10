@@ -82,9 +82,9 @@
     <dependencyManagement>
         <dependencies>
             <dependency>
-                <groupId>edu.jhuapl.ses.vtk</groupId>
-                <artifactId>vtk-java-all</artifactId>
-                <version>9.2.6.0</version>
+                <groupId>org.jzy3d</groupId>
+                <artifactId>vtk-java8-wrapper</artifactId>
+                <version>2.2.1-SNAPSHOT</version>
             </dependency>
         </dependencies>
     </dependencyManagement>
@@ -121,8 +121,8 @@
             <artifactId>3D_Viewer</artifactId>
         </dependency>
         <dependency>
-            <groupId>edu.jhuapl.ses.vtk</groupId>
-            <artifactId>vtk-java-all</artifactId>
+            <groupId>org.jzy3d</groupId>
+            <artifactId>vtk-java8-wrapper</artifactId>
         </dependency>
     </dependencies>
 

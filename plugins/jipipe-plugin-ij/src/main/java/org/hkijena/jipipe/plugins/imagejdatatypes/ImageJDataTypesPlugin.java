@@ -13,8 +13,6 @@
 
 package org.hkijena.jipipe.plugins.imagejdatatypes;
 
-import edu.jhuapl.ses.vtkjavanativelibs.VtkJavaNativeLibraryException;
-import edu.jhuapl.ses.vtkjavanativelibs.VtkNativeLibraries;
 import ome.xml.model.enums.DimensionOrder;
 import org.apache.commons.compress.utils.Sets;
 import org.apache.commons.lang3.exception.ExceptionUtils;
@@ -102,6 +100,7 @@ import org.hkijena.jipipe.utils.ResourceUtils;
 import org.hkijena.jipipe.utils.UIUtils;
 import org.scijava.Context;
 import org.scijava.plugin.Plugin;
+import vtk.VTKUtils;
 
 import javax.swing.*;
 import java.util.Arrays;
@@ -593,9 +592,10 @@ public class ImageJDataTypesPlugin extends JIPipePrepackagedDefaultJavaPlugin {
 
         progressInfo.log("Initializing VTK ...");
         try {
-            VtkNativeLibraries.initialize(PathUtils.createDirectories(PathUtils.getJIPipeUserDir().resolve("contrib").resolve("vtk-native")).toFile());
+            VTKUtils.VTK_NATIVES_EXTRACT_PATH = PathUtils.createDirectories(PathUtils.getJIPipeUserDir().resolve("contrib").resolve("vtk-native"));
+            VTKUtils.loadVtkNativeLibraries();
             progressInfo.log("Initializing VTK ... successful");
-        } catch (VtkJavaNativeLibraryException e) {
+        } catch (Throwable e) {
             progressInfo.log("Initializing VTK ... failed!");
             progressInfo.log(ExceptionUtils.getStackTrace(e));
         }

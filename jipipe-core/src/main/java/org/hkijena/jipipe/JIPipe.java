@@ -721,8 +721,7 @@ public class JIPipe extends AbstractService implements JIPipeService {
         JIPipeProgressInfo postprocessingProgress = progressInfo.resolveAndLog("Postprocessing");
         for (JIPipeDependency extension : registeredExtensions) {
             if (!failedExtensions.contains(extension) && extension instanceof JIPipeJavaPlugin) {
-                postprocessingProgress.log(extension.getDependencyId());
-                ((JIPipeJavaPlugin) extension).postprocess(postprocessingProgress);
+                ((JIPipeJavaPlugin) extension).postprocess(postprocessingProgress.resolveAndLog(extension.getDependencyId()));
             }
         }
         postprocessingProgress.log("Converting display operations to import operations ...");
@@ -991,8 +990,7 @@ public class JIPipe extends AbstractService implements JIPipeService {
         JIPipeProgressInfo postprocessingProgress = progressInfo.resolveAndLog("Postprocessing");
         for (JIPipeDependency extension : registeredExtensions) {
             if (!failedExtensions.contains(extension) && extension instanceof JIPipeJavaPlugin) {
-                postprocessingProgress.log(extension.getDependencyId());
-                ((JIPipeJavaPlugin) extension).postprocess(postprocessingProgress);
+                ((JIPipeJavaPlugin) extension).postprocess(postprocessingProgress.resolveAndLog(extension.getDependencyId()));
             }
         }
         postprocessingProgress.log("Converting display operations to import operations ...");

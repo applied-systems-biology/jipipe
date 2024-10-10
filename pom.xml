@@ -86,6 +86,14 @@ See the LICENSE file provided with this code for the full license.
             <id>imagej.public</id>
             <url>https://maven.imagej.net/content/groups/public</url>
         </repository>
+        <repository>
+            <id>jipipe-nexus-snapshots</id>
+            <url>https://jipipe.hki-jena.de/nexus/repository/jipipe-snapshots/</url>
+        </repository>
+        <repository>
+            <id>jipipe-nexus-releases</id>
+            <url>https://jipipe.hki-jena.de/nexus/repository/jipipe-releases/</url>
+        </repository>
     </repositories>
 
     <dependencyManagement>
@@ -353,7 +361,58 @@ See the LICENSE file provided with this code for the full license.
 
         <!-- Versions -->
         <jipipe.version>${project.version}</jipipe.version>
+        <vtk.version>9.2.6</vtk.version>
     </properties>
+
+    <profiles>
+        <profile>
+            <id>Unix</id>
+            <activation>
+                <os>
+                    <family>unix</family>
+                </os>
+            </activation>
+            <properties>
+                <vtk.platform>linux_x86_64</vtk.platform>
+            </properties>
+        </profile>
+        <profile>
+            <id>MacOS x86_64</id>
+            <activation>
+                <os>
+                    <family>mac</family>
+                    <arch>x86_64</arch>
+                </os>
+            </activation>
+
+            <properties>
+                <vtk.platform>macos_x86_64</vtk.platform>
+            </properties>
+        </profile>
+        <profile>
+            <id>MacOS Aarch64</id>
+            <activation>
+                <os>
+                    <family>mac</family>
+                    <arch>aarch64</arch>
+                </os>
+            </activation>
+            <properties>
+                <vtk.platform>macos_aarch64</vtk.platform>
+            </properties>
+        </profile>
+        <profile>
+            <id>Windows</id>
+            <activation>
+                <os>
+                    <family>Windows</family>
+                </os>
+            </activation>
+            <properties>
+                <vtk.platform>windows_x86_64</vtk.platform>
+            </properties>
+        </profile>
+    </profiles>
 
     <modules>
         <module>jipipe-core</module>
