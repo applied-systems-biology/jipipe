@@ -32,7 +32,6 @@ import org.hkijena.jipipe.desktop.commons.components.JIPipeDesktopPathEditorComp
 import org.hkijena.jipipe.desktop.commons.components.ribbon.JIPipeDesktopCheckBoxRibbonAction;
 import org.hkijena.jipipe.desktop.commons.components.ribbon.JIPipeDesktopRibbon;
 import org.hkijena.jipipe.desktop.commons.components.ribbon.JIPipeDesktopSmallButtonRibbonAction;
-import org.hkijena.jipipe.desktop.commons.components.tabs.JIPipeDesktopTabPane;
 import org.hkijena.jipipe.plugins.imagejdatatypes.datatypes.ImagePlusData;
 import org.hkijena.jipipe.plugins.imagejdatatypes.util.*;
 import org.hkijena.jipipe.plugins.imageviewer.legacy.JIPipeDesktopLegacyImageViewer;
@@ -379,11 +378,19 @@ public class JIPipeDesktopLegacyImageViewerPanel2D extends JPanel implements JIP
     public void buildRibbon(JIPipeDesktopRibbon ribbon) {
         buildViewRibbon(ribbon);
         buildExportRibbon(ribbon);
+        buildAnimationRibbon(ribbon);
 
         // Build plugin ribbons
         for (JIPipeDesktopLegacyImageViewerPlugin2D plugin : imageViewer.getPlugins2D()) {
             plugin.buildRibbon(ribbon);
         }
+    }
+
+    private void buildAnimationRibbon(JIPipeDesktopRibbon ribbon) {
+        JIPipeDesktopRibbon.Task animationTask = ribbon.getOrCreateTask("Animation");
+        JIPipeDesktopRibbon.Band exportBand = animationTask.getOrCreateBand("Export");
+        exportBand.addLargeButton("To movie", "Exports the all slices as image file",  UIUtils.getIcon32FromResources("actions/filmgrain.png"), this::exportVideo);
+        exportBand.addComponent(UIUtils.boxHorizontal(new JLabel("FPS"), Box.createHorizontalStrut(8), animationFPSControl), 1, new Insets(2,2,2,2));
     }
 
     private void buildViewRibbon(JIPipeDesktopRibbon ribbon) {
@@ -676,10 +683,6 @@ public class JIPipeDesktopLegacyImageViewerPanel2D extends JPanel implements JIP
         boolean hasMultipleSlices = image != null && image.getImage().getNDimensions() > 2;
         exportAllSlicesItem.setVisible(hasMultipleSlices);
         exportMovieItem.setVisible(hasMultipleSlices);
-    }
-
-    public JSpinner getAnimationFPSControl() {
-        return animationFPSControl;
     }
 
     /**

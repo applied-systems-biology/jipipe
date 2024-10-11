@@ -53,8 +53,7 @@ public class JIPipeDesktopLegacyImageViewer extends JPanel implements JIPipeDesk
             CompositeManagerPlugin2D.class,
             ROIManagerPlugin2D.class,
             AnimationSpeedPlugin2D.class,
-            MeasurementDrawerPlugin2D.class,
-            AnnotationInfoPlugin2D.class));
+            MeasurementDrawerPlugin2D.class));
     private final JIPipeDesktopWorkbench workbench;
     private final Map<Class<?>, Object> contextObjects;
     private final JIPipeDesktopLegacyImageViewerPanel2D imageViewerPanel2D;

@@ -16,9 +16,11 @@ package org.hkijena.jipipe.plugins.imageviewer.legacy.plugins2d;
 import ij.process.ColorProcessor;
 import ij.process.ImageProcessor;
 import org.hkijena.jipipe.desktop.commons.components.JIPipeDesktopFormPanel;
+import org.hkijena.jipipe.desktop.commons.components.ribbon.JIPipeDesktopRibbon;
 import org.hkijena.jipipe.plugins.imageviewer.legacy.JIPipeDesktopLegacyImageViewer;
 import org.hkijena.jipipe.plugins.imageviewer.utils.viewer2d.ImageViewerPanelCanvas2D;
 import org.hkijena.jipipe.utils.UIUtils;
+import org.hkijena.jipipe.utils.ui.JIPipeDesktopDockPanel;
 
 import javax.swing.*;
 import java.awt.*;
@@ -34,13 +36,18 @@ public class PixelInfoPlugin2D extends GeneralImageViewerPanelPlugin2D implement
     }
 
     @Override
-    public ImageProcessor draw(int c, int z, int t, ImageProcessor processor) {
-        return processor;
+    public void buildRibbon(JIPipeDesktopRibbon ribbon) {
+
     }
 
     @Override
-    public void initializeSettingsPanel(JIPipeDesktopFormPanel formPanel) {
-        formPanel.addWideToForm(pixelInfoLabel, null);
+    public void buildDock(JIPipeDesktopDockPanel dockPanel) {
+
+    }
+
+    @Override
+    public void buildStatusBar(JPanel statusBar) {
+        statusBar.add(pixelInfoLabel);
     }
 
     private void updatePixelInfo(Point coordinate) {

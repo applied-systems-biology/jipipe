@@ -486,6 +486,12 @@ public class JIPipeDesktopRibbon extends JPanel {
             add(ribbonAction);
             return ribbonAction;
         }
+
+        public Action addComponent(Component component, int height, Insets insets) {
+            Action action = new Action(component, height, insets);
+            add(action);
+            return action;
+        }
     }
 
     /**
@@ -504,6 +510,12 @@ public class JIPipeDesktopRibbon extends JPanel {
             this.insets = insets;
         }
 
+        /**
+         * Adds multiple components in a row
+         * @param components the components in a row
+         * @param height the height occupied by this action
+         * @param insets the insets
+         */
         public Action(List<Component> components, int height, Insets insets) {
             this.components = components;
             this.height = height;
