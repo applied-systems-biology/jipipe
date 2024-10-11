@@ -19,8 +19,10 @@ import org.hkijena.jipipe.api.data.JIPipeDataSource;
 import org.hkijena.jipipe.desktop.app.JIPipeDesktopWorkbench;
 import org.hkijena.jipipe.desktop.app.JIPipeDesktopWorkbenchAccess;
 import org.hkijena.jipipe.desktop.commons.components.JIPipeDesktopFormPanel;
+import org.hkijena.jipipe.desktop.commons.components.ribbon.JIPipeDesktopRibbon;
 import org.hkijena.jipipe.plugins.imagejdatatypes.datatypes.ImagePlusData;
 import org.hkijena.jipipe.plugins.imageviewer.legacy.JIPipeDesktopLegacyImageViewer;
+import org.hkijena.jipipe.utils.ui.JIPipeDesktopDockPanel;
 import org.scijava.Disposable;
 
 import javax.swing.*;
@@ -66,16 +68,6 @@ public abstract class JIPipeDesktopLegacyImageViewerPlugin implements JIPipeDesk
      * Called when the current image is changed
      */
     public void onImageChanged() {
-
-    }
-
-    /**
-     * Called when the form panel should be recreated
-     *
-     * @param formPanel the form panel
-     */
-    public void initializeSettingsPanel(JIPipeDesktopFormPanel formPanel) {
-
     }
 
     /**
@@ -116,4 +108,10 @@ public abstract class JIPipeDesktopLegacyImageViewerPlugin implements JIPipeDesk
     public void onOverlaysCleared() {
 
     }
+
+    public abstract void buildRibbon(JIPipeDesktopRibbon ribbon);
+
+    public abstract void buildDock(JIPipeDesktopDockPanel dockPanel);
+
+    public abstract void buildStatusBar(JPanel statusBar);
 }

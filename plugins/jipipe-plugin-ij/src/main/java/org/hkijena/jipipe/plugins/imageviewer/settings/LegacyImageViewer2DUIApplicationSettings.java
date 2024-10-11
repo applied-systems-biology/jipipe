@@ -29,13 +29,9 @@ import javax.swing.*;
 public class LegacyImageViewer2DUIApplicationSettings extends JIPipeDefaultApplicationsSettingsSheet {
 
     public static String ID = "org.hkijena.jipipe:image-viewer-ui-2d";
-    private boolean showSideBar = true;
     private double defaultAnimationFPS = 24;
     private double zoomBaseSpeed = 0.05;
-
     private double zoomDynamicSpeed = 0.1;
-
-
     private boolean exportAsDisplayed = true;
 
     public static LegacyImageViewer2DUIApplicationSettings getInstance() {
@@ -52,17 +48,6 @@ public class LegacyImageViewer2DUIApplicationSettings extends JIPipeDefaultAppli
     @JIPipeParameter("export-as-displayed")
     public void setExportAsDisplayed(boolean exportAsDisplayed) {
         this.exportAsDisplayed = exportAsDisplayed;
-    }
-
-    @SetJIPipeDocumentation(name = "Show side bar", description = "If enabled, show a side bar with additional settings and tools")
-    @JIPipeParameter("show-side-bar")
-    public boolean isShowSideBar() {
-        return showSideBar;
-    }
-
-    @JIPipeParameter("show-side-bar")
-    public void setShowSideBar(boolean showSideBar) {
-        this.showSideBar = showSideBar;
     }
 
     @SetJIPipeDocumentation(name = "Animation FPS", description = "The default animation FPS")

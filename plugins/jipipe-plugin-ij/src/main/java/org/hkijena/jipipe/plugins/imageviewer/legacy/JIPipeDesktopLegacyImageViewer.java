@@ -24,6 +24,7 @@ import org.hkijena.jipipe.api.data.JIPipeDataSource;
 import org.hkijena.jipipe.desktop.app.JIPipeDesktopWorkbench;
 import org.hkijena.jipipe.desktop.app.JIPipeDesktopWorkbenchAccess;
 import org.hkijena.jipipe.desktop.app.JIPipeDummyWorkbench;
+import org.hkijena.jipipe.desktop.commons.components.ribbon.JIPipeDesktopRibbon;
 import org.hkijena.jipipe.plugins.imagejdatatypes.datatypes.ImagePlusData;
 import org.hkijena.jipipe.plugins.imagejdatatypes.util.ImageJUtils;
 import org.hkijena.jipipe.plugins.imageviewer.legacy.api.JIPipeDesktopLegacyImageViewerPlugin;
@@ -35,6 +36,7 @@ import org.hkijena.jipipe.plugins.imageviewer.legacy.plugins2d.roimanager.ROIMan
 import org.hkijena.jipipe.plugins.imageviewer.settings.ImageViewerGeneralUIApplicationSettings;
 import org.hkijena.jipipe.utils.ReflectionUtils;
 import org.hkijena.jipipe.utils.UIUtils;
+import org.hkijena.jipipe.utils.ui.JIPipeDesktopDockPanel;
 import org.scijava.Disposable;
 
 import javax.swing.*;
@@ -55,11 +57,6 @@ public class JIPipeDesktopLegacyImageViewer extends JPanel implements JIPipeDesk
             AnnotationInfoPlugin2D.class));
     private final JIPipeDesktopWorkbench workbench;
     private final Map<Class<?>, Object> contextObjects;
-    private final JToolBar toolBar = new JToolBar();
-
-    private final JPanel toolBarDynamicContent = new JPanel(new BorderLayout());
-
-    private final JPanel dynamicContent = new JPanel(new BorderLayout());
     private final JIPipeDesktopLegacyImageViewerPanel2D imageViewerPanel2D;
     private final List<JIPipeDesktopLegacyImageViewerPlugin> plugins = new ArrayList<>();
     private final List<JIPipeDesktopLegacyImageViewerPlugin2D> plugins2D = new ArrayList<>();
@@ -67,7 +64,6 @@ public class JIPipeDesktopLegacyImageViewer extends JPanel implements JIPipeDesk
     private final Map<Class<? extends JIPipeDesktopLegacyImageViewerPlugin>, JIPipeDesktopLegacyImageViewerPlugin> pluginMap = new HashMap<>();
     private final JLabel imageInfoLabel = new JLabel();
     private final List<Object> overlays = new ArrayList<>();
-    private final ImageViewerGeneralUIApplicationSettings settings;
     private ImagePlusData image;
     private JIPipeDataSource dataSource;
 
@@ -80,14 +76,8 @@ public class JIPipeDesktopLegacyImageViewer extends JPanel implements JIPipeDesk
         this.workbench = workbench;
         this.contextObjects = contextObjects;
         imageViewerPanel2D = new JIPipeDesktopLegacyImageViewerPanel2D(this);
-        if (JIPipe.isInstantiated()) {
-            settings = ImageViewerGeneralUIApplicationSettings.getInstance();
-        } else {
-            settings = new ImageViewerGeneralUIApplicationSettings();
-        }
         initializePlugins(pluginTypes);
         initialize();
-        switchTo2D();
     }
 
     public static void registerDefaultPlugin(Class<? extends JIPipeDesktopLegacyImageViewerPlugin> klass) {
@@ -140,24 +130,24 @@ public class JIPipeDesktopLegacyImageViewer extends JPanel implements JIPipeDesk
     }
 
     private void initialize() {
-        toolBar.setFloatable(false);
-        setLayout(new BorderLayout());
-        add(toolBar, BorderLayout.NORTH);
+        add(imageViewerPanel2D, BorderLayout.CENTER);
+    }
 
-        // Shared image controls
-        JButton openInImageJButton = new JButton("Open in ImageJ", UIUtils.getIconFromResources("apps/imagej.png"));
-        openInImageJButton.addActionListener(e -> openInImageJ());
+    public void buildRibbon(JIPipeDesktopRibbon ribbon) {
+        JIPipeDesktopRibbon.Task exportTask = ribbon.getOrCreateTask("Export");
+        JIPipeDesktopRibbon.Band imageBand = exportTask.addBand("Image");
+        imageBand.addLargeButton("ImageJ", "Open the image in ImageJ", UIUtils.getIcon32FromResources("apps/imagej2.png"), this::openInImageJ);
 
-        toolBar.add(openInImageJButton);
-        toolBar.add(Box.createHorizontalStrut(8));
-        toolBar.add(imageInfoLabel);
+        imageViewerPanel2D.buildRibbon(ribbon);
+    }
 
-        // Dynamic content
-        add(dynamicContent, BorderLayout.CENTER);
+    public void buildDock(JIPipeDesktopDockPanel dockPanel) {
+        imageViewerPanel2D.buildDock(dockPanel);
+    }
 
-        // Dynamic toolbar
-        toolBarDynamicContent.setLayout(new BoxLayout(toolBarDynamicContent, BoxLayout.X_AXIS));
-        toolBar.add(toolBarDynamicContent);
+    public void buildStatusBar(JPanel statusBar) {
+        statusBar.add(imageInfoLabel);
+        imageViewerPanel2D.buildStatusBar(statusBar);
     }
 
     private void openInImageJ() {
@@ -215,17 +205,6 @@ public class JIPipeDesktopLegacyImageViewer extends JPanel implements JIPipeDesk
 //            s += " (Rotated " + rotation + "°)";
 //        }
         imageInfoLabel.setText(s);
-    }
-
-    public void switchTo2D() {
-        toolBarDynamicContent.removeAll();
-        dynamicContent.removeAll();
-
-        toolBarDynamicContent.add(imageViewerPanel2D.getToolBar(), BorderLayout.CENTER);
-        dynamicContent.add(imageViewerPanel2D, BorderLayout.CENTER);
-
-        revalidate();
-        repaint();
     }
 
     public List<JIPipeDesktopLegacyImageViewerPlugin> getPlugins() {
@@ -310,10 +289,6 @@ public class JIPipeDesktopLegacyImageViewer extends JPanel implements JIPipeDesk
         } else {
             imageViewerPanel2D.getCanvas().setError(null);
         }
-    }
-
-    public JToolBar getToolBar() {
-        return toolBar;
     }
 
     public <T> T getPlugin(Class<T> klass) {

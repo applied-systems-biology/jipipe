@@ -29,6 +29,9 @@ import org.hkijena.jipipe.desktop.app.running.JIPipeDesktopRunExecuteUI;
 import org.hkijena.jipipe.desktop.app.running.JIPipeDesktopRunnableQueueButton;
 import org.hkijena.jipipe.desktop.commons.components.JIPipeDesktopFormPanel;
 import org.hkijena.jipipe.desktop.commons.components.JIPipeDesktopPathEditorComponent;
+import org.hkijena.jipipe.desktop.commons.components.ribbon.JIPipeDesktopCheckBoxRibbonAction;
+import org.hkijena.jipipe.desktop.commons.components.ribbon.JIPipeDesktopRibbon;
+import org.hkijena.jipipe.desktop.commons.components.ribbon.JIPipeDesktopSmallButtonRibbonAction;
 import org.hkijena.jipipe.desktop.commons.components.tabs.JIPipeDesktopTabPane;
 import org.hkijena.jipipe.plugins.imagejdatatypes.datatypes.ImagePlusData;
 import org.hkijena.jipipe.plugins.imagejdatatypes.util.*;
@@ -42,6 +45,7 @@ import org.hkijena.jipipe.plugins.imageviewer.utils.viewer2d.ImageViewerPanelCan
 import org.hkijena.jipipe.plugins.settings.JIPipeFileChooserApplicationSettings;
 import org.hkijena.jipipe.utils.*;
 import org.hkijena.jipipe.utils.ui.CopyImageToClipboard;
+import org.hkijena.jipipe.utils.ui.JIPipeDesktopDockPanel;
 
 import javax.imageio.ImageIO;
 import javax.swing.Timer;
@@ -56,7 +60,8 @@ import java.util.*;
 public class JIPipeDesktopLegacyImageViewerPanel2D extends JPanel implements JIPipeDesktopWorkbenchAccess {
 
     private final JIPipeDesktopLegacyImageViewer imageViewer;
-    private final JButton zoomStatusButton = new JButton();
+    private final JIPipeDesktopSmallButtonRibbonAction zoomStatusButton = new JIPipeDesktopSmallButtonRibbonAction("100%", "The status of the zoom",
+            UIUtils.getIconFromResources("actions/empty.png"));
     private final LegacyImageViewer2DUIApplicationSettings settings;
     private final JLabel stackSliderLabel = new JLabel("Slice (Z)");
     private final JLabel channelSliderLabel = new JLabel("Channel (C)");
@@ -69,12 +74,9 @@ public class JIPipeDesktopLegacyImageViewerPanel2D extends JPanel implements JIP
     private final JToggleButton animationChannelToggle = new JToggleButton(UIUtils.getIconFromResources("actions/play.png"));
     private final JToggleButton animationFrameToggle = new JToggleButton(UIUtils.getIconFromResources("actions/play.png"));
     private final JSpinner animationFPSControl = new JSpinner(new SpinnerNumberModel(24, 0.01, 1000, 0.1));
-    private final JToolBar toolBar = new JToolBar();
-    private final JToggleButton enableSideBarButton = new JToggleButton();
-    private final JIPipeDesktopTabPane tabPane = new JIPipeDesktopTabPane(false, JIPipeDesktopTabPane.TabPlacement.Right);
-    private final Map<String, JIPipeDesktopFormPanel> formPanels = new HashMap<>();
     private final JIPipeDesktopWorkbench workbench;
-    private final JCheckBoxMenuItem exportDisplayedScaleToggle = new JCheckBoxMenuItem("Export as displayed", true);
+    private final JIPipeDesktopCheckBoxRibbonAction exportDisplayedScaleToggle = new JIPipeDesktopCheckBoxRibbonAction("Export as displayed", "If enabled, " +
+            "the snapshot is exported exactly as displayed (including the size)", true, cb -> {});
     private final Map<ImageSliceIndex, ImageStatistics> statisticsMap = new HashMap<>();
     private final JPanel viewerPanel = new JPanel(new BorderLayout());
     private final JIPipeRunnableQueue viewerRunnerQueue = new JIPipeRunnableQueue("Image Viewer 2D");
@@ -90,7 +92,6 @@ public class JIPipeDesktopLegacyImageViewerPanel2D extends JPanel implements JIP
     //    private int rotation = 0;
     private JMenuItem exportAllSlicesItem;
     private JMenuItem exportMovieItem;
-    private Component currentContentPanel;
     private boolean isUpdatingSliders = false;
     private JScrollPane canvasScrollPane;
     private boolean composite;
@@ -176,7 +177,6 @@ public class JIPipeDesktopLegacyImageViewerPanel2D extends JPanel implements JIP
         canvas = new ImageViewerPanelCanvas2D(this);
         canvasScrollPane = new JScrollPane(canvas);
         canvas.setScrollPane(canvasScrollPane);
-        initializeToolbar();
         canvas.addMouseWheelListener(e -> {
             if (e.isControlDown()) {
                 if (e.getWheelRotation() < 0) {
@@ -230,7 +230,9 @@ public class JIPipeDesktopLegacyImageViewerPanel2D extends JPanel implements JIP
         });
 
         initializeAnimationControls();
-        updateSideBar();
+        add(viewerPanel, BorderLayout.CENTER);
+
+        createZoomMenu(zoomStatusButton.getButton());
     }
 
     public boolean isComposite() {
@@ -374,33 +376,30 @@ public class JIPipeDesktopLegacyImageViewerPanel2D extends JPanel implements JIP
         bottomPanel.addToForm(contentPanel, descriptionPanel, null);
     }
 
-    public JToolBar getToolBar() {
-        return toolBar;
+    public void buildRibbon(JIPipeDesktopRibbon ribbon) {
+        buildViewRibbon(ribbon);
+        buildExportRibbon(ribbon);
+
+        // Build plugin ribbons
+        for (JIPipeDesktopLegacyImageViewerPlugin2D plugin : imageViewer.getPlugins2D()) {
+            plugin.buildRibbon(ribbon);
+        }
     }
 
-    private void initializeToolbar() {
-        toolBar.setFloatable(false);
+    private void buildViewRibbon(JIPipeDesktopRibbon ribbon) {
+        JIPipeDesktopRibbon.Task generalTask = ribbon.getOrCreateTask("General");
+        JIPipeDesktopRibbon.Band viewBand = generalTask.getOrCreateBand("View");
+        viewBand.addLargeButton("Fit", "Fits the image into the view", UIUtils.getIcon32FromResources("actions/zoom-select-fit.png"), this::fitImageToScreen);
+        viewBand.addLargeButton("Center", "Centers the image into the view", UIUtils.getIcon32FromResources("actions/zoom-center-page.png"), () -> canvas.centerImage());
 
-        toolBar.add(Box.createHorizontalGlue());
+        // Zoom buttons
+        viewBand.addSmallButton("Zoom in", "Increases the zoom", UIUtils.getIconFromResources("actions/magnifying-glass-plus.png"), this::increaseZoom);
+        viewBand.add(zoomStatusButton);
+        viewBand.addSmallButton("Zoom out", "Decreases the zoom", UIUtils.getIconFromResources("actions/magnifying-glass-minus.png"), this::decreaseZoom);
+    }
 
-        initializeExportMenu();
-        toolBar.addSeparator();
-
-        JButton centerImageButton = new JButton("Center", UIUtils.getIconFromResources("actions/zoom-center-page.png"));
-        centerImageButton.addActionListener(e -> canvas.centerImage());
-        toolBar.add(centerImageButton);
-
-        JButton fitImageButton = new JButton("Fit", UIUtils.getIconFromResources("actions/zoom-select-fit.png"));
-        fitImageButton.addActionListener(e -> fitImageToScreen());
-        toolBar.add(fitImageButton);
-
-        JButton zoomOutButton = new JButton(UIUtils.getIconFromResources("actions/square-minus.png"));
-        UIUtils.makeButtonFlat25x25(zoomOutButton);
-        zoomOutButton.addActionListener(e -> decreaseZoom());
-        toolBar.add(zoomOutButton);
-
-        UIUtils.makeButtonBorderlessWithoutMargin(zoomStatusButton);
-        JPopupMenu zoomMenu = UIUtils.addPopupMenuToButton(zoomStatusButton);
+    private void createZoomMenu(JButton button) {
+        JPopupMenu zoomMenu = UIUtils.addPopupMenuToButton(button);
         for (double zoom = 0.5; zoom <= 2; zoom += 0.25) {
             JMenuItem changeZoomItem = new JMenuItem((int) (zoom * 100) + "%", UIUtils.getIconFromResources("actions/zoom.png"));
             double finalZoom = zoom;
@@ -426,92 +425,39 @@ public class JIPipeDesktopLegacyImageViewerPanel2D extends JPanel implements JIP
             }
         });
         zoomMenu.add(changeZoomToItem);
-        toolBar.add(zoomStatusButton);
+    }
 
-        JButton zoomInButton = new JButton(UIUtils.getIconFromResources("actions/square-plus.png"));
-        UIUtils.makeButtonFlat25x25(zoomInButton);
-        zoomInButton.addActionListener(e -> increaseZoom());
-        toolBar.add(zoomInButton);
+    private void buildExportRibbon(JIPipeDesktopRibbon ribbon) {
+        JIPipeDesktopRibbon.Task exportTask = ribbon.getOrCreateTask("Export");
+        JIPipeDesktopRibbon.Band imageBand = exportTask.getOrCreateBand("Image");
+        JIPipeDesktopRibbon.Band snapshotBand = exportTask.getOrCreateBand("Snapshot");
 
-        toolBar.addSeparator();
+        imageBand.addLargeButton("Save TIFF", "Exports the raw image as *.tif", UIUtils.getIcon32FromResources("actions/filesave.png"), this::saveRawImage);
+        snapshotBand.addLargeButton("To clipboard", "Exports a snapshot of the current slice to the clipboard", UIUtils.getIcon32FromResources("actions/edit-copy.png"), this::copyCurrentSliceToClipboard);
+        snapshotBand.addSmallButton("To PNG (current)", "Exports the current slice as image file", UIUtils.getIconFromResources("actions/viewimage.png"), this::exportCurrentSliceToPNG);
+        snapshotBand.addSmallButton("To PNG (all)", "Exports the all slices as image file",  UIUtils.getIconFromResources("actions/qlipper.png"), this::exportAllSlicesToPNG);
+        snapshotBand.addSmallButton("To movie", "Exports the all slices as image file",  UIUtils.getIconFromResources("actions/filmgrain.png"), this::exportVideo);
+        snapshotBand.add(exportDisplayedScaleToggle);
+    }
 
-        enableSideBarButton.setIcon(UIUtils.getIconFromResources("actions/sidebar.png"));
-        enableSideBarButton.setToolTipText("Show side bar with additional tools");
-        if (settings != null) {
-            enableSideBarButton.setSelected(settings.isShowSideBar());
-        } else {
-            enableSideBarButton.setSelected(true);
+    public void buildDock(JIPipeDesktopDockPanel dockPanel) {
+        for (JIPipeDesktopLegacyImageViewerPlugin2D plugin : imageViewer.getPlugins2D()) {
+            plugin.buildDock(dockPanel);
         }
-        enableSideBarButton.addActionListener(e -> {
-            if (settings != null) {
-                settings.setShowSideBar(enableSideBarButton.isSelected());
-                if (!JIPipe.NO_SETTINGS_AUTOSAVE) {
-                    JIPipe.getSettings().save();
-                }
-            }
-            updateSideBar();
-        });
-        toolBar.add(enableSideBarButton);
     }
 
-    private void initializeExportMenu() {
-        JButton exportMenuButton = new JButton(UIUtils.getIconFromResources("actions/camera.png"));
-        exportMenuButton.setToolTipText("Export currently displayed image");
-        JPopupMenu exportMenu = new JPopupMenu();
-
-        JMenuItem saveRawImageItem = new JMenuItem("Export raw image to *.tif", UIUtils.getIconFromResources("actions/filesave.png"));
-        saveRawImageItem.addActionListener(e -> saveRawImage());
-        exportMenu.add(saveRawImageItem);
-
-        exportMenu.addSeparator();
-
-        exportMenu.add(exportDisplayedScaleToggle);
-
-        JMenuItem exportCurrentSliceItem = new JMenuItem("Export snapshot of current slice", UIUtils.getIconFromResources("actions/viewimage.png"));
-        exportCurrentSliceItem.addActionListener(e -> exportCurrentSliceToPNG());
-        exportMenu.add(exportCurrentSliceItem);
-
-        exportAllSlicesItem = new JMenuItem("Export snapshot of all slices", UIUtils.getIconFromResources("actions/qlipper.png"));
-        exportAllSlicesItem.addActionListener(e -> exportAllSlicesToPNG());
-        exportMenu.add(exportAllSlicesItem);
-
-        exportMovieItem = new JMenuItem("Export movie", UIUtils.getIconFromResources("actions/filmgrain.png"));
-        exportMovieItem.addActionListener(e -> exportVideo());
-        exportMenu.add(exportMovieItem);
-
-        exportMenu.addSeparator();
-
-        JMenuItem copyCurrentSliceItem = new JMenuItem("Copy snapshot of current slice", UIUtils.getIconFromResources("actions/edit-copy.png"));
-        copyCurrentSliceItem.addActionListener(e -> copyCurrentSliceToClipboard());
-        exportMenu.add(copyCurrentSliceItem);
-
-        UIUtils.addPopupMenuToButton(exportMenuButton, exportMenu);
-        toolBar.add(exportMenuButton);
+    public void buildStatusBar(JPanel statusBar) {
+        for (JIPipeDesktopLegacyImageViewerPlugin2D plugin : imageViewer.getPlugins2D()) {
+            plugin.buildStatusBar(statusBar);
+        }
     }
+
 
     private void saveRawImage() {
         Path path = JIPipeFileChooserApplicationSettings.saveFile(this, JIPipeFileChooserApplicationSettings.LastDirectoryKey.Data, "Save as *.tif", UIUtils.EXTENSION_FILTER_TIFF);
         if (path != null) {
             JIPipeDesktopRunExecuteUI.runInDialog(workbench, this, new RawImage2DExporterRun(getImagePlus(), path), viewerRunnerQueue);
         }
-    }
-
-    private void updateSideBar() {
-        if (currentContentPanel != null) {
-            remove(currentContentPanel);
-        }
-        if (enableSideBarButton.isSelected()) {
-            JSplitPane splitPane = new JIPipeDesktopSplitPane(JSplitPane.HORIZONTAL_SPLIT,
-                    viewerPanel,
-                    tabPane, new JIPipeDesktopSplitPane.DynamicSidebarRatio(450, false));
-            add(splitPane, BorderLayout.CENTER);
-            currentContentPanel = splitPane;
-        } else {
-            add(viewerPanel, BorderLayout.CENTER);
-            currentContentPanel = viewerPanel;
-        }
-        revalidate();
-        repaint();
     }
 
     /**
@@ -642,7 +588,7 @@ public class JIPipeDesktopLegacyImageViewerPanel2D extends JPanel implements JIP
     }
 
     private void updateZoomStatus() {
-        zoomStatusButton.setText((int) Math.round(canvas.getZoom() * 100) + "%");
+        zoomStatusButton.getButton().setText((int) Math.round(canvas.getZoom() * 100) + "%");
     }
 
     /**
@@ -730,37 +676,6 @@ public class JIPipeDesktopLegacyImageViewerPanel2D extends JPanel implements JIP
         boolean hasMultipleSlices = image != null && image.getImage().getNDimensions() > 2;
         exportAllSlicesItem.setVisible(hasMultipleSlices);
         exportMovieItem.setVisible(hasMultipleSlices);
-    }
-
-    public void refreshFormPanel() {
-        Map<String, Integer> scrollValues = new HashMap<>();
-        for (Map.Entry<String, JIPipeDesktopFormPanel> entry : formPanels.entrySet()) {
-            scrollValues.put(entry.getKey(), entry.getValue().getScrollPane().getVerticalScrollBar().getValue());
-            entry.getValue().clear();
-        }
-        for (JIPipeDesktopLegacyImageViewerPlugin2D plugin : imageViewer.getPlugins2D()) {
-            JIPipeDesktopFormPanel formPanel = formPanels.getOrDefault(plugin.getCategory(), null);
-            if (formPanel == null) {
-                formPanel = new JIPipeDesktopFormPanel(null, JIPipeDesktopFormPanel.WITH_SCROLLING);
-                formPanels.put(plugin.getCategory(), formPanel);
-                JIPipeDesktopFormPanel finalFormPanel = formPanel;
-                tabPane.registerSingletonTab(plugin.getCategory(),
-                        plugin.getCategory(),
-                        plugin.getCategoryIcon(),
-                        () -> finalFormPanel,
-                        JIPipeDesktopTabPane.CloseMode.withoutCloseButton,
-                        JIPipeDesktopTabPane.SingletonTabMode.Present);
-            }
-            plugin.initializeSettingsPanel(formPanel);
-        }
-        for (Map.Entry<String, JIPipeDesktopFormPanel> entry : formPanels.entrySet()) {
-            if (!entry.getValue().isHasVerticalGlue()) {
-                entry.getValue().addVerticalGlue();
-            }
-            SwingUtilities.invokeLater(() -> {
-                entry.getValue().getScrollPane().getVerticalScrollBar().setValue(scrollValues.getOrDefault(entry.getKey(), 0));
-            });
-        }
     }
 
     public JSpinner getAnimationFPSControl() {
@@ -957,7 +872,6 @@ public class JIPipeDesktopLegacyImageViewerPanel2D extends JPanel implements JIP
         }
         refreshSliders();
         refreshSlice();
-        refreshFormPanel();
         refreshMenus();
         revalidate();
         repaint();
@@ -998,7 +912,6 @@ public class JIPipeDesktopLegacyImageViewerPanel2D extends JPanel implements JIP
                 CompositeLayer backup = orderedCompositeBlendLayers.get(newIndex);
                 orderedCompositeBlendLayers.set(newIndex, layer);
                 orderedCompositeBlendLayers.set(oldIndex, backup);
-                refreshFormPanel();
                 uploadSliceToCanvas();
             }
         }
@@ -1013,7 +926,6 @@ public class JIPipeDesktopLegacyImageViewerPanel2D extends JPanel implements JIP
                 CompositeLayer backup = orderedCompositeBlendLayers.get(newIndex);
                 orderedCompositeBlendLayers.set(newIndex, layer);
                 orderedCompositeBlendLayers.set(oldIndex, backup);
-                refreshFormPanel();
                 uploadSliceToCanvas();
             }
         }
