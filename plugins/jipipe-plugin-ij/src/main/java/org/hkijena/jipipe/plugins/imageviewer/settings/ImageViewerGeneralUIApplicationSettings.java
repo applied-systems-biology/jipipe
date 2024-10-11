@@ -29,22 +29,10 @@ import javax.swing.*;
 public class ImageViewerGeneralUIApplicationSettings extends JIPipeDefaultApplicationsSettingsSheet {
 
     public static String ID = "image-viewer-ui-general";
-    private boolean autoSwitch2D3DViewer = false;
     private boolean forceLegacyImageViewer = false;
 
     public static ImageViewerGeneralUIApplicationSettings getInstance() {
         return JIPipe.getSettings().getById(ID, ImageViewerGeneralUIApplicationSettings.class);
-    }
-
-    @SetJIPipeDocumentation(name = "Automatically select 2D/3D viewer", description = "If enabled, the viewer automatically switches to the 3D mode if 3D data is opened")
-    @JIPipeParameter("auto-switch-2d-3d")
-    public boolean isAutoSwitch2D3DViewer() {
-        return autoSwitch2D3DViewer;
-    }
-
-    @JIPipeParameter("auto-switch-2d-3d")
-    public void setAutoSwitch2D3DViewer(boolean autoSwitch2D3DViewer) {
-        this.autoSwitch2D3DViewer = autoSwitch2D3DViewer;
     }
 
     @SetJIPipeDocumentation(name = "Force legacy image viewer", description = "If enabled, always use the legacy image viewer instead of the VTK-based one")

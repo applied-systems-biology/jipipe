@@ -48,6 +48,5 @@ public class FilamentsLegacyCacheDataViewerWindow extends ImageLegacyCacheDataVi
     protected void initializePlugins(List<Class<? extends JIPipeDesktopLegacyImageViewerPlugin>> plugins, Map<Class<?>, Object> contextObjects) {
         super.initializePlugins(plugins, contextObjects);
         plugins.add(FilamentsManagerPlugin2D.class);
-        plugins.add(FilamentsManagerPlugin3D.class);
     }
 }

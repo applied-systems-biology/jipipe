@@ -81,7 +81,6 @@ import org.hkijena.jipipe.plugins.imagejdatatypes.util.BitDepth;
 import org.hkijena.jipipe.plugins.imagejdatatypes.util.OptionalBitDepth;
 import org.hkijena.jipipe.plugins.imagejdatatypes.util.ROIElementDrawingMode;
 import org.hkijena.jipipe.plugins.imageviewer.settings.LegacyImageViewer2DUIApplicationSettings;
-import org.hkijena.jipipe.plugins.imageviewer.settings.LegacyImageViewer3DUIApplicationSettings;
 import org.hkijena.jipipe.plugins.imageviewer.settings.ImageViewerGeneralUIApplicationSettings;
 import org.hkijena.jipipe.plugins.parameters.library.jipipe.PluginCategoriesEnumParameter;
 import org.hkijena.jipipe.plugins.parameters.library.markup.HTMLText;
@@ -403,7 +402,6 @@ public class ImageJDataTypesPlugin extends JIPipePrepackagedDefaultJavaPlugin {
 
         // Register settings
         registerApplicationSettingsSheet(new LegacyImageViewer2DUIApplicationSettings());
-        registerApplicationSettingsSheet(new LegacyImageViewer3DUIApplicationSettings());
 
         // Register data types
         registerDatatype("imagej-ome",

@@ -28,13 +28,10 @@ import org.hkijena.jipipe.plugins.imagejdatatypes.datatypes.ImagePlusData;
 import org.hkijena.jipipe.plugins.imagejdatatypes.util.ImageJUtils;
 import org.hkijena.jipipe.plugins.imageviewer.legacy.api.JIPipeDesktopLegacyImageViewerPlugin;
 import org.hkijena.jipipe.plugins.imageviewer.legacy.api.JIPipeDesktopLegacyImageViewerPlugin2D;
-import org.hkijena.jipipe.plugins.imageviewer.legacy.api.JIPipeDesktopLegacyImageViewerPlugin3D;
 import org.hkijena.jipipe.plugins.imageviewer.legacy.impl.JIPipeDesktopLegacyImageViewerPanel2D;
-import org.hkijena.jipipe.plugins.imageviewer.legacy.impl.JIPipeDesktopLegacyImageViewerPanel3D;
 import org.hkijena.jipipe.plugins.imageviewer.legacy.plugins2d.*;
 import org.hkijena.jipipe.plugins.imageviewer.legacy.plugins2d.maskdrawer.MeasurementDrawerPlugin2D;
 import org.hkijena.jipipe.plugins.imageviewer.legacy.plugins2d.roimanager.ROIManagerPlugin2D;
-import org.hkijena.jipipe.plugins.imageviewer.legacy.plugins3d.*;
 import org.hkijena.jipipe.plugins.imageviewer.settings.ImageViewerGeneralUIApplicationSettings;
 import org.hkijena.jipipe.utils.ReflectionUtils;
 import org.hkijena.jipipe.utils.UIUtils;
@@ -55,14 +52,7 @@ public class JIPipeDesktopLegacyImageViewer extends JPanel implements JIPipeDesk
             ROIManagerPlugin2D.class,
             AnimationSpeedPlugin2D.class,
             MeasurementDrawerPlugin2D.class,
-            AnnotationInfoPlugin2D.class,
-            CalibrationPlugin3D.class,
-            LUTManagerPlugin3D.class,
-            OpacityManagerPlugin3D.class,
-            RenderSettingsPlugin3D.class,
-            AnimationSpeedPlugin3D.class,
-            SlicerControlsPlugin3D.class,
-            AnnotationInfoPlugin3D.class));
+            AnnotationInfoPlugin2D.class));
     private final JIPipeDesktopWorkbench workbench;
     private final Map<Class<?>, Object> contextObjects;
     private final JToolBar toolBar = new JToolBar();
@@ -71,13 +61,10 @@ public class JIPipeDesktopLegacyImageViewer extends JPanel implements JIPipeDesk
 
     private final JPanel dynamicContent = new JPanel(new BorderLayout());
     private final JIPipeDesktopLegacyImageViewerPanel2D imageViewerPanel2D;
-    private final JIPipeDesktopLegacyImageViewerPanel3D imageViewerPanel3D;
     private final List<JIPipeDesktopLegacyImageViewerPlugin> plugins = new ArrayList<>();
     private final List<JIPipeDesktopLegacyImageViewerPlugin2D> plugins2D = new ArrayList<>();
-    private final List<JIPipeDesktopLegacyImageViewerPlugin3D> plugins3D = new ArrayList<>();
 
     private final Map<Class<? extends JIPipeDesktopLegacyImageViewerPlugin>, JIPipeDesktopLegacyImageViewerPlugin> pluginMap = new HashMap<>();
-    private final JButton switchModeButton = new JButton();
     private final JLabel imageInfoLabel = new JLabel();
     private final List<Object> overlays = new ArrayList<>();
     private final ImageViewerGeneralUIApplicationSettings settings;
@@ -93,7 +80,6 @@ public class JIPipeDesktopLegacyImageViewer extends JPanel implements JIPipeDesk
         this.workbench = workbench;
         this.contextObjects = contextObjects;
         imageViewerPanel2D = new JIPipeDesktopLegacyImageViewerPanel2D(this);
-        imageViewerPanel3D = new JIPipeDesktopLegacyImageViewerPanel3D(this);
         if (JIPipe.isInstantiated()) {
             settings = ImageViewerGeneralUIApplicationSettings.getInstance();
         } else {
@@ -121,21 +107,12 @@ public class JIPipeDesktopLegacyImageViewer extends JPanel implements JIPipeDesk
                 plugins.add(plugin2D);
                 plugins2D.add(plugin2D);
                 pluginMap.put(pluginType, plugin2D);
-            } else if (plugin instanceof JIPipeDesktopLegacyImageViewerPlugin3D) {
-                JIPipeDesktopLegacyImageViewerPlugin3D plugin3D = (JIPipeDesktopLegacyImageViewerPlugin3D) plugin;
-                plugins.add(plugin3D);
-                plugins3D.add(plugin3D);
-                pluginMap.put(pluginType, plugin3D);
             }
         }
     }
 
     public JIPipeDesktopLegacyImageViewerPanel2D getImageViewerPanel2D() {
         return imageViewerPanel2D;
-    }
-
-    public JIPipeDesktopLegacyImageViewerPanel3D getImageViewerPanel3D() {
-        return imageViewerPanel3D;
     }
 
     public List<Object> getOverlays() {
@@ -166,25 +143,6 @@ public class JIPipeDesktopLegacyImageViewer extends JPanel implements JIPipeDesk
         toolBar.setFloatable(false);
         setLayout(new BorderLayout());
         add(toolBar, BorderLayout.NORTH);
-
-        // Switcher
-        toolBar.add(switchModeButton);
-        JPopupMenu switchModeMenu = new JPopupMenu();
-        UIUtils.addReloadablePopupMenuToButton(switchModeButton, switchModeMenu, () -> {
-            switchModeMenu.removeAll();
-            switchModeMenu.add(UIUtils.createMenuItem("Switch to 2D", "Display the image in 2D", UIUtils.getIconFromResources("data-types/imgplus-2d.png"), this::switchTo2D));
-            switchModeMenu.add(UIUtils.createMenuItem("Switch to 3D", "Display the image in 3D", UIUtils.getIconFromResources("data-types/imgplus-3d.png"), this::switchTo3D));
-            switchModeMenu.addSeparator();
-            JCheckBoxMenuItem autoSwitchToggle = new JCheckBoxMenuItem("Select automatically", settings.isAutoSwitch2D3DViewer());
-            autoSwitchToggle.addActionListener(e -> {
-                settings.setAutoSwitch2D3DViewer(autoSwitchToggle.isSelected());
-                if (!JIPipe.NO_SETTINGS_AUTOSAVE) {
-                    JIPipe.getSettings().save();
-                }
-            });
-            switchModeMenu.add(autoSwitchToggle);
-        });
-
 
         // Shared image controls
         JButton openInImageJButton = new JButton("Open in ImageJ", UIUtils.getIconFromResources("apps/imagej.png"));
@@ -259,26 +217,7 @@ public class JIPipeDesktopLegacyImageViewer extends JPanel implements JIPipeDesk
         imageInfoLabel.setText(s);
     }
 
-    public void switchTo3D() {
-        switchModeButton.setText("3D Viewer");
-        switchModeButton.setIcon(UIUtils.getIconFromResources("data-types/imgplus-3d.png"));
-
-        toolBarDynamicContent.removeAll();
-        dynamicContent.removeAll();
-
-        toolBarDynamicContent.add(imageViewerPanel3D.getToolBar(), BorderLayout.CENTER);
-        dynamicContent.add(imageViewerPanel3D, BorderLayout.CENTER);
-
-        revalidate();
-        repaint();
-
-        imageViewerPanel3D.activate();
-    }
-
     public void switchTo2D() {
-        switchModeButton.setText("2D Viewer");
-        switchModeButton.setIcon(UIUtils.getIconFromResources("data-types/imgplus-2d.png"));
-
         toolBarDynamicContent.removeAll();
         dynamicContent.removeAll();
 
@@ -295,10 +234,6 @@ public class JIPipeDesktopLegacyImageViewer extends JPanel implements JIPipeDesk
 
     public List<JIPipeDesktopLegacyImageViewerPlugin2D> getPlugins2D() {
         return Collections.unmodifiableList(plugins2D);
-    }
-
-    public List<JIPipeDesktopLegacyImageViewerPlugin3D> getPlugins3D() {
-        return Collections.unmodifiableList(plugins3D);
     }
 
     public JIPipeDesktopWorkbench getDesktopWorkbench() {
@@ -334,23 +269,13 @@ public class JIPipeDesktopLegacyImageViewer extends JPanel implements JIPipeDesk
             plugin.dispose();
         }
         imageViewerPanel2D.dispose();
-        imageViewerPanel3D.dispose();
     }
 
     public void setImageData(ImagePlusData image) {
         this.image = image;
         imageViewerPanel2D.setImage(image);
-        imageViewerPanel3D.setImage(image);
 
         refreshImageInfo();
-
-        if (settings.isAutoSwitch2D3DViewer()) {
-            if (image.getImage().getNSlices() > 1) {
-                switchTo3D();
-            } else {
-                switchTo2D();
-            }
-        }
     }
 
     public ImagePlusData getImage() {
@@ -381,12 +306,9 @@ public class JIPipeDesktopLegacyImageViewer extends JPanel implements JIPipeDesk
     public void setError(String errorMessage) {
         if (errorMessage != null) {
             JLabel errorLabel2D = new JLabel(errorMessage, UIUtils.getIconFromResources("emblems/no-data.png"), JLabel.LEFT);
-            JLabel errorLabel3D = new JLabel(errorMessage, UIUtils.getIconFromResources("emblems/no-data.png"), JLabel.LEFT);
             imageViewerPanel2D.getCanvas().setError(errorLabel2D);
-            imageViewerPanel3D.showDataError(errorLabel3D);
         } else {
             imageViewerPanel2D.getCanvas().setError(null);
-            imageViewerPanel3D.showDataError(null);
         }
     }
 
