@@ -23,6 +23,7 @@ import javax.swing.border.Border;
 import java.awt.*;
 import java.util.List;
 import java.util.*;
+import java.util.function.Consumer;
 
 /**
  * A simple Ribbon-style panel
@@ -454,6 +455,36 @@ public class JIPipeDesktopRibbon extends JPanel {
         public Band addAll(Action... actions) {
             Collections.addAll(this.actions, actions);
             return this;
+        }
+
+        public JIPipeDesktopLargeButtonRibbonAction addLargeButton(String label, String tooltip, ImageIcon icon, Runnable action) {
+            JIPipeDesktopLargeButtonRibbonAction ribbonAction = new JIPipeDesktopLargeButtonRibbonAction(label, tooltip, icon, action);
+            add(ribbonAction);
+            return ribbonAction;
+        }
+
+        public JIPipeDesktopSmallButtonRibbonAction addSmallButton(String label, String tooltip, ImageIcon icon, Runnable action) {
+            JIPipeDesktopSmallButtonRibbonAction ribbonAction = new JIPipeDesktopSmallButtonRibbonAction(label, tooltip, icon, action);
+            add(ribbonAction);
+            return ribbonAction;
+        }
+
+        public JIPipeDesktopLargeToggleButtonRibbonAction addLargeToggle(String label, String tooltip, ImageIcon icon, boolean selected, Consumer<JToggleButton> action) {
+            JIPipeDesktopLargeToggleButtonRibbonAction ribbonAction = new JIPipeDesktopLargeToggleButtonRibbonAction(label, tooltip, icon, selected, action);
+            add(ribbonAction);
+            return ribbonAction;
+        }
+
+        public JIPipeDesktopSmallToggleButtonRibbonAction addSmallToggle(String label, String tooltip, ImageIcon icon, boolean selected, Consumer<JToggleButton> action) {
+            JIPipeDesktopSmallToggleButtonRibbonAction ribbonAction = new JIPipeDesktopSmallToggleButtonRibbonAction(label, tooltip, icon, selected, action);
+            add(ribbonAction);
+            return ribbonAction;
+        }
+
+        public JIPipeDesktopCheckBoxRibbonAction addCheckBox(String label, String tooltip, boolean selected, Consumer<JCheckBox> action) {
+            JIPipeDesktopCheckBoxRibbonAction ribbonAction = new JIPipeDesktopCheckBoxRibbonAction(label, tooltip, selected, action);
+            add(ribbonAction);
+            return ribbonAction;
         }
     }
 
