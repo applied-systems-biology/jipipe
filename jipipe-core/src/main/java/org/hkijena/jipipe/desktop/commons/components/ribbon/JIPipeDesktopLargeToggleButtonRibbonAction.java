@@ -18,7 +18,7 @@ import java.awt.*;
 import java.awt.event.ActionListener;
 import java.util.function.Consumer;
 
-public class JIPipeDesktopLargeToggleButtonRibbonAction extends JIPipeDesktopRibbon.Action {
+public class JIPipeDesktopLargeToggleButtonRibbonAction extends JIPipeDesktopToggleButtonRibbonAction {
 
     public JIPipeDesktopLargeToggleButtonRibbonAction(String label, String tooltip, Icon icon) {
         this(label, tooltip, icon, false, (button) -> {
@@ -42,29 +42,5 @@ public class JIPipeDesktopLargeToggleButtonRibbonAction extends JIPipeDesktopRib
 
     public JToggleButton getButton() {
         return (JToggleButton) getFirstComponent();
-    }
-
-    public boolean getState() {
-        return getButton().isSelected();
-    }
-
-    public void setState(boolean state) {
-        getButton().setSelected(state);
-    }
-
-    public boolean isSelected() {
-        return getButton().isSelected();
-    }
-
-    public void setSelected(boolean state) {
-        getButton().setSelected(state);
-    }
-
-    public void addActionListener(Runnable runnable) {
-        getButton().addActionListener(e -> runnable.run());
-    }
-
-    public void addActionListener(ActionListener listener) {
-        getButton().addActionListener(listener);
     }
 }

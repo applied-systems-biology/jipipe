@@ -15,7 +15,8 @@ public class VtkPanel extends JPanel implements Disposable {
 
     private final Timer resizeRendererTimer;
     private NativeVtkPanelWrapper nativeVtkPanelWrapper;
-    private InteractionMode interactionMode = InteractionMode.Rotate;
+    private InteractionTool currentInteractionMode = InteractionTool.Default;
+    private InteractionTool interactionTool = InteractionTool.Default;
 
     public VtkPanel() {
         this.resizeRendererTimer = new Timer(250, e -> updateRendererSize());
@@ -32,7 +33,7 @@ public class VtkPanel extends JPanel implements Disposable {
         nativeVtkPanelWrapper.addMouseListener(new MouseAdapter() {
             @Override
             public void mouseDragged(MouseEvent e) {
-               onNativePanelMouseDragged(e);
+                onNativePanelMouseDragged(e);
             }
 
             @Override
@@ -100,16 +101,25 @@ public class VtkPanel extends JPanel implements Disposable {
             int ShiftMouseButton1 = 1088;
             int MouseButton2 = 2048;
             int MouseButton3 = 4096;
-            if ((mods & MouseButton2) != MouseButton2 && (mods & ShiftMouseButton1) != ShiftMouseButton1) {
-                if ((mods & MouseButton3) == MouseButton3) {
-                    setInteractionMode(InteractionMode.Zoom);
-                } else {
-                    setInteractionMode(InteractionMode.Rotate);
-                }
-            } else {
-                setInteractionMode(InteractionMode.Translate);
+            switch (interactionTool) {
+                case Zoom:
+                case Rotate:
+                case Translate:
+                case None:
+                    currentInteractionMode = interactionTool;
+                    break;
+                case Default:
+                    if ((mods & MouseButton2) != MouseButton2 && (mods & ShiftMouseButton1) != ShiftMouseButton1) {
+                        if ((mods & MouseButton3) == MouseButton3) {
+                            currentInteractionMode = InteractionTool.Zoom;
+                        } else {
+                            currentInteractionMode = InteractionTool.Rotate;
+                        }
+                    } else {
+                        currentInteractionMode = InteractionTool.Translate;
+                    }
+                    break;
             }
-
         }
     }
 
@@ -126,7 +136,7 @@ public class VtkPanel extends JPanel implements Disposable {
         if (ren.VisibleActorCount() != 0) {
             int x = e.getX();
             int y = e.getY();
-            if (interactionMode == InteractionMode.Rotate) {
+            if (currentInteractionMode == InteractionTool.Rotate) {
                 cam.Azimuth(nativeVtkPanelWrapper.getLastX() - x);
                 cam.Elevation(y - nativeVtkPanelWrapper.getLastY());
                 cam.OrthogonalizeViewUp();
@@ -135,17 +145,15 @@ public class VtkPanel extends JPanel implements Disposable {
                     nativeVtkPanelWrapper.getLight().SetPosition(cam.GetPosition());
                     nativeVtkPanelWrapper.getLight().SetFocalPoint(cam.GetFocalPoint());
                 }
-            }
-
-            if (interactionMode == InteractionMode.Translate) {
+            } else if (currentInteractionMode == InteractionTool.Translate) {
                 double[] APoint = new double[3];
                 double[] FPoint = cam.GetFocalPoint();
                 double[] PPoint = cam.GetPosition();
                 ren.SetWorldPoint(FPoint[0], FPoint[1], FPoint[2], 1.0);
                 ren.WorldToDisplay();
                 double focalDepth = ren.GetDisplayPoint()[2];
-                APoint[0] = (double) rw.GetSize()[0] / 2.0 + (double)(x - nativeVtkPanelWrapper.getLastX());
-                APoint[1] = (double) rw.GetSize()[1] / 2.0 - (double)(y - nativeVtkPanelWrapper.getLastY());
+                APoint[0] = (double) rw.GetSize()[0] / 2.0 + (double) (x - nativeVtkPanelWrapper.getLastX());
+                APoint[1] = (double) rw.GetSize()[1] / 2.0 - (double) (y - nativeVtkPanelWrapper.getLastY());
                 APoint[2] = focalDepth;
                 ren.SetDisplayPoint(APoint);
                 ren.DisplayToWorld();
@@ -159,9 +167,7 @@ public class VtkPanel extends JPanel implements Disposable {
                 cam.SetFocalPoint((FPoint[0] - RPoint[0]) / 2.0 + FPoint[0], (FPoint[1] - RPoint[1]) / 2.0 + FPoint[1], (FPoint[2] - RPoint[2]) / 2.0 + FPoint[2]);
                 cam.SetPosition((FPoint[0] - RPoint[0]) / 2.0 + PPoint[0], (FPoint[1] - RPoint[1]) / 2.0 + PPoint[1], (FPoint[2] - RPoint[2]) / 2.0 + PPoint[2]);
                 nativeVtkPanelWrapper.resetCameraClippingRange();
-            }
-
-            if (interactionMode == InteractionMode.Zoom) {
+            } else if (currentInteractionMode == InteractionTool.Zoom) {
                 double zoomFactor = Math.pow(1.02, y - nativeVtkPanelWrapper.getLastY());
                 if (cam.GetParallelProjection() == 1) {
                     cam.SetParallelScale(cam.GetParallelScale() / zoomFactor);
@@ -177,12 +183,12 @@ public class VtkPanel extends JPanel implements Disposable {
         }
     }
 
-    public void setInteractionMode(InteractionMode interactionMode) {
-        this.interactionMode = interactionMode;
+    public InteractionTool getInteractionTool() {
+        return interactionTool;
     }
 
-    public InteractionMode getInteractionMode() {
-        return interactionMode;
+    public void setInteractionTool(InteractionTool interactionTool) {
+        this.interactionTool = interactionTool;
     }
 
     public vtkRenderer getRenderer() {
@@ -208,10 +214,12 @@ public class VtkPanel extends JPanel implements Disposable {
         nativeVtkPanelWrapper = null;
     }
 
-    public enum InteractionMode {
+    public enum InteractionTool {
+        Default,
         Rotate,
         Translate,
-        Zoom
+        Zoom,
+        None
     }
 
     /**
