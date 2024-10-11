@@ -67,10 +67,9 @@ public class VtkPanel extends JPanel implements Disposable {
     private void onNativePanelMouseWheelMoved(MouseWheelEvent e) {
         vtkRenderer ren = nativeVtkPanelWrapper.GetRenderer();
         vtkCamera cam = nativeVtkPanelWrapper.getCamera();
-        vtkRenderWindow rw = nativeVtkPanelWrapper.getRenderWindow();
         if (ren.VisibleActorCount() != 0 && e.getWheelRotation() != 0) {
             int exponent = -10 * e.getWheelRotation() / Math.abs(e.getWheelRotation());
-            double zoomFactor = Math.pow(1.02, (double)exponent);
+            double zoomFactor = Math.pow(1.02, exponent);
             if (cam.GetParallelProjection() == 1) {
                 cam.SetParallelScale(cam.GetParallelScale() / zoomFactor);
             } else {
