@@ -2403,6 +2403,10 @@ public class UIUtils {
         }
     }
 
+    public static void repaintLater(Component component) {
+        SwingUtilities.invokeLater(() -> component.repaint(50));
+    }
+
 
     public static class DragThroughMouseListener implements MouseListener, MouseMotionListener {
         private final Component component;
