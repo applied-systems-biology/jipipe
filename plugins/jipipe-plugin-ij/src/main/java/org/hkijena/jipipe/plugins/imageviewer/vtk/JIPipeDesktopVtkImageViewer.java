@@ -17,14 +17,12 @@ import java.awt.event.ComponentEvent;
 
 public class JIPipeDesktopVtkImageViewer extends JIPipeDesktopWorkbenchPanel {
 
-    private vtkPanel renderer;
-    private final Timer resizeRendererTimer;
+    private VtkPanel renderer;
 
     public JIPipeDesktopVtkImageViewer(JIPipeDesktopWorkbench desktopWorkbench) {
         super(desktopWorkbench);
         initialize();
-        this.resizeRendererTimer = new Timer(250, e -> updateRendererSize());
-        this.resizeRendererTimer.setRepeats(false);
+
     }
 
 
@@ -51,26 +49,11 @@ public class JIPipeDesktopVtkImageViewer extends JIPipeDesktopWorkbenchPanel {
         vtkActor coneActor = new vtkActor();
         coneActor.SetMapper(coneMapper);
 
-        renderer = new vtkPanel();
-        renderer.GetRenderer().AddActor(coneActor);
-        renderer.Report();
-        renderer.addComponentListener(new ComponentAdapter() {
-            @Override
-            public void componentResized(ComponentEvent e) {
-                resizeRendererTimer.restart();
-            }
-        });
+        renderer = new VtkPanel();
+        renderer.getRenderer().AddActor(coneActor);
+        renderer.getNativeVtkPanelWrapper().Report();
 
         add(renderer, BorderLayout.CENTER);
-    }
-
-    private void updateRendererSize() {
-        if (renderer != null) {
-            renderer.lock();
-            renderer.GetRenderWindow().SetSize(renderer.getWidth(), renderer.getHeight());
-            renderer.unlock();
-            UIUtils.repaintLater(renderer);
-        }
     }
 
     public static void main(String[] args) {
