@@ -75,14 +75,16 @@ public abstract class JIPipeDesktopLegacyImageViewerPlugin implements JIPipeDesk
      *
      * @return the category
      */
-    public abstract String getCategory();
+    public abstract String getPanelName();
+
+    public abstract JIPipeDesktopDockPanel.PanelLocation getPanelLocation();
 
     /**
      * The icon for the category if a new one must be created
      *
      * @return the icon
      */
-    public abstract Icon getCategoryIcon();
+    public abstract Icon getPanelIcon();
 
     /**
      * Called if an overlay was added
@@ -114,4 +116,8 @@ public abstract class JIPipeDesktopLegacyImageViewerPlugin implements JIPipeDesk
     public abstract void buildDock(JIPipeDesktopDockPanel dockPanel);
 
     public abstract void buildStatusBar(JPanel statusBar);
+
+    public void initializeSettingsPanel(JIPipeDesktopFormPanel formPanel) {
+
+    }
 }

@@ -17,6 +17,7 @@ import ij.ImagePlus;
 import ij.process.ColorProcessor;
 import ij.process.ImageProcessor;
 import org.hkijena.jipipe.desktop.commons.components.JIPipeDesktopFormPanel;
+import org.hkijena.jipipe.desktop.commons.components.ribbon.JIPipeDesktopRibbon;
 import org.hkijena.jipipe.plugins.imagejdatatypes.datatypes.ImagePlusData;
 import org.hkijena.jipipe.plugins.imagejdatatypes.util.ImageJUtils;
 import org.hkijena.jipipe.plugins.imageviewer.legacy.JIPipeDesktopLegacyImageViewer;
@@ -24,6 +25,7 @@ import org.hkijena.jipipe.plugins.imageviewer.utils.ImageViewerLUTEditor;
 import org.hkijena.jipipe.plugins.imageviewer.utils.viewer2d.ImageViewer2DLUTEditor;
 import org.hkijena.jipipe.utils.UIUtils;
 import org.hkijena.jipipe.utils.ui.BusyCursor;
+import org.hkijena.jipipe.utils.ui.JIPipeDesktopDockPanel;
 
 import javax.swing.*;
 import java.util.ArrayList;
@@ -121,6 +123,21 @@ public class LUTManagerPlugin2D extends GeneralImageViewerPanelPlugin2D {
         }
 
         return processor;
+    }
+
+    @Override
+    public void buildRibbon(JIPipeDesktopRibbon ribbon) {
+
+    }
+
+    @Override
+    public void buildDock(JIPipeDesktopDockPanel dockPanel) {
+
+    }
+
+    @Override
+    public void buildStatusBar(JPanel statusBar) {
+
     }
 
     @Override

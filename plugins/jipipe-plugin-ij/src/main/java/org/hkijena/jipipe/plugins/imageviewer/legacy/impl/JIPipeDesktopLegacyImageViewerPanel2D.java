@@ -94,6 +94,7 @@ public class JIPipeDesktopLegacyImageViewerPanel2D extends JPanel implements JIP
     private boolean isUpdatingSliders = false;
     private JScrollPane canvasScrollPane;
     private boolean composite;
+    private JIPipeDesktopDockPanel currentDockPanel;
 
     /**
      * Initializes a new image viewer
@@ -448,6 +449,7 @@ public class JIPipeDesktopLegacyImageViewerPanel2D extends JPanel implements JIP
     }
 
     public void buildDock(JIPipeDesktopDockPanel dockPanel) {
+        this.currentDockPanel = dockPanel;
         for (JIPipeDesktopLegacyImageViewerPlugin2D plugin : imageViewer.getPlugins2D()) {
             plugin.buildDock(dockPanel);
         }
@@ -685,6 +687,50 @@ public class JIPipeDesktopLegacyImageViewerPanel2D extends JPanel implements JIP
         exportMovieItem.setVisible(hasMultipleSlices);
     }
 
+    public void refreshFormPanel() {
+        Map<String, Integer> scrollValues = new HashMap<>();
+        final String panelIdPrefix = "LEGACY_IMAGE_VIEWER2D_";
+        for (Map.Entry<String, JIPipeDesktopDockPanel.Panel> entry : currentDockPanel.getPanels().entrySet()) {
+            if(entry.getKey().startsWith(panelIdPrefix)) {
+                JIPipeDesktopFormPanel formPanel = entry.getValue().getComponent(JIPipeDesktopFormPanel.class);
+                scrollValues.put(entry.getKey(), formPanel.getScrollPane().getVerticalScrollBar().getValue());
+                formPanel.clear();
+            }
+        }
+
+        List<JIPipeDesktopLegacyImageViewerPlugin2D> plugins2D = imageViewer.getPlugins2D();
+        for (int i = 0; i < plugins2D.size(); i++) {
+            JIPipeDesktopLegacyImageViewerPlugin2D plugin = plugins2D.get(i);
+            JIPipeDesktopFormPanel formPanel = currentDockPanel.getPanelComponent(panelIdPrefix + plugin.getPanelName(), JIPipeDesktopFormPanel.class);
+            if (formPanel == null) {
+                formPanel = new JIPipeDesktopFormPanel(null, JIPipeDesktopFormPanel.WITH_SCROLLING);
+                currentDockPanel.addDockPanel(panelIdPrefix + plugin.getPanelName(),
+                        plugin.getPanelName(),
+                        plugin.getPanelIcon(),
+                        plugin.getPanelLocation(),
+                        false,
+                        i,
+                        formPanel);
+            }
+            plugin.initializeSettingsPanel(formPanel);
+        }
+        for (Map.Entry<String, JIPipeDesktopDockPanel.Panel> entry : currentDockPanel.getPanels().entrySet()) {
+            if(entry.getKey().startsWith(panelIdPrefix)) {
+                JIPipeDesktopFormPanel formPanel = entry.getValue().getComponent(JIPipeDesktopFormPanel.class);
+                if (!formPanel.isHasVerticalGlue()) {
+                    formPanel.addVerticalGlue();
+                }
+                SwingUtilities.invokeLater(() -> {
+                    formPanel.getScrollPane().getVerticalScrollBar().setValue(scrollValues.getOrDefault(entry.getKey(), 0));
+                });
+            }
+        }
+    }
+
+    public JSpinner getAnimationFPSControl() {
+        return animationFPSControl;
+    }
+
     /**
      * Returns the currently viewed slice position
      *
@@ -875,6 +921,7 @@ public class JIPipeDesktopLegacyImageViewerPanel2D extends JPanel implements JIP
         }
         refreshSliders();
         refreshSlice();
+        refreshFormPanel();
         refreshMenus();
         revalidate();
         repaint();
@@ -915,6 +962,7 @@ public class JIPipeDesktopLegacyImageViewerPanel2D extends JPanel implements JIP
                 CompositeLayer backup = orderedCompositeBlendLayers.get(newIndex);
                 orderedCompositeBlendLayers.set(newIndex, layer);
                 orderedCompositeBlendLayers.set(oldIndex, backup);
+                refreshFormPanel();
                 uploadSliceToCanvas();
             }
         }
@@ -929,6 +977,7 @@ public class JIPipeDesktopLegacyImageViewerPanel2D extends JPanel implements JIP
                 CompositeLayer backup = orderedCompositeBlendLayers.get(newIndex);
                 orderedCompositeBlendLayers.set(newIndex, layer);
                 orderedCompositeBlendLayers.set(oldIndex, backup);
+                refreshFormPanel();
                 uploadSliceToCanvas();
             }
         }

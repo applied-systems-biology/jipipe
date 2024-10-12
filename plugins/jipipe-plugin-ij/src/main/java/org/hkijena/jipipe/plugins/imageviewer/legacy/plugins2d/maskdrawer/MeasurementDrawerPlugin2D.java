@@ -93,21 +93,22 @@ public class MeasurementDrawerPlugin2D extends MaskDrawerPlugin2D implements Mas
     }
 
     private void initialize() {
-        JIPipeDesktopRibbon.Task measureTask = getRibbon().addTask("Measure");
-        getRibbon().reorderTasks(Arrays.asList("Draw", "Measure"));
-
-        JIPipeDesktopRibbon.Band generalBand = measureTask.addBand("General");
-        generalBand.add(new JIPipeDesktopLargeButtonRibbonAction("Measure", "Measures the image/mask now", UIUtils.getIcon32FromResources("actions/statistics.png"), this::measureCurrentMask));
-        generalBand.add(new JIPipeDesktopSmallButtonRibbonAction("Settings ...", "Opens the settings for the measurement tool", UIUtils.getIconFromResources("actions/configure.png"), this::showSettings));
-        generalBand.add(new JIPipeDesktopRibbon.Action(autoMeasureToggle, 1, new Insets(2, 2, 2, 2)));
-
-        JIPipeDesktopRibbon.Task importExportTask = getRibbon().getOrCreateTask("Import/Export");
-        JIPipeDesktopRibbon.Band importExportMeasurementsBand = importExportTask.addBand("Measurements");
-        importExportMeasurementsBand.add(new JIPipeDesktopSmallButtonRibbonAction("Export to file", "Exports the measurements to *.csv/*.xlsx", UIUtils.getIconFromResources("actions/filesave.png"), this::exportMeasurementsToFile));
-        importExportMeasurementsBand.add(new JIPipeDesktopSmallButtonRibbonAction("Open in editor", "Opens the measurements in a table editor", UIUtils.getIconFromResources("actions/open-in-new-window.png"), this::exportMeasurementsToEditor));
-
         autoMeasureToggle.setSelected(true);
-//        table.setBorder(new RoundedLineBorder(UIManager.getColor("Button.borderColor"), 1, 3));
+    }
+
+    @Override
+    public void buildRibbon(JIPipeDesktopRibbon ribbon) {
+        super.buildRibbon(ribbon);
+
+        JIPipeDesktopRibbon.Task maskTask = ribbon.getOrCreateTask("Mask");
+        JIPipeDesktopRibbon.Band measureBand = maskTask.getOrCreateBand("Measure");
+        measureBand.add(new JIPipeDesktopLargeButtonRibbonAction("Measure", "Measures the image/mask now", UIUtils.getIcon32FromResources("actions/statistics.png"), this::measureCurrentMask));
+        measureBand.add(new JIPipeDesktopSmallButtonRibbonAction("Settings ...", "Opens the settings for the measurement tool", UIUtils.getIconFromResources("actions/configure.png"), this::showSettings));
+        measureBand.add(new JIPipeDesktopRibbon.Action(autoMeasureToggle, 1, new Insets(2, 2, 2, 2)));
+
+        measureBand.add(new JIPipeDesktopSmallButtonRibbonAction("Export to file", "Exports the measurements to *.csv/*.xlsx", UIUtils.getIconFromResources("actions/filesave.png"), this::exportMeasurementsToFile));
+        measureBand.add(new JIPipeDesktopSmallButtonRibbonAction("Open in editor", "Opens the measurements in a table editor", UIUtils.getIconFromResources("actions/open-in-new-window.png"), this::exportMeasurementsToEditor));
+
     }
 
     private void exportMeasurementsToEditor() {
@@ -179,12 +180,12 @@ public class MeasurementDrawerPlugin2D extends MaskDrawerPlugin2D implements Mas
     }
 
     @Override
-    public String getCategory() {
+    public String getPanelName() {
         return "Measure";
     }
 
     @Override
-    public Icon getCategoryIcon() {
+    public Icon getPanelIcon() {
         return UIUtils.getIconFromResources("actions/measure.png");
     }
 

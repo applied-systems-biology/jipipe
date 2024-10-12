@@ -657,7 +657,7 @@ public class JIPipeDesktopDockPanel extends JPanel implements JIPipeDesktopSplit
         }
     }
 
-    public <T extends JComponent> T getPanel(String id, Class<T> klass) {
+    public <T extends JComponent> T getPanelComponent(String id, Class<T> klass) {
         Panel panel = panels.getOrDefault(id, null);
         if (panel != null) {
             return (T) panel.getComponent();
@@ -779,6 +779,10 @@ public class JIPipeDesktopDockPanel extends JPanel implements JIPipeDesktopSplit
 
     public boolean containsPanel(String id) {
         return panels.containsKey(id);
+    }
+
+    public Map<String, Panel> getPanels() {
+        return new HashMap<>(panels);
     }
 
     public enum PanelLocation {
@@ -960,6 +964,10 @@ public class JIPipeDesktopDockPanel extends JPanel implements JIPipeDesktopSplit
                 return name.compareTo(panel.getName());
             }
             return byUIOrder;
+        }
+
+        public <T extends JComponent> T getComponent(Class<T> klass) {
+            return (T)getComponent();
         }
     }
 

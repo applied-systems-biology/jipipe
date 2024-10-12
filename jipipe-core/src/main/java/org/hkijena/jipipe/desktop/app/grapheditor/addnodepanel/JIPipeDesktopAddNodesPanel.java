@@ -543,7 +543,7 @@ public class JIPipeDesktopAddNodesPanel extends JIPipeDesktopWorkbenchPanel {
 
     private void showDocumentation(JIPipeNodeDatabaseEntry entry) {
         // Create/open the documentation panel
-        JIPipeDesktopFormHelpPanel helpPanel = graphEditorUI.getDockPanel().getPanel(JIPipeDesktopPipelineGraphEditorUI.DOCK_NODE_CONTEXT_HELP, JIPipeDesktopFormHelpPanel.class);
+        JIPipeDesktopFormHelpPanel helpPanel = graphEditorUI.getDockPanel().getPanelComponent(JIPipeDesktopPipelineGraphEditorUI.DOCK_NODE_CONTEXT_HELP, JIPipeDesktopFormHelpPanel.class);
         if (helpPanel == null) {
             helpPanel = new JIPipeDesktopFormHelpPanel();
             graphEditorUI.getDockPanel().addDockPanel(JIPipeDesktopPipelineGraphEditorUI.DOCK_NODE_CONTEXT_HELP,

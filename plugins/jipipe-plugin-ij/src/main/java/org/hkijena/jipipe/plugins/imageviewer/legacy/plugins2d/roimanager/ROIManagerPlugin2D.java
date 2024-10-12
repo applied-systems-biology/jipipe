@@ -43,6 +43,7 @@ import org.hkijena.jipipe.plugins.settings.JIPipeFileChooserApplicationSettings;
 import org.hkijena.jipipe.plugins.tables.datatypes.ResultsTableData;
 import org.hkijena.jipipe.utils.StringUtils;
 import org.hkijena.jipipe.utils.UIUtils;
+import org.hkijena.jipipe.utils.ui.JIPipeDesktopDockPanel;
 
 import javax.swing.*;
 import javax.swing.filechooser.FileNameExtensionFilter;
@@ -61,7 +62,6 @@ public class ROIManagerPlugin2D extends JIPipeDesktopLegacyImageViewerPlugin2D {
     private final JIPipeDesktopSmallToggleButtonRibbonAction renderROIAsOverlayViewMenuItem = new JIPipeDesktopSmallToggleButtonRibbonAction("Draw ROI as overlay", "If disabled, ROI are drawn as pixels directly into the displayed image.", UIUtils.getIconFromResources("actions/path-break-apart.png"));
     private final List<ROIManagerPlugin2DSelectionContextPanel> selectionContextPanels = new ArrayList<>();
     private final JPanel selectionContentPanelUI = new JPanel();
-    private final JIPipeDesktopRibbon ribbon = new JIPipeDesktopRibbon(3);
     private ROI2DListData rois = new ROI2DListData();
     private boolean filterListHideInvisible = false;
     private boolean filterListOnlySelected = false;
@@ -191,100 +191,6 @@ public class ROIManagerPlugin2D extends JIPipeDesktopLegacyImageViewerPlugin2D {
                 rois.set(i, roi);
             }
             updateListModel();
-        }
-    }
-
-    private void initializeRibbon() {
-
-        // Register necessary actions
-        displayROIViewMenuItem.addActionListener(this::uploadSliceToCanvas);
-        renderROIAsOverlayViewMenuItem.addActionListener(this::uploadSliceToCanvas);
-
-        // View menu for general display
-        {
-            JIPipeDesktopRibbon.Task viewTask = ribbon.addTask("View");
-            JIPipeDesktopRibbon.Band renderingBand = viewTask.addBand("Rendering");
-
-            renderingBand.add(displayROIViewMenuItem);
-
-            renderingBand.add(renderROIAsOverlayViewMenuItem);
-            renderingBand.add(new JIPipeDesktopSmallButtonRibbonAction("More settings ...", "Opens more rendering settings", UIUtils.getIconFromResources("actions/configure.png"), this::openRoiDrawingSettings));
-            renderingBand.add(new JIPipeDesktopSmallButtonRibbonAction("Save settings", "Saves the current settings as default", UIUtils.getIconFromResources("actions/filesave.png"), this::saveDefaults));
-        }
-
-        // Filter task
-        {
-            JIPipeDesktopRibbon.Task filterTask = ribbon.addTask("Filter");
-            JIPipeDesktopRibbon.Band listBand = filterTask.addBand("List");
-            JIPipeDesktopRibbon.Band roiBand = filterTask.addBand("ROI");
-
-            // List band
-            listBand.add(new JIPipeDesktopSmallToggleButtonRibbonAction("Hide invisible", "Show only visible ROI in list", UIUtils.getIconFromResources("actions/eye-slash.png"), filterListHideInvisible, (toggle) -> {
-                filterListHideInvisible = toggle.isSelected();
-                updateListModel();
-            }));
-            listBand.add(new JIPipeDesktopSmallToggleButtonRibbonAction("Only selection", "Show only ROI that are selected", UIUtils.getIconFromResources("actions/edit-select-all.png"), filterListOnlySelected, (toggle) -> {
-                filterListOnlySelected = toggle.isSelected();
-                updateListModel();
-            }));
-
-            // ROI band
-            roiBand.add(new JIPipeDesktopSmallToggleButtonRibbonAction("Ignore Z", "If enabled, ROI ignore the Z axis", UIUtils.getIconFromResources("actions/layer-flatten-z.png"), roiDrawer.isIgnoreZ(), (toggle) -> {
-                roiDrawer.setIgnoreZ(toggle.isSelected());
-                uploadSliceToCanvas();
-            }));
-            roiBand.add(new JIPipeDesktopSmallToggleButtonRibbonAction("Ignore C", "If enabled, ROI ignore the channel axis", UIUtils.getIconFromResources("actions/layer-flatten-c.png"), roiDrawer.isIgnoreC(), (toggle) -> {
-                roiDrawer.setIgnoreC(toggle.isSelected());
-                uploadSliceToCanvas();
-            }));
-            roiBand.add(new JIPipeDesktopSmallToggleButtonRibbonAction("Ignore T", "If enabled, ROI ignore the time/frame axis", UIUtils.getIconFromResources("actions/layer-flatten-t.png"), roiDrawer.isIgnoreT(), (toggle) -> {
-                roiDrawer.setIgnoreT(toggle.isSelected());
-                uploadSliceToCanvas();
-            }));
-        }
-
-        // Select/Edit task
-        {
-            JIPipeDesktopRibbon.Task selectionTask = ribbon.addTask("Selection");
-            JIPipeDesktopRibbon.Band generalBand = selectionTask.addBand("General");
-            JIPipeDesktopRibbon.Band modifyBand = selectionTask.addBand("Modify");
-            JIPipeDesktopRibbon.Band measureBand = selectionTask.addBand("Measure");
-
-            ROIPicker2DTool pickerTool = new ROIPicker2DTool(this);
-            JIPipeDesktopLargeToggleButtonRibbonAction pickerToggle = new JIPipeDesktopLargeToggleButtonRibbonAction("Pick", "Allows to select ROI via the mouse", UIUtils.getIcon32FromResources("actions/followmouse.png"));
-            pickerTool.addToggleButton(pickerToggle.getButton(), getViewerPanel2D().getCanvas());
-            generalBand.add(pickerToggle);
-
-            generalBand.add(new JIPipeDesktopSmallButtonRibbonAction("Select all", "Selects all ROI", UIUtils.getIconFromResources("actions/edit-select-all.png"), this::selectAll));
-            generalBand.add(new JIPipeDesktopSmallButtonRibbonAction("Clear selection", "Deselects all ROI", UIUtils.getIconFromResources("actions/edit-select-none.png"), this::selectNone));
-            generalBand.add(new JIPipeDesktopSmallButtonRibbonAction("Invert selection", "Inverts the current selection", UIUtils.getIconFromResources("actions/edit-select-none.png"), this::invertSelection));
-
-            modifyBand.add(new JIPipeDesktopSmallButtonRibbonAction("Delete", "Deletes the selected ROI", UIUtils.getIconFromResources("actions/delete.png"), () -> removeSelectedROIs(false)));
-
-            JIPipeDesktopSmallButtonRibbonAction modifyEditAction = new JIPipeDesktopSmallButtonRibbonAction("Modify", "Modifies the selected ROI", UIUtils.getIconFromResources("actions/edit.png"), () -> {
-            });
-            JPopupMenu modifyEditMenu = new JPopupMenu();
-            UIUtils.addReloadablePopupMenuToButton(modifyEditAction.getButton(), modifyEditMenu, () -> reloadEditRoiMenu(modifyEditMenu));
-            modifyBand.add(modifyEditAction);
-
-            measureBand.add(new JIPipeDesktopSmallButtonRibbonAction("Metadata", "Shows the metadata of the selected ROI as table", UIUtils.getIconFromResources("actions/tag.png"), this::showSelectedROIMetadata));
-
-            JIPipeDesktopSmallButtonRibbonAction measureAction = new JIPipeDesktopSmallButtonRibbonAction("Measure", "Measures the ROI and displays the results as table", UIUtils.getIconFromResources("actions/statistics.png"), this::measureSelectedROI);
-            measureBand.add(measureAction);
-            measureBand.add(new JIPipeDesktopSmallButtonRibbonAction("Settings ...", "Opens the measurement settings", UIUtils.getIconFromResources("actions/configure.png"), this::openMeasurementSettings));
-
-        }
-
-        // Import/Export task
-        {
-            JIPipeDesktopRibbon.Task importExportTask = ribbon.addTask("Import/Export");
-            JIPipeDesktopRibbon.Band imageJBand = importExportTask.addBand("ImageJ");
-            JIPipeDesktopRibbon.Band fileBand = importExportTask.addBand("File");
-
-            imageJBand.add(new JIPipeDesktopLargeButtonRibbonAction("To ROI Manager", "Exports the ROI into the ImageJ ROI manager", UIUtils.getIcon32FromResources("apps/imagej2.png"), this::exportROIsToManager));
-
-            fileBand.add(new JIPipeDesktopSmallButtonRibbonAction("Import from file", "Imports ROI from a *.roi or *.zip file", UIUtils.getIconFromResources("actions/fileopen.png"), this::importROIsFromFile));
-            fileBand.add(new JIPipeDesktopSmallButtonRibbonAction("Export to file", "Exports ROI to a *.zip file", UIUtils.getIconFromResources("actions/filesave.png"), this::exportROIsToFile));
         }
     }
 
@@ -458,13 +364,115 @@ public class ROIManagerPlugin2D extends JIPipeDesktopLegacyImageViewerPlugin2D {
     }
 
     @Override
-    public String getCategory() {
+    public String getPanelName() {
         return "ROI";
     }
 
     @Override
-    public Icon getCategoryIcon() {
-        return UIUtils.getIconFromResources("actions/roi.png");
+    public JIPipeDesktopDockPanel.PanelLocation getPanelLocation() {
+        return JIPipeDesktopDockPanel.PanelLocation.BottomRight;
+    }
+
+    @Override
+    public void buildRibbon(JIPipeDesktopRibbon ribbon) {
+        JIPipeDesktopRibbon.Task roiTask = ribbon.getOrCreateTask("ROI");
+
+        // Select/Edit task
+        {
+            JIPipeDesktopRibbon.Band generalBand = roiTask.getOrCreateBand("Select");
+            JIPipeDesktopRibbon.Band modifyBand = roiTask.getOrCreateBand("Modify");
+            JIPipeDesktopRibbon.Band measureBand = roiTask.getOrCreateBand("Measure");
+
+            ROIPicker2DTool pickerTool = new ROIPicker2DTool(this);
+            JIPipeDesktopLargeToggleButtonRibbonAction pickerToggle = new JIPipeDesktopLargeToggleButtonRibbonAction("Pick", "Allows to select ROI via the mouse", UIUtils.getIcon32FromResources("actions/followmouse.png"));
+            pickerTool.addToggleButton(pickerToggle.getButton(), getViewerPanel2D().getCanvas());
+            generalBand.add(pickerToggle);
+
+            generalBand.add(new JIPipeDesktopSmallButtonRibbonAction("Select all", "Selects all ROI", UIUtils.getIconFromResources("actions/edit-select-all.png"), this::selectAll));
+            generalBand.add(new JIPipeDesktopSmallButtonRibbonAction("Clear selection", "Deselects all ROI", UIUtils.getIconFromResources("actions/edit-select-none.png"), this::selectNone));
+            generalBand.add(new JIPipeDesktopSmallButtonRibbonAction("Invert selection", "Inverts the current selection", UIUtils.getIconFromResources("actions/edit-select-none.png"), this::invertSelection));
+
+            modifyBand.add(new JIPipeDesktopSmallButtonRibbonAction("Delete", "Deletes the selected ROI", UIUtils.getIconFromResources("actions/delete.png"), () -> removeSelectedROIs(false)));
+
+            JIPipeDesktopSmallButtonRibbonAction modifyEditAction = new JIPipeDesktopSmallButtonRibbonAction("Modify", "Modifies the selected ROI", UIUtils.getIconFromResources("actions/edit.png"), () -> {
+            });
+            JPopupMenu modifyEditMenu = new JPopupMenu();
+            UIUtils.addReloadablePopupMenuToButton(modifyEditAction.getButton(), modifyEditMenu, () -> reloadEditRoiMenu(modifyEditMenu));
+            modifyBand.add(modifyEditAction);
+
+            measureBand.add(new JIPipeDesktopSmallButtonRibbonAction("Metadata", "Shows the metadata of the selected ROI as table", UIUtils.getIconFromResources("actions/tag.png"), this::showSelectedROIMetadata));
+
+            JIPipeDesktopSmallButtonRibbonAction measureAction = new JIPipeDesktopSmallButtonRibbonAction("Measure", "Measures the ROI and displays the results as table", UIUtils.getIconFromResources("actions/statistics.png"), this::measureSelectedROI);
+            measureBand.add(measureAction);
+            measureBand.add(new JIPipeDesktopSmallButtonRibbonAction("Settings ...", "Opens the measurement settings", UIUtils.getIconFromResources("actions/configure.png"), this::openMeasurementSettings));
+
+        }
+
+        // Filter task
+        {
+            JIPipeDesktopRibbon.Band listBand = roiTask.getOrCreateBand("List");
+            JIPipeDesktopRibbon.Band roiBand = roiTask.getOrCreateBand("View");
+
+            // List band
+            listBand.add(new JIPipeDesktopSmallToggleButtonRibbonAction("Hide invisible", "Show only visible ROI in list", UIUtils.getIconFromResources("actions/eye-slash.png"), filterListHideInvisible, (toggle) -> {
+                filterListHideInvisible = toggle.isSelected();
+                updateListModel();
+            }));
+            listBand.add(new JIPipeDesktopSmallToggleButtonRibbonAction("Only selection", "Show only ROI that are selected", UIUtils.getIconFromResources("actions/edit-select-all.png"), filterListOnlySelected, (toggle) -> {
+                filterListOnlySelected = toggle.isSelected();
+                updateListModel();
+            }));
+
+            // ROI band
+            roiBand.add(new JIPipeDesktopSmallToggleButtonRibbonAction("Ignore Z", "If enabled, ROI ignore the Z axis", UIUtils.getIconFromResources("actions/layer-flatten-z.png"), roiDrawer.isIgnoreZ(), (toggle) -> {
+                roiDrawer.setIgnoreZ(toggle.isSelected());
+                uploadSliceToCanvas();
+            }));
+            roiBand.add(new JIPipeDesktopSmallToggleButtonRibbonAction("Ignore C", "If enabled, ROI ignore the channel axis", UIUtils.getIconFromResources("actions/layer-flatten-c.png"), roiDrawer.isIgnoreC(), (toggle) -> {
+                roiDrawer.setIgnoreC(toggle.isSelected());
+                uploadSliceToCanvas();
+            }));
+            roiBand.add(new JIPipeDesktopSmallToggleButtonRibbonAction("Ignore T", "If enabled, ROI ignore the time/frame axis", UIUtils.getIconFromResources("actions/layer-flatten-t.png"), roiDrawer.isIgnoreT(), (toggle) -> {
+                roiDrawer.setIgnoreT(toggle.isSelected());
+                uploadSliceToCanvas();
+            }));
+        }
+
+        // View menu for general display
+        {
+            JIPipeDesktopRibbon.Band renderingBand = roiTask.getOrCreateBand("View");
+
+            renderingBand.add(displayROIViewMenuItem);
+
+            renderingBand.add(renderROIAsOverlayViewMenuItem);
+            renderingBand.add(new JIPipeDesktopSmallButtonRibbonAction("More settings ...", "Opens more rendering settings", UIUtils.getIconFromResources("actions/configure.png"), this::openRoiDrawingSettings));
+            renderingBand.add(new JIPipeDesktopSmallButtonRibbonAction("Save settings", "Saves the current settings as default", UIUtils.getIconFromResources("actions/filesave.png"), this::saveDefaults));
+        }
+
+        // Import/Export task
+        {
+            JIPipeDesktopRibbon.Band importExportBand = roiTask.getOrCreateBand("Import/Export");
+
+            importExportBand.add(new JIPipeDesktopLargeButtonRibbonAction("To ROI Manager", "Exports the ROI into the ImageJ ROI manager", UIUtils.getIcon32FromResources("apps/imagej2.png"), this::exportROIsToManager));
+
+            importExportBand.add(new JIPipeDesktopSmallButtonRibbonAction("Import from file", "Imports ROI from a *.roi or *.zip file", UIUtils.getIconFromResources("actions/fileopen.png"), this::importROIsFromFile));
+            importExportBand.add(new JIPipeDesktopSmallButtonRibbonAction("Export to file", "Exports ROI to a *.zip file", UIUtils.getIconFromResources("actions/filesave.png"), this::exportROIsToFile));
+        }
+    }
+
+    @Override
+    public void buildDock(JIPipeDesktopDockPanel dockPanel) {
+
+    }
+
+    @Override
+    public void buildStatusBar(JPanel statusBar) {
+
+    }
+
+    @Override
+    public Icon getPanelIcon() {
+        return UIUtils.getIcon32FromResources("actions/ellipse-5pts.png");
     }
 
     private void reloadEditRoiMenu(JPopupMenu menu) {
@@ -586,16 +594,11 @@ public class ROIManagerPlugin2D extends JIPipeDesktopLegacyImageViewerPlugin2D {
             uploadSliceToCanvas();
         });
 
-        // Setup ribbon
-        initializeRibbon();
-        ribbon.rebuildRibbon();
 
         // Setup panel
         mainPanel = new JPanel(new BorderLayout());
         mainPanel.setMinimumSize(new Dimension(100, 300));
         mainPanel.setBorder(UIUtils.createControlBorder());
-
-        mainPanel.add(ribbon, BorderLayout.NORTH);
 
 //        JMenuBar listMenuBar = new JMenuBar();
 //        mainPanel.add(listMenuBar, BorderLayout.NORTH);
@@ -612,6 +615,10 @@ public class ROIManagerPlugin2D extends JIPipeDesktopLegacyImageViewerPlugin2D {
         // Info (bottom toolbar)
         selectionContentPanelUI.setLayout(new BoxLayout(selectionContentPanelUI, BoxLayout.Y_AXIS));
         mainPanel.add(selectionContentPanelUI, BorderLayout.SOUTH);
+
+        // Ribbon items
+        displayROIViewMenuItem.addActionListener(this::uploadSliceToCanvas);
+        renderROIAsOverlayViewMenuItem.addActionListener(this::uploadSliceToCanvas);
     }
 
     public void importROIs(ROI2DListData rois, boolean deferUploadSlice) {

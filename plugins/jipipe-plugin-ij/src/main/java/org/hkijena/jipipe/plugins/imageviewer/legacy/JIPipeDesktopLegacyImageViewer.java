@@ -52,7 +52,6 @@ public class JIPipeDesktopLegacyImageViewer extends JPanel implements JIPipeDesk
             LUTManagerPlugin2D.class,
             CompositeManagerPlugin2D.class,
             ROIManagerPlugin2D.class,
-            AnimationSpeedPlugin2D.class,
             MeasurementDrawerPlugin2D.class));
     private final JIPipeDesktopWorkbench workbench;
     private final Map<Class<?>, Object> contextObjects;

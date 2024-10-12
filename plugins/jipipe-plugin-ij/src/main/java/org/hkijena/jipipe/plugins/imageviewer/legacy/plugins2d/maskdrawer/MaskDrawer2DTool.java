@@ -13,8 +13,11 @@
 
 package org.hkijena.jipipe.plugins.imageviewer.legacy.plugins2d.maskdrawer;
 
+import org.hkijena.jipipe.desktop.commons.components.ribbon.JIPipeDesktopRibbon;
 import org.hkijena.jipipe.plugins.imageviewer.legacy.api.JIPipeDesktopLegacyImageViewerPlugin2D;
 import org.hkijena.jipipe.plugins.imageviewer.utils.viewer2d.ImageViewerPanelCanvas2DTool;
+import org.hkijena.jipipe.utils.UIUtils;
+import org.hkijena.jipipe.utils.ui.JIPipeDesktopDockPanel;
 
 import javax.swing.*;
 
@@ -64,16 +67,6 @@ public abstract class MaskDrawer2DTool extends JIPipeDesktopLegacyImageViewerPlu
         return true;
     }
 
-    @Override
-    public String getCategory() {
-        return null;
-    }
-
-    @Override
-    public Icon getCategoryIcon() {
-        return null;
-    }
-
     /**
      * Posts a mask changed event to the viewer' canvas event bus
      */
@@ -85,5 +78,35 @@ public abstract class MaskDrawer2DTool extends JIPipeDesktopLegacyImageViewerPlu
      * Triggered when the highlight color was changed
      */
     public void onHighlightColorChanged() {
+    }
+
+    @Override
+    public void buildStatusBar(JPanel statusBar) {
+
+    }
+
+    @Override
+    public void buildDock(JIPipeDesktopDockPanel dockPanel) {
+
+    }
+
+    @Override
+    public void buildRibbon(JIPipeDesktopRibbon ribbon) {
+
+    }
+
+    @Override
+    public Icon getPanelIcon() {
+        return UIUtils.getIcon32FromResources("actions/configure3.png");
+    }
+
+    @Override
+    public JIPipeDesktopDockPanel.PanelLocation getPanelLocation() {
+        return JIPipeDesktopDockPanel.PanelLocation.BottomRight;
+    }
+
+    @Override
+    public String getPanelName() {
+        return "Settings";
     }
 }

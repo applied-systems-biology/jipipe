@@ -39,7 +39,7 @@ public class AddNewNodeUIContextAction implements NodeUIContextAction {
             JIPipeDesktopDockPanel dockPanel = canvasUI.getGraphEditorUI().getDockPanel();
             dockPanel.activatePanel(JIPipeDesktopPipelineGraphEditorUI.DOCK_ADD_NODES, true);
             SwingUtilities.invokeLater(() -> {
-                dockPanel.getPanel(JIPipeDesktopPipelineGraphEditorUI.DOCK_ADD_NODES, JIPipeDesktopAddNodesPanel.class).focusSearchBar();
+                dockPanel.getPanelComponent(JIPipeDesktopPipelineGraphEditorUI.DOCK_ADD_NODES, JIPipeDesktopAddNodesPanel.class).focusSearchBar();
             });
         } else {
             JIPipeDesktopNodeFinderDialogUI dialogUI = new JIPipeDesktopNodeFinderDialogUI(canvasUI, null);

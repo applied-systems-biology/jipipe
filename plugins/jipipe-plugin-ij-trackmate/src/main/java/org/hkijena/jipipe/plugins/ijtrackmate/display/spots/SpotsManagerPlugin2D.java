@@ -45,6 +45,7 @@ import org.hkijena.jipipe.plugins.settings.JIPipeFileChooserApplicationSettings;
 import org.hkijena.jipipe.plugins.tables.datatypes.ResultsTableData;
 import org.hkijena.jipipe.utils.NaturalOrderComparator;
 import org.hkijena.jipipe.utils.UIUtils;
+import org.hkijena.jipipe.utils.ui.JIPipeDesktopDockPanel;
 
 import javax.swing.*;
 import javax.swing.filechooser.FileNameExtensionFilter;
@@ -62,7 +63,6 @@ public class SpotsManagerPlugin2D extends JIPipeDesktopLegacyImageViewerPlugin2D
     private final JIPipeDesktopSmallToggleButtonRibbonAction displayLabelsViewMenuItem = new JIPipeDesktopSmallToggleButtonRibbonAction("Display labels", "Determines whether spot labels are displayed", UIUtils.getIconFromResources("actions/tag.png"));
     private final List<SelectionContextPanel> selectionContextPanels = new ArrayList<>();
     private final JPanel selectionContentPanelUI = new JPanel();
-    private final JIPipeDesktopRibbon ribbon = new JIPipeDesktopRibbon(3);
     private SpotsCollectionData spotsCollection;
     private SpotDrawer spotDrawer = new SpotDrawer();
     private SpotListCellRenderer spotsListCellRenderer;
@@ -97,18 +97,31 @@ public class SpotsManagerPlugin2D extends JIPipeDesktopLegacyImageViewerPlugin2D
         }
     }
 
-    private void initializeRibbon() {
+    @Override
+    public void buildRibbon(JIPipeDesktopRibbon ribbon) {
+        JIPipeDesktopRibbon.Task spotsTask = ribbon.getOrCreateTask("Spots");
         {
-            displayLabelsViewMenuItem.addActionListener(e -> {
-                spotDrawer.getLabelSettings().setDrawLabels(displayLabelsViewMenuItem.getState());
-            });
-            displayLabelsViewMenuItem.addActionListener(this::uploadSliceToCanvas);
-            displaySpotsViewMenuItem.addActionListener(this::uploadSliceToCanvas);
+            JIPipeDesktopRibbon.Band generalBand = spotsTask.getOrCreateBand("General");
+            JIPipeDesktopRibbon.Band modifyBand = spotsTask.getOrCreateBand("Modify");
+            JIPipeDesktopRibbon.Band measureBand = spotsTask.getOrCreateBand("Measure");
 
+//            ROIPickerTool pickerTool = new ROIPickerTool(this);
+//            LargeToggleButtonAction pickerToggle = new LargeToggleButtonAction("Pick", "Allows to select ROI via the mouse", UIUtils.getIcon32FromResources("actions/followmouse.png"));
+//            pickerTool.addToggleButton(pickerToggle.getButton(), getViewerPanel().getCanvas());
+//            generalBand.add(pickerToggle);
 
-            JIPipeDesktopRibbon.Task viewTask = ribbon.getOrCreateTask("View");
-            JIPipeDesktopRibbon.Band generalBand = viewTask.addBand("General");
-            JIPipeDesktopRibbon.Band visualizationBand = viewTask.addBand("Visualization");
+            generalBand.add(new JIPipeDesktopSmallButtonRibbonAction("Select all", "Selects all spots", UIUtils.getIconFromResources("actions/edit-select-all.png"), this::selectAll));
+            generalBand.add(new JIPipeDesktopSmallButtonRibbonAction("Clear selection", "Deselects all spots", UIUtils.getIconFromResources("actions/edit-select-none.png"), this::selectNone));
+            generalBand.add(new JIPipeDesktopSmallButtonRibbonAction("Invert selection", "Inverts the current selection", UIUtils.getIconFromResources("actions/edit-select-none.png"), this::invertSelection));
+
+            modifyBand.add(new JIPipeDesktopSmallButtonRibbonAction("Delete", "Deletes the selected spots", UIUtils.getIconFromResources("actions/delete.png"), () -> removeSelectedSpots(false)));
+
+            JIPipeDesktopSmallButtonRibbonAction measureAction = new JIPipeDesktopSmallButtonRibbonAction("Measure", "Measures the spots and displays the results as table", UIUtils.getIconFromResources("actions/statistics.png"), this::measureSelectedSpots);
+            measureBand.add(measureAction);
+        }
+        {
+            JIPipeDesktopRibbon.Band generalBand = spotsTask.getOrCreateBand("View");
+            JIPipeDesktopRibbon.Band visualizationBand = spotsTask.getOrCreateBand("View");
 
             generalBand.add(displaySpotsViewMenuItem);
             generalBand.add(displayLabelsViewMenuItem);
@@ -161,32 +174,21 @@ public class SpotsManagerPlugin2D extends JIPipeDesktopLegacyImageViewerPlugin2D
             visualizationBand.add(new JIPipeDesktopSmallButtonRibbonAction("Save settings", "Saves the current settings as default", UIUtils.getIconFromResources("actions/filesave.png"), this::saveDefaults));
         }
         {
-            JIPipeDesktopRibbon.Task selectionTask = ribbon.addTask("Selection");
-            JIPipeDesktopRibbon.Band generalBand = selectionTask.addBand("General");
-            JIPipeDesktopRibbon.Band modifyBand = selectionTask.addBand("Modify");
-            JIPipeDesktopRibbon.Band measureBand = selectionTask.addBand("Measure");
-
-//            ROIPickerTool pickerTool = new ROIPickerTool(this);
-//            LargeToggleButtonAction pickerToggle = new LargeToggleButtonAction("Pick", "Allows to select ROI via the mouse", UIUtils.getIcon32FromResources("actions/followmouse.png"));
-//            pickerTool.addToggleButton(pickerToggle.getButton(), getViewerPanel().getCanvas());
-//            generalBand.add(pickerToggle);
-
-            generalBand.add(new JIPipeDesktopSmallButtonRibbonAction("Select all", "Selects all spots", UIUtils.getIconFromResources("actions/edit-select-all.png"), this::selectAll));
-            generalBand.add(new JIPipeDesktopSmallButtonRibbonAction("Clear selection", "Deselects all spots", UIUtils.getIconFromResources("actions/edit-select-none.png"), this::selectNone));
-            generalBand.add(new JIPipeDesktopSmallButtonRibbonAction("Invert selection", "Inverts the current selection", UIUtils.getIconFromResources("actions/edit-select-none.png"), this::invertSelection));
-
-            modifyBand.add(new JIPipeDesktopSmallButtonRibbonAction("Delete", "Deletes the selected spots", UIUtils.getIconFromResources("actions/delete.png"), () -> removeSelectedSpots(false)));
-
-            JIPipeDesktopSmallButtonRibbonAction measureAction = new JIPipeDesktopSmallButtonRibbonAction("Measure", "Measures the spots and displays the results as table", UIUtils.getIconFromResources("actions/statistics.png"), this::measureSelectedSpots);
-            measureBand.add(measureAction);
-        }
-        {
-            JIPipeDesktopRibbon.Task importExportTask = ribbon.addTask("Import/Export");
-            JIPipeDesktopRibbon.Band fileBand = importExportTask.addBand("File");
+            JIPipeDesktopRibbon.Band fileBand = spotsTask.getOrCreateBand("Import/Export");
 
             fileBand.add(new JIPipeDesktopSmallButtonRibbonAction("Import from file", "Imports spots from a file", UIUtils.getIconFromResources("actions/fileopen.png"), this::importSpotsFromFile));
             fileBand.add(new JIPipeDesktopSmallButtonRibbonAction("Export to file", "Exports ROI to a file", UIUtils.getIconFromResources("actions/filesave.png"), this::exportSpotsToFile));
         }
+    }
+
+    @Override
+    public void buildDock(JIPipeDesktopDockPanel dockPanel) {
+
+    }
+
+    @Override
+    public void buildStatusBar(JPanel statusBar) {
+
     }
 
     private void measureSelectedSpots() {
@@ -351,13 +353,18 @@ public class SpotsManagerPlugin2D extends JIPipeDesktopLegacyImageViewerPlugin2D
     }
 
     @Override
-    public String getCategory() {
+    public String getPanelName() {
         return "Spots";
     }
 
     @Override
-    public Icon getCategoryIcon() {
-        return TrackMatePlugin.RESOURCES.getIconFromResources("trackmate-spots.png");
+    public JIPipeDesktopDockPanel.PanelLocation getPanelLocation() {
+        return JIPipeDesktopDockPanel.PanelLocation.BottomRight;
+    }
+
+    @Override
+    public Icon getPanelIcon() {
+        return TrackMatePlugin.RESOURCES.getIcon32FromResources("trackmate.png");
     }
 
     private void initialize() {
@@ -369,16 +376,10 @@ public class SpotsManagerPlugin2D extends JIPipeDesktopLegacyImageViewerPlugin2D
             uploadSliceToCanvas();
         });
 
-        // Setup ribbon
-        initializeRibbon();
-        ribbon.rebuildRibbon();
-
         // Setup panel
         mainPanel = new JPanel(new BorderLayout());
         mainPanel.setMinimumSize(new Dimension(100, 300));
         mainPanel.setBorder(UIUtils.createControlBorder());
-
-        mainPanel.add(ribbon, BorderLayout.NORTH);
 
         JScrollPane scrollPane = new JScrollPane(spotsListControl);
         mainPanel.add(scrollPane, BorderLayout.CENTER);
@@ -386,6 +387,13 @@ public class SpotsManagerPlugin2D extends JIPipeDesktopLegacyImageViewerPlugin2D
         // Info (bottom toolbar)
         selectionContentPanelUI.setLayout(new BoxLayout(selectionContentPanelUI, BoxLayout.Y_AXIS));
         mainPanel.add(selectionContentPanelUI, BorderLayout.SOUTH);
+
+        // Ribbon actions
+        displayLabelsViewMenuItem.addActionListener(e -> {
+            spotDrawer.getLabelSettings().setDrawLabels(displayLabelsViewMenuItem.getState());
+        });
+        displayLabelsViewMenuItem.addActionListener(this::uploadSliceToCanvas);
+        displaySpotsViewMenuItem.addActionListener(this::uploadSliceToCanvas);
     }
 
     @Override

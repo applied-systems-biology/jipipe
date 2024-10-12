@@ -225,7 +225,7 @@ public class JIPipeDesktopDataViewerWindow extends JFrame implements JIPipeDeskt
                         0,
                         panel);
             }
-            JIPipeDesktopDataViewerTextAnnotationsPanel textAnnotationsPanel = dockPanel.getPanel("TEXT_ANNOTATIONS",
+            JIPipeDesktopDataViewerTextAnnotationsPanel textAnnotationsPanel = dockPanel.getPanelComponent("TEXT_ANNOTATIONS",
                     JIPipeDesktopDataViewerTextAnnotationsPanel.class);
             JIPipeDataTableRowInfo row = dataTableInfo.getRow(currentDataRow);
             ResultsTableData tableData = new ResultsTableData();
