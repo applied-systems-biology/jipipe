@@ -592,15 +592,20 @@ public class ImageJDataTypesPlugin extends JIPipePrepackagedDefaultJavaPlugin {
     public void postprocess(JIPipeProgressInfo progressInfo) {
         super.postprocess(progressInfo);
 
-        progressInfo.log("Initializing VTK ...");
-        try {
-            VTKUtils.VTK_NATIVES_EXTRACT_PATH = PathUtils.createDirectories(PathUtils.getJIPipeUserDir().resolve("contrib").resolve("vtk-native"));
-            VTKUtils.loadVtkNativeLibraries();
-            progressInfo.log("Initializing VTK ... successful");
-            VTK_AVAILABLE = true;
-        } catch (Throwable e) {
-            progressInfo.log("Initializing VTK ... failed!");
-            progressInfo.log(ExceptionUtils.getStackTrace(e));
+        if(!ImageViewerGeneralUIApplicationSettings.getInstance().isDisableVtk()) {
+            progressInfo.log("Initializing VTK ...");
+            try {
+                VTKUtils.VTK_NATIVES_EXTRACT_PATH = PathUtils.createDirectories(PathUtils.getJIPipeUserDir().resolve("contrib").resolve("vtk-native"));
+                VTKUtils.loadVtkNativeLibraries();
+                progressInfo.log("Initializing VTK ... successful");
+                VTK_AVAILABLE = true;
+            } catch (Throwable e) {
+                progressInfo.log("Initializing VTK ... failed!");
+                progressInfo.log(ExceptionUtils.getStackTrace(e));
+            }
+        }
+        else {
+            progressInfo.log("VTK initialization is disabled.");
         }
 
     }
