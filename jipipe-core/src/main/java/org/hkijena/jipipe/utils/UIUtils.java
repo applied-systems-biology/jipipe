@@ -229,6 +229,15 @@ public class UIUtils {
                 new RoundedLineBorder(color, 1, 5));
     }
 
+    public static void addToStatusBarWithSeparator(JComponent target, JComponent control) {
+        if(target.getComponentCount() > 0) {
+            target.add(Box.createHorizontalStrut(4));
+            target.add(createVerticalSeparator());
+            target.add(Box.createHorizontalStrut(4));
+        }
+        target.add(control);
+    }
+
     public static Border createPanelBorder() {
         if (PANEL_BORDER == null) {
             if (!DARK_THEME) {
@@ -240,6 +249,16 @@ public class UIUtils {
             }
         }
         return PANEL_BORDER;
+    }
+
+    public static Border createPanelBorder(int left, int top, int right, int bottom) {
+        if (!DARK_THEME) {
+            return BorderFactory.createCompoundBorder(BorderFactory.createLineBorder(JIPipeDesktopModernMetalTheme.MEDIUM_GRAY, 1),
+                    BorderFactory.createEmptyBorder(top, left, bottom, right));
+        } else {
+            return BorderFactory.createCompoundBorder(BorderFactory.createLineBorder(Color.DARK_GRAY, 1),
+                    BorderFactory.createEmptyBorder(top, left, bottom, right));
+        }
     }
 
     public static void registerHyperlinkHandler(JTextPane content) {

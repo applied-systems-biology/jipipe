@@ -488,7 +488,6 @@ public class ImageJDataTypesPlugin extends JIPipePrepackagedDefaultJavaPlugin {
                 new OpenInNativeApplicationDataImportOperation(".csv"));
         registerImageJDataImporter("import-results-table", new ResultsTableDataImageJImporter(), DefaultImageJDataImporterUI.class);
         registerImageJDataExporter("export-results-table", new ResultsTableDataImageJExporter(), DefaultImageJDataExporterUI.class);
-        registerDefaultDataTypeViewer(ResultsTableData.class, ResultsTableDataViewer.class);
 
         // Register FFT data types
         registerImageDataType("imagej-imgplus-fft", ImagePlusFFTData.class, imageImporter, imageExporter, "icons/data-types/imgplus-fft.png");
@@ -533,6 +532,11 @@ public class ImageJDataTypesPlugin extends JIPipePrepackagedDefaultJavaPlugin {
         registerApplicationSettingsSheet(new ImageViewerUIROI2DDisplayApplicationSettings());
         registerApplicationSettingsSheet(new ImageViewerGeneralUIApplicationSettings());
 
+        // Register viewers
+        registerDefaultDataTypeViewer(ImagePlusData.class, ImagePlusDataViewer.class);
+        registerDefaultDataTypeViewer(ROI2DListData.class, ROI2DListDataViewer.class);
+        registerDefaultDataTypeViewer(OMEImageData.class, OMEImageDataViewer.class);
+        registerDefaultDataTypeViewer(ResultsTableData.class, ResultsTableDataViewer.class);
     }
 
     /**

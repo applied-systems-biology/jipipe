@@ -32,7 +32,7 @@ public abstract class GeneralImageViewerPanelPlugin2D extends JIPipeDesktopLegac
 
     @Override
     public Icon getPanelIcon() {
-        return UIUtils.getIconFromResources("actions/configure.png");
+        return UIUtils.getIcon32FromResources("actions/configure.png");
     }
 
     @Override

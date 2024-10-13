@@ -25,7 +25,7 @@ public class JIPipeDesktopCheckBoxRibbonAction extends JIPipeDesktopRibbon.Actio
     }
 
     public JIPipeDesktopCheckBoxRibbonAction(String label, String tooltip, boolean selected, Consumer<JCheckBox> action) {
-        super(new JToggleButton(), 1, new Insets(2, 2, 2, 2));
+        super(new JCheckBox(), 1, new Insets(2, 2, 2, 2));
 
         JCheckBox button = (JCheckBox) getFirstComponent();
         button.setOpaque(false);

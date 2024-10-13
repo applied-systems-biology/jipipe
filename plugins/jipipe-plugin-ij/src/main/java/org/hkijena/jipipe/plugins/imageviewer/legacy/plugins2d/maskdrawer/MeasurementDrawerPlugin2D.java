@@ -186,7 +186,7 @@ public class MeasurementDrawerPlugin2D extends MaskDrawerPlugin2D implements Mas
 
     @Override
     public Icon getPanelIcon() {
-        return UIUtils.getIconFromResources("actions/measure.png");
+        return UIUtils.getIcon32FromResources("actions/measure.png");
     }
 
     @Override

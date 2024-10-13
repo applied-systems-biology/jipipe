@@ -60,7 +60,7 @@ public class JIPipeDesktopLegacyImageViewer extends JPanel implements JIPipeDesk
     private final List<JIPipeDesktopLegacyImageViewerPlugin2D> plugins2D = new ArrayList<>();
 
     private final Map<Class<? extends JIPipeDesktopLegacyImageViewerPlugin>, JIPipeDesktopLegacyImageViewerPlugin> pluginMap = new HashMap<>();
-    private final JLabel imageInfoLabel = new JLabel();
+    private final JLabel imageInfoLabel = new JLabel(UIUtils.getIconFromResources("actions/viewimage.png"));
     private final List<Object> overlays = new ArrayList<>();
     private ImagePlusData image;
     private JIPipeDataSource dataSource;
@@ -128,6 +128,7 @@ public class JIPipeDesktopLegacyImageViewer extends JPanel implements JIPipeDesk
     }
 
     private void initialize() {
+        setLayout(new BorderLayout());
         add(imageViewerPanel2D, BorderLayout.CENTER);
     }
 

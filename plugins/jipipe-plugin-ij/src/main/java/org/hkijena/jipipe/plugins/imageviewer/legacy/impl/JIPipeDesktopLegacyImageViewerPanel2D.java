@@ -88,9 +88,6 @@ public class JIPipeDesktopLegacyImageViewerPanel2D extends JPanel implements JIP
     private ImageViewerPanelCanvas2D canvas;
     private JIPipeDesktopFormPanel bottomPanel;
     private long lastTimeZoomed;
-    //    private int rotation = 0;
-    private JMenuItem exportAllSlicesItem;
-    private JMenuItem exportMovieItem;
     private boolean isUpdatingSliders = false;
     private JScrollPane canvasScrollPane;
     private boolean composite;
@@ -681,12 +678,6 @@ public class JIPipeDesktopLegacyImageViewerPanel2D extends JPanel implements JIP
         return imageViewer.getImagePlus();
     }
 
-    private void refreshMenus() {
-        boolean hasMultipleSlices = image != null && image.getImage().getNDimensions() > 2;
-        exportAllSlicesItem.setVisible(hasMultipleSlices);
-        exportMovieItem.setVisible(hasMultipleSlices);
-    }
-
     public void refreshFormPanel() {
         Map<String, Integer> scrollValues = new HashMap<>();
         final String panelIdPrefix = "LEGACY_IMAGE_VIEWER2D_";
@@ -922,7 +913,6 @@ public class JIPipeDesktopLegacyImageViewerPanel2D extends JPanel implements JIP
         refreshSliders();
         refreshSlice();
         refreshFormPanel();
-        refreshMenus();
         revalidate();
         repaint();
         uploadSliceToCanvas();

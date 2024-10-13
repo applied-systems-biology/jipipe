@@ -47,7 +47,7 @@ public class PixelInfoPlugin2D extends GeneralImageViewerPanelPlugin2D implement
 
     @Override
     public void buildStatusBar(JToolBar statusBar) {
-        statusBar.add(pixelInfoLabel);
+       UIUtils.addToStatusBarWithSeparator(statusBar, pixelInfoLabel);
     }
 
     private void updatePixelInfo(Point coordinate) {

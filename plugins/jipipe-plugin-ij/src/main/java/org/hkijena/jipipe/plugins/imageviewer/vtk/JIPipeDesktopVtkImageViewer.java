@@ -115,6 +115,10 @@ public class JIPipeDesktopVtkImageViewer extends JIPipeDesktopWorkbenchPanel {
 
     }
 
+    public void buildStatusBar(JToolBar statusBar) {
+
+    }
+
     public void startRenderer() {
         vtkConeSource cone = new vtkConeSource();
         cone.SetResolution(8);
@@ -165,4 +169,6 @@ public class JIPipeDesktopVtkImageViewer extends JIPipeDesktopWorkbenchPanel {
     public JIPipeDesktopVtkImageViewerTool getCurrentTool() {
         return currentTool;
     }
+
+
 }

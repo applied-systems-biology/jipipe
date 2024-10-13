@@ -666,8 +666,7 @@ public class MaskDrawerPlugin2D extends JIPipeDesktopLegacyImageViewerPlugin2D i
         modifyMaskBand.add(new JIPipeDesktopSmallButtonRibbonAction("Clear", "Sets the whole mask to zero", UIUtils.getIconFromResources("actions/tool_color_eraser.png"), this::clearCurrentMask));
 
         // Import/Export menu
-        JIPipeDesktopRibbon.Task importExportTask = ribbon.addTask("Import/Export");
-        JIPipeDesktopRibbon.Band fileImportExportBand = importExportTask.addBand("Mask");
+        JIPipeDesktopRibbon.Band fileImportExportBand = maskTask.addBand("Import/Export");
 
         fileImportExportBand.add(new JIPipeDesktopSmallButtonRibbonAction("Import mask", "Imports the mask slice from a *.tif file", UIUtils.getIconFromResources("actions/document-import.png"), this::importMask));
         fileImportExportBand.add(new JIPipeDesktopSmallButtonRibbonAction("Export mask", "Exports the mask slice to a *.tif file", UIUtils.getIconFromResources("actions/document-export.png"), this::exportMask));
