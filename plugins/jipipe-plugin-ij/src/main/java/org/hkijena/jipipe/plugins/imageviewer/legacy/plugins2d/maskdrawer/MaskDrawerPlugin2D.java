@@ -681,7 +681,7 @@ public class MaskDrawerPlugin2D extends JIPipeDesktopLegacyImageViewerPlugin2D i
     }
 
     @Override
-    public void buildStatusBar(JPanel statusBar) {
+    public void buildStatusBar(JToolBar statusBar) {
 
     }
 

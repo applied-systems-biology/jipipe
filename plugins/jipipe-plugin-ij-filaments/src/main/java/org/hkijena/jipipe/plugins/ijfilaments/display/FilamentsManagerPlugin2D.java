@@ -133,7 +133,7 @@ public class FilamentsManagerPlugin2D extends JIPipeDesktopLegacyImageViewerPlug
     }
 
     @Override
-    public void buildStatusBar(JPanel statusBar) {
+    public void buildStatusBar(JToolBar statusBar) {
 
     }
 

@@ -88,7 +88,7 @@ public class CalibrationPlugin2D extends GeneralImageViewerPanelPlugin2D {
     }
 
     @Override
-    public void buildStatusBar(JPanel statusBar) {
+    public void buildStatusBar(JToolBar statusBar) {
 
     }
 

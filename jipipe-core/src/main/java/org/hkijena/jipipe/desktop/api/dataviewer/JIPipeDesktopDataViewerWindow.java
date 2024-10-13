@@ -64,7 +64,8 @@ public class JIPipeDesktopDataViewerWindow extends JFrame implements JIPipeDeskt
     private int currentDataAnnotationColumn = -1;
     private JIPipeDesktopDataViewer currentDataViewer;
     private final JPanel contentPane = new JPanel(new BorderLayout());
-    private final JToolBar statusBar = new JToolBar();
+    private final JToolBar staticStatusBar = new JToolBar();
+    private final JToolBar dynamicStatusBar = new JToolBar();
     private final JButton dataTypeInfoButton = new JButton();
 
     public JIPipeDesktopDataViewerWindow(JIPipeDesktopWorkbench workbench) {
@@ -104,6 +105,11 @@ public class JIPipeDesktopDataViewerWindow extends JFrame implements JIPipeDeskt
         setContentPane(contentPane);
         contentPane.add(ribbon, BorderLayout.NORTH);
         contentPane.add(dockPanel, BorderLayout.CENTER);
+
+        JPanel statusBar = new JPanel(new BorderLayout());
+        statusBar.setBorder(BorderFactory.createMatteBorder(1, 0, 0, 0, UIManager.getColor("MenuBar.borderColor")));
+        statusBar.add(dynamicStatusBar, BorderLayout.WEST);
+        statusBar.add(staticStatusBar, BorderLayout.CENTER);
         contentPane.add(statusBar, BorderLayout.SOUTH);
 
         initializeStatusBar();
@@ -113,27 +119,30 @@ public class JIPipeDesktopDataViewerWindow extends JFrame implements JIPipeDeskt
     }
 
     private void initializeStatusBar() {
-        statusBar.setBorder(BorderFactory.createMatteBorder(1, 0, 0, 0, UIManager.getColor("MenuBar.borderColor")));
-        statusBar.setFloatable(false);
-        statusBar.putClientProperty(BasicStatusBarUI.AUTO_ADD_SEPARATOR, false);
 
-        statusBar.add(Box.createHorizontalGlue(), new JXStatusBar.Constraint(JXStatusBar.Constraint.ResizeBehavior.FILL));
+        dynamicStatusBar.setFloatable(false);
+        dynamicStatusBar.setBorder(null);
+
+        staticStatusBar.setFloatable(false);
+        staticStatusBar.putClientProperty(BasicStatusBarUI.AUTO_ADD_SEPARATOR, false);
+        staticStatusBar.setBorder(null);
+        staticStatusBar.add(Box.createHorizontalGlue(), new JXStatusBar.Constraint(JXStatusBar.Constraint.ResizeBehavior.FILL));
 
         dataTypeInfoButton.setBorder(UIUtils.createEmptyBorder(3));
-        statusBar.add(dataTypeInfoButton);
-        statusBar.addSeparator();
+        staticStatusBar.add(dataTypeInfoButton);
+        staticStatusBar.addSeparator();
 
         JIPipeDesktopRunnableQueueButton downloadQueueButton = new JIPipeDesktopRunnableQueueButton(getDesktopWorkbench(), downloaderQueue);
         downloadQueueButton.makeFlat();
         downloadQueueButton.setReadyLabel("Data");
         downloadQueueButton.setTasksFinishedLabel("Data");
-        statusBar.add(downloadQueueButton);
-        statusBar.addSeparator();
+        staticStatusBar.add(downloadQueueButton);
+        staticStatusBar.addSeparator();
         JIPipeDesktopRunnableQueueButton globalQueueButton = new JIPipeDesktopRunnableQueueButton(getDesktopWorkbench());
         globalQueueButton.makeFlat();
-        statusBar.add(globalQueueButton);
-        statusBar.addSeparator();
-        statusBar.add(new JIPipeDesktopAlwaysOnTopToggle(this));
+        staticStatusBar.add(globalQueueButton);
+        staticStatusBar.addSeparator();
+        staticStatusBar.add(new JIPipeDesktopAlwaysOnTopToggle(this));
     }
 
     private void onDataChanged() {
@@ -169,6 +178,11 @@ public class JIPipeDesktopDataViewerWindow extends JFrame implements JIPipeDeskt
         rebuildRibbon();
         currentDataViewer.rebuildRibbon(ribbon);
         ribbon.rebuildRibbon();
+
+        // Update the status bar
+        dynamicStatusBar.removeAll();
+        currentDataViewer.rebuildStatusBar(dynamicStatusBar);
+
         currentDataViewer.postOnDataChanged();
     }
 

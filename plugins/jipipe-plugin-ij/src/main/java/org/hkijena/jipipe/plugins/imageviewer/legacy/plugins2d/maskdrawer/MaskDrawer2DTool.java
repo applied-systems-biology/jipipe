@@ -81,7 +81,7 @@ public abstract class MaskDrawer2DTool extends JIPipeDesktopLegacyImageViewerPlu
     }
 
     @Override
-    public void buildStatusBar(JPanel statusBar) {
+    public void buildStatusBar(JToolBar statusBar) {
 
     }
 

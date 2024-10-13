@@ -46,7 +46,7 @@ public class PixelInfoPlugin2D extends GeneralImageViewerPanelPlugin2D implement
     }
 
     @Override
-    public void buildStatusBar(JPanel statusBar) {
+    public void buildStatusBar(JToolBar statusBar) {
         statusBar.add(pixelInfoLabel);
     }
 

@@ -53,6 +53,14 @@ public abstract class JIPipeDesktopDataViewer extends JIPipeDesktopWorkbenchPane
 
     }
 
+    /**
+     * Called after rebuildDock()
+     * @param statusBar the status bar (left side)
+     */
+    public void rebuildStatusBar(JToolBar statusBar) {
+
+    }
+
     protected void showError(JIPipeDesktopDockPanel dockPanel) {
         JPanel errorPanel = new JPanel(new BorderLayout());
         errorPanel.add(UIUtils.createInfoLabel("No data to be displayed",
@@ -70,7 +78,7 @@ public abstract class JIPipeDesktopDataViewer extends JIPipeDesktopWorkbenchPane
 
     /**
      * Called when the data browser was changed.
-     * Called after rebuildRibbon() and rebuildDock()
+     * Called after rebuildRibbon(), rebuildDock(), and rebuildStatusBar()
      */
     public void postOnDataChanged() {
 

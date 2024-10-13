@@ -455,7 +455,7 @@ public class JIPipeDesktopLegacyImageViewerPanel2D extends JPanel implements JIP
         }
     }
 
-    public void buildStatusBar(JPanel statusBar) {
+    public void buildStatusBar(JToolBar statusBar) {
         for (JIPipeDesktopLegacyImageViewerPlugin2D plugin : imageViewer.getPlugins2D()) {
             plugin.buildStatusBar(statusBar);
         }

@@ -143,7 +143,7 @@ public class JIPipeDesktopLegacyImageViewer extends JPanel implements JIPipeDesk
         imageViewerPanel2D.buildDock(dockPanel);
     }
 
-    public void buildStatusBar(JPanel statusBar) {
+    public void buildStatusBar(JToolBar statusBar) {
         statusBar.add(imageInfoLabel);
         imageViewerPanel2D.buildStatusBar(statusBar);
     }
