@@ -651,8 +651,7 @@ public class MaskDrawerPlugin2D extends JIPipeDesktopLegacyImageViewerPlugin2D i
         viewTweaksBand.add(new JIPipeDesktopRibbon.Action(showGuidesToggle, 1, new Insets(2, 2, 2, 2)));
 
         // Modify menu
-        JIPipeDesktopRibbon.Task modifyTask = ribbon.addTask("Modify");
-        JIPipeDesktopRibbon.Band modifyMaskBand = modifyTask.addBand("Mask");
+        JIPipeDesktopRibbon.Band modifyMaskBand = maskTask.addBand("Modify");
         modifyMaskBand.add(new JIPipeDesktopLargeButtonRibbonAction("Process ...", "Apply a morphological operation", UIUtils.getIcon32FromResources("actions/configure.png"),
                 UIUtils.createMenuItem("Invert", "Inverts the mask", UIUtils.getIconFromResources("actions/object-inverse.png"), this::applyInvert),
                 null,

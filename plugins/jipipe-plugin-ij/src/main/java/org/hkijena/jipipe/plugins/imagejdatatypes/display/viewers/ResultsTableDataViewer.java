@@ -11,7 +11,7 @@
  * See the LICENSE file provided with the code for the full license.
  */
 
-package org.hkijena.jipipe.plugins.imagejdatatypes.display;
+package org.hkijena.jipipe.plugins.imagejdatatypes.display.viewers;
 
 import org.hkijena.jipipe.api.JIPipeProgressInfo;
 import org.hkijena.jipipe.api.data.JIPipeData;
@@ -21,8 +21,6 @@ import org.hkijena.jipipe.desktop.app.tableeditor.JIPipeDesktopTableEditor;
 import org.hkijena.jipipe.desktop.commons.components.ribbon.JIPipeDesktopRibbon;
 import org.hkijena.jipipe.plugins.tables.datatypes.ResultsTableData;
 import org.hkijena.jipipe.utils.ui.JIPipeDesktopDockPanel;
-
-import java.util.concurrent.ExecutionException;
 
 public class ResultsTableDataViewer extends JIPipeDesktopDataViewer {
     private final JIPipeDesktopTableEditor tableEditor;

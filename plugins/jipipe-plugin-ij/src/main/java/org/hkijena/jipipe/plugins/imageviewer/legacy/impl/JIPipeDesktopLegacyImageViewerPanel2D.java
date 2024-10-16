@@ -58,6 +58,7 @@ import java.util.*;
 
 public class JIPipeDesktopLegacyImageViewerPanel2D extends JPanel implements JIPipeDesktopWorkbenchAccess {
 
+    public static final String DOCK_PANEL_PREFIX = "LEGACY_IMAGE_VIEWER2D_";
     private final JIPipeDesktopLegacyImageViewer imageViewer;
     private final JIPipeDesktopSmallButtonRibbonAction zoomStatusButton = new JIPipeDesktopSmallButtonRibbonAction("100%", "The status of the zoom",
             UIUtils.getIconFromResources("actions/empty.png"));
@@ -680,9 +681,8 @@ public class JIPipeDesktopLegacyImageViewerPanel2D extends JPanel implements JIP
 
     public void refreshFormPanel() {
         Map<String, Integer> scrollValues = new HashMap<>();
-        final String panelIdPrefix = "LEGACY_IMAGE_VIEWER2D_";
         for (Map.Entry<String, JIPipeDesktopDockPanel.Panel> entry : currentDockPanel.getPanels().entrySet()) {
-            if(entry.getKey().startsWith(panelIdPrefix)) {
+            if(entry.getKey().startsWith(DOCK_PANEL_PREFIX)) {
                 JIPipeDesktopFormPanel formPanel = entry.getValue().getComponent(JIPipeDesktopFormPanel.class);
                 scrollValues.put(entry.getKey(), formPanel.getScrollPane().getVerticalScrollBar().getValue());
                 formPanel.clear();
@@ -692,10 +692,10 @@ public class JIPipeDesktopLegacyImageViewerPanel2D extends JPanel implements JIP
         List<JIPipeDesktopLegacyImageViewerPlugin2D> plugins2D = imageViewer.getPlugins2D();
         for (int i = 0; i < plugins2D.size(); i++) {
             JIPipeDesktopLegacyImageViewerPlugin2D plugin = plugins2D.get(i);
-            JIPipeDesktopFormPanel formPanel = currentDockPanel.getPanelComponent(panelIdPrefix + plugin.getPanelName(), JIPipeDesktopFormPanel.class);
+            JIPipeDesktopFormPanel formPanel = currentDockPanel.getPanelComponent(DOCK_PANEL_PREFIX + plugin.getPanelName(), JIPipeDesktopFormPanel.class);
             if (formPanel == null) {
                 formPanel = new JIPipeDesktopFormPanel(null, JIPipeDesktopFormPanel.WITH_SCROLLING);
-                currentDockPanel.addDockPanel(panelIdPrefix + plugin.getPanelName(),
+                currentDockPanel.addDockPanel(DOCK_PANEL_PREFIX + plugin.getPanelName(),
                         plugin.getPanelName(),
                         plugin.getPanelIcon(),
                         plugin.getPanelLocation(),
@@ -706,7 +706,7 @@ public class JIPipeDesktopLegacyImageViewerPanel2D extends JPanel implements JIP
             plugin.initializeSettingsPanel(formPanel);
         }
         for (Map.Entry<String, JIPipeDesktopDockPanel.Panel> entry : currentDockPanel.getPanels().entrySet()) {
-            if(entry.getKey().startsWith(panelIdPrefix)) {
+            if(entry.getKey().startsWith(DOCK_PANEL_PREFIX)) {
                 JIPipeDesktopFormPanel formPanel = entry.getValue().getComponent(JIPipeDesktopFormPanel.class);
                 if (!formPanel.isHasVerticalGlue()) {
                     formPanel.addVerticalGlue();

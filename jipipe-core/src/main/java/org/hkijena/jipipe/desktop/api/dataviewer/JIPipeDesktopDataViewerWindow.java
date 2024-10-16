@@ -355,6 +355,14 @@ public class JIPipeDesktopDataViewerWindow extends JFrame implements JIPipeDeskt
         return dataTableBrowser;
     }
 
+    public JIPipeDesktopRibbon getRibbon() {
+        return ribbon;
+    }
+
+    public JIPipeDesktopDockPanel getDockPanel() {
+        return dockPanel;
+    }
+
     private void goToNextData() {
         if (dataTableInfo != null) {
             goToRow((currentDataRow + 1) % dataTableInfo.getRowCount(), currentDataAnnotationColumn);
