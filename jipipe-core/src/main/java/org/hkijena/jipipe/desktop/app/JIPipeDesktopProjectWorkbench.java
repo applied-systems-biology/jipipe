@@ -13,6 +13,7 @@
 
 package org.hkijena.jipipe.desktop.app;
 
+import net.imagej.ui.swing.updater.ImageJUpdater;
 import org.hkijena.jipipe.JIPipe;
 import org.hkijena.jipipe.JIPipeService;
 import org.hkijena.jipipe.api.JIPipeProgressInfo;
@@ -37,7 +38,8 @@ import org.hkijena.jipipe.desktop.app.documentation.JIPipeDesktopWelcomePanel;
 import org.hkijena.jipipe.desktop.app.grapheditor.flavors.compartments.JIPipeDesktopCompartmentsGraphEditorUI;
 import org.hkijena.jipipe.desktop.app.grapheditor.flavors.pipeline.JIPipeDesktopPipelineGraphEditorUI;
 import org.hkijena.jipipe.desktop.app.plugins.JIPipeDesktopPluginValidityCheckerPanel;
-import org.hkijena.jipipe.desktop.app.plugins.pluginsmanager.JIPipeDesktopManagePluginsButton;
+import org.hkijena.jipipe.desktop.app.plugins.artifactsmanager.JIPipeDesktopArtifactManagerUI;
+import org.hkijena.jipipe.desktop.app.plugins.pluginsmanager.JIPipeDesktopPluginManagerUI;
 import org.hkijena.jipipe.desktop.app.project.JIPipeDesktopJIPipeProjectTabMetadata;
 import org.hkijena.jipipe.desktop.app.project.JIPipeDesktopLoadResultDirectoryIntoCacheRun;
 import org.hkijena.jipipe.desktop.app.project.JIPipeDesktopLoadResultZipIntoCacheRun;
@@ -569,6 +571,16 @@ public class JIPipeDesktopProjectWorkbench extends JPanel implements JIPipeDeskt
         // Tools menu
         JMenu toolsMenu = new JMenu("Tools");
 
+        JMenu pluginsMenu = new JMenu("Plugins");
+        pluginsMenu.add(UIUtils.createMenuItem("JIPipe plugins",
+                "Opens the JIPipe plugin manager",
+                hasNewExtensions() ? UIUtils.getIconFromResources("emblems/emblem-important-blue.png") : UIUtils.getIconFromResources("apps/jipipe.png"),
+                this::openJIPipePluginManager));
+        pluginsMenu.add(UIUtils.createMenuItem("Artifacts", "Opens the artifacts manager for external dependencies", UIUtils.getIconFromResources("actions/run-install.png"), this::openArtifactManager));
+        pluginsMenu.addSeparator();
+        pluginsMenu.add(UIUtils.createMenuItem("ImageJ plugins", "Opens the ImageJ update manager", UIUtils.getIconFromResources("apps/imagej.png"), this::openImageJPluginManager));
+        toolsMenu.add(pluginsMenu);
+
         JMenuItem openCacheBrowserButton = new JMenuItem("Cache browser", UIUtils.getIconFromResources("actions/database.png"));
         openCacheBrowserButton.addActionListener(e -> openCacheBrowser());
         toolsMenu.add(openCacheBrowserButton);
@@ -588,7 +600,7 @@ public class JIPipeDesktopProjectWorkbench extends JPanel implements JIPipeDeskt
         menu.add(Box.createHorizontalGlue());
 
         // Overview link
-        JButton openProjectOverviewButton = new JButton("Info & Settings", UIUtils.getIconFromResources("actions/configure.png"));
+        JButton openProjectOverviewButton = new JButton("Project settings", UIUtils.getIconFromResources("actions/configure.png"));
         openProjectOverviewButton.setToolTipText("Opens the project info & settings tab or jumps to the existing tab if it is already open.");
         openProjectOverviewButton.addActionListener(e -> documentTabPane.selectSingletonTab(TAB_PROJECT_OVERVIEW));
         UIUtils.setStandardButtonBorder(openProjectOverviewButton);
@@ -619,9 +631,6 @@ public class JIPipeDesktopProjectWorkbench extends JPanel implements JIPipeDeskt
 
         runProjectButton.addActionListener(e -> runWholeProject());
         menu.add(runProjectButton);
-
-        // Plugins/artifacts management
-        menu.add(new JIPipeDesktopManagePluginsButton(this));
 
         // Notification panel
         menu.add(notificationButton);
@@ -675,6 +684,25 @@ public class JIPipeDesktopProjectWorkbench extends JPanel implements JIPipeDeskt
 
         add(menu, BorderLayout.NORTH);
     }
+
+    private void openImageJPluginManager() {
+        ImageJUpdater updater = new ImageJUpdater();
+        JIPipe.getInstance().getContext().inject(updater);
+        updater.run();
+    }
+
+    private void openArtifactManager() {
+        JIPipeDesktopArtifactManagerUI.show(this);
+    }
+
+    private void openJIPipePluginManager() {
+        JIPipeDesktopPluginManagerUI.show(this);
+    }
+
+    private boolean hasNewExtensions() {
+        return !JIPipe.getInstance().getPluginRegistry().getNewPlugins().isEmpty();
+    }
+
 
     public void openApplicationSettings(String navigateToCategory) {
         JDialog dialog = new JDialog(getWindow());
