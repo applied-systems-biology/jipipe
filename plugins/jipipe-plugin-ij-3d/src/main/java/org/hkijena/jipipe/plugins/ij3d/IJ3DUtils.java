@@ -38,6 +38,7 @@ import org.hkijena.jipipe.plugins.tables.datatypes.ResultsTableData;
 import org.hkijena.jipipe.utils.ColorUtils;
 import org.hkijena.jipipe.utils.StringUtils;
 import org.hkijena.jipipe.utils.TriConsumer;
+import org.jogamp.vecmath.Point3f;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -515,5 +516,13 @@ public class IJ3DUtils {
         for (int z = 0; z < stack.getSize(); z++) {
             sliceMap.put(new ImageSliceIndex(c, z, t), stack.getProcessor(z + 1));
         }
+    }
+
+    public static List<Point3f> convertVec3Array(List<org.scijava.vecmath.Point3f> src) {
+        List<Point3f> result = new ArrayList<>();
+        for (org.scijava.vecmath.Point3f point3f : src) {
+            result.add(new Point3f(point3f.getX(), point3f.getY(), point3f.getZ()));
+        }
+        return result;
     }
 }

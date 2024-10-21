@@ -57,11 +57,11 @@ import org.hkijena.jipipe.utils.JIPipeDesktopSplitPane;
 import org.hkijena.jipipe.utils.StringUtils;
 import org.hkijena.jipipe.utils.UIUtils;
 import org.hkijena.jipipe.utils.ui.CopyImageToClipboard;
+import org.jogamp.java3d.Canvas3D;
+import org.jogamp.java3d.View;
+import org.jogamp.vecmath.Color3f;
 import org.scijava.Disposable;
-import org.scijava.java3d.Canvas3D;
 import org.scijava.java3d.GraphicsConfigTemplate3D;
-import org.scijava.java3d.View;
-import org.scijava.vecmath.Color3f;
 
 import javax.imageio.ImageIO;
 import javax.swing.Timer;

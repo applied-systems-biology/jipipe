@@ -52,7 +52,7 @@ import org.hkijena.jipipe.plugins.settings.JIPipeFileChooserApplicationSettings;
 import org.hkijena.jipipe.plugins.tables.datatypes.ResultsTableData;
 import org.hkijena.jipipe.utils.UIUtils;
 import org.jgrapht.alg.connectivity.ConnectivityInspector;
-import org.scijava.vecmath.Color3f;
+import org.jogamp.vecmath.Color3f;
 
 import javax.swing.Timer;
 import javax.swing.*;
