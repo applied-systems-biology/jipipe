@@ -16,6 +16,7 @@ package org.hkijena.jipipe.plugins.r.algorithms;
 import org.hkijena.jipipe.api.ConfigureJIPipeNode;
 import org.hkijena.jipipe.api.JIPipeProgressInfo;
 import org.hkijena.jipipe.api.SetJIPipeDocumentation;
+import org.hkijena.jipipe.api.environments.ExternalEnvironmentParameterSettings;
 import org.hkijena.jipipe.api.environments.JIPipeEnvironment;
 import org.hkijena.jipipe.api.nodes.AddJIPipeOutputSlot;
 import org.hkijena.jipipe.api.nodes.JIPipeGraphNodeRunContext;
@@ -75,6 +76,7 @@ public class ImportRDatasetAlgorithm extends JIPipeSimpleIteratingAlgorithm impl
 
     @SetJIPipeDocumentation(name = "Override R environment", description = "If enabled, a different R environment is used for this Node.")
     @JIPipeParameter("override-environment")
+    @ExternalEnvironmentParameterSettings(allowArtifact = true, artifactFilters = {"org.r.*"})
     public OptionalREnvironment getOverrideEnvironment() {
         return overrideEnvironment;
     }

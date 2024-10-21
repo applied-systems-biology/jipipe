@@ -32,6 +32,7 @@ import org.hkijena.jipipe.api.data.JIPipeDataSlotRole;
 import org.hkijena.jipipe.api.data.JIPipeInputDataSlot;
 import org.hkijena.jipipe.api.data.JIPipeSlotType;
 import org.hkijena.jipipe.api.data.context.JIPipeDataContext;
+import org.hkijena.jipipe.api.environments.ExternalEnvironmentParameterSettings;
 import org.hkijena.jipipe.api.environments.JIPipeEnvironment;
 import org.hkijena.jipipe.api.nodes.AddJIPipeInputSlot;
 import org.hkijena.jipipe.api.nodes.AddJIPipeOutputSlot;
@@ -303,6 +304,7 @@ public class IlastikPixelClassificationAlgorithm extends JIPipeSingleIterationAl
     @SetJIPipeDocumentation(name = "Override Ilastik environment", description = "If enabled, a different Ilastik environment is used for this node. Otherwise " +
             "the one in the Project > Application settings > Extensions > Ilastik is used.")
     @JIPipeParameter("override-environment")
+    @ExternalEnvironmentParameterSettings(allowArtifact = true, artifactFilters = {"org.embl.ilastik:*"})
     public OptionalIlastikEnvironment getOverrideEnvironment() {
         return overrideEnvironment;
     }

@@ -22,6 +22,7 @@ import org.hkijena.jipipe.api.data.*;
 import org.hkijena.jipipe.api.data.serialization.JIPipeDataTableMetadata;
 import org.hkijena.jipipe.api.data.storage.JIPipeFileSystemReadDataStorage;
 import org.hkijena.jipipe.api.data.storage.JIPipeFileSystemWriteDataStorage;
+import org.hkijena.jipipe.api.environments.ExternalEnvironmentParameterSettings;
 import org.hkijena.jipipe.api.environments.JIPipeEnvironment;
 import org.hkijena.jipipe.api.nodes.AddJIPipeInputSlot;
 import org.hkijena.jipipe.api.nodes.AddJIPipeOutputSlot;
@@ -130,6 +131,7 @@ public class IteratingRScriptAlgorithm extends JIPipeIteratingAlgorithm implemen
 
     @SetJIPipeDocumentation(name = "Override R environment", description = "If enabled, a different R environment is used for this Node.")
     @JIPipeParameter("override-environment")
+    @ExternalEnvironmentParameterSettings(allowArtifact = true, artifactFilters = {"org.r.*"})
     public OptionalREnvironment getOverrideEnvironment() {
         return overrideEnvironment;
     }

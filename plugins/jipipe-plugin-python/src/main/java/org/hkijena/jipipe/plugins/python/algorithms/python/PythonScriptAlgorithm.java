@@ -19,6 +19,7 @@ import org.hkijena.jipipe.api.SetJIPipeDocumentation;
 import org.hkijena.jipipe.api.annotation.JIPipeTextAnnotation;
 import org.hkijena.jipipe.api.annotation.JIPipeTextAnnotationMergeMode;
 import org.hkijena.jipipe.api.data.JIPipeDefaultMutableSlotConfiguration;
+import org.hkijena.jipipe.api.environments.ExternalEnvironmentParameterSettings;
 import org.hkijena.jipipe.api.environments.JIPipeEnvironment;
 import org.hkijena.jipipe.api.nodes.JIPipeGraphNodeRunContext;
 import org.hkijena.jipipe.api.nodes.JIPipeNodeInfo;
@@ -97,6 +98,7 @@ public class PythonScriptAlgorithm extends JIPipeParameterSlotAlgorithm implemen
     @SetJIPipeDocumentation(name = "Override Python environment", description = "If enabled, a different Python environment is used for this Node. Otherwise " +
             "the one in the Project > Application settings > Extensions > Python is used.")
     @JIPipeParameter("override-environment")
+    @ExternalEnvironmentParameterSettings(allowArtifact = true, artifactFilters = {"org.python.*"})
     public OptionalPythonEnvironment getOverrideEnvironment() {
         return overrideEnvironment;
     }
