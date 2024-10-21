@@ -485,7 +485,7 @@ public class JIPipeDesktopProjectWindow extends JFrame {
         }
 
         try {
-            Path tempFile = Files.createTempFile(savePath.getParent(), savePath.getFileName().toString(), ".part");
+            Path tempFile = PathUtils.createSubTempFilePath(savePath.getParent(), savePath.getFileName().toString(), ".part");
             getProject().setWorkDirectory(savePath.getParent());
             getProject().getAdditionalMetadata().put(JIPipeDesktopJIPipeProjectTabMetadata.METADATA_KEY, new JIPipeDesktopJIPipeProjectTabMetadata(getProjectUI()));
             getProject().saveProject(tempFile);

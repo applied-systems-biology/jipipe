@@ -263,12 +263,31 @@ public class JIPipeProject implements JIPipeValidatable {
         }
     }
 
+    /**
+     * Gets the path to a non-existing file in the project's temporary directory
+     * @param baseName the base name (prefix)
+     * @param suffix the suffix (extension)
+     * @return the path
+     */
+    public Path getTemporaryFile(String baseName, String suffix) {
+        return PathUtils.createSubTempFilePath(getTemporaryBaseDirectory(), baseName, suffix);
+    }
+
+    /**
+     * Creates a new temporary subdirectory in the project's temporary directory
+     * @param baseName the base name (prefix)
+     * @return the temporary directory
+     */
     public Path getTemporaryDirectory(String baseName) {
-        try {
-            return Files.createTempDirectory(getTemporaryBaseDirectory(), baseName);
-        } catch (IOException e) {
-            throw new RuntimeException(e);
-        }
+        return PathUtils.createTempSubDirectory(getTemporaryBaseDirectory(), baseName);
+    }
+
+    /**
+     * Creates a new temporary subdirectory in the project's temporary directory
+     * @return the temporary directory
+     */
+    public Path getTemporaryDirectory() {
+        return PathUtils.createTempSubDirectory(getTemporaryBaseDirectory());
     }
 
     public Path getTemporaryBaseDirectory() {
@@ -285,11 +304,7 @@ public class JIPipeProject implements JIPipeValidatable {
                 output = workDirectory.resolve("JIPipe.tmp.dir");
                 if (temporaryBaseDirectory == null || !temporaryBaseDirectory.startsWith(output)) {
                     PathUtils.createDirectories(output);
-                    try {
-                        output = Files.createTempDirectory(output, "tmp");
-                    } catch (IOException e) {
-                        throw new RuntimeException(e);
-                    }
+                    output = PathUtils.createTempSubDirectory(output);
                 } else {
                     output = temporaryBaseDirectory;
                 }

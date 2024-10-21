@@ -55,11 +55,7 @@ public class JIPipeRuntimeApplicationSettings extends JIPipeDefaultApplicationsS
 
     public static Path getTemporaryBaseDirectory() {
         if (JIPipe.getInstance() == null || !JIPipe.getInstance().getApplicationSettingsRegistry().getRegisteredSheets().containsKey(ID)) {
-            try {
-                return Files.createTempDirectory("JIPipe");
-            } catch (IOException e) {
-                throw new RuntimeException(e);
-            }
+            return PathUtils.createGlobalTempDirectory("JIPipe");
         }
         OptionalPathParameter tempDirectory = getInstance().getTempDirectory();
         if (tempDirectory.isEnabled()) {
@@ -75,18 +71,10 @@ public class JIPipeRuntimeApplicationSettings extends JIPipeDefaultApplicationsS
             } catch (IOException e) {
                 System.err.println("Fallback temporary directory due to following error:");
                 e.printStackTrace();
-                try {
-                    return Files.createTempDirectory("JIPipe");
-                } catch (IOException e2) {
-                    throw new RuntimeException(e);
-                }
+                return PathUtils.createGlobalTempDirectory("JIPipe");
             }
         } else {
-            try {
-                return Files.createTempDirectory("JIPipe");
-            } catch (IOException e) {
-                throw new RuntimeException(e);
-            }
+            return PathUtils.createGlobalTempDirectory("JIPipe");
         }
     }
 
@@ -97,11 +85,7 @@ public class JIPipeRuntimeApplicationSettings extends JIPipeDefaultApplicationsS
      * @return a temporary directory
      */
     public static Path getTemporaryDirectory(String baseName) {
-        try {
-            return Files.createTempDirectory(getTemporaryBaseDirectory(), baseName);
-        } catch (IOException e) {
-            throw new RuntimeException(e);
-        }
+        return PathUtils.createTempSubDirectory(getTemporaryBaseDirectory(), baseName);
     }
 
     /**
@@ -112,11 +96,7 @@ public class JIPipeRuntimeApplicationSettings extends JIPipeDefaultApplicationsS
      * @return a temporary directory
      */
     public static Path getTemporaryFile(String prefix, String suffix) {
-        try {
-            return Files.createTempFile(getTemporaryBaseDirectory(), prefix, suffix);
-        } catch (IOException e) {
-            throw new RuntimeException(e);
-        }
+        return PathUtils.createSubTempFilePath(getTemporaryBaseDirectory(), prefix, suffix);
     }
 
     @SetJIPipeDocumentation(name = "Temporary directory per project", description = "If enable, store temporary files are stored next to the current project file if possible")
