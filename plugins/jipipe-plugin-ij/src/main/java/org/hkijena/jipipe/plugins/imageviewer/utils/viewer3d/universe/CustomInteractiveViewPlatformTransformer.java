@@ -17,9 +17,9 @@ import ij3d.ImageCanvas3D;
 import ij3d.behaviors.BehaviorCallback;
 import ij3d.behaviors.InteractiveViewPlatformTransformer;
 import org.hkijena.jipipe.plugins.imageviewer.utils.viewer3d.StandardView;
-import org.jogamp.java3d.Transform3D;
-import org.jogamp.java3d.TransformGroup;
-import org.jogamp.vecmath.*;
+import org.scijava.java3d.Transform3D;
+import org.scijava.java3d.TransformGroup;
+import org.scijava.vecmath.*;
 
 import java.awt.event.MouseEvent;
 import java.awt.event.MouseWheelEvent;

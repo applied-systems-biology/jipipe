@@ -44,7 +44,7 @@ import org.hkijena.jipipe.plugins.imagejdatatypes.util.measure.ImageStatisticsSe
 import org.hkijena.jipipe.plugins.imagejdatatypes.util.measure.Measurement;
 import org.hkijena.jipipe.plugins.tables.datatypes.ResultsTableData;
 import org.hkijena.jipipe.utils.StringUtils;
-import org.jogamp.vecmath.Point2d;
+import org.scijava.vecmath.Point2d;
 
 public class ImageJAlgorithmUtils {
 
