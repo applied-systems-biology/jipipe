@@ -94,6 +94,7 @@ public class JIPipeDesktopRibbon extends JPanel {
         for (Task task : tasks) {
             if (task.isVisible()) {
                 JPanel taskPanel = new JPanel(new GridBagLayout());
+                taskPanel.setBackground(UIManager.getColor("Table.background"));
                 buildTaskPanel(taskPanel, task);
                 tabPane.addTab(task.label, null, taskPanel, JIPipeDesktopTabPane.CloseMode.withoutCloseButton);
             }
@@ -154,7 +155,9 @@ public class JIPipeDesktopRibbon extends JPanel {
         }
 
         // Add horizontal glue
-        taskPanel.add(new JPanel(), new GridBagConstraints(col, 0, 1, 1, 1, 1, GridBagConstraints.NORTHWEST, GridBagConstraints.HORIZONTAL, new Insets(0, 0, 0, 0), 0, 0));
+        JPanel horizontalGlue = new JPanel();
+        horizontalGlue.setOpaque(false);
+        taskPanel.add(horizontalGlue, new GridBagConstraints(col, 0, 1, 1, 1, 1, GridBagConstraints.NORTHWEST, GridBagConstraints.HORIZONTAL, new Insets(0, 0, 0, 0), 0, 0));
     }
 
     public List<Task> getTasks() {

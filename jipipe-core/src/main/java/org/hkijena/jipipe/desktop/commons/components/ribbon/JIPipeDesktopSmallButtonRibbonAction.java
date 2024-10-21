@@ -25,6 +25,7 @@ public class JIPipeDesktopSmallButtonRibbonAction extends JIPipeDesktopRibbon.Ac
         super(new JButton(), 1, new Insets(2, 2, 2, 2));
 
         JButton button = (JButton) getFirstComponent();
+        button.setOpaque(false);
         button.setToolTipText(tooltip);
         button.setText(label);
         button.setIcon(icon);
@@ -37,6 +38,7 @@ public class JIPipeDesktopSmallButtonRibbonAction extends JIPipeDesktopRibbon.Ac
         super(new JButton(), 1, new Insets(2, 2, 2, 2));
 
         JButton button = (JButton) getFirstComponent();
+        button.setOpaque(false);
         button.setToolTipText(tooltip);
         button.setText(label);
         button.setIcon(icon);

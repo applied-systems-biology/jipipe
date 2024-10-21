@@ -28,6 +28,7 @@ public class JIPipeDesktopSmallToggleButtonRibbonAction extends JIPipeDesktopRib
         super(new JToggleButton(), 1, new Insets(2, 2, 2, 2));
 
         JToggleButton button = (JToggleButton) getFirstComponent();
+        button.setOpaque(false);
         button.setToolTipText(tooltip);
         button.setSelected(selected);
         button.setText(label);

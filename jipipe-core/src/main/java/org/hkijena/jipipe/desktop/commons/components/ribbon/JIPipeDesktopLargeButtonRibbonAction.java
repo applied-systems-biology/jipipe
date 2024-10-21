@@ -27,6 +27,7 @@ public class JIPipeDesktopLargeButtonRibbonAction extends JIPipeDesktopRibbon.Ac
 
         // Create a new button
         JButton button = (JButton) getFirstComponent();
+        button.setOpaque(false);
         button.setToolTipText(tooltip);
         button.setText(label);
         button.setIcon(icon);
@@ -41,6 +42,7 @@ public class JIPipeDesktopLargeButtonRibbonAction extends JIPipeDesktopRibbon.Ac
 
         // Create a new button
         JButton button = (JButton) getFirstComponent();
+        button.setOpaque(false);
         button.setToolTipText(tooltip);
         button.setText(label);
         button.setIcon(icon);
