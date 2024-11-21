@@ -31,6 +31,7 @@ import org.hkijena.jipipe.api.run.JIPipeGraphRunConfiguration;
 import org.hkijena.jipipe.api.validation.JIPipeValidationReport;
 import org.hkijena.jipipe.api.validation.contexts.UnspecifiedValidationReportContext;
 import org.hkijena.jipipe.plugins.settings.JIPipeExtensionApplicationSettings;
+import org.hkijena.jipipe.utils.PathUtils;
 import org.hkijena.jipipe.utils.json.JsonUtils;
 
 import java.io.File;
@@ -75,9 +76,35 @@ public class JIPipeCLIMain {
         int numThreads = 1;
         boolean saveToDisk = true;
         boolean saveToDiskOnlyCompartments = false;
+
+        boolean verbose = false;
+        boolean fastInit = false;
+        Path overrideProfileDir = null;
+
         Map<String, String> parameterOverrides = new HashMap<>();
         Map<String, Path> userDirectoryOverrides = new HashMap<>();
 
+        // Parse flags
+        for (int i = 0; i < argsList.size(); i++) {
+            String arg = argsList.get(i);
+            boolean success = false;
+            if(arg.equals("--fast-init")) {
+                fastInit = true;
+                success = true;
+            }
+            else if(arg.equals("--verbose")) {
+                verbose = true;
+                success = true;
+            }
+
+            // Delete the flag
+            if(success) {
+                argsList.remove(i);
+                --i;
+            }
+        }
+
+        // Parse key value pairs
         for (int i = 0; i < argsList.size(); i += 2) {
             String arg = argsList.get(i);
             String value = argsList.get(i + 1);
@@ -128,7 +155,11 @@ public class JIPipeCLIMain {
                 parameterOverrides.put(arg.substring(3), value);
             } else if (arg.startsWith("--U")) {
                 userDirectoryOverrides.put(arg.substring(3), Paths.get(value));
-            } else {
+            }
+            else if(arg.equals("profile-dir")) {
+                overrideProfileDir = Paths.get(value);
+            }
+            else {
                 System.err.println("Unknown argument: " + arg);
                 showHelp();
                 return;
@@ -140,21 +171,26 @@ public class JIPipeCLIMain {
             showHelp();
             return;
         }
-        if (outputFolder == null) {
-            System.err.println("Please provide an output folder!");
-            showHelp();
-            return;
-        }
         if (numThreads < 1) {
             System.err.println("Invalid number of threads!");
             showHelp();
             return;
         }
+        if(overrideProfileDir != null) {
+            System.out.println("Overriding base path for JIPipe profiles with " + overrideProfileDir);
+            PathUtils.createDirectories(overrideProfileDir);
+            JIPipe.OVERRIDE_USER_DIR_BASE = overrideProfileDir;
+        }
+
         final ImageJ ij = new ImageJ();
         JIPipe jiPipe = JIPipe.createInstance(ij.context());
         JIPipeExtensionApplicationSettings extensionSettings = JIPipeExtensionApplicationSettings.getInstanceFromRaw();
+        extensionSettings.setSilent(true);
+        if(fastInit) {
+            extensionSettings.setValidateNodeTypes(false);
+        }
         JIPipeRegistryIssues issues = new JIPipeRegistryIssues();
-        jiPipe.initialize(extensionSettings, issues);
+        jiPipe.initialize(extensionSettings, issues, verbose);
 
         JIPipeValidationReport projectIssues = new JIPipeValidationReport();
         JIPipeNotificationInbox notifications = new JIPipeNotificationInbox();
@@ -214,6 +250,12 @@ public class JIPipeCLIMain {
             }
         }
 
+        if(outputFolder == null) {
+            System.out.println("No output folder provided.");
+            outputFolder = project.getTemporaryDirectory("output");
+            System.out.println("Output files will be written into: " + outputFolder);
+        }
+
         JIPipeGraphRunConfiguration settings = new JIPipeGraphRunConfiguration();
         settings.setNumThreads(numThreads);
         settings.setOutputPath(outputFolder);
@@ -244,20 +286,31 @@ public class JIPipeCLIMain {
                 "|  '-'  /|  ||  | --' |  || '-' '\\   --. \n" +
                 " `-----' `--'`--'     `--'|  |-'  `----' \n" +
                 "                          `--'           \n\n");
-        System.out.println("Part of JIPipe https://www.jipipe.org/");
+        System.out.println("JIPipe CLI https://www.jipipe.org/");
         System.out.println("Developed by Applied Systems Biology, HKI Jena, Germany");
         System.out.println();
         System.out.println("run <options>");
         System.out.println("Runs a project file and writes outputs to the specified directory.");
-        System.out.println("--project <Project file>");
-        System.out.println("--output-folder <Output folder>");
-        System.out.println("--num-threads <N=1,2,...>");
-        System.out.println("--overwrite-parameters <JSON file>");
-        System.out.println("--P<Node ID>/<Parameter ID> <Parameter Value (JSON)>");
-        System.out.println("--overwrite-user-directories <JSON file>");
-        System.out.println("--U<User directory key> <User directory value>");
-        System.out.println("--output-results <all/none/only-compartment-outputs> (default: all)");
+        System.out.println("--project <Project file>                                                       Sets the project file to run");
+        System.out.println();
+        System.out.println("Optional parameters:");
+        System.out.println("--output-folder <Output folder>                                                Sets the output directory (if not set, will use a temporary directory)");
+        System.out.println("--num-threads <N=1,2,...>                                                      Sets the maximum number of threads for parallelization");
+        System.out.println("--overwrite-parameters <JSON file>                                             Overrides parameters from a JSON file (key to value pairing)");
+        System.out.println("--P<Node ID>/<Parameter ID> <Parameter Value (JSON)>                           Overrides one parameter from the specified JSON data");
+        System.out.println("--overwrite-user-directories <JSON file>                                       Read user directory overrides from a JSON file (object with key to value pairing)");
+        System.out.println("--U<User directory key> <User directory value>                                 Overrides one user directory key with the specified directory");
+        System.out.println("--output-results <all/none/only-compartment-outputs>                           Determines which standard JIPipe outputs are written (default: all)");
+        System.out.println();
+        System.out.println("Advanced settings:");
+        System.out.println("--verbose                                                                      Print all initialization logs (a lot of text)");
+        System.out.println("--profile-dir                                                                  Sets the directory for the JIPipe profile (location of settings, artifacts, etc.)");
+        System.out.println("--fast-init                                                                    Skips the validation steps to make the JIPipe initialization faster");
+        System.out.println();
         System.out.println("To run this tool, execute following command:");
-        System.out.println("<ImageJ executable> --debug --pass-classpath --full-classpath --main-class org.hkijena.jipipe.cli.JIPipeCLI");
+        System.out.println("<ImageJ executable> --debug --pass-classpath --full-classpath --main-class org.hkijena.jipipe.cli.JIPipeCLIMain");
+        System.out.println();
+        System.out.println("Environment variables:");
+        System.out.println("JIPIPE_OVERRIDE_USER_DIR_BASE                                                  Overrides the base directory where JIPipe looks for profiles (the directory itself will contain sub-directories for the JIPipe version)");
     }
 }

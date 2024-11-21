@@ -104,8 +104,24 @@ public class JIPipe extends AbstractService implements JIPipeService {
      * Resource manager for core JIPipe
      */
     public static final JIPipeResourceManager RESOURCES = new JIPipeResourceManager(JIPipe.class, "org/hkijena/jipipe");
+
+    /**
+     * To be used with an alternative start mode not involving ImageJ
+     */
     public static boolean NO_IMAGEJ = false;
+
+    /**
+     * Prevent saving settings
+     */
     public static boolean NO_SETTINGS_AUTOSAVE = false;
+
+    /**
+     * Allows to override the directory where profiles are located (needs to be done before init!)
+     * Overridden by the JIPIPE_OVERRIDE_USER_DIR_BASE environment variable
+     */
+    public static Path OVERRIDE_USER_DIR_BASE = null;
+
+
     private static JIPipe instance;
     private static boolean IS_RESTARTING = false;
     private final JIPipeProgressInfo progressInfo = new JIPipeProgressInfo();
@@ -751,7 +767,7 @@ public class JIPipe extends AbstractService implements JIPipeService {
         if (NO_IMAGEJ) {
             return;
         }
-        initialize(JIPipeExtensionApplicationSettings.getInstanceFromRaw(), new JIPipeRegistryIssues());
+        initialize(JIPipeExtensionApplicationSettings.getInstanceFromRaw(), new JIPipeRegistryIssues(), true);
     }
 
     /**
@@ -759,14 +775,17 @@ public class JIPipe extends AbstractService implements JIPipeService {
      *
      * @param extensionSettings extension settings
      * @param issues            if no windows should be opened
+     * @param verbose if all steps should be logged (otherwise the initialization will be silent)
      */
-    public void initialize(JIPipeExtensionApplicationSettings extensionSettings, JIPipeRegistryIssues issues) {
+    public void initialize(JIPipeExtensionApplicationSettings extensionSettings, JIPipeRegistryIssues issues, boolean verbose) {
         initializing = true;
 
         progressInfo.setProgress(0, 5);
-        progressInfo.getStatusUpdatedEventEmitter().subscribeLambda((emitter, event) -> {
-            logService.info(event.getMessage());
-        });
+        if(verbose) {
+            progressInfo.getStatusUpdatedEventEmitter().subscribeLambda((emitter, event) -> {
+                logService.info(event.getMessage());
+            });
+        }
 
         IJ.showStatus("Initializing JIPipe ...");
         nodeRegistry.installEvents();

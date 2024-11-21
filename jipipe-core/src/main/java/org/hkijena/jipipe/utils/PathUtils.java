@@ -16,6 +16,7 @@ package org.hkijena.jipipe.utils;
 import ij.IJ;
 import ij.Prefs;
 import org.apache.commons.lang3.SystemUtils;
+import org.hkijena.jipipe.JIPipe;
 import org.hkijena.jipipe.api.JIPipeProgressInfo;
 
 import javax.swing.*;
@@ -373,6 +374,12 @@ public class PathUtils {
      * @return the base directory
      */
     public static Path getJIPipeUserDirBase() {
+        if(System.getProperties().containsKey("JIPIPE_OVERRIDE_USER_DIR_BASE")) {
+            return Paths.get(System.getProperties().getProperty("JIPIPE_OVERRIDE_USER_DIR_BASE"));
+        }
+        if(JIPipe.OVERRIDE_USER_DIR_BASE != null) {
+            return JIPipe.OVERRIDE_USER_DIR_BASE;
+        }
         if (SystemUtils.IS_OS_WINDOWS) {
             return Paths.get(System.getenv("APPDATA")).resolve("JIPipe")
                     .resolve("profiles");

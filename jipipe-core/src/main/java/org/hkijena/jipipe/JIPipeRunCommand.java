@@ -69,8 +69,8 @@ public class JIPipeRunCommand implements Command {
         JIPipeExtensionApplicationSettings extensionSettings = JIPipeExtensionApplicationSettings.getInstanceFromRaw();
         if (JIPipe.getInstance() == null) {
             JIPipe jiPipe = JIPipe.createInstance(context);
-            jiPipe.initialize(extensionSettings, issues);
-            JIPipe.getInstance().initialize(extensionSettings, issues);
+            jiPipe.initialize(extensionSettings, issues, true);
+            JIPipe.getInstance().initialize(extensionSettings, issues, true);
         }
         if (!extensionSettings.isSilent()) {
             JIPipeValidationReport report = new JIPipeValidationReport();
