@@ -127,7 +127,7 @@ public class JIPipeCLIMain {
                 try {
                     JsonNode node = JsonUtils.getObjectMapper().readerFor(JsonNode.class).readValue(new File(value));
                     for (Map.Entry<String, JsonNode> entry : ImmutableList.copyOf(node.fields())) {
-                        userDirectoryOverrides.put(entry.getKey(), Paths.get(JsonUtils.toJsonString(entry.getValue())));
+                        userDirectoryOverrides.put(entry.getKey(), Paths.get(entry.getValue().textValue()));
                     }
                 } catch (IOException e) {
                     throw new RuntimeException(e);
