@@ -155,6 +155,11 @@
                 <artifactId>OrientationJ</artifactId>
                 <version>ce968334bcd09ce70f54df74e9f7a2fbe5c79cca</version>
             </dependency>
+            <dependency>
+                <groupId>sc.fiji</groupId>
+                <artifactId>register_virtual_stack_slices</artifactId>
+                <version>3.0.8</version>
+            </dependency>
         </dependencies>
     </dependencyManagement>
 
@@ -242,6 +247,18 @@
         <dependency>
             <groupId>sc.fiji</groupId>
             <artifactId>bUnwarpJ_</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>sc.fiji</groupId>
+            <artifactId>TrakEM2_</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>sc.fiji</groupId>
+            <artifactId>trakem2-transform</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>sc.fiji</groupId>
+            <artifactId>register_virtual_stack_slices</artifactId>
         </dependency>
     </dependencies>
 
