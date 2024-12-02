@@ -19,10 +19,12 @@ public class JIPipeDesktopUpdateCacheAction implements JIPipeDesktopNodeUIAction
     private final boolean storeIntermediateResults;
 
     private final boolean onlyPredecessors;
+    private final boolean allowChangePanels;
 
-    public JIPipeDesktopUpdateCacheAction(boolean storeIntermediateResults, boolean onlyPredecessors) {
+    public JIPipeDesktopUpdateCacheAction(boolean storeIntermediateResults, boolean onlyPredecessors, boolean allowChangePanels) {
         this.storeIntermediateResults = storeIntermediateResults;
         this.onlyPredecessors = onlyPredecessors;
+        this.allowChangePanels = allowChangePanels;
     }
 
     public boolean isStoreIntermediateResults() {
@@ -31,5 +33,9 @@ public class JIPipeDesktopUpdateCacheAction implements JIPipeDesktopNodeUIAction
 
     public boolean isOnlyPredecessors() {
         return onlyPredecessors;
+    }
+
+    public boolean isAllowChangePanels() {
+        return allowChangePanels;
     }
 }

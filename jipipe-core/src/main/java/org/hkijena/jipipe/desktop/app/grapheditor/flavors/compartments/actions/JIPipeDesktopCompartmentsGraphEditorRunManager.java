@@ -16,7 +16,6 @@ package org.hkijena.jipipe.desktop.app.grapheditor.flavors.compartments.actions;
 import org.hkijena.jipipe.api.compartments.algorithms.JIPipeProjectCompartment;
 import org.hkijena.jipipe.api.compartments.algorithms.JIPipeProjectCompartmentOutput;
 import org.hkijena.jipipe.api.project.JIPipeProject;
-import org.hkijena.jipipe.api.run.JIPipeRunnable;
 import org.hkijena.jipipe.api.validation.JIPipeValidationReport;
 import org.hkijena.jipipe.api.validation.contexts.UnspecifiedValidationReportContext;
 import org.hkijena.jipipe.desktop.app.grapheditor.commons.JIPipeDesktopGraphCanvasUI;
@@ -33,8 +32,8 @@ import java.util.ArrayList;
 
 public class JIPipeDesktopCompartmentsGraphEditorRunManager extends JIPipeDesktopGraphEditorRunManager {
 
-    public JIPipeDesktopCompartmentsGraphEditorRunManager(JIPipeProject project, JIPipeDesktopGraphCanvasUI canvasUI, JIPipeDesktopGraphNodeUI nodeUI, JIPipeDesktopDockPanel dockPanel) {
-        super(project, canvasUI, nodeUI, dockPanel);
+    public JIPipeDesktopCompartmentsGraphEditorRunManager(JIPipeProject project, JIPipeDesktopGraphCanvasUI canvasUI, JIPipeDesktopGraphNodeUI nodeUI, JIPipeDesktopDockPanel dockPanel, boolean allowChangePanels) {
+        super(project, canvasUI, nodeUI, dockPanel, allowChangePanels);
     }
 
     @Override

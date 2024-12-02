@@ -80,7 +80,7 @@ public class UpdateCacheShowIntermediateNodeUIContextAction implements NodeUICon
         }
         // Send last one to UI
         JIPipeDesktopGraphNodeUI ui = list.get(list.size() - 1);
-        ui.getNodeUIActionRequestedEventEmitter().emit(new JIPipeDesktopGraphNodeUI.NodeUIActionRequestedEvent(ui, new JIPipeDesktopUpdateCacheAction(true, false)));
+        ui.getNodeUIActionRequestedEventEmitter().emit(new JIPipeDesktopGraphNodeUI.NodeUIActionRequestedEvent(ui, new JIPipeDesktopUpdateCacheAction(true, false, true)));
     }
 
     @Override
