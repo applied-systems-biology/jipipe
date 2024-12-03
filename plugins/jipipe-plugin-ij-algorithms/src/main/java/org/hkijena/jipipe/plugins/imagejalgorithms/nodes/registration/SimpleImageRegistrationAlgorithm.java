@@ -28,18 +28,23 @@ import org.hkijena.jipipe.api.nodes.iterationstep.JIPipeMultiIterationStep;
 import org.hkijena.jipipe.api.parameters.JIPipeParameter;
 import org.hkijena.jipipe.api.parameters.JIPipeParameterCollection;
 import org.hkijena.jipipe.api.parameters.JIPipeParameterTree;
+import org.hkijena.jipipe.api.validation.JIPipeValidationRuntimeException;
+import org.hkijena.jipipe.api.validation.contexts.GraphNodeValidationReportContext;
 import org.hkijena.jipipe.plugins.imagejdatatypes.datatypes.ImagePlusData;
 import org.hkijena.jipipe.plugins.strings.XMLData;
+
+import java.util.List;
 
 /**
  * Port of {@link register_virtual_stack.Register_Virtual_Stack_MT}
  */
 @SetJIPipeDocumentation(name = "Simple image registration", description = "All-in-one node that can apply the following image registration techniques: " +
-        "Translation, Rigid (translation + rotation), Similarity (translation + rotation + isotropic scaling), Affine, Elastic (BUnwarpJ with cubic B-splines), Moving least squares")
+        "Translation, Rigid (translation + rotation), Similarity (translation + rotation + isotropic scaling), Affine, Elastic (BUnwarpJ with cubic B-splines), Moving least squares. " +
+        "Users must provide one reference image and any amount of target images.")
 @ConfigureJIPipeNode(nodeTypeCategory = ImagesNodeTypeCategory.class, menuPath = "Registration")
 @AddJIPipeCitation("Based on Register Virtual Stack Slices by Albert Cardona, Ignacio Arganda-Carreras and Stephan Saalfeld")
 @AddJIPipeCitation("https://imagej.net/plugins/register-virtual-stack-slices")
-@AddJIPipeInputSlot(value = ImagePlusData.class, name = "Reference", description = "The reference images", create = true)
+@AddJIPipeInputSlot(value = ImagePlusData.class, name = "Reference", description = "The reference images. Please ensure that only once reference image per iteration step is present.", create = true)
 @AddJIPipeInputSlot(value = ImagePlusData.class, name = "Target", description = "The target images", create = true)
 @AddJIPipeOutputSlot(value = ImagePlusData.class, name = "Registered", description = "The registered images", create = true)
 @AddJIPipeOutputSlot(value = XMLData.class, name = "Transform", description = "The transform function in TrakEM format", create = true)
@@ -166,6 +171,16 @@ public class SimpleImageRegistrationAlgorithm extends JIPipeMergingAlgorithm {
 
     @Override
     protected void runIteration(JIPipeMultiIterationStep iterationStep, JIPipeIterationContext iterationContext, JIPipeGraphNodeRunContext runContext, JIPipeProgressInfo progressInfo) {
+        List<ImagePlusData> referenceImages = iterationStep.getInputData("Reference", ImagePlusData.class, progressInfo);
+        List<ImagePlusData> targetImages = iterationStep.getInputData("Target", ImagePlusData.class, progressInfo);
+
+        if(referenceImages.size() != 1) {
+            throw new JIPipeValidationRuntimeException(new IllegalArgumentException("Expected exactly one reference image"),
+                    "Only one reference image is allowed",
+                    "Image registration requires exactly one reference image per iteration step",
+                    "Check if the 'Reference' slot only receives exactly one image per iteration step");
+        }
+
 
     }
 }
