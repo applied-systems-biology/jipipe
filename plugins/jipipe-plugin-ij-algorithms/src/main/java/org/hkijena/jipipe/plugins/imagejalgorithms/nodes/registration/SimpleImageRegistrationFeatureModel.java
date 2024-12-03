@@ -16,7 +16,7 @@ package org.hkijena.jipipe.plugins.imagejalgorithms.nodes.registration;
 /**
  * Feature extraction model for the registration nodes
  */
-public enum RegistrationFeatureModel {
+public enum SimpleImageRegistrationFeatureModel {
     Translation,
     Rigid,
     Similarity,

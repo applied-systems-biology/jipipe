@@ -88,6 +88,7 @@ import org.hkijena.jipipe.plugins.imagejalgorithms.nodes.overlay.ExtractOverlayA
 import org.hkijena.jipipe.plugins.imagejalgorithms.nodes.overlay.RemoveOverlayAlgorithm;
 import org.hkijena.jipipe.plugins.imagejalgorithms.nodes.overlay.RenderOverlayAlgorithm;
 import org.hkijena.jipipe.plugins.imagejalgorithms.nodes.overlay.SetOverlayAlgorithm;
+import org.hkijena.jipipe.plugins.imagejalgorithms.nodes.registration.*;
 import org.hkijena.jipipe.plugins.imagejalgorithms.nodes.roi.*;
 import org.hkijena.jipipe.plugins.imagejalgorithms.nodes.roi.annotations.RoiPropertiesToAnnotationsAlgorithm;
 import org.hkijena.jipipe.plugins.imagejalgorithms.nodes.roi.assemble.AssembleExtractedROIAlgorithm;
@@ -603,6 +604,7 @@ public class ImageJAlgorithmsPlugin extends JIPipePrepackagedDefaultJavaPlugin {
         registerCalibrationAlgorithms();
         registerColocalizationAlgorithms();
         registerMetadataAlgorithms();
+        registerRegistrationAlgorithms();
 
         registerNodeType("ij1-generate-missing-results-table", GenerateMissingTablesAlgorithm.class, UIUtils.getIconURLFromResources("actions/image-auto-adjust.png"));
         registerNodeType("ij1-generate-missing-results-table-2", GenerateMissingTablesAlgorithm2.class, UIUtils.getIconURLFromResources("actions/image-auto-adjust.png"));
@@ -626,6 +628,15 @@ public class ImageJAlgorithmsPlugin extends JIPipePrepackagedDefaultJavaPlugin {
         // Register examples
         registerNodeExamplesFromResources(RESOURCES, "examples");
         registerProjectTemplatesFromResources(RESOURCES, "templates");
+    }
+
+    private void registerRegistrationAlgorithms() {
+        registerEnumParameterType("ij1-simple-image-registration:model", SimpleImageRegistrationModel.class, "Simple image registration model", "Image registration model");
+        registerEnumParameterType("ij1-simple-image-registration:feature-model", SimpleImageRegistrationFeatureModel.class, "Simple image registration feature model", "Model to extract image features");
+        registerEnumParameterType("ij1-bunwarpj-registration:max-scale-deformation", BUnwarpJMaxScaleDeformation.class, "BUnwarpJ max scale deformation", "");
+        registerEnumParameterType("ij1-bunwarpj-registration:min-scale-deformation", BUnwarpJMinScaleDeformation.class, "BUnwarpJ min scale deformation", "");
+        registerEnumParameterType("ij1-bunwarpj-registration:mode", BUnwarpJMode.class, "BUnwarpJ mode", "");
+        registerNodeType("ij1-simple-image-registration", SimpleImageRegistrationAlgorithm.class, UIUtils.getIconURLFromResources("actions/transform-shear-right.png"));
     }
 
     @Override
