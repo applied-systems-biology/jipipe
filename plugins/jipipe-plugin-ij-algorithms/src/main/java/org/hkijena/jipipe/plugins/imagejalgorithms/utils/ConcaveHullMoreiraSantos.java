@@ -13,19 +13,29 @@
 
 package org.hkijena.jipipe.plugins.imagejalgorithms.utils;
 
-public class ConcaveHull {
+import org.locationtech.jts.geom.Coordinate;
+import org.locationtech.jts.geom.GeometryFactory;
+import org.locationtech.jts.geom.LineString;
+
+import java.util.*;
+import java.util.stream.Collectors;
+
+/**
+ * Moreira, A. and Santos, M.Y., 2007, Concave Hull: A K-nearest neighbors approach for the computation of the region occupied by a set of points
+ */
+public class ConcaveHullMoreiraSantos {
     private Coordinate[] dataSet;
-    private boolean[] indices;
+    private Boolean[] indices;
     private static final int[] PRIME_K = {3, 5, 7, 11, 13, 17, 21, 23, 29, 31, 37, 41, 43, 47, 53, 59, 61, 67, 71, 73, 79, 83, 89, 97};
     private int primeIndex;
 
-    public ConcaveHull(Coordinate[] points, int primeIndex) {
+    public ConcaveHullMoreiraSantos(Coordinate[] points, int primeIndex) {
         if (points == null || points.length < 3) {
             throw new IllegalArgumentException("Provide at least 3 points.");
         }
 
         this.dataSet = Arrays.stream(points).distinct().toArray(Coordinate[]::new);
-        this.indices = new boolean[this.dataSet.length];
+        this.indices = new Boolean[this.dataSet.length];
         Arrays.fill(this.indices, true);
         this.primeIndex = primeIndex;
     }
@@ -83,7 +93,7 @@ public class ConcaveHull {
         if (primeIndex + 1 >= PRIME_K.length) {
             return null;
         }
-        return new ConcaveHull(dataSet, primeIndex + 1).calculate(PRIME_K[primeIndex + 1]);
+        return new ConcaveHullMoreiraSantos(dataSet, primeIndex + 1).calculate(PRIME_K[primeIndex + 1]);
     }
 
     private List<Integer> getKNearest(int index, int k) {
@@ -154,4 +164,5 @@ public class ConcaveHull {
         }
         return index;
     }
+
 }
