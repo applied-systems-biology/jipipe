@@ -30,7 +30,7 @@ import java.util.List;
 public class JIPipeDesktopDarkModernMetalTheme extends DefaultMetalTheme {
     public static final Color TRANSPARENT = new Color(0, 0, 0, 0);
     public static final ColorUIResource PRIMARY1 =
-            new ColorUIResource(0x65a4e3); // Progress bar text, focus
+            new ColorUIResource(0x5d85ae); // Progress bar text, focus
     public static final ColorUIResource PRIMARY2 =
             new ColorUIResource(0x444444);
     public static final ColorUIResource PRIMARY3 =
@@ -44,7 +44,7 @@ public class JIPipeDesktopDarkModernMetalTheme extends DefaultMetalTheme {
     public static final ColorUIResource PRIMARY4 =
             new ColorUIResource(0x2f2f2f);
     public static final ColorUIResource PRIMARY5 =
-            new ColorUIResource(0x65a4e3);
+            new ColorUIResource(0x5d85ae);
     public static final ColorUIResource PRIMARY6 =
             new ColorUIResource(0xaa87de);
     public static final Color DARK_GRAY = new ColorUIResource(0x2f2f2f);
@@ -103,7 +103,7 @@ public class JIPipeDesktopDarkModernMetalTheme extends DefaultMetalTheme {
                 "Button.disabledToolBarBorderBackground", new Color(0x5f6265),
                 "Button.rolloverIconType", "ocean",
                 "Button.border", BUTTON_BORDER,
-                "Button.focus", new Color(0x65a4e3),
+                "Button.focus", new Color(0x5d85ae),
                 "ScrollPane.border", BorderFactory.createEmptyBorder(),
                 "Button.borderColor", new Color(0x5f6265),
 
@@ -159,10 +159,10 @@ public class JIPipeDesktopDarkModernMetalTheme extends DefaultMetalTheme {
                 "CheckBoxMenuItem.selectionForeground", new Color(0xfcfcfc),
                 "CheckBoxMenuItem.borderPainted", false,
                 "CheckBoxMenuItem.checkIcon", new CheckBoxMenuItemIcon(new Color(0xfcfcfc)),
-                "MenuItem.selectionBackground", new Color(0x65a4e3),
+                "MenuItem.selectionBackground", new Color(0x5d85ae),
                 "MenuItem.selectionForeground", new Color(0xfcfcfc),
                 "MenuItem.borderPainted", false,
-                "Menu.selectionBackground", new Color(0x65a4e3),
+                "Menu.selectionBackground", new Color(0x5d85ae),
                 "Menu.selectionForeground", new Color(0xfcfcfc),
                 "Menu.borderPainted", false,
 
@@ -244,7 +244,7 @@ public class JIPipeDesktopDarkModernMetalTheme extends DefaultMetalTheme {
 
                 "ToggleButton.background", new Color(0x31363b),
                 "ToggleButton.border", BUTTON_BORDER,
-                "ToggleButton.select", new Color(0x65a4e3),
+                "ToggleButton.select", new Color(0x5d85ae),
 
                 "TextField.inactiveForeground", new Color(0xD2E2EF),
                 "TextField.background", new Color(0x1b1e20),
@@ -275,9 +275,9 @@ public class JIPipeDesktopDarkModernMetalTheme extends DefaultMetalTheme {
                 "Tree.expandedIcon", UIUtils.getIcon8FromResources("tree-shrink.png"),
                 "Tree.leafIcon", fileIcon,
                 "Tree.openIcon", directoryIcon,
-                "Tree.selectionBorderColor", new Color(0x65a4e3),
-                "Tree.dropLineColor", new Color(0x65a4e3),
-                "Table.dropLineColor", new Color(0x65a4e3),
+                "Tree.selectionBorderColor", new Color(0x5d85ae),
+                "Tree.dropLineColor", new Color(0x5d85ae),
+                "Table.dropLineColor", new Color(0x5d85ae),
                 "Table.dropLineShortColor", new Color(0x1b1e20),
                 "Table.background", new Color(0x1b1e20),
                 "TableHeader.background", new Color(0x1b1e20),
@@ -285,14 +285,14 @@ public class JIPipeDesktopDarkModernMetalTheme extends DefaultMetalTheme {
                 "Table.dropCellBackground", new Color(0x1b1e20),
                 "Tree.dropCellBackground", new Color(0x1b1e20),
                 "List.dropCellBackground", new Color(0x1b1e20),
-                "List.dropLineColor", new Color(0x65a4e3),
+                "List.dropLineColor", new Color(0x5d85ae),
 
                 "ProgressBar.background", new Color(0xfcfcfc),
-                "ProgressBar.foreground", new Color(0x65a4e3),
+                "ProgressBar.foreground", new Color(0x5d85ae),
                 "ProgressBar.border", new RoundedLineBorder(new Color(0x5f6265), 1, 2),
 
                 "List.background", new Color(0x1b1e20),
-                "List.selectionBackground", new Color(0x65a4e3),
+                "List.selectionBackground", new Color(0x5d85ae),
                 "EditorPane.background", new Color(0x1b1e20),
                 "FormattedTextField.background", new Color(0x1b1e20),
 
