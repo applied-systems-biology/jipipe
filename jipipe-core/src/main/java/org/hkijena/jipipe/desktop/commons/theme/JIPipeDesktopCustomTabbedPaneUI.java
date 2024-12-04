@@ -13,6 +13,8 @@
 
 package org.hkijena.jipipe.desktop.commons.theme;
 
+import org.hkijena.jipipe.utils.UIUtils;
+
 import javax.swing.*;
 import javax.swing.plaf.ComponentUI;
 import javax.swing.plaf.UIResource;
@@ -916,7 +918,7 @@ public class JIPipeDesktopCustomTabbedPaneUI extends BasicTabbedPaneUI {
             g.setColor(selectHighlight);
         }
 
-        g.setColor(JIPipeDesktopModernMetalTheme.GRAY);
+        g.setColor(UIUtils.DARK_THEME ? JIPipeDesktopDarkModernMetalTheme.GRAY : JIPipeDesktopModernMetalTheme.GRAY);
 
         // Draw unbroken line if tabs are not on TOP, OR
         // selected tab is not in run adjacent to content, OR
@@ -944,7 +946,7 @@ public class JIPipeDesktopCustomTabbedPaneUI extends BasicTabbedPaneUI {
             g.setColor(JIPipeDesktopModernMetalTheme.PRIMARY5);
             g.drawLine(selRect.x + 1, y, selRect.x + selRect.width - 1, y);
 
-            g.setColor(JIPipeDesktopModernMetalTheme.GRAY);
+            g.setColor(UIUtils.DARK_THEME ? JIPipeDesktopDarkModernMetalTheme.GRAY : JIPipeDesktopModernMetalTheme.GRAY);
 
             if (selRect.x + selRect.width < right - 1) {
                 if (leftToRight && !lastInRun) {
