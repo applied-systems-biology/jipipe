@@ -30,7 +30,7 @@ import java.util.Map;
 import java.util.Set;
 
 /**
- * Displays a tree that contains data stored in a data batch
+ * Displays a tree that contains data stored in a iteration step
  */
 public class JIPipeDesktopDataBatchTree extends JIPipeDesktopWorkbenchPanel {
     private final JIPipeMultiIterationStep iterationStep;
@@ -39,7 +39,7 @@ public class JIPipeDesktopDataBatchTree extends JIPipeDesktopWorkbenchPanel {
 
     /**
      * @param workbenchUI   Workbench ui
-     * @param iterationStep the data batch
+     * @param iterationStep the iteration step
      */
     public JIPipeDesktopDataBatchTree(JIPipeDesktopWorkbench workbenchUI, JIPipeMultiIterationStep iterationStep) {
         super(workbenchUI);

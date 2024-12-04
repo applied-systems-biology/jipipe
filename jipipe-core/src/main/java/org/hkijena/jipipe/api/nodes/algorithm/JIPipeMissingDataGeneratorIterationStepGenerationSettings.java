@@ -95,7 +95,7 @@ public class JIPipeMissingDataGeneratorIterationStepGenerationSettings extends A
         this.customColumns = customColumns;
     }
 
-    @SetJIPipeDocumentation(name = "Limit", description = "Limits which data batches are generated. The first index is zero.")
+    @SetJIPipeDocumentation(name = "Limit", description = "Limits which iteration steps are generated. The first index is zero.")
     @JIPipeParameter(value = "limit")
     public OptionalIntegerRange getLimit() {
         return limit;
@@ -106,7 +106,7 @@ public class JIPipeMissingDataGeneratorIterationStepGenerationSettings extends A
         this.limit = limit;
     }
 
-    @SetJIPipeDocumentation(name = "Allow merging", description = "If enabled, there can be multiple rows per data batch for any slot. " +
+    @SetJIPipeDocumentation(name = "Allow merging", description = "If enabled, there can be multiple rows per iteration step for any slot. " +
             "Otherwise, only one will be present at most.")
     @JIPipeParameter("allow-merging")
     public boolean isAllowMerging() {

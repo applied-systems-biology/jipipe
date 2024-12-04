@@ -97,7 +97,7 @@ public class OMEROListDatasetsAlgorithm extends JIPipeSingleIterationAlgorithm i
         }
     }
 
-    @SetJIPipeDocumentation(name = "Filter", description = "Allows to filter the returned data sets")
+    @SetJIPipeDocumentation(name = "Keep dataset if", description = "Allows to filter the returned data sets")
     @JIPipeParameter("filter")
     @JIPipeExpressionParameterSettings(hint = "per OMERO data set")
     @AddJIPipeExpressionParameterVariable(fromClass = JIPipeTextAnnotationsExpressionParameterVariablesInfo.class)

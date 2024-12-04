@@ -107,14 +107,14 @@ public abstract class FormData extends AbstractJIPipeParameterCollection impleme
     /**
      * This method is called by the form processor nodes on loading data into this form.
      *
-     * @param iterationStep the data batch
+     * @param iterationStep the iteration step
      */
     public abstract void loadData(JIPipeMultiIterationStep iterationStep);
 
     /**
-     * This method should write any changes into the data batch
+     * This method should write any changes into the iteration step
      *
-     * @param iterationStep the data batch
+     * @param iterationStep the iteration step
      */
     public abstract void writeData(JIPipeMultiIterationStep iterationStep);
 

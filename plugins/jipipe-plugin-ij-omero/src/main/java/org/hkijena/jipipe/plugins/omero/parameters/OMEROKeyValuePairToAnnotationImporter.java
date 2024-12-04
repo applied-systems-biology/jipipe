@@ -59,7 +59,7 @@ public class OMEROKeyValuePairToAnnotationImporter extends AbstractJIPipeParamet
         this.enabled = enabled;
     }
 
-    @SetJIPipeDocumentation(name = "Filter", description = "Allows to filter out key-value pairs from being converted into annotations")
+    @SetJIPipeDocumentation(name = "Keep kv-pair if", description = "Allows to filter out key-value pairs from being converted into annotations")
     @JIPipeParameter("filter")
     @JIPipeExpressionParameterSettings(hint = "per key-value pair")
     @AddJIPipeExpressionParameterVariable(name = "Key-value pair key", key = "key", description = "The key of the key-value pair")

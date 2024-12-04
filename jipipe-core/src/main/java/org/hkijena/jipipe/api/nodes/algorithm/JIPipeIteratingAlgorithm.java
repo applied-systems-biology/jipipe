@@ -130,7 +130,7 @@ public abstract class JIPipeIteratingAlgorithm extends JIPipeParameterSlotAlgori
         IntegerRange limit = iterationStepGenerationSettings.getLimit().getContent();
         TIntSet allowedIndices = withLimit ? new TIntHashSet(limit.getIntegers(0, iterationSteps.size(), new JIPipeExpressionVariablesMap())) : null;
         if (withLimit) {
-            progressInfo.log("[INFO] Applying limit to all data batches. Allowed indices are " + Ints.join(", ", allowedIndices.toArray()));
+            progressInfo.log("[INFO] Applying limit to all iteration steps. Allowed indices are " + Ints.join(", ", allowedIndices.toArray()));
             List<JIPipeMultiIterationStep> limitedBatches = new ArrayList<>();
             for (int i = 0; i < iterationSteps.size(); i++) {
                 if (allowedIndices.contains(i)) {
@@ -185,10 +185,10 @@ public abstract class JIPipeIteratingAlgorithm extends JIPipeParameterSlotAlgori
 
     /**
      * A pass-through variant for iterating algorithms.
-     * Passes the data batch to the single output
+     * Passes the iteration step to the single output
      *
      * @param progressInfo  progress info
-     * @param iterationStep the data batch
+     * @param iterationStep the iteration step
      */
     protected void runPassThrough(JIPipeProgressInfo progressInfo, JIPipeSingleIterationStep iterationStep) {
         progressInfo.log("Passing trough (via dynamic pass-through)");
@@ -247,7 +247,7 @@ public abstract class JIPipeIteratingAlgorithm extends JIPipeParameterSlotAlgori
                 iterationSteps.add(iterationStep);
             }
         } else {
-            // First generate merging data batches
+            // First generate merging iteration steps
             List<JIPipeMultiIterationStep> mergingDataBatches = generateDataBatchesGenerationResult(getNonParameterInputSlots(), progressInfo).getDataBatches();
 
             // Check for incomplete batches
@@ -288,7 +288,7 @@ public abstract class JIPipeIteratingAlgorithm extends JIPipeParameterSlotAlgori
 
         // Handle case: All optional input, no data
         if ((iterationSteps == null || iterationSteps.isEmpty()) && getDataInputSlots().stream().allMatch(slot -> slot.getInfo().isOptional() && slot.isEmpty())) {
-            progressInfo.log("Generating dummy data batch because of the [all inputs empty optional] condition");
+            progressInfo.log("Generating dummy iteration step because of the [all inputs empty optional] condition");
             // Generate a dummy batch
             JIPipeSingleIterationStep iterationStep = new JIPipeSingleIterationStep(this);
             iterationStep.addMergedTextAnnotations(parameterAnnotations, JIPipeTextAnnotationMergeMode.Merge);
@@ -302,7 +302,7 @@ public abstract class JIPipeIteratingAlgorithm extends JIPipeParameterSlotAlgori
                     "Unable to split data into batches!",
                     "The algorithm needs to assign input a unique data set via annotations, but there are either missing elements or multiple data per slot.",
                     "Please check the input of the algorithm by running the quick run on each input algorithm. " +
-                            "Try to switch to the 'Data batches' tab to preview how data is split into batches."));
+                            "Try to switch to the 'Iteration stepes' tab to preview how data is split into batches."));
         }
 
         // Execute the workload
@@ -411,7 +411,7 @@ public abstract class JIPipeIteratingAlgorithm extends JIPipeParameterSlotAlgori
         iterationStep.addMergedTextAnnotation(new JIPipeTextAnnotation(name, value), JIPipeTextAnnotationMergeMode.Merge);
     }
 
-    @SetJIPipeDocumentation(name = "Adaptive parameters", description = "You can use the following settings to generate parameter values for each data batch based on annotations.")
+    @SetJIPipeDocumentation(name = "Adaptive parameters", description = "You can use the following settings to generate parameter values for each iteration step based on annotations.")
     @JIPipeParameter(value = "jipipe:adaptive-parameters", hidden = true,
             iconURL = ResourceUtils.RESOURCE_BASE_PATH + "/icons/actions/insert-function.png",
             iconDarkURL = ResourceUtils.RESOURCE_BASE_PATH + "/dark/icons/actions/insert-function.png")

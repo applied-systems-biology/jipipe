@@ -80,7 +80,7 @@ public class RemoveROIMetadataAlgorithm extends JIPipeSimpleIteratingAlgorithm {
         iterationStep.addOutputData(getFirstOutputSlot(), rois, progressInfo);
     }
 
-    @SetJIPipeDocumentation(name = "Filter", description = "This expression is executed per ROI property and should return <code>true</code> if the property should be removed")
+    @SetJIPipeDocumentation(name = "Remove if", description = "This expression is executed per ROI property and should return <code>true</code> if the property should be removed")
     @JIPipeParameter("filter")
     @AddJIPipeExpressionParameterVariable(fromClass = JIPipeTextAnnotationsExpressionParameterVariablesInfo.class)
     @AddJIPipeExpressionParameterVariable(key = "key", name = "Metadata key", description = "The name of the metadata")

@@ -35,7 +35,7 @@ import org.jdesktop.swingx.JXTable;
 import javax.swing.*;
 import java.awt.*;
 
-@SetJIPipeDocumentation(name = "Data batch status", description = "Structural data indicating the status of a data batch")
+@SetJIPipeDocumentation(name = "Iteration step status", description = "Structural data indicating the status of a iteration step")
 @LabelAsJIPipeHidden
 @JIPipeDataStorageDocumentation(humanReadableDescription = "Contains a single JSON file that stores the status information.",
         jsonSchemaURL = "https://jipipe.org/schemas/datatypes/jipipe-json-data.schema.json")
@@ -96,7 +96,7 @@ public class DataBatchStatusData extends JIPipeSerializedJsonObjectData {
         JFrame frame = new JFrame();
         frame.setIconImage(UIUtils.getJIPipeIcon128());
         frame.setContentPane(formPanel);
-        frame.setTitle("Data batch status");
+        frame.setTitle("Iteration step status");
         frame.pack();
         frame.setSize(new Dimension(800, 600));
         frame.setLocationRelativeTo(desktopWorkbench.getWindow());

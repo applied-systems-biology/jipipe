@@ -112,7 +112,7 @@ public class OMEROListProjectsAlgorithm extends JIPipeSingleIterationAlgorithm i
         }
     }
 
-    @SetJIPipeDocumentation(name = "Filter", description = "Allows to filter the returned projects")
+    @SetJIPipeDocumentation(name = "Keep project if", description = "Allows to filter the returned projects")
     @JIPipeParameter("filter")
     @JIPipeExpressionParameterSettings(hint = "per OMERO data set")
     @AddJIPipeExpressionParameterVariable(fromClass = JIPipeTextAnnotationsExpressionParameterVariablesInfo.class)

@@ -34,7 +34,7 @@ import org.hkijena.jipipe.plugins.parameters.library.primitives.ranges.IntegerRa
 import java.util.ArrayList;
 import java.util.HashSet;
 
-@SetJIPipeDocumentation(name = "Data batch slicer", description = "Merges the incoming data into merging data batches. Only outputs " +
+@SetJIPipeDocumentation(name = "Iteration step slicer", description = "Merges the incoming data into merging iteration steps. Only outputs " +
         "the items according to the index range. You can use this to remove duplicates. Annotations are not modified (merged annotations are not copied into " +
         "the output).")
 @AddJIPipeInputSlot(value = JIPipeData.class, name = "Input", create = true)
@@ -72,7 +72,7 @@ public class IterationStepSlicer extends JIPipeMergingAlgorithm {
     }
 
     @SetJIPipeDocumentation(name = "Slice range", description = "Only the items within this range are copied into the output. The first index is zero. " +
-            "If a data batch does not contain the requested index, no data is copied.")
+            "If a iteration step does not contain the requested index, no data is copied.")
     @JIPipeParameter("slice-range")
     public IntegerRange getSliceRange() {
         return sliceRange;

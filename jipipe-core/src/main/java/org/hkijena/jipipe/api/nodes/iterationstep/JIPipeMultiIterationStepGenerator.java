@@ -65,7 +65,7 @@ public class JIPipeMultiIterationStepGenerator {
     }
 
     /**
-     * Builds a single data batch where each slot only can have one row
+     * Builds a single iteration step where each slot only can have one row
      *
      * @return the list of batched or null if none can be generated
      */
@@ -203,7 +203,7 @@ public class JIPipeMultiIterationStepGenerator {
      * It cannot handle custom equality
      *
      * @param progressInfo the progress info
-     * @return data batches
+     * @return iteration steps
      */
     private List<JIPipeMultiIterationStep> applyDictionarySolver(JIPipeProgressInfo progressInfo) {
         final String annotationKey = referenceColumns.iterator().next();
@@ -247,7 +247,7 @@ public class JIPipeMultiIterationStepGenerator {
 
         List<JIPipeMultiIterationStep> iterationSteps = new ArrayList<>();
         if (applyMerging) {
-            // We are done. Directly convert to data batches
+            // We are done. Directly convert to iteration steps
             for (String key : allKeys) {
                 JIPipeMultiIterationStep iterationStep = new JIPipeMultiIterationStep(node);
                 for (JIPipeDataSlot slot : slotList) {
@@ -267,7 +267,7 @@ public class JIPipeMultiIterationStepGenerator {
                 for (JIPipeDataSlot slot : slotList) {
                     Collection<Integer> rows = matchedRows.get(slot).get(key);
                     if (keyBatches.isEmpty()) {
-                        // No data batches -> Create initial batch set
+                        // No iteration steps -> Create initial batch set
                         for (Integer row : rows) {
                             JIPipeMultiIterationStep iterationStep = new JIPipeMultiIterationStep(node);
                             iterationStep.addInputData(slot, row);
@@ -306,7 +306,7 @@ public class JIPipeMultiIterationStepGenerator {
                 iterationStep.addMergedDataAnnotations(dataAnnotations, getDataAnnotationMergeStrategy());
             }
         }
-        // Ensure that all slots are known to the data batch builder
+        // Ensure that all slots are known to the iteration step builder
         for (JIPipeMultiIterationStep iterationStep : iterationSteps) {
             for (JIPipeDataSlot slot : slotList) {
                 iterationStep.addEmptySlot(slot);
@@ -316,10 +316,10 @@ public class JIPipeMultiIterationStepGenerator {
     }
 
     /**
-     * Special case solver that splits all data batches
+     * Special case solver that splits all iteration steps
      *
      * @param progressInfo the progress info
-     * @return data batches
+     * @return iteration steps
      */
     private List<JIPipeMultiIterationStep> applySplitAllSolver(JIPipeProgressInfo progressInfo) {
         List<JIPipeMultiIterationStep> split = new ArrayList<>();
@@ -347,7 +347,7 @@ public class JIPipeMultiIterationStepGenerator {
      * Special case solver that merges all data into one batch
      *
      * @param progressInfo the progress info
-     * @return data batches
+     * @return iteration steps
      */
     private List<JIPipeMultiIterationStep> applyMergeAllSolver(JIPipeProgressInfo progressInfo) {
         JIPipeMultiIterationStep batch = new JIPipeMultiIterationStep(this.node);
@@ -523,7 +523,7 @@ public class JIPipeMultiIterationStepGenerator {
         if (progressInfo.isCancelled())
             return null;
 
-        progressInfo.log("Generating data batches");
+        progressInfo.log("Generating iteration steps");
         for (GraphPath<RowNode, DefaultEdge> path : allPaths) {
             JIPipeMultiIterationStep iterationStep = new JIPipeMultiIterationStep(this.node);
             for (RowNode rowNode : path.getVertexList()) {

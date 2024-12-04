@@ -83,7 +83,7 @@ public class JIPipeDesktopDataBatchAssistantDataTableUI extends JIPipeDesktopWor
 
     /**
      * @param workbenchUI the workbench UI
-     * @param dataTable   data table containing the visualization of the data batches
+     * @param dataTable   data table containing the visualization of the iteration steps
      */
     public JIPipeDesktopDataBatchAssistantDataTableUI(JIPipeDesktopWorkbench workbenchUI, JIPipeDataTable dataTable) {
         super(workbenchUI);

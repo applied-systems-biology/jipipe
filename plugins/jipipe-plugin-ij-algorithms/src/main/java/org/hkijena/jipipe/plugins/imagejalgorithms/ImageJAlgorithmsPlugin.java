@@ -132,6 +132,7 @@ import org.hkijena.jipipe.plugins.imagejalgorithms.parameters.*;
 import org.hkijena.jipipe.plugins.imagejalgorithms.utils.OMEAccessorStorage;
 import org.hkijena.jipipe.plugins.imagejalgorithms.utils.OrientationJGradientOperator;
 import org.hkijena.jipipe.plugins.imagejalgorithms.utils.OrientationJVectorFieldType;
+import org.hkijena.jipipe.plugins.imagejalgorithms.utils.LineMirror;
 import org.hkijena.jipipe.plugins.imagejdatatypes.ImageJDataTypesPlugin;
 import org.hkijena.jipipe.plugins.imagejdatatypes.algorithms.ApplyDisplayContrastAlgorithm;
 import org.hkijena.jipipe.plugins.imagejdatatypes.algorithms.DisplayRangeCalibrationAlgorithm;
@@ -987,6 +988,7 @@ public class ImageJAlgorithmsPlugin extends JIPipePrepackagedDefaultJavaPlugin {
         registerNodeType("ij1-transform-tile-2d-v2", TileImage2Dv2Algorithm.class, UIUtils.getIconURLFromResources("actions/grid-rectangular.png"));
         registerNodeType("ij1-transform-un-tile-2d", UnTileImage2DAlgorithm.class, UIUtils.getIconURLFromResources("actions/grid-rectangular.png"));
         registerNodeType("ij1-transform-add-border-2d", AddBorder2DAlgorithm.class, UIUtils.getIconURLFromResources("actions/bordertool.png"));
+        registerNodeType("ij1-transform-line-mirror-by-expression", LineMirror2DFromExpressionsAlgorithm.class, UIUtils.getIconURLFromResources("actions/draw-geometry-mirror.png"));
 
         registerEnumParameterType("ij1-transform-flip2d:flip-mode", TransformFlip2DAlgorithm.FlipMode.class,
                 "Flip mode", "Available modes");
@@ -999,6 +1001,8 @@ public class ImageJAlgorithmsPlugin extends JIPipePrepackagedDefaultJavaPlugin {
                 "Scale mode",
                 "Determines how the image is scaled");
         registerEnumParameterType("ij1-border-mode", BorderMode.class, "Border type", "Types of borders");
+        registerEnumParameterType("ij1-transform-line-mirror:mode", LineMirror.MirrorOperationMode.class, "Line mirror mode", "Modes for the line mirror operator");
+
     }
 
     private void registerFFTAlgorithms() {

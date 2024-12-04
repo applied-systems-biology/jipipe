@@ -105,7 +105,7 @@ public class SpotFilterNode extends JIPipeSimpleIteratingAlgorithm {
         ++index;
     }
 
-    @SetJIPipeDocumentation(name = "Filter", description = "The expression is executed per spot. If it returns TRUE, the spot is kept.")
+    @SetJIPipeDocumentation(name = "Keep spot if", description = "The expression is executed per spot. If it returns TRUE, the spot is kept.")
     @JIPipeParameter(value = "filter", important = true)
     @JIPipeExpressionParameterSettings(hint = "per spot")
     @AddJIPipeExpressionParameterVariable(fromClass = SpotFeatureVariablesInfo.class)

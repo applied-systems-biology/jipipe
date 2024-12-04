@@ -54,7 +54,7 @@ import java.util.List;
 import java.util.Map;
 
 @SetJIPipeDocumentation(name = "R script (merging)", description = "Allows to execute a custom R script. " +
-        "The script is repeated for each data batch. Please note the each data batch can contain multiple items per slot. " +
+        "The script is repeated for each iteration step. Please note the each iteration step can contain multiple items per slot. " +
         "The script comes with various API functions and variables that allow to communicate with JIPipe: " +
         "<ul>" +
         "<li><code>JIPipe.InputSlotRowCounts</code> contains named row counts for each slot</li>" +
