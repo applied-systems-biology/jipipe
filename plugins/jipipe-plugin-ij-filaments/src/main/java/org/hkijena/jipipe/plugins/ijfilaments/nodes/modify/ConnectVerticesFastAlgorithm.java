@@ -41,6 +41,7 @@ import org.hkijena.jipipe.plugins.ijfilaments.util.FilamentVertexVariablesInfo;
 import org.hkijena.jipipe.plugins.imagejdatatypes.datatypes.greyscale.ImagePlusGreyscaleMaskData;
 import org.hkijena.jipipe.plugins.imagejdatatypes.util.ImageJUtils;
 import org.hkijena.jipipe.plugins.parameters.library.colors.OptionalColorParameter;
+import org.hkijena.jipipe.plugins.parameters.library.pairs.StringAndStringPairParameter;
 import org.hkijena.jipipe.plugins.parameters.library.primitives.optional.OptionalIntegerParameter;
 import org.hkijena.jipipe.plugins.parameters.library.primitives.vectors.Vector2dParameter;
 import org.hkijena.jipipe.plugins.parameters.library.primitives.vectors.Vector2iParameter;
@@ -76,6 +77,7 @@ public class ConnectVerticesFastAlgorithm extends JIPipeIteratingAlgorithm {
     private SortOrder limitConnectionsLengthSortOrder = SortOrder.Ascending;
     private boolean ignoreLimitConnectionsForSource = false;
     private boolean isIgnoreLimitConnectionsForTarget = false;
+    private StringAndStringPairParameter.List newEdgeMetadata = new StringAndStringPairParameter.List();
 
     public ConnectVerticesFastAlgorithm(JIPipeNodeInfo info) {
         super(info);
@@ -98,6 +100,18 @@ public class ConnectVerticesFastAlgorithm extends JIPipeIteratingAlgorithm {
         this.targetVertexFilter = new OptionalJIPipeExpressionParameter(other.targetVertexFilter);
         this.ignoreLimitConnectionsForSource = other.ignoreLimitConnectionsForSource;
         this.isIgnoreLimitConnectionsForTarget = other.isIgnoreLimitConnectionsForTarget;
+        this.newEdgeMetadata = new StringAndStringPairParameter.List(other.newEdgeMetadata);
+    }
+
+    @SetJIPipeDocumentation(name = "Set new edges metadata", description = "Allows to set the metadata of newly created edges")
+    @JIPipeParameter("new-edge-metadata")
+    public StringAndStringPairParameter.List getNewEdgeMetadata() {
+        return newEdgeMetadata;
+    }
+
+    @JIPipeParameter("new-edge-metadata")
+    public void setNewEdgeMetadata(StringAndStringPairParameter.List newEdgeMetadata) {
+        this.newEdgeMetadata = newEdgeMetadata;
     }
 
     @SetJIPipeDocumentation(name = "Bypass connection limit for sources", description = "If enabled, the 'Limit connections' parameter does not apply to source vertices.")
@@ -423,8 +437,12 @@ public class ConnectVerticesFastAlgorithm extends JIPipeIteratingAlgorithm {
             // Connect
             FilamentEdge edge = outputData.addEdge(candidate.source, candidate.target);
             if (edge != null) {
-                if (newEdgeColor.isEnabled())
+                if (newEdgeColor.isEnabled()) {
                     edge.setColor(newEdgeColor.getContent());
+                }
+                for (StringAndStringPairParameter item : newEdgeMetadata) {
+                    edge.setMetadata(item.getKey(), item.getValue());
+                }
             }
             ++successes;
         }
