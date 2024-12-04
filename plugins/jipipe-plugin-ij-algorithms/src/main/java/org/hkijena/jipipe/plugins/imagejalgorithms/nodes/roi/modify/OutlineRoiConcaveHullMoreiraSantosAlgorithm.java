@@ -36,7 +36,7 @@ import org.locationtech.jts.geom.Coordinate;
 import org.locationtech.jts.geom.CoordinateXY;
 
 
-@SetJIPipeDocumentation(name = "Outline 2D ROI (Concave Hull)", description = "Uses the algorithm by Moreira and Santos to calculate the concave hull of the provided rois")
+@SetJIPipeDocumentation(name = "Outline 2D ROI (Concave Hull Moreira/Santos)", description = "Uses the algorithm by Moreira and Santos to calculate the concave hull of the provided rois")
 @ConfigureJIPipeNode(nodeTypeCategory = RoiNodeTypeCategory.class, menuPath = "Modify")
 @AddJIPipeInputSlot(value = ROI2DListData.class, name = "Input", create = true)
 @AddJIPipeOutputSlot(value = ROI2DListData.class, name = "Output", create = true)
@@ -58,6 +58,40 @@ public class OutlineRoiConcaveHullMoreiraSantosAlgorithm extends JIPipeSimpleIte
         this.skipInvalidInputs = other.skipInvalidInputs;
     }
 
+    @SetJIPipeDocumentation(name = "K-means k")
+    @JIPipeParameter("kmeans-k")
+    public int getkMeansK() {
+        return kMeansK;
+    }
+
+    @JIPipeParameter("kmeans-k")
+    public void setkMeansK(int kMeansK) {
+        this.kMeansK = kMeansK;
+    }
+
+    @SetJIPipeDocumentation(name = "Prime index")
+    @JIPipeParameter("prime-index")
+    public int getPrimeIndex() {
+        return primeIndex;
+    }
+
+    @JIPipeParameter("prime-index")
+    public void setPrimeIndex(int primeIndex) {
+        this.primeIndex = primeIndex;
+    }
+
+    @SetJIPipeDocumentation(name = "Delete invalid ROIs", description = "If a ROI has less than 3 points, delete it from the output. " +
+            "Otherwise, the ROI is not processed and be stored in the output as-is.")
+    @JIPipeParameter("skip-invalid-inputs")
+    public boolean isSkipInvalidInputs() {
+        return skipInvalidInputs;
+    }
+
+    @JIPipeParameter("skip-invalid-inputs")
+    public void setSkipInvalidInputs(boolean skipInvalidInputs) {
+        this.skipInvalidInputs = skipInvalidInputs;
+    }
+
     @Override
     protected void runIteration(JIPipeSingleIterationStep iterationStep, JIPipeIterationContext iterationContext, JIPipeGraphNodeRunContext runContext, JIPipeProgressInfo progressInfo) {
         ROI2DListData input = iterationStep.getInputData(getFirstInputSlot(), ROI2DListData.class, progressInfo);
@@ -74,6 +108,7 @@ public class OutlineRoiConcaveHullMoreiraSantosAlgorithm extends JIPipeSimpleIte
                 ConcaveHullMoreiraSantos concaveHull = new ConcaveHullMoreiraSantos(points, primeIndex);
                 Coordinate[] hull = concaveHull.calculate(kMeansK);
                 Roi hullRoi = convertToRoi(hull);
+                hullRoi.copyAttributes(roi);
 
             } else if(skipInvalidInputs) {
                 progressInfo.log("Skipping ROI at index " + i + " (NPoints < 3)");
