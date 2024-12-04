@@ -19,9 +19,7 @@ import org.hkijena.jipipe.utils.StringUtils;
 
 import java.nio.file.Path;
 import java.nio.file.Paths;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 /**
  * Object that carries variables for expressions
@@ -110,6 +108,13 @@ public class JIPipeExpressionVariablesMap extends HashMap<String, Object> {
      */
     public JIPipeExpressionVariablesMap putCustomVariables(JIPipeCustomExpressionVariablesParameter customExpressionVariablesParameter) {
         customExpressionVariablesParameter.writeToVariables(this);
+        return this;
+    }
+
+    public JIPipeExpressionVariablesMap putAnnotationsIfAbsent(Collection<JIPipeTextAnnotation> textAnnotations) {
+        for (JIPipeTextAnnotation textAnnotation : textAnnotations) {
+            putIfAbsent(textAnnotation.getName(), textAnnotation.getValue());
+        }
         return this;
     }
 }

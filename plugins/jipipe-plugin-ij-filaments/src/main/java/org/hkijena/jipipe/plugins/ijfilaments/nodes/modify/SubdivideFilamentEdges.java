@@ -34,6 +34,8 @@ import org.hkijena.jipipe.plugins.ijfilaments.util.FilamentEdge;
 import org.hkijena.jipipe.plugins.ijfilaments.util.FilamentVertex;
 import org.hkijena.jipipe.plugins.ijfilaments.util.NonSpatialPoint3d;
 import org.hkijena.jipipe.plugins.ijfilaments.util.Point3d;
+import org.hkijena.jipipe.plugins.parameters.library.pairs.StringAndStringPairParameter;
+import org.hkijena.jipipe.plugins.parameters.library.primitives.optional.OptionalDoubleParameter;
 import org.hkijena.jipipe.plugins.parameters.library.primitives.optional.OptionalIntegerParameter;
 import org.hkijena.jipipe.plugins.parameters.library.quantities.OptionalQuantity;
 import org.hkijena.jipipe.plugins.parameters.library.quantities.Quantity;
@@ -49,6 +51,9 @@ public class SubdivideFilamentEdges extends JIPipeSimpleIteratingAlgorithm {
 
     private OptionalQuantity maximumLength = new OptionalQuantity(new Quantity(2, "px"), true);
     private OptionalIntegerParameter maximumNumIterations = new OptionalIntegerParameter(true, 2);
+    private OptionalDoubleParameter overrideValue = new OptionalDoubleParameter();
+    private OptionalDoubleParameter overrideRadius = new OptionalDoubleParameter();
+    private StringAndStringPairParameter.List metadata = new StringAndStringPairParameter.List();
 
     public SubdivideFilamentEdges(JIPipeNodeInfo info) {
         super(info);
@@ -58,6 +63,9 @@ public class SubdivideFilamentEdges extends JIPipeSimpleIteratingAlgorithm {
         super(other);
         this.maximumLength = new OptionalQuantity(other.maximumLength);
         this.maximumNumIterations = new OptionalIntegerParameter(other.maximumNumIterations);
+        this.overrideValue = new OptionalDoubleParameter(other.overrideValue);
+        this.overrideRadius = new OptionalDoubleParameter(other.overrideRadius);
+        this.metadata = new StringAndStringPairParameter.List(other.metadata);
     }
 
     @Override
@@ -97,8 +105,22 @@ public class SubdivideFilamentEdges extends JIPipeSimpleIteratingAlgorithm {
                 vertex.setSpatialLocation(new Point3d((edgeSource.getSpatialLocation().getX() + edgeTarget.getSpatialLocation().getX()) / 2.0,
                         (edgeSource.getSpatialLocation().getY() + edgeTarget.getSpatialLocation().getY()) / 2.0,
                         (edgeSource.getSpatialLocation().getZ() + edgeTarget.getSpatialLocation().getZ()) / 2.0));
-                vertex.setValue((edgeSource.getValue() + edgeTarget.getValue()) / 2.0);
-                vertex.setRadius((edgeSource.getRadius() + edgeTarget.getRadius()) / 2.0);
+                if(overrideValue.isEnabled()) {
+                    vertex.setValue(overrideValue.getContent());
+                }
+                else {
+                    vertex.setValue((edgeSource.getValue() + edgeTarget.getValue()) / 2.0);
+                }
+                if(overrideRadius.isEnabled()) {
+                    vertex.setRadius(overrideRadius.getContent());
+                }
+                else {
+                    vertex.setRadius((edgeSource.getRadius() + edgeTarget.getRadius()) / 2.0);
+                }
+                for (StringAndStringPairParameter item : metadata) {
+                    vertex.setMetadata(item.getKey(), item.getValue());
+                }
+
 
                 graph.removeEdge(edge);
                 graph.addEdge(edgeSource, vertex);
@@ -121,6 +143,41 @@ public class SubdivideFilamentEdges extends JIPipeSimpleIteratingAlgorithm {
                     "The filament subdivision operator has no stopping criteria and will run infinitely",
                     "Use either the maximum length and/or the maximum number of iterations"));
         }
+    }
+
+    @SetJIPipeDocumentation(name = "Add metadata to created vertices", description = "Allows to add metadata to newly created vertices")
+     @JIPipeParameter("add-metadata")
+    public StringAndStringPairParameter.List getMetadata() {
+        return metadata;
+    }
+
+    @JIPipeParameter("add-metadata")
+    public void setMetadata(StringAndStringPairParameter.List metadata) {
+        this.metadata = metadata;
+    }
+
+    @SetJIPipeDocumentation(name = "Override radius", description = "If enabled, the radius of newly created vertices is set manually. " +
+            "Otherwise it is the average of the two target vertices.")
+    @JIPipeParameter("override-radius")
+    public OptionalDoubleParameter getOverrideRadius() {
+        return overrideRadius;
+    }
+
+    @JIPipeParameter("override-radius")
+    public void setOverrideRadius(OptionalDoubleParameter overrideRadius) {
+        this.overrideRadius = overrideRadius;
+    }
+
+    @SetJIPipeDocumentation(name = "Override value", description = "If enabled, the value if the newly created vertices is set manually. " +
+            "Otherwise it is the average of the two target vertices.")
+    @JIPipeParameter("override-value")
+    public OptionalDoubleParameter getOverrideValue() {
+        return overrideValue;
+    }
+
+    @JIPipeParameter("override-value")
+    public void setOverrideValue(OptionalDoubleParameter overrideValue) {
+        this.overrideValue = overrideValue;
     }
 
     @SetJIPipeDocumentation(name = "Split if longer than ...", description = "If enabled, only edges longer than the specified length are split")
