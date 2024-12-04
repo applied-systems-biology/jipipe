@@ -31,9 +31,10 @@ import org.hkijena.jipipe.api.nodes.iterationstep.JIPipeSingleIterationStep;
 import org.hkijena.jipipe.api.parameters.JIPipeParameter;
 import org.hkijena.jipipe.plugins.imagejalgorithms.utils.ConcaveHullMoreiraSantos;
 import org.hkijena.jipipe.plugins.imagejdatatypes.datatypes.ROI2DListData;
-import org.hkijena.jipipe.plugins.imagejdatatypes.util.RoiOutline;
-import org.locationtech.jts.geom.Coordinate;
-import org.locationtech.jts.geom.CoordinateXY;
+
+import java.awt.geom.Point2D;
+import java.util.ArrayList;
+import java.util.List;
 
 
 @SetJIPipeDocumentation(name = "Outline 2D ROI (Concave Hull Moreira/Santos)", description = "Uses the algorithm by Moreira and Santos to calculate the concave hull of the provided rois")
@@ -101,14 +102,14 @@ public class OutlineRoiConcaveHullMoreiraSantosAlgorithm extends JIPipeSimpleIte
             Roi roi = input.get(i);
             FloatPolygon polygon = roi.getFloatPolygon();
             if (polygon.npoints >= 3) {
-                Coordinate[] points = new Coordinate[polygon.npoints];
+                List<Point2D> points = new ArrayList<>();
                 for (int j = 0; j < polygon.npoints; j++) {
-                    points[j] = new CoordinateXY(polygon.xpoints[j], polygon.ypoints[j]);
+                    points.add(new Point2D.Double(polygon.xpoints[j], polygon.ypoints[j]));
                 }
-                ConcaveHullMoreiraSantos concaveHull = new ConcaveHullMoreiraSantos(points, primeIndex);
-                Coordinate[] hull = concaveHull.calculate(kMeansK);
+                List<Point2D> hull = ConcaveHullMoreiraSantos.calculateConcaveHull(points, kMeansK);
                 Roi hullRoi = convertToRoi(hull);
                 hullRoi.copyAttributes(roi);
+                output.add(hullRoi);
 
             } else if(skipInvalidInputs) {
                 progressInfo.log("Skipping ROI at index " + i + " (NPoints < 3)");
@@ -123,22 +124,22 @@ public class OutlineRoiConcaveHullMoreiraSantosAlgorithm extends JIPipeSimpleIte
         iterationStep.addOutputData(getFirstOutputSlot(), output, progressInfo);
     }
 
-    public static PolygonRoi convertToRoi(Coordinate[] coordinates) {
-        if (coordinates == null || coordinates.length < 3) {
+    public static PolygonRoi convertToRoi(List<Point2D> coordinates) {
+        if (coordinates == null || coordinates.size() < 3) {
             throw new IllegalArgumentException("At least 3 coordinates are required to form a polygon.");
         }
 
         // Extract X and Y coordinates with subpixel precision
-        float[] xPoints = new float[coordinates.length];
-        float[] yPoints = new float[coordinates.length];
+        float[] xPoints = new float[coordinates.size()];
+        float[] yPoints = new float[coordinates.size()];
 
-        for (int i = 0; i < coordinates.length; i++) {
-            xPoints[i] = (float) coordinates[i].x;
-            yPoints[i] = (float) coordinates[i].y;
+        for (int i = 0; i < coordinates.size(); i++) {
+            xPoints[i] = (float) coordinates.get(i).getX();
+            yPoints[i] = (float) coordinates.get(i).getY();
         }
 
         // Create and return the PolygonRoi with subpixel precision
-        return new PolygonRoi(xPoints, yPoints, coordinates.length, Roi.POLYGON);
+        return new PolygonRoi(xPoints, yPoints, coordinates.size(), Roi.POLYGON);
     }
 
 }

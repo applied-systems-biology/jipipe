@@ -13,6 +13,7 @@
 
 package org.hkijena.jipipe.plugins.imagejalgorithms.utils;
 
+import java.awt.geom.Point2D;
 import java.util.*;
 
 /**
@@ -51,57 +52,19 @@ public class ConcaveHullMoreiraSantos {
         }
     }
 
-    public static class Point {
-
-        private final double x;
-        private final double y;
-
-        public Point(double x, double y) {
-            this.x = x;
-            this.y = y;
-        }
-
-        public double getX() {
-            return x;
-        }
-
-        public double getY() {
-            return y;
-        }
-
-        public String toString() {
-            return "(" + x + " " + y + ")";
-        }
-
-        @Override
-        public boolean equals(Object o) {
-            if (o == null || getClass() != o.getClass()) return false;
-            Point point = (Point) o;
-            return Double.compare(x, point.x) == 0 && Double.compare(y, point.y) == 0;
-        }
-
-        @Override
-        public int hashCode() {
-            // http://stackoverflow.com/questions/22826326/good-hashcode-function-for-2d-coordinates
-            // http://www.cs.upc.edu/~alvarez/calculabilitat/enumerabilitat.pdf
-            int tmp = (int) (y + ((x + 1) / 2));
-            return Math.abs((int) (x + (tmp * tmp)));
-        }
-    }
-
-    private static double euclideanDistance(Point a, Point b) {
+    private static double euclideanDistance(Point2D a, Point2D b) {
         return Math.sqrt(Math.pow(a.getX() - b.getX(), 2) + Math.pow(a.getY() - b.getY(), 2));
     }
 
-    private static List<Point> kNearestNeighbors(List<Point> l, Point q, Integer k) {
-        List<Pair<Double, Point>> nearestList = new ArrayList<>();
-        for (Point o : l) {
+    private static List<Point2D> kNearestNeighbors(List<Point2D> l, Point2D q, int k) {
+        List<Pair<Double, Point2D>> nearestList = new ArrayList<>();
+        for (Point2D o : l) {
             nearestList.add(new Pair<>(euclideanDistance(q, o), o));
         }
 
         nearestList.sort(Comparator.comparing(Pair::getKey));
 
-        ArrayList<Point> result = new ArrayList<>();
+        ArrayList<Point2D> result = new ArrayList<>();
 
         for (int i = 0; i < Math.min(k, nearestList.size()); i++) {
             result.add(nearestList.get(i).getValue());
@@ -110,12 +73,12 @@ public class ConcaveHullMoreiraSantos {
         return result;
     }
 
-    private static Point findMinYPoint(List<Point> l) {
-        l.sort(Comparator.comparing(Point::getY));
+    private static Point2D findMinYPoint2D(List<Point2D> l) {
+        l.sort(Comparator.comparing(Point2D::getY));
         return l.get(0);
     }
 
-    private static double calculateAngle(Point o1, Point o2) {
+    private static double calculateAngle(Point2D o1, Point2D o2) {
         return Math.atan2(o2.getY() - o1.getY(), o2.getX() - o1.getX());
     }
 
@@ -138,17 +101,17 @@ public class ConcaveHullMoreiraSantos {
         }
     }
 
-    private static List<Point> sortByAngle(List<Point> l, Point q, Double a) {
+    private static List<Point2D> sortByAngle(List<Point2D> l, Point2D q, double a) {
         // Sort by angle descending
         l.sort((o1, o2) -> {
-            Double a1 = angleDifference(a, calculateAngle(q, o1));
-            Double a2 = angleDifference(a, calculateAngle(q, o2));
-            return a2.compareTo(a1);
+            double a1 = angleDifference(a, calculateAngle(q, o1));
+            double a2 = angleDifference(a, calculateAngle(q, o2));
+            return Double.compare(a2, a1);
         });
         return l;
     }
 
-    private Boolean intersect(Point l1p1, Point l1p2, Point l2p1, Point l2p2) {
+    private static boolean intersect(Point2D l1p1, Point2D l1p2, Point2D l2p1, Point2D l2p2) {
         // calculate part equations for line-line intersection
         double a1 = l1p2.getY() - l1p1.getY();
         double b1 = l1p1.getX() - l1p2.getX();
@@ -180,7 +143,7 @@ public class ConcaveHullMoreiraSantos {
         return true;
     }
 
-    private boolean pointInPolygon(Point p, List<Point> pp) {
+    private static boolean pointInPolygon(Point2D p, List<Point2D> pp) {
         boolean result = false;
         for (int i = 0, j = pp.size() - 1; i < pp.size(); j = i++) {
             if ((pp.get(i).getY() > p.getY()) != (pp.get(j).getY() > p.getY()) &&
@@ -195,19 +158,19 @@ public class ConcaveHullMoreiraSantos {
 
     }
 
-    public List<Point> calculateConcaveHull(List<Point> pointArrayList, Integer k) {
+    public static List<Point2D> calculateConcaveHull(List<Point2D> pointArrayList, int k) {
 
         // the resulting concave hull
-        List<Point> concaveHull = new ArrayList<>();
+        List<Point2D> concaveHull = new ArrayList<>();
 
         // optional remove duplicates
-        Set<Point> set = new HashSet<>(pointArrayList);
-        List<Point> pointArraySet = new ArrayList<>(set);
+        Set<Point2D> set = new HashSet<>(pointArrayList);
+        List<Point2D> pointArraySet = new ArrayList<>(set);
 
         // k has to be greater than 3 to execute the algorithm
         int kk = Math.max(k, 3);
 
-        // return Points if already Concave Hull
+        // return Point2Ds if already Concave Hull
         if (pointArraySet.size() < 3) {
             return pointArraySet;
         }
@@ -216,43 +179,43 @@ public class ConcaveHullMoreiraSantos {
         kk = Math.min(kk, pointArraySet.size() - 1);
 
         // find first point and remove from point list
-        Point firstPoint = findMinYPoint(pointArraySet);
-        concaveHull.add(firstPoint);
-        Point currentPoint = firstPoint;
-        pointArraySet.remove(firstPoint);
+        Point2D firstPoint2D = findMinYPoint2D(pointArraySet);
+        concaveHull.add(firstPoint2D);
+        Point2D currentPoint2D = firstPoint2D;
+        pointArraySet.remove(firstPoint2D);
 
         double previousAngle = 0.0;
         int step = 2;
 
-        while ((currentPoint != firstPoint || step == 2) && !pointArraySet.isEmpty()) {
+        while ((currentPoint2D != firstPoint2D || step == 2) && !pointArraySet.isEmpty()) {
 
             // after 3 steps add first point to dataset, otherwise hull cannot be closed
             if (step == 5) {
-                pointArraySet.add(firstPoint);
+                pointArraySet.add(firstPoint2D);
             }
 
             // get k nearest neighbors of current point
-            List<Point> kNearestPoints = kNearestNeighbors(pointArraySet, currentPoint, kk);
+            List<Point2D> kNearestPoint2Ds = kNearestNeighbors(pointArraySet, currentPoint2D, kk);
 
             // sort points by angle clockwise
-            List<Point> clockwisePoints = sortByAngle(kNearestPoints, currentPoint, previousAngle);
+            List<Point2D> clockwisePoint2Ds = sortByAngle(kNearestPoint2Ds, currentPoint2D, previousAngle);
 
             // check if clockwise angle nearest neighbors are candidates for concave hull
             boolean its = true;
             int i = -1;
-            while (its && i < clockwisePoints.size() - 1) {
+            while (its && i < clockwisePoint2Ds.size() - 1) {
                 i++;
 
-                int lastPoint = 0;
-                if (clockwisePoints.get(i) == firstPoint) {
-                    lastPoint = 1;
+                int lastPoint2D = 0;
+                if (clockwisePoint2Ds.get(i) == firstPoint2D) {
+                    lastPoint2D = 1;
                 }
 
                 // check if possible new concave hull point intersects with others
                 int j = 2;
                 its = false;
-                while (!its && j < concaveHull.size() - lastPoint) {
-                    its = intersect(concaveHull.get(step - 2), clockwisePoints.get(i), concaveHull.get(step - 2 - j), concaveHull.get(step - 1 - j));
+                while (!its && j < concaveHull.size() - lastPoint2D) {
+                    its = intersect(concaveHull.get(step - 2), clockwisePoint2Ds.get(i), concaveHull.get(step - 2 - j), concaveHull.get(step - 1 - j));
                     j++;
                 }
             }
@@ -263,9 +226,9 @@ public class ConcaveHullMoreiraSantos {
             }
 
             // add candidate to concave hull and remove from dataset
-            currentPoint = clockwisePoints.get(i);
-            concaveHull.add(currentPoint);
-            pointArraySet.remove(currentPoint);
+            currentPoint2D = clockwisePoint2Ds.get(i);
+            concaveHull.add(currentPoint2D);
+            pointArraySet.remove(currentPoint2D);
 
             // calculate last angle of the concave hull line
             previousAngle = calculateAngle(concaveHull.get(step - 1), concaveHull.get(step - 2));
