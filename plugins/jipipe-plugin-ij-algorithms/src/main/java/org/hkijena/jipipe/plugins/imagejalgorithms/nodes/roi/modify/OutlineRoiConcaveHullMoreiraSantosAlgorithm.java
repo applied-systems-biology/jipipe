@@ -44,7 +44,6 @@ import java.util.List;
 @AddJIPipeCitation("Moreira, A., & Santos, M. Y. (2007, March). Concave hull: A k-nearest neighbours approach for the computation of the region occupied by a set of points. In International Conference on Computer Graphics Theory and Applications (Vol. 2, pp. 61-68). SciTePress.")
 public class OutlineRoiConcaveHullMoreiraSantosAlgorithm extends JIPipeSimpleIteratingAlgorithm {
 
-    private int primeIndex = 0;
     private int kMeansK = 3;
     private boolean skipInvalidInputs = false;
 
@@ -54,12 +53,12 @@ public class OutlineRoiConcaveHullMoreiraSantosAlgorithm extends JIPipeSimpleIte
 
     public OutlineRoiConcaveHullMoreiraSantosAlgorithm(OutlineRoiConcaveHullMoreiraSantosAlgorithm other) {
         super(other);
-        this.primeIndex = other.primeIndex;
         this.kMeansK = other.kMeansK;
         this.skipInvalidInputs = other.skipInvalidInputs;
     }
 
-    @SetJIPipeDocumentation(name = "K-means k")
+    @SetJIPipeDocumentation(name = "K-means k", description = "The k parameter of the underlying k-means algorithm. If this value is < 3, it is set to 3. " +
+            "Determines the number of closes neighbors are selected from the current point.")
     @JIPipeParameter("kmeans-k")
     public int getkMeansK() {
         return kMeansK;
@@ -68,17 +67,6 @@ public class OutlineRoiConcaveHullMoreiraSantosAlgorithm extends JIPipeSimpleIte
     @JIPipeParameter("kmeans-k")
     public void setkMeansK(int kMeansK) {
         this.kMeansK = kMeansK;
-    }
-
-    @SetJIPipeDocumentation(name = "Prime index")
-    @JIPipeParameter("prime-index")
-    public int getPrimeIndex() {
-        return primeIndex;
-    }
-
-    @JIPipeParameter("prime-index")
-    public void setPrimeIndex(int primeIndex) {
-        this.primeIndex = primeIndex;
     }
 
     @SetJIPipeDocumentation(name = "Delete invalid ROIs", description = "If a ROI has less than 3 points, delete it from the output. " +
