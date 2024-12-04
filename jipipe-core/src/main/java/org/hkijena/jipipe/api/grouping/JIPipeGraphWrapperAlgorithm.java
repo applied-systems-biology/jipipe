@@ -331,6 +331,13 @@ public class JIPipeGraphWrapperAlgorithm extends JIPipeAlgorithm implements JIPi
             // We kill it in this case
             JIPipeRuntimePartition runtimePartition = runContext.getGraphRun().getRuntimePartition(getRuntimePartition());
             if (runtimePartition.getContinueOnFailureSettings().isContinueOnFailure()) {
+
+                // Check if we are in update cache
+                if(runtimePartition.getContinueOnFailureSettings().isDisableOnUpdateCache() && runContext.getGraphRun().getConfiguration().isStoreToCache()) {
+                    progressInfo.log("CONTINUE ON FAILURE IS TURNED OFF DUE TO A USER SETTING IN THE PARTITION");
+                    throw e;
+                }
+
                 progressInfo.log("\n\n------------------------\n" +
                         "Wrapped graph execution FAILED!\n" +
                         "Message: " + e.getMessage() + "\n" +
