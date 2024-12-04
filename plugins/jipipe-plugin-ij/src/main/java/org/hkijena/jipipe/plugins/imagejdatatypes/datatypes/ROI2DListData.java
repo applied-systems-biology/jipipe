@@ -16,10 +16,7 @@ package org.hkijena.jipipe.plugins.imagejdatatypes.datatypes;
 import com.google.common.collect.ImmutableList;
 import ij.IJ;
 import ij.ImagePlus;
-import ij.gui.PointRoi;
-import ij.gui.PolygonRoi;
-import ij.gui.Roi;
-import ij.gui.ShapeRoi;
+import ij.gui.*;
 import ij.io.RoiDecoder;
 import ij.io.RoiEncoder;
 import ij.measure.Calibration;
@@ -1311,6 +1308,35 @@ public class ROI2DListData extends ArrayList<Roi> implements JIPipeData {
                 break;
                 case MinimumBoundingRectangle: {
                     outlined = calculateMinimumBoundingRectangle(roi);
+                }
+                break;
+                case OrientedLine: {
+                    Roi tmp = calculateMinimumBoundingRectangle(roi);
+                    FloatPolygon mbr = tmp.getFloatPolygon();
+
+                    // Extract the points of the rectangle
+                    float x1 = mbr.xpoints[0], y1 = mbr.ypoints[0];
+                    float x2 = mbr.xpoints[1], y2 = mbr.ypoints[1];
+                    float x3 = mbr.xpoints[2], y3 = mbr.ypoints[2];
+                    float x4 = mbr.xpoints[3], y4 = mbr.ypoints[3];
+
+                    // Calculate lengths of sides
+                    float width = (float) Point2D.distance(x1, y1, x2, y2);  // Horizontal side
+                    float height = (float) Point2D.distance(x2, y2, x3, y3); // Vertical side
+
+                    if (width <= height) {
+                        // Horizontal sides are shorter or it's a square
+                        Point2D.Float midpoint1 = new Point2D.Float((x1 + x2) / 2, (y1 + y2) / 2);
+                        Point2D.Float midpoint2 = new Point2D.Float((x3 + x4) / 2, (y3 + y4) / 2);
+
+                        outlined = new Line(midpoint1.x, midpoint1.y, midpoint2.x, midpoint2.y);
+                    } else {
+                        // Vertical sides are shorter
+                        Point2D.Float midpoint1 = new Point2D.Float((x2 + x3) / 2, (y2 + y3) / 2);
+                        Point2D.Float midpoint2 = new Point2D.Float((x4 + x1) / 2, (y4 + y1) / 2);
+
+                        outlined = new Line(midpoint1.x, midpoint1.y, midpoint2.x, midpoint2.y);
+                    }
                 }
                 break;
                 default:

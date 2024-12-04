@@ -220,7 +220,7 @@ public class Filaments3DGraphData extends SimpleGraph<FilamentVertex, FilamentEd
         if (boundsXY.height == 0)
             boundsXY.height = height;
         double scale = Math.min(1.0 * width / boundsXY.width, 1.0 * height / boundsXY.height);
-        BufferedImage image = new BufferedImage((int) (boundsXY.width * scale), (int) (boundsXY.height * scale), BufferedImage.TYPE_INT_RGB);
+        BufferedImage image = new BufferedImage((int)Math.max (1, boundsXY.width * scale), (int) Math.max(1, boundsXY.height * scale), BufferedImage.TYPE_INT_RGB);
         Graphics2D graphics = image.createGraphics();
         if (edgeSet().isEmpty()) {
             for (FilamentVertex vertex : vertexSet()) {
