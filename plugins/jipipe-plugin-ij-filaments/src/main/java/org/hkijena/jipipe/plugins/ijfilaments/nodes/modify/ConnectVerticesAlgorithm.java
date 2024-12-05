@@ -455,21 +455,12 @@ public class ConnectVerticesAlgorithm extends JIPipeIteratingAlgorithm {
 
                     // Write variables
                     FilamentUnconnectedEdgeVariablesInfo.writeToVariables(outputData, current, other, variables, "");
+
+                    // Path check
                     GraphPath<FilamentVertex, FilamentEdge> path = null;
                     if (findPath && outputDataInspector != null) {
                         path = outputDataInspector.getPath(current, other);
-                        if (hasDirection) {
-                            variables.set("angle", Math.toDegrees(currentDirection.angle(otherDirection)));
-                            variables.set("dot_product", currentDirection.dot(otherDirection));
-                        } else {
-                            variables.set("angle", Double.NaN);
-                            variables.set("dot_product", Double.NaN);
-                        }
-                    } else {
-                        variables.set("angle", Double.NaN);
-                        variables.set("dot_product", Double.NaN);
                     }
-
                     if (path != null) {
                         variables.set("path_exists", true);
                         variables.set("path_length", path.getLength());
@@ -478,6 +469,18 @@ public class ConnectVerticesAlgorithm extends JIPipeIteratingAlgorithm {
                         variables.set("path_length", Double.NaN);
                     }
 
+                    // Direction-related variables
+                    if (hasDirection) {
+                        variables.set("angle", Math.toDegrees(currentDirection.angle(otherDirection)));
+                        variables.set("dot_product", currentDirection.dot(otherDirection));
+                        variables.set("source.direction", Arrays.asList(currentDirection.x, currentDirection.y, currentDirection.z));
+                        variables.set("target.direction", Arrays.asList(otherDirection.x, otherDirection.y, otherDirection.z));
+                    } else {
+                        variables.set("angle", Double.NaN);
+                        variables.set("dot_product", Double.NaN);
+                        variables.set("source.direction", Arrays.asList(0,0,0));
+                        variables.set("target.direction", Arrays.asList(0,0,0));
+                    }
 
                     // Check via filter
                     if (!filterFunction.test(variables)) {
