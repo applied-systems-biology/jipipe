@@ -13,6 +13,11 @@
 
 package org.hkijena.jipipe.plugins.imagejalgorithms.nodes.registration;
 
+import bunwarpj.trakem2.transform.CubicBSplineTransform;
+import ij.IJ;
+import mpicbg.trakem2.transform.*;
+import register_virtual_stack.Register_Virtual_Stack_MT;
+
 /**
  * Feature extraction model for the registration nodes
  */
@@ -22,5 +27,22 @@ public enum SimpleImageRegistrationModel {
     Similarity,
     Affine,
     Elastic,
-    MovingLeastSquares
+    MovingLeastSquares;
+
+    public CoordinateTransform toCoordinateTransform()
+    {
+        CoordinateTransform t;
+        switch (this)
+        {
+            case Translation: t = new TranslationModel2D(); break;
+            case Rigid: t = new RigidModel2D(); break;
+            case Similarity: t = new SimilarityModel2D(); break;
+            case Affine: t = new AffineModel2D(); break;
+            case Elastic: t = new CubicBSplineTransform(); break;
+            case MovingLeastSquares: t = new MovingLeastSquaresTransform(); break;
+            default:
+                throw new RuntimeException("Unknown image registration model: " + this);
+        }
+        return t;
+    }
 }

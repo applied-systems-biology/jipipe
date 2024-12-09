@@ -13,6 +13,7 @@
 
 package org.hkijena.jipipe.plugins.imagejalgorithms.nodes.registration;
 
+import mpicbg.imagefeatures.FloatArray2DSIFT;
 import org.hkijena.jipipe.api.SetJIPipeDocumentation;
 import org.hkijena.jipipe.api.parameters.AbstractJIPipeParameterCollection;
 import org.hkijena.jipipe.api.parameters.JIPipeParameter;
@@ -94,5 +95,16 @@ public class SIFTParameters extends AbstractJIPipeParameterCollection {
     @JIPipeParameter("initial-sigma")
     public void setInitialSigma(float initialSigma) {
         this.initialSigma = initialSigma;
+    }
+
+    public FloatArray2DSIFT.Param toParam() {
+        FloatArray2DSIFT.Param param = new FloatArray2DSIFT.Param();
+        param.initialSigma = initialSigma;
+        param.fdBins = featureDescriptorOrientationBins;
+        param.fdSize = featureDescriptorSize;
+        param.minOctaveSize = octaveSizeLimits.getX();
+        param.maxOctaveSize = octaveSizeLimits.getY();
+        param.steps = stepsPerScale;
+        return param;
     }
 }

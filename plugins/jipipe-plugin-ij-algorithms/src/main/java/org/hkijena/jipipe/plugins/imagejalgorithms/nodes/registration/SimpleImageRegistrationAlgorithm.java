@@ -13,6 +13,8 @@
 
 package org.hkijena.jipipe.plugins.imagejalgorithms.nodes.registration;
 
+import ij.ImagePlus;
+import mpicbg.trakem2.transform.CoordinateTransform;
 import org.hkijena.jipipe.api.AddJIPipeCitation;
 import org.hkijena.jipipe.api.ConfigureJIPipeNode;
 import org.hkijena.jipipe.api.JIPipeProgressInfo;
@@ -33,7 +35,11 @@ import org.hkijena.jipipe.api.validation.contexts.GraphNodeValidationReportConte
 import org.hkijena.jipipe.plugins.imagejdatatypes.datatypes.ImagePlusData;
 import org.hkijena.jipipe.plugins.strings.XMLData;
 
+import java.util.Comparator;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
+import java.util.stream.Collectors;
 
 /**
  * Port of {@link register_virtual_stack.Register_Virtual_Stack_MT}
@@ -172,7 +178,6 @@ public class SimpleImageRegistrationAlgorithm extends JIPipeMergingAlgorithm {
     @Override
     protected void runIteration(JIPipeMultiIterationStep iterationStep, JIPipeIterationContext iterationContext, JIPipeGraphNodeRunContext runContext, JIPipeProgressInfo progressInfo) {
         List<ImagePlusData> referenceImages = iterationStep.getInputData("Reference", ImagePlusData.class, progressInfo);
-        List<ImagePlusData> targetImages = iterationStep.getInputData("Target", ImagePlusData.class, progressInfo);
 
         if(referenceImages.size() != 1) {
             throw new JIPipeValidationRuntimeException(new IllegalArgumentException("Expected exactly one reference image"),
@@ -181,6 +186,27 @@ public class SimpleImageRegistrationAlgorithm extends JIPipeMergingAlgorithm {
                     "Check if the 'Reference' slot only receives exactly one image per iteration step");
         }
 
+        // Collect reference and target images
+        ImagePlus referenceImage = referenceImages.get(0).getImage();
+        Map<Integer, ImagePlus> targetImages = new HashMap<>();
+        List<Integer> sortedInputRows = iterationStep.getInputRows("Target").stream().sorted().collect(Collectors.toList());
+        for (int inputRow : iterationStep.getInputRows("Target")) {
+            ImagePlus targetImage = getInputSlot("Target").getData(inputRow, ImagePlusData.class, progressInfo).getImage();
+            targetImages.put(inputRow, targetImage);
+        }
+
+        // Forward registration (from reference image to the end of the sequence)
+        ImagePlus currentReferenceImage = referenceImage;
+        ImagePlus currentReferenceMask = new ImagePlus();
+        Map<Integer, CoordinateTransform> transforms = new HashMap<>();
+        for (int i : sortedInputRows) {
+            ImagePlus current = targetImages.get(i);
+            ImagePlus mask = new ImagePlus();
+
+            CoordinateTransform coordinateTransform = imageRegistrationModel.toCoordinateTransform();
+            transforms.put(i, coordinateTransform);
+
+        }
 
     }
 }
