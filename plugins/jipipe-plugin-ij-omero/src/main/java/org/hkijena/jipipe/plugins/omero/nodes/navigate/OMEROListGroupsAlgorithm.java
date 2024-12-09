@@ -86,7 +86,7 @@ public class OMEROListGroupsAlgorithm extends JIPipeSingleIterationAlgorithm imp
         }
     }
 
-    @SetJIPipeDocumentation(name = "Filter", description = "Allows to filter the returned groups")
+    @SetJIPipeDocumentation(name = "Keep group if", description = "Allows to filter the returned groups")
     @JIPipeParameter("filter")
     @JIPipeExpressionParameterSettings(hint = "per OMERO data set")
     @AddJIPipeExpressionParameterVariable(name = "OMERO tags", description = "List of OMERO tag names associated with the data object", key = "tags")

@@ -45,7 +45,7 @@ import java.util.Map;
 /**
  * An algorithm that allows to run Python code
  */
-@SetJIPipeDocumentation(name = "Python script (iterating)", description = "Runs a Python script that iterates through each data batch in the input slots. " +
+@SetJIPipeDocumentation(name = "Python script (iterating)", description = "Runs a Python script that iterates through each iteration step in the input slots. " +
         "This node uses an existing dedicated Python interpreter that must be set up in the application settings.\n\nTo learn more about the JIPipe Python API, visit https://jipipe.hki-jena.de/apidocs/python-current/index.html")
 @ConfigureJIPipeNode(nodeTypeCategory = MiscellaneousNodeTypeCategory.class, menuPath = "Python script")
 public class IteratingPythonScriptAlgorithm extends JIPipeIteratingAlgorithm implements PythonEnvironmentAccessNode {
@@ -188,7 +188,7 @@ public class IteratingPythonScriptAlgorithm extends JIPipeIteratingAlgorithm imp
             "<ul>" +
             "<li><code>jipipe_inputs</code> is a dict of input slots.</li>" +
             "<li><code>jipipe_outputs</code> is a dict of output slots.</li>" +
-            "<li><code>jipipe_annotations</code> is a dict of annotation variables of the current data batch.</li>" +
+            "<li><code>jipipe_annotations</code> is a dict of annotation variables of the current iteration step.</li>" +
             "<li><code>jipipe_variables</code> is a dict of variables passed from the script parameters.</li>" +
             "</ul>" +
             "The script is designed to be used with the JIPipe Python API (supplied automatically by default). " +

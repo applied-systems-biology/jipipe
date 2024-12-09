@@ -395,38 +395,38 @@ public class FormsDialog extends JFrame {
         JButton applyToButton = new JButton("Apply to ...", UIUtils.getIconFromResources("actions/tools-wizard.png"));
         JPopupMenu applyToMenu = UIUtils.addPopupMenuToButton(applyToButton);
 
-        JMenuItem applyToAllButton = new JMenuItem("All data batches", UIUtils.getIconFromResources("actions/dialog-layers.png"));
+        JMenuItem applyToAllButton = new JMenuItem("All iteration steps", UIUtils.getIconFromResources("actions/dialog-layers.png"));
         applyToAllButton.addActionListener(e -> {
             if (JOptionPane.showConfirmDialog(this,
                     "Do you really want to copy the current settings to all other batches?\n" +
                             "This will replace all existing values.",
-                    "Apply to all data batches",
+                    "Apply to all iteration steps",
                     JOptionPane.YES_NO_OPTION,
                     JOptionPane.QUESTION_MESSAGE) == JOptionPane.YES_OPTION) {
                 applyCurrentSettingsToAll(true);
             }
         });
-        applyToAllButton.setToolTipText("Applies the current settings to all data batches, including ones that have been already visited.");
+        applyToAllButton.setToolTipText("Applies the current settings to all iteration steps, including ones that have been already visited.");
         applyToMenu.add(applyToAllButton);
 
         JMenuItem applyToAllRemainingButton = new JMenuItem("All data remaining batches", UIUtils.getIconFromResources("actions/dialog-layers.png"));
         applyToAllRemainingButton.addActionListener(e -> {
             if (iterationStepStatuses.stream().noneMatch(iterationStepStatus -> iterationStepStatus == DataBatchStatus.Unvisited)) {
                 JOptionPane.showMessageDialog(this,
-                        "There are no remaining unvisited data batches.",
+                        "There are no remaining unvisited iteration steps.",
                         "Apply to all remaining batches",
                         JOptionPane.ERROR_MESSAGE);
                 return;
             }
             if (JOptionPane.showConfirmDialog(this,
                     "Do you really want to copy the current settings to all remaining batches?",
-                    "Apply to all remaining data batches",
+                    "Apply to all remaining iteration steps",
                     JOptionPane.YES_NO_OPTION,
                     JOptionPane.QUESTION_MESSAGE) == JOptionPane.YES_OPTION) {
                 applyCurrentSettingsToAll(false);
             }
         });
-        applyToAllRemainingButton.setToolTipText("Applies the current settings to all data batches, excluding ones that have been already visited.");
+        applyToAllRemainingButton.setToolTipText("Applies the current settings to all iteration steps, excluding ones that have been already visited.");
         applyToMenu.add(applyToAllRemainingButton);
 
         buttonBar.add(applyToButton);
@@ -435,7 +435,7 @@ public class FormsDialog extends JFrame {
         JPopupMenu resetMenu = UIUtils.addPopupMenuToButton(resetButton);
 
         JMenuItem resetVisitedItem = new JMenuItem("'Reviewed' status only", UIUtils.getIconFromResources("actions/eye-slash.png"));
-        resetVisitedItem.setToolTipText("Marks all data batches as not reviewed. This will not change any settings.");
+        resetVisitedItem.setToolTipText("Marks all iteration steps as not reviewed. This will not change any settings.");
         resetVisitedItem.addActionListener(e -> {
             if (JOptionPane.showConfirmDialog(this,
                     "Do you want to set all batches to 'not reviewed'?\n" +
@@ -455,7 +455,7 @@ public class FormsDialog extends JFrame {
         resetMenu.addSeparator();
 
         JMenuItem resetCurrentItem = new JMenuItem("Current batch", UIUtils.getIconFromResources("actions/clear-brush.png"));
-        resetCurrentItem.setToolTipText("Resets the settings of the currently viewed data batch.");
+        resetCurrentItem.setToolTipText("Resets the settings of the currently viewed iteration step.");
         resetCurrentItem.addActionListener(e -> {
             if (JOptionPane.showConfirmDialog(this,
                     "Do you want to reset all settings of the current batch?",
@@ -468,7 +468,7 @@ public class FormsDialog extends JFrame {
         resetMenu.add(resetCurrentItem);
 
         JMenuItem resetAllItem = new JMenuItem("All batches", UIUtils.getIconFromResources("actions/clear-brush.png"));
-        resetAllItem.setToolTipText("Resets the settings of all data batches.");
+        resetAllItem.setToolTipText("Resets the settings of all iteration steps.");
         resetAllItem.addActionListener(e -> {
             if (JOptionPane.showConfirmDialog(this,
                     "Do you want to reset all settings of all batches?",
@@ -481,7 +481,7 @@ public class FormsDialog extends JFrame {
         resetMenu.add(resetAllItem);
 
         JMenuItem resetUnvisitedItem = new JMenuItem("Non-reviewed batches", UIUtils.getIconFromResources("actions/clear-brush.png"));
-        resetUnvisitedItem.setToolTipText("Resets the settings of all data batches that are not reviewed.");
+        resetUnvisitedItem.setToolTipText("Resets the settings of all iteration steps that are not reviewed.");
         resetUnvisitedItem.addActionListener(e -> {
             if (JOptionPane.showConfirmDialog(this,
                     "Do you want to reset all settings of all non-reviewed batches?",
@@ -637,7 +637,7 @@ public class FormsDialog extends JFrame {
         long invalid = iterationStepStatuses.stream().filter(iterationStepStatus -> iterationStepStatus == DataBatchStatus.Invalid).count();
         if (unvisited > 0) {
             if (JOptionPane.showConfirmDialog(FormsDialog.this,
-                    "There are " + unvisited + " data batches that are not marked as reviewed. Do you want to continue, anyway?",
+                    "There are " + unvisited + " iteration steps that are not marked as reviewed. Do you want to continue, anyway?",
                     getTitle(),
                     JOptionPane.YES_NO_OPTION,
                     JOptionPane.QUESTION_MESSAGE) == JOptionPane.NO_OPTION) {
@@ -646,7 +646,7 @@ public class FormsDialog extends JFrame {
         }
         if (invalid > 0) {
             if (JOptionPane.showConfirmDialog(FormsDialog.this,
-                    "There are " + invalid + " data batches that report issues. Do you want to continue, anyway?",
+                    "There are " + invalid + " iteration steps that report issues. Do you want to continue, anyway?",
                     getTitle(),
                     JOptionPane.YES_NO_OPTION,
                     JOptionPane.QUESTION_MESSAGE) == JOptionPane.NO_OPTION) {

@@ -133,6 +133,7 @@ import org.hkijena.jipipe.plugins.imagejalgorithms.parameters.*;
 import org.hkijena.jipipe.plugins.imagejalgorithms.utils.OMEAccessorStorage;
 import org.hkijena.jipipe.plugins.imagejalgorithms.utils.OrientationJGradientOperator;
 import org.hkijena.jipipe.plugins.imagejalgorithms.utils.OrientationJVectorFieldType;
+import org.hkijena.jipipe.plugins.imagejalgorithms.utils.LineMirror;
 import org.hkijena.jipipe.plugins.imagejdatatypes.ImageJDataTypesPlugin;
 import org.hkijena.jipipe.plugins.imagejdatatypes.algorithms.ApplyDisplayContrastAlgorithm;
 import org.hkijena.jipipe.plugins.imagejdatatypes.algorithms.DisplayRangeCalibrationAlgorithm;
@@ -887,6 +888,7 @@ public class ImageJAlgorithmsPlugin extends JIPipePrepackagedDefaultJavaPlugin {
         registerNodeType("ij1-roi-to-mask-unreferenced", UnreferencedRoiToMaskAlgorithm.class, UIUtils.getIconURLFromResources("actions/segment.png"));
         registerNodeType("ij1-roi-to-mask", RoiToMaskAlgorithm.class, UIUtils.getIconURLFromResources("actions/segment.png"));
         registerNodeType("ij1-roi-outline", OutlineRoiAlgorithm.class, UIUtils.getIconURLFromResources("actions/draw-connector.png"));
+        registerNodeType("ij1-roi-outline-concave-hull-moreira-santos", OutlineRoiConcaveHullMoreiraSantosAlgorithm.class, UIUtils.getIconURLFromResources("actions/draw-connector.png"));
         registerNodeType("ij1-roi-crop-list", CropRoiListAlgorithm.class, UIUtils.getIconURLFromResources("actions/image-crop.png"));
         registerNodeType("ij1-roi-to-centroid", RoiToCentroidAlgorithm.class, UIUtils.getIconURLFromResources("actions/draw-connector.png"));
         registerNodeType("ij1-roi-remove-bordering", RemoveBorderRoisAlgorithm.class, UIUtils.getIconURLFromResources("actions/bordertool.png"));
@@ -997,6 +999,8 @@ public class ImageJAlgorithmsPlugin extends JIPipePrepackagedDefaultJavaPlugin {
         registerNodeType("ij1-transform-tile-2d-v2", TileImage2Dv2Algorithm.class, UIUtils.getIconURLFromResources("actions/grid-rectangular.png"));
         registerNodeType("ij1-transform-un-tile-2d", UnTileImage2DAlgorithm.class, UIUtils.getIconURLFromResources("actions/grid-rectangular.png"));
         registerNodeType("ij1-transform-add-border-2d", AddBorder2DAlgorithm.class, UIUtils.getIconURLFromResources("actions/bordertool.png"));
+        registerNodeType("ij1-transform-line-mirror-by-expression", LineMirror2DFromExpressionsAlgorithm.class, UIUtils.getIconURLFromResources("actions/draw-geometry-mirror.png"));
+        registerNodeType("ij1-transform-line-mirror-by-roi", LineMirror2DFromRoiAlgorithm.class, UIUtils.getIconURLFromResources("actions/draw-geometry-mirror.png"));
 
         registerEnumParameterType("ij1-transform-flip2d:flip-mode", TransformFlip2DAlgorithm.FlipMode.class,
                 "Flip mode", "Available modes");
@@ -1009,6 +1013,8 @@ public class ImageJAlgorithmsPlugin extends JIPipePrepackagedDefaultJavaPlugin {
                 "Scale mode",
                 "Determines how the image is scaled");
         registerEnumParameterType("ij1-border-mode", BorderMode.class, "Border type", "Types of borders");
+        registerEnumParameterType("ij1-transform-line-mirror:mode", LineMirror.MirrorOperationMode.class, "Line mirror mode", "Modes for the line mirror operator");
+
     }
 
     private void registerFFTAlgorithms() {
@@ -1106,7 +1112,15 @@ public class ImageJAlgorithmsPlugin extends JIPipePrepackagedDefaultJavaPlugin {
         registerEnumParameterType("ij1:eigenvalue-selection-2d", EigenvalueSelection2D.class,
                 "Eigenvalue selection (2D)", "Determines whether to choose the smallest or largest Eigenvalue");
         registerEnumParameterType("ij1:roi-outline", RoiOutline.class,
-                "ROI outline", "Available ways to outline a ROI");
+                "ROI outline", "Available ways to outline a ROI. " +
+                        "<ul>" +
+                        "<li>Polygon: outline the ROI with an open polygon (ImageJ)</li>" +
+                        "<li>Closed polygon: outline the ROI with a closed polygon (ImageJ)</li>" +
+                        "<li>Convex hull: find the convex hull of the ROI</li>" +
+                        "<li>Bounding rectangle: outline the ROI with its bounding rectangle. Please note that this rectangle is not rotated.</li>" +
+                        "<li>Minimum bounding rectangle: outline the ROI with its minimum bounding rectangle. The rectangle is rotated to minimize its area.</li>" +
+                        "<li>Oriented line: Finds the minimum bounding rectangle and chooses the center of the two short sides as the endpoint of a line.</li>" +
+                        "</ul>");
     }
 
     private void registerSharpenAlgorithms() {

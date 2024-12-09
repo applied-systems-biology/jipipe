@@ -40,10 +40,10 @@ import org.hkijena.jipipe.utils.json.JsonUtils;
 import java.util.*;
 
 /**
- * An {@link JIPipeAlgorithm} that applies a single iteration with a data batch containing all data.
+ * An {@link JIPipeAlgorithm} that applies a single iteration with a iteration step containing all data.
  */
 @AddJIPipeDocumentationDescription(description = "This algorithm merges all annotations and data annotations. " +
-        "Use the data batch settings to determine how annotations and data annotations are merged")
+        "Use the iteration step settings to determine how annotations and data annotations are merged")
 public abstract class JIPipeSingleIterationAlgorithm extends JIPipeParameterSlotAlgorithm implements JIPipeParallelizedAlgorithm, JIPipeIterationStepAlgorithm, JIPipeAdaptiveParametersAlgorithm {
 
     private boolean parallelizationEnabled = true;
@@ -128,10 +128,10 @@ public abstract class JIPipeSingleIterationAlgorithm extends JIPipeParameterSlot
 
     /**
      * A pass-through variant for merging algorithms.
-     * Passes the data batch to the single output
+     * Passes the iteration step to the single output
      *
      * @param progressInfo  progress info
-     * @param iterationStep the data batch
+     * @param iterationStep the iteration step
      */
     protected void runPassThrough(JIPipeProgressInfo progressInfo, JIPipeMultiIterationStep iterationStep) {
         progressInfo.log("Passing trough (via dynamic pass-through)");
@@ -288,7 +288,7 @@ public abstract class JIPipeSingleIterationAlgorithm extends JIPipeParameterSlot
         return iterationStepGenerationSettings;
     }
 
-    @SetJIPipeDocumentation(name = "Adaptive parameters", description = "You can use the following settings to generate parameter values for each data batch based on annotations.")
+    @SetJIPipeDocumentation(name = "Adaptive parameters", description = "You can use the following settings to generate parameter values for each iteration step based on annotations.")
     @JIPipeParameter(value = "jipipe:adaptive-parameters", hidden = true,
             iconURL = ResourceUtils.RESOURCE_BASE_PATH + "/icons/actions/insert-function.png",
             iconDarkURL = ResourceUtils.RESOURCE_BASE_PATH + "/dark/icons/actions/insert-function.png")

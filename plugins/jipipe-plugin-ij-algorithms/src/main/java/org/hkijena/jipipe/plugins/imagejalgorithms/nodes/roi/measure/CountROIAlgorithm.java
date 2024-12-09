@@ -40,7 +40,7 @@ import java.util.stream.Collectors;
         "Each ROI list produces one column in the output table and contains all annotations of the incoming ROI data. " +
         "You can add multiple input slots. " +
         "All output table column is named according to the slot name of the incoming ROI list." +
-        "This node can merge ROI lists according to their annotations. The sum of the counts within the same data batch are generated.")
+        "This node can merge ROI lists according to their annotations. The sum of the counts within the same iteration step are generated.")
 @AddJIPipeInputSlot(value = ROI2DListData.class)
 @AddJIPipeOutputSlot(value = AnnotationTableData.class, name = "Counts")
 @ConfigureJIPipeNode(nodeTypeCategory = RoiNodeTypeCategory.class, menuPath = "Measure")

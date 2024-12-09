@@ -28,7 +28,7 @@ import org.hkijena.jipipe.api.nodes.iterationstep.JIPipeMultiIterationStep;
 import org.hkijena.jipipe.plugins.imagejdatatypes.datatypes.ROI2DListData;
 
 @SetJIPipeDocumentation(name = "Generate missing 2D ROI lists", description = "Generates empty ROI lists for data that are not paired " +
-        "with a matching ROI in the same data batch. ")
+        "with a matching ROI in the same iteration step. ")
 @ConfigureJIPipeNode(nodeTypeCategory = DataSourceNodeTypeCategory.class)
 @AddJIPipeInputSlot(value = JIPipeData.class, name = "Data", create = true)
 @AddJIPipeInputSlot(value = ROI2DListData.class, name = "ROI", create = true, optional = true)

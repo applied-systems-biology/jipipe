@@ -60,7 +60,7 @@ import java.util.concurrent.atomic.AtomicBoolean;
 @SetJIPipeDocumentation(name = "Form processor (simple iterating)", description = "An algorithm that iterates through each row " +
         "of its 'Data' slot and shows a user interface during the runtime that allows users to modify annotations via form elements. " +
         "These forms are provided via the 'Forms' slot, where all contained form elements are shown in the user interface. " +
-        "After the user input, the form data objects are stored in an output slot (one set of copies per data batch).")
+        "After the user input, the form data objects are stored in an output slot (one set of copies per iteration step).")
 @ConfigureJIPipeNode(nodeTypeCategory = MiscellaneousNodeTypeCategory.class, menuPath = "Forms")
 @AddJIPipeInputSlot(value = JIPipeData.class, name = "Data", create = true)
 @AddJIPipeInputSlot(value = FormData.class, name = "Forms", create = true, role = JIPipeDataSlotRole.Parameters)
@@ -92,7 +92,7 @@ public class SimpleIteratingFormProcessorAlgorithm extends JIPipeAlgorithm imple
             // Just copy without changes
             outputDataSlot.addDataFromSlot(dataSlot, progressInfo);
         } else if (!dataSlot.isEmpty()) {
-            // Generate data batches and show the user interface
+            // Generate iteration steps and show the user interface
             List<JIPipeMultiIterationStep> iterationStepList = new ArrayList<>();
             boolean withLimit = iterationStepGenerationSettings.getLimit().isEnabled();
             IntegerRange limit = iterationStepGenerationSettings.getLimit().getContent();
@@ -107,7 +107,7 @@ public class SimpleIteratingFormProcessorAlgorithm extends JIPipeAlgorithm imple
             }
 
             if (iterationStepList.isEmpty()) {
-                progressInfo.log("No data batches selected (according to limit). Skipping.");
+                progressInfo.log("No iteration steps selected (according to limit). Skipping.");
                 return;
             }
 
@@ -228,7 +228,7 @@ public class SimpleIteratingFormProcessorAlgorithm extends JIPipeAlgorithm imple
     }
 
     @SetJIPipeDocumentation(name = "Input management", description = "This algorithm has one input and will iterate through each row of its input and apply the workload. " +
-            "Use following settings to control which data batches are generated.")
+            "Use following settings to control which iteration steps are generated.")
     @JIPipeParameter(value = "jipipe:data-batch-generation", hidden = true)
     public JIPipeSimpleIteratingAlgorithmIterationStepGenerationSettings getDataBatchGenerationSettings() {
         return iterationStepGenerationSettings;

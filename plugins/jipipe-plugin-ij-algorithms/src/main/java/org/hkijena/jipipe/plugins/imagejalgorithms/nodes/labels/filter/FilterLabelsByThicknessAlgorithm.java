@@ -278,7 +278,7 @@ public class FilterLabelsByThicknessAlgorithm extends JIPipeIteratingAlgorithm {
         iterationStep.addOutputData(getFirstOutputSlot(), new ImagePlusGreyscaleData(image), progressInfo);
     }
 
-    @SetJIPipeDocumentation(name = "Filter", description = "Determines whether a label is kept or removed")
+    @SetJIPipeDocumentation(name = "Keep label if", description = "Determines whether a label is kept or removed")
     @JIPipeParameter("filter")
     public JIPipeExpressionParameter getFilter() {
         return filter;

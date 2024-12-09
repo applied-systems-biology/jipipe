@@ -43,10 +43,10 @@ import java.util.ArrayList;
 /**
  * An algorithm that allows to run Python code
  */
-@SetJIPipeDocumentation(name = "Jython script (merging)", description = "Runs a Python script that iterates through each data batch in the input slots. " +
+@SetJIPipeDocumentation(name = "Jython script (merging)", description = "Runs a Python script that iterates through each iteration step in the input slots. " +
         "This node uses Jython, a Java interpreter for Python that currently does not support native functions (e.g. Numpy), but can access all Java types." +
-        "Each data batch contains multiple input and output data items." +
-        "Access to the data batch is done via a variable 'data_batch' that provides access to all input and output data, as well as annotations. " +
+        "Each iteration step contains multiple input and output data items." +
+        "Access to the iteration step is done via a variable 'data_batch' that provides access to all input and output data, as well as annotations. " +
         "Input slots can be accessed from variables 'input_slots' (array), 'input_slots_map' (map from name to slot). " +
         "Output slots can be accessed from variables 'output_slots' (array), 'output_slots_map' (map from name to slot).")
 @ConfigureJIPipeNode(nodeTypeCategory = MiscellaneousNodeTypeCategory.class, menuPath = "Python script")
@@ -114,7 +114,7 @@ public class MergingJythonScriptAlgorithm extends JIPipeMergingAlgorithm {
         }
     }
 
-    @SetJIPipeDocumentation(name = "Script", description = "Access to the data batch is done via a variable 'data_batch' that provides access to all input and output data, as well as annotations." +
+    @SetJIPipeDocumentation(name = "Script", description = "Access to the iteration step is done via a variable 'data_batch' that provides access to all input and output data, as well as annotations." +
             "Input slots can be accessed from variables 'input_slots' (array), 'input_slots_map' (map from name to slot). " +
             "Output slots can be accessed from variables 'output_slots' (array), 'output_slots_map' (map from name to slot). " +
             "A variable 'progress_info' provides the current progress logger instance.")

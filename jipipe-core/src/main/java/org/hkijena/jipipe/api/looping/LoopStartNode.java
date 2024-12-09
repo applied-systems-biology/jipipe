@@ -39,7 +39,7 @@ import java.util.List;
 
 @SetJIPipeDocumentation(name = "Loop start", description = "Deprecated. Use graph partitions instead. " +
         "Indicates the start of a loop. All nodes following a loop start are " +
-        "executed per data batch of this loop start node, unless its mode is set to pass-through. " +
+        "executed per iteration step of this loop start node, unless its mode is set to pass-through. " +
         "All following nodes are assigned to a loop, unless a node has no output connections, or it is a loop end node. " +
         "Please be aware that intermediate results of this loop are discarded automatically, meaning that only the end points will contain the generated data. " +
         "You can also explicitly insert loop end nodes to collect results.")
@@ -68,8 +68,8 @@ public class LoopStartNode extends IOInterfaceAlgorithm implements JIPipeIterati
     @SetJIPipeDocumentation(name = "Iteration mode", description = "Determines how the loop is iterated:" +
             "<ul>" +
             "<li>Pass through: Disables looping. The node behaves as a regular IO interface.</li>" +
-            "<li>The loop can be executed per data batch. Here you can choose between an iterative data batch (one item per slot) " +
-            "or a merging data batch (multiple items per slot).</li>" +
+            "<li>The loop can be executed per iteration step. Here you can choose between an iterative iteration step (one item per slot) " +
+            "or a merging iteration step (multiple items per slot).</li>" +
             "</ul><br/>" +
             "<strong>Automatically assumed to be 'Pass through', if the node is set to 'Pass through'</strong>")
     @JIPipeParameter("iteration-mode")
@@ -127,7 +127,7 @@ public class LoopStartNode extends IOInterfaceAlgorithm implements JIPipeIterati
             IntegerRange limit = batchGenerationSettings.getLimit().getContent();
             TIntSet allowedIndices = withLimit ? new TIntHashSet(limit.getIntegers(0, iterationSteps.size(), new JIPipeExpressionVariablesMap())) : null;
             if (withLimit) {
-                progressInfo.log("[INFO] Applying limit to all data batches. Allowed indices are " + Ints.join(", ", allowedIndices.toArray()));
+                progressInfo.log("[INFO] Applying limit to all iteration steps. Allowed indices are " + Ints.join(", ", allowedIndices.toArray()));
                 List<JIPipeMultiIterationStep> limitedBatches = new ArrayList<>();
                 for (int i = 0; i < iterationSteps.size(); i++) {
                     if (allowedIndices.contains(i)) {

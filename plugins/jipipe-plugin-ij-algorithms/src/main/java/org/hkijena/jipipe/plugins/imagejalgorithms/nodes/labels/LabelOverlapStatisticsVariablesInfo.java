@@ -29,7 +29,7 @@ public class LabelOverlapStatisticsVariablesInfo implements JIPipeExpressionVari
 
     static {
         VARIABLES = new HashSet<>();
-        VARIABLES.add(new JIPipeExpressionParameterVariableInfo("annotations", "Annotations map", "A map of annotations that are attached to the data batch"));
+        VARIABLES.add(new JIPipeExpressionParameterVariableInfo("annotations", "Annotations map", "A map of annotations that are attached to the iteration step"));
         VARIABLES.add(new JIPipeExpressionParameterVariableInfo("z", "Z", "The Z location of the label slice (the first index is zero)"));
         VARIABLES.add(new JIPipeExpressionParameterVariableInfo("c", "Channel", "The channel location of the label slice (the first index is zero)"));
         VARIABLES.add(new JIPipeExpressionParameterVariableInfo("t", "Frame", "The frame location of the label slice (the first index is zero)"));

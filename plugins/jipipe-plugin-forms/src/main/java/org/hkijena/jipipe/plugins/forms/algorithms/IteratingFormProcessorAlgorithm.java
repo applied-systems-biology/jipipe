@@ -60,7 +60,7 @@ import java.util.stream.Collectors;
         "its 'Data' slot and shows a user interface during the runtime that allows users to modify annotations via form elements. " +
         "Groups are based on the annotations. " +
         "These forms are provided via the 'Forms' slot, where all contained form elements are shown in the user interface." +
-        "After the user input, the form data objects are stored in an output slot (one set of copies per data batch).")
+        "After the user input, the form data objects are stored in an output slot (one set of copies per iteration step).")
 @ConfigureJIPipeNode(nodeTypeCategory = MiscellaneousNodeTypeCategory.class, menuPath = "Forms")
 @AddJIPipeInputSlot(value = JIPipeData.class, name = "Data")
 @AddJIPipeInputSlot(value = FormData.class, name = "Forms", role = JIPipeDataSlotRole.Parameters)
@@ -90,7 +90,7 @@ public class IteratingFormProcessorAlgorithm extends JIPipeAlgorithm implements 
     /**
      * Extracts original annotations into the annotation list
      *
-     * @param iterationStep      the data batch
+     * @param iterationStep      the iteration step
      * @param preFormAnnotations annotations before the form was applied
      * @param inputSlot          the input slot
      * @param row                row of the data in the input slot
@@ -148,11 +148,11 @@ public class IteratingFormProcessorAlgorithm extends JIPipeAlgorithm implements 
                 outputSlot.addDataFromSlot(inputSlot, progressInfo);
             }
         } else {
-            // Generate data batches and show the user interface
+            // Generate iteration steps and show the user interface
             List<JIPipeMultiIterationStep> iterationStepList = generateDataBatchesGenerationResult(getDataInputSlots(), progressInfo).getDataBatches();
 
             if (iterationStepList.isEmpty()) {
-                progressInfo.log("No data batches. Skipping.");
+                progressInfo.log("No iteration steps. Skipping.");
                 return;
             }
 
@@ -281,7 +281,7 @@ public class IteratingFormProcessorAlgorithm extends JIPipeAlgorithm implements 
     }
 
     @SetJIPipeDocumentation(name = "Restore original annotations", description = "If enabled, original annotations that were not changed by the form processor will be restored in the output data. " +
-            "Otherwise, merged annotation values from the data batch are used.")
+            "Otherwise, merged annotation values from the iteration step are used.")
     @JIPipeParameter("restore-annotations")
     public boolean isRestoreAnnotations() {
         return restoreAnnotations;
@@ -305,7 +305,7 @@ public class IteratingFormProcessorAlgorithm extends JIPipeAlgorithm implements 
     }
 
     @SetJIPipeDocumentation(name = "Input management", description = "This algorithm will iterate through multiple inputs at once and apply the workload. " +
-            "Use following settings to control which data batches are generated.")
+            "Use following settings to control which iteration steps are generated.")
     @JIPipeParameter(value = "jipipe:data-batch-generation", hidden = true)
     public JIPipeMergingAlgorithmIterationStepGenerationSettings getDataBatchGenerationSettings() {
         return iterationStepGenerationSettings;
@@ -348,7 +348,7 @@ public class IteratingFormProcessorAlgorithm extends JIPipeAlgorithm implements 
         IntegerRange limit = iterationStepGenerationSettings.getLimit().getContent();
         TIntSet allowedIndices = withLimit ? new TIntHashSet(limit.getIntegers(0, iterationSteps.size(), new JIPipeExpressionVariablesMap())) : null;
         if (withLimit) {
-            progressInfo.log("[INFO] Applying limit to all data batches. Allowed indices are " + Ints.join(", ", allowedIndices.toArray()));
+            progressInfo.log("[INFO] Applying limit to all iteration steps. Allowed indices are " + Ints.join(", ", allowedIndices.toArray()));
             List<JIPipeMultiIterationStep> limitedBatches = new ArrayList<>();
             for (int i = 0; i < iterationSteps.size(); i++) {
                 if (allowedIndices.contains(i)) {

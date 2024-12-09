@@ -80,7 +80,7 @@ public class RemoveImageMetadataAlgorithm extends JIPipeSimpleIteratingAlgorithm
         iterationStep.addOutputData(getFirstOutputSlot(), new ImagePlusData(imagePlus), progressInfo);
     }
 
-    @SetJIPipeDocumentation(name = "Filter", description = "This expression should return <code>true</code> if the property should be removed")
+    @SetJIPipeDocumentation(name = "Remove metadata if", description = "This expression should return <code>true</code> if the property should be removed")
     @JIPipeParameter("filter")
     @AddJIPipeExpressionParameterVariable(fromClass = JIPipeTextAnnotationsExpressionParameterVariablesInfo.class)
     @AddJIPipeExpressionParameterVariable(key = "key", name = "Metadata key", description = "The name of the metadata")

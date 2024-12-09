@@ -32,12 +32,12 @@ public class BatchAssistantPlugin extends JIPipePrepackagedDefaultJavaPlugin {
 
     @Override
     public String getName() {
-        return "Data batch assistant types";
+        return "Iteration step assistant types";
     }
 
     @Override
     public HTMLText getDescription() {
-        return new HTMLText("Types that are used in the data batch assistant");
+        return new HTMLText("Types that are used in the iteration step assistant");
     }
 
     @Override

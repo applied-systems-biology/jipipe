@@ -113,7 +113,7 @@ public class OMEROListImagesAlgorithm extends JIPipeSingleIterationAlgorithm imp
         this.overrideCredentials = overrideCredentials;
     }
 
-    @SetJIPipeDocumentation(name = "Filter", description = "Allows to filter the returned images")
+    @SetJIPipeDocumentation(name = "Keep image if", description = "Allows to filter the returned images")
     @JIPipeParameter("filter")
     @JIPipeExpressionParameterSettings(hint = "per OMERO data set")
     @AddJIPipeExpressionParameterVariable(fromClass = JIPipeTextAnnotationsExpressionParameterVariablesInfo.class)

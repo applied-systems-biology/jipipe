@@ -318,7 +318,7 @@ public class JIPipeMultiIterationStep implements JIPipeIterationStep, Comparable
     }
 
     /**
-     * Creates a context for new data that inherits direct predecessors from this data batch's input
+     * Creates a context for new data that inherits direct predecessors from this iteration step's input
      *
      * @return the new context
      */
@@ -701,7 +701,7 @@ public class JIPipeMultiIterationStep implements JIPipeIterationStep, Comparable
     }
 
     /**
-     * Ensures that the specified slot is registered to the data batch
+     * Ensures that the specified slot is registered to the iteration step
      *
      * @param slot the slot
      */

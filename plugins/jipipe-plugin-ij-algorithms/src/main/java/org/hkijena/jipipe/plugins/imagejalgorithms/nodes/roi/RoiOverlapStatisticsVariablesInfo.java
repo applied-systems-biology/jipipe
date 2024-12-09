@@ -29,7 +29,7 @@ public class RoiOverlapStatisticsVariablesInfo implements JIPipeExpressionVariab
 
     static {
         VARIABLES = new HashSet<>();
-        VARIABLES.add(new JIPipeExpressionParameterVariableInfo("annotations", "Annotations map", "A map of annotations that are attached to the data batch"));
+        VARIABLES.add(new JIPipeExpressionParameterVariableInfo("annotations", "Annotations map", "A map of annotations that are attached to the iteration step"));
         VARIABLES.add(new JIPipeExpressionParameterVariableInfo("ROI1.z", "ROI 1 Z", "The Z location of the first ROI (first index is 1, zero indicates no Z constraint)"));
         VARIABLES.add(new JIPipeExpressionParameterVariableInfo("ROI1.c", "ROI 1 C", "The channel (C) location of the first ROI (first index is 1, zero indicates no C constraint)"));
         VARIABLES.add(new JIPipeExpressionParameterVariableInfo("ROI1.t", "ROI 1 T", "The frame (T) location of the first ROI (first index is 1, zero indicates no T constraint)"));

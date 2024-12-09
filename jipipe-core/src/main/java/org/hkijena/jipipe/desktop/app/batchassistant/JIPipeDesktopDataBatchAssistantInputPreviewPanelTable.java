@@ -306,7 +306,7 @@ public class JIPipeDesktopDataBatchAssistantInputPreviewPanelTable extends JPane
 
         this.iterationStepGenerationResult = iterationStepGenerationResult;
 
-        // Generate data batch mapping
+        // Generate iteration step mapping
         this.iterationStepMapping.clear();
         List<JIPipeMultiIterationStep> iterationSteps = iterationStepGenerationResult.getDataBatches();
         for (int iterationStepIndex = 0; iterationStepIndex < iterationSteps.size(); iterationStepIndex++) {

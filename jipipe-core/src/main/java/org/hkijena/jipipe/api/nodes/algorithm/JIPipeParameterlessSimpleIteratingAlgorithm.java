@@ -182,7 +182,7 @@ public abstract class JIPipeParameterlessSimpleIteratingAlgorithm extends JIPipe
     }
 
     @SetJIPipeDocumentation(name = "Input management", description = "This algorithm has one input and will iterate through each row of its input and apply the workload. " +
-            "Use following settings to control which data batches are generated.")
+            "Use following settings to control which iteration steps are generated.")
     @JIPipeParameter(value = "jipipe:data-batch-generation", hidden = true)
     public IterationStepGenerationSettings getDataBatchGenerationSettings() {
         return iterationStepGenerationSettings;
@@ -243,7 +243,7 @@ public abstract class JIPipeParameterlessSimpleIteratingAlgorithm extends JIPipe
             this.limit = new OptionalIntegerRange(other.limit);
         }
 
-        @SetJIPipeDocumentation(name = "Limit", description = "Limits which data batches are generated. The first index is zero.")
+        @SetJIPipeDocumentation(name = "Limit", description = "Limits which iteration steps are generated. The first index is zero.")
         @JIPipeParameter("limit")
         public OptionalIntegerRange getLimit() {
             return limit;

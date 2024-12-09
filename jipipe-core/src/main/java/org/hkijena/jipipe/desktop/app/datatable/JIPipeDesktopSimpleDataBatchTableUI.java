@@ -33,7 +33,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 /**
- * Panel that displays a data batch table
+ * Panel that displays a iteration step table
  */
 public class JIPipeDesktopSimpleDataBatchTableUI extends JPanel implements JIPipeParameterCollection.ParameterChangedEventListener {
     private List<JIPipeMultiIterationStep> iterationStepList;

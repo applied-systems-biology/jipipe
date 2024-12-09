@@ -31,7 +31,7 @@ public class TableColumnValuesExpressionParameterVariablesInfo implements JIPipe
         VARIABLES.add(new JIPipeExpressionParameterVariableInfo("values", "Column values", "The values of this column as array"));
         VARIABLES.add(new JIPipeExpressionParameterVariableInfo("num_rows", "Number of rows", "The number of rows within the table"));
         VARIABLES.add(new JIPipeExpressionParameterVariableInfo("num_cols", "Number of columns", "The number of columns within the table"));
-        VARIABLES.add(new JIPipeExpressionParameterVariableInfo("annotations", "Annotations", "Map of annotations of the current data batch"));
+        VARIABLES.add(new JIPipeExpressionParameterVariableInfo("annotations", "Annotations", "Map of annotations of the current iteration step"));
     }
 
     @Override

@@ -33,7 +33,7 @@ import org.hkijena.jipipe.plugins.parameters.library.roi.Anchor;
 
 import java.awt.*;
 
-@SetJIPipeDocumentation(name = "Make images equal 2D", description = "Makes all images within a data batch have the same size by padding with the predefined background color according to the largest image dimensions.")
+@SetJIPipeDocumentation(name = "Make images equal 2D", description = "Makes all images within a iteration step have the same size by padding with the predefined background color according to the largest image dimensions.")
 @ConfigureJIPipeNode(nodeTypeCategory = ImagesNodeTypeCategory.class, menuPath = "Transform")
 @AddJIPipeInputSlot(value = ImagePlusData.class, name = "Input", create = true)
 @AddJIPipeOutputSlot(value = ImagePlusData.class, name = "Output", create = true)

@@ -96,10 +96,10 @@ public abstract class JIPipeSimpleIteratingAlgorithm extends JIPipeParameterSlot
 
     /**
      * A pass-through variant for iterating algorithms.
-     * Passes the data batch to the single output
+     * Passes the iteration step to the single output
      *
      * @param progressInfo  progress info
-     * @param iterationStep the data batch
+     * @param iterationStep the iteration step
      */
     protected void runPassThrough(JIPipeProgressInfo progressInfo, JIPipeSingleIterationStep iterationStep) {
         progressInfo.log("Passing trough (via dynamic pass-through)");
@@ -131,7 +131,7 @@ public abstract class JIPipeSimpleIteratingAlgorithm extends JIPipeParameterSlot
 
         List<JIPipeSingleIterationStep> iterationSteps;
 
-        // Generate data batches
+        // Generate iteration steps
         if (getDataInputSlotCount() == 0) {
             JIPipeSingleIterationStep iterationStep = new JIPipeSingleIterationStep(this);
             iterationStep.addMergedTextAnnotations(parameterAnnotations, JIPipeTextAnnotationMergeMode.Merge);
@@ -166,7 +166,7 @@ public abstract class JIPipeSimpleIteratingAlgorithm extends JIPipeParameterSlot
 
         // Handle case: All optional input, no data
         if (iterationSteps.isEmpty() && getDataInputSlots().stream().allMatch(slot -> slot.getInfo().isOptional() && slot.isEmpty())) {
-            progressInfo.log("Generating dummy data batch because of the [all inputs empty optional] condition");
+            progressInfo.log("Generating dummy iteration step because of the [all inputs empty optional] condition");
             // Generate a dummy batch
             JIPipeSingleIterationStep iterationStep = new JIPipeSingleIterationStep(this);
             iterationStep.addMergedTextAnnotations(parameterAnnotations, JIPipeTextAnnotationMergeMode.Merge);
@@ -335,7 +335,7 @@ public abstract class JIPipeSimpleIteratingAlgorithm extends JIPipeParameterSlot
     }
 
     @SetJIPipeDocumentation(name = "Input management", description = "This algorithm has one input and will iterate through each row of its input and apply the workload. " +
-            "Use following settings to control which data batches are generated.")
+            "Use following settings to control which iteration steps are generated.")
     @JIPipeParameter(value = "jipipe:data-batch-generation",
             iconURL = ResourceUtils.RESOURCE_BASE_PATH + "/icons/actions/package.png",
             iconDarkURL = ResourceUtils.RESOURCE_BASE_PATH + "/dark/icons/actions/package.png")
@@ -364,7 +364,7 @@ public abstract class JIPipeSimpleIteratingAlgorithm extends JIPipeParameterSlot
         return iterationStepGenerationSettings;
     }
 
-    @SetJIPipeDocumentation(name = "Adaptive parameters", description = "You can use the following settings to generate parameter values for each data batch based on annotations.")
+    @SetJIPipeDocumentation(name = "Adaptive parameters", description = "You can use the following settings to generate parameter values for each iteration step based on annotations.")
     @JIPipeParameter(value = "jipipe:adaptive-parameters", hidden = true,
             iconURL = ResourceUtils.RESOURCE_BASE_PATH + "/icons/actions/insert-function.png",
             iconDarkURL = ResourceUtils.RESOURCE_BASE_PATH + "/dark/icons/actions/insert-function.png")
