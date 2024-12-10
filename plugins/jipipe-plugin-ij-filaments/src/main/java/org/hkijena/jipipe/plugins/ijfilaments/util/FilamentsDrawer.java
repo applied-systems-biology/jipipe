@@ -277,9 +277,9 @@ public class FilamentsDrawer extends AbstractJIPipeParameterCollection {
         if (radius <= 0) {
             if (targetZ == imageZ) {
                 if (opacity >= 1 && blendMode == ImageBlendMode.Normal) {
-                    processor.set(targetX, targetY, blendMode.blend(processor.get(targetX, targetY), rgb, opacity));
-                } else {
                     processor.set(targetX, targetY, rgb);
+                } else {
+                    processor.set(targetX, targetY, blendMode.blend(processor.get(targetX, targetY), rgb, opacity));
                 }
             }
         } else if (Math.abs(imageZ - targetZ) <= radius) {

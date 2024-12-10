@@ -23,7 +23,12 @@ import ij.ImagePlus;
 import ij.gui.EllipseRoi;
 import ij.gui.Line;
 import ij.gui.Roi;
+import ij.process.ColorProcessor;
+import ij.process.FloatProcessor;
+import ij.process.ImageProcessor;
+import mcib3d.geom.Vector3D;
 import mcib3d.image3d.ImageHandler;
+import ome.xml.model.Filament;
 import org.hkijena.jipipe.api.JIPipeProgressInfo;
 import org.hkijena.jipipe.api.SetJIPipeDocumentation;
 import org.hkijena.jipipe.api.data.JIPipeData;
@@ -44,6 +49,7 @@ import org.hkijena.jipipe.plugins.ijfilaments.display.CachedFilamentsDataViewerW
 import org.hkijena.jipipe.plugins.ijfilaments.util.*;
 import org.hkijena.jipipe.plugins.imagejdatatypes.datatypes.ROI2DListData;
 import org.hkijena.jipipe.plugins.imagejdatatypes.util.BitDepth;
+import org.hkijena.jipipe.plugins.imagejdatatypes.util.ImageBlendMode;
 import org.hkijena.jipipe.plugins.imagejdatatypes.util.ImageJUtils;
 import org.hkijena.jipipe.plugins.parameters.library.quantities.Quantity;
 import org.hkijena.jipipe.plugins.scene3d.model.Scene3DGroupNode;
@@ -1006,6 +1012,15 @@ public class Filaments3DGraphData extends SimpleGraph<FilamentVertex, FilamentEd
         return createBlankCanvas(title, bitDepth.getBitDepth());
     }
 
+    public boolean is2D() {
+        for (FilamentVertex vertex : vertexSet()) {
+            if(vertex.getPhysicalVoxelSizeZ().getValue() != 0) {
+                return false;
+            }
+        }
+        return true;
+    }
+
     public ImagePlus createBlankCanvas(String title, int bitDepth) {
         int maxX = 0;
         int maxY = 0;
@@ -1019,6 +1034,11 @@ public class Filaments3DGraphData extends SimpleGraph<FilamentVertex, FilamentEd
             maxZ = (int) Math.max(maxZ, vertex.getZMax(true));
             maxC = Math.max(maxC, vertex.getNonSpatialLocation().getChannel());
             maxT = Math.max(maxT, vertex.getNonSpatialLocation().getFrame());
+        }
+
+        // 2D detection
+        if(is2D()) {
+            maxZ = 0;
         }
 
         return IJ.createHyperStack(title, maxX + 1, maxY + 1, maxC + 1, maxZ + 1, maxT + 1, bitDepth);
@@ -1226,5 +1246,131 @@ public class Filaments3DGraphData extends SimpleGraph<FilamentVertex, FilamentEd
             finalRadius = radius;
         }
         return finalRadius;
+    }
+
+    public ImagePlus toLabels2(ImagePlus reference, boolean withEdges, boolean withVertices, int forcedLineThickness, int forcedVertexRadius, boolean ignoreC, boolean ignoreZ, boolean ignoreT, boolean hollowVertices, JIPipeProgressInfo progressInfo) {
+        if(reference == null) {
+            reference = createBlankCanvas("Image", BitDepth.Grayscale32f);
+        }
+        else {
+            reference = ImageJUtils.newBlankOf(reference, BitDepth.Grayscale32f);
+        }
+
+        // Assign color map
+        Map<FilamentVertex, Integer> vertexToLabelMapping = new HashMap<>();
+
+        ConnectivityInspector<FilamentVertex, FilamentEdge> connectivityInspector = getConnectivityInspector();
+        List<Set<FilamentVertex>> connectedSets = connectivityInspector.connectedSets();
+        for (int i = 0; i < connectedSets.size(); i++) {
+            Set<FilamentVertex> connectedSet = connectedSets.get(i);
+            for (FilamentVertex vertex : connectedSet) {
+                vertexToLabelMapping.put(vertex, i + 1);
+            }
+        }
+
+        // Draw
+        ImageJUtils.forEachIndexedZCTSlice(reference, (ip, index) -> {
+
+            final int z = index.getZ();
+            final int c = index.getC();
+            final int t = index.getT();
+
+            if (withEdges) {
+                for (FilamentEdge edge : edgeSet()) {
+                    FilamentVertex source = getEdgeSource(edge);
+                    FilamentVertex target = getEdgeTarget(edge);
+                    int label = vertexToLabelMapping.get(source); // Sufficient due to connected set
+
+                    if (source.getNonSpatialLocation().getChannel() != c && !ignoreC)
+                        continue;
+                    if (source.getNonSpatialLocation().getFrame() != t && !ignoreT)
+                        continue;
+                    if (target.getNonSpatialLocation().getChannel() != c && !ignoreC)
+                        continue;
+                    if (target.getNonSpatialLocation().getFrame() != t && !ignoreT)
+                        continue;
+
+                    double sourceRadius = source.getRadius();
+                    double targetRadius = target.getRadius();
+                    if (forcedVertexRadius >= 0) {
+                        sourceRadius = forcedVertexRadius;
+                        targetRadius = forcedVertexRadius;
+                    }
+                    if (forcedLineThickness >= 0) {
+                        sourceRadius = forcedLineThickness;
+                        targetRadius = forcedLineThickness;
+                    }
+
+                    drawLabelLineOnProcessor(source.getSpatialLocation().getX(), source.getSpatialLocation().getY(), source.getSpatialLocation().getZ(),
+                            target.getSpatialLocation().getX(), target.getSpatialLocation().getY(), target.getSpatialLocation().getZ(),
+                            label,
+                            sourceRadius,
+                            targetRadius,
+                            ip,
+                            z);
+                }
+            }
+            if (withVertices) {
+                for (FilamentVertex vertex : vertexSet()) {
+//            if(vertex.getSpatialLocation().getZ() != z && !ignoreZ)
+//                continue;
+                    if (vertex.getNonSpatialLocation().getChannel() != c && !ignoreC)
+                        continue;
+                    if (vertex.getNonSpatialLocation().getFrame() != t && !ignoreT)
+                        continue;
+                    int label = vertexToLabelMapping.get(vertex);
+                    int radius = (int) vertex.getRadius();
+
+                    if (forcedVertexRadius >= 0)
+                        radius = forcedVertexRadius;
+
+                    drawLabelBallOnProcessor((int) vertex.getSpatialLocation().getX(), (int) vertex.getSpatialLocation().getY(), (int) vertex.getSpatialLocation().getZ(), label, radius, hollowVertices, ip, z);
+                }
+            }
+        }, progressInfo);
+
+        return reference;
+    }
+
+    public static void drawLabelLineOnProcessor(double x0, double y0, double z0, double x1, double y1, double z1, int label, double rad0, double rad1, ImageProcessor processor, int imageZ) {
+        Vector3D V = new Vector3D(x1 - x0, y1 - y0, z1 - z0);
+        double len = V.getLength();
+        V.normalize();
+        double vx = V.getX();
+        double vy = V.getY();
+        double vz = V.getZ();
+        for (int i = 0; i < (int) len; i++) {
+            double perc = i / len;
+            int rad = (int) (rad0 + perc * (rad1 - rad0));
+            drawLabelBallOnProcessor((int) (x0 + i * vx), (int) (y0 + i * vy), (int) (z0 + i * vz), label, rad, false, processor, imageZ);
+        }
+    }
+
+    public static  void drawLabelBallOnProcessor(int targetX, int targetY, int targetZ, int label, int radius, boolean hollow, ImageProcessor processor, int imageZ) {
+        int imageWidth = processor.getWidth();
+        int imageHeight = processor.getHeight();
+        if (radius <= 0) {
+            if (targetZ == imageZ) {
+                processor.setf(targetX, targetY, label);
+            }
+        } else if (Math.abs(imageZ - targetZ) <= radius) {
+            float[] pixels = (float[]) processor.getPixels();
+            for (int y = targetY - radius; y < targetY + radius; y++) {
+                if (y < 0 || y >= imageHeight)
+                    continue;
+                for (int x = targetX - radius; x < targetX + radius; x++) {
+                    if (x < 0 || x >= imageWidth)
+                        continue;
+                    double k = Math.pow(x - targetX, 2) + Math.pow(y - targetY, 2) + Math.pow(imageZ - targetZ, 2);
+                    if (k > radius * radius) {
+                        continue;
+                    }
+                    if (hollow && k < Math.pow(radius - 1, 2)) {
+                        continue;
+                    }
+                    pixels[x + y * imageWidth] = label;
+                }
+            }
+        }
     }
 }

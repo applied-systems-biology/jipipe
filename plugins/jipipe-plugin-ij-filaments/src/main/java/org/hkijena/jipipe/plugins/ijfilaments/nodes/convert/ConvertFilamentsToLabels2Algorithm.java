@@ -32,30 +32,35 @@ import org.hkijena.jipipe.plugins.imagejdatatypes.datatypes.greyscale.ImagePlusG
 import org.hkijena.jipipe.plugins.imagejdatatypes.util.ImageJUtils;
 import org.hkijena.jipipe.plugins.parameters.library.primitives.optional.OptionalIntegerParameter;
 
-@SetJIPipeDocumentation(name = "Convert filaments to labels (legacy)", description = "Converts filaments into a labels image. Legacy implementation that uses 3D ROI as intermediate for rendering labels. " +
-        "We recommend new non-legacy node for more accurate results.")
+@SetJIPipeDocumentation(name = "Convert filaments to labels", description = "Converts filaments into a labels image.")
 @AddJIPipeInputSlot(value = Filaments3DGraphData.class, name = "Input", create = true)
 @AddJIPipeInputSlot(value = ImagePlusData.class, name = "Reference", create = true, optional = true, description = "Optional reference image that determines the size of the mask")
 @AddJIPipeOutputSlot(value = ImagePlusGreyscaleData.class, name = "Output", create = true)
 @ConfigureJIPipeNode(nodeTypeCategory = FilamentsNodeTypeCategory.class, menuPath = "Convert")
-public class ConvertFilamentsToLabelsAlgorithm extends JIPipeIteratingAlgorithm {
+public class ConvertFilamentsToLabels2Algorithm extends JIPipeIteratingAlgorithm {
     private boolean withEdges = true;
     private boolean withVertices = true;
-
     private OptionalIntegerParameter forcedLineThickness = new OptionalIntegerParameter(false, 1);
-
     private OptionalIntegerParameter forcedVertexRadius = new OptionalIntegerParameter(false, 1);
+    private boolean ignoreZ = false;
+    private boolean ignoreC = false;
+    private boolean ignoreT = false;
+    private boolean hollowVertices = false;
 
-    public ConvertFilamentsToLabelsAlgorithm(JIPipeNodeInfo info) {
+    public ConvertFilamentsToLabels2Algorithm(JIPipeNodeInfo info) {
         super(info);
     }
 
-    public ConvertFilamentsToLabelsAlgorithm(ConvertFilamentsToLabelsAlgorithm other) {
+    public ConvertFilamentsToLabels2Algorithm(ConvertFilamentsToLabels2Algorithm other) {
         super(other);
         this.withEdges = other.withEdges;
         this.withVertices = other.withVertices;
         this.forcedVertexRadius = new OptionalIntegerParameter(other.forcedVertexRadius);
         this.forcedLineThickness = new OptionalIntegerParameter(other.forcedLineThickness);
+        this.ignoreZ = other.ignoreZ;
+        this.ignoreC = other.ignoreC;
+        this.ignoreT = other.ignoreT;
+        this.hollowVertices = other.hollowVertices;
     }
 
     @Override
@@ -63,8 +68,62 @@ public class ConvertFilamentsToLabelsAlgorithm extends JIPipeIteratingAlgorithm 
         Filaments3DGraphData inputData = iterationStep.getInputData("Input", Filaments3DGraphData.class, progressInfo);
         ImagePlus reference = ImageJUtils.unwrap(iterationStep.getInputData("Reference", ImagePlusData.class, progressInfo));
 
-        ImagePlus mask = inputData.toLabels(reference, withEdges, withVertices, forcedLineThickness.orElse(-1), forcedVertexRadius.orElse(-1), progressInfo);
+        ImagePlus mask = inputData.toLabels2(reference,
+                withEdges,
+                withVertices,
+                forcedLineThickness.orElse(-1),
+                forcedVertexRadius.orElse(-1),
+                ignoreC,
+                ignoreZ,
+                ignoreT,
+                hollowVertices,
+                progressInfo);
         iterationStep.addOutputData(getFirstOutputSlot(), new ImagePlusGreyscaleData(mask), progressInfo);
+    }
+
+    @SetJIPipeDocumentation(name = "Ignore Z", description = "If enabled, the Z location of each each vertex will be ignored")
+    @JIPipeParameter("ignore-z")
+    public boolean isIgnoreZ() {
+        return ignoreZ;
+    }
+
+    @JIPipeParameter("ignore-z")
+    public void setIgnoreZ(boolean ignoreZ) {
+        this.ignoreZ = ignoreZ;
+    }
+
+    @SetJIPipeDocumentation(name = "Ignore channel", description = "If enabled, ignore the channel (C) location of each vertex")
+    @JIPipeParameter("ignore-c")
+    public boolean isIgnoreC() {
+        return ignoreC;
+    }
+
+    @JIPipeParameter("ignore-c")
+    public void setIgnoreC(boolean ignoreC) {
+        this.ignoreC = ignoreC;
+    }
+
+    @SetJIPipeDocumentation(name = "Ignore frame", description = "If enabled, ignore the frame (T) location of each vertex")
+    @JIPipeParameter("ignore-t")
+    public boolean isIgnoreT() {
+        return ignoreT;
+    }
+
+    @JIPipeParameter("ignore-t")
+    public void setIgnoreT(boolean ignoreT) {
+        this.ignoreT = ignoreT;
+    }
+
+
+    @SetJIPipeDocumentation(name = "Hollow vertices", description = "If enabled, draw vertices as hollow spheres")
+    @JIPipeParameter("hollow-vertices")
+    public boolean isHollowVertices() {
+        return hollowVertices;
+    }
+
+    @JIPipeParameter("hollow-vertices")
+    public void setHollowVertices(boolean hollowVertices) {
+        this.hollowVertices = hollowVertices;
     }
 
     @SetJIPipeDocumentation(name = "Override edge thickness", description = "If enabled, set the thickness of edges. Must be at least zero.")
