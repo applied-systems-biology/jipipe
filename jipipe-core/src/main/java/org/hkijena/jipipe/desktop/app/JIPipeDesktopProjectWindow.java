@@ -362,7 +362,7 @@ public class JIPipeDesktopProjectWindow extends JFrame {
                 window.projectSavePath = path;
                 window.getProjectUI().sendStatusBarText("Opened project from " + window.projectSavePath);
                 window.updateTitle();
-                JIPipeProjectDefaultsApplicationSettings.getInstance().addRecentProject(path);
+                JIPipe.getInstance().getRecentProjectsRegistry().add(path);
                 if (!notifications.isEmpty()) {
                     UIUtils.openNotificationsDialog(window.getProjectUI(),
                             this,
@@ -404,7 +404,7 @@ public class JIPipeDesktopProjectWindow extends JFrame {
                 window.getProjectUI().sendStatusBarText("Opened project from " + window.projectSavePath);
                 window.updateTitle();
 
-                JIPipeProjectDefaultsApplicationSettings.getInstance().addRecentProject(path);
+                JIPipe.getInstance().getRecentProjectsRegistry().add(path);
 
                 // Give user the option to either open in tab or cache
                 int selectedOption = JOptionPane.showOptionDialog(window,
@@ -505,7 +505,7 @@ public class JIPipeDesktopProjectWindow extends JFrame {
             updateTitle();
             projectUI.setProjectModified(false);
             projectUI.sendStatusBarText("Saved project to " + savePath);
-            JIPipeProjectDefaultsApplicationSettings.getInstance().addRecentProject(savePath);
+            JIPipe.getInstance().getRecentProjectsRegistry().add(savePath);
 
             // Remove tmp file
             Files.delete(tempFile);

@@ -13,23 +13,27 @@
 
 package org.hkijena.jipipe.desktop.app.documentation;
 
+import org.hkijena.jipipe.JIPipe;
 import org.hkijena.jipipe.api.events.AbstractJIPipeEvent;
 import org.hkijena.jipipe.api.events.JIPipeEventEmitter;
 import org.hkijena.jipipe.api.parameters.JIPipeParameterCollection;
+import org.hkijena.jipipe.api.registries.JIPipeRecentProjectsRegistry;
 import org.hkijena.jipipe.desktop.app.JIPipeDesktopProjectWindow;
 import org.hkijena.jipipe.desktop.app.JIPipeDesktopProjectWorkbench;
 import org.hkijena.jipipe.desktop.app.JIPipeDesktopProjectWorkbenchPanel;
 import org.hkijena.jipipe.desktop.commons.components.JIPipeDesktopRecentProjectListCellRenderer;
 import org.hkijena.jipipe.desktop.commons.components.search.JIPipeDesktopSearchTextField;
 import org.hkijena.jipipe.plugins.settings.JIPipeProjectDefaultsApplicationSettings;
+import org.hkijena.jipipe.utils.UIUtils;
 
 import javax.swing.*;
 import java.awt.*;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 import java.nio.file.Path;
+import java.util.List;
 
-public class JIPipeDesktopRecentProjectsListPanel extends JIPipeDesktopProjectWorkbenchPanel implements JIPipeParameterCollection.ParameterChangedEventListener {
+public class JIPipeDesktopRecentProjectsListPanel extends JIPipeDesktopProjectWorkbenchPanel implements JIPipeRecentProjectsRegistry.ChangedEventListener {
     private final ProjectOpenedEventEmitter projectOpenedEventEmitter = new ProjectOpenedEventEmitter();
     private final JIPipeDesktopSearchTextField recentProjectsSearch = new JIPipeDesktopSearchTextField();
     private final JList<Path> recentProjectsList = new JList<>();
@@ -37,7 +41,7 @@ public class JIPipeDesktopRecentProjectsListPanel extends JIPipeDesktopProjectWo
     public JIPipeDesktopRecentProjectsListPanel(JIPipeDesktopProjectWorkbench workbench) {
         super(workbench);
         initialize();
-        JIPipeProjectDefaultsApplicationSettings.getInstance().getParameterChangedEventEmitter().subscribeWeak(this);
+        JIPipe.getInstance().getRecentProjectsRegistry().getChangedEventEmitter().subscribeWeak(this);
         refreshRecentProjects();
     }
 
@@ -48,18 +52,20 @@ public class JIPipeDesktopRecentProjectsListPanel extends JIPipeDesktopProjectWo
         recentProjectsList.addMouseListener(new MouseAdapter() {
             @Override
             public void mouseClicked(MouseEvent e) {
-                if (e.getClickCount() == 2) {
-                    Path value = recentProjectsList.getSelectedValue();
-                    if (value != null) {
-                        projectOpenedEventEmitter.emit(new ProjectOpenedEvent(value));
-                        ((JIPipeDesktopProjectWindow) getDesktopProjectWorkbench().getWindow()).openProject(value, false);
-                    }
-                } else {
-                    if (recentProjectsList.getMousePosition().x > recentProjectsList.getWidth() - 50) {
+                if(SwingUtilities.isLeftMouseButton(e)) {
+                    if (e.getClickCount() == 2) {
                         Path value = recentProjectsList.getSelectedValue();
                         if (value != null) {
                             projectOpenedEventEmitter.emit(new ProjectOpenedEvent(value));
                             ((JIPipeDesktopProjectWindow) getDesktopProjectWorkbench().getWindow()).openProject(value, false);
+                        }
+                    } else {
+                        if (recentProjectsList.getMousePosition().x > recentProjectsList.getWidth() - 50) {
+                            Path value = recentProjectsList.getSelectedValue();
+                            if (value != null) {
+                                projectOpenedEventEmitter.emit(new ProjectOpenedEvent(value));
+                                ((JIPipeDesktopProjectWindow) getDesktopProjectWorkbench().getWindow()).openProject(value, false);
+                            }
                         }
                     }
                 }
@@ -67,15 +73,47 @@ public class JIPipeDesktopRecentProjectsListPanel extends JIPipeDesktopProjectWo
         });
 
         // Init search
+        JToolBar toolbar = new JToolBar();
+        toolbar.setFloatable(false);
+        toolbar.add(recentProjectsSearch);
+
+        JButton menuButton = new JButton(UIUtils.getIconFromResources("actions/hamburger-menu.png"));
+        UIUtils.makeButtonFlat25x25(menuButton);
+        JPopupMenu menu = UIUtils.addPopupMenuToButton(menuButton);
+        menu.add(UIUtils.createMenuItem("Delete selection", "Deletes the selected items", UIUtils.getIconFromResources("actions/editdelete.png"), this::deleteSelection));
+        menu.add(UIUtils.createMenuItem("Clear", "Deletes all items", UIUtils.getIconFromResources("actions/edit-clear-history.png"), this::clearAll));
+        toolbar.add(menuButton);
+
         recentProjectsSearch.addActionListener(e -> refreshRecentProjects());
 
         add(recentProjectsScrollPane, BorderLayout.CENTER);
-        add(recentProjectsSearch, BorderLayout.NORTH);
+        add(toolbar, BorderLayout.NORTH);
+    }
+
+    private void clearAll() {
+        if(JOptionPane.showConfirmDialog(SwingUtilities.getWindowAncestor(this),
+                "Do you really want to remove all recent projects from this list?",
+                "Clear recent projects",
+                JOptionPane.YES_NO_OPTION,
+                JOptionPane.QUESTION_MESSAGE) == JOptionPane.YES_OPTION) {
+            JIPipe.getInstance().getRecentProjectsRegistry().clear();
+        }
+    }
+
+    private void deleteSelection() {
+        List<Path> selectedValues = recentProjectsList.getSelectedValuesList();
+        if(!selectedValues.isEmpty() && JOptionPane.showConfirmDialog(SwingUtilities.getWindowAncestor(this),
+                "Do you really want to remove the selected recent projects from this list?",
+                "Remove recent projects",
+                JOptionPane.YES_NO_OPTION,
+                JOptionPane.QUESTION_MESSAGE) == JOptionPane.YES_OPTION) {
+            JIPipe.getInstance().getRecentProjectsRegistry().removeAll(selectedValues);
+        }
     }
 
     private void refreshRecentProjects() {
         DefaultListModel<Path> model = new DefaultListModel<>();
-        for (Path path : JIPipeProjectDefaultsApplicationSettings.getInstance().getRecentProjects()) {
+        for (Path path : JIPipe.getInstance().getRecentProjectsRegistry().getRecentProjects()) {
             if (recentProjectsSearch.test(path.toString())) {
                 model.addElement(path);
             }
@@ -86,15 +124,13 @@ public class JIPipeDesktopRecentProjectsListPanel extends JIPipeDesktopProjectWo
         recentProjectsList.setModel(model);
     }
 
-    @Override
-    public void onParameterChanged(JIPipeParameterCollection.ParameterChangedEvent event) {
-        if ("recent-projects".equals(event.getKey())) {
-            refreshRecentProjects();
-        }
-    }
-
     public ProjectOpenedEventEmitter getProjectOpenedEventEmitter() {
         return projectOpenedEventEmitter;
+    }
+
+    @Override
+    public void onRecentProjectsChanged(JIPipeRecentProjectsRegistry.ChangedEvent event) {
+        refreshRecentProjects();
     }
 
     public interface ProjectOpenedEventListener {

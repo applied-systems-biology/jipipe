@@ -13,8 +13,10 @@
 
 package org.hkijena.jipipe.desktop.commons.components;
 
+import org.hkijena.jipipe.JIPipe;
 import org.hkijena.jipipe.api.parameters.JIPipeParameterCollection;
 import org.hkijena.jipipe.api.project.JIPipeProject;
+import org.hkijena.jipipe.api.registries.JIPipeRecentProjectsRegistry;
 import org.hkijena.jipipe.desktop.app.JIPipeDesktopProjectWindow;
 import org.hkijena.jipipe.desktop.app.documentation.JIPipeDesktopRecentProjectsListPanel;
 import org.hkijena.jipipe.plugins.settings.JIPipeProjectDefaultsApplicationSettings;
@@ -26,7 +28,7 @@ import java.nio.file.Path;
 /**
  * Menu that displays recently opened {@link JIPipeProject}
  */
-public class JIPipeDesktopRecentProjectsMenu extends JMenu implements JIPipeParameterCollection.ParameterChangedEventListener {
+public class JIPipeDesktopRecentProjectsMenu extends JMenu implements JIPipeRecentProjectsRegistry.ChangedEventListener {
 
     private final JIPipeDesktopProjectWindow workbenchWindow;
 
@@ -40,12 +42,12 @@ public class JIPipeDesktopRecentProjectsMenu extends JMenu implements JIPipePara
         this.setIcon(icon);
         this.workbenchWindow = workbenchWindow;
         reload();
-        JIPipeProjectDefaultsApplicationSettings.getInstance().getParameterChangedEventEmitter().subscribeWeak(this);
+        JIPipe.getInstance().getRecentProjectsRegistry().getChangedEventEmitter().subscribeWeak(this);
     }
 
     private void reload() {
         removeAll();
-        if (JIPipeProjectDefaultsApplicationSettings.getInstance().getRecentProjects().isEmpty()) {
+        if (JIPipe.getInstance().getRecentProjectsRegistry().getRecentProjects().isEmpty()) {
             JMenuItem noProject = new JMenuItem("No recent projects");
             noProject.setEnabled(false);
             add(noProject);
@@ -53,7 +55,8 @@ public class JIPipeDesktopRecentProjectsMenu extends JMenu implements JIPipePara
             JMenuItem searchItem = new JMenuItem("Search ...", UIUtils.getIconFromResources("actions/search.png"));
             searchItem.addActionListener(e -> openProjectSearch());
             add(searchItem);
-            for (Path path : JIPipeProjectDefaultsApplicationSettings.getInstance().getRecentProjects()) {
+
+            for (Path path : JIPipe.getInstance().getRecentProjectsRegistry().getRecentProjects()) {
                 JMenuItem openProjectItem = new JMenuItem(path.toString());
                 openProjectItem.addActionListener(e -> openProject(path));
                 add(openProjectItem);
@@ -82,15 +85,8 @@ public class JIPipeDesktopRecentProjectsMenu extends JMenu implements JIPipePara
         workbenchWindow.openProject(path, false);
     }
 
-    /**
-     * Triggered when the list should be changed
-     *
-     * @param event generated event
-     */
     @Override
-    public void onParameterChanged(JIPipeParameterCollection.ParameterChangedEvent event) {
-        if ("recent-projects".equals(event.getKey())) {
-            reload();
-        }
+    public void onRecentProjectsChanged(JIPipeRecentProjectsRegistry.ChangedEvent event) {
+        reload();
     }
 }

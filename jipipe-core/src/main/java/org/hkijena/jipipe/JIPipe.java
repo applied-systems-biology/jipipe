@@ -143,6 +143,7 @@ public class JIPipe extends AbstractService implements JIPipeService {
     private final JIPipeProjectTemplateRegistry projectTemplateRegistry;
     private final JIPipeArtifactsRegistry artifactsRegistry;
     private final JIPipeNodeTemplateRegistry nodeTemplateRegistry;
+    private final JIPipeRecentProjectsRegistry recentProjectsRegistry;
 
     private final JIPipeMetadataRegistry metadataRegistry;
     private final DatatypeRegisteredEventEmitter datatypeRegisteredEventEmitter = new DatatypeRegisteredEventEmitter();
@@ -159,6 +160,7 @@ public class JIPipe extends AbstractService implements JIPipeService {
     private PluginService pluginService;
 
     public JIPipe() {
+        recentProjectsRegistry = new JIPipeRecentProjectsRegistry(this);
         nodeRegistry = new JIPipeNodeRegistry(this);
         datatypeRegistry = new JIPipeDatatypeRegistry(this);
         imageJDataAdapterRegistry = new JIPipeImageJAdapterRegistry(this);
@@ -1024,11 +1026,9 @@ public class JIPipe extends AbstractService implements JIPipeService {
         // Check recent projects and backups
         progressInfo.setProgress(6);
         progressInfo.log("Checking recent projects ...");
-        JIPipeProjectDefaultsApplicationSettings projectsSettings = JIPipeProjectDefaultsApplicationSettings.getInstance();
-        List<Path> invalidRecentProjects = projectsSettings.getRecentProjects().stream().filter(path -> !Files.exists(path)).collect(Collectors.toList());
-        if (!invalidRecentProjects.isEmpty()) {
-            projectsSettings.getRecentProjects().removeAll(invalidRecentProjects);
-        }
+        recentProjectsRegistry.reload();
+        recentProjectsRegistry.cleanup();
+        recentProjectsRegistry.migrateFromLegacy();
 
         // Check artifacts
         progressInfo.setProgress(7);
@@ -1614,5 +1614,10 @@ public class JIPipe extends AbstractService implements JIPipeService {
     @Override
     public JIPipeArtifactsRegistry getArtifactsRegistry() {
         return artifactsRegistry;
+    }
+
+    @Override
+    public JIPipeRecentProjectsRegistry getRecentProjectsRegistry() {
+        return recentProjectsRegistry;
     }
 }

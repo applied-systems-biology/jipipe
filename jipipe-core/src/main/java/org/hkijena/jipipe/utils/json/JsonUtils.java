@@ -15,9 +15,11 @@ package org.hkijena.jipipe.utils.json;
 
 import com.fasterxml.jackson.annotation.JsonAutoDetect;
 import com.fasterxml.jackson.annotation.PropertyAccessor;
+import com.fasterxml.jackson.core.JsonFactory;
 import com.fasterxml.jackson.core.JsonGenerator;
 import com.fasterxml.jackson.core.JsonParser;
 import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.core.json.JsonReadFeature;
 import com.fasterxml.jackson.databind.*;
 import com.fasterxml.jackson.databind.module.SimpleModule;
 import org.hkijena.jipipe.utils.StringUtils;
@@ -41,7 +43,12 @@ public class JsonUtils {
 
     public static ObjectMapper getObjectMapper() {
         if (objectMapper == null) {
-            objectMapper = new ObjectMapper();
+            JsonFactory factory = JsonFactory.builder()
+                    .enable(JsonReadFeature.ALLOW_UNESCAPED_CONTROL_CHARS)
+                    .enable(JsonReadFeature.ALLOW_NON_NUMERIC_NUMBERS)
+                    .build();
+
+            objectMapper = new ObjectMapper(factory);
             objectMapper.setVisibility(PropertyAccessor.ALL, JsonAutoDetect.Visibility.NONE);
             objectMapper.configure(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES, false);
 
