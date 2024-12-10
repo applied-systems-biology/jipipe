@@ -172,6 +172,7 @@ public class JIPipeGraphRun extends AbstractJIPipeRunnable implements JIPipeGrap
             progressInfo.log("Registered data types: " + JIPipe.getDataTypes().getRegisteredDataTypes().size() + " types");
             progressInfo.log("Enabled extensions: " + String.join(", ", JIPipe.getInstance().getPluginRegistry().getActivatedPlugins()));
             progressInfo.log("Operating system: " + SystemUtils.OS_NAME + " " + SystemUtils.OS_VERSION + " [" + SystemUtils.OS_ARCH + "]");
+            progressInfo.log("Profile directory: " + JIPipe.getJIPipeUserDir());
             progressInfo.log("");
         }
 
