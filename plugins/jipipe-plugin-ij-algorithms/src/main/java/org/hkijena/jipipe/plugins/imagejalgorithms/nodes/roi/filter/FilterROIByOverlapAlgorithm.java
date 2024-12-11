@@ -14,6 +14,7 @@
 package org.hkijena.jipipe.plugins.imagejalgorithms.nodes.roi.filter;
 
 import ij.ImagePlus;
+import ij.gui.PointRoi;
 import ij.gui.Roi;
 import org.hkijena.jipipe.api.ConfigureJIPipeNode;
 import org.hkijena.jipipe.api.JIPipeProgressInfo;
@@ -258,14 +259,16 @@ public class FilterROIByOverlapAlgorithm extends JIPipeIteratingAlgorithm {
             variableSet.set(secondPrefix + "." + secondMeasurements.getColumnName(col), secondMeasurements.getValueAt(0, col));
         }
 
-        if (overlap != null) {
-            // Measure overlap
-            temp.clear();
-            temp.add(overlap);
-            ResultsTableData overlapMeasurements = temp.measure(referenceImage, overlapFilterMeasurements, false, measureInPhysicalUnits);
-            for (int col = 0; col < overlapMeasurements.getColumnCount(); col++) {
-                variableSet.set("Overlap." + overlapMeasurements.getColumnName(col), overlapMeasurements.getValueAt(0, col));
-            }
+        if (overlap == null) {
+          overlap = new PointRoi(0, 0); // Generate a dummy ROI for measurements
+        }
+
+        // Measure overlap
+        temp.clear();
+        temp.add(overlap);
+        ResultsTableData overlapMeasurements = temp.measure(referenceImage, overlapFilterMeasurements, false, measureInPhysicalUnits);
+        for (int col = 0; col < overlapMeasurements.getColumnCount(); col++) {
+            variableSet.set("Overlap." + overlapMeasurements.getColumnName(col), overlapMeasurements.getValueAt(0, col));
         }
     }
 
