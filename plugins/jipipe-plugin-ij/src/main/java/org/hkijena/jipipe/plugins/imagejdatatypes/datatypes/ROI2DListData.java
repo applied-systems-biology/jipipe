@@ -46,15 +46,16 @@ import org.hkijena.jipipe.desktop.app.JIPipeDesktopWorkbench;
 import org.hkijena.jipipe.plugins.expressions.JIPipeExpressionVariablesMap;
 import org.hkijena.jipipe.plugins.imagejdatatypes.display.CachedROIListDataViewerWindow;
 import org.hkijena.jipipe.plugins.imagejdatatypes.util.*;
+import org.hkijena.jipipe.plugins.imagejdatatypes.util.measure.CustomAnalyzer;
 import org.hkijena.jipipe.plugins.imagejdatatypes.util.measure.ImageStatisticsSetParameter;
-import org.hkijena.jipipe.plugins.imagejdatatypes.util.measure.Measurement;
 import org.hkijena.jipipe.plugins.parameters.library.roi.Margin;
 import org.hkijena.jipipe.plugins.tables.datatypes.ResultsTableData;
 import org.hkijena.jipipe.utils.ColorUtils;
+import org.hkijena.jipipe.plugins.imagejdatatypes.util.measure.ImageMeasurementUtils;
 import org.hkijena.jipipe.utils.PathUtils;
 import org.hkijena.jipipe.utils.StringUtils;
-import org.scijava.vecmath.Point2f;
 
+import javax.swing.*;
 import java.awt.*;
 import java.awt.geom.Point2D;
 import java.io.*;
@@ -421,67 +422,6 @@ public class ROI2DListData extends ArrayList<Roi> implements JIPipeData {
     private static double parDist(double p1x, double p1y, double p2x, double p2y, double x, double y) {
         // signed projection of vector (x,y)-p1 into a line passing through p1 and p2
         return ((p2x - p1x) * (x - p1x) + (y - p1y) * (p2y - p1y)) / Math.sqrt(dist2(p1x, p1y, p2x, p2y));
-    }
-
-    private static void calculateAdditionalMeasurements(ImageStatisticsSetParameter measurements, boolean addNameToTable, Roi roi, ResultsTableData forRoi) {
-        if (measurements.getValues().contains(Measurement.BoundingRectangle) || measurements.getValues().contains(Measurement.ShapeDescriptors)) {
-            // Calculate fitted rotated rectangle
-            Roi mbr = calculateMinimumBoundingRectangle(roi);
-            FloatPolygon fp = mbr.getFloatPolygon();
-            Point2f p1 = new Point2f(fp.xpoints[0], fp.ypoints[0]);
-            Point2f p2 = new Point2f(fp.xpoints[1], fp.ypoints[1]);
-            Point2f p3 = new Point2f(fp.xpoints[2], fp.ypoints[2]);
-            Point2f p4 = new Point2f(fp.xpoints[3], fp.ypoints[3]);
-            float major = Math.max(p1.distance(p2), p2.distance(p3));
-            float minor = Math.min(p1.distance(p2), p2.distance(p3));
-            if (measurements.getValues().contains(Measurement.BoundingRectangle)) {
-                int columnRBWidth = forRoi.getOrCreateColumnIndex("RBWidth", false);
-                int columnRBHeight = forRoi.getOrCreateColumnIndex("RBHeight", false);
-                int columnRBX1 = forRoi.getOrCreateColumnIndex("RBX1", false);
-                int columnRBX2 = forRoi.getOrCreateColumnIndex("RBX2", false);
-                int columnRBX3 = forRoi.getOrCreateColumnIndex("RBX3", false);
-                int columnRBX4 = forRoi.getOrCreateColumnIndex("RBX4", false);
-                int columnRBY1 = forRoi.getOrCreateColumnIndex("RBY1", false);
-                int columnRBY2 = forRoi.getOrCreateColumnIndex("RBY2", false);
-                int columnRBY3 = forRoi.getOrCreateColumnIndex("RBY3", false);
-                int columnRBY4 = forRoi.getOrCreateColumnIndex("RBY4", false);
-                for (int row = 0; row < forRoi.getRowCount(); row++) {
-                    forRoi.setValueAt(major, row, columnRBWidth);
-                    forRoi.setValueAt(minor, row, columnRBHeight);
-                    forRoi.setValueAt(p1.x, row, columnRBX1);
-                    forRoi.setValueAt(p2.x, row, columnRBX2);
-                    forRoi.setValueAt(p3.x, row, columnRBX3);
-                    forRoi.setValueAt(p4.x, row, columnRBX4);
-                    forRoi.setValueAt(p1.y, row, columnRBY1);
-                    forRoi.setValueAt(p2.y, row, columnRBY2);
-                    forRoi.setValueAt(p3.y, row, columnRBY3);
-                    forRoi.setValueAt(p4.y, row, columnRBY4);
-                }
-            }
-            if (measurements.getValues().contains(Measurement.ShapeDescriptors)) {
-                float ar = major / minor;
-                int column = forRoi.getOrCreateColumnIndex("rAR", false);
-                for (int row = 0; row < forRoi.getRowCount(); row++) {
-                    forRoi.setValueAt(ar, row, column);
-                }
-            }
-        }
-        if (measurements.getValues().contains(Measurement.StackPosition)) {
-            int columnChannel = forRoi.getOrCreateColumnIndex("Ch", false);
-            int columnStack = forRoi.getOrCreateColumnIndex("Slice", false);
-            int columnFrame = forRoi.getOrCreateColumnIndex("Frame", false);
-            for (int row = 0; row < forRoi.getRowCount(); row++) {
-                forRoi.setValueAt(roi.getCPosition(), row, columnChannel);
-                forRoi.setValueAt(roi.getZPosition(), row, columnStack);
-                forRoi.setValueAt(roi.getTPosition(), row, columnFrame);
-            }
-        }
-        if (addNameToTable) {
-            int columnName = forRoi.getOrCreateColumnIndex("Name", true);
-            for (int row = 0; row < forRoi.getRowCount(); row++) {
-                forRoi.setValueAt(roi.getName(), row, columnName);
-            }
-        }
     }
 
     /**
@@ -1554,10 +1494,11 @@ public class ROI2DListData extends ArrayList<Roi> implements JIPipeData {
                 if (!measurePhysicalSizes) {
                     imp.setCalibration(null);
                 }
-                measurements.updateAnalyzer();
-                Analyzer aSys = new Analyzer(imp); // System Analyzer
-                ResultsTable rtSys = Analyzer.getResultsTable();
+
+                CustomAnalyzer analyzer = new CustomAnalyzer(imp, measurements.getNativeValue(), new ResultsTable());
+                ResultsTable rtSys = analyzer.getResultsTable();
                 rtSys.reset();
+
                 for (int z = 0; z < imp.getNSlices(); z++) {
                     for (int c = 0; c < imp.getNChannels(); c++) {
                         for (int t = 0; t < imp.getNFrames(); t++) {
@@ -1568,7 +1509,7 @@ public class ROI2DListData extends ArrayList<Roi> implements JIPipeData {
                                         (roi.getTPosition() == 0 || roi.getTPosition() == t + 1)) {
                                     imp.setRoi(roi);
                                     rtSys.reset();
-                                    aSys.measure();
+                                    analyzer.measure();
                                     ResultsTableData forRoi;
                                     if (addNameToTable) {
                                         forRoi = new ResultsTableData();
@@ -1577,7 +1518,7 @@ public class ROI2DListData extends ArrayList<Roi> implements JIPipeData {
                                     } else {
                                         forRoi = new ResultsTableData(rtSys);
                                     }
-                                    calculateAdditionalMeasurements(measurements, addNameToTable, roi, forRoi);
+                                    ImageMeasurementUtils.calculateAdditionalMeasurements(measurements, addNameToTable, roi, forRoi);
                                     result.addRows(forRoi);
                                 }
                             }
@@ -1592,16 +1533,17 @@ public class ROI2DListData extends ArrayList<Roi> implements JIPipeData {
 
         } else {
             imp = createDummyImage();
-            measurements.updateAnalyzer();
-            Analyzer aSys = new Analyzer(imp); // System Analyzer
-            ResultsTable rtSys = Analyzer.getResultsTable();
+
+            CustomAnalyzer analyzer = new CustomAnalyzer(imp, measurements.getNativeValue(), new ResultsTable());
+            ResultsTable rtSys = analyzer.getResultsTable();
             rtSys.reset();
+
             for (Roi roi : this) {
                 imp.setRoi(roi);
                 rtSys.reset();
-                aSys.measure();
+                analyzer.measure();
                 ResultsTableData forRoi = new ResultsTableData(rtSys);
-                calculateAdditionalMeasurements(measurements, addNameToTable, roi, forRoi);
+                ImageMeasurementUtils.calculateAdditionalMeasurements(measurements, addNameToTable, roi, forRoi);
                 result.addRows(forRoi);
             }
         }
@@ -1618,6 +1560,15 @@ public class ROI2DListData extends ArrayList<Roi> implements JIPipeData {
 //                result.mergeWith(forRoi);
 //            }
 //        }
+
+        // Ensure that the results table is closed
+        SwingUtilities.invokeLater(() -> {
+            if(ResultsTable.getResultsWindow() != null) {
+                ResultsTable.getResultsWindow().close();
+            }
+        });
+
+
         return result;
     }
 

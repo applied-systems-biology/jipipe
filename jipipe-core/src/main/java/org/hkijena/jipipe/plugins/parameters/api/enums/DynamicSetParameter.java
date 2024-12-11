@@ -120,4 +120,8 @@ public abstract class DynamicSetParameter<T> {
     public int hashCode() {
         return Objects.hash(values, allowedValues);
     }
+
+    public boolean contains(T value) {
+        return values.contains(value);
+    }
 }
