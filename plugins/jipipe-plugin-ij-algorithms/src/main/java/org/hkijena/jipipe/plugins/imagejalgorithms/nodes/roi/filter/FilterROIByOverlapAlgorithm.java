@@ -272,12 +272,12 @@ public class FilterROIByOverlapAlgorithm extends JIPipeIteratingAlgorithm {
     private Roi calculateOverlap(ROI2DListData temp, Roi roi1, Roi roi2, boolean fastMode, boolean ignoreC, boolean ignoreT) {
 
         if (!ignoreC) {
-            if (roi1.getCPosition() != roi2.getCPosition() && (roi1.getCPosition() > 0 || roi1.getCPosition() > 0)) {
+            if (roi1.getCPosition() != roi2.getCPosition() && (roi1.getCPosition() > 0 || roi2.getCPosition() > 0)) {
                 return null;
             }
         }
         if (!ignoreT) {
-            if (roi1.getTPosition() != roi2.getTPosition() && (roi1.getTPosition() > 0 || roi1.getTPosition() > 0)) {
+            if (roi1.getTPosition() != roi2.getTPosition() && (roi1.getTPosition() > 0 || roi2.getTPosition() > 0)) {
                 return null;
             }
         }
