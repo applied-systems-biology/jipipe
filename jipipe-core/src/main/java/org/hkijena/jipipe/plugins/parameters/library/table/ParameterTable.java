@@ -14,6 +14,7 @@
 package org.hkijena.jipipe.plugins.parameters.library.table;
 
 import com.fasterxml.jackson.annotation.JsonGetter;
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonSetter;
 import com.fasterxml.jackson.core.JsonGenerator;
 import com.fasterxml.jackson.core.JsonParser;
@@ -310,7 +311,6 @@ public class ParameterTable implements TableModel {
             this.name = name;
         }
 
-        @JsonGetter("field-class")
         public Class<?> getFieldClass() {
             return fieldClass;
         }

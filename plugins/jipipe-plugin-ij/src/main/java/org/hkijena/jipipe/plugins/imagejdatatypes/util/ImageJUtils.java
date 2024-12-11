@@ -2423,5 +2423,25 @@ public class ImageJUtils {
             throw new UnsupportedOperationException("Unsupported bitDepth: " + bitDepth);
         }
     }
+
+    public static ImagePlus newBlankOf(ImagePlus reference) {
+        return IJ.createHyperStack("Blank",
+                reference.getWidth(),
+                reference.getHeight(),
+                reference.getNChannels(),
+                reference.getNSlices(),
+                reference.getNFrames(),
+                reference.getBitDepth());
+    }
+
+    public static ImagePlus newBlankOf(ImagePlus reference, BitDepth bitDepth) {
+        return IJ.createHyperStack("Blank",
+                reference.getWidth(),
+                reference.getHeight(),
+                reference.getNChannels(),
+                reference.getNSlices(),
+                reference.getNFrames(),
+                bitDepth.getBitDepth());
+    }
 }
 

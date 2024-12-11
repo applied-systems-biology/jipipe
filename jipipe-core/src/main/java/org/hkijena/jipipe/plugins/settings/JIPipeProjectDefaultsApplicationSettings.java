@@ -34,8 +34,6 @@ import java.util.ArrayList;
 public class JIPipeProjectDefaultsApplicationSettings extends JIPipeDefaultApplicationsSettingsSheet {
 
     public static String ID = "org.hkijena.jipipe:projects";
-    private PathList recentProjects = new PathList();
-    private PathList recentJsonExtensionProjects = new PathList();
     private ProjectTemplateEnum projectTemplate = new ProjectTemplateEnum();
 
     private StringList projectTemplateDownloadRepositories = new StringList();
@@ -48,72 +46,6 @@ public class JIPipeProjectDefaultsApplicationSettings extends JIPipeDefaultAppli
 
     public static JIPipeProjectDefaultsApplicationSettings getInstance() {
         return JIPipe.getSettings().getById(ID, JIPipeProjectDefaultsApplicationSettings.class);
-    }
-
-    @SetJIPipeDocumentation(name = "Recent projects", description = "List of recent projects")
-    @JIPipeParameter("recent-projects")
-    public PathList getRecentProjects() {
-        return recentProjects;
-    }
-
-    @JIPipeParameter("recent-projects")
-    public void setRecentProjects(PathList recentProjects) {
-        this.recentProjects = recentProjects;
-
-    }
-
-    @SetJIPipeDocumentation(name = "Recent JSON extension projects", description = "List of recent JSON extension projects")
-    @JIPipeParameter("recent-json-extension-projects")
-    public PathList getRecentJsonExtensionProjects() {
-        return recentJsonExtensionProjects;
-    }
-
-    @JIPipeParameter("recent-json-extension-projects")
-    public void setRecentJsonExtensionProjects(PathList recentJsonExtensionProjects) {
-        this.recentJsonExtensionProjects = recentJsonExtensionProjects;
-
-    }
-
-    /**
-     * Adds a project file to the list of recent projects
-     *
-     * @param fileName Project file
-     */
-    public void addRecentProject(Path fileName) {
-        int index = recentProjects.indexOf(fileName);
-        if (index == -1) {
-            recentProjects.add(0, fileName);
-            emitParameterChangedEvent("recent-projects");
-            if (!JIPipe.NO_SETTINGS_AUTOSAVE) {
-                JIPipe.getSettings().save();
-            }
-        } else if (index != 0) {
-            recentProjects.remove(index);
-            recentProjects.add(0, fileName);
-            emitParameterChangedEvent("recent-projects");
-            if (!JIPipe.NO_SETTINGS_AUTOSAVE) {
-                JIPipe.getSettings().save();
-            }
-        }
-    }
-
-    /**
-     * Adds a JSON extension file to the list of recent JSON extensions
-     *
-     * @param fileName JSON extension file
-     */
-    public void addRecentJsonExtension(Path fileName) {
-        int index = recentJsonExtensionProjects.indexOf(fileName);
-        if (index == -1) {
-            recentJsonExtensionProjects.add(0, fileName);
-            emitParameterChangedEvent("recent-json-extension-projects");
-            JIPipe.getSettings().save();
-        } else if (index != 0) {
-            recentJsonExtensionProjects.remove(index);
-            recentJsonExtensionProjects.add(0, fileName);
-            emitParameterChangedEvent("recent-json-extension-projects");
-            JIPipe.getSettings().save();
-        }
     }
 
     @SetJIPipeDocumentation(name = "New project template", description = "Template used for creating new projects")
