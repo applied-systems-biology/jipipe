@@ -94,7 +94,7 @@ public class CUDAUtils {
                 minCudaVersion = Math.min(minCudaVersion, minVersion);
             }
 
-            return (int) StringUtils.tryParseDouble(String.format("%.1f", minCudaVersion), 0);
+            return (int) StringUtils.tryParseDouble(String.format("%.1f", minCudaVersion), 0) * 10;
         } catch (Exception e) {
             return 0;
         }

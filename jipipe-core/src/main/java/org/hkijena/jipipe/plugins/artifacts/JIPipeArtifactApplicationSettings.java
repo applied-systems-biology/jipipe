@@ -36,6 +36,7 @@ public class JIPipeArtifactApplicationSettings extends JIPipeDefaultApplications
     private Vector2iParameter accelerationPreferenceVersions = new Vector2iParameter();
     private JIPipeArtifactRepositoryReferenceList repositories = new JIPipeArtifactRepositoryReferenceList();
     private OptionalPathParameter overrideInstallationPath = new OptionalPathParameter();
+    private boolean autoConfigureAccelerationOnNextStartup = true;
 
     public JIPipeArtifactApplicationSettings() {
         repositories.add(new JIPipeArtifactRepositoryReference("https://jipipe.hki-jena.de/nexus/", "jipipe-artifacts", JIPipeArtifactRepositoryType.SonatypeNexus));
@@ -43,6 +44,17 @@ public class JIPipeArtifactApplicationSettings extends JIPipeDefaultApplications
 
     public static JIPipeArtifactApplicationSettings getInstance() {
         return JIPipe.getSettings().getById(ID, JIPipeArtifactApplicationSettings.class);
+    }
+
+    @SetJIPipeDocumentation(name = "Auto-configure acceleration on next startup", description = "Attempts to automatically determine the acceleration during the next JIPipe startup.")
+    @JIPipeParameter("auto-configure-acceleration-on-next-startup")
+    public boolean isAutoConfigureAccelerationOnNextStartup() {
+        return autoConfigureAccelerationOnNextStartup;
+    }
+
+    @JIPipeParameter("auto-configure-acceleration-on-next-startup")
+    public void setAutoConfigureAccelerationOnNextStartup(boolean autoConfigureAccelerationOnNextStartup) {
+        this.autoConfigureAccelerationOnNextStartup = autoConfigureAccelerationOnNextStartup;
     }
 
     @SetJIPipeDocumentation(name = "Acceleration mode", description = "Determines if JIPipe should prefer artifacts with a specific acceleration type. " +

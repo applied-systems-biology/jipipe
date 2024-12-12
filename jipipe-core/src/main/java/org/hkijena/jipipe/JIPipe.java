@@ -52,8 +52,11 @@ import org.hkijena.jipipe.api.validation.contexts.UnspecifiedValidationReportCon
 import org.hkijena.jipipe.desktop.api.registries.JIPipeCustomMenuRegistry;
 import org.hkijena.jipipe.desktop.app.JIPipeDesktopProjectWindow;
 import org.hkijena.jipipe.desktop.app.running.JIPipeDesktopRunnableLogsCollection;
+import org.hkijena.jipipe.plugins.artifacts.JIPipeArtifactAccelerationPreference;
+import org.hkijena.jipipe.plugins.artifacts.JIPipeArtifactApplicationSettings;
 import org.hkijena.jipipe.plugins.parameters.library.jipipe.DynamicDataDisplayOperationIdEnumParameter;
 import org.hkijena.jipipe.plugins.parameters.library.jipipe.DynamicDataImportOperationIdEnumParameter;
+import org.hkijena.jipipe.plugins.parameters.library.primitives.vectors.Vector2iParameter;
 import org.hkijena.jipipe.plugins.settings.JIPipeDefaultCacheDisplayApplicationSettings;
 import org.hkijena.jipipe.plugins.settings.JIPipeDefaultResultImporterApplicationSettings;
 import org.hkijena.jipipe.plugins.settings.JIPipeExtensionApplicationSettings;
@@ -1033,6 +1036,33 @@ public class JIPipe extends AbstractService implements JIPipeService {
         // Check artifacts
         progressInfo.setProgress(7);
         artifactsRegistry.updateCachedArtifacts(progressInfo.resolve("Updating artifacts"));
+
+        // Check acceleration
+        if(JIPipeArtifactApplicationSettings.getInstance().isAutoConfigureAccelerationOnNextStartup()) {
+            progressInfo.log("Determining acceleration profile ...");
+            try {
+
+                if(CUDAUtils.hasCudaSupport()) {
+                    progressInfo.log("Determining acceleration profile ... CUDA support detected");
+                    JIPipeArtifactApplicationSettings.getInstance().setAccelerationPreference(JIPipeArtifactAccelerationPreference.CUDA);
+
+                    try {
+                        JIPipeArtifactApplicationSettings.getInstance().setAccelerationPreferenceVersions(new Vector2iParameter(
+                                CUDAUtils.getMinimumCudaVersion(),
+                                0  // Broken due to Nvidia-SMI hanging on Linux -> have to use 0
+                        ));
+                        progressInfo.log("Determined CUDA version limits as " + JIPipeArtifactApplicationSettings.getInstance().getAccelerationPreferenceVersions());
+                    } catch (Exception e) {
+                        progressInfo.log(e);
+                    }
+                }
+
+                JIPipeArtifactApplicationSettings.getInstance().setAutoConfigureAccelerationOnNextStartup(false);
+                applicationSettingsRegistry.save();
+            } catch (Exception e) {
+                progressInfo.log(e);
+            }
+        }
 
         // Load templates
         progressInfo.log("Loading node templates ...");
