@@ -48,10 +48,7 @@ import org.hkijena.jipipe.desktop.app.quickrun.JIPipeDesktopQuickRunSettings;
 import org.hkijena.jipipe.desktop.app.running.*;
 import org.hkijena.jipipe.desktop.app.settings.JIPipeDesktopApplicationSettingsUI;
 import org.hkijena.jipipe.desktop.app.settings.JIPipeDesktopProjectOverviewUI;
-import org.hkijena.jipipe.desktop.commons.components.JIPipeDesktopMemoryOptionsControl;
-import org.hkijena.jipipe.desktop.commons.components.JIPipeDesktopMemoryStatusUI;
-import org.hkijena.jipipe.desktop.commons.components.JIPipeDesktopRecentProjectsMenu;
-import org.hkijena.jipipe.desktop.commons.components.JIPipeDesktopReloadableValidityChecker;
+import org.hkijena.jipipe.desktop.commons.components.*;
 import org.hkijena.jipipe.desktop.commons.components.markup.JIPipeDesktopMarkdownReader;
 import org.hkijena.jipipe.desktop.commons.components.tabs.JIPipeDesktopTabPane;
 import org.hkijena.jipipe.desktop.commons.notifications.JIPipeDesktopNotificationButton;
@@ -403,7 +400,14 @@ public class JIPipeDesktopProjectWorkbench extends JPanel implements JIPipeDeskt
         UIUtils.makeButtonFlat(optionsButton);
         statusBar.add(optionsButton);
         statusBar.add(Box.createHorizontalStrut(4));
+
+
+        // Acceleration control
+        statusBar.add(new JIPipeDesktopAccelerationOptionsControl(this));
+
+        // Memory meter
         statusBar.add(new JIPipeDesktopMemoryStatusUI());
+
 
         add(statusBar, BorderLayout.SOUTH);
     }
