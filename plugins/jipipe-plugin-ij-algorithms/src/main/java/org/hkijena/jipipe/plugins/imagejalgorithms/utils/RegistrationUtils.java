@@ -60,7 +60,7 @@ public class RegistrationUtils {
      * @param t            coordinate transform
      * @param commonBounds current common bounds of the registration space
      * @param bounds       list of bounds for the already registered images
-     * @param parameters
+     * @param parameters   the parameters
      */
     public static void register(
             final ImagePlus imp1,
@@ -155,8 +155,8 @@ public class RegistrationUtils {
 
                 // Tweak initial affine transform based on the chosen model
                 if (parameters.getImageRegistrationFeatureModel() == SimpleImageRegistrationFeatureModel.Translation ||
-                parameters.getImageRegistrationFeatureModel() == SimpleImageRegistrationFeatureModel.Rigid ||
-                parameters.getImageRegistrationFeatureModel() == SimpleImageRegistrationFeatureModel.Similarity) {
+                        parameters.getImageRegistrationFeatureModel() == SimpleImageRegistrationFeatureModel.Rigid ||
+                        parameters.getImageRegistrationFeatureModel() == SimpleImageRegistrationFeatureModel.Similarity) {
                     // Remove shearing
                     elasticParams.setShearCorrection(1.0);
                     // Remove anisotropy

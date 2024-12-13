@@ -126,8 +126,14 @@ public class SimpleImageRegistrationAlgorithm extends JIPipeIteratingAlgorithm {
         CoordinateTransform coordinateTransform = parameters.getImageRegistrationModel().toCoordinateTransform();
         Rectangle commonBounds = new Rectangle(0,0, imp1.getWidth(), imp1.getHeight());
         List<Rectangle> bounds = new ArrayList<>();
+        bounds.add(new Rectangle(0,0, imp1.getWidth(), imp1.getHeight()));
 
         RegistrationUtils.register(imp1, imp2, imp1mask, imp2mask, coordinateTransform, commonBounds, bounds, parameters, siftParameters, unwarpJParametersParam, progressInfo);
+
+        iterationStep.addOutputData("Reference", new ImagePlusData(imp1), progressInfo);
+        iterationStep.addOutputData("Target", new ImagePlusData(imp2), progressInfo);
+
+        System.out.println();
 
     }
 }
