@@ -13,12 +13,11 @@
 
 package org.hkijena.jipipe.plugins.imagejalgorithms.utils;
 
+import bunwarpj.Param;
 import bunwarpj.Transformation;
 import bunwarpj.bUnwarpJ_;
 import bunwarpj.trakem2.transform.CubicBSplineTransform;
-import ij.IJ;
 import ij.ImagePlus;
-import ij.io.FileSaver;
 import ij.process.ByteProcessor;
 import ij.process.ImageProcessor;
 import mpicbg.ij.FeatureTransform;
@@ -26,21 +25,21 @@ import mpicbg.ij.SIFT;
 import mpicbg.ij.util.Util;
 import mpicbg.imagefeatures.Feature;
 import mpicbg.imagefeatures.FloatArray2DSIFT;
+import mpicbg.models.IllDefinedDataPointsException;
 import mpicbg.models.Model;
 import mpicbg.models.NotEnoughDataPointsException;
 import mpicbg.models.PointMatch;
 import mpicbg.trakem2.transform.*;
 import org.hkijena.jipipe.api.JIPipeProgressInfo;
 import org.hkijena.jipipe.plugins.imagejalgorithms.nodes.registration.SIFTParameters;
-import org.hkijena.jipipe.plugins.imagejalgorithms.nodes.registration.SimpleBUnwarpJParameters;
+import org.hkijena.jipipe.plugins.imagejalgorithms.nodes.registration.SimpleImageRegistrationFeatureModel;
+import org.hkijena.jipipe.plugins.imagejalgorithms.nodes.registration.SimpleImageRegistrationModel;
+import org.hkijena.jipipe.plugins.imagejalgorithms.nodes.registration.SimpleImageRegistrationParameters;
 import register_virtual_stack.Register_Virtual_Stack_MT;
 
 import java.awt.*;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.concurrent.Callable;
-import java.util.concurrent.ExecutorService;
-import java.util.concurrent.Future;
 
 /**
  * Port of {@link Register_Virtual_Stack_MT}
@@ -61,6 +60,7 @@ public class RegistrationUtils {
      * @param t            coordinate transform
      * @param commonBounds current common bounds of the registration space
      * @param bounds       list of bounds for the already registered images
+     * @param parameters
      */
     public static void register(
             final ImagePlus imp1,
@@ -70,36 +70,42 @@ public class RegistrationUtils {
             final CoordinateTransform t,
             final Rectangle commonBounds,
             final List<Rectangle> bounds,
-            final SIFTParameters siftParameters,
-            final bunwarpj.Param elasticParams,
-            JIPipeProgressInfo progressInfo) throws Exception {
+            SimpleImageRegistrationParameters parameters, final SIFTParameters siftParameters,
+            final Param elasticParams,
+            JIPipeProgressInfo progressInfo) {
+
+        // Extract parameters
+        float maxEpsilon = parameters.getMaxEpsilon();
+        float rod = parameters.getRod();
+        float minInlierRatio = parameters.getMinInlierRatio();
+        boolean interpolate = parameters.isInterpolate();
 
         // Extract SIFT features
         List<Feature> fs1 = extractFeatures(siftParameters, imp1.getProcessor());
         List<Feature> fs2 = extractFeatures(siftParameters, imp2.getProcessor());
 
-        final java.util.List<PointMatch> candidates = new ArrayList<>();
-        FeatureTransform.matchFeatures(fs2, fs1, candidates, Register_Virtual_Stack_MT.Param.rod);
+        final List<PointMatch> candidates = new ArrayList<>();
+        FeatureTransform.matchFeatures(fs2, fs1, candidates, rod);
 
-        final java.util.List<PointMatch> inliers = new ArrayList<>();
+        final List<PointMatch> inliers = new ArrayList<>();
 
         // Select features model
         Model<?> featuresModel;
-        switch (Register_Virtual_Stack_MT.Param.featuresModelIndex) {
-            case Register_Virtual_Stack_MT.TRANSLATION:
+        switch (parameters.getImageRegistrationFeatureModel()) {
+            case Translation:
                 featuresModel = new TranslationModel2D();
                 break;
-            case Register_Virtual_Stack_MT.RIGID:
+            case Rigid:
                 featuresModel = new RigidModel2D();
                 break;
-            case Register_Virtual_Stack_MT.SIMILARITY:
+            case Similarity:
                 featuresModel = new SimilarityModel2D();
                 break;
-            case Register_Virtual_Stack_MT.AFFINE:
+            case Affine:
                 featuresModel = new AffineModel2D();
                 break;
             default:
-                throw new RuntimeException("ERROR: unknown featuresModelIndex = " + Register_Virtual_Stack_MT.Param.featuresModelIndex);
+                throw new RuntimeException("ERROR: unknown features model = " + parameters.getImageRegistrationFeatureModel());
         }
 
         // Filter candidates into inliers
@@ -108,21 +114,25 @@ public class RegistrationUtils {
                     candidates,
                     inliers,
                     1000,
-                    Register_Virtual_Stack_MT.Param.maxEpsilon,
-                    Register_Virtual_Stack_MT.Param.minInlierRatio);
+                    maxEpsilon,
+                    minInlierRatio);
         } catch (NotEnoughDataPointsException e) {
             throw new RuntimeException("Unable to find model features!");
         }
 
         // Generate registered image, put it into imp2 and save it
-        switch (Register_Virtual_Stack_MT.Param.registrationModelIndex) {
-            case Register_Virtual_Stack_MT.TRANSLATION:
-            case Register_Virtual_Stack_MT.SIMILARITY:
-            case Register_Virtual_Stack_MT.RIGID:
-            case Register_Virtual_Stack_MT.AFFINE:
-                ((Model<?>) t).fit(inliers);
+        switch (parameters.getImageRegistrationModel()) {
+            case Translation:
+            case Similarity:
+            case Rigid:
+            case Affine:
+                try {
+                    ((Model<?>) t).fit(inliers);
+                } catch (NotEnoughDataPointsException | IllDefinedDataPointsException e) {
+                    throw new RuntimeException(e);
+                }
                 break;
-            case Register_Virtual_Stack_MT.ELASTIC:
+            case Elastic:
                 // set inliers as a PointRoi, and set masks
                 //call_bUnwarpJ(...);
                 //imp1.show();
@@ -144,12 +154,15 @@ public class RegistrationUtils {
                 //if(imp1mask != null) new ImagePlus("mask", imp1mask).show();
 
                 // Tweak initial affine transform based on the chosen model
-                if (Register_Virtual_Stack_MT.Param.featuresModelIndex < Register_Virtual_Stack_MT.AFFINE) {
+                if (parameters.getImageRegistrationFeatureModel() == SimpleImageRegistrationFeatureModel.Translation ||
+                parameters.getImageRegistrationFeatureModel() == SimpleImageRegistrationFeatureModel.Rigid ||
+                parameters.getImageRegistrationFeatureModel() == SimpleImageRegistrationFeatureModel.Similarity) {
                     // Remove shearing
                     elasticParams.setShearCorrection(1.0);
                     // Remove anisotropy
                     elasticParams.setAnisotropyCorrection(1.0);
-                    if (Register_Virtual_Stack_MT.Param.featuresModelIndex < Register_Virtual_Stack_MT.SIMILARITY) {
+                    if (parameters.getImageRegistrationFeatureModel() == SimpleImageRegistrationFeatureModel.Translation ||
+                            parameters.getImageRegistrationFeatureModel() == SimpleImageRegistrationFeatureModel.Rigid) {
                         // Remove scaling
                         elasticParams.setScaleCorrection(1.0);
                     }
@@ -173,11 +186,17 @@ public class RegistrationUtils {
                 ((CubicBSplineTransform) t).set(warp.getIntervals(), warp.getDirectDeformationCoefficientsX(), warp.getDirectDeformationCoefficientsY(),
                         imp2.getWidth(), imp2.getHeight());
                 break;
-            case Register_Virtual_Stack_MT.MOVING_LEAST_SQUARES:
-                ((MovingLeastSquaresTransform) t).setModel(AffineModel2D.class);
-                ((MovingLeastSquaresTransform) t).setAlpha(1); // smoothness
-                ((MovingLeastSquaresTransform) t).setMatches(inliers);
+            case MovingLeastSquares:
+                try {
+                    ((MovingLeastSquaresTransform) t).setModel(AffineModel2D.class);
+                    ((MovingLeastSquaresTransform) t).setAlpha(1); // smoothness
+                    ((MovingLeastSquaresTransform) t).setMatches(inliers);
+                } catch (Exception e) {
+                    throw new RuntimeException(e);
+                }
                 break;
+            default:
+                throw new RuntimeException("ERROR: unknown image registration model = " + parameters.getImageRegistrationModel());
         }
 
         // Calculate transform mesh
@@ -185,16 +204,16 @@ public class RegistrationUtils {
         TransformMeshMapping mapping = new TransformMeshMapping(mesh);
 
         // Create interpolated mask (only for elastic registration)
-        if (Register_Virtual_Stack_MT.Param.registrationModelIndex == Register_Virtual_Stack_MT.ELASTIC) {
+        if (parameters.getImageRegistrationModel() == SimpleImageRegistrationModel.Elastic) {
             imp2mask.setProcessor(imp2mask.getTitle(), new ByteProcessor(imp2.getWidth(), imp2.getHeight()));
             imp2mask.getProcessor().setValue(255);
             imp2mask.getProcessor().fill();
-            final ImageProcessor ip2mask = Register_Virtual_Stack_MT.Param.interpolate ? mapping.createMappedImageInterpolated(imp2mask.getProcessor()) : mapping.createMappedImage(imp2mask.getProcessor());
+            final ImageProcessor ip2mask = interpolate ? mapping.createMappedImageInterpolated(imp2mask.getProcessor()) : mapping.createMappedImage(imp2mask.getProcessor());
             imp2mask.setProcessor(imp2mask.getTitle(), ip2mask);
         }
         // Create interpolated deformed image with black background
         imp2.getProcessor().setValue(0);
-        final ImageProcessor ip2 = Register_Virtual_Stack_MT.Param.interpolate ? mapping.createMappedImageInterpolated(imp2.getProcessor()) : mapping.createMappedImage(imp2.getProcessor());
+        final ImageProcessor ip2 = interpolate ? mapping.createMappedImageInterpolated(imp2.getProcessor()) : mapping.createMappedImage(imp2.getProcessor());
         imp2.setProcessor(imp2.getTitle(), ip2);
 
         // Accumulate bounding boxes, so in the end they can be reopened and re-saved with an enlarged canvas.

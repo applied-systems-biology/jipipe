@@ -160,4 +160,19 @@ public class SimpleBUnwarpJParameters extends AbstractJIPipeParameterCollection 
     public void setStopThreshold(double stopThreshold) {
         this.stopThreshold = stopThreshold;
     }
+
+    public bunwarpj.Param toParam() {
+        bunwarpj.Param param = new bunwarpj.Param();
+        param.consistencyWeight = consistencyWeight;
+        param.curlWeight = curlWeight;
+        param.imageWeight = imageWeight;
+        param.landmarkWeight = landmarkWeight;
+        param.mode = mode.getNativeValue();
+        param.divWeight = divergenceWeight;
+        param.img_subsamp_fact = imageSubsamplingFactor;
+        param.min_scale_deformation = minScaleDeformation.getNativeValue();
+        param.max_scale_deformation = maxScaleDeformation.getNativeValue();
+        param.stopThreshold = stopThreshold;
+        return param;
+    }
 }
