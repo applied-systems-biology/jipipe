@@ -52,4 +52,9 @@ public class Vector2dParameter implements Vector2Parameter {
     public void setY(double y) {
         this.y = y;
     }
+
+    @Override
+    public String toString() {
+        return "[" + x + ", " + y + "]";
+    }
 }

@@ -65,4 +65,9 @@ public class Vector3dParameter implements Vector3Parameter {
     public void setZ(double z) {
         this.z = z;
     }
+
+    @Override
+    public String toString() {
+        return "[" + x + ", " + y + ", " + z + "]";
+    }
 }

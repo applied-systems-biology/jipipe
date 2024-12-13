@@ -654,4 +654,13 @@ public class PathUtils {
             throw new RuntimeException(e);
         }
     }
+
+    /**
+     * Checks if a file exists and is an executable
+     * @param path the file
+     * @return if it is an executable
+     */
+    public static boolean isExecutable(Path path) {
+        return  Files.exists(path) && Files.isRegularFile(path) && Files.isExecutable(path);
+    }
 }
