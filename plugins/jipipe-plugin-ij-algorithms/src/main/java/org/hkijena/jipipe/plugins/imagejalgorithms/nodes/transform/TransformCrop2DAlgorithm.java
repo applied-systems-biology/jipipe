@@ -14,7 +14,6 @@
 package org.hkijena.jipipe.plugins.imagejalgorithms.nodes.transform;
 
 import ij.ImagePlus;
-import ij.ImageStack;
 import ij.process.ImageProcessor;
 import org.hkijena.jipipe.api.ConfigureJIPipeNode;
 import org.hkijena.jipipe.api.JIPipeProgressInfo;
@@ -68,30 +67,6 @@ public class TransformCrop2DAlgorithm extends JIPipeSimpleIteratingAlgorithm {
         this.roi = new Margin(other.roi);
     }
 
-    public static ImagePlus crop(JIPipeProgressInfo progressInfo, ImagePlus img, Rectangle cropped) {
-        ImagePlus croppedImg;
-        if (img.hasImageStack()) {
-            ImageStack result = new ImageStack(cropped.width, cropped.height, img.getStackSize());
-            ImageJUtils.forEachIndexedZCTSlice(img, (imp, index) -> {
-                imp.setRoi(cropped);
-                ImageProcessor croppedImage = imp.crop();
-                imp.resetRoi();
-                result.setProcessor(croppedImage, index.zeroSliceIndexToOneStackIndex(img));
-            }, progressInfo);
-            croppedImg = new ImagePlus("Cropped", result);
-            croppedImg.setDimensions(img.getNChannels(), img.getNSlices(), img.getNFrames());
-            croppedImg.copyScale(img);
-        } else {
-            ImageProcessor imp = img.getProcessor();
-            imp.setRoi(cropped);
-            ImageProcessor croppedImage = imp.crop();
-            imp.resetRoi();
-            croppedImg = new ImagePlus("Cropped", croppedImage);
-            croppedImg.copyScale(img);
-        }
-        return croppedImg;
-    }
-
     @Override
     public boolean supportsParallelization() {
         return true;
@@ -121,7 +96,7 @@ public class TransformCrop2DAlgorithm extends JIPipeSimpleIteratingAlgorithm {
 //                    "Please check the parameters and ensure that you only crop ");
 //        }
 
-        ImagePlus croppedImg = crop(progressInfo, img, cropped);
+        ImagePlus croppedImg = ImageJUtils.cropLegacy(img, cropped, progressInfo);
 
         iterationStep.addOutputData(getFirstOutputSlot(), new ImagePlusData(croppedImg), progressInfo);
     }

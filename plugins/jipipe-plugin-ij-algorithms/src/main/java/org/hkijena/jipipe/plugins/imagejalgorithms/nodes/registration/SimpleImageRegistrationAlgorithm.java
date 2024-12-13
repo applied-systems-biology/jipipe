@@ -15,7 +15,6 @@ package org.hkijena.jipipe.plugins.imagejalgorithms.nodes.registration;
 
 import bunwarpj.Param;
 import ij.ImagePlus;
-import mpicbg.trakem2.transform.AffineModel2D;
 import mpicbg.trakem2.transform.CoordinateTransform;
 import org.hkijena.jipipe.api.AddJIPipeCitation;
 import org.hkijena.jipipe.api.ConfigureJIPipeNode;
@@ -26,25 +25,20 @@ import org.hkijena.jipipe.api.nodes.AddJIPipeOutputSlot;
 import org.hkijena.jipipe.api.nodes.JIPipeGraphNodeRunContext;
 import org.hkijena.jipipe.api.nodes.JIPipeNodeInfo;
 import org.hkijena.jipipe.api.nodes.algorithm.JIPipeIteratingAlgorithm;
-import org.hkijena.jipipe.api.nodes.algorithm.JIPipeMergingAlgorithm;
 import org.hkijena.jipipe.api.nodes.categories.ImagesNodeTypeCategory;
 import org.hkijena.jipipe.api.nodes.iterationstep.JIPipeIterationContext;
-import org.hkijena.jipipe.api.nodes.iterationstep.JIPipeIterationStep;
-import org.hkijena.jipipe.api.nodes.iterationstep.JIPipeMultiIterationStep;
 import org.hkijena.jipipe.api.nodes.iterationstep.JIPipeSingleIterationStep;
 import org.hkijena.jipipe.api.parameters.JIPipeParameter;
 import org.hkijena.jipipe.api.parameters.JIPipeParameterCollection;
 import org.hkijena.jipipe.api.parameters.JIPipeParameterTree;
-import org.hkijena.jipipe.api.validation.JIPipeValidationRuntimeException;
-import org.hkijena.jipipe.api.validation.contexts.GraphNodeValidationReportContext;
 import org.hkijena.jipipe.plugins.imagejalgorithms.utils.RegistrationUtils;
 import org.hkijena.jipipe.plugins.imagejdatatypes.datatypes.ImagePlusData;
+import org.hkijena.jipipe.plugins.imagejdatatypes.util.ImageJUtils;
 import org.hkijena.jipipe.plugins.strings.XMLData;
 
 import java.awt.*;
 import java.util.*;
 import java.util.List;
-import java.util.stream.Collectors;
 
 /**
  * Port of {@link register_virtual_stack.Register_Virtual_Stack_MT}
@@ -129,6 +123,8 @@ public class SimpleImageRegistrationAlgorithm extends JIPipeIteratingAlgorithm {
         bounds.add(new Rectangle(0,0, imp1.getWidth(), imp1.getHeight()));
 
         RegistrationUtils.register(imp1, imp2, imp1mask, imp2mask, coordinateTransform, commonBounds, bounds, parameters, siftParameters, unwarpJParametersParam, progressInfo);
+
+        imp2 = ImageJUtils.cropLegacy(imp2, bounds.get(0), progressInfo);
 
         iterationStep.addOutputData("Reference", new ImagePlusData(imp1), progressInfo);
         iterationStep.addOutputData("Target", new ImagePlusData(imp2), progressInfo);

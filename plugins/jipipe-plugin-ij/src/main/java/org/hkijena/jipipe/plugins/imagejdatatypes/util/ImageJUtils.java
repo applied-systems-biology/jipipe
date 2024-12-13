@@ -2443,5 +2443,57 @@ public class ImageJUtils {
                 reference.getNFrames(),
                 bitDepth.getBitDepth());
     }
+
+    /**
+     * Cropping as implemented in ImageJ.
+     * Cannot handle negative X and Y in the rectangle
+     * @param img the image
+     * @param cropped the cropping ROI
+     * @param progressInfo the progress info
+     * @return the cropped image
+     */
+    public static ImagePlus cropLegacy(ImagePlus img, Rectangle cropped, JIPipeProgressInfo progressInfo) {
+        ImagePlus croppedImg;
+        if (img.hasImageStack()) {
+            ImageStack result = new ImageStack(cropped.width, cropped.height, img.getStackSize());
+            forEachIndexedZCTSlice(img, (imp, index) -> {
+                imp.setRoi(cropped);
+                ImageProcessor croppedImage = imp.crop();
+                imp.resetRoi();
+                result.setProcessor(croppedImage, index.zeroSliceIndexToOneStackIndex(img));
+            }, progressInfo);
+            croppedImg = new ImagePlus("Cropped", result);
+            croppedImg.setDimensions(img.getNChannels(), img.getNSlices(), img.getNFrames());
+            croppedImg.copyScale(img);
+        } else {
+            ImageProcessor imp = img.getProcessor();
+            imp.setRoi(cropped);
+            ImageProcessor croppedImage = imp.crop();
+            imp.resetRoi();
+            croppedImg = new ImagePlus("Cropped", croppedImage);
+            croppedImg.copyScale(img);
+        }
+        return croppedImg;
+    }
+
+    /**
+     * Cropping that can handle negative X and Y
+     * @param img the image
+     * @param cropped the cropping ROI
+     * @param progressInfo the progress info
+     * @return the cropped image
+     */
+    public static ImagePlus crop(ImagePlus img, Rectangle cropped, JIPipeProgressInfo progressInfo) {
+        ImagePlus result = IJ.createHyperStack(img.getTitle(),
+                img.getWidth(),
+                img.getHeight(),
+                img.getNChannels(),
+                img.getNSlices(),
+                img.getNFrames(),
+                img.getBitDepth());
+
+        result.copyScale(img);
+        return result;
+    }
 }
 
