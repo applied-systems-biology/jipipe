@@ -38,6 +38,7 @@ import org.hkijena.jipipe.desktop.app.grapheditor.flavors.compartments.propertie
 import org.hkijena.jipipe.desktop.app.grapheditor.flavors.pipeline.actions.JIPipeDesktopRunAndShowResultsAction;
 import org.hkijena.jipipe.desktop.app.grapheditor.flavors.pipeline.actions.JIPipeDesktopUpdateCacheAction;
 import org.hkijena.jipipe.desktop.app.history.JIPipeDesktopHistoryJournalUI;
+import org.hkijena.jipipe.desktop.commons.components.JIPipeDesktopExpressionCalculatorUI;
 import org.hkijena.jipipe.plugins.parameters.library.pairs.StringAndStringPairParameter;
 import org.hkijena.jipipe.plugins.settings.JIPipeGraphEditorUIApplicationSettings;
 import org.hkijena.jipipe.utils.UIUtils;
@@ -118,6 +119,12 @@ public class JIPipeDesktopCompartmentsGraphEditorUI extends AbstractJIPipeDeskto
 
     private void initializeDefaultPanels() {
 
+        getDockPanel().addDockPanel(AbstractJIPipeDesktopGraphEditorUI.DOCK_CALCULATOR,
+                "Calculator",
+                UIUtils.getIcon32FromResources("actions/insert-math-expression.png"),
+                JIPipeDesktopDockPanel.PanelLocation.TopLeft,
+                true,
+                0, new JIPipeDesktopExpressionCalculatorUI(getDesktopWorkbench()));
         getDockPanel().addDockPanel(AbstractJIPipeDesktopGraphEditorUI.DOCK_MAP,
                 "Overview map",
                 UIUtils.getIcon32FromResources("actions/zoom.png"),

@@ -70,6 +70,7 @@ public abstract class AbstractJIPipeDesktopGraphEditorUI extends JIPipeDesktopWo
     public static final String DOCK_BOOKMARKS = "BOOKMARKS";
     public static final String DOCK_MAP = "MAP";
     public static final String DOCK_ERRORS = "ERRORS";
+    public static final String DOCK_CALCULATOR = "CALCULATOR";
 
     public static final KeyStroke KEY_STROKE_UNDO = KeyStroke.getKeyStroke(KeyEvent.VK_Z, InputEvent.CTRL_MASK, true);
     public static final KeyStroke KEY_STROKE_REDO = KeyStroke.getKeyStroke(KeyEvent.VK_Z, InputEvent.CTRL_MASK | InputEvent.SHIFT_MASK, true);
@@ -80,6 +81,7 @@ public abstract class AbstractJIPipeDesktopGraphEditorUI extends JIPipeDesktopWo
     public static final KeyStroke KEY_STROKE_MOVE_SELECTION_RIGHT = KeyStroke.getKeyStroke(KeyEvent.VK_RIGHT, 0, false);
     public static final KeyStroke KEY_STROKE_MOVE_SELECTION_UP = KeyStroke.getKeyStroke(KeyEvent.VK_UP, 0, false);
     public static final KeyStroke KEY_STROKE_MOVE_SELECTION_DOWN = KeyStroke.getKeyStroke(KeyEvent.VK_DOWN, 0, false);
+
     private final JIPipeGraphEditorUIApplicationSettings graphUISettings;
     private final JIPipeDesktopGraphCanvasUI canvasUI;
     private final JIPipeGraph graph;
