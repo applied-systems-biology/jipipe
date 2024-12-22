@@ -2437,6 +2437,10 @@ public class UIUtils {
         });
     }
 
+    public static URL getIcon32URLFromResources(String iconName) {
+        return ResourceUtils.getPluginResource("icons-32/" + iconName);
+    }
+
 
     public static class DragThroughMouseListener implements MouseListener, MouseMotionListener {
         private final Component component;
