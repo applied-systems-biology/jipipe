@@ -49,7 +49,7 @@ import org.hkijena.jipipe.plugins.strings.XMLData;
 @AddJIPipeOutputSlot(value = XMLData.class, name = "Transform", description = "The transform function in TrakEM format", create = true)
 public class TurboRegRegistrationAlgorithm extends JIPipeIteratingAlgorithm {
     
-    private TurboRegTransformation transformation = TurboRegTransformation.Affine;
+    private TurboRegTransformation transformation = TurboRegTransformation.RigidBody;
 
     /**
      * Minimal linear dimension of an image in the multiresolution pyramid.
@@ -73,6 +73,8 @@ public class TurboRegRegistrationAlgorithm extends JIPipeIteratingAlgorithm {
         ImagePlus source = iterationStep.getInputData("Reference", ImagePlusGreyscaleData.class, progressInfo).getDuplicateImage();
         ImagePlus target = iterationStep.getInputData("Target", ImagePlusGreyscaleData.class, progressInfo).getDuplicateImage();
 
+        transformation = TurboRegTransformation.RigidBody;
+
         if(!ImageJUtils.imagesHaveSameSize(source, target)) {
             throw new RuntimeException("Source and target images do not have the same size!");
         }
@@ -87,6 +89,23 @@ public class TurboRegRegistrationAlgorithm extends JIPipeIteratingAlgorithm {
                 new double[TurboRegPointHandler.NUM_POINTS][2];
         double[][] targetPoints =
                 new double[TurboRegPointHandler.NUM_POINTS][2];
+
+        if(transformation == TurboRegTransformation.RigidBody) {
+            final int width = source.getWidth();
+            final int height = source.getHeight();
+            sourcePoints[0][0] = (width / 2);
+            sourcePoints[0][1] = (height / 2);
+            targetPoints[0][0] = (width / 2);
+            targetPoints[0][1] = (height / 2);
+            sourcePoints[1][0] = (width / 2);
+            sourcePoints[1][1] = (height / 4);
+            targetPoints[1][0] = (width / 2);
+            targetPoints[1][1] = (height / 4);
+            sourcePoints[2][0] = (width / 2);
+            sourcePoints[2][1] = ((3 * height) / 4);
+            targetPoints[2][0] = (width / 2);
+            targetPoints[2][1] = ((3 * height) / 4);
+        }
 
         final TurboRegImage sourceImg = new TurboRegImage(
                 sourceImp, transformation, false);
