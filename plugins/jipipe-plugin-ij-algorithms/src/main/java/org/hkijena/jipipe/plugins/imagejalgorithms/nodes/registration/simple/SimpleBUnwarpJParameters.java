@@ -11,11 +11,14 @@
  * See the LICENSE file provided with the code for the full license.
  */
 
-package org.hkijena.jipipe.plugins.imagejalgorithms.nodes.registration;
+package org.hkijena.jipipe.plugins.imagejalgorithms.nodes.registration.simple;
 
 import org.hkijena.jipipe.api.SetJIPipeDocumentation;
 import org.hkijena.jipipe.api.parameters.AbstractJIPipeParameterCollection;
 import org.hkijena.jipipe.api.parameters.JIPipeParameter;
+import org.hkijena.jipipe.plugins.imagejalgorithms.nodes.registration.bunwarpj.BUnwarpJMaxScaleDeformation;
+import org.hkijena.jipipe.plugins.imagejalgorithms.nodes.registration.bunwarpj.BUnwarpJMinScaleDeformation;
+import org.hkijena.jipipe.plugins.imagejalgorithms.nodes.registration.bunwarpj.BUnwarpJMode;
 
 /**
  * Reduced parameter set for {@link SimpleImageRegistrationAlgorithm} (no shear, scale, anisotropy correction)

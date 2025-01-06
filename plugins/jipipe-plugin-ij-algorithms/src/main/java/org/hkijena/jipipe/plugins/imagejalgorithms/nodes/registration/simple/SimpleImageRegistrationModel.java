@@ -11,12 +11,10 @@
  * See the LICENSE file provided with the code for the full license.
  */
 
-package org.hkijena.jipipe.plugins.imagejalgorithms.nodes.registration;
+package org.hkijena.jipipe.plugins.imagejalgorithms.nodes.registration.simple;
 
 import bunwarpj.trakem2.transform.CubicBSplineTransform;
-import ij.IJ;
 import mpicbg.trakem2.transform.*;
-import register_virtual_stack.Register_Virtual_Stack_MT;
 
 /**
  * Feature extraction model for the registration nodes

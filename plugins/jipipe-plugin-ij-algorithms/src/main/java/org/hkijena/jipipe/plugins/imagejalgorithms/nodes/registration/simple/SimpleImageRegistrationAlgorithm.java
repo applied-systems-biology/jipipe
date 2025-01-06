@@ -11,7 +11,7 @@
  * See the LICENSE file provided with the code for the full license.
  */
 
-package org.hkijena.jipipe.plugins.imagejalgorithms.nodes.registration;
+package org.hkijena.jipipe.plugins.imagejalgorithms.nodes.registration.simple;
 
 import bunwarpj.Param;
 import ij.ImagePlus;
@@ -31,7 +31,7 @@ import org.hkijena.jipipe.api.nodes.iterationstep.JIPipeSingleIterationStep;
 import org.hkijena.jipipe.api.parameters.JIPipeParameter;
 import org.hkijena.jipipe.api.parameters.JIPipeParameterCollection;
 import org.hkijena.jipipe.api.parameters.JIPipeParameterTree;
-import org.hkijena.jipipe.plugins.imagejalgorithms.utils.RegistrationUtils;
+import org.hkijena.jipipe.plugins.imagejalgorithms.utils.SimpleRegistrationUtils;
 import org.hkijena.jipipe.plugins.imagejdatatypes.datatypes.ImagePlusData;
 import org.hkijena.jipipe.plugins.imagejdatatypes.util.ImageJUtils;
 import org.hkijena.jipipe.plugins.strings.XMLData;
@@ -122,7 +122,7 @@ public class SimpleImageRegistrationAlgorithm extends JIPipeIteratingAlgorithm {
         List<Rectangle> bounds = new ArrayList<>();
         bounds.add(new Rectangle(0,0, imp1.getWidth(), imp1.getHeight()));
 
-        RegistrationUtils.register(imp1, imp2, imp1mask, imp2mask, coordinateTransform, commonBounds, bounds, parameters, siftParameters, unwarpJParametersParam, progressInfo);
+        SimpleRegistrationUtils.register(imp1, imp2, imp1mask, imp2mask, coordinateTransform, commonBounds, bounds, parameters, siftParameters, unwarpJParametersParam, progressInfo);
 
         imp2 = ImageJUtils.cropLegacy(imp2, bounds.get(0), progressInfo);
 

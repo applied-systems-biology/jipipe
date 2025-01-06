@@ -11,21 +11,36 @@
  * See the LICENSE file provided with the code for the full license.
  */
 
-package org.hkijena.jipipe.plugins.imagejalgorithms.nodes.registration;
+package org.hkijena.jipipe.plugins.imagejalgorithms.nodes.registration.bunwarpj;
 
-public enum BUnwarpJMinScaleDeformation {
-    VeryCoarse(0),
-    Coarse(1),
-    Fine(2),
-    VeryFine(3);
+public enum BUnwarpJMode {
+    Fast(0),
+    Accurate(1),
+    Mono(2);
 
     private final int nativeValue;
 
-    BUnwarpJMinScaleDeformation(int nativeValue) {
+    BUnwarpJMode(int nativeValue) {
         this.nativeValue = nativeValue;
     }
 
     public int getNativeValue() {
         return nativeValue;
+    }
+
+
+    @Override
+    public String toString() {
+        switch (this) {
+            case Fast:
+                return "Fast (Bi-directional)";
+            case Accurate:
+                return "Accurate (Bi-directional)";
+            case Mono:
+                return "Mono";
+            default:
+                return super.toString();
+        }
+
     }
 }

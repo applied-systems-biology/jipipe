@@ -31,10 +31,10 @@ import mpicbg.models.NotEnoughDataPointsException;
 import mpicbg.models.PointMatch;
 import mpicbg.trakem2.transform.*;
 import org.hkijena.jipipe.api.JIPipeProgressInfo;
-import org.hkijena.jipipe.plugins.imagejalgorithms.nodes.registration.SIFTParameters;
-import org.hkijena.jipipe.plugins.imagejalgorithms.nodes.registration.SimpleImageRegistrationFeatureModel;
-import org.hkijena.jipipe.plugins.imagejalgorithms.nodes.registration.SimpleImageRegistrationModel;
-import org.hkijena.jipipe.plugins.imagejalgorithms.nodes.registration.SimpleImageRegistrationParameters;
+import org.hkijena.jipipe.plugins.imagejalgorithms.nodes.registration.simple.SIFTParameters;
+import org.hkijena.jipipe.plugins.imagejalgorithms.nodes.registration.simple.SimpleImageRegistrationFeatureModel;
+import org.hkijena.jipipe.plugins.imagejalgorithms.nodes.registration.simple.SimpleImageRegistrationModel;
+import org.hkijena.jipipe.plugins.imagejalgorithms.nodes.registration.simple.SimpleImageRegistrationParameters;
 import register_virtual_stack.Register_Virtual_Stack_MT;
 
 import java.awt.*;
@@ -44,8 +44,8 @@ import java.util.List;
 /**
  * Port of {@link Register_Virtual_Stack_MT}
  */
-public class RegistrationUtils {
-    private RegistrationUtils() {
+public class SimpleRegistrationUtils {
+    private SimpleRegistrationUtils() {
 
     }
 
