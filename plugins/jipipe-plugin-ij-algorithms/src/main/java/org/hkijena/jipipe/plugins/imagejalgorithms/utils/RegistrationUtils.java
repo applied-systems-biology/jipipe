@@ -87,6 +87,8 @@ public class RegistrationUtils {
         final List<PointMatch> candidates = new ArrayList<>();
         FeatureTransform.matchFeatures(fs2, fs1, candidates, rod);
 
+        progressInfo.log("Found " + fs1.size() + "/" + fs2.size() + " features. Matched into " + candidates.size() + " candidates.");
+
         final List<PointMatch> inliers = new ArrayList<>();
 
         // Select features model
