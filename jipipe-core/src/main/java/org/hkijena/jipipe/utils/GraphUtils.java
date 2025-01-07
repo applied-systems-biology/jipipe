@@ -14,6 +14,9 @@
 package org.hkijena.jipipe.utils;
 
 import org.jgrapht.Graph;
+import org.jgrapht.alg.cycle.CycleDetector;
+import org.jgrapht.graph.DefaultDirectedGraph;
+import org.jgrapht.graph.DefaultEdge;
 import org.jgrapht.graph.EdgeReversedGraph;
 import org.jgrapht.traverse.BreadthFirstIterator;
 
@@ -61,4 +64,8 @@ public class GraphUtils {
         return getAllSuccessors(new EdgeReversedGraph<>(graph), vertex);
     }
 
+    public static <V, E> boolean hasCycle(DefaultDirectedGraph<V, E> graph) {
+        CycleDetector<V, E> cycleDetector = new CycleDetector<>(graph);
+        return cycleDetector.detectCycles();
+    }
 }
