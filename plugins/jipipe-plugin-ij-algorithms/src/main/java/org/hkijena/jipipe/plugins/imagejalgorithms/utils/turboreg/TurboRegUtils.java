@@ -14,6 +14,7 @@
 package org.hkijena.jipipe.plugins.imagejalgorithms.utils.turboreg;
 
 import ij.ImagePlus;
+import ij.ImageStack;
 import org.hkijena.jipipe.plugins.imagejalgorithms.nodes.registration.turboreg.AdvancedTurboRegParameters;
 import org.hkijena.jipipe.plugins.imagejdatatypes.util.ImageJUtils;
 import org.hkijena.jipipe.plugins.imagejdatatypes.util.ImageSliceIndex;
@@ -242,6 +243,44 @@ public class TurboRegUtils {
             targetPoints[1][1] = (height / 2);
         } else if (transformationType == TurboRegTransformationType.Bilinear) {
             throw new UnsupportedOperationException("Bilinear not supported yet.");
+        }
+    }
+
+    /**
+     * Variant of transformImage2D that can handle RGB
+     * @param source the image to be transformed
+     * @param width target width
+     * @param height target height
+     * @param transformation transformation type
+     * @param sourcePoints source points
+     * @param targetPoints target points
+     * @return transformed image
+     */
+    public static ImagePlus transformImage2DSimple(
+            final ImagePlus source,
+            final int width,
+            final int height,
+            final TurboRegTransformationType transformation,
+            double[][] sourcePoints,
+            double[][] targetPoints) {
+        if(source.getType() != ImagePlus.COLOR_RGB) {
+            return transformImage2D(source, width, height, transformation, sourcePoints, targetPoints);
+        }
+        else {
+            // Split into channel slices and re-combine
+            ImagePlus toChannels = ImageJUtils.rgbToChannels(source);
+            ImagePlus transformedR = transformImage2D(new ImagePlus("r", toChannels.getStack().getProcessor(1)), width, height, transformation, sourcePoints, targetPoints);
+            ImagePlus transformedG = transformImage2D(new ImagePlus("g", toChannels.getStack().getProcessor(2)), width, height, transformation, sourcePoints, targetPoints);
+            ImagePlus transformedB = transformImage2D(new ImagePlus("b", toChannels.getStack().getProcessor(3)), width, height, transformation, sourcePoints, targetPoints);
+
+            ImageStack stack = new ImageStack(width, height);
+            stack.addSlice(transformedR.getProcessor());
+            stack.addSlice(transformedG.getProcessor());
+            stack.addSlice(transformedB.getProcessor());
+            ImagePlus result = new ImagePlus(source.getTitle(), stack);
+            result.setDimensions(3, 1,1);
+
+            return ImageJUtils.channelsToRGB(result);
         }
     }
 

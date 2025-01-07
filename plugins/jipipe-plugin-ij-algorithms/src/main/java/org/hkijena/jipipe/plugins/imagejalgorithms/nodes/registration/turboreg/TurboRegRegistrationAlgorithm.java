@@ -265,18 +265,24 @@ public class TurboRegRegistrationAlgorithm extends JIPipeIteratingAlgorithm {
                             targetImp_,
                             transformationType,
                             advancedTurboRegParameters);
+                    TurboRegTransformationInfo.Entry transformationEntry = aligned.getTransformation().getEntries().get(0);
 
                     if(isRGB) {
-                        // Transform the individual channels using the transform matrix
-                        // TODO: Handling RGB
-                        transformedTargetProcessors.put(node.sourceIndex, aligned.getTransformedTargetImage().getProcessor());
+                        // Re-do transformation (using simple method)
+                        ImagePlus transformed = TurboRegUtils.transformImage2DSimple(sourceImp,
+                                targetImp_.getWidth(),
+                                targetImp_.getHeight(),
+                                transformationType,
+                                transformationEntry.getSourcePointsAsArray(),
+                                transformationEntry.getTargetPointsAsArray());
+                        transformedTargetProcessors.put(node.sourceIndex, transformed.getProcessor());
                     }
                     else {
                         transformedTargetProcessors.put(node.sourceIndex, aligned.getTransformedTargetImage().getProcessor());
                     }
 
                     // Modify the transformation
-                    TurboRegTransformationInfo.Entry transformationEntry = aligned.getTransformation().getEntries().get(0);
+
                     transformationEntry.setSourceImageIndex(node.sourceIndex);
                     transformationEntry.setTargetImageIndex(targetIndex);
                     transformation.getEntries().add(transformationEntry);
@@ -301,16 +307,12 @@ public class TurboRegRegistrationAlgorithm extends JIPipeIteratingAlgorithm {
                         progressInfo.log("Transforming node at " + node.sourceIndex + " with transformation from " + useSource.sourceIndex);
 
                         ImagePlus sourceImp = new ImagePlus("source", sourceIp);
-                        boolean isRGB = sourceImp.getType() == ImagePlus.COLOR_RGB;
-
-                        // TODO: handling of RGB
-                        sourceImp = ImageJUtils.convertToGreyscaleIfNeeded(sourceImp);
 
                         TurboRegTransformationInfo.Entry transformEntry = useSource.transformationInfo.getEntries().get(0);
                         double[][] sourcePoints = transformEntry.getSourcePointsAsArray();
                         double[][] targetPoints = transformEntry.getTargetPointsAsArray();
 
-                        ImagePlus transformed = TurboRegUtils.transformImage2D(sourceImp,
+                        ImagePlus transformed = TurboRegUtils.transformImage2DSimple(sourceImp,
                                 sourceImp.getWidth(),
                                 sourceImp.getHeight(),
                                 transformationType,
