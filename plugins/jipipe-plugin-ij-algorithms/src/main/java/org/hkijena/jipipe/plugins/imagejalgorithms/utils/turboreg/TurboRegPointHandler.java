@@ -61,7 +61,7 @@ public class TurboRegPointHandler extends Roi {
     private final Point[] point = new Point[NUM_POINTS];
     private final Color[] spectrum = new Color[NUM_POINTS];
     private double[][] precisionPoint = new double[NUM_POINTS][2];
-    private TurboRegTransformation transformation;
+    private TurboRegTransformationType transformation;
     private int currentPoint = 0;
     private boolean interactive = true;
     private boolean started = false;
@@ -83,7 +83,7 @@ public class TurboRegPointHandler extends Roi {
             final int dx = (int) (mag / 2.0);
             final int dy = (int) (mag / 2.0);
             Point p;
-            if (transformation == TurboRegTransformation.RigidBody) {
+            if (transformation == TurboRegTransformationType.RigidBody) {
                 if (currentPoint == 0) {
                     for (int k = 1; (k < transformation.getNativeValue()); k++) {
                         p = point[k];
@@ -312,7 +312,7 @@ public class TurboRegPointHandler extends Roi {
         double distance = (double) (x - p.x) * (double) (x - p.x)
                 + (double) (y - p.y) * (double) (y - p.y);
         double candidate;
-        if (transformation == TurboRegTransformation.RigidBody) {
+        if (transformation == TurboRegTransformationType.RigidBody) {
             for (int k = 1; (k < transformation.getNativeValue()); k++) {
                 p = point[k];
                 candidate = (double) (x - p.x) * (double) (x - p.x)
@@ -353,7 +353,7 @@ public class TurboRegPointHandler extends Roi {
     public double[][] getPoints(
     ) {
         if (interactive) {
-            if (transformation == TurboRegTransformation.RigidBody) {
+            if (transformation == TurboRegTransformationType.RigidBody) {
                 double[][] points = new double[transformation.getNativeValue()][2];
                 for (int k = 0; (k < transformation.getNativeValue()); k++) {
                     points[k][0] = (double) point[k].x;
@@ -391,7 +391,7 @@ public class TurboRegPointHandler extends Roi {
         x = (imp.getWidth() <= x) ? (imp.getWidth() - 1) : (x);
         y = (y < 0) ? (0) : (y);
         y = (imp.getHeight() <= y) ? (imp.getHeight() - 1) : (y);
-        if ((transformation == TurboRegTransformation.RigidBody) && (currentPoint != 0)) {
+        if ((transformation == TurboRegTransformationType.RigidBody) && (currentPoint != 0)) {
             final Point p = new Point(x, y);
             final Point q = point[3 - currentPoint];
             final double radius = 0.5 * Math.sqrt(
@@ -429,7 +429,7 @@ public class TurboRegPointHandler extends Roi {
             final double[][] precisionPoint
     ) {
         interactive = false;
-        if (transformation == TurboRegTransformation.RigidBody) {
+        if (transformation == TurboRegTransformationType.RigidBody) {
             for (int k = 0; (k < transformation.getNativeValue()); k++) {
                 point[k].x = (int) Math.round(precisionPoint[k][0]);
                 point[k].y = (int) Math.round(precisionPoint[k][1]);
@@ -453,7 +453,7 @@ public class TurboRegPointHandler extends Roi {
      * @param transformation Transformation code.
      **/
     public void setTransformation(
-            final TurboRegTransformation transformation
+            final TurboRegTransformationType transformation
     ) {
         interactive = true;
         this.transformation = transformation;
@@ -542,7 +542,7 @@ public class TurboRegPointHandler extends Roi {
      **/
     public TurboRegPointHandler(
             final double[][] precisionPoint,
-            final TurboRegTransformation transformation
+            final TurboRegTransformationType transformation
     ) {
         super(0, 0, 0, 0, null);
         this.transformation = transformation;
@@ -559,7 +559,7 @@ public class TurboRegPointHandler extends Roi {
      **/
     public TurboRegPointHandler(
             final ImagePlus imp,
-            final TurboRegTransformation transformation
+            final TurboRegTransformationType transformation
     ) {
         super(0, 0, imp.getWidth(), imp.getHeight(), imp);
         this.transformation = transformation;
@@ -654,7 +654,7 @@ public class TurboRegPointHandler extends Roi {
 
     private void setSpectrum(
     ) {
-        if (transformation == TurboRegTransformation.RigidBody) {
+        if (transformation == TurboRegTransformationType.RigidBody) {
             spectrum[0] = Color.green;
             spectrum[1] = new Color(16, 119, 169);
             spectrum[2] = new Color(119, 85, 51);

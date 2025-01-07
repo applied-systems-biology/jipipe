@@ -32,7 +32,7 @@ public class TurboRegImage
     private final int width;
     private final int height;
     private int pyramidDepth;
-    private TurboRegTransformation transformation;
+    private TurboRegTransformationType transformation;
     private final boolean isTarget;
 
 
@@ -46,7 +46,7 @@ public class TurboRegImage
      **/
     public TurboRegImage(
             final ImagePlus imp,
-            final TurboRegTransformation transformation,
+            final TurboRegTransformationType transformation,
             final boolean isTarget
     ) {
         this.transformation = transformation;
@@ -221,7 +221,7 @@ public class TurboRegImage
      * Set or modify the transformation.
      **/
     public void setTransformation(
-            final TurboRegTransformation transformation
+            final TurboRegTransformationType transformation
     ) {
         this.transformation = transformation;
     }

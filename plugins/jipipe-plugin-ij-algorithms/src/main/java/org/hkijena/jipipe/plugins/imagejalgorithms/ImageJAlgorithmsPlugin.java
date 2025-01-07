@@ -134,6 +134,7 @@ import org.hkijena.jipipe.plugins.imagejalgorithms.utils.OMEAccessorStorage;
 import org.hkijena.jipipe.plugins.imagejalgorithms.utils.OrientationJGradientOperator;
 import org.hkijena.jipipe.plugins.imagejalgorithms.utils.OrientationJVectorFieldType;
 import org.hkijena.jipipe.plugins.imagejalgorithms.utils.LineMirror;
+import org.hkijena.jipipe.plugins.imagejalgorithms.utils.turboreg.TurboRegTransformationType;
 import org.hkijena.jipipe.plugins.imagejdatatypes.ImageJDataTypesPlugin;
 import org.hkijena.jipipe.plugins.imagejdatatypes.algorithms.ApplyDisplayContrastAlgorithm;
 import org.hkijena.jipipe.plugins.imagejdatatypes.algorithms.DisplayRangeCalibrationAlgorithm;
@@ -640,6 +641,7 @@ public class ImageJAlgorithmsPlugin extends JIPipePrepackagedDefaultJavaPlugin {
 //        registerEnumParameterType("ij1-bunwarpj-registration:mode", BUnwarpJMode.class, "BUnwarpJ mode", "");
 //        registerNodeType("ij1-simple-image-registration", SimpleImageRegistrationAlgorithm.class, UIUtils.getIconURLFromResources("actions/transform-shear-right.png"));
 
+        registerEnumParameterType("ij1-turbo-reg:transformation-type", TurboRegTransformationType.class, "TurboReg transformation", "Transformation type");
         registerNodeType("ij1-turbo-reg-image-registration", TurboRegRegistrationAlgorithm.class, UIUtils.getIconURLFromResources("actions/transform-shear-right.png"));
     }
 

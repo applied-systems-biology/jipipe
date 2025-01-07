@@ -536,6 +536,20 @@ public class ImageJUtils {
     }
 
     /**
+     * Converts a zero-based slice index to a safe index that can be found within the image
+     * @param img the image
+     * @param index the index
+     * @return the safe index
+     */
+    public static ImageSliceIndex toSafeZeroIndex(ImagePlus img, ImageSliceIndex index) {
+        return new ImageSliceIndex(
+                Math.max(0, Math.min(img.getNChannels() - 1, index.getC())),
+                Math.max(0, Math.min(img.getNSlices() - 1, index.getZ())),
+                Math.max(0, Math.min(img.getNFrames() - 1, index.getT()))
+        );
+    }
+
+    /**
      * Gets slice from image.
      * Will not trigger an {@link IndexOutOfBoundsException}
      *
@@ -2447,8 +2461,9 @@ public class ImageJUtils {
     /**
      * Cropping as implemented in ImageJ.
      * Cannot handle negative X and Y in the rectangle
-     * @param img the image
-     * @param cropped the cropping ROI
+     *
+     * @param img          the image
+     * @param cropped      the cropping ROI
      * @param progressInfo the progress info
      * @return the cropped image
      */
@@ -2478,8 +2493,9 @@ public class ImageJUtils {
 
     /**
      * Cropping that can handle negative X and Y
-     * @param img the image
-     * @param cropped the cropping ROI
+     *
+     * @param img          the image
+     * @param cropped      the cropping ROI
      * @param progressInfo the progress info
      * @return the cropped image
      */

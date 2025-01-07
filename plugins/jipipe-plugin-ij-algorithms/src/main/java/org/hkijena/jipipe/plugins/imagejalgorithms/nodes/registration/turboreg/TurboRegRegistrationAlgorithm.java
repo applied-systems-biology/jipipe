@@ -13,8 +13,8 @@
 
 package org.hkijena.jipipe.plugins.imagejalgorithms.nodes.registration.turboreg;
 
-import ij.IJ;
 import ij.ImagePlus;
+import ij.process.ImageProcessor;
 import org.hkijena.jipipe.api.AddJIPipeCitation;
 import org.hkijena.jipipe.api.ConfigureJIPipeNode;
 import org.hkijena.jipipe.api.JIPipeProgressInfo;
@@ -27,215 +27,123 @@ import org.hkijena.jipipe.api.nodes.algorithm.JIPipeIteratingAlgorithm;
 import org.hkijena.jipipe.api.nodes.categories.ImagesNodeTypeCategory;
 import org.hkijena.jipipe.api.nodes.iterationstep.JIPipeIterationContext;
 import org.hkijena.jipipe.api.nodes.iterationstep.JIPipeSingleIterationStep;
+import org.hkijena.jipipe.api.parameters.JIPipeParameter;
 import org.hkijena.jipipe.plugins.imagejalgorithms.utils.turboreg.*;
 import org.hkijena.jipipe.plugins.imagejdatatypes.datatypes.ImagePlusData;
 import org.hkijena.jipipe.plugins.imagejdatatypes.datatypes.greyscale.ImagePlusGreyscaleData;
 import org.hkijena.jipipe.plugins.imagejdatatypes.util.ImageJUtils;
-import org.hkijena.jipipe.plugins.strings.XMLData;
+import org.hkijena.jipipe.plugins.imagejdatatypes.util.ImageSliceIndex;
+import org.hkijena.jipipe.plugins.strings.JsonData;
+import org.hkijena.jipipe.utils.json.JsonUtils;
+
+import java.util.HashMap;
+import java.util.Map;
 
 /**
  * Port of {@link register_virtual_stack.Register_Virtual_Stack_MT}
  */
-@SetJIPipeDocumentation(name = "TurboReg registration", description = "Aligns or to matches two images, one of them being called the source image and the other the target image.")
+@SetJIPipeDocumentation(name = "TurboReg registration 2D", description = "Aligns the target image to the source image using methods " +
+        "implemented by TurboReg and MultiStackReg. ")
 @ConfigureJIPipeNode(nodeTypeCategory = ImagesNodeTypeCategory.class, menuPath = "Registration")
 @AddJIPipeCitation("Based on TurboReg")
 @AddJIPipeCitation("Based on MultiStackReg")
 @AddJIPipeCitation("https://bigwww.epfl.ch/thevenaz/turboreg/")
 @AddJIPipeCitation("https://github.com/miura/MultiStackRegistration/")
-@AddJIPipeInputSlot(value = ImagePlusGreyscaleData.class, name = "Reference", description = "The reference image", create = true)
-@AddJIPipeInputSlot(value = ImagePlusGreyscaleData.class, name = "Target", description = "The target image that will be registered to the reference", create = true)
-@AddJIPipeOutputSlot(value = ImagePlusGreyscaleData.class, name = "Reference", description = "The reference image", create = true)
-@AddJIPipeOutputSlot(value = ImagePlusGreyscaleData.class, name = "Target", description = "The registered image", create = true)
-@AddJIPipeOutputSlot(value = XMLData.class, name = "Transform", description = "The transform function in TrakEM format", create = true)
+@AddJIPipeInputSlot(value = ImagePlusGreyscaleData.class, name = "Reference", description = "The reference image. Can have fewer slices/channels/frames than the target image", create = true)
+@AddJIPipeInputSlot(value = ImagePlusGreyscaleData.class, name = "Input", description = "The target image that will be registered to the reference", create = true)
+@AddJIPipeOutputSlot(value = ImagePlusGreyscaleData.class, name = "Reference", description = "Copy of the reference image", create = true)
+@AddJIPipeOutputSlot(value = ImagePlusGreyscaleData.class, name = "Registered", description = "The registered image", create = true)
+@AddJIPipeOutputSlot(value = JsonData.class, name = "Transform", description = "The transform serialized in JSON format", create = true)
 public class TurboRegRegistrationAlgorithm extends JIPipeIteratingAlgorithm {
     
-    private TurboRegTransformation transformation = TurboRegTransformation.RigidBody;
-
-    /**
-     * Minimal linear dimension of an image in the multiresolution pyramid.
-     */
-    private int minSize = 12;
+    private TurboRegTransformationType transformationType = TurboRegTransformationType.RigidBody;
+    private final AdvancedTurboRegParameters advancedTurboRegParameters;
 
 
     public TurboRegRegistrationAlgorithm(JIPipeNodeInfo info) {
         super(info);
+        this.advancedTurboRegParameters = new AdvancedTurboRegParameters();
+        registerSubParameter(advancedTurboRegParameters);
     }
 
     public TurboRegRegistrationAlgorithm(TurboRegRegistrationAlgorithm other) {
         super(other);
-        this.transformation = other.transformation;
+        this.transformationType = other.transformationType;
+        this.advancedTurboRegParameters = new AdvancedTurboRegParameters(other.advancedTurboRegParameters);
+        registerSubParameter(advancedTurboRegParameters);
     }
 
+    @SetJIPipeDocumentation(name = "Transformation", description = "The type of transformation to be used." +
+            "<ul>" +
+            "<li>Translation. Upon translation, a straight line is mapped to a straight line of identical orientation, with conservation of the distance between any pair of points. A single landmark in each image gives a complete description of a translation. The mapping is of the form x = u + Δu. </li>" +
+            "<li>Rigid Body. Upon rigid-body transformation, the distance between any pair of points is conserved. A single landmark is necessary to describe the translational component of the rigid-body transformation, while the rotational component is given by an angle. The mapping is of the form x = { {cos θ, −sin θ}, {sin θ, cos θ} } ⋅ u + Δu.<li>" +
+            "<li>Scaled rotation. Upon scaled rotation, a straight line is mapped to a straight line; moreover, the angle between any pair of lines is conserved (this is sometimes called a conformal mapping). A pair of landmarks in each image is needed to give a complete description of a scaled rotation. The mapping is of the form x = λ { {cos θ, −sin θ}, {sin θ, cos θ} } ⋅ u + Δu.<li>" +
+            "<li>Affine. Upon affine transformation, a straight line is mapped to a straight line, with conservation of flat angles between lines (parallel or coincident lines remain parallel or coincident). In 2D, a simplex—three landmarks—in each image is needed to give a complete description of an affine transformation. The mapping is of the form x = { {a11, a12}, {a21, a22} } ⋅ u + Δu.<li>" +
+            "<li>Bilinear. Upon bilinear transformation, a straight line is mapped to a conic section. In 2D, four landmarks in each image are needed to give a complete description of a bilinear transformation. The mapping is of the form x = { {a11, a12}, {a21, a22} } ⋅ u + b u1 u2 + Δu.<li>" +
+            "<li>None. Do not apply any transformation.<li>" +
+            "</ul>")
+    @JIPipeParameter("transformation-type")
+    public TurboRegTransformationType getTransformationType() {
+        return transformationType;
+    }
 
+    @JIPipeParameter("transformation-type")
+    public void setTransformationType(TurboRegTransformationType transformationType) {
+        this.transformationType = transformationType;
+    }
+
+    @SetJIPipeDocumentation(name = "Advanced parameters", description = "Advanced parameters for TurboReg")
+    @JIPipeParameter("advanced-parameters")
+    public AdvancedTurboRegParameters getAdvancedTurboRegParameters() {
+        return advancedTurboRegParameters;
+    }
 
     @Override
     protected void runIteration(JIPipeSingleIterationStep iterationStep, JIPipeIterationContext iterationContext, JIPipeGraphNodeRunContext runContext, JIPipeProgressInfo progressInfo) {
-        ImagePlus source = iterationStep.getInputData("Reference", ImagePlusGreyscaleData.class, progressInfo).getDuplicateImage();
-        ImagePlus target = iterationStep.getInputData("Target", ImagePlusGreyscaleData.class, progressInfo).getDuplicateImage();
+        ImagePlus target = iterationStep.getInputData("Reference", ImagePlusGreyscaleData.class, progressInfo).getDuplicateImage();
+        ImagePlus source = iterationStep.getInputData("Input", ImagePlusGreyscaleData.class, progressInfo).getDuplicateImage();
 
-        transformation = TurboRegTransformation.RigidBody;
-
-        if(!ImageJUtils.imagesHaveSameSize(source, target)) {
-            throw new RuntimeException("Source and target images do not have the same size!");
+        if(transformationType == TurboRegTransformationType.GenericTransformation) {
+            progressInfo.log("Transformation set to 'None'. Skipping.");
+            iterationStep.addOutputData("Reference", new ImagePlusData(source), progressInfo);
+            iterationStep.addOutputData("Target", new ImagePlusData(target), progressInfo);
+            iterationStep.addOutputData("Transform", new JsonData(JsonUtils.toPrettyJsonString(new TurboRegTransformationInfo())), progressInfo);
+            return;
+        }
+        if(source.getWidth() != target.getWidth() || source.getHeight() != target.getHeight()) {
+            throw new RuntimeException("Source and target images do not have the same width and height!");
         }
 
-        // TODO: handle stacks etc.
-        final ImagePlus sourceImp = new ImagePlus("source",
-                source.getProcessor().crop());
-        final ImagePlus targetImp = new ImagePlus("target",
-                target.getProcessor().crop());
+        Map<ImageSliceIndex, ImageProcessor> transformedTargetProcessors = new HashMap<>();
+        TurboRegTransformationInfo transformation = new TurboRegTransformationInfo();
 
-        double[][] sourcePoints =
-                new double[TurboRegPointHandler.NUM_POINTS][2];
-        double[][] targetPoints =
-                new double[TurboRegPointHandler.NUM_POINTS][2];
+        ImageJUtils.forEachIndexedZCTSliceWithProgress(source, (sourceIp, index, sliceProgress) -> {
+            // Find the best matching target
+            // TODO: smarter selection of the reference slice
+            ImageSliceIndex targetIndex = ImageJUtils.toSafeZeroIndex(target, index);
+            ImageProcessor targetIp = ImageJUtils.getSliceZero(target, targetIndex);
 
-        if(transformation == TurboRegTransformation.RigidBody) {
-            final int width = source.getWidth();
-            final int height = source.getHeight();
-            sourcePoints[0][0] = (width / 2);
-            sourcePoints[0][1] = (height / 2);
-            targetPoints[0][0] = (width / 2);
-            targetPoints[0][1] = (height / 2);
-            sourcePoints[1][0] = (width / 2);
-            sourcePoints[1][1] = (height / 4);
-            targetPoints[1][0] = (width / 2);
-            targetPoints[1][1] = (height / 4);
-            sourcePoints[2][0] = (width / 2);
-            sourcePoints[2][1] = ((3 * height) / 4);
-            targetPoints[2][0] = (width / 2);
-            targetPoints[2][1] = ((3 * height) / 4);
-        }
+            TurboRegResult aligned = TurboRegUtils.alignImage2D(new ImagePlus("source", sourceIp),
+                    new ImagePlus("target", targetIp),
+                    transformationType,
+                    advancedTurboRegParameters);
 
-        final TurboRegImage sourceImg = new TurboRegImage(
-                sourceImp, transformation, false);
-        final TurboRegImage targetImg = new TurboRegImage(
-                targetImp, transformation, true);
-        final int pyramidDepth = getPyramidDepth(
-                sourceImp.getWidth(), sourceImp.getHeight(),
-                targetImp.getWidth(), targetImp.getHeight());
+            transformedTargetProcessors.put(index, aligned.getTransformedTargetImage().getProcessor());
 
-        sourceImg.setPyramidDepth(pyramidDepth);
-        targetImg.setPyramidDepth(pyramidDepth);
+            // Modify the transformation
+            TurboRegTransformationInfo.Entry transformationEntry = aligned.getTransformation().getEntries().get(0);
+            transformationEntry.setSourceImageIndex(index);
+            transformationEntry.setTargetImageIndex(targetIndex);
+            transformation.getEntries().add(transformationEntry);
+        }, progressInfo);
 
-        // TODO: progress
-        sourceImg.run();
-        targetImg.run();
 
-        if (2 <= source.getStackSize()) {
-            source.setSlice(2);
-        }
-        if (2 <= target.getStackSize()) {
-            target.setSlice(2);
-        }
-
-        // Mask generation
-        final ImagePlus sourceMskImp = new ImagePlus("source mask",
-                source.getProcessor().crop());
-        final ImagePlus targetMskImp = new ImagePlus("target mask",
-                target.getProcessor().crop());
-        final TurboRegMask sourceMsk = new TurboRegMask(sourceMskImp);
-        final TurboRegMask targetMsk = new TurboRegMask(targetMskImp);
-
-        source.setSlice(1);
-        target.setSlice(1);
-        if (source.getStackSize() < 2) {
-            sourceMsk.clearMask();
-        }
-        if (target.getStackSize() < 2) {
-            targetMsk.clearMask();
-        }
-
-        sourceMsk.setPyramidDepth(pyramidDepth);
-        targetMsk.setPyramidDepth(pyramidDepth);
-
-        // TODO: progress
-        sourceMsk.run();
-        targetMsk.run();
-
-        // Point handler
-        final TurboRegPointHandler sourcePh = new TurboRegPointHandler(
-                sourceImp, transformation);
-        final TurboRegPointHandler targetPh = new TurboRegPointHandler(
-                targetImp, transformation);
-        sourcePh.setPoints(sourcePoints);
-        targetPh.setPoints(targetPoints);
-
-        // TODO: FinalAction???
-
-        sourcePoints = sourcePh.getPoints();
-        targetPoints = targetPh.getPoints();
-
-        // TODO: refined landmarks?
-        source.killRoi();
-        target.killRoi();
-
-        ImagePlus result = transformImage(source, target.getWidth(), target.getHeight(), transformation, sourcePoints, targetPoints);
-
-        iterationStep.addOutputData("Target", new ImagePlusData(result), progressInfo);
-
-        System.out.println();
+        ImagePlus result = ImageJUtils.mergeMappedSlices(transformedTargetProcessors);
+        result.copyScale(target);
+        iterationStep.addOutputData("Reference", new ImagePlusData(target), progressInfo);
+        iterationStep.addOutputData("Registered", new ImagePlusData(result), progressInfo);
+        iterationStep.addOutputData("Transform", new JsonData(JsonUtils.toPrettyJsonString(transformation)), progressInfo);
 
     }
 
-    private ImagePlus transformImage (
-            final ImagePlus source,
-            final int width,
-            final int height,
-            final TurboRegTransformation transformation,
-            double[][] sourcePoints, double[][] targetPoints
-    ) {
-        if ((source.getType() != ImagePlus.GRAY16)
-                && (source.getType() != ImagePlus.GRAY32)
-                && ((source.getType() != ImagePlus.GRAY8)
-                || source.getStack().isRGB() || source.getStack().isHSB())) {
-            IJ.error(
-                    source.getTitle() + " should be grayscale (8, 16, or 32 bit)");
-            return(null);
-        }
-        source.setSlice(1);
-        final TurboRegImage sourceImg = new TurboRegImage(source,
-                TurboRegTransformation.GenericTransformation, false);
-        sourceImg.run();
-        if (2 <= source.getStackSize()) {
-            source.setSlice(2);
-        }
-        final TurboRegMask sourceMsk = new TurboRegMask(source);
-        source.setSlice(1);
-        if (source.getStackSize() < 2) {
-            sourceMsk.clearMask();
-        }
-        final TurboRegPointHandler sourcePh = new TurboRegPointHandler(
-                sourcePoints, transformation);
-        final TurboRegPointHandler targetPh = new TurboRegPointHandler(
-                targetPoints, transformation);
-
-        final TurboRegTransform regTransform = new TurboRegTransform(
-                sourceImg, sourceMsk, sourcePh,
-                null, null, targetPh, transformation, false, false);
-        final ImagePlus transformedImage = regTransform.doFinalTransform(
-                width, height);
-//        if (false) {
-//            transformedImage.setSlice(1);
-//            transformedImage.getProcessor().resetMinAndMax();
-//            transformedImage.show();
-//            transformedImage.updateAndDraw();
-//        }
-        return transformedImage;
-    }
-
-    private int getPyramidDepth (int sw, int sh, int tw, int th) {
-        int pyramidDepth = 1;
-        while (((2 * minSize) <= sw)
-                && ((2 * minSize) <= sh)
-                && ((2 * minSize) <= tw)
-                && ((2 * minSize) <= th)) {
-            sw /= 2;
-            sh /= 2;
-            tw /= 2;
-            th /= 2;
-            pyramidDepth++;
-        }
-        return(pyramidDepth);
-    }
 }

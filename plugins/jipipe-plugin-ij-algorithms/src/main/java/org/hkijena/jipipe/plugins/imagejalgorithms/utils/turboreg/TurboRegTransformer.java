@@ -23,7 +23,7 @@ import java.io.FileWriter;
 import java.io.IOException;
 import java.util.Stack;
 
-public class TurboRegTransform {
+public class TurboRegTransformer {
 
     /**
      * Maximal number of registration iterations per level, when
@@ -31,7 +31,7 @@ public class TurboRegTransform {
      * corrected so that there are more iterations at the coarse levels
      * of the pyramid than at the fine levels.
      *
-     * @see TurboRegTransform#ITERATION_PROGRESSION
+     * @see TurboRegTransformer#ITERATION_PROGRESSION
      **/
     private static final int FEW_ITERATIONS = 5;
 
@@ -51,7 +51,7 @@ public class TurboRegTransform {
      * corrected so that there are more iterations at the coarse levels
      * of the pyramid than at the fine levels.
      *
-     * @see TurboRegTransform#ITERATION_PROGRESSION
+     * @see TurboRegTransformer#ITERATION_PROGRESSION
      **/
     private static final int MANY_ITERATIONS = 10;
 
@@ -126,7 +126,7 @@ public class TurboRegTransform {
     private int outNy;
     private int twiceInNx;
     private int twiceInNy;
-    private TurboRegTransformation transformation;
+    private TurboRegTransformationType transformation;
     private int pyramidDepth;
     private int iterationPower;
     private int iterationCost;
@@ -182,7 +182,7 @@ public class TurboRegTransform {
             fw.write(outNx + "\t" + outNy + "\n");
             fw.write("\n");
             fw.write("Refined source landmarks\n");
-            if (transformation == TurboRegTransformation.RigidBody) {
+            if (transformation == TurboRegTransformationType.RigidBody) {
                 for (int i = 0; (i < transformation.getNativeValue()); i++) {
                     fw.write(sourcePoint[i][0] + "\t" + sourcePoint[i][1] + "\n");
                 }
@@ -193,7 +193,7 @@ public class TurboRegTransform {
             }
             fw.write("\n");
             fw.write("Target landmarks\n");
-            if (transformation == TurboRegTransformation.RigidBody) {
+            if (transformation == TurboRegTransformationType.RigidBody) {
                 for (int i = 0; (i < transformation.getNativeValue()); i++) {
                     fw.write(targetPoint[i][0] + "\t" + targetPoint[i][1] + "\n");
                 }
@@ -312,7 +312,7 @@ public class TurboRegTransform {
             final TurboRegPointHandler sourcePh,
             final TurboRegImage targetImg,
             final TurboRegPointHandler targetPh,
-            final TurboRegTransformation transformation,
+            final TurboRegTransformationType transformation,
             final boolean accelerated
     ) {
         this.sourceImg = sourceImg;
@@ -382,7 +382,7 @@ public class TurboRegTransform {
         scaleBottomDownLandmarks();
         while (!targetImgPyramid.isEmpty()) {
             iterationPower /= ITERATION_PROGRESSION;
-            if (transformation == TurboRegTransformation.Bilinear) {
+            if (transformation == TurboRegTransformationType.Bilinear) {
                 inNx = (Integer) sourceImgPyramid.pop();
                 inNy = (Integer) sourceImgPyramid.pop();
                 inImg = (float[]) sourceImgPyramid.pop();
@@ -456,7 +456,7 @@ public class TurboRegTransform {
             iterationCost *= ITERATION_PROGRESSION;
         }
         iterationPower /= ITERATION_PROGRESSION;
-        if (transformation == TurboRegTransformation.Bilinear) {
+        if (transformation == TurboRegTransformationType.Bilinear) {
             inNx = sourceImg.getWidth();
             inNy = sourceImg.getHeight();
             inImg = sourceImg.getCoefficient();
@@ -572,7 +572,7 @@ public class TurboRegTransform {
             fw.write(outNx + "\t" + outNy + "\n");
             fw.write("\n");
             fw.write("Refined source landmarks\n");
-            if (transformation == TurboRegTransformation.RigidBody) {
+            if (transformation == TurboRegTransformationType.RigidBody) {
                 for (int i = 0; (i < transformation.getNativeValue()); i++) {
                     fw.write(sourcePoint[i][0] + "\t" + sourcePoint[i][1] + "\n");
                 }
@@ -583,7 +583,7 @@ public class TurboRegTransform {
             }
             fw.write("\n");
             fw.write("Target landmarks\n");
-            if (transformation == TurboRegTransformation.RigidBody) {
+            if (transformation == TurboRegTransformationType.RigidBody) {
                 for (int i = 0; (i < transformation.getNativeValue()); i++) {
                     fw.write(targetPoint[i][0] + "\t" + targetPoint[i][1] + "\n");
                 }
@@ -617,14 +617,14 @@ public class TurboRegTransform {
      * @param accelerated    Trade-off between speed and accuracy.
      * @param interactive    Shows or hides the resulting image.
      **/
-    public TurboRegTransform(
+    public TurboRegTransformer(
             final TurboRegImage sourceImg,
             final TurboRegMask sourceMsk,
             final TurboRegPointHandler sourcePh,
             final TurboRegImage targetImg,
             final TurboRegMask targetMsk,
             final TurboRegPointHandler targetPh,
-            final TurboRegTransformation transformation,
+            final TurboRegTransformationType transformation,
             final boolean accelerated,
             final boolean interactive
     ) {
@@ -3182,7 +3182,7 @@ public class TurboRegTransform {
     private void scaleBottomDownLandmarks(
     ) {
         for (int depth = 1; (depth < pyramidDepth); depth++) {
-            if (transformation == TurboRegTransformation.RigidBody) {
+            if (transformation == TurboRegTransformationType.RigidBody) {
                 for (int n = 0; (n < transformation.getNativeValue()); n++) {
                     sourcePoint[n][0] *= 0.5;
                     sourcePoint[n][1] *= 0.5;
@@ -3203,7 +3203,7 @@ public class TurboRegTransform {
     /*------------------------------------------------------------------*/
     private void scaleUpLandmarks(
     ) {
-        if (transformation == TurboRegTransformation.RigidBody) {
+        if (transformation == TurboRegTransformationType.RigidBody) {
             for (int n = 0; (n < transformation.getNativeValue()); n++) {
                 sourcePoint[n][0] *= 2.0;
                 sourcePoint[n][1] *= 2.0;

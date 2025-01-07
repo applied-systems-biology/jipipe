@@ -71,4 +71,89 @@ public class ArrayUtils {
         }
         return target;
     }
+
+    public static byte[][] deepCopy(byte[][] original) {
+        if (original == null) {
+            return null;
+        }
+        byte[][] copy = new byte[original.length][];
+        for (int i = 0; i < original.length; i++) {
+            if (original[i] != null) {
+                copy[i] = new byte[original[i].length];
+                System.arraycopy(original[i], 0, copy[i], 0, original[i].length);
+            }
+        }
+        return copy;
+    }
+
+    public static short[][] deepCopy(short[][] original) {
+        if (original == null) {
+            return null;
+        }
+        short[][] copy = new short[original.length][];
+        for (int i = 0; i < original.length; i++) {
+            if (original[i] != null) {
+                copy[i] = new short[original[i].length];
+                System.arraycopy(original[i], 0, copy[i], 0, original[i].length);
+            }
+        }
+        return copy;
+    }
+
+    public static int[][] deepCopy(int[][] original) {
+        if (original == null) {
+            return null;
+        }
+        int[][] copy = new int[original.length][];
+        for (int i = 0; i < original.length; i++) {
+            if (original[i] != null) {
+                copy[i] = new int[original[i].length];
+                System.arraycopy(original[i], 0, copy[i], 0, original[i].length);
+            }
+        }
+        return copy;
+    }
+
+    public static long[][] deepCopy(long[][] original) {
+        if (original == null) {
+            return null;
+        }
+        long[][] copy = new long[original.length][];
+        for (int i = 0; i < original.length; i++) {
+            if (original[i] != null) {
+                copy[i] = new long[original[i].length];
+                System.arraycopy(original[i], 0, copy[i], 0, original[i].length);
+            }
+        }
+        return copy;
+    }
+
+    public static float[][] deepCopy(float[][] original) {
+        if (original == null) {
+            return null;
+        }
+        float[][] copy = new float[original.length][];
+        for (int i = 0; i < original.length; i++) {
+            if (original[i] != null) {
+                copy[i] = new float[original[i].length];
+                System.arraycopy(original[i], 0, copy[i], 0, original[i].length);
+            }
+        }
+        return copy;
+    }
+
+    public static double[][] deepCopy(double[][] original) {
+        if (original == null) {
+            return null;
+        }
+        double[][] copy = new double[original.length][];
+        for (int i = 0; i < original.length; i++) {
+            if (original[i] != null) {
+                copy[i] = new double[original[i].length];
+                System.arraycopy(original[i], 0, copy[i], 0, original[i].length);
+            }
+        }
+        return copy;
+    }
+
 }
