@@ -127,5 +127,23 @@ public class TurboRegTransformationInfo {
         public void setTargetPoints(Vector2dParameter.List targetPoints) {
             this.targetPoints = targetPoints;
         }
+
+        public double[][] getSourcePointsAsArray() {
+            double[][] result = new double[sourcePoints.size()][2];
+            for (int i = 0; i < sourcePoints.size(); i++) {
+                result[i][0] = sourcePoints.get(i).getX();
+                result[i][1] = sourcePoints.get(i).getY();
+            }
+            return result;
+        }
+
+        public double[][] getTargetPointsAsArray() {
+            double[][] result = new double[targetPoints.size()][2];
+            for (int i = 0; i < targetPoints.size(); i++) {
+                result[i][0] = targetPoints.get(i).getX();
+                result[i][1] = targetPoints.get(i).getY();
+            }
+            return result;
+        }
     }
 }

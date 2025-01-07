@@ -68,4 +68,11 @@ public class GraphUtils {
         CycleDetector<V, E> cycleDetector = new CycleDetector<>(graph);
         return cycleDetector.detectCycles();
     }
+
+    public static <V, E> V getFirstPredecessor(Graph<V, E> graph, V vertex) {
+        for (E edge : graph.incomingEdgesOf(vertex)) {
+            return graph.getEdgeSource(edge);
+        }
+        return null;
+    }
 }

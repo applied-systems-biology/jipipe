@@ -82,6 +82,9 @@ public class TurboRegRegistrationAlgorithm extends JIPipeIteratingAlgorithm {
         super(info);
         this.advancedTurboRegParameters = new AdvancedTurboRegParameters();
         registerSubParameter(advancedTurboRegParameters);
+
+        // Add default config
+        rules.addNewInstance();
     }
 
     public TurboRegRegistrationAlgorithm(TurboRegRegistrationAlgorithm other) {
@@ -265,7 +268,8 @@ public class TurboRegRegistrationAlgorithm extends JIPipeIteratingAlgorithm {
 
                     if(isRGB) {
                         // Transform the individual channels using the transform matrix
-                        throw new UnsupportedOperationException("Not implemented yet");
+                        // TODO: Handling RGB
+                        transformedTargetProcessors.put(node.sourceIndex, aligned.getTransformedTargetImage().getProcessor());
                     }
                     else {
                         transformedTargetProcessors.put(node.sourceIndex, aligned.getTransformedTargetImage().getProcessor());
@@ -279,6 +283,50 @@ public class TurboRegRegistrationAlgorithm extends JIPipeIteratingAlgorithm {
 
                     // Save the transformation into the node (required for UseTransform)
                     node.transformationInfo = aligned.getTransformation();
+                }
+                break;
+                case UseTransformation: {
+
+                    // Grab the node's source transformation info
+                    TransformationNode useSource = GraphUtils.getFirstPredecessor(graph, node);
+                    Objects.requireNonNull(useSource);
+
+                    if(useSource.transformationInfo == null) {
+                        // Was set to "Ignore" -> Also ignore
+                        progressInfo.log("Ignoring UseTransformation for node at " + node.sourceIndex + ": " +
+                                "source at index " + useSource.sourceIndex + " has no transform (probably ignored in the chain)");
+                        transformedTargetProcessors.put(node.sourceIndex, sourceIp);
+                    }
+                    else {
+                        progressInfo.log("Transforming node at " + node.sourceIndex + " with transformation from " + useSource.sourceIndex);
+
+                        ImagePlus sourceImp = new ImagePlus("source", sourceIp);
+                        boolean isRGB = sourceImp.getType() == ImagePlus.COLOR_RGB;
+
+                        // TODO: handling of RGB
+                        sourceImp = ImageJUtils.convertToGreyscaleIfNeeded(sourceImp);
+
+                        TurboRegTransformationInfo.Entry transformEntry = useSource.transformationInfo.getEntries().get(0);
+                        double[][] sourcePoints = transformEntry.getSourcePointsAsArray();
+                        double[][] targetPoints = transformEntry.getTargetPointsAsArray();
+
+                        ImagePlus transformed = TurboRegUtils.transformImage2D(sourceImp,
+                                sourceImp.getWidth(),
+                                sourceImp.getHeight(),
+                                transformationType,
+                                sourcePoints,
+                                targetPoints);
+                        transformedTargetProcessors.put(node.sourceIndex, transformed.getProcessor());
+
+                        // Modify the transformation
+                        TurboRegTransformationInfo.Entry transformationEntry = new TurboRegTransformationInfo.Entry(transformEntry);
+                        transformationEntry.setSourceImageIndex(node.sourceIndex);
+                        transformation.getEntries().add(transformationEntry);
+
+                        // Save the transformation into the node (required for UseTransform)
+                        node.transformationInfo = useSource.transformationInfo;
+                    }
+
                 }
                 break;
                 default:
