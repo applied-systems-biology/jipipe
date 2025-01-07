@@ -28,6 +28,13 @@ import org.hkijena.jipipe.api.nodes.categories.ImagesNodeTypeCategory;
 import org.hkijena.jipipe.api.nodes.iterationstep.JIPipeIterationContext;
 import org.hkijena.jipipe.api.nodes.iterationstep.JIPipeSingleIterationStep;
 import org.hkijena.jipipe.api.parameters.JIPipeParameter;
+import org.hkijena.jipipe.plugins.expressions.AddJIPipeExpressionParameterVariable;
+import org.hkijena.jipipe.plugins.expressions.JIPipeExpressionParameter;
+import org.hkijena.jipipe.plugins.expressions.JIPipeExpressionParameterSettings;
+import org.hkijena.jipipe.plugins.expressions.JIPipeExpressionVariablesMap;
+import org.hkijena.jipipe.plugins.expressions.variables.JIPipeTextAnnotationsExpressionParameterVariablesInfo;
+import org.hkijena.jipipe.plugins.imagejalgorithms.utils.AlignedImage5DSliceIndexExpressionParameterVariablesInfo;
+import org.hkijena.jipipe.plugins.imagejalgorithms.utils.Image5DSliceIndexExpressionParameterVariablesInfo;
 import org.hkijena.jipipe.plugins.imagejalgorithms.utils.turboreg.*;
 import org.hkijena.jipipe.plugins.imagejdatatypes.datatypes.ImagePlusData;
 import org.hkijena.jipipe.plugins.imagejdatatypes.datatypes.greyscale.ImagePlusGreyscaleData;
@@ -57,6 +64,9 @@ import java.util.Map;
 public class TurboRegRegistrationAlgorithm extends JIPipeIteratingAlgorithm {
     
     private TurboRegTransformationType transformationType = TurboRegTransformationType.RigidBody;
+    private JIPipeExpressionParameter referenceCIndex = new JIPipeExpressionParameter("0");
+    private JIPipeExpressionParameter referenceZIndex = new JIPipeExpressionParameter("z");
+    private JIPipeExpressionParameter referenceTIndex = new JIPipeExpressionParameter("0");
     private final AdvancedTurboRegParameters advancedTurboRegParameters;
 
 
@@ -69,6 +79,9 @@ public class TurboRegRegistrationAlgorithm extends JIPipeIteratingAlgorithm {
     public TurboRegRegistrationAlgorithm(TurboRegRegistrationAlgorithm other) {
         super(other);
         this.transformationType = other.transformationType;
+        this.referenceCIndex = new JIPipeExpressionParameter(other.referenceCIndex);
+        this.referenceZIndex = new JIPipeExpressionParameter(other.referenceZIndex);
+        this.referenceTIndex = new JIPipeExpressionParameter(other.referenceTIndex);
         this.advancedTurboRegParameters = new AdvancedTurboRegParameters(other.advancedTurboRegParameters);
         registerSubParameter(advancedTurboRegParameters);
     }
@@ -90,6 +103,62 @@ public class TurboRegRegistrationAlgorithm extends JIPipeIteratingAlgorithm {
     @JIPipeParameter("transformation-type")
     public void setTransformationType(TurboRegTransformationType transformationType) {
         this.transformationType = transformationType;
+    }
+
+    @Override
+    public boolean isEnableDefaultCustomExpressionVariables() {
+        return true;
+    }
+
+    @SetJIPipeDocumentation(name = "Reference channel index", description = "Expression that determines which channel of the reference image is used for the alignment. " +
+            "Executed per Z/C/T slice in the input image." +
+            "For example, set to <code>c</code> to follow the current channel and <code>0</code> to always use the first channel (index 0). " +
+            "Automatically corrects for values lower than zero and larger than the maximum index.")
+    @JIPipeParameter("reference-c-index")
+    @AddJIPipeExpressionParameterVariable(fromClass = JIPipeTextAnnotationsExpressionParameterVariablesInfo.class)
+    @AddJIPipeExpressionParameterVariable(fromClass = AlignedImage5DSliceIndexExpressionParameterVariablesInfo.class)
+    @JIPipeExpressionParameterSettings(hint = "per input Z/C/T slice")
+    public JIPipeExpressionParameter getReferenceCIndex() {
+        return referenceCIndex;
+    }
+
+    @JIPipeParameter("reference-c-index")
+    public void setReferenceCIndex(JIPipeExpressionParameter referenceCIndex) {
+        this.referenceCIndex = referenceCIndex;
+    }
+
+    @SetJIPipeDocumentation(name = "Reference Z index", description = "Expression that determines which depth of the reference image is used for the alignment. " +
+            "Executed per Z/C/T slice in the input image." +
+            "For example, set to <code>z</code> to follow the current Z and <code>0</code> to always use the first slice (index 0). " +
+            "Automatically corrects for values lower than zero and larger than the maximum index.")
+    @JIPipeParameter("reference-z-index")
+    @AddJIPipeExpressionParameterVariable(fromClass = JIPipeTextAnnotationsExpressionParameterVariablesInfo.class)
+    @AddJIPipeExpressionParameterVariable(fromClass = AlignedImage5DSliceIndexExpressionParameterVariablesInfo.class)
+    @JIPipeExpressionParameterSettings(hint = "per input Z/C/T slice")
+    public JIPipeExpressionParameter getReferenceZIndex() {
+        return referenceZIndex;
+    }
+
+    @JIPipeParameter("reference-z-index")
+    public void setReferenceZIndex(JIPipeExpressionParameter referenceZIndex) {
+        this.referenceZIndex = referenceZIndex;
+    }
+
+    @SetJIPipeDocumentation(name = "Reference frame index", description = "Expression that determines which frame of the reference image is used for the alignment. " +
+            "Executed per Z/C/T slice in the input image." +
+            "For example, set to <code>t</code> to follow the current frame and <code>0</code> to always use the first frame (index 0). " +
+            "Automatically corrects for values lower than zero and larger than the maximum index.")
+    @JIPipeParameter("reference-t-index")
+    @AddJIPipeExpressionParameterVariable(fromClass = JIPipeTextAnnotationsExpressionParameterVariablesInfo.class)
+    @AddJIPipeExpressionParameterVariable(fromClass = AlignedImage5DSliceIndexExpressionParameterVariablesInfo.class)
+    @JIPipeExpressionParameterSettings(hint = "per input Z/C/T slice")
+    public JIPipeExpressionParameter getReferenceTIndex() {
+        return referenceTIndex;
+    }
+
+    @JIPipeParameter("reference-t-index")
+    public void setReferenceTIndex(JIPipeExpressionParameter referenceTIndex) {
+        this.referenceTIndex = referenceTIndex;
     }
 
     @SetJIPipeDocumentation(name = "Advanced parameters", description = "Advanced parameters for TurboReg")
@@ -114,13 +183,23 @@ public class TurboRegRegistrationAlgorithm extends JIPipeIteratingAlgorithm {
             throw new RuntimeException("Source and target images do not have the same width and height!");
         }
 
+        JIPipeExpressionVariablesMap variablesMap = new JIPipeExpressionVariablesMap();
+        variablesMap.putAnnotations(iterationStep.getMergedTextAnnotations());
+        variablesMap.putCustomVariables(getDefaultCustomExpressionVariables());
+
         Map<ImageSliceIndex, ImageProcessor> transformedTargetProcessors = new HashMap<>();
         TurboRegTransformationInfo transformation = new TurboRegTransformationInfo();
 
         ImageJUtils.forEachIndexedZCTSliceWithProgress(source, (sourceIp, index, sliceProgress) -> {
-            // Find the best matching target
-            // TODO: smarter selection of the reference slice
-            ImageSliceIndex targetIndex = ImageJUtils.toSafeZeroIndex(target, index);
+
+            // Calculate slice index
+            AlignedImage5DSliceIndexExpressionParameterVariablesInfo.apply(variablesMap, target, source, index);
+            int targetReferenceC = referenceCIndex.evaluateToInteger(variablesMap);
+            int targetReferenceZ = referenceZIndex.evaluateToInteger(variablesMap);
+            int targetReferenceT = referenceTIndex.evaluateToInteger(variablesMap);
+
+            ImageSliceIndex targetIndex = ImageJUtils.toSafeZeroIndex(target, new ImageSliceIndex(targetReferenceC, targetReferenceZ, targetReferenceT));
+            progressInfo.log("Aligning input slice " + index + " to reference " + targetIndex);
             ImageProcessor targetIp = ImageJUtils.getSliceZero(target, targetIndex);
 
             TurboRegResult aligned = TurboRegUtils.alignImage2D(new ImagePlus("source", sourceIp),
