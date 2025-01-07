@@ -149,7 +149,7 @@ public class JIPipeDesktopPipelineParametersPanel extends JIPipeDesktopWorkbench
                 quickActionsMenu.add(UIUtils.createMenuItem(quickAction.getName(),
                         quickAction.getDescription(),
                         UIUtils.getIconFromResources(quickAction.getIcon()),
-                        () -> quickAction.run(node, canvas)));
+                        () -> quickAction.getWorkload().accept(node, canvas)));
             }
             JButton button = UIUtils.createButton("Tools", UIUtils.getIconFromResources("actions/quickopen.png"), null);
             UIUtils.makeButtonHighlightedSuccess(button);

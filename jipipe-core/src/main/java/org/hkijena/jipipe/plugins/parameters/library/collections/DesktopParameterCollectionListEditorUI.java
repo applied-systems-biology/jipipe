@@ -79,7 +79,7 @@ public class DesktopParameterCollectionListEditorUI extends JIPipeDesktopParamet
         reorderModeButton.addActionListener(e -> reload());
         toolBar.add(reorderModeButton);
 
-        JButton menuButton = new JButton(UIUtils.getIconFromResources("actions/open-menu.png"));
+        JButton menuButton = new JButton(UIUtils.getIconFromResources("actions/hamburger-menu.png"));
         menuButton.setToolTipText("Show additional options");
         JPopupMenu menu = UIUtils.addPopupMenuToButton(menuButton);
         toolBar.add(menuButton);
