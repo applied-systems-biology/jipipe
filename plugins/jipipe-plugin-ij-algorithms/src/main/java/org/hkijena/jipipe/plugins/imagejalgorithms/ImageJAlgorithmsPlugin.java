@@ -88,7 +88,9 @@ import org.hkijena.jipipe.plugins.imagejalgorithms.nodes.overlay.ExtractOverlayA
 import org.hkijena.jipipe.plugins.imagejalgorithms.nodes.overlay.RemoveOverlayAlgorithm;
 import org.hkijena.jipipe.plugins.imagejalgorithms.nodes.overlay.RenderOverlayAlgorithm;
 import org.hkijena.jipipe.plugins.imagejalgorithms.nodes.overlay.SetOverlayAlgorithm;
-import org.hkijena.jipipe.plugins.imagejalgorithms.nodes.registration.turboreg.TurboRegRegistration2DAlgorithm;
+import org.hkijena.jipipe.plugins.imagejalgorithms.nodes.registration.turboreg.TurboRegRegistration2DReferencedAlgorithm;
+import org.hkijena.jipipe.plugins.imagejalgorithms.nodes.registration.turboreg.TurboRegRegistration2DSingleAlgorithm;
+import org.hkijena.jipipe.plugins.imagejalgorithms.nodes.registration.turboreg.TurboRegRegistrationAlgorithmRuleType;
 import org.hkijena.jipipe.plugins.imagejalgorithms.nodes.roi.*;
 import org.hkijena.jipipe.plugins.imagejalgorithms.nodes.roi.annotations.RoiPropertiesToAnnotationsAlgorithm;
 import org.hkijena.jipipe.plugins.imagejalgorithms.nodes.roi.assemble.AssembleExtractedROIAlgorithm;
@@ -642,8 +644,9 @@ public class ImageJAlgorithmsPlugin extends JIPipePrepackagedDefaultJavaPlugin {
 //        registerNodeType("ij1-simple-image-registration", SimpleImageRegistrationAlgorithm.class, UIUtils.getIconURLFromResources("actions/transform-shear-right.png"));
 
         registerEnumParameterType("ij1-turbo-reg:transformation-type", TurboRegTransformationType.class, "TurboReg transformation", "Transformation type");
-        registerEnumParameterType("ij1-turbo-reg-image-registration:rule-type", TurboRegRegistration2DAlgorithm.RuleType.class, "TurboReg registration rule type", "Determines the behavior of the algorithm");
-        registerNodeType("ij1-turbo-reg-image-registration", TurboRegRegistration2DAlgorithm.class, UIUtils.getIconURLFromResources("actions/transform-shear-right.png"));
+        registerEnumParameterType("ij1-turbo-reg-image-registration:rule-type", TurboRegRegistrationAlgorithmRuleType.class, "TurboReg registration rule type", "Determines the behavior of the algorithm");
+        registerNodeType("ij1-turbo-reg-image-registration", TurboRegRegistration2DReferencedAlgorithm.class, UIUtils.getIconURLFromResources("actions/transform-shear-right.png"));
+        registerNodeType("ij1-turbo-reg-image-registration-io", TurboRegRegistration2DSingleAlgorithm.class, UIUtils.getIconURLFromResources("actions/transform-shear-right.png"));
     }
 
     @Override
