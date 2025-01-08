@@ -35,7 +35,7 @@ public class JIPipeParameterCollectionVisibilitiesDesktopParameterEditorUI exten
     private JIPipeDesktopFormPanel formPanel;
 
     public JIPipeParameterCollectionVisibilitiesDesktopParameterEditorUI(InitializationParameters parameters) {
-       super(parameters);
+        super(parameters);
         initialize();
         reload();
     }

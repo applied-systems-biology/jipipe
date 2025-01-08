@@ -13,11 +13,8 @@
 
 package org.hkijena.jipipe.plugins.parameters.library.jipipe;
 
-import org.hkijena.jipipe.api.parameters.JIPipeParameterAccess;
 import org.hkijena.jipipe.api.parameters.JIPipeParameterCollection;
-import org.hkijena.jipipe.api.parameters.JIPipeParameterTree;
 import org.hkijena.jipipe.desktop.api.JIPipeDesktopParameterEditorUI;
-import org.hkijena.jipipe.desktop.app.JIPipeDesktopWorkbench;
 import org.hkijena.jipipe.desktop.commons.components.JIPipeDesktopParameterFormPanel;
 import org.hkijena.jipipe.utils.UIUtils;
 
@@ -29,7 +26,7 @@ public class JIPipeParameterCollectionDesktopParameterEditorUI extends JIPipeDes
     private boolean isReloading;
 
     public JIPipeParameterCollectionDesktopParameterEditorUI(InitializationParameters parameters) {
-       super(parameters);
+        super(parameters);
         initialize();
         reload();
     }

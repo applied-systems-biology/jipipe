@@ -65,12 +65,12 @@ public class CUDAUtils {
 
         try {
             String output = ProcessUtils.queryFast(nvidiaSmiPath, new JIPipeProgressInfo());
-            if(output == null) {
+            if (output == null) {
                 return 0;
             }
             return (int) StringUtils.tryParseDouble(parseMaxCudaVersion(output), 0);
         } catch (Exception e) {
-           return 0;
+            return 0;
         }
     }
 

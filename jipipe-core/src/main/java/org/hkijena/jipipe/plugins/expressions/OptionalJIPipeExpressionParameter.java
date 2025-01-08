@@ -15,9 +15,11 @@ package org.hkijena.jipipe.plugins.expressions;
 
 import com.fasterxml.jackson.core.JsonParser;
 import com.fasterxml.jackson.core.JsonProcessingException;
-import com.fasterxml.jackson.databind.*;
+import com.fasterxml.jackson.databind.DeserializationContext;
+import com.fasterxml.jackson.databind.JsonDeserializer;
+import com.fasterxml.jackson.databind.JsonNode;
+import com.fasterxml.jackson.databind.ObjectReader;
 import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
-import com.fasterxml.jackson.databind.deser.ContextualDeserializer;
 import org.hkijena.jipipe.plugins.parameters.api.optional.OptionalParameter;
 import org.hkijena.jipipe.utils.json.JsonUtils;
 

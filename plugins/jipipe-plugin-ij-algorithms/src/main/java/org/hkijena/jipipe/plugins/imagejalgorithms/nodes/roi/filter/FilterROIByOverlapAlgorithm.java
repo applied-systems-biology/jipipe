@@ -32,7 +32,6 @@ import org.hkijena.jipipe.api.nodes.iterationstep.JIPipeIterationContext;
 import org.hkijena.jipipe.api.nodes.iterationstep.JIPipeSingleIterationStep;
 import org.hkijena.jipipe.api.parameters.AbstractJIPipeParameterCollection;
 import org.hkijena.jipipe.api.parameters.JIPipeParameter;
-import org.hkijena.jipipe.plugins.expressions.JIPipeExpressionParameter;
 import org.hkijena.jipipe.plugins.expressions.JIPipeExpressionParameterSettings;
 import org.hkijena.jipipe.plugins.expressions.JIPipeExpressionVariablesMap;
 import org.hkijena.jipipe.plugins.expressions.OptionalJIPipeExpressionParameter;
@@ -262,7 +261,7 @@ public class FilterROIByOverlapAlgorithm extends JIPipeIteratingAlgorithm {
         }
 
         if (overlap == null) {
-          overlap = new PointRoi(0, 0); // Generate a dummy ROI for measurements
+            overlap = new PointRoi(0, 0); // Generate a dummy ROI for measurements
         }
 
         // Measure overlap

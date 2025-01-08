@@ -19,7 +19,10 @@ import org.hkijena.jipipe.utils.StringUtils;
 
 import java.nio.file.Path;
 import java.nio.file.Paths;
-import java.util.*;
+import java.util.Collection;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 
 /**
  * Object that carries variables for expressions

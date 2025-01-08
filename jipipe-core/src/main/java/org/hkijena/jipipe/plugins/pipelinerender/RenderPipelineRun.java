@@ -24,7 +24,6 @@ import org.hkijena.jipipe.api.nodes.JIPipeGraph;
 import org.hkijena.jipipe.api.nodes.JIPipeGraphEdge;
 import org.hkijena.jipipe.api.nodes.JIPipeGraphNode;
 import org.hkijena.jipipe.api.project.JIPipeProject;
-import org.hkijena.jipipe.api.run.JIPipeRunnable;
 import org.hkijena.jipipe.desktop.app.JIPipeDesktopDummyWorkbench;
 import org.hkijena.jipipe.desktop.app.grapheditor.JIPipeGraphViewMode;
 import org.hkijena.jipipe.desktop.app.grapheditor.commons.JIPipeDesktopGraphCanvasUI;

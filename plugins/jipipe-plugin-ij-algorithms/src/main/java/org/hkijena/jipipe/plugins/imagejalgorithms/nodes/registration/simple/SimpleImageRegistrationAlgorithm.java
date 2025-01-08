@@ -37,7 +37,7 @@ import org.hkijena.jipipe.plugins.imagejdatatypes.util.ImageJUtils;
 import org.hkijena.jipipe.plugins.strings.XMLData;
 
 import java.awt.*;
-import java.util.*;
+import java.util.ArrayList;
 import java.util.List;
 
 /**
@@ -71,11 +71,10 @@ public class SimpleImageRegistrationAlgorithm extends JIPipeIteratingAlgorithm {
     public SimpleImageRegistrationAlgorithm(SimpleImageRegistrationAlgorithm other) {
         super(other);
         this.siftParameters = new SIFTParameters(other.siftParameters);
-        this.bUnwarpJParameters  = new SimpleBUnwarpJParameters(other.bUnwarpJParameters);
+        this.bUnwarpJParameters = new SimpleBUnwarpJParameters(other.bUnwarpJParameters);
         this.parameters = new SimpleImageRegistrationParameters(other.parameters);
         registerSubParameters(siftParameters, bUnwarpJParameters, parameters);
     }
-
 
 
     @SetJIPipeDocumentation(name = "SIFT parameters", description = "Parameters for the SIFT feature extraction")
@@ -98,7 +97,7 @@ public class SimpleImageRegistrationAlgorithm extends JIPipeIteratingAlgorithm {
 
     @Override
     public boolean isParameterUIVisible(JIPipeParameterTree tree, JIPipeParameterCollection subParameter) {
-        if(subParameter == bUnwarpJParameters) {
+        if (subParameter == bUnwarpJParameters) {
             return parameters.getImageRegistrationModel() == SimpleImageRegistrationModel.Elastic;
         }
         return super.isParameterUIVisible(tree, subParameter);
@@ -118,9 +117,9 @@ public class SimpleImageRegistrationAlgorithm extends JIPipeIteratingAlgorithm {
         ImagePlus imp1mask = new ImagePlus();
         ImagePlus imp2mask = new ImagePlus();
         CoordinateTransform coordinateTransform = parameters.getImageRegistrationModel().toCoordinateTransform();
-        Rectangle commonBounds = new Rectangle(0,0, imp1.getWidth(), imp1.getHeight());
+        Rectangle commonBounds = new Rectangle(0, 0, imp1.getWidth(), imp1.getHeight());
         List<Rectangle> bounds = new ArrayList<>();
-        bounds.add(new Rectangle(0,0, imp1.getWidth(), imp1.getHeight()));
+        bounds.add(new Rectangle(0, 0, imp1.getWidth(), imp1.getHeight()));
 
         SimpleRegistrationUtils.register(imp1, imp2, imp1mask, imp2mask, coordinateTransform, commonBounds, bounds, parameters, siftParameters, unwarpJParametersParam, progressInfo);
 

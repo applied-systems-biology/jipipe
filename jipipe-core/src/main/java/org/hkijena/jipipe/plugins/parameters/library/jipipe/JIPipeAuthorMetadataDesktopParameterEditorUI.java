@@ -14,10 +14,7 @@
 package org.hkijena.jipipe.plugins.parameters.library.jipipe;
 
 import org.hkijena.jipipe.api.JIPipeAuthorMetadata;
-import org.hkijena.jipipe.api.parameters.JIPipeParameterAccess;
-import org.hkijena.jipipe.api.parameters.JIPipeParameterTree;
 import org.hkijena.jipipe.desktop.api.JIPipeDesktopParameterEditorUI;
-import org.hkijena.jipipe.desktop.app.JIPipeDesktopWorkbench;
 import org.hkijena.jipipe.desktop.commons.components.JIPipeDesktopDocumentChangeListener;
 import org.hkijena.jipipe.desktop.commons.components.JIPipeDesktopParameterFormPanel;
 import org.hkijena.jipipe.plugins.parameters.library.markup.MarkdownText;
@@ -34,7 +31,7 @@ public class JIPipeAuthorMetadataDesktopParameterEditorUI extends JIPipeDesktopP
     private boolean isReloading = false;
 
     public JIPipeAuthorMetadataDesktopParameterEditorUI(InitializationParameters parameters) {
-       super(parameters);
+        super(parameters);
         initialize();
         reload();
     }

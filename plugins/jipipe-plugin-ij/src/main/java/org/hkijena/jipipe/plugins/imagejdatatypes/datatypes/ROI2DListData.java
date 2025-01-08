@@ -23,7 +23,6 @@ import ij.measure.Calibration;
 import ij.measure.ResultsTable;
 import ij.plugin.RoiRotator;
 import ij.plugin.RoiScaler;
-import ij.plugin.filter.Analyzer;
 import ij.plugin.filter.Filler;
 import ij.plugin.frame.RoiManager;
 import ij.process.FloatPolygon;
@@ -47,11 +46,11 @@ import org.hkijena.jipipe.plugins.expressions.JIPipeExpressionVariablesMap;
 import org.hkijena.jipipe.plugins.imagejdatatypes.display.CachedROIListDataViewerWindow;
 import org.hkijena.jipipe.plugins.imagejdatatypes.util.*;
 import org.hkijena.jipipe.plugins.imagejdatatypes.util.measure.CustomAnalyzer;
+import org.hkijena.jipipe.plugins.imagejdatatypes.util.measure.ImageMeasurementUtils;
 import org.hkijena.jipipe.plugins.imagejdatatypes.util.measure.ImageStatisticsSetParameter;
 import org.hkijena.jipipe.plugins.parameters.library.roi.Margin;
 import org.hkijena.jipipe.plugins.tables.datatypes.ResultsTableData;
 import org.hkijena.jipipe.utils.ColorUtils;
-import org.hkijena.jipipe.plugins.imagejdatatypes.util.measure.ImageMeasurementUtils;
 import org.hkijena.jipipe.utils.PathUtils;
 import org.hkijena.jipipe.utils.StringUtils;
 
@@ -1563,7 +1562,7 @@ public class ROI2DListData extends ArrayList<Roi> implements JIPipeData {
 
         // Ensure that the results table is closed
         SwingUtilities.invokeLater(() -> {
-            if(ResultsTable.getResultsWindow() != null) {
+            if (ResultsTable.getResultsWindow() != null) {
                 ResultsTable.getResultsWindow().close();
             }
         });

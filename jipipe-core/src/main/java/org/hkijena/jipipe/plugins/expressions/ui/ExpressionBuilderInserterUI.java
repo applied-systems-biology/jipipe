@@ -182,16 +182,15 @@ public class ExpressionBuilderInserterUI extends JPanel {
             }
             for (int i = 0; i < function.getMinimumArgumentCount(); i++) {
                 ParameterInfo info = function.getParameterInfo(i);
-                if(info != null) {
+                if (info != null) {
                     ExpressionBuilderParameterUI parameterUI = new ExpressionBuilderParameterUI();
                     JLabel infoLabel = new JLabel(info.getName());
                     appendTooltipForParameterLabel(info, infoLabel);
                     inserterForm.addToForm(parameterUI, infoLabel, null);
                     inserterParameterEditorUIList.add(parameterUI);
-                }
-                else {
+                } else {
                     ExpressionBuilderParameterUI parameterUI = new ExpressionBuilderParameterUI();
-                    JLabel infoLabel = new JLabel("Parameter " + ( i + 1));
+                    JLabel infoLabel = new JLabel("Parameter " + (i + 1));
                     inserterForm.addToForm(parameterUI, infoLabel, null);
                     inserterParameterEditorUIList.add(parameterUI);
                 }

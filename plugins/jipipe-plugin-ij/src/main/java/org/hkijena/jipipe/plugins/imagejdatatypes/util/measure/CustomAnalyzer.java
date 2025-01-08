@@ -20,7 +20,6 @@ import ij.measure.Calibration;
 import ij.measure.Measurements;
 import ij.measure.ResultsTable;
 import ij.plugin.MeasurementsWriter;
-import ij.plugin.filter.PlugInFilter;
 import ij.plugin.frame.RoiManager;
 import ij.process.FloatPolygon;
 import ij.process.FloatProcessor;
@@ -29,13 +28,23 @@ import ij.process.ImageStatistics;
 import ij.text.TextPanel;
 
 import java.awt.*;
-import java.util.Properties;
 
 /**
  * Copy of {@link ij.plugin.filter.Analyzer} that removes some of the GUI-dependent functions and also does not rely on static functions.
  */
 public class CustomAnalyzer implements Measurements {
 
+    // Order must agree with order of checkboxes in Set Measurements dialog box
+    private static final int[] list = {AREA, MEAN, STD_DEV, MODE, MIN_MAX,
+            CENTROID, CENTER_OF_MASS, PERIMETER, RECT, ELLIPSE, SHAPE_DESCRIPTORS, FERET,
+            INTEGRATED_DENSITY, MEDIAN, SKEWNESS, KURTOSIS, AREA_FRACTION, STACK_POSITION,
+            LIMIT, LABELS, INVERT_Y, SCIENTIFIC_NOTATION, ADD_TO_OVERLAY, NaN_EMPTY_CELLS};
+    private final String MEASUREMENTS = "measurements";
+    private final String MARK_WIDTH = "mark.width";
+    private final String PRECISION = "precision";
+    public Color darkBlue = new Color(0, 0, 160);
+    public int markWidth;
+    public int precision = Prefs.getInt(PRECISION, 3);
     private boolean drawLabels = true;
     private String arg;
     private ImagePlus imp;
@@ -44,21 +53,8 @@ public class CustomAnalyzer implements Measurements {
     private StringBuffer min, max, mean, sd;
     private boolean disableReset;
     private boolean resultsUpdated;
-
-    // Order must agree with order of checkboxes in Set Measurements dialog box
-    private static final int[] list = {AREA, MEAN, STD_DEV, MODE, MIN_MAX,
-            CENTROID, CENTER_OF_MASS, PERIMETER, RECT, ELLIPSE, SHAPE_DESCRIPTORS, FERET,
-            INTEGRATED_DENSITY, MEDIAN, SKEWNESS, KURTOSIS, AREA_FRACTION, STACK_POSITION,
-            LIMIT, LABELS, INVERT_Y, SCIENTIFIC_NOTATION, ADD_TO_OVERLAY, NaN_EMPTY_CELLS};
-
-    private final String MEASUREMENTS = "measurements";
-    private final String MARK_WIDTH = "mark.width";
-    private final String PRECISION = "precision";
     private boolean unsavedMeasurements;
-    public Color darkBlue = new Color(0, 0, 160);
     private int systemMeasurements = Prefs.getInt(MEASUREMENTS, AREA + MEAN + MIN_MAX);
-    public int markWidth;
-    public int precision = Prefs.getInt(PRECISION, 3);
     private float[] umeans = new float[MAX_STANDARDS];
     private int redirectTarget;
     private String redirectTitle = "";
@@ -777,6 +773,18 @@ public class CustomAnalyzer implements Measurements {
         return rt;
     }
 
+    public void setResultsTable(ResultsTable rt) {
+        TextPanel tp = IJ.isResultsWindow() ? IJ.getTextPanel() : null;
+        if (tp != null)
+            tp.clear();
+        if (rt == null)
+            rt = new ResultsTable();
+        rt.setPrecision((systemMeasurements & SCIENTIFIC_NOTATION) != 0 ? -precision : precision);
+        rt.setNaNEmptyCells((systemMeasurements & NaN_EMPTY_CELLS) != 0);
+        umeans = null;
+        unsavedMeasurements = false;
+    }
+
     /**
      * Returns the number of digits displayed to the right of decimal point.
      */
@@ -813,7 +821,6 @@ public class CustomAnalyzer implements Measurements {
         return y;
     }
 
-
     public void setOption(String option, boolean b) {
         if (option.contains("min"))
             showMin = b;
@@ -823,18 +830,6 @@ public class CustomAnalyzer implements Measurements {
 
     public boolean addToOverlay() {
         return ((getMeasurements() & ADD_TO_OVERLAY) != 0);
-    }
-
-    public void setResultsTable(ResultsTable rt) {
-        TextPanel tp = IJ.isResultsWindow() ? IJ.getTextPanel() : null;
-        if (tp != null)
-            tp.clear();
-        if (rt == null)
-            rt = new ResultsTable();
-        rt.setPrecision((systemMeasurements & SCIENTIFIC_NOTATION) != 0 ? -precision : precision);
-        rt.setNaNEmptyCells((systemMeasurements & NaN_EMPTY_CELLS) != 0);
-        umeans = null;
-        unsavedMeasurements = false;
     }
 
     public void drawLabels(boolean b) {

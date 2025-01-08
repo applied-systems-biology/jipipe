@@ -28,11 +28,11 @@ public abstract class JIPipeDesktopGraphEditorRunManager implements JIPipeRunnab
     private final JIPipeDesktopGraphCanvasUI canvasUI;
     private final JIPipeDesktopGraphNodeUI nodeUI;
     private final JIPipeDesktopDockPanel dockPanel;
+    private final boolean allowChangePanels;
     private JIPipeRunnable run;
     private JIPipeDesktopDockPanel.State savedState;
     private boolean queueMode;
     private boolean restoreDockStateRequired;
-    private final boolean allowChangePanels;
 
     public JIPipeDesktopGraphEditorRunManager(JIPipeProject project, JIPipeDesktopGraphCanvasUI canvasUI, JIPipeDesktopGraphNodeUI nodeUI, JIPipeDesktopDockPanel dockPanel, boolean allowChangePanels) {
         this.project = project;

@@ -215,8 +215,9 @@ public class StringUtils {
 
     /**
      * Generates a random string
+     *
      * @param characters the available characters
-     * @param length the length
+     * @param length     the length
      * @return the string
      */
     public static String generateRandomString(String characters, int length) {
@@ -590,10 +591,10 @@ public class StringUtils {
 
     public static int parseInt(String str) {
         double v = parseDouble(str);
-        if(Double.isNaN(v)) {
+        if (Double.isNaN(v)) {
             return 0;
         }
-        if(Double.isInfinite(v)) {
+        if (Double.isInfinite(v)) {
             return v < 0 ? Integer.MIN_VALUE : Integer.MAX_VALUE;
         }
         return (int) v;

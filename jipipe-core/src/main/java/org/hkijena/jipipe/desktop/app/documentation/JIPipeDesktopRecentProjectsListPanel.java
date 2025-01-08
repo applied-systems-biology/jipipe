@@ -16,14 +16,12 @@ package org.hkijena.jipipe.desktop.app.documentation;
 import org.hkijena.jipipe.JIPipe;
 import org.hkijena.jipipe.api.events.AbstractJIPipeEvent;
 import org.hkijena.jipipe.api.events.JIPipeEventEmitter;
-import org.hkijena.jipipe.api.parameters.JIPipeParameterCollection;
 import org.hkijena.jipipe.api.registries.JIPipeRecentProjectsRegistry;
 import org.hkijena.jipipe.desktop.app.JIPipeDesktopProjectWindow;
 import org.hkijena.jipipe.desktop.app.JIPipeDesktopProjectWorkbench;
 import org.hkijena.jipipe.desktop.app.JIPipeDesktopProjectWorkbenchPanel;
 import org.hkijena.jipipe.desktop.commons.components.JIPipeDesktopRecentProjectListCellRenderer;
 import org.hkijena.jipipe.desktop.commons.components.search.JIPipeDesktopSearchTextField;
-import org.hkijena.jipipe.plugins.settings.JIPipeProjectDefaultsApplicationSettings;
 import org.hkijena.jipipe.utils.UIUtils;
 
 import javax.swing.*;
@@ -52,7 +50,7 @@ public class JIPipeDesktopRecentProjectsListPanel extends JIPipeDesktopProjectWo
         recentProjectsList.addMouseListener(new MouseAdapter() {
             @Override
             public void mouseClicked(MouseEvent e) {
-                if(SwingUtilities.isLeftMouseButton(e)) {
+                if (SwingUtilities.isLeftMouseButton(e)) {
                     if (e.getClickCount() == 2) {
                         Path value = recentProjectsList.getSelectedValue();
                         if (value != null) {
@@ -91,7 +89,7 @@ public class JIPipeDesktopRecentProjectsListPanel extends JIPipeDesktopProjectWo
     }
 
     private void clearAll() {
-        if(JOptionPane.showConfirmDialog(SwingUtilities.getWindowAncestor(this),
+        if (JOptionPane.showConfirmDialog(SwingUtilities.getWindowAncestor(this),
                 "Do you really want to remove all recent projects from this list?",
                 "Clear recent projects",
                 JOptionPane.YES_NO_OPTION,
@@ -102,7 +100,7 @@ public class JIPipeDesktopRecentProjectsListPanel extends JIPipeDesktopProjectWo
 
     private void deleteSelection() {
         List<Path> selectedValues = recentProjectsList.getSelectedValuesList();
-        if(!selectedValues.isEmpty() && JOptionPane.showConfirmDialog(SwingUtilities.getWindowAncestor(this),
+        if (!selectedValues.isEmpty() && JOptionPane.showConfirmDialog(SwingUtilities.getWindowAncestor(this),
                 "Do you really want to remove the selected recent projects from this list?",
                 "Remove recent projects",
                 JOptionPane.YES_NO_OPTION,

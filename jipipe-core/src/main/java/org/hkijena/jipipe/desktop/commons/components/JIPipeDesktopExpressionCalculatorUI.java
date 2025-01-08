@@ -6,7 +6,10 @@ import org.fife.ui.rsyntaxtextarea.TokenMaker;
 import org.fife.ui.rsyntaxtextarea.TokenMakerFactory;
 import org.hkijena.jipipe.desktop.app.JIPipeDesktopWorkbench;
 import org.hkijena.jipipe.desktop.app.JIPipeDesktopWorkbenchPanel;
-import org.hkijena.jipipe.plugins.expressions.*;
+import org.hkijena.jipipe.plugins.expressions.JIPipeExpressionEvaluatorSyntaxTokenMaker;
+import org.hkijena.jipipe.plugins.expressions.JIPipeExpressionParameter;
+import org.hkijena.jipipe.plugins.expressions.JIPipeExpressionParameterVariableInfo;
+import org.hkijena.jipipe.plugins.expressions.JIPipeExpressionVariablesMap;
 import org.hkijena.jipipe.plugins.expressions.ui.ExpressionBuilderUI;
 import org.hkijena.jipipe.utils.StringUtils;
 import org.hkijena.jipipe.utils.UIUtils;
@@ -19,16 +22,16 @@ import java.awt.event.FocusEvent;
 import java.awt.event.FocusListener;
 import java.awt.event.KeyAdapter;
 import java.awt.event.KeyEvent;
-import java.util.*;
 import java.util.List;
+import java.util.*;
 
 public class JIPipeDesktopExpressionCalculatorUI extends JIPipeDesktopWorkbenchPanel {
 
-    private RSyntaxTextArea expressionEditor;
     private final JIPipeExpressionEvaluatorSyntaxTokenMaker tokenMaker = new JIPipeExpressionEvaluatorSyntaxTokenMaker();
     private final JIPipeDesktopFormPanel resultPanel = new JIPipeDesktopFormPanel(JIPipeDesktopFormPanel.WITH_SCROLLING);
     private final List<ResultItem> resultItems = new ArrayList<>();
     private final JIPipeExpressionVariablesMap variablesMap = new JIPipeExpressionVariablesMap();
+    private RSyntaxTextArea expressionEditor;
 
     public JIPipeDesktopExpressionCalculatorUI(JIPipeDesktopWorkbench desktopWorkbench) {
         super(desktopWorkbench);
@@ -91,7 +94,7 @@ public class JIPipeDesktopExpressionCalculatorUI extends JIPipeDesktopWorkbenchP
         expressionEditorPanel.setBackground(UIManager.getColor("TextArea.background"));
         expressionEditorPanel.setPreferredSize(new Dimension(256, 64));
         expressionEditorPanel.setMinimumSize(new Dimension(256, 64));
-        expressionEditorPanel.setBorder(BorderFactory.createCompoundBorder(UIUtils.createControlBorder(), UIUtils.createEmptyBorder(4) ));
+        expressionEditorPanel.setBorder(BorderFactory.createCompoundBorder(UIUtils.createControlBorder(), UIUtils.createEmptyBorder(4)));
         expressionEditorPanel.add(expressionEditor, BorderLayout.CENTER);
 
 
@@ -126,17 +129,15 @@ public class JIPipeDesktopExpressionCalculatorUI extends JIPipeDesktopWorkbenchP
         UIUtils.requestFocusOnShown(keyField);
 
 
-        if(JOptionPane.showConfirmDialog(this, formPanel, "Set variable", JOptionPane.OK_CANCEL_OPTION) == JOptionPane.OK_OPTION) {
-            if(!StringUtils.isNullOrEmpty(keyField.getText()) && JIPipeExpressionParameter.isValidVariableName(keyField.getText())) {
-                if(StringUtils.isValidDouble(valueField.getText())) {
+        if (JOptionPane.showConfirmDialog(this, formPanel, "Set variable", JOptionPane.OK_CANCEL_OPTION) == JOptionPane.OK_OPTION) {
+            if (!StringUtils.isNullOrEmpty(keyField.getText()) && JIPipeExpressionParameter.isValidVariableName(keyField.getText())) {
+                if (StringUtils.isValidDouble(valueField.getText())) {
                     evaluate("SET_VARIABLE(\"" + keyField.getText() + "\", " + valueField.getText() + ")");
-                }
-                else {
+                } else {
                     evaluate("SET_VARIABLE(\"" + keyField.getText() + "\", \"" + MacroUtils.escapeString(valueField.getText()) + "\")");
                 }
                 expressionEditor.requestFocusInWindow();
-            }
-            else {
+            } else {
                 JOptionPane.showMessageDialog(this, "You did not specify a valid variable name", "Set variable", JOptionPane.ERROR_MESSAGE);
             }
         }
@@ -162,7 +163,7 @@ public class JIPipeDesktopExpressionCalculatorUI extends JIPipeDesktopWorkbenchP
     }
 
     private void evaluate() {
-       evaluate(expressionEditor.getText());
+        evaluate(expressionEditor.getText());
     }
 
     private void evaluate(String expression) {
@@ -182,21 +183,20 @@ public class JIPipeDesktopExpressionCalculatorUI extends JIPipeDesktopWorkbenchP
 
             String value;
 
-            if(resultItem.result instanceof Throwable) {
+            if (resultItem.result instanceof Throwable) {
                 value = ((Throwable) resultItem.result).getMessage();
-            }
-            else {
+            } else {
                 value = JsonUtils.toJsonString(resultItem.result);
             }
 
             JButton copyValueButton = UIUtils.createButton("", UIUtils.getIconFromResources("actions/edit-copy.png"), () -> {
-               UIUtils.copyToClipboard(value);
+                UIUtils.copyToClipboard(value);
             });
             UIUtils.makeButtonBorderlessWithoutMargin(copyValueButton);
 
             JTextField valueField = UIUtils.createReadonlyBorderlessTextField(value);
 
-            if(resultItem.result instanceof Throwable) {
+            if (resultItem.result instanceof Throwable) {
                 valueField.setForeground(Color.RED);
             }
 

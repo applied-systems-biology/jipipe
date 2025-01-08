@@ -37,7 +37,10 @@ import org.hkijena.jipipe.plugins.expressions.JIPipeExpressionParameterSettings;
 import org.hkijena.jipipe.plugins.expressions.JIPipeExpressionVariablesMap;
 import org.hkijena.jipipe.plugins.expressions.variables.JIPipeTextAnnotationsExpressionParameterVariablesInfo;
 import org.hkijena.jipipe.plugins.imagejalgorithms.utils.AlignedImage5DSliceIndexExpressionParameterVariablesInfo;
-import org.hkijena.jipipe.plugins.imagejalgorithms.utils.turboreg.*;
+import org.hkijena.jipipe.plugins.imagejalgorithms.utils.turboreg.TurboRegResult;
+import org.hkijena.jipipe.plugins.imagejalgorithms.utils.turboreg.TurboRegTransformationInfo;
+import org.hkijena.jipipe.plugins.imagejalgorithms.utils.turboreg.TurboRegTransformationType;
+import org.hkijena.jipipe.plugins.imagejalgorithms.utils.turboreg.TurboRegUtils;
 import org.hkijena.jipipe.plugins.imagejdatatypes.datatypes.ImagePlusData;
 import org.hkijena.jipipe.plugins.imagejdatatypes.util.ImageJUtils;
 import org.hkijena.jipipe.plugins.imagejdatatypes.util.ImageSliceIndex;
@@ -78,9 +81,9 @@ import java.util.Objects;
 @AddJIPipeOutputSlot(value = JsonData.class, name = "Transform", description = "The transform serialized in JSON format", create = true)
 public class TurboRegRegistration2DAlgorithm extends JIPipeIteratingAlgorithm {
 
+    private final AdvancedTurboRegParameters advancedTurboRegParameters;
     private TurboRegTransformationType transformationType = TurboRegTransformationType.RigidBody;
     private ParameterCollectionList rules = ParameterCollectionList.containingCollection(Rule.class);
-    private final AdvancedTurboRegParameters advancedTurboRegParameters;
 
 
     public TurboRegRegistration2DAlgorithm(JIPipeNodeInfo info) {
@@ -273,7 +276,7 @@ public class TurboRegRegistration2DAlgorithm extends JIPipeIteratingAlgorithm {
                             advancedTurboRegParameters);
                     TurboRegTransformationInfo.Entry transformationEntry = aligned.getTransformation().getEntries().get(0);
 
-                    if(isRGB) {
+                    if (isRGB) {
                         // Re-do transformation (using simple method)
                         ImagePlus transformed = TurboRegUtils.transformImage2DSimple(sourceImp,
                                 targetImp_.getWidth(),
@@ -282,8 +285,7 @@ public class TurboRegRegistration2DAlgorithm extends JIPipeIteratingAlgorithm {
                                 transformationEntry.getSourcePointsAsArray(),
                                 transformationEntry.getTargetPointsAsArray());
                         transformedTargetProcessors.put(node.sourceIndex, transformed.getProcessor());
-                    }
-                    else {
+                    } else {
                         transformedTargetProcessors.put(node.sourceIndex, aligned.getTransformedTargetImage().getProcessor());
                     }
 
@@ -303,13 +305,12 @@ public class TurboRegRegistration2DAlgorithm extends JIPipeIteratingAlgorithm {
                     TransformationNode useSource = GraphUtils.getFirstPredecessor(graph, node);
                     Objects.requireNonNull(useSource);
 
-                    if(useSource.transformationInfo == null) {
+                    if (useSource.transformationInfo == null) {
                         // Was set to "Ignore" -> Also ignore
                         progressInfo.log("Ignoring UseTransformation for node at " + node.sourceIndex + ": " +
                                 "source at index " + useSource.sourceIndex + " has no transform (probably ignored in the chain)");
                         transformedTargetProcessors.put(node.sourceIndex, sourceIp);
-                    }
-                    else {
+                    } else {
                         progressInfo.log("Transforming node at " + node.sourceIndex + " with transformation from " + useSource.sourceIndex);
 
                         ImagePlus sourceImp = new ImagePlus("source", sourceIp);
@@ -347,6 +348,12 @@ public class TurboRegRegistration2DAlgorithm extends JIPipeIteratingAlgorithm {
         iterationStep.addOutputData("Reference", new ImagePlusData(target), progressInfo);
         iterationStep.addOutputData("Registered", new ImagePlusData(result), progressInfo);
         iterationStep.addOutputData("Transform", new JsonData(JsonUtils.toPrettyJsonString(transformation)), progressInfo);
+    }
+
+    public enum RuleType {
+        Ignore,
+        CalculateTransformation,
+        UseTransformation
     }
 
     private static class TransformationNode {
@@ -467,12 +474,6 @@ public class TurboRegRegistration2DAlgorithm extends JIPipeIteratingAlgorithm {
         public void setRuleType(RuleType ruleType) {
             this.ruleType = ruleType;
         }
-    }
-
-    public enum RuleType {
-        Ignore,
-        CalculateTransformation,
-        UseTransformation
     }
 
 }

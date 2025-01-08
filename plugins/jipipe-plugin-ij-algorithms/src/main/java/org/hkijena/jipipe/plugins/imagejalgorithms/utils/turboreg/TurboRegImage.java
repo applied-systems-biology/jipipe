@@ -25,15 +25,15 @@ public class TurboRegImage
         Runnable {
 
     private final Stack<Object> pyramid = new Stack<>();
+    private final int width;
+    private final int height;
+    private final boolean isTarget;
     private float[] image;
     private float[] coefficient;
     private float[] xGradient;
     private float[] yGradient;
-    private final int width;
-    private final int height;
     private int pyramidDepth;
     private TurboRegTransformationType transformation;
-    private final boolean isTarget;
 
 
     /**

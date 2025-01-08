@@ -478,8 +478,8 @@ public class ConnectVerticesAlgorithm extends JIPipeIteratingAlgorithm {
                     } else {
                         variables.set("angle", Double.NaN);
                         variables.set("dot_product", Double.NaN);
-                        variables.set("source.direction", Arrays.asList(0,0,0));
-                        variables.set("target.direction", Arrays.asList(0,0,0));
+                        variables.set("source.direction", Arrays.asList(0, 0, 0));
+                        variables.set("target.direction", Arrays.asList(0, 0, 0));
                     }
 
                     // Check via filter
@@ -514,10 +514,10 @@ public class ConnectVerticesAlgorithm extends JIPipeIteratingAlgorithm {
             if (limitConnections.isEnabled()) {
                 int c1 = connectionCount.getOrDefault(candidate.source, 0);
                 int c2 = connectionCount.getOrDefault(candidate.target, 0);
-                if(ignoreLimitConnectionsForSource) {
+                if (ignoreLimitConnectionsForSource) {
                     c1 = 0;
                 }
-                if(isIgnoreLimitConnectionsForTarget) {
+                if (isIgnoreLimitConnectionsForTarget) {
                     c2 = 0;
                 }
                 if (c1 < limitConnections.getContent() && c2 < limitConnections.getContent()) {

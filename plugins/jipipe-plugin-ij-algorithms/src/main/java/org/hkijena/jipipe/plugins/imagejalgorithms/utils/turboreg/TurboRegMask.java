@@ -31,6 +31,48 @@ public class TurboRegMask
     private int pyramidDepth;
 
     /**
+     * Converts the pixel array of the incoming <code>ImagePlus</code>
+     * object into a local <code>boolean</code> array.
+     *
+     * @param imp <code>ImagePlus</code> object to preprocess.
+     **/
+    public TurboRegMask(
+            final ImagePlus imp
+    ) {
+        width = imp.getWidth();
+        height = imp.getHeight();
+        int k = 0;
+
+        mask = new float[width * height];
+        if (imp.getType() == ImagePlus.GRAY8) {
+            final byte[] pixels = (byte[]) imp.getProcessor().getPixels();
+            for (int y = 0; (y < height); y++) {
+                for (int x = 0; (x < width); x++, k++) {
+                    mask[k] = (float) pixels[k];
+                }
+
+            }
+        } else if (imp.getType() == ImagePlus.GRAY16) {
+            final short[] pixels = (short[]) imp.getProcessor().getPixels();
+            for (int y = 0; (y < height); y++) {
+                for (int x = 0; (x < width); x++, k++) {
+                    mask[k] = (float) pixels[k];
+                }
+
+            }
+        } else if (imp.getType() == ImagePlus.GRAY32) {
+            final float[] pixels = (float[]) imp.getProcessor().getPixels();
+            for (int y = 0; (y < height); y++) {
+                for (int x = 0; (x < width); x++, k++) {
+                    mask[k] = pixels[k];
+                }
+
+            }
+        }
+
+    }
+
+    /**
      * Set to <code>true</code> every pixel of the full-size mask.
      **/
     public void clearMask(
@@ -94,48 +136,6 @@ public class TurboRegMask
             final int pyramidDepth
     ) {
         this.pyramidDepth = pyramidDepth;
-    }
-
-    /**
-     * Converts the pixel array of the incoming <code>ImagePlus</code>
-     * object into a local <code>boolean</code> array.
-     *
-     * @param imp <code>ImagePlus</code> object to preprocess.
-     **/
-    public TurboRegMask(
-            final ImagePlus imp
-    ) {
-        width = imp.getWidth();
-        height = imp.getHeight();
-        int k = 0;
-
-        mask = new float[width * height];
-        if (imp.getType() == ImagePlus.GRAY8) {
-            final byte[] pixels = (byte[]) imp.getProcessor().getPixels();
-            for (int y = 0; (y < height); y++) {
-                for (int x = 0; (x < width); x++, k++) {
-                    mask[k] = (float) pixels[k];
-                }
-
-            }
-        } else if (imp.getType() == ImagePlus.GRAY16) {
-            final short[] pixels = (short[]) imp.getProcessor().getPixels();
-            for (int y = 0; (y < height); y++) {
-                for (int x = 0; (x < width); x++, k++) {
-                    mask[k] = (float) pixels[k];
-                }
-
-            }
-        } else if (imp.getType() == ImagePlus.GRAY32) {
-            final float[] pixels = (float[]) imp.getProcessor().getPixels();
-            for (int y = 0; (y < height); y++) {
-                for (int x = 0; (x < width); x++, k++) {
-                    mask[k] = pixels[k];
-                }
-
-            }
-        }
-
     }
 
     private void buildPyramid(

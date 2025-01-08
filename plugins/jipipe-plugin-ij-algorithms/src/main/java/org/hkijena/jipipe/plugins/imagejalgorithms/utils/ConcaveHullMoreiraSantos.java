@@ -21,35 +21,21 @@ import java.util.*;
  *
  * @author Udo Schlegel - Udo.3.Schlegel(at)uni-konstanz.de
  * @version 1.0
- *
+ * <p>
  * This is an implementation of the algorithm described by Adriano Moreira and Maribel Yasmina Santos:
  * CONCAVE HULL: A K-NEAREST NEIGHBOURS APPROACH FOR THE COMPUTATION OF THE REGION OCCUPIED BY A SET OF POINTS.
  * GRAPP 2007 - International Conference on Computer Graphics Theory and Applications; pp 61-68.
- *
+ * <p>
  * https://repositorium.sdum.uminho.pt/bitstream/1822/6429/1/ConcaveHull_ACM_MYS.pdf
- *
+ * <p>
  * With help from https://github.com/detlevn/QGIS-ConcaveHull-Plugin/blob/master/concavehull.py
- *
+ * <p>
  * Adapted to modern Java standards by Ruman Gerst
  */
 public class ConcaveHullMoreiraSantos {
 
-    public static class Pair<K, V> {
-        public final K key;
-        public final V value;
+    private ConcaveHullMoreiraSantos() {
 
-        public Pair(K key, V value) {
-            this.key = key;
-            this.value = value;
-        }
-
-        public K getKey() {
-            return key;
-        }
-
-        public V getValue() {
-            return value;
-        }
     }
 
     private static double euclideanDistance(Point2D a, Point2D b) {
@@ -154,10 +140,6 @@ public class ConcaveHullMoreiraSantos {
         return result;
     }
 
-    private ConcaveHullMoreiraSantos() {
-
-    }
-
     public static List<Point2D> calculateConcaveHull(List<Point2D> pointArrayList, int k) {
 
         // the resulting concave hull
@@ -253,6 +235,24 @@ public class ConcaveHullMoreiraSantos {
             return concaveHull;
         }
 
+    }
+
+    public static class Pair<K, V> {
+        public final K key;
+        public final V value;
+
+        public Pair(K key, V value) {
+            this.key = key;
+            this.value = value;
+        }
+
+        public K getKey() {
+            return key;
+        }
+
+        public V getValue() {
+            return value;
+        }
     }
 
 }

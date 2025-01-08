@@ -13,10 +13,7 @@
 
 package org.hkijena.jipipe.api.grouping.parameters;
 
-import org.hkijena.jipipe.api.parameters.JIPipeParameterAccess;
-import org.hkijena.jipipe.api.parameters.JIPipeParameterTree;
 import org.hkijena.jipipe.desktop.api.JIPipeDesktopParameterEditorUI;
-import org.hkijena.jipipe.desktop.app.JIPipeDesktopWorkbench;
 import org.hkijena.jipipe.desktop.app.parameterreference.JIPipeDesktopGraphNodeParameterReferenceGroupCollectionEditorUI;
 import org.hkijena.jipipe.utils.OKCancelDialog;
 import org.hkijena.jipipe.utils.UIUtils;
@@ -36,7 +33,7 @@ public class GraphNodeParameterReferenceGroupCollectionDesktopParameterEditorUI 
      * @param parameterAccess Parameter
      */
     public GraphNodeParameterReferenceGroupCollectionDesktopParameterEditorUI(InitializationParameters parameters) {
-       super(parameters);
+        super(parameters);
         initialize();
     }
 

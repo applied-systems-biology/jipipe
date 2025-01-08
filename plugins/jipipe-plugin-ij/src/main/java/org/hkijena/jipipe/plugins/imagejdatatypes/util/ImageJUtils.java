@@ -537,7 +537,8 @@ public class ImageJUtils {
 
     /**
      * Converts a zero-based slice index to a safe index that can be found within the image
-     * @param img the image
+     *
+     * @param img   the image
      * @param index the index
      * @return the safe index
      */

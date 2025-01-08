@@ -13,10 +13,7 @@
 
 package org.hkijena.jipipe.api.grouping.parameters;
 
-import org.hkijena.jipipe.api.parameters.JIPipeParameterAccess;
-import org.hkijena.jipipe.api.parameters.JIPipeParameterTree;
 import org.hkijena.jipipe.desktop.api.JIPipeDesktopParameterEditorUI;
-import org.hkijena.jipipe.desktop.app.JIPipeDesktopWorkbench;
 import org.hkijena.jipipe.desktop.app.grapheditor.flavors.groups.JIPipeDesktopNodeGroupUI;
 import org.hkijena.jipipe.utils.UIUtils;
 
@@ -35,7 +32,7 @@ public class NodeGroupContentsDesktopParameterEditorUI extends JIPipeDesktopPara
      * @param parameterAccess Parameter
      */
     public NodeGroupContentsDesktopParameterEditorUI(InitializationParameters parameters) {
-       super(parameters);
+        super(parameters);
         initialize();
     }
 

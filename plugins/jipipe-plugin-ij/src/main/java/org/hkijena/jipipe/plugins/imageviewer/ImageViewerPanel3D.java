@@ -170,11 +170,11 @@ public class ImageViewerPanel3D extends JPanel implements JIPipeDesktopWorkbench
 
     public int getCurrentImageContentsResamplingFactor() {
         return currentImageContentsResamplingFactor;
-    }    private final Timer animationTimer = new Timer(250, e -> animateNextSlice());
+    }
 
     public ImageViewer3DUIApplicationSettings getSettings() {
         return settings;
-    }
+    }    private final Timer animationTimer = new Timer(250, e -> animateNextSlice());
 
     public Image3DRendererSettings getImage3DRendererSettings() {
         return image3DRendererSettings;

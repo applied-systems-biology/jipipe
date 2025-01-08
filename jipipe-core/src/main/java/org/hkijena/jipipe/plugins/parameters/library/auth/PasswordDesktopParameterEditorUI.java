@@ -13,10 +13,7 @@
 
 package org.hkijena.jipipe.plugins.parameters.library.auth;
 
-import org.hkijena.jipipe.api.parameters.JIPipeParameterAccess;
-import org.hkijena.jipipe.api.parameters.JIPipeParameterTree;
 import org.hkijena.jipipe.desktop.api.JIPipeDesktopParameterEditorUI;
-import org.hkijena.jipipe.desktop.app.JIPipeDesktopWorkbench;
 import org.hkijena.jipipe.desktop.commons.components.JIPipeDesktopFancyPasswordField;
 import org.hkijena.jipipe.utils.UIUtils;
 
@@ -36,7 +33,7 @@ public class PasswordDesktopParameterEditorUI extends JIPipeDesktopParameterEdit
      * @param parameterAccess the parameter
      */
     public PasswordDesktopParameterEditorUI(InitializationParameters parameters) {
-       super(parameters);
+        super(parameters);
         initialize();
         reload();
     }

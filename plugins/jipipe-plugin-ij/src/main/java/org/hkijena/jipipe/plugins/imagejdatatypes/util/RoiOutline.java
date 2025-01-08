@@ -22,7 +22,8 @@ public enum RoiOutline {
     ConvexHull("Convex hull"),
     BoundingRectangle("Bounding rectangle"),
     MinimumBoundingRectangle("Minimum bounding rectangle"),
-    OrientedLine("Oriented line"),;
+    OrientedLine("Oriented line"),
+    ;
 
     private final String label;
 

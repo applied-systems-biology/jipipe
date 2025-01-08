@@ -130,10 +130,10 @@ import org.hkijena.jipipe.plugins.imagejalgorithms.nodes.threshold.iterative.Ite
 import org.hkijena.jipipe.plugins.imagejalgorithms.nodes.threshold.local.*;
 import org.hkijena.jipipe.plugins.imagejalgorithms.nodes.transform.*;
 import org.hkijena.jipipe.plugins.imagejalgorithms.parameters.*;
+import org.hkijena.jipipe.plugins.imagejalgorithms.utils.LineMirror;
 import org.hkijena.jipipe.plugins.imagejalgorithms.utils.OMEAccessorStorage;
 import org.hkijena.jipipe.plugins.imagejalgorithms.utils.OrientationJGradientOperator;
 import org.hkijena.jipipe.plugins.imagejalgorithms.utils.OrientationJVectorFieldType;
-import org.hkijena.jipipe.plugins.imagejalgorithms.utils.LineMirror;
 import org.hkijena.jipipe.plugins.imagejalgorithms.utils.turboreg.TurboRegTransformationType;
 import org.hkijena.jipipe.plugins.imagejdatatypes.ImageJDataTypesPlugin;
 import org.hkijena.jipipe.plugins.imagejdatatypes.algorithms.ApplyDisplayContrastAlgorithm;

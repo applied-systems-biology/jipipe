@@ -32,7 +32,9 @@ import org.hkijena.jipipe.plugins.expressions.custom.JIPipeCustomExpressionVaria
 import org.hkijena.jipipe.plugins.expressions.variables.JIPipeTextAnnotationsExpressionParameterVariablesInfo;
 import org.hkijena.jipipe.plugins.ijfilaments.FilamentsNodeTypeCategory;
 import org.hkijena.jipipe.plugins.ijfilaments.datatypes.Filaments3DGraphData;
-import org.hkijena.jipipe.plugins.ijfilaments.util.*;
+import org.hkijena.jipipe.plugins.ijfilaments.util.AllFilamentVertexVariablesInfo;
+import org.hkijena.jipipe.plugins.ijfilaments.util.FilamentVertex;
+import org.hkijena.jipipe.plugins.ijfilaments.util.FilamentVertexVariablesInfo;
 
 import java.util.*;
 
@@ -74,7 +76,7 @@ public class FilterFilamentVerticesByProperties extends JIPipeSimpleIteratingAlg
             for (FilamentVertex vertex : outputData.vertexSet()) {
                 JIPipeExpressionVariablesMap forEdge = allMeasurements.get(vertex);
                 Object value = forEdge.get(key);
-                if(value != null) {
+                if (value != null) {
                     allValues.add(value);
                 }
             }

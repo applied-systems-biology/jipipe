@@ -13,23 +13,11 @@
 
 package org.hkijena.jipipe.plugins.imagejdatatypes.util.measure;
 
-import ij.IJ;
-import ij.ImagePlus;
-import ij.Prefs;
-import ij.gui.*;
-import ij.measure.Calibration;
-import ij.measure.ResultsTable;
+import ij.gui.Roi;
 import ij.process.FloatPolygon;
-import ij.process.ImageProcessor;
-import ij.process.ImageStatistics;
 import org.hkijena.jipipe.plugins.imagejdatatypes.datatypes.ROI2DListData;
-import org.hkijena.jipipe.plugins.imagejdatatypes.util.ImageSliceIndex;
 import org.hkijena.jipipe.plugins.tables.datatypes.ResultsTableData;
 import org.scijava.vecmath.Point2f;
-
-import java.awt.*;
-
-import static ij.measure.Measurements.MAX_STANDARDS;
 
 /**
  * Custom implementation of {@link ij.plugin.filter.Analyzer}
@@ -259,17 +247,18 @@ public class ImageMeasurementUtils {
 //            rt.addValue("Counter", info[0]);
 //            rt.addValue("Count", info[1]);
 //        }
-////        if (imp.getProperty("FHT")!=null) {
-////            double center = imp.getWidth()/2.0;
-////            y = imp.getHeight()-y-1;
-////            double r = Math.sqrt((x-center)*(x-center) + (y-center)*(y-center));
-////            if (r<1.0) r = 1.0;
-////            double theta = Math.atan2(y-center, x-center);
-////            theta = theta*180.0/Math.PI;
-////            if (theta<0) theta = 360.0+theta;
-////            rt.addValue("R", (imp.getWidth()/r)*cal.pixelWidth);
-////            rt.addValue("Theta", theta);
-////        }
+
+    /// /        if (imp.getProperty("FHT")!=null) {
+    /// /            double center = imp.getWidth()/2.0;
+    /// /            y = imp.getHeight()-y-1;
+    /// /            double r = Math.sqrt((x-center)*(x-center) + (y-center)*(y-center));
+    /// /            if (r<1.0) r = 1.0;
+    /// /            double theta = Math.atan2(y-center, x-center);
+    /// /            theta = theta*180.0/Math.PI;
+    /// /            if (theta<0) theta = 360.0+theta;
+    /// /            rt.addValue("R", (imp.getWidth()/r)*cal.pixelWidth);
+    /// /            rt.addValue("Theta", theta);
+    /// /        }
 //    }
 //
 //    public static double getArea(Polygon p) {

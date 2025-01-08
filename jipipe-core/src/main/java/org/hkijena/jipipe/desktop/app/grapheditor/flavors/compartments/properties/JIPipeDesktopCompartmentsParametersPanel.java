@@ -14,27 +14,17 @@
 package org.hkijena.jipipe.desktop.app.grapheditor.flavors.compartments.properties;
 
 import org.hkijena.jipipe.api.compartments.algorithms.JIPipeProjectCompartment;
-import org.hkijena.jipipe.api.nodes.JIPipeAdaptiveParametersAlgorithm;
 import org.hkijena.jipipe.api.nodes.JIPipeGraphNode;
-import org.hkijena.jipipe.api.nodes.algorithm.JIPipeParameterSlotAlgorithm;
-import org.hkijena.jipipe.api.parameters.JIPipeParameterCollection;
-import org.hkijena.jipipe.desktop.api.nodes.JIPipeDesktopNodeQuickAction;
 import org.hkijena.jipipe.desktop.app.JIPipeDesktopProjectWorkbench;
 import org.hkijena.jipipe.desktop.app.JIPipeDesktopProjectWorkbenchPanel;
-import org.hkijena.jipipe.desktop.app.JIPipeDesktopWorkbench;
-import org.hkijena.jipipe.desktop.app.JIPipeDesktopWorkbenchPanel;
 import org.hkijena.jipipe.desktop.app.grapheditor.commons.JIPipeDesktopGraphCanvasUI;
 import org.hkijena.jipipe.desktop.commons.components.JIPipeDesktopFormPanel;
 import org.hkijena.jipipe.desktop.commons.components.JIPipeDesktopParameterFormPanel;
-import org.hkijena.jipipe.desktop.commons.components.markup.JIPipeDesktopMarkdownReader;
-import org.hkijena.jipipe.plugins.parameters.library.markup.MarkdownText;
 import org.hkijena.jipipe.utils.TooltipUtils;
 import org.hkijena.jipipe.utils.UIUtils;
 
 import javax.swing.*;
 import java.awt.*;
-import java.util.Collections;
-import java.util.List;
 
 public class JIPipeDesktopCompartmentsParametersPanel extends JIPipeDesktopProjectWorkbenchPanel {
 

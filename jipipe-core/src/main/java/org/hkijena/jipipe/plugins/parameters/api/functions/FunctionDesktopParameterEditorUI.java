@@ -29,7 +29,7 @@ public class FunctionDesktopParameterEditorUI extends JIPipeDesktopParameterEdit
     private final JIPipeDesktopFormPanel formPanel;
 
     public FunctionDesktopParameterEditorUI(InitializationParameters parameters) {
-       super(parameters);
+        super(parameters);
         setLayout(new BorderLayout());
         setBorder(UIUtils.createControlBorder());
 //        JToolBar toolBar = new JToolBar();

@@ -333,7 +333,7 @@ public class JIPipeGraphWrapperAlgorithm extends JIPipeAlgorithm implements JIPi
             if (runtimePartition.getContinueOnFailureSettings().isContinueOnFailure()) {
 
                 // Check if we are in update cache
-                if(runtimePartition.getContinueOnFailureSettings().isDisableOnUpdateCache() && runContext.getGraphRun().getConfiguration().isStoreToCache()) {
+                if (runtimePartition.getContinueOnFailureSettings().isDisableOnUpdateCache() && runContext.getGraphRun().getConfiguration().isStoreToCache()) {
                     progressInfo.log("CONTINUE ON FAILURE IS TURNED OFF DUE TO A USER SETTING IN THE PARTITION");
                     throw e;
                 }

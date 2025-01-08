@@ -15,9 +15,7 @@ package org.hkijena.jipipe.desktop.commons.components;
 
 import org.hkijena.jipipe.JIPipe;
 import org.hkijena.jipipe.api.parameters.JIPipeParameterCollection;
-import org.hkijena.jipipe.api.registries.JIPipeApplicationSettingsRegistry;
 import org.hkijena.jipipe.desktop.app.JIPipeDesktopProjectWorkbench;
-import org.hkijena.jipipe.desktop.app.settings.JIPipeDesktopApplicationSettingsUI;
 import org.hkijena.jipipe.plugins.artifacts.JIPipeArtifactAccelerationPreference;
 import org.hkijena.jipipe.plugins.artifacts.JIPipeArtifactApplicationSettings;
 import org.hkijena.jipipe.utils.UIUtils;
@@ -64,12 +62,11 @@ public class JIPipeDesktopAccelerationOptionsControl extends JButton implements 
     }
 
     private void updateText() {
-        if(settings.getAccelerationPreference() != JIPipeArtifactAccelerationPreference.CPU && (settings.getAccelerationPreferenceVersions().getX() > 0 || settings.getAccelerationPreferenceVersions().getY() > 0)) {
-         setText(String.format("%s (%s - %s)", settings.getAccelerationPreference().toString(),
-                 settings.getAccelerationPreferenceVersions().getX() > 0 ? Integer.toString(settings.getAccelerationPreferenceVersions().getX()) : "*",
-                 settings.getAccelerationPreferenceVersions().getY() > 0 ? Integer.toString(settings.getAccelerationPreferenceVersions().getY()) : "*"));
-        }
-        else {
+        if (settings.getAccelerationPreference() != JIPipeArtifactAccelerationPreference.CPU && (settings.getAccelerationPreferenceVersions().getX() > 0 || settings.getAccelerationPreferenceVersions().getY() > 0)) {
+            setText(String.format("%s (%s - %s)", settings.getAccelerationPreference().toString(),
+                    settings.getAccelerationPreferenceVersions().getX() > 0 ? Integer.toString(settings.getAccelerationPreferenceVersions().getX()) : "*",
+                    settings.getAccelerationPreferenceVersions().getY() > 0 ? Integer.toString(settings.getAccelerationPreferenceVersions().getY()) : "*"));
+        } else {
             setText(settings.getAccelerationPreference().toString());
         }
     }

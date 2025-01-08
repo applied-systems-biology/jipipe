@@ -14,10 +14,7 @@
 package org.hkijena.jipipe.plugins.parameters.library.images;
 
 import ij.IJ;
-import org.hkijena.jipipe.api.parameters.JIPipeParameterAccess;
-import org.hkijena.jipipe.api.parameters.JIPipeParameterTree;
 import org.hkijena.jipipe.desktop.api.JIPipeDesktopParameterEditorUI;
-import org.hkijena.jipipe.desktop.app.JIPipeDesktopWorkbench;
 import org.hkijena.jipipe.desktop.commons.components.pickers.JIPipeDesktopIconPickerDialog;
 import org.hkijena.jipipe.plugins.parameters.library.references.IconRefDesktopParameterEditorUI;
 import org.hkijena.jipipe.plugins.settings.JIPipeFileChooserApplicationSettings;
@@ -37,7 +34,7 @@ public class ImageDesktopParameterEditorUI extends JIPipeDesktopParameterEditorU
     private final JLabel imagePreview = new JLabel();
 
     public ImageDesktopParameterEditorUI(InitializationParameters parameters) {
-       super(parameters);
+        super(parameters);
         initialize();
         reload();
     }

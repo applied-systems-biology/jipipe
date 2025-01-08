@@ -2423,9 +2423,11 @@ public class UIUtils {
     public static void requestFocusOnShown(JComponent component) {
         component.addAncestorListener(new AncestorListener() {
 
-            public void ancestorRemoved(AncestorEvent event) {}
+            public void ancestorRemoved(AncestorEvent event) {
+            }
 
-            public void ancestorMoved(AncestorEvent event) {}
+            public void ancestorMoved(AncestorEvent event) {
+            }
 
             public void ancestorAdded(final AncestorEvent event) {
                 AncestorListener listener = this;

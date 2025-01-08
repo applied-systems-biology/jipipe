@@ -27,7 +27,7 @@ import java.awt.*;
 public class OptionalDesktopParameterEditorUI extends JIPipeDesktopParameterEditorUI {
 
     public OptionalDesktopParameterEditorUI(InitializationParameters parameters) {
-       super(parameters);
+        super(parameters);
         initialize();
         reload();
     }

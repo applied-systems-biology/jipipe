@@ -43,20 +43,6 @@ public class CellposePluginApplicationSettings extends JIPipeDefaultApplications
         preconfigureEnvironment(defaultEnvironment.getContent());
     }
 
-    private void preconfigureEnvironment(PythonEnvironment environment) {
-        environment.setLoadFromArtifact(true);
-        environment.setArtifactQuery(new JIPipeArtifactQueryParameter("com.github.mouseland.cellpose:*"));
-    }
-
-    public PythonEnvironment getReadOnlyDefaultEnvironment() {
-        if(defaultEnvironment.isEnabled()) {
-            return new PythonEnvironment(defaultEnvironment.getContent());
-        }
-        else {
-            return new PythonEnvironment(standardEnvironment);
-        }
-    }
-
     public static CellposePluginApplicationSettings getInstance() {
         return JIPipe.getSettings().getById(ID, CellposePluginApplicationSettings.class);
     }
@@ -92,6 +78,19 @@ public class CellposePluginApplicationSettings extends JIPipeDefaultApplications
                             "according to the documentation https://cellpose.readthedocs.io/en/latest/installation.html\n" +
                             "Then go to Project > Application settings > Extensions > Cellpose and choose the correct environment. " +
                             "Alternatively, the settings page will provide you with means to install Cellpose automatically."));
+        }
+    }
+
+    private void preconfigureEnvironment(PythonEnvironment environment) {
+        environment.setLoadFromArtifact(true);
+        environment.setArtifactQuery(new JIPipeArtifactQueryParameter("com.github.mouseland.cellpose:*"));
+    }
+
+    public PythonEnvironment getReadOnlyDefaultEnvironment() {
+        if (defaultEnvironment.isEnabled()) {
+            return new PythonEnvironment(defaultEnvironment.getContent());
+        } else {
+            return new PythonEnvironment(standardEnvironment);
         }
     }
 

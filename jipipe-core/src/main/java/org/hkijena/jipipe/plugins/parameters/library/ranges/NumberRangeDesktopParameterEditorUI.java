@@ -14,10 +14,7 @@
 package org.hkijena.jipipe.plugins.parameters.library.ranges;
 
 import org.apache.commons.lang3.math.NumberUtils;
-import org.hkijena.jipipe.api.parameters.JIPipeParameterAccess;
-import org.hkijena.jipipe.api.parameters.JIPipeParameterTree;
 import org.hkijena.jipipe.desktop.api.JIPipeDesktopParameterEditorUI;
-import org.hkijena.jipipe.desktop.app.JIPipeDesktopWorkbench;
 import org.hkijena.jipipe.desktop.commons.components.JIPipeDesktopDocumentChangeListener;
 import org.hkijena.jipipe.desktop.commons.theme.JIPipeDesktopModernMetalTheme;
 import org.hkijena.jipipe.utils.ReflectionUtils;
@@ -42,7 +39,7 @@ public class NumberRangeDesktopParameterEditorUI extends JIPipeDesktopParameterE
     private boolean isUpdatingTextBoxes = false;
 
     public NumberRangeDesktopParameterEditorUI(InitializationParameters parameters) {
-       super(parameters);
+        super(parameters);
         initialize();
         reload();
     }

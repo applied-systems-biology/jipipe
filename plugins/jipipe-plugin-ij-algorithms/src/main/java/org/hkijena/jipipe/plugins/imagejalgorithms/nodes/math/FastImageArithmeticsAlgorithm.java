@@ -53,7 +53,6 @@ import org.jgrapht.graph.DefaultDirectedGraph;
 import org.jgrapht.graph.DefaultEdge;
 
 import java.util.*;
-import java.util.stream.Collectors;
 
 @SetJIPipeDocumentation(name = "Fast image arithmetics", description = "Applies standard arithmetic and logical operations including, addition, subtraction, division, multiplication, GAMMA, EXP, LOG, SQR, SQRT, ABS, AND, OR, XOR, minimum, maximum, and more.")
 @ConfigureJIPipeNode(nodeTypeCategory = ImagesNodeTypeCategory.class, menuPath = "Math")
@@ -462,8 +461,7 @@ public class FastImageArithmeticsAlgorithm extends JIPipeIteratingAlgorithm {
                 setIpValueSafe(result, i, o1_.getf(i) > 0 ? o2_ : o3_, bitDepth);
             }
             return result;
-        }
-        else if (o1 instanceof ImageProcessor && o2 instanceof Number && o3 instanceof ImageProcessor) {
+        } else if (o1 instanceof ImageProcessor && o2 instanceof Number && o3 instanceof ImageProcessor) {
             float o2_ = ((Number) o2).floatValue();
             ImageProcessor o3_ = ((ImageProcessor) o3);
             ImageProcessor o1_ = (ImageProcessor) o1;
@@ -472,8 +470,7 @@ public class FastImageArithmeticsAlgorithm extends JIPipeIteratingAlgorithm {
                 setIpValueSafe(result, i, o1_.getf(i) > 0 ? o2_ : o3_.getf(i), bitDepth);
             }
             return result;
-        }
-        else if (o1 instanceof ImageProcessor && o2 instanceof ImageProcessor && o3 instanceof Number) {
+        } else if (o1 instanceof ImageProcessor && o2 instanceof ImageProcessor && o3 instanceof Number) {
             ImageProcessor o2_ = (ImageProcessor) o2;
             ImageProcessor o1_ = (ImageProcessor) o1;
             float o3_ = ((Number) o3).floatValue();
@@ -482,8 +479,7 @@ public class FastImageArithmeticsAlgorithm extends JIPipeIteratingAlgorithm {
                 setIpValueSafe(result, i, o1_.getf(i) > 0 ? o2_.getf(i) : o3_, bitDepth);
             }
             return result;
-        }
-        else if (o1 instanceof ImageProcessor && o2 instanceof ImageProcessor && o3 instanceof ImageProcessor) {
+        } else if (o1 instanceof ImageProcessor && o2 instanceof ImageProcessor && o3 instanceof ImageProcessor) {
             ImageProcessor o2_ = (ImageProcessor) o2;
             ImageProcessor o1_ = (ImageProcessor) o1;
             ImageProcessor o3_ = ((ImageProcessor) o3);
@@ -492,8 +488,7 @@ public class FastImageArithmeticsAlgorithm extends JIPipeIteratingAlgorithm {
                 setIpValueSafe(result, i, o1_.getf(i) > 0 ? o2_.getf(i) : o3_.getf(i), bitDepth);
             }
             return result;
-        }
-        else {
+        } else {
             throw new UnsupportedOperationException("Unsupported arguments: " + o1 + " " + o2 + " " + o3);
         }
     }

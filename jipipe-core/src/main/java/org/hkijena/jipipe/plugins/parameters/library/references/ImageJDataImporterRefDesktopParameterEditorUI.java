@@ -16,10 +16,7 @@ package org.hkijena.jipipe.plugins.parameters.library.references;
 import org.hkijena.jipipe.JIPipe;
 import org.hkijena.jipipe.api.compat.ImageJDataImporter;
 import org.hkijena.jipipe.api.data.JIPipeData;
-import org.hkijena.jipipe.api.parameters.JIPipeParameterAccess;
-import org.hkijena.jipipe.api.parameters.JIPipeParameterTree;
 import org.hkijena.jipipe.desktop.api.JIPipeDesktopParameterEditorUI;
-import org.hkijena.jipipe.desktop.app.JIPipeDesktopWorkbench;
 import org.hkijena.jipipe.desktop.commons.components.pickers.JIPipeDesktopImageJDataImporterPicker;
 import org.hkijena.jipipe.utils.UIUtils;
 
@@ -40,7 +37,7 @@ public class ImageJDataImporterRefDesktopParameterEditorUI extends JIPipeDesktop
      * @param parameterAccess the parameter
      */
     public ImageJDataImporterRefDesktopParameterEditorUI(InitializationParameters parameters) {
-       super(parameters);
+        super(parameters);
         initialize();
         reload();
     }

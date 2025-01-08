@@ -16,10 +16,7 @@ package org.hkijena.jipipe.plugins.tables.parameters.enums;
 import org.hkijena.jipipe.JIPipe;
 import org.hkijena.jipipe.api.data.JIPipeData;
 import org.hkijena.jipipe.api.data.JIPipeDataInfo;
-import org.hkijena.jipipe.api.parameters.JIPipeParameterAccess;
-import org.hkijena.jipipe.api.parameters.JIPipeParameterTree;
 import org.hkijena.jipipe.desktop.api.JIPipeDesktopParameterEditorUI;
-import org.hkijena.jipipe.desktop.app.JIPipeDesktopWorkbench;
 import org.hkijena.jipipe.desktop.commons.components.renderers.JIPipeDesktopDataInfoListCellRenderer;
 import org.hkijena.jipipe.plugins.tables.ColumnContentType;
 import org.hkijena.jipipe.plugins.tables.datatypes.TableColumn;
@@ -44,7 +41,7 @@ public class TableColumnGeneratorDesktopParameterEditorUI extends JIPipeDesktopP
      * @param parameterAccess the parameter
      */
     public TableColumnGeneratorDesktopParameterEditorUI(InitializationParameters parameters) {
-       super(parameters);
+        super(parameters);
         initialize();
         reload();
     }

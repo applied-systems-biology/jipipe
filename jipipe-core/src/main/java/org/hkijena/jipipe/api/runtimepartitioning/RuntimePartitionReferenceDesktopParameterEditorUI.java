@@ -14,13 +14,10 @@
 package org.hkijena.jipipe.api.runtimepartitioning;
 
 import org.hkijena.jipipe.api.environments.JIPipeExternalEnvironmentInstaller;
-import org.hkijena.jipipe.api.parameters.JIPipeParameterAccess;
-import org.hkijena.jipipe.api.parameters.JIPipeParameterTree;
 import org.hkijena.jipipe.api.run.JIPipeRunnable;
 import org.hkijena.jipipe.api.run.JIPipeRunnableQueue;
 import org.hkijena.jipipe.desktop.api.JIPipeDesktopParameterEditorUI;
 import org.hkijena.jipipe.desktop.app.JIPipeDesktopProjectWorkbench;
-import org.hkijena.jipipe.desktop.app.JIPipeDesktopWorkbench;
 import org.hkijena.jipipe.desktop.app.settings.JIPipeDesktopRuntimePartitionListEditor;
 import org.hkijena.jipipe.desktop.commons.components.icons.SolidColorIcon;
 import org.hkijena.jipipe.utils.StringUtils;
@@ -42,7 +39,7 @@ public class RuntimePartitionReferenceDesktopParameterEditorUI extends JIPipeDes
      * @param parameterAccess Parameter
      */
     public RuntimePartitionReferenceDesktopParameterEditorUI(InitializationParameters parameters) {
-       super(parameters);
+        super(parameters);
         initialize();
         reload();
         JIPipeRunnableQueue.getInstance().getFinishedEventEmitter().subscribeWeak(this);

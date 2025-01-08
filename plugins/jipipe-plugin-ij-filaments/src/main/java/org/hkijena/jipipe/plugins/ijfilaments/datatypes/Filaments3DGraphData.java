@@ -23,12 +23,9 @@ import ij.ImagePlus;
 import ij.gui.EllipseRoi;
 import ij.gui.Line;
 import ij.gui.Roi;
-import ij.process.ColorProcessor;
-import ij.process.FloatProcessor;
 import ij.process.ImageProcessor;
 import mcib3d.geom.Vector3D;
 import mcib3d.image3d.ImageHandler;
-import ome.xml.model.Filament;
 import org.hkijena.jipipe.api.JIPipeProgressInfo;
 import org.hkijena.jipipe.api.SetJIPipeDocumentation;
 import org.hkijena.jipipe.api.data.JIPipeData;
@@ -49,7 +46,6 @@ import org.hkijena.jipipe.plugins.ijfilaments.display.CachedFilamentsDataViewerW
 import org.hkijena.jipipe.plugins.ijfilaments.util.*;
 import org.hkijena.jipipe.plugins.imagejdatatypes.datatypes.ROI2DListData;
 import org.hkijena.jipipe.plugins.imagejdatatypes.util.BitDepth;
-import org.hkijena.jipipe.plugins.imagejdatatypes.util.ImageBlendMode;
 import org.hkijena.jipipe.plugins.imagejdatatypes.util.ImageJUtils;
 import org.hkijena.jipipe.plugins.parameters.library.quantities.Quantity;
 import org.hkijena.jipipe.plugins.scene3d.model.Scene3DGroupNode;
@@ -139,6 +135,48 @@ public class Filaments3DGraphData extends SimpleGraph<FilamentVertex, FilamentEd
         return finalLocation;
     }
 
+    public static void drawLabelLineOnProcessor(double x0, double y0, double z0, double x1, double y1, double z1, int label, double rad0, double rad1, ImageProcessor processor, int imageZ) {
+        Vector3D V = new Vector3D(x1 - x0, y1 - y0, z1 - z0);
+        double len = V.getLength();
+        V.normalize();
+        double vx = V.getX();
+        double vy = V.getY();
+        double vz = V.getZ();
+        for (int i = 0; i < (int) len; i++) {
+            double perc = i / len;
+            int rad = (int) (rad0 + perc * (rad1 - rad0));
+            drawLabelBallOnProcessor((int) (x0 + i * vx), (int) (y0 + i * vy), (int) (z0 + i * vz), label, rad, false, processor, imageZ);
+        }
+    }
+
+    public static void drawLabelBallOnProcessor(int targetX, int targetY, int targetZ, int label, int radius, boolean hollow, ImageProcessor processor, int imageZ) {
+        int imageWidth = processor.getWidth();
+        int imageHeight = processor.getHeight();
+        if (radius <= 0) {
+            if (targetZ == imageZ) {
+                processor.setf(targetX, targetY, label);
+            }
+        } else if (Math.abs(imageZ - targetZ) <= radius) {
+            float[] pixels = (float[]) processor.getPixels();
+            for (int y = targetY - radius; y < targetY + radius; y++) {
+                if (y < 0 || y >= imageHeight)
+                    continue;
+                for (int x = targetX - radius; x < targetX + radius; x++) {
+                    if (x < 0 || x >= imageWidth)
+                        continue;
+                    double k = Math.pow(x - targetX, 2) + Math.pow(y - targetY, 2) + Math.pow(imageZ - targetZ, 2);
+                    if (k > radius * radius) {
+                        continue;
+                    }
+                    if (hollow && k < Math.pow(radius - 1, 2)) {
+                        continue;
+                    }
+                    pixels[x + y * imageWidth] = label;
+                }
+            }
+        }
+    }
+
     public void mergeWithCopy(Filaments3DGraphData other) {
         Map<FilamentVertex, FilamentVertex> copyMap = new IdentityHashMap<>();
         for (FilamentVertex vertex : other.vertexSet()) {
@@ -226,7 +264,7 @@ public class Filaments3DGraphData extends SimpleGraph<FilamentVertex, FilamentEd
         if (boundsXY.height == 0)
             boundsXY.height = height;
         double scale = Math.min(1.0 * width / boundsXY.width, 1.0 * height / boundsXY.height);
-        BufferedImage image = new BufferedImage((int)Math.max (1, boundsXY.width * scale), (int) Math.max(1, boundsXY.height * scale), BufferedImage.TYPE_INT_RGB);
+        BufferedImage image = new BufferedImage((int) Math.max(1, boundsXY.width * scale), (int) Math.max(1, boundsXY.height * scale), BufferedImage.TYPE_INT_RGB);
         Graphics2D graphics = image.createGraphics();
         if (edgeSet().isEmpty()) {
             for (FilamentVertex vertex : vertexSet()) {
@@ -1014,7 +1052,7 @@ public class Filaments3DGraphData extends SimpleGraph<FilamentVertex, FilamentEd
 
     public boolean is2D() {
         for (FilamentVertex vertex : vertexSet()) {
-            if(vertex.getPhysicalVoxelSizeZ().getValue() != 0) {
+            if (vertex.getPhysicalVoxelSizeZ().getValue() != 0) {
                 return false;
             }
         }
@@ -1037,7 +1075,7 @@ public class Filaments3DGraphData extends SimpleGraph<FilamentVertex, FilamentEd
         }
 
         // 2D detection
-        if(is2D()) {
+        if (is2D()) {
             maxZ = 0;
         }
 
@@ -1249,10 +1287,9 @@ public class Filaments3DGraphData extends SimpleGraph<FilamentVertex, FilamentEd
     }
 
     public ImagePlus toLabels2(ImagePlus reference, boolean withEdges, boolean withVertices, int forcedLineThickness, int forcedVertexRadius, boolean ignoreC, boolean ignoreZ, boolean ignoreT, boolean hollowVertices, JIPipeProgressInfo progressInfo) {
-        if(reference == null) {
+        if (reference == null) {
             reference = createBlankCanvas("Image", BitDepth.Grayscale32f);
-        }
-        else {
+        } else {
             reference = ImageJUtils.newBlankOf(reference, BitDepth.Grayscale32f);
         }
 
@@ -1330,47 +1367,5 @@ public class Filaments3DGraphData extends SimpleGraph<FilamentVertex, FilamentEd
         }, progressInfo);
 
         return reference;
-    }
-
-    public static void drawLabelLineOnProcessor(double x0, double y0, double z0, double x1, double y1, double z1, int label, double rad0, double rad1, ImageProcessor processor, int imageZ) {
-        Vector3D V = new Vector3D(x1 - x0, y1 - y0, z1 - z0);
-        double len = V.getLength();
-        V.normalize();
-        double vx = V.getX();
-        double vy = V.getY();
-        double vz = V.getZ();
-        for (int i = 0; i < (int) len; i++) {
-            double perc = i / len;
-            int rad = (int) (rad0 + perc * (rad1 - rad0));
-            drawLabelBallOnProcessor((int) (x0 + i * vx), (int) (y0 + i * vy), (int) (z0 + i * vz), label, rad, false, processor, imageZ);
-        }
-    }
-
-    public static  void drawLabelBallOnProcessor(int targetX, int targetY, int targetZ, int label, int radius, boolean hollow, ImageProcessor processor, int imageZ) {
-        int imageWidth = processor.getWidth();
-        int imageHeight = processor.getHeight();
-        if (radius <= 0) {
-            if (targetZ == imageZ) {
-                processor.setf(targetX, targetY, label);
-            }
-        } else if (Math.abs(imageZ - targetZ) <= radius) {
-            float[] pixels = (float[]) processor.getPixels();
-            for (int y = targetY - radius; y < targetY + radius; y++) {
-                if (y < 0 || y >= imageHeight)
-                    continue;
-                for (int x = targetX - radius; x < targetX + radius; x++) {
-                    if (x < 0 || x >= imageWidth)
-                        continue;
-                    double k = Math.pow(x - targetX, 2) + Math.pow(y - targetY, 2) + Math.pow(imageZ - targetZ, 2);
-                    if (k > radius * radius) {
-                        continue;
-                    }
-                    if (hollow && k < Math.pow(radius - 1, 2)) {
-                        continue;
-                    }
-                    pixels[x + y * imageWidth] = label;
-                }
-            }
-        }
     }
 }

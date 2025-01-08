@@ -18,7 +18,6 @@ import org.hkijena.jipipe.api.nodes.JIPipeAlgorithm;
 import org.hkijena.jipipe.api.nodes.JIPipeGraphNode;
 import org.hkijena.jipipe.api.nodes.JIPipeNodeExample;
 import org.hkijena.jipipe.desktop.app.grapheditor.commons.JIPipeDesktopGraphCanvasUI;
-import org.hkijena.jipipe.utils.UIUtils;
 
 import javax.swing.*;
 import java.lang.reflect.InvocationTargetException;
@@ -59,12 +58,12 @@ public class JIPipeDesktopNodeQuickAction {
                         "Load example: " + example.getNodeTemplate().getName(),
                         (node, canvasUI) -> {
                             if (JOptionPane.showConfirmDialog(SwingUtilities.getWindowAncestor(canvasUI), "Do you really want to load the example '" +
-                                    example.getNodeTemplate().getName() + "'?\n" +
-                                    "This will override all your existing settings.", "Load example", JOptionPane.YES_NO_OPTION,
+                                            example.getNodeTemplate().getName() + "'?\n" +
+                                            "This will override all your existing settings.", "Load example", JOptionPane.YES_NO_OPTION,
                                     JOptionPane.QUESTION_MESSAGE) == JOptionPane.NO_OPTION) {
                                 return;
                             }
-                            ((JIPipeAlgorithm)node).loadExample(example);
+                            ((JIPipeAlgorithm) node).loadExample(example);
                         }));
             }
         }

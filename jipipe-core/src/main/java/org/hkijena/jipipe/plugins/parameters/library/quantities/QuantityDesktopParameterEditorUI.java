@@ -14,10 +14,7 @@
 package org.hkijena.jipipe.plugins.parameters.library.quantities;
 
 import org.apache.commons.lang3.math.NumberUtils;
-import org.hkijena.jipipe.api.parameters.JIPipeParameterAccess;
-import org.hkijena.jipipe.api.parameters.JIPipeParameterTree;
 import org.hkijena.jipipe.desktop.api.JIPipeDesktopParameterEditorUI;
-import org.hkijena.jipipe.desktop.app.JIPipeDesktopWorkbench;
 import org.hkijena.jipipe.desktop.commons.components.JIPipeDesktopDocumentChangeListener;
 import org.hkijena.jipipe.utils.StringUtils;
 import org.hkijena.jipipe.utils.UIUtils;
@@ -35,7 +32,7 @@ public class QuantityDesktopParameterEditorUI extends JIPipeDesktopParameterEdit
     private boolean isUpdatingTextBoxes = false;
 
     public QuantityDesktopParameterEditorUI(InitializationParameters parameters) {
-       super(parameters);
+        super(parameters);
         initialize();
         reload();
     }

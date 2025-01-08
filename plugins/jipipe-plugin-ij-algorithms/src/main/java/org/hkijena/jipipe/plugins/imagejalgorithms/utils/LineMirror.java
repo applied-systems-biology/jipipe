@@ -4,10 +4,6 @@ import ij.process.*;
 
 public class LineMirror {
 
-    public enum MirrorOperationMode {
-        Max, Min, AboveOrLeft, BelowOrRight
-    }
-
     public static void mirrorImage(ImageProcessor ip, int x1, int y1, int x2, int y2, MirrorOperationMode mode) {
         if (y1 == y2) {
             mirrorHorizontal(ip, y1, mode);
@@ -79,7 +75,6 @@ public class LineMirror {
         }
     }
 
-
     private static void handleGrayscaleMirror(ImageProcessor ip, int x1, int y1, int x2, int y2, MirrorOperationMode mode) {
         int value1 = ip.get(x1, y1);
         int value2 = ip.get(x2, y2);
@@ -103,7 +98,6 @@ public class LineMirror {
                 break;
         }
     }
-
 
     private static void handleColorMirror(ColorProcessor ip, int x1, int y1, int x2, int y2, MirrorOperationMode mode) {
         int rgb1 = ip.get(x1, y1);
@@ -141,6 +135,11 @@ public class LineMirror {
                 ip.set(x2, y2, minRGB);
                 break;
         }
+    }
+
+
+    public enum MirrorOperationMode {
+        Max, Min, AboveOrLeft, BelowOrRight
     }
 }
 

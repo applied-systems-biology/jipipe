@@ -64,11 +64,9 @@ public class NaNToNumFunction extends ExpressionFunction {
     public ParameterInfo getParameterInfo(int index) {
         if (index == 0) {
             return new ParameterInfo("Value", "The value to be checked.", Number.class);
-        }
-        else if (index == 1) {
+        } else if (index == 1) {
             return new ParameterInfo("Replacement", "If the first parameter is NaN", Number.class);
-        }
-        else {
+        } else {
             return null;
         }
     }

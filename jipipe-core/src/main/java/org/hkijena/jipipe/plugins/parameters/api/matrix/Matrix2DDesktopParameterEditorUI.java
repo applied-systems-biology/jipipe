@@ -13,10 +13,7 @@
 
 package org.hkijena.jipipe.plugins.parameters.api.matrix;
 
-import org.hkijena.jipipe.api.parameters.JIPipeParameterAccess;
-import org.hkijena.jipipe.api.parameters.JIPipeParameterTree;
 import org.hkijena.jipipe.desktop.api.JIPipeDesktopParameterEditorUI;
-import org.hkijena.jipipe.desktop.app.JIPipeDesktopWorkbench;
 import org.hkijena.jipipe.utils.UIUtils;
 
 import javax.swing.*;
@@ -32,7 +29,7 @@ public class Matrix2DDesktopParameterEditorUI extends JIPipeDesktopParameterEdit
     private JTable table;
 
     public Matrix2DDesktopParameterEditorUI(InitializationParameters parameters) {
-       super(parameters);
+        super(parameters);
         initialize();
         reload();
     }

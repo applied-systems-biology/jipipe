@@ -13,19 +13,14 @@ import org.hkijena.jipipe.api.nodes.AddJIPipeOutputSlot;
 import org.hkijena.jipipe.api.nodes.JIPipeGraphNodeRunContext;
 import org.hkijena.jipipe.api.nodes.JIPipeNodeInfo;
 import org.hkijena.jipipe.api.nodes.algorithm.JIPipeIteratingAlgorithm;
-import org.hkijena.jipipe.api.nodes.algorithm.JIPipeSimpleIteratingAlgorithm;
 import org.hkijena.jipipe.api.nodes.categories.ImagesNodeTypeCategory;
 import org.hkijena.jipipe.api.nodes.iterationstep.JIPipeIterationContext;
 import org.hkijena.jipipe.api.nodes.iterationstep.JIPipeSingleIterationStep;
 import org.hkijena.jipipe.api.parameters.JIPipeParameter;
-import org.hkijena.jipipe.plugins.expressions.AddJIPipeExpressionParameterVariable;
-import org.hkijena.jipipe.plugins.expressions.JIPipeExpressionParameter;
-import org.hkijena.jipipe.plugins.expressions.JIPipeExpressionVariablesMap;
 import org.hkijena.jipipe.plugins.imagejalgorithms.utils.LineMirror;
 import org.hkijena.jipipe.plugins.imagejdatatypes.datatypes.ImagePlusData;
 import org.hkijena.jipipe.plugins.imagejdatatypes.datatypes.ROI2DListData;
 import org.hkijena.jipipe.plugins.imagejdatatypes.util.ImageJUtils;
-import org.hkijena.jipipe.plugins.imagejdatatypes.util.ImagePlusPropertiesExpressionParameterVariablesInfo;
 import org.hkijena.jipipe.plugins.imagejdatatypes.util.RoiOutline;
 import org.hkijena.jipipe.plugins.parameters.library.primitives.optional.OptionalTextAnnotationNameParameter;
 
@@ -104,7 +99,7 @@ public class LineMirror2DFromRoiAlgorithm extends JIPipeIteratingAlgorithm {
                 polygon = single.get(0).getFloatPolygon();
             }
             if (polygon.npoints != 2) {
-                throw new UnsupportedOperationException("Unable to convert ROI #" + i  + " to a line!");
+                throw new UnsupportedOperationException("Unable to convert ROI #" + i + " to a line!");
             }
 
             int x1_ = (int) polygon.xpoints[0];

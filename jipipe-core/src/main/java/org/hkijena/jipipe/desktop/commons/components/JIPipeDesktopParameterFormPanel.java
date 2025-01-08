@@ -15,7 +15,6 @@ package org.hkijena.jipipe.desktop.commons.components;
 
 import com.google.common.collect.Sets;
 import com.google.common.html.HtmlEscapers;
-import net.imglib2.view.ExtendedRandomAccessibleInterval;
 import org.hkijena.jipipe.JIPipe;
 import org.hkijena.jipipe.api.SetJIPipeDocumentation;
 import org.hkijena.jipipe.api.nodes.JIPipeGraphNode;

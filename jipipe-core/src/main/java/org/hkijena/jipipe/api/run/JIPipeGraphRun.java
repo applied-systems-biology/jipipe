@@ -794,7 +794,7 @@ public class JIPipeGraphRun extends AbstractJIPipeRunnable implements JIPipeGrap
                         "------------------------\n\n");
 
                 // Check if we are in update cache
-                if(runtimePartition.getContinueOnFailureSettings().isDisableOnUpdateCache() && runContext.getGraphRun().getConfiguration().isStoreToCache()) {
+                if (runtimePartition.getContinueOnFailureSettings().isDisableOnUpdateCache() && runContext.getGraphRun().getConfiguration().isStoreToCache()) {
                     progressInfo.log("CONTINUE ON FAILURE IS TURNED OFF DUE TO A USER SETTING IN THE PARTITION");
                     throw e;
                 }
@@ -980,7 +980,7 @@ public class JIPipeGraphRun extends AbstractJIPipeRunnable implements JIPipeGrap
                         "------------------------\n\n");
 
                 // Check if we are in update cache
-                if(runtimePartition.getContinueOnFailureSettings().isDisableOnUpdateCache() && runContext.getGraphRun().getConfiguration().isStoreToCache()) {
+                if (runtimePartition.getContinueOnFailureSettings().isDisableOnUpdateCache() && runContext.getGraphRun().getConfiguration().isStoreToCache()) {
                     progressInfo.log("CONTINUE ON FAILURE IS TURNED OFF DUE TO A USER SETTING IN THE PARTITION");
                     throw e;
                 }

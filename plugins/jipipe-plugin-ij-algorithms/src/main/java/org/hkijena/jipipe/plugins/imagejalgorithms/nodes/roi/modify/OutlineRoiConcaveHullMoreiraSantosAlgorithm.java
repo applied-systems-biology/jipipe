@@ -57,6 +57,24 @@ public class OutlineRoiConcaveHullMoreiraSantosAlgorithm extends JIPipeSimpleIte
         this.skipInvalidInputs = other.skipInvalidInputs;
     }
 
+    public static PolygonRoi convertToRoi(List<Point2D> coordinates) {
+        if (coordinates == null || coordinates.size() < 3) {
+            throw new IllegalArgumentException("At least 3 coordinates are required to form a polygon.");
+        }
+
+        // Extract X and Y coordinates with subpixel precision
+        float[] xPoints = new float[coordinates.size()];
+        float[] yPoints = new float[coordinates.size()];
+
+        for (int i = 0; i < coordinates.size(); i++) {
+            xPoints[i] = (float) coordinates.get(i).getX();
+            yPoints[i] = (float) coordinates.get(i).getY();
+        }
+
+        // Create and return the PolygonRoi with subpixel precision
+        return new PolygonRoi(xPoints, yPoints, coordinates.size(), Roi.POLYGON);
+    }
+
     @SetJIPipeDocumentation(name = "K-means k", description = "The k parameter of the underlying k-means algorithm. If this value is < 3, it is set to 3. " +
             "Determines the number of closes neighbors are selected from the current point.")
     @JIPipeParameter("kmeans-k")
@@ -99,10 +117,9 @@ public class OutlineRoiConcaveHullMoreiraSantosAlgorithm extends JIPipeSimpleIte
                 hullRoi.copyAttributes(roi);
                 output.add(hullRoi);
 
-            } else if(skipInvalidInputs) {
+            } else if (skipInvalidInputs) {
                 progressInfo.log("Skipping ROI at index " + i + " (NPoints < 3)");
-            }
-            else {
+            } else {
                 progressInfo.log("Refusing to process ROI at index " + i + " (NPoints < 3)");
                 output.add(roi);
             }
@@ -110,24 +127,6 @@ public class OutlineRoiConcaveHullMoreiraSantosAlgorithm extends JIPipeSimpleIte
         }
 
         iterationStep.addOutputData(getFirstOutputSlot(), output, progressInfo);
-    }
-
-    public static PolygonRoi convertToRoi(List<Point2D> coordinates) {
-        if (coordinates == null || coordinates.size() < 3) {
-            throw new IllegalArgumentException("At least 3 coordinates are required to form a polygon.");
-        }
-
-        // Extract X and Y coordinates with subpixel precision
-        float[] xPoints = new float[coordinates.size()];
-        float[] yPoints = new float[coordinates.size()];
-
-        for (int i = 0; i < coordinates.size(); i++) {
-            xPoints[i] = (float) coordinates.get(i).getX();
-            yPoints[i] = (float) coordinates.get(i).getY();
-        }
-
-        // Create and return the PolygonRoi with subpixel precision
-        return new PolygonRoi(xPoints, yPoints, coordinates.size(), Roi.POLYGON);
     }
 
 }

@@ -60,7 +60,6 @@ import org.hkijena.jipipe.plugins.parameters.library.primitives.vectors.Vector2i
 import org.hkijena.jipipe.plugins.settings.JIPipeDefaultCacheDisplayApplicationSettings;
 import org.hkijena.jipipe.plugins.settings.JIPipeDefaultResultImporterApplicationSettings;
 import org.hkijena.jipipe.plugins.settings.JIPipeExtensionApplicationSettings;
-import org.hkijena.jipipe.plugins.settings.JIPipeProjectDefaultsApplicationSettings;
 import org.hkijena.jipipe.utils.*;
 import org.hkijena.jipipe.utils.json.JsonUtils;
 import org.scijava.Context;
@@ -780,13 +779,13 @@ public class JIPipe extends AbstractService implements JIPipeService {
      *
      * @param extensionSettings extension settings
      * @param issues            if no windows should be opened
-     * @param verbose if all steps should be logged (otherwise the initialization will be silent)
+     * @param verbose           if all steps should be logged (otherwise the initialization will be silent)
      */
     public void initialize(JIPipeExtensionApplicationSettings extensionSettings, JIPipeRegistryIssues issues, boolean verbose) {
         initializing = true;
 
         progressInfo.setProgress(0, 5);
-        if(verbose) {
+        if (verbose) {
             progressInfo.getStatusUpdatedEventEmitter().subscribeLambda((emitter, event) -> {
                 logService.info(event.getMessage());
             });
@@ -1038,11 +1037,11 @@ public class JIPipe extends AbstractService implements JIPipeService {
         artifactsRegistry.updateCachedArtifacts(progressInfo.resolve("Updating artifacts"));
 
         // Check acceleration
-        if(JIPipeArtifactApplicationSettings.getInstance().isAutoConfigureAccelerationOnNextStartup()) {
+        if (JIPipeArtifactApplicationSettings.getInstance().isAutoConfigureAccelerationOnNextStartup()) {
             progressInfo.log("Determining acceleration profile ...");
             try {
 
-                if(CUDAUtils.hasCudaSupport()) {
+                if (CUDAUtils.hasCudaSupport()) {
                     progressInfo.log("Determining acceleration profile ... CUDA support detected");
                     JIPipeArtifactApplicationSettings.getInstance().setAccelerationPreference(JIPipeArtifactAccelerationPreference.CUDA);
 

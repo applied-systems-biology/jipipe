@@ -27,11 +27,11 @@ public class TurboRegResult {
         this.transformation = transformation;
     }
 
-    public void setTransformedTargetImage(ImagePlus transformedTargetImage) {
-        this.transformedTargetImage = transformedTargetImage;
-    }
-
     public ImagePlus getTransformedTargetImage() {
         return transformedTargetImage;
+    }
+
+    public void setTransformedTargetImage(ImagePlus transformedTargetImage) {
+        this.transformedTargetImage = transformedTargetImage;
     }
 }

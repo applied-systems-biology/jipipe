@@ -105,16 +105,14 @@ public class SubdivideFilamentEdges extends JIPipeSimpleIteratingAlgorithm {
                 vertex.setSpatialLocation(new Point3d((edgeSource.getSpatialLocation().getX() + edgeTarget.getSpatialLocation().getX()) / 2.0,
                         (edgeSource.getSpatialLocation().getY() + edgeTarget.getSpatialLocation().getY()) / 2.0,
                         (edgeSource.getSpatialLocation().getZ() + edgeTarget.getSpatialLocation().getZ()) / 2.0));
-                if(overrideValue.isEnabled()) {
+                if (overrideValue.isEnabled()) {
                     vertex.setValue(overrideValue.getContent());
-                }
-                else {
+                } else {
                     vertex.setValue((edgeSource.getValue() + edgeTarget.getValue()) / 2.0);
                 }
-                if(overrideRadius.isEnabled()) {
+                if (overrideRadius.isEnabled()) {
                     vertex.setRadius(overrideRadius.getContent());
-                }
-                else {
+                } else {
                     vertex.setRadius((edgeSource.getRadius() + edgeTarget.getRadius()) / 2.0);
                 }
                 for (StringAndStringPairParameter item : addMetadata) {
@@ -146,7 +144,7 @@ public class SubdivideFilamentEdges extends JIPipeSimpleIteratingAlgorithm {
     }
 
     @SetJIPipeDocumentation(name = "Add metadata to created vertices", description = "Allows to add metadata to newly created vertices")
-     @JIPipeParameter("add-metadata")
+    @JIPipeParameter("add-metadata")
     public StringAndStringPairParameter.List getAddMetadata() {
         return addMetadata;
     }

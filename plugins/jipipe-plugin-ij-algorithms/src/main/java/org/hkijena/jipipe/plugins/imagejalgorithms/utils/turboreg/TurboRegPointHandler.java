@@ -71,6 +71,37 @@ public class TurboRegPointHandler extends Roi {
 ....................................................................*/
 
     /**
+     * Keep a local copy of the points and of the transformation.
+     **/
+    public TurboRegPointHandler(
+            final double[][] precisionPoint,
+            final TurboRegTransformationType transformation
+    ) {
+        super(0, 0, 0, 0, null);
+        this.transformation = transformation;
+        this.precisionPoint = precisionPoint;
+        interactive = false;
+    }
+
+    /**
+     * Keep a local copy of the <code>ImagePlus</code> object. Set the
+     * landmarks to their initial position for the given transformation.
+     *
+     * @param imp            <code>ImagePlus</code> object.
+     * @param transformation Transformation code.
+     **/
+    public TurboRegPointHandler(
+            final ImagePlus imp,
+            final TurboRegTransformationType transformation
+    ) {
+        super(0, 0, imp.getWidth(), imp.getHeight(), imp);
+        this.transformation = transformation;
+        setTransformation(transformation);
+        imp.setRoi(this);
+        started = true;
+    }
+
+    /**
      * Draw the landmarks. Outline the current point if the window has focus.
      *
      * @param g Graphics environment.
@@ -374,6 +405,32 @@ public class TurboRegPointHandler extends Roi {
     }
 
     /**
+     * Set new position for all landmarks, without clipping.
+     *
+     * @param precisionPoint New coordinates in canvas units.
+     **/
+    public void setPoints(
+            final double[][] precisionPoint
+    ) {
+        interactive = false;
+        if (transformation == TurboRegTransformationType.RigidBody) {
+            for (int k = 0; (k < transformation.getNativeValue()); k++) {
+                point[k].x = (int) Math.round(precisionPoint[k][0]);
+                point[k].y = (int) Math.round(precisionPoint[k][1]);
+                this.precisionPoint[k][0] = precisionPoint[k][0];
+                this.precisionPoint[k][1] = precisionPoint[k][1];
+            }
+        } else {
+            for (int k = 0; (k < (transformation.getNativeValue() / 2)); k++) {
+                point[k].x = (int) Math.round(precisionPoint[k][0]);
+                point[k].y = (int) Math.round(precisionPoint[k][1]);
+                this.precisionPoint[k][0] = precisionPoint[k][0];
+                this.precisionPoint[k][1] = precisionPoint[k][1];
+            }
+        }
+    }
+
+    /**
      * Modify the location of the current point. Clip the admissible range
      * to the image size.
      *
@@ -418,32 +475,6 @@ public class TurboRegPointHandler extends Roi {
             final int currentPoint
     ) {
         this.currentPoint = currentPoint;
-    }
-
-    /**
-     * Set new position for all landmarks, without clipping.
-     *
-     * @param precisionPoint New coordinates in canvas units.
-     **/
-    public void setPoints(
-            final double[][] precisionPoint
-    ) {
-        interactive = false;
-        if (transformation == TurboRegTransformationType.RigidBody) {
-            for (int k = 0; (k < transformation.getNativeValue()); k++) {
-                point[k].x = (int) Math.round(precisionPoint[k][0]);
-                point[k].y = (int) Math.round(precisionPoint[k][1]);
-                this.precisionPoint[k][0] = precisionPoint[k][0];
-                this.precisionPoint[k][1] = precisionPoint[k][1];
-            }
-        } else {
-            for (int k = 0; (k < (transformation.getNativeValue() / 2)); k++) {
-                point[k].x = (int) Math.round(precisionPoint[k][0]);
-                point[k].y = (int) Math.round(precisionPoint[k][1]);
-                this.precisionPoint[k][0] = precisionPoint[k][0];
-                this.precisionPoint[k][1] = precisionPoint[k][1];
-            }
-        }
     }
 
     /**
@@ -535,37 +566,6 @@ public class TurboRegPointHandler extends Roi {
         }
         setSpectrum();
         imp.updateAndDraw();
-    }
-
-    /**
-     * Keep a local copy of the points and of the transformation.
-     **/
-    public TurboRegPointHandler(
-            final double[][] precisionPoint,
-            final TurboRegTransformationType transformation
-    ) {
-        super(0, 0, 0, 0, null);
-        this.transformation = transformation;
-        this.precisionPoint = precisionPoint;
-        interactive = false;
-    }
-
-    /**
-     * Keep a local copy of the <code>ImagePlus</code> object. Set the
-     * landmarks to their initial position for the given transformation.
-     *
-     * @param imp            <code>ImagePlus</code> object.
-     * @param transformation Transformation code.
-     **/
-    public TurboRegPointHandler(
-            final ImagePlus imp,
-            final TurboRegTransformationType transformation
-    ) {
-        super(0, 0, imp.getWidth(), imp.getHeight(), imp);
-        this.transformation = transformation;
-        setTransformation(transformation);
-        imp.setRoi(this);
-        started = true;
     }
 
     private void drawArcs(

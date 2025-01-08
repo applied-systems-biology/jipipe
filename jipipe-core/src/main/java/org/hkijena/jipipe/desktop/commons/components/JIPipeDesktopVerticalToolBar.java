@@ -15,7 +15,6 @@ package org.hkijena.jipipe.desktop.commons.components;
 
 import org.hkijena.jipipe.desktop.commons.theme.JIPipeDesktopDarkModernMetalTheme;
 import org.hkijena.jipipe.desktop.commons.theme.JIPipeDesktopModernMetalTheme;
-import org.hkijena.jipipe.plugins.settings.JIPipeGeneralUIApplicationSettings;
 import org.hkijena.jipipe.utils.UIUtils;
 
 import javax.swing.*;

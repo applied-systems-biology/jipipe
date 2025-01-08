@@ -13,11 +13,6 @@
 
 package org.hkijena.jipipe.plugins.ilastik.nodes;
 
-import net.imagej.DefaultDataset;
-import net.imagej.ImgPlus;
-import net.imagej.axis.AxisType;
-import net.imglib2.img.display.imagej.ImageJFunctions;
-import org.hkijena.jipipe.JIPipe;
 import org.hkijena.jipipe.api.ConfigureJIPipeNode;
 import org.hkijena.jipipe.api.JIPipeProgressInfo;
 import org.hkijena.jipipe.api.SetJIPipeDocumentation;
@@ -37,7 +32,6 @@ import org.hkijena.jipipe.plugins.expressions.JIPipeExpressionVariablesMap;
 import org.hkijena.jipipe.plugins.expressions.variables.JIPipeTextAnnotationsExpressionParameterVariablesInfo;
 import org.hkijena.jipipe.plugins.filesystem.dataypes.FileData;
 import org.hkijena.jipipe.plugins.ilastik.utils.ImgUtils;
-import org.hkijena.jipipe.plugins.ilastik.utils.hdf5.Hdf5;
 import org.hkijena.jipipe.plugins.ilastik.utils.hdf5.IJ1Hdf5;
 import org.hkijena.jipipe.plugins.imagejdatatypes.datatypes.ImagePlusData;
 import org.hkijena.jipipe.plugins.imagejdatatypes.datatypes.greyscale.ImagePlusGreyscaleData;
@@ -50,7 +44,6 @@ import org.hkijena.jipipe.utils.UIUtils;
 import java.nio.file.Path;
 import java.util.ArrayList;
 import java.util.Collections;
-import java.util.List;
 import java.util.Map;
 
 import static org.hkijena.jipipe.plugins.ilastik.utils.ImgUtils.DEFAULT_AXES;

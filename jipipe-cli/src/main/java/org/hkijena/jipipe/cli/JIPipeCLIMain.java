@@ -88,17 +88,16 @@ public class JIPipeCLIMain {
         for (int i = 0; i < argsList.size(); i++) {
             String arg = argsList.get(i);
             boolean success = false;
-            if(arg.equals("--fast-init")) {
+            if (arg.equals("--fast-init")) {
                 fastInit = true;
                 success = true;
-            }
-            else if(arg.equals("--verbose")) {
+            } else if (arg.equals("--verbose")) {
                 verbose = true;
                 success = true;
             }
 
             // Delete the flag
-            if(success) {
+            if (success) {
                 argsList.remove(i);
                 --i;
             }
@@ -155,11 +154,9 @@ public class JIPipeCLIMain {
                 parameterOverrides.put(arg.substring(3), value);
             } else if (arg.startsWith("--U")) {
                 userDirectoryOverrides.put(arg.substring(3), Paths.get(value));
-            }
-            else if(arg.equals("profile-dir")) {
+            } else if (arg.equals("profile-dir")) {
                 overrideProfileDir = Paths.get(value);
-            }
-            else {
+            } else {
                 System.err.println("Unknown argument: " + arg);
                 showHelp();
                 return;
@@ -176,7 +173,7 @@ public class JIPipeCLIMain {
             showHelp();
             return;
         }
-        if(overrideProfileDir != null) {
+        if (overrideProfileDir != null) {
             System.out.println("Overriding base path for JIPipe profiles with " + overrideProfileDir);
             PathUtils.createDirectories(overrideProfileDir);
             JIPipe.OVERRIDE_USER_DIR_BASE = overrideProfileDir;
@@ -186,7 +183,7 @@ public class JIPipeCLIMain {
         JIPipe jiPipe = JIPipe.createInstance(ij.context());
         JIPipeExtensionApplicationSettings extensionSettings = JIPipeExtensionApplicationSettings.getInstanceFromRaw();
         extensionSettings.setSilent(true);
-        if(fastInit) {
+        if (fastInit) {
             extensionSettings.setValidateNodeTypes(false);
         }
         JIPipeRegistryIssues issues = new JIPipeRegistryIssues();
@@ -250,7 +247,7 @@ public class JIPipeCLIMain {
             }
         }
 
-        if(outputFolder == null) {
+        if (outputFolder == null) {
             System.out.println("No output folder provided.");
             outputFolder = project.getTemporaryDirectory("output");
             System.out.println("Output files will be written into: " + outputFolder);

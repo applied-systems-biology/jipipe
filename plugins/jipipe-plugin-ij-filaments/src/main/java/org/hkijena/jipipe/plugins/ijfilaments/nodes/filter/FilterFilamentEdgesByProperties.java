@@ -77,7 +77,7 @@ public class FilterFilamentEdgesByProperties extends JIPipeSimpleIteratingAlgori
             for (FilamentEdge edge : outputData.edgeSet()) {
                 JIPipeExpressionVariablesMap forEdge = allMeasurements.get(edge);
                 Object value = forEdge.get(key);
-                if(value != null) {
+                if (value != null) {
                     allValues.add(value);
                 }
             }

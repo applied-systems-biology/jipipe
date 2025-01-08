@@ -31,6 +31,24 @@ public enum TurboRegTransformationType {
         this.nativeValue = nativeValue;
     }
 
+    public static TurboRegTransformationType fromNativeValue(int nativeValue) {
+        for (TurboRegTransformationType value : TurboRegTransformationType.values()) {
+            if (value.nativeValue == nativeValue) {
+                return value;
+            }
+        }
+        return null;
+    }
+
+    public static TurboRegTransformationType fromNativeName(String name) {
+        for (TurboRegTransformationType value : TurboRegTransformationType.values()) {
+            if (value.name.equals(name)) {
+                return value;
+            }
+        }
+        return null;
+    }
+
     @Override
     public String toString() {
         return label;
@@ -46,23 +64,5 @@ public enum TurboRegTransformationType {
 
     public String getName() {
         return name;
-    }
-
-    public static TurboRegTransformationType fromNativeValue(int nativeValue) {
-        for (TurboRegTransformationType value : TurboRegTransformationType.values()) {
-            if(value.nativeValue == nativeValue){
-                return value;
-            }
-        }
-        return null;
-    }
-
-    public static TurboRegTransformationType fromNativeName(String name) {
-        for (TurboRegTransformationType value : TurboRegTransformationType.values()) {
-            if(value.name.equals(name)){
-                return value;
-            }
-        }
-        return null;
     }
 }

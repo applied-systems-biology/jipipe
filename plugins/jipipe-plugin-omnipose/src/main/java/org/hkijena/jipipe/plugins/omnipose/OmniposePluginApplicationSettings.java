@@ -37,20 +37,19 @@ public class OmniposePluginApplicationSettings extends JIPipeDefaultApplications
         preconfigureEnvironment(defaultEnvironment.getContent());
     }
 
+    public static OmniposePluginApplicationSettings getInstance() {
+        return JIPipe.getSettings().getById(ID, OmniposePluginApplicationSettings.class);
+    }
+
     private void preconfigureEnvironment(PythonEnvironment environment) {
         environment.setLoadFromArtifact(true);
         environment.setArtifactQuery(new JIPipeArtifactQueryParameter("com.github.kevinjohncutler.omnipose:*"));
     }
 
-    public static OmniposePluginApplicationSettings getInstance() {
-        return JIPipe.getSettings().getById(ID, OmniposePluginApplicationSettings.class);
-    }
-
     public PythonEnvironment getReadOnlyDefaultEnvironment() {
-        if(defaultEnvironment.isEnabled()) {
+        if (defaultEnvironment.isEnabled()) {
             return new PythonEnvironment(defaultEnvironment.getContent());
-        }
-        else {
+        } else {
             return new PythonEnvironment(standardEnvironment);
         }
     }

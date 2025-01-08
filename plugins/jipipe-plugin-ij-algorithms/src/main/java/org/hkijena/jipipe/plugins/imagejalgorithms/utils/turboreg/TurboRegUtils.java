@@ -24,10 +24,10 @@ public class TurboRegUtils {
     public static TurboRegResult alignImage2D(ImagePlus source, ImagePlus target, TurboRegTransformationType transformationType, AdvancedTurboRegParameters advancedTurboRegParameters) {
 
         // Full image crop (from MultiStackReg)
-        final int[] sourceCrop = new int[] {
+        final int[] sourceCrop = new int[]{
                 0, 0, source.getWidth() - 1, source.getHeight() - 1
         };
-        final int[] targetCrop = new int[] {
+        final int[] targetCrop = new int[]{
                 0, 0, source.getWidth() - 1, source.getHeight() - 1
         };
 
@@ -248,12 +248,13 @@ public class TurboRegUtils {
 
     /**
      * Variant of transformImage2D that can handle RGB
-     * @param source the image to be transformed
-     * @param width target width
-     * @param height target height
+     *
+     * @param source         the image to be transformed
+     * @param width          target width
+     * @param height         target height
      * @param transformation transformation type
-     * @param sourcePoints source points
-     * @param targetPoints target points
+     * @param sourcePoints   source points
+     * @param targetPoints   target points
      * @return transformed image
      */
     public static ImagePlus transformImage2DSimple(
@@ -263,10 +264,9 @@ public class TurboRegUtils {
             final TurboRegTransformationType transformation,
             double[][] sourcePoints,
             double[][] targetPoints) {
-        if(source.getType() != ImagePlus.COLOR_RGB) {
+        if (source.getType() != ImagePlus.COLOR_RGB) {
             return transformImage2D(source, width, height, transformation, sourcePoints, targetPoints);
-        }
-        else {
+        } else {
             // Split into channel slices and re-combine
             ImagePlus toChannels = ImageJUtils.rgbToChannels(source);
             ImagePlus transformedR = transformImage2D(new ImagePlus("r", toChannels.getStack().getProcessor(1)), width, height, transformation, sourcePoints, targetPoints);
@@ -278,7 +278,7 @@ public class TurboRegUtils {
             stack.addSlice(transformedG.getProcessor());
             stack.addSlice(transformedB.getProcessor());
             ImagePlus result = new ImagePlus(source.getTitle(), stack);
-            result.setDimensions(3, 1,1);
+            result.setDimensions(3, 1, 1);
 
             return ImageJUtils.channelsToRGB(result);
         }

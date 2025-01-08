@@ -29,16 +29,13 @@ import org.hkijena.jipipe.desktop.app.JIPipeDesktopWorkbenchPanel;
 import org.hkijena.jipipe.desktop.app.grapheditor.commons.JIPipeDesktopGraphCanvasUI;
 import org.hkijena.jipipe.desktop.app.running.JIPipeDesktopRunExecuteUI;
 import org.hkijena.jipipe.desktop.commons.components.JIPipeDesktopParameterFormPanel;
-import org.hkijena.jipipe.desktop.commons.components.markup.JIPipeDesktopMarkdownReader;
 import org.hkijena.jipipe.desktop.commons.components.search.JIPipeDesktopSearchTextField;
 import org.hkijena.jipipe.desktop.commons.components.window.JIPipeDesktopAlwaysOnTopToggle;
 import org.hkijena.jipipe.plugins.nodetemplate.templatedownloader.NodeTemplateDownloaderRun;
 import org.hkijena.jipipe.plugins.parameters.library.markup.MarkdownText;
 import org.hkijena.jipipe.plugins.settings.JIPipeFileChooserApplicationSettings;
 import org.hkijena.jipipe.plugins.settings.JIPipeNodeTemplateApplicationSettings;
-import org.hkijena.jipipe.utils.JIPipeDesktopSplitPane;
 import org.hkijena.jipipe.utils.StringUtils;
-import org.hkijena.jipipe.utils.TooltipUtils;
 import org.hkijena.jipipe.utils.UIUtils;
 import org.hkijena.jipipe.utils.json.JsonUtils;
 import org.hkijena.jipipe.utils.search.RankedData;
@@ -51,8 +48,8 @@ import java.io.IOException;
 import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.nio.file.Path;
-import java.util.*;
 import java.util.List;
+import java.util.*;
 import java.util.stream.Collectors;
 
 public class NodeTemplateBox extends JIPipeDesktopWorkbenchPanel implements NodeTemplatesRefreshedEventListener {

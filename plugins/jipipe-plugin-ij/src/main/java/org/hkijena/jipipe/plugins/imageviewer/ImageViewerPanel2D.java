@@ -125,11 +125,11 @@ public class ImageViewerPanel2D extends JPanel implements JIPipeDesktopWorkbench
         if (newIndex < 1)
             newIndex += maximum;
         slider.setValue(newIndex);
-    }    private final Timer animationTimer = new Timer(250, e -> animateNextSlice());
+    }
 
     public JIPipeDesktopWorkbench getDesktopWorkbench() {
         return workbench;
-    }
+    }    private final Timer animationTimer = new Timer(250, e -> animateNextSlice());
 
     public ImageViewer2DUIApplicationSettings getSettings() {
         return settings;
@@ -235,6 +235,15 @@ public class ImageViewerPanel2D extends JPanel implements JIPipeDesktopWorkbench
         return composite;
     }
 
+    public void setComposite(boolean composite) {
+        this.composite = composite;
+        if (composite) {
+            channelSlider.setValue(1);
+        }
+        refreshSliders();
+        uploadSliceToCanvas();
+    }
+
 
 //    public void setRotationEnabled(boolean enabled) {
 //        rotateLeftButton.setVisible(enabled);
@@ -245,15 +254,6 @@ public class ImageViewerPanel2D extends JPanel implements JIPipeDesktopWorkbench
 //            refreshSlice();
 //        }
 //    }
-
-    public void setComposite(boolean composite) {
-        this.composite = composite;
-        if (composite) {
-            channelSlider.setValue(1);
-        }
-        refreshSliders();
-        uploadSliceToCanvas();
-    }
 
     private void initializeAnimationControls() {
         animationTimer.setRepeats(true);

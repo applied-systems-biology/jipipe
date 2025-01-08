@@ -252,6 +252,7 @@ public abstract class JIPipeDesktopParameterEditorUI extends JIPipeDesktopWorkbe
 
     /**
      * Gets the parent object that is added during the creation of the UI
+     *
      * @return the parent object (can be null)
      */
     public Object getContextParent() {

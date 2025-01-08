@@ -49,6 +49,7 @@ public class ProcessUtils {
 
     /**
      * Test for handling quoting in addArgument
+     *
      * @return if should handle quoting
      */
     public static boolean shouldHandleQuoting() {

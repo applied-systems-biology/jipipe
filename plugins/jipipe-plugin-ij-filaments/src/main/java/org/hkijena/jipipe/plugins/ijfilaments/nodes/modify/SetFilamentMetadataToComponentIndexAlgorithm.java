@@ -16,8 +16,6 @@ package org.hkijena.jipipe.plugins.ijfilaments.nodes.modify;
 import org.hkijena.jipipe.api.ConfigureJIPipeNode;
 import org.hkijena.jipipe.api.JIPipeProgressInfo;
 import org.hkijena.jipipe.api.SetJIPipeDocumentation;
-import org.hkijena.jipipe.api.annotation.JIPipeTextAnnotation;
-import org.hkijena.jipipe.api.annotation.JIPipeTextAnnotationMergeMode;
 import org.hkijena.jipipe.api.nodes.AddJIPipeInputSlot;
 import org.hkijena.jipipe.api.nodes.AddJIPipeOutputSlot;
 import org.hkijena.jipipe.api.nodes.JIPipeGraphNodeRunContext;
@@ -30,12 +28,8 @@ import org.hkijena.jipipe.plugins.ijfilaments.FilamentsNodeTypeCategory;
 import org.hkijena.jipipe.plugins.ijfilaments.datatypes.Filaments3DGraphData;
 import org.hkijena.jipipe.plugins.ijfilaments.util.FilamentEdge;
 import org.hkijena.jipipe.plugins.ijfilaments.util.FilamentVertex;
-import org.hkijena.jipipe.plugins.parameters.library.primitives.optional.OptionalTextAnnotationNameParameter;
 import org.jgrapht.alg.connectivity.ConnectivityInspector;
-import org.jgrapht.graph.AsSubgraph;
 
-import java.util.ArrayList;
-import java.util.List;
 import java.util.Set;
 
 @SetJIPipeDocumentation(name = "Set filament vertex metadata to component index", description = "Finds all connected components and writes the component index into a metadata field")

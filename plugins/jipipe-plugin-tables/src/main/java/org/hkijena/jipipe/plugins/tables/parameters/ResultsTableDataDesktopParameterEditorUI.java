@@ -13,10 +13,7 @@
 
 package org.hkijena.jipipe.plugins.tables.parameters;
 
-import org.hkijena.jipipe.api.parameters.JIPipeParameterAccess;
-import org.hkijena.jipipe.api.parameters.JIPipeParameterTree;
 import org.hkijena.jipipe.desktop.api.JIPipeDesktopParameterEditorUI;
-import org.hkijena.jipipe.desktop.app.JIPipeDesktopWorkbench;
 import org.hkijena.jipipe.desktop.app.tableeditor.JIPipeDesktopTableEditor;
 import org.hkijena.jipipe.plugins.tables.datatypes.ResultsTableData;
 import org.hkijena.jipipe.utils.UIUtils;
@@ -30,7 +27,7 @@ import java.awt.*;
 public class ResultsTableDataDesktopParameterEditorUI extends JIPipeDesktopParameterEditorUI {
 
     public ResultsTableDataDesktopParameterEditorUI(InitializationParameters parameters) {
-       super(parameters);
+        super(parameters);
         initialize();
     }
 

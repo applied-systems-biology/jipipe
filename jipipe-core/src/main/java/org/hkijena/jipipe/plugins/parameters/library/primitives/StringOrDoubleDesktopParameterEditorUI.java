@@ -35,7 +35,7 @@ public class StringOrDoubleDesktopParameterEditorUI extends JIPipeDesktopParamet
      * @param parameterAccess the parameter
      */
     public StringOrDoubleDesktopParameterEditorUI(InitializationParameters parameters) {
-       super(parameters);
+        super(parameters);
         setLayout(new BoxLayout(this, BoxLayout.X_AXIS));
         reload();
     }

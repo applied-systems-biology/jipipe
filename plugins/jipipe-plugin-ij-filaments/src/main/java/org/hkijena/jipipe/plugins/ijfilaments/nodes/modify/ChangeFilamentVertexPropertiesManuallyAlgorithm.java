@@ -69,7 +69,7 @@ public class ChangeFilamentVertexPropertiesManuallyAlgorithm extends JIPipeSimpl
         super(other);
         this.color = new OptionalColorParameter(other.color);
         this.vertexMask = new VertexMaskParameter(other.vertexMask);
-        this.centroidC = new  OptionalIntegerParameter(other.centroidC);
+        this.centroidC = new OptionalIntegerParameter(other.centroidC);
         this.centroidT = new OptionalIntegerParameter(other.centroidT);
         this.centroidX = new OptionalDoubleParameter(other.centroidX);
         this.centroidY = new OptionalDoubleParameter(other.centroidY);
@@ -94,57 +94,57 @@ public class ChangeFilamentVertexPropertiesManuallyAlgorithm extends JIPipeSimpl
 
         for (FilamentVertex vertex : VertexMaskParameter.filter(vertexMask.getFilter(), outputData, outputData.vertexSet(), variables)) {
             // Centroid X
-            if(centroidX.isEnabled()) {
+            if (centroidX.isEnabled()) {
                 vertex.getSpatialLocation().setX(centroidX.getContent());
             }
 
             // Centroid Y
-            if(centroidY.isEnabled()) {
+            if (centroidY.isEnabled()) {
                 vertex.getSpatialLocation().setY(centroidY.getContent());
             }
 
             // Centroid Z
-            if(centroidZ.isEnabled()) {
+            if (centroidZ.isEnabled()) {
                 vertex.getSpatialLocation().setZ(centroidZ.getContent());
             }
 
             // Centroid C
-            if(centroidC.isEnabled()) {
+            if (centroidC.isEnabled()) {
                 vertex.getNonSpatialLocation().setChannel(centroidC.getContent());
             }
 
             // Centroid T
-            if(centroidT.isEnabled()) {
+            if (centroidT.isEnabled()) {
                 vertex.getNonSpatialLocation().setFrame(centroidT.getContent());
             }
 
             // Radius
-            if(radius.isEnabled()) {
+            if (radius.isEnabled()) {
                 vertex.setRadius(radius.getContent());
             }
 
             // Color
-            if(color.isEnabled()) {
+            if (color.isEnabled()) {
                 vertex.setColor(color.getContent());
             }
 
             // Intensity
-            if(value.isEnabled()) {
+            if (value.isEnabled()) {
                 vertex.setValue(value.getContent());
             }
 
             // Physical size X
-            if(physicalSizeX.isEnabled()) {
+            if (physicalSizeX.isEnabled()) {
                 vertex.setPhysicalVoxelSizeX(new Quantity(physicalSizeX.getContent()));
             }
 
             // Physical size Y
-            if(physicalSizeY.isEnabled()) {
+            if (physicalSizeY.isEnabled()) {
                 vertex.setPhysicalVoxelSizeY(new Quantity(physicalSizeY.getContent()));
             }
 
             // Physical size Z
-            if(physicalSizeZ.isEnabled()) {
+            if (physicalSizeZ.isEnabled()) {
                 vertex.setPhysicalVoxelSizeZ(new Quantity(physicalSizeZ.getContent()));
             }
 

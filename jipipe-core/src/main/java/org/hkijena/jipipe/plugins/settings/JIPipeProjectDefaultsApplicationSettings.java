@@ -20,12 +20,10 @@ import org.hkijena.jipipe.api.project.JIPipeProjectTemplate;
 import org.hkijena.jipipe.api.settings.JIPipeDefaultApplicationSettingsSheetCategory;
 import org.hkijena.jipipe.api.settings.JIPipeDefaultApplicationsSettingsSheet;
 import org.hkijena.jipipe.plugins.parameters.api.enums.DynamicEnumParameter;
-import org.hkijena.jipipe.plugins.parameters.library.filesystem.PathList;
 import org.hkijena.jipipe.plugins.parameters.library.primitives.list.StringList;
 import org.hkijena.jipipe.utils.UIUtils;
 
 import javax.swing.*;
-import java.nio.file.Path;
 import java.util.ArrayList;
 
 /**

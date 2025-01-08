@@ -14,11 +14,7 @@
 package org.hkijena.jipipe.plugins.ilastik.nodes;
 
 import ij.ImagePlus;
-import net.imagej.DefaultDataset;
-import net.imagej.ImgPlus;
-import net.imglib2.img.display.imagej.ImageJFunctions;
 import org.apache.commons.io.FilenameUtils;
-import org.hkijena.jipipe.JIPipe;
 import org.hkijena.jipipe.api.AddJIPipeCitation;
 import org.hkijena.jipipe.api.ConfigureJIPipeNode;
 import org.hkijena.jipipe.api.JIPipeProgressInfo;
@@ -52,7 +48,6 @@ import org.hkijena.jipipe.plugins.ilastik.environments.IlastikEnvironmentAccessN
 import org.hkijena.jipipe.plugins.ilastik.environments.OptionalIlastikEnvironment;
 import org.hkijena.jipipe.plugins.ilastik.parameters.IlastikProjectValidationMode;
 import org.hkijena.jipipe.plugins.ilastik.utils.IlastikUtils;
-import org.hkijena.jipipe.plugins.ilastik.utils.hdf5.Hdf5;
 import org.hkijena.jipipe.plugins.ilastik.utils.hdf5.IJ1Hdf5;
 import org.hkijena.jipipe.plugins.imagejdatatypes.datatypes.ImagePlusData;
 import org.hkijena.jipipe.plugins.imagejdatatypes.util.ImageJUtils;
@@ -61,10 +56,7 @@ import org.hkijena.jipipe.utils.ImageJCalibrationMode;
 import org.hkijena.jipipe.utils.PathUtils;
 import org.hkijena.jipipe.utils.json.JsonUtils;
 
-import java.io.IOException;
-import java.nio.file.Files;
 import java.nio.file.Path;
-import java.nio.file.StandardOpenOption;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
@@ -175,7 +167,7 @@ public class IlastikPredictionMapsObjectClassificationAlgorithm extends JIPipeSi
         for (int i = 0; i < projectInputSlot.getRowCount(); i++) {
             JIPipeProgressInfo exportProgress = progressInfo.resolveAndLog("Exporting project", i, projectInputSlot.getRowCount());
             IlastikModelData project = projectInputSlot.getData(i, IlastikModelData.class, exportProgress);
-            Path exportedPath = project.exportOrGetLink( workDirectory.resolve("project_" + i + ".ilp"));
+            Path exportedPath = project.exportOrGetLink(workDirectory.resolve("project_" + i + ".ilp"));
 
             // Check the project
             if (projectValidationMode != IlastikProjectValidationMode.Ignore) {

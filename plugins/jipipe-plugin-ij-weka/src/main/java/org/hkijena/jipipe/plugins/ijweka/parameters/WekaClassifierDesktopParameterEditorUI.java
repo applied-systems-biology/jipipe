@@ -13,10 +13,7 @@
 
 package org.hkijena.jipipe.plugins.ijweka.parameters;
 
-import org.hkijena.jipipe.api.parameters.JIPipeParameterAccess;
-import org.hkijena.jipipe.api.parameters.JIPipeParameterTree;
 import org.hkijena.jipipe.desktop.api.JIPipeDesktopParameterEditorUI;
-import org.hkijena.jipipe.desktop.app.JIPipeDesktopWorkbench;
 import org.hkijena.jipipe.desktop.commons.components.JIPipeDesktopFormPanel;
 import org.hkijena.jipipe.plugins.parameters.library.markup.MarkdownText;
 import org.hkijena.jipipe.utils.UIUtils;
@@ -39,7 +36,7 @@ public class WekaClassifierDesktopParameterEditorUI extends JIPipeDesktopParamet
      * @param parameterAccess the parameter
      */
     public WekaClassifierDesktopParameterEditorUI(InitializationParameters parameters) {
-       super(parameters);
+        super(parameters);
         initialize();
         reload();
     }

@@ -14,13 +14,10 @@
 package org.hkijena.jipipe.plugins.settings;
 
 import org.hkijena.jipipe.JIPipe;
-import org.hkijena.jipipe.api.JIPipeNodeTemplate;
 import org.hkijena.jipipe.api.SetJIPipeDocumentation;
-import org.hkijena.jipipe.api.parameters.AbstractJIPipeParameterCollection;
 import org.hkijena.jipipe.api.parameters.JIPipeParameter;
 import org.hkijena.jipipe.api.settings.JIPipeDefaultApplicationSettingsSheetCategory;
 import org.hkijena.jipipe.api.settings.JIPipeDefaultApplicationsSettingsSheet;
-import org.hkijena.jipipe.plugins.nodetemplate.NodeTemplatesRefreshedEvent;
 import org.hkijena.jipipe.plugins.parameters.library.primitives.list.StringList;
 import org.hkijena.jipipe.utils.UIUtils;
 

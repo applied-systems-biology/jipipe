@@ -42,7 +42,7 @@ public class IntegerRangeDesktopParameterEditorUI extends JIPipeDesktopParameter
      * @param parameterAccess the parameter
      */
     public IntegerRangeDesktopParameterEditorUI(InitializationParameters parameters) {
-       super(parameters);
+        super(parameters);
         initialize();
         reload();
     }

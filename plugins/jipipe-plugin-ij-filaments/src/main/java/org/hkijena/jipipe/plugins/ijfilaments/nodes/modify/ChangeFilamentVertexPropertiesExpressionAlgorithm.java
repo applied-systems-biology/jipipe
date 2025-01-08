@@ -98,7 +98,7 @@ public class ChangeFilamentVertexPropertiesExpressionAlgorithm extends JIPipeSim
 
         List<MetadataEntry> metadataEntries = metadata.mapToCollection(MetadataEntry.class);
 
-        for (FilamentVertex vertex : VertexMaskParameter.filter(vertexMask.getFilter(),outputData, outputData.vertexSet(), variables)) {
+        for (FilamentVertex vertex : VertexMaskParameter.filter(vertexMask.getFilter(), outputData, outputData.vertexSet(), variables)) {
             // Write variables
             for (Map.Entry<String, String> entry : vertex.getMetadata().entrySet()) {
                 variables.set("metadata." + entry.getKey(), entry.getValue());

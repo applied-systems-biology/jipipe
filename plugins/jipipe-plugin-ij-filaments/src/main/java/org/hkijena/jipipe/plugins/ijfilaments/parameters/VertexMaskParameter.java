@@ -41,23 +41,8 @@ public class VertexMaskParameter extends AbstractJIPipeParameterCollection {
         this.filter = new OptionalJIPipeExpressionParameter(other.filter);
     }
 
-    @SetJIPipeDocumentation(name = "Vertex mask", description = "Apply the operation to a specific set of vertices")
-    @JIPipeParameter("mask")
-    @AddJIPipeExpressionParameterVariable(fromClass = FilamentVertexVariablesInfo.class)
-    @AddJIPipeExpressionParameterVariable(fromClass = JIPipeTextAnnotationsExpressionParameterVariablesInfo.class)
-    @AddJIPipeExpressionParameterVariable(fromClass = JIPipeCustomExpressionVariablesParameterVariablesInfo.class)
-    @JIPipeExpressionParameterSettings(hint = "per vertex")
-    public OptionalJIPipeExpressionParameter getFilter() {
-        return filter;
-    }
-
-    @JIPipeParameter("mask")
-    public void setFilter(OptionalJIPipeExpressionParameter filter) {
-        this.filter = filter;
-    }
-
     public static Set<FilamentVertex> filter(OptionalJIPipeExpressionParameter filter, Filaments3DGraphData graph, Set<FilamentVertex> vertexSet, JIPipeExpressionVariablesMap variables) {
-        if(vertexSet == null) {
+        if (vertexSet == null) {
             vertexSet = graph.vertexSet();
         }
         if (filter.isEnabled()) {
@@ -74,5 +59,20 @@ public class VertexMaskParameter extends AbstractJIPipeParameterCollection {
         } else {
             return vertexSet;
         }
+    }
+
+    @SetJIPipeDocumentation(name = "Vertex mask", description = "Apply the operation to a specific set of vertices")
+    @JIPipeParameter("mask")
+    @AddJIPipeExpressionParameterVariable(fromClass = FilamentVertexVariablesInfo.class)
+    @AddJIPipeExpressionParameterVariable(fromClass = JIPipeTextAnnotationsExpressionParameterVariablesInfo.class)
+    @AddJIPipeExpressionParameterVariable(fromClass = JIPipeCustomExpressionVariablesParameterVariablesInfo.class)
+    @JIPipeExpressionParameterSettings(hint = "per vertex")
+    public OptionalJIPipeExpressionParameter getFilter() {
+        return filter;
+    }
+
+    @JIPipeParameter("mask")
+    public void setFilter(OptionalJIPipeExpressionParameter filter) {
+        this.filter = filter;
     }
 }

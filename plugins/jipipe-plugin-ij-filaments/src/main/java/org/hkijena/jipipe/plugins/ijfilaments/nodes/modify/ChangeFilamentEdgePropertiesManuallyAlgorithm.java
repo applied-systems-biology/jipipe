@@ -78,7 +78,7 @@ public class ChangeFilamentEdgePropertiesManuallyAlgorithm extends JIPipeSimpleI
             FilamentEdgeVariablesInfo.writeToVariables(outputData, edge, variables, "");
 
             // Color
-            if(color.isEnabled()) {
+            if (color.isEnabled()) {
                 edge.setColor(color.getContent());
             }
 

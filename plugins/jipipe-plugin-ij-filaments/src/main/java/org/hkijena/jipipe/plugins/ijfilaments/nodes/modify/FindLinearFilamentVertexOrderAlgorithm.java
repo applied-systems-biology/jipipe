@@ -163,7 +163,7 @@ public class FindLinearFilamentVertexOrderAlgorithm extends JIPipeSimpleIteratin
             } else if (connectedSet.size() >= 2) {
                 List<FilamentVertex> endPoints = connectedSet.stream().filter(vertex -> filaments.degreeOf(vertex) == 1).collect(Collectors.toList());
 
-                if(endPoints.size() != 2) {
+                if (endPoints.size() != 2) {
                     // Not a line
                     continue;
                 }
@@ -207,7 +207,7 @@ public class FindLinearFilamentVertexOrderAlgorithm extends JIPipeSimpleIteratin
                 }
                 for (int i = 0; i < vertexList.size(); i++) {
                     FilamentVertex vertex = vertexList.get(i);
-                    if(i > 0) {
+                    if (i > 0) {
                         currentDistancePixels += vertex.getSpatialLocation().distanceTo(vertexList.get(i - 1).getSpatialLocation());
                     }
                     if (distanceMetadataKey.isEnabled()) {

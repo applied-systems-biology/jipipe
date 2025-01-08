@@ -15,7 +15,6 @@ import org.hkijena.jipipe.api.nodes.iterationstep.JIPipeSingleIterationStep;
 import org.hkijena.jipipe.api.parameters.JIPipeParameter;
 import org.hkijena.jipipe.plugins.expressions.AddJIPipeExpressionParameterVariable;
 import org.hkijena.jipipe.plugins.expressions.JIPipeExpressionParameter;
-import org.hkijena.jipipe.plugins.expressions.JIPipeExpressionParameterVariableInfo;
 import org.hkijena.jipipe.plugins.expressions.JIPipeExpressionVariablesMap;
 import org.hkijena.jipipe.plugins.imagejalgorithms.utils.LineMirror;
 import org.hkijena.jipipe.plugins.imagejdatatypes.datatypes.ImagePlusData;

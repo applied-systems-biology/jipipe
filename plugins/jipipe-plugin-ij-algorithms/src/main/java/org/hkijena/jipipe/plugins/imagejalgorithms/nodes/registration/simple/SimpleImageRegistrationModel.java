@@ -27,17 +27,27 @@ public enum SimpleImageRegistrationModel {
     Elastic,
     MovingLeastSquares;
 
-    public CoordinateTransform toCoordinateTransform()
-    {
+    public CoordinateTransform toCoordinateTransform() {
         CoordinateTransform t;
-        switch (this)
-        {
-            case Translation: t = new TranslationModel2D(); break;
-            case Rigid: t = new RigidModel2D(); break;
-            case Similarity: t = new SimilarityModel2D(); break;
-            case Affine: t = new AffineModel2D(); break;
-            case Elastic: t = new CubicBSplineTransform(); break;
-            case MovingLeastSquares: t = new MovingLeastSquaresTransform(); break;
+        switch (this) {
+            case Translation:
+                t = new TranslationModel2D();
+                break;
+            case Rigid:
+                t = new RigidModel2D();
+                break;
+            case Similarity:
+                t = new SimilarityModel2D();
+                break;
+            case Affine:
+                t = new AffineModel2D();
+                break;
+            case Elastic:
+                t = new CubicBSplineTransform();
+                break;
+            case MovingLeastSquares:
+                t = new MovingLeastSquaresTransform();
+                break;
             default:
                 throw new RuntimeException("Unknown image registration model: " + this);
         }

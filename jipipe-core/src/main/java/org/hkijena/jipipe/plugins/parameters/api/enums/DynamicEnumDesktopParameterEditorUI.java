@@ -13,10 +13,7 @@
 
 package org.hkijena.jipipe.plugins.parameters.api.enums;
 
-import org.hkijena.jipipe.api.parameters.JIPipeParameterAccess;
-import org.hkijena.jipipe.api.parameters.JIPipeParameterTree;
 import org.hkijena.jipipe.desktop.api.JIPipeDesktopParameterEditorUI;
-import org.hkijena.jipipe.desktop.app.JIPipeDesktopWorkbench;
 import org.hkijena.jipipe.desktop.commons.components.JIPipeDesktopPickDynamicEnumValueDialog;
 import org.hkijena.jipipe.utils.ReflectionUtils;
 import org.hkijena.jipipe.utils.UIUtils;
@@ -41,7 +38,7 @@ public class DynamicEnumDesktopParameterEditorUI extends JIPipeDesktopParameterE
      * @param parameterAccess the parameter
      */
     public DynamicEnumDesktopParameterEditorUI(InitializationParameters parameters) {
-       super(parameters);
+        super(parameters);
         initialize();
         reload();
     }

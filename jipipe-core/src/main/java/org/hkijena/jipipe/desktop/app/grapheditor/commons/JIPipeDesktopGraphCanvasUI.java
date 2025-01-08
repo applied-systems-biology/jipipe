@@ -1676,7 +1676,7 @@ public class JIPipeDesktopGraphCanvasUI extends JLayeredPane implements JIPipeDe
             Component component = getComponent(i);
             if (component.getBounds().contains(mouseEvent.getX(), mouseEvent.getY())) {
                 if (component instanceof JIPipeDesktopGraphNodeUI) {
-                    if(graphAnnotationsLocked && ((JIPipeDesktopGraphNodeUI) component).getNode() instanceof JIPipeAnnotationGraphNode) {
+                    if (graphAnnotationsLocked && ((JIPipeDesktopGraphNodeUI) component).getNode() instanceof JIPipeAnnotationGraphNode) {
                         continue;
                     }
                     return (JIPipeDesktopGraphNodeUI) component;
@@ -1728,7 +1728,7 @@ public class JIPipeDesktopGraphCanvasUI extends JLayeredPane implements JIPipeDe
                 Rectangle selectionRectangle = new Rectangle(x, y, w, h);
                 Set<JIPipeDesktopGraphNodeUI> newSelection = new HashSet<>();
                 for (JIPipeDesktopGraphNodeUI ui : nodeUIs.values()) {
-                    if(graphAnnotationsLocked && ui.getNode() instanceof JIPipeAnnotationGraphNode) {
+                    if (graphAnnotationsLocked && ui.getNode() instanceof JIPipeAnnotationGraphNode) {
                         continue;
                     }
                     if (selectionRectangle.intersects(ui.getBounds())) {
@@ -3543,19 +3543,19 @@ public class JIPipeDesktopGraphCanvasUI extends JLayeredPane implements JIPipeDe
         return visibleNodes;
     }
 
+    public boolean isGraphAnnotationsLocked() {
+        return graphAnnotationsLocked;
+    }
+
     public void setGraphAnnotationsLocked(boolean graphAnnotationsLocked) {
         this.graphAnnotationsLocked = graphAnnotationsLocked;
-        if(graphAnnotationsLocked) {
+        if (graphAnnotationsLocked) {
             for (JIPipeDesktopGraphNodeUI nodeUI : ImmutableList.copyOf(selection)) {
-                if(nodeUI.getNode() instanceof JIPipeAnnotationGraphNode) {
+                if (nodeUI.getNode() instanceof JIPipeAnnotationGraphNode) {
                     removeFromSelection(nodeUI);
                 }
             }
         }
-    }
-
-    public boolean isGraphAnnotationsLocked() {
-        return graphAnnotationsLocked;
     }
 
     public enum EdgeMuteMode {

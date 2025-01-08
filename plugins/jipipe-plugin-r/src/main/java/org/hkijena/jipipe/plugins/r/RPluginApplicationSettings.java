@@ -17,8 +17,8 @@ import com.google.common.collect.ImmutableList;
 import org.hkijena.jipipe.JIPipe;
 import org.hkijena.jipipe.api.SetJIPipeDocumentation;
 import org.hkijena.jipipe.api.environments.ExternalEnvironmentParameterSettings;
-import org.hkijena.jipipe.api.environments.JIPipeExternalEnvironmentSettings;
 import org.hkijena.jipipe.api.environments.JIPipeEnvironment;
+import org.hkijena.jipipe.api.environments.JIPipeExternalEnvironmentSettings;
 import org.hkijena.jipipe.api.parameters.JIPipeParameter;
 import org.hkijena.jipipe.api.settings.JIPipeDefaultApplicationSettingsSheetCategory;
 import org.hkijena.jipipe.api.settings.JIPipeDefaultApplicationsSettingsSheet;
@@ -40,20 +40,19 @@ public class RPluginApplicationSettings extends JIPipeDefaultApplicationsSetting
         preconfigureEnvironment(defaultEnvironment.getContent());
     }
 
+    public static RPluginApplicationSettings getInstance() {
+        return JIPipe.getSettings().getById(ID, RPluginApplicationSettings.class);
+    }
+
     private void preconfigureEnvironment(REnvironment environment) {
         environment.setLoadFromArtifact(true);
         environment.setArtifactQuery(new JIPipeArtifactQueryParameter("org.r.r_prepackaged:*"));
     }
 
-    public static RPluginApplicationSettings getInstance() {
-        return JIPipe.getSettings().getById(ID, RPluginApplicationSettings.class);
-    }
-
     public REnvironment getReadOnlyEnvironment() {
-        if(defaultEnvironment.isEnabled()) {
+        if (defaultEnvironment.isEnabled()) {
             return new REnvironment(defaultEnvironment.getContent());
-        }
-        else {
+        } else {
             return new REnvironment(standardEnvironment);
         }
     }

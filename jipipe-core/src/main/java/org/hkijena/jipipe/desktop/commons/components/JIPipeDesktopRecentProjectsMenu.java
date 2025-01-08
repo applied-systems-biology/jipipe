@@ -14,12 +14,10 @@
 package org.hkijena.jipipe.desktop.commons.components;
 
 import org.hkijena.jipipe.JIPipe;
-import org.hkijena.jipipe.api.parameters.JIPipeParameterCollection;
 import org.hkijena.jipipe.api.project.JIPipeProject;
 import org.hkijena.jipipe.api.registries.JIPipeRecentProjectsRegistry;
 import org.hkijena.jipipe.desktop.app.JIPipeDesktopProjectWindow;
 import org.hkijena.jipipe.desktop.app.documentation.JIPipeDesktopRecentProjectsListPanel;
-import org.hkijena.jipipe.plugins.settings.JIPipeProjectDefaultsApplicationSettings;
 import org.hkijena.jipipe.utils.UIUtils;
 
 import javax.swing.*;

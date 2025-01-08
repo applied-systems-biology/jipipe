@@ -134,6 +134,51 @@ public class TurboRegTransformer {
     private boolean interactive;
 
     /**
+     * Keep a local copy of most everything. Select among the pre-stored
+     * constants.
+     *
+     * @param targetImg      Target image pyramid.
+     * @param targetMsk      Target mask pyramid.
+     * @param sourceImg      Source image pyramid.
+     * @param sourceMsk      Source mask pyramid.
+     * @param targetPh       Target <code>TurboRegPointHandler</code> object.
+     * @param sourcePh       Source <code>TurboRegPointHandler</code> object.
+     * @param transformation Transformation code.
+     * @param accelerated    Trade-off between speed and accuracy.
+     * @param interactive    Shows or hides the resulting image.
+     **/
+    public TurboRegTransformer(
+            final TurboRegImage sourceImg,
+            final TurboRegMask sourceMsk,
+            final TurboRegPointHandler sourcePh,
+            final TurboRegImage targetImg,
+            final TurboRegMask targetMsk,
+            final TurboRegPointHandler targetPh,
+            final TurboRegTransformationType transformation,
+            final boolean accelerated,
+            final boolean interactive
+    ) {
+        this.sourceImg = sourceImg;
+        this.sourceMsk = sourceMsk;
+        this.sourcePh = sourcePh;
+        this.targetImg = targetImg;
+        this.targetMsk = targetMsk;
+        this.targetPh = targetPh;
+        this.transformation = transformation;
+        this.accelerated = accelerated;
+        this.interactive = interactive;
+        sourcePoint = sourcePh.getPoints();
+        targetPoint = targetPh.getPoints();
+        if (accelerated) {
+            pixelPrecision = PIXEL_LOW_PRECISION;
+            maxIterations = FEW_ITERATIONS;
+        } else {
+            pixelPrecision = PIXEL_HIGH_PRECISION;
+            maxIterations = MANY_ITERATIONS;
+        }
+    }
+
+    /**
      * Append the current landmarks into a text file. Rigid format.
      *
      * @param pathAndFilename Path and name of the file where batch results
@@ -488,7 +533,7 @@ public class TurboRegTransformer {
         twiceInNx = 2 * inNx;
         twiceInNy = 2 * inNy;
         if (accelerated) {
-//            
+//
 //                    iterationCost * (maxIterations - 1));
         } else {
             switch (transformation) {
@@ -601,51 +646,6 @@ public class TurboRegTransformer {
                     "Security exception " + e.getMessage());
         }
         return (path + filename);
-    }
-
-    /**
-     * Keep a local copy of most everything. Select among the pre-stored
-     * constants.
-     *
-     * @param targetImg      Target image pyramid.
-     * @param targetMsk      Target mask pyramid.
-     * @param sourceImg      Source image pyramid.
-     * @param sourceMsk      Source mask pyramid.
-     * @param targetPh       Target <code>TurboRegPointHandler</code> object.
-     * @param sourcePh       Source <code>TurboRegPointHandler</code> object.
-     * @param transformation Transformation code.
-     * @param accelerated    Trade-off between speed and accuracy.
-     * @param interactive    Shows or hides the resulting image.
-     **/
-    public TurboRegTransformer(
-            final TurboRegImage sourceImg,
-            final TurboRegMask sourceMsk,
-            final TurboRegPointHandler sourcePh,
-            final TurboRegImage targetImg,
-            final TurboRegMask targetMsk,
-            final TurboRegPointHandler targetPh,
-            final TurboRegTransformationType transformation,
-            final boolean accelerated,
-            final boolean interactive
-    ) {
-        this.sourceImg = sourceImg;
-        this.sourceMsk = sourceMsk;
-        this.sourcePh = sourcePh;
-        this.targetImg = targetImg;
-        this.targetMsk = targetMsk;
-        this.targetPh = targetPh;
-        this.transformation = transformation;
-        this.accelerated = accelerated;
-        this.interactive = interactive;
-        sourcePoint = sourcePh.getPoints();
-        targetPoint = targetPh.getPoints();
-        if (accelerated) {
-            pixelPrecision = PIXEL_LOW_PRECISION;
-            maxIterations = FEW_ITERATIONS;
-        } else {
-            pixelPrecision = PIXEL_HIGH_PRECISION;
-            maxIterations = MANY_ITERATIONS;
-        }
     }
 
     private void affineTransform(

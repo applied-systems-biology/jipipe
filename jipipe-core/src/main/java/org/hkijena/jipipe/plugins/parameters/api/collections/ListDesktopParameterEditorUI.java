@@ -41,7 +41,7 @@ public class ListDesktopParameterEditorUI extends JIPipeDesktopParameterEditorUI
     private int lastClickedIndex = -1;
 
     public ListDesktopParameterEditorUI(InitializationParameters parameters) {
-       super(parameters);
+        super(parameters);
         initialize();
         reload();
     }

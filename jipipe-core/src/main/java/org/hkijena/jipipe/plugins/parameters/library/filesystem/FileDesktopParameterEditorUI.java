@@ -13,10 +13,7 @@
 
 package org.hkijena.jipipe.plugins.parameters.library.filesystem;
 
-import org.hkijena.jipipe.api.parameters.JIPipeParameterAccess;
-import org.hkijena.jipipe.api.parameters.JIPipeParameterTree;
 import org.hkijena.jipipe.desktop.api.JIPipeDesktopParameterEditorUI;
-import org.hkijena.jipipe.desktop.app.JIPipeDesktopWorkbench;
 import org.hkijena.jipipe.desktop.commons.components.JIPipeDesktopPathEditorComponent;
 import org.hkijena.jipipe.utils.PathIOMode;
 import org.hkijena.jipipe.utils.PathType;
@@ -36,7 +33,7 @@ public class FileDesktopParameterEditorUI extends JIPipeDesktopParameterEditorUI
      * @param parameterAccess the parameter
      */
     public FileDesktopParameterEditorUI(InitializationParameters parameters) {
-       super(parameters);
+        super(parameters);
         initialize();
 //        getWorkbenchUI().getProject().getEventBus().register(this);
     }
