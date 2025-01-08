@@ -21,6 +21,10 @@ import org.hkijena.jipipe.api.AddJIPipeCitation;
 import org.hkijena.jipipe.api.ConfigureJIPipeNode;
 import org.hkijena.jipipe.api.JIPipeProgressInfo;
 import org.hkijena.jipipe.api.SetJIPipeDocumentation;
+import org.hkijena.jipipe.api.annotation.JIPipeDataAnnotation;
+import org.hkijena.jipipe.api.annotation.JIPipeDataAnnotationMergeMode;
+import org.hkijena.jipipe.api.annotation.JIPipeTextAnnotation;
+import org.hkijena.jipipe.api.annotation.JIPipeTextAnnotationMergeMode;
 import org.hkijena.jipipe.api.nodes.AddJIPipeInputSlot;
 import org.hkijena.jipipe.api.nodes.AddJIPipeOutputSlot;
 import org.hkijena.jipipe.api.nodes.JIPipeGraphNodeRunContext;
@@ -53,10 +57,7 @@ import org.jgrapht.graph.DefaultDirectedGraph;
 import org.jgrapht.graph.DefaultEdge;
 import org.jgrapht.traverse.TopologicalOrderIterator;
 
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.Objects;
+import java.util.*;
 
 /**
  * Port of {@link register_virtual_stack.Register_Virtual_Stack_MT}
@@ -167,12 +168,34 @@ public class TurboRegRegistration2DAlgorithm extends JIPipeIteratingAlgorithm {
         ImagePlus target = iterationStep.getInputData("Reference", ImagePlusData.class, progressInfo).getDuplicateImage();
         ImagePlus source = iterationStep.getInputData("Input", ImagePlusData.class, progressInfo).getDuplicateImage();
 
-        TODO RESTORE ORIGINAL ANNOTATIONS
+        List<JIPipeTextAnnotation> referenceTextAnnotations = new ArrayList<>();
+        List<JIPipeTextAnnotation> inputTextAnnotations = new ArrayList<>();
+        List<JIPipeDataAnnotation> referenceDataAnnotations = new ArrayList<>();
+        List<JIPipeDataAnnotation> inputDataAnnotations = new ArrayList<>();
+
+        if(restoreOriginalAnnotations) {
+           referenceTextAnnotations = iterationStep.getOriginalTextAnnotations("Reference");
+           inputTextAnnotations = iterationStep.getOriginalTextAnnotations("Input");
+           referenceDataAnnotations = iterationStep.getOriginalDataAnnotations("Reference");
+           inputDataAnnotations = iterationStep.getOriginalDataAnnotations("Input");
+        }
 
         if (transformationType == TurboRegTransformationType.GenericTransformation) {
             progressInfo.log("Transformation set to 'None'. Skipping.");
-            iterationStep.addOutputData("Reference", new ImagePlusData(source), progressInfo);
-            iterationStep.addOutputData("Target", new ImagePlusData(target), progressInfo);
+            iterationStep.addOutputData("Reference",
+                    new ImagePlusData(source),
+                    referenceTextAnnotations,
+                    JIPipeTextAnnotationMergeMode.OverwriteExisting,
+                    referenceDataAnnotations,
+                    JIPipeDataAnnotationMergeMode.OverwriteExisting,
+                    progressInfo);
+            iterationStep.addOutputData("Target",
+                    new ImagePlusData(target),
+                    inputTextAnnotations,
+                    JIPipeTextAnnotationMergeMode.OverwriteExisting,
+                    inputDataAnnotations,
+                    JIPipeDataAnnotationMergeMode.OverwriteExisting,
+                    progressInfo);
             iterationStep.addOutputData("Transform", new JsonData(JsonUtils.toPrettyJsonString(new TurboRegTransformationInfo())), progressInfo);
             return;
         }
@@ -373,8 +396,20 @@ public class TurboRegRegistration2DAlgorithm extends JIPipeIteratingAlgorithm {
 
         ImagePlus result = ImageJUtils.mergeMappedSlices(transformedTargetProcessors);
         result.copyScale(target);
-        iterationStep.addOutputData("Reference", new ImagePlusData(target), progressInfo);
-        iterationStep.addOutputData("Registered", new ImagePlusData(result), progressInfo);
+        iterationStep.addOutputData("Reference",
+                new ImagePlusData(target),
+                referenceTextAnnotations,
+                JIPipeTextAnnotationMergeMode.OverwriteExisting,
+                referenceDataAnnotations,
+                JIPipeDataAnnotationMergeMode.OverwriteExisting,
+                progressInfo);
+        iterationStep.addOutputData("Registered",
+                new ImagePlusData(result),
+                inputTextAnnotations,
+                JIPipeTextAnnotationMergeMode.OverwriteExisting,
+                inputDataAnnotations,
+                JIPipeDataAnnotationMergeMode.OverwriteExisting,
+                progressInfo);
         iterationStep.addOutputData("Transform", new JsonData(JsonUtils.toPrettyJsonString(transformation)), progressInfo);
     }
 
