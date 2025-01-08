@@ -60,7 +60,11 @@ import java.util.Objects;
 @SetJIPipeDocumentation(name = "TurboReg registration 2D", description = "Aligns the target image to the source image using methods " +
         "implemented by TurboReg and MultiStackReg. Due to the variation in registration tasks, this node follows a 'rules' approach where each slice of the input image is matched to one rule that " +
         "determines how the slice is aligned. There are three modes: (1) register to a reference slice, (2) use the same transformation calculated for another slice, and (3) apply no registration. " +
-        "Use the examples provided via the 'Tools' menu (top right of the parameter window) to get started with configuring the rules.")
+        "Use the examples provided via the 'Tools' menu (top right of the parameter window) to get started with configuring the rules.\n\n" +
+        "Handling of RGB images: as the underlying alignment methods were only designed for greyscale images, RGB slices are automatically converted to greyscale prior to registration (using ImageJ methods). " +
+        "The resulting transformation is then applied per RGB channel, which is then output.\n\n" +
+        "Please note that if an RGB image is present, the output will be RGB. You may lose greyscale precision (16 bit/ 32 bit) in other slices. " +
+        "To prevent this, convert RGB to greyscale prior to registration (e.g. by splitting RGB channels into hyperstack channels).")
 @ConfigureJIPipeNode(nodeTypeCategory = ImagesNodeTypeCategory.class, menuPath = "Registration")
 @AddJIPipeCitation("Based on TurboReg")
 @AddJIPipeCitation("Based on MultiStackReg")
