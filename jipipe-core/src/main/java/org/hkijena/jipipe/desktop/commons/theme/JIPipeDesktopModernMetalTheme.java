@@ -193,7 +193,7 @@ public class JIPipeDesktopModernMetalTheme extends DefaultMetalTheme {
                 UIUtils.getIconFromResources("actions/xfce-wm-minimize.png"),
                 // menubutton3
                 "InternalFrame.icon",
-                UIUtils.getIconFromResources("actions/open-menu.png"),
+                UIUtils.getIconFromResources("actions/hamburger-menu.png"),
                 // maximize2
                 "InternalFrame.maximizeIcon",
                 UIUtils.getIconFromResources("actions/xfce-wm-maximize.png"),

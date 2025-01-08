@@ -13,14 +13,20 @@
 
 package org.hkijena.jipipe.desktop.api.nodes;
 
+import org.hkijena.jipipe.JIPipe;
+import org.hkijena.jipipe.api.nodes.JIPipeAlgorithm;
 import org.hkijena.jipipe.api.nodes.JIPipeGraphNode;
+import org.hkijena.jipipe.api.nodes.JIPipeNodeExample;
 import org.hkijena.jipipe.desktop.app.grapheditor.commons.JIPipeDesktopGraphCanvasUI;
+import org.hkijena.jipipe.utils.UIUtils;
 
+import javax.swing.*;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.util.ArrayList;
 import java.util.Comparator;
 import java.util.List;
+import java.util.function.BiConsumer;
 
 public class JIPipeDesktopNodeQuickAction {
 
@@ -29,19 +35,41 @@ public class JIPipeDesktopNodeQuickAction {
     private final String icon;
     private final String buttonIcon;
     private final String buttonText;
-    private final Method method;
+    private final BiConsumer<JIPipeGraphNode, JIPipeDesktopGraphCanvasUI> workload;
 
-    public JIPipeDesktopNodeQuickAction(String name, String description, String icon, String buttonIcon, String buttonText, Method method) {
+    public JIPipeDesktopNodeQuickAction(String name, String description, String icon, String buttonIcon, String buttonText, BiConsumer<JIPipeGraphNode, JIPipeDesktopGraphCanvasUI> workload) {
         this.name = name;
         this.description = description;
         this.icon = icon;
         this.buttonIcon = buttonIcon;
         this.buttonText = buttonText;
-        this.method = method;
+        this.workload = workload;
     }
 
     public static List<JIPipeDesktopNodeQuickAction> getQuickActions(Object object) {
         List<JIPipeDesktopNodeQuickAction> quickActions = new ArrayList<>();
+
+        // Also add the examples into quick actions
+        if (object instanceof JIPipeAlgorithm) {
+            for (JIPipeNodeExample example : JIPipe.getNodes().getNodeExamples(((JIPipeGraphNode) object).getInfo().getId())) {
+                quickActions.add(new JIPipeDesktopNodeQuickAction("Load example: " + example.getNodeTemplate().getName(),
+                        example.getNodeTemplate().getDescription().toPlainText(),
+                        "actions/graduation-cap.png",
+                        "actions/graduation-cap.png",
+                        "Load example: " + example.getNodeTemplate().getName(),
+                        (node, canvasUI) -> {
+                            if (JOptionPane.showConfirmDialog(SwingUtilities.getWindowAncestor(canvasUI), "Do you really want to load the example '" +
+                                    example.getNodeTemplate().getName() + "'?\n" +
+                                    "This will override all your existing settings.", "Load example", JOptionPane.YES_NO_OPTION,
+                                    JOptionPane.QUESTION_MESSAGE) == JOptionPane.NO_OPTION) {
+                                return;
+                            }
+                            ((JIPipeAlgorithm)node).loadExample(example);
+                        }));
+            }
+        }
+
+        // The quick actions
         for (Method method : object.getClass().getMethods()) {
             AddJIPipeDesktopNodeQuickAction annotation = method.getAnnotation(AddJIPipeDesktopNodeQuickAction.class);
             if (annotation != null) {
@@ -50,7 +78,13 @@ public class JIPipeDesktopNodeQuickAction {
                         annotation.icon(),
                         annotation.buttonIcon(),
                         annotation.buttonText(),
-                        method));
+                        (node, canvasUI) -> {
+                            try {
+                                method.invoke(node, canvasUI);
+                            } catch (IllegalAccessException | InvocationTargetException e) {
+                                throw new RuntimeException(e);
+                            }
+                        }));
             }
         }
         quickActions.sort(Comparator.comparing(JIPipeDesktopNodeQuickAction::getName));
@@ -77,15 +111,7 @@ public class JIPipeDesktopNodeQuickAction {
         return buttonText;
     }
 
-    public Method getMethod() {
-        return method;
-    }
-
-    public void run(JIPipeGraphNode node, JIPipeDesktopGraphCanvasUI canvasUI) {
-        try {
-            getMethod().invoke(node, canvasUI);
-        } catch (IllegalAccessException | InvocationTargetException e) {
-            throw new RuntimeException(e);
-        }
+    public BiConsumer<JIPipeGraphNode, JIPipeDesktopGraphCanvasUI> getWorkload() {
+        return workload;
     }
 }

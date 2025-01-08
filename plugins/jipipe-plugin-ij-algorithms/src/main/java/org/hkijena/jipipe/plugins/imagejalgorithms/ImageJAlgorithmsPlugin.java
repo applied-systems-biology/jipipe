@@ -88,6 +88,7 @@ import org.hkijena.jipipe.plugins.imagejalgorithms.nodes.overlay.ExtractOverlayA
 import org.hkijena.jipipe.plugins.imagejalgorithms.nodes.overlay.RemoveOverlayAlgorithm;
 import org.hkijena.jipipe.plugins.imagejalgorithms.nodes.overlay.RenderOverlayAlgorithm;
 import org.hkijena.jipipe.plugins.imagejalgorithms.nodes.overlay.SetOverlayAlgorithm;
+import org.hkijena.jipipe.plugins.imagejalgorithms.nodes.registration.turboreg.TurboRegRegistrationAlgorithm;
 import org.hkijena.jipipe.plugins.imagejalgorithms.nodes.roi.*;
 import org.hkijena.jipipe.plugins.imagejalgorithms.nodes.roi.annotations.RoiPropertiesToAnnotationsAlgorithm;
 import org.hkijena.jipipe.plugins.imagejalgorithms.nodes.roi.assemble.AssembleExtractedROIAlgorithm;
@@ -133,6 +134,7 @@ import org.hkijena.jipipe.plugins.imagejalgorithms.utils.OMEAccessorStorage;
 import org.hkijena.jipipe.plugins.imagejalgorithms.utils.OrientationJGradientOperator;
 import org.hkijena.jipipe.plugins.imagejalgorithms.utils.OrientationJVectorFieldType;
 import org.hkijena.jipipe.plugins.imagejalgorithms.utils.LineMirror;
+import org.hkijena.jipipe.plugins.imagejalgorithms.utils.turboreg.TurboRegTransformationType;
 import org.hkijena.jipipe.plugins.imagejdatatypes.ImageJDataTypesPlugin;
 import org.hkijena.jipipe.plugins.imagejdatatypes.algorithms.ApplyDisplayContrastAlgorithm;
 import org.hkijena.jipipe.plugins.imagejdatatypes.algorithms.DisplayRangeCalibrationAlgorithm;
@@ -604,6 +606,7 @@ public class ImageJAlgorithmsPlugin extends JIPipePrepackagedDefaultJavaPlugin {
         registerCalibrationAlgorithms();
         registerColocalizationAlgorithms();
         registerMetadataAlgorithms();
+        registerRegistrationAlgorithms();
 
         registerNodeType("ij1-generate-missing-results-table", GenerateMissingTablesAlgorithm.class, UIUtils.getIconURLFromResources("actions/image-auto-adjust.png"));
         registerNodeType("ij1-generate-missing-results-table-2", GenerateMissingTablesAlgorithm2.class, UIUtils.getIconURLFromResources("actions/image-auto-adjust.png"));
@@ -627,6 +630,20 @@ public class ImageJAlgorithmsPlugin extends JIPipePrepackagedDefaultJavaPlugin {
         // Register examples
         registerNodeExamplesFromResources(RESOURCES, "examples");
         registerProjectTemplatesFromResources(RESOURCES, "templates");
+    }
+
+    private void registerRegistrationAlgorithms() {
+        // Algorithms temporarily deactivated (no time to develop them)
+//        registerEnumParameterType("ij1-simple-image-registration:model", SimpleImageRegistrationModel.class, "Simple image registration model", "Image registration model");
+//        registerEnumParameterType("ij1-simple-image-registration:feature-model", SimpleImageRegistrationFeatureModel.class, "Simple image registration feature model", "Model to extract image features");
+//        registerEnumParameterType("ij1-bunwarpj-registration:max-scale-deformation", BUnwarpJMaxScaleDeformation.class, "BUnwarpJ max scale deformation", "");
+//        registerEnumParameterType("ij1-bunwarpj-registration:min-scale-deformation", BUnwarpJMinScaleDeformation.class, "BUnwarpJ min scale deformation", "");
+//        registerEnumParameterType("ij1-bunwarpj-registration:mode", BUnwarpJMode.class, "BUnwarpJ mode", "");
+//        registerNodeType("ij1-simple-image-registration", SimpleImageRegistrationAlgorithm.class, UIUtils.getIconURLFromResources("actions/transform-shear-right.png"));
+
+        registerEnumParameterType("ij1-turbo-reg:transformation-type", TurboRegTransformationType.class, "TurboReg transformation", "Transformation type");
+        registerEnumParameterType("ij1-turbo-reg-image-registration:rule-type", TurboRegRegistrationAlgorithm.RuleType.class, "TurboReg registration rule type", "Determines the behavior of the algorithm");
+        registerNodeType("ij1-turbo-reg-image-registration", TurboRegRegistrationAlgorithm.class, UIUtils.getIconURLFromResources("actions/transform-shear-right.png"));
     }
 
     @Override
