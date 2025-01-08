@@ -61,7 +61,7 @@ import java.util.Objects;
 /**
  * Port of {@link register_virtual_stack.Register_Virtual_Stack_MT}
  */
-@SetJIPipeDocumentation(name = "TurboReg registration 2D", description = "Aligns the target image to the source image using methods " +
+@SetJIPipeDocumentation(name = "TurboReg registration 2D (simple)", description = "Aligns the target image to the source image using methods " +
         "implemented by TurboReg and MultiStackReg. Due to the variation in registration tasks, this node follows a 'rules' approach where each slice of the input image is matched to one rule that " +
         "determines how the slice is aligned. There are three modes: (1) register to a reference slice, (2) use the same transformation calculated for another slice, and (3) apply no registration. " +
         "Use the examples provided via the 'Tools' menu (top right of the parameter window) to get started with configuring the rules.\n\n" +

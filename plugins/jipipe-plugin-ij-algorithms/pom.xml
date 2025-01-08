@@ -270,14 +270,14 @@
             <groupId>sc.fiji</groupId>
             <artifactId>register_virtual_stack_slices</artifactId>
         </dependency>
-        <dependency>
-            <groupId>com.github.miura</groupId>
-            <artifactId>MultiStackRegistration</artifactId>
-        </dependency>
-        <dependency>
-            <groupId>sc.fiji</groupId>
-            <artifactId>TurboReg_</artifactId>
-        </dependency>
+<!--        <dependency>-->
+<!--            <groupId>com.github.miura</groupId>-->
+<!--            <artifactId>MultiStackRegistration</artifactId>-->
+<!--        </dependency>-->
+<!--        <dependency>-->
+<!--            <groupId>sc.fiji</groupId>-->
+<!--            <artifactId>TurboReg_</artifactId>-->
+<!--        </dependency>-->
     </dependencies>
 
     <build>
