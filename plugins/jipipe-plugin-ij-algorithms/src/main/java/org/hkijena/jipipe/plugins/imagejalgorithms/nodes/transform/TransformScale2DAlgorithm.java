@@ -104,6 +104,17 @@ public class TransformScale2DAlgorithm extends JIPipeSimpleIteratingAlgorithm {
                 container.insert(resized, finalRect.x, finalRect.y);
                 return container;
             }
+            case Paste: {
+                ImageProcessor container = IJ.createImage("", width, height, 1, imp.getBitDepth()).getProcessor();
+                container.setRoi(0, 0, width, height);
+                container.setColor(background);
+                container.fill();
+                container.setRoi((Roi) null);
+
+                Rectangle finalRect = location.placeInside(new Rectangle(0, 0, imp.getWidth(), imp.getHeight()), new Rectangle(0, 0, width, height));
+                container.insert(imp, finalRect.x, finalRect.y);
+                return container;
+            }
             case Cover: {
                 double factor = Math.max(width * 1.0 / imp.getWidth(), height * 1.0 / imp.getHeight());
                 ImageProcessor resized = imp.resize((int) (imp.getWidth() * factor), (int) (imp.getHeight() * factor), useAveraging);
@@ -191,7 +202,7 @@ public class TransformScale2DAlgorithm extends JIPipeSimpleIteratingAlgorithm {
         }
     }
 
-    @SetJIPipeDocumentation(name = "Placement", description = "Used if the scale mode is 'Fit' or 'Cover'. Determines where the image is placed.")
+    @SetJIPipeDocumentation(name = "Placement", description = "Used if the scale mode is 'Fit'/'Cover'/'Paste'. Determines where the image is placed.")
     @JIPipeParameter("anchor")
     public Anchor getAnchor() {
         return anchor;
@@ -202,7 +213,7 @@ public class TransformScale2DAlgorithm extends JIPipeSimpleIteratingAlgorithm {
         this.anchor = anchor;
     }
 
-    @SetJIPipeDocumentation(name = "Background", description = "Used if the scale mode is 'Fit' or 'Cover'. Determines the background color of the output")
+    @SetJIPipeDocumentation(name = "Background", description = "Used if the scale mode is 'Fit'/'Cover'/'Paste'. Determines the background color of the output")
     @JIPipeParameter("background-color")
     public Color getBackground() {
         return background;
@@ -249,7 +260,7 @@ public class TransformScale2DAlgorithm extends JIPipeSimpleIteratingAlgorithm {
     }
 
     @SetJIPipeDocumentation(name = "Scale mode", description = "Determines how the image is fit into the output. You can either stretch the image " +
-            "to the new dimensions, fit it inside the boundaries, or cut off parts to cover the whole output")
+            "to the new dimensions, fit it inside the boundaries, cut off parts to cover the whole output, or leave the image unchanged (no resize) and just copy it into the output image with a given size")
     @JIPipeParameter("scale-mode")
     public ScaleMode getScaleMode() {
         return scaleMode;

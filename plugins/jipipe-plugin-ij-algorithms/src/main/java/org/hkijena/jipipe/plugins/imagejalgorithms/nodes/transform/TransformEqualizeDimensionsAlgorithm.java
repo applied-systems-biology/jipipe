@@ -25,6 +25,10 @@ import org.hkijena.jipipe.api.nodes.categories.ImagesNodeTypeCategory;
 import org.hkijena.jipipe.api.nodes.iterationstep.JIPipeIterationContext;
 import org.hkijena.jipipe.api.nodes.iterationstep.JIPipeSingleIterationStep;
 import org.hkijena.jipipe.api.parameters.JIPipeParameter;
+import org.hkijena.jipipe.api.parameters.JIPipeParameterAccess;
+import org.hkijena.jipipe.api.parameters.JIPipeParameterCollection;
+import org.hkijena.jipipe.api.parameters.JIPipeParameterTree;
+import org.hkijena.jipipe.plugins.expressions.OptionalJIPipeExpressionParameter;
 import org.hkijena.jipipe.plugins.imagejdatatypes.datatypes.ImagePlusData;
 import org.hkijena.jipipe.plugins.imagejdatatypes.util.ImageJUtils;
 import org.hkijena.jipipe.plugins.parameters.library.primitives.BooleanParameterSettings;
@@ -67,6 +71,8 @@ public class TransformEqualizeDimensionsAlgorithm extends JIPipeIteratingAlgorit
         if (equalWidthAndHeight) {
             scale2DAlgorithm.clearSlotData(false, progressInfo);
             scale2DAlgorithm.getFirstInputSlot().addData(new ImagePlusData(image), progressInfo);
+            scale2DAlgorithm.setxAxis(new OptionalJIPipeExpressionParameter(true, Integer.toString(referenceImage.getWidth())));
+            scale2DAlgorithm.setyAxis(new OptionalJIPipeExpressionParameter(true, Integer.toString(referenceImage.getHeight())));
             scale2DAlgorithm.run(runContext, progressInfo.resolve("2D scaling"));
             image = scale2DAlgorithm.getFirstOutputSlot().getData(0, ImagePlusData.class, progressInfo).getImage();
             scale2DAlgorithm.clearSlotData(false, progressInfo);
@@ -87,6 +93,7 @@ public class TransformEqualizeDimensionsAlgorithm extends JIPipeIteratingAlgorit
     @JIPipeParameter("equal-width-and-height")
     public void setEqualWidthAndHeight(boolean equalWidthAndHeight) {
         this.equalWidthAndHeight = equalWidthAndHeight;
+        emitParameterUIChangedEvent();
     }
 
     @SetJIPipeDocumentation(name = "Equalize hyperstack dimensions", description = "If enabled, the hyperstack dimensions are equalized")
@@ -116,5 +123,23 @@ public class TransformEqualizeDimensionsAlgorithm extends JIPipeIteratingAlgorit
     @JIPipeParameter(value = "scale-algorithm")
     public TransformScale2DAlgorithm getScale2DAlgorithm() {
         return scale2DAlgorithm;
+    }
+
+    @Override
+    public boolean isParameterUIVisible(JIPipeParameterTree tree, JIPipeParameterCollection subParameter) {
+        if(!equalWidthAndHeight && subParameter == scale2DAlgorithm) {
+            return false;
+        }
+        return super.isParameterUIVisible(tree, subParameter);
+    }
+
+    @Override
+    public boolean isParameterUIVisible(JIPipeParameterTree tree, JIPipeParameterAccess access) {
+        if(access.getSource() == scale2DAlgorithm) {
+            if("x-axis".equals(access.getKey()) || "y-axis".equals(access.getKey())) {
+                return false;
+            }
+        }
+        return super.isParameterUIVisible(tree, access);
     }
 }

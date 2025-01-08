@@ -202,6 +202,10 @@ public class TurboRegRegistration2DAlgorithm extends JIPipeIteratingAlgorithm {
             }
         }
 
+        if(progressInfo.isCancelled()) {
+            return;
+        }
+
         // Create the edges
         for (TransformationNode node : graph.vertexSet()) {
             if (node.rule.ruleType == RuleType.UseTransformation) {
@@ -221,6 +225,10 @@ public class TurboRegRegistration2DAlgorithm extends JIPipeIteratingAlgorithm {
                 // Create edge
                 graph.addEdge(usedNode, node);
             }
+        }
+
+        if(progressInfo.isCancelled()) {
+            return;
         }
 
         progressInfo.log("Transformation graph: " + graph.vertexSet().size() + " vertices, " + graph.edgeSet().size() + " edges");
@@ -244,6 +252,11 @@ public class TurboRegRegistration2DAlgorithm extends JIPipeIteratingAlgorithm {
 
         TopologicalOrderIterator<TransformationNode, DefaultEdge> topologicalOrderIterator = new TopologicalOrderIterator<>(graph);
         while (topologicalOrderIterator.hasNext()) {
+
+            if(progressInfo.isCancelled()) {
+                return;
+            }
+
             TransformationNode node = topologicalOrderIterator.next();
             ImageProcessor sourceIp = ImageJUtils.getSliceZero(source, node.sourceIndex);
             switch (node.rule.ruleType) {
