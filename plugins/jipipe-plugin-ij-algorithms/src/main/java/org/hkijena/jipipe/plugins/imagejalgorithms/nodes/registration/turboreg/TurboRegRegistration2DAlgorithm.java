@@ -84,6 +84,7 @@ public class TurboRegRegistration2DAlgorithm extends JIPipeIteratingAlgorithm {
     private final AdvancedTurboRegParameters advancedTurboRegParameters;
     private TurboRegTransformationType transformationType = TurboRegTransformationType.RigidBody;
     private ParameterCollectionList rules = ParameterCollectionList.containingCollection(Rule.class);
+    private boolean restoreOriginalAnnotations = true;
 
 
     public TurboRegRegistration2DAlgorithm(JIPipeNodeInfo info) {
@@ -100,6 +101,7 @@ public class TurboRegRegistration2DAlgorithm extends JIPipeIteratingAlgorithm {
         this.transformationType = other.transformationType;
         this.rules = new ParameterCollectionList(other.rules);
         this.advancedTurboRegParameters = new AdvancedTurboRegParameters(other.advancedTurboRegParameters);
+        this.restoreOriginalAnnotations = other.restoreOriginalAnnotations;
         registerSubParameter(advancedTurboRegParameters);
     }
 
@@ -149,10 +151,23 @@ public class TurboRegRegistration2DAlgorithm extends JIPipeIteratingAlgorithm {
         return advancedTurboRegParameters;
     }
 
+    @SetJIPipeDocumentation(name = "Restore original annotations", description = "If enabled, restore the original annotations of the data")
+    @JIPipeParameter("restore-original-annotations")
+    public boolean isRestoreOriginalAnnotations() {
+        return restoreOriginalAnnotations;
+    }
+
+    @JIPipeParameter("restore-original-annotations")
+    public void setRestoreOriginalAnnotations(boolean restoreOriginalAnnotations) {
+        this.restoreOriginalAnnotations = restoreOriginalAnnotations;
+    }
+
     @Override
     protected void runIteration(JIPipeSingleIterationStep iterationStep, JIPipeIterationContext iterationContext, JIPipeGraphNodeRunContext runContext, JIPipeProgressInfo progressInfo) {
         ImagePlus target = iterationStep.getInputData("Reference", ImagePlusData.class, progressInfo).getDuplicateImage();
         ImagePlus source = iterationStep.getInputData("Input", ImagePlusData.class, progressInfo).getDuplicateImage();
+
+        TODO RESTORE ORIGINAL ANNOTATIONS
 
         if (transformationType == TurboRegTransformationType.GenericTransformation) {
             progressInfo.log("Transformation set to 'None'. Skipping.");

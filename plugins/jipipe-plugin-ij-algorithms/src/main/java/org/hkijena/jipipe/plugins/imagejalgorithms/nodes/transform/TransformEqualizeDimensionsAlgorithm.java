@@ -32,8 +32,9 @@ import org.hkijena.jipipe.plugins.expressions.OptionalJIPipeExpressionParameter;
 import org.hkijena.jipipe.plugins.imagejdatatypes.datatypes.ImagePlusData;
 import org.hkijena.jipipe.plugins.imagejdatatypes.util.ImageJUtils;
 import org.hkijena.jipipe.plugins.parameters.library.primitives.BooleanParameterSettings;
+import org.hkijena.jipipe.plugins.parameters.library.roi.Anchor;
 
-@SetJIPipeDocumentation(name = "Equalize hyperstack dimensions", description = "Makes the input image have the same dimensions as the reference image. You can choose to make them equal in width/height, and " +
+@SetJIPipeDocumentation(name = "Equalize hyperstack dimensions (referenced)", description = "Makes the input image have the same dimensions as the reference image. You can choose to make them equal in width/height, and " +
         "hyperstack dimensions (Z, C, T)")
 @ConfigureJIPipeNode(nodeTypeCategory = ImagesNodeTypeCategory.class, menuPath = "Transform")
 @AddJIPipeInputSlot(value = ImagePlusData.class, name = "Input", create = true)
@@ -51,6 +52,8 @@ public class TransformEqualizeDimensionsAlgorithm extends JIPipeIteratingAlgorit
     public TransformEqualizeDimensionsAlgorithm(JIPipeNodeInfo info) {
         super(info);
         scale2DAlgorithm = JIPipe.createNode(TransformScale2DAlgorithm.class);
+        scale2DAlgorithm.setAnchor(Anchor.TopLeft);
+        scale2DAlgorithm.setScaleMode(ScaleMode.Paste);
         registerSubParameter(scale2DAlgorithm);
     }
 
