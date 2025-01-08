@@ -38,8 +38,8 @@ public class NumberDesktopParameterEditorUI extends JIPipeDesktopParameterEditor
      * @param workbench       workbench
      * @param parameterAccess the parameter
      */
-    public NumberDesktopParameterEditorUI(JIPipeDesktopWorkbench workbench, JIPipeParameterTree parameterTree, JIPipeParameterAccess parameterAccess) {
-        super(workbench, parameterTree, parameterAccess);
+    public NumberDesktopParameterEditorUI(InitializationParameters parameters) {
+       super(parameters);
         initialize();
         reload();
     }

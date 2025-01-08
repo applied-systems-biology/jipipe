@@ -40,8 +40,8 @@ public class DynamicEnumDesktopParameterEditorUI extends JIPipeDesktopParameterE
      * @param workbench       workbench
      * @param parameterAccess the parameter
      */
-    public DynamicEnumDesktopParameterEditorUI(JIPipeDesktopWorkbench workbench, JIPipeParameterTree parameterTree, JIPipeParameterAccess parameterAccess) {
-        super(workbench, parameterTree, parameterAccess);
+    public DynamicEnumDesktopParameterEditorUI(InitializationParameters parameters) {
+       super(parameters);
         initialize();
         reload();
     }

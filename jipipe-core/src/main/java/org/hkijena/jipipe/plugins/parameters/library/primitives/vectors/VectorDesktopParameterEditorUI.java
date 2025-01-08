@@ -39,14 +39,8 @@ public class VectorDesktopParameterEditorUI extends JIPipeDesktopParameterEditor
     private final JXTextField zEditor = new JXTextField();
     private boolean isUpdatingTextBoxes = false;
 
-    /**
-     * Creates new instance
-     *
-     * @param workbench       the workbech
-     * @param parameterAccess Parameter
-     */
-    public VectorDesktopParameterEditorUI(JIPipeDesktopWorkbench workbench, JIPipeParameterTree parameterTree, JIPipeParameterAccess parameterAccess) {
-        super(workbench, parameterTree, parameterAccess);
+    public VectorDesktopParameterEditorUI(InitializationParameters parameters) {
+       super(parameters);
         initialize();
         reload();
     }

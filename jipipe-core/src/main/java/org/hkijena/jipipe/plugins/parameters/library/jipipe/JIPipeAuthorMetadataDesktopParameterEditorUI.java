@@ -33,14 +33,8 @@ public class JIPipeAuthorMetadataDesktopParameterEditorUI extends JIPipeDesktopP
     private final JXTextField lastNameEditor = new JXTextField("Last name");
     private boolean isReloading = false;
 
-    /**
-     * Creates new instance
-     *
-     * @param workbench       the workbech
-     * @param parameterAccess Parameter
-     */
-    public JIPipeAuthorMetadataDesktopParameterEditorUI(JIPipeDesktopWorkbench workbench, JIPipeParameterTree parameterTree, JIPipeParameterAccess parameterAccess) {
-        super(workbench, parameterTree, parameterAccess);
+    public JIPipeAuthorMetadataDesktopParameterEditorUI(InitializationParameters parameters) {
+       super(parameters);
         initialize();
         reload();
     }

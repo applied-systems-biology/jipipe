@@ -47,8 +47,8 @@ public class JIPipeExpressionDesktopParameterEditorUI extends JIPipeDesktopParam
      * @param parameterTree   the parameter tree
      * @param parameterAccess Parameter
      */
-    public JIPipeExpressionDesktopParameterEditorUI(JIPipeDesktopWorkbench workbench, JIPipeParameterTree parameterTree, JIPipeParameterAccess parameterAccess) {
-        super(workbench, parameterTree, parameterAccess);
+    public JIPipeExpressionDesktopParameterEditorUI(InitializationParameters parameters) {
+       super(parameters);
 
         // Init the token maker
         JIPipeExpressionParameterSettings settings = getParameterAccess().getAnnotationOfType(JIPipeExpressionParameterSettings.class);

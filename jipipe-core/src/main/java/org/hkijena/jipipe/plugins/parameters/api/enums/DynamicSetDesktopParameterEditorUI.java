@@ -39,8 +39,8 @@ public class DynamicSetDesktopParameterEditorUI extends JIPipeDesktopParameterEd
      * @param workbench       workbench
      * @param parameterAccess the parameter
      */
-    public DynamicSetDesktopParameterEditorUI(JIPipeDesktopWorkbench workbench, JIPipeParameterTree parameterTree, JIPipeParameterAccess parameterAccess) {
-        super(workbench, parameterTree, parameterAccess);
+    public DynamicSetDesktopParameterEditorUI(InitializationParameters parameters) {
+       super(parameters);
         initialize();
         reload();
     }

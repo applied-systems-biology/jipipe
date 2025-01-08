@@ -188,6 +188,14 @@ public class JIPipeDesktopFormPanel extends JPanel {
         return Collections.unmodifiableList(groupHeaderPanels);
     }
 
+    public int getFlags() {
+        return flags;
+    }
+
+    public boolean hasFlag(int flag) {
+        return (flags & flag) == flag;
+    }
+
     /**
      * The panel that surrounds the scroll pane or content panel
      *

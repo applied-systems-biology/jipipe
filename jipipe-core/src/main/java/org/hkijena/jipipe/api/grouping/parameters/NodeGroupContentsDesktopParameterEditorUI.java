@@ -34,8 +34,8 @@ public class NodeGroupContentsDesktopParameterEditorUI extends JIPipeDesktopPara
      * @param workbench       workbench
      * @param parameterAccess Parameter
      */
-    public NodeGroupContentsDesktopParameterEditorUI(JIPipeDesktopWorkbench workbench, JIPipeParameterTree parameterTree, JIPipeParameterAccess parameterAccess) {
-        super(workbench, parameterTree, parameterAccess);
+    public NodeGroupContentsDesktopParameterEditorUI(InitializationParameters parameters) {
+       super(parameters);
         initialize();
     }
 

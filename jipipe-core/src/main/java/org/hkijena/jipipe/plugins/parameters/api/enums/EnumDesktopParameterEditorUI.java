@@ -41,8 +41,8 @@ public class EnumDesktopParameterEditorUI extends JIPipeDesktopParameterEditorUI
      * @param workbench       workbench
      * @param parameterAccess the parameter
      */
-    public EnumDesktopParameterEditorUI(JIPipeDesktopWorkbench workbench, JIPipeParameterTree parameterTree, JIPipeParameterAccess parameterAccess) {
-        super(workbench, parameterTree, parameterAccess);
+    public EnumDesktopParameterEditorUI(InitializationParameters parameters) {
+       super(parameters);
         initialize();
         reload();
     }

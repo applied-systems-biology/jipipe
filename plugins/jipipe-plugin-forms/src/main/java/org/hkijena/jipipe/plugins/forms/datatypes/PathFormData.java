@@ -169,7 +169,7 @@ public class PathFormData extends ParameterFormData {
                     }
                 })
                 .build();
-        return JIPipe.getParameterTypes().createEditorFor(workbench, new JIPipeParameterTree(access), access);
+        return JIPipe.getParameterTypes().createEditorInstance(access, workbench, new JIPipeParameterTree(access), null);
     }
 
     @Override

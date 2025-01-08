@@ -41,8 +41,8 @@ public class RuntimePartitionReferenceDesktopParameterEditorUI extends JIPipeDes
      * @param workbench       the workbench
      * @param parameterAccess Parameter
      */
-    public RuntimePartitionReferenceDesktopParameterEditorUI(JIPipeDesktopWorkbench workbench, JIPipeParameterTree parameterTree, JIPipeParameterAccess parameterAccess) {
-        super(workbench, parameterTree, parameterAccess);
+    public RuntimePartitionReferenceDesktopParameterEditorUI(InitializationParameters parameters) {
+       super(parameters);
         initialize();
         reload();
         JIPipeRunnableQueue.getInstance().getFinishedEventEmitter().subscribeWeak(this);

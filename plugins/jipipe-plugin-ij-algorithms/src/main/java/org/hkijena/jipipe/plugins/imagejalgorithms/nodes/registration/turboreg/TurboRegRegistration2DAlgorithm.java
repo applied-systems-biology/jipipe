@@ -37,10 +37,8 @@ import org.hkijena.jipipe.plugins.expressions.JIPipeExpressionParameterSettings;
 import org.hkijena.jipipe.plugins.expressions.JIPipeExpressionVariablesMap;
 import org.hkijena.jipipe.plugins.expressions.variables.JIPipeTextAnnotationsExpressionParameterVariablesInfo;
 import org.hkijena.jipipe.plugins.imagejalgorithms.utils.AlignedImage5DSliceIndexExpressionParameterVariablesInfo;
-import org.hkijena.jipipe.plugins.imagejalgorithms.utils.Image5DSliceIndexExpressionParameterVariablesInfo;
 import org.hkijena.jipipe.plugins.imagejalgorithms.utils.turboreg.*;
 import org.hkijena.jipipe.plugins.imagejdatatypes.datatypes.ImagePlusData;
-import org.hkijena.jipipe.plugins.imagejdatatypes.datatypes.greyscale.ImagePlusGreyscaleData;
 import org.hkijena.jipipe.plugins.imagejdatatypes.util.ImageJUtils;
 import org.hkijena.jipipe.plugins.imagejdatatypes.util.ImageSliceIndex;
 import org.hkijena.jipipe.plugins.parameters.library.collections.ParameterCollectionList;
@@ -60,7 +58,9 @@ import java.util.Objects;
  * Port of {@link register_virtual_stack.Register_Virtual_Stack_MT}
  */
 @SetJIPipeDocumentation(name = "TurboReg registration 2D", description = "Aligns the target image to the source image using methods " +
-        "implemented by TurboReg and MultiStackReg. ")
+        "implemented by TurboReg and MultiStackReg. Due to the variation in registration tasks, this node follows a 'rules' approach where each slice of the input image is matched to one rule that " +
+        "determines how the slice is aligned. There are three modes: (1) register to a reference slice, (2) use the same transformation calculated for another slice, and (3) apply no registration. " +
+        "Use the examples provided via the 'Tools' menu (top right of the parameter window) to get started with configuring the rules.")
 @ConfigureJIPipeNode(nodeTypeCategory = ImagesNodeTypeCategory.class, menuPath = "Registration")
 @AddJIPipeCitation("Based on TurboReg")
 @AddJIPipeCitation("Based on MultiStackReg")
@@ -71,14 +71,14 @@ import java.util.Objects;
 @AddJIPipeOutputSlot(value = ImagePlusData.class, name = "Reference", description = "Copy of the reference image", create = true)
 @AddJIPipeOutputSlot(value = ImagePlusData.class, name = "Registered", description = "The registered image", create = true)
 @AddJIPipeOutputSlot(value = JsonData.class, name = "Transform", description = "The transform serialized in JSON format", create = true)
-public class TurboRegRegistrationAlgorithm extends JIPipeIteratingAlgorithm {
+public class TurboRegRegistration2DAlgorithm extends JIPipeIteratingAlgorithm {
 
     private TurboRegTransformationType transformationType = TurboRegTransformationType.RigidBody;
     private ParameterCollectionList rules = ParameterCollectionList.containingCollection(Rule.class);
     private final AdvancedTurboRegParameters advancedTurboRegParameters;
 
 
-    public TurboRegRegistrationAlgorithm(JIPipeNodeInfo info) {
+    public TurboRegRegistration2DAlgorithm(JIPipeNodeInfo info) {
         super(info);
         this.advancedTurboRegParameters = new AdvancedTurboRegParameters();
         registerSubParameter(advancedTurboRegParameters);
@@ -87,7 +87,7 @@ public class TurboRegRegistrationAlgorithm extends JIPipeIteratingAlgorithm {
         rules.addNewInstance();
     }
 
-    public TurboRegRegistrationAlgorithm(TurboRegRegistrationAlgorithm other) {
+    public TurboRegRegistration2DAlgorithm(TurboRegRegistration2DAlgorithm other) {
         super(other);
         this.transformationType = other.transformationType;
         this.rules = new ParameterCollectionList(other.rules);

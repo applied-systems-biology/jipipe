@@ -36,8 +36,8 @@ public class AnchorDesktopParameterEditorUI extends JIPipeDesktopParameterEditor
      * @param workbench       workbench
      * @param parameterAccess the parameter
      */
-    public AnchorDesktopParameterEditorUI(JIPipeDesktopWorkbench workbench, JIPipeParameterTree parameterTree, JIPipeParameterAccess parameterAccess) {
-        super(workbench, parameterTree, parameterAccess);
+    public AnchorDesktopParameterEditorUI(InitializationParameters parameters) {
+       super(parameters);
         initialize();
         reload();
     }

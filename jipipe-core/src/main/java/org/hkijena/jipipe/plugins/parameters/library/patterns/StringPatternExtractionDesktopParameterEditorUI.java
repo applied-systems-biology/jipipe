@@ -34,8 +34,8 @@ public class StringPatternExtractionDesktopParameterEditorUI extends JIPipeDeskt
      * @param workbench       workbench
      * @param parameterAccess the parameter
      */
-    public StringPatternExtractionDesktopParameterEditorUI(JIPipeDesktopWorkbench workbench, JIPipeParameterTree parameterTree, JIPipeParameterAccess parameterAccess) {
-        super(workbench, parameterTree, parameterAccess);
+    public StringPatternExtractionDesktopParameterEditorUI(InitializationParameters parameters) {
+       super(parameters);
         setLayout(new BoxLayout(this, BoxLayout.X_AXIS));
         reload();
     }

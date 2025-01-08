@@ -14,10 +14,7 @@
 package org.hkijena.jipipe.plugins.parameters.api.optional;
 
 import org.hkijena.jipipe.JIPipe;
-import org.hkijena.jipipe.api.parameters.JIPipeParameterAccess;
-import org.hkijena.jipipe.api.parameters.JIPipeParameterTree;
 import org.hkijena.jipipe.desktop.api.JIPipeDesktopParameterEditorUI;
-import org.hkijena.jipipe.desktop.app.JIPipeDesktopWorkbench;
 import org.hkijena.jipipe.utils.UIUtils;
 import org.hkijena.jipipe.utils.ui.RoundedLineBorder;
 
@@ -28,14 +25,9 @@ import java.awt.*;
  * Generic parameter for {@link OptionalParameter}
  */
 public class OptionalDesktopParameterEditorUI extends JIPipeDesktopParameterEditorUI {
-    /**
-     * Creates new instance
-     *
-     * @param workbench       workbench
-     * @param parameterAccess Parameter
-     */
-    public OptionalDesktopParameterEditorUI(JIPipeDesktopWorkbench workbench, JIPipeParameterTree parameterTree, JIPipeParameterAccess parameterAccess) {
-        super(workbench, parameterTree, parameterAccess);
+
+    public OptionalDesktopParameterEditorUI(InitializationParameters parameters) {
+       super(parameters);
         initialize();
         reload();
     }
@@ -74,7 +66,7 @@ public class OptionalDesktopParameterEditorUI extends JIPipeDesktopParameterEdit
         add(toggle, BorderLayout.WEST);
 
         OptionalParameterContentAccess<?> access = new OptionalParameterContentAccess(getParameterAccess(), parameter);
-        JIPipeDesktopParameterEditorUI ui = JIPipe.getParameterTypes().createEditorFor(getDesktopWorkbench(), getParameterTree(), access);
+        JIPipeDesktopParameterEditorUI ui = JIPipe.getParameterTypes().createEditorInstance(access, getDesktopWorkbench(), getParameterTree(), null);
         add(ui, BorderLayout.CENTER);
 
         // Listen for changes inside the parameter content

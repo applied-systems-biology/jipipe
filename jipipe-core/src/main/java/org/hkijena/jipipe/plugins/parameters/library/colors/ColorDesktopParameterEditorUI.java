@@ -38,8 +38,8 @@ public class ColorDesktopParameterEditorUI extends JIPipeDesktopParameterEditorU
      * @param workbench       workbench
      * @param parameterAccess the parameter
      */
-    public ColorDesktopParameterEditorUI(JIPipeDesktopWorkbench workbench, JIPipeParameterTree parameterTree, JIPipeParameterAccess parameterAccess) {
-        super(workbench, parameterTree, parameterAccess);
+    public ColorDesktopParameterEditorUI(InitializationParameters parameters) {
+       super(parameters);
         initialize();
         reload();
     }

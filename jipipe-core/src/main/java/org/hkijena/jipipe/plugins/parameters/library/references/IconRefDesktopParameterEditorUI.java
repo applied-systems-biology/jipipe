@@ -40,8 +40,8 @@ public class IconRefDesktopParameterEditorUI extends JIPipeDesktopParameterEdito
      * @param workbench       workbench
      * @param parameterAccess the parameter
      */
-    public IconRefDesktopParameterEditorUI(JIPipeDesktopWorkbench workbench, JIPipeParameterTree parameterTree, JIPipeParameterAccess parameterAccess) {
-        super(workbench, parameterTree, parameterAccess);
+    public IconRefDesktopParameterEditorUI(InitializationParameters parameters) {
+       super(parameters);
         initialize();
         reload();
     }

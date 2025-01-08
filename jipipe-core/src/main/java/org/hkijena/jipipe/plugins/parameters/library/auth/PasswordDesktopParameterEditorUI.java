@@ -35,8 +35,8 @@ public class PasswordDesktopParameterEditorUI extends JIPipeDesktopParameterEdit
      * @param workbench       workbench
      * @param parameterAccess the parameter
      */
-    public PasswordDesktopParameterEditorUI(JIPipeDesktopWorkbench workbench, JIPipeParameterTree parameterTree, JIPipeParameterAccess parameterAccess) {
-        super(workbench, parameterTree, parameterAccess);
+    public PasswordDesktopParameterEditorUI(InitializationParameters parameters) {
+       super(parameters);
         initialize();
         reload();
     }

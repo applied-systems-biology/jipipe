@@ -94,12 +94,13 @@ public class JIPipeParameterTypeRegistry {
     /**
      * Creates editor for the parameter
      *
+     * @param parameterAccess the parameter access
      * @param workbench       SciJava context
      * @param parameterTree   the parameter tree
-     * @param parameterAccess the parameter
+     * @param parent          the parent (can be null)
      * @return Parameter editor UI
      */
-    public JIPipeDesktopParameterEditorUI createEditorFor(JIPipeDesktopWorkbench workbench, JIPipeParameterTree parameterTree, JIPipeParameterAccess parameterAccess) {
+    public JIPipeDesktopParameterEditorUI createEditorInstance(JIPipeParameterAccess parameterAccess, JIPipeDesktopWorkbench workbench, JIPipeParameterTree parameterTree, Object parent) {
         Class<? extends JIPipeDesktopParameterEditorUI> uiClass = parameterTypesUIs.getOrDefault(parameterAccess.getFieldClass(), null);
         if (uiClass == null) {
             // Search a matching one
@@ -114,7 +115,13 @@ public class JIPipeParameterTypeRegistry {
             throw new NullPointerException("Could not find parameter editor for parameter class '" + parameterAccess.getFieldClass() + "'");
         }
         try {
-            return uiClass.getConstructor(JIPipeDesktopWorkbench.class, JIPipeParameterTree.class, JIPipeParameterAccess.class).newInstance(workbench, parameterTree, parameterAccess);
+            JIPipeDesktopParameterEditorUI.InitializationParameters parameters = new JIPipeDesktopParameterEditorUI.InitializationParameters();
+            parameters.setWorkbench(workbench);
+            parameters.setParameterTree(parameterTree);
+            parameters.setParameterAccess(parameterAccess);
+            parameters.setParent(parent);
+
+            return uiClass.getConstructor(JIPipeDesktopParameterEditorUI.InitializationParameters.class).newInstance(parameters);
         } catch (InstantiationException | IllegalAccessException | InvocationTargetException |
                  NoSuchMethodException e) {
             throw new RuntimeException(e);

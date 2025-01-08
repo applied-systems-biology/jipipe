@@ -41,14 +41,8 @@ public class NumberRangeDesktopParameterEditorUI extends JIPipeDesktopParameterE
     private boolean isUpdatingThumbs = false;
     private boolean isUpdatingTextBoxes = false;
 
-    /**
-     * Creates new instance
-     *
-     * @param workbench       the workbech
-     * @param parameterAccess Parameter
-     */
-    public NumberRangeDesktopParameterEditorUI(JIPipeDesktopWorkbench workbench, JIPipeParameterTree parameterTree, JIPipeParameterAccess parameterAccess) {
-        super(workbench, parameterTree, parameterAccess);
+    public NumberRangeDesktopParameterEditorUI(InitializationParameters parameters) {
+       super(parameters);
         initialize();
         reload();
     }

@@ -116,7 +116,7 @@ public class EnumFormData extends ParameterFormData {
                 .setSource(new JIPipeDummyParameterCollection())
                 .setFieldClass(DynamicStringEnumParameter.class)
                 .build();
-        return JIPipe.getParameterTypes().createEditorFor(workbench, new JIPipeParameterTree(access), access);
+        return JIPipe.getParameterTypes().createEditorInstance(access, workbench, new JIPipeParameterTree(access), null);
     }
 
     @Override

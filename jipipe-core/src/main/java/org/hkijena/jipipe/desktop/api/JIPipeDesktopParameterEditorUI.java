@@ -41,6 +41,7 @@ public abstract class JIPipeDesktopParameterEditorUI extends JIPipeDesktopWorkbe
     public static final int CONTROL_STYLE_CHECKBOX = 4;
 
     private final JIPipeParameterTree parameterTree;
+    private final Object contextParent;
     private JIPipeParameterAccess parameterAccess;
     private Context context;
     private int preventReload = 0;
@@ -49,15 +50,14 @@ public abstract class JIPipeDesktopParameterEditorUI extends JIPipeDesktopWorkbe
     /**
      * Creates new instance
      *
-     * @param workbench       the workbench
-     * @param parameterTree   the parameter tree that contains the access
-     * @param parameterAccess the parameter access
+     * @param initializationParameters the initialization parameters
      */
-    public JIPipeDesktopParameterEditorUI(JIPipeDesktopWorkbench workbench, JIPipeParameterTree parameterTree, JIPipeParameterAccess parameterAccess) {
-        super(workbench);
-        this.context = workbench.getContext();
-        this.parameterTree = parameterTree;
-        this.parameterAccess = parameterAccess;
+    public JIPipeDesktopParameterEditorUI(InitializationParameters initializationParameters) {
+        super(initializationParameters.workbench);
+        this.context = initializationParameters.workbench.getContext();
+        this.parameterTree = initializationParameters.parameterTree;
+        this.contextParent = initializationParameters.parent;
+        this.parameterAccess = initializationParameters.parameterAccess;
         parameterAccess.getSource().getParameterChangedEventEmitter().subscribeWeak(this);
     }
 
@@ -248,5 +248,68 @@ public abstract class JIPipeDesktopParameterEditorUI extends JIPipeDesktopWorkbe
     public void setContext(Context context) {
         this.context = context;
         this.context.inject(this);
+    }
+
+    /**
+     * Gets the parent object that is added during the creation of the UI
+     * @return the parent object (can be null)
+     */
+    public Object getContextParent() {
+        return contextParent;
+    }
+
+    public static class InitializationParameters {
+        private JIPipeDesktopWorkbench workbench;
+        private JIPipeParameterTree parameterTree;
+        private Object parent;
+        private JIPipeParameterAccess parameterAccess;
+
+        public InitializationParameters() {
+        }
+
+        public InitializationParameters(JIPipeDesktopWorkbench workbench, JIPipeParameterTree parameterTree, Object parent, JIPipeParameterAccess parameterAccess) {
+            this.workbench = workbench;
+            this.parameterTree = parameterTree;
+            this.parent = parent;
+            this.parameterAccess = parameterAccess;
+        }
+
+        public InitializationParameters(JIPipeDesktopWorkbench workbench, JIPipeParameterTree parameterTree, JIPipeParameterAccess parameterAccess) {
+            this.workbench = workbench;
+            this.parameterTree = parameterTree;
+            this.parameterAccess = parameterAccess;
+        }
+
+        public JIPipeDesktopWorkbench getWorkbench() {
+            return workbench;
+        }
+
+        public void setWorkbench(JIPipeDesktopWorkbench workbench) {
+            this.workbench = workbench;
+        }
+
+        public JIPipeParameterTree getParameterTree() {
+            return parameterTree;
+        }
+
+        public void setParameterTree(JIPipeParameterTree parameterTree) {
+            this.parameterTree = parameterTree;
+        }
+
+        public Object getParent() {
+            return parent;
+        }
+
+        public void setParent(Object parent) {
+            this.parent = parent;
+        }
+
+        public JIPipeParameterAccess getParameterAccess() {
+            return parameterAccess;
+        }
+
+        public void setParameterAccess(JIPipeParameterAccess parameterAccess) {
+            this.parameterAccess = parameterAccess;
+        }
     }
 }

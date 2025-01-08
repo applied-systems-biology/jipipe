@@ -31,14 +31,8 @@ public class Matrix2DDesktopParameterEditorUI extends JIPipeDesktopParameterEdit
 
     private JTable table;
 
-    /**
-     * Creates new instance
-     *
-     * @param workbench       workbench
-     * @param parameterAccess Parameter
-     */
-    public Matrix2DDesktopParameterEditorUI(JIPipeDesktopWorkbench workbench, JIPipeParameterTree parameterTree, JIPipeParameterAccess parameterAccess) {
-        super(workbench, parameterTree, parameterAccess);
+    public Matrix2DDesktopParameterEditorUI(InitializationParameters parameters) {
+       super(parameters);
         initialize();
         reload();
     }

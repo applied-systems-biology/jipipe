@@ -15,6 +15,7 @@ package org.hkijena.jipipe.desktop.commons.components;
 
 import com.google.common.collect.Sets;
 import com.google.common.html.HtmlEscapers;
+import net.imglib2.view.ExtendedRandomAccessibleInterval;
 import org.hkijena.jipipe.JIPipe;
 import org.hkijena.jipipe.api.SetJIPipeDocumentation;
 import org.hkijena.jipipe.api.nodes.JIPipeGraphNode;
@@ -504,7 +505,7 @@ public class JIPipeDesktopParameterFormPanel extends JIPipeDesktopFormPanel impl
                 collapseButton.setState(true);
             }
 
-            JIPipeDesktopParameterEditorUI ui = JIPipe.getParameterTypes().createEditorFor(desktopWorkbench, parameterTree, parameterAccess);
+            JIPipeDesktopParameterEditorUI ui = JIPipe.getParameterTypes().createEditorInstance(parameterAccess, desktopWorkbench, parameterTree, this);
             uiList.add(ui);
             uiComponents.add(ui);
         }
@@ -747,5 +748,9 @@ public class JIPipeDesktopParameterFormPanel extends JIPipeDesktopFormPanel impl
 
     public JIPipeParameterTree getParameterTree() {
         return parameterTree;
+    }
+
+    public boolean isWithExternalDocumentation() {
+        return isWithDocumentation() && hasFlag(DOCUMENTATION_EXTERNAL);
     }
 }

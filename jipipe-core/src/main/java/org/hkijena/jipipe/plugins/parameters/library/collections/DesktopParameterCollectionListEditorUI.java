@@ -25,8 +25,12 @@ import org.hkijena.jipipe.utils.UIUtils;
 import org.hkijena.jipipe.utils.ui.RoundedLineBorder;
 
 import javax.swing.*;
+import javax.swing.event.AncestorEvent;
+import javax.swing.event.AncestorListener;
 import java.awt.*;
 import java.awt.event.ActionEvent;
+import java.awt.event.ComponentAdapter;
+import java.awt.event.ComponentEvent;
 import java.util.List;
 import java.util.*;
 
@@ -41,16 +45,17 @@ public class DesktopParameterCollectionListEditorUI extends JIPipeDesktopParamet
     private JIPipeDesktopFormPanel formPanel;
     private int lastClickedIndex = -1;
 
-    /**
-     * Creates new instance
-     *
-     * @param workbench       workbench
-     * @param parameterAccess Parameter
-     */
-    public DesktopParameterCollectionListEditorUI(JIPipeDesktopWorkbench workbench, JIPipeParameterTree parameterTree, JIPipeParameterAccess parameterAccess) {
-        super(workbench, parameterTree, parameterAccess);
+    public DesktopParameterCollectionListEditorUI(InitializationParameters parameters) {
+       super(parameters);
         initialize();
         reload();
+        addComponentListener(new ComponentAdapter() {
+            @Override
+            public void componentShown(ComponentEvent e) {
+                reload();
+                super.componentShown(e);
+            }
+        });
     }
 
     private void initialize() {
@@ -271,7 +276,16 @@ public class DesktopParameterCollectionListEditorUI extends JIPipeDesktopParamet
                 moveEntryUp(entry);
             }));
 
-            JIPipeDesktopParameterFormPanel ui = new JIPipeDesktopParameterFormPanel(getDesktopWorkbench(), parameter.get(i), getParameterTree(), null, JIPipeDesktopParameterFormPanel.NO_EMPTY_GROUP_HEADERS);
+            JIPipeDesktopParameterFormPanel ui;
+
+            if(getContextParent() instanceof JIPipeDesktopParameterFormPanel && ((JIPipeDesktopParameterFormPanel) getContextParent()).isWithExternalDocumentation()) {
+                ui = new JIPipeDesktopParameterFormPanel(getDesktopWorkbench(), parameter.get(i), getParameterTree(), null, JIPipeDesktopParameterFormPanel.NO_EMPTY_GROUP_HEADERS | JIPipeDesktopParameterFormPanel.WITH_DOCUMENTATION | JIPipeDesktopParameterFormPanel.DOCUMENTATION_EXTERNAL);
+                ui.setRedirectDocumentationTarget((JIPipeDesktopFormPanel) getContextParent());
+            }
+            else {
+                ui = new JIPipeDesktopParameterFormPanel(getDesktopWorkbench(), parameter.get(i), getParameterTree(), null, JIPipeDesktopParameterFormPanel.NO_EMPTY_GROUP_HEADERS);
+            }
+
             ui.setBorder(UIUtils.createControlBorder());
             ui.setOpaque(false);
 

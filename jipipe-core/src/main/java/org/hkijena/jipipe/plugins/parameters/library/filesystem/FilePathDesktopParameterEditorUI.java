@@ -36,8 +36,8 @@ public class FilePathDesktopParameterEditorUI extends JIPipeDesktopParameterEdit
      * @param workbench       workbench
      * @param parameterAccess the parameter
      */
-    public FilePathDesktopParameterEditorUI(JIPipeDesktopWorkbench workbench, JIPipeParameterTree parameterTree, JIPipeParameterAccess parameterAccess) {
-        super(workbench, parameterTree, parameterAccess);
+    public FilePathDesktopParameterEditorUI(InitializationParameters parameters) {
+       super(parameters);
         initialize();
 //        getWorkbenchUI().getProject().getEventBus().register(this);
     }

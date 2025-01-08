@@ -41,8 +41,8 @@ public class FixedMarginEditorUIDesktop extends JIPipeDesktopParameterEditorUI {
      * @param parameterTree   the parameter tree
      * @param parameterAccess the parameter
      */
-    public FixedMarginEditorUIDesktop(JIPipeDesktopWorkbench workbench, JIPipeParameterTree parameterTree, JIPipeParameterAccess parameterAccess) {
-        super(workbench, parameterTree, parameterAccess);
+    public FixedMarginEditorUIDesktop(InitializationParameters parameters) {
+       super(parameters);
         initialize();
         reload();
     }

@@ -39,8 +39,8 @@ public class StringDesktopParameterEditorUI extends JIPipeDesktopParameterEditor
      * @param workbench       workbench
      * @param parameterAccess the parameter
      */
-    public StringDesktopParameterEditorUI(JIPipeDesktopWorkbench workbench, JIPipeParameterTree parameterTree, JIPipeParameterAccess parameterAccess) {
-        super(workbench, parameterTree, parameterAccess);
+    public StringDesktopParameterEditorUI(InitializationParameters parameters) {
+       super(parameters);
         initialize();
         reload();
     }

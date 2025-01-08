@@ -13,10 +13,7 @@
 
 package org.hkijena.jipipe.plugins.parameters.library.markup;
 
-import org.hkijena.jipipe.api.parameters.JIPipeParameterAccess;
-import org.hkijena.jipipe.api.parameters.JIPipeParameterTree;
 import org.hkijena.jipipe.desktop.api.JIPipeDesktopParameterEditorUI;
-import org.hkijena.jipipe.desktop.app.JIPipeDesktopWorkbench;
 import org.hkijena.jipipe.desktop.commons.components.JIPipeDesktopDocumentChangeListener;
 import org.hkijena.jipipe.desktop.commons.components.markup.JIPipeDesktopHTMLEditor;
 import org.hkijena.jipipe.utils.UIUtils;
@@ -34,13 +31,10 @@ public class HTMLTextDesktopParameterEditorUI extends JIPipeDesktopParameterEdit
     private final JIPipeDesktopHTMLEditor editor;
     private boolean isReloading = false;
 
-    /**
-     * @param workbench       workbench
-     * @param parameterAccess the parameter
-     */
-    public HTMLTextDesktopParameterEditorUI(JIPipeDesktopWorkbench workbench, JIPipeParameterTree parameterTree, JIPipeParameterAccess parameterAccess) {
-        super(workbench, parameterTree, parameterAccess);
-        editor = new JIPipeDesktopHTMLEditor(workbench, JIPipeDesktopHTMLEditor.Mode.Compact, JIPipeDesktopHTMLEditor.WITH_DIALOG_EDITOR_BUTTON);
+
+    public HTMLTextDesktopParameterEditorUI(InitializationParameters parameters) {
+        super(parameters);
+        editor = new JIPipeDesktopHTMLEditor(parameters.getWorkbench(), JIPipeDesktopHTMLEditor.Mode.Compact, JIPipeDesktopHTMLEditor.WITH_DIALOG_EDITOR_BUTTON);
         initialize();
         reload();
     }

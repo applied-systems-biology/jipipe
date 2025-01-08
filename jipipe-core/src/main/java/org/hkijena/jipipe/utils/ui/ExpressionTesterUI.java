@@ -22,6 +22,7 @@ import org.hkijena.jipipe.api.parameters.JIPipeManualParameterAccess;
 import org.hkijena.jipipe.api.parameters.JIPipeParameter;
 import org.hkijena.jipipe.api.parameters.JIPipeParameterTree;
 import org.hkijena.jipipe.api.registries.JIPipeExpressionRegistry;
+import org.hkijena.jipipe.desktop.api.JIPipeDesktopParameterEditorUI;
 import org.hkijena.jipipe.desktop.app.JIPipeDesktopWorkbench;
 import org.hkijena.jipipe.desktop.app.JIPipeDesktopWorkbenchPanel;
 import org.hkijena.jipipe.desktop.commons.components.markup.JIPipeDesktopMarkdownReader;
@@ -65,7 +66,7 @@ public class ExpressionTesterUI extends JIPipeDesktopWorkbenchPanel {
                     setExpression((JIPipeExpressionParameter) o);
                     return true;
                 }).setSource(new JIPipeDummyParameterCollection()).build();
-        expressionEditor = new JIPipeExpressionDesktopParameterEditorUI(getDesktopWorkbench(), new JIPipeParameterTree(access.getSource()), access);
+        expressionEditor = new JIPipeExpressionDesktopParameterEditorUI(new JIPipeDesktopParameterEditorUI.InitializationParameters(getDesktopWorkbench(), new JIPipeParameterTree(access.getSource()), access));
 
         JPanel bottomPanel = new JPanel(new BorderLayout());
         bottomPanel.add(expressionEditor, BorderLayout.CENTER);

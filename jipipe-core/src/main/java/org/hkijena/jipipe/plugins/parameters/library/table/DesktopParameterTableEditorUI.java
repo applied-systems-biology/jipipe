@@ -33,15 +33,8 @@ public class DesktopParameterTableEditorUI extends JIPipeDesktopParameterEditorU
 
     private JXTable table;
 
-    /**
-     * Creates new instance
-     *
-     * @param workbench       workbench
-     * @param parameterTree   the parameter tree
-     * @param parameterAccess Parameter
-     */
-    public DesktopParameterTableEditorUI(JIPipeDesktopWorkbench workbench, JIPipeParameterTree parameterTree, JIPipeParameterAccess parameterAccess) {
-        super(workbench, parameterTree, parameterAccess);
+    public DesktopParameterTableEditorUI(InitializationParameters parameters) {
+       super(parameters);
         initialize();
         reload();
     }

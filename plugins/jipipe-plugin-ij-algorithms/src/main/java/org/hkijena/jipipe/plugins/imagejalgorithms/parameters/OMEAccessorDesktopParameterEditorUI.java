@@ -34,14 +34,8 @@ public class OMEAccessorDesktopParameterEditorUI extends JIPipeDesktopParameterE
     private JIPipeDesktopParameterFormPanel parameterPanel;
     private JButton currentTemplateButton;
 
-    /**
-     * Creates new instance
-     *
-     * @param workbench       the workbench
-     * @param parameterAccess Parameter
-     */
-    public OMEAccessorDesktopParameterEditorUI(JIPipeDesktopWorkbench workbench, JIPipeParameterTree parameterTree, JIPipeParameterAccess parameterAccess) {
-        super(workbench, parameterTree, parameterAccess);
+    public OMEAccessorDesktopParameterEditorUI(InitializationParameters parameters) {
+       super(parameters);
         initialize();
         reload();
     }

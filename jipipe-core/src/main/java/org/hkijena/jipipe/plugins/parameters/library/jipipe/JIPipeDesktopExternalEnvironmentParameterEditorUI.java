@@ -44,14 +44,8 @@ public class JIPipeDesktopExternalEnvironmentParameterEditorUI extends JIPipeDes
     private final JTextField pathLabel = UIUtils.createReadonlyBorderlessTextField("");
     private final JPopupMenu configureMenu = new JPopupMenu();
 
-    /**
-     * Creates new instance
-     *
-     * @param workbench       the workbench
-     * @param parameterAccess Parameter
-     */
-    public JIPipeDesktopExternalEnvironmentParameterEditorUI(JIPipeDesktopWorkbench workbench, JIPipeParameterTree parameterTree, JIPipeParameterAccess parameterAccess) {
-        super(workbench, parameterTree, parameterAccess);
+    public JIPipeDesktopExternalEnvironmentParameterEditorUI(InitializationParameters parameters) {
+       super(parameters);
         initialize();
         reload();
         JIPipeRunnableQueue.getInstance().getFinishedEventEmitter().subscribeWeak(this);

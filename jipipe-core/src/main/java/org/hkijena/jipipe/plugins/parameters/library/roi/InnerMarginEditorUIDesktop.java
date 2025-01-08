@@ -38,8 +38,8 @@ public class InnerMarginEditorUIDesktop extends JIPipeDesktopParameterEditorUI {
      * @param parameterTree   the parameter tree
      * @param parameterAccess the parameter
      */
-    public InnerMarginEditorUIDesktop(JIPipeDesktopWorkbench workbench, JIPipeParameterTree parameterTree, JIPipeParameterAccess parameterAccess) {
-        super(workbench, parameterTree, parameterAccess);
+    public InnerMarginEditorUIDesktop(InitializationParameters parameters) {
+       super(parameters);
         initialize();
         reload();
     }

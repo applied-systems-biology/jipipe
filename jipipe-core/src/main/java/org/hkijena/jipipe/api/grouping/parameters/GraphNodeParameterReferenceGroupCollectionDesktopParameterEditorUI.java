@@ -35,8 +35,8 @@ public class GraphNodeParameterReferenceGroupCollectionDesktopParameterEditorUI 
      * @param workbench       the workbench
      * @param parameterAccess Parameter
      */
-    public GraphNodeParameterReferenceGroupCollectionDesktopParameterEditorUI(JIPipeDesktopWorkbench workbench, JIPipeParameterTree parameterTree, JIPipeParameterAccess parameterAccess) {
-        super(workbench, parameterTree, parameterAccess);
+    public GraphNodeParameterReferenceGroupCollectionDesktopParameterEditorUI(InitializationParameters parameters) {
+       super(parameters);
         initialize();
     }
 

@@ -14,10 +14,7 @@
 package org.hkijena.jipipe.plugins.parameters.api.pairs;
 
 import org.hkijena.jipipe.JIPipe;
-import org.hkijena.jipipe.api.parameters.JIPipeParameterAccess;
-import org.hkijena.jipipe.api.parameters.JIPipeParameterTree;
 import org.hkijena.jipipe.desktop.api.JIPipeDesktopParameterEditorUI;
-import org.hkijena.jipipe.desktop.app.JIPipeDesktopWorkbench;
 import org.hkijena.jipipe.desktop.commons.components.JIPipeDesktopFormPanel;
 import org.hkijena.jipipe.utils.StringUtils;
 import org.hkijena.jipipe.utils.UIUtils;
@@ -30,14 +27,8 @@ import java.awt.*;
  */
 public class PairDesktopParameterEditorUI extends JIPipeDesktopParameterEditorUI {
 
-    /**
-     * Creates new instance
-     *
-     * @param workbench       workbench
-     * @param parameterAccess Parameter
-     */
-    public PairDesktopParameterEditorUI(JIPipeDesktopWorkbench workbench, JIPipeParameterTree parameterTree, JIPipeParameterAccess parameterAccess) {
-        super(workbench, parameterTree, parameterAccess);
+    public PairDesktopParameterEditorUI(InitializationParameters parameters) {
+       super(parameters);
         reload();
     }
 
@@ -74,8 +65,8 @@ public class PairDesktopParameterEditorUI extends JIPipeDesktopParameterEditorUI
             singleRowChevron = settings.singleRowWithChevron();
         }
 
-        JIPipeDesktopParameterEditorUI keyEditor = JIPipe.getParameterTypes().createEditorFor(getDesktopWorkbench(), getParameterTree(), keyAccess);
-        JIPipeDesktopParameterEditorUI valueEditor = JIPipe.getParameterTypes().createEditorFor(getDesktopWorkbench(), getParameterTree(), valueAccess);
+        JIPipeDesktopParameterEditorUI keyEditor = JIPipe.getParameterTypes().createEditorInstance(keyAccess, getDesktopWorkbench(), getParameterTree(), null);
+        JIPipeDesktopParameterEditorUI valueEditor = JIPipe.getParameterTypes().createEditorInstance(valueAccess, getDesktopWorkbench(), getParameterTree(), null);
 
         if (singleRow) {
             setLayout(new BoxLayout(this, BoxLayout.X_AXIS));

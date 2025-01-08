@@ -88,7 +88,7 @@ import org.hkijena.jipipe.plugins.imagejalgorithms.nodes.overlay.ExtractOverlayA
 import org.hkijena.jipipe.plugins.imagejalgorithms.nodes.overlay.RemoveOverlayAlgorithm;
 import org.hkijena.jipipe.plugins.imagejalgorithms.nodes.overlay.RenderOverlayAlgorithm;
 import org.hkijena.jipipe.plugins.imagejalgorithms.nodes.overlay.SetOverlayAlgorithm;
-import org.hkijena.jipipe.plugins.imagejalgorithms.nodes.registration.turboreg.TurboRegRegistrationAlgorithm;
+import org.hkijena.jipipe.plugins.imagejalgorithms.nodes.registration.turboreg.TurboRegRegistration2DAlgorithm;
 import org.hkijena.jipipe.plugins.imagejalgorithms.nodes.roi.*;
 import org.hkijena.jipipe.plugins.imagejalgorithms.nodes.roi.annotations.RoiPropertiesToAnnotationsAlgorithm;
 import org.hkijena.jipipe.plugins.imagejalgorithms.nodes.roi.assemble.AssembleExtractedROIAlgorithm;
@@ -642,8 +642,8 @@ public class ImageJAlgorithmsPlugin extends JIPipePrepackagedDefaultJavaPlugin {
 //        registerNodeType("ij1-simple-image-registration", SimpleImageRegistrationAlgorithm.class, UIUtils.getIconURLFromResources("actions/transform-shear-right.png"));
 
         registerEnumParameterType("ij1-turbo-reg:transformation-type", TurboRegTransformationType.class, "TurboReg transformation", "Transformation type");
-        registerEnumParameterType("ij1-turbo-reg-image-registration:rule-type", TurboRegRegistrationAlgorithm.RuleType.class, "TurboReg registration rule type", "Determines the behavior of the algorithm");
-        registerNodeType("ij1-turbo-reg-image-registration", TurboRegRegistrationAlgorithm.class, UIUtils.getIconURLFromResources("actions/transform-shear-right.png"));
+        registerEnumParameterType("ij1-turbo-reg-image-registration:rule-type", TurboRegRegistration2DAlgorithm.RuleType.class, "TurboReg registration rule type", "Determines the behavior of the algorithm");
+        registerNodeType("ij1-turbo-reg-image-registration", TurboRegRegistration2DAlgorithm.class, UIUtils.getIconURLFromResources("actions/transform-shear-right.png"));
     }
 
     @Override

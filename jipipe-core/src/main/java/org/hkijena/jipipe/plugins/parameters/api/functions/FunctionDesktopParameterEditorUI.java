@@ -14,10 +14,7 @@
 package org.hkijena.jipipe.plugins.parameters.api.functions;
 
 import org.hkijena.jipipe.JIPipe;
-import org.hkijena.jipipe.api.parameters.JIPipeParameterAccess;
-import org.hkijena.jipipe.api.parameters.JIPipeParameterTree;
 import org.hkijena.jipipe.desktop.api.JIPipeDesktopParameterEditorUI;
-import org.hkijena.jipipe.desktop.app.JIPipeDesktopWorkbench;
 import org.hkijena.jipipe.desktop.commons.components.JIPipeDesktopFormPanel;
 import org.hkijena.jipipe.utils.UIUtils;
 
@@ -31,14 +28,8 @@ public class FunctionDesktopParameterEditorUI extends JIPipeDesktopParameterEdit
 
     private final JIPipeDesktopFormPanel formPanel;
 
-    /**
-     * Creates new instance
-     *
-     * @param workbench       workbench
-     * @param parameterAccess Parameter
-     */
-    public FunctionDesktopParameterEditorUI(JIPipeDesktopWorkbench workbench, JIPipeParameterTree parameterTree, JIPipeParameterAccess parameterAccess) {
-        super(workbench, parameterTree, parameterAccess);
+    public FunctionDesktopParameterEditorUI(InitializationParameters parameters) {
+       super(parameters);
         setLayout(new BorderLayout());
         setBorder(UIUtils.createControlBorder());
 //        JToolBar toolBar = new JToolBar();
@@ -63,8 +54,8 @@ public class FunctionDesktopParameterEditorUI extends JIPipeDesktopParameterEdit
         FunctionParameterParameterAccess<Object, Object, Object> parameterAccess = new FunctionParameterParameterAccess<>(getParameterAccess());
         FunctionParameterOutputAccess<Object, Object, Object> outputAccess = new FunctionParameterOutputAccess<>(getParameterAccess());
 
-        formPanel.addToForm(JIPipe.getParameterTypes().createEditorFor(getDesktopWorkbench(), getParameterTree(), inputAccess), new JLabel(functionParameter.renderInputName()), null);
-        formPanel.addToForm(JIPipe.getParameterTypes().createEditorFor(getDesktopWorkbench(), getParameterTree(), parameterAccess), new JLabel(functionParameter.renderParameterName()), null);
-        formPanel.addToForm(JIPipe.getParameterTypes().createEditorFor(getDesktopWorkbench(), getParameterTree(), outputAccess), new JLabel(functionParameter.renderOutputName()), null);
+        formPanel.addToForm(JIPipe.getParameterTypes().createEditorInstance(inputAccess, getDesktopWorkbench(), getParameterTree(), null), new JLabel(functionParameter.renderInputName()), null);
+        formPanel.addToForm(JIPipe.getParameterTypes().createEditorInstance(parameterAccess, getDesktopWorkbench(), getParameterTree(), null), new JLabel(functionParameter.renderParameterName()), null);
+        formPanel.addToForm(JIPipe.getParameterTypes().createEditorInstance(outputAccess, getDesktopWorkbench(), getParameterTree(), null), new JLabel(functionParameter.renderOutputName()), null);
     }
 }

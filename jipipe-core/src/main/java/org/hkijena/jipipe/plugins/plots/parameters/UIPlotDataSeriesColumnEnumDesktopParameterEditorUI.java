@@ -38,8 +38,8 @@ public class UIPlotDataSeriesColumnEnumDesktopParameterEditorUI extends JIPipeDe
      * @param workbench       workbench
      * @param parameterAccess the parameter
      */
-    public UIPlotDataSeriesColumnEnumDesktopParameterEditorUI(JIPipeDesktopWorkbench workbench, JIPipeParameterTree parameterTree, JIPipeParameterAccess parameterAccess) {
-        super(workbench, parameterTree, parameterAccess);
+    public UIPlotDataSeriesColumnEnumDesktopParameterEditorUI(InitializationParameters parameters) {
+       super(parameters);
         initialize();
         reload();
     }

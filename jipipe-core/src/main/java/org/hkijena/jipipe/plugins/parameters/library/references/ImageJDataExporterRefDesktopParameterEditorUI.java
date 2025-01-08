@@ -39,8 +39,8 @@ public class ImageJDataExporterRefDesktopParameterEditorUI extends JIPipeDesktop
      * @param workbench       workbench
      * @param parameterAccess the parameter
      */
-    public ImageJDataExporterRefDesktopParameterEditorUI(JIPipeDesktopWorkbench workbench, JIPipeParameterTree parameterTree, JIPipeParameterAccess parameterAccess) {
-        super(workbench, parameterTree, parameterAccess);
+    public ImageJDataExporterRefDesktopParameterEditorUI(InitializationParameters parameters) {
+       super(parameters);
         initialize();
         reload();
     }

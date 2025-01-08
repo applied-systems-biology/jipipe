@@ -28,14 +28,9 @@ import java.awt.*;
  * Editor for {@link org.hkijena.jipipe.plugins.tables.datatypes.ResultsTableData}
  */
 public class ResultsTableDataDesktopParameterEditorUI extends JIPipeDesktopParameterEditorUI {
-    /**
-     * Creates new instance
-     *
-     * @param workbench       the workbench
-     * @param parameterAccess Parameter
-     */
-    public ResultsTableDataDesktopParameterEditorUI(JIPipeDesktopWorkbench workbench, JIPipeParameterTree parameterTree, JIPipeParameterAccess parameterAccess) {
-        super(workbench, parameterTree, parameterAccess);
+
+    public ResultsTableDataDesktopParameterEditorUI(InitializationParameters parameters) {
+       super(parameters);
         initialize();
     }
 

@@ -47,8 +47,8 @@ public class JIPipeDataInfoRefDesktopParameterEditorUI extends JIPipeDesktopPara
      * @param workbench       workbench
      * @param parameterAccess the parameter
      */
-    public JIPipeDataInfoRefDesktopParameterEditorUI(JIPipeDesktopWorkbench workbench, JIPipeParameterTree parameterTree, JIPipeParameterAccess parameterAccess) {
-        super(workbench, parameterTree, parameterAccess);
+    public JIPipeDataInfoRefDesktopParameterEditorUI(InitializationParameters parameters) {
+       super(parameters);
         initialize();
         reload();
     }

@@ -43,8 +43,8 @@ public class TableColumnGeneratorDesktopParameterEditorUI extends JIPipeDesktopP
      * @param workbench       workbench
      * @param parameterAccess the parameter
      */
-    public TableColumnGeneratorDesktopParameterEditorUI(JIPipeDesktopWorkbench workbench, JIPipeParameterTree parameterTree, JIPipeParameterAccess parameterAccess) {
-        super(workbench, parameterTree, parameterAccess);
+    public TableColumnGeneratorDesktopParameterEditorUI(InitializationParameters parameters) {
+       super(parameters);
         initialize();
         reload();
     }

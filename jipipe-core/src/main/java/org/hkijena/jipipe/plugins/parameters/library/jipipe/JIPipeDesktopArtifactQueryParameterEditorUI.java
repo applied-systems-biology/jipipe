@@ -41,8 +41,8 @@ public class JIPipeDesktopArtifactQueryParameterEditorUI extends JIPipeDesktopPa
      * @param parameterTree   the parameter tree that contains the access
      * @param parameterAccess the parameter access
      */
-    public JIPipeDesktopArtifactQueryParameterEditorUI(JIPipeDesktopWorkbench workbench, JIPipeParameterTree parameterTree, JIPipeParameterAccess parameterAccess) {
-        super(workbench, parameterTree, parameterAccess);
+    public JIPipeDesktopArtifactQueryParameterEditorUI(InitializationParameters parameters) {
+       super(parameters);
         initialize();
         reloadArtifacts();
         reload();

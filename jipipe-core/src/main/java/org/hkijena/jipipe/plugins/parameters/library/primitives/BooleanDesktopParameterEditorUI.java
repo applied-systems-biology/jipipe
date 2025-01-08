@@ -36,8 +36,8 @@ public class BooleanDesktopParameterEditorUI extends JIPipeDesktopParameterEdito
      * @param workbench       workbench
      * @param parameterAccess the parameter
      */
-    public BooleanDesktopParameterEditorUI(JIPipeDesktopWorkbench workbench, JIPipeParameterTree parameterTree, JIPipeParameterAccess parameterAccess) {
-        super(workbench, parameterTree, parameterAccess);
+    public BooleanDesktopParameterEditorUI(InitializationParameters parameters) {
+       super(parameters);
         initialize();
     }
 

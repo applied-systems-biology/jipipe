@@ -17,10 +17,8 @@ import org.fife.ui.rsyntaxtextarea.AbstractTokenMaker;
 import org.hkijena.jipipe.JIPipe;
 import org.hkijena.jipipe.api.parameters.JIPipeDummyParameterCollection;
 import org.hkijena.jipipe.api.parameters.JIPipeManualParameterAccess;
-import org.hkijena.jipipe.api.parameters.JIPipeParameterAccess;
 import org.hkijena.jipipe.api.parameters.JIPipeParameterTree;
 import org.hkijena.jipipe.desktop.api.JIPipeDesktopParameterEditorUI;
-import org.hkijena.jipipe.desktop.app.JIPipeDesktopWorkbench;
 import org.hkijena.jipipe.desktop.commons.components.JIPipeDesktopDocumentChangeListener;
 import org.hkijena.jipipe.plugins.expressions.*;
 import org.hkijena.jipipe.utils.UIUtils;
@@ -43,8 +41,8 @@ public class IntegerRangeDesktopParameterEditorUI extends JIPipeDesktopParameter
      * @param workbench       workbench
      * @param parameterAccess the parameter
      */
-    public IntegerRangeDesktopParameterEditorUI(JIPipeDesktopWorkbench workbench, JIPipeParameterTree parameterTree, JIPipeParameterAccess parameterAccess) {
-        super(workbench, parameterTree, parameterAccess);
+    public IntegerRangeDesktopParameterEditorUI(InitializationParameters parameters) {
+       super(parameters);
         initialize();
         reload();
     }
@@ -104,7 +102,7 @@ public class IntegerRangeDesktopParameterEditorUI extends JIPipeDesktopParameter
                             setParameter(rangeString, false);
                             checkParameter();
                         }).build();
-                add(JIPipe.getParameterTypes().createEditorFor(getDesktopWorkbench(), new JIPipeParameterTree(access), access), BorderLayout.CENTER);
+                add(JIPipe.getParameterTypes().createEditorInstance(access, getDesktopWorkbench(), new JIPipeParameterTree(access), null), BorderLayout.CENTER);
             } else {
                 rangeStringEditor.setText(rangeString.getValue());
                 add(rangeStringEditor, BorderLayout.CENTER);

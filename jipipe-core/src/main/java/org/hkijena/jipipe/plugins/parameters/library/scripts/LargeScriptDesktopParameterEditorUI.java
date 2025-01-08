@@ -35,14 +35,8 @@ public class LargeScriptDesktopParameterEditorUI extends JIPipeDesktopParameterE
 
     private CustomEditorPane textArea;
 
-    /**
-     * Creates new instance
-     *
-     * @param workbench       the workbech
-     * @param parameterAccess Parameter
-     */
-    public LargeScriptDesktopParameterEditorUI(JIPipeDesktopWorkbench workbench, JIPipeParameterTree parameterTree, JIPipeParameterAccess parameterAccess) {
-        super(workbench, parameterTree, parameterAccess);
+    public LargeScriptDesktopParameterEditorUI(InitializationParameters parameters) {
+       super(parameters);
         initialize();
     }
 

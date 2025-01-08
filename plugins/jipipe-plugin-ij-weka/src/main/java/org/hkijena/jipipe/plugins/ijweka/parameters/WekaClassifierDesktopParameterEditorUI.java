@@ -38,8 +38,8 @@ public class WekaClassifierDesktopParameterEditorUI extends JIPipeDesktopParamet
      * @param workbench       workbench
      * @param parameterAccess the parameter
      */
-    public WekaClassifierDesktopParameterEditorUI(JIPipeDesktopWorkbench workbench, JIPipeParameterTree parameterTree, JIPipeParameterAccess parameterAccess) {
-        super(workbench, parameterTree, parameterAccess);
+    public WekaClassifierDesktopParameterEditorUI(InitializationParameters parameters) {
+       super(parameters);
         initialize();
         reload();
     }
