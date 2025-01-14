@@ -154,7 +154,7 @@ public class JIPipeCLIMain {
                 parameterOverrides.put(arg.substring(3), value);
             } else if (arg.startsWith("--U")) {
                 userDirectoryOverrides.put(arg.substring(3), Paths.get(value));
-            } else if (arg.equals("profile-dir")) {
+            } else if (arg.equals("--profile-dir")) {
                 overrideProfileDir = Paths.get(value);
             } else {
                 System.err.println("Unknown argument: " + arg);
