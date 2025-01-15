@@ -30,6 +30,7 @@ import org.hkijena.jipipe.plugins.expressions.AddJIPipeExpressionParameterVariab
 import org.hkijena.jipipe.plugins.expressions.JIPipeExpressionVariablesMap;
 import org.hkijena.jipipe.plugins.expressions.variables.JIPipeTextAnnotationsExpressionParameterVariablesInfo;
 import org.hkijena.jipipe.plugins.imagejdatatypes.datatypes.ImagePlusData;
+import org.hkijena.jipipe.plugins.imagejdatatypes.util.Image5DExpressionParameterVariablesInfo;
 import org.hkijena.jipipe.plugins.imagejdatatypes.util.ImageJUtils;
 import org.hkijena.jipipe.plugins.parameters.library.roi.Margin;
 
@@ -80,6 +81,7 @@ public class TransformCrop2DAlgorithm extends JIPipeSimpleIteratingAlgorithm {
         Rectangle imageArea = new Rectangle(0, 0, img.getWidth(), img.getHeight());
         JIPipeExpressionVariablesMap variables = new JIPipeExpressionVariablesMap();
         variables.putAnnotations(iterationStep.getMergedTextAnnotations());
+        Image5DExpressionParameterVariablesInfo.writeToVariables(img, variables);
         Rectangle cropped = roi.getInsideArea(imageArea, variables);
         if (cropped == null || cropped.width == 0 || cropped.height == 0) {
             throw new JIPipeValidationRuntimeException(new NullPointerException("Cropped rectangle is null or empty!"),
@@ -104,6 +106,7 @@ public class TransformCrop2DAlgorithm extends JIPipeSimpleIteratingAlgorithm {
     @SetJIPipeDocumentation(name = "ROI", description = "Defines the area to crop.")
     @JIPipeParameter("roi")
     @AddJIPipeExpressionParameterVariable(fromClass = JIPipeTextAnnotationsExpressionParameterVariablesInfo.class)
+    @AddJIPipeExpressionParameterVariable(fromClass = Image5DExpressionParameterVariablesInfo.class)
     public Margin getRoi() {
         return roi;
     }
