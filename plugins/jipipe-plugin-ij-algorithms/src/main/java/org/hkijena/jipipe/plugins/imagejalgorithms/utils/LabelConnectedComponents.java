@@ -14,11 +14,10 @@
 package org.hkijena.jipipe.plugins.imagejalgorithms.utils;
 
 import gnu.trove.list.array.TIntArrayList;
-import gnu.trove.map.hash.TIntIntHashMap;
 import ij.process.FloatProcessor;
 import ij.process.ImageProcessor;
 import ij.process.ShortProcessor;
-import inra.ijpb.plugins.Connectivity2D;
+import inra.ijpb.label.LabelImages;
 import org.hkijena.jipipe.plugins.imagejalgorithms.parameters.Neighborhood2D;
 
 public class LabelConnectedComponents {
@@ -32,123 +31,144 @@ public class LabelConnectedComponents {
         int height = ip.getHeight();
 
         // Output image for labeled components
-        ImageProcessor labeled;
-        if(ip instanceof ShortProcessor) {
-            labeled = new ShortProcessor(width, height);
+        ImageProcessor output;
+        if (ip instanceof ShortProcessor) {
+            output = new ShortProcessor(width, height);
+        } else {
+            output = new FloatProcessor(width, height);
         }
-        else {
-            labeled = new FloatProcessor(width, height);
-        }
-        int[] labels = new int[width * height];
-        int[] labelRoots = new int[width * height + 1]; // +1 to handle label indices starting from 1
-        for (int i = 0; i < labelRoots.length; i++) {
-            labelRoots[i] = i; // Initialize each label as its own root
-        }
-        int nextLabel = 1; // Start labeling from 1
+        int[] newLabels = new int[width * height];
+        int nextLabel = 1;
+        TIntArrayList neighborhoodNewDifferentLabels = new TIntArrayList(8);
 
-        TIntArrayList neighbors = new TIntArrayList(8); // Preallocate for neighbor labels
-
-        // First pass: Label components and record equivalences
+        // Find the neighborhoods and track them
         for (int y = 0; y < height; y++) {
             for (int x = 0; x < width; x++) {
-                int pixel = (int) ip.getf(x, y); // Get pixel value as int
-                if (pixel == 0) continue; // Skip background (assumes background is 0)
+                final int currentLabel = (int) ip.getf(x, y);
+                if (currentLabel <= 0) {
+                    continue;
+                }
 
-                neighbors.resetQuick(); // Clear the neighbors list
-                getConnectedNeighbors(x, y, ip, labeled, connectivity, neighbors);
-                if (neighbors.isEmpty()) {
-                    labels[y * width + x] = nextLabel++;
+                int currentNewLabel = newLabels[y * width + x];
+                if (currentNewLabel == 0) {
+                    // Hitting this label the first time, so we assign it
+                    currentNewLabel = nextLabel++;
+                    newLabels[y * width + x] = currentNewLabel;
+                }
+
+                neighborhoodNewDifferentLabels.resetQuick();
+                boolean containsUnassignedNeighbors = false;
+
+                for (int dy = -1; dy <= 1; dy++) {
+                    for (int dx = -1; dx <= 1; dx++) {
+                        int ny = y + dy;
+                        int nx = x + dx;
+
+                        if (dx == 0 && dy == 0) {
+                            continue;
+                        }
+                        if (connectivity == Neighborhood2D.FourConnected && dx == dy) {
+                            continue;
+                        }
+                        if (nx < 0 || ny < 0 || nx >= width || ny >= height) {
+                            continue;
+                        }
+
+                        final int otherLabel = (int) ip.getf(nx, ny);
+                        if (otherLabel <= 0) {
+                            continue;
+                        }
+
+                        if (currentLabel == otherLabel) {
+                            // We track which new assignments may be already in the neighborhood
+                            int otherNewLabel = newLabels[ny * width + nx];
+                            if (otherNewLabel > 0) {
+                                if (otherNewLabel != currentNewLabel) {
+                                    neighborhoodNewDifferentLabels.add(otherNewLabel);
+                                }
+                            } else {
+                                // For later meaning that we need to override all values
+                                containsUnassignedNeighbors = true;
+                            }
+                        }
+                    }
+                }
+
+                final int currentNewLabel_ = currentNewLabel;
+                boolean writeAssignments = false;
+
+                if (!neighborhoodNewDifferentLabels.isEmpty()) {
+                    // Find a new label
+                    for (int i = 0; i < neighborhoodNewDifferentLabels.size(); i++) {
+                        currentNewLabel = Math.min(currentNewLabel, neighborhoodNewDifferentLabels.get(i));
+                    }
+
+                    // Apply label renaming for the current one
+                    for (int i = 0; i < newLabels.length; i++) {
+                        if (newLabels[i] == currentNewLabel_) {
+                            newLabels[i] = currentNewLabel;
+                        }
+                    }
+
+                    // Apply label renaming for the neighbors
+                    for (int j = 0; j < neighborhoodNewDifferentLabels.size(); j++) {
+                        int neighborNewLabel = neighborhoodNewDifferentLabels.get(j);
+
+                        for (int i = 0; i < newLabels.length; i++) {
+                            if (newLabels[i] == neighborNewLabel) {
+                                newLabels[i] = currentNewLabel;
+                            }
+                        }
+                    }
                 } else {
-                    int minLabel = neighbors.min();
-                    labels[y * width + x] = minLabel;
-                    for (int i = 0; i < neighbors.size(); i++) {
-                        int neighborLabel = neighbors.get(i);
-                        if (neighborLabel > 0) { // Only union valid labels
-                            union(minLabel, neighborLabel, labelRoots);
+                    if (containsUnassignedNeighbors) {
+                        // We need to ensure that all the neighbors have the correct label
+                        writeAssignments = true;
+                    } else {
+                        // Nothing to do
+                    }
+                }
+
+                if (containsUnassignedNeighbors) {
+                    // Explicitly write into the neighborhood
+                    for (int dy = -1; dy <= 1; dy++) {
+                        for (int dx = -1; dx <= 1; dx++) {
+                            int ny = y + dy;
+                            int nx = x + dx;
+
+                            if (dx == 0 && dy == 0) {
+                                continue;
+                            }
+                            if (connectivity == Neighborhood2D.FourConnected && dx == dy) {
+                                continue;
+                            }
+                            if (nx < 0 || ny < 0 || nx >= width || ny >= height) {
+                                continue;
+                            }
+                            final int otherLabel = (int) ip.getf(nx, ny);
+                            if (otherLabel <= 0) {
+                                continue;
+                            }
+                            if (currentLabel == otherLabel) {
+                                newLabels[nx + width * ny] = currentNewLabel;
+                            }
                         }
                     }
                 }
             }
         }
 
-        // Second pass: Relabel components with compact labels
-        TIntIntHashMap newLabels = new TIntIntHashMap();
-        int newLabelCount = 1;
-        for (int i = 0; i < labels.length; i++) {
-            if (labels[i] > 0) {
-                int rootLabel = find(labels[i], labelRoots);
-                if (!newLabels.containsKey(rootLabel)) {
-                    newLabels.put(rootLabel, newLabelCount++);
-                }
-                labels[i] = newLabels.get(rootLabel);
-            }
-        }
-
-        // Apply new labels to the output image
+        // Copy the labels into the output
         for (int y = 0; y < height; y++) {
             for (int x = 0; x < width; x++) {
-                labeled.setf(x, y, labels[y * width + x]); // Set label as float
+                int newLabel = newLabels[x + y * width];
+                output.setf(x, y, newLabel);
             }
         }
 
-        return labeled;
-    }
+        // Remap labels
+        LabelImages.remapLabels(output);
 
-    private static void getConnectedNeighbors(int x, int y, ImageProcessor ip, ImageProcessor labeled, Neighborhood2D connectivity, TIntArrayList neighbors) {
-        int width = ip.getWidth();
-        int height = ip.getHeight();
-        int pixelValue = (int) ip.getf(x, y);
-
-        int[] dx, dy;
-        if (connectivity == Neighborhood2D.EightConnected) {
-            dx = new int[]{-1, 0, 1, -1, 1, -1, 0, 1};
-            dy = new int[]{-1, -1, -1, 0, 0, 1, 1, 1};
-        } else { // 4-connectivity
-            dx = new int[]{-1, 0, 1, 0};
-            dy = new int[]{0, -1, 0, 1};
-        }
-
-        for (int i = 0; i < dx.length; i++) {
-            int nx = x + dx[i];
-            int ny = y + dy[i];
-            if (nx >= 0 && nx < width && ny >= 0 && ny < height) {
-                int nv = (int)ip.getf(nx, ny);
-                if(nv == pixelValue) {
-                    int neighborLabel = labeled.getPixel(nx, ny);
-                    if (neighborLabel > 0) {
-                        neighbors.add(neighborLabel);
-                    }
-                }
-            }
-        }
-    }
-
-    // Find operation for Union-Find with path compression
-    private static int find(int label, int[] labelRoots) {
-        int root = label;
-
-        // Find the root of the component
-        while (labelRoots[root] != root) {
-            root = labelRoots[root];
-        }
-
-        // Path compression: Make all nodes on the path point directly to the root
-        int current = label;
-        while (current != root) {
-            int parent = labelRoots[current];
-            labelRoots[current] = root;
-            current = parent;
-        }
-
-        return root;
-    }
-
-    // Union operation for Union-Find
-    private static void union(int label1, int label2, int[] labelRoots) {
-        int root1 = find(label1, labelRoots);
-        int root2 = find(label2, labelRoots);
-        if (root1 != root2) {
-            labelRoots[root2] = root1;
-        }
+        return output;
     }
 }
