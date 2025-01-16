@@ -654,8 +654,9 @@ public class PathUtils {
      * Same as Files.createDirectories, but throws a {@link RuntimeException}
      *
      * @param path the path
+     * @return the path
      */
-    public static void createDirectories(Path path) {
+    public static Path createDirectories(Path path) {
         try {
             Files.createDirectories(path);
         } catch (IOException e) {
