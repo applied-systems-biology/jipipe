@@ -1075,7 +1075,7 @@ public class JIPipe extends AbstractService implements JIPipeService {
         for (Class<? extends JIPipeData> dataClass : datatypeRegistry.getRegisteredDataTypes().values()) {
             Class<? extends JIPipeDesktopDataViewer> defaultDataViewer = datatypeRegistry.getDefaultDataViewer(dataClass);
             if(defaultDataViewer == JIPipeDesktopDefaultDataViewer.class) {
-                progressInfo.log("Warning: Data type " + datatypeRegistry.getIdOf(dataClass) + " does not have a default data viewer");
+                progressInfo.log("Info: Data type " + datatypeRegistry.getIdOf(dataClass) + " does not have a default data viewer");
             }
         }
 

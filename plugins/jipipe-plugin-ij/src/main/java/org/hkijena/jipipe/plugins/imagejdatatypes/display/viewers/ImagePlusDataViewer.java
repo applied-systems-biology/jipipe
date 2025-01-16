@@ -107,7 +107,7 @@ public class ImagePlusDataViewer extends JIPipeDesktopDataViewer {
         setupPanelsOnce(getDataViewerWindow().getDockPanel());
     }
 
-    private void loadDataIntoLegacyViewer(JIPipeData data) {
+    protected void loadDataIntoLegacyViewer(JIPipeData data) {
         if(data instanceof ImagePlusData) {
             legacyImageViewer.setImageData((ImagePlusData) data);
         }
@@ -132,5 +132,13 @@ public class ImagePlusDataViewer extends JIPipeDesktopDataViewer {
 
     protected void loadDataIntoVtkViewer(JIPipeData data) {
 
+    }
+
+    public JIPipeDesktopLegacyImageViewer getLegacyImageViewer() {
+        return legacyImageViewer;
+    }
+
+    public JIPipeDesktopVtkImageViewer getVtkImageViewer() {
+        return vtkImageViewer;
     }
 }
