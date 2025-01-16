@@ -181,7 +181,6 @@ public class JIPipeDesktopInvalidProjectDependenciesInfoDialog extends JDialog i
         buttonPanel.add(cancelButton);
 
         JButton startUpdaterButton = new JButton("Start ImageJ updater", UIUtils.getIconFromResources("apps/imagej.png"));
-        startUpdaterButton.setFont(new Font(Font.DIALOG, Font.PLAIN, 16));
         startUpdaterButton.addActionListener(e -> {
             ImageJUpdater updater = new ImageJUpdater();
             JIPipe.getInstance().getContext().inject(updater);
@@ -190,7 +189,6 @@ public class JIPipeDesktopInvalidProjectDependenciesInfoDialog extends JDialog i
         buttonPanel.add(startUpdaterButton);
 
         JButton startPluginManagerButton = new JButton("Start plugin manager", UIUtils.getIconFromResources("apps/jipipe.png"));
-        startPluginManagerButton.setFont(new Font(Font.DIALOG, Font.PLAIN, 16));
         startPluginManagerButton.addActionListener(e -> {
             JIPipeDesktopPluginManagerUI.show(workbench);
         });
