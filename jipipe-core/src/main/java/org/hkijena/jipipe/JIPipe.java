@@ -49,6 +49,8 @@ import org.hkijena.jipipe.api.run.JIPipeRunnableQueue;
 import org.hkijena.jipipe.api.validation.*;
 import org.hkijena.jipipe.api.validation.contexts.JavaExtensionValidationReportContext;
 import org.hkijena.jipipe.api.validation.contexts.UnspecifiedValidationReportContext;
+import org.hkijena.jipipe.desktop.api.dataviewer.JIPipeDesktopDataViewer;
+import org.hkijena.jipipe.desktop.api.dataviewer.JIPipeDesktopDefaultDataViewer;
 import org.hkijena.jipipe.desktop.api.registries.JIPipeCustomMenuRegistry;
 import org.hkijena.jipipe.desktop.app.JIPipeDesktopProjectWindow;
 import org.hkijena.jipipe.desktop.app.running.JIPipeDesktopRunnableLogsCollection;
@@ -1068,6 +1070,14 @@ public class JIPipe extends AbstractService implements JIPipeService {
         progressInfo.setProgress(8);
         progressInfo.log("JIPipe loading finished");
         initializing = false;
+
+        // Check if we have viewers for everything
+        for (Class<? extends JIPipeData> dataClass : datatypeRegistry.getRegisteredDataTypes().values()) {
+            Class<? extends JIPipeDesktopDataViewer> defaultDataViewer = datatypeRegistry.getDefaultDataViewer(dataClass);
+            if(defaultDataViewer == JIPipeDesktopDefaultDataViewer.class) {
+                progressInfo.log("Warning: Data type " + datatypeRegistry.getIdOf(dataClass) + " does not have a default data viewer");
+            }
+        }
 
         // Check for new extensions
         pluginRegistry.findNewPlugins();
