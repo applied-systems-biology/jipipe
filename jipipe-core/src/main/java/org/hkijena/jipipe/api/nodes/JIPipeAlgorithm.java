@@ -250,11 +250,12 @@ public abstract class JIPipeAlgorithm extends JIPipeGraphNode {
 
     /**
      * Returns true if the default custom expression variables are shown in the UI
+     * (defaults to true)
      *
      * @return if the custom expression variables are shown in the UI
      */
     public boolean isEnableDefaultCustomExpressionVariables() {
-        return false;
+        return true;
     }
 
     @Override

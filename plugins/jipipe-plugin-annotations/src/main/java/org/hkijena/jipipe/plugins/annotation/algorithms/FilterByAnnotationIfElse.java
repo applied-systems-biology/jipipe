@@ -84,9 +84,4 @@ public class FilterByAnnotationIfElse extends JIPipeSimpleIteratingAlgorithm {
     public void setFilter(AnnotationFilterExpression filter) {
         this.filter = filter;
     }
-
-    @Override
-    public boolean isEnableDefaultCustomExpressionVariables() {
-        return true;
-    }
 }

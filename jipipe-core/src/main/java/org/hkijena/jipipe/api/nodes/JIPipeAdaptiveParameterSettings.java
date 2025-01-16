@@ -23,6 +23,7 @@ import org.hkijena.jipipe.plugins.expressions.JIPipeExpressionParameter;
 import org.hkijena.jipipe.plugins.expressions.JIPipeExpressionParameterSettings;
 import org.hkijena.jipipe.plugins.expressions.JIPipeExpressionParameterVariableInfo;
 import org.hkijena.jipipe.plugins.expressions.JIPipeExpressionVariablesInfo;
+import org.hkijena.jipipe.plugins.expressions.custom.JIPipeCustomExpressionVariablesParameterVariablesInfo;
 import org.hkijena.jipipe.plugins.parameters.api.pairs.PairParameterSettings;
 import org.hkijena.jipipe.plugins.parameters.library.pairs.StringQueryExpressionAndStringPairParameter;
 import org.hkijena.jipipe.plugins.parameters.library.primitives.StringParameterSettings;
@@ -167,6 +168,7 @@ public class JIPipeAdaptiveParameterSettings extends AbstractJIPipeParameterColl
         static {
             VARIABLES = new HashSet<>();
             VARIABLES.add(JIPipeExpressionParameterVariableInfo.ANNOTATIONS_VARIABLE);
+            VARIABLES.addAll(JIPipeCustomExpressionVariablesParameterVariablesInfo.VARIABLES);
             VARIABLES.add(new JIPipeExpressionParameterVariableInfo("default", "Default value",
                     "The default value of this parameter"
             ));

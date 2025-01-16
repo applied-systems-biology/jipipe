@@ -179,11 +179,6 @@ public class FilterRoi3DByStatisticsAlgorithm extends JIPipeIteratingAlgorithm {
         this.outputEmptyLists = outputEmptyLists;
     }
 
-    @Override
-    public boolean isEnableDefaultCustomExpressionVariables() {
-        return true;
-    }
-
     @SetJIPipeDocumentation(name = "Measure in physical units", description = "If true, measurements will be generated in physical units if available")
     @JIPipeParameter("measure-in-physical-units")
     public boolean isMeasureInPhysicalUnits() {

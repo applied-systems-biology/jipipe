@@ -162,11 +162,6 @@ public class GenerateParametersFromExpressionAlgorithm extends JIPipeSimpleItera
         }
     }
 
-    @Override
-    public boolean isEnableDefaultCustomExpressionVariables() {
-        return true;
-    }
-
     @SetJIPipeDocumentation(name = "Generated parameter columns", description = "Each item within this list defines a column in the generated parameter table. You must set the following properties: " +
             "<ul>" +
             "<li>Key: the internal key of the parameter that is referred to. You can look it up by clicking the (?) icon next to a parameter and reading the technical info in the documentation that will be shown.</li>" +

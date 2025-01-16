@@ -301,9 +301,11 @@ public abstract class JIPipeMergingAlgorithm extends JIPipeParameterSlotAlgorith
 
     private void uploadAdaptiveParameters(JIPipeMultiIterationStep iterationStep, JIPipeParameterTree tree, Map<String, Object> parameterBackups, JIPipeProgressInfo progressInfo) {
         JIPipeExpressionVariablesMap expressionVariables = new JIPipeExpressionVariablesMap();
-        for (JIPipeTextAnnotation annotation : iterationStep.getMergedTextAnnotations().values()) {
-            expressionVariables.put(annotation.getName(), annotation.getValue());
-        }
+
+        // Upload annotations and custom variables
+        expressionVariables.putCustomVariables(getDefaultCustomExpressionVariables());
+        expressionVariables.putAnnotations(iterationStep.getMergedTextAnnotations());
+
         for (StringQueryExpressionAndStringPairParameter overriddenParameter : getAdaptiveParameterSettings().getOverriddenParameters()) {
             String key = overriddenParameter.getValue();
             JIPipeParameterAccess target = tree.getParameters().getOrDefault(key, null);

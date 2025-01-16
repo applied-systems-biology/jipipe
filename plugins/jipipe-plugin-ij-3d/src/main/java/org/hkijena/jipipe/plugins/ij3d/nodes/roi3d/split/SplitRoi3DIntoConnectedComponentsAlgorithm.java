@@ -212,11 +212,6 @@ public class SplitRoi3DIntoConnectedComponentsAlgorithm extends JIPipeIteratingA
         this.overlapFilterMeasurements = overlapFilterMeasurements;
     }
 
-    @Override
-    public boolean isEnableDefaultCustomExpressionVariables() {
-        return true;
-    }
-
     @SetJIPipeDocumentation(name = "Only measure if objects co-localize", description = "If enabled, only co-localizing objects are measured")
     @JIPipeParameter("require-colocalization")
     public boolean isRequireColocalization() {

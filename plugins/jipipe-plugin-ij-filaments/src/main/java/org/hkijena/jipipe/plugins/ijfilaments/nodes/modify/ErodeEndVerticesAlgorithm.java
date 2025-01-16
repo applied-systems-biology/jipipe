@@ -97,9 +97,4 @@ public class ErodeEndVerticesAlgorithm extends JIPipeSimpleIteratingAlgorithm {
     public VertexMaskParameter getVertexMask() {
         return vertexMask;
     }
-
-    @Override
-    public boolean isEnableDefaultCustomExpressionVariables() {
-        return true;
-    }
 }

@@ -118,9 +118,4 @@ public class FilterFilamentVerticesByProperties extends JIPipeSimpleIteratingAlg
     public void setFilter(JIPipeExpressionParameter filter) {
         this.filter = filter;
     }
-
-    @Override
-    public boolean isEnableDefaultCustomExpressionVariables() {
-        return true;
-    }
 }

@@ -276,11 +276,6 @@ public class FastImageArithmeticsAlgorithm extends JIPipeIteratingAlgorithm {
         return (ImageProcessor) result;
     }
 
-    @Override
-    public boolean isEnableDefaultCustomExpressionVariables() {
-        return true;
-    }
-
     private Object applyFunction(List<Object> arguments, String functionName, int bitDepth) {
         switch (functionName) {
             case "IF_ELSE":

@@ -250,11 +250,6 @@ public class ConnectVerticesAlgorithm extends JIPipeIteratingAlgorithm {
         this.requireDirection = requireDirection;
     }
 
-    @Override
-    public boolean isEnableDefaultCustomExpressionVariables() {
-        return true;
-    }
-
     @SetJIPipeDocumentation(name = "Candidate edge filter", description = "Filter expression that determines if an edge is considered as candidate")
     @JIPipeParameter("filter-function")
     @JIPipeExpressionParameterSettings(hint = "per candidate edge")

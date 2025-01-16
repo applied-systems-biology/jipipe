@@ -134,11 +134,6 @@ public class SortRowsByExpressionAlgorithm extends JIPipeParameterSlotAlgorithm 
         this.entries = entries;
     }
 
-    @Override
-    public boolean isEnableDefaultCustomExpressionVariables() {
-        return true;
-    }
-
     public static class SortEntry extends AbstractJIPipeParameterCollection {
 
         private JIPipeExpressionParameter value = new JIPipeExpressionParameter();

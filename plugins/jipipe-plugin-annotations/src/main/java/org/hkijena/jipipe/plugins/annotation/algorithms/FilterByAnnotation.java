@@ -111,9 +111,4 @@ public class FilterByAnnotation extends JIPipeAlgorithm {
     public void setFilter(AnnotationFilterExpression filter) {
         this.filter = filter;
     }
-
-    @Override
-    public boolean isEnableDefaultCustomExpressionVariables() {
-        return true;
-    }
 }

@@ -136,11 +136,6 @@ public class TurboRegRegistration2DReferencedAlgorithm extends JIPipeIteratingAl
         this.rules = rules;
     }
 
-    @Override
-    public boolean isEnableDefaultCustomExpressionVariables() {
-        return true;
-    }
-
     @SetJIPipeDocumentation(name = "Advanced parameters", description = "Advanced parameters for TurboReg")
     @JIPipeParameter("advanced-parameters")
     public AdvancedTurboRegParameters getAdvancedTurboRegParameters() {

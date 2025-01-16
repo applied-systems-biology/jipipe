@@ -110,11 +110,6 @@ public class ApplyExpressionPerRowAlgorithm extends JIPipeSimpleIteratingAlgorit
         this.expressionList = expressionList;
     }
 
-    @Override
-    public boolean isEnableDefaultCustomExpressionVariables() {
-        return true;
-    }
-
     public static class VariablesInfo implements JIPipeExpressionVariablesInfo {
         private final static Set<JIPipeExpressionParameterVariableInfo> VARIABLES;
 

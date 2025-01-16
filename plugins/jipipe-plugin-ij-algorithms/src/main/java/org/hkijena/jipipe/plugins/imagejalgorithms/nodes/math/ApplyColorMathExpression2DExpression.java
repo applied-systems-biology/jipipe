@@ -177,9 +177,4 @@ public class ApplyColorMathExpression2DExpression extends JIPipeSimpleIteratingA
     public void setExpression(JIPipeExpressionParameter expression) {
         this.expression = expression;
     }
-
-    @Override
-    public boolean isEnableDefaultCustomExpressionVariables() {
-        return true;
-    }
 }

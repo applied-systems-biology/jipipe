@@ -296,9 +296,4 @@ public class ChangeFilamentVertexPropertiesManuallyAlgorithm extends JIPipeSimpl
     public VertexMaskParameter getVertexMask() {
         return vertexMask;
     }
-
-    @Override
-    public boolean isEnableDefaultCustomExpressionVariables() {
-        return true;
-    }
 }

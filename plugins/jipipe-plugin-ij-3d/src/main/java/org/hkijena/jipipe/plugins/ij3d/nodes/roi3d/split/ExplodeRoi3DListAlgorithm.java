@@ -135,9 +135,4 @@ public class ExplodeRoi3DListAlgorithm extends JIPipeSimpleIteratingAlgorithm {
     public void setAnnotationValue(JIPipeExpressionParameter annotationValue) {
         this.annotationValue = annotationValue;
     }
-
-    @Override
-    public boolean isEnableDefaultCustomExpressionVariables() {
-        return true;
-    }
 }

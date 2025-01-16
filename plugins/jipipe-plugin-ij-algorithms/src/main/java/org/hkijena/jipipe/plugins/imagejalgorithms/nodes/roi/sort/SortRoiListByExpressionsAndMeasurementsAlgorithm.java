@@ -173,11 +173,6 @@ public class SortRoiListByExpressionsAndMeasurementsAlgorithm extends JIPipeIter
         this.reverseSortOrder = reverseSortOrder;
     }
 
-    @Override
-    public boolean isEnableDefaultCustomExpressionVariables() {
-        return true;
-    }
-
     public static class VariablesInfo implements JIPipeExpressionVariablesInfo {
 
         public static final Set<JIPipeExpressionParameterVariableInfo> VARIABLES;

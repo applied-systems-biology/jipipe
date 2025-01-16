@@ -120,9 +120,4 @@ public class ChangeFilamentEdgePropertiesManuallyAlgorithm extends JIPipeSimpleI
     public EdgeMaskParameter getEdgeMask() {
         return edgeMask;
     }
-
-    @Override
-    public boolean isEnableDefaultCustomExpressionVariables() {
-        return true;
-    }
 }

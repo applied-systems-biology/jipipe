@@ -146,12 +146,6 @@ public class ApplyExpressionToTableByColumnAlgorithm extends JIPipeSimpleIterati
         this.processorParameters = processorParameters;
     }
 
-    @Override
-    public boolean isEnableDefaultCustomExpressionVariables() {
-        return true;
-    }
-
-
     public static class ProcessingItem extends AbstractJIPipeParameterCollection {
         private JIPipeExpressionParameter outputColumnName = new JIPipeExpressionParameter("\"Output\"");
         private JIPipeExpressionParameter outputColumnValues = new JIPipeExpressionParameter("");

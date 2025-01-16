@@ -376,11 +376,6 @@ public class ChangeFilamentVertexPropertiesExpressionAlgorithm extends JIPipeSim
         return vertexMask;
     }
 
-    @Override
-    public boolean isEnableDefaultCustomExpressionVariables() {
-        return true;
-    }
-
     public static class MetadataEntry extends AbstractJIPipeParameterCollection {
         private String key;
         private JIPipeExpressionParameter value;

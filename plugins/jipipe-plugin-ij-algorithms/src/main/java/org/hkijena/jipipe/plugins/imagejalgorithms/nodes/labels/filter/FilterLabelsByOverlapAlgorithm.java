@@ -425,11 +425,6 @@ public class FilterLabelsByOverlapAlgorithm extends JIPipeIteratingAlgorithm {
 
     }
 
-    @Override
-    public boolean isEnableDefaultCustomExpressionVariables() {
-        return true;
-    }
-
     @SetJIPipeDocumentation(name = "Labels 1 filter", description = "Use following settings to determine how inputs into <b>Labels 1</b> are filtered " +
             "(by overlapping them with items in <b>Labels 2</b>). " +
             "Filtered Labels will be put into the corresponding <b>Labels 1</b> output.")

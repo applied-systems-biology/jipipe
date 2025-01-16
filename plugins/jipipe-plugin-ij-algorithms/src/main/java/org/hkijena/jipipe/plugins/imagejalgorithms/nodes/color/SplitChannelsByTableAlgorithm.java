@@ -219,11 +219,6 @@ public class SplitChannelsByTableAlgorithm extends JIPipeIteratingAlgorithm {
         }
     }
 
-    @Override
-    public boolean isEnableDefaultCustomExpressionVariables() {
-        return true;
-    }
-
     @SetJIPipeDocumentation(name = "Ignore 'Annotation columns' on trivial match", description = "If enabled and an image is matched to a table with exactly one row, " +
             "annotation matching is not applied and the singular row is used.")
     @JIPipeParameter("ignore-annotation-columns-on-trivial-match")

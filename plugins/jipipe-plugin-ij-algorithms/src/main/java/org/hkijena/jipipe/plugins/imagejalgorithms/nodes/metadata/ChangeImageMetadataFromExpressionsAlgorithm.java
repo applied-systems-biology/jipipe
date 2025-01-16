@@ -96,11 +96,6 @@ public class ChangeImageMetadataFromExpressionsAlgorithm extends JIPipeSimpleIte
         iterationStep.addOutputData(getFirstOutputSlot(), new ImagePlusData(imagePlus), progressInfo);
     }
 
-    @Override
-    public boolean isEnableDefaultCustomExpressionVariables() {
-        return true;
-    }
-
     @SetJIPipeDocumentation(name = "Image title", description = "Allows to change the image title")
     @JIPipeParameter("image-title")
     @AddJIPipeExpressionParameterVariable(fromClass = Image5DExpressionParameterVariablesInfo.class)

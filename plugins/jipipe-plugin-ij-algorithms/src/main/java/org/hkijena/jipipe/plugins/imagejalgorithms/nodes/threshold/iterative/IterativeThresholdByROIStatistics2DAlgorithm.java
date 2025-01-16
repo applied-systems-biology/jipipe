@@ -281,11 +281,6 @@ public class IterativeThresholdByROIStatistics2DAlgorithm extends JIPipeIteratin
         return new ThresholdingResult(maskIp, filteredRois, threshold, score);
     }
 
-    @Override
-    public boolean isEnableDefaultCustomExpressionVariables() {
-        return true;
-    }
-
     @SetJIPipeDocumentation(name = "Measurements", description = "The measurements to calculate." + "<br/><br/>" + ImageStatisticsSetParameter.ALL_DESCRIPTIONS)
     @JIPipeParameter(value = "measurements", important = true)
     public ImageStatisticsSetParameter getMeasurements() {

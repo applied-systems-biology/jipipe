@@ -135,11 +135,6 @@ public class ChangeFilamentEdgePropertiesExpressionAlgorithm extends JIPipeSimpl
         return edgeMask;
     }
 
-    @Override
-    public boolean isEnableDefaultCustomExpressionVariables() {
-        return true;
-    }
-
     public static class MetadataEntry extends AbstractJIPipeParameterCollection {
         private String key;
         private JIPipeExpressionParameter value;

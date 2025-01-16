@@ -139,11 +139,6 @@ public class ReorderHyperstackSlicesExpressionAlgorithm extends JIPipeSimpleIter
         this.newLocationExpression = newLocationExpression;
     }
 
-    @Override
-    public boolean isEnableDefaultCustomExpressionVariables() {
-        return true;
-    }
-
     @SetJIPipeDocumentation(name = "Silently override duplicate indices", description = "If enabled, duplicate plane indices are ignored and silently overriden")
     @JIPipeParameter("silently-override")
     public boolean isSilentlyOverride() {

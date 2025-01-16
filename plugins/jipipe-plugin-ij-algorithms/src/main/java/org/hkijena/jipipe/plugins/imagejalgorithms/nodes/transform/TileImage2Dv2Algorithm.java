@@ -173,11 +173,6 @@ public class TileImage2Dv2Algorithm extends JIPipeSimpleIteratingAlgorithm {
         }
     }
 
-    @Override
-    public boolean isEnableDefaultCustomExpressionVariables() {
-        return true;
-    }
-
     @SetJIPipeDocumentation(name = "Merge existing annotations", description = "Determines how existing annotations are merged")
     @JIPipeParameter("annotation-merge-strategy")
     public JIPipeTextAnnotationMergeMode getAnnotationMergeStrategy() {

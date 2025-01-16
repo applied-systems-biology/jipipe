@@ -119,9 +119,4 @@ public class FilterFilamentEdgesByProperties extends JIPipeSimpleIteratingAlgori
     public void setFilter(JIPipeExpressionParameter filter) {
         this.filter = filter;
     }
-
-    @Override
-    public boolean isEnableDefaultCustomExpressionVariables() {
-        return true;
-    }
 }

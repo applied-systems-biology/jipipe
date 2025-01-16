@@ -171,11 +171,6 @@ public class ChangeRoi3DPropertiesFromExpressionsAlgorithm extends JIPipeSimpleI
         iterationStep.addOutputData(getFirstOutputSlot(), outputROI, progressInfo);
     }
 
-    @Override
-    public boolean isEnableDefaultCustomExpressionVariables() {
-        return true;
-    }
-
     @SetJIPipeDocumentation(name = "ROI name", description = "If true, override the ROI name")
     @JIPipeParameter("roi-name")
     @JIPipeExpressionParameterSettings(hint = "per ROI")

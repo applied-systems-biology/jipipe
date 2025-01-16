@@ -151,9 +151,4 @@ public class ImageCalculator2DExpression extends JIPipeIteratingAlgorithm {
     public void setExpression(JIPipeExpressionParameter expression) {
         this.expression = expression;
     }
-
-    @Override
-    public boolean isEnableDefaultCustomExpressionVariables() {
-        return true;
-    }
 }

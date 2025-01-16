@@ -104,11 +104,6 @@ public class FindLinearFilamentVertexOrderAlgorithm extends JIPipeSimpleIteratin
         this.maxDistanceMetadataKey = maxDistanceMetadataKey;
     }
 
-    @Override
-    public boolean isEnableDefaultCustomExpressionVariables() {
-        return true;
-    }
-
     @SetJIPipeDocumentation(name = "Start point selector", description = "Applied per linear component. Given are the two end points (first and second). The function should return \"first\" or \"second\" depending on which of the end points should be ")
     @JIPipeParameter("selector-function")
     @JIPipeExpressionParameterSettings(hint = "per endpoint pair")
