@@ -62,6 +62,9 @@ import org.hkijena.jipipe.plugins.imagejalgorithms.nodes.io.*;
 import org.hkijena.jipipe.plugins.imagejalgorithms.nodes.labels.*;
 import org.hkijena.jipipe.plugins.imagejalgorithms.nodes.labels.filter.*;
 import org.hkijena.jipipe.plugins.imagejalgorithms.nodes.lut.*;
+import org.hkijena.jipipe.plugins.imagejalgorithms.nodes.masking.SetToColorAlgorithm;
+import org.hkijena.jipipe.plugins.imagejalgorithms.nodes.masking.SetToContentAwareAlgorithm;
+import org.hkijena.jipipe.plugins.imagejalgorithms.nodes.masking.SetToValueAlgorithm;
 import org.hkijena.jipipe.plugins.imagejalgorithms.nodes.math.*;
 import org.hkijena.jipipe.plugins.imagejalgorithms.nodes.math.distancemap.*;
 import org.hkijena.jipipe.plugins.imagejalgorithms.nodes.math.local.*;
@@ -609,6 +612,7 @@ public class ImageJAlgorithmsPlugin extends JIPipePrepackagedDefaultJavaPlugin {
         registerColocalizationAlgorithms();
         registerMetadataAlgorithms();
         registerRegistrationAlgorithms();
+        registerMaskingAlgorithms();
 
         registerNodeType("ij1-generate-missing-results-table", GenerateMissingTablesAlgorithm.class, UIUtils.getIconURLFromResources("actions/image-auto-adjust.png"));
         registerNodeType("ij1-generate-missing-results-table-2", GenerateMissingTablesAlgorithm2.class, UIUtils.getIconURLFromResources("actions/image-auto-adjust.png"));
@@ -632,6 +636,13 @@ public class ImageJAlgorithmsPlugin extends JIPipePrepackagedDefaultJavaPlugin {
         // Register examples
         registerNodeExamplesFromResources(RESOURCES, "examples");
         registerProjectTemplatesFromResources(RESOURCES, "templates");
+    }
+
+    private void registerMaskingAlgorithms() {
+        registerNodeType("ij1-color-set-to-color", SetToColorAlgorithm.class, UIUtils.getIconURLFromResources("actions/color-fill.png"));
+        registerNodeType("ij1-color-set-to-grayscale-value", SetToValueAlgorithm.class, UIUtils.getIconURLFromResources("actions/color-fill.png"));
+        registerNodeType("ij1-color-set-to-content-aware-2d", SetToContentAwareAlgorithm.class, UIUtils.getIconURLFromResources("actions/color-fill.png"));
+        registerEnumParameterType("ij1-color-set-to-content-aware-2d:method", SetToContentAwareAlgorithm.Method.class, "Method", "Content-aware fill method");
     }
 
     private void registerRegistrationAlgorithms() {
@@ -1343,8 +1354,6 @@ public class ImageJAlgorithmsPlugin extends JIPipePrepackagedDefaultJavaPlugin {
         registerNodeType("ij1-color-merge-channels-hsb", MergeHSBChannelsAlgorithm.class, UIUtils.getIconURLFromResources("actions/colors-rgb.png"));
         registerNodeType("ij1-color-merge-channels-lab", MergeLABChannelsAlgorithm.class, UIUtils.getIconURLFromResources("actions/colors-rgb.png"));
         registerNodeType("ij1-color-split-rgb", SplitRGBChannelsAlgorithm.class, UIUtils.getIconURLFromResources("actions/channelmixer.png"));
-        registerNodeType("ij1-color-set-to-color", SetToColorAlgorithm.class, UIUtils.getIconURLFromResources("actions/color-fill.png"));
-        registerNodeType("ij1-color-set-to-grayscale-value", SetToValueAlgorithm.class, UIUtils.getIconURLFromResources("actions/color-fill.png"));
         registerNodeType("ij1-color-to-rgb", RenderImageToRGBAlgorithm.class, UIUtils.getIconURLFromResources("data-types/imgplus-color-rgb.png"));
         registerNodeType("ij1-color-to-greyscale-expression", ColorToGreyscaleExpression2D.class, UIUtils.getIconURLFromResources("actions/color-picker-grey.png"));
 

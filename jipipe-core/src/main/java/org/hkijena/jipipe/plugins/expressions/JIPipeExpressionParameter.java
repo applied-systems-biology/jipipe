@@ -19,11 +19,12 @@ import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.*;
 import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
 import com.fasterxml.jackson.databind.annotation.JsonSerialize;
+import com.fasterxml.jackson.databind.deser.ContextualDeserializer;
 import org.hkijena.jipipe.JIPipe;
 import org.hkijena.jipipe.plugins.parameters.api.collections.ListParameter;
+import org.hkijena.jipipe.utils.ReflectionUtils;
 import org.hkijena.jipipe.utils.scripting.MacroUtils;
 
-import javax.crypto.Mac;
 import java.io.IOException;
 import java.util.Collection;
 import java.util.HashSet;
@@ -64,21 +65,22 @@ public class JIPipeExpressionParameter extends AbstractExpressionParameter {
 
     /**
      * Escapes a string
-     * @param s the string
+     *
+     * @param s         the string
      * @param addQuotes if quotes should be added
      * @return the escaped string
      */
     public static String escapeString(String s, boolean addQuotes) {
-        if(addQuotes) {
+        if (addQuotes) {
             return String.format("\"%s\"", MacroUtils.escapeString(s));
-        }
-        else {
+        } else {
             return MacroUtils.escapeString(s);
         }
     }
 
     /**
      * Escapes a string as valid expression (with quotes)
+     *
      * @param s the string
      * @return the escaped string
      */
@@ -88,6 +90,7 @@ public class JIPipeExpressionParameter extends AbstractExpressionParameter {
 
     /**
      * Returns true if a string is a valid variable name
+     *
      * @param key the string
      * @return if the key is a valid variable name
      */
@@ -121,27 +124,38 @@ public class JIPipeExpressionParameter extends AbstractExpressionParameter {
         }
     }
 
-    public static class Deserializer extends JsonDeserializer<JIPipeExpressionParameter> {
+    public static class Deserializer extends JsonDeserializer<JIPipeExpressionParameter> implements ContextualDeserializer {
+
+        private JavaType deserializedType;
+
         @Override
         public JIPipeExpressionParameter deserialize(JsonParser p, DeserializationContext ctxt) throws IOException, JsonProcessingException {
             JsonNode root = p.readValueAsTree();
-            if(root.isNumber()) {
+            if (root.isNumber()) {
                 // Upgrade a numeric parameter to expression
-                return new JIPipeExpressionParameter(root.numberValue().toString());
-            }
-            else if(root.isTextual()) {
-                return new JIPipeExpressionParameter(JIPipeExpressionParameter.escapeString(root.textValue(), true));
-            }
-            else if(root.isObject()) {
+                return (JIPipeExpressionParameter) ReflectionUtils.newInstance(deserializedType.getRawClass(), root.numberValue().toString());
+            } else if (root.isTextual()) {
+                return (JIPipeExpressionParameter) ReflectionUtils.newInstance(deserializedType.getRawClass(), JIPipeExpressionParameter.escapeString(root.textValue(), true));
+            } else if (root.isObject()) {
                 String expression = "";
-                if(root.has("expression")) {
+                if (root.has("expression")) {
                     expression = root.get("expression").asText();
                 }
-                return new JIPipeExpressionParameter(expression);
+                return (JIPipeExpressionParameter) ReflectionUtils.newInstance(deserializedType.getRawClass(), expression);
+            } else {
+                return (JIPipeExpressionParameter) ReflectionUtils.newInstance(deserializedType.getRawClass());
             }
-            else {
-                return new JIPipeExpressionParameter();
-            }
+        }
+
+        @Override
+        public JsonDeserializer<?> createContextual(DeserializationContext ctxt, BeanProperty property) throws JsonMappingException {
+            //beanProperty is null when the type to deserialize is the top-level type or a generic type, not a type of a bean property
+            JavaType type = ctxt.getContextualType() != null
+                    ? ctxt.getContextualType()
+                    : property.getMember().getType();
+            Deserializer deserializer = new Deserializer();
+            deserializer.deserializedType = type;
+            return deserializer;
         }
     }
 
