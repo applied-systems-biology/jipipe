@@ -79,24 +79,40 @@ public class JIPipeDesktopDataViewerWindow extends JFrame implements JIPipeDeskt
     }
 
     private void registerHotkeys() {
-        InputMap inputMap = contentPane.getInputMap(JComponent.WHEN_IN_FOCUSED_WINDOW);
-        ActionMap actionMap = contentPane.getActionMap();
+//        InputMap inputMap = getRootPane().getInputMap(JComponent.WHEN_IN_FOCUSED_WINDOW);
+//        ActionMap actionMap = getRootPane().getActionMap();
+//        setFocusTraversalKeysEnabled(false);
+//
+//        actionMap.put("next-row", new AbstractAction() {
+//            @Override
+//            public void actionPerformed(ActionEvent e) {
+//                goToNextData();
+//            }
+//        });
+//        actionMap.put("previous-row", new AbstractAction() {
+//            @Override
+//            public void actionPerformed(ActionEvent e) {
+//                goToPreviousData();
+//            }
+//        });
+//
+//        inputMap.put(KeyStroke.getKeyStroke(KeyEvent.VK_UP, InputEvent.CTRL_DOWN_MASK), "previous-row");
+//        inputMap.put(KeyStroke.getKeyStroke(KeyEvent.VK_DOWN, InputEvent.CTRL_DOWN_MASK), "next-row");
 
-        actionMap.put("next-row", new AbstractAction() {
-            @Override
-            public void actionPerformed(ActionEvent e) {
-                goToNextData();
+        // Register a KeyEventDispatcher for global shortcuts
+        KeyboardFocusManager.getCurrentKeyboardFocusManager().addKeyEventDispatcher(e -> {
+            if (e.getID() == KeyEvent.KEY_PRESSED) {
+                if (e.getKeyCode() == KeyEvent.VK_DOWN && (e.getModifiersEx() & KeyEvent.CTRL_DOWN_MASK) != 0) {
+                    goToNextData();
+                    return true; // Consume the event
+                }
+                if (e.getKeyCode() == KeyEvent.VK_UP && (e.getModifiersEx() & KeyEvent.CTRL_DOWN_MASK) != 0) {
+                    goToPreviousData();
+                    return true; // Consume the event
+                }
             }
+            return false; // Let the event propagate otherwise
         });
-        actionMap.put("previous-row", new AbstractAction() {
-            @Override
-            public void actionPerformed(ActionEvent e) {
-                goToPreviousData();
-            }
-        });
-
-        inputMap.put(KeyStroke.getKeyStroke(KeyEvent.VK_UP, InputEvent.CTRL_DOWN_MASK), "previous-row");
-        inputMap.put(KeyStroke.getKeyStroke(KeyEvent.VK_DOWN, InputEvent.CTRL_DOWN_MASK), "next-row");
     }
 
     private void initialize() {
