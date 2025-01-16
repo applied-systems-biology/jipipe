@@ -31,7 +31,6 @@ import org.hkijena.jipipe.desktop.app.JIPipeDesktopDummyWorkbench;
 import org.hkijena.jipipe.desktop.app.compat.JIPipeDesktopRunSingleAlgorithmWindow;
 import org.hkijena.jipipe.desktop.commons.components.JIPipeDesktopSplashScreen;
 import org.hkijena.jipipe.plugins.settings.JIPipeExtensionApplicationSettings;
-import org.hkijena.jipipe.plugins.settings.JIPipeRuntimeApplicationSettings;
 import org.hkijena.jipipe.utils.PathUtils;
 import org.hkijena.jipipe.utils.StringUtils;
 import org.hkijena.jipipe.utils.UIUtils;
@@ -93,7 +92,7 @@ public class JIPipeRunAlgorithmCommand extends DynamicCommand implements Initial
             }
             JIPipe jiPipe = JIPipe.createInstance(getContext());
             JIPipeDesktopSplashScreen.getInstance().setJIPipe(JIPipe.getInstance());
-            jiPipe.initialize(extensionSettings, issues);
+            jiPipe.initialize(extensionSettings, issues, true);
             SwingUtilities.invokeLater(() -> JIPipeDesktopSplashScreen.getInstance().hideSplash());
         }
         if (!extensionSettings.isSilent()) {

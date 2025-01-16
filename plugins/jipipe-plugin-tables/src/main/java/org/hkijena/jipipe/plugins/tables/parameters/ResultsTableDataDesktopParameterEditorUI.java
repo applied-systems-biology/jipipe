@@ -13,10 +13,7 @@
 
 package org.hkijena.jipipe.plugins.tables.parameters;
 
-import org.hkijena.jipipe.api.parameters.JIPipeParameterAccess;
-import org.hkijena.jipipe.api.parameters.JIPipeParameterTree;
 import org.hkijena.jipipe.desktop.api.JIPipeDesktopParameterEditorUI;
-import org.hkijena.jipipe.desktop.app.JIPipeDesktopWorkbench;
 import org.hkijena.jipipe.desktop.app.tableeditor.JIPipeDesktopTableEditor;
 import org.hkijena.jipipe.plugins.tables.datatypes.ResultsTableData;
 import org.hkijena.jipipe.utils.UIUtils;
@@ -28,14 +25,9 @@ import java.awt.*;
  * Editor for {@link org.hkijena.jipipe.plugins.tables.datatypes.ResultsTableData}
  */
 public class ResultsTableDataDesktopParameterEditorUI extends JIPipeDesktopParameterEditorUI {
-    /**
-     * Creates new instance
-     *
-     * @param workbench       the workbench
-     * @param parameterAccess Parameter
-     */
-    public ResultsTableDataDesktopParameterEditorUI(JIPipeDesktopWorkbench workbench, JIPipeParameterTree parameterTree, JIPipeParameterAccess parameterAccess) {
-        super(workbench, parameterTree, parameterAccess);
+
+    public ResultsTableDataDesktopParameterEditorUI(InitializationParameters parameters) {
+        super(parameters);
         initialize();
     }
 

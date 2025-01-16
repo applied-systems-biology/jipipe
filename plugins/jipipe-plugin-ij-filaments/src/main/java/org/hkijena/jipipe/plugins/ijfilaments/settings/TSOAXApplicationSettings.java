@@ -17,8 +17,8 @@ import com.google.common.collect.ImmutableList;
 import org.hkijena.jipipe.JIPipe;
 import org.hkijena.jipipe.api.SetJIPipeDocumentation;
 import org.hkijena.jipipe.api.environments.ExternalEnvironmentParameterSettings;
-import org.hkijena.jipipe.api.environments.JIPipeExternalEnvironmentSettings;
 import org.hkijena.jipipe.api.environments.JIPipeEnvironment;
+import org.hkijena.jipipe.api.environments.JIPipeExternalEnvironmentSettings;
 import org.hkijena.jipipe.api.parameters.JIPipeParameter;
 import org.hkijena.jipipe.api.settings.JIPipeDefaultApplicationSettingsSheetCategory;
 import org.hkijena.jipipe.api.settings.JIPipeDefaultApplicationsSettingsSheet;
@@ -43,6 +43,10 @@ public class TSOAXApplicationSettings extends JIPipeDefaultApplicationsSettingsS
         preconfigureEnvironment(defaultEnvironment.getContent());
     }
 
+    public static TSOAXApplicationSettings getInstance() {
+        return JIPipe.getSettings().getById(ID, TSOAXApplicationSettings.class);
+    }
+
     private void preconfigureEnvironment(TSOAXEnvironment environment) {
         environment.setLoadFromArtifact(true);
         environment.setArtifactQuery(new JIPipeArtifactQueryParameter("com.github.tix209.tsoax:*"));
@@ -50,16 +54,11 @@ public class TSOAXApplicationSettings extends JIPipeDefaultApplicationsSettingsS
     }
 
     public TSOAXEnvironment getReadOnlyDefaultEnvironment() {
-        if(defaultEnvironment.isEnabled()) {
+        if (defaultEnvironment.isEnabled()) {
             return new TSOAXEnvironment(defaultEnvironment.getContent());
-        }
-        else {
+        } else {
             return new TSOAXEnvironment(standardEnvironment);
         }
-    }
-
-    public static TSOAXApplicationSettings getInstance() {
-        return JIPipe.getSettings().getById(ID, TSOAXApplicationSettings.class);
     }
 
     @SetJIPipeDocumentation(name = "TSOAX environment", description = "Contains information about the location of the TSOAX installation.")

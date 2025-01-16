@@ -49,7 +49,7 @@ import java.util.concurrent.ExecutionException;
 import java.util.concurrent.Future;
 
 /**
- * An {@link JIPipeAlgorithm} that passes incoming data to their corresponding output slots if the data batch is complete
+ * An {@link JIPipeAlgorithm} that passes incoming data to their corresponding output slots if the iteration step is complete
  * and otherwise runs a generator function that generates missing data items.
  * Original annotations are preserved.
  */
@@ -114,7 +114,7 @@ public abstract class JIPipeMissingDataGeneratorAlgorithm extends JIPipeParamete
         IntegerRange limit = iterationStepGenerationSettings.getLimit().getContent();
         TIntSet allowedIndices = withLimit ? new TIntHashSet(limit.getIntegers(0, iterationSteps.size(), new JIPipeExpressionVariablesMap())) : null;
         if (withLimit) {
-            progressInfo.log("[INFO] Applying limit to all data batches. Allowed indices are " + Ints.join(", ", allowedIndices.toArray()));
+            progressInfo.log("[INFO] Applying limit to all iteration steps. Allowed indices are " + Ints.join(", ", allowedIndices.toArray()));
             List<JIPipeMultiIterationStep> limitedBatches = new ArrayList<>();
             for (int i = 0; i < iterationSteps.size(); i++) {
                 if (allowedIndices.contains(i)) {
@@ -166,7 +166,7 @@ public abstract class JIPipeMissingDataGeneratorAlgorithm extends JIPipeParamete
                     "Unable to split data into batches!",
                     "The algorithm needs to assign input a unique data set via annotations, but there are either missing elements or multiple data per slot.",
                     "Please check the input of the algorithm by running the quick run on each input algorithm. " +
-                            "Try to switch to the 'Data batches' tab to preview how data is split into batches."));
+                            "Try to switch to the 'Iteration stepes' tab to preview how data is split into batches."));
         }
 
         final int numIterationSteps = iterationSteps.size();
@@ -232,7 +232,7 @@ public abstract class JIPipeMissingDataGeneratorAlgorithm extends JIPipeParamete
     }
 
     @SetJIPipeDocumentation(name = "Keep original annotations", description = "If enabled, outputs that were not generated " +
-            "keep their original annotations. Otherwise the merged annotations from the data batch are used.")
+            "keep their original annotations. Otherwise the merged annotations from the iteration step are used.")
     @JIPipeParameter(value = "keep-original-annotations", pinned = true)
     public boolean isKeepOriginalAnnotations() {
         return keepOriginalAnnotations;
@@ -298,7 +298,7 @@ public abstract class JIPipeMissingDataGeneratorAlgorithm extends JIPipeParamete
     /**
      * Generates data and puts the output into the specified output slot
      *
-     * @param iterationStep the data batch
+     * @param iterationStep the iteration step
      * @param inputSlot     the input slot that should be generated. Please note that it does not contain any data for this batch.
      * @param outputSlot    the output slot where data should be put.
      * @param progressInfo  the progress info

@@ -44,7 +44,7 @@ public class JIPipeDesktopModernMetalTheme extends DefaultMetalTheme {
     public static final ColorUIResource PRIMARY4 =
             new ColorUIResource(0xF7F8FA);
     public static final ColorUIResource PRIMARY5 =
-            new ColorUIResource(0x65a4e3);
+            new ColorUIResource(0x5d85ae);
     public static final ColorUIResource CONTROL_TOGGLED =
             new ColorUIResource(0xDEE0E4);
     public static final ColorUIResource CONTROL_HIGHLIGHTED =
@@ -193,7 +193,7 @@ public class JIPipeDesktopModernMetalTheme extends DefaultMetalTheme {
                 UIUtils.getIconFromResources("actions/xfce-wm-minimize.png"),
                 // menubutton3
                 "InternalFrame.icon",
-                UIUtils.getIconFromResources("actions/open-menu.png"),
+                UIUtils.getIconFromResources("actions/hamburger-menu.png"),
                 // maximize2
                 "InternalFrame.maximizeIcon",
                 UIUtils.getIconFromResources("actions/xfce-wm-maximize.png"),

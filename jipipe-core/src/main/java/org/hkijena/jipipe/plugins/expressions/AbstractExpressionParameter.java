@@ -75,7 +75,7 @@ public abstract class AbstractExpressionParameter implements JIPipeCustomTextDes
      * @return true if the expression is empty
      */
     public boolean isEmpty() {
-        return StringUtils.nullToEmpty(getExpression()).trim().length() == 0;
+        return StringUtils.nullToEmpty(getExpression()).trim().isEmpty();
     }
 
     /**

@@ -102,7 +102,7 @@ public class AnnotateWithAnnotationTable extends JIPipeParameterSlotAlgorithm {
         IntegerRange limit = tableMergeSettings.getLimit().getContent();
         TIntSet allowedIndices = withLimit ? new TIntHashSet(limit.getIntegers(0, iterationSteps.size(), new JIPipeExpressionVariablesMap())) : null;
         if (withLimit) {
-            progressInfo.log("[INFO] Applying limit to all data batches. Allowed indices are " + Ints.join(", ", allowedIndices.toArray()));
+            progressInfo.log("[INFO] Applying limit to all iteration steps. Allowed indices are " + Ints.join(", ", allowedIndices.toArray()));
             List<JIPipeMultiIterationStep> limitedBatches = new ArrayList<>();
             for (int i = 0; i < iterationSteps.size(); i++) {
                 if (allowedIndices.contains(i)) {

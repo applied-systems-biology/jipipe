@@ -36,7 +36,6 @@ import org.hkijena.jipipe.plugins.ijfilaments.datatypes.Filaments3DGraphData;
 import org.hkijena.jipipe.plugins.ijfilaments.parameters.EdgeMaskParameter;
 import org.hkijena.jipipe.plugins.ijfilaments.util.FilamentEdge;
 import org.hkijena.jipipe.plugins.ijfilaments.util.FilamentEdgeVariablesInfo;
-import org.hkijena.jipipe.plugins.ijfilaments.util.FilamentVertexVariablesInfo;
 import org.hkijena.jipipe.plugins.parameters.library.collections.ParameterCollectionList;
 import org.hkijena.jipipe.utils.ColorUtils;
 
@@ -134,11 +133,6 @@ public class ChangeFilamentEdgePropertiesExpressionAlgorithm extends JIPipeSimpl
     @JIPipeParameter("edge-filter")
     public EdgeMaskParameter getEdgeMask() {
         return edgeMask;
-    }
-
-    @Override
-    public boolean isEnableDefaultCustomExpressionVariables() {
-        return true;
     }
 
     public static class MetadataEntry extends AbstractJIPipeParameterCollection {

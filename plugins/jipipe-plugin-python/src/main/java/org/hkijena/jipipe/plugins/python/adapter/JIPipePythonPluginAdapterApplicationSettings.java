@@ -17,8 +17,8 @@ import com.google.common.collect.ImmutableList;
 import org.hkijena.jipipe.JIPipe;
 import org.hkijena.jipipe.api.SetJIPipeDocumentation;
 import org.hkijena.jipipe.api.environments.ExternalEnvironmentParameterSettings;
-import org.hkijena.jipipe.api.environments.JIPipeExternalEnvironmentSettings;
 import org.hkijena.jipipe.api.environments.JIPipeEnvironment;
+import org.hkijena.jipipe.api.environments.JIPipeExternalEnvironmentSettings;
 import org.hkijena.jipipe.api.parameters.JIPipeParameter;
 import org.hkijena.jipipe.api.settings.JIPipeDefaultApplicationSettingsSheetCategory;
 import org.hkijena.jipipe.api.settings.JIPipeDefaultApplicationsSettingsSheet;
@@ -40,20 +40,19 @@ public class JIPipePythonPluginAdapterApplicationSettings extends JIPipeDefaultA
         preconfigureEnvironment(defaultEnvironment.getContent());
     }
 
+    public static JIPipePythonPluginAdapterApplicationSettings getInstance() {
+        return JIPipe.getSettings().getById(ID, JIPipePythonPluginAdapterApplicationSettings.class);
+    }
+
     private void preconfigureEnvironment(JIPipePythonAdapterLibraryEnvironment environment) {
         environment.setLoadFromArtifact(true);
         environment.setArtifactQuery(new JIPipeArtifactQueryParameter("org.hkijena.jipipe-python-adapter:*"));
     }
 
-    public static JIPipePythonPluginAdapterApplicationSettings getInstance() {
-        return JIPipe.getSettings().getById(ID, JIPipePythonPluginAdapterApplicationSettings.class);
-    }
-
     public JIPipePythonAdapterLibraryEnvironment getReadOnlyDefaultEnvironment() {
-        if(defaultEnvironment.isEnabled()) {
+        if (defaultEnvironment.isEnabled()) {
             return new JIPipePythonAdapterLibraryEnvironment(defaultEnvironment.getContent());
-        }
-        else {
+        } else {
             return new JIPipePythonAdapterLibraryEnvironment(standardEnvironment);
         }
     }

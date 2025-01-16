@@ -41,6 +41,7 @@ import org.hkijena.jipipe.plugins.ijfilaments.util.FilamentVertexVariablesInfo;
 import org.hkijena.jipipe.plugins.imagejdatatypes.datatypes.greyscale.ImagePlusGreyscaleMaskData;
 import org.hkijena.jipipe.plugins.imagejdatatypes.util.ImageJUtils;
 import org.hkijena.jipipe.plugins.parameters.library.colors.OptionalColorParameter;
+import org.hkijena.jipipe.plugins.parameters.library.pairs.StringAndStringPairParameter;
 import org.hkijena.jipipe.plugins.parameters.library.primitives.optional.OptionalIntegerParameter;
 import org.jetbrains.annotations.NotNull;
 import org.jgrapht.GraphPath;
@@ -72,6 +73,7 @@ public class ConnectVerticesAlgorithm extends JIPipeIteratingAlgorithm {
     private boolean findPath = true;
     private boolean ignoreLimitConnectionsForSource = false;
     private boolean isIgnoreLimitConnectionsForTarget = false;
+    private StringAndStringPairParameter.List newEdgeMetadata = new StringAndStringPairParameter.List();
 
     public ConnectVerticesAlgorithm(JIPipeNodeInfo info) {
         super(info);
@@ -93,6 +95,7 @@ public class ConnectVerticesAlgorithm extends JIPipeIteratingAlgorithm {
         this.targetVertexFilter = new OptionalJIPipeExpressionParameter(other.targetVertexFilter);
         this.ignoreLimitConnectionsForSource = other.ignoreLimitConnectionsForSource;
         this.isIgnoreLimitConnectionsForTarget = other.isIgnoreLimitConnectionsForTarget;
+        this.newEdgeMetadata = new StringAndStringPairParameter.List(other.newEdgeMetadata);
     }
 
     @SetJIPipeDocumentation(name = "Bypass connection limit for sources", description = "If enabled, the 'Limit connections' parameter does not apply to source vertices.")
@@ -195,6 +198,17 @@ public class ConnectVerticesAlgorithm extends JIPipeIteratingAlgorithm {
         this.findPath = findPath;
     }
 
+    @SetJIPipeDocumentation(name = "Set new edges metadata", description = "Allows to set the metadata of newly created edges")
+    @JIPipeParameter("new-edge-metadata")
+    public StringAndStringPairParameter.List getNewEdgeMetadata() {
+        return newEdgeMetadata;
+    }
+
+    @JIPipeParameter("new-edge-metadata")
+    public void setNewEdgeMetadata(StringAndStringPairParameter.List newEdgeMetadata) {
+        this.newEdgeMetadata = newEdgeMetadata;
+    }
+
     @Override
     public boolean isParameterUIVisible(JIPipeParameterTree tree, JIPipeParameterAccess access) {
         if (access.getSource() == this && "scoring-function".equals(access.getKey())) {
@@ -234,11 +248,6 @@ public class ConnectVerticesAlgorithm extends JIPipeIteratingAlgorithm {
     @JIPipeParameter("require-direction")
     public void setRequireDirection(boolean requireDirection) {
         this.requireDirection = requireDirection;
-    }
-
-    @Override
-    public boolean isEnableDefaultCustomExpressionVariables() {
-        return true;
     }
 
     @SetJIPipeDocumentation(name = "Candidate edge filter", description = "Filter expression that determines if an edge is considered as candidate")
@@ -441,21 +450,12 @@ public class ConnectVerticesAlgorithm extends JIPipeIteratingAlgorithm {
 
                     // Write variables
                     FilamentUnconnectedEdgeVariablesInfo.writeToVariables(outputData, current, other, variables, "");
+
+                    // Path check
                     GraphPath<FilamentVertex, FilamentEdge> path = null;
                     if (findPath && outputDataInspector != null) {
                         path = outputDataInspector.getPath(current, other);
-                        if (hasDirection) {
-                            variables.set("angle", Math.toDegrees(currentDirection.angle(otherDirection)));
-                            variables.set("dot_product", currentDirection.dot(otherDirection));
-                        } else {
-                            variables.set("angle", Double.NaN);
-                            variables.set("dot_product", Double.NaN);
-                        }
-                    } else {
-                        variables.set("angle", Double.NaN);
-                        variables.set("dot_product", Double.NaN);
                     }
-
                     if (path != null) {
                         variables.set("path_exists", true);
                         variables.set("path_length", path.getLength());
@@ -464,6 +464,18 @@ public class ConnectVerticesAlgorithm extends JIPipeIteratingAlgorithm {
                         variables.set("path_length", Double.NaN);
                     }
 
+                    // Direction-related variables
+                    if (hasDirection) {
+                        variables.set("angle", Math.toDegrees(currentDirection.angle(otherDirection)));
+                        variables.set("dot_product", currentDirection.dot(otherDirection));
+                        variables.set("source.direction", Arrays.asList(currentDirection.x, currentDirection.y, currentDirection.z));
+                        variables.set("target.direction", Arrays.asList(otherDirection.x, otherDirection.y, otherDirection.z));
+                    } else {
+                        variables.set("angle", Double.NaN);
+                        variables.set("dot_product", Double.NaN);
+                        variables.set("source.direction", Arrays.asList(0, 0, 0));
+                        variables.set("target.direction", Arrays.asList(0, 0, 0));
+                    }
 
                     // Check via filter
                     if (!filterFunction.test(variables)) {
@@ -497,10 +509,10 @@ public class ConnectVerticesAlgorithm extends JIPipeIteratingAlgorithm {
             if (limitConnections.isEnabled()) {
                 int c1 = connectionCount.getOrDefault(candidate.source, 0);
                 int c2 = connectionCount.getOrDefault(candidate.target, 0);
-                if(ignoreLimitConnectionsForSource) {
+                if (ignoreLimitConnectionsForSource) {
                     c1 = 0;
                 }
-                if(isIgnoreLimitConnectionsForTarget) {
+                if (isIgnoreLimitConnectionsForTarget) {
                     c2 = 0;
                 }
                 if (c1 < limitConnections.getContent() && c2 < limitConnections.getContent()) {
@@ -514,8 +526,13 @@ public class ConnectVerticesAlgorithm extends JIPipeIteratingAlgorithm {
             // Connect
             FilamentEdge edge = outputData.addEdge(candidate.source, candidate.target);
             if (edge != null) {
-                if (newEdgeColor.isEnabled())
+                if (newEdgeColor.isEnabled()) {
                     edge.setColor(newEdgeColor.getContent());
+                }
+                for (StringAndStringPairParameter item : newEdgeMetadata) {
+                    edge.setMetadata(item.getKey(), item.getValue());
+                }
+
             }
             ++successes;
         }

@@ -14,10 +14,8 @@
 package org.hkijena.jipipe.desktop.app.grapheditor.commons.contextmenu;
 
 import org.hkijena.jipipe.JIPipe;
-import org.hkijena.jipipe.api.nodes.JIPipeGraphNode;
 import org.hkijena.jipipe.desktop.app.grapheditor.commons.JIPipeDesktopGraphCanvasUI;
 import org.hkijena.jipipe.desktop.app.grapheditor.commons.nodeui.JIPipeDesktopGraphNodeUI;
-import org.hkijena.jipipe.desktop.app.grapheditor.nodefinder.JIPipeDesktopNodeFinderDialogUI;
 import org.hkijena.jipipe.desktop.commons.components.JIPipeDesktopParameterKeyPickerUI;
 import org.hkijena.jipipe.plugins.multiparameters.nodes.DefineParametersTableAlgorithm;
 import org.hkijena.jipipe.plugins.parameters.library.table.ParameterTable;
@@ -25,7 +23,6 @@ import org.hkijena.jipipe.utils.UIUtils;
 
 import javax.swing.*;
 import java.awt.event.KeyEvent;
-import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 

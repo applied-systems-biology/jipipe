@@ -286,7 +286,7 @@ public class JIPipeSingleIterationStep implements JIPipeIterationStep, Comparabl
 
 
     /**
-     * Creates a context for new data that inherits direct predecessors from this data batch's input
+     * Creates a context for new data that inherits direct predecessors from this iteration step's input
      *
      * @return the new context
      */

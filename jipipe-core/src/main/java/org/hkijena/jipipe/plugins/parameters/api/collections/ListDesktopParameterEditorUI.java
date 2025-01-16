@@ -17,7 +17,6 @@ import org.hkijena.jipipe.JIPipe;
 import org.hkijena.jipipe.api.parameters.JIPipeParameterAccess;
 import org.hkijena.jipipe.api.parameters.JIPipeParameterTree;
 import org.hkijena.jipipe.desktop.api.JIPipeDesktopParameterEditorUI;
-import org.hkijena.jipipe.desktop.app.JIPipeDesktopWorkbench;
 import org.hkijena.jipipe.desktop.commons.components.JIPipeDesktopFormPanel;
 import org.hkijena.jipipe.utils.UIUtils;
 import org.hkijena.jipipe.utils.ui.RoundedLineBorder;
@@ -41,14 +40,8 @@ public class ListDesktopParameterEditorUI extends JIPipeDesktopParameterEditorUI
     private JIPipeDesktopFormPanel formPanel;
     private int lastClickedIndex = -1;
 
-    /**
-     * Creates new instance
-     *
-     * @param workbench       workbench
-     * @param parameterAccess Parameter
-     */
-    public ListDesktopParameterEditorUI(JIPipeDesktopWorkbench workbench, JIPipeParameterTree parameterTree, JIPipeParameterAccess parameterAccess) {
-        super(workbench, parameterTree, parameterAccess);
+    public ListDesktopParameterEditorUI(InitializationParameters parameters) {
+        super(parameters);
         initialize();
         reload();
     }
@@ -79,7 +72,7 @@ public class ListDesktopParameterEditorUI extends JIPipeDesktopParameterEditorUI
         reorderModeButton.addActionListener(e -> reload());
         toolBar.add(reorderModeButton);
 
-        JButton menuButton = new JButton(UIUtils.getIconFromResources("actions/open-menu.png"));
+        JButton menuButton = new JButton(UIUtils.getIconFromResources("actions/hamburger-menu.png"));
         menuButton.setToolTipText("Show additional options");
         JPopupMenu menu = UIUtils.addPopupMenuToButton(menuButton);
         toolBar.add(menuButton);
@@ -256,7 +249,7 @@ public class ListDesktopParameterEditorUI extends JIPipeDesktopParameterEditorUI
                     parameter,
                     parameter.getContentClass(),
                     i);
-            JIPipeDesktopParameterEditorUI ui = JIPipe.getParameterTypes().createEditorFor(getDesktopWorkbench(), new JIPipeParameterTree(access), access);
+            JIPipeDesktopParameterEditorUI ui = JIPipe.getParameterTypes().createEditorInstance(access, getDesktopWorkbench(), new JIPipeParameterTree(access), null);
             ui.setOpaque(false);
 
             JPanel entryPanel = new JPanel(new GridBagLayout());

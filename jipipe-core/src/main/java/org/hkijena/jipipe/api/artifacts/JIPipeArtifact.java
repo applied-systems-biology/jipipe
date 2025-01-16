@@ -225,12 +225,12 @@ public class JIPipeArtifact implements Comparable<JIPipeArtifact> {
 
     public int getGPUVersion(String prefix) {
         for (String entry : getClassifier().split("_")) {
-            if(entry.matches(prefix + "\\d\\d\\d")) {
+            if (entry.matches(prefix + "\\d\\d\\d")) {
                 return Integer.parseInt(entry.substring(prefix.length()));
             }
         }
         // Handle legacy case
-        if(isRequireGPU() && "cu".equals(prefix)) {
+        if (isRequireGPU() && "cu".equals(prefix)) {
             return 102; // old artifacts were running on CUDA 10.2
         }
         return -1;
@@ -239,18 +239,17 @@ public class JIPipeArtifact implements Comparable<JIPipeArtifact> {
     public boolean isGPUCompatible(JIPipeArtifactAccelerationPreference accelerationPreference, Vector2iParameter accelerationPreferenceVersions) {
         int min = accelerationPreferenceVersions.getX();
         int max = accelerationPreferenceVersions.getY();
-        if(accelerationPreference == JIPipeArtifactAccelerationPreference.CPU) {
+        if (accelerationPreference == JIPipeArtifactAccelerationPreference.CPU) {
             return true;
-        }
-        else {
+        } else {
             int gpuVersion = getGPUVersion(accelerationPreference.getPrefix());
-            if(gpuVersion == 0) {
+            if (gpuVersion == 0) {
                 return false;
             }
-            if(min > 0 && gpuVersion < min) {
+            if (min > 0 && gpuVersion < min) {
                 return false;
             }
-            if(max > 0 && gpuVersion > max) {
+            if (max > 0 && gpuVersion > max) {
                 return false;
             }
             return true;

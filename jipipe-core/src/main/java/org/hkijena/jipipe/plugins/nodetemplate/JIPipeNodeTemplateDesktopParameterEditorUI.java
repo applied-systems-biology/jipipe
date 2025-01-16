@@ -17,10 +17,7 @@ import org.hkijena.jipipe.JIPipe;
 import org.hkijena.jipipe.api.JIPipeNodeTemplate;
 import org.hkijena.jipipe.api.nodes.JIPipeGraph;
 import org.hkijena.jipipe.api.nodes.JIPipeNodeInfo;
-import org.hkijena.jipipe.api.parameters.JIPipeParameterAccess;
-import org.hkijena.jipipe.api.parameters.JIPipeParameterTree;
 import org.hkijena.jipipe.desktop.api.JIPipeDesktopParameterEditorUI;
-import org.hkijena.jipipe.desktop.app.JIPipeDesktopWorkbench;
 import org.hkijena.jipipe.desktop.commons.components.JIPipeDesktopParameterFormPanel;
 import org.hkijena.jipipe.plugins.parameters.library.markup.MarkdownText;
 import org.hkijena.jipipe.utils.UIUtils;
@@ -38,8 +35,8 @@ public class JIPipeNodeTemplateDesktopParameterEditorUI extends JIPipeDesktopPar
      * @param workbench       the workbech
      * @param parameterAccess Parameter
      */
-    public JIPipeNodeTemplateDesktopParameterEditorUI(JIPipeDesktopWorkbench workbench, JIPipeParameterTree parameterTree, JIPipeParameterAccess parameterAccess) {
-        super(workbench, parameterTree, parameterAccess);
+    public JIPipeNodeTemplateDesktopParameterEditorUI(InitializationParameters parameters) {
+        super(parameters);
         initialize();
         reload();
     }

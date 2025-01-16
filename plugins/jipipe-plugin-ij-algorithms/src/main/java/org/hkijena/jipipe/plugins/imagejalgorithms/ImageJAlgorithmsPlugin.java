@@ -62,6 +62,9 @@ import org.hkijena.jipipe.plugins.imagejalgorithms.nodes.io.*;
 import org.hkijena.jipipe.plugins.imagejalgorithms.nodes.labels.*;
 import org.hkijena.jipipe.plugins.imagejalgorithms.nodes.labels.filter.*;
 import org.hkijena.jipipe.plugins.imagejalgorithms.nodes.lut.*;
+import org.hkijena.jipipe.plugins.imagejalgorithms.nodes.masking.SetToColorAlgorithm;
+import org.hkijena.jipipe.plugins.imagejalgorithms.nodes.masking.SetToContentAwareAlgorithm;
+import org.hkijena.jipipe.plugins.imagejalgorithms.nodes.masking.SetToValueAlgorithm;
 import org.hkijena.jipipe.plugins.imagejalgorithms.nodes.math.*;
 import org.hkijena.jipipe.plugins.imagejalgorithms.nodes.math.distancemap.*;
 import org.hkijena.jipipe.plugins.imagejalgorithms.nodes.math.local.*;
@@ -88,6 +91,9 @@ import org.hkijena.jipipe.plugins.imagejalgorithms.nodes.overlay.ExtractOverlayA
 import org.hkijena.jipipe.plugins.imagejalgorithms.nodes.overlay.RemoveOverlayAlgorithm;
 import org.hkijena.jipipe.plugins.imagejalgorithms.nodes.overlay.RenderOverlayAlgorithm;
 import org.hkijena.jipipe.plugins.imagejalgorithms.nodes.overlay.SetOverlayAlgorithm;
+import org.hkijena.jipipe.plugins.imagejalgorithms.nodes.registration.turboreg.TurboRegRegistration2DReferencedAlgorithm;
+import org.hkijena.jipipe.plugins.imagejalgorithms.nodes.registration.turboreg.TurboRegRegistration2DSingleAlgorithm;
+import org.hkijena.jipipe.plugins.imagejalgorithms.nodes.registration.turboreg.TurboRegRegistrationAlgorithmRuleType;
 import org.hkijena.jipipe.plugins.imagejalgorithms.nodes.roi.*;
 import org.hkijena.jipipe.plugins.imagejalgorithms.nodes.roi.annotations.RoiPropertiesToAnnotationsAlgorithm;
 import org.hkijena.jipipe.plugins.imagejalgorithms.nodes.roi.assemble.AssembleExtractedROIAlgorithm;
@@ -129,9 +135,11 @@ import org.hkijena.jipipe.plugins.imagejalgorithms.nodes.threshold.iterative.Ite
 import org.hkijena.jipipe.plugins.imagejalgorithms.nodes.threshold.local.*;
 import org.hkijena.jipipe.plugins.imagejalgorithms.nodes.transform.*;
 import org.hkijena.jipipe.plugins.imagejalgorithms.parameters.*;
+import org.hkijena.jipipe.plugins.imagejalgorithms.utils.LineMirror;
 import org.hkijena.jipipe.plugins.imagejalgorithms.utils.OMEAccessorStorage;
 import org.hkijena.jipipe.plugins.imagejalgorithms.utils.OrientationJGradientOperator;
 import org.hkijena.jipipe.plugins.imagejalgorithms.utils.OrientationJVectorFieldType;
+import org.hkijena.jipipe.plugins.imagejalgorithms.utils.turboreg.TurboRegTransformationType;
 import org.hkijena.jipipe.plugins.imagejdatatypes.ImageJDataTypesPlugin;
 import org.hkijena.jipipe.plugins.imagejdatatypes.algorithms.ApplyDisplayContrastAlgorithm;
 import org.hkijena.jipipe.plugins.imagejdatatypes.algorithms.DisplayRangeCalibrationAlgorithm;
@@ -600,6 +608,8 @@ public class ImageJAlgorithmsPlugin extends JIPipePrepackagedDefaultJavaPlugin {
         registerCalibrationAlgorithms();
         registerColocalizationAlgorithms();
         registerMetadataAlgorithms();
+        registerRegistrationAlgorithms();
+        registerMaskingAlgorithms();
 
         registerNodeType("ij1-generate-missing-results-table", GenerateMissingTablesAlgorithm.class, UIUtils.getIconURLFromResources("actions/image-auto-adjust.png"));
         registerNodeType("ij1-generate-missing-results-table-2", GenerateMissingTablesAlgorithm2.class, UIUtils.getIconURLFromResources("actions/image-auto-adjust.png"));
@@ -623,6 +633,28 @@ public class ImageJAlgorithmsPlugin extends JIPipePrepackagedDefaultJavaPlugin {
         // Register examples
         registerNodeExamplesFromResources(RESOURCES, "examples");
         registerProjectTemplatesFromResources(RESOURCES, "templates");
+    }
+
+    private void registerMaskingAlgorithms() {
+        registerNodeType("ij1-color-set-to-color", SetToColorAlgorithm.class, UIUtils.getIconURLFromResources("actions/color-fill.png"));
+        registerNodeType("ij1-color-set-to-grayscale-value", SetToValueAlgorithm.class, UIUtils.getIconURLFromResources("actions/color-fill.png"));
+        registerNodeType("ij1-color-set-to-content-aware-2d", SetToContentAwareAlgorithm.class, UIUtils.getIconURLFromResources("actions/color-fill.png"));
+        registerEnumParameterType("ij1-color-set-to-content-aware-2d:method", SetToContentAwareAlgorithm.Method.class, "Method", "Content-aware fill method");
+    }
+
+    private void registerRegistrationAlgorithms() {
+        // Algorithms temporarily deactivated (no time to develop them)
+//        registerEnumParameterType("ij1-simple-image-registration:model", SimpleImageRegistrationModel.class, "Simple image registration model", "Image registration model");
+//        registerEnumParameterType("ij1-simple-image-registration:feature-model", SimpleImageRegistrationFeatureModel.class, "Simple image registration feature model", "Model to extract image features");
+//        registerEnumParameterType("ij1-bunwarpj-registration:max-scale-deformation", BUnwarpJMaxScaleDeformation.class, "BUnwarpJ max scale deformation", "");
+//        registerEnumParameterType("ij1-bunwarpj-registration:min-scale-deformation", BUnwarpJMinScaleDeformation.class, "BUnwarpJ min scale deformation", "");
+//        registerEnumParameterType("ij1-bunwarpj-registration:mode", BUnwarpJMode.class, "BUnwarpJ mode", "");
+//        registerNodeType("ij1-simple-image-registration", SimpleImageRegistrationAlgorithm.class, UIUtils.getIconURLFromResources("actions/transform-shear-right.png"));
+
+        registerEnumParameterType("ij1-turbo-reg:transformation-type", TurboRegTransformationType.class, "TurboReg transformation", "Transformation type");
+        registerEnumParameterType("ij1-turbo-reg-image-registration:rule-type", TurboRegRegistrationAlgorithmRuleType.class, "TurboReg registration rule type", "Determines the behavior of the algorithm");
+        registerNodeType("ij1-turbo-reg-image-registration", TurboRegRegistration2DReferencedAlgorithm.class, UIUtils.getIconURLFromResources("actions/transform-shear-right.png"));
+        registerNodeType("ij1-turbo-reg-image-registration-io", TurboRegRegistration2DSingleAlgorithm.class, UIUtils.getIconURLFromResources("actions/transform-shear-right.png"));
     }
 
     @Override
@@ -706,17 +738,18 @@ public class ImageJAlgorithmsPlugin extends JIPipePrepackagedDefaultJavaPlugin {
         registerNodeType("ij1-labels-remove-largest-label", RemoveLargestLabelAlgorithm.class, UIUtils.getIconURLFromResources("actions/filter.png"));
         registerNodeType("ij1-labels-keep-largest-label", KeepLargestLabelAlgorithm.class, UIUtils.getIconURLFromResources("actions/filter.png"));
         registerNodeType("ij1-labels-dilate-labels", DilateLabelsAlgorithm.class, UIUtils.getIconURLFromResources("actions/morphology.png"));
-        registerNodeType("ij1-labels-extract-statistics", ExtractLabelStatisticsAlgorithm.class, UIUtils.getIconURLFromResources("actions/sum.png"));
+        registerNodeType("ij1-labels-extract-statistics", ExtractLabelStatisticsAlgorithm.class, UIUtils.getIconURLFromResources("actions/insert-math-expression.png"));
         registerNodeType("ij1-labels-filter-by-statistics", FilterLabelsByStatisticsAlgorithm.class, UIUtils.getIconURLFromResources("actions/filter.png"));
         registerNodeType("ij1-labels-filter-by-mask", FilterLabelsByMaskAlgorithm.class, UIUtils.getIconURLFromResources("actions/filter.png"));
         registerNodeType("ij1-labels-filter-by-overlap", FilterLabelsByOverlapAlgorithm.class, UIUtils.getIconURLFromResources("actions/filter.png"));
-        registerNodeType("ij1-labels-overlap-statistics", OverlapMeasureLabelsAlgorithm.class, UIUtils.getIconURLFromResources("actions/sum.png"));
-        registerNodeType("ij1-labels-annotate-with-overlap-statistics", AnnotateWithOverlapMeasureLabelsAlgorithm.class, UIUtils.getIconURLFromResources("actions/sum.png"));
+        registerNodeType("ij1-labels-overlap-statistics", OverlapMeasureLabelsAlgorithm.class, UIUtils.getIconURLFromResources("actions/insert-math-expression.png"));
+        registerNodeType("ij1-labels-annotate-with-overlap-statistics", AnnotateWithOverlapMeasureLabelsAlgorithm.class, UIUtils.getIconURLFromResources("actions/insert-math-expression.png"));
         registerNodeType("ij1-labels-merge-small-labels", MergeSmallLabelsAlgorithm.class, UIUtils.getIconURLFromResources("actions/insert-math-expression.png"));
         registerNodeType("ij1-labels-merge-labels-to-thickness", MergeLabelsToThicknessAlgorithm.class, UIUtils.getIconURLFromResources("actions/insert-math-expression.png"));
         registerNodeType("ij1-labels-merge-labels-to-bins", MergeLabelsToBinsAlgorithm.class, UIUtils.getIconURLFromResources("actions/insert-math-expression.png"));
         registerNodeType("ij1-labels-filter-labels-by-thickness", FilterLabelsByThicknessAlgorithm.class, UIUtils.getIconURLFromResources("actions/filter.png"));
         registerNodeType("ij1-labels-separate", SeparateLabelsAlgorithm.class, UIUtils.getIconURLFromResources("actions/split.png"));
+        registerNodeType("ij1-labels-split-connected-components-2d", SplitLabelsConnectedComponents2DAlgorithm.class, UIUtils.getIconURLFromResources("actions/split.png"));
     }
 
     private void registerConverterAlgorithms() {
@@ -873,6 +906,7 @@ public class ImageJAlgorithmsPlugin extends JIPipePrepackagedDefaultJavaPlugin {
         registerNodeType("ij1-roi-to-mask-unreferenced", UnreferencedRoiToMaskAlgorithm.class, UIUtils.getIconURLFromResources("actions/segment.png"));
         registerNodeType("ij1-roi-to-mask", RoiToMaskAlgorithm.class, UIUtils.getIconURLFromResources("actions/segment.png"));
         registerNodeType("ij1-roi-outline", OutlineRoiAlgorithm.class, UIUtils.getIconURLFromResources("actions/draw-connector.png"));
+        registerNodeType("ij1-roi-outline-concave-hull-moreira-santos", OutlineRoiConcaveHullMoreiraSantosAlgorithm.class, UIUtils.getIconURLFromResources("actions/draw-connector.png"));
         registerNodeType("ij1-roi-crop-list", CropRoiListAlgorithm.class, UIUtils.getIconURLFromResources("actions/image-crop.png"));
         registerNodeType("ij1-roi-to-centroid", RoiToCentroidAlgorithm.class, UIUtils.getIconURLFromResources("actions/draw-connector.png"));
         registerNodeType("ij1-roi-remove-bordering", RemoveBorderRoisAlgorithm.class, UIUtils.getIconURLFromResources("actions/bordertool.png"));
@@ -976,6 +1010,7 @@ public class ImageJAlgorithmsPlugin extends JIPipePrepackagedDefaultJavaPlugin {
         registerNodeType("ij1-transform-expand2d", TransformExpandCanvas2DAlgorithm.class, UIUtils.getIconURLFromResources("actions/transform-scale.png"));
         registerNodeType("ij1-transform-equalize-expand2d", TransformEqualCanvasSize2DAlgorithm.class, UIUtils.getIconURLFromResources("actions/transform-scale.png"));
         registerNodeType("ij1-transform-equalize-dimensions", TransformEqualizeDimensionsAlgorithm.class, UIUtils.getIconURLFromResources("actions/transform-scale.png"));
+        registerNodeType("ij1-transform-equalize-dimensions-max-io", TransformEqualizeDimensionsToMaxAlgorithm.class, UIUtils.getIconURLFromResources("actions/transform-scale.png"));
         registerNodeType("ij1-transform-set-dimensions", TransformSetHyperstackDimensionsAlgorithm.class, UIUtils.getIconURLFromResources("actions/transform-scale.png"));
         registerNodeType("ij1-transform-warp2d", Warp2DAlgorithm.class, UIUtils.getIconURLFromResources("actions/object-tweak-rotate.png"));
         registerNodeType("ij1-overlay", MergeImagesAlgorithm.class, UIUtils.getIconURLFromResources("actions/insert-image.png"));
@@ -983,6 +1018,8 @@ public class ImageJAlgorithmsPlugin extends JIPipePrepackagedDefaultJavaPlugin {
         registerNodeType("ij1-transform-tile-2d-v2", TileImage2Dv2Algorithm.class, UIUtils.getIconURLFromResources("actions/grid-rectangular.png"));
         registerNodeType("ij1-transform-un-tile-2d", UnTileImage2DAlgorithm.class, UIUtils.getIconURLFromResources("actions/grid-rectangular.png"));
         registerNodeType("ij1-transform-add-border-2d", AddBorder2DAlgorithm.class, UIUtils.getIconURLFromResources("actions/bordertool.png"));
+        registerNodeType("ij1-transform-line-mirror-by-expression", LineMirror2DFromExpressionsAlgorithm.class, UIUtils.getIconURLFromResources("actions/draw-geometry-mirror.png"));
+        registerNodeType("ij1-transform-line-mirror-by-roi", LineMirror2DFromRoiAlgorithm.class, UIUtils.getIconURLFromResources("actions/draw-geometry-mirror.png"));
 
         registerEnumParameterType("ij1-transform-flip2d:flip-mode", TransformFlip2DAlgorithm.FlipMode.class,
                 "Flip mode", "Available modes");
@@ -995,6 +1032,8 @@ public class ImageJAlgorithmsPlugin extends JIPipePrepackagedDefaultJavaPlugin {
                 "Scale mode",
                 "Determines how the image is scaled");
         registerEnumParameterType("ij1-border-mode", BorderMode.class, "Border type", "Types of borders");
+        registerEnumParameterType("ij1-transform-line-mirror:mode", LineMirror.MirrorOperationMode.class, "Line mirror mode", "Modes for the line mirror operator");
+
     }
 
     private void registerFFTAlgorithms() {
@@ -1092,7 +1131,15 @@ public class ImageJAlgorithmsPlugin extends JIPipePrepackagedDefaultJavaPlugin {
         registerEnumParameterType("ij1:eigenvalue-selection-2d", EigenvalueSelection2D.class,
                 "Eigenvalue selection (2D)", "Determines whether to choose the smallest or largest Eigenvalue");
         registerEnumParameterType("ij1:roi-outline", RoiOutline.class,
-                "ROI outline", "Available ways to outline a ROI");
+                "ROI outline", "Available ways to outline a ROI. " +
+                        "<ul>" +
+                        "<li>Polygon: outline the ROI with an open polygon (ImageJ)</li>" +
+                        "<li>Closed polygon: outline the ROI with a closed polygon (ImageJ)</li>" +
+                        "<li>Convex hull: find the convex hull of the ROI</li>" +
+                        "<li>Bounding rectangle: outline the ROI with its bounding rectangle. Please note that this rectangle is not rotated.</li>" +
+                        "<li>Minimum bounding rectangle: outline the ROI with its minimum bounding rectangle. The rectangle is rotated to minimize its area.</li>" +
+                        "<li>Oriented line: Finds the minimum bounding rectangle and chooses the center of the two short sides as the endpoint of a line.</li>" +
+                        "</ul>");
     }
 
     private void registerSharpenAlgorithms() {
@@ -1304,8 +1351,6 @@ public class ImageJAlgorithmsPlugin extends JIPipePrepackagedDefaultJavaPlugin {
         registerNodeType("ij1-color-merge-channels-hsb", MergeHSBChannelsAlgorithm.class, UIUtils.getIconURLFromResources("actions/colors-rgb.png"));
         registerNodeType("ij1-color-merge-channels-lab", MergeLABChannelsAlgorithm.class, UIUtils.getIconURLFromResources("actions/colors-rgb.png"));
         registerNodeType("ij1-color-split-rgb", SplitRGBChannelsAlgorithm.class, UIUtils.getIconURLFromResources("actions/channelmixer.png"));
-        registerNodeType("ij1-color-set-to-color", SetToColorAlgorithm.class, UIUtils.getIconURLFromResources("actions/color-fill.png"));
-        registerNodeType("ij1-color-set-to-grayscale-value", SetToValueAlgorithm.class, UIUtils.getIconURLFromResources("actions/color-fill.png"));
         registerNodeType("ij1-color-to-rgb", RenderImageToRGBAlgorithm.class, UIUtils.getIconURLFromResources("data-types/imgplus-color-rgb.png"));
         registerNodeType("ij1-color-to-greyscale-expression", ColorToGreyscaleExpression2D.class, UIUtils.getIconURLFromResources("actions/color-picker-grey.png"));
 

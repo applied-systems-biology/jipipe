@@ -77,7 +77,9 @@ public class SpotFeaturePenaltyParameter extends AbstractJIPipeParameterCollecti
 
         @Override
         public SpotFeaturePenaltyParameter addNewInstance() {
-            return new SpotFeaturePenaltyParameter(new SpotFeature("QUALITY"), 1.0);
+            SpotFeaturePenaltyParameter quality = new SpotFeaturePenaltyParameter(new SpotFeature("QUALITY"), 1.0);
+            add(quality);
+            return quality;
         }
     }
 }

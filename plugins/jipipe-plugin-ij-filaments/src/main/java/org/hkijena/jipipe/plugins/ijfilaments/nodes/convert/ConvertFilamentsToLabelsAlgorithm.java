@@ -32,7 +32,8 @@ import org.hkijena.jipipe.plugins.imagejdatatypes.datatypes.greyscale.ImagePlusG
 import org.hkijena.jipipe.plugins.imagejdatatypes.util.ImageJUtils;
 import org.hkijena.jipipe.plugins.parameters.library.primitives.optional.OptionalIntegerParameter;
 
-@SetJIPipeDocumentation(name = "Convert filaments to labels", description = "Converts filaments into a 3D ROI")
+@SetJIPipeDocumentation(name = "Convert filaments to labels (legacy)", description = "Converts filaments into a labels image. Legacy implementation that uses 3D ROI as intermediate for rendering labels. " +
+        "We recommend new non-legacy node for more accurate results.")
 @AddJIPipeInputSlot(value = Filaments3DGraphData.class, name = "Input", create = true)
 @AddJIPipeInputSlot(value = ImagePlusData.class, name = "Reference", create = true, optional = true, description = "Optional reference image that determines the size of the mask")
 @AddJIPipeOutputSlot(value = ImagePlusGreyscaleData.class, name = "Output", create = true)

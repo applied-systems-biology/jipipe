@@ -310,7 +310,6 @@ public class ParameterTable implements TableModel {
             this.name = name;
         }
 
-        @JsonGetter("field-class")
         public Class<?> getFieldClass() {
             return fieldClass;
         }

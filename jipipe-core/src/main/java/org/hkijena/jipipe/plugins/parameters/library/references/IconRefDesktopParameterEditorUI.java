@@ -13,10 +13,7 @@
 
 package org.hkijena.jipipe.plugins.parameters.library.references;
 
-import org.hkijena.jipipe.api.parameters.JIPipeParameterAccess;
-import org.hkijena.jipipe.api.parameters.JIPipeParameterTree;
 import org.hkijena.jipipe.desktop.api.JIPipeDesktopParameterEditorUI;
-import org.hkijena.jipipe.desktop.app.JIPipeDesktopWorkbench;
 import org.hkijena.jipipe.desktop.commons.components.pickers.JIPipeDesktopIconPickerDialog;
 import org.hkijena.jipipe.utils.ResourceUtils;
 import org.hkijena.jipipe.utils.StringUtils;
@@ -40,8 +37,8 @@ public class IconRefDesktopParameterEditorUI extends JIPipeDesktopParameterEdito
      * @param workbench       workbench
      * @param parameterAccess the parameter
      */
-    public IconRefDesktopParameterEditorUI(JIPipeDesktopWorkbench workbench, JIPipeParameterTree parameterTree, JIPipeParameterAccess parameterAccess) {
-        super(workbench, parameterTree, parameterAccess);
+    public IconRefDesktopParameterEditorUI(InitializationParameters parameters) {
+        super(parameters);
         initialize();
         reload();
     }

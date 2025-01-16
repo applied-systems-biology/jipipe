@@ -84,7 +84,7 @@ public class JIPipeGUICommand implements Command {
             if (JIPipe.getInstance() == null) {
                 JIPipe jiPipe = JIPipe.createInstance(context);
                 JIPipeDesktopSplashScreen.getInstance().setJIPipe(JIPipe.getInstance());
-                jiPipe.initialize(extensionSettings, issues);
+                jiPipe.initialize(extensionSettings, issues, true);
             }
         } catch (Exception e) {
             e.printStackTrace();

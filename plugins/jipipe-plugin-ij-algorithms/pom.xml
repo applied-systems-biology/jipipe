@@ -146,9 +146,29 @@
                 <version>2.1.1</version>
             </dependency>
             <dependency>
+                <groupId>sc.fiji</groupId>
+                <artifactId>bUnwarpJ_</artifactId>
+                <version>2.6.13</version>
+            </dependency>
+            <dependency>
                 <groupId>com.github.Biomedical-Imaging-Group</groupId>
                 <artifactId>OrientationJ</artifactId>
                 <version>ce968334bcd09ce70f54df74e9f7a2fbe5c79cca</version>
+            </dependency>
+            <dependency>
+                <groupId>sc.fiji</groupId>
+                <artifactId>register_virtual_stack_slices</artifactId>
+                <version>3.0.8</version>
+            </dependency>
+            <dependency>
+                <groupId>com.github.miura</groupId>
+                <artifactId>MultiStackRegistration</artifactId>
+                <version>v1.46.2</version>
+            </dependency>
+            <dependency>
+                <groupId>sc.fiji</groupId>
+                <artifactId>TurboReg_</artifactId>
+                <version>2.0.0</version>
             </dependency>
         </dependencies>
     </dependencyManagement>
@@ -234,6 +254,30 @@
             <groupId>com.github.Biomedical-Imaging-Group</groupId>
             <artifactId>OrientationJ</artifactId>
         </dependency>
+        <dependency>
+            <groupId>sc.fiji</groupId>
+            <artifactId>bUnwarpJ_</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>sc.fiji</groupId>
+            <artifactId>TrakEM2_</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>sc.fiji</groupId>
+            <artifactId>trakem2-transform</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>sc.fiji</groupId>
+            <artifactId>register_virtual_stack_slices</artifactId>
+        </dependency>
+<!--        <dependency>-->
+<!--            <groupId>com.github.miura</groupId>-->
+<!--            <artifactId>MultiStackRegistration</artifactId>-->
+<!--        </dependency>-->
+<!--        <dependency>-->
+<!--            <groupId>sc.fiji</groupId>-->
+<!--            <artifactId>TurboReg_</artifactId>-->
+<!--        </dependency>-->
     </dependencies>
 
     <build>

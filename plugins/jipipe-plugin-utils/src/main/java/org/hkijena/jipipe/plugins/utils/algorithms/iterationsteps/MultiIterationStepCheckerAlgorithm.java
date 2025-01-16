@@ -76,7 +76,7 @@ public class MultiIterationStepCheckerAlgorithm extends JIPipeMergingAlgorithm {
 
     @Override
     protected void runIteration(JIPipeMultiIterationStep iterationStep, JIPipeIterationContext iterationContext, JIPipeGraphNodeRunContext runContext, JIPipeProgressInfo progressInfo) {
-        if(enableFilter) {
+        if (enableFilter) {
             JIPipeExpressionVariablesMap variables = new JIPipeExpressionVariablesMap();
             variables.putAnnotations(iterationStep.getMergedTextAnnotations());
             variables.set("iteration_step_index", iterationContext.getCurrentIterationStepIndex());
@@ -130,7 +130,7 @@ public class MultiIterationStepCheckerAlgorithm extends JIPipeMergingAlgorithm {
         this.iterationStepIndexAnnotation = iterationStepIndexAnnotation;
     }
 
-    @SetJIPipeDocumentation(name = "Filter", description = "Allows to filter data batches")
+    @SetJIPipeDocumentation(name = "Keep iteration step if", description = "Allows to filter iteration steps")
     @JIPipeParameter(value = "filter", important = true)
     @AddJIPipeExpressionParameterVariable(fromClass = JIPipeTextAnnotationsExpressionParameterVariablesInfo.class)
     @AddJIPipeExpressionParameterVariable(name = "Current iteration step index", key = "iteration_step_index", description = "The index of the current iteration step")

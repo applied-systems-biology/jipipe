@@ -13,10 +13,7 @@
 
 package org.hkijena.jipipe.plugins.parameters.library.roi;
 
-import org.hkijena.jipipe.api.parameters.JIPipeParameterAccess;
-import org.hkijena.jipipe.api.parameters.JIPipeParameterTree;
 import org.hkijena.jipipe.desktop.api.JIPipeDesktopParameterEditorUI;
-import org.hkijena.jipipe.desktop.app.JIPipeDesktopWorkbench;
 import org.hkijena.jipipe.utils.UIUtils;
 
 import javax.swing.*;
@@ -36,8 +33,8 @@ public class AnchorDesktopParameterEditorUI extends JIPipeDesktopParameterEditor
      * @param workbench       workbench
      * @param parameterAccess the parameter
      */
-    public AnchorDesktopParameterEditorUI(JIPipeDesktopWorkbench workbench, JIPipeParameterTree parameterTree, JIPipeParameterAccess parameterAccess) {
-        super(workbench, parameterTree, parameterAccess);
+    public AnchorDesktopParameterEditorUI(InitializationParameters parameters) {
+        super(parameters);
         initialize();
         reload();
     }

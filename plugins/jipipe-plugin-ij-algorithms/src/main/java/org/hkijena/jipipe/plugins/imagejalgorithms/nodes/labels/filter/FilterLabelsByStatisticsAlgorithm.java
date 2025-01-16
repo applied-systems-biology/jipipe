@@ -142,13 +142,8 @@ public class FilterLabelsByStatisticsAlgorithm extends JIPipeIteratingAlgorithm 
         iterationStep.addOutputData(getFirstOutputSlot(), new ImagePlusGreyscaleData(labels), progressInfo);
     }
 
-    @Override
-    public boolean isEnableDefaultCustomExpressionVariables() {
-        return true;
-    }
-
     @JIPipeParameter(value = "filter", important = true)
-    @SetJIPipeDocumentation(name = "Filter", description = "Filtering expression. This is applied per label. " +
+    @SetJIPipeDocumentation(name = "Keep label if", description = "Filtering expression. This is applied per label. " +
             "Click the 'Edit' button to see all available variables you can test for (note: requires from you to enable the corresponding measurement!)." +
             "An example for an expression would be 'Area > 200 AND Mean > 10'." +
             "Annotations are available as variables.")

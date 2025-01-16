@@ -536,6 +536,21 @@ public class ImageJUtils {
     }
 
     /**
+     * Converts a zero-based slice index to a safe index that can be found within the image
+     *
+     * @param img   the image
+     * @param index the index
+     * @return the safe index
+     */
+    public static ImageSliceIndex toSafeZeroIndex(ImagePlus img, ImageSliceIndex index) {
+        return new ImageSliceIndex(
+                Math.max(0, Math.min(img.getNChannels() - 1, index.getC())),
+                Math.max(0, Math.min(img.getNSlices() - 1, index.getZ())),
+                Math.max(0, Math.min(img.getNFrames() - 1, index.getT()))
+        );
+    }
+
+    /**
      * Gets slice from image.
      * Will not trigger an {@link IndexOutOfBoundsException}
      *
@@ -2422,6 +2437,80 @@ public class ImageJUtils {
         } else {
             throw new UnsupportedOperationException("Unsupported bitDepth: " + bitDepth);
         }
+    }
+
+    public static ImagePlus newBlankOf(ImagePlus reference) {
+        return IJ.createHyperStack("Blank",
+                reference.getWidth(),
+                reference.getHeight(),
+                reference.getNChannels(),
+                reference.getNSlices(),
+                reference.getNFrames(),
+                reference.getBitDepth());
+    }
+
+    public static ImagePlus newBlankOf(ImagePlus reference, BitDepth bitDepth) {
+        return IJ.createHyperStack("Blank",
+                reference.getWidth(),
+                reference.getHeight(),
+                reference.getNChannels(),
+                reference.getNSlices(),
+                reference.getNFrames(),
+                bitDepth.getBitDepth());
+    }
+
+    /**
+     * Cropping as implemented in ImageJ.
+     * Cannot handle negative X and Y in the rectangle
+     *
+     * @param img          the image
+     * @param cropped      the cropping ROI
+     * @param progressInfo the progress info
+     * @return the cropped image
+     */
+    public static ImagePlus cropLegacy(ImagePlus img, Rectangle cropped, JIPipeProgressInfo progressInfo) {
+        ImagePlus croppedImg;
+        if (img.hasImageStack()) {
+            ImageStack result = new ImageStack(cropped.width, cropped.height, img.getStackSize());
+            forEachIndexedZCTSlice(img, (imp, index) -> {
+                imp.setRoi(cropped);
+                ImageProcessor croppedImage = imp.crop();
+                imp.resetRoi();
+                result.setProcessor(croppedImage, index.zeroSliceIndexToOneStackIndex(img));
+            }, progressInfo);
+            croppedImg = new ImagePlus("Cropped", result);
+            croppedImg.setDimensions(img.getNChannels(), img.getNSlices(), img.getNFrames());
+            croppedImg.copyScale(img);
+        } else {
+            ImageProcessor imp = img.getProcessor();
+            imp.setRoi(cropped);
+            ImageProcessor croppedImage = imp.crop();
+            imp.resetRoi();
+            croppedImg = new ImagePlus("Cropped", croppedImage);
+            croppedImg.copyScale(img);
+        }
+        return croppedImg;
+    }
+
+    /**
+     * Cropping that can handle negative X and Y
+     *
+     * @param img          the image
+     * @param cropped      the cropping ROI
+     * @param progressInfo the progress info
+     * @return the cropped image
+     */
+    public static ImagePlus crop(ImagePlus img, Rectangle cropped, JIPipeProgressInfo progressInfo) {
+        ImagePlus result = IJ.createHyperStack(img.getTitle(),
+                img.getWidth(),
+                img.getHeight(),
+                img.getNChannels(),
+                img.getNSlices(),
+                img.getNFrames(),
+                img.getBitDepth());
+
+        result.copyScale(img);
+        return result;
     }
 }
 

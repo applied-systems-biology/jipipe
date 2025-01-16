@@ -17,8 +17,8 @@ import com.google.common.collect.ImmutableList;
 import org.hkijena.jipipe.JIPipe;
 import org.hkijena.jipipe.api.SetJIPipeDocumentation;
 import org.hkijena.jipipe.api.environments.ExternalEnvironmentParameterSettings;
-import org.hkijena.jipipe.api.environments.JIPipeExternalEnvironmentSettings;
 import org.hkijena.jipipe.api.environments.JIPipeEnvironment;
+import org.hkijena.jipipe.api.environments.JIPipeExternalEnvironmentSettings;
 import org.hkijena.jipipe.api.parameters.JIPipeParameter;
 import org.hkijena.jipipe.api.settings.JIPipeDefaultApplicationSettingsSheetCategory;
 import org.hkijena.jipipe.api.settings.JIPipeDefaultApplicationsSettingsSheet;
@@ -45,21 +45,20 @@ public class IlastikPluginApplicationSettings extends JIPipeDefaultApplicationsS
         preconfigureEnvironment(defaultEnvironment.getContent());
     }
 
+    public static IlastikPluginApplicationSettings getInstance() {
+        return JIPipe.getSettings().getById(ID, IlastikPluginApplicationSettings.class);
+    }
+
     private void preconfigureEnvironment(IlastikEnvironment environment) {
         environment.setLoadFromArtifact(true);
         environment.setArtifactQuery(new JIPipeArtifactQueryParameter("org.embl.ilastik:*"));
         environment.setArguments(new JIPipeExpressionParameter("cli_parameters"));
     }
 
-    public static IlastikPluginApplicationSettings getInstance() {
-        return JIPipe.getSettings().getById(ID, IlastikPluginApplicationSettings.class);
-    }
-
     public IlastikEnvironment getReadOnlyDefaultEnvironment() {
-        if(defaultEnvironment.isEnabled()) {
+        if (defaultEnvironment.isEnabled()) {
             return new IlastikEnvironment(defaultEnvironment.getContent());
-        }
-        else {
+        } else {
             return new IlastikEnvironment(standardEnvironment);
         }
     }

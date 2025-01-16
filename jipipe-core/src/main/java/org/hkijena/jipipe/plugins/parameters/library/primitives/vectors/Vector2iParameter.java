@@ -15,6 +15,7 @@ package org.hkijena.jipipe.plugins.parameters.library.primitives.vectors;
 
 import com.fasterxml.jackson.annotation.JsonGetter;
 import com.fasterxml.jackson.annotation.JsonSetter;
+import org.hkijena.jipipe.plugins.parameters.api.collections.ListParameter;
 
 public class Vector2iParameter implements Vector2Parameter {
     private int x;
@@ -51,5 +52,23 @@ public class Vector2iParameter implements Vector2Parameter {
     @JsonSetter("y")
     public void setY(int y) {
         this.y = y;
+    }
+
+    @Override
+    public String toString() {
+        return "[" + x + ", " + y + "]";
+    }
+
+    public static class List extends ListParameter<Vector2iParameter> {
+        public List() {
+            super(Vector2iParameter.class);
+        }
+
+        public List(Vector2iParameter.List other) {
+            super(Vector2iParameter.class);
+            for (Vector2iParameter parameter : other) {
+                add(new Vector2iParameter(parameter));
+            }
+        }
     }
 }

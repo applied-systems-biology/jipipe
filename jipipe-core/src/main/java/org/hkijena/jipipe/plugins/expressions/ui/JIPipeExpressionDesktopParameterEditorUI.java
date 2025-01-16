@@ -14,10 +14,7 @@
 package org.hkijena.jipipe.plugins.expressions.ui;
 
 import org.fife.ui.rsyntaxtextarea.*;
-import org.hkijena.jipipe.api.parameters.JIPipeParameterAccess;
-import org.hkijena.jipipe.api.parameters.JIPipeParameterTree;
 import org.hkijena.jipipe.desktop.api.JIPipeDesktopParameterEditorUI;
-import org.hkijena.jipipe.desktop.app.JIPipeDesktopWorkbench;
 import org.hkijena.jipipe.desktop.commons.components.JIPipeDesktopDocumentChangeListener;
 import org.hkijena.jipipe.desktop.commons.components.JIPipeDesktopRSyntaxTextField;
 import org.hkijena.jipipe.plugins.expressions.*;
@@ -47,8 +44,8 @@ public class JIPipeExpressionDesktopParameterEditorUI extends JIPipeDesktopParam
      * @param parameterTree   the parameter tree
      * @param parameterAccess Parameter
      */
-    public JIPipeExpressionDesktopParameterEditorUI(JIPipeDesktopWorkbench workbench, JIPipeParameterTree parameterTree, JIPipeParameterAccess parameterAccess) {
-        super(workbench, parameterTree, parameterAccess);
+    public JIPipeExpressionDesktopParameterEditorUI(InitializationParameters parameters) {
+        super(parameters);
 
         // Init the token maker
         JIPipeExpressionParameterSettings settings = getParameterAccess().getAnnotationOfType(JIPipeExpressionParameterSettings.class);

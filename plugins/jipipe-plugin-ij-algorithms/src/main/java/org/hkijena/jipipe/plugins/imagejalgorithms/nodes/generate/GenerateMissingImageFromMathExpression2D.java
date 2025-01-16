@@ -42,7 +42,7 @@ import org.hkijena.jipipe.utils.ImageJCalibrationMode;
  * Wrapper around {@link ij.process.ImageProcessor}
  */
 @SetJIPipeDocumentation(name = "Generate missing from math expression", description = "Generates an image if it cannot be matched to a reference " +
-        "in a data batch according to the mathematical operation." +
+        "in a iteration step according to the mathematical operation." +
         " Applies a mathematical operation to each pixel. The value is written into the image. ")
 @ConfigureJIPipeNode(nodeTypeCategory = DataSourceNodeTypeCategory.class)
 @AddJIPipeInputSlot(value = ImagePlusData.class, name = "Reference", create = true)

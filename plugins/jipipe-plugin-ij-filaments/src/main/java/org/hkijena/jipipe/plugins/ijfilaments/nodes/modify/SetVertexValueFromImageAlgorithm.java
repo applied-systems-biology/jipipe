@@ -69,7 +69,7 @@ public class SetVertexValueFromImageAlgorithm extends JIPipeIteratingAlgorithm {
         JIPipeExpressionVariablesMap variablesMap = new JIPipeExpressionVariablesMap();
         variablesMap.putAnnotations(iterationStep.getMergedTextAnnotations());
 
-        for (FilamentVertex vertex : VertexMaskParameter.filter(vertexMask.getFilter(),filaments, filaments.vertexSet(), variablesMap)) {
+        for (FilamentVertex vertex : VertexMaskParameter.filter(vertexMask.getFilter(), filaments, filaments.vertexSet(), variablesMap)) {
             int z = (int) Math.max(0, vertex.getSpatialLocation().getZ());
             int c = Math.max(0, vertex.getNonSpatialLocation().getChannel());
             int t = Math.max(0, vertex.getNonSpatialLocation().getFrame());
@@ -78,7 +78,7 @@ public class SetVertexValueFromImageAlgorithm extends JIPipeIteratingAlgorithm {
             if (backupOldValue.isEnabled()) {
                 vertex.getValueBackups().put(StringUtils.nullToEmpty(backupOldValue.getContent()), vertex.getValue());
             }
-            if(backupOldValueToMetadata.isEnabled()) {
+            if (backupOldValueToMetadata.isEnabled()) {
                 vertex.getMetadata().put(StringUtils.nullToEmpty(backupOldValueToMetadata.getContent()), String.valueOf(vertex.getValue()));
             }
             vertex.setValue(d);

@@ -32,8 +32,8 @@ import java.util.ArrayList;
 
 public class JIPipeDesktopCompartmentsGraphEditorRunManager extends JIPipeDesktopGraphEditorRunManager {
 
-    public JIPipeDesktopCompartmentsGraphEditorRunManager(JIPipeProject project, JIPipeDesktopGraphCanvasUI canvasUI, JIPipeDesktopGraphNodeUI nodeUI, JIPipeDesktopDockPanel dockPanel) {
-        super(project, canvasUI, nodeUI, dockPanel);
+    public JIPipeDesktopCompartmentsGraphEditorRunManager(JIPipeProject project, JIPipeDesktopGraphCanvasUI canvasUI, JIPipeDesktopGraphNodeUI nodeUI, JIPipeDesktopDockPanel dockPanel, boolean allowChangePanels) {
+        super(project, canvasUI, nodeUI, dockPanel, allowChangePanels);
     }
 
     @Override

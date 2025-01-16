@@ -198,7 +198,7 @@ public class JIPipeDesktopAlgorithmCacheBrowserUI extends JIPipeDesktopProjectWo
             JIPipeDesktopGraphNodeUI ui = graphCanvasUI.getNodeUIs().getOrDefault(graphNode, null);
             if (ui != null) {
                 // Same event as triggered by any other canvas tool
-                ui.getNodeUIActionRequestedEventEmitter().emit(new JIPipeDesktopGraphNodeUI.NodeUIActionRequestedEvent(ui, new JIPipeDesktopUpdateCacheAction(storeIntermediateResults, false)));
+                ui.getNodeUIActionRequestedEventEmitter().emit(new JIPipeDesktopGraphNodeUI.NodeUIActionRequestedEvent(ui, new JIPipeDesktopUpdateCacheAction(storeIntermediateResults, false, true)));
                 return;
             }
         }

@@ -16,10 +16,7 @@ package org.hkijena.jipipe.plugins.parameters.library.references;
 import org.hkijena.jipipe.JIPipe;
 import org.hkijena.jipipe.api.compat.ImageJDataExporter;
 import org.hkijena.jipipe.api.data.JIPipeData;
-import org.hkijena.jipipe.api.parameters.JIPipeParameterAccess;
-import org.hkijena.jipipe.api.parameters.JIPipeParameterTree;
 import org.hkijena.jipipe.desktop.api.JIPipeDesktopParameterEditorUI;
-import org.hkijena.jipipe.desktop.app.JIPipeDesktopWorkbench;
 import org.hkijena.jipipe.desktop.commons.components.JIPipeDesktopParameterFormPanel;
 import org.hkijena.jipipe.desktop.commons.components.pickers.JIPipeDesktopImageJDataExporterPicker;
 import org.hkijena.jipipe.plugins.parameters.library.markup.MarkdownText;
@@ -41,8 +38,8 @@ public class ImageJDataExportOperationRefDesktopParameterEditorUI extends JIPipe
      * @param workbench       workbench
      * @param parameterAccess the parameter
      */
-    public ImageJDataExportOperationRefDesktopParameterEditorUI(JIPipeDesktopWorkbench workbench, JIPipeParameterTree parameterTree, JIPipeParameterAccess parameterAccess) {
-        super(workbench, parameterTree, parameterAccess);
+    public ImageJDataExportOperationRefDesktopParameterEditorUI(InitializationParameters parameters) {
+        super(parameters);
         initialize();
         reload();
     }

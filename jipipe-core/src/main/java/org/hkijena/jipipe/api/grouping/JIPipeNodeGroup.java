@@ -361,8 +361,8 @@ public class JIPipeNodeGroup extends JIPipeGraphWrapperAlgorithm implements JIPi
     @SetJIPipeDocumentation(name = "Graph iteration mode", description = "Determines how the wrapped graph is iterated:" +
             "<ul>" +
             "<li>The data can be passed through. This means that the wrapped graph receives all data as-is and will be executed once.</li>" +
-            "<li>The wrapped graph can be executed per data batch. Here you can choose between an iterative data batch (one item per slot) " +
-            "or a merging data batch (multiple items per slot).</li>" +
+            "<li>The wrapped graph can be executed per iteration step. Here you can choose between an iterative iteration step (one item per slot) " +
+            "or a merging iteration step (multiple items per slot).</li>" +
             "</ul>")
     @JIPipeParameter(value = "iteration-mode", functional = false)
     public IterationMode getIterationMode() {

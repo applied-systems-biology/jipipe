@@ -21,7 +21,6 @@ import org.hkijena.jipipe.desktop.commons.components.JIPipeDesktopFormPanel;
 import org.hkijena.jipipe.desktop.commons.components.JIPipeDesktopUserFriendlyErrorUI;
 import org.hkijena.jipipe.utils.UIUtils;
 
-import javax.swing.*;
 import java.awt.*;
 
 public class JIPipeDesktopGraphEditorErrorPanel extends JIPipeDesktopWorkbenchPanel {

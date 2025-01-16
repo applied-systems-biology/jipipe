@@ -15,7 +15,6 @@ package org.hkijena.jipipe.plugins.parameters.library.collections;
 
 import org.hkijena.jipipe.api.parameters.*;
 import org.hkijena.jipipe.desktop.api.JIPipeDesktopParameterEditorUI;
-import org.hkijena.jipipe.desktop.app.JIPipeDesktopWorkbench;
 import org.hkijena.jipipe.desktop.commons.components.JIPipeDesktopFormPanel;
 import org.hkijena.jipipe.desktop.commons.components.JIPipeDesktopParameterFormPanel;
 import org.hkijena.jipipe.plugins.parameters.api.collections.ListParameter;
@@ -27,6 +26,8 @@ import org.hkijena.jipipe.utils.ui.RoundedLineBorder;
 import javax.swing.*;
 import java.awt.*;
 import java.awt.event.ActionEvent;
+import java.awt.event.ComponentAdapter;
+import java.awt.event.ComponentEvent;
 import java.util.List;
 import java.util.*;
 
@@ -41,16 +42,17 @@ public class DesktopParameterCollectionListEditorUI extends JIPipeDesktopParamet
     private JIPipeDesktopFormPanel formPanel;
     private int lastClickedIndex = -1;
 
-    /**
-     * Creates new instance
-     *
-     * @param workbench       workbench
-     * @param parameterAccess Parameter
-     */
-    public DesktopParameterCollectionListEditorUI(JIPipeDesktopWorkbench workbench, JIPipeParameterTree parameterTree, JIPipeParameterAccess parameterAccess) {
-        super(workbench, parameterTree, parameterAccess);
+    public DesktopParameterCollectionListEditorUI(InitializationParameters parameters) {
+        super(parameters);
         initialize();
         reload();
+        addComponentListener(new ComponentAdapter() {
+            @Override
+            public void componentShown(ComponentEvent e) {
+                reload();
+                super.componentShown(e);
+            }
+        });
     }
 
     private void initialize() {
@@ -79,7 +81,7 @@ public class DesktopParameterCollectionListEditorUI extends JIPipeDesktopParamet
         reorderModeButton.addActionListener(e -> reload());
         toolBar.add(reorderModeButton);
 
-        JButton menuButton = new JButton(UIUtils.getIconFromResources("actions/open-menu.png"));
+        JButton menuButton = new JButton(UIUtils.getIconFromResources("actions/hamburger-menu.png"));
         menuButton.setToolTipText("Show additional options");
         JPopupMenu menu = UIUtils.addPopupMenuToButton(menuButton);
         toolBar.add(menuButton);
@@ -271,7 +273,15 @@ public class DesktopParameterCollectionListEditorUI extends JIPipeDesktopParamet
                 moveEntryUp(entry);
             }));
 
-            JIPipeDesktopParameterFormPanel ui = new JIPipeDesktopParameterFormPanel(getDesktopWorkbench(), parameter.get(i), getParameterTree(), null, JIPipeDesktopParameterFormPanel.NO_EMPTY_GROUP_HEADERS);
+            JIPipeDesktopParameterFormPanel ui;
+
+            if (getContextParent() instanceof JIPipeDesktopParameterFormPanel && ((JIPipeDesktopParameterFormPanel) getContextParent()).isWithExternalDocumentation()) {
+                ui = new JIPipeDesktopParameterFormPanel(getDesktopWorkbench(), parameter.get(i), getParameterTree(), null, JIPipeDesktopParameterFormPanel.NO_EMPTY_GROUP_HEADERS | JIPipeDesktopParameterFormPanel.WITH_DOCUMENTATION | JIPipeDesktopParameterFormPanel.DOCUMENTATION_EXTERNAL);
+                ui.setRedirectDocumentationTarget((JIPipeDesktopFormPanel) getContextParent());
+            } else {
+                ui = new JIPipeDesktopParameterFormPanel(getDesktopWorkbench(), parameter.get(i), getParameterTree(), null, JIPipeDesktopParameterFormPanel.NO_EMPTY_GROUP_HEADERS);
+            }
+
             ui.setBorder(UIUtils.createControlBorder());
             ui.setOpaque(false);
 

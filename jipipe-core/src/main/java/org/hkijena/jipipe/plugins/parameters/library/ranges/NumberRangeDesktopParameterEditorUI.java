@@ -14,10 +14,7 @@
 package org.hkijena.jipipe.plugins.parameters.library.ranges;
 
 import org.apache.commons.lang3.math.NumberUtils;
-import org.hkijena.jipipe.api.parameters.JIPipeParameterAccess;
-import org.hkijena.jipipe.api.parameters.JIPipeParameterTree;
 import org.hkijena.jipipe.desktop.api.JIPipeDesktopParameterEditorUI;
-import org.hkijena.jipipe.desktop.app.JIPipeDesktopWorkbench;
 import org.hkijena.jipipe.desktop.commons.components.JIPipeDesktopDocumentChangeListener;
 import org.hkijena.jipipe.desktop.commons.theme.JIPipeDesktopModernMetalTheme;
 import org.hkijena.jipipe.utils.ReflectionUtils;
@@ -41,14 +38,8 @@ public class NumberRangeDesktopParameterEditorUI extends JIPipeDesktopParameterE
     private boolean isUpdatingThumbs = false;
     private boolean isUpdatingTextBoxes = false;
 
-    /**
-     * Creates new instance
-     *
-     * @param workbench       the workbech
-     * @param parameterAccess Parameter
-     */
-    public NumberRangeDesktopParameterEditorUI(JIPipeDesktopWorkbench workbench, JIPipeParameterTree parameterTree, JIPipeParameterAccess parameterAccess) {
-        super(workbench, parameterTree, parameterAccess);
+    public NumberRangeDesktopParameterEditorUI(InitializationParameters parameters) {
+        super(parameters);
         initialize();
         reload();
     }

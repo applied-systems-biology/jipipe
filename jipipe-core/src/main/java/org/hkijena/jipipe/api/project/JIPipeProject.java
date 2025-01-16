@@ -265,8 +265,9 @@ public class JIPipeProject implements JIPipeValidatable {
 
     /**
      * Gets the path to a non-existing file in the project's temporary directory
+     *
      * @param baseName the base name (prefix)
-     * @param suffix the suffix (extension)
+     * @param suffix   the suffix (extension)
      * @return the path
      */
     public Path getTemporaryFile(String baseName, String suffix) {
@@ -275,6 +276,7 @@ public class JIPipeProject implements JIPipeValidatable {
 
     /**
      * Creates a new temporary subdirectory in the project's temporary directory
+     *
      * @param baseName the base name (prefix)
      * @return the temporary directory
      */
@@ -284,6 +286,7 @@ public class JIPipeProject implements JIPipeValidatable {
 
     /**
      * Creates a new temporary subdirectory in the project's temporary directory
+     *
      * @return the temporary directory
      */
     public Path getTemporaryDirectory() {

@@ -13,14 +13,8 @@
 
 package org.hkijena.jipipe.plugins.parameters.library.primitives.vectors;
 
-import org.apache.commons.lang3.math.NumberUtils;
-import org.hkijena.jipipe.api.parameters.JIPipeParameterAccess;
-import org.hkijena.jipipe.api.parameters.JIPipeParameterTree;
 import org.hkijena.jipipe.desktop.api.JIPipeDesktopParameterEditorUI;
-import org.hkijena.jipipe.desktop.app.JIPipeDesktopWorkbench;
 import org.hkijena.jipipe.desktop.commons.components.JIPipeDesktopDocumentChangeListener;
-import org.hkijena.jipipe.plugins.parameters.library.quantities.Quantity;
-import org.hkijena.jipipe.plugins.parameters.library.quantities.QuantityParameterSettings;
 import org.hkijena.jipipe.utils.StringUtils;
 import org.hkijena.jipipe.utils.UIUtils;
 import org.jdesktop.swingx.JXTextField;
@@ -30,7 +24,6 @@ import javax.swing.event.DocumentEvent;
 import java.awt.*;
 import java.util.Arrays;
 import java.util.List;
-import java.util.Objects;
 
 public class VectorDesktopParameterEditorUI extends JIPipeDesktopParameterEditorUI {
 
@@ -39,14 +32,8 @@ public class VectorDesktopParameterEditorUI extends JIPipeDesktopParameterEditor
     private final JXTextField zEditor = new JXTextField();
     private boolean isUpdatingTextBoxes = false;
 
-    /**
-     * Creates new instance
-     *
-     * @param workbench       the workbech
-     * @param parameterAccess Parameter
-     */
-    public VectorDesktopParameterEditorUI(JIPipeDesktopWorkbench workbench, JIPipeParameterTree parameterTree, JIPipeParameterAccess parameterAccess) {
-        super(workbench, parameterTree, parameterAccess);
+    public VectorDesktopParameterEditorUI(InitializationParameters parameters) {
+        super(parameters);
         initialize();
         reload();
     }

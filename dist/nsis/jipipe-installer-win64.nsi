@@ -81,7 +81,7 @@ Section "Create desktop icon (JIPipe)"
     CreateShortcut "$DESKTOP\${PRODUCT_NAME} ${PRODUCT_VERSION_SHORT}.lnk" "$INSTDIR\ImageJ-win64.exe" "--pass-classpath --full-classpath --main-class org.hkijena.jipipe.JIPipeLauncher" "$INSTDIR\jipipe-icon.ico"
 SectionEnd 
 
-Section /o "Create desktop icon (ImageJ)"
+Section "Create desktop icon (ImageJ)"
     CreateShortcut "$DESKTOP\ImageJ (${PRODUCT_NAME} ${PRODUCT_VERSION_SHORT}).lnk" "$INSTDIR\ImageJ-win64.exe" "" "$INSTDIR\fiji-icon.ico"
 SectionEnd 
 

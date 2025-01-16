@@ -26,7 +26,7 @@ import java.util.Set;
 
 public class FilamentEdgeVariablesInfo implements JIPipeExpressionVariablesInfo {
 
-    private static final Set<JIPipeExpressionParameterVariableInfo> VARIABLES;
+    public static final Set<JIPipeExpressionParameterVariableInfo> VARIABLES;
 
     static {
         VARIABLES = new HashSet<>();

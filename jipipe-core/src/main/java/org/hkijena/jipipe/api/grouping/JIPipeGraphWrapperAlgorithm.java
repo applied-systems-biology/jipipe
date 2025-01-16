@@ -331,6 +331,13 @@ public class JIPipeGraphWrapperAlgorithm extends JIPipeAlgorithm implements JIPi
             // We kill it in this case
             JIPipeRuntimePartition runtimePartition = runContext.getGraphRun().getRuntimePartition(getRuntimePartition());
             if (runtimePartition.getContinueOnFailureSettings().isContinueOnFailure()) {
+
+                // Check if we are in update cache
+                if (runtimePartition.getContinueOnFailureSettings().isDisableOnUpdateCache() && runContext.getGraphRun().getConfiguration().isStoreToCache()) {
+                    progressInfo.log("CONTINUE ON FAILURE IS TURNED OFF DUE TO A USER SETTING IN THE PARTITION");
+                    throw e;
+                }
+
                 progressInfo.log("\n\n------------------------\n" +
                         "Wrapped graph execution FAILED!\n" +
                         "Message: " + e.getMessage() + "\n" +
@@ -463,7 +470,7 @@ public class JIPipeGraphWrapperAlgorithm extends JIPipeAlgorithm implements JIPi
             IntegerRange limit = batchGenerationSettings.getLimit().getContent();
             TIntSet allowedIndices = withLimit ? new TIntHashSet(limit.getIntegers(0, iterationSteps.size(), new JIPipeExpressionVariablesMap())) : null;
             if (withLimit) {
-                progressInfo.log("[INFO] Applying limit to all data batches. Allowed indices are " + Ints.join(", ", allowedIndices.toArray()));
+                progressInfo.log("[INFO] Applying limit to all iteration steps. Allowed indices are " + Ints.join(", ", allowedIndices.toArray()));
                 List<JIPipeMultiIterationStep> limitedBatches = new ArrayList<>();
                 for (int i = 0; i < iterationSteps.size(); i++) {
                     if (allowedIndices.contains(i)) {
@@ -618,12 +625,12 @@ public class JIPipeGraphWrapperAlgorithm extends JIPipeAlgorithm implements JIPi
                             "The wrapped graph is then executed once.";
                 case IteratingDataBatch:
                     return "Iterates through all iteration steps of the group node. " +
-                            "The wrapped graph is executed for each data batch. " +
-                            "This uses an iterating data batch (only one data row per slot per batch)";
+                            "The wrapped graph is executed for each iteration step. " +
+                            "This uses an iterating iteration step (only one data row per slot per batch)";
                 case MergingDataBatch:
                     return "Iterates through all iteration steps of the group node. " +
-                            "The wrapped graph is executed for each data batch. " +
-                            "This uses an merging data batch (multiple data rows per slot per batch)";
+                            "The wrapped graph is executed for each iteration step. " +
+                            "This uses an merging iteration step (multiple data rows per slot per batch)";
                 default:
                     throw new UnsupportedOperationException();
             }

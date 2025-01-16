@@ -29,7 +29,7 @@ import java.util.List;
 import java.util.*;
 
 /**
- * A table model that displays data batches
+ * A table model that displays iteration steps
  */
 public class JIPipeDesktopSimpleDataBatchTableModel implements TableModel {
 

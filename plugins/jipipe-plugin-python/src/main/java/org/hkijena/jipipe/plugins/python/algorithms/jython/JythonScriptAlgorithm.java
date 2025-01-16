@@ -116,7 +116,7 @@ public class JythonScriptAlgorithm extends JIPipeParameterSlotAlgorithm {
         code.makeExternalScriptFileRelative(baseDirectory);
     }
 
-    @SetJIPipeDocumentation(name = "Script", description = "Access to the data batch is done via a variable 'data_batch' that provides access to all input and output data, as well as annotations. " +
+    @SetJIPipeDocumentation(name = "Script", description = "Access to the iteration step is done via a variable 'data_batch' that provides access to all input and output data, as well as annotations. " +
             "A variable 'progress_info' provides the current progress logger instance.")
     @JIPipeParameter("code")
     public PythonScript getCode() {

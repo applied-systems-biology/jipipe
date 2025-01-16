@@ -33,7 +33,6 @@ import org.hkijena.jipipe.plugins.expressions.variables.JIPipeTextAnnotationsExp
 import org.hkijena.jipipe.plugins.filesystem.dataypes.FileData;
 import org.hkijena.jipipe.plugins.ilastik.utils.ImgUtils;
 import org.hkijena.jipipe.plugins.ilastik.utils.hdf5.IJ1Hdf5;
-import org.hkijena.jipipe.plugins.imagejdatatypes.datatypes.ImagePlusData;
 import org.hkijena.jipipe.plugins.imagejdatatypes.datatypes.greyscale.ImagePlusGreyscaleData;
 import org.hkijena.jipipe.plugins.imagejdatatypes.util.CalibrationParameters;
 import org.hkijena.jipipe.plugins.imagejdatatypes.util.ImageJUtils;

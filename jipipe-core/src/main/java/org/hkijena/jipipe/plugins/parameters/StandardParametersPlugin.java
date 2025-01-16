@@ -178,6 +178,10 @@ public class StandardParametersPlugin extends JIPipePrepackagedDefaultJavaPlugin
         registerParameterType("optional-vector2i", OptionalVector2iParameter.class, "Optional 2D Vector (Integer)", "2D vector containing integers values");
         registerParameterType("optional-vector3d", OptionalVector3dParameter.class, "Optional 3D Vector (Double)", "3D vector containing double values");
         registerParameterType("optional-vector3i", OptionalVector3iParameter.class, "Optional 3D Vector (Double)", "3D vector containing integers values");
+        registerParameterType("vector2d-list", Vector2dParameter.List.class, "2D Vector list (Double)", "2D vector containing double values");
+        registerParameterType("vector2i-list", Vector2iParameter.List.class, "2D Vector list (Integer)", "2D vector containing integers values");
+        registerParameterType("vector3d-list", Vector3dParameter.List.class, "3D Vector list (Double)", "3D vector containing double values");
+        registerParameterType("vector3i-list", Vector3iParameter.List.class, "3D Vector list (Double)", "3D vector containing integers values");
     }
 
     private void registerImageParameters() {

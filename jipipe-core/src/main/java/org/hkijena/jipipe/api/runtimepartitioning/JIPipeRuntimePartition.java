@@ -237,6 +237,7 @@ public class JIPipeRuntimePartition extends AbstractJIPipeParameterCollection {
         private boolean continueOnFailure = false;
         private boolean exportFailedLoopInputs = true;
         private boolean exportFailedPartitionInputs = false;
+        private boolean disableOnUpdateCache = false;
 
         public ContinueOnFailureSettings() {
 
@@ -246,6 +247,20 @@ public class JIPipeRuntimePartition extends AbstractJIPipeParameterCollection {
             this.continueOnFailure = other.continueOnFailure;
             this.exportFailedLoopInputs = other.exportFailedLoopInputs;
             this.exportFailedPartitionInputs = other.exportFailedPartitionInputs;
+            this.disableOnUpdateCache = other.disableOnUpdateCache;
+        }
+
+        @SetJIPipeDocumentation(name = "Disable in 'Update cache'", description = "If enabled, failures will not be skipped if the partition is run within 'Update cache'/'Cache intermediate results'/'Update predecessor caches'")
+        @JIPipeParameter("disable-on-update-cache")
+        @JsonGetter("disable-on-update-cache")
+        public boolean isDisableOnUpdateCache() {
+            return disableOnUpdateCache;
+        }
+
+        @JIPipeParameter("disable-on-update-cache")
+        @JsonSetter("disable-on-update-cache")
+        public void setDisableOnUpdateCache(boolean disableOnUpdateCache) {
+            this.disableOnUpdateCache = disableOnUpdateCache;
         }
 
         @SetJIPipeDocumentation(name = "Continue on failure", description = "If enabled, the pipeline will continue if a node within the partition fails. For pass-through iteration, " +

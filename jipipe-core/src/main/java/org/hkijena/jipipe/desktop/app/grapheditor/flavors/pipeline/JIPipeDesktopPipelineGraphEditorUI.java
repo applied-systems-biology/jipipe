@@ -16,8 +16,8 @@ package org.hkijena.jipipe.desktop.app.grapheditor.flavors.pipeline;
 import org.hkijena.jipipe.JIPipe;
 import org.hkijena.jipipe.api.JIPipeDocumentation;
 import org.hkijena.jipipe.api.SetJIPipeDocumentation;
-import org.hkijena.jipipe.api.compartments.algorithms.JIPipeProjectCompartmentOutput;
 import org.hkijena.jipipe.api.compartments.algorithms.JIPipeProjectCompartment;
+import org.hkijena.jipipe.api.compartments.algorithms.JIPipeProjectCompartmentOutput;
 import org.hkijena.jipipe.api.data.JIPipeOutputDataSlot;
 import org.hkijena.jipipe.api.grouping.JIPipeNodeGroup;
 import org.hkijena.jipipe.api.history.JIPipeDedicatedGraphHistoryJournal;
@@ -33,32 +33,34 @@ import org.hkijena.jipipe.desktop.app.grapheditor.addnodepanel.JIPipeDesktopAddN
 import org.hkijena.jipipe.desktop.app.grapheditor.commons.AbstractJIPipeDesktopGraphEditorUI;
 import org.hkijena.jipipe.desktop.app.grapheditor.commons.JIPipeDesktopGraphEditorLogPanel;
 import org.hkijena.jipipe.desktop.app.grapheditor.commons.JIPipeDesktopGraphEditorMinimap;
-import org.hkijena.jipipe.desktop.app.grapheditor.commons.properties.JIPipeDesktopGraphEditorErrorPanel;
-import org.hkijena.jipipe.desktop.app.grapheditor.flavors.pipeline.actions.JIPipeDesktopPipelineGraphEditorRunManager;
 import org.hkijena.jipipe.desktop.app.grapheditor.commons.contextmenu.*;
 import org.hkijena.jipipe.desktop.app.grapheditor.commons.nodeui.JIPipeDesktopGraphNodeUI;
+import org.hkijena.jipipe.desktop.app.grapheditor.commons.properties.JIPipeDesktopGraphEditorErrorPanel;
 import org.hkijena.jipipe.desktop.app.grapheditor.commons.properties.JIPipeDesktopGraphNodeSlotEditorUI;
+import org.hkijena.jipipe.desktop.app.grapheditor.flavors.groups.JIPipeDesktopNodeGroupUI;
+import org.hkijena.jipipe.desktop.app.grapheditor.flavors.pipeline.actions.JIPipeDesktopPipelineGraphEditorRunManager;
 import org.hkijena.jipipe.desktop.app.grapheditor.flavors.pipeline.actions.JIPipeDesktopRunAndShowResultsAction;
 import org.hkijena.jipipe.desktop.app.grapheditor.flavors.pipeline.actions.JIPipeDesktopUpdateCacheAction;
 import org.hkijena.jipipe.desktop.app.grapheditor.flavors.pipeline.contextmenu.*;
 import org.hkijena.jipipe.desktop.app.grapheditor.flavors.pipeline.dragdrop.JIPipeCreatePipelineNodesFromDraggedDataDragAndDropBehavior;
 import org.hkijena.jipipe.desktop.app.grapheditor.flavors.pipeline.properties.JIPipeDesktopPipelineParametersPanel;
 import org.hkijena.jipipe.desktop.app.grapheditor.flavors.pipeline.properties.JIPipeDesktopPipelineQuickGuidePanel;
-import org.hkijena.jipipe.desktop.app.grapheditor.flavors.groups.JIPipeDesktopNodeGroupUI;
 import org.hkijena.jipipe.desktop.app.history.JIPipeDesktopHistoryJournalUI;
+import org.hkijena.jipipe.desktop.commons.components.JIPipeDesktopExpressionCalculatorUI;
 import org.hkijena.jipipe.desktop.commons.components.JIPipeDesktopParameterFormPanel;
 import org.hkijena.jipipe.plugins.nodetemplate.NodeTemplateBox;
 import org.hkijena.jipipe.plugins.parameters.library.pairs.StringAndStringPairParameter;
 import org.hkijena.jipipe.plugins.settings.JIPipeGeneralUIApplicationSettings;
 import org.hkijena.jipipe.plugins.settings.JIPipeGraphEditorUIApplicationSettings;
-import org.hkijena.jipipe.utils.*;
+import org.hkijena.jipipe.utils.DocumentationUtils;
+import org.hkijena.jipipe.utils.StringUtils;
+import org.hkijena.jipipe.utils.UIUtils;
 import org.hkijena.jipipe.utils.json.JsonUtils;
 import org.hkijena.jipipe.utils.ui.JIPipeDesktopDockPanel;
 
 import javax.swing.*;
 import java.lang.reflect.Method;
 import java.net.URL;
-import java.util.List;
 import java.util.*;
 import java.util.stream.Collectors;
 
@@ -202,12 +204,19 @@ public class JIPipeDesktopPipelineGraphEditorUI extends AbstractJIPipeDesktopGra
 
     private void initializeDefaultPanels() {
 
+        getDockPanel().addDockPanel(AbstractJIPipeDesktopGraphEditorUI.DOCK_CALCULATOR,
+                "Calculator",
+                UIUtils.getIcon32FromResources("actions/insert-math-expression.png"),
+                JIPipeDesktopDockPanel.PanelLocation.TopLeft,
+                true,
+                0, new JIPipeDesktopExpressionCalculatorUI(getDesktopWorkbench()));
         getDockPanel().addDockPanel(AbstractJIPipeDesktopGraphEditorUI.DOCK_MAP,
                 "Overview map",
                 UIUtils.getIcon32FromResources("actions/zoom.png"),
                 JIPipeDesktopDockPanel.PanelLocation.TopLeft,
                 true,
                 0, new JIPipeDesktopGraphEditorMinimap(this));
+
         getDockPanel().addDockPanel(DOCK_QUICK_GUIDE,
                 "Quick guide",
                 UIUtils.getIcon32FromResources("actions/help-about.png"),
@@ -302,7 +311,7 @@ public class JIPipeDesktopPipelineGraphEditorUI extends AbstractJIPipeDesktopGra
                         false,
                         -60, () -> new JIPipeDesktopDataBatchAssistantUI((JIPipeDesktopProjectWorkbench) getDesktopWorkbench(), node, () -> {
                             nodeUI.getNodeUIActionRequestedEventEmitter().emit(new JIPipeDesktopGraphNodeUI.NodeUIActionRequestedEvent(nodeUI,
-                                    new JIPipeDesktopUpdateCacheAction(false, true)));
+                                    new JIPipeDesktopUpdateCacheAction(false, true, false)));
                         }));
             } else {
                 getDockPanel().addDockPanel(
@@ -391,13 +400,17 @@ public class JIPipeDesktopPipelineGraphEditorUI extends AbstractJIPipeDesktopGra
     public void onNodeUIActionRequested(JIPipeDesktopGraphNodeUI.NodeUIActionRequestedEvent event) {
         if (event.getAction() instanceof JIPipeDesktopRunAndShowResultsAction) {
             selectOnly(event.getUi());
-            JIPipeDesktopPipelineGraphEditorRunManager runManager = new JIPipeDesktopPipelineGraphEditorRunManager(getWorkbench().getProject(), getCanvasUI(), event.getUi(), getDockPanel());
+            JIPipeDesktopPipelineGraphEditorRunManager runManager = new JIPipeDesktopPipelineGraphEditorRunManager(getWorkbench().getProject(), getCanvasUI(), event.getUi(), getDockPanel(), true);
             runManager.run(true,
                     ((JIPipeDesktopRunAndShowResultsAction) event.getAction()).isStoreIntermediateResults(),
                     false);
         } else if (event.getAction() instanceof JIPipeDesktopUpdateCacheAction) {
             selectOnly(event.getUi());
-            JIPipeDesktopPipelineGraphEditorRunManager runManager = new JIPipeDesktopPipelineGraphEditorRunManager(getWorkbench().getProject(), getCanvasUI(), event.getUi(), getDockPanel());
+            JIPipeDesktopPipelineGraphEditorRunManager runManager = new JIPipeDesktopPipelineGraphEditorRunManager(getWorkbench().getProject(),
+                    getCanvasUI(),
+                    event.getUi(),
+                    getDockPanel(),
+                    ((JIPipeDesktopUpdateCacheAction) event.getAction()).isAllowChangePanels());
             runManager.run(false,
                     ((JIPipeDesktopUpdateCacheAction) event.getAction()).isStoreIntermediateResults(),
                     ((JIPipeDesktopUpdateCacheAction) event.getAction()).isOnlyPredecessors());

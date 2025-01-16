@@ -164,7 +164,7 @@ public class Clij2ExecuteKernelSimpleIterating extends JIPipeSimpleIteratingAlgo
             "This script is executed to generate those values. There are following variables: 'cl_output_buffers', 'cl_dimensions', 'cl_global_sizes'. 'cl_output_buffers' is a dict that should contain the pre-allocated " +
             "output images for each output slot. 'cl_dimensions' is a list of integers that contains the dimensions of the output image. 'cl_global_sizes' is a list of integers that contains " +
             "the global size where the tasks are executed over (usually the output size). A variable 'clij2' is available that provides access to the CLIJ2 API. " +
-            "A variable 'data_batch' provides access to the current data batch. " +
+            "A variable 'data_batch' provides access to the current iteration step. " +
             "Input slots can be accessed from variables 'input_slots' (array), 'input_slots_map' (map from name to slot). " +
             "The first (and only) input slot is also accessible via the 'input_slot' variable. " +
             "Output slots can be accessed from variables 'output_slots' (array), 'output_slots_map' (map from name to slot). " +

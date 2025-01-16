@@ -126,11 +126,11 @@ public class JIPipeDesktopLegacyImageViewerPanel2D extends JPanel implements JIP
         if (newIndex < 1)
             newIndex += maximum;
         slider.setValue(newIndex);
-    }    private final Timer animationTimer = new Timer(250, e -> animateNextSlice());
+    }
 
     public JIPipeDesktopWorkbench getDesktopWorkbench() {
         return workbench;
-    }
+    }    private final Timer animationTimer = new Timer(250, e -> animateNextSlice());
 
     public LegacyImageViewer2DUIApplicationSettings getSettings() {
         return settings;
@@ -237,6 +237,15 @@ public class JIPipeDesktopLegacyImageViewerPanel2D extends JPanel implements JIP
         return composite;
     }
 
+    public void setComposite(boolean composite) {
+        this.composite = composite;
+        if (composite) {
+            channelSlider.setValue(1);
+        }
+        refreshSliders();
+        uploadSliceToCanvas();
+    }
+
 
 //    public void setRotationEnabled(boolean enabled) {
 //        rotateLeftButton.setVisible(enabled);
@@ -247,15 +256,6 @@ public class JIPipeDesktopLegacyImageViewerPanel2D extends JPanel implements JIP
 //            refreshSlice();
 //        }
 //    }
-
-    public void setComposite(boolean composite) {
-        this.composite = composite;
-        if (composite) {
-            channelSlider.setValue(1);
-        }
-        refreshSliders();
-        uploadSliceToCanvas();
-    }
 
     private void initializeAnimationControls() {
         animationTimer.setRepeats(true);

@@ -207,11 +207,6 @@ public class ExpressionSlicerAlgorithm extends JIPipeSimpleIteratingAlgorithm {
         }
     }
 
-    @Override
-    public boolean isEnableDefaultCustomExpressionVariables() {
-        return true;
-    }
-
     @SetJIPipeDocumentation(name = "Generate Z slices", description = "Expression that is executed for each Z/C/T slice and generates an array of slice indices (or a single slice index) that " +
             "determine which Z indices are exported. All indices begin with zero. Indices outside the available range are automatically wrapped. Return an empty array to skip a slice.")
     @JIPipeParameter("expression-z")

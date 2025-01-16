@@ -55,7 +55,6 @@ import org.hkijena.jipipe.utils.ui.ViewOnlyMenuItem;
 import javax.swing.*;
 import java.awt.*;
 import java.io.IOException;
-import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.List;
 import java.util.*;
@@ -961,7 +960,7 @@ public abstract class JIPipeGraphNode extends AbstractJIPipeParameterCollection 
         if (getScratchBaseDirectory() == null) {
             return JIPipeRuntimeApplicationSettings.getTemporaryDirectory(getParentGraph() != null ? getAliasIdInParentGraph() : "scratch");
         }
-        return PathUtils.createTempSubDirectory(getScratchBaseDirectory());
+        return PathUtils.createTempSubDirectory(getScratchBaseDirectory(), getParentGraph() != null ? getAliasIdInParentGraph() : "scratch");
     }
 
     /**

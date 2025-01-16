@@ -21,7 +21,7 @@ import org.hkijena.jipipe.api.nodes.JIPipeAlgorithm;
 import java.util.List;
 
 /**
- * Methods shared across all {@link JIPipeAlgorithm} that generate data batches
+ * Methods shared across all {@link JIPipeAlgorithm} that generate iteration steps
  */
 public interface JIPipeIterationStepAlgorithm {
     /**
@@ -32,7 +32,7 @@ public interface JIPipeIterationStepAlgorithm {
     JIPipeIterationStepGenerationSettings getGenerationSettingsInterface();
 
     /**
-     * Generates data batches.
+     * Generates iteration steps.
      * This is a dry-run function that should never throw errors
      *
      * @param slots        the data slots
@@ -42,7 +42,7 @@ public interface JIPipeIterationStepAlgorithm {
     JIPipeDataBatchGenerationResult generateDataBatchesGenerationResult(List<JIPipeInputDataSlot> slots, JIPipeProgressInfo progressInfo);
 
     /**
-     * Generates data batches.
+     * Generates iteration steps.
      * This is a dry-run function that should never throw errors
      *
      * @param slots        the data slots

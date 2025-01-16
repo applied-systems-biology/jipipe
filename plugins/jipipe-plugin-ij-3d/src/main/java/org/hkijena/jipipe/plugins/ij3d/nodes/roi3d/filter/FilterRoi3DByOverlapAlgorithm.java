@@ -220,11 +220,6 @@ public class FilterRoi3DByOverlapAlgorithm extends JIPipeIteratingAlgorithm {
         return output;
     }
 
-    @Override
-    public boolean isEnableDefaultCustomExpressionVariables() {
-        return true;
-    }
-
     @SetJIPipeDocumentation(name = "ROI 1 filter", description = "Use following settings to determine how inputs into <b>ROI 1</b> are filtered " +
             "(by overlapping them with items in <b>ROI 2</b>). " +
             "Filtered ROI will be put into the corresponding <b>ROI 1</b> output.")

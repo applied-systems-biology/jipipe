@@ -18,7 +18,6 @@ import org.hkijena.jipipe.api.parameters.JIPipeParameterAccess;
 import org.hkijena.jipipe.api.parameters.JIPipeParameterCollectionVisibilities;
 import org.hkijena.jipipe.api.parameters.JIPipeParameterTree;
 import org.hkijena.jipipe.desktop.api.JIPipeDesktopParameterEditorUI;
-import org.hkijena.jipipe.desktop.app.JIPipeDesktopWorkbench;
 import org.hkijena.jipipe.desktop.commons.components.JIPipeDesktopFormPanel;
 import org.hkijena.jipipe.utils.UIUtils;
 
@@ -35,14 +34,8 @@ public class JIPipeParameterCollectionVisibilitiesDesktopParameterEditorUI exten
 
     private JIPipeDesktopFormPanel formPanel;
 
-    /**
-     * Creates new instance
-     *
-     * @param workbench       workbench
-     * @param parameterAccess Parameter
-     */
-    public JIPipeParameterCollectionVisibilitiesDesktopParameterEditorUI(JIPipeDesktopWorkbench workbench, JIPipeParameterTree parameterTree, JIPipeParameterAccess parameterAccess) {
-        super(workbench, parameterTree, parameterAccess);
+    public JIPipeParameterCollectionVisibilitiesDesktopParameterEditorUI(InitializationParameters parameters) {
+        super(parameters);
         initialize();
         reload();
     }
@@ -84,7 +77,7 @@ public class JIPipeParameterCollectionVisibilitiesDesktopParameterEditorUI exten
                 JIPipeParameterAccess parameterAccess = parameters.get(key);
 
                 JIPipeDesktopParameterEditorUI ui = JIPipe.getInstance()
-                        .getParameterTypeRegistry().createEditorFor(getDesktopWorkbench(), new JIPipeParameterTree(parameterAccess), parameterAccess);
+                        .getParameterTypeRegistry().createEditorInstance(parameterAccess, getDesktopWorkbench(), new JIPipeParameterTree(parameterAccess), null);
 
                 JPanel labelPanel = new JPanel(new BorderLayout(8, 8));
                 JToggleButton exportParameterToggle = new JToggleButton(UIUtils.getIconFromResources("actions/eye.png"));

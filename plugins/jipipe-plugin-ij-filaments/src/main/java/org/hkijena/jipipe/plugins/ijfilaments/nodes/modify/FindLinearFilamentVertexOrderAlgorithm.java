@@ -104,11 +104,6 @@ public class FindLinearFilamentVertexOrderAlgorithm extends JIPipeSimpleIteratin
         this.maxDistanceMetadataKey = maxDistanceMetadataKey;
     }
 
-    @Override
-    public boolean isEnableDefaultCustomExpressionVariables() {
-        return true;
-    }
-
     @SetJIPipeDocumentation(name = "Start point selector", description = "Applied per linear component. Given are the two end points (first and second). The function should return \"first\" or \"second\" depending on which of the end points should be ")
     @JIPipeParameter("selector-function")
     @JIPipeExpressionParameterSettings(hint = "per endpoint pair")
@@ -163,7 +158,7 @@ public class FindLinearFilamentVertexOrderAlgorithm extends JIPipeSimpleIteratin
             } else if (connectedSet.size() >= 2) {
                 List<FilamentVertex> endPoints = connectedSet.stream().filter(vertex -> filaments.degreeOf(vertex) == 1).collect(Collectors.toList());
 
-                if(endPoints.size() != 2) {
+                if (endPoints.size() != 2) {
                     // Not a line
                     continue;
                 }
@@ -207,7 +202,7 @@ public class FindLinearFilamentVertexOrderAlgorithm extends JIPipeSimpleIteratin
                 }
                 for (int i = 0; i < vertexList.size(); i++) {
                     FilamentVertex vertex = vertexList.get(i);
-                    if(i > 0) {
+                    if (i > 0) {
                         currentDistancePixels += vertex.getSpatialLocation().distanceTo(vertexList.get(i - 1).getSpatialLocation());
                     }
                     if (distanceMetadataKey.isEnabled()) {

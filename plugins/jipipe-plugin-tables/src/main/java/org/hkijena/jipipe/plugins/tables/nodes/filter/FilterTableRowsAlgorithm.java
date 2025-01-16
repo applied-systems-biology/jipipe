@@ -121,9 +121,4 @@ public class FilterTableRowsAlgorithm extends JIPipeSimpleIteratingAlgorithm {
     public void setFilters(JIPipeExpressionParameter filters) {
         this.filters = filters;
     }
-
-    @Override
-    public boolean isEnableDefaultCustomExpressionVariables() {
-        return true;
-    }
 }

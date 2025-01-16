@@ -128,11 +128,6 @@ public class OverwriteAnnotations extends JIPipeIteratingAlgorithm {
         this.sourceAnnotationFilter = sourceAnnotationFilter;
     }
 
-    @Override
-    public boolean isEnableDefaultCustomExpressionVariables() {
-        return true;
-    }
-
     @SetJIPipeDocumentation(name = "Merge mode", description = "Determines what to do if the target already has an annotation of the name")
     @JIPipeParameter("merge-mode")
     public JIPipeTextAnnotationMergeMode getMergeMode() {

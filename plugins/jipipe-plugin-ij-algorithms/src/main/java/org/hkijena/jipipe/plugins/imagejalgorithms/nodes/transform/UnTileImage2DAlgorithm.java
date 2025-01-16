@@ -97,7 +97,7 @@ public class UnTileImage2DAlgorithm extends JIPipeMergingAlgorithm {
             }
 
             if (insetX != 0 || insetY != 0) {
-                tile = TransformCrop2DAlgorithm.crop(progressInfo, tile, new Rectangle(insetX, insetY, tile.getWidth() - insetX * 2, tile.getHeight() - insetY * 2));
+                tile = ImageJUtils.cropLegacy(tile, new Rectangle(insetX, insetY, tile.getWidth() - insetX * 2, tile.getHeight() - insetY * 2), progressInfo);
             }
 
             // Calculate dimensions

@@ -266,6 +266,7 @@ public class JIPipeDesktopWelcomePanel extends JIPipeDesktopProjectWorkbenchPane
         technicalInfo.addToForm(UIUtils.createReadonlyBorderlessTextField(StringUtils.orElse(System.getProperty("java.version"), "N/A")), new JLabel("Java"), null);
         technicalInfo.addToForm(UIUtils.createReadonlyBorderlessTextField(JIPipe.getNodes().getRegisteredNodeInfos().size() + " algorithms"), new JLabel("Registered node types"), null);
         technicalInfo.addToForm(UIUtils.createReadonlyBorderlessTextField(JIPipe.getDataTypes().getRegisteredDataTypes().size() + " types"), new JLabel("Registered data types"), null);
+        technicalInfo.addToForm(UIUtils.createReadonlyBorderlessTextField(JIPipe.getJIPipeUserDir().toString()), new JLabel("Profile directory"), null);
 
         technicalInfo.setMaximumSize(new Dimension(300, 200));
 

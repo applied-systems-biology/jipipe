@@ -32,11 +32,11 @@ import org.hkijena.jipipe.plugins.expressions.custom.JIPipeCustomExpressionVaria
 import org.hkijena.jipipe.plugins.expressions.variables.JIPipeTextAnnotationsExpressionParameterVariablesInfo;
 import org.hkijena.jipipe.plugins.ijfilaments.FilamentsNodeTypeCategory;
 import org.hkijena.jipipe.plugins.ijfilaments.datatypes.Filaments3DGraphData;
+import org.hkijena.jipipe.plugins.ijfilaments.util.AllFilamentEdgeVariablesInfo;
 import org.hkijena.jipipe.plugins.ijfilaments.util.FilamentEdge;
 import org.hkijena.jipipe.plugins.ijfilaments.util.FilamentEdgeVariablesInfo;
 
-import java.util.HashSet;
-import java.util.Set;
+import java.util.*;
 
 @SetJIPipeDocumentation(name = "Filter filament edges", description = "Filters filament edges by various properties")
 @ConfigureJIPipeNode(nodeTypeCategory = FilamentsNodeTypeCategory.class, menuPath = "Filter")
@@ -60,15 +60,42 @@ public class FilterFilamentEdgesByProperties extends JIPipeSimpleIteratingAlgori
         Filaments3DGraphData inputData = iterationStep.getInputData(getFirstInputSlot(), Filaments3DGraphData.class, progressInfo);
         Filaments3DGraphData outputData = new Filaments3DGraphData(inputData);
 
-        JIPipeExpressionVariablesMap variables = new JIPipeExpressionVariablesMap();
-        variables.putAnnotations(iterationStep.getMergedTextAnnotations());
-        getDefaultCustomExpressionVariables().writeToVariables(variables);
+        // Collect all measurements
+        Set<String> measurementKeys = new HashSet<>();
+        Map<FilamentEdge, JIPipeExpressionVariablesMap> allMeasurements = new HashMap<>();
+        for (FilamentEdge edge : outputData.edgeSet()) {
+            JIPipeExpressionVariablesMap forEdge = new JIPipeExpressionVariablesMap();
+            FilamentEdgeVariablesInfo.writeToVariables(outputData, edge, forEdge, "");
+            allMeasurements.put(edge, forEdge);
+            measurementKeys.addAll(forEdge.keySet());
+        }
+
+        // Create the all. measurements
+        JIPipeExpressionVariablesMap allMeasurementsCalculated = new JIPipeExpressionVariablesMap();
+        for (String key : measurementKeys) {
+            List<Object> allValues = new ArrayList<>();
+            for (FilamentEdge edge : outputData.edgeSet()) {
+                JIPipeExpressionVariablesMap forEdge = allMeasurements.get(edge);
+                Object value = forEdge.get(key);
+                if (value != null) {
+                    allValues.add(value);
+                }
+            }
+            allMeasurementsCalculated.put("all." + key, allValues);
+        }
+
+        // Merge all. measurements
+        for (JIPipeExpressionVariablesMap map : allMeasurements.values()) {
+            map.putAll(allMeasurementsCalculated);
+
+            // Add annotations and custom variables
+            map.putAnnotationsIfAbsent(iterationStep.getMergedTextAnnotations().values()); // Must be if absent to not break functionality
+            getDefaultCustomExpressionVariables().writeToVariables(map);
+        }
 
         Set<FilamentEdge> toDelete = new HashSet<>();
         for (FilamentEdge edge : outputData.edgeSet()) {
-            // Write variables
-            FilamentEdgeVariablesInfo.writeToVariables(outputData, edge, variables, "");
-            if (!filter.test(variables)) {
+            if (!filter.test(allMeasurements.get(edge))) {
                 toDelete.add(edge);
             }
         }
@@ -80,6 +107,7 @@ public class FilterFilamentEdgesByProperties extends JIPipeSimpleIteratingAlgori
     @SetJIPipeDocumentation(name = "Only keep edge if", description = "If the filter is left empty or returns TRUE, the vertex is kept. Otherwise the vertex is deleted.")
     @JIPipeParameter("filter")
     @AddJIPipeExpressionParameterVariable(fromClass = FilamentEdgeVariablesInfo.class)
+    @AddJIPipeExpressionParameterVariable(fromClass = AllFilamentEdgeVariablesInfo.class)
     @AddJIPipeExpressionParameterVariable(fromClass = JIPipeTextAnnotationsExpressionParameterVariablesInfo.class)
     @AddJIPipeExpressionParameterVariable(fromClass = JIPipeCustomExpressionVariablesParameterVariablesInfo.class)
     @JIPipeExpressionParameterSettings(hint = "per edge")
@@ -90,10 +118,5 @@ public class FilterFilamentEdgesByProperties extends JIPipeSimpleIteratingAlgori
     @JIPipeParameter("filter")
     public void setFilter(JIPipeExpressionParameter filter) {
         this.filter = filter;
-    }
-
-    @Override
-    public boolean isEnableDefaultCustomExpressionVariables() {
-        return true;
     }
 }

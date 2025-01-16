@@ -62,7 +62,7 @@ public class RunExpressionAlgorithm extends JIPipeSimpleIteratingAlgorithm {
         this.writeToAnnotationMergeStrategy = other.writeToAnnotationMergeStrategy;
     }
 
-    @SetJIPipeDocumentation(name = "Expression", description = "Expression that is executed per data batch. " +
+    @SetJIPipeDocumentation(name = "Expression", description = "Expression that is executed per iteration step. " +
             "All annotations are available as variables, including variables 'data_string' and 'data_type' that provide information about the current data.")
     @JIPipeParameter("expression")
     @JIPipeExpressionParameterSettings(variableSource = VariablesInfo.class)

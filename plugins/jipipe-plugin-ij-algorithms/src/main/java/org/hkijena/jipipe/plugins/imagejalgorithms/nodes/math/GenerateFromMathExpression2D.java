@@ -184,9 +184,4 @@ public class GenerateFromMathExpression2D extends JIPipeSimpleIteratingAlgorithm
     public void setSizeT(int sizeT) {
         this.sizeT = sizeT;
     }
-
-    @Override
-    public boolean isEnableDefaultCustomExpressionVariables() {
-        return true;
-    }
 }

@@ -292,9 +292,4 @@ public class GenerateVectorFromMathExpression extends JIPipeSimpleIteratingAlgor
     public void setComponentDimension(HyperstackDimension componentDimension) {
         this.componentDimension = componentDimension;
     }
-
-    @Override
-    public boolean isEnableDefaultCustomExpressionVariables() {
-        return true;
-    }
 }

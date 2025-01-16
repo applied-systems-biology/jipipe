@@ -13,10 +13,7 @@
 
 package org.hkijena.jipipe.plugins.parameters.library.patterns;
 
-import org.hkijena.jipipe.api.parameters.JIPipeParameterAccess;
-import org.hkijena.jipipe.api.parameters.JIPipeParameterTree;
 import org.hkijena.jipipe.desktop.api.JIPipeDesktopParameterEditorUI;
-import org.hkijena.jipipe.desktop.app.JIPipeDesktopWorkbench;
 import org.hkijena.jipipe.desktop.commons.components.JIPipeDesktopDocumentChangeListener;
 import org.hkijena.jipipe.utils.UIUtils;
 import org.jdesktop.swingx.JXTextField;
@@ -34,8 +31,8 @@ public class StringPatternExtractionDesktopParameterEditorUI extends JIPipeDeskt
      * @param workbench       workbench
      * @param parameterAccess the parameter
      */
-    public StringPatternExtractionDesktopParameterEditorUI(JIPipeDesktopWorkbench workbench, JIPipeParameterTree parameterTree, JIPipeParameterAccess parameterAccess) {
-        super(workbench, parameterTree, parameterAccess);
+    public StringPatternExtractionDesktopParameterEditorUI(InitializationParameters parameters) {
+        super(parameters);
         setLayout(new BoxLayout(this, BoxLayout.X_AXIS));
         reload();
     }

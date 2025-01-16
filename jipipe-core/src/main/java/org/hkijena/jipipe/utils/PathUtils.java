@@ -16,6 +16,7 @@ package org.hkijena.jipipe.utils;
 import ij.IJ;
 import ij.Prefs;
 import org.apache.commons.lang3.SystemUtils;
+import org.hkijena.jipipe.JIPipe;
 import org.hkijena.jipipe.api.JIPipeProgressInfo;
 
 import javax.swing.*;
@@ -31,8 +32,10 @@ import java.nio.file.attribute.PosixFilePermission;
 import java.security.DigestInputStream;
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
+import java.util.Set;
 import java.util.function.Predicate;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
@@ -373,6 +376,12 @@ public class PathUtils {
      * @return the base directory
      */
     public static Path getJIPipeUserDirBase() {
+        if (System.getProperties().containsKey("JIPIPE_OVERRIDE_USER_DIR_BASE")) {
+            return Paths.get(System.getProperties().getProperty("JIPIPE_OVERRIDE_USER_DIR_BASE"));
+        }
+        if (JIPipe.OVERRIDE_USER_DIR_BASE != null) {
+            return JIPipe.OVERRIDE_USER_DIR_BASE;
+        }
         if (SystemUtils.IS_OS_WINDOWS) {
             return Paths.get(System.getenv("APPDATA")).resolve("JIPipe")
                     .resolve("profiles");
@@ -564,6 +573,7 @@ public class PathUtils {
 
     /**
      * Create a unique subdirectory rooted at system-wide temporary directory
+     *
      * @param prefix the prefix (can be null, but not recommended)
      * @return the temporary directory
      */
@@ -574,6 +584,7 @@ public class PathUtils {
 
     /**
      * Create a unique subdirectory rooted at the root path
+     *
      * @param root the root directory
      * @return the temporary directory
      */
@@ -583,16 +594,17 @@ public class PathUtils {
 
     /**
      * Create a unique subdirectory rooted at the root path
-     * @param root the root directory
+     *
+     * @param root   the root directory
      * @param prefix the prefix (can be null)
      * @return the temporary directory
      */
     public static Path createTempSubDirectory(Path root, String prefix) {
         try {
             Files.createDirectories(root);
-            while(true) {
+            while (true) {
                 Path path = root.resolve(StringUtils.nullToEmpty(prefix) + StringUtils.generateRandomString(RANDOM_TMP_CHARACTERS, RANDOM_TMP_LENGTH));
-                if(!Files.exists(path)) {
+                if (!Files.exists(path)) {
                     Files.createDirectories(path);
                     return path;
                 }
@@ -605,6 +617,7 @@ public class PathUtils {
     /**
      * Creates a path to a file that does not exist yet
      * The file will be located in the system-wide temporary path
+     *
      * @param prefix the file name prefix (can be null)
      * @param suffix the file name suffix (can be null)
      * @return the path
@@ -616,7 +629,8 @@ public class PathUtils {
 
     /**
      * Creates a path to a file that does not exist yet
-     * @param root the root directory
+     *
+     * @param root   the root directory
      * @param prefix the file name prefix (can be null)
      * @param suffix the file name suffix (can be null)
      * @return the path
@@ -624,10 +638,10 @@ public class PathUtils {
     public static Path createSubTempFilePath(Path root, String prefix, String suffix) {
         try {
             Files.createDirectories(root);
-            while(true) {
+            while (true) {
                 Path path = root.resolve(StringUtils.nullToEmpty(prefix) +
                         StringUtils.generateRandomString(RANDOM_TMP_CHARACTERS, RANDOM_TMP_LENGTH) + StringUtils.nullToEmpty(suffix));
-                if(!Files.exists(path)) {
+                if (!Files.exists(path)) {
                     return path;
                 }
             }
@@ -638,15 +652,25 @@ public class PathUtils {
 
     /**
      * Same as Files.createDirectories, but throws a {@link RuntimeException}
+     *
      * @param path the path
-     * @return the path
      */
-    public static Path createDirectories(Path path) {
+    public static void createDirectories(Path path) {
         try {
             Files.createDirectories(path);
         } catch (IOException e) {
             throw new RuntimeException(e);
         }
         return path;
+    }
+
+    /**
+     * Checks if a file exists and is an executable
+     *
+     * @param path the file
+     * @return if it is an executable
+     */
+    public static boolean isExecutable(Path path) {
+        return Files.exists(path) && Files.isRegularFile(path) && Files.isExecutable(path);
     }
 }

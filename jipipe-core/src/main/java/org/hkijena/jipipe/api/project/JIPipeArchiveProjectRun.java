@@ -43,7 +43,7 @@ public abstract class JIPipeArchiveProjectRun extends AbstractJIPipeRunnable {
         progressInfo.setProgress(0, 3);
         progressInfo.log("Copying project ...");
         // Store the project into a temporary file
-        Path tempFile = getProject().getTemporaryFile( "archive-project", ".jip");
+        Path tempFile = getProject().getTemporaryFile("archive-project", ".jip");
         project.saveProject(tempFile);
 
         // Load the project again

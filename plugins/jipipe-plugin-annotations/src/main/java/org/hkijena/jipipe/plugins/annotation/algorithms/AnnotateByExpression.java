@@ -114,11 +114,6 @@ public class AnnotateByExpression extends JIPipeSimpleIteratingAlgorithm {
         this.annotationMergeStrategy = annotationMergeStrategy;
     }
 
-    @Override
-    public boolean isEnableDefaultCustomExpressionVariables() {
-        return true;
-    }
-
     public static class VariablesInfo implements JIPipeExpressionVariablesInfo {
 
         public static final Set<JIPipeExpressionParameterVariableInfo> VARIABLES;

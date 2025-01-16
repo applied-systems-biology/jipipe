@@ -172,6 +172,7 @@ public class JIPipeGraphRun extends AbstractJIPipeRunnable implements JIPipeGrap
             progressInfo.log("Registered data types: " + JIPipe.getDataTypes().getRegisteredDataTypes().size() + " types");
             progressInfo.log("Enabled extensions: " + String.join(", ", JIPipe.getInstance().getPluginRegistry().getActivatedPlugins()));
             progressInfo.log("Operating system: " + SystemUtils.OS_NAME + " " + SystemUtils.OS_VERSION + " [" + SystemUtils.OS_ARCH + "]");
+            progressInfo.log("Profile directory: " + JIPipe.getJIPipeUserDir());
             progressInfo.log("");
         }
 
@@ -792,6 +793,12 @@ public class JIPipeGraphRun extends AbstractJIPipeRunnable implements JIPipeGrap
                         "CONTINUING AS REQUESTED!\n" +
                         "------------------------\n\n");
 
+                // Check if we are in update cache
+                if (runtimePartition.getContinueOnFailureSettings().isDisableOnUpdateCache() && runContext.getGraphRun().getConfiguration().isStoreToCache()) {
+                    progressInfo.log("CONTINUE ON FAILURE IS TURNED OFF DUE TO A USER SETTING IN THE PARTITION");
+                    throw e;
+                }
+
                 // Clean to prevent moving corrupted data out
                 graphWrapperAlgorithm.clearSlotData(false, progressInfo);
 
@@ -971,6 +978,12 @@ public class JIPipeGraphRun extends AbstractJIPipeRunnable implements JIPipeGrap
                         "\n" +
                         "CONTINUING AS REQUESTED!\n" +
                         "------------------------\n\n");
+
+                // Check if we are in update cache
+                if (runtimePartition.getContinueOnFailureSettings().isDisableOnUpdateCache() && runContext.getGraphRun().getConfiguration().isStoreToCache()) {
+                    progressInfo.log("CONTINUE ON FAILURE IS TURNED OFF DUE TO A USER SETTING IN THE PARTITION");
+                    throw e;
+                }
 
                 // Dump errored data
                 exportFailedInputs(graph, nodeFilter, continueOnErrorBackup, progressInfo);

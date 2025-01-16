@@ -222,7 +222,7 @@ public class JIPipeMergingAlgorithmIterationStepGenerationSettings extends Abstr
         this.dataAnnotationMergeStrategy = dataAnnotationMergeStrategy;
     }
 
-    @SetJIPipeDocumentation(name = "Limit", description = "Limits which data batches are generated. The first index is zero.")
+    @SetJIPipeDocumentation(name = "Limit", description = "Limits which iteration steps are generated. The first index is zero.")
     @JIPipeParameter(value = "limit")
     @JsonGetter("limit")
     public OptionalIntegerRange getLimit() {

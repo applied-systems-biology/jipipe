@@ -31,7 +31,7 @@ import java.util.List;
 import java.util.stream.Collectors;
 
 /**
- * Browser for a Data batch, similar to the cache browser
+ * Browser for a Iteration step, similar to the cache browser
  */
 public class JIPipeDesktopDataBatchBrowserUI extends JIPipeDesktopWorkbenchPanel {
     private final JIPipeMultiIterationStep iterationStep;
@@ -40,7 +40,7 @@ public class JIPipeDesktopDataBatchBrowserUI extends JIPipeDesktopWorkbenchPanel
 
     /**
      * @param workbenchUI   the workbench
-     * @param iterationStep the data batch
+     * @param iterationStep the iteration step
      */
     public JIPipeDesktopDataBatchBrowserUI(JIPipeDesktopWorkbench workbenchUI, JIPipeMultiIterationStep iterationStep) {
         super(workbenchUI);

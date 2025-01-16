@@ -15,10 +15,7 @@ package org.hkijena.jipipe.plugins.parameters.library.jipipe;
 
 import org.hkijena.jipipe.JIPipe;
 import org.hkijena.jipipe.api.artifacts.JIPipeArtifact;
-import org.hkijena.jipipe.api.parameters.JIPipeParameterAccess;
-import org.hkijena.jipipe.api.parameters.JIPipeParameterTree;
 import org.hkijena.jipipe.desktop.api.JIPipeDesktopParameterEditorUI;
-import org.hkijena.jipipe.desktop.app.JIPipeDesktopWorkbench;
 import org.hkijena.jipipe.desktop.commons.components.JIPipeDesktopPickEnumValueDialog;
 import org.hkijena.jipipe.plugins.parameters.api.enums.EnumItemInfo;
 import org.hkijena.jipipe.utils.StringUtils;
@@ -41,8 +38,8 @@ public class JIPipeDesktopArtifactQueryParameterEditorUI extends JIPipeDesktopPa
      * @param parameterTree   the parameter tree that contains the access
      * @param parameterAccess the parameter access
      */
-    public JIPipeDesktopArtifactQueryParameterEditorUI(JIPipeDesktopWorkbench workbench, JIPipeParameterTree parameterTree, JIPipeParameterAccess parameterAccess) {
-        super(workbench, parameterTree, parameterAccess);
+    public JIPipeDesktopArtifactQueryParameterEditorUI(InitializationParameters parameters) {
+        super(parameters);
         initialize();
         reloadArtifacts();
         reload();

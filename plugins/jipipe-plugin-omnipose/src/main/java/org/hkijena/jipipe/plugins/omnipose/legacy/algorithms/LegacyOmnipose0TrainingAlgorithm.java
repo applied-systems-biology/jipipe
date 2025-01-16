@@ -323,8 +323,8 @@ public class LegacyOmnipose0TrainingAlgorithm extends JIPipeSingleIterationAlgor
                 throw new JIPipeValidationRuntimeException(new JIPipeValidationReportEntry(JIPipeValidationReportEntryLevel.Error,
                         new GraphNodeValidationReportContext(this),
                         "Only one pretrained model is allowed",
-                        "You can only provide one pretrained model per data batch for training.",
-                        "Ensure that only one pretrained model is in a data batch."));
+                        "You can only provide one pretrained model per iteration step for training.",
+                        "Ensure that only one pretrained model is in a iteration step."));
             }
             LegacyCellposeModelData modelData = iterationStep.getInputData(INPUT_PRETRAINED_MODEL.getName(), LegacyCellposeModelData.class, progressInfo).get(0);
             customModelPath = workDirectory.resolve(modelData.getName());

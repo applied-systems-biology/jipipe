@@ -117,11 +117,6 @@ public class GenerateColumnAlgorithm extends JIPipeSimpleIteratingAlgorithm {
         report.report(new ParameterValidationReportContext(reportContext, this, "Columns", "columns"), columns);
     }
 
-    @Override
-    public boolean isEnableDefaultCustomExpressionVariables() {
-        return true;
-    }
-
     @SetJIPipeDocumentation(name = "Replace existing data", description = "If the target column exists, replace its content")
     @JIPipeParameter("replace-existing")
     public boolean isReplaceIfExists() {

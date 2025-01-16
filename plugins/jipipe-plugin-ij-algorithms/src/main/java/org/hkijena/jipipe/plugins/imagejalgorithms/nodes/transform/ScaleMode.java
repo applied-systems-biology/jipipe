@@ -16,5 +16,6 @@ package org.hkijena.jipipe.plugins.imagejalgorithms.nodes.transform;
 public enum ScaleMode {
     Stretch,
     Fit,
-    Cover
+    Cover,
+    Paste
 }

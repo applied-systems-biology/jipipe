@@ -32,11 +32,11 @@ import org.hkijena.jipipe.plugins.expressions.custom.JIPipeCustomExpressionVaria
 import org.hkijena.jipipe.plugins.expressions.variables.JIPipeTextAnnotationsExpressionParameterVariablesInfo;
 import org.hkijena.jipipe.plugins.ijfilaments.FilamentsNodeTypeCategory;
 import org.hkijena.jipipe.plugins.ijfilaments.datatypes.Filaments3DGraphData;
+import org.hkijena.jipipe.plugins.ijfilaments.util.AllFilamentVertexVariablesInfo;
 import org.hkijena.jipipe.plugins.ijfilaments.util.FilamentVertex;
 import org.hkijena.jipipe.plugins.ijfilaments.util.FilamentVertexVariablesInfo;
 
-import java.util.HashSet;
-import java.util.Set;
+import java.util.*;
 
 @SetJIPipeDocumentation(name = "Filter filament vertices", description = "Filters filament vertices by various properties")
 @ConfigureJIPipeNode(nodeTypeCategory = FilamentsNodeTypeCategory.class, menuPath = "Filter")
@@ -59,15 +59,42 @@ public class FilterFilamentVerticesByProperties extends JIPipeSimpleIteratingAlg
         Filaments3DGraphData inputData = iterationStep.getInputData(getFirstInputSlot(), Filaments3DGraphData.class, progressInfo);
         Filaments3DGraphData outputData = new Filaments3DGraphData(inputData);
 
-        JIPipeExpressionVariablesMap variables = new JIPipeExpressionVariablesMap();
-        variables.putAnnotations(iterationStep.getMergedTextAnnotations());
-        getDefaultCustomExpressionVariables().writeToVariables(variables);
+        // Collect all measurements
+        Set<String> measurementKeys = new HashSet<>();
+        Map<FilamentVertex, JIPipeExpressionVariablesMap> allMeasurements = new HashMap<>();
+        for (FilamentVertex vertex : outputData.vertexSet()) {
+            JIPipeExpressionVariablesMap forEdge = new JIPipeExpressionVariablesMap();
+            FilamentVertexVariablesInfo.writeToVariables(outputData, vertex, forEdge, "");
+            allMeasurements.put(vertex, forEdge);
+            measurementKeys.addAll(forEdge.keySet());
+        }
+
+        // Create the all. measurements
+        JIPipeExpressionVariablesMap allMeasurementsCalculated = new JIPipeExpressionVariablesMap();
+        for (String key : measurementKeys) {
+            List<Object> allValues = new ArrayList<>();
+            for (FilamentVertex vertex : outputData.vertexSet()) {
+                JIPipeExpressionVariablesMap forEdge = allMeasurements.get(vertex);
+                Object value = forEdge.get(key);
+                if (value != null) {
+                    allValues.add(value);
+                }
+            }
+            allMeasurementsCalculated.put("all." + key, allValues);
+        }
+
+        // Merge all. measurements
+        for (JIPipeExpressionVariablesMap map : allMeasurements.values()) {
+            map.putAll(allMeasurementsCalculated);
+
+            // Add annotations and custom variables
+            map.putAnnotationsIfAbsent(iterationStep.getMergedTextAnnotations().values()); // Must be if absent to not break functionality
+            getDefaultCustomExpressionVariables().writeToVariables(map);
+        }
 
         Set<FilamentVertex> toDelete = new HashSet<>();
         for (FilamentVertex vertex : outputData.vertexSet()) {
-            // Write variables
-            FilamentVertexVariablesInfo.writeToVariables(outputData, vertex, variables, "");
-            if (!filter.test(variables)) {
+            if (!filter.test(allMeasurements.get(vertex))) {
                 toDelete.add(vertex);
             }
         }
@@ -79,6 +106,7 @@ public class FilterFilamentVerticesByProperties extends JIPipeSimpleIteratingAlg
     @SetJIPipeDocumentation(name = "Only keep vertex if", description = "If the filter is left empty or returns TRUE, the vertex is kept. Otherwise the vertex is deleted.")
     @JIPipeParameter("filter")
     @AddJIPipeExpressionParameterVariable(fromClass = FilamentVertexVariablesInfo.class)
+    @AddJIPipeExpressionParameterVariable(fromClass = AllFilamentVertexVariablesInfo.class)
     @AddJIPipeExpressionParameterVariable(fromClass = JIPipeTextAnnotationsExpressionParameterVariablesInfo.class)
     @AddJIPipeExpressionParameterVariable(fromClass = JIPipeCustomExpressionVariablesParameterVariablesInfo.class)
     @JIPipeExpressionParameterSettings(hint = "per vertex")
@@ -89,10 +117,5 @@ public class FilterFilamentVerticesByProperties extends JIPipeSimpleIteratingAlg
     @JIPipeParameter("filter")
     public void setFilter(JIPipeExpressionParameter filter) {
         this.filter = filter;
-    }
-
-    @Override
-    public boolean isEnableDefaultCustomExpressionVariables() {
-        return true;
     }
 }

@@ -51,7 +51,7 @@ import java.util.List;
 import java.util.concurrent.atomic.AtomicBoolean;
 
 @SetJIPipeDocumentation(name = "Draw/modify mask", description = "Allows users to draw or modify a mask that is drawn over a reference image." +
-        " You can supply existing masks via the 'Masks' input. If a data batch has no existing mask, a new one is generated according to the " +
+        " You can supply existing masks via the 'Masks' input. If a iteration step has no existing mask, a new one is generated according to the " +
         "node parameters.")
 @ConfigureJIPipeNode(nodeTypeCategory = ImagesNodeTypeCategory.class, menuPath = "Forms")
 @AddJIPipeInputSlot(value = ImagePlusData.class, name = "Reference", create = true)
@@ -82,7 +82,7 @@ public class DrawMaskAlgorithm extends JIPipeIteratingMissingDataGeneratorAlgori
         if (isPassThrough())
             return;
 
-        // Get back the data batches
+        // Get back the iteration steps
         List<JIPipeMultiIterationStep> iterationSteps;
 
         // No input slots -> Nothing to do
@@ -118,7 +118,7 @@ public class DrawMaskAlgorithm extends JIPipeIteratingMissingDataGeneratorAlgori
 
     private void runForm(List<JIPipeMultiIterationStep> iterationSteps, JIPipeProgressInfo progressInfo) {
         if (iterationSteps.isEmpty()) {
-            progressInfo.log("No data batches selected (according to limit). Skipping.");
+            progressInfo.log("No iteration steps selected (according to limit). Skipping.");
             return;
         }
 

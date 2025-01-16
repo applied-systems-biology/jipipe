@@ -60,6 +60,8 @@ import javax.swing.*;
 import javax.swing.border.Border;
 import javax.swing.border.CompoundBorder;
 import javax.swing.border.EmptyBorder;
+import javax.swing.event.AncestorEvent;
+import javax.swing.event.AncestorListener;
 import javax.swing.event.HyperlinkEvent;
 import javax.swing.filechooser.FileNameExtensionFilter;
 import javax.swing.text.*;
@@ -2290,6 +2292,12 @@ public class UIUtils {
         });
     }
 
+    public static void invokeScrollToBottom(JScrollPane scrollPane) {
+        SwingUtilities.invokeLater(() -> {
+            scrollPane.getVerticalScrollBar().setValue(scrollPane.getVerticalScrollBar().getMaximum());
+        });
+    }
+
     public static void redirectDragEvents(Component component, Component target) {
         component.setFocusable(false);
         DragThroughMouseListener listener = new DragThroughMouseListener(component, target);
@@ -2340,6 +2348,15 @@ public class UIUtils {
 
     public static JButton createButton(String text, Icon icon, Runnable function) {
         JButton button = new JButton(text, icon);
+        if (function != null) {
+            button.addActionListener(e -> function.run());
+        }
+        return button;
+    }
+
+    public static JButton createIconOnlyButton(String text, Icon icon, Runnable function) {
+        JButton button = new JButton(icon);
+        button.setToolTipText(text);
         if (function != null) {
             button.addActionListener(e -> function.run());
         }
@@ -2424,6 +2441,29 @@ public class UIUtils {
 
     public static void repaintLater(Component component) {
         SwingUtilities.invokeLater(() -> component.repaint(50));
+    }
+
+    public static void requestFocusOnShown(JComponent component) {
+        component.addAncestorListener(new AncestorListener() {
+
+            public void ancestorRemoved(AncestorEvent event) {
+            }
+
+            public void ancestorMoved(AncestorEvent event) {
+            }
+
+            public void ancestorAdded(final AncestorEvent event) {
+                AncestorListener listener = this;
+                SwingUtilities.invokeLater(() -> {
+                    event.getComponent().requestFocusInWindow();
+                    event.getComponent().removeAncestorListener(listener);
+                });
+            }
+        });
+    }
+
+    public static URL getIcon32URLFromResources(String iconName) {
+        return ResourceUtils.getPluginResource("icons-32/" + iconName);
     }
 
 

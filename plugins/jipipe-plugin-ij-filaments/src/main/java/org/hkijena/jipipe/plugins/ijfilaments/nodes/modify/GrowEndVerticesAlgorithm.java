@@ -115,7 +115,7 @@ public class GrowEndVerticesAlgorithm extends JIPipeSimpleIteratingAlgorithm {
         for (int i = 0; i < iterations; i++) {
             JIPipeProgressInfo iterationProgress = progressInfo.resolveAndLog("Iteration", i, iterations);
             Set<FilamentVertex> toProcess = new HashSet<>();
-            for (FilamentVertex vertex : VertexMaskParameter.filter(vertexMask.getFilter(),graph, graph.vertexSet(), variables)) {
+            for (FilamentVertex vertex : VertexMaskParameter.filter(vertexMask.getFilter(), graph, graph.vertexSet(), variables)) {
                 if (graph.degreeOf(vertex) == 1) {
                     toProcess.add(vertex);
                 }
@@ -233,10 +233,5 @@ public class GrowEndVerticesAlgorithm extends JIPipeSimpleIteratingAlgorithm {
     @JIPipeParameter("vertex-filter")
     public VertexMaskParameter getVertexMask() {
         return vertexMask;
-    }
-
-    @Override
-    public boolean isEnableDefaultCustomExpressionVariables() {
-        return true;
     }
 }

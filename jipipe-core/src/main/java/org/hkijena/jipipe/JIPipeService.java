@@ -29,6 +29,8 @@ import java.util.Set;
  */
 public interface JIPipeService extends Service, JIPipeValidatable {
 
+    JIPipeRecentProjectsRegistry getRecentProjectsRegistry();
+
     JIPipeImageJAdapterRegistry getImageJDataAdapterRegistry();
 
     List<JIPipeDependency> getRegisteredExtensions();

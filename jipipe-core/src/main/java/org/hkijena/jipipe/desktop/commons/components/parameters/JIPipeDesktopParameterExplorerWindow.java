@@ -18,8 +18,8 @@ import org.hkijena.jipipe.api.nodes.JIPipeGraphNode;
 import org.hkijena.jipipe.api.parameters.*;
 import org.hkijena.jipipe.desktop.app.JIPipeDesktopWorkbench;
 import org.hkijena.jipipe.desktop.commons.components.JIPipeDesktopFormPanel;
-import org.hkijena.jipipe.desktop.commons.components.JIPipeDesktopParameterFormPanel;
 import org.hkijena.jipipe.desktop.commons.components.JIPipeDesktopParameterAccessTreeUI;
+import org.hkijena.jipipe.desktop.commons.components.JIPipeDesktopParameterFormPanel;
 import org.hkijena.jipipe.desktop.commons.components.JIPipeDesktopReadonlyCopyableTextField;
 import org.hkijena.jipipe.plugins.parameters.library.markup.MarkdownText;
 import org.hkijena.jipipe.utils.JIPipeDesktopSplitPane;
@@ -288,8 +288,8 @@ public class JIPipeDesktopParameterExplorerWindow extends JFrame implements JIPi
         testerValue.getSource().getParameterChangedEventEmitter().subscribeWeak(this);
 
         // Set editors
-        currentValuePanel.add(JIPipe.getParameterTypes().createEditorFor(workbench, parameterTree, parameterAccess), BorderLayout.CENTER);
-        testerValuePanel.add(JIPipe.getParameterTypes().createEditorFor(workbench, parameterTree, testerValue), BorderLayout.CENTER);
+        currentValuePanel.add(JIPipe.getParameterTypes().createEditorInstance(parameterAccess, workbench, parameterTree, null), BorderLayout.CENTER);
+        testerValuePanel.add(JIPipe.getParameterTypes().createEditorInstance(testerValue, workbench, parameterTree, null), BorderLayout.CENTER);
 
         // Load info
         nameLabel.setText(parameterAccess.getName());

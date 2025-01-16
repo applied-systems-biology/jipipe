@@ -348,10 +348,9 @@ public class JIPipeDesktopDockPanel extends JPanel implements JIPipeDesktopSplit
         boolean rightPanelIsUsed = false;
 
         for (Panel value : panels.values()) {
-            if(value.location == PanelLocation.TopLeft || value.location == PanelLocation.BottomLeft) {
+            if (value.location == PanelLocation.TopLeft || value.location == PanelLocation.BottomLeft) {
                 leftPanelIsUsed = true;
-            }
-            else if(value.location == PanelLocation.TopRight || value.location == PanelLocation.BottomRight) {
+            } else if (value.location == PanelLocation.TopRight || value.location == PanelLocation.BottomRight) {
                 rightPanelIsUsed = true;
             }
         }

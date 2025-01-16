@@ -14,11 +14,9 @@
 package org.hkijena.jipipe.plugins.parameters.library.primitives;
 
 import org.hkijena.jipipe.JIPipe;
-import org.hkijena.jipipe.api.parameters.JIPipeParameterAccess;
 import org.hkijena.jipipe.api.parameters.JIPipeParameterCollection;
 import org.hkijena.jipipe.api.parameters.JIPipeParameterTree;
 import org.hkijena.jipipe.desktop.api.JIPipeDesktopParameterEditorUI;
-import org.hkijena.jipipe.desktop.app.JIPipeDesktopWorkbench;
 import org.hkijena.jipipe.utils.UIUtils;
 
 import javax.swing.*;
@@ -36,8 +34,8 @@ public class StringOrDoubleDesktopParameterEditorUI extends JIPipeDesktopParamet
      * @param workbench       workbench
      * @param parameterAccess the parameter
      */
-    public StringOrDoubleDesktopParameterEditorUI(JIPipeDesktopWorkbench workbench, JIPipeParameterTree parameterTree, JIPipeParameterAccess parameterAccess) {
-        super(workbench, parameterTree, parameterAccess);
+    public StringOrDoubleDesktopParameterEditorUI(InitializationParameters parameters) {
+        super(parameters);
         setLayout(new BoxLayout(this, BoxLayout.X_AXIS));
         reload();
     }
@@ -63,10 +61,10 @@ public class StringOrDoubleDesktopParameterEditorUI extends JIPipeDesktopParamet
 
         if (parameter.getMode() == StringOrDouble.Mode.Double) {
             doubleToggle.setSelected(true);
-            add(JIPipe.getParameterTypes().createEditorFor(getDesktopWorkbench(), traversedParameterCollection, traversedParameterCollection.getParameters().get("number")));
+            add(JIPipe.getParameterTypes().createEditorInstance(traversedParameterCollection.getParameters().get("number"), getDesktopWorkbench(), traversedParameterCollection, null));
         } else if (parameter.getMode() == StringOrDouble.Mode.String) {
             stringToggle.setSelected(true);
-            add(JIPipe.getParameterTypes().createEditorFor(getDesktopWorkbench(), traversedParameterCollection, traversedParameterCollection.getParameters().get("string")));
+            add(JIPipe.getParameterTypes().createEditorInstance(traversedParameterCollection.getParameters().get("string"), getDesktopWorkbench(), traversedParameterCollection, null));
         }
 
         revalidate();

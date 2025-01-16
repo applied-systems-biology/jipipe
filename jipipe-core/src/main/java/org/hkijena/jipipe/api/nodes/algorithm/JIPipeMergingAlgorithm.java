@@ -143,7 +143,7 @@ public abstract class JIPipeMergingAlgorithm extends JIPipeParameterSlotAlgorith
         IntegerRange limit = iterationStepGenerationSettings.getLimit().getContent();
         TIntSet allowedIndices = withLimit ? new TIntHashSet(limit.getIntegers(0, iterationSteps.size(), new JIPipeExpressionVariablesMap())) : null;
         if (withLimit) {
-            progressInfo.log("[INFO] Applying limit to all data batches. Allowed indices are " + Ints.join(", ", allowedIndices.toArray()));
+            progressInfo.log("[INFO] Applying limit to all iteration steps. Allowed indices are " + Ints.join(", ", allowedIndices.toArray()));
             List<JIPipeMultiIterationStep> limitedBatches = new ArrayList<>();
             for (int i = 0; i < iterationSteps.size(); i++) {
                 if (allowedIndices.contains(i)) {
@@ -174,10 +174,10 @@ public abstract class JIPipeMergingAlgorithm extends JIPipeParameterSlotAlgorith
 
     /**
      * A pass-through variant for merging algorithms.
-     * Passes the data batch to the single output
+     * Passes the iteration step to the single output
      *
      * @param progressInfo  progress info
-     * @param iterationStep the data batch
+     * @param iterationStep the iteration step
      */
     protected void runPassThrough(JIPipeProgressInfo progressInfo, JIPipeMultiIterationStep iterationStep) {
         progressInfo.log("Passing trough (via dynamic pass-through)");
@@ -301,9 +301,11 @@ public abstract class JIPipeMergingAlgorithm extends JIPipeParameterSlotAlgorith
 
     private void uploadAdaptiveParameters(JIPipeMultiIterationStep iterationStep, JIPipeParameterTree tree, Map<String, Object> parameterBackups, JIPipeProgressInfo progressInfo) {
         JIPipeExpressionVariablesMap expressionVariables = new JIPipeExpressionVariablesMap();
-        for (JIPipeTextAnnotation annotation : iterationStep.getMergedTextAnnotations().values()) {
-            expressionVariables.put(annotation.getName(), annotation.getValue());
-        }
+
+        // Upload annotations and custom variables
+        expressionVariables.putCustomVariables(getDefaultCustomExpressionVariables());
+        expressionVariables.putAnnotations(iterationStep.getMergedTextAnnotations());
+
         for (StringQueryExpressionAndStringPairParameter overriddenParameter : getAdaptiveParameterSettings().getOverriddenParameters()) {
             String key = overriddenParameter.getValue();
             JIPipeParameterAccess target = tree.getParameters().getOrDefault(key, null);
@@ -427,7 +429,7 @@ public abstract class JIPipeMergingAlgorithm extends JIPipeParameterSlotAlgorith
         return iterationStepGenerationSettings;
     }
 
-    @SetJIPipeDocumentation(name = "Adaptive parameters", description = "You can use the following settings to generate parameter values for each data batch based on annotations.")
+    @SetJIPipeDocumentation(name = "Adaptive parameters", description = "You can use the following settings to generate parameter values for each iteration step based on annotations.")
     @JIPipeParameter(value = "jipipe:adaptive-parameters", hidden = true,
             iconURL = ResourceUtils.RESOURCE_BASE_PATH + "/icons/actions/insert-function.png",
             iconDarkURL = ResourceUtils.RESOURCE_BASE_PATH + "/dark/icons/actions/insert-function.png")

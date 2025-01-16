@@ -125,9 +125,4 @@ public class FilterFilamentsByProperties extends JIPipeSimpleIteratingAlgorithm 
     public void setFilter(JIPipeExpressionParameter filter) {
         this.filter = filter;
     }
-
-    @Override
-    public boolean isEnableDefaultCustomExpressionVariables() {
-        return true;
-    }
 }

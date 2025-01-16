@@ -110,9 +110,4 @@ public class SplitByAnnotation extends JIPipeAlgorithm {
         return targetSlots;
     }
 
-    @Override
-    public boolean isEnableDefaultCustomExpressionVariables() {
-        return true;
-    }
-
 }

@@ -124,9 +124,4 @@ public class SplitSpotsNode extends JIPipeSimpleIteratingAlgorithm {
     public void setAnnotationGenerator(NamedTextAnnotationGeneratorExpression.List annotationGenerator) {
         this.annotationGenerator = annotationGenerator;
     }
-
-    @Override
-    public boolean isEnableDefaultCustomExpressionVariables() {
-        return true;
-    }
 }

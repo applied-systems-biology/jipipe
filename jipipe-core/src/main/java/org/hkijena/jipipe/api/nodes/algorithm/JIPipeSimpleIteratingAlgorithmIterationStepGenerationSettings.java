@@ -30,7 +30,7 @@ public class JIPipeSimpleIteratingAlgorithmIterationStepGenerationSettings exten
         this.limit = new OptionalIntegerRange(other.limit);
     }
 
-    @SetJIPipeDocumentation(name = "Limit", description = "Limits which data batches are generated. The first index is zero.")
+    @SetJIPipeDocumentation(name = "Limit", description = "Limits which iteration steps are generated. The first index is zero.")
     @JIPipeParameter(value = "limit")
     public OptionalIntegerRange getLimit() {
         return limit;

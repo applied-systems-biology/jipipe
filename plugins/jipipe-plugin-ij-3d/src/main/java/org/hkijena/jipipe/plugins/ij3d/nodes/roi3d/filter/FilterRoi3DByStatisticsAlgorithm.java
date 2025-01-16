@@ -136,7 +136,7 @@ public class FilterRoi3DByStatisticsAlgorithm extends JIPipeIteratingAlgorithm {
     }
 
     @JIPipeParameter(value = "filter", important = true)
-    @SetJIPipeDocumentation(name = "Filter", description = "Filtering expression. This is applied per ROI. " +
+    @SetJIPipeDocumentation(name = "Only keep ROI if", description = "Filtering expression. This is applied per ROI. " +
             "Click the 'f' button to see all available variables you can test for (note: requires from you to enable the corresponding measurement!)." +
             "An example for an expression would be 'Area > 200 AND Mean > 10'." +
             "Annotations are available as variables.")
@@ -177,11 +177,6 @@ public class FilterRoi3DByStatisticsAlgorithm extends JIPipeIteratingAlgorithm {
     @JIPipeParameter("output-empty-lists")
     public void setOutputEmptyLists(boolean outputEmptyLists) {
         this.outputEmptyLists = outputEmptyLists;
-    }
-
-    @Override
-    public boolean isEnableDefaultCustomExpressionVariables() {
-        return true;
     }
 
     @SetJIPipeDocumentation(name = "Measure in physical units", description = "If true, measurements will be generated in physical units if available")

@@ -504,7 +504,7 @@ public class JIPipeDesktopParameterFormPanel extends JIPipeDesktopFormPanel impl
                 collapseButton.setState(true);
             }
 
-            JIPipeDesktopParameterEditorUI ui = JIPipe.getParameterTypes().createEditorFor(desktopWorkbench, parameterTree, parameterAccess);
+            JIPipeDesktopParameterEditorUI ui = JIPipe.getParameterTypes().createEditorInstance(parameterAccess, desktopWorkbench, parameterTree, this);
             uiList.add(ui);
             uiComponents.add(ui);
         }
@@ -747,5 +747,9 @@ public class JIPipeDesktopParameterFormPanel extends JIPipeDesktopFormPanel impl
 
     public JIPipeParameterTree getParameterTree() {
         return parameterTree;
+    }
+
+    public boolean isWithExternalDocumentation() {
+        return isWithDocumentation() && hasFlag(DOCUMENTATION_EXTERNAL);
     }
 }

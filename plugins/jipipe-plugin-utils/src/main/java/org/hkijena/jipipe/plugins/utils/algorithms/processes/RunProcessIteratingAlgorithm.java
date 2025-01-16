@@ -147,7 +147,7 @@ public class RunProcessIteratingAlgorithm extends JIPipeIteratingAlgorithm {
         this.overrideArguments = overrideArguments;
     }
 
-    @SetJIPipeDocumentation(name = "Output output folder", description = "If enabled, the output folder designated to the current data batch is also output into a slot 'Output folder'. Please " +
+    @SetJIPipeDocumentation(name = "Output output folder", description = "If enabled, the output folder designated to the current iteration step is also output into a slot 'Output folder'. Please " +
             "note that any existing slot with this name is replaced by a directory output slot. Data will be not be extracted from the process output.")
     @JIPipeParameter("output-output-folder")
     public boolean isOutputOutputFolder() {
@@ -164,7 +164,7 @@ public class RunProcessIteratingAlgorithm extends JIPipeIteratingAlgorithm {
                     if (slotConfiguration.hasOutputSlot("Output folder")) {
                         slotConfiguration.removeOutputSlot("Output folder", false);
                     }
-                    slotConfiguration.addOutputSlot("Output folder", "Output folder designated to the current data batch", FolderData.class, null, false);
+                    slotConfiguration.addOutputSlot("Output folder", "Output folder designated to the current iteration step", FolderData.class, null, false);
                 }
             } else {
                 if (slotConfiguration.hasOutputSlot("Output folder")) {

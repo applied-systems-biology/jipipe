@@ -15,7 +15,9 @@ package org.hkijena.jipipe.plugins.tools;
 
 import com.google.common.collect.ImmutableList;
 import org.hkijena.jipipe.JIPipe;
-import org.hkijena.jipipe.api.compartments.algorithms.*;
+import org.hkijena.jipipe.api.compartments.algorithms.IOInterfaceAlgorithm;
+import org.hkijena.jipipe.api.compartments.algorithms.JIPipeProjectCompartment;
+import org.hkijena.jipipe.api.compartments.algorithms.JIPipeProjectCompartmentOutput;
 import org.hkijena.jipipe.api.nodes.JIPipeGraph;
 import org.hkijena.jipipe.api.nodes.JIPipeGraphNode;
 import org.hkijena.jipipe.desktop.api.JIPipeDesktopMenuExtension;

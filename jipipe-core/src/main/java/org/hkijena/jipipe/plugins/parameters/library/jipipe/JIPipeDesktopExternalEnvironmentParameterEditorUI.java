@@ -16,8 +16,6 @@ package org.hkijena.jipipe.plugins.parameters.library.jipipe;
 import org.hkijena.jipipe.JIPipe;
 import org.hkijena.jipipe.api.artifacts.JIPipeArtifact;
 import org.hkijena.jipipe.api.environments.*;
-import org.hkijena.jipipe.api.parameters.JIPipeParameterAccess;
-import org.hkijena.jipipe.api.parameters.JIPipeParameterTree;
 import org.hkijena.jipipe.api.parameters.JIPipeParameterTypeInfo;
 import org.hkijena.jipipe.api.registries.JIPipeExternalEnvironmentRegistry;
 import org.hkijena.jipipe.api.run.JIPipeRunnable;
@@ -25,7 +23,6 @@ import org.hkijena.jipipe.api.run.JIPipeRunnableQueue;
 import org.hkijena.jipipe.api.validation.JIPipeValidationReport;
 import org.hkijena.jipipe.api.validation.contexts.UnspecifiedValidationReportContext;
 import org.hkijena.jipipe.desktop.api.JIPipeDesktopParameterEditorUI;
-import org.hkijena.jipipe.desktop.app.JIPipeDesktopWorkbench;
 import org.hkijena.jipipe.desktop.app.running.JIPipeDesktopRunExecuteUI;
 import org.hkijena.jipipe.desktop.commons.components.JIPipeDesktopParameterFormPanel;
 import org.hkijena.jipipe.utils.ReflectionUtils;
@@ -44,14 +41,8 @@ public class JIPipeDesktopExternalEnvironmentParameterEditorUI extends JIPipeDes
     private final JTextField pathLabel = UIUtils.createReadonlyBorderlessTextField("");
     private final JPopupMenu configureMenu = new JPopupMenu();
 
-    /**
-     * Creates new instance
-     *
-     * @param workbench       the workbench
-     * @param parameterAccess Parameter
-     */
-    public JIPipeDesktopExternalEnvironmentParameterEditorUI(JIPipeDesktopWorkbench workbench, JIPipeParameterTree parameterTree, JIPipeParameterAccess parameterAccess) {
-        super(workbench, parameterTree, parameterAccess);
+    public JIPipeDesktopExternalEnvironmentParameterEditorUI(InitializationParameters parameters) {
+        super(parameters);
         initialize();
         reload();
         JIPipeRunnableQueue.getInstance().getFinishedEventEmitter().subscribeWeak(this);

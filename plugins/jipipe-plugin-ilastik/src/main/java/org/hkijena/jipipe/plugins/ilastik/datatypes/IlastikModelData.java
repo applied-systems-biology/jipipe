@@ -36,11 +36,10 @@ public class IlastikModelData implements JIPipeData {
 
     public IlastikModelData(Path file, boolean linked) {
         this.name = file.getFileName().toString();
-        if(linked) {
+        if (linked) {
             data = null;
             linkedPath = file;
-        }
-        else {
+        } else {
             linkedPath = null;
             try {
                 data = Files.readAllBytes(file);
@@ -91,10 +90,9 @@ public class IlastikModelData implements JIPipeData {
                 name = "project";
             }
             Path outputFile = storage.getFileSystemPath().resolve(PathUtils.ensureExtension(Paths.get(name), ".ilp"));
-            if(isLinked()) {
+            if (isLinked()) {
                 Files.copy(linkedPath, outputFile, StandardCopyOption.REPLACE_EXISTING);
-            }
-            else {
+            } else {
                 Files.write(outputFile, data);
             }
         } catch (IOException e) {
@@ -109,20 +107,18 @@ public class IlastikModelData implements JIPipeData {
 
     @Override
     public String toString() {
-        if(isLinked()) {
+        if (isLinked()) {
             return linkedPath.toString();
-        }
-        else {
+        } else {
             return "Ilastik model: " + name + " (" + (data.length / 1024 / 1024) + " MB)";
         }
 
     }
 
     public Path exportOrGetLink(Path exportedPath) {
-        if(isLinked()) {
+        if (isLinked()) {
             return linkedPath;
-        }
-        else {
+        } else {
             try {
                 Files.write(exportedPath, getData(), StandardOpenOption.CREATE);
             } catch (IOException e) {

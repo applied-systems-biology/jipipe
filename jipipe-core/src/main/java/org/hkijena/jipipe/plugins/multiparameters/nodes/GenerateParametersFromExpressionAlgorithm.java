@@ -32,8 +32,8 @@ import org.hkijena.jipipe.api.validation.JIPipeValidationReport;
 import org.hkijena.jipipe.api.validation.JIPipeValidationReportContext;
 import org.hkijena.jipipe.api.validation.JIPipeValidationReportEntry;
 import org.hkijena.jipipe.api.validation.JIPipeValidationReportEntryLevel;
-import org.hkijena.jipipe.plugins.expressions.JIPipeExpressionParameter;
 import org.hkijena.jipipe.plugins.expressions.AddJIPipeExpressionParameterVariable;
+import org.hkijena.jipipe.plugins.expressions.JIPipeExpressionParameter;
 import org.hkijena.jipipe.plugins.expressions.JIPipeExpressionVariablesMap;
 import org.hkijena.jipipe.plugins.expressions.variables.JIPipeTextAnnotationsExpressionParameterVariablesInfo;
 import org.hkijena.jipipe.plugins.multiparameters.datatypes.ParametersData;
@@ -160,11 +160,6 @@ public class GenerateParametersFromExpressionAlgorithm extends JIPipeSimpleItera
             }
             throw new RuntimeException("Cannot convert " + obj + " into a value compatible with " + fieldClass);
         }
-    }
-
-    @Override
-    public boolean isEnableDefaultCustomExpressionVariables() {
-        return true;
     }
 
     @SetJIPipeDocumentation(name = "Generated parameter columns", description = "Each item within this list defines a column in the generated parameter table. You must set the following properties: " +

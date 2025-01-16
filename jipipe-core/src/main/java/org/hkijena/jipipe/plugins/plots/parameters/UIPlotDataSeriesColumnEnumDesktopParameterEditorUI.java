@@ -13,10 +13,7 @@
 
 package org.hkijena.jipipe.plugins.plots.parameters;
 
-import org.hkijena.jipipe.api.parameters.JIPipeParameterAccess;
-import org.hkijena.jipipe.api.parameters.JIPipeParameterTree;
 import org.hkijena.jipipe.desktop.api.JIPipeDesktopParameterEditorUI;
-import org.hkijena.jipipe.desktop.app.JIPipeDesktopWorkbench;
 import org.hkijena.jipipe.desktop.app.ploteditor.JIPipeDesktopPlotDataSeriesColumnListCellRenderer;
 import org.hkijena.jipipe.plugins.parameters.api.enums.DynamicEnumParameter;
 import org.hkijena.jipipe.plugins.parameters.api.enums.DynamicEnumParameterSettings;
@@ -38,8 +35,8 @@ public class UIPlotDataSeriesColumnEnumDesktopParameterEditorUI extends JIPipeDe
      * @param workbench       workbench
      * @param parameterAccess the parameter
      */
-    public UIPlotDataSeriesColumnEnumDesktopParameterEditorUI(JIPipeDesktopWorkbench workbench, JIPipeParameterTree parameterTree, JIPipeParameterAccess parameterAccess) {
-        super(workbench, parameterTree, parameterAccess);
+    public UIPlotDataSeriesColumnEnumDesktopParameterEditorUI(InitializationParameters parameters) {
+        super(parameters);
         initialize();
         reload();
     }

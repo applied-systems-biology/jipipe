@@ -60,8 +60,8 @@ public class ScriptDesktopParameterEditorUI extends JIPipeDesktopParameterEditor
      * @param workbench       workbench
      * @param parameterAccess the parameter
      */
-    public ScriptDesktopParameterEditorUI(JIPipeDesktopWorkbench workbench, JIPipeParameterTree parameterTree, JIPipeParameterAccess parameterAccess) {
-        super(workbench, parameterTree, parameterAccess);
+    public ScriptDesktopParameterEditorUI(InitializationParameters parameters) {
+        super(parameters);
         initialize();
         reload();
     }
@@ -230,7 +230,7 @@ public class ScriptDesktopParameterEditorUI extends JIPipeDesktopParameterEditor
                                     return JIPipeFileChooserApplicationSettings.LastDirectoryKey.Projects;
                                 }
                             }).build();
-                    JIPipeDesktopParameterEditorUI pathEditor = JIPipe.getInstance().getParameterTypeRegistry().createEditorFor(getDesktopWorkbench(), getParameterTree(), access);
+                    JIPipeDesktopParameterEditorUI pathEditor = JIPipe.getInstance().getParameterTypeRegistry().createEditorInstance(access, getDesktopWorkbench(), getParameterTree(), null);
                     JIPipeDesktopFormPanel formPanel = new JIPipeDesktopFormPanel(null, JIPipeDesktopFormPanel.NONE);
                     formPanel.addToForm(pathEditor, new JLabel("External script path"), null);
                     add(formPanel, BorderLayout.CENTER);
@@ -316,7 +316,7 @@ public class ScriptDesktopParameterEditorUI extends JIPipeDesktopParameterEditor
         }
 
         private void initialize() {
-            editorUI = new LargeScriptDesktopParameterEditorUI(getDesktopWorkbench(), getParameterTree(), getParameterAccess());
+            editorUI = new LargeScriptDesktopParameterEditorUI(new InitializationParameters(getDesktopWorkbench(), getParameterTree(), getParameterAccess()));
             ScriptParameter code = getParameter(ScriptParameter.class);
             getDesktopWorkbench().getDocumentTabPane().addTab(getParameterAccess().getName() + " (" + code.getLanguageName() + ")",
                     UIUtils.getIconFromResources("actions/dialog-xml-editor.png"),
@@ -347,7 +347,7 @@ public class ScriptDesktopParameterEditorUI extends JIPipeDesktopParameterEditor
         }
 
         private void initialize() {
-            LargeScriptDesktopParameterEditorUI editorUI = new LargeScriptDesktopParameterEditorUI(getDesktopWorkbench(), getParameterTree(), getParameterAccess());
+            LargeScriptDesktopParameterEditorUI editorUI = new LargeScriptDesktopParameterEditorUI(new InitializationParameters(getDesktopWorkbench(), getParameterTree(), getParameterAccess()));
             ScriptParameter code = getParameter(ScriptParameter.class);
             frame = new JFrame();
             frame.setTitle("JIPipe - " + getParameterAccess().getKey() + " (" + code.getLanguageName() + ")");

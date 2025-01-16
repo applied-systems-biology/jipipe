@@ -13,6 +13,7 @@
 
 package org.hkijena.jipipe.desktop.app.project;
 
+import org.hkijena.jipipe.JIPipe;
 import org.hkijena.jipipe.api.AbstractJIPipeRunnable;
 import org.hkijena.jipipe.api.JIPipeProgressInfo;
 import org.hkijena.jipipe.api.cache.JIPipeLocalProjectMemoryCache;
@@ -21,7 +22,6 @@ import org.hkijena.jipipe.api.nodes.JIPipeGraphNode;
 import org.hkijena.jipipe.api.project.JIPipeProject;
 import org.hkijena.jipipe.desktop.app.JIPipeDesktopWorkbench;
 import org.hkijena.jipipe.desktop.app.cache.exporters.JIPipeDesktopDataTableToOutputExporterRun;
-import org.hkijena.jipipe.plugins.settings.JIPipeProjectDefaultsApplicationSettings;
 import org.hkijena.jipipe.utils.PathUtils;
 
 import java.io.IOException;
@@ -57,8 +57,9 @@ public class JIPipeDesktopSaveProjectAndCacheToDirectoryRun extends AbstractJIPi
         try {
             Files.createDirectories(outputPath);
             project.saveProject(outputPath.resolve("project.jip"));
-            if (addAsRecentProject)
-                JIPipeProjectDefaultsApplicationSettings.getInstance().addRecentProject(outputPath);
+            if (addAsRecentProject) {
+                JIPipe.getInstance().getRecentProjectsRegistry().add(outputPath);
+            }
         } catch (IOException e) {
             throw new RuntimeException(e);
         }

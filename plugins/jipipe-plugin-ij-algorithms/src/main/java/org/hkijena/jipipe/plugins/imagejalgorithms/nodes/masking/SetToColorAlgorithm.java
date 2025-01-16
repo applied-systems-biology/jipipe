@@ -11,7 +11,7 @@
  * See the LICENSE file provided with the code for the full license.
  */
 
-package org.hkijena.jipipe.plugins.imagejalgorithms.nodes.color;
+package org.hkijena.jipipe.plugins.imagejalgorithms.nodes.masking;
 
 import ij.ImagePlus;
 import ij.process.ColorProcessor;
@@ -31,22 +31,22 @@ import org.hkijena.jipipe.plugins.imagejdatatypes.util.ImageJUtils;
 
 import java.awt.*;
 
-@SetJIPipeDocumentation(name = "Set to value (grayscale)", description = "Sets all pixels of the input image to the specified grayscale value. If the image is RGB, the value is converted into an integer that is parsed as RGB.")
-@ConfigureJIPipeNode(menuPath = "Colors", nodeTypeCategory = ImagesNodeTypeCategory.class)
-@AddJIPipeInputSlot(value = ImagePlusData.class, name = "Input", create = true)
-@AddJIPipeOutputSlot(value = ImagePlusData.class, name = "Output", create = true)
-@AddJIPipeNodeAlias(nodeTypeCategory = ImageJNodeTypeCategory.class, menuPath = "Edit", aliasName = "Fill (whole image, greyscale)")
-public class SetToValueAlgorithm extends SimpleImageAndRoiIteratingAlgorithm {
+@SetJIPipeDocumentation(name = "Set to color (RGB)", description = "Sets all pixels of the input image to the specified color. If the image is grayscale, the provided color is converted to its equivalent grayscale value.")
+@ConfigureJIPipeNode(menuPath = "Masking", nodeTypeCategory = ImagesNodeTypeCategory.class)
+@AddJIPipeInputSlot(value = ImagePlusData.class, name = "Input")
+@AddJIPipeOutputSlot(value = ImagePlusData.class, name = "Output")
+@AddJIPipeNodeAlias(nodeTypeCategory = ImageJNodeTypeCategory.class, menuPath = "Edit", aliasName = "Fill (whole image, RGB)")
+public class SetToColorAlgorithm extends SimpleImageAndRoiIteratingAlgorithm {
 
-    private double value = 0;
+    private Color color = Color.BLACK;
 
-    public SetToValueAlgorithm(JIPipeNodeInfo info) {
+    public SetToColorAlgorithm(JIPipeNodeInfo info) {
         super(info, ImagePlusData.class, ImagePlusData.class);
     }
 
-    public SetToValueAlgorithm(SetToValueAlgorithm other) {
+    public SetToColorAlgorithm(SetToColorAlgorithm other) {
         super(other);
-        this.value = other.value;
+        this.color = other.color;
     }
 
     @Override
@@ -54,7 +54,6 @@ public class SetToValueAlgorithm extends SimpleImageAndRoiIteratingAlgorithm {
         ImagePlus image = iterationStep.getInputData("Input", ImagePlusData.class, progressInfo).getDuplicateImage();
         image = ImageJUtils.channelsToRGB(image);
         if (image.getType() == ImagePlus.COLOR_RGB) {
-            Color color = new Color((int) value);
             ImageJUtils.forEachIndexedZCTSlice(image, (ip, index) -> {
                 ImageProcessor roi = getMask(iterationStep, index, progressInfo);
                 ColorProcessor colorProcessor = (ColorProcessor) ip;
@@ -63,6 +62,7 @@ public class SetToValueAlgorithm extends SimpleImageAndRoiIteratingAlgorithm {
                 ip.fill(roi);
             }, progressInfo);
         } else {
+            double value = (color.getRed() + color.getGreen() + color.getBlue()) / 3.0;
             ImageJUtils.forEachIndexedZCTSlice(image, (ip, index) -> {
                 ImageProcessor roi = getMask(iterationStep, index, progressInfo);
                 ip.resetRoi();
@@ -73,14 +73,14 @@ public class SetToValueAlgorithm extends SimpleImageAndRoiIteratingAlgorithm {
         iterationStep.addOutputData(getFirstOutputSlot(), new ImagePlusData(image), progressInfo);
     }
 
-    @SetJIPipeDocumentation(name = "Value", description = "The value of each pixel.")
-    @JIPipeParameter("value")
-    public double getValue() {
-        return value;
+    @SetJIPipeDocumentation(name = "Color", description = "The color of each pixel.")
+    @JIPipeParameter("color")
+    public Color getColor() {
+        return color;
     }
 
-    @JIPipeParameter("value")
-    public void setValue(double value) {
-        this.value = value;
+    @JIPipeParameter("color")
+    public void setColor(Color color) {
+        this.color = color;
     }
 }

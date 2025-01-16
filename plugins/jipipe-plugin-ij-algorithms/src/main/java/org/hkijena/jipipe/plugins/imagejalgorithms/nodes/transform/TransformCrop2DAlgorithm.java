@@ -14,7 +14,6 @@
 package org.hkijena.jipipe.plugins.imagejalgorithms.nodes.transform;
 
 import ij.ImagePlus;
-import ij.ImageStack;
 import ij.process.ImageProcessor;
 import org.hkijena.jipipe.api.ConfigureJIPipeNode;
 import org.hkijena.jipipe.api.JIPipeProgressInfo;
@@ -31,6 +30,7 @@ import org.hkijena.jipipe.plugins.expressions.AddJIPipeExpressionParameterVariab
 import org.hkijena.jipipe.plugins.expressions.JIPipeExpressionVariablesMap;
 import org.hkijena.jipipe.plugins.expressions.variables.JIPipeTextAnnotationsExpressionParameterVariablesInfo;
 import org.hkijena.jipipe.plugins.imagejdatatypes.datatypes.ImagePlusData;
+import org.hkijena.jipipe.plugins.imagejdatatypes.util.Image5DExpressionParameterVariablesInfo;
 import org.hkijena.jipipe.plugins.imagejdatatypes.util.ImageJUtils;
 import org.hkijena.jipipe.plugins.parameters.library.roi.Margin;
 
@@ -68,30 +68,6 @@ public class TransformCrop2DAlgorithm extends JIPipeSimpleIteratingAlgorithm {
         this.roi = new Margin(other.roi);
     }
 
-    public static ImagePlus crop(JIPipeProgressInfo progressInfo, ImagePlus img, Rectangle cropped) {
-        ImagePlus croppedImg;
-        if (img.hasImageStack()) {
-            ImageStack result = new ImageStack(cropped.width, cropped.height, img.getStackSize());
-            ImageJUtils.forEachIndexedZCTSlice(img, (imp, index) -> {
-                imp.setRoi(cropped);
-                ImageProcessor croppedImage = imp.crop();
-                imp.resetRoi();
-                result.setProcessor(croppedImage, index.zeroSliceIndexToOneStackIndex(img));
-            }, progressInfo);
-            croppedImg = new ImagePlus("Cropped", result);
-            croppedImg.setDimensions(img.getNChannels(), img.getNSlices(), img.getNFrames());
-            croppedImg.copyScale(img);
-        } else {
-            ImageProcessor imp = img.getProcessor();
-            imp.setRoi(cropped);
-            ImageProcessor croppedImage = imp.crop();
-            imp.resetRoi();
-            croppedImg = new ImagePlus("Cropped", croppedImage);
-            croppedImg.copyScale(img);
-        }
-        return croppedImg;
-    }
-
     @Override
     public boolean supportsParallelization() {
         return true;
@@ -105,6 +81,7 @@ public class TransformCrop2DAlgorithm extends JIPipeSimpleIteratingAlgorithm {
         Rectangle imageArea = new Rectangle(0, 0, img.getWidth(), img.getHeight());
         JIPipeExpressionVariablesMap variables = new JIPipeExpressionVariablesMap();
         variables.putAnnotations(iterationStep.getMergedTextAnnotations());
+        Image5DExpressionParameterVariablesInfo.writeToVariables(img, variables);
         Rectangle cropped = roi.getInsideArea(imageArea, variables);
         if (cropped == null || cropped.width == 0 || cropped.height == 0) {
             throw new JIPipeValidationRuntimeException(new NullPointerException("Cropped rectangle is null or empty!"),
@@ -121,7 +98,7 @@ public class TransformCrop2DAlgorithm extends JIPipeSimpleIteratingAlgorithm {
 //                    "Please check the parameters and ensure that you only crop ");
 //        }
 
-        ImagePlus croppedImg = crop(progressInfo, img, cropped);
+        ImagePlus croppedImg = ImageJUtils.cropLegacy(img, cropped, progressInfo);
 
         iterationStep.addOutputData(getFirstOutputSlot(), new ImagePlusData(croppedImg), progressInfo);
     }
@@ -129,6 +106,7 @@ public class TransformCrop2DAlgorithm extends JIPipeSimpleIteratingAlgorithm {
     @SetJIPipeDocumentation(name = "ROI", description = "Defines the area to crop.")
     @JIPipeParameter("roi")
     @AddJIPipeExpressionParameterVariable(fromClass = JIPipeTextAnnotationsExpressionParameterVariablesInfo.class)
+    @AddJIPipeExpressionParameterVariable(fromClass = Image5DExpressionParameterVariablesInfo.class)
     public Margin getRoi() {
         return roi;
     }

@@ -29,12 +29,11 @@ import java.nio.file.Path;
 import java.util.*;
 import java.util.stream.Collectors;
 
-import static org.hkijena.jipipe.plugins.ilastik.utils.ImgUtils.*;
+import static org.hkijena.jipipe.plugins.ilastik.utils.ImgUtils.reversed;
 
 public final class IJ1Hdf5 {
-    
-    
-    
+
+
     private IJ1Hdf5() {
         throw new AssertionError();
     }
@@ -79,10 +78,9 @@ public final class IJ1Hdf5 {
 
         Objects.requireNonNull(file);
         Objects.requireNonNull(path);
-        if(axes == null) {
+        if (axes == null) {
             axes = new ArrayList<>();
-        }
-        else {
+        } else {
             axes = axes.stream().distinct().collect(Collectors.toList());
             if (!(axes.contains(Axes.X) && axes.contains(Axes.Y))) {
                 throw new IllegalArgumentException("Axes must contain X and Y if you define them manually");
@@ -134,29 +132,28 @@ public final class IJ1Hdf5 {
 
             try (HDF5DataSet dataset = reader.object().openDataSet(path)) {
                 for (int t = 0; t < result.getNFrames(); t++) {
-                    if(axisIndices.containsKey(Axes.TIME)) {
+                    if (axisIndices.containsKey(Axes.TIME)) {
                         offsets[dims.length - 1 - axisIndices.get(Axes.TIME)] = t;
                     }
                     for (int z = 0; z < result.getNSlices(); z++) {
-                        if(axisIndices.containsKey(Axes.Z)) {
+                        if (axisIndices.containsKey(Axes.Z)) {
                             offsets[dims.length - 1 - axisIndices.get(Axes.Z)] = z;
                         }
                         for (int c = 0; c < result.getNChannels(); c++) {
-                            if(axisIndices.containsKey(Axes.CHANNEL)) {
+                            if (axisIndices.containsKey(Axes.CHANNEL)) {
                                 offsets[dims.length - 1 - axisIndices.get(Axes.CHANNEL)] = c;
                             }
                             MDFloatArray arrayEntries = reader.float32().readMDArrayBlockWithOffset(dataset, blockDimensions, offsets);
                             float[] src = arrayEntries.getAsFlatArray();
                             ImageProcessor target = ImageJUtils.getSliceZero(result, c, z, t);
 
-                            if(!invertXY) {
+                            if (!invertXY) {
                                 for (int i = 0; i < src.length; i++) {
                                     int x = i % target.getHeight(); // Swapped!
                                     int y = i / target.getHeight(); // Swapped!
                                     target.setf(x, y, src[i]);
                                 }
-                            }
-                            else {
+                            } else {
                                 for (int i = 0; i < target.getPixelCount(); i++) {
                                     target.setf(i, src[i]);
                                 }
@@ -171,25 +168,24 @@ public final class IJ1Hdf5 {
     }
 
     private static String formatAxes(List<AxisType> axes) {
-        return axes.stream().map(at -> at.getLabel().substring(0,1)).collect(Collectors.joining(""));
+        return axes.stream().map(at -> at.getLabel().substring(0, 1)).collect(Collectors.joining(""));
     }
 
     public static void writeImage(ImagePlus image, Path file, String path, List<AxisType> axes, JIPipeProgressInfo progressInfo) {
         image = ImageJUtils.convertToGreyscaleIfNeeded(image);
         Objects.requireNonNull(file);
         Objects.requireNonNull(path);
-        if(axes == null) {
+        if (axes == null) {
             axes = new ArrayList<>();
 
             // For 2D images, just go with two axes (preconfigured)
-            if(image.getNDimensions() == 2) {
+            if (image.getNDimensions() == 2) {
                 progressInfo.log("2D image detected. Setting default axis config to XY");
                 axes.add(Axes.X);
                 axes.add(Axes.Y);
             }
 
-        }
-        else {
+        } else {
             axes = axes.stream().distinct().collect(Collectors.toList());
             if (!(axes.contains(Axes.X) && axes.contains(Axes.Y))) {
                 throw new IllegalArgumentException("Axes must contain X and Y if you define them manually");
@@ -213,52 +209,52 @@ public final class IJ1Hdf5 {
         long[] offsets = new long[dims];
         Arrays.fill(blockDimensions, 1);
 
-        if(axes.contains(Axes.TIME)) {
+        if (axes.contains(Axes.TIME)) {
             dimensions[dims - 1 - axes.indexOf(Axes.TIME)] = timePoints;
         }
-        if(axes.contains(Axes.CHANNEL)) {
+        if (axes.contains(Axes.CHANNEL)) {
             dimensions[dims - 1 - axes.indexOf(Axes.CHANNEL)] = channels;
         }
-        if(axes.contains(Axes.X)) {
+        if (axes.contains(Axes.X)) {
             dimensions[dims - 1 - axes.indexOf(Axes.X)] = width;
             blockDimensions[dims - 1 - axes.indexOf(Axes.X)] = width;
         }
-        if(axes.contains(Axes.Y)) {
+        if (axes.contains(Axes.Y)) {
             dimensions[dims - 1 - axes.indexOf(Axes.Y)] = height;
             blockDimensions[dims - 1 - axes.indexOf(Axes.Y)] = height;
         }
-        if(axes.contains(Axes.Z)) {
+        if (axes.contains(Axes.Z)) {
             dimensions[dims - 1 - axes.indexOf(Axes.Z)] = depth;
         }
         boolean invertXY = axes.indexOf(Axes.X) < axes.indexOf(Axes.Y);
 
         try (IHDF5Writer writer = HDF5Factory.open(file.toFile())) {
-            if(image.getBitDepth() == 8) {
+            if (image.getBitDepth() == 8) {
                 HDF5IntStorageFeatures features = HDF5IntStorageFeatures.build().compress().unsigned().features();
                 try (HDF5DataSet dataSet = writer.uint8().createMDArrayAndOpen(path, dimensions, blockDimensions, features)) {
                     for (int t = 0; t < timePoints; t++) {
-                        if(axes.contains(Axes.TIME)) {
+                        if (axes.contains(Axes.TIME)) {
                             offsets[dims - 1 - axes.indexOf(Axes.TIME)] = t;
                         }
                         for (int z = 0; z < depth; z++) {
-                            if(axes.contains(Axes.Z)) {
+                            if (axes.contains(Axes.Z)) {
                                 offsets[dims - 1 - axes.indexOf(Axes.Z)] = z;
                             }
                             for (int c = 0; c < channels; c++) {
-                                if(axes.contains(Axes.CHANNEL)) {
+                                if (axes.contains(Axes.CHANNEL)) {
                                     offsets[dims - 1 - axes.indexOf(Axes.CHANNEL)] = c;
                                 }
 
                                 byte[] src = (byte[]) ImageJUtils.getSliceZero(image, c, z, t).getPixels();
                                 byte[] target;
-                                if(!invertXY) {
+                                if (!invertXY) {
                                     target = new byte[src.length];
                                     for (int i = 0; i < src.length; i++) {
                                         int x = i % height; // Swapped!
                                         int y = i / height; // Swapped!
                                         target[x + y * width] = src[i];
                                     }
-                                }else {
+                                } else {
                                     target = src;
                                 }
                                 writer.uint8().writeMDArrayBlockWithOffset(dataSet, new MDByteArray(target, blockDimensions), offsets);
@@ -266,8 +262,7 @@ public final class IJ1Hdf5 {
                         }
                     }
                 }
-            }
-            else {
+            } else {
                 throw new IllegalArgumentException("Unsupported bitdepth " + image.getBitDepth());
             }
         }
@@ -315,16 +310,16 @@ public final class IJ1Hdf5 {
     private static void addMissingAxesForReading(List<AxisType> axes, int numAxes, JIPipeProgressInfo progressInfo) {
         String originalAxes = formatAxes(axes);
         boolean changed = false;
-        while(axes.size() < numAxes) {
-            for(AxisType axisType : ImgUtils.DEFAULT_AXES) {
-                if(!axes.contains(axisType)) {
-                    axes.add( axisType);
+        while (axes.size() < numAxes) {
+            for (AxisType axisType : ImgUtils.DEFAULT_AXES) {
+                if (!axes.contains(axisType)) {
+                    axes.add(axisType);
                     break;
                 }
             }
             changed = true;
         }
-        if(changed) {
+        if (changed) {
             progressInfo.log("Original axis configuration was \"" + originalAxes + "\" and was changed to " + formatAxes(axes) + " to fit " + numAxes + " dimensions");
         }
     }
@@ -332,27 +327,27 @@ public final class IJ1Hdf5 {
     private static void addMissingAxesForWriting(List<AxisType> axes, ImagePlus image, JIPipeProgressInfo progressInfo) {
         String originalAxes = formatAxes(axes);
         boolean changed = false;
-        if(!axes.contains(Axes.X)) {
+        if (!axes.contains(Axes.X)) {
             axes.add(Axes.X);
             changed = true;
         }
-        if(!axes.contains(Axes.Y)) {
+        if (!axes.contains(Axes.Y)) {
             axes.add(Axes.Y);
             changed = true;
         }
-        if(image.getNChannels() > 1 && !axes.contains(Axes.CHANNEL)) {
+        if (image.getNChannels() > 1 && !axes.contains(Axes.CHANNEL)) {
             axes.add(Axes.CHANNEL);
             changed = true;
         }
-        if(image.getNSlices() > 1 && !axes.contains(Axes.Z)) {
+        if (image.getNSlices() > 1 && !axes.contains(Axes.Z)) {
             axes.add(Axes.Z);
             changed = true;
         }
-        if(image.getNFrames() > 1 && !axes.contains(Axes.TIME)) {
+        if (image.getNFrames() > 1 && !axes.contains(Axes.TIME)) {
             axes.add(Axes.TIME);
             changed = true;
         }
-        if(changed) {
+        if (changed) {
             progressInfo.log("Original axis configuration was \"" + originalAxes + "\" and was changed to " + formatAxes(axes) + " to fit " + image + " dimensions");
         }
     }

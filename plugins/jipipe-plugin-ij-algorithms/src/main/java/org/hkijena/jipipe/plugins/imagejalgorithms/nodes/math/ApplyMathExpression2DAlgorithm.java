@@ -118,9 +118,4 @@ public class ApplyMathExpression2DAlgorithm extends JIPipeSimpleIteratingAlgorit
         this.transformation = transformation;
 
     }
-
-    @Override
-    public boolean isEnableDefaultCustomExpressionVariables() {
-        return true;
-    }
 }

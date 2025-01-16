@@ -78,7 +78,7 @@ public class ChangeFilamentEdgePropertiesManuallyAlgorithm extends JIPipeSimpleI
             FilamentEdgeVariablesInfo.writeToVariables(outputData, edge, variables, "");
 
             // Color
-            if(color.isEnabled()) {
+            if (color.isEnabled()) {
                 edge.setColor(color.getContent());
             }
 
@@ -119,10 +119,5 @@ public class ChangeFilamentEdgePropertiesManuallyAlgorithm extends JIPipeSimpleI
     @JIPipeParameter("edge-filter")
     public EdgeMaskParameter getEdgeMask() {
         return edgeMask;
-    }
-
-    @Override
-    public boolean isEnableDefaultCustomExpressionVariables() {
-        return true;
     }
 }

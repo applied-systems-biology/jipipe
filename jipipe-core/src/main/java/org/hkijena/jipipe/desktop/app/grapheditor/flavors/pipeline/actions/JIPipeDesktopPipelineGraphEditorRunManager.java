@@ -28,8 +28,8 @@ import org.hkijena.jipipe.utils.ui.JIPipeDesktopDockPanel;
 
 public class JIPipeDesktopPipelineGraphEditorRunManager extends JIPipeDesktopGraphEditorRunManager {
 
-    public JIPipeDesktopPipelineGraphEditorRunManager(JIPipeProject project, JIPipeDesktopGraphCanvasUI canvasUI, JIPipeDesktopGraphNodeUI nodeUI, JIPipeDesktopDockPanel dockPanel) {
-        super(project, canvasUI, nodeUI, dockPanel);
+    public JIPipeDesktopPipelineGraphEditorRunManager(JIPipeProject project, JIPipeDesktopGraphCanvasUI canvasUI, JIPipeDesktopGraphNodeUI nodeUI, JIPipeDesktopDockPanel dockPanel, boolean allowChangePanels) {
+        super(project, canvasUI, nodeUI, dockPanel, allowChangePanels);
     }
 
     @Override

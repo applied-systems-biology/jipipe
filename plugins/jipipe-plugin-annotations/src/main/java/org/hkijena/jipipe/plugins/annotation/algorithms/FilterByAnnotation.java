@@ -97,7 +97,7 @@ public class FilterByAnnotation extends JIPipeAlgorithm {
         }
     }
 
-    @SetJIPipeDocumentation(name = "Filter", description = "The filter is an expression that should return a boolean value " +
+    @SetJIPipeDocumentation(name = "Only keep data if", description = "The filter is an expression that should return a boolean value " +
             "that indicates whether a data item should be put into the corresponding output." +
             "Annotation values are available as variables. If an annotation has spaces special characters, use $ to access its value. Examples: <pre>" +
             "#Dataset CONTAINS \"Raw\" AND condition EQUALS \"mock\"</pre>" +
@@ -110,10 +110,5 @@ public class FilterByAnnotation extends JIPipeAlgorithm {
     @JIPipeParameter("filter")
     public void setFilter(AnnotationFilterExpression filter) {
         this.filter = filter;
-    }
-
-    @Override
-    public boolean isEnableDefaultCustomExpressionVariables() {
-        return true;
     }
 }

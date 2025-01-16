@@ -61,11 +61,6 @@ public class RemoveColumnAlgorithm extends JIPipeSimpleIteratingAlgorithm {
     }
 
     @Override
-    public boolean isEnableDefaultCustomExpressionVariables() {
-        return true;
-    }
-
-    @Override
     protected void runIteration(JIPipeSingleIterationStep iterationStep, JIPipeIterationContext iterationContext, JIPipeGraphNodeRunContext runContext, JIPipeProgressInfo progressInfo) {
         ResultsTableData table = (ResultsTableData) iterationStep.getInputData(getFirstInputSlot(), ResultsTableData.class, progressInfo).duplicate(progressInfo);
         JIPipeExpressionVariablesMap variablesMap = new JIPipeExpressionVariablesMap();

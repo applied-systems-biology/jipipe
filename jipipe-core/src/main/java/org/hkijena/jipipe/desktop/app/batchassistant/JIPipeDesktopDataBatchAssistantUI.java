@@ -72,7 +72,7 @@ public class JIPipeDesktopDataBatchAssistantUI extends JIPipeDesktopProjectWorkb
     private final JIPipeDesktopMessagePanel messagePanel = new JIPipeDesktopMessagePanel();
     private final JIPipeDesktopDataBatchAssistantBatchPanel batchPanel;
     private final JIPipeDesktopDataBatchAssistantInputPreviewPanel inputPreviewPanel;
-    private final JIPipeRunnableQueue calculatePreviewQueue = new JIPipeRunnableQueue("Data batch preview calculation");
+    private final JIPipeRunnableQueue calculatePreviewQueue = new JIPipeRunnableQueue("Iteration step preview calculation");
     JIPipeDesktopSplitPane splitPane1 = new JIPipeDesktopSplitPane(JSplitPane.VERTICAL_SPLIT, 0.5);
     JIPipeDesktopSplitPane splitPane2 = new JIPipeDesktopSplitPane(JSplitPane.VERTICAL_SPLIT, 0.4);
     private JIPipeGraphNode batchesNodeCopy;

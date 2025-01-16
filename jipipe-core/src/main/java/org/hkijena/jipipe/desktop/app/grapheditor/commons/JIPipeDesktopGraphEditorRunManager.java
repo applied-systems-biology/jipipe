@@ -28,16 +28,18 @@ public abstract class JIPipeDesktopGraphEditorRunManager implements JIPipeRunnab
     private final JIPipeDesktopGraphCanvasUI canvasUI;
     private final JIPipeDesktopGraphNodeUI nodeUI;
     private final JIPipeDesktopDockPanel dockPanel;
+    private final boolean allowChangePanels;
     private JIPipeRunnable run;
     private JIPipeDesktopDockPanel.State savedState;
     private boolean queueMode;
     private boolean restoreDockStateRequired;
 
-    public JIPipeDesktopGraphEditorRunManager(JIPipeProject project, JIPipeDesktopGraphCanvasUI canvasUI, JIPipeDesktopGraphNodeUI nodeUI, JIPipeDesktopDockPanel dockPanel) {
+    public JIPipeDesktopGraphEditorRunManager(JIPipeProject project, JIPipeDesktopGraphCanvasUI canvasUI, JIPipeDesktopGraphNodeUI nodeUI, JIPipeDesktopDockPanel dockPanel, boolean allowChangePanels) {
         this.project = project;
         this.canvasUI = canvasUI;
         this.nodeUI = nodeUI;
         this.dockPanel = dockPanel;
+        this.allowChangePanels = allowChangePanels;
         JIPipeRunnableQueue.getInstance().getFinishedEventEmitter().subscribe(this);
         JIPipeRunnableQueue.getInstance().getInterruptedEventEmitter().subscribe(this);
     }
@@ -50,7 +52,7 @@ public abstract class JIPipeDesktopGraphEditorRunManager implements JIPipeRunnab
         // Remember the saved state
         savedState = getDockPanel().getCurrentState();
         queueMode = alreadyHasRunEnqueued();
-        restoreDockStateRequired = getLogPanel().isAutoShowProgress() || getLogPanel().isAutoShowResults();
+        restoreDockStateRequired = (getLogPanel().isAutoShowProgress() || getLogPanel().isAutoShowResults()) && allowChangePanels;
 
         // Validation step
         JIPipeValidationReport report = new JIPipeValidationReport();
@@ -63,7 +65,7 @@ public abstract class JIPipeDesktopGraphEditorRunManager implements JIPipeRunnab
             dockPanel.getPanelComponent(AbstractJIPipeDesktopGraphEditorUI.DOCK_ERRORS, JIPipeDesktopGraphEditorErrorPanel.class).clearItems();
         }
 
-        if (getLogPanel().isAutoShowProgress()) {
+        if (getLogPanel().isAutoShowProgress() && allowChangePanels) {
             getDockPanel().activatePanel(AbstractJIPipeDesktopGraphEditorUI.DOCK_LOG, true);
         }
 
@@ -119,7 +121,7 @@ public abstract class JIPipeDesktopGraphEditorRunManager implements JIPipeRunnab
                     getDockPanel().restoreState(savedState);
                 }
 
-                if (getLogPanel().isAutoShowResults()) {
+                if (getLogPanel().isAutoShowResults() && allowChangePanels) {
                     canvasUI.selectOnly(nodeUI);
                     showResults();
                 }

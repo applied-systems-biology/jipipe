@@ -20,8 +20,8 @@ import org.hkijena.jipipe.desktop.commons.components.markup.JIPipeDesktopMarkdow
 import org.hkijena.jipipe.desktop.commons.components.tabs.JIPipeDesktopTabPane;
 import org.hkijena.jipipe.desktop.commons.theme.JIPipeDesktopModernMetalTheme;
 import org.hkijena.jipipe.plugins.parameters.library.markup.MarkdownText;
-import org.hkijena.jipipe.utils.JIPipeDesktopSplitPane;
 import org.hkijena.jipipe.utils.ColorUtils;
+import org.hkijena.jipipe.utils.JIPipeDesktopSplitPane;
 import org.hkijena.jipipe.utils.StringUtils;
 import org.hkijena.jipipe.utils.UIUtils;
 import org.jdesktop.swingx.JXPanel;
@@ -186,6 +186,14 @@ public class JIPipeDesktopFormPanel extends JPanel {
 
     public List<GroupHeaderPanel> getGroupHeaderPanels() {
         return Collections.unmodifiableList(groupHeaderPanels);
+    }
+
+    public int getFlags() {
+        return flags;
+    }
+
+    public boolean hasFlag(int flag) {
+        return (flags & flag) == flag;
     }
 
     /**

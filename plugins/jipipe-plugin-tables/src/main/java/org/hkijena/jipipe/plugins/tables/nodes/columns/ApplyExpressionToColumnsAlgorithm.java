@@ -171,11 +171,6 @@ public class ApplyExpressionToColumnsAlgorithm extends JIPipeSimpleIteratingAlgo
         this.processorParameters = processorParameters;
     }
 
-    @Override
-    public boolean isEnableDefaultCustomExpressionVariables() {
-        return true;
-    }
-
     @SetJIPipeDocumentation(name = "Append to existing table", description = "If enabled, the converted columns are appended to the existing table. Existing columns are overwritten.")
     @JIPipeParameter("append")
     public boolean isAppend() {

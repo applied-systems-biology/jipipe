@@ -15,7 +15,10 @@ package org.hkijena.jipipe.plugins.parameters.library.primitives.list;
 
 import org.hkijena.jipipe.plugins.parameters.api.collections.ListParameter;
 
-import java.util.*;
+import java.util.Arrays;
+import java.util.Collection;
+import java.util.LinkedHashSet;
+import java.util.Set;
 
 /**
  * A list of {@link String}

@@ -14,10 +14,7 @@
 package org.hkijena.jipipe.plugins.imagejalgorithms.parameters;
 
 import org.hkijena.jipipe.api.parameters.JIPipeDummyParameterCollection;
-import org.hkijena.jipipe.api.parameters.JIPipeParameterAccess;
-import org.hkijena.jipipe.api.parameters.JIPipeParameterTree;
 import org.hkijena.jipipe.desktop.api.JIPipeDesktopParameterEditorUI;
-import org.hkijena.jipipe.desktop.app.JIPipeDesktopWorkbench;
 import org.hkijena.jipipe.desktop.commons.components.JIPipeDesktopFormPanel;
 import org.hkijena.jipipe.desktop.commons.components.JIPipeDesktopParameterFormPanel;
 import org.hkijena.jipipe.desktop.commons.components.JIPipeDesktopPickDynamicEnumValueDialog;
@@ -34,14 +31,8 @@ public class OMEAccessorDesktopParameterEditorUI extends JIPipeDesktopParameterE
     private JIPipeDesktopParameterFormPanel parameterPanel;
     private JButton currentTemplateButton;
 
-    /**
-     * Creates new instance
-     *
-     * @param workbench       the workbench
-     * @param parameterAccess Parameter
-     */
-    public OMEAccessorDesktopParameterEditorUI(JIPipeDesktopWorkbench workbench, JIPipeParameterTree parameterTree, JIPipeParameterAccess parameterAccess) {
-        super(workbench, parameterTree, parameterAccess);
+    public OMEAccessorDesktopParameterEditorUI(InitializationParameters parameters) {
+        super(parameters);
         initialize();
         reload();
     }

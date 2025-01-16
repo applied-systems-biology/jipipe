@@ -103,7 +103,7 @@ public class TrackFilterNode extends JIPipeSimpleIteratingAlgorithm {
         iterationStep.addOutputData(getFirstOutputSlot(), trackCollectionData, progressInfo);
     }
 
-    @SetJIPipeDocumentation(name = "Filter", description = "The expression is executed per track. If it returns TRUE, the track is kept.")
+    @SetJIPipeDocumentation(name = "Keep track if", description = "The expression is executed per track. If it returns TRUE, the track is kept.")
     @JIPipeParameter(value = "filter", important = true)
     @JIPipeExpressionParameterSettings(hint = "per track")
     @AddJIPipeExpressionParameterVariable(fromClass = TrackFeatureVariablesInfo.class)
@@ -116,10 +116,5 @@ public class TrackFilterNode extends JIPipeSimpleIteratingAlgorithm {
     @JIPipeParameter("filter")
     public void setFilter(JIPipeExpressionParameter filter) {
         this.filter = filter;
-    }
-
-    @Override
-    public boolean isEnableDefaultCustomExpressionVariables() {
-        return true;
     }
 }

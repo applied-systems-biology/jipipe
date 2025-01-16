@@ -31,7 +31,7 @@ import org.hkijena.jipipe.utils.UIUtils;
 import javax.swing.*;
 import java.awt.*;
 
-@SetJIPipeDocumentation(name = "Data batch status", description = "Structural data indicating the status of a data batch")
+@SetJIPipeDocumentation(name = "Iteration step status", description = "Structural data indicating the status of a iteration step")
 @LabelAsJIPipeHidden
 @JIPipeDataStorageDocumentation(humanReadableDescription = "Contains a single JSON file that stores the status information.",
         jsonSchemaURL = "https://jipipe.org/schemas/datatypes/jipipe-json-data.schema.json")

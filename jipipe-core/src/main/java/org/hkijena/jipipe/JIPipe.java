@@ -52,12 +52,14 @@ import org.hkijena.jipipe.api.validation.contexts.UnspecifiedValidationReportCon
 import org.hkijena.jipipe.desktop.api.registries.JIPipeCustomMenuRegistry;
 import org.hkijena.jipipe.desktop.app.JIPipeDesktopProjectWindow;
 import org.hkijena.jipipe.desktop.app.running.JIPipeDesktopRunnableLogsCollection;
+import org.hkijena.jipipe.plugins.artifacts.JIPipeArtifactAccelerationPreference;
+import org.hkijena.jipipe.plugins.artifacts.JIPipeArtifactApplicationSettings;
 import org.hkijena.jipipe.plugins.parameters.library.jipipe.DynamicDataDisplayOperationIdEnumParameter;
 import org.hkijena.jipipe.plugins.parameters.library.jipipe.DynamicDataImportOperationIdEnumParameter;
+import org.hkijena.jipipe.plugins.parameters.library.primitives.vectors.Vector2iParameter;
 import org.hkijena.jipipe.plugins.settings.JIPipeDefaultCacheDisplayApplicationSettings;
 import org.hkijena.jipipe.plugins.settings.JIPipeDefaultResultImporterApplicationSettings;
 import org.hkijena.jipipe.plugins.settings.JIPipeExtensionApplicationSettings;
-import org.hkijena.jipipe.plugins.settings.JIPipeProjectDefaultsApplicationSettings;
 import org.hkijena.jipipe.utils.*;
 import org.hkijena.jipipe.utils.json.JsonUtils;
 import org.scijava.Context;
@@ -104,8 +106,24 @@ public class JIPipe extends AbstractService implements JIPipeService {
      * Resource manager for core JIPipe
      */
     public static final JIPipeResourceManager RESOURCES = new JIPipeResourceManager(JIPipe.class, "org/hkijena/jipipe");
+
+    /**
+     * To be used with an alternative start mode not involving ImageJ
+     */
     public static boolean NO_IMAGEJ = false;
+
+    /**
+     * Prevent saving settings
+     */
     public static boolean NO_SETTINGS_AUTOSAVE = false;
+
+    /**
+     * Allows to override the directory where profiles are located (needs to be done before init!)
+     * Overridden by the JIPIPE_OVERRIDE_USER_DIR_BASE environment variable
+     */
+    public static Path OVERRIDE_USER_DIR_BASE = null;
+
+
     private static JIPipe instance;
     private static boolean IS_RESTARTING = false;
     private final JIPipeProgressInfo progressInfo = new JIPipeProgressInfo();
@@ -127,6 +145,7 @@ public class JIPipe extends AbstractService implements JIPipeService {
     private final JIPipeProjectTemplateRegistry projectTemplateRegistry;
     private final JIPipeArtifactsRegistry artifactsRegistry;
     private final JIPipeNodeTemplateRegistry nodeTemplateRegistry;
+    private final JIPipeRecentProjectsRegistry recentProjectsRegistry;
 
     private final JIPipeMetadataRegistry metadataRegistry;
     private final DatatypeRegisteredEventEmitter datatypeRegisteredEventEmitter = new DatatypeRegisteredEventEmitter();
@@ -143,6 +162,7 @@ public class JIPipe extends AbstractService implements JIPipeService {
     private PluginService pluginService;
 
     public JIPipe() {
+        recentProjectsRegistry = new JIPipeRecentProjectsRegistry(this);
         nodeRegistry = new JIPipeNodeRegistry(this);
         datatypeRegistry = new JIPipeDatatypeRegistry(this);
         imageJDataAdapterRegistry = new JIPipeImageJAdapterRegistry(this);
@@ -750,7 +770,7 @@ public class JIPipe extends AbstractService implements JIPipeService {
         if (NO_IMAGEJ) {
             return;
         }
-        initialize(JIPipeExtensionApplicationSettings.getInstanceFromRaw(), new JIPipeRegistryIssues());
+        initialize(JIPipeExtensionApplicationSettings.getInstanceFromRaw(), new JIPipeRegistryIssues(), true);
     }
 
     /**
@@ -758,14 +778,17 @@ public class JIPipe extends AbstractService implements JIPipeService {
      *
      * @param extensionSettings extension settings
      * @param issues            if no windows should be opened
+     * @param verbose           if all steps should be logged (otherwise the initialization will be silent)
      */
-    public void initialize(JIPipeExtensionApplicationSettings extensionSettings, JIPipeRegistryIssues issues) {
+    public void initialize(JIPipeExtensionApplicationSettings extensionSettings, JIPipeRegistryIssues issues, boolean verbose) {
         initializing = true;
 
         progressInfo.setProgress(0, 5);
-        progressInfo.getStatusUpdatedEventEmitter().subscribeLambda((emitter, event) -> {
-            logService.info(event.getMessage());
-        });
+        if (verbose) {
+            progressInfo.getStatusUpdatedEventEmitter().subscribeLambda((emitter, event) -> {
+                logService.info(event.getMessage());
+            });
+        }
 
         IJ.showStatus("Initializing JIPipe ...");
         nodeRegistry.installEvents();
@@ -1003,15 +1026,40 @@ public class JIPipe extends AbstractService implements JIPipeService {
         // Check recent projects and backups
         progressInfo.setProgress(6);
         progressInfo.log("Checking recent projects ...");
-        JIPipeProjectDefaultsApplicationSettings projectsSettings = JIPipeProjectDefaultsApplicationSettings.getInstance();
-        List<Path> invalidRecentProjects = projectsSettings.getRecentProjects().stream().filter(path -> !Files.exists(path)).collect(Collectors.toList());
-        if (!invalidRecentProjects.isEmpty()) {
-            projectsSettings.getRecentProjects().removeAll(invalidRecentProjects);
-        }
+        recentProjectsRegistry.reload();
+        recentProjectsRegistry.cleanup();
+        recentProjectsRegistry.migrateFromLegacy();
 
         // Check artifacts
         progressInfo.setProgress(7);
         artifactsRegistry.updateCachedArtifacts(progressInfo.resolve("Updating artifacts"));
+
+        // Check acceleration
+        if (JIPipeArtifactApplicationSettings.getInstance().isAutoConfigureAccelerationOnNextStartup()) {
+            progressInfo.log("Determining acceleration profile ...");
+            try {
+
+                if (CUDAUtils.hasCudaSupport()) {
+                    progressInfo.log("Determining acceleration profile ... CUDA support detected");
+                    JIPipeArtifactApplicationSettings.getInstance().setAccelerationPreference(JIPipeArtifactAccelerationPreference.CUDA);
+
+                    try {
+                        JIPipeArtifactApplicationSettings.getInstance().setAccelerationPreferenceVersions(new Vector2iParameter(
+                                CUDAUtils.getMinimumCudaVersion(),
+                                0  // Broken due to Nvidia-SMI hanging on Linux -> have to use 0
+                        ));
+                        progressInfo.log("Determined CUDA version limits as " + JIPipeArtifactApplicationSettings.getInstance().getAccelerationPreferenceVersions());
+                    } catch (Exception e) {
+                        progressInfo.log(e);
+                    }
+                }
+
+                JIPipeArtifactApplicationSettings.getInstance().setAutoConfigureAccelerationOnNextStartup(false);
+                applicationSettingsRegistry.save();
+            } catch (Exception e) {
+                progressInfo.log(e);
+            }
+        }
 
         // Load templates
         progressInfo.log("Loading node templates ...");
@@ -1593,5 +1641,10 @@ public class JIPipe extends AbstractService implements JIPipeService {
     @Override
     public JIPipeArtifactsRegistry getArtifactsRegistry() {
         return artifactsRegistry;
+    }
+
+    @Override
+    public JIPipeRecentProjectsRegistry getRecentProjectsRegistry() {
+        return recentProjectsRegistry;
     }
 }

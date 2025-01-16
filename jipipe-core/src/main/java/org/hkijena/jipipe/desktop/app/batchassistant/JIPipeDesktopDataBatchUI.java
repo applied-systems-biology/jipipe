@@ -55,7 +55,7 @@ public class JIPipeDesktopDataBatchUI extends JIPipeDesktopProjectWorkbenchPanel
     private void initialize() {
         setBorder(UIUtils.createControlBorder());
         setLayout(new BorderLayout());
-        JLabel iterationStepName = new JLabel("Data batch");
+        JLabel iterationStepName = new JLabel("Iteration step");
         iterationStepName.setBorder(BorderFactory.createEmptyBorder(4, 4, 4, 4));
         iterationStepName.setFont(new Font(Font.DIALOG, Font.BOLD, 16));
         add(iterationStepName, BorderLayout.NORTH);
@@ -107,7 +107,7 @@ public class JIPipeDesktopDataBatchUI extends JIPipeDesktopProjectWorkbenchPanel
         }
         JIPipeDesktopExtendedDataTableUI tableUI = new JIPipeDesktopExtendedDataTableUI(getDesktopProjectWorkbench(), new OwningStore<>(copySlot), true);
 //        DataSlotTableUI tableUI = new DataSlotTableUI(getProjectWorkbench(), copySlot);
-        JFrame frame = new JFrame("Data batch contents");
+        JFrame frame = new JFrame("Iteration step contents");
         frame.setDefaultCloseOperation(WindowConstants.DISPOSE_ON_CLOSE);
         frame.setIconImage(UIUtils.getJIPipeIcon128());
         frame.setContentPane(tableUI);

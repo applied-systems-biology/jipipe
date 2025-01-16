@@ -1,6 +1,6 @@
 # Adaptive parameters
 
-*Summary:* Specific parameters are <i>adapted</i> to the properties (e.g., annotations) of the currently processed data batch.
+*Summary:* Specific parameters are <i>adapted</i> to the properties (e.g., annotations) of the currently processed iteration step.
 
 To make a parameter adapt to annotations, click the ⏷ menu button next to the parameter help and select "Make parameter adaptive".
 Alternatively, you can click **Configure** and add custom entries into the list of overrides. 
