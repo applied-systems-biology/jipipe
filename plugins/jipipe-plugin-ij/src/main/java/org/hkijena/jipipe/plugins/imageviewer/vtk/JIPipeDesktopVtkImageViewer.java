@@ -13,13 +13,14 @@ import org.hkijena.jipipe.plugins.imageviewer.vtk.tools.ViewTranslateTool;
 import org.hkijena.jipipe.plugins.imageviewer.vtk.tools.ViewZoomTool;
 import org.hkijena.jipipe.utils.UIUtils;
 import org.hkijena.jipipe.utils.ui.JIPipeDesktopDockPanel;
+import org.scijava.Disposable;
 import vtk.*;
 
 import javax.swing.*;
 import java.awt.*;
 import java.util.Map;
 
-public class JIPipeDesktopVtkImageViewer extends JIPipeDesktopWorkbenchPanel {
+public class JIPipeDesktopVtkImageViewer extends JIPipeDesktopWorkbenchPanel implements Disposable {
 
     private VtkPanel renderer;
     private final BiMap<Class<? extends JIPipeDesktopVtkImageViewerTool>, JIPipeDesktopVtkImageViewerTool> viewInteractionTools

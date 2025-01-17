@@ -21,6 +21,7 @@ import ij.util.Tools;
 import org.hkijena.jipipe.JIPipe;
 import org.hkijena.jipipe.api.JIPipeWorkbench;
 import org.hkijena.jipipe.api.data.JIPipeDataSource;
+import org.hkijena.jipipe.desktop.api.dataviewer.JIPipeDesktopDataViewer;
 import org.hkijena.jipipe.desktop.app.JIPipeDesktopWorkbench;
 import org.hkijena.jipipe.desktop.app.JIPipeDesktopWorkbenchAccess;
 import org.hkijena.jipipe.desktop.app.JIPipeDummyWorkbench;
@@ -53,6 +54,7 @@ public class JIPipeDesktopLegacyImageViewer extends JPanel implements JIPipeDesk
             CompositeManagerPlugin2D.class,
             ROIManagerPlugin2D.class,
             MeasurementDrawerPlugin2D.class));
+    private final JIPipeDesktopDataViewer dataViewer;
     private final JIPipeDesktopWorkbench workbench;
     private final Map<Class<?>, Object> contextObjects;
     private final JIPipeDesktopLegacyImageViewerPanel2D imageViewerPanel2D;
@@ -70,12 +72,17 @@ public class JIPipeDesktopLegacyImageViewer extends JPanel implements JIPipeDesk
      *
      * @param workbench the workbench. Use {@link JIPipeDummyWorkbench} if you do not have access to one.
      */
-    public JIPipeDesktopLegacyImageViewer(JIPipeDesktopWorkbench workbench, List<Class<? extends JIPipeDesktopLegacyImageViewerPlugin>> pluginTypes, Map<Class<?>, Object> contextObjects) {
+    public JIPipeDesktopLegacyImageViewer(JIPipeDesktopWorkbench workbench, List<Class<? extends JIPipeDesktopLegacyImageViewerPlugin>> pluginTypes, JIPipeDesktopDataViewer dataViewer, Map<Class<?>, Object> contextObjects) {
         this.workbench = workbench;
+        this.dataViewer = dataViewer;
         this.contextObjects = contextObjects;
         imageViewerPanel2D = new JIPipeDesktopLegacyImageViewerPanel2D(this);
         initializePlugins(pluginTypes);
         initialize();
+    }
+
+    public JIPipeDesktopDataViewer getDataViewer() {
+        return dataViewer;
     }
 
     public static void registerDefaultPlugin(Class<? extends JIPipeDesktopLegacyImageViewerPlugin> klass) {
@@ -133,10 +140,6 @@ public class JIPipeDesktopLegacyImageViewer extends JPanel implements JIPipeDesk
     }
 
     public void buildRibbon(JIPipeDesktopRibbon ribbon) {
-        JIPipeDesktopRibbon.Task exportTask = ribbon.getOrCreateTask("Export");
-        JIPipeDesktopRibbon.Band imageBand = exportTask.addBand("Image");
-        imageBand.addLargeButton("ImageJ", "Open the image in ImageJ", UIUtils.getIcon32FromResources("apps/imagej2.png"), this::openInImageJ);
-
         imageViewerPanel2D.buildRibbon(ribbon);
     }
 
@@ -148,15 +151,6 @@ public class JIPipeDesktopLegacyImageViewer extends JPanel implements JIPipeDesk
         statusBar.add(Box.createHorizontalStrut(8));
         statusBar.add(imageInfoLabel);
         imageViewerPanel2D.buildStatusBar(statusBar);
-    }
-
-    private void openInImageJ() {
-        if (image != null) {
-            String title = image.getImage().getTitle();
-            ImagePlus duplicate = image.getDuplicateImage();
-            duplicate.setTitle(title);
-            duplicate.show();
-        }
     }
 
     public void refreshImageInfo() {

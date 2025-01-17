@@ -413,7 +413,8 @@ public class ImageJDataTypesPlugin extends JIPipePrepackagedDefaultJavaPlugin {
                 UIUtils.getIconURLFromResources("data-types/bioformats.png"),
                 null,
                 OMEImageDataPreview.class,
-                new OpenInImageJDataDisplayOperation());
+                new OpenInImageJDataDisplayOperation(),
+                new OpenInImageJ3DViewerDataDisplayOperation());
         registerImageJDataImporter("ome-image-from-image-window", new OMEImageFromImageWindowImageJImporter(), ImagePlusWindowImageJImporterUI.class);
         registerImageJDataExporter("ome-image-to-image-window", new OMEImageToImageWindowImageJExporter(), DefaultImageJDataExporterUI.class);
 
@@ -590,7 +591,8 @@ public class ImageJDataTypesPlugin extends JIPipePrepackagedDefaultJavaPlugin {
                 ResourceUtils.getPluginResource(iconResource),
                 null,
                 ImageDataPreview.class,
-                new OpenInImageJDataDisplayOperation());
+                new OpenInImageJDataDisplayOperation(),
+                new OpenInImageJ3DViewerDataDisplayOperation());
         configureDefaultImageJAdapters(dataClass, imageImporter, imageExporter);
 //        registerImageJDataImporter("import-" + id, new ImagePlusDataFromImageWindowImageJImporter(dataClass), ImagePlusWindowImageJImporterUI.class);
     }

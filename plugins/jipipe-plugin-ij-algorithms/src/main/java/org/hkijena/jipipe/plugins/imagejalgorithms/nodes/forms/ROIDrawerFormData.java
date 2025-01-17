@@ -62,7 +62,9 @@ public class ROIDrawerFormData extends FormData {
                 PixelInfoPlugin2D.class,
                 LUTManagerPlugin2D.class,
                 ROIManagerPlugin2D.class,
-                MaskToROIDrawerPlugin2D.class), Collections.emptyMap());
+                MaskToROIDrawerPlugin2D.class),
+                null,
+                Collections.emptyMap());
         maskDrawerPlugin = imageViewerPanel.getPlugin(MaskToROIDrawerPlugin2D.class);
         roiManagerPlugin = imageViewerPanel.getPlugin(ROIManagerPlugin2D.class);
         if (lazyLoadedImage != null) {

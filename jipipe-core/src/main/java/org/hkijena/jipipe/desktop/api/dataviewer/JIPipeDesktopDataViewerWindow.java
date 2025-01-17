@@ -121,6 +121,7 @@ public class JIPipeDesktopDataViewerWindow extends JFrame implements JIPipeDeskt
         setDefaultCloseOperation(WindowConstants.DISPOSE_ON_CLOSE);
         setContentPane(contentPane);
         contentPane.add(ribbon, BorderLayout.NORTH);
+        dockPanel.setRightPanelWidth(350);
         contentPane.add(dockPanel, BorderLayout.CENTER);
 
         JPanel statusBar = new JPanel(new BorderLayout());
@@ -419,6 +420,10 @@ public class JIPipeDesktopDataViewerWindow extends JFrame implements JIPipeDeskt
     @Override
     public JIPipeWorkbench getWorkbench() {
         return workbench;
+    }
+
+    public String getDisplayName() {
+        return displayName;
     }
 
     public void browseData(JIPipeDataBrowser dataBrowser, String displayName) {

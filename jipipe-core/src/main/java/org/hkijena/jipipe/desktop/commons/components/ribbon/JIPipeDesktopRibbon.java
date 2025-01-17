@@ -469,6 +469,28 @@ public class JIPipeDesktopRibbon extends JPanel {
             return ribbonAction;
         }
 
+        public JIPipeDesktopLargeButtonRibbonAction addLargeMenuButton(String label, String tooltip, ImageIcon icon, Component... menuItems) {
+            JIPipeDesktopLargeButtonRibbonAction ribbonAction = new JIPipeDesktopLargeButtonRibbonAction(label, tooltip, icon, () -> {});
+            JPopupMenu popupMenu = new JPopupMenu();
+            for (Component menuItem : menuItems) {
+                popupMenu.add(menuItem);
+            }
+            UIUtils.addPopupMenuToButton(ribbonAction.getButton(), popupMenu);
+            add(ribbonAction);
+            return ribbonAction;
+        }
+
+        public JIPipeDesktopSmallButtonRibbonAction addSmallMenuButton(String label, String tooltip, ImageIcon icon, Component... menuItems) {
+            JIPipeDesktopSmallButtonRibbonAction ribbonAction = new JIPipeDesktopSmallButtonRibbonAction(label, tooltip, icon, () -> {});
+            JPopupMenu popupMenu = new JPopupMenu();
+            for (Component menuItem : menuItems) {
+                popupMenu.add(menuItem);
+            }
+            UIUtils.addPopupMenuToButton(ribbonAction.getButton(), popupMenu);
+            add(ribbonAction);
+            return ribbonAction;
+        }
+
         public JIPipeDesktopLargeToggleButtonRibbonAction addLargeToggle(String label, String tooltip, ImageIcon icon, boolean selected, Consumer<JToggleButton> action) {
             JIPipeDesktopLargeToggleButtonRibbonAction ribbonAction = new JIPipeDesktopLargeToggleButtonRibbonAction(label, tooltip, icon, selected, action);
             add(ribbonAction);

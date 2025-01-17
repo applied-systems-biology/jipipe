@@ -2489,6 +2489,14 @@ public class UIUtils {
         }
     }
 
+    public static void invokeMuchLater(int timeout, Runnable run) {
+        Timer timer = new Timer(timeout, e -> {
+            SwingUtilities.invokeLater(run);
+        });
+        timer.setRepeats(false);
+        timer.start();
+    }
+
 
     public static class DragThroughMouseListener implements MouseListener, MouseMotionListener {
         private final Component component;

@@ -62,6 +62,7 @@ public class MaskDrawerFormData extends FormData {
                         PixelInfoPlugin2D.class,
                         LUTManagerPlugin2D.class,
                         MaskDrawerPlugin2D.class),
+                null,
                 Collections.emptyMap());
         maskDrawerPlugin = imageViewerPanel.getPlugin(MaskDrawerPlugin2D.class);
         if (lazyLoadedImage != null) {

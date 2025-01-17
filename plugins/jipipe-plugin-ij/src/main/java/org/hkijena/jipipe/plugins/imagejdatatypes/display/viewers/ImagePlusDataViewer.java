@@ -13,17 +13,21 @@
 
 package org.hkijena.jipipe.plugins.imagejdatatypes.display.viewers;
 
+import ij.ImagePlus;
 import org.hkijena.jipipe.api.data.JIPipeData;
 import org.hkijena.jipipe.desktop.api.dataviewer.JIPipeDesktopDataViewer;
 import org.hkijena.jipipe.desktop.api.dataviewer.JIPipeDesktopDataViewerWindow;
 import org.hkijena.jipipe.desktop.commons.components.ribbon.JIPipeDesktopRibbon;
 import org.hkijena.jipipe.plugins.imagejdatatypes.ImageJDataTypesPlugin;
 import org.hkijena.jipipe.plugins.imagejdatatypes.datatypes.ImagePlusData;
+import org.hkijena.jipipe.plugins.imagejdatatypes.display.OpenInImageJ3DViewerDataDisplayOperation;
+import org.hkijena.jipipe.plugins.imagejdatatypes.display.OpenInImageJDataDisplayOperation;
+import org.hkijena.jipipe.plugins.imagejdatatypes.util.ImageJUtils;
 import org.hkijena.jipipe.plugins.imageviewer.legacy.JIPipeDesktopLegacyImageViewer;
-import org.hkijena.jipipe.plugins.imageviewer.legacy.api.JIPipeDesktopLegacyImageViewerPlugin2D;
 import org.hkijena.jipipe.plugins.imageviewer.legacy.impl.JIPipeDesktopLegacyImageViewerPanel2D;
 import org.hkijena.jipipe.plugins.imageviewer.settings.ImageViewerGeneralUIApplicationSettings;
 import org.hkijena.jipipe.plugins.imageviewer.vtk.JIPipeDesktopVtkImageViewer;
+import org.hkijena.jipipe.utils.UIUtils;
 import org.hkijena.jipipe.utils.ui.JIPipeDesktopDockPanel;
 
 import javax.swing.*;
@@ -35,6 +39,7 @@ public class ImagePlusDataViewer extends JIPipeDesktopDataViewer {
     private final JIPipeDesktopVtkImageViewer vtkImageViewer;
     private final JIPipeDesktopLegacyImageViewer legacyImageViewer;
     private boolean panelSetupDone = false;
+    private JIPipeData currentData;
 
     public ImagePlusDataViewer(JIPipeDesktopDataViewerWindow dataViewerWindow) {
         super(dataViewerWindow);
@@ -44,7 +49,10 @@ public class ImagePlusDataViewer extends JIPipeDesktopDataViewer {
         }
         else {
             this.vtkImageViewer = null;
-            this.legacyImageViewer = new JIPipeDesktopLegacyImageViewer(dataViewerWindow.getDesktopWorkbench(), JIPipeDesktopLegacyImageViewer.DEFAULT_PLUGINS, Collections.emptyMap());
+            this.legacyImageViewer = new JIPipeDesktopLegacyImageViewer(dataViewerWindow.getDesktopWorkbench(),
+                    JIPipeDesktopLegacyImageViewer.DEFAULT_PLUGINS,
+                    this,
+                    Collections.emptyMap());
         }
         initialize();
     }
@@ -66,6 +74,15 @@ public class ImagePlusDataViewer extends JIPipeDesktopDataViewer {
         else {
             legacyImageViewer.buildRibbon(ribbon);
         }
+    }
+
+
+    private void openInImageJ3DViewer() {
+        new OpenInImageJ3DViewerDataDisplayOperation().display(currentData, getDataViewerWindow().getDisplayName(), getDesktopWorkbench(), null);
+    }
+
+    private void openInImageJ() {
+        new OpenInImageJDataDisplayOperation().display(currentData, getDataViewerWindow().getDisplayName(), getDesktopWorkbench(), null);
     }
 
     @Override
@@ -98,6 +115,7 @@ public class ImagePlusDataViewer extends JIPipeDesktopDataViewer {
 
     @Override
     public void onDataDownloaded(JIPipeData data) {
+        this.currentData = data;
         if(vtkImageViewer != null) {
             loadDataIntoVtkViewer(data);
         }
@@ -105,6 +123,14 @@ public class ImagePlusDataViewer extends JIPipeDesktopDataViewer {
             loadDataIntoLegacyViewer(data);
         }
         setupPanelsOnce(getDataViewerWindow().getDockPanel());
+    }
+
+    @Override
+    public void dispose() {
+        super.dispose();
+        this.legacyImageViewer.dispose();
+        this.vtkImageViewer.dispose();
+        this.currentData = null;
     }
 
     protected void loadDataIntoLegacyViewer(JIPipeData data) {

@@ -14,7 +14,10 @@
 package org.hkijena.jipipe.api.run;
 
 import com.google.common.collect.ImmutableList;
+import org.hkijena.jipipe.desktop.app.JIPipeDesktopWorkbench;
+import org.hkijena.jipipe.desktop.app.running.JIPipeDesktopRunExecuteUI;
 
+import java.awt.*;
 import java.util.ArrayDeque;
 import java.util.HashMap;
 import java.util.Map;
@@ -275,5 +278,13 @@ public class JIPipeRunnableQueue implements JIPipeRunnable.FinishedEventListener
         if (currentlyRunningWorker != null && !currentlyRunningWorker.isDone() && predicate.test(currentlyRunningWorker.getRun())) {
             cancel(currentlyRunningWorker.getRun());
         }
+    }
+
+    /**
+     * Runs the runnable in a dialog
+     * @param runnable the runnable
+     */
+    public void runInDialog(JIPipeDesktopWorkbench workbench, Component parent, JIPipeRunnable runnable) {
+        JIPipeDesktopRunExecuteUI.runInDialog(workbench, parent, runnable);
     }
 }
