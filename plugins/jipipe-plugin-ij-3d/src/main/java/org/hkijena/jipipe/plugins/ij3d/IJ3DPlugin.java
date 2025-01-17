@@ -58,6 +58,7 @@ import org.hkijena.jipipe.plugins.ij3d.nodes.roi3d.split.ExplodeRoi3DListAlgorit
 import org.hkijena.jipipe.plugins.ij3d.nodes.roi3d.split.SplitRoi3DIntoConnectedComponentsAlgorithm;
 import org.hkijena.jipipe.plugins.ij3d.nodes.segmentation.*;
 import org.hkijena.jipipe.plugins.ij3d.utils.*;
+import org.hkijena.jipipe.plugins.ij3d.viewers.ROI3DListDataViewer;
 import org.hkijena.jipipe.plugins.imagejalgorithms.ImageJAlgorithmsPlugin;
 import org.hkijena.jipipe.plugins.imagejdatatypes.ImageJDataTypesPlugin;
 import org.hkijena.jipipe.plugins.multiparameters.MultiParameterAlgorithmsPlugin;
@@ -139,6 +140,7 @@ public class IJ3DPlugin extends JIPipePrepackagedDefaultJavaPlugin {
         registerEnumParameterType("ij3d-roi-outline", ROI3DOutline.class, "3D ROI outline", "Outline algorithm for 3D ROI");
 
         registerDatatype("roi-3d-list", ROI3DListData.class, RESOURCES.getIcon16URLFromResources("data-type-roi3d.png"), new AddROI3DToManagerDataDisplayOperation());
+        registerDefaultDataTypeViewer(ROI3DListData.class, ROI3DListDataViewer.class);
         registerImageJDataImporter("import-roi-3d", new ROI3DImageJImporter(), null);
         registerImageJDataExporter("export-roi-3d", new ROI3DImageJExporter(), null);
         registerNodeType("import-roi-3d", ImportROI3DAlgorithm.class);

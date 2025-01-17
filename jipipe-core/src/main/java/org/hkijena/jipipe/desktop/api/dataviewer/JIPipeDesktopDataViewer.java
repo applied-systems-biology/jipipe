@@ -3,7 +3,6 @@ package org.hkijena.jipipe.desktop.api.dataviewer;
 import org.hkijena.jipipe.api.data.JIPipeData;
 import org.hkijena.jipipe.api.data.browser.JIPipeDataBrowser;
 import org.hkijena.jipipe.api.data.browser.JIPipeDataTableBrowser;
-import org.hkijena.jipipe.desktop.app.JIPipeDesktopProjectWorkbenchPanel;
 import org.hkijena.jipipe.desktop.app.JIPipeDesktopWorkbenchPanel;
 import org.hkijena.jipipe.desktop.commons.components.ribbon.JIPipeDesktopRibbon;
 import org.hkijena.jipipe.utils.UIUtils;
@@ -61,10 +60,10 @@ public abstract class JIPipeDesktopDataViewer extends JIPipeDesktopWorkbenchPane
 
     }
 
-    protected void showError(JIPipeDesktopDockPanel dockPanel) {
+    protected void showError(JIPipeDesktopDockPanel dockPanel, String text, String subtext) {
         JPanel errorPanel = new JPanel(new BorderLayout());
-        errorPanel.add(UIUtils.createInfoLabel("No data to be displayed",
-                "There is no data available",
+        errorPanel.add(UIUtils.createInfoLabel(text,
+                subtext,
                 UIUtils.getIcon32FromResources("actions/circle-xmark.png")), BorderLayout.CENTER);
         dockPanel.setBackgroundComponent(errorPanel);
     }

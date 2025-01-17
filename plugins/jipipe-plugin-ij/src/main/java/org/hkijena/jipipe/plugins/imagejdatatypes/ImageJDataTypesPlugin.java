@@ -68,10 +68,7 @@ import org.hkijena.jipipe.plugins.imagejdatatypes.datatypes.d5.greyscale.*;
 import org.hkijena.jipipe.plugins.imagejdatatypes.datatypes.fft.*;
 import org.hkijena.jipipe.plugins.imagejdatatypes.datatypes.greyscale.*;
 import org.hkijena.jipipe.plugins.imagejdatatypes.display.*;
-import org.hkijena.jipipe.plugins.imagejdatatypes.display.viewers.ImagePlusDataViewer;
-import org.hkijena.jipipe.plugins.imagejdatatypes.display.viewers.OMEImageDataViewer;
-import org.hkijena.jipipe.plugins.imagejdatatypes.display.viewers.ROI2DListDataViewer;
-import org.hkijena.jipipe.plugins.imagejdatatypes.display.viewers.ResultsTableDataViewer;
+import org.hkijena.jipipe.plugins.imagejdatatypes.display.viewers.*;
 import org.hkijena.jipipe.plugins.imagejdatatypes.parameters.OMEColorMode;
 import org.hkijena.jipipe.plugins.imagejdatatypes.parameters.OMETIFFCompression;
 import org.hkijena.jipipe.plugins.imagejdatatypes.resultanalysis.ImageDataPreview;
@@ -480,6 +477,7 @@ public class ImageJDataTypesPlugin extends JIPipePrepackagedDefaultJavaPlugin {
                 null, ROIDataPreview.class,
                 new AddToROIManagerDataDisplayOperation());
         registerDatatype("imagej-lut", LUTData.class, ResourceUtils.getPluginResource("icons/data-types/lut.png"));
+        registerDefaultDataTypeViewer(LUTData.class, LUTDataViewer.class);
         registerImageJDataImporter("roi-from-roi-manager", new RoiManagerImageJImporter(), RoiManagerImageJImporterUI.class);
         registerImageJDataExporter("roi-to-roi-manager", new RoiManagerImageJExporter(), DefaultImageJDataExporterUI.class);
         registerDatatype("imagej-results-table",

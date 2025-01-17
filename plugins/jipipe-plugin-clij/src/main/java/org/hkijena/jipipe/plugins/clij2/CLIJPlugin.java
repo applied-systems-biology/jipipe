@@ -32,6 +32,7 @@ import org.hkijena.jipipe.plugins.clij2.datatypes.CLIJImageToImagePlusDataConver
 import org.hkijena.jipipe.plugins.clij2.datatypes.ImagePlusDataToCLIJImageDataConverter;
 import org.hkijena.jipipe.plugins.clij2.parameters.OpenCLKernelScript;
 import org.hkijena.jipipe.plugins.clij2.ui.CLIJControlPanelJIPipeDesktopMenuExtension;
+import org.hkijena.jipipe.plugins.clij2.viewers.CLIJImageDataViewer;
 import org.hkijena.jipipe.plugins.core.CorePlugin;
 import org.hkijena.jipipe.plugins.imagejdatatypes.ImageJDataTypesPlugin;
 import org.hkijena.jipipe.plugins.imagejdatatypes.compat.ImagePlusWindowImageJImporterUI;
@@ -223,6 +224,7 @@ public class CLIJPlugin extends JIPipePrepackagedDefaultJavaPlugin {
         registerDatatype("clij2-image",
                 CLIJImageData.class,
                 UIUtils.getIconURLFromResources("data-types/clij2-image.png"));
+        registerDefaultDataTypeViewer(CLIJImageData.class, CLIJImageDataViewer.class);
         registerDatatypeConversion(new CLIJImageToImagePlusDataConverter(ImagePlusData.class));
         registerDatatypeConversion(new ImagePlusDataToCLIJImageDataConverter());
         registerImageJDataImporter("clij2-image-from-window", new CLIJ2DataFromImageWindowImageJImporter(), ImagePlusWindowImageJImporterUI.class);

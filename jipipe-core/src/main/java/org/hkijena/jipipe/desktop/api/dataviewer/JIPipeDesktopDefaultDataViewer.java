@@ -1,10 +1,8 @@
 package org.hkijena.jipipe.desktop.api.dataviewer;
 
-import org.hkijena.jipipe.api.JIPipeProgressInfo;
 import org.hkijena.jipipe.desktop.commons.components.JIPipeDesktopFancyReadOnlyTextArea;
 import org.hkijena.jipipe.desktop.commons.components.JIPipeDesktopFancyReadOnlyTextField;
 import org.hkijena.jipipe.desktop.commons.components.JIPipeDesktopFormPanel;
-import org.hkijena.jipipe.desktop.commons.components.ribbon.JIPipeDesktopRibbon;
 import org.hkijena.jipipe.utils.ui.JIPipeDesktopDockPanel;
 
 import javax.swing.*;
@@ -31,8 +29,9 @@ public class JIPipeDesktopDefaultDataViewer extends JIPipeDesktopDataViewer {
     @Override
     public void rebuildDock(JIPipeDesktopDockPanel dockPanel) {
         if (getDataBrowser() == null) {
-            showError(dockPanel);
+            showError(dockPanel, "No data to display", "There is currently no data source");
         } else {
+            showError(dockPanel, "Unable to display data", "The viewer does not know how to display this data");
             awaitToSwing(getDataBrowser().getDataAsString(), stringField::setText);
             awaitToSwing(getDataBrowser().getDataAsDetailedString(), detailedStringField::setText);
         }
