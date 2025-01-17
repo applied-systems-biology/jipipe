@@ -2466,6 +2466,29 @@ public class UIUtils {
         return ResourceUtils.getPluginResource("icons-32/" + iconName);
     }
 
+    public static void makeNonOpaque(Component component, boolean recursive) {
+        if(recursive) {
+            Stack<JComponent> stack = new Stack<>();
+            if(component instanceof JComponent) {
+                stack.push((JComponent) component);
+            }
+            while(!stack.isEmpty()) {
+                JComponent component1 = stack.pop();
+                component1.setOpaque(false);
+                for (Component child : component1.getComponents()) {
+                    if(child instanceof JComponent) {
+                        stack.push((JComponent) child);
+                    }
+                }
+            }
+        }
+        else {
+            if(component instanceof JComponent) {
+                ((JComponent) component).setOpaque(false);
+            }
+        }
+    }
+
 
     public static class DragThroughMouseListener implements MouseListener, MouseMotionListener {
         private final Component component;

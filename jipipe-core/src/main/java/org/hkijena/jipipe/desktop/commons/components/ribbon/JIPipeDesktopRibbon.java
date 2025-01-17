@@ -488,6 +488,13 @@ public class JIPipeDesktopRibbon extends JPanel {
         }
 
         public Action addComponent(Component component, int height, Insets insets) {
+            return addComponent(component, height, insets, true);
+        }
+
+        public Action addComponent(Component component, int height, Insets insets, boolean makeNonOpaque) {
+            if(makeNonOpaque) {
+                UIUtils.makeNonOpaque(component, true);
+            }
             Action action = new Action(component, height, insets);
             add(action);
             return action;
@@ -504,10 +511,21 @@ public class JIPipeDesktopRibbon extends JPanel {
         private boolean visible = true;
         private Insets insets;
 
-        public Action(Component component, int height, Insets insets) {
+        public Action(Component component, int height, Insets insets, boolean nonOpaque) {
+            if(nonOpaque) {
+                UIUtils.makeNonOpaque(component, true);
+            }
             this.components = Collections.singletonList(component);
             this.height = height;
             this.insets = insets;
+        }
+
+        public Action(Component component, int height, Insets insets) {
+           this(component, height, insets, true);
+        }
+
+        public Action(List<Component> components, int height, Insets insets) {
+            this(components, height, insets, true);
         }
 
         /**
@@ -516,7 +534,12 @@ public class JIPipeDesktopRibbon extends JPanel {
          * @param height the height occupied by this action
          * @param insets the insets
          */
-        public Action(List<Component> components, int height, Insets insets) {
+        public Action(List<Component> components, int height, Insets insets, boolean nonOpaque) {
+            if(nonOpaque) {
+                for (Component component : components) {
+                    UIUtils.makeNonOpaque(component, true);
+                }
+            }
             this.components = components;
             this.height = height;
             this.insets = insets;
