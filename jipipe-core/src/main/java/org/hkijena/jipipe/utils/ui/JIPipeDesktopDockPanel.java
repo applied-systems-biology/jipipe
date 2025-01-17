@@ -70,8 +70,8 @@ public class JIPipeDesktopDockPanel extends JPanel implements JIPipeDesktopSplit
         add(leftToolBar, BorderLayout.WEST);
         add(rightToolBar, BorderLayout.EAST);
 
-        rightToolBar.setBorder(UIUtils.createPanelBorder(0, 0,1,0));
-        leftToolBar.setBorder(UIUtils.createPanelBorder(1, 0,0,0));
+        rightToolBar.setBorder(UIUtils.createPanelBorder(0, 0, 1, 0));
+        leftToolBar.setBorder(UIUtils.createPanelBorder(1, 0, 0, 0));
 
         JPopupMenu toolbarContextMenu = new JPopupMenu();
         toolbarContextMenu.add(showToolbarLabelsMenuItem);
@@ -105,7 +105,7 @@ public class JIPipeDesktopDockPanel extends JPanel implements JIPipeDesktopSplit
     }
 
     private void initializeRightFloatingPanel() {
-        rightPanel.setBorder(UIUtils.createPanelBorder(1, 0,0,0));
+        rightPanel.setBorder(UIUtils.createPanelBorder(1, 0, 0, 0));
         rightPanel.add(rightResizerPanel, BorderLayout.WEST);
         rightResizerPanel.setCursor(Cursor.getPredefinedCursor(Cursor.MOVE_CURSOR));
         rightResizerPanel.setPreferredSize(new Dimension(RESIZE_HANDLE_SIZE, 64));
@@ -129,7 +129,7 @@ public class JIPipeDesktopDockPanel extends JPanel implements JIPipeDesktopSplit
 
     private void initializeLeftFloatingPanel() {
 //        leftFloatingPanel.setOpaque(false);
-        leftPanel.setBorder(UIUtils.createPanelBorder(0,0,1,0));
+        leftPanel.setBorder(UIUtils.createPanelBorder(0, 0, 1, 0));
         leftPanel.add(leftResizerPanel, BorderLayout.EAST);
         leftResizerPanel.setCursor(Cursor.getPredefinedCursor(Cursor.MOVE_CURSOR));
         leftResizerPanel.setPreferredSize(new Dimension(RESIZE_HANDLE_SIZE, 64));
@@ -230,6 +230,9 @@ public class JIPipeDesktopDockPanel extends JPanel implements JIPipeDesktopSplit
         } else if (leftPanel.isVisible()) {
             backgroundLeft = leftPanelIsFloating ? 0 : leftSize.width;
             backgroundWidth = layeredPane.getWidth() - backgroundLeft;
+        } else if (rightPanel.isVisible()) {
+            backgroundLeft = 0;
+            backgroundWidth = layeredPane.getWidth() - rightSize.width;
         } else {
             backgroundLeft = 0;
             backgroundWidth = layeredPane.getWidth();
@@ -969,7 +972,7 @@ public class JIPipeDesktopDockPanel extends JPanel implements JIPipeDesktopSplit
         }
 
         public <T extends JComponent> T getComponent(Class<T> klass) {
-            return (T)getComponent();
+            return (T) getComponent();
         }
     }
 
