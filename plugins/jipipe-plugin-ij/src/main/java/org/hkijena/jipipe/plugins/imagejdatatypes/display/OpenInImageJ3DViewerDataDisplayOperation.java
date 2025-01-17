@@ -24,6 +24,7 @@ import org.hkijena.jipipe.desktop.api.data.JIPipeDesktopDataDisplayOperation;
 import org.hkijena.jipipe.desktop.app.JIPipeDesktopWorkbench;
 import org.hkijena.jipipe.plugins.imagejdatatypes.datatypes.ImagePlusData;
 import org.hkijena.jipipe.plugins.imagejdatatypes.datatypes.OMEImageData;
+import org.hkijena.jipipe.plugins.imageviewer.utils.viewer3d.CustomImage3DUniverse;
 import org.hkijena.jipipe.utils.UIUtils;
 
 import javax.swing.*;
@@ -57,9 +58,9 @@ public class OpenInImageJ3DViewerDataDisplayOperation implements JIPipeDesktopDa
                         Thread.sleep(100); // Check every 100ms
                     }
 
-                    // Add the ImagePlus to the 3D Viewer as a volume
-                    universe.addContent(image, Content.VOLUME);
-                    System.out.println("Image successfully opened in the 3D Viewer!");
+                    Content volume = universe.addContent(image, Content.VOLUME);
+                    volume.setLocked(true);
+
                 } catch (InterruptedException e) {
                     e.printStackTrace();
                 }
