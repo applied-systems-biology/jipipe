@@ -76,22 +76,16 @@ public class ImageViewerPanelCanvas2D extends JPanel implements MouseListener, M
     }
 
     public void centerImage() {
+        int imageWidth = (int) (image.getWidth() * zoom);
+        int imageHeight = (int) (image.getHeight() * zoom);
         int availableWidth = 2;
         int availableHeight = 2;
         if (scrollPane != null) {
             availableWidth = scrollPane.getWidth();
             availableHeight = scrollPane.getHeight();
         }
-        if (image.getWidth() < availableWidth) {
-            contentX = availableWidth / 2 - image.getWidth() / 2;
-        } else {
-            contentX = 0;
-        }
-        if (image.getHeight() < availableHeight) {
-            contentY = availableHeight / 2 - image.getHeight() / 2;
-        } else {
-            contentY = 0;
-        }
+        contentX = availableWidth / 2 - imageWidth / 2;
+        contentY = availableHeight / 2 - imageHeight / 2;
         revalidate();
         repaint(50);
     }

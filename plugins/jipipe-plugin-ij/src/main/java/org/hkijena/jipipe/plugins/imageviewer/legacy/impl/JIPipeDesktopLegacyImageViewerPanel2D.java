@@ -903,7 +903,7 @@ public class JIPipeDesktopLegacyImageViewerPanel2D extends JPanel implements JIP
             double zoomx = canvasScrollPane.getViewport().getWidth() / (1.0 * image.getWidth());
             double zoomy = canvasScrollPane.getViewport().getHeight() / (1.0 * image.getHeight());
             canvas.setZoom(Math.min(zoomx, zoomy));
-            canvas.setContentXY(0, 0);
+            canvas.centerImage();
             updateZoomStatus();
         }
     }
