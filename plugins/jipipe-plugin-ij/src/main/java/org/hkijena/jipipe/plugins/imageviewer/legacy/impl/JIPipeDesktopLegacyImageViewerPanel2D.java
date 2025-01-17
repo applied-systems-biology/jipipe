@@ -49,6 +49,7 @@ import org.hkijena.jipipe.utils.ui.JIPipeDesktopDockPanel;
 import javax.imageio.ImageIO;
 import javax.swing.Timer;
 import javax.swing.*;
+import javax.swing.border.Border;
 import java.awt.*;
 import java.awt.image.BufferedImage;
 import java.io.IOException;
