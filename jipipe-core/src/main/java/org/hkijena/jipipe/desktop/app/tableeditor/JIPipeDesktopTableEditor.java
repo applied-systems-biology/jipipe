@@ -104,6 +104,7 @@ public class JIPipeDesktopTableEditor extends JIPipeDesktopWorkbenchPanel {
         window.setIconImage(UIUtils.getJIPipeIcon128());
         JIPipeDesktopTableEditor editor = new JIPipeDesktopTableEditor(workbench, tableData);
         window.getContentPane().add(editor, BorderLayout.CENTER);
+        window.getContentPane().add(editor.getRibbon(), BorderLayout.NORTH);
         window.pack();
         window.setSize(1024, 768);
         window.setLocationRelativeTo(workbench.getWindow());
