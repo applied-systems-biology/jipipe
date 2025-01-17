@@ -82,9 +82,7 @@ public class Stack2DRendererRun extends AbstractJIPipeRunnable {
         outputImage.setTitle(image.getTitle() + " (Rendered)");
 
         progressInfo.log("Rendering finished. Continuing.");
-        SwingUtilities.invokeLater(() -> {
-            nextAction.accept(outputImage);
-        });
+        nextAction.accept(outputImage);
     }
 
     public JIPipeDesktopLegacyImageViewer getViewerPanel() {

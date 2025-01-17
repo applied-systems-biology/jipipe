@@ -11,7 +11,7 @@
  * See the LICENSE file provided with the code for the full license.
  */
 
-package org.hkijena.jipipe.plugins.imageviewer.runs;
+package org.hkijena.jipipe.plugins.imageviewer.legacy.runs;
 
 import ij.IJ;
 import ij.ImagePlus;
