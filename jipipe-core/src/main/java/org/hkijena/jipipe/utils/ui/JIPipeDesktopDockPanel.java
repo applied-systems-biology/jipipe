@@ -198,7 +198,7 @@ public class JIPipeDesktopDockPanel extends JPanel implements JIPipeDesktopSplit
         updateAll();
     }
 
-    private void updateSizes() {
+    public void updateSizes() {
 
         int availableWidth = layeredPane.getWidth();
 

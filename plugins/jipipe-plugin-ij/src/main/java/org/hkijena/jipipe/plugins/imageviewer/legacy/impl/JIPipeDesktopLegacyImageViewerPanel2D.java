@@ -61,7 +61,7 @@ public class JIPipeDesktopLegacyImageViewerPanel2D extends JPanel implements JIP
     public static final String DOCK_PANEL_PREFIX = "LEGACY_IMAGE_VIEWER2D_";
     private final JIPipeDesktopLegacyImageViewer imageViewer;
     private final JIPipeDesktopSmallButtonRibbonAction zoomStatusButton = new JIPipeDesktopSmallButtonRibbonAction("100%", "The status of the zoom",
-            UIUtils.getIconFromResources("actions/empty.png"));
+            UIUtils.getIconFromResources("actions/transform-move-vertical.png"));
     private final LegacyImageViewer2DUIApplicationSettings settings;
     private final JLabel stackSliderLabel = new JLabel("Slice (Z)");
     private final JLabel channelSliderLabel = new JLabel("Channel (C)");
@@ -190,14 +190,6 @@ public class JIPipeDesktopLegacyImageViewerPanel2D extends JPanel implements JIP
 
         // Viewer panel, status bar
         viewerPanel.add(canvasScrollPane, BorderLayout.CENTER);
-        JToolBar statusBar = new JToolBar();
-        statusBar.setFloatable(false);
-        statusBar.setBorder(BorderFactory.createMatteBorder(1, 0, 1, 0, UIManager.getColor("MenuBar.borderColor")));
-        viewerPanel.add(statusBar, BorderLayout.SOUTH);
-
-        JIPipeDesktopRunnableQueueButton runnerQueueUI = new JIPipeDesktopRunnableQueueButton(getDesktopWorkbench(), viewerRunnerQueue);
-        runnerQueueUI.makeFlat();
-        statusBar.add(runnerQueueUI);
 
         // Bottom panel (sliders)
         bottomPanel = new JIPipeDesktopFormPanel(null, JIPipeDesktopFormPanel.NONE);
@@ -454,6 +446,10 @@ public class JIPipeDesktopLegacyImageViewerPanel2D extends JPanel implements JIP
     }
 
     public void buildStatusBar(JToolBar statusBar) {
+        JIPipeDesktopRunnableQueueButton runnerQueueUI = new JIPipeDesktopRunnableQueueButton(getDesktopWorkbench(), viewerRunnerQueue);
+        runnerQueueUI.makeFlat();
+        runnerQueueUI.setReadyLabel("Viewer");
+        UIUtils.addToStatusBarWithSeparator(statusBar, runnerQueueUI);
         for (JIPipeDesktopLegacyImageViewerPlugin2D plugin : imageViewer.getPlugins2D()) {
             plugin.buildStatusBar(statusBar);
         }

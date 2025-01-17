@@ -145,6 +145,7 @@ public class JIPipeDesktopLegacyImageViewer extends JPanel implements JIPipeDesk
     }
 
     public void buildStatusBar(JToolBar statusBar) {
+        statusBar.add(Box.createHorizontalStrut(8));
         statusBar.add(imageInfoLabel);
         imageViewerPanel2D.buildStatusBar(statusBar);
     }

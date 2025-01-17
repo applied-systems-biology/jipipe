@@ -39,6 +39,7 @@ public class DefaultDataDisplayOperation implements JIPipeDesktopDataDisplayOper
         else {
             window.browseData(new JIPipeLocalDataBrowser(new JIPipeDataItemStore(data)), displayName);
         }
+        window.revalidateDockLater();
     }
 
     @Override

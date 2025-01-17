@@ -43,6 +43,7 @@ import java.io.IOException;
 import java.nio.file.Path;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.TimerTask;
 import java.util.concurrent.ExecutionException;
 
 /**
@@ -181,9 +182,11 @@ public class JIPipeDesktopDataViewerWindow extends JFrame implements JIPipeDeskt
         createTextAnnotationsPanel();
 
         // Create a new viewer if needed
+        boolean hasNewViewer = false;
         if (currentDataViewer == null) {
             currentDataViewer = (JIPipeDesktopDataViewer) ReflectionUtils.newInstance(viewerClass, this);
             dockPanel.setBackgroundComponent(currentDataViewer);
+            hasNewViewer = true;
         }
 
         // Update the viewer
@@ -200,6 +203,11 @@ public class JIPipeDesktopDataViewerWindow extends JFrame implements JIPipeDeskt
         currentDataViewer.rebuildStatusBar(dynamicStatusBar);
 
         currentDataViewer.postOnDataChanged();
+
+        // Force a full revalidate
+        if(hasNewViewer) {
+            revalidateDockLater();
+        }
     }
 
     private void updateDataTypeInfoButton() {
@@ -449,6 +457,16 @@ public class JIPipeDesktopDataViewerWindow extends JFrame implements JIPipeDeskt
             }
             run.setData(null);
         }
+    }
+
+    public void revalidateDockLater() {
+        Timer timer = new Timer(250, e -> {
+            SwingUtilities.invokeLater(() -> {
+                dockPanel.updateSizes();
+            });
+        });
+        timer.setRepeats(false);
+        timer.start();
     }
 
     public static class DownloadFullDataRun extends AbstractJIPipeRunnable {
