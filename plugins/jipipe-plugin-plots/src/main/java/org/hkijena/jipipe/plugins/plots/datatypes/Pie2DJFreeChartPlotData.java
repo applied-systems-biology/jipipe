@@ -28,17 +28,17 @@ import java.awt.*;
  * Series table columns: Amount (Double), Category (String)
  * Multiple series: No
  */
-@SetJIPipeDocumentation(name = "2D pie plot", description = "Plot that shows the amount for each category as slice in a pie.")
-@PlotMetadata(columns = {@PlotColumn(name = "Amount", description = "The values to be displayed", isNumeric = true),
-        @PlotColumn(name = "Category", description = "The categories to be displayed", isNumeric = false)}, maxSeriesCount = 1)
-public class Pie2DPlotData extends PiePlotData {
+@SetJIPipeDocumentation(name = "JFreeChart 2D pie plot", description = "Plot that shows the amount for each category as slice in a pie.")
+@JFreeChartPlotMetadata(columns = {@JFreeChartPlotColumn(name = "Amount", description = "The values to be displayed", isNumeric = true),
+        @JFreeChartPlotColumn(name = "Category", description = "The categories to be displayed", isNumeric = false)}, maxSeriesCount = 1)
+public class Pie2DJFreeChartPlotData extends PieJFreeChartPlotData {
 
     private int labelFontSize = 12;
 
     /**
      * Creates a new instance
      */
-    public Pie2DPlotData() {
+    public Pie2DJFreeChartPlotData() {
     }
 
     /**
@@ -46,13 +46,13 @@ public class Pie2DPlotData extends PiePlotData {
      *
      * @param other the original
      */
-    public Pie2DPlotData(Pie2DPlotData other) {
+    public Pie2DJFreeChartPlotData(Pie2DJFreeChartPlotData other) {
         super(other);
         this.labelFontSize = other.labelFontSize;
     }
 
-    public static Pie2DPlotData importData(JIPipeReadDataStorage storage, JIPipeProgressInfo progressInfo) {
-        return PlotData.importData(storage, Pie2DPlotData.class, progressInfo);
+    public static Pie2DJFreeChartPlotData importData(JIPipeReadDataStorage storage, JIPipeProgressInfo progressInfo) {
+        return JFreeChartPlotData.importData(storage, Pie2DJFreeChartPlotData.class, progressInfo);
     }
 
     @Override

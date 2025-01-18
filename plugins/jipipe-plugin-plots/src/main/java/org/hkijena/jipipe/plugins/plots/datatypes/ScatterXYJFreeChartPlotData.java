@@ -26,15 +26,15 @@ import java.awt.*;
  * Series table columns: X (Double), Y (Double)
  * Multiple series: Yes
  */
-@SetJIPipeDocumentation(name = "XY scatter plot", description = "Plot that displays the Y values against the X values.")
-@PlotMetadata(columns = {@PlotColumn(name = "X", description = "The X values", isNumeric = true),
-        @PlotColumn(name = "Y", description = "The Y values", isNumeric = true)}, maxSeriesCount = Integer.MAX_VALUE)
-public class ScatterXYPlotData extends XYPlotData {
+@SetJIPipeDocumentation(name = "JFreeChart XY scatter plot", description = "Plot that displays the Y values against the X values.")
+@JFreeChartPlotMetadata(columns = {@JFreeChartPlotColumn(name = "X", description = "The X values", isNumeric = true),
+        @JFreeChartPlotColumn(name = "Y", description = "The Y values", isNumeric = true)}, maxSeriesCount = Integer.MAX_VALUE)
+public class ScatterXYJFreeChartPlotData extends XYJFreeChartPlotData {
 
     /**
      * Creates a new instance
      */
-    public ScatterXYPlotData() {
+    public ScatterXYJFreeChartPlotData() {
     }
 
     /**
@@ -42,12 +42,12 @@ public class ScatterXYPlotData extends XYPlotData {
      *
      * @param other the original
      */
-    public ScatterXYPlotData(ScatterXYPlotData other) {
+    public ScatterXYJFreeChartPlotData(ScatterXYJFreeChartPlotData other) {
         super(other);
     }
 
-    public static ScatterXYPlotData importData(JIPipeReadDataStorage storage, JIPipeProgressInfo progressInfo) {
-        return PlotData.importData(storage, ScatterXYPlotData.class, progressInfo);
+    public static ScatterXYJFreeChartPlotData importData(JIPipeReadDataStorage storage, JIPipeProgressInfo progressInfo) {
+        return JFreeChartPlotData.importData(storage, ScatterXYJFreeChartPlotData.class, progressInfo);
     }
 
     @Override

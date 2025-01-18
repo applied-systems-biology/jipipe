@@ -27,7 +27,7 @@ import org.jfree.data.category.DefaultCategoryDataset;
  * Values are assigned a category that is its X-axis.
  * Colors are assigned by its group
  */
-public abstract class CategoryPlotData extends PlotData {
+public abstract class CategoryJFreeChartPlotData extends JFreeChartPlotData {
 
     private String categoryAxisLabel = "Category";
     private String valueAxisLabel = "Value";
@@ -39,7 +39,7 @@ public abstract class CategoryPlotData extends PlotData {
     /**
      * Creates a new instance
      */
-    public CategoryPlotData() {
+    public CategoryJFreeChartPlotData() {
 
     }
 
@@ -48,7 +48,7 @@ public abstract class CategoryPlotData extends PlotData {
      *
      * @param other the original
      */
-    public CategoryPlotData(CategoryPlotData other) {
+    public CategoryJFreeChartPlotData(CategoryJFreeChartPlotData other) {
         super(other);
         this.categoryAxisLabel = other.categoryAxisLabel;
         this.valueAxisLabel = other.valueAxisLabel;
@@ -65,7 +65,7 @@ public abstract class CategoryPlotData extends PlotData {
      */
     public CategoryDataset createDataSet() {
         DefaultCategoryDataset dataset = new DefaultCategoryDataset();
-        for (PlotDataSeries series : getSeries()) {
+        for (JFreeChartPlotDataSeries series : getSeries()) {
             double[] values = series.getColumnAsDouble("Value");
             String[] categories = series.getColumnAsString("Category");
             String[] groups = series.getColumnAsString("Group");

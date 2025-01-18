@@ -21,12 +21,12 @@ import org.jfree.data.general.PieDataset;
  * Any pie plot has following columns:
  * Amount (Double), Category (String)
  */
-public abstract class PiePlotData extends PlotData {
+public abstract class PieJFreeChartPlotData extends JFreeChartPlotData {
 
     /**
      * Creates a new instance
      */
-    public PiePlotData() {
+    public PieJFreeChartPlotData() {
 
     }
 
@@ -35,7 +35,7 @@ public abstract class PiePlotData extends PlotData {
      *
      * @param other the original
      */
-    public PiePlotData(PiePlotData other) {
+    public PieJFreeChartPlotData(PieJFreeChartPlotData other) {
         super(other);
     }
 
@@ -46,7 +46,7 @@ public abstract class PiePlotData extends PlotData {
      */
     public PieDataset createDataSet() {
         DefaultPieDataset dataset = new DefaultPieDataset();
-        for (PlotDataSeries series : getSeries()) {
+        for (JFreeChartPlotDataSeries series : getSeries()) {
             double[] values = series.getColumnAsDouble("Amount");
             String[] categories = series.getColumnAsString("Category");
             for (int i = 0; i < values.length; i++) {

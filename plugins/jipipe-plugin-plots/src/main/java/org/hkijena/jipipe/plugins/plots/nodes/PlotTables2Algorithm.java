@@ -34,10 +34,10 @@ import org.hkijena.jipipe.plugins.expressions.JIPipeExpressionVariablesMap;
 import org.hkijena.jipipe.plugins.expressions.StringQueryExpression;
 import org.hkijena.jipipe.plugins.expressions.TableColumnSourceExpressionParameter;
 import org.hkijena.jipipe.plugins.expressions.variables.JIPipeTextAnnotationsExpressionParameterVariablesInfo;
-import org.hkijena.jipipe.plugins.plots.datatypes.PlotColumn;
-import org.hkijena.jipipe.plugins.plots.datatypes.PlotData;
-import org.hkijena.jipipe.plugins.plots.datatypes.PlotDataSeries;
-import org.hkijena.jipipe.plugins.plots.datatypes.PlotMetadata;
+import org.hkijena.jipipe.plugins.plots.datatypes.JFreeChartPlotColumn;
+import org.hkijena.jipipe.plugins.plots.datatypes.JFreeChartPlotData;
+import org.hkijena.jipipe.plugins.plots.datatypes.JFreeChartPlotDataSeries;
+import org.hkijena.jipipe.plugins.plots.datatypes.JFreeChartPlotMetadata;
 import org.hkijena.jipipe.plugins.tables.datatypes.ResultsTableData;
 import org.hkijena.jipipe.utils.ReflectionUtils;
 
@@ -46,12 +46,12 @@ import java.util.List;
 import java.util.Map;
 
 /**
- * Algorithm that creates {@link PlotData} from {@link ResultsTableData}
+ * Algorithm that creates {@link JFreeChartPlotData} from {@link ResultsTableData}
  * This is an improved version of {@link PlotTables2Algorithm} that is linked directly to a specific plot
  */
 public class PlotTables2Algorithm extends JIPipeMergingAlgorithm {
 
-    private final PlotData plotTypeParameters;
+    private final JFreeChartPlotData plotTypeParameters;
 
     private final JIPipeDataInfo plotType;
     private JIPipeDynamicParameterCollection inputColumns = new JIPipeDynamicParameterCollection(false);
@@ -68,7 +68,7 @@ public class PlotTables2Algorithm extends JIPipeMergingAlgorithm {
                 .seal()
                 .build());
         plotType = info.getPlotDataType();
-        plotTypeParameters = (PlotData) ReflectionUtils.newInstance(info.getPlotDataType().getDataClass());
+        plotTypeParameters = (JFreeChartPlotData) ReflectionUtils.newInstance(info.getPlotDataType().getDataClass());
         registerSubParameter(inputColumns);
         updateColumnAssignment();
     }
@@ -81,20 +81,20 @@ public class PlotTables2Algorithm extends JIPipeMergingAlgorithm {
     public PlotTables2Algorithm(PlotTables2Algorithm other) {
         super(other);
         this.plotType = other.plotType;
-        this.plotTypeParameters = (PlotData) other.plotTypeParameters.duplicate(new JIPipeProgressInfo());
+        this.plotTypeParameters = (JFreeChartPlotData) other.plotTypeParameters.duplicate(new JIPipeProgressInfo());
         this.inputColumns = new JIPipeDynamicParameterCollection(other.inputColumns);
         this.seriesName = new StringQueryExpression(other.seriesName);
     }
 
     @Override
     protected void runIteration(JIPipeMultiIterationStep iterationStep, JIPipeIterationContext iterationContext, JIPipeGraphNodeRunContext runContext, JIPipeProgressInfo progressInfo) {
-        PlotMetadata plotMetadata = plotType.getDataClass().getAnnotation(PlotMetadata.class);
-        Map<String, PlotColumn> plotColumns = new HashMap<>();
-        for (PlotColumn column : plotMetadata.columns()) {
+        JFreeChartPlotMetadata plotMetadata = plotType.getDataClass().getAnnotation(JFreeChartPlotMetadata.class);
+        Map<String, JFreeChartPlotColumn> plotColumns = new HashMap<>();
+        for (JFreeChartPlotColumn column : plotMetadata.columns()) {
             plotColumns.put(column.name(), column);
         }
 
-        PlotData plot = (PlotData) plotTypeParameters.duplicate(progressInfo);
+        JFreeChartPlotData plot = (JFreeChartPlotData) plotTypeParameters.duplicate(progressInfo);
         int seriesCounter = 0;
         for (int row : iterationStep.getInputRows(getFirstInputSlot())) {
 
@@ -114,7 +114,7 @@ public class PlotTables2Algorithm extends JIPipeMergingAlgorithm {
                 seriesTable.setColumn(entry.getKey(), parameter.pickOrGenerateColumn(inputData, new JIPipeExpressionVariablesMap()), plotColumns.get(entry.getKey()).isNumeric());
             }
 
-            PlotDataSeries series = new PlotDataSeries(seriesTable.getTable());
+            JFreeChartPlotDataSeries series = new JFreeChartPlotDataSeries(seriesTable.getTable());
             series.setName(seriesName.generate(variables));
             plot.addSeries(series);
 
@@ -123,7 +123,7 @@ public class PlotTables2Algorithm extends JIPipeMergingAlgorithm {
             if (seriesCounter >= plotMetadata.maxSeriesCount()) {
                 progressInfo.log("Maximum number of series was reached (maximum is " + plotMetadata.maxSeriesCount() + "!). Creating a new plot.");
                 iterationStep.addOutputData(getFirstOutputSlot(), plot, progressInfo);
-                plot = (PlotData) plotTypeParameters.duplicate(progressInfo);
+                plot = (JFreeChartPlotData) plotTypeParameters.duplicate(progressInfo);
                 seriesCounter = 0;
             }
         }
@@ -141,8 +141,8 @@ public class PlotTables2Algorithm extends JIPipeMergingAlgorithm {
     private void updateColumnAssignment() {
         inputColumns.beginModificationBlock();
         inputColumns.clear();
-        PlotMetadata plotMetadata = plotType.getDataClass().getAnnotation(PlotMetadata.class);
-        for (PlotColumn column : plotMetadata.columns()) {
+        JFreeChartPlotMetadata plotMetadata = plotType.getDataClass().getAnnotation(JFreeChartPlotMetadata.class);
+        for (JFreeChartPlotColumn column : plotMetadata.columns()) {
             JIPipeMutableParameterAccess parameterAccess = new JIPipeMutableParameterAccess();
             parameterAccess.setKey(column.name());
             parameterAccess.setName(column.name());
@@ -158,7 +158,7 @@ public class PlotTables2Algorithm extends JIPipeMergingAlgorithm {
 
     @SetJIPipeDocumentation(name = "Plot parameters")
     @JIPipeParameter("plot-parameters")
-    public PlotData getPlotTypeParameters() {
+    public JFreeChartPlotData getPlotTypeParameters() {
         return plotTypeParameters;
     }
 

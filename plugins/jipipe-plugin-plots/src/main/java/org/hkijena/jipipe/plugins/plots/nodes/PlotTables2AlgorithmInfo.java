@@ -20,7 +20,7 @@ import org.hkijena.jipipe.api.nodes.*;
 import org.hkijena.jipipe.api.nodes.categories.ImageJNodeTypeCategory;
 import org.hkijena.jipipe.api.nodes.categories.TableNodeTypeCategory;
 import org.hkijena.jipipe.plugins.parameters.library.markup.HTMLText;
-import org.hkijena.jipipe.plugins.plots.datatypes.PlotData;
+import org.hkijena.jipipe.plugins.plots.datatypes.JFreeChartPlotData;
 import org.hkijena.jipipe.plugins.tables.datatypes.ResultsTableData;
 
 import java.util.Collections;
@@ -86,7 +86,7 @@ public class PlotTables2AlgorithmInfo implements JIPipeNodeInfo {
 
     @Override
     public List<AddJIPipeOutputSlot> getOutputSlots() {
-        return Collections.singletonList(new DefaultAddJIPipeOutputSlot(PlotData.class, "Output", "The generated plots", null, false, JIPipeDataSlotRole.Data));
+        return Collections.singletonList(new DefaultAddJIPipeOutputSlot(JFreeChartPlotData.class, "Output", "The generated plots", null, false, JIPipeDataSlotRole.Data));
     }
 
     @Override

@@ -13,7 +13,8 @@
 
 package org.hkijena.jipipe.desktop.commons.components;
 
-import org.hkijena.jipipe.desktop.app.ploteditor.JIPipeDesktopPlotEditorUI;
+import org.hkijena.jipipe.desktop.app.ploteditor.JFreeChartPlotEditor;
+import org.hkijena.jipipe.desktop.commons.components.ribbon.JIPipeDesktopRibbon;
 import org.hkijena.jipipe.plugins.settings.JIPipeFileChooserApplicationSettings;
 import org.hkijena.jipipe.utils.UIUtils;
 import org.hkijena.jipipe.utils.ui.CopyImageToClipboard;
@@ -35,77 +36,21 @@ import java.nio.file.Path;
  */
 public class JIPipeDesktopPlotDisplayComponent extends JPanel {
 
-    private final JIPipeDesktopPlotEditorUI plotBuilderUI;
+    private final JFreeChartPlotEditor plotBuilderUI;
     private ChartPanel chartPanel;
-    private JToolBar toolBar;
 
     /**
      * Creates a new instance
      *
      * @param plotBuilderUI the plot builder associated to this reader
      */
-    public JIPipeDesktopPlotDisplayComponent(JIPipeDesktopPlotEditorUI plotBuilderUI) {
+    public JIPipeDesktopPlotDisplayComponent(JFreeChartPlotEditor plotBuilderUI) {
         this.plotBuilderUI = plotBuilderUI;
         initialize();
     }
 
     private void initialize() {
         setLayout(new BorderLayout());
-
-        toolBar = new JToolBar();
-        toolBar.setFloatable(false);
-
-        JButton exportButton = new JButton("Export", UIUtils.getIconFromResources("actions/document-export.png"));
-        JPopupMenu exportMenu = UIUtils.addPopupMenuToButton(exportButton);
-
-        JMenuItem copyCurrentPlot = new JMenuItem("Copy to clipboard (current size)",
-                UIUtils.getIconFromResources("actions/edit-copy.png"));
-        copyCurrentPlot.addActionListener(e -> exportPlotToClipboard(true));
-        exportMenu.add(copyCurrentPlot);
-
-        JMenuItem copyPlot = new JMenuItem("Copy to clipboard (exported size)",
-                UIUtils.getIconFromResources("actions/edit-copy.png"));
-        copyPlot.addActionListener(e -> exportPlotToClipboard(false));
-        exportMenu.add(copyPlot);
-
-        exportMenu.addSeparator();
-
-        JMenuItem exportCurrentPlotAsPNG = new JMenuItem("as *.png (current size)",
-                UIUtils.getIconFromResources("actions/viewimage.png"));
-        exportCurrentPlotAsPNG.addActionListener(e -> exportPlotToFile(true, FileFormat.PNG));
-        exportMenu.add(exportCurrentPlotAsPNG);
-
-        JMenuItem exportCurrentPlotAsJPEG = new JMenuItem("as *.jpeg (current size)",
-                UIUtils.getIconFromResources("actions/viewimage.png"));
-        exportCurrentPlotAsJPEG.addActionListener(e -> exportPlotToFile(true, FileFormat.JPEG));
-        exportMenu.add(exportCurrentPlotAsJPEG);
-
-        JMenuItem exportCurrentPlotAsSVG = new JMenuItem("as *.svg (current size)",
-                UIUtils.getIconFromResources("actions/viewimage.png"));
-        exportCurrentPlotAsSVG.addActionListener(e -> exportPlotToFile(true, FileFormat.SVG));
-        exportMenu.add(exportCurrentPlotAsSVG);
-
-        exportMenu.addSeparator();
-
-        JMenuItem exportPlotAsPNG = new JMenuItem("as *.png (exported size)",
-                UIUtils.getIconFromResources("actions/viewimage.png"));
-        exportPlotAsPNG.addActionListener(e -> exportPlotToFile(false, FileFormat.PNG));
-        exportMenu.add(exportPlotAsPNG);
-
-        JMenuItem exportPlotAsJPEG = new JMenuItem("as *.jpeg (exported size)",
-                UIUtils.getIconFromResources("actions/viewimage.png"));
-        exportPlotAsJPEG.addActionListener(e -> exportPlotToFile(false, FileFormat.JPEG));
-        exportMenu.add(exportPlotAsJPEG);
-
-        JMenuItem exportPlotAsSVG = new JMenuItem("as *.svg (exported size)",
-                UIUtils.getIconFromResources("actions/viewimage.png"));
-        exportPlotAsSVG.addActionListener(e -> exportPlotToFile(false, FileFormat.SVG));
-        exportMenu.add(exportPlotAsSVG);
-
-        toolBar.add(exportButton);
-
-        add(toolBar, BorderLayout.NORTH);
-
         chartPanel = new ChartPanel(null);
         add(chartPanel, BorderLayout.CENTER);
 
@@ -113,6 +58,24 @@ public class JIPipeDesktopPlotDisplayComponent extends JPanel {
         chartPanel.setMaximumDrawWidth(Integer.MAX_VALUE);
         chartPanel.setMinimumDrawHeight(0);
         chartPanel.setMaximumDrawHeight(Integer.MAX_VALUE);
+    }
+
+    public void rebuildRibbon(JIPipeDesktopRibbon ribbon) {
+        JIPipeDesktopRibbon.Band generalViewBand = ribbon.getOrCreateTask("General").getOrCreateBand("View");
+        JIPipeDesktopRibbon.Band exportPlotBand = ribbon.getOrCreateTask("Export").getOrCreateBand("Plot");
+        generalViewBand.addLargeButton("Refresh plot", "Redraws the plot", UIUtils.getIcon32FromResources("actions/view-refresh.png"), this::redrawPlot);
+        exportPlotBand.addLargeMenuButton("As image", "Exports the plot as image", UIUtils.getIcon32FromResources("actions/viewimage.png"),
+                UIUtils.createMenuItem("As *.png (current size)", "Exports the plot in the current size", UIUtils.getIconFromResources("actions/filesave.png"), () -> exportPlotToFile(true, FileFormat.PNG)),
+                UIUtils.createMenuItem("As *.jpeg (current size)", "Exports the plot in the current size", UIUtils.getIconFromResources("actions/filesave.png"), () -> exportPlotToFile(true, FileFormat.JPEG)),
+                UIUtils.createMenuItem("As *.svg (current size)", "Exports the plot in the current size", UIUtils.getIconFromResources("actions/filesave.png"), () -> exportPlotToFile(true, FileFormat.SVG)),
+                null,
+                UIUtils.createMenuItem("As *.png (exported size)", "Exports the plot in the configured exported size", UIUtils.getIconFromResources("actions/filesave.png"), () -> exportPlotToFile(false, FileFormat.PNG)),
+                UIUtils.createMenuItem("As *.jpeg (exported size)", "Exports the plot in the configured exported size", UIUtils.getIconFromResources("actions/filesave.png"), () -> exportPlotToFile(false, FileFormat.JPEG)),
+                UIUtils.createMenuItem("As *.svg (exported size)", "Exports the plot in the configured exported size", UIUtils.getIconFromResources("actions/filesave.png"), () -> exportPlotToFile(false, FileFormat.SVG)));
+        exportPlotBand.addLargeMenuButton("Copy to clipboard", "Copies the snapshot to the clipboard", UIUtils.getIcon32FromResources("actions/edit-copy.png"),
+                UIUtils.createMenuItem("Current size", "Exports the plot in the current size", UIUtils.getIconFromResources("actions/edit-copy.png"), () -> exportPlotToClipboard(true)),
+                UIUtils.createMenuItem("Exported size", "Exports the plot in the configured exported size", UIUtils.getIconFromResources("actions/edit-copy.png"), () -> exportPlotToClipboard(false)));
+
     }
 
     private void exportPlotToClipboard(boolean currentSize) {
@@ -210,10 +173,6 @@ public class JIPipeDesktopPlotDisplayComponent extends JPanel {
         }
     }
 
-    public JToolBar getToolBar() {
-        return toolBar;
-    }
-
     public ChartPanel getChartPanel() {
         return chartPanel;
     }
@@ -230,6 +189,7 @@ public class JIPipeDesktopPlotDisplayComponent extends JPanel {
         chartPanel.revalidate();
         chartPanel.repaint();
     }
+
 
     /**
      * Available file formats

@@ -23,7 +23,7 @@ import org.hkijena.jipipe.api.registries.JIPipeExpressionRegistry;
 import org.hkijena.jipipe.desktop.app.JIPipeDesktopProjectWorkbench;
 import org.hkijena.jipipe.desktop.app.JIPipeDesktopWorkbench;
 import org.hkijena.jipipe.desktop.app.JIPipeDesktopWorkbenchPanel;
-import org.hkijena.jipipe.desktop.app.ploteditor.JIPipeDesktopPlotEditorUI;
+import org.hkijena.jipipe.desktop.app.ploteditor.JFreeChartPlotEditor;
 import org.hkijena.jipipe.desktop.commons.components.ribbon.JIPipeDesktopLargeButtonRibbonAction;
 import org.hkijena.jipipe.desktop.commons.components.ribbon.JIPipeDesktopRibbon;
 import org.hkijena.jipipe.desktop.commons.components.ribbon.JIPipeDesktopSmallButtonRibbonAction;
@@ -294,7 +294,7 @@ public class JIPipeDesktopTableEditor extends JIPipeDesktopWorkbenchPanel {
     }
 
     private void createNewPlot() {
-        JIPipeDesktopPlotEditorUI plotBuilderUI = JIPipeDesktopPlotEditorUI.openWindow(getDesktopWorkbench(), "Plot");
+        JFreeChartPlotEditor plotBuilderUI = JFreeChartPlotEditor.openWindow(getDesktopWorkbench(), "Plot");
         plotBuilderUI.importData(tableModel, getDesktopWorkbench().getDocumentTabPane().findTabNameFor(this));
     }
 

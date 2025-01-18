@@ -19,23 +19,24 @@ import java.lang.annotation.RetentionPolicy;
 import java.lang.annotation.Target;
 
 /**
- * Defines that a {@link PlotData} has
+ * Annotates a {@link JFreeChartPlotData} with information about plots
  */
 @Target(ElementType.TYPE)
 @Retention(RetentionPolicy.RUNTIME)
-public @interface PlotColumn {
-    /**
-     * @return the identifier of this column
-     */
-    String name();
+public @interface JFreeChartPlotMetadata {
 
     /**
-     * @return a short description
+     * @return how many data series this plot can display
      */
-    String description();
+    int maxSeriesCount() default 1;
 
     /**
-     * @return if the column is numeric. In this case, it is converted to double. Otherwise it is assumed the row is {@link String}
+     * @return how many data series this plot needs
      */
-    boolean isNumeric();
+    int minSeriesCount() default 1;
+
+    /**
+     * @return This plot's columns
+     */
+    JFreeChartPlotColumn[] columns();
 }

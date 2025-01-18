@@ -19,9 +19,9 @@ import org.hkijena.jipipe.api.data.JIPipeDataInfo;
 import org.hkijena.jipipe.api.parameters.*;
 import org.hkijena.jipipe.api.validation.*;
 import org.hkijena.jipipe.api.validation.contexts.CustomValidationReportContext;
-import org.hkijena.jipipe.plugins.plots.datatypes.PlotColumn;
-import org.hkijena.jipipe.plugins.plots.datatypes.PlotDataSeries;
-import org.hkijena.jipipe.plugins.plots.datatypes.PlotMetadata;
+import org.hkijena.jipipe.plugins.plots.datatypes.JFreeChartPlotColumn;
+import org.hkijena.jipipe.plugins.plots.datatypes.JFreeChartPlotDataSeries;
+import org.hkijena.jipipe.plugins.plots.datatypes.JFreeChartPlotMetadata;
 import org.hkijena.jipipe.plugins.plots.parameters.UIPlotDataSeriesColumnEnum;
 import org.hkijena.jipipe.plugins.tables.datatypes.TableColumnData;
 
@@ -34,7 +34,7 @@ import java.util.Map;
  * Constructs a series from a set of columns
  */
 public class JIPipeDesktopPlotSeriesEditor extends AbstractJIPipeParameterCollection implements JIPipeValidatable, JIPipeParameterCollection.ParameterChangedEventListener {
-    private final JIPipeDesktopPlotEditorUI plotBuilderUI;
+    private final JFreeChartPlotEditor plotBuilderUI;
     private final JIPipeDataInfo plotType;
     private final JIPipeDynamicParameterCollection columnAssignments = new JIPipeDynamicParameterCollection(false);
     private String name = "Series";
@@ -46,12 +46,12 @@ public class JIPipeDesktopPlotSeriesEditor extends AbstractJIPipeParameterCollec
      * @param plotBuilderUI the plot builder
      * @param plotType      the plot type this series builder is defined for
      */
-    public JIPipeDesktopPlotSeriesEditor(JIPipeDesktopPlotEditorUI plotBuilderUI, JIPipeDataInfo plotType) {
+    public JIPipeDesktopPlotSeriesEditor(JFreeChartPlotEditor plotBuilderUI, JIPipeDataInfo plotType) {
         this.plotBuilderUI = plotBuilderUI;
         this.plotType = plotType;
 
-        PlotMetadata metadata = plotType.getDataClass().getAnnotation(PlotMetadata.class);
-        for (PlotColumn column : metadata.columns()) {
+        JFreeChartPlotMetadata metadata = plotType.getDataClass().getAnnotation(JFreeChartPlotMetadata.class);
+        for (JFreeChartPlotColumn column : metadata.columns()) {
             UIPlotDataSeriesColumnEnum parameter = new UIPlotDataSeriesColumnEnum();
             JIPipeMutableParameterAccess parameterAccess = new JIPipeMutableParameterAccess();
             parameterAccess.set(parameter);
@@ -128,7 +128,7 @@ public class JIPipeDesktopPlotSeriesEditor extends AbstractJIPipeParameterCollec
         this.name = name;
     }
 
-    public JIPipeDesktopPlotEditorUI getPlotBuilderUI() {
+    public JFreeChartPlotEditor getPlotBuilderUI() {
         return plotBuilderUI;
     }
 
@@ -177,18 +177,18 @@ public class JIPipeDesktopPlotSeriesEditor extends AbstractJIPipeParameterCollec
      *
      * @return Generated series
      */
-    public PlotDataSeries buildSeries() {
+    public JFreeChartPlotDataSeries buildSeries() {
         int rows = 0;
         Map<String, TableColumnData> selectedSources = getSelectedSources();
         for (TableColumnData source : selectedSources.values()) {
             rows = Math.max(rows, source.getRows());
         }
         ResultsTable table = new ResultsTable(rows);
-        PlotMetadata metadata = plotType.getDataClass().getAnnotation(PlotMetadata.class);
+        JFreeChartPlotMetadata metadata = plotType.getDataClass().getAnnotation(JFreeChartPlotMetadata.class);
 
         Map<String, Boolean> columnIsNumeric = new HashMap<>();
         Map<String, Integer> columnIndices = new HashMap<>();
-        for (PlotColumn column : metadata.columns()) {
+        for (JFreeChartPlotColumn column : metadata.columns()) {
             columnIsNumeric.put(column.name(), column.isNumeric());
             int columnIndex = table.getFreeColumn(column.name());
             columnIndices.put(column.name(), columnIndex);
@@ -210,7 +210,7 @@ public class JIPipeDesktopPlotSeriesEditor extends AbstractJIPipeParameterCollec
             }
         }
 
-        PlotDataSeries dataSeries = new PlotDataSeries(table);
+        JFreeChartPlotDataSeries dataSeries = new JFreeChartPlotDataSeries(table);
         dataSeries.setName(getName());
         return dataSeries;
     }

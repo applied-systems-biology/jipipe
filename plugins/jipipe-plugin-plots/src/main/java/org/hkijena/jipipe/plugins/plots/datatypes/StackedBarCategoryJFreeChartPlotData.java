@@ -28,17 +28,17 @@ import java.awt.*;
  * Series table columns: Value (Double), Category (String), Group (String)
  * Multiple series: No
  */
-@SetJIPipeDocumentation(name = "Stacked bar category plot", description = "Bar chart that displays categories in its X axis and colors the bars according to the group." +
+@SetJIPipeDocumentation(name = "JFreeChart Stacked bar category plot", description = "Bar chart that displays categories in its X axis and colors the bars according to the group." +
         " Bars within the same group are stacked.")
-@PlotMetadata(columns = {@PlotColumn(name = "Value", description = "Values displayed in the Y axis", isNumeric = true),
-        @PlotColumn(name = "Category", description = "Categories displayed in the X axis. Must correspond to each value.", isNumeric = false),
-        @PlotColumn(name = "Group", description = "Groups to color the bars. Shown in the legend. Must correspond to each value.", isNumeric = false)}, maxSeriesCount = 1)
-public class StackedBarCategoryPlotData extends CategoryPlotData {
+@JFreeChartPlotMetadata(columns = {@JFreeChartPlotColumn(name = "Value", description = "Values displayed in the Y axis", isNumeric = true),
+        @JFreeChartPlotColumn(name = "Category", description = "Categories displayed in the X axis. Must correspond to each value.", isNumeric = false),
+        @JFreeChartPlotColumn(name = "Group", description = "Groups to color the bars. Shown in the legend. Must correspond to each value.", isNumeric = false)}, maxSeriesCount = 1)
+public class StackedBarCategoryJFreeChartPlotData extends CategoryJFreeChartPlotData {
 
     /**
      * Creates a new instance
      */
-    public StackedBarCategoryPlotData() {
+    public StackedBarCategoryJFreeChartPlotData() {
     }
 
     /**
@@ -46,12 +46,12 @@ public class StackedBarCategoryPlotData extends CategoryPlotData {
      *
      * @param other the original
      */
-    public StackedBarCategoryPlotData(StackedBarCategoryPlotData other) {
+    public StackedBarCategoryJFreeChartPlotData(StackedBarCategoryJFreeChartPlotData other) {
         super(other);
     }
 
-    public static StackedBarCategoryPlotData importData(JIPipeReadDataStorage storage, JIPipeProgressInfo progressInfo) {
-        return PlotData.importData(storage, StackedBarCategoryPlotData.class, progressInfo);
+    public static StackedBarCategoryJFreeChartPlotData importData(JIPipeReadDataStorage storage, JIPipeProgressInfo progressInfo) {
+        return JFreeChartPlotData.importData(storage, StackedBarCategoryJFreeChartPlotData.class, progressInfo);
     }
 
     @Override

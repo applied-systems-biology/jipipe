@@ -30,19 +30,19 @@ import java.awt.*;
  * Series table columns: Value (Double), Category (String), Group (String)
  * Multiple series: No
  */
-@SetJIPipeDocumentation(name = "Statistical line category plot", description = "Line chart that displays categories in its X axis and colors the lines according to the group. " +
+@SetJIPipeDocumentation(name = "JFreeChart Statistical line category plot", description = "Line chart that displays categories in its X axis and colors the lines according to the group. " +
         "The line Y value is the mean of each condition's values. Shows an error bar.")
-@PlotMetadata(columns = {@PlotColumn(name = "Value", description = "Values displayed in the Y axis", isNumeric = true),
-        @PlotColumn(name = "Category", description = "Categories displayed in the X axis. Must correspond to each value.", isNumeric = false),
-        @PlotColumn(name = "Group", description = "Groups to color the bars. Shown in the legend. Must correspond to each value.", isNumeric = false)}, maxSeriesCount = 1)
-public class LineStatisticalCategoryPlotData extends StatisticalCategoryPlotData {
+@JFreeChartPlotMetadata(columns = {@JFreeChartPlotColumn(name = "Value", description = "Values displayed in the Y axis", isNumeric = true),
+        @JFreeChartPlotColumn(name = "Category", description = "Categories displayed in the X axis. Must correspond to each value.", isNumeric = false),
+        @JFreeChartPlotColumn(name = "Group", description = "Groups to color the bars. Shown in the legend. Must correspond to each value.", isNumeric = false)}, maxSeriesCount = 1)
+public class LineStatisticalCategoryJFreeChartPlotData extends StatisticalCategoryJFreeChartPlotData {
 
     private int lineThickness = 1;
 
     /**
      * Creates a new instance
      */
-    public LineStatisticalCategoryPlotData() {
+    public LineStatisticalCategoryJFreeChartPlotData() {
     }
 
     /**
@@ -50,13 +50,13 @@ public class LineStatisticalCategoryPlotData extends StatisticalCategoryPlotData
      *
      * @param other the original
      */
-    public LineStatisticalCategoryPlotData(LineStatisticalCategoryPlotData other) {
+    public LineStatisticalCategoryJFreeChartPlotData(LineStatisticalCategoryJFreeChartPlotData other) {
         super(other);
         this.lineThickness = other.lineThickness;
     }
 
-    public static LineStatisticalCategoryPlotData importData(JIPipeReadDataStorage storage, JIPipeProgressInfo progressInfo) {
-        return PlotData.importData(storage, LineStatisticalCategoryPlotData.class, progressInfo);
+    public static LineStatisticalCategoryJFreeChartPlotData importData(JIPipeReadDataStorage storage, JIPipeProgressInfo progressInfo) {
+        return JFreeChartPlotData.importData(storage, LineStatisticalCategoryJFreeChartPlotData.class, progressInfo);
     }
 
     @Override

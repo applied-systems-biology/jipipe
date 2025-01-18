@@ -13,12 +13,12 @@
 
 package org.hkijena.jipipe.plugins.plots;
 
-import org.hkijena.jipipe.plugins.plots.datatypes.PlotData;
+import org.hkijena.jipipe.plugins.plots.datatypes.JFreeChartPlotData;
 import org.hkijena.jipipe.utils.classfilters.ClassFilter;
 
 public class JIPipePlotDataClassFilter implements ClassFilter {
     @Override
     public boolean test(Class<?> aClass) {
-        return PlotData.class.isAssignableFrom(aClass) && aClass != PlotData.class;
+        return JFreeChartPlotData.class.isAssignableFrom(aClass) && aClass != JFreeChartPlotData.class;
     }
 }

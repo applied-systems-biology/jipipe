@@ -65,8 +65,8 @@ import java.util.stream.Collectors;
 /**
  * Contains all necessary data to generate a plot
  */
-@SetJIPipeDocumentation(name = "Plot", description = "A plot")
-@JsonSerialize(using = PlotData.Serializer.class)
+@SetJIPipeDocumentation(name = "JFreeChart Plot", description = "A plot")
+@JsonSerialize(using = JFreeChartPlotData.Serializer.class)
 @JIPipeDataStorageDocumentation(humanReadableDescription = "The folder contains following files:<br/>" +
         "<ul>" +
         "<li><code>plot-metadata.json</code> contains the serialized information about the plot.</li>" +
@@ -80,8 +80,8 @@ import java.util.stream.Collectors;
         "Additional metadata in the root object and series metadata depend on the exact plot type.",
         jsonSchemaURL = "https://jipipe.org/schemas/datatypes/plot-data.schema.json")
 @LabelAsJIPipeCommonData
-public abstract class PlotData extends AbstractJIPipeParameterCollection implements JIPipeData, JIPipeValidatable {
-    private final List<PlotDataSeries> series = new ArrayList<>();
+public abstract class JFreeChartPlotData extends AbstractJIPipeParameterCollection implements JIPipeData, JIPipeValidatable {
+    private final List<JFreeChartPlotDataSeries> series = new ArrayList<>();
     private String title;
     private int exportWidth = 1024;
     private int exportHeight = 768;
@@ -97,7 +97,7 @@ public abstract class PlotData extends AbstractJIPipeParameterCollection impleme
     /**
      * Creates a new empty instance
      */
-    public PlotData() {
+    public JFreeChartPlotData() {
 
     }
 
@@ -106,7 +106,7 @@ public abstract class PlotData extends AbstractJIPipeParameterCollection impleme
      *
      * @param other the original
      */
-    public PlotData(PlotData other) {
+    public JFreeChartPlotData(JFreeChartPlotData other) {
         this.title = other.title;
         this.exportWidth = other.exportWidth;
         this.exportHeight = other.exportHeight;
@@ -116,25 +116,25 @@ public abstract class PlotData extends AbstractJIPipeParameterCollection impleme
         this.titleFontSize = other.titleFontSize;
         this.legendFontSize = other.legendFontSize;
         this.colorMap = other.colorMap;
-        for (PlotDataSeries data : other.series) {
-            this.series.add(new PlotDataSeries(data));
+        for (JFreeChartPlotDataSeries data : other.series) {
+            this.series.add(new JFreeChartPlotDataSeries(data));
         }
         this.useCustomColorMap = other.useCustomColorMap;
         this.customColorMap = new ColorListParameter(other.customColorMap);
     }
 
-    public static <T extends PlotData> T importData(JIPipeReadDataStorage storage, JIPipeProgressInfo progressInfo) {
+    public static <T extends JFreeChartPlotData> T importData(JIPipeReadDataStorage storage, JIPipeProgressInfo progressInfo) {
         try {
             Path storageFilePath = storage.getFileSystemPath();
             JsonNode node = JsonUtils.getObjectMapper().readerFor(JsonNode.class).readValue(storageFilePath.resolve("plot-metadata.json").toFile());
             String dataTypeId = node.get("plot-data-type").textValue();
             Class<? extends JIPipeData> klass = JIPipe.getDataTypes().getById(dataTypeId);
-            PlotData plotData = JsonUtils.getObjectMapper().readerFor(klass).readValue(node);
+            JFreeChartPlotData plotData = JsonUtils.getObjectMapper().readerFor(klass).readValue(node);
             ParameterUtils.deserializeParametersFromJson(plotData, node, new UnspecifiedValidationReportContext(), new JIPipeValidationReport());
             List<Path> seriesFiles = PathUtils.findFilesByExtensionIn(storageFilePath, ".csv").stream()
                     .filter(p -> p.getFileName().toString().matches("series\\d+.csv")).sorted(Comparator.comparing(p -> p.getFileName().toString())).collect(Collectors.toList());
             for (Path seriesFile : seriesFiles) {
-                plotData.addSeries(new PlotDataSeries(ResultsTable.open(seriesFile.toString())));
+                plotData.addSeries(new JFreeChartPlotDataSeries(ResultsTable.open(seriesFile.toString())));
             }
             return (T) plotData;
         } catch (IOException e) {
@@ -142,16 +142,16 @@ public abstract class PlotData extends AbstractJIPipeParameterCollection impleme
         }
     }
 
-    public static <T extends PlotData> T importData(JIPipeReadDataStorage storage, Class<T> klass, JIPipeProgressInfo progressInfo) {
+    public static <T extends JFreeChartPlotData> T importData(JIPipeReadDataStorage storage, Class<T> klass, JIPipeProgressInfo progressInfo) {
         try {
             Path storageFilePath = storage.getFileSystemPath();
             JsonNode node = JsonUtils.getObjectMapper().readerFor(JsonNode.class).readValue(storageFilePath.resolve("plot-metadata.json").toFile());
-            PlotData plotData = JsonUtils.getObjectMapper().readerFor(klass).readValue(node);
+            JFreeChartPlotData plotData = JsonUtils.getObjectMapper().readerFor(klass).readValue(node);
             ParameterUtils.deserializeParametersFromJson(plotData, node, new UnspecifiedValidationReportContext(), new JIPipeValidationReport());
             List<Path> seriesFiles = PathUtils.findFilesByExtensionIn(storageFilePath, ".csv").stream()
                     .filter(p -> p.getFileName().toString().matches("series\\d+.csv")).sorted(Comparator.comparing(p -> p.getFileName().toString())).collect(Collectors.toList());
             for (Path seriesFile : seriesFiles) {
-                plotData.addSeries(new PlotDataSeries(ResultsTable.open(seriesFile.toString())));
+                plotData.addSeries(new JFreeChartPlotDataSeries(ResultsTable.open(seriesFile.toString())));
             }
             return (T) plotData;
         } catch (IOException e) {
@@ -451,8 +451,8 @@ public abstract class PlotData extends AbstractJIPipeParameterCollection impleme
      *
      * @return the metadata
      */
-    public PlotMetadata getMetadata() {
-        return getClass().getAnnotation(PlotMetadata.class);
+    public JFreeChartPlotMetadata getMetadata() {
+        return getClass().getAnnotation(JFreeChartPlotMetadata.class);
     }
 
     /**
@@ -462,7 +462,7 @@ public abstract class PlotData extends AbstractJIPipeParameterCollection impleme
      */
     public ResultsTableData createSeriesTable() {
         ResultsTableData result = new ResultsTableData();
-        for (PlotColumn column : getMetadata().columns()) {
+        for (JFreeChartPlotColumn column : getMetadata().columns()) {
             result.addColumn(column.name(), !column.isNumeric());
         }
         return result;
@@ -478,7 +478,7 @@ public abstract class PlotData extends AbstractJIPipeParameterCollection impleme
         }
     }
 
-    public List<PlotDataSeries> getSeries() {
+    public List<JFreeChartPlotDataSeries> getSeries() {
         return Collections.unmodifiableList(series);
     }
 
@@ -487,7 +487,7 @@ public abstract class PlotData extends AbstractJIPipeParameterCollection impleme
      *
      * @param series the series
      */
-    public void addSeries(PlotDataSeries series) {
+    public void addSeries(JFreeChartPlotDataSeries series) {
         this.series.add(series);
 
     }
@@ -497,7 +497,7 @@ public abstract class PlotData extends AbstractJIPipeParameterCollection impleme
      *
      * @param series the series
      */
-    public void removeSeries(PlotDataSeries series) {
+    public void removeSeries(JFreeChartPlotDataSeries series) {
         this.series.remove(series);
 
     }
@@ -525,11 +525,11 @@ public abstract class PlotData extends AbstractJIPipeParameterCollection impleme
     }
 
     /**
-     * Serializes the metadata of {@link PlotData}
+     * Serializes the metadata of {@link JFreeChartPlotData}
      */
-    public static class Serializer extends JsonSerializer<PlotData> {
+    public static class Serializer extends JsonSerializer<JFreeChartPlotData> {
         @Override
-        public void serialize(PlotData value, JsonGenerator gen, SerializerProvider serializers) throws IOException, JsonProcessingException {
+        public void serialize(JFreeChartPlotData value, JsonGenerator gen, SerializerProvider serializers) throws IOException, JsonProcessingException {
             gen.writeStartObject();
             gen.writeStringField("plot-data-type", JIPipe.getDataTypes().getIdOf(value.getClass()));
 

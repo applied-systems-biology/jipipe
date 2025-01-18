@@ -34,9 +34,9 @@ import java.io.IOException;
 /**
  * A data series (table) that is rendered as plot series
  */
-@JsonSerialize(using = PlotDataSeries.Serializer.class)
-@JsonDeserialize(using = PlotDataSeries.Deserializer.class)
-public class PlotDataSeries extends ResultsTableData implements JIPipeParameterCollection {
+@JsonSerialize(using = JFreeChartPlotDataSeries.Serializer.class)
+@JsonDeserialize(using = JFreeChartPlotDataSeries.Deserializer.class)
+public class JFreeChartPlotDataSeries extends ResultsTableData implements JIPipeParameterCollection {
     private final ParameterChangedEventEmitter parameterChangedEventEmitter = new ParameterChangedEventEmitter();
     private final ParameterStructureChangedEventEmitter parameterStructureChangedEventEmitter = new ParameterStructureChangedEventEmitter();
     private final ParameterUIChangedEventEmitter parameterUIChangedEventEmitter = new ParameterUIChangedEventEmitter();
@@ -45,7 +45,7 @@ public class PlotDataSeries extends ResultsTableData implements JIPipeParameterC
     /**
      * Creates a new instance with a null table
      */
-    public PlotDataSeries() {
+    public JFreeChartPlotDataSeries() {
         super();
     }
 
@@ -54,7 +54,7 @@ public class PlotDataSeries extends ResultsTableData implements JIPipeParameterC
      *
      * @param table the table
      */
-    public PlotDataSeries(ResultsTable table) {
+    public JFreeChartPlotDataSeries(ResultsTable table) {
         super(table);
     }
 
@@ -63,13 +63,13 @@ public class PlotDataSeries extends ResultsTableData implements JIPipeParameterC
      *
      * @param other the original
      */
-    public PlotDataSeries(PlotDataSeries other) {
+    public JFreeChartPlotDataSeries(JFreeChartPlotDataSeries other) {
         super(other);
         this.name = other.name;
     }
 
-    public static PlotDataSeries importData(JIPipeReadDataStorage storage, JIPipeProgressInfo progressInfo) {
-        return new PlotDataSeries(ResultsTableData.importData(storage, progressInfo).getTable());
+    public static JFreeChartPlotDataSeries importData(JIPipeReadDataStorage storage, JIPipeProgressInfo progressInfo) {
+        return new JFreeChartPlotDataSeries(ResultsTableData.importData(storage, progressInfo).getTable());
     }
 
     /**
@@ -131,20 +131,20 @@ public class PlotDataSeries extends ResultsTableData implements JIPipeParameterC
         return getName() + " (" + getTable().getCounter() + " rows)";
     }
 
-    public static class Serializer extends JsonSerializer<PlotDataSeries> {
+    public static class Serializer extends JsonSerializer<JFreeChartPlotDataSeries> {
         @Override
-        public void serialize(PlotDataSeries resultsTableData, JsonGenerator jsonGenerator, SerializerProvider serializerProvider) throws IOException {
+        public void serialize(JFreeChartPlotDataSeries resultsTableData, JsonGenerator jsonGenerator, SerializerProvider serializerProvider) throws IOException {
             jsonGenerator.writeStartObject();
             jsonGenerator.writeObjectField("name", resultsTableData.name);
             jsonGenerator.writeEndObject();
         }
     }
 
-    public static class Deserializer extends JsonDeserializer<PlotDataSeries> {
+    public static class Deserializer extends JsonDeserializer<JFreeChartPlotDataSeries> {
         @Override
-        public PlotDataSeries deserialize(JsonParser jsonParser, DeserializationContext deserializationContext) throws IOException, JsonProcessingException {
+        public JFreeChartPlotDataSeries deserialize(JsonParser jsonParser, DeserializationContext deserializationContext) throws IOException, JsonProcessingException {
             JsonNode node = jsonParser.readValueAsTree();
-            PlotDataSeries resultsTableData = new PlotDataSeries();
+            JFreeChartPlotDataSeries resultsTableData = new JFreeChartPlotDataSeries();
             resultsTableData.name = node.get("name").asText();
             return resultsTableData;
         }

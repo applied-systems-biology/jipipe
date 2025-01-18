@@ -473,7 +473,12 @@ public class JIPipeDesktopRibbon extends JPanel {
             JIPipeDesktopLargeButtonRibbonAction ribbonAction = new JIPipeDesktopLargeButtonRibbonAction(label, tooltip, icon, () -> {});
             JPopupMenu popupMenu = new JPopupMenu();
             for (Component menuItem : menuItems) {
-                popupMenu.add(menuItem);
+                if(menuItem != null) {
+                    popupMenu.add(menuItem);
+                }
+                else {
+                    popupMenu.addSeparator();
+                }
             }
             UIUtils.addPopupMenuToButton(ribbonAction.getButton(), popupMenu);
             add(ribbonAction);
@@ -484,7 +489,12 @@ public class JIPipeDesktopRibbon extends JPanel {
             JIPipeDesktopSmallButtonRibbonAction ribbonAction = new JIPipeDesktopSmallButtonRibbonAction(label, tooltip, icon, () -> {});
             JPopupMenu popupMenu = new JPopupMenu();
             for (Component menuItem : menuItems) {
-                popupMenu.add(menuItem);
+                if(menuItem != null) {
+                    popupMenu.add(menuItem);
+                }
+                else {
+                    popupMenu.addSeparator();
+                }
             }
             UIUtils.addPopupMenuToButton(ribbonAction.getButton(), popupMenu);
             add(ribbonAction);

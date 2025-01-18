@@ -35,10 +35,10 @@ import java.util.Set;
  * Series table colums: Value (Numeric)
  * Multiple series: Yes
  */
-@SetJIPipeDocumentation(name = "Histogram plot", description = "Bar chart that displays the number of items for each bin. Please note that this plot requires " +
+@SetJIPipeDocumentation(name = "JFreeChart Histogram plot", description = "Bar chart that displays the number of items for each bin. Please note that this plot requires " +
         "raw values as input. A pre-defined histogram table should be rendered with an XY bar plot.")
-@PlotMetadata(columns = {@PlotColumn(name = "Value", description = "Values to generate a histogram from.", isNumeric = true)}, maxSeriesCount = Integer.MAX_VALUE)
-public class HistogramPlotData extends PlotData {
+@JFreeChartPlotMetadata(columns = {@JFreeChartPlotColumn(name = "Value", description = "Values to generate a histogram from.", isNumeric = true)}, maxSeriesCount = Integer.MAX_VALUE)
+public class HistogramJFreeChartPlotData extends JFreeChartPlotData {
 
     private String binAxisLabel = "Bin";
     private String valueAxisLabel = "Value";
@@ -56,7 +56,7 @@ public class HistogramPlotData extends PlotData {
     /**
      * Creates a new instance
      */
-    public HistogramPlotData() {
+    public HistogramJFreeChartPlotData() {
         setTitle("Histogram plot");
     }
 
@@ -65,7 +65,7 @@ public class HistogramPlotData extends PlotData {
      *
      * @param other the original
      */
-    public HistogramPlotData(HistogramPlotData other) {
+    public HistogramJFreeChartPlotData(HistogramJFreeChartPlotData other) {
         super(other);
         this.binAxisLabel = other.binAxisLabel;
         this.valueAxisLabel = other.valueAxisLabel;
@@ -79,8 +79,8 @@ public class HistogramPlotData extends PlotData {
         this.histogramType = other.histogramType;
     }
 
-    public static HistogramPlotData importData(JIPipeReadDataStorage storage, JIPipeProgressInfo progressInfo) {
-        return PlotData.importData(storage, HistogramPlotData.class, progressInfo);
+    public static HistogramJFreeChartPlotData importData(JIPipeReadDataStorage storage, JIPipeProgressInfo progressInfo) {
+        return JFreeChartPlotData.importData(storage, HistogramJFreeChartPlotData.class, progressInfo);
     }
 
     @Override
@@ -98,7 +98,7 @@ public class HistogramPlotData extends PlotData {
                 dataset.setType(HistogramType.SCALE_AREA_TO_1);
                 break;
         }
-        for (PlotDataSeries series : getSeries()) {
+        for (JFreeChartPlotDataSeries series : getSeries()) {
             String name = StringUtils.isNullOrEmpty(series.getName()) ? "Series" : series.getName();
             name = StringUtils.makeUniqueString(name, " ", existingSeriesNames);
             existingSeriesNames.add(name);

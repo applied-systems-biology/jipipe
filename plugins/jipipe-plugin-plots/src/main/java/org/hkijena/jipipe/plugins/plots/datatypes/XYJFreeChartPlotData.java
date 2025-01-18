@@ -29,7 +29,7 @@ import java.util.Set;
  * Any plot has following columns:
  * X (Double), Y (Double)
  */
-public abstract class XYPlotData extends PlotData {
+public abstract class XYJFreeChartPlotData extends JFreeChartPlotData {
 
     private String xAxisLabel = "X";
     private String yAxisLabel = "Y";
@@ -43,7 +43,7 @@ public abstract class XYPlotData extends PlotData {
     /**
      * Creates a new instance
      */
-    public XYPlotData() {
+    public XYJFreeChartPlotData() {
 
     }
 
@@ -52,7 +52,7 @@ public abstract class XYPlotData extends PlotData {
      *
      * @param other the original
      */
-    public XYPlotData(XYPlotData other) {
+    public XYJFreeChartPlotData(XYJFreeChartPlotData other) {
         super(other);
         this.xAxisLabel = other.xAxisLabel;
         this.yAxisLabel = other.yAxisLabel;
@@ -72,7 +72,7 @@ public abstract class XYPlotData extends PlotData {
     public XYDataset createDataSet() {
         Set<String> existingSeriesNames = new HashSet<>();
         XYSeriesCollection dataset = new XYSeriesCollection();
-        for (PlotDataSeries series : getSeries()) {
+        for (JFreeChartPlotDataSeries series : getSeries()) {
             String name = StringUtils.isNullOrEmpty(series.getName()) ? "Series" : series.getName();
             name = StringUtils.makeUniqueString(name, " ", existingSeriesNames);
             existingSeriesNames.add(name);

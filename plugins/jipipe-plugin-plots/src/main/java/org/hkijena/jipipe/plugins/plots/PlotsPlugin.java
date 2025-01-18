@@ -35,6 +35,7 @@ import org.hkijena.jipipe.plugins.plots.parameters.UIPlotDataSeriesColumnEnumDes
 import org.hkijena.jipipe.plugins.plots.ui.resultanalysis.OpenPlotInJIPipeDataDisplayOperation;
 import org.hkijena.jipipe.plugins.plots.ui.resultanalysis.PlotDataSlotPreview;
 import org.hkijena.jipipe.plugins.plots.utils.ColorMap;
+import org.hkijena.jipipe.plugins.plots.viewers.JFreeChartPlotDataViewer;
 import org.hkijena.jipipe.plugins.tables.TablesPlugin;
 import org.hkijena.jipipe.utils.ResourceUtils;
 import org.hkijena.jipipe.utils.UIUtils;
@@ -56,7 +57,7 @@ public class PlotsPlugin extends JIPipePrepackagedDefaultJavaPlugin implements J
      */
     public static final JIPipeDependency AS_DEPENDENCY = new JIPipeMutableDependency("org.hkijena.jipipe:plots",
             JIPipe.getJIPipeVersion(),
-            "Standard plots");
+            "JFreeChart plots");
     public static JIPipeLegacyDataOperation[] STANDARD_DATA_OPERATIONS = {
             new OpenPlotInJIPipeDataDisplayOperation(),
             new OpenInNativeApplicationDataImportOperation("Open *.png", "Opens the rendered PNG image", new String[]{".png"}),
@@ -79,12 +80,12 @@ public class PlotsPlugin extends JIPipePrepackagedDefaultJavaPlugin implements J
 
     @Override
     public String getName() {
-        return "Standard plots";
+        return "JFreeChart plots";
     }
 
     @Override
     public HTMLText getDescription() {
-        return new HTMLText("Commonly used plot types");
+        return new HTMLText("JFreeChart plot support");
     }
 
     @Override
@@ -108,11 +109,12 @@ public class PlotsPlugin extends JIPipePrepackagedDefaultJavaPlugin implements J
 
         // Register the base plot data type for internal usage
         registerDatatype("plot",
-                PlotData.class,
+                JFreeChartPlotData.class,
                 ResourceUtils.getPluginResource("icons/data-types/data-type-plot.png"),
                 null,
                 PlotDataSlotPreview.class,
                 STANDARD_DATA_OPERATIONS);
+        registerDefaultDataTypeViewer(JFreeChartPlotData.class, JFreeChartPlotDataViewer.class);
         registerDatatypeConversion(new PlotToTableConverter());
 
         // Register any existing plot data types
@@ -126,67 +128,67 @@ public class PlotsPlugin extends JIPipePrepackagedDefaultJavaPlugin implements J
 
         // Register
         registerDatatype("plot-histogram",
-                HistogramPlotData.class,
+                HistogramJFreeChartPlotData.class,
                 ResourceUtils.getPluginResource("icons/data-types/bar-plot.png"),
                 null,
                 PlotDataSlotPreview.class,
                 STANDARD_DATA_OPERATIONS);
         registerDatatype("plot-category-bar",
-                BarCategoryPlotData.class,
+                BarCategoryJFreeChartPlotData.class,
                 ResourceUtils.getPluginResource("icons/data-types/bar-plot.png"),
                 null,
                 PlotDataSlotPreview.class,
                 STANDARD_DATA_OPERATIONS);
         registerDatatype("plot-category-bar-stacked",
-                StackedBarCategoryPlotData.class,
+                StackedBarCategoryJFreeChartPlotData.class,
                 ResourceUtils.getPluginResource("icons/data-types/bar-plot.png"),
                 null,
                 PlotDataSlotPreview.class,
                 STANDARD_DATA_OPERATIONS);
         registerDatatype("plot-category-line",
-                LineCategoryPlotData.class,
+                LineCategoryJFreeChartPlotData.class,
                 ResourceUtils.getPluginResource("icons/data-types/line-plot.png"),
                 null,
                 PlotDataSlotPreview.class,
                 STANDARD_DATA_OPERATIONS);
         registerDatatype("plot-pie-2d",
-                Pie2DPlotData.class,
+                Pie2DJFreeChartPlotData.class,
                 ResourceUtils.getPluginResource("icons/data-types/pie-plot.png"),
                 null,
                 PlotDataSlotPreview.class,
                 STANDARD_DATA_OPERATIONS);
         registerDatatype("plot-pie-3d",
-                Pie3DPlotData.class,
+                Pie3DJFreeChartPlotData.class,
                 ResourceUtils.getPluginResource("icons/data-types/pie-plot.png"),
                 null,
                 PlotDataSlotPreview.class,
                 STANDARD_DATA_OPERATIONS);
         registerDatatype("plot-xy-scatter",
-                ScatterXYPlotData.class,
+                ScatterXYJFreeChartPlotData.class,
                 ResourceUtils.getPluginResource("icons/data-types/scatter-plot.png"),
                 null,
                 PlotDataSlotPreview.class,
                 STANDARD_DATA_OPERATIONS);
         registerDatatype("plot-xy-line",
-                LineXYPlotData.class,
+                LineXYJFreeChartPlotData.class,
                 ResourceUtils.getPluginResource("icons/data-types/line-plot.png"),
                 null,
                 PlotDataSlotPreview.class,
                 STANDARD_DATA_OPERATIONS);
         registerDatatype("plot-box-and-whisker",
-                BarBoxAndWhiskerCategoryPlotData.class,
+                BarBoxAndWhiskerCategoryJFreeChartPlotData.class,
                 ResourceUtils.getPluginResource("icons/data-types/bar-plot.png"),
                 null,
                 PlotDataSlotPreview.class,
                 STANDARD_DATA_OPERATIONS);
         registerDatatype("plot-category-statistical-bar",
-                BarStatisticalCategoryPlotData.class,
+                BarStatisticalCategoryJFreeChartPlotData.class,
                 ResourceUtils.getPluginResource("icons/data-types/bar-plot.png"),
                 null,
                 PlotDataSlotPreview.class,
                 STANDARD_DATA_OPERATIONS);
         registerDatatype("plot-category-statistical-line",
-                LineStatisticalCategoryPlotData.class,
+                LineStatisticalCategoryJFreeChartPlotData.class,
                 ResourceUtils.getPluginResource("icons/data-types/line-plot.png"),
                 null,
                 PlotDataSlotPreview.class,
@@ -197,7 +199,7 @@ public class PlotsPlugin extends JIPipePrepackagedDefaultJavaPlugin implements J
 
         // Register parameters
         registerEnumParameterType("plot-histogram:type",
-                HistogramPlotData.HistogramType_.class,
+                HistogramJFreeChartPlotData.HistogramType_.class,
                 "Histogram type",
                 "Available histogram types");
         registerParameterType("plot-data:series-column",
@@ -211,7 +213,7 @@ public class PlotsPlugin extends JIPipePrepackagedDefaultJavaPlugin implements J
 
     private void tryRegisterPlotCreatorNode(String datatypeId) {
         JIPipeDataInfo dataInfo = JIPipeDataInfo.getInstance(datatypeId);
-        if (!PlotData.class.isAssignableFrom(dataInfo.getDataClass()))
+        if (!JFreeChartPlotData.class.isAssignableFrom(dataInfo.getDataClass()))
             return;
         if (Modifier.isAbstract(dataInfo.getDataClass().getModifiers()))
             return;
@@ -222,7 +224,7 @@ public class PlotsPlugin extends JIPipePrepackagedDefaultJavaPlugin implements J
     public void postprocess(JIPipeProgressInfo progressInfo) {
         super.postprocess(progressInfo);
         for (Class<? extends JIPipeData> value : getRegistry().getDatatypeRegistry().getRegisteredDataTypes().values()) {
-            if (PlotData.class.isAssignableFrom(value)) {
+            if (JFreeChartPlotData.class.isAssignableFrom(value)) {
                 configureDefaultImageJAdapters(value, DataTableImageJDataImporter.ID, "image-to-imagej-window");
             }
         }

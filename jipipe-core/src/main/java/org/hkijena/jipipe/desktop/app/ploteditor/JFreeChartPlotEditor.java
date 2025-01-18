@@ -34,13 +34,14 @@ import org.hkijena.jipipe.desktop.app.JIPipeDesktopWorkbenchPanel;
 import org.hkijena.jipipe.desktop.commons.components.JIPipeDesktopParameterFormPanel;
 import org.hkijena.jipipe.desktop.commons.components.JIPipeDesktopPlotDisplayComponent;
 import org.hkijena.jipipe.desktop.commons.components.JIPipeDesktopUserFriendlyErrorUI;
+import org.hkijena.jipipe.desktop.commons.components.ribbon.JIPipeDesktopRibbon;
 import org.hkijena.jipipe.desktop.commons.components.tabs.JIPipeDesktopTabPane;
 import org.hkijena.jipipe.plugins.parameters.library.references.JIPipeDataInfoRef;
 import org.hkijena.jipipe.plugins.parameters.library.references.JIPipeDataParameterSettings;
 import org.hkijena.jipipe.plugins.plots.JIPipePlotDataClassFilter;
-import org.hkijena.jipipe.plugins.plots.datatypes.PlotData;
-import org.hkijena.jipipe.plugins.plots.datatypes.PlotDataSeries;
-import org.hkijena.jipipe.plugins.plots.datatypes.PlotMetadata;
+import org.hkijena.jipipe.plugins.plots.datatypes.JFreeChartPlotData;
+import org.hkijena.jipipe.plugins.plots.datatypes.JFreeChartPlotDataSeries;
+import org.hkijena.jipipe.plugins.plots.datatypes.JFreeChartPlotMetadata;
 import org.hkijena.jipipe.plugins.settings.JIPipeFileChooserApplicationSettings;
 import org.hkijena.jipipe.plugins.tables.datatypes.DoubleArrayTableColumnData;
 import org.hkijena.jipipe.plugins.tables.datatypes.StringArrayTableColumnData;
@@ -49,6 +50,7 @@ import org.hkijena.jipipe.utils.JIPipeDesktopSplitPane;
 import org.hkijena.jipipe.utils.ReflectionUtils;
 import org.hkijena.jipipe.utils.StringUtils;
 import org.hkijena.jipipe.utils.UIUtils;
+import org.hkijena.jipipe.utils.ui.JIPipeDesktopDockPanel;
 import org.scijava.Priority;
 
 import javax.swing.*;
@@ -62,23 +64,21 @@ import java.util.*;
 /**
  * User interface for displaying and creating plots
  */
-public class JIPipeDesktopPlotEditorUI extends JIPipeDesktopWorkbenchPanel implements JIPipeParameterCollection, JIPipeValidatable, JIPipeParameterCollection.ParameterChangedEventListener {
+public class JFreeChartPlotEditor extends JIPipeDesktopWorkbenchPanel implements JIPipeParameterCollection, JIPipeValidatable, JIPipeParameterCollection.ParameterChangedEventListener {
     private final BiMap<String, TableColumnData> availableData = HashBiMap.create();
     private final List<JIPipeDesktopPlotSeriesEditor> seriesBuilders = new ArrayList<>();
-    private final JIPipeDesktopTabPane sideBar = new JIPipeDesktopTabPane(false, JIPipeDesktopTabPane.TabPlacement.Right);
     private final ParameterChangedEventEmitter parameterChangedEventEmitter = new ParameterChangedEventEmitter();
     private final ParameterStructureChangedEventEmitter parameterStructureChangedEventEmitter = new ParameterStructureChangedEventEmitter();
     private final ParameterUIChangedEventEmitter parameterUIChangedEventEmitter = new ParameterUIChangedEventEmitter();
     private JIPipeDataInfoRef plotType = new JIPipeDataInfoRef();
-    private PlotData currentPlot;
-    private JSplitPane splitPane;
+    private JFreeChartPlotData currentPlot;
     private boolean isRebuilding = false;
     private JIPipeDesktopPlotDisplayComponent plotReader;
 
     /**
      * @param workbench the workbench
      */
-    public JIPipeDesktopPlotEditorUI(JIPipeDesktopWorkbench workbench) {
+    public JFreeChartPlotEditor(JIPipeDesktopWorkbench workbench) {
         super(workbench);
         initialize();
         rebuildPlot();
@@ -93,57 +93,63 @@ public class JIPipeDesktopPlotEditorUI extends JIPipeDesktopWorkbenchPanel imple
      * @param title     the title
      * @return the table editor component
      */
-    public static JIPipeDesktopPlotEditorUI openWindow(JIPipeDesktopWorkbench workbench, String title) {
+    public static JFreeChartPlotEditor openWindow(JIPipeDesktopWorkbench workbench, String title) {
         JFrame window = new JFrame(title);
         window.getContentPane().setLayout(new BorderLayout());
         window.setIconImage(UIUtils.getJIPipeIcon128());
-        JIPipeDesktopPlotEditorUI editor = new JIPipeDesktopPlotEditorUI(workbench);
-        window.getContentPane().add(editor, BorderLayout.CENTER);
+        JFreeChartPlotEditor editor = new JFreeChartPlotEditor(workbench);
+        JIPipeDesktopRibbon ribbon = new JIPipeDesktopRibbon();
+        JIPipeDesktopDockPanel dockPanel = new JIPipeDesktopDockPanel();
+        editor.rebuildDock(dockPanel);
+        editor.rebuildRibbon(ribbon);
+        dockPanel.setBackgroundComponent(editor);
+        window.getContentPane().add(dockPanel, BorderLayout.CENTER);
+        window.getContentPane().add(ribbon, BorderLayout.NORTH);
         window.setSize(1024, 768);
         window.setLocationRelativeTo(workbench.getWindow());
         window.setVisible(true);
         return editor;
     }
 
-    public JToolBar getToolBar() {
-        return plotReader.getToolBar();
+
+    public void rebuildDock(JIPipeDesktopDockPanel dockPanel) {
+        dockPanel.addDockPanel("SETTINGS",
+                "Settings",
+                UIUtils.getIcon32FromResources("actions/configure.png"),
+                JIPipeDesktopDockPanel.PanelLocation.TopRight,
+                true,
+                0,
+                new JIPipeDesktopParameterFormPanel(getDesktopWorkbench(),
+                        this,
+                        null,
+                        JIPipeDesktopParameterFormPanel.WITH_DOCUMENTATION | JIPipeDesktopParameterFormPanel.DOCUMENTATION_BELOW | JIPipeDesktopParameterFormPanel.WITH_SCROLLING));
+        dockPanel.addDockPanel("SERIES",
+                "Series",
+                UIUtils.getIcon32FromResources("actions/stock_select-column.png"),
+                JIPipeDesktopDockPanel.PanelLocation.BottomRight,
+                false,
+                0,
+                new JIPipePlotSeriesListEditorUI(getDesktopWorkbench(), this));
+        dockPanel.addDockPanel("DATA",
+                "Data",
+                UIUtils.getIcon32FromResources("actions/table.png"),
+                JIPipeDesktopDockPanel.PanelLocation.BottomRight,
+                false,
+                0,
+                new JIPipeDesktopPlotAvailableDataManagerUI(getDesktopWorkbench(), this));
+    }
+
+    public void rebuildRibbon(JIPipeDesktopRibbon ribbon) {
+        JIPipeDesktopRibbon.Band generalPlotBand = ribbon.getOrCreateTask("General").getOrCreateBand("Plot");
+        generalPlotBand.addLargeButton("Open", "Loads the plot from a *.zip file", UIUtils.getIcon32FromResources("actions/document-open.png"), this::openPlot);
+        generalPlotBand.addLargeButton("Save", "Saves the plot to a *.zip file", UIUtils.getIcon32FromResources("actions/filesave.png"), this::savePlot);
+
+        plotReader.rebuildRibbon(ribbon);
     }
 
     private void initialize() {
         setLayout(new BorderLayout());
-
-        // Create settings panel
-        sideBar.addTab("Settings", UIUtils.getIconFromResources("actions/configure.png"),
-                new JIPipeDesktopParameterFormPanel(getDesktopWorkbench(),
-                        this,
-                        null,
-                        JIPipeDesktopParameterFormPanel.WITH_DOCUMENTATION | JIPipeDesktopParameterFormPanel.DOCUMENTATION_BELOW | JIPipeDesktopParameterFormPanel.WITH_SCROLLING),
-                JIPipeDesktopTabPane.CloseMode.withoutCloseButton,
-                false);
-        sideBar.addTab("Series", UIUtils.getIconFromResources("actions/stock_select-column.png"),
-                new JIPipePlotSeriesListEditorUI(getDesktopWorkbench(), this),
-                JIPipeDesktopTabPane.CloseMode.withoutCloseButton);
-        sideBar.addTab("Data", UIUtils.getIconFromResources("data-types/results-table.png"),
-                new JIPipeDesktopPlotAvailableDataManagerUI(getDesktopWorkbench(), this),
-                JIPipeDesktopTabPane.CloseMode.withoutCloseButton);
-
-        // Create plot reader
         plotReader = new JIPipeDesktopPlotDisplayComponent(this);
-
-        JButton saveButton = new JButton("Save", UIUtils.getIconFromResources("actions/filesave.png"));
-        saveButton.addActionListener(e -> savePlot());
-        plotReader.getToolBar().add(saveButton, 0);
-
-        JButton openButton = new JButton("Open", UIUtils.getIconFromResources("actions/fileopen.png"));
-        openButton.addActionListener(e -> openPlot());
-        plotReader.getToolBar().add(openButton, 0);
-
-        splitPane = new JIPipeDesktopSplitPane(JSplitPane.HORIZONTAL_SPLIT, plotReader, sideBar, new JIPipeDesktopSplitPane.DynamicSidebarRatio());
-        add(splitPane, BorderLayout.CENTER);
-    }
-
-    public JIPipeDesktopTabPane getSideBar() {
-        return sideBar;
     }
 
     private void savePlot() {
@@ -163,7 +169,7 @@ public class JIPipeDesktopPlotEditorUI extends JIPipeDesktopWorkbenchPanel imple
         if (path != null) {
             JIPipeProgressInfo progressInfo = new JIPipeProgressInfo();
             try (JIPipeZIPReadDataStorage storage = new JIPipeZIPReadDataStorage(progressInfo, path)) {
-                PlotData plotData = PlotData.importData(storage, progressInfo);
+                JFreeChartPlotData plotData = JFreeChartPlotData.importData(storage, progressInfo);
                 importExistingPlot(plotData);
             } catch (IOException e) {
                 throw new RuntimeException(e);
@@ -215,7 +221,7 @@ public class JIPipeDesktopPlotEditorUI extends JIPipeDesktopWorkbenchPanel imple
 
     @SetJIPipeDocumentation(name = "Plot type", description = "The type of plot to be generated.")
     @JIPipeParameter(value = "plot-type", priority = Priority.HIGH)
-    @JIPipeDataParameterSettings(dataBaseClass = PlotData.class, dataClassFilter = JIPipePlotDataClassFilter.class)
+    @JIPipeDataParameterSettings(dataBaseClass = JFreeChartPlotData.class, dataClassFilter = JIPipePlotDataClassFilter.class)
     public JIPipeDataInfoRef getPlotType() {
         if (plotType == null) {
             plotType = new JIPipeDataInfoRef();
@@ -235,7 +241,7 @@ public class JIPipeDesktopPlotEditorUI extends JIPipeDesktopWorkbenchPanel imple
         if (currentPlot == null || (plotType.getInfo() != null &&
                 !Objects.equals(plotType.getInfo().getDataClass(), currentPlot.getClass()))) {
             if (plotType.getInfo() != null) {
-                currentPlot = (PlotData) JIPipe.createData(plotType.getInfo().getDataClass());
+                currentPlot = (JFreeChartPlotData) JIPipe.createData(plotType.getInfo().getDataClass());
                 changedPlot = true;
                 currentPlot.getParameterChangedEventEmitter().subscribe(this);
             }
@@ -248,7 +254,7 @@ public class JIPipeDesktopPlotEditorUI extends JIPipeDesktopWorkbenchPanel imple
 
             parameterStructureChangedEventEmitter.emit(new ParameterStructureChangedEvent(this));
             if (currentPlot != null) {
-                PlotMetadata metadata = currentPlot.getClass().getAnnotation(PlotMetadata.class);
+                JFreeChartPlotMetadata metadata = currentPlot.getClass().getAnnotation(JFreeChartPlotMetadata.class);
                 for (int i = 0; i < metadata.minSeriesCount(); i++) {
                     addSeries();
                 }
@@ -258,7 +264,7 @@ public class JIPipeDesktopPlotEditorUI extends JIPipeDesktopWorkbenchPanel imple
 
     @SetJIPipeDocumentation(name = "Plot parameters")
     @JIPipeParameter("plot")
-    public PlotData getCurrentPlot() {
+    public JFreeChartPlotData getCurrentPlot() {
         return currentPlot;
     }
 
@@ -268,12 +274,12 @@ public class JIPipeDesktopPlotEditorUI extends JIPipeDesktopWorkbenchPanel imple
      *
      * @param data the existing plot
      */
-    public void importExistingPlot(PlotData data) {
+    public void importExistingPlot(JFreeChartPlotData data) {
         this.plotType.setInfo(JIPipeDataInfo.getInstance(data.getClass()));
         this.currentPlot = data;
         seriesBuilders.clear();
-        List<PlotDataSeries> seriesList = new ArrayList<>(data.getSeries());
-        for (PlotDataSeries series : seriesList) {
+        List<JFreeChartPlotDataSeries> seriesList = new ArrayList<>(data.getSeries());
+        for (JFreeChartPlotDataSeries series : seriesList) {
             JIPipeDesktopPlotSeriesEditor builder = new JIPipeDesktopPlotSeriesEditor(this, JIPipeDataInfo.getInstance(data.getClass()));
             builder.setName(series.getName());
             Map<String, String> columnMap = importData(series);
@@ -324,7 +330,10 @@ public class JIPipeDesktopPlotEditorUI extends JIPipeDesktopWorkbenchPanel imple
                 JIPipeDesktopUserFriendlyErrorUI errorUI = new JIPipeDesktopUserFriendlyErrorUI(getDesktopWorkbench(), null, JIPipeDesktopUserFriendlyErrorUI.WITH_SCROLLING);
                 errorUI.displayErrors(report);
                 errorUI.addVerticalGlue();
-                splitPane.setLeftComponent(errorUI);
+                removeAll();
+                add(errorUI, BorderLayout.CENTER);
+                revalidate();
+                repaint(50);
                 return;
             }
 
@@ -333,12 +342,14 @@ public class JIPipeDesktopPlotEditorUI extends JIPipeDesktopWorkbenchPanel imple
             for (JIPipeDesktopPlotSeriesEditor seriesBuilder : seriesBuilders) {
                 if (!seriesBuilder.isEnabled())
                     continue;
-                PlotDataSeries dataSeries = seriesBuilder.buildSeries();
+                JFreeChartPlotDataSeries dataSeries = seriesBuilder.buildSeries();
                 currentPlot.addSeries(dataSeries);
             }
 
             plotReader.getChartPanel().setChart(currentPlot.getChart());
-            splitPane.setLeftComponent(plotReader);
+            add(plotReader, BorderLayout.CENTER);
+            revalidate();
+            repaint(50);
         } finally {
             isRebuilding = false;
         }
@@ -350,7 +361,7 @@ public class JIPipeDesktopPlotEditorUI extends JIPipeDesktopWorkbenchPanel imple
      * @param series the data
      * @return how the columns of this series are mapped to the columns in the list of available columns
      */
-    public Map<String, String> importData(PlotDataSeries series) {
+    public Map<String, String> importData(JFreeChartPlotDataSeries series) {
         Map<String, String> columnMapping = new HashMap<>();
 
         String seriesName = series.getName();

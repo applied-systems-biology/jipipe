@@ -20,7 +20,7 @@ import org.hkijena.jipipe.desktop.app.JIPipeDesktopWorkbench;
 import org.hkijena.jipipe.desktop.app.JIPipeDesktopWorkbenchPanel;
 import org.hkijena.jipipe.desktop.app.tableeditor.JIPipeDesktopTableEditor;
 import org.hkijena.jipipe.desktop.commons.components.tabs.JIPipeDesktopTabPane;
-import org.hkijena.jipipe.plugins.plots.datatypes.PlotDataSeries;
+import org.hkijena.jipipe.plugins.plots.datatypes.JFreeChartPlotDataSeries;
 import org.hkijena.jipipe.plugins.settings.JIPipeFileChooserApplicationSettings;
 import org.hkijena.jipipe.plugins.tables.datatypes.ResultsTableData;
 import org.hkijena.jipipe.plugins.tables.datatypes.TableColumnData;
@@ -41,7 +41,7 @@ import java.util.stream.Collectors;
  */
 public class JIPipeDesktopPlotAvailableDataManagerUI extends JIPipeDesktopWorkbenchPanel implements JIPipeParameterCollection.ParameterChangedEventListener {
 
-    private final JIPipeDesktopPlotEditorUI plotEditor;
+    private final JFreeChartPlotEditor plotEditor;
     private JList<TableColumnData> dataSourceJList;
     private JPopupMenu importPopupMenu;
 
@@ -49,7 +49,7 @@ public class JIPipeDesktopPlotAvailableDataManagerUI extends JIPipeDesktopWorkbe
      * @param workbench  the workbench
      * @param plotEditor the plot builder
      */
-    public JIPipeDesktopPlotAvailableDataManagerUI(JIPipeDesktopWorkbench workbench, JIPipeDesktopPlotEditorUI plotEditor) {
+    public JIPipeDesktopPlotAvailableDataManagerUI(JIPipeDesktopWorkbench workbench, JFreeChartPlotEditor plotEditor) {
         super(workbench);
         this.plotEditor = plotEditor;
         initialize();
@@ -128,7 +128,7 @@ public class JIPipeDesktopPlotAvailableDataManagerUI extends JIPipeDesktopWorkbe
             String fileName = selectedPath.getFileName().toString();
             try {
                 ResultsTable table = ResultsTable.open(selectedPath.toString());
-                PlotDataSeries series = new PlotDataSeries(table);
+                JFreeChartPlotDataSeries series = new JFreeChartPlotDataSeries(table);
                 series.setName(fileName);
                 plotEditor.importData(series);
             } catch (IOException e) {

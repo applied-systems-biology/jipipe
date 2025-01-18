@@ -14,8 +14,7 @@
 package org.hkijena.jipipe.plugins.plots.datatypes;
 
 import org.jfree.data.category.CategoryDataset;
-import org.jfree.data.statistics.DefaultStatisticalCategoryDataset;
-import org.jfree.data.statistics.StatisticalCategoryDataset;
+import org.jfree.data.statistics.DefaultBoxAndWhiskerCategoryDataset;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -23,19 +22,19 @@ import java.util.List;
 import java.util.Map;
 
 /**
- * Contains data for statistical plots. Generates {@link StatisticalCategoryDataset}.
+ * Contains data for box and whisker category plots category plots.
  * Any category plot has following columns:
  * Value (Double), Category (String), Group (String)
  * <p>
  * Values are assigned a category that is its X-axis.
  * Colors are assigned by its group
  */
-public abstract class StatisticalCategoryPlotData extends CategoryPlotData {
+public abstract class BoxAndWhiskerCategoryJFreeChartPlotData extends CategoryJFreeChartPlotData {
 
     /**
      * Creates a new instance
      */
-    public StatisticalCategoryPlotData() {
+    public BoxAndWhiskerCategoryJFreeChartPlotData() {
     }
 
     /**
@@ -43,18 +42,18 @@ public abstract class StatisticalCategoryPlotData extends CategoryPlotData {
      *
      * @param other the original
      */
-    public StatisticalCategoryPlotData(StatisticalCategoryPlotData other) {
+    public BoxAndWhiskerCategoryJFreeChartPlotData(BoxAndWhiskerCategoryJFreeChartPlotData other) {
         super(other);
     }
 
     @Override
     public CategoryDataset createDataSet() {
-        DefaultStatisticalCategoryDataset dataset = new DefaultStatisticalCategoryDataset();
+        DefaultBoxAndWhiskerCategoryDataset dataset = new DefaultBoxAndWhiskerCategoryDataset();
 
         // Map from category -> group -> value
         Map<String, Map<String, List<Double>>> listMap = new HashMap<>();
 
-        for (PlotDataSeries series : getSeries()) {
+        for (JFreeChartPlotDataSeries series : getSeries()) {
             double[] values = series.getColumnAsDouble("Value");
             String[] categories = series.getColumnAsString("Category");
             String[] groups = series.getColumnAsString("Group");
@@ -82,18 +81,7 @@ public abstract class StatisticalCategoryPlotData extends CategoryPlotData {
 
         for (Map.Entry<String, Map<String, List<Double>>> categoryEntry : listMap.entrySet()) {
             for (Map.Entry<String, List<Double>> groupEntry : categoryEntry.getValue().entrySet()) {
-
-                double sum = 0;
-                double sumSq = 0;
-                for (double v : groupEntry.getValue()) {
-                    sum += v;
-                    sumSq += v * v;
-                }
-
-                double mean = sum / categoryEntry.getValue().size();
-                double var = (sumSq / categoryEntry.getValue().size()) - mean * mean;
-
-                dataset.add(mean, Math.sqrt(var), categoryEntry.getKey(), groupEntry.getKey());
+                dataset.add(groupEntry.getValue(), groupEntry.getKey(), categoryEntry.getKey());
             }
         }
 

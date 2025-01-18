@@ -29,17 +29,17 @@ import java.awt.*;
  * Series table columns: X (Double), Y (Double)
  * Multiple series: Yes
  */
-@SetJIPipeDocumentation(name = "XY line plot", description = "Plot that displays the Y values against the X values.")
-@PlotMetadata(columns = {@PlotColumn(name = "X", description = "The X values", isNumeric = true),
-        @PlotColumn(name = "Y", description = "The Y values", isNumeric = true)}, maxSeriesCount = Integer.MAX_VALUE)
-public class LineXYPlotData extends XYPlotData {
+@SetJIPipeDocumentation(name = "JFreeChart XY line plot", description = "Plot that displays the Y values against the X values.")
+@JFreeChartPlotMetadata(columns = {@JFreeChartPlotColumn(name = "X", description = "The X values", isNumeric = true),
+        @JFreeChartPlotColumn(name = "Y", description = "The Y values", isNumeric = true)}, maxSeriesCount = Integer.MAX_VALUE)
+public class LineXYJFreeChartPlotData extends XYJFreeChartPlotData {
 
     private int lineThickness = 1;
 
     /**
      * Creates a new instance
      */
-    public LineXYPlotData() {
+    public LineXYJFreeChartPlotData() {
     }
 
     /**
@@ -47,13 +47,13 @@ public class LineXYPlotData extends XYPlotData {
      *
      * @param other the original
      */
-    public LineXYPlotData(LineXYPlotData other) {
+    public LineXYJFreeChartPlotData(LineXYJFreeChartPlotData other) {
         super(other);
         this.lineThickness = other.lineThickness;
     }
 
-    public static LineXYPlotData importData(JIPipeReadDataStorage storage, JIPipeProgressInfo progressInfo) {
-        return PlotData.importData(storage, LineXYPlotData.class, progressInfo);
+    public static LineXYJFreeChartPlotData importData(JIPipeReadDataStorage storage, JIPipeProgressInfo progressInfo) {
+        return JFreeChartPlotData.importData(storage, LineXYJFreeChartPlotData.class, progressInfo);
     }
 
     @Override

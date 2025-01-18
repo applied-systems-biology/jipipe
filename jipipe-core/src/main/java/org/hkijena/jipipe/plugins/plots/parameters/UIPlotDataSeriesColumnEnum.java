@@ -14,9 +14,10 @@
 package org.hkijena.jipipe.plugins.plots.parameters;
 
 import org.hkijena.jipipe.plugins.parameters.api.enums.DynamicEnumParameter;
+import org.hkijena.jipipe.plugins.plots.datatypes.JFreeChartPlotDataSeries;
 
 /**
- * Parameter that contains one selected {@link org.hkijena.jipipe.plugins.plots.datatypes.PlotDataSeries} item.
+ * Parameter that contains one selected {@link JFreeChartPlotDataSeries} item.
  * Not serializable.
  */
 public class UIPlotDataSeriesColumnEnum extends DynamicEnumParameter {

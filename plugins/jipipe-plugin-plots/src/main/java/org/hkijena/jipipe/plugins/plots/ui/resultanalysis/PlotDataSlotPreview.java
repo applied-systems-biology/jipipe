@@ -21,7 +21,7 @@ import org.hkijena.jipipe.api.data.serialization.JIPipeDataTableRowInfo;
 import org.hkijena.jipipe.api.data.storage.JIPipeFileSystemReadDataStorage;
 import org.hkijena.jipipe.desktop.app.JIPipeDesktopProjectWorkbench;
 import org.hkijena.jipipe.desktop.app.resultanalysis.JIPipeDesktopAsyncResultDataSlotPreview;
-import org.hkijena.jipipe.plugins.plots.datatypes.PlotData;
+import org.hkijena.jipipe.plugins.plots.datatypes.JFreeChartPlotData;
 
 import javax.swing.*;
 import java.nio.file.Path;
@@ -52,6 +52,6 @@ public class PlotDataSlotPreview extends JIPipeDesktopAsyncResultDataSlotPreview
 
     @Override
     protected JIPipeData loadData(Path storageFolder) {
-        return PlotData.importData(new JIPipeFileSystemReadDataStorage(new JIPipeProgressInfo(), storageFolder), new JIPipeProgressInfo());
+        return JFreeChartPlotData.importData(new JIPipeFileSystemReadDataStorage(new JIPipeProgressInfo(), storageFolder), new JIPipeProgressInfo());
     }
 }

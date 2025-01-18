@@ -76,15 +76,6 @@ public class ImagePlusDataViewer extends JIPipeDesktopDataViewer {
         }
     }
 
-
-    private void openInImageJ3DViewer() {
-        new OpenInImageJ3DViewerDataDisplayOperation().display(currentData, getDataViewerWindow().getDisplayName(), getDesktopWorkbench(), null);
-    }
-
-    private void openInImageJ() {
-        new OpenInImageJDataDisplayOperation().display(currentData, getDataViewerWindow().getDisplayName(), getDesktopWorkbench(), null);
-    }
-
     @Override
     public void rebuildDock(JIPipeDesktopDockPanel dockPanel) {
         if(vtkImageViewer != null) {

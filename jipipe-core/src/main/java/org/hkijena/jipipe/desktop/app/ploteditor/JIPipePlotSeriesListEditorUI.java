@@ -23,10 +23,10 @@ import javax.swing.*;
 import java.awt.*;
 
 /**
- * Manages the list of series in a {@link JIPipeDesktopPlotEditorUI}
+ * Manages the list of series in a {@link JFreeChartPlotEditor}
  */
 public class JIPipePlotSeriesListEditorUI extends JIPipeDesktopWorkbenchPanel implements JIPipeParameterCollection.ParameterChangedEventListener {
-    private final JIPipeDesktopPlotEditorUI plotBuilderUI;
+    private final JFreeChartPlotEditor plotBuilderUI;
     private JIPipeDesktopFormPanel entriesPanel;
 
     /**
@@ -35,7 +35,7 @@ public class JIPipePlotSeriesListEditorUI extends JIPipeDesktopWorkbenchPanel im
      * @param workbench     the workbench
      * @param plotBuilderUI the plot builder
      */
-    public JIPipePlotSeriesListEditorUI(JIPipeDesktopWorkbench workbench, JIPipeDesktopPlotEditorUI plotBuilderUI) {
+    public JIPipePlotSeriesListEditorUI(JIPipeDesktopWorkbench workbench, JFreeChartPlotEditor plotBuilderUI) {
         super(workbench);
         this.plotBuilderUI = plotBuilderUI;
         initialize();

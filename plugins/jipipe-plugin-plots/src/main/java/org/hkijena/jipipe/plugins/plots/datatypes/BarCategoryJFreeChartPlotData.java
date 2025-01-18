@@ -28,16 +28,16 @@ import java.awt.*;
  * Series table columns: Value (Double), Category (String), Group (String)
  * Multiple series: No
  */
-@SetJIPipeDocumentation(name = "Bar category plot", description = "Bar chart that displays categories in its X axis and colors the bars according to the group.")
-@PlotMetadata(columns = {@PlotColumn(name = "Value", description = "Values displayed in the Y axis", isNumeric = true),
-        @PlotColumn(name = "Category", description = "Categories displayed in the X axis. Must correspond to each value.", isNumeric = false),
-        @PlotColumn(name = "Group", description = "Groups to color the bars. Shown in the legend. Must correspond to each value.", isNumeric = false)}, maxSeriesCount = 1)
-public class BarCategoryPlotData extends CategoryPlotData {
+@SetJIPipeDocumentation(name = "JFreeChart Bar category plot", description = "Bar chart that displays categories in its X axis and colors the bars according to the group.")
+@JFreeChartPlotMetadata(columns = {@JFreeChartPlotColumn(name = "Value", description = "Values displayed in the Y axis", isNumeric = true),
+        @JFreeChartPlotColumn(name = "Category", description = "Categories displayed in the X axis. Must correspond to each value.", isNumeric = false),
+        @JFreeChartPlotColumn(name = "Group", description = "Groups to color the bars. Shown in the legend. Must correspond to each value.", isNumeric = false)}, maxSeriesCount = 1)
+public class BarCategoryJFreeChartPlotData extends CategoryJFreeChartPlotData {
 
     /**
      * Creates a new instance
      */
-    public BarCategoryPlotData() {
+    public BarCategoryJFreeChartPlotData() {
     }
 
     /**
@@ -45,12 +45,12 @@ public class BarCategoryPlotData extends CategoryPlotData {
      *
      * @param other the original
      */
-    public BarCategoryPlotData(BarCategoryPlotData other) {
+    public BarCategoryJFreeChartPlotData(BarCategoryJFreeChartPlotData other) {
         super(other);
     }
 
-    public static BarCategoryPlotData importData(JIPipeReadDataStorage storage, JIPipeProgressInfo progressInfo) {
-        return PlotData.importData(storage, BarCategoryPlotData.class, progressInfo);
+    public static BarCategoryJFreeChartPlotData importData(JIPipeReadDataStorage storage, JIPipeProgressInfo progressInfo) {
+        return JFreeChartPlotData.importData(storage, BarCategoryJFreeChartPlotData.class, progressInfo);
     }
 
     @Override
