@@ -162,12 +162,7 @@ public class JIPipeDesktopPlotAvailableDataManagerUI extends JIPipeDesktopWorkbe
         }
 
         String name = dataSourceJList.getSelectedValuesList().size() == 1 ? dataSourceJList.getSelectedValuesList().get(0).getLabel() : "Table";
-        JIPipeDesktopTableEditor tableAnalyzerUI = new JIPipeDesktopTableEditor((JIPipeDesktopProjectWorkbench) getDesktopWorkbench(), tableModel);
-        getDesktopWorkbench().getDocumentTabPane().addTab(name, UIUtils.getIconFromResources("data-types/results-table.png"),
-                tableAnalyzerUI,
-                JIPipeDesktopTabPane.CloseMode.withAskOnCloseButton,
-                true);
-        getDesktopWorkbench().getDocumentTabPane().switchToLastTab();
+        JIPipeDesktopTableEditor.openWindow(getDesktopWorkbench(), tableModel, name);
     }
 
     /**
