@@ -102,6 +102,7 @@ public class JFreeChartPlotEditor extends JIPipeDesktopWorkbenchPanel implements
         JIPipeDesktopDockPanel dockPanel = new JIPipeDesktopDockPanel();
         editor.rebuildDock(dockPanel);
         editor.rebuildRibbon(ribbon);
+        ribbon.rebuildRibbon();
         dockPanel.setBackgroundComponent(editor);
         window.getContentPane().add(dockPanel, BorderLayout.CENTER);
         window.getContentPane().add(ribbon, BorderLayout.NORTH);
