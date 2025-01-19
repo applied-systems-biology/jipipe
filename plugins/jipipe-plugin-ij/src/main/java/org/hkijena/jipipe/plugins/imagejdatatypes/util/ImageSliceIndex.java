@@ -24,6 +24,7 @@ import java.util.Objects;
  * Indices are shifted compared to ImageJ (-1 indicating that no assignment is set and zero being the first index)
  */
 public class ImageSliceIndex {
+    public static final ImageSliceIndex ZERO = new ImageSliceIndex(0, 0, 0);
     private int z = -1;
     private int c = -1;
     private int t = -1;

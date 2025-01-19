@@ -339,8 +339,7 @@ public class ROIManagerPlugin2D extends JIPipeDesktopLegacyImageViewerPlugin2D {
     @Override
     public void postprocessDraw(Graphics2D graphics2D, Rectangle renderArea, ImageSliceIndex sliceIndex) {
         if (displayROIViewMenuItem.getState() && renderROIAsOverlayViewMenuItem.getState()) {
-            for (int i = 0; i < rois.size(); i++) {
-                Roi roi = rois.get(i);
+            for (Roi roi : rois) {
                 ImageJUtils.setRoiCanvas(roi, getCurrentImagePlus(), getViewerPanel2D().getZoomedDummyCanvas());
             }
             roiDrawer.drawOverlayOnGraphics(rois, graphics2D, renderArea, sliceIndex, new HashSet<>(roiListControl.getSelectedValuesList()), getViewerPanel2D().getCanvas().getZoom());

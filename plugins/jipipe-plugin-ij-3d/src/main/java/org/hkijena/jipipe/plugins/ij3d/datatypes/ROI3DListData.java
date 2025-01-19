@@ -42,6 +42,7 @@ import org.hkijena.jipipe.utils.StringUtils;
 import org.hkijena.jipipe.utils.UnclosableInputStream;
 import org.hkijena.jipipe.utils.UnclosableOutputStream;
 import org.hkijena.jipipe.utils.json.JsonUtils;
+import org.stringtemplate.v4.ST;
 
 import java.io.FileOutputStream;
 import java.io.IOException;
@@ -482,12 +483,24 @@ public class ROI3DListData extends ArrayList<ROI3D> implements JIPipeData {
     }
 
     public ROI2DListData toRoi2D(JIPipeProgressInfo progressInfo) {
+        return toRoi2D(ImageSliceIndex.ZERO, progressInfo);
+    }
+
+    public ROI2DListData toRoi2D(ImageSliceIndex oneSliceIndex, JIPipeProgressInfo progressInfo) {
         ROI2DListData result = new ROI2DListData();
         for (int i = 0; i < this.size(); i++) {
             if (progressInfo.isCancelled())
                 return null;
             JIPipeProgressInfo roiProgress = progressInfo.resolveAndLog("ROI", i, size());
             ROI3D roi3D = this.get(i);
+
+            if(oneSliceIndex.getC() != 0 && roi3D.getChannel() != 0 && roi3D.getChannel() != oneSliceIndex.getC()) {
+                continue;
+            }
+            if(oneSliceIndex.getT() != 0 && roi3D.getFrame() != 0 && roi3D.getFrame() != oneSliceIndex.getT()) {
+                continue;
+            }
+
             Object3D object3D = roi3D.getObject3D();
 
             int xMin = object3D.getXmin();
@@ -499,8 +512,11 @@ public class ROI3DListData extends ArrayList<ROI3D> implements JIPipeData {
 
             object3D.translate(-xMin, -yMin, 0);
 
+            int startZ = oneSliceIndex.getZ() != 0 ? oneSliceIndex.getZ() - 1 : object3D.getZmin();
+            int endZ = oneSliceIndex.getZ() != 0 ? oneSliceIndex.getZ() - 1 : object3D.getZmax();
+
             try {
-                for (int z = object3D.getZmin(); z <= object3D.getZmax(); z++) {
+                for (int z = startZ; z <= endZ; z++) {
                     if (progressInfo.isCancelled())
                         return null;
                     roiProgress.log("z=" + z);
