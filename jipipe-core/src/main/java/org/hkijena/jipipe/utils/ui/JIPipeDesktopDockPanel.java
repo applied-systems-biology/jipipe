@@ -59,6 +59,7 @@ public class JIPipeDesktopDockPanel extends JPanel implements JIPipeDesktopSplit
     private boolean showToolbarLabels = true;
     private int toolbarWithLabelsWidth = 92;
     private int toolbarWithoutLabelsWidth = 42;
+    private boolean hideToolbars = false;
 
     public JIPipeDesktopDockPanel() {
         super(new BorderLayout());
@@ -259,28 +260,30 @@ public class JIPipeDesktopDockPanel extends JPanel implements JIPipeDesktopSplit
         List<JComponent> leftContent = new ArrayList<>();
         List<JComponent> rightContent = new ArrayList<>();
 
-        for (Panel panel : getPanelsAtLocation(PanelLocation.TopLeft)) {
-            if (panel.isDisplayed()) {
-                leftContent.add(panel.getComponent());
-                break;
+        if(!hideToolbars) {
+            for (Panel panel : getPanelsAtLocation(PanelLocation.TopLeft)) {
+                if (panel.isDisplayed()) {
+                    leftContent.add(panel.getComponent());
+                    break;
+                }
             }
-        }
-        for (Panel panel : getPanelsAtLocation(PanelLocation.BottomLeft)) {
-            if (panel.isDisplayed()) {
-                leftContent.add(panel.getComponent());
-                break;
+            for (Panel panel : getPanelsAtLocation(PanelLocation.BottomLeft)) {
+                if (panel.isDisplayed()) {
+                    leftContent.add(panel.getComponent());
+                    break;
+                }
             }
-        }
-        for (Panel panel : getPanelsAtLocation(PanelLocation.TopRight)) {
-            if (panel.isDisplayed()) {
-                rightContent.add(panel.getComponent());
-                break;
+            for (Panel panel : getPanelsAtLocation(PanelLocation.TopRight)) {
+                if (panel.isDisplayed()) {
+                    rightContent.add(panel.getComponent());
+                    break;
+                }
             }
-        }
-        for (Panel panel : getPanelsAtLocation(PanelLocation.BottomRight)) {
-            if (panel.isDisplayed()) {
-                rightContent.add(panel.getComponent());
-                break;
+            for (Panel panel : getPanelsAtLocation(PanelLocation.BottomRight)) {
+                if (panel.isDisplayed()) {
+                    rightContent.add(panel.getComponent());
+                    break;
+                }
             }
         }
 
@@ -356,6 +359,11 @@ public class JIPipeDesktopDockPanel extends JPanel implements JIPipeDesktopSplit
             } else if (value.location == PanelLocation.TopRight || value.location == PanelLocation.BottomRight) {
                 rightPanelIsUsed = true;
             }
+        }
+
+        if(hideToolbars) {
+            leftPanelIsUsed = false;
+            rightPanelIsUsed = false;
         }
 
         leftToolBar.setVisible(leftPanelIsUsed);
@@ -788,6 +796,15 @@ public class JIPipeDesktopDockPanel extends JPanel implements JIPipeDesktopSplit
 
     public Map<String, Panel> getPanels() {
         return new HashMap<>(panels);
+    }
+
+    public boolean isHideToolbars() {
+        return hideToolbars;
+    }
+
+    public void setHideToolbars(boolean hideToolbars) {
+        this.hideToolbars = hideToolbars;
+        updateAll();
     }
 
     public enum PanelLocation {

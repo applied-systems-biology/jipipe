@@ -68,6 +68,7 @@ public class JIPipeDesktopDataViewerWindow extends JFrame implements JIPipeDeskt
     private final JToolBar staticStatusBar = new JToolBar();
     private final JToolBar dynamicStatusBar = new JToolBar();
     private final JButton dataTypeInfoButton = new JButton();
+    private final JToggleButton toggleFocusView = new JToggleButton(UIUtils.getIconFromResources("actions/view-fullscreen.png"));
 
     public JIPipeDesktopDataViewerWindow(JIPipeDesktopWorkbench workbench) {
         this.workbench = workbench;
@@ -160,7 +161,24 @@ public class JIPipeDesktopDataViewerWindow extends JFrame implements JIPipeDeskt
         globalQueueButton.makeFlat();
         staticStatusBar.add(globalQueueButton);
         staticStatusBar.addSeparator();
+        staticStatusBar.add(toggleFocusView);
         staticStatusBar.add(new JIPipeDesktopAlwaysOnTopToggle(this));
+
+        toggleFocusView.setToolTipText("Hide dock panels and ribbon");
+        toggleFocusView.addActionListener(e -> updateFocusView());
+    }
+
+    private void updateFocusView() {
+        if(toggleFocusView.isSelected()) {
+            dockPanel.setHideToolbars(true);
+            ribbon.setVisible(false);
+        }
+        else {
+            dockPanel.setHideToolbars(false);
+            ribbon.setVisible(true);
+        }
+        revalidate();
+        repaint(50);
     }
 
     private void onDataChanged() {
