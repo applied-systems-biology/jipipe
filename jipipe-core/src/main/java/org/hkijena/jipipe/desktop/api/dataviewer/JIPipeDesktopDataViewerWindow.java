@@ -190,6 +190,25 @@ public class JIPipeDesktopDataViewerWindow extends JFrame implements JIPipeDeskt
             hasNewViewer = true;
         }
 
+        rebuildUI();
+
+        currentDataViewer.postOnDataChanged();
+
+        // Force a full revalidate
+        if(hasNewViewer) {
+            revalidateDockLater();
+        }
+    }
+
+    /**
+     * Rebuilds the dock, ribbon, and status bar of the current data viewer
+     */
+    public void rebuildUI() {
+
+        if(currentDataViewer == null) {
+            return;
+        }
+
         // Update the viewer
         currentDataViewer.preOnDataChanged();
         currentDataViewer.rebuildDock(dockPanel);
@@ -202,13 +221,6 @@ public class JIPipeDesktopDataViewerWindow extends JFrame implements JIPipeDeskt
         // Update the status bar
         dynamicStatusBar.removeAll();
         currentDataViewer.rebuildStatusBar(dynamicStatusBar);
-
-        currentDataViewer.postOnDataChanged();
-
-        // Force a full revalidate
-        if(hasNewViewer) {
-            revalidateDockLater();
-        }
     }
 
     private void updateDataTypeInfoButton() {

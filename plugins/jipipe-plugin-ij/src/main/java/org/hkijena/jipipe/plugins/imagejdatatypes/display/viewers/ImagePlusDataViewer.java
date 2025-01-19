@@ -133,6 +133,7 @@ public class ImagePlusDataViewer extends JIPipeDesktopDataViewer {
     protected void loadDataIntoLegacyViewer(JIPipeData data) {
         if(data instanceof ImagePlusData) {
             legacyImageViewer.setImageData((ImagePlusData) data);
+            legacyImageViewer.addOverlays(((ImagePlusData) data).getOverlays());
         }
     }
 

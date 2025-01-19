@@ -32,11 +32,14 @@ import org.hkijena.jipipe.api.data.JIPipeDataStorageDocumentation;
 import org.hkijena.jipipe.api.data.storage.JIPipeReadDataStorage;
 import org.hkijena.jipipe.api.data.storage.JIPipeWriteDataStorage;
 import org.hkijena.jipipe.plugins.ij3d.IJ3DUtils;
+import org.hkijena.jipipe.plugins.ij3d.imageviewer.ROIManagerPlugin3D;
 import org.hkijena.jipipe.plugins.ij3d.utils.ExtendedObject3DVoxels;
 import org.hkijena.jipipe.plugins.ij3d.utils.ROI3DOutline;
 import org.hkijena.jipipe.plugins.imagejdatatypes.datatypes.ROI2DListData;
 import org.hkijena.jipipe.plugins.imagejdatatypes.util.BitDepth;
 import org.hkijena.jipipe.plugins.imagejdatatypes.util.ImageSliceIndex;
+import org.hkijena.jipipe.plugins.imageviewer.legacy.api.JIPipeDesktopLegacyImageViewerOverlay;
+import org.hkijena.jipipe.plugins.imageviewer.legacy.api.JIPipeDesktopLegacyImageViewerPlugin;
 import org.hkijena.jipipe.plugins.tables.datatypes.ResultsTableData;
 import org.hkijena.jipipe.utils.StringUtils;
 import org.hkijena.jipipe.utils.UnclosableInputStream;
@@ -62,7 +65,7 @@ import java.util.zip.ZipOutputStream;
         "one will be loaded.", jsonSchemaURL = "https://jipipe.org/schemas/datatypes/roi-list-data.schema.json")
 @LabelAsJIPipeHeavyData
 @LabelAsJIPipeCommonData
-public class ROI3DListData extends ArrayList<ROI3D> implements JIPipeData {
+public class ROI3DListData extends ArrayList<ROI3D> implements JIPipeData, JIPipeDesktopLegacyImageViewerOverlay {
     public ROI3DListData() {
 
     }
@@ -608,4 +611,8 @@ public class ROI3DListData extends ArrayList<ROI3D> implements JIPipeData {
     }
 
 
+    @Override
+    public Set<Class<? extends JIPipeDesktopLegacyImageViewerPlugin>> getRequiredLegacyImageViewerPlugins() {
+        return Collections.singleton(ROIManagerPlugin3D.class);
+    }
 }

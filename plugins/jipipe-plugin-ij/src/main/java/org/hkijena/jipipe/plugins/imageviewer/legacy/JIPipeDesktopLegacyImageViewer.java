@@ -27,6 +27,7 @@ import org.hkijena.jipipe.desktop.app.JIPipeDummyWorkbench;
 import org.hkijena.jipipe.desktop.commons.components.ribbon.JIPipeDesktopRibbon;
 import org.hkijena.jipipe.plugins.imagejdatatypes.datatypes.ImagePlusData;
 import org.hkijena.jipipe.plugins.imagejdatatypes.util.ImageJUtils;
+import org.hkijena.jipipe.plugins.imageviewer.legacy.api.JIPipeDesktopLegacyImageViewerOverlay;
 import org.hkijena.jipipe.plugins.imageviewer.legacy.api.JIPipeDesktopLegacyImageViewerPlugin;
 import org.hkijena.jipipe.plugins.imageviewer.legacy.api.JIPipeDesktopLegacyImageViewerPlugin2D;
 import org.hkijena.jipipe.plugins.imageviewer.legacy.impl.JIPipeDesktopLegacyImageViewerPanel2D;
@@ -64,6 +65,7 @@ public class JIPipeDesktopLegacyImageViewer extends JPanel implements JIPipeDesk
     private final List<Object> overlays = new ArrayList<>();
     private ImagePlusData image;
     private JIPipeDataSource dataSource;
+    private boolean pluginsInitialized = false;
 
     /**
      * Initializes a new image viewer
@@ -75,7 +77,7 @@ public class JIPipeDesktopLegacyImageViewer extends JPanel implements JIPipeDesk
         this.dataViewer = dataViewer;
         this.contextObjects = contextObjects;
         imageViewerPanel2D = new JIPipeDesktopLegacyImageViewerPanel2D(this);
-        initializePlugins(pluginTypes);
+        registerPlugins(pluginTypes);
         initialize();
     }
 
@@ -92,14 +94,31 @@ public class JIPipeDesktopLegacyImageViewer extends JPanel implements JIPipeDesk
         }
     }
 
-    private void initializePlugins(List<Class<? extends JIPipeDesktopLegacyImageViewerPlugin>> pluginTypes) {
-        for (Class<? extends JIPipeDesktopLegacyImageViewerPlugin> pluginType : pluginTypes) {
-            Object plugin = ReflectionUtils.newInstance(pluginType, this);
-            if (plugin instanceof JIPipeDesktopLegacyImageViewerPlugin2D) {
-                JIPipeDesktopLegacyImageViewerPlugin2D plugin2D = (JIPipeDesktopLegacyImageViewerPlugin2D) plugin;
-                plugins.add(plugin2D);
-                plugins2D.add(plugin2D);
-                pluginMap.put(pluginType, plugin2D);
+    public void registerPlugins(Collection<Class<? extends JIPipeDesktopLegacyImageViewerPlugin>> pluginTypes) {
+        boolean requireRebuild = false;
+        try {
+            for (Class<? extends JIPipeDesktopLegacyImageViewerPlugin> pluginType : pluginTypes) {
+                if (!pluginMap.containsKey(pluginType)) {
+                    Object plugin = ReflectionUtils.newInstance(pluginType, this);
+                    if (plugin instanceof JIPipeDesktopLegacyImageViewerPlugin2D) {
+                        JIPipeDesktopLegacyImageViewerPlugin2D plugin2D = (JIPipeDesktopLegacyImageViewerPlugin2D) plugin;
+                        plugins.add(plugin2D);
+                        plugins2D.add(plugin2D);
+                        pluginMap.put(pluginType, plugin2D);
+                        requireRebuild = pluginsInitialized;
+                    }
+                }
+            }
+        }
+        finally {
+            pluginsInitialized = true;
+        }
+        if(requireRebuild) {
+            if(getDataViewer() != null) {
+                SwingUtilities.invokeLater(() -> {
+                    getDataViewer().getDataViewerWindow().rebuildUI();
+                    imageViewerPanel2D.refreshFormPanel();
+                });
             }
         }
     }
@@ -126,6 +145,10 @@ public class JIPipeDesktopLegacyImageViewer extends JPanel implements JIPipeDesk
     }
 
     public void addOverlay(Object o) {
+        if(o instanceof JIPipeDesktopLegacyImageViewerOverlay) {
+            // Register missing plugins
+            registerPlugins(((JIPipeDesktopLegacyImageViewerOverlay) o).getRequiredLegacyImageViewerPlugins());
+        }
         overlays.add(o);
         for (JIPipeDesktopLegacyImageViewerPlugin plugin : plugins) {
             plugin.onOverlayAdded(o);
@@ -138,6 +161,7 @@ public class JIPipeDesktopLegacyImageViewer extends JPanel implements JIPipeDesk
     }
 
     public void buildRibbon(JIPipeDesktopRibbon ribbon) {
+
         imageViewerPanel2D.buildRibbon(ribbon);
     }
 
@@ -287,4 +311,9 @@ public class JIPipeDesktopLegacyImageViewer extends JPanel implements JIPipeDesk
         return (T) pluginMap.getOrDefault(klass, null);
     }
 
+    public void addOverlays(Collection<?> overlays) {
+        for (Object overlay : overlays) {
+            addOverlay(overlay);
+        }
+    }
 }
