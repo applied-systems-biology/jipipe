@@ -78,6 +78,7 @@ import java.util.Set;
 public class JIPipeDesktopExtendedDataTableUI extends JIPipeDesktopWorkbenchPanel implements JIPipeCache.ModifiedEventListener, JIPipeParameterCollection.ParameterChangedEventListener {
 
     private final boolean updateWithCache;
+    private final boolean externalRibbon;
     private final JIPipeDesktopSearchTextField searchTextField = new JIPipeDesktopSearchTextField();
     private final JIPipeDesktopRibbon ribbon = new JIPipeDesktopRibbon(2);
     private final JLabel infoLabel = new JLabel();
@@ -90,16 +91,18 @@ public class JIPipeDesktopExtendedDataTableUI extends JIPipeDesktopWorkbenchPane
      * @param workbenchUI     the workbench UI
      * @param dataTableStore  The slot
      * @param updateWithCache if the table should refresh on project cache changes
+     * @param externalRibbon if an external ribbon should be provided
      */
-    public JIPipeDesktopExtendedDataTableUI(JIPipeDesktopWorkbench workbenchUI, Store<JIPipeDataTable> dataTableStore, boolean updateWithCache) {
+    public JIPipeDesktopExtendedDataTableUI(JIPipeDesktopWorkbench workbenchUI, Store<JIPipeDataTable> dataTableStore, boolean updateWithCache, boolean externalRibbon) {
         super(workbenchUI);
         this.dataTableStore = dataTableStore;
         this.updateWithCache = updateWithCache;
+        this.externalRibbon = externalRibbon;
 
         initialize();
         reloadTable();
         if (updateWithCache && getDesktopWorkbench() instanceof JIPipeDesktopProjectWorkbench) {
-            ((JIPipeDesktopProjectWorkbench) getDesktopWorkbench()).getProject().getCache().getModifiedEventEmitter().subscribeWeak(this);
+            getDesktopWorkbench().getProject().getCache().getModifiedEventEmitter().subscribeWeak(this);
         }
         updateStatus();
         JIPipeGeneralDataApplicationSettings.getInstance().getParameterChangedEventEmitter().subscribeWeak(this);
@@ -180,7 +183,11 @@ public class JIPipeDesktopExtendedDataTableUI extends JIPipeDesktopWorkbenchPane
         add(menuContainerPanel, BorderLayout.NORTH);
 
         // Ribbon
-        initializeRibbon(menuContainerPanel);
+        if(!externalRibbon) {
+            menuContainerPanel.add(ribbon);
+            buildRibbon(ribbon);
+            ribbon.rebuildRibbon();
+        }
 
         // Search toolbar
         initializeToolbar(menuContainerPanel);
@@ -312,11 +319,9 @@ public class JIPipeDesktopExtendedDataTableUI extends JIPipeDesktopWorkbenchPane
         JIPipeDesktopDataTracerUI.openWindow((JIPipeDesktopProjectWorkbench) getDesktopWorkbench(), id);
     }
 
-    private void initializeRibbon(JPanel menuContainerPanel) {
-        menuContainerPanel.add(ribbon);
-        initializeTableRibbon();
-        initializeExportRibbon();
-        ribbon.rebuildRibbon();
+    public void buildRibbon(JIPipeDesktopRibbon ribbon) {
+        initializeTableRibbon(ribbon);
+        initializeExportRibbon(ribbon);
     }
 
     private void initializeToolbar(JPanel menuContainerPanel) {
@@ -336,10 +341,10 @@ public class JIPipeDesktopExtendedDataTableUI extends JIPipeDesktopWorkbenchPane
         return ribbon;
     }
 
-    private void initializeTableRibbon() {
-        JIPipeDesktopRibbon.Task viewTask = ribbon.addTask("Table");
-        JIPipeDesktopRibbon.Band tableBand = viewTask.addBand("General");
-        JIPipeDesktopRibbon.Band previewBand = viewTask.addBand("Previews");
+    private void initializeTableRibbon(JIPipeDesktopRibbon ribbon) {
+        JIPipeDesktopRibbon.Task viewTask = ribbon.getOrCreateTask("Table");
+        JIPipeDesktopRibbon.Band tableBand = viewTask.getOrCreateBand("General");
+        JIPipeDesktopRibbon.Band previewBand = viewTask.getOrCreateBand("Previews");
 
         // Table band
         tableBand.add(new JIPipeDesktopLargeButtonRibbonAction("Open as tab", "Opens the current table in a new tab", UIUtils.getIcon32FromResources("actions/open-in-new-window.png"), this::openTableInNewTab));
@@ -355,11 +360,11 @@ public class JIPipeDesktopExtendedDataTableUI extends JIPipeDesktopWorkbenchPane
         previewBand.add(new JIPipeDesktopRibbon.Action(UIUtils.boxHorizontal(new JLabel("Size"), new JIPipeDesktopDataPreviewControlUI()), 1, new Insets(2, 2, 2, 2)));
     }
 
-    private void initializeExportRibbon() {
-        JIPipeDesktopRibbon.Task exportTask = ribbon.addTask("Export");
-        JIPipeDesktopRibbon.Band dataBand = exportTask.addBand("Data");
-        JIPipeDesktopRibbon.Band metadataBand = exportTask.addBand("Metadata");
-        JIPipeDesktopRibbon.Band tableBand = exportTask.addBand("Table");
+    private void initializeExportRibbon(JIPipeDesktopRibbon ribbon) {
+        JIPipeDesktopRibbon.Task exportTask = ribbon.getOrCreateTask("Export");
+        JIPipeDesktopRibbon.Band dataBand = exportTask.getOrCreateBand("Data");
+        JIPipeDesktopRibbon.Band metadataBand = exportTask.getOrCreateBand("Metadata");
+        JIPipeDesktopRibbon.Band tableBand = exportTask.getOrCreateBand("Table");
 
         // Data band
         dataBand.add(new JIPipeDesktopLargeButtonRibbonAction("As files", "Exports all data as files named according to annotations", UIUtils.getIcon32FromResources("actions/document-export.png"), this::exportByMetadataExporter));
@@ -397,7 +402,7 @@ public class JIPipeDesktopExtendedDataTableUI extends JIPipeDesktopWorkbenchPane
             }
             getDesktopWorkbench().getDocumentTabPane().addTab(name,
                     UIUtils.getIconFromResources("data-types/data-table.png"),
-                    new JIPipeDesktopExtendedDataTableUI(getDesktopWorkbench(), new OwningStore<>(copy), true),
+                    new JIPipeDesktopExtendedDataTableUI(getDesktopWorkbench(), new OwningStore<>(copy), true, false),
                     JIPipeDesktopTabPane.CloseMode.withSilentCloseButton,
                     true);
             getDesktopWorkbench().getDocumentTabPane().switchToLastTab();
@@ -408,7 +413,7 @@ public class JIPipeDesktopExtendedDataTableUI extends JIPipeDesktopWorkbenchPane
         String name = "Cache: " + getDataTable().getDisplayName();
         getDesktopWorkbench().getDocumentTabPane().addTab(name,
                 UIUtils.getIconFromResources("actions/database.png"),
-                new JIPipeDesktopExtendedDataTableUI(getDesktopWorkbench(), dataTableStore, true),
+                new JIPipeDesktopExtendedDataTableUI(getDesktopWorkbench(), dataTableStore, true, false),
                 JIPipeDesktopTabPane.CloseMode.withSilentCloseButton,
                 true);
         getDesktopWorkbench().getDocumentTabPane().switchToLastTab();

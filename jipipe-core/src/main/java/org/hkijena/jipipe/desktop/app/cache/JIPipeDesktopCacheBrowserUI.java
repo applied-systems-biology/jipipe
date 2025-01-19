@@ -136,7 +136,7 @@ public class JIPipeDesktopCacheBrowserUI extends JIPipeDesktopProjectWorkbenchPa
     }
 
     private void showDataTable(JIPipeDataTable dataTable) {
-        JIPipeDesktopExtendedDataTableUI ui = new JIPipeDesktopExtendedDataTableUI(getDesktopProjectWorkbench(), new WeakStore<>(dataTable), true);
+        JIPipeDesktopExtendedDataTableUI ui = new JIPipeDesktopExtendedDataTableUI(getDesktopProjectWorkbench(), new WeakStore<>(dataTable), true, false);
         splitPane.setRightComponent(ui);
         revalidate();
     }

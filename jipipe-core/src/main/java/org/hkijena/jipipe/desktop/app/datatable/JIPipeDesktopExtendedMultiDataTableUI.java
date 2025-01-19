@@ -433,7 +433,7 @@ public class JIPipeDesktopExtendedMultiDataTableUI extends JIPipeDesktopWorkbenc
         }
         getDesktopWorkbench().getDocumentTabPane().addTab(name,
                 UIUtils.getIconFromResources("data-types/data-table.png"),
-                new JIPipeDesktopExtendedDataTableUI(getDesktopWorkbench(), new OwningStore<>(copy), true),
+                new JIPipeDesktopExtendedDataTableUI(getDesktopWorkbench(), new OwningStore<>(copy), true, false),
                 JIPipeDesktopTabPane.CloseMode.withSilentCloseButton,
                 true);
         getDesktopWorkbench().getDocumentTabPane().switchToLastTab();

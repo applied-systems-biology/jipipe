@@ -132,7 +132,7 @@ public class JIPipeDesktopAlgorithmCacheBrowserUI extends JIPipeDesktopProjectWo
         if (currentContent != null) {
             remove(currentContent);
         }
-        JIPipeDesktopExtendedDataTableUI ui = new JIPipeDesktopExtendedDataTableUI(getDesktopProjectWorkbench(), new WeakStore<>(dataTable), true);
+        JIPipeDesktopExtendedDataTableUI ui = new JIPipeDesktopExtendedDataTableUI(getDesktopProjectWorkbench(), new WeakStore<>(dataTable), true, false);
         initializeDataTableAdditionalRibbon(ui.getRibbon());
 //        initializeTableMenu(ui.getMenuManager());
         add(ui, BorderLayout.CENTER);

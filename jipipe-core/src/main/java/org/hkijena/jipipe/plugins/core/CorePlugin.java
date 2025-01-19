@@ -41,6 +41,7 @@ import org.hkijena.jipipe.plugins.JIPipePrepackagedDefaultJavaPlugin;
 import org.hkijena.jipipe.plugins.core.data.CopyContainingFolderDataImportOperation;
 import org.hkijena.jipipe.plugins.core.data.DefaultDataDisplayOperation;
 import org.hkijena.jipipe.plugins.core.data.OpenContainingFolderDataImportOperation;
+import org.hkijena.jipipe.plugins.core.viewers.JIPipeDataTableDataViewer;
 import org.hkijena.jipipe.plugins.parameters.library.markup.HTMLText;
 import org.hkijena.jipipe.plugins.parameters.library.primitives.list.StringList;
 import org.hkijena.jipipe.utils.ResourceUtils;
@@ -111,6 +112,8 @@ public class CorePlugin extends JIPipePrepackagedDefaultJavaPlugin {
         registerDatatype("jipipe:thumbnail-grid",
                 JIPipeGridThumbnailData.class,
                 ResourceUtils.getPluginResource("icons/data-types/data-type.png"));
+
+        registerDefaultDataTypeViewer(JIPipeDataTable.class, JIPipeDataTableDataViewer.class);
 
         registerNodeTypeCategory(new InternalNodeTypeCategory());
         registerNodeTypeCategory(new DataSourceNodeTypeCategory());

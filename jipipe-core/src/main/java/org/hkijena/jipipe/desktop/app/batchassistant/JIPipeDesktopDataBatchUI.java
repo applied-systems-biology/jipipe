@@ -105,7 +105,7 @@ public class JIPipeDesktopDataBatchUI extends JIPipeDesktopProjectWorkbenchPanel
         for (int row : rows) {
             copySlot.addData(slot.getDataItemStore(row), slot.getTextAnnotations(row), JIPipeTextAnnotationMergeMode.Merge, slot.getDataContext(row), new JIPipeProgressInfo());
         }
-        JIPipeDesktopExtendedDataTableUI tableUI = new JIPipeDesktopExtendedDataTableUI(getDesktopProjectWorkbench(), new OwningStore<>(copySlot), true);
+        JIPipeDesktopExtendedDataTableUI tableUI = new JIPipeDesktopExtendedDataTableUI(getDesktopProjectWorkbench(), new OwningStore<>(copySlot), true, false);
 //        DataSlotTableUI tableUI = new DataSlotTableUI(getProjectWorkbench(), copySlot);
         JFrame frame = new JFrame("Iteration step contents");
         frame.setDefaultCloseOperation(WindowConstants.DISPOSE_ON_CLOSE);
