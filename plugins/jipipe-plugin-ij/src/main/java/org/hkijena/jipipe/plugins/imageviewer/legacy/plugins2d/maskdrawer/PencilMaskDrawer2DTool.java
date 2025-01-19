@@ -130,7 +130,7 @@ public class PencilMaskDrawer2DTool extends MaskDrawer2DTool implements MouseCli
     }
 
     @Override
-    public void initializeSettingsPanel(JIPipeDesktopFormPanel formPanel) {
+    public void buildPanel(JIPipeDesktopFormPanel formPanel) {
         formPanel.addToForm(pencilShapeSelection, new JLabel("Pencil type"), null);
         formPanel.addToForm(pencilSizeXSpinner, new JLabel("Pencil width"), null);
         JPanel sizeYPanel = new JPanel(new BorderLayout());

@@ -350,8 +350,8 @@ public class FilamentsManagerPlugin2D extends JIPipeDesktopLegacyImageViewerPlug
 
         // Setup panel
         mainPanel = new JPanel(new BorderLayout());
-        mainPanel.setMinimumSize(new Dimension(100, 300));
-        mainPanel.setBorder(UIUtils.createControlBorder());
+//        mainPanel.setMinimumSize(new Dimension(100, 300));
+//        mainPanel.setBorder(UIUtils.createControlBorder());
 
         JScrollPane scrollPane = new JScrollPane(filamentsListControl);
         mainPanel.add(scrollPane, BorderLayout.CENTER);
@@ -365,9 +365,13 @@ public class FilamentsManagerPlugin2D extends JIPipeDesktopLegacyImageViewerPlug
     }
 
     @Override
-    public void initializeSettingsPanel(JIPipeDesktopFormPanel formPanel) {
-        super.initializeSettingsPanel(formPanel);
-        formPanel.addVerticalGlue(mainPanel, null);
+    public boolean isBuildingCustomPanel() {
+        return true;
+    }
+
+    @Override
+    public JComponent buildCustomPanel() {
+        return mainPanel;
     }
 
     public void removeSelectedSpots(boolean deferUploadSlice) {

@@ -85,8 +85,8 @@ public class TracksManagerPlugin2D extends JIPipeDesktopLegacyImageViewerPlugin2
     }
 
     @Override
-    public void initializeSettingsPanel(JIPipeDesktopFormPanel formPanel) {
-        super.initializeSettingsPanel(formPanel);
+    public void buildPanel(JIPipeDesktopFormPanel formPanel) {
+        super.buildPanel(formPanel);
         formPanel.addVerticalGlue(mainPanel, null);
     }
 

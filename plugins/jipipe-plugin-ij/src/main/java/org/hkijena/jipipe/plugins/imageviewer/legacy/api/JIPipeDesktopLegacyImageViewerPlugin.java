@@ -117,7 +117,15 @@ public abstract class JIPipeDesktopLegacyImageViewerPlugin implements JIPipeDesk
 
     public abstract void buildStatusBar(JToolBar statusBar);
 
-    public void initializeSettingsPanel(JIPipeDesktopFormPanel formPanel) {
+    public void buildPanel(JIPipeDesktopFormPanel formPanel) {
 
+    }
+
+    public JComponent buildCustomPanel() {
+        return null;
+    }
+
+    public boolean isBuildingCustomPanel() {
+        return false;
     }
 }

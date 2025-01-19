@@ -118,11 +118,15 @@ public class ROIManagerPlugin2D extends JIPipeDesktopLegacyImageViewerPlugin2D {
         clearROIs(false);
     }
 
+
     @Override
-    public void initializeSettingsPanel(JIPipeDesktopFormPanel formPanel) {
-        if (getCurrentImagePlus() == null)
-            return;
-        formPanel.addVerticalGlue(mainPanel, null);
+    public boolean isBuildingCustomPanel() {
+        return true;
+    }
+
+    @Override
+    public JComponent buildCustomPanel() {
+       return mainPanel;
     }
 
     public ROI2DListData getSelectedROIOrAll(String title, String message) {
@@ -375,7 +379,7 @@ public class ROIManagerPlugin2D extends JIPipeDesktopLegacyImageViewerPlugin2D {
 
     @Override
     public void buildRibbon(JIPipeDesktopRibbon ribbon) {
-        JIPipeDesktopRibbon.Task roiTask = ribbon.getOrCreateTask("ROI");
+        JIPipeDesktopRibbon.Task roiTask = ribbon.getOrCreateTask("2D ROI");
 
         // Select/Edit task
         {
@@ -597,8 +601,8 @@ public class ROIManagerPlugin2D extends JIPipeDesktopLegacyImageViewerPlugin2D {
 
         // Setup panel
         mainPanel = new JPanel(new BorderLayout());
-        mainPanel.setMinimumSize(new Dimension(100, 300));
-        mainPanel.setBorder(UIUtils.createControlBorder());
+//        mainPanel.setMinimumSize(new Dimension(100, 300));
+//        mainPanel.setBorder(UIUtils.createControlBorder());
 
 //        JMenuBar listMenuBar = new JMenuBar();
 //        mainPanel.add(listMenuBar, BorderLayout.NORTH);

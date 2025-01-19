@@ -70,7 +70,7 @@ public class EllipseMaskDrawer2DTool extends MaskDrawer2DTool implements MouseCl
     }
 
     @Override
-    public void initializeSettingsPanel(JIPipeDesktopFormPanel formPanel) {
+    public void buildPanel(JIPipeDesktopFormPanel formPanel) {
         formPanel.addToForm(startFromCenterToggle, new JLabel(), null);
         formPanel.addToForm(squareToggle, new JLabel(), null);
         formPanel.addToForm(fillToggle, new JLabel(), null);

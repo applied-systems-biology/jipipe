@@ -741,18 +741,29 @@ public class JIPipeDesktopLegacyImageViewerPanel2D extends JPanel implements JIP
         List<JIPipeDesktopLegacyImageViewerPlugin2D> plugins2D = imageViewer.getPlugins2D();
         for (int i = 0; i < plugins2D.size(); i++) {
             JIPipeDesktopLegacyImageViewerPlugin2D plugin = plugins2D.get(i);
-            JIPipeDesktopFormPanel formPanel = currentDockPanel.getPanelComponent(DOCK_PANEL_PREFIX + plugin.getPanelName(), JIPipeDesktopFormPanel.class);
-            if (formPanel == null) {
-                formPanel = new JIPipeDesktopFormPanel(null, JIPipeDesktopFormPanel.WITH_SCROLLING);
-                currentDockPanel.addDockPanel(DOCK_PANEL_PREFIX + plugin.getPanelName(),
+            if(plugin.isBuildingCustomPanel()) {
+                currentDockPanel.addDockPanel( "CUSTOM__" + DOCK_PANEL_PREFIX + plugin.getPanelName(),
                         plugin.getPanelName(),
                         plugin.getPanelIcon(),
                         plugin.getPanelLocation(),
                         false,
                         i,
-                        formPanel);
+                        plugin.buildCustomPanel());
             }
-            plugin.initializeSettingsPanel(formPanel);
+            else {
+                JIPipeDesktopFormPanel formPanel = currentDockPanel.getPanelComponent(DOCK_PANEL_PREFIX + plugin.getPanelName(), JIPipeDesktopFormPanel.class);
+                if (formPanel == null) {
+                    formPanel = new JIPipeDesktopFormPanel(null, JIPipeDesktopFormPanel.WITH_SCROLLING);
+                    currentDockPanel.addDockPanel(DOCK_PANEL_PREFIX + plugin.getPanelName(),
+                            plugin.getPanelName(),
+                            plugin.getPanelIcon(),
+                            plugin.getPanelLocation(),
+                            false,
+                            i,
+                            formPanel);
+                }
+                plugin.buildPanel(formPanel);
+            }
         }
         for (Map.Entry<String, JIPipeDesktopDockPanel.Panel> entry : currentDockPanel.getPanels().entrySet()) {
             if (entry.getKey().startsWith(DOCK_PANEL_PREFIX)) {

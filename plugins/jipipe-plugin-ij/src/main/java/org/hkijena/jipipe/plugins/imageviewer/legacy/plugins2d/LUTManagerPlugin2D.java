@@ -56,7 +56,7 @@ public class LUTManagerPlugin2D extends GeneralImageViewerPanelPlugin2D {
     }
 
     @Override
-    public void initializeSettingsPanel(JIPipeDesktopFormPanel formPanel) {
+    public void buildPanel(JIPipeDesktopFormPanel formPanel) {
         if (getCurrentImagePlus() == null) {
             return;
         }

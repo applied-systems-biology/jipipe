@@ -40,7 +40,6 @@ import javax.swing.*;
 import javax.swing.table.DefaultTableModel;
 import java.awt.*;
 import java.nio.file.Path;
-import java.util.Arrays;
 
 /**
  * Mask drawer focuses on measurements (different category and icon)
@@ -70,8 +69,8 @@ public class MeasurementDrawerPlugin2D extends MaskDrawerPlugin2D implements Mas
     }
 
     @Override
-    public void initializeSettingsPanel(JIPipeDesktopFormPanel formPanel) {
-        super.initializeSettingsPanel(formPanel);
+    public void buildPanel(JIPipeDesktopFormPanel formPanel) {
+        super.buildPanel(formPanel);
 
         // Add the measurement table
         formPanel.addWideToForm(table);

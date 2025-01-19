@@ -397,8 +397,8 @@ public class SpotsManagerPlugin2D extends JIPipeDesktopLegacyImageViewerPlugin2D
     }
 
     @Override
-    public void initializeSettingsPanel(JIPipeDesktopFormPanel formPanel) {
-        super.initializeSettingsPanel(formPanel);
+    public void buildPanel(JIPipeDesktopFormPanel formPanel) {
+        super.buildPanel(formPanel);
         formPanel.addVerticalGlue(mainPanel, null);
     }
 

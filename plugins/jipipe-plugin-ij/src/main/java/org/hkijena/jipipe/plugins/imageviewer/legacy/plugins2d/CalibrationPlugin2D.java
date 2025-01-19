@@ -93,7 +93,7 @@ public class CalibrationPlugin2D extends GeneralImageViewerPanelPlugin2D {
     }
 
     @Override
-    public void initializeSettingsPanel(JIPipeDesktopFormPanel formPanel) {
+    public void buildPanel(JIPipeDesktopFormPanel formPanel) {
         formPanel.addGroupHeader("Display range", UIUtils.getIconFromResources("actions/contrast.png"));
 //        headerPanel.addColumn(autoCalibrateButton);
 //        formPanel.addToForm(calibrationModes, new JLabel("Presets"), null);

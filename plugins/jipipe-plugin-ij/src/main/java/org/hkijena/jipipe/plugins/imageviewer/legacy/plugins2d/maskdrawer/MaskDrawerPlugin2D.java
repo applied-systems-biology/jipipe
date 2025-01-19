@@ -373,12 +373,12 @@ public class MaskDrawerPlugin2D extends JIPipeDesktopLegacyImageViewerPlugin2D i
     }
 
     @Override
-    public void initializeSettingsPanel(JIPipeDesktopFormPanel formPanel) {
+    public void buildPanel(JIPipeDesktopFormPanel formPanel) {
         if (getCurrentImagePlus() == null) {
             return;
         }
         formPanel.addWideToForm(toolSettingsPanel);
-        currentTool.initializeSettingsPanel(formPanel);
+        currentTool.buildPanel(formPanel);
     }
 
     private void copySlice() {
@@ -717,7 +717,7 @@ public class MaskDrawerPlugin2D extends JIPipeDesktopLegacyImageViewerPlugin2D i
             toolSettingsPanel.addToForm(colorSelectionPanel, new JLabel("Current color"));
             toolSettingsPanel.addWideToForm(new JSeparator(SwingConstants.HORIZONTAL));
             int count = toolSettingsPanel.getComponentCount();
-            currentTool.initializeSettingsPanel(toolSettingsPanel);
+            currentTool.buildPanel(toolSettingsPanel);
             if (toolSettingsPanel.getComponentCount() == count) {
                 toolSettingsPanel.removeLastRow();
             }
