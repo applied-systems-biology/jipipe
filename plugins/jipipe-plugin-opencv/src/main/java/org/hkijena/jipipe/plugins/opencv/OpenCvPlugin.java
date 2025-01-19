@@ -30,6 +30,7 @@ import org.hkijena.jipipe.plugins.opencv.nodes.generators.GaussianKernelGenerato
 import org.hkijena.jipipe.plugins.opencv.utils.OpenCvBorderType;
 import org.hkijena.jipipe.plugins.opencv.utils.OpenCvDepth;
 import org.hkijena.jipipe.plugins.opencv.utils.OpenCvType;
+import org.hkijena.jipipe.plugins.opencv.viewers.OpenCvImageDataViewer;
 import org.hkijena.jipipe.plugins.parameters.library.jipipe.PluginCategoriesEnumParameter;
 import org.hkijena.jipipe.plugins.parameters.library.markup.HTMLText;
 import org.hkijena.jipipe.plugins.parameters.library.primitives.list.StringList;
@@ -103,6 +104,9 @@ public class OpenCvPlugin extends JIPipePrepackagedDefaultJavaPlugin {
         registerDatatype("opencv-image", OpenCvImageData.class, RESOURCES.getIcon16URLFromResources("opencv-image.png"));
         registerDatatypeConversion(new ImageJToOpenCvDataTypeConverter());
         registerDatatypeConversion(new OpenCvToImageJDataTypeConverter());
+
+        registerDefaultDataTypeViewer(OpenCvImageData.class, OpenCvImageDataViewer.class);
+
         registerEnumParameterType("opencv-type", OpenCvType.class, "OpenCV Type", "An OpenCV data type (CV_[bit depth][data type Signed/Unsigned/Float]C[number of channels])");
         registerEnumParameterType("opencv-depth", OpenCvDepth.class, "OpenCV Depth", "An OpenCV depth (CV_[bit depth][data type Signed/Unsigned/Float])");
         registerEnumParameterType("opencv-border-type", OpenCvBorderType.class, "OpenCV Border Type", "An OpenCV border type");

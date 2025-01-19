@@ -33,6 +33,7 @@ import org.hkijena.jipipe.plugins.imagej2.datatypes.ImageJ2DatasetData;
 import org.hkijena.jipipe.plugins.imagej2.datatypes.outofbounds.*;
 import org.hkijena.jipipe.plugins.imagej2.datatypes.outofbounds.constant.*;
 import org.hkijena.jipipe.plugins.imagej2.datatypes.shapes.*;
+import org.hkijena.jipipe.plugins.imagej2.viewers.ImageJ2DatasetDataViewer;
 import org.hkijena.jipipe.plugins.imagejdatatypes.ImageJDataTypesPlugin;
 import org.hkijena.jipipe.plugins.imagejdatatypes.compat.ImagePlusWindowImageJImporterUI;
 import org.hkijena.jipipe.plugins.parameters.library.jipipe.PluginCategoriesEnumParameter;
@@ -174,6 +175,8 @@ public class ImageJ2Plugin extends JIPipePrepackagedDefaultJavaPlugin {
         registerDatatypeConversion(new ImageJ2ToImageJ1Converter());
         registerImageJDataImporter("ij2-dataset-from-window", new IJ2DataFromImageWindowImageJImporter(), ImagePlusWindowImageJImporterUI.class);
         registerImageJDataExporter("ij2-dataset-to-window", new IJ2DataToImageWindowImageJExporter(), DefaultImageJDataExporterUI.class);
+
+        registerDefaultDataTypeViewer(ImageJ2DatasetData.class, ImageJ2DatasetDataViewer.class);
 
         // Shapes
         registerDatatype("ij2-shape", ImageJ2ShapeData.class, UIUtils.getIconURLFromResources("data-types/ij2-shape.png"));
