@@ -22,6 +22,7 @@ public class Filaments3DGraphDataViewer extends ImagePlusDataViewer {
 
     @Override
     protected void loadDataIntoLegacyViewer(JIPipeData data) {
+        getLegacyImageViewer().clearOverlays();
         if(data instanceof Filaments3DGraphData) {
             Filaments3DGraphData graphData = (Filaments3DGraphData) data;
             ImagePlus canvas = graphData.createBlankCanvas("Filaments", BitDepth.Grayscale8u);

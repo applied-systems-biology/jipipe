@@ -26,6 +26,7 @@ public class ROI3DListDataViewer extends ImagePlusDataViewer {
 
     @Override
     protected void loadDataIntoLegacyViewer(JIPipeData data) {
+        getLegacyImageViewer().clearOverlays();
         if (data instanceof ROI3DListData) {
             super.loadDataIntoLegacyViewer(new ImagePlusData(((ROI3DListData) data).createBlankCanvas("ROI", BitDepth.Grayscale8u)));
             getLegacyImageViewer().addOverlay(data);

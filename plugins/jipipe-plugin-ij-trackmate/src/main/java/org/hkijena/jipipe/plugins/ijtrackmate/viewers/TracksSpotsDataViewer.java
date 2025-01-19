@@ -24,6 +24,7 @@ public class TracksSpotsDataViewer extends ImagePlusDataViewer {
 
     @Override
     protected void loadDataIntoLegacyViewer(JIPipeData data) {
+        getLegacyImageViewer().clearOverlays();
         if(data instanceof ModelData) {
             ImagePlus img = ((ModelData) data).getImage();
             super.loadDataIntoLegacyViewer(new ImagePlusData(img));
