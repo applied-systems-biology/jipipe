@@ -37,6 +37,7 @@ import org.hkijena.jipipe.plugins.ijtrackmate.nodes.spots.MeasureSpotsNode;
 import org.hkijena.jipipe.plugins.ijtrackmate.parameters.SpotFeature;
 import org.hkijena.jipipe.plugins.ijtrackmate.settings.ImageViewerUISpotsDisplayApplicationSettings;
 import org.hkijena.jipipe.plugins.ijtrackmate.utils.SpotDrawer;
+import org.hkijena.jipipe.plugins.imagejdatatypes.datatypes.ROI2DListData;
 import org.hkijena.jipipe.plugins.imagejdatatypes.util.ImageSliceIndex;
 import org.hkijena.jipipe.plugins.imageviewer.legacy.JIPipeDesktopLegacyImageViewer;
 import org.hkijena.jipipe.plugins.imageviewer.legacy.api.JIPipeDesktopLegacyImageViewerPlugin2D;
@@ -378,8 +379,8 @@ public class SpotsManagerPlugin2D extends JIPipeDesktopLegacyImageViewerPlugin2D
 
         // Setup panel
         mainPanel = new JPanel(new BorderLayout());
-        mainPanel.setMinimumSize(new Dimension(100, 300));
-        mainPanel.setBorder(UIUtils.createControlBorder());
+//        mainPanel.setMinimumSize(new Dimension(100, 300));
+//        mainPanel.setBorder(UIUtils.createControlBorder());
 
         JScrollPane scrollPane = new JScrollPane(spotsListControl);
         mainPanel.add(scrollPane, BorderLayout.CENTER);
@@ -397,9 +398,18 @@ public class SpotsManagerPlugin2D extends JIPipeDesktopLegacyImageViewerPlugin2D
     }
 
     @Override
-    public void buildPanel(JIPipeDesktopFormPanel formPanel) {
-        super.buildPanel(formPanel);
-        formPanel.addVerticalGlue(mainPanel, null);
+    public boolean isActive() {
+        return getViewerPanel().getOverlays().stream().anyMatch(SpotsCollectionData.class::isInstance);
+    }
+
+    @Override
+    public boolean isBuildingCustomPanel() {
+        return true;
+    }
+
+    @Override
+    public JComponent buildCustomPanel() {
+        return mainPanel;
     }
 
     public void setSpotCollection(SpotsCollectionData spots, boolean deferUploadSlice) {
@@ -427,8 +437,10 @@ public class SpotsManagerPlugin2D extends JIPipeDesktopLegacyImageViewerPlugin2D
     private void updateSpotJList(boolean deferUploadSlice) {
         DefaultListModel<Spot> model = new DefaultListModel<>();
         int[] selectedIndices = spotsListControl.getSelectedIndices();
-        for (Spot spot : spotsCollection.getSpots().iterable(true)) {
-            model.addElement(spot);
+        if(spotsCollection != null) {
+            for (Spot spot : spotsCollection.getSpots().iterable(true)) {
+                model.addElement(spot);
+            }
         }
         spotsListControl.setModel(model);
         spotsListControl.setSelectedIndices(selectedIndices);
@@ -484,10 +496,16 @@ public class SpotsManagerPlugin2D extends JIPipeDesktopLegacyImageViewerPlugin2D
 
         @Override
         public void selectionUpdated(SpotsCollectionData spotsCollectionData, List<Spot> selectedSpots) {
-            if (selectedSpots.isEmpty())
-                roiInfoLabel.setText(spotsCollectionData.getNSpots() + " spots");
-            else
-                roiInfoLabel.setText(selectedSpots.size() + "/" + spotsCollectionData.getNSpots() + " spots");
+            if(spotsCollectionData != null) {
+                if (selectedSpots.isEmpty()) {
+                    roiInfoLabel.setText(spotsCollectionData.getNSpots() + " spots");
+                } else {
+                    roiInfoLabel.setText(selectedSpots.size() + "/" + spotsCollectionData.getNSpots() + " spots");
+                }
+            }
+            else {
+                roiInfoLabel.setText("0 spots");
+            }
         }
     }
 

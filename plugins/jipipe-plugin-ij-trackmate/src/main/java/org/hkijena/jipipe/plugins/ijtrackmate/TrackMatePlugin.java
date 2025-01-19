@@ -36,6 +36,7 @@ import org.hkijena.jipipe.plugins.ijtrackmate.settings.ImageViewerUISpotsDisplay
 import org.hkijena.jipipe.plugins.ijtrackmate.settings.ImageViewerUITracksDisplayApplicationSettings;
 import org.hkijena.jipipe.plugins.ijtrackmate.utils.TrackDrawer;
 import org.hkijena.jipipe.plugins.ijtrackmate.utils.TrackMateUtils;
+import org.hkijena.jipipe.plugins.ijtrackmate.viewers.TracksSpotsDataViewer;
 import org.hkijena.jipipe.plugins.imagejalgorithms.ImageJAlgorithmsPlugin;
 import org.hkijena.jipipe.plugins.imagejdatatypes.ImageJDataTypesPlugin;
 import org.hkijena.jipipe.plugins.parameters.library.jipipe.PluginCategoriesEnumParameter;
@@ -239,6 +240,8 @@ public class TrackMatePlugin extends JIPipePrepackagedDefaultJavaPlugin {
         registerDatatype("trackmate-spot-collection", SpotsCollectionData.class, RESOURCES.getIcon16URLFromResources("trackmate-spots.png"));
         registerDatatype("trackmate-track-collection", TrackCollectionData.class, RESOURCES.getIcon16URLFromResources("trackmate-tracker.png"), new ShowTrackSchemeDataDisplayOperation());
         registerDatatypeConversion(new SpotsToRoiConverter());
+
+        registerDefaultDataTypeViewer(ModelData.class, TracksSpotsDataViewer.class);
     }
 
     @Override

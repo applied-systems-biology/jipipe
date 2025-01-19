@@ -121,6 +121,10 @@ public abstract class JIPipeDesktopLegacyImageViewerPlugin implements JIPipeDesk
 
     }
 
+    public boolean isActive() {
+        return true;
+    }
+
     public JComponent buildCustomPanel() {
         return null;
     }

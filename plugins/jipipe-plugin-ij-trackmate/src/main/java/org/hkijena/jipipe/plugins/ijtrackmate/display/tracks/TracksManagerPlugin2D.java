@@ -40,6 +40,7 @@ import org.hkijena.jipipe.plugins.ijtrackmate.parameters.EdgeFeature;
 import org.hkijena.jipipe.plugins.ijtrackmate.parameters.TrackFeature;
 import org.hkijena.jipipe.plugins.ijtrackmate.settings.ImageViewerUITracksDisplayApplicationSettings;
 import org.hkijena.jipipe.plugins.ijtrackmate.utils.TrackDrawer;
+import org.hkijena.jipipe.plugins.imagejdatatypes.datatypes.ROI2DListData;
 import org.hkijena.jipipe.plugins.imagejdatatypes.util.ImageSliceIndex;
 import org.hkijena.jipipe.plugins.imageviewer.legacy.JIPipeDesktopLegacyImageViewer;
 import org.hkijena.jipipe.plugins.imageviewer.legacy.api.JIPipeDesktopLegacyImageViewerPlugin2D;
@@ -85,9 +86,13 @@ public class TracksManagerPlugin2D extends JIPipeDesktopLegacyImageViewerPlugin2
     }
 
     @Override
-    public void buildPanel(JIPipeDesktopFormPanel formPanel) {
-        super.buildPanel(formPanel);
-        formPanel.addVerticalGlue(mainPanel, null);
+    public boolean isBuildingCustomPanel() {
+        return true;
+    }
+
+    @Override
+    public JComponent buildCustomPanel() {
+        return mainPanel;
     }
 
     private void openTrackScheme() {
@@ -255,7 +260,7 @@ public class TracksManagerPlugin2D extends JIPipeDesktopLegacyImageViewerPlugin2
 
     @Override
     public JIPipeDesktopDockPanel.PanelLocation getPanelLocation() {
-        return JIPipeDesktopDockPanel.PanelLocation.TopRight;
+        return JIPipeDesktopDockPanel.PanelLocation.BottomRight;
     }
 
     @Override
@@ -274,8 +279,8 @@ public class TracksManagerPlugin2D extends JIPipeDesktopLegacyImageViewerPlugin2
 
         // Setup panel
         mainPanel = new JPanel(new BorderLayout());
-        mainPanel.setMinimumSize(new Dimension(100, 300));
-        mainPanel.setBorder(UIUtils.createControlBorder());
+//        mainPanel.setMinimumSize(new Dimension(100, 300));
+//        mainPanel.setBorder(UIUtils.createControlBorder());
 
         JScrollPane scrollPane = new JScrollPane(tracksListControl);
         mainPanel.add(scrollPane, BorderLayout.CENTER);
@@ -293,6 +298,11 @@ public class TracksManagerPlugin2D extends JIPipeDesktopLegacyImageViewerPlugin2
         tracksListCellRenderer.updateColorMaps();
         updateTrackJList(false);
         uploadSliceToCanvas();
+    }
+
+    @Override
+    public boolean isActive() {
+        return getViewerPanel().getOverlays().stream().anyMatch(TrackCollectionData.class::isInstance);
     }
 
     @Override
@@ -429,8 +439,10 @@ public class TracksManagerPlugin2D extends JIPipeDesktopLegacyImageViewerPlugin2
     private void updateTrackJList(boolean deferUploadSlice) {
         DefaultListModel<Integer> model = new DefaultListModel<>();
         int[] selectedIndices = tracksListControl.getSelectedIndices();
-        for (Integer trackID : tracksCollection.getTrackModel().trackIDs(true)) {
-            model.addElement(trackID);
+        if(tracksCollection != null) {
+            for (Integer trackID : tracksCollection.getTrackModel().trackIDs(true)) {
+                model.addElement(trackID);
+            }
         }
         tracksListControl.setModel(model);
         tracksListControl.setSelectedIndices(selectedIndices);
@@ -506,10 +518,17 @@ public class TracksManagerPlugin2D extends JIPipeDesktopLegacyImageViewerPlugin2
 
         @Override
         public void selectionUpdated(TrackCollectionData trackCollectionData, List<Integer> selectedTrackIds) {
-            if (selectedTrackIds.isEmpty())
-                roiInfoLabel.setText(trackCollectionData.getNTracks() + " tracks");
-            else
-                roiInfoLabel.setText(selectedTrackIds.size() + "/" + trackCollectionData.getNTracks() + " tracks");
+            if(trackCollectionData != null) {
+                if (selectedTrackIds.isEmpty()) {
+                    roiInfoLabel.setText(trackCollectionData.getNTracks() + " tracks");
+                } else {
+                    roiInfoLabel.setText(selectedTrackIds.size() + "/" + trackCollectionData.getNTracks() + " tracks");
+                }
+            }
+            else {
+                roiInfoLabel.setText("0 tracks");
+            }
+
         }
     }
 

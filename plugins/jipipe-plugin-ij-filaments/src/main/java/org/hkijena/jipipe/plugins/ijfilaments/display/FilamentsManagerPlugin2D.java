@@ -31,6 +31,7 @@ import org.hkijena.jipipe.plugins.ijfilaments.settings.ImageViewerUIFilamentDisp
 import org.hkijena.jipipe.plugins.ijfilaments.util.FilamentEdge;
 import org.hkijena.jipipe.plugins.ijfilaments.util.FilamentVertex;
 import org.hkijena.jipipe.plugins.ijfilaments.util.FilamentsDrawer;
+import org.hkijena.jipipe.plugins.imagejdatatypes.datatypes.ROI2DListData;
 import org.hkijena.jipipe.plugins.imagejdatatypes.util.ImageSliceIndex;
 import org.hkijena.jipipe.plugins.imageviewer.legacy.JIPipeDesktopLegacyImageViewer;
 import org.hkijena.jipipe.plugins.imageviewer.legacy.api.JIPipeDesktopLegacyImageViewerPlugin2D;
@@ -372,6 +373,11 @@ public class FilamentsManagerPlugin2D extends JIPipeDesktopLegacyImageViewerPlug
     @Override
     public JComponent buildCustomPanel() {
         return mainPanel;
+    }
+
+    @Override
+    public boolean isActive() {
+        return getViewerPanel().getOverlays().stream().anyMatch(Filaments3DGraphData.class::isInstance);
     }
 
     public void removeSelectedSpots(boolean deferUploadSlice) {

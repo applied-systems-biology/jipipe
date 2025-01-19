@@ -24,6 +24,7 @@ import org.hkijena.jipipe.plugins.imagejdatatypes.display.OpenInImageJ3DViewerDa
 import org.hkijena.jipipe.plugins.imagejdatatypes.display.OpenInImageJDataDisplayOperation;
 import org.hkijena.jipipe.plugins.imagejdatatypes.util.ImageJUtils;
 import org.hkijena.jipipe.plugins.imageviewer.legacy.JIPipeDesktopLegacyImageViewer;
+import org.hkijena.jipipe.plugins.imageviewer.legacy.api.JIPipeDesktopLegacyImageViewerPlugin;
 import org.hkijena.jipipe.plugins.imageviewer.legacy.impl.JIPipeDesktopLegacyImageViewerPanel2D;
 import org.hkijena.jipipe.plugins.imageviewer.settings.ImageViewerGeneralUIApplicationSettings;
 import org.hkijena.jipipe.plugins.imageviewer.vtk.JIPipeDesktopVtkImageViewer;
@@ -33,6 +34,7 @@ import org.hkijena.jipipe.utils.ui.JIPipeDesktopDockPanel;
 import javax.swing.*;
 import java.awt.*;
 import java.util.Collections;
+import java.util.List;
 
 public class ImagePlusDataViewer extends JIPipeDesktopDataViewer {
 
@@ -50,11 +52,15 @@ public class ImagePlusDataViewer extends JIPipeDesktopDataViewer {
         else {
             this.vtkImageViewer = null;
             this.legacyImageViewer = new JIPipeDesktopLegacyImageViewer(dataViewerWindow.getDesktopWorkbench(),
-                    JIPipeDesktopLegacyImageViewer.DEFAULT_PLUGINS,
+                    getLegacyImageViewerPlugins(),
                     this,
                     Collections.emptyMap());
         }
         initialize();
+    }
+
+    protected List<Class<? extends JIPipeDesktopLegacyImageViewerPlugin>> getLegacyImageViewerPlugins() {
+        return JIPipeDesktopLegacyImageViewer.DEFAULT_PLUGINS;
     }
 
     private void initialize() {

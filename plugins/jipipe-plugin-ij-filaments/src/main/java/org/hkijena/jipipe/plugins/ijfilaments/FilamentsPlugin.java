@@ -166,7 +166,7 @@ public class FilamentsPlugin extends JIPipePrepackagedDefaultJavaPlugin {
         registerDatatypeConversion(new FilamentsToRoiDataTypeConverter());
         registerDatatypeConversion(new FilamentsToRoi3dDataTypeConverter());
 
-        JIPipeDesktopLegacyImageViewer.registerDefaultPlugin(FilamentsManagerPlugin2D.class);
+//        JIPipeDesktopLegacyImageViewer.registerDefaultPlugin(FilamentsManagerPlugin2D.class);
         registerDefaultDataTypeViewer(Filaments3DGraphData.class, Filaments3DGraphDataViewer.class);
 
         registerEnumParameterType("filaments-cycle-finder-algorithm", CycleFinderAlgorithm.class, "Cycle finder algorithm", "An algorithm for finding cycles");
