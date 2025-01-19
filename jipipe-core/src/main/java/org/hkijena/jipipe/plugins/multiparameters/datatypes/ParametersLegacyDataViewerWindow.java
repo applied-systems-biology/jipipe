@@ -26,12 +26,12 @@ import java.awt.*;
 public class ParametersLegacyDataViewerWindow extends JIPipeDesktopLegacyCacheDataViewerWindow {
 
     private final JToolBar toolBar = new JToolBar();
-    private final ParametersDataViewer viewer;
+    private final ParametersDataViewerPanel viewer;
     private JLabel errorLabel;
 
     public ParametersLegacyDataViewerWindow(JIPipeDesktopWorkbench workbench, JIPipeDataTableDataSource dataSource, String displayName) {
         super(workbench, dataSource, displayName);
-        this.viewer = new ParametersDataViewer(workbench);
+        this.viewer = new ParametersDataViewerPanel(workbench);
         initialize();
     }
 
