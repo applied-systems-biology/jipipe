@@ -45,6 +45,7 @@ import org.hkijena.jipipe.plugins.omero.nodes.navigate.OMEROListImagesAlgorithm;
 import org.hkijena.jipipe.plugins.omero.nodes.navigate.OMEROListProjectsAlgorithm;
 import org.hkijena.jipipe.plugins.omero.nodes.upload.UploadOMEROImageAlgorithm;
 import org.hkijena.jipipe.plugins.omero.nodes.upload.UploadOMEROTableAlgorithm;
+import org.hkijena.jipipe.plugins.omero.viewers.OMERODataViewer;
 import org.hkijena.jipipe.plugins.parameters.library.jipipe.PluginCategoriesEnumParameter;
 import org.hkijena.jipipe.plugins.parameters.library.markup.HTMLText;
 import org.hkijena.jipipe.plugins.parameters.library.primitives.list.StringList;
@@ -213,6 +214,12 @@ public class OMEROPlugin extends JIPipePrepackagedDefaultJavaPlugin {
         registerDatatype("omero-dataset-id", OMERODatasetReferenceData.class, RESOURCES.getIconURLFromResources("omero-dataset.png"));
         registerDatatype("omero-image-id", OMEROImageReferenceData.class, RESOURCES.getIconURLFromResources("omero-image.png"));
         registerDatatype("omero-annotation-id", OMEROAnnotationReferenceData.class, RESOURCES.getIconURLFromResources("omero-annotation.png"));
+
+        registerDefaultDataTypeViewer(OMEROGroupReferenceData.class, OMERODataViewer.class);
+        registerDefaultDataTypeViewer(OMEROProjectReferenceData.class, OMERODataViewer.class);
+        registerDefaultDataTypeViewer(OMERODatasetReferenceData.class, OMERODataViewer.class);
+        registerDefaultDataTypeViewer(OMEROImageReferenceData.class, OMERODataViewer.class);
+        registerDefaultDataTypeViewer(OMEROAnnotationReferenceData.class, OMERODataViewer.class);
 
         // Data sources
         registerNodeType("omero-image-id-definition", OMEROImageReferenceDataSource.class);
