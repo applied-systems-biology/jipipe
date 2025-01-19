@@ -26,6 +26,7 @@ import org.hkijena.jipipe.plugins.ij3d.IJ3DPlugin;
 import org.hkijena.jipipe.plugins.ijfilaments.datatypes.Filaments3DGraphData;
 import org.hkijena.jipipe.plugins.ijfilaments.datatypes.FilamentsToRoi3dDataTypeConverter;
 import org.hkijena.jipipe.plugins.ijfilaments.datatypes.FilamentsToRoiDataTypeConverter;
+import org.hkijena.jipipe.plugins.ijfilaments.display.FilamentsManagerPlugin2D;
 import org.hkijena.jipipe.plugins.ijfilaments.environments.OptionalTSOAXEnvironment;
 import org.hkijena.jipipe.plugins.ijfilaments.environments.TSOAXEnvironment;
 import org.hkijena.jipipe.plugins.ijfilaments.nodes.convert.*;
@@ -49,8 +50,10 @@ import org.hkijena.jipipe.plugins.ijfilaments.parameters.CycleFinderAlgorithm;
 import org.hkijena.jipipe.plugins.ijfilaments.settings.FilamentsPluginProjectSettings;
 import org.hkijena.jipipe.plugins.ijfilaments.settings.ImageViewerUIFilamentDisplayApplicationSettings;
 import org.hkijena.jipipe.plugins.ijfilaments.settings.TSOAXApplicationSettings;
+import org.hkijena.jipipe.plugins.ijfilaments.viewers.Filaments3DGraphDataViewer;
 import org.hkijena.jipipe.plugins.imagejalgorithms.ImageJAlgorithmsPlugin;
 import org.hkijena.jipipe.plugins.imagejdatatypes.ImageJDataTypesPlugin;
+import org.hkijena.jipipe.plugins.imageviewer.legacy.JIPipeDesktopLegacyImageViewer;
 import org.hkijena.jipipe.plugins.parameters.library.jipipe.PluginCategoriesEnumParameter;
 import org.hkijena.jipipe.plugins.parameters.library.markup.HTMLText;
 import org.hkijena.jipipe.plugins.parameters.library.primitives.list.StringList;
@@ -162,6 +165,9 @@ public class FilamentsPlugin extends JIPipePrepackagedDefaultJavaPlugin {
         registerDatatype("filaments", Filaments3DGraphData.class, RESOURCES.getIcon16URLFromResources("data-type-filaments.png"));
         registerDatatypeConversion(new FilamentsToRoiDataTypeConverter());
         registerDatatypeConversion(new FilamentsToRoi3dDataTypeConverter());
+
+        JIPipeDesktopLegacyImageViewer.registerDefaultPlugin(FilamentsManagerPlugin2D.class);
+        registerDefaultDataTypeViewer(Filaments3DGraphData.class, Filaments3DGraphDataViewer.class);
 
         registerEnumParameterType("filaments-cycle-finder-algorithm", CycleFinderAlgorithm.class, "Cycle finder algorithm", "An algorithm for finding cycles");
 
