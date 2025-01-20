@@ -126,7 +126,7 @@ public class ImagePlusDataViewer extends JIPipeDesktopDataViewer {
     public void dispose() {
         super.dispose();
         this.legacyImageViewer.dispose();
-        this.vtkImageViewer.dispose();
+//        this.vtkImageViewer.dispose();
         this.currentData = null;
     }
 

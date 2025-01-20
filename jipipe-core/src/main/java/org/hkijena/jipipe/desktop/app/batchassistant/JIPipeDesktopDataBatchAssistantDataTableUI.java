@@ -122,7 +122,10 @@ public class JIPipeDesktopDataBatchAssistantDataTableUI extends JIPipeDesktopWor
 
     private void reloadTable() {
         dataTableModel = new JIPipeDesktopDataBatchAssistantTableModel(table, dataTable);
-        table.setModel(dataTableModel);
+        try {
+            table.setModel(dataTableModel);
+        }
+        catch (Throwable ignored) {}
         dataTableModel.setScrollPane(scrollPane);
         if (JIPipeGeneralDataApplicationSettings.getInstance().isGenerateCachePreviews())
             table.setRowHeight(JIPipeGeneralDataApplicationSettings.getInstance().getPreviewSize());
