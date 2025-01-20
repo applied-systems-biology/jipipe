@@ -83,6 +83,7 @@ import org.hkijena.jipipe.plugins.imagejdatatypes.util.OptionalBitDepth;
 import org.hkijena.jipipe.plugins.imagejdatatypes.util.ROIElementDrawingMode;
 import org.hkijena.jipipe.plugins.imageviewer.settings.LegacyImageViewer2DUIApplicationSettings;
 import org.hkijena.jipipe.plugins.imageviewer.settings.ImageViewerGeneralUIApplicationSettings;
+import org.hkijena.jipipe.plugins.napari.NapariPlugin;
 import org.hkijena.jipipe.plugins.parameters.library.jipipe.PluginCategoriesEnumParameter;
 import org.hkijena.jipipe.plugins.parameters.library.markup.HTMLText;
 import org.hkijena.jipipe.plugins.parameters.library.primitives.list.StringList;
@@ -133,7 +134,7 @@ public class ImageJDataTypesPlugin extends JIPipePrepackagedDefaultJavaPlugin {
 
     @Override
     public Set<JIPipeDependency> getDependencies() {
-        return Sets.newHashSet(CorePlugin.AS_DEPENDENCY, TablesPlugin.AS_DEPENDENCY, StringsPlugin.AS_DEPENDENCY, FilesystemPlugin.AS_DEPENDENCY);
+        return Sets.newHashSet(CorePlugin.AS_DEPENDENCY, TablesPlugin.AS_DEPENDENCY, StringsPlugin.AS_DEPENDENCY, FilesystemPlugin.AS_DEPENDENCY, NapariPlugin.AS_DEPENDENCY);
     }
 
     @Override
@@ -377,6 +378,8 @@ public class ImageJDataTypesPlugin extends JIPipePrepackagedDefaultJavaPlugin {
         return Arrays.asList(UIUtils.getIcon32FromResources("apps/bio-formats.png"));
     }
 
+
+
     @Override
     public void register(JIPipe jiPipe, Context context, JIPipeProgressInfo progressInfo) {
         registerApplicationSettingsSheet(new ImageJDataTypesApplicationSettings());
@@ -590,7 +593,8 @@ public class ImageJDataTypesPlugin extends JIPipePrepackagedDefaultJavaPlugin {
                 null,
                 ImageDataPreview.class,
                 new OpenInImageJDataDisplayOperation(),
-                new OpenInImageJ3DViewerDataDisplayOperation());
+                new OpenInImageJ3DViewerDataDisplayOperation(),
+                new OpenInNapariDataDisplayOperation());
         configureDefaultImageJAdapters(dataClass, imageImporter, imageExporter);
 //        registerImageJDataImporter("import-" + id, new ImagePlusDataFromImageWindowImageJImporter(dataClass), ImagePlusWindowImageJImporterUI.class);
     }
@@ -600,21 +604,21 @@ public class ImageJDataTypesPlugin extends JIPipePrepackagedDefaultJavaPlugin {
     public void postprocess(JIPipeProgressInfo progressInfo) {
         super.postprocess(progressInfo);
 
-        if(!ImageViewerGeneralUIApplicationSettings.getInstance().isDisableVtk()) {
-            progressInfo.log("Initializing VTK ...");
-            try {
-                VTKUtils.VTK_NATIVES_EXTRACT_PATH = PathUtils.createDirectories(PathUtils.getJIPipeUserDir().resolve("contrib").resolve("vtk-native"));
-                VTKUtils.loadVtkNativeLibraries();
-                progressInfo.log("Initializing VTK ... successful");
-                VTK_AVAILABLE = true;
-            } catch (Throwable e) {
-                progressInfo.log("Initializing VTK ... failed!");
-                progressInfo.log(ExceptionUtils.getStackTrace(e));
-            }
-        }
-        else {
-            progressInfo.log("VTK initialization is disabled.");
-        }
+//        if(!ImageViewerGeneralUIApplicationSettings.getInstance().isDisableVtk()) {
+//            progressInfo.log("Initializing VTK ...");
+//            try {
+//                VTKUtils.VTK_NATIVES_EXTRACT_PATH = PathUtils.createDirectories(PathUtils.getJIPipeUserDir().resolve("contrib").resolve("vtk-native"));
+//                VTKUtils.loadVtkNativeLibraries();
+//                progressInfo.log("Initializing VTK ... successful");
+//                VTK_AVAILABLE = true;
+//            } catch (Throwable e) {
+//                progressInfo.log("Initializing VTK ... failed!");
+//                progressInfo.log(ExceptionUtils.getStackTrace(e));
+//            }
+//        }
+//        else {
+//            progressInfo.log("VTK initialization is disabled.");
+//        }
 
     }
 }

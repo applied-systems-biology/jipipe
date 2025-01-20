@@ -44,6 +44,7 @@ import org.hkijena.jipipe.plugins.imagejdatatypes.util.*;
 import org.hkijena.jipipe.plugins.imagejdatatypes.util.measure.CustomAnalyzer;
 import org.hkijena.jipipe.plugins.imagejdatatypes.util.measure.ImageMeasurementUtils;
 import org.hkijena.jipipe.plugins.imagejdatatypes.util.measure.ImageStatisticsSetParameter;
+import org.hkijena.jipipe.plugins.napari.NapariOverlay;
 import org.hkijena.jipipe.plugins.parameters.library.roi.Margin;
 import org.hkijena.jipipe.plugins.tables.datatypes.ResultsTableData;
 import org.hkijena.jipipe.utils.ColorUtils;
@@ -71,7 +72,7 @@ import java.util.zip.ZipOutputStream;
         "*.roi is a single ImageJ ROI. *.zip contains multiple ImageJ ROI. Please note that if multiple *.roi/*.zip are present, only " +
         "one will be loaded.", jsonSchemaURL = "https://jipipe.org/schemas/datatypes/roi-list-data.schema.json")
 @LabelAsJIPipeCommonData
-public class ROI2DListData extends ArrayList<Roi> implements JIPipeData {
+public class ROI2DListData extends ArrayList<Roi> implements JIPipeData, NapariOverlay {
 
     /**
      * Creates an empty set of ROI
@@ -1640,5 +1641,23 @@ public class ROI2DListData extends ArrayList<Roi> implements JIPipeData {
         }
 
         return IJ.createHyperStack(title, maxX + 1, maxY + 1, maxC + 1, maxZ + 1, maxT + 1, bitDepth);
+    }
+
+    @Override
+    public List<Path> exportOverlayToNapari(ImagePlus imp, Path outputDirectory, String prefix, JIPipeProgressInfo progressInfo) {
+        if(!isEmpty()) {
+            Path outputFile = outputDirectory.resolve(prefix + "_roi2d.tif");
+
+            progressInfo.log("Exporting " + size() + " 2D ROIs ...");
+            RoiDrawer roiDrawer = new RoiDrawer();
+            roiDrawer.setDrawOver(false);
+            ImagePlus rendered = roiDrawer.draw(imp, this, progressInfo);
+            IJ.saveAsTiff(rendered, outputFile.toString());
+
+            return Collections.singletonList(outputFile);
+        }
+        else {
+            return Collections.emptyList();
+        }
     }
 }

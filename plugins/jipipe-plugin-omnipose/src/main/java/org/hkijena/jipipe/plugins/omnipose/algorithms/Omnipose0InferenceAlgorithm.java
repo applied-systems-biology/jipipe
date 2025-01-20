@@ -301,7 +301,7 @@ public class Omnipose0InferenceAlgorithm extends JIPipeSingleIterationAlgorithm 
                     Collections.emptyList(),
                     Collections.emptyMap(),
                     suppressLogs,
-                    progressInfo.resolve("Extract Omnipose results (2D)"));
+                    false, progressInfo.resolve("Extract Omnipose results (2D)"));
         }
         if (!runWith3D.isEmpty()) {
             List<String> arguments = new ArrayList<>();
@@ -315,7 +315,7 @@ public class Omnipose0InferenceAlgorithm extends JIPipeSingleIterationAlgorithm 
                     Collections.emptyList(),
                     Collections.emptyMap(),
                     suppressLogs,
-                    progressInfo.resolve("Extract Omnipose results (3D)"));
+                    false, progressInfo.resolve("Extract Omnipose results (3D)"));
         }
 
         // Fetch the data from the directory

@@ -302,7 +302,7 @@ public class Cellpose2InferenceAlgorithm extends JIPipeSingleIterationAlgorithm 
                     Collections.emptyList(),
                     Collections.emptyMap(),
                     suppressLogs,
-                    progressInfo.resolve("Extract Cellpose results (2D)"));
+                    false, progressInfo.resolve("Extract Cellpose results (2D)"));
         }
         if (!runWith3D.isEmpty()) {
             List<String> arguments = new ArrayList<>();
@@ -316,7 +316,7 @@ public class Cellpose2InferenceAlgorithm extends JIPipeSingleIterationAlgorithm 
                     Collections.emptyList(),
                     Collections.emptyMap(),
                     suppressLogs,
-                    progressInfo.resolve("Extract Cellpose results (3D)"));
+                    false, progressInfo.resolve("Extract Cellpose results (3D)"));
         }
 
         // Fetch the data from the directory

@@ -141,7 +141,7 @@ public class ProcessUtils {
     }
 
     /**
-     * Runs a process
+     * Runs a process detached
      *
      * @param environment                  the process environment
      * @param variables                    additional variables for the arguments (can be null)
@@ -373,7 +373,7 @@ public class ProcessUtils {
         }
 
         @Override
-        protected Process launch(CommandLine command, Map<String, String> env, File dir) throws IOException {
+        public Process launch(CommandLine command, Map<String, String> env, File dir) throws IOException {
             process = new ProcessTree(super.launch(command, env, dir), progressInfo);
             return process;
         }

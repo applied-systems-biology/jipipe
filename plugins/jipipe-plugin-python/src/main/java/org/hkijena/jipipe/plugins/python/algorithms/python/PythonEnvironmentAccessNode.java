@@ -19,6 +19,7 @@ import org.hkijena.jipipe.api.validation.JIPipeValidationReport;
 import org.hkijena.jipipe.api.validation.JIPipeValidationReportContext;
 import org.hkijena.jipipe.api.validation.JIPipeValidationReportEntry;
 import org.hkijena.jipipe.api.validation.JIPipeValidationReportEntryLevel;
+import org.hkijena.jipipe.plugins.python.CorePythonPlugin;
 import org.hkijena.jipipe.plugins.python.OptionalPythonEnvironment;
 import org.hkijena.jipipe.plugins.python.PythonEnvironment;
 import org.hkijena.jipipe.plugins.python.PythonPlugin;
@@ -42,7 +43,7 @@ public interface PythonEnvironmentAccessNode {
         if (project == null) {
             project = node.getParentGraph().getProject();
         }
-        return PythonPlugin.getEnvironment(project, getOverrideEnvironment());
+        return CorePythonPlugin.getEnvironment(project, getOverrideEnvironment());
     }
 
     /**
@@ -57,7 +58,7 @@ public interface PythonEnvironmentAccessNode {
         if (project == null) {
             project = node.getParentGraph().getProject();
         }
-        return PythonPlugin.getAdapterEnvironment(project);
+        return CorePythonPlugin.getAdapterEnvironment(project);
     }
 
     /**

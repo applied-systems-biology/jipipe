@@ -15,7 +15,10 @@ package org.hkijena.jipipe.api;
 
 import org.hkijena.jipipe.api.notifications.JIPipeNotificationInbox;
 import org.hkijena.jipipe.api.project.JIPipeProject;
+import org.hkijena.jipipe.utils.PathUtils;
 import org.scijava.Context;
+
+import java.nio.file.Path;
 
 /**
  * Interface shared by all workbench UIs
@@ -63,4 +66,46 @@ public interface JIPipeWorkbench {
      * @return the project or null
      */
     JIPipeProject getProject();
+
+    /**
+     * Creates a new temporary directory. Uses the project temporary directory as root if available.
+     * @return the temporary directory
+     */
+    default Path newTempDirectory() {
+        if(getProject() != null) {
+            return getProject().newTemporaryDirectory();
+        }
+        else {
+            return PathUtils.createGlobalTempDirectory("");
+        }
+    }
+
+    /**
+     * Creates a new temporary directory. Uses the project temporary directory as root if available.
+     * @param baseName the base name
+     * @return the temporary directory
+     */
+    default Path newTempDirectory(String baseName) {
+        if(getProject() != null) {
+            return getProject().newTemporaryDirectory(baseName);
+        }
+        else {
+            return PathUtils.createGlobalTempDirectory(baseName);
+        }
+    }
+
+    /**
+     * Creates a new temporary file path. Uses the project temporary directory as root if available.
+     * @param baseName the base name
+     * @param suffix the suffix (extensions must include the dot)
+     * @return path to a non-existing temporary file
+     */
+    default Path newTemporaryFilePath(String baseName, String suffix) {
+        if(getProject() != null) {
+            return getProject().newTemporaryFilePath(baseName, suffix);
+        }
+        else {
+            return PathUtils.createGlobalTempFilePath(baseName, suffix);
+        }
+    }
 }

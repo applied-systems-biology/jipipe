@@ -249,7 +249,7 @@ public class JIPipeCLIMain {
 
         if (outputFolder == null) {
             System.out.println("No output folder provided.");
-            outputFolder = project.getTemporaryDirectory("output");
+            outputFolder = project.newTemporaryDirectory("output");
             System.out.println("Output files will be written into: " + outputFolder);
         }
 

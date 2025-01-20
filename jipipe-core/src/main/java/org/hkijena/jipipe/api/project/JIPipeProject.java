@@ -270,7 +270,7 @@ public class JIPipeProject implements JIPipeValidatable {
      * @param suffix   the suffix (extension)
      * @return the path
      */
-    public Path getTemporaryFile(String baseName, String suffix) {
+    public Path newTemporaryFilePath(String baseName, String suffix) {
         return PathUtils.createSubTempFilePath(getTemporaryBaseDirectory(), baseName, suffix);
     }
 
@@ -280,7 +280,7 @@ public class JIPipeProject implements JIPipeValidatable {
      * @param baseName the base name (prefix)
      * @return the temporary directory
      */
-    public Path getTemporaryDirectory(String baseName) {
+    public Path newTemporaryDirectory(String baseName) {
         return PathUtils.createTempSubDirectory(getTemporaryBaseDirectory(), baseName);
     }
 
@@ -289,7 +289,7 @@ public class JIPipeProject implements JIPipeValidatable {
      *
      * @return the temporary directory
      */
-    public Path getTemporaryDirectory() {
+    public Path newTemporaryDirectory() {
         return PathUtils.createTempSubDirectory(getTemporaryBaseDirectory());
     }
 

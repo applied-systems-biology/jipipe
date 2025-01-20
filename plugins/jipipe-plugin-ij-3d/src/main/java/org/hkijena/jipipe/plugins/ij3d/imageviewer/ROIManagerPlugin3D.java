@@ -281,11 +281,10 @@ public class ROIManagerPlugin3D extends JIPipeDesktopLegacyImageViewerPlugin2D {
 
         // Import/Export task
         {
-            JIPipeDesktopRibbon.Task importExportTask = ribbon.addTask("Import/Export");
-            JIPipeDesktopRibbon.Band fileBand = importExportTask.addBand("File");
+            JIPipeDesktopRibbon.Band importExportBand = roiTask.getOrCreateBand("Import/Export");
 
-            fileBand.add(new JIPipeDesktopSmallButtonRibbonAction("Import from file", "Imports ROI from a *.roi or *.zip file", UIUtils.getIconFromResources("actions/fileopen.png"), this::importROIsFromFile));
-            fileBand.add(new JIPipeDesktopSmallButtonRibbonAction("Export to file", "Exports ROI to a *.zip file", UIUtils.getIconFromResources("actions/filesave.png"), this::exportROIsToFile));
+            importExportBand.add(new JIPipeDesktopSmallButtonRibbonAction("Import from file", "Imports ROI from a *.roi or *.zip file", UIUtils.getIconFromResources("actions/fileopen.png"), this::importROIsFromFile));
+            importExportBand.add(new JIPipeDesktopSmallButtonRibbonAction("Export to file", "Exports ROI to a *.zip file", UIUtils.getIconFromResources("actions/filesave.png"), this::exportROIsToFile));
         }
     }
 

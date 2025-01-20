@@ -19,6 +19,7 @@ import ij.gui.ImageWindow;
 import ij.measure.Calibration;
 import ij.util.Tools;
 import org.hkijena.jipipe.api.JIPipeWorkbench;
+import org.hkijena.jipipe.api.data.JIPipeData;
 import org.hkijena.jipipe.api.data.JIPipeDataSource;
 import org.hkijena.jipipe.desktop.api.dataviewer.JIPipeDesktopDataViewer;
 import org.hkijena.jipipe.desktop.app.JIPipeDesktopWorkbench;
@@ -315,5 +316,19 @@ public class JIPipeDesktopLegacyImageViewer extends JPanel implements JIPipeDesk
         for (Object overlay : overlays) {
             addOverlay(overlay);
         }
+    }
+
+    /**
+     * Gets only the overlays that are of type {@link JIPipeData}
+     * @return the overlays
+     */
+    public List<JIPipeData> getDataOverlays() {
+        List<JIPipeData> result = new ArrayList<>();
+        for (Object overlay : overlays) {
+            if(overlay instanceof JIPipeData) {
+                result.add((JIPipeData) overlay);
+            }
+        }
+        return result;
     }
 }

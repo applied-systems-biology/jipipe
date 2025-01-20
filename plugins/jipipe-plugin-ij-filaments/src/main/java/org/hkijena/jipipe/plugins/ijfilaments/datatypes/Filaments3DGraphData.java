@@ -23,6 +23,7 @@ import ij.ImagePlus;
 import ij.gui.EllipseRoi;
 import ij.gui.Line;
 import ij.gui.Roi;
+import ij.process.ColorProcessor;
 import ij.process.ImageProcessor;
 import mcib3d.geom.Vector3D;
 import mcib3d.image3d.ImageHandler;
@@ -39,10 +40,15 @@ import org.hkijena.jipipe.plugins.expressions.JIPipeExpressionVariablesMap;
 import org.hkijena.jipipe.plugins.ij3d.datatypes.ROI3D;
 import org.hkijena.jipipe.plugins.ij3d.datatypes.ROI3DListData;
 import org.hkijena.jipipe.plugins.ij3d.utils.ExtendedObjectCreator3D;
+import org.hkijena.jipipe.plugins.ijfilaments.display.FilamentsManagerPlugin2D;
 import org.hkijena.jipipe.plugins.ijfilaments.util.*;
 import org.hkijena.jipipe.plugins.imagejdatatypes.datatypes.ROI2DListData;
 import org.hkijena.jipipe.plugins.imagejdatatypes.util.BitDepth;
 import org.hkijena.jipipe.plugins.imagejdatatypes.util.ImageJUtils;
+import org.hkijena.jipipe.plugins.imagejdatatypes.util.RoiDrawer;
+import org.hkijena.jipipe.plugins.imageviewer.legacy.api.JIPipeDesktopLegacyImageViewerOverlay;
+import org.hkijena.jipipe.plugins.imageviewer.legacy.api.JIPipeDesktopLegacyImageViewerPlugin;
+import org.hkijena.jipipe.plugins.napari.NapariOverlay;
 import org.hkijena.jipipe.plugins.parameters.library.quantities.Quantity;
 import org.hkijena.jipipe.plugins.scene3d.model.Scene3DGroupNode;
 import org.hkijena.jipipe.plugins.scene3d.model.geometries.Scene3DLineGeometry;
@@ -74,7 +80,7 @@ import java.util.stream.Collectors;
         jsonSchemaURL = "https://jipipe.org/schemas/datatypes/jipipe-json-data.schema.json")
 @JsonSerialize(using = FilamentsDataSerializer.class)
 @JsonDeserialize(using = FilamentsDataDeserializer.class)
-public class Filaments3DGraphData extends SimpleGraph<FilamentVertex, FilamentEdge> implements JIPipeData {
+public class Filaments3DGraphData extends SimpleGraph<FilamentVertex, FilamentEdge> implements JIPipeData, JIPipeDesktopLegacyImageViewerOverlay, NapariOverlay {
 
     public Filaments3DGraphData() {
         super(FilamentEdge.class);
@@ -1356,5 +1362,30 @@ public class Filaments3DGraphData extends SimpleGraph<FilamentVertex, FilamentEd
         }, progressInfo);
 
         return reference;
+    }
+
+    @Override
+    public Set<Class<? extends JIPipeDesktopLegacyImageViewerPlugin>> getRequiredLegacyImageViewerPlugins() {
+        return Collections.singleton(FilamentsManagerPlugin2D.class);
+    }
+
+    @Override
+    public List<Path> exportOverlayToNapari(ImagePlus imp, Path outputDirectory, String prefix, JIPipeProgressInfo progressInfo) {
+        if(!isEmpty()) {
+            Path outputFile = outputDirectory.resolve(prefix + "_filaments.tif");
+
+            progressInfo.log("Exporting " + this);
+            FilamentsDrawer filamentsDrawer = new FilamentsDrawer();
+            ImagePlus rendered = ImageJUtils.newBlankOf(imp, BitDepth.ColorRGB);
+            ImageJUtils.forEachIndexedZCTSlice(rendered, (ip, index) -> {
+                filamentsDrawer.drawFilamentsOnProcessor(this, (ColorProcessor) ip, index.getZ(), index.getC(), index.getT());
+            }, progressInfo);
+            IJ.saveAsTiff(rendered, outputFile.toString());
+
+            return Collections.singletonList(outputFile);
+        }
+        else {
+            return Collections.emptyList();
+        }
     }
 }

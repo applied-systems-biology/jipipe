@@ -23,6 +23,7 @@ import org.hkijena.jipipe.api.project.JIPipeProject;
 import org.hkijena.jipipe.plugins.JIPipePrepackagedDefaultJavaPlugin;
 import org.hkijena.jipipe.plugins.core.CorePlugin;
 import org.hkijena.jipipe.plugins.ij3d.IJ3DPlugin;
+import org.hkijena.jipipe.plugins.ij3d.nodes.overlay.SetOverlay3DAlgorithm;
 import org.hkijena.jipipe.plugins.ijfilaments.datatypes.Filaments3DGraphData;
 import org.hkijena.jipipe.plugins.ijfilaments.datatypes.FilamentsToRoi3dDataTypeConverter;
 import org.hkijena.jipipe.plugins.ijfilaments.datatypes.FilamentsToRoiDataTypeConverter;
@@ -40,6 +41,7 @@ import org.hkijena.jipipe.plugins.ijfilaments.nodes.measure.MeasureFilamentsAlgo
 import org.hkijena.jipipe.plugins.ijfilaments.nodes.measure.MeasureVerticesAlgorithm;
 import org.hkijena.jipipe.plugins.ijfilaments.nodes.merge.MergeFilamentsAlgorithm;
 import org.hkijena.jipipe.plugins.ijfilaments.nodes.modify.*;
+import org.hkijena.jipipe.plugins.ijfilaments.nodes.overlay.SetOverlayFilamentsAlgorithm;
 import org.hkijena.jipipe.plugins.ijfilaments.nodes.process.FixOverlapsNonBranchingAlgorithm;
 import org.hkijena.jipipe.plugins.ijfilaments.nodes.process.RemoveDuplicateVerticesAlgorithm;
 import org.hkijena.jipipe.plugins.ijfilaments.nodes.process.SimplifyFilamentsAlgorithm;
@@ -230,6 +232,8 @@ public class FilamentsPlugin extends JIPipePrepackagedDefaultJavaPlugin {
 
         registerNodeType("filaments-remove-vertex-value-backups", RemoveVertexValueBackupsAlgorithm.class, UIUtils.getIconURLFromResources("actions/insert-math-expression.png"));
         registerNodeType("filaments-restore-vertex-value-backups", RestoreVertexValueBackupAlgorithm.class, UIUtils.getIconURLFromResources("actions/insert-math-expression.png"));
+
+        registerNodeType("filaments-set-overlay", SetOverlayFilamentsAlgorithm.class, UIUtils.getIconURLFromResources("actions/roi.png"));
     }
 
 

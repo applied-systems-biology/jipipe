@@ -64,23 +64,6 @@ public class PythonPlugin extends JIPipePrepackagedDefaultJavaPlugin {
         getMetadata().addCategories(PluginCategoriesEnumParameter.CATEGORY_SCRIPTING);
     }
 
-    public static PythonEnvironment getEnvironment(JIPipeProject project, OptionalPythonEnvironment nodeEnvironment) {
-        if (nodeEnvironment.isEnabled()) {
-            return nodeEnvironment.getContent();
-        }
-        if (project != null && project.getSettingsSheet(PythonPluginProjectSettings.class).getProjectDefaultEnvironment().isEnabled()) {
-            return project.getSettingsSheet(PythonPluginProjectSettings.class).getProjectDefaultEnvironment().getContent();
-        }
-        return PythonPluginApplicationSettings.getInstance().getReadOnlyDefaultEnvironment();
-    }
-
-    public static JIPipePythonAdapterLibraryEnvironment getAdapterEnvironment(JIPipeProject project) {
-        if (project != null && project.getSettingsSheet(PythonPluginProjectSettings.class).getProjectPythonAdapterLibraryEnvironment().isEnabled()) {
-            return project.getSettingsSheet(PythonPluginProjectSettings.class).getProjectPythonAdapterLibraryEnvironment().getContent();
-        }
-        return JIPipePythonPluginAdapterApplicationSettings.getInstance().getReadOnlyDefaultEnvironment();
-    }
-
     @Override
     public StringList getDependencyProvides() {
         return new StringList();
@@ -93,7 +76,7 @@ public class PythonPlugin extends JIPipePrepackagedDefaultJavaPlugin {
 
     @Override
     public String getName() {
-        return "Python integration";
+        return "Python integration (nodes)";
     }
 
     @Override
@@ -103,51 +86,6 @@ public class PythonPlugin extends JIPipePrepackagedDefaultJavaPlugin {
 
     @Override
     public void register(JIPipe jiPipe, Context context, JIPipeProgressInfo progressInfo) {
-        PythonPluginApplicationSettings settings = new PythonPluginApplicationSettings();
-        JIPipePythonPluginAdapterApplicationSettings adapterExtensionSettings = new JIPipePythonPluginAdapterApplicationSettings();
-
-        registerEnvironment(PythonEnvironment.class,
-                PythonEnvironment.List.class,
-                settings,
-                PythonEnvironment.ENVIRONMENT_ID,
-                "Python environment",
-                "A Python environment",
-                UIUtils.getIconFromResources("apps/python.png"));
-        registerParameterType("optional-python-environment",
-                OptionalPythonEnvironment.class,
-                null,
-                null,
-                "Optional Python environment",
-                "An optional Python environment",
-                null);
-
-        // JIPipe Python adapter
-        registerEnvironment(JIPipePythonAdapterLibraryEnvironment.class,
-                JIPipePythonAdapterLibraryEnvironment.List.class,
-                settings,
-                JIPipePythonAdapterLibraryEnvironment.ENVIRONMENT_ID,
-                "JIPipe Python adapter library",
-                "Additional library for Python",
-                UIUtils.getIconFromResources("actions/plugins.png"));
-        registerParameterType("optional-" + JIPipePythonAdapterLibraryEnvironment.ENVIRONMENT_ID,
-                OptionalJIPipePythonAdapterLibraryEnvironment.class,
-                null,
-                null,
-                "Optional JIPipe Python adapter library",
-                "An optional JIPipe Python adapter library",
-                null);
-
-        registerEnumParameterType("python-environment-type",
-                PythonEnvironmentType.class,
-                "Python environment type",
-                "A Python environment type");
-        registerApplicationSettingsSheet(settings);
-        registerApplicationSettingsSheet(adapterExtensionSettings);
-        registerProjectSettingsSheet(PythonPluginProjectSettings.class);
-
-        registerEnvironmentInstaller(PythonEnvironment.class, SelectCondaEnvPythonInstaller.class, UIUtils.getIconFromResources("actions/project-open.png"));
-        registerEnvironmentInstaller(PythonEnvironment.class, SelectSystemPythonInstaller.class, UIUtils.getIconFromResources("actions/project-open.png"));
-        registerEnvironmentInstaller(PythonEnvironment.class, SelectVirtualEnvPythonInstaller.class, UIUtils.getIconFromResources("actions/project-open.png"));
 
         registerNodeType("python-script", JythonScriptAlgorithm.class, UIUtils.getIconURLFromResources("apps/python.png"));
         registerNodeType("python-script-iterating-simple", SimpleIteratingJythonScriptAlgorithm.class, UIUtils.getIconURLFromResources("apps/python.png"));
@@ -158,11 +96,6 @@ public class PythonPlugin extends JIPipePrepackagedDefaultJavaPlugin {
         registerNodeType("cpython-script-merging", MergingPythonScriptAlgorithm.class, UIUtils.getIconURLFromResources("apps/python.png"));
 
         registerNodeExamplesFromResources(RESOURCES, "examples");
-    }
-
-    @Override
-    public List<ImageIcon> getSplashIcons() {
-        return Arrays.asList(UIUtils.getIcon32FromResources("apps/python.png"));
     }
 
     @Override

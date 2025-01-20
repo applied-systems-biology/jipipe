@@ -155,7 +155,7 @@ public class JIPipeRunAlgorithmCommand extends DynamicCommand implements Initial
         JIPipeProjectCompartment projectCompartment = project.addCompartment("Default");
         project.getGraph().insertNode(algorithm, projectCompartment.getProjectCompartmentUUID());
         JIPipeGraphRunConfiguration runConfiguration = new JIPipeGraphRunConfiguration();
-        runConfiguration.setOutputPath(project.getTemporaryDirectory());
+        runConfiguration.setOutputPath(project.newTemporaryDirectory());
         runConfiguration.setNumThreads(threads);
         runConfiguration.setLoadFromCache(false);
         runConfiguration.setStoreToCache(true);

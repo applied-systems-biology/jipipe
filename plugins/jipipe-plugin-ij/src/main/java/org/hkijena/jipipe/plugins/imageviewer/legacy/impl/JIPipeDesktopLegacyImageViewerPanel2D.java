@@ -22,6 +22,7 @@ import ij.process.ImageStatistics;
 import org.apache.commons.lang3.math.NumberUtils;
 import org.hkijena.jipipe.JIPipe;
 import org.hkijena.jipipe.api.JIPipeWorkbench;
+import org.hkijena.jipipe.api.data.JIPipeData;
 import org.hkijena.jipipe.api.run.JIPipeRunnableQueue;
 import org.hkijena.jipipe.desktop.app.JIPipeDesktopWorkbench;
 import org.hkijena.jipipe.desktop.app.JIPipeDesktopWorkbenchAccess;
@@ -35,6 +36,7 @@ import org.hkijena.jipipe.desktop.commons.components.ribbon.JIPipeDesktopSmallBu
 import org.hkijena.jipipe.plugins.imagejdatatypes.datatypes.ImagePlusData;
 import org.hkijena.jipipe.plugins.imagejdatatypes.display.OpenInImageJ3DViewerDataDisplayOperation;
 import org.hkijena.jipipe.plugins.imagejdatatypes.display.OpenInImageJDataDisplayOperation;
+import org.hkijena.jipipe.plugins.imagejdatatypes.display.OpenInNapariDataDisplayOperation;
 import org.hkijena.jipipe.plugins.imagejdatatypes.util.*;
 import org.hkijena.jipipe.plugins.imageviewer.legacy.JIPipeDesktopLegacyImageViewer;
 import org.hkijena.jipipe.plugins.imageviewer.legacy.api.JIPipeDesktopLegacyImageViewerPlugin2D;
@@ -58,6 +60,7 @@ import java.io.IOException;
 import java.nio.file.Path;
 import java.util.List;
 import java.util.*;
+import java.util.stream.Collectors;
 
 public class JIPipeDesktopLegacyImageViewerPanel2D extends JPanel implements JIPipeDesktopWorkbenchAccess {
 
@@ -439,10 +442,13 @@ public class JIPipeDesktopLegacyImageViewerPanel2D extends JPanel implements JIP
 
         imageBand.addLargeMenuButton("ImageJ", "Open the image in ImageJ", UIUtils.getIcon32FromResources("apps/imagej2.png"),
                 UIUtils.createMenuItem("Raw image", "Use the raw image", UIUtils.getIconFromResources("actions/image.png"), this::exportRawImageToImageJ),
-                UIUtils.createMenuItem("Rendered image", "Render the image (as displayed) and export that to ImageJ", UIUtils.getIconFromResources("actions/image.png"), () -> exportRenderedImageToImageJ()));
+                UIUtils.createMenuItem("Rendered image", "Render the image (as displayed) and export that to ImageJ", UIUtils.getIconFromResources("actions/image.png"), this::exportRenderedImageToImageJ));
         imageBand.addLargeMenuButton("3D viewer", "Opens the image in the ImageJ 3D viewer", UIUtils.getIcon32FromResources("apps/imagej2.png"),
                 UIUtils.createMenuItem("Raw image", "Use the raw image", UIUtils.getIconFromResources("actions/image.png"), this::exportRawImageToImageJ3DViewer),
-                UIUtils.createMenuItem("Rendered image", "Render the image (as displayed) and export that to ImageJ", UIUtils.getIconFromResources("actions/image.png"), () -> exportRenderedImageToImageJ3DViewer()));
+                UIUtils.createMenuItem("Rendered image", "Render the image (as displayed) and export that to ImageJ", UIUtils.getIconFromResources("actions/image.png"), this::exportRenderedImageToImageJ3DViewer));
+        imageBand.addLargeMenuButton("Napari", "Opens the image in Napari", UIUtils.getIcon32FromResources("apps/napari.png"),
+                UIUtils.createMenuItem("Raw image", "Use the raw image", UIUtils.getIconFromResources("actions/image.png"), this::exportToRawImageNapari),
+                UIUtils.createMenuItem("Rendered image", "Render the image (as displayed) and export that to Napari", UIUtils.getIconFromResources("actions/image.png"), this::exportRenderedImageToNapari));
 
         imageBand.addLargeMenuButton("Save TIFF", "Exports the image as *.tif", UIUtils.getIcon32FromResources("actions/filesave.png"),
                 UIUtils.createMenuItem("Raw image", "Save the raw image", UIUtils.getIconFromResources("actions/filesave.png"), this::saveRawImageToTiff),
@@ -452,6 +458,22 @@ public class JIPipeDesktopLegacyImageViewerPanel2D extends JPanel implements JIP
         snapshotBand.addSmallButton("To PNG (all)", "Exports the all slices as image file", UIUtils.getIconFromResources("actions/qlipper.png"), this::exportAllSlicesToPNG);
         snapshotBand.addSmallButton("To movie", "Exports the all slices as image file", UIUtils.getIconFromResources("actions/filmgrain.png"), this::exportVideo);
         snapshotBand.add(exportDisplayedScaleToggle);
+    }
+
+    private void exportRenderedImageToNapari() {
+        viewerRunnerQueue.runInDialog(getDesktopWorkbench(), this, new Stack2DRendererRun(getImageViewer(), "Export rendered image to Napari", 1, (renderedImage) -> {
+            SwingUtilities.invokeLater(() -> {
+                ImagePlusData data = new ImagePlusData(renderedImage);
+                data.setOverlays(getImageViewer().getDataOverlays());
+                new OpenInNapariDataDisplayOperation().display(data, getDisplayName(), getDesktopWorkbench(), null);
+            });
+        }));
+    }
+
+    private void exportToRawImageNapari() {
+        ImagePlusData data = new ImagePlusData(getImagePlus());
+        data.setOverlays(getImageViewer().getDataOverlays());
+        new OpenInNapariDataDisplayOperation().display(data, getDisplayName(), getDesktopWorkbench(), null);
     }
 
     private void saveRenderedImageToTiff() {
@@ -464,13 +486,17 @@ public class JIPipeDesktopLegacyImageViewerPanel2D extends JPanel implements JIP
     }
 
     private void exportRawImageToImageJ3DViewer() {
-        new OpenInImageJ3DViewerDataDisplayOperation().display(new ImagePlusData(getImagePlus()), getDisplayName(), getDesktopWorkbench(), null);
+        ImagePlusData data = new ImagePlusData(getImagePlus());
+        data.setOverlays(getImageViewer().getDataOverlays());
+        new OpenInImageJ3DViewerDataDisplayOperation().display(data, getDisplayName(), getDesktopWorkbench(), null);
     }
 
     private void exportRenderedImageToImageJ3DViewer() {
         viewerRunnerQueue.runInDialog(getDesktopWorkbench(), this, new Stack2DRendererRun(getImageViewer(), "Export rendered image to 3D Image Viewer", 1, (renderedImage) -> {
             SwingUtilities.invokeLater(() -> {
-                new OpenInImageJ3DViewerDataDisplayOperation().display(new ImagePlusData(renderedImage), getDisplayName(), getDesktopWorkbench(), null);
+                ImagePlusData data = new ImagePlusData(renderedImage);
+                data.setOverlays(getImageViewer().getDataOverlays());
+                new OpenInImageJ3DViewerDataDisplayOperation().display(data, getDisplayName(), getDesktopWorkbench(), null);
             });
         }));
     }
@@ -478,13 +504,17 @@ public class JIPipeDesktopLegacyImageViewerPanel2D extends JPanel implements JIP
     private void exportRenderedImageToImageJ() {
         viewerRunnerQueue.runInDialog(getDesktopWorkbench(), this, new Stack2DRendererRun(getImageViewer(), "Export rendered image to 3D Image Viewer", 1, (renderedImage) -> {
             SwingUtilities.invokeLater(() -> {
-                new OpenInImageJDataDisplayOperation().display(new ImagePlusData(renderedImage), getDisplayName(), getDesktopWorkbench(), null);
+                ImagePlusData data = new ImagePlusData(renderedImage);
+                data.setOverlays(getImageViewer().getDataOverlays());
+                new OpenInImageJDataDisplayOperation().display(data, getDisplayName(), getDesktopWorkbench(), null);
             });
         }));
     }
 
     private void exportRawImageToImageJ() {
-        new OpenInImageJDataDisplayOperation().display(new ImagePlusData(getImagePlus()), getDisplayName(), getDesktopWorkbench(), null);
+        ImagePlusData data = new ImagePlusData(getImagePlus());
+        data.setOverlays(getImageViewer().getDataOverlays());
+        new OpenInImageJDataDisplayOperation().display(data, getDisplayName(), getDesktopWorkbench(), null);
     }
 
     public String getDisplayName() {

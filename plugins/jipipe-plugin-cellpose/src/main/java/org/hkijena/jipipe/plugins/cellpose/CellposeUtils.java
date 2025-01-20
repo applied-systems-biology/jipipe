@@ -68,7 +68,7 @@ public class CellposeUtils {
                 Collections.emptyList(),
                 additionalEnvironmentVariables,
                 suppressLogs,
-                progressInfo);
+                false, progressInfo);
     }
 
     public static String getCellposeCustomCode() {
