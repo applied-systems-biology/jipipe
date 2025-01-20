@@ -24,11 +24,9 @@ import org.hkijena.jipipe.api.data.JIPipeDataSource;
 import org.hkijena.jipipe.api.run.JIPipeRunnableQueue;
 import org.hkijena.jipipe.desktop.api.data.JIPipeDesktopDataDisplayOperation;
 import org.hkijena.jipipe.desktop.app.JIPipeDesktopWorkbench;
-import org.hkijena.jipipe.plugins.imagejdatatypes.algorithms.BioFormatsExporter2;
 import org.hkijena.jipipe.plugins.imagejdatatypes.datatypes.ImagePlusData;
 import org.hkijena.jipipe.plugins.imagejdatatypes.datatypes.OMEImageData;
 import org.hkijena.jipipe.plugins.imagejdatatypes.datatypes.ROI2DListData;
-import org.hkijena.jipipe.plugins.imagejdatatypes.util.ImageJUtils;
 import org.hkijena.jipipe.plugins.napari.NapariOverlay;
 import org.hkijena.jipipe.plugins.napari.NapariPlugin;
 import org.hkijena.jipipe.utils.UIUtils;
@@ -97,7 +95,7 @@ public class OpenInNapariDataDisplayOperation implements JIPipeDesktopDataDispla
 
             progressInfo.log("Napari should open in a few seconds ...");
             progressInfo.setLogToStdOut(true);
-            NapariPlugin.launchNapari(desktopWorkbench, exportFiles.stream().map(Path::toString).collect(Collectors.toList()), progressInfo);
+            NapariPlugin.launchNapari(desktopWorkbench, exportFiles.stream().map(Path::toString).collect(Collectors.toList()), progressInfo, false);
 
         }));
     }

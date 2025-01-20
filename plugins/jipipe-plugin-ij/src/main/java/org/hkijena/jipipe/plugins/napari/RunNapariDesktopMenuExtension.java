@@ -48,6 +48,6 @@ public class RunNapariDesktopMenuExtension extends JIPipeDesktopMenuExtension im
 
     @Override
     public void actionPerformed(ActionEvent e) {
-        NapariPlugin.launchNapari(getDesktopWorkbench(), Collections.emptyList());
+        NapariPlugin.launchNapari(getDesktopWorkbench(), Collections.emptyList(), true);
     }
 }
