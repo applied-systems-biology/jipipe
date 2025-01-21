@@ -17,13 +17,17 @@ import com.google.common.collect.Sets;
 import org.hkijena.jipipe.api.ConfigureJIPipeNode;
 import org.hkijena.jipipe.api.JIPipeProgressInfo;
 import org.hkijena.jipipe.api.SetJIPipeDocumentation;
+import org.hkijena.jipipe.api.annotation.JIPipeDataAnnotationMergeMode;
+import org.hkijena.jipipe.api.annotation.JIPipeTextAnnotationMergeMode;
 import org.hkijena.jipipe.api.nodes.AddJIPipeInputSlot;
 import org.hkijena.jipipe.api.nodes.AddJIPipeOutputSlot;
 import org.hkijena.jipipe.api.nodes.JIPipeGraphNodeRunContext;
 import org.hkijena.jipipe.api.nodes.JIPipeNodeInfo;
 import org.hkijena.jipipe.api.nodes.algorithm.JIPipeIteratingAlgorithm;
+import org.hkijena.jipipe.api.nodes.algorithm.JIPipeMergingAlgorithm;
 import org.hkijena.jipipe.api.nodes.categories.TableNodeTypeCategory;
 import org.hkijena.jipipe.api.nodes.iterationstep.JIPipeIterationContext;
+import org.hkijena.jipipe.api.nodes.iterationstep.JIPipeMultiIterationStep;
 import org.hkijena.jipipe.api.nodes.iterationstep.JIPipeSingleIterationStep;
 import org.hkijena.jipipe.api.parameters.JIPipeParameter;
 import org.hkijena.jipipe.plugins.expressions.AddJIPipeExpressionParameterVariable;
@@ -39,17 +43,17 @@ import java.util.*;
 /**
  * Algorithm that integrates columns
  */
-@SetJIPipeDocumentation(name = "Merge table columns (supplement, iterative)", description = "Merges columns from the source table into the target table. You can choose one or multiple reference columns that determine which rows from each table should be merged together. " +
-        "Please note that this node can only merge two tables per iteration step. Use the 'Merge table columns (supplement)' node if you for example want to merge multiple sources into one/multiple target(s).")
+@SetJIPipeDocumentation(name = "Merge table columns (supplement)", description = "Merges columns from the source table into the target table. You can choose one or multiple reference columns that determine which rows from each table should be merged together.")
 @ConfigureJIPipeNode(nodeTypeCategory = TableNodeTypeCategory.class, menuPath = "Merge")
-@AddJIPipeInputSlot(value = ResultsTableData.class, name = "Target", create = true)
+@AddJIPipeInputSlot(value = ResultsTableData.class, name = "Target", create = true, description = "The tables that should be supplemented with information from the source")
 @AddJIPipeInputSlot(value = ResultsTableData.class, name = "Source", create = true)
 @AddJIPipeOutputSlot(value = ResultsTableData.class, name = "Output", create = true)
-public class MergeTableColumnsSupplementAlgorithm extends JIPipeIteratingAlgorithm {
+public class MergeTableColumnsSupplementMergingAlgorithm extends JIPipeMergingAlgorithm {
 
     private TableColumnNormalization rowNormalization = TableColumnNormalization.ZeroOrEmpty;
     private StringQueryExpression columnFilter = new StringQueryExpression();
     private StringQueryExpression referenceColumns = new StringQueryExpression("false");
+    private boolean restoreOriginalAnnotations = true;
 
     private boolean extendTarget = true;
 
@@ -60,7 +64,7 @@ public class MergeTableColumnsSupplementAlgorithm extends JIPipeIteratingAlgorit
      *
      * @param info algorithm info
      */
-    public MergeTableColumnsSupplementAlgorithm(JIPipeNodeInfo info) {
+    public MergeTableColumnsSupplementMergingAlgorithm(JIPipeNodeInfo info) {
         super(info);
     }
 
@@ -69,76 +73,97 @@ public class MergeTableColumnsSupplementAlgorithm extends JIPipeIteratingAlgorit
      *
      * @param other the original
      */
-    public MergeTableColumnsSupplementAlgorithm(MergeTableColumnsSupplementAlgorithm other) {
+    public MergeTableColumnsSupplementMergingAlgorithm(MergeTableColumnsSupplementMergingAlgorithm other) {
         super(other);
         this.rowNormalization = other.rowNormalization;
         this.columnFilter = new StringQueryExpression(other.columnFilter);
         this.referenceColumns = new StringQueryExpression(other.referenceColumns);
         this.extendTarget = other.extendTarget;
         this.skipEmptyTarget = other.skipEmptyTarget;
+        this.restoreOriginalAnnotations = other.restoreOriginalAnnotations;
     }
 
     @Override
-    protected void runIteration(JIPipeSingleIterationStep iterationStep, JIPipeIterationContext iterationContext, JIPipeGraphNodeRunContext runContext, JIPipeProgressInfo progressInfo) {
-        ResultsTableData inputTarget = new ResultsTableData(iterationStep.getInputData("Target", ResultsTableData.class, progressInfo));
-        ResultsTableData inputSource = new ResultsTableData(iterationStep.getInputData("Source", ResultsTableData.class, progressInfo));
+    protected void runIteration(JIPipeMultiIterationStep iterationStep, JIPipeIterationContext iterationContext, JIPipeGraphNodeRunContext runContext, JIPipeProgressInfo progressInfo) {
 
         JIPipeExpressionVariablesMap variables = new JIPipeExpressionVariablesMap();
         variables.putAnnotations(iterationStep.getMergedTextAnnotations());
 
-        // Choose the reference columns
-        List<String> selectedReferenceColumns = referenceColumns.queryAll(new ArrayList<>(Sets.union(new HashSet<>(inputTarget.getColumnNames()), new HashSet<>(inputSource.getColumnNames()))), variables);
-        Map<String, ResultsTableData> splitInputTarget = splitTableByCondition(inputTarget, selectedReferenceColumns, "target");
-        Map<String, ResultsTableData> splitInputSource = splitTableByCondition(inputSource, selectedReferenceColumns, "source");
+        for (int targetRow : iterationStep.getInputRows("Target")) {
+            ResultsTableData inputTarget = new ResultsTableData(iterationStep.getInputData("Target", targetRow, ResultsTableData.class, progressInfo));
+            ResultsTableData outputTable = new ResultsTableData();
+            outputTable.copyColumnSchemaFrom(inputTarget);
 
-        // For non-unique column names from source -> target generate new values
-        Map<String, String> sourceToTargetColumnNameMap = new HashMap<>();
-        {
-            Set<String> existing = new HashSet<>(inputTarget.getColumnNames());
-            for (String columnName : inputSource.getColumnNames()) {
-                String newColumnName;
-                if (selectedReferenceColumns.contains(columnName))
-                    newColumnName = columnName;
-                else {
-                    newColumnName = StringUtils.makeUniqueString(columnName, ".", existing);
+            for (int sourceRow : iterationStep.getInputRows("Source")) {
+                ResultsTableData inputSource = new ResultsTableData(iterationStep.getInputData("Source", sourceRow, ResultsTableData.class, progressInfo));
+
+                // Choose the reference columns
+                List<String> selectedReferenceColumns = referenceColumns.queryAll(new ArrayList<>(Sets.union(new HashSet<>(inputTarget.getColumnNames()), new HashSet<>(inputSource.getColumnNames()))), variables);
+                Map<String, ResultsTableData> splitInputTarget = splitTableByCondition(inputTarget, selectedReferenceColumns, "target");
+                Map<String, ResultsTableData> splitInputSource = splitTableByCondition(inputSource, selectedReferenceColumns, "source");
+
+                // For non-unique column names from source -> target generate new values
+                Map<String, String> sourceToTargetColumnNameMap = new HashMap<>();
+                {
+                    Set<String> existing = new HashSet<>(inputTarget.getColumnNames());
+                    for (String columnName : inputSource.getColumnNames()) {
+                        String newColumnName;
+                        if (selectedReferenceColumns.contains(columnName))
+                            newColumnName = columnName;
+                        else {
+                            newColumnName = StringUtils.makeUniqueString(columnName, ".", existing);
+                        }
+                        existing.add(newColumnName);
+                        sourceToTargetColumnNameMap.put(columnName, newColumnName);
+                    }
                 }
-                existing.add(newColumnName);
-                sourceToTargetColumnNameMap.put(columnName, newColumnName);
+
+
+
+                for (String condition : Sets.union(splitInputTarget.keySet(), splitInputSource.keySet())) {
+                    ResultsTableData target = splitInputTarget.getOrDefault(condition, new ResultsTableData());
+                    ResultsTableData source = splitInputSource.getOrDefault(condition, new ResultsTableData());
+                    boolean targetWasEmpty = target.getRowCount() == 0;
+                    if (target.getRowCount() <= 0 && skipEmptyTarget)
+                        continue;
+                    if (!extendTarget && source.getRowCount() > target.getRowCount()) {
+                        // Downsize the source table
+                        source = source.getRows(0, target.getRowCount());
+                    }
+                    // Apply normalization
+                    int nRow = Math.max(target.getRowCount(), source.getRowCount());
+                    target = rowNormalization.normalize(target, nRow);
+                    source = rowNormalization.normalize(source, nRow);
+
+                    // Apply merging
+                    ResultsTableData merged = target;
+                    for (String columnName : source.getColumnNames()) {
+                        if ((targetWasEmpty || !selectedReferenceColumns.contains(columnName)) && columnFilter.test(columnName, variables)) {
+                            String newColumnName = sourceToTargetColumnNameMap.get(columnName);
+                            merged.addColumn(newColumnName, source.getColumnReference(columnName), true);
+                        }
+                    }
+
+                    // Write to output
+                    outputTable.addRows(merged);
+                }
+            }
+
+            if(restoreOriginalAnnotations) {
+                iterationStep.addOutputData(getFirstOutputSlot(),
+                        outputTable,
+                        iterationStep.getInputTextAnnotations("Target", targetRow),
+                        JIPipeTextAnnotationMergeMode.OverwriteExisting,
+                        iterationStep.getInputDataAnnotations("Target", targetRow),
+                        JIPipeDataAnnotationMergeMode.OverwriteExisting,
+                        progressInfo);
+            }
+            else {
+                iterationStep.addOutputData(getFirstOutputSlot(),
+                        outputTable,
+                        progressInfo);
             }
         }
-
-        ResultsTableData outputTable = new ResultsTableData();
-        outputTable.copyColumnSchemaFrom(inputTarget);
-
-        for (String condition : Sets.union(splitInputTarget.keySet(), splitInputSource.keySet())) {
-            ResultsTableData target = splitInputTarget.getOrDefault(condition, new ResultsTableData());
-            ResultsTableData source = splitInputSource.getOrDefault(condition, new ResultsTableData());
-            boolean targetWasEmpty = target.getRowCount() == 0;
-            if (target.getRowCount() <= 0 && skipEmptyTarget)
-                continue;
-            if (!extendTarget && source.getRowCount() > target.getRowCount()) {
-                // Downsize the source table
-                source = source.getRows(0, target.getRowCount());
-            }
-            // Apply normalization
-            int nRow = Math.max(target.getRowCount(), source.getRowCount());
-            target = rowNormalization.normalize(target, nRow);
-            source = rowNormalization.normalize(source, nRow);
-
-            // Apply merging
-            ResultsTableData merged = target;
-            for (String columnName : source.getColumnNames()) {
-                if ((targetWasEmpty || !selectedReferenceColumns.contains(columnName)) && columnFilter.test(columnName, variables)) {
-                    String newColumnName = sourceToTargetColumnNameMap.get(columnName);
-                    merged.addColumn(newColumnName, source.getColumnReference(columnName), true);
-                }
-            }
-
-            // Write to output
-            outputTable.addRows(merged);
-        }
-
-        iterationStep.addOutputData(getFirstOutputSlot(), outputTable, progressInfo);
     }
 
     private Map<String, ResultsTableData> splitTableByCondition(ResultsTableData data, List<String> selectedReferenceColumns, String dummyConditionLabel) {
@@ -176,6 +201,17 @@ public class MergeTableColumnsSupplementAlgorithm extends JIPipeIteratingAlgorit
         }
 
         return result;
+    }
+
+    @SetJIPipeDocumentation(name = "Restore original annotations", description = "If enabled, restore the original annotations of the data")
+    @JIPipeParameter("restore-original-annotations")
+    public boolean isRestoreOriginalAnnotations() {
+        return restoreOriginalAnnotations;
+    }
+
+    @JIPipeParameter("restore-original-annotations")
+    public void setRestoreOriginalAnnotations(boolean restoreOriginalAnnotations) {
+        this.restoreOriginalAnnotations = restoreOriginalAnnotations;
     }
 
     @SetJIPipeDocumentation(name = "Row normalization", description = "Determines how missing column values are handled if the input tables have different numbers of rows. " +

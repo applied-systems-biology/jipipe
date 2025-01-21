@@ -33,14 +33,9 @@ import org.hkijena.jipipe.api.nodes.algorithm.JIPipeIteratingAlgorithm;
 import org.hkijena.jipipe.api.nodes.categories.ImagesNodeTypeCategory;
 import org.hkijena.jipipe.api.nodes.iterationstep.JIPipeIterationContext;
 import org.hkijena.jipipe.api.nodes.iterationstep.JIPipeSingleIterationStep;
-import org.hkijena.jipipe.api.parameters.AbstractJIPipeParameterCollection;
-import org.hkijena.jipipe.api.parameters.JIPipeDynamicParameterCollection;
 import org.hkijena.jipipe.api.parameters.JIPipeParameter;
-import org.hkijena.jipipe.plugins.expressions.AddJIPipeExpressionParameterVariable;
 import org.hkijena.jipipe.plugins.expressions.JIPipeExpressionParameter;
-import org.hkijena.jipipe.plugins.expressions.JIPipeExpressionParameterSettings;
 import org.hkijena.jipipe.plugins.expressions.JIPipeExpressionVariablesMap;
-import org.hkijena.jipipe.plugins.expressions.variables.JIPipeTextAnnotationsExpressionParameterVariablesInfo;
 import org.hkijena.jipipe.plugins.imagejalgorithms.utils.AlignedImage5DSliceIndexExpressionParameterVariablesInfo;
 import org.hkijena.jipipe.plugins.imagejalgorithms.utils.turboreg.TurboRegResult;
 import org.hkijena.jipipe.plugins.imagejalgorithms.utils.turboreg.TurboRegTransformationInfo;
@@ -170,8 +165,8 @@ public class TurboRegRegistration2DSingleAlgorithm extends JIPipeIteratingAlgori
         List<JIPipeDataAnnotation> dataAnnotations = new ArrayList<>();
 
         if(restoreOriginalAnnotations) {
-           textAnnotations = iterationStep.getOriginalTextAnnotations("Input");
-           dataAnnotations = iterationStep.getOriginalDataAnnotations("Input");
+           textAnnotations = iterationStep.getInputTextAnnotations("Input");
+           dataAnnotations = iterationStep.getInputDataAnnotations("Input");
         }
 
         if (transformationType == TurboRegTransformationType.GenericTransformation) {

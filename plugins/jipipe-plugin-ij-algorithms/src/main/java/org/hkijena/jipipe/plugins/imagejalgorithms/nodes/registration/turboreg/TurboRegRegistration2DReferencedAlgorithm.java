@@ -164,10 +164,10 @@ public class TurboRegRegistration2DReferencedAlgorithm extends JIPipeIteratingAl
         List<JIPipeDataAnnotation> inputDataAnnotations = new ArrayList<>();
 
         if(restoreOriginalAnnotations) {
-           referenceTextAnnotations = iterationStep.getOriginalTextAnnotations("Reference");
-           inputTextAnnotations = iterationStep.getOriginalTextAnnotations("Input");
-           referenceDataAnnotations = iterationStep.getOriginalDataAnnotations("Reference");
-           inputDataAnnotations = iterationStep.getOriginalDataAnnotations("Input");
+           referenceTextAnnotations = iterationStep.getInputTextAnnotations("Reference");
+           inputTextAnnotations = iterationStep.getInputTextAnnotations("Input");
+           referenceDataAnnotations = iterationStep.getInputDataAnnotations("Reference");
+           inputDataAnnotations = iterationStep.getInputDataAnnotations("Input");
         }
 
         if (transformationType == TurboRegTransformationType.GenericTransformation) {

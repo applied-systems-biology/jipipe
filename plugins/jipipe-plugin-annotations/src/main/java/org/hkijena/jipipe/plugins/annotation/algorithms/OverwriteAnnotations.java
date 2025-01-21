@@ -68,7 +68,7 @@ public class OverwriteAnnotations extends JIPipeIteratingAlgorithm {
         getDefaultCustomExpressionVariables().writeToVariables(variables);
 
         // Remove annotations from target (via original annotations)
-        Map<String, String> targetAnnotationMap = JIPipeTextAnnotation.annotationListToMap(iterationStep.getOriginalTextAnnotations("Target"), JIPipeTextAnnotationMergeMode.OverwriteExisting);
+        Map<String, String> targetAnnotationMap = JIPipeTextAnnotation.annotationListToMap(iterationStep.getInputTextAnnotations("Target"), JIPipeTextAnnotationMergeMode.OverwriteExisting);
         variables.set("target.annotations", targetAnnotationMap);
         for (Map.Entry<String, String> entry : targetAnnotationMap.entrySet()) {
             variables.set("name", entry.getValue());
@@ -80,8 +80,8 @@ public class OverwriteAnnotations extends JIPipeIteratingAlgorithm {
 
         // Overwrite
         List<JIPipeTextAnnotation> annotations = new ArrayList<>();
-        variables.set("target.annotations", JIPipeTextAnnotation.annotationListToMap(iterationStep.getOriginalTextAnnotations("Source"), JIPipeTextAnnotationMergeMode.OverwriteExisting));
-        for (JIPipeTextAnnotation originalAnnotation : iterationStep.getOriginalTextAnnotations("Source")) {
+        variables.set("target.annotations", JIPipeTextAnnotation.annotationListToMap(iterationStep.getInputTextAnnotations("Source"), JIPipeTextAnnotationMergeMode.OverwriteExisting));
+        for (JIPipeTextAnnotation originalAnnotation : iterationStep.getInputTextAnnotations("Source")) {
             variables.set("name", originalAnnotation.getName());
             variables.set("source.value", originalAnnotation.getValue());
             variables.set("target.value", targetAnnotationMap.getOrDefault(originalAnnotation.getName(), null));

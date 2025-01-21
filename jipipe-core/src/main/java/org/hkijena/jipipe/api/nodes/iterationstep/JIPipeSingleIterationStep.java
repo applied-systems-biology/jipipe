@@ -68,7 +68,7 @@ public class JIPipeSingleIterationStep implements JIPipeIterationStep, Comparabl
      * @param slot the slot
      * @return the annotations
      */
-    public List<JIPipeTextAnnotation> getOriginalTextAnnotations(JIPipeDataSlot slot) {
+    public List<JIPipeTextAnnotation> getInputTextAnnotations(JIPipeDataSlot slot) {
         return slot.getTextAnnotations(inputSlotRows.get(slot));
     }
 
@@ -78,8 +78,8 @@ public class JIPipeSingleIterationStep implements JIPipeIterationStep, Comparabl
      * @param slotName the slot
      * @return the annotations
      */
-    public List<JIPipeTextAnnotation> getOriginalTextAnnotations(String slotName) {
-        return getOriginalTextAnnotations(node.getInputSlot(slotName));
+    public List<JIPipeTextAnnotation> getInputTextAnnotations(String slotName) {
+        return getInputTextAnnotations(node.getInputSlot(slotName));
     }
 
     /**
@@ -88,7 +88,7 @@ public class JIPipeSingleIterationStep implements JIPipeIterationStep, Comparabl
      * @param slot the slot
      * @return the annotations
      */
-    public List<JIPipeDataAnnotation> getOriginalDataAnnotations(JIPipeDataSlot slot) {
+    public List<JIPipeDataAnnotation> getInputDataAnnotations(JIPipeDataSlot slot) {
         return slot.getDataAnnotations(inputSlotRows.get(slot));
     }
 
@@ -98,8 +98,8 @@ public class JIPipeSingleIterationStep implements JIPipeIterationStep, Comparabl
      * @param slotName the slot
      * @return the annotations
      */
-    public List<JIPipeDataAnnotation> getOriginalDataAnnotations(String slotName) {
-        return getOriginalDataAnnotations(node.getInputSlot(slotName));
+    public List<JIPipeDataAnnotation> getInputDataAnnotations(String slotName) {
+        return getInputDataAnnotations(node.getInputSlot(slotName));
     }
 
     /**

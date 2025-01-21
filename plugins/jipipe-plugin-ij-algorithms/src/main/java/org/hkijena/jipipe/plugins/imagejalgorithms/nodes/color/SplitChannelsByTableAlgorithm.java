@@ -149,7 +149,7 @@ public class SplitChannelsByTableAlgorithm extends JIPipeIteratingAlgorithm {
             }).collect(Collectors.toSet());
 
             // Get original annotations
-            Map<String, String> imageAnnotations = JIPipeTextAnnotation.annotationListToMap(iterationStep.getOriginalTextAnnotations("Image"),
+            Map<String, String> imageAnnotations = JIPipeTextAnnotation.annotationListToMap(iterationStep.getInputTextAnnotations("Image"),
                     JIPipeTextAnnotationMergeMode.OverwriteExisting);
 
             outer:

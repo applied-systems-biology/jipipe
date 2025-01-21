@@ -201,6 +201,20 @@ public class JIPipeMultiIterationStep implements JIPipeIterationStep, Comparable
     /**
      * Gets stored data from an input slot
      *
+     * @param <T>          Data type
+     * @param slotName     The slot name
+     * @param row the row
+     * @param dataClass    The data type that should be returned
+     * @param progressInfo data access progress
+     * @return Input data with provided name
+     */
+    public <T extends JIPipeData> T getInputData(String slotName, int row, Class<T> dataClass, JIPipeProgressInfo progressInfo) {
+        return getInputData(node.getInputSlot(slotName), row, dataClass, progressInfo);
+    }
+
+    /**
+     * Gets stored data from an input slot
+     *
      * @param slotName The slot name
      * @return Input data with provided name
      */
@@ -227,6 +241,24 @@ public class JIPipeMultiIterationStep implements JIPipeIterationStep, Comparable
             result.add(slot.getData(row, dataClass, progressInfo));
         }
         return result;
+    }
+
+    /**
+     * Gets stored data from an input slot
+     *
+     * @param <T>          Data type
+     * @param slot         The slot
+     * @param row the row
+     * @param dataClass    The data type that should be returned
+     * @param progressInfo data access progress
+     * @return Input data with provided name
+     */
+    public <T extends JIPipeData> T getInputData(JIPipeDataSlot slot, int row, Class<T> dataClass, JIPipeProgressInfo progressInfo) {
+        if (slot.getNode() != node)
+            throw new IllegalArgumentException("The provided slot does not belong to the data interface algorithm!");
+        if (!slot.isInput())
+            throw new IllegalArgumentException("Slot is not an input slot!");
+       return slot.getData(row, dataClass, progressInfo);
     }
 
     /**
@@ -578,22 +610,46 @@ public class JIPipeMultiIterationStep implements JIPipeIterationStep, Comparable
 
     /**
      * Gets the original annotations of given slot
+     * This returns all annotations (of all rows)
      *
      * @param slot the slot
      * @return the annotations
      */
-    public List<JIPipeTextAnnotation> getOriginalAnnotations(JIPipeDataSlot slot) {
+    public List<JIPipeTextAnnotation> getInputTextAnnotations(JIPipeDataSlot slot) {
         return slot.getTextAnnotations(inputSlotRows.get(slot));
     }
 
     /**
      * Gets the original annotations of given slot
+     * This returns all annotations (of all rows)
      *
      * @param slotName the slot
      * @return the annotations
      */
-    public List<JIPipeTextAnnotation> getOriginalAnnotations(String slotName) {
-        return getOriginalAnnotations(node.getInputSlot(slotName));
+    public List<JIPipeTextAnnotation> getInputTextAnnotations(String slotName) {
+        return getInputTextAnnotations(node.getInputSlot(slotName));
+    }
+
+    /**
+     * Gets the original annotations of given slot
+     * This returns all annotations (of all rows)
+     *
+     * @param slot the slot
+     * @return the annotations
+     */
+    public List<JIPipeDataAnnotation> getInputDataAnnotations(JIPipeDataSlot slot) {
+        return slot.getDataAnnotations(inputSlotRows.get(slot));
+    }
+
+    /**
+     * Gets the original annotations of given slot
+     * This returns all annotations (of all rows)
+     *
+     * @param slotName the slot
+     * @return the annotations
+     */
+    public List<JIPipeDataAnnotation> getInputDataAnnotations(String slotName) {
+        return getInputDataAnnotations(node.getInputSlot(slotName));
     }
 
     /**
@@ -602,8 +658,8 @@ public class JIPipeMultiIterationStep implements JIPipeIterationStep, Comparable
      * @param slot the slot
      * @return the annotations
      */
-    public List<JIPipeDataAnnotation> getOriginalDataAnnotations(JIPipeDataSlot slot) {
-        return slot.getDataAnnotations(inputSlotRows.get(slot));
+    public List<JIPipeTextAnnotation> getInputTextAnnotations(JIPipeDataSlot slot, Collection<Integer> rows) {
+        return slot.getTextAnnotations(rows);
     }
 
     /**
@@ -612,8 +668,68 @@ public class JIPipeMultiIterationStep implements JIPipeIterationStep, Comparable
      * @param slotName the slot
      * @return the annotations
      */
-    public List<JIPipeDataAnnotation> getOriginalDataAnnotations(String slotName) {
-        return getOriginalDataAnnotations(node.getInputSlot(slotName));
+    public List<JIPipeTextAnnotation> getInputTextAnnotations(String slotName, Collection<Integer> rows) {
+        return getInputTextAnnotations(node.getInputSlot(slotName), rows);
+    }
+
+    /**
+     * Gets the original annotations of given slot
+     *
+     * @param slot the slot
+     * @return the annotations
+     */
+    public List<JIPipeDataAnnotation> getInputDataAnnotations(JIPipeDataSlot slot, Collection<Integer> rows) {
+        return slot.getDataAnnotations(rows);
+    }
+
+    /**
+     * Gets the original annotations of given slot
+     *
+     * @param slotName the slot
+     * @return the annotations
+     */
+    public List<JIPipeDataAnnotation> getInputDataAnnotations(String slotName, Collection<Integer> rows) {
+        return getInputDataAnnotations(node.getInputSlot(slotName), rows);
+    }
+
+    /**
+     * Gets the original annotations of given slot
+     *
+     * @param slot the slot
+     * @return the annotations
+     */
+    public List<JIPipeTextAnnotation> getInputTextAnnotations(JIPipeDataSlot slot, int row) {
+        return slot.getTextAnnotations(row);
+    }
+
+    /**
+     * Gets the original annotations of given slot
+     *
+     * @param slotName the slot
+     * @return the annotations
+     */
+    public List<JIPipeTextAnnotation> getInputTextAnnotations(String slotName, int row) {
+        return getInputTextAnnotations(node.getInputSlot(slotName), row);
+    }
+
+    /**
+     * Gets the original annotations of given slot
+     *
+     * @param slot the slot
+     * @return the annotations
+     */
+    public List<JIPipeDataAnnotation> getInputDataAnnotations(JIPipeDataSlot slot, int row) {
+        return slot.getDataAnnotations(row);
+    }
+
+    /**
+     * Gets the original annotations of given slot
+     *
+     * @param slotName the slot
+     * @return the annotations
+     */
+    public List<JIPipeDataAnnotation> getInputDataAnnotations(String slotName, int row) {
+        return getInputDataAnnotations(node.getInputSlot(slotName), row);
     }
 
     /**
