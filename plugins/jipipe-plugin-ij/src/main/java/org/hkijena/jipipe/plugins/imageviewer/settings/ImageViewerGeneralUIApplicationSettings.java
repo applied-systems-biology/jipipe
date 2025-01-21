@@ -29,34 +29,9 @@ import javax.swing.*;
 public class ImageViewerGeneralUIApplicationSettings extends JIPipeDefaultApplicationsSettingsSheet {
 
     public static String ID = "image-viewer-ui-general";
-    private boolean forceLegacyImageViewer = false;
-    private boolean disableVtk = false;
 
     public static ImageViewerGeneralUIApplicationSettings getInstance() {
         return JIPipe.getSettings().getById(ID, ImageViewerGeneralUIApplicationSettings.class);
-    }
-
-    @SetJIPipeDocumentation(name = "Disable VTK initialization", description = "Enable this option if you experience crashes related to VTK. " +
-            "Only the legacy (2D) image viewer will be available.")
-    @JIPipeParameter("disable-vtk")
-    public boolean isDisableVtk() {
-        return disableVtk;
-    }
-
-    @JIPipeParameter("disable-vtk")
-    public void setDisableVtk(boolean disableVtk) {
-        this.disableVtk = disableVtk;
-    }
-
-    @SetJIPipeDocumentation(name = "Force legacy image viewer", description = "If enabled, always use the legacy image viewer instead of the VTK-based one")
-    @JIPipeParameter("force-legacy-image-viewer")
-    public boolean isForceLegacyImageViewer() {
-        return forceLegacyImageViewer;
-    }
-
-    @JIPipeParameter("force-legacy-image-viewer")
-    public void setForceLegacyImageViewer(boolean forceLegacyImageViewer) {
-        this.forceLegacyImageViewer = forceLegacyImageViewer;
     }
 
     @Override
