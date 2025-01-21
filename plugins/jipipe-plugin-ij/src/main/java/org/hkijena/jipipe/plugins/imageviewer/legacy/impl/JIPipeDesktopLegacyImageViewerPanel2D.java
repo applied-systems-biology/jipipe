@@ -22,7 +22,6 @@ import ij.process.ImageStatistics;
 import org.apache.commons.lang3.math.NumberUtils;
 import org.hkijena.jipipe.JIPipe;
 import org.hkijena.jipipe.api.JIPipeWorkbench;
-import org.hkijena.jipipe.api.data.JIPipeData;
 import org.hkijena.jipipe.api.run.JIPipeRunnableQueue;
 import org.hkijena.jipipe.desktop.app.JIPipeDesktopWorkbench;
 import org.hkijena.jipipe.desktop.app.JIPipeDesktopWorkbenchAccess;
@@ -60,7 +59,6 @@ import java.io.IOException;
 import java.nio.file.Path;
 import java.util.List;
 import java.util.*;
-import java.util.stream.Collectors;
 
 public class JIPipeDesktopLegacyImageViewerPanel2D extends JPanel implements JIPipeDesktopWorkbenchAccess {
 
@@ -139,11 +137,9 @@ public class JIPipeDesktopLegacyImageViewerPanel2D extends JPanel implements JIP
         return workbench;
     }
 
-    private final Timer animationTimer = new Timer(250, e -> animateNextSlice());
-
     public LegacyImageViewer2DUIApplicationSettings getSettings() {
         return settings;
-    }
+    }    private final Timer animationTimer = new Timer(250, e -> animateNextSlice());
 
     public List<CompositeLayer> getOrderedCompositeBlendLayers() {
         return Collections.unmodifiableList(orderedCompositeBlendLayers);
@@ -248,17 +244,6 @@ public class JIPipeDesktopLegacyImageViewerPanel2D extends JPanel implements JIP
         uploadSliceToCanvas();
     }
 
-
-//    public void setRotationEnabled(boolean enabled) {
-//        rotateLeftButton.setVisible(enabled);
-//        rotateRightButton.setVisible(enabled);
-//        if (!enabled) {
-//            rotation = 0;
-//            refreshImageInfo();
-//            refreshSlice();
-//        }
-//    }
-
     private void initializeAnimationControls() {
         animationTimer.setRepeats(true);
         animationFPSControl.addChangeListener(e -> {
@@ -294,6 +279,17 @@ public class JIPipeDesktopLegacyImageViewerPanel2D extends JPanel implements JIP
             }
         });
     }
+
+
+//    public void setRotationEnabled(boolean enabled) {
+//        rotateLeftButton.setVisible(enabled);
+//        rotateRightButton.setVisible(enabled);
+//        if (!enabled) {
+//            rotation = 0;
+//            refreshImageInfo();
+//            refreshSlice();
+//        }
+//    }
 
     private void stopAnimations() {
         animationTimer.stop();
@@ -538,7 +534,6 @@ public class JIPipeDesktopLegacyImageViewerPanel2D extends JPanel implements JIP
         }
     }
 
-
     private void saveRawImageToTiff() {
         Path path = JIPipeFileChooserApplicationSettings.saveFile(this, JIPipeFileChooserApplicationSettings.LastDirectoryKey.Data, "Save as *.tif", UIUtils.EXTENSION_FILTER_TIFF);
         if (path != null) {
@@ -771,16 +766,15 @@ public class JIPipeDesktopLegacyImageViewerPanel2D extends JPanel implements JIP
         List<JIPipeDesktopLegacyImageViewerPlugin2D> plugins2D = imageViewer.getPlugins2D();
         for (int i = 0; i < plugins2D.size(); i++) {
             JIPipeDesktopLegacyImageViewerPlugin2D plugin = plugins2D.get(i);
-            if(plugin.isBuildingCustomPanel()) {
-                currentDockPanel.addDockPanel( "CUSTOM__" + DOCK_PANEL_PREFIX + plugin.getPanelName(),
+            if (plugin.isBuildingCustomPanel()) {
+                currentDockPanel.addDockPanel("CUSTOM__" + DOCK_PANEL_PREFIX + plugin.getPanelName(),
                         plugin.getPanelName(),
                         plugin.getPanelIcon(),
                         plugin.getPanelLocation(),
                         false,
                         i,
                         plugin.buildCustomPanel());
-            }
-            else {
+            } else {
                 JIPipeDesktopFormPanel formPanel = currentDockPanel.getPanelComponent(DOCK_PANEL_PREFIX + plugin.getPanelName(), JIPipeDesktopFormPanel.class);
                 if (formPanel == null) {
                     formPanel = new JIPipeDesktopFormPanel(null, JIPipeDesktopFormPanel.WITH_SCROLLING);
@@ -1092,6 +1086,8 @@ public class JIPipeDesktopLegacyImageViewerPanel2D extends JPanel implements JIP
             return channel;
         }
     }
+
+
 
 
 }

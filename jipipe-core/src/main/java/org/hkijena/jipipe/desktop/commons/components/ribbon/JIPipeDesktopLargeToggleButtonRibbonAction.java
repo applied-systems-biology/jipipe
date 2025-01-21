@@ -15,7 +15,6 @@ package org.hkijena.jipipe.desktop.commons.components.ribbon;
 
 import javax.swing.*;
 import java.awt.*;
-import java.awt.event.ActionListener;
 import java.util.function.Consumer;
 
 public class JIPipeDesktopLargeToggleButtonRibbonAction extends JIPipeDesktopToggleButtonRibbonAction {

@@ -23,7 +23,7 @@ public class ParametersDataViewer extends JIPipeDesktopDataViewer {
 
     @Override
     public void onDataDownloaded(JIPipeData data) {
-        if(data instanceof ParametersData){
+        if (data instanceof ParametersData) {
             panel.setParametersData((ParametersData) data);
         }
     }

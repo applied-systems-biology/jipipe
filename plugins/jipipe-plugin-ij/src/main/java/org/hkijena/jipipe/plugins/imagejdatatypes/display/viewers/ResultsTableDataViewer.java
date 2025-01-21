@@ -47,10 +47,9 @@ public class ResultsTableDataViewer extends JIPipeDesktopDataViewer {
 
     @Override
     public void onDataDownloaded(JIPipeData data) {
-        if(data instanceof ResultsTableData) {
+        if (data instanceof ResultsTableData) {
             tableEditor.setTableModel((ResultsTableData) data.duplicate(new JIPipeProgressInfo()));
-        }
-        else {
+        } else {
             tableEditor.setTableModel(new ResultsTableData());
         }
     }

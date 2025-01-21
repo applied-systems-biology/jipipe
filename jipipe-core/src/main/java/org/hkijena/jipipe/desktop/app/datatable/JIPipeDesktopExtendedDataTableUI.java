@@ -20,7 +20,10 @@ import org.hkijena.jipipe.api.annotation.JIPipeDataAnnotationMergeMode;
 import org.hkijena.jipipe.api.annotation.JIPipeTextAnnotation;
 import org.hkijena.jipipe.api.annotation.JIPipeTextAnnotationMergeMode;
 import org.hkijena.jipipe.api.cache.JIPipeCache;
-import org.hkijena.jipipe.api.data.*;
+import org.hkijena.jipipe.api.data.JIPipeData;
+import org.hkijena.jipipe.api.data.JIPipeDataInfo;
+import org.hkijena.jipipe.api.data.JIPipeDataSlot;
+import org.hkijena.jipipe.api.data.JIPipeDataTable;
 import org.hkijena.jipipe.api.parameters.JIPipeParameterCollection;
 import org.hkijena.jipipe.api.run.JIPipeRunnableQueue;
 import org.hkijena.jipipe.desktop.api.data.JIPipeDesktopDataDisplayOperation;
@@ -91,7 +94,7 @@ public class JIPipeDesktopExtendedDataTableUI extends JIPipeDesktopWorkbenchPane
      * @param workbenchUI     the workbench UI
      * @param dataTableStore  The slot
      * @param updateWithCache if the table should refresh on project cache changes
-     * @param externalRibbon if an external ribbon should be provided
+     * @param externalRibbon  if an external ribbon should be provided
      */
     public JIPipeDesktopExtendedDataTableUI(JIPipeDesktopWorkbench workbenchUI, Store<JIPipeDataTable> dataTableStore, boolean updateWithCache, boolean externalRibbon) {
         super(workbenchUI);
@@ -183,7 +186,7 @@ public class JIPipeDesktopExtendedDataTableUI extends JIPipeDesktopWorkbenchPane
         add(menuContainerPanel, BorderLayout.NORTH);
 
         // Ribbon
-        if(!externalRibbon) {
+        if (!externalRibbon) {
             menuContainerPanel.add(ribbon);
             buildRibbon(ribbon);
             ribbon.rebuildRibbon();

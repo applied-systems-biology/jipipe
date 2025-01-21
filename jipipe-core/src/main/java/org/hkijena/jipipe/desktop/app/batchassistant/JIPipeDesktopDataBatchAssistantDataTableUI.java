@@ -17,7 +17,10 @@ import org.hkijena.jipipe.JIPipe;
 import org.hkijena.jipipe.api.JIPipeProgressInfo;
 import org.hkijena.jipipe.api.annotation.JIPipeDataAnnotation;
 import org.hkijena.jipipe.api.annotation.JIPipeTextAnnotation;
-import org.hkijena.jipipe.api.data.*;
+import org.hkijena.jipipe.api.data.JIPipeData;
+import org.hkijena.jipipe.api.data.JIPipeDataInfo;
+import org.hkijena.jipipe.api.data.JIPipeDataSlot;
+import org.hkijena.jipipe.api.data.JIPipeDataTable;
 import org.hkijena.jipipe.api.parameters.JIPipeParameterCollection;
 import org.hkijena.jipipe.api.run.JIPipeRunnableQueue;
 import org.hkijena.jipipe.desktop.api.data.JIPipeDesktopDataDisplayOperation;
@@ -124,8 +127,8 @@ public class JIPipeDesktopDataBatchAssistantDataTableUI extends JIPipeDesktopWor
         dataTableModel = new JIPipeDesktopDataBatchAssistantTableModel(table, dataTable);
         try {
             table.setModel(dataTableModel);
+        } catch (Throwable ignored) {
         }
-        catch (Throwable ignored) {}
         dataTableModel.setScrollPane(scrollPane);
         if (JIPipeGeneralDataApplicationSettings.getInstance().isGenerateCachePreviews())
             table.setRowHeight(JIPipeGeneralDataApplicationSettings.getInstance().getPreviewSize());

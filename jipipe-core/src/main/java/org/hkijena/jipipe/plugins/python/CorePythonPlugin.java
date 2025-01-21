@@ -29,7 +29,6 @@ import org.hkijena.jipipe.plugins.python.adapter.OptionalJIPipePythonAdapterLibr
 import org.hkijena.jipipe.plugins.python.installers.SelectCondaEnvPythonInstaller;
 import org.hkijena.jipipe.plugins.python.installers.SelectSystemPythonInstaller;
 import org.hkijena.jipipe.plugins.python.installers.SelectVirtualEnvPythonInstaller;
-import org.hkijena.jipipe.utils.JIPipeResourceManager;
 import org.hkijena.jipipe.utils.UIUtils;
 import org.scijava.Context;
 import org.scijava.plugin.Plugin;

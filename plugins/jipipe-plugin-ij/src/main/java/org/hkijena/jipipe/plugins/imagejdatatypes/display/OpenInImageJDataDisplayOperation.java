@@ -17,8 +17,8 @@ import ij.ImagePlus;
 import org.hkijena.jipipe.JIPipe;
 import org.hkijena.jipipe.api.JIPipeProgressInfo;
 import org.hkijena.jipipe.api.data.JIPipeData;
-import org.hkijena.jipipe.desktop.api.data.JIPipeDesktopDataDisplayOperation;
 import org.hkijena.jipipe.api.data.JIPipeDataSource;
+import org.hkijena.jipipe.desktop.api.data.JIPipeDesktopDataDisplayOperation;
 import org.hkijena.jipipe.desktop.app.JIPipeDesktopWorkbench;
 import org.hkijena.jipipe.plugins.imagejdatatypes.datatypes.ImagePlusData;
 import org.hkijena.jipipe.plugins.imagejdatatypes.datatypes.OMEImageData;
@@ -34,11 +34,9 @@ public class OpenInImageJDataDisplayOperation implements JIPipeDesktopDataDispla
             image = ((ImagePlusData) data).getDuplicateImage();
         } else if (data instanceof OMEImageData) {
             image = ((OMEImageData) data).getDuplicateImage();
-        }
-        else if(JIPipe.getDataTypes().isConvertible(data.getClass(), ImagePlusData.class)) {
+        } else if (JIPipe.getDataTypes().isConvertible(data.getClass(), ImagePlusData.class)) {
             image = JIPipe.getDataTypes().convert(data, ImagePlusData.class, JIPipeProgressInfo.SILENT).getDuplicateImage();
-        }
-        else {
+        } else {
             throw new UnsupportedOperationException();
         }
         image.setTitle(displayName);

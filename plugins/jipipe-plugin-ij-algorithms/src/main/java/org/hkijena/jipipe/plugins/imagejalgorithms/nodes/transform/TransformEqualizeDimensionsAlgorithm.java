@@ -130,7 +130,7 @@ public class TransformEqualizeDimensionsAlgorithm extends JIPipeIteratingAlgorit
 
     @Override
     public boolean isParameterUIVisible(JIPipeParameterTree tree, JIPipeParameterCollection subParameter) {
-        if(!equalWidthAndHeight && subParameter == scale2DAlgorithm) {
+        if (!equalWidthAndHeight && subParameter == scale2DAlgorithm) {
             return false;
         }
         return super.isParameterUIVisible(tree, subParameter);
@@ -138,8 +138,8 @@ public class TransformEqualizeDimensionsAlgorithm extends JIPipeIteratingAlgorit
 
     @Override
     public boolean isParameterUIVisible(JIPipeParameterTree tree, JIPipeParameterAccess access) {
-        if(access.getSource() == scale2DAlgorithm) {
-            if("x-axis".equals(access.getKey()) || "y-axis".equals(access.getKey())) {
+        if (access.getSource() == scale2DAlgorithm) {
+            if ("x-axis".equals(access.getKey()) || "y-axis".equals(access.getKey())) {
                 return false;
             }
         }

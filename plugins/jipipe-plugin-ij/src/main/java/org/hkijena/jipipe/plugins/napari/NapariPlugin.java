@@ -46,37 +46,6 @@ public class NapariPlugin extends JIPipePrepackagedDefaultJavaPlugin {
             JIPipe.getJIPipeVersion(),
             "Napari integration");
 
-    @Override
-    public StringList getDependencyCitations() {
-        return new StringList("Sofroniew, N., Lambert, T., Bokota, G., Nunez-Iglesias, J., Sobolewski, P., Sweet, A., Gaifas, L., Evans, K., Burt, A., Doncila Pop, D., Yamauchi, K., Weber Mendonça, M., Buckley, G., Vierdag, W.-M., Royer, L., Can Solak, A., Harrington, K. I. S., Ahlers, J., Althviz Moré, D., … Zhao, R. (2025). napari: a multi-dimensional image viewer for Python (v0.5.6rc0). Zenodo. https://doi.org/10.5281/zenodo.14680029");
-    }
-
-    @Override
-    public String getName() {
-        return "Napari integration";
-    }
-
-    @Override
-    public HTMLText getDescription() {
-        return new HTMLText("Basic Napari integration into JIPipe");
-    }
-
-    @Override
-    public void register(JIPipe jiPipe, Context context, JIPipeProgressInfo progressInfo) {
-        registerApplicationSettingsSheet(new NapariPluginApplicationSettings());
-        registerMenuExtension(RunNapariDesktopMenuExtension.class);
-    }
-
-    @Override
-    public String getDependencyId() {
-        return "org.hkijena.jipipe:napari";
-    }
-
-    @Override
-    public StringList getDependencyProvides() {
-        return new StringList();
-    }
-
     public static PythonEnvironment getEnvironment() {
         return NapariPluginApplicationSettings.getInstance().getReadOnlyDefaultEnvironment();
     }
@@ -90,14 +59,13 @@ public class NapariPlugin extends JIPipePrepackagedDefaultJavaPlugin {
     public static void launchNapari(JIPipeDesktopWorkbench workbench, List<String> arguments, JIPipeProgressInfo progressInfo, boolean interactive) {
         PythonEnvironment environment = getEnvironment();
         if (!environment.generateValidityReport(new UnspecifiedValidationReportContext()).isValid()) {
-            if(interactive) {
+            if (interactive) {
                 JOptionPane.showMessageDialog(workbench.getWindow(),
                         "Napari is currently not correctly installed. Please check the project/application settings and ensure that Napari is setup correctly.",
                         "Launch Napari",
                         JOptionPane.ERROR_MESSAGE);
                 return;
-            }
-            else {
+            } else {
                 throw new RuntimeException("Napari is currently not correctly installed. Please check the project/application settings and ensure that Napari is setup correctly.");
             }
         }
@@ -106,7 +74,7 @@ public class NapariPlugin extends JIPipePrepackagedDefaultJavaPlugin {
             if (artifact instanceof JIPipeLocalArtifact) {
                 environment.applyConfigurationFromArtifact((JIPipeLocalArtifact) artifact, new JIPipeProgressInfo());
             } else if (artifact instanceof JIPipeRemoteArtifact) {
-                if(interactive) {
+                if (interactive) {
                     if (JOptionPane.showConfirmDialog(workbench.getWindow(), "The Napari version " + artifact.getVersion() + " is currently not downloaded. " +
                             "Download it now?", "Run Napari", JOptionPane.YES_NO_OPTION) == JOptionPane.YES_OPTION) {
                         JIPipeArtifactRepositoryInstallArtifactRun run = new JIPipeArtifactRepositoryInstallArtifactRun((JIPipeRemoteArtifact) artifact);
@@ -120,13 +88,12 @@ public class NapariPlugin extends JIPipePrepackagedDefaultJavaPlugin {
                     } else {
                         return;
                     }
-                }
-                else {
+                } else {
                     progressInfo.log("Napari is not installed. Downloading now.");
                     JIPipeArtifactRepositoryInstallArtifactRun run = new JIPipeArtifactRepositoryInstallArtifactRun((JIPipeRemoteArtifact) artifact);
                     run.setProgressInfo(progressInfo.resolve("Napari download"));
                     run.run();
-                    if(progressInfo.isCancelled()) {
+                    if (progressInfo.isCancelled()) {
                         return;
                     }
                     artifact = JIPipe.getArtifacts().queryCachedArtifact(artifact.getFullId());
@@ -164,5 +131,36 @@ public class NapariPlugin extends JIPipePrepackagedDefaultJavaPlugin {
         finalParameters.addAll(parameters);
 
         PythonUtils.runPython(finalParameters.toArray(new String[0]), environment, Collections.emptyList(), environmentVariables, false, detached, progressInfo);
+    }
+
+    @Override
+    public StringList getDependencyCitations() {
+        return new StringList("Sofroniew, N., Lambert, T., Bokota, G., Nunez-Iglesias, J., Sobolewski, P., Sweet, A., Gaifas, L., Evans, K., Burt, A., Doncila Pop, D., Yamauchi, K., Weber Mendonça, M., Buckley, G., Vierdag, W.-M., Royer, L., Can Solak, A., Harrington, K. I. S., Ahlers, J., Althviz Moré, D., … Zhao, R. (2025). napari: a multi-dimensional image viewer for Python (v0.5.6rc0). Zenodo. https://doi.org/10.5281/zenodo.14680029");
+    }
+
+    @Override
+    public String getName() {
+        return "Napari integration";
+    }
+
+    @Override
+    public HTMLText getDescription() {
+        return new HTMLText("Basic Napari integration into JIPipe");
+    }
+
+    @Override
+    public void register(JIPipe jiPipe, Context context, JIPipeProgressInfo progressInfo) {
+        registerApplicationSettingsSheet(new NapariPluginApplicationSettings());
+        registerMenuExtension(RunNapariDesktopMenuExtension.class);
+    }
+
+    @Override
+    public String getDependencyId() {
+        return "org.hkijena.jipipe:napari";
+    }
+
+    @Override
+    public StringList getDependencyProvides() {
+        return new StringList();
     }
 }

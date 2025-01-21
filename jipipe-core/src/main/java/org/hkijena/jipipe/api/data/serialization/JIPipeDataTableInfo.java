@@ -51,6 +51,7 @@ public class JIPipeDataTableInfo implements TableModel, List<JIPipeDataTableRowI
 
     /**
      * Converts the data table info an info instance
+     *
      * @param dataTable the data table
      */
     public JIPipeDataTableInfo(JIPipeDataTable dataTable) {

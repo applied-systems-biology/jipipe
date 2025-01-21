@@ -62,6 +62,12 @@ public class JIPipeDesktopDataViewerWindow extends JFrame implements JIPipeDeskt
     private final JIPipeDesktopWorkbench workbench;
     private final JIPipeDesktopRibbon ribbon = new JIPipeDesktopRibbon();
     private final JIPipeDesktopDockPanel dockPanel = new JIPipeDesktopDockPanel();
+    private final JPanel contentPane = new JPanel(new BorderLayout());
+    private final JToolBar staticStatusBar = new JToolBar();
+    private final JToolBar dynamicStatusBar = new JToolBar();
+    private final JButton dataTypeInfoButton = new JButton();
+    private final JToggleButton toggleFocusView = new JToggleButton(UIUtils.getIconFromResources("actions/view-fullscreen.png"));
+    private final JIPipeDesktopSmallToggleButtonRibbonAction toggleAutoRefreshFromCache;
     private JIPipeDataBrowser dataBrowser;
     private String displayName;
     private JIPipeLocalDataTableBrowser dataTableBrowser;
@@ -70,17 +76,11 @@ public class JIPipeDesktopDataViewerWindow extends JFrame implements JIPipeDeskt
     private int currentDataRow = -1;
     private int currentDataAnnotationColumn = -1;
     private JIPipeDesktopDataViewer currentDataViewer;
-    private final JPanel contentPane = new JPanel(new BorderLayout());
-    private final JToolBar staticStatusBar = new JToolBar();
-    private final JToolBar dynamicStatusBar = new JToolBar();
-    private final JButton dataTypeInfoButton = new JButton();
-    private final JToggleButton toggleFocusView = new JToggleButton(UIUtils.getIconFromResources("actions/view-fullscreen.png"));
-    private final JIPipeDesktopSmallToggleButtonRibbonAction toggleAutoRefreshFromCache;
 
     public JIPipeDesktopDataViewerWindow(JIPipeDesktopWorkbench workbench) {
         this.workbench = workbench;
         this.toggleAutoRefreshFromCache = new JIPipeDesktopSmallToggleButtonRibbonAction("Auto-refresh", "If enabled, automatically update the displayed data when the cache changes", UIUtils.getIconFromResources("actions/view-refresh.png"), true, (button) -> {
-            if(button.isSelected()) {
+            if (button.isSelected()) {
                 refreshFromLocalCache();
             }
         });
@@ -90,7 +90,7 @@ public class JIPipeDesktopDataViewerWindow extends JFrame implements JIPipeDeskt
         downloaderQueue.getFinishedEventEmitter().subscribe(this);
 
         // Listen to local cache
-        if(workbench.getProject() != null) {
+        if (workbench.getProject() != null) {
             workbench.getProject().getCache().getModifiedEventEmitter().subscribe(this);
         }
 
@@ -166,11 +166,10 @@ public class JIPipeDesktopDataViewerWindow extends JFrame implements JIPipeDeskt
     }
 
     private void updateFocusView() {
-        if(toggleFocusView.isSelected()) {
+        if (toggleFocusView.isSelected()) {
             dockPanel.setHideToolbars(true);
             ribbon.setVisible(false);
-        }
-        else {
+        } else {
             dockPanel.setHideToolbars(false);
             ribbon.setVisible(true);
         }
@@ -184,10 +183,9 @@ public class JIPipeDesktopDataViewerWindow extends JFrame implements JIPipeDeskt
 
         // Select the viewer
         Class<? extends JIPipeDesktopDataViewer> viewerClass;
-        if(dataBrowser != null) {
+        if (dataBrowser != null) {
             viewerClass = JIPipe.getDataTypes().getDefaultDataViewer(dataBrowser.getDataClass());
-        }
-        else {
+        } else {
             viewerClass = JIPipeDesktopDefaultDataViewer.class;
         }
         if (currentDataViewer != null && currentDataViewer.getClass() != viewerClass) {
@@ -210,7 +208,7 @@ public class JIPipeDesktopDataViewerWindow extends JFrame implements JIPipeDeskt
         currentDataViewer.postOnDataChanged();
 
         // Force a full revalidate
-        if(hasNewViewer) {
+        if (hasNewViewer) {
             revalidateDockLater();
         }
     }
@@ -220,7 +218,7 @@ public class JIPipeDesktopDataViewerWindow extends JFrame implements JIPipeDeskt
      */
     public void rebuildUI() {
 
-        if(currentDataViewer == null) {
+        if (currentDataViewer == null) {
             return;
         }
 
@@ -239,11 +237,10 @@ public class JIPipeDesktopDataViewerWindow extends JFrame implements JIPipeDeskt
     }
 
     private void updateDataTypeInfoButton() {
-        if(dataBrowser != null) {
+        if (dataBrowser != null) {
             dataTypeInfoButton.setText(dataBrowser.getDataTypeInfo().getName());
             dataTypeInfoButton.setIcon(JIPipe.getDataTypes().getIconFor(dataBrowser.getDataClass()));
-        }
-        else {
+        } else {
             dataTypeInfoButton.setText("No data");
             dataTypeInfoButton.setIcon(UIUtils.getIconFromResources("emblems/emblem-unavailable.png"));
         }
@@ -324,7 +321,7 @@ public class JIPipeDesktopDataViewerWindow extends JFrame implements JIPipeDeskt
                     UIUtils.getIconFromResources("actions/caret-down.png"),
                     this::goToNextData));
         }
-        if(isDisplayingLocallyCachedData()) {
+        if (isDisplayingLocallyCachedData()) {
             JIPipeDesktopRibbon.Band cacheBand = generalTask.addBand("Cache");
             cacheBand.addLargeMenuButton("Update cache", "Updates the cache of the node that generated the data", UIUtils.getIcon32FromResources("actions/database.png"),
                     UIUtils.createMenuItem("Update cache", "Runs the pipeline up until this algorithm and caches the results. Nothing is written to disk.", UIUtils.getIconFromResources("actions/database.png"), this::doLocalUpdateCache),
@@ -332,12 +329,12 @@ public class JIPipeDesktopDataViewerWindow extends JFrame implements JIPipeDeskt
             cacheBand.add(toggleAutoRefreshFromCache);
             cacheBand.addSmallButton("Refresh", "Updates the current data with the newest in cache if possible", UIUtils.getIconFromResources("actions/view-refresh.png"), this::refreshFromLocalCache);
         }
-        if(dataBrowser != null) {
+        if (dataBrowser != null) {
             JIPipeDesktopRibbon.Task exportTask = ribbon.addTask("Export");
             JIPipeDesktopRibbon.Band dataBand = exportTask.addBand("Data");
             dataBand.add(new JIPipeDesktopLargeButtonRibbonAction("As files", "Exports the data as file(s) according to a custom-set name", UIUtils.getIcon32FromResources("actions/document-export.png"), this::exportAsFilesCustom));
             dataBand.add(new JIPipeDesktopLargeButtonRibbonAction("Into directory", "Exports the data as file(s) into a directory using JIPipe's standard naming", UIUtils.getIcon32FromResources("actions/folder-new.png"), this::exportAsFilesIntoDirectory));
-            if(dataTableBrowser != null) {
+            if (dataTableBrowser != null) {
                 JIPipeDesktopRibbon.Band tableBand = exportTask.addBand("Data table (" + StringUtils.formatPluralS(dataTableInfo.getRowCount(), "row") + ")");
                 tableBand.add(new JIPipeDesktopLargeButtonRibbonAction("As *.zip", "Exports the data table into a *.zip file", UIUtils.getIcon32FromResources("actions/document-export.png"), this::exportDataTableToZip));
                 tableBand.add(new JIPipeDesktopLargeButtonRibbonAction("Into directory", "Exports the data as file(s) into a directory using JIPipe's standard naming", UIUtils.getIcon32FromResources("actions/folder-new.png"), this::exportDataTableToFolder));
@@ -346,9 +343,9 @@ public class JIPipeDesktopDataViewerWindow extends JFrame implements JIPipeDeskt
     }
 
     private void doLocalUpdateCacheIntermediateResults() {
-        if(isDisplayingLocallyCachedData()) {
+        if (isDisplayingLocallyCachedData()) {
             JIPipeGraphNode node = ((JIPipeDataSlot) dataTableBrowser.getLocalDataTable()).getNode();
-            if(node != null) {
+            if (node != null) {
                 // Generate settings
                 JIPipeDesktopQuickRunSettings settings = new JIPipeDesktopQuickRunSettings(getWorkbench().getProject());
                 settings.setSaveToDisk(false);
@@ -367,9 +364,9 @@ public class JIPipeDesktopDataViewerWindow extends JFrame implements JIPipeDeskt
     }
 
     private void doLocalUpdateCache() {
-        if(isDisplayingLocallyCachedData()) {
+        if (isDisplayingLocallyCachedData()) {
             JIPipeGraphNode node = ((JIPipeDataSlot) dataTableBrowser.getLocalDataTable()).getNode();
-            if(node != null) {
+            if (node != null) {
                 // Generate settings
                 JIPipeDesktopQuickRunSettings settings = new JIPipeDesktopQuickRunSettings(getWorkbench().getProject());
                 settings.setSaveToDisk(false);
@@ -388,14 +385,14 @@ public class JIPipeDesktopDataViewerWindow extends JFrame implements JIPipeDeskt
     }
 
     private void refreshFromLocalCache() {
-        if(isDisplayingLocallyCachedData()) {
-            String slotName = ((JIPipeDataSlot)dataTableBrowser.getLocalDataTable()).getName();
+        if (isDisplayingLocallyCachedData()) {
+            String slotName = ((JIPipeDataSlot) dataTableBrowser.getLocalDataTable()).getName();
             JIPipeGraphNode node = ((JIPipeDataSlot) dataTableBrowser.getLocalDataTable()).getNode();
-            if(slotName != null && node != null) {
+            if (slotName != null && node != null) {
                 Map<String, JIPipeDataTable> cacheResult = getWorkbench().getProject().getCache().query(node, node.getUUIDInParentGraph(), JIPipeProgressInfo.SILENT);
-                if(cacheResult != null ) {
+                if (cacheResult != null) {
                     JIPipeDataTable newTable = cacheResult.getOrDefault(slotName, null);
-                    if(newTable != null) {
+                    if (newTable != null) {
                         dataTableBrowser = new JIPipeLocalDataTableBrowser(newTable);
                         goToRow(currentDataRow, currentDataAnnotationColumn, true);
                     }
@@ -430,7 +427,7 @@ public class JIPipeDesktopDataViewerWindow extends JFrame implements JIPipeDeskt
 
     private void goToRow(int row, int dataAnnotationColumn, boolean force) {
         boolean changed = false;
-        if(force || row != currentDataRow || dataAnnotationColumn != currentDataAnnotationColumn) {
+        if (force || row != currentDataRow || dataAnnotationColumn != currentDataAnnotationColumn) {
             this.currentDataRow = row;
             this.currentDataAnnotationColumn = dataAnnotationColumn;
 
@@ -446,19 +443,18 @@ public class JIPipeDesktopDataViewerWindow extends JFrame implements JIPipeDeskt
                 dataBrowser = dataTableBrowser.browse(currentDataRow);
             }
         }
-        if(changed) {
+        if (changed) {
             onDataChanged();
         }
     }
 
     private void destroyCurrentDataBrowser() {
-        if(dataBrowser != null) {
+        if (dataBrowser != null) {
             try {
                 dataBrowser.close();
             } catch (IOException e) {
                 throw new RuntimeException(e);
-            }
-            finally {
+            } finally {
                 dataBrowser = null;
             }
         }
@@ -492,7 +488,7 @@ public class JIPipeDesktopDataViewerWindow extends JFrame implements JIPipeDeskt
 
     private void goToPreviousData() {
         int row = currentDataRow - 1;
-        while(row < 0) {
+        while (row < 0) {
             row += dataTableInfo.getRowCount();
         }
         goToRow(row, currentDataAnnotationColumn, false);
@@ -549,10 +545,10 @@ public class JIPipeDesktopDataViewerWindow extends JFrame implements JIPipeDeskt
 
     @Override
     public void onRunnableFinished(JIPipeRunnable.FinishedEvent event) {
-        if(event.getRun() instanceof DownloadFullDataRun) {
+        if (event.getRun() instanceof DownloadFullDataRun) {
             DownloadFullDataRun run = (DownloadFullDataRun) event.getRun();
-            if(run.getData() != null && run.getCurrentDataRow() == currentDataRow && run.getCurrentDataAnnotationColumn() == currentDataAnnotationColumn) {
-                if(currentDataViewer != null) {
+            if (run.getData() != null && run.getCurrentDataRow() == currentDataRow && run.getCurrentDataAnnotationColumn() == currentDataAnnotationColumn) {
+                if (currentDataViewer != null) {
                     currentDataViewer.onDataDownloaded(run.getData());
                 }
             }
@@ -578,7 +574,7 @@ public class JIPipeDesktopDataViewerWindow extends JFrame implements JIPipeDeskt
 
     @Override
     public void onCacheModified(JIPipeCache.ModifiedEvent event) {
-        if(isDisplayingLocallyCachedData() && toggleAutoRefreshFromCache.isSelected()) {
+        if (isDisplayingLocallyCachedData() && toggleAutoRefreshFromCache.isSelected()) {
             refreshFromLocalCache();
         }
     }
@@ -630,7 +626,7 @@ public class JIPipeDesktopDataViewerWindow extends JFrame implements JIPipeDeskt
         }
     }
 
-    private static class ExportDataIntoDirectoryRun extends AbstractJIPipeRunnable{
+    private static class ExportDataIntoDirectoryRun extends AbstractJIPipeRunnable {
         private final JIPipeDataBrowser dataBrowser;
         private final Path path;
 
@@ -656,7 +652,7 @@ public class JIPipeDesktopDataViewerWindow extends JFrame implements JIPipeDeskt
         }
     }
 
-    private static class ExportDataWithCustomNameRun extends AbstractJIPipeRunnable{
+    private static class ExportDataWithCustomNameRun extends AbstractJIPipeRunnable {
         private final JIPipeDataBrowser dataBrowser;
         private final Path path;
 
@@ -682,7 +678,7 @@ public class JIPipeDesktopDataViewerWindow extends JFrame implements JIPipeDeskt
         }
     }
 
-    private static class ExportDataTableIntoDirectoryRun extends AbstractJIPipeRunnable{
+    private static class ExportDataTableIntoDirectoryRun extends AbstractJIPipeRunnable {
         private final JIPipeDataTableBrowser dataTableBrowser;
         private final Path path;
 
@@ -708,7 +704,7 @@ public class JIPipeDesktopDataViewerWindow extends JFrame implements JIPipeDeskt
         }
     }
 
-    private static class ExportDataTableToZipRun extends AbstractJIPipeRunnable{
+    private static class ExportDataTableToZipRun extends AbstractJIPipeRunnable {
         private final JIPipeDataTableBrowser dataTableBrowser;
         private final Path path;
 

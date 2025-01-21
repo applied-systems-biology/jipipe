@@ -18,14 +18,10 @@ import org.hkijena.jipipe.JIPipeDependency;
 import org.hkijena.jipipe.JIPipeJavaPlugin;
 import org.hkijena.jipipe.JIPipeMutableDependency;
 import org.hkijena.jipipe.api.JIPipeProgressInfo;
-import org.hkijena.jipipe.api.project.JIPipeProject;
 import org.hkijena.jipipe.plugins.JIPipePrepackagedDefaultJavaPlugin;
 import org.hkijena.jipipe.plugins.parameters.library.jipipe.PluginCategoriesEnumParameter;
 import org.hkijena.jipipe.plugins.parameters.library.markup.HTMLText;
 import org.hkijena.jipipe.plugins.parameters.library.primitives.list.StringList;
-import org.hkijena.jipipe.plugins.python.adapter.JIPipePythonAdapterLibraryEnvironment;
-import org.hkijena.jipipe.plugins.python.adapter.JIPipePythonPluginAdapterApplicationSettings;
-import org.hkijena.jipipe.plugins.python.adapter.OptionalJIPipePythonAdapterLibraryEnvironment;
 import org.hkijena.jipipe.plugins.python.algorithms.jython.IteratingJythonScriptAlgorithm;
 import org.hkijena.jipipe.plugins.python.algorithms.jython.JythonScriptAlgorithm;
 import org.hkijena.jipipe.plugins.python.algorithms.jython.MergingJythonScriptAlgorithm;
@@ -33,17 +29,10 @@ import org.hkijena.jipipe.plugins.python.algorithms.jython.SimpleIteratingJython
 import org.hkijena.jipipe.plugins.python.algorithms.python.IteratingPythonScriptAlgorithm;
 import org.hkijena.jipipe.plugins.python.algorithms.python.MergingPythonScriptAlgorithm;
 import org.hkijena.jipipe.plugins.python.algorithms.python.PythonScriptAlgorithm;
-import org.hkijena.jipipe.plugins.python.installers.SelectCondaEnvPythonInstaller;
-import org.hkijena.jipipe.plugins.python.installers.SelectSystemPythonInstaller;
-import org.hkijena.jipipe.plugins.python.installers.SelectVirtualEnvPythonInstaller;
 import org.hkijena.jipipe.utils.JIPipeResourceManager;
 import org.hkijena.jipipe.utils.UIUtils;
 import org.scijava.Context;
 import org.scijava.plugin.Plugin;
-
-import javax.swing.*;
-import java.util.Arrays;
-import java.util.List;
 
 /**
  * Python nodes

@@ -13,7 +13,6 @@
 
 package org.hkijena.jipipe.plugins.tables.display;
 
-import org.hkijena.jipipe.api.JIPipeProgressInfo;
 import org.hkijena.jipipe.api.data.JIPipeData;
 import org.hkijena.jipipe.desktop.api.dataviewer.JIPipeDesktopDataViewer;
 import org.hkijena.jipipe.desktop.api.dataviewer.JIPipeDesktopDataViewerWindow;
@@ -49,13 +48,12 @@ public class TableColumnDataViewer extends JIPipeDesktopDataViewer {
 
     @Override
     public void onDataDownloaded(JIPipeData data) {
-        if(data instanceof TableColumnData) {
+        if (data instanceof TableColumnData) {
             String label = StringUtils.orElse(((TableColumnData) data).getLabel(), "Unnamed");
             ResultsTableData resultsTableData = new ResultsTableData();
             resultsTableData.addColumn(label, (TableColumnData) data, true);
             tableEditor.setTableModel(resultsTableData);
-        }
-        else {
+        } else {
             tableEditor.setTableModel(new ResultsTableData());
         }
     }

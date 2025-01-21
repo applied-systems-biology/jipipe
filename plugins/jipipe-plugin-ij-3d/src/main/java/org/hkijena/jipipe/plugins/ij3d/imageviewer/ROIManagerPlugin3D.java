@@ -71,9 +71,9 @@ public class ROIManagerPlugin3D extends JIPipeDesktopLegacyImageViewerPlugin2D {
     private final JIPipeDesktopLargeToggleButtonRibbonAction displayROIViewMenuItem = new JIPipeDesktopLargeToggleButtonRibbonAction("Display ROI", "Determines whether ROI are displayed", UIUtils.getIcon32FromResources("data-types/roi.png"));
     private final List<ROIManagerPlugin3DSelectionContextPanel> selectionContextPanels = new ArrayList<>();
     private final JPanel selectionContentPanelUI = new JPanel();
-    private ROI3DListData rois = new ROI3DListData();
     private final RoiDrawer roiDrawer = new RoiDrawer();
     private final Map<ImageSliceIndex, ROI2DListData> renderedRois = new HashMap<>();
+    private ROI3DListData rois = new ROI3DListData();
     private boolean filterListOnlySelected = false;
     private JPanel mainPanel;
 

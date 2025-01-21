@@ -39,7 +39,6 @@ import org.hkijena.jipipe.plugins.ij3d.utils.Roi3DDrawer;
 import org.hkijena.jipipe.plugins.imagejdatatypes.datatypes.ROI2DListData;
 import org.hkijena.jipipe.plugins.imagejdatatypes.util.BitDepth;
 import org.hkijena.jipipe.plugins.imagejdatatypes.util.ImageSliceIndex;
-import org.hkijena.jipipe.plugins.imagejdatatypes.util.RoiDrawer;
 import org.hkijena.jipipe.plugins.imageviewer.legacy.api.JIPipeDesktopLegacyImageViewerOverlay;
 import org.hkijena.jipipe.plugins.imageviewer.legacy.api.JIPipeDesktopLegacyImageViewerPlugin;
 import org.hkijena.jipipe.plugins.napari.NapariOverlay;
@@ -48,7 +47,6 @@ import org.hkijena.jipipe.utils.StringUtils;
 import org.hkijena.jipipe.utils.UnclosableInputStream;
 import org.hkijena.jipipe.utils.UnclosableOutputStream;
 import org.hkijena.jipipe.utils.json.JsonUtils;
-import org.stringtemplate.v4.ST;
 
 import java.io.FileOutputStream;
 import java.io.IOException;
@@ -500,10 +498,10 @@ public class ROI3DListData extends ArrayList<ROI3D> implements JIPipeData, JIPip
             JIPipeProgressInfo roiProgress = progressInfo.resolveAndLog("ROI", i, size());
             ROI3D roi3D = this.get(i);
 
-            if(oneSliceIndex.getC() != 0 && roi3D.getChannel() != 0 && roi3D.getChannel() != oneSliceIndex.getC()) {
+            if (oneSliceIndex.getC() != 0 && roi3D.getChannel() != 0 && roi3D.getChannel() != oneSliceIndex.getC()) {
                 continue;
             }
-            if(oneSliceIndex.getT() != 0 && roi3D.getFrame() != 0 && roi3D.getFrame() != oneSliceIndex.getT()) {
+            if (oneSliceIndex.getT() != 0 && roi3D.getFrame() != 0 && roi3D.getFrame() != oneSliceIndex.getT()) {
                 continue;
             }
 
@@ -621,7 +619,7 @@ public class ROI3DListData extends ArrayList<ROI3D> implements JIPipeData, JIPip
 
     @Override
     public List<Path> exportOverlayToNapari(ImagePlus imp, Path outputDirectory, String prefix, JIPipeProgressInfo progressInfo) {
-        if(!isEmpty()) {
+        if (!isEmpty()) {
             Path outputFile = outputDirectory.resolve(prefix + "_roi3d.tif");
 
             progressInfo.log("Exporting " + size() + " 3D ROIs ...");
@@ -631,8 +629,7 @@ public class ROI3DListData extends ArrayList<ROI3D> implements JIPipeData, JIPip
             IJ.saveAsTiff(rendered, outputFile.toString());
 
             return Collections.singletonList(outputFile);
-        }
-        else {
+        } else {
             return Collections.emptyList();
         }
     }

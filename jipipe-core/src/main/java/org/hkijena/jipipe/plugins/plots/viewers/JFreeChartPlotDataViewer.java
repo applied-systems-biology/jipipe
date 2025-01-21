@@ -32,7 +32,7 @@ public class JFreeChartPlotDataViewer extends JIPipeDesktopDataViewer {
 
     @Override
     public void rebuildRibbon(JIPipeDesktopRibbon ribbon) {
-       plotEditor.rebuildRibbon(ribbon);
+        plotEditor.rebuildRibbon(ribbon);
     }
 
     @Override

@@ -7,13 +7,13 @@ import org.hkijena.jipipe.api.events.AbstractJIPipeEvent;
 import org.hkijena.jipipe.api.events.JIPipeEventEmitter;
 
 import java.io.Closeable;
-import java.util.List;
 import java.util.concurrent.Future;
 
 public interface JIPipeDataTableBrowser extends Closeable, AutoCloseable {
 
     /**
      * Creates a data browser
+     *
      * @param row the row
      * @return the browser
      */
@@ -23,7 +23,8 @@ public interface JIPipeDataTableBrowser extends Closeable, AutoCloseable {
 
     /**
      * Creates a data browser (optionally supports a data annotation column)
-     * @param row the row
+     *
+     * @param row                  the row
      * @param dataAnnotationColumn the data annotation column (null for no column)
      * @return the browser
      */
@@ -31,15 +32,21 @@ public interface JIPipeDataTableBrowser extends Closeable, AutoCloseable {
 
     /**
      * Gets the data table info
+     *
      * @return the info
      */
     Future<JIPipeDataTableInfo> getDataTableInfo();
 
     /**
      * Gets the whole data table
+     *
      * @return the data table
      */
     Future<JIPipeDataTable> getDataTable(JIPipeProgressInfo progressInfo);
+
+    interface UpdatedEventListener {
+        void onDataTableBrowserUpdated(UpdatedEvent event);
+    }
 
     /*
     Future<List<String>> getDataAnnotationColumns();
@@ -50,6 +57,7 @@ public interface JIPipeDataTableBrowser extends Closeable, AutoCloseable {
     class UpdatedEvent extends AbstractJIPipeEvent {
         private final JIPipeDataTableBrowser browser;
         private final String type;
+
         public UpdatedEvent(Object source, JIPipeDataTableBrowser browser, String type) {
             super(source);
             this.browser = browser;
@@ -63,10 +71,6 @@ public interface JIPipeDataTableBrowser extends Closeable, AutoCloseable {
         public String getType() {
             return type;
         }
-    }
-
-    interface UpdatedEventListener {
-        void onDataTableBrowserUpdated(UpdatedEvent event);
     }
 
     class UpdatedEventEmitter extends JIPipeEventEmitter<UpdatedEvent, UpdatedEventListener> {

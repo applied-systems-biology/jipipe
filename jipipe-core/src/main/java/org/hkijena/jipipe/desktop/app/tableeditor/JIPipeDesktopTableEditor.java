@@ -54,10 +54,10 @@ public class JIPipeDesktopTableEditor extends JIPipeDesktopWorkbenchPanel {
     private static final int MAX_UNDO = 10;
     private final JIPipeTableViewerUIApplicationSettings settings;
     private final Stack<ResultsTableData> undoBuffer = new Stack<>();
+    private final JPanel contentPanel = new JPanel(new BorderLayout());
     private ResultsTableData tableModel;
     private JXTable jxTable;
     private boolean isRebuildingSelection = false;
-    private final JPanel contentPanel = new JPanel(new BorderLayout());
     private JIPipeDesktopRibbon ribbon = new JIPipeDesktopRibbon();
 
     /**

@@ -69,20 +69,17 @@ public class PathDataViewer extends JIPipeDesktopDataViewer {
             try {
                 Path path = Paths.get(currentPath);
                 pathParentTextField.setText(path.getParent().toString());
-                if(Files.isRegularFile(path)) {
+                if (Files.isRegularFile(path)) {
                     pathTypeLabel.setText("File");
                     pathTypeLabel.setIcon(UIUtils.getIconFromResources("actions/file.png"));
-                }
-                else if(Files.isDirectory(path)) {
+                } else if (Files.isDirectory(path)) {
                     pathTypeLabel.setText("Folder");
                     pathTypeLabel.setIcon(UIUtils.getIconFromResources("actions/folder.png"));
-                }
-                else {
+                } else {
                     pathTypeLabel.setText("Unknown");
                     pathTypeLabel.setIcon(UIUtils.getIconFromResources("actions/circle-question.png"));
                 }
-            }
-            catch (Exception e) {
+            } catch (Exception e) {
                 pathParentTextField.setText(ERROR_PLACEHOLDER_TEXT);
                 pathTypeLabel.setText(ERROR_PLACEHOLDER_TEXT);
             }

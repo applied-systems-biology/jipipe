@@ -15,7 +15,6 @@ package org.hkijena.jipipe.plugins.imageviewer.legacy.plugins2d;
 
 import ij.process.ColorProcessor;
 import ij.process.ImageProcessor;
-import org.hkijena.jipipe.desktop.commons.components.JIPipeDesktopFormPanel;
 import org.hkijena.jipipe.desktop.commons.components.ribbon.JIPipeDesktopRibbon;
 import org.hkijena.jipipe.plugins.imageviewer.legacy.JIPipeDesktopLegacyImageViewer;
 import org.hkijena.jipipe.plugins.imageviewer.utils.viewer2d.ImageViewerPanelCanvas2D;
@@ -47,7 +46,7 @@ public class PixelInfoPlugin2D extends GeneralImageViewerPanelPlugin2D implement
 
     @Override
     public void buildStatusBar(JToolBar statusBar) {
-       UIUtils.addToStatusBarWithSeparator(statusBar, pixelInfoLabel);
+        UIUtils.addToStatusBarWithSeparator(statusBar, pixelInfoLabel);
     }
 
     private void updatePixelInfo(Point coordinate) {

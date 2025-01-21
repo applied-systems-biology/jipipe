@@ -41,8 +41,8 @@ public class JIPipeDesktopFancyReadOnlyTextArea extends JPanel {
         textArea.setEditable(false);
         textArea.setLineWrap(true);
         textArea.setWrapStyleWord(true);
-        textArea.setBorder(BorderFactory.createEmptyBorder(3,0,0,0));
-        if(monospace) {
+        textArea.setBorder(BorderFactory.createEmptyBorder(3, 0, 0, 0));
+        if (monospace) {
             textArea.setFont(new Font(Font.MONOSPACED, Font.PLAIN, 12));
         }
         add(textArea, BorderLayout.CENTER);

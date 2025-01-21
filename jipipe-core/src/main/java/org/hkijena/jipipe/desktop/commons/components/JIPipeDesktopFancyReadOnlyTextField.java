@@ -40,7 +40,7 @@ public class JIPipeDesktopFancyReadOnlyTextField extends JPanel {
         textField.setEditable(false);
         textField.setOpaque(false);
         textField.setBorder(null);
-        if(monospace) {
+        if (monospace) {
             textField.setFont(new Font(Font.MONOSPACED, Font.PLAIN, 12));
         }
         add(textField, BorderLayout.CENTER);

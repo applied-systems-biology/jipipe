@@ -24,7 +24,6 @@ import org.hkijena.jipipe.desktop.api.data.JIPipeDesktopDataDisplayOperation;
 import org.hkijena.jipipe.desktop.app.JIPipeDesktopWorkbench;
 import org.hkijena.jipipe.plugins.imagejdatatypes.datatypes.ImagePlusData;
 import org.hkijena.jipipe.plugins.imagejdatatypes.datatypes.OMEImageData;
-import org.hkijena.jipipe.plugins.imageviewer.utils.viewer3d.CustomImage3DUniverse;
 import org.hkijena.jipipe.utils.UIUtils;
 
 import javax.swing.*;
@@ -37,11 +36,9 @@ public class OpenInImageJ3DViewerDataDisplayOperation implements JIPipeDesktopDa
             image = ((ImagePlusData) data).getDuplicateImage();
         } else if (data instanceof OMEImageData) {
             image = ((OMEImageData) data).getDuplicateImage();
-        }
-        else if(JIPipe.getDataTypes().isConvertible(data.getClass(), ImagePlusData.class)) {
+        } else if (JIPipe.getDataTypes().isConvertible(data.getClass(), ImagePlusData.class)) {
             image = JIPipe.getDataTypes().convert(data, ImagePlusData.class, JIPipeProgressInfo.SILENT).getDuplicateImage();
-        }
-        else {
+        } else {
             throw new UnsupportedOperationException();
         }
         image.setTitle(displayName);

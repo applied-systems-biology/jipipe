@@ -502,7 +502,8 @@ public class JIPipeDatatypeRegistry {
 
     /**
      * Registers a default data viewer class
-     * @param dataClass the data class
+     *
+     * @param dataClass       the data class
      * @param dataViewerClass the data viewer class
      */
     public void registerDefaultDataViewer(Class<? extends JIPipeData> dataClass, Class<? extends JIPipeDesktopDataViewer> dataViewerClass) {
@@ -512,21 +513,20 @@ public class JIPipeDatatypeRegistry {
 
     /**
      * Gets the default data viewer
+     *
      * @param dataClass the data class
      * @return the data viewer
      */
     public Class<? extends JIPipeDesktopDataViewer> getDefaultDataViewer(Class<? extends JIPipeData> dataClass) {
-        while(dataClass != JIPipeData.class) {
+        while (dataClass != JIPipeData.class) {
             Class<? extends JIPipeDesktopDataViewer> result = defaultDataViewers.getOrDefault(dataClass, null);
-            if(result != null) {
+            if (result != null) {
                 return result;
-            }
-            else {
+            } else {
                 Class<?> superclass = dataClass.getSuperclass();
-                if(JIPipeData.class.isAssignableFrom(superclass)) {
+                if (JIPipeData.class.isAssignableFrom(superclass)) {
                     dataClass = (Class<? extends JIPipeData>) superclass;
-                }
-                else {
+                } else {
                     break;
                 }
             }

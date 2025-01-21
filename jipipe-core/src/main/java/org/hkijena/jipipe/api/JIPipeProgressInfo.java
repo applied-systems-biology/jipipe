@@ -36,8 +36,12 @@ public class JIPipeProgressInfo implements Cancelable {
     public static final JIPipeProgressInfo STDOUT = new JIPipeProgressInfo();
 
     private static final String[] SPINNER_1 = new String[]{"⠋", "⠙", "⠹", "⠸", "⠼", "⠴", "⠦", "⠧", "⠇", "⠏"};
-    private final StampedLock stampedLock;
 
+    static {
+        STDOUT.setLogToStdOut(true);
+    }
+
+    private final StampedLock stampedLock;
     private AtomicBoolean cancelled = new AtomicBoolean();
     private AtomicInteger progress = new AtomicInteger(0);
     private AtomicInteger maxProgress = new AtomicInteger(1);
@@ -50,10 +54,6 @@ public class JIPipeProgressInfo implements Cancelable {
     private String cancelReason;
     private StatusUpdatedEventEmitter statusUpdatedEventEmitter;
     private JIPipeNotificationInbox notifications = new JIPipeNotificationInbox();
-
-    static {
-        STDOUT.setLogToStdOut(true);
-    }
 
     public JIPipeProgressInfo() {
         this.statusUpdatedEventEmitter = new StatusUpdatedEventEmitter();

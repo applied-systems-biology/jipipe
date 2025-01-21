@@ -12,7 +12,7 @@ public class LUTDataViewer extends ImagePlusDataViewer {
 
     @Override
     protected void loadDataIntoLegacyViewer(JIPipeData data) {
-        if(data instanceof LUTData) {
+        if (data instanceof LUTData) {
             super.loadDataIntoLegacyViewer(new ImagePlusData(((LUTData) data).toImage(256, 256)));
         }
     }

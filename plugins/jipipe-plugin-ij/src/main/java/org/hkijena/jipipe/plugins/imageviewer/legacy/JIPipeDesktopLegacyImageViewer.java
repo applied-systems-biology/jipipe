@@ -32,7 +32,10 @@ import org.hkijena.jipipe.plugins.imageviewer.legacy.api.JIPipeDesktopLegacyImag
 import org.hkijena.jipipe.plugins.imageviewer.legacy.api.JIPipeDesktopLegacyImageViewerPlugin;
 import org.hkijena.jipipe.plugins.imageviewer.legacy.api.JIPipeDesktopLegacyImageViewerPlugin2D;
 import org.hkijena.jipipe.plugins.imageviewer.legacy.impl.JIPipeDesktopLegacyImageViewerPanel2D;
-import org.hkijena.jipipe.plugins.imageviewer.legacy.plugins2d.*;
+import org.hkijena.jipipe.plugins.imageviewer.legacy.plugins2d.CalibrationPlugin2D;
+import org.hkijena.jipipe.plugins.imageviewer.legacy.plugins2d.CompositeManagerPlugin2D;
+import org.hkijena.jipipe.plugins.imageviewer.legacy.plugins2d.LUTManagerPlugin2D;
+import org.hkijena.jipipe.plugins.imageviewer.legacy.plugins2d.PixelInfoPlugin2D;
 import org.hkijena.jipipe.plugins.imageviewer.legacy.plugins2d.maskdrawer.MeasurementDrawerPlugin2D;
 import org.hkijena.jipipe.plugins.imageviewer.legacy.plugins2d.roimanager.ROIManagerPlugin2D;
 import org.hkijena.jipipe.utils.ReflectionUtils;
@@ -82,10 +85,6 @@ public class JIPipeDesktopLegacyImageViewer extends JPanel implements JIPipeDesk
         initialize();
     }
 
-    public JIPipeDesktopDataViewer getDataViewer() {
-        return dataViewer;
-    }
-
     public static void registerDefaultPlugin(Class<? extends JIPipeDesktopLegacyImageViewerPlugin> klass) {
         if (!DEFAULT_PLUGINS.contains(klass)) {
             if (Modifier.isAbstract(klass.getModifiers())) {
@@ -93,6 +92,10 @@ public class JIPipeDesktopLegacyImageViewer extends JPanel implements JIPipeDesk
             }
             DEFAULT_PLUGINS.add(klass);
         }
+    }
+
+    public JIPipeDesktopDataViewer getDataViewer() {
+        return dataViewer;
     }
 
     public void registerPlugins(Collection<Class<? extends JIPipeDesktopLegacyImageViewerPlugin>> pluginTypes) {
@@ -110,12 +113,11 @@ public class JIPipeDesktopLegacyImageViewer extends JPanel implements JIPipeDesk
                     }
                 }
             }
-        }
-        finally {
+        } finally {
             pluginsInitialized = true;
         }
-        if(requireRebuild) {
-            if(getDataViewer() != null) {
+        if (requireRebuild) {
+            if (getDataViewer() != null) {
                 SwingUtilities.invokeLater(() -> {
                     getDataViewer().getDataViewerWindow().rebuildUI();
                     imageViewerPanel2D.refreshFormPanel();
@@ -146,7 +148,7 @@ public class JIPipeDesktopLegacyImageViewer extends JPanel implements JIPipeDesk
     }
 
     public void addOverlay(Object o) {
-        if(o instanceof JIPipeDesktopLegacyImageViewerOverlay) {
+        if (o instanceof JIPipeDesktopLegacyImageViewerOverlay) {
             // Register missing plugins
             registerPlugins(((JIPipeDesktopLegacyImageViewerOverlay) o).getRequiredLegacyImageViewerPlugins());
         }
@@ -320,12 +322,13 @@ public class JIPipeDesktopLegacyImageViewer extends JPanel implements JIPipeDesk
 
     /**
      * Gets only the overlays that are of type {@link JIPipeData}
+     *
      * @return the overlays
      */
     public List<JIPipeData> getDataOverlays() {
         List<JIPipeData> result = new ArrayList<>();
         for (Object overlay : overlays) {
-            if(overlay instanceof JIPipeData) {
+            if (overlay instanceof JIPipeData) {
                 result.add((JIPipeData) overlay);
             }
         }

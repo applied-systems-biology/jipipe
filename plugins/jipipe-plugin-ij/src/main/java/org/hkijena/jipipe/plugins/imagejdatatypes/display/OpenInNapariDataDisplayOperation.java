@@ -87,7 +87,7 @@ public class OpenInNapariDataDisplayOperation implements JIPipeDesktopDataDispla
             // Export the overlays (if supported)
             for (int i = 0; i < overlays.size(); i++) {
                 Object overlay = overlays.get(i);
-                if(overlay instanceof NapariOverlay) {
+                if (overlay instanceof NapariOverlay) {
                     exportFiles.addAll(((NapariOverlay) overlay).exportOverlayToNapari(image, tmpDir, i + "", progressInfo.resolve("Overlay " + (i + 1))));
                 }
                 progressInfo.incrementProgress();

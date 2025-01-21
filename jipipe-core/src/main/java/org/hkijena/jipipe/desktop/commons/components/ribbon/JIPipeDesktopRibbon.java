@@ -470,13 +470,13 @@ public class JIPipeDesktopRibbon extends JPanel {
         }
 
         public JIPipeDesktopLargeButtonRibbonAction addLargeMenuButton(String label, String tooltip, ImageIcon icon, Component... menuItems) {
-            JIPipeDesktopLargeButtonRibbonAction ribbonAction = new JIPipeDesktopLargeButtonRibbonAction(label, tooltip, icon, () -> {});
+            JIPipeDesktopLargeButtonRibbonAction ribbonAction = new JIPipeDesktopLargeButtonRibbonAction(label, tooltip, icon, () -> {
+            });
             JPopupMenu popupMenu = new JPopupMenu();
             for (Component menuItem : menuItems) {
-                if(menuItem != null) {
+                if (menuItem != null) {
                     popupMenu.add(menuItem);
-                }
-                else {
+                } else {
                     popupMenu.addSeparator();
                 }
             }
@@ -486,13 +486,13 @@ public class JIPipeDesktopRibbon extends JPanel {
         }
 
         public JIPipeDesktopSmallButtonRibbonAction addSmallMenuButton(String label, String tooltip, ImageIcon icon, Component... menuItems) {
-            JIPipeDesktopSmallButtonRibbonAction ribbonAction = new JIPipeDesktopSmallButtonRibbonAction(label, tooltip, icon, () -> {});
+            JIPipeDesktopSmallButtonRibbonAction ribbonAction = new JIPipeDesktopSmallButtonRibbonAction(label, tooltip, icon, () -> {
+            });
             JPopupMenu popupMenu = new JPopupMenu();
             for (Component menuItem : menuItems) {
-                if(menuItem != null) {
+                if (menuItem != null) {
                     popupMenu.add(menuItem);
-                }
-                else {
+                } else {
                     popupMenu.addSeparator();
                 }
             }
@@ -524,7 +524,7 @@ public class JIPipeDesktopRibbon extends JPanel {
         }
 
         public Action addComponent(Component component, int height, Insets insets, boolean makeNonOpaque) {
-            if(makeNonOpaque) {
+            if (makeNonOpaque) {
                 UIUtils.makeNonOpaque(component, true);
             }
             Action action = new Action(component, height, insets);
@@ -544,7 +544,7 @@ public class JIPipeDesktopRibbon extends JPanel {
         private Insets insets;
 
         public Action(Component component, int height, Insets insets, boolean nonOpaque) {
-            if(nonOpaque) {
+            if (nonOpaque) {
                 UIUtils.makeNonOpaque(component, true);
             }
             this.components = Collections.singletonList(component);
@@ -553,7 +553,7 @@ public class JIPipeDesktopRibbon extends JPanel {
         }
 
         public Action(Component component, int height, Insets insets) {
-           this(component, height, insets, true);
+            this(component, height, insets, true);
         }
 
         public Action(List<Component> components, int height, Insets insets) {
@@ -562,12 +562,13 @@ public class JIPipeDesktopRibbon extends JPanel {
 
         /**
          * Adds multiple components in a row
+         *
          * @param components the components in a row
-         * @param height the height occupied by this action
-         * @param insets the insets
+         * @param height     the height occupied by this action
+         * @param insets     the insets
          */
         public Action(List<Component> components, int height, Insets insets, boolean nonOpaque) {
-            if(nonOpaque) {
+            if (nonOpaque) {
                 for (Component component : components) {
                     UIUtils.makeNonOpaque(component, true);
                 }

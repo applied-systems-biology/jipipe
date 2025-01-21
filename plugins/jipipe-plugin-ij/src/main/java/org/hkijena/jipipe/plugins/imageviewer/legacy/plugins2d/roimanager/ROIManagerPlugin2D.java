@@ -118,7 +118,7 @@ public class ROIManagerPlugin2D extends JIPipeDesktopLegacyImageViewerPlugin2D {
         clearROIs(false);
     }
 
-    
+
     @Override
     public boolean isActive() {
         return getViewerPanel().getOverlays().stream().anyMatch(ROI2DListData.class::isInstance);
@@ -131,7 +131,7 @@ public class ROIManagerPlugin2D extends JIPipeDesktopLegacyImageViewerPlugin2D {
 
     @Override
     public JComponent buildCustomPanel() {
-       return mainPanel;
+        return mainPanel;
     }
 
     public ROI2DListData getSelectedROIOrAll(String title, String message) {

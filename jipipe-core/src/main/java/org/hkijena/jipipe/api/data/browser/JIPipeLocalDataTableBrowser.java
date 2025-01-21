@@ -31,23 +31,20 @@ public class JIPipeLocalDataTableBrowser implements JIPipeDataTableBrowser {
 
     @Override
     public JIPipeDataBrowser browse(int row, String dataAnnotationColumn) {
-        if(dataAnnotationColumn == null) {
-            if(row >= 0 && row < dataTable.getRowCount()) {
+        if (dataAnnotationColumn == null) {
+            if (row >= 0 && row < dataTable.getRowCount()) {
                 return new JIPipeLocalDataBrowser(dataTable.getDataItemStore(row));
-            }
-            else {
+            } else {
                 return null;
             }
-        }
-        else {
-            if(row >= 0 && row < dataTable.getRowCount()) {
+        } else {
+            if (row >= 0 && row < dataTable.getRowCount()) {
                 JIPipeDataItemStore store = dataTable.getDataAnnotationItemStore(row, dataAnnotationColumn);
-                if(store == null) {
+                if (store == null) {
                     return null;
                 }
                 return new JIPipeLocalDataBrowser(store);
-            }
-            else {
+            } else {
                 return null;
             }
         }

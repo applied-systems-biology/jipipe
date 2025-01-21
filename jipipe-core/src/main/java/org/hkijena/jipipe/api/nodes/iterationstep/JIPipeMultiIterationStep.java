@@ -203,7 +203,7 @@ public class JIPipeMultiIterationStep implements JIPipeIterationStep, Comparable
      *
      * @param <T>          Data type
      * @param slotName     The slot name
-     * @param row the row
+     * @param row          the row
      * @param dataClass    The data type that should be returned
      * @param progressInfo data access progress
      * @return Input data with provided name
@@ -248,7 +248,7 @@ public class JIPipeMultiIterationStep implements JIPipeIterationStep, Comparable
      *
      * @param <T>          Data type
      * @param slot         The slot
-     * @param row the row
+     * @param row          the row
      * @param dataClass    The data type that should be returned
      * @param progressInfo data access progress
      * @return Input data with provided name
@@ -258,7 +258,7 @@ public class JIPipeMultiIterationStep implements JIPipeIterationStep, Comparable
             throw new IllegalArgumentException("The provided slot does not belong to the data interface algorithm!");
         if (!slot.isInput())
             throw new IllegalArgumentException("Slot is not an input slot!");
-       return slot.getData(row, dataClass, progressInfo);
+        return slot.getData(row, dataClass, progressInfo);
     }
 
     /**

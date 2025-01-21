@@ -42,8 +42,9 @@ public class JIPipeDataTableRowInfo {
 
     /**
      * Creates a new instance from an existing row
+     *
      * @param dataTable the data table
-     * @param row the row
+     * @param row       the row
      */
     public JIPipeDataTableRowInfo(JIPipeDataTable dataTable, int row) {
         this.index = row;

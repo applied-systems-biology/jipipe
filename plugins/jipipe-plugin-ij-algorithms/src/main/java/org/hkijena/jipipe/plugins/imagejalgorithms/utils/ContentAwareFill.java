@@ -16,20 +16,18 @@ package org.hkijena.jipipe.plugins.imagejalgorithms.utils;
 import gnu.trove.list.array.TDoubleArrayList;
 import ij.process.ColorProcessor;
 import ij.process.ImageProcessor;
-import ij.process.ImageStatistics;
-import org.hkijena.jipipe.utils.ColorUtils;
 
-import java.awt.Point;
+import java.awt.*;
 import java.util.LinkedList;
 import java.util.Queue;
 
 public class ContentAwareFill {
 
     public static void fillMean(ImageProcessor imageProcessor, ImageProcessor maskProcessor) {
-        if(imageProcessor instanceof ColorProcessor) {
+        if (imageProcessor instanceof ColorProcessor) {
             double sumR = 0, sumG = 0, sumB = 0;
             for (int i = 0; i < imageProcessor.getPixelCount(); i++) {
-                if(maskProcessor.get(i) == 0) {
+                if (maskProcessor.get(i) == 0) {
                     int rgb = imageProcessor.get(i);
                     int r = (rgb & 0xff0000) >> 16;
                     int g = (rgb & 0xff00) >> 8;
@@ -39,25 +37,24 @@ public class ContentAwareFill {
                     sumB += b;
                 }
             }
-            int newR = (int)(sumR / imageProcessor.getPixelCount());
-            int newG = (int)(sumG / imageProcessor.getPixelCount());
-            int newB = (int)(sumB / imageProcessor.getPixelCount());
+            int newR = (int) (sumR / imageProcessor.getPixelCount());
+            int newG = (int) (sumG / imageProcessor.getPixelCount());
+            int newB = (int) (sumB / imageProcessor.getPixelCount());
             for (int i = 0; i < imageProcessor.getPixelCount(); i++) {
                 if (maskProcessor.get(i) > 0) {
                     int rgb = newB + (newG << 8) + (newR << 16);
                     imageProcessor.set(i, rgb);
                 }
             }
-        }
-        else {
+        } else {
             double sum = 0;
             for (int i = 0; i < imageProcessor.getPixelCount(); i++) {
-                if(maskProcessor.get(i) == 0) {
+                if (maskProcessor.get(i) == 0) {
                     sum += imageProcessor.getf(i);
                 }
             }
             for (int i = 0; i < imageProcessor.getPixelCount(); i++) {
-                if(maskProcessor.get(i) > 0) {
+                if (maskProcessor.get(i) > 0) {
                     imageProcessor.setf(i, (float) (sum / imageProcessor.getPixelCount()));
                 }
             }
@@ -65,12 +62,12 @@ public class ContentAwareFill {
     }
 
     public static void fillMedian(ImageProcessor imageProcessor, ImageProcessor maskProcessor) {
-        if(imageProcessor instanceof ColorProcessor) {
+        if (imageProcessor instanceof ColorProcessor) {
             TDoubleArrayList reds = new TDoubleArrayList(imageProcessor.getPixelCount());
             TDoubleArrayList greens = new TDoubleArrayList(imageProcessor.getPixelCount());
             TDoubleArrayList blues = new TDoubleArrayList(imageProcessor.getPixelCount());
             for (int i = 0; i < imageProcessor.getPixelCount(); i++) {
-                if(maskProcessor.get(i) == 0) {
+                if (maskProcessor.get(i) == 0) {
                     int rgb = imageProcessor.get(i);
                     int r = (rgb & 0xff0000) >> 16;
                     int g = (rgb & 0xff00) >> 8;
@@ -92,18 +89,17 @@ public class ContentAwareFill {
                     imageProcessor.set(i, rgb);
                 }
             }
-        }
-        else {
+        } else {
             TDoubleArrayList values = new TDoubleArrayList(imageProcessor.getPixelCount());
             for (int i = 0; i < imageProcessor.getPixelCount(); i++) {
-                if(maskProcessor.get(i) == 0) {
+                if (maskProcessor.get(i) == 0) {
                     values.add(imageProcessor.getf(i));
                 }
             }
             values.sort();
             float newValue = (float) values.get(values.size() / 2);
             for (int i = 0; i < imageProcessor.getPixelCount(); i++) {
-                if(maskProcessor.get(i) > 0) {
+                if (maskProcessor.get(i) > 0) {
                     imageProcessor.setf(i, newValue);
                 }
             }
@@ -112,8 +108,9 @@ public class ContentAwareFill {
 
     /**
      * Simple content-aware fill that just takes the closest pixel
+     *
      * @param imageProcessor the processor i/o
-     * @param maskProcessor the mask
+     * @param maskProcessor  the mask
      */
     public static void fillClosestPixel(ImageProcessor imageProcessor, ImageProcessor maskProcessor) {
         int width = imageProcessor.getWidth();

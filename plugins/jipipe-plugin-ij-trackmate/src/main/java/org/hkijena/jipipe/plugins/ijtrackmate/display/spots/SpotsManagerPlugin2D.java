@@ -26,7 +26,6 @@ import org.hkijena.jipipe.api.data.storage.JIPipeZIPReadDataStorage;
 import org.hkijena.jipipe.api.data.storage.JIPipeZIPWriteDataStorage;
 import org.hkijena.jipipe.api.nodes.JIPipeGraphNodeRunContext;
 import org.hkijena.jipipe.desktop.app.tableeditor.JIPipeDesktopTableEditor;
-import org.hkijena.jipipe.desktop.commons.components.JIPipeDesktopFormPanel;
 import org.hkijena.jipipe.desktop.commons.components.JIPipeDesktopParameterFormPanel;
 import org.hkijena.jipipe.desktop.commons.components.ribbon.JIPipeDesktopRibbon;
 import org.hkijena.jipipe.desktop.commons.components.ribbon.JIPipeDesktopSmallButtonRibbonAction;
@@ -37,7 +36,6 @@ import org.hkijena.jipipe.plugins.ijtrackmate.nodes.spots.MeasureSpotsNode;
 import org.hkijena.jipipe.plugins.ijtrackmate.parameters.SpotFeature;
 import org.hkijena.jipipe.plugins.ijtrackmate.settings.ImageViewerUISpotsDisplayApplicationSettings;
 import org.hkijena.jipipe.plugins.ijtrackmate.utils.SpotDrawer;
-import org.hkijena.jipipe.plugins.imagejdatatypes.datatypes.ROI2DListData;
 import org.hkijena.jipipe.plugins.imagejdatatypes.util.ImageSliceIndex;
 import org.hkijena.jipipe.plugins.imageviewer.legacy.JIPipeDesktopLegacyImageViewer;
 import org.hkijena.jipipe.plugins.imageviewer.legacy.api.JIPipeDesktopLegacyImageViewerPlugin2D;
@@ -437,7 +435,7 @@ public class SpotsManagerPlugin2D extends JIPipeDesktopLegacyImageViewerPlugin2D
     private void updateSpotJList(boolean deferUploadSlice) {
         DefaultListModel<Spot> model = new DefaultListModel<>();
         int[] selectedIndices = spotsListControl.getSelectedIndices();
-        if(spotsCollection != null) {
+        if (spotsCollection != null) {
             for (Spot spot : spotsCollection.getSpots().iterable(true)) {
                 model.addElement(spot);
             }
@@ -496,14 +494,13 @@ public class SpotsManagerPlugin2D extends JIPipeDesktopLegacyImageViewerPlugin2D
 
         @Override
         public void selectionUpdated(SpotsCollectionData spotsCollectionData, List<Spot> selectedSpots) {
-            if(spotsCollectionData != null) {
+            if (spotsCollectionData != null) {
                 if (selectedSpots.isEmpty()) {
                     roiInfoLabel.setText(spotsCollectionData.getNSpots() + " spots");
                 } else {
                     roiInfoLabel.setText(selectedSpots.size() + "/" + spotsCollectionData.getNSpots() + " spots");
                 }
-            }
-            else {
+            } else {
                 roiInfoLabel.setText("0 spots");
             }
         }

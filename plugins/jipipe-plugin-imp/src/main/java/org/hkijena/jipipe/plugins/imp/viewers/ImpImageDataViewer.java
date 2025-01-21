@@ -14,7 +14,7 @@ public class ImpImageDataViewer extends ImagePlusDataViewer {
 
     @Override
     protected void loadDataIntoLegacyViewer(JIPipeData data) {
-        if(data instanceof ImpImageData) {
+        if (data instanceof ImpImageData) {
             super.loadDataIntoLegacyViewer(new ImagePlusData(((ImpImageData) data).toImagePlus(true, 8)));
         }
     }

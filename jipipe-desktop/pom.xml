@@ -162,11 +162,11 @@
                 <artifactId>lucene-queryparser</artifactId>
                 <version>8.11.2</version>
             </dependency>
-            <dependency>
-                <groupId>org.bioimageanalysis.icy</groupId>
-                <artifactId>icy-vtk</artifactId>
-                <version>${vtk.version}</version>
-            </dependency>
+<!--            <dependency>-->
+<!--                <groupId>org.bioimageanalysis.icy</groupId>-->
+<!--                <artifactId>icy-vtk</artifactId>-->
+<!--                <version>${vtk.version}</version>-->
+<!--            </dependency>-->
         </dependencies>
     </dependencyManagement>
 
@@ -365,11 +365,11 @@
             <artifactId>OrientationJ</artifactId>
             <scope>runtime</scope>
         </dependency>
-        <dependency>
-            <groupId>org.bioimageanalysis.icy</groupId>
-            <artifactId>icy-vtk</artifactId>
-            <scope>runtime</scope>
-        </dependency>
+<!--        <dependency>-->
+<!--            <groupId>org.bioimageanalysis.icy</groupId>-->
+<!--            <artifactId>icy-vtk</artifactId>-->
+<!--            <scope>runtime</scope>-->
+<!--        </dependency>-->
 <!--        <dependency>-->
 <!--            <groupId>org.apache.lucene</groupId>-->
 <!--            <artifactId>lucene-core</artifactId>-->

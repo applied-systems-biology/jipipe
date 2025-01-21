@@ -13,22 +13,17 @@
 
 package org.hkijena.jipipe.plugins.imagejdatatypes.display.viewers;
 
-import ij.ImagePlus;
 import org.hkijena.jipipe.api.data.JIPipeData;
 import org.hkijena.jipipe.desktop.api.dataviewer.JIPipeDesktopDataViewer;
 import org.hkijena.jipipe.desktop.api.dataviewer.JIPipeDesktopDataViewerWindow;
 import org.hkijena.jipipe.desktop.commons.components.ribbon.JIPipeDesktopRibbon;
 import org.hkijena.jipipe.plugins.imagejdatatypes.ImageJDataTypesPlugin;
 import org.hkijena.jipipe.plugins.imagejdatatypes.datatypes.ImagePlusData;
-import org.hkijena.jipipe.plugins.imagejdatatypes.display.OpenInImageJ3DViewerDataDisplayOperation;
-import org.hkijena.jipipe.plugins.imagejdatatypes.display.OpenInImageJDataDisplayOperation;
-import org.hkijena.jipipe.plugins.imagejdatatypes.util.ImageJUtils;
 import org.hkijena.jipipe.plugins.imageviewer.legacy.JIPipeDesktopLegacyImageViewer;
 import org.hkijena.jipipe.plugins.imageviewer.legacy.api.JIPipeDesktopLegacyImageViewerPlugin;
 import org.hkijena.jipipe.plugins.imageviewer.legacy.impl.JIPipeDesktopLegacyImageViewerPanel2D;
 import org.hkijena.jipipe.plugins.imageviewer.settings.ImageViewerGeneralUIApplicationSettings;
 import org.hkijena.jipipe.plugins.imageviewer.vtk.JIPipeDesktopVtkImageViewer;
-import org.hkijena.jipipe.utils.UIUtils;
 import org.hkijena.jipipe.utils.ui.JIPipeDesktopDockPanel;
 
 import javax.swing.*;
@@ -45,11 +40,10 @@ public class ImagePlusDataViewer extends JIPipeDesktopDataViewer {
 
     public ImagePlusDataViewer(JIPipeDesktopDataViewerWindow dataViewerWindow) {
         super(dataViewerWindow);
-        if(ImageJDataTypesPlugin.isVtkAvailable() && !ImageViewerGeneralUIApplicationSettings.getInstance().isForceLegacyImageViewer()) {
+        if (ImageJDataTypesPlugin.isVtkAvailable() && !ImageViewerGeneralUIApplicationSettings.getInstance().isForceLegacyImageViewer()) {
             this.vtkImageViewer = new JIPipeDesktopVtkImageViewer(dataViewerWindow.getDesktopWorkbench());
             this.legacyImageViewer = null;
-        }
-        else {
+        } else {
             this.vtkImageViewer = null;
             this.legacyImageViewer = new JIPipeDesktopLegacyImageViewer(dataViewerWindow.getDesktopWorkbench(),
                     getLegacyImageViewerPlugins(),
@@ -64,47 +58,43 @@ public class ImagePlusDataViewer extends JIPipeDesktopDataViewer {
     }
 
     private void initialize() {
-        if(vtkImageViewer != null) {
+        if (vtkImageViewer != null) {
             add(vtkImageViewer, BorderLayout.CENTER);
-        }
-        else {
+        } else {
             add(legacyImageViewer, BorderLayout.CENTER);
         }
     }
 
     @Override
     public void rebuildRibbon(JIPipeDesktopRibbon ribbon) {
-        if(vtkImageViewer != null) {
+        if (vtkImageViewer != null) {
             vtkImageViewer.buildRibbon(ribbon);
-        }
-        else {
+        } else {
             legacyImageViewer.buildRibbon(ribbon);
         }
     }
 
     @Override
     public void rebuildDock(JIPipeDesktopDockPanel dockPanel) {
-        if(vtkImageViewer != null) {
+        if (vtkImageViewer != null) {
             vtkImageViewer.buildDock(dockPanel);
-        }
-        else {
+        } else {
             legacyImageViewer.buildDock(dockPanel);
         }
     }
 
     @Override
     public void rebuildStatusBar(JToolBar statusBar) {
-        if(vtkImageViewer != null) {
+        if (vtkImageViewer != null) {
             vtkImageViewer.buildStatusBar(statusBar);
-        }
-        else {
+        } else {
             legacyImageViewer.buildStatusBar(statusBar);
         }
     }
 
     @Override
     public void postOnDataChanged() {
-        if(vtkImageViewer != null) {
+        if (vtkImageViewer != null) {
             vtkImageViewer.startRenderer();
         }
         getDataViewerWindow().startDownloadFullData();
@@ -113,10 +103,9 @@ public class ImagePlusDataViewer extends JIPipeDesktopDataViewer {
     @Override
     public void onDataDownloaded(JIPipeData data) {
         this.currentData = data;
-        if(vtkImageViewer != null) {
+        if (vtkImageViewer != null) {
             loadDataIntoVtkViewer(data);
-        }
-        else {
+        } else {
             loadDataIntoLegacyViewer(data);
         }
         setupPanelsOnce(getDataViewerWindow().getDockPanel());
@@ -131,14 +120,14 @@ public class ImagePlusDataViewer extends JIPipeDesktopDataViewer {
     }
 
     protected void loadDataIntoLegacyViewer(JIPipeData data) {
-        if(data instanceof ImagePlusData) {
+        if (data instanceof ImagePlusData) {
             legacyImageViewer.setImageData((ImagePlusData) data);
             legacyImageViewer.addOverlays(((ImagePlusData) data).getOverlays());
         }
     }
 
     protected void setupPanelsOnce(JIPipeDesktopDockPanel dockPanel) {
-        if(!panelSetupDone) {
+        if (!panelSetupDone) {
             setupPanels(dockPanel);
             panelSetupDone = true;
         }
@@ -149,7 +138,7 @@ public class ImagePlusDataViewer extends JIPipeDesktopDataViewer {
     }
 
     protected void activateLegacyDockPanel(String id) {
-        if(legacyImageViewer != null) {
+        if (legacyImageViewer != null) {
             getDataViewerWindow().getDockPanel().activatePanel(JIPipeDesktopLegacyImageViewerPanel2D.DOCK_PANEL_PREFIX + id, true);
         }
     }

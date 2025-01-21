@@ -232,7 +232,7 @@ public class UIUtils {
     }
 
     public static void addToStatusBarWithSeparator(JComponent target, JComponent control) {
-        if(target.getComponentCount() > 0) {
+        if (target.getComponentCount() > 0) {
             target.add(Box.createHorizontalStrut(4));
             target.add(createVerticalSeparator());
             target.add(Box.createHorizontalStrut(4));
@@ -2467,23 +2467,22 @@ public class UIUtils {
     }
 
     public static void makeNonOpaque(Component component, boolean recursive) {
-        if(recursive) {
+        if (recursive) {
             Stack<JComponent> stack = new Stack<>();
-            if(component instanceof JComponent) {
+            if (component instanceof JComponent) {
                 stack.push((JComponent) component);
             }
-            while(!stack.isEmpty()) {
+            while (!stack.isEmpty()) {
                 JComponent component1 = stack.pop();
                 component1.setOpaque(false);
                 for (Component child : component1.getComponents()) {
-                    if(child instanceof JComponent) {
+                    if (child instanceof JComponent) {
                         stack.push((JComponent) child);
                     }
                 }
             }
-        }
-        else {
-            if(component instanceof JComponent) {
+        } else {
+            if (component instanceof JComponent) {
                 ((JComponent) component).setOpaque(false);
             }
         }

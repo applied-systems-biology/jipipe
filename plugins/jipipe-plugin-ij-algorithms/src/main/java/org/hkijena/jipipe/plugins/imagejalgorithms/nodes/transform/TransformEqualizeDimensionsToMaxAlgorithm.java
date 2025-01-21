@@ -156,7 +156,7 @@ public class TransformEqualizeDimensionsToMaxAlgorithm extends JIPipeMergingAlgo
                 List<JIPipeTextAnnotation> textAnnotations = new ArrayList<>();
                 List<JIPipeDataAnnotation> dataAnnotations = new ArrayList<>();
 
-                if(restoreOriginalAnnotations) {
+                if (restoreOriginalAnnotations) {
                     textAnnotations = inputSlot.getTextAnnotations(row);
                     dataAnnotations = inputSlot.getDataAnnotations(row);
                 }

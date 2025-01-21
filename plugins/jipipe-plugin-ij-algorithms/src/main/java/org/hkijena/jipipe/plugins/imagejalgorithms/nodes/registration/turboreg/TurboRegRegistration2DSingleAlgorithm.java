@@ -164,9 +164,9 @@ public class TurboRegRegistration2DSingleAlgorithm extends JIPipeIteratingAlgori
         List<JIPipeTextAnnotation> textAnnotations = new ArrayList<>();
         List<JIPipeDataAnnotation> dataAnnotations = new ArrayList<>();
 
-        if(restoreOriginalAnnotations) {
-           textAnnotations = iterationStep.getInputTextAnnotations("Input");
-           dataAnnotations = iterationStep.getInputDataAnnotations("Input");
+        if (restoreOriginalAnnotations) {
+            textAnnotations = iterationStep.getInputTextAnnotations("Input");
+            dataAnnotations = iterationStep.getInputDataAnnotations("Input");
         }
 
         if (transformationType == TurboRegTransformationType.GenericTransformation) {
@@ -219,7 +219,7 @@ public class TurboRegRegistration2DSingleAlgorithm extends JIPipeIteratingAlgori
             }
         }
 
-        if(progressInfo.isCancelled()) {
+        if (progressInfo.isCancelled()) {
             return;
         }
 
@@ -244,7 +244,7 @@ public class TurboRegRegistration2DSingleAlgorithm extends JIPipeIteratingAlgori
             }
         }
 
-        if(progressInfo.isCancelled()) {
+        if (progressInfo.isCancelled()) {
             return;
         }
 
@@ -270,7 +270,7 @@ public class TurboRegRegistration2DSingleAlgorithm extends JIPipeIteratingAlgori
         TopologicalOrderIterator<TurboRegRegistrationAlgorithmTransformationNode, DefaultEdge> topologicalOrderIterator = new TopologicalOrderIterator<>(graph);
         while (topologicalOrderIterator.hasNext()) {
 
-            if(progressInfo.isCancelled()) {
+            if (progressInfo.isCancelled()) {
                 return;
             }
 
@@ -383,5 +383,5 @@ public class TurboRegRegistration2DSingleAlgorithm extends JIPipeIteratingAlgori
                 JIPipeDataAnnotationMergeMode.OverwriteExisting,
                 progressInfo);
         iterationStep.addOutputData("Transform", new JsonData(JsonUtils.toPrettyJsonString(transformation)), progressInfo);
-    }   
+    }
 }

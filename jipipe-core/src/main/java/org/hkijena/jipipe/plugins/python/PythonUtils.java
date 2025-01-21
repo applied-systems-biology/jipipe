@@ -47,7 +47,6 @@ import java.io.IOException;
 import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.nio.file.Path;
-import java.nio.file.Paths;
 import java.util.*;
 import java.util.stream.Collectors;
 
@@ -321,7 +320,7 @@ public class PythonUtils {
      * @param environment  the environment
      * @param libraryPaths additional library paths
      * @param suppressLogs if logging should be suppressed
-     * @param detached if the script should be run detached
+     * @param detached     if the script should be run detached
      * @param progressInfo the progress info
      */
     public static void runPython(Path scriptFile, PythonEnvironment environment, List<Path> libraryPaths, boolean suppressLogs, boolean detached, JIPipeProgressInfo progressInfo) {
@@ -355,10 +354,9 @@ public class PythonUtils {
         setupLogger(commandLine, executor, suppressLogs, progressInfo);
 
         try {
-            if(detached) {
+            if (detached) {
                 executor.launch(commandLine, environmentVariables, scriptFile.getParent().toFile());
-            }
-            else {
+            } else {
                 executor.execute(commandLine, environmentVariables);
             }
         } catch (IOException e) {
@@ -393,7 +391,7 @@ public class PythonUtils {
      * @param libraryPaths                   additional library paths
      * @param additionalEnvironmentVariables additional environment variables
      * @param suppressLogs                   if logs should be suppressed
-     * @param detached run the process detached
+     * @param detached                       run the process detached
      * @param progressInfo                   the progress info
      */
     public static void runPython(String[] arguments, PythonEnvironment environment, List<Path> libraryPaths, Map<String, String> additionalEnvironmentVariables, boolean suppressLogs, boolean detached, JIPipeProgressInfo progressInfo) {
@@ -435,10 +433,9 @@ public class PythonUtils {
         setupLogger(commandLine, executor, suppressLogs, progressInfo);
 
         try {
-            if(detached) {
+            if (detached) {
                 executor.launch(commandLine, environmentVariables, executor.getWorkingDirectory());
-            }
-            else {
+            } else {
                 executor.execute(commandLine, environmentVariables);
             }
         } catch (IOException e) {

@@ -15,11 +15,11 @@ package org.hkijena.jipipe.plugins.core.data;
 
 import org.hkijena.jipipe.api.data.JIPipeData;
 import org.hkijena.jipipe.api.data.JIPipeDataItemStore;
+import org.hkijena.jipipe.api.data.JIPipeDataSource;
 import org.hkijena.jipipe.api.data.browser.JIPipeLocalDataBrowser;
 import org.hkijena.jipipe.api.data.browser.JIPipeLocalDataTableBrowser;
 import org.hkijena.jipipe.api.data.sources.JIPipeDataTableDataSource;
 import org.hkijena.jipipe.desktop.api.data.JIPipeDesktopDataDisplayOperation;
-import org.hkijena.jipipe.api.data.JIPipeDataSource;
 import org.hkijena.jipipe.desktop.api.dataviewer.JIPipeDesktopDataViewerWindow;
 import org.hkijena.jipipe.desktop.app.JIPipeDesktopWorkbench;
 import org.hkijena.jipipe.utils.UIUtils;
@@ -32,11 +32,10 @@ public class DefaultDataDisplayOperation implements JIPipeDesktopDataDisplayOper
         JIPipeDesktopDataViewerWindow window = new JIPipeDesktopDataViewerWindow(desktopWorkbench);
         window.setLocationRelativeTo(desktopWorkbench.getWindow());
         window.setVisible(true);
-        if(source instanceof JIPipeDataTableDataSource) {
+        if (source instanceof JIPipeDataTableDataSource) {
             JIPipeDataTableDataSource dataSource = (JIPipeDataTableDataSource) source;
             window.browseDataTable(new JIPipeLocalDataTableBrowser(dataSource.getDataTable()), dataSource.getRow(), dataSource.getDataAnnotation(), displayName);
-        }
-        else {
+        } else {
             window.browseData(new JIPipeLocalDataBrowser(new JIPipeDataItemStore(data)), displayName);
         }
         window.revalidateDockLater();

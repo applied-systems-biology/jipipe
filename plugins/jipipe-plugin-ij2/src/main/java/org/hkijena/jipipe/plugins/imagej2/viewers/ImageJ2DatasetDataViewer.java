@@ -12,7 +12,7 @@ public class ImageJ2DatasetDataViewer extends ImagePlusDataViewer {
 
     @Override
     protected void loadDataIntoLegacyViewer(JIPipeData data) {
-        if(data instanceof ImageJ2DatasetData) {
+        if (data instanceof ImageJ2DatasetData) {
             super.loadDataIntoLegacyViewer(((ImageJ2DatasetData) data).wrap());
         }
     }

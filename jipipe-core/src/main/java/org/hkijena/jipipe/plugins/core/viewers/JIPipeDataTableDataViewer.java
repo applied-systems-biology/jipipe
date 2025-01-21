@@ -31,7 +31,7 @@ public class JIPipeDataTableDataViewer extends JIPipeDesktopDataViewer {
 
     @Override
     public void onDataDownloaded(JIPipeData data) {
-        if(data instanceof JIPipeDataTable) {
+        if (data instanceof JIPipeDataTable) {
             dataTableUI.setDataTable(new WeakStore<>((JIPipeDataTable) data));
         }
     }

@@ -15,7 +15,6 @@ package org.hkijena.jipipe.plugins.imagejdatatypes;
 
 import ome.xml.model.enums.DimensionOrder;
 import org.apache.commons.compress.utils.Sets;
-import org.apache.commons.lang3.exception.ExceptionUtils;
 import org.hkijena.jipipe.JIPipe;
 import org.hkijena.jipipe.JIPipeDependency;
 import org.hkijena.jipipe.JIPipeJavaPlugin;
@@ -67,7 +66,10 @@ import org.hkijena.jipipe.plugins.imagejdatatypes.datatypes.d5.color.ImagePlus5D
 import org.hkijena.jipipe.plugins.imagejdatatypes.datatypes.d5.greyscale.*;
 import org.hkijena.jipipe.plugins.imagejdatatypes.datatypes.fft.*;
 import org.hkijena.jipipe.plugins.imagejdatatypes.datatypes.greyscale.*;
-import org.hkijena.jipipe.plugins.imagejdatatypes.display.*;
+import org.hkijena.jipipe.plugins.imagejdatatypes.display.AddToROIManagerDataDisplayOperation;
+import org.hkijena.jipipe.plugins.imagejdatatypes.display.OpenInImageJ3DViewerDataDisplayOperation;
+import org.hkijena.jipipe.plugins.imagejdatatypes.display.OpenInImageJDataDisplayOperation;
+import org.hkijena.jipipe.plugins.imagejdatatypes.display.OpenInNapariDataDisplayOperation;
 import org.hkijena.jipipe.plugins.imagejdatatypes.display.viewers.*;
 import org.hkijena.jipipe.plugins.imagejdatatypes.parameters.OMEColorMode;
 import org.hkijena.jipipe.plugins.imagejdatatypes.parameters.OMETIFFCompression;
@@ -81,8 +83,8 @@ import org.hkijena.jipipe.plugins.imagejdatatypes.util.AVICompression;
 import org.hkijena.jipipe.plugins.imagejdatatypes.util.BitDepth;
 import org.hkijena.jipipe.plugins.imagejdatatypes.util.OptionalBitDepth;
 import org.hkijena.jipipe.plugins.imagejdatatypes.util.ROIElementDrawingMode;
-import org.hkijena.jipipe.plugins.imageviewer.settings.LegacyImageViewer2DUIApplicationSettings;
 import org.hkijena.jipipe.plugins.imageviewer.settings.ImageViewerGeneralUIApplicationSettings;
+import org.hkijena.jipipe.plugins.imageviewer.settings.LegacyImageViewer2DUIApplicationSettings;
 import org.hkijena.jipipe.plugins.napari.NapariPlugin;
 import org.hkijena.jipipe.plugins.parameters.library.jipipe.PluginCategoriesEnumParameter;
 import org.hkijena.jipipe.plugins.parameters.library.markup.HTMLText;
@@ -96,12 +98,10 @@ import org.hkijena.jipipe.plugins.tables.datatypes.ResultsTableData;
 import org.hkijena.jipipe.plugins.tables.display.CacheAwareOpenResultsTableInJIPipeDataDisplayOperation;
 import org.hkijena.jipipe.plugins.tables.display.OpenResultsTableInImageJDataDisplayOperation;
 import org.hkijena.jipipe.plugins.tables.display.OpenResultsTableInJIPipeTabDataDisplayOperation;
-import org.hkijena.jipipe.utils.PathUtils;
 import org.hkijena.jipipe.utils.ResourceUtils;
 import org.hkijena.jipipe.utils.UIUtils;
 import org.scijava.Context;
 import org.scijava.plugin.Plugin;
-import vtk.VTKUtils;
 
 import javax.swing.*;
 import java.util.Arrays;
@@ -377,7 +377,6 @@ public class ImageJDataTypesPlugin extends JIPipePrepackagedDefaultJavaPlugin {
     public List<ImageIcon> getSplashIcons() {
         return Arrays.asList(UIUtils.getIcon32FromResources("apps/bio-formats.png"));
     }
-
 
 
     @Override

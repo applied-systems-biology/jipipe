@@ -260,7 +260,7 @@ public class JIPipeDesktopDockPanel extends JPanel implements JIPipeDesktopSplit
         List<JComponent> leftContent = new ArrayList<>();
         List<JComponent> rightContent = new ArrayList<>();
 
-        if(!hideToolbars) {
+        if (!hideToolbars) {
             for (Panel panel : getPanelsAtLocation(PanelLocation.TopLeft)) {
                 if (panel.isDisplayed()) {
                     leftContent.add(panel.getComponent());
@@ -361,7 +361,7 @@ public class JIPipeDesktopDockPanel extends JPanel implements JIPipeDesktopSplit
             }
         }
 
-        if(hideToolbars) {
+        if (hideToolbars) {
             leftPanelIsUsed = false;
             rightPanelIsUsed = false;
         }

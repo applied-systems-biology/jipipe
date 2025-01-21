@@ -17,7 +17,6 @@ import javax.swing.*;
 import java.awt.*;
 import java.awt.event.ActionListener;
 import java.util.List;
-import java.util.function.Consumer;
 
 public abstract class JIPipeDesktopToggleButtonRibbonAction extends JIPipeDesktopRibbon.Action {
 

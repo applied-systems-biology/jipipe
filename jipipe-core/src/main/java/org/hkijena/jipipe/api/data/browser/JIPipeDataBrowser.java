@@ -1,6 +1,5 @@
 package org.hkijena.jipipe.api.data.browser;
 
-import org.hkijena.jipipe.JIPipeDefaultJavaPlugin;
 import org.hkijena.jipipe.api.JIPipeProgressInfo;
 import org.hkijena.jipipe.api.data.JIPipeData;
 import org.hkijena.jipipe.api.data.JIPipeDataInfo;
@@ -14,12 +13,14 @@ public interface JIPipeDataBrowser extends Closeable, AutoCloseable {
 
     /**
      * Gets the emitter for the updated event
+     *
      * @return the emitter
      */
     UpdatedEventEmitter getUpdatedEventEmitter();
 
     /**
      * Gets the store for the fully downloaded data
+     *
      * @return the store. can be null
      */
     default <T extends JIPipeData> Future<T> getData(Class<T> klass) {
@@ -29,6 +30,7 @@ public interface JIPipeDataBrowser extends Closeable, AutoCloseable {
 
     /**
      * Gets the store for the fully downloaded data
+     *
      * @param progressInfo the progress info for the download
      * @return the store. can be null
      */
@@ -36,6 +38,7 @@ public interface JIPipeDataBrowser extends Closeable, AutoCloseable {
 
     /**
      * Gets the string representation of the data
+     *
      * @return the string
      */
     default Future<String> getDataAsString() {
@@ -44,6 +47,7 @@ public interface JIPipeDataBrowser extends Closeable, AutoCloseable {
 
     /**
      * Gets the string representation of the data
+     *
      * @param progressInfo the progress info
      * @return the string
      */
@@ -51,6 +55,7 @@ public interface JIPipeDataBrowser extends Closeable, AutoCloseable {
 
     /**
      * Gets the detailed string representation of the data
+     *
      * @return the string
      */
     default Future<String> getDataAsDetailedString() {
@@ -59,6 +64,7 @@ public interface JIPipeDataBrowser extends Closeable, AutoCloseable {
 
     /**
      * Gets the detailed string representation of the data
+     *
      * @param progressInfo the progress info
      * @return the string
      */
@@ -66,16 +72,22 @@ public interface JIPipeDataBrowser extends Closeable, AutoCloseable {
 
     /**
      * The data class
+     *
      * @return the data class
      */
     Class<? extends JIPipeData> getDataClass();
 
     /**
      * The data class info
+     *
      * @return the info
      */
     default JIPipeDataInfo getDataTypeInfo() {
         return JIPipeDataInfo.getInstance(getDataClass());
+    }
+
+    interface UpdatedEventListener {
+        void onDataBrowserUpdated(UpdatedEvent event);
     }
 
     /**
@@ -84,6 +96,7 @@ public interface JIPipeDataBrowser extends Closeable, AutoCloseable {
     class UpdatedEvent extends AbstractJIPipeEvent {
         private final JIPipeDataBrowser browser;
         private final String type;
+
         public UpdatedEvent(Object source, JIPipeDataBrowser browser, String type) {
             super(source);
             this.browser = browser;
@@ -97,10 +110,6 @@ public interface JIPipeDataBrowser extends Closeable, AutoCloseable {
         public String getType() {
             return type;
         }
-    }
-
-    interface UpdatedEventListener {
-        void onDataBrowserUpdated(UpdatedEvent event);
     }
 
     class UpdatedEventEmitter extends JIPipeEventEmitter<UpdatedEvent, UpdatedEventListener> {

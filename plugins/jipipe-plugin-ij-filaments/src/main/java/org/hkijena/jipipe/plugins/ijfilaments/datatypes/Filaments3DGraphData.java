@@ -45,7 +45,6 @@ import org.hkijena.jipipe.plugins.ijfilaments.util.*;
 import org.hkijena.jipipe.plugins.imagejdatatypes.datatypes.ROI2DListData;
 import org.hkijena.jipipe.plugins.imagejdatatypes.util.BitDepth;
 import org.hkijena.jipipe.plugins.imagejdatatypes.util.ImageJUtils;
-import org.hkijena.jipipe.plugins.imagejdatatypes.util.RoiDrawer;
 import org.hkijena.jipipe.plugins.imageviewer.legacy.api.JIPipeDesktopLegacyImageViewerOverlay;
 import org.hkijena.jipipe.plugins.imageviewer.legacy.api.JIPipeDesktopLegacyImageViewerPlugin;
 import org.hkijena.jipipe.plugins.napari.NapariOverlay;
@@ -1371,7 +1370,7 @@ public class Filaments3DGraphData extends SimpleGraph<FilamentVertex, FilamentEd
 
     @Override
     public List<Path> exportOverlayToNapari(ImagePlus imp, Path outputDirectory, String prefix, JIPipeProgressInfo progressInfo) {
-        if(!isEmpty()) {
+        if (!isEmpty()) {
             Path outputFile = outputDirectory.resolve(prefix + "_filaments.tif");
 
             progressInfo.log("Exporting " + this);
@@ -1383,8 +1382,7 @@ public class Filaments3DGraphData extends SimpleGraph<FilamentVertex, FilamentEd
             IJ.saveAsTiff(rendered, outputFile.toString());
 
             return Collections.singletonList(outputFile);
-        }
-        else {
+        } else {
             return Collections.emptyList();
         }
     }

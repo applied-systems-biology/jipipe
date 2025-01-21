@@ -25,7 +25,6 @@ import org.hkijena.jipipe.api.data.storage.JIPipeZIPReadDataStorage;
 import org.hkijena.jipipe.api.data.storage.JIPipeZIPWriteDataStorage;
 import org.hkijena.jipipe.api.nodes.JIPipeGraphNodeRunContext;
 import org.hkijena.jipipe.desktop.app.tableeditor.JIPipeDesktopTableEditor;
-import org.hkijena.jipipe.desktop.commons.components.JIPipeDesktopFormPanel;
 import org.hkijena.jipipe.desktop.commons.components.JIPipeDesktopParameterFormPanel;
 import org.hkijena.jipipe.desktop.commons.components.ribbon.JIPipeDesktopLargeButtonRibbonAction;
 import org.hkijena.jipipe.desktop.commons.components.ribbon.JIPipeDesktopRibbon;
@@ -40,7 +39,6 @@ import org.hkijena.jipipe.plugins.ijtrackmate.parameters.EdgeFeature;
 import org.hkijena.jipipe.plugins.ijtrackmate.parameters.TrackFeature;
 import org.hkijena.jipipe.plugins.ijtrackmate.settings.ImageViewerUITracksDisplayApplicationSettings;
 import org.hkijena.jipipe.plugins.ijtrackmate.utils.TrackDrawer;
-import org.hkijena.jipipe.plugins.imagejdatatypes.datatypes.ROI2DListData;
 import org.hkijena.jipipe.plugins.imagejdatatypes.util.ImageSliceIndex;
 import org.hkijena.jipipe.plugins.imageviewer.legacy.JIPipeDesktopLegacyImageViewer;
 import org.hkijena.jipipe.plugins.imageviewer.legacy.api.JIPipeDesktopLegacyImageViewerPlugin2D;
@@ -439,7 +437,7 @@ public class TracksManagerPlugin2D extends JIPipeDesktopLegacyImageViewerPlugin2
     private void updateTrackJList(boolean deferUploadSlice) {
         DefaultListModel<Integer> model = new DefaultListModel<>();
         int[] selectedIndices = tracksListControl.getSelectedIndices();
-        if(tracksCollection != null) {
+        if (tracksCollection != null) {
             for (Integer trackID : tracksCollection.getTrackModel().trackIDs(true)) {
                 model.addElement(trackID);
             }
@@ -518,14 +516,13 @@ public class TracksManagerPlugin2D extends JIPipeDesktopLegacyImageViewerPlugin2
 
         @Override
         public void selectionUpdated(TrackCollectionData trackCollectionData, List<Integer> selectedTrackIds) {
-            if(trackCollectionData != null) {
+            if (trackCollectionData != null) {
                 if (selectedTrackIds.isEmpty()) {
                     roiInfoLabel.setText(trackCollectionData.getNTracks() + " tracks");
                 } else {
                     roiInfoLabel.setText(selectedTrackIds.size() + "/" + trackCollectionData.getNTracks() + " tracks");
                 }
-            }
-            else {
+            } else {
                 roiInfoLabel.setText("0 tracks");
             }
 

@@ -163,11 +163,11 @@ public class TurboRegRegistration2DReferencedAlgorithm extends JIPipeIteratingAl
         List<JIPipeDataAnnotation> referenceDataAnnotations = new ArrayList<>();
         List<JIPipeDataAnnotation> inputDataAnnotations = new ArrayList<>();
 
-        if(restoreOriginalAnnotations) {
-           referenceTextAnnotations = iterationStep.getInputTextAnnotations("Reference");
-           inputTextAnnotations = iterationStep.getInputTextAnnotations("Input");
-           referenceDataAnnotations = iterationStep.getInputDataAnnotations("Reference");
-           inputDataAnnotations = iterationStep.getInputDataAnnotations("Input");
+        if (restoreOriginalAnnotations) {
+            referenceTextAnnotations = iterationStep.getInputTextAnnotations("Reference");
+            inputTextAnnotations = iterationStep.getInputTextAnnotations("Input");
+            referenceDataAnnotations = iterationStep.getInputDataAnnotations("Reference");
+            inputDataAnnotations = iterationStep.getInputDataAnnotations("Input");
         }
 
         if (transformationType == TurboRegTransformationType.GenericTransformation) {
@@ -230,7 +230,7 @@ public class TurboRegRegistration2DReferencedAlgorithm extends JIPipeIteratingAl
             }
         }
 
-        if(progressInfo.isCancelled()) {
+        if (progressInfo.isCancelled()) {
             return;
         }
 
@@ -255,7 +255,7 @@ public class TurboRegRegistration2DReferencedAlgorithm extends JIPipeIteratingAl
             }
         }
 
-        if(progressInfo.isCancelled()) {
+        if (progressInfo.isCancelled()) {
             return;
         }
 
@@ -281,7 +281,7 @@ public class TurboRegRegistration2DReferencedAlgorithm extends JIPipeIteratingAl
         TopologicalOrderIterator<TurboRegRegistrationAlgorithmTransformationNode, DefaultEdge> topologicalOrderIterator = new TopologicalOrderIterator<>(graph);
         while (topologicalOrderIterator.hasNext()) {
 
-            if(progressInfo.isCancelled()) {
+            if (progressInfo.isCancelled()) {
                 return;
             }
 

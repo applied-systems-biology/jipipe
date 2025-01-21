@@ -23,12 +23,10 @@ import org.hkijena.jipipe.api.nodes.AddJIPipeInputSlot;
 import org.hkijena.jipipe.api.nodes.AddJIPipeOutputSlot;
 import org.hkijena.jipipe.api.nodes.JIPipeGraphNodeRunContext;
 import org.hkijena.jipipe.api.nodes.JIPipeNodeInfo;
-import org.hkijena.jipipe.api.nodes.algorithm.JIPipeIteratingAlgorithm;
 import org.hkijena.jipipe.api.nodes.algorithm.JIPipeMergingAlgorithm;
 import org.hkijena.jipipe.api.nodes.categories.TableNodeTypeCategory;
 import org.hkijena.jipipe.api.nodes.iterationstep.JIPipeIterationContext;
 import org.hkijena.jipipe.api.nodes.iterationstep.JIPipeMultiIterationStep;
-import org.hkijena.jipipe.api.nodes.iterationstep.JIPipeSingleIterationStep;
 import org.hkijena.jipipe.api.parameters.JIPipeParameter;
 import org.hkijena.jipipe.plugins.expressions.AddJIPipeExpressionParameterVariable;
 import org.hkijena.jipipe.plugins.expressions.JIPipeExpressionVariablesMap;
@@ -120,7 +118,6 @@ public class MergeTableColumnsSupplementMergingAlgorithm extends JIPipeMergingAl
                 }
 
 
-
                 for (String condition : Sets.union(splitInputTarget.keySet(), splitInputSource.keySet())) {
                     ResultsTableData target = splitInputTarget.getOrDefault(condition, new ResultsTableData());
                     ResultsTableData source = splitInputSource.getOrDefault(condition, new ResultsTableData());
@@ -153,7 +150,7 @@ public class MergeTableColumnsSupplementMergingAlgorithm extends JIPipeMergingAl
                 inputTarget = outputTable;
             }
 
-            if(restoreOriginalAnnotations) {
+            if (restoreOriginalAnnotations) {
                 iterationStep.addOutputData(getFirstOutputSlot(),
                         outputTable,
                         iterationStep.getInputTextAnnotations("Target", targetRow),
@@ -161,8 +158,7 @@ public class MergeTableColumnsSupplementMergingAlgorithm extends JIPipeMergingAl
                         iterationStep.getInputDataAnnotations("Target", targetRow),
                         JIPipeDataAnnotationMergeMode.OverwriteExisting,
                         progressInfo);
-            }
-            else {
+            } else {
                 iterationStep.addOutputData(getFirstOutputSlot(),
                         outputTable,
                         progressInfo);

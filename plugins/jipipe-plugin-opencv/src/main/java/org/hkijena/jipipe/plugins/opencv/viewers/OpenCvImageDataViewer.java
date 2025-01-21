@@ -13,7 +13,7 @@ public class OpenCvImageDataViewer extends ImagePlusDataViewer {
 
     @Override
     protected void loadDataIntoLegacyViewer(JIPipeData data) {
-        if(data instanceof OpenCvImageData) {
+        if (data instanceof OpenCvImageData) {
             super.loadDataIntoLegacyViewer(new ImagePlusData(((OpenCvImageData) data).toImagePlus()));
         }
     }

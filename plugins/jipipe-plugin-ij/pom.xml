@@ -79,15 +79,15 @@
         <license.projectName>JIPipe-IJ</license.projectName>
     </properties>
 
-    <dependencyManagement>
-        <dependencies>
-            <dependency>
-                <groupId>org.jzy3d</groupId>
-                <artifactId>vtk-java8-wrapper</artifactId>
-                <version>2.2.1-SNAPSHOT</version>
-            </dependency>
-        </dependencies>
-    </dependencyManagement>
+<!--    <dependencyManagement>-->
+<!--        <dependencies>-->
+<!--            <dependency>-->
+<!--                <groupId>org.jzy3d</groupId>-->
+<!--                <artifactId>vtk-java8-wrapper</artifactId>-->
+<!--                <version>2.2.1-SNAPSHOT</version>-->
+<!--            </dependency>-->
+<!--        </dependencies>-->
+<!--    </dependencyManagement>-->
 
     <dependencies>
         <dependency>
@@ -120,15 +120,15 @@
             <groupId>sc.fiji</groupId>
             <artifactId>3D_Viewer</artifactId>
         </dependency>
-        <dependency>
-            <groupId>org.jzy3d</groupId>
-            <artifactId>vtk-java8-wrapper</artifactId>
-        </dependency>
-        <dependency>
-            <groupId>org.bioimageanalysis.icy</groupId>
-            <artifactId>icy-vtk</artifactId>
-            <version>${vtk.version}</version>
-        </dependency>
+<!--        <dependency>-->
+<!--            <groupId>org.jzy3d</groupId>-->
+<!--            <artifactId>vtk-java8-wrapper</artifactId>-->
+<!--        </dependency>-->
+<!--        <dependency>-->
+<!--            <groupId>org.bioimageanalysis.icy</groupId>-->
+<!--            <artifactId>icy-vtk</artifactId>-->
+<!--            <version>${vtk.version}</version>-->
+<!--        </dependency>-->
     </dependencies>
     <build>
         <plugins>
@@ -139,11 +139,11 @@
             </plugin>
         </plugins>
     </build>
-    <repositories>
-        <repository>
-            <id>icy</id>
-            <name>Icy</name>
-            <url>https://maven.scijava.org/content/repositories/icy/</url>
-        </repository>
-    </repositories>
+<!--    <repositories>-->
+<!--        <repository>-->
+<!--            <id>icy</id>-->
+<!--            <name>Icy</name>-->
+<!--            <url>https://maven.scijava.org/content/repositories/icy/</url>-->
+<!--        </repository>-->
+<!--    </repositories>-->
 </project>

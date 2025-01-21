@@ -27,7 +27,7 @@ public class ROI2DListDataViewer extends ImagePlusDataViewer {
     @Override
     protected void loadDataIntoLegacyViewer(JIPipeData data) {
         getLegacyImageViewer().clearOverlays();
-        if(data instanceof ROI2DListData) {
+        if (data instanceof ROI2DListData) {
             ROI2DListData listData = (ROI2DListData) data;
             ImagePlus canvas = listData.createBlankCanvas("ROI", BitDepth.Grayscale8u);
             getLegacyImageViewer().setImagePlus(canvas);

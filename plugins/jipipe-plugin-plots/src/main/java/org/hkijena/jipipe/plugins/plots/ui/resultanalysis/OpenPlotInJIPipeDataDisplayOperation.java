@@ -14,8 +14,8 @@
 package org.hkijena.jipipe.plugins.plots.ui.resultanalysis;
 
 import org.hkijena.jipipe.api.data.JIPipeData;
-import org.hkijena.jipipe.desktop.api.data.JIPipeDesktopDataDisplayOperation;
 import org.hkijena.jipipe.api.data.JIPipeDataSource;
+import org.hkijena.jipipe.desktop.api.data.JIPipeDesktopDataDisplayOperation;
 import org.hkijena.jipipe.desktop.app.JIPipeDesktopWorkbench;
 import org.hkijena.jipipe.plugins.core.data.DefaultDataDisplayOperation;
 import org.hkijena.jipipe.utils.UIUtils;

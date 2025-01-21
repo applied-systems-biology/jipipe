@@ -38,6 +38,7 @@ public abstract class JIPipeDesktopDataViewer extends JIPipeDesktopWorkbenchPane
 
     /**
      * Called after preOnDataChanged() in the phase where the ribbon is re-built
+     *
      * @param ribbon the ribbon
      */
     public void rebuildRibbon(JIPipeDesktopRibbon ribbon) {
@@ -46,6 +47,7 @@ public abstract class JIPipeDesktopDataViewer extends JIPipeDesktopWorkbenchPane
 
     /**
      * Called before rebuildRibbon()
+     *
      * @param dockPanel the dock panel
      */
     public void rebuildDock(JIPipeDesktopDockPanel dockPanel) {
@@ -54,6 +56,7 @@ public abstract class JIPipeDesktopDataViewer extends JIPipeDesktopWorkbenchPane
 
     /**
      * Called after rebuildDock()
+     *
      * @param statusBar the status bar (left side)
      */
     public void rebuildStatusBar(JToolBar statusBar) {
@@ -85,6 +88,7 @@ public abstract class JIPipeDesktopDataViewer extends JIPipeDesktopWorkbenchPane
 
     /**
      * Called when the full data was downloaded.
+     *
      * @param data the downloaded data. please check using instanceof if the correct data is present
      */
     public void onDataDownloaded(JIPipeData data) {
@@ -94,6 +98,7 @@ public abstract class JIPipeDesktopDataViewer extends JIPipeDesktopWorkbenchPane
 
     /**
      * Gets the current data browser
+     *
      * @return the data browser. Can be null
      */
     public JIPipeDataBrowser getDataBrowser() {
@@ -102,6 +107,7 @@ public abstract class JIPipeDesktopDataViewer extends JIPipeDesktopWorkbenchPane
 
     /**
      * Gets the current data table browser
+     *
      * @return the data table browser. Can be null.
      */
     public JIPipeDataTableBrowser getDataTableBrowser() {
@@ -116,9 +122,10 @@ public abstract class JIPipeDesktopDataViewer extends JIPipeDesktopWorkbenchPane
 
     /**
      * Gets a future and passes it into Swing.invokeLater
-     * @param future the future
+     *
+     * @param future   the future
      * @param consumer the consumer
-     * @param <T> the type
+     * @param <T>      the type
      */
     public <T> void awaitToSwing(Future<T> future, Consumer<T> consumer) {
         executorService.submit(() -> {

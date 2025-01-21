@@ -282,6 +282,7 @@ public class JIPipeRunnableQueue implements JIPipeRunnable.FinishedEventListener
 
     /**
      * Runs the runnable in a dialog
+     *
      * @param runnable the runnable
      */
     public void runInDialog(JIPipeDesktopWorkbench workbench, Component parent, JIPipeRunnable runnable) {

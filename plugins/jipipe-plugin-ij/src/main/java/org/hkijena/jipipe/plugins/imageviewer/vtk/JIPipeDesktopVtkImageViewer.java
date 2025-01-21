@@ -14,7 +14,6 @@ import org.hkijena.jipipe.plugins.imageviewer.vtk.tools.ViewZoomTool;
 import org.hkijena.jipipe.utils.UIUtils;
 import org.hkijena.jipipe.utils.ui.JIPipeDesktopDockPanel;
 import org.scijava.Disposable;
-import vtk.*;
 
 import javax.swing.*;
 import java.awt.*;
@@ -22,16 +21,45 @@ import java.util.Map;
 
 public class JIPipeDesktopVtkImageViewer extends JIPipeDesktopWorkbenchPanel implements Disposable {
 
-    private VtkPanel renderer;
     private final BiMap<Class<? extends JIPipeDesktopVtkImageViewerTool>, JIPipeDesktopVtkImageViewerTool> viewInteractionTools
             = HashBiMap.create();
     private final BiMap<Class<? extends JIPipeDesktopVtkImageViewerTool>, JIPipeDesktopToggleButtonRibbonAction> viewInteractionToolButtons
             = HashBiMap.create();
+    private VtkPanel renderer;
     private JIPipeDesktopVtkImageViewerTool currentTool;
 
     public JIPipeDesktopVtkImageViewer(JIPipeDesktopWorkbench desktopWorkbench) {
         super(desktopWorkbench);
         initialize();
+    }
+
+    public static void main(String[] args) {
+        JIPipeDesktopUITheme.ModernLight.install();
+        VTKUtils.loadVtkNativeLibraries();
+
+        JFrame frame = new JFrame();
+        JIPipeDesktopVtkImageViewer imageViewer = new JIPipeDesktopVtkImageViewer(new JIPipeDesktopDummyWorkbench());
+
+        frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+        frame.setTitle("JIPipe Image Viewer Test");
+        JPanel panel = new JPanel(new BorderLayout());
+        JIPipeDesktopRibbon ribbon = new JIPipeDesktopRibbon();
+        JIPipeDesktopDockPanel dockPanel = new JIPipeDesktopDockPanel();
+
+        imageViewer.buildRibbon(ribbon);
+        imageViewer.buildDock(dockPanel);
+        ribbon.rebuildRibbon();
+
+        panel.add(ribbon, BorderLayout.NORTH);
+        panel.add(dockPanel, BorderLayout.CENTER);
+        dockPanel.setBackgroundComponent(imageViewer);
+
+        frame.getContentPane().add(panel, BorderLayout.CENTER);
+        frame.pack();
+        frame.setSize(1920, 1080);
+        frame.setVisible(true);
+
+        imageViewer.startRenderer();
     }
 
     private void initialize() {
@@ -56,48 +84,45 @@ public class JIPipeDesktopVtkImageViewer extends JIPipeDesktopWorkbenchPanel imp
     }
 
     public void switchTool(Class<? extends JIPipeDesktopVtkImageViewerTool> klass) {
-       if(viewInteractionToolButtons.containsKey(klass)) {
-           if(currentTool != null && currentTool.getClass() == klass) {
-               currentTool.onDeactivate(this);
-           }
-           for (Map.Entry<Class<? extends JIPipeDesktopVtkImageViewerTool>,
-                   JIPipeDesktopToggleButtonRibbonAction> entry : viewInteractionToolButtons.entrySet()) {
-               entry.getValue().setSelected(entry.getKey() == klass);
-           }
-           currentTool = viewInteractionTools.get(klass);
-           currentTool.onActivate(this);
-           if(renderer != null) {
-               renderer.setInteractionTool(currentTool.getInteractionTool());
-           }
-       }
+        if (viewInteractionToolButtons.containsKey(klass)) {
+            if (currentTool != null && currentTool.getClass() == klass) {
+                currentTool.onDeactivate(this);
+            }
+            for (Map.Entry<Class<? extends JIPipeDesktopVtkImageViewerTool>,
+                    JIPipeDesktopToggleButtonRibbonAction> entry : viewInteractionToolButtons.entrySet()) {
+                entry.getValue().setSelected(entry.getKey() == klass);
+            }
+            currentTool = viewInteractionTools.get(klass);
+            currentTool.onActivate(this);
+            if (renderer != null) {
+                renderer.setInteractionTool(currentTool.getInteractionTool());
+            }
+        }
     }
 
     public void addToolToRibbon(JIPipeDesktopVtkImageViewerTool tool, JIPipeDesktopRibbon.Band band, boolean large) {
         JIPipeDesktopToggleButtonRibbonAction action;
-        if(large) {
+        if (large) {
             action = new JIPipeDesktopLargeToggleButtonRibbonAction(tool.getLabel(),
                     tool.getDescription(),
                     tool.getIcon32(),
                     false,
                     button -> {
-                        if(button.isSelected()) {
+                        if (button.isSelected()) {
                             switchTool(tool.getClass());
-                        }
-                        else {
+                        } else {
                             switchTool(ViewDefaultTool.class);
                         }
                     });
-        }
-        else {
+        } else {
             action = new JIPipeDesktopSmallToggleButtonRibbonAction(tool.getLabel(),
                     tool.getDescription(),
                     tool.getIcon16(),
                     false,
                     button -> {
-                        if(button.isSelected()) {
+                        if (button.isSelected()) {
                             switchTool(tool.getClass());
-                        }
-                        else {
+                        } else {
                             switchTool(ViewDefaultTool.class);
                         }
                     });
@@ -136,35 +161,6 @@ public class JIPipeDesktopVtkImageViewer extends JIPipeDesktopWorkbenchPanel imp
 
         add(renderer, BorderLayout.CENTER);
         switchTool(ViewDefaultTool.class);
-    }
-
-    public static void main(String[] args) {
-        JIPipeDesktopUITheme.ModernLight.install();
-        VTKUtils.loadVtkNativeLibraries();
-
-        JFrame frame = new JFrame();
-        JIPipeDesktopVtkImageViewer imageViewer = new JIPipeDesktopVtkImageViewer(new JIPipeDesktopDummyWorkbench());
-
-        frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-        frame.setTitle("JIPipe Image Viewer Test");
-        JPanel panel = new JPanel(new BorderLayout());
-        JIPipeDesktopRibbon ribbon = new JIPipeDesktopRibbon();
-        JIPipeDesktopDockPanel dockPanel = new JIPipeDesktopDockPanel();
-
-        imageViewer.buildRibbon(ribbon);
-        imageViewer.buildDock(dockPanel);
-        ribbon.rebuildRibbon();
-
-        panel.add(ribbon, BorderLayout.NORTH);
-        panel.add(dockPanel, BorderLayout.CENTER);
-        dockPanel.setBackgroundComponent(imageViewer);
-
-        frame.getContentPane().add(panel, BorderLayout.CENTER);
-        frame.pack();
-        frame.setSize(1920,1080);
-        frame.setVisible(true);
-
-        imageViewer.startRenderer();
     }
 
     public JIPipeDesktopVtkImageViewerTool getCurrentTool() {

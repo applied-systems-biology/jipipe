@@ -1645,7 +1645,7 @@ public class ROI2DListData extends ArrayList<Roi> implements JIPipeData, NapariO
 
     @Override
     public List<Path> exportOverlayToNapari(ImagePlus imp, Path outputDirectory, String prefix, JIPipeProgressInfo progressInfo) {
-        if(!isEmpty()) {
+        if (!isEmpty()) {
             Path outputFile = outputDirectory.resolve(prefix + "_roi2d.tif");
 
             progressInfo.log("Exporting " + size() + " 2D ROIs ...");
@@ -1655,8 +1655,7 @@ public class ROI2DListData extends ArrayList<Roi> implements JIPipeData, NapariO
             IJ.saveAsTiff(rendered, outputFile.toString());
 
             return Collections.singletonList(outputFile);
-        }
-        else {
+        } else {
             return Collections.emptyList();
         }
     }

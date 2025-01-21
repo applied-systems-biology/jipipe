@@ -694,7 +694,6 @@ public class MaskDrawerPlugin2D extends JIPipeDesktopLegacyImageViewerPlugin2D i
     }
 
 
-
     public MaskColor getCurrentColor() {
         return currentColor;
     }
