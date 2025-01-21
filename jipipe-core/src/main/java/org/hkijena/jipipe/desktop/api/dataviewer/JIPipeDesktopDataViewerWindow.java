@@ -57,6 +57,8 @@ import java.util.concurrent.ExecutionException;
  */
 public class JIPipeDesktopDataViewerWindow extends JFrame implements JIPipeDesktopWorkbenchAccess, Disposable, JIPipeRunnable.FinishedEventListener, JIPipeCache.ModifiedEventListener {
 
+    private static boolean HOTKEYS_ENABLED = false;
+
     private final JIPipeRunnableQueue downloaderQueue = new JIPipeRunnableQueue("Data download");
 
     private final JIPipeDesktopWorkbench workbench;
@@ -98,20 +100,25 @@ public class JIPipeDesktopDataViewerWindow extends JFrame implements JIPipeDeskt
     }
 
     private void registerHotkeys() {
-        // Register a KeyEventDispatcher for global shortcuts
-        KeyboardFocusManager.getCurrentKeyboardFocusManager().addKeyEventDispatcher(e -> {
-            if (e.getID() == KeyEvent.KEY_PRESSED) {
-                if (e.getKeyCode() == KeyEvent.VK_DOWN && (e.getModifiersEx() & KeyEvent.CTRL_DOWN_MASK) != 0) {
-                    goToNextData();
-                    return true; // Consume the event
+        if(!HOTKEYS_ENABLED) {
+            KeyboardFocusManager.getCurrentKeyboardFocusManager().addKeyEventDispatcher(e -> {
+                if(KeyboardFocusManager.getCurrentKeyboardFocusManager().getActiveWindow() instanceof JIPipeDesktopDataViewerWindow) {
+                    JIPipeDesktopDataViewerWindow dataViewerWindow = (JIPipeDesktopDataViewerWindow) KeyboardFocusManager.getCurrentKeyboardFocusManager().getActiveWindow();
+                    if (e.getID() == KeyEvent.KEY_PRESSED) {
+                        if (e.getKeyCode() == KeyEvent.VK_DOWN && (e.getModifiersEx() & KeyEvent.CTRL_DOWN_MASK) != 0) {
+                            dataViewerWindow.goToNextData();
+                            return true;
+                        }
+                        if (e.getKeyCode() == KeyEvent.VK_UP && (e.getModifiersEx() & KeyEvent.CTRL_DOWN_MASK) != 0) {
+                            dataViewerWindow.goToPreviousData();
+                            return true;
+                        }
+                    }
                 }
-                if (e.getKeyCode() == KeyEvent.VK_UP && (e.getModifiersEx() & KeyEvent.CTRL_DOWN_MASK) != 0) {
-                    goToPreviousData();
-                    return true; // Consume the event
-                }
-            }
-            return false; // Let the event propagate otherwise
-        });
+                return false;
+            });
+            HOTKEYS_ENABLED = true;
+        }
     }
 
     private void initialize() {
