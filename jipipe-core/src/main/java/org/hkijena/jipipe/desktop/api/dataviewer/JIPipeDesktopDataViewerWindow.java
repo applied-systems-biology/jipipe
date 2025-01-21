@@ -576,6 +576,8 @@ public class JIPipeDesktopDataViewerWindow extends JFrame implements JIPipeDeskt
     @Override
     public void dispose() {
         super.dispose();
+        destroyCurrentViewer();
+        destroyCurrentDataBrowser();
         workbench.getProject().getCache().getModifiedEventEmitter().unsubscribe(this);
     }
 
