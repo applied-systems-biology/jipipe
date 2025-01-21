@@ -95,6 +95,7 @@ public class MergeTableColumnsSupplementMergingAlgorithm extends JIPipeMergingAl
             outputTable.copyColumnSchemaFrom(inputTarget);
 
             for (int sourceRow : iterationStep.getInputRows("Source")) {
+                outputTable = new ResultsTableData();
                 ResultsTableData inputSource = new ResultsTableData(iterationStep.getInputData("Source", sourceRow, ResultsTableData.class, progressInfo));
 
                 // Choose the reference columns
@@ -147,6 +148,9 @@ public class MergeTableColumnsSupplementMergingAlgorithm extends JIPipeMergingAl
                     // Write to output
                     outputTable.addRows(merged);
                 }
+
+                // Switch for next iteration
+                inputTarget = outputTable;
             }
 
             if(restoreOriginalAnnotations) {
