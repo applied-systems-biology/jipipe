@@ -74,6 +74,7 @@ public class ImagePlusDataViewer extends JIPipeDesktopDataViewer {
     @Override
     public void onDataDownloaded(JIPipeData data) {
         this.currentData = data;
+        legacyImageViewer.clearOverlays();
         loadDataIntoLegacyViewer(data);
         setupPanelsOnce(getDataViewerWindow().getDockPanel());
     }
