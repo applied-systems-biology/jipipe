@@ -62,7 +62,8 @@ public class GraphNodeValidationReportContext extends NavigableJIPipeValidationR
         JIPipeGraphNode targetNode = findTargetNode(workbench);
         if (workbench instanceof JIPipeDesktopProjectWorkbench && targetNode != null) {
             SwingUtilities.invokeLater(() -> {
-                JIPipeDesktopTabPane.DocumentTab pipelineEditorTab = ((JIPipeDesktopProjectWorkbench) workbench).getOrOpenPipelineEditorTab(graphNode.getProjectCompartment(), true);
+                JIPipeGraphNode equivalentNode = workbench.getProject().getGraph().getEquivalentNode(graphNode);
+                JIPipeDesktopTabPane.DocumentTab pipelineEditorTab = ((JIPipeDesktopProjectWorkbench) workbench).getOrOpenPipelineEditorTab(equivalentNode.getProjectCompartment(), true);
                 SwingUtilities.invokeLater(() -> {
                     JIPipeDesktopPipelineGraphEditorUI ui = (JIPipeDesktopPipelineGraphEditorUI) pipelineEditorTab.getContent();
                     ui.selectOnly(ui.getCanvasUI().getNodeUIs().get(targetNode));
