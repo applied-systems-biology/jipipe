@@ -141,7 +141,7 @@ public class JIPipeGraphRunConfiguration extends AbstractJIPipeParameterCollecti
         this.cleanupOutputsAfterSuccess = cleanupOutputsAfterSuccess;
     }
 
-    @SetJIPipeDocumentation(name = "Cleanup outputs on success", description = "If enabled, the output directory is removed if the run has failed")
+    @SetJIPipeDocumentation(name = "Cleanup outputs on failure", description = "If enabled, the output directory is removed if the run has failed")
     @JIPipeParameter("cleanup-outputs-after-failure")
     public boolean isCleanupOutputsAfterFailure() {
         return cleanupOutputsAfterFailure;

@@ -288,13 +288,28 @@ public abstract class JIPipeIteratingAlgorithm extends JIPipeParameterSlotAlgori
 
         // Handle case: All optional input, no data
         if ((iterationSteps == null || iterationSteps.isEmpty()) && getDataInputSlots().stream().allMatch(slot -> slot.getInfo().isOptional() && slot.isEmpty())) {
-            progressInfo.log("Generating dummy iteration step because of the [all inputs empty optional] condition");
-            // Generate a dummy batch
-            JIPipeSingleIterationStep iterationStep = new JIPipeSingleIterationStep(this);
-            iterationStep.addMergedTextAnnotations(parameterAnnotations, JIPipeTextAnnotationMergeMode.Merge);
-            uploadAdaptiveParameters(iterationStep, tree, parameterBackups, progressInfo);
-            iterationSteps = new ArrayList<>();
-            iterationSteps.add(iterationStep);
+
+            // Check if we even have data
+            boolean hasData = false;
+            for (JIPipeInputDataSlot slot : getDataInputSlots()) {
+                if(!slot.isEmpty()) {
+                    hasData = true;
+                }
+            }
+
+            if(hasData) {
+                progressInfo.log("Generating dummy iteration step because of the [all inputs empty optional] condition");
+                // Generate a dummy batch
+                JIPipeSingleIterationStep iterationStep = new JIPipeSingleIterationStep(this);
+                iterationStep.addMergedTextAnnotations(parameterAnnotations, JIPipeTextAnnotationMergeMode.Merge);
+                uploadAdaptiveParameters(iterationStep, tree, parameterBackups, progressInfo);
+                iterationSteps = new ArrayList<>();
+                iterationSteps.add(iterationStep);
+            }
+            else {
+                progressInfo.log("Nothing to do (all slots empty)");
+                iterationSteps = new ArrayList<>();
+            }
         }
 
         if (iterationSteps == null) {

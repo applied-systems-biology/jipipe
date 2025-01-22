@@ -351,6 +351,19 @@ public class JIPipeMultiIterationStepGenerator {
      */
     private List<JIPipeMultiIterationStep> applyMergeAllSolver(JIPipeProgressInfo progressInfo) {
         JIPipeMultiIterationStep batch = new JIPipeMultiIterationStep(this.node);
+
+        // Handle case where there is no data
+        boolean hasData = false;
+        for (JIPipeDataSlot slot : slotList) {
+            if(!slot.isEmpty()) {
+                hasData = true;
+            }
+        }
+        if(!hasData) {
+            progressInfo.log("Info: no data present. Nothing to do.");
+            return new ArrayList<>();
+        }
+
         for (JIPipeDataSlot slot : slotList) {
             batch.addEmptySlot(slot);
             List<JIPipeTextAnnotation> annotations = new ArrayList<>();
