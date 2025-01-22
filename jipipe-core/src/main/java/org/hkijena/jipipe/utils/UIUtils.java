@@ -69,6 +69,7 @@ import javax.swing.text.html.HTMLDocument;
 import javax.swing.text.html.HTMLEditorKit;
 import javax.swing.text.html.StyleSheet;
 import javax.swing.tree.DefaultMutableTreeNode;
+import javax.swing.tree.TreeNode;
 import javax.swing.tree.TreePath;
 import java.awt.*;
 import java.awt.datatransfer.Clipboard;
@@ -2129,9 +2130,11 @@ public class UIUtils {
     }
 
     public static void setNodeExpandedState(JTree tree, DefaultMutableTreeNode node, boolean expanded) {
-        ArrayList<DefaultMutableTreeNode> list = Collections.list(node.children());
-        for (DefaultMutableTreeNode treeNode : list) {
-            setNodeExpandedState(tree, treeNode, expanded);
+        ArrayList<TreeNode> list = Collections.list(node.children());
+        for (TreeNode treeNode : list) {
+            if(treeNode instanceof DefaultMutableTreeNode) {
+                setNodeExpandedState(tree, (DefaultMutableTreeNode) treeNode, expanded);
+            }
         }
         if (!expanded && node.isRoot()) {
             return;

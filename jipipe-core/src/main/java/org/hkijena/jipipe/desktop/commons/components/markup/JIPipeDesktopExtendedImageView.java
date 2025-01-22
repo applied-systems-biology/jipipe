@@ -20,7 +20,6 @@ import javax.swing.text.html.HTML;
 import javax.swing.text.html.HTMLDocument;
 import javax.swing.text.html.InlineView;
 import javax.swing.text.html.StyleSheet;
-import javax.xml.bind.DatatypeConverter;
 import java.awt.*;
 import java.awt.image.BufferedImage;
 import java.awt.image.ImageObserver;
@@ -28,6 +27,7 @@ import java.io.ByteArrayInputStream;
 import java.io.IOException;
 import java.net.MalformedURLException;
 import java.net.URL;
+import java.util.Base64;
 import java.util.Dictionary;
 
 /**
@@ -681,8 +681,7 @@ public class JIPipeDesktopExtendedImageView extends View {
         URL src = getImageURL();
         Image newImage = null;
         if (src != null) {
-            Dictionary cache = (Dictionary) getDocument().
-                    getProperty(IMAGE_CACHE_PROPERTY);
+            Dictionary cache = (Dictionary) getDocument().getProperty(IMAGE_CACHE_PROPERTY);
             if (cache != null) {
                 newImage = (Image) cache.get(src);
             } else {
@@ -693,14 +692,14 @@ public class JIPipeDesktopExtendedImageView extends View {
                     ii.setImage(newImage);
                 }
             }
-        } else {  // BEGIN:  Modified code...
-            //System.out.println("[DEBUG] Image Source:  " + src);
+        } else {  // BEGIN: Modified code...
             String b64 = getBASE64Image();
             BufferedImage newBufferedImage = null;
-            try (ByteArrayInputStream bais = new ByteArrayInputStream(DatatypeConverter.parseBase64Binary(b64))) {
+            try (ByteArrayInputStream bais = new ByteArrayInputStream(Base64.getDecoder().decode(b64))) {
                 newBufferedImage = ImageIO.read(bais);
             } catch (IOException ex) {
-            } // End catch()...
+                ex.printStackTrace(); // Consider proper error handling here
+            }
             newImage = newBufferedImage;
         }  // FINISH: Modified code...
         image = newImage;

@@ -46,6 +46,22 @@ import java.util.Map;
 
 public class IJ3DUtils {
 
+    public static List<org.scijava.vecmath.Point3f> jogAmpToSciJava(List<org.jogamp.vecmath.Point3f> points) {
+        List<org.scijava.vecmath.Point3f> result = new ArrayList<>();
+        for (org.jogamp.vecmath.Point3f p : points) {
+            result.add(new org.scijava.vecmath.Point3f(p.getX(), p.getY(), p.getZ()));
+        }
+        return result;
+    }
+
+    public static List<org.jogamp.vecmath.Point3f> sciJavaToJogAmp(List<org.scijava.vecmath.Point3f> points) {
+        List<org.jogamp.vecmath.Point3f> result = new ArrayList<>();
+        for (org.scijava.vecmath.Point3f p : points) {
+            result.add(new org.jogamp.vecmath.Point3f(p.getX(), p.getY(), p.getZ()));
+        }
+        return result;
+    }
+
     public static void forEach3DIn5DIO(ImagePlus imagePlus, TriConsumer<ImageHandler, ImageSliceIndex, JIPipeProgressInfo> operation, JIPipeProgressInfo progressInfo) {
         ImageJUtils.forEachIndexedCTStack(imagePlus, (imp, index, ctProgress) -> {
             ImageHandler imageHandler = ImageHandler.wrap(imp);

@@ -21,8 +21,6 @@ import org.hkijena.jipipe.plugins.settings.JIPipeFileChooserApplicationSettings;
 import org.hkijena.jipipe.utils.JIPipeDesktopSplitPane;
 import org.hkijena.jipipe.utils.StringUtils;
 import org.hkijena.jipipe.utils.UIUtils;
-import sun.awt.shell.ShellFolder;
-import sun.swing.FilePane;
 
 import javax.accessibility.AccessibleContext;
 import javax.swing.*;
@@ -313,15 +311,15 @@ public class JIPipeDesktopAdvancedFileChooser extends JPanel implements Property
         });
         actionToolbar.add(bookmarkToggle);
 
-        if (!UIManager.getBoolean("FileChooser.readOnly")) {
-            FilePane filePane = ((FileChooserComponentUI) fileChooserComponent.getUI()).getFilePane();
-            JButton newFolderButton = new JButton();
-            newFolderButton.setAction(filePane.getNewFolderAction());
-            newFolderButton.setText("New folder");
-            newFolderButton.setIcon(UIUtils.getIconFromResources("actions/folder-new.png"));
-            newFolderButton.setBorder(BorderFactory.createEmptyBorder(8, 3, 8, 3));
-            actionToolbar.add(newFolderButton);
-        }
+//        if (!UIManager.getBoolean("FileChooser.readOnly")) {
+//            FilePane filePane = ((FileChooserComponentUI) fileChooserComponent.getUI()).getFilePane();
+//            JButton newFolderButton = new JButton();
+//            newFolderButton.setAction(filePane.getNewFolderAction());
+//            newFolderButton.setText("New folder");
+//            newFolderButton.setIcon(UIUtils.getIconFromResources("actions/folder-new.png"));
+//            newFolderButton.setBorder(BorderFactory.createEmptyBorder(8, 3, 8, 3));
+//            actionToolbar.add(newFolderButton);
+//        }
 
         actionToolbar.add(Box.createHorizontalGlue());
 
@@ -331,41 +329,41 @@ public class JIPipeDesktopAdvancedFileChooser extends JPanel implements Property
         refreshButton.setBorder(BorderFactory.createEmptyBorder(8, 8, 8, 8));
         actionToolbar.add(refreshButton);
 
-        // View button group
-        FilePane filePane = ((FileChooserComponentUI) fileChooserComponent.getUI()).getFilePane();
-        ButtonGroup viewButtonGroup = new ButtonGroup();
+//        // View button group
+//        FilePane filePane = ((FileChooserComponentUI) fileChooserComponent.getUI()).getFilePane();
+//        ButtonGroup viewButtonGroup = new ButtonGroup();
 
-        // List Button
-        JToggleButton listViewButton = new JToggleButton(UIUtils.getIconFromResources("actions/view-list.png"));
-        listViewButton.setToolTipText("Display as list of items");
-        listViewButton.setSelected(true);
-        UIUtils.makeButtonFlat25x25(listViewButton);
-        listViewButton.addActionListener(filePane.getViewTypeAction(FilePane.VIEWTYPE_LIST));
-        actionToolbar.add(listViewButton);
-        viewButtonGroup.add(listViewButton);
-
-        // Details Button
-        JToggleButton detailsViewButton = new JToggleButton(UIUtils.getIconFromResources("actions/view-list-details.png"));
-        detailsViewButton.setToolTipText("Display as detailed list of items");
-        UIUtils.makeButtonFlat25x25(detailsViewButton);
-        detailsViewButton.addActionListener(filePane.getViewTypeAction(FilePane.VIEWTYPE_DETAILS));
-        actionToolbar.add(detailsViewButton);
-        viewButtonGroup.add(detailsViewButton);
-
-        filePane.addPropertyChangeListener(e -> {
-            if ("viewType".equals(e.getPropertyName())) {
-                int viewType = filePane.getViewType();
-                switch (viewType) {
-                    case FilePane.VIEWTYPE_LIST:
-                        listViewButton.setSelected(true);
-                        break;
-
-                    case FilePane.VIEWTYPE_DETAILS:
-                        detailsViewButton.setSelected(true);
-                        break;
-                }
-            }
-        });
+//        // List Button
+//        JToggleButton listViewButton = new JToggleButton(UIUtils.getIconFromResources("actions/view-list.png"));
+//        listViewButton.setToolTipText("Display as list of items");
+//        listViewButton.setSelected(true);
+//        UIUtils.makeButtonFlat25x25(listViewButton);
+//        listViewButton.addActionListener(filePane.getViewTypeAction(FilePane.VIEWTYPE_LIST));
+//        actionToolbar.add(listViewButton);
+//        viewButtonGroup.add(listViewButton);
+//
+//        // Details Button
+//        JToggleButton detailsViewButton = new JToggleButton(UIUtils.getIconFromResources("actions/view-list-details.png"));
+//        detailsViewButton.setToolTipText("Display as detailed list of items");
+//        UIUtils.makeButtonFlat25x25(detailsViewButton);
+//        detailsViewButton.addActionListener(filePane.getViewTypeAction(FilePane.VIEWTYPE_DETAILS));
+//        actionToolbar.add(detailsViewButton);
+//        viewButtonGroup.add(detailsViewButton);
+//
+//        filePane.addPropertyChangeListener(e -> {
+//            if ("viewType".equals(e.getPropertyName())) {
+//                int viewType = filePane.getViewType();
+//                switch (viewType) {
+//                    case FilePane.VIEWTYPE_LIST:
+//                        listViewButton.setSelected(true);
+//                        break;
+//
+//                    case FilePane.VIEWTYPE_DETAILS:
+//                        detailsViewButton.setSelected(true);
+//                        break;
+//                }
+//            }
+//        });
     }
 
     private void toggleBookmark(File directory, boolean bookmarked) {
@@ -465,36 +463,36 @@ public class JIPipeDesktopAdvancedFileChooser extends JPanel implements Property
             addLink("Home", UIUtils.getIconFromResources("places/user-home.png"),
                     fileSystemView.getHomeDirectory().toPath().getParent().toFile());
         }
-        boolean useShellFolder = FilePane.usesShellFolder(fileChooserComponent);
+//        boolean useShellFolder = FilePane.usesShellFolder(fileChooserComponent);
+//
+//        File[] baseFolders = (useShellFolder)
+//                ? (File[]) ShellFolder.get("fileChooserComboBoxFolders")
+//                : fileSystemView.getRoots();
 
-        File[] baseFolders = (useShellFolder)
-                ? (File[]) ShellFolder.get("fileChooserComboBoxFolders")
-                : fileSystemView.getRoots();
-
-        for (File root : baseFolders) {
-            if (!SystemUtils.IS_OS_WINDOWS) {
-                String name;
-                if (root.toString().equals("/"))
-                    name = "Root";
-                else
-                    name = root.getName();
-                addLink(name, UIUtils.getIconFromResources("places/folder-root.png"), root);
-            } else {
-                Icon icon;
-                if (fileSystemView.isFloppyDrive(root)) {
-                    icon = UIUtils.getIconFromResources("devices/media-floppy.png");
-                } else if (fileSystemView.isDrive(root)) {
-                    icon = UIUtils.getIconFromResources("devices/drive-harddisk.png");
-                } else if (fileSystemView.isComputerNode(root)) {
-                    continue;
-                } else {
-                    continue;
-                }
-                if (root.toPath().getParent() != null)
-                    continue;
-                addLink(root.toString(), icon, root);
-            }
-        }
+//        for (File root : baseFolders) {
+//            if (!SystemUtils.IS_OS_WINDOWS) {
+//                String name;
+//                if (root.toString().equals("/"))
+//                    name = "Root";
+//                else
+//                    name = root.getName();
+//                addLink(name, UIUtils.getIconFromResources("places/folder-root.png"), root);
+//            } else {
+//                Icon icon;
+//                if (fileSystemView.isFloppyDrive(root)) {
+//                    icon = UIUtils.getIconFromResources("devices/media-floppy.png");
+//                } else if (fileSystemView.isDrive(root)) {
+//                    icon = UIUtils.getIconFromResources("devices/drive-harddisk.png");
+//                } else if (fileSystemView.isComputerNode(root)) {
+//                    continue;
+//                } else {
+//                    continue;
+//                }
+//                if (root.toPath().getParent() != null)
+//                    continue;
+//                addLink(root.toString(), icon, root);
+//            }
+//        }
         addLink("ImageJ", UIUtils.getIconFromResources("apps/imagej.png"),
                 Paths.get(Prefs.getImageJDir() != null ? Prefs.getImageJDir() : "").toAbsolutePath().toFile());
 
@@ -729,7 +727,7 @@ public class JIPipeDesktopAdvancedFileChooser extends JPanel implements Property
 
     public static class FileChooserComponentUI extends MetalFileChooserUI {
 
-        FilePane filePane;
+//        FilePane filePane;
 
         public FileChooserComponentUI(JFileChooser filechooser) {
             super(filechooser);
@@ -747,14 +745,14 @@ public class JIPipeDesktopAdvancedFileChooser extends JPanel implements Property
                     component.setVisible(false);
                 } else if (constraints == BorderLayout.CENTER) {
                     // Add border to the list
-                    filePane = (FilePane) component;
+//                    filePane = (FilePane) component;
                     ((JComponent) component).setBorder(UIUtils.createControlBorder());
                 }
             }
         }
 
-        public FilePane getFilePane() {
-            return filePane;
-        }
+//        public FilePane getFilePane() {
+//            return filePane;
+//        }
     }
 }

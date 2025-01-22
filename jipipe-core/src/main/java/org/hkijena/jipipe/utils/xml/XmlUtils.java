@@ -13,7 +13,6 @@
 
 package org.hkijena.jipipe.utils.xml;
 
-import com.sun.org.apache.xalan.internal.xsltc.trax.TransformerFactoryImpl;
 import org.w3c.dom.Document;
 import org.w3c.dom.Node;
 import org.w3c.dom.NodeList;
@@ -51,16 +50,21 @@ public class XmlUtils {
 
     public static String prettyPrint(String xmlString, int indent, boolean ignoreDeclaration) {
         try {
+            // Parse the XML string into a DOM Document
             InputSource src = new InputSource(new StringReader(xmlString));
             Document document = DocumentBuilderFactory.newInstance().newDocumentBuilder().parse(src);
 
-            TransformerFactory transformerFactory = new TransformerFactoryImpl();
-            transformerFactory.setAttribute("indent-number", indent);
+            // Create a Transformer for pretty printing
+            TransformerFactory transformerFactory = TransformerFactory.newInstance();
             Transformer transformer = transformerFactory.newTransformer();
             transformer.setOutputProperty(OutputKeys.ENCODING, "UTF-8");
             transformer.setOutputProperty(OutputKeys.OMIT_XML_DECLARATION, ignoreDeclaration ? "yes" : "no");
             transformer.setOutputProperty(OutputKeys.INDENT, "yes");
 
+            // Set the indentation amount
+            transformer.setOutputProperty("{http://xml.apache.org/xslt}indent-amount", String.valueOf(indent));
+
+            // Perform the transformation
             Writer out = new StringWriter();
             transformer.transform(new DOMSource(document), new StreamResult(out));
             return out.toString();
@@ -112,7 +116,7 @@ public class XmlUtils {
         XPath xPathInstance = XPathFactory.newInstance().newXPath();
         xPathInstance.setNamespaceContext(new NamespaceContext() {
             @Override
-            public Iterator<?> getPrefixes(String arg0) {
+            public Iterator<String> getPrefixes(String arg0) {
                 return null;
             }
 
@@ -149,7 +153,7 @@ public class XmlUtils {
         XPath xPathInstance = XPathFactory.newInstance().newXPath();
         xPathInstance.setNamespaceContext(new NamespaceContext() {
             @Override
-            public Iterator<?> getPrefixes(String arg0) {
+            public Iterator<String> getPrefixes(String arg0) {
                 return null;
             }
 

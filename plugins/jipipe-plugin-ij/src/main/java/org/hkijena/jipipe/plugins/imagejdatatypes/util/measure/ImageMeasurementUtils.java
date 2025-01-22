@@ -17,7 +17,7 @@ import ij.gui.Roi;
 import ij.process.FloatPolygon;
 import org.hkijena.jipipe.plugins.imagejdatatypes.datatypes.ROI2DListData;
 import org.hkijena.jipipe.plugins.tables.datatypes.ResultsTableData;
-import org.scijava.vecmath.Point2f;
+import org.jogamp.vecmath.Point2f;
 
 /**
  * Custom implementation of {@link ij.plugin.filter.Analyzer}

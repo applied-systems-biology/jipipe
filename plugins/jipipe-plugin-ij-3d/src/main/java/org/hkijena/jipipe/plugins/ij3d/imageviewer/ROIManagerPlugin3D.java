@@ -56,7 +56,7 @@ import org.hkijena.jipipe.plugins.settings.JIPipeFileChooserApplicationSettings;
 import org.hkijena.jipipe.plugins.tables.datatypes.ResultsTableData;
 import org.hkijena.jipipe.utils.UIUtils;
 import org.hkijena.jipipe.utils.ui.JIPipeDesktopDockPanel;
-import org.scijava.vecmath.Color3f;
+import org.jogamp.vecmath.Color3f;
 
 import javax.swing.*;
 import java.awt.*;
@@ -727,7 +727,7 @@ public class ROIManagerPlugin3D extends JIPipeDesktopLegacyImageViewerPlugin2D {
                 for (int i = 0; i < rois.size(); i++) {
                     getProgressInfo().resolveAndLog("ROI to 3D mesh", i, rois.size());
                     ROI3D roi3D = rois.get(i);
-                    CustomTriangleMesh mesh = new CustomTriangleMesh(roi3D.getObject3D().getObject3DSurface().getSurfaceTrianglesPixels(true),
+                    CustomTriangleMesh mesh = new CustomTriangleMesh(IJ3DUtils.sciJavaToJogAmp(roi3D.getObject3D().getObject3DSurface().getSurfaceTrianglesPixels(true)),
                             new Color3f(roi3D.getFillColor().getRed() / 255.0f, roi3D.getFillColor().getGreen() / 255.0f, roi3D.getFillColor().getBlue() / 255.0f),
                             0f);
                     meshList.add(mesh);

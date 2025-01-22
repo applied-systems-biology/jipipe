@@ -20,11 +20,10 @@ import org.hkijena.jipipe.api.parameters.JIPipeParameterCollection;
 import org.hkijena.jipipe.api.validation.JIPipeValidationReport;
 import org.hkijena.jipipe.api.validation.contexts.UnspecifiedValidationReportContext;
 import org.hkijena.jipipe.utils.json.JsonUtils;
-import sun.misc.BASE64Decoder;
-import sun.misc.BASE64Encoder;
 
 import java.io.*;
 import java.nio.file.Path;
+import java.util.Base64;
 
 /**
  * Utils for serializing objects
@@ -118,16 +117,15 @@ public class SerializationUtils {
      * @param obj the object
      * @return the base64 string
      */
+
     public static String objectToBase64(Object obj) {
         String base64;
         try (ByteArrayOutputStream bos = new ByteArrayOutputStream()) {
             ObjectOutputStream objectOutputStream = new ObjectOutputStream(bos);
             objectOutputStream.writeObject(obj);
             objectOutputStream.flush();
-            objectOutputStream.close();
             byte[] objectBytes = bos.toByteArray();
-            BASE64Encoder encoder = new BASE64Encoder();
-            base64 = encoder.encode(objectBytes);
+            base64 = Base64.getEncoder().encodeToString(objectBytes);
         } catch (IOException e) {
             throw new RuntimeException(e);
         }
@@ -141,9 +139,8 @@ public class SerializationUtils {
      * @return the object
      */
     public static Object base64ToObject(String base64) {
-        BASE64Decoder decoder = new BASE64Decoder();
         try {
-            byte[] bytes = decoder.decodeBuffer(base64);
+            byte[] bytes = Base64.getDecoder().decode(base64);
             try (ByteArrayInputStream bis = new ByteArrayInputStream(bytes)) {
                 ObjectInputStream ois = new ObjectInputStream(bis);
                 return ois.readObject();

@@ -18,8 +18,6 @@ import ij.process.ByteProcessor;
 import ij.process.ColorProcessor;
 import org.hkijena.jipipe.api.validation.JIPipeValidationRuntimeException;
 import org.hkijena.jipipe.desktop.commons.theme.JIPipeDesktopModernMetalTheme;
-import sun.misc.BASE64Decoder;
-import sun.misc.BASE64Encoder;
 
 import javax.imageio.ImageIO;
 import java.awt.*;
@@ -32,6 +30,7 @@ import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.nio.file.Path;
 import java.util.Arrays;
+import java.util.Base64;
 
 public class BufferedImageUtils {
 
@@ -223,15 +222,13 @@ public class BufferedImageUtils {
         try (ByteArrayOutputStream bos = new ByteArrayOutputStream()) {
             ImageIO.write(image, type, bos);
             byte[] imageBytes = bos.toByteArray();
-            BASE64Encoder encoder = new BASE64Encoder();
-            imageString = encoder.encode(imageBytes);
+            imageString = Base64.getEncoder().encodeToString(imageBytes);
         }
         return imageString;
     }
 
     public static BufferedImage base64ToImage(String imageString) throws IOException {
-        BASE64Decoder decoder = new BASE64Decoder();
-        byte[] bytes = decoder.decodeBuffer(imageString);
+        byte[] bytes = Base64.getDecoder().decode(imageString);
         try (ByteArrayInputStream bis = new ByteArrayInputStream(bytes)) {
             return ImageIO.read(bis);
         }
