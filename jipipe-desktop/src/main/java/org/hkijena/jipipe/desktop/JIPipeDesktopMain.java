@@ -14,6 +14,7 @@
 package org.hkijena.jipipe.desktop;
 
 import net.imagej.ImageJ;
+import net.imagej.patcher.LegacyInjector;
 import org.hkijena.jipipe.JIPipe;
 import org.hkijena.jipipe.JIPipeGUICommand;
 import org.hkijena.jipipe.desktop.app.JIPipeDesktopProjectWindow;
@@ -29,6 +30,7 @@ public class JIPipeDesktopMain {
      * @param args ignored
      */
     public static void main(final String... args) {
+        LegacyInjector.preinit();
         final ImageJ ij = new ImageJ();
         final WindowWatcher windowWatcher = new WindowWatcher(); //JIPipeGUICommand
         SwingUtilities.invokeLater(() -> ij.command().run(JIPipeGUICommand.class, true));
