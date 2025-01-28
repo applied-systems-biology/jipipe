@@ -36,11 +36,12 @@ import org.hkijena.jipipe.plugins.parameters.library.roi.Margin;
 import java.awt.*;
 import java.awt.geom.RoundRectangle2D;
 
-@SetJIPipeDocumentation(name = "Draw 2D rectangular ROI", description = "Draws one or multiple rectangular ROI. Also supports the drawing of rounded rectangles.")
+@SetJIPipeDocumentation(name = "Draw 2D rectangular ROI (old)", description = "Draws one or multiple rectangular ROI. Also supports the drawing of rounded rectangles.  We recommend to use the 'Draw 2D rectangle/oval/line ROI' algorithm.")
 @AddJIPipeInputSlot(value = ROI2DListData.class, name = "ROI", description = "Optional existing list of ROI. The new ROI will be appended to it.", optional = true, create = true)
 @AddJIPipeInputSlot(value = ImagePlusData.class, name = "Reference", description = "Reference image for the positioning. If not set, the area covered by the existing ROI are used (or width=0, height=0)", optional = true, create = true)
 @AddJIPipeOutputSlot(value = ROI2DListData.class, name = "ROI", create = true)
 @ConfigureJIPipeNode(nodeTypeCategory = RoiNodeTypeCategory.class, menuPath = "Draw")
+@Deprecated
 public class DrawRectangleRoiAlgorithm extends JIPipeIteratingAlgorithm {
 
     private final VisualLocationROIProperties roiProperties;

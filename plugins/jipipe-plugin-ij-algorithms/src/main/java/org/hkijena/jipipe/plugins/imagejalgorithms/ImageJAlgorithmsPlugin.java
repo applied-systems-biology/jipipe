@@ -965,12 +965,13 @@ public class ImageJAlgorithmsPlugin extends JIPipePrepackagedDefaultJavaPlugin {
         registerNodeType("ij1-roi-draw-rectangle", DrawRectangleRoiAlgorithm.class, UIUtils.getIconURLFromResources("actions/draw-rectangle.png"));
         registerNodeType("ij1-roi-draw-oval", DrawOvalRoiAlgorithm.class, UIUtils.getIconURLFromResources("actions/draw-ellipse.png"));
         registerNodeType("ij1-roi-draw-text", DrawTextRoiAlgorithm.class, UIUtils.getIconURLFromResources("actions/draw-text.png"));
-        registerNodeType("ij1-roi-draw-line", DrawLineRoiAlgorithm.class, UIUtils.getIconURLFromResources("actions/draw-line.png"));
+        registerNodeType("ij1-roi-draw-line", DrawLineOvalRectangleRoiAlgorithm.class, UIUtils.getIconURLFromResources("actions/draw-line.png"));
         registerNodeType("ij1-roi-draw-scalebar", DrawScaleBarRoiAlgorithm.class, UIUtils.getIconURLFromResources("actions/draw-geometry-show-measuring-info.png"));
 
 //        registerNodeType("ij1-roi-register-max-brightness", RegisterRoiToImageByBrightnessAlgorithm.class, UIUtils.getIconURLFromResources("actions/cm_search.png"));
         registerNodeType("ij1-roi-extract-profile", ExtractROIProfileAlgorithm.class, UIUtils.getIconURLFromResources("actions/draw-line.png"));
 
+        registerEnumParameterType("ij1-roi-draw-line:roi-type", DrawLineOvalRectangleRoiAlgorithm.RoiType.class, "ROI type", "Available ROI types");
         registerEnumParameterType("ij1-roi-flood-fill:mode",
                 RoiFloodFillAlgorithm.Mode.class,
                 "Magic wand mode",

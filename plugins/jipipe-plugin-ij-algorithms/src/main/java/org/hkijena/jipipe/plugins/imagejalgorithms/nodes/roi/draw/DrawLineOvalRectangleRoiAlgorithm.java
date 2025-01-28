@@ -14,7 +14,9 @@
 package org.hkijena.jipipe.plugins.imagejalgorithms.nodes.roi.draw;
 
 import ij.gui.Line;
+import ij.gui.OvalRoi;
 import ij.gui.Roi;
+import ij.gui.ShapeRoi;
 import org.hkijena.jipipe.api.ConfigureJIPipeNode;
 import org.hkijena.jipipe.api.JIPipeProgressInfo;
 import org.hkijena.jipipe.api.SetJIPipeDocumentation;
@@ -35,30 +37,34 @@ import org.hkijena.jipipe.plugins.expressions.variables.JIPipeTextAnnotationsExp
 import org.hkijena.jipipe.plugins.imagejdatatypes.datatypes.ImagePlusData;
 import org.hkijena.jipipe.plugins.imagejdatatypes.datatypes.ROI2DListData;
 import org.hkijena.jipipe.plugins.imagejdatatypes.util.Image5DExpressionParameterVariablesInfo;
+import org.hkijena.jipipe.plugins.imagejdatatypes.util.ImageJUtils;
 import org.hkijena.jipipe.plugins.parameters.library.collections.ParameterCollectionList;
 
-@SetJIPipeDocumentation(name = "Draw 2D line ROI", description = "Draws one or multiple line ROI.")
+import java.awt.geom.Rectangle2D;
+import java.awt.geom.RoundRectangle2D;
+
+@SetJIPipeDocumentation(name = "Draw 2D rectangle/oval/line ROI", description = "Draws one or multiple ROI that have two definition points, including lines, rectangles, and ovals.")
 @AddJIPipeInputSlot(value = ROI2DListData.class, name = "ROI", description = "Optional existing list of ROI. The new ROI will be appended to it.", optional = true, create = true)
 @AddJIPipeInputSlot(value = ImagePlusData.class, name = "Reference", description = "Reference image for the positioning. If not set, all image-related variables will be set to 0", optional = true, create = true)
 @AddJIPipeOutputSlot(value = ROI2DListData.class, name = "ROI", create = true)
 @ConfigureJIPipeNode(nodeTypeCategory = RoiNodeTypeCategory.class, menuPath = "Draw")
-public class DrawLineRoiAlgorithm extends JIPipeIteratingAlgorithm {
+public class DrawLineOvalRectangleRoiAlgorithm extends JIPipeIteratingAlgorithm {
 
     private final VisualLocationROIProperties roiProperties;
 
-    private ParameterCollectionList lines;
+    private ParameterCollectionList entries;
 
-    public DrawLineRoiAlgorithm(JIPipeNodeInfo info) {
+    public DrawLineOvalRectangleRoiAlgorithm(JIPipeNodeInfo info) {
         super(info);
         this.roiProperties = new VisualLocationROIProperties();
-        this.lines = ParameterCollectionList.containingCollection(LineParameter.class);
-        lines.addNewInstance();
+        this.entries = ParameterCollectionList.containingCollection(Entry.class);
+        entries.addNewInstance();
     }
 
-    public DrawLineRoiAlgorithm(DrawLineRoiAlgorithm other) {
+    public DrawLineOvalRectangleRoiAlgorithm(DrawLineOvalRectangleRoiAlgorithm other) {
         super(other);
         this.roiProperties = new VisualLocationROIProperties(other.roiProperties);
-        this.lines = new ParameterCollectionList(other.lines);
+        this.entries = new ParameterCollectionList(other.entries);
     }
 
     @Override
@@ -90,14 +96,45 @@ public class DrawLineRoiAlgorithm extends JIPipeIteratingAlgorithm {
         }
 
         // Create lines
-        for (LineParameter lineParameter : lines.mapToCollection(LineParameter.class)) {
-            double x1 = lineParameter.getX1().evaluateToDouble(variables);
-            double y1 = lineParameter.getY1().evaluateToDouble(variables);
-            double x2 = lineParameter.getX2().evaluateToDouble(variables);
-            double y2 = lineParameter.getY2().evaluateToDouble(variables);
-            Line roi = new Line(x1, y1, x2, y2);
-            roiProperties.applyTo(roi, variables);
-            target.add(roi);
+        for (Entry entry : entries.mapToCollection(Entry.class)) {
+            double x1 = entry.getX1().evaluateToDouble(variables);
+            double y1 = entry.getY1().evaluateToDouble(variables);
+            double x2 = entry.getX2().evaluateToDouble(variables);
+            double y2 = entry.getY2().evaluateToDouble(variables);
+            switch (entry.getType()) {
+                case Line: {
+                    Line roi = new Line(x1, y1, x2, y2);
+                    roiProperties.applyTo(roi, variables);
+                    target.add(roi);
+                }
+                break;
+                case Oval: {
+                    Rectangle2D.Double rectangle = ImageJUtils.pointsToRectangle(x1, y1, x2, y2);
+                    OvalRoi roi = new OvalRoi(rectangle.x, rectangle.y, rectangle.width, rectangle.height);
+                    roiProperties.applyTo(roi, variables);
+                    target.add(roi);
+                }
+                break;
+                case Rectangle: {
+                    double arcWidth = entry.getArcWidth().evaluateToDouble(variables);
+                    double arcHeight = entry.getArcHeight().evaluateToDouble(variables);
+                    Rectangle2D.Double rectangle = ImageJUtils.pointsToRectangle(x1, y1, x2, y2);
+                    if (arcWidth <= 0 && arcHeight <= 0) {
+                        ShapeRoi roi = new ShapeRoi(rectangle);
+                        roiProperties.applyTo(roi, variables);
+                        target.add(roi);
+                    } else {
+                        RoundRectangle2D rectangle2D = new RoundRectangle2D.Double(rectangle.x, rectangle.y, rectangle.width, rectangle.height, arcWidth, arcHeight);
+                        ShapeRoi roi = new ShapeRoi(rectangle2D);
+                        roiProperties.applyTo(roi, variables);
+                        target.add(roi);
+                    }
+                }
+                break;
+                default:
+                    throw new RuntimeException("Unknown entry type: " + entry.getType());
+            }
+
         }
 
         // Apply properties
@@ -117,15 +154,15 @@ public class DrawLineRoiAlgorithm extends JIPipeIteratingAlgorithm {
         iterationStep.addOutputData(getFirstOutputSlot(), target, progressInfo);
     }
 
-    @SetJIPipeDocumentation(name = "Lines", description = "List of lines to be created")
+    @SetJIPipeDocumentation(name = "ROI", description = "List of ROI to be created")
     @JIPipeParameter("lines")
-    public ParameterCollectionList getLines() {
-        return lines;
+    public ParameterCollectionList getEntries() {
+        return entries;
     }
 
     @JIPipeParameter("lines")
-    public void setLines(ParameterCollectionList lines) {
-        this.lines = lines;
+    public void setEntries(ParameterCollectionList entries) {
+        this.entries = entries;
     }
 
     @SetJIPipeDocumentation(name = "ROI properties", description = "Use the following settings to customize the generated ROI")
@@ -134,20 +171,32 @@ public class DrawLineRoiAlgorithm extends JIPipeIteratingAlgorithm {
         return roiProperties;
     }
 
-    public static class LineParameter extends AbstractJIPipeParameterCollection {
+    public enum RoiType {
+        Line,
+        Rectangle,
+        Oval
+    }
+
+    public static class Entry extends AbstractJIPipeParameterCollection {
         private JIPipeExpressionParameter x1 = new JIPipeExpressionParameter("0");
         private JIPipeExpressionParameter y1 = new JIPipeExpressionParameter("0");
         private JIPipeExpressionParameter x2 = new JIPipeExpressionParameter("0");
         private JIPipeExpressionParameter y2 = new JIPipeExpressionParameter("0");
+        private RoiType type = RoiType.Line;
+        private JIPipeExpressionParameter arcWidth = new JIPipeExpressionParameter("0");
+        private JIPipeExpressionParameter arcHeight = new JIPipeExpressionParameter("0");
 
-        public LineParameter() {
+        public Entry() {
         }
 
-        public LineParameter(LineParameter other) {
+        public Entry(Entry other) {
             this.x1 = new JIPipeExpressionParameter(other.x1);
             this.y1 = new JIPipeExpressionParameter(other.y1);
             this.x2 = new JIPipeExpressionParameter(other.x2);
             this.y2 = new JIPipeExpressionParameter(other.y2);
+            this.type = other.type;
+            this.arcWidth = new JIPipeExpressionParameter(other.arcWidth);
+            this.arcHeight = new JIPipeExpressionParameter(other.arcHeight);
         }
 
         @SetJIPipeDocumentation(name = "X1")
@@ -200,6 +249,39 @@ public class DrawLineRoiAlgorithm extends JIPipeIteratingAlgorithm {
         @JIPipeParameter("y2")
         public void setY2(JIPipeExpressionParameter y2) {
             this.y2 = y2;
+        }
+
+        @SetJIPipeDocumentation(name="ROI type")
+        @JIPipeParameter("type")
+        public RoiType getType() {
+            return type;
+        }
+
+        @JIPipeParameter("type")
+        public void setType(RoiType type) {
+            this.type = type;
+        }
+
+        @SetJIPipeDocumentation(name = "Rectangle arc width", description = "Only applicable if the type is set to 'Rectangle'")
+        @JIPipeParameter("arc-width")
+        public JIPipeExpressionParameter getArcWidth() {
+            return arcWidth;
+        }
+
+        @JIPipeParameter("arc-width")
+        public void setArcWidth(JIPipeExpressionParameter arcWidth) {
+            this.arcWidth = arcWidth;
+        }
+
+        @SetJIPipeDocumentation(name = "Rectangle arc height", description = "Only applicable if the type is set to 'Rectangle'")
+        @JIPipeParameter("arc-height")
+        public JIPipeExpressionParameter getArcHeight() {
+            return arcHeight;
+        }
+
+        @JIPipeParameter("arc-height")
+        public void setArcHeight(JIPipeExpressionParameter arcHeight) {
+            this.arcHeight = arcHeight;
         }
     }
 }
