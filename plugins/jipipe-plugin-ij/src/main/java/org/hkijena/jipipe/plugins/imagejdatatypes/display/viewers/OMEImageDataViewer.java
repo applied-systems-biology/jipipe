@@ -13,10 +13,21 @@
 
 package org.hkijena.jipipe.plugins.imagejdatatypes.display.viewers;
 
+import org.hkijena.jipipe.api.data.JIPipeData;
 import org.hkijena.jipipe.desktop.api.dataviewer.JIPipeDesktopDataViewerWindow;
+import org.hkijena.jipipe.plugins.imagejdatatypes.datatypes.ImagePlusData;
+import org.hkijena.jipipe.plugins.imagejdatatypes.datatypes.OMEImageData;
 
 public class OMEImageDataViewer extends ImagePlusDataViewer {
     public OMEImageDataViewer(JIPipeDesktopDataViewerWindow dataViewerWindow) {
         super(dataViewerWindow);
+    }
+
+    @Override
+    protected void loadDataIntoLegacyViewer(JIPipeData data) {
+        if(data instanceof OMEImageData) {
+            super.loadDataIntoLegacyViewer(new ImagePlusData(((OMEImageData) data).getImage()));
+            getLegacyImageViewer().addOverlay(((OMEImageData) data).getRois());
+        }
     }
 }
