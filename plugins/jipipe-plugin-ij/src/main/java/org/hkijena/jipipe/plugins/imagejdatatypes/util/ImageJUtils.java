@@ -1167,7 +1167,13 @@ public class ImageJUtils {
         }
     }
 
-    public static ImagePlus mergeMappedSlices(Map<ImageSliceIndex, ImageProcessor> sliceMap) {
+    /**
+     * Merges mapped slices into one image
+     * @param sliceMap the slice map
+     * @param equalizeBitDepth if true, find the consensus bit depth and convert all slices
+     * @return the merged image
+     */
+    public static ImagePlus mergeMappedSlices(Map<ImageSliceIndex, ImageProcessor> sliceMap, boolean equalizeBitDepth) {
         int maxZ = Integer.MIN_VALUE;
         int maxC = Integer.MIN_VALUE;
         int maxT = Integer.MIN_VALUE;
@@ -1203,7 +1209,7 @@ public class ImageJUtils {
         Iterables.removeIf(cRemapping, Objects::isNull);
         Iterables.removeIf(tRemapping, Objects::isNull);
 
-        int consensusBitDepth = ImageJUtils.getConsensusBitDepth(sliceMap.values().stream().map(ip -> new ImagePlus("", ip)).collect(Collectors.toList()));
+        int consensusBitDepth = equalizeBitDepth ? ImageJUtils.getConsensusBitDepth(sliceMap.values().stream().map(ip -> new ImagePlus("", ip)).collect(Collectors.toList())) : -1;
         ImageProcessor referenceProcessor = sliceMap.values().iterator().next();
         ImageStack outputImageStack = new ImageStack(referenceProcessor.getWidth(), referenceProcessor.getHeight(), zRemapping.size() * cRemapping.size() * tRemapping.size());
 
@@ -1212,7 +1218,13 @@ public class ImageJUtils {
             int c = cRemapping.indexOf(entry.getKey().getC());
             int t = tRemapping.indexOf(entry.getKey().getT());
             ImageSliceIndex targetIndex = new ImageSliceIndex(c, z, t);
-            ImagePlus converted = ImageJUtils.convertToBitDepthIfNeeded(new ImagePlus("", entry.getValue()), consensusBitDepth);
+            ImagePlus converted;
+            if(consensusBitDepth > 0) {
+                converted = ImageJUtils.convertToBitDepthIfNeeded(new ImagePlus("", entry.getValue()), consensusBitDepth);
+            }
+            else {
+                converted = new ImagePlus("", entry.getValue()); // No conversion
+            }
             outputImageStack.setProcessor(converted.getProcessor(), targetIndex.zeroSliceIndexToOneStackIndex(cRemapping.size(), zRemapping.size(), tRemapping.size()));
         }
 
@@ -1225,6 +1237,10 @@ public class ImageJUtils {
         ImagePlus outputImage = new ImagePlus("Merged", outputImageStack);
         outputImage.setDimensions(cRemapping.size(), zRemapping.size(), tRemapping.size());
         return outputImage;
+    }
+
+    public static ImagePlus mergeMappedSlices(Map<ImageSliceIndex, ImageProcessor> sliceMap) {
+       return mergeMappedSlices(sliceMap, true);
     }
 
     public static ImagePlus extractCTStack(ImagePlus img, int c, int t) {

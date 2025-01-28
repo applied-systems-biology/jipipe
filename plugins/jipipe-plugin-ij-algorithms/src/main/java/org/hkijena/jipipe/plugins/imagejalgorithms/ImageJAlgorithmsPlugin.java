@@ -52,9 +52,7 @@ import org.hkijena.jipipe.plugins.imagejalgorithms.nodes.edge.CannyEdgeDetectorA
 import org.hkijena.jipipe.plugins.imagejalgorithms.nodes.edge.LaplacianEdgeDetectorAlgorithm;
 import org.hkijena.jipipe.plugins.imagejalgorithms.nodes.edge.SobelEdgeDetectorAlgorithm;
 import org.hkijena.jipipe.plugins.imagejalgorithms.nodes.features.*;
-import org.hkijena.jipipe.plugins.imagejalgorithms.nodes.fft.FFT2DForwardTransform;
-import org.hkijena.jipipe.plugins.imagejalgorithms.nodes.fft.FFT2DInverseTransform;
-import org.hkijena.jipipe.plugins.imagejalgorithms.nodes.fft.FFT2DSwapQuadrants;
+import org.hkijena.jipipe.plugins.imagejalgorithms.nodes.fft.*;
 import org.hkijena.jipipe.plugins.imagejalgorithms.nodes.forms.DrawMaskAlgorithm;
 import org.hkijena.jipipe.plugins.imagejalgorithms.nodes.forms.DrawROIAlgorithm;
 import org.hkijena.jipipe.plugins.imagejalgorithms.nodes.generate.*;
@@ -1044,6 +1042,10 @@ public class ImageJAlgorithmsPlugin extends JIPipePrepackagedDefaultJavaPlugin {
         registerNodeType("ij1-fft-forward2d", FFT2DForwardTransform.class, UIUtils.getIconURLFromResources("actions/insert-math-expression.png"));
         registerNodeType("ij1-fft-inverse2d", FFT2DInverseTransform.class, UIUtils.getIconURLFromResources("actions/insert-math-expression.png"));
         registerNodeType("ij1-fft-swap2d", FFT2DSwapQuadrants.class, UIUtils.getIconURLFromResources("actions/insert-math-expression.png"));
+        registerNodeType("ij1-fft-bandpass2d", FFTBandPassFilter.class, UIUtils.getIconURLFromResources("actions/insert-math-expression.png"));
+//        registerNodeType("ij1-fft-custom2d", FFTCustomFilter.class, UIUtils.getIconURLFromResources("actions/insert-math-expression.png"));
+
+        registerEnumParameterType("ij1-fft-bandpass2d:stripe-suppression", FFTBandPassFilter.SuppressStripesMode.class, "Suppress stripes", "Available modes");
     }
 
     private void registerAnalysisAlgorithms() {
