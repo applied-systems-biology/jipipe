@@ -23,7 +23,6 @@ import org.hkijena.jipipe.api.nodes.JIPipeNodeInfo;
 import org.hkijena.jipipe.api.nodes.algorithm.JIPipeSimpleIteratingAlgorithm;
 import org.hkijena.jipipe.api.nodes.iterationstep.JIPipeIterationContext;
 import org.hkijena.jipipe.api.nodes.iterationstep.JIPipeSingleIterationStep;
-import org.hkijena.jipipe.api.parameters.AbstractJIPipeParameterCollection;
 import org.hkijena.jipipe.api.parameters.JIPipeParameter;
 import org.hkijena.jipipe.plugins.expressions.AddJIPipeExpressionParameterVariable;
 import org.hkijena.jipipe.plugins.expressions.JIPipeExpressionParameter;
@@ -33,6 +32,7 @@ import org.hkijena.jipipe.plugins.expressions.custom.JIPipeCustomExpressionVaria
 import org.hkijena.jipipe.plugins.expressions.variables.JIPipeTextAnnotationsExpressionParameterVariablesInfo;
 import org.hkijena.jipipe.plugins.ijfilaments.FilamentsNodeTypeCategory;
 import org.hkijena.jipipe.plugins.ijfilaments.datatypes.Filaments3DGraphData;
+import org.hkijena.jipipe.plugins.ijfilaments.nodes.utils.FilamentsVertexMetadataEntry;
 import org.hkijena.jipipe.plugins.ijfilaments.parameters.VertexMaskParameter;
 import org.hkijena.jipipe.plugins.ijfilaments.util.FilamentVertex;
 import org.hkijena.jipipe.plugins.ijfilaments.util.FilamentVertexVariablesInfo;
@@ -61,7 +61,7 @@ public class ChangeFilamentVertexPropertiesExpressionAlgorithm extends JIPipeSim
     private JIPipeExpressionParameter physicalSizeX = new JIPipeExpressionParameter("default");
     private JIPipeExpressionParameter physicalSizeY = new JIPipeExpressionParameter("default");
     private JIPipeExpressionParameter physicalSizeZ = new JIPipeExpressionParameter("default");
-    private ParameterCollectionList metadata = ParameterCollectionList.containingCollection(MetadataEntry.class);
+    private ParameterCollectionList metadata = ParameterCollectionList.containingCollection(FilamentsVertexMetadataEntry.class);
 
     public ChangeFilamentVertexPropertiesExpressionAlgorithm(JIPipeNodeInfo info) {
         super(info);
@@ -96,7 +96,7 @@ public class ChangeFilamentVertexPropertiesExpressionAlgorithm extends JIPipeSim
         variables.putAnnotations(iterationStep.getMergedTextAnnotations());
         getDefaultCustomExpressionVariables().writeToVariables(variables);
 
-        List<MetadataEntry> metadataEntries = metadata.mapToCollection(MetadataEntry.class);
+        List<FilamentsVertexMetadataEntry> metadataEntries = metadata.mapToCollection(FilamentsVertexMetadataEntry.class);
 
         for (FilamentVertex vertex : VertexMaskParameter.filter(vertexMask.getFilter(), outputData, outputData.vertexSet(), variables)) {
             // Write variables
@@ -150,7 +150,7 @@ public class ChangeFilamentVertexPropertiesExpressionAlgorithm extends JIPipeSim
             vertex.setPhysicalVoxelSizeZ(Quantity.parse(physicalSizeZ.evaluateToString(variables)));
 
             // Metadata
-            for (MetadataEntry metadataEntry : metadataEntries) {
+            for (FilamentsVertexMetadataEntry metadataEntry : metadataEntries) {
                 vertex.setMetadata(metadataEntry.getKey(), metadataEntry.getValue().evaluateToString(variables));
             }
         }
@@ -376,32 +376,4 @@ public class ChangeFilamentVertexPropertiesExpressionAlgorithm extends JIPipeSim
         return vertexMask;
     }
 
-    public static class MetadataEntry extends AbstractJIPipeParameterCollection {
-        private String key;
-        private JIPipeExpressionParameter value;
-
-        @SetJIPipeDocumentation(name = "Key")
-        @JIPipeParameter("key")
-        public String getKey() {
-            return key;
-        }
-
-        @JIPipeParameter("key")
-        public void setKey(String key) {
-            this.key = key;
-        }
-
-        @JIPipeParameter("value")
-        @SetJIPipeDocumentation(name = "Value")
-        @AddJIPipeExpressionParameterVariable(fromClass = JIPipeTextAnnotationsExpressionParameterVariablesInfo.class)
-        @AddJIPipeExpressionParameterVariable(fromClass = FilamentVertexVariablesInfo.class)
-        public JIPipeExpressionParameter getValue() {
-            return value;
-        }
-
-        @JIPipeParameter("value")
-        public void setValue(JIPipeExpressionParameter value) {
-            this.value = value;
-        }
-    }
 }
