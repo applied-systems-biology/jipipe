@@ -104,7 +104,7 @@ public class JFreeChartPlotEditor extends JIPipeDesktopWorkbenchPanel implements
         dockPanel.setBackgroundComponent(editor);
         window.getContentPane().add(dockPanel, BorderLayout.CENTER);
         window.getContentPane().add(ribbon, BorderLayout.NORTH);
-        window.setSize(1024, 768);
+        window.setSize(1280, 800);
         window.setLocationRelativeTo(workbench.getWindow());
         window.setVisible(true);
         return editor;
@@ -121,7 +121,7 @@ public class JFreeChartPlotEditor extends JIPipeDesktopWorkbenchPanel implements
                 new JIPipeDesktopParameterFormPanel(getDesktopWorkbench(),
                         this,
                         null,
-                        JIPipeDesktopParameterFormPanel.WITH_DOCUMENTATION | JIPipeDesktopParameterFormPanel.DOCUMENTATION_BELOW | JIPipeDesktopParameterFormPanel.WITH_SCROLLING));
+                        JIPipeDesktopParameterFormPanel.WITH_DOCUMENTATION | JIPipeDesktopParameterFormPanel.DOCUMENTATION_NO_UI | JIPipeDesktopParameterFormPanel.WITH_SCROLLING));
         dockPanel.addDockPanel("SERIES",
                 "Series",
                 UIUtils.getIcon32FromResources("actions/stock_select-column.png"),
@@ -322,6 +322,8 @@ public class JFreeChartPlotEditor extends JIPipeDesktopWorkbenchPanel implements
             return;
         try {
             isRebuilding = true;
+
+            removeAll();
 
             JIPipeValidationReport report = new JIPipeValidationReport();
             this.reportValidity(new UnspecifiedValidationReportContext(), report);
