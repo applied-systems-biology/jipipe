@@ -13,6 +13,8 @@
 
 package org.hkijena.jipipe.plugins.ijfilaments.nodes.process;
 
+import com.google.common.collect.ImmutableList;
+import com.google.common.primitives.Ints;
 import org.hkijena.jipipe.api.ConfigureJIPipeNode;
 import org.hkijena.jipipe.api.JIPipeProgressInfo;
 import org.hkijena.jipipe.api.SetJIPipeDocumentation;
@@ -26,12 +28,22 @@ import org.hkijena.jipipe.api.nodes.iterationstep.JIPipeSingleIterationStep;
 import org.hkijena.jipipe.api.parameters.JIPipeParameter;
 import org.hkijena.jipipe.plugins.expressions.AddJIPipeExpressionParameterVariable;
 import org.hkijena.jipipe.plugins.expressions.JIPipeExpressionParameter;
+import org.hkijena.jipipe.plugins.expressions.JIPipeExpressionParameterSettings;
+import org.hkijena.jipipe.plugins.expressions.JIPipeExpressionVariablesMap;
+import org.hkijena.jipipe.plugins.expressions.custom.JIPipeCustomExpressionVariablesParameterVariablesInfo;
+import org.hkijena.jipipe.plugins.expressions.variables.JIPipeTextAnnotationsExpressionParameterVariablesInfo;
 import org.hkijena.jipipe.plugins.ijfilaments.FilamentsNodeTypeCategory;
 import org.hkijena.jipipe.plugins.ijfilaments.datatypes.Filaments3DGraphData;
 import org.hkijena.jipipe.plugins.ijfilaments.parameters.VertexMaskParameter;
+import org.hkijena.jipipe.plugins.ijfilaments.util.FilamentVertex;
+import org.hkijena.jipipe.plugins.ijfilaments.util.FilamentVertexVariablesInfo;
 import org.hkijena.jipipe.plugins.imagejdatatypes.datatypes.ImagePlusData;
 import org.hkijena.jipipe.plugins.imagejdatatypes.util.HyperstackDimension;
 import org.hkijena.jipipe.plugins.imagejdatatypes.util.ImagePlusPropertiesExpressionParameterVariablesInfo;
+
+import java.util.HashSet;
+import java.util.List;
+import java.util.Set;
 
 @SetJIPipeDocumentation(name = "Copy filaments across Z/C/T", description = "Copies a filament graph to other Z locations, channels, and frames. The newly created vertices can be optionally connected to the neighboring source vertex.")
 @ConfigureJIPipeNode(nodeTypeCategory = FilamentsNodeTypeCategory.class, menuPath = "Process")
@@ -41,7 +53,7 @@ import org.hkijena.jipipe.plugins.imagejdatatypes.util.ImagePlusPropertiesExpres
 public class CopyFilamentsAcrossZCTAlgorithm extends JIPipeIteratingAlgorithm {
 
     private HyperstackDimension dimension = HyperstackDimension.Frame;
-    private JIPipeExpressionParameter locations = new JIPipeExpressionParameter("RANGE(0, num_t)");
+    private JIPipeExpressionParameter locations = new JIPipeExpressionParameter("MAKE_SEQUENCE(0, num_t)");
     private final VertexMaskParameter vertexMask;
 
     public CopyFilamentsAcrossZCTAlgorithm(JIPipeNodeInfo info) {
@@ -63,6 +75,41 @@ public class CopyFilamentsAcrossZCTAlgorithm extends JIPipeIteratingAlgorithm {
         Filaments3DGraphData filaments = (Filaments3DGraphData) iterationStep.getInputData("Input", Filaments3DGraphData.class, progressInfo).duplicate(progressInfo);
         ImagePlusData referenceImageData = iterationStep.getInputData("Reference", ImagePlusData.class, progressInfo);
 
+        JIPipeExpressionVariablesMap variablesMap = new JIPipeExpressionVariablesMap();
+        ImagePlusPropertiesExpressionParameterVariablesInfo.extractValues(variablesMap,
+                referenceImageData != null ? referenceImageData.getImage() : null, iterationStep.getMergedTextAnnotations().values());
+        variablesMap.putCustomVariables(getDefaultCustomExpressionVariables());
+
+
+        // Find the start vertices
+        Set<FilamentVertex> startVertices = VertexMaskParameter.filter(vertexMask.getFilter(), filaments, filaments.vertexSet(), variablesMap);
+        progressInfo.log(startVertices.size() + " starting vertices will be processed");
+
+        ImmutableList<FilamentVertex> startVerticesList = ImmutableList.copyOf(startVertices);
+        for (int i = 0; i < startVerticesList.size(); i++) {
+            FilamentVertex vertex = startVerticesList.get(i);
+            JIPipeProgressInfo vertexProgress = progressInfo.resolveAndLog("Vertex " + vertex.getUuid(), i, startVerticesList.size());
+            FilamentVertexVariablesInfo.writeToVariables(filaments, vertex, variablesMap, "");
+
+            List<Double> requestedLocations = locations.evaluateToDoubleList(variablesMap);
+            int[] requestedLocationsArray = Ints.toArray(requestedLocations);
+            vertexProgress.log("Will be expanded to " + requestedLocations.size() + " locations (min: " + Ints.min(requestedLocationsArray) + ", max: " + Ints.max(requestedLocationsArray) + ")");
+
+            if(dimension == HyperstackDimension.Frame) {
+
+            }
+            else if(dimension == HyperstackDimension.Channel) {
+
+            }
+            else if(dimension == HyperstackDimension.Depth) {
+
+            }
+            else {
+                throw new RuntimeException("Unknown dimension: " + dimension);
+            }
+        }
+
+
     }
 
     @SetJIPipeDocumentation(name = "Direction", description = "The direction in which to expand each vertex.")
@@ -79,6 +126,10 @@ public class CopyFilamentsAcrossZCTAlgorithm extends JIPipeIteratingAlgorithm {
     @SetJIPipeDocumentation(name = "Locations (in direction)", description = "Expression that determines the locations in the selected direction where the vertex will be present.")
     @JIPipeParameter("locations")
     @AddJIPipeExpressionParameterVariable(fromClass = ImagePlusPropertiesExpressionParameterVariablesInfo.class)
+    @AddJIPipeExpressionParameterVariable(fromClass = FilamentVertexVariablesInfo.class)
+    @AddJIPipeExpressionParameterVariable(fromClass = JIPipeTextAnnotationsExpressionParameterVariablesInfo.class)
+    @AddJIPipeExpressionParameterVariable(fromClass = JIPipeCustomExpressionVariablesParameterVariablesInfo.class)
+    @JIPipeExpressionParameterSettings(hint = "per start vertex")
     public JIPipeExpressionParameter getLocations() {
         return locations;
     }

@@ -40,10 +40,7 @@ import org.hkijena.jipipe.plugins.ijfilaments.nodes.measure.MeasureVerticesAlgor
 import org.hkijena.jipipe.plugins.ijfilaments.nodes.merge.MergeFilamentsAlgorithm;
 import org.hkijena.jipipe.plugins.ijfilaments.nodes.modify.*;
 import org.hkijena.jipipe.plugins.ijfilaments.nodes.overlay.SetOverlayFilamentsAlgorithm;
-import org.hkijena.jipipe.plugins.ijfilaments.nodes.process.FixOverlapsNonBranchingAlgorithm;
-import org.hkijena.jipipe.plugins.ijfilaments.nodes.process.RemoveDuplicateVerticesAlgorithm;
-import org.hkijena.jipipe.plugins.ijfilaments.nodes.process.SimplifyFilamentsAlgorithm;
-import org.hkijena.jipipe.plugins.ijfilaments.nodes.process.SmoothFilamentsAlgorithm;
+import org.hkijena.jipipe.plugins.ijfilaments.nodes.process.*;
 import org.hkijena.jipipe.plugins.ijfilaments.nodes.split.SplitFilamentsIntoConnectedComponentsAlgorithm;
 import org.hkijena.jipipe.plugins.ijfilaments.nodes.split.SplitFilamentsIntoCyclesAlgorithm;
 import org.hkijena.jipipe.plugins.ijfilaments.parameters.CycleFinderAlgorithm;
@@ -222,6 +219,7 @@ public class FilamentsPlugin extends JIPipePrepackagedDefaultJavaPlugin {
         registerNodeType("filaments-grow-end-vertices", GrowEndVerticesAlgorithm.class, UIUtils.getIconURLFromResources("actions/draw-arrow.png"));
         registerNodeType("filaments-connect-vertices", ConnectVerticesAlgorithm.class, UIUtils.getIconURLFromResources("actions/lines-connector.png"));
         registerNodeType("filaments-connect-vertices-fast", ConnectVerticesFastAlgorithm.class, UIUtils.getIconURLFromResources("actions/lines-connector.png"));
+        registerNodeType("filaments-copy-across-zct", CopyFilamentsAcrossZCTAlgorithm.class, UIUtils.getIconURLFromResources("actions/insert-math-expression.png"));
 
         registerNodeType("filaments-tsoax", TSOAX3DAlgorithm.class, UIUtils.getIconURLFromResources("actions/labplot-xy-fit-curve.png"));
         registerNodeType("filaments-tsoax-2d", TSOAX2DAlgorithm.class, UIUtils.getIconURLFromResources("actions/labplot-xy-fit-curve.png"));
