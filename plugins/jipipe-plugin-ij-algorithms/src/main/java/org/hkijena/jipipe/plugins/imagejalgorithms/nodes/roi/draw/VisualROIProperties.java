@@ -20,6 +20,7 @@ import org.hkijena.jipipe.api.parameters.JIPipeParameter;
 import org.hkijena.jipipe.plugins.expressions.AddJIPipeExpressionParameterVariable;
 import org.hkijena.jipipe.plugins.expressions.JIPipeExpressionParameter;
 import org.hkijena.jipipe.plugins.expressions.JIPipeExpressionVariablesMap;
+import org.hkijena.jipipe.plugins.expressions.OptionalJIPipeExpressionParameter;
 import org.hkijena.jipipe.plugins.expressions.variables.JIPipeTextAnnotationsExpressionParameterVariablesInfo;
 import org.hkijena.jipipe.plugins.imagejdatatypes.util.ROIEditor;
 import org.hkijena.jipipe.plugins.parameters.library.colors.OptionalColorParameter;
@@ -31,7 +32,7 @@ import java.awt.*;
  */
 public class VisualROIProperties extends AbstractJIPipeParameterCollection {
 
-    private JIPipeExpressionParameter roiName = new JIPipeExpressionParameter("\"unnamed\"");
+    private OptionalJIPipeExpressionParameter roiName = new OptionalJIPipeExpressionParameter(true, "\"unnamed\"");
     private OptionalColorParameter fillColor = new OptionalColorParameter(Color.RED, false);
     private OptionalColorParameter lineColor = new OptionalColorParameter(Color.YELLOW, true);
     private double lineWidth = 1;
@@ -41,7 +42,7 @@ public class VisualROIProperties extends AbstractJIPipeParameterCollection {
     }
 
     public VisualROIProperties(VisualROIProperties other) {
-        this.roiName = new JIPipeExpressionParameter(other.roiName);
+        this.roiName = new OptionalJIPipeExpressionParameter(other.roiName);
         this.fillColor = new OptionalColorParameter(other.fillColor);
         this.lineColor = new OptionalColorParameter(other.lineColor);
         this.lineWidth = other.lineWidth;
@@ -83,12 +84,12 @@ public class VisualROIProperties extends AbstractJIPipeParameterCollection {
     @SetJIPipeDocumentation(name = "ROI name", description = "Allows to change the ROI name")
     @JIPipeParameter("roi-name")
     @AddJIPipeExpressionParameterVariable(fromClass = JIPipeTextAnnotationsExpressionParameterVariablesInfo.class)
-    public JIPipeExpressionParameter getRoiName() {
+    public OptionalJIPipeExpressionParameter getRoiName() {
         return roiName;
     }
 
     @JIPipeParameter("roi-name")
-    public void setRoiName(JIPipeExpressionParameter roiName) {
+    public void setRoiName(OptionalJIPipeExpressionParameter roiName) {
         this.roiName = roiName;
     }
 
@@ -103,11 +104,15 @@ public class VisualROIProperties extends AbstractJIPipeParameterCollection {
         if (lineColor.isEnabled())
             target.setStrokeColor(lineColor.getContent());
         target.setStrokeWidth(lineWidth);
-        target.setName(roiName.evaluateToString(variables));
+        if(roiName.isEnabled()) {
+            target.setName(roiName.getContent().evaluateToString(variables));
+        }
     }
 
     public void applyTo(Roi roi, JIPipeExpressionVariablesMap variables) {
-        roi.setName(getRoiName().evaluateToString(variables));
+        if(roiName.isEnabled()) {
+            roi.setName(roiName.getContent().evaluateToString(variables));
+        }
         roi.setStrokeWidth(getLineWidth());
         if (getFillColor().isEnabled()) {
             roi.setFillColor(getFillColor().getContent());

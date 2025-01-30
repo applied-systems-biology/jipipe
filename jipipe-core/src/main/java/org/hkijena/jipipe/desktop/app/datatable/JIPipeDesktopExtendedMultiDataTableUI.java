@@ -63,6 +63,7 @@ import org.hkijena.jipipe.utils.StringUtils;
 import org.hkijena.jipipe.utils.UIUtils;
 import org.hkijena.jipipe.utils.data.OwningStore;
 import org.hkijena.jipipe.utils.data.Store;
+import org.hkijena.jipipe.utils.debounce.StaticDebouncer;
 import org.hkijena.jipipe.utils.scripting.MacroUtils;
 import org.jdesktop.swingx.JXTable;
 
@@ -92,6 +93,7 @@ public class JIPipeDesktopExtendedMultiDataTableUI extends JIPipeDesktopWorkbenc
     private final JIPipeDesktopRibbon ribbon = new JIPipeDesktopRibbon(2);
     private final JIPipeDesktopExtendedMultiDataTableModel multiSlotTable;
     private final JLabel infoLabel = new JLabel();
+    private final StaticDebouncer updateStatusDebouncer;
 
     /**
      * @param workbenchUI                 the workbench UI
@@ -103,6 +105,7 @@ public class JIPipeDesktopExtendedMultiDataTableUI extends JIPipeDesktopWorkbenc
         this.dataTableStores = new ArrayList<>();
         this.dataTableStores.addAll(dataTableStores);
         this.withCompartmentAndAlgorithm = withCompartmentAndAlgorithm;
+        this.updateStatusDebouncer = new StaticDebouncer(1500, this::updateStatus);
         table = new JXTable();
         this.multiSlotTable = new JIPipeDesktopExtendedMultiDataTableModel(table, withCompartmentAndAlgorithm);
         JIPipeProject project = null;
@@ -619,7 +622,7 @@ public class JIPipeDesktopExtendedMultiDataTableUI extends JIPipeDesktopWorkbenc
      */
     @Override
     public void onCacheModified(JIPipeCache.ModifiedEvent event) {
-        updateStatus();
+        this.updateStatusDebouncer.debounce();
     }
 
     private void updateStatus() {

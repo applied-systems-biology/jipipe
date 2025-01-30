@@ -59,6 +59,7 @@ import org.hkijena.jipipe.utils.StringUtils;
 import org.hkijena.jipipe.utils.UIUtils;
 import org.hkijena.jipipe.utils.data.OwningStore;
 import org.hkijena.jipipe.utils.data.Store;
+import org.hkijena.jipipe.utils.debounce.StaticDebouncer;
 import org.hkijena.jipipe.utils.scripting.MacroUtils;
 import org.jdesktop.swingx.JXTable;
 
@@ -89,6 +90,7 @@ public class JIPipeDesktopExtendedDataTableUI extends JIPipeDesktopWorkbenchPane
     private JXTable table;
     private JIPipeDesktopExtendedDataTableModel dataTableModel;
     private JScrollPane scrollPane;
+    private final StaticDebouncer updateStatusDebouncer;
 
     /**
      * @param workbenchUI     the workbench UI
@@ -101,6 +103,7 @@ public class JIPipeDesktopExtendedDataTableUI extends JIPipeDesktopWorkbenchPane
         this.dataTableStore = dataTableStore;
         this.updateWithCache = updateWithCache;
         this.externalRibbon = externalRibbon;
+        this.updateStatusDebouncer = new StaticDebouncer(1500, this::updateStatus);
 
         initialize();
         reloadTable();
@@ -538,7 +541,7 @@ public class JIPipeDesktopExtendedDataTableUI extends JIPipeDesktopWorkbenchPane
      */
     @Override
     public void onCacheModified(JIPipeCache.ModifiedEvent event) {
-        updateStatus();
+        this.updateStatusDebouncer.debounce();
     }
 
     private void updateStatus() {

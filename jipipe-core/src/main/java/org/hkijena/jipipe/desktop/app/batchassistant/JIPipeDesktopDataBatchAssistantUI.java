@@ -46,10 +46,12 @@ import org.hkijena.jipipe.desktop.commons.components.JIPipeDesktopMessagePanel;
 import org.hkijena.jipipe.desktop.commons.components.JIPipeDesktopParameterFormPanel;
 import org.hkijena.jipipe.plugins.batchassistant.DataBatchStatusData;
 import org.hkijena.jipipe.plugins.strings.StringData;
+import org.hkijena.jipipe.utils.debounce.DynamicDebouncer;
 import org.hkijena.jipipe.utils.JIPipeDesktopSplitPane;
 import org.hkijena.jipipe.utils.UIUtils;
 import org.hkijena.jipipe.utils.data.Store;
 import org.hkijena.jipipe.utils.data.WeakStore;
+import org.hkijena.jipipe.utils.debounce.StaticDebouncer;
 
 import javax.swing.*;
 import java.awt.*;
@@ -77,6 +79,7 @@ public class JIPipeDesktopDataBatchAssistantUI extends JIPipeDesktopProjectWorkb
     JIPipeDesktopSplitPane splitPane2 = new JIPipeDesktopSplitPane(JSplitPane.VERTICAL_SPLIT, 0.4);
     private JIPipeGraphNode batchesNodeCopy;
     private boolean autoRefresh = true;
+    private final StaticDebouncer updateStatusDebouncer;
 
 
     /**
@@ -91,6 +94,7 @@ public class JIPipeDesktopDataBatchAssistantUI extends JIPipeDesktopProjectWorkb
         this.runUpdatePredecessorCache = runUpdatePredecessorCache;
         this.batchPanel = new JIPipeDesktopDataBatchAssistantBatchPanel(workbenchUI, this);
         this.inputPreviewPanel = new JIPipeDesktopDataBatchAssistantInputPreviewPanel(workbenchUI, this);
+        this.updateStatusDebouncer = new StaticDebouncer(1000, this::updateStatus);
         initialize();
         updateStatus();
         getProject().getCache().getModifiedEventEmitter().subscribeWeak(this);
@@ -371,7 +375,7 @@ public class JIPipeDesktopDataBatchAssistantUI extends JIPipeDesktopProjectWorkb
             clearCaches();
             return;
         }
-        updateStatus();
+        updateStatusDebouncer.debounce();
     }
 
     private void clearCaches() {

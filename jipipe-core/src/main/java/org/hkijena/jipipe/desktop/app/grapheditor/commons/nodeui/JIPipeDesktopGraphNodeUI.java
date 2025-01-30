@@ -50,6 +50,7 @@ import org.hkijena.jipipe.desktop.commons.components.JIPipeDesktopParameterKeyPi
 import org.hkijena.jipipe.plugins.multiparameters.nodes.DefineParametersTableAlgorithm;
 import org.hkijena.jipipe.plugins.parameters.library.table.ParameterTable;
 import org.hkijena.jipipe.utils.*;
+import org.hkijena.jipipe.utils.debounce.StaticDebouncer;
 import org.hkijena.jipipe.utils.ui.ViewOnlyMenuItem;
 
 import javax.swing.*;
@@ -131,6 +132,7 @@ public class JIPipeDesktopGraphNodeUI extends JIPipeDesktopWorkbenchPanel implem
     private boolean nodeBufferInvalid = true;
     private boolean buffered = true;
     private Color partitionColor;
+    private final StaticDebouncer updateViewOnCacheUpdatedDebouncer;
 
     /**
      * Creates a new UI
@@ -144,6 +146,8 @@ public class JIPipeDesktopGraphNodeUI extends JIPipeDesktopWorkbenchPanel implem
         this.graphCanvasUI = graphCanvasUI;
         this.node = node;
         this.zoom = graphCanvasUI.getZoom();
+
+        this.updateViewOnCacheUpdatedDebouncer = new StaticDebouncer(500, () ->  updateView(false, true, false));
 
         this.node.getParameterChangedEventEmitter().subscribeWeak(this);
         this.node.getNodeSlotsChangedEventEmitter().subscribeWeak(this);
@@ -2225,7 +2229,7 @@ public class JIPipeDesktopGraphNodeUI extends JIPipeDesktopWorkbenchPanel implem
 
     @Override
     public void onCacheModified(JIPipeCache.ModifiedEvent event) {
-        updateView(false, true, false);
+        updateViewOnCacheUpdatedDebouncer.debounce();
     }
 
     private void updateCurrentActiveArea(MouseEvent e) {

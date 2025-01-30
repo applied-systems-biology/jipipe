@@ -13,6 +13,7 @@
 
 package org.hkijena.jipipe.plugins.imagejdatatypes.util;
 
+import com.fasterxml.jackson.databind.JsonNode;
 import com.google.common.collect.ImmutableList;
 import com.google.common.collect.Iterables;
 import gnu.trove.list.TIntList;
@@ -47,10 +48,8 @@ import org.hkijena.jipipe.plugins.parameters.library.colors.ColorMap;
 import org.hkijena.jipipe.plugins.parameters.library.quantities.Quantity;
 import org.hkijena.jipipe.plugins.parameters.library.roi.Anchor;
 import org.hkijena.jipipe.plugins.tables.datatypes.ResultsTableData;
-import org.hkijena.jipipe.utils.ColorUtils;
-import org.hkijena.jipipe.utils.ImageJCalibrationMode;
-import org.hkijena.jipipe.utils.StringUtils;
-import org.hkijena.jipipe.utils.TriConsumer;
+import org.hkijena.jipipe.utils.*;
+import org.hkijena.jipipe.utils.json.JsonUtils;
 
 import javax.swing.*;
 import java.awt.*;
@@ -235,6 +234,29 @@ public class ImageJUtils {
             roi.setProperties(writer.toString());
         } catch (IOException e) {
             throw new RuntimeException(e);
+        }
+    }
+
+    /**
+     * Sets ROI properties from a JSON string or
+     * @param roi the ROI
+     * @param properties the properties (must be JSON, or is set as value of fallbackKey). If empty, nothing happens.
+     */
+    public static void setRoiPropertiesFromString(Roi roi, String properties, String fallbackKey) {
+        if(!StringUtils.isNullOrEmpty(properties)) {
+            Map<String, String> map = new HashMap<>();
+            try {
+                JsonNode jsonNode = SerializationUtils.jsonStringToObject(properties, JsonNode.class);
+                for (Map.Entry<String, JsonNode> entry : ImmutableList.copyOf(jsonNode.fields())) {
+                    map.put(entry.getKey(), entry.getValue().asText());
+                }
+            }
+            catch (Exception ignored) {
+                map.put(fallbackKey, properties);
+            }
+            if(!map.isEmpty()) {
+                setRoiProperties(roi, map);
+            }
         }
     }
 

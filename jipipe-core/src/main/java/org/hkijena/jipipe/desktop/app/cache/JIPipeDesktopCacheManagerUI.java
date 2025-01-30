@@ -22,6 +22,7 @@ import org.hkijena.jipipe.desktop.app.JIPipeDesktopProjectWorkbench;
 import org.hkijena.jipipe.desktop.app.JIPipeDesktopProjectWorkbenchAccess;
 import org.hkijena.jipipe.desktop.app.JIPipeDesktopWorkbench;
 import org.hkijena.jipipe.utils.UIUtils;
+import org.hkijena.jipipe.utils.debounce.StaticDebouncer;
 
 import javax.swing.*;
 import java.awt.*;
@@ -33,6 +34,7 @@ public class JIPipeDesktopCacheManagerUI extends JButton implements JIPipeDeskto
 
     private final JIPipeDesktopWorkbench desktopWorkbench;
     private final JPopupMenu menu = new JPopupMenu();
+    private final StaticDebouncer updateStatusDebouncer;
 
     /**
      * Creates new instance
@@ -41,6 +43,7 @@ public class JIPipeDesktopCacheManagerUI extends JButton implements JIPipeDeskto
      */
     public JIPipeDesktopCacheManagerUI(JIPipeDesktopProjectWorkbench workbenchUI) {
         this.desktopWorkbench = workbenchUI;
+        this.updateStatusDebouncer = new StaticDebouncer(500, this::updateStatus);
         initialize();
         updateStatus();
 
@@ -114,7 +117,7 @@ public class JIPipeDesktopCacheManagerUI extends JButton implements JIPipeDeskto
      */
     @Override
     public void onCacheModified(JIPipeCache.ModifiedEvent event) {
-        updateStatus();
+        updateStatusDebouncer.debounce();
     }
 
     @Override

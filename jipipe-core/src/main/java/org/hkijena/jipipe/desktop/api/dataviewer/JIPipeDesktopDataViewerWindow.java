@@ -33,10 +33,9 @@ import org.hkijena.jipipe.desktop.commons.components.window.JIPipeDesktopAlwaysO
 import org.hkijena.jipipe.plugins.settings.JIPipeFileChooserApplicationSettings;
 import org.hkijena.jipipe.plugins.settings.JIPipeRuntimeApplicationSettings;
 import org.hkijena.jipipe.plugins.tables.datatypes.ResultsTableData;
-import org.hkijena.jipipe.utils.PathUtils;
-import org.hkijena.jipipe.utils.ReflectionUtils;
-import org.hkijena.jipipe.utils.StringUtils;
-import org.hkijena.jipipe.utils.UIUtils;
+import org.hkijena.jipipe.utils.*;
+import org.hkijena.jipipe.utils.debounce.DynamicDebouncer;
+import org.hkijena.jipipe.utils.debounce.StaticDebouncer;
 import org.hkijena.jipipe.utils.ui.JIPipeDesktopDockPanel;
 import org.jdesktop.swingx.JXStatusBar;
 import org.jdesktop.swingx.plaf.basic.BasicStatusBarUI;
@@ -78,6 +77,7 @@ public class JIPipeDesktopDataViewerWindow extends JFrame implements JIPipeDeskt
     private int currentDataRow = -1;
     private int currentDataAnnotationColumn = -1;
     private JIPipeDesktopDataViewer currentDataViewer;
+    private final StaticDebouncer refreshFromCacheDebouncer;
 
     public JIPipeDesktopDataViewerWindow(JIPipeDesktopWorkbench workbench) {
         this.workbench = workbench;
@@ -86,6 +86,7 @@ public class JIPipeDesktopDataViewerWindow extends JFrame implements JIPipeDeskt
                 refreshFromLocalCache();
             }
         });
+        this.refreshFromCacheDebouncer = new StaticDebouncer(1500, this::refreshFromLocalCache);
         initialize();
         registerHotkeys();
 
@@ -584,7 +585,7 @@ public class JIPipeDesktopDataViewerWindow extends JFrame implements JIPipeDeskt
     @Override
     public void onCacheModified(JIPipeCache.ModifiedEvent event) {
         if (isDisplayingLocallyCachedData() && toggleAutoRefreshFromCache.isSelected()) {
-            refreshFromLocalCache();
+            refreshFromCacheDebouncer.debounce();
         }
     }
 

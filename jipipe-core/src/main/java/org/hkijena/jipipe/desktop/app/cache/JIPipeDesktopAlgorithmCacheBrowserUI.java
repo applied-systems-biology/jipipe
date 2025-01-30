@@ -40,8 +40,10 @@ import org.hkijena.jipipe.desktop.commons.components.ribbon.JIPipeDesktopLargeBu
 import org.hkijena.jipipe.desktop.commons.components.ribbon.JIPipeDesktopRibbon;
 import org.hkijena.jipipe.desktop.commons.components.ribbon.JIPipeDesktopSmallButtonRibbonAction;
 import org.hkijena.jipipe.plugins.settings.JIPipeFileChooserApplicationSettings;
+import org.hkijena.jipipe.utils.debounce.DynamicDebouncer;
 import org.hkijena.jipipe.utils.UIUtils;
 import org.hkijena.jipipe.utils.data.WeakStore;
+import org.hkijena.jipipe.utils.debounce.StaticDebouncer;
 import org.hkijena.jipipe.utils.json.JsonUtils;
 
 import javax.swing.*;
@@ -61,6 +63,7 @@ public class JIPipeDesktopAlgorithmCacheBrowserUI extends JIPipeDesktopProjectWo
     private final JIPipeDesktopGraphCanvasUI graphCanvasUI;
     private JIPipeDataSlot selectedSlot;
     private Component currentContent;
+    private final StaticDebouncer refreshTableDebouncer;
 
     /**
      * @param workbenchUI   the workbench
@@ -71,6 +74,7 @@ public class JIPipeDesktopAlgorithmCacheBrowserUI extends JIPipeDesktopProjectWo
         super(workbenchUI);
         this.graphNode = graphNode;
         this.graphCanvasUI = graphCanvasUI;
+        this.refreshTableDebouncer = new StaticDebouncer(1500, this::refreshTable);
         initialize();
 
         getProject().getCache().getModifiedEventEmitter().subscribeWeak(this);
@@ -322,7 +326,7 @@ public class JIPipeDesktopAlgorithmCacheBrowserUI extends JIPipeDesktopProjectWo
         if (!isDisplayable())
             return;
         if (JIPipeRunnableQueue.getInstance().getCurrentRun() == null) {
-            refreshTable();
+            refreshTableDebouncer.debounce();
         }
     }
 
@@ -330,13 +334,13 @@ public class JIPipeDesktopAlgorithmCacheBrowserUI extends JIPipeDesktopProjectWo
     public void onRunnableInterrupted(JIPipeRunnable.InterruptedEvent event) {
         if (!isDisplayable())
             return;
-        refreshTable();
+        refreshTableDebouncer.debounce();
     }
 
     @Override
     public void onRunnableFinished(JIPipeRunnable.FinishedEvent event) {
         if (!isDisplayable())
             return;
-        refreshTable();
+        refreshTableDebouncer.debounce();
     }
 }
