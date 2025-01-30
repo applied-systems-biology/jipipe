@@ -19,7 +19,6 @@ import java.util.concurrent.Executors;
 import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.ScheduledFuture;
 import java.util.concurrent.TimeUnit;
-import java.util.function.Consumer;
 
 public class DynamicDebouncer implements Disposable {
     private final ScheduledExecutorService scheduler = Executors.newSingleThreadScheduledExecutor();

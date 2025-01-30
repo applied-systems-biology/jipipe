@@ -49,7 +49,6 @@ import org.hkijena.jipipe.plugins.parameters.library.quantities.Quantity;
 import org.hkijena.jipipe.plugins.parameters.library.roi.Anchor;
 import org.hkijena.jipipe.plugins.tables.datatypes.ResultsTableData;
 import org.hkijena.jipipe.utils.*;
-import org.hkijena.jipipe.utils.json.JsonUtils;
 
 import javax.swing.*;
 import java.awt.*;
@@ -239,22 +238,22 @@ public class ImageJUtils {
 
     /**
      * Sets ROI properties from a JSON string or
-     * @param roi the ROI
+     *
+     * @param roi        the ROI
      * @param properties the properties (must be JSON, or is set as value of fallbackKey). If empty, nothing happens.
      */
     public static void setRoiPropertiesFromString(Roi roi, String properties, String fallbackKey) {
-        if(!StringUtils.isNullOrEmpty(properties)) {
+        if (!StringUtils.isNullOrEmpty(properties)) {
             Map<String, String> map = new HashMap<>();
             try {
                 JsonNode jsonNode = SerializationUtils.jsonStringToObject(properties, JsonNode.class);
                 for (Map.Entry<String, JsonNode> entry : ImmutableList.copyOf(jsonNode.fields())) {
                     map.put(entry.getKey(), entry.getValue().asText());
                 }
-            }
-            catch (Exception ignored) {
+            } catch (Exception ignored) {
                 map.put(fallbackKey, properties);
             }
-            if(!map.isEmpty()) {
+            if (!map.isEmpty()) {
                 setRoiProperties(roi, map);
             }
         }
@@ -1191,7 +1190,8 @@ public class ImageJUtils {
 
     /**
      * Merges mapped slices into one image
-     * @param sliceMap the slice map
+     *
+     * @param sliceMap         the slice map
      * @param equalizeBitDepth if true, find the consensus bit depth and convert all slices
      * @return the merged image
      */
@@ -1241,10 +1241,9 @@ public class ImageJUtils {
             int t = tRemapping.indexOf(entry.getKey().getT());
             ImageSliceIndex targetIndex = new ImageSliceIndex(c, z, t);
             ImagePlus converted;
-            if(consensusBitDepth > 0) {
+            if (consensusBitDepth > 0) {
                 converted = ImageJUtils.convertToBitDepthIfNeeded(new ImagePlus("", entry.getValue()), consensusBitDepth);
-            }
-            else {
+            } else {
                 converted = new ImagePlus("", entry.getValue()); // No conversion
             }
             outputImageStack.setProcessor(converted.getProcessor(), targetIndex.zeroSliceIndexToOneStackIndex(cRemapping.size(), zRemapping.size(), tRemapping.size()));
@@ -1262,7 +1261,7 @@ public class ImageJUtils {
     }
 
     public static ImagePlus mergeMappedSlices(Map<ImageSliceIndex, ImageProcessor> sliceMap) {
-       return mergeMappedSlices(sliceMap, true);
+        return mergeMappedSlices(sliceMap, true);
     }
 
     public static ImagePlus extractCTStack(ImagePlus img, int c, int t) {

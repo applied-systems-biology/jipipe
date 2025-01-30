@@ -25,7 +25,7 @@ public class OMEImageDataViewer extends ImagePlusDataViewer {
 
     @Override
     protected void loadDataIntoLegacyViewer(JIPipeData data) {
-        if(data instanceof OMEImageData) {
+        if (data instanceof OMEImageData) {
             super.loadDataIntoLegacyViewer(new ImagePlusData(((OMEImageData) data).getImage()));
             getLegacyImageViewer().addOverlay(((OMEImageData) data).getRois());
         }

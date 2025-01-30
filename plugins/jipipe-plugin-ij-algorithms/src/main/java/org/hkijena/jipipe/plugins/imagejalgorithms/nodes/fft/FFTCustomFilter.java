@@ -16,9 +16,7 @@ package org.hkijena.jipipe.plugins.imagejalgorithms.nodes.fft;
 import ij.ImagePlus;
 import ij.plugin.ContrastEnhancer;
 import ij.plugin.filter.FFTFilter;
-import ij.process.ColorProcessor;
 import ij.process.FHT;
-import ij.process.FloatProcessor;
 import ij.process.ImageProcessor;
 import org.hkijena.jipipe.api.ConfigureJIPipeNode;
 import org.hkijena.jipipe.api.JIPipeProgressInfo;
@@ -54,6 +52,68 @@ public class FFTCustomFilter extends JIPipeIteratingAlgorithm {
         super(other);
     }
 
+    public static void doInverseTransform(FHT fht, ImageProcessor ip, Rectangle rect, int originalBitDepth) {
+        fht.inverseTransform();
+        //if (fht.quadrantSwapNeeded)
+        //	fht.swapQuadrants();
+        fht.resetMinAndMax();
+        ImageProcessor ip2 = fht;
+        fht.setRoi(rect.x, rect.y, rect.width, rect.height);
+        ip2 = fht.crop();
+        int bitDepth = fht.originalBitDepth > 0 ? fht.originalBitDepth : originalBitDepth;
+        switch (bitDepth) {
+            case 8:
+                ip2 = ip2.convertToByte(true);
+                break;
+            case 16:
+                ip2 = ip2.convertToShort(true);
+                break;
+        }
+        ip.insert(ip2, 0, 0);
+    }
+
+    public static void customFilter(FHT fht, ImageProcessor filter) {
+        int size = fht.getWidth();
+        fht.swapQuadrants(filter);
+        float[] fhtPixels = (float[]) fht.getPixels();
+        boolean isFloat = filter.getBitDepth() == 32;
+        for (int i = 0; i < fhtPixels.length; i++) {
+            if (isFloat)
+                fhtPixels[i] = fhtPixels[i] * filter.getf(i);
+            else
+                fhtPixels[i] = (float) (fhtPixels[i] * (filter.get(i) / 255.0));
+        }
+        fht.swapQuadrants(filter);
+    }
+
+    public static FHT newFHT(ImageProcessor ip, Rectangle rect, int originalWidth, int originalHeight, int originalBitDepth) {
+        FHT fht;
+        int width = ip.getWidth();
+        int height = ip.getHeight();
+        int maxN = Math.max(width, height);
+        int size = 2;
+        while (size < 1.5 * maxN) size *= 2;
+        rect.x = (int) Math.round((size - width) / 2.0);
+        rect.y = (int) Math.round((size - height) / 2.0);
+        rect.width = width;
+        rect.height = height;
+        FFTFilter fftFilter = new FFTFilter();
+        fht = new FHT(fftFilter.tileMirror(ip, size, size, rect.x, rect.y));
+        fht.originalWidth = originalWidth;
+        fht.originalHeight = originalHeight;
+        fht.originalBitDepth = originalBitDepth;
+        return fht;
+    }
+
+    public static ImageProcessor resizeFilter(ImageProcessor ip, int maxN, JIPipeProgressInfo progressInfo) {
+        int width = ip.getWidth();
+        int height = ip.getHeight();
+        if (width == maxN && height == maxN)
+            return ip;
+        progressInfo.log("Scaling filter to " + maxN + "x" + maxN);
+        return ip.resize(maxN, maxN);
+    }
+
     @Override
     protected void runIteration(JIPipeSingleIterationStep iterationStep, JIPipeIterationContext iterationContext, JIPipeGraphNodeRunContext runContext, JIPipeProgressInfo progressInfo) {
         ImagePlus impInput = iterationStep.getInputData("Input", ImagePlusGreyscaleData.class, progressInfo).getImage();
@@ -80,63 +140,5 @@ public class FFTCustomFilter extends JIPipeIteratingAlgorithm {
         new ContrastEnhancer().stretchHistogram(impOutput, 0.0);
 
         iterationStep.addOutputData(getFirstOutputSlot(), new ImagePlusGreyscaleData(impOutput), progressInfo);
-    }
-
-    public static void doInverseTransform(FHT fht, ImageProcessor ip, Rectangle rect, int originalBitDepth) {
-        fht.inverseTransform();
-        //if (fht.quadrantSwapNeeded)
-        //	fht.swapQuadrants();
-        fht.resetMinAndMax();
-        ImageProcessor ip2 = fht;
-        fht.setRoi(rect.x, rect.y, rect.width, rect.height);
-        ip2 = fht.crop();
-        int bitDepth = fht.originalBitDepth>0?fht.originalBitDepth:originalBitDepth;
-        switch (bitDepth) {
-            case 8: ip2 = ip2.convertToByte(true); break;
-            case 16: ip2 = ip2.convertToShort(true); break;
-        }
-        ip.insert(ip2, 0, 0);
-    }
-
-    public static void customFilter(FHT fht, ImageProcessor filter) {
-        int size = fht.getWidth();
-        fht.swapQuadrants(filter);
-        float[] fhtPixels = (float[])fht.getPixels();
-        boolean isFloat = filter.getBitDepth()==32;
-        for (int i=0; i<fhtPixels.length; i++) {
-            if (isFloat)
-                fhtPixels[i] = fhtPixels[i]*filter.getf(i);
-            else
-                fhtPixels[i] = (float)(fhtPixels[i]*(filter.get(i)/255.0));
-        }
-        fht.swapQuadrants(filter);
-    }
-
-    public static FHT newFHT(ImageProcessor ip, Rectangle rect, int originalWidth, int originalHeight, int originalBitDepth) {
-        FHT fht;
-        int width = ip.getWidth();
-        int height = ip.getHeight();
-        int maxN = Math.max(width, height);
-        int size = 2;
-        while (size<1.5*maxN) size *= 2;
-        rect.x = (int)Math.round((size-width)/2.0);
-        rect.y = (int)Math.round((size-height)/2.0);
-        rect.width = width;
-        rect.height = height;
-        FFTFilter fftFilter = new FFTFilter();
-        fht = new FHT(fftFilter.tileMirror(ip, size, size, rect.x, rect.y));
-        fht.originalWidth = originalWidth;
-        fht.originalHeight = originalHeight;
-        fht.originalBitDepth = originalBitDepth;
-        return fht;
-    }
-
-    public static ImageProcessor resizeFilter(ImageProcessor ip, int maxN, JIPipeProgressInfo progressInfo) {
-        int width = ip.getWidth();
-        int height = ip.getHeight();
-        if (width==maxN && height==maxN)
-            return ip;
-        progressInfo.log("Scaling filter to "+ maxN + "x" + maxN);
-        return ip.resize(maxN, maxN);
     }
 }

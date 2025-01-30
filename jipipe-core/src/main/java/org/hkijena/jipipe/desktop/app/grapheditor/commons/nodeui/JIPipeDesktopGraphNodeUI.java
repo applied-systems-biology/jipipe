@@ -115,6 +115,7 @@ public class JIPipeDesktopGraphNodeUI extends JIPipeDesktopWorkbenchPanel implem
     private final boolean showOutputs;
     private final NodeUIActionRequestedEventEmitter nodeUIActionRequestedEventEmitter = new NodeUIActionRequestedEventEmitter();
     private final boolean nodeIsRunnable;
+    private final StaticDebouncer updateViewOnCacheUpdatedDebouncer;
     private Color nodeBorderColor;
     private Color slotFillColor;
     private Color buttonFillColor;
@@ -132,7 +133,6 @@ public class JIPipeDesktopGraphNodeUI extends JIPipeDesktopWorkbenchPanel implem
     private boolean nodeBufferInvalid = true;
     private boolean buffered = true;
     private Color partitionColor;
-    private final StaticDebouncer updateViewOnCacheUpdatedDebouncer;
 
     /**
      * Creates a new UI
@@ -147,7 +147,7 @@ public class JIPipeDesktopGraphNodeUI extends JIPipeDesktopWorkbenchPanel implem
         this.node = node;
         this.zoom = graphCanvasUI.getZoom();
 
-        this.updateViewOnCacheUpdatedDebouncer = new StaticDebouncer(500, () ->  updateView(false, true, false));
+        this.updateViewOnCacheUpdatedDebouncer = new StaticDebouncer(500, () -> updateView(false, true, false));
 
         this.node.getParameterChangedEventEmitter().subscribeWeak(this);
         this.node.getNodeSlotsChangedEventEmitter().subscribeWeak(this);
@@ -157,7 +157,7 @@ public class JIPipeDesktopGraphNodeUI extends JIPipeDesktopWorkbenchPanel implem
         graph.getNodeDisconnectedEventEmitter().subscribeWeak(this);
 
         if (workbench instanceof JIPipeDesktopProjectWorkbench) {
-            ((JIPipeDesktopProjectWorkbench) workbench).getProject().getCache().getModifiedEventEmitter().subscribeWeak(this);
+            workbench.getProject().getCache().getModifiedEventEmitter().subscribeWeak(this);
         }
 
         // Node information

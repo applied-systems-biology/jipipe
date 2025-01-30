@@ -52,7 +52,10 @@ import org.hkijena.jipipe.plugins.imagejalgorithms.nodes.edge.CannyEdgeDetectorA
 import org.hkijena.jipipe.plugins.imagejalgorithms.nodes.edge.LaplacianEdgeDetectorAlgorithm;
 import org.hkijena.jipipe.plugins.imagejalgorithms.nodes.edge.SobelEdgeDetectorAlgorithm;
 import org.hkijena.jipipe.plugins.imagejalgorithms.nodes.features.*;
-import org.hkijena.jipipe.plugins.imagejalgorithms.nodes.fft.*;
+import org.hkijena.jipipe.plugins.imagejalgorithms.nodes.fft.FFT2DForwardTransform;
+import org.hkijena.jipipe.plugins.imagejalgorithms.nodes.fft.FFT2DInverseTransform;
+import org.hkijena.jipipe.plugins.imagejalgorithms.nodes.fft.FFT2DSwapQuadrants;
+import org.hkijena.jipipe.plugins.imagejalgorithms.nodes.fft.FFTBandPassFilter;
 import org.hkijena.jipipe.plugins.imagejalgorithms.nodes.forms.DrawMaskAlgorithm;
 import org.hkijena.jipipe.plugins.imagejalgorithms.nodes.forms.DrawROIAlgorithm;
 import org.hkijena.jipipe.plugins.imagejalgorithms.nodes.generate.*;

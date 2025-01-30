@@ -18,7 +18,6 @@ import org.hkijena.jipipe.api.SetJIPipeDocumentation;
 import org.hkijena.jipipe.api.parameters.AbstractJIPipeParameterCollection;
 import org.hkijena.jipipe.api.parameters.JIPipeParameter;
 import org.hkijena.jipipe.plugins.expressions.AddJIPipeExpressionParameterVariable;
-import org.hkijena.jipipe.plugins.expressions.JIPipeExpressionParameter;
 import org.hkijena.jipipe.plugins.expressions.JIPipeExpressionVariablesMap;
 import org.hkijena.jipipe.plugins.expressions.OptionalJIPipeExpressionParameter;
 import org.hkijena.jipipe.plugins.expressions.variables.JIPipeTextAnnotationsExpressionParameterVariablesInfo;
@@ -104,13 +103,13 @@ public class VisualROIProperties extends AbstractJIPipeParameterCollection {
         if (lineColor.isEnabled())
             target.setStrokeColor(lineColor.getContent());
         target.setStrokeWidth(lineWidth);
-        if(roiName.isEnabled()) {
+        if (roiName.isEnabled()) {
             target.setName(roiName.getContent().evaluateToString(variables));
         }
     }
 
     public void applyTo(Roi roi, JIPipeExpressionVariablesMap variables) {
-        if(roiName.isEnabled()) {
+        if (roiName.isEnabled()) {
             roi.setName(roiName.getContent().evaluateToString(variables));
         }
         roi.setStrokeWidth(getLineWidth());

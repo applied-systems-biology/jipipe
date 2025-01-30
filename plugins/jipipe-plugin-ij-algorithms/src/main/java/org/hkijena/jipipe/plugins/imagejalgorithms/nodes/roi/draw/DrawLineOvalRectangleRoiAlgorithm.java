@@ -251,7 +251,7 @@ public class DrawLineOvalRectangleRoiAlgorithm extends JIPipeIteratingAlgorithm 
             this.y2 = y2;
         }
 
-        @SetJIPipeDocumentation(name="ROI type")
+        @SetJIPipeDocumentation(name = "ROI type")
         @JIPipeParameter("type")
         public RoiType getType() {
             return type;

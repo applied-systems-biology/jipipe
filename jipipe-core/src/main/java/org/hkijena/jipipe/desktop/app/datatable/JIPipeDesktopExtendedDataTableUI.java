@@ -86,11 +86,11 @@ public class JIPipeDesktopExtendedDataTableUI extends JIPipeDesktopWorkbenchPane
     private final JIPipeDesktopSearchTextField searchTextField = new JIPipeDesktopSearchTextField();
     private final JIPipeDesktopRibbon ribbon = new JIPipeDesktopRibbon(2);
     private final JLabel infoLabel = new JLabel();
+    private final StaticDebouncer updateStatusDebouncer;
     private Store<JIPipeDataTable> dataTableStore;
     private JXTable table;
     private JIPipeDesktopExtendedDataTableModel dataTableModel;
     private JScrollPane scrollPane;
-    private final StaticDebouncer updateStatusDebouncer;
 
     /**
      * @param workbenchUI     the workbench UI

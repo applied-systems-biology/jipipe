@@ -355,11 +355,11 @@ public class JIPipeMultiIterationStepGenerator {
         // Handle case where there is no data
         boolean hasData = false;
         for (JIPipeDataSlot slot : slotList) {
-            if(!slot.isEmpty()) {
+            if (!slot.isEmpty()) {
                 hasData = true;
             }
         }
-        if(!hasData) {
+        if (!hasData) {
             progressInfo.log("Info: no data present. Nothing to do.");
             return new ArrayList<>();
         }

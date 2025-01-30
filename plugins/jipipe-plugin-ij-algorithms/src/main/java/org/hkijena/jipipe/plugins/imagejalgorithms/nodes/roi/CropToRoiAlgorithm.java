@@ -35,12 +35,11 @@ import org.hkijena.jipipe.plugins.imagejdatatypes.datatypes.ROI2DListData;
 import org.hkijena.jipipe.plugins.imagejdatatypes.util.ImageJUtils;
 import org.hkijena.jipipe.plugins.imagejdatatypes.util.ImageSliceIndex;
 import org.hkijena.jipipe.plugins.parameters.library.primitives.optional.OptionalTextAnnotationNameParameter;
-import org.hkijena.jipipe.plugins.parameters.library.roi.Anchor;
 import org.hkijena.jipipe.utils.json.JsonUtils;
 
 import java.awt.*;
-import java.util.*;
 import java.util.List;
+import java.util.*;
 
 @SetJIPipeDocumentation(name = "Crop image to 2D ROI", description = "Crops the incoming images to fit into the boundaries defined by the ROI. " +
         "Alternative: Extract to ROI")
@@ -90,7 +89,7 @@ public class CropToRoiAlgorithm extends JIPipeIteratingAlgorithm {
         Rectangle bounds = rois.getBounds();
 
         List<JIPipeTextAnnotation> annotations = new ArrayList<>();
-        if(cropXY) {
+        if (cropXY) {
             annotationX.addAnnotationIfEnabled(annotations, String.valueOf(bounds.x));
             annotationY.addAnnotationIfEnabled(annotations, String.valueOf(bounds.y));
             annotationBoundingWidth.addAnnotationIfEnabled(annotations, String.valueOf(bounds.width));
@@ -158,13 +157,13 @@ public class CropToRoiAlgorithm extends JIPipeIteratingAlgorithm {
 //            targetHeight = cropped.getHeight();
 //        }
 
-        if(cropC) {
+        if (cropC) {
             annotationC.addAnnotationIfEnabled(annotations, JsonUtils.toJsonString(Arrays.asList(minC, maxC)));
         }
-        if(cropZ) {
+        if (cropZ) {
             annotationZ.addAnnotationIfEnabled(annotations, JsonUtils.toJsonString(Arrays.asList(minZ, maxZ)));
         }
-        if(cropT) {
+        if (cropT) {
             annotationT.addAnnotationIfEnabled(annotations, JsonUtils.toJsonString(Arrays.asList(minT, maxT)));
         }
 

@@ -80,8 +80,7 @@ public class JIPipeDataInfoRefDesktopParameterEditorUI extends JIPipeDesktopPara
         try {
             JIPipeDataInfoRef infoRef = getParameter(JIPipeDataInfoRef.class);
             info = infoRef.getInfo();
-        }
-        catch (NullPointerException ignored) {
+        } catch (NullPointerException ignored) {
             info = null;
         }
         if (info != null) {

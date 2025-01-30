@@ -28,7 +28,6 @@ import org.hkijena.jipipe.api.nodes.categories.ImagesNodeTypeCategory;
 import org.hkijena.jipipe.api.nodes.iterationstep.JIPipeIterationContext;
 import org.hkijena.jipipe.api.nodes.iterationstep.JIPipeSingleIterationStep;
 import org.hkijena.jipipe.api.parameters.JIPipeParameter;
-import org.hkijena.jipipe.plugins.imagejdatatypes.datatypes.fft.ImagePlusFFTData;
 import org.hkijena.jipipe.plugins.imagejdatatypes.datatypes.greyscale.ImagePlusGreyscaleData;
 import org.hkijena.jipipe.plugins.imagejdatatypes.util.ImageJUtils;
 import org.hkijena.jipipe.plugins.imagejdatatypes.util.ImageSliceIndex;
@@ -64,171 +63,6 @@ public class FFTBandPassFilter extends JIPipeSimpleIteratingAlgorithm {
         this.toleranceOfDirectionPercentage = other.toleranceOfDirectionPercentage;
         this.doScaling = other.doScaling;
         this.saturate = other.saturate;
-    }
-
-    @SetJIPipeDocumentation(name = "Large diameter (px)", description = "Larger structures are filtered down to the specified diameter")
-    @JIPipeParameter("filter-large-diameter")
-    public double getFilterLargeDiameter() {
-        return filterLargeDiameter;
-    }
-
-    @JIPipeParameter("filter-large-diameter")
-    public void setFilterLargeDiameter(double filterLargeDiameter) {
-        this.filterLargeDiameter = filterLargeDiameter;
-    }
-
-    @SetJIPipeDocumentation(name = "Small diameter (px)", description = "Smaller structures are filtered up to the specified diameter")
-    @JIPipeParameter("filter-small-diameter")
-    public double getFilterSmallDiameter() {
-        return filterSmallDiameter;
-    }
-
-    @JIPipeParameter("filter-small-diameter")
-    public void setFilterSmallDiameter(double filterSmallDiameter) {
-        this.filterSmallDiameter = filterSmallDiameter;
-    }
-
-    @SetJIPipeDocumentation(name = "Suppress stripes", description = "If enabled, suppress stripes in the specified direction")
-    @JIPipeParameter("suppress-stripes")
-    public SuppressStripesMode getSuppressStripesMode() {
-        return suppressStripesMode;
-    }
-
-    @JIPipeParameter("suppress-stripes")
-    public void setSuppressStripesMode(SuppressStripesMode suppressStripesMode) {
-        this.suppressStripesMode = suppressStripesMode;
-    }
-
-    @SetJIPipeDocumentation(name = "Tolerance of direction (%)", description = "Tolerance of direction. Use to calculate the sharpness of the filter.")
-    @JIPipeParameter("tolerance-of-direction-perc")
-    public double getToleranceOfDirectionPercentage() {
-        return toleranceOfDirectionPercentage;
-    }
-
-    @JIPipeParameter("tolerance-of-direction-perc")
-    public void setToleranceOfDirectionPercentage(double toleranceOfDirectionPercentage) {
-        this.toleranceOfDirectionPercentage = toleranceOfDirectionPercentage;
-    }
-
-    @SetJIPipeDocumentation(name = "Auto-scale after filtering", description = "After filtering, apply automated scaling of values")
-    @JIPipeParameter("do-scaling")
-    public boolean isDoScaling() {
-        return doScaling;
-    }
-
-    @JIPipeParameter("do-scaling")
-    public void setDoScaling(boolean doScaling) {
-        this.doScaling = doScaling;
-    }
-
-    @SetJIPipeDocumentation(name = "Auto-scale saturates values", description = "During auto-scaling, saturate pixel values")
-    @JIPipeParameter("saturate")
-    public boolean isSaturate() {
-        return saturate;
-    }
-
-    @JIPipeParameter("saturate")
-    public void setSaturate(boolean saturate) {
-        this.saturate = saturate;
-    }
-
-    @Override
-    protected void runIteration(JIPipeSingleIterationStep iterationStep, JIPipeIterationContext iterationContext, JIPipeGraphNodeRunContext runContext, JIPipeProgressInfo progressInfo) {
-        ImagePlus imp = iterationStep.getInputData(getFirstInputSlot(), ImagePlusGreyscaleData.class, progressInfo).getImage();
-        Map<ImageSliceIndex, ImageProcessor> outputMap = new HashMap<>();
-        Map<ImageSliceIndex, ImageProcessor> filterMap = new HashMap<>();
-        ImageJUtils.forEachIndexedZCTSlice(imp, (ip, index) -> {
-            doFilter(ip, index, outputMap, filterMap, progressInfo, imp.getBitDepth());
-        }, progressInfo);
-
-        ImagePlus outputImage = ImageJUtils.mergeMappedSlices(outputMap);
-        ImagePlus outputFilter = ImageJUtils.mergeMappedSlices(filterMap, false);
-
-        outputImage.copyScale(imp);
-        iterationStep.addOutputData("Output", new ImagePlusGreyscaleData(outputImage), progressInfo);
-//        iterationStep.addOutputData("Filter", new ImagePlusFFTData(outputFilter), progressInfo);
-    }
-
-    private void doFilter(ImageProcessor ip, ImageSliceIndex index, Map<ImageSliceIndex, ImageProcessor> outputMap, Map<ImageSliceIndex, ImageProcessor> filterMap, JIPipeProgressInfo progressInfo, int bitDepth) {
-        Rectangle roiRect = ip.getRoi();
-        int maxN = Math.max(roiRect.width, roiRect.height);
-        double sharpness = (100.0 - toleranceOfDirectionPercentage) / 100.0;
-        boolean doScaling = this.doScaling;
-        boolean saturate = this.saturate;
-
-        int i = 2;
-        while (i < 1.5 * maxN) {
-            i *= 2;
-        }
-
-        // Calculate the inverse of the 1/e frequencies for large and small structures.
-        double filterLarge = 2.0 * filterLargeDiameter / (double) i;
-        double filterSmall = 2.0 * filterSmallDiameter / (double) i;
-
-        // fit image into power of 2 size
-        Rectangle fitRect = new Rectangle();
-        fitRect.x = (int) Math.round((i - roiRect.width) / 2.0);
-        fitRect.y = (int) Math.round((i - roiRect.height) / 2.0);
-        fitRect.width = roiRect.width;
-        fitRect.height = roiRect.height;
-
-        // put image (ROI) into power 2 size image
-        // mirroring to avoid wrap around effects
-        progressInfo.log("Pad to " + i + "x" + i);
-        ip = tileMirror(ip, i, i, fitRect.x, fitRect.y);
-
-        // transform forward
-        progressInfo.log(i + "x" + i + " forward transform");
-        FHT fht = new FHT(ip);
-        fht.setShowProgress(false);
-        fht.transform();
-
-        // filter out large and small structures
-        progressInfo.log("Filter in frequency domain");
-        FHT filterFht = filterLargeSmall(fht, filterLarge, filterSmall, suppressStripesMode.nativeValue, sharpness);
-
-        // transform backward
-        progressInfo.log("Inverse transform");
-        fht.inverseTransform();
-
-        // crop to original size and do scaling if selected
-        progressInfo.log("Crop and convert to original type");
-        fht.setRoi(fitRect);
-        ip = fht.crop();
-        if (doScaling) {
-            ImagePlus imp2 = new ImagePlus("filtered", ip);
-            new ContrastEnhancer().stretchHistogram(imp2, saturate ? 1.0 : 0.0);
-            ip = imp2.getProcessor();
-        }
-
-        // convert back to original data type
-        switch (bitDepth) {
-            case 8:
-                ip = ip.convertToByte(doScaling);
-                break;
-            case 16:
-                ip = ip.convertToShort(doScaling);
-                break;
-        }
-
-        outputMap.put(index, ip);
-        filterMap.put(index, filterFht);
-    }
-
-    public enum SuppressStripesMode {
-        Horizontal(1),
-        Vertical(2),
-        None(0);
-
-        private final int nativeValue;
-
-        SuppressStripesMode(int nativeValue) {
-            this.nativeValue = nativeValue;
-        }
-
-        public int getNativeValue() {
-            return nativeValue;
-        }
     }
 
     public static ImageProcessor tileMirror(ImageProcessor ip, int width, int height, int x, int y) {
@@ -470,5 +304,170 @@ public class FFTBandPassFilter extends JIPipeSimpleIteratingAlgorithm {
         FHT f = new FHT(new FloatProcessor(maxN, maxN, filter, null));
         f.swapQuadrants();
         return f;
+    }
+
+    @SetJIPipeDocumentation(name = "Large diameter (px)", description = "Larger structures are filtered down to the specified diameter")
+    @JIPipeParameter("filter-large-diameter")
+    public double getFilterLargeDiameter() {
+        return filterLargeDiameter;
+    }
+
+    @JIPipeParameter("filter-large-diameter")
+    public void setFilterLargeDiameter(double filterLargeDiameter) {
+        this.filterLargeDiameter = filterLargeDiameter;
+    }
+
+    @SetJIPipeDocumentation(name = "Small diameter (px)", description = "Smaller structures are filtered up to the specified diameter")
+    @JIPipeParameter("filter-small-diameter")
+    public double getFilterSmallDiameter() {
+        return filterSmallDiameter;
+    }
+
+    @JIPipeParameter("filter-small-diameter")
+    public void setFilterSmallDiameter(double filterSmallDiameter) {
+        this.filterSmallDiameter = filterSmallDiameter;
+    }
+
+    @SetJIPipeDocumentation(name = "Suppress stripes", description = "If enabled, suppress stripes in the specified direction")
+    @JIPipeParameter("suppress-stripes")
+    public SuppressStripesMode getSuppressStripesMode() {
+        return suppressStripesMode;
+    }
+
+    @JIPipeParameter("suppress-stripes")
+    public void setSuppressStripesMode(SuppressStripesMode suppressStripesMode) {
+        this.suppressStripesMode = suppressStripesMode;
+    }
+
+    @SetJIPipeDocumentation(name = "Tolerance of direction (%)", description = "Tolerance of direction. Use to calculate the sharpness of the filter.")
+    @JIPipeParameter("tolerance-of-direction-perc")
+    public double getToleranceOfDirectionPercentage() {
+        return toleranceOfDirectionPercentage;
+    }
+
+    @JIPipeParameter("tolerance-of-direction-perc")
+    public void setToleranceOfDirectionPercentage(double toleranceOfDirectionPercentage) {
+        this.toleranceOfDirectionPercentage = toleranceOfDirectionPercentage;
+    }
+
+    @SetJIPipeDocumentation(name = "Auto-scale after filtering", description = "After filtering, apply automated scaling of values")
+    @JIPipeParameter("do-scaling")
+    public boolean isDoScaling() {
+        return doScaling;
+    }
+
+    @JIPipeParameter("do-scaling")
+    public void setDoScaling(boolean doScaling) {
+        this.doScaling = doScaling;
+    }
+
+    @SetJIPipeDocumentation(name = "Auto-scale saturates values", description = "During auto-scaling, saturate pixel values")
+    @JIPipeParameter("saturate")
+    public boolean isSaturate() {
+        return saturate;
+    }
+
+    @JIPipeParameter("saturate")
+    public void setSaturate(boolean saturate) {
+        this.saturate = saturate;
+    }
+
+    @Override
+    protected void runIteration(JIPipeSingleIterationStep iterationStep, JIPipeIterationContext iterationContext, JIPipeGraphNodeRunContext runContext, JIPipeProgressInfo progressInfo) {
+        ImagePlus imp = iterationStep.getInputData(getFirstInputSlot(), ImagePlusGreyscaleData.class, progressInfo).getImage();
+        Map<ImageSliceIndex, ImageProcessor> outputMap = new HashMap<>();
+        Map<ImageSliceIndex, ImageProcessor> filterMap = new HashMap<>();
+        ImageJUtils.forEachIndexedZCTSlice(imp, (ip, index) -> {
+            doFilter(ip, index, outputMap, filterMap, progressInfo, imp.getBitDepth());
+        }, progressInfo);
+
+        ImagePlus outputImage = ImageJUtils.mergeMappedSlices(outputMap);
+        ImagePlus outputFilter = ImageJUtils.mergeMappedSlices(filterMap, false);
+
+        outputImage.copyScale(imp);
+        iterationStep.addOutputData("Output", new ImagePlusGreyscaleData(outputImage), progressInfo);
+//        iterationStep.addOutputData("Filter", new ImagePlusFFTData(outputFilter), progressInfo);
+    }
+
+    private void doFilter(ImageProcessor ip, ImageSliceIndex index, Map<ImageSliceIndex, ImageProcessor> outputMap, Map<ImageSliceIndex, ImageProcessor> filterMap, JIPipeProgressInfo progressInfo, int bitDepth) {
+        Rectangle roiRect = ip.getRoi();
+        int maxN = Math.max(roiRect.width, roiRect.height);
+        double sharpness = (100.0 - toleranceOfDirectionPercentage) / 100.0;
+        boolean doScaling = this.doScaling;
+        boolean saturate = this.saturate;
+
+        int i = 2;
+        while (i < 1.5 * maxN) {
+            i *= 2;
+        }
+
+        // Calculate the inverse of the 1/e frequencies for large and small structures.
+        double filterLarge = 2.0 * filterLargeDiameter / (double) i;
+        double filterSmall = 2.0 * filterSmallDiameter / (double) i;
+
+        // fit image into power of 2 size
+        Rectangle fitRect = new Rectangle();
+        fitRect.x = (int) Math.round((i - roiRect.width) / 2.0);
+        fitRect.y = (int) Math.round((i - roiRect.height) / 2.0);
+        fitRect.width = roiRect.width;
+        fitRect.height = roiRect.height;
+
+        // put image (ROI) into power 2 size image
+        // mirroring to avoid wrap around effects
+        progressInfo.log("Pad to " + i + "x" + i);
+        ip = tileMirror(ip, i, i, fitRect.x, fitRect.y);
+
+        // transform forward
+        progressInfo.log(i + "x" + i + " forward transform");
+        FHT fht = new FHT(ip);
+        fht.setShowProgress(false);
+        fht.transform();
+
+        // filter out large and small structures
+        progressInfo.log("Filter in frequency domain");
+        FHT filterFht = filterLargeSmall(fht, filterLarge, filterSmall, suppressStripesMode.nativeValue, sharpness);
+
+        // transform backward
+        progressInfo.log("Inverse transform");
+        fht.inverseTransform();
+
+        // crop to original size and do scaling if selected
+        progressInfo.log("Crop and convert to original type");
+        fht.setRoi(fitRect);
+        ip = fht.crop();
+        if (doScaling) {
+            ImagePlus imp2 = new ImagePlus("filtered", ip);
+            new ContrastEnhancer().stretchHistogram(imp2, saturate ? 1.0 : 0.0);
+            ip = imp2.getProcessor();
+        }
+
+        // convert back to original data type
+        switch (bitDepth) {
+            case 8:
+                ip = ip.convertToByte(doScaling);
+                break;
+            case 16:
+                ip = ip.convertToShort(doScaling);
+                break;
+        }
+
+        outputMap.put(index, ip);
+        filterMap.put(index, filterFht);
+    }
+
+    public enum SuppressStripesMode {
+        Horizontal(1),
+        Vertical(2),
+        None(0);
+
+        private final int nativeValue;
+
+        SuppressStripesMode(int nativeValue) {
+            this.nativeValue = nativeValue;
+        }
+
+        public int getNativeValue() {
+            return nativeValue;
+        }
     }
 }

@@ -33,8 +33,10 @@ import org.hkijena.jipipe.desktop.commons.components.window.JIPipeDesktopAlwaysO
 import org.hkijena.jipipe.plugins.settings.JIPipeFileChooserApplicationSettings;
 import org.hkijena.jipipe.plugins.settings.JIPipeRuntimeApplicationSettings;
 import org.hkijena.jipipe.plugins.tables.datatypes.ResultsTableData;
-import org.hkijena.jipipe.utils.*;
-import org.hkijena.jipipe.utils.debounce.DynamicDebouncer;
+import org.hkijena.jipipe.utils.PathUtils;
+import org.hkijena.jipipe.utils.ReflectionUtils;
+import org.hkijena.jipipe.utils.StringUtils;
+import org.hkijena.jipipe.utils.UIUtils;
 import org.hkijena.jipipe.utils.debounce.StaticDebouncer;
 import org.hkijena.jipipe.utils.ui.JIPipeDesktopDockPanel;
 import org.jdesktop.swingx.JXStatusBar;
@@ -69,6 +71,7 @@ public class JIPipeDesktopDataViewerWindow extends JFrame implements JIPipeDeskt
     private final JButton dataTypeInfoButton = new JButton();
     private final JToggleButton toggleFocusView = new JToggleButton(UIUtils.getIconFromResources("actions/view-fullscreen.png"));
     private final JIPipeDesktopSmallToggleButtonRibbonAction toggleAutoRefreshFromCache;
+    private final StaticDebouncer refreshFromCacheDebouncer;
     private JIPipeDataBrowser dataBrowser;
     private String displayName;
     private JIPipeLocalDataTableBrowser dataTableBrowser;
@@ -77,7 +80,6 @@ public class JIPipeDesktopDataViewerWindow extends JFrame implements JIPipeDeskt
     private int currentDataRow = -1;
     private int currentDataAnnotationColumn = -1;
     private JIPipeDesktopDataViewer currentDataViewer;
-    private final StaticDebouncer refreshFromCacheDebouncer;
 
     public JIPipeDesktopDataViewerWindow(JIPipeDesktopWorkbench workbench) {
         this.workbench = workbench;
@@ -101,9 +103,9 @@ public class JIPipeDesktopDataViewerWindow extends JFrame implements JIPipeDeskt
     }
 
     private void registerHotkeys() {
-        if(!HOTKEYS_ENABLED) {
+        if (!HOTKEYS_ENABLED) {
             KeyboardFocusManager.getCurrentKeyboardFocusManager().addKeyEventDispatcher(e -> {
-                if(KeyboardFocusManager.getCurrentKeyboardFocusManager().getActiveWindow() instanceof JIPipeDesktopDataViewerWindow) {
+                if (KeyboardFocusManager.getCurrentKeyboardFocusManager().getActiveWindow() instanceof JIPipeDesktopDataViewerWindow) {
                     JIPipeDesktopDataViewerWindow dataViewerWindow = (JIPipeDesktopDataViewerWindow) KeyboardFocusManager.getCurrentKeyboardFocusManager().getActiveWindow();
                     if (e.getID() == KeyEvent.KEY_PRESSED) {
                         if (e.getKeyCode() == KeyEvent.VK_DOWN && (e.getModifiersEx() & KeyEvent.CTRL_DOWN_MASK) != 0) {

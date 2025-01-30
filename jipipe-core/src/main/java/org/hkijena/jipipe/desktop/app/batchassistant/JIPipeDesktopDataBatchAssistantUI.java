@@ -46,7 +46,6 @@ import org.hkijena.jipipe.desktop.commons.components.JIPipeDesktopMessagePanel;
 import org.hkijena.jipipe.desktop.commons.components.JIPipeDesktopParameterFormPanel;
 import org.hkijena.jipipe.plugins.batchassistant.DataBatchStatusData;
 import org.hkijena.jipipe.plugins.strings.StringData;
-import org.hkijena.jipipe.utils.debounce.DynamicDebouncer;
 import org.hkijena.jipipe.utils.JIPipeDesktopSplitPane;
 import org.hkijena.jipipe.utils.UIUtils;
 import org.hkijena.jipipe.utils.data.Store;
@@ -75,11 +74,11 @@ public class JIPipeDesktopDataBatchAssistantUI extends JIPipeDesktopProjectWorkb
     private final JIPipeDesktopDataBatchAssistantBatchPanel batchPanel;
     private final JIPipeDesktopDataBatchAssistantInputPreviewPanel inputPreviewPanel;
     private final JIPipeRunnableQueue calculatePreviewQueue = new JIPipeRunnableQueue("Iteration step preview calculation");
+    private final StaticDebouncer updateStatusDebouncer;
     JIPipeDesktopSplitPane splitPane1 = new JIPipeDesktopSplitPane(JSplitPane.VERTICAL_SPLIT, 0.5);
     JIPipeDesktopSplitPane splitPane2 = new JIPipeDesktopSplitPane(JSplitPane.VERTICAL_SPLIT, 0.4);
     private JIPipeGraphNode batchesNodeCopy;
     private boolean autoRefresh = true;
-    private final StaticDebouncer updateStatusDebouncer;
 
 
     /**

@@ -45,9 +45,9 @@ import java.util.stream.Collectors;
  * UI around an {@link JIPipeGraphRun} result
  */
 public class JIPipeDesktopCacheBrowserUI extends JIPipeDesktopProjectWorkbenchPanel implements JIPipeCache.ModifiedEventListener {
+    private final StaticDebouncer refreshTreeAndSlotsDebouncer;
     private JSplitPane splitPane;
     private JIPipeDesktopCacheTreePanel tree;
-    private final StaticDebouncer refreshTreeAndSlotsDebouncer;
 
     /**
      * @param workbenchUI the workbench

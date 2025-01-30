@@ -24,7 +24,7 @@ public class StaticDebouncer implements Disposable {
 
     public StaticDebouncer(long delay, TimeUnit unit, Runnable runnable) {
         this.runnable = runnable;
-        timer = new Timer((int) unit.convert(delay, TimeUnit.MILLISECONDS), e->runnable.run());
+        timer = new Timer((int) unit.convert(delay, TimeUnit.MILLISECONDS), e -> runnable.run());
         timer.setRepeats(false);
     }
 
@@ -37,6 +37,6 @@ public class StaticDebouncer implements Disposable {
     }
 
     public void debounce() {
-       timer.restart();
+        timer.restart();
     }
 }

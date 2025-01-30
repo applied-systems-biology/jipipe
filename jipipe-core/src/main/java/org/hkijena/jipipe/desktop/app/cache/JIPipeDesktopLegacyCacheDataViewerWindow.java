@@ -57,6 +57,7 @@ public abstract class JIPipeDesktopLegacyCacheDataViewerWindow extends JFrame im
     private final String slotName;
     private final JPanel contentPane = new JPanel(new BorderLayout());
     private final JPopupMenu rowInfoLabelMenu = new JPopupMenu();
+    private final StaticDebouncer reloadFromCurrentCacheDebouncer;
     private JIPipeDataTableDataSource dataSource;
     private JIPipeDesktopCachedDataDisplayCacheControl cacheAwareToggle;
     private Store<JIPipeDataItemStore> lastVirtualData;
@@ -64,8 +65,6 @@ public abstract class JIPipeDesktopLegacyCacheDataViewerWindow extends JFrame im
     private JButton nextRowButton;
     private JButton rowInfoLabel;
     private Function<JIPipeDataItemStore, JIPipeDataItemStore> dataConverterFunction;
-    private final StaticDebouncer reloadFromCurrentCacheDebouncer;
-
     private JLabel standardErrorLabel;
 
     public JIPipeDesktopLegacyCacheDataViewerWindow(JIPipeDesktopWorkbench workbench, JIPipeDataTableDataSource dataSource, String displayName) {
@@ -427,7 +426,6 @@ public abstract class JIPipeDesktopLegacyCacheDataViewerWindow extends JFrame im
             return;
         reloadFromCurrentCacheDebouncer.debounce();
     }
-
 
 
     public String getDisplayName() {

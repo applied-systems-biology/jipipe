@@ -84,7 +84,7 @@ public class JIPipeImageThumbnailData implements JIPipeThumbnailData {
 
     @Override
     public Component renderToComponent(int width, int height) {
-        if(image.getWidth() * image.getWidth() <= 0) {
+        if (image.getWidth() * image.getWidth() <= 0) {
             return new JLabel("Zero size!", UIUtils.getIconFromResources("emblems/vcs-conflicting.png"), JLabel.LEFT);
         }
         return new JLabel(new ImageIcon(image.getBufferedImage()));

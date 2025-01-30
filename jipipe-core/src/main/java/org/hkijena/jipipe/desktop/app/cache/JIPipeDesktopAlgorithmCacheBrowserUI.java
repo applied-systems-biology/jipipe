@@ -40,7 +40,6 @@ import org.hkijena.jipipe.desktop.commons.components.ribbon.JIPipeDesktopLargeBu
 import org.hkijena.jipipe.desktop.commons.components.ribbon.JIPipeDesktopRibbon;
 import org.hkijena.jipipe.desktop.commons.components.ribbon.JIPipeDesktopSmallButtonRibbonAction;
 import org.hkijena.jipipe.plugins.settings.JIPipeFileChooserApplicationSettings;
-import org.hkijena.jipipe.utils.debounce.DynamicDebouncer;
 import org.hkijena.jipipe.utils.UIUtils;
 import org.hkijena.jipipe.utils.data.WeakStore;
 import org.hkijena.jipipe.utils.debounce.StaticDebouncer;
@@ -61,9 +60,9 @@ import java.util.stream.Collectors;
 public class JIPipeDesktopAlgorithmCacheBrowserUI extends JIPipeDesktopProjectWorkbenchPanel implements JIPipeCache.ModifiedEventListener, JIPipeRunnable.InterruptedEventListener, JIPipeRunnable.FinishedEventListener {
     private final JIPipeGraphNode graphNode;
     private final JIPipeDesktopGraphCanvasUI graphCanvasUI;
+    private final StaticDebouncer refreshTableDebouncer;
     private JIPipeDataSlot selectedSlot;
     private Component currentContent;
-    private final StaticDebouncer refreshTableDebouncer;
 
     /**
      * @param workbenchUI   the workbench
