@@ -135,7 +135,7 @@ public class JIPipeNodeGroup extends JIPipeGraphWrapperAlgorithm implements JIPi
                 int minY = Integer.MAX_VALUE;
                 int maxY = Integer.MIN_VALUE;
                 for (JIPipeGraphNode graphNode : graph.getGraphNodes()) {
-                    Map<String, Point> locations = graphNode.getLocations().getOrDefault("", null);
+                    Map<String, Point> locations = graphNode.getNodeUILocationPerViewModePerCompartment().getOrDefault("", null);
                     if (locations != null) {
                         Point point = locations.getOrDefault(viewMode.name(), null);
                         if (point != null) {
@@ -149,8 +149,8 @@ public class JIPipeNodeGroup extends JIPipeGraphWrapperAlgorithm implements JIPi
 
                 // Set group input/output
                 if (minX != Integer.MAX_VALUE && minY != Integer.MAX_VALUE && maxX != Integer.MIN_VALUE && maxY != Integer.MIN_VALUE) {
-                    getGroupInput().setLocationWithin("", new Point(minX, minY - 5), viewMode.name());
-                    getGroupOutput().setLocationWithin("", new Point(maxX, maxY + 5), viewMode.name());
+                    getGroupInput().setNodeUILocationWithin("", new Point(minX, minY - 5), viewMode.name());
+                    getGroupOutput().setNodeUILocationWithin("", new Point(maxX, maxY + 5), viewMode.name());
                 }
             }
         }

@@ -644,14 +644,14 @@ public class JIPipeDesktopGraphNodeUI extends JIPipeDesktopWorkbenchPanel implem
             setLocation(location);
         }
         if (save) {
-            node.setLocationWithin(graphCanvasUI.getCompartmentUUID(), gridLocation, graphCanvasUI.getViewMode().name());
+            node.setNodeUILocationWithin(graphCanvasUI.getCompartmentUUID(), gridLocation, graphCanvasUI.getViewMode().name());
             getGraphCanvasUI().getDesktopWorkbench().setProjectModified(true);
         }
         return true;
     }
 
     public Point getStoredGridLocation() {
-        return node.getLocationWithin(StringUtils.nullToEmpty(graphCanvasUI.getCompartmentUUID()), graphCanvasUI.getViewMode().name());
+        return node.getNodeUILocationWithin(StringUtils.nullToEmpty(graphCanvasUI.getCompartmentUUID()), graphCanvasUI.getViewMode().name());
     }
 
     /**
@@ -662,10 +662,10 @@ public class JIPipeDesktopGraphNodeUI extends JIPipeDesktopWorkbenchPanel implem
      */
     @SuppressWarnings("deprecation")
     public boolean moveToStoredGridLocation(boolean force) {
-        Point point = node.getLocationWithin(StringUtils.nullToEmpty(graphCanvasUI.getCompartmentUUID()), graphCanvasUI.getViewMode().name());
+        Point point = node.getNodeUILocationWithin(StringUtils.nullToEmpty(graphCanvasUI.getCompartmentUUID()), graphCanvasUI.getViewMode().name());
         if (point == null) {
             // Try to get the point from vertical layout (migrate to compact)
-            point = node.getLocationWithin(StringUtils.nullToEmpty(graphCanvasUI.getCompartmentUUID()), JIPipeGraphViewMode.Vertical.name());
+            point = node.getNodeUILocationWithin(StringUtils.nullToEmpty(graphCanvasUI.getCompartmentUUID()), JIPipeGraphViewMode.Vertical.name());
         }
         if (point != null) {
             return moveToGridLocation(point, force, false);

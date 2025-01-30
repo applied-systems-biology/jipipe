@@ -239,7 +239,7 @@ public class JIPipeDesktopGraphCanvasUI extends JLayeredPane implements JIPipeDe
         Map<JIPipeGraphNode, Point> originalLocations = new HashMap<>();
         for (JIPipeGraphNode algorithm : graph.getGraphNodes()) {
             String compartmentUUIDInGraphAsString = algorithm.getCompartmentUUIDInGraphAsString();
-            Point point = algorithm.getLocationWithin(compartmentUUIDInGraphAsString, getViewMode().name());
+            Point point = algorithm.getNodeUILocationWithin(compartmentUUIDInGraphAsString, getViewMode().name());
             if (point != null) {
                 originalLocations.put(algorithm, point);
                 minX = Math.min(minX, point.x);
@@ -264,7 +264,7 @@ public class JIPipeDesktopGraphCanvasUI extends JLayeredPane implements JIPipeDe
             if (original != null) {
                 original.x = (int) (original.x - minX + (cursor.x / getZoom()) / getViewMode().getGridWidth());
                 original.y = (int) (original.y - minY + (cursor.y / getZoom()) / getViewMode().getGridHeight());
-                algorithm.setLocationWithin(compartment, original, getViewMode().name());
+                algorithm.setNodeUILocationWithin(compartment, original, getViewMode().name());
             }
         }
 
@@ -1590,7 +1590,7 @@ public class JIPipeDesktopGraphCanvasUI extends JLayeredPane implements JIPipeDe
                     if (rectangle != null) {
                         if (rectangle.contains(mouseEvent.getPoint())) {
                             JIPipeAnnotationGraphNode node = (JIPipeAnnotationGraphNode) currentResizeTarget.getNode();
-                            Point gridLocation = node.getLocationWithin(StringUtils.nullToEmpty(getCompartmentUUID()), viewMode.name());
+                            Point gridLocation = node.getNodeUILocationWithin(StringUtils.nullToEmpty(getCompartmentUUID()), viewMode.name());
                             currentResizeOperationStartProperties = new Rectangle(gridLocation.x, gridLocation.y, node.getGridWidth(), node.getGridHeight());
                             currentResizeOperationAnchor = anchor;
                             return;

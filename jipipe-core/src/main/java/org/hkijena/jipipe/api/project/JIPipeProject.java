@@ -575,7 +575,7 @@ public class JIPipeProject implements JIPipeValidatable {
                     // Place IOInterface at the same location as the compartment output
                     IOInterfaceAlgorithm ioInterfaceAlgorithm = JIPipe.createNode(IOInterfaceAlgorithm.class);
                     ioInterfaceAlgorithm.getSlotConfiguration().setTo(source.getNode().getSlotConfiguration());
-                    ioInterfaceAlgorithm.setLocations(source.getNode().getLocations());
+                    ioInterfaceAlgorithm.setNodeUILocationPerViewModePerCompartment(source.getNode().getNodeUILocationPerViewModePerCompartment());
                     graph.insertNode(ioInterfaceAlgorithm, target.getNode().getCompartmentUUIDInParentGraph());
 
                     for (JIPipeOutputDataSlot outputSlot : source.getNode().getOutputSlots()) {
@@ -674,7 +674,7 @@ public class JIPipeProject implements JIPipeValidatable {
                     IOInterfaceAlgorithm ioInterfaceAlgorithm = JIPipe.createNode(IOInterfaceAlgorithm.class);
                     ioInterfaceAlgorithm.setCustomName(outputNode.getName());
                     ioInterfaceAlgorithm.getSlotConfiguration().setTo(outputNode.getSlotConfiguration());
-                    ioInterfaceAlgorithm.setLocations(outputNode.getLocations());
+                    ioInterfaceAlgorithm.setNodeUILocationPerViewModePerCompartment(outputNode.getNodeUILocationPerViewModePerCompartment());
                     graph.insertNode(ioInterfaceAlgorithm, targetCompartment.getProjectCompartmentUUID());
 
                     for (JIPipeOutputDataSlot outputSlot : outputNode.getOutputSlots()) {
@@ -928,7 +928,7 @@ public class JIPipeProject implements JIPipeValidatable {
                 }
 
                 // Fix legacy node location information
-                for (Map.Entry<String, Map<String, Point>> locationEntry : ImmutableList.copyOf(node.getLocations().entrySet())) {
+                for (Map.Entry<String, Map<String, Point>> locationEntry : ImmutableList.copyOf(node.getNodeUILocationPerViewModePerCompartment().entrySet())) {
                     Map<String, Point> location = locationEntry.getValue();
                     String compartmentUUIDString;
                     if ("DEFAULT".equals(locationEntry.getKey())) {
@@ -936,8 +936,8 @@ public class JIPipeProject implements JIPipeValidatable {
                     } else {
                         compartmentUUIDString = StringUtils.nullToEmpty(compartmentGraph.findNodeUUID(locationEntry.getKey()));
                     }
-                    node.getLocations().remove(locationEntry.getKey());
-                    node.getLocations().put(compartmentUUIDString, location);
+                    node.getNodeUILocationPerViewModePerCompartment().remove(locationEntry.getKey());
+                    node.getNodeUILocationPerViewModePerCompartment().put(compartmentUUIDString, location);
                     JIPipe.getInstance().getLogService().info("[Project format conversion] Move location within " + locationEntry.getKey() + " to " + compartmentUUIDString);
                 }
             }

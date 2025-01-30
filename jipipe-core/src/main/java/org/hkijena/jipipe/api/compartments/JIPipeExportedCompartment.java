@@ -100,9 +100,9 @@ public class JIPipeExportedCompartment {
                     ioInterfaceAlgorithm.getSlotConfiguration().setTo(algorithm.getSlotConfiguration());
 
                     // Copy the location
-                    Map<String, Point> pointMap = algorithm.getLocations().get(compartmentId.toString());
+                    Map<String, Point> pointMap = algorithm.getNodeUILocationPerViewModePerCompartment().get(compartmentId.toString());
                     if (pointMap != null) {
-                        ioInterfaceAlgorithm.getLocations().put(compartmentId.toString(), pointMap);
+                        ioInterfaceAlgorithm.getNodeUILocationPerViewModePerCompartment().put(compartmentId.toString(), pointMap);
                     }
 
                     exportedGraph.insertNode(ioInterfaceAlgorithm);
@@ -113,10 +113,10 @@ public class JIPipeExportedCompartment {
                 exportedGraph.insertNode(copy);
                 copies.put(algorithm.getUUIDInParentGraph(), copy);
 
-                copy.getLocations().clear();
-                Map<String, Point> pointMap = algorithm.getLocations().get(compartmentId.toString());
+                copy.getNodeUILocationPerViewModePerCompartment().clear();
+                Map<String, Point> pointMap = algorithm.getNodeUILocationPerViewModePerCompartment().get(compartmentId.toString());
                 if (pointMap != null) {
-                    copy.getLocations().put(compartmentId.toString(), pointMap);
+                    copy.getNodeUILocationPerViewModePerCompartment().put(compartmentId.toString(), pointMap);
                 }
             }
         }
@@ -159,8 +159,8 @@ public class JIPipeExportedCompartment {
         String locationCompartment = "";
         for (JIPipeGraphNode algorithm : exportedGraph.getGraphNodes()) {
             if (!(algorithm instanceof JIPipeProjectCompartmentOutput)) {
-                if (!algorithm.getLocations().keySet().isEmpty())
-                    locationCompartment = algorithm.getLocations().keySet().iterator().next();
+                if (!algorithm.getNodeUILocationPerViewModePerCompartment().keySet().isEmpty())
+                    locationCompartment = algorithm.getNodeUILocationPerViewModePerCompartment().keySet().iterator().next();
             }
         }
 
@@ -169,7 +169,7 @@ public class JIPipeExportedCompartment {
         UUID compartmentUUID = compartment.getProjectCompartmentUUID();
         for (JIPipeGraphNode algorithm : exportedGraph.getGraphNodes()) {
             exportedGraph.setCompartment(algorithm.getUUIDInParentGraph(), compartmentUUID);
-            Map<String, Point> map = algorithm.getLocations().getOrDefault(locationCompartment, null);
+            Map<String, Point> map = algorithm.getNodeUILocationPerViewModePerCompartment().getOrDefault(locationCompartment, null);
             if (map != null) {
                 locations.put(algorithm, map);
             }
@@ -196,7 +196,7 @@ public class JIPipeExportedCompartment {
 
                 // Set location
                 if (outputLocation != null) {
-                    outputNode.getLocations().put(compartmentUUID.toString(), outputLocation);
+                    outputNode.getNodeUILocationPerViewModePerCompartment().put(compartmentUUID.toString(), outputLocation);
                 }
 
                 // Copy the slot configuration over
@@ -205,7 +205,7 @@ public class JIPipeExportedCompartment {
                 JIPipeGraphNode copy = algorithm.getInfo().duplicate(algorithm);
                 Map<String, Point> locationMapEntry = locations.getOrDefault(algorithm, null);
                 if (locationMapEntry != null) {
-                    copy.getLocations().put(compartmentUUID.toString(), new HashMap<>(locationMapEntry));
+                    copy.getNodeUILocationPerViewModePerCompartment().put(compartmentUUID.toString(), new HashMap<>(locationMapEntry));
                 }
                 project.getGraph().insertNode(copy, compartmentUUID);
                 copies.put(algorithm.getUUIDInParentGraph(), copy);

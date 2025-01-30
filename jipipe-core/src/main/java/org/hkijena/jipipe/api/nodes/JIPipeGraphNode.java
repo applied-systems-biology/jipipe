@@ -81,7 +81,7 @@ public abstract class JIPipeGraphNode extends AbstractJIPipeParameterCollection 
     private final BiMap<String, JIPipeOutputDataSlot> outputSlotMap = HashBiMap.create();
     private JIPipeNodeInfo info;
     private JIPipeSlotConfiguration slotConfiguration;
-    private Map<String, Map<String, Point>> locations = new HashMap<>();
+    private Map<String, Map<String, Point>> nodeUILocationPerViewModePerCompartment = new HashMap<>();
     private Path internalStoragePath;
     private Path storagePath;
     private String customName;
@@ -162,9 +162,9 @@ public abstract class JIPipeGraphNode extends AbstractJIPipeParameterCollection 
         this.info = other.info;
         this.bookmarked = other.bookmarked;
         this.slotConfiguration = copySlotConfiguration(other);
-        this.locations = new HashMap<>();
-        for (Map.Entry<String, Map<String, Point>> entry : other.locations.entrySet()) {
-            locations.put(entry.getKey(), new HashMap<>(entry.getValue()));
+        this.nodeUILocationPerViewModePerCompartment = new HashMap<>();
+        for (Map.Entry<String, Map<String, Point>> entry : other.nodeUILocationPerViewModePerCompartment.entrySet()) {
+            nodeUILocationPerViewModePerCompartment.put(entry.getKey(), new HashMap<>(entry.getValue()));
         }
         this.customName = other.customName;
         this.customDescription = other.customDescription;
@@ -473,23 +473,23 @@ public abstract class JIPipeGraphNode extends AbstractJIPipeParameterCollection 
      *
      * @return map from compartment UUID to visual mode to location
      */
-    public Map<String, Map<String, Point>> getLocations() {
-        return locations;
+    public Map<String, Map<String, Point>> getNodeUILocationPerViewModePerCompartment() {
+        return nodeUILocationPerViewModePerCompartment;
     }
 
     /**
      * Sets the location map.
      *
-     * @param locations map from compartment UUID to visual mode to location
+     * @param nodeUILocationPerViewModePerCompartment map from compartment UUID to visual mode to location
      */
-    public void setLocations(Map<String, Map<String, Point>> locations) {
-        this.locations.clear();
-        for (Map.Entry<String, Map<String, Point>> entry : locations.entrySet()) {
+    public void setNodeUILocationPerViewModePerCompartment(Map<String, Map<String, Point>> nodeUILocationPerViewModePerCompartment) {
+        this.nodeUILocationPerViewModePerCompartment.clear();
+        for (Map.Entry<String, Map<String, Point>> entry : nodeUILocationPerViewModePerCompartment.entrySet()) {
             Map<String, Point> pointMap = new HashMap<>();
             for (Map.Entry<String, Point> stringPointEntry : entry.getValue().entrySet()) {
                 pointMap.put(stringPointEntry.getKey(), new Point(stringPointEntry.getValue()));
             }
-            this.locations.put(entry.getKey(), pointMap);
+            this.nodeUILocationPerViewModePerCompartment.put(entry.getKey(), pointMap);
         }
     }
 
@@ -500,8 +500,8 @@ public abstract class JIPipeGraphNode extends AbstractJIPipeParameterCollection 
      * @param visualMode  Used to differentiate between different visual modes
      * @return The UI location or null if unset
      */
-    public Point getLocationWithin(String compartment, String visualMode) {
-        Map<String, Point> visualModeMap = locations.getOrDefault(compartment, null);
+    public Point getNodeUILocationWithin(String compartment, String visualMode) {
+        Map<String, Point> visualModeMap = nodeUILocationPerViewModePerCompartment.getOrDefault(compartment, null);
         if (visualModeMap != null) {
             return visualModeMap.getOrDefault(visualMode, null);
         }
@@ -515,11 +515,11 @@ public abstract class JIPipeGraphNode extends AbstractJIPipeParameterCollection 
      * @param location    The UI location. Can be null to reset the location
      * @param visualMode  Used to differentiate between different visual modes
      */
-    public void setLocationWithin(String compartment, Point location, String visualMode) {
-        Map<String, Point> visualModeMap = locations.getOrDefault(compartment, null);
+    public void setNodeUILocationWithin(String compartment, Point location, String visualMode) {
+        Map<String, Point> visualModeMap = nodeUILocationPerViewModePerCompartment.getOrDefault(compartment, null);
         if (visualModeMap == null) {
             visualModeMap = new HashMap<>();
-            locations.put(compartment, visualModeMap);
+            nodeUILocationPerViewModePerCompartment.put(compartment, visualModeMap);
         }
         visualModeMap.put(visualMode, location);
     }
@@ -531,8 +531,8 @@ public abstract class JIPipeGraphNode extends AbstractJIPipeParameterCollection 
      * @param location    The UI location. Can be null to reset the location
      * @param visualMode  Used to differentiate between different visual modes
      */
-    public void setLocationWithin(UUID compartment, Point location, String visualMode) {
-        setLocationWithin(StringUtils.nullToEmpty(compartment), location, visualMode);
+    public void setNodeUILocationWithin(UUID compartment, Point location, String visualMode) {
+        setNodeUILocationWithin(StringUtils.nullToEmpty(compartment), location, visualMode);
     }
 
     /**
@@ -549,7 +549,7 @@ public abstract class JIPipeGraphNode extends AbstractJIPipeParameterCollection 
         jsonGenerator.writeObjectField("jipipe:slot-configuration", slotConfiguration);
         jsonGenerator.writeFieldName("jipipe:ui-grid-location");
         jsonGenerator.writeStartObject();
-        for (Map.Entry<String, Map<String, Point>> visualModeEntry : locations.entrySet()) {
+        for (Map.Entry<String, Map<String, Point>> visualModeEntry : nodeUILocationPerViewModePerCompartment.entrySet()) {
             if (visualModeEntry.getKey() == null)
                 continue;
             jsonGenerator.writeFieldName(visualModeEntry.getKey());
@@ -592,7 +592,7 @@ public abstract class JIPipeGraphNode extends AbstractJIPipeParameterCollection 
                     JsonNode xValue = entry.getValue().path("x");
                     JsonNode yValue = entry.getValue().path("y");
                     if (!xValue.isMissingNode() && !yValue.isMissingNode()) {
-                        setLocationWithin(compartment, new Point(xValue.asInt(), yValue.asInt()), entry.getKey());
+                        setNodeUILocationWithin(compartment, new Point(xValue.asInt(), yValue.asInt()), entry.getKey());
                     }
                 }
             }
@@ -836,7 +836,7 @@ public abstract class JIPipeGraphNode extends AbstractJIPipeParameterCollection 
      * Removes all location information added via setLocationWithin()
      */
     public void clearLocations() {
-        locations.clear();
+        nodeUILocationPerViewModePerCompartment.clear();
     }
 
     /**
