@@ -20,6 +20,7 @@ import ij.gui.ShapeRoi;
 import org.hkijena.jipipe.api.ConfigureJIPipeNode;
 import org.hkijena.jipipe.api.JIPipeProgressInfo;
 import org.hkijena.jipipe.api.SetJIPipeDocumentation;
+import org.hkijena.jipipe.api.environments.ExternalEnvironmentParameterSettings;
 import org.hkijena.jipipe.api.nodes.AddJIPipeInputSlot;
 import org.hkijena.jipipe.api.nodes.AddJIPipeOutputSlot;
 import org.hkijena.jipipe.api.nodes.JIPipeGraphNodeRunContext;
@@ -39,6 +40,7 @@ import org.hkijena.jipipe.plugins.imagejdatatypes.datatypes.ROI2DListData;
 import org.hkijena.jipipe.plugins.imagejdatatypes.util.Image5DExpressionParameterVariablesInfo;
 import org.hkijena.jipipe.plugins.imagejdatatypes.util.ImageJUtils;
 import org.hkijena.jipipe.plugins.parameters.library.collections.ParameterCollectionList;
+import org.hkijena.jipipe.plugins.parameters.library.collections.ParameterCollectionListTemplate;
 
 import java.awt.geom.Rectangle2D;
 import java.awt.geom.RoundRectangle2D;
@@ -156,6 +158,7 @@ public class DrawLineOvalRectangleRoiAlgorithm extends JIPipeIteratingAlgorithm 
 
     @SetJIPipeDocumentation(name = "ROI", description = "List of ROI to be created")
     @JIPipeParameter("lines")
+    @ParameterCollectionListTemplate(Entry.class)
     public ParameterCollectionList getEntries() {
         return entries;
     }
@@ -253,6 +256,8 @@ public class DrawLineOvalRectangleRoiAlgorithm extends JIPipeIteratingAlgorithm 
 
         @SetJIPipeDocumentation(name = "ROI type")
         @JIPipeParameter("type")
+        @AddJIPipeExpressionParameterVariable(fromClass = JIPipeTextAnnotationsExpressionParameterVariablesInfo.class)
+        @AddJIPipeExpressionParameterVariable(fromClass = Image5DExpressionParameterVariablesInfo.class)
         public RoiType getType() {
             return type;
         }
@@ -264,6 +269,8 @@ public class DrawLineOvalRectangleRoiAlgorithm extends JIPipeIteratingAlgorithm 
 
         @SetJIPipeDocumentation(name = "Rectangle arc width", description = "Only applicable if the type is set to 'Rectangle'")
         @JIPipeParameter("arc-width")
+        @AddJIPipeExpressionParameterVariable(fromClass = JIPipeTextAnnotationsExpressionParameterVariablesInfo.class)
+        @AddJIPipeExpressionParameterVariable(fromClass = Image5DExpressionParameterVariablesInfo.class)
         public JIPipeExpressionParameter getArcWidth() {
             return arcWidth;
         }
@@ -275,6 +282,8 @@ public class DrawLineOvalRectangleRoiAlgorithm extends JIPipeIteratingAlgorithm 
 
         @SetJIPipeDocumentation(name = "Rectangle arc height", description = "Only applicable if the type is set to 'Rectangle'")
         @JIPipeParameter("arc-height")
+        @AddJIPipeExpressionParameterVariable(fromClass = JIPipeTextAnnotationsExpressionParameterVariablesInfo.class)
+        @AddJIPipeExpressionParameterVariable(fromClass = Image5DExpressionParameterVariablesInfo.class)
         public JIPipeExpressionParameter getArcHeight() {
             return arcHeight;
         }
