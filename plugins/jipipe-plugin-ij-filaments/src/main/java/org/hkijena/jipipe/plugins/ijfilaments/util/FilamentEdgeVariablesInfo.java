@@ -64,6 +64,10 @@ public class FilamentEdgeVariablesInfo implements JIPipeExpressionVariablesInfo 
         graph.measureEdge(edge, variables, prefix, graph.getConsensusPhysicalSizeUnit());
     }
 
+    public static void writeToVariables(Filaments3DGraphData graph, FilamentVertex edgeSource, FilamentVertex edgeTarget, JIPipeExpressionVariablesMap variables, String prefix) {
+        graph.measureNewEdge(edgeSource, edgeTarget, variables, prefix, graph.getConsensusPhysicalSizeUnit());
+    }
+
     @Override
     public Set<JIPipeExpressionParameterVariableInfo> getVariables(JIPipeWorkbench workbench, JIPipeParameterTree parameterTree, JIPipeParameterAccess parameterAccess) {
         return VARIABLES;

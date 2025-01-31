@@ -518,6 +518,25 @@ public class Filaments3DGraphData extends SimpleGraph<FilamentVertex, FilamentEd
     }
 
     /**
+     * Measures an edge that might not exist
+     *
+     * @param sourceVertex   the source vertex
+     * @param targetVertex  the target vertex
+     * @param target the map where results will be stored
+     * @param prefix the prefix for the map keys
+     * @param unit   the unit for physical sizes
+     */
+    public void measureNewEdge(FilamentVertex sourceVertex, FilamentVertex targetVertex, Map<String, Object> target, String prefix, String unit) {
+        target.put(prefix + "uuid", "");
+        target.put(prefix + "color", "");
+        target.put(prefix + "length", getNewEdgeLength(sourceVertex, targetVertex, false, Quantity.UNIT_PIXELS));
+        target.put(prefix + "ulength", getNewEdgeLength(sourceVertex, targetVertex, true, unit));
+        target.put(prefix + "unit", unit);
+        measureVertex(sourceVertex, target, prefix + "source.");
+        measureVertex(targetVertex, target, prefix + "target.");
+    }
+
+    /**
      * Gets the length of an edge in the specified unit
      *
      * @param edge             the edge
@@ -528,6 +547,26 @@ public class Filaments3DGraphData extends SimpleGraph<FilamentVertex, FilamentEd
     public double getEdgeLength(FilamentEdge edge, boolean usePhysicalSizes, String unit) {
         FilamentVertex edgeSource = getEdgeSource(edge);
         FilamentVertex edgeTarget = getEdgeTarget(edge);
+        if (!usePhysicalSizes || Quantity.isPixelsUnit(unit)) {
+            return edgeSource.getSpatialLocation().distanceTo(edgeTarget.getSpatialLocation());
+        } else {
+            Vector3d sourceLocation = edgeSource.getSpatialLocationInUnit(unit);
+            Vector3d targetLocation = edgeTarget.getSpatialLocationInUnit(unit);
+            targetLocation.sub(sourceLocation);
+            return targetLocation.length();
+        }
+    }
+
+    /**
+     * Gets the length of an edge that might not exist yet in the specified unit
+     *
+     * @param edgeSource the source vertex
+     * @param edgeTarget the target vertex
+     * @param usePhysicalSizes if the length should be returned in pixels or in the physical size
+     * @param unit             the unit (any supported by {@link org.hkijena.jipipe.plugins.parameters.library.quantities.Quantity})
+     * @return the length of the edge
+     */
+    public double getNewEdgeLength(FilamentVertex edgeSource, FilamentVertex edgeTarget, boolean usePhysicalSizes, String unit) {
         if (!usePhysicalSizes || Quantity.isPixelsUnit(unit)) {
             return edgeSource.getSpatialLocation().distanceTo(edgeTarget.getSpatialLocation());
         } else {
@@ -1060,17 +1099,23 @@ public class Filaments3DGraphData extends SimpleGraph<FilamentVertex, FilamentEd
         int maxC = 0;
         int maxT = 0;
 
-        for (FilamentVertex vertex : vertexSet()) {
-            maxX = (int) Math.max(maxX, vertex.getXMax(true));
-            maxY = (int) Math.max(maxY, vertex.getYMax(true));
-            maxZ = (int) Math.max(maxZ, vertex.getZMax(true));
-            maxC = Math.max(maxC, vertex.getNonSpatialLocation().getChannel());
-            maxT = Math.max(maxT, vertex.getNonSpatialLocation().getFrame());
-        }
-
-        // 2D detection
         if (is2D()) {
-            maxZ = 0;
+            for (FilamentVertex vertex : vertexSet()) {
+                maxX = (int) Math.max(maxX, vertex.getXMax(true));
+                maxY = (int) Math.max(maxY, vertex.getYMax(true));
+                maxZ = (int) Math.max(maxZ, vertex.getZMax(true));
+                maxC = Math.max(maxC, vertex.getNonSpatialLocation().getChannel());
+                maxT = Math.max(maxT, vertex.getNonSpatialLocation().getFrame());
+            }
+        }
+        else {
+            for (FilamentVertex vertex : vertexSet()) {
+                maxX = (int) Math.max(maxX, vertex.getXMax(true));
+                maxY = (int) Math.max(maxY, vertex.getYMax(true));
+                maxZ = (int) Math.max(maxZ, vertex.getSpatialLocation().getZ());
+                maxC = Math.max(maxC, vertex.getNonSpatialLocation().getChannel());
+                maxT = Math.max(maxT, vertex.getNonSpatialLocation().getFrame());
+            }
         }
 
         return IJ.createHyperStack(title, maxX + 1, maxY + 1, maxC + 1, maxZ + 1, maxT + 1, bitDepth);

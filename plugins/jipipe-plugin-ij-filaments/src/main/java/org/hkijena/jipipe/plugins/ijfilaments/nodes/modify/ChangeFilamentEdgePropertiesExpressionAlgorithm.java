@@ -37,6 +37,7 @@ import org.hkijena.jipipe.plugins.ijfilaments.parameters.EdgeMaskParameter;
 import org.hkijena.jipipe.plugins.ijfilaments.util.FilamentEdge;
 import org.hkijena.jipipe.plugins.ijfilaments.util.FilamentEdgeVariablesInfo;
 import org.hkijena.jipipe.plugins.parameters.library.collections.ParameterCollectionList;
+import org.hkijena.jipipe.plugins.parameters.library.collections.ParameterCollectionListTemplate;
 import org.hkijena.jipipe.utils.ColorUtils;
 
 import java.util.List;
@@ -120,6 +121,7 @@ public class ChangeFilamentEdgePropertiesExpressionAlgorithm extends JIPipeSimpl
     @AddJIPipeExpressionParameterVariable(fromClass = FilamentEdgeVariablesInfo.class)
     @AddJIPipeExpressionParameterVariable(fromClass = JIPipeTextAnnotationsExpressionParameterVariablesInfo.class)
     @AddJIPipeExpressionParameterVariable(fromClass = JIPipeCustomExpressionVariablesParameterVariablesInfo.class)
+    @ParameterCollectionListTemplate(FilamentEdgeMetadataEntry.class)
     public ParameterCollectionList getMetadata() {
         return metadata;
     }
