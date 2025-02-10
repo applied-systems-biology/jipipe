@@ -11,28 +11,27 @@
  * See the LICENSE file provided with the code for the full license.
  */
 
-package org.hkijena.jipipe.plugins.imagejdatatypes.algorithms;
+package org.hkijena.jipipe.plugins.imagejdatatypes.converters;
 
 import org.hkijena.jipipe.api.JIPipeProgressInfo;
 import org.hkijena.jipipe.api.data.JIPipeData;
 import org.hkijena.jipipe.api.data.JIPipeDataConverter;
-import org.hkijena.jipipe.plugins.imagejdatatypes.datatypes.LUTData;
-import org.hkijena.jipipe.plugins.imagejdatatypes.datatypes.d2.color.ImagePlus2DColorRGBData;
+import org.hkijena.jipipe.plugins.imagejdatatypes.datatypes.ImagePlusData;
+import org.hkijena.jipipe.plugins.imagejdatatypes.datatypes.OMEImageData;
 
-public class ImageToLUTTypeConverter implements JIPipeDataConverter {
+public class OMEImageToImagePlusTypeConverter implements JIPipeDataConverter {
     @Override
     public Class<? extends JIPipeData> getInputType() {
-        return ImagePlus2DColorRGBData.class;
+        return OMEImageData.class;
     }
 
     @Override
     public Class<? extends JIPipeData> getOutputType() {
-        return LUTData.class;
+        return ImagePlusData.class;
     }
 
     @Override
     public JIPipeData convert(JIPipeData input, JIPipeProgressInfo progressInfo) {
-        ImagePlus2DColorRGBData imageData = (ImagePlus2DColorRGBData) input;
-        return LUTData.fromImage(imageData.getImage(), false);
+        return new ImagePlusData(((OMEImageData) input).getImage());
     }
 }

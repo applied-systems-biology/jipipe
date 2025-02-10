@@ -11,15 +11,15 @@
  * See the LICENSE file provided with the code for the full license.
  */
 
-package org.hkijena.jipipe.plugins.imagejdatatypes.algorithms;
+package org.hkijena.jipipe.plugins.imagejdatatypes.converters;
 
 import org.hkijena.jipipe.api.JIPipeProgressInfo;
 import org.hkijena.jipipe.api.data.JIPipeData;
 import org.hkijena.jipipe.api.data.JIPipeDataConverter;
 import org.hkijena.jipipe.plugins.imagejdatatypes.datatypes.OMEImageData;
-import org.hkijena.jipipe.plugins.strings.XMLData;
+import org.hkijena.jipipe.plugins.imagejdatatypes.datatypes.ROI2DListData;
 
-public class OmeImageToOMEXMLTypeConverter implements JIPipeDataConverter {
+public class OMEImageToROITypeConverter implements JIPipeDataConverter {
     @Override
     public Class<? extends JIPipeData> getInputType() {
         return OMEImageData.class;
@@ -27,12 +27,11 @@ public class OmeImageToOMEXMLTypeConverter implements JIPipeDataConverter {
 
     @Override
     public Class<? extends JIPipeData> getOutputType() {
-        return XMLData.class;
+        return ROI2DListData.class;
     }
 
     @Override
     public JIPipeData convert(JIPipeData input, JIPipeProgressInfo progressInfo) {
-        OMEImageData imageData = (OMEImageData) input;
-        return new XMLData(imageData.getMetadata() != null ? imageData.getMetadata().dumpXML() : "");
+        return ((OMEImageData) input).getRois();
     }
 }

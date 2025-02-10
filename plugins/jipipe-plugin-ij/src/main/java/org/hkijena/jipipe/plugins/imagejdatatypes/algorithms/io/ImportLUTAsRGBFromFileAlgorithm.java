@@ -11,7 +11,7 @@
  * See the LICENSE file provided with the code for the full license.
  */
 
-package org.hkijena.jipipe.plugins.imagejdatatypes.algorithms.datasources;
+package org.hkijena.jipipe.plugins.imagejdatatypes.algorithms.io;
 
 import ij.ImagePlus;
 import ij.plugin.LutLoader;
@@ -35,12 +35,12 @@ import org.hkijena.jipipe.plugins.imagejdatatypes.datatypes.d2.color.ImagePlus2D
 @AddJIPipeOutputSlot(value = ImagePlus2DColorRGBData.class, name = "Output", description = "Description of the LUT as RGB image", create = true)
 @ConfigureJIPipeNode(nodeTypeCategory = ImagesNodeTypeCategory.class)
 @AddJIPipeNodeAlias(nodeTypeCategory = ImageJNodeTypeCategory.class, menuPath = "File", aliasName = "Open (LUT)")
-public class ImportLUTAsRGBFromFile extends JIPipeSimpleIteratingAlgorithm {
-    public ImportLUTAsRGBFromFile(JIPipeNodeInfo info) {
+public class ImportLUTAsRGBFromFileAlgorithm extends JIPipeSimpleIteratingAlgorithm {
+    public ImportLUTAsRGBFromFileAlgorithm(JIPipeNodeInfo info) {
         super(info);
     }
 
-    public ImportLUTAsRGBFromFile(ImportLUTAsRGBFromFile other) {
+    public ImportLUTAsRGBFromFileAlgorithm(ImportLUTAsRGBFromFileAlgorithm other) {
         super(other);
     }
 

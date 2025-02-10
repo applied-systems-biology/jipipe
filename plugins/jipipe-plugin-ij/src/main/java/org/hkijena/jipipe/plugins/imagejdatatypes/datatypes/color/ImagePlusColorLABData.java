@@ -24,6 +24,7 @@ import org.hkijena.jipipe.api.data.storage.JIPipeReadDataStorage;
 import org.hkijena.jipipe.api.data.thumbnails.JIPipeThumbnailData;
 import org.hkijena.jipipe.plugins.imagejdatatypes.colorspace.ColorSpace;
 import org.hkijena.jipipe.plugins.imagejdatatypes.colorspace.LABColorSpace;
+import org.hkijena.jipipe.plugins.imagejdatatypes.converters.ImplicitImageTypeConverter;
 import org.hkijena.jipipe.plugins.imagejdatatypes.datatypes.ImagePlusData;
 import org.hkijena.jipipe.plugins.imagejdatatypes.datatypes.ImageTypeInfo;
 import org.hkijena.jipipe.plugins.imagejdatatypes.util.ImageDimensions;
@@ -34,7 +35,7 @@ import java.awt.*;
 /**
  * LAB colored image without dimension.
  * These image data types exist to address general processing solely based on bit-depth (e.g. process all 2D image planes).
- * Conversion works through {@link org.hkijena.jipipe.plugins.imagejdatatypes.algorithms.ImplicitImageTypeConverter}
+ * Conversion works through {@link ImplicitImageTypeConverter}
  */
 @SetJIPipeDocumentation(name = "ImageJ Image (LAB)", description = "A colored image (LAB colors)")
 @ConfigureJIPipeNode(menuPath = "Images\nColor")

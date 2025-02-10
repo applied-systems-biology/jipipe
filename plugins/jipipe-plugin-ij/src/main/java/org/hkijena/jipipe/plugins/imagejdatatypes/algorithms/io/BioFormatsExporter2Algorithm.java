@@ -11,7 +11,7 @@
  * See the LICENSE file provided with the code for the full license.
  */
 
-package org.hkijena.jipipe.plugins.imagejdatatypes.algorithms;
+package org.hkijena.jipipe.plugins.imagejdatatypes.algorithms.io;
 
 import org.hkijena.jipipe.api.AddJIPipeCitation;
 import org.hkijena.jipipe.api.ConfigureJIPipeNode;
@@ -47,16 +47,16 @@ import java.util.Map;
         "Carlos Neves, Donald MacDonald, Aleksandra Tarkowska, Caitlin Sticco, Emma Hill, Mike Rossner, Kevin W. Eliceiri, " +
         "and Jason R. Swedlow (2010) Metadata matters: access to image data in the real world. The Journal of Cell Biology 189(5), 777-782")
 @AddJIPipeNodeAlias(nodeTypeCategory = ImageJNodeTypeCategory.class, menuPath = "Plugins\nBio-Formats", aliasName = "Bio-Formats Exporter")
-public class BioFormatsExporter2 extends JIPipeSimpleIteratingAlgorithm {
+public class BioFormatsExporter2Algorithm extends JIPipeSimpleIteratingAlgorithm {
     private OMEExporterSettings exporterSettings = new OMEExporterSettings();
     private DataExportExpressionParameter filePath = new DataExportExpressionParameter();
 
-    public BioFormatsExporter2(JIPipeNodeInfo info) {
+    public BioFormatsExporter2Algorithm(JIPipeNodeInfo info) {
         super(info);
         registerSubParameter(exporterSettings);
     }
 
-    public BioFormatsExporter2(BioFormatsExporter2 other) {
+    public BioFormatsExporter2Algorithm(BioFormatsExporter2Algorithm other) {
         super(other);
         this.exporterSettings = new OMEExporterSettings(other.exporterSettings);
         this.filePath = new DataExportExpressionParameter(other.filePath);

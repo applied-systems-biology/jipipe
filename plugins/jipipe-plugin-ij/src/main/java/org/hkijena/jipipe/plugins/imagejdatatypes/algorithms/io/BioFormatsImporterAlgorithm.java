@@ -11,7 +11,7 @@
  * See the LICENSE file provided with the code for the full license.
  */
 
-package org.hkijena.jipipe.plugins.imagejdatatypes.algorithms.datasources;
+package org.hkijena.jipipe.plugins.imagejdatatypes.algorithms.io;
 
 import ij.ImagePlus;
 import loci.common.Region;
@@ -62,7 +62,7 @@ import java.util.List;
         "Carlos Neves, Donald MacDonald, Aleksandra Tarkowska, Caitlin Sticco, Emma Hill, Mike Rossner, Kevin W. Eliceiri, " +
         "and Jason R. Swedlow (2010) Metadata matters: access to image data in the real world. The Journal of Cell Biology 189(5), 777-782")
 @AddJIPipeNodeAlias(nodeTypeCategory = ImageJNodeTypeCategory.class, menuPath = "Plugins\nBio-Formats", aliasName = "Bio-Formats Importer")
-public class BioFormatsImporter extends JIPipeSimpleIteratingAlgorithm {
+public class BioFormatsImporterAlgorithm extends JIPipeSimpleIteratingAlgorithm {
 
     private OMEColorMode colorMode = OMEColorMode.Default;
     private DimensionOrder stackOrder = DimensionOrder.XYCZT;
@@ -84,7 +84,7 @@ public class BioFormatsImporter extends JIPipeSimpleIteratingAlgorithm {
     /**
      * @param info the info
      */
-    public BioFormatsImporter(JIPipeNodeInfo info) {
+    public BioFormatsImporterAlgorithm(JIPipeNodeInfo info) {
         super(info);
         seriesToImport.add(0);
     }
@@ -94,7 +94,7 @@ public class BioFormatsImporter extends JIPipeSimpleIteratingAlgorithm {
      *
      * @param other the original
      */
-    public BioFormatsImporter(BioFormatsImporter other) {
+    public BioFormatsImporterAlgorithm(BioFormatsImporterAlgorithm other) {
         super(other);
         this.colorMode = other.colorMode;
         this.stackOrder = other.stackOrder;

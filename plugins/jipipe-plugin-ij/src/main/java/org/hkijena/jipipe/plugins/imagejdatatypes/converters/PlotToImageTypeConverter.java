@@ -11,34 +11,32 @@
  * See the LICENSE file provided with the code for the full license.
  */
 
-package org.hkijena.jipipe.plugins.imagejdatatypes.algorithms;
+package org.hkijena.jipipe.plugins.imagejdatatypes.converters;
 
 import ij.ImagePlus;
 import org.hkijena.jipipe.api.JIPipeProgressInfo;
 import org.hkijena.jipipe.api.data.JIPipeData;
 import org.hkijena.jipipe.api.data.JIPipeDataConverter;
-import org.hkijena.jipipe.plugins.imagejdatatypes.datatypes.ImagePlusData;
-import org.hkijena.jipipe.plugins.imagejdatatypes.datatypes.OMEImageData;
-import org.hkijena.jipipe.plugins.imagejdatatypes.datatypes.ROI2DListData;
+import org.hkijena.jipipe.plugins.imagejdatatypes.datatypes.d2.color.ImagePlus2DColorRGBData;
+import org.hkijena.jipipe.plugins.plots.datatypes.JFreeChartPlotData;
 
-public class ImagePlusToOMEImageTypeConverter implements JIPipeDataConverter {
+import java.awt.image.BufferedImage;
+
+public class PlotToImageTypeConverter implements JIPipeDataConverter {
     @Override
     public Class<? extends JIPipeData> getInputType() {
-        return ImagePlusData.class;
+        return JFreeChartPlotData.class;
     }
 
     @Override
     public Class<? extends JIPipeData> getOutputType() {
-        return OMEImageData.class;
+        return ImagePlus2DColorRGBData.class;
     }
 
     @Override
     public JIPipeData convert(JIPipeData input, JIPipeProgressInfo progressInfo) {
-        ImagePlus img = ((ImagePlusData) input).getImage();
-        ROI2DListData rois = new ROI2DListData();
-        if (img.getRoi() != null) {
-            rois.add(img.getRoi());
-        }
-        return new OMEImageData(img, rois, null);
+        JFreeChartPlotData plotData = (JFreeChartPlotData) input;
+        BufferedImage bufferedImage = plotData.getChart().createBufferedImage(plotData.getExportWidth(), plotData.getExportHeight());
+        return new ImagePlus2DColorRGBData(new ImagePlus("Plot", bufferedImage));
     }
 }

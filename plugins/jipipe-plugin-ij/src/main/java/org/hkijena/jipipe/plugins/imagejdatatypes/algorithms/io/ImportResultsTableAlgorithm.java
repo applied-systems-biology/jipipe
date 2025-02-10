@@ -11,7 +11,7 @@
  * See the LICENSE file provided with the code for the full license.
  */
 
-package org.hkijena.jipipe.plugins.imagejdatatypes.algorithms.datasources;
+package org.hkijena.jipipe.plugins.imagejdatatypes.algorithms.io;
 
 import org.hkijena.jipipe.api.ConfigureJIPipeNode;
 import org.hkijena.jipipe.api.JIPipeProgressInfo;
@@ -49,7 +49,7 @@ import java.util.*;
 @AddJIPipeOutputSlot(value = ResultsTableData.class, name = "Results table", create = true)
 @ConfigureJIPipeNode(nodeTypeCategory = DataSourceNodeTypeCategory.class)
 @AddJIPipeNodeAlias(nodeTypeCategory = ImageJNodeTypeCategory.class, menuPath = "File", aliasName = "Open (CSV/XLSX)")
-public class ResultsTableFromFile extends JIPipeSimpleIteratingAlgorithm {
+public class ImportResultsTableAlgorithm extends JIPipeSimpleIteratingAlgorithm {
 
     private FileFormat fileFormat = FileFormat.Auto;
     private StringList sheets = new StringList();
@@ -60,11 +60,11 @@ public class ResultsTableFromFile extends JIPipeSimpleIteratingAlgorithm {
     /**
      * @param info algorithm info
      */
-    public ResultsTableFromFile(JIPipeNodeInfo info) {
+    public ImportResultsTableAlgorithm(JIPipeNodeInfo info) {
         super(info);
     }
 
-    public ResultsTableFromFile(ResultsTableFromFile other) {
+    public ImportResultsTableAlgorithm(ImportResultsTableAlgorithm other) {
         super(other);
         this.fileFormat = other.fileFormat;
         this.sheets = new StringList(other.sheets);

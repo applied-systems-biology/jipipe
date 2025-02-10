@@ -11,7 +11,7 @@
  * See the LICENSE file provided with the code for the full license.
  */
 
-package org.hkijena.jipipe.plugins.imagejdatatypes.algorithms.datasources;
+package org.hkijena.jipipe.plugins.imagejdatatypes.algorithms.io;
 
 import ij.IJ;
 import ij.ImagePlus;
@@ -54,7 +54,7 @@ import java.util.List;
         "Carlos Neves, Donald MacDonald, Aleksandra Tarkowska, Caitlin Sticco, Emma Hill, Mike Rossner, Kevin W. Eliceiri, " +
         "and Jason R. Swedlow (2010) Metadata matters: access to image data in the real world. The Journal of Cell Biology 189(5), 777-782")
 @AddJIPipeNodeAlias(nodeTypeCategory = ImageJNodeTypeCategory.class, menuPath = "File", aliasName = "Open (image)")
-public class ImagePlusFromFile extends JIPipeSimpleIteratingAlgorithm {
+public class ImportImagePlusAlgorithm extends JIPipeSimpleIteratingAlgorithm {
 
     private JIPipeDataInfoRef generatedImageType = new JIPipeDataInfoRef("imagej-imgplus");
     private OptionalTextAnnotationNameParameter titleAnnotation = new OptionalTextAnnotationNameParameter();
@@ -65,7 +65,7 @@ public class ImagePlusFromFile extends JIPipeSimpleIteratingAlgorithm {
     /**
      * @param info algorithm info
      */
-    public ImagePlusFromFile(JIPipeNodeInfo info) {
+    public ImportImagePlusAlgorithm(JIPipeNodeInfo info) {
         super(info);
         titleAnnotation.setContent("Image title");
     }
@@ -75,7 +75,7 @@ public class ImagePlusFromFile extends JIPipeSimpleIteratingAlgorithm {
      *
      * @param other the original
      */
-    public ImagePlusFromFile(ImagePlusFromFile other) {
+    public ImportImagePlusAlgorithm(ImportImagePlusAlgorithm other) {
         super(other);
         setGeneratedImageType(new JIPipeDataInfoRef(other.generatedImageType));
         this.titleAnnotation = new OptionalTextAnnotationNameParameter(other.titleAnnotation);
@@ -98,7 +98,7 @@ public class ImagePlusFromFile extends JIPipeSimpleIteratingAlgorithm {
         if (!forceNativeImport && !CoreImageJUtils.supportsNativeImageImport(fileName)) {
             // Pass to bioformats
             progressInfo.log("Using BioFormats importer. Please use the Bio-Formats importer node for more settings.");
-            BioFormatsImporter importer = JIPipe.createNode(BioFormatsImporter.class);
+            BioFormatsImporterAlgorithm importer = JIPipe.createNode(BioFormatsImporterAlgorithm.class);
             importer.getFirstInputSlot().addData(new FileData(fileName), progressInfo);
             importer.run(runContext, progressInfo);
             image = importer.getFirstOutputSlot().getData(0, OMEImageData.class, progressInfo).getImage();
@@ -111,7 +111,7 @@ public class ImagePlusFromFile extends JIPipeSimpleIteratingAlgorithm {
             // Try Bioformats again?
             // Pass to bioformats
             progressInfo.log("Using BioFormats importer. Please use the Bio-Formats importer node for more settings.");
-            BioFormatsImporter importer = JIPipe.createNode(BioFormatsImporter.class);
+            BioFormatsImporterAlgorithm importer = JIPipe.createNode(BioFormatsImporterAlgorithm.class);
             importer.getFirstInputSlot().addData(new FileData(fileName), progressInfo);
             importer.run(runContext, progressInfo);
             image = importer.getFirstOutputSlot().getData(0, OMEImageData.class, progressInfo).getImage();

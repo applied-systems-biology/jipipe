@@ -11,7 +11,7 @@
  * See the LICENSE file provided with the code for the full license.
  */
 
-package org.hkijena.jipipe.plugins.imagejdatatypes.algorithms;
+package org.hkijena.jipipe.plugins.imagejdatatypes.algorithms.io;
 
 import org.hkijena.jipipe.api.*;
 import org.hkijena.jipipe.api.annotation.JIPipeDataByMetadataExporter;
@@ -48,21 +48,21 @@ import java.util.Set;
 @AddJIPipeNodeAlias(nodeTypeCategory = ImageJNodeTypeCategory.class, menuPath = "Plugins\nBio-Formats", aliasName = "Bio-Formats Exporter")
 @LabelAsJIPipeHidden
 @Deprecated
-public class BioFormatsExporter extends JIPipeSimpleIteratingAlgorithm {
+public class BioFormatsExporterAlgorithm extends JIPipeSimpleIteratingAlgorithm {
 
     private final Set<String> existingMetadata = new HashSet<>();
     private OMEExporterSettings exporterSettings = new OMEExporterSettings();
     private JIPipeDataByMetadataExporter exporter;
     private Path outputDirectory = Paths.get("exported-data");
 
-    public BioFormatsExporter(JIPipeNodeInfo info) {
+    public BioFormatsExporterAlgorithm(JIPipeNodeInfo info) {
         super(info);
         registerSubParameter(exporterSettings);
         this.exporter = new JIPipeDataByMetadataExporter(JIPipeDataExporterApplicationSettings.getInstance());
         registerSubParameter(exporter);
     }
 
-    public BioFormatsExporter(BioFormatsExporter other) {
+    public BioFormatsExporterAlgorithm(BioFormatsExporterAlgorithm other) {
         super(other);
         this.exporterSettings = new OMEExporterSettings(other.exporterSettings);
         this.exporter = new JIPipeDataByMetadataExporter(other.exporter);
