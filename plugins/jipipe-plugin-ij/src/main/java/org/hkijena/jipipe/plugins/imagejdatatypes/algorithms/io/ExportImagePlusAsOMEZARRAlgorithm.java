@@ -15,6 +15,7 @@ package org.hkijena.jipipe.plugins.imagejdatatypes.algorithms.io;
 
 import com.google.common.primitives.Ints;
 import ij.ImagePlus;
+import ome.xml.meta.OMEXMLMetadata;
 import org.hkijena.jipipe.api.AddJIPipeCitation;
 import org.hkijena.jipipe.api.ConfigureJIPipeNode;
 import org.hkijena.jipipe.api.JIPipeProgressInfo;
@@ -34,7 +35,7 @@ import org.hkijena.jipipe.plugins.expressions.JIPipeExpressionVariablesMap;
 import org.hkijena.jipipe.plugins.expressions.OptionalJIPipeExpressionParameter;
 import org.hkijena.jipipe.plugins.expressions.custom.JIPipeCustomExpressionVariablesParameterVariablesInfo;
 import org.hkijena.jipipe.plugins.expressions.variables.JIPipeTextAnnotationsExpressionParameterVariablesInfo;
-import org.hkijena.jipipe.plugins.imagejdatatypes.datatypes.ImagePlusData;
+import org.hkijena.jipipe.plugins.imagejdatatypes.datatypes.OMEImageData;
 import org.hkijena.jipipe.plugins.imagejdatatypes.util.ZARRUtils;
 import org.hkijena.jipipe.plugins.strings.URIData;
 import org.hkijena.jipipe.utils.PathType;
@@ -50,7 +51,7 @@ import java.util.*;
 
 @SetJIPipeDocumentation(name = "Export OME ZARR (IJ1)", description = "Writes an OME ZARR")
 @ConfigureJIPipeNode(nodeTypeCategory = ExportNodeTypeCategory.class, menuPath = "Images")
-@AddJIPipeInputSlot(value = ImagePlusData.class, name = "Input", create = true)
+@AddJIPipeInputSlot(value = OMEImageData.class, name = "Input", create = true)
 @AddJIPipeOutputSlot(value = URIData.class, name = "Output", create = true)
 @AddJIPipeCitation("https://ngff.openmicroscopy.org/latest/")
 public class ExportImagePlusAsOMEZARRAlgorithm extends JIPipeSimpleIteratingAlgorithm {
@@ -75,7 +76,8 @@ public class ExportImagePlusAsOMEZARRAlgorithm extends JIPipeSimpleIteratingAlgo
 
     @Override
     protected void runIteration(JIPipeSingleIterationStep iterationStep, JIPipeIterationContext iterationContext, JIPipeGraphNodeRunContext runContext, JIPipeProgressInfo progressInfo) {
-        ImagePlus imp = iterationStep.getInputData(getFirstInputSlot(), ImagePlusData.class, progressInfo).getImage();
+        OMEImageData omeImageData = iterationStep.getInputData(getFirstInputSlot(), OMEImageData.class, progressInfo);
+        ImagePlus imp = omeImageData.getImage();
         int[] defaultChunkSize = ZARRUtils.computeOptimalChunkSizes(new int[] { imp.getWidth(), imp.getHeight(), imp.getNChannels(), imp.getNSlices(), imp.getNFrames() });
         if(chunkSizeExpression.isEnabled()) {
             JIPipeExpressionVariablesMap variablesMap = new JIPipeExpressionVariablesMap();
@@ -122,7 +124,7 @@ public class ExportImagePlusAsOMEZARRAlgorithm extends JIPipeSimpleIteratingAlgo
             // Create a temporary storage
             try(JIPipeZIPWriteDataStorage storage = new JIPipeZIPWriteDataStorage(progressInfo.resolve("ZIP"), outputPath)) {
                 Path tmpPath = storage.getFileSystemPath();
-                writeZarr(imp, updatedChunkSize,tmpPath, progressInfo);
+                writeZARR(imp, omeImageData.getMetadata(), updatedChunkSize,tmpPath, progressInfo);
             } catch (IOException e) {
                 throw new RuntimeException(e);
             }
@@ -139,7 +141,7 @@ public class ExportImagePlusAsOMEZARRAlgorithm extends JIPipeSimpleIteratingAlgo
             // Create URI (unofficial one)
             String uri = ZARRUtils.pathToZARRURI(outputPath);
 
-            writeZarr(imp, updatedChunkSize, outputPath, progressInfo);
+            writeZARR(imp, omeImageData.getMetadata(), updatedChunkSize, outputPath, progressInfo);
 
             iterationStep.addOutputData(getFirstOutputSlot(), new URIData(uri), progressInfo);
         }
@@ -150,11 +152,11 @@ public class ExportImagePlusAsOMEZARRAlgorithm extends JIPipeSimpleIteratingAlgo
 
     }
 
-    private void writeZarr(ImagePlus imp, int[] updatedChunkSize, Path path, JIPipeProgressInfo progressInfo) {
+    private void writeZARR(ImagePlus imp, OMEXMLMetadata metadata, int[] updatedChunkSize, Path path, JIPipeProgressInfo progressInfo) {
         N5ScalePyramidExporter exporter = new N5ScalePyramidExporter();
         exporter.setOptions(imp,
                 ZARRUtils.pathToZARRURI(path),
-                "s0",
+                "",
                 N5ScalePyramidExporter.ZARR_FORMAT,
                 Ints.join(",", updatedChunkSize),
                 createPyramid,
@@ -163,6 +165,10 @@ public class ExportImagePlusAsOMEZARRAlgorithm extends JIPipeSimpleIteratingAlgo
                 compression.getNativeValue());
         progressInfo.log("Exporting ZARR to " + path + " (URI " + ZARRUtils.pathToZARRURI(path) + ")");
         exporter.run();
+
+        if(metadata != null) {
+            ZARRUtils.writeOMEXMLToZARR(path, metadata, progressInfo);
+        }
     }
 
     @SetJIPipeDocumentation(name = "Chunk size", description = "If enabled, sets the chunk size via an expression that must return an array of five numbers, corresponding to the ImageJ1 axis order is X,Y,C,Z,T. " +

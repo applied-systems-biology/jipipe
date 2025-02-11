@@ -16,24 +16,24 @@ package org.hkijena.jipipe.plugins.imagejdatatypes.util;
 import gnu.trove.list.TIntList;
 import gnu.trove.list.array.TIntArrayList;
 import ij.ImagePlus;
+import loci.common.services.DependencyException;
+import loci.common.services.ServiceException;
+import loci.common.services.ServiceFactory;
+import loci.formats.services.OMEXMLService;
 import net.imglib2.RandomAccessibleInterval;
 import net.imglib2.img.display.imagej.ImageJFunctions;
-import net.imglib2.type.NativeType;
 import net.imglib2.type.numeric.NumericType;
-import net.imglib2.type.numeric.RealType;
-import net.imglib2.view.Views;
+import ome.xml.meta.OMEXMLMetadata;
+import org.hkijena.jipipe.JIPipe;
+import org.hkijena.jipipe.api.JIPipeProgressInfo;
+import org.hkijena.jipipe.utils.PathUtils;
 import org.janelia.saalfeldlab.n5.ij.N5IJUtils;
-import org.janelia.saalfeldlab.n5.ij.N5Importer;
-import org.janelia.saalfeldlab.n5.metadata.imagej.N5ImagePlusMetadata;
-import org.janelia.saalfeldlab.n5.universe.metadata.N5CosemMetadata;
-import org.janelia.saalfeldlab.n5.universe.metadata.N5DatasetMetadata;
-import org.janelia.saalfeldlab.n5.universe.metadata.N5SingleScaleMetadata;
-import org.janelia.saalfeldlab.n5.universe.metadata.ome.ngff.v04.NgffSingleScaleAxesMetadata;
 
+import java.io.IOException;
+import java.nio.charset.StandardCharsets;
+import java.nio.file.Files;
 import java.nio.file.Path;
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.List;
+import java.nio.file.Paths;
 
 public class ZARRUtils {
     /**
@@ -96,7 +96,7 @@ public class ZARRUtils {
         result.add(chunkSize[0]);
         result.add(chunkSize[1]);
         for (int i = 2; i < chunkSize.length; i++) {
-            if(chunkSize[i] > 1) {
+            if (chunkSize[i] > 1) {
                 result.add(chunkSize[i]);
             }
         }
@@ -111,54 +111,46 @@ public class ZARRUtils {
     public static <T extends NumericType<T>> RandomAccessibleInterval<T> wrap(ImagePlus image) {
         final RandomAccessibleInterval<T> baseImg;
         if (image.getType() == ImagePlus.COLOR_RGB)
-            baseImg = (RandomAccessibleInterval<T>)(N5IJUtils.wrapRgbAsInt(image));
+            baseImg = (RandomAccessibleInterval<T>) (N5IJUtils.wrapRgbAsInt(image));
         else
             baseImg = (RandomAccessibleInterval<T>) ImageJFunctions.wrap(image);
 
         return baseImg;
     }
 
-    @SuppressWarnings("unchecked")
-    public static <M extends N5DatasetMetadata> M copyMetadata(final M metadata) {
+    public static void writeOMEXMLToZARR(Path localZarrPath, OMEXMLMetadata metadata, JIPipeProgressInfo progressInfo) {
+        // N5 seems to no support writing arbitrary data and currently the specification is still open https://github.com/ome/ngff/issues/104
+        // So I just follow whatever Qupath does
+        PathUtils.createDirectories(localZarrPath.resolve("OME"));
+        try {
+            // Manually write the ZARR group info
+            Files.write(localZarrPath.resolve("OME").resolve(".zgroup"), ("{\n" + "  \"zarr_format\" : 2\n" + "}").getBytes(StandardCharsets.UTF_8));
 
-        if (metadata == null)
-            return metadata;
+            // Manually write the OME metadata
+            Files.write(localZarrPath.resolve("OME").resolve("METADATA.ome.xml"), metadata.dumpXML().getBytes(StandardCharsets.UTF_8));
 
-        // Needs to be implemented for metadata types that split channels
-        if (metadata instanceof N5CosemMetadata) {
-            return ((M)new N5CosemMetadata(metadata.getPath(), ((N5CosemMetadata)metadata).getCosemTransform(),
-                    metadata.getAttributes()));
-        } else if (metadata instanceof N5SingleScaleMetadata) {
-            final N5SingleScaleMetadata ssm = (N5SingleScaleMetadata)metadata;
-            return ((M)new N5SingleScaleMetadata(ssm.getPath(),
-                    ssm.spatialTransform3d(), ssm.getDownsamplingFactors(),
-                    ssm.getPixelResolution(), ssm.getOffset(), ssm.unit(),
-                    metadata.getAttributes(),
-                    ssm.minIntensity(),
-                    ssm.maxIntensity(),
-                    ssm.isLabelMultiset()));
-        } else if (metadata instanceof NgffSingleScaleAxesMetadata) {
-            final NgffSingleScaleAxesMetadata ngffMeta = (NgffSingleScaleAxesMetadata)metadata;
-            return (M)new NgffSingleScaleAxesMetadata(ngffMeta.getPath(),
-                    ngffMeta.getScale(), ngffMeta.getTranslation(),
-                    ngffMeta.getAxes(),
-                    ngffMeta.getAttributes());
-        } else if (metadata instanceof N5ImagePlusMetadata) {
-            final N5ImagePlusMetadata ijmeta = (N5ImagePlusMetadata)metadata;
-            return (M)new N5ImagePlusMetadata(ijmeta.getPath(), ijmeta.getAttributes(),
-                    ijmeta.getName(), ijmeta.fps, ijmeta.frameInterval, ijmeta.unit,
-                    ijmeta.pixelWidth, ijmeta.pixelHeight, ijmeta.pixelDepth,
-                    ijmeta.xOrigin, ijmeta.yOrigin, ijmeta.zOrigin,
-                    ijmeta.numChannels, ijmeta.numSlices, ijmeta.numFrames,
-                    ijmeta.type, ijmeta.properties);
-        } else
-            System.err.println("Encountered metadata of unexpected type.");
-
-        return metadata;
+            progressInfo.log("OME XML data was written to " + localZarrPath.toAbsolutePath() + " (QuPath flavor)");
+        } catch (IOException e) {
+            throw new RuntimeException(e);
+        }
     }
 
-    public static <T extends RealType<T> & NativeType<T>, M extends N5DatasetMetadata> List<RandomAccessibleInterval<T>> splitChannels(final M metadata,
-                                                                                                                                                 final RandomAccessibleInterval<T> img) {
-        return Collections.singletonList(img);
+    public static OMEXMLMetadata readOMEXMLFromZARR(Path localZarrPath, JIPipeProgressInfo progressInfo) throws IOException {
+        Path xmlPath = localZarrPath.resolve("OME").resolve("METADATA.ome.xml");
+        if(Files.isRegularFile(xmlPath)) {
+            progressInfo.log("Reading OME XML metadata from " + xmlPath.toAbsolutePath() + " (QuPath flavor)");
+            String omeXml = new String(Files.readAllBytes(xmlPath));
+            try {
+                ServiceFactory serviceFactory = new ServiceFactory();
+                OMEXMLService omexmlService = serviceFactory.getInstance(OMEXMLService.class);
+                return omexmlService.createOMEXMLMetadata(omeXml);
+            } catch (DependencyException | ServiceException e) {
+                throw new RuntimeException(e);
+            }
+        }
+        else {
+            return null;
+        }
     }
+
 }

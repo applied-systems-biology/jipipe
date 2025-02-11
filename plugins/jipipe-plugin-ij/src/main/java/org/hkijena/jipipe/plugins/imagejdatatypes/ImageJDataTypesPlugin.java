@@ -29,7 +29,6 @@ import org.hkijena.jipipe.plugins.JIPipePrepackagedDefaultJavaPlugin;
 import org.hkijena.jipipe.plugins.core.CorePlugin;
 import org.hkijena.jipipe.plugins.core.data.OpenInNativeApplicationDataImportOperation;
 import org.hkijena.jipipe.plugins.filesystem.FilesystemPlugin;
-import org.hkijena.jipipe.plugins.filesystem.algorithms.zarr.ListZARRDatasetsAlgorithm;
 import org.hkijena.jipipe.plugins.imagejdatatypes.algorithms.*;
 import org.hkijena.jipipe.plugins.imagejdatatypes.algorithms.annotate.AnnotateDataWithImagePropertiesAlgorithm;
 import org.hkijena.jipipe.plugins.imagejdatatypes.algorithms.annotate.ImagePropertiesToAnnotationAlgorithm;
@@ -513,7 +512,7 @@ public class ImageJDataTypesPlugin extends JIPipePrepackagedDefaultJavaPlugin {
         registerNodeType("import-imagej-imgplus-from-file", ImportImagePlusAlgorithm.class);
         registerNodeType("import-imagej-bioformats", BioFormatsImporterAlgorithm.class, UIUtils.getIconURLFromResources("apps/bioformats.png"));
         registerNodeType("import-imagej-lut-from-file-as-rgb", ImportLUTAsRGBFromFileAlgorithm.class, UIUtils.getIconURLFromResources("data-types/lut.png"));
-        registerNodeType("import-ome-zarr-from-directory-as-imgplus", ImportOMEZARRFromDirectoryAsImagePlusAlgorithm.class, UIUtils.getIconURLFromResources("actions/zarr.png"));
+        registerNodeType("import-ome-zarr-from-zip-directory-as-imgplus", ImportOMEZARRFromZipDirectoryAsImagePlusAlgorithm.class, UIUtils.getIconURLFromResources("actions/zarr.png"));
 
         // Register algorithms
         registerNodeType("convert-imagej-image", ImageTypeConverter.class, UIUtils.getIconURLFromResources("actions/viewimage.png"));
