@@ -49,7 +49,7 @@ import java.io.IOException;
 import java.nio.file.Path;
 import java.util.*;
 
-@SetJIPipeDocumentation(name = "Export OME ZARR (IJ1)", description = "Writes an OME ZARR")
+@SetJIPipeDocumentation(name = "Export OME ZARR", description = "Writes an OME ZARR into a directory or ZIP file")
 @ConfigureJIPipeNode(nodeTypeCategory = ExportNodeTypeCategory.class, menuPath = "Images")
 @AddJIPipeInputSlot(value = OMEImageData.class, name = "Input", create = true)
 @AddJIPipeOutputSlot(value = URIData.class, name = "Output", create = true)

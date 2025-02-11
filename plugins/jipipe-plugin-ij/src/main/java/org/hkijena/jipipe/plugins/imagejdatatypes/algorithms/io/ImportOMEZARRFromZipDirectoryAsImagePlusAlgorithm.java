@@ -68,7 +68,7 @@ import java.util.stream.Collectors;
 
 import static org.janelia.saalfeldlab.n5.ij.N5Importer.PARSERS;
 
-@SetJIPipeDocumentation(name = "Import OME ZARR from ZIP/directory (IJ1)", description = "Imports images within an OME ZARR (NGFF) ZIP/directory as ImageJ image. " +
+@SetJIPipeDocumentation(name = "Import OME ZARR from ZIP/directory", description = "Imports images within an OME ZARR (NGFF) ZIP/directory as ImageJ image. " +
         "Please note that all data contained within the ZARR ZIP/directory will be imported and only XYZCT axes are supported due to ImageJ limitations.")
 @AddJIPipeCitation("https://ngff.openmicroscopy.org/latest/")
 @ConfigureJIPipeNode(nodeTypeCategory = DataSourceNodeTypeCategory.class)
