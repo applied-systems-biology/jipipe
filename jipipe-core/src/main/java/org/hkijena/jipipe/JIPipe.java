@@ -955,12 +955,13 @@ public class JIPipe extends AbstractService implements JIPipeService {
             JIPipeJavaPlugin extension = null;
             try {
                 extension = initializationInfo.getInstance();
-
+                registerFeaturesProgress.log("ID=" + extension.getDependencyId());
                 extension.register(this, getContext(), progressInfo.resolve(extension.getDependencyId()));
                 registeredExtensions.add(extension);
                 registeredExtensionIds.add(extension.getDependencyId());
                 extensionRegisteredEventEmitter.emit(new ExtensionRegisteredEvent(this, extension));
             } catch (NoClassDefFoundError | Exception e) {
+                progressInfo.log("[!] ERROR: Unable to instantiate extension " + info);
                 e.printStackTrace();
                 progressInfo.log(e.toString());
                 issues.getErroneousPlugins().add(info);
@@ -1292,6 +1293,8 @@ public class JIPipe extends AbstractService implements JIPipeService {
                 JIPipeParameterTree collection = new JIPipeParameterTree(algorithm);
                 for (Map.Entry<String, JIPipeParameterAccess> entry : collection.getParameters().entrySet()) {
                     if (JIPipe.getParameterTypes().getInfoByFieldClass(entry.getValue().getFieldClass()) == null) {
+                        progressInfo.log("[!] ERROR: Unregistered parameter found: " + entry.getValue().getFieldClass() + " @ "
+                                + algorithm + " -> " + entry.getKey());
                         throw new JIPipeValidationRuntimeException(new JIPipeValidationReportEntry(JIPipeValidationReportEntryLevel.Error,
                                 new UnspecifiedValidationReportContext(),
                                 "A plugin is invalid!",

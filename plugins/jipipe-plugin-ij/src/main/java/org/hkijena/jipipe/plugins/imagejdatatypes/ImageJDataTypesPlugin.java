@@ -524,7 +524,7 @@ public class ImageJDataTypesPlugin extends JIPipePrepackagedDefaultJavaPlugin {
         registerNodeType("annotate-data-with-image-properties", AnnotateDataWithImagePropertiesAlgorithm.class, UIUtils.getIconURLFromResources("data-types/annotation-table.png"));
         registerNodeType("ij1-export-ome-zarr", ExportImagePlusAsOMEZARRAlgorithm.class, UIUtils.getIconURLFromResources("actions/zarr.png"));
         registerEnumParameterType("ij1-export-ome-zarr:output-format", ExportImagePlusAsOMEZARRAlgorithm.OutputFormat.class, "ZARR Output format", "Output formats");
-        registerEnumParameterType("ij1-export-ome-zarr:compression", ExportImagePlusAsOMEZARRAlgorithm.OutputFormat.class, "ZARR Compression", "Available compression types");
+        registerEnumParameterType("ij1-export-ome-zarr:compression", ExportImagePlusAsOMEZARRAlgorithm.Compression.class, "ZARR Compression", "Available compression types");
 
         registerNodeType("ij1-color-convert-to-rgb", ToRGBColorSpaceConverterAlgorithm.class, UIUtils.getIconURLFromResources("data-types/imgplus-color-rgb.png"));
         registerNodeType("ij1-color-convert-to-hsb", ToHSBColorSpaceConverterAlgorithm.class, UIUtils.getIconURLFromResources("data-types/imgplus-color-hsb.png"));

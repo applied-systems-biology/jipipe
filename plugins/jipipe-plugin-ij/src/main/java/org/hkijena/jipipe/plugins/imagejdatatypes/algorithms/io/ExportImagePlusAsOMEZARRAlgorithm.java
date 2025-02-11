@@ -13,8 +13,8 @@
 
 package org.hkijena.jipipe.plugins.imagejdatatypes.algorithms.io;
 
+import com.google.common.primitives.Ints;
 import ij.ImagePlus;
-import net.imglib2.RandomAccessibleInterval;
 import org.hkijena.jipipe.api.AddJIPipeCitation;
 import org.hkijena.jipipe.api.ConfigureJIPipeNode;
 import org.hkijena.jipipe.api.JIPipeProgressInfo;
@@ -41,13 +41,8 @@ import org.hkijena.jipipe.utils.PathType;
 import org.hkijena.jipipe.utils.PathUtils;
 import org.hkijena.jipipe.utils.UIUtils;
 import org.hkijena.jipipe.utils.json.JsonUtils;
-import org.janelia.saalfeldlab.n5.N5Writer;
-import org.janelia.saalfeldlab.n5.metadata.imagej.NgffToImagePlus;
-import org.janelia.saalfeldlab.n5.universe.N5Factory;
-import org.janelia.saalfeldlab.n5.universe.metadata.N5DatasetMetadata;
-import org.janelia.saalfeldlab.n5.universe.metadata.N5MetadataWriter;
-import org.janelia.saalfeldlab.n5.universe.metadata.ome.ngff.v04.NgffSingleScaleAxesMetadata;
-import org.janelia.saalfeldlab.n5.universe.metadata.ome.ngff.v04.OmeNgffMetadataParser;
+import org.janelia.saalfeldlab.n5.ij.N5Importer;
+import org.janelia.saalfeldlab.n5.ij.N5ScalePyramidExporter;
 
 import java.io.IOException;
 import java.nio.file.Path;
@@ -118,7 +113,7 @@ public class ExportImagePlusAsOMEZARRAlgorithm extends JIPipeSimpleIteratingAlgo
 
         if(outputFormat == OutputFormat.ZippedZARR) {
             // Add extensions and delete existing file/directory
-            outputPath = PathUtils.ensureExtension(outputPath, ".zarr");
+            outputPath = PathUtils.ensureExtension(outputPath, ".zarr.zip");
             PathUtils.deleteIfExists(outputPath, progressInfo);
 
             // Create URI (unofficial one)
@@ -126,8 +121,8 @@ public class ExportImagePlusAsOMEZARRAlgorithm extends JIPipeSimpleIteratingAlgo
 
             // Create a temporary storage
             try(JIPipeZIPWriteDataStorage storage = new JIPipeZIPWriteDataStorage(progressInfo.resolve("ZIP"), outputPath)) {
-                Path tmpPath = storage.getInternalPath();
-                writeZarr(imp,tmpPath, progressInfo);
+                Path tmpPath = storage.getFileSystemPath();
+                writeZarr(imp, updatedChunkSize,tmpPath, progressInfo);
             } catch (IOException e) {
                 throw new RuntimeException(e);
             }
@@ -137,14 +132,14 @@ public class ExportImagePlusAsOMEZARRAlgorithm extends JIPipeSimpleIteratingAlgo
         else if(outputFormat == OutputFormat.ZARRDirectory) {
 
             // Add extensions and delete existing file/directory
-            outputPath = PathUtils.ensureExtension(outputPath, ".zarr.zip");
+            outputPath = PathUtils.ensureExtension(outputPath, ".zarr");
             PathUtils.deleteIfExists(outputPath, progressInfo);
             PathUtils.createDirectories(outputPath);
 
             // Create URI (unofficial one)
             String uri = ZARRUtils.pathToZARRURI(outputPath);
 
-            writeZarr(imp, outputPath, progressInfo);
+            writeZarr(imp, updatedChunkSize, outputPath, progressInfo);
 
             iterationStep.addOutputData(getFirstOutputSlot(), new URIData(uri), progressInfo);
         }
@@ -155,107 +150,19 @@ public class ExportImagePlusAsOMEZARRAlgorithm extends JIPipeSimpleIteratingAlgo
 
     }
 
-    private void writeZarr(ImagePlus imp, Path path, JIPipeProgressInfo progressInfo) {
-        try(final N5Writer n5 = new N5Factory()
-                .zarrDimensionSeparator("/")
-                .openWriter(N5Factory.StorageFormat.ZARR, path.toUri())) {
-            OmeNgffMetadataParser metadataWriter = new OmeNgffMetadataParser();
-            NgffToImagePlus impMeta = new NgffToImagePlus();
-            RandomAccessibleInterval<?> baseImg = ZARRUtils.wrap(imp);
-            NgffSingleScaleAxesMetadata baseMetadata = impMeta.readMetadata(imp);
-
-            N5DatasetMetadata currentChannelMetadata = ZARRUtils.copyMetadata(baseMetadata);
-            N5DatasetMetadata currentMetadata;
-
-            // channel splitting may modify currentBlockSize, currentAbsoluteDownsampling, and channelMetadata
-            final List<RandomAccessibleInterval<?>> channelImgs = Collections.singletonList(baseImg);
-            for (int c = 0; c < channelImgs.size(); c++) {
-
-                currentMetadata = ZARRUtils.copyMetadata((N5DatasetMetadata)currentChannelMetadata);
-                final String channelDataset = getChannelDatasetName(c);
-                RandomAccessibleInterval<T> currentChannelImg = channelImgs.get(c);
-
-                final int nd = currentChannelImg.numDimensions();
-                final double[] baseResolution = new double[nd];
-                fillResolution(baseMetadata, baseResolution);
-
-                // every channel starts at the original scale level reset
-                // downsampling factors to 1
-                currentAbsoluteDownsampling = new long[nd];
-                Arrays.fill(currentAbsoluteDownsampling, 1);
-
-                final double[] currentResolution = new double[nd];
-                System.arraycopy(baseResolution, 0, currentResolution, 0, nd);
-
-                final N multiscaleMetadata = initializeMultiscaleMetadata((M)currentMetadata, channelDataset);
-                currentTranslation = new double[nd];
-
-                // write scale levels
-                // we will stop early even when maxNumScales != 1
-                final int maxNumScales = computeScales ? 99 : 1;
-                boolean anyScalesWritten = false;
-                for (int s = 0; s < maxNumScales; s++) {
-
-                    final String dset = getScaleDatasetName(c, s);
-                    // downsample when relevant
-                    long[] relativeFactors = new long[nd];
-                    Arrays.fill(relativeFactors, 1);
-
-                    if (s > 0) {
-                        relativeFactors = getRelativeDownsampleFactors(currentMetadata, currentChannelImg.numDimensions(), s, currentAbsoluteDownsampling);
-
-                        // update absolute downsampling factors
-                        for (int i = 0; i < nd; i++)
-                            currentAbsoluteDownsampling[i] *= relativeFactors[i];
-
-                        currentChannelImg = downsampleMethod((RandomAccessibleInterval<T>)getPreviousScaleImage(c, s), relativeFactors);
-
-                        // update resolution
-                        Arrays.setAll(currentResolution, i -> {
-                            return currentAbsoluteDownsampling[i] * baseResolution[i];
-                        });
-
-                        if (downsampleMethod.equals(DOWN_AVERAGE))
-                            Arrays.setAll(currentTranslation, i -> {
-                                if (currentAbsoluteDownsampling[i] > 1)
-                                    return baseResolution[i] * (0.5 * currentAbsoluteDownsampling[i] - 0.5);
-                                else
-                                    return 0.0;
-                            });
-                    }
-
-                    // update metadata to reflect this scale level, returns new metadata instance
-                    currentMetadata = (M)metadataForThisScale(dset, currentMetadata, downsampleMethod,
-                            baseResolution,
-                            currentAbsoluteDownsampling,
-                            currentResolution,
-                            currentTranslation);
-
-                    // write to the appropriate dataset
-                    // if dataset exists and not overwritten, don't write metadata
-                    if (!write(currentChannelImg, n5, dset, compression, currentMetadata))
-                        continue;
-
-                    storeScaleReference(c, s, currentChannelImg);
-                    updateMultiscaleMetadata(multiscaleMetadata, currentMetadata);
-                    anyScalesWritten = true;
-
-                    // chunkSize variable is updated by the write method
-                    if (lastScale(chunkSize, currentChannelImg))
-                        break;
-                }
-
-                if (anyScalesWritten)
-                    writeMetadata(
-                            // this returns null when not multiscale
-                            finalizeMultiscaleMetadata(channelDataset, multiscaleMetadata),
-                            n5,
-                            channelDataset);
-            }
-
-        } catch (IOException e) {
-            throw new RuntimeException(e);
-        }
+    private void writeZarr(ImagePlus imp, int[] updatedChunkSize, Path path, JIPipeProgressInfo progressInfo) {
+        N5ScalePyramidExporter exporter = new N5ScalePyramidExporter();
+        exporter.setOptions(imp,
+                ZARRUtils.pathToZARRURI(path),
+                "s0",
+                N5ScalePyramidExporter.ZARR_FORMAT,
+                Ints.join(",", updatedChunkSize),
+                createPyramid,
+                N5ScalePyramidExporter.DOWN_SAMPLE,
+                N5Importer.MetadataOmeZarrKey,
+                compression.getNativeValue());
+        progressInfo.log("Exporting ZARR to " + path + " (URI " + ZARRUtils.pathToZARRURI(path) + ")");
+        exporter.run();
     }
 
     @SetJIPipeDocumentation(name = "Chunk size", description = "If enabled, sets the chunk size via an expression that must return an array of five numbers, corresponding to the ImageJ1 axis order is X,Y,C,Z,T. " +
@@ -284,7 +191,7 @@ public class ExportImagePlusAsOMEZARRAlgorithm extends JIPipeSimpleIteratingAlgo
         this.chunkSizeExpression = chunkSizeExpression;
     }
 
-    @SetJIPipeDocumentation(name = "Create mult-resolution pyramid", description = "Writes multiple resolutions. Increases size and processing time, but makes the ZARR more useful for cloud storage and image viewers.")
+    @SetJIPipeDocumentation(name = "Create multi-resolution pyramid", description = "Writes multiple resolutions. Increases size and processing time, but makes the ZARR more useful for cloud storage and image viewers.")
     @JIPipeParameter("create-pyramid")
     public boolean isCreatePyramid() {
         return createPyramid;
