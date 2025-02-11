@@ -16,6 +16,8 @@ package org.hkijena.jipipe.plugins.filesystem.algorithms.zarr;
 import org.hkijena.jipipe.api.ConfigureJIPipeNode;
 import org.hkijena.jipipe.api.JIPipeProgressInfo;
 import org.hkijena.jipipe.api.SetJIPipeDocumentation;
+import org.hkijena.jipipe.api.data.storage.JIPipeReadDataStorage;
+import org.hkijena.jipipe.api.data.storage.JIPipeZIPReadDataStorage;
 import org.hkijena.jipipe.api.nodes.AddJIPipeInputSlot;
 import org.hkijena.jipipe.api.nodes.AddJIPipeOutputSlot;
 import org.hkijena.jipipe.api.nodes.JIPipeGraphNodeRunContext;
@@ -34,29 +36,43 @@ import org.janelia.saalfeldlab.n5.universe.N5TreeNode;
 import org.janelia.saalfeldlab.n5.universe.metadata.ome.ngff.v04.OmeNgffMetadataParser;
 
 import java.io.IOException;
+import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.Collections;
 import java.util.stream.Collectors;
 
 import static org.janelia.saalfeldlab.n5.ij.N5Importer.PARSERS;
 
-@SetJIPipeDocumentation(name = "List ZARR directory datasets", description = "Lists all available datasets and groups in an ZARR directory")
+@SetJIPipeDocumentation(name = "List ZARR directory/ZIP datasets", description = "Lists all available datasets and groups in an ZARR directory or ZIP")
 @ConfigureJIPipeNode(nodeTypeCategory = FileSystemNodeTypeCategory.class, menuPath = "ZARR")
 @AddJIPipeInputSlot(value = FolderData.class, name = "Input", create = true)
 @AddJIPipeOutputSlot(value = ResultsTableData.class, name = "Output", create = true)
-public class ListZARRDatasetsAlgorithm extends JIPipeSimpleIteratingAlgorithm {
+public class ListZARRDirectoryZIPDatasetsAlgorithm extends JIPipeSimpleIteratingAlgorithm {
 
-    public ListZARRDatasetsAlgorithm(JIPipeNodeInfo info) {
+    public ListZARRDirectoryZIPDatasetsAlgorithm(JIPipeNodeInfo info) {
         super(info);
     }
 
-    public ListZARRDatasetsAlgorithm(ListZARRDatasetsAlgorithm other) {
+    public ListZARRDirectoryZIPDatasetsAlgorithm(ListZARRDirectoryZIPDatasetsAlgorithm other) {
         super(other);
     }
 
     @Override
     protected void runIteration(JIPipeSingleIterationStep iterationStep, JIPipeIterationContext iterationContext, JIPipeGraphNodeRunContext runContext, JIPipeProgressInfo progressInfo) {
         Path inputPath = iterationStep.getInputData(getFirstInputSlot(), PathData.class, progressInfo).toPath();
+        if (Files.isRegularFile(inputPath)) {
+            progressInfo.log("Listing OME ZARR from ZIP file " + inputPath);
+            try (JIPipeReadDataStorage storage = new JIPipeZIPReadDataStorage(progressInfo.resolve("ZIP"), inputPath)) {
+                processInputPath(iterationStep, progressInfo, storage.getFileSystemPath());
+            } catch (IOException e) {
+                throw new RuntimeException(e);
+            }
+        } else {
+            processInputPath(iterationStep, progressInfo, inputPath);
+        }
+    }
+
+    private void processInputPath(JIPipeSingleIterationStep iterationStep, JIPipeProgressInfo progressInfo, Path inputPath) {
         String n5Path = "zarr://file:" + inputPath.toString();
 
         // Discover data sets

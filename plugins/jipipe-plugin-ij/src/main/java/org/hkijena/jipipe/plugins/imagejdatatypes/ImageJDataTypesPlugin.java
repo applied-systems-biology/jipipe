@@ -513,6 +513,7 @@ public class ImageJDataTypesPlugin extends JIPipePrepackagedDefaultJavaPlugin {
         registerNodeType("import-imagej-bioformats", BioFormatsImporterAlgorithm.class, UIUtils.getIconURLFromResources("apps/bioformats.png"));
         registerNodeType("import-imagej-lut-from-file-as-rgb", ImportLUTAsRGBFromFileAlgorithm.class, UIUtils.getIconURLFromResources("data-types/lut.png"));
         registerNodeType("import-ome-zarr-from-zip-directory-as-imgplus", ImportOMEZARRFromZipDirectoryAsImagePlusAlgorithm.class, UIUtils.getIconURLFromResources("actions/zarr.png"));
+        registerNodeType("import-ome-zarr-from-uri-as-imgplus", ImportOMEZARRFromURIAsImagePlusAlgorithm.class, UIUtils.getIconURLFromResources("actions/zarr.png"));
 
         // Register algorithms
         registerNodeType("convert-imagej-image", ImageTypeConverter.class, UIUtils.getIconURLFromResources("actions/viewimage.png"));

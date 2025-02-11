@@ -28,12 +28,15 @@ import org.hkijena.jipipe.JIPipe;
 import org.hkijena.jipipe.api.JIPipeProgressInfo;
 import org.hkijena.jipipe.utils.PathUtils;
 import org.janelia.saalfeldlab.n5.ij.N5IJUtils;
+import org.janelia.saalfeldlab.n5.universe.N5TreeNode;
+import org.janelia.saalfeldlab.n5.universe.metadata.N5DatasetMetadata;
 
 import java.io.IOException;
 import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
+import java.util.List;
 
 public class ZARRUtils {
     /**
@@ -153,4 +156,23 @@ public class ZARRUtils {
         }
     }
 
+    public static void findImagesToImport(JIPipeProgressInfo progressInfo, N5TreeNode node, List<N5TreeNode> toImport) {
+        if (node.getMetadata() != null) {
+            if (node.getMetadata().getClass().getSimpleName().equalsIgnoreCase("NgffSingleScaleAxesMetadata") && node.getMetadata() instanceof N5DatasetMetadata) {
+                progressInfo.log("- Detected OME NGFF Image " + node.getMetadata() + " at " + node.getPath());
+                toImport.add(node);
+            } else if (node.getMetadata().getClass().getSimpleName().equalsIgnoreCase("OmeNgffMetadata")) {
+                progressInfo.log("- Detected OME NGFF " + node.getMetadata() + " at " + node.getPath());
+            }
+            else if(node.getMetadata() instanceof N5DatasetMetadata) {
+                progressInfo.log("- Detected dataset " + node.getMetadata() + " at " + node.getPath());
+                toImport.add(node);
+            }
+            else {
+                progressInfo.log("- Detected unknown " + node.getMetadata() + " at " + node.getPath());
+            }
+        } else {
+            progressInfo.log("- Detected group at " + node.getPath());
+        }
+    }
 }

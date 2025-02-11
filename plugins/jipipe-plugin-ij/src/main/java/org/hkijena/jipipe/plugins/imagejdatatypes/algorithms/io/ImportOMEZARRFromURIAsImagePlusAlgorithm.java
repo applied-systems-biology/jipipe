@@ -21,9 +21,6 @@ import org.hkijena.jipipe.api.JIPipeProgressInfo;
 import org.hkijena.jipipe.api.SetJIPipeDocumentation;
 import org.hkijena.jipipe.api.annotation.JIPipeTextAnnotation;
 import org.hkijena.jipipe.api.annotation.JIPipeTextAnnotationMergeMode;
-import org.hkijena.jipipe.api.data.JIPipeOutputDataSlot;
-import org.hkijena.jipipe.api.data.storage.JIPipeReadDataStorage;
-import org.hkijena.jipipe.api.data.storage.JIPipeZIPReadDataStorage;
 import org.hkijena.jipipe.api.nodes.AddJIPipeInputSlot;
 import org.hkijena.jipipe.api.nodes.AddJIPipeOutputSlot;
 import org.hkijena.jipipe.api.nodes.JIPipeGraphNodeRunContext;
@@ -37,17 +34,16 @@ import org.hkijena.jipipe.plugins.expressions.AddJIPipeExpressionParameterVariab
 import org.hkijena.jipipe.plugins.expressions.JIPipeExpressionParameterSettings;
 import org.hkijena.jipipe.plugins.expressions.JIPipeExpressionVariablesMap;
 import org.hkijena.jipipe.plugins.expressions.OptionalJIPipeExpressionParameter;
-import org.hkijena.jipipe.plugins.expressions.custom.JIPipeCustomExpressionVariablesParameter;
 import org.hkijena.jipipe.plugins.expressions.custom.JIPipeCustomExpressionVariablesParameterVariablesInfo;
 import org.hkijena.jipipe.plugins.expressions.variables.JIPipeTextAnnotationsExpressionParameterVariablesInfo;
-import org.hkijena.jipipe.plugins.filesystem.dataypes.FolderData;
-import org.hkijena.jipipe.plugins.filesystem.dataypes.PathData;
 import org.hkijena.jipipe.plugins.imagejdatatypes.datatypes.ImagePlusData;
 import org.hkijena.jipipe.plugins.imagejdatatypes.datatypes.OMEImageData;
 import org.hkijena.jipipe.plugins.imagejdatatypes.datatypes.ROI2DListData;
 import org.hkijena.jipipe.plugins.imagejdatatypes.util.ROIHandler;
 import org.hkijena.jipipe.plugins.imagejdatatypes.util.ZARRUtils;
 import org.hkijena.jipipe.plugins.parameters.library.primitives.optional.OptionalTextAnnotationNameParameter;
+import org.hkijena.jipipe.plugins.strings.StringData;
+import org.hkijena.jipipe.plugins.strings.URIData;
 import org.janelia.saalfeldlab.n5.N5Reader;
 import org.janelia.saalfeldlab.n5.ij.N5Importer;
 import org.janelia.saalfeldlab.n5.universe.N5DatasetDiscoverer;
@@ -56,9 +52,6 @@ import org.janelia.saalfeldlab.n5.universe.metadata.N5DatasetMetadata;
 import org.janelia.saalfeldlab.n5.universe.metadata.ome.ngff.v04.OmeNgffMetadataParser;
 
 import java.io.IOException;
-import java.nio.file.Files;
-import java.nio.file.Path;
-import java.nio.file.Paths;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
@@ -68,22 +61,24 @@ import java.util.stream.Collectors;
 
 import static org.janelia.saalfeldlab.n5.ij.N5Importer.PARSERS;
 
-@SetJIPipeDocumentation(name = "Import OME ZARR from ZIP/directory", description = "Imports images within an OME ZARR (NGFF) ZIP/directory as ImageJ image. " +
-        "Please note that all data contained within the ZARR ZIP/directory will be imported and only XYZCT axes are supported due to ImageJ limitations.")
+@SetJIPipeDocumentation(name = "Import OME ZARR from URI", description = "Imports OME ZARR (NGFF) images provided as URI as ImageJ image. " +
+        "Please note that all data contained within the ZARR ZIP/directory will be imported and only XYZCT axes are supported due to ImageJ limitations. " +
+        "Please note that OME metadata cannot be currently loaded due to missing standardization (see https://github.com/ome/ngff/issues/104). " +
+        "If you have OME ZARR as local files or as ZIP, use the other reader (supports OME metadata using the mechanism as implemented in QuPath)")
 @AddJIPipeCitation("https://ngff.openmicroscopy.org/latest/")
 @ConfigureJIPipeNode(nodeTypeCategory = DataSourceNodeTypeCategory.class)
-@AddJIPipeInputSlot(value = PathData.class, name = "Input", create = true)
+@AddJIPipeInputSlot(value = URIData.class, name = "Input", create = true)
 @AddJIPipeOutputSlot(value = OMEImageData.class, name = "Output", create = true)
-public class ImportOMEZARRFromZipDirectoryAsImagePlusAlgorithm extends JIPipeSimpleIteratingAlgorithm {
+public class ImportOMEZARRFromURIAsImagePlusAlgorithm extends JIPipeSimpleIteratingAlgorithm {
 
     private OptionalJIPipeExpressionParameter datasetFilter = new OptionalJIPipeExpressionParameter();
     private OptionalTextAnnotationNameParameter datasetNameAnnotation = new OptionalTextAnnotationNameParameter("#Dataset", true);
 
-    public ImportOMEZARRFromZipDirectoryAsImagePlusAlgorithm(JIPipeNodeInfo info) {
+    public ImportOMEZARRFromURIAsImagePlusAlgorithm(JIPipeNodeInfo info) {
         super(info);
     }
 
-    public ImportOMEZARRFromZipDirectoryAsImagePlusAlgorithm(ImportOMEZARRFromZipDirectoryAsImagePlusAlgorithm other) {
+    public ImportOMEZARRFromURIAsImagePlusAlgorithm(ImportOMEZARRFromURIAsImagePlusAlgorithm other) {
         super(other);
         this.datasetFilter = new OptionalJIPipeExpressionParameter(other.datasetFilter);
         this.datasetNameAnnotation = new OptionalTextAnnotationNameParameter(other.datasetNameAnnotation);
@@ -91,21 +86,13 @@ public class ImportOMEZARRFromZipDirectoryAsImagePlusAlgorithm extends JIPipeSim
 
     @Override
     protected void runIteration(JIPipeSingleIterationStep iterationStep, JIPipeIterationContext iterationContext, JIPipeGraphNodeRunContext runContext, JIPipeProgressInfo progressInfo) {
-        Path inputPath = iterationStep.getInputData(getFirstInputSlot(), PathData.class, progressInfo).toPath();
-        if (Files.isRegularFile(inputPath)) {
-            progressInfo.log("Importing OME ZARR from ZIP file " + inputPath);
-            try (JIPipeReadDataStorage storage = new JIPipeZIPReadDataStorage(progressInfo.resolve("ZIP"), inputPath)) {
-                readZARRFromInputPath(iterationStep, storage.getFileSystemPath(), progressInfo);
-            } catch (IOException e) {
-                throw new RuntimeException(e);
-            }
-        } else {
-            readZARRFromInputPath(iterationStep, inputPath, progressInfo);
-        }
-    }
+        String n5Path = iterationStep.getInputData(getFirstInputSlot(), StringData.class, progressInfo).getData();
 
-    private void readZARRFromInputPath(JIPipeSingleIterationStep iterationStep, Path inputPath, JIPipeProgressInfo progressInfo) {
-        String n5Path = ZARRUtils.pathToZARRURI(inputPath);
+        // Add zarr:// if needed
+        if(!n5Path.startsWith("zarr://")) {
+            n5Path = "zarr://" + n5Path;
+            progressInfo.log("Fixing path: " + n5Path);
+        }
 
         // Discover data sets
         progressInfo.log("Reading " + n5Path);
@@ -145,16 +132,18 @@ public class ImportOMEZARRFromZipDirectoryAsImagePlusAlgorithm extends JIPipeSim
                         null);
                 progressInfo.log("Loaded " + importedImages.size() + " images from " + treeNode.getPath());
 
-                // Look for OME metadata
-                // Currently not specified https://github.com/ome/ngff/issues/104
-                // But Qupath puts it into OME/METADATA.ome.xml, so we do the same
+//                // Look for OME metadata
+//                // Currently not specified https://github.com/ome/ngff/issues/104
+//                // But Qupath puts it into OME/METADATA.ome.xml, so we do the same
                 OMEXMLMetadata omexmlMetadata = null;
-                try {
-                    Path parentPath = Paths.get(inputPath + treeNode.getPath()).getParent();
-                    omexmlMetadata = ZARRUtils.readOMEXMLFromZARR(parentPath, progressInfo);
-                } catch (Exception e) {
-                    progressInfo.log(e);
-                }
+//                try {
+//                    Path parentPath = Paths.get(inputPath + treeNode.getPath()).getParent();
+//                    omexmlMetadata = ZARRUtils.readOMEXMLFromZARR(parentPath, progressInfo);
+//                } catch (Exception e) {
+//                    progressInfo.log(e);
+//                }
+
+                progressInfo.log("Info: OME XML metadata currently not supported!");
 
                 for (ImagePlus image : importedImages) {
                     List<JIPipeTextAnnotation> annotations = new ArrayList<>();
