@@ -29,6 +29,7 @@ import org.hkijena.jipipe.plugins.JIPipePrepackagedDefaultJavaPlugin;
 import org.hkijena.jipipe.plugins.core.CorePlugin;
 import org.hkijena.jipipe.plugins.core.data.OpenInNativeApplicationDataImportOperation;
 import org.hkijena.jipipe.plugins.filesystem.FilesystemPlugin;
+import org.hkijena.jipipe.plugins.filesystem.algorithms.zarr.ListZARRDatasetsAlgorithm;
 import org.hkijena.jipipe.plugins.imagejdatatypes.algorithms.*;
 import org.hkijena.jipipe.plugins.imagejdatatypes.algorithms.annotate.AnnotateDataWithImagePropertiesAlgorithm;
 import org.hkijena.jipipe.plugins.imagejdatatypes.algorithms.annotate.ImagePropertiesToAnnotationAlgorithm;
@@ -521,13 +522,13 @@ public class ImageJDataTypesPlugin extends JIPipePrepackagedDefaultJavaPlugin {
         registerNodeType("set-imagej-bioformats-settings", SetBioFormatsExporterSettings.class, UIUtils.getIconURLFromResources("apps/bioformats.png"));
         registerNodeType("image-properties-to-annotation", ImagePropertiesToAnnotationAlgorithm.class, UIUtils.getIconURLFromResources("data-types/annotation-table.png"));
         registerNodeType("annotate-data-with-image-properties", AnnotateDataWithImagePropertiesAlgorithm.class, UIUtils.getIconURLFromResources("data-types/annotation-table.png"));
+        registerNodeType("ij1-export-ome-zarr", ExportImagePlusAsOMEZARRAlgorithm.class, UIUtils.getIconURLFromResources("actions/zarr.png"));
+        registerEnumParameterType("ij1-export-ome-zarr:output-format", ExportImagePlusAsOMEZARRAlgorithm.OutputFormat.class, "ZARR Output format", "Output formats");
+        registerEnumParameterType("ij1-export-ome-zarr:compression", ExportImagePlusAsOMEZARRAlgorithm.OutputFormat.class, "ZARR Compression", "Available compression types");
 
         registerNodeType("ij1-color-convert-to-rgb", ToRGBColorSpaceConverterAlgorithm.class, UIUtils.getIconURLFromResources("data-types/imgplus-color-rgb.png"));
         registerNodeType("ij1-color-convert-to-hsb", ToHSBColorSpaceConverterAlgorithm.class, UIUtils.getIconURLFromResources("data-types/imgplus-color-hsb.png"));
         registerNodeType("ij1-color-convert-to-lab", ToLABColorSpaceConverterAlgorithm.class, UIUtils.getIconURLFromResources("data-types/imgplus-color-lab.png"));
-
-        // ZARR
-        registerNodeType("list-zarr-directory-datasets", ListZARRDatasetsAlgorithm.class, UIUtils.getIconURLFromResources("actions/zarr.png"));
 
         // Register parameter editors
         registerEnumParameterType("import-imagej-bioformats:color-mode", OMEColorMode.class,

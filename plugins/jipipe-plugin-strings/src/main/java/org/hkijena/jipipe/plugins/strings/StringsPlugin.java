@@ -87,8 +87,11 @@ public class StringsPlugin extends JIPipePrepackagedDefaultJavaPlugin {
                 new OpenInNativeApplicationDataImportOperation(".xml"));
         registerDatatype("json", JsonData.class, UIUtils.getIconURLFromResources("data-types/json.png"),
                 new OpenInNativeApplicationDataImportOperation(".json"));
+        registerDatatype("uri", URIData.class, UIUtils.getIconURLFromResources("data-types/path.png"),
+                new OpenInNativeApplicationDataImportOperation(".uri"));
         registerDatatypeConversion(new StringDataConverter(XMLData.class));
         registerDatatypeConversion(new StringDataConverter(JsonData.class));
+        registerDatatypeConversion(new StringDataConverter(URIData.class));
         registerDefaultDataTypeViewer(StringData.class, StringDataViewer.class);
 
         registerNodeType("define-string", StringDefinitionDataSource.class);

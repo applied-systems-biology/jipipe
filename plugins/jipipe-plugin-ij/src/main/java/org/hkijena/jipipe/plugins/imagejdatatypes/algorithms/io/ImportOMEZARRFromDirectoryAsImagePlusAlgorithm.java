@@ -15,6 +15,7 @@ package org.hkijena.jipipe.plugins.imagejdatatypes.algorithms.io;
 
 import ij.ImagePlus;
 import net.imglib2.Interval;
+import org.hkijena.jipipe.api.AddJIPipeCitation;
 import org.hkijena.jipipe.api.ConfigureJIPipeNode;
 import org.hkijena.jipipe.api.JIPipeProgressInfo;
 import org.hkijena.jipipe.api.SetJIPipeDocumentation;
@@ -39,6 +40,7 @@ import org.hkijena.jipipe.plugins.expressions.variables.JIPipeTextAnnotationsExp
 import org.hkijena.jipipe.plugins.filesystem.dataypes.FolderData;
 import org.hkijena.jipipe.plugins.filesystem.dataypes.PathData;
 import org.hkijena.jipipe.plugins.imagejdatatypes.datatypes.ImagePlusData;
+import org.hkijena.jipipe.plugins.imagejdatatypes.util.ZARRUtils;
 import org.hkijena.jipipe.plugins.parameters.library.primitives.optional.OptionalTextAnnotationNameParameter;
 import org.janelia.saalfeldlab.n5.N5Reader;
 import org.janelia.saalfeldlab.n5.ij.N5Importer;
@@ -61,8 +63,9 @@ import java.util.stream.Collectors;
 
 import static org.janelia.saalfeldlab.n5.ij.N5Importer.PARSERS;
 
-@SetJIPipeDocumentation(name = "Import OME ZARR from directory", description = "Imports images within an OME ZARR (NGFF) directory as ImageJ image. " +
+@SetJIPipeDocumentation(name = "Import OME ZARR from directory (IJ1)", description = "Imports images within an OME ZARR (NGFF) directory as ImageJ image. " +
         "Please note that all data contained within the ZARR directory will be imported and only XYZCT axes are supported due to ImageJ limitations.")
+@AddJIPipeCitation("https://ngff.openmicroscopy.org/latest/")
 @ConfigureJIPipeNode(nodeTypeCategory = DataSourceNodeTypeCategory.class)
 @AddJIPipeInputSlot(value = FolderData.class, name = "Input", create = true)
 @AddJIPipeOutputSlot(value = ImagePlusData.class, name = "Output", create = true)
@@ -84,7 +87,7 @@ public class ImportOMEZARRFromDirectoryAsImagePlusAlgorithm extends JIPipeSimple
     @Override
     protected void runIteration(JIPipeSingleIterationStep iterationStep, JIPipeIterationContext iterationContext, JIPipeGraphNodeRunContext runContext, JIPipeProgressInfo progressInfo) {
         Path inputPath = iterationStep.getInputData(getFirstInputSlot(), PathData.class, progressInfo).toPath();
-        String n5Path = "zarr://file:" + inputPath.toString();
+        String n5Path = ZARRUtils.pathToZARRURI(inputPath);
 
         // Discover data sets
         progressInfo.log("Reading " + n5Path);

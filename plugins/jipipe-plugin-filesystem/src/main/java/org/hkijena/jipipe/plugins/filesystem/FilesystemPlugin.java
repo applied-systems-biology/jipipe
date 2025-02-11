@@ -21,7 +21,8 @@ import org.hkijena.jipipe.api.JIPipeProgressInfo;
 import org.hkijena.jipipe.api.compat.DefaultImageJDataExporterUI;
 import org.hkijena.jipipe.api.compat.DefaultImageJDataImporterUI;
 import org.hkijena.jipipe.plugins.JIPipePrepackagedDefaultJavaPlugin;
-import org.hkijena.jipipe.plugins.filesystem.algorithms.*;
+import org.hkijena.jipipe.plugins.filesystem.algorithms.local.*;
+import org.hkijena.jipipe.plugins.filesystem.algorithms.zarr.ListZARRDatasetsAlgorithm;
 import org.hkijena.jipipe.plugins.filesystem.compat.PathDataFromTableImageJImporter;
 import org.hkijena.jipipe.plugins.filesystem.compat.PathDataToTableImageJExporter;
 import org.hkijena.jipipe.plugins.filesystem.datasources.*;
@@ -166,6 +167,9 @@ public class FilesystemPlugin extends JIPipePrepackagedDefaultJavaPlugin {
 
         registerNodeType("path-modify-with-expression", ModifyPathWithExpression.class, UIUtils.getIconURLFromResources("actions/insert-math-expression.png"));
         registerNodeType("get-exported-path", ConvertToExportedPath.class, UIUtils.getIconURLFromResources("actions/reload.png"));
+
+        // ZARR
+        registerNodeType("list-zarr-directory-datasets", ListZARRDatasetsAlgorithm.class, UIUtils.getIconURLFromResources("actions/zarr.png"));
 
         registerNodeExamplesFromResources(RESOURCES, "examples");
     }
