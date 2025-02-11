@@ -20,6 +20,7 @@ import org.hkijena.jipipe.api.JIPipeProgressInfo;
 import org.hkijena.jipipe.api.SetJIPipeDocumentation;
 import org.hkijena.jipipe.api.annotation.JIPipeTextAnnotation;
 import org.hkijena.jipipe.api.annotation.JIPipeTextAnnotationMergeMode;
+import org.hkijena.jipipe.api.environments.ExternalEnvironmentParameterSettings;
 import org.hkijena.jipipe.api.nodes.AddJIPipeInputSlot;
 import org.hkijena.jipipe.api.nodes.AddJIPipeOutputSlot;
 import org.hkijena.jipipe.api.nodes.JIPipeGraphNodeRunContext;
@@ -29,7 +30,12 @@ import org.hkijena.jipipe.api.nodes.categories.DataSourceNodeTypeCategory;
 import org.hkijena.jipipe.api.nodes.iterationstep.JIPipeIterationContext;
 import org.hkijena.jipipe.api.nodes.iterationstep.JIPipeSingleIterationStep;
 import org.hkijena.jipipe.api.parameters.JIPipeParameter;
+import org.hkijena.jipipe.plugins.expressions.AddJIPipeExpressionParameterVariable;
+import org.hkijena.jipipe.plugins.expressions.JIPipeExpressionParameterSettings;
+import org.hkijena.jipipe.plugins.expressions.JIPipeExpressionVariablesMap;
 import org.hkijena.jipipe.plugins.expressions.OptionalJIPipeExpressionParameter;
+import org.hkijena.jipipe.plugins.expressions.custom.JIPipeCustomExpressionVariablesParameterVariablesInfo;
+import org.hkijena.jipipe.plugins.expressions.variables.JIPipeTextAnnotationsExpressionParameterVariablesInfo;
 import org.hkijena.jipipe.plugins.filesystem.dataypes.FolderData;
 import org.hkijena.jipipe.plugins.filesystem.dataypes.PathData;
 import org.hkijena.jipipe.plugins.imagejdatatypes.datatypes.ImagePlusData;
@@ -110,7 +116,12 @@ public class ImportOMEZARRFromDirectoryAsImagePlusAlgorithm extends JIPipeSimple
             throw new RuntimeException(e);
         }
 
-        // TODO: filter data sets
+        if(datasetFilter.isEnabled()) {
+            JIPipeExpressionVariablesMap variablesMap = new JIPipeExpressionVariablesMap();
+            variablesMap.putCustomVariables(getDefaultCustomExpressionVariables());
+            variablesMap.putAnnotations(iterationStep.getMergedTextAnnotations());
+            toImport.removeIf(node -> !datasetFilter.getContent().evaluateToBoolean(variablesMap));
+        }
 
         // Import the datasets
         ExecutorService executorService = Executors.newSingleThreadExecutor();
@@ -133,8 +144,12 @@ public class ImportOMEZARRFromDirectoryAsImagePlusAlgorithm extends JIPipeSimple
 
     }
 
-    @SetJIPipeDocumentation(name = "Dataset filter", description = "Allows to specify which dataset should be imported.")
+    @SetJIPipeDocumentation(name = "Keep dataset if ...", description = "If enabled, allows to specify which dataset should be imported.")
     @JIPipeParameter("dataset-filter")
+    @JIPipeExpressionParameterSettings(hint = "per dataset")
+    @AddJIPipeExpressionParameterVariable(fromClass = JIPipeTextAnnotationsExpressionParameterVariablesInfo.class)
+    @AddJIPipeExpressionParameterVariable(fromClass = JIPipeCustomExpressionVariablesParameterVariablesInfo.class)
+    @AddJIPipeExpressionParameterVariable(key = "path", name = "Dataset path", description = "The internal path of the dataset")
     public OptionalJIPipeExpressionParameter getDatasetFilter() {
         return datasetFilter;
     }
