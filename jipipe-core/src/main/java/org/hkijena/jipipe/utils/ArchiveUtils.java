@@ -13,8 +13,13 @@
 
 package org.hkijena.jipipe.utils;
 
+import org.apache.commons.compress.archivers.ArchiveEntry;
+import org.apache.commons.compress.archivers.ArchiveException;
+import org.apache.commons.compress.archivers.ArchiveInputStream;
+import org.apache.commons.compress.archivers.ArchiveStreamFactory;
 import org.apache.commons.compress.archivers.tar.TarArchiveEntry;
 import org.apache.commons.compress.archivers.tar.TarArchiveInputStream;
+import org.apache.commons.compress.compressors.CompressorException;
 import org.apache.commons.compress.compressors.gzip.GzipCompressorInputStream;
 import org.hkijena.jipipe.api.JIPipeProgressInfo;
 
@@ -183,6 +188,57 @@ public class ArchiveUtils {
 
             }
         }
+    }
+
+    /**
+     * Returns the contents of the specified entry inside an archive (ZIP or tar.gz)
+     * as a byte array, or null if the entry is not found.
+     *
+     * @param archivePath  the path to the archive file
+     * @param internalPath the path to the entry within the archive
+     * @return the entry’s data as a byte array, or null if not found
+     * @throws IOException if there is an error reading or processing the archive
+     */
+    public static byte[] decompressArchiveEntry(Path archivePath, Path internalPath) throws IOException {
+        // Normalize the entry name to use forward slashes (as is common in archives)
+        String targetEntryName = internalPath.toString().replace('\\', '/');
+        // Get the archive file name in lower-case for extension checking
+        String fileName = archivePath.getFileName().toString().toLowerCase();
+
+        try (InputStream fis = Files.newInputStream(archivePath);
+             BufferedInputStream bis = new BufferedInputStream(fis)) {
+
+            // Wrap the stream in a Gzip decompressor if the file is a tar.gz (or .tgz)
+            InputStream decompressedStream = (fileName.endsWith(".tar.gz") || fileName.endsWith(".tgz"))
+                    ? new GzipCompressorInputStream(bis)
+                    : bis;
+
+            // Create the archive stream (auto-detects the archive type, e.g. ZIP or TAR)
+            try (ArchiveInputStream archiveInputStream =
+                         new ArchiveStreamFactory().createArchiveInputStream(decompressedStream)) {
+
+                ArchiveEntry entry;
+                // Loop through all entries in the archive
+                while ((entry = archiveInputStream.getNextEntry()) != null) {
+                    // Compare the entry's name with the target name
+                    if (entry.getName().equals(targetEntryName)) {
+                        // Read the contents of the found entry into a byte array
+                        ByteArrayOutputStream baos = new ByteArrayOutputStream();
+                        byte[] buffer = new byte[8192];
+                        int n;
+                        while ((n = archiveInputStream.read(buffer)) != -1) {
+                            baos.write(buffer, 0, n);
+                        }
+                        return baos.toByteArray();
+                    }
+                }
+            }
+        } catch (ArchiveException e) {
+            throw new IOException("Error processing archive " + archivePath, e);
+        }
+
+        // Return null if the entry was not found
+        return null;
     }
 
     public static void main(String[] args) throws IOException {

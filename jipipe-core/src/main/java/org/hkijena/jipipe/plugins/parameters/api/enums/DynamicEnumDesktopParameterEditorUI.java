@@ -33,10 +33,6 @@ public class DynamicEnumDesktopParameterEditorUI extends JIPipeDesktopParameterE
     private boolean isComboBox;
     private JButton currentlyDisplayed;
 
-    /**
-     * @param workbench       workbench
-     * @param parameterAccess the parameter
-     */
     public DynamicEnumDesktopParameterEditorUI(InitializationParameters parameters) {
         super(parameters);
         initialize();

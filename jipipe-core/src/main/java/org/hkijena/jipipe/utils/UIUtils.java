@@ -116,6 +116,8 @@ public class UIUtils {
     public static final FileNameExtensionFilter EXTENSION_FILTER_JSON = new FileNameExtensionFilter("JSON file (*.json)", "json");
     public static final FileNameExtensionFilter EXTENSION_FILTER_TXT = new FileNameExtensionFilter("Text file (*.txt)", "txt", "log");
     public static final FileNameExtensionFilter EXTENSION_FILTER_ZIP = new FileNameExtensionFilter("ZIP file (*.zip)", "zip");
+    public static final FileNameExtensionFilter EXTENSION_FILTER_TAR_GZ = new FileNameExtensionFilter("GZipped TAR file (*.tar.gz)", "tar.gz");
+    public static final FileNameExtensionFilter EXTENSION_FILTER_ARCHIVE = new FileNameExtensionFilter("Archive (*.zip, *.tar.gz)", "zip", "gz");
     public static final FileNameExtensionFilter EXTENSION_FILTER_ROI_ZIP = new FileNameExtensionFilter("ImageJ ROIs (*.zip)", "zip");
     public static final FileNameExtensionFilter EXTENSION_FILTER_ROI = new FileNameExtensionFilter("ImageJ ROI (*.roi)", "roi");
     public static final FileNameExtensionFilter EXTENSION_FILTER_ROIS = new FileNameExtensionFilter("ImageJ ROI (*.roi, *.zip)", "roi", "zip");
@@ -1310,7 +1312,7 @@ public class UIUtils {
      * @param infoText  the info text
      * @param modal     make the dialog modal
      */
-    public static void openValidityReportDialog(JIPipeDesktopWorkbench workbench, Component parent, JIPipeValidationReport report, String title, String infoText, boolean modal) {
+    public static void showValidityReportDialog(JIPipeDesktopWorkbench workbench, Component parent, JIPipeValidationReport report, String title, String infoText, boolean modal) {
         JPanel contentPanel = new JPanel(new BorderLayout(8, 8));
 
         JIPipeDesktopValidityReportUI ui = new JIPipeDesktopValidityReportUI(workbench, false);

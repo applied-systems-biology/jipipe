@@ -53,7 +53,7 @@ public abstract class DynamicSetParameter<T> {
 
     @JsonSetter("values")
     public void setValues(Set<T> values) {
-        this.values = values;
+        this.values = new HashSet<>(values);
     }
 
     @JsonGetter("collapsed")

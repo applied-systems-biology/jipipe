@@ -85,6 +85,8 @@
     <file url="file://$PROJECT_DIR$/plugins/jipipe-plugin-ij-filaments/src/main/resources" charset="UTF-8" />
     <file url="file://$PROJECT_DIR$/plugins/jipipe-plugin-ij-multi-template-matching/src/main/java" charset="UTF-8" />
     <file url="file://$PROJECT_DIR$/plugins/jipipe-plugin-ij-multi-template-matching/src/main/resources" charset="UTF-8" />
+    <file url="file://$PROJECT_DIR$/plugins/jipipe-plugin-ij-ocr/src/main/java" charset="UTF-8" />
+    <file url="file://$PROJECT_DIR$/plugins/jipipe-plugin-ij-ocr/src/main/resources" charset="UTF-8" />
     <file url="file://$PROJECT_DIR$/plugins/jipipe-plugin-ij-omero/src/main/java" charset="UTF-8" />
     <file url="file://$PROJECT_DIR$/plugins/jipipe-plugin-ij-omero/src/main/resources" charset="UTF-8" />
     <file url="file://$PROJECT_DIR$/plugins/jipipe-plugin-ij-trackmate/src/main/java" charset="UTF-8" />

@@ -647,4 +647,8 @@ public class StringUtils {
             return StringUtils.parseDouble(StringUtils.nullToEmpty(o));
         }
     }
+
+    public static boolean isValidVersion(String version) {
+        return version.matches("\\d+(\\.\\d+)*");
+    }
 }

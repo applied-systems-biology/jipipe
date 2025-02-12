@@ -18,10 +18,7 @@ import org.hkijena.jipipe.api.JIPipeProgressInfo;
 import org.hkijena.jipipe.api.SetJIPipeDocumentation;
 import org.hkijena.jipipe.api.annotation.JIPipeTextAnnotation;
 import org.hkijena.jipipe.api.annotation.JIPipeTextAnnotationMergeMode;
-import org.hkijena.jipipe.api.nodes.AddJIPipeInputSlot;
-import org.hkijena.jipipe.api.nodes.AddJIPipeOutputSlot;
-import org.hkijena.jipipe.api.nodes.JIPipeGraphNodeRunContext;
-import org.hkijena.jipipe.api.nodes.JIPipeNodeInfo;
+import org.hkijena.jipipe.api.nodes.*;
 import org.hkijena.jipipe.api.nodes.algorithm.JIPipeSimpleIteratingAlgorithm;
 import org.hkijena.jipipe.api.nodes.categories.AnnotationsNodeTypeCategory;
 import org.hkijena.jipipe.api.nodes.iterationstep.JIPipeIterationContext;
@@ -39,6 +36,7 @@ import java.nio.file.Files;
  */
 @SetJIPipeDocumentation(name = "Add path to annotations", description = "Creates an annotation for each path based on its name or its full path.")
 @ConfigureJIPipeNode(nodeTypeCategory = AnnotationsNodeTypeCategory.class, menuPath = "For paths")
+@AddJIPipeNodeAlias(nodeTypeCategory = AnnotationsNodeTypeCategory.class, menuPath = "For paths", aliasName = "Annotate with file/directory name")
 @AddJIPipeInputSlot(value = PathData.class, name = "Paths", create = true)
 @AddJIPipeOutputSlot(value = PathData.class, name = "Annotated paths", create = true)
 public class SimplePathAnnotationGenerator extends JIPipeSimpleIteratingAlgorithm {

@@ -13,16 +13,16 @@
 
 package org.hkijena.jipipe.plugins.parameters.library.primitives;
 
-import org.hkijena.jipipe.plugins.parameters.api.enums.DynamicEnumParameterSettings;
+import org.hkijena.jipipe.plugins.parameters.api.enums.DynamicSetParameterSettings;
 import org.hkijena.jipipe.plugins.parameters.api.enums.DynamicSetParameter;
 
 import java.util.Set;
 
 /**
  * Parameter that acts as dynamic enum where a set of items can be selected
- * Use {@link DynamicEnumParameterSettings} to define a supplier for the
+ * Use {@link DynamicSetParameterSettings} to define a supplier for the
  * items. Alternatively, use allowedValues to supply items.
- * allowedValues is preferred. If allowedValues is null, you have to use {@link DynamicEnumParameterSettings}.
+ * allowedValues is preferred. If allowedValues is null, you have to use {@link DynamicSetParameterSettings}.
  */
 public class DynamicStringSetParameter extends DynamicSetParameter<String> {
     public DynamicStringSetParameter() {

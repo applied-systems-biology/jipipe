@@ -79,7 +79,7 @@ public class JIPipeRunCommand implements Command {
                 if (GraphicsEnvironment.isHeadless()) {
                     report.print();
                 } else {
-                    UIUtils.openValidityReportDialog(new JIPipeDesktopDummyWorkbench(),
+                    UIUtils.showValidityReportDialog(new JIPipeDesktopDummyWorkbench(),
                             null,
                             report,
                             "Errors while initializing JIPipe",

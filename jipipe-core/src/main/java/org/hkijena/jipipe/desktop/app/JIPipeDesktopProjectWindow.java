@@ -284,7 +284,7 @@ public class JIPipeDesktopProjectWindow extends JFrame {
                     UIUtils.openNotificationsDialog(window.getProjectUI(), this, notifications, "Potential issues found", "There seem to be potential issues that might prevent the successful execution of the pipeline. Please review the following entries and resolve the issues if possible.", true);
                 }
                 if (!report.isValid()) {
-                    UIUtils.openValidityReportDialog(new JIPipeDesktopDummyWorkbench(), this, report, "Errors while loading the project", "It seems that not all parameters/nodes/connections could be restored from the project file. The cause might be that you are using a version of JIPipe that changed the affected features. " +
+                    UIUtils.showValidityReportDialog(new JIPipeDesktopDummyWorkbench(), this, report, "Errors while loading the project", "It seems that not all parameters/nodes/connections could be restored from the project file. The cause might be that you are using a version of JIPipe that changed the affected features. " +
                             "Please review the entries and apply the necessary changes (e.g., reconnecting nodes).", false);
                 }
             } catch (IOException e) {
@@ -376,7 +376,7 @@ public class JIPipeDesktopProjectWindow extends JFrame {
                 throw new RuntimeException(e);
             }
             if (!report.isValid()) {
-                UIUtils.openValidityReportDialog(new JIPipeDesktopDummyWorkbench(), this, report, "Errors while loading the project", "It seems that not all parameters/nodes/connections could be restored from the project file. The cause might be that you are using a version of JIPipe that changed the affected features. " +
+                UIUtils.showValidityReportDialog(new JIPipeDesktopDummyWorkbench(), this, report, "Errors while loading the project", "It seems that not all parameters/nodes/connections could be restored from the project file. The cause might be that you are using a version of JIPipe that changed the affected features. " +
                         "Please review the entries and apply the necessary changes (e.g., reconnecting nodes).", false);
             }
         } else if (Files.isDirectory(path)) {
@@ -436,7 +436,7 @@ public class JIPipeDesktopProjectWindow extends JFrame {
                 throw new RuntimeException(e);
             }
             if (!report.isValid()) {
-                UIUtils.openValidityReportDialog(new JIPipeDesktopDummyWorkbench(),
+                UIUtils.showValidityReportDialog(new JIPipeDesktopDummyWorkbench(),
                         this,
                         report,
                         "Errors while loading the project",

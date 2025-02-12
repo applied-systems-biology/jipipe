@@ -142,7 +142,7 @@ public class JsonExtensionLoaderPlugin extends JIPipePrepackagedDefaultJavaPlugi
                 System.err.println("Invalid extension ID: " + extension.getDependencyId() + ". Please contact the developer of the extension.");
                 getRegistry().getProgressInfo().log("Invalid extension ID: " + extension.getDependencyId() + ". Please contact the developer of the extension.");
             }
-            if (!JIPipe.getInstance().getPluginRegistry().getStartupPlugins().contains(extension.getDependencyId())) {
+            if (JIPipe.getInstance().getPluginRegistry().getSettings().getDeactivatedPlugins().contains(extension.getDependencyId())) {
                 getRegistry().getProgressInfo().log("Skipping registration of JSON extension " + extension.getDependencyId() + " (deactivated in extension manager)");
                 return;
             }
