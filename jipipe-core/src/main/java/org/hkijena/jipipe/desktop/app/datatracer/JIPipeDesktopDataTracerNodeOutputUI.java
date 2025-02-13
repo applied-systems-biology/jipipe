@@ -51,7 +51,7 @@ public class JIPipeDesktopDataTracerNodeOutputUI extends JIPipeDesktopProjectWor
         setLayout(new BorderLayout());
         setBorder(BorderFactory.createCompoundBorder(new DropShadowBorder(Color.BLACK,
                 5,
-                0.2f,
+                0.1f,
                 12,
                 true,
                 true,

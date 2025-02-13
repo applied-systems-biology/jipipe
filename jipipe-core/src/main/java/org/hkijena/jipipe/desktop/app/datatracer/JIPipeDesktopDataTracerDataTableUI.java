@@ -96,7 +96,9 @@ public class JIPipeDesktopDataTracerDataTableUI extends JIPipeDesktopWorkbenchPa
             TableColumn column = columnModel.getColumn(i);
             column.setHeaderRenderer(new WrapperColumnHeaderRenderer(dataTableStore));
         }
+        table.getTableHeader().setReorderingAllowed(false);
         table.setAutoCreateRowSorter(true);
+        table.setSortable(false);
         UIUtils.packDataTable(table);
         columnModel.getColumn(1).setPreferredWidth(JIPipeGeneralDataApplicationSettings.getInstance().getPreviewSize());
         SwingUtilities.invokeLater(dataTableModel::updateRenderedPreviews);
@@ -106,6 +108,7 @@ public class JIPipeDesktopDataTracerDataTableUI extends JIPipeDesktopWorkbenchPa
             table.getColumnExt(0).setMaxWidth(100);
             table.getColumnExt(0).setPreferredWidth(100);
         }
+
         if (dataTableModel.getColumnCount() > 1) {
             int previewSize = JIPipeGeneralDataApplicationSettings.getInstance().getPreviewSize() * 2;
             table.getColumnExt(1).setMinWidth(previewSize);

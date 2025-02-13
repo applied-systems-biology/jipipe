@@ -138,6 +138,55 @@ public class UIUtils {
     private static Border PANEL_BORDER;
     private static Border CONTROL_ERROR_BORDER;
 
+    public static void addPanningToScrollPane(JScrollPane scrollPane) {
+        JViewport viewport = scrollPane.getViewport();
+
+        MouseAdapter panListener = new MouseAdapter() {
+            private Point origin;
+
+            @Override
+            public void mousePressed(MouseEvent e) {
+                if (SwingUtilities.isMiddleMouseButton(e)) {
+                    origin = e.getPoint();
+                    // Change cursor for feedback (optional)
+                    viewport.setCursor(Cursor.getPredefinedCursor(Cursor.MOVE_CURSOR));
+                }
+            }
+
+            @Override
+            public void mouseReleased(MouseEvent e) {
+                if (SwingUtilities.isMiddleMouseButton(e)) {
+                    origin = null;
+                    viewport.setCursor(Cursor.getDefaultCursor());
+                }
+            }
+
+            @Override
+            public void mouseDragged(MouseEvent e) {
+                if (SwingUtilities.isMiddleMouseButton(e) && origin != null) {
+                    Point current = e.getPoint();
+                    Point viewPos = viewport.getViewPosition();
+                    // Calculate the new view position by adding the difference
+                    viewPos.translate(origin.x - current.x, origin.y - current.y);
+
+                    // Optionally, check for bounds if needed:
+                    Component view = viewport.getView();
+                    int maxX = view.getWidth() - viewport.getWidth();
+                    int maxY = view.getHeight() - viewport.getHeight();
+                    viewPos.x = Math.max(0, Math.min(viewPos.x, maxX));
+                    viewPos.y = Math.max(0, Math.min(viewPos.y, maxY));
+
+                    viewport.setViewPosition(viewPos);
+                    // Update the origin for the next drag event
+                    origin = current;
+                }
+            }
+        };
+
+        viewport.addMouseListener(panListener);
+        viewport.addMouseMotionListener(panListener);
+    }
+
     public static void rebuildMenu(JPopupMenu menu, List<Component> items) {
         menu.removeAll();
         if (items.isEmpty()) {

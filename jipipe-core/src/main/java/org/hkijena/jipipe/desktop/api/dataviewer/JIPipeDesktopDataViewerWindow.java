@@ -12,6 +12,7 @@ import org.hkijena.jipipe.api.data.JIPipeDataTable;
 import org.hkijena.jipipe.api.data.browser.JIPipeDataBrowser;
 import org.hkijena.jipipe.api.data.browser.JIPipeDataTableBrowser;
 import org.hkijena.jipipe.api.data.browser.JIPipeLocalDataTableBrowser;
+import org.hkijena.jipipe.api.data.context.JIPipeDataContext;
 import org.hkijena.jipipe.api.data.serialization.JIPipeDataTableInfo;
 import org.hkijena.jipipe.api.data.serialization.JIPipeDataTableRowInfo;
 import org.hkijena.jipipe.api.data.storage.JIPipeFileSystemWriteDataStorage;
@@ -19,8 +20,10 @@ import org.hkijena.jipipe.api.data.storage.JIPipeZIPWriteDataStorage;
 import org.hkijena.jipipe.api.nodes.JIPipeGraphNode;
 import org.hkijena.jipipe.api.run.JIPipeRunnable;
 import org.hkijena.jipipe.api.run.JIPipeRunnableQueue;
+import org.hkijena.jipipe.desktop.app.JIPipeDesktopProjectWorkbench;
 import org.hkijena.jipipe.desktop.app.JIPipeDesktopWorkbench;
 import org.hkijena.jipipe.desktop.app.JIPipeDesktopWorkbenchAccess;
+import org.hkijena.jipipe.desktop.app.datatracer.JIPipeDesktopDataTracerUI;
 import org.hkijena.jipipe.desktop.app.quickrun.JIPipeDesktopQuickRun;
 import org.hkijena.jipipe.desktop.app.quickrun.JIPipeDesktopQuickRunSettings;
 import org.hkijena.jipipe.desktop.app.running.JIPipeDesktopRunExecuteUI;
@@ -336,8 +339,10 @@ public class JIPipeDesktopDataViewerWindow extends JFrame implements JIPipeDeskt
             cacheBand.addLargeMenuButton("Update cache", "Updates the cache of the node that generated the data", UIUtils.getIcon32FromResources("actions/database.png"),
                     UIUtils.createMenuItem("Update cache", "Runs the pipeline up until this algorithm and caches the results. Nothing is written to disk.", UIUtils.getIconFromResources("actions/database.png"), this::doLocalUpdateCache),
                     UIUtils.createMenuItem("Cache intermediate results", "Runs the pipeline up until this algorithm and caches the results (including intermediate results). Nothing is written to disk.", UIUtils.getIconFromResources("actions/cache-intermediate-results.png"), this::doLocalUpdateCacheIntermediateResults));
+            cacheBand.addLargeButton("Trace", "Shows all predecessors of this data if available. Requires an unbroken chain of data (i.e. use Cache intermediate results)", UIUtils.getIcon32FromResources("actions/footsteps.png"), this::traceData);
             cacheBand.add(toggleAutoRefreshFromCache);
             cacheBand.addSmallButton("Refresh", "Updates the current data with the newest in cache if possible", UIUtils.getIconFromResources("actions/view-refresh.png"), this::refreshFromLocalCache);
+
         }
         if (dataBrowser != null) {
             JIPipeDesktopRibbon.Task exportTask = ribbon.addTask("Export");
@@ -348,6 +353,18 @@ public class JIPipeDesktopDataViewerWindow extends JFrame implements JIPipeDeskt
                 JIPipeDesktopRibbon.Band tableBand = exportTask.addBand("Data table (" + StringUtils.formatPluralS(dataTableInfo.getRowCount(), "row") + ")");
                 tableBand.add(new JIPipeDesktopLargeButtonRibbonAction("As *.zip", "Exports the data table into a *.zip file", UIUtils.getIcon32FromResources("actions/document-export.png"), this::exportDataTableToZip));
                 tableBand.add(new JIPipeDesktopLargeButtonRibbonAction("Into directory", "Exports the data as file(s) into a directory using JIPipe's standard naming", UIUtils.getIcon32FromResources("actions/folder-new.png"), this::exportDataTableToFolder));
+            }
+        }
+    }
+
+    private void traceData() {
+        if (isDisplayingLocallyCachedData()) {
+            JIPipeDataContext dataContext = dataTableBrowser.getLocalDataTable().getDataContext(currentDataRow);
+            if(dataContext != null) {
+                JIPipeDesktopDataTracerUI.openWindow((JIPipeDesktopProjectWorkbench) getDesktopWorkbench(), dataContext.getId());
+            }
+            else {
+                UIUtils.showErrorDialog(getDesktopWorkbench(), this, new NullPointerException("No data trace could be found!"));
             }
         }
     }

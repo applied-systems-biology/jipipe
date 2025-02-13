@@ -27,11 +27,15 @@ import org.hkijena.jipipe.api.validation.contexts.InternalErrorValidationReportC
 import org.hkijena.jipipe.api.validation.contexts.UnspecifiedValidationReportContext;
 import org.hkijena.jipipe.desktop.app.JIPipeDesktopProjectWorkbench;
 import org.hkijena.jipipe.desktop.app.JIPipeDesktopProjectWorkbenchPanel;
+import org.hkijena.jipipe.desktop.app.datatable.JIPipeDesktopExtendedDataTableUI;
 import org.hkijena.jipipe.desktop.app.running.JIPipeDesktopRunnableQueueButton;
 import org.hkijena.jipipe.desktop.commons.components.JIPipeDesktopMessagePanel;
 import org.hkijena.jipipe.desktop.commons.components.JIPipeDesktopValidityReportUI;
+import org.hkijena.jipipe.desktop.commons.components.tabs.JIPipeDesktopTabPane;
 import org.hkijena.jipipe.desktop.commons.components.window.JIPipeDesktopAlwaysOnTopToggle;
 import org.hkijena.jipipe.utils.UIUtils;
+import org.hkijena.jipipe.utils.data.OwningStore;
+import org.jdesktop.swingx.JXStatusBar;
 import org.scijava.Disposable;
 
 import javax.swing.*;
@@ -48,12 +52,14 @@ public class JIPipeDesktopDataTracerUI extends JIPipeDesktopProjectWorkbenchPane
     private final UUID targetNodeUUID;
     private final JIPipeDataTable targetTable;
     private final int targetTableRow;
-    private final JPanel contentPanel = new JPanel();
+    private final JPanel graphContentPanel = new JPanel();
     private final JToolBar toolBar = new JToolBar();
+    private final JToolBar statusBar = new JToolBar();
     private final JIPipeDesktopMessagePanel messagePanel = new JIPipeDesktopMessagePanel();
     private Map<Integer, Map<String, Map<String, JIPipeDataTable>>> resultMap = Collections.emptyMap();
+    private final JIPipeDesktopTabPane tabPane = new JIPipeDesktopTabPane();
 
-    private JScrollPane scrollPane;
+    private JScrollPane graphScrollPane;
 
     public JIPipeDesktopDataTracerUI(JIPipeDesktopProjectWorkbench workbench, JIPipeGraphNode targetNode, String targetSlotName, UUID targetNodeUUID, JIPipeDataTable targetTable, int targetTableRow) {
         super(workbench);
@@ -108,7 +114,7 @@ public class JIPipeDesktopDataTracerUI extends JIPipeDesktopProjectWorkbenchPane
         if (targetTable != null) {
             frame.setTitle("JIPipe - Data trace - " + targetNode.getCompartmentDisplayName() + "/" + targetNode.getName() + "/" + targetSlotName + "/" + targetTableRow);
             JIPipeDesktopDataTracerUI tracerUI = new JIPipeDesktopDataTracerUI(workbench, targetNode, targetSlotName, targetNodeUUID, targetTable, targetTableRow);
-            tracerUI.toolBar.add(new JIPipeDesktopAlwaysOnTopToggle(frame));
+            tracerUI.statusBar.add(new JIPipeDesktopAlwaysOnTopToggle(frame));
             frame.setContentPane(tracerUI);
         } else {
             JIPipeValidationReport report = new JIPipeValidationReport();
@@ -140,14 +146,33 @@ public class JIPipeDesktopDataTracerUI extends JIPipeDesktopProjectWorkbenchPane
         add(topPanel, BorderLayout.NORTH);
         initializeToolbar(toolBar);
 
-        contentPanel.setLayout(new GridBagLayout());
-        scrollPane = new JScrollPane(contentPanel);
-        scrollPane.getVerticalScrollBar().setUnitIncrement(10);
-        add(scrollPane, BorderLayout.CENTER);
+        graphContentPanel.setLayout(new GridBagLayout());
+        graphContentPanel.setBackground(UIManager.getColor("EditorPane.background"));
+        graphScrollPane = new JScrollPane(graphContentPanel);
+        graphScrollPane.getVerticalScrollBar().setUnitIncrement(25);
+        UIUtils.addPanningToScrollPane(graphScrollPane);
+
+        add(tabPane, BorderLayout.CENTER);
+
+        statusBar.setFloatable(false);
+        statusBar.setBorder(BorderFactory.createMatteBorder(1, 0, 0, 0, UIManager.getColor("MenuBar.borderColor")));
+        add(statusBar, BorderLayout.SOUTH);
+
+        statusBar.add(Box.createHorizontalGlue());
+
+        JIPipeDesktopRunnableQueueButton tracerQueueButton = new JIPipeDesktopRunnableQueueButton(getDesktopWorkbench(), queue);
+        tracerQueueButton.makeFlat();
+        tracerQueueButton.setReadyLabel("Trace");
+        tracerQueueButton.setTasksFinishedLabel("Trace");
+        statusBar.add(tracerQueueButton);
+        statusBar.addSeparator();
+        JIPipeDesktopRunnableQueueButton globalQueueButton = new JIPipeDesktopRunnableQueueButton(getDesktopWorkbench());
+        globalQueueButton.makeFlat();
+        statusBar.add(globalQueueButton);
+        statusBar.addSeparator();
     }
 
     private void initializeToolbar(JToolBar toolBar) {
-        toolBar.add(new JIPipeDesktopRunnableQueueButton(getDesktopWorkbench(), queue));
         toolBar.add(Box.createHorizontalGlue());
         toolBar.add(UIUtils.createButton("Refresh", UIUtils.getIconFromResources("actions/view-refresh.png"), this::rebuildContent));
     }
@@ -158,7 +183,44 @@ public class JIPipeDesktopDataTracerUI extends JIPipeDesktopProjectWorkbenchPane
     }
 
     private void refreshContent() {
-        contentPanel.removeAll();
+        tabPane.closeAllTabs(true);
+
+        buildGraphView();
+        buildTableView();
+    }
+
+    private void buildTableView() {
+        List<Integer> levels = resultMap.keySet().stream().sorted().collect(Collectors.toList());
+        JIPipeDataTable tracedDataTable = new JIPipeDataTable();
+        for (int i = 0; i < levels.size(); i++) {
+            int level = levels.get(i);
+            Map<String, Map<String, JIPipeDataTable>> nodes = resultMap.get(level);
+            for (Map.Entry<String, Map<String, JIPipeDataTable>> nodeEntry : nodes.entrySet()) {
+                String nodeUUID = nodeEntry.getKey();
+                JIPipeGraphNode node = getDesktopProjectWorkbench().getProject().getGraph().getNodeByUUID(UUID.fromString(nodeUUID));
+                for (Map.Entry<String, JIPipeDataTable> outputSlotEntry : nodeEntry.getValue().entrySet()) {
+                    String outputSlotName = outputSlotEntry.getKey();
+                    JIPipeDataTable dataTable = outputSlotEntry.getValue();
+                    tracedDataTable.addDataFromTable(dataTable, JIPipeProgressInfo.SILENT);
+                    for (int j = tracedDataTable.getRowCount() - dataTable.getRowCount(); j < tracedDataTable.getRowCount(); j++) {
+                        tracedDataTable.setTextAnnotation(j, "jipipe:trace:level", String.valueOf(level));
+                        tracedDataTable.setTextAnnotation(j, "jipipe:trace:node-uuid", nodeUUID);
+                        tracedDataTable.setTextAnnotation(j, "jipipe:trace:node-name", node != null ? node.getName() : "N/A");
+                        tracedDataTable.setTextAnnotation(j, "jipipe:trace:slot-name", outputSlotName);
+                    }
+                }
+            }
+        }
+
+        JIPipeDesktopExtendedDataTableUI dataTableUI = new JIPipeDesktopExtendedDataTableUI(getDesktopWorkbench(),
+                new OwningStore<>(tracedDataTable),
+                false,
+                false);
+        tabPane.addTab("Table view", UIUtils.getIconFromResources("/actions/table-list.png"), dataTableUI, JIPipeDesktopTabPane.CloseMode.withoutCloseButton);
+
+    }
+
+    private void buildGraphView() {
         List<Integer> levels = resultMap.keySet().stream().sorted().collect(Collectors.toList());
         int numRows = 0;
         JPanel level0Panel = null;
@@ -166,7 +228,7 @@ public class JIPipeDesktopDataTracerUI extends JIPipeDesktopProjectWorkbenchPane
             int level = levels.get(i);
             if (i != 0) {
                 JLabel separatorLabel = new JLabel(UIUtils.getIconFromResources("actions/merge-down.png"));
-                contentPanel.add(separatorLabel, new GridBagConstraints(0,
+                graphContentPanel.add(separatorLabel, new GridBagConstraints(0,
                         numRows++,
                         1,
                         1,
@@ -202,7 +264,7 @@ public class JIPipeDesktopDataTracerUI extends JIPipeDesktopProjectWorkbenchPane
 //            levelPanel.setLayout(new GridLayout(1, tableCount, 8,8));
             levelPanel.setLayout(new BoxLayout(levelPanel, BoxLayout.X_AXIS));
 
-            contentPanel.add(levelPanel, new GridBagConstraints(0,
+            graphContentPanel.add(levelPanel, new GridBagConstraints(0,
                     numRows++,
                     1,
                     1,
@@ -215,7 +277,7 @@ public class JIPipeDesktopDataTracerUI extends JIPipeDesktopProjectWorkbenchPane
                     0));
         }
 
-        contentPanel.add(new JPanel(), new GridBagConstraints(0,
+        graphContentPanel.add(new JPanel(), new GridBagConstraints(0,
                 numRows++,
                 1,
                 1,
@@ -235,17 +297,19 @@ public class JIPipeDesktopDataTracerUI extends JIPipeDesktopProjectWorkbenchPane
                     true);
         }
 
+        tabPane.addTab("Graph view", UIUtils.getIconFromResources("/actions/distribute-graph-directed.png"), graphScrollPane, JIPipeDesktopTabPane.CloseMode.withoutCloseButton);
+
         if (level0Panel != null) {
             JPanel finalLevel0Panel = level0Panel;
             SwingUtilities.invokeLater(() -> {
-                scrollPane.getVerticalScrollBar().setValue(finalLevel0Panel.getY());
+                graphScrollPane.getVerticalScrollBar().setValue(finalLevel0Panel.getY());
             });
         }
     }
 
     @Override
     public void onRunnableInterrupted(JIPipeRunnable.InterruptedEvent event) {
-        contentPanel.removeAll();
+        graphContentPanel.removeAll();
         JIPipeDesktopValidityReportUI reportUI = new JIPipeDesktopValidityReportUI(getDesktopWorkbench(), false);
         JIPipeValidationReport report = new JIPipeValidationReport();
         report.add(new JIPipeValidationReportEntry(JIPipeValidationReportEntryLevel.Error,
@@ -255,7 +319,7 @@ public class JIPipeDesktopDataTracerUI extends JIPipeDesktopProjectWorkbenchPane
                 "See details",
                 event.getException().toString()));
         reportUI.setReport(report);
-        contentPanel.add(reportUI);
+        graphContentPanel.add(reportUI);
     }
 
     @Override
