@@ -15,9 +15,11 @@ package org.hkijena.jipipe.plugins.settings;
 
 import ij.IJ;
 import org.hkijena.jipipe.JIPipe;
+import org.hkijena.jipipe.api.AbstractJIPipeRunnable;
 import org.hkijena.jipipe.api.SetJIPipeDocumentation;
 import org.hkijena.jipipe.api.backups.JIPipeProjectBackupSessionInfo;
 import org.hkijena.jipipe.api.parameters.JIPipeParameter;
+import org.hkijena.jipipe.api.run.JIPipeRunnable;
 import org.hkijena.jipipe.api.settings.JIPipeDefaultApplicationSettingsSheetCategory;
 import org.hkijena.jipipe.api.settings.JIPipeDefaultApplicationsSettingsSheet;
 import org.hkijena.jipipe.desktop.app.JIPipeDesktopProjectWindow;
@@ -69,32 +71,45 @@ public class JIPipeBackupApplicationSettings extends JIPipeDefaultApplicationsSe
         if (window.getProjectSavePath() != null) {
             name = window.getProjectSavePath().getFileName().toString();
         }
-        Path directory = getCurrentBackupPath();
-        try {
-            directory = directory.resolve(window.getSessionId().toString());
-            Files.createDirectories(directory);
+        window.getProjectUI().getBackupQueue().cancelAll();
+        String finalName = name;
+        JIPipeRunnable run = new AbstractJIPipeRunnable() {
+            @Override
+            public String getTaskLabel() {
+                return "Creating backup";
+            }
 
-            String dateTimeFormatted = LocalDateTime.now().format(DateTimeFormatter.ISO_LOCAL_DATE_TIME);
+            @Override
+            public void run() {
+                try {
+                    Path directory = getCurrentBackupPath();
+                    directory = directory.resolve(window.getSessionId().toString());
+                    Files.createDirectories(directory);
 
-            String baseName = name + "_" + dateTimeFormatted.replace(':', '-');
-            baseName = StringUtils.makeFilesystemCompatible(baseName);
-            Path targetFile = directory.resolve(baseName + ".jip");
-            window.getProject().saveProject(targetFile);
+                    String dateTimeFormatted = LocalDateTime.now().format(DateTimeFormatter.ISO_LOCAL_DATE_TIME);
 
-            window.getProjectUI().sendStatusBarText("Saved backup to " + targetFile);
+                    String baseName = finalName + "_" + dateTimeFormatted.replace(':', '-');
+                    baseName = StringUtils.makeFilesystemCompatible(baseName);
+                    Path targetFile = directory.resolve(baseName + ".jip");
+                    window.getProject().saveProject(targetFile);
 
-            // Write storage info
-            JIPipeProjectBackupSessionInfo info = new JIPipeProjectBackupSessionInfo();
-            info.setProjectStoragePath(window.getProjectSavePath() != null ? window.getProjectSavePath().toString() : "");
-            info.setProjectSessionId(window.getSessionId().toString());
-            info.setLastDateTimeInfo(dateTimeFormatted);
-            JsonUtils.saveToFile(info, directory.resolve("backup-info.json"));
+                    SwingUtilities.invokeLater(() -> window.getProjectUI().sendStatusBarText("Saved backup to " + targetFile));
 
-        } catch (IOException e) {
-            window.getProjectUI().sendStatusBarText("Failed to save backup: " + e.getMessage());
-            IJ.handleException(e);
-            e.printStackTrace();
-        }
+                    // Write storage info
+                    JIPipeProjectBackupSessionInfo info = new JIPipeProjectBackupSessionInfo();
+                    info.setProjectStoragePath(window.getProjectSavePath() != null ? window.getProjectSavePath().toString() : "");
+                    info.setProjectSessionId(window.getSessionId().toString());
+                    info.setLastDateTimeInfo(dateTimeFormatted);
+                    JsonUtils.saveToFile(info, directory.resolve("backup-info.json"));
+
+                } catch (IOException e) {
+                    SwingUtilities.invokeLater(() -> window.getProjectUI().sendStatusBarText("Failed to save backup: " + e.getMessage()));
+                    IJ.handleException(e);
+                    e.printStackTrace();
+                }
+            }
+        };
+        window.getProjectUI().getBackupQueue().enqueue(run);
     }
 
     public Path getCurrentBackupPath() {

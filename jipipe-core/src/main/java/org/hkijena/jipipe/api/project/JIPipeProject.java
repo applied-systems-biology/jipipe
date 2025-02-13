@@ -43,6 +43,7 @@ import org.hkijena.jipipe.api.nodes.*;
 import org.hkijena.jipipe.api.notifications.JIPipeNotification;
 import org.hkijena.jipipe.api.notifications.JIPipeNotificationInbox;
 import org.hkijena.jipipe.api.parameters.JIPipeParameterCollection;
+import org.hkijena.jipipe.api.run.JIPipeRunnableQueue;
 import org.hkijena.jipipe.api.runtimepartitioning.JIPipeRuntimePartition;
 import org.hkijena.jipipe.api.runtimepartitioning.JIPipeRuntimePartitionConfiguration;
 import org.hkijena.jipipe.api.settings.JIPipeProjectSettingsSheet;
@@ -84,6 +85,7 @@ public class JIPipeProject implements JIPipeValidatable {
     private final BiMap<UUID, JIPipeProjectCompartment> compartments = HashBiMap.create();
     private final JIPipeLocalProjectMemoryCache cache;
     private final JIPipeProjectHistoryJournal historyJournal;
+    private final JIPipeRunnableQueue snapshotQueue = new JIPipeRunnableQueue("History");
     private final CompartmentAddedEventEmitter compartmentAddedEventEmitter = new CompartmentAddedEventEmitter();
     private final CompartmentRemovedEventEmitter compartmentRemovedEventEmitter = new CompartmentRemovedEventEmitter();
     private final JIPipeGraphNode.BaseDirectoryChangedEventEmitter baseDirectoryChangedEventEmitter = new JIPipeGraphNode.BaseDirectoryChangedEventEmitter();
@@ -101,7 +103,7 @@ public class JIPipeProject implements JIPipeValidatable {
      * A JIPipe project
      */
     public JIPipeProject() {
-        this.historyJournal = new JIPipeProjectHistoryJournal(this);
+        this.historyJournal = new JIPipeProjectHistoryJournal(this, snapshotQueue);
         this.cache = new JIPipeLocalProjectMemoryCache(this);
         this.metadata.setDescription(new HTMLText(MarkdownText.fromPluginResource("documentation/new-project-template.md", new HashMap<>()).getRenderedHTML()));
         this.graph.attach(JIPipeProject.class, this);
@@ -332,6 +334,10 @@ public class JIPipeProject implements JIPipeValidatable {
             return (JIPipeProjectCompartment) node;
         else
             return null;
+    }
+
+    public JIPipeRunnableQueue getSnapshotQueue() {
+        return snapshotQueue;
     }
 
     /**

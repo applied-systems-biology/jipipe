@@ -2084,8 +2084,9 @@ public class JIPipeDesktopGraphCanvasUI extends JLayeredPane implements JIPipeDe
             currentTool.paintBelowNodesAndEdges(g);
         }
 
-        if (renderOutsideEdges && getCompartmentUUID() != null && settings.isDrawOutsideEdges())
+        if (renderOutsideEdges && getCompartmentUUID() != null && settings.isDrawOutsideEdges()) {
             paintOutsideEdges(g, false, Color.DARK_GRAY, strokeDefault, strokeDefaultBorder);
+        }
 
         // Main edge drawing
         lastDisplayedMainEdges = paintEdges(g,

@@ -54,6 +54,7 @@ import org.hkijena.jipipe.desktop.commons.components.tabs.JIPipeDesktopTabPane;
 import org.hkijena.jipipe.desktop.commons.notifications.JIPipeDesktopNotificationButton;
 import org.hkijena.jipipe.desktop.commons.notifications.JIPipeDesktopWorkbenchNotificationInboxUI;
 import org.hkijena.jipipe.plugins.parameters.library.markup.MarkdownText;
+import org.hkijena.jipipe.plugins.settings.JIPipeBackupApplicationSettings;
 import org.hkijena.jipipe.plugins.settings.JIPipeFileChooserApplicationSettings;
 import org.hkijena.jipipe.plugins.settings.JIPipeGeneralUIApplicationSettings;
 import org.hkijena.jipipe.plugins.settings.JIPipeProjectDefaultsApplicationSettings;
@@ -104,6 +105,7 @@ public class JIPipeDesktopProjectWorkbench extends JPanel implements JIPipeDeskt
     private JIPipeDesktopReloadableValidityChecker validityCheckerPanel;
     private JIPipeDesktopPluginValidityCheckerPanel pluginValidityCheckerPanel;
     private boolean projectModified;
+    private final JIPipeRunnableQueue backupQueue = new JIPipeRunnableQueue("Backups");
 
     /**
      * @param window           Parent window
@@ -386,6 +388,24 @@ public class JIPipeDesktopProjectWorkbench extends JPanel implements JIPipeDeskt
         statusBar.add(statusText);
         statusBar.add(Box.createHorizontalGlue(), new JXStatusBar.Constraint(JXStatusBar.Constraint.ResizeBehavior.FILL));
 
+        // Snapshot/History control
+        JIPipeDesktopRunnableQueueButton snapshotQueueButton = new JIPipeDesktopRunnableQueueButton(this, project.getSnapshotQueue());
+        snapshotQueueButton.makeFlat();
+        snapshotQueueButton.setReadyLabel("History");
+        snapshotQueueButton.setTasksFinishedLabel("History");
+        snapshotQueueButton.setTaskSingleRunningLabel("Creating snapshot");
+        snapshotQueueButton.setTaskSingleEnqueuedRunningLabel("Creating snapshots (%d)");
+        statusBar.add(snapshotQueueButton);
+
+        // Backup control
+        JIPipeDesktopRunnableQueueButton backupQueueButton = new JIPipeDesktopRunnableQueueButton(this, backupQueue);
+        backupQueueButton.makeFlat();
+        backupQueueButton.setReadyLabel("Backup");
+        backupQueueButton.setTasksFinishedLabel("Backup");
+        backupQueueButton.setTaskSingleRunningLabel("Creating backup");
+        backupQueueButton.setTaskSingleEnqueuedRunningLabel("Creating backups (%d)");
+        statusBar.add(backupQueueButton);
+
         // Thumbnail generation control
         JIPipeDesktopRunnableQueueButton thumbnailQueueButton = new JIPipeDesktopRunnableQueueButton(this, JIPipeThumbnailGenerationQueue.getInstance().getRunnerQueue());
         thumbnailQueueButton.makeFlat();
@@ -465,6 +485,8 @@ public class JIPipeDesktopProjectWorkbench extends JPanel implements JIPipeDeskt
         restoreMenuItem.setToolTipText("Restores an automatically created backup and manages the collection of backups");
         restoreMenuItem.addActionListener(e -> JIPipeDesktopBackupManagerPanel.openNewWindow(this));
         projectMenu.add(restoreMenuItem);
+
+        projectMenu.add(UIUtils.createMenuItem("Create backup now", "Creates a backup of the current project", UIUtils.getIconFromResources("actions/backup.png"), () -> JIPipeBackupApplicationSettings.getInstance().backup(getProjectWindow())));
 
         projectMenu.addSeparator();
 
@@ -1010,4 +1032,7 @@ public class JIPipeDesktopProjectWorkbench extends JPanel implements JIPipeDeskt
         sendStatusBarText("Registered extension: '" + event.getExtension().getMetadata().getName() + "' with id '" + event.getExtension().getDependencyId() + "'. We recommend to restart ImageJ.");
     }
 
+    public JIPipeRunnableQueue getBackupQueue() {
+        return backupQueue;
+    }
 }
