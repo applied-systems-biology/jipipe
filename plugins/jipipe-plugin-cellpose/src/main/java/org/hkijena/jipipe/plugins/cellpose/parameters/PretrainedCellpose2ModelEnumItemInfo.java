@@ -19,7 +19,7 @@ import org.hkijena.jipipe.utils.UIUtils;
 
 import javax.swing.*;
 
-public class PretrainedCellposeModelEnumItemInfo implements EnumItemInfo {
+public class PretrainedCellpose2ModelEnumItemInfo implements EnumItemInfo {
     @Override
     public Icon getIcon(Object value) {
         return UIUtils.getIconFromResources("apps/cellpose.png");

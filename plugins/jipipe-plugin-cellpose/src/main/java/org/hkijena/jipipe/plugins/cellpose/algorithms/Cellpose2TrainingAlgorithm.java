@@ -44,9 +44,9 @@ import org.hkijena.jipipe.plugins.cellpose.CellposeEnvironmentAccessNode;
 import org.hkijena.jipipe.plugins.cellpose.CellposeUtils;
 import org.hkijena.jipipe.plugins.cellpose.datatypes.CellposeModelData;
 import org.hkijena.jipipe.plugins.cellpose.datatypes.CellposeSizeModelData;
-import org.hkijena.jipipe.plugins.cellpose.parameters.CellposeChannelSettings;
-import org.hkijena.jipipe.plugins.cellpose.parameters.CellposeGPUSettings;
-import org.hkijena.jipipe.plugins.cellpose.parameters.CellposeTrainingTweaksSettings;
+import org.hkijena.jipipe.plugins.cellpose.parameters.Cellpose2ChannelSettings;
+import org.hkijena.jipipe.plugins.cellpose.parameters.Cellpose2GPUSettings;
+import org.hkijena.jipipe.plugins.cellpose.parameters.Cellpose2TrainingTweaksSettings;
 import org.hkijena.jipipe.plugins.expressions.DataAnnotationQueryExpression;
 import org.hkijena.jipipe.plugins.imagejalgorithms.nodes.binary.ConnectedComponentsLabeling2DAlgorithm;
 import org.hkijena.jipipe.plugins.imagejalgorithms.nodes.binary.ConnectedComponentsLabeling3DAlgorithm;
@@ -86,9 +86,9 @@ public class Cellpose2TrainingAlgorithm extends JIPipeSingleIterationAlgorithm i
 
     public static final JIPipeDataSlotInfo OUTPUT_SIZE_MODEL = new JIPipeDataSlotInfo(CellposeSizeModelData.class, JIPipeSlotType.Output, "Size Model", "Generated size model", true);
 
-    private final CellposeGPUSettings gpuSettings;
-    private final CellposeTrainingTweaksSettings tweaksSettings;
-    private final CellposeChannelSettings channelSettings;
+    private final Cellpose2GPUSettings gpuSettings;
+    private final Cellpose2TrainingTweaksSettings tweaksSettings;
+    private final Cellpose2ChannelSettings channelSettings;
     private int numEpochs = 500;
     private boolean enable3DSegmentation = true;
     private boolean cleanUpAfterwards = true;
@@ -100,9 +100,9 @@ public class Cellpose2TrainingAlgorithm extends JIPipeSingleIterationAlgorithm i
 
     public Cellpose2TrainingAlgorithm(JIPipeNodeInfo info) {
         super(info);
-        this.gpuSettings = new CellposeGPUSettings();
-        this.tweaksSettings = new CellposeTrainingTweaksSettings();
-        this.channelSettings = new CellposeChannelSettings();
+        this.gpuSettings = new Cellpose2GPUSettings();
+        this.tweaksSettings = new Cellpose2TrainingTweaksSettings();
+        this.channelSettings = new Cellpose2ChannelSettings();
         updateSlots();
 
         registerSubParameter(gpuSettings);
@@ -113,9 +113,9 @@ public class Cellpose2TrainingAlgorithm extends JIPipeSingleIterationAlgorithm i
     public Cellpose2TrainingAlgorithm(Cellpose2TrainingAlgorithm other) {
         super(other);
 
-        this.gpuSettings = new CellposeGPUSettings(other.gpuSettings);
-        this.tweaksSettings = new CellposeTrainingTweaksSettings(other.tweaksSettings);
-        this.channelSettings = new CellposeChannelSettings(other.channelSettings);
+        this.gpuSettings = new Cellpose2GPUSettings(other.gpuSettings);
+        this.tweaksSettings = new Cellpose2TrainingTweaksSettings(other.tweaksSettings);
+        this.channelSettings = new Cellpose2ChannelSettings(other.channelSettings);
         this.suppressLogs = other.suppressLogs;
 
         this.numEpochs = other.numEpochs;
@@ -235,19 +235,19 @@ public class Cellpose2TrainingAlgorithm extends JIPipeSingleIterationAlgorithm i
 
     @SetJIPipeDocumentation(name = "Cellpose: GPU", description = "Controls how the graphics card is utilized.")
     @JIPipeParameter(value = "gpu-settings", collapsed = true, iconURL = ResourceUtils.RESOURCE_BASE_PATH + "/icons/apps/cellpose.png")
-    public CellposeGPUSettings getGpuSettings() {
+    public Cellpose2GPUSettings getGpuSettings() {
         return gpuSettings;
     }
 
     @SetJIPipeDocumentation(name = "Cellpose: Tweaks", description = "Advanced settings for the training.")
     @JIPipeParameter(value = "tweaks-settings", collapsed = true, iconURL = ResourceUtils.RESOURCE_BASE_PATH + "/icons/apps/cellpose.png")
-    public CellposeTrainingTweaksSettings getTweaksSettings() {
+    public Cellpose2TrainingTweaksSettings getTweaksSettings() {
         return tweaksSettings;
     }
 
     @SetJIPipeDocumentation(name = "Cellpose: Channels", description = "Determines which channels are used for the segmentation")
     @JIPipeParameter(value = "channel-parameters", iconURL = ResourceUtils.RESOURCE_BASE_PATH + "/icons/apps/cellpose.png")
-    public CellposeChannelSettings getChannelSettings() {
+    public Cellpose2ChannelSettings getChannelSettings() {
         return channelSettings;
     }
 

@@ -80,7 +80,7 @@ public class CellposePlugin extends JIPipePrepackagedDefaultJavaPlugin {
         if (project != null && project.getSettingsSheet(CellposePluginProjectSettings.class).getProjectDefaultEnvironment().isEnabled()) {
             return project.getSettingsSheet(CellposePluginProjectSettings.class).getProjectDefaultEnvironment().getContent();
         }
-        return CellposePluginApplicationSettings.getInstance().getReadOnlyDefaultEnvironment();
+        return Cellpose2PluginApplicationSettings.getInstance().getReadOnlyDefaultEnvironment();
     }
 
     @Override
@@ -158,7 +158,7 @@ public class CellposePlugin extends JIPipePrepackagedDefaultJavaPlugin {
 
     @Override
     public void register(JIPipe jiPipe, Context context, JIPipeProgressInfo progressInfo) {
-        registerApplicationSettingsSheet(new CellposePluginApplicationSettings());
+        registerApplicationSettingsSheet(new Cellpose2PluginApplicationSettings());
         registerProjectSettingsSheet(CellposePluginProjectSettings.class);
 
         // Modern nodes and data types

@@ -99,12 +99,12 @@ public class Cellpose2InferenceAlgorithm extends JIPipeSingleIterationAlgorithm 
     public static final JIPipeDataSlotInfo OUTPUT_PROBABILITIES = new JIPipeDataSlotInfo(ImagePlusGreyscaleData.class, JIPipeSlotType.Output, "Probabilities", "An image indicating the cell probabilities for each pixel");
     public static final JIPipeDataSlotInfo OUTPUT_ROI = new JIPipeDataSlotInfo(ROI2DListData.class, JIPipeSlotType.Output, "ROI", "ROI of the segmented areas");
 
-    private final CellposeGPUSettings gpuSettings;
-    private final CellposeSegmentationTweaksSettings segmentationTweaksSettings;
-    private final CellposeSegmentationThresholdSettings segmentationThresholdSettings;
-    private final CellposeSegmentationOutputSettings segmentationOutputSettings;
+    private final Cellpose2GPUSettings gpuSettings;
+    private final Cellpose2SegmentationTweaksSettings segmentationTweaksSettings;
+    private final Cellpose2SegmentationThresholdSettings segmentationThresholdSettings;
+    private final Cellpose2SegmentationOutputSettings segmentationOutputSettings;
 
-    private final CellposeChannelSettings channelSettings;
+    private final Cellpose2ChannelSettings channelSettings;
     private OptionalDoubleParameter diameter = new OptionalDoubleParameter(30.0, true);
     private boolean enable3DSegmentation = true;
     private OptionalTextAnnotationNameParameter diameterAnnotation = new OptionalTextAnnotationNameParameter("Diameter", true);
@@ -116,11 +116,11 @@ public class Cellpose2InferenceAlgorithm extends JIPipeSingleIterationAlgorithm 
 
     public Cellpose2InferenceAlgorithm(JIPipeNodeInfo info) {
         super(info);
-        this.segmentationTweaksSettings = new CellposeSegmentationTweaksSettings();
-        this.gpuSettings = new CellposeGPUSettings();
-        this.segmentationThresholdSettings = new CellposeSegmentationThresholdSettings();
-        this.segmentationOutputSettings = new CellposeSegmentationOutputSettings();
-        this.channelSettings = new CellposeChannelSettings();
+        this.segmentationTweaksSettings = new Cellpose2SegmentationTweaksSettings();
+        this.gpuSettings = new Cellpose2GPUSettings();
+        this.segmentationThresholdSettings = new Cellpose2SegmentationThresholdSettings();
+        this.segmentationOutputSettings = new Cellpose2SegmentationOutputSettings();
+        this.channelSettings = new Cellpose2ChannelSettings();
 
         updateOutputSlots();
 
@@ -133,11 +133,11 @@ public class Cellpose2InferenceAlgorithm extends JIPipeSingleIterationAlgorithm 
 
     public Cellpose2InferenceAlgorithm(Cellpose2InferenceAlgorithm other) {
         super(other);
-        this.gpuSettings = new CellposeGPUSettings(other.gpuSettings);
-        this.segmentationTweaksSettings = new CellposeSegmentationTweaksSettings(other.segmentationTweaksSettings);
-        this.segmentationThresholdSettings = new CellposeSegmentationThresholdSettings(other.segmentationThresholdSettings);
-        this.segmentationOutputSettings = new CellposeSegmentationOutputSettings(other.segmentationOutputSettings);
-        this.channelSettings = new CellposeChannelSettings(other.channelSettings);
+        this.gpuSettings = new Cellpose2GPUSettings(other.gpuSettings);
+        this.segmentationTweaksSettings = new Cellpose2SegmentationTweaksSettings(other.segmentationTweaksSettings);
+        this.segmentationThresholdSettings = new Cellpose2SegmentationThresholdSettings(other.segmentationThresholdSettings);
+        this.segmentationOutputSettings = new Cellpose2SegmentationOutputSettings(other.segmentationOutputSettings);
+        this.channelSettings = new Cellpose2ChannelSettings(other.channelSettings);
         this.suppressLogs = other.suppressLogs;
 //        this.sizeModelAnnotationName = new OptionalDataAnnotationNameParameter(other.sizeModelAnnotationName);
 
@@ -637,31 +637,31 @@ public class Cellpose2InferenceAlgorithm extends JIPipeSingleIterationAlgorithm 
 
     @SetJIPipeDocumentation(name = "Cellpose: Channels", description = "Determines which channels are used for the segmentation")
     @JIPipeParameter(value = "channel-parameters", iconURL = ResourceUtils.RESOURCE_BASE_PATH + "/icons/apps/cellpose.png")
-    public CellposeChannelSettings getChannelSettings() {
+    public Cellpose2ChannelSettings getChannelSettings() {
         return channelSettings;
     }
 
     @SetJIPipeDocumentation(name = "Cellpose: Tweaks", description = "Additional options like augmentation and averaging over multiple networks")
     @JIPipeParameter(value = "enhancement-parameters", iconURL = ResourceUtils.RESOURCE_BASE_PATH + "/icons/apps/cellpose.png", collapsed = true)
-    public CellposeSegmentationTweaksSettings getEnhancementParameters() {
+    public Cellpose2SegmentationTweaksSettings getEnhancementParameters() {
         return segmentationTweaksSettings;
     }
 
     @SetJIPipeDocumentation(name = "Cellpose: Thresholds", description = "Parameters that control which objects are selected.")
     @JIPipeParameter(value = "threshold-parameters", iconURL = ResourceUtils.RESOURCE_BASE_PATH + "/icons/apps/cellpose.png", collapsed = true)
-    public CellposeSegmentationThresholdSettings getThresholdParameters() {
+    public Cellpose2SegmentationThresholdSettings getThresholdParameters() {
         return segmentationThresholdSettings;
     }
 
     @SetJIPipeDocumentation(name = "Cellpose: Outputs", description = "The following settings allow you to select which outputs are generated.")
     @JIPipeParameter(value = "output-parameters", collapsed = true, iconURL = ResourceUtils.RESOURCE_BASE_PATH + "/icons/apps/cellpose.png")
-    public CellposeSegmentationOutputSettings getSegmentationOutputSettings() {
+    public Cellpose2SegmentationOutputSettings getSegmentationOutputSettings() {
         return segmentationOutputSettings;
     }
 
     @SetJIPipeDocumentation(name = "Cellpose: GPU", description = "Controls how the graphics card is utilized.")
     @JIPipeParameter(value = "gpu-parameters", collapsed = true, iconURL = ResourceUtils.RESOURCE_BASE_PATH + "/icons/apps/cellpose.png")
-    public CellposeGPUSettings getGpuSettings() {
+    public Cellpose2GPUSettings getGpuSettings() {
         return gpuSettings;
     }
 

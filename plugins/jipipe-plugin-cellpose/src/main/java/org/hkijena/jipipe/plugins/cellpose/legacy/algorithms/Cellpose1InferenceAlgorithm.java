@@ -38,7 +38,7 @@ import org.hkijena.jipipe.api.parameters.JIPipeParameterAccess;
 import org.hkijena.jipipe.api.parameters.JIPipeParameterTree;
 import org.hkijena.jipipe.api.validation.*;
 import org.hkijena.jipipe.api.validation.contexts.GraphNodeValidationReportContext;
-import org.hkijena.jipipe.plugins.cellpose.CellposePluginApplicationSettings;
+import org.hkijena.jipipe.plugins.cellpose.Cellpose2PluginApplicationSettings;
 import org.hkijena.jipipe.plugins.cellpose.CellposeUtils;
 import org.hkijena.jipipe.plugins.cellpose.legacy.PretrainedLegacyCellpose2InferenceModel;
 import org.hkijena.jipipe.plugins.cellpose.legacy.datatypes.LegacyCellposeModelData;
@@ -197,7 +197,7 @@ public class Cellpose1InferenceAlgorithm extends JIPipeSingleIterationAlgorithm 
             if (overrideEnvironment.isEnabled()) {
                 report.report(reportContext, overrideEnvironment.getContent());
             } else {
-                CellposePluginApplicationSettings.checkPythonSettings(reportContext, report);
+                Cellpose2PluginApplicationSettings.checkPythonSettings(reportContext, report);
             }
         }
     }
@@ -208,7 +208,7 @@ public class Cellpose1InferenceAlgorithm extends JIPipeSingleIterationAlgorithm 
         if (overrideEnvironment.isEnabled()) {
             target.add(overrideEnvironment.getContent());
         } else {
-            target.add(CellposePluginApplicationSettings.getInstance().getReadOnlyDefaultEnvironment());
+            target.add(Cellpose2PluginApplicationSettings.getInstance().getReadOnlyDefaultEnvironment());
         }
     }
 
@@ -377,7 +377,7 @@ public class Cellpose1InferenceAlgorithm extends JIPipeSingleIterationAlgorithm 
 
         // Run script
         PythonUtils.runPython(code.toString(), overrideEnvironment.isEnabled() ? overrideEnvironment.getContent() :
-                CellposePluginApplicationSettings.getInstance().getReadOnlyDefaultEnvironment(), Collections.emptyList(), false, progressInfo);
+                Cellpose2PluginApplicationSettings.getInstance().getReadOnlyDefaultEnvironment(), Collections.emptyList(), false, progressInfo);
 
 
         for (int i = 0; i < inputRowList.size(); i++) {

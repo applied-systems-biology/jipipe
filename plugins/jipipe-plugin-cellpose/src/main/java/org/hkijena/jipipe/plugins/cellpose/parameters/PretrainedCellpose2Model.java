@@ -17,7 +17,7 @@ import org.hkijena.jipipe.api.AddJIPipeDocumentationDescription;
 import org.hkijena.jipipe.plugins.parameters.api.enums.EnumParameterSettings;
 
 @AddJIPipeDocumentationDescription(description = "See https://cellpose.readthedocs.io/en/latest/models.html for a description of all models")
-@EnumParameterSettings(itemInfo = PretrainedCellposeModelEnumItemInfo.class)
+@EnumParameterSettings(itemInfo = PretrainedCellpose2ModelEnumItemInfo.class)
 public enum PretrainedCellpose2Model {
     cyto("cyto", "Cytoplasm"),
     cyto2("cyto2", "Cytoplasm2"),

@@ -25,8 +25,8 @@ public class CellposePluginProjectSettings extends JIPipeDefaultProjectSettingsS
     }
 
     private void autoConfigureDefaultEnvironment() {
-        if (CellposePluginApplicationSettings.getInstance().getReadOnlyDefaultEnvironment().isLoadFromArtifact()) {
-            List<JIPipeArtifact> artifacts = JIPipe.getArtifacts().queryCachedArtifacts(CellposePluginApplicationSettings.getInstance().getReadOnlyDefaultEnvironment().getArtifactQuery().getQuery());
+        if (Cellpose2PluginApplicationSettings.getInstance().getReadOnlyDefaultEnvironment().isLoadFromArtifact()) {
+            List<JIPipeArtifact> artifacts = JIPipe.getArtifacts().queryCachedArtifacts(Cellpose2PluginApplicationSettings.getInstance().getReadOnlyDefaultEnvironment().getArtifactQuery().getQuery());
             artifacts.removeIf(artifact -> !artifact.isCompatible());
             if (!artifacts.isEmpty()) {
                 JIPipeArtifact target = JIPipeArtifactsRegistry.selectPreferredArtifactByClassifier(artifacts);

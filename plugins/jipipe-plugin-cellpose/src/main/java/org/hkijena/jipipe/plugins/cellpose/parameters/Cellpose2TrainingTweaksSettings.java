@@ -17,7 +17,7 @@ import org.hkijena.jipipe.api.SetJIPipeDocumentation;
 import org.hkijena.jipipe.api.parameters.AbstractJIPipeParameterCollection;
 import org.hkijena.jipipe.api.parameters.JIPipeParameter;
 
-public class CellposeTrainingTweaksSettings extends AbstractJIPipeParameterCollection {
+public class Cellpose2TrainingTweaksSettings extends AbstractJIPipeParameterCollection {
 
     private double learningRate = 0.2;
     private double weightDecay = 1e-05;
@@ -29,10 +29,10 @@ public class CellposeTrainingTweaksSettings extends AbstractJIPipeParameterColle
 
     private boolean generateConnectedComponents = true;
 
-    public CellposeTrainingTweaksSettings() {
+    public Cellpose2TrainingTweaksSettings() {
     }
 
-    public CellposeTrainingTweaksSettings(CellposeTrainingTweaksSettings other) {
+    public Cellpose2TrainingTweaksSettings(Cellpose2TrainingTweaksSettings other) {
         this.learningRate = other.learningRate;
         this.batchSize = other.batchSize;
         this.useResidualConnections = other.useResidualConnections;

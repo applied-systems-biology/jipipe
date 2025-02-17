@@ -31,20 +31,20 @@ import org.hkijena.jipipe.utils.UIUtils;
 
 import javax.swing.*;
 
-public class CellposePluginApplicationSettings extends JIPipeDefaultApplicationsSettingsSheet {
+public class Cellpose2PluginApplicationSettings extends JIPipeDefaultApplicationsSettingsSheet {
 
     public static String ID = "org.hkijena.jipipe:cellpose";
 
     private final PythonEnvironment standardEnvironment = new PythonEnvironment();
     private OptionalPythonEnvironment defaultEnvironment = new OptionalPythonEnvironment();
 
-    public CellposePluginApplicationSettings() {
+    public Cellpose2PluginApplicationSettings() {
         preconfigureEnvironment(standardEnvironment);
         preconfigureEnvironment(defaultEnvironment.getContent());
     }
 
-    public static CellposePluginApplicationSettings getInstance() {
-        return JIPipe.getSettings().getById(ID, CellposePluginApplicationSettings.class);
+    public static Cellpose2PluginApplicationSettings getInstance() {
+        return JIPipe.getSettings().getById(ID, Cellpose2PluginApplicationSettings.class);
     }
 
     /**
@@ -54,7 +54,7 @@ public class CellposePluginApplicationSettings extends JIPipeDefaultApplications
      */
     public static boolean pythonSettingsAreValid() {
         if (JIPipe.getInstance() != null) {
-            CellposePluginApplicationSettings instance = getInstance();
+            Cellpose2PluginApplicationSettings instance = getInstance();
             JIPipeValidationReport report = new JIPipeValidationReport();
             instance.getReadOnlyDefaultEnvironment().reportValidity(new UnspecifiedValidationReportContext(), report);
             return report.isValid();
@@ -72,8 +72,8 @@ public class CellposePluginApplicationSettings extends JIPipeDefaultApplications
         if (!pythonSettingsAreValid()) {
             report.add(new JIPipeValidationReportEntry(JIPipeValidationReportEntryLevel.Error,
                     context,
-                    "Cellpose is not configured!",
-                    "This node requires an installation of Python with Cellpose. You have to point JIPipe to a Cellpose installation.",
+                    "Cellpose 2.x is not configured!",
+                    "This node requires an installation of Python with Cellpose 2.x. You have to point JIPipe to a Cellpose installation.",
                     "Please install Python from https://www.python.org/, or from https://www.anaconda.com/ or https://docs.conda.io/en/latest/miniconda.html and install Cellpose " +
                             "according to the documentation https://cellpose.readthedocs.io/en/latest/installation.html\n" +
                             "Then go to Project > Application settings > Extensions > Cellpose and choose the correct environment. " +
@@ -94,7 +94,7 @@ public class CellposePluginApplicationSettings extends JIPipeDefaultApplications
         }
     }
 
-    @SetJIPipeDocumentation(name = "Default Cellpose environment", description = "The default Cellpose environment that is associated to newly created projects. " +
+    @SetJIPipeDocumentation(name = "Default Cellpose 2.x environment", description = "The default Cellpose 2.x environment that is associated to newly created projects. " +
             "Leave at default (<code>com.github.mouseland.cellpose:*</code>) to automatically select the best available environment from an artifact. " +
             "If disabled, falls back to <code>com.github.mouseland.cellpose:*</code>.")
     @JIPipeParameter("default-cellpose-environment")
@@ -125,11 +125,11 @@ public class CellposePluginApplicationSettings extends JIPipeDefaultApplications
 
     @Override
     public String getName() {
-        return "Cellpose";
+        return "Cellpose 2.x";
     }
 
     @Override
     public String getDescription() {
-        return "Settings related to the Cellpose integration";
+        return "Settings related to the Cellpose 2.x integration";
     }
 }

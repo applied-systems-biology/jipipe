@@ -16,7 +16,7 @@ package org.hkijena.jipipe.plugins.cellpose.parameters;
 import org.hkijena.jipipe.plugins.parameters.api.collections.ListParameter;
 import org.hkijena.jipipe.plugins.parameters.api.enums.EnumParameterSettings;
 
-@EnumParameterSettings(itemInfo = PretrainedCellposeModelEnumItemInfo.class)
+@EnumParameterSettings(itemInfo = PretrainedCellpose2ModelEnumItemInfo.class)
 public class PretrainedCellpose2ModelList extends ListParameter<PretrainedCellpose2Model> {
     public PretrainedCellpose2ModelList() {
         super(PretrainedCellpose2Model.class);

@@ -18,16 +18,16 @@ import org.hkijena.jipipe.api.parameters.AbstractJIPipeParameterCollection;
 import org.hkijena.jipipe.api.parameters.JIPipeParameter;
 import org.hkijena.jipipe.plugins.parameters.library.primitives.optional.OptionalDoubleParameter;
 
-public class CellposeSegmentationThresholdSettings extends AbstractJIPipeParameterCollection {
+public class Cellpose2SegmentationThresholdSettings extends AbstractJIPipeParameterCollection {
     private double flowThreshold = 0.4;
     private double cellProbabilityThreshold = 0;
     private OptionalDoubleParameter stitchThreshold = new OptionalDoubleParameter(0, false);
     private boolean excludeOnEdges = false;
 
-    public CellposeSegmentationThresholdSettings() {
+    public Cellpose2SegmentationThresholdSettings() {
     }
 
-    public CellposeSegmentationThresholdSettings(CellposeSegmentationThresholdSettings other) {
+    public Cellpose2SegmentationThresholdSettings(Cellpose2SegmentationThresholdSettings other) {
         this.flowThreshold = other.flowThreshold;
         this.cellProbabilityThreshold = other.cellProbabilityThreshold;
         this.stitchThreshold = other.stitchThreshold;

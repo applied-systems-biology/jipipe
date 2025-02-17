@@ -18,7 +18,7 @@ import org.hkijena.jipipe.api.parameters.AbstractJIPipeParameterCollection;
 import org.hkijena.jipipe.api.parameters.JIPipeParameter;
 import org.hkijena.jipipe.plugins.parameters.library.primitives.optional.OptionalIntegerParameter;
 
-public class CellposeChannelSettings extends AbstractJIPipeParameterCollection {
+public class Cellpose2ChannelSettings extends AbstractJIPipeParameterCollection {
     private OptionalIntegerParameter segmentedChannel = new OptionalIntegerParameter(false, 0);
     private OptionalIntegerParameter nuclearChannel = new OptionalIntegerParameter(false, 0);
 
@@ -26,11 +26,11 @@ public class CellposeChannelSettings extends AbstractJIPipeParameterCollection {
 
     private boolean invert = false;
 
-    public CellposeChannelSettings() {
+    public Cellpose2ChannelSettings() {
 
     }
 
-    public CellposeChannelSettings(CellposeChannelSettings other) {
+    public Cellpose2ChannelSettings(Cellpose2ChannelSettings other) {
         this.segmentedChannel = new OptionalIntegerParameter(other.segmentedChannel);
         this.nuclearChannel = new OptionalIntegerParameter(other.nuclearChannel);
         this.allChannels = other.allChannels;

@@ -42,9 +42,9 @@ import org.hkijena.jipipe.api.validation.contexts.GraphNodeValidationReportConte
 import org.hkijena.jipipe.plugins.cellpose.CellposePlugin;
 import org.hkijena.jipipe.plugins.cellpose.CellposeUtils;
 import org.hkijena.jipipe.plugins.cellpose.legacy.datatypes.LegacyCellposeModelData;
-import org.hkijena.jipipe.plugins.cellpose.parameters.CellposeChannelSettings;
-import org.hkijena.jipipe.plugins.cellpose.parameters.CellposeGPUSettings;
-import org.hkijena.jipipe.plugins.cellpose.parameters.CellposeSegmentationOutputSettings;
+import org.hkijena.jipipe.plugins.cellpose.parameters.Cellpose2ChannelSettings;
+import org.hkijena.jipipe.plugins.cellpose.parameters.Cellpose2GPUSettings;
+import org.hkijena.jipipe.plugins.cellpose.parameters.Cellpose2SegmentationOutputSettings;
 import org.hkijena.jipipe.plugins.imagejdatatypes.datatypes.ImagePlusData;
 import org.hkijena.jipipe.plugins.imagejdatatypes.datatypes.OMEImageData;
 import org.hkijena.jipipe.plugins.imagejdatatypes.datatypes.ROI2DListData;
@@ -105,11 +105,11 @@ public class LegacyOmnipose0InferenceAlgorithm extends JIPipeSingleIterationAlgo
     public static final JIPipeDataSlotInfo OUTPUT_PROBABILITIES = new JIPipeDataSlotInfo(ImagePlusGreyscaleData.class, JIPipeSlotType.Output, "Probabilities", "An image indicating the cell probabilities for each pixel");
     public static final JIPipeDataSlotInfo OUTPUT_ROI = new JIPipeDataSlotInfo(ROI2DListData.class, JIPipeSlotType.Output, "ROI", "ROI of the segmented areas");
 
-    private final CellposeGPUSettings gpuSettings;
+    private final Cellpose2GPUSettings gpuSettings;
     private final OmniposeSegmentationTweaksSettings segmentationTweaksSettings;
     private final OmniposeSegmentationThresholdSettings segmentationThresholdSettings;
-    private final CellposeSegmentationOutputSettings segmentationOutputSettings;
-    private final CellposeChannelSettings channelSettings;
+    private final Cellpose2SegmentationOutputSettings segmentationOutputSettings;
+    private final Cellpose2ChannelSettings channelSettings;
 
     private LegacyOmnipose0Model model = LegacyOmnipose0Model.BactOmni;
     private OptionalDoubleParameter diameter = new OptionalDoubleParameter(30.0, true);
@@ -122,10 +122,10 @@ public class LegacyOmnipose0InferenceAlgorithm extends JIPipeSingleIterationAlgo
     public LegacyOmnipose0InferenceAlgorithm(JIPipeNodeInfo info) {
         super(info);
         this.segmentationTweaksSettings = new OmniposeSegmentationTweaksSettings();
-        this.gpuSettings = new CellposeGPUSettings();
+        this.gpuSettings = new Cellpose2GPUSettings();
         this.segmentationThresholdSettings = new OmniposeSegmentationThresholdSettings();
-        this.segmentationOutputSettings = new CellposeSegmentationOutputSettings();
-        this.channelSettings = new CellposeChannelSettings();
+        this.segmentationOutputSettings = new Cellpose2SegmentationOutputSettings();
+        this.channelSettings = new Cellpose2ChannelSettings();
 
         updateOutputSlots();
         updateInputSlots();
@@ -139,11 +139,11 @@ public class LegacyOmnipose0InferenceAlgorithm extends JIPipeSingleIterationAlgo
 
     public LegacyOmnipose0InferenceAlgorithm(LegacyOmnipose0InferenceAlgorithm other) {
         super(other);
-        this.gpuSettings = new CellposeGPUSettings(other.gpuSettings);
+        this.gpuSettings = new Cellpose2GPUSettings(other.gpuSettings);
         this.segmentationTweaksSettings = new OmniposeSegmentationTweaksSettings(other.segmentationTweaksSettings);
         this.segmentationThresholdSettings = new OmniposeSegmentationThresholdSettings(other.segmentationThresholdSettings);
-        this.segmentationOutputSettings = new CellposeSegmentationOutputSettings(other.segmentationOutputSettings);
-        this.channelSettings = new CellposeChannelSettings(other.channelSettings);
+        this.segmentationOutputSettings = new Cellpose2SegmentationOutputSettings(other.segmentationOutputSettings);
+        this.channelSettings = new Cellpose2ChannelSettings(other.channelSettings);
 
         this.model = other.model;
         this.diameter = new OptionalDoubleParameter(other.diameter);
@@ -643,7 +643,7 @@ public class LegacyOmnipose0InferenceAlgorithm extends JIPipeSingleIterationAlgo
 
     @SetJIPipeDocumentation(name = "Omnipose: Channels", description = "Determines which channels are used for the segmentation")
     @JIPipeParameter(value = "channel-parameters", resourceClass = OmniposePlugin.class, iconURL = "/org/hkijena/jipipe/plugins/omnipose/icons/omnipose.png")
-    public CellposeChannelSettings getChannelSettings() {
+    public Cellpose2ChannelSettings getChannelSettings() {
         return channelSettings;
     }
 
@@ -661,13 +661,13 @@ public class LegacyOmnipose0InferenceAlgorithm extends JIPipeSingleIterationAlgo
 
     @SetJIPipeDocumentation(name = "Omnipose: Outputs", description = "The following settings allow you to select which outputs are generated.")
     @JIPipeParameter(value = "output-parameters", collapsed = true, resourceClass = OmniposePlugin.class, iconURL = "/org/hkijena/jipipe/plugins/omnipose/icons/omnipose.png")
-    public CellposeSegmentationOutputSettings getSegmentationOutputSettings() {
+    public Cellpose2SegmentationOutputSettings getSegmentationOutputSettings() {
         return segmentationOutputSettings;
     }
 
     @SetJIPipeDocumentation(name = "Omnipose: GPU", description = "Controls how the graphics card is utilized.")
     @JIPipeParameter(value = "gpu-parameters", collapsed = true, resourceClass = OmniposePlugin.class, iconURL = "/org/hkijena/jipipe/plugins/omnipose/icons/omnipose.png")
-    public CellposeGPUSettings getGpuSettings() {
+    public Cellpose2GPUSettings getGpuSettings() {
         return gpuSettings;
     }
 

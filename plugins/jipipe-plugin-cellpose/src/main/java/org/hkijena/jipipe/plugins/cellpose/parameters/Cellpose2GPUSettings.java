@@ -18,14 +18,14 @@ import org.hkijena.jipipe.api.parameters.AbstractJIPipeParameterCollection;
 import org.hkijena.jipipe.api.parameters.JIPipeParameter;
 import org.hkijena.jipipe.plugins.parameters.library.primitives.optional.OptionalIntegerParameter;
 
-public class CellposeGPUSettings extends AbstractJIPipeParameterCollection {
+public class Cellpose2GPUSettings extends AbstractJIPipeParameterCollection {
     private boolean enableGPU = true;
     private OptionalIntegerParameter gpuDevice = new OptionalIntegerParameter(false, 0);
 
-    public CellposeGPUSettings() {
+    public Cellpose2GPUSettings() {
     }
 
-    public CellposeGPUSettings(CellposeGPUSettings other) {
+    public Cellpose2GPUSettings(Cellpose2GPUSettings other) {
         this.enableGPU = other.enableGPU;
         this.gpuDevice = new OptionalIntegerParameter(other.gpuDevice);
     }

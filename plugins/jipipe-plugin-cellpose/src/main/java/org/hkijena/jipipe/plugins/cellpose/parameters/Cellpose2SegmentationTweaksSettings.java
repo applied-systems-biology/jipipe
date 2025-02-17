@@ -18,7 +18,7 @@ import org.hkijena.jipipe.api.parameters.AbstractJIPipeParameterCollection;
 import org.hkijena.jipipe.api.parameters.JIPipeParameter;
 import org.hkijena.jipipe.plugins.parameters.library.primitives.optional.OptionalDoubleParameter;
 
-public class CellposeSegmentationTweaksSettings extends AbstractJIPipeParameterCollection {
+public class Cellpose2SegmentationTweaksSettings extends AbstractJIPipeParameterCollection {
     private boolean normalize = true;
     private boolean netAverage = true;
     private boolean interpolate = true;
@@ -26,10 +26,10 @@ public class CellposeSegmentationTweaksSettings extends AbstractJIPipeParameterC
 
     private boolean disableResample = false;
 
-    public CellposeSegmentationTweaksSettings() {
+    public Cellpose2SegmentationTweaksSettings() {
     }
 
-    public CellposeSegmentationTweaksSettings(CellposeSegmentationTweaksSettings other) {
+    public Cellpose2SegmentationTweaksSettings(Cellpose2SegmentationTweaksSettings other) {
         this.normalize = other.normalize;
         this.netAverage = other.netAverage;
         this.interpolate = other.interpolate;

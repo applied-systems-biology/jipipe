@@ -17,7 +17,7 @@ import org.hkijena.jipipe.api.SetJIPipeDocumentation;
 import org.hkijena.jipipe.api.parameters.AbstractJIPipeParameterCollection;
 import org.hkijena.jipipe.api.parameters.JIPipeParameter;
 
-public class CellposeSegmentationOutputSettings extends AbstractJIPipeParameterCollection {
+public class Cellpose2SegmentationOutputSettings extends AbstractJIPipeParameterCollection {
 
     private boolean outputLabels = true;
     private boolean outputFlowsXY = false;
@@ -28,10 +28,10 @@ public class CellposeSegmentationOutputSettings extends AbstractJIPipeParameterC
     private boolean outputProbabilities = false;
     private boolean outputROI = true;
 
-    public CellposeSegmentationOutputSettings() {
+    public Cellpose2SegmentationOutputSettings() {
     }
 
-    public CellposeSegmentationOutputSettings(CellposeSegmentationOutputSettings other) {
+    public Cellpose2SegmentationOutputSettings(Cellpose2SegmentationOutputSettings other) {
         this.outputLabels = other.outputLabels;
         this.outputFlowsXY = other.outputFlowsXY;
         this.outputFlowsZ = other.outputFlowsZ;
