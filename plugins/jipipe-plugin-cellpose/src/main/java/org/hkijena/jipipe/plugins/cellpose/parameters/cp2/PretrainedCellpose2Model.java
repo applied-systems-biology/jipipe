@@ -11,7 +11,7 @@
  * See the LICENSE file provided with the code for the full license.
  */
 
-package org.hkijena.jipipe.plugins.cellpose.parameters;
+package org.hkijena.jipipe.plugins.cellpose.parameters.cp2;
 
 import org.hkijena.jipipe.api.AddJIPipeDocumentationDescription;
 import org.hkijena.jipipe.plugins.parameters.api.enums.EnumParameterSettings;

@@ -18,7 +18,8 @@ import java.util.List;
 
 public class CellposePluginProjectSettings extends JIPipeDefaultProjectSettingsSheet {
     public static String ID = "org.hkijena.jipipe:cellpose";
-    private OptionalPythonEnvironment projectDefaultEnvironment = new OptionalPythonEnvironment();
+    private OptionalPythonEnvironment cellpose2Environment = new OptionalPythonEnvironment();
+    private OptionalPythonEnvironment cellpose3Environment = new OptionalPythonEnvironment();
 
     public CellposePluginProjectSettings() {
         autoConfigureDefaultEnvironment();
@@ -34,22 +35,47 @@ public class CellposePluginProjectSettings extends JIPipeDefaultProjectSettingsS
                 environment.setLoadFromArtifact(true);
                 environment.setArtifactQuery(new JIPipeArtifactQueryParameter(target.getFullId()));
 
-                projectDefaultEnvironment.setEnabled(true);
-                projectDefaultEnvironment.setContent(environment);
+                cellpose2Environment.setEnabled(true);
+                cellpose2Environment.setContent(environment);
+            }
+        }
+        if (Cellpose3PluginApplicationSettings.getInstance().getReadOnlyDefaultEnvironment().isLoadFromArtifact()) {
+            List<JIPipeArtifact> artifacts = JIPipe.getArtifacts().queryCachedArtifacts(Cellpose3PluginApplicationSettings.getInstance().getReadOnlyDefaultEnvironment().getArtifactQuery().getQuery());
+            artifacts.removeIf(artifact -> !artifact.isCompatible());
+            if (!artifacts.isEmpty()) {
+                JIPipeArtifact target = JIPipeArtifactsRegistry.selectPreferredArtifactByClassifier(artifacts);
+                PythonEnvironment environment = new PythonEnvironment();
+                environment.setLoadFromArtifact(true);
+                environment.setArtifactQuery(new JIPipeArtifactQueryParameter(target.getFullId()));
+
+                cellpose3Environment.setEnabled(true);
+                cellpose3Environment.setContent(environment);
             }
         }
     }
 
-    @SetJIPipeDocumentation(name = "Project default environment", description = "If enabled, overwrite the application-wide Cellpose environment and store them inside the project.")
+    @SetJIPipeDocumentation(name = "Cellpose 2.x environment", description = "If enabled, overwrite the application-wide Cellpose 2.x environment and store them inside the project.")
     @JIPipeParameter("project-default-environment")
     @ExternalEnvironmentParameterSettings(showCategory = "Cellpose", allowArtifact = true, artifactFilters = {"com.github.mouseland.cellpose:*"})
-    public OptionalPythonEnvironment getProjectDefaultEnvironment() {
-        return projectDefaultEnvironment;
+    public OptionalPythonEnvironment getCellpose2Environment() {
+        return cellpose2Environment;
     }
 
     @JIPipeParameter("project-default-environment")
-    public void setProjectDefaultEnvironment(OptionalPythonEnvironment projectDefaultEnvironment) {
-        this.projectDefaultEnvironment = projectDefaultEnvironment;
+    public void setCellpose2Environment(OptionalPythonEnvironment cellpose2Environment) {
+        this.cellpose2Environment = cellpose2Environment;
+    }
+
+    @SetJIPipeDocumentation(name = "Cellpose 3.x environment", description = "If enabled, overwrite the application-wide Cellpose 3.x environment and store them inside the project.")
+    @JIPipeParameter("project-cellpose3-environment")
+    @ExternalEnvironmentParameterSettings(showCategory = "Cellpose", allowArtifact = true, artifactFilters = {"com.github.mouseland.cellpose3:*"})
+    public OptionalPythonEnvironment getCellpose3Environment() {
+        return cellpose3Environment;
+    }
+
+    @JIPipeParameter("project-cellpose3-environment")
+    public void setCellpose3Environment(OptionalPythonEnvironment cellpose3Environment) {
+        this.cellpose3Environment = cellpose3Environment;
     }
 
     @Override

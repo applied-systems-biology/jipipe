@@ -42,9 +42,9 @@ import org.hkijena.jipipe.api.validation.contexts.GraphNodeValidationReportConte
 import org.hkijena.jipipe.plugins.cellpose.CellposePlugin;
 import org.hkijena.jipipe.plugins.cellpose.CellposeUtils;
 import org.hkijena.jipipe.plugins.cellpose.legacy.datatypes.LegacyCellposeModelData;
-import org.hkijena.jipipe.plugins.cellpose.parameters.Cellpose2ChannelSettings;
-import org.hkijena.jipipe.plugins.cellpose.parameters.Cellpose2GPUSettings;
-import org.hkijena.jipipe.plugins.cellpose.parameters.Cellpose2SegmentationOutputSettings;
+import org.hkijena.jipipe.plugins.cellpose.parameters.cp2.Cellpose2ChannelSettings;
+import org.hkijena.jipipe.plugins.cellpose.parameters.cp2.Cellpose2GPUSettings;
+import org.hkijena.jipipe.plugins.cellpose.parameters.cp2.Cellpose2SegmentationOutputSettings;
 import org.hkijena.jipipe.plugins.imagejdatatypes.datatypes.ImagePlusData;
 import org.hkijena.jipipe.plugins.imagejdatatypes.datatypes.OMEImageData;
 import org.hkijena.jipipe.plugins.imagejdatatypes.datatypes.ROI2DListData;

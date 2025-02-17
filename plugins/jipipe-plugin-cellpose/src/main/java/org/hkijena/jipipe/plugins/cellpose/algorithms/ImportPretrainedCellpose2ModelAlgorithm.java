@@ -27,8 +27,8 @@ import org.hkijena.jipipe.api.nodes.iterationstep.JIPipeIterationContext;
 import org.hkijena.jipipe.api.nodes.iterationstep.JIPipeSingleIterationStep;
 import org.hkijena.jipipe.api.parameters.JIPipeParameter;
 import org.hkijena.jipipe.plugins.cellpose.datatypes.CellposeModelData;
-import org.hkijena.jipipe.plugins.cellpose.parameters.PretrainedCellpose2Model;
-import org.hkijena.jipipe.plugins.cellpose.parameters.PretrainedCellpose2ModelList;
+import org.hkijena.jipipe.plugins.cellpose.parameters.cp2.PretrainedCellpose2Model;
+import org.hkijena.jipipe.plugins.cellpose.parameters.cp2.PretrainedCellpose2ModelList;
 import org.hkijena.jipipe.plugins.parameters.library.primitives.optional.OptionalTextAnnotationNameParameter;
 
 import java.util.ArrayList;

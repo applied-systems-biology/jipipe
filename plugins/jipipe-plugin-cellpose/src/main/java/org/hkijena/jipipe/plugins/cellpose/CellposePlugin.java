@@ -36,8 +36,10 @@ import org.hkijena.jipipe.plugins.cellpose.legacy.compat.LegacyCellposeSizeModel
 import org.hkijena.jipipe.plugins.cellpose.legacy.compat.LegacyCellposeSizeModelImageJImporter;
 import org.hkijena.jipipe.plugins.cellpose.legacy.datatypes.LegacyCellposeModelData;
 import org.hkijena.jipipe.plugins.cellpose.legacy.datatypes.LegacyCellposeSizeModelData;
-import org.hkijena.jipipe.plugins.cellpose.parameters.PretrainedCellpose2Model;
-import org.hkijena.jipipe.plugins.cellpose.parameters.PretrainedCellpose2ModelList;
+import org.hkijena.jipipe.plugins.cellpose.parameters.cp2.PretrainedCellpose2Model;
+import org.hkijena.jipipe.plugins.cellpose.parameters.cp2.PretrainedCellpose2ModelList;
+import org.hkijena.jipipe.plugins.cellpose.parameters.cp3.PretrainedCellpose3Model;
+import org.hkijena.jipipe.plugins.cellpose.parameters.cp3.PretrainedCellpose3ModelList;
 import org.hkijena.jipipe.plugins.core.CorePlugin;
 import org.hkijena.jipipe.plugins.imagejalgorithms.ImageJAlgorithmsPlugin;
 import org.hkijena.jipipe.plugins.imagejdatatypes.ImageJDataTypesPlugin;
@@ -77,8 +79,8 @@ public class CellposePlugin extends JIPipePrepackagedDefaultJavaPlugin {
         if (nodeEnvironment.isEnabled()) {
             return nodeEnvironment.getContent();
         }
-        if (project != null && project.getSettingsSheet(CellposePluginProjectSettings.class).getProjectDefaultEnvironment().isEnabled()) {
-            return project.getSettingsSheet(CellposePluginProjectSettings.class).getProjectDefaultEnvironment().getContent();
+        if (project != null && project.getSettingsSheet(CellposePluginProjectSettings.class).getCellpose2Environment().isEnabled()) {
+            return project.getSettingsSheet(CellposePluginProjectSettings.class).getCellpose2Environment().getContent();
         }
         return Cellpose2PluginApplicationSettings.getInstance().getReadOnlyDefaultEnvironment();
     }
@@ -159,6 +161,7 @@ public class CellposePlugin extends JIPipePrepackagedDefaultJavaPlugin {
     @Override
     public void register(JIPipe jiPipe, Context context, JIPipeProgressInfo progressInfo) {
         registerApplicationSettingsSheet(new Cellpose2PluginApplicationSettings());
+        registerApplicationSettingsSheet(new Cellpose3PluginApplicationSettings());
         registerProjectSettingsSheet(CellposePluginProjectSettings.class);
 
         // Modern nodes and data types
@@ -167,6 +170,9 @@ public class CellposePlugin extends JIPipePrepackagedDefaultJavaPlugin {
 
         registerEnumParameterType("cellpose-2.x-pretrained-model", PretrainedCellpose2Model.class, "Cellpose 2.x pretrained model", "A pretrained model provided with Cellpose 2.x");
         registerParameterType("cellpose-2.x-pretrained-model-list", PretrainedCellpose2ModelList.class, "Cellpose 2.x pretrained model list", "A list of pretrained Cellpose 2.x models");
+
+        registerEnumParameterType("cellpose-3.x-pretrained-model", PretrainedCellpose3Model.class, "Cellpose 3.x pretrained model", "A pretrained model provided with Cellpose 3.x");
+        registerParameterType("cellpose-3.x-pretrained-model-list", PretrainedCellpose3ModelList.class, "Cellpose 3.x pretrained model list", "A list of pretrained Cellpose 3.x models");
 
         registerNodeType("import-cellpose-model-v2", ImportCellposeModelFromFileAlgorithm.class);
         registerNodeType("import-cellpose-size-model-v2", ImportCellposeSizeModelFromFileAlgorithm.class);
