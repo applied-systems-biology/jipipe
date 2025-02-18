@@ -11,7 +11,7 @@
  * See the LICENSE file provided with the code for the full license.
  */
 
-package org.hkijena.jipipe.plugins.cellpose;
+package org.hkijena.jipipe.plugins.cellpose.algorithms.cp3;
 
 import org.hkijena.jipipe.api.nodes.JIPipeGraphNode;
 import org.hkijena.jipipe.api.project.JIPipeProject;
@@ -19,13 +19,14 @@ import org.hkijena.jipipe.api.validation.JIPipeValidationReport;
 import org.hkijena.jipipe.api.validation.JIPipeValidationReportContext;
 import org.hkijena.jipipe.api.validation.JIPipeValidationReportEntry;
 import org.hkijena.jipipe.api.validation.JIPipeValidationReportEntryLevel;
+import org.hkijena.jipipe.plugins.cellpose.CellposePlugin;
 import org.hkijena.jipipe.plugins.python.OptionalPythonEnvironment;
 import org.hkijena.jipipe.plugins.python.PythonEnvironment;
 
 /**
  * Interface that should be used by nodes that access the OMERO credentials environments
  */
-public interface CellposeEnvironmentAccessNode {
+public interface Cellpose3EnvironmentAccessNode {
     OptionalPythonEnvironment getOverrideEnvironment();
 
     /**
@@ -40,7 +41,7 @@ public interface CellposeEnvironmentAccessNode {
         if (project == null) {
             project = node.getParentGraph().getProject();
         }
-        return CellposePlugin.getEnvironment(project, getOverrideEnvironment());
+        return CellposePlugin.getCP3Environment(project, getOverrideEnvironment());
     }
 
     /**
@@ -53,9 +54,9 @@ public interface CellposeEnvironmentAccessNode {
         if (!getConfiguredCellposeEnvironment().generateValidityReport(context).isValid()) {
             report.report(new JIPipeValidationReportEntry(JIPipeValidationReportEntryLevel.Error,
                     context,
-                    "Cellpose not configured",
-                    "The Cellpose integration is not configured correctly.",
-                    "Go to the Project > Project settings/overview > Settings > Plugins > Cellpose and setup an appropriate Cellpose environment."));
+                    "Cellpose 3.x not configured",
+                    "The Cellpose 3.x integration is not configured correctly.",
+                    "Go to the Project > Project settings/overview > Settings > Plugins > Cellpose 3.x and setup an appropriate Cellpose environment."));
         }
     }
 }

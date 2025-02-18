@@ -11,7 +11,7 @@
  * See the LICENSE file provided with the code for the full license.
  */
 
-package org.hkijena.jipipe.plugins.cellpose.algorithms;
+package org.hkijena.jipipe.plugins.cellpose.algorithms.cp3;
 
 import org.hkijena.jipipe.api.ConfigureJIPipeNode;
 import org.hkijena.jipipe.api.JIPipeProgressInfo;
@@ -29,38 +29,40 @@ import org.hkijena.jipipe.api.parameters.JIPipeParameter;
 import org.hkijena.jipipe.plugins.cellpose.datatypes.CellposeModelData;
 import org.hkijena.jipipe.plugins.cellpose.parameters.cp2.PretrainedCellpose2Model;
 import org.hkijena.jipipe.plugins.cellpose.parameters.cp2.PretrainedCellpose2ModelList;
+import org.hkijena.jipipe.plugins.cellpose.parameters.cp3.PretrainedCellpose3Model;
+import org.hkijena.jipipe.plugins.cellpose.parameters.cp3.PretrainedCellpose3ModelList;
 import org.hkijena.jipipe.plugins.parameters.library.primitives.optional.OptionalTextAnnotationNameParameter;
 
 import java.util.ArrayList;
 import java.util.List;
 
-@SetJIPipeDocumentation(name = "Pretrained Cellpose 2.x model", description = "Imports one or a selection of pretrained Cellpose 2.x models")
+@SetJIPipeDocumentation(name = "Pretrained Cellpose 3.x model", description = "Imports one or a selection of pretrained Cellpose 3.x models")
 @ConfigureJIPipeNode(nodeTypeCategory = DataSourceNodeTypeCategory.class)
 @AddJIPipeOutputSlot(value = CellposeModelData.class, name = "Output", create = true)
-public class ImportPretrainedCellpose2ModelAlgorithm extends JIPipeSimpleIteratingAlgorithm {
+public class ImportPretrainedCellpose3ModelAlgorithm extends JIPipeSimpleIteratingAlgorithm {
 
-    private PretrainedCellpose2ModelList models = new PretrainedCellpose2ModelList();
+    private PretrainedCellpose3ModelList models = new PretrainedCellpose3ModelList();
     private OptionalTextAnnotationNameParameter modelNameAnnotation = new OptionalTextAnnotationNameParameter("Model", true);
 
-    public ImportPretrainedCellpose2ModelAlgorithm(JIPipeNodeInfo info) {
+    public ImportPretrainedCellpose3ModelAlgorithm(JIPipeNodeInfo info) {
         super(info);
-        models.add(PretrainedCellpose2Model.cyto2);
+        models.add(PretrainedCellpose3Model.cyto3);
     }
 
-    public ImportPretrainedCellpose2ModelAlgorithm(ImportPretrainedCellpose2ModelAlgorithm other) {
+    public ImportPretrainedCellpose3ModelAlgorithm(ImportPretrainedCellpose3ModelAlgorithm other) {
         super(other);
-        this.models = new PretrainedCellpose2ModelList(other.models);
+        this.models = new PretrainedCellpose3ModelList(other.models);
         this.modelNameAnnotation = new OptionalTextAnnotationNameParameter(other.modelNameAnnotation);
     }
 
     @SetJIPipeDocumentation(name = "Models", description = "The list of models to be imported")
     @JIPipeParameter(value = "models", important = true)
-    public PretrainedCellpose2ModelList getModels() {
+    public PretrainedCellpose3ModelList getModels() {
         return models;
     }
 
     @JIPipeParameter("models")
-    public void setModels(PretrainedCellpose2ModelList models) {
+    public void setModels(PretrainedCellpose3ModelList models) {
         this.models = models;
     }
 
@@ -77,7 +79,7 @@ public class ImportPretrainedCellpose2ModelAlgorithm extends JIPipeSimpleIterati
 
     @Override
     protected void runIteration(JIPipeSingleIterationStep iterationStep, JIPipeIterationContext iterationContext, JIPipeGraphNodeRunContext runContext, JIPipeProgressInfo progressInfo) {
-        for (PretrainedCellpose2Model model : models) {
+        for (PretrainedCellpose3Model model : models) {
             List<JIPipeTextAnnotation> annotationList = new ArrayList<>();
             modelNameAnnotation.addAnnotationIfEnabled(annotationList, model.getId());
             iterationStep.addOutputData(getFirstOutputSlot(), new CellposeModelData(model.getId()), annotationList, JIPipeTextAnnotationMergeMode.Merge, progressInfo);

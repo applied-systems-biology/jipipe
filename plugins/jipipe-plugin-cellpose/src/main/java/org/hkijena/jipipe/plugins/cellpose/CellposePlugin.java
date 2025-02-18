@@ -25,6 +25,11 @@ import org.hkijena.jipipe.api.compat.ui.FolderImageJDataExporterUI;
 import org.hkijena.jipipe.api.project.JIPipeProject;
 import org.hkijena.jipipe.plugins.JIPipePrepackagedDefaultJavaPlugin;
 import org.hkijena.jipipe.plugins.cellpose.algorithms.*;
+import org.hkijena.jipipe.plugins.cellpose.algorithms.cp2.Cellpose2InferenceAlgorithm;
+import org.hkijena.jipipe.plugins.cellpose.algorithms.cp2.Cellpose2TrainingAlgorithm;
+import org.hkijena.jipipe.plugins.cellpose.algorithms.cp2.ImportPretrainedCellpose2ModelAlgorithm;
+import org.hkijena.jipipe.plugins.cellpose.algorithms.cp3.Cellpose3InferenceAlgorithm;
+import org.hkijena.jipipe.plugins.cellpose.algorithms.cp3.ImportPretrainedCellpose3ModelAlgorithm;
 import org.hkijena.jipipe.plugins.cellpose.datatypes.CellposeModelData;
 import org.hkijena.jipipe.plugins.cellpose.datatypes.CellposeSizeModelData;
 import org.hkijena.jipipe.plugins.cellpose.legacy.PretrainedLegacyCellpose2InferenceModel;
@@ -75,7 +80,7 @@ public class CellposePlugin extends JIPipePrepackagedDefaultJavaPlugin {
         getMetadata().addCategories(PluginCategoriesEnumParameter.CATEGORY_DEEP_LEARNING, PluginCategoriesEnumParameter.CATEGORY_SEGMENTATION, PluginCategoriesEnumParameter.CATEGORY_MACHINE_LEARNING);
     }
 
-    public static PythonEnvironment getEnvironment(JIPipeProject project, OptionalPythonEnvironment nodeEnvironment) {
+    public static PythonEnvironment getCP2Environment(JIPipeProject project, OptionalPythonEnvironment nodeEnvironment) {
         if (nodeEnvironment.isEnabled()) {
             return nodeEnvironment.getContent();
         }
@@ -83,6 +88,16 @@ public class CellposePlugin extends JIPipePrepackagedDefaultJavaPlugin {
             return project.getSettingsSheet(CellposePluginProjectSettings.class).getCellpose2Environment().getContent();
         }
         return Cellpose2PluginApplicationSettings.getInstance().getReadOnlyDefaultEnvironment();
+    }
+
+    public static PythonEnvironment getCP3Environment(JIPipeProject project, OptionalPythonEnvironment nodeEnvironment) {
+        if (nodeEnvironment.isEnabled()) {
+            return nodeEnvironment.getContent();
+        }
+        if (project != null && project.getSettingsSheet(CellposePluginProjectSettings.class).getCellpose3Environment().isEnabled()) {
+            return project.getSettingsSheet(CellposePluginProjectSettings.class).getCellpose3Environment().getContent();
+        }
+        return Cellpose3PluginApplicationSettings.getInstance().getReadOnlyDefaultEnvironment();
     }
 
     @Override
@@ -176,10 +191,16 @@ public class CellposePlugin extends JIPipePrepackagedDefaultJavaPlugin {
 
         registerNodeType("import-cellpose-model-v2", ImportCellposeModelFromFileAlgorithm.class);
         registerNodeType("import-cellpose-size-model-v2", ImportCellposeSizeModelFromFileAlgorithm.class);
-        registerNodeType("import-cellpose-2.x-pretrained-model", ImportPretrainedCellpose2ModelAlgorithm.class);
 
+        // CP2 nodes
+        registerNodeType("import-cellpose-2.x-pretrained-model", ImportPretrainedCellpose2ModelAlgorithm.class);
         registerNodeType("cellpose-inference-2.x", Cellpose2InferenceAlgorithm.class, UIUtils.getIconURLFromResources("apps/cellpose.png"));
         registerNodeType("cellpose-training-2.x", Cellpose2TrainingAlgorithm.class, UIUtils.getIconURLFromResources("apps/cellpose.png"));
+
+        // CP3 nodes
+        registerNodeType("import-cellpose-3.x-pretrained-model", ImportPretrainedCellpose3ModelAlgorithm.class);
+        registerNodeType("cellpose-inference-3.x", Cellpose3InferenceAlgorithm.class, UIUtils.getIconURLFromResources("apps/cellpose.png"));
+//        registerNodeType("cellpose-training-2.x", Cellpose2TrainingAlgorithm.class, UIUtils.getIconURLFromResources("apps/cellpose.png"));
 
         // Legacy nodes and data types
         registerEnumParameterType("cellpose-model", PretrainedLegacyCellpose2InferenceModel.class, "Cellpose model (deprecated)", "A Cellpose model");
