@@ -41,6 +41,7 @@ import org.hkijena.jipipe.plugins.imagejalgorithms.nodes.color.*;
 import org.hkijena.jipipe.plugins.imagejalgorithms.nodes.contrast.CLAHEContrastEnhancer;
 import org.hkijena.jipipe.plugins.imagejalgorithms.nodes.contrast.HistogramContrastEnhancerAlgorithm;
 import org.hkijena.jipipe.plugins.imagejalgorithms.nodes.contrast.IlluminationCorrection2DAlgorithm;
+import org.hkijena.jipipe.plugins.imagejalgorithms.nodes.contrast.ImageJContrastEnhancerAlgorithm;
 import org.hkijena.jipipe.plugins.imagejalgorithms.nodes.convert.*;
 import org.hkijena.jipipe.plugins.imagejalgorithms.nodes.convolve.ConvolveByImage2DAlgorithm;
 import org.hkijena.jipipe.plugins.imagejalgorithms.nodes.convolve.ConvolveByParameter2DAlgorithm;
@@ -773,6 +774,9 @@ public class ImageJAlgorithmsPlugin extends JIPipePrepackagedDefaultJavaPlugin {
         registerNodeType("ij1-convert-image-to-table-column", ImageToTableColumnAlgorithm.class, UIUtils.getIconURLFromResources("actions/table.png"));
         registerNodeType("ij1-extract-ome-image-xml", ExtractOMEXMLAlgorithm.class, UIUtils.getIconURLFromResources("actions/dialog-xml-editor.png"));
         registerNodeType("ij1-extract-ome-image-roi", ExtractOMEROIAlgorithm.class, UIUtils.getIconURLFromResources("actions/roi.png"));
+
+        registerNodeType("ij-convert-image-to-8-bit-ij-auto-contrast", ConvertImageTo8BitAutoContrastAlgorithm.class, UIUtils.getIconURLFromResources("data-types/imgplus-greyscale-8u.png"));
+        registerNodeType("ij-convert-image-to-16-bit-ij-auto-contrast", ConvertImageTo16BitAutoContrastAlgorithm.class, UIUtils.getIconURLFromResources("data-types/imgplus-greyscale-16u.png"));
     }
 
     private void registerFormAlgorithms() {
@@ -1328,6 +1332,7 @@ public class ImageJAlgorithmsPlugin extends JIPipePrepackagedDefaultJavaPlugin {
         registerNodeType("ij1-contrast-calibrate", DisplayRangeCalibrationAlgorithm.class, UIUtils.getIconURLFromResources("actions/contrast.png"));
         registerNodeType("ij1-contrast-apply-displayed-contrast", ApplyDisplayContrastAlgorithm.class, UIUtils.getIconURLFromResources("actions/contrast.png"));
         registerNodeType("ij1-contrast-histogram-enhancer", HistogramContrastEnhancerAlgorithm.class, UIUtils.getIconURLFromResources("actions/contrast.png"));
+        registerNodeType("ij1-contrast-apply-ij-per-slice", ImageJContrastEnhancerAlgorithm.class, UIUtils.getIconURLFromResources("actions/contrast.png"));
 
         registerEnumParameterType(HistogramContrastEnhancerAlgorithm.Method.class.getCanonicalName(), HistogramContrastEnhancerAlgorithm.Method.class,
                 "Histogram contrast enhancer method", "Available methods");

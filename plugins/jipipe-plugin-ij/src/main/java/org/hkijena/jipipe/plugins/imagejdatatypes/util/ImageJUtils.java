@@ -45,6 +45,7 @@ import org.hkijena.jipipe.plugins.imagejdatatypes.datatypes.greyscale.ImagePlusG
 import org.hkijena.jipipe.plugins.imagejdatatypes.util.measure.ImageStatisticsSetParameter;
 import org.hkijena.jipipe.plugins.imagejdatatypes.util.measure.Measurement;
 import org.hkijena.jipipe.plugins.parameters.library.colors.ColorMap;
+import org.hkijena.jipipe.plugins.parameters.library.primitives.vectors.Vector2dParameter;
 import org.hkijena.jipipe.plugins.parameters.library.quantities.Quantity;
 import org.hkijena.jipipe.plugins.parameters.library.roi.Anchor;
 import org.hkijena.jipipe.plugins.tables.datatypes.ResultsTableData;
@@ -1679,7 +1680,7 @@ public class ImageJUtils {
         }, new JIPipeProgressInfo());
     }
 
-    public static void calibrate(ImageProcessor imp, ImageJCalibrationMode calibrationMode, double customMin, double customMax, ImageStatistics stats) {
+    public static Vector2dParameter calibrate(ImageProcessor imp, ImageJCalibrationMode calibrationMode, double customMin, double customMax, ImageStatistics stats) {
         double min = calibrationMode.getMin();
         double max = calibrationMode.getMax();
         if (calibrationMode == ImageJCalibrationMode.Custom) {
@@ -1726,6 +1727,55 @@ public class ImageJUtils {
             max = stats.max;
         }
         imp.setMinAndMax(min, max);
+        return new Vector2dParameter(min, max);
+    }
+
+    public static void writeCalibrationToPixels(ImageProcessor ip, double min, double max) {
+        if(ip instanceof ByteProcessor) {
+            min = Math.max(0, min);
+            max = Math.min(255, max);
+            byte[] pixels = (byte[]) ip.getPixels();
+            for (int i = 0; i < pixels.length; i++) {
+                int value = Byte.toUnsignedInt(pixels[i]);
+                double k = (value - min) / (max - min);
+                k = Math.max(Math.min(k, 1), 0);
+                value = (int) (min + k * (max - min));
+                pixels[i] = (byte) value;
+            }
+        }
+        else if(ip instanceof ShortProcessor) {
+            min = Math.max(0, min);
+            max = Math.min(65535, max);
+            short[] pixels = (short[]) ip.getPixels();
+            for (int i = 0; i < pixels.length; i++) {
+                int value = Short.toUnsignedInt(pixels[i]);
+                double k = (value - min) / (max - min);
+                k = Math.max(Math.min(k, 1), 0);
+                value = (int) (min + k * (max - min));
+                pixels[i] = (short) value;
+            }
+        }
+        else if(ip instanceof FloatProcessor) {
+            if(Double.isInfinite(min) || Double.isInfinite(max)) {
+                // Unable to resolve
+                return;
+            }
+            float[] pixels = (float[]) ip.getPixels();
+            for (int i = 0; i < pixels.length; i++) {
+                float value = pixels[i];
+                if(!Float.isNaN(value) ) {
+                    double k = (value - min) / (max - min);
+                    value = (float) (min + k * (max - min));
+                    pixels[i] = value;
+                }
+            }
+        }
+        else if(ip instanceof ColorProcessor) {
+            // Do nothing
+        }
+        else {
+            throw new UnsupportedOperationException("Unsupported processor: " + ip);
+        }
     }
 
     public static double[] calculateCalibration(ImageProcessor imp, ImageJCalibrationMode calibrationMode, double customMin, double customMax, ImageStatistics stats) {
@@ -1784,13 +1834,15 @@ public class ImageJUtils {
      * @param calibrationMode the calibration mode
      * @param customMin       custom min value (only used if calibrationMode is Custom)
      * @param customMax       custom max value (only used if calibrationMode is Custom)
+     * @return the new min and max
      */
-    public static void calibrate(ImagePlus imp, ImageJCalibrationMode calibrationMode, double customMin, double customMax) {
+    public static Vector2dParameter calibrate(ImagePlus imp, ImageJCalibrationMode calibrationMode, double customMin, double customMax) {
         ImageProcessor ip = imp.getProcessor();
-        ImageJUtils.calibrate(ip, calibrationMode, customMin, customMax, ip.getStats());
+        Vector2dParameter result = ImageJUtils.calibrate(ip, calibrationMode, customMin, customMax, ip.getStats());
         if (imp.hasImageStack()) {
             imp.getImageStack().update(ip);
         }
+        return result;
     }
 
     public static ImageStack expandImageStackCanvas(ImageStack stackOld, Color backgroundColor, int wNew, int hNew, int xOff, int yOff) {
