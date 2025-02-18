@@ -54,13 +54,14 @@ import org.jgrapht.graph.DefaultEdge;
 
 import java.util.*;
 
-@SetJIPipeDocumentation(name = "Fast image arithmetics", description = "Applies standard arithmetic and logical operations including, addition, subtraction, division, multiplication, GAMMA, EXP, LOG, SQR, SQRT, ABS, AND, OR, XOR, minimum, maximum, and more.")
+@SetJIPipeDocumentation(name = "Fast image arithmetics 2D", description = "Applies standard arithmetic and logical operations including, addition, subtraction, division, multiplication, GAMMA, EXP, LOG, SQR, SQRT, ABS, AND, OR, XOR, minimum, maximum, and more.")
 @ConfigureJIPipeNode(nodeTypeCategory = ImagesNodeTypeCategory.class, menuPath = "Math")
 @AddJIPipeOutputSlot(value = ImagePlusGreyscaleData.class, name = "Output")
 public class FastImageArithmeticsAlgorithm extends JIPipeIteratingAlgorithm {
 
     public static final Set<String> FUNCTIONS = Sets.newHashSet("MIN", "MAX", "SQR", "SQRT", "EXP", "LN", "LOG", "INVERT", "ABS", "AND", "OR", "XOR", "NOT", "GAMMA", "POW", "MOD",
-            "SIN", "SINH", "ASIN", "COS", "COSH", "ACOS", "TAN", "TANH", "ATAN2", "FLOOR", "CEIL", "ROUND", "SIGNUM", "IF_ELSE");
+            "SIN", "SINH", "ASIN", "COS", "COSH", "ACOS", "TAN", "TANH", "ATAN2", "FLOOR", "CEIL", "ROUND", "SIGNUM", "IF_ELSE",
+            "SLICE_MAX", "SLICE_MIN", "SLICE_MEAN", "SLICE_MEDIAN", "SLICE_STDDEV", "SLICE_SKEWNESS", "SLICE_MODE");
     public static final Set<String> CONSTANTS = Sets.newHashSet("x", "y", "c", "z", "t", "pi", "e", "width", "height", "numZ", "numC", "numT");
     private final JIPipeExpressionCustomASTParser astParser = new JIPipeExpressionCustomASTParser();
     private OptionalBitDepth bitDepth = OptionalBitDepth.Grayscale32f;
@@ -366,8 +367,128 @@ public class FastImageArithmeticsAlgorithm extends JIPipeIteratingAlgorithm {
             case "ATAN2":
                 checkArgumentCount(functionName, arguments, 2);
                 return applyATan2Function(arguments.get(0), arguments.get(1), bitDepth);
+            case "SLICE_MIN":
+                checkArgumentCount(functionName, arguments, 1);
+                return applySliceMinFunction(arguments.get(0), bitDepth);
+            case "SLICE_MAX":
+                checkArgumentCount(functionName, arguments, 1);
+                return applySliceMaxFunction(arguments.get(0), bitDepth);
+            case "SLICE_MEAN":
+                checkArgumentCount(functionName, arguments, 1);
+                return applySliceMeanFunction(arguments.get(0), bitDepth);
+            case "SLICE_MEDIAN":
+                checkArgumentCount(functionName, arguments, 1);
+                return applySliceMedianFunction(arguments.get(0), bitDepth);
+            case "SLICE_STDDEV":
+                checkArgumentCount(functionName, arguments, 1);
+                return applySliceStdDevFunction(arguments.get(0), bitDepth);
+            case "SLICE_SKEWNESS":
+                checkArgumentCount(functionName, arguments, 1);
+                return applySliceSkewnessFunction(arguments.get(0), bitDepth);
+            case "SLICE_KURTOSIS":
+                checkArgumentCount(functionName, arguments, 1);
+                return applySliceKurtosisFunction(arguments.get(0), bitDepth);
+            case "SLICE_MODE":
+                checkArgumentCount(functionName, arguments, 1);
+                return applySliceModeFunction(arguments.get(0), bitDepth);
             default:
                 throw new IllegalArgumentException("Unknown function: " + functionName);
+        }
+    }
+
+    private Object applySliceModeFunction(Object o, int bitDepth) {
+        if(o instanceof ImageProcessor) {
+            return ((ImageProcessor) o).getStats().mode;
+        }
+        else if(o instanceof Number) {
+            return o;
+        }
+        else {
+            throw new UnsupportedOperationException("Unsupported argument: " + o);
+        }
+    }
+
+    private Object applySliceKurtosisFunction(Object o, int bitDepth) {
+        if(o instanceof ImageProcessor) {
+            return ((ImageProcessor) o).getStatistics().kurtosis;
+        }
+        else if(o instanceof Number) {
+            return o;
+        }
+        else {
+            throw new UnsupportedOperationException("Unsupported argument: " + o);
+        }
+    }
+
+    private Object applySliceSkewnessFunction(Object o, int bitDepth) {
+        if(o instanceof ImageProcessor) {
+            return ((ImageProcessor) o).getStatistics().skewness;
+        }
+        else if(o instanceof Number) {
+            return o;
+        }
+        else {
+            throw new UnsupportedOperationException("Unsupported argument: " + o);
+        }
+    }
+
+    private Object applySliceStdDevFunction(Object o, int bitDepth) {
+        if(o instanceof ImageProcessor) {
+            return ((ImageProcessor) o).getStats().stdDev;
+        }
+        else if(o instanceof Number) {
+            return o;
+        }
+        else {
+            throw new UnsupportedOperationException("Unsupported argument: " + o);
+        }
+    }
+
+    private Object applySliceMedianFunction(Object o, int bitDepth) {
+        if(o instanceof ImageProcessor) {
+            return ((ImageProcessor) o).getStatistics().median;
+        }
+        else if(o instanceof Number) {
+            return o;
+        }
+        else {
+            throw new UnsupportedOperationException("Unsupported argument: " + o);
+        }
+    }
+
+    private Object applySliceMeanFunction(Object o, int bitDepth) {
+        if(o instanceof ImageProcessor) {
+            return ((ImageProcessor) o).getStats().mean;
+        }
+        else if(o instanceof Number) {
+            return o;
+        }
+        else {
+            throw new UnsupportedOperationException("Unsupported argument: " + o);
+        }
+    }
+
+    private Object applySliceMaxFunction(Object o, int bitDepth) {
+        if(o instanceof ImageProcessor) {
+            return ((ImageProcessor) o).getStats().max;
+        }
+        else if(o instanceof Number) {
+            return o;
+        }
+        else {
+            throw new UnsupportedOperationException("Unsupported argument: " + o);
+        }
+    }
+
+    private Object applySliceMinFunction(Object o, int bitDepth) {
+        if(o instanceof ImageProcessor) {
+            return ((ImageProcessor) o).getStats().min;
+        }
+        else if(o instanceof Number) {
+            return o;
+        }
+        else {
+            throw new UnsupportedOperationException("Unsupported argument: " + o);
         }
     }
 
@@ -1427,6 +1548,7 @@ public class FastImageArithmeticsAlgorithm extends JIPipeIteratingAlgorithm {
             "<li><code>INVERT([])</code> calculates the inverted pixel value (for numbers it will return NOT(x))</li>" +
             "<li><code>AND([], [])</code>, <code>OR([], [])</code>, <code>XOR([], [])</code>, <code>NOT([])</code> to calculate bitwise logical operations. Values are automatically converted to integers to allow the operation.</li>" +
             "<li><code>SIN([])</code>, <code>SINH([])</code>, <code>ASIN([])</code>, <code>COS([])</code>, <code>COSH([])</code>, <code>ACOS([])</code>, <code>TAN([])</code>, <code>TANH([])</code>, <code>ATAN2([])</code> are supported trigonometric functions (behavior according to the Java standard library)</li>" +
+            "<li><code>SLICE_MAX([])</code>, <code>SLICE_MIN([])</code>, <code>SLICE_MEAN([])</code>, <code>SLICE_MEDIAN([])</code>, <code>SLICE_STDDEV([])</code>, <code>SLICE_SKEWNESS([])</code>, <code>SLICE_KURTOSIS([])</code>, <code>SLICE_MODE([])</code> calculate the given statistic over all pixel values in the current 2D slice</li>" +
             "</ul>")
     @JIPipeParameter("expression")
     @JIPipeExpressionParameterSettings(withoutEditorButton = true, tokenMaker = FastImageArithmeticsTokenMaker.class)
