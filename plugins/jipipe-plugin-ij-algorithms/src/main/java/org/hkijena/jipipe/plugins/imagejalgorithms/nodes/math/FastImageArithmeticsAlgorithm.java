@@ -65,13 +65,12 @@ public class FastImageArithmeticsAlgorithm extends JIPipeIteratingAlgorithm {
     public static final Set<String> CONSTANTS = Sets.newHashSet("x", "y", "c", "z", "t", "pi", "e", "width", "height", "numZ", "numC", "numT");
     private final JIPipeExpressionCustomASTParser astParser = new JIPipeExpressionCustomASTParser();
     private OptionalBitDepth bitDepth = OptionalBitDepth.Grayscale32f;
-    private JIPipeExpressionParameter expression = new JIPipeExpressionParameter("I1 + I2");
+    private JIPipeExpressionParameter expression = new JIPipeExpressionParameter("I1 + 5");
 
     public FastImageArithmeticsAlgorithm(JIPipeNodeInfo info) {
         super(info, JIPipeDefaultMutableSlotConfiguration.builder()
                 .restrictInputTo(ImagePlusGreyscaleData.class)
                 .addInputSlot("I1", "", ImagePlusGreyscaleData.class, true)
-                .addInputSlot("I2", "", ImagePlusGreyscaleData.class, true)
                 .addOutputSlot("Output", "", ImagePlusGreyscaleData.class)
                 .sealOutput()
                 .build());
