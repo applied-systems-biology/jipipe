@@ -11,7 +11,7 @@
  * See the LICENSE file provided with the code for the full license.
  */
 
-package org.hkijena.jipipe.plugins.cellpose.parameters.cp3;
+package org.hkijena.jipipe.plugins.cellpose.parameters;
 
 import org.hkijena.jipipe.plugins.parameters.api.enums.EnumItemInfo;
 import org.hkijena.jipipe.utils.StringUtils;
@@ -19,7 +19,7 @@ import org.hkijena.jipipe.utils.UIUtils;
 
 import javax.swing.*;
 
-public class PretrainedCellpose3ModelEnumItemInfo implements EnumItemInfo {
+public class PretrainedCellposeModelEnumItemInfo implements EnumItemInfo {
     @Override
     public Icon getIcon(Object value) {
         return UIUtils.getIconFromResources("apps/cellpose.png");

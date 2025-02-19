@@ -13,17 +13,18 @@
 
 package org.hkijena.jipipe.plugins.cellpose.parameters.cp2;
 
+import org.hkijena.jipipe.plugins.cellpose.parameters.PretrainedCellposeModelEnumItemInfo;
 import org.hkijena.jipipe.plugins.parameters.api.collections.ListParameter;
 import org.hkijena.jipipe.plugins.parameters.api.enums.EnumParameterSettings;
 
-@EnumParameterSettings(itemInfo = PretrainedCellpose2ModelEnumItemInfo.class)
-public class PretrainedCellpose2ModelList extends ListParameter<PretrainedCellpose2Model> {
-    public PretrainedCellpose2ModelList() {
-        super(PretrainedCellpose2Model.class);
+@EnumParameterSettings(itemInfo = PretrainedCellposeModelEnumItemInfo.class)
+public class PretrainedCellpose2SegmentationModelList extends ListParameter<PretrainedCellpose2SegmentationModel> {
+    public PretrainedCellpose2SegmentationModelList() {
+        super(PretrainedCellpose2SegmentationModel.class);
     }
 
-    public PretrainedCellpose2ModelList(PretrainedCellpose2ModelList other) {
-        super(PretrainedCellpose2Model.class);
+    public PretrainedCellpose2SegmentationModelList(PretrainedCellpose2SegmentationModelList other) {
+        super(PretrainedCellpose2SegmentationModel.class);
         addAll(other);
     }
 }
