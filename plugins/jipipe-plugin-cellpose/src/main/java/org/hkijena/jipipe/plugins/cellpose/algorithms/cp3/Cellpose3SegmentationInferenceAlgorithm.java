@@ -11,7 +11,7 @@
  * See the LICENSE file provided with the code for the full license.
  */
 
-package org.hkijena.jipipe.plugins.cellpose.algorithms.cp2;
+package org.hkijena.jipipe.plugins.cellpose.algorithms.cp3;
 
 import com.fasterxml.jackson.databind.JsonNode;
 import ij.IJ;
@@ -45,8 +45,8 @@ import org.hkijena.jipipe.api.validation.contexts.GraphNodeValidationReportConte
 import org.hkijena.jipipe.plugins.cellpose.CellposePlugin;
 import org.hkijena.jipipe.plugins.cellpose.CellposeUtils;
 import org.hkijena.jipipe.plugins.cellpose.datatypes.CellposeModelData;
-import org.hkijena.jipipe.plugins.cellpose.datatypes.CellposeSizeModelData;
 import org.hkijena.jipipe.plugins.cellpose.parameters.cp2.*;
+import org.hkijena.jipipe.plugins.cellpose.parameters.cp3.Cellpose3SegmentationTweaksSettings;
 import org.hkijena.jipipe.plugins.imagejdatatypes.datatypes.ImagePlusData;
 import org.hkijena.jipipe.plugins.imagejdatatypes.datatypes.OMEImageData;
 import org.hkijena.jipipe.plugins.imagejdatatypes.datatypes.ROI2DListData;
@@ -59,6 +59,7 @@ import org.hkijena.jipipe.plugins.parameters.library.primitives.optional.Optiona
 import org.hkijena.jipipe.plugins.python.OptionalPythonEnvironment;
 import org.hkijena.jipipe.plugins.python.PythonUtils;
 import org.hkijena.jipipe.utils.PathUtils;
+import org.hkijena.jipipe.utils.ProcessUtils;
 import org.hkijena.jipipe.utils.ResourceUtils;
 import org.hkijena.jipipe.utils.json.JsonUtils;
 
@@ -66,7 +67,7 @@ import java.nio.file.Path;
 import java.util.*;
 
 
-@SetJIPipeDocumentation(name = "Cellpose prediction (2.x)", description =
+@SetJIPipeDocumentation(name = "Cellpose segmentation (3.x)", description =
         "Runs Cellpose on the input image with the given model(s). This node supports both segmentation in 3D and executing " +
                 "Cellpose for each 2D image plane. " +
                 "This node can generate a multitude of outputs, although only ROI is activated by default. " +
@@ -89,7 +90,7 @@ import java.util.*;
 @AddJIPipeOutputSlot(value = ImagePlusGreyscale32FData.class, name = "Probabilities")
 @AddJIPipeOutputSlot(value = ROI2DListData.class, name = "ROI")
 @ConfigureJIPipeNode(nodeTypeCategory = ImagesNodeTypeCategory.class, menuPath = "Deep learning")
-public class Cellpose2InferenceAlgorithm extends JIPipeSingleIterationAlgorithm implements Cellpose2EnvironmentAccessNode {
+public class Cellpose3SegmentationInferenceAlgorithm extends JIPipeSingleIterationAlgorithm implements Cellpose3EnvironmentAccessNode {
 
     public static final JIPipeDataSlotInfo OUTPUT_LABELS = new JIPipeDataSlotInfo(ImagePlusGreyscaleData.class, JIPipeSlotType.Output, "Labels", "A grayscale image where each connected component is assigned a unique value");
     public static final JIPipeDataSlotInfo OUTPUT_FLOWS_XY = new JIPipeDataSlotInfo(ImagePlusData.class, JIPipeSlotType.Output, "Flows XY", "An RGB image that indicates the x and y flow of each pixel");
@@ -99,7 +100,7 @@ public class Cellpose2InferenceAlgorithm extends JIPipeSingleIterationAlgorithm 
     public static final JIPipeDataSlotInfo OUTPUT_ROI = new JIPipeDataSlotInfo(ROI2DListData.class, JIPipeSlotType.Output, "ROI", "ROI of the segmented areas");
 
     private final Cellpose2GPUSettings gpuSettings;
-    private final Cellpose2SegmentationTweaksSettings segmentationTweaksSettings;
+    private final Cellpose3SegmentationTweaksSettings segmentationTweaksSettings;
     private final Cellpose2SegmentationThresholdSettings segmentationThresholdSettings;
     private final Cellpose2SegmentationOutputSettings segmentationOutputSettings;
 
@@ -113,9 +114,9 @@ public class Cellpose2InferenceAlgorithm extends JIPipeSingleIterationAlgorithm 
 
 //    private OptionalDataAnnotationNameParameter sizeModelAnnotationName = new OptionalDataAnnotationNameParameter("Size model", true);
 
-    public Cellpose2InferenceAlgorithm(JIPipeNodeInfo info) {
+    public Cellpose3SegmentationInferenceAlgorithm(JIPipeNodeInfo info) {
         super(info);
-        this.segmentationTweaksSettings = new Cellpose2SegmentationTweaksSettings();
+        this.segmentationTweaksSettings = new Cellpose3SegmentationTweaksSettings();
         this.gpuSettings = new Cellpose2GPUSettings();
         this.segmentationThresholdSettings = new Cellpose2SegmentationThresholdSettings();
         this.segmentationOutputSettings = new Cellpose2SegmentationOutputSettings();
@@ -130,10 +131,10 @@ public class Cellpose2InferenceAlgorithm extends JIPipeSingleIterationAlgorithm 
         registerSubParameter(channelSettings);
     }
 
-    public Cellpose2InferenceAlgorithm(Cellpose2InferenceAlgorithm other) {
+    public Cellpose3SegmentationInferenceAlgorithm(Cellpose3SegmentationInferenceAlgorithm other) {
         super(other);
         this.gpuSettings = new Cellpose2GPUSettings(other.gpuSettings);
-        this.segmentationTweaksSettings = new Cellpose2SegmentationTweaksSettings(other.segmentationTweaksSettings);
+        this.segmentationTweaksSettings = new Cellpose3SegmentationTweaksSettings(other.segmentationTweaksSettings);
         this.segmentationThresholdSettings = new Cellpose2SegmentationThresholdSettings(other.segmentationThresholdSettings);
         this.segmentationOutputSettings = new Cellpose2SegmentationOutputSettings(other.segmentationOutputSettings);
         this.channelSettings = new Cellpose2ChannelSettings(other.channelSettings);
@@ -186,9 +187,9 @@ public class Cellpose2InferenceAlgorithm extends JIPipeSingleIterationAlgorithm 
     }
 
     @SetJIPipeDocumentation(name = "Override Python environment", description = "If enabled, a different Python environment is used for this Node. Otherwise " +
-            "the one in the Project > Application settings > Extensions > Cellpose is used.")
+            "the one in the Project > Application settings > Extensions > Cellpose 3.x is used.")
     @JIPipeParameter("override-environment")
-    @ExternalEnvironmentParameterSettings(showCategory = "Cellpose", allowArtifact = true, artifactFilters = {"com.github.mouseland.cellpose:*"})
+    @ExternalEnvironmentParameterSettings(showCategory = "Cellpose 3", allowArtifact = true, artifactFilters = {"com.github.mouseland.cellpose3:*"})
     public OptionalPythonEnvironment getOverrideEnvironment() {
         return overrideEnvironment;
     }
@@ -225,13 +226,6 @@ public class Cellpose2InferenceAlgorithm extends JIPipeSingleIterationAlgorithm 
         for (int modelRow : iterationStep.getInputRows(modelSlot)) {
             JIPipeProgressInfo modelProgress = progressInfo.resolve("Model row " + modelRow);
             CellposeModelData modelData = modelSlot.getData(modelRow, CellposeModelData.class, modelProgress);
-            CellposeSizeModelData sizeModelData = null;
-//            if(sizeModelAnnotationName.isEnabled() && !StringUtils.isNullOrEmpty(sizeModelAnnotationName.getContent())) {
-//                JIPipeDataAnnotation dataAnnotation = getInputSlot("Model").getDataAnnotation(modelRow, sizeModelAnnotationName.getContent());
-//                if(dataAnnotation != null) {
-//                    sizeModelData = dataAnnotation.getData(CellposeSizeModelData.class, modelProgress);
-//                }
-//            }
 
             // Save the model out
             CellposeModelInfo modelInfo = new CellposeModelInfo();
@@ -245,19 +239,13 @@ public class Cellpose2InferenceAlgorithm extends JIPipeSingleIterationAlgorithm 
                 modelInfo.modelPretrained = false;
                 modelInfo.modelNameOrPath = tempDirectory.resolve(modelData.getMetadata().getName()).toString();
             }
-//            if(sizeModelData != null) {
-//                Path tempDirectory = PathUtils.createTempDirectory(workDirectory.resolve("models"), "size-model");
-//                sizeModelData.exportData(new JIPipeFileSystemWriteDataStorage(modelProgress, tempDirectory), null, false, modelProgress);
-//                modelInfo.sizeModelNameOrPath = tempDirectory.resolve(sizeModelData.getMetadata().getName()).toString();
-//            }
-
             modelInfos.add(modelInfo);
         }
 
         for (int i = 0; i < modelInfos.size(); i++) {
             CellposeModelInfo modelInfo = modelInfos.get(i);
             JIPipeProgressInfo modelProgress = progressInfo.resolve("Model", i, modelInfos.size());
-            processModel(PathUtils.createTempSubDirectory(workDirectory, "run"), modelInfo, iterationStep, iterationContext, runContext, modelProgress);
+            processModel(PathUtils.createTempSubDirectory(workDirectory, "run"), modelInfo, iterationStep, modelProgress);
         }
 
         // Cleanup
@@ -266,7 +254,7 @@ public class Cellpose2InferenceAlgorithm extends JIPipeSingleIterationAlgorithm 
         }
     }
 
-    private void processModel(Path workDirectory, CellposeModelInfo modelInfo, JIPipeMultiIterationStep iterationStep, JIPipeIterationContext iterationContext, JIPipeGraphNodeRunContext runContext, JIPipeProgressInfo progressInfo) {
+    private void processModel(Path workDirectory, CellposeModelInfo modelInfo, JIPipeMultiIterationStep iterationStep, JIPipeProgressInfo progressInfo) {
         // We need a 2D and a 3D branch due to incompatibilities on the side of Cellpose
         final Path io2DPath = PathUtils.resolveAndMakeSubDirectory(workDirectory, "io-2d");
         final Path io3DPath = PathUtils.resolveAndMakeSubDirectory(workDirectory, "io-3d");
@@ -279,21 +267,22 @@ public class Cellpose2InferenceAlgorithm extends JIPipeSingleIterationAlgorithm 
 
         // Run Cellpose
         if (!runWith2D.isEmpty()) {
-            runCellpose(progressInfo.resolve("Cellpose"), io2DPath, false, modelInfo.modelNameOrPath, null);
+            runCellpose(progressInfo.resolve("Cellpose"), io2DPath, false, modelInfo.modelNameOrPath);
         }
         if (!runWith3D.isEmpty()) {
-            runCellpose(progressInfo.resolve("Cellpose"), io3DPath, true, modelInfo.modelNameOrPath, null);
+            runCellpose(progressInfo.resolve("Cellpose"), io3DPath, true, modelInfo.modelNameOrPath);
         }
 
         // Deploy and run extraction script
         progressInfo.log("Deploying script to extract Cellpose *.npy results ...");
-        Path npyExtractorScript = workDirectory.resolve("extract-cellpose-npy.py");
-        CellposePlugin.RESOURCES.exportResourceToFile("extract-cellpose-npy.py", npyExtractorScript);
+        Path npyExtractorScript = workDirectory.resolve("extract-cellpose3-npy.py");
+        CellposePlugin.RESOURCES.exportResourceToFile("extract-cellpose3-npy.py", npyExtractorScript);
         if (!runWith2D.isEmpty()) {
             List<String> arguments = new ArrayList<>();
             arguments.add(npyExtractorScript.toString());
-            if (!segmentationOutputSettings.isOutputROI())
+            if (!segmentationOutputSettings.isOutputROI()) {
                 arguments.add("--skip-roi");
+            }
             arguments.add(io2DPath.toString());
             arguments.add(io2DPath.toString());
             PythonUtils.runPython(arguments.toArray(new String[0]),
@@ -306,8 +295,9 @@ public class Cellpose2InferenceAlgorithm extends JIPipeSingleIterationAlgorithm 
         if (!runWith3D.isEmpty()) {
             List<String> arguments = new ArrayList<>();
             arguments.add(npyExtractorScript.toString());
-            if (!segmentationOutputSettings.isOutputROI())
+            if (!segmentationOutputSettings.isOutputROI()) {
                 arguments.add("--skip-roi");
+            }
             arguments.add(io3DPath.toString());
             arguments.add(io3DPath.toString());
             PythonUtils.runPython(arguments.toArray(new String[0]),
@@ -427,7 +417,7 @@ public class Cellpose2InferenceAlgorithm extends JIPipeSingleIterationAlgorithm 
         }
     }
 
-    private void runCellpose(JIPipeProgressInfo progressInfo, Path ioPath, boolean with3D, String modelNameOrPath, String sizeModelNameOrPath) {
+    private void runCellpose(JIPipeProgressInfo progressInfo, Path ioPath, boolean with3D, String modelNameOrPath) {
         List<String> arguments = new ArrayList<>();
         arguments.add("-m");
         arguments.add("cellpose");
@@ -451,7 +441,14 @@ public class Cellpose2InferenceAlgorithm extends JIPipeSingleIterationAlgorithm 
             arguments.add("--use_gpu");
         if (gpuSettings.getGpuDevice().isEnabled()) {
             arguments.add("--gpu_device");
-            arguments.add(gpuSettings.getGpuDevice().getContent() + "");
+
+            // Special handling for macOS ARM (M1 etc)
+            if(ProcessUtils.systemIsMacM1()) {
+                arguments.add("mps");
+            }
+            else {
+                arguments.add(gpuSettings.getGpuDevice().getContent() + "");
+            }
         }
 
         // Channels
@@ -481,8 +478,10 @@ public class Cellpose2InferenceAlgorithm extends JIPipeSingleIterationAlgorithm 
         if (!segmentationTweaksSettings.isNormalize()) {
             arguments.add("--no_norm");
         }
-        if (segmentationTweaksSettings.isNetAverage()) {
-            arguments.add("--net_avg");
+        if (segmentationTweaksSettings.getNormalizePercentile().isEnabled()) {
+            arguments.add("--norm_percentile");
+            arguments.add(segmentationTweaksSettings.getNormalizePercentile().getContent().getX() + "");
+            arguments.add(segmentationTweaksSettings.getNormalizePercentile().getContent().getY() + "");
         }
         if (!segmentationTweaksSettings.isInterpolate()) {
             arguments.add("--no_interp");
@@ -491,8 +490,16 @@ public class Cellpose2InferenceAlgorithm extends JIPipeSingleIterationAlgorithm 
             arguments.add("--anisotropy");
             arguments.add(segmentationTweaksSettings.getAnisotropy().getContent() + "");
         }
-        if (segmentationTweaksSettings.isDisableResample()) {
+        if (!segmentationTweaksSettings.isResample()) {
             arguments.add("--no_resample");
+        }
+        {
+            arguments.add("--niter");
+            arguments.add(String.valueOf(segmentationTweaksSettings.getNiter()));
+        }
+        {
+            arguments.add("--flow3D_smooth");
+            arguments.add(String.valueOf(segmentationTweaksSettings.getFlow3DSmoothing()));
         }
 
         // Segmentation
@@ -640,9 +647,9 @@ public class Cellpose2InferenceAlgorithm extends JIPipeSingleIterationAlgorithm 
         return channelSettings;
     }
 
-    @SetJIPipeDocumentation(name = "Cellpose: Tweaks", description = "Additional options like augmentation and averaging over multiple networks")
+    @SetJIPipeDocumentation(name = "Cellpose: Tweaks", description = "Advanced segmentation settings.")
     @JIPipeParameter(value = "enhancement-parameters", iconURL = ResourceUtils.RESOURCE_BASE_PATH + "/icons/apps/cellpose.png", collapsed = true)
-    public Cellpose2SegmentationTweaksSettings getEnhancementParameters() {
+    public Cellpose3SegmentationTweaksSettings getEnhancementParameters() {
         return segmentationTweaksSettings;
     }
 

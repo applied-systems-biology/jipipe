@@ -11,7 +11,7 @@
  * See the LICENSE file provided with the code for the full license.
  */
 
-package org.hkijena.jipipe.plugins.cellpose.algorithms.cp3;
+package org.hkijena.jipipe.plugins.cellpose.algorithms.cp2;
 
 import com.fasterxml.jackson.databind.JsonNode;
 import ij.IJ;
@@ -42,7 +42,6 @@ import org.hkijena.jipipe.api.nodes.iterationstep.JIPipeMultiIterationStep;
 import org.hkijena.jipipe.api.parameters.JIPipeParameter;
 import org.hkijena.jipipe.api.validation.*;
 import org.hkijena.jipipe.api.validation.contexts.GraphNodeValidationReportContext;
-import org.hkijena.jipipe.plugins.cellpose.algorithms.cp2.Cellpose2EnvironmentAccessNode;
 import org.hkijena.jipipe.plugins.cellpose.CellposePlugin;
 import org.hkijena.jipipe.plugins.cellpose.CellposeUtils;
 import org.hkijena.jipipe.plugins.cellpose.datatypes.CellposeModelData;
@@ -67,7 +66,7 @@ import java.nio.file.Path;
 import java.util.*;
 
 
-@SetJIPipeDocumentation(name = "Cellpose prediction (3.x)", description =
+@SetJIPipeDocumentation(name = "Cellpose segmentation (2.x)", description =
         "Runs Cellpose on the input image with the given model(s). This node supports both segmentation in 3D and executing " +
                 "Cellpose for each 2D image plane. " +
                 "This node can generate a multitude of outputs, although only ROI is activated by default. " +
@@ -90,7 +89,7 @@ import java.util.*;
 @AddJIPipeOutputSlot(value = ImagePlusGreyscale32FData.class, name = "Probabilities")
 @AddJIPipeOutputSlot(value = ROI2DListData.class, name = "ROI")
 @ConfigureJIPipeNode(nodeTypeCategory = ImagesNodeTypeCategory.class, menuPath = "Deep learning")
-public class Cellpose3InferenceAlgorithm extends JIPipeSingleIterationAlgorithm implements Cellpose3EnvironmentAccessNode {
+public class Cellpose2SegmentationInferenceAlgorithm extends JIPipeSingleIterationAlgorithm implements Cellpose2EnvironmentAccessNode {
 
     public static final JIPipeDataSlotInfo OUTPUT_LABELS = new JIPipeDataSlotInfo(ImagePlusGreyscaleData.class, JIPipeSlotType.Output, "Labels", "A grayscale image where each connected component is assigned a unique value");
     public static final JIPipeDataSlotInfo OUTPUT_FLOWS_XY = new JIPipeDataSlotInfo(ImagePlusData.class, JIPipeSlotType.Output, "Flows XY", "An RGB image that indicates the x and y flow of each pixel");
@@ -114,7 +113,7 @@ public class Cellpose3InferenceAlgorithm extends JIPipeSingleIterationAlgorithm 
 
 //    private OptionalDataAnnotationNameParameter sizeModelAnnotationName = new OptionalDataAnnotationNameParameter("Size model", true);
 
-    public Cellpose3InferenceAlgorithm(JIPipeNodeInfo info) {
+    public Cellpose2SegmentationInferenceAlgorithm(JIPipeNodeInfo info) {
         super(info);
         this.segmentationTweaksSettings = new Cellpose2SegmentationTweaksSettings();
         this.gpuSettings = new Cellpose2GPUSettings();
@@ -131,7 +130,7 @@ public class Cellpose3InferenceAlgorithm extends JIPipeSingleIterationAlgorithm 
         registerSubParameter(channelSettings);
     }
 
-    public Cellpose3InferenceAlgorithm(Cellpose3InferenceAlgorithm other) {
+    public Cellpose2SegmentationInferenceAlgorithm(Cellpose2SegmentationInferenceAlgorithm other) {
         super(other);
         this.gpuSettings = new Cellpose2GPUSettings(other.gpuSettings);
         this.segmentationTweaksSettings = new Cellpose2SegmentationTweaksSettings(other.segmentationTweaksSettings);
@@ -189,7 +188,7 @@ public class Cellpose3InferenceAlgorithm extends JIPipeSingleIterationAlgorithm 
     @SetJIPipeDocumentation(name = "Override Python environment", description = "If enabled, a different Python environment is used for this Node. Otherwise " +
             "the one in the Project > Application settings > Extensions > Cellpose is used.")
     @JIPipeParameter("override-environment")
-    @ExternalEnvironmentParameterSettings(showCategory = "Cellpose 3", allowArtifact = true, artifactFilters = {"com.github.mouseland.cellpose3:*"})
+    @ExternalEnvironmentParameterSettings(showCategory = "Cellpose", allowArtifact = true, artifactFilters = {"com.github.mouseland.cellpose:*"})
     public OptionalPythonEnvironment getOverrideEnvironment() {
         return overrideEnvironment;
     }
@@ -288,8 +287,8 @@ public class Cellpose3InferenceAlgorithm extends JIPipeSingleIterationAlgorithm 
 
         // Deploy and run extraction script
         progressInfo.log("Deploying script to extract Cellpose *.npy results ...");
-        Path npyExtractorScript = workDirectory.resolve("extract-cellpose-npy.py");
-        CellposePlugin.RESOURCES.exportResourceToFile("extract-cellpose-npy.py", npyExtractorScript);
+        Path npyExtractorScript = workDirectory.resolve("extract-cellpose2-npy.py");
+        CellposePlugin.RESOURCES.exportResourceToFile("extract-cellpose2-npy.py", npyExtractorScript);
         if (!runWith2D.isEmpty()) {
             List<String> arguments = new ArrayList<>();
             arguments.add(npyExtractorScript.toString());

@@ -25,10 +25,10 @@ import org.hkijena.jipipe.api.compat.ui.FolderImageJDataExporterUI;
 import org.hkijena.jipipe.api.project.JIPipeProject;
 import org.hkijena.jipipe.plugins.JIPipePrepackagedDefaultJavaPlugin;
 import org.hkijena.jipipe.plugins.cellpose.algorithms.*;
-import org.hkijena.jipipe.plugins.cellpose.algorithms.cp2.Cellpose2InferenceAlgorithm;
+import org.hkijena.jipipe.plugins.cellpose.algorithms.cp2.Cellpose2SegmentationInferenceAlgorithm;
 import org.hkijena.jipipe.plugins.cellpose.algorithms.cp2.Cellpose2TrainingAlgorithm;
 import org.hkijena.jipipe.plugins.cellpose.algorithms.cp2.ImportPretrainedCellpose2ModelAlgorithm;
-import org.hkijena.jipipe.plugins.cellpose.algorithms.cp3.Cellpose3InferenceAlgorithm;
+import org.hkijena.jipipe.plugins.cellpose.algorithms.cp3.Cellpose3SegmentationInferenceAlgorithm;
 import org.hkijena.jipipe.plugins.cellpose.algorithms.cp3.ImportPretrainedCellpose3ModelAlgorithm;
 import org.hkijena.jipipe.plugins.cellpose.datatypes.CellposeModelData;
 import org.hkijena.jipipe.plugins.cellpose.datatypes.CellposeSizeModelData;
@@ -194,12 +194,12 @@ public class CellposePlugin extends JIPipePrepackagedDefaultJavaPlugin {
 
         // CP2 nodes
         registerNodeType("import-cellpose-2.x-pretrained-model", ImportPretrainedCellpose2ModelAlgorithm.class);
-        registerNodeType("cellpose-inference-2.x", Cellpose2InferenceAlgorithm.class, UIUtils.getIconURLFromResources("apps/cellpose.png"));
+        registerNodeType("cellpose-inference-2.x", Cellpose2SegmentationInferenceAlgorithm.class, UIUtils.getIconURLFromResources("apps/cellpose.png"));
         registerNodeType("cellpose-training-2.x", Cellpose2TrainingAlgorithm.class, UIUtils.getIconURLFromResources("apps/cellpose.png"));
 
         // CP3 nodes
         registerNodeType("import-cellpose-3.x-pretrained-model", ImportPretrainedCellpose3ModelAlgorithm.class);
-        registerNodeType("cellpose-inference-3.x", Cellpose3InferenceAlgorithm.class, UIUtils.getIconURLFromResources("apps/cellpose.png"));
+        registerNodeType("cellpose-inference-3.x", Cellpose3SegmentationInferenceAlgorithm.class, UIUtils.getIconURLFromResources("apps/cellpose.png"));
 //        registerNodeType("cellpose-training-2.x", Cellpose2TrainingAlgorithm.class, UIUtils.getIconURLFromResources("apps/cellpose.png"));
 
         // Legacy nodes and data types

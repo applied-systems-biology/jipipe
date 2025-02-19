@@ -282,8 +282,8 @@ public class LegacyOmnipose0InferenceAlgorithm extends JIPipeSingleIterationAlgo
 
         // Deploy and run extraction script
         progressInfo.log("Deploying script to extract Omnipose *.npy results ...");
-        Path npyExtractorScript = workDirectory.resolve("extract-cellpose-npy.py");
-        CellposePlugin.RESOURCES.exportResourceToFile("extract-cellpose-npy.py", npyExtractorScript);
+        Path npyExtractorScript = workDirectory.resolve("extract-cellpose2-npy.py");
+        CellposePlugin.RESOURCES.exportResourceToFile("extract-cellpose2-npy.py", npyExtractorScript);
         if (!runWith2D.isEmpty()) {
             List<String> arguments = new ArrayList<>();
             arguments.add(npyExtractorScript.toString());
