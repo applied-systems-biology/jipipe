@@ -18,42 +18,58 @@ import org.hkijena.jipipe.api.parameters.AbstractJIPipeParameterCollection;
 import org.hkijena.jipipe.api.parameters.JIPipeParameter;
 import org.hkijena.jipipe.plugins.parameters.library.primitives.optional.OptionalIntegerParameter;
 
-public class Cellpose3TrainingTweaksSettings extends AbstractJIPipeParameterCollection {
+public class Cellpose3DenoiseTrainingTweaksSettings extends AbstractJIPipeParameterCollection {
 
     private double learningRate = 0.2;
     private double weightDecay = 1e-05;
-    private int batchSize = 8;
-    private int minTrainMasks = 1;
-    private OptionalIntegerParameter useSGD = new OptionalIntegerParameter(false, 1);
+
+    private double lambdaPerceptual = 1;
+    private double lambdaSegmentation = 1.5;
+    private double lambdaReconstruction = 0;
 
     private OptionalIntegerParameter numTrainingImagesPerEpoch = new OptionalIntegerParameter(false, 10);
     private OptionalIntegerParameter numTestImagesPerEpoch = new OptionalIntegerParameter(false, 10);
 
     private boolean generateConnectedComponents = true;
 
-    public Cellpose3TrainingTweaksSettings() {
+    private PretrainedCellpose3SegmentationModel segmentationModel = PretrainedCellpose3SegmentationModel.cyto2;
+
+    public Cellpose3DenoiseTrainingTweaksSettings() {
     }
 
-    public Cellpose3TrainingTweaksSettings(Cellpose3TrainingTweaksSettings other) {
+    public Cellpose3DenoiseTrainingTweaksSettings(Cellpose3DenoiseTrainingTweaksSettings other) {
         this.learningRate = other.learningRate;
-        this.batchSize = other.batchSize;
-        this.minTrainMasks = other.minTrainMasks;
         this.weightDecay = other.weightDecay;
-        this.generateConnectedComponents = other.generateConnectedComponents;
-        this.useSGD = other.useSGD;
+        this.lambdaPerceptual = other.lambdaPerceptual;
+        this.lambdaSegmentation = other.lambdaSegmentation;
+        this.lambdaReconstruction = other.lambdaReconstruction;
         this.numTrainingImagesPerEpoch = new OptionalIntegerParameter(other.numTrainingImagesPerEpoch);
         this.numTestImagesPerEpoch = new OptionalIntegerParameter(other.numTestImagesPerEpoch);
+        this.generateConnectedComponents = other.generateConnectedComponents;
+        this.segmentationModel = other.segmentationModel;
     }
 
-    @SetJIPipeDocumentation(name = "Use SGD", description = "Enabling this parameter may be useful for re-training. It is recommended to train with more epoch (e.g. 300 instead of 100) with this parameter enabled.")
-    @JIPipeParameter("use-sgd")
-    public OptionalIntegerParameter isUseSGD() {
-        return useSGD;
+    @SetJIPipeDocumentation(name = "Segmentation model", description = "Pretrained segmentation model used for calculating the segmentation loss. Cannot be None.")
+    @JIPipeParameter("segmentation-model")
+    public PretrainedCellpose3SegmentationModel getSegmentationModel() {
+        return segmentationModel;
     }
 
-    @JIPipeParameter("use-sgd")
-    public void setUseSGD(OptionalIntegerParameter useSGD) {
-        this.useSGD = useSGD;
+    @JIPipeParameter("segmentation-model")
+    public void setSegmentationModel(PretrainedCellpose3SegmentationModel segmentationModel) {
+        this.segmentationModel = segmentationModel;
+    }
+
+    @SetJIPipeDocumentation(name = "Generate connected components", description = "If enabled, JIPipe will apply a connected component labeling to the annotated masks. If disabled, Cellpose is provided with " +
+            "the labels as-is, which might result in issues with the training.")
+    @JIPipeParameter("generate-connected-components")
+    public boolean isGenerateConnectedComponents() {
+        return generateConnectedComponents;
+    }
+
+    @JIPipeParameter("generate-connected-components")
+    public void setGenerateConnectedComponents(boolean generateConnectedComponents) {
+        this.generateConnectedComponents = generateConnectedComponents;
     }
 
     @SetJIPipeDocumentation(name = "Training images per epoch", description = "Allows to override the number of training images per epoch. Defaults to all images.")
@@ -89,29 +105,6 @@ public class Cellpose3TrainingTweaksSettings extends AbstractJIPipeParameterColl
         this.weightDecay = weightDecay;
     }
 
-    @SetJIPipeDocumentation(name = "Generate connected components", description = "If enabled, JIPipe will apply a connected component labeling to the annotated masks. If disabled, Cellpose is provided with " +
-            "the labels as-is, which might result in issues with the training.")
-    @JIPipeParameter("generate-connected-components")
-    public boolean isGenerateConnectedComponents() {
-        return generateConnectedComponents;
-    }
-
-    @JIPipeParameter("generate-connected-components")
-    public void setGenerateConnectedComponents(boolean generateConnectedComponents) {
-        this.generateConnectedComponents = generateConnectedComponents;
-    }
-
-    @SetJIPipeDocumentation(name = "Minimum number of labels per image", description = "Minimum number of masks an image must have to use in training set. " +
-            "This value is by default 5 in the original Cellpose tool.")
-    @JIPipeParameter("min-train-masks")
-    public int getMinTrainMasks() {
-        return minTrainMasks;
-    }
-
-    @JIPipeParameter("min-train-masks")
-    public void setMinTrainMasks(int minTrainMasks) {
-        this.minTrainMasks = minTrainMasks;
-    }
 
     @SetJIPipeDocumentation(name = "Learning rate")
     @JIPipeParameter("learning-rate")
@@ -124,14 +117,36 @@ public class Cellpose3TrainingTweaksSettings extends AbstractJIPipeParameterColl
         this.learningRate = learningRate;
     }
 
-    @SetJIPipeDocumentation(name = "Batch size")
-    @JIPipeParameter("batch-size")
-    public int getBatchSize() {
-        return batchSize;
+    @SetJIPipeDocumentation(name = "Loss weight: perceptual", description = "Weighting of perceptual loss")
+    @JIPipeParameter("lambda-perceptual")
+    public double getLambdaPerceptual() {
+        return lambdaPerceptual;
     }
 
-    @JIPipeParameter("batch-size")
-    public void setBatchSize(int batchSize) {
-        this.batchSize = batchSize;
+    @JIPipeParameter("lambda-perceptual")
+    public void setLambdaPerceptual(double lambdaPerceptual) {
+        this.lambdaPerceptual = lambdaPerceptual;
+    }
+
+    @SetJIPipeDocumentation(name = "Loss weight: segmentation", description = "Weighting of segmentation loss")
+    @JIPipeParameter("lambda-segmentation")
+    public double getLambdaSegmentation() {
+        return lambdaSegmentation;
+    }
+
+    @JIPipeParameter("lambda-segmentation")
+    public void setLambdaSegmentation(double lambdaSegmentation) {
+        this.lambdaSegmentation = lambdaSegmentation;
+    }
+
+    @SetJIPipeDocumentation(name = "Loss weight: reconstruction", description = "Weighting of reconstruction loss")
+    @JIPipeParameter("lambda-reconstruction")
+    public double getLambdaReconstruction() {
+        return lambdaReconstruction;
+    }
+
+    @JIPipeParameter("lambda-reconstruction")
+    public void setLambdaReconstruction(double lambdaReconstruction) {
+        this.lambdaReconstruction = lambdaReconstruction;
     }
 }

@@ -45,6 +45,9 @@ import org.hkijena.jipipe.plugins.cellpose.datatypes.CellposeModelData;
 import org.hkijena.jipipe.plugins.cellpose.datatypes.CellposeSizeModelData;
 import org.hkijena.jipipe.plugins.cellpose.parameters.cp2.Cellpose2ChannelSettings;
 import org.hkijena.jipipe.plugins.cellpose.parameters.cp2.Cellpose2GPUSettings;
+import org.hkijena.jipipe.plugins.cellpose.parameters.cp3.Cellpose3DenoiseTrainingNoiseSettings;
+import org.hkijena.jipipe.plugins.cellpose.parameters.cp3.Cellpose3DenoiseTrainingNoiseType;
+import org.hkijena.jipipe.plugins.cellpose.parameters.cp3.Cellpose3DenoiseTrainingTweaksSettings;
 import org.hkijena.jipipe.plugins.cellpose.parameters.cp3.Cellpose3SegmentationTrainingTweaksSettings;
 import org.hkijena.jipipe.plugins.expressions.DataAnnotationQueryExpression;
 import org.hkijena.jipipe.plugins.imagejalgorithms.nodes.binary.ConnectedComponentsLabeling2DAlgorithm;
@@ -71,8 +74,8 @@ import java.util.List;
 import java.util.concurrent.atomic.AtomicInteger;
 import java.util.stream.Collectors;
 
-@SetJIPipeDocumentation(name = "Cellpose segmentation training (3.x)", description =
-        "Trains a segmentation model with Cellpose. You start from an existing model or train from scratch. " +
+@SetJIPipeDocumentation(name = "Cellpose image restoration training (3.x)", description =
+        "Trains an image restoration (denoising) model with Cellpose. You start from an existing model or train from scratch. " +
                 "Incoming images are automatically converted to greyscale. Only 2D or 3D images are supported. For this node to work, you need to annotate a greyscale 16-bit or 8-bit label image column to each raw data input. " +
                 "To do this, you can use the node 'Annotate with data'. By default, JIPipe will ensure that all connected components of this image are assigned a unique component. You can disable this feature via the parameters. " +
                 "Does not support the training of image restoration models.")
@@ -82,40 +85,38 @@ import java.util.stream.Collectors;
 @ConfigureJIPipeNode(nodeTypeCategory = ImagesNodeTypeCategory.class, menuPath = "Deep learning")
 @AddJIPipeOutputSlot(value = CellposeModelData.class, name = "Model", create = true, description = "The trained model")
 @AddJIPipeOutputSlot(value = CellposeSizeModelData.class)
-public class Cellpose3SegmentationTrainingAlgorithm extends JIPipeSingleIterationAlgorithm implements Cellpose3EnvironmentAccessNode {
+public class Cellpose3DenoiseTrainingAlgorithm extends JIPipeSingleIterationAlgorithm implements Cellpose3EnvironmentAccessNode {
 
     public static final JIPipeDataSlotInfo OUTPUT_SIZE_MODEL = new JIPipeDataSlotInfo(CellposeSizeModelData.class, JIPipeSlotType.Output, "Size Model", "Generated size model", true);
 
     private final Cellpose2GPUSettings gpuSettings;
-    private final Cellpose3SegmentationTrainingTweaksSettings tweaksSettings;
-    private final Cellpose2ChannelSettings channelSettings;
-    private int numEpochs = 500;
+    private final Cellpose3DenoiseTrainingTweaksSettings tweaksSettings;
+    private final Cellpose3DenoiseTrainingNoiseSettings noiseSettings;
+    private int numEpochs = 2000;
     private boolean enable3DSegmentation = true;
     private boolean cleanUpAfterwards = true;
     private OptionalDoubleParameter diameter = new OptionalDoubleParameter(30, false);
-    private boolean trainSizeModel = false;
     private OptionalPythonEnvironment overrideEnvironment = new OptionalPythonEnvironment();
     private DataAnnotationQueryExpression labelDataAnnotation = new DataAnnotationQueryExpression("\"Label\"");
     private boolean suppressLogs = false;
 
-    public Cellpose3SegmentationTrainingAlgorithm(JIPipeNodeInfo info) {
+    public Cellpose3DenoiseTrainingAlgorithm(JIPipeNodeInfo info) {
         super(info);
         this.gpuSettings = new Cellpose2GPUSettings();
-        this.tweaksSettings = new Cellpose3SegmentationTrainingTweaksSettings();
-        this.channelSettings = new Cellpose2ChannelSettings();
-        updateSlots();
+        this.tweaksSettings = new Cellpose3DenoiseTrainingTweaksSettings();
+        this.noiseSettings = new Cellpose3DenoiseTrainingNoiseSettings();
 
         registerSubParameter(gpuSettings);
         registerSubParameter(tweaksSettings);
-        registerSubParameter(channelSettings);
+        registerSubParameter(noiseSettings);
     }
 
-    public Cellpose3SegmentationTrainingAlgorithm(Cellpose3SegmentationTrainingAlgorithm other) {
+    public Cellpose3DenoiseTrainingAlgorithm(Cellpose3DenoiseTrainingAlgorithm other) {
         super(other);
 
         this.gpuSettings = new Cellpose2GPUSettings(other.gpuSettings);
-        this.tweaksSettings = new Cellpose3SegmentationTrainingTweaksSettings(other.tweaksSettings);
-        this.channelSettings = new Cellpose2ChannelSettings(other.channelSettings);
+        this.tweaksSettings = new Cellpose3DenoiseTrainingTweaksSettings(other.tweaksSettings);
+        this.noiseSettings = new Cellpose3DenoiseTrainingNoiseSettings(other.noiseSettings);
         this.suppressLogs = other.suppressLogs;
 
         this.numEpochs = other.numEpochs;
@@ -123,14 +124,11 @@ public class Cellpose3SegmentationTrainingAlgorithm extends JIPipeSingleIteratio
         this.cleanUpAfterwards = other.cleanUpAfterwards;
         this.diameter = new OptionalDoubleParameter(other.diameter);
         this.overrideEnvironment = new OptionalPythonEnvironment(other.overrideEnvironment);
-        this.trainSizeModel = other.trainSizeModel;
         this.labelDataAnnotation = new DataAnnotationQueryExpression(other.labelDataAnnotation);
 
         registerSubParameter(gpuSettings);
         registerSubParameter(tweaksSettings);
-        registerSubParameter(channelSettings);
-
-        updateSlots();
+        registerSubParameter(noiseSettings);
     }
 
     @SetJIPipeDocumentation(name = "Suppress logs", description = "If enabled, the node will not log the status of the Cellpose operation. " +
@@ -149,22 +147,6 @@ public class Cellpose3SegmentationTrainingAlgorithm extends JIPipeSingleIteratio
     public void getEnvironmentDependencies(List<JIPipeEnvironment> target) {
         super.getEnvironmentDependencies(target);
         target.add(getConfiguredCellposeEnvironment());
-    }
-
-    private void updateSlots() {
-        toggleSlot(OUTPUT_SIZE_MODEL, trainSizeModel);
-    }
-
-    @SetJIPipeDocumentation(name = "Train size model", description = "If enabled, also train a size model")
-    @JIPipeParameter("train-size-model")
-    public boolean isTrainSizeModel() {
-        return trainSizeModel;
-    }
-
-    @JIPipeParameter("train-size-model")
-    public void setTrainSizeModel(boolean trainSizeModel) {
-        this.trainSizeModel = trainSizeModel;
-        updateSlots();
     }
 
     @SetJIPipeDocumentation(name = "Mean diameter", description = "The cell diameter. Depending on the model, you can choose following values: " +
@@ -241,14 +223,14 @@ public class Cellpose3SegmentationTrainingAlgorithm extends JIPipeSingleIteratio
 
     @SetJIPipeDocumentation(name = "Cellpose: Tweaks", description = "Advanced settings for the training.")
     @JIPipeParameter(value = "tweaks-settings", collapsed = true, iconURL = ResourceUtils.RESOURCE_BASE_PATH + "/icons/apps/cellpose.png")
-    public Cellpose3SegmentationTrainingTweaksSettings getTweaksSettings() {
+    public Cellpose3DenoiseTrainingTweaksSettings getTweaksSettings() {
         return tweaksSettings;
     }
 
-    @SetJIPipeDocumentation(name = "Cellpose: Channels", description = "Determines which channels are used for the segmentation")
-    @JIPipeParameter(value = "channel-parameters", iconURL = ResourceUtils.RESOURCE_BASE_PATH + "/icons/apps/cellpose.png")
-    public Cellpose2ChannelSettings getChannelSettings() {
-        return channelSettings;
+    @SetJIPipeDocumentation(name = "Cellpose: Noise", description = "Settings related to the noise")
+    @JIPipeParameter(value = "noise-settings", iconURL = ResourceUtils.RESOURCE_BASE_PATH + "/icons/apps/cellpose.png")
+    public Cellpose3DenoiseTrainingNoiseSettings getNoiseSettings() {
+        return noiseSettings;
     }
 
     @Override
@@ -352,31 +334,6 @@ public class Cellpose3SegmentationTrainingAlgorithm extends JIPipeSingleIteratio
             arguments.add(testDir.toAbsolutePath().toString());
         }
 
-        arguments.add("--img_filter");
-        arguments.add("raw");
-
-        arguments.add("--mask_filter");
-        arguments.add("masks");
-
-        // Channels
-        if (channelSettings.getSegmentedChannel().isEnabled()) {
-            arguments.add("--chan");
-            arguments.add(channelSettings.getSegmentedChannel().getContent() + "");
-        } else {
-            arguments.add("--chan");
-            arguments.add("0");
-        }
-        if (channelSettings.getNuclearChannel().isEnabled()) {
-            arguments.add("--chan2");
-            arguments.add(channelSettings.getNuclearChannel().getContent() + "");
-        }
-        if (channelSettings.isAllChannels()) {
-            arguments.add("--all_channels");
-        }
-        if (channelSettings.isInvert()) {
-            arguments.add("--invert");
-        }
-
         // GPU
         if (gpuSettings.isEnableGPU())
             arguments.add("--use_gpu");
@@ -401,10 +358,6 @@ public class Cellpose3SegmentationTrainingAlgorithm extends JIPipeSingleIteratio
             arguments.add("None");
         }
 
-        if (trainSizeModel) {
-            arguments.add("--train_size");
-        }
-
         arguments.add("--learning_rate");
         arguments.add(tweaksSettings.getLearningRate() + "");
 
@@ -413,12 +366,6 @@ public class Cellpose3SegmentationTrainingAlgorithm extends JIPipeSingleIteratio
 
         arguments.add("--n_epochs");
         arguments.add(numEpochs + "");
-
-        arguments.add("--batch_size");
-        arguments.add(tweaksSettings.getBatchSize() + "");
-
-        arguments.add("--min_train_masks");
-        arguments.add(tweaksSettings.getMinTrainMasks() + "");
 
         if(tweaksSettings.getNumTrainingImagesPerEpoch().isEnabled()) {
             arguments.add("--nimg_per_epoch");
@@ -430,10 +377,37 @@ public class Cellpose3SegmentationTrainingAlgorithm extends JIPipeSingleIteratio
             arguments.add(tweaksSettings.getNumTestImagesPerEpoch().getContent() + "");
         }
 
-        if(tweaksSettings.isUseSGD().isEnabled()) {
-            arguments.add("--SGD");
-            arguments.add(tweaksSettings.isUseSGD().getContent() + "");
+        if(noiseSettings.getNoiseType() == Cellpose3DenoiseTrainingNoiseType.Custom) {
+            arguments.add("--poisson");
+            arguments.add(String.valueOf(noiseSettings.getCustomPoisson()));
+            arguments.add("--beta");
+            arguments.add(String.valueOf(noiseSettings.getCustomBeta()));
+            arguments.add("--blur");
+            arguments.add(String.valueOf(noiseSettings.getCustomBlur()));
+            arguments.add("--gblur");
+            arguments.add(String.valueOf(noiseSettings.getCustomGBlur()));
+            arguments.add("--downsample");
+            arguments.add(String.valueOf(noiseSettings.getCustomDownsample()));
         }
+        else {
+            arguments.add("--noise_type");
+            arguments.add(noiseSettings.getNoiseType().getId());
+        }
+
+        if(noiseSettings.getMaxDownsampling().isEnabled()) {
+            arguments.add("--ds_max");
+            arguments.add(String.valueOf(noiseSettings.getMaxDownsampling().getContent()));
+        }
+
+        arguments.add("--lam_per");
+        arguments.add(String.valueOf(tweaksSettings.getLambdaPerceptual()));
+        arguments.add("--lam_seg");
+        arguments.add(String.valueOf(tweaksSettings.getLambdaSegmentation()));
+        arguments.add("--lam_rec");
+        arguments.add(String.valueOf(tweaksSettings.getLambdaReconstruction()));
+
+        arguments.add("--seg_model_type");
+        arguments.add(tweaksSettings.getSegmentationModel().getId());
 
         // Run the module
         CellposeUtils.runCellpose(getConfiguredCellposeEnvironment(),
@@ -449,13 +423,6 @@ public class Cellpose3SegmentationTrainingAlgorithm extends JIPipeSingleIteratio
         Path generatedModelFile = findModelFile(modelsPath);
         CellposeModelData modelData = new CellposeModelData(generatedModelFile);
         iterationStep.addOutputData("Model", modelData, annotationList, JIPipeTextAnnotationMergeMode.Merge, progressInfo);
-
-        // Extract size model
-        if (trainSizeModel) {
-            Path generatedSizeModelFile = findSizeModelFile(modelsPath);
-            CellposeSizeModelData sizeModelData = new CellposeSizeModelData(generatedSizeModelFile);
-            iterationStep.addOutputData(OUTPUT_SIZE_MODEL.getName(), sizeModelData, annotationList, JIPipeTextAnnotationMergeMode.Merge, progressInfo);
-        }
     }
 
     private ImagePlus applyConnectedComponents(ImagePlus mask, JIPipeGraphNodeRunContext runContext, JIPipeProgressInfo progressInfo) {
@@ -495,24 +462,13 @@ public class Cellpose3SegmentationTrainingAlgorithm extends JIPipeSingleIteratio
         throw new RuntimeException("Could not find model in " + modelsPath);
     }
 
-    private Path findSizeModelFile(Path modelsPath) {
-        List<Path> list = PathUtils.findFilesByExtensionIn(modelsPath, ".npy").stream().sorted(Comparator.comparing(path -> {
-            try {
-                return Files.getLastModifiedTime((Path) path);
-            } catch (IOException e) {
-                throw new RuntimeException(e);
-            }
-        }).reversed()).collect(Collectors.toList());
-        return list.get(0);
-    }
-
     private void saveImagesToPath(Path dir, AtomicInteger imageCounter, JIPipeProgressInfo rowProgress, ImagePlus image, ImagePlus mask) {
         if (image.getStackSize() > 1 && !enable3DSegmentation) {
             ImageJUtils.forEachIndexedZCTSlice(image, (ip, index) -> {
                 ImageProcessor maskSlice = ImageJUtils.getSliceZero(mask, index);
                 ImagePlus maskSliceImage = new ImagePlus("slice", maskSlice);
                 ImagePlus imageSliceImage = new ImagePlus("slice", ip);
-                Path imageFile = dir.resolve("i" + imageCounter + "_raw.tif");
+                Path imageFile = dir.resolve("i" + imageCounter + "_img.tif");
                 Path maskFile = dir.resolve("i" + imageCounter + "_masks.tif");
                 imageCounter.getAndIncrement();
                 IJ.saveAs(maskSliceImage, "TIFF", imageFile.toString());
@@ -520,7 +476,7 @@ public class Cellpose3SegmentationTrainingAlgorithm extends JIPipeSingleIteratio
             }, rowProgress);
         } else {
             // Save as-is
-            Path imageFile = dir.resolve("i" + imageCounter + "_raw.tif");
+            Path imageFile = dir.resolve("i" + imageCounter + "_img.tif");
             Path maskFile = dir.resolve("i" + imageCounter + "_masks.tif");
             imageCounter.getAndIncrement();
             IJ.saveAs(image, "TIFF", imageFile.toString());

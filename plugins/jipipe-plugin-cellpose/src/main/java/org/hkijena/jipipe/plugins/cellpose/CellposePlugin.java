@@ -42,10 +42,7 @@ import org.hkijena.jipipe.plugins.cellpose.legacy.datatypes.LegacyCellposeModelD
 import org.hkijena.jipipe.plugins.cellpose.legacy.datatypes.LegacyCellposeSizeModelData;
 import org.hkijena.jipipe.plugins.cellpose.parameters.cp2.PretrainedCellpose2SegmentationModel;
 import org.hkijena.jipipe.plugins.cellpose.parameters.cp2.PretrainedCellpose2SegmentationModelList;
-import org.hkijena.jipipe.plugins.cellpose.parameters.cp3.PretrainedCellpose3DenoiseModel;
-import org.hkijena.jipipe.plugins.cellpose.parameters.cp3.PretrainedCellpose3DenoiseModelList;
-import org.hkijena.jipipe.plugins.cellpose.parameters.cp3.PretrainedCellpose3SegmentationModel;
-import org.hkijena.jipipe.plugins.cellpose.parameters.cp3.PretrainedCellpose3SegmentationModelList;
+import org.hkijena.jipipe.plugins.cellpose.parameters.cp3.*;
 import org.hkijena.jipipe.plugins.core.CorePlugin;
 import org.hkijena.jipipe.plugins.imagejalgorithms.ImageJAlgorithmsPlugin;
 import org.hkijena.jipipe.plugins.imagejdatatypes.ImageJDataTypesPlugin;
@@ -191,7 +188,7 @@ public class CellposePlugin extends JIPipePrepackagedDefaultJavaPlugin {
         registerParameterType("cellpose-3.x-pretrained-segmentation-model-list", PretrainedCellpose3SegmentationModelList.class, "Cellpose 3.x pretrained segmentation model list", "A list of pretrained segmentation Cellpose 3.x models");
         registerEnumParameterType("cellpose-3.x-pretrained-denoise-model", PretrainedCellpose3DenoiseModel.class, "Cellpose 3.x pretrained segmentation model", "A pretrained segmentation model provided with Cellpose 3.x");
         registerParameterType("cellpose-3.x-pretrained-denoise-model-list", PretrainedCellpose3DenoiseModelList.class, "Cellpose 3.x pretrained denoise model list", "A list of pretrained denoise Cellpose 3.x models");
-
+        registerEnumParameterType("cellpose-3.x-denoise-noise-type", Cellpose3DenoiseTrainingNoiseType.class, "Cellpose 3.x noise type", "Available noise types for denoising");
 
         registerNodeType("import-cellpose-model-v2", ImportCellposeModelFromFileAlgorithm.class);
         registerNodeType("import-cellpose-size-model-v2", ImportCellposeSizeModelFromFileAlgorithm.class);
@@ -207,6 +204,7 @@ public class CellposePlugin extends JIPipePrepackagedDefaultJavaPlugin {
         registerNodeType("cellpose-segmentation-inference-3.x", Cellpose3SegmentationInferenceAlgorithm.class, UIUtils.getIconURLFromResources("apps/cellpose.png"));
         registerNodeType("cellpose-denoise-inference-3.x", Cellpose3DenoiseInferenceAlgorithm.class, UIUtils.getIconURLFromResources("apps/cellpose.png"));
         registerNodeType("cellpose-segmentation-training-3.x", Cellpose3SegmentationTrainingAlgorithm.class, UIUtils.getIconURLFromResources("apps/cellpose.png"));
+        registerNodeType("cellpose-denoise-training-3.x", Cellpose3DenoiseTrainingAlgorithm.class, UIUtils.getIconURLFromResources("apps/cellpose.png"));
 
         // Legacy nodes and data types
         registerEnumParameterType("cellpose-model", PretrainedLegacyCellpose2InferenceModel.class, "Cellpose model (deprecated)", "A Cellpose model");
