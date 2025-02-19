@@ -28,10 +28,7 @@ import org.hkijena.jipipe.plugins.cellpose.algorithms.*;
 import org.hkijena.jipipe.plugins.cellpose.algorithms.cp2.Cellpose2SegmentationInferenceAlgorithm;
 import org.hkijena.jipipe.plugins.cellpose.algorithms.cp2.Cellpose2TrainingAlgorithm;
 import org.hkijena.jipipe.plugins.cellpose.algorithms.cp2.ImportPretrainedCellpose2ModelAlgorithm;
-import org.hkijena.jipipe.plugins.cellpose.algorithms.cp3.Cellpose3DenoiseInferenceAlgorithm;
-import org.hkijena.jipipe.plugins.cellpose.algorithms.cp3.Cellpose3SegmentationInferenceAlgorithm;
-import org.hkijena.jipipe.plugins.cellpose.algorithms.cp3.ImportPretrainedCellpose3DenoiseModelAlgorithm;
-import org.hkijena.jipipe.plugins.cellpose.algorithms.cp3.ImportPretrainedCellpose3SegmentationModelAlgorithm;
+import org.hkijena.jipipe.plugins.cellpose.algorithms.cp3.*;
 import org.hkijena.jipipe.plugins.cellpose.datatypes.CellposeModelData;
 import org.hkijena.jipipe.plugins.cellpose.datatypes.CellposeSizeModelData;
 import org.hkijena.jipipe.plugins.cellpose.legacy.PretrainedLegacyCellpose2InferenceModel;
@@ -209,7 +206,7 @@ public class CellposePlugin extends JIPipePrepackagedDefaultJavaPlugin {
         registerNodeType("import-cellpose-3.x-pretrained-denoise-model", ImportPretrainedCellpose3DenoiseModelAlgorithm.class);
         registerNodeType("cellpose-segmentation-inference-3.x", Cellpose3SegmentationInferenceAlgorithm.class, UIUtils.getIconURLFromResources("apps/cellpose.png"));
         registerNodeType("cellpose-denoise-inference-3.x", Cellpose3DenoiseInferenceAlgorithm.class, UIUtils.getIconURLFromResources("apps/cellpose.png"));
-//        registerNodeType("cellpose-training-2.x", Cellpose2TrainingAlgorithm.class, UIUtils.getIconURLFromResources("apps/cellpose.png"));
+        registerNodeType("cellpose-segmentation-training-3.x", Cellpose3SegmentationTrainingAlgorithm.class, UIUtils.getIconURLFromResources("apps/cellpose.png"));
 
         // Legacy nodes and data types
         registerEnumParameterType("cellpose-model", PretrainedLegacyCellpose2InferenceModel.class, "Cellpose model (deprecated)", "A Cellpose model");

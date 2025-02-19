@@ -11,7 +11,7 @@
  * See the LICENSE file provided with the code for the full license.
  */
 
-package org.hkijena.jipipe.plugins.cellpose.algorithms.cp2;
+package org.hkijena.jipipe.plugins.cellpose.algorithms.cp3;
 
 import ij.IJ;
 import ij.ImagePlus;
@@ -46,6 +46,7 @@ import org.hkijena.jipipe.plugins.cellpose.datatypes.CellposeSizeModelData;
 import org.hkijena.jipipe.plugins.cellpose.parameters.cp2.Cellpose2ChannelSettings;
 import org.hkijena.jipipe.plugins.cellpose.parameters.cp2.Cellpose2GPUSettings;
 import org.hkijena.jipipe.plugins.cellpose.parameters.cp2.Cellpose2TrainingTweaksSettings;
+import org.hkijena.jipipe.plugins.cellpose.parameters.cp3.Cellpose3TrainingTweaksSettings;
 import org.hkijena.jipipe.plugins.expressions.DataAnnotationQueryExpression;
 import org.hkijena.jipipe.plugins.imagejalgorithms.nodes.binary.ConnectedComponentsLabeling2DAlgorithm;
 import org.hkijena.jipipe.plugins.imagejalgorithms.nodes.binary.ConnectedComponentsLabeling3DAlgorithm;
@@ -71,22 +72,23 @@ import java.util.List;
 import java.util.concurrent.atomic.AtomicInteger;
 import java.util.stream.Collectors;
 
-@SetJIPipeDocumentation(name = "Cellpose segmentation training (2.x)", description =
+@SetJIPipeDocumentation(name = "Cellpose segmentation training (3.x)", description =
         "Trains a segmentation model with Cellpose. You start from an existing model or train from scratch. " +
                 "Incoming images are automatically converted to greyscale. Only 2D or 3D images are supported. For this node to work, you need to annotate a greyscale 16-bit or 8-bit label image column to each raw data input. " +
-                "To do this, you can use the node 'Annotate with data'. By default, JIPipe will ensure that all connected components of this image are assigned a unique component. You can disable this feature via the parameters.")
+                "To do this, you can use the node 'Annotate with data'. By default, JIPipe will ensure that all connected components of this image are assigned a unique component. You can disable this feature via the parameters. " +
+                "Does not support the training of image restoration models.")
 @AddJIPipeInputSlot(value = ImagePlusData.class, name = "Training data", create = true)
 @AddJIPipeInputSlot(value = ImagePlusData.class, name = "Test data", create = true, optional = true)
 @AddJIPipeInputSlot(value = CellposeModelData.class, name = "Pretrained model", create = true, optional = true, description = "Optional pretrained models. All workloads are repeated per model.", role = JIPipeDataSlotRole.ParametersLooping)
 @ConfigureJIPipeNode(nodeTypeCategory = ImagesNodeTypeCategory.class, menuPath = "Deep learning")
 @AddJIPipeOutputSlot(value = CellposeModelData.class, name = "Model", create = true, description = "The trained model")
 @AddJIPipeOutputSlot(value = CellposeSizeModelData.class)
-public class Cellpose2TrainingAlgorithm extends JIPipeSingleIterationAlgorithm implements Cellpose2EnvironmentAccessNode {
+public class Cellpose3SegmentationTrainingAlgorithm extends JIPipeSingleIterationAlgorithm implements Cellpose3EnvironmentAccessNode {
 
     public static final JIPipeDataSlotInfo OUTPUT_SIZE_MODEL = new JIPipeDataSlotInfo(CellposeSizeModelData.class, JIPipeSlotType.Output, "Size Model", "Generated size model", true);
 
     private final Cellpose2GPUSettings gpuSettings;
-    private final Cellpose2TrainingTweaksSettings tweaksSettings;
+    private final Cellpose3TrainingTweaksSettings tweaksSettings;
     private final Cellpose2ChannelSettings channelSettings;
     private int numEpochs = 500;
     private boolean enable3DSegmentation = true;
@@ -97,10 +99,10 @@ public class Cellpose2TrainingAlgorithm extends JIPipeSingleIterationAlgorithm i
     private DataAnnotationQueryExpression labelDataAnnotation = new DataAnnotationQueryExpression("\"Label\"");
     private boolean suppressLogs = false;
 
-    public Cellpose2TrainingAlgorithm(JIPipeNodeInfo info) {
+    public Cellpose3SegmentationTrainingAlgorithm(JIPipeNodeInfo info) {
         super(info);
         this.gpuSettings = new Cellpose2GPUSettings();
-        this.tweaksSettings = new Cellpose2TrainingTweaksSettings();
+        this.tweaksSettings = new Cellpose3TrainingTweaksSettings();
         this.channelSettings = new Cellpose2ChannelSettings();
         updateSlots();
 
@@ -109,11 +111,11 @@ public class Cellpose2TrainingAlgorithm extends JIPipeSingleIterationAlgorithm i
         registerSubParameter(channelSettings);
     }
 
-    public Cellpose2TrainingAlgorithm(Cellpose2TrainingAlgorithm other) {
+    public Cellpose3SegmentationTrainingAlgorithm(Cellpose3SegmentationTrainingAlgorithm other) {
         super(other);
 
         this.gpuSettings = new Cellpose2GPUSettings(other.gpuSettings);
-        this.tweaksSettings = new Cellpose2TrainingTweaksSettings(other.tweaksSettings);
+        this.tweaksSettings = new Cellpose3TrainingTweaksSettings(other.tweaksSettings);
         this.channelSettings = new Cellpose2ChannelSettings(other.channelSettings);
         this.suppressLogs = other.suppressLogs;
 
@@ -240,7 +242,7 @@ public class Cellpose2TrainingAlgorithm extends JIPipeSingleIterationAlgorithm i
 
     @SetJIPipeDocumentation(name = "Cellpose: Tweaks", description = "Advanced settings for the training.")
     @JIPipeParameter(value = "tweaks-settings", collapsed = true, iconURL = ResourceUtils.RESOURCE_BASE_PATH + "/icons/apps/cellpose.png")
-    public Cellpose2TrainingTweaksSettings getTweaksSettings() {
+    public Cellpose3TrainingTweaksSettings getTweaksSettings() {
         return tweaksSettings;
     }
 
@@ -263,13 +265,6 @@ public class Cellpose2TrainingAlgorithm extends JIPipeSingleIterationAlgorithm i
         for (int modelRow : iterationStep.getInputRows(modelSlot)) {
             JIPipeProgressInfo modelProgress = progressInfo.resolve("Model row " + modelRow);
             CellposeModelData modelData = modelSlot.getData(modelRow, CellposeModelData.class, modelProgress);
-            CellposeSizeModelData sizeModelData = null;
-//            if(sizeModelAnnotationName.isEnabled() && !StringUtils.isNullOrEmpty(sizeModelAnnotationName.getContent())) {
-//                JIPipeDataAnnotation dataAnnotation = getInputSlot("Model").getDataAnnotation(modelRow, sizeModelAnnotationName.getContent());
-//                if(dataAnnotation != null) {
-//                    sizeModelData = dataAnnotation.getData(CellposeSizeModelData.class, modelProgress);
-//                }
-//            }
 
             // Save the model out
             CellposeModelInfo modelInfo = new CellposeModelInfo();
@@ -285,11 +280,6 @@ public class Cellpose2TrainingAlgorithm extends JIPipeSingleIterationAlgorithm i
                     modelInfo.modelNameOrPath = tempDirectory.resolve(modelData.getMetadata().getName()).toString();
                 }
             }
-//            if(sizeModelData != null) {
-//                Path tempDirectory = PathUtils.createTempDirectory(workDirectory.resolve("models"), "size-model");
-//                sizeModelData.exportData(new JIPipeFileSystemWriteDataStorage(modelProgress, tempDirectory), null, false, modelProgress);
-//                modelInfo.sizeModelNameOrPath = tempDirectory.resolve(sizeModelData.getMetadata().getName()).toString();
-//            }
 
             modelInfos.add(modelInfo);
         }
@@ -297,7 +287,7 @@ public class Cellpose2TrainingAlgorithm extends JIPipeSingleIterationAlgorithm i
         for (int i = 0; i < modelInfos.size(); i++) {
             CellposeModelInfo modelInfo = modelInfos.get(i);
             JIPipeProgressInfo modelProgress = progressInfo.resolve("Model", i, modelInfos.size());
-            processModel(PathUtils.createTempSubDirectory(workDirectory, "run"), modelInfo, iterationStep, iterationContext, runContext, modelProgress);
+            processModel(PathUtils.createTempSubDirectory(workDirectory, "run"), modelInfo, iterationStep, runContext, modelProgress);
         }
 
 
@@ -306,7 +296,7 @@ public class Cellpose2TrainingAlgorithm extends JIPipeSingleIterationAlgorithm i
         }
     }
 
-    private void processModel(Path workDirectory, CellposeModelInfo modelInfo, JIPipeMultiIterationStep iterationStep, JIPipeIterationContext iterationContext, JIPipeGraphNodeRunContext runContext, JIPipeProgressInfo progressInfo) {
+    private void processModel(Path workDirectory, CellposeModelInfo modelInfo, JIPipeMultiIterationStep iterationStep, JIPipeGraphNodeRunContext runContext, JIPipeProgressInfo progressInfo) {
         Path trainingDir = workDirectory.resolve("training");
         Path testDir = workDirectory.resolve("test");
         try {
@@ -428,17 +418,23 @@ public class Cellpose2TrainingAlgorithm extends JIPipeSingleIterationAlgorithm i
         arguments.add("--batch_size");
         arguments.add(tweaksSettings.getBatchSize() + "");
 
-        arguments.add("--residual_on");
-        arguments.add(tweaksSettings.isUseResidualConnections() ? "1" : "0");
-
-        arguments.add("--style_on");
-        arguments.add(tweaksSettings.isUseStyleVector() ? "1" : "0");
-
-        arguments.add("--concatenation");
-        arguments.add(tweaksSettings.isConcatenateDownsampledLayers() ? "1" : "0");
-
         arguments.add("--min_train_masks");
         arguments.add(tweaksSettings.getMinTrainMasks() + "");
+
+        if(tweaksSettings.getNumTrainingImagesPerEpoch().isEnabled()) {
+            arguments.add("--nimg_per_epoch");
+            arguments.add(tweaksSettings.getNumTrainingImagesPerEpoch().getContent() + "");
+        }
+
+        if(tweaksSettings.getNumTestImagesPerEpoch().isEnabled()) {
+            arguments.add("--nimg_test_per_epoch");
+            arguments.add(tweaksSettings.getNumTestImagesPerEpoch().getContent() + "");
+        }
+
+        if(tweaksSettings.isUseSGD().isEnabled()) {
+            arguments.add("--SGD");
+            arguments.add(tweaksSettings.isUseSGD().getContent() + "");
+        }
 
         // Run the module
         CellposeUtils.runCellpose(getConfiguredCellposeEnvironment(),

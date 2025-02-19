@@ -34,7 +34,7 @@ import org.hkijena.jipipe.plugins.parameters.library.primitives.optional.Optiona
 import java.util.ArrayList;
 import java.util.List;
 
-@SetJIPipeDocumentation(name = "Pretrained Cellpose 3.x denoise model", description = "Imports one or a selection of pretrained Cellpose 3.x denoise models")
+@SetJIPipeDocumentation(name = "Pretrained Cellpose 3.x image restoration model", description = "Imports one or a selection of pretrained Cellpose 3.x image restoration models")
 @ConfigureJIPipeNode(nodeTypeCategory = DataSourceNodeTypeCategory.class)
 @AddJIPipeOutputSlot(value = CellposeModelData.class, name = "Output", create = true)
 public class ImportPretrainedCellpose3DenoiseModelAlgorithm extends JIPipeSimpleIteratingAlgorithm {

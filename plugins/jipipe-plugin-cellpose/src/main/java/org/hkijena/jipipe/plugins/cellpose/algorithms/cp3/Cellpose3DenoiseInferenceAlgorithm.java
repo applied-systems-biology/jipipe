@@ -68,12 +68,14 @@ import java.nio.file.Path;
 import java.util.*;
 
 
-@SetJIPipeDocumentation(name = "Cellpose denoising (3.x)", description =
-        "Runs Cellpose denoising on the input image with the given model(s). This node supports both denoising in 3D and executing " +
+@SetJIPipeDocumentation(name = "Cellpose image restoration (3.x)", description =
+        "Runs Cellpose restoration on the input image with the given model(s). " +
+                "Cellpose provides algorithms for denoising (similar to noise2void), deblurring, and upsampling. " +
+                "This node supports operations in 3D and executing " +
                 "Cellpose for each 2D image plane. " +
                 "Please note that you need to setup a valid Python environment with Cellpose installed. You can find the setting in Project &gt; Application settings &gt; Extensions &gt; Cellpose.")
 @AddJIPipeInputSlot(value = ImagePlusData.class, name = "Input", create = true, description = "The input images")
-@AddJIPipeInputSlot(value = CellposeModelData.class, name = "Model", create = true, description = "The models (pretrained/custom). All workloads are repeated per model.", role = JIPipeDataSlotRole.ParametersLooping)
+@AddJIPipeInputSlot(value = CellposeModelData.class, name = "Model", create = true, description = "The models (pretrained/custom). All workloads are repeated per model. To provide a pretrained model, use 'Pretrained Cellpose 3.x image restoration model'.", role = JIPipeDataSlotRole.ParametersLooping)
 @AddJIPipeOutputSlot(value = ImagePlusData.class, name = "Output", create = true)
 @ConfigureJIPipeNode(nodeTypeCategory = ImagesNodeTypeCategory.class, menuPath = "Deep learning")
 public class Cellpose3DenoiseInferenceAlgorithm extends JIPipeSingleIterationAlgorithm implements Cellpose3EnvironmentAccessNode {
@@ -133,14 +135,14 @@ public class Cellpose3DenoiseInferenceAlgorithm extends JIPipeSingleIterationAlg
         this.suppressLogs = suppressLogs;
     }
 
-    @SetJIPipeDocumentation(name = "Enable 3D segmentation", description = "If enabled, Cellpose will segment in 3D. Otherwise, " +
-            "any 3D image will be processed per-slice. Please note that 3D segmentation requires large amounts of memory.")
-    @JIPipeParameter(value = "enable-3d-segmentation", important = true)
+    @SetJIPipeDocumentation(name = "Enable 3D denoising", description = "If enabled, Cellpose will denoise in 3D. Otherwise, " +
+            "any 3D image will be processed per-slice. Please note that 3D denoising requires large amounts of memory.")
+    @JIPipeParameter(value = "enable-3d-denoising", important = true)
     public boolean isEnable3DDenoising() {
         return enable3DDenoising;
     }
 
-    @JIPipeParameter("enable-3d-segmentation")
+    @JIPipeParameter("enable-3d-denoising")
     public void setEnable3DDenoising(boolean enable3DDenoising) {
         this.enable3DDenoising = enable3DDenoising;
     }
@@ -496,7 +498,7 @@ public class Cellpose3DenoiseInferenceAlgorithm extends JIPipeSingleIterationAlg
         this.diameter = diameter;
     }
 
-    @SetJIPipeDocumentation(name = "Cellpose: Channels", description = "Determines which channels are used for the segmentation")
+    @SetJIPipeDocumentation(name = "Cellpose: Channels", description = "Determines which channels are denoised")
     @JIPipeParameter(value = "channel-parameters", iconURL = ResourceUtils.RESOURCE_BASE_PATH + "/icons/apps/cellpose.png")
     public Cellpose2ChannelSettings getChannelSettings() {
         return channelSettings;
