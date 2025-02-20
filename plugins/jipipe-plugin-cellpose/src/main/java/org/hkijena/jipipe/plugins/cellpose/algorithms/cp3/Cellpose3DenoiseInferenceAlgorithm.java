@@ -17,7 +17,6 @@ import com.fasterxml.jackson.databind.JsonNode;
 import ij.IJ;
 import ij.ImagePlus;
 import ij.ImageStack;
-import ij.gui.Roi;
 import ij.process.ImageProcessor;
 import org.hkijena.jipipe.api.ConfigureJIPipeNode;
 import org.hkijena.jipipe.api.JIPipeProgressInfo;
@@ -29,31 +28,22 @@ import org.hkijena.jipipe.api.data.JIPipeInputDataSlot;
 import org.hkijena.jipipe.api.data.storage.JIPipeFileSystemWriteDataStorage;
 import org.hkijena.jipipe.api.environments.ExternalEnvironmentParameterSettings;
 import org.hkijena.jipipe.api.environments.JIPipeEnvironment;
-import org.hkijena.jipipe.api.nodes.AddJIPipeInputSlot;
-import org.hkijena.jipipe.api.nodes.AddJIPipeOutputSlot;
-import org.hkijena.jipipe.api.nodes.JIPipeGraphNodeRunContext;
-import org.hkijena.jipipe.api.nodes.JIPipeNodeInfo;
+import org.hkijena.jipipe.api.nodes.*;
 import org.hkijena.jipipe.api.nodes.algorithm.JIPipeSingleIterationAlgorithm;
 import org.hkijena.jipipe.api.nodes.categories.ImagesNodeTypeCategory;
 import org.hkijena.jipipe.api.nodes.iterationstep.JIPipeIterationContext;
 import org.hkijena.jipipe.api.nodes.iterationstep.JIPipeMultiIterationStep;
 import org.hkijena.jipipe.api.parameters.JIPipeParameter;
 import org.hkijena.jipipe.api.validation.*;
-import org.hkijena.jipipe.api.validation.contexts.GraphNodeValidationReportContext;
 import org.hkijena.jipipe.plugins.cellpose.CellposePlugin;
-import org.hkijena.jipipe.plugins.cellpose.CellposeUtils;
+import org.hkijena.jipipe.plugins.cellpose.utils.CellposeUtils;
 import org.hkijena.jipipe.plugins.cellpose.datatypes.CellposeModelData;
 import org.hkijena.jipipe.plugins.cellpose.parameters.cp2.Cellpose2ChannelSettings;
 import org.hkijena.jipipe.plugins.cellpose.parameters.cp2.Cellpose2GPUSettings;
-import org.hkijena.jipipe.plugins.cellpose.parameters.cp2.Cellpose2SegmentationOutputSettings;
-import org.hkijena.jipipe.plugins.cellpose.parameters.cp2.Cellpose2SegmentationThresholdSettings;
-import org.hkijena.jipipe.plugins.cellpose.parameters.cp3.Cellpose3SegmentationTweaksSettings;
+import org.hkijena.jipipe.plugins.cellpose.utils.CellposeImageInfo;
+import org.hkijena.jipipe.plugins.cellpose.utils.CellposeModelInfo;
 import org.hkijena.jipipe.plugins.imagejdatatypes.datatypes.ImagePlusData;
 import org.hkijena.jipipe.plugins.imagejdatatypes.datatypes.OMEImageData;
-import org.hkijena.jipipe.plugins.imagejdatatypes.datatypes.ROI2DListData;
-import org.hkijena.jipipe.plugins.imagejdatatypes.datatypes.greyscale.ImagePlusGreyscale32FData;
-import org.hkijena.jipipe.plugins.imagejdatatypes.datatypes.greyscale.ImagePlusGreyscaleData;
-import org.hkijena.jipipe.plugins.imagejdatatypes.util.ImageJUtils;
 import org.hkijena.jipipe.plugins.imagejdatatypes.util.ImageSliceIndex;
 import org.hkijena.jipipe.plugins.parameters.library.primitives.optional.OptionalDoubleParameter;
 import org.hkijena.jipipe.plugins.parameters.library.primitives.optional.OptionalTextAnnotationNameParameter;
@@ -181,17 +171,7 @@ public class Cellpose3DenoiseInferenceAlgorithm extends JIPipeSingleIterationAlg
             CellposeModelData modelData = modelSlot.getData(modelRow, CellposeModelData.class, modelProgress);
 
             // Save the model out
-            CellposeModelInfo modelInfo = new CellposeModelInfo();
-            modelInfo.annotationList = modelSlot.getTextAnnotations(modelRow);
-            if (modelData.isPretrained()) {
-                modelInfo.modelPretrained = true;
-                modelInfo.modelNameOrPath = modelData.getPretrainedModelName();
-            } else {
-                Path tempDirectory = PathUtils.createTempSubDirectory(workDirectory.resolve("models"), "model");
-                modelData.exportData(new JIPipeFileSystemWriteDataStorage(modelProgress, tempDirectory), null, false, modelProgress);
-                modelInfo.modelPretrained = false;
-                modelInfo.modelNameOrPath = tempDirectory.resolve(modelData.getMetadata().getName()).toString();
-            }
+            CellposeModelInfo modelInfo = CellposeUtils.createModelInfo(modelSlot.getTextAnnotations(modelRow), modelData, workDirectory, modelProgress);
             modelInfos.add(modelInfo);
         }
 
@@ -216,14 +196,22 @@ public class Cellpose3DenoiseInferenceAlgorithm extends JIPipeSingleIterationAlg
         List<CellposeImageInfo> runWith3D = new ArrayList<>();
 
         // Save input images
-        saveInputImages(iterationStep, progressInfo.resolve("Export input images"), io2DPath, io3DPath, runWith2D, runWith3D);
+        CellposeUtils.saveInputImages(getInputSlot("Input"),
+                iterationStep.getInputRows("Input"),
+                enable3DDenoising,
+                progressInfo.resolve("Export input images"),
+                io2DPath,
+                io3DPath,
+                runWith2D,
+                runWith3D,
+                this);
 
         // Run Cellpose
         if (!runWith2D.isEmpty()) {
-            runCellpose(progressInfo.resolve("Cellpose"), io2DPath, false, modelInfo.modelNameOrPath);
+            runCellpose(progressInfo.resolve("Cellpose"), io2DPath, false, modelInfo.getModelNameOrPath());
         }
         if (!runWith3D.isEmpty()) {
-            runCellpose(progressInfo.resolve("Cellpose"), io3DPath, true, modelInfo.modelNameOrPath);
+            runCellpose(progressInfo.resolve("Cellpose"), io3DPath, true, modelInfo.getModelNameOrPath());
         }
 
         // Deploy and run extraction script
@@ -257,20 +245,20 @@ public class Cellpose3DenoiseInferenceAlgorithm extends JIPipeSingleIterationAlg
 
         // Fetch the data from the directory
         for (CellposeImageInfo imageInfo : runWith2D) {
-            extractDataFromInfo(modelInfo, iterationStep, imageInfo, io2DPath, progressInfo.resolve("Importing results row " + imageInfo.sourceRow));
+            extractDataFromInfo(modelInfo, iterationStep, imageInfo, io2DPath, progressInfo.resolve("Importing results row " + imageInfo.getSourceRow()));
         }
         for (CellposeImageInfo imageInfo : runWith3D) {
-            extractDataFromInfo(modelInfo, iterationStep, imageInfo, io3DPath, progressInfo.resolve("Importing results row " + imageInfo.sourceRow));
+            extractDataFromInfo(modelInfo, iterationStep, imageInfo, io3DPath, progressInfo.resolve("Importing results row " + imageInfo.getSourceRow()));
         }
     }
 
     private void extractDataFromInfo(CellposeModelInfo modelInfo, JIPipeMultiIterationStep iterationStep, CellposeImageInfo imageInfo, Path ioPath, JIPipeProgressInfo progressInfo) {
-        List<JIPipeTextAnnotation> annotationList = new ArrayList<>(getInputSlot("Input").getTextAnnotations(imageInfo.sourceRow));
-        annotationList.addAll(modelInfo.annotationList);
+        List<JIPipeTextAnnotation> annotationList = new ArrayList<>(getInputSlot("Input").getTextAnnotations(imageInfo.getSourceRow()));
+        annotationList.addAll(modelInfo.getAnnotationList());
         if (diameterAnnotation.isEnabled()) {
             progressInfo.log("Reading info ...");
             List<JIPipeTextAnnotation> diameterAnnotations = new ArrayList<>();
-            for (Map.Entry<ImageSliceIndex, String> entry : imageInfo.sliceBaseNames.entrySet()) {
+            for (Map.Entry<ImageSliceIndex, String> entry : imageInfo.getSliceBaseNames().entrySet()) {
                 JsonNode node = JsonUtils.readFromFile(ioPath.resolve(entry.getValue() + "_seg_info.json"), JsonNode.class);
                 diameterAnnotation.addAnnotationIfEnabled(diameterAnnotations, node.get("est_diam").asText());
             }
@@ -285,7 +273,7 @@ public class Cellpose3DenoiseInferenceAlgorithm extends JIPipeSingleIterationAlg
 
     private ImagePlus extractImageFromInfo(CellposeImageInfo imageInfo, Path ioPath, String basePathSuffix, boolean useBioFormats, JIPipeProgressInfo progressInfo) {
         Map<ImageSliceIndex, ImagePlus> sliceMap = new HashMap<>();
-        for (Map.Entry<ImageSliceIndex, String> entry : imageInfo.sliceBaseNames.entrySet()) {
+        for (Map.Entry<ImageSliceIndex, String> entry : imageInfo.getSliceBaseNames().entrySet()) {
             Path imageFile = ioPath.resolve(entry.getValue() + basePathSuffix);
             progressInfo.log("Reading: " + imageFile);
             ImagePlus slice;
@@ -398,70 +386,6 @@ public class Cellpose3DenoiseInferenceAlgorithm extends JIPipeSingleIterationAlg
                 progressInfo);
     }
 
-    private void saveInputImages(JIPipeMultiIterationStep iterationStep, JIPipeProgressInfo progressInfo, Path io2DPath, Path io3DPath, List<CellposeImageInfo> runWith2D, List<CellposeImageInfo> runWith3D) {
-        for (int row : iterationStep.getInputRows("Input")) {
-            JIPipeProgressInfo rowProgress = progressInfo.resolve("Data row " + row);
-
-            ImagePlus img = getInputSlot("Input").getData(row, ImagePlusData.class, rowProgress).getImage();
-            if (img.getNFrames() > 1) {
-                throw new JIPipeValidationRuntimeException(new JIPipeValidationReportEntry(JIPipeValidationReportEntryLevel.Error,
-                        new GraphNodeValidationReportContext(this),
-                        "Cellpose does not support time series!",
-                        "Please ensure that the image dimensions are correctly assigned.",
-                        "Remove the frames or reorder the dimensions before applying Cellpose"));
-            }
-            if (img.getNSlices() == 1) {
-                // Output the image as-is
-                String baseName = row + "_";
-                Path outputPath = io2DPath.resolve(baseName + ".tif");
-                IJ.saveAsTiff(img, outputPath.toString());
-
-                // Create info
-                CellposeImageInfo info = new CellposeImageInfo(row);
-                info.sliceBaseNames.put(new ImageSliceIndex(-1, -1, -1), baseName);
-                runWith2D.add(info);
-            } else {
-                if (enable3DDenoising) {
-                    // Cannot have channels AND RGB
-                    if (img.getNChannels() > 1 && img.getType() == ImagePlus.COLOR_RGB) {
-                        throw new JIPipeValidationRuntimeException(new JIPipeValidationReportEntry(JIPipeValidationReportEntryLevel.Error,
-                                new GraphNodeValidationReportContext(this),
-                                "Cellpose does not support 3D multichannel images with RGB!",
-                                "Python will convert the RGB channels into greyscale slices, thus conflicting with the channel slices defined in the input image",
-                                "Convert the image from RGB to greyscale or remove the additional channel slices."));
-                    }
-
-                    // Output the image as-is
-                    String baseName = row + "_";
-                    Path outputPath = io3DPath.resolve(baseName + ".tif");
-                    IJ.saveAsTiff(img, outputPath.toString());
-
-                    // Create info
-                    CellposeImageInfo info = new CellposeImageInfo(row);
-                    info.sliceBaseNames.put(new ImageSliceIndex(-1, -1, -1), baseName);
-                    runWith3D.add(info);
-                } else {
-                    rowProgress.log("3D mode not active, but 3D image detected -> Image will be split into 2D slices.");
-
-                    CellposeImageInfo info = new CellposeImageInfo(row);
-
-                    // Split the 3D image into slices
-                    ImageJUtils.forEachIndexedZCTSlice(img, (ip, index) -> {
-                        ImagePlus sliceImage = new ImagePlus(index.toString(), ip);
-                        String baseName = row + "_z" + index.getZ() + "_c" + index.getC() + "_t" + index.getT() + "_";
-                        Path outputPath = io2DPath.resolve(baseName + ".tif");
-                        IJ.saveAsTiff(sliceImage, outputPath.toString());
-
-                        // Create info
-                        info.sliceBaseNames.put(index, baseName);
-                    }, rowProgress);
-
-                    runWith2D.add(info);
-                }
-            }
-        }
-    }
-
     @SetJIPipeDocumentation(name = "Clean up data after processing", description = "If enabled, data is deleted from temporary directories after " +
             "the processing was finished. Disable this to make it possible to debug your scripts. The directories are accessible via the logs (Tools &gt; Logs).")
     @JIPipeParameter("cleanup-afterwards")
@@ -511,29 +435,5 @@ public class Cellpose3DenoiseInferenceAlgorithm extends JIPipeSingleIterationAlg
         return gpuSettings;
     }
 
-    private static class CellposeModelInfo {
-        private String modelNameOrPath;
-        private String sizeModelNameOrPath;
-        private boolean modelPretrained;
-        private List<JIPipeTextAnnotation> annotationList;
-    }
-
-    private static class CellposeImageInfo {
-        private final int sourceRow;
-        private final Map<ImageSliceIndex, String> sliceBaseNames;
-
-        private CellposeImageInfo(int sourceRow) {
-            this.sourceRow = sourceRow;
-            this.sliceBaseNames = new HashMap<>();
-        }
-
-        public int getSourceRow() {
-            return sourceRow;
-        }
-
-        public Map<ImageSliceIndex, String> getSliceBaseNames() {
-            return sliceBaseNames;
-        }
-    }
 }
 

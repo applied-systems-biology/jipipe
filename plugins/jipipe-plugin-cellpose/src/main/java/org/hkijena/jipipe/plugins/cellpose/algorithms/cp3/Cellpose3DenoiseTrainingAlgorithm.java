@@ -40,15 +40,13 @@ import org.hkijena.jipipe.api.nodes.iterationstep.JIPipeMultiIterationStep;
 import org.hkijena.jipipe.api.parameters.JIPipeParameter;
 import org.hkijena.jipipe.api.validation.JIPipeValidationReport;
 import org.hkijena.jipipe.api.validation.JIPipeValidationReportContext;
-import org.hkijena.jipipe.plugins.cellpose.CellposeUtils;
+import org.hkijena.jipipe.plugins.cellpose.utils.CellposeUtils;
 import org.hkijena.jipipe.plugins.cellpose.datatypes.CellposeModelData;
 import org.hkijena.jipipe.plugins.cellpose.datatypes.CellposeSizeModelData;
-import org.hkijena.jipipe.plugins.cellpose.parameters.cp2.Cellpose2ChannelSettings;
 import org.hkijena.jipipe.plugins.cellpose.parameters.cp2.Cellpose2GPUSettings;
 import org.hkijena.jipipe.plugins.cellpose.parameters.cp3.Cellpose3DenoiseTrainingNoiseSettings;
 import org.hkijena.jipipe.plugins.cellpose.parameters.cp3.Cellpose3DenoiseTrainingNoiseType;
 import org.hkijena.jipipe.plugins.cellpose.parameters.cp3.Cellpose3DenoiseTrainingTweaksSettings;
-import org.hkijena.jipipe.plugins.cellpose.parameters.cp3.Cellpose3SegmentationTrainingTweaksSettings;
 import org.hkijena.jipipe.plugins.expressions.DataAnnotationQueryExpression;
 import org.hkijena.jipipe.plugins.imagejalgorithms.nodes.binary.ConnectedComponentsLabeling2DAlgorithm;
 import org.hkijena.jipipe.plugins.imagejalgorithms.nodes.binary.ConnectedComponentsLabeling3DAlgorithm;
@@ -501,12 +499,5 @@ public class Cellpose3DenoiseTrainingAlgorithm extends JIPipeSingleIterationAlgo
         if (!isPassThrough()) {
             reportConfiguredCellposeEnvironmentValidity(reportContext, report);
         }
-    }
-
-    private static class CellposeModelInfo {
-        private String modelNameOrPath;
-        private String sizeModelNameOrPath;
-        private boolean modelPretrained;
-        private List<JIPipeTextAnnotation> annotationList = new ArrayList<>();
     }
 }

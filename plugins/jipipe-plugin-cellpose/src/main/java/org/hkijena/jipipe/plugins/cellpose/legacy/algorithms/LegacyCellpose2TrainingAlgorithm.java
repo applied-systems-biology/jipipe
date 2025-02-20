@@ -36,7 +36,7 @@ import org.hkijena.jipipe.api.parameters.JIPipeParameter;
 import org.hkijena.jipipe.api.validation.*;
 import org.hkijena.jipipe.api.validation.contexts.GraphNodeValidationReportContext;
 import org.hkijena.jipipe.plugins.cellpose.algorithms.cp2.Cellpose2EnvironmentAccessNode;
-import org.hkijena.jipipe.plugins.cellpose.CellposeUtils;
+import org.hkijena.jipipe.plugins.cellpose.utils.CellposeUtils;
 import org.hkijena.jipipe.plugins.cellpose.legacy.PretrainedLegacyCellpose2TrainingModel;
 import org.hkijena.jipipe.plugins.cellpose.legacy.datatypes.LegacyCellposeModelData;
 import org.hkijena.jipipe.plugins.cellpose.legacy.datatypes.LegacyCellposeSizeModelData;

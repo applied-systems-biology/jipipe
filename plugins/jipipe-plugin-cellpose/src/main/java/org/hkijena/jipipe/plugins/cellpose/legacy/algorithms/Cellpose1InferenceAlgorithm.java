@@ -21,6 +21,7 @@ import org.hkijena.jipipe.api.JIPipeProgressInfo;
 import org.hkijena.jipipe.api.LabelAsJIPipeHidden;
 import org.hkijena.jipipe.api.SetJIPipeDocumentation;
 import org.hkijena.jipipe.api.annotation.JIPipeTextAnnotation;
+import org.hkijena.jipipe.api.annotation.JIPipeTextAnnotationMergeMode;
 import org.hkijena.jipipe.api.data.JIPipeDataSlotInfo;
 import org.hkijena.jipipe.api.data.JIPipeDefaultMutableSlotConfiguration;
 import org.hkijena.jipipe.api.data.JIPipeSlotType;
@@ -39,7 +40,7 @@ import org.hkijena.jipipe.api.parameters.JIPipeParameterTree;
 import org.hkijena.jipipe.api.validation.*;
 import org.hkijena.jipipe.api.validation.contexts.GraphNodeValidationReportContext;
 import org.hkijena.jipipe.plugins.cellpose.Cellpose2PluginApplicationSettings;
-import org.hkijena.jipipe.plugins.cellpose.CellposeUtils;
+import org.hkijena.jipipe.plugins.cellpose.utils.CellposeUtils;
 import org.hkijena.jipipe.plugins.cellpose.legacy.PretrainedLegacyCellpose2InferenceModel;
 import org.hkijena.jipipe.plugins.cellpose.legacy.datatypes.LegacyCellposeModelData;
 import org.hkijena.jipipe.plugins.cellpose.legacy.datatypes.LegacyCellposeSizeModelData;
@@ -132,6 +133,29 @@ public class Cellpose1InferenceAlgorithm extends JIPipeSingleIterationAlgorithm 
         registerSubParameter(segmentationEnhancementSettings);
         registerSubParameter(SegmentationThresholdSettings_Old);
         registerSubParameter(outputParameters);
+    }
+
+    public static void extractCellposeOutputs(JIPipeMultiIterationStep iterationStep, JIPipeProgressInfo progressInfo, Path outputRoiOutline, Path outputLabels, Path outputFlows, Path outputProbabilities, Path outputStyles, List<JIPipeTextAnnotation> annotationList, CellposeSegmentationOutputSettings_Old outputParameters) {
+        if (outputParameters.isOutputROI()) {
+            ROI2DListData rois = CellposeUtils.cellposeROIJsonToImageJ(outputRoiOutline);
+            iterationStep.addOutputData("ROI", rois, annotationList, JIPipeTextAnnotationMergeMode.OverwriteExisting, progressInfo);
+        }
+        if (outputParameters.isOutputLabels()) {
+            ImagePlus labels = IJ.openImage(outputLabels.toString());
+            iterationStep.addOutputData("Labels", new ImagePlus3DGreyscaleData(labels), annotationList, JIPipeTextAnnotationMergeMode.OverwriteExisting, progressInfo);
+        }
+        if (outputParameters.isOutputFlows()) {
+            ImagePlus flows = IJ.openImage(outputFlows.toString());
+            iterationStep.addOutputData("Flows", new ImagePlus3DColorRGBData(flows), annotationList, JIPipeTextAnnotationMergeMode.OverwriteExisting, progressInfo);
+        }
+        if (outputParameters.isOutputProbabilities()) {
+            ImagePlus probabilities = IJ.openImage(outputProbabilities.toString());
+            iterationStep.addOutputData("Probabilities", new ImagePlus3DGreyscale32FData(probabilities), annotationList, JIPipeTextAnnotationMergeMode.OverwriteExisting, progressInfo);
+        }
+        if (outputParameters.isOutputStyles()) {
+            ImagePlus styles = IJ.openImage(outputStyles.toString());
+            iterationStep.addOutputData("Styles", new ImagePlus3DGreyscale32FData(styles), annotationList, JIPipeTextAnnotationMergeMode.OverwriteExisting, progressInfo);
+        }
     }
 
     @SetJIPipeDocumentation(name = "Enable 3D segmentation", description = "If enabled, Cellpose will segment in 3D. Otherwise, " +
@@ -397,7 +421,7 @@ public class Cellpose1InferenceAlgorithm extends JIPipeSingleIterationAlgorithm 
             }
 
             // Extract outputs
-            CellposeUtils.extractCellposeOutputs(iterationStep,
+            extractCellposeOutputs(iterationStep,
                     progressInfo,
                     outputRoiOutlinePaths.get(i),
                     outputLabelsPaths.get(i),

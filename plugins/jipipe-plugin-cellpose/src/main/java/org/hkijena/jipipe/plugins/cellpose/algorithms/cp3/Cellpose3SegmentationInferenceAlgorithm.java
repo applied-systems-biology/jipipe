@@ -43,7 +43,9 @@ import org.hkijena.jipipe.api.parameters.JIPipeParameter;
 import org.hkijena.jipipe.api.validation.*;
 import org.hkijena.jipipe.api.validation.contexts.GraphNodeValidationReportContext;
 import org.hkijena.jipipe.plugins.cellpose.CellposePlugin;
-import org.hkijena.jipipe.plugins.cellpose.CellposeUtils;
+import org.hkijena.jipipe.plugins.cellpose.utils.CellposeImageInfo;
+import org.hkijena.jipipe.plugins.cellpose.utils.CellposeModelInfo;
+import org.hkijena.jipipe.plugins.cellpose.utils.CellposeUtils;
 import org.hkijena.jipipe.plugins.cellpose.datatypes.CellposeModelData;
 import org.hkijena.jipipe.plugins.cellpose.parameters.cp2.*;
 import org.hkijena.jipipe.plugins.cellpose.parameters.cp3.Cellpose3SegmentationTweaksSettings;
@@ -228,17 +230,7 @@ public class Cellpose3SegmentationInferenceAlgorithm extends JIPipeSingleIterati
             CellposeModelData modelData = modelSlot.getData(modelRow, CellposeModelData.class, modelProgress);
 
             // Save the model out
-            CellposeModelInfo modelInfo = new CellposeModelInfo();
-            modelInfo.annotationList = modelSlot.getTextAnnotations(modelRow);
-            if (modelData.isPretrained()) {
-                modelInfo.modelPretrained = true;
-                modelInfo.modelNameOrPath = modelData.getPretrainedModelName();
-            } else {
-                Path tempDirectory = PathUtils.createTempSubDirectory(workDirectory.resolve("models"), "model");
-                modelData.exportData(new JIPipeFileSystemWriteDataStorage(modelProgress, tempDirectory), null, false, modelProgress);
-                modelInfo.modelPretrained = false;
-                modelInfo.modelNameOrPath = tempDirectory.resolve(modelData.getMetadata().getName()).toString();
-            }
+            CellposeModelInfo modelInfo = CellposeUtils.createModelInfo(modelSlot.getTextAnnotations(modelRow), modelData, workDirectory, modelProgress);
             modelInfos.add(modelInfo);
         }
 
@@ -263,14 +255,22 @@ public class Cellpose3SegmentationInferenceAlgorithm extends JIPipeSingleIterati
         List<CellposeImageInfo> runWith3D = new ArrayList<>();
 
         // Save input images
-        saveInputImages(iterationStep, progressInfo.resolve("Export input images"), io2DPath, io3DPath, runWith2D, runWith3D);
+        CellposeUtils.saveInputImages(getInputSlot("Input"),
+                iterationStep.getInputRows("Input"),
+                enable3DSegmentation,
+                progressInfo.resolve("Export input images"),
+                io2DPath,
+                io3DPath,
+                runWith2D,
+                runWith3D,
+                this);
 
         // Run Cellpose
         if (!runWith2D.isEmpty()) {
-            runCellpose(progressInfo.resolve("Cellpose"), io2DPath, false, modelInfo.modelNameOrPath);
+            runCellpose(progressInfo.resolve("Cellpose"), io2DPath, false, modelInfo.getModelNameOrPath());
         }
         if (!runWith3D.isEmpty()) {
-            runCellpose(progressInfo.resolve("Cellpose"), io3DPath, true, modelInfo.modelNameOrPath);
+            runCellpose(progressInfo.resolve("Cellpose"), io3DPath, true, modelInfo.getModelNameOrPath());
         }
 
         // Deploy and run extraction script
@@ -310,20 +310,20 @@ public class Cellpose3SegmentationInferenceAlgorithm extends JIPipeSingleIterati
 
         // Fetch the data from the directory
         for (CellposeImageInfo imageInfo : runWith2D) {
-            extractDataFromInfo(modelInfo, iterationStep, imageInfo, io2DPath, progressInfo.resolve("Importing results row " + imageInfo.sourceRow));
+            extractDataFromInfo(modelInfo, iterationStep, imageInfo, io2DPath, progressInfo.resolve("Importing results row " + imageInfo.getSourceRow()));
         }
         for (CellposeImageInfo imageInfo : runWith3D) {
-            extractDataFromInfo(modelInfo, iterationStep, imageInfo, io3DPath, progressInfo.resolve("Importing results row " + imageInfo.sourceRow));
+            extractDataFromInfo(modelInfo, iterationStep, imageInfo, io3DPath, progressInfo.resolve("Importing results row " + imageInfo.getSourceRow()));
         }
     }
 
     private void extractDataFromInfo(CellposeModelInfo modelInfo, JIPipeMultiIterationStep iterationStep, CellposeImageInfo imageInfo, Path ioPath, JIPipeProgressInfo progressInfo) {
-        List<JIPipeTextAnnotation> annotationList = new ArrayList<>(getInputSlot("Input").getTextAnnotations(imageInfo.sourceRow));
-        annotationList.addAll(modelInfo.annotationList);
+        List<JIPipeTextAnnotation> annotationList = new ArrayList<>(getInputSlot("Input").getTextAnnotations(imageInfo.getSourceRow()));
+        annotationList.addAll(modelInfo.getAnnotationList());
         if (diameterAnnotation.isEnabled()) {
             progressInfo.log("Reading info ...");
             List<JIPipeTextAnnotation> diameterAnnotations = new ArrayList<>();
-            for (Map.Entry<ImageSliceIndex, String> entry : imageInfo.sliceBaseNames.entrySet()) {
+            for (Map.Entry<ImageSliceIndex, String> entry : imageInfo.getSliceBaseNames().entrySet()) {
                 JsonNode node = JsonUtils.readFromFile(ioPath.resolve(entry.getValue() + "_seg_info.json"), JsonNode.class);
                 diameterAnnotation.addAnnotationIfEnabled(diameterAnnotations, node.get("est_diam").asText());
             }
@@ -332,9 +332,9 @@ public class Cellpose3SegmentationInferenceAlgorithm extends JIPipeSingleIterati
         if (segmentationOutputSettings.isOutputROI()) {
             progressInfo.log("Reading ROI ...");
             ROI2DListData rois = new ROI2DListData();
-            for (Map.Entry<ImageSliceIndex, String> entry : imageInfo.sliceBaseNames.entrySet()) {
+            for (Map.Entry<ImageSliceIndex, String> entry : imageInfo.getSliceBaseNames().entrySet()) {
                 ROI2DListData sliceRoi = CellposeUtils.cellposeROIJsonToImageJ(ioPath.resolve(entry.getValue() + "_seg_roi.json"));
-                if (imageInfo.sliceBaseNames.size() > 1) {
+                if (imageInfo.getSliceBaseNames().size() > 1) {
                     for (Roi roi : sliceRoi) {
                         roi.setPosition(0, entry.getKey().getZ() + 1, 0);
                     }
@@ -372,7 +372,7 @@ public class Cellpose3SegmentationInferenceAlgorithm extends JIPipeSingleIterati
 
     private ImagePlus extractImageFromInfo(CellposeImageInfo imageInfo, Path ioPath, String basePathSuffix, boolean useBioFormats, JIPipeProgressInfo progressInfo) {
         Map<ImageSliceIndex, ImagePlus> sliceMap = new HashMap<>();
-        for (Map.Entry<ImageSliceIndex, String> entry : imageInfo.sliceBaseNames.entrySet()) {
+        for (Map.Entry<ImageSliceIndex, String> entry : imageInfo.getSliceBaseNames().entrySet()) {
             Path imageFile = ioPath.resolve(entry.getValue() + basePathSuffix);
             progressInfo.log("Reading: " + imageFile);
             ImagePlus slice;
@@ -530,81 +530,6 @@ public class Cellpose3SegmentationInferenceAlgorithm extends JIPipeSingleIterati
                 progressInfo);
     }
 
-    private void saveInputImages(JIPipeMultiIterationStep iterationStep, JIPipeProgressInfo progressInfo, Path io2DPath, Path io3DPath, List<CellposeImageInfo> runWith2D, List<CellposeImageInfo> runWith3D) {
-        for (int row : iterationStep.getInputRows("Input")) {
-            JIPipeProgressInfo rowProgress = progressInfo.resolve("Data row " + row);
-
-            ImagePlus img = getInputSlot("Input").getData(row, ImagePlusData.class, rowProgress).getImage();
-            if (img.getNFrames() > 1) {
-                throw new JIPipeValidationRuntimeException(new JIPipeValidationReportEntry(JIPipeValidationReportEntryLevel.Error,
-                        new GraphNodeValidationReportContext(this),
-                        "Cellpose does not support time series!",
-                        "Please ensure that the image dimensions are correctly assigned.",
-                        "Remove the frames or reorder the dimensions before applying Cellpose"));
-            }
-            if (img.getNSlices() == 1) {
-                // Output the image as-is
-                String baseName = row + "_";
-                Path outputPath = io2DPath.resolve(baseName + ".tif");
-                IJ.saveAsTiff(img, outputPath.toString());
-
-                // Create info
-                CellposeImageInfo info = new CellposeImageInfo(row);
-                info.sliceBaseNames.put(new ImageSliceIndex(-1, -1, -1), baseName);
-                runWith2D.add(info);
-            } else {
-                if (enable3DSegmentation) {
-                    // Cannot have channels AND RGB
-                    if (img.getNChannels() > 1 && img.getType() == ImagePlus.COLOR_RGB) {
-                        throw new JIPipeValidationRuntimeException(new JIPipeValidationReportEntry(JIPipeValidationReportEntryLevel.Error,
-                                new GraphNodeValidationReportContext(this),
-                                "Cellpose does not support 3D multichannel images with RGB!",
-                                "Python will convert the RGB channels into greyscale slices, thus conflicting with the channel slices defined in the input image",
-                                "Convert the image from RGB to greyscale or remove the additional channel slices."));
-                    }
-
-                    // Output the image as-is
-                    String baseName = row + "_";
-                    Path outputPath = io3DPath.resolve(baseName + ".tif");
-                    IJ.saveAsTiff(img, outputPath.toString());
-
-                    // Create info
-                    CellposeImageInfo info = new CellposeImageInfo(row);
-                    info.sliceBaseNames.put(new ImageSliceIndex(-1, -1, -1), baseName);
-                    runWith3D.add(info);
-                } else {
-                    rowProgress.log("3D mode not active, but 3D image detected -> Image will be split into 2D slices.");
-
-                    CellposeImageInfo info = new CellposeImageInfo(row);
-
-                    // Split the 3D image into slices
-                    ImageJUtils.forEachIndexedZCTSlice(img, (ip, index) -> {
-                        ImagePlus sliceImage = new ImagePlus(index.toString(), ip);
-                        String baseName = row + "_z" + index.getZ() + "_c" + index.getC() + "_t" + index.getT() + "_";
-                        Path outputPath = io2DPath.resolve(baseName + ".tif");
-                        IJ.saveAsTiff(sliceImage, outputPath.toString());
-
-                        // Create info
-                        info.sliceBaseNames.put(index, baseName);
-                    }, rowProgress);
-
-                    runWith2D.add(info);
-                }
-            }
-        }
-    }
-
-//    @SetJIPipeDocumentation(name = "Size model data annotation", description = "Name of the size model data annotation. Will be extracted from the inputs of the 'Model' input. ")
-//    @JIPipeParameter("size-model-annotation-name")
-//    public OptionalDataAnnotationNameParameter getSizeModelAnnotationName() {
-//        return sizeModelAnnotationName;
-//    }
-//
-//    @JIPipeParameter("size-model-annotation-name")
-//    public void setSizeModelAnnotationName(OptionalDataAnnotationNameParameter sizeModelAnnotationName) {
-//        this.sizeModelAnnotationName = sizeModelAnnotationName;
-//    }
-
     @SetJIPipeDocumentation(name = "Clean up data after processing", description = "If enabled, data is deleted from temporary directories after " +
             "the processing was finished. Disable this to make it possible to debug your scripts. The directories are accessible via the logs (Tools &gt; Logs).")
     @JIPipeParameter("cleanup-afterwards")
@@ -678,31 +603,6 @@ public class Cellpose3SegmentationInferenceAlgorithm extends JIPipeSingleIterati
         toggleSlot(OUTPUT_LABELS, segmentationOutputSettings.isOutputLabels());
         toggleSlot(OUTPUT_FLOWS_Z, segmentationOutputSettings.isOutputFlowsZ());
         toggleSlot(OUTPUT_ROI, segmentationOutputSettings.isOutputROI());
-    }
-
-    private static class CellposeModelInfo {
-        private String modelNameOrPath;
-        private String sizeModelNameOrPath;
-        private boolean modelPretrained;
-        private List<JIPipeTextAnnotation> annotationList;
-    }
-
-    private static class CellposeImageInfo {
-        private final int sourceRow;
-        private final Map<ImageSliceIndex, String> sliceBaseNames;
-
-        private CellposeImageInfo(int sourceRow) {
-            this.sourceRow = sourceRow;
-            this.sliceBaseNames = new HashMap<>();
-        }
-
-        public int getSourceRow() {
-            return sourceRow;
-        }
-
-        public Map<ImageSliceIndex, String> getSliceBaseNames() {
-            return sliceBaseNames;
-        }
     }
 }
 
