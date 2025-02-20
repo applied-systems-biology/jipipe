@@ -14,11 +14,8 @@
 package org.hkijena.jipipe.plugins.cellpose.algorithms.cp3;
 
 import com.fasterxml.jackson.databind.JsonNode;
-import ij.IJ;
 import ij.ImagePlus;
-import ij.ImageStack;
 import ij.gui.Roi;
-import ij.process.ImageProcessor;
 import org.hkijena.jipipe.api.ConfigureJIPipeNode;
 import org.hkijena.jipipe.api.JIPipeProgressInfo;
 import org.hkijena.jipipe.api.SetJIPipeDocumentation;
@@ -28,7 +25,6 @@ import org.hkijena.jipipe.api.data.JIPipeDataSlotInfo;
 import org.hkijena.jipipe.api.data.JIPipeDataSlotRole;
 import org.hkijena.jipipe.api.data.JIPipeInputDataSlot;
 import org.hkijena.jipipe.api.data.JIPipeSlotType;
-import org.hkijena.jipipe.api.data.storage.JIPipeFileSystemWriteDataStorage;
 import org.hkijena.jipipe.api.environments.ExternalEnvironmentParameterSettings;
 import org.hkijena.jipipe.api.environments.JIPipeEnvironment;
 import org.hkijena.jipipe.api.nodes.AddJIPipeInputSlot;
@@ -41,7 +37,6 @@ import org.hkijena.jipipe.api.nodes.iterationstep.JIPipeIterationContext;
 import org.hkijena.jipipe.api.nodes.iterationstep.JIPipeMultiIterationStep;
 import org.hkijena.jipipe.api.parameters.JIPipeParameter;
 import org.hkijena.jipipe.api.validation.*;
-import org.hkijena.jipipe.api.validation.contexts.GraphNodeValidationReportContext;
 import org.hkijena.jipipe.plugins.cellpose.CellposePlugin;
 import org.hkijena.jipipe.plugins.cellpose.utils.CellposeImageInfo;
 import org.hkijena.jipipe.plugins.cellpose.utils.CellposeModelInfo;
@@ -50,11 +45,9 @@ import org.hkijena.jipipe.plugins.cellpose.datatypes.CellposeModelData;
 import org.hkijena.jipipe.plugins.cellpose.parameters.cp2.*;
 import org.hkijena.jipipe.plugins.cellpose.parameters.cp3.Cellpose3SegmentationTweaksSettings;
 import org.hkijena.jipipe.plugins.imagejdatatypes.datatypes.ImagePlusData;
-import org.hkijena.jipipe.plugins.imagejdatatypes.datatypes.OMEImageData;
 import org.hkijena.jipipe.plugins.imagejdatatypes.datatypes.ROI2DListData;
 import org.hkijena.jipipe.plugins.imagejdatatypes.datatypes.greyscale.ImagePlusGreyscale32FData;
 import org.hkijena.jipipe.plugins.imagejdatatypes.datatypes.greyscale.ImagePlusGreyscaleData;
-import org.hkijena.jipipe.plugins.imagejdatatypes.util.ImageJUtils;
 import org.hkijena.jipipe.plugins.imagejdatatypes.util.ImageSliceIndex;
 import org.hkijena.jipipe.plugins.parameters.library.primitives.optional.OptionalDoubleParameter;
 import org.hkijena.jipipe.plugins.parameters.library.primitives.optional.OptionalTextAnnotationNameParameter;
@@ -108,11 +101,12 @@ public class Cellpose3SegmentationInferenceAlgorithm extends JIPipeSingleIterati
 
     private final Cellpose2ChannelSettings channelSettings;
     private OptionalDoubleParameter diameter = new OptionalDoubleParameter(30.0, true);
-    private boolean enable3DSegmentation = true;
+    private boolean enable3D = true;
     private OptionalTextAnnotationNameParameter diameterAnnotation = new OptionalTextAnnotationNameParameter("Diameter", true);
     private boolean cleanUpAfterwards = true;
     private OptionalPythonEnvironment overrideEnvironment = new OptionalPythonEnvironment();
     private boolean suppressLogs = false;
+    private boolean enableMultiChannel = true;
 
 //    private OptionalDataAnnotationNameParameter sizeModelAnnotationName = new OptionalDataAnnotationNameParameter("Size model", true);
 
@@ -146,7 +140,8 @@ public class Cellpose3SegmentationInferenceAlgorithm extends JIPipeSingleIterati
         this.diameter = new OptionalDoubleParameter(other.diameter);
         this.diameterAnnotation = new OptionalTextAnnotationNameParameter(other.diameterAnnotation);
         this.overrideEnvironment = new OptionalPythonEnvironment(other.overrideEnvironment);
-        this.enable3DSegmentation = other.enable3DSegmentation;
+        this.enable3D = other.enable3D;
+        this.enableMultiChannel = other.enableMultiChannel;
         this.cleanUpAfterwards = other.cleanUpAfterwards;
 
         updateOutputSlots();
@@ -179,13 +174,25 @@ public class Cellpose3SegmentationInferenceAlgorithm extends JIPipeSingleIterati
     @SetJIPipeDocumentation(name = "Enable 3D segmentation", description = "If enabled, Cellpose will segment in 3D. Otherwise, " +
             "any 3D image will be processed per-slice. Please note that 3D segmentation requires large amounts of memory.")
     @JIPipeParameter(value = "enable-3d-segmentation", important = true)
-    public boolean isEnable3DSegmentation() {
-        return enable3DSegmentation;
+    public boolean isEnable3D() {
+        return enable3D;
     }
 
     @JIPipeParameter("enable-3d-segmentation")
-    public void setEnable3DSegmentation(boolean enable3DSegmentation) {
-        this.enable3DSegmentation = enable3DSegmentation;
+    public void setEnable3D(boolean enable3D) {
+        this.enable3D = enable3D;
+    }
+
+    @SetJIPipeDocumentation(name = "Enable multichannel", description = "If enabled, multiple image channels are passed to Cellpose. " +
+            "Otherwise, each channel will be processed individually.")
+    @JIPipeParameter("enable-multichannel")
+    public boolean isEnableMultiChannel() {
+        return enableMultiChannel;
+    }
+
+    @JIPipeParameter("enable-multichannel")
+    public void setEnableMultiChannel(boolean enableMultiChannel) {
+        this.enableMultiChannel = enableMultiChannel;
     }
 
     @SetJIPipeDocumentation(name = "Override Python environment", description = "If enabled, a different Python environment is used for this Node. Otherwise " +
@@ -257,13 +264,15 @@ public class Cellpose3SegmentationInferenceAlgorithm extends JIPipeSingleIterati
         // Save input images
         CellposeUtils.saveInputImages(getInputSlot("Input"),
                 iterationStep.getInputRows("Input"),
-                enable3DSegmentation,
-                progressInfo.resolve("Export input images"),
+                enable3D,
+                enableMultiChannel,
                 io2DPath,
                 io3DPath,
                 runWith2D,
                 runWith3D,
-                this);
+                this,
+                progressInfo.resolve("Export input images")
+        );
 
         // Run Cellpose
         if (!runWith2D.isEmpty()) {
@@ -331,89 +340,33 @@ public class Cellpose3SegmentationInferenceAlgorithm extends JIPipeSingleIterati
         }
         if (segmentationOutputSettings.isOutputROI()) {
             progressInfo.log("Reading ROI ...");
-            ROI2DListData rois = new ROI2DListData();
-            for (Map.Entry<ImageSliceIndex, String> entry : imageInfo.getSliceBaseNames().entrySet()) {
-                ROI2DListData sliceRoi = CellposeUtils.cellposeROIJsonToImageJ(ioPath.resolve(entry.getValue() + "_seg_roi.json"));
-                if (imageInfo.getSliceBaseNames().size() > 1) {
-                    for (Roi roi : sliceRoi) {
-                        roi.setPosition(0, entry.getKey().getZ() + 1, 0);
-                    }
-                }
-                rois.addAll(sliceRoi);
-            }
+            ROI2DListData rois = CellposeUtils.extractROIFromInfo(imageInfo, ioPath);
             iterationStep.addOutputData("ROI", rois, annotationList, JIPipeTextAnnotationMergeMode.OverwriteExisting, progressInfo);
         }
         if (segmentationOutputSettings.isOutputFlowsD()) {
             progressInfo.log("Reading Flows d ...");
-            ImagePlus img = extractImageFromInfo(imageInfo, ioPath, "_seg_flows_dz_dy_dx.tif", true, progressInfo);
+            ImagePlus img = CellposeUtils.extractImageFromInfo(imageInfo, ioPath, "_seg_flows_dz_dy_dx.tif", true, progressInfo);
             iterationStep.addOutputData(OUTPUT_FLOWS_D.getName(), new ImagePlusData(img), annotationList, JIPipeTextAnnotationMergeMode.OverwriteExisting, progressInfo);
         }
         if (segmentationOutputSettings.isOutputFlowsXY()) {
             progressInfo.log("Reading Flows XY ...");
-            ImagePlus img = extractImageFromInfo(imageInfo, ioPath, "_seg_flows_rgb.tif", false, progressInfo);
+            ImagePlus img = CellposeUtils.extractImageFromInfo(imageInfo, ioPath, "_seg_flows_rgb.tif", false, progressInfo);
             iterationStep.addOutputData(OUTPUT_FLOWS_XY.getName(), new ImagePlusData(img), annotationList, JIPipeTextAnnotationMergeMode.OverwriteExisting, progressInfo);
         }
         if (segmentationOutputSettings.isOutputFlowsZ()) {
             progressInfo.log("Reading Flows Z ...");
-            ImagePlus img = extractImageFromInfo(imageInfo, ioPath, "_seg_flows_z.tif", false, progressInfo);
+            ImagePlus img = CellposeUtils.extractImageFromInfo(imageInfo, ioPath, "_seg_flows_z.tif", false, progressInfo);
             iterationStep.addOutputData(OUTPUT_FLOWS_Z.getName(), new ImagePlusData(img), annotationList, JIPipeTextAnnotationMergeMode.OverwriteExisting, progressInfo);
         }
         if (segmentationOutputSettings.isOutputLabels()) {
             progressInfo.log("Reading labels ...");
-            ImagePlus img = extractImageFromInfo(imageInfo, ioPath, "_seg_labels.tif", false, progressInfo);
+            ImagePlus img = CellposeUtils.extractImageFromInfo(imageInfo, ioPath, "_seg_labels.tif", false, progressInfo);
             iterationStep.addOutputData(OUTPUT_LABELS.getName(), new ImagePlusGreyscaleData(img), annotationList, JIPipeTextAnnotationMergeMode.OverwriteExisting, progressInfo);
         }
         if (segmentationOutputSettings.isOutputProbabilities()) {
             progressInfo.log("Reading probabilities ...");
-            ImagePlus img = extractImageFromInfo(imageInfo, ioPath, "_seg_probabilities.tif", false, progressInfo);
+            ImagePlus img = CellposeUtils.extractImageFromInfo(imageInfo, ioPath, "_seg_probabilities.tif", false, progressInfo);
             iterationStep.addOutputData(OUTPUT_PROBABILITIES.getName(), new ImagePlusGreyscale32FData(img), annotationList, JIPipeTextAnnotationMergeMode.OverwriteExisting, progressInfo);
-        }
-    }
-
-    private ImagePlus extractImageFromInfo(CellposeImageInfo imageInfo, Path ioPath, String basePathSuffix, boolean useBioFormats, JIPipeProgressInfo progressInfo) {
-        Map<ImageSliceIndex, ImagePlus> sliceMap = new HashMap<>();
-        for (Map.Entry<ImageSliceIndex, String> entry : imageInfo.getSliceBaseNames().entrySet()) {
-            Path imageFile = ioPath.resolve(entry.getValue() + basePathSuffix);
-            progressInfo.log("Reading: " + imageFile);
-            ImagePlus slice;
-            if (useBioFormats) {
-                OMEImageData omeImageData = OMEImageData.simpleOMEImport(imageFile);
-                slice = omeImageData.getImage();
-            } else {
-                slice = IJ.openImage(imageFile.toString());
-            }
-            if (slice == null) {
-                throw new NullPointerException("Unable to read image from " + imageFile + "! Bio-Formats: " + useBioFormats);
-            }
-            sliceMap.put(entry.getKey(), slice);
-        }
-        if (sliceMap.size() == 1) {
-            return sliceMap.values().iterator().next();
-        } else {
-            int width = 0;
-            int height = 0;
-            int sizeZ = 0;
-            int sizeC = 0;
-            int sizeT = 0;
-            for (Map.Entry<ImageSliceIndex, ImagePlus> entry : sliceMap.entrySet()) {
-                width = Math.max(entry.getValue().getWidth(), width);
-                height = Math.max(entry.getValue().getHeight(), height);
-                sizeZ = Math.max(entry.getKey().getZ() + 1, sizeZ);
-                sizeC = Math.max(Math.max(entry.getKey().getC() + 1, sizeC), entry.getValue().getStackSize()); // Map slices to channels
-                sizeT = Math.max(entry.getKey().getT() + 1, sizeT);
-            }
-            ImageStack stack = new ImageStack(width, height, sizeZ * sizeT * sizeC);
-            for (Map.Entry<ImageSliceIndex, ImagePlus> entry : sliceMap.entrySet()) {
-                // Map all slices to channels
-                for (int i = 0; i < entry.getValue().getStackSize(); i++) {
-                    ImageProcessor processor = entry.getValue().getStack().getProcessor(i + 1);
-                    int targetIndex = (new ImageSliceIndex(i, entry.getKey().getZ(), entry.getKey().getT())).zeroSliceIndexToOneStackIndex(sizeC, sizeZ, sizeT);
-                    stack.setProcessor(processor, targetIndex);
-                }
-            }
-            ImagePlus img = new ImagePlus(basePathSuffix, stack);
-            img.setDimensions(sizeC, sizeZ, sizeT);
-            return img;
         }
     }
 

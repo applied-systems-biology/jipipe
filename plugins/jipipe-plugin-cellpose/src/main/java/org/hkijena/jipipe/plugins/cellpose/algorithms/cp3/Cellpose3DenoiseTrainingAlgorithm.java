@@ -40,6 +40,7 @@ import org.hkijena.jipipe.api.nodes.iterationstep.JIPipeMultiIterationStep;
 import org.hkijena.jipipe.api.parameters.JIPipeParameter;
 import org.hkijena.jipipe.api.validation.JIPipeValidationReport;
 import org.hkijena.jipipe.api.validation.JIPipeValidationReportContext;
+import org.hkijena.jipipe.plugins.cellpose.utils.CellposeModelInfo;
 import org.hkijena.jipipe.plugins.cellpose.utils.CellposeUtils;
 import org.hkijena.jipipe.plugins.cellpose.datatypes.CellposeModelData;
 import org.hkijena.jipipe.plugins.cellpose.datatypes.CellposeSizeModelData;
@@ -246,20 +247,7 @@ public class Cellpose3DenoiseTrainingAlgorithm extends JIPipeSingleIterationAlgo
             CellposeModelData modelData = modelSlot.getData(modelRow, CellposeModelData.class, modelProgress);
 
             // Save the model out
-            CellposeModelInfo modelInfo = new CellposeModelInfo();
-            modelInfo.annotationList = modelSlot.getTextAnnotations(modelRow);
-            if (modelData != null) {
-                if (modelData.isPretrained()) {
-                    modelInfo.modelPretrained = true;
-                    modelInfo.modelNameOrPath = modelData.getPretrainedModelName();
-                } else {
-                    Path tempDirectory = PathUtils.createTempSubDirectory(workDirectory.resolve("models"), "model");
-                    modelData.exportData(new JIPipeFileSystemWriteDataStorage(modelProgress, tempDirectory), null, false, modelProgress);
-                    modelInfo.modelPretrained = false;
-                    modelInfo.modelNameOrPath = tempDirectory.resolve(modelData.getMetadata().getName()).toString();
-                }
-            }
-
+            CellposeModelInfo modelInfo = CellposeUtils.createModelInfo(modelSlot.getTextAnnotations(modelRow), modelData, workDirectory, modelProgress);
             modelInfos.add(modelInfo);
         }
 
@@ -348,9 +336,9 @@ public class Cellpose3DenoiseTrainingAlgorithm extends JIPipeSingleIterationAlgo
             arguments.add(diameter.getContent() + "");
         }
 
-        if (modelInfo.modelNameOrPath != null) {
+        if (modelInfo.getModelNameOrPath() != null) {
             arguments.add("--pretrained_model");
-            arguments.add(modelInfo.modelNameOrPath);
+            arguments.add(modelInfo.getModelNameOrPath());
         } else {
             arguments.add("--pretrained_model");
             arguments.add("None");
@@ -414,7 +402,7 @@ public class Cellpose3DenoiseTrainingAlgorithm extends JIPipeSingleIterationAlgo
                 progressInfo);
 
         // Collect annotations
-        List<JIPipeTextAnnotation> annotationList = new ArrayList<>(modelInfo.annotationList);
+        List<JIPipeTextAnnotation> annotationList = new ArrayList<>(modelInfo.getAnnotationList());
 
         // Extract the model
         Path modelsPath = trainingDir.resolve("models");

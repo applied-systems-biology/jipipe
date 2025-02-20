@@ -1266,14 +1266,36 @@ public class ImageJUtils {
     }
 
     public static ImagePlus extractCTStack(ImagePlus img, int c, int t) {
-        ImageStack stack = new ImageStack(img.getWidth(), img.getHeight());
+        Map<ImageSliceIndex, ImageProcessor> sliceMap = new HashMap<>();
         for (int z = 0; z < img.getNSlices(); z++) {
-            int index = img.getStackIndex(c + 1, z + 1, t + 1);
-            ImageProcessor processor = img.getImageStack().getProcessor(index);
-            stack.addSlice(processor);
+            ImageProcessor processor = getSliceZero(img, c, z, t);
+            sliceMap.put(new ImageSliceIndex(0, z, 0), processor);
         }
+        ImagePlus result = mergeMappedSlices(sliceMap);
+        result.copyScale(img);
+        return result;
+    }
 
-        ImagePlus result = new ImagePlus(img.getTitle() + " " + "c=" + c + ", t=" + t, stack);
+    public static ImagePlus extractZTStack(ImagePlus img, int z, int t) {
+        Map<ImageSliceIndex, ImageProcessor> sliceMap = new HashMap<>();
+        for (int c = 0; c < img.getNChannels(); c++) {
+            ImageProcessor processor = getSliceZero(img, c, z, t);
+            sliceMap.put(new ImageSliceIndex(c, 0, 0), processor);
+        }
+        ImagePlus result = mergeMappedSlices(sliceMap);
+        result.copyScale(img);
+        return result;
+    }
+
+    public static ImagePlus extractTHyperStack(ImagePlus img, int t) {
+        Map<ImageSliceIndex, ImageProcessor> sliceMap = new HashMap<>();
+        for (int c = 0; c < img.getNChannels(); c++) {
+            for (int z = 0; z < img.getNSlices(); z++) {
+                ImageProcessor processor = getSliceZero(img, c, z, t);
+                sliceMap.put(new ImageSliceIndex(c, z, 0), processor);
+            }
+        }
+        ImagePlus result = mergeMappedSlices(sliceMap);
         result.copyScale(img);
         return result;
     }
@@ -1302,6 +1324,50 @@ public class ImageJUtils {
             }
         } else {
             function.accept(img, new ImageSliceIndex(0, -1, 0), progressInfo);
+        }
+    }
+
+    public static void forEachIndexedZTStack(ImagePlus img, TriConsumer<ImagePlus, ImageSliceIndex, JIPipeProgressInfo> function, JIPipeProgressInfo progressInfo) {
+        if (img.hasImageStack()) {
+            int iterationIndex = 0;
+            for (int t = 0; t < img.getNFrames(); t++) {
+                for (int z = 0; z < img.getNSlices(); z++) {
+                    if (progressInfo.isCancelled())
+                        return;
+                    ImagePlus cube = extractZTStack(img, z, t);
+                    progressInfo.resolveAndLog("Z/Channel", iterationIndex, img.getNSlices() * img.getNFrames()).log("z=" + z + ", t=" + t);
+                    JIPipeProgressInfo stackProgress = progressInfo.resolveAndLog("Z/Channel", iterationIndex, img.getNChannels() * img.getNFrames()).resolve("z=" + z + ", t=" + t);
+                    function.accept(cube, new ImageSliceIndex(-1, z, t), stackProgress);
+                    ++iterationIndex;
+                }
+            }
+        } else {
+            function.accept(img, new ImageSliceIndex(-1, 0, 0), progressInfo);
+        }
+    }
+
+
+    /**
+     * Runs the function for each T hyperstack
+     *
+     * @param img          the image
+     * @param function     the function. The indices are ZERO-based (Z is always -1)
+     * @param progressInfo the progress
+     */
+    public static void forEachIndexedTHyperStack(ImagePlus img, TriConsumer<ImagePlus, ImageSliceIndex, JIPipeProgressInfo> function, JIPipeProgressInfo progressInfo) {
+        if (img.hasImageStack()) {
+            int iterationIndex = 0;
+            for (int t = 0; t < img.getNFrames(); t++) {
+                if (progressInfo.isCancelled())
+                    return;
+                ImagePlus cube = extractTHyperStack(img, t);
+                progressInfo.resolveAndLog("Frame", iterationIndex, img.getNFrames()).log("t=" + t);
+                JIPipeProgressInfo stackProgress = progressInfo.resolveAndLog("Frame", iterationIndex, img.getNChannels() * img.getNFrames()).resolve("t=" + t);
+                function.accept(cube, new ImageSliceIndex(-1, -1, t), stackProgress);
+                ++iterationIndex;
+            }
+        } else {
+            function.accept(img, new ImageSliceIndex(-1, -1, 0), progressInfo);
         }
     }
 

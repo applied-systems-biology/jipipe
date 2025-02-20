@@ -20,8 +20,10 @@ import gnu.trove.list.TIntList;
 import gnu.trove.list.array.TIntArrayList;
 import ij.IJ;
 import ij.ImagePlus;
+import ij.ImageStack;
 import ij.gui.PolygonRoi;
 import ij.gui.Roi;
+import ij.process.ImageProcessor;
 import org.hkijena.jipipe.api.JIPipeProgressInfo;
 import org.hkijena.jipipe.api.annotation.JIPipeTextAnnotation;
 import org.hkijena.jipipe.api.data.JIPipeInputDataSlot;
@@ -33,6 +35,7 @@ import org.hkijena.jipipe.api.validation.JIPipeValidationRuntimeException;
 import org.hkijena.jipipe.api.validation.contexts.GraphNodeValidationReportContext;
 import org.hkijena.jipipe.plugins.cellpose.datatypes.CellposeModelData;
 import org.hkijena.jipipe.plugins.imagejdatatypes.datatypes.ImagePlusData;
+import org.hkijena.jipipe.plugins.imagejdatatypes.datatypes.OMEImageData;
 import org.hkijena.jipipe.plugins.imagejdatatypes.datatypes.ROI2DListData;
 import org.hkijena.jipipe.plugins.imagejdatatypes.util.ImageJUtils;
 import org.hkijena.jipipe.plugins.imagejdatatypes.util.ImageSliceIndex;
@@ -131,68 +134,81 @@ public class CellposeUtils {
         return rois;
     }
 
-    public static void saveInputImages(JIPipeInputDataSlot inputSlot, Set<Integer> inputRows, boolean enable3D, JIPipeProgressInfo progressInfo, Path io2DPath, Path io3DPath, List<CellposeImageInfo> runWith2D, List<CellposeImageInfo> runWith3D, JIPipeGraphNode executingNode) {
+    public static void saveInputImages(JIPipeInputDataSlot inputSlot, Set<Integer> inputRows, boolean enable3D, boolean enableMultiChannel, Path io2DPath, Path io3DPath, List<CellposeImageInfo> runWith2D, List<CellposeImageInfo> runWith3D, JIPipeGraphNode executingNode, JIPipeProgressInfo progressInfo) {
         for (int row : inputRows) {
             JIPipeProgressInfo rowProgress = progressInfo.resolve("Data row " + row);
-
             ImagePlus img = inputSlot.getData(row, ImagePlusData.class, rowProgress).getImage();
-            if (img.getNFrames() > 1) {
-                throw new JIPipeValidationRuntimeException(new JIPipeValidationReportEntry(JIPipeValidationReportEntryLevel.Error,
-                        new GraphNodeValidationReportContext(executingNode),
-                        "Cellpose does not support time series!",
-                        "Please ensure that the image dimensions are correctly assigned.",
-                        "Remove the frames or reorder the dimensions before applying Cellpose"));
-            }
-            if (img.getNSlices() == 1) {
-                // Output the image as-is
-                String baseName = row + "_";
-                Path outputPath = io2DPath.resolve(baseName + ".tif");
-                IJ.saveAsTiff(img, outputPath.toString());
 
-                // Create info
+            // Save only one slice
+            if (img.getStackSize() == 1) {
+
                 CellposeImageInfo info = new CellposeImageInfo(row);
-                info.getSliceBaseNames().put(new ImageSliceIndex(-1, -1, -1), baseName);
+                saveInputImage(row, img, io2DPath, new ImageSliceIndex(-1, -1, -1), info);
                 runWith2D.add(info);
-            } else {
-                if (enable3D) {
-                    // Cannot have channels AND RGB
-                    if (img.getNChannels() > 1 && img.getType() == ImagePlus.COLOR_RGB) {
-                        throw new JIPipeValidationRuntimeException(new JIPipeValidationReportEntry(JIPipeValidationReportEntryLevel.Error,
-                                new GraphNodeValidationReportContext(executingNode),
-                                "Cellpose does not support 3D multichannel images with RGB!",
-                                "Python will convert the RGB channels into greyscale slices, thus conflicting with the channel slices defined in the input image",
-                                "Convert the image from RGB to greyscale or remove the additional channel slices."));
+                return;
+            }
+
+
+            if (enable3D && img.getNSlices() > 1) {
+                final boolean isRGB = img.getType() == ImagePlus.COLOR_RGB;
+                final boolean isMultiChannel = img.getNChannels() > 1;
+
+                if(enableMultiChannel) {
+                    if (isRGB ^ isMultiChannel || !isRGB) {
+                        rowProgress.log("3D mode, multichannel (multichannel XOR RGB) -> Image will be split by frame.");
+                        CellposeImageInfo info = new CellposeImageInfo(row);
+                        ImageJUtils.forEachIndexedTHyperStack(img, (sliceImage, index, sliceProgress) -> {
+                            saveInputImage(row, sliceImage, io3DPath, index, info);
+                        }, progressInfo);
+                        runWith3D.add(info);
+                    } else {
+                        rowProgress.log("3D mode, multichannel (multichannel !! RGB conflict) -> Image will be converted to greyscale.");
+                        rowProgress.log("vvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvv");
+                        rowProgress.log("CONVERTING TO GREYSCALE, AS CHANNEL SLICES ARE CONSIDERED MORE IMPORTANT");
+                        rowProgress.log("^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^");
+                        CellposeImageInfo info = new CellposeImageInfo(row);
+                        ImageJUtils.forEachIndexedTHyperStack(img, (sliceImage, index, sliceProgress) -> {
+                            saveInputImage(row, ImageJUtils.convertToGreyscaleIfNeeded(sliceImage), io3DPath, index, info);
+                        }, progressInfo);
+                        runWith3D.add(info);
                     }
-
-                    // Output the image as-is
-                    String baseName = row + "_";
-                    Path outputPath = io3DPath.resolve(baseName + ".tif");
-                    IJ.saveAsTiff(img, outputPath.toString());
-
-                    // Create info
+                }
+                else {
                     CellposeImageInfo info = new CellposeImageInfo(row);
-                    info.getSliceBaseNames().put(new ImageSliceIndex(-1, -1, -1), baseName);
+                    ImageJUtils.forEachIndexedCTStack(img, (sliceImage, index, sliceProcess) -> {
+                        saveInputImage(row, ImageJUtils.convertToGreyscaleIfNeeded(sliceImage), io3DPath, index, info);
+                    }, progressInfo);
                     runWith3D.add(info);
-                } else {
-                    rowProgress.log("3D mode not active, but 3D image detected -> Image will be split into 2D slices.");
-
+                }
+            } else {
+                if (enableMultiChannel) {
+                    // Split into stacks per frame
                     CellposeImageInfo info = new CellposeImageInfo(row);
-
-                    // Split the 3D image into slices
-                    ImageJUtils.forEachIndexedZCTSlice(img, (ip, index) -> {
-                        ImagePlus sliceImage = new ImagePlus(index.toString(), ip);
-                        String baseName = row + "_z" + index.getZ() + "_c" + index.getC() + "_t" + index.getT() + "_";
-                        Path outputPath = io2DPath.resolve(baseName + ".tif");
-                        IJ.saveAsTiff(sliceImage, outputPath.toString());
-
-                        // Create info
-                        info.getSliceBaseNames().put(index, baseName);
-                    }, rowProgress);
-
+                    rowProgress.log("3D mode not active, multichannel -> Image will be split into multi-channel images + split by frame.");
+                    ImageJUtils.forEachIndexedZTStack(img, (sliceImage, index, stackProgress) -> {
+                        saveInputImage(row, sliceImage, io2DPath, index, info);
+                    }, progressInfo);
                     runWith2D.add(info);
+
+                } else {
+                    // Split everything into 2D slices
+                    rowProgress.log("3D mode not active, no multichannel -> Image will be split into 2D slices.");
+                    CellposeImageInfo info = new CellposeImageInfo(row);
+                    ImageJUtils.forEachIndexedZCTSlice(img, (ip, index) -> {
+                        saveInputImage(row, new ImagePlus("slice", ip), io2DPath, index, info);
+                    }, rowProgress);
                 }
             }
+
         }
+    }
+
+    private static void saveInputImage(int row, ImagePlus img, Path ioPath, ImageSliceIndex index, CellposeImageInfo info) {
+        String baseName = row + "_z" + index.getZ() + "_c" + index.getC() + "_t" + index.getT() + "_";
+        Path outputPath = ioPath.resolve(baseName + ".tif");
+        IJ.saveAsTiff(img, outputPath.toString());
+
+        info.getSliceBaseNames().put(index, baseName);
     }
 
     public static CellposeModelInfo createModelInfo(List<JIPipeTextAnnotation> textAnnotations, CellposeModelData modelData, Path workDirectory, JIPipeProgressInfo modelProgress) {
@@ -206,9 +222,66 @@ public class CellposeUtils {
                 Path tempDirectory = PathUtils.createTempSubDirectory(workDirectory.resolve("models"), "model");
                 modelData.exportData(new JIPipeFileSystemWriteDataStorage(modelProgress, tempDirectory), null, false, modelProgress);
                 modelInfo.setModelPretrained(false);
-                modelInfo.setSizeModelNameOrPath(tempDirectory.resolve(modelData.getMetadata().getName()).toString());
+                modelInfo.setModelNameOrPath(tempDirectory.resolve(modelData.getMetadata().getName()).toString());
             }
         }
         return modelInfo;
+    }
+
+    public static ImagePlus extractImageFromInfo(CellposeImageInfo imageInfo, Path ioPath, String basePathSuffix, boolean useBioFormats, JIPipeProgressInfo progressInfo) {
+        Map<ImageSliceIndex, ImageProcessor> sliceMap = new HashMap<>();
+        for (Map.Entry<ImageSliceIndex, String> entry : imageInfo.getSliceBaseNames().entrySet()) {
+            ImageSliceIndex sourceIndex = entry.getKey();
+            Path imageFile = ioPath.resolve(entry.getValue() + basePathSuffix);
+
+            // Read the slice image
+            progressInfo.log("Reading: " + imageFile);
+            ImagePlus sliceImg;
+            if (useBioFormats) {
+                OMEImageData omeImageData = OMEImageData.simpleOMEImport(imageFile);
+                sliceImg = omeImageData.getImage();
+            } else {
+                sliceImg = IJ.openImage(imageFile.toString());
+            }
+            if (sliceImg == null) {
+                throw new NullPointerException("Unable to read image from " + imageFile + "! Bio-Formats: " + useBioFormats);
+            }
+
+            for (int c = 0; c < sliceImg.getNChannels(); c++) {
+                for (int z = 0; z < sliceImg.getNSlices(); z++) {
+                    for (int t = 0; t < sliceImg.getNFrames(); t++) {
+                        int targetC = c;
+                        int targetZ = z;
+                        int targetT = t;
+                        if(sourceIndex.getC() >= 0) {
+                            targetC = sourceIndex.getC();
+                        }
+                        if(sourceIndex.getZ() >= 0) {
+                            targetZ = sourceIndex.getZ();
+                        }
+                        if(sourceIndex.getT() >= 0) {
+                            targetT = sourceIndex.getT();
+                        }
+                        progressInfo.log("Assigning local slice (c=" + c + ", z=" + z + ", t=" + t + ") to final location (c=" + targetC + ", z=" + targetZ + ", t=" + targetT + ")");
+                        sliceMap.put(new ImageSliceIndex(targetC, targetZ, targetT), ImageJUtils.getSliceZero(sliceImg, c, z, t));
+                    }
+                }
+            }
+        }
+        return ImageJUtils.mergeMappedSlices(sliceMap);
+    }
+
+    public static ROI2DListData extractROIFromInfo(CellposeImageInfo imageInfo, Path ioPath) {
+        ROI2DListData rois = new ROI2DListData();
+        for (Map.Entry<ImageSliceIndex, String> entry : imageInfo.getSliceBaseNames().entrySet()) {
+            ROI2DListData sliceRoi = cellposeROIJsonToImageJ(ioPath.resolve(entry.getValue() + "_seg_roi.json"));
+            if (imageInfo.getSliceBaseNames().size() > 1) {
+                for (Roi roi : sliceRoi) {
+                    roi.setPosition(entry.getKey().getC() + 1, entry.getKey().getZ() + 1, entry.getKey().getT() + 1);
+                }
+            }
+            rois.addAll(sliceRoi);
+        }
+        return rois;
     }
 }

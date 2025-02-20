@@ -26,7 +26,6 @@ import org.hkijena.jipipe.api.data.JIPipeDataSlotInfo;
 import org.hkijena.jipipe.api.data.JIPipeDataSlotRole;
 import org.hkijena.jipipe.api.data.JIPipeInputDataSlot;
 import org.hkijena.jipipe.api.data.JIPipeSlotType;
-import org.hkijena.jipipe.api.data.storage.JIPipeFileSystemWriteDataStorage;
 import org.hkijena.jipipe.api.environments.ExternalEnvironmentParameterSettings;
 import org.hkijena.jipipe.api.environments.JIPipeEnvironment;
 import org.hkijena.jipipe.api.nodes.AddJIPipeInputSlot;
@@ -90,7 +89,7 @@ public class Cellpose2TrainingAlgorithm extends JIPipeSingleIterationAlgorithm i
     private final Cellpose2TrainingTweaksSettings tweaksSettings;
     private final Cellpose2ChannelSettings channelSettings;
     private int numEpochs = 500;
-    private boolean enable3DSegmentation = true;
+    private boolean enable3D = true;
     private boolean cleanUpAfterwards = true;
     private OptionalDoubleParameter diameter = new OptionalDoubleParameter(30, false);
     private boolean trainSizeModel = false;
@@ -119,7 +118,7 @@ public class Cellpose2TrainingAlgorithm extends JIPipeSingleIterationAlgorithm i
         this.suppressLogs = other.suppressLogs;
 
         this.numEpochs = other.numEpochs;
-        this.enable3DSegmentation = other.enable3DSegmentation;
+        this.enable3D = other.enable3D;
         this.cleanUpAfterwards = other.cleanUpAfterwards;
         this.diameter = new OptionalDoubleParameter(other.diameter);
         this.overrideEnvironment = new OptionalPythonEnvironment(other.overrideEnvironment);
@@ -212,13 +211,13 @@ public class Cellpose2TrainingAlgorithm extends JIPipeSingleIterationAlgorithm i
     @SetJIPipeDocumentation(name = "Enable 3D segmentation", description = "If enabled, Cellpose will train in 3D. " +
             "Otherwise, JIPipe will prepare the data by splitting 3D data into planes.")
     @JIPipeParameter(value = "enable-3d-segmentation", important = true)
-    public boolean isEnable3DSegmentation() {
-        return enable3DSegmentation;
+    public boolean isEnable3D() {
+        return enable3D;
     }
 
     @JIPipeParameter("enable-3d-segmentation")
-    public void setEnable3DSegmentation(boolean enable3DSegmentation) {
-        this.enable3DSegmentation = enable3DSegmentation;
+    public void setEnable3D(boolean enable3D) {
+        this.enable3D = enable3D;
     }
 
     @SetJIPipeDocumentation(name = "Label data annotation", description = "Determines which data annotation contains the labels. Please ensure that " +
@@ -305,7 +304,7 @@ public class Cellpose2TrainingAlgorithm extends JIPipeSingleIterationAlgorithm i
             mask = ImageJUtils.ensureEqualSize(mask, raw, true);
             if (tweaksSettings.isGenerateConnectedComponents())
                 mask = applyConnectedComponents(mask, runContext, rowProgress.resolveAndLog("Connected components"));
-            dataIs3D |= raw.getNDimensions() > 2 && enable3DSegmentation;
+            dataIs3D |= raw.getNDimensions() > 2 && enable3D;
 
             saveImagesToPath(trainingDir, imageCounter, rowProgress, raw, mask);
         }
@@ -441,7 +440,7 @@ public class Cellpose2TrainingAlgorithm extends JIPipeSingleIterationAlgorithm i
 
     private ImagePlus applyConnectedComponents(ImagePlus mask, JIPipeGraphNodeRunContext runContext, JIPipeProgressInfo progressInfo) {
         progressInfo.log("Apply MorphoLibJ connected components labeling (8-connectivity, 16-bit) to " + mask);
-        if (enable3DSegmentation) {
+        if (enable3D) {
             ConnectedComponentsLabeling3DAlgorithm algorithm = JIPipe.createNode(ConnectedComponentsLabeling3DAlgorithm.class);
             algorithm.setConnectivity(Neighborhood3D.TwentySixConnected);
             algorithm.setOutputType(new JIPipeDataInfoRef(ImagePlusGreyscale16UData.class));
@@ -488,7 +487,7 @@ public class Cellpose2TrainingAlgorithm extends JIPipeSingleIterationAlgorithm i
     }
 
     private void saveImagesToPath(Path dir, AtomicInteger imageCounter, JIPipeProgressInfo rowProgress, ImagePlus image, ImagePlus mask) {
-        if (image.getStackSize() > 1 && !enable3DSegmentation) {
+        if (image.getStackSize() > 1 && !enable3D) {
             ImageJUtils.forEachIndexedZCTSlice(image, (ip, index) -> {
                 ImageProcessor maskSlice = ImageJUtils.getSliceZero(mask, index);
                 ImagePlus maskSliceImage = new ImagePlus("slice", maskSlice);
