@@ -45,6 +45,7 @@ public class JIPipeAuthorMetadata extends AbstractJIPipeParameterCollection {
     private String contact;
     private boolean firstAuthor;
     private boolean correspondingAuthor;
+    private String orcid;
     private HTMLText customText = new HTMLText();
 
     /**
@@ -65,7 +66,7 @@ public class JIPipeAuthorMetadata extends AbstractJIPipeParameterCollection {
      * @param firstAuthor         if the author is marked as first author
      * @param correspondingAuthor if the author is marked as corresponding author
      */
-    public JIPipeAuthorMetadata(String title, String firstName, String lastName, StringList affiliations, String website, String contact, boolean firstAuthor, boolean correspondingAuthor) {
+    public JIPipeAuthorMetadata(String title, String firstName, String lastName, StringList affiliations, String website, String contact, String orcid, boolean firstAuthor, boolean correspondingAuthor) {
         this.title = title;
         this.firstName = firstName;
         this.lastName = lastName;
@@ -74,6 +75,7 @@ public class JIPipeAuthorMetadata extends AbstractJIPipeParameterCollection {
         this.contact = contact;
         this.firstAuthor = firstAuthor;
         this.correspondingAuthor = correspondingAuthor;
+        this.orcid = StringUtils.nullToEmpty(orcid);
     }
 
     public JIPipeAuthorMetadata(JIPipeAuthorMetadata other) {
@@ -85,6 +87,7 @@ public class JIPipeAuthorMetadata extends AbstractJIPipeParameterCollection {
         this.correspondingAuthor = other.correspondingAuthor;
         this.firstAuthor = other.firstAuthor;
         this.customText = new HTMLText(other.customText);
+        this.orcid = other.orcid;
     }
 
     /**
@@ -109,6 +112,9 @@ public class JIPipeAuthorMetadata extends AbstractJIPipeParameterCollection {
                 } else {
                     stringBuilder.append("<div><strong>Contact:</strong> ").append(HtmlEscapers.htmlEscaper().escape(author.getContact())).append("</div>");
                 }
+            }
+            if(!StringUtils.isNullOrEmpty(author.getOrcid())) {
+                stringBuilder.append("<div><strong>ORCID:</strong> <a href=\"").append(author.getOrcidUrl()).append("\">").append(author.getOrcidUrl()).append("</a></div>");
             }
             if (!StringUtils.isNullOrEmpty(author.getWebsite())) {
                 stringBuilder.append("<div><strong>Website:</strong> <a href=\"").append(author.getWebsite()).append("\">").append(author.getWebsite()).append("</a></div>");
@@ -140,6 +146,29 @@ public class JIPipeAuthorMetadata extends AbstractJIPipeParameterCollection {
         dialog.setLocationRelativeTo(parent);
         dialog.setVisible(true);
         return dialog;
+    }
+
+    public String getOrcidUrl() {
+        if(!StringUtils.isNullOrEmpty(orcid)) {
+            if(orcid.startsWith("http") || orcid.contains("orcid.org")) {
+                return orcid;
+            }
+            return "https://orcid.org/" + orcid;
+        }
+        return "";
+    }
+
+    @JIPipeParameter("orcid")
+    @JsonGetter("orcid")
+    @SetJIPipeDocumentation(name = "ORCID", description = "The ORCID (URL or ID)")
+    public String getOrcid() {
+        return orcid;
+    }
+
+    @JIPipeParameter("orcid")
+    @JsonSetter("orcid")
+    public void setOrcid(String orcid) {
+        this.orcid = orcid;
     }
 
     @JIPipeParameter(value = "title", uiOrder = -1)
