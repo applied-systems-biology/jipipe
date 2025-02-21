@@ -323,6 +323,26 @@ public class JIPipeAuthorMetadata extends AbstractJIPipeParameterCollection {
         return (StringUtils.nullToEmpty(title) + " " + StringUtils.nullToEmpty(firstName) + " " + StringUtils.nullToEmpty(lastName) + (isFirstAuthor() ? "*" : "") + (isCorrespondingAuthor() ? "#" : "")).trim();
     }
 
+    public void mergeWith(JIPipeAuthorMetadata other) {
+        if(StringUtils.isNullOrEmpty(orcid) && !StringUtils.isNullOrEmpty(other.getOrcid())) {
+            orcid = other.getOrcid();
+        }
+        if(!StringUtils.isNullOrEmpty(title) && !StringUtils.isNullOrEmpty(other.getTitle())) {
+            title = other.getTitle();
+        }
+        if(!StringUtils.isNullOrEmpty(website) && !StringUtils.isNullOrEmpty(other.getWebsite())) {
+            website = other.getWebsite();
+        }
+        if(!StringUtils.isNullOrEmpty(contact) && !StringUtils.isNullOrEmpty(other.getContact())) {
+            contact = other.getContact();
+        }
+        for (String affiliation : other.getAffiliations()) {
+            if(!affiliations.contains(affiliation)) {
+                affiliations.add(affiliation);
+            }
+        }
+    }
+
     public static class List extends ListParameter<JIPipeAuthorMetadata> {
 
         /**

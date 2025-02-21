@@ -31,6 +31,19 @@ public class JIPipeProjectMetadata extends JIPipeStandardMetadata {
     private JIPipeProjectDirectories directories = new JIPipeProjectDirectories();
     private JIPipeNodeTemplate.List nodeTemplates = new JIPipeNodeTemplate.List();
     private boolean restoreTabs = true;
+    private boolean autoAddAuthors = true;
+
+    @SetJIPipeDocumentation(name = "Automatically add new authors", description = "If enabled, automatically add the configured authors in " +
+            "the application settings to the project if enabled.")
+    @JIPipeParameter("auto-add-authors")
+    public boolean isAutoAddAuthors() {
+        return autoAddAuthors;
+    }
+
+    @JIPipeParameter("auto-add-authors")
+    public void setAutoAddAuthors(boolean autoAddAuthors) {
+        this.autoAddAuthors = autoAddAuthors;
+    }
 
     @SetJIPipeDocumentation(name = "Restore tabs", description = "If enabled, all tabs are restored on loading the project. Otherwise, the Project overview and Compartments " +
             "tab are opened.")

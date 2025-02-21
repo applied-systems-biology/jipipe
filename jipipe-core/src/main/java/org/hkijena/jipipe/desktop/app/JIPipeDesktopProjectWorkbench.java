@@ -32,6 +32,7 @@ import org.hkijena.jipipe.desktop.api.JIPipeMenuExtensionTarget;
 import org.hkijena.jipipe.desktop.app.backups.JIPipeDesktopBackupManagerPanel;
 import org.hkijena.jipipe.desktop.app.cache.JIPipeDesktopCacheBrowserUI;
 import org.hkijena.jipipe.desktop.app.cache.JIPipeDesktopCacheManagerUI;
+import org.hkijena.jipipe.desktop.app.components.JIPipeDesktopAuthorProfileButton;
 import org.hkijena.jipipe.desktop.app.documentation.JIPipeDataTypeCompendiumUI;
 import org.hkijena.jipipe.desktop.app.documentation.JIPipeDesktopAlgorithmCompendiumUI;
 import org.hkijena.jipipe.desktop.app.documentation.JIPipeDesktopWelcomePanel;
@@ -387,6 +388,13 @@ public class JIPipeDesktopProjectWorkbench extends JPanel implements JIPipeDeskt
         statusText = new JLabel("Ready ...");
         statusBar.add(statusText);
         statusBar.add(Box.createHorizontalGlue(), new JXStatusBar.Constraint(JXStatusBar.Constraint.ResizeBehavior.FILL));
+
+        // Author control
+        JIPipeDesktopAuthorProfileButton authorProfileButton = new JIPipeDesktopAuthorProfileButton(this);
+        authorProfileButton.setBorder(BorderFactory.createEmptyBorder(2, 8, 2, 8));
+        statusBar.add(authorProfileButton);
+
+        statusBar.add(UIUtils.createVerticalSeparator());
 
         // Snapshot/History control
         JIPipeDesktopRunnableQueueButton snapshotQueueButton = new JIPipeDesktopRunnableQueueButton(this, project.getSnapshotQueue());

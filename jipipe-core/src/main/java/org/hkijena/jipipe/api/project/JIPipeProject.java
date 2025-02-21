@@ -24,10 +24,7 @@ import com.google.common.collect.*;
 import org.apache.commons.lang3.exception.ExceptionUtils;
 import org.hkijena.jipipe.JIPipe;
 import org.hkijena.jipipe.JIPipeDependency;
-import org.hkijena.jipipe.api.JIPipeGraphType;
-import org.hkijena.jipipe.api.JIPipeMetadataObject;
-import org.hkijena.jipipe.api.JIPipeNodeTemplate;
-import org.hkijena.jipipe.api.LabelAsJIPipeHeavyData;
+import org.hkijena.jipipe.api.*;
 import org.hkijena.jipipe.api.cache.JIPipeLocalProjectMemoryCache;
 import org.hkijena.jipipe.api.compartments.algorithms.IOInterfaceAlgorithm;
 import org.hkijena.jipipe.api.compartments.algorithms.JIPipeProjectCompartment;
@@ -54,6 +51,7 @@ import org.hkijena.jipipe.plugins.parameters.library.colors.OptionalColorParamet
 import org.hkijena.jipipe.plugins.parameters.library.markup.HTMLText;
 import org.hkijena.jipipe.plugins.parameters.library.markup.MarkdownText;
 import org.hkijena.jipipe.plugins.settings.JIPipeDataStorageProjectSettings;
+import org.hkijena.jipipe.plugins.settings.JIPipeProjectAuthorsApplicationSettings;
 import org.hkijena.jipipe.plugins.settings.JIPipeRuntimeApplicationSettings;
 import org.hkijena.jipipe.utils.*;
 import org.hkijena.jipipe.utils.json.JsonUtils;
@@ -354,8 +352,31 @@ public class JIPipeProject implements JIPipeValidatable {
      * @throws IOException Triggered by {@link ObjectMapper}
      */
     public void saveProject(Path fileName) throws IOException {
+
+        // Add authors from global list
+        if(metadata.isAutoAddAuthors()) {
+            addAuthorsFromGlobalList();
+        }
+
         ObjectMapper mapper = JsonUtils.getObjectMapper();
         mapper.writerWithDefaultPrettyPrinter().writeValue(fileName.toFile(), this);
+    }
+
+    private void addAuthorsFromGlobalList() {
+        JIPipeProjectAuthorsApplicationSettings settings = JIPipeProjectAuthorsApplicationSettings.getInstance();
+        if(settings.isAutomaticallyAddToProjects()) {
+            for (JIPipeAuthorMetadata projectAuthor : settings.getProjectAuthors()) {
+                Optional<JIPipeAuthorMetadata> existing = metadata.getAuthors().stream().filter(a ->
+                        StringUtils.nullToEmpty(a.getFirstName()).equalsIgnoreCase(StringUtils.nullToEmpty(projectAuthor.getFirstName()))
+                        && StringUtils.nullToEmpty(a.getLastName()).equalsIgnoreCase(StringUtils.nullToEmpty(projectAuthor.getLastName()))).findFirst();
+                if (existing.isPresent()) {
+                    existing.get().mergeWith(projectAuthor);
+                }
+                else {
+                    metadata.getAuthors().add(projectAuthor);
+                }
+            }
+        }
     }
 
     /**

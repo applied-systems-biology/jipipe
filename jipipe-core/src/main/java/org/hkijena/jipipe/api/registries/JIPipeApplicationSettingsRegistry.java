@@ -22,6 +22,8 @@ import com.google.common.collect.HashBiMap;
 import com.google.common.collect.ImmutableBiMap;
 import ij.IJ;
 import org.hkijena.jipipe.JIPipe;
+import org.hkijena.jipipe.api.events.AbstractJIPipeEvent;
+import org.hkijena.jipipe.api.events.JIPipeEventEmitter;
 import org.hkijena.jipipe.api.settings.JIPipeApplicationSettingsSheet;
 import org.hkijena.jipipe.api.settings.JIPipeSettingsSheet;
 import org.hkijena.jipipe.utils.StringUtils;
@@ -46,6 +48,7 @@ public class JIPipeApplicationSettingsRegistry {
     private final BiMap<String, JIPipeApplicationSettingsSheet> registeredSheets = HashBiMap.create();
     private final Map<Class<? extends JIPipeApplicationSettingsSheet>, JIPipeApplicationSettingsSheet> registeredSheetsByType = new HashMap<>();
     private final Timer saveLaterTimer;
+    private final ChangedEventEmitter changedEventEmitter = new ChangedEventEmitter();
 
     public JIPipeApplicationSettingsRegistry(JIPipe jiPipe) {
         this.jiPipe = jiPipe;
@@ -167,6 +170,7 @@ public class JIPipeApplicationSettingsRegistry {
      */
     public void save() {
         save(getPropertyFile());
+        changedEventEmitter.emit(new ChangedEvent(this));
     }
 
     /**
@@ -193,6 +197,9 @@ public class JIPipeApplicationSettingsRegistry {
         } catch (Exception e) {
             e.printStackTrace();
         }
+        finally {
+            changedEventEmitter.emit(new ChangedEvent(this));
+        }
     }
 
     /**
@@ -208,5 +215,27 @@ public class JIPipeApplicationSettingsRegistry {
 
     public void saveLater() {
         saveLaterTimer.restart();
+    }
+
+    public ChangedEventEmitter getChangedEventEmitter() {
+        return changedEventEmitter;
+    }
+
+    public interface ChangedEventListener {
+        void onApplicationSettingsChanged();
+    }
+
+    public static class ChangedEvent extends AbstractJIPipeEvent {
+        public ChangedEvent(Object source) {
+            super(source);
+        }
+    }
+
+    public static class ChangedEventEmitter extends JIPipeEventEmitter<ChangedEvent, ChangedEventListener> {
+
+        @Override
+        protected void call(ChangedEventListener changedEventListener, ChangedEvent event) {
+            changedEventListener.onApplicationSettingsChanged();
+        }
     }
 }
