@@ -78,6 +78,30 @@ public class JIPipeAuthorMetadata extends AbstractJIPipeParameterCollection {
         this.orcid = StringUtils.nullToEmpty(orcid);
     }
 
+    /**
+     * Initializes the instance
+     *
+     * @param title               the title (can be empty)
+     * @param firstName           first name
+     * @param lastName            last name
+     * @param affiliations        list of affiliations
+     * @param website             optional website link
+     * @param contact             contact information, e.g., an E-Mail address
+     * @param firstAuthor         if the author is marked as first author
+     * @param correspondingAuthor if the author is marked as corresponding author
+     */
+    public JIPipeAuthorMetadata(String title, String firstName, String lastName, StringList affiliations, String website, String contact, boolean firstAuthor, boolean correspondingAuthor) {
+        this.title = title;
+        this.firstName = firstName;
+        this.lastName = lastName;
+        this.affiliations = affiliations;
+        this.website = website;
+        this.contact = contact;
+        this.firstAuthor = firstAuthor;
+        this.correspondingAuthor = correspondingAuthor;
+        this.orcid = "";
+    }
+
     public JIPipeAuthorMetadata(JIPipeAuthorMetadata other) {
         this.firstName = other.firstName;
         this.lastName = other.lastName;
