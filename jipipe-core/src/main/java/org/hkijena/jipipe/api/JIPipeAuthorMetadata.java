@@ -158,9 +158,10 @@ public class JIPipeAuthorMetadata extends AbstractJIPipeParameterCollection {
         return "";
     }
 
-    @JIPipeParameter("orcid")
+    @JIPipeParameter(value = "orcid", uiOrder = 45)
     @JsonGetter("orcid")
     @SetJIPipeDocumentation(name = "ORCID", description = "The ORCID (URL or ID)")
+    @StringParameterSettings(monospace = true)
     public String getOrcid() {
         return orcid;
     }
@@ -171,7 +172,7 @@ public class JIPipeAuthorMetadata extends AbstractJIPipeParameterCollection {
         this.orcid = orcid;
     }
 
-    @JIPipeParameter(value = "title", uiOrder = -1)
+    @JIPipeParameter(value = "title", uiOrder = -10)
     @JsonGetter("title")
     @SetJIPipeDocumentation(name = "Title", description = "The title (optional)")
     public String getTitle() {
@@ -197,7 +198,7 @@ public class JIPipeAuthorMetadata extends AbstractJIPipeParameterCollection {
         this.firstName = firstName;
     }
 
-    @JIPipeParameter(value = "last-name", uiOrder = 1)
+    @JIPipeParameter(value = "last-name", uiOrder = 10)
     @SetJIPipeDocumentation(name = "Last name", description = "The last name")
     @JsonGetter("last-name")
     public String getLastName() {
@@ -210,7 +211,7 @@ public class JIPipeAuthorMetadata extends AbstractJIPipeParameterCollection {
         this.lastName = lastName;
     }
 
-    @JIPipeParameter(value = "affiliations-list", uiOrder = 3)
+    @JIPipeParameter(value = "affiliations-list", uiOrder = 30)
     @SetJIPipeDocumentation(name = "Affiliations", description = "Author affiliations")
     @StringParameterSettings(multiline = true, monospace = true)
     @JsonGetter("affiliations-list")
@@ -226,7 +227,7 @@ public class JIPipeAuthorMetadata extends AbstractJIPipeParameterCollection {
         this.affiliations = affiliations;
     }
 
-    @JIPipeParameter(value = "contact", uiOrder = 4)
+    @JIPipeParameter(value = "contact", uiOrder = 40)
     @StringParameterSettings(monospace = true)
     @SetJIPipeDocumentation(name = "Contact info", description = "Information on how to contact the author, for example an E-Mail address.")
     @JsonGetter("contact")
@@ -240,7 +241,7 @@ public class JIPipeAuthorMetadata extends AbstractJIPipeParameterCollection {
         this.contact = contact;
     }
 
-    @JIPipeParameter(value = "website", uiOrder = 5)
+    @JIPipeParameter(value = "website", uiOrder = 50)
     @StringParameterSettings(monospace = true)
     @SetJIPipeDocumentation(name = "Website", description = "An optional website URL")
     @JsonGetter("website")
@@ -254,7 +255,7 @@ public class JIPipeAuthorMetadata extends AbstractJIPipeParameterCollection {
         this.website = website;
     }
 
-    @JIPipeParameter(value = "first-author", uiOrder = 6)
+    @JIPipeParameter(value = "first-author", uiOrder = 60)
     @SetJIPipeDocumentation(name = "Is first author", description = "If this author is marked as first author")
     @JsonGetter("first-author")
     public boolean isFirstAuthor() {
@@ -267,7 +268,7 @@ public class JIPipeAuthorMetadata extends AbstractJIPipeParameterCollection {
         this.firstAuthor = firstAuthor;
     }
 
-    @JIPipeParameter(value = "corresponding-author", uiOrder = 7)
+    @JIPipeParameter(value = "corresponding-author", uiOrder = 70)
     @SetJIPipeDocumentation(name = "Is corresponding author", description = "If this author is marked as corresponding author")
     @JsonGetter("corresponding-author")
     public boolean isCorrespondingAuthor() {
@@ -280,7 +281,7 @@ public class JIPipeAuthorMetadata extends AbstractJIPipeParameterCollection {
         this.correspondingAuthor = correspondingAuthor;
     }
 
-    @JIPipeParameter(value = "custom-text", uiOrder = 8)
+    @JIPipeParameter(value = "custom-text", uiOrder = 80)
     @SetJIPipeDocumentation(name = "Custom text", description = "Will be displayed in the author information window.")
     @JsonGetter("custom-text")
     public HTMLText getCustomText() {
