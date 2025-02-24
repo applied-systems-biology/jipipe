@@ -22,6 +22,7 @@ import org.hkijena.jipipe.JIPipeJavaPlugin;
 import org.hkijena.jipipe.api.JIPipeAuthorMetadata;
 import org.hkijena.jipipe.api.JIPipeNodeTemplate;
 import org.hkijena.jipipe.api.JIPipeProgressInfo;
+import org.hkijena.jipipe.api.OptionalJIPipeAuthorMetadata;
 import org.hkijena.jipipe.api.grouping.JIPipeGraphWrapperAlgorithm;
 import org.hkijena.jipipe.api.nodes.JIPipeColumMatching;
 import org.hkijena.jipipe.api.parameters.JIPipeParameterCollection;
@@ -719,6 +720,14 @@ public class StandardParametersPlugin extends JIPipePrepackagedDefaultJavaPlugin
                 "Author",
                 "An author with affiliations",
                 JIPipeAuthorMetadataDesktopParameterEditorUI.class);
+        registerParameterType("optional-author",
+                OptionalJIPipeAuthorMetadata.class,
+                OptionalJIPipeAuthorMetadata.List.class,
+                null,
+                null,
+                "Optional author",
+                "An author with affiliations",
+                null);
 
         // Node templates
         registerParameterType("node-template",

@@ -365,15 +365,17 @@ public class JIPipeProject implements JIPipeValidatable {
     private void addAuthorsFromGlobalList() {
         JIPipeProjectAuthorsApplicationSettings settings = JIPipeProjectAuthorsApplicationSettings.getInstance();
         if(settings.isAutomaticallyAddToProjects()) {
-            for (JIPipeAuthorMetadata projectAuthor : settings.getProjectAuthors()) {
-                Optional<JIPipeAuthorMetadata> existing = metadata.getAuthors().stream().filter(a ->
-                        StringUtils.nullToEmpty(a.getFirstName()).equalsIgnoreCase(StringUtils.nullToEmpty(projectAuthor.getFirstName()))
-                        && StringUtils.nullToEmpty(a.getLastName()).equalsIgnoreCase(StringUtils.nullToEmpty(projectAuthor.getLastName()))).findFirst();
-                if (existing.isPresent()) {
-                    existing.get().mergeWith(projectAuthor);
-                }
-                else {
-                    metadata.getAuthors().add(projectAuthor);
+            for (OptionalJIPipeAuthorMetadata projectAuthor_ : settings.getProjectAuthors()) {
+                if(projectAuthor_.isEnabled()) {
+                    JIPipeAuthorMetadata projectAuthor = projectAuthor_.getContent();
+                    Optional<JIPipeAuthorMetadata> existing = metadata.getAuthors().stream().filter(a ->
+                            StringUtils.nullToEmpty(a.getFirstName()).equalsIgnoreCase(StringUtils.nullToEmpty(projectAuthor.getFirstName()))
+                                    && StringUtils.nullToEmpty(a.getLastName()).equalsIgnoreCase(StringUtils.nullToEmpty(projectAuthor.getLastName()))).findFirst();
+                    if (existing.isPresent()) {
+                        existing.get().mergeWith(projectAuthor);
+                    } else {
+                        metadata.getAuthors().add(projectAuthor);
+                    }
                 }
             }
         }

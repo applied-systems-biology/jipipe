@@ -11,12 +11,15 @@ import org.hkijena.jipipe.desktop.app.JIPipeDesktopProjectWorkbench;
 import org.hkijena.jipipe.desktop.app.JIPipeDesktopWorkbench;
 import org.hkijena.jipipe.desktop.app.JIPipeDesktopWorkbenchAccess;
 import org.hkijena.jipipe.desktop.commons.theme.JIPipeDesktopModernMetalTheme;
+import org.hkijena.jipipe.plugins.parameters.api.optional.OptionalParameter;
 import org.hkijena.jipipe.plugins.settings.JIPipeProjectAuthorsApplicationSettings;
 import org.hkijena.jipipe.utils.StringUtils;
 import org.hkijena.jipipe.utils.UIUtils;
 
 import javax.swing.*;
 import java.awt.*;
+import java.util.List;
+import java.util.stream.Collectors;
 
 public class JIPipeDesktopAuthorProfileButton extends JButton implements JIPipeDesktopWorkbenchAccess, JIPipeApplicationSettingsRegistry.ChangedEventListener {
     private final JIPipeDesktopProjectWorkbench workbench;
@@ -35,17 +38,22 @@ public class JIPipeDesktopAuthorProfileButton extends JButton implements JIPipeD
     }
 
     private void updateStatus() {
-        if(settings.getProjectAuthors().isEmpty()) {
+        List<JIPipeAuthorMetadata> activeAuthors = settings.getProjectAuthors().stream().filter(OptionalParameter::isEnabled).map(OptionalParameter::getContent).collect(Collectors.toList());
+        if(settings.getProjectAuthors().isEmpty() && activeAuthors.isEmpty()) {
             setText("Unknown author");
             setIcon(UIUtils.getIconFromResources("actions/im-kick-user.png"));
         }
-        else if(settings.getProjectAuthors().size() == 1) {
-            JIPipeAuthorMetadata authorMetadata = settings.getProjectAuthors().get(0);
+        else if(activeAuthors.isEmpty()) {
+            setText("None");
+            setIcon(UIUtils.getIconFromResources("actions/im-kick-user.png"));
+        }
+        else if(activeAuthors.size() == 1) {
+            JIPipeAuthorMetadata authorMetadata = activeAuthors.get(0);
             setText(authorMetadata.getFirstName() + " " + authorMetadata.getLastName());
             setIcon(UIUtils.getIconFromResources("actions/icon_user.png"));
         }
         else {
-            JIPipeAuthorMetadata authorMetadata = settings.getProjectAuthors().get(0);
+            JIPipeAuthorMetadata authorMetadata = activeAuthors.get(0);
             setText("<html>" + authorMetadata.getFirstName() + " " + authorMetadata.getLastName() + " <i>et al.</i></html>");
             setIcon(UIUtils.getIconFromResources("actions/user-group.png"));
         }
