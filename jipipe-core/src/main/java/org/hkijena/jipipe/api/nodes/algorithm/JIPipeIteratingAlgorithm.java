@@ -195,6 +195,14 @@ public abstract class JIPipeIteratingAlgorithm extends JIPipeParameterSlotAlgori
         iterationStep.addOutputData(getFirstOutputSlot(), iterationStep.getInputData(getFirstInputSlot(), JIPipeData.class, progressInfo), progressInfo);
     }
 
+    /**
+     * If true, allow the execution of an empty iteration step if all inputs are optional and are empty
+     * @return whether empty iteration steps are allowed
+     */
+    protected boolean isAllowEmptyIterationStep() {
+        return false;
+    }
+
     @Override
     public void runParameterSet(JIPipeGraphNodeRunContext runContext, JIPipeProgressInfo progressInfo, List<JIPipeTextAnnotation> parameterAnnotations) {
 
@@ -295,6 +303,11 @@ public abstract class JIPipeIteratingAlgorithm extends JIPipeParameterSlotAlgori
                 if (!slot.isEmpty()) {
                     hasData = true;
                 }
+            }
+
+            if(!hasData && isAllowEmptyIterationStep()) {
+                progressInfo.log("Fully empty, but node allowed empty iteration steps -> unlocking");
+                hasData = true;
             }
 
             if (hasData) {

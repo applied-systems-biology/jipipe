@@ -66,6 +66,11 @@ public class GenerateParametersFromExpressionAlgorithm extends JIPipeSimpleItera
     }
 
     @Override
+    protected boolean isAllowEmptyIterationStep() {
+        return true;
+    }
+
+    @Override
     public void reportValidity(JIPipeValidationReportContext reportContext, JIPipeValidationReport report) {
         super.reportValidity(reportContext, report);
         for (Column column : columns.mapToCollection(Column.class)) {

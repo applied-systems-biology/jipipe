@@ -72,6 +72,7 @@ public class MultiParameterAlgorithmsPlugin extends JIPipePrepackagedDefaultJava
         registerNodeType("parameters-define-table", DefineParametersTableAlgorithm.class);
         registerNodeType("parameters-define-table-expression", GenerateParametersFromExpressionAlgorithm.class);
         registerNodeType("parameters-from-node", ExtractParametersAlgorithm.class);
+        registerNodeType("parameters-from-global", DefineParametersFromGlobalParametersAlgorithm.class);
 
         registerNodeType("parameters-to-annotations", ParametersToAnnotationsAlgorithm.class, UIUtils.getIconURLFromResources("data-types/parameters.png"));
         registerNodeType("annotations-to-parameters", AnnotationsToParametersAlgorithm.class, UIUtils.getIconURLFromResources("data-types/parameters.png"));

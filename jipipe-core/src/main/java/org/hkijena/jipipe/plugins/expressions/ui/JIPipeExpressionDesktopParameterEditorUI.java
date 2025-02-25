@@ -214,7 +214,7 @@ public class JIPipeExpressionDesktopParameterEditorUI extends JIPipeDesktopParam
             // Add custom variables
             if(((JIPipeAlgorithm) graphNode).isEnableDefaultCustomExpressionVariables()) {
                 for (JIPipeExpressionParameterVariableInfo variable : JIPipeCustomExpressionVariablesParameterVariablesInfo.VARIABLES) {
-                    if (!usedKeys.contains(variable.getKey())) {
+                    if (!usedKeys.contains(variable.getKey()) || StringUtils.isNullOrEmpty(variable.getKey())) {
                         variables.add(variable);
                         usedKeys.add(variable.getKey());
                     }
@@ -223,7 +223,7 @@ public class JIPipeExpressionDesktopParameterEditorUI extends JIPipeDesktopParam
 
             // Add directories
             for (JIPipeExpressionParameterVariableInfo variable : JIPipeProjectDirectoriesVariablesInfo.VARIABLES) {
-                if (!usedKeys.contains(variable.getKey())) {
+                if (!usedKeys.contains(variable.getKey()) || StringUtils.isNullOrEmpty(variable.getKey())) {
                     variables.add(variable);
                     usedKeys.add(variable.getKey());
                 }
@@ -241,7 +241,7 @@ public class JIPipeExpressionDesktopParameterEditorUI extends JIPipeDesktopParam
             if(graphNode instanceof JIPipeIterationStepAlgorithm) {
                 // Generated annotations map
                 variables.add(new JIPipeExpressionParameterVariableInfo("_local.annotations", "Text annotations (map)", "The text annotations of the current iteration step as map"));
-                if(!usedKeys.contains(ANNOTATIONS_VARIABLE.getKey())) {
+                if(!usedKeys.contains(ANNOTATIONS_VARIABLE.getKey()) || StringUtils.isNullOrEmpty(ANNOTATIONS_VARIABLE.getKey())) {
                     variables.add(ANNOTATIONS_VARIABLE);
                 }
             }

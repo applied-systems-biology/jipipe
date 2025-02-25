@@ -99,6 +99,11 @@ public class GenerateTableFromExpressionAlgorithm extends JIPipeSimpleIteratingA
     }
 
     @Override
+    protected boolean isAllowEmptyIterationStep() {
+        return true;
+    }
+
+    @Override
     public void reportValidity(JIPipeValidationReportContext reportContext, JIPipeValidationReport report) {
         super.reportValidity(reportContext, report);
         report.report(new ParameterValidationReportContext(reportContext, this, "Columns", "columns"), columns);
