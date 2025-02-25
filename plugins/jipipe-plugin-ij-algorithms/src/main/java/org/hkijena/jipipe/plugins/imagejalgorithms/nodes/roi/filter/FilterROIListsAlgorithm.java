@@ -53,7 +53,6 @@ public class FilterROIListsAlgorithm extends JIPipeSimpleIteratingAlgorithm {
     public FilterROIListsAlgorithm(FilterROIListsAlgorithm other) {
         super(other);
         this.filter = new JIPipeExpressionParameter(other.filter);
-        this.includeAnnotations = other.includeAnnotations;
         this.outputEmptyLists = other.outputEmptyLists;
     }
 

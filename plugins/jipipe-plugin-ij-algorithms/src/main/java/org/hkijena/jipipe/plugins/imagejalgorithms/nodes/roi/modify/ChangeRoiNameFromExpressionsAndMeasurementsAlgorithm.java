@@ -63,7 +63,6 @@ public class ChangeRoiNameFromExpressionsAndMeasurementsAlgorithm extends JIPipe
     public ChangeRoiNameFromExpressionsAndMeasurementsAlgorithm(ChangeRoiNameFromExpressionsAndMeasurementsAlgorithm other) {
         super(other);
         this.expression = new StringQueryExpression(other.expression);
-        this.includeAnnotations = other.includeAnnotations;
         this.measurements = new ImageStatisticsSetParameter(other.measurements);
         this.measureInPhysicalUnits = other.measureInPhysicalUnits;
     }
