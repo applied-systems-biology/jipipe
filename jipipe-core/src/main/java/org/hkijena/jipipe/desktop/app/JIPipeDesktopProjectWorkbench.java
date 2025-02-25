@@ -237,7 +237,7 @@ public class JIPipeDesktopProjectWorkbench extends JPanel implements JIPipeDeskt
                 (JIPipeGeneralUIApplicationSettings.getInstance().isShowIntroduction() && showIntroduction) ? JIPipeDesktopTabPane.SingletonTabMode.Present : JIPipeDesktopTabPane.SingletonTabMode.Hidden);
         documentTabPane.registerSingletonTab(TAB_PROJECT_OVERVIEW,
                 "Project",
-                UIUtils.getIconFromResources("actions/configure.png"),
+                UIUtils.getIconFromResources("actions/view-list-icons.png"),
                 () -> new JIPipeDesktopProjectOverviewUI(this),
                 (JIPipeGeneralUIApplicationSettings.getInstance().isShowProjectInfo() && !isNewProject) ? JIPipeDesktopTabPane.SingletonTabMode.Present : JIPipeDesktopTabPane.SingletonTabMode.Hidden);
         documentTabPane.registerSingletonTab(TAB_LICENSE,
@@ -631,7 +631,7 @@ public class JIPipeDesktopProjectWorkbench extends JPanel implements JIPipeDeskt
         menu.add(Box.createHorizontalGlue());
 
         // Overview link
-        JButton openProjectOverviewButton = new JButton("Project", UIUtils.getIconFromResources("actions/document-properties.png"));
+        JButton openProjectOverviewButton = new JButton("Project", UIUtils.getIconFromResources("actions/view-list-icons.png"));
         openProjectOverviewButton.setToolTipText("Opens the project info & settings tab or jumps to the existing tab if it is already open.");
         openProjectOverviewButton.addActionListener(e -> documentTabPane.selectSingletonTab(TAB_PROJECT_OVERVIEW));
         UIUtils.setStandardButtonBorder(openProjectOverviewButton);

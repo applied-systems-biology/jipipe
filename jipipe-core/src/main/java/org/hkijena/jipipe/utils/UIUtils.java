@@ -2548,6 +2548,12 @@ public class UIUtils {
         timer.start();
     }
 
+    public static JButton makeButtonTransparent(JButton button) {
+        button.setOpaque(false);
+        button.setBackground(new Color(0, 0, 0, 0));
+        return button;
+    }
+
 
     public static class DragThroughMouseListener implements MouseListener, MouseMotionListener {
         private final Component component;

@@ -15,6 +15,7 @@ package org.hkijena.jipipe.desktop.app.settings;
 
 import org.hkijena.jipipe.api.JIPipeAuthorMetadata;
 import org.hkijena.jipipe.api.grouping.parameters.GraphNodeParameterReferenceGroupCollection;
+import org.hkijena.jipipe.api.parameters.JIPipeDynamicParameterCollection;
 import org.hkijena.jipipe.api.parameters.JIPipeParameterCollection;
 import org.hkijena.jipipe.api.project.JIPipeProjectDirectories;
 import org.hkijena.jipipe.desktop.app.JIPipeDesktopProjectWorkbench;
@@ -27,6 +28,7 @@ import org.hkijena.jipipe.desktop.commons.components.JIPipeDesktopImageFrameComp
 import org.hkijena.jipipe.desktop.commons.components.JIPipeDesktopParameterFormPanel;
 import org.hkijena.jipipe.desktop.commons.components.markup.JIPipeDesktopHTMLEditorKit;
 import org.hkijena.jipipe.desktop.commons.components.markup.JIPipeDesktopMarkdownReader;
+import org.hkijena.jipipe.desktop.commons.components.parameters.JIPipeDesktopDynamicParameterEditorDialog;
 import org.hkijena.jipipe.desktop.commons.components.ribbon.JIPipeDesktopRibbon;
 import org.hkijena.jipipe.plugins.parameters.library.markup.MarkdownText;
 import org.hkijena.jipipe.plugins.settings.JIPipeFileChooserApplicationSettings;
@@ -48,7 +50,7 @@ import java.util.Objects;
 /**
  * UI that gives an overview of a pipeline (shows parameters, etc.)
  */
-public class JIPipeDesktopProjectOverviewUI extends JIPipeDesktopProjectWorkbenchPanel implements JIPipeParameterCollection.ParameterChangedEventListener {
+public class JIPipeDesktopProjectOverviewUI extends JIPipeDesktopProjectWorkbenchPanel {
 
     private final JTextPane descriptionReader;
     private final JScrollPane descriptionReaderScrollPane;
@@ -92,8 +94,6 @@ public class JIPipeDesktopProjectOverviewUI extends JIPipeDesktopProjectWorkbenc
 
         initialize();
         refreshAll();
-        getProject().getMetadata().getParameterChangedEventEmitter().subscribeWeak(this);
-
     }
 
     private void refreshAll() {
@@ -102,7 +102,17 @@ public class JIPipeDesktopProjectOverviewUI extends JIPipeDesktopProjectWorkbenc
         refreshHeaderText();
         refreshTechnicalInfo();
         refreshHeaderButtons();
+        refreshParameters();
+    }
+
+    private void refreshParameters() {
         userParametersPanel.reloadForm();
+        if(userParametersPanel.getParameterTree().getParameters().isEmpty()) {
+            userParametersPanel.clear();
+            userParametersPanel.addWideToForm(UIUtils.createInfoLabel("This project has no parameters",
+                    "Use the options above to add or link parameters into this panel."));
+            userParametersPanel.addVerticalGlue();
+        }
     }
 
     private void refreshHeaderText() {
@@ -245,7 +255,7 @@ public class JIPipeDesktopProjectOverviewUI extends JIPipeDesktopProjectWorkbenc
                         continue;
                     }
                     getProject().getMetadata().getDirectories().getDirectories().addFromTemplate(entry);
-                    userParametersPanel.reloadForm();
+                    refreshParameters();
                     break;
                 }
             }
@@ -254,11 +264,17 @@ public class JIPipeDesktopProjectOverviewUI extends JIPipeDesktopProjectWorkbenc
 
     private void editDirectoryParameters() {
         getDesktopProjectWorkbench().openProjectSettings("/General/Project-wide directories");
-        userParametersPanel.reloadForm();
+        refreshParameters();
     }
 
     private void editGlobalParameters() {
-
+        JIPipeDesktopDynamicParameterEditorDialog dialog = new JIPipeDesktopDynamicParameterEditorDialog(SwingUtilities.getWindowAncestor(this),
+                getDesktopProjectWorkbench(),
+               getProject().getMetadata().getGlobalParameters());
+        dialog.setLocationRelativeTo(SwingUtilities.getWindowAncestor(this));
+        dialog.setModal(true);
+        dialog.setVisible(true);
+        refreshParameters();
     }
 
     private void editReferencedParameters() {
@@ -288,7 +304,7 @@ public class JIPipeDesktopProjectOverviewUI extends JIPipeDesktopProjectWorkbenc
         confirmButton.addActionListener(e -> {
             getProject().getPipelineParameters().setExportedParameters(copy);
             dialog.setVisible(false);
-            userParametersPanel.reloadForm();
+            refreshParameters();
         });
         buttonPanel.add(confirmButton);
 
@@ -298,18 +314,6 @@ public class JIPipeDesktopProjectOverviewUI extends JIPipeDesktopProjectWorkbenc
         dialog.setSize(1024, 768);
         dialog.setLocationRelativeTo(getDesktopProjectWorkbench().getWindow());
         dialog.setVisible(true);
-    }
-
-    @Override
-    public void onParameterChanged(JIPipeParameterCollection.ParameterChangedEvent event) {
-        if ("description".equals(event.getKey())) {
-            refreshDescription();
-        } else if ("name".equals(event.getKey()) || "authors".equals(event.getKey())) {
-            refreshHeaderText();
-        } else {
-            refreshTechnicalInfo();
-            refreshHeaderButtons();
-        }
     }
 
     private void initializeHeaderPanel() {
@@ -325,7 +329,8 @@ public class JIPipeDesktopProjectOverviewUI extends JIPipeDesktopProjectWorkbenc
         projectName.setOpaque(false);
         projectName.setFont(new Font(Font.DIALOG, Font.PLAIN, 40));
         projectName.setBorder(BorderFactory.createEmptyBorder(8, 8, 8, 8));
-        nameAndAuthorPanel.addWideToForm(projectName, null);
+        nameAndAuthorPanel.addWideToForm(UIUtils.boxHorizontal(projectName,
+                UIUtils.makeButtonTransparent(UIUtils.createButton("", UIUtils.getIcon32FromResources("actions/edit.png"), this::editProjectMetadata))), null);
 
         projectAuthors = new JPanel();
         projectAuthors.setLayout(new BoxLayout(projectAuthors, BoxLayout.X_AXIS));
@@ -349,6 +354,11 @@ public class JIPipeDesktopProjectOverviewUI extends JIPipeDesktopProjectWorkbenc
         initializeToolbar(headerPanel);
 
         add(headerPanel, BorderLayout.NORTH);
+    }
+
+    private void editProjectMetadata() {
+        getDesktopProjectWorkbench().openProjectSettings("/General/Project metadata");
+        refreshAll();
     }
 
     private void initializeToolbar(JPanel topPanel) {
@@ -428,7 +438,10 @@ public class JIPipeDesktopProjectOverviewUI extends JIPipeDesktopProjectWorkbenc
         openProjectSettingsButton.setOpaque(false);
         openProjectSettingsButton.setBackground(new Color(0, 0, 0, 0));
         openProjectSettingsButton.setToolTipText("Opens the project settings dialog");
-        openProjectSettingsButton.addActionListener(e -> getDesktopProjectWorkbench().openProjectSettings(null));
+        openProjectSettingsButton.addActionListener(e -> {
+            getDesktopProjectWorkbench().openProjectSettings(null);
+            refreshAll();
+        });
         toolBar.add(openProjectSettingsButton);
 
         JButton runProjectButton = new JButton("Run project", UIUtils.getIconFromResources("actions/play.png"));

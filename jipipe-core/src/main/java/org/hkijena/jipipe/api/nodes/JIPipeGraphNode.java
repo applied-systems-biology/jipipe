@@ -1290,6 +1290,15 @@ public abstract class JIPipeGraphNode extends AbstractJIPipeParameterCollection 
         stringBuilder.append("</ul>");
     }
 
+    public JIPipeProject getProject() {
+        if(getRuntimeProject() == null && getParentGraph() != null) {
+            return getParentGraph().getProject();
+        }
+        else {
+            return getRuntimeProject();
+        }
+    }
+
     public interface NodeSlotsChangedEventListener {
         void onNodeSlotsChanged(NodeSlotsChangedEvent event);
     }

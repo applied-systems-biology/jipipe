@@ -72,7 +72,7 @@ public class JIPipeDesktopProjectSettingsUI extends JPanel {
 
         // Introduce legacy settings as sheets
         settingsSheets.add(new ProjectMetadataSettingsSheetWrapper(project));
-        settingsSheets.add(new ProjectPermissionsSettingsSheetWrapper(project));
+        settingsSheets.add(new ProjectParametersSettingsSheetWrapper(project));
         settingsSheets.add(new ProjectDirectoriesSettingsSheetWrapper(project));
 
         // Continue with sheets
@@ -304,6 +304,9 @@ public class JIPipeDesktopProjectSettingsUI extends JPanel {
             if (subParameter == project.getMetadata().getDirectories()) {
                 return false;
             }
+            if(subParameter == project.getMetadata().getGlobalParameters()) {
+                return false;
+            }
             return super.isParameterUIVisible(tree, subParameter);
         }
 
@@ -355,6 +358,53 @@ public class JIPipeDesktopProjectSettingsUI extends JPanel {
         @Override
         public boolean isParameterUIVisible(JIPipeParameterTree tree, JIPipeParameterCollection subParameter) {
             if (subParameter == project.getMetadata().getPermissions()) {
+                return true;
+            }
+            return false;
+        }
+
+        @Override
+        public boolean isParameterUIVisible(JIPipeParameterTree tree, JIPipeParameterAccess access) {
+            return super.isParameterUIVisible(tree, access);
+        }
+    }
+
+    public static class ProjectParametersSettingsSheetWrapper extends SettingsSheetWrapper {
+        private final JIPipeProject project;
+
+        public ProjectParametersSettingsSheetWrapper(JIPipeProject project) {
+            super(project.getMetadata());
+            this.project = project;
+        }
+
+        @Override
+        public String getId() {
+            return "jipipe:project-global-parameters";
+        }
+
+        @Override
+        public Icon getIcon() {
+            return UIUtils.getIconFromResources("actions/configure_toolbars.png");
+        }
+
+        @Override
+        public String getName() {
+            return "Project-wide parameters";
+        }
+
+        @Override
+        public String getDescription() {
+            return "Allows to configure parameters that are accessible project-wide in expressions and nodes";
+        }
+
+        @Override
+        public JIPipeDefaultProjectSettingsSheetCategory getDefaultCategory() {
+            return JIPipeDefaultProjectSettingsSheetCategory.General;
+        }
+
+        @Override
+        public boolean isParameterUIVisible(JIPipeParameterTree tree, JIPipeParameterCollection subParameter) {
+            if(subParameter == project.getMetadata().getGlobalParameters()) {
                 return true;
             }
             return false;

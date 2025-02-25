@@ -14,10 +14,7 @@
 package org.hkijena.jipipe.desktop.app.settings.project;
 
 import org.hkijena.jipipe.api.SetJIPipeDocumentation;
-import org.hkijena.jipipe.api.parameters.AbstractJIPipeParameterCollection;
-import org.hkijena.jipipe.api.parameters.JIPipeCustomParameterCollection;
-import org.hkijena.jipipe.api.parameters.JIPipeParameter;
-import org.hkijena.jipipe.api.parameters.JIPipeParameterAccess;
+import org.hkijena.jipipe.api.parameters.*;
 import org.hkijena.jipipe.api.project.JIPipeProject;
 import org.hkijena.jipipe.utils.ResourceUtils;
 
@@ -33,6 +30,7 @@ public class JIPipeDesktopMergedProjectSettings extends AbstractJIPipeParameterC
         this.project = project;
         this.userDirectoriesSettings = new JIPipeDesktopMergedProjectSettingsUserDirectories(project);
         registerSubParameter(userDirectoriesSettings);
+        registerSubParameter(project.getMetadata().getGlobalParameters());
     }
 
     @Override
@@ -45,12 +43,18 @@ public class JIPipeDesktopMergedProjectSettings extends AbstractJIPipeParameterC
         return true;
     }
 
-    @SetJIPipeDocumentation(name = "Project-wide directories", description = "Project-wide directories that can be access through a variety of nodes and expressions. " +
+    @SetJIPipeDocumentation(name = "Project-wide directories", description = "Project-wide directories that can be access through a variety of nodes. " +
             "The set of directories can be modified in the project settings.")
     @JIPipeParameter(value = "user-directories",
             iconURL = ResourceUtils.RESOURCE_BASE_PATH + "/icons/places/folder-blue.png")
     public JIPipeDesktopMergedProjectSettingsUserDirectories getUserDirectoriesSettings() {
         return userDirectoriesSettings;
+    }
+
+    @SetJIPipeDocumentation(name = "Project-wide parameters", description = "Project-wide parameters that can be accessed through a variety of nodes.")
+    @JIPipeParameter("global-parameters")
+    public JIPipeDynamicParameterCollection getGlobalParameters() {
+        return project.getMetadata().getGlobalParameters();
     }
 
     public JIPipeProject getProject() {
