@@ -23,8 +23,7 @@ import org.hkijena.jipipe.api.ConfigureJIPipeNode;
 import org.hkijena.jipipe.api.JIPipeProgressInfo;
 import org.hkijena.jipipe.api.SetJIPipeDocumentation;
 import org.hkijena.jipipe.api.annotation.JIPipeTextAnnotation;
-import org.hkijena.jipipe.api.data.JIPipeDefaultMutableSlotConfiguration;
-import org.hkijena.jipipe.api.data.JIPipeInputDataSlot;
+import org.hkijena.jipipe.api.data.*;
 import org.hkijena.jipipe.api.nodes.AddJIPipeOutputSlot;
 import org.hkijena.jipipe.api.nodes.JIPipeGraphNodeRunContext;
 import org.hkijena.jipipe.api.nodes.JIPipeNodeInfo;
@@ -1558,6 +1557,11 @@ public class FastImageArithmeticsAlgorithm extends JIPipeIteratingAlgorithm {
     @JIPipeParameter("expression")
     public void setExpression(JIPipeExpressionParameter expression) {
         this.expression = expression;
+    }
+
+    public void configureTwoInputExample(String expr) {
+        JIPipeMutableSlotConfiguration mutableSlotConfiguration = (JIPipeMutableSlotConfiguration) getSlotConfiguration();
+        mutableSlotConfiguration.addSlot(new JIPipeDataSlotInfo(ImagePlusGreyscaleData.class, JIPipeSlotType.Input, "I2", ""), true);
     }
 
     public static class FastImageArithmeticsTokenMaker extends JIPipeExpressionEvaluatorSyntaxTokenMaker {

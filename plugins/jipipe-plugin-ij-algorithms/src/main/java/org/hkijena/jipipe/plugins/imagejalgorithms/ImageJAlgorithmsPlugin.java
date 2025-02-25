@@ -26,6 +26,8 @@ import inra.ijpb.morphology.directional.DirectionalFilter;
 import org.hkijena.jipipe.*;
 import org.hkijena.jipipe.api.JIPipeAuthorMetadata;
 import org.hkijena.jipipe.api.JIPipeProgressInfo;
+import org.hkijena.jipipe.api.data.JIPipeDataSlotInfo;
+import org.hkijena.jipipe.api.data.JIPipeDefaultMutableSlotConfiguration;
 import org.hkijena.jipipe.plugins.JIPipePrepackagedDefaultJavaPlugin;
 import org.hkijena.jipipe.plugins.core.CorePlugin;
 import org.hkijena.jipipe.plugins.expressions.JIPipeExpressionParameter;
@@ -667,17 +669,17 @@ public class ImageJAlgorithmsPlugin extends JIPipePrepackagedDefaultJavaPlugin {
         super.postprocess(progressInfo);
 
         // Register examples
-        registerNodeExample(FastImageArithmeticsAlgorithm.class, "Add images", node -> node.setExpression(new JIPipeExpressionParameter("I1 + I2")));
-        registerNodeExample(FastImageArithmeticsAlgorithm.class, "Subtract images", node -> node.setExpression(new JIPipeExpressionParameter("I1 - I2")));
-        registerNodeExample(FastImageArithmeticsAlgorithm.class, "Multiply images", node -> node.setExpression(new JIPipeExpressionParameter("I1 * I2")));
-        registerNodeExample(FastImageArithmeticsAlgorithm.class, "Divide images", node -> node.setExpression(new JIPipeExpressionParameter("I1 / I2")));
-        registerNodeExample(FastImageArithmeticsAlgorithm.class, "Image difference", node -> node.setExpression(new JIPipeExpressionParameter("ABS(I1 - I2)")));
-        registerNodeExample(FastImageArithmeticsAlgorithm.class, "Pixel-wise min", node -> node.setExpression(new JIPipeExpressionParameter("MIN(I1, I2)")));
-        registerNodeExample(FastImageArithmeticsAlgorithm.class, "Pixel-wise max", node -> node.setExpression(new JIPipeExpressionParameter("MAX(I1, I2)")));
-        registerNodeExample(FastImageArithmeticsAlgorithm.class, "Pixel-wise average", node -> node.setExpression(new JIPipeExpressionParameter("(I1 + I2) / 2")));
-        registerNodeExample(FastImageArithmeticsAlgorithm.class, "Pixel-wise AND", node -> node.setExpression(new JIPipeExpressionParameter("AND(I1, I2)")));
-        registerNodeExample(FastImageArithmeticsAlgorithm.class, "Pixel-wise OR", node -> node.setExpression(new JIPipeExpressionParameter("OR(I1, I2)")));
-        registerNodeExample(FastImageArithmeticsAlgorithm.class, "Pixel-wise XOR", node -> node.setExpression(new JIPipeExpressionParameter("XOR(I1, I2)")));
+        registerNodeExample(FastImageArithmeticsAlgorithm.class, "Add images", node -> node.configureTwoInputExample("I1 + I2"));
+        registerNodeExample(FastImageArithmeticsAlgorithm.class, "Subtract images", node -> node.configureTwoInputExample("I1 - I2"));
+        registerNodeExample(FastImageArithmeticsAlgorithm.class, "Multiply images", node ->node.configureTwoInputExample("I1 * I2"));
+        registerNodeExample(FastImageArithmeticsAlgorithm.class, "Divide images", node -> node.configureTwoInputExample("I1 / I2"));
+        registerNodeExample(FastImageArithmeticsAlgorithm.class, "Image difference", node -> node.configureTwoInputExample("ABS(I1 - I2)"));
+        registerNodeExample(FastImageArithmeticsAlgorithm.class, "Pixel-wise min", node -> node.configureTwoInputExample("MIN(I1, I2)"));
+        registerNodeExample(FastImageArithmeticsAlgorithm.class, "Pixel-wise max", node -> node.configureTwoInputExample("MAX(I1, I2)"));
+        registerNodeExample(FastImageArithmeticsAlgorithm.class, "Pixel-wise average", node -> node.configureTwoInputExample("(I1 + I2) / 2"));
+        registerNodeExample(FastImageArithmeticsAlgorithm.class, "Pixel-wise AND", node -> node.configureTwoInputExample("AND(I1, I2)"));
+        registerNodeExample(FastImageArithmeticsAlgorithm.class, "Pixel-wise OR", node -> node.configureTwoInputExample("OR(I1, I2)"));
+        registerNodeExample(FastImageArithmeticsAlgorithm.class, "Pixel-wise XOR", node -> node.configureTwoInputExample("XOR(I1, I2)"));
 
         registerNodeExample(SetToValueAlgorithm.class, "Inside mask", node -> node.setTargetArea(ImageROITargetArea.InsideMask));
         registerNodeExample(SetToValueAlgorithm.class, "Outside mask", node -> node.setTargetArea(ImageROITargetArea.OutsideMask));
