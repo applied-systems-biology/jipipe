@@ -15,8 +15,6 @@ package org.hkijena.jipipe.desktop.app.settings;
 
 import org.hkijena.jipipe.api.JIPipeAuthorMetadata;
 import org.hkijena.jipipe.api.grouping.parameters.GraphNodeParameterReferenceGroupCollection;
-import org.hkijena.jipipe.api.parameters.JIPipeDynamicParameterCollection;
-import org.hkijena.jipipe.api.parameters.JIPipeParameterCollection;
 import org.hkijena.jipipe.api.project.JIPipeProjectDirectories;
 import org.hkijena.jipipe.desktop.app.JIPipeDesktopProjectWorkbench;
 import org.hkijena.jipipe.desktop.app.JIPipeDesktopProjectWorkbenchPanel;
@@ -26,17 +24,18 @@ import org.hkijena.jipipe.desktop.app.settings.project.JIPipeDesktopMergedProjec
 import org.hkijena.jipipe.desktop.commons.components.JIPipeDesktopFormPanel;
 import org.hkijena.jipipe.desktop.commons.components.JIPipeDesktopImageFrameComponent;
 import org.hkijena.jipipe.desktop.commons.components.JIPipeDesktopParameterFormPanel;
+import org.hkijena.jipipe.desktop.commons.components.layouts.JIPipeDesktopFlowLayout;
+import org.hkijena.jipipe.desktop.commons.components.layouts.JIPipeDesktopWrapLayout;
 import org.hkijena.jipipe.desktop.commons.components.markup.JIPipeDesktopHTMLEditorKit;
 import org.hkijena.jipipe.desktop.commons.components.markup.JIPipeDesktopMarkdownReader;
 import org.hkijena.jipipe.desktop.commons.components.parameters.JIPipeDesktopDynamicParameterEditorDialog;
 import org.hkijena.jipipe.desktop.commons.components.ribbon.JIPipeDesktopRibbon;
+import org.hkijena.jipipe.desktop.commons.theme.JIPipeDesktopModernMetalTheme;
 import org.hkijena.jipipe.plugins.parameters.library.markup.MarkdownText;
 import org.hkijena.jipipe.plugins.settings.JIPipeFileChooserApplicationSettings;
-import org.hkijena.jipipe.utils.JIPipeDesktopSplitPane;
-import org.hkijena.jipipe.utils.SizeFitMode;
-import org.hkijena.jipipe.utils.StringUtils;
-import org.hkijena.jipipe.utils.UIUtils;
+import org.hkijena.jipipe.utils.*;
 import org.hkijena.jipipe.utils.ui.JIPipeDesktopDockPanel;
+import org.hkijena.jipipe.utils.ui.RoundedLineBorder;
 
 import javax.swing.*;
 import java.awt.*;
@@ -44,6 +43,7 @@ import java.awt.datatransfer.Clipboard;
 import java.awt.datatransfer.StringSelection;
 import java.awt.image.BufferedImage;
 import java.nio.file.Path;
+import java.util.Arrays;
 import java.util.HashMap;
 import java.util.Objects;
 
@@ -52,8 +52,8 @@ import java.util.Objects;
  */
 public class JIPipeDesktopProjectOverviewUI extends JIPipeDesktopProjectWorkbenchPanel {
 
+    private final JIPipeDesktopFormPanel centerPanel;
     private final JTextPane descriptionReader;
-    private final JScrollPane descriptionReaderScrollPane;
 
     private final JPanel runtimePartitionsPanel;
     private final JIPipeDesktopParameterFormPanel userParametersPanel;
@@ -84,7 +84,9 @@ public class JIPipeDesktopProjectOverviewUI extends JIPipeDesktopProjectWorkbenc
         descriptionReader.setEditorKit(new JIPipeDesktopHTMLEditorKit());
         descriptionReader.setEditable(false);
         UIUtils.registerHyperlinkHandler(descriptionReader);
-        descriptionReaderScrollPane = new JScrollPane(descriptionReader);
+
+        // Center panel
+        centerPanel = new JIPipeDesktopFormPanel(JIPipeDesktopFormPanel.WITH_SCROLLING);
 
         userParametersPanel = new JIPipeDesktopParameterFormPanel(getDesktopWorkbench(),
                 new JIPipeDesktopMergedProjectSettings(getProject()),
@@ -98,7 +100,7 @@ public class JIPipeDesktopProjectOverviewUI extends JIPipeDesktopProjectWorkbenc
 
     private void refreshAll() {
         renderBackgroundPanel();
-        refreshDescription();
+        refreshCenterPanel();
         refreshHeaderText();
         refreshTechnicalInfo();
         refreshHeaderButtons();
@@ -171,8 +173,121 @@ public class JIPipeDesktopProjectOverviewUI extends JIPipeDesktopProjectWorkbenc
         headerPanel.setBackgroundImage(headerBackground);
     }
 
-    private void refreshDescription() {
-        descriptionReader.setText(getProject().getMetadata().getDescription().getHtml());
+    private void refreshCenterPanel() {
+        centerPanel.clear();
+
+        JPanel tipsPanel = new JPanel();
+        tipsPanel.setLayout(new BoxLayout(tipsPanel, BoxLayout.X_AXIS));
+
+        if(!StringUtils.isNullOrEmpty(getProject().getMetadata().getDescription().toPlainText())) {
+            addPanelToCenterPanel("Description", descriptionReader, UIUtils.makeButtonTransparent(UIUtils.createButton("", UIUtils.getIconFromResources("actions/edit.png"), this::editProjectMetadata)));
+            descriptionReader.setText(getProject().getMetadata().getDescription().getHtml());
+        }
+        else {
+            addToTipsPanel(tipsPanel, "Write a description", "Don't forget to write a description for your project",
+                    UIUtils.makeButtonTransparent(UIUtils.createButton("Edit metadata", UIUtils.getIconFromResources("actions/edit.png"), this::editProjectMetadata)));
+        }
+
+        if(StringUtils.isNullOrEmpty(getProject().getMetadata().getLicense())) {
+            JButton button = UIUtils.makeButtonTransparent(UIUtils.createButton("Choose a license", UIUtils.getIconFromResources("actions/edit.png"), () -> {
+            }));
+            JPopupMenu popupMenu = UIUtils.addPopupMenuToButton(button);
+            for(String license : Arrays.asList(
+                    "CC-BY-4.0",
+                    "MIT",
+                    "Apache-2.0",
+                    "GPL-3.0",
+                    "GPL-2.0",
+                    "LGPL-3.0",
+                    "LGPL-2.1",
+                    "AGPL-3.0",
+                    "BSD-2-Clause",
+                    "BSD-3-Clause",
+                    "MPL-2.0",
+                    "EPL-2.0",
+                    "Unlicense"
+            )) {
+                popupMenu.add(UIUtils.createMenuItem(license, "Set the license to " + license, UIUtils.getIconFromResources("actions/copyright.png"), () -> {
+                    getProject().getMetadata().setLicense(license);
+                    refreshAll();
+                }));
+            }
+
+            popupMenu.addSeparator();
+            popupMenu.add(UIUtils.createMenuItem("Learn more ...", "Open https://choosealicense.com/", UIUtils.getIconFromResources("actions/web-browser.png"), () -> {
+                UIUtils.openWebsite("https://choosealicense.com/");
+            }));
+
+            addToTipsPanel(tipsPanel, "Make your project reusable", "Set the license of your project (preferably to CC-BY-4.0), " +
+                    "so others can reuse it.", button);
+        }
+
+        if(tipsPanel.getComponentCount() > 0) {
+            tipsPanel.add(Box.createHorizontalGlue());
+            JScrollPane scrollPane = new JScrollPane(tipsPanel);
+            scrollPane.setMinimumSize(new Dimension(300, 300));
+            scrollPane.setBorder(  BorderFactory.createEmptyBorder(16,16,16,16));
+            centerPanel.addWideToForm(scrollPane);
+        }
+        centerPanel.addVerticalGlue();
+
+    }
+
+    private void addToTipsPanel(JPanel tipsPanel, String title, String text, Component... ctaComponents) {
+        JPanel panel = new JPanel(new BorderLayout());
+        panel.setBorder(BorderFactory.createCompoundBorder(
+                BorderFactory.createEmptyBorder(0,0,0,16),
+                new RoundedLineBorder(UIUtils.getControlBorderColor(), 1, 4)
+        ));
+        JLabel titleLabel = new JLabel(title);
+        titleLabel.setIcon(UIUtils.getIcon32FromResources("status/starred.png"));
+        titleLabel.setFont(titleLabel.getFont().deriveFont(Font.BOLD, 14));
+        titleLabel.setBorder(BorderFactory.createEmptyBorder(0,0,16,0));
+        panel.add(titleLabel, BorderLayout.NORTH);
+        panel.add(UIUtils.createReadonlyBorderlessTextArea(text), BorderLayout.CENTER);
+
+        JToolBar toolBar = new JToolBar();
+        toolBar.setBorder(BorderFactory.createMatteBorder(1,0,0,0,UIUtils.getControlBorderColor()));
+        toolBar.setFloatable(false);
+        toolBar.add(Box.createHorizontalGlue());
+        for (Component component : ctaComponents) {
+            toolBar.add(component);
+        }
+        panel.add(toolBar, BorderLayout.SOUTH);
+
+
+        panel.setPreferredSize(new Dimension(300, 250));
+        panel.setMaximumSize(new Dimension(300, 300));
+
+        tipsPanel.add(panel);
+    }
+
+    private void addPanelToCenterPanel(String title, Component center, Component... titleBarComponents) {
+        JPanel panel = new JPanel(new BorderLayout());
+        panel.setBorder(BorderFactory.createCompoundBorder(
+                BorderFactory.createEmptyBorder(16,16,16,16),
+                new RoundedLineBorder(UIUtils.getControlBorderColor(), 1, 4)
+        ));
+
+        JLabel titleLabel = new JLabel(title);
+        titleLabel.setBorder(UIUtils.createEmptyBorder(8));
+        titleLabel.setFont(titleLabel.getFont().deriveFont(Font.BOLD, 16));
+
+        JToolBar toolBar = new JToolBar();
+        toolBar.setFloatable(false);
+        toolBar.add(titleLabel);
+        toolBar.add(Box.createHorizontalGlue());
+        for (Component titleBarComponent : titleBarComponents) {
+            toolBar.add(titleBarComponent);
+        }
+        toolBar.setBorder(BorderFactory.createMatteBorder(0, 0, 1, 0, UIUtils.getControlBorderColor()));
+        toolBar.setBackground(ColorUtils.mix(JIPipeDesktopModernMetalTheme.PRIMARY5, ColorUtils.scaleHSV(UIManager.getColor("Panel.background"), 1, 1, 0.98f), 0.92));
+
+        panel.add(toolBar, BorderLayout.NORTH);
+        panel.add(center, BorderLayout.CENTER);
+
+        centerPanel.addWideToForm(panel);
+
     }
 
     private void initialize() {
@@ -182,7 +297,6 @@ public class JIPipeDesktopProjectOverviewUI extends JIPipeDesktopProjectWorkbenc
         initializeUserParametersPanel();
         initializeHeaderPanel();
 
-        descriptionReaderScrollPane.setBorder(null);
         userParametersPanel.getScrollPane().setBorder(null);
 
         JPanel userParametersContainer = new JPanel(new BorderLayout());
@@ -211,7 +325,7 @@ public class JIPipeDesktopProjectOverviewUI extends JIPipeDesktopProjectWorkbenc
                 0,
                 new JIPipeDesktopBookmarkListPanel(getDesktopWorkbench(), getProject().getGraph(), null, null));
 
-        dockPanel.setBackgroundComponent(descriptionReaderScrollPane);
+        dockPanel.setBackgroundComponent(centerPanel);
         add(dockPanel, BorderLayout.CENTER);
     }
 
