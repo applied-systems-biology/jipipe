@@ -184,43 +184,15 @@ public class JIPipeDesktopProjectOverviewUI extends JIPipeDesktopProjectWorkbenc
             descriptionReader.setText(getProject().getMetadata().getDescription().getHtml());
         }
         else {
-            addToTipsPanel(tipsPanel, "Write a description", "Don't forget to write a description for your project",
+            addToTipsPanel(tipsPanel, "Write a description", "Write a workflow description to help people who are unfamiliar with your pipeline.",
                     UIUtils.makeButtonTransparent(UIUtils.createButton("Edit metadata", UIUtils.getIconFromResources("actions/edit.png"), this::editProjectMetadata)));
         }
 
         if(StringUtils.isNullOrEmpty(getProject().getMetadata().getLicense())) {
-            JButton button = UIUtils.makeButtonTransparent(UIUtils.createButton("Choose a license", UIUtils.getIconFromResources("actions/edit.png"), () -> {
-            }));
-            JPopupMenu popupMenu = UIUtils.addPopupMenuToButton(button);
-            for(String license : Arrays.asList(
-                    "CC-BY-4.0",
-                    "MIT",
-                    "Apache-2.0",
-                    "GPL-3.0",
-                    "GPL-2.0",
-                    "LGPL-3.0",
-                    "LGPL-2.1",
-                    "AGPL-3.0",
-                    "BSD-2-Clause",
-                    "BSD-3-Clause",
-                    "MPL-2.0",
-                    "EPL-2.0",
-                    "Unlicense"
-            )) {
-                popupMenu.add(UIUtils.createMenuItem(license, "Set the license to " + license, UIUtils.getIconFromResources("actions/copyright.png"), () -> {
-                    getProject().getMetadata().setLicense(license);
-                    refreshAll();
-                }));
-            }
-
-            popupMenu.addSeparator();
-            popupMenu.add(UIUtils.createMenuItem("Learn more ...", "Open https://choosealicense.com/", UIUtils.getIconFromResources("actions/web-browser.png"), () -> {
-                UIUtils.openWebsite("https://choosealicense.com/");
-            }));
-
-            addToTipsPanel(tipsPanel, "Make your project reusable", "Set the license of your project (preferably to CC-BY-4.0), " +
-                    "so others can reuse it.", button);
+            createLicenseTip(tipsPanel);
         }
+
+        createCompartmentsTipIfNeeded(tipsPanel);
 
         if(tipsPanel.getComponentCount() > 0) {
             tipsPanel.add(Box.createHorizontalGlue());
@@ -231,6 +203,55 @@ public class JIPipeDesktopProjectOverviewUI extends JIPipeDesktopProjectWorkbenc
         }
         centerPanel.addVerticalGlue();
 
+    }
+
+    private void createCompartmentsTipIfNeeded(JPanel tipsPanel) {
+        int nodeCount = getProject().getGraph().getNodeCount();
+        int compartmentCount = getProject().getCompartments().size();
+
+        if(nodeCount > 30 && compartmentCount == 1) {
+            addToTipsPanel(tipsPanel, "Consider organizing your project", "Use compartments to split your pipeline into smaller units, so it is easier " +
+                            "to navigate through your project.",
+                    UIUtils.makeButtonTransparent(UIUtils.createButton("Show compartments",UIUtils.getIconFromResources("actions/graph-compartments.png"), this::openCompartmentsEditor)));
+        }
+    }
+
+    private void openCompartmentsEditor() {
+        getDesktopProjectWorkbench().getDocumentTabPane().selectSingletonTab(JIPipeDesktopProjectWorkbench.TAB_COMPARTMENT_EDITOR);
+    }
+
+    private void createLicenseTip(JPanel tipsPanel) {
+        JButton button = UIUtils.makeButtonTransparent(UIUtils.createButton("Choose a license", UIUtils.getIconFromResources("actions/edit.png"), () -> {
+        }));
+        JPopupMenu popupMenu = UIUtils.addPopupMenuToButton(button);
+        for(String license : Arrays.asList(
+                "CC-BY-4.0",
+                "MIT",
+                "Apache-2.0",
+                "GPL-3.0",
+                "GPL-2.0",
+                "LGPL-3.0",
+                "LGPL-2.1",
+                "AGPL-3.0",
+                "BSD-2-Clause",
+                "BSD-3-Clause",
+                "MPL-2.0",
+                "EPL-2.0",
+                "Unlicense"
+        )) {
+            popupMenu.add(UIUtils.createMenuItem(license, "Set the license to " + license, UIUtils.getIconFromResources("actions/copyright.png"), () -> {
+                getProject().getMetadata().setLicense(license);
+                refreshAll();
+            }));
+        }
+
+        popupMenu.addSeparator();
+        popupMenu.add(UIUtils.createMenuItem("Learn more ...", "Open https://choosealicense.com/", UIUtils.getIconFromResources("actions/web-browser.png"), () -> {
+            UIUtils.openWebsite("https://choosealicense.com/");
+        }));
+
+        addToTipsPanel(tipsPanel, "Make your project reusable", "Set the license of your project (preferably to CC-BY-4.0), " +
+                "so others can reuse it.", button);
     }
 
     private void addToTipsPanel(JPanel tipsPanel, String title, String text, Component... ctaComponents) {
