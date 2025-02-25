@@ -75,8 +75,7 @@ public class Merge2DToHyperstackAlgorithm extends JIPipeMergingAlgorithm {
             return;
         }
 
-        JIPipeExpressionVariablesMap variables = new JIPipeExpressionVariablesMap();
-        variables.putAnnotations(iterationStep.getMergedTextAnnotations());
+        JIPipeExpressionVariablesMap variables = new JIPipeExpressionVariablesMap(iterationStep);
         Map<ImagePlusData, ImageSliceIndex> sliceMappings = new IdentityHashMap<>();
 
         progressInfo.log("Collecting target slice locations ...");

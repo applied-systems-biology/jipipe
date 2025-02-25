@@ -148,8 +148,7 @@ public class KeyValueThresholdPartitionAveragesGenerator extends JIPipeIterating
         }, progressInfo.resolve("Collect pixels"));
 
         // Setup values
-        JIPipeExpressionVariablesMap variables = new JIPipeExpressionVariablesMap();
-        variables.putAnnotations(iterationStep.getMergedTextAnnotations());
+        JIPipeExpressionVariablesMap variables = new JIPipeExpressionVariablesMap(iterationStep);
         variables.set("all.values", allValues);
         variables.set("all.keys", allKeys);
 

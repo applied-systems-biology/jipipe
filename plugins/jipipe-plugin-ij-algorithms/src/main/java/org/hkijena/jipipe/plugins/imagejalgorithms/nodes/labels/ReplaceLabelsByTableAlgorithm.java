@@ -114,8 +114,8 @@ public class ReplaceLabelsByTableAlgorithm extends JIPipeIteratingAlgorithm {
         ResultsTableData mappingsTable = iterationStep.getInputData("Mappings", ResultsTableData.class, progressInfo);
 
         TFloatFloatMap mapping = new TFloatFloatHashMap();
-        TableColumnData mappingOld = oldLabelColumn.pickOrGenerateColumn(mappingsTable, new JIPipeExpressionVariablesMap());
-        TableColumnData mappingNew = newLabelColumn.pickOrGenerateColumn(mappingsTable, new JIPipeExpressionVariablesMap());
+        TableColumnData mappingOld = oldLabelColumn.pickOrGenerateColumn(mappingsTable, new JIPipeExpressionVariablesMap(iterationStep));
+        TableColumnData mappingNew = newLabelColumn.pickOrGenerateColumn(mappingsTable, new JIPipeExpressionVariablesMap(iterationStep));
 
         for (int i = 0; i < mappingOld.getRows(); i++) {
             mapping.put((float) mappingOld.getRowAsDouble(i), (float) mappingNew.getRowAsDouble(i));
@@ -123,8 +123,7 @@ public class ReplaceLabelsByTableAlgorithm extends JIPipeIteratingAlgorithm {
 
         float defaultMapping;
         if (missingValueReplacement.isEnabled()) {
-            JIPipeExpressionVariablesMap variables = new JIPipeExpressionVariablesMap();
-            variables.putAnnotations(iterationStep.getMergedTextAnnotations());
+            JIPipeExpressionVariablesMap variables = new JIPipeExpressionVariablesMap(iterationStep);
             defaultMapping = missingValueReplacement.getContent().evaluateToFloat(variables);
         } else {
             defaultMapping = 0;

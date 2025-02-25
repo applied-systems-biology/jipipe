@@ -104,8 +104,7 @@ public class Morphology2DAlgorithm extends JIPipeSimpleIteratingAlgorithm {
         if (!addBorder) {
             img = inputData.getDuplicateImage();
         } else {
-            JIPipeExpressionVariablesMap variables = new JIPipeExpressionVariablesMap();
-            variables.putAnnotations(iterationStep.getMergedTextAnnotations());
+            JIPipeExpressionVariablesMap variables = new JIPipeExpressionVariablesMap(iterationStep);
             ImageQueryExpressionVariablesInfo.buildVariablesSet(originalImg, variables);
 
             int left = (int) (addBorder2DAlgorithm.getMarginLeft().evaluateToNumber(variables));

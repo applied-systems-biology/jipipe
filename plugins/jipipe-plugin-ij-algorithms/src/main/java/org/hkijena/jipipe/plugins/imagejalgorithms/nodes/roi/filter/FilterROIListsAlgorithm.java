@@ -44,7 +44,6 @@ import java.util.Set;
 public class FilterROIListsAlgorithm extends JIPipeSimpleIteratingAlgorithm {
 
     private JIPipeExpressionParameter filter = new JIPipeExpressionParameter("count > 0");
-    private boolean includeAnnotations = true;
     private boolean outputEmptyLists = true;
 
     public FilterROIListsAlgorithm(JIPipeNodeInfo info) {
@@ -62,12 +61,8 @@ public class FilterROIListsAlgorithm extends JIPipeSimpleIteratingAlgorithm {
     protected void runIteration(JIPipeSingleIterationStep iterationStep, JIPipeIterationContext iterationContext, JIPipeGraphNodeRunContext runContext, JIPipeProgressInfo progressInfo) {
         ROI2DListData rois = iterationStep.getInputData(getFirstInputSlot(), ROI2DListData.class, progressInfo);
 
-        JIPipeExpressionVariablesMap parameters = new JIPipeExpressionVariablesMap();
-        if (includeAnnotations) {
-            for (JIPipeTextAnnotation annotation : iterationStep.getMergedTextAnnotations().values()) {
-                parameters.set(annotation.getName(), annotation.getValue());
-            }
-        }
+        JIPipeExpressionVariablesMap parameters = new JIPipeExpressionVariablesMap(iterationStep);
+
         Rectangle bounds = rois.getBounds();
         parameters.set("count", rois.size());
         parameters.set("x", bounds.x);
@@ -91,18 +86,6 @@ public class FilterROIListsAlgorithm extends JIPipeSimpleIteratingAlgorithm {
     @JIPipeParameter("output-empty-list")
     public void setOutputEmptyLists(boolean outputEmptyLists) {
         this.outputEmptyLists = outputEmptyLists;
-    }
-
-    @SetJIPipeDocumentation(name = "Include annotations", description = "If enabled, annotations are also available as string variables. Please note that " +
-            "ROI-list specific variables will overwrite annotations with the same name.")
-    @JIPipeParameter("include-annotations")
-    public boolean isIncludeAnnotations() {
-        return includeAnnotations;
-    }
-
-    @JIPipeParameter("include-annotations")
-    public void setIncludeAnnotations(boolean includeAnnotations) {
-        this.includeAnnotations = includeAnnotations;
     }
 
     @SetJIPipeDocumentation(name = "Keep ROI list if", description = "The filter expression used to test ROI lists. Must return a boolean.")

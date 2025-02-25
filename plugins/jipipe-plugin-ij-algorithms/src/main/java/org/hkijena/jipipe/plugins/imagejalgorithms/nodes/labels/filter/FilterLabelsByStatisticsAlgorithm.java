@@ -97,7 +97,7 @@ public class FilterLabelsByStatisticsAlgorithm extends JIPipeIteratingAlgorithm 
 
         Calibration calibration = measureInPhysicalUnits ? labels.getCalibration() : null;
 
-        JIPipeExpressionVariablesMap variables = new JIPipeExpressionVariablesMap();
+        JIPipeExpressionVariablesMap variables = new JIPipeExpressionVariablesMap(iterationStep);
         TIntSet labelsToKeep = new TIntHashSet();
         ImageJUtils.forEachIndexedZCTSlice(labels, (labelProcessor, index) -> {
 

@@ -72,8 +72,7 @@ public class AnnotateWithJsonDataAlgorithm extends JIPipeSimpleIteratingAlgorith
         DocumentContext documentContext = JsonPath.parse(data.getData());
         List<JIPipeTextAnnotation> annotationList = new ArrayList<>();
 
-        JIPipeExpressionVariablesMap variables = new JIPipeExpressionVariablesMap();
-        variables.putAnnotations(iterationStep.getMergedTextAnnotations());
+        JIPipeExpressionVariablesMap variables = new JIPipeExpressionVariablesMap(iterationStep);
         for (Entry entry : entries.mapToCollection(Entry.class)) {
             String path = entry.getJsonPath().evaluateToString(variables);
             String annotationName = entry.getAnnotationName().evaluateToString(variables);

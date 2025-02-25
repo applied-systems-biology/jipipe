@@ -79,7 +79,7 @@ public class ImagePlusFromGUI extends JIPipeSimpleIteratingAlgorithm {
                 }
             }
         }
-        JIPipeExpressionVariablesMap variableSet = new JIPipeExpressionVariablesMap();
+        JIPipeExpressionVariablesMap variableSet = new JIPipeExpressionVariablesMap(iterationStep);
         for (ImagePlus rawImage : rawImages) {
             ImageQueryExpressionVariablesInfo.buildVariablesSet(rawImage, variableSet);
             if (imageFilters.test(variableSet)) {

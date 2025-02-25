@@ -80,7 +80,7 @@ public class OMEROListDatasetsAlgorithm extends JIPipeSingleIterationAlgorithm i
                 ProjectData projectData = gateway.getProject(projectId, -1);
                 SecurityContext context = new SecurityContext(projectData.getGroupId());
                 for (DatasetData dataset : projectData.getDatasets()) {
-                    JIPipeExpressionVariablesMap variables = new JIPipeExpressionVariablesMap();
+                    JIPipeExpressionVariablesMap variables = new JIPipeExpressionVariablesMap(iterationStep);
                     variables.putAnnotations(getFirstInputSlot().getTextAnnotations(row));
                     variables.put("name", dataset.getName());
                     variables.put("id", dataset.getId());

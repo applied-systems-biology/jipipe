@@ -84,7 +84,7 @@ public class ApplyVectorMathExpression2DAlgorithm extends JIPipeSimpleIteratingA
     @Override
     protected void runIteration(JIPipeSingleIterationStep iterationStep, JIPipeIterationContext iterationContext, JIPipeGraphNodeRunContext runContext, JIPipeProgressInfo progressInfo) {
         ImagePlusData inputData = iterationStep.getInputData(getFirstInputSlot(), ImagePlusData.class, progressInfo);
-        JIPipeExpressionVariablesMap variableSet = new JIPipeExpressionVariablesMap();
+        JIPipeExpressionVariablesMap variableSet = new JIPipeExpressionVariablesMap(iterationStep);
         variableSet.set("width", inputData.getImage().getWidth());
         variableSet.set("height", inputData.getImage().getHeight());
         variableSet.set("num_z", inputData.getImage().getNSlices());

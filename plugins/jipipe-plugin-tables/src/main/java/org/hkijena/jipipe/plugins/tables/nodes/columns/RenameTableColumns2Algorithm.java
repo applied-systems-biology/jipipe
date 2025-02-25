@@ -72,7 +72,7 @@ public class RenameTableColumns2Algorithm extends JIPipeSimpleIteratingAlgorithm
     @Override
     protected void runIteration(JIPipeSingleIterationStep iterationStep, JIPipeIterationContext iterationContext, JIPipeGraphNodeRunContext runContext, JIPipeProgressInfo progressInfo) {
         ResultsTableData table = (ResultsTableData) iterationStep.getInputData(getFirstInputSlot(), ResultsTableData.class, progressInfo).duplicate(progressInfo);
-        JIPipeExpressionVariablesMap variables = new JIPipeExpressionVariablesMap();
+        JIPipeExpressionVariablesMap variables = new JIPipeExpressionVariablesMap(iterationStep);
         variables.putAnnotations(iterationStep.getMergedTextAnnotations());
         for (RenamingEntry renamingEntry : renamingEntries.mapToCollection(RenamingEntry.class)) {
             for (int col = 0; col < table.getColumnCount(); col++) {

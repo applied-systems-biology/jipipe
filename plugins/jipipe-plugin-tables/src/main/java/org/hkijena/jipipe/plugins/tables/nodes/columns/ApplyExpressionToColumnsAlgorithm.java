@@ -101,7 +101,7 @@ public class ApplyExpressionToColumnsAlgorithm extends JIPipeSimpleIteratingAlgo
             }
         }
         for (ExpressionTableColumnProcessorParameter processor : processorParameters) {
-            String sourceColumn = processor.getInput().queryFirst(input.getColumnNames(), new JIPipeExpressionVariablesMap());
+            String sourceColumn = processor.getInput().queryFirst(input.getColumnNames(), new JIPipeExpressionVariablesMap(iterationStep));
             if (sourceColumn == null) {
                 throw new JIPipeValidationRuntimeException(new NullPointerException("Could not find column matching '" + processor.getInput() + "'"),
                         "Could not find column matching '" + processor.getInput() + "'",

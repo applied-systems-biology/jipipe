@@ -116,7 +116,7 @@ public class ExportTableAsXLSXAlgorithm extends JIPipeMergingAlgorithm {
             for (int row : iterationStep.getInputRows(getFirstInputSlot())) {
                 ResultsTableData tableData = getFirstInputSlot().getData(row, ResultsTableData.class, progressInfo);
 
-                JIPipeExpressionVariablesMap variables = new JIPipeExpressionVariablesMap();
+                JIPipeExpressionVariablesMap variables = new JIPipeExpressionVariablesMap(iterationStep);
                 variables.putAnnotations(getFirstInputSlot().getTextAnnotationMap(row));
                 variables.set("annotations", JIPipeTextAnnotation.annotationListToMap(getFirstInputSlot().getTextAnnotations(row), JIPipeTextAnnotationMergeMode.OverwriteExisting));
 
@@ -128,7 +128,7 @@ public class ExportTableAsXLSXAlgorithm extends JIPipeMergingAlgorithm {
 
             List<String> sortedSheets = new ArrayList<>();
             {
-                JIPipeExpressionVariablesMap variables = new JIPipeExpressionVariablesMap();
+                JIPipeExpressionVariablesMap variables = new JIPipeExpressionVariablesMap(iterationStep);
                 variables.putAnnotations(iterationStep.getMergedTextAnnotations());
                 variables.set("annotations", JIPipeTextAnnotation.annotationListToMap(iterationStep.getMergedTextAnnotations().values(), JIPipeTextAnnotationMergeMode.OverwriteExisting));
                 variables.set("sheet_names", new ArrayList<>(sheets.keySet()));

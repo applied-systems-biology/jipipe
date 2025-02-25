@@ -73,8 +73,7 @@ public class SliceROIListAlgorithm extends JIPipeSimpleIteratingAlgorithm {
         ROI2DListData inputRois = iterationStep.getInputData(getFirstInputSlot(), ROI2DListData.class, progressInfo);
 
         ROI2DListData outputRois = new ROI2DListData();
-        JIPipeExpressionVariablesMap variables = new JIPipeExpressionVariablesMap();
-        variables.putAnnotations(iterationStep.getMergedTextAnnotations());
+        JIPipeExpressionVariablesMap variables = new JIPipeExpressionVariablesMap(iterationStep);
 
         List<Integer> indices = selectedIndices.getIntegers(0, inputRois.size() - 1, variables);
         for (int roiIndex : indices) {

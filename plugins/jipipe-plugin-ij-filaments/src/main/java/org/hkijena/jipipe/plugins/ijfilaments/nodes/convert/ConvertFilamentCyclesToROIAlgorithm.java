@@ -75,7 +75,7 @@ public class ConvertFilamentCyclesToROIAlgorithm extends JIPipeSimpleIteratingAl
         Set<List<FilamentEdge>> cycles = cycleFinderAlgorithm.findCycles(inputData);
         progressInfo.log("Detected " + cycles.size() + " cycles");
 
-        JIPipeExpressionVariablesMap variablesMap = new JIPipeExpressionVariablesMap();
+        JIPipeExpressionVariablesMap variablesMap = new JIPipeExpressionVariablesMap(iterationStep);
         variablesMap.putAnnotations(iterationStep.getMergedTextAnnotations());
 
         String consensusPhysicalSizeUnit = inputData.getConsensusPhysicalSizeUnit();

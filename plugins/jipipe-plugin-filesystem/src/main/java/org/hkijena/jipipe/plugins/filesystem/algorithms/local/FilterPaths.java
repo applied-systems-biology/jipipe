@@ -91,7 +91,7 @@ public class FilterPaths extends JIPipeSimpleIteratingAlgorithm {
     @Override
     protected void runIteration(JIPipeSingleIterationStep iterationStep, JIPipeIterationContext iterationContext, JIPipeGraphNodeRunContext runContext, JIPipeProgressInfo progressInfo) {
         // Expression parameters from annotations
-        JIPipeExpressionVariablesMap expressionVariables = new JIPipeExpressionVariablesMap();
+        JIPipeExpressionVariablesMap expressionVariables = new JIPipeExpressionVariablesMap(iterationStep);
         for (JIPipeTextAnnotation annotation : iterationStep.getMergedTextAnnotations().values()) {
             expressionVariables.set(annotation.getName(), annotation.getValue());
         }

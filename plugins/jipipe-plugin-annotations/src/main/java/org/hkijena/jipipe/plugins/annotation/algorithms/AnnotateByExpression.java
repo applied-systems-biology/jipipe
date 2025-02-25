@@ -72,8 +72,7 @@ public class AnnotateByExpression extends JIPipeSimpleIteratingAlgorithm {
     @Override
     protected void runIteration(JIPipeSingleIterationStep iterationStep, JIPipeIterationContext iterationContext, JIPipeGraphNodeRunContext runContext, JIPipeProgressInfo progressInfo) {
         for (NamedTextAnnotationGeneratorExpression expression : annotations) {
-            JIPipeExpressionVariablesMap variableSet = new JIPipeExpressionVariablesMap();
-            variableSet.putCommonVariables(iterationStep);
+            JIPipeExpressionVariablesMap variableSet = new JIPipeExpressionVariablesMap(iterationStep);
 
             variableSet.set("data_string", getFirstInputSlot().getDataItemStore(iterationStep.getInputSlotRows().get(getFirstInputSlot())).getStringRepresentation());
             variableSet.set("data_type", JIPipe.getDataTypes().getIdOf(getFirstInputSlot().getDataItemStore(iterationStep.getInputSlotRows().get(getFirstInputSlot())).getDataClass()));

@@ -79,10 +79,7 @@ public class ListFiles extends JIPipeSimpleIteratingAlgorithm {
     @Override
     protected void runIteration(JIPipeSingleIterationStep iterationStep, JIPipeIterationContext iterationContext, JIPipeGraphNodeRunContext runContext, JIPipeProgressInfo progressInfo) {
         // Expression parameters from annotations
-        JIPipeExpressionVariablesMap expressionVariables = new JIPipeExpressionVariablesMap();
-        for (JIPipeTextAnnotation annotation : iterationStep.getMergedTextAnnotations().values()) {
-            expressionVariables.set(annotation.getName(), annotation.getValue());
-        }
+        JIPipeExpressionVariablesMap expressionVariables = new JIPipeExpressionVariablesMap(iterationStep);
 
         FolderData inputFolder = iterationStep.getInputData(getFirstInputSlot(), FolderData.class, progressInfo);
         Path inputPath = inputFolder.toPath();

@@ -70,8 +70,7 @@ public class ExtractTextFromXMLAlgorithm extends JIPipeSimpleIteratingAlgorithm 
             namespaces.put(parameter.getKey(), parameter.getValue());
         }
 
-        JIPipeExpressionVariablesMap variables = new JIPipeExpressionVariablesMap();
-        variables.putAnnotations(iterationStep.getMergedTextAnnotations());
+        JIPipeExpressionVariablesMap variables = new JIPipeExpressionVariablesMap(iterationStep);
 
         String path = xPath.evaluateToString(variables);
         String text = XmlUtils.extractStringFromXPath(document, path, namespaces);

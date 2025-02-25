@@ -72,7 +72,7 @@ public class OMEROListGroupsAlgorithm extends JIPipeSingleIterationAlgorithm imp
             progressInfo.log("Listing groups ...");
             for (GroupData groupData : user.getGroups()) {
                 SecurityContext context = new SecurityContext(groupData.getGroupId());
-                JIPipeExpressionVariablesMap variables = new JIPipeExpressionVariablesMap();
+                JIPipeExpressionVariablesMap variables = new JIPipeExpressionVariablesMap(iterationStep);
                 variables.put("name", groupData.getName());
                 variables.put("id", groupData.getId());
                 variables.put("kv_pairs", OMEROUtils.getKeyValuePairs(gateway.getMetadataFacility(), context, groupData));

@@ -70,8 +70,7 @@ public class ConvertTracksToRoiNode extends JIPipeSimpleIteratingAlgorithm {
         TrackCollectionData trackCollectionData = iterationStep.getInputData(getFirstInputSlot(), TrackCollectionData.class, progressInfo);
         ImagePlus image = trackCollectionData.getImage();
 
-        JIPipeExpressionVariablesMap variables = new JIPipeExpressionVariablesMap();
-        variables.putAnnotations(iterationStep.getMergedTextAnnotations());
+        JIPipeExpressionVariablesMap variables = new JIPipeExpressionVariablesMap(iterationStep);
         variables.set("n_tracks", trackCollectionData.getTrackModel().nTracks(true));
 
         int index = 0;

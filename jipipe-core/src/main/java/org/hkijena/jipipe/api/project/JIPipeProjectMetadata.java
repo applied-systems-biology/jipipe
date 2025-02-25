@@ -19,7 +19,9 @@ import org.hkijena.jipipe.JIPipeImageJUpdateSiteDependency;
 import org.hkijena.jipipe.api.JIPipeNodeTemplate;
 import org.hkijena.jipipe.api.JIPipeStandardMetadata;
 import org.hkijena.jipipe.api.SetJIPipeDocumentation;
+import org.hkijena.jipipe.api.parameters.JIPipeDynamicParameterCollection;
 import org.hkijena.jipipe.api.parameters.JIPipeParameter;
+import org.hkijena.jipipe.api.parameters.JIPipeParameterSerializationMode;
 
 /**
  * Metadata for a {@link JIPipeProject}
@@ -29,6 +31,7 @@ public class JIPipeProjectMetadata extends JIPipeStandardMetadata {
     private String templateDescription = "";
     private JIPipeProjectPermissions permissions = new JIPipeProjectPermissions();
     private JIPipeProjectDirectories directories = new JIPipeProjectDirectories();
+    private JIPipeDynamicParameterCollection globalParameters = new JIPipeDynamicParameterCollection(true);
     private JIPipeNodeTemplate.List nodeTemplates = new JIPipeNodeTemplate.List();
     private boolean restoreTabs = true;
     private boolean autoAddAuthors = true;
@@ -126,5 +129,15 @@ public class JIPipeProjectMetadata extends JIPipeStandardMetadata {
         this.nodeTemplates = nodeTemplates;
     }
 
+    @JIPipeParameter(value = "global-parameters", persistence = JIPipeParameterSerializationMode.Object)
+    @JsonGetter("global-parameters")
+    @SetJIPipeDocumentation(name = "Global parameters", description = "Parameters that are passed into the global context within nodes")
+    public JIPipeDynamicParameterCollection getGlobalParameters() {
+        return globalParameters;
+    }
 
+    @JsonSetter("global-parameters")
+    public void setGlobalParameters(JIPipeDynamicParameterCollection globalParameters) {
+        this.globalParameters = globalParameters;
+    }
 }

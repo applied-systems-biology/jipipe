@@ -155,7 +155,7 @@ public class FilterLabelsByOverlapAlgorithm extends JIPipeIteratingAlgorithm {
                                 JIPipeOutputDataSlot outputSlot, LabelFilterSettings settings, JIPipeSingleIterationStep iterationStep, JIPipeProgressInfo progressInfo) {
         boolean withExpression = !StringUtils.isNullOrEmpty(settings.overlapFilter.getExpression());
         ByteProcessor overlap = new ByteProcessor(targetLabels.getWidth(), targetLabels.getHeight());
-        JIPipeExpressionVariablesMap variables = new JIPipeExpressionVariablesMap();
+        JIPipeExpressionVariablesMap variables = new JIPipeExpressionVariablesMap(iterationStep);
 
         // Write annotations map
         Map<String, String> annotations = new HashMap<>();
@@ -163,7 +163,6 @@ public class FilterLabelsByOverlapAlgorithm extends JIPipeIteratingAlgorithm {
             annotations.put(entry.getKey(), entry.getValue().getValue());
         }
         variables.set("annotations", annotations);
-        variables.putCommonVariables(this);
 
         final Calibration targetLabelsCalibration = settings.measureInPhysicalUnits ? targetLabels.getCalibration() : null;
         final Calibration otherLabelsCalibration = settings.measureInPhysicalUnits ? otherLabels.getCalibration() : null;

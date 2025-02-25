@@ -100,7 +100,7 @@ public class SplitRoiConnectedComponentsAlgorithm extends JIPipeIteratingAlgorit
 
         boolean withFiltering = !StringUtils.isNullOrEmpty(overlapFilter.getExpression());
         ROI2DListData temp = new ROI2DListData();
-        JIPipeExpressionVariablesMap variableSet = new JIPipeExpressionVariablesMap();
+        JIPipeExpressionVariablesMap variableSet = new JIPipeExpressionVariablesMap(iterationStep);
 
         // Write annotations map
         Map<String, String> annotations = new HashMap<>();
@@ -204,7 +204,7 @@ public class SplitRoiConnectedComponentsAlgorithm extends JIPipeIteratingAlgorit
         }
 
         if (!StringUtils.isNullOrEmpty(graphPostprocessing.getExpression())) {
-            JIPipeExpressionVariablesMap postprocessingVariableSet = new JIPipeExpressionVariablesMap();
+            JIPipeExpressionVariablesMap postprocessingVariableSet = new JIPipeExpressionVariablesMap(iterationStep);
             postprocessingVariableSet.set("KEEP", "KEEP");
             postprocessingVariableSet.set("ISOLATE", "ISOLATE");
             postprocessingVariableSet.set("REMOVE", "REMOVE");

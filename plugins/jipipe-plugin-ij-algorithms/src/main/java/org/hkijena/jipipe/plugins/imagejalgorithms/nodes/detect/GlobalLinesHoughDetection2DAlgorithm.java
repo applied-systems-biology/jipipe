@@ -108,8 +108,7 @@ public class GlobalLinesHoughDetection2DAlgorithm extends JIPipeSimpleIteratingA
         outputTable.addNumericColumn("Line Y1");
         outputTable.addNumericColumn("Line Length");
 
-        JIPipeExpressionVariablesMap variables = new JIPipeExpressionVariablesMap();
-        variables.putAnnotations(iterationStep.getMergedTextAnnotations());
+        JIPipeExpressionVariablesMap variables = new JIPipeExpressionVariablesMap(iterationStep);
         List<Double> thetaAngles = thetas.evaluateToDoubleList(variables);
 
         // Fix thetas, so they are within the range [-90, 90)
@@ -150,8 +149,7 @@ public class GlobalLinesHoughDetection2DAlgorithm extends JIPipeSimpleIteratingA
                     houghArray = houghResult.getH().duplicate();
                 }
 
-                JIPipeExpressionVariablesMap peakThresholdVariables = new JIPipeExpressionVariablesMap();
-                peakThresholdVariables.putAnnotations(iterationStep.getMergedTextAnnotations());
+                JIPipeExpressionVariablesMap peakThresholdVariables = new JIPipeExpressionVariablesMap(iterationStep);
                 peakThresholdVariables.put("H", Floats.asList((float[]) houghResult.getH().getPixels()));
                 peakThresholdVariables.put("H.width", houghResult.getH().getWidth());
                 peakThresholdVariables.put("H.height", houghResult.getH().getHeight());

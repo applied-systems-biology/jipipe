@@ -57,9 +57,7 @@ public class ModifyPathWithExpression extends JIPipeSimpleIteratingAlgorithm {
     protected void runIteration(JIPipeSingleIterationStep iterationStep, JIPipeIterationContext iterationContext, JIPipeGraphNodeRunContext runContext, JIPipeProgressInfo progressInfo) {
         Path path = iterationStep.getInputData(getFirstInputSlot(), PathData.class, progressInfo).toPath();
 
-        JIPipeExpressionVariablesMap variables = new JIPipeExpressionVariablesMap();
-        variables.putAnnotations(iterationStep.getMergedTextAnnotations());
-        variables.putProjectDirectories(getProjectDirectory(), getProjectDataDirs());
+        JIPipeExpressionVariablesMap variables = new JIPipeExpressionVariablesMap(iterationStep);
         variables.set("path", StringUtils.nullToEmpty(path));
 
         Object result = expression.evaluate(variables);

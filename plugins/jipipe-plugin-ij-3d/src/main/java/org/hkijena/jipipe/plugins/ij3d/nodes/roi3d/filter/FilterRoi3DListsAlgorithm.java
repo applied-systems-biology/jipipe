@@ -45,7 +45,6 @@ import java.util.Set;
 public class FilterRoi3DListsAlgorithm extends JIPipeSimpleIteratingAlgorithm {
 
     private JIPipeExpressionParameter filter = new JIPipeExpressionParameter("count > 0");
-    private boolean includeAnnotations = true;
     private boolean outputEmptyLists = true;
 
     public FilterRoi3DListsAlgorithm(JIPipeNodeInfo info) {
@@ -55,20 +54,14 @@ public class FilterRoi3DListsAlgorithm extends JIPipeSimpleIteratingAlgorithm {
     public FilterRoi3DListsAlgorithm(FilterRoi3DListsAlgorithm other) {
         super(other);
         this.filter = new JIPipeExpressionParameter(other.filter);
-        this.includeAnnotations = other.includeAnnotations;
         this.outputEmptyLists = other.outputEmptyLists;
     }
 
     @Override
     protected void runIteration(JIPipeSingleIterationStep iterationStep, JIPipeIterationContext iterationContext, JIPipeGraphNodeRunContext runContext, JIPipeProgressInfo progressInfo) {
         ROI3DListData rois = iterationStep.getInputData(getFirstInputSlot(), ROI3DListData.class, progressInfo);
+        JIPipeExpressionVariablesMap parameters = new JIPipeExpressionVariablesMap(iterationStep);
 
-        JIPipeExpressionVariablesMap parameters = new JIPipeExpressionVariablesMap();
-        if (includeAnnotations) {
-            for (JIPipeTextAnnotation annotation : iterationStep.getMergedTextAnnotations().values()) {
-                parameters.set(annotation.getName(), annotation.getValue());
-            }
-        }
         Vector3D[] bounds = rois.getBounds();
         parameters.set("count", rois.size());
         parameters.set("x", bounds[0].x);
@@ -94,18 +87,6 @@ public class FilterRoi3DListsAlgorithm extends JIPipeSimpleIteratingAlgorithm {
     @JIPipeParameter("output-empty-list")
     public void setOutputEmptyLists(boolean outputEmptyLists) {
         this.outputEmptyLists = outputEmptyLists;
-    }
-
-    @SetJIPipeDocumentation(name = "Include annotations", description = "If enabled, annotations are also available as string variables. Please note that " +
-            "ROI-list specific variables will overwrite annotations with the same name.")
-    @JIPipeParameter("include-annotations")
-    public boolean isIncludeAnnotations() {
-        return includeAnnotations;
-    }
-
-    @JIPipeParameter("include-annotations")
-    public void setIncludeAnnotations(boolean includeAnnotations) {
-        this.includeAnnotations = includeAnnotations;
     }
 
     @SetJIPipeDocumentation(name = "Keep 3D ROI list if ...", description = "The filter expression used to test ROI lists. Must return a boolean.")

@@ -116,7 +116,7 @@ public class GenerateMissingImageFromMathExpression2D extends JIPipeMissingDataG
                 bitDepth = overwriteOutputBitDepth.getBitDepth();
 
             ImagePlus img = IJ.createHyperStack("Generated", width, height, sizeC, sizeZ, sizeT, bitDepth);
-            JIPipeExpressionVariablesMap variableSet = new JIPipeExpressionVariablesMap();
+            JIPipeExpressionVariablesMap variableSet = new JIPipeExpressionVariablesMap(this);
             variableSet.set("width", overwriteWidth);
             variableSet.set("height", overwriteHeight);
             variableSet.set("num_z", overwriteSizeZ);

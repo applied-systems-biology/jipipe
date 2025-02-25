@@ -81,8 +81,7 @@ public class AnnotateWithXPathDataAlgorithm extends JIPipeSimpleIteratingAlgorit
             namespaces.put(parameter.getKey(), parameter.getValue());
         }
 
-        JIPipeExpressionVariablesMap variables = new JIPipeExpressionVariablesMap();
-        variables.putAnnotations(iterationStep.getMergedTextAnnotations());
+        JIPipeExpressionVariablesMap variables = new JIPipeExpressionVariablesMap(iterationStep);
         for (Entry entry : entries.mapToCollection(Entry.class)) {
             String path = entry.getxPath().evaluateToString(variables);
             String annotationName = entry.getAnnotationName().evaluateToString(variables);

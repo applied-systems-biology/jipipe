@@ -80,8 +80,8 @@ public class ApplyExpressionPerLabelAlgorithm extends JIPipeSimpleIteratingAlgor
         TDoubleObjectHashMap<TDoubleList> bucketedValues = new TDoubleObjectHashMap<>();
 
         // Copy the buckets
-        TableColumnData keyColumn_ = keyColumn.pickOrGenerateColumn(inputTable, new JIPipeExpressionVariablesMap());
-        TableColumnData valueColumn_ = valueColumn.pickOrGenerateColumn(inputTable, new JIPipeExpressionVariablesMap());
+        TableColumnData keyColumn_ = keyColumn.pickOrGenerateColumn(inputTable, new JIPipeExpressionVariablesMap(iterationStep));
+        TableColumnData valueColumn_ = valueColumn.pickOrGenerateColumn(inputTable, new JIPipeExpressionVariablesMap(iterationStep));
 
         for (int row = 0; row < inputTable.getRowCount(); row++) {
             double key = keyColumn_.getRowAsDouble(row);
@@ -95,8 +95,7 @@ public class ApplyExpressionPerLabelAlgorithm extends JIPipeSimpleIteratingAlgor
         }
 
         // Setup values
-        JIPipeExpressionVariablesMap variables = new JIPipeExpressionVariablesMap();
-        variables.putAnnotations(iterationStep.getMergedTextAnnotations());
+        JIPipeExpressionVariablesMap variables = new JIPipeExpressionVariablesMap(iterationStep);
 
         // Integrate buckets
         TDoubleDoubleMap integratedValues = new TDoubleDoubleHashMap();

@@ -72,8 +72,7 @@ public class LabelsToROIAlgorithm extends JIPipeSimpleIteratingAlgorithm {
         ImagePlus labelsImage = iterationStep.getInputData(getFirstInputSlot(), ImagePlusGreyscaleData.class, progressInfo).getDuplicateImage();
         ROI2DListData rois = new ROI2DListData();
 
-        JIPipeExpressionVariablesMap variables = new JIPipeExpressionVariablesMap();
-        variables.putAnnotations(iterationStep.getMergedTextAnnotations());
+        JIPipeExpressionVariablesMap variables = new JIPipeExpressionVariablesMap(iterationStep);
 
         ImageJUtils.forEachIndexedZCTSlice(labelsImage, (ip, index) -> {
             if (method == Method.ProtectedFloodfill)

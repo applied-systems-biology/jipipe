@@ -75,8 +75,8 @@ public class ReferencedAppendRectangularRoiAlgorithm extends JIPipeIteratingAlgo
         ROI2DListData currentData = (ROI2DListData) iterationStep.getInputData("ROI", ROI2DListData.class, progressInfo).duplicate(progressInfo);
         ImagePlus reference = iterationStep.getInputData("Reference", ImagePlusData.class, progressInfo).getImage();
         Rectangle bounds = new Rectangle(0, 0, reference.getWidth(), reference.getHeight());
-        JIPipeExpressionVariablesMap variables = new JIPipeExpressionVariablesMap();
-        variables.putAnnotations(iterationStep.getMergedTextAnnotations());
+        JIPipeExpressionVariablesMap variables = new JIPipeExpressionVariablesMap(iterationStep);
+
         for (Margin margin : rectangles) {
             currentData.add(new ShapeRoi(margin.getInsideArea(bounds, variables)));
         }

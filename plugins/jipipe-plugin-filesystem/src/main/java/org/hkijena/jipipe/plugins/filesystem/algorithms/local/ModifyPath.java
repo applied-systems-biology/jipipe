@@ -44,7 +44,6 @@ import java.nio.file.Paths;
 public class ModifyPath extends JIPipeSimpleIteratingAlgorithm {
 
     private PathQueryExpression expression = new PathQueryExpression("path");
-    private boolean accessAnnotations = true;
 
     public ModifyPath(JIPipeNodeInfo info) {
         super(info);
@@ -53,19 +52,12 @@ public class ModifyPath extends JIPipeSimpleIteratingAlgorithm {
     public ModifyPath(ModifyPath other) {
         super(other);
         this.expression = new PathQueryExpression(other.expression);
-        this.accessAnnotations = other.accessAnnotations;
     }
 
     @Override
     protected void runIteration(JIPipeSingleIterationStep iterationStep, JIPipeIterationContext iterationContext, JIPipeGraphNodeRunContext runContext, JIPipeProgressInfo progressInfo) {
         PathData input = iterationStep.getInputData(getFirstInputSlot(), PathData.class, progressInfo);
-        JIPipeExpressionVariablesMap variables = new JIPipeExpressionVariablesMap();
-        if (accessAnnotations) {
-            for (JIPipeTextAnnotation annotation : iterationStep.getMergedTextAnnotations().values()) {
-                variables.set(annotation.getName(), annotation.getValue());
-            }
-        }
-        variables.putProjectDirectories(getProjectDirectory(), getProjectDataDirs());
+        JIPipeExpressionVariablesMap variables = new JIPipeExpressionVariablesMap(iterationStep);
 
         PathFilterExpressionParameterVariablesInfo.buildFor(input.toPath(), variables);
         Object result = expression.evaluate(variables);
@@ -91,17 +83,5 @@ public class ModifyPath extends JIPipeSimpleIteratingAlgorithm {
     @JIPipeParameter("expression")
     public void setExpression(PathQueryExpression expression) {
         this.expression = expression;
-    }
-
-    @SetJIPipeDocumentation(name = "Annotations are variables", description = "If enabled, the expression has variables that contain " +
-            "annotation values. Annotations with one of the names path, absolute_path, name, or parent are overridden by the input path properties.")
-    @JIPipeParameter("access-annotations")
-    public boolean isAccessAnnotations() {
-        return accessAnnotations;
-    }
-
-    @JIPipeParameter("access-annotations")
-    public void setAccessAnnotations(boolean accessAnnotations) {
-        this.accessAnnotations = accessAnnotations;
     }
 }

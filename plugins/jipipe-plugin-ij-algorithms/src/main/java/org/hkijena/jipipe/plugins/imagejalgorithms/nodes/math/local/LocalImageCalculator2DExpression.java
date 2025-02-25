@@ -103,7 +103,7 @@ public class LocalImageCalculator2DExpression extends JIPipeIteratingAlgorithm {
             }
         }
 
-        JIPipeExpressionVariablesMap parameters = new JIPipeExpressionVariablesMap();
+        JIPipeExpressionVariablesMap parameters = new JIPipeExpressionVariablesMap(iterationStep);
         parameters.set("width", width);
         parameters.set("height", height);
         parameters.set("num_z", nZ);

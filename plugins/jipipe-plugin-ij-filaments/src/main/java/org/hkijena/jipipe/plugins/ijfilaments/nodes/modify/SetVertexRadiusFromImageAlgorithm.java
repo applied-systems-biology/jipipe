@@ -59,8 +59,7 @@ public class SetVertexRadiusFromImageAlgorithm extends JIPipeIteratingAlgorithm 
     protected void runIteration(JIPipeSingleIterationStep iterationStep, JIPipeIterationContext iterationContext, JIPipeGraphNodeRunContext runContext, JIPipeProgressInfo progressInfo) {
         Filaments3DGraphData filaments = new Filaments3DGraphData(iterationStep.getInputData("Filaments", Filaments3DGraphData.class, progressInfo));
         ImagePlus thickness = iterationStep.getInputData("Radius", ImagePlusGreyscaleData.class, progressInfo).getImage();
-        JIPipeExpressionVariablesMap variablesMap = new JIPipeExpressionVariablesMap();
-        variablesMap.putAnnotations(iterationStep.getMergedTextAnnotations());
+        JIPipeExpressionVariablesMap variablesMap = new JIPipeExpressionVariablesMap(iterationStep);
 
         for (FilamentVertex vertex : VertexMaskParameter.filter(vertexMask.getFilter(), filaments, filaments.vertexSet(), variablesMap)) {
             int z = (int) Math.max(0, vertex.getSpatialLocation().getZ());

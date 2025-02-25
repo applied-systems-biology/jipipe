@@ -69,8 +69,7 @@ public class ImportIlastikHDF5ImageAlgorithm extends JIPipeSimpleIteratingAlgori
     @Override
     protected void runIteration(JIPipeSingleIterationStep iterationStep, JIPipeIterationContext iterationContext, JIPipeGraphNodeRunContext runContext, JIPipeProgressInfo progressInfo) {
         Path path = iterationStep.getInputData(getFirstInputSlot(), FileData.class, progressInfo).toPath();
-        JIPipeExpressionVariablesMap variables = new JIPipeExpressionVariablesMap();
-        variables.putAnnotations(iterationStep.getMergedTextAnnotations());
+        JIPipeExpressionVariablesMap variables = new JIPipeExpressionVariablesMap(iterationStep);
         String hdf5Path_ = hdf5Path.evaluateToString(variables);
 
         ImagePlus imagePlus = IJ1Hdf5.readImage(path, hdf5Path_, overrideAxes.isEnabled() ? ImgUtils.toImagejAxes(overrideAxes.getContent()) : null, progressInfo);

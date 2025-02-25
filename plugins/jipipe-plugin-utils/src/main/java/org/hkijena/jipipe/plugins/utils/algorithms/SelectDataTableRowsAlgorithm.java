@@ -53,7 +53,7 @@ public class SelectDataTableRowsAlgorithm extends JIPipeParameterSlotAlgorithm {
 
     @Override
     public void runParameterSet(JIPipeGraphNodeRunContext runContext, JIPipeProgressInfo progressInfo, List<JIPipeTextAnnotation> parameterAnnotations) {
-        TIntSet allowedRows = new TIntHashSet(limit.getIntegers(0, getFirstInputSlot().getRowCount(), new JIPipeExpressionVariablesMap()));
+        TIntSet allowedRows = new TIntHashSet(limit.getIntegers(0, getFirstInputSlot().getRowCount(), new JIPipeExpressionVariablesMap(this)));
         for (int row = 0; row < getFirstInputSlot().getRowCount(); row++) {
             if (allowedRows.contains(row)) {
                 getFirstOutputSlot().addData(getFirstInputSlot().getDataItemStore(row),

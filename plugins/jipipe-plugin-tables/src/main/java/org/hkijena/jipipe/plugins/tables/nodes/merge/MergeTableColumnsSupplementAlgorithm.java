@@ -83,8 +83,7 @@ public class MergeTableColumnsSupplementAlgorithm extends JIPipeIteratingAlgorit
         ResultsTableData inputTarget = new ResultsTableData(iterationStep.getInputData("Target", ResultsTableData.class, progressInfo));
         ResultsTableData inputSource = new ResultsTableData(iterationStep.getInputData("Source", ResultsTableData.class, progressInfo));
 
-        JIPipeExpressionVariablesMap variables = new JIPipeExpressionVariablesMap();
-        variables.putAnnotations(iterationStep.getMergedTextAnnotations());
+        JIPipeExpressionVariablesMap variables = new JIPipeExpressionVariablesMap(iterationStep);
 
         // Choose the reference columns
         List<String> selectedReferenceColumns = referenceColumns.queryAll(new ArrayList<>(Sets.union(new HashSet<>(inputTarget.getColumnNames()), new HashSet<>(inputSource.getColumnNames()))), variables);

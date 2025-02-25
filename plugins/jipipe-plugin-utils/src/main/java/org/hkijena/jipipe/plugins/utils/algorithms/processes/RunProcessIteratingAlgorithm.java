@@ -77,10 +77,7 @@ public class RunProcessIteratingAlgorithm extends JIPipeIteratingAlgorithm {
         }
 
         // Run process
-        JIPipeExpressionVariablesMap variables = new JIPipeExpressionVariablesMap();
-        for (Map.Entry<String, JIPipeTextAnnotation> entry : iterationStep.getMergedTextAnnotations().entrySet()) {
-            variables.set(entry.getKey(), entry.getValue().getValue());
-        }
+        JIPipeExpressionVariablesMap variables = new JIPipeExpressionVariablesMap(iterationStep);
         variables.set("input_folder", inputPath.toString());
         variables.set("output_folder", outputPath.toString());
 

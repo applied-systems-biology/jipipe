@@ -64,8 +64,7 @@ public class OverwriteAnnotations extends JIPipeIteratingAlgorithm {
     protected void runIteration(JIPipeSingleIterationStep iterationStep, JIPipeIterationContext iterationContext, JIPipeGraphNodeRunContext runContext, JIPipeProgressInfo progressInfo) {
         JIPipeData target = iterationStep.getInputData("Target", JIPipeData.class, progressInfo);
 
-        JIPipeExpressionVariablesMap variables = new JIPipeExpressionVariablesMap();
-        variables.putCommonVariables(this);
+        JIPipeExpressionVariablesMap variables = new JIPipeExpressionVariablesMap(iterationStep);
 
         // Remove annotations from target (via original annotations)
         Map<String, String> targetAnnotationMap = JIPipeTextAnnotation.annotationListToMap(iterationStep.getInputTextAnnotations("Target"), JIPipeTextAnnotationMergeMode.OverwriteExisting);

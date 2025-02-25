@@ -149,8 +149,7 @@ public class TransformCrop2DAlgorithm extends JIPipeSimpleIteratingAlgorithm {
         ImagePlus img = inputData.getImage();
 
         Rectangle imageArea = new Rectangle(0, 0, img.getWidth(), img.getHeight());
-        JIPipeExpressionVariablesMap variables = new JIPipeExpressionVariablesMap();
-        variables.putAnnotations(iterationStep.getMergedTextAnnotations());
+        JIPipeExpressionVariablesMap variables = new JIPipeExpressionVariablesMap(iterationStep);
         Image5DExpressionParameterVariablesInfo.writeToVariables(img, variables);
         Rectangle bounds = roi.getInsideArea(imageArea, variables);
         if (bounds == null || bounds.width == 0 || bounds.height == 0) {

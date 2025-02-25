@@ -67,8 +67,8 @@ public class RotateRoiAlgorithm extends JIPipeIteratingAlgorithm {
         ROI2DListData rois = iterationStep.getInputData("Input", ROI2DListData.class, progressInfo);
         ImagePlusData imagePlusData = iterationStep.getInputData("Reference", ImagePlusData.class, progressInfo);
 
-        JIPipeExpressionVariablesMap variables = new JIPipeExpressionVariablesMap();
-        variables.putAnnotations(iterationStep.getMergedTextAnnotations());
+        JIPipeExpressionVariablesMap variables = new JIPipeExpressionVariablesMap(iterationStep);
+
         if (imagePlusData != null) {
             variables.set("width", imagePlusData.getImage().getWidth());
             variables.set("height", imagePlusData.getImage().getHeight());

@@ -83,7 +83,7 @@ public class FilterByAnnotation extends JIPipeAlgorithm {
             List<JIPipeTextAnnotation> annotations = inputSlot.getTextAnnotations(row);
             String dataString = inputSlot.getData(row, JIPipeData.class, progressInfo).toString();
             AnnotationFilterExpression expression = filter;
-            JIPipeExpressionVariablesMap variables = new JIPipeExpressionVariablesMap();
+            JIPipeExpressionVariablesMap variables = new JIPipeExpressionVariablesMap(this);
             variables.putCommonVariables(this);
             if (!enableFilter || expression.test(annotations, dataString, variables)) {
                 getFirstOutputSlot().addData(inputSlot.getData(row, JIPipeData.class, progressInfo),

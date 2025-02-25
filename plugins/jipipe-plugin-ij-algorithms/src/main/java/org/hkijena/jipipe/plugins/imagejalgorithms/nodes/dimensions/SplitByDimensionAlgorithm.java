@@ -98,7 +98,7 @@ public class SplitByDimensionAlgorithm extends JIPipeSimpleIteratingAlgorithm {
                 for (JIPipeOutputDataSlot outputSlot : getOutputSlots()) {
                     OptionalIntegerRange range = outputIndices.get(outputSlot.getName()).get(OptionalIntegerRange.class);
                     if (range.isEnabled()) {
-                        if (!range.getContent().getIntegers(0, img.getNChannels(), new JIPipeExpressionVariablesMap()).contains(c)) {
+                        if (!range.getContent().getIntegers(0, img.getNChannels(), new JIPipeExpressionVariablesMap(iterationStep)).contains(c)) {
                             continue;
                         }
                     }
@@ -126,7 +126,7 @@ public class SplitByDimensionAlgorithm extends JIPipeSimpleIteratingAlgorithm {
                 for (JIPipeOutputDataSlot outputSlot : getOutputSlots()) {
                     OptionalIntegerRange range = outputIndices.get(outputSlot.getName()).get(OptionalIntegerRange.class);
                     if (range.isEnabled()) {
-                        if (!range.getContent().getIntegers(0, img.getNSlices(), new JIPipeExpressionVariablesMap()).contains(z)) {
+                        if (!range.getContent().getIntegers(0, img.getNSlices(), new JIPipeExpressionVariablesMap(iterationStep)).contains(z)) {
                             continue;
                         }
                     }
@@ -154,7 +154,7 @@ public class SplitByDimensionAlgorithm extends JIPipeSimpleIteratingAlgorithm {
                 for (JIPipeOutputDataSlot outputSlot : getOutputSlots()) {
                     OptionalIntegerRange range = outputIndices.get(outputSlot.getName()).get(OptionalIntegerRange.class);
                     if (range.isEnabled()) {
-                        if (!range.getContent().getIntegers(0, img.getNFrames(), new JIPipeExpressionVariablesMap()).contains(t)) {
+                        if (!range.getContent().getIntegers(0, img.getNFrames(), new JIPipeExpressionVariablesMap(iterationStep)).contains(t)) {
                             continue;
                         }
                     }

@@ -45,7 +45,6 @@ import java.util.Set;
 public class FilterTablesAlgorithm extends JIPipeSimpleIteratingAlgorithm {
 
     private JIPipeExpressionParameter filters = new JIPipeExpressionParameter("");
-    private boolean includeAnnotations = true;
 
     /**
      * Creates a new instance
@@ -63,7 +62,6 @@ public class FilterTablesAlgorithm extends JIPipeSimpleIteratingAlgorithm {
      */
     public FilterTablesAlgorithm(FilterTablesAlgorithm other) {
         super(other);
-        this.includeAnnotations = other.includeAnnotations;
         this.filters = new JIPipeExpressionParameter(other.filters);
     }
 
@@ -71,12 +69,8 @@ public class FilterTablesAlgorithm extends JIPipeSimpleIteratingAlgorithm {
     protected void runIteration(JIPipeSingleIterationStep iterationStep, JIPipeIterationContext iterationContext, JIPipeGraphNodeRunContext runContext, JIPipeProgressInfo progressInfo) {
         ResultsTableData input = iterationStep.getInputData(getFirstInputSlot(), ResultsTableData.class, progressInfo);
 
-        JIPipeExpressionVariablesMap parameters = new JIPipeExpressionVariablesMap();
-        if (includeAnnotations) {
-            for (JIPipeTextAnnotation annotation : iterationStep.getMergedTextAnnotations().values()) {
-                parameters.set(annotation.getName(), annotation.getValue());
-            }
-        }
+        JIPipeExpressionVariablesMap parameters = new JIPipeExpressionVariablesMap(iterationStep);
+
         parameters.set("num_rows", input.getRowCount());
         parameters.set("num_cols", input.getColumnCount());
         parameters.set("column_names", input.getColumnNames());
@@ -84,18 +78,6 @@ public class FilterTablesAlgorithm extends JIPipeSimpleIteratingAlgorithm {
         if (filters.test(parameters)) {
             iterationStep.addOutputData(getFirstOutputSlot(), input, progressInfo);
         }
-    }
-
-    @SetJIPipeDocumentation(name = "Include annotations", description = "If enabled, annotations are also available as string variables. Please note that " +
-            "table data specific variables will overwrite annotations with the same name.")
-    @JIPipeParameter("include-annotations")
-    public boolean isIncludeAnnotations() {
-        return includeAnnotations;
-    }
-
-    @JIPipeParameter("include-annotations")
-    public void setIncludeAnnotations(boolean includeAnnotations) {
-        this.includeAnnotations = includeAnnotations;
     }
 
     @SetJIPipeDocumentation(name = "Filters", description = "Expression that is applied per table to determine if it is filtered out. Must return a boolean.")

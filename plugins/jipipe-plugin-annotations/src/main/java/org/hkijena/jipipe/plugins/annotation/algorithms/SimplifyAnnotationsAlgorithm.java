@@ -73,7 +73,7 @@ public class SimplifyAnnotationsAlgorithm extends JIPipeSimpleIteratingAlgorithm
 
         String combinedValue;
         {
-            JIPipeExpressionVariablesMap variables = new JIPipeExpressionVariablesMap();
+            JIPipeExpressionVariablesMap variables = new JIPipeExpressionVariablesMap(iterationStep);
             for (JIPipeTextAnnotation annotation : combinedAnnotations) {
                 variables.set(annotation.getName(), annotation.getValue());
             }
@@ -90,7 +90,7 @@ public class SimplifyAnnotationsAlgorithm extends JIPipeSimpleIteratingAlgorithm
             for (JIPipeTextAnnotation annotation : iterationStep.getMergedTextAnnotations().values()) {
                 existing.add(annotation.getName());
             }
-            JIPipeExpressionVariablesMap variables = new JIPipeExpressionVariablesMap();
+            JIPipeExpressionVariablesMap variables = new JIPipeExpressionVariablesMap(iterationStep);
             for (JIPipeTextAnnotation annotation : combinedAnnotations) {
                 variables.set("value", annotation.getName());
                 String newName = StringUtils.makeUniqueString(renameFunction.generate(variables), " ", existing);

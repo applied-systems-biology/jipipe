@@ -122,8 +122,7 @@ public class TableToTextROIAlgorithm extends JIPipeSimpleIteratingAlgorithm {
         ResultsTableData table = iterationStep.getInputData(getFirstInputSlot(), ResultsTableData.class, progressInfo);
         ROI2DListData rois = new ROI2DListData();
 
-        JIPipeExpressionVariablesMap variables = new JIPipeExpressionVariablesMap();
-        variables.putAnnotations(iterationStep.getMergedTextAnnotations());
+        JIPipeExpressionVariablesMap variables = new JIPipeExpressionVariablesMap(iterationStep);
 
         TableColumnData colX = columnX.pickOrGenerateColumn(table, variables);
         TableColumnData colY = columnY.pickOrGenerateColumn(table, variables);

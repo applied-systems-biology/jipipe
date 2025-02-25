@@ -121,15 +121,15 @@ public class HyperstackSlicerAlgorithm extends JIPipeSimpleIteratingAlgorithm {
     }
 
     private void extractZ(ImageSliceIndices indices, int maxZ) {
-        indices.getZ().addAll(indicesZ.getIntegers(0, maxZ, new JIPipeExpressionVariablesMap()));
+        indices.getZ().addAll(indicesZ.getIntegers(0, maxZ, new JIPipeExpressionVariablesMap(this)));
     }
 
     private void extractC(ImageSliceIndices indices, int maxC) {
-        indices.getC().addAll(indicesC.getIntegers(0, maxC, new JIPipeExpressionVariablesMap()));
+        indices.getC().addAll(indicesC.getIntegers(0, maxC, new JIPipeExpressionVariablesMap(this)));
     }
 
     private void extractT(ImageSliceIndices indices, int maxT) {
-        indices.getT().addAll(indicesT.getIntegers(0, maxT, new JIPipeExpressionVariablesMap()));
+        indices.getT().addAll(indicesT.getIntegers(0, maxT, new JIPipeExpressionVariablesMap(this)));
     }
 
     @SetJIPipeDocumentation(name = "Indices (Z)", description = "Array of Z indices to be included in the final image. All indices begin with zero. Indices outside the available range are automatically wrapped. Return an empty array to skip a slice.")

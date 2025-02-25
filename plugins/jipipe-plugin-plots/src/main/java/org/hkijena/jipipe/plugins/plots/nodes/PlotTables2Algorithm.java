@@ -102,7 +102,7 @@ public class PlotTables2Algorithm extends JIPipeMergingAlgorithm {
             ResultsTableData seriesTable = new ResultsTableData();
             seriesTable.addRows(inputData.getRowCount());
 
-            JIPipeExpressionVariablesMap variables = new JIPipeExpressionVariablesMap();
+            JIPipeExpressionVariablesMap variables = new JIPipeExpressionVariablesMap(iterationStep);
             List<JIPipeTextAnnotation> originalAnnotations = getFirstInputSlot().getTextAnnotations(row);
             for (JIPipeTextAnnotation annotation : originalAnnotations) {
                 variables.set(annotation.getName(), annotation.getValue());
@@ -111,7 +111,7 @@ public class PlotTables2Algorithm extends JIPipeMergingAlgorithm {
             // Generate series
             for (Map.Entry<String, JIPipeParameterAccess> entry : inputColumns.getParameters().entrySet()) {
                 TableColumnSourceExpressionParameter parameter = entry.getValue().get(TableColumnSourceExpressionParameter.class);
-                seriesTable.setColumn(entry.getKey(), parameter.pickOrGenerateColumn(inputData, new JIPipeExpressionVariablesMap()), plotColumns.get(entry.getKey()).isNumeric());
+                seriesTable.setColumn(entry.getKey(), parameter.pickOrGenerateColumn(inputData, new JIPipeExpressionVariablesMap(iterationStep)), plotColumns.get(entry.getKey()).isNumeric());
             }
 
             JFreeChartPlotDataSeries series = new JFreeChartPlotDataSeries(seriesTable.getTable());

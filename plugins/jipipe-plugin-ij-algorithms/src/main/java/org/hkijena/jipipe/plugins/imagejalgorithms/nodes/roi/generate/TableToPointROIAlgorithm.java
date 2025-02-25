@@ -100,8 +100,7 @@ public class TableToPointROIAlgorithm extends JIPipeSimpleIteratingAlgorithm {
         ResultsTableData table = iterationStep.getInputData(getFirstInputSlot(), ResultsTableData.class, progressInfo);
         ROI2DListData rois = new ROI2DListData();
 
-        JIPipeExpressionVariablesMap variables = new JIPipeExpressionVariablesMap();
-        variables.putAnnotations(iterationStep.getMergedTextAnnotations());
+        JIPipeExpressionVariablesMap variables = new JIPipeExpressionVariablesMap(iterationStep);
 
         TableColumnData colX1 = columnX1.pickOrGenerateColumn(table, variables);
         TableColumnData colY1 = columnY1.pickOrGenerateColumn(table, variables);

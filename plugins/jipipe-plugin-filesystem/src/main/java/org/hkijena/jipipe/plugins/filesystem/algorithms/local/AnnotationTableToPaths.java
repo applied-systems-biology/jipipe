@@ -76,7 +76,7 @@ public class AnnotationTableToPaths extends JIPipeSimpleIteratingAlgorithm {
     @Override
     protected void runIteration(JIPipeSingleIterationStep iterationStep, JIPipeIterationContext iterationContext, JIPipeGraphNodeRunContext runContext, JIPipeProgressInfo progressInfo) {
         AnnotationTableData tableData = iterationStep.getInputData(getFirstInputSlot(), AnnotationTableData.class, progressInfo);
-        TableColumnData tableColumn = column.pickOrGenerateColumn(tableData, new JIPipeExpressionVariablesMap());
+        TableColumnData tableColumn = column.pickOrGenerateColumn(tableData, new JIPipeExpressionVariablesMap(iterationStep));
         if (tableColumn == null) {
             throw new JIPipeValidationRuntimeException(new JIPipeValidationReportEntry(JIPipeValidationReportEntryLevel.Error, new GraphNodeValidationReportContext(this),
                     "Could not find column that matches '" + column.toString() + "'!",

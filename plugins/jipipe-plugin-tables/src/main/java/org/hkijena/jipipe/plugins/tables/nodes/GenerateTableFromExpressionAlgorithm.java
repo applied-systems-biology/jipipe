@@ -76,8 +76,8 @@ public class GenerateTableFromExpressionAlgorithm extends JIPipeSimpleIteratingA
     protected void runIteration(JIPipeSingleIterationStep iterationStep, JIPipeIterationContext iterationContext, JIPipeGraphNodeRunContext runContext, JIPipeProgressInfo progressInfo) {
         ResultsTableData table = new ResultsTableData();
         table.addRows(generatedRows);
-        JIPipeExpressionVariablesMap variableSet = new JIPipeExpressionVariablesMap();
-        variableSet.putAnnotations(iterationStep.getMergedTextAnnotations());
+        JIPipeExpressionVariablesMap variableSet = new JIPipeExpressionVariablesMap(iterationStep);
+
         variableSet.set("num_rows", generatedRows);
         variableSet.set("num_cols", columns.size());
         for (ExpressionTableColumnGeneratorProcessor entry : columns) {
