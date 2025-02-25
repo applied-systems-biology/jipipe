@@ -42,6 +42,7 @@ public class JIPipeProjectCompartment extends JIPipeGraphNode implements JIPipeC
 
     private JIPipeProject project;
     private BiMap<String, JIPipeProjectCompartmentOutput> outputNodes = HashBiMap.create();
+    private boolean showInProjectOverview = true;
 
     private GraphNodeParameterReferenceGroupCollection exportedParameters = new GraphNodeParameterReferenceGroupCollection();
 
@@ -65,6 +66,7 @@ public class JIPipeProjectCompartment extends JIPipeGraphNode implements JIPipeC
         super(other);
         this.exportedParameters = new GraphNodeParameterReferenceGroupCollection(other.exportedParameters);
         this.showLimitedParameters = other.showLimitedParameters;
+        this.showInProjectOverview = other.showInProjectOverview;
 
         registerSubParameter(exportedParameters);
     }
@@ -155,6 +157,17 @@ public class JIPipeProjectCompartment extends JIPipeGraphNode implements JIPipeC
     @Override
     public void reportValidity(JIPipeValidationReportContext reportContext, JIPipeValidationReport report) {
 
+    }
+
+    @SetJIPipeDocumentation(name = "Show in project overview", description = "If enabled, show this compartment's outputs in the project overview")
+    @JIPipeParameter("show-in-project-overview")
+    public boolean isShowInProjectOverview() {
+        return showInProjectOverview;
+    }
+
+    @JIPipeParameter("show-in-project-overview")
+    public void setShowInProjectOverview(boolean showInProjectOverview) {
+        this.showInProjectOverview = showInProjectOverview;
     }
 
     @SetJIPipeDocumentation(name = "Exported parameters", description = "Allows you to export parameters from the group into the group node")

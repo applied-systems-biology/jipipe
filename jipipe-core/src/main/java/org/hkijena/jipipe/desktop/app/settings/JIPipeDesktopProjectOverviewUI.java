@@ -14,11 +14,17 @@
 package org.hkijena.jipipe.desktop.app.settings;
 
 import org.hkijena.jipipe.api.JIPipeAuthorMetadata;
+import org.hkijena.jipipe.api.compartments.algorithms.JIPipeProjectCompartment;
+import org.hkijena.jipipe.api.compartments.algorithms.JIPipeProjectCompartmentOutput;
 import org.hkijena.jipipe.api.grouping.parameters.GraphNodeParameterReferenceGroupCollection;
+import org.hkijena.jipipe.api.nodes.JIPipeGraphNode;
 import org.hkijena.jipipe.api.project.JIPipeProjectDirectories;
 import org.hkijena.jipipe.desktop.app.JIPipeDesktopProjectWorkbench;
 import org.hkijena.jipipe.desktop.app.JIPipeDesktopProjectWorkbenchPanel;
 import org.hkijena.jipipe.desktop.app.bookmarks.JIPipeDesktopBookmarkListPanel;
+import org.hkijena.jipipe.desktop.app.grapheditor.commons.AbstractJIPipeDesktopGraphEditorUI;
+import org.hkijena.jipipe.desktop.app.grapheditor.commons.JIPipeDesktopGraphEditorLogPanel;
+import org.hkijena.jipipe.desktop.app.grapheditor.commons.properties.JIPipeDesktopGraphEditorErrorPanel;
 import org.hkijena.jipipe.desktop.app.parameterreference.JIPipeDesktopGraphNodeParameterReferenceGroupCollectionEditorUI;
 import org.hkijena.jipipe.desktop.app.settings.project.JIPipeDesktopMergedProjectSettings;
 import org.hkijena.jipipe.desktop.commons.components.JIPipeDesktopFormPanel;
@@ -43,8 +49,10 @@ import java.awt.datatransfer.Clipboard;
 import java.awt.datatransfer.StringSelection;
 import java.awt.image.BufferedImage;
 import java.nio.file.Path;
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Objects;
 
 /**
@@ -109,7 +117,7 @@ public class JIPipeDesktopProjectOverviewUI extends JIPipeDesktopProjectWorkbenc
 
     private void refreshParameters() {
         userParametersPanel.reloadForm();
-        if(userParametersPanel.getParameterTree().getParameters().isEmpty()) {
+        if (userParametersPanel.getParameterTree().getParameters().isEmpty()) {
             userParametersPanel.clear();
             userParametersPanel.addWideToForm(UIUtils.createInfoLabel("This project has no parameters",
                     "Use the options above to add or link parameters into this panel."));
@@ -179,40 +187,112 @@ public class JIPipeDesktopProjectOverviewUI extends JIPipeDesktopProjectWorkbenc
         JPanel tipsPanel = new JPanel();
         tipsPanel.setLayout(new BoxLayout(tipsPanel, BoxLayout.X_AXIS));
 
-        if(!StringUtils.isNullOrEmpty(getProject().getMetadata().getDescription().toPlainText())) {
-            addPanelToCenterPanel("Description", descriptionReader, UIUtils.makeButtonTransparent(UIUtils.createButton("", UIUtils.getIconFromResources("actions/edit.png"), this::editProjectMetadata)));
+        if (!StringUtils.isNullOrEmpty(getProject().getMetadata().getDescription().toPlainText())) {
+            addPanelToCenterPanel(UIUtils.getIcon32FromResources("status/messagebox_info.png"), "Description", descriptionReader, UIUtils.makeButtonTransparent(UIUtils.createButton("", UIUtils.getIconFromResources("actions/edit.png"), this::editProjectMetadata)));
             descriptionReader.setText(getProject().getMetadata().getDescription().getHtml());
-        }
-        else {
+        } else {
             addToTipsPanel(tipsPanel, "Write a description", "Write a workflow description to help people who are unfamiliar with your pipeline.",
                     UIUtils.makeButtonTransparent(UIUtils.createButton("Edit metadata", UIUtils.getIconFromResources("actions/edit.png"), this::editProjectMetadata)));
         }
 
-        if(StringUtils.isNullOrEmpty(getProject().getMetadata().getLicense())) {
+        if (StringUtils.isNullOrEmpty(getProject().getMetadata().getLicense())) {
             createLicenseTip(tipsPanel);
         }
 
-        createCompartmentsTipIfNeeded(tipsPanel);
+        createRunPanel();
 
-        if(tipsPanel.getComponentCount() > 0) {
+        createCompartmentsTipIfNeeded(tipsPanel);
+        createCompartmentsOutputTipIfNeeded(tipsPanel);
+
+        // Handle the tips panel
+        if (tipsPanel.getComponentCount() > 0) {
             tipsPanel.add(Box.createHorizontalGlue());
             JScrollPane scrollPane = new JScrollPane(tipsPanel);
             scrollPane.setMinimumSize(new Dimension(300, 300));
-            scrollPane.setBorder(  BorderFactory.createEmptyBorder(16,16,16,16));
+            scrollPane.setBorder(BorderFactory.createEmptyBorder(16, 16, 16, 16));
             centerPanel.addWideToForm(scrollPane);
         }
         centerPanel.addVerticalGlue();
 
     }
 
+    private void createRunPanel() {
+        List<JIPipeProjectCompartmentOutput> outputList = new ArrayList<>();
+        for (JIPipeGraphNode graphNode : getProject().getCompartmentGraph().traverse()) {
+            if (graphNode instanceof JIPipeProjectCompartment) {
+                if(((JIPipeProjectCompartment) graphNode).isShowInProjectOverview()) {
+                    outputList.addAll(((JIPipeProjectCompartment) graphNode).getOutputNodes().values());
+                }
+            }
+        }
+        if(!outputList.isEmpty()) {
+            JPanel listPanel = UIUtils.boxVertical();
+
+            for (JIPipeProjectCompartmentOutput output : outputList) {
+                JPanel outputPanel = new JPanel(new BorderLayout());
+                outputPanel.setBorder(BorderFactory.createCompoundBorder(
+                        BorderFactory.createEmptyBorder(4,4,4,4),
+                        new RoundedLineBorder(UIUtils.getControlBorderColor(), 1, 4)
+                ));
+                outputPanel.add(new JLabel(output.getDisplayName(), UIUtils.getIconFromResources("actions/graph-compartment.png"), JLabel.LEFT), BorderLayout.WEST);
+
+                JButton runButton = new JButton("Run", UIUtils.getIconFromResources("actions/run-play.png"));
+                JPopupMenu runMenu = UIUtils.addPopupMenuToButton(runButton);
+                runMenu.add(UIUtils.createMenuItem("Update cache", "Runs the output and stores the results in the memory cache",  UIUtils.getIcon16FromResources("actions/update-cache.png"), () -> {
+                    doUpdateCache(output, false);
+                }));
+                runMenu.add(UIUtils.createMenuItem("Cache intermediate results", "Runs the output and stores the results and intermediate" +
+                        " results in the memory cache (memory-intensive for large workflows!)",  UIUtils.getIcon16FromResources("actions/cache-intermediate-results.png"), () -> {
+                    doUpdateCache(output, true);
+                }));
+
+                outputPanel.add(UIUtils.boxHorizontal(
+                        UIUtils.createButton("Go to", UIUtils.getIconFromResources("actions/go-jump.png"), () -> {
+                            getDesktopProjectWorkbench().getOrOpenPipelineEditorTab(output.getProjectCompartment(), true);
+                        }),
+                        UIUtils.createButton("Show results", UIUtils.getIconFromResources("actions/update-cache.png"), () -> {
+                            doShowResults(output);
+                        }),
+                        runButton
+                ), BorderLayout.EAST);
+
+                listPanel.add(outputPanel);
+            }
+
+            addPanelToCenterPanel(UIUtils.getIcon32FromResources("actions/run-play.png"), "Run compartment", listPanel);
+        }
+    }
+
+    private void doShowResults(JIPipeProjectCompartmentOutput output) {
+
+    }
+
+    private void doUpdateCache(JIPipeProjectCompartmentOutput output, boolean intermediateResults) {
+
+    }
+
+    private void createCompartmentsOutputTipIfNeeded(JPanel tipsPanel) {
+        int numHits = 0;
+        for (JIPipeProjectCompartment compartment : getProject().getCompartments().values()) {
+            if (compartment.getOutputNodes().isEmpty()) {
+                numHits++;
+            }
+        }
+        if (numHits > 0) {
+            addToTipsPanel(tipsPanel, "Let compartments output data", "If you setup at least one output for each compartment, you can pass data to other compartments. " +
+                            "Additionally, you will be able to run the outputs from the Compartments view and from here.",
+                    UIUtils.makeButtonTransparent(UIUtils.createButton("Show compartments", UIUtils.getIconFromResources("actions/graph-compartments.png"), this::openCompartmentsEditor)));
+        }
+    }
+
     private void createCompartmentsTipIfNeeded(JPanel tipsPanel) {
         int nodeCount = getProject().getGraph().getNodeCount();
         int compartmentCount = getProject().getCompartments().size();
 
-        if(nodeCount > 30 && compartmentCount == 1) {
+        if (nodeCount > 30 && compartmentCount == 1) {
             addToTipsPanel(tipsPanel, "Consider organizing your project", "Use compartments to split your pipeline into smaller units, so it is easier " +
                             "to navigate through your project.",
-                    UIUtils.makeButtonTransparent(UIUtils.createButton("Show compartments",UIUtils.getIconFromResources("actions/graph-compartments.png"), this::openCompartmentsEditor)));
+                    UIUtils.makeButtonTransparent(UIUtils.createButton("Show compartments", UIUtils.getIconFromResources("actions/graph-compartments.png"), this::openCompartmentsEditor)));
         }
     }
 
@@ -224,7 +304,7 @@ public class JIPipeDesktopProjectOverviewUI extends JIPipeDesktopProjectWorkbenc
         JButton button = UIUtils.makeButtonTransparent(UIUtils.createButton("Choose a license", UIUtils.getIconFromResources("actions/edit.png"), () -> {
         }));
         JPopupMenu popupMenu = UIUtils.addPopupMenuToButton(button);
-        for(String license : Arrays.asList(
+        for (String license : Arrays.asList(
                 "CC-BY-4.0",
                 "MIT",
                 "Apache-2.0",
@@ -257,18 +337,18 @@ public class JIPipeDesktopProjectOverviewUI extends JIPipeDesktopProjectWorkbenc
     private void addToTipsPanel(JPanel tipsPanel, String title, String text, Component... ctaComponents) {
         JPanel panel = new JPanel(new BorderLayout());
         panel.setBorder(BorderFactory.createCompoundBorder(
-                BorderFactory.createEmptyBorder(0,0,0,16),
+                BorderFactory.createEmptyBorder(0, 0, 0, 16),
                 new RoundedLineBorder(UIUtils.getControlBorderColor(), 1, 4)
         ));
         JLabel titleLabel = new JLabel(title);
         titleLabel.setIcon(UIUtils.getIcon32FromResources("status/starred.png"));
         titleLabel.setFont(titleLabel.getFont().deriveFont(Font.BOLD, 14));
-        titleLabel.setBorder(BorderFactory.createEmptyBorder(0,0,16,0));
+        titleLabel.setBorder(BorderFactory.createEmptyBorder(0, 0, 16, 0));
         panel.add(titleLabel, BorderLayout.NORTH);
         panel.add(UIUtils.createReadonlyBorderlessTextArea(text), BorderLayout.CENTER);
 
         JToolBar toolBar = new JToolBar();
-        toolBar.setBorder(BorderFactory.createMatteBorder(1,0,0,0,UIUtils.getControlBorderColor()));
+        toolBar.setBorder(BorderFactory.createMatteBorder(1, 0, 0, 0, UIUtils.getControlBorderColor()));
         toolBar.setFloatable(false);
         toolBar.add(Box.createHorizontalGlue());
         for (Component component : ctaComponents) {
@@ -283,14 +363,14 @@ public class JIPipeDesktopProjectOverviewUI extends JIPipeDesktopProjectWorkbenc
         tipsPanel.add(panel);
     }
 
-    private void addPanelToCenterPanel(String title, Component center, Component... titleBarComponents) {
+    private void addPanelToCenterPanel(Icon icon, String title, Component center, Component... titleBarComponents) {
         JPanel panel = new JPanel(new BorderLayout());
         panel.setBorder(BorderFactory.createCompoundBorder(
-                BorderFactory.createEmptyBorder(16,16,16,16),
+                BorderFactory.createEmptyBorder(16, 16, 16, 16),
                 new RoundedLineBorder(UIUtils.getControlBorderColor(), 1, 4)
         ));
 
-        JLabel titleLabel = new JLabel(title);
+        JLabel titleLabel = new JLabel(title, icon, JLabel.LEFT);
         titleLabel.setBorder(UIUtils.createEmptyBorder(8));
         titleLabel.setFont(titleLabel.getFont().deriveFont(Font.BOLD, 16));
 
@@ -301,6 +381,7 @@ public class JIPipeDesktopProjectOverviewUI extends JIPipeDesktopProjectWorkbenc
         for (Component titleBarComponent : titleBarComponents) {
             toolBar.add(titleBarComponent);
         }
+        toolBar.add(Box.createHorizontalStrut(8));
         toolBar.setBorder(BorderFactory.createMatteBorder(0, 0, 1, 0, UIUtils.getControlBorderColor()));
         toolBar.setBackground(ColorUtils.mix(JIPipeDesktopModernMetalTheme.PRIMARY5, ColorUtils.scaleHSV(UIManager.getColor("Panel.background"), 1, 1, 0.98f), 0.92));
 
@@ -345,6 +426,18 @@ public class JIPipeDesktopProjectOverviewUI extends JIPipeDesktopProjectWorkbenc
                 false,
                 0,
                 new JIPipeDesktopBookmarkListPanel(getDesktopWorkbench(), getProject().getGraph(), null, null));
+        dockPanel.addDockPanel(AbstractJIPipeDesktopGraphEditorUI.DOCK_LOG,
+                "Log",
+                UIUtils.getIcon32FromResources("actions/rabbitvcs-show_log.png"),
+                JIPipeDesktopDockPanel.PanelLocation.BottomRight,
+                false,
+                0, new JIPipeDesktopGraphEditorLogPanel(getDesktopWorkbench()));
+        dockPanel.addDockPanel(AbstractJIPipeDesktopGraphEditorUI.DOCK_ERRORS,
+                "Errors",
+                UIUtils.getIcon32FromResources("actions/dialog-warning-2.png"),
+                JIPipeDesktopDockPanel.PanelLocation.BottomRight,
+                false,
+                0, new JIPipeDesktopGraphEditorErrorPanel(getDesktopWorkbench(), null));
 
         dockPanel.setBackgroundComponent(centerPanel);
         add(dockPanel, BorderLayout.CENTER);
@@ -373,19 +466,19 @@ public class JIPipeDesktopProjectOverviewUI extends JIPipeDesktopProjectWorkbenc
 
     private void addDirectoryParameter() {
         Path path = JIPipeFileChooserApplicationSettings.openPath(this, JIPipeFileChooserApplicationSettings.LastDirectoryKey.Data, "Add new project-wide path/directory");
-        if(path != null) {
+        if (path != null) {
             JIPipeProjectDirectories.DirectoryEntry entry = new JIPipeProjectDirectories.DirectoryEntry();
             entry.setPath(path);
             entry.setName(path.getFileName().toString());
-            while(true) {
-                if(JIPipeDesktopParameterFormPanel.showDialog(getDesktopProjectWorkbench(), entry, new MarkdownText("# Add new project-wide path/directory\n\n" +
+            while (true) {
+                if (JIPipeDesktopParameterFormPanel.showDialog(getDesktopProjectWorkbench(), entry, new MarkdownText("# Add new project-wide path/directory\n\n" +
                         "Please provide at least a unique key that identifies the path and allows to recall it from within the workflow. " +
                         "You can also request that the path must exist."), "Add new project-wide path/directory", JIPipeDesktopParameterFormPanel.DEFAULT_DIALOG_FLAGS)) {
-                    if(StringUtils.isNullOrEmpty(entry.getKey())) {
+                    if (StringUtils.isNullOrEmpty(entry.getKey())) {
                         JOptionPane.showMessageDialog(this, "Please provide a key", "Add new project-wide path/directory", JOptionPane.ERROR_MESSAGE);
                         continue;
                     }
-                    if(getProject().getMetadata().getDirectories().getDirectoriesAsInstance().stream().anyMatch(e -> Objects.equals(e.getKey(), entry.getKey()))) {
+                    if (getProject().getMetadata().getDirectories().getDirectoriesAsInstance().stream().anyMatch(e -> Objects.equals(e.getKey(), entry.getKey()))) {
                         JOptionPane.showMessageDialog(this, "The key already exists", "Add new project-wide path/directory", JOptionPane.ERROR_MESSAGE);
                         continue;
                     }
@@ -405,7 +498,7 @@ public class JIPipeDesktopProjectOverviewUI extends JIPipeDesktopProjectWorkbenc
     private void editGlobalParameters() {
         JIPipeDesktopDynamicParameterEditorDialog dialog = new JIPipeDesktopDynamicParameterEditorDialog(SwingUtilities.getWindowAncestor(this),
                 getDesktopProjectWorkbench(),
-               getProject().getMetadata().getGlobalParameters());
+                getProject().getMetadata().getGlobalParameters());
         dialog.setLocationRelativeTo(SwingUtilities.getWindowAncestor(this));
         dialog.setModal(true);
         dialog.setVisible(true);
