@@ -76,16 +76,13 @@ public class ApplyMathExpression2DAlgorithm extends JIPipeSimpleIteratingAlgorit
     protected void runIteration(JIPipeSingleIterationStep iterationStep, JIPipeIterationContext iterationContext, JIPipeGraphNodeRunContext runContext, JIPipeProgressInfo progressInfo) {
         ImagePlusData inputData = iterationStep.getInputData(getFirstInputSlot(), ImagePlusData.class, progressInfo);
         ImagePlus img = inputData.getDuplicateImage();
-        JIPipeExpressionVariablesMap variableSet = new JIPipeExpressionVariablesMap();
-        for (JIPipeTextAnnotation annotation : iterationStep.getMergedTextAnnotations().values()) {
-            variableSet.set(annotation.getName(), annotation.getValue());
-        }
+        JIPipeExpressionVariablesMap variableSet = new JIPipeExpressionVariablesMap(this);
+
         variableSet.set("width", img.getWidth());
         variableSet.set("height", img.getHeight());
         variableSet.set("num_z", inputData.getImage().getNSlices());
         variableSet.set("num_c", inputData.getImage().getNChannels());
         variableSet.set("num_t", inputData.getImage().getNFrames());
-        variableSet.putCustomVariables(getDefaultCustomExpressionVariables());
 
         ImageJUtils.forEachIndexedZCTSlice(img, (ip, index) -> {
             for (int y = 0; y < ip.getHeight(); y++) {

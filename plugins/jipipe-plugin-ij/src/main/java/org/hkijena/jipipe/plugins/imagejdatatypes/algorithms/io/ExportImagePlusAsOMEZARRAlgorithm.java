@@ -80,9 +80,8 @@ public class ExportImagePlusAsOMEZARRAlgorithm extends JIPipeSimpleIteratingAlgo
         ImagePlus imp = omeImageData.getImage();
         int[] defaultChunkSize = ZARRUtils.computeOptimalChunkSizes(new int[] { imp.getWidth(), imp.getHeight(), imp.getNChannels(), imp.getNSlices(), imp.getNFrames() });
         if(chunkSizeExpression.isEnabled()) {
-            JIPipeExpressionVariablesMap variablesMap = new JIPipeExpressionVariablesMap();
-            variablesMap.putAnnotations(iterationStep.getMergedTextAnnotations());
-            variablesMap.putCustomVariables(getDefaultCustomExpressionVariables());
+            JIPipeExpressionVariablesMap variablesMap = new JIPipeExpressionVariablesMap(iterationStep);
+            variablesMap.putCommonVariables(iterationStep);
             variablesMap.put("default.cz.x", defaultChunkSize[0]);
             variablesMap.put("default.cz.y", defaultChunkSize[1]);
             variablesMap.put("default.cz.c", defaultChunkSize[2]);

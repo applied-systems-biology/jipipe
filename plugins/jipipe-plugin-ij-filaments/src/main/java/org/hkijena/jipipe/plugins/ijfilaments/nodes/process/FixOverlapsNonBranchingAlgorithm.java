@@ -234,9 +234,7 @@ public class FixOverlapsNonBranchingAlgorithm extends JIPipeIteratingAlgorithm {
         }
 
         Map<FilamentVertex, Integer> components = outputData.findComponentIds();
-        JIPipeExpressionVariablesMap variables = new JIPipeExpressionVariablesMap();
-        variables.putAnnotations(iterationStep.getMergedTextAnnotations());
-        getDefaultCustomExpressionVariables().writeToVariables(variables);
+        JIPipeExpressionVariablesMap variables = new JIPipeExpressionVariablesMap(iterationStep);
 
         // Find the existing endpoints
         Set<FilamentVertex> existingEndpoints = outputData.vertexSet().stream().filter(vertex -> outputData.degreeOf(vertex) == 1).collect(Collectors.toSet());

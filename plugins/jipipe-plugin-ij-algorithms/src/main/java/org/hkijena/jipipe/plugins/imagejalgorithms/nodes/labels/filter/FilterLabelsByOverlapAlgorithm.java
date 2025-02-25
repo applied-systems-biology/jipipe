@@ -163,7 +163,7 @@ public class FilterLabelsByOverlapAlgorithm extends JIPipeIteratingAlgorithm {
             annotations.put(entry.getKey(), entry.getValue().getValue());
         }
         variables.set("annotations", annotations);
-        getDefaultCustomExpressionVariables().writeToVariables(variables);
+        variables.putCommonVariables(this);
 
         final Calibration targetLabelsCalibration = settings.measureInPhysicalUnits ? targetLabels.getCalibration() : null;
         final Calibration otherLabelsCalibration = settings.measureInPhysicalUnits ? otherLabels.getCalibration() : null;

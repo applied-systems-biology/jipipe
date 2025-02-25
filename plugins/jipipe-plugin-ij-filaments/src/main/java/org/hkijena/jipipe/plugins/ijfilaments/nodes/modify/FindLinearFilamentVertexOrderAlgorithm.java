@@ -131,9 +131,7 @@ public class FindLinearFilamentVertexOrderAlgorithm extends JIPipeSimpleIteratin
     protected void runIteration(JIPipeSingleIterationStep iterationStep, JIPipeIterationContext iterationContext, JIPipeGraphNodeRunContext runContext, JIPipeProgressInfo progressInfo) {
         Filaments3DGraphData filaments = (Filaments3DGraphData) iterationStep.getInputData(getFirstInputSlot(), Filaments3DGraphData.class, progressInfo).duplicate(progressInfo);
 
-        JIPipeExpressionVariablesMap variables = new JIPipeExpressionVariablesMap();
-        variables.putAnnotations(iterationStep.getMergedTextAnnotations());
-        getDefaultCustomExpressionVariables().writeToVariables(variables);
+        JIPipeExpressionVariablesMap variables = new JIPipeExpressionVariablesMap(iterationStep);
 
         ConnectivityInspector<FilamentVertex, FilamentEdge> connectivityInspector = new ConnectivityInspector<>(filaments);
         DijkstraShortestPath<FilamentVertex, FilamentEdge> shortestPath = new DijkstraShortestPath<>(filaments);

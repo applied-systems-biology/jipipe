@@ -71,9 +71,8 @@ public class ChangeImageMetadataFromExpressionsAlgorithm extends JIPipeSimpleIte
     protected void runIteration(JIPipeSingleIterationStep iterationStep, JIPipeIterationContext iterationContext, JIPipeGraphNodeRunContext runContext, JIPipeProgressInfo progressInfo) {
         ImagePlus imagePlus = iterationStep.getInputData(getFirstInputSlot(), ImagePlusData.class, progressInfo).getDuplicateImage();
 
-        JIPipeExpressionVariablesMap variables = new JIPipeExpressionVariablesMap();
-        variables.putAnnotations(iterationStep.getMergedTextAnnotations());
-        getDefaultCustomExpressionVariables().writeToVariables(variables);
+        JIPipeExpressionVariablesMap variables = new JIPipeExpressionVariablesMap(iterationStep);
+
         variables.set("title", StringUtils.nullToEmpty(imagePlus.getTitle()));
         variables.set("width", imagePlus.getWidth());
         variables.set("height", imagePlus.getHeight());

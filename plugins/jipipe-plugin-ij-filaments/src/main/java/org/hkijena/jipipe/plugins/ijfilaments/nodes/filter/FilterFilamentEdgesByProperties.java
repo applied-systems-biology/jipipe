@@ -64,14 +64,14 @@ public class FilterFilamentEdgesByProperties extends JIPipeSimpleIteratingAlgori
         Set<String> measurementKeys = new HashSet<>();
         Map<FilamentEdge, JIPipeExpressionVariablesMap> allMeasurements = new HashMap<>();
         for (FilamentEdge edge : outputData.edgeSet()) {
-            JIPipeExpressionVariablesMap forEdge = new JIPipeExpressionVariablesMap();
+            JIPipeExpressionVariablesMap forEdge = new JIPipeExpressionVariablesMap(iterationStep);
             FilamentEdgeVariablesInfo.writeToVariables(outputData, edge, forEdge, "");
             allMeasurements.put(edge, forEdge);
             measurementKeys.addAll(forEdge.keySet());
         }
 
         // Create the all. measurements
-        JIPipeExpressionVariablesMap allMeasurementsCalculated = new JIPipeExpressionVariablesMap();
+        JIPipeExpressionVariablesMap allMeasurementsCalculated = new JIPipeExpressionVariablesMap(iterationStep);
         for (String key : measurementKeys) {
             List<Object> allValues = new ArrayList<>();
             for (FilamentEdge edge : outputData.edgeSet()) {
@@ -87,10 +87,6 @@ public class FilterFilamentEdgesByProperties extends JIPipeSimpleIteratingAlgori
         // Merge all. measurements
         for (JIPipeExpressionVariablesMap map : allMeasurements.values()) {
             map.putAll(allMeasurementsCalculated);
-
-            // Add annotations and custom variables
-            map.putAnnotationsIfAbsent(iterationStep.getMergedTextAnnotations().values()); // Must be if absent to not break functionality
-            getDefaultCustomExpressionVariables().writeToVariables(map);
         }
 
         Set<FilamentEdge> toDelete = new HashSet<>();

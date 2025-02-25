@@ -61,7 +61,7 @@ public class FilterByAnnotationIfElse extends JIPipeSimpleIteratingAlgorithm {
     @Override
     protected void runIteration(JIPipeSingleIterationStep iterationStep, JIPipeIterationContext iterationContext, JIPipeGraphNodeRunContext runContext, JIPipeProgressInfo progressInfo) {
         JIPipeExpressionVariablesMap variables = new JIPipeExpressionVariablesMap();
-        getDefaultCustomExpressionVariables().writeToVariables(variables);
+        variables.putCommonVariables(this);
         JIPipeData data = iterationStep.getInputData(getFirstInputSlot(), JIPipeData.class, progressInfo);
         if (filter.test(iterationStep.getMergedTextAnnotations().values(), data.toString(), variables)) {
             iterationStep.addOutputData("Matched", data, progressInfo);

@@ -193,9 +193,7 @@ public class TurboRegRegistration2DReferencedAlgorithm extends JIPipeIteratingAl
             throw new RuntimeException("Source and target images do not have the same width and height!");
         }
 
-        JIPipeExpressionVariablesMap variablesMap = new JIPipeExpressionVariablesMap();
-        variablesMap.putAnnotations(iterationStep.getMergedTextAnnotations());
-        variablesMap.putCustomVariables(getDefaultCustomExpressionVariables());
+        JIPipeExpressionVariablesMap variablesMap = new JIPipeExpressionVariablesMap(iterationStep);
 
         progressInfo.log("Building transformation graph ...");
 

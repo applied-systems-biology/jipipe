@@ -63,14 +63,14 @@ public class FilterFilamentVerticesByProperties extends JIPipeSimpleIteratingAlg
         Set<String> measurementKeys = new HashSet<>();
         Map<FilamentVertex, JIPipeExpressionVariablesMap> allMeasurements = new HashMap<>();
         for (FilamentVertex vertex : outputData.vertexSet()) {
-            JIPipeExpressionVariablesMap forEdge = new JIPipeExpressionVariablesMap();
+            JIPipeExpressionVariablesMap forEdge = new JIPipeExpressionVariablesMap(iterationStep);
             FilamentVertexVariablesInfo.writeToVariables(outputData, vertex, forEdge, "");
             allMeasurements.put(vertex, forEdge);
             measurementKeys.addAll(forEdge.keySet());
         }
 
         // Create the all. measurements
-        JIPipeExpressionVariablesMap allMeasurementsCalculated = new JIPipeExpressionVariablesMap();
+        JIPipeExpressionVariablesMap allMeasurementsCalculated = new JIPipeExpressionVariablesMap(iterationStep);
         for (String key : measurementKeys) {
             List<Object> allValues = new ArrayList<>();
             for (FilamentVertex vertex : outputData.vertexSet()) {
@@ -86,10 +86,6 @@ public class FilterFilamentVerticesByProperties extends JIPipeSimpleIteratingAlg
         // Merge all. measurements
         for (JIPipeExpressionVariablesMap map : allMeasurements.values()) {
             map.putAll(allMeasurementsCalculated);
-
-            // Add annotations and custom variables
-            map.putAnnotationsIfAbsent(iterationStep.getMergedTextAnnotations().values()); // Must be if absent to not break functionality
-            getDefaultCustomExpressionVariables().writeToVariables(map);
         }
 
         Set<FilamentVertex> toDelete = new HashSet<>();

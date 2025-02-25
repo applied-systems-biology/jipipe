@@ -66,9 +66,7 @@ public class FilterFilamentsByProperties extends JIPipeSimpleIteratingAlgorithm 
         Filaments3DGraphData inputData = iterationStep.getInputData(getFirstInputSlot(), Filaments3DGraphData.class, progressInfo);
         Filaments3DGraphData outputData = new Filaments3DGraphData(inputData);
 
-        JIPipeExpressionVariablesMap variables = new JIPipeExpressionVariablesMap();
-        variables.putAnnotations(iterationStep.getMergedTextAnnotations());
-        getDefaultCustomExpressionVariables().writeToVariables(variables);
+        JIPipeExpressionVariablesMap variables = new JIPipeExpressionVariablesMap(iterationStep);
 
         ConnectivityInspector<FilamentVertex, FilamentEdge> connectivityInspector = outputData.getConnectivityInspector();
         List<Set<FilamentVertex>> connectedSets = connectivityInspector.connectedSets();

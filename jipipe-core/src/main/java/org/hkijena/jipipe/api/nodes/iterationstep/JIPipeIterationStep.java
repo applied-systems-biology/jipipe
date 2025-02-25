@@ -14,10 +14,17 @@
 package org.hkijena.jipipe.api.nodes.iterationstep;
 
 import org.hkijena.jipipe.api.data.JIPipeDataSlot;
+import org.hkijena.jipipe.api.nodes.JIPipeGraphNode;
 
 import java.util.Set;
 
 public interface JIPipeIterationStep {
+    /**
+     * The node that the iteration step is working on
+     * @return the node
+     */
+    JIPipeGraphNode getNode();
+
     /**
      * Returns the referenced indices of given input slot name
      *

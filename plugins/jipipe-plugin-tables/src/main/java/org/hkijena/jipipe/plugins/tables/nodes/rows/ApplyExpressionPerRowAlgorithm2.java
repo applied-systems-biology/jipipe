@@ -61,10 +61,9 @@ public class ApplyExpressionPerRowAlgorithm2 extends JIPipeSimpleIteratingAlgori
     @Override
     protected void runIteration(JIPipeSingleIterationStep iterationStep, JIPipeIterationContext iterationContext, JIPipeGraphNodeRunContext runContext, JIPipeProgressInfo progressInfo) {
         ResultsTableData data = (ResultsTableData) iterationStep.getInputData(getFirstInputSlot(), ResultsTableData.class, progressInfo).duplicate(progressInfo);
-        JIPipeExpressionVariablesMap variableSet = new JIPipeExpressionVariablesMap();
+        JIPipeExpressionVariablesMap variableSet = new JIPipeExpressionVariablesMap(iterationStep);
         Map<String, String> annotationsMap = JIPipeTextAnnotation.annotationListToMap(iterationStep.getMergedTextAnnotations().values(), JIPipeTextAnnotationMergeMode.OverwriteExisting);
         variableSet.set("annotations", annotationsMap);
-        getDefaultCustomExpressionVariables().writeToVariables(variableSet);
         variableSet.set("num_rows", data.getRowCount());
         for (int col = 0; col < data.getColumnCount(); col++) {
             TableColumnData column = data.getColumnReference(col);

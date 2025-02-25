@@ -111,9 +111,8 @@ public class LineMirror2DFromExpressionsAlgorithm extends JIPipeSimpleIteratingA
     @Override
     protected void runIteration(JIPipeSingleIterationStep iterationStep, JIPipeIterationContext iterationContext, JIPipeGraphNodeRunContext runContext, JIPipeProgressInfo progressInfo) {
         ImagePlus img = iterationStep.getInputData(getFirstInputSlot(), ImagePlusData.class, progressInfo).getDuplicateImage();
-        JIPipeExpressionVariablesMap variablesMap = new JIPipeExpressionVariablesMap();
+        JIPipeExpressionVariablesMap variablesMap = new JIPipeExpressionVariablesMap(iterationStep);
         ImagePlusPropertiesExpressionParameterVariablesInfo.extractValues(variablesMap, img, iterationStep.getMergedTextAnnotations().values());
-        variablesMap.putCustomVariables(getDefaultCustomExpressionVariables());
         int x1_ = x1.evaluateToInteger(variablesMap);
         int x2_ = x2.evaluateToInteger(variablesMap);
         int y1_ = y1.evaluateToInteger(variablesMap);

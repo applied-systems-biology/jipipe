@@ -122,9 +122,7 @@ public class ChangeRoiPropertiesFromExpressionsAlgorithm extends JIPipeIterating
         ROI2DListData inputRois = (ROI2DListData) iterationStep.getInputData("Input", ROI2DListData.class, progressInfo).duplicate(progressInfo);
         ImagePlusData inputReference = iterationStep.getInputData("Reference", ImagePlusData.class, progressInfo);
 
-        JIPipeExpressionVariablesMap variables = new JIPipeExpressionVariablesMap();
-        variables.putAnnotations(iterationStep.getMergedTextAnnotations());
-        variables.putCustomVariables(getDefaultCustomExpressionVariables());
+        JIPipeExpressionVariablesMap variables = new JIPipeExpressionVariablesMap(iterationStep);
 
         // Obtain statistics
         roiStatisticsAlgorithm.clearSlotData(false, progressInfo);

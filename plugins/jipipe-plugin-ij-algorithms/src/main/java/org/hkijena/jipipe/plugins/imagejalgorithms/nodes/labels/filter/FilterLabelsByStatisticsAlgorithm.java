@@ -114,7 +114,7 @@ public class FilterLabelsByStatisticsAlgorithm extends JIPipeIteratingAlgorithm 
             for (JIPipeTextAnnotation annotation : iterationStep.getMergedTextAnnotations().values()) {
                 variables.set(annotation.getName(), annotation.getValue());
             }
-            variables.putCustomVariables(getDefaultCustomExpressionVariables());
+            variables.putCommonVariables(this);
 
             // Write statistics into variables
             for (int col = 0; col < statistics.getColumnCount(); col++) {

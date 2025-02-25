@@ -77,9 +77,7 @@ public class ExplodeRoi3DListAlgorithm extends JIPipeSimpleIteratingAlgorithm {
     protected void runIteration(JIPipeSingleIterationStep iterationStep, JIPipeIterationContext iterationContext, JIPipeGraphNodeRunContext runContext, JIPipeProgressInfo progressInfo) {
         ROI3DListData data = iterationStep.getInputData(getFirstInputSlot(), ROI3DListData.class, progressInfo);
 
-        JIPipeExpressionVariablesMap variables = new JIPipeExpressionVariablesMap()
-                .putAnnotations(iterationStep.getMergedTextAnnotations())
-                .putCustomVariables(getDefaultCustomExpressionVariables());
+        JIPipeExpressionVariablesMap variables = new JIPipeExpressionVariablesMap(iterationStep);
 
         for (int i = 0; i < data.size(); i++) {
             ROI3D roi = data.get(i);

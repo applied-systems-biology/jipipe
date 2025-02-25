@@ -88,9 +88,7 @@ public class ExpressionSlicerAlgorithm extends JIPipeSimpleIteratingAlgorithm {
 
         // Collect indices
         List<ImageSliceIndices> imageSliceIndicesList = new ArrayList<>();
-        JIPipeExpressionVariablesMap variablesMap = new JIPipeExpressionVariablesMap()
-                .putAnnotations(iterationStep.getMergedTextAnnotations())
-                .putCustomVariables(getDefaultCustomExpressionVariables());
+        JIPipeExpressionVariablesMap variablesMap = new JIPipeExpressionVariablesMap(iterationStep);
         variablesMap.set("width", img.getWidth());
         variablesMap.set("height", img.getHeight());
         variablesMap.set("size_z", img.getNSlices());

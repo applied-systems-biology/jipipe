@@ -95,16 +95,13 @@ public class ApplyColorMathExpression2DExpression extends JIPipeSimpleIteratingA
     protected void runIteration(JIPipeSingleIterationStep iterationStep, JIPipeIterationContext iterationContext, JIPipeGraphNodeRunContext runContext, JIPipeProgressInfo progressInfo) {
         ImagePlusColorData inputData = iterationStep.getInputData(getFirstInputSlot(), ImagePlusColorData.class, progressInfo);
         ImagePlus img = inputData.getDuplicateImage();
-        JIPipeExpressionVariablesMap variableSet = new JIPipeExpressionVariablesMap();
-        for (JIPipeTextAnnotation annotation : iterationStep.getMergedTextAnnotations().values()) {
-            variableSet.set(annotation.getName(), annotation.getValue());
-        }
+        JIPipeExpressionVariablesMap variableSet = new JIPipeExpressionVariablesMap(iterationStep);
+
         variableSet.set("width", inputData.getImage().getWidth());
         variableSet.set("height", inputData.getImage().getHeight());
         variableSet.set("num_z", inputData.getImage().getNSlices());
         variableSet.set("num_c", inputData.getImage().getNChannels());
         variableSet.set("num_t", inputData.getImage().getNFrames());
-        getDefaultCustomExpressionVariables().writeToVariables(variableSet);
 
         ImageJUtils.forEachIndexedZCTSlice(img, (ip, index) -> {
             for (int y = 0; y < ip.getHeight(); y++) {

@@ -132,9 +132,7 @@ public class SplitChannelsByTableAlgorithm extends JIPipeIteratingAlgorithm {
 
         ImagePlus[] split = splitByChannel(imp);
 
-        JIPipeExpressionVariablesMap variablesMap = new JIPipeExpressionVariablesMap();
-        variablesMap.putAnnotations(iterationStep.getMergedTextAnnotations());
-        variablesMap.putCustomVariables(getDefaultCustomExpressionVariables());
+        JIPipeExpressionVariablesMap variablesMap = new JIPipeExpressionVariablesMap(iterationStep);
 
         // Match annotations
         int targetRow = -1;

@@ -91,8 +91,7 @@ public class GenerateParametersFromExpressionAlgorithm extends JIPipeSimpleItera
 
         // Generate variables
         JIPipeExpressionVariablesMap variables = new JIPipeExpressionVariablesMap();
-        variables.putAnnotations(iterationStep.getMergedTextAnnotations());
-        getDefaultCustomExpressionVariables().writeToVariables(variables);
+        variables.putCommonVariables(iterationStep);
 
         // Generate columns
         Map<String, List<Object>> valueMap = new HashMap<>();

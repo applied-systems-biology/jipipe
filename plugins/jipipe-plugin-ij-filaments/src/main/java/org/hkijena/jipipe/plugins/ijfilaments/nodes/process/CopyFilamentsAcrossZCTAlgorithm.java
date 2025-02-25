@@ -99,10 +99,9 @@ public class CopyFilamentsAcrossZCTAlgorithm extends JIPipeIteratingAlgorithm {
         Filaments3DGraphData outputGraph = inputGraph.shallowCopy();
         ImagePlusData referenceImageData = iterationStep.getInputData("Reference", ImagePlusData.class, progressInfo);
 
-        JIPipeExpressionVariablesMap variablesMap = new JIPipeExpressionVariablesMap();
+        JIPipeExpressionVariablesMap variablesMap = new JIPipeExpressionVariablesMap(iterationStep);
         ImagePlusPropertiesExpressionParameterVariablesInfo.extractValues(variablesMap,
                 referenceImageData != null ? referenceImageData.getImage() : null, iterationStep.getMergedTextAnnotations().values());
-        variablesMap.putCustomVariables(getDefaultCustomExpressionVariables());
 
 
         // Find the start vertices

@@ -92,9 +92,7 @@ public class ChangeFilamentVertexPropertiesExpressionAlgorithm extends JIPipeSim
         Filaments3DGraphData inputData = iterationStep.getInputData(getFirstInputSlot(), Filaments3DGraphData.class, progressInfo);
         Filaments3DGraphData outputData = new Filaments3DGraphData(inputData);
 
-        JIPipeExpressionVariablesMap variables = new JIPipeExpressionVariablesMap();
-        variables.putAnnotations(iterationStep.getMergedTextAnnotations());
-        getDefaultCustomExpressionVariables().writeToVariables(variables);
+        JIPipeExpressionVariablesMap variables = new JIPipeExpressionVariablesMap(iterationStep);
 
         List<FilamentsVertexMetadataEntry> metadataEntries = metadata.mapToCollection(FilamentsVertexMetadataEntry.class);
 

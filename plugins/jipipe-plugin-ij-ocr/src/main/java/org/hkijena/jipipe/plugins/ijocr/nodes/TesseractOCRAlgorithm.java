@@ -92,10 +92,8 @@ public class TesseractOCRAlgorithm extends JIPipeSimpleIteratingAlgorithm {
 
         ImagePlus inputImage = iterationStep.getInputData(getFirstInputSlot(), ImagePlusGreyscaleData.class, progressInfo).getImage();
 
-        JIPipeExpressionVariablesMap variablesMap = new JIPipeExpressionVariablesMap();
-        variablesMap.putAnnotations(iterationStep.getMergedTextAnnotations());
+        JIPipeExpressionVariablesMap variablesMap = new JIPipeExpressionVariablesMap(iterationStep);
         ImagePlusPropertiesExpressionParameterVariablesInfo.extractValues(variablesMap, inputImage, Collections.emptyList());
-        variablesMap.putCustomVariables(getDefaultCustomExpressionVariables());
 
         int dpi = overrideDPI.isEnabled() ? overrideDPI.getContent().evaluateToInteger(variablesMap) : 0;
         String allowedChars = overrideCharAllowList.isEnabled() ? overrideCharAllowList.getContent().evaluateToString(variablesMap) : null;

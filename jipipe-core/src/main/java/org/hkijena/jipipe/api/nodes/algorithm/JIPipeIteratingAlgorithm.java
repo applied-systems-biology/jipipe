@@ -374,9 +374,8 @@ public abstract class JIPipeIteratingAlgorithm extends JIPipeParameterSlotAlgori
     private void uploadAdaptiveParameters(JIPipeSingleIterationStep iterationStep, JIPipeParameterTree tree, Map<String, Object> parameterBackups, JIPipeProgressInfo progressInfo) {
         JIPipeExpressionVariablesMap expressionVariables = new JIPipeExpressionVariablesMap();
 
-        // Upload annotations and custom variables
-        expressionVariables.putCustomVariables(getDefaultCustomExpressionVariables());
-        expressionVariables.putAnnotations(iterationStep.getMergedTextAnnotations());
+        // Upload common variables
+        expressionVariables.putCommonVariables(iterationStep);
 
         for (StringQueryExpressionAndStringPairParameter overriddenParameter : getAdaptiveParameterSettings().getOverriddenParameters()) {
             String key = overriddenParameter.getValue();

@@ -105,9 +105,7 @@ public class SetRoiMetadataByStatisticsAlgorithm extends JIPipeIteratingAlgorith
         ImagePlusData inputReference = iterationStep.getInputData("Reference", ImagePlusData.class, progressInfo);
 
         // Create variables
-        JIPipeExpressionVariablesMap variableSet = new JIPipeExpressionVariablesMap();
-        variableSet.putAnnotations(iterationStep.getMergedTextAnnotations());
-        getDefaultCustomExpressionVariables().writeToVariables(variableSet);
+        JIPipeExpressionVariablesMap variableSet = new JIPipeExpressionVariablesMap(iterationStep);
 
         // Obtain statistics
         roiStatisticsAlgorithm.clearSlotData(false, progressInfo);

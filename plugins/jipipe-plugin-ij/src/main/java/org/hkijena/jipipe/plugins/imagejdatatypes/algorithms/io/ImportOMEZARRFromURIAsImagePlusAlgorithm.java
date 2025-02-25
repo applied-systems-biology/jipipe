@@ -111,9 +111,7 @@ public class ImportOMEZARRFromURIAsImagePlusAlgorithm extends JIPipeSimpleIterat
         }
 
         if (datasetFilter.isEnabled()) {
-            JIPipeExpressionVariablesMap variablesMap = new JIPipeExpressionVariablesMap();
-            variablesMap.putCustomVariables(getDefaultCustomExpressionVariables());
-            variablesMap.putAnnotations(iterationStep.getMergedTextAnnotations());
+            JIPipeExpressionVariablesMap variablesMap = new JIPipeExpressionVariablesMap(iterationStep);
             toImport.removeIf(node -> !datasetFilter.getContent().evaluateToBoolean(variablesMap));
         }
 
