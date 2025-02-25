@@ -1,4 +1,4 @@
-# Project-wide user parameters
+# Project parameters
 
 Users can create and collect custom parameters in this panel with the purpose of 
 simplifying the distribution of JIPipe pipelines. 
