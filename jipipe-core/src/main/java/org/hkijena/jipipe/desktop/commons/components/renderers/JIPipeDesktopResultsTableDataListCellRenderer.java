@@ -24,9 +24,6 @@ import java.awt.*;
  */
 public class JIPipeDesktopResultsTableDataListCellRenderer extends JLabel implements ListCellRenderer<ResultsTableData> {
 
-    /**
-     * Creates new instance
-     */
     public JIPipeDesktopResultsTableDataListCellRenderer() {
         setOpaque(true);
         setIcon(UIUtils.getIconFromResources("data-types/results-table.png"));

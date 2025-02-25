@@ -32,12 +32,6 @@ public class RuntimePartitionReferenceDesktopParameterEditorUI extends JIPipeDes
     private final JTextField pathLabel = UIUtils.createReadonlyBorderlessTextField("");
     private final JPopupMenu configureMenu = new JPopupMenu();
 
-    /**
-     * Creates new instance
-     *
-     * @param workbench       the workbench
-     * @param parameterAccess Parameter
-     */
     public RuntimePartitionReferenceDesktopParameterEditorUI(InitializationParameters parameters) {
         super(parameters);
         initialize();

@@ -34,9 +34,6 @@ public class JIPipeDataTableRowInfo {
     private String trueDataType;
     private JIPipeDataContext dataContext;
 
-    /**
-     * Creates new instance
-     */
     public JIPipeDataTableRowInfo() {
     }
 

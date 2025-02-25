@@ -25,9 +25,6 @@ import java.awt.*;
  */
 public class JIPipeDesktopProjectCompartmentTableCellRenderer extends JLabel implements TableCellRenderer {
 
-    /**
-     * Creates new instance
-     */
     public JIPipeDesktopProjectCompartmentTableCellRenderer() {
         setOpaque(true);
         setIcon(UIUtils.getIconFromResources("data-types/graph-compartment.png"));

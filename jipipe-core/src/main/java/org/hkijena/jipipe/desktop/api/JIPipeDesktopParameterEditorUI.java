@@ -47,11 +47,7 @@ public abstract class JIPipeDesktopParameterEditorUI extends JIPipeDesktopWorkbe
     private int preventReload = 0;
     private boolean reloadScheduled = false;
 
-    /**
-     * Creates new instance
-     *
-     * @param initializationParameters the initialization parameters
-     */
+
     public JIPipeDesktopParameterEditorUI(InitializationParameters initializationParameters) {
         super(initializationParameters.workbench);
         this.context = initializationParameters.workbench.getContext();

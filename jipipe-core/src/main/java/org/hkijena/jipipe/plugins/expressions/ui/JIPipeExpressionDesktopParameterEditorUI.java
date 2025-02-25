@@ -37,13 +37,6 @@ public class JIPipeExpressionDesktopParameterEditorUI extends JIPipeDesktopParam
     private final Set<JIPipeExpressionParameterVariableInfo> variables = new HashSet<>();
     private RSyntaxTextArea expressionEditor;
 
-    /**
-     * Creates new instance
-     *
-     * @param workbench       the workbench
-     * @param parameterTree   the parameter tree
-     * @param parameterAccess Parameter
-     */
     public JIPipeExpressionDesktopParameterEditorUI(InitializationParameters parameters) {
         super(parameters);
 

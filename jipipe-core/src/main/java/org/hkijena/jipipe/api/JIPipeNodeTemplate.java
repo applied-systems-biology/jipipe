@@ -323,18 +323,11 @@ public class JIPipeNodeTemplate extends AbstractJIPipeParameterCollection {
     }
 
     public static class List extends ListParameter<JIPipeNodeTemplate> {
-        /**
-         * Creates a new instance
-         */
+
         public List() {
             super(JIPipeNodeTemplate.class);
         }
 
-        /**
-         * Creates a copy
-         *
-         * @param other the original
-         */
         public List(JIPipeNodeTemplate.List other) {
             super(JIPipeNodeTemplate.class);
             for (JIPipeNodeTemplate template : other) {

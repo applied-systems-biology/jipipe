@@ -47,11 +47,6 @@ public class JIPipeProjectCompartment extends JIPipeGraphNode implements JIPipeC
 
     private boolean showLimitedParameters = false;
 
-    /**
-     * Creates new instance
-     *
-     * @param info Algorithm info
-     */
     public JIPipeProjectCompartment(JIPipeNodeInfo info) {
         super(info, JIPipeDefaultMutableSlotConfiguration.builder()
                 .addInputSlot("Input", "Incoming data from other compartments", JIPipeCompartmentOutputData.class, true)

@@ -29,12 +29,6 @@ public class JIPipeNodeTemplateDesktopParameterEditorUI extends JIPipeDesktopPar
 
     private JButton infoButton;
 
-    /**
-     * Creates new instance
-     *
-     * @param workbench       the workbech
-     * @param parameterAccess Parameter
-     */
     public JIPipeNodeTemplateDesktopParameterEditorUI(InitializationParameters parameters) {
         super(parameters);
         initialize();

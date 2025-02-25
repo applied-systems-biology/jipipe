@@ -341,7 +341,7 @@ public class UIUtils {
         EdgedBalloonStyle style = new EdgedBalloonStyle(UIManager.getColor("TextField.background"), JIPipeDesktopModernMetalTheme.PRIMARY5);
         final BalloonTip balloonTip = new BalloonTip(
                 button,
-                new JLabel(StringUtils.wordWrappedHTML(text, 100)),
+                new JLabel(text.startsWith("<html>") ? text : StringUtils.wordWrappedHTML(text, 100)),
                 style,
                 BalloonTip.Orientation.LEFT_ABOVE,
                 BalloonTip.AttachLocation.ALIGNED,

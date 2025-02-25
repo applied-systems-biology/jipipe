@@ -44,18 +44,11 @@ public class StringPatternExtractionFunction extends FunctionParameter<String, S
      * List of {@link StringPatternExtractionFunction}
      */
     public static class List extends ListParameter<StringPatternExtractionFunction> {
-        /**
-         * Creates new instance
-         */
+
         public List() {
             super(StringPatternExtractionFunction.class);
         }
-
-        /**
-         * Creates a copy
-         *
-         * @param other the original
-         */
+        
         public List(List other) {
             super(StringPatternExtractionFunction.class);
             for (StringPatternExtractionFunction function : other) {

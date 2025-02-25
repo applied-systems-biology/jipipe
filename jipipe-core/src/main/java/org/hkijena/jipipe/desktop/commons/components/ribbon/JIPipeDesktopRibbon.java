@@ -87,19 +87,32 @@ public class JIPipeDesktopRibbon extends JPanel {
         tabPane.setTabPanelBorder(BorderFactory.createEmptyBorder(2, 2, 2, 2));
 //        tabPane.getTabbedPane().setTabPlacement(SwingConstants.TOP);
         tabPane.setEnableTabContextMenu(false);
-        add(tabPane, BorderLayout.CENTER);
     }
 
     public void rebuildRibbon() {
         tabPane.closeAllTabs(true);
-        for (Task task : tasks) {
-            if (task.isVisible()) {
+        removeAll();
+        if(tasks.size() > 1) {
+            for (Task task : tasks) {
+                if (task.isVisible()) {
+                    JPanel taskPanel = new JPanel(new GridBagLayout());
+                    taskPanel.setBackground(UIManager.getColor("Table.background"));
+                    buildTaskPanel(taskPanel, task);
+                    tabPane.addTab(task.label, null, taskPanel, JIPipeDesktopTabPane.CloseMode.withoutCloseButton);
+                }
+            }
+            add(tabPane, BorderLayout.CENTER);
+        }
+        else {
+            for (Task task : tasks) {
                 JPanel taskPanel = new JPanel(new GridBagLayout());
                 taskPanel.setBackground(UIManager.getColor("Table.background"));
                 buildTaskPanel(taskPanel, task);
-                tabPane.addTab(task.label, null, taskPanel, JIPipeDesktopTabPane.CloseMode.withoutCloseButton);
+                add(taskPanel, BorderLayout.CENTER);
             }
         }
+        revalidate();
+        repaint(50);
     }
 
     private void buildTaskPanel(JPanel taskPanel, Task task) {

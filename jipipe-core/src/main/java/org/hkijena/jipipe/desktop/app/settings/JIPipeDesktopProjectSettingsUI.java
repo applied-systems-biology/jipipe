@@ -26,6 +26,7 @@ import org.hkijena.jipipe.desktop.app.JIPipeDesktopWorkbench;
 import org.hkijena.jipipe.desktop.commons.components.JIPipeDesktopFormPanel;
 import org.hkijena.jipipe.desktop.commons.components.JIPipeDesktopParameterFormPanel;
 import org.hkijena.jipipe.plugins.parameters.library.markup.MarkdownText;
+import org.hkijena.jipipe.utils.JIPipeDesktopSplitPane;
 import org.hkijena.jipipe.utils.UIUtils;
 
 import javax.swing.*;
@@ -39,7 +40,7 @@ import java.util.stream.Collectors;
  * Provides components for the project settings.
  * This is not a panel, as the project overview UI splits the tree and the content
  */
-public class JIPipeDesktopProjectSettingsComponents {
+public class JIPipeDesktopProjectSettingsUI extends JPanel {
 
     private final JIPipeProject project;
     private final JIPipeDesktopWorkbench workbench;
@@ -56,13 +57,14 @@ public class JIPipeDesktopProjectSettingsComponents {
      *
      * @param workbench the workbench
      */
-    public JIPipeDesktopProjectSettingsComponents(JIPipeProject project, JIPipeDesktopWorkbench workbench) {
+    public JIPipeDesktopProjectSettingsUI(JIPipeProject project, JIPipeDesktopWorkbench workbench) {
         this.project = project;
         this.workbench = workbench;
         initialize();
     }
 
     private void initialize() {
+        setLayout(new BorderLayout());
         treePanel.add(new JScrollPane(tree), BorderLayout.CENTER);
         tree.setCellRenderer(new SettingsCategoryNodeRenderer());
 
@@ -71,6 +73,7 @@ public class JIPipeDesktopProjectSettingsComponents {
         // Introduce legacy settings as sheets
         settingsSheets.add(new ProjectMetadataSettingsSheetWrapper(project));
         settingsSheets.add(new ProjectPermissionsSettingsSheetWrapper(project));
+        settingsSheets.add(new ProjectDirectoriesSettingsSheetWrapper(project));
 
         // Continue with sheets
         Map<String, List<JIPipeProjectSettingsSheet>> byCategory =
@@ -112,7 +115,8 @@ public class JIPipeDesktopProjectSettingsComponents {
         }
         UIUtils.expandAllTree(tree);
 
-
+        JSplitPane splitPane = new JIPipeDesktopSplitPane(JSplitPane.HORIZONTAL_SPLIT, treePanel, contentPanel, JIPipeDesktopSplitPane.RATIO_1_TO_3);
+        add(splitPane, BorderLayout.CENTER);
     }
 
     private void onTreeNodeSelected() {
@@ -149,14 +153,6 @@ public class JIPipeDesktopProjectSettingsComponents {
             contentPanel.repaint();
 
         }
-    }
-
-    public JPanel getTreePanel() {
-        return treePanel;
-    }
-
-    public JPanel getContentPanel() {
-        return contentPanel;
     }
 
     public void selectNode(String path) {
@@ -230,6 +226,40 @@ public class JIPipeDesktopProjectSettingsComponents {
         @JIPipeParameter("wrapped")
         public JIPipeParameterCollection getWrapped() {
             return wrapped;
+        }
+    }
+
+    public static class ProjectDirectoriesSettingsSheetWrapper extends SettingsSheetWrapper {
+        private final JIPipeProject project;
+
+        public ProjectDirectoriesSettingsSheetWrapper(JIPipeProject project) {
+            super(project.getMetadata().getDirectories());
+            this.project = project;
+        }
+
+        @Override
+        public JIPipeDefaultProjectSettingsSheetCategory getDefaultCategory() {
+            return JIPipeDefaultProjectSettingsSheetCategory.General;
+        }
+
+        @Override
+        public String getId() {
+            return "jipipe:project-directories";
+        }
+
+        @Override
+        public Icon getIcon() {
+            return UIUtils.getIconFromResources("actions/folder.png");
+        }
+
+        @Override
+        public String getName() {
+            return "Project-wide directories";
+        }
+
+        @Override
+        public String getDescription() {
+            return "Allows to setup project-wide paths and directories";
         }
     }
 

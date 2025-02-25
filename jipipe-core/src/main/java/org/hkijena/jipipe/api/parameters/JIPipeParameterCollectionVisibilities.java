@@ -29,9 +29,6 @@ public class JIPipeParameterCollectionVisibilities {
     private Map<String, JIPipeParameterAccess> availableParameters;
     private Set<String> visibleParameters = new HashSet<>();
 
-    /**
-     * Creates new instance
-     */
     public JIPipeParameterCollectionVisibilities() {
         this.availableParameters = new HashMap<>();
     }

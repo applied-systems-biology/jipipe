@@ -59,11 +59,6 @@ public class ListFiles extends JIPipeSimpleIteratingAlgorithm {
     private boolean recursive = false;
     private boolean recursiveFollowsLinks = true;
 
-    /**
-     * Creates new instance
-     *
-     * @param info The info
-     */
     public ListFiles(JIPipeNodeInfo info) {
         super(info);
     }

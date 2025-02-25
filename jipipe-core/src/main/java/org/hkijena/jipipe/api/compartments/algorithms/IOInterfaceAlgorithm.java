@@ -33,21 +33,10 @@ import java.util.*;
 @ConfigureJIPipeNode(nodeTypeCategory = MiscellaneousNodeTypeCategory.class)
 public class IOInterfaceAlgorithm extends JIPipeAlgorithm {
 
-    /**
-     * Creates a new instance.
-     * Please do not use this constructor manually, but instead use {@link JIPipeGraphNode}'s newInstance() method
-     *
-     * @param info The algorithm info
-     */
     public IOInterfaceAlgorithm(JIPipeNodeInfo info) {
         super(info, new JIPipeIOSlotConfiguration());
     }
 
-    /**
-     * Creates a copy of the other algorithm
-     *
-     * @param other The original
-     */
     public IOInterfaceAlgorithm(IOInterfaceAlgorithm other) {
         super(other);
     }

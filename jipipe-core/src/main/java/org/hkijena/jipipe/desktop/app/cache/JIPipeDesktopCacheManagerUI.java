@@ -36,11 +36,6 @@ public class JIPipeDesktopCacheManagerUI extends JButton implements JIPipeDeskto
     private final JPopupMenu menu = new JPopupMenu();
     private final StaticDebouncer updateStatusDebouncer;
 
-    /**
-     * Creates new instance
-     *
-     * @param workbenchUI the workbench
-     */
     public JIPipeDesktopCacheManagerUI(JIPipeDesktopProjectWorkbench workbenchUI) {
         this.desktopWorkbench = workbenchUI;
         this.updateStatusDebouncer = new StaticDebouncer(500, this::updateStatus);

@@ -1,9 +1,11 @@
-# Pipeline parameters
+# Linking parameters
 
-For larger pipelines it can be hard for users to figure out which parameters need to be changed. JIPipe allows 
-you create project-wide parameters that can be easily accessed via the project overview UI that can be found in
-`Project > Project overview`.
+You can link/reference any parameter in your pipeline via the interface on the left-hand side. 
 
-You can reference any parameter in your pipeline via the interface on the left-hand side. 
-Parameters are organized in groups with a customizable name and description. 
-You can either manually define groups or add all available parameters of a selected algorithm.
+## Getting started
+
+* To begin, create a new group by clicking **Add | Add empty group**
+* Select the created group and give it a name
+* Link parameters into the group by clicking **Add | Add parameter** and selecting the parameter(s) to add 
+
+If required, you can give a custom name and description to the linked parameter to enhance the usability.

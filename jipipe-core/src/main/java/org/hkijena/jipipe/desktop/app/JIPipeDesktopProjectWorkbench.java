@@ -49,6 +49,7 @@ import org.hkijena.jipipe.desktop.app.quickrun.JIPipeDesktopQuickRunSettings;
 import org.hkijena.jipipe.desktop.app.running.*;
 import org.hkijena.jipipe.desktop.app.settings.JIPipeDesktopApplicationSettingsUI;
 import org.hkijena.jipipe.desktop.app.settings.JIPipeDesktopProjectOverviewUI;
+import org.hkijena.jipipe.desktop.app.settings.JIPipeDesktopProjectSettingsUI;
 import org.hkijena.jipipe.desktop.commons.components.*;
 import org.hkijena.jipipe.desktop.commons.components.markup.JIPipeDesktopMarkdownReader;
 import org.hkijena.jipipe.desktop.commons.components.tabs.JIPipeDesktopTabPane;
@@ -482,7 +483,6 @@ public class JIPipeDesktopProjectWorkbench extends JPanel implements JIPipeDeskt
         JMenuItem openProjectOutputButton = new JMenuItem("Open analysis output ...", UIUtils.getIconFromResources("actions/document-open-folder.png"));
         openProjectOutputButton.setToolTipText("<html>Opens a project and its analysis output from an output folder.<br/>" +
                 "<i>Note: The output folder must contain a project.jip file</i></html>");
-        openProjectOutputButton.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_O, KeyEvent.CTRL_DOWN_MASK + KeyEvent.SHIFT_DOWN_MASK));
         openProjectOutputButton.addActionListener(e -> window.openProjectAndOutput());
         projectMenu.add(openProjectOutputButton);
 
@@ -536,7 +536,6 @@ public class JIPipeDesktopProjectWorkbench extends JPanel implements JIPipeDeskt
         // "Save project" entry
         JMenuItem saveProjectAndCache = new JMenuItem("Save project and cache ...", UIUtils.getIconFromResources("actions/document-export.png"));
         saveProjectAndCache.setToolTipText("Saves the project and all current cached data into a folder.");
-        saveProjectAndCache.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_S, KeyEvent.CTRL_DOWN_MASK + KeyEvent.SHIFT_DOWN_MASK + KeyEvent.ALT_DOWN_MASK));
         saveProjectAndCache.addActionListener(e -> {
             saveProjectAndCache("Save project and cache", true);
         });
@@ -565,17 +564,15 @@ public class JIPipeDesktopProjectWorkbench extends JPanel implements JIPipeDeskt
         editCompartmentsButton.addActionListener(e -> openCompartmentEditor());
         projectMenu.add(editCompartmentsButton);
 
-        JMenuItem openApplicationSettingsButton = new JMenuItem("Application settings", UIUtils.getIconFromResources("apps/jipipe.png"));
+        JMenuItem openApplicationSettingsButton = new JMenuItem("Application settings", UIUtils.getIconFromResources("actions/configure.png"));
         openApplicationSettingsButton.setToolTipText("Opens the application settings");
-        openApplicationSettingsButton.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_P, KeyEvent.CTRL_DOWN_MASK + KeyEvent.ALT_DOWN_MASK));
         openApplicationSettingsButton.addActionListener(e -> openApplicationSettings(null));
         projectMenu.add(openApplicationSettingsButton);
 
         projectMenu.addSeparator();
 
-        JMenuItem projectInfo = new JMenuItem("Project settings/overview", UIUtils.getIconFromResources("actions/wrench.png"));
+        JMenuItem projectInfo = new JMenuItem("Project settings/overview", UIUtils.getIconFromResources("actions/document-properties.png"));
         projectInfo.setToolTipText("Opens the project overview");
-        projectInfo.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_S, KeyEvent.CTRL_DOWN_MASK + KeyEvent.ALT_DOWN_MASK));
         projectInfo.addActionListener(e -> documentTabPane.selectSingletonTab(TAB_PROJECT_OVERVIEW));
         projectMenu.add(projectInfo);
 
@@ -634,7 +631,7 @@ public class JIPipeDesktopProjectWorkbench extends JPanel implements JIPipeDeskt
         menu.add(Box.createHorizontalGlue());
 
         // Overview link
-        JButton openProjectOverviewButton = new JButton("Project settings", UIUtils.getIconFromResources("actions/configure.png"));
+        JButton openProjectOverviewButton = new JButton("Project", UIUtils.getIconFromResources("actions/document-properties.png"));
         openProjectOverviewButton.setToolTipText("Opens the project info & settings tab or jumps to the existing tab if it is already open.");
         openProjectOverviewButton.addActionListener(e -> documentTabPane.selectSingletonTab(TAB_PROJECT_OVERVIEW));
         UIUtils.setStandardButtonBorder(openProjectOverviewButton);
@@ -1042,5 +1039,41 @@ public class JIPipeDesktopProjectWorkbench extends JPanel implements JIPipeDeskt
 
     public JIPipeRunnableQueue getBackupQueue() {
         return backupQueue;
+    }
+
+    public void openProjectSettings(String navigateToCategory) {
+        JIPipeDesktopProjectSettingsUI projectSettingsComponents = new JIPipeDesktopProjectSettingsUI(getProject(), this);
+
+        JDialog dialog = new JDialog(getWindow());
+        dialog.setDefaultCloseOperation(WindowConstants.DISPOSE_ON_CLOSE);
+        dialog.setTitle("JIPipe - Project settings");
+        dialog.setModal(true);
+        dialog.setIconImage(UIUtils.getJIPipeIcon128());
+
+        UIUtils.addEscapeListener(dialog);
+        JPanel contentPanel = new JPanel(new BorderLayout(8, 8));
+        contentPanel.add(projectSettingsComponents, BorderLayout.CENTER);
+
+        JPanel buttonPanel = new JPanel();
+        buttonPanel.setLayout(new BoxLayout(buttonPanel, BoxLayout.X_AXIS));
+        buttonPanel.add(new JLabel("Settings are applied automatically", UIUtils.getIconFromResources("emblems/emblem-important-blue.png"), JLabel.LEFT));
+        buttonPanel.add(Box.createHorizontalGlue());
+
+        JButton closeButton = new JButton("Close", UIUtils.getIconFromResources("actions/message-close.png"));
+        closeButton.addActionListener(e -> { dialog.setVisible(false); });
+        buttonPanel.add(closeButton);
+
+        contentPanel.add(buttonPanel, BorderLayout.SOUTH);
+        buttonPanel.setBorder(BorderFactory.createEmptyBorder(8, 8, 8, 8));
+
+        if(navigateToCategory != null) {
+            projectSettingsComponents.selectNode(navigateToCategory);
+        }
+
+        dialog.setContentPane(contentPanel);
+        dialog.pack();
+        dialog.setSize(1280, 768);
+        dialog.setLocationRelativeTo(getWindow());
+        dialog.setVisible(true);
     }
 }
