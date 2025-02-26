@@ -136,7 +136,7 @@ public class CellposeUtils {
 
     public static void saveInputImages(JIPipeInputDataSlot inputSlot, Set<Integer> inputRows, boolean enable3D, boolean enableMultiChannel, Path io2DPath, Path io3DPath, List<CellposeImageInfo> runWith2D, List<CellposeImageInfo> runWith3D, JIPipeGraphNode executingNode, JIPipeProgressInfo progressInfo) {
         for (int row : inputRows) {
-            JIPipeProgressInfo rowProgress = progressInfo.resolve("Data row " + row);
+            JIPipeProgressInfo rowProgress = progressInfo.resolveAndLog("Saving input image @ row " + row);
             ImagePlus img = inputSlot.getData(row, ImagePlusData.class, rowProgress).getImage();
 
             // Save only one slice
@@ -145,7 +145,7 @@ public class CellposeUtils {
                 CellposeImageInfo info = new CellposeImageInfo(row);
                 saveInputImage(row, img, io2DPath, new ImageSliceIndex(-1, -1, -1), info);
                 runWith2D.add(info);
-                return;
+                continue;
             }
 
 
