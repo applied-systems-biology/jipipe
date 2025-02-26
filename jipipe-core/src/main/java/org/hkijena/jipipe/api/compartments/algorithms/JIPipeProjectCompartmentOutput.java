@@ -18,6 +18,9 @@ import org.hkijena.jipipe.api.SetJIPipeDocumentation;
 import org.hkijena.jipipe.api.nodes.JIPipeGraphNode;
 import org.hkijena.jipipe.api.nodes.JIPipeNodeInfo;
 import org.hkijena.jipipe.api.parameters.JIPipeParameter;
+import org.hkijena.jipipe.plugins.parameters.library.colors.OptionalColorParameter;
+
+import java.awt.*;
 
 /**
  * A graph compartment output
@@ -28,6 +31,8 @@ import org.hkijena.jipipe.api.parameters.JIPipeParameter;
 public class JIPipeProjectCompartmentOutput extends IOInterfaceAlgorithm {
 
     private String outputSlotName;
+    private boolean showInProjectOverview = true;
+    private OptionalColorParameter projectOverviewColor = new OptionalColorParameter(Color.WHITE, false);
 
     /**
      * Creates a new instance.
@@ -37,16 +42,14 @@ public class JIPipeProjectCompartmentOutput extends IOInterfaceAlgorithm {
      */
     public JIPipeProjectCompartmentOutput(JIPipeNodeInfo info) {
         super(info);
+
     }
 
-    /**
-     * Creates a copy of the other algorithm
-     *
-     * @param other The original
-     */
     public JIPipeProjectCompartmentOutput(JIPipeProjectCompartmentOutput other) {
         super(other);
         this.outputSlotName = other.outputSlotName;
+        this.showInProjectOverview = other.showInProjectOverview;
+        this.projectOverviewColor = new OptionalColorParameter(other.projectOverviewColor);
     }
 
     @Override
@@ -64,5 +67,28 @@ public class JIPipeProjectCompartmentOutput extends IOInterfaceAlgorithm {
     @JIPipeParameter("jipipe:compartment:output-slot-name")
     public void setOutputSlotName(String outputSlotName) {
         this.outputSlotName = outputSlotName;
+    }
+
+    @SetJIPipeDocumentation(name = "Show in project overview", description = "If enabled, show this output in the project overview. " +
+            "Please note that this setting has no effect if 'Show in project overview' on the compartment itself.")
+    @JIPipeParameter("show-in-project-overview")
+    public boolean isShowInProjectOverview() {
+        return showInProjectOverview;
+    }
+
+    @JIPipeParameter("show-in-project-overview")
+    public void setShowInProjectOverview(boolean showInProjectOverview) {
+        this.showInProjectOverview = showInProjectOverview;
+    }
+
+    @SetJIPipeDocumentation(name = "Project overview color", description = "Allows to mark outputs of this compartment with a color in the project overview.")
+    @JIPipeParameter("project-overview-color")
+    public OptionalColorParameter getProjectOverviewColor() {
+        return projectOverviewColor;
+    }
+
+    @JIPipeParameter("project-overview-color")
+    public void setProjectOverviewColor(OptionalColorParameter projectOverviewColor) {
+        this.projectOverviewColor = projectOverviewColor;
     }
 }

@@ -28,8 +28,13 @@ import org.hkijena.jipipe.api.parameters.*;
 import org.hkijena.jipipe.api.project.JIPipeProject;
 import org.hkijena.jipipe.api.validation.JIPipeValidationReport;
 import org.hkijena.jipipe.api.validation.JIPipeValidationReportContext;
+import org.hkijena.jipipe.plugins.parameters.library.colors.OptionalColorParameter;
+import org.hkijena.jipipe.utils.ColorUtils;
+import org.hkijena.jipipe.utils.UIUtils;
 
+import java.awt.*;
 import java.util.*;
+import java.util.List;
 
 /**
  * A project compartment.
@@ -43,6 +48,7 @@ public class JIPipeProjectCompartment extends JIPipeGraphNode implements JIPipeC
     private JIPipeProject project;
     private BiMap<String, JIPipeProjectCompartmentOutput> outputNodes = HashBiMap.create();
     private boolean showInProjectOverview = true;
+    private OptionalColorParameter projectOverviewColor = new OptionalColorParameter(Color.WHITE, false);
 
     private GraphNodeParameterReferenceGroupCollection exportedParameters = new GraphNodeParameterReferenceGroupCollection();
 
@@ -67,8 +73,20 @@ public class JIPipeProjectCompartment extends JIPipeGraphNode implements JIPipeC
         this.exportedParameters = new GraphNodeParameterReferenceGroupCollection(other.exportedParameters);
         this.showLimitedParameters = other.showLimitedParameters;
         this.showInProjectOverview = other.showInProjectOverview;
+        this.projectOverviewColor = new OptionalColorParameter(other.projectOverviewColor);
 
         registerSubParameter(exportedParameters);
+    }
+
+    @SetJIPipeDocumentation(name = "Project overview color", description = "Allows to mark outputs of this compartment with a color in the project overview.")
+    @JIPipeParameter("project-overview-color")
+    public OptionalColorParameter getProjectOverviewColor() {
+        return projectOverviewColor;
+    }
+
+    @JIPipeParameter("project-overview-color")
+    public void setProjectOverviewColor(OptionalColorParameter projectOverviewColor) {
+        this.projectOverviewColor = projectOverviewColor;
     }
 
     /**

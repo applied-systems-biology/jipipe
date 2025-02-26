@@ -35,9 +35,11 @@ import org.hkijena.jipipe.desktop.app.grapheditor.flavors.compartments.propertie
 import org.hkijena.jipipe.desktop.app.parameterreference.JIPipeDesktopGraphNodeParameterReferenceGroupCollectionEditorUI;
 import org.hkijena.jipipe.desktop.app.settings.project.JIPipeDesktopMergedProjectSettings;
 import org.hkijena.jipipe.desktop.app.settings.project.JIPipeDesktopProjectOverviewRunManager;
+import org.hkijena.jipipe.desktop.commons.components.JIPipeDesktopFormHelpPanel;
 import org.hkijena.jipipe.desktop.commons.components.JIPipeDesktopFormPanel;
 import org.hkijena.jipipe.desktop.commons.components.JIPipeDesktopImageFrameComponent;
 import org.hkijena.jipipe.desktop.commons.components.JIPipeDesktopParameterFormPanel;
+import org.hkijena.jipipe.desktop.commons.components.icons.SolidColorIcon;
 import org.hkijena.jipipe.desktop.commons.components.layouts.JIPipeDesktopFlowLayout;
 import org.hkijena.jipipe.desktop.commons.components.layouts.JIPipeDesktopWrapLayout;
 import org.hkijena.jipipe.desktop.commons.components.markup.JIPipeDesktopHTMLEditorKit;
@@ -61,6 +63,7 @@ import java.util.*;
 import java.util.List;
 
 import static org.hkijena.jipipe.desktop.app.grapheditor.flavors.compartments.JIPipeDesktopCompartmentsGraphEditorUI.DOCK_NODE_CONTEXT_RESULTS;
+import static org.hkijena.jipipe.desktop.app.grapheditor.flavors.pipeline.JIPipeDesktopPipelineGraphEditorUI.DOCK_NODE_CONTEXT_HELP;
 
 /**
  * UI that gives an overview of a pipeline (shows parameters, etc.)
@@ -106,7 +109,7 @@ public class JIPipeDesktopProjectOverviewUI extends JIPipeDesktopProjectWorkbenc
         userParametersPanel = new JIPipeDesktopParameterFormPanel(getDesktopWorkbench(),
                 new JIPipeDesktopMergedProjectSettings(getProject()),
                 MarkdownText.fromPluginResource("documentation/project-user-parameters.md"),
-                JIPipeDesktopParameterFormPanel.WITH_SEARCH_BAR | JIPipeDesktopParameterFormPanel.WITH_SCROLLING | JIPipeDesktopParameterFormPanel.WITH_DOCUMENTATION | JIPipeDesktopParameterFormPanel.DOCUMENTATION_BELOW);
+                JIPipeDesktopParameterFormPanel.WITH_SEARCH_BAR | JIPipeDesktopParameterFormPanel.WITH_SCROLLING | JIPipeDesktopParameterFormPanel.WITH_DOCUMENTATION | JIPipeDesktopParameterFormPanel.DOCUMENTATION_EXTERNAL);
         runtimePartitionsPanel = new JPanel(new BorderLayout());
 
         initialize();
@@ -231,7 +234,11 @@ public class JIPipeDesktopProjectOverviewUI extends JIPipeDesktopProjectWorkbenc
         for (JIPipeGraphNode graphNode : getProject().getCompartmentGraph().traverse()) {
             if (graphNode instanceof JIPipeProjectCompartment) {
                 if(((JIPipeProjectCompartment) graphNode).isShowInProjectOverview()) {
-                    outputList.addAll(((JIPipeProjectCompartment) graphNode).getOutputNodes().values());
+                    for (JIPipeProjectCompartmentOutput output : ((JIPipeProjectCompartment) graphNode).getOutputNodes().values()) {
+                        if(output.isShowInProjectOverview()) {
+                            outputList.add(output);
+                        }
+                    }
                 }
             }
         }
@@ -239,12 +246,20 @@ public class JIPipeDesktopProjectOverviewUI extends JIPipeDesktopProjectWorkbenc
             JPanel listPanel = UIUtils.boxVertical();
 
             for (JIPipeProjectCompartmentOutput output : outputList) {
-                JPanel outputPanel = new JPanel(new BorderLayout());
+                JPanel outputPanel = new JPanel(new BorderLayout(16, 0));
                 outputPanel.setBorder(BorderFactory.createCompoundBorder(
                         BorderFactory.createEmptyBorder(4,4,4,4),
                         new RoundedLineBorder(UIUtils.getControlBorderColor(), 1, 4)
                 ));
-                outputPanel.add(new JLabel(output.getDisplayName(), UIUtils.getIconFromResources("actions/graph-compartment.png"), JLabel.LEFT), BorderLayout.WEST);
+                Color color = null;
+                if(output.getProjectCompartment().getProjectOverviewColor().isEnabled()) {
+                    color = output.getProjectCompartment().getProjectOverviewColor().getContent();
+                }
+                if(output.getProjectOverviewColor().isEnabled()) {
+                    color = output.getProjectOverviewColor().getContent();
+                }
+                outputPanel.add(new JLabel(new SolidColorIcon(8, 32, color != null ? color : UIManager.getColor("Panel.background"), UIUtils.getControlBorderColor())), BorderLayout.WEST);
+                outputPanel.add(new JLabel(output.getDisplayName(), UIUtils.getIconFromResources("actions/graph-compartment.png"), JLabel.LEFT), BorderLayout.CENTER);
 
                 JButton runButton = new JButton("Run", UIUtils.getIconFromResources("actions/run-play.png"));
                 JPopupMenu runMenu = UIUtils.addPopupMenuToButton(runButton);
@@ -259,6 +274,18 @@ public class JIPipeDesktopProjectOverviewUI extends JIPipeDesktopProjectWorkbenc
                 outputPanel.add(UIUtils.boxHorizontal(
                         UIUtils.createButton("Go to", UIUtils.getIconFromResources("actions/go-jump.png"), () -> {
                             getDesktopProjectWorkbench().getOrOpenPipelineEditorTab(output.getProjectCompartment(), true);
+                        }),
+                        Box.createHorizontalStrut(16),
+                        UIUtils.createButton("Help", UIUtils.getIconFromResources("actions/help.png"), () -> {
+                            dockPanel.activatePanel(DOCK_NODE_CONTEXT_HELP, true);
+                            JIPipeDesktopFormHelpPanel helpPanel = dockPanel.getPanelComponent(DOCK_NODE_CONTEXT_HELP, JIPipeDesktopFormHelpPanel.class);
+                            if(!StringUtils.isNullOrEmpty( output.getProjectCompartment().getCustomDescription().toPlainText().trim()) || !StringUtils.isNullOrEmpty( output.getCustomDescription().toPlainText().trim())) {
+                                helpPanel.showContent(new MarkdownText("# " + output.getDisplayName() +"\n\n" + output.getProjectCompartment().getCustomDescription().getBody() + "\n\n" + output.getCustomDescription().getBody()));
+                            }
+                            else {
+                                helpPanel.showContent(new MarkdownText("# " + output.getDisplayName() +"\n\n*No description provided*"));
+                            }
+
                         }),
                         UIUtils.createButton("Show results", UIUtils.getIconFromResources("actions/update-cache.png"), () -> {
                             doShowResults(output);
@@ -507,6 +534,15 @@ public class JIPipeDesktopProjectOverviewUI extends JIPipeDesktopProjectWorkbenc
                 JIPipeDesktopDockPanel.PanelLocation.BottomRight,
                 false,
                 0, new JIPipeDesktopGraphEditorErrorPanel(getDesktopWorkbench(), null));
+        dockPanel.addDockPanel(DOCK_NODE_CONTEXT_HELP,
+                "Documentation",
+                UIUtils.getIcon32FromResources("actions/help-question.png"),
+                JIPipeDesktopDockPanel.PanelLocation.BottomRight,
+                true,
+                0, userParametersPanel.getHelpPanel());
+        userParametersPanel.getContextHelpEventEmitter().subscribeLambda((source, event) -> {
+            dockPanel.activatePanel(DOCK_NODE_CONTEXT_HELP, true);
+        });
 
         dockPanel.setBackgroundComponent(centerPanel);
         add(dockPanel, BorderLayout.CENTER);
