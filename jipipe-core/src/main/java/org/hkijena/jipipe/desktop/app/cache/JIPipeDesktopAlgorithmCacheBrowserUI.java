@@ -109,6 +109,10 @@ public class JIPipeDesktopAlgorithmCacheBrowserUI extends JIPipeDesktopProjectWo
         }
     }
 
+    public JIPipeGraphNode getGraphNode() {
+        return graphNode;
+    }
+
     private List<JIPipeDataTable> getSortedDataTables(Map<String, JIPipeDataTable> slotMap) {
         List<JIPipeDataTable> result = new ArrayList<>();
         for (JIPipeOutputDataSlot outputSlot : graphNode.getOutputSlots()) {

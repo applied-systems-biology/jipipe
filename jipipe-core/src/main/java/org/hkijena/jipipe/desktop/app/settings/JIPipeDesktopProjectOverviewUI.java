@@ -19,6 +19,7 @@ import org.hkijena.jipipe.api.compartments.algorithms.JIPipeProjectCompartment;
 import org.hkijena.jipipe.api.compartments.algorithms.JIPipeProjectCompartmentOutput;
 import org.hkijena.jipipe.api.data.JIPipeDataTable;
 import org.hkijena.jipipe.api.grouping.parameters.GraphNodeParameterReferenceGroupCollection;
+import org.hkijena.jipipe.api.nodes.JIPipeAlgorithm;
 import org.hkijena.jipipe.api.nodes.JIPipeGraphNode;
 import org.hkijena.jipipe.api.project.JIPipeProjectDirectories;
 import org.hkijena.jipipe.api.run.JIPipeRunnable;
@@ -26,11 +27,14 @@ import org.hkijena.jipipe.api.run.JIPipeRunnableQueue;
 import org.hkijena.jipipe.desktop.app.JIPipeDesktopProjectWorkbench;
 import org.hkijena.jipipe.desktop.app.JIPipeDesktopProjectWorkbenchPanel;
 import org.hkijena.jipipe.desktop.app.bookmarks.JIPipeDesktopBookmarkListPanel;
+import org.hkijena.jipipe.desktop.app.cache.JIPipeDesktopAlgorithmCacheBrowserUI;
 import org.hkijena.jipipe.desktop.app.grapheditor.commons.AbstractJIPipeDesktopGraphEditorUI;
 import org.hkijena.jipipe.desktop.app.grapheditor.commons.JIPipeDesktopGraphEditorLogPanel;
 import org.hkijena.jipipe.desktop.app.grapheditor.commons.properties.JIPipeDesktopGraphEditorErrorPanel;
+import org.hkijena.jipipe.desktop.app.grapheditor.flavors.compartments.properties.JIPipeDesktopCompartmentGraphEditorResultsPanel;
 import org.hkijena.jipipe.desktop.app.parameterreference.JIPipeDesktopGraphNodeParameterReferenceGroupCollectionEditorUI;
 import org.hkijena.jipipe.desktop.app.settings.project.JIPipeDesktopMergedProjectSettings;
+import org.hkijena.jipipe.desktop.app.settings.project.JIPipeDesktopProjectOverviewRunManager;
 import org.hkijena.jipipe.desktop.commons.components.JIPipeDesktopFormPanel;
 import org.hkijena.jipipe.desktop.commons.components.JIPipeDesktopImageFrameComponent;
 import org.hkijena.jipipe.desktop.commons.components.JIPipeDesktopParameterFormPanel;
@@ -55,6 +59,8 @@ import java.awt.image.BufferedImage;
 import java.nio.file.Path;
 import java.util.*;
 import java.util.List;
+
+import static org.hkijena.jipipe.desktop.app.grapheditor.flavors.compartments.JIPipeDesktopCompartmentsGraphEditorUI.DOCK_NODE_CONTEXT_RESULTS;
 
 /**
  * UI that gives an overview of a pipeline (shows parameters, etc.)
@@ -287,10 +293,41 @@ public class JIPipeDesktopProjectOverviewUI extends JIPipeDesktopProjectWorkbenc
                 doUpdateCache(output, Objects.equals(options.getSelectedItem(), "Cache intermediate results"));
             }
         }
+        else {
+            showResults(output);
+        }
+    }
+
+    public void showResults(JIPipeAlgorithm node) {
+        JIPipeDesktopAlgorithmCacheBrowserUI currentBrowser = dockPanel.getPanelComponent("_RESULTS", JIPipeDesktopAlgorithmCacheBrowserUI.class);
+        if(currentBrowser != null && currentBrowser.getGraphNode() != node) {
+            JIPipeDesktopDockPanel.Panel panel = dockPanel.getPanels().get("_RESULTS");
+            // Replace with new component
+            dockPanel.deactivatePanel(panel, false);
+            currentBrowser = new JIPipeDesktopAlgorithmCacheBrowserUI(getDesktopProjectWorkbench(), node, null);
+            panel.setComponent(currentBrowser);
+            dockPanel.activatePanel("_RESULTS", true);
+        }
+        else if(currentBrowser == null) {
+            currentBrowser = new JIPipeDesktopAlgorithmCacheBrowserUI(getDesktopProjectWorkbench(), node, null);
+            dockPanel.addDockPanel("_RESULTS", "Results",  UIUtils.getIcon32FromResources("actions/network-server-database.png"),
+                    JIPipeDesktopDockPanel.PanelLocation.TopRight,
+                    true,
+                    0,
+                    currentBrowser);
+        }
+        else {
+            dockPanel.activatePanel("_RESULTS", true);
+        }
     }
 
     private void doUpdateCache(JIPipeProjectCompartmentOutput output, boolean intermediateResults) {
-
+        JIPipeDesktopProjectOverviewRunManager runManager = new JIPipeDesktopProjectOverviewRunManager(getProject(),
+                dockPanel,
+                this,
+                output,
+                true);
+        runManager.run(false, intermediateResults, false);
     }
 
     @Override
@@ -439,7 +476,7 @@ public class JIPipeDesktopProjectOverviewUI extends JIPipeDesktopProjectWorkbenc
 
         dockPanel.addDockPanel("PARAMETERS",
                 "Parameters",
-                UIUtils.getIcon32FromResources("actions/configure.png"),
+                UIUtils.getIcon32FromResources("actions/configure3.png"),
                 JIPipeDesktopDockPanel.PanelLocation.TopRight,
                 true,
                 0,

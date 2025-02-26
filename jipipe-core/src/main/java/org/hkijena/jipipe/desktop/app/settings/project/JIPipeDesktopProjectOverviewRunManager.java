@@ -13,23 +13,32 @@
 
 package org.hkijena.jipipe.desktop.app.settings.project;
 
+import org.hkijena.jipipe.api.compartments.algorithms.JIPipeProjectCompartment;
 import org.hkijena.jipipe.api.nodes.JIPipeAlgorithm;
 import org.hkijena.jipipe.api.project.JIPipeProject;
 import org.hkijena.jipipe.api.run.JIPipeRunnable;
 import org.hkijena.jipipe.api.run.JIPipeRunnableQueue;
 import org.hkijena.jipipe.api.run.JIPipeRunnableWorker;
 import org.hkijena.jipipe.api.validation.JIPipeValidationReport;
+import org.hkijena.jipipe.api.validation.contexts.UnspecifiedValidationReportContext;
 import org.hkijena.jipipe.desktop.app.grapheditor.commons.AbstractJIPipeDesktopGraphEditorUI;
 import org.hkijena.jipipe.desktop.app.grapheditor.commons.JIPipeDesktopGraphCanvasUI;
 import org.hkijena.jipipe.desktop.app.grapheditor.commons.JIPipeDesktopGraphEditorLogPanel;
 import org.hkijena.jipipe.desktop.app.grapheditor.commons.nodeui.JIPipeDesktopGraphNodeUI;
 import org.hkijena.jipipe.desktop.app.grapheditor.commons.properties.JIPipeDesktopGraphEditorErrorPanel;
 import org.hkijena.jipipe.desktop.app.quickrun.JIPipeDesktopQuickRun;
+import org.hkijena.jipipe.desktop.app.quickrun.JIPipeDesktopQuickRunSettings;
+import org.hkijena.jipipe.desktop.app.settings.JIPipeDesktopProjectOverviewUI;
+import org.hkijena.jipipe.plugins.settings.JIPipeRuntimeApplicationSettings;
 import org.hkijena.jipipe.utils.ui.JIPipeDesktopDockPanel;
+
+import java.util.ArrayList;
+import java.util.Collections;
 
 public class JIPipeDesktopProjectOverviewRunManager implements JIPipeRunnable.FinishedEventListener, JIPipeRunnable.InterruptedEventListener {
     private final JIPipeProject project;
     private final JIPipeDesktopDockPanel dockPanel;
+    private final JIPipeDesktopProjectOverviewUI projectOverviewUI;
     private final JIPipeAlgorithm node;
     private final boolean allowChangePanels;
     private JIPipeRunnable run;
@@ -37,9 +46,10 @@ public class JIPipeDesktopProjectOverviewRunManager implements JIPipeRunnable.Fi
     private boolean queueMode;
     private boolean restoreDockStateRequired;
 
-    public JIPipeDesktopProjectOverviewRunManager(JIPipeProject project, JIPipeDesktopDockPanel dockPanel, JIPipeAlgorithm node, boolean allowChangePanels) {
+    public JIPipeDesktopProjectOverviewRunManager(JIPipeProject project, JIPipeDesktopDockPanel dockPanel, JIPipeDesktopProjectOverviewUI projectOverviewUI, JIPipeAlgorithm node, boolean allowChangePanels) {
         this.project = project;
         this.dockPanel = dockPanel;
+        this.projectOverviewUI = projectOverviewUI;
         this.node = node;
         this.allowChangePanels = allowChangePanels;
         JIPipeRunnableQueue.getInstance().getFinishedEventEmitter().subscribe(this);
@@ -92,7 +102,7 @@ public class JIPipeDesktopProjectOverviewRunManager implements JIPipeRunnable.Fi
     }
 
     private void createValidationReport(JIPipeValidationReport report) {
-        // TODO
+        node.reportValidity(new UnspecifiedValidationReportContext(), report);
     }
 
     public JIPipeProject getProject() {
@@ -125,9 +135,8 @@ public class JIPipeDesktopProjectOverviewRunManager implements JIPipeRunnable.Fi
     }
 
     private void showResults() {
-        // TODO
+        projectOverviewUI.showResults(node);
     }
-
 
     @Override
     public void onRunnableInterrupted(JIPipeRunnable.InterruptedEvent event) {
@@ -152,5 +161,27 @@ public class JIPipeDesktopProjectOverviewRunManager implements JIPipeRunnable.Fi
 
     private JIPipeDesktopQuickRun createRun(boolean saveToDisk, boolean storeIntermediateResults, boolean excludeSelected) {
 
+        // Generate settings
+        JIPipeDesktopQuickRunSettings settings;
+        if (saveToDisk) {
+            settings = new JIPipeDesktopQuickRunSettings(getProject());
+            settings.setSaveToDisk(true);
+            settings.setExcludeSelected(false);
+            settings.setLoadFromCache(true);
+            settings.setStoreToCache(false);
+            settings.setStoreIntermediateResults(storeIntermediateResults);
+        } else {
+            settings = new JIPipeDesktopQuickRunSettings(getProject());
+            settings.setSaveToDisk(false);
+            settings.setExcludeSelected(excludeSelected);
+            settings.setLoadFromCache(true);
+            settings.setStoreToCache(true);
+            settings.setStoreIntermediateResults(storeIntermediateResults);
+        }
+
+        // Run
+        JIPipeDesktopQuickRun run = new JIPipeDesktopQuickRun(getProject(), Collections.singletonList(node), settings);
+        JIPipeRuntimeApplicationSettings.getInstance().setDefaultQuickRunThreads(settings.getNumThreads());
+        return run;
     }
 }
