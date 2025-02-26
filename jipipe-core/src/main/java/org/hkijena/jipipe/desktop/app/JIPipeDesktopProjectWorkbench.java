@@ -656,10 +656,15 @@ public class JIPipeDesktopProjectWorkbench extends JPanel implements JIPipeDeskt
 
         projectMenu.addSeparator();
 
-        JMenuItem projectInfo = new JMenuItem("Project settings/overview", UIUtils.getIconFromResources("actions/document-properties.png"));
+        JMenuItem projectInfo = new JMenuItem("Project overview", UIUtils.getIconFromResources("actions/view-list-icons.png"));
         projectInfo.setToolTipText("Opens the project overview");
         projectInfo.addActionListener(e -> documentTabPane.selectSingletonTab(TAB_PROJECT_OVERVIEW));
         projectMenu.add(projectInfo);
+
+        JMenuItem projectSettings = new JMenuItem("Project settings", UIUtils.getIconFromResources("actions/configure.png"));
+        projectSettings.setToolTipText("Opens the project settings");
+        projectSettings.addActionListener(e -> openProjectSettings(null));
+        projectMenu.add(projectSettings);
 
         JMenuItem projectReport = new JMenuItem("Project report", UIUtils.getIconFromResources("actions/document-preview.png"));
         projectReport.setToolTipText("Opens the project report");
