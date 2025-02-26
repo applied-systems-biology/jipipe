@@ -182,6 +182,22 @@ public class JIPipeAuthorMetadata extends AbstractJIPipeParameterCollection {
         return "";
     }
 
+    /**
+     * A fuzzy equals method that attempts to check if the authors are the same
+     * @param other the other author
+     * @return if they are likely the same
+     */
+    public boolean fuzzyEquals(JIPipeAuthorMetadata other) {
+        // ORCID is the best qualifier, try this first
+        if(!StringUtils.isNullOrEmpty(getOrcidUrl()) && !StringUtils.isNullOrEmpty(other.getOrcidUrl())) {
+            return getOrcidUrl().equalsIgnoreCase(other.getOrcidUrl());
+        }
+
+        // ORCID not present, so we have to use the name
+        return StringUtils.nullToEmpty(getFirstName()).trim().equalsIgnoreCase(StringUtils.nullToEmpty(other.getFirstName()).trim()) &&
+                StringUtils.nullToEmpty(getLastName()).trim().equalsIgnoreCase(StringUtils.nullToEmpty(other.getLastName()).trim());
+    }
+
     @JIPipeParameter(value = "orcid", uiOrder = 45)
     @JsonGetter("orcid")
     @SetJIPipeDocumentation(name = "ORCID", description = "The ORCID (URL or ID)")

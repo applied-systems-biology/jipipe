@@ -93,4 +93,13 @@ public class JIPipeProjectAuthorsApplicationSettings extends JIPipeDefaultApplic
     public String getDescription() {
         return "Authors that are automatically added to the project";
     }
+
+    public boolean isConfigured() {
+        for (OptionalJIPipeAuthorMetadata projectAuthor : projectAuthors) {
+            if(projectAuthor.isEnabled()) {
+                return true;
+            }
+        }
+        return false;
+    }
 }

@@ -14,11 +14,15 @@
 package org.hkijena.jipipe.desktop.app.settings;
 
 import org.hkijena.jipipe.api.JIPipeAuthorMetadata;
+import org.hkijena.jipipe.api.JIPipeProgressInfo;
 import org.hkijena.jipipe.api.compartments.algorithms.JIPipeProjectCompartment;
 import org.hkijena.jipipe.api.compartments.algorithms.JIPipeProjectCompartmentOutput;
+import org.hkijena.jipipe.api.data.JIPipeDataTable;
 import org.hkijena.jipipe.api.grouping.parameters.GraphNodeParameterReferenceGroupCollection;
 import org.hkijena.jipipe.api.nodes.JIPipeGraphNode;
 import org.hkijena.jipipe.api.project.JIPipeProjectDirectories;
+import org.hkijena.jipipe.api.run.JIPipeRunnable;
+import org.hkijena.jipipe.api.run.JIPipeRunnableQueue;
 import org.hkijena.jipipe.desktop.app.JIPipeDesktopProjectWorkbench;
 import org.hkijena.jipipe.desktop.app.JIPipeDesktopProjectWorkbenchPanel;
 import org.hkijena.jipipe.desktop.app.bookmarks.JIPipeDesktopBookmarkListPanel;
@@ -49,16 +53,13 @@ import java.awt.datatransfer.Clipboard;
 import java.awt.datatransfer.StringSelection;
 import java.awt.image.BufferedImage;
 import java.nio.file.Path;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.HashMap;
+import java.util.*;
 import java.util.List;
-import java.util.Objects;
 
 /**
  * UI that gives an overview of a pipeline (shows parameters, etc.)
  */
-public class JIPipeDesktopProjectOverviewUI extends JIPipeDesktopProjectWorkbenchPanel {
+public class JIPipeDesktopProjectOverviewUI extends JIPipeDesktopProjectWorkbenchPanel implements JIPipeRunnable.FinishedEventListener, JIPipeRunnable.InterruptedEventListener {
 
     private final JIPipeDesktopFormPanel centerPanel;
     private final JTextPane descriptionReader;
@@ -104,6 +105,9 @@ public class JIPipeDesktopProjectOverviewUI extends JIPipeDesktopProjectWorkbenc
 
         initialize();
         refreshAll();
+
+        JIPipeRunnableQueue.getInstance().getFinishedEventEmitter().subscribe(this);
+        JIPipeRunnableQueue.getInstance().getInterruptedEventEmitter().subscribe(this);
     }
 
     private void refreshAll() {
@@ -238,7 +242,7 @@ public class JIPipeDesktopProjectOverviewUI extends JIPipeDesktopProjectWorkbenc
 
                 JButton runButton = new JButton("Run", UIUtils.getIconFromResources("actions/run-play.png"));
                 JPopupMenu runMenu = UIUtils.addPopupMenuToButton(runButton);
-                runMenu.add(UIUtils.createMenuItem("Update cache", "Runs the output and stores the results in the memory cache",  UIUtils.getIcon16FromResources("actions/update-cache.png"), () -> {
+                runMenu.add(UIUtils.createMenuItem("Update cache (default)", "Runs the output and stores the results in the memory cache",  UIUtils.getIcon16FromResources("actions/update-cache.png"), () -> {
                     doUpdateCache(output, false);
                 }));
                 runMenu.add(UIUtils.createMenuItem("Cache intermediate results", "Runs the output and stores the results and intermediate" +
@@ -264,10 +268,38 @@ public class JIPipeDesktopProjectOverviewUI extends JIPipeDesktopProjectWorkbenc
     }
 
     private void doShowResults(JIPipeProjectCompartmentOutput output) {
+        Map<String, JIPipeDataTable> cachedData = getProject().getCache().query(output, output.getUUIDInParentGraph(), JIPipeProgressInfo.SILENT);
+        if(cachedData == null || cachedData.isEmpty()) {
 
+            JComboBox<String> options = new JComboBox<>(new String[] { "Update cache (default)", "Cache intermediate results" });
+            JIPipeDesktopFormPanel formPanel =new JIPipeDesktopFormPanel(JIPipeDesktopFormPanel.NONE);
+            formPanel.addWideToForm(new JLabel("<html>" +
+                    "The output " + output.getDisplayName() + " currently has no cached results.<br/>" +
+                    "Do you want to run the pipeline to generate them?" +
+                    "</html>"));
+            formPanel.addToForm(options, new JLabel("Operation"));
+
+            if(JOptionPane.showConfirmDialog(this,
+                    formPanel,
+                    "Show results",
+                    JOptionPane.YES_NO_OPTION,
+                    JOptionPane.QUESTION_MESSAGE) == JOptionPane.YES_OPTION) {
+                doUpdateCache(output, Objects.equals(options.getSelectedItem(), "Cache intermediate results"));
+            }
+        }
     }
 
     private void doUpdateCache(JIPipeProjectCompartmentOutput output, boolean intermediateResults) {
+
+    }
+
+    @Override
+    public void onRunnableFinished(JIPipeRunnable.FinishedEvent event) {
+
+    }
+
+    @Override
+    public void onRunnableInterrupted(JIPipeRunnable.InterruptedEvent event) {
 
     }
 
@@ -686,5 +718,6 @@ public class JIPipeDesktopProjectOverviewUI extends JIPipeDesktopProjectWorkbenc
     private void openProjectReport() {
         getDesktopProjectWorkbench().openProjectReport();
     }
+
 
 }

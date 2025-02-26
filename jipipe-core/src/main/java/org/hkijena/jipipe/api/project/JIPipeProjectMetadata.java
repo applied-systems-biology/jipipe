@@ -16,12 +16,11 @@ package org.hkijena.jipipe.api.project;
 import com.fasterxml.jackson.annotation.JsonGetter;
 import com.fasterxml.jackson.annotation.JsonSetter;
 import org.hkijena.jipipe.JIPipeImageJUpdateSiteDependency;
-import org.hkijena.jipipe.api.JIPipeNodeTemplate;
-import org.hkijena.jipipe.api.JIPipeStandardMetadata;
-import org.hkijena.jipipe.api.SetJIPipeDocumentation;
+import org.hkijena.jipipe.api.*;
 import org.hkijena.jipipe.api.parameters.JIPipeDynamicParameterCollection;
 import org.hkijena.jipipe.api.parameters.JIPipeParameter;
 import org.hkijena.jipipe.api.parameters.JIPipeParameterSerializationMode;
+import org.hkijena.jipipe.plugins.settings.JIPipeProjectAuthorsApplicationSettings;
 
 /**
  * Metadata for a {@link JIPipeProject}
@@ -139,5 +138,18 @@ public class JIPipeProjectMetadata extends JIPipeStandardMetadata {
     @JsonSetter("global-parameters")
     public void setGlobalParameters(JIPipeDynamicParameterCollection globalParameters) {
         this.globalParameters = globalParameters;
+    }
+
+    public boolean hasKnownGlobalAuthor() {
+        for (OptionalJIPipeAuthorMetadata projectAuthor : JIPipeProjectAuthorsApplicationSettings.getInstance().getProjectAuthors()) {
+            if(projectAuthor.isEnabled())  {
+                for (JIPipeAuthorMetadata author : getAuthors()) {
+                    if(author.fuzzyEquals(projectAuthor.getContent())) {
+                        return true;
+                    }
+                }
+            }
+        }
+        return false;
     }
 }

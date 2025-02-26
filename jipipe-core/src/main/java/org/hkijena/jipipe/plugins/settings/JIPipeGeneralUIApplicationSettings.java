@@ -41,9 +41,21 @@ public class JIPipeGeneralUIApplicationSettings extends JIPipeDefaultApplication
     private boolean openUtilityWindowsAlwaysOnTop = true;
     private boolean allowDefaultCollapsedParameters = true;
     private JIPipeDesktopUITheme theme = JIPipeDesktopUITheme.ModernLight;
+    private boolean switchToProjectInfoOnUnknownProject = true;
 
     public static JIPipeGeneralUIApplicationSettings getInstance() {
         return JIPipe.getSettings().getById(ID, JIPipeGeneralUIApplicationSettings.class);
+    }
+
+    @SetJIPipeDocumentation(name = "Switch to project overview if not author", description = "If enabled, switches to the project overview instead of restoring tabs in the case if a project doesn't have the current user as author.")
+    @JIPipeParameter("switch-to-project-info-on-unknown-project")
+    public boolean isSwitchToProjectInfoOnUnknownProject() {
+        return switchToProjectInfoOnUnknownProject;
+    }
+
+    @JIPipeParameter("switch-to-project-info-on-unknown-project")
+    public void setSwitchToProjectInfoOnUnknownProject(boolean switchToProjectInfoOnUnknownProject) {
+        this.switchToProjectInfoOnUnknownProject = switchToProjectInfoOnUnknownProject;
     }
 
     @SetJIPipeDocumentation(name = "Show introduction on startup",

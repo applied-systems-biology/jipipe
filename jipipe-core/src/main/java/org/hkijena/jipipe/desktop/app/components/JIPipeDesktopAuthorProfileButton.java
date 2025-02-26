@@ -78,6 +78,7 @@ public class JIPipeDesktopAuthorProfileButton extends JButton implements JIPipeD
         EdgedBalloonStyle style = new EdgedBalloonStyle(UIManager.getColor("TextField.background"), JIPipeDesktopModernMetalTheme.PRIMARY5);
         JPanel content = new JPanel(new BorderLayout(8,8));
         content.setOpaque(false);
+        content.add(UIUtils.createJLabel("Missing author information", 16), BorderLayout.NORTH);
         content.add(new JLabel("<html><strong>Please click this button to configure your author information.</strong><br/>" +
                 "You only have to do this once and JIPipe will automatically add you<br/>" +
                 "as author to your projects with appropriate affiliations.</html>"), BorderLayout.CENTER);

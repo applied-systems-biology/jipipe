@@ -14,6 +14,8 @@
 package org.hkijena.jipipe.desktop.app;
 
 import net.imagej.ui.swing.updater.ImageJUpdater;
+import net.java.balloontip.BalloonTip;
+import net.java.balloontip.styles.EdgedBalloonStyle;
 import org.hkijena.jipipe.JIPipe;
 import org.hkijena.jipipe.JIPipeService;
 import org.hkijena.jipipe.api.JIPipeProgressInfo;
@@ -55,11 +57,9 @@ import org.hkijena.jipipe.desktop.commons.components.markup.JIPipeDesktopMarkdow
 import org.hkijena.jipipe.desktop.commons.components.tabs.JIPipeDesktopTabPane;
 import org.hkijena.jipipe.desktop.commons.notifications.JIPipeDesktopNotificationButton;
 import org.hkijena.jipipe.desktop.commons.notifications.JIPipeDesktopWorkbenchNotificationInboxUI;
+import org.hkijena.jipipe.desktop.commons.theme.JIPipeDesktopModernMetalTheme;
 import org.hkijena.jipipe.plugins.parameters.library.markup.MarkdownText;
-import org.hkijena.jipipe.plugins.settings.JIPipeBackupApplicationSettings;
-import org.hkijena.jipipe.plugins.settings.JIPipeFileChooserApplicationSettings;
-import org.hkijena.jipipe.plugins.settings.JIPipeGeneralUIApplicationSettings;
-import org.hkijena.jipipe.plugins.settings.JIPipeProjectDefaultsApplicationSettings;
+import org.hkijena.jipipe.plugins.settings.*;
 import org.hkijena.jipipe.utils.UIUtils;
 import org.jdesktop.swingx.JXStatusBar;
 import org.jdesktop.swingx.plaf.basic.BasicStatusBarUI;
@@ -108,6 +108,7 @@ public class JIPipeDesktopProjectWorkbench extends JPanel implements JIPipeDeskt
     private JIPipeDesktopPluginValidityCheckerPanel pluginValidityCheckerPanel;
     private boolean projectModified;
     private final JIPipeRunnableQueue backupQueue = new JIPipeRunnableQueue("Backups");
+    private JButton openProjectOverviewButton;
 
     /**
      * @param window           Parent window
@@ -129,10 +130,12 @@ public class JIPipeDesktopProjectWorkbench extends JPanel implements JIPipeDeskt
         validatePlugins(true);
 
         restoreStandardTabs(showIntroduction, isNewProject);
-        if (JIPipeProjectDefaultsApplicationSettings.getInstance().isRestoreTabs())
-            restoreTabs();
-        if (JIPipeGeneralUIApplicationSettings.getInstance().isShowIntroduction() && showIntroduction)
+        if (JIPipeProjectDefaultsApplicationSettings.getInstance().isRestoreTabs()) {
+            restoreTabs(isNewProject);
+        }
+        if (JIPipeGeneralUIApplicationSettings.getInstance().isShowIntroduction() && showIntroduction) {
             documentTabPane.selectSingletonTab(TAB_INTRODUCTION);
+        }
 
         // Register modification state watchers
         project.getGraph().getGraphChangedEventEmitter().subscribeLambda((emitter, event) -> setProjectModified(true));
@@ -141,6 +144,8 @@ public class JIPipeDesktopProjectWorkbench extends JPanel implements JIPipeDeskt
         // Install the run notifier
         JIPipeDesktopRunnableQueueNotifier.install();
     }
+
+
 
     /**
      * Attempts to find a workbench
@@ -206,7 +211,87 @@ public class JIPipeDesktopProjectWorkbench extends JPanel implements JIPipeDeskt
         }
     }
 
-    private void restoreTabs() {
+    private void restoreTabs(boolean isNewProject) {
+        if(isNewProject || !JIPipeGeneralUIApplicationSettings.getInstance().isSwitchToProjectInfoOnUnknownProject()) {
+            restoreTabsFromProjectMetadata();
+        }
+        else {
+            if(!project.getMetadata().hasKnownGlobalAuthor()) {
+                documentTabPane.closeAllTabs(false);
+                documentTabPane.selectSingletonTab(TAB_COMPARTMENT_EDITOR);
+                documentTabPane.selectSingletonTab(TAB_PROJECT_OVERVIEW);
+
+                // Display message popup for the user
+                EdgedBalloonStyle style = new EdgedBalloonStyle(UIManager.getColor("TextField.background"), JIPipeDesktopModernMetalTheme.PRIMARY5);
+                JPanel content = new JPanel(new BorderLayout(8,8));
+                content.setOpaque(false);
+                content.add(UIUtils.createJLabel("JIPipe switched you to the project overview", 16), BorderLayout.NORTH);
+                content.add(new JLabel("<html>" +
+                        "You are not in the list of project authors, so JIPipe assumed that you are new to this project.<br/>" +
+                        "<i>If you setup yourself as an author (see status bar), projects are automatically tagged with<br/>" +
+                        "your info on saving them.</i></html>"), BorderLayout.CENTER);
+                JPanel buttons = UIUtils.boxHorizontal();
+                buttons.setOpaque(false);
+                content.add(buttons , BorderLayout.SOUTH);
+                BalloonTip balloonTip = new BalloonTip(
+                        openProjectOverviewButton,
+                        content,
+                        style,
+                        BalloonTip.Orientation.LEFT_ABOVE,
+                        BalloonTip.AttachLocation.ALIGNED,
+                        30, 10,
+                        true
+                );
+                balloonTip.setVisible(false);
+
+                buttons.add( UIUtils.createButton("Never do this again", UIUtils.getIconFromResources("actions/cancel.png"), () -> {
+                    balloonTip.closeBalloon();
+                    JIPipeGeneralUIApplicationSettings.getInstance().setSwitchToProjectInfoOnUnknownProject(false);
+                    JIPipe.getInstance().getApplicationSettingsRegistry().saveLater();
+                    restoreTabsFromProjectMetadata();
+                }));
+                buttons.add(Box.createHorizontalGlue());
+                buttons.add( UIUtils.createButton("This is my project", UIUtils.getIconFromResources("actions/im-user-online.png"), () -> {
+                    balloonTip.closeBalloon();
+                    restoreTabsFromProjectMetadata();
+
+                    if(!JIPipeProjectAuthorsApplicationSettings.getInstance().isConfigured()) {
+                        if(JOptionPane.showConfirmDialog(this, "<html>You did not setup the application-wide authors yet,<br/>" +
+                                "meaning that JIPipe will be unable to associate your projects to you.<br/><br/>" +
+                                "Do you want to setup the authors now (you only need to do this once!)?</html>",
+                                "Missing author information",
+                                JOptionPane.YES_NO_OPTION,
+                                JOptionPane.QUESTION_MESSAGE) == JOptionPane.YES_OPTION) {
+                            openApplicationSettings("/General/Project authors");
+                        }
+                    }
+                    else {
+                        if(JOptionPane.showConfirmDialog(this, "<html>The project needs to be saved to update the author information.<br/>" +
+                                        "Do you want to save the project now?</html>",
+                                "Update author information",
+                                JOptionPane.YES_NO_OPTION,
+                                JOptionPane.QUESTION_MESSAGE) == JOptionPane.YES_OPTION) {
+                            getProjectWindow().saveProjectAs(true, true);
+                        }
+                    }
+                }));
+                buttons.add( UIUtils.createButton("Thanks!", UIUtils.getIconFromResources("actions/checkbox.png"), balloonTip::closeBalloon));
+
+                JButton closeButton = new JButton(UIUtils.getIconFromResources("actions/window-close.png"));
+                closeButton.setBorder(BorderFactory.createEmptyBorder(4, 4, 4, 4));
+                closeButton.setOpaque(false);
+                balloonTip.setCloseButton(closeButton, false);
+
+                UIUtils.invokeMuchLater(500, () -> balloonTip.setVisible(true));
+            }
+            else {
+                // Author is known. Proceed as usual.
+                restoreTabsFromProjectMetadata();
+            }
+        }
+    }
+
+    private void restoreTabsFromProjectMetadata() {
         if (project.getMetadata().isRestoreTabs()) {
             try {
                 Object metadata = project.getAdditionalMetadata().getOrDefault(JIPipeDesktopJIPipeProjectTabMetadata.METADATA_KEY, null);
@@ -236,7 +321,7 @@ public class JIPipeDesktopProjectWorkbench extends JPanel implements JIPipeDeskt
                 () -> new JIPipeDesktopWelcomePanel(this),
                 (JIPipeGeneralUIApplicationSettings.getInstance().isShowIntroduction() && showIntroduction) ? JIPipeDesktopTabPane.SingletonTabMode.Present : JIPipeDesktopTabPane.SingletonTabMode.Hidden);
         documentTabPane.registerSingletonTab(TAB_PROJECT_OVERVIEW,
-                "Project",
+                "Project overview",
                 UIUtils.getIconFromResources("actions/view-list-icons.png"),
                 () -> new JIPipeDesktopProjectOverviewUI(this),
                 (JIPipeGeneralUIApplicationSettings.getInstance().isShowProjectInfo() && !isNewProject) ? JIPipeDesktopTabPane.SingletonTabMode.Present : JIPipeDesktopTabPane.SingletonTabMode.Hidden);
@@ -631,7 +716,7 @@ public class JIPipeDesktopProjectWorkbench extends JPanel implements JIPipeDeskt
         menu.add(Box.createHorizontalGlue());
 
         // Overview link
-        JButton openProjectOverviewButton = new JButton("Project", UIUtils.getIconFromResources("actions/view-list-icons.png"));
+        openProjectOverviewButton = new JButton("Project", UIUtils.getIconFromResources("actions/view-list-icons.png"));
         openProjectOverviewButton.setToolTipText("Opens the project info & settings tab or jumps to the existing tab if it is already open.");
         openProjectOverviewButton.addActionListener(e -> documentTabPane.selectSingletonTab(TAB_PROJECT_OVERVIEW));
         UIUtils.setStandardButtonBorder(openProjectOverviewButton);
