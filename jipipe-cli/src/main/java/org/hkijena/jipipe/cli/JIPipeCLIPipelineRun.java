@@ -19,6 +19,7 @@ import org.hkijena.jipipe.api.validation.JIPipeValidationReport;
 import org.hkijena.jipipe.api.validation.contexts.UnspecifiedValidationReportContext;
 import org.hkijena.jipipe.plugins.settings.JIPipeExtensionApplicationSettings;
 import org.hkijena.jipipe.utils.PathUtils;
+import org.hkijena.jipipe.utils.StringUtils;
 import org.hkijena.jipipe.utils.json.JsonUtils;
 
 import java.io.File;
@@ -165,18 +166,31 @@ public class JIPipeCLIPipelineRun {
             String[] components = entry.getKey().split("/");
             String nodeId = components[0];
             String parameterId = String.join("/", Arrays.copyOfRange(components, 1, components.length));
-            System.out.println("Setting parameter nodeId='" + nodeId + "' parameterId='" + parameterId + "' to " + entry.getValue());
 
-            JIPipeGraphNode node = project.getGraph().findNode(nodeId);
-            if (node == null) {
-                throw new RuntimeException("Could not find node nodeId='" + nodeId + "'. Check if the UUID or alias ID are provided in the pipeline.");
+            JIPipeParameterAccess access;
+
+            if(StringUtils.isNullOrEmpty(nodeId)) {
+                System.out.println("Setting parameter nodeId='" + nodeId + "' parameterId='" + parameterId + "' to " + entry.getValue());
+
+                JIPipeGraphNode node = project.getGraph().findNode(nodeId);
+                if (node == null) {
+                    throw new RuntimeException("Could not find node nodeId='" + nodeId + "'. Check if the UUID or alias ID are provided in the pipeline.");
+                }
+
+                JIPipeParameterTree tree = new JIPipeParameterTree(node);
+                access = tree.getParameters().getOrDefault(parameterId, null);
+
+                if (access == null) {
+                    throw new RuntimeException("Could not find parameter parameterId='" + parameterId + "' in nodeId='" + nodeId + "'. Check if the UUID or alias ID are provided in the pipeline.");
+                }
             }
+            else {
+                System.out.println("Setting global parameter parameterId='" + parameterId + "' to " + entry.getValue());
+                access = project.getMetadata().getGlobalParameters().get(parameterId);
 
-            JIPipeParameterTree tree = new JIPipeParameterTree(node);
-            JIPipeParameterAccess access = tree.getParameters().getOrDefault(parameterId, null);
-
-            if (access == null) {
-                throw new RuntimeException("Could not find parameter parameterId='" + parameterId + "' in nodeId='" + nodeId + "'. Check if the UUID or alias ID are provided in the pipeline.");
+                if (access == null) {
+                    throw new RuntimeException("Could not find parameter parameterId='" + parameterId + "' in the set of global parameters.");
+                }
             }
 
             Object value;
