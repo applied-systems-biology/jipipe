@@ -57,6 +57,14 @@ public class JIPipeDesktopMergedProjectSettings extends AbstractJIPipeParameterC
         return project.getMetadata().getGlobalParameters();
     }
 
+    @Override
+    public boolean isParameterUIVisible(JIPipeParameterTree tree, JIPipeParameterCollection subParameter) {
+        if(subParameter == project.getMetadata().getGlobalParameters() && project.getMetadata().getGlobalParameters().getParameters().isEmpty()) {
+            return false;
+        }
+        return super.isParameterUIVisible(tree, subParameter);
+    }
+
     public JIPipeProject getProject() {
         return project;
     }
