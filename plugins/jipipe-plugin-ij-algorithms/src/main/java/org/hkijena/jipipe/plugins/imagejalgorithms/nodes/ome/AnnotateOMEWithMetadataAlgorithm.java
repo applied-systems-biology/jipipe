@@ -41,7 +41,7 @@ import org.hkijena.jipipe.utils.StringUtils;
 import java.util.ArrayList;
 import java.util.List;
 
-@SetJIPipeDocumentation(name = "Annotate with OME metadata", description = "Annotates an OME image with metadata extracted from the OME metadata")
+@SetJIPipeDocumentation(name = "Annotate image with OME metadata", description = "Annotates an OME image with metadata extracted from the OME metadata")
 @ConfigureJIPipeNode(nodeTypeCategory = AnnotationsNodeTypeCategory.class, menuPath = "For images")
 @AddJIPipeInputSlot(value = OMEImageData.class, name = "Input", create = true)
 @AddJIPipeOutputSlot(value = OMEImageData.class, name = "Output", create = true)

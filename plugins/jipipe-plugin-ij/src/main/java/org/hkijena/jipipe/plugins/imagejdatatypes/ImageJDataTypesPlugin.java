@@ -31,6 +31,7 @@ import org.hkijena.jipipe.plugins.core.data.OpenInNativeApplicationDataImportOpe
 import org.hkijena.jipipe.plugins.filesystem.FilesystemPlugin;
 import org.hkijena.jipipe.plugins.imagejdatatypes.algorithms.*;
 import org.hkijena.jipipe.plugins.imagejdatatypes.algorithms.annotate.AnnotateDataWithImagePropertiesAlgorithm;
+import org.hkijena.jipipe.plugins.imagejdatatypes.algorithms.annotate.BioFormatsAnnotatorAlgorithm;
 import org.hkijena.jipipe.plugins.imagejdatatypes.algorithms.annotate.ImagePropertiesToAnnotationAlgorithm;
 import org.hkijena.jipipe.plugins.imagejdatatypes.algorithms.color.ToHSBColorSpaceConverterAlgorithm;
 import org.hkijena.jipipe.plugins.imagejdatatypes.algorithms.color.ToLABColorSpaceConverterAlgorithm;
@@ -519,6 +520,7 @@ public class ImageJDataTypesPlugin extends JIPipePrepackagedDefaultJavaPlugin {
         registerNodeType("convert-imagej-image", ImageTypeConverter.class, UIUtils.getIconURLFromResources("actions/viewimage.png"));
         registerNodeType("export-imagej-bioformats", BioFormatsExporterAlgorithm.class, UIUtils.getIconURLFromResources("apps/bioformats.png"));
         registerNodeType("export-imagej-bioformats-v2", BioFormatsExporter2Algorithm.class, UIUtils.getIconURLFromResources("apps/bioformats.png"));
+        registerNodeType("annotate-with-bioformats", BioFormatsAnnotatorAlgorithm.class, UIUtils.getIconURLFromResources("apps/bioformats.png"));
         registerNodeType("set-imagej-bioformats-settings", SetBioFormatsExporterSettings.class, UIUtils.getIconURLFromResources("apps/bioformats.png"));
         registerNodeType("image-properties-to-annotation", ImagePropertiesToAnnotationAlgorithm.class, UIUtils.getIconURLFromResources("data-types/annotation-table.png"));
         registerNodeType("annotate-data-with-image-properties", AnnotateDataWithImagePropertiesAlgorithm.class, UIUtils.getIconURLFromResources("data-types/annotation-table.png"));

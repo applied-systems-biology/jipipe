@@ -173,11 +173,11 @@ public class JIPipeAuthorMetadata extends AbstractJIPipeParameterCollection {
     }
 
     public String getOrcidUrl() {
-        if(!StringUtils.isNullOrEmpty(orcid)) {
-            if(orcid.startsWith("http") || orcid.contains("orcid.org")) {
-                return orcid;
+        if(!StringUtils.isNullOrEmpty(getOrcid())) {
+            if(getOrcid().startsWith("http") || getOrcid().contains("orcid.org")) {
+                return getOrcid();
             }
-            return "https://orcid.org/" + orcid;
+            return "https://orcid.org/" + getOrcid();
         }
         return "";
     }
@@ -203,7 +203,7 @@ public class JIPipeAuthorMetadata extends AbstractJIPipeParameterCollection {
     @SetJIPipeDocumentation(name = "ORCID", description = "The ORCID (URL or ID)")
     @StringParameterSettings(monospace = true)
     public String getOrcid() {
-        return orcid;
+        return StringUtils.nullToEmpty(orcid).trim();
     }
 
     @JIPipeParameter("orcid")
