@@ -169,7 +169,7 @@ public class JIPipeCLIPipelineRun {
 
             JIPipeParameterAccess access;
 
-            if(StringUtils.isNullOrEmpty(nodeId)) {
+            if(!StringUtils.isNullOrEmpty(nodeId)) {
                 System.out.println("Setting parameter nodeId='" + nodeId + "' parameterId='" + parameterId + "' to " + entry.getValue());
 
                 JIPipeGraphNode node = project.getGraph().findNode(nodeId);
