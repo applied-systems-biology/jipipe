@@ -46,6 +46,7 @@ import org.hkijena.jipipe.desktop.commons.components.JIPipeDesktopFormPanel;
 import org.hkijena.jipipe.desktop.commons.components.JIPipeDesktopImageFrameComponent;
 import org.hkijena.jipipe.desktop.commons.components.JIPipeDesktopParameterFormPanel;
 import org.hkijena.jipipe.desktop.commons.components.icons.SolidColorIcon;
+import org.hkijena.jipipe.desktop.commons.components.markup.JIPipeDesktopHTMLEditor;
 import org.hkijena.jipipe.desktop.commons.components.markup.JIPipeDesktopHTMLEditorKit;
 import org.hkijena.jipipe.desktop.commons.components.markup.JIPipeDesktopMarkdownReader;
 import org.hkijena.jipipe.desktop.commons.components.parameters.JIPipeDesktopDynamicParameterEditorDialog;
@@ -53,6 +54,8 @@ import org.hkijena.jipipe.desktop.commons.components.ribbon.JIPipeDesktopRibbon;
 import org.hkijena.jipipe.desktop.commons.theme.JIPipeDesktopModernMetalTheme;
 import org.hkijena.jipipe.plugins.parameters.api.optional.OptionalParameter;
 import org.hkijena.jipipe.plugins.parameters.library.jipipe.JIPipeArtifactQueryParameter;
+import org.hkijena.jipipe.plugins.parameters.library.markup.HTMLText;
+import org.hkijena.jipipe.plugins.parameters.library.markup.HTMLTextDesktopParameterEditorUI;
 import org.hkijena.jipipe.plugins.parameters.library.markup.MarkdownText;
 import org.hkijena.jipipe.plugins.settings.JIPipeFileChooserApplicationSettings;
 import org.hkijena.jipipe.utils.*;
@@ -206,11 +209,11 @@ public class JIPipeDesktopProjectOverviewUI extends JIPipeDesktopProjectWorkbenc
         tipsPanel.setLayout(new BoxLayout(tipsPanel, BoxLayout.X_AXIS));
 
         if (!StringUtils.isNullOrEmpty(getProject().getMetadata().getDescription().toPlainText())) {
-            addPanelToCenterPanel(UIUtils.getIcon32FromResources("status/messagebox_info.png"), "Description", descriptionReader, UIUtils.makeButtonTransparent(UIUtils.createButton("", UIUtils.getIconFromResources("actions/edit.png"), this::editProjectMetadata)));
+            addPanelToCenterPanel(UIUtils.getIcon32FromResources("status/messagebox_info.png"), "Description", descriptionReader, UIUtils.makeButtonTransparent(UIUtils.createButton("", UIUtils.getIconFromResources("actions/edit.png"), this::editProjectDescription)));
             descriptionReader.setText(getProject().getMetadata().getDescription().getHtml());
         } else {
             addToTipsPanel(tipsPanel, "Write a description", "Write a workflow description to help people who are unfamiliar with your pipeline.",
-                    UIUtils.makeButtonTransparent(UIUtils.createButton("Edit metadata", UIUtils.getIconFromResources("actions/edit.png"), this::editProjectMetadata)));
+                    UIUtils.makeButtonTransparent(UIUtils.createButton("Edit metadata", UIUtils.getIconFromResources("actions/edit.png"), this::editProjectDescription)));
         }
 
         if (StringUtils.isNullOrEmpty(getProject().getMetadata().getLicense())) {
@@ -233,6 +236,15 @@ public class JIPipeDesktopProjectOverviewUI extends JIPipeDesktopProjectWorkbenc
         }
         centerPanel.addVerticalGlue();
 
+    }
+
+    private void editProjectDescription() {
+        JIPipeDesktopHTMLEditor editor = new JIPipeDesktopHTMLEditor(getDesktopProjectWorkbench(), JIPipeDesktopHTMLEditor.Mode.Full, JIPipeDesktopHTMLEditor.WITH_SCROLL_BAR);
+        editor.setText(getProject().getMetadata().getDescription().getHtml());
+        if(UIUtils.showConfirmDialog(this, "Edit project description", new Dimension(800,600), editor)) {
+            getProject().getMetadata().setDescription(new HTMLText(editor.getHTML()));
+            refreshCenterPanel();
+        }
     }
 
     private void createArtifactUpgradeTipsIfNeeded(JPanel tipsPanel) {
