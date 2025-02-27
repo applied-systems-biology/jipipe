@@ -61,8 +61,8 @@ public class OCRPlugin extends JIPipePrepackagedDefaultJavaPlugin {
         if (nodeEnvironment != null && nodeEnvironment.isEnabled()) {
             return nodeEnvironment.getContent();
         }
-        if (project != null && project.getSettingsSheet(OCRPluginProjectSettings.class).getProjectDefaultTSOAXEnvironment().isEnabled()) {
-            return project.getSettingsSheet(OCRPluginProjectSettings.class).getProjectDefaultTSOAXEnvironment().getContent();
+        if (project != null && project.getSettingsSheet(OCRPluginProjectSettings.class).getProjectDefaultEnvironment().isEnabled()) {
+            return project.getSettingsSheet(OCRPluginProjectSettings.class).getProjectDefaultEnvironment().getContent();
         }
         return TesseractOCRApplicationSettings.getInstance().getReadOnlyDefaultEnvironment();
     }

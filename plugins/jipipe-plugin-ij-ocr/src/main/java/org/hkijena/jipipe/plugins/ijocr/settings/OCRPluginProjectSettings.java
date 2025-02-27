@@ -17,11 +17,11 @@ import org.hkijena.jipipe.JIPipe;
 import org.hkijena.jipipe.api.SetJIPipeDocumentation;
 import org.hkijena.jipipe.api.artifacts.JIPipeArtifact;
 import org.hkijena.jipipe.api.environments.ExternalEnvironmentParameterSettings;
+import org.hkijena.jipipe.api.environments.JIPipeEnvironment;
 import org.hkijena.jipipe.api.parameters.JIPipeParameter;
 import org.hkijena.jipipe.api.registries.JIPipeArtifactsRegistry;
 import org.hkijena.jipipe.api.settings.JIPipeDefaultProjectSettingsSheet;
 import org.hkijena.jipipe.api.settings.JIPipeDefaultProjectSettingsSheetCategory;
-import org.hkijena.jipipe.plugins.ijocr.OCRPlugin;
 import org.hkijena.jipipe.plugins.ijocr.environments.OptionalTesseractOCREnvironment;
 import org.hkijena.jipipe.plugins.ijocr.environments.TesseractOCREnvironment;
 import org.hkijena.jipipe.plugins.parameters.library.jipipe.JIPipeArtifactQueryParameter;
@@ -34,7 +34,7 @@ public class OCRPluginProjectSettings extends JIPipeDefaultProjectSettingsSheet 
 
     public static final String ID = "org.hkijena.jipipe:ij-ocr";
 
-    private OptionalTesseractOCREnvironment projectDefaultTSOAXEnvironment = new OptionalTesseractOCREnvironment();
+    private OptionalTesseractOCREnvironment projectDefaultEnvironment = new OptionalTesseractOCREnvironment();
 
     public OCRPluginProjectSettings() {
         autoConfigureTSOAXEnvironment();
@@ -51,8 +51,8 @@ public class OCRPluginProjectSettings extends JIPipeDefaultProjectSettingsSheet 
                 environment.setLoadFromArtifact(true);
                 environment.setArtifactQuery(new JIPipeArtifactQueryParameter(target.getFullId()));
 
-                projectDefaultTSOAXEnvironment.setEnabled(true);
-                projectDefaultTSOAXEnvironment.setContent(environment);
+                projectDefaultEnvironment.setEnabled(true);
+                projectDefaultEnvironment.setContent(environment);
             }
         }
     }
@@ -61,13 +61,13 @@ public class OCRPluginProjectSettings extends JIPipeDefaultProjectSettingsSheet 
     @SetJIPipeDocumentation(name = "Project default Tesseract OCR environment", description = "If enabled, overwrite the application-wide Tesseract OCR environment and store them inside the project. ")
     @JIPipeParameter("project-default-environment")
     @ExternalEnvironmentParameterSettings(allowArtifact = true, artifactFilters = {"com.github.tesseractocr.tesseract:*"})
-    public OptionalTesseractOCREnvironment getProjectDefaultTSOAXEnvironment() {
-        return projectDefaultTSOAXEnvironment;
+    public OptionalTesseractOCREnvironment getProjectDefaultEnvironment() {
+        return projectDefaultEnvironment;
     }
 
     @JIPipeParameter("project-default-environment")
-    public void setProjectDefaultTSOAXEnvironment(OptionalTesseractOCREnvironment projectDefaultTSOAXEnvironment) {
-        this.projectDefaultTSOAXEnvironment = projectDefaultTSOAXEnvironment;
+    public void setProjectDefaultEnvironment(OptionalTesseractOCREnvironment projectDefaultEnvironment) {
+        this.projectDefaultEnvironment = projectDefaultEnvironment;
     }
 
     @Override
@@ -93,5 +93,12 @@ public class OCRPluginProjectSettings extends JIPipeDefaultProjectSettingsSheet 
     @Override
     public String getDescription() {
         return "Settings related to the Optical Character Recognition (OCR)";
+    }
+
+    @Override
+    public void getEnvironmentDependencies(List<JIPipeEnvironment> target) {
+        if(projectDefaultEnvironment.isEnabled()) {
+            target.add(projectDefaultEnvironment.getContent());
+        }
     }
 }

@@ -17,6 +17,7 @@ import org.hkijena.jipipe.JIPipe;
 import org.hkijena.jipipe.api.SetJIPipeDocumentation;
 import org.hkijena.jipipe.api.artifacts.JIPipeArtifact;
 import org.hkijena.jipipe.api.environments.ExternalEnvironmentParameterSettings;
+import org.hkijena.jipipe.api.environments.JIPipeEnvironment;
 import org.hkijena.jipipe.api.parameters.JIPipeParameter;
 import org.hkijena.jipipe.api.registries.JIPipeArtifactsRegistry;
 import org.hkijena.jipipe.api.settings.JIPipeDefaultProjectSettingsSheet;
@@ -122,5 +123,15 @@ public class PythonPluginProjectSettings extends JIPipeDefaultProjectSettingsShe
     @Override
     public String getDescription() {
         return "Settings related to the Python integration";
+    }
+
+    @Override
+    public void getEnvironmentDependencies(List<JIPipeEnvironment> target) {
+        if(projectDefaultEnvironment.isEnabled()) {
+            target.add(projectDefaultEnvironment.getContent());
+        }
+        if(projectPythonAdapterLibraryEnvironment.isEnabled()) {
+            target.add(projectPythonAdapterLibraryEnvironment.getContent());
+        }
     }
 }

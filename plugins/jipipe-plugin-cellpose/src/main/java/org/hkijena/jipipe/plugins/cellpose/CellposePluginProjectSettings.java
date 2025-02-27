@@ -4,6 +4,7 @@ import org.hkijena.jipipe.JIPipe;
 import org.hkijena.jipipe.api.SetJIPipeDocumentation;
 import org.hkijena.jipipe.api.artifacts.JIPipeArtifact;
 import org.hkijena.jipipe.api.environments.ExternalEnvironmentParameterSettings;
+import org.hkijena.jipipe.api.environments.JIPipeEnvironment;
 import org.hkijena.jipipe.api.parameters.JIPipeParameter;
 import org.hkijena.jipipe.api.registries.JIPipeArtifactsRegistry;
 import org.hkijena.jipipe.api.settings.JIPipeDefaultProjectSettingsSheet;
@@ -101,5 +102,15 @@ public class CellposePluginProjectSettings extends JIPipeDefaultProjectSettingsS
     @Override
     public String getDescription() {
         return "Settings related to the Cellpose integration";
+    }
+
+    @Override
+    public void getEnvironmentDependencies(List<JIPipeEnvironment> target) {
+        if(cellpose2Environment.isEnabled()) {
+            target.add(cellpose2Environment.getContent());
+        }
+        if(cellpose3Environment.isEnabled()) {
+            target.add(cellpose3Environment.getContent());
+        }
     }
 }

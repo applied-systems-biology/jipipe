@@ -14,12 +14,14 @@
 package org.hkijena.jipipe.plugins.omero;
 
 import org.hkijena.jipipe.api.SetJIPipeDocumentation;
+import org.hkijena.jipipe.api.environments.JIPipeEnvironment;
 import org.hkijena.jipipe.api.parameters.JIPipeParameter;
 import org.hkijena.jipipe.api.settings.JIPipeDefaultProjectSettingsSheet;
 import org.hkijena.jipipe.api.settings.JIPipeDefaultProjectSettingsSheetCategory;
 import org.hkijena.jipipe.utils.UIUtils;
 
 import javax.swing.*;
+import java.util.List;
 
 public class OMEROPluginProjectSettings extends JIPipeDefaultProjectSettingsSheet {
 
@@ -69,5 +71,12 @@ public class OMEROPluginProjectSettings extends JIPipeDefaultProjectSettingsShee
     @Override
     public String getDescription() {
         return "Settings for the OMERO integration";
+    }
+
+    @Override
+    public void getEnvironmentDependencies(List<JIPipeEnvironment> target) {
+        if(projectDefaultEnvironment.isEnabled()) {
+            target.add(projectDefaultEnvironment.getContent());
+        }
     }
 }

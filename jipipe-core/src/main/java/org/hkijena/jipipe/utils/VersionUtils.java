@@ -13,7 +13,13 @@
 
 package org.hkijena.jipipe.utils;
 
+import gnu.trove.list.TIntList;
+import gnu.trove.list.array.TIntArrayList;
 import org.hkijena.jipipe.plugins.core.CorePlugin;
+
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.List;
 
 public class VersionUtils {
 
@@ -50,5 +56,27 @@ public class VersionUtils {
             return 0;
         }
         return StringUtils.compareVersions(version1, version2);
+    }
+
+    public static int[] getVersionComponents(String version) {
+        String[] items = StringUtils.splitNonRegex(version, ".");
+        int[] result = new int[items.length];
+        for (int i = 0; i < items.length; i++) {
+            result[i] = Integer.parseInt(items[i]);
+        }
+        return result;
+    }
+
+    public List<int[]> equalizeVersionComponents(int[]... versions) {
+        List<int[]> result = new ArrayList<>();
+        int numComponents = Arrays.stream(versions).mapToInt(v -> v.length).max().orElse(0);
+        for (int[] version : versions) {
+            TIntList intList = new TIntArrayList(version);
+            while(intList.size() < numComponents) {
+                intList.add(0);
+            }
+            result.add(intList.toArray());
+        }
+        return result;
     }
 }

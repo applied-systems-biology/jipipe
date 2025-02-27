@@ -14,6 +14,7 @@
 package org.hkijena.jipipe.plugins.settings;
 
 import org.hkijena.jipipe.api.SetJIPipeDocumentation;
+import org.hkijena.jipipe.api.environments.JIPipeEnvironment;
 import org.hkijena.jipipe.api.parameters.JIPipeParameter;
 import org.hkijena.jipipe.api.settings.JIPipeDefaultProjectSettingsSheet;
 import org.hkijena.jipipe.api.settings.JIPipeDefaultProjectSettingsSheetCategory;
@@ -21,6 +22,7 @@ import org.hkijena.jipipe.plugins.parameters.library.primitives.optional.Optiona
 import org.hkijena.jipipe.utils.UIUtils;
 
 import javax.swing.*;
+import java.util.List;
 
 public class JIPipeDataStorageProjectSettings extends JIPipeDefaultProjectSettingsSheet {
     public static String ID = "org.hkijena.jipipe:data-storage";
@@ -73,5 +75,10 @@ public class JIPipeDataStorageProjectSettings extends JIPipeDefaultProjectSettin
     @Override
     public String getDescription() {
         return "Settings related to per-project data storage";
+    }
+
+    @Override
+    public void getEnvironmentDependencies(List<JIPipeEnvironment> target) {
+
     }
 }

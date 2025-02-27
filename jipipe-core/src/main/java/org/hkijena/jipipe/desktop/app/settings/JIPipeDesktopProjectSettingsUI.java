@@ -14,6 +14,7 @@
 package org.hkijena.jipipe.desktop.app.settings;
 
 import org.hkijena.jipipe.api.SetJIPipeDocumentation;
+import org.hkijena.jipipe.api.environments.JIPipeEnvironment;
 import org.hkijena.jipipe.api.parameters.JIPipeParameter;
 import org.hkijena.jipipe.api.parameters.JIPipeParameterAccess;
 import org.hkijena.jipipe.api.parameters.JIPipeParameterCollection;
@@ -261,6 +262,11 @@ public class JIPipeDesktopProjectSettingsUI extends JPanel {
         public String getDescription() {
             return "Allows to setup project-wide paths and directories";
         }
+
+        @Override
+        public void getEnvironmentDependencies(List<JIPipeEnvironment> target) {
+
+        }
     }
 
     public static class ProjectMetadataSettingsSheetWrapper extends SettingsSheetWrapper {
@@ -320,6 +326,11 @@ public class JIPipeDesktopProjectSettingsUI extends JPanel {
             }
             return super.isParameterUIVisible(tree, access);
         }
+
+        @Override
+        public void getEnvironmentDependencies(List<JIPipeEnvironment> target) {
+
+        }
     }
 
     public static class ProjectPermissionsSettingsSheetWrapper extends SettingsSheetWrapper {
@@ -367,6 +378,11 @@ public class JIPipeDesktopProjectSettingsUI extends JPanel {
         public boolean isParameterUIVisible(JIPipeParameterTree tree, JIPipeParameterAccess access) {
             return super.isParameterUIVisible(tree, access);
         }
+
+        @Override
+        public void getEnvironmentDependencies(List<JIPipeEnvironment> target) {
+
+        }
     }
 
     public static class ProjectParametersSettingsSheetWrapper extends SettingsSheetWrapper {
@@ -413,6 +429,11 @@ public class JIPipeDesktopProjectSettingsUI extends JPanel {
         @Override
         public boolean isParameterUIVisible(JIPipeParameterTree tree, JIPipeParameterAccess access) {
             return super.isParameterUIVisible(tree, access);
+        }
+
+        @Override
+        public void getEnvironmentDependencies(List<JIPipeEnvironment> target) {
+
         }
     }
 

@@ -122,6 +122,14 @@ public class JIPipeArtifact extends AbstractJIPipeParameterCollection implements
         return getGroupId() + "." + getArtifactId() + ":" + getVersion() + "-" + getClassifier();
     }
 
+    public void setFullId(String fullId) {
+        JIPipeArtifact artifact = new JIPipeArtifact(fullId);
+        this.setArtifactId(artifact.getArtifactId());
+        this.setVersion(artifact.getVersion());
+        this.setClassifier(artifact.getClassifier());
+        this.setGroupId(artifact.getGroupId());
+    }
+
     /**
      * Returns true if this artifact is compatible with the current system
      * Includes non-native compatibility (e.g., x86 is compatible to amd64)
@@ -291,5 +299,37 @@ public class JIPipeArtifact extends AbstractJIPipeParameterCollection implements
                 report.report(new JIPipeValidationReportEntry(JIPipeValidationReportEntryLevel.Error, reportContext, "Invalid version", "The version is not valid!"));
             }
         }
+    }
+
+    public String getVersionWithoutRevision() {
+        if(StringUtils.isValidVersion(version)) {
+            int[] items = VersionUtils.getVersionComponents(version);
+            int lastItem = items[items.length - 1];
+
+            // JIPipe-style revisions start at 1000
+            if(lastItem >= 1000) {
+                int[] s = new int[items.length - 1];
+                System.arraycopy(items, 0, s, 0, items.length - 1);
+                return Arrays.stream(s).boxed().map(Object::toString).collect(Collectors.joining("."));
+            }
+            else {
+                // No revision part
+                return version;
+            }
+        }
+        return version;
+    }
+
+    public int getVersionRevision() {
+        if(StringUtils.isValidVersion(version)) {
+            int[] items = VersionUtils.getVersionComponents(version);
+            int lastItem = items[items.length - 1];
+
+            // JIPipe-style revisions start at 1000
+            if(lastItem >= 1000) {
+                return lastItem;
+            }
+        }
+        return 0;
     }
 }

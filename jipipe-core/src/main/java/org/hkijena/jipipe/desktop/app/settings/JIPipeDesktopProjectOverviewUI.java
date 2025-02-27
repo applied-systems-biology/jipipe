@@ -13,17 +13,24 @@
 
 package org.hkijena.jipipe.desktop.app.settings;
 
+import org.hkijena.jipipe.JIPipe;
 import org.hkijena.jipipe.api.JIPipeAuthorMetadata;
 import org.hkijena.jipipe.api.JIPipeProgressInfo;
+import org.hkijena.jipipe.api.artifacts.JIPipeArtifact;
 import org.hkijena.jipipe.api.compartments.algorithms.JIPipeProjectCompartment;
 import org.hkijena.jipipe.api.compartments.algorithms.JIPipeProjectCompartmentOutput;
 import org.hkijena.jipipe.api.data.JIPipeDataTable;
+import org.hkijena.jipipe.api.environments.JIPipeArtifactEnvironment;
 import org.hkijena.jipipe.api.grouping.parameters.GraphNodeParameterReferenceGroupCollection;
 import org.hkijena.jipipe.api.nodes.JIPipeAlgorithm;
 import org.hkijena.jipipe.api.nodes.JIPipeGraphNode;
+import org.hkijena.jipipe.api.parameters.JIPipeParameterAccess;
+import org.hkijena.jipipe.api.parameters.JIPipeParameterTree;
 import org.hkijena.jipipe.api.project.JIPipeProjectDirectories;
+import org.hkijena.jipipe.api.registries.JIPipeArtifactsRegistry;
 import org.hkijena.jipipe.api.run.JIPipeRunnable;
 import org.hkijena.jipipe.api.run.JIPipeRunnableQueue;
+import org.hkijena.jipipe.api.settings.JIPipeProjectSettingsSheet;
 import org.hkijena.jipipe.desktop.app.JIPipeDesktopProjectWorkbench;
 import org.hkijena.jipipe.desktop.app.JIPipeDesktopProjectWorkbenchPanel;
 import org.hkijena.jipipe.desktop.app.bookmarks.JIPipeDesktopBookmarkListPanel;
@@ -31,7 +38,6 @@ import org.hkijena.jipipe.desktop.app.cache.JIPipeDesktopAlgorithmCacheBrowserUI
 import org.hkijena.jipipe.desktop.app.grapheditor.commons.AbstractJIPipeDesktopGraphEditorUI;
 import org.hkijena.jipipe.desktop.app.grapheditor.commons.JIPipeDesktopGraphEditorLogPanel;
 import org.hkijena.jipipe.desktop.app.grapheditor.commons.properties.JIPipeDesktopGraphEditorErrorPanel;
-import org.hkijena.jipipe.desktop.app.grapheditor.flavors.compartments.properties.JIPipeDesktopCompartmentGraphEditorResultsPanel;
 import org.hkijena.jipipe.desktop.app.parameterreference.JIPipeDesktopGraphNodeParameterReferenceGroupCollectionEditorUI;
 import org.hkijena.jipipe.desktop.app.settings.project.JIPipeDesktopMergedProjectSettings;
 import org.hkijena.jipipe.desktop.app.settings.project.JIPipeDesktopProjectOverviewRunManager;
@@ -40,13 +46,13 @@ import org.hkijena.jipipe.desktop.commons.components.JIPipeDesktopFormPanel;
 import org.hkijena.jipipe.desktop.commons.components.JIPipeDesktopImageFrameComponent;
 import org.hkijena.jipipe.desktop.commons.components.JIPipeDesktopParameterFormPanel;
 import org.hkijena.jipipe.desktop.commons.components.icons.SolidColorIcon;
-import org.hkijena.jipipe.desktop.commons.components.layouts.JIPipeDesktopFlowLayout;
-import org.hkijena.jipipe.desktop.commons.components.layouts.JIPipeDesktopWrapLayout;
 import org.hkijena.jipipe.desktop.commons.components.markup.JIPipeDesktopHTMLEditorKit;
 import org.hkijena.jipipe.desktop.commons.components.markup.JIPipeDesktopMarkdownReader;
 import org.hkijena.jipipe.desktop.commons.components.parameters.JIPipeDesktopDynamicParameterEditorDialog;
 import org.hkijena.jipipe.desktop.commons.components.ribbon.JIPipeDesktopRibbon;
 import org.hkijena.jipipe.desktop.commons.theme.JIPipeDesktopModernMetalTheme;
+import org.hkijena.jipipe.plugins.parameters.api.optional.OptionalParameter;
+import org.hkijena.jipipe.plugins.parameters.library.jipipe.JIPipeArtifactQueryParameter;
 import org.hkijena.jipipe.plugins.parameters.library.markup.MarkdownText;
 import org.hkijena.jipipe.plugins.settings.JIPipeFileChooserApplicationSettings;
 import org.hkijena.jipipe.utils.*;
@@ -59,10 +65,9 @@ import java.awt.datatransfer.Clipboard;
 import java.awt.datatransfer.StringSelection;
 import java.awt.image.BufferedImage;
 import java.nio.file.Path;
-import java.util.*;
 import java.util.List;
+import java.util.*;
 
-import static org.hkijena.jipipe.desktop.app.grapheditor.flavors.compartments.JIPipeDesktopCompartmentsGraphEditorUI.DOCK_NODE_CONTEXT_RESULTS;
 import static org.hkijena.jipipe.desktop.app.grapheditor.flavors.pipeline.JIPipeDesktopPipelineGraphEditorUI.DOCK_NODE_CONTEXT_HELP;
 
 /**
@@ -216,6 +221,7 @@ public class JIPipeDesktopProjectOverviewUI extends JIPipeDesktopProjectWorkbenc
 
         createCompartmentsTipIfNeeded(tipsPanel);
         createCompartmentsOutputTipIfNeeded(tipsPanel);
+        createArtifactUpgradeTipsIfNeeded(tipsPanel);
 
         // Handle the tips panel
         if (tipsPanel.getComponentCount() > 0) {
@@ -229,33 +235,157 @@ public class JIPipeDesktopProjectOverviewUI extends JIPipeDesktopProjectWorkbenc
 
     }
 
+    private void createArtifactUpgradeTipsIfNeeded(JPanel tipsPanel) {
+        List<JIPipeArtifactEnvironment> environments = new ArrayList<>();
+        for (JIPipeProjectSettingsSheet settingsSheet : getProject().getSettingsSheets().values()) {
+            JIPipeParameterTree parameterTree = new JIPipeParameterTree(settingsSheet);
+            for (JIPipeParameterAccess access : parameterTree.getParameters().values()) {
+                Object o = access.get(Object.class);
+                if (o instanceof OptionalParameter) {
+                    if (((OptionalParameter<?>) o).isEnabled() && ((OptionalParameter<?>) o).getContent() instanceof JIPipeArtifactEnvironment) {
+                        environments.add((JIPipeArtifactEnvironment) ((OptionalParameter<?>) o).getContent());
+                    }
+                } else if (o instanceof JIPipeArtifactEnvironment) {
+                    environments.add((JIPipeArtifactEnvironment) o);
+                }
+            }
+        }
+        List<ArtifactUpgrade> upgrades = new ArrayList<>();
+        for (JIPipeArtifactEnvironment environment : environments) {
+            if (environment.isLoadFromArtifact() && !StringUtils.isNullOrEmpty(environment.getArtifactQuery().getQuery()) && environment.getArtifactQuery().isStatic()) {
+                try {
+                    JIPipeArtifact current = JIPipe.getArtifacts().queryCachedArtifact(environment.getArtifactQuery().getQuery());
+                    List<JIPipeArtifact> candidates = JIPipe.getArtifacts().queryCachedArtifacts(environment.getArtifactQuery().getBaseQuery());
+                    List<JIPipeArtifact> revisionUpgrades = new ArrayList<>();
+                    List<JIPipeArtifact> accelerationUpgrades = new ArrayList<>();
+                    if (current != null) {
+                        int revisionVersion = current.getVersionRevision();
+                        String baseVersion = current.getVersionWithoutRevision();
+
+                        for (JIPipeArtifact candidate : candidates) {
+                            if (candidate.isCompatible()) {
+                                String candidateBaseVersion = candidate.getVersionWithoutRevision();
+                                int candidateRevision = candidate.getVersionRevision();
+                                if (StringUtils.compareVersions(candidateBaseVersion, baseVersion) == 0) {
+//                                    System.out.println("Found upgrade from " + current.getFullId() + " to " + candidate.getFullId());
+                                    if (candidateRevision > revisionVersion && !candidate.getFullId().equals(current.getFullId())) {
+                                        revisionUpgrades.add(candidate);
+                                    }
+                                    if (candidateRevision >= revisionVersion) {
+                                        accelerationUpgrades.add(candidate);
+                                    }
+                                }
+                            }
+                        }
+                    }
+
+                    if (!accelerationUpgrades.isEmpty()) {
+                        accelerationUpgrades = Collections.singletonList(JIPipeArtifactsRegistry.selectPreferredArtifactByClassifier(accelerationUpgrades));
+                        if(accelerationUpgrades.get(0).getFullId().equals(current.getFullId())) {
+                            accelerationUpgrades = Collections.emptyList();
+                        }
+                    }
+
+                    if (!accelerationUpgrades.isEmpty() || !revisionUpgrades.isEmpty()) {
+                        upgrades.add(new ArtifactUpgrade(environment, current, revisionUpgrades, accelerationUpgrades));
+                    }
+
+                } catch (Throwable ignored) {
+
+                }
+            }
+        }
+
+        if (!upgrades.isEmpty()) {
+            addToTipsPanel(tipsPanel, "Update third-party artifacts", "Your project has some non-optimal configurations regarding " + StringUtils.formatPluralS(upgrades.size(), "third-party artifact") +
+                            ". Alternatives were detected that may allow to utilize your hardware better or contain important bugfixes.",
+                    UIUtils.makeButtonTransparent(UIUtils.createButton("Review updates", UIUtils.getIconFromResources("actions/list-check.png"), () -> upgradeArtifacts(upgrades))));
+        }
+    }
+
+    private void upgradeArtifacts(List<ArtifactUpgrade> upgrades) {
+        JIPipeDesktopFormPanel formPanel = new JIPipeDesktopFormPanel(JIPipeDesktopFormPanel.WITH_SCROLLING);
+        List<JComboBox<String>> comboBoxes = new ArrayList<>();
+
+        formPanel.addToForm(UIUtils.createJLabel("New version", 16), UIUtils.createJLabel("Old version", 16));
+        formPanel.addWideToForm(new JSeparator(JSeparator.HORIZONTAL));
+
+        for (ArtifactUpgrade artifactUpgrade : upgrades) {
+            JComboBox<String> comboBox = new JComboBox<>();
+            for (JIPipeArtifact revisionUpgrade : artifactUpgrade.revisionUpgrades) {
+                comboBox.addItem(revisionUpgrade.getFullId());
+            }
+            for (JIPipeArtifact accelerationUpgrade : artifactUpgrade.accelerationUpgrades) {
+                comboBox.addItem(accelerationUpgrade.getFullId());
+            }
+            comboBox.addItem("Keep as-is");
+            comboBoxes.add(comboBox);
+
+            formPanel.addToForm(comboBox, new JLabel(artifactUpgrade.current.getFullId(), UIUtils.getIconFromResources("actions/run-build-install.png"), JLabel.LEFT));
+        }
+        int numSuccesses = 0;
+        if (JIPipeDesktopFormPanel.showDialog(this, formPanel, "Update third-party artifacts")) {
+            for (int i = 0; i < upgrades.size(); i++) {
+                ArtifactUpgrade upgrade = upgrades.get(i);
+                JComboBox<String> comboBox = comboBoxes.get(i);
+                String selectedItem = StringUtils.nullToEmpty(comboBox.getSelectedItem());
+
+                if(!StringUtils.isNullOrEmpty(selectedItem) && !"Keep as-is".equals(selectedItem)) {
+                    upgrade.environment.setArtifactQuery(new JIPipeArtifactQueryParameter(selectedItem));
+                    ++numSuccesses;
+                }
+            }
+
+            if(numSuccesses > 0) {
+                JOptionPane.showMessageDialog(this,  StringUtils.wrapHtml(StringUtils.formatPluralS(numSuccesses, "artifact") + " were updated.<br/>JIPipe will automatically take care of downloading and setting up the artifacts."));
+                refreshCenterPanel();
+            }
+
+
+        }
+    }
+
+    private static class ArtifactUpgrade {
+        private final JIPipeArtifactEnvironment environment;
+        private final JIPipeArtifact current;
+        private final List<JIPipeArtifact> revisionUpgrades;
+        private final List<JIPipeArtifact> accelerationUpgrades;
+
+        public ArtifactUpgrade(JIPipeArtifactEnvironment environment, JIPipeArtifact current, List<JIPipeArtifact> revisionUpgrades, List<JIPipeArtifact> accelerationUpgrades) {
+            this.environment = environment;
+            this.current = current;
+            this.revisionUpgrades = revisionUpgrades;
+            this.accelerationUpgrades = accelerationUpgrades;
+        }
+    }
+
     private void createRunPanel() {
         List<JIPipeProjectCompartmentOutput> outputList = new ArrayList<>();
         for (JIPipeGraphNode graphNode : getProject().getCompartmentGraph().traverse()) {
             if (graphNode instanceof JIPipeProjectCompartment) {
-                if(((JIPipeProjectCompartment) graphNode).isShowInProjectOverview()) {
+                if (((JIPipeProjectCompartment) graphNode).isShowInProjectOverview()) {
                     for (JIPipeProjectCompartmentOutput output : ((JIPipeProjectCompartment) graphNode).getOutputNodes().values()) {
-                        if(output.isShowInProjectOverview()) {
+                        if (output.isShowInProjectOverview()) {
                             outputList.add(output);
                         }
                     }
                 }
             }
         }
-        if(!outputList.isEmpty()) {
+        if (!outputList.isEmpty()) {
             JPanel listPanel = UIUtils.boxVertical();
 
             for (JIPipeProjectCompartmentOutput output : outputList) {
                 JPanel outputPanel = new JPanel(new BorderLayout(16, 0));
                 outputPanel.setBorder(BorderFactory.createCompoundBorder(
-                        BorderFactory.createEmptyBorder(4,4,4,4),
+                        BorderFactory.createEmptyBorder(4, 4, 4, 4),
                         new RoundedLineBorder(UIUtils.getControlBorderColor(), 1, 4)
                 ));
                 Color color = null;
-                if(output.getProjectCompartment().getProjectOverviewColor().isEnabled()) {
+                if (output.getProjectCompartment().getProjectOverviewColor().isEnabled()) {
                     color = output.getProjectCompartment().getProjectOverviewColor().getContent();
                 }
-                if(output.getProjectOverviewColor().isEnabled()) {
+                if (output.getProjectOverviewColor().isEnabled()) {
                     color = output.getProjectOverviewColor().getContent();
                 }
                 outputPanel.add(new JLabel(new SolidColorIcon(8, 32, color != null ? color : UIManager.getColor("Panel.background"), UIUtils.getControlBorderColor())), BorderLayout.WEST);
@@ -263,11 +393,11 @@ public class JIPipeDesktopProjectOverviewUI extends JIPipeDesktopProjectWorkbenc
 
                 JButton runButton = new JButton("Run", UIUtils.getIconFromResources("actions/run-play.png"));
                 JPopupMenu runMenu = UIUtils.addPopupMenuToButton(runButton);
-                runMenu.add(UIUtils.createMenuItem("Update cache (default)", "Runs the output and stores the results in the memory cache",  UIUtils.getIcon16FromResources("actions/update-cache.png"), () -> {
+                runMenu.add(UIUtils.createMenuItem("Update cache (default)", "Runs the output and stores the results in the memory cache", UIUtils.getIcon16FromResources("actions/update-cache.png"), () -> {
                     doUpdateCache(output, false);
                 }));
                 runMenu.add(UIUtils.createMenuItem("Cache intermediate results", "Runs the output and stores the results and intermediate" +
-                        " results in the memory cache (memory-intensive for large workflows!)",  UIUtils.getIcon16FromResources("actions/cache-intermediate-results.png"), () -> {
+                        " results in the memory cache (memory-intensive for large workflows!)", UIUtils.getIcon16FromResources("actions/cache-intermediate-results.png"), () -> {
                     doUpdateCache(output, true);
                 }));
 
@@ -279,11 +409,10 @@ public class JIPipeDesktopProjectOverviewUI extends JIPipeDesktopProjectWorkbenc
                         UIUtils.createButton("Help", UIUtils.getIconFromResources("actions/help.png"), () -> {
                             dockPanel.activatePanel(DOCK_NODE_CONTEXT_HELP, true);
                             JIPipeDesktopFormHelpPanel helpPanel = dockPanel.getPanelComponent(DOCK_NODE_CONTEXT_HELP, JIPipeDesktopFormHelpPanel.class);
-                            if(!StringUtils.isNullOrEmpty( output.getProjectCompartment().getCustomDescription().toPlainText().trim()) || !StringUtils.isNullOrEmpty( output.getCustomDescription().toPlainText().trim())) {
-                                helpPanel.showContent(new MarkdownText("# " + output.getDisplayName() +"\n\n" + output.getProjectCompartment().getCustomDescription().getBody() + "\n\n" + output.getCustomDescription().getBody()));
-                            }
-                            else {
-                                helpPanel.showContent(new MarkdownText("# " + output.getDisplayName() +"\n\n*No description provided*"));
+                            if (!StringUtils.isNullOrEmpty(output.getProjectCompartment().getCustomDescription().toPlainText().trim()) || !StringUtils.isNullOrEmpty(output.getCustomDescription().toPlainText().trim())) {
+                                helpPanel.showContent(new MarkdownText("# " + output.getDisplayName() + "\n\n" + output.getProjectCompartment().getCustomDescription().getBody() + "\n\n" + output.getCustomDescription().getBody()));
+                            } else {
+                                helpPanel.showContent(new MarkdownText("# " + output.getDisplayName() + "\n\n*No description provided*"));
                             }
 
                         }),
@@ -302,48 +431,45 @@ public class JIPipeDesktopProjectOverviewUI extends JIPipeDesktopProjectWorkbenc
 
     private void doShowResults(JIPipeProjectCompartmentOutput output) {
         Map<String, JIPipeDataTable> cachedData = getProject().getCache().query(output, output.getUUIDInParentGraph(), JIPipeProgressInfo.SILENT);
-        if(cachedData == null || cachedData.isEmpty()) {
+        if (cachedData == null || cachedData.isEmpty()) {
 
-            JComboBox<String> options = new JComboBox<>(new String[] { "Update cache (default)", "Cache intermediate results" });
-            JIPipeDesktopFormPanel formPanel =new JIPipeDesktopFormPanel(JIPipeDesktopFormPanel.NONE);
+            JComboBox<String> options = new JComboBox<>(new String[]{"Update cache (default)", "Cache intermediate results"});
+            JIPipeDesktopFormPanel formPanel = new JIPipeDesktopFormPanel(JIPipeDesktopFormPanel.NONE);
             formPanel.addWideToForm(new JLabel("<html>" +
                     "The output " + output.getDisplayName() + " currently has no cached results.<br/>" +
                     "Do you want to run the pipeline to generate them?" +
                     "</html>"));
             formPanel.addToForm(options, new JLabel("Operation"));
 
-            if(JOptionPane.showConfirmDialog(this,
+            if (JOptionPane.showConfirmDialog(this,
                     formPanel,
                     "Show results",
                     JOptionPane.YES_NO_OPTION,
                     JOptionPane.QUESTION_MESSAGE) == JOptionPane.YES_OPTION) {
                 doUpdateCache(output, Objects.equals(options.getSelectedItem(), "Cache intermediate results"));
             }
-        }
-        else {
+        } else {
             showResults(output);
         }
     }
 
     public void showResults(JIPipeAlgorithm node) {
         JIPipeDesktopAlgorithmCacheBrowserUI currentBrowser = dockPanel.getPanelComponent("_RESULTS", JIPipeDesktopAlgorithmCacheBrowserUI.class);
-        if(currentBrowser != null && currentBrowser.getGraphNode() != node) {
+        if (currentBrowser != null && currentBrowser.getGraphNode() != node) {
             JIPipeDesktopDockPanel.Panel panel = dockPanel.getPanels().get("_RESULTS");
             // Replace with new component
             dockPanel.deactivatePanel(panel, false);
             currentBrowser = new JIPipeDesktopAlgorithmCacheBrowserUI(getDesktopProjectWorkbench(), node, null);
             panel.setComponent(currentBrowser);
             dockPanel.activatePanel("_RESULTS", true);
-        }
-        else if(currentBrowser == null) {
+        } else if (currentBrowser == null) {
             currentBrowser = new JIPipeDesktopAlgorithmCacheBrowserUI(getDesktopProjectWorkbench(), node, null);
-            dockPanel.addDockPanel("_RESULTS", "Results",  UIUtils.getIcon32FromResources("actions/network-server-database.png"),
+            dockPanel.addDockPanel("_RESULTS", "Results", UIUtils.getIcon32FromResources("actions/network-server-database.png"),
                     JIPipeDesktopDockPanel.PanelLocation.TopRight,
                     true,
                     0,
                     currentBrowser);
-        }
-        else {
+        } else {
             dockPanel.activatePanel("_RESULTS", true);
         }
     }
