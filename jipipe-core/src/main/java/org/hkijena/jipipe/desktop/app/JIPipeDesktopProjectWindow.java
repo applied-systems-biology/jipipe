@@ -15,11 +15,13 @@ package org.hkijena.jipipe.desktop.app;
 
 import com.fasterxml.jackson.databind.JsonNode;
 import net.imagej.updater.UpdateSite;
+import net.java.balloontip.BalloonTip;
 import org.apache.commons.math3.util.Precision;
 import org.hkijena.jipipe.JIPipe;
 import org.hkijena.jipipe.JIPipeDependency;
 import org.hkijena.jipipe.JIPipeImageJUpdateSiteDependency;
 import org.hkijena.jipipe.api.AbstractJIPipeRunnable;
+import org.hkijena.jipipe.api.data.serialization.JIPipeDataTableInfo;
 import org.hkijena.jipipe.api.notifications.JIPipeNotificationInbox;
 import org.hkijena.jipipe.api.project.JIPipeProject;
 import org.hkijena.jipipe.api.project.JIPipeProjectMetadata;
@@ -54,6 +56,7 @@ import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.*;
+import java.util.List;
 
 /**
  * Window that holds an {@link JIPipeDesktopProjectWorkbench} instance
@@ -67,6 +70,7 @@ public class JIPipeDesktopProjectWindow extends JFrame {
     private JIPipeDesktopProjectWorkbench projectUI;
     private Path projectSavePath;
     private UUID sessionId = UUID.randomUUID();
+    private List<BalloonTip> registeredBalloons = new ArrayList<>();
 
     /**
      * @param context          context
@@ -561,12 +565,20 @@ public class JIPipeDesktopProjectWindow extends JFrame {
     private JIPipeDesktopProjectWindow openProjectInThisOrNewWindow(String messageTitle, JIPipeProject project, boolean showIntroduction, boolean isNewProject) {
         switch (UIUtils.askOpenInCurrentWindow(this, messageTitle)) {
             case JOptionPane.YES_OPTION:
+                closeAllBalloons();
                 loadProject(project, false, isNewProject);
                 return this;
             case JOptionPane.NO_OPTION:
                 return newWindow(context, project, showIntroduction, isNewProject);
         }
         return null;
+    }
+
+    private void closeAllBalloons() {
+        for (BalloonTip registeredBalloon : registeredBalloons) {
+            registeredBalloon.closeBalloon();
+        }
+        registeredBalloons.clear();
     }
 
     /**
@@ -642,5 +654,9 @@ public class JIPipeDesktopProjectWindow extends JFrame {
 
     public UUID getSessionId() {
         return sessionId;
+    }
+
+    public void registerBalloon(BalloonTip balloonTip) {
+        this.registeredBalloons.add(balloonTip);
     }
 }

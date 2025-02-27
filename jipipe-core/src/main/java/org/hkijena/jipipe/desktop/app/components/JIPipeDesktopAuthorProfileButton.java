@@ -5,7 +5,6 @@ import net.java.balloontip.styles.EdgedBalloonStyle;
 import org.hkijena.jipipe.JIPipe;
 import org.hkijena.jipipe.api.JIPipeAuthorMetadata;
 import org.hkijena.jipipe.api.JIPipeWorkbench;
-import org.hkijena.jipipe.api.parameters.JIPipeParameterCollection;
 import org.hkijena.jipipe.api.registries.JIPipeApplicationSettingsRegistry;
 import org.hkijena.jipipe.desktop.app.JIPipeDesktopProjectWorkbench;
 import org.hkijena.jipipe.desktop.app.JIPipeDesktopWorkbench;
@@ -13,7 +12,6 @@ import org.hkijena.jipipe.desktop.app.JIPipeDesktopWorkbenchAccess;
 import org.hkijena.jipipe.desktop.commons.theme.JIPipeDesktopModernMetalTheme;
 import org.hkijena.jipipe.plugins.parameters.api.optional.OptionalParameter;
 import org.hkijena.jipipe.plugins.settings.JIPipeProjectAuthorsApplicationSettings;
-import org.hkijena.jipipe.utils.StringUtils;
 import org.hkijena.jipipe.utils.UIUtils;
 
 import javax.swing.*;
@@ -120,6 +118,7 @@ public class JIPipeDesktopAuthorProfileButton extends JButton implements JIPipeD
         UIUtils.invokeMuchLater(2000, () -> {
             balloonTip.refreshLocation();
             balloonTip.setVisible(true);
+            workbench.getProjectWindow().registerBalloon(balloonTip);
         });
     }
 

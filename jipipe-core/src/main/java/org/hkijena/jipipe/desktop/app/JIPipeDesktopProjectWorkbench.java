@@ -282,7 +282,10 @@ public class JIPipeDesktopProjectWorkbench extends JPanel implements JIPipeDeskt
                 closeButton.setOpaque(false);
                 balloonTip.setCloseButton(closeButton, false);
 
-                UIUtils.invokeMuchLater(500, () -> balloonTip.setVisible(true));
+                UIUtils.invokeMuchLater(500, () -> {
+                    getProjectWindow().registerBalloon(balloonTip);
+                    balloonTip.setVisible(true);
+                });
             }
             else {
                 // Author is known. Proceed as usual.
