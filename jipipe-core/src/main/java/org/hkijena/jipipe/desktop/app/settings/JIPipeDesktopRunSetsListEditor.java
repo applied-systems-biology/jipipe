@@ -13,6 +13,7 @@
 
 package org.hkijena.jipipe.desktop.app.settings;
 
+import com.google.common.collect.ImmutableList;
 import com.google.common.collect.Sets;
 import org.hkijena.jipipe.api.nodes.JIPipeAlgorithm;
 import org.hkijena.jipipe.api.nodes.JIPipeGraphNode;
@@ -68,6 +69,8 @@ public class JIPipeDesktopRunSetsListEditor extends JIPipeDesktopProjectWorkbenc
         JToolBar toolBar = new JToolBar();
         toolBar.setFloatable(false);
 
+        toolBar.add(UIUtils.createButton("", UIUtils.getIconFromResources("actions/caret-up.png"), this::sortItemUp));
+        toolBar.add(UIUtils.createButton("", UIUtils.getIconFromResources("actions/caret-down.png"), this::sortItemDown));
         toolBar.add(Box.createHorizontalGlue());
         toolBar.add(UIUtils.createButton("Add", UIUtils.getIconFromResources("actions/add.png"), this::addNewItem));
         toolBar.add(UIUtils.createButton("Remove", UIUtils.getIconFromResources("actions/trash-empty.png"), this::removeSelectedItems));
@@ -86,6 +89,18 @@ public class JIPipeDesktopRunSetsListEditor extends JIPipeDesktopProjectWorkbenc
             }
         });
         add(new JScrollPane(jList), BorderLayout.CENTER);
+    }
+
+    private void sortItemDown() {
+        if(jList.getSelectedValue() != null) {
+            getProject().getRunSetsConfiguration().sortUp(jList.getSelectedValue());
+        }
+    }
+
+    private void sortItemUp() {
+        if(jList.getSelectedValue() != null) {
+            getProject().getRunSetsConfiguration().sortDown(jList.getSelectedValue());
+        }
     }
 
     private void removeSelectedItems() {
@@ -111,11 +126,15 @@ public class JIPipeDesktopRunSetsListEditor extends JIPipeDesktopProjectWorkbenc
     }
 
     private void refresh() {
+        ImmutableList<JIPipeProjectRunSet> selectedValues = ImmutableList.copyOf(jList.getSelectedValuesList());
+
         DefaultListModel<JIPipeProjectRunSet> model = new DefaultListModel<>();
         for (JIPipeProjectRunSet partition : getDesktopProjectWorkbench().getProject().getRunSetsConfiguration().getRunSets()) {
             model.addElement(partition);
         }
         jList.setModel(model);
+
+        UIUtils.selectItemsInJList(jList, selectedValues);
     }
 
     @Override

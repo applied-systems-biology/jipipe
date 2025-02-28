@@ -34,6 +34,7 @@ public class JIPipeProjectMetadata extends JIPipeStandardMetadata {
     private JIPipeNodeTemplate.List nodeTemplates = new JIPipeNodeTemplate.List();
     private boolean restoreTabs = true;
     private boolean autoAddAuthors = true;
+    private boolean showCompartmentsRunPanelInOverview = true;
 
     @SetJIPipeDocumentation(name = "Automatically add new authors", description = "If enabled, automatically add the configured authors in " +
             "the application settings to the project if enabled.")
@@ -151,5 +152,16 @@ public class JIPipeProjectMetadata extends JIPipeStandardMetadata {
             }
         }
         return false;
+    }
+
+    @SetJIPipeDocumentation(name = "Show compartment runs in project overview", description = "If enabled, show a 'Run compartment' panel in the project overview")
+    @JIPipeParameter("show-compartments-run-panel-in-overview")
+    public boolean isShowCompartmentsRunPanelInOverview() {
+        return showCompartmentsRunPanelInOverview;
+    }
+
+    @JIPipeParameter("show-compartments-run-panel-in-overview")
+    public void setShowCompartmentsRunPanelInOverview(boolean showCompartmentsRunPanelInOverview) {
+        this.showCompartmentsRunPanelInOverview = showCompartmentsRunPanelInOverview;
     }
 }

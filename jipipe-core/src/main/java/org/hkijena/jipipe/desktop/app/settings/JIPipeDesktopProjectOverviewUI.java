@@ -28,6 +28,7 @@ import org.hkijena.jipipe.api.parameters.JIPipeParameterAccess;
 import org.hkijena.jipipe.api.parameters.JIPipeParameterTree;
 import org.hkijena.jipipe.api.project.JIPipeProjectDirectories;
 import org.hkijena.jipipe.api.registries.JIPipeArtifactsRegistry;
+import org.hkijena.jipipe.api.run.JIPipeProjectRunSet;
 import org.hkijena.jipipe.api.run.JIPipeRunnable;
 import org.hkijena.jipipe.api.run.JIPipeRunnableQueue;
 import org.hkijena.jipipe.api.settings.JIPipeProjectSettingsSheet;
@@ -35,6 +36,7 @@ import org.hkijena.jipipe.desktop.app.JIPipeDesktopProjectWorkbench;
 import org.hkijena.jipipe.desktop.app.JIPipeDesktopProjectWorkbenchPanel;
 import org.hkijena.jipipe.desktop.app.bookmarks.JIPipeDesktopBookmarkListPanel;
 import org.hkijena.jipipe.desktop.app.cache.JIPipeDesktopAlgorithmCacheBrowserUI;
+import org.hkijena.jipipe.desktop.app.cache.JIPipeDesktopMultiAlgorithmCacheBrowserUI;
 import org.hkijena.jipipe.desktop.app.grapheditor.commons.AbstractJIPipeDesktopGraphEditorUI;
 import org.hkijena.jipipe.desktop.app.grapheditor.commons.JIPipeDesktopGraphEditorLogPanel;
 import org.hkijena.jipipe.desktop.app.grapheditor.commons.properties.JIPipeDesktopGraphEditorErrorPanel;
@@ -55,7 +57,6 @@ import org.hkijena.jipipe.desktop.commons.theme.JIPipeDesktopModernMetalTheme;
 import org.hkijena.jipipe.plugins.parameters.api.optional.OptionalParameter;
 import org.hkijena.jipipe.plugins.parameters.library.jipipe.JIPipeArtifactQueryParameter;
 import org.hkijena.jipipe.plugins.parameters.library.markup.HTMLText;
-import org.hkijena.jipipe.plugins.parameters.library.markup.HTMLTextDesktopParameterEditorUI;
 import org.hkijena.jipipe.plugins.parameters.library.markup.MarkdownText;
 import org.hkijena.jipipe.plugins.settings.JIPipeFileChooserApplicationSettings;
 import org.hkijena.jipipe.utils.*;
@@ -84,6 +85,7 @@ public class JIPipeDesktopProjectOverviewUI extends JIPipeDesktopProjectWorkbenc
     private final JPanel runtimePartitionsPanel;
     private final JIPipeDesktopRunSetsListEditor runSetsEditor;
     private final JIPipeDesktopParameterFormPanel userParametersPanel;
+    private final JIPipeDesktopMultiAlgorithmCacheBrowserUI resultsPanel;
     private final JIPipeDesktopRibbon userParametersRibbon = new JIPipeDesktopRibbon(2);
 
     private JTextField licenseInfo;
@@ -117,7 +119,7 @@ public class JIPipeDesktopProjectOverviewUI extends JIPipeDesktopProjectWorkbenc
 
         // Center panel
         centerPanel = new JIPipeDesktopFormPanel(JIPipeDesktopFormPanel.WITH_SCROLLING);
-
+        resultsPanel = new JIPipeDesktopMultiAlgorithmCacheBrowserUI(getDesktopProjectWorkbench());
         userParametersPanel = new JIPipeDesktopParameterFormPanel(getDesktopWorkbench(),
                 new JIPipeDesktopMergedProjectSettings(getProject()),
                 MarkdownText.fromPluginResource("documentation/project-user-parameters.md"),
@@ -224,7 +226,8 @@ public class JIPipeDesktopProjectOverviewUI extends JIPipeDesktopProjectWorkbenc
             createLicenseTip(tipsPanel);
         }
 
-        createRunPanel();
+        createRunSetsPanel();
+        createRunCompartmentsPanel();
 
         createCompartmentsTipIfNeeded(tipsPanel);
         createCompartmentsOutputTipIfNeeded(tipsPanel);
@@ -375,7 +378,119 @@ public class JIPipeDesktopProjectOverviewUI extends JIPipeDesktopProjectWorkbenc
         }
     }
 
-    private void createRunPanel() {
+    private void createRunSetsPanel() {
+        if(!getProject().getRunSetsConfiguration().getRunSets().isEmpty()) {
+            JPanel listPanel = UIUtils.boxVertical();
+            for (JIPipeProjectRunSet runSet : getProject().getRunSetsConfiguration().getRunSets()) {
+                JPanel outputPanel = new JPanel(new BorderLayout(16, 0));
+                outputPanel.setBorder(BorderFactory.createCompoundBorder(
+                        BorderFactory.createEmptyBorder(4, 4, 4, 4),
+                        new RoundedLineBorder(UIUtils.getControlBorderColor(), 1, 4)
+                ));
+                Color color = null;
+                if(runSet.getColor().isEnabled()) {
+                    color = runSet.getColor().getContent();
+                }
+                outputPanel.add(new JLabel(new SolidColorIcon(8, 32, color != null ? color : UIManager.getColor("Panel.background"), UIUtils.getControlBorderColor())), BorderLayout.WEST);
+                outputPanel.add(new JLabel(runSet.getDisplayName(),  UIUtils.getIconFromResources("actions/debug-run.png"), JLabel.LEFT), BorderLayout.CENTER);
+
+                JButton runButton = new JButton("Run", UIUtils.getIconFromResources("actions/run-play.png"));
+                JPopupMenu runMenu = UIUtils.addPopupMenuToButton(runButton);
+                runMenu.add(UIUtils.createMenuItem("Update cache (default)", "Runs the output and stores the results in the memory cache", UIUtils.getIcon16FromResources("actions/update-cache.png"), () -> {
+                    doUpdateCache(runSet, false);
+                }));
+                runMenu.add(UIUtils.createMenuItem("Cache intermediate results", "Runs the output and stores the results and intermediate" +
+                        " results in the memory cache (memory-intensive for large workflows!)", UIUtils.getIcon16FromResources("actions/cache-intermediate-results.png"), () -> {
+                    doUpdateCache(runSet, true);
+                }));
+                runMenu.addSeparator();
+                runMenu.add(UIUtils.createMenuItem("Run (no cache)", "Runs the output without caching any results in memory", UIUtils.getIcon16FromResources("actions/play.png"), () -> {
+                    doRun(runSet);
+                }));
+
+                outputPanel.add(UIUtils.boxHorizontal(
+                        UIUtils.createButton("Help", UIUtils.getIconFromResources("actions/help.png"), () -> {
+                            dockPanel.activatePanel(DOCK_NODE_CONTEXT_HELP, true);
+                            JIPipeDesktopFormHelpPanel helpPanel = dockPanel.getPanelComponent(DOCK_NODE_CONTEXT_HELP, JIPipeDesktopFormHelpPanel.class);
+                            if(!StringUtils.isNullOrEmpty(runSet.getDescription().toPlainText())) {
+                                helpPanel.showContent(new MarkdownText("# " + runSet.getDisplayName() + "\n\n" + runSet.getDescription().getBody()));
+                            }
+                            else {
+                                helpPanel.showContent(new MarkdownText("# " + runSet.getDisplayName() + "\n\n*No description provided*"));
+                            }
+                        }),
+                        UIUtils.createButton("Show results", UIUtils.getIconFromResources("actions/update-cache.png"), () -> {
+                            doShowResults(runSet);
+                        }),
+                        runButton
+                ), BorderLayout.EAST);
+
+                listPanel.add(outputPanel);
+            }
+            addPanelToCenterPanel(UIUtils.getIcon32FromResources("actions/run-play.png"), "Run predefined node sets", listPanel);
+        }
+    }
+
+    private void doRun(JIPipeProjectRunSet runSet) {
+        List<JIPipeAlgorithm> nodes = JIPipeUtils.filterAlgorithmsList(runSet.resolveNodes(getProject()));
+        if(nodes.isEmpty()) {
+            JOptionPane.showMessageDialog(this, "Unable to run the set '" + runSet.getDisplayName() + "'. No nodes found.", "Run set", JOptionPane.ERROR_MESSAGE);
+            return;
+        }
+        doRun(nodes);
+    }
+
+    private void doShowResults(JIPipeProjectRunSet runSet) {
+        List<JIPipeAlgorithm> nodes = JIPipeUtils.filterAlgorithmsList(runSet.resolveNodes(getProject()));
+        if(nodes.isEmpty()) {
+            JOptionPane.showMessageDialog(this, "Unable to run the set '" + runSet.getDisplayName() + "'. No nodes found.", "Run set", JOptionPane.ERROR_MESSAGE);
+            return;
+        }
+
+        List<JIPipeAlgorithm> nodesToDo = new ArrayList<>();
+        for (JIPipeAlgorithm node : nodes) {
+            Map<String, JIPipeDataTable> cachedData = getProject().getCache().query(node, node.getUUIDInParentGraph(), JIPipeProgressInfo.SILENT);
+            if (cachedData == null || cachedData.isEmpty()) {
+                nodesToDo.add(node);
+            }
+        }
+
+        if(nodesToDo.isEmpty()) {
+            showResults(nodes);
+        }
+        else {
+            JComboBox<String> options = new JComboBox<>(new String[]{"Update cache (default)", "Cache intermediate results"});
+            JIPipeDesktopFormPanel formPanel = new JIPipeDesktopFormPanel(JIPipeDesktopFormPanel.NONE);
+            formPanel.addWideToForm(new JLabel("<html>" +
+                    "There are missing cached results.<br/>" +
+                    "Do you want to run the pipeline to generate them?" +
+                    "</html>"));
+            formPanel.addToForm(options, new JLabel("Operation"));
+
+            if (JOptionPane.showConfirmDialog(this,
+                    formPanel,
+                    "Show results",
+                    JOptionPane.YES_NO_OPTION,
+                    JOptionPane.QUESTION_MESSAGE) == JOptionPane.YES_OPTION) {
+                doUpdateCache(nodesToDo, Objects.equals(options.getSelectedItem(), "Cache intermediate results"));
+            }
+        }
+
+    }
+
+    private void doUpdateCache(JIPipeProjectRunSet runSet, boolean intermediateResults) {
+        List<JIPipeAlgorithm> nodes = JIPipeUtils.filterAlgorithmsList(runSet.resolveNodes(getProject()));
+        if(nodes.isEmpty()) {
+            JOptionPane.showMessageDialog(this, "Unable to run the set '" + runSet.getDisplayName() + "'. No nodes found.", "Run set", JOptionPane.ERROR_MESSAGE);
+            return;
+        }
+        doUpdateCache(nodes, intermediateResults);
+    }
+
+    private void createRunCompartmentsPanel() {
+        if(!getProject().getMetadata().isShowCompartmentsRunPanelInOverview()) {
+            return;
+        }
         List<JIPipeProjectCompartmentOutput> outputList = new ArrayList<>();
         for (JIPipeGraphNode graphNode : getProject().getCompartmentGraph().traverse()) {
             if (graphNode instanceof JIPipeProjectCompartment) {
@@ -410,11 +525,15 @@ public class JIPipeDesktopProjectOverviewUI extends JIPipeDesktopProjectWorkbenc
                 JButton runButton = new JButton("Run", UIUtils.getIconFromResources("actions/run-play.png"));
                 JPopupMenu runMenu = UIUtils.addPopupMenuToButton(runButton);
                 runMenu.add(UIUtils.createMenuItem("Update cache (default)", "Runs the output and stores the results in the memory cache", UIUtils.getIcon16FromResources("actions/update-cache.png"), () -> {
-                    doUpdateCache(output, false);
+                    doUpdateCache(Collections.singletonList(output), false);
                 }));
                 runMenu.add(UIUtils.createMenuItem("Cache intermediate results", "Runs the output and stores the results and intermediate" +
                         " results in the memory cache (memory-intensive for large workflows!)", UIUtils.getIcon16FromResources("actions/cache-intermediate-results.png"), () -> {
-                    doUpdateCache(output, true);
+                    doUpdateCache(Collections.singletonList(output), true);
+                }));
+                runMenu.addSeparator();
+                runMenu.add(UIUtils.createMenuItem("Run (no cache)", "Runs the output without caching any results in memory", UIUtils.getIcon16FromResources("actions/play.png"), () -> {
+                    doRun(Collections.singletonList(output));
                 }));
 
                 outputPanel.add(UIUtils.boxHorizontal(
@@ -445,6 +564,15 @@ public class JIPipeDesktopProjectOverviewUI extends JIPipeDesktopProjectWorkbenc
         }
     }
 
+    private void doRun(List<JIPipeAlgorithm> nodes) {
+        JIPipeDesktopProjectOverviewRunManager runManager = new JIPipeDesktopProjectOverviewRunManager(getProject(),
+                dockPanel,
+                this,
+                nodes,
+                true);
+        runManager.run(false, false, false, false);
+    }
+
     private void doShowResults(JIPipeProjectCompartmentOutput output) {
         Map<String, JIPipeDataTable> cachedData = getProject().getCache().query(output, output.getUUIDInParentGraph(), JIPipeProgressInfo.SILENT);
         if (cachedData == null || cachedData.isEmpty()) {
@@ -462,41 +590,25 @@ public class JIPipeDesktopProjectOverviewUI extends JIPipeDesktopProjectWorkbenc
                     "Show results",
                     JOptionPane.YES_NO_OPTION,
                     JOptionPane.QUESTION_MESSAGE) == JOptionPane.YES_OPTION) {
-                doUpdateCache(output, Objects.equals(options.getSelectedItem(), "Cache intermediate results"));
+                doUpdateCache(Collections.singletonList(output), Objects.equals(options.getSelectedItem(), "Cache intermediate results"));
             }
         } else {
-            showResults(output);
+            showResults(Collections.singletonList(output));
         }
     }
 
-    public void showResults(JIPipeAlgorithm node) {
-        JIPipeDesktopAlgorithmCacheBrowserUI currentBrowser = dockPanel.getPanelComponent("_RESULTS", JIPipeDesktopAlgorithmCacheBrowserUI.class);
-        if (currentBrowser != null && currentBrowser.getGraphNode() != node) {
-            JIPipeDesktopDockPanel.Panel panel = dockPanel.getPanels().get("_RESULTS");
-            // Replace with new component
-            dockPanel.deactivatePanel(panel, false);
-            currentBrowser = new JIPipeDesktopAlgorithmCacheBrowserUI(getDesktopProjectWorkbench(), node, null);
-            panel.setComponent(currentBrowser);
-            dockPanel.activatePanel("_RESULTS", true);
-        } else if (currentBrowser == null) {
-            currentBrowser = new JIPipeDesktopAlgorithmCacheBrowserUI(getDesktopProjectWorkbench(), node, null);
-            dockPanel.addDockPanel("_RESULTS", "Results", UIUtils.getIcon32FromResources("actions/network-server-database.png"),
-                    JIPipeDesktopDockPanel.PanelLocation.TopRight,
-                    true,
-                    0,
-                    currentBrowser);
-        } else {
-            dockPanel.activatePanel("_RESULTS", true);
-        }
+    public void showResults(List<JIPipeAlgorithm> nodes) {
+        resultsPanel.setDisplayedAlgorithms(nodes);
+        dockPanel.activatePanel("RESULTS", true);
     }
 
-    private void doUpdateCache(JIPipeProjectCompartmentOutput output, boolean intermediateResults) {
+    private void doUpdateCache(List<JIPipeAlgorithm> output, boolean intermediateResults) {
         JIPipeDesktopProjectOverviewRunManager runManager = new JIPipeDesktopProjectOverviewRunManager(getProject(),
                 dockPanel,
                 this,
                 output,
                 true);
-        runManager.run(false, intermediateResults, false);
+        runManager.run(true, false, intermediateResults, false);
     }
 
     @Override
@@ -650,6 +762,11 @@ public class JIPipeDesktopProjectOverviewUI extends JIPipeDesktopProjectWorkbenc
                 true,
                 0,
                 userParametersContainer);
+        dockPanel.addDockPanel("RESULTS", "Results", UIUtils.getIcon32FromResources("actions/network-server-database.png"),
+                JIPipeDesktopDockPanel.PanelLocation.TopRight,
+                false,
+                0,
+                resultsPanel);
         dockPanel.addDockPanel("PARTITIONS",
                 "Partitions",
                 UIUtils.getIcon32FromResources("actions/runtime-partition.png"),

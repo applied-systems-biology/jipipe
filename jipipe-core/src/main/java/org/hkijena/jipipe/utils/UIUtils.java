@@ -1351,6 +1351,30 @@ public class UIUtils {
         }
     }
 
+    public static <T> void selectItemsInJList(JList<T> list, List<T> itemsToSelect) {
+        if (itemsToSelect.isEmpty()) {
+            list.clearSelection();
+            return;
+        }
+
+        ListModel<T> model = list.getModel();
+        List<Integer> indicesToSelect = new ArrayList<>();
+
+        for (int i = 0; i < model.getSize(); i++) {
+            T element = model.getElementAt(i);
+            if (itemsToSelect.contains(element)) {
+                indicesToSelect.add(i);
+            }
+        }
+
+        if (indicesToSelect.isEmpty()) {
+            list.clearSelection();
+        } else {
+            int[] indicesArray = indicesToSelect.stream().mapToInt(Integer::intValue).toArray();
+            list.setSelectedIndices(indicesArray);
+        }
+    }
+
     /**
      * Opens a dialog showing a validity report
      *

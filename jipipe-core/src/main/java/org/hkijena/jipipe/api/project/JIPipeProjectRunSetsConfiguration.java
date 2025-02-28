@@ -7,10 +7,7 @@ import org.hkijena.jipipe.api.events.JIPipeEventEmitter;
 import org.hkijena.jipipe.api.run.JIPipeProjectRunSet;
 import org.hkijena.jipipe.plugins.parameters.library.graph.GraphNodeReferenceParameter;
 
-import java.util.ArrayList;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Set;
+import java.util.*;
 
 public class JIPipeProjectRunSetsConfiguration {
     private List<JIPipeProjectRunSet> runSets = new ArrayList<>();
@@ -58,6 +55,22 @@ public class JIPipeProjectRunSetsConfiguration {
 
     public Set<String> getUuidCache() {
         return uuidCache;
+    }
+
+    public void sortUp(JIPipeProjectRunSet value) {
+        int index = runSets.indexOf(value);
+        if (index > 0) {
+            Collections.swap(runSets, index, index - 1);
+            modifiedEventEmitter.emit(new RunSetsModifiedEvent(this));
+        }
+    }
+
+    public void sortDown(JIPipeProjectRunSet value) {
+        int index = runSets.indexOf(value);
+        if (index >= 0 && index < runSets.size() - 1) {
+            Collections.swap(runSets, index, index + 1);
+            modifiedEventEmitter.emit(new RunSetsModifiedEvent(this));
+        }
     }
 
     public static class RunSetsModifiedEvent extends AbstractJIPipeEvent {
