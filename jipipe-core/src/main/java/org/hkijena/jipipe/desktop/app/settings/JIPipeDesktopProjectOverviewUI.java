@@ -82,6 +82,7 @@ public class JIPipeDesktopProjectOverviewUI extends JIPipeDesktopProjectWorkbenc
     private final JTextPane descriptionReader;
 
     private final JPanel runtimePartitionsPanel;
+    private final JIPipeDesktopRunSetsListEditor runSetsEditor;
     private final JIPipeDesktopParameterFormPanel userParametersPanel;
     private final JIPipeDesktopRibbon userParametersRibbon = new JIPipeDesktopRibbon(2);
 
@@ -103,6 +104,9 @@ public class JIPipeDesktopProjectOverviewUI extends JIPipeDesktopProjectWorkbenc
      */
     public JIPipeDesktopProjectOverviewUI(JIPipeDesktopProjectWorkbench workbench) {
         super(workbench);
+
+        // Run sets
+        runSetsEditor = new JIPipeDesktopRunSetsListEditor(workbench);
 
         // Description
         descriptionReader = new JTextPane();
@@ -653,6 +657,13 @@ public class JIPipeDesktopProjectOverviewUI extends JIPipeDesktopProjectWorkbenc
                 false,
                 0,
                 runtimePartitionsPanel);
+        dockPanel.addDockPanel("RUN_SETS",
+                "Run sets",
+                UIUtils.getIcon32FromResources("actions/debug-run.png"),
+                JIPipeDesktopDockPanel.PanelLocation.BottomLeft,
+                false,
+                0,
+                runSetsEditor);
         dockPanel.addDockPanel("BOOKMARKS",
                 "Bookmarks",
                 UIUtils.getIcon32FromResources("actions/bookmark.png"),

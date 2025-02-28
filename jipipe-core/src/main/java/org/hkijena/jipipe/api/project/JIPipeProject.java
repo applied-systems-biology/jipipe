@@ -91,6 +91,7 @@ public class JIPipeProject implements JIPipeValidatable {
     private final Map<String, JsonNode> unloadedSettingsSheets = new HashMap<>();
     private JIPipeProjectMetadata metadata = new JIPipeProjectMetadata();
     private JIPipeRuntimePartitionConfiguration runtimePartitions = new JIPipeRuntimePartitionConfiguration();
+    private JIPipeProjectRunSetsConfiguration runSetsConfiguration = new JIPipeProjectRunSetsConfiguration();
     private Map<String, JIPipeMetadataObject> additionalMetadata = new HashMap<>();
     private Path workDirectory;
     private Path temporaryBaseDirectory;
@@ -772,6 +773,10 @@ public class JIPipeProject implements JIPipeValidatable {
         }
     }
 
+    public JIPipeProjectRunSetsConfiguration getRunSetsConfiguration() {
+        return runSetsConfiguration;
+    }
+
     public JIPipeRuntimePartitionConfiguration getRuntimePartitions() {
         return runtimePartitions;
     }
@@ -799,6 +804,7 @@ public class JIPipeProject implements JIPipeValidatable {
         generator.writeObjectField("metadata", metadata);
         generator.writeObjectField("dependencies", getSimplifiedMinimalDependencies());
         generator.writeObjectField("runtime-partitions", runtimePartitions);
+        generator.writeObjectField("run-sets", runSetsConfiguration);
 
         // Write settings
         generator.writeObjectFieldStart("settings");
@@ -880,6 +886,12 @@ public class JIPipeProject implements JIPipeValidatable {
             if (jsonNode.has("runtime-partitions")) {
                 JsonNode sub = jsonNode.get("runtime-partitions");
                 this.runtimePartitions = JsonUtils.getObjectMapper().convertValue(sub, JIPipeRuntimePartitionConfiguration.class);
+            }
+
+            // Load run sets
+            if(jsonNode.has("run-sets")) {
+                JsonNode sub = jsonNode.get("run-sets");
+                this.runSetsConfiguration = JsonUtils.getObjectMapper().convertValue(sub, JIPipeProjectRunSetsConfiguration.class);
             }
 
             // Load settings sheets
