@@ -15,6 +15,7 @@ package org.hkijena.jipipe.desktop.app.grapheditor.flavors.compartments;
 
 import org.hkijena.jipipe.JIPipe;
 import org.hkijena.jipipe.api.compartments.algorithms.JIPipeProjectCompartment;
+import org.hkijena.jipipe.api.compartments.algorithms.JIPipeProjectCompartmentOutput;
 import org.hkijena.jipipe.api.nodes.JIPipeGraphNode;
 import org.hkijena.jipipe.api.project.JIPipeProject;
 import org.hkijena.jipipe.desktop.app.JIPipeDesktopProjectWorkbench;
@@ -38,6 +39,7 @@ import org.hkijena.jipipe.desktop.app.grapheditor.flavors.compartments.propertie
 import org.hkijena.jipipe.desktop.app.grapheditor.flavors.pipeline.actions.JIPipeDesktopRunAndShowResultsAction;
 import org.hkijena.jipipe.desktop.app.grapheditor.flavors.pipeline.actions.JIPipeDesktopUpdateCacheAction;
 import org.hkijena.jipipe.desktop.app.history.JIPipeDesktopHistoryJournalUI;
+import org.hkijena.jipipe.desktop.app.settings.JIPipeDesktopRunSetsListEditor;
 import org.hkijena.jipipe.desktop.commons.components.JIPipeDesktopExpressionCalculatorUI;
 import org.hkijena.jipipe.plugins.parameters.library.pairs.StringAndStringPairParameter;
 import org.hkijena.jipipe.plugins.settings.JIPipeGraphEditorUIApplicationSettings;
@@ -46,9 +48,7 @@ import org.hkijena.jipipe.utils.json.JsonUtils;
 import org.hkijena.jipipe.utils.ui.JIPipeDesktopDockPanel;
 
 import javax.swing.*;
-import java.util.Arrays;
-import java.util.Comparator;
-import java.util.List;
+import java.util.*;
 import java.util.stream.Collectors;
 
 
@@ -284,6 +284,26 @@ public class JIPipeDesktopCompartmentsGraphEditorUI extends AbstractJIPipeDeskto
             runManager.run(false,
                     ((JIPipeDesktopUpdateCacheAction) event.getAction()).isStoreIntermediateResults(),
                     ((JIPipeDesktopUpdateCacheAction) event.getAction()).isOnlyPredecessors());
+        }
+    }
+
+    @Override
+    public void beforeOpenContextMenu(JPopupMenu menu) {
+        if(getGraph().isProjectGraph() && getSelection().stream().anyMatch(ui -> ui.getNode() instanceof JIPipeProjectCompartment)) {
+            menu.addSeparator();
+            JMenu runSetsMenu = new JMenu("Run sets ...");
+            menu.add(runSetsMenu);
+
+            Set<JIPipeGraphNode> selectedOutputs = new HashSet<>();
+            for (JIPipeDesktopGraphNodeUI ui : getSelection()) {
+                if(ui.getNode() instanceof JIPipeProjectCompartment) {
+                    selectedOutputs.addAll(((JIPipeProjectCompartment) ui.getNode()).getOutputNodes().values());
+                }
+            }
+
+            JIPipeDesktopRunSetsListEditor.createRunSetsManagementContextMenu(runSetsMenu,
+                    selectedOutputs,
+                    getProjectWorkbench());
         }
     }
 

@@ -26,6 +26,7 @@ import org.hkijena.jipipe.plugins.settings.JIPipeGraphEditorUIApplicationSetting
 import org.hkijena.jipipe.utils.UIUtils;
 import org.hkijena.jipipe.utils.ui.JIPipeDesktopDockPanel;
 
+import javax.swing.*;
 import java.util.Map;
 
 public class JIPipeDesktopRunSingleAlgorithmSettingsPanelIOEditor extends AbstractJIPipeDesktopGraphEditorUI implements JIPipeGraphNode.NodeSlotsChangedEventListener {
@@ -98,6 +99,11 @@ public class JIPipeDesktopRunSingleAlgorithmSettingsPanelIOEditor extends Abstra
 
     @Override
     protected void restoreDefaultDockState() {
+
+    }
+
+    @Override
+    public void beforeOpenContextMenu(JPopupMenu menu) {
 
     }
 

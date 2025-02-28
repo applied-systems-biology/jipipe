@@ -2052,6 +2052,22 @@ public class JIPipeGraph implements JIPipeValidatable, JIPipeFunctionallyCompara
         return new JIPipeGraph(this);
     }
 
+    public boolean isProjectGraph() {
+        JIPipeProject project = getProject();
+        if(project != null) {
+            return project.getGraph() == this;
+        }
+        return false;
+    }
+
+    public boolean isProjectCompartmentGraph() {
+        JIPipeProject project = getProject();
+        if(project != null) {
+            return project.getCompartmentGraph() == this;
+        }
+        return false;
+    }
+
     public interface GraphChangedEventListener {
         void onGraphChanged(GraphChangedEvent event);
     }

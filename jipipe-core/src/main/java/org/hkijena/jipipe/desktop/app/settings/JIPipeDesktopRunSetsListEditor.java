@@ -16,6 +16,7 @@ package org.hkijena.jipipe.desktop.app.settings;
 import com.google.common.collect.Sets;
 import org.hkijena.jipipe.api.nodes.JIPipeAlgorithm;
 import org.hkijena.jipipe.api.nodes.JIPipeGraphNode;
+import org.hkijena.jipipe.api.project.JIPipeProjectRunSetsConfiguration;
 import org.hkijena.jipipe.api.run.JIPipeProjectRunSet;
 import org.hkijena.jipipe.desktop.app.JIPipeDesktopProjectWorkbench;
 import org.hkijena.jipipe.desktop.app.JIPipeDesktopProjectWorkbenchPanel;
@@ -25,7 +26,9 @@ import org.hkijena.jipipe.desktop.app.grapheditor.commons.JIPipeDesktopGraphCanv
 import org.hkijena.jipipe.desktop.app.grapheditor.commons.nodeui.JIPipeDesktopGraphNodeUI;
 import org.hkijena.jipipe.desktop.commons.components.JIPipeDesktopParameterFormPanel;
 import org.hkijena.jipipe.desktop.commons.components.tabs.JIPipeDesktopTabPane;
+import org.hkijena.jipipe.plugins.parameters.library.graph.GraphNodeReferenceParameter;
 import org.hkijena.jipipe.plugins.parameters.library.markup.MarkdownText;
+import org.hkijena.jipipe.utils.NaturalOrderComparator;
 import org.hkijena.jipipe.utils.UIUtils;
 
 import javax.swing.*;
@@ -34,13 +37,15 @@ import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 import java.util.*;
 import java.util.List;
+import java.util.stream.Collectors;
 
-public class JIPipeDesktopRunSetsListEditor extends JIPipeDesktopProjectWorkbenchPanel {
+public class JIPipeDesktopRunSetsListEditor extends JIPipeDesktopProjectWorkbenchPanel implements JIPipeProjectRunSetsConfiguration.RunSetsModifiedEventListener {
     private final JList<JIPipeProjectRunSet> jList = new JList<>();
 
     public JIPipeDesktopRunSetsListEditor(JIPipeDesktopProjectWorkbench workbench) {
         super(workbench);
         initialize();
+        workbench.getProject().getRunSetsConfiguration().getModifiedEventEmitter().subscribe(this);
         refresh();
     }
 
@@ -85,16 +90,15 @@ public class JIPipeDesktopRunSetsListEditor extends JIPipeDesktopProjectWorkbenc
 
     private void removeSelectedItems() {
         for (JIPipeProjectRunSet runSet : jList.getSelectedValuesList()) {
-            getProject().getRunSetsConfiguration().getRunSets().remove(runSet);
+            getProject().getRunSetsConfiguration().remove(runSet);
         }
         refresh();
     }
 
     private void addNewItem() {
         JIPipeProjectRunSet runSet = new JIPipeProjectRunSet();
-        if(editRunSet(getDesktopWorkbench(), runSet)) {
-            getProject().getRunSetsConfiguration().getRunSets().add(runSet);
-            refresh();
+        if (editRunSet(getDesktopWorkbench(), runSet)) {
+            getProject().getRunSetsConfiguration().add(runSet);
         }
     }
 
@@ -114,4 +118,48 @@ public class JIPipeDesktopRunSetsListEditor extends JIPipeDesktopProjectWorkbenc
         jList.setModel(model);
     }
 
+    @Override
+    public void onRunSetsModified(JIPipeProjectRunSetsConfiguration.RunSetsModifiedEvent event) {
+        refresh();
+    }
+
+    public static void createRunSetsManagementContextMenu(JMenu menu, Set<JIPipeGraphNode> nodes, JIPipeDesktopWorkbench workbench) {
+        menu.add(UIUtils.createMenuItem("Assign to new run set ...", "Creates a new run set and afterwards adds the node to it", UIUtils.getIconFromResources("actions/add.png"), () -> {
+            JIPipeProjectRunSet runSet = new JIPipeProjectRunSet();
+            if (JIPipeDesktopRunSetsListEditor.editRunSet(workbench, runSet)) {
+                for (JIPipeGraphNode node : nodes) {
+                    if (node instanceof JIPipeAlgorithm) {
+                        runSet.getNodes().add(new GraphNodeReferenceParameter(node));
+                    }
+                }
+                workbench.getProject().getRunSetsConfiguration().add(runSet);
+            }
+        }));
+
+        Set<String> targetUUIDs = nodes.stream().map(JIPipeGraphNode::getUUIDInParentGraph).map(UUID::toString).collect(Collectors.toSet());
+
+        Map<JIPipeProjectRunSet, Boolean> states = new HashMap<>();
+        for (JIPipeProjectRunSet runSet : workbench.getProject().getRunSetsConfiguration().getRunSets()) {
+            if (!Sets.intersection(targetUUIDs, runSet.getNodeUUIDs()).isEmpty()) {
+                states.put(runSet, true);
+            } else {
+                states.put(runSet, false);
+            }
+        }
+
+        if (!states.isEmpty()) {
+            menu.addSeparator();
+            states.keySet().stream().sorted(Comparator.comparing(JIPipeProjectRunSet::getDisplayName)).forEach(runSet -> {
+                JCheckBoxMenuItem menuItem = new JCheckBoxMenuItem(runSet.getDisplayName(), states.get(runSet));
+                menuItem.addActionListener(e -> {
+                    if (menuItem.isSelected()) {
+                        runSet.addNodes(nodes, workbench.getProject().getRunSetsConfiguration());
+                    } else {
+                        runSet.removeNodes(nodes, workbench.getProject().getRunSetsConfiguration());
+                    }
+                });
+                menu.add(menuItem);
+            });
+        }
+    }
 }

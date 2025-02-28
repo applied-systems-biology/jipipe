@@ -19,6 +19,10 @@ public class GraphNodeReferenceParameter {
         this.nodeUUID = other.nodeUUID;
     }
 
+    public GraphNodeReferenceParameter(JIPipeGraphNode node) {
+        this.nodeUUID = node.getUUIDInParentGraph().toString();
+    }
+
     @JsonGetter("node-uuid")
     public String getNodeUUID() {
         return nodeUUID;
@@ -34,6 +38,10 @@ public class GraphNodeReferenceParameter {
             return null;
         }
         return project.getGraph().getNodeByUUID(UUID.fromString(nodeUUID));
+    }
+
+    public boolean isSet() {
+        return !StringUtils.isNullOrEmpty(nodeUUID);
     }
 
     public static class List extends ListParameter<GraphNodeReferenceParameter> {

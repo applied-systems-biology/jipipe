@@ -74,11 +74,8 @@ public class JIPipeDesktopGraphNodeUI extends JIPipeDesktopWorkbenchPanel implem
         JIPipeGraph.NodeDisconnectedEventListener, JIPipeParameterCollection.ParameterChangedEventListener {
     public static final Color COLOR_DISABLED_1 = new Color(227, 86, 86);
     public static final Color COLOR_DISABLED_2 = new Color(0xc36262);
-
     public static final Color COLOR_SLOT_CACHED = new Color(0x95c2a8);
-
     public static final Color COLOR_SLOT_DISCONNECTED = new Color(0xc36262);
-
     public static final Color COLOR_RUN_BUTTON_ICON = new Color(0x22A02D);
 
     public static final NodeUIContextAction[] RUN_NODE_CONTEXT_MENU_ENTRIES = new NodeUIContextAction[]{
@@ -745,6 +742,17 @@ public class JIPipeDesktopGraphNodeUI extends JIPipeDesktopWorkbenchPanel implem
             g2.drawImage(nodeBuffer, 0, 0, getWidth(), getHeight(), null);
         } else {
             paintNode(g2);
+        }
+
+        try {
+            if (getWorkbench().getProject() != null && getWorkbench().getProject().getRunSetsConfiguration().getUuidCache().contains(getNode().getUUIDInParentGraph().toString())) {
+                g2.setStroke(JIPipeDesktopGraphCanvasUI.STROKE_THICK);
+                g2.setColor(COLOR_SLOT_CACHED);
+                g2.drawRect(0, 0, getWidth() - 1, getHeight() -1);
+            }
+        }
+        catch (Throwable e) {
+            e.printStackTrace();
         }
 
 //        for (JIPipeNodeUIActiveArea activeArea : activeAreas) {

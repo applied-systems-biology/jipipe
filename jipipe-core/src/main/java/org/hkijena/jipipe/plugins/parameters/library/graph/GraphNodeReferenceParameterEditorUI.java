@@ -1,5 +1,6 @@
 package org.hkijena.jipipe.plugins.parameters.library.graph;
 
+import org.hkijena.jipipe.JIPipe;
 import org.hkijena.jipipe.api.nodes.JIPipeGraphNode;
 import org.hkijena.jipipe.api.project.JIPipeProject;
 import org.hkijena.jipipe.desktop.api.JIPipeDesktopParameterEditorUI;
@@ -63,7 +64,7 @@ public class GraphNodeReferenceParameterEditorUI extends JIPipeDesktopParameterE
                 if(node != null) {
                     selectButton.setEnabled(true);
                     selectButton.setText(node.getDisplayName());
-                    selectButton.setIcon(UIUtils.getIconFromResources("actions/graph-node.png"));
+                    selectButton.setIcon(JIPipe.getNodes().getIconFor(node.getInfo()));
                 }
                 else {
                     selectButton.setEnabled(true);

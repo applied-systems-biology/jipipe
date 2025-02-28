@@ -110,6 +110,7 @@ public class JIPipeDesktopGraphCanvasUI extends JLayeredPane implements JIPipeDe
     public static final Font GRAPH_TOOL_CURSOR_FONT = new Font("Dialog", Font.PLAIN, 12);
     public static final Color COLOR_HIGHLIGHT_GREEN = new Color(0, 128, 0);
     public static final Stroke STROKE_UNIT = new BasicStroke(1);
+    public static final Stroke STROKE_THICK = new BasicStroke(3);
     public static final Stroke STROKE_UNIT_COMMENT = new BasicStroke(1, BasicStroke.CAP_ROUND, BasicStroke.JOIN_BEVEL, 0, new float[]{1}, 0);
     public static final Stroke STROKE_SELECTION = new BasicStroke(3, BasicStroke.CAP_SQUARE, BasicStroke.JOIN_ROUND, 0, new float[]{5}, 0);
     public static final Stroke STROKE_MARQUEE = new BasicStroke(1, BasicStroke.CAP_ROUND, BasicStroke.JOIN_BEVEL, 0, new float[]{2}, 0);
@@ -1493,9 +1494,13 @@ public class JIPipeDesktopGraphCanvasUI extends JLayeredPane implements JIPipeDe
             menu.add(item);
         }
 
+        if(graphEditorUI != null) {
+            graphEditorUI.beforeOpenContextMenu(menu);
+        }
+
         // Node partitioning menus
         if (getDesktopWorkbench() instanceof JIPipeDesktopProjectWorkbench) {
-            JIPipeProject project = ((JIPipeDesktopProjectWorkbench) getDesktopWorkbench()).getProject();
+            JIPipeProject project = getDesktopWorkbench().getProject();
             JIPipeRuntimePartitionConfiguration runtimePartitions = project.getRuntimePartitions();
 
             // Algorithms

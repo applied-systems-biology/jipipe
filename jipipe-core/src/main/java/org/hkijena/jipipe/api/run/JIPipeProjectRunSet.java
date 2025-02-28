@@ -7,11 +7,16 @@ import org.hkijena.jipipe.api.nodes.JIPipeGraphNode;
 import org.hkijena.jipipe.api.parameters.AbstractJIPipeParameterCollection;
 import org.hkijena.jipipe.api.parameters.JIPipeParameter;
 import org.hkijena.jipipe.api.project.JIPipeProject;
+import org.hkijena.jipipe.api.project.JIPipeProjectRunSetsConfiguration;
 import org.hkijena.jipipe.plugins.parameters.library.colors.OptionalColorParameter;
 import org.hkijena.jipipe.plugins.parameters.library.graph.GraphNodeReferenceParameter;
 import org.hkijena.jipipe.plugins.parameters.library.markup.HTMLText;
+import org.hkijena.jipipe.utils.StringUtils;
+import org.jetbrains.annotations.NotNull;
 
 import java.util.List;
+import java.util.Set;
+import java.util.UUID;
 import java.util.stream.Collectors;
 
 public class JIPipeProjectRunSet extends AbstractJIPipeParameterCollection {
@@ -99,4 +104,27 @@ public class JIPipeProjectRunSet extends AbstractJIPipeParameterCollection {
         return nodes.stream().map(reference -> reference.resolve(project)).collect(Collectors.toList());
     }
 
+    public String getDisplayName() {
+        return StringUtils.orElse(getName(), "Unnamed");
+    }
+
+    public void removeNodes(Set<JIPipeGraphNode> nodes, JIPipeProjectRunSetsConfiguration configuration) {
+        Set<String> targetUUIDs = nodes.stream().map(JIPipeGraphNode::getUUIDInParentGraph).map(UUID::toString).collect(Collectors.toSet());
+        this.nodes.removeIf(reference -> targetUUIDs.contains(reference.getNodeUUID()));
+        configuration.refreshUUIDCache();
+    }
+
+    public void addNodes(Set<JIPipeGraphNode> nodes, JIPipeProjectRunSetsConfiguration configuration) {
+        Set<String> existing = getNodeUUIDs();
+        for (JIPipeGraphNode node : nodes) {
+            if(!existing.contains(node.getUUIDInParentGraph().toString())) {
+                this.nodes.add(new GraphNodeReferenceParameter(node));
+            }
+        }
+        configuration.refreshUUIDCache();
+    }
+
+    public Set<String> getNodeUUIDs() {
+        return this.nodes.stream().filter(GraphNodeReferenceParameter::isSet).map(GraphNodeReferenceParameter::getNodeUUID).collect(Collectors.toSet());
+    }
 }

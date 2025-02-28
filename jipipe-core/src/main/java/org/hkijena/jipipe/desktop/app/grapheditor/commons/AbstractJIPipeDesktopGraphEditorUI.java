@@ -865,6 +865,13 @@ public abstract class AbstractJIPipeDesktopGraphEditorUI extends JIPipeDesktopWo
         }
     }
 
+    /**
+     * Executed before opening the context menu
+     * Right before adding the partition entries and after all auto-generated items
+     * @param menu the menu
+     */
+    public abstract void beforeOpenContextMenu(JPopupMenu menu);
+
 
 //    @Override
 //    public void onSearchBoxSelectedEvent(JIPipeDesktopNodeDatabaseSearchBox.SelectedEvent event) {
