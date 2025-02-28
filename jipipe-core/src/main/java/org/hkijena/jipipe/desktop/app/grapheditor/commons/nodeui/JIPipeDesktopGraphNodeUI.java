@@ -745,10 +745,25 @@ public class JIPipeDesktopGraphNodeUI extends JIPipeDesktopWorkbenchPanel implem
         }
 
         try {
-            if (getWorkbench().getProject() != null && getWorkbench().getProject().getRunSetsConfiguration().getUuidCache().contains(getNode().getUUIDInParentGraph().toString())) {
-                g2.setStroke(JIPipeDesktopGraphCanvasUI.STROKE_THICK);
-                g2.setColor(COLOR_SLOT_CACHED);
-                g2.drawRect(0, 0, getWidth() - 1, getHeight() -1);
+            if (getWorkbench().getProject() != null) {
+                boolean highlight = false;
+                if(node instanceof JIPipeProjectCompartment) {
+                    for (JIPipeProjectCompartmentOutput compartmentOutput : ((JIPipeProjectCompartment) node).getOutputNodes().values()) {
+                        if(getWorkbench().getProject().getRunSetsConfiguration().getUuidCache().contains(compartmentOutput.getUUIDInParentGraph().toString())) {
+                            highlight = true;
+                            break;
+                        }
+                    }
+                }
+                else {
+                    // Check if the node itself is part of the highlight
+                    highlight = getWorkbench().getProject().getRunSetsConfiguration().getUuidCache().contains(getNode().getUUIDInParentGraph().toString());
+                }
+                if(highlight) {
+                    g2.setStroke(JIPipeDesktopGraphCanvasUI.STROKE_THICK);
+                    g2.setColor(COLOR_SLOT_CACHED);
+                    g2.drawRect(0, 0, getWidth() - 1, getHeight() - 1);
+                }
             }
         }
         catch (Throwable e) {

@@ -289,7 +289,7 @@ public class JIPipeDesktopCompartmentsGraphEditorUI extends AbstractJIPipeDeskto
 
     @Override
     public void beforeOpenContextMenu(JPopupMenu menu) {
-        if(getGraph().isProjectGraph() && getSelection().stream().anyMatch(ui -> ui.getNode() instanceof JIPipeProjectCompartment)) {
+        if(getGraph().isProjectCompartmentGraph() && getSelection().stream().anyMatch(ui -> ui.getNode() instanceof JIPipeProjectCompartment)) {
             menu.addSeparator();
             JMenu runSetsMenu = new JMenu("Run sets ...");
             menu.add(runSetsMenu);
