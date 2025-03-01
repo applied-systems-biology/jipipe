@@ -1,48 +1,151 @@
 package org.hkijena.jipipe.desktop.commons.components.filechoosernext;
 
+import org.apache.commons.lang.SystemUtils;
 import org.hkijena.jipipe.desktop.commons.components.JIPipeDesktopFancyTextField;
 import org.hkijena.jipipe.desktop.commons.components.JIPipeDesktopFormPanel;
+import org.hkijena.jipipe.desktop.commons.components.JIPipeDesktopParameterFormPanel;
 import org.hkijena.jipipe.desktop.commons.theme.JIPipeDesktopUITheme;
-import org.hkijena.jipipe.utils.JIPipeDesktopSplitPane;
-import org.hkijena.jipipe.utils.PathUtils;
-import org.hkijena.jipipe.utils.StringUtils;
-import org.hkijena.jipipe.utils.UIUtils;
+import org.hkijena.jipipe.utils.*;
 import org.jdesktop.swingx.JXTable;
 import org.jdesktop.swingx.decorator.HighlighterFactory;
 
 import javax.swing.*;
+import javax.swing.filechooser.FileNameExtensionFilter;
 import java.awt.*;
 import java.awt.event.*;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.time.LocalDateTime;
-import java.util.ArrayList;
 import java.util.Comparator;
 import java.util.List;
+import java.util.concurrent.atomic.AtomicBoolean;
 
 public class JIPipeDesktopFileChooserNext extends JPanel {
 
     private static final int TOOLBAR_BUTTON_SIZE = 42;
-    private final JIPipeDesktopFormPanel leftPanel = new JIPipeDesktopFormPanel(JIPipeDesktopFormPanel.WITH_SCROLLING);
+    private final JIPipeDesktopFormPanel sidePanel = new JIPipeDesktopFormPanel(JIPipeDesktopFormPanel.WITH_SCROLLING);
     private final JXTable entriesTable = new JXTable();
     private final JToolBar breadcrumbToolBar = new JToolBar();
     private final JIPipeDesktopFancyTextField breadcrumbPathEditor;
     private final JButton breadcrumbPathEditorConfirmButton;
+    private final Path initialDirectory;
     private Path currentDirectory;
     private final FileChooserHistory history = new FileChooserHistory();
     boolean breadcrumbEditMode = false;
     private final JCheckBoxMenuItem showHiddenToggle = new JCheckBoxMenuItem("Show hidden items");
+    private final JPopupMenu entriesPopupMenu = new JPopupMenu();
+    private final PathIOMode ioMode;
+    private final PathType pathType;
+    private final boolean multiple;
+    private final JIPipeDesktopFancyTextField selectedPathEditor;
+    private final JComboBox<FileNameExtensionFilter> extensionFilterComboBox = new JComboBox<>();
+    private final JIPipeDesktopFormPanel bottomPanel = new JIPipeDesktopFormPanel(JIPipeDesktopFormPanel.NONE);
 
-    public JIPipeDesktopFileChooserNext() {
+
+    public JIPipeDesktopFileChooserNext(Path initialDirectory, PathIOMode ioMode, PathType pathType, boolean multiple) {
+        this.initialDirectory = initialDirectory.toAbsolutePath();
+        this.ioMode = ioMode;
+        this.pathType = pathType;
+        this.multiple = multiple;
         this.breadcrumbPathEditor = new JIPipeDesktopFancyTextField(new JLabel(UIUtils.getIconFromResources("places/inode-directory.png")),
                 "Enter the directory here", false);
+        this.selectedPathEditor = new JIPipeDesktopFancyTextField(getPathTypeLabel(pathType), "", false);
         this.breadcrumbPathEditorConfirmButton = UIUtils.createButton("",
                 UIUtils.getIconFromResources("actions/check.png"), this::confirmBreadcrumbPathEditor);
         UIUtils.makeButtonFlatWithSize(breadcrumbPathEditorConfirmButton, TOOLBAR_BUTTON_SIZE);
 
         initialize();
-        setCurrentDirectory(Paths.get(""));
+        setCurrentDirectory(initialDirectory);
+        refreshSidePanel();
+    }
+
+    private JLabel getPathTypeLabel(PathType pathType) {
+        switch (pathType) {
+            case FilesOnly:
+                return new JLabel(UIUtils.getIconFromResources("data-types/file.png"));
+            case DirectoriesOnly:
+                return new JLabel(UIUtils.getIconFromResources("data-types/folder.png"));
+            default:
+                return new JLabel(UIUtils.getIconFromResources("data-types/path.png"));
+        }
+    }
+
+    public PathIOMode getIoMode() {
+        return ioMode;
+    }
+
+    public PathType getPathType() {
+        return pathType;
+    }
+
+    private void refreshSidePanel() {
+        sidePanel.clear();
+        createSidePanelHeader("Locations", UIUtils.makeButtonFlat25x25(UIUtils.createButton("", UIUtils.getIconInvertedFromResources("actions/view-refresh.png"), this::refreshSidePanel)));
+
+        CommonDirectoriesProvider provider = new CommonDirectoriesProvider();
+        for (CommonDirectory directory : provider.getStaticDirectories()) {
+            createSidePanelShortcut(directory);
+        }
+        for (CommonDirectory directory : provider.getRefreshableDirectories()) {
+            createSidePanelShortcut(directory);
+        }
+
+        createSidePanelHeader("Recent");
+        createSidePanelShortcut(PathUtils.getPathNameSafe(initialDirectory), UIUtils.getIconFromResources("actions/folder-open-recent.png"), initialDirectory);
+    }
+
+    private void createSidePanelShortcut(CommonDirectory directory) {
+        String name;
+        Icon icon;
+        switch (directory.getType()) {
+            case HOME: {
+                name = "Home";
+                icon = UIUtils.getIconFromResources("places/user-home.png");
+            }
+            break;
+            case ROOT: {
+                name = "Root";
+                icon = UIUtils.getIconFromResources("places/folder-root.png");
+            }
+            break;
+            case DRIVE: {
+                if(SystemUtils.IS_OS_WINDOWS) {
+                    name = directory.getPath().toString();
+                }
+                else {
+                    name = directory.getPath().getFileName().toString();
+                }
+                icon = UIUtils.getIconFromResources("devices/drive-harddisk.png");
+            }
+            break;
+            default: {
+                name = directory.getPath().getFileName().toString();
+                icon = UIUtils.getIconFromResources("places/inode-directory.png");
+            }
+        }
+
+        Path path = directory.getPath();
+        createSidePanelShortcut(name, icon, path);
+    }
+
+    private void createSidePanelShortcut(String name, Icon icon, Path path) {
+        JButton button = new JButton(name, icon);
+        button.setHorizontalAlignment(JButton.LEFT);
+        button.addActionListener(e -> { setCurrentDirectory(path); });
+        UIUtils.makeButtonFlat(button);
+        sidePanel.addWideToForm(button);
+    }
+
+    private void createSidePanelHeader(String title, JComponent... components) {
+        JPanel panel = UIUtils.boxHorizontal(components);
+        JLabel label = new JLabel(title);
+        label.setFont(label.getFont().deriveFont(Font.PLAIN, 11));
+        label.setForeground(UIUtils.getIconBaseColor());
+        label.setBorder(BorderFactory.createEmptyBorder(5, 5, 5, 5));
+        panel.add(UIUtils.createHorizontalFillingSeparator(), 0);
+        panel.add(label, 0);
+        sidePanel.addWideToForm(panel);
     }
 
     private void confirmBreadcrumbPathEditor() {
@@ -70,12 +173,19 @@ public class JIPipeDesktopFileChooserNext extends JPanel {
         tablePanel.add(new JScrollPane(entriesTable), BorderLayout.CENTER);
         mainPanel.add(tablePanel, BorderLayout.CENTER);
 
+        mainPanel.add(bottomPanel, BorderLayout.SOUTH);
+        initializeBottomPanel();
+
         entriesTable.setModel(new JIPipeDesktopFileChooserNextTableModel(null, false, false));
 
         entriesTable.setShowGrid(false);
         entriesTable.setHighlighters(
                 HighlighterFactory.createSimpleStriping(UIManager.getColor("Panel.background"))
         );
+
+        if(!multiple) {
+            entriesTable.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
+        }
 
         // Configure renderers
         entriesTable.setRowHeight(34);
@@ -90,8 +200,15 @@ public class JIPipeDesktopFileChooserNext extends JPanel {
         entriesTable.addMouseListener(new MouseAdapter() {
             @Override
             public void mouseClicked(MouseEvent e) {
-                if (e.getClickCount() == 2) {
+                if(SwingUtilities.isLeftMouseButton(e) && e.getClickCount() == 2) {
                     navigateSelected();
+                }
+                else if(SwingUtilities.isRightMouseButton(e) && e.getClickCount() == 1) {
+                    int row = entriesTable.rowAtPoint(e.getPoint());
+                    if (row >= 0 && !entriesTable.isRowSelected(row)) {
+                        entriesTable.getSelectionModel().setSelectionInterval(row, row);  // Select row under mouse
+                    }
+                    openContextMenu(e);
                 }
             }
         });
@@ -131,12 +248,77 @@ public class JIPipeDesktopFileChooserNext extends JPanel {
         mainPanel.add(UIUtils.borderNorthSouth(topToolbar, breadcrumbToolBar), BorderLayout.NORTH);
 
         JIPipeDesktopSplitPane splitPane = new JIPipeDesktopSplitPane(JIPipeDesktopSplitPane.LEFT_RIGHT,
-                leftPanel,
+                sidePanel,
                 mainPanel,
                 new JIPipeDesktopSplitPane.DynamicSidebarRatio(200, true));
         add(splitPane, BorderLayout.CENTER);
+    }
 
-        leftPanel.addGroupHeader("Test", UIUtils.getIconFromResources("actions/add.png"));
+    private void initializeBottomPanel() {
+
+        selectedPathEditor.setMinimumSize(new Dimension(100, 42));
+        selectedPathEditor.setPreferredSize(new Dimension(100, 42));
+        extensionFilterComboBox.setMinimumSize(new Dimension(100, 42));
+        extensionFilterComboBox.setPreferredSize(new Dimension(100, 42));
+
+        if(pathType == PathType.FilesOnly) {
+
+            bottomPanel.addToForm(selectedPathEditor, new JLabel("Name"));
+        }
+        else {
+            JPanel panel = new JPanel(new BorderLayout());
+            panel.add(selectedPathEditor, BorderLayout.CENTER);
+            panel.add(UIUtils.createButton("Use current directory", UIUtils.getIconFromResources("actions/edit-paste.png"), () -> {
+                selectedPathEditor.setText(currentDirectory.toAbsolutePath().toString());
+            }), BorderLayout.EAST);
+            bottomPanel.addToForm(panel, new JLabel("Name"));
+        }
+
+        if(pathType == PathType.FilesOnly || pathType == PathType.FilesAndDirectories) {
+            // Add the filter combo box
+            bottomPanel.addToForm(extensionFilterComboBox, new JLabel("Filter"));
+        }
+    }
+
+    private void openContextMenu(MouseEvent e) {
+        Path path;
+        int selectedRow = entriesTable.getSelectedRow();
+        if (selectedRow >= 0) {
+            int modelRow = entriesTable.convertRowIndexToModel(selectedRow);
+            path = (Path) entriesTable.getModel().getValueAt(modelRow, 0);
+        } else {
+            path = null;
+        }
+
+        entriesPopupMenu.removeAll();
+
+        if(path != null) {
+            entriesPopupMenu.add(UIUtils.createMenuItem("Open in default application", "Opens the selected item in the system-wide default application", UIUtils.getIconFromResources("actions/fileopen.png"), () -> {
+               try {
+                   Desktop desktop = Desktop.getDesktop();
+                   desktop.open(path.toFile());
+               }
+               catch (Exception ex) {
+               }
+            }));
+            entriesPopupMenu.add(UIUtils.createMenuItem("Copy path", "Copies the full path to the clipboard", UIUtils.getIconFromResources("actions/url-copy.png"), () -> {
+                UIUtils.copyToClipboard(path.toString());
+            }));
+        }
+
+        UIUtils.addSeparatorIfNeeded(entriesPopupMenu);
+        entriesPopupMenu.add(UIUtils.createMenuItem("Open current directory", "Opens the current directory in the system file manager", UIUtils.getIconFromResources("actions/fileopen.png"), this::openCurrentDirectoryInSystem));
+        entriesPopupMenu.add(UIUtils.createMenuItem("Refresh", "Refreshes the view", UIUtils.getIconFromResources("actions/view-refresh.png"), this::refresh));
+
+        entriesPopupMenu.show(entriesTable, e.getX(), e.getY());
+    }
+
+    private void openCurrentDirectoryInSystem() {
+        try {
+            Desktop desktop = Desktop.getDesktop();
+            desktop.open(currentDirectory.toFile());
+        }
+        catch (Exception ex) {}
     }
 
     private void navigateSelected() {
@@ -184,7 +366,8 @@ public class JIPipeDesktopFileChooserNext extends JPanel {
     }
 
     private void refresh() {
-        JIPipeDesktopFileChooserNextTableModel model = new JIPipeDesktopFileChooserNextTableModel(currentDirectory, true, showHiddenToggle.isSelected());
+        JIPipeDesktopFileChooserNextTableModel model = new JIPipeDesktopFileChooserNextTableModel(currentDirectory,
+                pathType != PathType.DirectoriesOnly, showHiddenToggle.isSelected());
 
         // Grab the old sort order
         int targetColumn = -1;
@@ -320,8 +503,9 @@ public class JIPipeDesktopFileChooserNext extends JPanel {
         breadcrumbToolBar.repaint(50);
     }
 
-    public static List<Path> showDialog(JComponent parent, String title) {
+    public static List<Path> showDialog(JComponent parent, String title, Path initialDirectory, PathIOMode ioMode, PathType pathType, boolean multiple) {
         JDialog dialog = new JDialog(parent != null ? SwingUtilities.getWindowAncestor(parent) : null);
+        UIUtils.addEscapeListener(dialog);
         dialog.setTitle(title);
         dialog.setModal(true);
         dialog.setDefaultCloseOperation(WindowConstants.DISPOSE_ON_CLOSE);
@@ -329,16 +513,35 @@ public class JIPipeDesktopFileChooserNext extends JPanel {
 
         JPanel mainPanel = new JPanel(new BorderLayout());
 
-        JIPipeDesktopFileChooserNext panel = new JIPipeDesktopFileChooserNext();
+        JIPipeDesktopFileChooserNext panel = new JIPipeDesktopFileChooserNext(initialDirectory, ioMode, pathType, multiple);
         mainPanel.add(panel, BorderLayout.CENTER);
+
+        AtomicBoolean cancelled = new AtomicBoolean(true);
+        JPanel buttonPanel = UIUtils.boxHorizontal(
+                Box.createHorizontalGlue(),
+                UIUtils.createButton("Cancel", UIUtils.getIconFromResources("actions/cancel.png"), () -> dialog.setVisible(false)),
+                UIUtils.createButton(ioMode.name(), UIUtils.getIconFromResources("actions/check.png"), () -> {
+                    if(panel.getOutput().isEmpty()) {
+                        cancelled.set(false);
+                        dialog.setVisible(false);
+                    }
+                })
+        );
+        buttonPanel.setBorder(BorderFactory.createEmptyBorder(16, 4, 4, 4));
+        panel.bottomPanel.addWideToForm(buttonPanel);
 
         dialog.setContentPane(mainPanel);
         dialog.setLocationRelativeTo(parent);
         dialog.pack();
         dialog.setSize(1024, 768);
+        SwingUtilities.invokeLater(panel::refresh);
         dialog.setVisible(true);
 
         return panel.getSelectedPaths();
+    }
+
+    public List<Path> getOutput() {
+        return null;
     }
 
     private List<Path> getSelectedPaths() {
@@ -347,7 +550,7 @@ public class JIPipeDesktopFileChooserNext extends JPanel {
 
     public static void main(String[] args) {
         JIPipeDesktopUITheme.ModernLight.install();
-        JIPipeDesktopFileChooserNext.showDialog(null, "Test dialog");
+        JIPipeDesktopFileChooserNext.showDialog(null, "Test dialog", Paths.get(""), PathIOMode.Open, PathType.DirectoriesOnly, true);
     }
 
     public Path getCurrentDirectory() {

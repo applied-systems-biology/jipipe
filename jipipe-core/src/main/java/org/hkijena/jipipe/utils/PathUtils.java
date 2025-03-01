@@ -697,4 +697,8 @@ public class PathUtils {
             deleteDirectoryRecursively(path, progressInfo);
         }
     }
+
+    public static String getPathNameSafe(Path path) {
+        return StringUtils.orElse(path.getFileName(), "Root");
+    }
 }

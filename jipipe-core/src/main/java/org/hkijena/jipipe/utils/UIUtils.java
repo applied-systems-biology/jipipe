@@ -427,6 +427,26 @@ public class UIUtils {
         }
     }
 
+    public static Color getIconBaseColor() {
+        if(DARK_THEME) {
+            return new Color(0xDFDFDF);
+        }
+        else {
+            return new Color(0x333333);
+        }
+    }
+
+    public static JSeparator createHorizontalFillingSeparator() {
+        JSeparator separator = new JSeparator(SwingConstants.HORIZONTAL);
+
+        // Force the separator to fill horizontally
+        separator.setMaximumSize(new Dimension(Short.MAX_VALUE, 1));
+        separator.setPreferredSize(new Dimension(50, 1)); // Default pref size
+        separator.setAlignmentY(Component.CENTER_ALIGNMENT); // Critical: vertical centering
+
+        return separator;
+    }
+
     /**
      * packAll() for a data table (with a limit)
      *
