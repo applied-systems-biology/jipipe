@@ -663,4 +663,26 @@ public class StringUtils {
         }
         return text;
     }
+
+    public static String formatSize(long size) {
+        if (size <= 0) return "0 bytes";
+
+        final String[] units = {"bytes", "KB", "MB", "GB", "TB"};
+        int unitIndex = 0;
+        double sizeAsDouble = size;
+
+        while (sizeAsDouble >= 1024 && unitIndex < units.length - 1) {
+            sizeAsDouble /= 1024;
+            unitIndex++;
+        }
+
+        if (sizeAsDouble < 10 && unitIndex > 0) {
+            // For smaller sizes like 1.5 KB, show one decimal place
+            return String.format("%.1f %s", sizeAsDouble, units[unitIndex]);
+        } else {
+            // Otherwise, show whole number
+            return String.format("%d %s", Math.round(sizeAsDouble), units[unitIndex]);
+        }
+    }
+
 }

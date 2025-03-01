@@ -203,6 +203,14 @@ public class PathUtils {
         }
     }
 
+    public static List<Path> listDirectory(Path directory) throws IOException {
+        List<Path> result = new ArrayList<>();
+        try(Stream<Path> stream = Files.list(directory)) {
+            stream.forEach(result::add);
+        }
+        return result;
+    }
+
     /**
      * Computes the SHA1 of a file
      *

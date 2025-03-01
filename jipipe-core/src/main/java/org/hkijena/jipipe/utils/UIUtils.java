@@ -1066,8 +1066,9 @@ public class UIUtils {
      * Makes a button flat and 25x25 size
      *
      * @param component the button
+     * @return the component
      */
-    public static void makeButtonFlat25x25(AbstractButton component) {
+    public static <T extends AbstractButton> T makeButtonFlat25x25(T component) {
         component.setBackground(Color.WHITE);
         component.setOpaque(false);
         component.setPreferredSize(new Dimension(25, 25));
@@ -1077,6 +1078,17 @@ public class UIUtils {
 //        Border compound = new CompoundBorder(new RoundedLineBorder(ModernMetalTheme.GRAY2, 1, 2), margin);
 //        component.setBorder(compound);
         component.setBorder(BorderFactory.createEmptyBorder(3, 3, 3, 3));
+        return component;
+    }
+
+    /**
+     * Makes a button flat and 25x25 size
+     *
+     * @param component the button
+     * @return the component
+     */
+    public static <T extends AbstractButton> T makeButtonFlatWithSize(T component, int size) {
+        return makeButtonFlatWithSize(component, size, 3);
     }
 
     /**
@@ -1084,16 +1096,14 @@ public class UIUtils {
      *
      * @param component the button
      */
-    public static void makeButtonFlatWithSize(AbstractButton component, int size, int borderSize) {
+    public static <T extends AbstractButton> T makeButtonFlatWithSize(T component, int size, int borderSize) {
         component.setBackground(Color.WHITE);
         component.setOpaque(false);
         component.setPreferredSize(new Dimension(size, size));
         component.setMinimumSize(new Dimension(size, size));
         component.setMaximumSize(new Dimension(size, size));
-//        Border margin = new EmptyBorder(2, 2, 2, 2);
-//        Border compound = new CompoundBorder(new RoundedLineBorder(ModernMetalTheme.GRAY2, 1, 2), margin);
-//        component.setBorder(compound);
         component.setBorder(BorderFactory.createEmptyBorder(borderSize, borderSize, borderSize, borderSize));
+        return component;
     }
 
     public static String getAWTWindowTitle(Window window) {
@@ -1113,7 +1123,7 @@ public class UIUtils {
      *
      * @param component the button
      */
-    public static void makeButtonFlat(AbstractButton component) {
+    public static <T extends AbstractButton> T makeButtonFlat(T component) {
         component.setBackground(Color.WHITE);
         component.setOpaque(false);
 //        component.setPreferredSize(new Dimension(component.getPreferredSize().width, 25));
@@ -1122,6 +1132,7 @@ public class UIUtils {
         Border margin = new EmptyBorder(3, 3, 3, 3);
 //        Border compound = new CompoundBorder(UIUtils.createControlBorder(), margin);
         component.setBorder(margin);
+        return component;
     }
 
     /**
@@ -1129,10 +1140,11 @@ public class UIUtils {
      *
      * @param component the component
      */
-    public static void makeButtonBorderlessWithoutMargin(AbstractButton component) {
+    public static <T extends AbstractButton> T makeButtonBorderlessWithoutMargin(T component) {
         component.setBackground(Color.WHITE);
         component.setOpaque(false);
         component.setBorder(null);
+        return component;
     }
 
     /**
@@ -2576,6 +2588,13 @@ public class UIUtils {
         button.setOpaque(false);
         button.setBackground(new Color(0, 0, 0, 0));
         return button;
+    }
+
+    public static JPanel borderNorthSouth(JComponent north, JComponent south) {
+        JPanel panel = new JPanel(new BorderLayout());
+        panel.add(north, BorderLayout.NORTH);
+        panel.add(south, BorderLayout.SOUTH);
+        return panel;
     }
 
 
