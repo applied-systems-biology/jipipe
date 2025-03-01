@@ -40,12 +40,13 @@ public class JIPipePercentageProgressInfo extends JIPipeProgressInfo {
 
     public void logPercentage(double value, double max) {
 
-        long time = System.currentTimeMillis();
-        if(time - lastTime > notifyInterval) {
-            int currentPercentage = (int) (value / max * 100);
-            if (currentPercentage != lastPercentage) {
+
+        int currentPercentage = (int) (value / max * 100);
+        if (currentPercentage != lastPercentage) {
+            long time = System.currentTimeMillis();
+            lastPercentage = currentPercentage;
+            if (time - lastTime > notifyInterval || currentPercentage == 50 || currentPercentage == 100) {
                 log(currentPercentage + "%");
-                lastPercentage = currentPercentage;
                 lastTime = time;
             }
         }
