@@ -48,8 +48,8 @@ the JIPipe runtime.
 
 You will need following packages:
 
-* Java 8 (newer versions do **not** work until supported by SciJava)
-* Maven (please make sure Maven runs with Java 8)
+* Java 21
+* Maven
 
 ### Generate packages
 
@@ -92,8 +92,12 @@ Following requirements are needed for these installers to work:
 
 ## Running JIPipe in an IDE
 
-This repository comes with a project `jipipe-launcher` that allows you to run and debug JIPipe inside your IDE.
-You just have to run the `main()` function inside this project.
+This repository comes with a project `jipipe-desktop` that allows you to run and debug JIPipe inside your IDE.
+You just have to run the `main()` function inside `JIPipeDesktopMain`.
+
+You might need to add `--add-opens=java.base/java.lang=ALL-UNNAMED` as VM option, due to known issues with ImageJ's class patching
+mechanism (see https://forum.image.sc/t/imagej-legacy-error/23013/10). SciJava is already providing a newer version of 
+the legacy patcher, so the other fix is not needed anymore.
 
 ## Generate JavaDocs (Optional)
 

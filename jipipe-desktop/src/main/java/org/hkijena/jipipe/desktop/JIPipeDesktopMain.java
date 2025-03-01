@@ -30,7 +30,6 @@ public class JIPipeDesktopMain {
      * @param args ignored
      */
     public static void main(final String... args) {
-        LegacyInjector.preinit();
         final ImageJ ij = new ImageJ();
         final WindowWatcher windowWatcher = new WindowWatcher(); //JIPipeGUICommand
         SwingUtilities.invokeLater(() -> ij.command().run(JIPipeGUICommand.class, true));
