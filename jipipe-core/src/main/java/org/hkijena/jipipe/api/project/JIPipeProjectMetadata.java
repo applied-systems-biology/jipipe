@@ -16,10 +16,11 @@ package org.hkijena.jipipe.api.project;
 import com.fasterxml.jackson.annotation.JsonGetter;
 import com.fasterxml.jackson.annotation.JsonSetter;
 import org.hkijena.jipipe.JIPipeImageJUpdateSiteDependency;
-import org.hkijena.jipipe.api.JIPipeNodeTemplate;
-import org.hkijena.jipipe.api.JIPipeStandardMetadata;
-import org.hkijena.jipipe.api.SetJIPipeDocumentation;
+import org.hkijena.jipipe.api.*;
+import org.hkijena.jipipe.api.parameters.JIPipeDynamicParameterCollection;
 import org.hkijena.jipipe.api.parameters.JIPipeParameter;
+import org.hkijena.jipipe.api.parameters.JIPipeParameterSerializationMode;
+import org.hkijena.jipipe.plugins.settings.JIPipeProjectAuthorsApplicationSettings;
 
 /**
  * Metadata for a {@link JIPipeProject}
@@ -29,8 +30,23 @@ public class JIPipeProjectMetadata extends JIPipeStandardMetadata {
     private String templateDescription = "";
     private JIPipeProjectPermissions permissions = new JIPipeProjectPermissions();
     private JIPipeProjectDirectories directories = new JIPipeProjectDirectories();
+    private JIPipeDynamicParameterCollection globalParameters = new JIPipeDynamicParameterCollection(true);
     private JIPipeNodeTemplate.List nodeTemplates = new JIPipeNodeTemplate.List();
     private boolean restoreTabs = true;
+    private boolean autoAddAuthors = true;
+    private boolean showCompartmentsRunPanelInOverview = true;
+
+    @SetJIPipeDocumentation(name = "Automatically add new authors", description = "If enabled, automatically add the configured authors in " +
+            "the application settings to the project if enabled.")
+    @JIPipeParameter("auto-add-authors")
+    public boolean isAutoAddAuthors() {
+        return autoAddAuthors;
+    }
+
+    @JIPipeParameter("auto-add-authors")
+    public void setAutoAddAuthors(boolean autoAddAuthors) {
+        this.autoAddAuthors = autoAddAuthors;
+    }
 
     @SetJIPipeDocumentation(name = "Restore tabs", description = "If enabled, all tabs are restored on loading the project. Otherwise, the Project overview and Compartments " +
             "tab are opened.")
@@ -113,5 +129,39 @@ public class JIPipeProjectMetadata extends JIPipeStandardMetadata {
         this.nodeTemplates = nodeTemplates;
     }
 
+    @JIPipeParameter(value = "global-parameters", persistence = JIPipeParameterSerializationMode.Object)
+    @JsonGetter("global-parameters")
+    @SetJIPipeDocumentation(name = "Global parameters", description = "Parameters that are passed into the global context within nodes")
+    public JIPipeDynamicParameterCollection getGlobalParameters() {
+        return globalParameters;
+    }
 
+    @JsonSetter("global-parameters")
+    public void setGlobalParameters(JIPipeDynamicParameterCollection globalParameters) {
+        this.globalParameters = globalParameters;
+    }
+
+    public boolean hasKnownGlobalAuthor() {
+        for (OptionalJIPipeAuthorMetadata projectAuthor : JIPipeProjectAuthorsApplicationSettings.getInstance().getProjectAuthors()) {
+            if(projectAuthor.isEnabled())  {
+                for (JIPipeAuthorMetadata author : getAuthors()) {
+                    if(author.fuzzyEquals(projectAuthor.getContent())) {
+                        return true;
+                    }
+                }
+            }
+        }
+        return false;
+    }
+
+    @SetJIPipeDocumentation(name = "Show compartment runs in project overview", description = "If enabled, show a 'Run compartment' panel in the project overview")
+    @JIPipeParameter("show-compartments-run-panel-in-overview")
+    public boolean isShowCompartmentsRunPanelInOverview() {
+        return showCompartmentsRunPanelInOverview;
+    }
+
+    @JIPipeParameter("show-compartments-run-panel-in-overview")
+    public void setShowCompartmentsRunPanelInOverview(boolean showCompartmentsRunPanelInOverview) {
+        this.showCompartmentsRunPanelInOverview = showCompartmentsRunPanelInOverview;
+    }
 }

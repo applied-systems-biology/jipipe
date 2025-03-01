@@ -195,6 +195,14 @@ public abstract class JIPipeIteratingAlgorithm extends JIPipeParameterSlotAlgori
         iterationStep.addOutputData(getFirstOutputSlot(), iterationStep.getInputData(getFirstInputSlot(), JIPipeData.class, progressInfo), progressInfo);
     }
 
+    /**
+     * If true, allow the execution of an empty iteration step if all inputs are optional and are empty
+     * @return whether empty iteration steps are allowed
+     */
+    protected boolean isAllowEmptyIterationStep() {
+        return false;
+    }
+
     @Override
     public void runParameterSet(JIPipeGraphNodeRunContext runContext, JIPipeProgressInfo progressInfo, List<JIPipeTextAnnotation> parameterAnnotations) {
 
@@ -292,12 +300,17 @@ public abstract class JIPipeIteratingAlgorithm extends JIPipeParameterSlotAlgori
             // Check if we even have data
             boolean hasData = false;
             for (JIPipeInputDataSlot slot : getDataInputSlots()) {
-                if(!slot.isEmpty()) {
+                if (!slot.isEmpty()) {
                     hasData = true;
                 }
             }
 
-            if(hasData) {
+            if(!hasData && isAllowEmptyIterationStep()) {
+                progressInfo.log("Fully empty, but node allowed empty iteration steps -> unlocking");
+                hasData = true;
+            }
+
+            if (hasData) {
                 progressInfo.log("Generating dummy iteration step because of the [all inputs empty optional] condition");
                 // Generate a dummy batch
                 JIPipeSingleIterationStep iterationStep = new JIPipeSingleIterationStep(this);
@@ -305,8 +318,7 @@ public abstract class JIPipeIteratingAlgorithm extends JIPipeParameterSlotAlgori
                 uploadAdaptiveParameters(iterationStep, tree, parameterBackups, progressInfo);
                 iterationSteps = new ArrayList<>();
                 iterationSteps.add(iterationStep);
-            }
-            else {
+            } else {
                 progressInfo.log("Nothing to do (all slots empty)");
                 iterationSteps = new ArrayList<>();
             }
@@ -375,9 +387,8 @@ public abstract class JIPipeIteratingAlgorithm extends JIPipeParameterSlotAlgori
     private void uploadAdaptiveParameters(JIPipeSingleIterationStep iterationStep, JIPipeParameterTree tree, Map<String, Object> parameterBackups, JIPipeProgressInfo progressInfo) {
         JIPipeExpressionVariablesMap expressionVariables = new JIPipeExpressionVariablesMap();
 
-        // Upload annotations and custom variables
-        expressionVariables.putCustomVariables(getDefaultCustomExpressionVariables());
-        expressionVariables.putAnnotations(iterationStep.getMergedTextAnnotations());
+        // Upload common variables
+        expressionVariables.putCommonVariables(iterationStep);
 
         for (StringQueryExpressionAndStringPairParameter overriddenParameter : getAdaptiveParameterSettings().getOverriddenParameters()) {
             String key = overriddenParameter.getValue();

@@ -26,6 +26,8 @@ import inra.ijpb.morphology.directional.DirectionalFilter;
 import org.hkijena.jipipe.*;
 import org.hkijena.jipipe.api.JIPipeAuthorMetadata;
 import org.hkijena.jipipe.api.JIPipeProgressInfo;
+import org.hkijena.jipipe.api.data.JIPipeDataSlotInfo;
+import org.hkijena.jipipe.api.data.JIPipeDefaultMutableSlotConfiguration;
 import org.hkijena.jipipe.plugins.JIPipePrepackagedDefaultJavaPlugin;
 import org.hkijena.jipipe.plugins.core.CorePlugin;
 import org.hkijena.jipipe.plugins.expressions.JIPipeExpressionParameter;
@@ -41,6 +43,7 @@ import org.hkijena.jipipe.plugins.imagejalgorithms.nodes.color.*;
 import org.hkijena.jipipe.plugins.imagejalgorithms.nodes.contrast.CLAHEContrastEnhancer;
 import org.hkijena.jipipe.plugins.imagejalgorithms.nodes.contrast.HistogramContrastEnhancerAlgorithm;
 import org.hkijena.jipipe.plugins.imagejalgorithms.nodes.contrast.IlluminationCorrection2DAlgorithm;
+import org.hkijena.jipipe.plugins.imagejalgorithms.nodes.contrast.ImageJContrastEnhancerAlgorithm;
 import org.hkijena.jipipe.plugins.imagejalgorithms.nodes.convert.*;
 import org.hkijena.jipipe.plugins.imagejalgorithms.nodes.convolve.ConvolveByImage2DAlgorithm;
 import org.hkijena.jipipe.plugins.imagejalgorithms.nodes.convolve.ConvolveByParameter2DAlgorithm;
@@ -55,6 +58,7 @@ import org.hkijena.jipipe.plugins.imagejalgorithms.nodes.features.*;
 import org.hkijena.jipipe.plugins.imagejalgorithms.nodes.fft.FFT2DForwardTransform;
 import org.hkijena.jipipe.plugins.imagejalgorithms.nodes.fft.FFT2DInverseTransform;
 import org.hkijena.jipipe.plugins.imagejalgorithms.nodes.fft.FFT2DSwapQuadrants;
+import org.hkijena.jipipe.plugins.imagejalgorithms.nodes.fft.FFTBandPassFilter;
 import org.hkijena.jipipe.plugins.imagejalgorithms.nodes.forms.DrawMaskAlgorithm;
 import org.hkijena.jipipe.plugins.imagejalgorithms.nodes.forms.DrawROIAlgorithm;
 import org.hkijena.jipipe.plugins.imagejalgorithms.nodes.generate.*;
@@ -665,17 +669,17 @@ public class ImageJAlgorithmsPlugin extends JIPipePrepackagedDefaultJavaPlugin {
         super.postprocess(progressInfo);
 
         // Register examples
-        registerNodeExample(FastImageArithmeticsAlgorithm.class, "Add images", node -> node.setExpression(new JIPipeExpressionParameter("I1 + I2")));
-        registerNodeExample(FastImageArithmeticsAlgorithm.class, "Subtract images", node -> node.setExpression(new JIPipeExpressionParameter("I1 - I2")));
-        registerNodeExample(FastImageArithmeticsAlgorithm.class, "Multiply images", node -> node.setExpression(new JIPipeExpressionParameter("I1 * I2")));
-        registerNodeExample(FastImageArithmeticsAlgorithm.class, "Divide images", node -> node.setExpression(new JIPipeExpressionParameter("I1 / I2")));
-        registerNodeExample(FastImageArithmeticsAlgorithm.class, "Image difference", node -> node.setExpression(new JIPipeExpressionParameter("ABS(I1 - I2)")));
-        registerNodeExample(FastImageArithmeticsAlgorithm.class, "Pixel-wise min", node -> node.setExpression(new JIPipeExpressionParameter("MIN(I1, I2)")));
-        registerNodeExample(FastImageArithmeticsAlgorithm.class, "Pixel-wise max", node -> node.setExpression(new JIPipeExpressionParameter("MAX(I1, I2)")));
-        registerNodeExample(FastImageArithmeticsAlgorithm.class, "Pixel-wise average", node -> node.setExpression(new JIPipeExpressionParameter("(I1 + I2) / 2")));
-        registerNodeExample(FastImageArithmeticsAlgorithm.class, "Pixel-wise AND", node -> node.setExpression(new JIPipeExpressionParameter("AND(I1, I2)")));
-        registerNodeExample(FastImageArithmeticsAlgorithm.class, "Pixel-wise OR", node -> node.setExpression(new JIPipeExpressionParameter("OR(I1, I2)")));
-        registerNodeExample(FastImageArithmeticsAlgorithm.class, "Pixel-wise XOR", node -> node.setExpression(new JIPipeExpressionParameter("XOR(I1, I2)")));
+        registerNodeExample(FastImageArithmeticsAlgorithm.class, "Add images", node -> node.configureTwoInputExample("I1 + I2"));
+        registerNodeExample(FastImageArithmeticsAlgorithm.class, "Subtract images", node -> node.configureTwoInputExample("I1 - I2"));
+        registerNodeExample(FastImageArithmeticsAlgorithm.class, "Multiply images", node ->node.configureTwoInputExample("I1 * I2"));
+        registerNodeExample(FastImageArithmeticsAlgorithm.class, "Divide images", node -> node.configureTwoInputExample("I1 / I2"));
+        registerNodeExample(FastImageArithmeticsAlgorithm.class, "Image difference", node -> node.configureTwoInputExample("ABS(I1 - I2)"));
+        registerNodeExample(FastImageArithmeticsAlgorithm.class, "Pixel-wise min", node -> node.configureTwoInputExample("MIN(I1, I2)"));
+        registerNodeExample(FastImageArithmeticsAlgorithm.class, "Pixel-wise max", node -> node.configureTwoInputExample("MAX(I1, I2)"));
+        registerNodeExample(FastImageArithmeticsAlgorithm.class, "Pixel-wise average", node -> node.configureTwoInputExample("(I1 + I2) / 2"));
+        registerNodeExample(FastImageArithmeticsAlgorithm.class, "Pixel-wise AND", node -> node.configureTwoInputExample("AND(I1, I2)"));
+        registerNodeExample(FastImageArithmeticsAlgorithm.class, "Pixel-wise OR", node -> node.configureTwoInputExample("OR(I1, I2)"));
+        registerNodeExample(FastImageArithmeticsAlgorithm.class, "Pixel-wise XOR", node -> node.configureTwoInputExample("XOR(I1, I2)"));
 
         registerNodeExample(SetToValueAlgorithm.class, "Inside mask", node -> node.setTargetArea(ImageROITargetArea.InsideMask));
         registerNodeExample(SetToValueAlgorithm.class, "Outside mask", node -> node.setTargetArea(ImageROITargetArea.OutsideMask));
@@ -772,6 +776,9 @@ public class ImageJAlgorithmsPlugin extends JIPipePrepackagedDefaultJavaPlugin {
         registerNodeType("ij1-convert-image-to-table-column", ImageToTableColumnAlgorithm.class, UIUtils.getIconURLFromResources("actions/table.png"));
         registerNodeType("ij1-extract-ome-image-xml", ExtractOMEXMLAlgorithm.class, UIUtils.getIconURLFromResources("actions/dialog-xml-editor.png"));
         registerNodeType("ij1-extract-ome-image-roi", ExtractOMEROIAlgorithm.class, UIUtils.getIconURLFromResources("actions/roi.png"));
+
+        registerNodeType("ij-convert-image-to-8-bit-ij-auto-contrast", ConvertImageTo8BitAutoContrastAlgorithm.class, UIUtils.getIconURLFromResources("data-types/imgplus-greyscale-8u.png"));
+        registerNodeType("ij-convert-image-to-16-bit-ij-auto-contrast", ConvertImageTo16BitAutoContrastAlgorithm.class, UIUtils.getIconURLFromResources("data-types/imgplus-greyscale-16u.png"));
     }
 
     private void registerFormAlgorithms() {
@@ -936,6 +943,7 @@ public class ImageJAlgorithmsPlugin extends JIPipePrepackagedDefaultJavaPlugin {
         registerNodeType("ij1-roi-from-table-rectangular", TableToRectangularROIAlgorithm.class, UIUtils.getIconURLFromResources("actions/draw-rectangle.png"));
         registerNodeType("ij1-roi-from-table-circle", TableToCircularROIAlgorithm.class, UIUtils.getIconURLFromResources("actions/draw-circle.png"));
         registerNodeType("ij1-roi-from-table-line", TableToLineROIAlgorithm.class, UIUtils.getIconURLFromResources("actions/draw-line.png"));
+        registerNodeType("ij1-roi-from-table-point", TableToPointROIAlgorithm.class, UIUtils.getIconURLFromResources("actions/labplot-xy-curve-points.png"));
         registerNodeType("ij1-roi-from-table-text", TableToTextROIAlgorithm.class, UIUtils.getIconURLFromResources("actions/edit-select-text.png"));
         registerNodeType("ij1-roi-set-image", SetRoiImageAlgorithm.class, UIUtils.getIconURLFromResources("actions/viewimage.png"));
         registerNodeType("ij1-roi-get-image", GetRoiImageAlgorithm.class, UIUtils.getIconURLFromResources("actions/viewimage.png"));
@@ -965,12 +973,13 @@ public class ImageJAlgorithmsPlugin extends JIPipePrepackagedDefaultJavaPlugin {
         registerNodeType("ij1-roi-draw-rectangle", DrawRectangleRoiAlgorithm.class, UIUtils.getIconURLFromResources("actions/draw-rectangle.png"));
         registerNodeType("ij1-roi-draw-oval", DrawOvalRoiAlgorithm.class, UIUtils.getIconURLFromResources("actions/draw-ellipse.png"));
         registerNodeType("ij1-roi-draw-text", DrawTextRoiAlgorithm.class, UIUtils.getIconURLFromResources("actions/draw-text.png"));
-        registerNodeType("ij1-roi-draw-line", DrawLineRoiAlgorithm.class, UIUtils.getIconURLFromResources("actions/draw-line.png"));
+        registerNodeType("ij1-roi-draw-line", DrawLineOvalRectangleRoiAlgorithm.class, UIUtils.getIconURLFromResources("actions/draw-line.png"));
         registerNodeType("ij1-roi-draw-scalebar", DrawScaleBarRoiAlgorithm.class, UIUtils.getIconURLFromResources("actions/draw-geometry-show-measuring-info.png"));
 
 //        registerNodeType("ij1-roi-register-max-brightness", RegisterRoiToImageByBrightnessAlgorithm.class, UIUtils.getIconURLFromResources("actions/cm_search.png"));
         registerNodeType("ij1-roi-extract-profile", ExtractROIProfileAlgorithm.class, UIUtils.getIconURLFromResources("actions/draw-line.png"));
 
+        registerEnumParameterType("ij1-roi-draw-line:roi-type", DrawLineOvalRectangleRoiAlgorithm.RoiType.class, "ROI type", "Available ROI types");
         registerEnumParameterType("ij1-roi-flood-fill:mode",
                 RoiFloodFillAlgorithm.Mode.class,
                 "Magic wand mode",
@@ -1043,6 +1052,10 @@ public class ImageJAlgorithmsPlugin extends JIPipePrepackagedDefaultJavaPlugin {
         registerNodeType("ij1-fft-forward2d", FFT2DForwardTransform.class, UIUtils.getIconURLFromResources("actions/insert-math-expression.png"));
         registerNodeType("ij1-fft-inverse2d", FFT2DInverseTransform.class, UIUtils.getIconURLFromResources("actions/insert-math-expression.png"));
         registerNodeType("ij1-fft-swap2d", FFT2DSwapQuadrants.class, UIUtils.getIconURLFromResources("actions/insert-math-expression.png"));
+        registerNodeType("ij1-fft-bandpass2d", FFTBandPassFilter.class, UIUtils.getIconURLFromResources("actions/insert-math-expression.png"));
+//        registerNodeType("ij1-fft-custom2d", FFTCustomFilter.class, UIUtils.getIconURLFromResources("actions/insert-math-expression.png"));
+
+        registerEnumParameterType("ij1-fft-bandpass2d:stripe-suppression", FFTBandPassFilter.SuppressStripesMode.class, "Suppress stripes", "Available modes");
     }
 
     private void registerAnalysisAlgorithms() {
@@ -1241,7 +1254,6 @@ public class ImageJAlgorithmsPlugin extends JIPipePrepackagedDefaultJavaPlugin {
         registerNodeType("ij1-math-imagecalculator2d-merging", LegacyImageCalculator2DMergingAlgorithm.class, UIUtils.getIconURLFromResources("actions/calculator.png"));
         registerNodeType("ij1-math-compare-images-2d", ImageComparer2DAlgorithm.class, UIUtils.getIconURLFromResources("actions/calculator.png"));
         registerNodeType("ij1-math-imagecalculator2d-expression", ImageCalculator2DExpression.class, UIUtils.getIconURLFromResources("actions/calculator.png"));
-        registerNodeType("ij1-math-hessian2d", Hessian2DAlgorithm.class, UIUtils.getIconURLFromResources("actions/insert-math-expression.png"));
         registerNodeType("ij1-math-divide-by-maximum", DivideByMaximumAlgorithm.class, UIUtils.getIconURLFromResources("actions/insert-math-expression.png"));
 
         registerNodeType("ij1-math-regional-minima-2d", RegionalMinima2DAlgorithm.class, UIUtils.getIconURLFromResources("actions/insert-math-expression.png"));
@@ -1300,6 +1312,11 @@ public class ImageJAlgorithmsPlugin extends JIPipePrepackagedDefaultJavaPlugin {
         registerNodeType("ij1-feature-mfc-2d", MorphologicalFeatureContrast2DAlgorithm.class, UIUtils.getIconURLFromResources("actions/insert-math-expression.png"));
         registerNodeType("ij1-feature-harris-corner-2d", CornerHarris2DAlgorithm.class, UIUtils.getIconURLFromResources("actions/insert-math-expression.png"));
         registerNodeType("ij1-feature-orientationj-2d", OrientationFeatures2DAlgorithm.class, UIUtils.getIconURLFromResources("actions/insert-math-expression.png"));
+        registerNodeType("ij1-feature-featurej-derivatives", DerivativesFeaturesAlgorithm.class, UIUtils.getIconURLFromResources("actions/insert-math-expression.png"));
+        registerNodeType("ij1-feature-featurej-hessian", HessianFeatureAlgorithm.class, UIUtils.getIconURLFromResources("actions/insert-math-expression.png"));
+        registerNodeType("ij1-feature-featurej-structure", StructureFeatureAlgorithm.class, UIUtils.getIconURLFromResources("actions/insert-math-expression.png"));
+        registerNodeType("ij1-math-hessian2d", Hessian2DAlgorithm.class, UIUtils.getIconURLFromResources("actions/insert-math-expression.png"));
+
 
         registerEnumParameterType("ij1-feature-vesselness-frangi:slicing-mode", FrangiVesselnessFeatures.SlicingMode.class,
                 "Slicing mode", "Available slicing modes");
@@ -1321,6 +1338,7 @@ public class ImageJAlgorithmsPlugin extends JIPipePrepackagedDefaultJavaPlugin {
         registerNodeType("ij1-contrast-calibrate", DisplayRangeCalibrationAlgorithm.class, UIUtils.getIconURLFromResources("actions/contrast.png"));
         registerNodeType("ij1-contrast-apply-displayed-contrast", ApplyDisplayContrastAlgorithm.class, UIUtils.getIconURLFromResources("actions/contrast.png"));
         registerNodeType("ij1-contrast-histogram-enhancer", HistogramContrastEnhancerAlgorithm.class, UIUtils.getIconURLFromResources("actions/contrast.png"));
+        registerNodeType("ij1-contrast-apply-ij-per-slice", ImageJContrastEnhancerAlgorithm.class, UIUtils.getIconURLFromResources("actions/contrast.png"));
 
         registerEnumParameterType(HistogramContrastEnhancerAlgorithm.Method.class.getCanonicalName(), HistogramContrastEnhancerAlgorithm.Method.class,
                 "Histogram contrast enhancer method", "Available methods");

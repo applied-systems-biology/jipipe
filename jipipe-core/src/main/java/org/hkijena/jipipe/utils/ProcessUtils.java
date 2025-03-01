@@ -47,6 +47,10 @@ public class ProcessUtils {
 
     }
 
+    public static boolean systemIsMacM1() {
+        return SystemUtils.IS_OS_MAC && ("aarch64".equals(SystemUtils.OS_ARCH) || "arm64".equals(SystemUtils.OS_ARCH));
+    }
+
     /**
      * Test for handling quoting in addArgument
      *

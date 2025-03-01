@@ -58,6 +58,7 @@ public class JIPipeSingleIterationStep implements JIPipeIterationStep, Comparabl
         this.mergedDataAnnotations = new HashMap<>(other.mergedDataAnnotations);
     }
 
+    @Override
     public JIPipeGraphNode getNode() {
         return node;
     }

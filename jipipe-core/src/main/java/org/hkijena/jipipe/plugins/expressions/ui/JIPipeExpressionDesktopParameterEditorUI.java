@@ -14,10 +14,17 @@
 package org.hkijena.jipipe.plugins.expressions.ui;
 
 import org.fife.ui.rsyntaxtextarea.*;
+import org.hkijena.jipipe.api.nodes.JIPipeAlgorithm;
+import org.hkijena.jipipe.api.nodes.JIPipeGraphNode;
+import org.hkijena.jipipe.api.nodes.iterationstep.JIPipeIterationStepAlgorithm;
+import org.hkijena.jipipe.api.parameters.JIPipeParameterAccess;
+import org.hkijena.jipipe.api.parameters.JIPipeParameterCollection;
+import org.hkijena.jipipe.api.project.JIPipeProject;
 import org.hkijena.jipipe.desktop.api.JIPipeDesktopParameterEditorUI;
 import org.hkijena.jipipe.desktop.commons.components.JIPipeDesktopDocumentChangeListener;
 import org.hkijena.jipipe.desktop.commons.components.JIPipeDesktopRSyntaxTextField;
 import org.hkijena.jipipe.plugins.expressions.*;
+import org.hkijena.jipipe.plugins.expressions.custom.JIPipeCustomExpressionVariablesParameterVariablesInfo;
 import org.hkijena.jipipe.plugins.expressions.variables.UndefinedExpressionParameterVariablesInfo;
 import org.hkijena.jipipe.utils.ReflectionUtils;
 import org.hkijena.jipipe.utils.StringUtils;
@@ -29,6 +36,8 @@ import java.awt.*;
 import java.util.List;
 import java.util.*;
 
+import static org.hkijena.jipipe.plugins.expressions.JIPipeExpressionParameterVariableInfo.ANNOTATIONS_VARIABLE;
+
 public class JIPipeExpressionDesktopParameterEditorUI extends JIPipeDesktopParameterEditorUI {
 
     private final JPanel expressionEditorPanel = new JPanel(new BorderLayout());
@@ -37,13 +46,6 @@ public class JIPipeExpressionDesktopParameterEditorUI extends JIPipeDesktopParam
     private final Set<JIPipeExpressionParameterVariableInfo> variables = new HashSet<>();
     private RSyntaxTextArea expressionEditor;
 
-    /**
-     * Creates new instance
-     *
-     * @param workbench       the workbench
-     * @param parameterTree   the parameter tree
-     * @param parameterAccess Parameter
-     */
     public JIPipeExpressionDesktopParameterEditorUI(InitializationParameters parameters) {
         super(parameters);
 
@@ -63,18 +65,8 @@ public class JIPipeExpressionDesktopParameterEditorUI extends JIPipeDesktopParam
     private void initialize() {
         JIPipeExpressionParameterSettings settings = getParameterAccess().getAnnotationOfType(JIPipeExpressionParameterSettings.class);
         setLayout(new BorderLayout());
-//        add(availableModes, BorderLayout.WEST);
-
-//        JPanel optionPanel = new JPanel();
-//        optionPanel.setOpaque(true);
-//        optionPanel.setLayout(new BoxLayout(optionPanel, BoxLayout.X_AXIS));
-//        optionPanel.setBorder(BorderFactory.createMatteBorder(0, 1, 0, 0, UIManager.getColor("Button.borderColor")));
 
         JButton functionBuilder = new JButton("Edit", UIUtils.getIconFromResources("actions/edit.png"));
-//        UIUtils.makeFlat25x25(functionBuilder);
-//        functionBuilder.setPreferredSize(new Dimension(80, 25));
-//        functionBuilder.setMaximumSize(new Dimension(80, 25));
-//        optionPanel.add(functionBuilder);
         functionBuilder.addActionListener(e -> editInFunctionBuilder());
 
         if (settings == null || !settings.withoutEditorButton()) {
@@ -155,6 +147,15 @@ public class JIPipeExpressionDesktopParameterEditorUI extends JIPipeDesktopParam
         }
     }
 
+    private JIPipeGraphNode searchForNodeInParents() {
+        for (JIPipeParameterCollection source : getParameterTree().getRegisteredSources()) {
+            if(source instanceof JIPipeGraphNode) {
+                return (JIPipeGraphNode) source;
+            }
+        }
+        return null;
+    }
+
     private void reloadVariables() {
         variables.clear();
 
@@ -201,6 +202,51 @@ public class JIPipeExpressionDesktopParameterEditorUI extends JIPipeDesktopParam
         }
         // Read from parameter
         variables.addAll(getParameter(JIPipeExpressionParameter.class).getAdditionalUIVariables());
+
+        // Special handling of global parameters (associated to nodes)
+        JIPipeGraphNode graphNode = searchForNodeInParents();
+        if(graphNode instanceof JIPipeAlgorithm) {
+            Set<String> usedKeys = new HashSet<>();
+            for (JIPipeExpressionParameterVariableInfo variable : variables) {
+                usedKeys.add(variable.getKey());
+            }
+
+            // Add custom variables
+            if(((JIPipeAlgorithm) graphNode).isEnableDefaultCustomExpressionVariables()) {
+                for (JIPipeExpressionParameterVariableInfo variable : JIPipeCustomExpressionVariablesParameterVariablesInfo.VARIABLES) {
+                    if (!usedKeys.contains(variable.getKey()) || StringUtils.isNullOrEmpty(variable.getKey())) {
+                        variables.add(variable);
+                        usedKeys.add(variable.getKey());
+                    }
+                }
+            }
+
+            // Add directories
+            for (JIPipeExpressionParameterVariableInfo variable : JIPipeProjectDirectoriesVariablesInfo.VARIABLES) {
+                if (!usedKeys.contains(variable.getKey()) || StringUtils.isNullOrEmpty(variable.getKey())) {
+                    variables.add(variable);
+                    usedKeys.add(variable.getKey());
+                }
+            }
+
+            // Add custom global variables
+            JIPipeProject project = getWorkbench().getProject();
+            if(project != null) {
+                for (Map.Entry<String, JIPipeParameterAccess> entry : project.getMetadata().getGlobalParameters().getParameters().entrySet()) {
+                    variables.add(new JIPipeExpressionParameterVariableInfo("_global." + entry.getKey(), StringUtils.orElse(entry.getValue().getName(), entry.getKey()), entry.getValue().getDescription()));
+                }
+            }
+
+            // Handling of iterating algorithms (adds annotations)
+            if(graphNode instanceof JIPipeIterationStepAlgorithm) {
+                // Generated annotations map
+                variables.add(new JIPipeExpressionParameterVariableInfo("_local.annotations", "Text annotations (map)", "The text annotations of the current iteration step as map"));
+                if(!usedKeys.contains(ANNOTATIONS_VARIABLE.getKey()) || StringUtils.isNullOrEmpty(ANNOTATIONS_VARIABLE.getKey())) {
+                    variables.add(ANNOTATIONS_VARIABLE);
+                }
+            }
+
+        }
 
     }
 }

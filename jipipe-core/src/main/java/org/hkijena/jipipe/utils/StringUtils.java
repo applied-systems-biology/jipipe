@@ -25,6 +25,7 @@ import java.time.format.DateTimeFormatter;
 import java.util.Collection;
 import java.util.Random;
 import java.util.function.Predicate;
+import java.util.regex.Pattern;
 
 /**
  * Utilities for strings
@@ -646,5 +647,20 @@ public class StringUtils {
         } else {
             return StringUtils.parseDouble(StringUtils.nullToEmpty(o));
         }
+    }
+
+    public static boolean isValidVersion(String version) {
+        return version.matches("\\d+(\\.\\d+)*");
+    }
+
+    public static String[] splitNonRegex(String s, String delimiter) {
+        return s.split(Pattern.quote(delimiter));
+    }
+
+    public static String wrapHtml(String text) {
+        if(!text.trim().startsWith("<html>")) {
+            return "<html>" + text + "</html>";
+        }
+        return text;
     }
 }

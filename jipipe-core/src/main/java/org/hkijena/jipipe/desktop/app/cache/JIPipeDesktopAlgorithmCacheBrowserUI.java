@@ -42,6 +42,7 @@ import org.hkijena.jipipe.desktop.commons.components.ribbon.JIPipeDesktopSmallBu
 import org.hkijena.jipipe.plugins.settings.JIPipeFileChooserApplicationSettings;
 import org.hkijena.jipipe.utils.UIUtils;
 import org.hkijena.jipipe.utils.data.WeakStore;
+import org.hkijena.jipipe.utils.debounce.StaticDebouncer;
 import org.hkijena.jipipe.utils.json.JsonUtils;
 
 import javax.swing.*;
@@ -59,6 +60,7 @@ import java.util.stream.Collectors;
 public class JIPipeDesktopAlgorithmCacheBrowserUI extends JIPipeDesktopProjectWorkbenchPanel implements JIPipeCache.ModifiedEventListener, JIPipeRunnable.InterruptedEventListener, JIPipeRunnable.FinishedEventListener {
     private final JIPipeGraphNode graphNode;
     private final JIPipeDesktopGraphCanvasUI graphCanvasUI;
+    private final StaticDebouncer refreshTableDebouncer;
     private JIPipeDataSlot selectedSlot;
     private Component currentContent;
 
@@ -71,6 +73,7 @@ public class JIPipeDesktopAlgorithmCacheBrowserUI extends JIPipeDesktopProjectWo
         super(workbenchUI);
         this.graphNode = graphNode;
         this.graphCanvasUI = graphCanvasUI;
+        this.refreshTableDebouncer = new StaticDebouncer(1500, this::refreshTable);
         initialize();
 
         getProject().getCache().getModifiedEventEmitter().subscribeWeak(this);
@@ -104,6 +107,10 @@ public class JIPipeDesktopAlgorithmCacheBrowserUI extends JIPipeDesktopProjectWo
         } else {
             showDataSlots(slotsToDisplay);
         }
+    }
+
+    public JIPipeGraphNode getGraphNode() {
+        return graphNode;
     }
 
     private List<JIPipeDataTable> getSortedDataTables(Map<String, JIPipeDataTable> slotMap) {
@@ -322,7 +329,7 @@ public class JIPipeDesktopAlgorithmCacheBrowserUI extends JIPipeDesktopProjectWo
         if (!isDisplayable())
             return;
         if (JIPipeRunnableQueue.getInstance().getCurrentRun() == null) {
-            refreshTable();
+            refreshTableDebouncer.debounce();
         }
     }
 
@@ -330,13 +337,13 @@ public class JIPipeDesktopAlgorithmCacheBrowserUI extends JIPipeDesktopProjectWo
     public void onRunnableInterrupted(JIPipeRunnable.InterruptedEvent event) {
         if (!isDisplayable())
             return;
-        refreshTable();
+        refreshTableDebouncer.debounce();
     }
 
     @Override
     public void onRunnableFinished(JIPipeRunnable.FinishedEvent event) {
         if (!isDisplayable())
             return;
-        refreshTable();
+        refreshTableDebouncer.debounce();
     }
 }

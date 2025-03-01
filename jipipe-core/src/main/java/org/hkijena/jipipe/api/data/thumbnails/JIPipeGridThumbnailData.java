@@ -82,9 +82,13 @@ public class JIPipeGridThumbnailData implements JIPipeThumbnailData {
                 constraints.weighty = 1;
                 constraints.anchor = GridBagConstraints.CENTER;
 
-                Component preview = thumbnailData.renderToComponent(width / 3, height / 3);
-                if (preview == null)
+                Component preview = null;
+                if(thumbnailData != null) {
+                    preview = thumbnailData.renderToComponent(width / 3, height / 3);
+                }
+                if (preview == null) {
                     preview = new JLabel("N/A");
+                }
                 panel.add(preview, constraints);
             }
             return panel;

@@ -94,9 +94,7 @@ public class ChangeRoi3DPropertiesFromExpressionsAlgorithm extends JIPipeSimpleI
         ImagePlusData inputReference = iterationStep.getInputData("Reference", ImagePlusData.class, progressInfo);
 
         // Create variables
-        JIPipeExpressionVariablesMap variableSet = new JIPipeExpressionVariablesMap()
-                .putAnnotations(iterationStep.getMergedTextAnnotations())
-                .putCustomVariables(getDefaultCustomExpressionVariables());
+        JIPipeExpressionVariablesMap variableSet = new JIPipeExpressionVariablesMap(iterationStep);
 
         // Obtain statistics
         ResultsTableData statistics = outputROI.measure(IJ3DUtils.wrapImage(inputReference), measurements.getNativeValue(), measureInPhysicalUnits, "", progressInfo.resolve("Measuring ROIs"));

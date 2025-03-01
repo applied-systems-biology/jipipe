@@ -24,10 +24,7 @@ import com.google.common.collect.*;
 import org.apache.commons.lang3.exception.ExceptionUtils;
 import org.hkijena.jipipe.JIPipe;
 import org.hkijena.jipipe.JIPipeDependency;
-import org.hkijena.jipipe.api.JIPipeGraphType;
-import org.hkijena.jipipe.api.JIPipeMetadataObject;
-import org.hkijena.jipipe.api.JIPipeNodeTemplate;
-import org.hkijena.jipipe.api.LabelAsJIPipeHeavyData;
+import org.hkijena.jipipe.api.*;
 import org.hkijena.jipipe.api.cache.JIPipeLocalProjectMemoryCache;
 import org.hkijena.jipipe.api.compartments.algorithms.IOInterfaceAlgorithm;
 import org.hkijena.jipipe.api.compartments.algorithms.JIPipeProjectCompartment;
@@ -43,6 +40,7 @@ import org.hkijena.jipipe.api.nodes.*;
 import org.hkijena.jipipe.api.notifications.JIPipeNotification;
 import org.hkijena.jipipe.api.notifications.JIPipeNotificationInbox;
 import org.hkijena.jipipe.api.parameters.JIPipeParameterCollection;
+import org.hkijena.jipipe.api.run.JIPipeRunnableQueue;
 import org.hkijena.jipipe.api.runtimepartitioning.JIPipeRuntimePartition;
 import org.hkijena.jipipe.api.runtimepartitioning.JIPipeRuntimePartitionConfiguration;
 import org.hkijena.jipipe.api.settings.JIPipeProjectSettingsSheet;
@@ -53,6 +51,7 @@ import org.hkijena.jipipe.plugins.parameters.library.colors.OptionalColorParamet
 import org.hkijena.jipipe.plugins.parameters.library.markup.HTMLText;
 import org.hkijena.jipipe.plugins.parameters.library.markup.MarkdownText;
 import org.hkijena.jipipe.plugins.settings.JIPipeDataStorageProjectSettings;
+import org.hkijena.jipipe.plugins.settings.JIPipeProjectAuthorsApplicationSettings;
 import org.hkijena.jipipe.plugins.settings.JIPipeRuntimeApplicationSettings;
 import org.hkijena.jipipe.utils.*;
 import org.hkijena.jipipe.utils.json.JsonUtils;
@@ -84,6 +83,7 @@ public class JIPipeProject implements JIPipeValidatable {
     private final BiMap<UUID, JIPipeProjectCompartment> compartments = HashBiMap.create();
     private final JIPipeLocalProjectMemoryCache cache;
     private final JIPipeProjectHistoryJournal historyJournal;
+    private final JIPipeRunnableQueue snapshotQueue = new JIPipeRunnableQueue("History");
     private final CompartmentAddedEventEmitter compartmentAddedEventEmitter = new CompartmentAddedEventEmitter();
     private final CompartmentRemovedEventEmitter compartmentRemovedEventEmitter = new CompartmentRemovedEventEmitter();
     private final JIPipeGraphNode.BaseDirectoryChangedEventEmitter baseDirectoryChangedEventEmitter = new JIPipeGraphNode.BaseDirectoryChangedEventEmitter();
@@ -91,6 +91,7 @@ public class JIPipeProject implements JIPipeValidatable {
     private final Map<String, JsonNode> unloadedSettingsSheets = new HashMap<>();
     private JIPipeProjectMetadata metadata = new JIPipeProjectMetadata();
     private JIPipeRuntimePartitionConfiguration runtimePartitions = new JIPipeRuntimePartitionConfiguration();
+    private JIPipeProjectRunSetsConfiguration runSetsConfiguration = new JIPipeProjectRunSetsConfiguration();
     private Map<String, JIPipeMetadataObject> additionalMetadata = new HashMap<>();
     private Path workDirectory;
     private Path temporaryBaseDirectory;
@@ -101,9 +102,9 @@ public class JIPipeProject implements JIPipeValidatable {
      * A JIPipe project
      */
     public JIPipeProject() {
-        this.historyJournal = new JIPipeProjectHistoryJournal(this);
+        this.historyJournal = new JIPipeProjectHistoryJournal(this, snapshotQueue);
         this.cache = new JIPipeLocalProjectMemoryCache(this);
-        this.metadata.setDescription(new HTMLText(MarkdownText.fromPluginResource("documentation/new-project-template.md", new HashMap<>()).getRenderedHTML()));
+        this.metadata.setDescription(new HTMLText());
         this.graph.attach(JIPipeProject.class, this);
         this.graph.attach(JIPipeGraphType.Project);
         this.compartmentGraph.attach(JIPipeProject.class, this);
@@ -334,6 +335,10 @@ public class JIPipeProject implements JIPipeValidatable {
             return null;
     }
 
+    public JIPipeRunnableQueue getSnapshotQueue() {
+        return snapshotQueue;
+    }
+
     /**
      * @return The algorithm graph
      */
@@ -348,8 +353,31 @@ public class JIPipeProject implements JIPipeValidatable {
      * @throws IOException Triggered by {@link ObjectMapper}
      */
     public void saveProject(Path fileName) throws IOException {
+
+        // Add authors from global list
+        if(metadata.isAutoAddAuthors()) {
+            addAuthorsFromGlobalList();
+        }
+
         ObjectMapper mapper = JsonUtils.getObjectMapper();
         mapper.writerWithDefaultPrettyPrinter().writeValue(fileName.toFile(), this);
+    }
+
+    private void addAuthorsFromGlobalList() {
+        JIPipeProjectAuthorsApplicationSettings settings = JIPipeProjectAuthorsApplicationSettings.getInstance();
+        if(settings.isAutomaticallyAddToProjects()) {
+            for (OptionalJIPipeAuthorMetadata projectAuthor_ : settings.getProjectAuthors()) {
+                if(projectAuthor_.isEnabled()) {
+                    JIPipeAuthorMetadata projectAuthor = projectAuthor_.getContent();
+                    Optional<JIPipeAuthorMetadata> existing = metadata.getAuthors().stream().filter(a -> a.fuzzyEquals(projectAuthor)).findFirst();
+                    if (existing.isPresent()) {
+                        existing.get().mergeWith(projectAuthor);
+                    } else {
+                        metadata.getAuthors().add(projectAuthor);
+                    }
+                }
+            }
+        }
     }
 
     /**
@@ -575,7 +603,7 @@ public class JIPipeProject implements JIPipeValidatable {
                     // Place IOInterface at the same location as the compartment output
                     IOInterfaceAlgorithm ioInterfaceAlgorithm = JIPipe.createNode(IOInterfaceAlgorithm.class);
                     ioInterfaceAlgorithm.getSlotConfiguration().setTo(source.getNode().getSlotConfiguration());
-                    ioInterfaceAlgorithm.setLocations(source.getNode().getLocations());
+                    ioInterfaceAlgorithm.setNodeUILocationPerViewModePerCompartment(source.getNode().getNodeUILocationPerViewModePerCompartment());
                     graph.insertNode(ioInterfaceAlgorithm, target.getNode().getCompartmentUUIDInParentGraph());
 
                     for (JIPipeOutputDataSlot outputSlot : source.getNode().getOutputSlots()) {
@@ -674,7 +702,7 @@ public class JIPipeProject implements JIPipeValidatable {
                     IOInterfaceAlgorithm ioInterfaceAlgorithm = JIPipe.createNode(IOInterfaceAlgorithm.class);
                     ioInterfaceAlgorithm.setCustomName(outputNode.getName());
                     ioInterfaceAlgorithm.getSlotConfiguration().setTo(outputNode.getSlotConfiguration());
-                    ioInterfaceAlgorithm.setLocations(outputNode.getLocations());
+                    ioInterfaceAlgorithm.setNodeUILocationPerViewModePerCompartment(outputNode.getNodeUILocationPerViewModePerCompartment());
                     graph.insertNode(ioInterfaceAlgorithm, targetCompartment.getProjectCompartmentUUID());
 
                     for (JIPipeOutputDataSlot outputSlot : outputNode.getOutputSlots()) {
@@ -745,6 +773,10 @@ public class JIPipeProject implements JIPipeValidatable {
         }
     }
 
+    public JIPipeProjectRunSetsConfiguration getRunSetsConfiguration() {
+        return runSetsConfiguration;
+    }
+
     public JIPipeRuntimePartitionConfiguration getRuntimePartitions() {
         return runtimePartitions;
     }
@@ -772,6 +804,7 @@ public class JIPipeProject implements JIPipeValidatable {
         generator.writeObjectField("metadata", metadata);
         generator.writeObjectField("dependencies", getSimplifiedMinimalDependencies());
         generator.writeObjectField("runtime-partitions", runtimePartitions);
+        generator.writeObjectField("run-sets", runSetsConfiguration);
 
         // Write settings
         generator.writeObjectFieldStart("settings");
@@ -855,6 +888,12 @@ public class JIPipeProject implements JIPipeValidatable {
                 this.runtimePartitions = JsonUtils.getObjectMapper().convertValue(sub, JIPipeRuntimePartitionConfiguration.class);
             }
 
+            // Load run sets
+            if(jsonNode.has("run-sets")) {
+                JsonNode sub = jsonNode.get("run-sets");
+                this.runSetsConfiguration = JsonUtils.getObjectMapper().convertValue(sub, JIPipeProjectRunSetsConfiguration.class);
+            }
+
             // Load settings sheets
             if (jsonNode.has("settings")) {
                 for (Map.Entry<String, JsonNode> entry : ImmutableList.copyOf(jsonNode.get("settings").fields())) {
@@ -928,7 +967,7 @@ public class JIPipeProject implements JIPipeValidatable {
                 }
 
                 // Fix legacy node location information
-                for (Map.Entry<String, Map<String, Point>> locationEntry : ImmutableList.copyOf(node.getLocations().entrySet())) {
+                for (Map.Entry<String, Map<String, Point>> locationEntry : ImmutableList.copyOf(node.getNodeUILocationPerViewModePerCompartment().entrySet())) {
                     Map<String, Point> location = locationEntry.getValue();
                     String compartmentUUIDString;
                     if ("DEFAULT".equals(locationEntry.getKey())) {
@@ -936,8 +975,8 @@ public class JIPipeProject implements JIPipeValidatable {
                     } else {
                         compartmentUUIDString = StringUtils.nullToEmpty(compartmentGraph.findNodeUUID(locationEntry.getKey()));
                     }
-                    node.getLocations().remove(locationEntry.getKey());
-                    node.getLocations().put(compartmentUUIDString, location);
+                    node.getNodeUILocationPerViewModePerCompartment().remove(locationEntry.getKey());
+                    node.getNodeUILocationPerViewModePerCompartment().put(compartmentUUIDString, location);
                     JIPipe.getInstance().getLogService().info("[Project format conversion] Move location within " + locationEntry.getKey() + " to " + compartmentUUIDString);
                 }
             }

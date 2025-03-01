@@ -13,6 +13,7 @@
 
 package org.hkijena.jipipe.plugins.imagejdatatypes.util;
 
+import com.fasterxml.jackson.databind.JsonNode;
 import com.google.common.collect.ImmutableList;
 import com.google.common.collect.Iterables;
 import gnu.trove.list.TIntList;
@@ -44,18 +45,17 @@ import org.hkijena.jipipe.plugins.imagejdatatypes.datatypes.greyscale.ImagePlusG
 import org.hkijena.jipipe.plugins.imagejdatatypes.util.measure.ImageStatisticsSetParameter;
 import org.hkijena.jipipe.plugins.imagejdatatypes.util.measure.Measurement;
 import org.hkijena.jipipe.plugins.parameters.library.colors.ColorMap;
+import org.hkijena.jipipe.plugins.parameters.library.primitives.vectors.Vector2dParameter;
 import org.hkijena.jipipe.plugins.parameters.library.quantities.Quantity;
 import org.hkijena.jipipe.plugins.parameters.library.roi.Anchor;
 import org.hkijena.jipipe.plugins.tables.datatypes.ResultsTableData;
-import org.hkijena.jipipe.utils.ColorUtils;
-import org.hkijena.jipipe.utils.ImageJCalibrationMode;
-import org.hkijena.jipipe.utils.StringUtils;
-import org.hkijena.jipipe.utils.TriConsumer;
+import org.hkijena.jipipe.utils.*;
 
 import javax.swing.*;
 import java.awt.*;
 import java.awt.geom.AffineTransform;
 import java.awt.geom.PathIterator;
+import java.awt.geom.Rectangle2D;
 import java.awt.image.BufferedImage;
 import java.awt.image.DataBufferByte;
 import java.io.ByteArrayInputStream;
@@ -76,6 +76,47 @@ import java.util.stream.Collectors;
  * Utility functions for ImageJ
  */
 public class ImageJUtils {
+
+    /**
+     * Creates a Rectangle from two points (x1, y1) and (x2, y2).
+     *
+     * @param x1 the x-coordinate of the first point
+     * @param y1 the y-coordinate of the first point
+     * @param x2 the x-coordinate of the second point
+     * @param y2 the y-coordinate of the second point
+     * @return a Rectangle object representing the area between the two points
+     */
+    public static Rectangle pointsToRectangle(int x1, int y1, int x2, int y2) {
+        // Calculate the top-left corner and dimensions
+        int x = Math.min(x1, x2);
+        int y = Math.min(y1, y2);
+        int width = Math.abs(x2 - x1);
+        int height = Math.abs(y2 - y1);
+
+        // Create and return the Rectangle
+        return new Rectangle(x, y, width, height);
+    }
+
+    /**
+     * Creates a Rectangle2D.Double from two points (x1, y1) and (x2, y2).
+     *
+     * @param x1 the x-coordinate of the first point
+     * @param y1 the y-coordinate of the first point
+     * @param x2 the x-coordinate of the second point
+     * @param y2 the y-coordinate of the second point
+     * @return a Rectangle2D.Double object representing the area between the two points
+     */
+    public static Rectangle2D.Double pointsToRectangle(double x1, double y1, double x2, double y2) {
+        // Calculate the top-left corner and dimensions
+        double x = Math.min(x1, x2);
+        double y = Math.min(y1, y2);
+        double width = Math.abs(x2 - x1);
+        double height = Math.abs(y2 - y1);
+
+        // Create and return the Rectangle2D.Double
+        return new Rectangle2D.Double(x, y, width, height);
+    }
+
 
     public static ImageProcessor extractFromProcessor(ImageProcessor processor, Rectangle source) {
         try {
@@ -193,6 +234,29 @@ public class ImageJUtils {
             roi.setProperties(writer.toString());
         } catch (IOException e) {
             throw new RuntimeException(e);
+        }
+    }
+
+    /**
+     * Sets ROI properties from a JSON string or
+     *
+     * @param roi        the ROI
+     * @param properties the properties (must be JSON, or is set as value of fallbackKey). If empty, nothing happens.
+     */
+    public static void setRoiPropertiesFromString(Roi roi, String properties, String fallbackKey) {
+        if (!StringUtils.isNullOrEmpty(properties)) {
+            Map<String, String> map = new HashMap<>();
+            try {
+                JsonNode jsonNode = SerializationUtils.jsonStringToObject(properties, JsonNode.class);
+                for (Map.Entry<String, JsonNode> entry : ImmutableList.copyOf(jsonNode.fields())) {
+                    map.put(entry.getKey(), entry.getValue().asText());
+                }
+            } catch (Exception ignored) {
+                map.put(fallbackKey, properties);
+            }
+            if (!map.isEmpty()) {
+                setRoiProperties(roi, map);
+            }
         }
     }
 
@@ -1125,7 +1189,14 @@ public class ImageJUtils {
         }
     }
 
-    public static ImagePlus mergeMappedSlices(Map<ImageSliceIndex, ImageProcessor> sliceMap) {
+    /**
+     * Merges mapped slices into one image
+     *
+     * @param sliceMap         the slice map
+     * @param equalizeBitDepth if true, find the consensus bit depth and convert all slices
+     * @return the merged image
+     */
+    public static ImagePlus mergeMappedSlices(Map<ImageSliceIndex, ImageProcessor> sliceMap, boolean equalizeBitDepth) {
         int maxZ = Integer.MIN_VALUE;
         int maxC = Integer.MIN_VALUE;
         int maxT = Integer.MIN_VALUE;
@@ -1161,7 +1232,7 @@ public class ImageJUtils {
         Iterables.removeIf(cRemapping, Objects::isNull);
         Iterables.removeIf(tRemapping, Objects::isNull);
 
-        int consensusBitDepth = ImageJUtils.getConsensusBitDepth(sliceMap.values().stream().map(ip -> new ImagePlus("", ip)).collect(Collectors.toList()));
+        int consensusBitDepth = equalizeBitDepth ? ImageJUtils.getConsensusBitDepth(sliceMap.values().stream().map(ip -> new ImagePlus("", ip)).collect(Collectors.toList())) : -1;
         ImageProcessor referenceProcessor = sliceMap.values().iterator().next();
         ImageStack outputImageStack = new ImageStack(referenceProcessor.getWidth(), referenceProcessor.getHeight(), zRemapping.size() * cRemapping.size() * tRemapping.size());
 
@@ -1170,7 +1241,12 @@ public class ImageJUtils {
             int c = cRemapping.indexOf(entry.getKey().getC());
             int t = tRemapping.indexOf(entry.getKey().getT());
             ImageSliceIndex targetIndex = new ImageSliceIndex(c, z, t);
-            ImagePlus converted = ImageJUtils.convertToBitDepthIfNeeded(new ImagePlus("", entry.getValue()), consensusBitDepth);
+            ImagePlus converted;
+            if (consensusBitDepth > 0) {
+                converted = ImageJUtils.convertToBitDepthIfNeeded(new ImagePlus("", entry.getValue()), consensusBitDepth);
+            } else {
+                converted = new ImagePlus("", entry.getValue()); // No conversion
+            }
             outputImageStack.setProcessor(converted.getProcessor(), targetIndex.zeroSliceIndexToOneStackIndex(cRemapping.size(), zRemapping.size(), tRemapping.size()));
         }
 
@@ -1185,15 +1261,41 @@ public class ImageJUtils {
         return outputImage;
     }
 
-    public static ImagePlus extractCTStack(ImagePlus img, int c, int t) {
-        ImageStack stack = new ImageStack(img.getWidth(), img.getHeight());
-        for (int z = 0; z < img.getNSlices(); z++) {
-            int index = img.getStackIndex(c + 1, z + 1, t + 1);
-            ImageProcessor processor = img.getImageStack().getProcessor(index);
-            stack.addSlice(processor);
-        }
+    public static ImagePlus mergeMappedSlices(Map<ImageSliceIndex, ImageProcessor> sliceMap) {
+        return mergeMappedSlices(sliceMap, true);
+    }
 
-        ImagePlus result = new ImagePlus(img.getTitle() + " " + "c=" + c + ", t=" + t, stack);
+    public static ImagePlus extractCTStack(ImagePlus img, int c, int t) {
+        Map<ImageSliceIndex, ImageProcessor> sliceMap = new HashMap<>();
+        for (int z = 0; z < img.getNSlices(); z++) {
+            ImageProcessor processor = getSliceZero(img, c, z, t);
+            sliceMap.put(new ImageSliceIndex(0, z, 0), processor);
+        }
+        ImagePlus result = mergeMappedSlices(sliceMap);
+        result.copyScale(img);
+        return result;
+    }
+
+    public static ImagePlus extractZTStack(ImagePlus img, int z, int t) {
+        Map<ImageSliceIndex, ImageProcessor> sliceMap = new HashMap<>();
+        for (int c = 0; c < img.getNChannels(); c++) {
+            ImageProcessor processor = getSliceZero(img, c, z, t);
+            sliceMap.put(new ImageSliceIndex(c, 0, 0), processor);
+        }
+        ImagePlus result = mergeMappedSlices(sliceMap);
+        result.copyScale(img);
+        return result;
+    }
+
+    public static ImagePlus extractTHyperStack(ImagePlus img, int t) {
+        Map<ImageSliceIndex, ImageProcessor> sliceMap = new HashMap<>();
+        for (int c = 0; c < img.getNChannels(); c++) {
+            for (int z = 0; z < img.getNSlices(); z++) {
+                ImageProcessor processor = getSliceZero(img, c, z, t);
+                sliceMap.put(new ImageSliceIndex(c, z, 0), processor);
+            }
+        }
+        ImagePlus result = mergeMappedSlices(sliceMap);
         result.copyScale(img);
         return result;
     }
@@ -1222,6 +1324,50 @@ public class ImageJUtils {
             }
         } else {
             function.accept(img, new ImageSliceIndex(0, -1, 0), progressInfo);
+        }
+    }
+
+    public static void forEachIndexedZTStack(ImagePlus img, TriConsumer<ImagePlus, ImageSliceIndex, JIPipeProgressInfo> function, JIPipeProgressInfo progressInfo) {
+        if (img.hasImageStack()) {
+            int iterationIndex = 0;
+            for (int t = 0; t < img.getNFrames(); t++) {
+                for (int z = 0; z < img.getNSlices(); z++) {
+                    if (progressInfo.isCancelled())
+                        return;
+                    ImagePlus cube = extractZTStack(img, z, t);
+                    progressInfo.resolveAndLog("Z/Channel", iterationIndex, img.getNSlices() * img.getNFrames()).log("z=" + z + ", t=" + t);
+                    JIPipeProgressInfo stackProgress = progressInfo.resolveAndLog("Z/Channel", iterationIndex, img.getNChannels() * img.getNFrames()).resolve("z=" + z + ", t=" + t);
+                    function.accept(cube, new ImageSliceIndex(-1, z, t), stackProgress);
+                    ++iterationIndex;
+                }
+            }
+        } else {
+            function.accept(img, new ImageSliceIndex(-1, 0, 0), progressInfo);
+        }
+    }
+
+
+    /**
+     * Runs the function for each T hyperstack
+     *
+     * @param img          the image
+     * @param function     the function. The indices are ZERO-based (Z is always -1)
+     * @param progressInfo the progress
+     */
+    public static void forEachIndexedTHyperStack(ImagePlus img, TriConsumer<ImagePlus, ImageSliceIndex, JIPipeProgressInfo> function, JIPipeProgressInfo progressInfo) {
+        if (img.hasImageStack()) {
+            int iterationIndex = 0;
+            for (int t = 0; t < img.getNFrames(); t++) {
+                if (progressInfo.isCancelled())
+                    return;
+                ImagePlus cube = extractTHyperStack(img, t);
+                progressInfo.resolveAndLog("Frame", iterationIndex, img.getNFrames()).log("t=" + t);
+                JIPipeProgressInfo stackProgress = progressInfo.resolveAndLog("Frame", iterationIndex, img.getNChannels() * img.getNFrames()).resolve("t=" + t);
+                function.accept(cube, new ImageSliceIndex(-1, -1, t), stackProgress);
+                ++iterationIndex;
+            }
+        } else {
+            function.accept(img, new ImageSliceIndex(-1, -1, 0), progressInfo);
         }
     }
 
@@ -1600,7 +1746,7 @@ public class ImageJUtils {
         }, new JIPipeProgressInfo());
     }
 
-    public static void calibrate(ImageProcessor imp, ImageJCalibrationMode calibrationMode, double customMin, double customMax, ImageStatistics stats) {
+    public static Vector2dParameter calibrate(ImageProcessor imp, ImageJCalibrationMode calibrationMode, double customMin, double customMax, ImageStatistics stats) {
         double min = calibrationMode.getMin();
         double max = calibrationMode.getMax();
         if (calibrationMode == ImageJCalibrationMode.Custom) {
@@ -1647,6 +1793,55 @@ public class ImageJUtils {
             max = stats.max;
         }
         imp.setMinAndMax(min, max);
+        return new Vector2dParameter(min, max);
+    }
+
+    public static void writeCalibrationToPixels(ImageProcessor ip, double min, double max) {
+        if(ip instanceof ByteProcessor) {
+            min = Math.max(0, min);
+            max = Math.min(255, max);
+            byte[] pixels = (byte[]) ip.getPixels();
+            for (int i = 0; i < pixels.length; i++) {
+                int value = Byte.toUnsignedInt(pixels[i]);
+                double k = (value - min) / (max - min);
+                k = Math.max(Math.min(k, 1), 0);
+                value = (int) (min + k * (max - min));
+                pixels[i] = (byte) value;
+            }
+        }
+        else if(ip instanceof ShortProcessor) {
+            min = Math.max(0, min);
+            max = Math.min(65535, max);
+            short[] pixels = (short[]) ip.getPixels();
+            for (int i = 0; i < pixels.length; i++) {
+                int value = Short.toUnsignedInt(pixels[i]);
+                double k = (value - min) / (max - min);
+                k = Math.max(Math.min(k, 1), 0);
+                value = (int) (min + k * (max - min));
+                pixels[i] = (short) value;
+            }
+        }
+        else if(ip instanceof FloatProcessor) {
+            if(Double.isInfinite(min) || Double.isInfinite(max)) {
+                // Unable to resolve
+                return;
+            }
+            float[] pixels = (float[]) ip.getPixels();
+            for (int i = 0; i < pixels.length; i++) {
+                float value = pixels[i];
+                if(!Float.isNaN(value) ) {
+                    double k = (value - min) / (max - min);
+                    value = (float) (min + k * (max - min));
+                    pixels[i] = value;
+                }
+            }
+        }
+        else if(ip instanceof ColorProcessor) {
+            // Do nothing
+        }
+        else {
+            throw new UnsupportedOperationException("Unsupported processor: " + ip);
+        }
     }
 
     public static double[] calculateCalibration(ImageProcessor imp, ImageJCalibrationMode calibrationMode, double customMin, double customMax, ImageStatistics stats) {
@@ -1705,13 +1900,15 @@ public class ImageJUtils {
      * @param calibrationMode the calibration mode
      * @param customMin       custom min value (only used if calibrationMode is Custom)
      * @param customMax       custom max value (only used if calibrationMode is Custom)
+     * @return the new min and max
      */
-    public static void calibrate(ImagePlus imp, ImageJCalibrationMode calibrationMode, double customMin, double customMax) {
+    public static Vector2dParameter calibrate(ImagePlus imp, ImageJCalibrationMode calibrationMode, double customMin, double customMax) {
         ImageProcessor ip = imp.getProcessor();
-        ImageJUtils.calibrate(ip, calibrationMode, customMin, customMax, ip.getStats());
+        Vector2dParameter result = ImageJUtils.calibrate(ip, calibrationMode, customMin, customMax, ip.getStats());
         if (imp.hasImageStack()) {
             imp.getImageStack().update(ip);
         }
+        return result;
     }
 
     public static ImageStack expandImageStackCanvas(ImageStack stackOld, Color backgroundColor, int wNew, int hNew, int xOff, int yOff) {

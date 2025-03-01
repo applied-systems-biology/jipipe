@@ -72,8 +72,7 @@ public class StackToMontage2Algorithm extends JIPipeIteratingAlgorithm {
         List<MontageCreator.InputEntry> inputEntries = new ArrayList<>();
         ImagePlus stack = iterationStep.getInputData(getFirstInputSlot(), ImagePlusData.class, progressInfo).getImage();
         ImageJUtils.forEachIndexedZCTSlice(stack, (ip, index) -> {
-            JIPipeExpressionVariablesMap variables = new JIPipeExpressionVariablesMap();
-            variables.putAnnotations(iterationStep.getMergedTextAnnotations());
+            JIPipeExpressionVariablesMap variables = new JIPipeExpressionVariablesMap(iterationStep);
             Image5DSliceIndexExpressionParameterVariablesInfo.apply(variables, stack, index);
 
             if (sliceFilter.test(variables)) {
@@ -86,7 +85,7 @@ public class StackToMontage2Algorithm extends JIPipeIteratingAlgorithm {
 
         ImagePlus montage = montageCreator.createMontage(inputEntries,
                 new ArrayList<>(iterationStep.getMergedTextAnnotations().values()),
-                new JIPipeExpressionVariablesMap(),
+                new JIPipeExpressionVariablesMap(iterationStep),
                 progressInfo);
         iterationStep.addOutputData(getFirstOutputSlot(), new ImagePlusData(montage), progressInfo);
     }

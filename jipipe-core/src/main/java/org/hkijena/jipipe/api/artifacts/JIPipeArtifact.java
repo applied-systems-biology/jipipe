@@ -15,10 +15,14 @@ package org.hkijena.jipipe.api.artifacts;
 
 import com.fasterxml.jackson.annotation.JsonGetter;
 import com.fasterxml.jackson.annotation.JsonSetter;
-import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.lang3.SystemUtils;
+import org.hkijena.jipipe.api.SetJIPipeDocumentation;
+import org.hkijena.jipipe.api.parameters.AbstractJIPipeParameterCollection;
+import org.hkijena.jipipe.api.parameters.JIPipeParameter;
+import org.hkijena.jipipe.api.validation.*;
 import org.hkijena.jipipe.plugins.artifacts.JIPipeArtifactAccelerationPreference;
 import org.hkijena.jipipe.plugins.parameters.library.primitives.vectors.Vector2iParameter;
+import org.hkijena.jipipe.utils.StringUtils;
 import org.hkijena.jipipe.utils.VersionUtils;
 import org.jetbrains.annotations.NotNull;
 
@@ -27,7 +31,7 @@ import java.nio.file.Paths;
 import java.util.Arrays;
 import java.util.stream.Collectors;
 
-public class JIPipeArtifact implements Comparable<JIPipeArtifact> {
+public class JIPipeArtifact extends AbstractJIPipeParameterCollection implements Comparable<JIPipeArtifact>, JIPipeValidatable {
     private String groupId;
     private String artifactId;
     private String version;
@@ -44,7 +48,7 @@ public class JIPipeArtifact implements Comparable<JIPipeArtifact> {
     }
 
     public JIPipeArtifact(String fullArtifactId) {
-        String[] component = StringUtils.split(fullArtifactId, ":");
+        String[] component = org.apache.commons.lang3.StringUtils.split(fullArtifactId, ":");
         if (component.length != 2) {
             throw new IllegalArgumentException("Invalid artifact ID: " + fullArtifactId);
         }
@@ -56,41 +60,54 @@ public class JIPipeArtifact implements Comparable<JIPipeArtifact> {
         this.groupId = Arrays.stream(packagePathItems, 0, packagePathItems.length - 1).collect(Collectors.joining("."));
     }
 
+    @SetJIPipeDocumentation(name = "Group ID", description = "The group ID (e.g., org.hkijena")
+    @JIPipeParameter("group-id")
     @JsonGetter("group-id")
     public String getGroupId() {
         return groupId;
     }
 
+    @JIPipeParameter("group-id")
     @JsonSetter("group-id")
     public void setGroupId(String groupId) {
         this.groupId = groupId;
     }
 
+    @SetJIPipeDocumentation(name = "Artifact ID", description = "The artifact ID (e.g., jipipe)")
     @JsonGetter("artifact-id")
+    @JIPipeParameter("artifact-id")
     public String getArtifactId() {
         return artifactId;
     }
 
+    @JIPipeParameter("artifact-id")
     @JsonSetter("artifact-id")
     public void setArtifactId(String artifactId) {
         this.artifactId = artifactId;
     }
 
+    @SetJIPipeDocumentation(name = "Version", description = "The version (e.g., 1.0.0")
+    @JIPipeParameter("version")
     @JsonGetter("version")
     public String getVersion() {
         return version;
     }
 
+    @JIPipeParameter("version")
     @JsonSetter("version")
     public void setVersion(String version) {
         this.version = version;
     }
 
+    @SetJIPipeDocumentation(name = "Classifier", description = "Additional information about the artifact. Tags are separated by _. " +
+            "Generally recognized tags are: linux, windows, macos, amd64, arm64, gpu, cu112, cu(CUDA version), wine, any")
+    @JIPipeParameter("classifier")
     @JsonGetter("classifier")
     public String getClassifier() {
         return classifier;
     }
 
+    @JIPipeParameter("classifier")
     @JsonSetter("classifier")
     public void setClassifier(String classifier) {
         this.classifier = classifier;
@@ -103,6 +120,14 @@ public class JIPipeArtifact implements Comparable<JIPipeArtifact> {
      */
     public String getFullId() {
         return getGroupId() + "." + getArtifactId() + ":" + getVersion() + "-" + getClassifier();
+    }
+
+    public void setFullId(String fullId) {
+        JIPipeArtifact artifact = new JIPipeArtifact(fullId);
+        this.setArtifactId(artifact.getArtifactId());
+        this.setVersion(artifact.getVersion());
+        this.setClassifier(artifact.getClassifier());
+        this.setGroupId(artifact.getGroupId());
     }
 
     /**
@@ -254,5 +279,57 @@ public class JIPipeArtifact implements Comparable<JIPipeArtifact> {
             }
             return true;
         }
+    }
+
+    @Override
+    public void reportValidity(JIPipeValidationReportContext reportContext, JIPipeValidationReport report) {
+        if(StringUtils.isNullOrEmpty(artifactId)) {
+            report.report(new JIPipeValidationReportEntry(JIPipeValidationReportEntryLevel.Error, reportContext, "Invalid artifact ID", "The artifact ID cannot be empty!"));
+        }
+        else {
+            if(!artifactId.matches("[a-z]+[a-z0-9_]*")) {
+                report.report(new JIPipeValidationReportEntry(JIPipeValidationReportEntryLevel.Error, reportContext, "Invalid artifact ID", "The artifact ID must be lowercase and can only contain alphanumeric characters and underscores!"));
+            }
+        }
+        if(StringUtils.isNullOrEmpty(version)) {
+            report.report(new JIPipeValidationReportEntry(JIPipeValidationReportEntryLevel.Error, reportContext, "Invalid version", "The version cannot be empty!"));
+        }
+        else {
+            if(!StringUtils.isValidVersion(version)) {
+                report.report(new JIPipeValidationReportEntry(JIPipeValidationReportEntryLevel.Error, reportContext, "Invalid version", "The version is not valid!"));
+            }
+        }
+    }
+
+    public String getVersionWithoutRevision() {
+        if(StringUtils.isValidVersion(version)) {
+            int[] items = VersionUtils.getVersionComponents(version);
+            int lastItem = items[items.length - 1];
+
+            // JIPipe-style revisions start at 1000
+            if(lastItem >= 1000) {
+                int[] s = new int[items.length - 1];
+                System.arraycopy(items, 0, s, 0, items.length - 1);
+                return Arrays.stream(s).boxed().map(Object::toString).collect(Collectors.joining("."));
+            }
+            else {
+                // No revision part
+                return version;
+            }
+        }
+        return version;
+    }
+
+    public int getVersionRevision() {
+        if(StringUtils.isValidVersion(version)) {
+            int[] items = VersionUtils.getVersionComponents(version);
+            int lastItem = items[items.length - 1];
+
+            // JIPipe-style revisions start at 1000
+            if(lastItem >= 1000) {
+                return lastItem;
+            }
+        }
+        return 0;
     }
 }

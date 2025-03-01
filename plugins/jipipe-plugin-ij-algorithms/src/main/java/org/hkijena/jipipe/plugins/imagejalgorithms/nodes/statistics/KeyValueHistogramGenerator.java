@@ -145,8 +145,7 @@ public class KeyValueHistogramGenerator extends JIPipeIteratingAlgorithm {
         }, progressInfo.resolve("Collect pixels"));
 
         // Setup values
-        JIPipeExpressionVariablesMap variables = new JIPipeExpressionVariablesMap();
-        variables.putAnnotations(iterationStep.getMergedTextAnnotations());
+        JIPipeExpressionVariablesMap variables = new JIPipeExpressionVariablesMap(iterationStep);
 
         // Integrate buckets
         progressInfo.log("Integrating " + bucketedValues.size() + " buckets ...");

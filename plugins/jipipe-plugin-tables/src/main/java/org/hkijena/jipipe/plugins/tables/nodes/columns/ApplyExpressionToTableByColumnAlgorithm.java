@@ -75,11 +75,9 @@ public class ApplyExpressionToTableByColumnAlgorithm extends JIPipeSimpleIterati
         List<TableColumnData> resultColumns = new ArrayList<>();
 
         // Copy annotations
-        JIPipeExpressionVariablesMap expressionVariables = new JIPipeExpressionVariablesMap();
+        JIPipeExpressionVariablesMap expressionVariables = new JIPipeExpressionVariablesMap(iterationStep);
         Map<String, String> annotationsMap = JIPipeTextAnnotation.annotationListToMap(iterationStep.getMergedTextAnnotations().values(), JIPipeTextAnnotationMergeMode.OverwriteExisting);
         expressionVariables.set("annotations", annotationsMap);
-
-        getDefaultCustomExpressionVariables().writeToVariables(expressionVariables);
 
         // Copy columns
         if (input != null) {

@@ -89,8 +89,8 @@ public class MontageCreator extends AbstractJIPipeParameterCollection {
         for (InputEntry inputEntry : inputEntries) {
             JIPipeExpressionVariablesMap variables = new JIPipeExpressionVariablesMap();
             variables.putAll(additionalVariables);
-            variables.putAnnotations(inputEntry.annotationList);
             variables.putAll(inputEntry.additionalVariables);
+            variables.putAnnotations(inputEntry.annotationList);
 
             String autoName = inputEntry.annotationList.stream().sorted(Comparator.comparing(JIPipeTextAnnotation::getName))
                     .map(JIPipeTextAnnotation::getValue).collect(Collectors.joining("_"));

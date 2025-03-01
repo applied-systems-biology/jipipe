@@ -26,12 +26,6 @@ import java.awt.*;
  */
 public class GraphNodeParameterReferenceGroupCollectionDesktopParameterEditorUI extends JIPipeDesktopParameterEditorUI {
 
-    /**
-     * Creates new instance
-     *
-     * @param workbench       the workbench
-     * @param parameterAccess Parameter
-     */
     public GraphNodeParameterReferenceGroupCollectionDesktopParameterEditorUI(InitializationParameters parameters) {
         super(parameters);
         initialize();

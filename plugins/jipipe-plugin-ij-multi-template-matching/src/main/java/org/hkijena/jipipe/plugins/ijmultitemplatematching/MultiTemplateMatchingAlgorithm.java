@@ -154,7 +154,7 @@ public class MultiTemplateMatchingAlgorithm extends JIPipeMergingAlgorithm {
         pythonInterpreter.set("Method", templateMatchingMethod.getIndex());
         pythonInterpreter.set("fliph", flipTemplateHorizontally);
         pythonInterpreter.set("flipv", flipTemplateVertically);
-        pythonInterpreter.set("angles", rotateTemplate.getIntegers(0, 365, new JIPipeExpressionVariablesMap()).stream().map(Object::toString).collect(Collectors.joining(",")));
+        pythonInterpreter.set("angles", rotateTemplate.getIntegers(0, 365, new JIPipeExpressionVariablesMap(iterationStep)).stream().map(Object::toString).collect(Collectors.joining(",")));
         pythonInterpreter.set("n_hit", expectedNumberOfObjects);
         pythonInterpreter.set("score_threshold", multiObjectScoreThreshold);
         pythonInterpreter.set("tolerance", 0);

@@ -32,6 +32,7 @@ import org.hkijena.jipipe.desktop.app.datatable.JIPipeDesktopExtendedMultiDataTa
 import org.hkijena.jipipe.utils.JIPipeDesktopSplitPane;
 import org.hkijena.jipipe.utils.UIUtils;
 import org.hkijena.jipipe.utils.data.WeakStore;
+import org.hkijena.jipipe.utils.debounce.StaticDebouncer;
 
 import javax.swing.*;
 import javax.swing.tree.DefaultMutableTreeNode;
@@ -44,6 +45,7 @@ import java.util.stream.Collectors;
  * UI around an {@link JIPipeGraphRun} result
  */
 public class JIPipeDesktopCacheBrowserUI extends JIPipeDesktopProjectWorkbenchPanel implements JIPipeCache.ModifiedEventListener {
+    private final StaticDebouncer refreshTreeAndSlotsDebouncer;
     private JSplitPane splitPane;
     private JIPipeDesktopCacheTreePanel tree;
 
@@ -52,6 +54,7 @@ public class JIPipeDesktopCacheBrowserUI extends JIPipeDesktopProjectWorkbenchPa
      */
     public JIPipeDesktopCacheBrowserUI(JIPipeDesktopProjectWorkbench workbenchUI) {
         super(workbenchUI);
+        this.refreshTreeAndSlotsDebouncer = new StaticDebouncer(1500, this::refreshTreeAndSlots);
         initialize();
         showAllDataSlots();
 
@@ -167,6 +170,10 @@ public class JIPipeDesktopCacheBrowserUI extends JIPipeDesktopProjectWorkbenchPa
      */
     @Override
     public void onCacheModified(JIPipeCache.ModifiedEvent event) {
+        refreshTreeAndSlotsDebouncer.debounce();
+    }
+
+    private void refreshTreeAndSlots() {
         tree.refreshTree();
         showAllDataSlots();
     }

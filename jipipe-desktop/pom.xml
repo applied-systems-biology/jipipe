@@ -105,32 +105,12 @@
             <dependency>
                 <groupId>org.jogamp.gluegen</groupId>
                 <artifactId>gluegen-rt</artifactId>
-                <version>2.4.0-rc-20210111</version>
-            </dependency>
-            <dependency>
-                <groupId>org.jogamp.gluegen</groupId>
-                <artifactId>gluegen-rt-natives-linux-amd64</artifactId>
-                <version>2.4.0-rc-20210111</version>
-            </dependency>
-            <dependency>
-                <groupId>org.jogamp.gluegen</groupId>
-                <artifactId>gluegen-rt-natives-windows-amd64</artifactId>
-                <version>2.4.0-rc-20210111</version>
+                <version>2.5.0</version>
             </dependency>
             <dependency>
                 <groupId>org.jogamp.jogl</groupId>
                 <artifactId>jogl-all</artifactId>
-                <version>2.4.0-rc-20210111</version>
-            </dependency>
-            <dependency>
-                <groupId>org.jogamp.jogl</groupId>
-                <artifactId>jogl-all-natives-linux-amd64</artifactId>
-                <version>2.4.0-rc-20210111</version>
-            </dependency>
-            <dependency>
-                <groupId>org.jogamp.jogl</groupId>
-                <artifactId>jogl-all-natives-windows-amd64</artifactId>
-                <version>2.4.0-rc-20210111</version>
+                <version>2.5.0</version>
             </dependency>
             <dependency>
                 <groupId>org.bytedeco.javacpp-presets</groupId>
@@ -147,26 +127,6 @@
                 <artifactId>OrientationJ</artifactId>
                 <version>ce968334bcd09ce70f54df74e9f7a2fbe5c79cca</version>
             </dependency>
-            <dependency>
-                <groupId>org.apache.lucene</groupId>
-                <artifactId>lucene-core</artifactId>
-                <version>8.11.2</version>
-            </dependency>
-            <dependency>
-                <groupId>org.apache.lucene</groupId>
-                <artifactId>lucene-analyzers-common</artifactId>
-                <version>8.11.2</version>
-            </dependency>
-            <dependency>
-                <groupId>org.apache.lucene</groupId>
-                <artifactId>lucene-queryparser</artifactId>
-                <version>8.11.2</version>
-            </dependency>
-<!--            <dependency>-->
-<!--                <groupId>org.bioimageanalysis.icy</groupId>-->
-<!--                <artifactId>icy-vtk</artifactId>-->
-<!--                <version>${vtk.version}</version>-->
-<!--            </dependency>-->
         </dependencies>
     </dependencyManagement>
 
@@ -301,6 +261,11 @@
             <scope>runtime</scope>
         </dependency>
         <dependency>
+            <groupId>org.hkijena</groupId>
+            <artifactId>jipipe-plugin-ij-ocr</artifactId>
+            <scope>runtime</scope>
+        </dependency>
+        <dependency>
             <groupId>net.haesleinhuepf</groupId>
             <artifactId>clij2_</artifactId>
             <scope>runtime</scope>
@@ -326,29 +291,8 @@
             <scope>runtime</scope>
         </dependency>
         <dependency>
-            <groupId>org.jogamp.gluegen</groupId>
-            <artifactId>gluegen-rt-natives-linux-amd64</artifactId>
-            <scope>runtime</scope>
-        </dependency>
-        <dependency>
-            <groupId>org.jogamp.gluegen</groupId>
-            <artifactId>gluegen-rt-natives-windows-amd64</artifactId>
-            <scope>runtime</scope>
-        </dependency>
-        <dependency>
             <groupId>org.jogamp.jogl</groupId>
             <artifactId>jogl-all</artifactId>
-            <version>2.4.0-rc-20210111</version>
-        </dependency>
-        <dependency>
-            <groupId>org.jogamp.jogl</groupId>
-            <artifactId>jogl-all-natives-linux-amd64</artifactId>
-            <scope>runtime</scope>
-        </dependency>
-        <dependency>
-            <groupId>org.jogamp.jogl</groupId>
-            <artifactId>jogl-all-natives-windows-amd64</artifactId>
-            <scope>runtime</scope>
         </dependency>
         <dependency>
             <groupId>org.bytedeco.javacpp-presets</groupId>
@@ -365,26 +309,6 @@
             <artifactId>OrientationJ</artifactId>
             <scope>runtime</scope>
         </dependency>
-<!--        <dependency>-->
-<!--            <groupId>org.bioimageanalysis.icy</groupId>-->
-<!--            <artifactId>icy-vtk</artifactId>-->
-<!--            <scope>runtime</scope>-->
-<!--        </dependency>-->
-<!--        <dependency>-->
-<!--            <groupId>org.apache.lucene</groupId>-->
-<!--            <artifactId>lucene-core</artifactId>-->
-<!--            <scope>runtime</scope>-->
-<!--        </dependency>-->
-<!--        <dependency>-->
-<!--            <groupId>org.apache.lucene</groupId>-->
-<!--            <artifactId>lucene-analyzers-common</artifactId>-->
-<!--            <scope>runtime</scope>-->
-<!--        </dependency>-->
-<!--        <dependency>-->
-<!--            <groupId>org.apache.lucene</groupId>-->
-<!--            <artifactId>lucene-queryparser</artifactId>-->
-<!--            <scope>runtime</scope>-->
-<!--        </dependency>-->
     </dependencies>
 
     <properties>

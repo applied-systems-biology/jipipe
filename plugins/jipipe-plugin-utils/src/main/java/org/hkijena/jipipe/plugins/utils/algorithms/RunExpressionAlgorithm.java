@@ -101,10 +101,7 @@ public class RunExpressionAlgorithm extends JIPipeSimpleIteratingAlgorithm {
     @Override
     protected void runIteration(JIPipeSingleIterationStep iterationStep, JIPipeIterationContext iterationContext, JIPipeGraphNodeRunContext runContext, JIPipeProgressInfo progressInfo) {
         JIPipeData data = iterationStep.getInputData(getFirstInputSlot(), JIPipeData.class, progressInfo);
-        JIPipeExpressionVariablesMap variableSet = new JIPipeExpressionVariablesMap();
-        for (JIPipeTextAnnotation annotation : iterationStep.getMergedTextAnnotations().values()) {
-            variableSet.set(annotation.getName(), annotation.getValue());
-        }
+        JIPipeExpressionVariablesMap variableSet = new JIPipeExpressionVariablesMap(iterationStep);
         variableSet.set("data_string", "" + data);
         variableSet.set("data_type", JIPipeDataInfo.getInstance(data.getClass()).getId());
         variableSet.set("row", iterationStep.getInputSlotRows().get(getFirstInputSlot()));

@@ -25,12 +25,6 @@ import java.awt.*;
  */
 public class NodeGroupContentsDesktopParameterEditorUI extends JIPipeDesktopParameterEditorUI {
 
-    /**
-     * Creates new instance
-     *
-     * @param workbench       workbench
-     * @param parameterAccess Parameter
-     */
     public NodeGroupContentsDesktopParameterEditorUI(InitializationParameters parameters) {
         super(parameters);
         initialize();

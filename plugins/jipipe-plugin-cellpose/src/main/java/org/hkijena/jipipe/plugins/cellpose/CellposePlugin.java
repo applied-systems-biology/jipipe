@@ -25,6 +25,10 @@ import org.hkijena.jipipe.api.compat.ui.FolderImageJDataExporterUI;
 import org.hkijena.jipipe.api.project.JIPipeProject;
 import org.hkijena.jipipe.plugins.JIPipePrepackagedDefaultJavaPlugin;
 import org.hkijena.jipipe.plugins.cellpose.algorithms.*;
+import org.hkijena.jipipe.plugins.cellpose.algorithms.cp2.Cellpose2SegmentationInferenceAlgorithm;
+import org.hkijena.jipipe.plugins.cellpose.algorithms.cp2.Cellpose2TrainingAlgorithm;
+import org.hkijena.jipipe.plugins.cellpose.algorithms.cp2.ImportPretrainedCellpose2ModelAlgorithm;
+import org.hkijena.jipipe.plugins.cellpose.algorithms.cp3.*;
 import org.hkijena.jipipe.plugins.cellpose.datatypes.CellposeModelData;
 import org.hkijena.jipipe.plugins.cellpose.datatypes.CellposeSizeModelData;
 import org.hkijena.jipipe.plugins.cellpose.legacy.PretrainedLegacyCellpose2InferenceModel;
@@ -36,8 +40,9 @@ import org.hkijena.jipipe.plugins.cellpose.legacy.compat.LegacyCellposeSizeModel
 import org.hkijena.jipipe.plugins.cellpose.legacy.compat.LegacyCellposeSizeModelImageJImporter;
 import org.hkijena.jipipe.plugins.cellpose.legacy.datatypes.LegacyCellposeModelData;
 import org.hkijena.jipipe.plugins.cellpose.legacy.datatypes.LegacyCellposeSizeModelData;
-import org.hkijena.jipipe.plugins.cellpose.parameters.PretrainedCellpose2Model;
-import org.hkijena.jipipe.plugins.cellpose.parameters.PretrainedCellpose2ModelList;
+import org.hkijena.jipipe.plugins.cellpose.parameters.cp2.PretrainedCellpose2SegmentationModel;
+import org.hkijena.jipipe.plugins.cellpose.parameters.cp2.PretrainedCellpose2SegmentationModelList;
+import org.hkijena.jipipe.plugins.cellpose.parameters.cp3.*;
 import org.hkijena.jipipe.plugins.core.CorePlugin;
 import org.hkijena.jipipe.plugins.imagejalgorithms.ImageJAlgorithmsPlugin;
 import org.hkijena.jipipe.plugins.imagejdatatypes.ImageJDataTypesPlugin;
@@ -73,14 +78,24 @@ public class CellposePlugin extends JIPipePrepackagedDefaultJavaPlugin {
         getMetadata().addCategories(PluginCategoriesEnumParameter.CATEGORY_DEEP_LEARNING, PluginCategoriesEnumParameter.CATEGORY_SEGMENTATION, PluginCategoriesEnumParameter.CATEGORY_MACHINE_LEARNING);
     }
 
-    public static PythonEnvironment getEnvironment(JIPipeProject project, OptionalPythonEnvironment nodeEnvironment) {
+    public static PythonEnvironment getCP2Environment(JIPipeProject project, OptionalPythonEnvironment nodeEnvironment) {
         if (nodeEnvironment.isEnabled()) {
             return nodeEnvironment.getContent();
         }
-        if (project != null && project.getSettingsSheet(CellposePluginProjectSettings.class).getProjectDefaultEnvironment().isEnabled()) {
-            return project.getSettingsSheet(CellposePluginProjectSettings.class).getProjectDefaultEnvironment().getContent();
+        if (project != null && project.getSettingsSheet(CellposePluginProjectSettings.class).getCellpose2Environment().isEnabled()) {
+            return project.getSettingsSheet(CellposePluginProjectSettings.class).getCellpose2Environment().getContent();
         }
-        return CellposePluginApplicationSettings.getInstance().getReadOnlyDefaultEnvironment();
+        return Cellpose2PluginApplicationSettings.getInstance().getReadOnlyDefaultEnvironment();
+    }
+
+    public static PythonEnvironment getCP3Environment(JIPipeProject project, OptionalPythonEnvironment nodeEnvironment) {
+        if (nodeEnvironment.isEnabled()) {
+            return nodeEnvironment.getContent();
+        }
+        if (project != null && project.getSettingsSheet(CellposePluginProjectSettings.class).getCellpose3Environment().isEnabled()) {
+            return project.getSettingsSheet(CellposePluginProjectSettings.class).getCellpose3Environment().getContent();
+        }
+        return Cellpose3PluginApplicationSettings.getInstance().getReadOnlyDefaultEnvironment();
     }
 
     @Override
@@ -158,22 +173,38 @@ public class CellposePlugin extends JIPipePrepackagedDefaultJavaPlugin {
 
     @Override
     public void register(JIPipe jiPipe, Context context, JIPipeProgressInfo progressInfo) {
-        registerApplicationSettingsSheet(new CellposePluginApplicationSettings());
+        registerApplicationSettingsSheet(new Cellpose2PluginApplicationSettings());
+        registerApplicationSettingsSheet(new Cellpose3PluginApplicationSettings());
         registerProjectSettingsSheet(CellposePluginProjectSettings.class);
 
         // Modern nodes and data types
         registerDatatype("cellpose-model-v2", CellposeModelData.class, UIUtils.getIconURLFromResources("data-types/cellpose-model.png"));
         registerDatatype("cellpose-size-model-v2", CellposeSizeModelData.class, UIUtils.getIconURLFromResources("data-types/cellpose-size-model.png"));
 
-        registerEnumParameterType("cellpose-2.x-pretrained-model", PretrainedCellpose2Model.class, "Cellpose 2.x pretrained model", "A pretrained model provided with Cellpose 2.x");
-        registerParameterType("cellpose-2.x-pretrained-model-list", PretrainedCellpose2ModelList.class, "Cellpose 2.x pretrained model list", "A list of pretrained Cellpose 2.x models");
+        registerEnumParameterType("cellpose-2.x-pretrained-model", PretrainedCellpose2SegmentationModel.class, "Cellpose 2.x pretrained model", "A pretrained model provided with Cellpose 2.x");
+        registerParameterType("cellpose-2.x-pretrained-model-list", PretrainedCellpose2SegmentationModelList.class, "Cellpose 2.x pretrained model list", "A list of pretrained Cellpose 2.x models");
+
+        registerEnumParameterType("cellpose-3.x-pretrained-segmentation-model", PretrainedCellpose3SegmentationModel.class, "Cellpose 3.x pretrained segmentation model", "A pretrained segmentation model provided with Cellpose 3.x");
+        registerParameterType("cellpose-3.x-pretrained-segmentation-model-list", PretrainedCellpose3SegmentationModelList.class, "Cellpose 3.x pretrained segmentation model list", "A list of pretrained segmentation Cellpose 3.x models");
+        registerEnumParameterType("cellpose-3.x-pretrained-denoise-model", PretrainedCellpose3DenoiseModel.class, "Cellpose 3.x pretrained segmentation model", "A pretrained segmentation model provided with Cellpose 3.x");
+        registerParameterType("cellpose-3.x-pretrained-denoise-model-list", PretrainedCellpose3DenoiseModelList.class, "Cellpose 3.x pretrained denoise model list", "A list of pretrained denoise Cellpose 3.x models");
+        registerEnumParameterType("cellpose-3.x-denoise-noise-type", Cellpose3DenoiseTrainingNoiseType.class, "Cellpose 3.x noise type", "Available noise types for denoising");
 
         registerNodeType("import-cellpose-model-v2", ImportCellposeModelFromFileAlgorithm.class);
         registerNodeType("import-cellpose-size-model-v2", ImportCellposeSizeModelFromFileAlgorithm.class);
-        registerNodeType("import-cellpose-2.x-pretrained-model", ImportPretrainedCellpose2ModelAlgorithm.class);
 
-        registerNodeType("cellpose-inference-2.x", Cellpose2InferenceAlgorithm.class, UIUtils.getIconURLFromResources("apps/cellpose.png"));
+        // CP2 nodes
+        registerNodeType("import-cellpose-2.x-pretrained-model", ImportPretrainedCellpose2ModelAlgorithm.class);
+        registerNodeType("cellpose-inference-2.x", Cellpose2SegmentationInferenceAlgorithm.class, UIUtils.getIconURLFromResources("apps/cellpose.png"));
         registerNodeType("cellpose-training-2.x", Cellpose2TrainingAlgorithm.class, UIUtils.getIconURLFromResources("apps/cellpose.png"));
+
+        // CP3 nodes
+        registerNodeType("import-cellpose-3.x-pretrained-segmentation-model", ImportPretrainedCellpose3SegmentationModelAlgorithm.class);
+        registerNodeType("import-cellpose-3.x-pretrained-denoise-model", ImportPretrainedCellpose3DenoiseModelAlgorithm.class);
+        registerNodeType("cellpose-segmentation-inference-3.x", Cellpose3SegmentationInferenceAlgorithm.class, UIUtils.getIconURLFromResources("apps/cellpose.png"));
+        registerNodeType("cellpose-denoise-inference-3.x", Cellpose3DenoiseInferenceAlgorithm.class, UIUtils.getIconURLFromResources("apps/cellpose.png"));
+        registerNodeType("cellpose-segmentation-training-3.x", Cellpose3SegmentationTrainingAlgorithm.class, UIUtils.getIconURLFromResources("apps/cellpose.png"));
+        registerNodeType("cellpose-denoise-training-3.x", Cellpose3DenoiseTrainingAlgorithm.class, UIUtils.getIconURLFromResources("apps/cellpose.png"));
 
         // Legacy nodes and data types
         registerEnumParameterType("cellpose-model", PretrainedLegacyCellpose2InferenceModel.class, "Cellpose model (deprecated)", "A Cellpose model");

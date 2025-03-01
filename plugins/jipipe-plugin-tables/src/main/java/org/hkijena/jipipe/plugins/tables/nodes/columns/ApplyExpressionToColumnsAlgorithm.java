@@ -84,10 +84,9 @@ public class ApplyExpressionToColumnsAlgorithm extends JIPipeSimpleIteratingAlgo
     protected void runIteration(JIPipeSingleIterationStep iterationStep, JIPipeIterationContext iterationContext, JIPipeGraphNodeRunContext runContext, JIPipeProgressInfo progressInfo) {
         ResultsTableData input = iterationStep.getInputData(getFirstInputSlot(), ResultsTableData.class, progressInfo);
         List<TableColumnData> resultColumns = new ArrayList<>();
-        JIPipeExpressionVariablesMap expressionVariables = new JIPipeExpressionVariablesMap();
+        JIPipeExpressionVariablesMap expressionVariables = new JIPipeExpressionVariablesMap(iterationStep);
         Map<String, String> annotationsMap = JIPipeTextAnnotation.annotationListToMap(iterationStep.getMergedTextAnnotations().values(), JIPipeTextAnnotationMergeMode.OverwriteExisting);
         expressionVariables.set("annotations", annotationsMap);
-        getDefaultCustomExpressionVariables().writeToVariables(expressionVariables);
         if (append) {
             for (String columnName : input.getColumnNames()) {
                 resultColumns.add(input.getColumnReference(input.getColumnIndex(columnName)));
@@ -102,7 +101,7 @@ public class ApplyExpressionToColumnsAlgorithm extends JIPipeSimpleIteratingAlgo
             }
         }
         for (ExpressionTableColumnProcessorParameter processor : processorParameters) {
-            String sourceColumn = processor.getInput().queryFirst(input.getColumnNames(), new JIPipeExpressionVariablesMap());
+            String sourceColumn = processor.getInput().queryFirst(input.getColumnNames(), new JIPipeExpressionVariablesMap(iterationStep));
             if (sourceColumn == null) {
                 throw new JIPipeValidationRuntimeException(new NullPointerException("Could not find column matching '" + processor.getInput() + "'"),
                         "Could not find column matching '" + processor.getInput() + "'",

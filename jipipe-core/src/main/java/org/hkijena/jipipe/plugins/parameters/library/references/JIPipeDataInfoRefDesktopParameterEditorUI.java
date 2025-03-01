@@ -40,10 +40,6 @@ public class JIPipeDataInfoRefDesktopParameterEditorUI extends JIPipeDesktopPara
     private JDialog pickerDialog;
     private boolean isReloading = false;
 
-    /**
-     * @param workbench       workbench
-     * @param parameterAccess the parameter
-     */
     public JIPipeDataInfoRefDesktopParameterEditorUI(InitializationParameters parameters) {
         super(parameters);
         initialize();
@@ -80,8 +76,13 @@ public class JIPipeDataInfoRefDesktopParameterEditorUI extends JIPipeDesktopPara
         if (isReloading)
             return;
         isReloading = true;
-        JIPipeDataInfoRef infoRef = getParameter(JIPipeDataInfoRef.class);
-        JIPipeDataInfo info = infoRef.getInfo();
+        JIPipeDataInfo info;
+        try {
+            JIPipeDataInfoRef infoRef = getParameter(JIPipeDataInfoRef.class);
+            info = infoRef.getInfo();
+        } catch (NullPointerException ignored) {
+            info = null;
+        }
         if (info != null) {
             currentlyDisplayed.setText(info.getName());
             currentlyDisplayed.setToolTipText(TooltipUtils.getDataTooltip(info));

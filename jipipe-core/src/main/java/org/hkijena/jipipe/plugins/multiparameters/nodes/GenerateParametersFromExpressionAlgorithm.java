@@ -66,6 +66,11 @@ public class GenerateParametersFromExpressionAlgorithm extends JIPipeSimpleItera
     }
 
     @Override
+    protected boolean isAllowEmptyIterationStep() {
+        return true;
+    }
+
+    @Override
     public void reportValidity(JIPipeValidationReportContext reportContext, JIPipeValidationReport report) {
         super.reportValidity(reportContext, report);
         for (Column column : columns.mapToCollection(Column.class)) {
@@ -91,8 +96,7 @@ public class GenerateParametersFromExpressionAlgorithm extends JIPipeSimpleItera
 
         // Generate variables
         JIPipeExpressionVariablesMap variables = new JIPipeExpressionVariablesMap();
-        variables.putAnnotations(iterationStep.getMergedTextAnnotations());
-        getDefaultCustomExpressionVariables().writeToVariables(variables);
+        variables.putCommonVariables(iterationStep);
 
         // Generate columns
         Map<String, List<Object>> valueMap = new HashMap<>();

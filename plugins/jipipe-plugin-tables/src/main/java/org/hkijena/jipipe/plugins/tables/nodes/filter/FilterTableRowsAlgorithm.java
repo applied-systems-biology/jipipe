@@ -72,9 +72,7 @@ public class FilterTableRowsAlgorithm extends JIPipeSimpleIteratingAlgorithm {
     protected void runIteration(JIPipeSingleIterationStep iterationStep, JIPipeIterationContext iterationContext, JIPipeGraphNodeRunContext runContext, JIPipeProgressInfo progressInfo) {
         ResultsTableData input = iterationStep.getInputData(getFirstInputSlot(), ResultsTableData.class, progressInfo);
         List<Integer> selectedRows = new ArrayList<>();
-        JIPipeExpressionVariablesMap variableSet = new JIPipeExpressionVariablesMap();
-        variableSet.putAnnotations(iterationStep.getMergedTextAnnotations());
-        getDefaultCustomExpressionVariables().writeToVariables(variableSet);
+        JIPipeExpressionVariablesMap variableSet = new JIPipeExpressionVariablesMap(iterationStep);
         variableSet.set("num_rows", input.getRowCount());
         variableSet.set("num_cols", input.getColumnCount());
         for (int col = 0; col < input.getColumnCount(); col++) {

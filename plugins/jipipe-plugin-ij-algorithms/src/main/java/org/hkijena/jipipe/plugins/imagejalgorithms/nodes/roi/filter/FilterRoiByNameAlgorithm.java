@@ -73,8 +73,8 @@ public class FilterRoiByNameAlgorithm extends JIPipeSimpleIteratingAlgorithm {
         ROI2DListData inputRois = iterationStep.getInputData(getFirstInputSlot(), ROI2DListData.class, progressInfo);
         ROI2DListData outputRois = new ROI2DListData();
 
-        JIPipeExpressionVariablesMap parameters = new JIPipeExpressionVariablesMap();
-        parameters.putAnnotations(iterationStep.getMergedTextAnnotations());
+        JIPipeExpressionVariablesMap parameters = new JIPipeExpressionVariablesMap(iterationStep);
+
         for (int i = 0; i < inputRois.size(); i++) {
             Roi roi = inputRois.get(i);
             parameters.set("num_roi", inputRois.size());

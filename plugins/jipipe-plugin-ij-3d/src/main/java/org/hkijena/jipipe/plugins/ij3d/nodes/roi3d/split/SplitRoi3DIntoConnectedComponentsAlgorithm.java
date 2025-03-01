@@ -87,9 +87,7 @@ public class SplitRoi3DIntoConnectedComponentsAlgorithm extends JIPipeIteratingA
         ROI3DListData roiList = iterationStep.getInputData("Input", ROI3DListData.class, progressInfo);
         ImageHandler imageHandler = IJ3DUtils.wrapImage(iterationStep.getInputData("Reference", ImagePlusData.class, progressInfo));
 
-        JIPipeExpressionVariablesMap variables = new JIPipeExpressionVariablesMap()
-                .putAnnotations(iterationStep.getMergedTextAnnotations())
-                .putCustomVariables(getDefaultCustomExpressionVariables());
+        JIPipeExpressionVariablesMap variables = new JIPipeExpressionVariablesMap(iterationStep);
 
         ResultsTableData measurements = new ResultsTableData();
         IJ3DUtils.measureRoi3dRelation(imageHandler,

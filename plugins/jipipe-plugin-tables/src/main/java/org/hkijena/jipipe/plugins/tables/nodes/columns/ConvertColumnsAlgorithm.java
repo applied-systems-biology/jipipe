@@ -76,7 +76,7 @@ public class ConvertColumnsAlgorithm extends JIPipeSimpleIteratingAlgorithm {
         ResultsTableData input = iterationStep.getInputData(getFirstInputSlot(), ResultsTableData.class, progressInfo);
         Map<String, TableColumnData> resultColumns = new HashMap<>();
         for (ConvertingTableColumnProcessorParameter processor : processorParameters) {
-            String sourceColumn = processor.getInput().queryFirst(input.getColumnNames(), new JIPipeExpressionVariablesMap());
+            String sourceColumn = processor.getInput().queryFirst(input.getColumnNames(), new JIPipeExpressionVariablesMap(iterationStep));
             if (sourceColumn == null) {
                 throw new JIPipeValidationRuntimeException(new NullPointerException("Unable to find column matching " + processor.getInput()),
                         "Unable to find column matching " + processor.getInput(),

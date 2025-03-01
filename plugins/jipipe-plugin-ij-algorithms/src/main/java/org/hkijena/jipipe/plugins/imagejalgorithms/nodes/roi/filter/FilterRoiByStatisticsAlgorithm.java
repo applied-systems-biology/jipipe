@@ -104,9 +104,7 @@ public class FilterRoiByStatisticsAlgorithm extends JIPipeIteratingAlgorithm {
         ImagePlusData inputReference = iterationStep.getInputData("Reference", ImagePlusData.class, progressInfo);
 
         // Create variables
-        JIPipeExpressionVariablesMap variableSet = new JIPipeExpressionVariablesMap();
-        variableSet.putAnnotations(iterationStep.getMergedTextAnnotations());
-        variableSet.putCustomVariables(getDefaultCustomExpressionVariables());
+        JIPipeExpressionVariablesMap variableSet = new JIPipeExpressionVariablesMap(iterationStep);
 
         // Obtain statistics
         roiStatisticsAlgorithm.clearSlotData(false, progressInfo);

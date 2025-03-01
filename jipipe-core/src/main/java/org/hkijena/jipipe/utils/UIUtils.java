@@ -117,11 +117,14 @@ public class UIUtils {
     public static final FileNameExtensionFilter EXTENSION_FILTER_JSON = new FileNameExtensionFilter("JSON file (*.json)", "json");
     public static final FileNameExtensionFilter EXTENSION_FILTER_TXT = new FileNameExtensionFilter("Text file (*.txt)", "txt", "log");
     public static final FileNameExtensionFilter EXTENSION_FILTER_ZIP = new FileNameExtensionFilter("ZIP file (*.zip)", "zip");
+    public static final FileNameExtensionFilter EXTENSION_FILTER_TAR_GZ = new FileNameExtensionFilter("GZipped TAR file (*.tar.gz)", "tar.gz");
+    public static final FileNameExtensionFilter EXTENSION_FILTER_ARCHIVE = new FileNameExtensionFilter("Archive (*.zip, *.tar.gz)", "zip", "gz");
     public static final FileNameExtensionFilter EXTENSION_FILTER_ROI_ZIP = new FileNameExtensionFilter("ImageJ ROIs (*.zip)", "zip");
     public static final FileNameExtensionFilter EXTENSION_FILTER_ROI = new FileNameExtensionFilter("ImageJ ROI (*.roi)", "roi");
     public static final FileNameExtensionFilter EXTENSION_FILTER_ROIS = new FileNameExtensionFilter("ImageJ ROI (*.roi, *.zip)", "roi", "zip");
     public static final FileNameExtensionFilter EXTENSION_FILTER_AVI = new FileNameExtensionFilter("Video file (*.avi)", "avi");
     public static final FileNameExtensionFilter EXTENSION_FILTER_HDF5 = new FileNameExtensionFilter("HDF5 data (*.hdf5, *.h5)", "hdf5", "h5");
+    public static final FileNameExtensionFilter EXTENSION_FILTER_ZARR_ZIP = new FileNameExtensionFilter("ZARR ZIP (*.zarr.zip)", "zarr.zip");
     public static final Insets UI_PADDING = new Insets(4, 4, 4, 4);
     public static final Map<String, ImageIcon> ICON_FROM_RESOURCES_CACHE = new HashMap<>();
     public static final Map<String, ImageIcon> ICON_INVERTED_FROM_RESOURCES_CACHE = new HashMap<>();
@@ -135,6 +138,55 @@ public class UIUtils {
     private static Border CONTROL_BORDER;
     private static Border PANEL_BORDER;
     private static Border CONTROL_ERROR_BORDER;
+
+    public static void addPanningToScrollPane(JScrollPane scrollPane) {
+        JViewport viewport = scrollPane.getViewport();
+
+        MouseAdapter panListener = new MouseAdapter() {
+            private Point origin;
+
+            @Override
+            public void mousePressed(MouseEvent e) {
+                if (SwingUtilities.isMiddleMouseButton(e)) {
+                    origin = e.getPoint();
+                    // Change cursor for feedback (optional)
+                    viewport.setCursor(Cursor.getPredefinedCursor(Cursor.MOVE_CURSOR));
+                }
+            }
+
+            @Override
+            public void mouseReleased(MouseEvent e) {
+                if (SwingUtilities.isMiddleMouseButton(e)) {
+                    origin = null;
+                    viewport.setCursor(Cursor.getDefaultCursor());
+                }
+            }
+
+            @Override
+            public void mouseDragged(MouseEvent e) {
+                if (SwingUtilities.isMiddleMouseButton(e) && origin != null) {
+                    Point current = e.getPoint();
+                    Point viewPos = viewport.getViewPosition();
+                    // Calculate the new view position by adding the difference
+                    viewPos.translate(origin.x - current.x, origin.y - current.y);
+
+                    // Optionally, check for bounds if needed:
+                    Component view = viewport.getView();
+                    int maxX = view.getWidth() - viewport.getWidth();
+                    int maxY = view.getHeight() - viewport.getHeight();
+                    viewPos.x = Math.max(0, Math.min(viewPos.x, maxX));
+                    viewPos.y = Math.max(0, Math.min(viewPos.y, maxY));
+
+                    viewport.setViewPosition(viewPos);
+                    // Update the origin for the next drag event
+                    origin = current;
+                }
+            }
+        };
+
+        viewport.addMouseListener(panListener);
+        viewport.addMouseMotionListener(panListener);
+    }
 
     public static void rebuildMenu(JPopupMenu menu, List<Component> items) {
         menu.removeAll();
@@ -290,7 +342,7 @@ public class UIUtils {
         EdgedBalloonStyle style = new EdgedBalloonStyle(UIManager.getColor("TextField.background"), JIPipeDesktopModernMetalTheme.PRIMARY5);
         final BalloonTip balloonTip = new BalloonTip(
                 button,
-                new JLabel(StringUtils.wordWrappedHTML(text, 100)),
+                new JLabel(text.startsWith("<html>") ? text : StringUtils.wordWrappedHTML(text, 100)),
                 style,
                 BalloonTip.Orientation.LEFT_ABOVE,
                 BalloonTip.AttachLocation.ALIGNED,
@@ -1300,6 +1352,30 @@ public class UIUtils {
         }
     }
 
+    public static <T> void selectItemsInJList(JList<T> list, List<T> itemsToSelect) {
+        if (itemsToSelect.isEmpty()) {
+            list.clearSelection();
+            return;
+        }
+
+        ListModel<T> model = list.getModel();
+        List<Integer> indicesToSelect = new ArrayList<>();
+
+        for (int i = 0; i < model.getSize(); i++) {
+            T element = model.getElementAt(i);
+            if (itemsToSelect.contains(element)) {
+                indicesToSelect.add(i);
+            }
+        }
+
+        if (indicesToSelect.isEmpty()) {
+            list.clearSelection();
+        } else {
+            int[] indicesArray = indicesToSelect.stream().mapToInt(Integer::intValue).toArray();
+            list.setSelectedIndices(indicesArray);
+        }
+    }
+
     /**
      * Opens a dialog showing a validity report
      *
@@ -1310,7 +1386,7 @@ public class UIUtils {
      * @param infoText  the info text
      * @param modal     make the dialog modal
      */
-    public static void openValidityReportDialog(JIPipeDesktopWorkbench workbench, Component parent, JIPipeValidationReport report, String title, String infoText, boolean modal) {
+    public static void showValidityReportDialog(JIPipeDesktopWorkbench workbench, Component parent, JIPipeValidationReport report, String title, String infoText, boolean modal) {
         JPanel contentPanel = new JPanel(new BorderLayout(8, 8));
 
         JIPipeDesktopValidityReportUI ui = new JIPipeDesktopValidityReportUI(workbench, false);
@@ -2497,6 +2573,12 @@ public class UIUtils {
         });
         timer.setRepeats(false);
         timer.start();
+    }
+
+    public static JButton makeButtonTransparent(JButton button) {
+        button.setOpaque(false);
+        button.setBackground(new Color(0, 0, 0, 0));
+        return button;
     }
 
 

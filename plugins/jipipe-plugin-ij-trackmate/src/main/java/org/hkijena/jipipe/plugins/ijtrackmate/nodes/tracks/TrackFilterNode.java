@@ -62,9 +62,7 @@ public class TrackFilterNode extends JIPipeSimpleIteratingAlgorithm {
 
         trackCollectionData.computeTrackFeatures(progressInfo.resolve("Compute features"));
 
-        JIPipeExpressionVariablesMap variables = new JIPipeExpressionVariablesMap();
-        variables.putAnnotations(iterationStep.getMergedTextAnnotations());
-        getDefaultCustomExpressionVariables().writeToVariables(variables);
+        JIPipeExpressionVariablesMap variables = new JIPipeExpressionVariablesMap(iterationStep);
 
         // Define all.* variables
         Map<String, List<Object>> allVariables = new HashMap<>();

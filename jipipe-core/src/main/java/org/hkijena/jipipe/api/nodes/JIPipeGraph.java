@@ -1119,9 +1119,9 @@ public class JIPipeGraph implements JIPipeValidatable, JIPipeFunctionallyCompara
                 }
 
                 // Move DEFAULT location to empty string (UUID-based)
-                if (node.getLocations().containsKey("DEFAULT")) {
-                    node.getLocations().put("", node.getLocations().get("DEFAULT"));
-                    node.getLocations().remove("DEFAULT");
+                if (node.getNodeUILocationPerViewModePerCompartment().containsKey("DEFAULT")) {
+                    node.getNodeUILocationPerViewModePerCompartment().put("", node.getNodeUILocationPerViewModePerCompartment().get("DEFAULT"));
+                    node.getNodeUILocationPerViewModePerCompartment().remove("DEFAULT");
                 }
             }
         }
@@ -1184,9 +1184,9 @@ public class JIPipeGraph implements JIPipeValidatable, JIPipeFunctionallyCompara
                 continue;
             String compartment = StringUtils.nullToEmpty(getCompartmentUUIDOf(node));
             JIPipeGraphNode copy = node.getInfo().duplicate(node);
-            Map<String, Point> map = copy.getLocations().getOrDefault(compartment, new HashMap<>());
-            copy.getLocations().clear();
-            copy.getLocations().put("", map);
+            Map<String, Point> map = copy.getNodeUILocationPerViewModePerCompartment().getOrDefault(compartment, new HashMap<>());
+            copy.getNodeUILocationPerViewModePerCompartment().clear();
+            copy.getNodeUILocationPerViewModePerCompartment().put("", map);
             graph.insertNode(node.getUUIDInParentGraph(), copy, null);
         }
         for (Map.Entry<JIPipeDataSlot, JIPipeDataSlot> edge : getSlotEdges()) {
@@ -1618,7 +1618,7 @@ public class JIPipeGraph implements JIPipeValidatable, JIPipeFunctionallyCompara
                 connect(replacementOutput, slot);
             }
         }
-        replacement.setLocations(target.getLocations());
+        replacement.setNodeUILocationPerViewModePerCompartment(target.getNodeUILocationPerViewModePerCompartment());
         removeNode(target, false);
     }
 
@@ -2050,6 +2050,22 @@ public class JIPipeGraph implements JIPipeValidatable, JIPipeFunctionallyCompara
 
     public JIPipeGraph duplicate() {
         return new JIPipeGraph(this);
+    }
+
+    public boolean isProjectGraph() {
+        JIPipeProject project = getProject();
+        if(project != null) {
+            return project.getGraph() == this;
+        }
+        return false;
+    }
+
+    public boolean isProjectCompartmentGraph() {
+        JIPipeProject project = getProject();
+        if(project != null) {
+            return project.getCompartmentGraph() == this;
+        }
+        return false;
     }
 
     public interface GraphChangedEventListener {

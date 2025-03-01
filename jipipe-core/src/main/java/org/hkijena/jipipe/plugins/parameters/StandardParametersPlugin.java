@@ -22,6 +22,7 @@ import org.hkijena.jipipe.JIPipeJavaPlugin;
 import org.hkijena.jipipe.api.JIPipeAuthorMetadata;
 import org.hkijena.jipipe.api.JIPipeNodeTemplate;
 import org.hkijena.jipipe.api.JIPipeProgressInfo;
+import org.hkijena.jipipe.api.OptionalJIPipeAuthorMetadata;
 import org.hkijena.jipipe.api.grouping.JIPipeGraphWrapperAlgorithm;
 import org.hkijena.jipipe.api.nodes.JIPipeColumMatching;
 import org.hkijena.jipipe.api.parameters.JIPipeParameterCollection;
@@ -54,6 +55,8 @@ import org.hkijena.jipipe.plugins.parameters.library.collections.ParameterCollec
 import org.hkijena.jipipe.plugins.parameters.library.colors.*;
 import org.hkijena.jipipe.plugins.parameters.library.editors.JIPipeParameterCollectionVisibilitiesDesktopParameterEditorUI;
 import org.hkijena.jipipe.plugins.parameters.library.filesystem.*;
+import org.hkijena.jipipe.plugins.parameters.library.graph.GraphNodeReferenceParameter;
+import org.hkijena.jipipe.plugins.parameters.library.graph.GraphNodeReferenceParameterEditorUI;
 import org.hkijena.jipipe.plugins.parameters.library.images.ImageDesktopParameterEditorUI;
 import org.hkijena.jipipe.plugins.parameters.library.images.ImageParameter;
 import org.hkijena.jipipe.plugins.parameters.library.jipipe.*;
@@ -719,6 +722,14 @@ public class StandardParametersPlugin extends JIPipePrepackagedDefaultJavaPlugin
                 "Author",
                 "An author with affiliations",
                 JIPipeAuthorMetadataDesktopParameterEditorUI.class);
+        registerParameterType("optional-author",
+                OptionalJIPipeAuthorMetadata.class,
+                OptionalJIPipeAuthorMetadata.List.class,
+                null,
+                null,
+                "Optional author",
+                "An author with affiliations",
+                null);
 
         // Node templates
         registerParameterType("node-template",
@@ -739,6 +750,16 @@ public class StandardParametersPlugin extends JIPipePrepackagedDefaultJavaPlugin
                 "File chooser bookmark",
                 "Bookmark for a path",
                 null);
+
+        // Graph node reference
+        registerParameterType("graph-node-reference",
+                GraphNodeReferenceParameter.class,
+                GraphNodeReferenceParameter.List.class,
+                null,
+                null,
+                "Graph node reference",
+                "Reference to a graph node",
+                GraphNodeReferenceParameterEditorUI.class);
     }
 
     private void registerCommonJavaTypes() {

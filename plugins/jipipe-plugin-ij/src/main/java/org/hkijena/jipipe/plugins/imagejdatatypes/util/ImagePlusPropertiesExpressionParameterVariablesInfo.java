@@ -51,16 +51,27 @@ public class ImagePlusPropertiesExpressionParameterVariablesInfo implements JIPi
         for (JIPipeTextAnnotation annotation : annotations) {
             variables.set(annotation.getName(), annotation.getValue());
         }
-        variables.set("width", imagePlus.getWidth());
-        variables.set("height", imagePlus.getHeight());
-        variables.set("num_c", imagePlus.getNChannels());
-        variables.set("num_z", imagePlus.getNSlices());
-        variables.set("num_t", imagePlus.getNFrames());
-        Calibration calibration = imagePlus.getCalibration();
-        variables.set("physical_dimension_x", (calibration.getX(1) + " " + calibration.getXUnit()).trim());
-        variables.set("physical_dimension_y", (calibration.getY(1) + " " + calibration.getYUnit()).trim());
-        variables.set("physical_dimension_z", (calibration.getZ(1) + " " + calibration.getZUnit()).trim());
-
+        if(imagePlus != null) {
+            variables.set("width", imagePlus.getWidth());
+            variables.set("height", imagePlus.getHeight());
+            variables.set("num_c", imagePlus.getNChannels());
+            variables.set("num_z", imagePlus.getNSlices());
+            variables.set("num_t", imagePlus.getNFrames());
+            Calibration calibration = imagePlus.getCalibration();
+            variables.set("physical_dimension_x", (calibration.getX(1) + " " + calibration.getXUnit()).trim());
+            variables.set("physical_dimension_y", (calibration.getY(1) + " " + calibration.getYUnit()).trim());
+            variables.set("physical_dimension_z", (calibration.getZ(1) + " " + calibration.getZUnit()).trim());
+        }
+        else {
+            variables.set("width", 0);
+            variables.set("height", 0);
+            variables.set("num_c", 0);
+            variables.set("num_z", 0);
+            variables.set("num_t", 0);
+            variables.set("physical_dimension_x", "1 px");
+            variables.set("physical_dimension_y", "1 px");
+            variables.set("physical_dimension_z", "1 px");
+        }
     }
 
     @Override

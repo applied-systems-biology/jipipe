@@ -67,7 +67,7 @@ public class SetPhysicalDimensionsByAnnotationsAlgorithm extends JIPipeSimpleIte
             calibration = new Calibration(img);
             img.setCalibration(calibration);
         }
-        JIPipeExpressionVariablesMap variables = new JIPipeExpressionVariablesMap();
+        JIPipeExpressionVariablesMap variables = new JIPipeExpressionVariablesMap(iterationStep);
         ImagePlusPropertiesExpressionParameterVariablesInfo.extractValues(variables, img, iterationStep.getMergedTextAnnotations().values());
         if (physicalDimensionXAnnotation.isEnabled()) {
             Quantity quantity = Quantity.parse(iterationStep.getMergedTextAnnotation(physicalDimensionXAnnotation.getContent()).getValue());

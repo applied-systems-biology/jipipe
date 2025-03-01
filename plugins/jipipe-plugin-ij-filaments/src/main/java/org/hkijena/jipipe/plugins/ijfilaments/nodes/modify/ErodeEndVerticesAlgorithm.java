@@ -58,9 +58,7 @@ public class ErodeEndVerticesAlgorithm extends JIPipeSimpleIteratingAlgorithm {
     @Override
     protected void runIteration(JIPipeSingleIterationStep iterationStep, JIPipeIterationContext iterationContext, JIPipeGraphNodeRunContext runContext, JIPipeProgressInfo progressInfo) {
         Filaments3DGraphData graph = (Filaments3DGraphData) iterationStep.getInputData(getFirstInputSlot(), Filaments3DGraphData.class, progressInfo).duplicate(progressInfo);
-        JIPipeExpressionVariablesMap variables = new JIPipeExpressionVariablesMap();
-        variables.putAnnotations(iterationStep.getMergedTextAnnotations());
-        getDefaultCustomExpressionVariables().writeToVariables(variables);
+        JIPipeExpressionVariablesMap variables = new JIPipeExpressionVariablesMap(iterationStep);
 
         for (int i = 0; i < iterations; i++) {
             JIPipeProgressInfo iterationProgress = progressInfo.resolveAndLog("Iteration", i, iterations);

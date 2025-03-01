@@ -65,12 +65,11 @@ public class SortRowsByExpressionAlgorithm extends JIPipeParameterSlotAlgorithm 
         List<SortEntry> sortEntries = entries.mapToCollection(SortEntry.class);
 
         // Run the expression
-        JIPipeExpressionVariablesMap variables = new JIPipeExpressionVariablesMap();
+        JIPipeExpressionVariablesMap variables = new JIPipeExpressionVariablesMap(this);
 
         List<List<String>> generatedValues = new ArrayList<>();
         for (int row = 0; row < getFirstInputSlot().getRowCount(); row++) {
             variables.putAnnotations(getFirstInputSlot().getTextAnnotations(row));
-            getDefaultCustomExpressionVariables().writeToVariables(variables);
 
             List<String> values = new ArrayList<>();
             for (SortEntry entry : sortEntries) {

@@ -61,10 +61,8 @@ public class ConditionalInverterAlgorithm extends JIPipeSimpleIteratingAlgorithm
     @Override
     protected void runIteration(JIPipeSingleIterationStep iterationStep, JIPipeIterationContext iterationContext, JIPipeGraphNodeRunContext runContext, JIPipeProgressInfo progressInfo) {
         ImagePlus img = iterationStep.getInputData(getFirstInputSlot(), ImagePlusGreyscaleMaskData.class, progressInfo).getDuplicateImage();
-        JIPipeExpressionVariablesMap variables = new JIPipeExpressionVariablesMap();
-        for (Map.Entry<String, JIPipeTextAnnotation> entry : iterationStep.getMergedTextAnnotations().entrySet()) {
-            variables.set(entry.getKey(), entry.getValue().getValue());
-        }
+        JIPipeExpressionVariablesMap variables = new JIPipeExpressionVariablesMap(iterationStep);
+
         variables.set("width", img.getWidth());
         variables.set("height", img.getHeight());
         variables.set("depth", img.getNSlices());

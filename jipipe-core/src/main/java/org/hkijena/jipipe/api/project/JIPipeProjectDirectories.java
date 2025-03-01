@@ -28,6 +28,7 @@ import org.hkijena.jipipe.utils.StringUtils;
 
 import java.nio.file.Path;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 import java.util.Objects;
 
@@ -48,6 +49,10 @@ public class JIPipeProjectDirectories extends AbstractJIPipeParameterCollection 
     @JsonSetter("user-directories")
     public void setDirectories(ParameterCollectionList directories) {
         this.directories = directories;
+    }
+
+    public List<DirectoryEntry> getDirectoriesAsInstance() {
+        return directories.mapToCollection(DirectoryEntry.class);
     }
 
     /**
@@ -107,6 +112,8 @@ public class JIPipeProjectDirectories extends AbstractJIPipeParameterCollection 
     }
 
     public static class DirectoryEntry extends AbstractJIPipeParameterCollection {
+        private String name;
+        private String description;
         private String key;
         private Path path;
         private boolean mustExist = true;
@@ -118,6 +125,30 @@ public class JIPipeProjectDirectories extends AbstractJIPipeParameterCollection 
             this.key = other.key;
             this.path = other.path;
             this.mustExist = other.mustExist;
+            this.name = other.name;
+            this.description = other.description;
+        }
+
+        @SetJIPipeDocumentation(name = "Name", description = "Name as displayed in the UI")
+        @JIPipeParameter(value = "name", uiOrder = -95)
+        public String getName() {
+            return name;
+        }
+
+        @JIPipeParameter("name")
+        public void setName(String name) {
+            this.name = name;
+        }
+
+        @SetJIPipeDocumentation(name = "Description", description = "Description as displayed in the UI")
+        @JIPipeParameter(value = "description", uiOrder = -92)
+        public String getDescription() {
+            return description;
+        }
+
+        @JIPipeParameter("description")
+        public void setDescription(String description) {
+            this.description = description;
         }
 
         @SetJIPipeDocumentation(name = "Key", description = "The key that will be used to access the directory. Cannot be empty.")

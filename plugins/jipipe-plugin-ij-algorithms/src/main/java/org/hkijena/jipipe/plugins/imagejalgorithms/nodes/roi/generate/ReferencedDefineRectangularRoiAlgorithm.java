@@ -77,8 +77,8 @@ public class ReferencedDefineRectangularRoiAlgorithm extends JIPipeIteratingAlgo
         Rectangle boundaries = new Rectangle(0, 0, reference.getWidth(), reference.getHeight());
 
         ROI2DListData currentData = new ROI2DListData();
-        JIPipeExpressionVariablesMap variables = new JIPipeExpressionVariablesMap();
-        variables.putAnnotations(iterationStep.getMergedTextAnnotations());
+        JIPipeExpressionVariablesMap variables = new JIPipeExpressionVariablesMap(iterationStep);
+
         for (Margin margin : rectangles) {
             Rectangle rectangle = margin.getInsideArea(boundaries, variables);
             currentData.add(new ShapeRoi(rectangle));

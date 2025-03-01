@@ -63,9 +63,7 @@ public class SpotFilterNode extends JIPipeSimpleIteratingAlgorithm {
         SpotsCollectionData spotsCollectionData = new SpotsCollectionData(iterationStep.getInputData(getFirstInputSlot(), SpotsCollectionData.class, progressInfo));
         SpotCollection newCollection = new SpotCollection();
         SpotCollection oldCollection = spotsCollectionData.getSpots();
-        JIPipeExpressionVariablesMap variables = new JIPipeExpressionVariablesMap();
-        variables.putAnnotations(iterationStep.getMergedTextAnnotations());
-        getDefaultCustomExpressionVariables().writeToVariables(variables);
+        JIPipeExpressionVariablesMap variables = new JIPipeExpressionVariablesMap(iterationStep);
         variables.set("n_spots", oldCollection.getNSpots(true));
         int index = 0;
 

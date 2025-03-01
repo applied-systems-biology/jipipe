@@ -97,9 +97,8 @@ public class TileImage2Dv2Algorithm extends JIPipeSimpleIteratingAlgorithm {
         ImagePlus img = iterationStep.getInputData(getFirstInputSlot(), ImagePlusData.class, progressInfo).getImage();
         ImagePlus originalImg = img;
 
-        JIPipeExpressionVariablesMap variables = new JIPipeExpressionVariablesMap();
-        variables.putAnnotations(iterationStep.getMergedTextAnnotations());
-        getDefaultCustomExpressionVariables().writeToVariables(variables);
+        JIPipeExpressionVariablesMap variables = new JIPipeExpressionVariablesMap(iterationStep);
+
         variables.set("width", img.getWidth());
         variables.set("height", img.getHeight());
         variables.set("num_c", img.getNChannels());

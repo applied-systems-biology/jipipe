@@ -26,6 +26,7 @@ import org.hkijena.jipipe.api.data.JIPipeDataStorageDocumentation;
 import org.hkijena.jipipe.api.data.storage.JIPipeReadDataStorage;
 import org.hkijena.jipipe.api.data.storage.JIPipeWriteDataStorage;
 import org.hkijena.jipipe.utils.PathUtils;
+import org.hkijena.jipipe.utils.UIUtils;
 
 import javax.swing.*;
 import java.awt.*;
@@ -83,6 +84,9 @@ public class JIPipeImageThumbnailData implements JIPipeThumbnailData {
 
     @Override
     public Component renderToComponent(int width, int height) {
+        if (image.getWidth() * image.getWidth() <= 0) {
+            return new JLabel("Zero size!", UIUtils.getIconFromResources("emblems/vcs-conflicting.png"), JLabel.LEFT);
+        }
         return new JLabel(new ImageIcon(image.getBufferedImage()));
     }
 

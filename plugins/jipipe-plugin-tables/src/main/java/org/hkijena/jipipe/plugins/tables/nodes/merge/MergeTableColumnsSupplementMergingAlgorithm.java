@@ -84,8 +84,7 @@ public class MergeTableColumnsSupplementMergingAlgorithm extends JIPipeMergingAl
     @Override
     protected void runIteration(JIPipeMultiIterationStep iterationStep, JIPipeIterationContext iterationContext, JIPipeGraphNodeRunContext runContext, JIPipeProgressInfo progressInfo) {
 
-        JIPipeExpressionVariablesMap variables = new JIPipeExpressionVariablesMap();
-        variables.putAnnotations(iterationStep.getMergedTextAnnotations());
+        JIPipeExpressionVariablesMap variables = new JIPipeExpressionVariablesMap(iterationStep);
 
         for (int targetRow : iterationStep.getInputRows("Target")) {
             ResultsTableData inputTarget = new ResultsTableData(iterationStep.getInputData("Target", targetRow, ResultsTableData.class, progressInfo));

@@ -159,7 +159,7 @@ public class FilterROIByOverlapAlgorithm extends JIPipeIteratingAlgorithm {
 
     private void applyFiltering(ROI2DListData first, ROI2DListData second, String firstPrefix, String secondPrefix, JIPipeOutputDataSlot outputSlot, ImagePlus referenceImage, ROIFilterSettings settings, JIPipeSingleIterationStep iterationStep, JIPipeProgressInfo progressInfo) {
         boolean withFiltering = settings.getOverlapFilter().isEnabled() && !settings.getOverlapFilter().getContent().isEmpty();
-        JIPipeExpressionVariablesMap variableSet = new JIPipeExpressionVariablesMap();
+        JIPipeExpressionVariablesMap variableSet = new JIPipeExpressionVariablesMap(this);
         ROI2DListData temp = new ROI2DListData();
         ROI2DListData result = new ROI2DListData();
 
@@ -169,7 +169,6 @@ public class FilterROIByOverlapAlgorithm extends JIPipeIteratingAlgorithm {
             annotations.put(entry.getKey(), entry.getValue().getValue());
         }
         variableSet.set("annotations", annotations);
-        getDefaultCustomExpressionVariables().writeToVariables(variableSet);
 
         // Apply comparison
         for (int i = 0; i < first.size(); i++) {

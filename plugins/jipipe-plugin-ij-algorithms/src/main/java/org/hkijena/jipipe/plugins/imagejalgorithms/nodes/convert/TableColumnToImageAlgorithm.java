@@ -53,7 +53,7 @@ public class TableColumnToImageAlgorithm extends JIPipeSimpleIteratingAlgorithm 
     @Override
     protected void runIteration(JIPipeSingleIterationStep iterationStep, JIPipeIterationContext iterationContext, JIPipeGraphNodeRunContext runContext, JIPipeProgressInfo progressInfo) {
         ResultsTableData tableData = iterationStep.getInputData(getFirstInputSlot(), ResultsTableData.class, progressInfo);
-        TableColumnData tableColumn = selectedColumn.pickOrGenerateColumn(tableData, new JIPipeExpressionVariablesMap());
+        TableColumnData tableColumn = selectedColumn.pickOrGenerateColumn(tableData, new JIPipeExpressionVariablesMap(iterationStep));
         FloatProcessor processor = new FloatProcessor(1, tableColumn.getRows());
         for (int i = 0; i < tableColumn.getRows(); i++) {
             processor.setf(i, (float) tableColumn.getRowAsDouble(i));

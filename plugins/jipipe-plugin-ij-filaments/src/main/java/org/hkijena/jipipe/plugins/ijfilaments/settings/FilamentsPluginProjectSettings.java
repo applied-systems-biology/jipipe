@@ -17,6 +17,7 @@ import org.hkijena.jipipe.JIPipe;
 import org.hkijena.jipipe.api.SetJIPipeDocumentation;
 import org.hkijena.jipipe.api.artifacts.JIPipeArtifact;
 import org.hkijena.jipipe.api.environments.ExternalEnvironmentParameterSettings;
+import org.hkijena.jipipe.api.environments.JIPipeEnvironment;
 import org.hkijena.jipipe.api.parameters.JIPipeParameter;
 import org.hkijena.jipipe.api.registries.JIPipeArtifactsRegistry;
 import org.hkijena.jipipe.api.settings.JIPipeDefaultProjectSettingsSheet;
@@ -92,5 +93,12 @@ public class FilamentsPluginProjectSettings extends JIPipeDefaultProjectSettings
     @Override
     public String getDescription() {
         return "Settings related to the filaments plugin";
+    }
+
+    @Override
+    public void getEnvironmentDependencies(List<JIPipeEnvironment> target) {
+        if(projectDefaultTSOAXEnvironment.isEnabled()) {
+            target.add(projectDefaultTSOAXEnvironment.getContent());
+        }
     }
 }

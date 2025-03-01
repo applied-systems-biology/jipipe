@@ -75,6 +75,11 @@ public class GenerateZeroImage extends JIPipeSimpleIteratingAlgorithm {
     }
 
     @Override
+    protected boolean isAllowEmptyIterationStep() {
+        return true;
+    }
+
+    @Override
     public boolean supportsParallelization() {
         return true;
     }

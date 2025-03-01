@@ -97,7 +97,7 @@ public class JIPipePluginRegistry {
                 JIPipeJavaPlugin extension = pluginInfo.createInstance();
                 if (extension instanceof JIPipePrepackagedDefaultJavaPlugin && !extension.isCorePlugin()) {
                     JIPipeDependency dependency = (JIPipeDependency) ReflectionUtils.getDeclaredStaticFieldValue("AS_DEPENDENCY", extension.getClass());
-                    settings.getActivatedPlugins().add(dependency.getDependencyId());
+                    settings.getDeactivatedPlugins().remove(dependency.getDependencyId());
                 }
             } catch (Throwable e) {
                 throw new RuntimeException("On pre-initializing " + pluginInfo, e);
@@ -118,17 +118,6 @@ public class JIPipePluginRegistry {
 
     public ScheduledActivatePluginEventEmitter getScheduledActivatePluginEventEmitter() {
         return scheduledActivatePluginEventEmitter;
-    }
-
-    /**
-     * List of all extensions that are requested during startup
-     * Please note that this may not contain core extensions
-     * Use getActivatedExtensions() instead
-     *
-     * @return unmodifiable set
-     */
-    public Set<String> getStartupPlugins() {
-        return Collections.unmodifiableSet(settings.getActivatedPlugins());
     }
 
     /**
@@ -247,7 +236,7 @@ public class JIPipePluginRegistry {
         for (String s : ids) {
             scheduledDeactivatePlugins.remove(s);
             scheduledActivatePlugins.add(s);
-            settings.getActivatedPlugins().add(s);
+            settings.getDeactivatedPlugins().remove(s);
             settings.getSilencedPlugins().add(s); // That the user is not warned by it
         }
         if (!JIPipe.NO_SETTINGS_AUTOSAVE) {
@@ -266,7 +255,7 @@ public class JIPipePluginRegistry {
         for (String s : ids) {
             scheduledDeactivatePlugins.add(s);
             scheduledActivatePlugins.remove(s);
-            settings.getActivatedPlugins().remove(s);
+            settings.getDeactivatedPlugins().add(s);
             settings.getSilencedPlugins().add(s); // That the user is not warned by it
         }
         if (!JIPipe.NO_SETTINGS_AUTOSAVE) {
@@ -466,18 +455,17 @@ public class JIPipePluginRegistry {
     }
 
     public static class Settings {
-        private Set<String> activatedPlugins = new HashSet<>();
-
+        private Set<String> deactivatedPlugins = new HashSet<>();
         private Set<String> silencedPlugins = new HashSet<>();
 
-        @JsonGetter("activated-extensions")
-        public Set<String> getActivatedPlugins() {
-            return activatedPlugins;
+        @JsonGetter("deactivated-extensions")
+        public Set<String> getDeactivatedPlugins() {
+            return deactivatedPlugins;
         }
 
-        @JsonSetter("activated-extensions")
-        public void setActivatedPlugins(Set<String> activatedPlugins) {
-            this.activatedPlugins = activatedPlugins;
+        @JsonSetter("deactivated-extensions")
+        public void setDeactivatedPlugins(Set<String> deactivatedPlugins) {
+            this.deactivatedPlugins = deactivatedPlugins;
         }
 
         @JsonGetter("silenced-extensions")

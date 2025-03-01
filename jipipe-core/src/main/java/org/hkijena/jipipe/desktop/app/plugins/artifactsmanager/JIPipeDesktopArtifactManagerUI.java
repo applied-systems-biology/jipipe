@@ -18,16 +18,20 @@ import org.hkijena.jipipe.api.artifacts.*;
 import org.hkijena.jipipe.api.registries.JIPipeArtifactsRegistry;
 import org.hkijena.jipipe.api.run.JIPipeRunnable;
 import org.hkijena.jipipe.api.run.JIPipeRunnableQueue;
+import org.hkijena.jipipe.api.validation.JIPipeValidationReport;
+import org.hkijena.jipipe.api.validation.contexts.UnspecifiedValidationReportContext;
 import org.hkijena.jipipe.desktop.app.JIPipeDesktopWorkbench;
 import org.hkijena.jipipe.desktop.app.JIPipeDesktopWorkbenchPanel;
 import org.hkijena.jipipe.desktop.app.running.JIPipeDesktopRunExecuteUI;
 import org.hkijena.jipipe.desktop.app.running.JIPipeDesktopRunnableQueueButton;
 import org.hkijena.jipipe.desktop.commons.components.JIPipeDesktopFormPanel;
 import org.hkijena.jipipe.desktop.commons.components.JIPipeDesktopMessagePanel;
+import org.hkijena.jipipe.desktop.commons.components.JIPipeDesktopParameterFormPanel;
 import org.hkijena.jipipe.desktop.commons.components.search.JIPipeDesktopSearchTextField;
-import org.hkijena.jipipe.utils.JIPipeDesktopSplitPane;
-import org.hkijena.jipipe.utils.StringUtils;
-import org.hkijena.jipipe.utils.UIUtils;
+import org.hkijena.jipipe.plugins.parameters.library.markup.MarkdownText;
+import org.hkijena.jipipe.plugins.settings.JIPipeFileChooserApplicationSettings;
+import org.hkijena.jipipe.utils.*;
+import org.hkijena.jipipe.utils.json.JsonUtils;
 
 import javax.swing.*;
 import java.awt.*;
@@ -36,8 +40,10 @@ import java.awt.event.MouseEvent;
 import java.awt.event.WindowAdapter;
 import java.awt.event.WindowEvent;
 import java.io.IOException;
+import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.nio.file.Path;
+import java.nio.file.Paths;
 import java.util.ArrayList;
 import java.util.Comparator;
 import java.util.List;
@@ -150,6 +156,7 @@ public class JIPipeDesktopArtifactManagerUI extends JIPipeDesktopWorkbenchPanel 
                 "correct version of the dependency based on project metadata.\n\n" +
                 "Artifacts are automatically downloaded to a directory shared across multiple JIPipe instances.", false, UIUtils.getIconFromResources("actions/help-info.png"));
         propertyPanel.addWideToForm(UIUtils.createButton("Open artifacts directory", UIUtils.getIconFromResources("actions/folder-open.png"), this::openArtifactsDirectory));
+        propertyPanel.addWideToForm(UIUtils.createButton("Install artifact manually", UIUtils.getIconFromResources("actions/run-install.png"), this::installArtifactManually));
 
         ArtifactEntry selectedValue = artifactEntryJList.getSelectedValue();
         if (selectedValue != null) {
@@ -195,6 +202,61 @@ public class JIPipeDesktopArtifactManagerUI extends JIPipeDesktopWorkbenchPanel 
         }
 
         propertyPanel.addVerticalGlue();
+    }
+
+    private void installArtifactManually() {
+        Path archiveFile = JIPipeFileChooserApplicationSettings.openFile(this, JIPipeFileChooserApplicationSettings.LastDirectoryKey.External, "Manually install artifact", UIUtils.EXTENSION_FILTER_ARCHIVE);
+        if(archiveFile != null) {
+            JIPipeArtifact dummyArtifact = new JIPipeArtifact();
+
+            // Guess information from the name
+            String fileName = archiveFile.getFileName().toString();
+            try {
+                // Remove extension
+                if(fileName.endsWith(".zip")) {
+                    fileName = fileName.substring(0, fileName.length() - ".zip".length());
+                }
+                if(fileName.endsWith(".tar.gz")) {
+                    fileName = fileName.substring(0, fileName.length() - ".tar.gz".length());
+                }
+
+                // Split into name-version-classifier
+                String[] items = fileName.split("-");
+
+                if(items.length == 3) {
+                    dummyArtifact.setArtifactId(items[0]);
+                    dummyArtifact.setVersion(items[1]);
+                    dummyArtifact.setClassifier(items[2]);
+                }
+            }
+            catch (Throwable ignored) {
+            }
+
+            // Try to fill in the values from an artifact JSON
+            try {
+                byte[] bytes = ArchiveUtils.decompressArchiveEntry(archiveFile, Paths.get("artifact.json"));
+                if(bytes != null) {
+                    dummyArtifact = JsonUtils.readFromString(new String(bytes, StandardCharsets.UTF_8), JIPipeArtifact.class);
+                }
+            }
+            catch (Throwable ignored) {
+            }
+
+            // Let the user confirm it
+            if(JIPipeDesktopParameterFormPanel.showDialog(getDesktopWorkbench(), dummyArtifact, new MarkdownText("# Manual artifact installation\n\n" +
+                    "Please ensure that the provided information is correct and follows the Maven standards."), "Manually install artifact",
+                    JIPipeDesktopParameterFormPanel.DEFAULT_DIALOG_FLAGS)) {
+                JIPipeValidationReport report = new JIPipeValidationReport();
+                dummyArtifact.reportValidity(new UnspecifiedValidationReportContext(), report);
+                if(!report.isValid()) {
+                    UIUtils.showValidityReportDialog(getDesktopWorkbench(), this, report, "Invalid artifact metadata", "The provided artifact metadata is invalid!", true);
+                    return;
+                }
+            }
+
+            // Install the artifact
+            JIPipeDesktopRunExecuteUI.runInDialog(getDesktopWorkbench(), this, new JIPipeArtifactRepositoryInstallManuallyRun(archiveFile, dummyArtifact));
+        }
     }
 
     private void revertChanges() {

@@ -36,11 +36,6 @@ public class JIPipeDesktopOpenTableFromImageJDialogUI extends JDialog {
     private JComboBox<ResultsTableData> tableSelection;
     private JXTable jxTable;
 
-    /**
-     * Creates new instance
-     *
-     * @param workbench the workbench
-     */
     public JIPipeDesktopOpenTableFromImageJDialogUI(JIPipeDesktopWorkbench workbench) {
         this.workbench = workbench;
         initialize();

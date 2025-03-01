@@ -71,7 +71,7 @@ public class ReplaceLabelsAlgorithm extends JIPipeSimpleIteratingAlgorithm {
         ImagePlus outputImage = ImageJUtils.duplicate(inputImage);
         outputImage.setTitle(inputImage.getTitle());
         for (IntRangeAndIntegerPairParameter replacement : replacements) {
-            LabelImages.replaceLabels(outputImage, Ints.toArray(replacement.getKey().getIntegers(0, 0, new JIPipeExpressionVariablesMap())), replacement.getValue());
+            LabelImages.replaceLabels(outputImage, Ints.toArray(replacement.getKey().getIntegers(0, 0, new JIPipeExpressionVariablesMap(iterationStep))), replacement.getValue());
         }
         outputImage.setDimensions(inputImage.getNChannels(), inputImage.getNSlices(), inputImage.getNFrames());
         iterationStep.addOutputData(getFirstOutputSlot(), new ImagePlusGreyscaleData(outputImage), progressInfo);

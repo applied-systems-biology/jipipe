@@ -28,8 +28,13 @@ import org.hkijena.jipipe.api.parameters.*;
 import org.hkijena.jipipe.api.project.JIPipeProject;
 import org.hkijena.jipipe.api.validation.JIPipeValidationReport;
 import org.hkijena.jipipe.api.validation.JIPipeValidationReportContext;
+import org.hkijena.jipipe.plugins.parameters.library.colors.OptionalColorParameter;
+import org.hkijena.jipipe.utils.ColorUtils;
+import org.hkijena.jipipe.utils.UIUtils;
 
+import java.awt.*;
 import java.util.*;
+import java.util.List;
 
 /**
  * A project compartment.
@@ -42,16 +47,13 @@ public class JIPipeProjectCompartment extends JIPipeGraphNode implements JIPipeC
 
     private JIPipeProject project;
     private BiMap<String, JIPipeProjectCompartmentOutput> outputNodes = HashBiMap.create();
+    private boolean showInProjectOverview = true;
+    private OptionalColorParameter projectOverviewColor = new OptionalColorParameter(Color.WHITE, false);
 
     private GraphNodeParameterReferenceGroupCollection exportedParameters = new GraphNodeParameterReferenceGroupCollection();
 
     private boolean showLimitedParameters = false;
 
-    /**
-     * Creates new instance
-     *
-     * @param info Algorithm info
-     */
     public JIPipeProjectCompartment(JIPipeNodeInfo info) {
         super(info, JIPipeDefaultMutableSlotConfiguration.builder()
                 .addInputSlot("Input", "Incoming data from other compartments", JIPipeCompartmentOutputData.class, true)
@@ -70,8 +72,21 @@ public class JIPipeProjectCompartment extends JIPipeGraphNode implements JIPipeC
         super(other);
         this.exportedParameters = new GraphNodeParameterReferenceGroupCollection(other.exportedParameters);
         this.showLimitedParameters = other.showLimitedParameters;
+        this.showInProjectOverview = other.showInProjectOverview;
+        this.projectOverviewColor = new OptionalColorParameter(other.projectOverviewColor);
 
         registerSubParameter(exportedParameters);
+    }
+
+    @SetJIPipeDocumentation(name = "Project overview color", description = "Allows to mark outputs of this compartment with a color in the project overview.")
+    @JIPipeParameter("project-overview-color")
+    public OptionalColorParameter getProjectOverviewColor() {
+        return projectOverviewColor;
+    }
+
+    @JIPipeParameter("project-overview-color")
+    public void setProjectOverviewColor(OptionalColorParameter projectOverviewColor) {
+        this.projectOverviewColor = projectOverviewColor;
     }
 
     /**
@@ -160,6 +175,17 @@ public class JIPipeProjectCompartment extends JIPipeGraphNode implements JIPipeC
     @Override
     public void reportValidity(JIPipeValidationReportContext reportContext, JIPipeValidationReport report) {
 
+    }
+
+    @SetJIPipeDocumentation(name = "Show in project overview", description = "If enabled, show this compartment's outputs in the project overview")
+    @JIPipeParameter("show-in-project-overview")
+    public boolean isShowInProjectOverview() {
+        return showInProjectOverview;
+    }
+
+    @JIPipeParameter("show-in-project-overview")
+    public void setShowInProjectOverview(boolean showInProjectOverview) {
+        this.showInProjectOverview = showInProjectOverview;
     }
 
     @SetJIPipeDocumentation(name = "Exported parameters", description = "Allows you to export parameters from the group into the group node")

@@ -32,10 +32,6 @@ public class DynamicSetDesktopParameterEditorUI extends JIPipeDesktopParameterEd
     private JToggleButton collapseToggle;
     private JLabel collapseInfoLabel;
 
-    /**
-     * @param workbench       workbench
-     * @param parameterAccess the parameter
-     */
     public DynamicSetDesktopParameterEditorUI(InitializationParameters parameters) {
         super(parameters);
         initialize();
@@ -88,7 +84,7 @@ public class DynamicSetDesktopParameterEditorUI extends JIPipeDesktopParameterEd
 
         DynamicSetParameter<Object> parameter = getParameter(DynamicSetParameter.class);
         Object[] values;
-        if (parameter.getAllowedValues() != null) {
+        if (parameter.getAllowedValues() != null && !parameter.getAllowedValues().isEmpty()) {
             values = parameter.getAllowedValues().toArray();
         } else {
             DynamicSetParameterSettings settings = getParameterAccess().getAnnotationOfType(DynamicSetParameterSettings.class);

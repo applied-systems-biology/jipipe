@@ -85,7 +85,7 @@ public class OMEROListImagesAlgorithm extends JIPipeSingleIterationAlgorithm imp
                 for (Object obj : datasetData.getImages()) {
                     if (obj instanceof ImageData) {
                         ImageData imageData = (ImageData) obj;
-                        JIPipeExpressionVariablesMap variables = new JIPipeExpressionVariablesMap();
+                        JIPipeExpressionVariablesMap variables = new JIPipeExpressionVariablesMap(iterationStep);
                         variables.putAnnotations(getFirstInputSlot().getTextAnnotations(row));
                         variables.put("name", imageData.getName());
                         variables.put("id", imageData.getId());

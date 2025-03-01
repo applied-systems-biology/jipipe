@@ -13,8 +13,11 @@
 
 package org.hkijena.jipipe.api.history;
 
+import org.hkijena.jipipe.api.AbstractJIPipeRunnable;
 import org.hkijena.jipipe.api.nodes.JIPipeGraph;
 import org.hkijena.jipipe.api.project.JIPipeProject;
+import org.hkijena.jipipe.api.run.JIPipeRunnable;
+import org.hkijena.jipipe.api.run.JIPipeRunnableQueue;
 import org.hkijena.jipipe.plugins.settings.JIPipeHistoryJournalApplicationSettings;
 import org.hkijena.jipipe.utils.UIUtils;
 
@@ -27,13 +30,15 @@ import java.util.UUID;
 public class JIPipeProjectHistoryJournal implements JIPipeHistoryJournal {
     private final HistoryChangedEventEmitter historyChangedEventEmitter = new HistoryChangedEventEmitter();
     private final JIPipeProject project;
+    private final JIPipeRunnableQueue snapshotQueue;
     private final JIPipeHistoryJournalApplicationSettings settings;
     private final List<Snapshot> undoStack = new ArrayList<>();
     private final List<Snapshot> redoStack = new ArrayList<>();
     private Snapshot currentSnapshot;
 
-    public JIPipeProjectHistoryJournal(JIPipeProject project) {
+    public JIPipeProjectHistoryJournal(JIPipeProject project, JIPipeRunnableQueue snapshotQueue) {
         this.project = project;
+        this.snapshotQueue = snapshotQueue;
         this.settings = JIPipeHistoryJournalApplicationSettings.getInstance();
     }
 
@@ -46,13 +51,21 @@ public class JIPipeProjectHistoryJournal implements JIPipeHistoryJournal {
         if (settings.getMaxEntries() == 0) {
             return;
         }
-        addSnapshot(new Snapshot(this,
+        snapshotQueue.cancelAll();
+        snapshotQueue.enqueue(new CreateSnapshotRun(this,
                 LocalDateTime.now(),
                 name,
                 description,
                 icon,
-                new JIPipeGraph(project.getGraph()),
-                new JIPipeGraph(project.getCompartmentGraph())));
+                project.getGraph(),
+                project.getCompartmentGraph()));
+//        addSnapshot(new Snapshot(this,
+//                LocalDateTime.now(),
+//                name,
+//                description,
+//                icon,
+//                new JIPipeGraph(project.getGraph()),
+//                new JIPipeGraph(project.getCompartmentGraph())));
     }
 
     @Override
@@ -237,6 +250,41 @@ public class JIPipeProjectHistoryJournal implements JIPipeHistoryJournal {
         @Override
         public LocalDateTime getCreationTime() {
             return creationTime;
+        }
+    }
+
+    private static class CreateSnapshotRun extends AbstractJIPipeRunnable {
+        private final JIPipeProjectHistoryJournal historyJournal;
+        private final LocalDateTime dateTime;
+        private final String name;
+        private final String description;
+        private final Icon icon;
+        private final JIPipeGraph graph;
+        private final JIPipeGraph compartmentGraph;
+
+        public CreateSnapshotRun(JIPipeProjectHistoryJournal historyJournal, LocalDateTime dateTime, String name, String description, Icon icon, JIPipeGraph graph, JIPipeGraph compartmentGraph) {
+            this.historyJournal = historyJournal;
+            this.dateTime = dateTime;
+            this.name = name;
+            this.description = description;
+            this.icon = icon;
+            this.graph = graph;
+            this.compartmentGraph = compartmentGraph;
+        }
+
+        @Override
+        public String getTaskLabel() {
+            return "Create snapshot " + name + " at " + dateTime;
+        }
+
+        @Override
+        public void run() {
+            JIPipeGraph graphCopy = new JIPipeGraph(graph);
+            JIPipeGraph compartmentGraphCopy = new JIPipeGraph(compartmentGraph);
+
+            SwingUtilities.invokeLater(() -> {
+                historyJournal.addSnapshot(new Snapshot(historyJournal, dateTime, name, description, icon, graphCopy, compartmentGraphCopy));
+            });
         }
     }
 }

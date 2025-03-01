@@ -106,8 +106,7 @@ public class DrawScaleBarRoiAlgorithm extends JIPipeIteratingAlgorithm {
         }
 
         // Render text
-        JIPipeExpressionVariablesMap variables = new JIPipeExpressionVariablesMap();
-        variables.putAnnotations(iterationStep.getMergedTextAnnotations());
+        JIPipeExpressionVariablesMap variables = new JIPipeExpressionVariablesMap(iterationStep);
 
         if (!generator.getConfig().isHideText()) {
             variables.set("unit", cal.getXUnit());

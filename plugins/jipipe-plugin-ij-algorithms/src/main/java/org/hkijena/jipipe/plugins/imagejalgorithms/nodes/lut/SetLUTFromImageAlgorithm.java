@@ -68,8 +68,7 @@ public class SetLUTFromImageAlgorithm extends JIPipeIteratingAlgorithm {
         ImagePlus image = data.getImage();
         Set<Integer> channels = new HashSet<>();
         if (restrictToChannels.isEnabled()) {
-            JIPipeExpressionVariablesMap variables = new JIPipeExpressionVariablesMap();
-            variables.putAnnotations(iterationStep.getMergedTextAnnotations());
+            JIPipeExpressionVariablesMap variables = new JIPipeExpressionVariablesMap(iterationStep);
             channels.addAll(restrictToChannels.getContent().getIntegers(0, data.getNChannels() - 1, variables));
         }
         ImageJUtils.setLut(image, lut, channels);

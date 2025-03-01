@@ -114,7 +114,7 @@ public class AnnotateByImageStatisticsExpressionAlgorithm extends JIPipeIteratin
         List<JIPipeTextAnnotation> outputAnnotations = new ArrayList<>();
 
         int currentIndexBatch = 0;
-        JIPipeExpressionVariablesMap parameters = new JIPipeExpressionVariablesMap();
+        JIPipeExpressionVariablesMap parameters = new JIPipeExpressionVariablesMap(iterationStep);
         parameters.set("width", img.getWidth());
         parameters.set("height", img.getHeight());
         parameters.set("num_z", img.getNSlices());

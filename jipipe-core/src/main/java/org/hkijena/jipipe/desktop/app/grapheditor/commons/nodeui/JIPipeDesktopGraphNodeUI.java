@@ -50,6 +50,7 @@ import org.hkijena.jipipe.desktop.commons.components.JIPipeDesktopParameterKeyPi
 import org.hkijena.jipipe.plugins.multiparameters.nodes.DefineParametersTableAlgorithm;
 import org.hkijena.jipipe.plugins.parameters.library.table.ParameterTable;
 import org.hkijena.jipipe.utils.*;
+import org.hkijena.jipipe.utils.debounce.StaticDebouncer;
 import org.hkijena.jipipe.utils.ui.ViewOnlyMenuItem;
 
 import javax.swing.*;
@@ -73,11 +74,8 @@ public class JIPipeDesktopGraphNodeUI extends JIPipeDesktopWorkbenchPanel implem
         JIPipeGraph.NodeDisconnectedEventListener, JIPipeParameterCollection.ParameterChangedEventListener {
     public static final Color COLOR_DISABLED_1 = new Color(227, 86, 86);
     public static final Color COLOR_DISABLED_2 = new Color(0xc36262);
-
     public static final Color COLOR_SLOT_CACHED = new Color(0x95c2a8);
-
     public static final Color COLOR_SLOT_DISCONNECTED = new Color(0xc36262);
-
     public static final Color COLOR_RUN_BUTTON_ICON = new Color(0x22A02D);
 
     public static final NodeUIContextAction[] RUN_NODE_CONTEXT_MENU_ENTRIES = new NodeUIContextAction[]{
@@ -114,6 +112,7 @@ public class JIPipeDesktopGraphNodeUI extends JIPipeDesktopWorkbenchPanel implem
     private final boolean showOutputs;
     private final NodeUIActionRequestedEventEmitter nodeUIActionRequestedEventEmitter = new NodeUIActionRequestedEventEmitter();
     private final boolean nodeIsRunnable;
+    private final StaticDebouncer updateViewOnCacheUpdatedDebouncer;
     private Color nodeBorderColor;
     private Color slotFillColor;
     private Color buttonFillColor;
@@ -145,6 +144,8 @@ public class JIPipeDesktopGraphNodeUI extends JIPipeDesktopWorkbenchPanel implem
         this.node = node;
         this.zoom = graphCanvasUI.getZoom();
 
+        this.updateViewOnCacheUpdatedDebouncer = new StaticDebouncer(500, () -> updateView(false, true, false));
+
         this.node.getParameterChangedEventEmitter().subscribeWeak(this);
         this.node.getNodeSlotsChangedEventEmitter().subscribeWeak(this);
 
@@ -153,7 +154,7 @@ public class JIPipeDesktopGraphNodeUI extends JIPipeDesktopWorkbenchPanel implem
         graph.getNodeDisconnectedEventEmitter().subscribeWeak(this);
 
         if (workbench instanceof JIPipeDesktopProjectWorkbench) {
-            ((JIPipeDesktopProjectWorkbench) workbench).getProject().getCache().getModifiedEventEmitter().subscribeWeak(this);
+            workbench.getProject().getCache().getModifiedEventEmitter().subscribeWeak(this);
         }
 
         // Node information
@@ -640,14 +641,14 @@ public class JIPipeDesktopGraphNodeUI extends JIPipeDesktopWorkbenchPanel implem
             setLocation(location);
         }
         if (save) {
-            node.setLocationWithin(graphCanvasUI.getCompartmentUUID(), gridLocation, graphCanvasUI.getViewMode().name());
+            node.setNodeUILocationWithin(graphCanvasUI.getCompartmentUUID(), gridLocation, graphCanvasUI.getViewMode().name());
             getGraphCanvasUI().getDesktopWorkbench().setProjectModified(true);
         }
         return true;
     }
 
     public Point getStoredGridLocation() {
-        return node.getLocationWithin(StringUtils.nullToEmpty(graphCanvasUI.getCompartmentUUID()), graphCanvasUI.getViewMode().name());
+        return node.getNodeUILocationWithin(StringUtils.nullToEmpty(graphCanvasUI.getCompartmentUUID()), graphCanvasUI.getViewMode().name());
     }
 
     /**
@@ -658,10 +659,10 @@ public class JIPipeDesktopGraphNodeUI extends JIPipeDesktopWorkbenchPanel implem
      */
     @SuppressWarnings("deprecation")
     public boolean moveToStoredGridLocation(boolean force) {
-        Point point = node.getLocationWithin(StringUtils.nullToEmpty(graphCanvasUI.getCompartmentUUID()), graphCanvasUI.getViewMode().name());
+        Point point = node.getNodeUILocationWithin(StringUtils.nullToEmpty(graphCanvasUI.getCompartmentUUID()), graphCanvasUI.getViewMode().name());
         if (point == null) {
             // Try to get the point from vertical layout (migrate to compact)
-            point = node.getLocationWithin(StringUtils.nullToEmpty(graphCanvasUI.getCompartmentUUID()), JIPipeGraphViewMode.Vertical.name());
+            point = node.getNodeUILocationWithin(StringUtils.nullToEmpty(graphCanvasUI.getCompartmentUUID()), JIPipeGraphViewMode.Vertical.name());
         }
         if (point != null) {
             return moveToGridLocation(point, force, false);
@@ -741,6 +742,32 @@ public class JIPipeDesktopGraphNodeUI extends JIPipeDesktopWorkbenchPanel implem
             g2.drawImage(nodeBuffer, 0, 0, getWidth(), getHeight(), null);
         } else {
             paintNode(g2);
+        }
+
+        try {
+            if (getWorkbench().getProject() != null) {
+                boolean highlight = false;
+                if(node instanceof JIPipeProjectCompartment) {
+                    for (JIPipeProjectCompartmentOutput compartmentOutput : ((JIPipeProjectCompartment) node).getOutputNodes().values()) {
+                        if(getWorkbench().getProject().getRunSetsConfiguration().getUuidCache().contains(compartmentOutput.getUUIDInParentGraph().toString())) {
+                            highlight = true;
+                            break;
+                        }
+                    }
+                }
+                else {
+                    // Check if the node itself is part of the highlight
+                    highlight = getWorkbench().getProject().getRunSetsConfiguration().getUuidCache().contains(getNode().getUUIDInParentGraph().toString());
+                }
+                if(highlight) {
+                    g2.setStroke(JIPipeDesktopGraphCanvasUI.STROKE_THICK);
+                    g2.setColor(COLOR_SLOT_CACHED);
+                    g2.drawRect(0, 0, getWidth() - 1, getHeight() - 1);
+                }
+            }
+        }
+        catch (Throwable e) {
+            e.printStackTrace();
         }
 
 //        for (JIPipeNodeUIActiveArea activeArea : activeAreas) {
@@ -2225,7 +2252,7 @@ public class JIPipeDesktopGraphNodeUI extends JIPipeDesktopWorkbenchPanel implem
 
     @Override
     public void onCacheModified(JIPipeCache.ModifiedEvent event) {
-        updateView(false, true, false);
+        updateViewOnCacheUpdatedDebouncer.debounce();
     }
 
     private void updateCurrentActiveArea(MouseEvent e) {

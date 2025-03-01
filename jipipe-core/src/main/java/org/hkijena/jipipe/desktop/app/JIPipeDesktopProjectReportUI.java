@@ -27,10 +27,9 @@ import org.hkijena.jipipe.api.data.JIPipeDataInfo;
 import org.hkijena.jipipe.api.environments.JIPipeEnvironment;
 import org.hkijena.jipipe.api.nodes.JIPipeGraphNode;
 import org.hkijena.jipipe.api.nodes.JIPipeNodeInfo;
-import org.hkijena.jipipe.api.parameters.AbstractJIPipeParameterCollection;
-import org.hkijena.jipipe.api.parameters.JIPipeParameter;
-import org.hkijena.jipipe.api.parameters.JIPipeParameterCollection;
+import org.hkijena.jipipe.api.parameters.*;
 import org.hkijena.jipipe.api.project.JIPipeProject;
+import org.hkijena.jipipe.api.project.JIPipeProjectDirectories;
 import org.hkijena.jipipe.api.run.JIPipeRunnable;
 import org.hkijena.jipipe.api.run.JIPipeRunnableQueue;
 import org.hkijena.jipipe.desktop.app.running.JIPipeDesktopRunnableQueueButton;
@@ -44,6 +43,7 @@ import org.hkijena.jipipe.utils.UIUtils;
 
 import javax.swing.*;
 import java.awt.*;
+import java.nio.file.Path;
 import java.util.List;
 import java.util.*;
 import java.util.stream.Collectors;
@@ -67,7 +67,7 @@ public class JIPipeDesktopProjectReportUI extends JIPipeDesktopProjectWorkbenchP
         JIPipeDesktopSplitPane splitPane = new JIPipeDesktopSplitPane(JIPipeDesktopSplitPane.LEFT_RIGHT,
                 new JIPipeDesktopParameterFormPanel(getDesktopWorkbench(), reportSettings, new MarkdownText(), JIPipeDesktopParameterFormPanel.WITH_SEARCH_BAR | JIPipeDesktopParameterFormPanel.NO_GROUP_HEADERS | JIPipeDesktopParameterFormPanel.DOCUMENTATION_BELOW),
                 markdownReader,
-                JIPipeDesktopSplitPane.RATIO_1_TO_3);
+                new JIPipeDesktopSplitPane.DynamicSidebarRatio(300, true));
         add(splitPane, BorderLayout.CENTER);
 
         JButton refreshButton = new JButton("Refresh", UIUtils.getIconFromResources("actions/view-refresh.png"));
@@ -178,8 +178,51 @@ public class JIPipeDesktopProjectReportUI extends JIPipeDesktopProjectWorkbenchP
             if (reportSettings.isAddDependencyCitations()) {
                 renderDependencyCitations();
             }
+            if(reportSettings.isAddUserDirectories()) {
+                renderUserDirectories();
+            }
+            if(reportSettings.isAddGlobalParameters()) {
+                renderGlobalParameters();
+            }
             if (reportSettings.isAddPipelineTextDescription()) {
                 renderPipelineTextDescription();
+            }
+        }
+
+        private void renderGlobalParameters() {
+            if(!project.getMetadata().getGlobalParameters().getParameters().isEmpty()) {
+                stringBuilder.append("<h2>Project-wide parameters</h2>");
+                stringBuilder.append("<table>");
+                stringBuilder.append("<tr><th>Key</th><th>Name</th><th>Description</th><th>Value</th></tr>");
+                for (Map.Entry<String, JIPipeParameterAccess> entry : project.getMetadata().getGlobalParameters().getParameters().entrySet()) {
+                    stringBuilder.append("<tr>");
+                    stringBuilder.append("<td>").append(entry.getKey()).append("</td>");
+                    stringBuilder.append("<td>").append(entry.getValue().getName()).append("</td>");
+                    stringBuilder.append("<td>").append(entry.getValue().getDescription()).append("</td>");
+                    stringBuilder.append("<td>").append(HtmlEscapers.htmlEscaper().escape(JIPipeCustomTextDescriptionParameter.getTextDescriptionOf(entry.getValue().get(Object.class)))).append("</td>");
+                    stringBuilder.append("</tr>");
+                }
+                stringBuilder.append("</table>");
+            }
+
+        }
+
+        private void renderUserDirectories() {
+            List<JIPipeProjectDirectories.DirectoryEntry> directories = project.getMetadata().getDirectories().getDirectoriesAsInstance();
+            if(!directories.isEmpty()) {
+                stringBuilder.append("<h2>Project-wide directories</h2>");
+                stringBuilder.append("<table>");
+                stringBuilder.append("<tr><th>Key</th><th>Name</th><th>Description</th><th>Path</th><th>Must exist</th></tr>");
+                for (JIPipeProjectDirectories.DirectoryEntry directoryEntry : directories) {
+                    stringBuilder.append("<tr>");
+                    stringBuilder.append("<td>").append(directoryEntry.getKey()).append("</td>");
+                    stringBuilder.append("<td>").append(directoryEntry.getName()).append("</td>");
+                    stringBuilder.append("<td>").append(directoryEntry.getDescription()).append("</td>");
+                    stringBuilder.append("<td>").append(directoryEntry.getPath()).append("</td>");
+                    stringBuilder.append("<td>").append(directoryEntry.isMustExist() ? "Yes" : "No").append("</td>");
+                    stringBuilder.append("</tr>");
+                }
+                stringBuilder.append("</table>");
             }
         }
 
@@ -363,6 +406,30 @@ public class JIPipeDesktopProjectReportUI extends JIPipeDesktopProjectWorkbenchP
         private boolean addDependencyCitations = true;
         private boolean addListOfUsedNodes = true;
         private boolean addPipelineTextDescription = true;
+        private boolean addGlobalParameters = true;
+        private boolean addUserDirectories = true;
+
+        @SetJIPipeDocumentation(name = "Project-wide parameters", description = "If enabled, summarize the project-wide parameters")
+        @JIPipeParameter("add-global-parameters")
+        public boolean isAddGlobalParameters() {
+            return addGlobalParameters;
+        }
+
+        @JIPipeParameter("add-global-parameters")
+        public void setAddGlobalParameters(boolean addGlobalParameters) {
+            this.addGlobalParameters = addGlobalParameters;
+        }
+
+        @SetJIPipeDocumentation(name = "User directories", description = "If enabled, add the user directories")
+        @JIPipeParameter("add-user-directories")
+        public boolean isAddUserDirectories() {
+            return addUserDirectories;
+        }
+
+        @JIPipeParameter("add-user-directories")
+        public void setAddUserDirectories(boolean addUserDirectories) {
+            this.addUserDirectories = addUserDirectories;
+        }
 
         @SetJIPipeDocumentation(name = "Title", description = "If enabled, add the project name")
         @JIPipeParameter(value = "add-title", uiOrder = -100)

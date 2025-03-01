@@ -34,6 +34,7 @@ import org.hkijena.jipipe.utils.StringUtils;
 import org.hkijena.jipipe.utils.UIUtils;
 import org.hkijena.jipipe.utils.data.Store;
 import org.hkijena.jipipe.utils.data.WeakStore;
+import org.hkijena.jipipe.utils.debounce.StaticDebouncer;
 
 import javax.swing.*;
 import java.awt.*;
@@ -56,6 +57,7 @@ public abstract class JIPipeDesktopLegacyCacheDataViewerWindow extends JFrame im
     private final String slotName;
     private final JPanel contentPane = new JPanel(new BorderLayout());
     private final JPopupMenu rowInfoLabelMenu = new JPopupMenu();
+    private final StaticDebouncer reloadFromCurrentCacheDebouncer;
     private JIPipeDataTableDataSource dataSource;
     private JIPipeDesktopCachedDataDisplayCacheControl cacheAwareToggle;
     private Store<JIPipeDataItemStore> lastVirtualData;
@@ -63,15 +65,15 @@ public abstract class JIPipeDesktopLegacyCacheDataViewerWindow extends JFrame im
     private JButton nextRowButton;
     private JButton rowInfoLabel;
     private Function<JIPipeDataItemStore, JIPipeDataItemStore> dataConverterFunction;
-
     private JLabel standardErrorLabel;
 
     public JIPipeDesktopLegacyCacheDataViewerWindow(JIPipeDesktopWorkbench workbench, JIPipeDataTableDataSource dataSource, String displayName) {
         this.workbench = workbench;
         this.dataSource = dataSource;
         this.slotName = dataSource.getDataTable().getLocation(JIPipeDataSlot.LOCATION_KEY_SLOT_NAME, "");
-        this.project = ((JIPipeDesktopProjectWorkbench) workbench).getProject();
+        this.project = workbench.getProject();
         this.displayName = displayName;
+        this.reloadFromCurrentCacheDebouncer = new StaticDebouncer(1500, this::reloadFromCurrentCache);
         setDefaultCloseOperation(WindowConstants.DISPOSE_ON_CLOSE);
         setIconImage(UIUtils.getJIPipeIcon128());
         initialize();
@@ -422,8 +424,9 @@ public abstract class JIPipeDesktopLegacyCacheDataViewerWindow extends JFrame im
             return;
         if (cacheAwareToggle == null)
             return;
-        reloadFromCurrentCache();
+        reloadFromCurrentCacheDebouncer.debounce();
     }
+
 
     public String getDisplayName() {
         return displayName;

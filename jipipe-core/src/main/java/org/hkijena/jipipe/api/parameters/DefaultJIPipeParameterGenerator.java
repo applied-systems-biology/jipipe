@@ -101,7 +101,7 @@ public abstract class DefaultJIPipeParameterGenerator extends AbstractJIPipePara
                 JIPipeValidationReport report = new JIPipeValidationReport();
                 generator.reportValidity(new UnspecifiedValidationReportContext(), report);
                 if (!report.isEmpty()) {
-                    UIUtils.openValidityReportDialog(workbench, this, report, "Invalid settings detected", "Please resolve the following issues:", true);
+                    UIUtils.showValidityReportDialog(workbench, this, report, "Invalid settings detected", "Please resolve the following issues:", true);
                     return;
                 }
                 this.cancelled = false;

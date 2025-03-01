@@ -137,7 +137,7 @@ public class AutoThreshold2DAlgorithm extends JIPipeIteratingAlgorithm {
                 }, progressInfo);
                 List<JIPipeTextAnnotation> annotations = new ArrayList<>();
                 if (thresholdAnnotation.isEnabled()) {
-                    JIPipeExpressionVariablesMap variableSet = new JIPipeExpressionVariablesMap();
+                    JIPipeExpressionVariablesMap variableSet = new JIPipeExpressionVariablesMap(iterationStep);
                     variableSet.set("thresholds", thresholds);
                     String result = thresholdCombinationExpression.evaluate(variableSet) + "";
                     annotations.add(thresholdAnnotation.createAnnotation(result));
@@ -193,7 +193,7 @@ public class AutoThreshold2DAlgorithm extends JIPipeIteratingAlgorithm {
                 }, progressInfo.resolve("Finding thresholds"));
 
                 // Combine thresholds
-                JIPipeExpressionVariablesMap variableSet = new JIPipeExpressionVariablesMap();
+                JIPipeExpressionVariablesMap variableSet = new JIPipeExpressionVariablesMap(iterationStep);
                 variableSet.set("thresholds", thresholds);
                 Number combined = (Number) thresholdCombinationExpression.evaluate(variableSet);
                 int threshold = Math.min(255, Math.max(0, combined.intValue()));

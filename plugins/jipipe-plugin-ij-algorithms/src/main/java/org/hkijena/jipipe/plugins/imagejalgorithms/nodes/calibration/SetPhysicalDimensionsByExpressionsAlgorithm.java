@@ -70,7 +70,7 @@ public class SetPhysicalDimensionsByExpressionsAlgorithm extends JIPipeSimpleIte
             calibration = new Calibration(img);
             img.setCalibration(calibration);
         }
-        JIPipeExpressionVariablesMap variables = new JIPipeExpressionVariablesMap();
+        JIPipeExpressionVariablesMap variables = new JIPipeExpressionVariablesMap(iterationStep);
         ImagePlusPropertiesExpressionParameterVariablesInfo.extractValues(variables, img, iterationStep.getMergedTextAnnotations().values());
         if (physicalDimensionX.isEnabled()) {
             Quantity quantity = Quantity.parse(StringUtils.nullToEmpty(physicalDimensionX.getContent().evaluate(variables)));

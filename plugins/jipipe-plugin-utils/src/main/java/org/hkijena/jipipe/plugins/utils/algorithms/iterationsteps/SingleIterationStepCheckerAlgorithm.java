@@ -78,9 +78,7 @@ public class SingleIterationStepCheckerAlgorithm extends JIPipeIteratingAlgorith
     @Override
     protected void runIteration(JIPipeSingleIterationStep iterationStep, JIPipeIterationContext iterationContext, JIPipeGraphNodeRunContext runContext, JIPipeProgressInfo progressInfo) {
         if (enableFilter) {
-            JIPipeExpressionVariablesMap variables = new JIPipeExpressionVariablesMap();
-            variables.putAnnotations(iterationStep.getMergedTextAnnotations());
-            getDefaultCustomExpressionVariables().writeToVariables(variables);
+            JIPipeExpressionVariablesMap variables = new JIPipeExpressionVariablesMap(iterationStep);
             variables.set("iteration_step_index", iterationContext.getCurrentIterationStepIndex());
             variables.set("num_iteration_steps", iterationContext.getNumIterationSteps());
             if (!filter.test(variables)) {

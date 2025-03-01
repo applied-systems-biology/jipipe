@@ -15,12 +15,16 @@ package org.hkijena.jipipe.plugins.strings;
 
 import com.google.common.base.Charsets;
 import org.apache.commons.lang3.CharSetUtils;
+import org.hkijena.jipipe.JIPipe;
 import org.hkijena.jipipe.api.JIPipeProgressInfo;
 import org.hkijena.jipipe.api.SetJIPipeDocumentation;
 import org.hkijena.jipipe.api.data.JIPipeData;
 import org.hkijena.jipipe.api.data.JIPipeDataStorageDocumentation;
 import org.hkijena.jipipe.api.data.storage.JIPipeReadDataStorage;
 import org.hkijena.jipipe.api.data.storage.JIPipeWriteDataStorage;
+import org.hkijena.jipipe.api.data.thumbnails.JIPipeIconLabelThumbnailData;
+import org.hkijena.jipipe.api.data.thumbnails.JIPipeTextThumbnailData;
+import org.hkijena.jipipe.api.data.thumbnails.JIPipeThumbnailData;
 import org.hkijena.jipipe.utils.PathUtils;
 
 import java.io.FileWriter;
@@ -67,6 +71,11 @@ public class StringData implements JIPipeData {
     @Override
     public JIPipeData duplicate(JIPipeProgressInfo progressInfo) {
         return new StringData(data);
+    }
+
+    @Override
+    public JIPipeThumbnailData createThumbnail(int width, int height, JIPipeProgressInfo progressInfo) {
+        return new JIPipeTextThumbnailData(data.length() + " characters");
     }
 
     /**

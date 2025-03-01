@@ -38,10 +38,10 @@ public class JIPipeDesktopAlgorithmListCellRenderer extends JLabel implements Li
             setFont(list.getFont());
         }
         if (value != null) {
-            setText(value.getName());
+            setText(value.getDisplayName());
             setIcon(JIPipe.getNodes().getIconFor(value.getInfo()));
         } else {
-            setText("<No data type>");
+            setText("<No node>");
             setIcon(null);
         }
 

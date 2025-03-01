@@ -63,28 +63,31 @@ public class JIPipeArtifactsRegistry {
         Vector2iParameter accelerationPreferenceVersions = JIPipeArtifactApplicationSettings.getInstance().getAccelerationPreferenceVersions();
         boolean wantsGPU = accelerationPreference != JIPipeArtifactAccelerationPreference.CPU;
 
+        // First find something with CPU if possible
+        for (JIPipeArtifact candidate : candidates) {
+            if (candidate.isCompatible() && !candidate.isRequireGPU()) {
+                bestCandidate = candidate;
+                break;
+            }
+        }
+
+        // Optimize for better GPU
         for (JIPipeArtifact candidate : candidates) {
             if (candidate.isCompatible()) {
                 if (bestCandidate == null) {
                     bestCandidate = candidate;
-                } else if (bestCandidate.isNative()) {
-                    if (candidate.isNative()) {
-                        if (wantsGPU && !bestCandidate.isRequireGPU()
-                                && candidate.isRequireGPU()
-                                && candidate.isGPUCompatible(accelerationPreference, accelerationPreferenceVersions)
-                                && candidate.getGPUVersion(accelerationPreference.getPrefix()) > bestCandidate.getGPUVersion(accelerationPreference.getPrefix())) {
+                } else if (wantsGPU) {
+                    // Look for GPU
+                    if (candidate.isRequireGPU() && candidate.isGPUCompatible(accelerationPreference, accelerationPreferenceVersions)) {
+                        if (!bestCandidate.isRequireGPU()) {
                             bestCandidate = candidate;
-                        } else if (!wantsGPU && bestCandidate.isRequireGPU() && !candidate.isRequireGPU()) {
+                        } else if (candidate.getGPUVersion(accelerationPreference.getPrefix()) > bestCandidate.getGPUVersion(accelerationPreference.getPrefix())) {
                             bestCandidate = candidate;
                         }
                     }
                 } else {
-                    if (wantsGPU && !bestCandidate.isRequireGPU()
-                            && candidate.isRequireGPU()
-                            && candidate.isGPUCompatible(accelerationPreference, accelerationPreferenceVersions)
-                            && candidate.getGPUVersion(accelerationPreference.getPrefix()) > bestCandidate.getGPUVersion(accelerationPreference.getPrefix())) {
-                        bestCandidate = candidate;
-                    } else if (!wantsGPU && bestCandidate.isRequireGPU() && !candidate.isRequireGPU()) {
+                    // Look for CPU
+                    if (!candidate.isRequireGPU()) {
                         bestCandidate = candidate;
                     }
                 }

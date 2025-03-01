@@ -47,9 +47,6 @@ public class JIPipeDesktopRunnableQueueButton extends JButton implements JIPipeD
 
     private String taskSingleEnqueuedRunningLabel = "1 task running (+ %d enqueued)";
 
-    /**
-     * Creates new instance
-     */
     public JIPipeDesktopRunnableQueueButton(JIPipeDesktopWorkbench desktopWorkbench) {
         this(desktopWorkbench, JIPipeRunnableQueue.getInstance());
     }

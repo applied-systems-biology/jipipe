@@ -107,8 +107,7 @@ public class InputImagesToMontage extends JIPipeMergingAlgorithm {
         List<String> labels = input.stream().map(labelledImages::get).collect(Collectors.toList());
 
         // Equalize canvas
-        JIPipeExpressionVariablesMap variables = new JIPipeExpressionVariablesMap();
-        variables.putAnnotations(iterationStep.getMergedTextAnnotations());
+        JIPipeExpressionVariablesMap variables = new JIPipeExpressionVariablesMap(iterationStep);
         List<ImagePlus> equalized = canvasEqualizer.equalize(input, variables);
 
         // Determine number of rows & columns

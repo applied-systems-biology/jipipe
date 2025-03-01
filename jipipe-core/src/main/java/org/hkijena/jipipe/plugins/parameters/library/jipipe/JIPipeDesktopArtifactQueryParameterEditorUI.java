@@ -31,13 +31,6 @@ public class JIPipeDesktopArtifactQueryParameterEditorUI extends JIPipeDesktopPa
     private final JButton button = new JButton();
     private final List<JIPipeArtifact> availableArtifacts = new ArrayList<>();
 
-    /**
-     * Creates new instance
-     *
-     * @param workbench       the workbench
-     * @param parameterTree   the parameter tree that contains the access
-     * @param parameterAccess the parameter access
-     */
     public JIPipeDesktopArtifactQueryParameterEditorUI(InitializationParameters parameters) {
         super(parameters);
         initialize();

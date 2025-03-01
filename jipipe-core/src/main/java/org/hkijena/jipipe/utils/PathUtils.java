@@ -641,4 +641,19 @@ public class PathUtils {
     public static boolean isExecutable(Path path) {
         return Files.exists(path) && Files.isRegularFile(path) && Files.isExecutable(path);
     }
+
+    public static void deleteIfExists(Path path, JIPipeProgressInfo progressInfo) {
+        if(Files.isRegularFile(path)) {
+            try {
+                progressInfo.log("Deleting " + path);
+                Files.delete(path);
+            } catch (IOException e) {
+                throw new RuntimeException(e);
+            }
+        }
+        else if(Files.isDirectory(path)) {
+            progressInfo.log("Deleting " + path);
+            deleteDirectoryRecursively(path, progressInfo);
+        }
+    }
 }

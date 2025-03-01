@@ -123,9 +123,7 @@ public class FilterRoi3DByOverlapAlgorithm extends JIPipeIteratingAlgorithm {
 
         if (roi1Settings.isEnabled()) {
 
-            JIPipeExpressionVariablesMap variables = new JIPipeExpressionVariablesMap();
-            variables.putAnnotations(iterationStep.getMergedTextAnnotations());
-            getDefaultCustomExpressionVariables().writeToVariables(variables);
+            JIPipeExpressionVariablesMap variables = new JIPipeExpressionVariablesMap(iterationStep);
 
             ROI3DListData copy1 = new ROI3DListData();
             ROI3DListData copy2 = new ROI3DListData();
@@ -136,9 +134,7 @@ public class FilterRoi3DByOverlapAlgorithm extends JIPipeIteratingAlgorithm {
         }
         if (roi2Settings.isEnabled()) {
 
-            JIPipeExpressionVariablesMap variables = new JIPipeExpressionVariablesMap();
-            variables.putAnnotations(iterationStep.getMergedTextAnnotations());
-            getDefaultCustomExpressionVariables().writeToVariables(variables);
+            JIPipeExpressionVariablesMap variables = new JIPipeExpressionVariablesMap(iterationStep);
 
             ROI3DListData copy1 = new ROI3DListData();
             ROI3DListData copy2 = new ROI3DListData();

@@ -67,8 +67,8 @@ public class AnnotateDataWithTableValues extends JIPipeIteratingAlgorithm {
         ResultsTableData tableData = iterationStep.getInputData("Table", ResultsTableData.class, progressInfo);
 
         List<JIPipeTextAnnotation> annotationList = new ArrayList<>();
-        JIPipeExpressionVariablesMap variables = new JIPipeExpressionVariablesMap();
-        variables.putAnnotations(iterationStep.getMergedTextAnnotations());
+        JIPipeExpressionVariablesMap variables = new JIPipeExpressionVariablesMap(iterationStep);
+
         for (int col = 0; col < tableData.getColumnCount(); col++) {
             variables.set(tableData.getColumnName(col), tableData.getColumnReference(col).getDataAsObjectList());
         }

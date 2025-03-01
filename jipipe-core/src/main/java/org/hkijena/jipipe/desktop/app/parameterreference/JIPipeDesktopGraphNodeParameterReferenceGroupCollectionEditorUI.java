@@ -53,7 +53,7 @@ public class JIPipeDesktopGraphNodeParameterReferenceGroupCollectionEditorUI ext
     private final JTree groupJTree = new JTree();
     private final JPanel rightPanel = new JPanel(new BorderLayout());
     private final MarkdownText documentation;
-    private final JLabel noGroupsLabel = UIUtils.createInfoLabel("No groups", "Click <i>Add &gt; Empty group</i> to begin editing parameters.");
+    private final JLabel noGroupsLabel = UIUtils.createInfoLabel("No groups", "Click <i>Add &gt; Empty group</i> to begin linking parameters.");
     private JIPipeParameterTree parameterTree;
     private boolean withRefresh;
 

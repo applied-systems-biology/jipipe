@@ -15,20 +15,13 @@ package org.hkijena.jipipe.plugins.ij3d.imageviewer;
 
 import com.google.common.collect.ImmutableList;
 import com.google.common.primitives.Ints;
-import customnode.CustomMesh;
-import customnode.CustomMultiMesh;
-import customnode.CustomTriangleMesh;
 import gnu.trove.list.TIntList;
 import gnu.trove.list.array.TIntArrayList;
-import ij.ImagePlus;
 import ij.gui.ImageCanvas;
 import ij.gui.Roi;
 import ij.plugin.frame.RoiManager;
-import ij3d.Content;
-import ij3d.ContentCreator;
 import mcib3d.image3d.ImageHandler;
 import org.hkijena.jipipe.JIPipe;
-import org.hkijena.jipipe.api.AbstractJIPipeRunnable;
 import org.hkijena.jipipe.api.JIPipeProgressInfo;
 import org.hkijena.jipipe.desktop.app.JIPipeDesktopDummyWorkbench;
 import org.hkijena.jipipe.desktop.app.tableeditor.JIPipeDesktopTableEditor;
@@ -39,11 +32,8 @@ import org.hkijena.jipipe.desktop.commons.components.ribbon.JIPipeDesktopLargeTo
 import org.hkijena.jipipe.desktop.commons.components.ribbon.JIPipeDesktopRibbon;
 import org.hkijena.jipipe.desktop.commons.components.ribbon.JIPipeDesktopSmallButtonRibbonAction;
 import org.hkijena.jipipe.desktop.commons.components.ribbon.JIPipeDesktopSmallToggleButtonRibbonAction;
-import org.hkijena.jipipe.plugins.ij3d.IJ3DUtils;
 import org.hkijena.jipipe.plugins.ij3d.datatypes.ROI3D;
 import org.hkijena.jipipe.plugins.ij3d.datatypes.ROI3DListData;
-import org.hkijena.jipipe.plugins.ij3d.utils.Roi3DDrawer;
-import org.hkijena.jipipe.plugins.imagejalgorithms.parameters.Neighborhood3D;
 import org.hkijena.jipipe.plugins.imagejdatatypes.datatypes.ROI2DListData;
 import org.hkijena.jipipe.plugins.imagejdatatypes.util.ImageJUtils;
 import org.hkijena.jipipe.plugins.imagejdatatypes.util.ImageSliceIndex;
@@ -56,7 +46,6 @@ import org.hkijena.jipipe.plugins.settings.JIPipeFileChooserApplicationSettings;
 import org.hkijena.jipipe.plugins.tables.datatypes.ResultsTableData;
 import org.hkijena.jipipe.utils.UIUtils;
 import org.hkijena.jipipe.utils.ui.JIPipeDesktopDockPanel;
-import org.jogamp.vecmath.Color3f;
 
 import javax.swing.*;
 import java.awt.*;
@@ -647,95 +636,4 @@ public class ROIManagerPlugin3D extends JIPipeDesktopLegacyImageViewerPlugin2D {
         roiListControl.setSelectedIndices(indices.toArray());
     }
 
-    private static class ROI2DTo3DConverterRun extends AbstractJIPipeRunnable {
-
-        private final List<Roi> rois;
-
-        private final List<ROI3D> converted = new ArrayList<>();
-
-        public ROI2DTo3DConverterRun(List<Roi> rois) {
-            this.rois = rois;
-        }
-
-        @Override
-        public String getTaskLabel() {
-            return "Convert 2D ROI to 3D ROI";
-        }
-
-        @Override
-        public void run() {
-            ROI2DListData inputData = new ROI2DListData();
-            inputData.addAll(rois);
-            ROI3DListData outputData = IJ3DUtils.roi2DtoRoi3D(inputData, true, false, Neighborhood3D.TwentySixConnected, getProgressInfo());
-            converted.addAll(outputData);
-        }
-    }
-
-    private static class ROI3DToContentConverterRun extends AbstractJIPipeRunnable {
-
-        private final List<ROI3D> rois;
-
-        private final Roi3DDrawer drawer;
-
-        private final ImagePlus referenceImage;
-        private final int resolutionFactor;
-        private final boolean renderAsVolume;
-        private Content renderedContent;
-
-        public ROI3DToContentConverterRun(List<ROI3D> rois, Roi3DDrawer drawer, ImagePlus referenceImage, boolean renderAsVolume, int resolutionFactor) {
-            this.rois = rois;
-            this.drawer = drawer;
-            this.referenceImage = referenceImage;
-            this.renderAsVolume = renderAsVolume;
-            this.resolutionFactor = resolutionFactor;
-        }
-
-        @Override
-        public String getTaskLabel() {
-            return "Preprocess 3D ROI";
-        }
-
-        public Content getRenderedContent() {
-            return renderedContent;
-        }
-
-        public List<ROI3D> getRois() {
-            return rois;
-        }
-
-        @Override
-        public void run() {
-
-            if (renderAsVolume) {
-                ROI3DListData roi3DListData = new ROI3DListData();
-                roi3DListData.addAll(rois);
-                Roi3DDrawer copyDrawer = new Roi3DDrawer(drawer);
-                copyDrawer.setDrawOver(false);
-                ImagePlus render = copyDrawer.draw(roi3DListData, referenceImage, getProgressInfo().resolve("Render ROI to RGB"));
-                getProgressInfo().log("Converting RGB to ");
-                renderedContent = ContentCreator.createContent("ROI3D-" + UUID.randomUUID(),
-                        render,
-                        Content.VOLUME,
-                        resolutionFactor,
-                        0,
-                        new Color3f(1, 1, 1),
-                        0,
-                        new boolean[]{true, true, true});
-            } else {
-                List<CustomMesh> meshList = new ArrayList<>();
-                getProgressInfo().setProgress(0, rois.size());
-                for (int i = 0; i < rois.size(); i++) {
-                    getProgressInfo().resolveAndLog("ROI to 3D mesh", i, rois.size());
-                    ROI3D roi3D = rois.get(i);
-                    CustomTriangleMesh mesh = new CustomTriangleMesh(IJ3DUtils.sciJavaToJogAmp(roi3D.getObject3D().getObject3DSurface().getSurfaceTrianglesPixels(true)),
-                            new Color3f(roi3D.getFillColor().getRed() / 255.0f, roi3D.getFillColor().getGreen() / 255.0f, roi3D.getFillColor().getBlue() / 255.0f),
-                            0f);
-                    meshList.add(mesh);
-                    getProgressInfo().incrementProgress();
-                }
-                CustomMultiMesh customMultiMesh = new CustomMultiMesh(meshList);
-                renderedContent = ContentCreator.createContent(customMultiMesh, "ROI3D-" + UUID.randomUUID());
-            }
-        }
-    }
 }

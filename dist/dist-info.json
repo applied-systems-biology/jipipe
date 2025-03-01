@@ -72,6 +72,7 @@
     "jipipe-plugin-ij-trackmate",
     "jipipe-plugin-ij-3d",
     "jipipe-plugin-ij-filaments",
+    "jipipe-plugin-ij-ocr",
     "jipipe-plugin-python",
     "jipipe-plugin-plots",
     "jipipe-plugin-tables",

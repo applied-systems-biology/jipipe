@@ -39,12 +39,12 @@ import org.hkijena.jipipe.api.nodes.iterationstep.JIPipeMultiIterationStep;
 import org.hkijena.jipipe.api.parameters.JIPipeParameter;
 import org.hkijena.jipipe.api.validation.*;
 import org.hkijena.jipipe.api.validation.contexts.GraphNodeValidationReportContext;
-import org.hkijena.jipipe.plugins.cellpose.CellposeEnvironmentAccessNode;
+import org.hkijena.jipipe.plugins.cellpose.algorithms.cp2.Cellpose2EnvironmentAccessNode;
 import org.hkijena.jipipe.plugins.cellpose.CellposePlugin;
-import org.hkijena.jipipe.plugins.cellpose.CellposeUtils;
+import org.hkijena.jipipe.plugins.cellpose.utils.CellposeUtils;
 import org.hkijena.jipipe.plugins.cellpose.legacy.PretrainedLegacyCellpose2InferenceModel;
 import org.hkijena.jipipe.plugins.cellpose.legacy.datatypes.LegacyCellposeModelData;
-import org.hkijena.jipipe.plugins.cellpose.parameters.*;
+import org.hkijena.jipipe.plugins.cellpose.parameters.cp2.*;
 import org.hkijena.jipipe.plugins.imagejdatatypes.datatypes.ImagePlusData;
 import org.hkijena.jipipe.plugins.imagejdatatypes.datatypes.OMEImageData;
 import org.hkijena.jipipe.plugins.imagejdatatypes.datatypes.ROI2DListData;
@@ -93,7 +93,7 @@ import java.util.*;
 @ConfigureJIPipeNode(nodeTypeCategory = ImagesNodeTypeCategory.class, menuPath = "Deep learning")
 @Deprecated
 @LabelAsJIPipeHidden
-public class LegacyCellpose2InferenceAlgorithm extends JIPipeSingleIterationAlgorithm implements CellposeEnvironmentAccessNode {
+public class LegacyCellpose2InferenceAlgorithm extends JIPipeSingleIterationAlgorithm implements Cellpose2EnvironmentAccessNode {
 
     public static final JIPipeDataSlotInfo INPUT_PRETRAINED_MODEL = new JIPipeDataSlotInfo(LegacyCellposeModelData.class, JIPipeSlotType.Input, "Pretrained Model", "A custom pretrained model");
     //    public static final JIPipeDataSlotInfo INPUT_SIZE_MODEL = new JIPipeDataSlotInfo(CellposeSizeModelData.class, JIPipeSlotType.Input, "Size Model", "A custom size model", null, true);
@@ -104,12 +104,12 @@ public class LegacyCellpose2InferenceAlgorithm extends JIPipeSingleIterationAlgo
     public static final JIPipeDataSlotInfo OUTPUT_PROBABILITIES = new JIPipeDataSlotInfo(ImagePlusGreyscaleData.class, JIPipeSlotType.Output, "Probabilities", "An image indicating the cell probabilities for each pixel");
     public static final JIPipeDataSlotInfo OUTPUT_ROI = new JIPipeDataSlotInfo(ROI2DListData.class, JIPipeSlotType.Output, "ROI", "ROI of the segmented areas");
 
-    private final CellposeGPUSettings gpuSettings;
-    private final CellposeSegmentationTweaksSettings segmentationTweaksSettings;
-    private final CellposeSegmentationThresholdSettings segmentationThresholdSettings;
-    private final CellposeSegmentationOutputSettings segmentationOutputSettings;
+    private final Cellpose2GPUSettings gpuSettings;
+    private final Cellpose2SegmentationTweaksSettings segmentationTweaksSettings;
+    private final Cellpose2SegmentationThresholdSettings segmentationThresholdSettings;
+    private final Cellpose2SegmentationOutputSettings segmentationOutputSettings;
 
-    private final CellposeChannelSettings channelSettings;
+    private final Cellpose2ChannelSettings channelSettings;
 
     private PretrainedLegacyCellpose2InferenceModel model = PretrainedLegacyCellpose2InferenceModel.Cytoplasm;
     private OptionalDoubleParameter diameter = new OptionalDoubleParameter(30.0, true);
@@ -121,11 +121,11 @@ public class LegacyCellpose2InferenceAlgorithm extends JIPipeSingleIterationAlgo
 
     public LegacyCellpose2InferenceAlgorithm(JIPipeNodeInfo info) {
         super(info);
-        this.segmentationTweaksSettings = new CellposeSegmentationTweaksSettings();
-        this.gpuSettings = new CellposeGPUSettings();
-        this.segmentationThresholdSettings = new CellposeSegmentationThresholdSettings();
-        this.segmentationOutputSettings = new CellposeSegmentationOutputSettings();
-        this.channelSettings = new CellposeChannelSettings();
+        this.segmentationTweaksSettings = new Cellpose2SegmentationTweaksSettings();
+        this.gpuSettings = new Cellpose2GPUSettings();
+        this.segmentationThresholdSettings = new Cellpose2SegmentationThresholdSettings();
+        this.segmentationOutputSettings = new Cellpose2SegmentationOutputSettings();
+        this.channelSettings = new Cellpose2ChannelSettings();
 
         updateOutputSlots();
         updateInputSlots();
@@ -139,11 +139,11 @@ public class LegacyCellpose2InferenceAlgorithm extends JIPipeSingleIterationAlgo
 
     public LegacyCellpose2InferenceAlgorithm(LegacyCellpose2InferenceAlgorithm other) {
         super(other);
-        this.gpuSettings = new CellposeGPUSettings(other.gpuSettings);
-        this.segmentationTweaksSettings = new CellposeSegmentationTweaksSettings(other.segmentationTweaksSettings);
-        this.segmentationThresholdSettings = new CellposeSegmentationThresholdSettings(other.segmentationThresholdSettings);
-        this.segmentationOutputSettings = new CellposeSegmentationOutputSettings(other.segmentationOutputSettings);
-        this.channelSettings = new CellposeChannelSettings(other.channelSettings);
+        this.gpuSettings = new Cellpose2GPUSettings(other.gpuSettings);
+        this.segmentationTweaksSettings = new Cellpose2SegmentationTweaksSettings(other.segmentationTweaksSettings);
+        this.segmentationThresholdSettings = new Cellpose2SegmentationThresholdSettings(other.segmentationThresholdSettings);
+        this.segmentationOutputSettings = new Cellpose2SegmentationOutputSettings(other.segmentationOutputSettings);
+        this.channelSettings = new Cellpose2ChannelSettings(other.channelSettings);
         this.suppressLogs = other.suppressLogs;
 
         this.model = other.model;
@@ -301,8 +301,8 @@ public class LegacyCellpose2InferenceAlgorithm extends JIPipeSingleIterationAlgo
 
         // Deploy and run extraction script
         progressInfo.log("Deploying script to extract Cellpose *.npy results ...");
-        Path npyExtractorScript = workDirectory.resolve("extract-cellpose-npy.py");
-        CellposePlugin.RESOURCES.exportResourceToFile("extract-cellpose-npy.py", npyExtractorScript);
+        Path npyExtractorScript = workDirectory.resolve("extract-cellpose2-npy.py");
+        CellposePlugin.RESOURCES.exportResourceToFile("extract-cellpose2-npy.py", npyExtractorScript);
         if (!runWith2D.isEmpty()) {
             List<String> arguments = new ArrayList<>();
             arguments.add(npyExtractorScript.toString());
@@ -648,31 +648,31 @@ public class LegacyCellpose2InferenceAlgorithm extends JIPipeSingleIterationAlgo
 
     @SetJIPipeDocumentation(name = "Cellpose: Channels", description = "Determines which channels are used for the segmentation")
     @JIPipeParameter(value = "channel-parameters", iconURL = ResourceUtils.RESOURCE_BASE_PATH + "/icons/apps/cellpose.png")
-    public CellposeChannelSettings getChannelSettings() {
+    public Cellpose2ChannelSettings getChannelSettings() {
         return channelSettings;
     }
 
     @SetJIPipeDocumentation(name = "Cellpose: Tweaks", description = "Additional options like augmentation and averaging over multiple networks")
     @JIPipeParameter(value = "enhancement-parameters", iconURL = ResourceUtils.RESOURCE_BASE_PATH + "/icons/apps/cellpose.png", collapsed = true)
-    public CellposeSegmentationTweaksSettings getEnhancementParameters() {
+    public Cellpose2SegmentationTweaksSettings getEnhancementParameters() {
         return segmentationTweaksSettings;
     }
 
     @SetJIPipeDocumentation(name = "Cellpose: Thresholds", description = "Parameters that control which objects are selected.")
     @JIPipeParameter(value = "threshold-parameters", iconURL = ResourceUtils.RESOURCE_BASE_PATH + "/icons/apps/cellpose.png", collapsed = true)
-    public CellposeSegmentationThresholdSettings getThresholdParameters() {
+    public Cellpose2SegmentationThresholdSettings getThresholdParameters() {
         return segmentationThresholdSettings;
     }
 
     @SetJIPipeDocumentation(name = "Cellpose: Outputs", description = "The following settings allow you to select which outputs are generated.")
     @JIPipeParameter(value = "output-parameters", collapsed = true, iconURL = ResourceUtils.RESOURCE_BASE_PATH + "/icons/apps/cellpose.png")
-    public CellposeSegmentationOutputSettings getSegmentationOutputSettings() {
+    public Cellpose2SegmentationOutputSettings getSegmentationOutputSettings() {
         return segmentationOutputSettings;
     }
 
     @SetJIPipeDocumentation(name = "Cellpose: GPU", description = "Controls how the graphics card is utilized.")
     @JIPipeParameter(value = "gpu-parameters", collapsed = true, iconURL = ResourceUtils.RESOURCE_BASE_PATH + "/icons/apps/cellpose.png")
-    public CellposeGPUSettings getGpuSettings() {
+    public Cellpose2GPUSettings getGpuSettings() {
         return gpuSettings;
     }
 

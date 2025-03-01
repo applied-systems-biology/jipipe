@@ -308,9 +308,7 @@ public class ConnectVerticesFastAlgorithm extends JIPipeIteratingAlgorithm {
             mask = null;
         }
 
-        JIPipeExpressionVariablesMap variables = new JIPipeExpressionVariablesMap();
-        variables.putAnnotations(iterationStep.getMergedTextAnnotations());
-        getDefaultCustomExpressionVariables().writeToVariables(variables);
+        JIPipeExpressionVariablesMap variables = new JIPipeExpressionVariablesMap(iterationStep);
 
         progressInfo.log("Filtering connection sources ...");
         Set<FilamentVertex> sources = VertexMaskParameter.filter(sourceVertexFilter, outputData, null, variables);

@@ -72,7 +72,7 @@ public class SplitTableByColumnsAlgorithm extends JIPipeSimpleIteratingAlgorithm
     @Override
     protected void runIteration(JIPipeSingleIterationStep iterationStep, JIPipeIterationContext iterationContext, JIPipeGraphNodeRunContext runContext, JIPipeProgressInfo progressInfo) {
         ResultsTableData input = iterationStep.getInputData(getFirstInputSlot(), ResultsTableData.class, progressInfo);
-        List<String> interestingColumns = columns.queryAll(input.getColumnNames(), new JIPipeExpressionVariablesMap());
+        List<String> interestingColumns = columns.queryAll(input.getColumnNames(), new JIPipeExpressionVariablesMap(iterationStep));
         if (interestingColumns.isEmpty()) {
             iterationStep.addOutputData(getFirstOutputSlot(), input.duplicate(progressInfo), progressInfo);
         } else {

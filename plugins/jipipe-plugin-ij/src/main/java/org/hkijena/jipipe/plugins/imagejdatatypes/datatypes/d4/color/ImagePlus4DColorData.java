@@ -23,6 +23,7 @@ import org.hkijena.jipipe.api.data.storage.JIPipeReadDataStorage;
 import org.hkijena.jipipe.api.data.thumbnails.JIPipeThumbnailData;
 import org.hkijena.jipipe.plugins.imagejdatatypes.colorspace.ColorSpace;
 import org.hkijena.jipipe.plugins.imagejdatatypes.colorspace.RGBColorSpace;
+import org.hkijena.jipipe.plugins.imagejdatatypes.converters.ImplicitImageTypeConverter;
 import org.hkijena.jipipe.plugins.imagejdatatypes.datatypes.ImagePlusData;
 import org.hkijena.jipipe.plugins.imagejdatatypes.datatypes.ImageTypeInfo;
 import org.hkijena.jipipe.plugins.imagejdatatypes.datatypes.color.ColorImageData;
@@ -34,7 +35,7 @@ import java.awt.*;
 /**
  * A colored image without dimension.
  * It acts as base and intermediate type between colored images. The convertFrom(data) method copies the color space
- * Conversion works through {@link org.hkijena.jipipe.plugins.imagejdatatypes.algorithms.ImplicitImageTypeConverter}
+ * Conversion works through {@link ImplicitImageTypeConverter}
  */
 @SetJIPipeDocumentation(name = "4D ImageJ Image (Color)", description = "A color image")
 @ConfigureJIPipeNode(menuPath = "Images\n3D\nColor")

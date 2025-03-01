@@ -66,7 +66,7 @@ public class JIPipeDesktopUserFriendlyErrorUI extends JIPipeDesktopFormPanel imp
             if (getDesktopWorkbench().getWindow() instanceof JFrame) {
                 title = ((JFrame) getDesktopWorkbench().getWindow()).getTitle();
             }
-            UIUtils.openValidityReportDialog(getDesktopWorkbench(), getDesktopWorkbench().getWindow(), report, title + " - Problems", null,
+            UIUtils.showValidityReportDialog(getDesktopWorkbench(), getDesktopWorkbench().getWindow(), report, title + " - Problems", null,
                     false);
         });
         toolBar.add(openInNewWindowButton);

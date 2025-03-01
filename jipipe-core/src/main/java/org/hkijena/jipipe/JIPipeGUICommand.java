@@ -99,7 +99,7 @@ public class JIPipeGUICommand implements Command {
                 JIPipeValidationReport report = new JIPipeValidationReport();
                 issues.reportValidity(new UnspecifiedValidationReportContext(), report);
                 if (!report.isValid()) {
-                    UIUtils.openValidityReportDialog(new JIPipeDesktopDummyWorkbench(), null, report, "JIPipe plugins registry", "Issues were detected during the initialization of certain extensions. " +
+                    UIUtils.showValidityReportDialog(new JIPipeDesktopDummyWorkbench(), null, report, "JIPipe plugins registry", "Issues were detected during the initialization of certain extensions. " +
                             "Please review the following items. Close the window to ignore the messages and load JIPipe. " +
                             "Some issues may also be caused by missing/broken ImageJ plugins. You can repair issues related to ImageJ by starting the ImageJ updater (ImageJ: Help > Update, JIPipe: Plugins > ImageJ plugins)", false);
                 }

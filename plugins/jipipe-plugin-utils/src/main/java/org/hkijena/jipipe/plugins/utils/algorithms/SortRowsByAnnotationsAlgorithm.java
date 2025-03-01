@@ -60,7 +60,7 @@ public class SortRowsByAnnotationsAlgorithm extends JIPipeParameterSlotAlgorithm
 
         // Find the order
         for (StringQueryExpressionAndSortOrderPairParameter entry : sortOrderList) {
-            String matched = entry.getKey().queryFirst(unMatchedAnnotationNames, new JIPipeExpressionVariablesMap());
+            String matched = entry.getKey().queryFirst(unMatchedAnnotationNames, new JIPipeExpressionVariablesMap(this));
             if (matched != null) {
                 unMatchedAnnotationNames.remove(matched);
                 annotationOrder.add(matched);

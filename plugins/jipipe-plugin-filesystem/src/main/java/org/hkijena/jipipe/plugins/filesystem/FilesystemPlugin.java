@@ -21,7 +21,9 @@ import org.hkijena.jipipe.api.JIPipeProgressInfo;
 import org.hkijena.jipipe.api.compat.DefaultImageJDataExporterUI;
 import org.hkijena.jipipe.api.compat.DefaultImageJDataImporterUI;
 import org.hkijena.jipipe.plugins.JIPipePrepackagedDefaultJavaPlugin;
-import org.hkijena.jipipe.plugins.filesystem.algorithms.*;
+import org.hkijena.jipipe.plugins.filesystem.algorithms.local.*;
+import org.hkijena.jipipe.plugins.filesystem.algorithms.zarr.ListZARRDirectoryZIPDatasetsAlgorithm;
+import org.hkijena.jipipe.plugins.filesystem.algorithms.zarr.ListZARRURIDatasetsAlgorithm;
 import org.hkijena.jipipe.plugins.filesystem.compat.PathDataFromTableImageJImporter;
 import org.hkijena.jipipe.plugins.filesystem.compat.PathDataToTableImageJExporter;
 import org.hkijena.jipipe.plugins.filesystem.datasources.*;
@@ -124,6 +126,7 @@ public class FilesystemPlugin extends JIPipePrepackagedDefaultJavaPlugin {
         registerNodeType("import-folder-list", FolderListDataSource.class);
         registerNodeType("import-path", PathDataSource.class);
         registerNodeType("import-path-list", PathListDataSource.class);
+        registerNodeType("import-uri-list", URIListDataSource.class);
         registerNodeType("download-files", DownloadFilesDataSource.class);
         registerNodeType("file-temporary", TemporaryFileDataSource.class);
         registerNodeType("folder-temporary", TemporaryFolderDataSource.class);
@@ -166,6 +169,10 @@ public class FilesystemPlugin extends JIPipePrepackagedDefaultJavaPlugin {
 
         registerNodeType("path-modify-with-expression", ModifyPathWithExpression.class, UIUtils.getIconURLFromResources("actions/insert-math-expression.png"));
         registerNodeType("get-exported-path", ConvertToExportedPath.class, UIUtils.getIconURLFromResources("actions/reload.png"));
+
+        // ZARR
+        registerNodeType("list-zarr-directory-zip-datasets", ListZARRDirectoryZIPDatasetsAlgorithm.class, UIUtils.getIconURLFromResources("actions/zarr.png"));
+        registerNodeType("list-zarr-uri-datasets", ListZARRURIDatasetsAlgorithm.class, UIUtils.getIconURLFromResources("actions/zarr.png"));
 
         registerNodeExamplesFromResources(RESOURCES, "examples");
     }

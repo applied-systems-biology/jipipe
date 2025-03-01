@@ -51,7 +51,7 @@ public class ApplyDisplayContrastAlgorithm extends JIPipeSimpleIteratingAlgorith
         iterationStep.addOutputData(getFirstOutputSlot(), new ImagePlusData(imagePlus), progressInfo);
     }
 
-    private void apply(ImagePlus imp, ImageProcessor ip) {
+    public static void apply(ImagePlus imp, ImageProcessor ip) {
         boolean RGBImage = imp.getType() == ImagePlus.COLOR_RGB;
         int bitDepth = imp.getBitDepth();
         String option = null;
@@ -106,7 +106,7 @@ public class ApplyDisplayContrastAlgorithm extends JIPipeSimpleIteratingAlgorith
         imp.changes = true;
     }
 
-    private void applyRGB(ImagePlus imp, ImageProcessor ip) {
+    public static void applyRGB(ImagePlus imp, ImageProcessor ip) {
         ip.snapshot();
         ip.setMinAndMax(0, 255);
         reset(imp, ip);
@@ -133,7 +133,7 @@ public class ApplyDisplayContrastAlgorithm extends JIPipeSimpleIteratingAlgorith
 		*/
     }
 
-    private void applyRGBStack(ImagePlus imp) {
+    public static void applyRGBStack(ImagePlus imp) {
         double min = imp.getDisplayRangeMin();
         double max = imp.getDisplayRangeMax();
 //        int channels = imp.getNChannels();
@@ -160,7 +160,7 @@ public class ApplyDisplayContrastAlgorithm extends JIPipeSimpleIteratingAlgorith
         imp.changes = true;
     }
 
-    private void reset(ImagePlus imp, ImageProcessor ip) {
+    public static void reset(ImagePlus imp, ImageProcessor ip) {
         boolean RGBImage = imp.getType() == ImagePlus.COLOR_RGB;
         if (RGBImage)
             ip.reset();

@@ -72,8 +72,8 @@ public class RenameTableColumnsToAnnotationAlgorithm extends JIPipeSimpleIterati
     protected void runIteration(JIPipeSingleIterationStep iterationStep, JIPipeIterationContext iterationContext, JIPipeGraphNodeRunContext runContext, JIPipeProgressInfo progressInfo) {
         ResultsTableData input = (ResultsTableData) iterationStep.getInputData(getFirstInputSlot(), ResultsTableData.class, progressInfo).duplicate(progressInfo);
         for (StringQueryExpressionAndStringQueryPairParameter renamingEntry : renamingEntries) {
-            String oldName = renamingEntry.getKey().queryFirst(input.getColumnNames(), new JIPipeExpressionVariablesMap());
-            String newName = renamingEntry.getValue().queryFirst(iterationStep.getMergedTextAnnotations().keySet(), new JIPipeExpressionVariablesMap());
+            String oldName = renamingEntry.getKey().queryFirst(input.getColumnNames(), new JIPipeExpressionVariablesMap(iterationStep));
+            String newName = renamingEntry.getValue().queryFirst(iterationStep.getMergedTextAnnotations().keySet(), new JIPipeExpressionVariablesMap(iterationStep));
             if (oldName == null) {
                 if (ignoreMissingColumns)
                     continue;

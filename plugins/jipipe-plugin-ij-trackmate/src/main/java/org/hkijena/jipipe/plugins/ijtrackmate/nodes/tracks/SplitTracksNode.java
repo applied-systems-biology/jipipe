@@ -59,8 +59,7 @@ public class SplitTracksNode extends JIPipeSimpleIteratingAlgorithm {
         TrackCollectionData oldTrackCollectionData = new TrackCollectionData(iterationStep.getInputData(getFirstInputSlot(), TrackCollectionData.class, progressInfo));
         oldTrackCollectionData.computeTrackFeatures(progressInfo.resolve("Compute features"));
 
-        JIPipeExpressionVariablesMap variables = new JIPipeExpressionVariablesMap();
-        variables.putAnnotations(iterationStep.getMergedTextAnnotations());
+        JIPipeExpressionVariablesMap variables = new JIPipeExpressionVariablesMap(iterationStep);
         variables.set("n_tracks", oldTrackCollectionData.getTrackModel().nTracks(true));
         int index = 0;
         Set<Integer> trackIds = oldTrackCollectionData.getTrackModel().trackIDs(true);

@@ -96,13 +96,12 @@ public class ImageCalculator2DExpression extends JIPipeIteratingAlgorithm {
             }
         }
 
-        JIPipeExpressionVariablesMap variables = new JIPipeExpressionVariablesMap();
+        JIPipeExpressionVariablesMap variables = new JIPipeExpressionVariablesMap(iterationStep);
         variables.set("width", width);
         variables.set("height", height);
         variables.set("num_z", nZ);
         variables.set("num_c", nC);
         variables.set("num_t", nT);
-        variables.putCustomVariables(getDefaultCustomExpressionVariables());
 
         Map<String, ImageProcessor> processorMap = new HashMap<>();
 

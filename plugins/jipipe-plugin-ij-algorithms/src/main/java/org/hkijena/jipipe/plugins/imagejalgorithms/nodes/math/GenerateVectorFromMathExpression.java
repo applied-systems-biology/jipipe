@@ -88,6 +88,11 @@ public class GenerateVectorFromMathExpression extends JIPipeSimpleIteratingAlgor
     }
 
     @Override
+    protected boolean isAllowEmptyIterationStep() {
+        return true;
+    }
+
+    @Override
     public boolean supportsParallelization() {
         return true;
     }
@@ -95,14 +100,13 @@ public class GenerateVectorFromMathExpression extends JIPipeSimpleIteratingAlgor
     @Override
     protected void runIteration(JIPipeSingleIterationStep iterationStep, JIPipeIterationContext iterationContext, JIPipeGraphNodeRunContext runContext, JIPipeProgressInfo progressInfo) {
         ImagePlus img = IJ.createHyperStack("Generated", width, height, sizeC, sizeZ, sizeT, 32);
-        JIPipeExpressionVariablesMap variableSet = new JIPipeExpressionVariablesMap();
-        variableSet.putAnnotations(iterationStep.getMergedTextAnnotations());
+        JIPipeExpressionVariablesMap variableSet = new JIPipeExpressionVariablesMap(iterationStep);
+
         variableSet.set("width", width);
         variableSet.set("height", height);
         variableSet.set("num_z", sizeZ);
         variableSet.set("num_c", sizeC);
         variableSet.set("num_t", sizeT);
-        variableSet.putCustomVariables(getDefaultCustomExpressionVariables());
 
         if (componentDimension == HyperstackDimension.Channel) {
             int iterationIndex = 0;

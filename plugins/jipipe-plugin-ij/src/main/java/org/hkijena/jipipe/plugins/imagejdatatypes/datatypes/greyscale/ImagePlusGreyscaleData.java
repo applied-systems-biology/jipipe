@@ -22,6 +22,7 @@ import org.hkijena.jipipe.api.SetJIPipeDocumentation;
 import org.hkijena.jipipe.api.data.storage.JIPipeReadDataStorage;
 import org.hkijena.jipipe.plugins.imagejdatatypes.colorspace.ColorSpace;
 import org.hkijena.jipipe.plugins.imagejdatatypes.colorspace.GreyscaleColorSpace;
+import org.hkijena.jipipe.plugins.imagejdatatypes.converters.ImplicitImageTypeConverter;
 import org.hkijena.jipipe.plugins.imagejdatatypes.datatypes.ImagePlusData;
 import org.hkijena.jipipe.plugins.imagejdatatypes.datatypes.ImageTypeInfo;
 import org.hkijena.jipipe.plugins.imagejdatatypes.util.ImageJUtils;
@@ -29,7 +30,7 @@ import org.hkijena.jipipe.plugins.imagejdatatypes.util.ImageJUtils;
 /**
  * Greyscale image without dimension.
  * These image data types exist to address general processing solely based on bit-depth (e.g. process all 2D image planes).
- * Conversion works through {@link org.hkijena.jipipe.plugins.imagejdatatypes.algorithms.ImplicitImageTypeConverter}
+ * Conversion works through {@link ImplicitImageTypeConverter}
  */
 @SetJIPipeDocumentation(name = "ImageJ Image (greyscale)", description = "A greyscale image")
 @ConfigureJIPipeNode(menuPath = "Images\nGreyscale")

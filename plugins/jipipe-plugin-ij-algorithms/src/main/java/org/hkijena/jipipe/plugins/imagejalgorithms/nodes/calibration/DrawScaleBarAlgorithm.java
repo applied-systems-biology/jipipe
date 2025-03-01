@@ -94,8 +94,7 @@ public class DrawScaleBarAlgorithm extends JIPipeSimpleIteratingAlgorithm {
         }
 
         // Render text
-        JIPipeExpressionVariablesMap variables = new JIPipeExpressionVariablesMap();
-        variables.putAnnotations(iterationStep.getMergedTextAnnotations());
+        JIPipeExpressionVariablesMap variables = new JIPipeExpressionVariablesMap(iterationStep);
 
         if (!generator.getConfig().isHideText()) {
             variables.set("unit", cal.getXUnit());

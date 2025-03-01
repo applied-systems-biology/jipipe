@@ -389,7 +389,7 @@ public class JIPipeDesktopRunSingleAlgorithmWindow extends JFrame implements JIP
         JIPipeValidationReport report = new JIPipeValidationReport();
         currentRunSettingsPanel.getRun().reportValidity(new UnspecifiedValidationReportContext(), report);
         if (!report.isEmpty()) {
-            UIUtils.openValidityReportDialog(new JIPipeDesktopDummyWorkbench(),
+            UIUtils.showValidityReportDialog(new JIPipeDesktopDummyWorkbench(),
                     this,
                     report,
                     "Issues with the run",
@@ -415,7 +415,7 @@ public class JIPipeDesktopRunSingleAlgorithmWindow extends JFrame implements JIP
         JIPipeValidationReport report = new JIPipeValidationReport();
         currentRunSettingsPanel.getRun().reportValidity(new UnspecifiedValidationReportContext(), report);
         if (!report.isEmpty()) {
-            UIUtils.openValidityReportDialog(new JIPipeDesktopDummyWorkbench(),
+            UIUtils.showValidityReportDialog(new JIPipeDesktopDummyWorkbench(),
                     this,
                     report,
                     "Issues with the run",

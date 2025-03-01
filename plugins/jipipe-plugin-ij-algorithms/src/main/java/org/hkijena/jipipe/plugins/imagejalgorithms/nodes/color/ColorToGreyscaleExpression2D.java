@@ -106,10 +106,7 @@ public class ColorToGreyscaleExpression2D extends JIPipeSimpleIteratingAlgorithm
             result = IJ.createHyperStack("Greyscale", img.getWidth(), img.getHeight(), img.getNChannels(), img.getNSlices(), img.getNFrames(), 32);
         }
 
-        JIPipeExpressionVariablesMap variableSet = new JIPipeExpressionVariablesMap();
-        for (JIPipeTextAnnotation annotation : iterationStep.getMergedTextAnnotations().values()) {
-            variableSet.set(annotation.getName(), annotation.getValue());
-        }
+        JIPipeExpressionVariablesMap variableSet = new JIPipeExpressionVariablesMap(iterationStep);
         variableSet.set("width", img.getWidth());
         variableSet.set("height", img.getHeight());
         variableSet.set("num_z", img.getNSlices());

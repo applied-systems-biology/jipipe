@@ -182,9 +182,7 @@ public class TurboRegRegistration2DSingleAlgorithm extends JIPipeIteratingAlgori
             return;
         }
 
-        JIPipeExpressionVariablesMap variablesMap = new JIPipeExpressionVariablesMap();
-        variablesMap.putAnnotations(iterationStep.getMergedTextAnnotations());
-        variablesMap.putCustomVariables(getDefaultCustomExpressionVariables());
+        JIPipeExpressionVariablesMap variablesMap = new JIPipeExpressionVariablesMap(iterationStep);
 
         progressInfo.log("Building transformation graph ...");
 

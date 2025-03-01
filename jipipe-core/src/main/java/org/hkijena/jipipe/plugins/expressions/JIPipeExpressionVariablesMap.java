@@ -14,6 +14,12 @@
 package org.hkijena.jipipe.plugins.expressions;
 
 import org.hkijena.jipipe.api.annotation.JIPipeTextAnnotation;
+import org.hkijena.jipipe.api.annotation.JIPipeTextAnnotationMergeMode;
+import org.hkijena.jipipe.api.nodes.JIPipeAlgorithm;
+import org.hkijena.jipipe.api.nodes.iterationstep.JIPipeMultiIterationStep;
+import org.hkijena.jipipe.api.nodes.iterationstep.JIPipeSingleIterationStep;
+import org.hkijena.jipipe.api.parameters.JIPipeParameterAccess;
+import org.hkijena.jipipe.api.project.JIPipeProject;
 import org.hkijena.jipipe.plugins.expressions.custom.JIPipeCustomExpressionVariablesParameter;
 import org.hkijena.jipipe.utils.StringUtils;
 
@@ -33,6 +39,18 @@ public class JIPipeExpressionVariablesMap extends HashMap<String, Object> {
 
     public JIPipeExpressionVariablesMap(JIPipeExpressionVariablesMap other) {
         putAll(other);
+    }
+
+    public JIPipeExpressionVariablesMap(JIPipeSingleIterationStep iterationStep) {
+        putCommonVariables(iterationStep);
+    }
+
+    public JIPipeExpressionVariablesMap(JIPipeMultiIterationStep iterationStep) {
+        putCommonVariables(iterationStep);
+    }
+
+    public JIPipeExpressionVariablesMap(JIPipeAlgorithm node) {
+        putCommonVariables(node);
     }
 
     /**
@@ -118,6 +136,50 @@ public class JIPipeExpressionVariablesMap extends HashMap<String, Object> {
         for (JIPipeTextAnnotation textAnnotation : textAnnotations) {
             putIfAbsent(textAnnotation.getName(), textAnnotation.getValue());
         }
+        return this;
+    }
+
+    public JIPipeExpressionVariablesMap putGlobalVariables(JIPipeProject project) {
+        if(project == null) {
+            return this;
+        }
+        for (Entry<String, JIPipeParameterAccess> entry : project.getMetadata().getGlobalParameters().getParameters().entrySet()) {
+            set("_global." + entry.getKey(), entry.getValue().get(Object.class));
+        }
+        return this;
+    }
+
+    public JIPipeExpressionVariablesMap putCommonVariables(JIPipeSingleIterationStep iterationStep) {
+        if(iterationStep.getNode() instanceof JIPipeAlgorithm) {
+            JIPipeAlgorithm node = (JIPipeAlgorithm) iterationStep.getNode();
+            putCommonVariables(node);
+        }
+        Map<String, JIPipeTextAnnotation> annotations = iterationStep.getMergedTextAnnotations();
+        putAnnotations(annotations);
+        putAnnotationsMap(annotations);
+        return this;
+    }
+
+    private JIPipeExpressionVariablesMap putAnnotationsMap(Map<String, JIPipeTextAnnotation> annotations) {
+        set("_local.annotations", JIPipeTextAnnotation.annotationListToMap(annotations.values(), JIPipeTextAnnotationMergeMode.OverwriteExisting));
+        return this;
+    }
+
+    public JIPipeExpressionVariablesMap putCommonVariables(JIPipeMultiIterationStep iterationStep) {
+        if(iterationStep.getNode() instanceof JIPipeAlgorithm) {
+            JIPipeAlgorithm node = (JIPipeAlgorithm) iterationStep.getNode();
+            putCommonVariables(node);
+        }
+        Map<String, JIPipeTextAnnotation> annotations = iterationStep.getMergedTextAnnotations();
+        putAnnotations(annotations);
+        putAnnotationsMap(annotations);
+        return this;
+    }
+
+    public JIPipeExpressionVariablesMap putCommonVariables(JIPipeAlgorithm node) {
+        putCustomVariables(node.getDefaultCustomExpressionVariables());
+        putProjectDirectories(node.getProjectDirectory(), node.getProjectDataDirs());
+        putGlobalVariables(node.getProject());
         return this;
     }
 }

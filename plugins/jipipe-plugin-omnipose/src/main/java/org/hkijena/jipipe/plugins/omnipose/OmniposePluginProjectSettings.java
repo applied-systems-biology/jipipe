@@ -4,6 +4,7 @@ import org.hkijena.jipipe.JIPipe;
 import org.hkijena.jipipe.api.SetJIPipeDocumentation;
 import org.hkijena.jipipe.api.artifacts.JIPipeArtifact;
 import org.hkijena.jipipe.api.environments.ExternalEnvironmentParameterSettings;
+import org.hkijena.jipipe.api.environments.JIPipeEnvironment;
 import org.hkijena.jipipe.api.parameters.JIPipeParameter;
 import org.hkijena.jipipe.api.registries.JIPipeArtifactsRegistry;
 import org.hkijena.jipipe.api.settings.JIPipeDefaultProjectSettingsSheet;
@@ -18,7 +19,7 @@ import java.util.List;
 public class OmniposePluginProjectSettings extends JIPipeDefaultProjectSettingsSheet {
 
     public static String ID = "org.hkijena.jipipe:omnipose";
-    private OptionalPythonEnvironment projectDefaultEnvironment = new OptionalPythonEnvironment();
+    private OptionalPythonEnvironment omnipose0Environment = new OptionalPythonEnvironment();
 
     public OmniposePluginProjectSettings() {
         autoConfigureDefaultEnvironment();
@@ -34,8 +35,8 @@ public class OmniposePluginProjectSettings extends JIPipeDefaultProjectSettingsS
                 environment.setLoadFromArtifact(true);
                 environment.setArtifactQuery(new JIPipeArtifactQueryParameter(target.getFullId()));
 
-                projectDefaultEnvironment.setEnabled(true);
-                projectDefaultEnvironment.setContent(environment);
+                omnipose0Environment.setEnabled(true);
+                omnipose0Environment.setContent(environment);
             }
         }
     }
@@ -43,13 +44,13 @@ public class OmniposePluginProjectSettings extends JIPipeDefaultProjectSettingsS
     @SetJIPipeDocumentation(name = "Project default environment", description = "If enabled, overwrite the application-wide Omnipose environment and store them inside the project.")
     @JIPipeParameter("project-default-environment")
     @ExternalEnvironmentParameterSettings(showCategory = "Omnipose", allowArtifact = true, artifactFilters = {"com.github.kevinjohncutler.omnipose:*"})
-    public OptionalPythonEnvironment getProjectDefaultEnvironment() {
-        return projectDefaultEnvironment;
+    public OptionalPythonEnvironment getOmnipose0Environment() {
+        return omnipose0Environment;
     }
 
     @JIPipeParameter("project-default-environment")
-    public void setProjectDefaultEnvironment(OptionalPythonEnvironment projectDefaultEnvironment) {
-        this.projectDefaultEnvironment = projectDefaultEnvironment;
+    public void setOmnipose0Environment(OptionalPythonEnvironment omnipose0Environment) {
+        this.omnipose0Environment = omnipose0Environment;
     }
 
     @Override
@@ -75,5 +76,12 @@ public class OmniposePluginProjectSettings extends JIPipeDefaultProjectSettingsS
     @Override
     public String getDescription() {
         return "Settings related to the Omnipose integration";
+    }
+
+    @Override
+    public void getEnvironmentDependencies(List<JIPipeEnvironment> target) {
+        if(omnipose0Environment.isEnabled()) {
+            target.add(omnipose0Environment.getContent());
+        }
     }
 }

@@ -35,11 +35,11 @@ import org.hkijena.jipipe.api.nodes.iterationstep.JIPipeMultiIterationStep;
 import org.hkijena.jipipe.api.parameters.JIPipeParameter;
 import org.hkijena.jipipe.api.validation.*;
 import org.hkijena.jipipe.api.validation.contexts.GraphNodeValidationReportContext;
-import org.hkijena.jipipe.plugins.cellpose.CellposeUtils;
+import org.hkijena.jipipe.plugins.cellpose.utils.CellposeUtils;
 import org.hkijena.jipipe.plugins.cellpose.legacy.datatypes.LegacyCellposeModelData;
 import org.hkijena.jipipe.plugins.cellpose.legacy.datatypes.LegacyCellposeSizeModelData;
-import org.hkijena.jipipe.plugins.cellpose.parameters.CellposeChannelSettings;
-import org.hkijena.jipipe.plugins.cellpose.parameters.CellposeGPUSettings;
+import org.hkijena.jipipe.plugins.cellpose.parameters.cp2.Cellpose2ChannelSettings;
+import org.hkijena.jipipe.plugins.cellpose.parameters.cp2.Cellpose2GPUSettings;
 import org.hkijena.jipipe.plugins.expressions.DataAnnotationQueryExpression;
 import org.hkijena.jipipe.plugins.imagejalgorithms.nodes.binary.ConnectedComponentsLabeling2DAlgorithm;
 import org.hkijena.jipipe.plugins.imagejalgorithms.nodes.binary.ConnectedComponentsLabeling3DAlgorithm;
@@ -83,9 +83,9 @@ public class LegacyOmnipose0TrainingAlgorithm extends JIPipeSingleIterationAlgor
     public static final JIPipeDataSlotInfo INPUT_PRETRAINED_MODEL = new JIPipeDataSlotInfo(LegacyCellposeModelData.class, JIPipeSlotType.Input, "Pretrained Model", "A custom pretrained model");
 
     public static final JIPipeDataSlotInfo OUTPUT_SIZE_MODEL = new JIPipeDataSlotInfo(LegacyCellposeSizeModelData.class, JIPipeSlotType.Output, "Size Model", "Generated size model", true);
-    private final CellposeGPUSettings gpuSettings;
+    private final Cellpose2GPUSettings gpuSettings;
     private final OmniposeTrainingTweaksSettings tweaksSettings;
-    private final CellposeChannelSettings channelSettings;
+    private final Cellpose2ChannelSettings channelSettings;
     private LegacyOmnipose0PretrainedModel pretrainedModel = LegacyOmnipose0PretrainedModel.BactOmni;
     private int numEpochs = 500;
     private boolean enable3DSegmentation = true;
@@ -98,9 +98,9 @@ public class LegacyOmnipose0TrainingAlgorithm extends JIPipeSingleIterationAlgor
 
     public LegacyOmnipose0TrainingAlgorithm(JIPipeNodeInfo info) {
         super(info);
-        this.gpuSettings = new CellposeGPUSettings();
+        this.gpuSettings = new Cellpose2GPUSettings();
         this.tweaksSettings = new OmniposeTrainingTweaksSettings();
-        this.channelSettings = new CellposeChannelSettings();
+        this.channelSettings = new Cellpose2ChannelSettings();
         updateSlots();
 
         registerSubParameter(gpuSettings);
@@ -111,9 +111,9 @@ public class LegacyOmnipose0TrainingAlgorithm extends JIPipeSingleIterationAlgor
     public LegacyOmnipose0TrainingAlgorithm(LegacyOmnipose0TrainingAlgorithm other) {
         super(other);
 
-        this.gpuSettings = new CellposeGPUSettings(other.gpuSettings);
+        this.gpuSettings = new Cellpose2GPUSettings(other.gpuSettings);
         this.tweaksSettings = new OmniposeTrainingTweaksSettings(other.tweaksSettings);
-        this.channelSettings = new CellposeChannelSettings(other.channelSettings);
+        this.channelSettings = new Cellpose2ChannelSettings(other.channelSettings);
 
         this.pretrainedModel = other.pretrainedModel;
         this.numEpochs = other.numEpochs;
@@ -234,7 +234,7 @@ public class LegacyOmnipose0TrainingAlgorithm extends JIPipeSingleIterationAlgor
 
     @SetJIPipeDocumentation(name = "Omnipose: GPU", description = "Controls how the graphics card is utilized.")
     @JIPipeParameter(value = "gpu-settings", collapsed = true, resourceClass = OmniposePlugin.class, iconURL = "/org/hkijena/jipipe/plugins/omnipose/icons/omnipose.png")
-    public CellposeGPUSettings getGpuSettings() {
+    public Cellpose2GPUSettings getGpuSettings() {
         return gpuSettings;
     }
 
@@ -246,7 +246,7 @@ public class LegacyOmnipose0TrainingAlgorithm extends JIPipeSingleIterationAlgor
 
     @SetJIPipeDocumentation(name = "Omnipose: Channels", description = "Determines which channels are used for the segmentation")
     @JIPipeParameter(value = "channel-parameters", resourceClass = OmniposePlugin.class, iconURL = "/org/hkijena/jipipe/plugins/omnipose/icons/omnipose.png")
-    public CellposeChannelSettings getChannelSettings() {
+    public Cellpose2ChannelSettings getChannelSettings() {
         return channelSettings;
     }
 

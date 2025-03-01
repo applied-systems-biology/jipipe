@@ -130,25 +130,14 @@ public class IterativeThresholdByROIStatistics2DAlgorithm extends JIPipeIteratin
         // Generate thresholds
         List<Integer> thresholds;
         {
-            JIPipeExpressionVariablesMap variables = new JIPipeExpressionVariablesMap();
-            variables.putAnnotations(iterationStep.getMergedTextAnnotations());
-            getDefaultCustomExpressionVariables().writeToVariables(variables);
+            JIPipeExpressionVariablesMap variables = new JIPipeExpressionVariablesMap(iterationStep);
             thresholds = this.thresholds.getIntegers(0, 255, variables);
         }
 
         // Generate variables
-        JIPipeExpressionVariablesMap roiFilterVariables = new JIPipeExpressionVariablesMap();
-        JIPipeExpressionVariablesMap thresholdCriteriaVariables = new JIPipeExpressionVariablesMap();
-        JIPipeExpressionVariablesMap accumulationVariables = new JIPipeExpressionVariablesMap();
-
-        roiFilterVariables.putAnnotations(iterationStep.getMergedTextAnnotations());
-        getDefaultCustomExpressionVariables().writeToVariables(roiFilterVariables);
-
-        thresholdCriteriaVariables.putAnnotations(iterationStep.getMergedTextAnnotations());
-        getDefaultCustomExpressionVariables().writeToVariables(thresholdCriteriaVariables);
-
-        accumulationVariables.putAnnotations(iterationStep.getMergedTextAnnotations());
-        getDefaultCustomExpressionVariables().writeToVariables(accumulationVariables);
+        JIPipeExpressionVariablesMap roiFilterVariables = new JIPipeExpressionVariablesMap(iterationStep);
+        JIPipeExpressionVariablesMap thresholdCriteriaVariables = new JIPipeExpressionVariablesMap(iterationStep);
+        JIPipeExpressionVariablesMap accumulationVariables = new JIPipeExpressionVariablesMap(iterationStep);
 
         // Do we optimize?
         boolean optimize = scoreParameters.scoreExpression.isEnabled();
@@ -192,9 +181,7 @@ public class IterativeThresholdByROIStatistics2DAlgorithm extends JIPipeIteratin
         // Combine thresholds
         List<JIPipeTextAnnotation> annotations = new ArrayList<>();
         if (!detectedThresholds.isEmpty()) {
-            JIPipeExpressionVariablesMap variables = new JIPipeExpressionVariablesMap();
-            variables.putAnnotations(iterationStep.getMergedTextAnnotations());
-            getDefaultCustomExpressionVariables().writeToVariables(variables);
+            JIPipeExpressionVariablesMap variables = new JIPipeExpressionVariablesMap(iterationStep);
             variables.set("thresholds", detectedThresholds);
             Number combined = (Number) thresholdCombinationExpression.evaluate(variables);
             int threshold = Math.min(255, Math.max(0, combined.intValue()));

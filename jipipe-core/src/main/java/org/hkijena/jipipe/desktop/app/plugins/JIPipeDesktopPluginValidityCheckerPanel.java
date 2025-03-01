@@ -25,9 +25,7 @@ import java.util.HashMap;
  * Panel that checks plugin validity
  */
 public class JIPipeDesktopPluginValidityCheckerPanel extends JIPipeDesktopReloadableValidityChecker implements JIPipeService.PluginRegisteredEventListener {
-    /**
-     * Creates new instance
-     */
+
     public JIPipeDesktopPluginValidityCheckerPanel(JIPipeDesktopWorkbench workbench) {
         super(workbench, JIPipe.getInstance(),
                 MarkdownText.fromPluginResource("documentation/plugin-validation.md", new HashMap<>()));

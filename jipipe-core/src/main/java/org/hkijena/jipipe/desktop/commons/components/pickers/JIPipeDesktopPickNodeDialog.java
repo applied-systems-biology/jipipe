@@ -146,8 +146,8 @@ public class JIPipeDesktopPickNodeDialog extends JDialog {
     }
 
     private List<JIPipeGraphNode> getFilteredAndSortedInfos() {
-        Predicate<JIPipeGraphNode> filterFunction = info -> searchField.test(info.getName());
-        return nodes.stream().filter(filterFunction).sorted(Comparator.comparing(JIPipeGraphNode::getName)).collect(Collectors.toList());
+        Predicate<JIPipeGraphNode> filterFunction = info -> searchField.test(info.getDisplayName());
+        return nodes.stream().filter(filterFunction).sorted(Comparator.comparing(JIPipeGraphNode::getDisplayName)).collect(Collectors.toList());
     }
 
     private void reloadNodeList() {

@@ -15,15 +15,19 @@ package org.hkijena.jipipe.desktop.app;
 
 import com.fasterxml.jackson.databind.JsonNode;
 import net.imagej.updater.UpdateSite;
+import net.java.balloontip.BalloonTip;
 import org.apache.commons.math3.util.Precision;
 import org.hkijena.jipipe.JIPipe;
 import org.hkijena.jipipe.JIPipeDependency;
 import org.hkijena.jipipe.JIPipeImageJUpdateSiteDependency;
+import org.hkijena.jipipe.api.AbstractJIPipeRunnable;
+import org.hkijena.jipipe.api.data.serialization.JIPipeDataTableInfo;
 import org.hkijena.jipipe.api.notifications.JIPipeNotificationInbox;
 import org.hkijena.jipipe.api.project.JIPipeProject;
 import org.hkijena.jipipe.api.project.JIPipeProjectMetadata;
 import org.hkijena.jipipe.api.project.JIPipeProjectTemplate;
 import org.hkijena.jipipe.api.registries.JIPipePluginRegistry;
+import org.hkijena.jipipe.api.run.JIPipeRunnable;
 import org.hkijena.jipipe.api.run.JIPipeRunnableQueue;
 import org.hkijena.jipipe.api.validation.JIPipeValidationReport;
 import org.hkijena.jipipe.api.validation.JIPipeValidationRuntimeException;
@@ -52,6 +56,7 @@ import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.*;
+import java.util.List;
 
 /**
  * Window that holds an {@link JIPipeDesktopProjectWorkbench} instance
@@ -65,6 +70,7 @@ public class JIPipeDesktopProjectWindow extends JFrame {
     private JIPipeDesktopProjectWorkbench projectUI;
     private Path projectSavePath;
     private UUID sessionId = UUID.randomUUID();
+    private List<BalloonTip> registeredBalloons = new ArrayList<>();
 
     /**
      * @param context          context
@@ -284,7 +290,7 @@ public class JIPipeDesktopProjectWindow extends JFrame {
                     UIUtils.openNotificationsDialog(window.getProjectUI(), this, notifications, "Potential issues found", "There seem to be potential issues that might prevent the successful execution of the pipeline. Please review the following entries and resolve the issues if possible.", true);
                 }
                 if (!report.isValid()) {
-                    UIUtils.openValidityReportDialog(new JIPipeDesktopDummyWorkbench(), this, report, "Errors while loading the project", "It seems that not all parameters/nodes/connections could be restored from the project file. The cause might be that you are using a version of JIPipe that changed the affected features. " +
+                    UIUtils.showValidityReportDialog(new JIPipeDesktopDummyWorkbench(), this, report, "Errors while loading the project", "It seems that not all parameters/nodes/connections could be restored from the project file. The cause might be that you are using a version of JIPipe that changed the affected features. " +
                             "Please review the entries and apply the necessary changes (e.g., reconnecting nodes).", false);
                 }
             } catch (IOException e) {
@@ -346,37 +352,68 @@ public class JIPipeDesktopProjectWindow extends JFrame {
                         return;
                 }
 
-                JIPipeProject project = new JIPipeProject();
-                project.fromJson(jsonData, new UnspecifiedValidationReportContext(), report, notifications);
-                project.setWorkDirectory(path.getParent());
-                project.validateUserDirectories(notifications);
-                JIPipeDesktopProjectWindow window;
-                if (forceCurrentWindow) {
-                    window = this;
-                    loadProject(project, false, false);
-                } else {
-                    window = openProjectInThisOrNewWindow("Open project", project, false, false);
-                }
-                if (window == null)
-                    return;
-                window.projectSavePath = path;
-                window.getProjectUI().sendStatusBarText("Opened project from " + window.projectSavePath);
-                window.updateTitle();
-                JIPipe.getInstance().getRecentProjectsRegistry().add(path);
-                if (!notifications.isEmpty()) {
-                    UIUtils.openNotificationsDialog(window.getProjectUI(),
-                            this,
-                            notifications,
-                            "Potential issues found",
-                            "There seem to be potential issues that might prevent the successful execution of the pipeline. Please review the following entries and resolve the issues if possible.",
-                            true);
-                }
+                JIPipeRunnableQueue localQueue = new JIPipeRunnableQueue("Project loading");
+                JIPipeDesktopProjectWindow currentWindow = this;
+                JIPipeRunnable run = new AbstractJIPipeRunnable() {
+                    @Override
+                    public String getTaskLabel() {
+                        return "Load project " + path;
+                    }
+
+                    @Override
+                    public void run() {
+                        try {
+                            JIPipeProject project = new JIPipeProject();
+                            getProgressInfo().log("Loading project " + path);
+                            if(Files.size(path) > 3 * 1024 * 1024) {
+                                getProgressInfo().log("INFO: File size is " + (Files.size(path) / 1024 / 1024) + " MB. Loading this project may take long.");
+                                getProgressInfo().log("INFO: Consider down-sizing your projects if you experience performance issues.");
+                            }
+                            project.fromJson(jsonData, new UnspecifiedValidationReportContext(), report, notifications);
+                            project.setWorkDirectory(path.getParent());
+                            project.validateUserDirectories(notifications);
+
+                            if(getProgressInfo().isCancelled()) {
+                                return;
+                            }
+
+                            SwingUtilities.invokeLater(() -> {
+                                JIPipeDesktopProjectWindow window;
+                                if (forceCurrentWindow) {
+                                    window = currentWindow;
+                                    loadProject(project, false, false);
+                                } else {
+                                    window = openProjectInThisOrNewWindow("Open project", project, false, false);
+                                }
+                                if (window == null)
+                                    return;
+                                window.projectSavePath = path;
+                                window.getProjectUI().sendStatusBarText("Opened project from " + window.projectSavePath);
+                                window.updateTitle();
+                                JIPipe.getInstance().getRecentProjectsRegistry().add(path);
+                                if (!notifications.isEmpty()) {
+                                    UIUtils.openNotificationsDialog(window.getProjectUI(),
+                                            currentWindow,
+                                            notifications,
+                                            "Potential issues found",
+                                            "There seem to be potential issues that might prevent the successful execution of the pipeline. Please review the following entries and resolve the issues if possible.",
+                                            true);
+                                }
+                            });
+
+                        } catch (Exception e) {
+                            throw new RuntimeException(e);
+                        }
+                    }
+                };
+                JIPipeDesktopRunExecuteUI.runInDialog(projectUI, this, run, localQueue);
+
                 JIPipeFileChooserApplicationSettings.getInstance().setLastDirectoryBy(JIPipeFileChooserApplicationSettings.LastDirectoryKey.Projects, path.getParent());
             } catch (IOException e) {
                 throw new RuntimeException(e);
             }
             if (!report.isValid()) {
-                UIUtils.openValidityReportDialog(new JIPipeDesktopDummyWorkbench(), this, report, "Errors while loading the project", "It seems that not all parameters/nodes/connections could be restored from the project file. The cause might be that you are using a version of JIPipe that changed the affected features. " +
+                UIUtils.showValidityReportDialog(new JIPipeDesktopDummyWorkbench(), this, report, "Errors while loading the project", "It seems that not all parameters/nodes/connections could be restored from the project file. The cause might be that you are using a version of JIPipe that changed the affected features. " +
                         "Please review the entries and apply the necessary changes (e.g., reconnecting nodes).", false);
             }
         } else if (Files.isDirectory(path)) {
@@ -436,7 +473,7 @@ public class JIPipeDesktopProjectWindow extends JFrame {
                 throw new RuntimeException(e);
             }
             if (!report.isValid()) {
-                UIUtils.openValidityReportDialog(new JIPipeDesktopDummyWorkbench(),
+                UIUtils.showValidityReportDialog(new JIPipeDesktopDummyWorkbench(),
                         this,
                         report,
                         "Errors while loading the project",
@@ -528,12 +565,20 @@ public class JIPipeDesktopProjectWindow extends JFrame {
     private JIPipeDesktopProjectWindow openProjectInThisOrNewWindow(String messageTitle, JIPipeProject project, boolean showIntroduction, boolean isNewProject) {
         switch (UIUtils.askOpenInCurrentWindow(this, messageTitle)) {
             case JOptionPane.YES_OPTION:
+                closeAllBalloons();
                 loadProject(project, false, isNewProject);
                 return this;
             case JOptionPane.NO_OPTION:
                 return newWindow(context, project, showIntroduction, isNewProject);
         }
         return null;
+    }
+
+    private void closeAllBalloons() {
+        for (BalloonTip registeredBalloon : registeredBalloons) {
+            registeredBalloon.closeBalloon();
+        }
+        registeredBalloons.clear();
     }
 
     /**
@@ -609,5 +654,9 @@ public class JIPipeDesktopProjectWindow extends JFrame {
 
     public UUID getSessionId() {
         return sessionId;
+    }
+
+    public void registerBalloon(BalloonTip balloonTip) {
+        this.registeredBalloons.add(balloonTip);
     }
 }

@@ -30,11 +30,15 @@ import org.hkijena.jipipe.plugins.core.CorePlugin;
 import org.hkijena.jipipe.plugins.core.data.OpenInNativeApplicationDataImportOperation;
 import org.hkijena.jipipe.plugins.filesystem.FilesystemPlugin;
 import org.hkijena.jipipe.plugins.imagejdatatypes.algorithms.*;
+import org.hkijena.jipipe.plugins.imagejdatatypes.algorithms.annotate.AnnotateDataWithImagePropertiesAlgorithm;
+import org.hkijena.jipipe.plugins.imagejdatatypes.algorithms.annotate.BioFormatsAnnotatorAlgorithm;
+import org.hkijena.jipipe.plugins.imagejdatatypes.algorithms.annotate.ImagePropertiesToAnnotationAlgorithm;
 import org.hkijena.jipipe.plugins.imagejdatatypes.algorithms.color.ToHSBColorSpaceConverterAlgorithm;
 import org.hkijena.jipipe.plugins.imagejdatatypes.algorithms.color.ToLABColorSpaceConverterAlgorithm;
 import org.hkijena.jipipe.plugins.imagejdatatypes.algorithms.color.ToRGBColorSpaceConverterAlgorithm;
-import org.hkijena.jipipe.plugins.imagejdatatypes.algorithms.datasources.*;
+import org.hkijena.jipipe.plugins.imagejdatatypes.algorithms.io.*;
 import org.hkijena.jipipe.plugins.imagejdatatypes.compat.*;
+import org.hkijena.jipipe.plugins.imagejdatatypes.converters.*;
 import org.hkijena.jipipe.plugins.imagejdatatypes.datatypes.*;
 import org.hkijena.jipipe.plugins.imagejdatatypes.datatypes.color.ImagePlusColorData;
 import org.hkijena.jipipe.plugins.imagejdatatypes.datatypes.color.ImagePlusColorHSBData;
@@ -502,21 +506,27 @@ public class ImageJDataTypesPlugin extends JIPipePrepackagedDefaultJavaPlugin {
         registerImageDataType("imagej-imgplus-fft-5d", ImagePlusFFT5DData.class, imageImporter, imageExporter, "icons/data-types/imgplus-fft-5d.png");
 
         // Register data sources
-        registerNodeType("import-imagej-roi-from-file", ROIDataFromFile.class);
-        registerNodeType("extract-imagej-roi-from-ome-image", ROIDataFromOMEImage.class);
-        registerEnumParameterType("import-imagej-results-table-from-file:file-format", ResultsTableFromFile.FileFormat.class, "File format", "A file format");
-        registerNodeType("import-imagej-results-table-from-file", ResultsTableFromFile.class);
-        registerNodeType("import-imagej-imgplus-from-file", ImagePlusFromFile.class);
-        registerNodeType("import-imagej-bioformats", BioFormatsImporter.class, UIUtils.getIconURLFromResources("apps/bioformats.png"));
-        registerNodeType("import-imagej-lut-from-file-as-rgb", ImportLUTAsRGBFromFile.class, ResourceUtils.getPluginResource("icons/data-types/lut.png"));
+        registerNodeType("import-imagej-roi-from-file", ImportRoi2DAlgorithm.class);
+        registerNodeType("extract-imagej-roi-from-ome-image", ExtractRoi2DFromOMEImageAlgorithm.class);
+        registerEnumParameterType("import-imagej-results-table-from-file:file-format", ImportResultsTableAlgorithm.FileFormat.class, "File format", "A file format");
+        registerNodeType("import-imagej-results-table-from-file", ImportResultsTableAlgorithm.class);
+        registerNodeType("import-imagej-imgplus-from-file", ImportImagePlusAlgorithm.class);
+        registerNodeType("import-imagej-bioformats", BioFormatsImporterAlgorithm.class, UIUtils.getIconURLFromResources("apps/bioformats.png"));
+        registerNodeType("import-imagej-lut-from-file-as-rgb", ImportLUTAsRGBFromFileAlgorithm.class, UIUtils.getIconURLFromResources("data-types/lut.png"));
+        registerNodeType("import-ome-zarr-from-zip-directory-as-imgplus", ImportOMEZARRFromZipDirectoryAsImagePlusAlgorithm.class, UIUtils.getIconURLFromResources("actions/zarr.png"));
+        registerNodeType("import-ome-zarr-from-uri-as-imgplus", ImportOMEZARRFromURIAsImagePlusAlgorithm.class, UIUtils.getIconURLFromResources("actions/zarr.png"));
 
         // Register algorithms
         registerNodeType("convert-imagej-image", ImageTypeConverter.class, UIUtils.getIconURLFromResources("actions/viewimage.png"));
-        registerNodeType("export-imagej-bioformats", BioFormatsExporter.class, UIUtils.getIconURLFromResources("apps/bioformats.png"));
-        registerNodeType("export-imagej-bioformats-v2", BioFormatsExporter2.class, UIUtils.getIconURLFromResources("apps/bioformats.png"));
+        registerNodeType("export-imagej-bioformats", BioFormatsExporterAlgorithm.class, UIUtils.getIconURLFromResources("apps/bioformats.png"));
+        registerNodeType("export-imagej-bioformats-v2", BioFormatsExporter2Algorithm.class, UIUtils.getIconURLFromResources("apps/bioformats.png"));
+        registerNodeType("annotate-with-bioformats", BioFormatsAnnotatorAlgorithm.class, UIUtils.getIconURLFromResources("apps/bioformats.png"));
         registerNodeType("set-imagej-bioformats-settings", SetBioFormatsExporterSettings.class, UIUtils.getIconURLFromResources("apps/bioformats.png"));
         registerNodeType("image-properties-to-annotation", ImagePropertiesToAnnotationAlgorithm.class, UIUtils.getIconURLFromResources("data-types/annotation-table.png"));
         registerNodeType("annotate-data-with-image-properties", AnnotateDataWithImagePropertiesAlgorithm.class, UIUtils.getIconURLFromResources("data-types/annotation-table.png"));
+        registerNodeType("ij1-export-ome-zarr", ExportImagePlusAsOMEZARRAlgorithm.class, UIUtils.getIconURLFromResources("actions/zarr.png"));
+        registerEnumParameterType("ij1-export-ome-zarr:output-format", ExportImagePlusAsOMEZARRAlgorithm.OutputFormat.class, "ZARR Output format", "Output formats");
+        registerEnumParameterType("ij1-export-ome-zarr:compression", ExportImagePlusAsOMEZARRAlgorithm.Compression.class, "ZARR Compression", "Available compression types");
 
         registerNodeType("ij1-color-convert-to-rgb", ToRGBColorSpaceConverterAlgorithm.class, UIUtils.getIconURLFromResources("data-types/imgplus-color-rgb.png"));
         registerNodeType("ij1-color-convert-to-hsb", ToHSBColorSpaceConverterAlgorithm.class, UIUtils.getIconURLFromResources("data-types/imgplus-color-hsb.png"));

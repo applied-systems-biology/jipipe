@@ -139,11 +139,11 @@ public class JIPipeDesktopLegacyImageViewerPanel2D extends JPanel implements JIP
 
     public LegacyImageViewer2DUIApplicationSettings getSettings() {
         return settings;
-    }    private final Timer animationTimer = new Timer(250, e -> animateNextSlice());
+    }
 
     public List<CompositeLayer> getOrderedCompositeBlendLayers() {
         return Collections.unmodifiableList(orderedCompositeBlendLayers);
-    }
+    }    private final Timer animationTimer = new Timer(250, e -> animateNextSlice());
 
     public Map<Integer, CompositeLayer> getCompositeBlendLayers() {
         return Collections.unmodifiableMap(compositeBlendLayers);
@@ -280,6 +280,13 @@ public class JIPipeDesktopLegacyImageViewerPanel2D extends JPanel implements JIP
         });
     }
 
+    private void stopAnimations() {
+        animationTimer.stop();
+        animationFrameToggle.setSelected(false);
+        animationChannelToggle.setSelected(false);
+        animationStackToggle.setSelected(false);
+    }
+
 
 //    public void setRotationEnabled(boolean enabled) {
 //        rotateLeftButton.setVisible(enabled);
@@ -290,13 +297,6 @@ public class JIPipeDesktopLegacyImageViewerPanel2D extends JPanel implements JIP
 //            refreshSlice();
 //        }
 //    }
-
-    private void stopAnimations() {
-        animationTimer.stop();
-        animationFrameToggle.setSelected(false);
-        animationChannelToggle.setSelected(false);
-        animationStackToggle.setSelected(false);
-    }
 
     private void addSliderToForm(JSlider slider, JLabel label, JToggleButton animation, String name, String labelFormat) {
 

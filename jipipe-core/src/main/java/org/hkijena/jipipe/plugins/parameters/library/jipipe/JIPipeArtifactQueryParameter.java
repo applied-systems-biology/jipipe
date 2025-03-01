@@ -47,4 +47,15 @@ public class JIPipeArtifactQueryParameter {
     public String toString() {
         return query;
     }
+
+    public boolean isStatic() {
+        return query.contains(":") && !query.contains("*");
+    }
+
+    public String getBaseQuery() {
+        if(isStatic()) {
+            return query.split(":")[0] + ":*";
+        }
+        return query;
+    }
 }

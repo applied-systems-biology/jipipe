@@ -124,11 +124,7 @@ public class CustomAutoThreshold2D32Fv2Algorithm extends JIPipeIteratingAlgorith
                 8);
         ROI2DListData roiInput = null;
         ImagePlus maskInput = null;
-        JIPipeExpressionVariablesMap parameters = new JIPipeExpressionVariablesMap();
-
-        for (JIPipeTextAnnotation annotation : iterationStep.getMergedTextAnnotations().values()) {
-            parameters.set(annotation.getName(), annotation.getValue());
-        }
+        JIPipeExpressionVariablesMap parameters = new JIPipeExpressionVariablesMap(iterationStep);
 
         parameters.set("width", inputImage.getWidth());
         parameters.set("height", inputImage.getHeight());
@@ -185,7 +181,7 @@ public class CustomAutoThreshold2D32Fv2Algorithm extends JIPipeIteratingAlgorith
         List<JIPipeTextAnnotation> annotations = new ArrayList<>();
 
         {
-            JIPipeExpressionVariablesMap variableSet = new JIPipeExpressionVariablesMap();
+            JIPipeExpressionVariablesMap variableSet = new JIPipeExpressionVariablesMap(iterationStep);
             variableSet.set("thresholds", minThresholds);
             Number combined = (Number) minThresholdParameters.thresholdCombinationExpression.evaluate(variableSet);
             minThreshold = combined.floatValue();
@@ -194,7 +190,7 @@ public class CustomAutoThreshold2D32Fv2Algorithm extends JIPipeIteratingAlgorith
             }
         }
         {
-            JIPipeExpressionVariablesMap variableSet = new JIPipeExpressionVariablesMap();
+            JIPipeExpressionVariablesMap variableSet = new JIPipeExpressionVariablesMap(iterationStep);
             variableSet.set("thresholds", maxThresholds);
             Number combined = (Number) maxThresholdParameters.thresholdCombinationExpression.evaluate(variableSet);
             maxThreshold = combined.floatValue();
@@ -285,13 +281,13 @@ public class CustomAutoThreshold2D32Fv2Algorithm extends JIPipeIteratingAlgorith
         }, progressInfo);
         List<JIPipeTextAnnotation> annotations = new ArrayList<>();
         if (minThresholdParameters.thresholdAnnotation.isEnabled()) {
-            JIPipeExpressionVariablesMap variableSet = new JIPipeExpressionVariablesMap();
+            JIPipeExpressionVariablesMap variableSet = new JIPipeExpressionVariablesMap(iterationStep);
             variableSet.set("thresholds", minThresholds);
             String result = minThresholdParameters.thresholdCombinationExpression.evaluate(variableSet) + "";
             annotations.add(minThresholdParameters.thresholdAnnotation.createAnnotation(result));
         }
         if (maxThresholdParameters.thresholdAnnotation.isEnabled()) {
-            JIPipeExpressionVariablesMap variableSet = new JIPipeExpressionVariablesMap();
+            JIPipeExpressionVariablesMap variableSet = new JIPipeExpressionVariablesMap(iterationStep);
             variableSet.set("thresholds", maxThresholds);
             String result = maxThresholdParameters.thresholdCombinationExpression.evaluate(variableSet) + "";
             annotations.add(maxThresholdParameters.thresholdAnnotation.createAnnotation(result));

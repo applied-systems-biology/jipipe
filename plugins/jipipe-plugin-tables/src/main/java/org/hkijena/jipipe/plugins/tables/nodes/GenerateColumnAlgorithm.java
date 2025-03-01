@@ -80,9 +80,7 @@ public class GenerateColumnAlgorithm extends JIPipeSimpleIteratingAlgorithm {
         if (ensureMinNumberOfRows.isEnabled()) {
             table.addRows(ensureMinNumberOfRows.getContent() - table.getRowCount());
         }
-        JIPipeExpressionVariablesMap variableSet = new JIPipeExpressionVariablesMap();
-        variableSet.putAnnotations(iterationStep.getMergedTextAnnotations());
-        getDefaultCustomExpressionVariables().writeToVariables(variableSet);
+        JIPipeExpressionVariablesMap variableSet = new JIPipeExpressionVariablesMap(iterationStep);
 
         variableSet.set("num_rows", table.getRowCount());
         for (ExpressionTableColumnGeneratorProcessor entry : columns) {

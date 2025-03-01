@@ -139,8 +139,8 @@ public class SortAndExtractRoiByStatisticsAlgorithm extends JIPipeIteratingAlgor
             data = sortedData;
         }
 
-        JIPipeExpressionVariablesMap variables = new JIPipeExpressionVariablesMap();
-        variables.putAnnotations(iterationStep.getMergedTextAnnotations());
+        JIPipeExpressionVariablesMap variables = new JIPipeExpressionVariablesMap(iterationStep);
+
         int topN = (int) selection.apply(data.size(), variables);
         if (autoClamp) {
             topN = Math.min(topN, data.size());

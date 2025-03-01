@@ -84,7 +84,7 @@ public class FilterLabelsByIdAlgorithm extends JIPipeSimpleIteratingAlgorithm {
         ImagePlus inputImage = iterationStep.getInputData(getFirstInputSlot(), ImagePlusGreyscaleData.class, progressInfo).getImage();
         ImagePlus outputImage = ImageJUtils.duplicate(inputImage);
         outputImage.setTitle(inputImage.getTitle());
-        int[] ints = Ints.toArray(values.getIntegers(0, 0, new JIPipeExpressionVariablesMap()));
+        int[] ints = Ints.toArray(values.getIntegers(0, 0, new JIPipeExpressionVariablesMap(iterationStep)));
         if (keepValues) {
             ImageJUtils.forEachIndexedZCTSlice(outputImage, (ip, index) -> ImageJAlgorithmUtils.removeLabelsExcept(ip, ints), progressInfo);
         } else {

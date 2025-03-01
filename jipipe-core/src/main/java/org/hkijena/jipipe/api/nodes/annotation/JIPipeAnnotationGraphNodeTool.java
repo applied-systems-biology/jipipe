@@ -119,7 +119,7 @@ public class JIPipeAnnotationGraphNodeTool<T extends JIPipeAnnotationGraphNode> 
         T newNode = JIPipe.createNode(nodeClass);
         newNode.setGridWidth(w);
         newNode.setGridHeight(h);
-        newNode.setLocationWithin(getGraphEditor().getCompartment(), new Point(x, y), getGraphEditor().getCanvasUI().getViewMode().name());
+        newNode.setNodeUILocationWithin(getGraphEditor().getCompartment(), new Point(x, y), getGraphEditor().getCanvasUI().getViewMode().name());
         return newNode;
     }
 

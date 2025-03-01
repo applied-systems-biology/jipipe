@@ -84,8 +84,8 @@ public class ExtractXPathDataAsTableAlgorithm extends JIPipeSimpleIteratingAlgor
 
         List<TableColumnData> columns = new ArrayList<>();
 
-        JIPipeExpressionVariablesMap variables = new JIPipeExpressionVariablesMap();
-        variables.putAnnotations(iterationStep.getMergedTextAnnotations());
+        JIPipeExpressionVariablesMap variables = new JIPipeExpressionVariablesMap(iterationStep);
+
         for (Entry entry : entries.mapToCollection(Entry.class)) {
             String path = entry.getxPath().evaluateToString(variables);
             String columnName = entry.getColumnName().evaluateToString(variables);

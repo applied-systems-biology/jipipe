@@ -102,7 +102,7 @@ public class JIPipeRunAlgorithmCommand extends DynamicCommand implements Initial
                 if (GraphicsEnvironment.isHeadless()) {
                     report.print();
                 } else {
-                    UIUtils.openValidityReportDialog(new JIPipeDesktopDummyWorkbench(),
+                    UIUtils.showValidityReportDialog(new JIPipeDesktopDummyWorkbench(),
                             null,
                             report,
                             "Errors while initializing JIPipe",

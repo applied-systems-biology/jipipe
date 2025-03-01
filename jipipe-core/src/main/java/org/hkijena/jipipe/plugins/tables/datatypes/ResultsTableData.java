@@ -73,7 +73,7 @@ import static ij.measure.ResultsTable.COLUMN_NOT_FOUND;
 /**
  * Data containing a {@link ResultsTable}
  */
-@SetJIPipeDocumentation(name = "Results table", description = "An ImageJ table")
+@SetJIPipeDocumentation(name = "ImageJ table", description = "An ImageJ results table")
 @JsonSerialize(using = ResultsTableData.Serializer.class)
 @JsonDeserialize(using = ResultsTableData.Deserializer.class)
 @JIPipeDataStorageDocumentation(humanReadableDescription = "Contains a single *.csv file that contains the table data.",

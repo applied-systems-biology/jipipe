@@ -72,9 +72,8 @@ public class ReorderHyperstackSlicesExpressionAlgorithm extends JIPipeSimpleIter
         Map<ImageSliceIndex, ImageProcessor> slices = ImageJUtils.splitIntoSlices(inputImage);
         Map<ImageProcessor, ImageSliceIndex> newSliceIndices = new IdentityHashMap<>();
 
-        JIPipeExpressionVariablesMap variables = new JIPipeExpressionVariablesMap();
-        variables.putAnnotations(iterationStep.getMergedTextAnnotations());
-        getDefaultCustomExpressionVariables().writeToVariables(variables);
+        JIPipeExpressionVariablesMap variables = new JIPipeExpressionVariablesMap(iterationStep);
+
         variables.set("width", inputImage.getWidth());
         variables.set("height", inputImage.getHeight());
         variables.set("num_c", inputImage.getNChannels());

@@ -110,8 +110,7 @@ public class KeyValueThresholdStatisticsGenerator extends JIPipeIteratingAlgorit
         }, progressInfo.resolve("Collect pixels"));
 
         // Setup values
-        JIPipeExpressionVariablesMap variables = new JIPipeExpressionVariablesMap();
-        variables.putAnnotations(iterationStep.getMergedTextAnnotations());
+        JIPipeExpressionVariablesMap variables = new JIPipeExpressionVariablesMap(iterationStep);
 
         // Integrate buckets
         progressInfo.log("Processing " + bucketedValues.size() + " thresholds ...");

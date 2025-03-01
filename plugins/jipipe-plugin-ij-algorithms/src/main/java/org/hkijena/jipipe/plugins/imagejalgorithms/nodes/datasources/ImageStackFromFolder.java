@@ -29,7 +29,7 @@ import org.hkijena.jipipe.api.parameters.JIPipeParameter;
 import org.hkijena.jipipe.plugins.expressions.JIPipeExpressionVariablesMap;
 import org.hkijena.jipipe.plugins.expressions.PathQueryExpression;
 import org.hkijena.jipipe.plugins.filesystem.dataypes.FolderData;
-import org.hkijena.jipipe.plugins.imagejdatatypes.algorithms.datasources.ImagePlusFromFile;
+import org.hkijena.jipipe.plugins.imagejdatatypes.algorithms.io.ImportImagePlusAlgorithm;
 import org.hkijena.jipipe.plugins.imagejdatatypes.datatypes.ImagePlusData;
 import org.hkijena.jipipe.plugins.imagejdatatypes.util.HyperstackDimension;
 import org.hkijena.jipipe.plugins.parameters.library.primitives.ranges.IntegerRange;
@@ -129,7 +129,7 @@ public class ImageStackFromFolder extends JIPipeSimpleIteratingAlgorithm {
             // Slicing
             if (!StringUtils.isNullOrEmpty(slicesToImport.getValue())) {
                 List<Path> inputFilesSliced = new ArrayList<>();
-                for (Integer index : slicesToImport.getIntegers(0, inputFiles.size(), new JIPipeExpressionVariablesMap())) {
+                for (Integer index : slicesToImport.getIntegers(0, inputFiles.size(), new JIPipeExpressionVariablesMap(iterationStep))) {
                     if (ignoreInvalidSlices && index < 0 || index >= inputFiles.size()) {
                         continue;
                     }
@@ -143,7 +143,7 @@ public class ImageStackFromFolder extends JIPipeSimpleIteratingAlgorithm {
             for (int i = 0; i < inputFiles.size(); i++) {
                 Path file = inputFiles.get(i);
                 JIPipeProgressInfo fileProgress = progressInfo.resolveAndLog(file.getFileName().toString(), i, inputFiles.size());
-                ImagePlus image = ImagePlusFromFile.readImageFrom(file, forceNativeImport, runContext, fileProgress);
+                ImagePlus image = ImportImagePlusAlgorithm.readImageFrom(file, forceNativeImport, runContext, fileProgress);
                 images.add(image);
             }
 

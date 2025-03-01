@@ -45,12 +45,37 @@ public class JIPipeAuthorMetadata extends AbstractJIPipeParameterCollection {
     private String contact;
     private boolean firstAuthor;
     private boolean correspondingAuthor;
+    private String orcid;
     private HTMLText customText = new HTMLText();
 
     /**
      * Creates a new instance
      */
     public JIPipeAuthorMetadata() {
+    }
+
+    /**
+     * Initializes the instance
+     *
+     * @param title               the title (can be empty)
+     * @param firstName           first name
+     * @param lastName            last name
+     * @param affiliations        list of affiliations
+     * @param website             optional website link
+     * @param contact             contact information, e.g., an E-Mail address
+     * @param firstAuthor         if the author is marked as first author
+     * @param correspondingAuthor if the author is marked as corresponding author
+     */
+    public JIPipeAuthorMetadata(String title, String firstName, String lastName, StringList affiliations, String website, String contact, String orcid, boolean firstAuthor, boolean correspondingAuthor) {
+        this.title = title;
+        this.firstName = firstName;
+        this.lastName = lastName;
+        this.affiliations = affiliations;
+        this.website = website;
+        this.contact = contact;
+        this.firstAuthor = firstAuthor;
+        this.correspondingAuthor = correspondingAuthor;
+        this.orcid = StringUtils.nullToEmpty(orcid);
     }
 
     /**
@@ -74,6 +99,7 @@ public class JIPipeAuthorMetadata extends AbstractJIPipeParameterCollection {
         this.contact = contact;
         this.firstAuthor = firstAuthor;
         this.correspondingAuthor = correspondingAuthor;
+        this.orcid = "";
     }
 
     public JIPipeAuthorMetadata(JIPipeAuthorMetadata other) {
@@ -85,6 +111,7 @@ public class JIPipeAuthorMetadata extends AbstractJIPipeParameterCollection {
         this.correspondingAuthor = other.correspondingAuthor;
         this.firstAuthor = other.firstAuthor;
         this.customText = new HTMLText(other.customText);
+        this.orcid = other.orcid;
     }
 
     /**
@@ -109,6 +136,9 @@ public class JIPipeAuthorMetadata extends AbstractJIPipeParameterCollection {
                 } else {
                     stringBuilder.append("<div><strong>Contact:</strong> ").append(HtmlEscapers.htmlEscaper().escape(author.getContact())).append("</div>");
                 }
+            }
+            if(!StringUtils.isNullOrEmpty(author.getOrcid())) {
+                stringBuilder.append("<div><strong>ORCID:</strong> <a href=\"").append(author.getOrcidUrl()).append("\">").append(author.getOrcidUrl()).append("</a></div>");
             }
             if (!StringUtils.isNullOrEmpty(author.getWebsite())) {
                 stringBuilder.append("<div><strong>Website:</strong> <a href=\"").append(author.getWebsite()).append("\">").append(author.getWebsite()).append("</a></div>");
@@ -142,7 +172,47 @@ public class JIPipeAuthorMetadata extends AbstractJIPipeParameterCollection {
         return dialog;
     }
 
-    @JIPipeParameter(value = "title", uiOrder = -1)
+    public String getOrcidUrl() {
+        if(!StringUtils.isNullOrEmpty(getOrcid())) {
+            if(getOrcid().startsWith("http") || getOrcid().contains("orcid.org")) {
+                return getOrcid();
+            }
+            return "https://orcid.org/" + getOrcid();
+        }
+        return "";
+    }
+
+    /**
+     * A fuzzy equals method that attempts to check if the authors are the same
+     * @param other the other author
+     * @return if they are likely the same
+     */
+    public boolean fuzzyEquals(JIPipeAuthorMetadata other) {
+        // ORCID is the best qualifier, try this first
+        if(!StringUtils.isNullOrEmpty(getOrcidUrl()) && !StringUtils.isNullOrEmpty(other.getOrcidUrl())) {
+            return getOrcidUrl().equalsIgnoreCase(other.getOrcidUrl());
+        }
+
+        // ORCID not present, so we have to use the name
+        return StringUtils.nullToEmpty(getFirstName()).trim().equalsIgnoreCase(StringUtils.nullToEmpty(other.getFirstName()).trim()) &&
+                StringUtils.nullToEmpty(getLastName()).trim().equalsIgnoreCase(StringUtils.nullToEmpty(other.getLastName()).trim());
+    }
+
+    @JIPipeParameter(value = "orcid", uiOrder = 45)
+    @JsonGetter("orcid")
+    @SetJIPipeDocumentation(name = "ORCID", description = "The ORCID (URL or ID)")
+    @StringParameterSettings(monospace = true)
+    public String getOrcid() {
+        return StringUtils.nullToEmpty(orcid).trim();
+    }
+
+    @JIPipeParameter("orcid")
+    @JsonSetter("orcid")
+    public void setOrcid(String orcid) {
+        this.orcid = orcid;
+    }
+
+    @JIPipeParameter(value = "title", uiOrder = -10)
     @JsonGetter("title")
     @SetJIPipeDocumentation(name = "Title", description = "The title (optional)")
     public String getTitle() {
@@ -168,7 +238,7 @@ public class JIPipeAuthorMetadata extends AbstractJIPipeParameterCollection {
         this.firstName = firstName;
     }
 
-    @JIPipeParameter(value = "last-name", uiOrder = 1)
+    @JIPipeParameter(value = "last-name", uiOrder = 10)
     @SetJIPipeDocumentation(name = "Last name", description = "The last name")
     @JsonGetter("last-name")
     public String getLastName() {
@@ -181,7 +251,7 @@ public class JIPipeAuthorMetadata extends AbstractJIPipeParameterCollection {
         this.lastName = lastName;
     }
 
-    @JIPipeParameter(value = "affiliations-list", uiOrder = 3)
+    @JIPipeParameter(value = "affiliations-list", uiOrder = 30)
     @SetJIPipeDocumentation(name = "Affiliations", description = "Author affiliations")
     @StringParameterSettings(multiline = true, monospace = true)
     @JsonGetter("affiliations-list")
@@ -197,7 +267,7 @@ public class JIPipeAuthorMetadata extends AbstractJIPipeParameterCollection {
         this.affiliations = affiliations;
     }
 
-    @JIPipeParameter(value = "contact", uiOrder = 4)
+    @JIPipeParameter(value = "contact", uiOrder = 40)
     @StringParameterSettings(monospace = true)
     @SetJIPipeDocumentation(name = "Contact info", description = "Information on how to contact the author, for example an E-Mail address.")
     @JsonGetter("contact")
@@ -211,7 +281,7 @@ public class JIPipeAuthorMetadata extends AbstractJIPipeParameterCollection {
         this.contact = contact;
     }
 
-    @JIPipeParameter(value = "website", uiOrder = 5)
+    @JIPipeParameter(value = "website", uiOrder = 50)
     @StringParameterSettings(monospace = true)
     @SetJIPipeDocumentation(name = "Website", description = "An optional website URL")
     @JsonGetter("website")
@@ -225,7 +295,7 @@ public class JIPipeAuthorMetadata extends AbstractJIPipeParameterCollection {
         this.website = website;
     }
 
-    @JIPipeParameter(value = "first-author", uiOrder = 6)
+    @JIPipeParameter(value = "first-author", uiOrder = 60)
     @SetJIPipeDocumentation(name = "Is first author", description = "If this author is marked as first author")
     @JsonGetter("first-author")
     public boolean isFirstAuthor() {
@@ -238,7 +308,7 @@ public class JIPipeAuthorMetadata extends AbstractJIPipeParameterCollection {
         this.firstAuthor = firstAuthor;
     }
 
-    @JIPipeParameter(value = "corresponding-author", uiOrder = 7)
+    @JIPipeParameter(value = "corresponding-author", uiOrder = 70)
     @SetJIPipeDocumentation(name = "Is corresponding author", description = "If this author is marked as corresponding author")
     @JsonGetter("corresponding-author")
     public boolean isCorrespondingAuthor() {
@@ -251,7 +321,7 @@ public class JIPipeAuthorMetadata extends AbstractJIPipeParameterCollection {
         this.correspondingAuthor = correspondingAuthor;
     }
 
-    @JIPipeParameter(value = "custom-text", uiOrder = 8)
+    @JIPipeParameter(value = "custom-text", uiOrder = 80)
     @SetJIPipeDocumentation(name = "Custom text", description = "Will be displayed in the author information window.")
     @JsonGetter("custom-text")
     public HTMLText getCustomText() {
@@ -267,6 +337,26 @@ public class JIPipeAuthorMetadata extends AbstractJIPipeParameterCollection {
     @Override
     public String toString() {
         return (StringUtils.nullToEmpty(title) + " " + StringUtils.nullToEmpty(firstName) + " " + StringUtils.nullToEmpty(lastName) + (isFirstAuthor() ? "*" : "") + (isCorrespondingAuthor() ? "#" : "")).trim();
+    }
+
+    public void mergeWith(JIPipeAuthorMetadata other) {
+        if(StringUtils.isNullOrEmpty(orcid) && !StringUtils.isNullOrEmpty(other.getOrcid())) {
+            orcid = other.getOrcid();
+        }
+        if(!StringUtils.isNullOrEmpty(title) && !StringUtils.isNullOrEmpty(other.getTitle())) {
+            title = other.getTitle();
+        }
+        if(!StringUtils.isNullOrEmpty(website) && !StringUtils.isNullOrEmpty(other.getWebsite())) {
+            website = other.getWebsite();
+        }
+        if(!StringUtils.isNullOrEmpty(contact) && !StringUtils.isNullOrEmpty(other.getContact())) {
+            contact = other.getContact();
+        }
+        for (String affiliation : other.getAffiliations()) {
+            if(!affiliations.contains(affiliation)) {
+                affiliations.add(affiliation);
+            }
+        }
     }
 
     public static class List extends ListParameter<JIPipeAuthorMetadata> {

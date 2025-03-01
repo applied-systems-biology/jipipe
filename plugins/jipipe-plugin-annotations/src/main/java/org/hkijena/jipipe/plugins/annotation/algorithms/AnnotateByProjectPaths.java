@@ -68,8 +68,7 @@ public class AnnotateByProjectPaths extends JIPipeSimpleIteratingAlgorithm {
         JIPipeData data = iterationStep.getInputData(getFirstInputSlot(), JIPipeData.class, progressInfo);
         Path scratch = getNewScratch();
 
-        JIPipeExpressionVariablesMap variables = new JIPipeExpressionVariablesMap();
-        variables.putAnnotations(iterationStep.getMergedTextAnnotations());
+        JIPipeExpressionVariablesMap variables = new JIPipeExpressionVariablesMap(iterationStep);
 
         Map<String, Path> projectDataDirs;
         if (getRuntimeProject() != null) {

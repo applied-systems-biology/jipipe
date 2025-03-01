@@ -13,12 +13,15 @@
 
 package org.hkijena.jipipe.plugins.parameters.api.enums;
 
+import java.lang.annotation.Retention;
+import java.lang.annotation.RetentionPolicy;
 import java.util.List;
 import java.util.function.Supplier;
 
 /**
  * Settings for dynamic enum-like parameters for non {@link Enum} data types
  */
+@Retention(RetentionPolicy.RUNTIME)
 public @interface DynamicEnumParameterSettings {
     /**
      * Supplies the enum items. Class must have a standard constructor

@@ -157,9 +157,7 @@ public class JIPipeDesktopRunExecuteUI extends JIPipeDesktopWorkbenchPanel imple
 
     @Override
     public void onRunnableStarted(JIPipeRunnable.StartedEvent event) {
-        if (event.getRun() == run) {
-            cancelButton.setEnabled(true);
-        }
+        cancelButton.setEnabled(true);
     }
 
     @Override

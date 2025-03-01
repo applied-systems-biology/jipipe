@@ -43,6 +43,7 @@ public abstract class JIPipePrepackagedDefaultJavaPlugin extends JIPipeDefaultJa
                         new StringList(HKI),
                         "https://www.leibniz-hki.de/en/staff-details.html?member=144",
                         "zoltan.cseresnyes@leibniz-hki.de",
+                        "https://orcid.org/0000-0002-6574-2588",
                         true,
                         false),
                 new JIPipeAuthorMetadata("",
@@ -51,6 +52,7 @@ public abstract class JIPipePrepackagedDefaultJavaPlugin extends JIPipeDefaultJa
                         new StringList(HKI, uniJena),
                         "https://www.leibniz-hki.de/en/staff-details.html?member=1027",
                         "ruman.gerst@leibniz-hki.de",
+                        "https://orcid.org/0000-0002-0723-6038",
                         true,
                         false),
                 new JIPipeAuthorMetadata("Prof. Dr.",
@@ -59,6 +61,7 @@ public abstract class JIPipePrepackagedDefaultJavaPlugin extends JIPipeDefaultJa
                         new StringList(HKI, uniJena2),
                         "https://www.leibniz-hki.de/en/staff-details.html?member=81",
                         "thilo.figge@leibniz-hki.de",
+                        "https://orcid.org/0000-0002-4044-9166",
                         false,
                         true));
     }

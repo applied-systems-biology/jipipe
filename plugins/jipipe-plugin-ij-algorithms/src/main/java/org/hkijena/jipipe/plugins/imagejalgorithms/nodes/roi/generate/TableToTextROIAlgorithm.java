@@ -34,12 +34,14 @@ import org.hkijena.jipipe.plugins.expressions.JIPipeExpressionVariablesMap;
 import org.hkijena.jipipe.plugins.expressions.TableColumnSourceExpressionParameter;
 import org.hkijena.jipipe.plugins.imagejalgorithms.nodes.roi.draw.VisualROIProperties;
 import org.hkijena.jipipe.plugins.imagejdatatypes.datatypes.ROI2DListData;
+import org.hkijena.jipipe.plugins.imagejdatatypes.util.ImageJUtils;
 import org.hkijena.jipipe.plugins.parameters.library.colors.OptionalColorParameter;
 import org.hkijena.jipipe.plugins.parameters.library.primitives.FontFamilyParameter;
 import org.hkijena.jipipe.plugins.parameters.library.primitives.FontStyleParameter;
 import org.hkijena.jipipe.plugins.parameters.library.roi.InnerMargin;
 import org.hkijena.jipipe.plugins.tables.datatypes.ResultsTableData;
 import org.hkijena.jipipe.plugins.tables.datatypes.TableColumnData;
+import org.hkijena.jipipe.utils.StringUtils;
 
 import java.awt.*;
 import java.awt.geom.Rectangle2D;
@@ -61,6 +63,8 @@ public class TableToTextROIAlgorithm extends JIPipeSimpleIteratingAlgorithm {
     private TableColumnSourceExpressionParameter columnZ = new TableColumnSourceExpressionParameter(TableColumnSourceExpressionParameter.TableSourceType.Generate, "0");
     private TableColumnSourceExpressionParameter columnC = new TableColumnSourceExpressionParameter(TableColumnSourceExpressionParameter.TableSourceType.Generate, "0");
     private TableColumnSourceExpressionParameter columnT = new TableColumnSourceExpressionParameter(TableColumnSourceExpressionParameter.TableSourceType.Generate, "0");
+    private TableColumnSourceExpressionParameter columnName = new TableColumnSourceExpressionParameter(TableColumnSourceExpressionParameter.TableSourceType.Generate, "\"ROI name\"");
+    private TableColumnSourceExpressionParameter columnMetadata = new TableColumnSourceExpressionParameter(TableColumnSourceExpressionParameter.TableSourceType.Generate, "TO_JSON(MAP())");
     private boolean oneBasedPositions = true;
     private boolean centerX = false;
     private boolean centerY = false;
@@ -80,6 +84,7 @@ public class TableToTextROIAlgorithm extends JIPipeSimpleIteratingAlgorithm {
     public TableToTextROIAlgorithm(JIPipeNodeInfo info) {
         super(info);
         this.roiProperties = new VisualROIProperties();
+        this.roiProperties.getRoiName().setEnabled(false);
         registerSubParameter(roiProperties);
     }
 
@@ -108,6 +113,8 @@ public class TableToTextROIAlgorithm extends JIPipeSimpleIteratingAlgorithm {
         this.antialiased = other.antialiased;
         this.backgroundColor = new OptionalColorParameter(other.backgroundColor);
         this.backgroundMargin = new InnerMargin(other.backgroundMargin);
+        this.columnName = new TableColumnSourceExpressionParameter(other.columnName);
+        this.columnMetadata = new TableColumnSourceExpressionParameter(other.columnMetadata);
     }
 
     @Override
@@ -115,8 +122,7 @@ public class TableToTextROIAlgorithm extends JIPipeSimpleIteratingAlgorithm {
         ResultsTableData table = iterationStep.getInputData(getFirstInputSlot(), ResultsTableData.class, progressInfo);
         ROI2DListData rois = new ROI2DListData();
 
-        JIPipeExpressionVariablesMap variables = new JIPipeExpressionVariablesMap();
-        variables.putAnnotations(iterationStep.getMergedTextAnnotations());
+        JIPipeExpressionVariablesMap variables = new JIPipeExpressionVariablesMap(iterationStep);
 
         TableColumnData colX = columnX.pickOrGenerateColumn(table, variables);
         TableColumnData colY = columnY.pickOrGenerateColumn(table, variables);
@@ -124,6 +130,8 @@ public class TableToTextROIAlgorithm extends JIPipeSimpleIteratingAlgorithm {
         TableColumnData colC = columnC.pickOrGenerateColumn(table, variables);
         TableColumnData colT = columnT.pickOrGenerateColumn(table, variables);
         TableColumnData colText = columnText.pickOrGenerateColumn(table, variables);
+        TableColumnData colName = columnName.pickOrGenerateColumn(table, variables);
+        TableColumnData colMetadata = columnMetadata.pickOrGenerateColumn(table, variables);
 
         ensureColumnExists(colX, table, "X1");
         ensureColumnExists(colY, table, "Y1");
@@ -131,6 +139,8 @@ public class TableToTextROIAlgorithm extends JIPipeSimpleIteratingAlgorithm {
         ensureColumnExists(colC, table, "C");
         ensureColumnExists(colT, table, "T");
         ensureColumnExists(colText, table, "Text");
+        ensureColumnExists(colName, table, "Name");
+        ensureColumnExists(colMetadata, table, "Metadata");
 
         Font font = fontStyle.toFont(fontFamily, fontSize);
 
@@ -145,6 +155,8 @@ public class TableToTextROIAlgorithm extends JIPipeSimpleIteratingAlgorithm {
             int c = (int) colC.getRowAsDouble(row) + (oneBasedPositions ? 0 : 1);
             int t = (int) colT.getRowAsDouble(row) + (oneBasedPositions ? 0 : 1);
             String text = colText.getRowAsString(row);
+            String name = colName.getRowAsString(row);
+            String metadata = colMetadata.getRowAsString(row);
 
             Rectangle2D stringBounds = fontMetrics.getStringBounds(text, canvas.getGraphics());
             double width = stringBounds.getWidth();
@@ -167,6 +179,8 @@ public class TableToTextROIAlgorithm extends JIPipeSimpleIteratingAlgorithm {
                         y - top,
                         width + left + right,
                         height + top + bottom));
+                backgroundRoi.setName(StringUtils.orElse(name, "Unnamed"));
+                ImageJUtils.setRoiPropertiesFromString(backgroundRoi, metadata, "metadata_");
                 roiProperties.applyTo(backgroundRoi, variables);
                 backgroundRoi.setFillColor(backgroundColor.getContent());
                 backgroundRoi.setStrokeColor(backgroundColor.getContent());
@@ -174,6 +188,8 @@ public class TableToTextROIAlgorithm extends JIPipeSimpleIteratingAlgorithm {
             }
 
             TextRoi textRoi = new TextRoi(x, y, width, height, text, font);
+            textRoi.setName(StringUtils.orElse(name, "Unnamed"));
+            ImageJUtils.setRoiPropertiesFromString(textRoi, metadata, "metadata_");
             textRoi.setAngle(angle);
             textRoi.setAntialiased(antialiased);
             textRoi.setPosition(c, z, t);
@@ -193,6 +209,28 @@ public class TableToTextROIAlgorithm extends JIPipeSimpleIteratingAlgorithm {
                     "The algorithm requires a column that provides coordinate " + name + ".",
                     "Please check if the settings are correct and if your table contains the requested column."));
         }
+    }
+
+    @SetJIPipeDocumentation(name = "ROI name", description = "The table column that is used for the ROI name (overwritten if the ROI name in 'ROI properties' is enabled)")
+    @JIPipeParameter("column-name")
+    public TableColumnSourceExpressionParameter getColumnName() {
+        return columnName;
+    }
+
+    @JIPipeParameter("column-name")
+    public void setColumnName(TableColumnSourceExpressionParameter columnName) {
+        this.columnName = columnName;
+    }
+
+    @SetJIPipeDocumentation(name = "ROI metadata", description = "The table column that contains ROI metadata in as JSON object (string keys, string values). If not valid JSON, the metadata will be stored into a field 'metadata_'.")
+    @JIPipeParameter("column-metadata")
+    public TableColumnSourceExpressionParameter getColumnMetadata() {
+        return columnMetadata;
+    }
+
+    @JIPipeParameter("column-metadata")
+    public void setColumnMetadata(TableColumnSourceExpressionParameter columnMetadata) {
+        this.columnMetadata = columnMetadata;
     }
 
     @SetJIPipeDocumentation(name = "Background color", description = "If enabled, draw a rectangular background ROI behind the text")

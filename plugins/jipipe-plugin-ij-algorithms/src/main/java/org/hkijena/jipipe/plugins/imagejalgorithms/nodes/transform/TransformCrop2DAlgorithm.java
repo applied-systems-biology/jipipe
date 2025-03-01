@@ -18,6 +18,8 @@ import ij.process.ImageProcessor;
 import org.hkijena.jipipe.api.ConfigureJIPipeNode;
 import org.hkijena.jipipe.api.JIPipeProgressInfo;
 import org.hkijena.jipipe.api.SetJIPipeDocumentation;
+import org.hkijena.jipipe.api.annotation.JIPipeTextAnnotation;
+import org.hkijena.jipipe.api.annotation.JIPipeTextAnnotationMergeMode;
 import org.hkijena.jipipe.api.nodes.*;
 import org.hkijena.jipipe.api.nodes.algorithm.JIPipeSimpleIteratingAlgorithm;
 import org.hkijena.jipipe.api.nodes.categories.ImageJNodeTypeCategory;
@@ -32,9 +34,12 @@ import org.hkijena.jipipe.plugins.expressions.variables.JIPipeTextAnnotationsExp
 import org.hkijena.jipipe.plugins.imagejdatatypes.datatypes.ImagePlusData;
 import org.hkijena.jipipe.plugins.imagejdatatypes.util.Image5DExpressionParameterVariablesInfo;
 import org.hkijena.jipipe.plugins.imagejdatatypes.util.ImageJUtils;
+import org.hkijena.jipipe.plugins.parameters.library.primitives.optional.OptionalTextAnnotationNameParameter;
 import org.hkijena.jipipe.plugins.parameters.library.roi.Margin;
 
 import java.awt.*;
+import java.util.ArrayList;
+import java.util.List;
 
 /**
  * Wrapper around {@link ImageProcessor}
@@ -48,6 +53,11 @@ import java.awt.*;
 public class TransformCrop2DAlgorithm extends JIPipeSimpleIteratingAlgorithm {
 
     private Margin roi = new Margin();
+    private OptionalTextAnnotationNameParameter annotationX = new OptionalTextAnnotationNameParameter("X", false);
+    private OptionalTextAnnotationNameParameter annotationY = new OptionalTextAnnotationNameParameter("Y", false);
+    private OptionalTextAnnotationNameParameter annotationBoundingWidth = new OptionalTextAnnotationNameParameter("Width", false);
+    private OptionalTextAnnotationNameParameter annotationBoundingHeight = new OptionalTextAnnotationNameParameter("Height", false);
+    private JIPipeTextAnnotationMergeMode annotationMergeStrategy = JIPipeTextAnnotationMergeMode.OverwriteExisting;
 
     /**
      * Instantiates a new node type.
@@ -66,6 +76,66 @@ public class TransformCrop2DAlgorithm extends JIPipeSimpleIteratingAlgorithm {
     public TransformCrop2DAlgorithm(TransformCrop2DAlgorithm other) {
         super(other);
         this.roi = new Margin(other.roi);
+        this.annotationX = new OptionalTextAnnotationNameParameter(other.annotationX);
+        this.annotationY = new OptionalTextAnnotationNameParameter(other.annotationY);
+        this.annotationBoundingWidth = new OptionalTextAnnotationNameParameter(other.annotationBoundingWidth);
+        this.annotationBoundingHeight = new OptionalTextAnnotationNameParameter(other.annotationBoundingHeight);
+        this.annotationMergeStrategy = other.annotationMergeStrategy;
+    }
+
+    @SetJIPipeDocumentation(name = "Annotate with X location", description = "If enabled, the generated image is annotated with the top-left X coordinate of the ROI bounding box.")
+    @JIPipeParameter(value = "annotation-x", uiOrder = -50)
+    public OptionalTextAnnotationNameParameter getAnnotationX() {
+        return annotationX;
+    }
+
+    @JIPipeParameter("annotation-x")
+    public void setAnnotationX(OptionalTextAnnotationNameParameter annotationX) {
+        this.annotationX = annotationX;
+    }
+
+    @SetJIPipeDocumentation(name = "Annotate with Y location", description = "If enabled, the generated image is annotated with the top-left Y coordinate of the ROI bounding box.")
+    @JIPipeParameter(value = "annotation-y", uiOrder = -45)
+    public OptionalTextAnnotationNameParameter getAnnotationY() {
+        return annotationY;
+    }
+
+    @JIPipeParameter("annotation-y")
+    public void setAnnotationY(OptionalTextAnnotationNameParameter annotationY) {
+        this.annotationY = annotationY;
+    }
+
+    @SetJIPipeDocumentation(name = "Annotate with ROI width", description = "If enabled, the generated image is annotated with the width of the ROI")
+    @JIPipeParameter("annotation-width")
+    public OptionalTextAnnotationNameParameter getAnnotationBoundingWidth() {
+        return annotationBoundingWidth;
+    }
+
+    @JIPipeParameter("annotation-width")
+    public void setAnnotationBoundingWidth(OptionalTextAnnotationNameParameter annotationBoundingWidth) {
+        this.annotationBoundingWidth = annotationBoundingWidth;
+    }
+
+    @SetJIPipeDocumentation(name = "Annotate with ROI height", description = "If enabled, the generated image is annotated with the height of the ROI")
+    @JIPipeParameter("annotation-height")
+    public OptionalTextAnnotationNameParameter getAnnotationBoundingHeight() {
+        return annotationBoundingHeight;
+    }
+
+    @JIPipeParameter("annotation-height")
+    public void setAnnotationBoundingHeight(OptionalTextAnnotationNameParameter annotationBoundingHeight) {
+        this.annotationBoundingHeight = annotationBoundingHeight;
+    }
+
+    @SetJIPipeDocumentation(name = "Annotation merging", description = "Determines how generated annotations are merged with existing annotations")
+    @JIPipeParameter("annotation-merging")
+    public JIPipeTextAnnotationMergeMode getAnnotationMergeStrategy() {
+        return annotationMergeStrategy;
+    }
+
+    @JIPipeParameter("annotation-merging")
+    public void setAnnotationMergeStrategy(JIPipeTextAnnotationMergeMode annotationMergeStrategy) {
+        this.annotationMergeStrategy = annotationMergeStrategy;
     }
 
     @Override
@@ -79,11 +149,10 @@ public class TransformCrop2DAlgorithm extends JIPipeSimpleIteratingAlgorithm {
         ImagePlus img = inputData.getImage();
 
         Rectangle imageArea = new Rectangle(0, 0, img.getWidth(), img.getHeight());
-        JIPipeExpressionVariablesMap variables = new JIPipeExpressionVariablesMap();
-        variables.putAnnotations(iterationStep.getMergedTextAnnotations());
+        JIPipeExpressionVariablesMap variables = new JIPipeExpressionVariablesMap(iterationStep);
         Image5DExpressionParameterVariablesInfo.writeToVariables(img, variables);
-        Rectangle cropped = roi.getInsideArea(imageArea, variables);
-        if (cropped == null || cropped.width == 0 || cropped.height == 0) {
+        Rectangle bounds = roi.getInsideArea(imageArea, variables);
+        if (bounds == null || bounds.width == 0 || bounds.height == 0) {
             throw new JIPipeValidationRuntimeException(new NullPointerException("Cropped rectangle is null or empty!"),
                     "Cropped rectangle is empty!",
                     "The input for the cropping operator was an image of size w=" + img.getWidth() + ", h=" + img.getHeight() + ". The resulting ROI is empty.",
@@ -98,9 +167,15 @@ public class TransformCrop2DAlgorithm extends JIPipeSimpleIteratingAlgorithm {
 //                    "Please check the parameters and ensure that you only crop ");
 //        }
 
-        ImagePlus croppedImg = ImageJUtils.cropLegacy(img, cropped, progressInfo);
+        List<JIPipeTextAnnotation> annotations = new ArrayList<>();
+        annotationX.addAnnotationIfEnabled(annotations, String.valueOf(bounds.x));
+        annotationY.addAnnotationIfEnabled(annotations, String.valueOf(bounds.y));
+        annotationBoundingWidth.addAnnotationIfEnabled(annotations, String.valueOf(bounds.width));
+        annotationBoundingHeight.addAnnotationIfEnabled(annotations, String.valueOf(bounds.height));
 
-        iterationStep.addOutputData(getFirstOutputSlot(), new ImagePlusData(croppedImg), progressInfo);
+        ImagePlus croppedImg = ImageJUtils.cropLegacy(img, bounds, progressInfo);
+
+        iterationStep.addOutputData(getFirstOutputSlot(), new ImagePlusData(croppedImg), annotations, annotationMergeStrategy, progressInfo);
     }
 
     @SetJIPipeDocumentation(name = "ROI", description = "Defines the area to crop.")

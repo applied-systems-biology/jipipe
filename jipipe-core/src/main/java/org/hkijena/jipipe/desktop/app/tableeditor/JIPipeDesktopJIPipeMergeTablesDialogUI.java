@@ -30,11 +30,6 @@ public class JIPipeDesktopJIPipeMergeTablesDialogUI extends JDialog {
     private JComboBox<JIPipeDesktopTabPane.DocumentTab> tableSelection;
     private JXTable jxTable;
 
-    /**
-     * Creates new instance
-     *
-     * @param tableAnalyzerUI The table analyzer
-     */
     public JIPipeDesktopJIPipeMergeTablesDialogUI(JIPipeDesktopTableEditor tableAnalyzerUI) {
         this.tableAnalyzerUI = tableAnalyzerUI;
         initialize();

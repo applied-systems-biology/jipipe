@@ -117,11 +117,7 @@ public class CustomAutoThreshold2D16UAlgorithm extends JIPipeIteratingAlgorithm 
                 8);
         ROI2DListData roiInput = null;
         ImagePlus maskInput = null;
-        JIPipeExpressionVariablesMap parameters = new JIPipeExpressionVariablesMap();
-
-        for (JIPipeTextAnnotation annotation : iterationStep.getMergedTextAnnotations().values()) {
-            parameters.set(annotation.getName(), annotation.getValue());
-        }
+        JIPipeExpressionVariablesMap parameters = new JIPipeExpressionVariablesMap(iterationStep);
 
         parameters.set("width", inputImage.getWidth());
         parameters.set("height", inputImage.getHeight());
@@ -171,7 +167,7 @@ public class CustomAutoThreshold2D16UAlgorithm extends JIPipeIteratingAlgorithm 
         }, progressInfo.resolve("Finding thresholds"));
 
         // Combine thresholds
-        JIPipeExpressionVariablesMap variableSet = new JIPipeExpressionVariablesMap();
+        JIPipeExpressionVariablesMap variableSet = new JIPipeExpressionVariablesMap(iterationStep);
         variableSet.set("thresholds", thresholds);
         Number combined = (Number) thresholdCombinationExpression.evaluate(variableSet);
         int threshold = combined.intValue();
@@ -254,7 +250,7 @@ public class CustomAutoThreshold2D16UAlgorithm extends JIPipeIteratingAlgorithm 
         }, progressInfo);
         List<JIPipeTextAnnotation> annotations = new ArrayList<>();
         if (thresholdAnnotation.isEnabled()) {
-            JIPipeExpressionVariablesMap variableSet = new JIPipeExpressionVariablesMap();
+            JIPipeExpressionVariablesMap variableSet = new JIPipeExpressionVariablesMap(iterationStep);
             variableSet.set("thresholds", thresholds);
             String result = thresholdCombinationExpression.evaluate(variableSet) + "";
             annotations.add(thresholdAnnotation.createAnnotation(result));

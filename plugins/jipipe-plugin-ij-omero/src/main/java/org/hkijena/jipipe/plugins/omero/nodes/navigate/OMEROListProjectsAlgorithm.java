@@ -95,7 +95,7 @@ public class OMEROListProjectsAlgorithm extends JIPipeSingleIterationAlgorithm i
         SecurityContext context = new SecurityContext(groupId);
         try {
             for (ProjectData project : gateway.getBrowseFacility().getProjects(context)) {
-                JIPipeExpressionVariablesMap variables = new JIPipeExpressionVariablesMap();
+                JIPipeExpressionVariablesMap variables = new JIPipeExpressionVariablesMap(this);
                 if (row >= 0) {
                     variables.putAnnotations(getFirstInputSlot().getTextAnnotations(row));
                 }

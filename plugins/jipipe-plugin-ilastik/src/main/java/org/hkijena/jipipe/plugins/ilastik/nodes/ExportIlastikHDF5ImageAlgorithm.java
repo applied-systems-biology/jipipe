@@ -92,8 +92,7 @@ public class ExportIlastikHDF5ImageAlgorithm extends JIPipeSimpleIteratingAlgori
         progressInfo.log("Saving to " + outputFile);
         PathUtils.ensureParentDirectoriesExist(outputFile);
 
-        JIPipeExpressionVariablesMap variables = new JIPipeExpressionVariablesMap();
-        variables.putAnnotations(iterationStep.getMergedTextAnnotations());
+        JIPipeExpressionVariablesMap variables = new JIPipeExpressionVariablesMap(iterationStep);
         String hdf5Path_ = hdf5Path.evaluateToString(variables);
 
         IJ1Hdf5.writeImage(inputData.getImage(), outputFile, hdf5Path_, overrideAxes.isEnabled() ? ImgUtils.toImagejAxes(overrideAxes.getContent()) : null, progressInfo);

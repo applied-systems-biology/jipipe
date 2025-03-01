@@ -38,11 +38,11 @@ import org.hkijena.jipipe.api.validation.JIPipeValidationReportEntry;
 import org.hkijena.jipipe.api.validation.JIPipeValidationReportEntryLevel;
 import org.hkijena.jipipe.api.validation.JIPipeValidationRuntimeException;
 import org.hkijena.jipipe.api.validation.contexts.GraphNodeValidationReportContext;
-import org.hkijena.jipipe.plugins.cellpose.CellposePluginApplicationSettings;
+import org.hkijena.jipipe.plugins.cellpose.Cellpose2PluginApplicationSettings;
 import org.hkijena.jipipe.plugins.cellpose.legacy.PretrainedLegacyCellpose2TrainingModel;
 import org.hkijena.jipipe.plugins.cellpose.legacy.datatypes.LegacyCellposeModelData;
 import org.hkijena.jipipe.plugins.cellpose.legacy.datatypes.LegacyCellposeSizeModelData;
-import org.hkijena.jipipe.plugins.cellpose.parameters.CellposeGPUSettings;
+import org.hkijena.jipipe.plugins.cellpose.parameters.cp2.Cellpose2GPUSettings;
 import org.hkijena.jipipe.plugins.expressions.DataAnnotationQueryExpression;
 import org.hkijena.jipipe.plugins.imagejalgorithms.nodes.binary.ConnectedComponentsLabeling2DAlgorithm;
 import org.hkijena.jipipe.plugins.imagejalgorithms.nodes.binary.ConnectedComponentsLabeling3DAlgorithm;
@@ -81,7 +81,7 @@ import java.util.stream.Collectors;
 public class Cellpose1TrainingAlgorithm extends JIPipeSingleIterationAlgorithm {
 
 
-    private final CellposeGPUSettings gpuSettings;
+    private final Cellpose2GPUSettings gpuSettings;
     private PretrainedLegacyCellpose2TrainingModel pretrainedModel = PretrainedLegacyCellpose2TrainingModel.Cytoplasm;
     private int numEpochs = 500;
     private double learningRate = 0.2;
@@ -106,7 +106,7 @@ public class Cellpose1TrainingAlgorithm extends JIPipeSingleIterationAlgorithm {
 
     public Cellpose1TrainingAlgorithm(JIPipeNodeInfo info) {
         super(info);
-        this.gpuSettings = new CellposeGPUSettings();
+        this.gpuSettings = new Cellpose2GPUSettings();
         updateSlots();
 
         registerSubParameter(gpuSettings);
@@ -115,7 +115,7 @@ public class Cellpose1TrainingAlgorithm extends JIPipeSingleIterationAlgorithm {
     public Cellpose1TrainingAlgorithm(Cellpose1TrainingAlgorithm other) {
         super(other);
 
-        this.gpuSettings = new CellposeGPUSettings(other.gpuSettings);
+        this.gpuSettings = new Cellpose2GPUSettings(other.gpuSettings);
 
         this.pretrainedModel = other.pretrainedModel;
         this.numEpochs = other.numEpochs;
@@ -172,7 +172,7 @@ public class Cellpose1TrainingAlgorithm extends JIPipeSingleIterationAlgorithm {
         if (overrideEnvironment.isEnabled()) {
             target.add(overrideEnvironment.getContent());
         } else {
-            target.add(CellposePluginApplicationSettings.getInstance().getReadOnlyDefaultEnvironment());
+            target.add(Cellpose2PluginApplicationSettings.getInstance().getReadOnlyDefaultEnvironment());
         }
     }
 
@@ -368,7 +368,7 @@ public class Cellpose1TrainingAlgorithm extends JIPipeSingleIterationAlgorithm {
 
     @SetJIPipeDocumentation(name = "Cellpose: GPU", description = "Controls how the graphics card is utilized.")
     @JIPipeParameter(value = "output-parameters", collapsed = true, iconURL = ResourceUtils.RESOURCE_BASE_PATH + "/icons/apps/cellpose.png")
-    public CellposeGPUSettings getGpuSettings() {
+    public Cellpose2GPUSettings getGpuSettings() {
         return gpuSettings;
     }
 
@@ -567,7 +567,7 @@ public class Cellpose1TrainingAlgorithm extends JIPipeSingleIterationAlgorithm {
 
         // Run the module
         PythonUtils.runPython(arguments.toArray(new String[0]), overrideEnvironment.isEnabled() ? overrideEnvironment.getContent() :
-                CellposePluginApplicationSettings.getInstance().getReadOnlyDefaultEnvironment(), Collections.emptyList(), Collections.emptyMap(), false, false, progressInfo);
+                Cellpose2PluginApplicationSettings.getInstance().getReadOnlyDefaultEnvironment(), Collections.emptyList(), Collections.emptyMap(), false, false, progressInfo);
 
         // Extract the model
         Path modelsPath = trainingDir.resolve("models");

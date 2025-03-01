@@ -340,6 +340,11 @@ See the LICENSE file provided with this code for the full license.
                 <artifactId>jipipe-plugin-ilastik</artifactId>
                 <version>${project.version}</version>
             </dependency>
+            <dependency>
+                <groupId>org.hkijena</groupId>
+                <artifactId>jipipe-plugin-ij-ocr</artifactId>
+                <version>${project.version}</version>
+            </dependency>
         </dependencies>
     </dependencyManagement>
 
@@ -443,6 +448,7 @@ See the LICENSE file provided with this code for the full license.
         <module>plugins/jipipe-plugin-ilastik</module>
         <module>plugins/jipipe-plugin-imp</module>
         <module>plugins/jipipe-plugin-opencv</module>
+        <module>plugins/jipipe-plugin-ij-ocr</module>
     </modules>
 
     <build>
