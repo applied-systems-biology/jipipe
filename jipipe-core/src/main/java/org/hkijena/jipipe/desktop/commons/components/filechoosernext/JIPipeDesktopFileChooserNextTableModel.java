@@ -18,19 +18,23 @@ import java.util.stream.Stream;
 public class JIPipeDesktopFileChooserNextTableModel implements TableModel {
 
     private final Path directory;
+    private final boolean showFiles;
+    private final boolean showHidden;
     private boolean successful = false;
 
     private final List<Path> children = new ArrayList<>();
     private final TLongList sizes = new TLongArrayList();
     private final List<LocalDateTime> dates = new ArrayList<>();
 
-    public JIPipeDesktopFileChooserNextTableModel(Path directory) {
+    public JIPipeDesktopFileChooserNextTableModel(Path directory, boolean showFiles, boolean showHidden) {
         this.directory = directory;
+        this.showFiles = showFiles;
+        this.showHidden = showHidden;
         discover();
     }
 
     private void discover() {
-        if(directory == null) {
+        if (directory == null) {
             return;
         }
         try {
@@ -38,19 +42,25 @@ public class JIPipeDesktopFileChooserNextTableModel implements TableModel {
                 successful = true;
                 for (Path path : PathUtils.listDirectory(directory)) {
                     try {
-                        if (Files.isDirectory(path)) {
-                            children.add(path);
-                            sizes.add(-PathUtils.listDirectory(path).size());
-                            dates.add(LocalDateTime.ofInstant(Files.getLastModifiedTime(path).toInstant(), ZoneId.systemDefault()));
-                        } else if (Files.isRegularFile(path)) {
-                            children.add(path);
-                            sizes.add(Files.size(path));
-                            dates.add(LocalDateTime.ofInstant(Files.getLastModifiedTime(path).toInstant(), ZoneId.systemDefault()));
-                        } else if (Files.isSymbolicLink(path)) {
-                            children.add(path);
-                            sizes.add(0);
-                            dates.add(LocalDateTime.ofInstant(Files.getLastModifiedTime(path).toInstant(), ZoneId.systemDefault()));
+
+                        if(!showHidden && (path.getFileName().toString().startsWith(".") || Files.isHidden(path))) {
+                            continue;
                         }
+
+                        long size;
+                        LocalDateTime date = LocalDateTime.ofInstant(Files.getLastModifiedTime(path).toInstant(), ZoneId.systemDefault());
+                        if (Files.isDirectory(path)) {
+                            size = -PathUtils.listDirectory(path).size();
+                        } else {
+                            if(!showFiles) {
+                                continue;
+                            }
+                            size = Files.size(path);
+                        }
+
+                        this.children.add(path);
+                        this.sizes.add(size);
+                        this.dates.add(date);
                     } catch (Throwable ignored) {
                         successful = false;
                     }
