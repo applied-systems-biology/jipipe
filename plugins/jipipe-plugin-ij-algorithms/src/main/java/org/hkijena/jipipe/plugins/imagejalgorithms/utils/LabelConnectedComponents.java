@@ -63,8 +63,10 @@ public class LabelConnectedComponents {
                 for (int dy = -1; dy <= 1; dy++) {
                     for (int dx = -1; dx <= 1; dx++) {
                         if ((dx == 0 && dy == 0) || // Skip current pixel
-                                (connectivity == Neighborhood2D.FourConnected && dx == dy) || // Skip diagonals for 4-connectivity
                                 (x + dx < 0 || y + dy < 0 || x + dx >= width || y + dy >= height)) { // Bounds check
+                            continue;
+                        }
+                        if(connectivity == Neighborhood2D.FourConnected && Math.abs(dx) + Math.abs(dy) != 1) {
                             continue;
                         }
 
