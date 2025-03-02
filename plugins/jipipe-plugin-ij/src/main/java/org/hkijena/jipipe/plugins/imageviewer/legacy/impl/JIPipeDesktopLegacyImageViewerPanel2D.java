@@ -473,7 +473,7 @@ public class JIPipeDesktopLegacyImageViewerPanel2D extends JPanel implements JIP
     }
 
     private void saveRenderedImageToTiff() {
-        Path path = JIPipeFileChooserApplicationSettings.saveFile(this, JIPipeFileChooserApplicationSettings.LastDirectoryKey.Data, "Save as *.tif", UIUtils.EXTENSION_FILTER_TIFF);
+        Path path = JIPipeFileChooserApplicationSettings.saveFile(this, workbench, JIPipeFileChooserApplicationSettings.LastDirectoryKey.Data, "Save as *.tif", UIUtils.EXTENSION_FILTER_TIFF);
         if (path != null) {
             viewerRunnerQueue.runInDialog(getDesktopWorkbench(), this, new Stack2DRendererRun(getImageViewer(), "Export rendered image", 1, (renderedImage) -> {
                 IJ.saveAs(renderedImage, "TIFF", path.toString());
@@ -535,7 +535,7 @@ public class JIPipeDesktopLegacyImageViewerPanel2D extends JPanel implements JIP
     }
 
     private void saveRawImageToTiff() {
-        Path path = JIPipeFileChooserApplicationSettings.saveFile(this, JIPipeFileChooserApplicationSettings.LastDirectoryKey.Data, "Save as *.tif", UIUtils.EXTENSION_FILTER_TIFF);
+        Path path = JIPipeFileChooserApplicationSettings.saveFile(this, workbench, JIPipeFileChooserApplicationSettings.LastDirectoryKey.Data, "Save as *.tif", UIUtils.EXTENSION_FILTER_TIFF);
         if (path != null) {
             JIPipeDesktopRunExecuteUI.runInDialog(workbench, this, new RawImage2DExporterRun(getImagePlus(), path), viewerRunnerQueue);
         }
@@ -555,7 +555,7 @@ public class JIPipeDesktopLegacyImageViewerPanel2D extends JPanel implements JIP
             JOptionPane.showMessageDialog(this, "No image loaded.", "Error", JOptionPane.ERROR_MESSAGE);
             return;
         }
-        Path targetFile = JIPipeFileChooserApplicationSettings.saveFile(this, JIPipeFileChooserApplicationSettings.LastDirectoryKey.Data, "Export current slice", UIUtils.EXTENSION_FILTER_PNG, UIUtils.EXTENSION_FILTER_JPEG, UIUtils.EXTENSION_FILTER_BMP);
+        Path targetFile = JIPipeFileChooserApplicationSettings.saveFile(this, workbench, JIPipeFileChooserApplicationSettings.LastDirectoryKey.Data, "Export current slice", UIUtils.EXTENSION_FILTER_PNG, UIUtils.EXTENSION_FILTER_JPEG, UIUtils.EXTENSION_FILTER_BMP);
         if (targetFile != null) {
             String format = "PNG";
             if (UIUtils.EXTENSION_FILTER_BMP.accept(targetFile.toFile()))
@@ -622,7 +622,7 @@ public class JIPipeDesktopLegacyImageViewerPanel2D extends JPanel implements JIP
     }
 
     public void exportVideo() {
-        Path path = JIPipeFileChooserApplicationSettings.saveFile(this, JIPipeFileChooserApplicationSettings.LastDirectoryKey.Data, "Export video", UIUtils.EXTENSION_FILTER_AVI);
+        Path path = JIPipeFileChooserApplicationSettings.saveFile(this, workbench, JIPipeFileChooserApplicationSettings.LastDirectoryKey.Data, "Export video", UIUtils.EXTENSION_FILTER_AVI);
         if (path == null) {
             return;
         }

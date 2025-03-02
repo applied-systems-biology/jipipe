@@ -122,7 +122,7 @@ public class JIPipeDesktopPlotAvailableDataManagerUI extends JIPipeDesktopWorkbe
     }
 
     private void importDataCSV() {
-        Path selectedPath = JIPipeFileChooserApplicationSettings.openFile(this, JIPipeFileChooserApplicationSettings.LastDirectoryKey.Projects, "Import CSV table (*.csv)", UIUtils.EXTENSION_FILTER_CSV);
+        Path selectedPath = JIPipeFileChooserApplicationSettings.openFile(this, getDesktopWorkbench(), JIPipeFileChooserApplicationSettings.LastDirectoryKey.Projects, "Import CSV table (*.csv)", UIUtils.EXTENSION_FILTER_CSV);
         if (selectedPath != null) {
             String fileName = selectedPath.getFileName().toString();
             try {

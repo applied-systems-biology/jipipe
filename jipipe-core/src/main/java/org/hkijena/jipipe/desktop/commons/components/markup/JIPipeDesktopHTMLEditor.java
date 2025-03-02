@@ -471,7 +471,7 @@ public class JIPipeDesktopHTMLEditor extends JIPipeDesktopWorkbenchPanel {
     }
 
     private void insertImageFromFile() {
-        Path path = JIPipeFileChooserApplicationSettings.openFile(this, JIPipeFileChooserApplicationSettings.LastDirectoryKey.Data, "Insert image from file", UIUtils.EXTENSION_FILTER_IMAGEIO_IMAGES);
+        Path path = JIPipeFileChooserApplicationSettings.openFile(this, getDesktopWorkbench(), JIPipeFileChooserApplicationSettings.LastDirectoryKey.Data, "Insert image from file", UIUtils.EXTENSION_FILTER_IMAGEIO_IMAGES);
         if (path != null) {
             try {
                 insertImage(ImageIO.read(path.toFile()));

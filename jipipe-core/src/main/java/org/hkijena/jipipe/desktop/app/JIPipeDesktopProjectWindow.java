@@ -21,7 +21,6 @@ import org.hkijena.jipipe.JIPipe;
 import org.hkijena.jipipe.JIPipeDependency;
 import org.hkijena.jipipe.JIPipeImageJUpdateSiteDependency;
 import org.hkijena.jipipe.api.AbstractJIPipeRunnable;
-import org.hkijena.jipipe.api.data.serialization.JIPipeDataTableInfo;
 import org.hkijena.jipipe.api.notifications.JIPipeNotificationInbox;
 import org.hkijena.jipipe.api.project.JIPipeProject;
 import org.hkijena.jipipe.api.project.JIPipeProjectMetadata;
@@ -249,7 +248,10 @@ public class JIPipeDesktopProjectWindow extends JFrame {
                     case JOptionPane.NO_OPTION:
                         break;
                     case JOptionPane.YES_OPTION:
-                        loadZipTarget = JIPipeFileChooserApplicationSettings.saveDirectory(this, JIPipeFileChooserApplicationSettings.LastDirectoryKey.Projects, "Load template: Choose an empty directory");
+                        loadZipTarget = JIPipeFileChooserApplicationSettings.saveDirectory(this,
+                                getProjectUI(),
+                                JIPipeFileChooserApplicationSettings.LastDirectoryKey.Projects,
+                                "Load template: Choose an empty directory");
                         break;
                 }
             } catch (IOException e) {
@@ -489,7 +491,11 @@ public class JIPipeDesktopProjectWindow extends JFrame {
      * Opens a file chooser where the user can select a project file
      */
     public void openProject() {
-        Path file = JIPipeFileChooserApplicationSettings.openFile(this, JIPipeFileChooserApplicationSettings.LastDirectoryKey.Projects, "Open JIPipe project (*.jip)", UIUtils.EXTENSION_FILTER_JIP);
+        Path file = JIPipeFileChooserApplicationSettings.openFile(this,
+                getProjectUI(),
+                JIPipeFileChooserApplicationSettings.LastDirectoryKey.Projects,
+                "Open JIPipe project (*.jip)",
+                UIUtils.EXTENSION_FILTER_JIP);
         if (file != null) {
             openProject(file, false);
         }
@@ -499,7 +505,10 @@ public class JIPipeDesktopProjectWindow extends JFrame {
      * Opens a file chooser where the user can select a result folder
      */
     public void openProjectAndOutput() {
-        Path file = JIPipeFileChooserApplicationSettings.openDirectory(this, JIPipeFileChooserApplicationSettings.LastDirectoryKey.Projects, "Open JIPipe output folder");
+        Path file = JIPipeFileChooserApplicationSettings.openDirectory(this,
+                getProjectUI(),
+                JIPipeFileChooserApplicationSettings.LastDirectoryKey.Projects,
+                "Open JIPipe output folder");
         if (file != null) {
             openProject(file, false);
         }
@@ -516,7 +525,11 @@ public class JIPipeDesktopProjectWindow extends JFrame {
         if (avoidDialog && projectSavePath != null)
             savePath = projectSavePath;
         if (savePath == null) {
-            savePath = JIPipeFileChooserApplicationSettings.saveFile(this, JIPipeFileChooserApplicationSettings.LastDirectoryKey.Projects, "Save JIPipe project (*.jip)", UIUtils.EXTENSION_FILTER_JIP);
+            savePath = JIPipeFileChooserApplicationSettings.saveFile(this,
+                    getProjectUI(),
+                    JIPipeFileChooserApplicationSettings.LastDirectoryKey.Projects,
+                    "Save JIPipe project (*.jip)",
+                    UIUtils.EXTENSION_FILTER_JIP);
             if (savePath == null)
                 return;
         }
@@ -613,7 +626,7 @@ public class JIPipeDesktopProjectWindow extends JFrame {
      * Saves the project and cache
      */
     public void saveProjectAndCacheToDirectory(String title, boolean addAsRecentProject) {
-        Path directory = JIPipeFileChooserApplicationSettings.saveDirectory(this, JIPipeFileChooserApplicationSettings.LastDirectoryKey.Projects, title);
+        Path directory = JIPipeFileChooserApplicationSettings.saveDirectory(this, getProjectUI(), JIPipeFileChooserApplicationSettings.LastDirectoryKey.Projects, title);
         if (directory == null)
             return;
         try {
@@ -638,7 +651,7 @@ public class JIPipeDesktopProjectWindow extends JFrame {
      * Saves the project and cache
      */
     public void saveProjectAndCacheToZIP(String title) {
-        Path file = JIPipeFileChooserApplicationSettings.saveFile(this, JIPipeFileChooserApplicationSettings.LastDirectoryKey.Projects, title, UIUtils.EXTENSION_FILTER_ZIP);
+        Path file = JIPipeFileChooserApplicationSettings.saveFile(this, getProjectUI(), JIPipeFileChooserApplicationSettings.LastDirectoryKey.Projects, title, UIUtils.EXTENSION_FILTER_ZIP);
         if (file == null)
             return;
         if (Files.exists(file)) {

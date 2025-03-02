@@ -197,7 +197,7 @@ public class JIPipeDesktopMergedResultDataSlotTableUI extends JIPipeDesktopProje
         for (int i = 0; i < table.getModel().getColumnCount(); i++) {
             variables.add(new JIPipeExpressionParameterVariableInfo(table.getModel().getColumnName(i), table.getModel().getColumnName(i), ""));
         }
-        String result = ExpressionBuilderUI.showDialog(getDesktopWorkbench().getWindow(), searchTextField.getText(), variables);
+        String result = ExpressionBuilderUI.showDialog(getDesktopWorkbench().getWindow(), getDesktopWorkbench(), searchTextField.getText(), variables);
         if (result != null) {
             searchTextField.setText(result);
         }
@@ -229,7 +229,7 @@ public class JIPipeDesktopMergedResultDataSlotTableUI extends JIPipeDesktopProje
     }
 
     private void exportMetadataAsFiles() {
-        Path path = JIPipeFileChooserApplicationSettings.saveFile(this, JIPipeFileChooserApplicationSettings.LastDirectoryKey.Projects, "Export as file", UIUtils.EXTENSION_FILTER_CSV, UIUtils.EXTENSION_FILTER_XLSX);
+        Path path = JIPipeFileChooserApplicationSettings.saveFile(this, getDesktopWorkbench(), JIPipeFileChooserApplicationSettings.LastDirectoryKey.Projects, "Export as file", UIUtils.EXTENSION_FILTER_CSV, UIUtils.EXTENSION_FILTER_XLSX);
         if (path != null) {
             AnnotationTableData tableData = new AnnotationTableData();
             for (JIPipeDataTableInfo exportedDataTable : mergedDataTable.getAddedTables()) {

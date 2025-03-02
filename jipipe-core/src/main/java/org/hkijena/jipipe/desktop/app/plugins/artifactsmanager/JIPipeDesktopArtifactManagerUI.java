@@ -205,7 +205,7 @@ public class JIPipeDesktopArtifactManagerUI extends JIPipeDesktopWorkbenchPanel 
     }
 
     private void installArtifactManually() {
-        Path archiveFile = JIPipeFileChooserApplicationSettings.openFile(this, JIPipeFileChooserApplicationSettings.LastDirectoryKey.External, "Manually install artifact", UIUtils.EXTENSION_FILTER_ARCHIVE);
+        Path archiveFile = JIPipeFileChooserApplicationSettings.openFile(this, getDesktopWorkbench(), JIPipeFileChooserApplicationSettings.LastDirectoryKey.External, "Manually install artifact", UIUtils.EXTENSION_FILTER_ARCHIVE);
         if(archiveFile != null) {
             JIPipeArtifact dummyArtifact = new JIPipeArtifact();
 

@@ -83,7 +83,7 @@ public class JIPipeDesktopCachedDataViewerAnnotationInfoPanel extends JIPipeDesk
     private void exportAsCSV() {
         if (currentData == null)
             return;
-        Path path = JIPipeFileChooserApplicationSettings.saveFile(this, JIPipeFileChooserApplicationSettings.LastDirectoryKey.Data, "Export as *.csv", UIUtils.EXTENSION_FILTER_CSV);
+        Path path = JIPipeFileChooserApplicationSettings.saveFile(this, getDesktopWorkbench(), JIPipeFileChooserApplicationSettings.LastDirectoryKey.Data, "Export as *.csv", UIUtils.EXTENSION_FILTER_CSV);
         if (path != null) {
             currentData.saveAsCSV(path);
         }

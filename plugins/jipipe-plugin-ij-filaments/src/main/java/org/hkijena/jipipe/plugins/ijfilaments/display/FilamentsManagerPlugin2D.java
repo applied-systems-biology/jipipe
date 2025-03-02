@@ -245,7 +245,7 @@ public class FilamentsManagerPlugin2D extends JIPipeDesktopLegacyImageViewerPlug
     }
 
     private void importFilamentsFromFile() {
-        Path path = JIPipeFileChooserApplicationSettings.openFile(getViewerPanel(), JIPipeFileChooserApplicationSettings.LastDirectoryKey.Data, "Import filaments", UIUtils.EXTENSION_FILTER_ZIP);
+        Path path = JIPipeFileChooserApplicationSettings.openFile(getViewerPanel(), workbench, JIPipeFileChooserApplicationSettings.LastDirectoryKey.Data, "Import filaments", UIUtils.EXTENSION_FILTER_ZIP);
         if (path != null && displayFilamentsViewMenuItem.getState()) {
             JIPipeProgressInfo progressInfo = new JIPipeProgressInfo();
             try (JIPipeZIPReadDataStorage storage = new JIPipeZIPReadDataStorage(progressInfo, path)) {
@@ -264,7 +264,7 @@ public class FilamentsManagerPlugin2D extends JIPipeDesktopLegacyImageViewerPlug
 
     private void exportFilamentsToFile(Filaments3DGraphData filaments) {
         FileNameExtensionFilter[] fileNameExtensionFilters = new FileNameExtensionFilter[]{UIUtils.EXTENSION_FILTER_ZIP};
-        Path path = JIPipeFileChooserApplicationSettings.saveFile(getViewerPanel(), JIPipeFileChooserApplicationSettings.LastDirectoryKey.Data, "Export filaments", fileNameExtensionFilters);
+        Path path = JIPipeFileChooserApplicationSettings.saveFile(getViewerPanel(), workbench, JIPipeFileChooserApplicationSettings.LastDirectoryKey.Data, "Export filaments", fileNameExtensionFilters);
         if (path != null) {
             JIPipeProgressInfo progressInfo = new JIPipeProgressInfo();
             try (JIPipeZIPWriteDataStorage storage = new JIPipeZIPWriteDataStorage(progressInfo, path)) {

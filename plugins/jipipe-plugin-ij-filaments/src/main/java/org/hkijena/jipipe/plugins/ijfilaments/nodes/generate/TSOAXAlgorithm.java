@@ -217,7 +217,7 @@ public abstract class TSOAXAlgorithm extends JIPipeSimpleIteratingAlgorithm {
             icon = "actions/document-export.png", buttonIcon = "actions/filesave.png", buttonText = "Save")
     public void saveParametersDesktopQuickAction(JIPipeDesktopGraphCanvasUI canvasUI) {
         Path filePath = JIPipeFileChooserApplicationSettings.saveFile(canvasUI.getDesktopWorkbench().getWindow(),
-                JIPipeFileChooserApplicationSettings.LastDirectoryKey.Data,
+                workbench, JIPipeFileChooserApplicationSettings.LastDirectoryKey.Data,
                 "Save TSOAX parameters",
                 UIUtils.EXTENSION_FILTER_TXT);
         if (filePath != null) {
@@ -230,7 +230,7 @@ public abstract class TSOAXAlgorithm extends JIPipeSimpleIteratingAlgorithm {
             icon = "actions/document-export.png", buttonIcon = "actions/fileopen.png", buttonText = "Open")
     public void loadParametersDesktopQuickAction(JIPipeDesktopGraphCanvasUI canvasUI) {
         Path filePath = JIPipeFileChooserApplicationSettings.openFile(canvasUI.getDesktopWorkbench().getWindow(),
-                JIPipeFileChooserApplicationSettings.LastDirectoryKey.Data,
+                workbench, JIPipeFileChooserApplicationSettings.LastDirectoryKey.Data,
                 "Open TSOAX parameters",
                 UIUtils.EXTENSION_FILTER_TXT);
         if (filePath != null) {

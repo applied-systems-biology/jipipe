@@ -129,7 +129,7 @@ public class JIPipeExpressionDesktopParameterEditorUI extends JIPipeDesktopParam
 
     private void editInFunctionBuilder() {
         reloadVariables();
-        String expression = ExpressionBuilderUI.showDialog(getDesktopWorkbench().getWindow(), expressionEditor.getText(), variables);
+        String expression = ExpressionBuilderUI.showDialog(getDesktopWorkbench().getWindow(), getDesktopWorkbench(), expressionEditor.getText(), variables);
         if (expression != null)
             expressionEditor.setText(expression);
     }

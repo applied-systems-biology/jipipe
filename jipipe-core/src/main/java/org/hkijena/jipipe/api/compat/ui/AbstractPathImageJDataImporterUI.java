@@ -40,7 +40,7 @@ public abstract class AbstractPathImageJDataImporterUI extends ImageJDataImporte
 
     private void initialize() {
         setLayout(new BorderLayout());
-        JIPipeDesktopPathEditorComponent pathEditor = new JIPipeDesktopPathEditorComponent(PathIOMode.Open, getPathType());
+        JIPipeDesktopPathEditorComponent pathEditor = new JIPipeDesktopPathEditorComponent(getDesktopWorkbench(),PathIOMode.Open, getPathType());
         try {
             pathEditor.setPath(Paths.get(getImporter().getName()));
         } catch (Exception e) {

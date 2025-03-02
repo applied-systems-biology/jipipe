@@ -575,7 +575,7 @@ public abstract class AbstractJIPipeDesktopGraphEditorUI extends JIPipeDesktopWo
 
     private void createScreenshotSVG() {
         SVGGraphics2D screenshot = canvasUI.createScreenshotSVG();
-        Path selectedPath = JIPipeFileChooserApplicationSettings.saveFile(this, JIPipeFileChooserApplicationSettings.LastDirectoryKey.Projects, "Export graph as SVG (*.svg)", UIUtils.EXTENSION_FILTER_SVG);
+        Path selectedPath = JIPipeFileChooserApplicationSettings.saveFile(this, getDesktopWorkbench(), JIPipeFileChooserApplicationSettings.LastDirectoryKey.Projects, "Export graph as SVG (*.svg)", UIUtils.EXTENSION_FILTER_SVG);
         if (selectedPath != null) {
             try {
                 SVGUtils.writeToSVG(selectedPath.toFile(), screenshot.getSVGElement());
@@ -588,7 +588,7 @@ public abstract class AbstractJIPipeDesktopGraphEditorUI extends JIPipeDesktopWo
 
     private void createScreenshotPNG() {
         BufferedImage screenshot = canvasUI.createScreenshotPNG();
-        Path selectedPath = JIPipeFileChooserApplicationSettings.saveFile(this, JIPipeFileChooserApplicationSettings.LastDirectoryKey.Projects, "Export graph as PNG (*.png)", UIUtils.EXTENSION_FILTER_PNG);
+        Path selectedPath = JIPipeFileChooserApplicationSettings.saveFile(this, getDesktopWorkbench(), JIPipeFileChooserApplicationSettings.LastDirectoryKey.Projects, "Export graph as PNG (*.png)", UIUtils.EXTENSION_FILTER_PNG);
         if (selectedPath != null) {
             try {
                 ImageIO.write(screenshot, "PNG", selectedPath.toFile());

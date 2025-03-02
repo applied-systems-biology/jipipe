@@ -52,7 +52,7 @@ public class ExportNodeParameterJsonsTool extends JIPipeDesktopMenuExtension {
     }
 
     private void runExportTool() {
-        Path outputDirectory = JIPipeFileChooserApplicationSettings.saveDirectory(getDesktopWorkbench().getWindow(), JIPipeFileChooserApplicationSettings.LastDirectoryKey.External, "Output directory");
+        Path outputDirectory = JIPipeFileChooserApplicationSettings.saveDirectory(getDesktopWorkbench().getWindow(), getDesktopWorkbench(), JIPipeFileChooserApplicationSettings.LastDirectoryKey.External, "Output directory");
         if (outputDirectory != null) {
             for (Map.Entry<String, JIPipeNodeInfo> entry : JIPipe.getNodes().getRegisteredNodeInfos().entrySet()) {
                 JIPipeGraphNode instance = entry.getValue().newInstance();

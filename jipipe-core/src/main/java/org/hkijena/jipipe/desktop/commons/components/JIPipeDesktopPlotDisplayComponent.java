@@ -106,7 +106,11 @@ public class JIPipeDesktopPlotDisplayComponent extends JPanel {
             default:
                 throw new UnsupportedOperationException();
         }
-        Path path = JIPipeFileChooserApplicationSettings.saveFile(this, JIPipeFileChooserApplicationSettings.LastDirectoryKey.Data, "Export plot as " + fileFormat, filter);
+        Path path = JIPipeFileChooserApplicationSettings.saveFile(this,
+                plotBuilderUI.getDesktopWorkbench(),
+                JIPipeFileChooserApplicationSettings.LastDirectoryKey.Data,
+                "Export plot as " + fileFormat,
+                filter);
         Dimension size;
         if (currentSize) {
             size = getSize();

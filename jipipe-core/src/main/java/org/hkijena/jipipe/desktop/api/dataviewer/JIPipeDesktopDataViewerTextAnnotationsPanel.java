@@ -96,7 +96,7 @@ public class JIPipeDesktopDataViewerTextAnnotationsPanel extends JIPipeDesktopWo
         if (currentData == null)
             return;
         Path path = JIPipeFileChooserApplicationSettings.saveFile(this,
-                JIPipeFileChooserApplicationSettings.LastDirectoryKey.Data,
+                getDesktopWorkbench(), JIPipeFileChooserApplicationSettings.LastDirectoryKey.Data,
                 "Export as *.xlsx",
                 UIUtils.EXTENSION_FILTER_XLSX);
         if (path != null) {
@@ -115,7 +115,7 @@ public class JIPipeDesktopDataViewerTextAnnotationsPanel extends JIPipeDesktopWo
         if (currentData == null)
             return;
         Path path = JIPipeFileChooserApplicationSettings.saveFile(this,
-                JIPipeFileChooserApplicationSettings.LastDirectoryKey.Data,
+                getDesktopWorkbench(), JIPipeFileChooserApplicationSettings.LastDirectoryKey.Data,
                 "Export as *.csv",
                 UIUtils.EXTENSION_FILTER_CSV);
         if (path != null) {

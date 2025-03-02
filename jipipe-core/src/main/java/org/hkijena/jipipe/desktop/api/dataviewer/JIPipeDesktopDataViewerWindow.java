@@ -429,25 +429,25 @@ public class JIPipeDesktopDataViewerWindow extends JFrame implements JIPipeDeskt
     }
 
     private void exportDataTableToFolder() {
-        Path path = JIPipeFileChooserApplicationSettings.saveDirectory(this, JIPipeFileChooserApplicationSettings.LastDirectoryKey.Data, "Export data table into directory");
+        Path path = JIPipeFileChooserApplicationSettings.saveDirectory(this, workbench, JIPipeFileChooserApplicationSettings.LastDirectoryKey.Data, "Export data table into directory");
         ExportDataTableIntoDirectoryRun run = new ExportDataTableIntoDirectoryRun(dataTableBrowser, path);
         JIPipeDesktopRunExecuteUI.runInDialog(getDesktopWorkbench(), this, run);
     }
 
     private void exportDataTableToZip() {
-        Path path = JIPipeFileChooserApplicationSettings.saveFile(this, JIPipeFileChooserApplicationSettings.LastDirectoryKey.Data, "Export data table", UIUtils.EXTENSION_FILTER_ZIP);
+        Path path = JIPipeFileChooserApplicationSettings.saveFile(this, workbench, JIPipeFileChooserApplicationSettings.LastDirectoryKey.Data, "Export data table", UIUtils.EXTENSION_FILTER_ZIP);
         ExportDataTableToZipRun run = new ExportDataTableToZipRun(dataTableBrowser, path);
         JIPipeDesktopRunExecuteUI.runInDialog(getDesktopWorkbench(), this, run);
     }
 
     private void exportAsFilesIntoDirectory() {
-        Path path = JIPipeFileChooserApplicationSettings.saveDirectory(this, JIPipeFileChooserApplicationSettings.LastDirectoryKey.Data, "Export data into directory");
+        Path path = JIPipeFileChooserApplicationSettings.saveDirectory(this, workbench, JIPipeFileChooserApplicationSettings.LastDirectoryKey.Data, "Export data into directory");
         ExportDataIntoDirectoryRun run = new ExportDataIntoDirectoryRun(dataBrowser, path);
         JIPipeDesktopRunExecuteUI.runInDialog(getDesktopWorkbench(), this, run);
     }
 
     private void exportAsFilesCustom() {
-        Path path = JIPipeFileChooserApplicationSettings.saveFile(this, JIPipeFileChooserApplicationSettings.LastDirectoryKey.Data, "Export data");
+        Path path = JIPipeFileChooserApplicationSettings.saveFile(this, workbench, JIPipeFileChooserApplicationSettings.LastDirectoryKey.Data, "Export data");
         ExportDataWithCustomNameRun run = new ExportDataWithCustomNameRun(dataBrowser, path);
         JIPipeDesktopRunExecuteUI.runInDialog(getDesktopWorkbench(), this, run);
     }

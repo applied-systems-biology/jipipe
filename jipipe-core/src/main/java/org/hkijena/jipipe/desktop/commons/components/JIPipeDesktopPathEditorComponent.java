@@ -13,6 +13,8 @@
 
 package org.hkijena.jipipe.desktop.commons.components;
 
+import org.hkijena.jipipe.desktop.app.JIPipeDesktopWorkbench;
+import org.hkijena.jipipe.desktop.app.JIPipeDesktopWorkbenchPanel;
 import org.hkijena.jipipe.plugins.settings.JIPipeFileChooserApplicationSettings;
 import org.hkijena.jipipe.plugins.settings.JIPipeRuntimeApplicationSettings;
 import org.hkijena.jipipe.utils.PathIOMode;
@@ -34,7 +36,7 @@ import java.util.*;
 /**
  * Text field with a file selection
  */
-public class JIPipeDesktopPathEditorComponent extends JPanel {
+public class JIPipeDesktopPathEditorComponent extends JIPipeDesktopWorkbenchPanel {
 
     private final Set<ActionListener> listeners = new HashSet<>();
     private JTextField pathEdit;
@@ -47,7 +49,8 @@ public class JIPipeDesktopPathEditorComponent extends JPanel {
     /**
      * Creates a new file selection that opens a file
      */
-    public JIPipeDesktopPathEditorComponent() {
+    public JIPipeDesktopPathEditorComponent(JIPipeDesktopWorkbench workbench) {
+        super(workbench);
         setPathMode(PathType.FilesOnly);
         initialize();
         setIoMode(PathIOMode.Open);
@@ -57,7 +60,8 @@ public class JIPipeDesktopPathEditorComponent extends JPanel {
      * @param ioMode   If a path is opened or saved
      * @param pathMode If the path is a file, directory or anything
      */
-    public JIPipeDesktopPathEditorComponent(PathIOMode ioMode, PathType pathMode) {
+    public JIPipeDesktopPathEditorComponent(JIPipeDesktopWorkbench workbench, PathIOMode ioMode, PathType pathMode) {
+        super(workbench);
         setPathMode(pathMode);
         initialize();
         setIoMode(ioMode);
@@ -124,6 +128,7 @@ public class JIPipeDesktopPathEditorComponent extends JPanel {
      */
     public void choosePath() {
         Path selected = JIPipeFileChooserApplicationSettings.selectSingle(this,
+                getDesktopWorkbench(),
                 directoryKey,
                 "Change current value",
                 ioMode,

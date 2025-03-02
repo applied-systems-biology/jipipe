@@ -65,7 +65,7 @@ public class JIPipeDesktopDataTableToFilesByMetadataExporterRun extends JIPipeDe
      * @return if setup was confirmed
      */
     public boolean setup() {
-        outputPath = JIPipeFileChooserApplicationSettings.openDirectory(this, JIPipeFileChooserApplicationSettings.LastDirectoryKey.Data, "Export data as files");
+        outputPath = JIPipeFileChooserApplicationSettings.openDirectory(this, getDesktopWorkbench(), JIPipeFileChooserApplicationSettings.LastDirectoryKey.Data, "Export data as files");
         if (outputPath == null)
             return false;
 

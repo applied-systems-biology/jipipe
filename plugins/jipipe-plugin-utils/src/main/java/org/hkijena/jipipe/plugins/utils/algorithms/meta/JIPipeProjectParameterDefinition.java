@@ -57,7 +57,7 @@ public class JIPipeProjectParameterDefinition extends DefineParametersTableAlgor
     @JIPipeContextAction(iconURL = ResourceUtils.RESOURCE_BASE_PATH + "/icons/actions/folder-open.png", iconDarkURL = ResourceUtils.RESOURCE_BASE_PATH + "/dark/icons/actions/folder-open.png")
     @SetJIPipeDocumentation(name = "Load parameters from project", description = "Loads parameters from a project file")
     public void importParametersFromProject(JIPipeWorkbench workbench) {
-        Path projectFile = JIPipeFileChooserApplicationSettings.openFile(((JIPipeDesktopWorkbench) workbench).getWindow(), JIPipeFileChooserApplicationSettings.LastDirectoryKey.Projects, "Import JIPipe project", UIUtils.EXTENSION_FILTER_JIP);
+        Path projectFile = JIPipeFileChooserApplicationSettings.openFile(((JIPipeDesktopWorkbench) workbench).getWindow(), workbench, JIPipeFileChooserApplicationSettings.LastDirectoryKey.Projects, "Import JIPipe project", UIUtils.EXTENSION_FILTER_JIP);
         if (projectFile != null) {
             try {
                 JIPipeProject project = JIPipeProject.loadProject(projectFile, new UnspecifiedValidationReportContext(), new JIPipeValidationReport(), new JIPipeNotificationInbox());

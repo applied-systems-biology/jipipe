@@ -67,7 +67,7 @@ public class ImageDesktopParameterEditorUI extends JIPipeDesktopParameterEditorU
 
     private void importImageFile() {
         Path path = JIPipeFileChooserApplicationSettings.openFile(getDesktopWorkbench().getWindow(),
-                JIPipeFileChooserApplicationSettings.LastDirectoryKey.External,
+                getDesktopWorkbench(), JIPipeFileChooserApplicationSettings.LastDirectoryKey.External,
                 "Open image",
                 UIUtils.EXTENSION_FILTER_IMAGEIO_IMAGES);
         if (path != null) {

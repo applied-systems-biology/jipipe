@@ -45,7 +45,7 @@ public class ExportCompartmentAsJsonNodeUIContextAction implements NodeUIContext
 
         if (JOptionPane.showConfirmDialog(canvasUI.getDesktopWorkbench().getWindow(), metadataEditor, "Export compartment",
                 JOptionPane.OK_CANCEL_OPTION, JOptionPane.PLAIN_MESSAGE) == JOptionPane.OK_OPTION) {
-            Path selectedPath = JIPipeFileChooserApplicationSettings.saveFile(canvasUI, JIPipeFileChooserApplicationSettings.LastDirectoryKey.Projects, "Save JIPipe graph compartment (*.jipc)", UIUtils.EXTENSION_FILTER_JIPC);
+            Path selectedPath = JIPipeFileChooserApplicationSettings.saveFile(canvasUI, canvasUI.getDesktopWorkbench(), JIPipeFileChooserApplicationSettings.LastDirectoryKey.Projects, "Save JIPipe graph compartment (*.jipc)", UIUtils.EXTENSION_FILTER_JIPC);
             if (selectedPath != null) {
                 try {
                     exportedCompartment.saveToJson(selectedPath);

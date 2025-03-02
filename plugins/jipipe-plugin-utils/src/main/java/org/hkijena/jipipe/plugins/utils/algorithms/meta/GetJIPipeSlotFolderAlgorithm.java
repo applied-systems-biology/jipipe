@@ -119,7 +119,7 @@ public class GetJIPipeSlotFolderAlgorithm extends JIPipeSimpleIteratingAlgorithm
     @SetJIPipeDocumentation(name = "Set output slot", description = "Loads parameters from a project file")
     public void importParametersFromProject(JIPipeWorkbench workbench) {
         Window window = ((JIPipeDesktopWorkbench) workbench).getWindow();
-        Path projectFile = JIPipeFileChooserApplicationSettings.openFile(window, JIPipeFileChooserApplicationSettings.LastDirectoryKey.Projects, "Import JIPipe project", UIUtils.EXTENSION_FILTER_JIP);
+        Path projectFile = JIPipeFileChooserApplicationSettings.openFile(window, workbench, JIPipeFileChooserApplicationSettings.LastDirectoryKey.Projects, "Import JIPipe project", UIUtils.EXTENSION_FILTER_JIP);
         if (projectFile != null) {
             try {
                 JIPipeProject project = JIPipeProject.loadProject(projectFile, new UnspecifiedValidationReportContext(), new JIPipeValidationReport(), new JIPipeNotificationInbox());

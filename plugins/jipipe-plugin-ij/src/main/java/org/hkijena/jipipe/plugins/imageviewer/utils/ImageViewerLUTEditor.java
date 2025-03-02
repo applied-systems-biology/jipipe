@@ -283,7 +283,7 @@ public abstract class ImageViewerLUTEditor extends JPanel implements ThumbListen
     }
 
     private void importLUTFromJSON() {
-        Path path = JIPipeFileChooserApplicationSettings.openFile(this, JIPipeFileChooserApplicationSettings.LastDirectoryKey.Data, "Import LUT", UIUtils.EXTENSION_FILTER_JSON);
+        Path path = JIPipeFileChooserApplicationSettings.openFile(this, workbench, JIPipeFileChooserApplicationSettings.LastDirectoryKey.Data, "Import LUT", UIUtils.EXTENSION_FILTER_JSON);
         if (path != null) {
             LUTData lutData = JsonUtils.readFromFile(path, LUTData.class);
             importLUT(lutData);
@@ -292,7 +292,7 @@ public abstract class ImageViewerLUTEditor extends JPanel implements ThumbListen
     }
 
     private void exportLUTToJSON() {
-        Path path = JIPipeFileChooserApplicationSettings.saveFile(this, JIPipeFileChooserApplicationSettings.LastDirectoryKey.Data, "Export LUT", UIUtils.EXTENSION_FILTER_JSON);
+        Path path = JIPipeFileChooserApplicationSettings.saveFile(this, workbench, JIPipeFileChooserApplicationSettings.LastDirectoryKey.Data, "Export LUT", UIUtils.EXTENSION_FILTER_JSON);
         if (path != null) {
             LUTData lutData = new LUTData();
             for (int i = 0; i < slider.getModel().getThumbCount(); i++) {
@@ -304,7 +304,7 @@ public abstract class ImageViewerLUTEditor extends JPanel implements ThumbListen
     }
 
     private void importLUTFromPNG() {
-        Path path = JIPipeFileChooserApplicationSettings.openFile(this, JIPipeFileChooserApplicationSettings.LastDirectoryKey.Data, "Import LUT", UIUtils.EXTENSION_FILTER_PNG);
+        Path path = JIPipeFileChooserApplicationSettings.openFile(this, workbench, JIPipeFileChooserApplicationSettings.LastDirectoryKey.Data, "Import LUT", UIUtils.EXTENSION_FILTER_PNG);
         if (path != null) {
             ImagePlus img = IJ.openImage(path.toString());
             LUT lut = ImageJUtils.lutFromImage(img);
@@ -314,7 +314,7 @@ public abstract class ImageViewerLUTEditor extends JPanel implements ThumbListen
     }
 
     private void exportLUTToPNG() {
-        Path path = JIPipeFileChooserApplicationSettings.saveFile(this, JIPipeFileChooserApplicationSettings.LastDirectoryKey.Data, "Export LUT", UIUtils.EXTENSION_FILTER_PNG);
+        Path path = JIPipeFileChooserApplicationSettings.saveFile(this, workbench, JIPipeFileChooserApplicationSettings.LastDirectoryKey.Data, "Export LUT", UIUtils.EXTENSION_FILTER_PNG);
         if (path != null) {
             LUT lut = generateLUT();
             ImagePlus img = ImageJUtils.lutToImage(lut, 256, 1);

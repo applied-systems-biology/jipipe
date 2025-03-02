@@ -156,7 +156,7 @@ public class JIPipeDesktopExpressionCalculatorUI extends JIPipeDesktopWorkbenchP
                     ""));
         }
 
-        String expression = ExpressionBuilderUI.showDialog(getDesktopWorkbench().getWindow(), expressionEditor.getText(), variableInfos);
+        String expression = ExpressionBuilderUI.showDialog(getDesktopWorkbench().getWindow(), getDesktopWorkbench(), expressionEditor.getText(), variableInfos);
         if (expression != null) {
             expressionEditor.setText(expression);
         }

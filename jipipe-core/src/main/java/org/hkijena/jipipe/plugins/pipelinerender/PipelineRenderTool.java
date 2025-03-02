@@ -55,7 +55,7 @@ public class PipelineRenderTool extends JIPipeDesktopMenuExtension {
                 document,
                 getText(),
                 JIPipeDesktopParameterFormPanel.WITH_SEARCH_BAR | JIPipeDesktopParameterFormPanel.WITH_SCROLLING | JIPipeDesktopParameterFormPanel.WITH_DOCUMENTATION)) {
-            Path path = JIPipeFileChooserApplicationSettings.saveFile(getDesktopWorkbench().getWindow(), JIPipeFileChooserApplicationSettings.LastDirectoryKey.External, getText(), UIUtils.EXTENSION_FILTER_PNG);
+            Path path = JIPipeFileChooserApplicationSettings.saveFile(getDesktopWorkbench().getWindow(), getDesktopWorkbench(), JIPipeFileChooserApplicationSettings.LastDirectoryKey.External, getText(), UIUtils.EXTENSION_FILTER_PNG);
             if (path != null) {
                 JIPipeDesktopRunExecuteUI.runInDialog(getDesktopWorkbench(), getDesktopWorkbench().getWindow(), new RenderPipelineRun(project, path, settings));
             }

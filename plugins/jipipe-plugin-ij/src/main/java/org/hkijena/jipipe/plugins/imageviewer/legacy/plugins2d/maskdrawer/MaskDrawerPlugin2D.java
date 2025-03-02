@@ -245,7 +245,7 @@ public class MaskDrawerPlugin2D extends JIPipeDesktopLegacyImageViewerPlugin2D i
 
     private void importMask() {
         Path selectedFile = JIPipeFileChooserApplicationSettings.openFile(getViewerPanel(),
-                JIPipeFileChooserApplicationSettings.LastDirectoryKey.Data,
+                workbench, JIPipeFileChooserApplicationSettings.LastDirectoryKey.Data,
                 "Import mask",
                 UIUtils.EXTENSION_FILTER_TIFF);
         if (selectedFile != null) {
@@ -277,7 +277,7 @@ public class MaskDrawerPlugin2D extends JIPipeDesktopLegacyImageViewerPlugin2D i
 
     private void exportMask() {
         Path selectedFile = JIPipeFileChooserApplicationSettings.saveFile(getViewerPanel(),
-                JIPipeFileChooserApplicationSettings.LastDirectoryKey.Data,
+                workbench, JIPipeFileChooserApplicationSettings.LastDirectoryKey.Data,
                 "Export mask",
                 UIUtils.EXTENSION_FILTER_TIFF);
         if (selectedFile != null) {

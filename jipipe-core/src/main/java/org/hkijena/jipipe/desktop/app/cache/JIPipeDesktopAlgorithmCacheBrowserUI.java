@@ -226,7 +226,7 @@ public class JIPipeDesktopAlgorithmCacheBrowserUI extends JIPipeDesktopProjectWo
             JOptionPane.showMessageDialog(this, "There is no cached data to export!", "Export cache", JOptionPane.ERROR_MESSAGE);
             return;
         }
-        Path outputFolder = JIPipeFileChooserApplicationSettings.saveDirectory(this, JIPipeFileChooserApplicationSettings.LastDirectoryKey.Data, "Export cache");
+        Path outputFolder = JIPipeFileChooserApplicationSettings.saveDirectory(this, getDesktopWorkbench(), JIPipeFileChooserApplicationSettings.LastDirectoryKey.Data, "Export cache");
         if (outputFolder != null) {
             // Save the node's state to a file
             Path nodeStateFile = outputFolder.resolve("node.json");
@@ -243,7 +243,7 @@ public class JIPipeDesktopAlgorithmCacheBrowserUI extends JIPipeDesktopProjectWo
     }
 
     private void importCache() {
-        Path inputFolder = JIPipeFileChooserApplicationSettings.openDirectory(this, JIPipeFileChooserApplicationSettings.LastDirectoryKey.Data, "Import cache");
+        Path inputFolder = JIPipeFileChooserApplicationSettings.openDirectory(this, getDesktopWorkbench(), JIPipeFileChooserApplicationSettings.LastDirectoryKey.Data, "Import cache");
         // Temporarily removed
 //        Path nodeStateFile = inputFolder.resolve("node.json");
 //        if (Files.exists(nodeStateFile)) {

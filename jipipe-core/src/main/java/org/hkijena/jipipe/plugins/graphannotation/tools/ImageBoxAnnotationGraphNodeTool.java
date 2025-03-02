@@ -39,7 +39,7 @@ public class ImageBoxAnnotationGraphNodeTool extends JIPipeAnnotationGraphNodeTo
     protected ImageBoxAnnotationGraphNode createAndConfigureNode(Point firstPoint, Point secondPoint) {
         ImageBoxAnnotationGraphNode node = super.createAndConfigureNode(firstPoint, secondPoint);
         Path path = JIPipeFileChooserApplicationSettings.openFile(getDesktopWorkbench().getWindow(),
-                JIPipeFileChooserApplicationSettings.LastDirectoryKey.External,
+                getDesktopWorkbench(), JIPipeFileChooserApplicationSettings.LastDirectoryKey.External,
                 "Open image",
                 UIUtils.EXTENSION_FILTER_IMAGEIO_IMAGES);
         if (path != null) {
