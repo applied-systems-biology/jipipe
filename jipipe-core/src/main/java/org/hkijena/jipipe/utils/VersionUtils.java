@@ -38,10 +38,18 @@ public class VersionUtils {
     /**
      * The current version of JIPipe according to the Maven-proved information
      *
-     * @return the version string or '4.1.0' if none is available
+     * @return the version string or FALLBACK_VERSION if none is available
      */
     public static String getJIPipeVersion() {
-        return StringUtils.orElse(CorePlugin.class.getPackage().getImplementationVersion(), FALLBACK_VERSION);
+        String version = CorePlugin.class.getPackage().getImplementationVersion();
+        if(version == null) {
+            return FALLBACK_VERSION;
+        }
+        // Remove "-SNAPSHOT" or other classifiers if they are present
+        if(version.contains("-")) {
+            return version.substring(0, version.indexOf("-"));
+        }
+        return version;
     }
 
     /**
