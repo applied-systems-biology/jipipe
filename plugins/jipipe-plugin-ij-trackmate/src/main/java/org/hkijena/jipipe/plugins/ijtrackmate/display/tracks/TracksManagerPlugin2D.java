@@ -172,7 +172,7 @@ public class TracksManagerPlugin2D extends JIPipeDesktopLegacyImageViewerPlugin2
     }
 
     private void importTracksFromFile() {
-        Path path = JIPipeFileChooserApplicationSettings.openFile(getViewerPanel(), workbench, JIPipeFileChooserApplicationSettings.LastDirectoryKey.Data, "Import tracks", UIUtils.EXTENSION_FILTER_ZIP);
+        Path path = JIPipeFileChooserApplicationSettings.openFile(getViewerPanel(), getWorkbench(), JIPipeFileChooserApplicationSettings.LastDirectoryKey.Data, "Import tracks", UIUtils.EXTENSION_FILTER_ZIP);
         if (path != null && displayTracksViewMenuItem.getState()) {
             JIPipeProgressInfo progressInfo = new JIPipeProgressInfo();
             try (JIPipeZIPReadDataStorage storage = new JIPipeZIPReadDataStorage(progressInfo, path)) {
@@ -205,7 +205,7 @@ public class TracksManagerPlugin2D extends JIPipeDesktopLegacyImageViewerPlugin2
 
     private void exportTracksToFile(TrackCollectionData rois) {
         FileNameExtensionFilter[] fileNameExtensionFilters = new FileNameExtensionFilter[]{UIUtils.EXTENSION_FILTER_ZIP};
-        Path path = JIPipeFileChooserApplicationSettings.saveFile(getViewerPanel(), workbench, JIPipeFileChooserApplicationSettings.LastDirectoryKey.Data, "Export tracks", fileNameExtensionFilters);
+        Path path = JIPipeFileChooserApplicationSettings.saveFile(getViewerPanel(), getWorkbench(), JIPipeFileChooserApplicationSettings.LastDirectoryKey.Data, "Export tracks", fileNameExtensionFilters);
         if (path != null) {
             JIPipeProgressInfo progressInfo = new JIPipeProgressInfo();
             try (JIPipeZIPWriteDataStorage storage = new JIPipeZIPWriteDataStorage(progressInfo, path)) {

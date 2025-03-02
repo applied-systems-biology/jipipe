@@ -178,6 +178,41 @@ public class CorePlugin extends JIPipePrepackagedDefaultJavaPlugin {
                 "jipipe:desktop:project-tabs",
                 "org.hkijena.jipipe.ui.project.JIPipeProjectTabMetadata",
                 "org.hkijena.jipipe.desktop.app.project.JIPipeDesktopJIPipeProjectTabMetadata");
+
+        // Common file types
+        registerFileChooserKnownFileType("JIPipe project file", "apps/jipipe.png", ".jip");
+
+        registerFileChooserKnownFileType("JSON file", "mimetypes/application-json.png", ".json", ".json5");
+        registerFileChooserKnownFileType("XML file", "mimetypes/text-xml.png", ".xml");
+        registerFileChooserKnownFileType("Text file", "mimetypes/text.png", ".txt");
+
+        registerFileChooserKnownFileType("Markdown file", "mimetypes/text-markdown.png", ".md");
+        registerFileChooserKnownFileType("HTML file", "mimetypes/text-html.png", ".html", ".htm");
+
+        registerFileChooserKnownFileType("CSV table", "mimetypes/text-csv.png", ".csv", ".tsv");
+        registerFileChooserKnownFileType("Excel table", "mimetypes/excel.png", ".xlsx", ".xls");
+
+        registerFileChooserKnownFileType("ZIP archive", "mimetypes/application-zip.png", ".zip");
+        registerFileChooserKnownFileType("RAR archive", "mimetypes/application-zip.png", ".rar");
+        registerFileChooserKnownFileType("TAR archive", "mimetypes/tar.png", ".tar", ".tar.gz", ".tar.bz2", ".tar.xz");
+
+        registerFileChooserKnownFileType("Java executable", "mimetypes/application-x-jar.png", ".jar");
+        registerFileChooserKnownFileType("Windows executable", "mimetypes/x-content-win32-software.png", ".exe");
+        registerFileChooserKnownFileType("Shell script", "mimetypes/shellscript.png", ".sh");
+        registerFileChooserKnownFileType("Batch file", "mimetypes/shellscript.png", ".bat");
+        registerFileChooserKnownFileType("Powershell script", "mimetypes/shellscript.png", ".ps1");
+
+        registerFileChooserKnownFileType("Python script", "mimetypes/text-x-python.png", ".py");
+        registerFileChooserKnownFileType("R script", "mimetypes/application-x-rdata.png", ".r");
+        registerFileChooserKnownFileType("Java code file", "mimetypes/text-x-java.png", ".java");
+        registerFileChooserKnownFileType("JavaScript script", "mimetypes/text-x-javascript.png", ".js");
+        registerFileChooserKnownFileType("ImageJ macro", "apps/imagej.png", ".ijm");
+
+        registerFileChooserKnownFileType("Image", "mimetypes/image-png.png", ".png", ".bmp", ".jpg", ".jpeg", ".gif");
+        registerFileChooserKnownFileType("Vector image", "mimetypes/svg.png", ".svg", ".svgz", ".ai");
+        registerFileChooserKnownFileType("TIFF image", "data-types/imgplus.png", ".tif", ".tiff");
+
+        registerFileChooserKnownFileType("PDF file", "data-types/viewpdf.png", ".pdf");
     }
 
     @Override

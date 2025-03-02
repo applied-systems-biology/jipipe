@@ -552,6 +552,33 @@ public class ImageJDataTypesPlugin extends JIPipePrepackagedDefaultJavaPlugin {
         registerDefaultDataTypeViewer(ROI2DListData.class, ROI2DListDataViewer.class);
         registerDefaultDataTypeViewer(OMEImageData.class, OMEImageDataViewer.class);
         registerDefaultDataTypeViewer(ResultsTableData.class, ResultsTableDataViewer.class);
+
+        // Register data types
+        registerFileChooserKnownFileType("TIFF image", "data-types/bioformats.png", ".tif", ".tiff");
+        registerFileChooserKnownFileType("OME-TIFF", "data-types/bioformats.png", ".ome.tif", ".ome.tiff");
+        registerFileChooserKnownFileType("OME-XML", "data-types/bioformats.png", ".ome.xml");
+        registerFileChooserKnownFileType("DICOM image", "data-types/bioformats.png", ".dcm");
+        registerFileChooserKnownFileType("LIF image", "data-types/bioformats.png", ".lif");
+        registerFileChooserKnownFileType("ND2 image", "data-types/bioformats.png", ".nd2");
+        registerFileChooserKnownFileType("CZI image", "data-types/bioformats.png", ".czi");
+        registerFileChooserKnownFileType("ICS/IDS image", "data-types/bioformats.png", ".ics", ".ids");
+        registerFileChooserKnownFileType("SVS image", "data-types/bioformats.png", ".svs");
+        registerFileChooserKnownFileType("AVI video", "data-types/bioformats.png", ".avi");
+        registerFileChooserKnownFileType("MOV video", "data-types/bioformats.png", ".mov");
+        registerFileChooserKnownFileType("MP4 video", "data-types/bioformats.png", ".mp4");
+        registerFileChooserKnownFileType("Gatan DM3/DM4", "data-types/bioformats.png", ".dm3", ".dm4");
+        registerFileChooserKnownFileType("Zeiss LSM", "data-types/bioformats.png", ".lsm");
+        registerFileChooserKnownFileType("Flex (PerkinElmer)", "data-types/bioformats.png", ".flex");
+        registerFileChooserKnownFileType("MetaMorph STK", "data-types/bioformats.png", ".stk");
+        registerFileChooserKnownFileType("AmiraMesh", "data-types/bioformats.png", ".am");
+        registerFileChooserKnownFileType("Slidebook", "data-types/bioformats.png", ".sld");
+        registerFileChooserKnownFileType("VSI image", "data-types/bioformats.png", ".vsi");
+        registerFileChooserKnownFileType("Imaris", "data-types/bioformats.png", ".ims");
+        registerFileChooserKnownFileType("OME-Zarr ZIP", "apps/zarr.png", ".zarr.zip");
+        registerFileChooserKnownDirectoryType("OME-Zarr", "apps/zarr.png", ".zarr");
+        registerFileChooserKnownFileType("OME-Zarr", "data-types/bioformats.png", ".zarr");
+        registerFileChooserKnownFileType("MRC/CCP4", "data-types/bioformats.png", ".mrc", ".ccp4", ".map");
+
     }
 
     /**

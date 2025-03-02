@@ -121,7 +121,7 @@ public class MeasurementDrawerPlugin2D extends MaskDrawerPlugin2D implements Mas
         if (lastMeasurements == null) {
             return;
         }
-        Path selectedPath = JIPipeFileChooserApplicationSettings.saveFile(getViewerPanel(), workbench, JIPipeFileChooserApplicationSettings.LastDirectoryKey.Projects, "Export table", UIUtils.EXTENSION_FILTER_CSV, UIUtils.EXTENSION_FILTER_XLSX);
+        Path selectedPath = JIPipeFileChooserApplicationSettings.saveFile(getViewerPanel(), getWorkbench(), JIPipeFileChooserApplicationSettings.LastDirectoryKey.Projects, "Export table", UIUtils.EXTENSION_FILTER_CSV, UIUtils.EXTENSION_FILTER_XLSX);
         if (selectedPath != null) {
             if (UIUtils.EXTENSION_FILTER_XLSX.accept(selectedPath.toFile())) {
                 lastMeasurements.saveAsXLSX(selectedPath);

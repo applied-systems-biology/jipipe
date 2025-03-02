@@ -589,7 +589,7 @@ public class JIPipeDesktopLegacyImageViewerPanel2D extends JPanel implements JIP
 
     public void exportAllSlicesToPNG() {
         JIPipeDesktopFormPanel formPanel = new JIPipeDesktopFormPanel(null, JIPipeDesktopFormPanel.NONE);
-        JIPipeDesktopPathEditorComponent exportPathEditor = new JIPipeDesktopPathEditorComponent(PathIOMode.Open, PathType.DirectoriesOnly);
+        JIPipeDesktopPathEditorComponent exportPathEditor = new JIPipeDesktopPathEditorComponent(getDesktopWorkbench(), PathIOMode.Open, PathType.DirectoriesOnly);
         exportPathEditor.setPath(JIPipeFileChooserApplicationSettings.getInstance().getLastDataDirectory());
         formPanel.addToForm(exportPathEditor, new JLabel("Target directory"), null);
 

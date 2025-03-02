@@ -47,6 +47,11 @@ public class JIPipeDesktopFileChooserNextPathTableCellRenderer extends JLabel im
     }
 
     private Icon getFileIcon(Path path) {
+        for (JIPipeDesktopFileChooserNextPathTypeMetadata pathType : JIPipeDesktopFileChooserNext.KNOWN_PATH_TYPES) {
+            if(pathType.test(path) ) {
+                return pathType.getIcon();
+            }
+        }
         return UIUtils.getIcon32FromResources("file.png");
     }
 
@@ -58,6 +63,11 @@ public class JIPipeDesktopFileChooserNextPathTableCellRenderer extends JLabel im
         }
         catch (Throwable ignored) {
 
+        }
+        for (JIPipeDesktopFileChooserNextPathTypeMetadata pathType : JIPipeDesktopFileChooserNext.KNOWN_PATH_TYPES) {
+            if(pathType.test(path) ) {
+                return pathType.getIcon();
+            }
         }
         return UIUtils.getIcon32FromResources("places/folder2.png");
     }

@@ -55,6 +55,7 @@ import org.hkijena.jipipe.desktop.api.dataviewer.JIPipeDesktopDataViewer;
 import org.hkijena.jipipe.desktop.app.grapheditor.commons.contextmenu.NodeUIContextAction;
 import org.hkijena.jipipe.desktop.app.resultanalysis.JIPipeDesktopResultDataSlotPreview;
 import org.hkijena.jipipe.desktop.app.resultanalysis.JIPipeDesktopResultDataSlotRowUI;
+import org.hkijena.jipipe.desktop.commons.components.filechoosernext.JIPipeDesktopFileChooserNext;
 import org.hkijena.jipipe.plugins.core.CorePlugin;
 import org.hkijena.jipipe.plugins.expressions.ExpressionFunction;
 import org.hkijena.jipipe.plugins.expressions.functions.ColumnOperationAdapterFunction;
@@ -945,6 +946,58 @@ public abstract class JIPipeDefaultJavaPlugin extends AbstractService implements
      */
     public void registerEnvironmentInstaller(Class<? extends JIPipeEnvironment> environmentClass, Class<? extends JIPipeExternalEnvironmentInstaller> installerClass, Icon icon) {
         registry.getExternalEnvironmentRegistry().registerInstaller(environmentClass, installerClass, icon);
+    }
+
+    /**
+     * Registers file type metadata for the file chooser.
+     * This is only for UX improvements with files and has no functional impact.
+     *
+     * @param name            the name
+     * @param icon            the icon. If 32x32, the icon itself is used. Otherwise, it is combined with the default file icon
+     * @param extension       the extension (including dot)
+     * @param otherExtensions other extensions (including dot)
+     */
+    public void registerFileChooserKnownFileType(String name, Icon icon, String extension, String... otherExtensions) {
+        JIPipeDesktopFileChooserNext.registerKnownFileType(name, icon, extension, otherExtensions);
+    }
+
+    /**
+     * Registers file type metadata for the file chooser.
+     * This is only for UX improvements with files and has no functional impact.
+     *
+     * @param name            the name
+     * @param icon16Name      the icon in JIPipe's standard library. Combined with the default file icon
+     * @param extension       the extension (including dot)
+     * @param otherExtensions other extensions (including dot)
+     */
+    public void registerFileChooserKnownFileType(String name, String icon16Name, String extension, String... otherExtensions) {
+        JIPipeDesktopFileChooserNext.registerKnownFileType(name, UIUtils.getIconFromResources(icon16Name), extension, otherExtensions);
+    }
+
+    /**
+     * Registers directory type metadata for the file chooser.
+     * This is only for UX improvements with files and has no functional impact.
+     *
+     * @param name            the name
+     * @param icon            the icon. If 32x32, the icon itself is used. Otherwise, it is combined with the default file icon
+     * @param extension       the extension (including dot)
+     * @param otherExtensions other extensions (including dot)
+     */
+    public void registerFileChooserKnownDirectoryType(String name, Icon icon, String extension, String... otherExtensions) {
+        JIPipeDesktopFileChooserNext.registerKnownDirectoryType(name, icon, extension, otherExtensions);
+    }
+
+    /**
+     * Registers directory type metadata for the file chooser.
+     * This is only for UX improvements with files and has no functional impact.
+     *
+     * @param name            the name
+     * @param icon16Name      the icon in JIPipe's standard library. Combined with the default file icon
+     * @param extension       the extension (including dot)
+     * @param otherExtensions other extensions (including dot)
+     */
+    public void registerFileChooserKnownDirectoryType(String name, String icon16Name, String extension, String... otherExtensions) {
+        JIPipeDesktopFileChooserNext.registerKnownDirectoryType(name, UIUtils.getIconFromResources(icon16Name), extension, otherExtensions);
     }
 
     @Override

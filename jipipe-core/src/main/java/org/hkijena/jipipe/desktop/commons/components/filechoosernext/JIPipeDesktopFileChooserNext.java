@@ -30,6 +30,7 @@ import java.util.stream.Collectors;
 
 public class JIPipeDesktopFileChooserNext extends JPanel {
 
+    public static final List<JIPipeDesktopFileChooserNextPathTypeMetadata> KNOWN_PATH_TYPES = new ArrayList<>();
     private static final int TOOLBAR_BUTTON_SIZE = 42;
     private final JIPipeDesktopFormPanel sidePanel = new JIPipeDesktopFormPanel(JIPipeDesktopFormPanel.WITH_SCROLLING);
     private final JXTable entriesTable = new JXTable();
@@ -120,7 +121,7 @@ public class JIPipeDesktopFileChooserNext extends JPanel {
         for (JIPipeFileChooserApplicationSettings.LastDirectoryKey directoryKey : JIPipeFileChooserApplicationSettings.LastDirectoryKey.values()) {
             Path directory = settings.getLastDirectoryBy(directoryKey);
             if (directory != null && Files.isDirectory(directory) && !StringUtils.isNullOrEmpty(directory)) {
-                if(!knownDirectories.contains(directory)) {
+                if (!knownDirectories.contains(directory)) {
                     createSidePanelShortcut(StringUtils.orElse(directory.getFileName(), "Root"), UIUtils.getIconFromResources("actions/folder-open-recent.png"), directory);
                     knownDirectories.add(directory);
                 }
@@ -325,6 +326,15 @@ public class JIPipeDesktopFileChooserNext extends JPanel {
             }
         });
 
+        selectedPathEditor.getTextField().addKeyListener(new KeyAdapter() {
+            @Override
+            public void keyReleased(KeyEvent e) {
+                if (e.getKeyCode() == KeyEvent.VK_ENTER) {
+                    doCallbackConfirmIfValid();
+                }
+            }
+        });
+
         mainPanel.add(UIUtils.borderNorthSouth(topToolbar, breadcrumbToolBar), BorderLayout.NORTH);
 
         JIPipeDesktopSplitPane splitPane = new JIPipeDesktopSplitPane(JIPipeDesktopSplitPane.LEFT_RIGHT,
@@ -392,7 +402,9 @@ public class JIPipeDesktopFileChooserNext extends JPanel {
             bottomPanel.addToForm(extensionFilterComboBox, new JLabel("Filter"));
 
             // Add auto extensions
-            bottomPanel.addWideToForm(autoAddExtension);
+            if(ioMode == PathIOMode.Save) {
+                bottomPanel.addWideToForm(autoAddExtension);
+            }
         }
     }
 
@@ -633,7 +645,7 @@ public class JIPipeDesktopFileChooserNext extends JPanel {
 
     public static Path showDialogSingle(Component parent, JIPipeWorkbench workbench, String title, Path initialDirectory, PathIOMode ioMode, PathType pathType, FileNameExtensionFilter... extensionFilters) {
         List<Path> paths = showDialog(parent, workbench, title, initialDirectory, ioMode, pathType, false, extensionFilters);
-        if(paths == null || paths.isEmpty()) {
+        if (paths.isEmpty()) {
             return null;
         }
         return paths.get(0);
@@ -668,23 +680,33 @@ public class JIPipeDesktopFileChooserNext extends JPanel {
         panel.bottomPanel.addWideToForm(buttonPanel);
 
         dialog.setContentPane(mainPanel);
-        dialog.setLocationRelativeTo(parent);
         dialog.pack();
         dialog.setSize(1024, 768);
+        dialog.setLocationRelativeTo(parent);
         SwingUtilities.invokeLater(panel::refresh);
+        if(pathType != PathType.DirectoriesOnly && ioMode == PathIOMode.Save) {
+            SwingUtilities.invokeLater(panel::focusPathEditor);
+        }
         dialog.setVisible(true);
 
         return result;
     }
 
+    private void focusPathEditor() {
+        selectedPathEditor.getTextField().requestFocusInWindow();
+    }
+
     public void doCallbackConfirmIfValid() {
-        if (!getSelectedPaths().isEmpty()) {
-            doCallbackConfirm();
+        List<Path> selectedPaths = getSelectedPaths();
+        if (!selectedPaths.isEmpty()) {
+            if (callbackConfirm != null) {
+                callbackConfirm.accept(selectedPaths);
+            }
         }
     }
 
     private Path getSelectedPathInEditor() {
-        if(!StringUtils.isNullOrEmpty(selectedPathEditor.getText())) {
+        if (!StringUtils.isNullOrEmpty(selectedPathEditor.getText())) {
             Path selectedPath = Paths.get(selectedPathEditor.getText());
             if (!selectedPath.isAbsolute()) {
                 // Is a name
@@ -698,7 +720,7 @@ public class JIPipeDesktopFileChooserNext extends JPanel {
     public List<Path> getSelectedPaths() {
         List<Path> results = new ArrayList<>();
 
-        if(ioMode == PathIOMode.Open) {
+        if (ioMode == PathIOMode.Open) {
             // We first try to handle the path editor
             Path editorPath = getSelectedPathInEditor();
             if (editorPath != null) {
@@ -722,42 +744,40 @@ public class JIPipeDesktopFileChooserNext extends JPanel {
             } else if (pathType == PathType.DirectoriesOnly) {
                 results.add(getCurrentDirectory());
             }
-        }
-        else {
+        } else {
             Path editorPath = getSelectedPathInEditor();
-            if(editorPath != null) {
+            if (editorPath != null) {
                 if (pathType == PathType.DirectoriesOnly) {
                     // Create the directory and return it
                     try {
                         Files.createDirectories(editorPath);
                         results.add(editorPath);
-                    }catch (Throwable ignored) {
+                    } catch (Throwable ignored) {
                         JOptionPane.showMessageDialog(this,
                                 "Unable to create directory '" + editorPath + "'!",
                                 "Save directory",
                                 JOptionPane.ERROR_MESSAGE);
                     }
-                }
-                else {
+                } else {
                     // Add the extension (if requested)
-                    if(autoAddExtension.isSelected()) {
+                    if (autoAddExtension.isSelected()) {
                         Object filter = extensionFilterComboBox.getSelectedItem();
                         String fileName = editorPath.getFileName().toString();
-                        if(filter instanceof FileNameExtensionFilter) {
+                        if (filter instanceof FileNameExtensionFilter) {
                             boolean anyMatch = false;
                             for (String extension : ((FileNameExtensionFilter) filter).getExtensions()) {
-                                if(!StringUtils.isNullOrEmpty(extension) && !"*".equals(extension)) {
-                                    if(fileName.toLowerCase().endsWith(extension.toLowerCase())) {
+                                if (!StringUtils.isNullOrEmpty(extension) && !"*".equals(extension)) {
+                                    if (fileName.toLowerCase().endsWith(extension.toLowerCase())) {
                                         anyMatch = true;
                                         break;
                                     }
                                 }
                             }
 
-                            if(!anyMatch) {
+                            if (!anyMatch) {
                                 // Add the first valid extension
                                 for (String extension : ((FileNameExtensionFilter) filter).getExtensions()) {
-                                    if(!StringUtils.isNullOrEmpty(extension) && !"*".equals(extension)) {
+                                    if (!StringUtils.isNullOrEmpty(extension) && !"*".equals(extension)) {
                                         editorPath = editorPath.getParent().resolve(fileName + "." + extension);
                                     }
                                 }
@@ -775,28 +795,32 @@ public class JIPipeDesktopFileChooserNext extends JPanel {
             results.addAll(getSelectedPathsInTable());
         }
 
-        if(ioMode == PathIOMode.Save && pathType != PathType.DirectoriesOnly) {
-            // Check if files already exist
-            boolean foundExisting = false;
-
-            for (Path path : results) {
-                if(!Files.isDirectory(path) && Files.exists(path)) {
-                    foundExisting = true;
-                }
-            }
-
-            if(foundExisting) {
-                if(JOptionPane.showConfirmDialog(this, "The selected file(s) already exist. Overwrite them?", "Save file", JOptionPane.YES_NO_OPTION) == JOptionPane.NO_OPTION) {
-                    results.clear();
-                }
-            }
-
-        }
+        // Removed for consistency
+//        if (ioMode == PathIOMode.Save && pathType != PathType.DirectoriesOnly) {
+//            // Check if files already exist
+//            boolean foundExisting = false;
+//
+//            for (Path path : results) {
+//                if (!Files.isDirectory(path) && Files.exists(path)) {
+//                    foundExisting = true;
+//                }
+//            }
+//
+//            if (foundExisting) {
+//                if (JOptionPane.showConfirmDialog(this, "The selected file(s) already exist. Overwrite them?", "Save file", JOptionPane.YES_NO_OPTION) == JOptionPane.NO_OPTION) {
+//                    results.clear();
+//                }
+//            }
+//
+//        }
 
         return results;
     }
 
     public static void main(String[] args) {
+
+        registerKnownFileType("SVG image", UIUtils.getIconFromResources("mimetypes/svg.png"), ".svg");
+
         JIPipeDesktopUITheme.ModernLight.install();
         List<Path> paths = JIPipeDesktopFileChooserNext.showDialog(null, null, "Test dialog", Paths.get(""), PathIOMode.Open, PathType.FilesOnly, true, UIUtils.EXTENSION_FILTER_SVG);
         if (paths.isEmpty()) {
@@ -812,6 +836,7 @@ public class JIPipeDesktopFileChooserNext extends JPanel {
     }
 
     public void setCurrentDirectory(Path currentDirectory) {
+        this.breadcrumbEditMode = false;
         this.currentDirectory = currentDirectory.toAbsolutePath();
         this.history.insert(currentDirectory);
         refresh();
@@ -833,5 +858,61 @@ public class JIPipeDesktopFileChooserNext extends JPanel {
 
     public JIPipeWorkbench getWorkbench() {
         return workbench;
+    }
+
+    /**
+     * Registers a new path type
+     *
+     * @param name            the name
+     * @param icon            the icon. If 32x32, the icon itself is used. Otherwise, it is combined with the default file icon
+     * @param extension       the extension (including dot)
+     * @param otherExtensions other extensions (including dot)
+     */
+    public static void registerKnownFileType(String name, Icon icon, String extension, String... otherExtensions) {
+        Set<String> extensions = new HashSet<>(Arrays.asList(otherExtensions));
+        extensions.add(extension);
+
+        Icon finalIcon;
+        if(icon.getIconWidth() < 32) {
+            // Create a combined icon
+            finalIcon = new CompositeIcon(UIUtils.getIcon32FromResources("file.png"),
+                    icon,
+                    16 - icon.getIconWidth() / 2,
+                    16 - icon.getIconHeight() / 2 );
+        }
+        else {
+            finalIcon = icon;
+        }
+
+        JIPipeDesktopFileChooserNextPathTypeMetadata metadata = new JIPipeDesktopFileChooserNextPathTypeMetadata(name, PathType.FilesOnly, extensions, finalIcon);
+        KNOWN_PATH_TYPES.add(metadata);
+    }
+
+    /**
+     * Registers a new path type
+     *
+     * @param name            the name
+     * @param icon            the icon. If 32x32, the icon itself is used. Otherwise, it is combined with the default file icon
+     * @param extension       the extension (including dot)
+     * @param otherExtensions other extensions (including dot)
+     */
+    public static void registerKnownDirectoryType(String name, Icon icon, String extension, String... otherExtensions) {
+        Set<String> extensions = new HashSet<>(Arrays.asList(otherExtensions));
+        extensions.add(extension);
+
+        Icon finalIcon;
+        if(icon.getIconWidth() < 32) {
+            // Create a combined icon
+            finalIcon = new CompositeIcon(UIUtils.getIcon32FromResources("places/folder2-purple.png"),
+                    icon,
+                    16 - icon.getIconWidth() / 2,
+                    19 - icon.getIconHeight() / 2 );
+        }
+        else {
+            finalIcon = icon;
+        }
+
+        JIPipeDesktopFileChooserNextPathTypeMetadata metadata = new JIPipeDesktopFileChooserNextPathTypeMetadata(name, PathType.DirectoriesOnly, extensions, finalIcon);
+        KNOWN_PATH_TYPES.add(metadata);
     }
 }
