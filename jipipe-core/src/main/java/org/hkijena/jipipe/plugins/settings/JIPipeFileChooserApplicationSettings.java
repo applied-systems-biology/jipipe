@@ -76,7 +76,7 @@ public class JIPipeFileChooserApplicationSettings extends JIPipeDefaultApplicati
      */
     public static Path openFile(Component parent, JIPipeWorkbench workbench, LastDirectoryKey key, String title, FileNameExtensionFilter... extensionFilters) {
         JIPipeFileChooserApplicationSettings instance = getInstance();
-        Path currentPath = instance.getLastDirectoryBy(key);
+        Path currentPath = instance.getLastDirectoryBy(workbench, key);
         if (instance.fileChooserType == FileChooserType.Native) {
             FileDialog dialog = createFileDialog(parent, title, FileDialog.LOAD);
             dialog.setTitle(title);
@@ -148,7 +148,7 @@ public class JIPipeFileChooserApplicationSettings extends JIPipeDefaultApplicati
      */
     public static Path saveFile(Component parent, JIPipeWorkbench workbench, LastDirectoryKey key, String title, FileNameExtensionFilter... extensionFilters) {
         JIPipeFileChooserApplicationSettings instance = getInstance();
-        Path currentPath = instance.getLastDirectoryBy(key);
+        Path currentPath = instance.getLastDirectoryBy(workbench, key);
         if (instance.fileChooserType == FileChooserType.Native) {
             FileDialog dialog = createFileDialog(parent, title, FileDialog.SAVE);
             dialog.setTitle(title);
@@ -262,7 +262,7 @@ public class JIPipeFileChooserApplicationSettings extends JIPipeDefaultApplicati
      */
     public static Path openPath(Component parent, JIPipeWorkbench workbench, LastDirectoryKey key, String title, FileNameExtensionFilter... extensionFilters) {
         JIPipeFileChooserApplicationSettings instance = getInstance();
-        Path currentPath = instance.getLastDirectoryBy(key);
+        Path currentPath = instance.getLastDirectoryBy(workbench, key);
         if (instance.getFileChooserType() == FileChooserType.Standard) {
             JFileChooser fileChooser = new JFileChooser(currentPath.toFile());
             fileChooser.setDialogTitle(title);
@@ -307,7 +307,7 @@ public class JIPipeFileChooserApplicationSettings extends JIPipeDefaultApplicati
      */
     public static Path savePath(Component parent, JIPipeWorkbench workbench, LastDirectoryKey key, String title, FileNameExtensionFilter... extensionFilters) {
         JIPipeFileChooserApplicationSettings instance = getInstance();
-        Path currentPath = instance.getLastDirectoryBy(key);
+        Path currentPath = instance.getLastDirectoryBy(workbench, key);
         if (instance.getFileChooserType() == FileChooserType.Standard) {
             JFileChooser fileChooser = new JFileChooser(currentPath.toFile());
             fileChooser.setDialogTitle(title);
@@ -352,7 +352,7 @@ public class JIPipeFileChooserApplicationSettings extends JIPipeDefaultApplicati
      */
     public static Path openDirectory(Component parent, JIPipeWorkbench workbench, LastDirectoryKey key, String title) {
         JIPipeFileChooserApplicationSettings instance = getInstance();
-        Path currentPath = instance.getLastDirectoryBy(key);
+        Path currentPath = instance.getLastDirectoryBy(workbench, key);
         if (instance.getFileChooserType() == FileChooserType.Standard) {
             JFileChooser fileChooser = new JFileChooser(currentPath.toFile());
             fileChooser.setDialogTitle(title);
@@ -396,7 +396,7 @@ public class JIPipeFileChooserApplicationSettings extends JIPipeDefaultApplicati
      */
     public static Path saveDirectory(Component parent, JIPipeWorkbench workbench, LastDirectoryKey key, String title) {
         JIPipeFileChooserApplicationSettings instance = getInstance();
-        Path currentPath = instance.getLastDirectoryBy(key);
+        Path currentPath = instance.getLastDirectoryBy(workbench, key);
         if (instance.getFileChooserType() == FileChooserType.Standard) {
             JFileChooser fileChooser = new JFileChooser(currentPath.toFile());
             fileChooser.setDialogTitle(title);
@@ -440,7 +440,7 @@ public class JIPipeFileChooserApplicationSettings extends JIPipeDefaultApplicati
      */
     public static List<Path> openFiles(Component parent, JIPipeWorkbench workbench, LastDirectoryKey key, String title, FileNameExtensionFilter... extensionFilters) {
         JIPipeFileChooserApplicationSettings instance = getInstance();
-        Path currentPath = instance.getLastDirectoryBy(key);
+        Path currentPath = instance.getLastDirectoryBy(workbench, key);
         if (instance.getFileChooserType() == FileChooserType.Native) {
             FileDialog dialog = createFileDialog(parent, title, FileDialog.LOAD);
             dialog.setTitle(title);
@@ -499,7 +499,7 @@ public class JIPipeFileChooserApplicationSettings extends JIPipeDefaultApplicati
      */
     public static List<Path> openDirectories(Component parent, JIPipeWorkbench workbench, LastDirectoryKey key, String title) {
         JIPipeFileChooserApplicationSettings instance = getInstance();
-        Path currentPath = instance.getLastDirectoryBy(key);
+        Path currentPath = instance.getLastDirectoryBy(workbench, key);
         if (instance.getFileChooserType() == FileChooserType.Standard) {
             JFileChooser fileChooser = new JFileChooser(currentPath.toFile());
             fileChooser.setDialogTitle(title);
@@ -548,7 +548,7 @@ public class JIPipeFileChooserApplicationSettings extends JIPipeDefaultApplicati
      */
     public static List<Path> openPaths(Component parent, JIPipeWorkbench workbench, LastDirectoryKey key, String title, FileNameExtensionFilter... extensionFilters) {
         JIPipeFileChooserApplicationSettings instance = getInstance();
-        Path currentPath = instance.getLastDirectoryBy(key);
+        Path currentPath = instance.getLastDirectoryBy(workbench, key);
         if (instance.getFileChooserType() == FileChooserType.Standard) {
             JFileChooser fileChooser = new JFileChooser(currentPath.toFile());
             fileChooser.setDialogTitle(title);
@@ -719,20 +719,30 @@ public class JIPipeFileChooserApplicationSettings extends JIPipeDefaultApplicati
     /**
      * Gets the last directory by key
      *
-     * @param key the key
+     * @param workbench the workbench (can be null)
+     * @param key       the key
      * @return the last path or Paths.get() (home directory)
      */
-    public Path getLastDirectoryBy(LastDirectoryKey key) {
+    public Path getLastDirectoryBy(JIPipeWorkbench workbench, LastDirectoryKey key) {
+        Path result;
         switch (key) {
             case Data:
-                return getLastDataDirectory();
+                result = getLastDataDirectory();
+                break;
             case External:
-                return getLastExternalDirectory();
+                result = getLastExternalDirectory();
+                break;
             case Projects:
-                return getLastProjectsDirectory();
+                result = getLastProjectsDirectory();
+                break;
             default:
-                return getLastParametersDirectory();
+                result = getLastParametersDirectory();
+                break;
         }
+        if(workbench != null && workbench.getProject() != null && workbench.getProject().getWorkDirectory() != null && result.equals(Paths.get("").toAbsolutePath())) {
+            result = workbench.getProject().getWorkDirectory();
+        }
+        return result;
     }
 
     /**

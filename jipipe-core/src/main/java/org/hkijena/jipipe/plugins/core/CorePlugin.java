@@ -212,7 +212,7 @@ public class CorePlugin extends JIPipePrepackagedDefaultJavaPlugin {
         registerFileChooserKnownFileType("Vector image", "mimetypes/svg.png", ".svg", ".svgz", ".ai");
         registerFileChooserKnownFileType("TIFF image", "data-types/imgplus.png", ".tif", ".tiff");
 
-        registerFileChooserKnownFileType("PDF file", "data-types/viewpdf.png", ".pdf");
+        registerFileChooserKnownFileType("PDF file", "mimetypes/viewpdf.png", ".pdf");
     }
 
     @Override

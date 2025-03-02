@@ -505,7 +505,7 @@ public class JIPipeDesktopAdvancedFileChooser extends JPanel implements Property
             Set<Path> lastDirectories = new HashSet<>();
             Path defaultDir = Paths.get("").toAbsolutePath();
             for (JIPipeFileChooserApplicationSettings.LastDirectoryKey key : JIPipeFileChooserApplicationSettings.LastDirectoryKey.values()) {
-                Path path = settings.getLastDirectoryBy(key);
+                Path path = settings.getLastDirectoryBy(null, key);
                 if (!Objects.equals(path, defaultDir) && Files.isDirectory(path)) {
                     lastDirectories.add(path);
                 }

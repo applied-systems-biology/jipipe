@@ -24,7 +24,6 @@ import java.nio.file.Paths;
 import java.time.LocalDateTime;
 import java.util.*;
 import java.util.List;
-import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.function.Consumer;
 import java.util.stream.Collectors;
 
@@ -86,7 +85,7 @@ public class JIPipeDesktopFileChooserNext extends JPanel {
             case FilesOnly:
                 return new JLabel(UIUtils.getIconFromResources("data-types/file.png"));
             case DirectoriesOnly:
-                return new JLabel(UIUtils.getIconFromResources("data-types/folder.png"));
+                return new JLabel(UIUtils.getIconFromResources("places/inode-directory.png"));
             default:
                 return new JLabel(UIUtils.getIconFromResources("data-types/path.png"));
         }
@@ -119,7 +118,7 @@ public class JIPipeDesktopFileChooserNext extends JPanel {
         knownDirectories.add(initialDirectory.toAbsolutePath());
 
         for (JIPipeFileChooserApplicationSettings.LastDirectoryKey directoryKey : JIPipeFileChooserApplicationSettings.LastDirectoryKey.values()) {
-            Path directory = settings.getLastDirectoryBy(directoryKey);
+            Path directory = settings.getLastDirectoryBy(workbench, directoryKey);
             if (directory != null && Files.isDirectory(directory) && !StringUtils.isNullOrEmpty(directory)) {
                 if (!knownDirectories.contains(directory)) {
                     createSidePanelShortcut(StringUtils.orElse(directory.getFileName(), "Root"), UIUtils.getIconFromResources("actions/folder-open-recent.png"), directory);
@@ -142,7 +141,7 @@ public class JIPipeDesktopFileChooserNext extends JPanel {
             if (!projectPaths.isEmpty()) {
                 createSidePanelHeader("Project", UIUtils.makeButtonFlat25x25(UIUtils.createButton("", UIUtils.getIcon16FromResources("actions/view-refresh.png"), this::refreshSidePanel)));
                 for (Map.Entry<String, Path> projectPath : projectPaths) {
-                    createSidePanelShortcut(projectPath.getKey(), UIUtils.getIconFromResources("actions/folder.png"), projectPath.getValue());
+                    createSidePanelShortcut(projectPath.getKey(), UIUtils.getIconFromResources("actions/folder-open.png"), projectPath.getValue());
                 }
             }
         }
