@@ -2617,6 +2617,22 @@ public class UIUtils {
         return panel;
     }
 
+    public static <T> DefaultComboBoxModel<T> toComboBoxModel(Collection<T> elements) {
+        DefaultComboBoxModel<T> model = new DefaultComboBoxModel<>();
+        for (T element : elements) {
+            model.addElement(element);
+        }
+        return model;
+    }
+
+
+    public static <T> DefaultListModel<T> toListModel(Collection<T> elements) {
+        DefaultListModel<T> model = new DefaultListModel<>();
+        for (T element : elements) {
+            model.addElement(element);
+        }
+        return model;
+    }
 
     public static class DragThroughMouseListener implements MouseListener, MouseMotionListener {
         private final Component component;
