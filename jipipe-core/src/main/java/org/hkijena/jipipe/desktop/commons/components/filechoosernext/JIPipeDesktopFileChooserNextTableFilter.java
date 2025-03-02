@@ -6,6 +6,7 @@ import org.hkijena.jipipe.utils.StringUtils;
 import javax.swing.*;
 import javax.swing.filechooser.FileNameExtensionFilter;
 import javax.swing.table.TableModel;
+import java.nio.file.Files;
 import java.nio.file.Path;
 
 public class JIPipeDesktopFileChooserNextTableFilter extends RowFilter<TableModel, Integer> {
@@ -36,7 +37,7 @@ public class JIPipeDesktopFileChooserNextTableFilter extends RowFilter<TableMode
         Path path = (Path) entry.getValue(0);
         String fileNameLc = path.getFileName().toString().toLowerCase();
 
-        if(extensionFilter != null) {
+        if(extensionFilter != null && !Files.isDirectory(path)) {
             boolean found = false;
             for (String extension : extensionFilter.getExtensions()) {
                 if(fileNameLc.endsWith("." + extension.toLowerCase())) {

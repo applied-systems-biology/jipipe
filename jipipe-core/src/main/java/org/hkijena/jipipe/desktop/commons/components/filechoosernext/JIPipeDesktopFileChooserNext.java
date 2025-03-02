@@ -1,9 +1,12 @@
 package org.hkijena.jipipe.desktop.commons.components.filechoosernext;
 
 import org.apache.commons.lang.SystemUtils;
+import org.hkijena.jipipe.JIPipe;
 import org.hkijena.jipipe.desktop.commons.components.JIPipeDesktopFancyTextField;
 import org.hkijena.jipipe.desktop.commons.components.JIPipeDesktopFormPanel;
 import org.hkijena.jipipe.desktop.commons.theme.JIPipeDesktopUITheme;
+import org.hkijena.jipipe.plugins.parameters.library.filesystem.FileChooserBookmark;
+import org.hkijena.jipipe.plugins.settings.JIPipeFileChooserApplicationSettings;
 import org.hkijena.jipipe.utils.*;
 import org.jdesktop.swingx.JXTable;
 import org.jdesktop.swingx.decorator.HighlighterFactory;
@@ -47,6 +50,7 @@ public class JIPipeDesktopFileChooserNext extends JPanel {
     private final JIPipeDesktopFormPanel bottomPanel = new JIPipeDesktopFormPanel(JIPipeDesktopFormPanel.NONE);
     private Consumer<List<Path>> callbackConfirm;
     private final JIPipeDesktopFancyTextField textFilterEditor;
+    private final JIPipeFileChooserApplicationSettings settings;
 
 
     public JIPipeDesktopFileChooserNext(Path initialDirectory, PathIOMode ioMode, PathType pathType, boolean multiple, FileNameExtensionFilter... extensionFilters) {
@@ -62,6 +66,7 @@ public class JIPipeDesktopFileChooserNext extends JPanel {
         this.breadcrumbPathEditorConfirmButton = UIUtils.createButton("",
                 UIUtils.getIconFromResources("actions/check.png"), this::confirmBreadcrumbPathEditor);
         UIUtils.makeButtonFlatWithSize(breadcrumbPathEditorConfirmButton, TOOLBAR_BUTTON_SIZE);
+        this.settings = JIPipe.isInstantiated() ? JIPipeFileChooserApplicationSettings.getInstance() : new JIPipeFileChooserApplicationSettings();
 
         this.extensionFilters.addAll(Arrays.asList(extensionFilters));
         this.extensionFilters.add(new FileNameExtensionFilter("All files", "*"));
@@ -92,7 +97,7 @@ public class JIPipeDesktopFileChooserNext extends JPanel {
 
     private void refreshSidePanel() {
         sidePanel.clear();
-        createSidePanelHeader("Locations", UIUtils.makeButtonFlat25x25(UIUtils.createButton("", UIUtils.getIconInvertedFromResources("actions/view-refresh.png"), this::refreshSidePanel)));
+        createSidePanelHeader("Locations", UIUtils.makeButtonFlat25x25(UIUtils.createButton("", UIUtils.getIcon16FromResources("actions/view-refresh.png"), this::refreshSidePanel)));
 
         CommonDirectoriesProvider provider = new CommonDirectoriesProvider();
         for (CommonDirectory directory : provider.getStaticDirectories()) {
@@ -102,8 +107,32 @@ public class JIPipeDesktopFileChooserNext extends JPanel {
             createSidePanelShortcut(directory);
         }
 
-        createSidePanelHeader("Recent");
+        createSidePanelHeader("Recent", UIUtils.makeButtonFlat25x25(UIUtils.createButton("", UIUtils.getIcon16FromResources("actions/view-refresh.png"), this::refreshSidePanel)));
         createSidePanelShortcut(PathUtils.getPathNameSafe(initialDirectory), UIUtils.getIconFromResources("actions/folder-open-recent.png"), initialDirectory);
+
+        for (JIPipeFileChooserApplicationSettings.LastDirectoryKey directoryKey : JIPipeFileChooserApplicationSettings.LastDirectoryKey.values()) {
+            Path directory = settings.getLastDirectoryBy(directoryKey);
+            if(directory != null && Files.isDirectory(directory)) {
+                createSidePanelShortcut(StringUtils.orElse(directory.getFileName(), "Root"), UIUtils.getIconFromResources("actions/folder-open-recent.png"), directory);
+            }
+        }
+
+        createSidePanelHeader("Bookmarks", UIUtils.makeButtonFlat25x25(UIUtils.createButton("", UIUtils.getIcon16FromResources("actions/add.png"), this::addBookmark)));
+        for (FileChooserBookmark bookmark : settings.getBookmarks()) {
+            createSidePanelShortcut(bookmark.getName(), UIUtils.getIconFromResources("actions/bookmarks.png"), bookmark.getPath());
+        }
+
+    }
+
+    private void addBookmark() {
+        String name = JOptionPane.showInputDialog(this, "Enter the name of the bookmark", StringUtils.orElse(currentDirectory.getFileName(), "Root"));
+        if(!StringUtils.isNullOrEmpty(name)) {
+            settings.getBookmarks().add(new FileChooserBookmark(name, currentDirectory));
+            if(JIPipe.isInstantiated()) {
+                JIPipe.getSettings().saveLater();
+            }
+            refreshSidePanel();
+        }
     }
 
     private void createSidePanelShortcut(CommonDirectory directory) {
