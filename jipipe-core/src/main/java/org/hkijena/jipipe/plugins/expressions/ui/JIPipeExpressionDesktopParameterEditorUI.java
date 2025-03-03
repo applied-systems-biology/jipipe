@@ -45,6 +45,7 @@ public class JIPipeExpressionDesktopParameterEditorUI extends JIPipeDesktopParam
     private final AbstractTokenMaker tokenMaker;
     private final Set<JIPipeExpressionParameterVariableInfo> variables = new HashSet<>();
     private RSyntaxTextArea expressionEditor;
+    private final JPanel editPanel = UIUtils.boxHorizontal();
 
     public JIPipeExpressionDesktopParameterEditorUI(InitializationParameters parameters) {
         super(parameters);
@@ -68,10 +69,14 @@ public class JIPipeExpressionDesktopParameterEditorUI extends JIPipeDesktopParam
 
         JButton functionBuilder = new JButton("Edit", UIUtils.getIconFromResources("actions/edit.png"));
         functionBuilder.addActionListener(e -> editInFunctionBuilder());
+        editPanel.add(functionBuilder);
+        editPanel.setOpaque(false);
 
         if (settings == null || !settings.withoutEditorButton()) {
-            expressionEditorPanel.add(functionBuilder, BorderLayout.EAST);
+            editPanel.add(functionBuilder);
         }
+
+        expressionEditorPanel.add(editPanel, BorderLayout.EAST);
 
         TokenMakerFactory tokenMakerFactory = new TokenMakerFactory() {
             @Override
@@ -248,5 +253,9 @@ public class JIPipeExpressionDesktopParameterEditorUI extends JIPipeDesktopParam
 
         }
 
+    }
+
+    public JPanel getEditPanel() {
+        return editPanel;
     }
 }
