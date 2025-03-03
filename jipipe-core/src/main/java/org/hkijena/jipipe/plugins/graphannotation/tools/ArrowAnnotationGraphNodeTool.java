@@ -35,17 +35,23 @@ public class ArrowAnnotationGraphNodeTool extends JIPipeAnnotationGraphNodeTool<
 
     @Override
     protected void paintDragOverlay(Graphics2D graphics2D, int x0, int y0, int x1, int y1) {
-        graphics2D.drawLine(x0, y0, x1, y1);
+        graphics2D.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
+        try {
+            graphics2D.drawLine(x0, y0, x1, y1);
 
-        // Draw arrowhead
-        int arrowSize = 10;
-        double angle = Math.atan2(y1 - y0, x1 - x0);
-        int ax1 = (int) (x1 - arrowSize * Math.cos(angle - Math.PI / 6));
-        int ay1 = (int) (y1 - arrowSize * Math.sin(angle - Math.PI / 6));
-        int ax2 = (int) (x1 - arrowSize * Math.cos(angle + Math.PI / 6));
-        int ay2 = (int) (y1 - arrowSize * Math.sin(angle + Math.PI / 6));
-        graphics2D.drawLine(x1, y1, ax1, ay1);
-        graphics2D.drawLine(x1, y1, ax2, ay2);
+            // Draw arrowhead
+            int arrowSize = 10;
+            double angle = Math.atan2(y1 - y0, x1 - x0);
+            int ax1 = (int) (x1 - arrowSize * Math.cos(angle - Math.PI / 6));
+            int ay1 = (int) (y1 - arrowSize * Math.sin(angle - Math.PI / 6));
+            int ax2 = (int) (x1 - arrowSize * Math.cos(angle + Math.PI / 6));
+            int ay2 = (int) (y1 - arrowSize * Math.sin(angle + Math.PI / 6));
+            graphics2D.drawLine(x1, y1, ax1, ay1);
+            graphics2D.drawLine(x1, y1, ax2, ay2);
+        }
+        finally {
+            graphics2D.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_OFF);
+        }
     }
 
     @Override

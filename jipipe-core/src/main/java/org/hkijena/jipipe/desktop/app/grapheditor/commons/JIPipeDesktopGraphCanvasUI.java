@@ -122,7 +122,7 @@ public class JIPipeDesktopGraphCanvasUI extends JLayeredPane implements JIPipeDe
     private static final int RESIZE_HANDLE_DISTANCE = 12;
     private static final int RESIZE_HANDLE_SIZE = 10;
     private static final Color COMMENT_EDGE_COLOR = new Color(194, 141, 0);
-    private static final Color COLOR_EDGE_DEFAULT = new Color(0x3E3E3E);
+    private static final Color COLOR_EDGE_DEFAULT =  UIUtils.DARK_THEME ? new Color(0x3E3E3E) : new Color(0x737880);
     private static final Color COLOR_EDGE_CONVERT = new Color(0x2957C2);
     private final JIPipeDesktopWorkbench desktopWorkbench;
     private final AbstractJIPipeDesktopGraphEditorUI graphEditorUI;
@@ -2013,7 +2013,7 @@ public class JIPipeDesktopGraphCanvasUI extends JLayeredPane implements JIPipeDe
     }
 
     private void paintMinimapEdges(Graphics2D graphics2D, double scale, int viewX, int viewY) {
-        graphics2D.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
+        graphics2D.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_OFF);
         graphics2D.setRenderingHint(RenderingHints.KEY_INTERPOLATION, RenderingHints.VALUE_INTERPOLATION_BILINEAR);
         graphics2D.setColor(Color.LIGHT_GRAY);
         paintEdges(graphics2D,
@@ -2068,7 +2068,7 @@ public class JIPipeDesktopGraphCanvasUI extends JLayeredPane implements JIPipeDe
                 if (component instanceof JIPipeDesktopAnnotationGraphNodeUI) {
 
                     // Set render settings (HQ)
-                    g.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
+                    g.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_OFF);
                     g.setRenderingHint(RenderingHints.KEY_INTERPOLATION, RenderingHints.VALUE_INTERPOLATION_BICUBIC);
 
                     JIPipeDesktopAnnotationGraphNodeUI annotationGraphNodeUI = (JIPipeDesktopAnnotationGraphNodeUI) component;
@@ -2081,7 +2081,7 @@ public class JIPipeDesktopGraphCanvasUI extends JLayeredPane implements JIPipeDe
         }
 
         // Set render settings (HQ)
-        g.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
+        g.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_OFF);
         g.setRenderingHint(RenderingHints.KEY_INTERPOLATION, RenderingHints.VALUE_INTERPOLATION_BICUBIC);
 
         // Below node paint
@@ -2326,7 +2326,7 @@ public class JIPipeDesktopGraphCanvasUI extends JLayeredPane implements JIPipeDe
 
         Graphics2D graphics2D = (Graphics2D) g;
         graphics2D.setRenderingHints(desktopRenderingHints);
-        graphics2D.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
+        graphics2D.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_OFF);
         graphics2D.setRenderingHint(RenderingHints.KEY_INTERPOLATION, RenderingHints.VALUE_INTERPOLATION_BICUBIC);
 
         // Draw node selections & lock
@@ -3021,6 +3021,7 @@ public class JIPipeDesktopGraphCanvasUI extends JLayeredPane implements JIPipeDe
 
         // Draw the polygon
         g.drawPolyline(xCoords.toArray(), yCoords.toArray(), xCoords.size());
+
     }
 
     private void addElbowPolygonCoordinate(int a1, int b1, double scale, int viewX, int viewY, TIntList xCoords, TIntList yCoords) {
