@@ -204,32 +204,6 @@ public class PathUtils {
         return result;
     }
 
-    /**
-     * Computes the SHA1 of a file
-     *
-     * @param file the file
-     * @return the SHA1
-     * @throws IOException exception
-     */
-    public static String computeFileSHA1(File file) throws IOException {
-        String sha1 = null;
-        MessageDigest digest;
-        try {
-            digest = MessageDigest.getInstance("SHA-1");
-        } catch (NoSuchAlgorithmException e1) {
-            throw new IOException("Impossible to get SHA-1 digester", e1);
-        }
-        try (InputStream input = new FileInputStream(file);
-             DigestInputStream digestStream = new DigestInputStream(input, digest)) {
-            while (digestStream.read() != -1) {
-                // read file stream without buffer
-            }
-            MessageDigest msgDigest = digestStream.getMessageDigest();
-            sha1 = new HexBinaryAdapter().marshal(msgDigest.digest());
-        }
-        return sha1;
-    }
-
     public static void copyOrLink(Path source, Path target, JIPipeProgressInfo progressInfo) {
         if (SystemUtils.IS_OS_WINDOWS) {
             // Copy file
