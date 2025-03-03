@@ -39,7 +39,7 @@ public class PathDataImporterUI extends ImageJDataImporterUI {
 
     private void initialize() {
         setLayout(new BorderLayout());
-        pathEditor = new JIPipeDesktopPathEditorComponent(PathIOMode.Open, PathType.FilesAndDirectories);
+        pathEditor = new JIPipeDesktopPathEditorComponent(getDesktopWorkbench(), PathIOMode.Open, PathType.FilesAndDirectories);
         pathEditor.addActionListener(e -> getImporter().setName("" + pathEditor.getPath()));
         add(pathEditor, BorderLayout.CENTER);
     }

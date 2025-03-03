@@ -20,6 +20,8 @@ import org.fife.ui.rsyntaxtextarea.TokenMaker;
 import org.fife.ui.rsyntaxtextarea.TokenMakerFactory;
 import org.hkijena.jipipe.JIPipe;
 import org.hkijena.jipipe.api.registries.JIPipeExpressionRegistry;
+import org.hkijena.jipipe.desktop.app.JIPipeDesktopWorkbench;
+import org.hkijena.jipipe.desktop.app.JIPipeDesktopWorkbenchPanel;
 import org.hkijena.jipipe.desktop.commons.components.markup.JIPipeDesktopMarkdownReader;
 import org.hkijena.jipipe.desktop.commons.components.search.JIPipeDesktopSearchTextField;
 import org.hkijena.jipipe.desktop.commons.components.tabs.JIPipeDesktopTabPane;
@@ -44,7 +46,7 @@ import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.function.Function;
 import java.util.stream.Collectors;
 
-public class ExpressionBuilderUI extends JPanel {
+public class ExpressionBuilderUI extends JIPipeDesktopWorkbenchPanel {
     public static final Color COLOR_VARIABLE = new Color(0xffaf0a);
     public static final Color COLOR_CONSTANT = Color.BLUE;
     public static final Color COLOR_OPERATOR = new Color(0x854745);
@@ -62,7 +64,8 @@ public class ExpressionBuilderUI extends JPanel {
     private RSyntaxTextArea expressionEditor;
     private ExpressionBuilderInserterUI lastVariableInserter;
 
-    public ExpressionBuilderUI(String expression, Set<JIPipeExpressionParameterVariableInfo> variables) {
+    public ExpressionBuilderUI(JIPipeDesktopWorkbench workbench, String expression, Set<JIPipeExpressionParameterVariableInfo> variables) {
+        super(workbench);
         this.variables = variables;
         this.operatorEntryList = ExpressionOperatorEntry.fromEvaluator(JIPipeExpressionParameter.getEvaluatorInstance(), true);
         this.operatorEntryList.sort(Comparator.comparing(ExpressionOperatorEntry::getName));
@@ -73,11 +76,11 @@ public class ExpressionBuilderUI extends JPanel {
         rebuildPalette();
     }
 
-    public static String showDialog(Component parent, String expression, Set<JIPipeExpressionParameterVariableInfo> variables) {
+    public static String showDialog(Component parent, JIPipeDesktopWorkbench workbench, String expression, Set<JIPipeExpressionParameterVariableInfo> variables) {
         JDialog dialog = new JDialog(SwingUtilities.getWindowAncestor(parent));
         dialog.setIconImage(UIUtils.getJIPipeIcon128());
 
-        ExpressionBuilderUI expressionBuilderUI = new ExpressionBuilderUI(expression, variables);
+        ExpressionBuilderUI expressionBuilderUI = new ExpressionBuilderUI(workbench, expression, variables);
         JPanel contentPanel = new JPanel(new BorderLayout(4, 4));
         contentPanel.add(expressionBuilderUI, BorderLayout.CENTER);
 
@@ -232,7 +235,7 @@ public class ExpressionBuilderUI extends JPanel {
     }
 
     private void insertPath() {
-        Path path = JIPipeFileChooserApplicationSettings.openPath(this, JIPipeFileChooserApplicationSettings.LastDirectoryKey.Data, "Insert path");
+        Path path = JIPipeFileChooserApplicationSettings.openPath(this, getDesktopWorkbench(), JIPipeFileChooserApplicationSettings.LastDirectoryKey.Data, "Insert path");
         if (path != null) {
             insertAtCaret(path.toString().replace('\\', '/'), false);
         }

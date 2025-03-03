@@ -152,7 +152,7 @@ public class JFreeChartPlotEditor extends JIPipeDesktopWorkbenchPanel implements
     }
 
     private void savePlot() {
-        Path path = JIPipeFileChooserApplicationSettings.saveFile(this, JIPipeFileChooserApplicationSettings.LastDirectoryKey.Data, "Save plot", UIUtils.EXTENSION_FILTER_ZIP);
+        Path path = JIPipeFileChooserApplicationSettings.saveFile(this, getDesktopWorkbench(), JIPipeFileChooserApplicationSettings.LastDirectoryKey.Data, "Save plot", UIUtils.EXTENSION_FILTER_ZIP);
         if (UIUtils.checkAndAskIfFileExists(this, path, "Save plot")) {
             JIPipeProgressInfo progressInfo = new JIPipeProgressInfo();
             try (JIPipeZIPWriteDataStorage storage = new JIPipeZIPWriteDataStorage(progressInfo, path)) {
@@ -164,7 +164,7 @@ public class JFreeChartPlotEditor extends JIPipeDesktopWorkbenchPanel implements
     }
 
     private void openPlot() {
-        Path path = JIPipeFileChooserApplicationSettings.openFile(this, JIPipeFileChooserApplicationSettings.LastDirectoryKey.Data, "Open plot", UIUtils.EXTENSION_FILTER_ZIP);
+        Path path = JIPipeFileChooserApplicationSettings.openFile(this, getDesktopWorkbench(), JIPipeFileChooserApplicationSettings.LastDirectoryKey.Data, "Open plot", UIUtils.EXTENSION_FILTER_ZIP);
         if (path != null) {
             JIPipeProgressInfo progressInfo = new JIPipeProgressInfo();
             try (JIPipeZIPReadDataStorage storage = new JIPipeZIPReadDataStorage(progressInfo, path)) {

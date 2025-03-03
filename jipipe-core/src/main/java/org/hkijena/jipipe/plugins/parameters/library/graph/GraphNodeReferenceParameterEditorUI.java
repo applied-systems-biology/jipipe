@@ -1,5 +1,6 @@
 package org.hkijena.jipipe.plugins.parameters.library.graph;
 
+import com.google.common.collect.Sets;
 import org.hkijena.jipipe.JIPipe;
 import org.hkijena.jipipe.api.nodes.JIPipeGraphNode;
 import org.hkijena.jipipe.api.project.JIPipeProject;
@@ -35,7 +36,7 @@ public class GraphNodeReferenceParameterEditorUI extends JIPipeDesktopParameterE
         JIPipeProject project = getWorkbench().getProject();
         if(project != null) {
             JIPipeGraphNode node = JIPipeDesktopPickNodeDialog.showDialog(getDesktopWorkbench().getWindow(),
-                    project.getGraph().getGraphNodes(),
+                    Sets.union(project.getGraph().getGraphNodes(), project.getCompartments().values()),
                     null,
                     "Select node");
             if(node != null) {
@@ -61,6 +62,10 @@ public class GraphNodeReferenceParameterEditorUI extends JIPipeDesktopParameterE
             JIPipeProject project = getWorkbench().getProject();
             if(project != null) {
                 JIPipeGraphNode node = project.getGraph().getNodeByUUID(UUID.fromString(parameter.getNodeUUID()));
+                if(node == null) {
+                    // Might be a compartment?
+                    node = project.getCompartments().get(UUID.fromString(parameter.getNodeUUID()));
+                }
                 if(node != null) {
                     selectButton.setEnabled(true);
                     selectButton.setText(node.getDisplayName());

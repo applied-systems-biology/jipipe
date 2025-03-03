@@ -27,6 +27,7 @@ import org.hkijena.jipipe.api.nodes.JIPipeGraphNode;
 import org.hkijena.jipipe.api.parameters.JIPipeParameterAccess;
 import org.hkijena.jipipe.api.parameters.JIPipeParameterTree;
 import org.hkijena.jipipe.api.project.JIPipeProjectDirectories;
+import org.hkijena.jipipe.api.project.JIPipeProjectRunSetsConfiguration;
 import org.hkijena.jipipe.api.registries.JIPipeArtifactsRegistry;
 import org.hkijena.jipipe.api.run.JIPipeProjectRunSet;
 import org.hkijena.jipipe.api.run.JIPipeRunnable;
@@ -35,7 +36,6 @@ import org.hkijena.jipipe.api.settings.JIPipeProjectSettingsSheet;
 import org.hkijena.jipipe.desktop.app.JIPipeDesktopProjectWorkbench;
 import org.hkijena.jipipe.desktop.app.JIPipeDesktopProjectWorkbenchPanel;
 import org.hkijena.jipipe.desktop.app.bookmarks.JIPipeDesktopBookmarkListPanel;
-import org.hkijena.jipipe.desktop.app.cache.JIPipeDesktopAlgorithmCacheBrowserUI;
 import org.hkijena.jipipe.desktop.app.cache.JIPipeDesktopMultiAlgorithmCacheBrowserUI;
 import org.hkijena.jipipe.desktop.app.grapheditor.commons.AbstractJIPipeDesktopGraphEditorUI;
 import org.hkijena.jipipe.desktop.app.grapheditor.commons.JIPipeDesktopGraphEditorLogPanel;
@@ -77,7 +77,7 @@ import static org.hkijena.jipipe.desktop.app.grapheditor.flavors.pipeline.JIPipe
 /**
  * UI that gives an overview of a pipeline (shows parameters, etc.)
  */
-public class JIPipeDesktopProjectOverviewUI extends JIPipeDesktopProjectWorkbenchPanel implements JIPipeRunnable.FinishedEventListener, JIPipeRunnable.InterruptedEventListener {
+public class JIPipeDesktopProjectOverviewUI extends JIPipeDesktopProjectWorkbenchPanel implements JIPipeRunnable.FinishedEventListener, JIPipeRunnable.InterruptedEventListener, JIPipeProjectRunSetsConfiguration.RunSetsModifiedEventListener {
 
     private final JIPipeDesktopFormPanel centerPanel;
     private final JTextPane descriptionReader;
@@ -109,6 +109,7 @@ public class JIPipeDesktopProjectOverviewUI extends JIPipeDesktopProjectWorkbenc
 
         // Run sets
         runSetsEditor = new JIPipeDesktopRunSetsListEditor(workbench);
+        workbench.getProject().getRunSetsConfiguration().getModifiedEventEmitter().subscribe(this);
 
         // Description
         descriptionReader = new JTextPane();
@@ -131,6 +132,10 @@ public class JIPipeDesktopProjectOverviewUI extends JIPipeDesktopProjectWorkbenc
 
         JIPipeRunnableQueue.getInstance().getFinishedEventEmitter().subscribe(this);
         JIPipeRunnableQueue.getInstance().getInterruptedEventEmitter().subscribe(this);
+    }
+
+    public JIPipeDesktopDockPanel getDockPanel() {
+        return dockPanel;
     }
 
     private void refreshAll() {
@@ -362,6 +367,11 @@ public class JIPipeDesktopProjectOverviewUI extends JIPipeDesktopProjectWorkbenc
 
 
         }
+    }
+
+    @Override
+    public void onRunSetsModified(JIPipeProjectRunSetsConfiguration.RunSetsModifiedEvent event) {
+        refreshCenterPanel();
     }
 
     private static class ArtifactUpgrade {
@@ -836,7 +846,7 @@ public class JIPipeDesktopProjectOverviewUI extends JIPipeDesktopProjectWorkbenc
     }
 
     private void addDirectoryParameter() {
-        Path path = JIPipeFileChooserApplicationSettings.openPath(this, JIPipeFileChooserApplicationSettings.LastDirectoryKey.Data, "Add new project-wide path/directory");
+        Path path = JIPipeFileChooserApplicationSettings.openPath(this, getDesktopProjectWorkbench(), JIPipeFileChooserApplicationSettings.LastDirectoryKey.Data, "Add new project-wide path/directory");
         if (path != null) {
             JIPipeProjectDirectories.DirectoryEntry entry = new JIPipeProjectDirectories.DirectoryEntry();
             entry.setPath(path);

@@ -268,7 +268,7 @@ public class JIPipeDesktopTableEditor extends JIPipeDesktopWorkbenchPanel {
     }
 
     private void openTableFromFile() {
-        Path fileName = JIPipeFileChooserApplicationSettings.openFile(this, JIPipeFileChooserApplicationSettings.LastDirectoryKey.Projects, "Open table", UIUtils.EXTENSION_FILTER_CSV, UIUtils.EXTENSION_FILTER_XLSX);
+        Path fileName = JIPipeFileChooserApplicationSettings.openFile(this, getDesktopWorkbench(), JIPipeFileChooserApplicationSettings.LastDirectoryKey.Projects, "Open table", UIUtils.EXTENSION_FILTER_CSV, UIUtils.EXTENSION_FILTER_XLSX);
         if (fileName != null) {
             ResultsTableData tableData;
             if (UIUtils.EXTENSION_FILTER_XLSX.accept(fileName.toFile())) {
@@ -568,7 +568,7 @@ public class JIPipeDesktopTableEditor extends JIPipeDesktopWorkbenchPanel {
     }
 
     private void exportTableToFile() {
-        Path selectedPath = JIPipeFileChooserApplicationSettings.saveFile(this, JIPipeFileChooserApplicationSettings.LastDirectoryKey.Projects, "Export table", UIUtils.EXTENSION_FILTER_CSV, UIUtils.EXTENSION_FILTER_XLSX);
+        Path selectedPath = JIPipeFileChooserApplicationSettings.saveFile(this, getDesktopWorkbench(), JIPipeFileChooserApplicationSettings.LastDirectoryKey.Projects, "Export table", UIUtils.EXTENSION_FILTER_CSV, UIUtils.EXTENSION_FILTER_XLSX);
         if (selectedPath != null) {
             if (UIUtils.EXTENSION_FILTER_XLSX.accept(selectedPath.toFile())) {
                 tableModel.saveAsXLSX(selectedPath);

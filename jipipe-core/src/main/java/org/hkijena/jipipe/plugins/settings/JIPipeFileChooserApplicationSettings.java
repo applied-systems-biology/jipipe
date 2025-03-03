@@ -14,11 +14,13 @@
 package org.hkijena.jipipe.plugins.settings;
 
 import org.hkijena.jipipe.JIPipe;
+import org.hkijena.jipipe.api.JIPipeWorkbench;
 import org.hkijena.jipipe.api.SetJIPipeDocumentation;
 import org.hkijena.jipipe.api.parameters.JIPipeParameter;
 import org.hkijena.jipipe.api.settings.JIPipeDefaultApplicationSettingsSheetCategory;
 import org.hkijena.jipipe.api.settings.JIPipeDefaultApplicationsSettingsSheet;
 import org.hkijena.jipipe.desktop.commons.components.JIPipeDesktopAdvancedFileChooser;
+import org.hkijena.jipipe.desktop.commons.components.filechoosernext.JIPipeDesktopFileChooserNext;
 import org.hkijena.jipipe.plugins.parameters.library.filesystem.FileChooserBookmarkList;
 import org.hkijena.jipipe.utils.PathIOMode;
 import org.hkijena.jipipe.utils.PathType;
@@ -66,14 +68,15 @@ public class JIPipeFileChooserApplicationSettings extends JIPipeDefaultApplicati
      * Lets the user choose a file
      *
      * @param parent           parent component
+     * @param workbench        the workbench
      * @param key              location where the dialog is opened
      * @param title            dialog title
      * @param extensionFilters optional extension filters. the first one is chosen automatically
      * @return selected file or null if dialog was cancelled
      */
-    public static Path openFile(Component parent, LastDirectoryKey key, String title, FileNameExtensionFilter... extensionFilters) {
+    public static Path openFile(Component parent, JIPipeWorkbench workbench, LastDirectoryKey key, String title, FileNameExtensionFilter... extensionFilters) {
         JIPipeFileChooserApplicationSettings instance = getInstance();
-        Path currentPath = instance.getLastDirectoryBy(key);
+        Path currentPath = instance.getLastDirectoryBy(workbench, key);
         if (instance.fileChooserType == FileChooserType.Native) {
             FileDialog dialog = createFileDialog(parent, title, FileDialog.LOAD);
             dialog.setTitle(title);
@@ -105,7 +108,7 @@ public class JIPipeFileChooserApplicationSettings extends JIPipeDefaultApplicati
             } else {
                 return null;
             }
-        } else {
+        } else if (instance.fileChooserType == FileChooserType.AdvancedLegacy) {
             JIPipeDesktopAdvancedFileChooser fileChooser = new JIPipeDesktopAdvancedFileChooser(currentPath.toFile());
             fileChooser.setDialogTitle(title);
             fileChooser.setFileSelectionMode(JFileChooser.FILES_ONLY);
@@ -122,6 +125,14 @@ public class JIPipeFileChooserApplicationSettings extends JIPipeDefaultApplicati
             } else {
                 return null;
             }
+        } else {
+            return JIPipeDesktopFileChooserNext.showDialogSingle(parent,
+                    workbench,
+                    title,
+                    currentPath,
+                    PathIOMode.Open,
+                    PathType.FilesOnly,
+                    extensionFilters);
         }
     }
 
@@ -129,14 +140,15 @@ public class JIPipeFileChooserApplicationSettings extends JIPipeDefaultApplicati
      * Lets the user choose a file
      *
      * @param parent           parent component
+     * @param workbench        the workbench
      * @param key              location where the dialog is opened
      * @param title            dialog title
      * @param extensionFilters extension filters. the first one is chosen automatically
      * @return selected file or null if dialog was cancelled
      */
-    public static Path saveFile(Component parent, LastDirectoryKey key, String title, FileNameExtensionFilter... extensionFilters) {
+    public static Path saveFile(Component parent, JIPipeWorkbench workbench, LastDirectoryKey key, String title, FileNameExtensionFilter... extensionFilters) {
         JIPipeFileChooserApplicationSettings instance = getInstance();
-        Path currentPath = instance.getLastDirectoryBy(key);
+        Path currentPath = instance.getLastDirectoryBy(workbench, key);
         if (instance.fileChooserType == FileChooserType.Native) {
             FileDialog dialog = createFileDialog(parent, title, FileDialog.SAVE);
             dialog.setTitle(title);
@@ -198,7 +210,7 @@ public class JIPipeFileChooserApplicationSettings extends JIPipeDefaultApplicati
             } else {
                 return null;
             }
-        } else {
+        } else if (instance.fileChooserType == FileChooserType.AdvancedLegacy) {
             JIPipeDesktopAdvancedFileChooser fileChooser = new JIPipeDesktopAdvancedFileChooser(currentPath.toFile());
             fileChooser.setDialogTitle(title);
             fileChooser.setFileSelectionMode(JFileChooser.FILES_ONLY);
@@ -228,20 +240,29 @@ public class JIPipeFileChooserApplicationSettings extends JIPipeDefaultApplicati
             } else {
                 return null;
             }
+        } else {
+            return JIPipeDesktopFileChooserNext.showDialogSingle(parent,
+                    workbench,
+                    title,
+                    currentPath,
+                    PathIOMode.Save,
+                    PathType.FilesOnly,
+                    extensionFilters);
         }
     }
 
     /**
      * Lets the user choose a file or directory
      *
-     * @param parent parent component
-     * @param key    location where the dialog is opened
-     * @param title  dialog title
+     * @param parent    parent component
+     * @param workbench the workbench
+     * @param key       location where the dialog is opened
+     * @param title     dialog title
      * @return selected file or null if dialog was cancelled
      */
-    public static Path openPath(Component parent, LastDirectoryKey key, String title) {
+    public static Path openPath(Component parent, JIPipeWorkbench workbench, LastDirectoryKey key, String title, FileNameExtensionFilter... extensionFilters) {
         JIPipeFileChooserApplicationSettings instance = getInstance();
-        Path currentPath = instance.getLastDirectoryBy(key);
+        Path currentPath = instance.getLastDirectoryBy(workbench, key);
         if (instance.getFileChooserType() == FileChooserType.Standard) {
             JFileChooser fileChooser = new JFileChooser(currentPath.toFile());
             fileChooser.setDialogTitle(title);
@@ -253,7 +274,7 @@ public class JIPipeFileChooserApplicationSettings extends JIPipeDefaultApplicati
             } else {
                 return null;
             }
-        } else {
+        } else if (instance.getFileChooserType() == FileChooserType.AdvancedLegacy) {
             JIPipeDesktopAdvancedFileChooser fileChooser = new JIPipeDesktopAdvancedFileChooser(currentPath.toFile());
             fileChooser.setDialogTitle(title);
             fileChooser.setFileSelectionMode(JFileChooser.FILES_AND_DIRECTORIES);
@@ -264,20 +285,29 @@ public class JIPipeFileChooserApplicationSettings extends JIPipeDefaultApplicati
             } else {
                 return null;
             }
+        } else {
+            return JIPipeDesktopFileChooserNext.showDialogSingle(parent,
+                    workbench,
+                    title,
+                    currentPath,
+                    PathIOMode.Open,
+                    PathType.FilesAndDirectories,
+                    extensionFilters);
         }
     }
 
     /**
      * Lets the user choose a file or directory
      *
-     * @param parent parent component
-     * @param key    location where the dialog is opened
-     * @param title  dialog title
+     * @param parent    parent component
+     * @param workbench the workbench
+     * @param key       location where the dialog is opened
+     * @param title     dialog title
      * @return selected file or null if dialog was cancelled
      */
-    public static Path savePath(Component parent, LastDirectoryKey key, String title) {
+    public static Path savePath(Component parent, JIPipeWorkbench workbench, LastDirectoryKey key, String title, FileNameExtensionFilter... extensionFilters) {
         JIPipeFileChooserApplicationSettings instance = getInstance();
-        Path currentPath = instance.getLastDirectoryBy(key);
+        Path currentPath = instance.getLastDirectoryBy(workbench, key);
         if (instance.getFileChooserType() == FileChooserType.Standard) {
             JFileChooser fileChooser = new JFileChooser(currentPath.toFile());
             fileChooser.setDialogTitle(title);
@@ -289,7 +319,7 @@ public class JIPipeFileChooserApplicationSettings extends JIPipeDefaultApplicati
             } else {
                 return null;
             }
-        } else {
+        } else if (instance.getFileChooserType() == FileChooserType.AdvancedLegacy) {
             JIPipeDesktopAdvancedFileChooser fileChooser = new JIPipeDesktopAdvancedFileChooser(currentPath.toFile());
             fileChooser.setDialogTitle(title);
             fileChooser.setFileSelectionMode(JFileChooser.FILES_AND_DIRECTORIES);
@@ -300,20 +330,29 @@ public class JIPipeFileChooserApplicationSettings extends JIPipeDefaultApplicati
             } else {
                 return null;
             }
+        } else {
+            return JIPipeDesktopFileChooserNext.showDialogSingle(parent,
+                    workbench,
+                    title,
+                    currentPath,
+                    PathIOMode.Save,
+                    PathType.FilesAndDirectories,
+                    extensionFilters);
         }
     }
 
     /**
      * Lets the user choose a directory
      *
-     * @param parent parent component
-     * @param key    location where the dialog is opened
-     * @param title  dialog title
+     * @param parent    parent component
+     * @param workbench the workbench
+     * @param key       location where the dialog is opened
+     * @param title     dialog title
      * @return selected directory or null if dialog was cancelled
      */
-    public static Path openDirectory(Component parent, LastDirectoryKey key, String title) {
+    public static Path openDirectory(Component parent, JIPipeWorkbench workbench, LastDirectoryKey key, String title) {
         JIPipeFileChooserApplicationSettings instance = getInstance();
-        Path currentPath = instance.getLastDirectoryBy(key);
+        Path currentPath = instance.getLastDirectoryBy(workbench, key);
         if (instance.getFileChooserType() == FileChooserType.Standard) {
             JFileChooser fileChooser = new JFileChooser(currentPath.toFile());
             fileChooser.setDialogTitle(title);
@@ -325,7 +364,7 @@ public class JIPipeFileChooserApplicationSettings extends JIPipeDefaultApplicati
             } else {
                 return null;
             }
-        } else {
+        } else if (instance.getFileChooserType() == FileChooserType.AdvancedLegacy) {
             JIPipeDesktopAdvancedFileChooser fileChooser = new JIPipeDesktopAdvancedFileChooser(currentPath.toFile());
             fileChooser.setDialogTitle(title);
             fileChooser.setFileSelectionMode(JFileChooser.DIRECTORIES_ONLY);
@@ -336,20 +375,28 @@ public class JIPipeFileChooserApplicationSettings extends JIPipeDefaultApplicati
             } else {
                 return null;
             }
+        } else {
+            return JIPipeDesktopFileChooserNext.showDialogSingle(parent,
+                    workbench,
+                    title,
+                    currentPath,
+                    PathIOMode.Open,
+                    PathType.DirectoriesOnly);
         }
     }
 
     /**
      * Lets the user choose a directory
      *
-     * @param parent parent component
-     * @param key    location where the dialog is opened
-     * @param title  dialog title
+     * @param parent    parent component
+     * @param workbench the workbench
+     * @param key       location where the dialog is opened
+     * @param title     dialog title
      * @return selected directory or null if dialog was cancelled
      */
-    public static Path saveDirectory(Component parent, LastDirectoryKey key, String title) {
+    public static Path saveDirectory(Component parent, JIPipeWorkbench workbench, LastDirectoryKey key, String title) {
         JIPipeFileChooserApplicationSettings instance = getInstance();
-        Path currentPath = instance.getLastDirectoryBy(key);
+        Path currentPath = instance.getLastDirectoryBy(workbench, key);
         if (instance.getFileChooserType() == FileChooserType.Standard) {
             JFileChooser fileChooser = new JFileChooser(currentPath.toFile());
             fileChooser.setDialogTitle(title);
@@ -361,7 +408,7 @@ public class JIPipeFileChooserApplicationSettings extends JIPipeDefaultApplicati
             } else {
                 return null;
             }
-        } else {
+        } else if (instance.getFileChooserType() == FileChooserType.AdvancedLegacy) {
             JIPipeDesktopAdvancedFileChooser fileChooser = new JIPipeDesktopAdvancedFileChooser(currentPath.toFile());
             fileChooser.setDialogTitle(title);
             fileChooser.setFileSelectionMode(JFileChooser.DIRECTORIES_ONLY);
@@ -372,20 +419,28 @@ public class JIPipeFileChooserApplicationSettings extends JIPipeDefaultApplicati
             } else {
                 return null;
             }
+        } else {
+            return JIPipeDesktopFileChooserNext.showDialogSingle(parent,
+                    workbench,
+                    title,
+                    currentPath,
+                    PathIOMode.Open,
+                    PathType.DirectoriesOnly);
         }
     }
 
     /**
      * Lets the user choose multiple files
      *
-     * @param parent parent component
-     * @param key    location where the dialog is opened
-     * @param title  dialog title
+     * @param parent    parent component
+     * @param workbench the workbench
+     * @param key       location where the dialog is opened
+     * @param title     dialog title
      * @return selected list of files. Is empty if dialog was cancelled.
      */
-    public static List<Path> openFiles(Component parent, LastDirectoryKey key, String title) {
+    public static List<Path> openFiles(Component parent, JIPipeWorkbench workbench, LastDirectoryKey key, String title, FileNameExtensionFilter... extensionFilters) {
         JIPipeFileChooserApplicationSettings instance = getInstance();
-        Path currentPath = instance.getLastDirectoryBy(key);
+        Path currentPath = instance.getLastDirectoryBy(workbench, key);
         if (instance.getFileChooserType() == FileChooserType.Native) {
             FileDialog dialog = createFileDialog(parent, title, FileDialog.LOAD);
             dialog.setTitle(title);
@@ -409,7 +464,7 @@ public class JIPipeFileChooserApplicationSettings extends JIPipeDefaultApplicati
             } else {
                 return Collections.emptyList();
             }
-        } else {
+        } else if (instance.getFileChooserType() == FileChooserType.AdvancedLegacy) {
             JIPipeDesktopAdvancedFileChooser fileChooser = new JIPipeDesktopAdvancedFileChooser(currentPath.toFile());
             fileChooser.setDialogTitle(title);
             fileChooser.setMultiSelectionEnabled(true);
@@ -421,20 +476,30 @@ public class JIPipeFileChooserApplicationSettings extends JIPipeDefaultApplicati
             } else {
                 return Collections.emptyList();
             }
+        } else {
+            return JIPipeDesktopFileChooserNext.showDialog(parent,
+                    workbench,
+                    title,
+                    currentPath,
+                    PathIOMode.Open,
+                    PathType.FilesOnly,
+                    true,
+                    extensionFilters);
         }
     }
 
     /**
      * Lets the user choose multiple directories
      *
-     * @param parent parent component
-     * @param key    location where the dialog is opened
-     * @param title  dialog title
+     * @param parent    parent component
+     * @param workbench the workbench
+     * @param key       location where the dialog is opened
+     * @param title     dialog title
      * @return selected list of files. Is empty if dialog was cancelled.
      */
-    public static List<Path> openDirectories(Component parent, LastDirectoryKey key, String title) {
+    public static List<Path> openDirectories(Component parent, JIPipeWorkbench workbench, LastDirectoryKey key, String title) {
         JIPipeFileChooserApplicationSettings instance = getInstance();
-        Path currentPath = instance.getLastDirectoryBy(key);
+        Path currentPath = instance.getLastDirectoryBy(workbench, key);
         if (instance.getFileChooserType() == FileChooserType.Standard) {
             JFileChooser fileChooser = new JFileChooser(currentPath.toFile());
             fileChooser.setDialogTitle(title);
@@ -448,7 +513,7 @@ public class JIPipeFileChooserApplicationSettings extends JIPipeDefaultApplicati
             } else {
                 return Collections.emptyList();
             }
-        } else {
+        } else if (instance.getFileChooserType() == FileChooserType.AdvancedLegacy) {
             JIPipeDesktopAdvancedFileChooser fileChooser = new JIPipeDesktopAdvancedFileChooser(currentPath.toFile());
             fileChooser.setDialogTitle(title);
             fileChooser.setMultiSelectionEnabled(true);
@@ -461,20 +526,29 @@ public class JIPipeFileChooserApplicationSettings extends JIPipeDefaultApplicati
             } else {
                 return Collections.emptyList();
             }
+        } else {
+            return JIPipeDesktopFileChooserNext.showDialog(parent,
+                    workbench,
+                    title,
+                    currentPath,
+                    PathIOMode.Open,
+                    PathType.DirectoriesOnly,
+                    true);
         }
     }
 
     /**
      * Lets the user choose multiple files or directories
      *
-     * @param parent parent component
-     * @param key    location where the dialog is opened
-     * @param title  dialog title
+     * @param parent    parent component
+     * @param workbench the workbench
+     * @param key       location where the dialog is opened
+     * @param title     dialog title
      * @return selected list of files. Is empty if dialog was cancelled.
      */
-    public static List<Path> openPaths(Component parent, LastDirectoryKey key, String title) {
+    public static List<Path> openPaths(Component parent, JIPipeWorkbench workbench, LastDirectoryKey key, String title, FileNameExtensionFilter... extensionFilters) {
         JIPipeFileChooserApplicationSettings instance = getInstance();
-        Path currentPath = instance.getLastDirectoryBy(key);
+        Path currentPath = instance.getLastDirectoryBy(workbench, key);
         if (instance.getFileChooserType() == FileChooserType.Standard) {
             JFileChooser fileChooser = new JFileChooser(currentPath.toFile());
             fileChooser.setDialogTitle(title);
@@ -488,7 +562,7 @@ public class JIPipeFileChooserApplicationSettings extends JIPipeDefaultApplicati
             } else {
                 return Collections.emptyList();
             }
-        } else {
+        } else if (instance.fileChooserType == FileChooserType.AdvancedLegacy) {
             JIPipeDesktopAdvancedFileChooser fileChooser = new JIPipeDesktopAdvancedFileChooser(currentPath.toFile());
             fileChooser.setDialogTitle(title);
             fileChooser.setMultiSelectionEnabled(true);
@@ -501,6 +575,15 @@ public class JIPipeFileChooserApplicationSettings extends JIPipeDefaultApplicati
             } else {
                 return Collections.emptyList();
             }
+        } else {
+            return JIPipeDesktopFileChooserNext.showDialog(parent,
+                    workbench,
+                    title,
+                    currentPath,
+                    PathIOMode.Open,
+                    PathType.FilesAndDirectories,
+                    true,
+                    extensionFilters);
         }
     }
 
@@ -508,6 +591,7 @@ public class JIPipeFileChooserApplicationSettings extends JIPipeDefaultApplicati
      * Generic open/save method for single paths
      *
      * @param parent           parent component
+     * @param workbench        the workbench
      * @param key              location where the dialog is opened
      * @param title            dialog title
      * @param ioMode           whether to load or save
@@ -515,18 +599,18 @@ public class JIPipeFileChooserApplicationSettings extends JIPipeDefaultApplicati
      * @param extensionFilters passed if a file is opened/saved
      * @return selected path of provided pathMode or null if dialog was cancelled
      */
-    public static Path selectSingle(Component parent, LastDirectoryKey key, String title, PathIOMode ioMode, PathType pathMode, FileNameExtensionFilter... extensionFilters) {
+    public static Path selectSingle(Component parent, JIPipeWorkbench workbench, LastDirectoryKey key, String title, PathIOMode ioMode, PathType pathMode, FileNameExtensionFilter... extensionFilters) {
         Path selected;
         if (ioMode == PathIOMode.Open) {
             switch (pathMode) {
                 case FilesOnly:
-                    selected = JIPipeFileChooserApplicationSettings.openFile(parent, key, title, extensionFilters);
+                    selected = JIPipeFileChooserApplicationSettings.openFile(parent, workbench, key, title, extensionFilters);
                     break;
                 case DirectoriesOnly:
-                    selected = JIPipeFileChooserApplicationSettings.openDirectory(parent, key, title);
+                    selected = JIPipeFileChooserApplicationSettings.openDirectory(parent, workbench, key, title);
                     break;
                 case FilesAndDirectories:
-                    selected = JIPipeFileChooserApplicationSettings.openPath(parent, key, title);
+                    selected = JIPipeFileChooserApplicationSettings.openPath(parent, workbench, key, title);
                     break;
                 default:
                     throw new UnsupportedOperationException("Unsupported: " + pathMode);
@@ -534,13 +618,13 @@ public class JIPipeFileChooserApplicationSettings extends JIPipeDefaultApplicati
         } else {
             switch (pathMode) {
                 case FilesOnly:
-                    selected = JIPipeFileChooserApplicationSettings.saveFile(parent, key, title, extensionFilters);
+                    selected = JIPipeFileChooserApplicationSettings.saveFile(parent, workbench, key, title, extensionFilters);
                     break;
                 case DirectoriesOnly:
-                    selected = JIPipeFileChooserApplicationSettings.saveDirectory(parent, key, title);
+                    selected = JIPipeFileChooserApplicationSettings.saveDirectory(parent, workbench, key, title);
                     break;
                 case FilesAndDirectories:
-                    selected = JIPipeFileChooserApplicationSettings.savePath(parent, key, title);
+                    selected = JIPipeFileChooserApplicationSettings.savePath(parent, workbench, key, title);
                     break;
                 default:
                     throw new UnsupportedOperationException("Unsupported: " + pathMode);
@@ -553,25 +637,26 @@ public class JIPipeFileChooserApplicationSettings extends JIPipeDefaultApplicati
      * Generic open method for multiple paths.
      * Info: Due to API limitations, only one saved file can be returned.
      *
-     * @param parent   parent component
-     * @param key      location where the dialog is opened
-     * @param title    dialog title
-     * @param ioMode   whether to load or save
-     * @param pathMode which types of paths are returned
+     * @param parent    parent component
+     * @param workbench the workbench
+     * @param key       location where the dialog is opened
+     * @param title     dialog title
+     * @param ioMode    whether to load or save
+     * @param pathMode  which types of paths are returned
      * @return selected paths of provided pathMode or empty list if dialog was cancelled
      */
-    public static List<Path> selectMulti(Component parent, LastDirectoryKey key, String title, PathIOMode ioMode, PathType pathMode) {
+    public static List<Path> selectMulti(Component parent, JIPipeWorkbench workbench, LastDirectoryKey key, String title, PathIOMode ioMode, PathType pathMode, FileNameExtensionFilter... extensionFilters) {
         List<Path> selected;
         if (ioMode == PathIOMode.Open) {
             switch (pathMode) {
                 case FilesOnly:
-                    selected = JIPipeFileChooserApplicationSettings.openFiles(parent, key, title);
+                    selected = JIPipeFileChooserApplicationSettings.openFiles(parent, workbench, key, title);
                     break;
                 case DirectoriesOnly:
-                    selected = JIPipeFileChooserApplicationSettings.openDirectories(parent, key, title);
+                    selected = JIPipeFileChooserApplicationSettings.openDirectories(parent, workbench, key, title);
                     break;
                 case FilesAndDirectories:
-                    selected = JIPipeFileChooserApplicationSettings.openPaths(parent, key, title);
+                    selected = JIPipeFileChooserApplicationSettings.openPaths(parent, workbench, key, title);
                     break;
                 default:
                     throw new UnsupportedOperationException("Unsupported: " + pathMode);
@@ -581,13 +666,13 @@ public class JIPipeFileChooserApplicationSettings extends JIPipeDefaultApplicati
             Path saveSelection;
             switch (pathMode) {
                 case FilesOnly:
-                    saveSelection = JIPipeFileChooserApplicationSettings.saveFile(parent, key, title);
+                    saveSelection = JIPipeFileChooserApplicationSettings.saveFile(parent, workbench, key, title);
                     break;
                 case DirectoriesOnly:
-                    saveSelection = JIPipeFileChooserApplicationSettings.saveDirectory(parent, key, title);
+                    saveSelection = JIPipeFileChooserApplicationSettings.saveDirectory(parent, workbench, key, title);
                     break;
                 case FilesAndDirectories:
-                    saveSelection = JIPipeFileChooserApplicationSettings.savePath(parent, key, title);
+                    saveSelection = JIPipeFileChooserApplicationSettings.savePath(parent, workbench, key, title);
                     break;
                 default:
                     throw new UnsupportedOperationException("Unsupported: " + pathMode);
@@ -634,20 +719,30 @@ public class JIPipeFileChooserApplicationSettings extends JIPipeDefaultApplicati
     /**
      * Gets the last directory by key
      *
-     * @param key the key
+     * @param workbench the workbench (can be null)
+     * @param key       the key
      * @return the last path or Paths.get() (home directory)
      */
-    public Path getLastDirectoryBy(LastDirectoryKey key) {
+    public Path getLastDirectoryBy(JIPipeWorkbench workbench, LastDirectoryKey key) {
+        Path result;
         switch (key) {
             case Data:
-                return getLastDataDirectory();
+                result = getLastDataDirectory();
+                break;
             case External:
-                return getLastExternalDirectory();
+                result = getLastExternalDirectory();
+                break;
             case Projects:
-                return getLastProjectsDirectory();
+                result = getLastProjectsDirectory();
+                break;
             default:
-                return getLastParametersDirectory();
+                result = getLastParametersDirectory();
+                break;
         }
+        if(workbench != null && workbench.getProject() != null && workbench.getProject().getWorkDirectory() != null && result.equals(Paths.get("").toAbsolutePath())) {
+            result = workbench.getProject().getWorkDirectory();
+        }
+        return result;
     }
 
     /**
@@ -780,6 +875,7 @@ public class JIPipeFileChooserApplicationSettings extends JIPipeDefaultApplicati
 
     public enum FileChooserType {
         Advanced,
+        AdvancedLegacy,
         Standard,
         Native
     }

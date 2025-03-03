@@ -168,7 +168,8 @@ public class ExpressionPlugin extends JIPipePrepackagedDefaultJavaPlugin {
         registerParameterType("data-export-expression",
                 DataExportExpressionParameter.class,
                 "Data export expression",
-                "Used for exporting data");
+                "Used for exporting data",
+                DataExportExpressionParameterEditorUI.class);
         registerExpressionFunction(new ContainsStringPredicateFunction());
         registerExpressionFunction(new EqualsStringPredicateFunction());
         registerExpressionFunction(new GlobStringPredicateFunction());

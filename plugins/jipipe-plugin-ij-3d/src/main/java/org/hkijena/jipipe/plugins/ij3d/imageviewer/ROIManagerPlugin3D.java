@@ -381,7 +381,7 @@ public class ROIManagerPlugin3D extends JIPipeDesktopLegacyImageViewerPlugin2D {
     }
 
     private void importROIsFromFile() {
-        Path path = JIPipeFileChooserApplicationSettings.openFile(getViewerPanel(), JIPipeFileChooserApplicationSettings.LastDirectoryKey.Data, "Import 3D ROI", UIUtils.EXTENSION_FILTER_ZIP);
+        Path path = JIPipeFileChooserApplicationSettings.openFile(getViewerPanel(), getWorkbench(), JIPipeFileChooserApplicationSettings.LastDirectoryKey.Data, "Import 3D ROI", UIUtils.EXTENSION_FILTER_ZIP);
         if (path != null) {
             ROI3DListData data = ROI3DListData.importData(path, JIPipeProgressInfo.SILENT);
             importROIs(data);
@@ -396,7 +396,7 @@ public class ROIManagerPlugin3D extends JIPipeDesktopLegacyImageViewerPlugin2D {
     }
 
     private void exportROIsToFile(ROI3DListData rois) {
-        Path path = JIPipeFileChooserApplicationSettings.saveFile(getViewerPanel(), JIPipeFileChooserApplicationSettings.LastDirectoryKey.Data, "Export ROI", UIUtils.EXTENSION_FILTER_ROI_ZIP);
+        Path path = JIPipeFileChooserApplicationSettings.saveFile(getViewerPanel(), getWorkbench(), JIPipeFileChooserApplicationSettings.LastDirectoryKey.Data, "Export ROI", UIUtils.EXTENSION_FILTER_ROI_ZIP);
         if (path != null) {
             rois.save(path);
         }

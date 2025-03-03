@@ -73,13 +73,13 @@ public class DataExportExpressionParameter extends JIPipeExpressionParameter {
         Path path;
         switch (pathType) {
             case DirectoriesOnly:
-                path = JIPipeFileChooserApplicationSettings.saveDirectory(parent, JIPipeFileChooserApplicationSettings.LastDirectoryKey.Data, title);
+                path = JIPipeFileChooserApplicationSettings.saveDirectory(parent, workbench, JIPipeFileChooserApplicationSettings.LastDirectoryKey.Data, title);
                 break;
             case FilesOnly:
-                path = JIPipeFileChooserApplicationSettings.saveFile(parent, JIPipeFileChooserApplicationSettings.LastDirectoryKey.Data, title, extensions);
+                path = JIPipeFileChooserApplicationSettings.saveFile(parent, workbench, JIPipeFileChooserApplicationSettings.LastDirectoryKey.Data, title, extensions);
                 break;
             case FilesAndDirectories:
-                path = JIPipeFileChooserApplicationSettings.savePath(parent, JIPipeFileChooserApplicationSettings.LastDirectoryKey.Data, title);
+                path = JIPipeFileChooserApplicationSettings.savePath(parent, workbench, JIPipeFileChooserApplicationSettings.LastDirectoryKey.Data, title);
                 break;
             default:
                 throw new IllegalArgumentException("Unsupported path type: " + pathType);

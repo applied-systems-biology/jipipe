@@ -15,6 +15,7 @@ package org.hkijena.jipipe.desktop.app.settings;
 
 import com.google.common.collect.ImmutableList;
 import com.google.common.collect.Sets;
+import org.hkijena.jipipe.api.compartments.algorithms.JIPipeProjectCompartment;
 import org.hkijena.jipipe.api.nodes.JIPipeAlgorithm;
 import org.hkijena.jipipe.api.nodes.JIPipeGraphNode;
 import org.hkijena.jipipe.api.project.JIPipeProjectRunSetsConfiguration;
@@ -30,6 +31,7 @@ import org.hkijena.jipipe.desktop.commons.components.tabs.JIPipeDesktopTabPane;
 import org.hkijena.jipipe.plugins.parameters.library.graph.GraphNodeReferenceParameter;
 import org.hkijena.jipipe.plugins.parameters.library.markup.MarkdownText;
 import org.hkijena.jipipe.utils.NaturalOrderComparator;
+import org.hkijena.jipipe.utils.StringUtils;
 import org.hkijena.jipipe.utils.UIUtils;
 
 import javax.swing.*;
@@ -104,6 +106,9 @@ public class JIPipeDesktopRunSetsListEditor extends JIPipeDesktopProjectWorkbenc
     }
 
     private void removeSelectedItems() {
+        if (JOptionPane.showConfirmDialog(this, "Do you really want to delete the selected run sets?", "Delete run sets", JOptionPane.YES_NO_OPTION) == JOptionPane.NO_OPTION) {
+            return;
+        }
         for (JIPipeProjectRunSet runSet : jList.getSelectedValuesList()) {
             getProject().getRunSetsConfiguration().remove(runSet);
         }
@@ -144,14 +149,23 @@ public class JIPipeDesktopRunSetsListEditor extends JIPipeDesktopProjectWorkbenc
 
     public static void createRunSetsManagementContextMenu(JMenu menu, Set<JIPipeGraphNode> nodes, JIPipeDesktopWorkbench workbench) {
         menu.add(UIUtils.createMenuItem("Assign to new run set ...", "Creates a new run set and afterwards adds the node to it", UIUtils.getIconFromResources("actions/add.png"), () -> {
-            JIPipeProjectRunSet runSet = new JIPipeProjectRunSet();
-            if (JIPipeDesktopRunSetsListEditor.editRunSet(workbench, runSet)) {
+            String newName = JOptionPane.showInputDialog(workbench.getWindow(), "Enter new run set name", "New run set", JOptionPane.PLAIN_MESSAGE);
+            if(!StringUtils.isNullOrEmpty(newName)) {
+                JIPipeProjectRunSet runSet = new JIPipeProjectRunSet();
+                runSet.setName(newName);
                 for (JIPipeGraphNode node : nodes) {
-                    if (node instanceof JIPipeAlgorithm) {
+                    if (node instanceof JIPipeAlgorithm || node instanceof JIPipeProjectCompartment) {
                         runSet.getNodes().add(new GraphNodeReferenceParameter(node));
                     }
                 }
                 workbench.getProject().getRunSetsConfiguration().add(runSet);
+            }
+        }));
+        menu.add(UIUtils.createMenuItem("Edit run sets", "Opens the run set editor panel", UIUtils.getIconFromResources("actions/edit.png"), () -> {
+            workbench.getDocumentTabPane().selectSingletonTab(JIPipeDesktopProjectWorkbench.TAB_PROJECT_OVERVIEW);
+            Component content = workbench.getDocumentTabPane().getSingletonTabInstances().get(JIPipeDesktopProjectWorkbench.TAB_PROJECT_OVERVIEW).getContent();
+            if(content instanceof JIPipeDesktopProjectOverviewUI) {
+                ((JIPipeDesktopProjectOverviewUI) content).getDockPanel().activatePanel("RUN_SETS", true);
             }
         }));
 

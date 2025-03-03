@@ -41,7 +41,7 @@ public abstract class AbstractPathImageJDataExporterUI extends ImageJDataExporte
 
     private void initialize() {
         setLayout(new BorderLayout());
-        JIPipeDesktopPathEditorComponent pathEditor = new JIPipeDesktopPathEditorComponent(PathIOMode.Save, getPathType());
+        JIPipeDesktopPathEditorComponent pathEditor = new JIPipeDesktopPathEditorComponent(getDesktopWorkbench(), PathIOMode.Save, getPathType());
         try {
             pathEditor.setPath(Paths.get(getExporter().getName()));
         } catch (Exception e) {

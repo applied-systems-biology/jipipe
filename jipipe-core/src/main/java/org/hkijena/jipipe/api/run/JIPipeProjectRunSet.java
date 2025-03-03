@@ -3,6 +3,7 @@ package org.hkijena.jipipe.api.run;
 import com.fasterxml.jackson.annotation.JsonGetter;
 import com.fasterxml.jackson.annotation.JsonSetter;
 import org.hkijena.jipipe.api.SetJIPipeDocumentation;
+import org.hkijena.jipipe.api.compartments.algorithms.JIPipeProjectCompartment;
 import org.hkijena.jipipe.api.nodes.JIPipeGraphNode;
 import org.hkijena.jipipe.api.parameters.AbstractJIPipeParameterCollection;
 import org.hkijena.jipipe.api.parameters.JIPipeParameter;
@@ -14,6 +15,7 @@ import org.hkijena.jipipe.plugins.parameters.library.markup.HTMLText;
 import org.hkijena.jipipe.utils.StringUtils;
 import org.jetbrains.annotations.NotNull;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Set;
 import java.util.UUID;
@@ -101,7 +103,17 @@ public class JIPipeProjectRunSet extends AbstractJIPipeParameterCollection {
     }
 
     public List<JIPipeGraphNode> resolveNodes(JIPipeProject project) {
-        return nodes.stream().map(reference -> reference.resolve(project)).collect(Collectors.toList());
+        List<JIPipeGraphNode> result = new ArrayList<>();
+        for (GraphNodeReferenceParameter node : nodes) {
+            JIPipeGraphNode resolved = node.resolve(project);
+            if(resolved instanceof JIPipeProjectCompartment) {
+                result.addAll(((JIPipeProjectCompartment) resolved).getOutputNodes().values());
+            }
+            else if(resolved != null) {
+                result.add(resolved);
+            }
+        }
+        return result;
     }
 
     public String getDisplayName() {

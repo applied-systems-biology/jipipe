@@ -927,14 +927,14 @@ public class JIPipeDesktopProjectWorkbench extends JPanel implements JIPipeDeskt
     }
 
     private void archiveProjectAsDirectory() {
-        Path directory = JIPipeFileChooserApplicationSettings.saveDirectory(this, JIPipeFileChooserApplicationSettings.LastDirectoryKey.Projects, "Archive project as directory");
+        Path directory = JIPipeFileChooserApplicationSettings.saveDirectory(this, this, JIPipeFileChooserApplicationSettings.LastDirectoryKey.Projects, "Archive project as directory");
         if (directory != null) {
             JIPipeDesktopRunExecuteUI.runInDialog(this, this, new JIPipeArchiveProjectToDirectoryRun(getProject(), directory));
         }
     }
 
     private void archiveProjectAsZIP() {
-        Path file = JIPipeFileChooserApplicationSettings.saveFile(this, JIPipeFileChooserApplicationSettings.LastDirectoryKey.Projects, "Archive project as ZIP", UIUtils.EXTENSION_FILTER_ZIP);
+        Path file = JIPipeFileChooserApplicationSettings.saveFile(this, this, JIPipeFileChooserApplicationSettings.LastDirectoryKey.Projects, "Archive project as ZIP", UIUtils.EXTENSION_FILTER_ZIP);
         if (file != null) {
             JIPipeDesktopRunExecuteUI.runInDialog(this, this, new JIPipeArchiveProjectToZIPRun(getProject(), file));
         }
@@ -969,7 +969,7 @@ public class JIPipeDesktopProjectWorkbench extends JPanel implements JIPipeDeskt
 
 
     public void restoreCacheFromZIPOrDirectory() {
-        Path path = JIPipeFileChooserApplicationSettings.openPath(this, JIPipeFileChooserApplicationSettings.LastDirectoryKey.Projects, "Select exported cache (ZIP/directory)");
+        Path path = JIPipeFileChooserApplicationSettings.openPath(this, this, JIPipeFileChooserApplicationSettings.LastDirectoryKey.Projects, "Select exported cache (ZIP/directory)");
         if (path != null) {
             if (Files.isRegularFile(path)) {
                 // Load into cache with a run

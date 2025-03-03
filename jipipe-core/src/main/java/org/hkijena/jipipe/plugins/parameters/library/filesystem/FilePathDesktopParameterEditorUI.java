@@ -51,7 +51,7 @@ public class FilePathDesktopParameterEditorUI extends JIPipeDesktopParameterEdit
 
     private void initialize() {
         setLayout(new BorderLayout());
-        pathEditor = new JIPipeDesktopPathEditorComponent(PathIOMode.Open, PathType.FilesOnly);
+        pathEditor = new JIPipeDesktopPathEditorComponent(getDesktopWorkbench(),PathIOMode.Open, PathType.FilesOnly);
         PathParameterSettings settings = getParameterAccess().getAnnotationOfType(PathParameterSettings.class);
         if (settings != null) {
             pathEditor.setIoMode(settings.ioMode());

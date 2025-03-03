@@ -183,7 +183,7 @@ public class JIPipeDesktopBackupManagerPanel extends JIPipeDesktopWorkbenchPanel
         }
 
         JIPipeFileChooserApplicationSettings.getInstance().setLastDirectoryBy(JIPipeFileChooserApplicationSettings.LastDirectoryKey.Projects, saveDirectory);
-        Path path = JIPipeFileChooserApplicationSettings.saveFile(this, JIPipeFileChooserApplicationSettings.LastDirectoryKey.Projects, "Restore backup as ...", UIUtils.EXTENSION_FILTER_JIP);
+        Path path = JIPipeFileChooserApplicationSettings.saveFile(this, getDesktopWorkbench(), JIPipeFileChooserApplicationSettings.LastDirectoryKey.Projects, "Restore backup as ...", UIUtils.EXTENSION_FILTER_JIP);
         if (path != null) {
             try {
                 Files.copy(backupItem.getProjectPath(), path, StandardCopyOption.REPLACE_EXISTING);

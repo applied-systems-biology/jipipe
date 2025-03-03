@@ -52,7 +52,7 @@ public class JIPipeDesktopTableImporterDialog extends JDialog {
                     insets = UIUtils.UI_PADDING;
                 }
             });
-            pathEditor = new JIPipeDesktopPathEditorComponent(PathIOMode.Open, PathType.FilesOnly);
+            pathEditor = new JIPipeDesktopPathEditorComponent(workbench,PathIOMode.Open, PathType.FilesOnly);
             add(pathEditor, new GridBagConstraints() {
                 {
                     gridx = 1;

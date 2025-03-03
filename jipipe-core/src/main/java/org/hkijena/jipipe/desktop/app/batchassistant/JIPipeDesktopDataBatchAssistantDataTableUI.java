@@ -348,7 +348,7 @@ public class JIPipeDesktopDataBatchAssistantDataTableUI extends JIPipeDesktopWor
 
             popupMenu.add(UIUtils.createMenuItem("Export", "Exports the data", UIUtils.getIconFromResources("actions/document-export.png"),
                     () -> {
-                        Path path = JIPipeFileChooserApplicationSettings.saveFile(this, JIPipeFileChooserApplicationSettings.LastDirectoryKey.Data, "Export row " + modelRow);
+                        Path path = JIPipeFileChooserApplicationSettings.saveFile(this, getDesktopWorkbench(), JIPipeFileChooserApplicationSettings.LastDirectoryKey.Data, "Export row " + modelRow);
                         if (path != null) {
                             Path directory = path.getParent();
                             String name = path.getFileName().toString();
@@ -362,7 +362,7 @@ public class JIPipeDesktopDataBatchAssistantDataTableUI extends JIPipeDesktopWor
                 JIPipeDataAnnotation dataAnnotation = dataTable.getDataAnnotation(modelRow, dataAnnotationColumn);
                 popupMenu.add(UIUtils.createMenuItem("Export " + dataAnnotation.getName(), "Exports the data annotation '" + dataAnnotation.getName() + "'", UIUtils.getIconFromResources("actions/document-export.png"),
                         () -> {
-                            Path path = JIPipeFileChooserApplicationSettings.saveFile(this, JIPipeFileChooserApplicationSettings.LastDirectoryKey.Data, "Export row " + modelRow);
+                            Path path = JIPipeFileChooserApplicationSettings.saveFile(this, getDesktopWorkbench(), JIPipeFileChooserApplicationSettings.LastDirectoryKey.Data, "Export row " + modelRow);
                             if (path != null) {
                                 Path directory = path.getParent();
                                 String name = path.getFileName().toString();
@@ -382,7 +382,7 @@ public class JIPipeDesktopDataBatchAssistantDataTableUI extends JIPipeDesktopWor
         for (int i = 0; i < table.getModel().getColumnCount(); i++) {
             variables.add(new JIPipeExpressionParameterVariableInfo(table.getModel().getColumnName(i), table.getModel().getColumnName(i), ""));
         }
-        String result = ExpressionBuilderUI.showDialog(getDesktopWorkbench().getWindow(), searchTextField.getText(), variables);
+        String result = ExpressionBuilderUI.showDialog(getDesktopWorkbench().getWindow(), getDesktopWorkbench(), searchTextField.getText(), variables);
         if (result != null) {
             searchTextField.setText(result);
         }
@@ -402,7 +402,7 @@ public class JIPipeDesktopDataBatchAssistantDataTableUI extends JIPipeDesktopWor
     }
 
     private void exportAsJIPipeSlotDirectory() {
-        Path directory = JIPipeFileChooserApplicationSettings.saveDirectory(this, JIPipeFileChooserApplicationSettings.LastDirectoryKey.Data, "Export as JIPipe data table");
+        Path directory = JIPipeFileChooserApplicationSettings.saveDirectory(this, getDesktopWorkbench(), JIPipeFileChooserApplicationSettings.LastDirectoryKey.Data, "Export as JIPipe data table");
         if (directory != null) {
             try {
                 if (Files.isDirectory(directory) && Files.list(directory).findAny().isPresent()) {
@@ -423,7 +423,7 @@ public class JIPipeDesktopDataBatchAssistantDataTableUI extends JIPipeDesktopWor
     }
 
     private void exportAsJIPipeSlotZIP() {
-        Path outputZipFile = JIPipeFileChooserApplicationSettings.saveFile(this, JIPipeFileChooserApplicationSettings.LastDirectoryKey.Data, "Export as JIPipe data table (*.zip)", UIUtils.EXTENSION_FILTER_ZIP);
+        Path outputZipFile = JIPipeFileChooserApplicationSettings.saveFile(this, getDesktopWorkbench(), JIPipeFileChooserApplicationSettings.LastDirectoryKey.Data, "Export as JIPipe data table (*.zip)", UIUtils.EXTENSION_FILTER_ZIP);
         if (outputZipFile != null) {
             if (Files.isRegularFile(outputZipFile)) {
                 if (JOptionPane.showConfirmDialog(getDesktopWorkbench().getWindow(),
@@ -441,7 +441,7 @@ public class JIPipeDesktopDataBatchAssistantDataTableUI extends JIPipeDesktopWor
     }
 
     private void exportAsCSV() {
-        Path path = JIPipeFileChooserApplicationSettings.saveFile(this, JIPipeFileChooserApplicationSettings.LastDirectoryKey.Projects, "Export as *.csv", UIUtils.EXTENSION_FILTER_CSV);
+        Path path = JIPipeFileChooserApplicationSettings.saveFile(this, getDesktopWorkbench(), JIPipeFileChooserApplicationSettings.LastDirectoryKey.Projects, "Export as *.csv", UIUtils.EXTENSION_FILTER_CSV);
         if (path != null) {
             ResultsTableData tableData = dataTableModel.getDataTable().toAnnotationTable(true);
             tableData.saveAsCSV(path);

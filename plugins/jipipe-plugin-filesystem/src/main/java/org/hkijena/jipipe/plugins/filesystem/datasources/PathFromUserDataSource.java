@@ -105,13 +105,13 @@ public class PathFromUserDataSource extends JIPipeSimpleIteratingAlgorithm {
                     JIPipeWorkbench workbench = JIPipeDesktopProjectWorkbench.tryFindProjectWorkbench(getParentGraph(), new JIPipeDummyWorkbench());
                     if (multiple) {
                         pathList.addAll(JIPipeFileChooserApplicationSettings.selectMulti(((JIPipeDesktopWorkbench) workbench).getWindow(),
-                                JIPipeFileChooserApplicationSettings.LastDirectoryKey.Data,
+                                workbench, JIPipeFileChooserApplicationSettings.LastDirectoryKey.Data,
                                 getDisplayName(),
                                 pathIOMode,
                                 pathType));
                     } else {
                         Path path = JIPipeFileChooserApplicationSettings.selectSingle(((JIPipeDesktopWorkbench) workbench).getWindow(),
-                                JIPipeFileChooserApplicationSettings.LastDirectoryKey.Data,
+                                workbench, JIPipeFileChooserApplicationSettings.LastDirectoryKey.Data,
                                 getDisplayName(),
                                 pathIOMode,
                                 pathType);

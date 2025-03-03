@@ -20,8 +20,18 @@ package org.hkijena.jipipe.api;
 public class JIPipePercentageProgressInfo extends JIPipeProgressInfo {
 
     private int lastPercentage;
+    private long lastTime;
+    private long notifyInterval = 1000;
 
     public JIPipePercentageProgressInfo() {
+    }
+
+    public long getNotifyInterval() {
+        return notifyInterval;
+    }
+
+    public void setNotifyInterval(long notifyInterval) {
+        this.notifyInterval = notifyInterval;
     }
 
     public JIPipePercentageProgressInfo(JIPipeProgressInfo other) {
@@ -29,10 +39,16 @@ public class JIPipePercentageProgressInfo extends JIPipeProgressInfo {
     }
 
     public void logPercentage(double value, double max) {
+
+
         int currentPercentage = (int) (value / max * 100);
         if (currentPercentage != lastPercentage) {
-            log(currentPercentage + "%");
+            long time = System.currentTimeMillis();
             lastPercentage = currentPercentage;
+            if (time - lastTime > notifyInterval || currentPercentage == 50 || currentPercentage == 100) {
+                log(currentPercentage + "%");
+                lastTime = time;
+            }
         }
     }
 }

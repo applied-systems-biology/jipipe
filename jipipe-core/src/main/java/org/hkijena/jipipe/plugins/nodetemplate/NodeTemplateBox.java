@@ -301,7 +301,7 @@ public class NodeTemplateBox extends JIPipeDesktopWorkbenchPanel implements Node
         if (templateJList.getSelectedValuesList().isEmpty()) {
             return;
         }
-        Path path = JIPipeFileChooserApplicationSettings.saveFile(this, JIPipeFileChooserApplicationSettings.LastDirectoryKey.Projects, "Export templates", UIUtils.EXTENSION_FILTER_JSON);
+        Path path = JIPipeFileChooserApplicationSettings.saveFile(this, getDesktopWorkbench(), JIPipeFileChooserApplicationSettings.LastDirectoryKey.Projects, "Export templates", UIUtils.EXTENSION_FILTER_JSON);
         if (path != null) {
             try {
                 Files.write(path, JsonUtils.toPrettyJsonString(templateJList.getSelectedValuesList()).getBytes(StandardCharsets.UTF_8));
@@ -312,7 +312,7 @@ public class NodeTemplateBox extends JIPipeDesktopWorkbenchPanel implements Node
     }
 
     private void importTemplates() {
-        Path path = JIPipeFileChooserApplicationSettings.openFile(this, JIPipeFileChooserApplicationSettings.LastDirectoryKey.Projects, "Import templates", UIUtils.EXTENSION_FILTER_JSON);
+        Path path = JIPipeFileChooserApplicationSettings.openFile(this, getDesktopWorkbench(), JIPipeFileChooserApplicationSettings.LastDirectoryKey.Projects, "Import templates", UIUtils.EXTENSION_FILTER_JSON);
         if (path != null) {
             try {
                 JsonNode node = JsonUtils.getObjectMapper().readerFor(JsonNode.class).readValue(path.toFile());

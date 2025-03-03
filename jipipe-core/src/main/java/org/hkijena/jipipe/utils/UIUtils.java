@@ -428,6 +428,26 @@ public class UIUtils {
         }
     }
 
+    public static Color getIconBaseColor() {
+        if(DARK_THEME) {
+            return new Color(0xDFDFDF);
+        }
+        else {
+            return new Color(0x333333);
+        }
+    }
+
+    public static JSeparator createHorizontalFillingSeparator() {
+        JSeparator separator = new JSeparator(SwingConstants.HORIZONTAL);
+
+        // Force the separator to fill horizontally
+        separator.setMaximumSize(new Dimension(Short.MAX_VALUE, 1));
+        separator.setPreferredSize(new Dimension(50, 1)); // Default pref size
+        separator.setAlignmentY(Component.CENTER_ALIGNMENT); // Critical: vertical centering
+
+        return separator;
+    }
+
     /**
      * packAll() for a data table (with a limit)
      *
@@ -1067,8 +1087,9 @@ public class UIUtils {
      * Makes a button flat and 25x25 size
      *
      * @param component the button
+     * @return the component
      */
-    public static void makeButtonFlat25x25(AbstractButton component) {
+    public static <T extends AbstractButton> T makeButtonFlat25x25(T component) {
         component.setBackground(Color.WHITE);
         component.setOpaque(false);
         component.setPreferredSize(new Dimension(25, 25));
@@ -1078,6 +1099,17 @@ public class UIUtils {
 //        Border compound = new CompoundBorder(new RoundedLineBorder(ModernMetalTheme.GRAY2, 1, 2), margin);
 //        component.setBorder(compound);
         component.setBorder(BorderFactory.createEmptyBorder(3, 3, 3, 3));
+        return component;
+    }
+
+    /**
+     * Makes a button flat and 25x25 size
+     *
+     * @param component the button
+     * @return the component
+     */
+    public static <T extends AbstractButton> T makeButtonFlatWithSize(T component, int size) {
+        return makeButtonFlatWithSize(component, size, 3);
     }
 
     /**
@@ -1085,16 +1117,14 @@ public class UIUtils {
      *
      * @param component the button
      */
-    public static void makeButtonFlatWithSize(AbstractButton component, int size, int borderSize) {
+    public static <T extends AbstractButton> T makeButtonFlatWithSize(T component, int size, int borderSize) {
         component.setBackground(Color.WHITE);
         component.setOpaque(false);
         component.setPreferredSize(new Dimension(size, size));
         component.setMinimumSize(new Dimension(size, size));
         component.setMaximumSize(new Dimension(size, size));
-//        Border margin = new EmptyBorder(2, 2, 2, 2);
-//        Border compound = new CompoundBorder(new RoundedLineBorder(ModernMetalTheme.GRAY2, 1, 2), margin);
-//        component.setBorder(compound);
         component.setBorder(BorderFactory.createEmptyBorder(borderSize, borderSize, borderSize, borderSize));
+        return component;
     }
 
     public static String getAWTWindowTitle(Window window) {
@@ -1114,7 +1144,7 @@ public class UIUtils {
      *
      * @param component the button
      */
-    public static void makeButtonFlat(AbstractButton component) {
+    public static <T extends AbstractButton> T makeButtonFlat(T component) {
         component.setBackground(Color.WHITE);
         component.setOpaque(false);
 //        component.setPreferredSize(new Dimension(component.getPreferredSize().width, 25));
@@ -1123,6 +1153,7 @@ public class UIUtils {
         Border margin = new EmptyBorder(3, 3, 3, 3);
 //        Border compound = new CompoundBorder(UIUtils.createControlBorder(), margin);
         component.setBorder(margin);
+        return component;
     }
 
     /**
@@ -1130,10 +1161,11 @@ public class UIUtils {
      *
      * @param component the component
      */
-    public static void makeButtonBorderlessWithoutMargin(AbstractButton component) {
+    public static <T extends AbstractButton> T makeButtonBorderlessWithoutMargin(T component) {
         component.setBackground(Color.WHITE);
         component.setOpaque(false);
         component.setBorder(null);
+        return component;
     }
 
     /**
@@ -2581,6 +2613,29 @@ public class UIUtils {
         return button;
     }
 
+    public static JPanel borderNorthSouth(JComponent north, JComponent south) {
+        JPanel panel = new JPanel(new BorderLayout());
+        panel.add(north, BorderLayout.NORTH);
+        panel.add(south, BorderLayout.SOUTH);
+        return panel;
+    }
+
+    public static <T> DefaultComboBoxModel<T> toComboBoxModel(Collection<T> elements) {
+        DefaultComboBoxModel<T> model = new DefaultComboBoxModel<>();
+        for (T element : elements) {
+            model.addElement(element);
+        }
+        return model;
+    }
+
+
+    public static <T> DefaultListModel<T> toListModel(Collection<T> elements) {
+        DefaultListModel<T> model = new DefaultListModel<>();
+        for (T element : elements) {
+            model.addElement(element);
+        }
+        return model;
+    }
 
     public static class DragThroughMouseListener implements MouseListener, MouseMotionListener {
         private final Component component;

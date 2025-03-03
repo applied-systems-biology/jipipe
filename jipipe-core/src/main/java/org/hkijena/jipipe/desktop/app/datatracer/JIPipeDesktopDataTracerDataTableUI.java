@@ -241,7 +241,7 @@ public class JIPipeDesktopDataTracerDataTableUI extends JIPipeDesktopWorkbenchPa
 
             popupMenu.add(UIUtils.createMenuItem("Export", "Exports the data", UIUtils.getIconFromResources("actions/document-export.png"),
                     () -> {
-                        Path path = JIPipeFileChooserApplicationSettings.saveFile(this, JIPipeFileChooserApplicationSettings.LastDirectoryKey.Data, "Export row " + modelRow);
+                        Path path = JIPipeFileChooserApplicationSettings.saveFile(this, getDesktopWorkbench(), JIPipeFileChooserApplicationSettings.LastDirectoryKey.Data, "Export row " + modelRow);
                         if (path != null) {
                             Path directory = path.getParent();
                             String name = path.getFileName().toString();
@@ -255,7 +255,7 @@ public class JIPipeDesktopDataTracerDataTableUI extends JIPipeDesktopWorkbenchPa
                 JIPipeDataAnnotation dataAnnotation = dataTable.getDataAnnotation(modelRow, dataAnnotationColumn);
                 popupMenu.add(UIUtils.createMenuItem("Export " + dataAnnotation.getName(), "Exports the data annotation '" + dataAnnotation.getName() + "'", UIUtils.getIconFromResources("actions/document-export.png"),
                         () -> {
-                            Path path = JIPipeFileChooserApplicationSettings.saveFile(this, JIPipeFileChooserApplicationSettings.LastDirectoryKey.Data, "Export row " + modelRow);
+                            Path path = JIPipeFileChooserApplicationSettings.saveFile(this, getDesktopWorkbench(), JIPipeFileChooserApplicationSettings.LastDirectoryKey.Data, "Export row " + modelRow);
                             if (path != null) {
                                 Path directory = path.getParent();
                                 String name = path.getFileName().toString();
@@ -279,7 +279,7 @@ public class JIPipeDesktopDataTracerDataTableUI extends JIPipeDesktopWorkbenchPa
         for (int i = 0; i < table.getModel().getColumnCount(); i++) {
             variables.add(new JIPipeExpressionParameterVariableInfo(table.getModel().getColumnName(i), table.getModel().getColumnName(i), ""));
         }
-        String result = ExpressionBuilderUI.showDialog(getDesktopWorkbench().getWindow(), searchTextField.getText(), variables);
+        String result = ExpressionBuilderUI.showDialog(getDesktopWorkbench().getWindow(), getDesktopWorkbench(), searchTextField.getText(), variables);
         if (result != null) {
             searchTextField.setText(result);
         }

@@ -209,7 +209,7 @@ public class JIPipeDesktopDefaultResultDataSlotRowUI extends JIPipeDesktopResult
     }
 
     private void exportAsFolder() {
-        Path path = JIPipeFileChooserApplicationSettings.saveDirectory(getDesktopWorkbench().getWindow(), JIPipeFileChooserApplicationSettings.LastDirectoryKey.Data, "Export " + getDisplayName());
+        Path path = JIPipeFileChooserApplicationSettings.saveDirectory(getDesktopWorkbench().getWindow(), getDesktopWorkbench(), JIPipeFileChooserApplicationSettings.LastDirectoryKey.Data, "Export " + getDisplayName());
         if (path != null) {
             try {
                 Files.createDirectories(path);
@@ -255,7 +255,7 @@ public class JIPipeDesktopDefaultResultDataSlotRowUI extends JIPipeDesktopResult
     }
 
     private void exportToFolder() {
-        Path path = JIPipeFileChooserApplicationSettings.saveFile(getDesktopWorkbench().getWindow(), JIPipeFileChooserApplicationSettings.LastDirectoryKey.Data, "Export " + getDisplayName());
+        Path path = JIPipeFileChooserApplicationSettings.saveFile(getDesktopWorkbench().getWindow(), getDesktopWorkbench(), JIPipeFileChooserApplicationSettings.LastDirectoryKey.Data, "Export " + getDisplayName());
         if (path != null) {
             JIPipeRunnable runnable = new JIPipeRunnable() {
                 private final UUID uuid = UUID.randomUUID();

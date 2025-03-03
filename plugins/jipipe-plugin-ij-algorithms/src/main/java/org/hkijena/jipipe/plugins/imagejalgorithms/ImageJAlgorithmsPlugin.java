@@ -742,6 +742,7 @@ public class ImageJAlgorithmsPlugin extends JIPipePrepackagedDefaultJavaPlugin {
         registerNodeType("ij1-labels-crop-labels", CropLabelsAlgorithm.class, UIUtils.getIconURLFromResources("actions/image-crop.png"));
         registerNodeType("ij1-labels-remap", RemapLabelsAlgorithm.class, UIUtils.getIconURLFromResources("actions/object-visible.png"));
         registerNodeType("ij1-labels-expand-labels", ExpandLabelsAlgorithm.class, UIUtils.getIconURLFromResources("actions/object-tweak-push.png"));
+        registerNodeType("ij1-labels-separate-touching-labels", SeparateTouchingLabels2DAlgorithm.class, UIUtils.getIconURLFromResources("actions/object-tweak-push.png"));
         registerNodeType("ij1-labels-remove-largest-label", RemoveLargestLabelAlgorithm.class, UIUtils.getIconURLFromResources("actions/filter.png"));
         registerNodeType("ij1-labels-keep-largest-label", KeepLargestLabelAlgorithm.class, UIUtils.getIconURLFromResources("actions/filter.png"));
         registerNodeType("ij1-labels-dilate-labels", DilateLabelsAlgorithm.class, UIUtils.getIconURLFromResources("actions/morphology.png"));
@@ -969,6 +970,7 @@ public class ImageJAlgorithmsPlugin extends JIPipePrepackagedDefaultJavaPlugin {
         registerNodeType("ij1-roi-set-metadata-from-statistics-expression", SetRoiMetadataByStatisticsAlgorithm.class, UIUtils.getIconURLFromResources("actions/cm_packfiles.png"));
         registerNodeType("ij1-roi-remove-metadata", RemoveROIMetadataAlgorithm.class, UIUtils.getIconURLFromResources("actions/filter.png"));
         registerNodeType("ij1-roi-flatten", FlattenRoiAlgorithm.class, UIUtils.getIconURLFromResources("actions/layer-flatten-z.png"));
+        registerNodeType("ij1-roi-enlarge-shrink", EnlargeShrinkRoiAlgorithm.class, UIUtils.getIconURLFromResources("actions/zoom-draw.png"));
 
         registerNodeType("ij1-roi-draw-rectangle", DrawRectangleRoiAlgorithm.class, UIUtils.getIconURLFromResources("actions/draw-rectangle.png"));
         registerNodeType("ij1-roi-draw-oval", DrawOvalRoiAlgorithm.class, UIUtils.getIconURLFromResources("actions/draw-ellipse.png"));
