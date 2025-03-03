@@ -75,6 +75,8 @@ public class JIPipeAnnotationGraphNodeTool<T extends JIPipeAnnotationGraphNode> 
 
     }
 
+    public boolean isDrawWithAntialiasing() { return false; }
+
     @Override
     public int getCategory() {
         return 64;

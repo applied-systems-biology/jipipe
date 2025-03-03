@@ -135,6 +135,11 @@ public abstract class AbstractTextBoxAnnotationGraphNode extends JIPipeAnnotatio
     }
 
     @Override
+    public boolean isDrawWithAntialiasing() {
+        return !StringUtils.isNullOrEmpty(textTitle) || !StringUtils.isNullOrEmpty(textContent);
+    }
+
+    @Override
     public void paintNode(Graphics2D g2, JIPipeDesktopAnnotationGraphNodeUI nodeUI, double zoom) {
 
         updateAssetsIfNeeded(g2, nodeUI, zoom);

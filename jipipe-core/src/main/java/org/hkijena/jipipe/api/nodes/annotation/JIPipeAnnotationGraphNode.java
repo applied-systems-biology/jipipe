@@ -92,6 +92,8 @@ public abstract class JIPipeAnnotationGraphNode extends JIPipeGraphNode {
 
     }
 
+    public boolean isDrawWithAntialiasing() { return false; }
+
     public boolean isPaintNodeShadow() {
         return true;
     }

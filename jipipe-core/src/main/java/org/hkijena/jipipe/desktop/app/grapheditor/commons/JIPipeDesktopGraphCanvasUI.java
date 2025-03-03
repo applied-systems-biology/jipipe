@@ -35,6 +35,7 @@ import org.hkijena.jipipe.api.nodes.JIPipeGraph;
 import org.hkijena.jipipe.api.nodes.JIPipeGraphEdge;
 import org.hkijena.jipipe.api.nodes.JIPipeGraphNode;
 import org.hkijena.jipipe.api.nodes.annotation.JIPipeAnnotationGraphNode;
+import org.hkijena.jipipe.api.nodes.annotation.JIPipeAnnotationGraphNodeTool;
 import org.hkijena.jipipe.api.nodes.categories.InternalNodeTypeCategory;
 import org.hkijena.jipipe.api.parameters.JIPipeParameterCollection;
 import org.hkijena.jipipe.api.project.JIPipeProject;
@@ -122,7 +123,7 @@ public class JIPipeDesktopGraphCanvasUI extends JLayeredPane implements JIPipeDe
     private static final int RESIZE_HANDLE_DISTANCE = 12;
     private static final int RESIZE_HANDLE_SIZE = 10;
     private static final Color COMMENT_EDGE_COLOR = new Color(194, 141, 0);
-    private static final Color COLOR_EDGE_DEFAULT =  UIUtils.DARK_THEME ? new Color(0x3E3E3E) : new Color(0x737880);
+    private static final Color COLOR_EDGE_DEFAULT = UIUtils.DARK_THEME ? new Color(0x3E3E3E) : new Color(0x737880);
     private static final Color COLOR_EDGE_CONVERT = new Color(0x2957C2);
     private final JIPipeDesktopWorkbench desktopWorkbench;
     private final AbstractJIPipeDesktopGraphEditorUI graphEditorUI;
@@ -1494,7 +1495,7 @@ public class JIPipeDesktopGraphCanvasUI extends JLayeredPane implements JIPipeDe
             menu.add(item);
         }
 
-        if(graphEditorUI != null) {
+        if (graphEditorUI != null) {
             graphEditorUI.beforeOpenContextMenu(menu);
         }
 
@@ -2074,7 +2075,16 @@ public class JIPipeDesktopGraphCanvasUI extends JLayeredPane implements JIPipeDe
                     JIPipeDesktopAnnotationGraphNodeUI annotationGraphNodeUI = (JIPipeDesktopAnnotationGraphNodeUI) component;
                     g.translate(annotationGraphNodeUI.getX(), annotationGraphNodeUI.getY());
                     JIPipeAnnotationGraphNode node = (JIPipeAnnotationGraphNode) (annotationGraphNodeUI).getNode();
-                    node.paintNode(g, annotationGraphNodeUI, zoom);
+                    if (node.isDrawWithAntialiasing()) {
+                        try {
+                            g.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
+                            node.paintNode(g, annotationGraphNodeUI, zoom);
+                        } finally {
+                            g.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_OFF);
+                        }
+                    } else {
+                        node.paintNode(g, annotationGraphNodeUI, zoom);
+                    }
                     g.setTransform(originalTransform);
                 }
             }
@@ -2381,7 +2391,18 @@ public class JIPipeDesktopGraphCanvasUI extends JLayeredPane implements JIPipeDe
 
         // Above node paint
         if (currentTool != null) {
-            currentTool.paintAfterNodesAndEdges(graphics2D);
+            if(currentTool instanceof JIPipeAnnotationGraphNodeTool && ((JIPipeAnnotationGraphNodeTool<?>) currentTool).isDrawWithAntialiasing()) {
+                try {
+                    graphics2D.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
+                    currentTool.paintAfterNodesAndEdges(graphics2D);
+                }
+                finally {
+                    graphics2D.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_OFF);
+                }
+            }
+            else {
+                currentTool.paintAfterNodesAndEdges(graphics2D);
+            }
         }
 
         // Smart edges drawing

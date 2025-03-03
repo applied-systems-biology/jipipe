@@ -162,37 +162,36 @@ public class ArrowAnnotationGraphNode extends JIPipeAnnotationGraphNode {
 
     @Override
     public void paintNode(Graphics2D g2, JIPipeDesktopAnnotationGraphNodeUI nodeUI, double zoom) {
-        g2.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
-        try {
-            int finalThickness = (int) Math.max(1, zoom * lineThickness);
-            int finalArrowSize = (int) (zoom * arrowSize);
-            double w = nodeUI.getWidth() - finalThickness * 2;
-            double h = nodeUI.getHeight() - finalThickness * 2;
+        int finalThickness = (int) Math.max(1, zoom * lineThickness);
+        int finalArrowSize = (int) (zoom * arrowSize);
+        double w = nodeUI.getWidth() - finalThickness * 2;
+        double h = nodeUI.getHeight() - finalThickness * 2;
 
-            double[] lineCoordinates = calculateLineCoordinates(w, h);
-            int x0 = (int) lineCoordinates[0] + finalThickness;
-            int y0 = (int) lineCoordinates[1] + finalThickness;
-            int x1 = (int) lineCoordinates[2] + finalThickness;
-            int y1 = (int) lineCoordinates[3] + finalThickness;
+        double[] lineCoordinates = calculateLineCoordinates(w, h);
+        int x0 = (int) lineCoordinates[0] + finalThickness;
+        int y0 = (int) lineCoordinates[1] + finalThickness;
+        int x1 = (int) lineCoordinates[2] + finalThickness;
+        int y1 = (int) lineCoordinates[3] + finalThickness;
 
-            g2.setStroke(new BasicStroke(finalThickness, BasicStroke.CAP_ROUND, BasicStroke.JOIN_ROUND));
-            g2.setColor(color);
-            g2.drawLine(x0, y0, x1, y1);
+        g2.setStroke(new BasicStroke(finalThickness, BasicStroke.CAP_ROUND, BasicStroke.JOIN_ROUND));
+        g2.setColor(color);
+        g2.drawLine(x0, y0, x1, y1);
 
-            if (finalArrowSize > 0) {
-                // Draw arrowhead
-                double angle = Math.atan2(y1 - y0, x1 - x0);
-                int ax1 = (int) (x1 - arrowSize * Math.cos(angle - Math.PI / 6));
-                int ay1 = (int) (y1 - arrowSize * Math.sin(angle - Math.PI / 6));
-                int ax2 = (int) (x1 - arrowSize * Math.cos(angle + Math.PI / 6));
-                int ay2 = (int) (y1 - arrowSize * Math.sin(angle + Math.PI / 6));
-                g2.drawLine(x1, y1, ax1, ay1);
-                g2.drawLine(x1, y1, ax2, ay2);
-            }
+        if (finalArrowSize > 0) {
+            // Draw arrowhead
+            double angle = Math.atan2(y1 - y0, x1 - x0);
+            int ax1 = (int) (x1 - arrowSize * Math.cos(angle - Math.PI / 6));
+            int ay1 = (int) (y1 - arrowSize * Math.sin(angle - Math.PI / 6));
+            int ax2 = (int) (x1 - arrowSize * Math.cos(angle + Math.PI / 6));
+            int ay2 = (int) (y1 - arrowSize * Math.sin(angle + Math.PI / 6));
+            g2.drawLine(x1, y1, ax1, ay1);
+            g2.drawLine(x1, y1, ax2, ay2);
         }
-        finally {
-            g2.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_OFF);
-        }
+    }
+
+    @Override
+    public boolean isDrawWithAntialiasing() {
+        return true;
     }
 
     @Override
