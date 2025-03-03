@@ -297,7 +297,7 @@ public class JIPipeDesktopCompartmentsGraphEditorUI extends AbstractJIPipeDeskto
             Set<JIPipeGraphNode> selectedOutputs = new HashSet<>();
             for (JIPipeDesktopGraphNodeUI ui : getSelection()) {
                 if(ui.getNode() instanceof JIPipeProjectCompartment) {
-                    selectedOutputs.addAll(((JIPipeProjectCompartment) ui.getNode()).getOutputNodes().values());
+                    selectedOutputs.add(ui.getNode());
                 }
             }
 

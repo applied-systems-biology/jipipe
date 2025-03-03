@@ -37,7 +37,11 @@ public class GraphNodeReferenceParameter {
         if(StringUtils.isNullOrEmpty(nodeUUID)) {
             return null;
         }
-        return project.getGraph().getNodeByUUID(UUID.fromString(nodeUUID));
+        JIPipeGraphNode node = project.getGraph().getNodeByUUID(UUID.fromString(nodeUUID));
+        if(node == null) {
+            node = project.getCompartments().get(UUID.fromString(nodeUUID));
+        }
+        return node;
     }
 
     public boolean isSet() {

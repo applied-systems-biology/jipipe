@@ -27,6 +27,7 @@ import org.hkijena.jipipe.api.nodes.JIPipeGraphNode;
 import org.hkijena.jipipe.api.parameters.JIPipeParameterAccess;
 import org.hkijena.jipipe.api.parameters.JIPipeParameterTree;
 import org.hkijena.jipipe.api.project.JIPipeProjectDirectories;
+import org.hkijena.jipipe.api.project.JIPipeProjectRunSetsConfiguration;
 import org.hkijena.jipipe.api.registries.JIPipeArtifactsRegistry;
 import org.hkijena.jipipe.api.run.JIPipeProjectRunSet;
 import org.hkijena.jipipe.api.run.JIPipeRunnable;
@@ -76,7 +77,7 @@ import static org.hkijena.jipipe.desktop.app.grapheditor.flavors.pipeline.JIPipe
 /**
  * UI that gives an overview of a pipeline (shows parameters, etc.)
  */
-public class JIPipeDesktopProjectOverviewUI extends JIPipeDesktopProjectWorkbenchPanel implements JIPipeRunnable.FinishedEventListener, JIPipeRunnable.InterruptedEventListener {
+public class JIPipeDesktopProjectOverviewUI extends JIPipeDesktopProjectWorkbenchPanel implements JIPipeRunnable.FinishedEventListener, JIPipeRunnable.InterruptedEventListener, JIPipeProjectRunSetsConfiguration.RunSetsModifiedEventListener {
 
     private final JIPipeDesktopFormPanel centerPanel;
     private final JTextPane descriptionReader;
@@ -108,6 +109,7 @@ public class JIPipeDesktopProjectOverviewUI extends JIPipeDesktopProjectWorkbenc
 
         // Run sets
         runSetsEditor = new JIPipeDesktopRunSetsListEditor(workbench);
+        workbench.getProject().getRunSetsConfiguration().getModifiedEventEmitter().subscribe(this);
 
         // Description
         descriptionReader = new JTextPane();
@@ -130,6 +132,10 @@ public class JIPipeDesktopProjectOverviewUI extends JIPipeDesktopProjectWorkbenc
 
         JIPipeRunnableQueue.getInstance().getFinishedEventEmitter().subscribe(this);
         JIPipeRunnableQueue.getInstance().getInterruptedEventEmitter().subscribe(this);
+    }
+
+    public JIPipeDesktopDockPanel getDockPanel() {
+        return dockPanel;
     }
 
     private void refreshAll() {
@@ -361,6 +367,11 @@ public class JIPipeDesktopProjectOverviewUI extends JIPipeDesktopProjectWorkbenc
 
 
         }
+    }
+
+    @Override
+    public void onRunSetsModified(JIPipeProjectRunSetsConfiguration.RunSetsModifiedEvent event) {
+        refreshCenterPanel();
     }
 
     private static class ArtifactUpgrade {
