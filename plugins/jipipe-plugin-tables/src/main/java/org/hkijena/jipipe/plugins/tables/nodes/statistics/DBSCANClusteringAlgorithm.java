@@ -44,33 +44,32 @@ import org.hkijena.jipipe.utils.StringUtils;
 import java.util.ArrayList;
 import java.util.List;
 
-@SetJIPipeDocumentation(name = "Apply K-Means clustering on rows", description = "Applies K-Means clustering on the table by extracting a feature vector per row and writes the cluster ID into a new column. " +
-        "Also supports Multi-K-means clustering by applying multiple trials.")
-@AddJIPipeCitation("Based on org.apache.commons.math3.ml.clustering.KMeansPlusPlusClusterer")
+@SetJIPipeDocumentation(name = "Apply DBSCAN clustering on rows", description = "Applies DBSCAN (density-based spatial clustering of applications with noise) clustering on the table by extracting a feature vector per row and writes the cluster ID into a new column.")
+@AddJIPipeCitation("Based on org.apache.commons.math3.ml.clustering.DBSCANClusterer")
 @ConfigureJIPipeNode(nodeTypeCategory = TableNodeTypeCategory.class, menuPath = "Clustering")
 @AddJIPipeInputSlot(value = ResultsTableData.class, name = "Input", create = true)
 @AddJIPipeOutputSlot(value = ResultsTableData.class, name = "Output", create = true)
 @AddJIPipeOutputSlot(value = ResultsTableData.class, name = "Centers", create = true, description = "The cluster centers")
-public class KMeansClusteringAlgorithm extends JIPipeSimpleIteratingAlgorithm {
+public class DBSCANClusteringAlgorithm extends JIPipeSimpleIteratingAlgorithm {
 
-    private int k = 3;
-    private int numTrials = 1;
+    private int epsilon = 0;
+    private int minNumPoints = 0;
     private TableColumnSourceExpressionParameter.List inputColumns = new TableColumnSourceExpressionParameter.List();
     private final OutputSettings outputSettings;
     private final ClusteringSettings clusteringSettings;
 
 
-    public KMeansClusteringAlgorithm(JIPipeNodeInfo info) {
+    public DBSCANClusteringAlgorithm(JIPipeNodeInfo info) {
         super(info);
         this.outputSettings = new OutputSettings();
         this.clusteringSettings = new ClusteringSettings();
         registerSubParameters(outputSettings, clusteringSettings);
     }
 
-    public KMeansClusteringAlgorithm(KMeansClusteringAlgorithm other) {
+    public DBSCANClusteringAlgorithm(DBSCANClusteringAlgorithm other) {
         super(other);
-        this.k = other.k;
-        this.numTrials = other.numTrials;
+        this.epsilon = other.epsilon;
+        this.minNumPoints = other.minNumPoints;
         this.inputColumns = new TableColumnSourceExpressionParameter.List(other.inputColumns);
 
         this.outputSettings = new OutputSettings(other.outputSettings);
@@ -95,21 +94,7 @@ public class KMeansClusteringAlgorithm extends JIPipeSimpleIteratingAlgorithm {
             }
         }
 
-        // Create the clusterer and the point array
-        Clusterer<IndexedDoublePoint> clusterer;
-        KMeansPlusPlusClusterer<IndexedDoublePoint> kMeansPlusPlusClusterer = new KMeansPlusPlusClusterer<>(k,
-                clusteringSettings.maxIterations,
-                clusteringSettings.distanceMeasure.getDistanceMeasure(),
-                new JDKRandomGenerator(),
-                clusteringSettings.emptyClusterStrategy);
-
-        if(numTrials <= 1) {
-            clusterer = kMeansPlusPlusClusterer;
-        }
-        else {
-            clusterer = new MultiKMeansPlusPlusClusterer<>(kMeansPlusPlusClusterer, numTrials);
-        }
-
+        // Create the point array
         List<IndexedDoublePoint> points = new ArrayList<>();
         for (int row = 0; row < tableData.getRowCount(); row++) {
             double[] arr = new double[inputColumns_.size()];
@@ -124,6 +109,14 @@ public class KMeansClusteringAlgorithm extends JIPipeSimpleIteratingAlgorithm {
             points.add(new IndexedDoublePoint(row, arr));
         }
 
+        // Create the clusterer
+        double epsilon_ = epsilon > 0 ? epsilon : estimateEpsilon(points);
+        int minNumPoints_ = minNumPoints > 0 ? minNumPoints : estimateMinPoints(points);
+
+        progressInfo.log("DBSCAN parameters: epsilon=" + epsilon_ + ", minNumPoints=" + minNumPoints_);
+
+        DBSCANClusterer<IndexedDoublePoint> clusterer = new DBSCANClusterer<>(epsilon_, minNumPoints_, clusteringSettings.distanceMeasure.getDistanceMeasure());
+
         // Table with cluster centers
         ResultsTableData clusterCentersTable = new ResultsTableData();
         for (TableColumnData columnData : inputColumns_) {
@@ -134,12 +127,11 @@ public class KMeansClusteringAlgorithm extends JIPipeSimpleIteratingAlgorithm {
         // Add columns
         int outputColumnClusterId = outputSettings.outputColumnClusterId.isEnabled() ? tableData.addNumericColumn(outputSettings.outputColumnClusterId.getContent()) : -1;
         int outputColumnClusterSize = outputSettings.outputColumnClusterSize.isEnabled() ? tableData.addNumericColumn(outputSettings.outputColumnClusterSize.getContent()) : -1;
-        int outputColumnDistanceToCenter = outputSettings.outputColumnDistanceToCenter.isEnabled() ? tableData.addNumericColumn(outputSettings.outputColumnDistanceToCenter.getContent()) : -1;
 
-        List<CentroidCluster<IndexedDoublePoint>> centroid = (List<CentroidCluster<IndexedDoublePoint>>) clusterer.cluster(points);
+        List<Cluster<IndexedDoublePoint>> centroid = clusterer.cluster(points);
         for (int i = 0; i < centroid.size(); i++) {
             final int clusterId = i + 1;
-            CentroidCluster<IndexedDoublePoint> cluster = centroid.get(i);
+            Cluster<IndexedDoublePoint> cluster = centroid.get(i);
 
             // Write into original
             for (IndexedDoublePoint point : cluster.getPoints()) {
@@ -149,18 +141,15 @@ public class KMeansClusteringAlgorithm extends JIPipeSimpleIteratingAlgorithm {
                 if(outputColumnClusterSize >= 0) {
                     tableData.setValueAt(cluster.getPoints().size(), point.getSourceRow(), outputColumnClusterSize);
                 }
-                if(outputColumnDistanceToCenter >= 0) {
-                    double distanceToCenter = clusteringSettings.distanceMeasure.getDistanceMeasure().compute(cluster.getCenter().getPoint(), point.getPoint());
-                    tableData.setValueAt(distanceToCenter, point.getSourceRow(), outputColumnDistanceToCenter);
-                }
             }
 
             // Write into centers
             {
                 int row = clusterCentersTable.addRow();
-                double[] point = cluster.getCenter().getPoint();
-                for (int j = 0; j < point.length; j++) {
-                    double v = point[j];
+                double[] center = IndexedDoublePoint.calculateCenter(cluster.getPoints());
+
+                for (int j = 0; j < center.length; j++) {
+                    double v = center[j];
                     clusterCentersTable.setValueAt(v, row, j);
                 }
 
@@ -171,6 +160,30 @@ public class KMeansClusteringAlgorithm extends JIPipeSimpleIteratingAlgorithm {
         // Output table
         iterationStep.addOutputData("Output", tableData, progressInfo);
         iterationStep.addOutputData("Centers", clusterCentersTable, progressInfo);
+    }
+
+    public static double estimateEpsilon(List<IndexedDoublePoint> points) {
+        if (points.isEmpty()) return 0.0;
+
+        double minX = Double.POSITIVE_INFINITY, maxX = Double.NEGATIVE_INFINITY;
+        double minY = Double.POSITIVE_INFINITY, maxY = Double.NEGATIVE_INFINITY;
+
+        for (IndexedDoublePoint point : points) {
+            double[] coords = point.getPoint();
+            minX = Math.min(minX, coords[0]);
+            maxX = Math.max(maxX, coords[0]);
+            minY = Math.min(minY, coords[1]);
+            maxY = Math.max(maxY, coords[1]);
+        }
+
+        // Bounding box diagonal as reference
+        double diagonal = Math.sqrt(Math.pow(maxX - minX, 2) + Math.pow(maxY - minY, 2));
+        return diagonal * 0.05; // 5% of diagonal as epsilon
+    }
+
+    public static int estimateMinPoints(List<IndexedDoublePoint> points) {
+        int dimensions = points.get(0).getPoint().length;
+        return Math.max(3, dimensions + 1); // Dimensionality + 1 rule
     }
 
     @Override
@@ -197,26 +210,26 @@ public class KMeansClusteringAlgorithm extends JIPipeSimpleIteratingAlgorithm {
         return clusteringSettings;
     }
 
-    @SetJIPipeDocumentation(name = "K", description = "The number of clusters to split the data into")
-    @JIPipeParameter(value = "k", important = true)
-    public int getK() {
-        return k;
+    @SetJIPipeDocumentation(name = "Epsilon", description = "Maximum radius of the neighborhood to be considered. If set to zero or negative, it will be roughly estimated as 5% of the dataset’s bounding box diagonal. We recommend to tune this value manually.")
+    @JIPipeParameter(value = "epsilon", important = true)
+    public int getEpsilon() {
+        return epsilon;
     }
 
-    @JIPipeParameter("k")
-    public void setK(int k) {
-        this.k = k;
+    @JIPipeParameter("epsilon")
+    public void setEpsilon(int epsilon) {
+        this.epsilon = epsilon;
     }
 
-    @SetJIPipeDocumentation(name = "Number of trials", description = "If larger than one, use the Multi-K-Means algorithm that repeats clustering multiple times and returns the one with the lowest sum of variances over all clusters.")
-    @JIPipeParameter(value = "num-trials", important = true)
-    public int getNumTrials() {
-        return numTrials;
+    @SetJIPipeDocumentation(name = "Minimum number of points", description = "Minimum number of points needed for a cluster. If set to zero or negative, it will be roughly estimated as the number of dimensions + 1. We recommend to tune this value manually.")
+    @JIPipeParameter(value = "min-num-points", important = true)
+    public int getMinNumPoints() {
+        return minNumPoints;
     }
 
-    @JIPipeParameter("num-trials")
-    public void setNumTrials(int numTrials) {
-        this.numTrials = numTrials;
+    @JIPipeParameter("min-num-points")
+    public void setMinNumPoints(int minNumPoints) {
+        this.minNumPoints = minNumPoints;
     }
 
     @SetJIPipeDocumentation(name = "Input columns", description = "The list of columns that will be used to create the points. Please note that string columns and NA/infinite values are automatically replaced with zeroes.")
@@ -233,7 +246,6 @@ public class KMeansClusteringAlgorithm extends JIPipeSimpleIteratingAlgorithm {
     public static class ClusteringSettings extends AbstractJIPipeParameterCollection {
         private int maxIterations = -1;
         private DistanceMeasures distanceMeasure = DistanceMeasures.Euclidean;
-        private KMeansPlusPlusClusterer.EmptyClusterStrategy emptyClusterStrategy = KMeansPlusPlusClusterer.EmptyClusterStrategy.LARGEST_VARIANCE;
 
         public ClusteringSettings() {
         }
@@ -241,7 +253,6 @@ public class KMeansClusteringAlgorithm extends JIPipeSimpleIteratingAlgorithm {
         public ClusteringSettings(ClusteringSettings other) {
             this.maxIterations = other.maxIterations;
             this.distanceMeasure = other.distanceMeasure;
-            this.emptyClusterStrategy = other.emptyClusterStrategy;
         }
 
         @SetJIPipeDocumentation(name = "Maximum iterations", description = "The maximum number of iterations to run the algorithm for. If negative, no maximum will be used.")
@@ -265,25 +276,12 @@ public class KMeansClusteringAlgorithm extends JIPipeSimpleIteratingAlgorithm {
         public void setDistanceMeasure(DistanceMeasures distanceMeasure) {
             this.distanceMeasure = distanceMeasure;
         }
-
-        @SetJIPipeDocumentation(name = "Empty cluster strategy", description = "Strategy to use for handling empty clusters that may appear during algorithm iterations")
-        @JIPipeParameter("empty-cluster-strategy")
-        public KMeansPlusPlusClusterer.EmptyClusterStrategy getEmptyClusterStrategy() {
-            return emptyClusterStrategy;
-        }
-
-        @JIPipeParameter("empty-cluster-strategy")
-        public void setEmptyClusterStrategy(KMeansPlusPlusClusterer.EmptyClusterStrategy emptyClusterStrategy) {
-            this.emptyClusterStrategy = emptyClusterStrategy;
-        }
-
     }
 
     public static class OutputSettings extends AbstractJIPipeParameterCollection {
 
         private OptionalStringParameter outputColumnClusterId = new OptionalStringParameter("cluster_id", true);
         private OptionalStringParameter outputColumnClusterSize = new OptionalStringParameter("cluster_size", true);
-        private OptionalStringParameter outputColumnDistanceToCenter = new OptionalStringParameter("distance_to_cluster_center", true);
 
         public OutputSettings() {
 
@@ -292,7 +290,6 @@ public class KMeansClusteringAlgorithm extends JIPipeSimpleIteratingAlgorithm {
         public OutputSettings(OutputSettings other) {
             this.outputColumnClusterId = new OptionalStringParameter(other.outputColumnClusterId);
             this.outputColumnClusterSize = new OptionalStringParameter(other.outputColumnClusterSize);
-            this.outputColumnDistanceToCenter = new OptionalStringParameter(other.outputColumnDistanceToCenter);
         }
 
         @SetJIPipeDocumentation(name = "Cluster ID column", description = "The column where the cluster ID will be written to. The first index will be 1.")
@@ -317,18 +314,6 @@ public class KMeansClusteringAlgorithm extends JIPipeSimpleIteratingAlgorithm {
         @JIPipeParameter("output-column-cluster-size")
         public void setOutputColumnClusterSize(OptionalStringParameter outputColumnClusterSize) {
             this.outputColumnClusterSize = outputColumnClusterSize;
-        }
-
-        @SetJIPipeDocumentation(name = "Distance to cluster center column", description = "The column where the distance to the cluster center will be written to")
-        @JIPipeParameter("output-column-distance-to-cluster-center")
-        @StringParameterSettings(monospace = true)
-        public OptionalStringParameter getOutputColumnDistanceToCenter() {
-            return outputColumnDistanceToCenter;
-        }
-
-        @JIPipeParameter("output-column-distance-to-cluster-center")
-        public void setOutputColumnDistanceToCenter(OptionalStringParameter outputColumnDistanceToCenter) {
-            this.outputColumnDistanceToCenter = outputColumnDistanceToCenter;
         }
     }
 }

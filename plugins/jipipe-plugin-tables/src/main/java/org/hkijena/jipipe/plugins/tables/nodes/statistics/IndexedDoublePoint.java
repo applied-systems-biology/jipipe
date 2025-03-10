@@ -18,6 +18,7 @@ import org.apache.commons.math3.ml.clustering.DoublePoint;
 
 import java.io.Serializable;
 import java.util.Arrays;
+import java.util.List;
 
 public class IndexedDoublePoint implements Clusterable, Serializable {
 
@@ -56,6 +57,27 @@ public class IndexedDoublePoint implements Clusterable, Serializable {
         for ( int i = 0; i < point.length; i++) {
             this.point[i] = point[i];
         }
+    }
+
+    public static double[] calculateCenter(List<IndexedDoublePoint> clusterPoints) {
+        int numPoints = clusterPoints.size();
+
+        int dimension = clusterPoints.get(0).getPoint().length;
+        double[] centroid = new double[dimension];
+
+        for (IndexedDoublePoint point : clusterPoints) {
+            double[] coords = point.getPoint();
+            for (int i = 0; i < dimension; i++) {
+                centroid[i] += coords[i];
+            }
+        }
+
+        // Compute the mean for each dimension
+        for (int i = 0; i < dimension; i++) {
+            centroid[i] /= numPoints;
+        }
+
+        return centroid;
     }
 
     public int getSourceRow() {
