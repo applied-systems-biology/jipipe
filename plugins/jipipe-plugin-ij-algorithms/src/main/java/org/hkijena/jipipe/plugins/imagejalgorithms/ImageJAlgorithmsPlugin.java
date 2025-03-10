@@ -937,6 +937,7 @@ public class ImageJAlgorithmsPlugin extends JIPipePrepackagedDefaultJavaPlugin {
         registerNodeType("ij1-roi-rotate", RotateRoiAlgorithm.class, UIUtils.getIconURLFromResources("actions/transform-rotate.png"));
         registerNodeType("ij1-roi-set-properties-from-annotation", ChangeRoiPropertiesFromAnnotationsAlgorithm.class, UIUtils.getIconURLFromResources("actions/document-edit.png"));
         registerNodeType("ij1-roi-set-properties-from-expressions", ChangeRoiPropertiesFromExpressionsAlgorithm.class, UIUtils.getIconURLFromResources("actions/document-edit.png"));
+        registerNodeType("ij1-roi-set-properties-from-table", ChangeRoiPropertiesFromTableAlgorithm.class, UIUtils.getIconURLFromResources("actions/document-edit.png"));
         registerNodeType("ij1-roi-to-rgb-unreferenced", UnreferencedRoiToRGBAlgorithm.class, UIUtils.getIconURLFromResources("actions/color-management.png"));
         registerNodeType("ij1-roi-to-rgb", RoiToRGBAlgorithm.class, UIUtils.getIconURLFromResources("actions/color-management.png"));
         registerNodeType("ij1-roi-filter-statistics-script", FilterRoiByStatisticsScriptAlgorithm.class, UIUtils.getIconURLFromResources("apps/python.png"));
