@@ -49,6 +49,7 @@ import org.hkijena.jipipe.plugins.tables.nodes.split.SplitTableIntoColumnsAlgori
 import org.hkijena.jipipe.plugins.tables.nodes.split.SplitTableIntoRowsAlgorithm;
 import org.hkijena.jipipe.plugins.tables.nodes.statistics.DBSCANClusteringAlgorithm;
 import org.hkijena.jipipe.plugins.tables.nodes.statistics.DistanceMeasures;
+import org.hkijena.jipipe.plugins.tables.nodes.statistics.FuzzyKMeansClusteringAlgorithm;
 import org.hkijena.jipipe.plugins.tables.nodes.statistics.KMeansClusteringAlgorithm;
 import org.hkijena.jipipe.plugins.tables.nodes.transform.*;
 import org.hkijena.jipipe.plugins.tables.operations.converting.*;
@@ -216,6 +217,7 @@ public class TablesPlugin extends JIPipePrepackagedDefaultJavaPlugin {
         registerNodeType("table-convert-to-histogram-2", TableToHistogram2Algorithm.class, UIUtils.getIconURLFromResources("actions/statistics.png"));
         registerNodeType("table-rows-kmeans-clustering", KMeansClusteringAlgorithm.class, UIUtils.getIconURLFromResources("actions/statistics.png"));
         registerNodeType("table-rows-dbscan-clustering", DBSCANClusteringAlgorithm.class, UIUtils.getIconURLFromResources("actions/statistics.png"));
+        registerNodeType("table-rows-fuzzy-kmeans-clustering", FuzzyKMeansClusteringAlgorithm.class, UIUtils.getIconURLFromResources("actions/statistics.png"));
 
         // Parameters
         registerEnumParameterType("table-statistics-distance-measures", DistanceMeasures.class, "Distance measure", "A distance measure (for N-dimensional points)");
