@@ -87,8 +87,9 @@ public class ExpressionPlugin extends JIPipePrepackagedDefaultJavaPlugin {
                 "A mathematical or conditional logic expression");
         registerParameterType("table-column-source",
                 TableColumnSourceExpressionParameter.class,
-                TableColumnSourceExpressionParameter::new,
-                p -> new TableColumnSourceExpressionParameter((TableColumnSourceExpressionParameter) p),
+                TableColumnSourceExpressionParameter.List.class,
+                null,
+                null,
                 "Column source",
                 "Defines a column source",
                 null);

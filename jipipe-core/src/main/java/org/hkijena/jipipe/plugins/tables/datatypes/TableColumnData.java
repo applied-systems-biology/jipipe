@@ -130,7 +130,7 @@ public interface TableColumnData extends JIPipeData {
     String getRowAsString(int row);
 
     /**
-     * Returns the data entry as string
+     * Returns the data entry as double
      *
      * @param row the row
      * @return the data

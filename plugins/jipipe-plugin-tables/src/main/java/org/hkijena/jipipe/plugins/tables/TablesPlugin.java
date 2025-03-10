@@ -14,6 +14,7 @@
 package org.hkijena.jipipe.plugins.tables;
 
 import org.apache.commons.compress.utils.Sets;
+import org.apache.commons.math3.ml.clustering.KMeansPlusPlusClusterer;
 import org.hkijena.jipipe.JIPipe;
 import org.hkijena.jipipe.JIPipeDependency;
 import org.hkijena.jipipe.JIPipeJavaPlugin;
@@ -46,6 +47,8 @@ import org.hkijena.jipipe.plugins.tables.nodes.rows.SortTableRowsAlgorithm;
 import org.hkijena.jipipe.plugins.tables.nodes.split.SplitTableByColumnsAlgorithm;
 import org.hkijena.jipipe.plugins.tables.nodes.split.SplitTableIntoColumnsAlgorithm;
 import org.hkijena.jipipe.plugins.tables.nodes.split.SplitTableIntoRowsAlgorithm;
+import org.hkijena.jipipe.plugins.tables.nodes.statistics.DistanceMeasures;
+import org.hkijena.jipipe.plugins.tables.nodes.statistics.KMeansClusteringAlgorithm;
 import org.hkijena.jipipe.plugins.tables.nodes.transform.*;
 import org.hkijena.jipipe.plugins.tables.operations.converting.*;
 import org.hkijena.jipipe.plugins.tables.operations.integrating.*;
@@ -210,6 +213,11 @@ public class TablesPlugin extends JIPipePrepackagedDefaultJavaPlugin {
         registerNodeType("table-convert-to-histogram-key-value", ApplyExpressionPerLabelAlgorithm.class, UIUtils.getIconURLFromResources("actions/statistics.png"));
         registerNodeType("table-convert-to-histogram", TableToHistogramAlgorithm.class, UIUtils.getIconURLFromResources("actions/statistics.png"));
         registerNodeType("table-convert-to-histogram-2", TableToHistogram2Algorithm.class, UIUtils.getIconURLFromResources("actions/statistics.png"));
+        registerNodeType("table-rows-kmeans-clustering", KMeansClusteringAlgorithm.class, UIUtils.getIconURLFromResources("actions/statistics.png"));
+
+        // Parameters
+        registerEnumParameterType("table-statistics-distance-measures", DistanceMeasures.class, "Distance measure", "A distance measure (for N-dimensional points)");
+        registerEnumParameterType("table-rows-kmeans-clustering:empty-cluster-strategy", KMeansPlusPlusClusterer.EmptyClusterStrategy.class, "K-Means empty cluster strategy", "An empty cluster strategy");
     }
 
     private void registerParameters() {

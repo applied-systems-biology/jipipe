@@ -23,6 +23,7 @@ import org.hkijena.jipipe.api.validation.JIPipeValidationReportEntry;
 import org.hkijena.jipipe.api.validation.JIPipeValidationReportEntryLevel;
 import org.hkijena.jipipe.api.validation.JIPipeValidationRuntimeException;
 import org.hkijena.jipipe.api.validation.contexts.UnspecifiedValidationReportContext;
+import org.hkijena.jipipe.plugins.parameters.api.collections.ListParameter;
 import org.hkijena.jipipe.plugins.parameters.api.pairs.PairParameter;
 import org.hkijena.jipipe.plugins.parameters.api.pairs.PairParameterSettings;
 import org.hkijena.jipipe.plugins.tables.datatypes.DoubleArrayTableColumnData;
@@ -193,6 +194,19 @@ public class TableColumnSourceExpressionParameter extends PairParameter<TableCol
         @Override
         public Set<JIPipeExpressionParameterVariableInfo> getVariables(JIPipeWorkbench workbench, JIPipeParameterTree parameterTree, JIPipeParameterAccess parameterAccess) {
             return VARIABLES;
+        }
+    }
+
+    public static class List extends ListParameter<TableColumnSourceExpressionParameter> {
+        public List() {
+            super(TableColumnSourceExpressionParameter.class);
+        }
+
+        public List(List other) {
+            super(TableColumnSourceExpressionParameter.class);
+            for (TableColumnSourceExpressionParameter parameter : other) {
+                add(new TableColumnSourceExpressionParameter(parameter));
+            }
         }
     }
 }
