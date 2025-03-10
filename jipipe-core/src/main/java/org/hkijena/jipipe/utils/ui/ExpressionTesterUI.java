@@ -35,8 +35,8 @@ import org.hkijena.jipipe.utils.json.JsonUtils;
 
 import javax.swing.*;
 import java.awt.*;
-import java.util.List;
 import java.util.*;
+import java.util.List;
 
 /**
  * A developer tool to test {@link JIPipeExpressionEvaluator}

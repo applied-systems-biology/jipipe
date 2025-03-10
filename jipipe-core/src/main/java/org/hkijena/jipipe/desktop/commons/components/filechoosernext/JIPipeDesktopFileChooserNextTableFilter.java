@@ -20,13 +20,13 @@ public class JIPipeDesktopFileChooserNextTableFilter extends RowFilter<TableMode
     }
 
     private static FileNameExtensionFilter processExtensionFilter(FileNameExtensionFilter extensionFilter) {
-        if(extensionFilter == null) {
+        if (extensionFilter == null) {
             return null;
         }
-        if(extensionFilter.getExtensions().length == 0) {
+        if (extensionFilter.getExtensions().length == 0) {
             return null;
         }
-        if(extensionFilter.getExtensions()[0].equals("*")) {
+        if (extensionFilter.getExtensions()[0].equals("*")) {
             return null;
         }
         return extensionFilter;
@@ -37,20 +37,20 @@ public class JIPipeDesktopFileChooserNextTableFilter extends RowFilter<TableMode
         Path path = (Path) entry.getValue(0);
         String fileNameLc = path.getFileName().toString().toLowerCase();
 
-        if(extensionFilter != null && !Files.isDirectory(path)) {
+        if (extensionFilter != null && !Files.isDirectory(path)) {
             boolean found = false;
             for (String extension : extensionFilter.getExtensions()) {
-                if(fileNameLc.endsWith("." + extension.toLowerCase())) {
+                if (fileNameLc.endsWith("." + extension.toLowerCase())) {
                     found = true;
                     break;
                 }
             }
-            if(!found) {
+            if (!found) {
                 return false;
             }
         }
 
-        if(!StringUtils.isNullOrEmpty(textFilter)) {
+        if (!StringUtils.isNullOrEmpty(textFilter)) {
             if (!fileNameLc.contains(textFilter.toLowerCase())) {
                 return false;
             }

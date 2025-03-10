@@ -21,8 +21,8 @@ import org.hkijena.jipipe.utils.UIUtils;
 import javax.swing.*;
 import javax.swing.border.Border;
 import java.awt.*;
-import java.util.List;
 import java.util.*;
+import java.util.List;
 import java.util.function.Consumer;
 
 /**
@@ -92,7 +92,7 @@ public class JIPipeDesktopRibbon extends JPanel {
     public void rebuildRibbon() {
         tabPane.closeAllTabs(true);
         removeAll();
-        if(tasks.size() > 1) {
+        if (tasks.size() > 1) {
             for (Task task : tasks) {
                 if (task.isVisible()) {
                     JPanel taskPanel = new JPanel(new GridBagLayout());
@@ -102,8 +102,7 @@ public class JIPipeDesktopRibbon extends JPanel {
                 }
             }
             add(tabPane, BorderLayout.CENTER);
-        }
-        else {
+        } else {
             for (Task task : tasks) {
                 JPanel taskPanel = new JPanel(new GridBagLayout());
                 taskPanel.setBackground(UIManager.getColor("Table.background"));

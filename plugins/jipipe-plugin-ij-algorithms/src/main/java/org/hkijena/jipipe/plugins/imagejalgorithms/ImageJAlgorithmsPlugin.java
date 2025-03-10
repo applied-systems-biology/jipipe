@@ -26,11 +26,8 @@ import inra.ijpb.morphology.directional.DirectionalFilter;
 import org.hkijena.jipipe.*;
 import org.hkijena.jipipe.api.JIPipeAuthorMetadata;
 import org.hkijena.jipipe.api.JIPipeProgressInfo;
-import org.hkijena.jipipe.api.data.JIPipeDataSlotInfo;
-import org.hkijena.jipipe.api.data.JIPipeDefaultMutableSlotConfiguration;
 import org.hkijena.jipipe.plugins.JIPipePrepackagedDefaultJavaPlugin;
 import org.hkijena.jipipe.plugins.core.CorePlugin;
-import org.hkijena.jipipe.plugins.expressions.JIPipeExpressionParameter;
 import org.hkijena.jipipe.plugins.forms.FormsPlugin;
 import org.hkijena.jipipe.plugins.imagejalgorithms.nodes.MacroWrapperAlgorithm;
 import org.hkijena.jipipe.plugins.imagejalgorithms.nodes.analyze.*;
@@ -671,7 +668,7 @@ public class ImageJAlgorithmsPlugin extends JIPipePrepackagedDefaultJavaPlugin {
         // Register examples
         registerNodeExample(FastImageArithmeticsAlgorithm.class, "Add images", node -> node.configureTwoInputExample("I1 + I2"));
         registerNodeExample(FastImageArithmeticsAlgorithm.class, "Subtract images", node -> node.configureTwoInputExample("I1 - I2"));
-        registerNodeExample(FastImageArithmeticsAlgorithm.class, "Multiply images", node ->node.configureTwoInputExample("I1 * I2"));
+        registerNodeExample(FastImageArithmeticsAlgorithm.class, "Multiply images", node -> node.configureTwoInputExample("I1 * I2"));
         registerNodeExample(FastImageArithmeticsAlgorithm.class, "Divide images", node -> node.configureTwoInputExample("I1 / I2"));
         registerNodeExample(FastImageArithmeticsAlgorithm.class, "Image difference", node -> node.configureTwoInputExample("ABS(I1 - I2)"));
         registerNodeExample(FastImageArithmeticsAlgorithm.class, "Pixel-wise min", node -> node.configureTwoInputExample("MIN(I1, I2)"));

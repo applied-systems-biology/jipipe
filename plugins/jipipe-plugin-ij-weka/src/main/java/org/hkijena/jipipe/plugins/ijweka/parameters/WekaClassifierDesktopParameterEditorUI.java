@@ -31,10 +31,6 @@ public class WekaClassifierDesktopParameterEditorUI extends JIPipeDesktopParamet
     private JButton currentlyDisplayed;
     private boolean isReloading = false;
 
-    /**
-     * @param workbench       workbench
-     * @param parameterAccess the parameter
-     */
     public WekaClassifierDesktopParameterEditorUI(InitializationParameters parameters) {
         super(parameters);
         initialize();

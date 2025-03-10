@@ -35,11 +35,11 @@ public class JIPipeDesktopFileChooserNextPathTypeMetadata implements Predicate<P
 
     @Override
     public boolean test(Path path) {
-        if(!Files.isDirectory(path) && pathType == PathType.DirectoriesOnly) {
+        if (!Files.isDirectory(path) && pathType == PathType.DirectoriesOnly) {
             return false;
         }
         for (String extension : extensions) {
-            if(path.getFileName().toString().toLowerCase().endsWith(extension.toLowerCase())) {
+            if (path.getFileName().toString().toLowerCase().endsWith(extension.toLowerCase())) {
                 return true;
             }
         }

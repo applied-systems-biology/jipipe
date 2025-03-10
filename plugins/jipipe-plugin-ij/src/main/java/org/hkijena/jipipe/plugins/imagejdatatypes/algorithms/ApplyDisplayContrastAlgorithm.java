@@ -44,13 +44,6 @@ public class ApplyDisplayContrastAlgorithm extends JIPipeSimpleIteratingAlgorith
         super(other);
     }
 
-    @Override
-    protected void runIteration(JIPipeSingleIterationStep iterationStep, JIPipeIterationContext iterationContext, JIPipeGraphNodeRunContext runContext, JIPipeProgressInfo progressInfo) {
-        ImagePlus imagePlus = iterationStep.getInputData(getFirstInputSlot(), ImagePlusData.class, progressInfo).getDuplicateImage();
-        apply(imagePlus, imagePlus.getProcessor());
-        iterationStep.addOutputData(getFirstOutputSlot(), new ImagePlusData(imagePlus), progressInfo);
-    }
-
     public static void apply(ImagePlus imp, ImageProcessor ip) {
         boolean RGBImage = imp.getType() == ImagePlus.COLOR_RGB;
         int bitDepth = imp.getBitDepth();
@@ -168,5 +161,12 @@ public class ApplyDisplayContrastAlgorithm extends JIPipeSimpleIteratingAlgorith
         if (bitDepth == 16 || bitDepth == 32) {
             imp.resetDisplayRange();
         }
+    }
+
+    @Override
+    protected void runIteration(JIPipeSingleIterationStep iterationStep, JIPipeIterationContext iterationContext, JIPipeGraphNodeRunContext runContext, JIPipeProgressInfo progressInfo) {
+        ImagePlus imagePlus = iterationStep.getInputData(getFirstInputSlot(), ImagePlusData.class, progressInfo).getDuplicateImage();
+        apply(imagePlus, imagePlus.getProcessor());
+        iterationStep.addOutputData(getFirstOutputSlot(), new ImagePlusData(imagePlus), progressInfo);
     }
 }

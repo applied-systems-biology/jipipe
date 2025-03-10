@@ -30,10 +30,6 @@ public class StringOrDoubleDesktopParameterEditorUI extends JIPipeDesktopParamet
     private JToggleButton doubleToggle;
     private JToggleButton stringToggle;
 
-    /**
-     * @param workbench       workbench
-     * @param parameterAccess the parameter
-     */
     public StringOrDoubleDesktopParameterEditorUI(InitializationParameters parameters) {
         super(parameters);
         setLayout(new BoxLayout(this, BoxLayout.X_AXIS));

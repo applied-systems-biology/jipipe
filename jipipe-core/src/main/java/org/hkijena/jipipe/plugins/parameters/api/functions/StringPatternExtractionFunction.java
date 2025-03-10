@@ -48,7 +48,7 @@ public class StringPatternExtractionFunction extends FunctionParameter<String, S
         public List() {
             super(StringPatternExtractionFunction.class);
         }
-        
+
         public List(List other) {
             super(StringPatternExtractionFunction.class);
             for (StringPatternExtractionFunction function : other) {

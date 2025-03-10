@@ -196,8 +196,7 @@ public class JIPipeApplicationSettingsRegistry {
             }
         } catch (Exception e) {
             e.printStackTrace();
-        }
-        finally {
+        } finally {
             changedEventEmitter.emit(new ChangedEvent(this));
         }
     }

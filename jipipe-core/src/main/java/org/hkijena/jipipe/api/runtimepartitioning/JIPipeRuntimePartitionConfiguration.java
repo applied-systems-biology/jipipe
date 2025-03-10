@@ -23,8 +23,8 @@ import org.hkijena.jipipe.utils.UIUtils;
 
 import javax.swing.*;
 import java.awt.*;
-import java.util.List;
 import java.util.*;
+import java.util.List;
 
 public class JIPipeRuntimePartitionConfiguration {
     private JIPipeRuntimePartition defaultRuntimePartition = new JIPipeRuntimePartition();

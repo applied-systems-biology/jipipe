@@ -24,8 +24,8 @@ import org.hkijena.jipipe.plugins.parameters.library.markup.HTMLText;
 
 import javax.swing.*;
 import java.awt.*;
-import java.util.List;
 import java.util.*;
+import java.util.List;
 
 public class ExistingCompartmentDatabaseEntry implements JIPipeNodeDatabaseEntry {
     private final String id;

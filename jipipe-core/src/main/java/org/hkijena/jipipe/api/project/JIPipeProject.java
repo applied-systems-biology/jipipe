@@ -49,7 +49,6 @@ import org.hkijena.jipipe.api.validation.contexts.GraphNodeValidationReportConte
 import org.hkijena.jipipe.api.validation.contexts.UnspecifiedValidationReportContext;
 import org.hkijena.jipipe.plugins.parameters.library.colors.OptionalColorParameter;
 import org.hkijena.jipipe.plugins.parameters.library.markup.HTMLText;
-import org.hkijena.jipipe.plugins.parameters.library.markup.MarkdownText;
 import org.hkijena.jipipe.plugins.settings.JIPipeDataStorageProjectSettings;
 import org.hkijena.jipipe.plugins.settings.JIPipeProjectAuthorsApplicationSettings;
 import org.hkijena.jipipe.plugins.settings.JIPipeRuntimeApplicationSettings;
@@ -62,8 +61,8 @@ import java.io.OutputStream;
 import java.io.Writer;
 import java.nio.file.Files;
 import java.nio.file.Path;
-import java.util.List;
 import java.util.*;
+import java.util.List;
 
 /**
  * A JIPipe project.
@@ -355,7 +354,7 @@ public class JIPipeProject implements JIPipeValidatable {
     public void saveProject(Path fileName) throws IOException {
 
         // Add authors from global list
-        if(metadata.isAutoAddAuthors()) {
+        if (metadata.isAutoAddAuthors()) {
             addAuthorsFromGlobalList();
         }
 
@@ -365,9 +364,9 @@ public class JIPipeProject implements JIPipeValidatable {
 
     private void addAuthorsFromGlobalList() {
         JIPipeProjectAuthorsApplicationSettings settings = JIPipeProjectAuthorsApplicationSettings.getInstance();
-        if(settings.isAutomaticallyAddToProjects()) {
+        if (settings.isAutomaticallyAddToProjects()) {
             for (OptionalJIPipeAuthorMetadata projectAuthor_ : settings.getProjectAuthors()) {
-                if(projectAuthor_.isEnabled()) {
+                if (projectAuthor_.isEnabled()) {
                     JIPipeAuthorMetadata projectAuthor = projectAuthor_.getContent();
                     Optional<JIPipeAuthorMetadata> existing = metadata.getAuthors().stream().filter(a -> a.fuzzyEquals(projectAuthor)).findFirst();
                     if (existing.isPresent()) {
@@ -889,7 +888,7 @@ public class JIPipeProject implements JIPipeValidatable {
             }
 
             // Load run sets
-            if(jsonNode.has("run-sets")) {
+            if (jsonNode.has("run-sets")) {
                 JsonNode sub = jsonNode.get("run-sets");
                 this.runSetsConfiguration = JsonUtils.getObjectMapper().convertValue(sub, JIPipeProjectRunSetsConfiguration.class);
             }

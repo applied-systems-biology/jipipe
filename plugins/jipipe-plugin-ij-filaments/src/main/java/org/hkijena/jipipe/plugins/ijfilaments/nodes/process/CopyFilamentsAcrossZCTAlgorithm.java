@@ -52,9 +52,7 @@ import org.hkijena.jipipe.plugins.imagejdatatypes.util.ImagePlusPropertiesExpres
 import org.hkijena.jipipe.plugins.parameters.library.collections.ParameterCollectionList;
 import org.hkijena.jipipe.plugins.parameters.library.collections.ParameterCollectionListTemplate;
 
-import java.awt.*;
 import java.util.*;
-import java.util.List;
 
 @SetJIPipeDocumentation(name = "Copy filaments across Z/C/T", description = "Copies a filament graph to other Z locations, channels, and frames. The newly created vertices can be optionally connected to the neighboring source vertex.")
 @ConfigureJIPipeNode(nodeTypeCategory = FilamentsNodeTypeCategory.class, menuPath = "Process")
@@ -63,14 +61,14 @@ import java.util.List;
 @AddJIPipeOutputSlot(value = Filaments3DGraphData.class, name = "Output", create = true)
 public class CopyFilamentsAcrossZCTAlgorithm extends JIPipeIteratingAlgorithm {
 
+    private final VertexMaskParameter vertexMask;
+    private final NewEdgesSettings connectOverDimensionLinearSettings;
+    private final NewEdgesSettings connectNewVerticesToStartSettings;
     private HyperstackDimension dimension = HyperstackDimension.Frame;
     private JIPipeExpressionParameter locations = new JIPipeExpressionParameter("MAKE_SEQUENCE(0, num_t)");
-    private final VertexMaskParameter vertexMask;
     private boolean copyOriginalEdges = true;
     private boolean connectOverDimensionLinear = false;
-    private final NewEdgesSettings connectOverDimensionLinearSettings;
     private boolean connectNewVerticesToStart = false;
-    private final NewEdgesSettings connectNewVerticesToStartSettings;
 
     public CopyFilamentsAcrossZCTAlgorithm(JIPipeNodeInfo info) {
         super(info);
@@ -151,13 +149,13 @@ public class CopyFilamentsAcrossZCTAlgorithm extends JIPipeIteratingAlgorithm {
         }
 
         // Connect new vertices to their start vertices
-        if(connectNewVerticesToStart) {
+        if (connectNewVerticesToStart) {
             progressInfo.log("Connecting start vertices directly to new vertices");
             connectNewVerticesToStart(startVerticesList, verticesForLocationsMap, outputGraph, variablesMap);
         }
 
         // Create linear connection over related vertices
-        if(connectOverDimensionLinear) {
+        if (connectOverDimensionLinear) {
             progressInfo.log("Creating linear connections");
             connectVerticesLinear(startVerticesList, verticesForLocationsMap, outputGraph, variablesMap);
         }
@@ -170,7 +168,7 @@ public class CopyFilamentsAcrossZCTAlgorithm extends JIPipeIteratingAlgorithm {
         List<FilamentEdgeMetadataEntry> metadataEntries = connectOverDimensionLinearSettings.getMetadata().mapToCollection(FilamentEdgeMetadataEntry.class);
         for (FilamentVertex startVertex : startVerticesList) {
             TDoubleObjectMap<FilamentVertex> startVertexAtLocations = verticesForLocationsMap.get(startVertex);
-            if(startVertexAtLocations == null) {
+            if (startVertexAtLocations == null) {
                 continue;
             }
 
@@ -183,8 +181,8 @@ public class CopyFilamentsAcrossZCTAlgorithm extends JIPipeIteratingAlgorithm {
 
                 // Filter (if enabled)
                 FilamentEdgeVariablesInfo.writeToVariables(outputGraph, current, next, variablesMap, "");
-                if(connectOverDimensionLinearSettings.filter.isEnabled()) {
-                    if(!connectOverDimensionLinearSettings.filter.getContent().evaluateToBoolean(variablesMap)) {
+                if (connectOverDimensionLinearSettings.filter.isEnabled()) {
+                    if (!connectOverDimensionLinearSettings.filter.getContent().evaluateToBoolean(variablesMap)) {
                         continue;
                     }
                 }
@@ -205,18 +203,18 @@ public class CopyFilamentsAcrossZCTAlgorithm extends JIPipeIteratingAlgorithm {
         List<FilamentEdgeMetadataEntry> metadataEntries = connectNewVerticesToStartSettings.getMetadata().mapToCollection(FilamentEdgeMetadataEntry.class);
         for (FilamentVertex startVertex : startVerticesList) {
             TDoubleObjectMap<FilamentVertex> startVertexAtLocations = verticesForLocationsMap.get(startVertex);
-            if(startVertexAtLocations == null) {
+            if (startVertexAtLocations == null) {
                 continue;
             }
             for (FilamentVertex newVertex : startVertexAtLocations.valueCollection()) {
-                if(newVertex == startVertex) {
+                if (newVertex == startVertex) {
                     continue;
                 }
 
                 // Filter (if enabled)
                 FilamentEdgeVariablesInfo.writeToVariables(outputGraph, startVertex, newVertex, variablesMap, "");
-                if(connectNewVerticesToStartSettings.filter.isEnabled()) {
-                    if(!connectNewVerticesToStartSettings.filter.getContent().evaluateToBoolean(variablesMap)) {
+                if (connectNewVerticesToStartSettings.filter.isEnabled()) {
+                    if (!connectNewVerticesToStartSettings.filter.getContent().evaluateToBoolean(variablesMap)) {
                         continue;
                     }
                 }
@@ -237,7 +235,7 @@ public class CopyFilamentsAcrossZCTAlgorithm extends JIPipeIteratingAlgorithm {
         for (int i = 0; i < startVerticesList.size(); i++) {
             final FilamentVertex startVertex = startVerticesList.get(i);
             TDoubleObjectMap<FilamentVertex> startVertexAtLocations = verticesForLocationsMap.get(startVertex);
-            if(startVertexAtLocations == null) {
+            if (startVertexAtLocations == null) {
                 continue;
             }
             double[] startVertexLocations = startVertexAtLocations.keys();
@@ -261,7 +259,7 @@ public class CopyFilamentsAcrossZCTAlgorithm extends JIPipeIteratingAlgorithm {
                 for (double location : startVertexLocations) {
                     FilamentVertex newSource = startVertexAtLocations.get(location);
                     FilamentVertex newTarget = neighborAtLocation.get(location);
-                    if(newSource != startSource && newTarget != null) {
+                    if (newSource != startSource && newTarget != null) {
                         FilamentEdge edgeCopy = new FilamentEdge(edge);
                         outputGraph.addEdge(newSource, newTarget, edgeCopy);
                     }
@@ -411,10 +409,10 @@ public class CopyFilamentsAcrossZCTAlgorithm extends JIPipeIteratingAlgorithm {
 
     @Override
     public boolean isParameterUIVisible(JIPipeParameterTree tree, JIPipeParameterCollection subParameter) {
-        if(subParameter == connectOverDimensionLinearSettings) {
+        if (subParameter == connectOverDimensionLinearSettings) {
             return connectOverDimensionLinear;
         }
-        if(subParameter == connectNewVerticesToStartSettings) {
+        if (subParameter == connectNewVerticesToStartSettings) {
             return connectNewVerticesToStart;
         }
         return super.isParameterUIVisible(tree, subParameter);

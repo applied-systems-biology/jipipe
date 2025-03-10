@@ -4,13 +4,8 @@ import java.nio.file.Path;
 
 public class CommonDirectory {
 
-    public enum DirectoryType {
-        HOME, ROOT, DRIVE, GENERIC
-    }
-
     private final Path path;
     private final DirectoryType type;
-
     public CommonDirectory(Path path, DirectoryType type) {
         this.path = path;
         this.type = type;
@@ -27,6 +22,10 @@ public class CommonDirectory {
     @Override
     public String toString() {
         return type + ": " + path;
+    }
+
+    public enum DirectoryType {
+        HOME, ROOT, DRIVE, GENERIC
     }
 }
 

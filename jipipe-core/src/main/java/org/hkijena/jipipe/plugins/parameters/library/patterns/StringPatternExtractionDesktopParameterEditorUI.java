@@ -27,10 +27,6 @@ import java.awt.*;
  */
 public class StringPatternExtractionDesktopParameterEditorUI extends JIPipeDesktopParameterEditorUI {
 
-    /**
-     * @param workbench       workbench
-     * @param parameterAccess the parameter
-     */
     public StringPatternExtractionDesktopParameterEditorUI(InitializationParameters parameters) {
         super(parameters);
         setLayout(new BoxLayout(this, BoxLayout.X_AXIS));

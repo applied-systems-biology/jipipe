@@ -62,8 +62,8 @@ import org.jgrapht.traverse.TopologicalOrderIterator;
 
 import java.awt.*;
 import java.io.IOException;
-import java.util.List;
 import java.util.*;
+import java.util.List;
 import java.util.stream.Collectors;
 
 /**
@@ -2054,7 +2054,7 @@ public class JIPipeGraph implements JIPipeValidatable, JIPipeFunctionallyCompara
 
     public boolean isProjectGraph() {
         JIPipeProject project = getProject();
-        if(project != null) {
+        if (project != null) {
             return project.getGraph() == this;
         }
         return false;
@@ -2062,7 +2062,7 @@ public class JIPipeGraph implements JIPipeValidatable, JIPipeFunctionallyCompara
 
     public boolean isProjectCompartmentGraph() {
         JIPipeProject project = getProject();
-        if(project != null) {
+        if (project != null) {
             return project.getCompartmentGraph() == this;
         }
         return false;

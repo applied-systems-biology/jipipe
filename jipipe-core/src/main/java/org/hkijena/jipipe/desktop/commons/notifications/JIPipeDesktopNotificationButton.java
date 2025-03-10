@@ -22,11 +22,11 @@ import org.hkijena.jipipe.desktop.commons.components.icons.JIPipeDesktopAnimated
 import org.hkijena.jipipe.plugins.settings.JIPipeNotificationUIApplicationSettings;
 import org.hkijena.jipipe.utils.UIUtils;
 
-import javax.swing.Timer;
 import javax.swing.*;
+import javax.swing.Timer;
 import java.awt.*;
-import java.util.List;
 import java.util.*;
+import java.util.List;
 
 /**
  * UI that monitors the queue

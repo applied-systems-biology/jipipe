@@ -13,7 +13,9 @@
 
 package org.hkijena.jipipe.cli;
 
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.List;
 
 public class JIPipeCLIMain {
     /**
@@ -40,8 +42,7 @@ public class JIPipeCLIMain {
             // remove run
             argsList.remove(0);
             JIPipeCLIPipelineRun.doRunPipeline(argsList);
-        }
-        else if (argsList.contains("render")) {
+        } else if (argsList.contains("render")) {
             int renderIndex = argsList.lastIndexOf("render");
             while (renderIndex > 0) {
                 argsList.remove(0);
@@ -50,8 +51,7 @@ public class JIPipeCLIMain {
             // remove run
             argsList.remove(0);
             JIPipeCLIPipelineRender.doRenderPipeline(argsList);
-        }
-        else {
+        } else {
             JIPipeCLIHelp.showHelp();
         }
     }

@@ -18,29 +18,25 @@ public class JIPipeDesktopFileChooserNextPathTableCellRenderer extends JLabel im
     @Override
     public Component getTableCellRendererComponent(JTable table, Object value, boolean isSelected, boolean hasFocus, int row, int column) {
 
-        if(value instanceof Path) {
+        if (value instanceof Path) {
             Path path = (Path) value;
             try {
-                if(Files.isDirectory(path)) {
+                if (Files.isDirectory(path)) {
                     setIcon(getDirectoryIcon(path));
-                }
-                else {
+                } else {
                     setIcon(getFileIcon(path));
                 }
-            }
-            catch(Throwable e) {
+            } catch (Throwable e) {
                 setIcon(UIUtils.getIcon32FromResources("file-error.png"));
             }
             setText((path).getFileName().toString());
-        }
-        else {
+        } else {
             setText("<N/A>");
         }
 
-        if(isSelected) {
+        if (isSelected) {
             setBackground(UIManager.getColor("List.selectionBackground"));
-        }
-        else {
+        } else {
             setBackground(UIManager.getColor("List.background"));
         }
         return this;
@@ -48,7 +44,7 @@ public class JIPipeDesktopFileChooserNextPathTableCellRenderer extends JLabel im
 
     private Icon getFileIcon(Path path) {
         for (JIPipeDesktopFileChooserNextPathTypeMetadata pathType : JIPipeDesktopFileChooserNext.KNOWN_PATH_TYPES) {
-            if(pathType.test(path) ) {
+            if (pathType.test(path)) {
                 return pathType.getIcon();
             }
         }
@@ -60,12 +56,11 @@ public class JIPipeDesktopFileChooserNextPathTableCellRenderer extends JLabel im
             if (path.getFileName().toString().startsWith(".") || Files.isHidden(path)) {
                 return UIUtils.getIcon32FromResources("places/folder2-hidden.png");
             }
-        }
-        catch (Throwable ignored) {
+        } catch (Throwable ignored) {
 
         }
         for (JIPipeDesktopFileChooserNextPathTypeMetadata pathType : JIPipeDesktopFileChooserNext.KNOWN_PATH_TYPES) {
-            if(pathType.test(path) ) {
+            if (pathType.test(path)) {
                 return pathType.getIcon();
             }
         }

@@ -29,10 +29,6 @@ public class BooleanDesktopParameterEditorUI extends JIPipeDesktopParameterEdito
     private boolean skipNextReload = false;
     private boolean isReloading = false;
 
-    /**
-     * @param workbench       workbench
-     * @param parameterAccess the parameter
-     */
     public BooleanDesktopParameterEditorUI(InitializationParameters parameters) {
         super(parameters);
         initialize();

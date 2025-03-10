@@ -21,15 +21,15 @@ import java.util.stream.Collectors;
 
 public class JIPipeDesktopAuthorProfileButton extends JButton implements JIPipeDesktopWorkbenchAccess, JIPipeApplicationSettingsRegistry.ChangedEventListener {
     private final JIPipeDesktopProjectWorkbench workbench;
-    private BalloonTip balloonTip;
     private final JIPipeProjectAuthorsApplicationSettings settings;
+    private BalloonTip balloonTip;
 
     public JIPipeDesktopAuthorProfileButton(JIPipeDesktopProjectWorkbench desktopWorkbench) {
         this.workbench = desktopWorkbench;
         this.settings = JIPipeProjectAuthorsApplicationSettings.getInstance();
         initialize();
         updateStatus();
-        if(settings.isWarnNoAuthors() && settings.getProjectAuthors().isEmpty()) {
+        if (settings.isWarnNoAuthors() && settings.getProjectAuthors().isEmpty()) {
             showMissingAuthorBalloon();
         }
         JIPipe.getSettings().getChangedEventEmitter().subscribe(this);
@@ -37,20 +37,17 @@ public class JIPipeDesktopAuthorProfileButton extends JButton implements JIPipeD
 
     private void updateStatus() {
         List<JIPipeAuthorMetadata> activeAuthors = settings.getProjectAuthors().stream().filter(OptionalParameter::isEnabled).map(OptionalParameter::getContent).collect(Collectors.toList());
-        if(settings.getProjectAuthors().isEmpty() && activeAuthors.isEmpty()) {
+        if (settings.getProjectAuthors().isEmpty() && activeAuthors.isEmpty()) {
             setText("Unknown author");
             setIcon(UIUtils.getIconFromResources("actions/im-kick-user.png"));
-        }
-        else if(activeAuthors.isEmpty()) {
+        } else if (activeAuthors.isEmpty()) {
             setText("None");
             setIcon(UIUtils.getIconFromResources("actions/im-kick-user.png"));
-        }
-        else if(activeAuthors.size() == 1) {
+        } else if (activeAuthors.size() == 1) {
             JIPipeAuthorMetadata authorMetadata = activeAuthors.get(0);
             setText(authorMetadata.getFirstName() + " " + authorMetadata.getLastName());
             setIcon(UIUtils.getIconFromResources("actions/icon_user.png"));
-        }
-        else {
+        } else {
             JIPipeAuthorMetadata authorMetadata = activeAuthors.get(0);
             setText("<html>" + authorMetadata.getFirstName() + " " + authorMetadata.getLastName() + " <i>et al.</i></html>");
             setIcon(UIUtils.getIconFromResources("actions/user-group.png"));
@@ -64,7 +61,9 @@ public class JIPipeDesktopAuthorProfileButton extends JButton implements JIPipeD
 
         // Initialize tooltip
         initializeBalloon();
-        addActionListener(e -> { showSettings(); });
+        addActionListener(e -> {
+            showSettings();
+        });
     }
 
     private void showSettings() {
@@ -74,7 +73,7 @@ public class JIPipeDesktopAuthorProfileButton extends JButton implements JIPipeD
 
     private void initializeBalloon() {
         EdgedBalloonStyle style = new EdgedBalloonStyle(UIManager.getColor("TextField.background"), JIPipeDesktopModernMetalTheme.PRIMARY5);
-        JPanel content = new JPanel(new BorderLayout(8,8));
+        JPanel content = new JPanel(new BorderLayout(8, 8));
         content.setOpaque(false);
         content.add(UIUtils.createJLabel("Missing author information", 16), BorderLayout.NORTH);
         content.add(new JLabel("<html><strong>Please click this button to configure your author information.</strong><br/>" +
@@ -86,7 +85,7 @@ public class JIPipeDesktopAuthorProfileButton extends JButton implements JIPipeD
                 UIUtils.createButton("Configure", UIUtils.getIconFromResources("actions/configure.png"), this::showSettings)
         );
         buttons.setOpaque(false);
-        content.add(buttons , BorderLayout.SOUTH);
+        content.add(buttons, BorderLayout.SOUTH);
         balloonTip = new BalloonTip(
                 this,
                 content,

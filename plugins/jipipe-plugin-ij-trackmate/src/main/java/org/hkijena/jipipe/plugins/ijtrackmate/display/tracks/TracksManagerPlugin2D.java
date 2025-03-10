@@ -56,8 +56,8 @@ import java.awt.*;
 import java.awt.image.BufferedImage;
 import java.io.IOException;
 import java.nio.file.Path;
-import java.util.List;
 import java.util.*;
+import java.util.List;
 import java.util.stream.Collectors;
 
 public class TracksManagerPlugin2D extends JIPipeDesktopLegacyImageViewerPlugin2D {

@@ -32,10 +32,6 @@ public class StringDesktopParameterEditorUI extends JIPipeDesktopParameterEditor
 
     private JTextComponent textComponent;
 
-    /**
-     * @param workbench       workbench
-     * @param parameterAccess the parameter
-     */
     public StringDesktopParameterEditorUI(InitializationParameters parameters) {
         super(parameters);
         initialize();

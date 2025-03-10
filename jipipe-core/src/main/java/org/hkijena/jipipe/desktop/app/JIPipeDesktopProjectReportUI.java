@@ -43,9 +43,8 @@ import org.hkijena.jipipe.utils.UIUtils;
 
 import javax.swing.*;
 import java.awt.*;
-import java.nio.file.Path;
-import java.util.List;
 import java.util.*;
+import java.util.List;
 import java.util.stream.Collectors;
 
 public class JIPipeDesktopProjectReportUI extends JIPipeDesktopProjectWorkbenchPanel implements JIPipeRunnable.FinishedEventListener, JIPipeParameterCollection.ParameterChangedEventListener {
@@ -178,10 +177,10 @@ public class JIPipeDesktopProjectReportUI extends JIPipeDesktopProjectWorkbenchP
             if (reportSettings.isAddDependencyCitations()) {
                 renderDependencyCitations();
             }
-            if(reportSettings.isAddUserDirectories()) {
+            if (reportSettings.isAddUserDirectories()) {
                 renderUserDirectories();
             }
-            if(reportSettings.isAddGlobalParameters()) {
+            if (reportSettings.isAddGlobalParameters()) {
                 renderGlobalParameters();
             }
             if (reportSettings.isAddPipelineTextDescription()) {
@@ -190,7 +189,7 @@ public class JIPipeDesktopProjectReportUI extends JIPipeDesktopProjectWorkbenchP
         }
 
         private void renderGlobalParameters() {
-            if(!project.getMetadata().getGlobalParameters().getParameters().isEmpty()) {
+            if (!project.getMetadata().getGlobalParameters().getParameters().isEmpty()) {
                 stringBuilder.append("<h2>Project-wide parameters</h2>");
                 stringBuilder.append("<table>");
                 stringBuilder.append("<tr><th>Key</th><th>Name</th><th>Description</th><th>Value</th></tr>");
@@ -209,7 +208,7 @@ public class JIPipeDesktopProjectReportUI extends JIPipeDesktopProjectWorkbenchP
 
         private void renderUserDirectories() {
             List<JIPipeProjectDirectories.DirectoryEntry> directories = project.getMetadata().getDirectories().getDirectoriesAsInstance();
-            if(!directories.isEmpty()) {
+            if (!directories.isEmpty()) {
                 stringBuilder.append("<h2>Project-wide directories</h2>");
                 stringBuilder.append("<table>");
                 stringBuilder.append("<tr><th>Key</th><th>Name</th><th>Description</th><th>Path</th><th>Must exist</th></tr>");

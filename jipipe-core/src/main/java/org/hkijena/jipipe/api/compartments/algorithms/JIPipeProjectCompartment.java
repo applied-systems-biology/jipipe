@@ -29,8 +29,6 @@ import org.hkijena.jipipe.api.project.JIPipeProject;
 import org.hkijena.jipipe.api.validation.JIPipeValidationReport;
 import org.hkijena.jipipe.api.validation.JIPipeValidationReportContext;
 import org.hkijena.jipipe.plugins.parameters.library.colors.OptionalColorParameter;
-import org.hkijena.jipipe.utils.ColorUtils;
-import org.hkijena.jipipe.utils.UIUtils;
 
 import java.awt.*;
 import java.util.*;

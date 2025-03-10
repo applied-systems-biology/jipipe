@@ -51,8 +51,8 @@ import java.awt.event.*;
 import java.awt.image.BufferedImage;
 import java.io.IOException;
 import java.nio.file.Path;
-import java.util.List;
 import java.util.*;
+import java.util.List;
 
 /**
  * A panel around {@link JIPipeDesktopGraphCanvasUI} that comes with scrolling/panning, properties panel,
@@ -868,6 +868,7 @@ public abstract class AbstractJIPipeDesktopGraphEditorUI extends JIPipeDesktopWo
     /**
      * Executed before opening the context menu
      * Right before adding the partition entries and after all auto-generated items
+     *
      * @param menu the menu
      */
     public abstract void beforeOpenContextMenu(JPopupMenu menu);

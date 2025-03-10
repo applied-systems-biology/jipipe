@@ -53,7 +53,7 @@ public class JIPipeArtifactQueryParameter {
     }
 
     public String getBaseQuery() {
-        if(isStatic()) {
+        if (isStatic()) {
             return query.split(":")[0] + ":*";
         }
         return query;

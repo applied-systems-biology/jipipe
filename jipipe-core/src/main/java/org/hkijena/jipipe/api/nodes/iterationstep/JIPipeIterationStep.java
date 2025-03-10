@@ -21,6 +21,7 @@ import java.util.Set;
 public interface JIPipeIterationStep {
     /**
      * The node that the iteration step is working on
+     *
      * @return the node
      */
     JIPipeGraphNode getNode();

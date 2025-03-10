@@ -107,27 +107,6 @@ public class TurboRegImage
         return (image);
     }
 
-    /**
-     * Return the image pyramid as a <code>Stack</code> object. The organization
-     * of the stack depends on whether the <code>TurboRegImage</code>
-     * object corresponds to the target or the source image, and on the
-     * transformation (ML* = {<code>TRANSLATION</code>,<code>RIGID_BODY</code>,
-     * <code>SCALED_ROTATION</code>, <code>AFFINE</code>} vs.
-     * ML = {<code>BILINEAR<code>}). A single pyramid level consists of
-     * <p>
-     * <table border="1">
-     * <tr><th><code>isTarget</code></th>
-     * <th>ML*</th>
-     * <th>ML</th></tr>
-     * <tr><td>true</td>
-     * <td>width<br>height<br>B-spline coefficients</td>
-     * <td>width<br>height<br>samples</td></tr>
-     * <tr><td>false</td>
-     * <td>width<br>height<br>samples<br>horizontal gradients<br>
-     * vertical gradients</td>
-     * <td>width<br>height<br>B-spline coefficients</td></tr>
-     * </table>
-     **/
     public Stack<Object> getPyramid(
     ) {
         return (pyramid);

@@ -26,7 +26,6 @@ import org.hkijena.jipipe.api.data.JIPipeDataSlotInfo;
 import org.hkijena.jipipe.api.data.JIPipeDataSlotRole;
 import org.hkijena.jipipe.api.data.JIPipeInputDataSlot;
 import org.hkijena.jipipe.api.data.JIPipeSlotType;
-import org.hkijena.jipipe.api.data.storage.JIPipeFileSystemWriteDataStorage;
 import org.hkijena.jipipe.api.environments.ExternalEnvironmentParameterSettings;
 import org.hkijena.jipipe.api.environments.JIPipeEnvironment;
 import org.hkijena.jipipe.api.nodes.AddJIPipeInputSlot;
@@ -40,13 +39,13 @@ import org.hkijena.jipipe.api.nodes.iterationstep.JIPipeMultiIterationStep;
 import org.hkijena.jipipe.api.parameters.JIPipeParameter;
 import org.hkijena.jipipe.api.validation.JIPipeValidationReport;
 import org.hkijena.jipipe.api.validation.JIPipeValidationReportContext;
-import org.hkijena.jipipe.plugins.cellpose.utils.CellposeModelInfo;
-import org.hkijena.jipipe.plugins.cellpose.utils.CellposeUtils;
 import org.hkijena.jipipe.plugins.cellpose.datatypes.CellposeModelData;
 import org.hkijena.jipipe.plugins.cellpose.datatypes.CellposeSizeModelData;
 import org.hkijena.jipipe.plugins.cellpose.parameters.cp2.Cellpose2ChannelSettings;
 import org.hkijena.jipipe.plugins.cellpose.parameters.cp2.Cellpose2GPUSettings;
 import org.hkijena.jipipe.plugins.cellpose.parameters.cp3.Cellpose3SegmentationTrainingTweaksSettings;
+import org.hkijena.jipipe.plugins.cellpose.utils.CellposeModelInfo;
+import org.hkijena.jipipe.plugins.cellpose.utils.CellposeUtils;
 import org.hkijena.jipipe.plugins.expressions.DataAnnotationQueryExpression;
 import org.hkijena.jipipe.plugins.imagejalgorithms.nodes.binary.ConnectedComponentsLabeling2DAlgorithm;
 import org.hkijena.jipipe.plugins.imagejalgorithms.nodes.binary.ConnectedComponentsLabeling3DAlgorithm;
@@ -408,17 +407,17 @@ public class Cellpose3SegmentationTrainingAlgorithm extends JIPipeSingleIteratio
         arguments.add("--min_train_masks");
         arguments.add(tweaksSettings.getMinTrainMasks() + "");
 
-        if(tweaksSettings.getNumTrainingImagesPerEpoch().isEnabled()) {
+        if (tweaksSettings.getNumTrainingImagesPerEpoch().isEnabled()) {
             arguments.add("--nimg_per_epoch");
             arguments.add(tweaksSettings.getNumTrainingImagesPerEpoch().getContent() + "");
         }
 
-        if(tweaksSettings.getNumTestImagesPerEpoch().isEnabled()) {
+        if (tweaksSettings.getNumTestImagesPerEpoch().isEnabled()) {
             arguments.add("--nimg_test_per_epoch");
             arguments.add(tweaksSettings.getNumTestImagesPerEpoch().getContent() + "");
         }
 
-        if(tweaksSettings.isUseSGD().isEnabled()) {
+        if (tweaksSettings.isUseSGD().isEnabled()) {
             arguments.add("--SGD");
             arguments.add(tweaksSettings.isUseSGD().getContent() + "");
         }

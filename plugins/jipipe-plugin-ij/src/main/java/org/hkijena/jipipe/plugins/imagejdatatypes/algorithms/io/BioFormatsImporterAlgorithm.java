@@ -141,10 +141,9 @@ public class BioFormatsImporterAlgorithm extends JIPipeSimpleIteratingAlgorithm 
         options.setCrop(crop);
         options.setAutoscale(autoScale);
         options.setStitchTiles(stitchTiles);
-        if(openAllSeries) {
+        if (openAllSeries) {
             options.setOpenAllSeries(openAllSeries);
-        }
-        else {
+        } else {
             options.setOpenAllSeries(openAllSeries);
             options.clearSeries();
             for (Integer index : seriesToImport) {

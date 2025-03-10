@@ -127,10 +127,10 @@ public class PythonPluginProjectSettings extends JIPipeDefaultProjectSettingsShe
 
     @Override
     public void getEnvironmentDependencies(List<JIPipeEnvironment> target) {
-        if(projectDefaultEnvironment.isEnabled()) {
+        if (projectDefaultEnvironment.isEnabled()) {
             target.add(projectDefaultEnvironment.getContent());
         }
-        if(projectPythonAdapterLibraryEnvironment.isEnabled()) {
+        if (projectPythonAdapterLibraryEnvironment.isEnabled()) {
             target.add(projectPythonAdapterLibraryEnvironment.getContent());
         }
     }

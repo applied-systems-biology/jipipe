@@ -38,8 +38,8 @@ import org.hkijena.jipipe.utils.json.JsonUtils;
 import java.awt.*;
 import java.io.IOException;
 import java.nio.file.Path;
-import java.util.List;
 import java.util.*;
+import java.util.List;
 
 /**
  * Exported {@link JIPipeProjectCompartment}

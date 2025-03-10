@@ -35,9 +35,9 @@ import org.hkijena.jipipe.plugins.expressions.variables.JIPipeTextAnnotationsExp
 import org.hkijena.jipipe.plugins.ijocr.OCRPlugin;
 import org.hkijena.jipipe.plugins.ijocr.environments.OptionalTesseractOCREnvironment;
 import org.hkijena.jipipe.plugins.ijocr.environments.TesseractOCREnvironment;
+import org.hkijena.jipipe.plugins.ijocr.utils.TesseractLanguagesSupplier;
 import org.hkijena.jipipe.plugins.ijocr.utils.TesseractOCREngineMode;
 import org.hkijena.jipipe.plugins.ijocr.utils.TesseractPageSegmentationMethod;
-import org.hkijena.jipipe.plugins.ijocr.utils.TesseractLanguagesSupplier;
 import org.hkijena.jipipe.plugins.imagejdatatypes.datatypes.greyscale.ImagePlusGreyscaleData;
 import org.hkijena.jipipe.plugins.imagejdatatypes.util.ImageJUtils;
 import org.hkijena.jipipe.plugins.imagejdatatypes.util.ImagePlusPropertiesExpressionParameterVariablesInfo;
@@ -47,13 +47,11 @@ import org.hkijena.jipipe.plugins.tables.datatypes.ResultsTableData;
 import org.hkijena.jipipe.utils.PathUtils;
 import org.hkijena.jipipe.utils.StringUtils;
 
-import java.io.File;
 import java.nio.file.Path;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 import java.util.Objects;
-import java.util.stream.Collectors;
 
 @SetJIPipeDocumentation(name = "Find text (Tesseract OCR)", description = "Detects text in the image using Tesseract OCR. " +
         "We highly recommend to preprocess the image by applying thresholding, otherwise Tesseract will apply its own Otsu-based method that may yield unsatisfactory results. " +
@@ -99,7 +97,7 @@ public class TesseractOCRAlgorithm extends JIPipeSimpleIteratingAlgorithm {
         String allowedChars = overrideCharAllowList.isEnabled() ? overrideCharAllowList.getContent().evaluateToString(variablesMap) : null;
         TesseractOCREnvironment tesseractOCREnvironment = getConfiguredTesseractOCREnvironment();
         String languagesString = String.join("+", languages.getValues());
-        if(StringUtils.isNullOrEmpty(languagesString)) {
+        if (StringUtils.isNullOrEmpty(languagesString)) {
             progressInfo.log("INFO: no language selected. Defaulting to eng");
             languagesString = "eng";
         }
@@ -125,14 +123,14 @@ public class TesseractOCRAlgorithm extends JIPipeSimpleIteratingAlgorithm {
             args.add("--oem");
             args.add(String.valueOf(engineMode.getNativeValue()));
 
-            if(dpi > 0) {
+            if (dpi > 0) {
                 args.add("--dpi");
                 args.add(String.valueOf(dpi));
             }
 
             args.add("tsv");
 
-            if(allowedChars != null) {
+            if (allowedChars != null) {
                 args.add("-c");
                 args.add("tessedit_char_whitelist=" + allowedChars);
             }
@@ -141,7 +139,7 @@ public class TesseractOCRAlgorithm extends JIPipeSimpleIteratingAlgorithm {
 
             // Find the TSV file
             Path tsvFile = PathUtils.findFileByExtensionIn(tmpPath, ".tsv");
-            if(tsvFile != null) {
+            if (tsvFile != null) {
                 ResultsTableData sliceResult = ResultsTableData.fromCSV(tsvFile, "\t");
                 Objects.requireNonNull(sliceResult);
                 sliceResult.addNumericColumn("slice_c");
@@ -154,8 +152,7 @@ public class TesseractOCRAlgorithm extends JIPipeSimpleIteratingAlgorithm {
                 }
 
                 output.addRows(sliceResult);
-            }
-            else {
+            } else {
                 sliceProcess.log("INFO: No output TSV detected");
             }
 

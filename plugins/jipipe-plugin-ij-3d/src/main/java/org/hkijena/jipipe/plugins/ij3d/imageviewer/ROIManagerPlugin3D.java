@@ -51,8 +51,8 @@ import javax.swing.*;
 import java.awt.*;
 import java.awt.image.BufferedImage;
 import java.nio.file.Path;
-import java.util.List;
 import java.util.*;
+import java.util.List;
 import java.util.stream.Collectors;
 
 public class ROIManagerPlugin3D extends JIPipeDesktopLegacyImageViewerPlugin2D {

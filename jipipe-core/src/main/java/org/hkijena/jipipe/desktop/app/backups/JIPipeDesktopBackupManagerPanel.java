@@ -46,8 +46,8 @@ import java.nio.file.Paths;
 import java.nio.file.StandardCopyOption;
 import java.time.Duration;
 import java.time.format.DateTimeFormatter;
-import java.util.List;
 import java.util.*;
+import java.util.List;
 
 public class JIPipeDesktopBackupManagerPanel extends JIPipeDesktopWorkbenchPanel implements JIPipeRunnable.FinishedEventListener {
 

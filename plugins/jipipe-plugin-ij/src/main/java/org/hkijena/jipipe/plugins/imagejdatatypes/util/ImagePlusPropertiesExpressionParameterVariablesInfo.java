@@ -51,7 +51,7 @@ public class ImagePlusPropertiesExpressionParameterVariablesInfo implements JIPi
         for (JIPipeTextAnnotation annotation : annotations) {
             variables.set(annotation.getName(), annotation.getValue());
         }
-        if(imagePlus != null) {
+        if (imagePlus != null) {
             variables.set("width", imagePlus.getWidth());
             variables.set("height", imagePlus.getHeight());
             variables.set("num_c", imagePlus.getNChannels());
@@ -61,8 +61,7 @@ public class ImagePlusPropertiesExpressionParameterVariablesInfo implements JIPi
             variables.set("physical_dimension_x", (calibration.getX(1) + " " + calibration.getXUnit()).trim());
             variables.set("physical_dimension_y", (calibration.getY(1) + " " + calibration.getYUnit()).trim());
             variables.set("physical_dimension_z", (calibration.getZ(1) + " " + calibration.getZUnit()).trim());
-        }
-        else {
+        } else {
             variables.set("width", 0);
             variables.set("height", 0);
             variables.set("num_c", 0);

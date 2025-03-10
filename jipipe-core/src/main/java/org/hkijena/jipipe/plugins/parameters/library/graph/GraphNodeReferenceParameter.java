@@ -34,11 +34,11 @@ public class GraphNodeReferenceParameter {
     }
 
     public JIPipeGraphNode resolve(JIPipeProject project) {
-        if(StringUtils.isNullOrEmpty(nodeUUID)) {
+        if (StringUtils.isNullOrEmpty(nodeUUID)) {
             return null;
         }
         JIPipeGraphNode node = project.getGraph().getNodeByUUID(UUID.fromString(nodeUUID));
-        if(node == null) {
+        if (node == null) {
             node = project.getCompartments().get(UUID.fromString(nodeUUID));
         }
         return node;

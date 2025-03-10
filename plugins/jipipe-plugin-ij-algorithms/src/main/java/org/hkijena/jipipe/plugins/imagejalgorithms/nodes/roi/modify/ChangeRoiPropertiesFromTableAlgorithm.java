@@ -15,7 +15,6 @@ package org.hkijena.jipipe.plugins.imagejalgorithms.nodes.roi.modify;
 
 import ij.gui.Roi;
 import ij.plugin.RoiScaler;
-import org.hkijena.jipipe.JIPipe;
 import org.hkijena.jipipe.api.ConfigureJIPipeNode;
 import org.hkijena.jipipe.api.JIPipeProgressInfo;
 import org.hkijena.jipipe.api.JIPipeWorkbench;
@@ -34,12 +33,8 @@ import org.hkijena.jipipe.api.parameters.JIPipeParameterTree;
 import org.hkijena.jipipe.plugins.expressions.*;
 import org.hkijena.jipipe.plugins.expressions.custom.JIPipeCustomExpressionVariablesParameterVariablesInfo;
 import org.hkijena.jipipe.plugins.expressions.variables.JIPipeTextAnnotationsExpressionParameterVariablesInfo;
-import org.hkijena.jipipe.plugins.imagejalgorithms.nodes.roi.measure.RoiStatisticsAlgorithm;
-import org.hkijena.jipipe.plugins.imagejdatatypes.datatypes.ImagePlusData;
 import org.hkijena.jipipe.plugins.imagejdatatypes.datatypes.ROI2DListData;
 import org.hkijena.jipipe.plugins.imagejdatatypes.util.ImageJUtils;
-import org.hkijena.jipipe.plugins.imagejdatatypes.util.measure.ImageStatisticsSetParameter;
-import org.hkijena.jipipe.plugins.imagejdatatypes.util.measure.MeasurementExpressionParameterVariablesInfo;
 import org.hkijena.jipipe.plugins.tables.datatypes.ResultsTableData;
 import org.hkijena.jipipe.utils.ColorUtils;
 import org.hkijena.jipipe.utils.StringUtils;
@@ -94,6 +89,25 @@ public class ChangeRoiPropertiesFromTableAlgorithm extends JIPipeIteratingAlgori
         this.centerScale = new OptionalJIPipeExpressionParameter(other.centerScale);
     }
 
+    private static void writeROIMetadataToVariables(JIPipeExpressionVariablesMap variables, Map<String, String> roiProperties, int roiIndex, ROI2DListData inputRois, double x, double y, int z, int c, int t, Roi roi) {
+        variables.set("metadata", roiProperties);
+        for (Map.Entry<String, String> entry : roiProperties.entrySet()) {
+            variables.set("metadata." + entry.getKey(), entry.getValue());
+        }
+
+        variables.set("index", roiIndex);
+        variables.set("num_roi", inputRois.size());
+        variables.set("x", x);
+        variables.set("y", y);
+        variables.set("z", z);
+        variables.set("c", c);
+        variables.set("t", t);
+        variables.set("fill_color", roi.getFillColor() != null ? ColorUtils.colorToHexString(roi.getFillColor()) : null);
+        variables.set("line_color", roi.getStrokeColor() != null ? ColorUtils.colorToHexString(roi.getStrokeColor()) : null);
+        variables.set("line_width", roi.getStrokeWidth());
+        variables.set("name", roi.getName());
+    }
+
     @Override
     protected void runIteration(JIPipeSingleIterationStep iterationStep, JIPipeIterationContext iterationContext, JIPipeGraphNodeRunContext runContext, JIPipeProgressInfo progressInfo) {
         ROI2DListData inputRois = (ROI2DListData) iterationStep.getInputData("Input", ROI2DListData.class, progressInfo).duplicate(progressInfo);
@@ -133,13 +147,13 @@ public class ChangeRoiPropertiesFromTableAlgorithm extends JIPipeIteratingAlgori
                     variables.set(inputMetadata.getColumnName(col), inputMetadata.getValueAt(row, col));
                 }
                 variables.set("table.row", row);
-                if(rowSelector.test(variables)) {
+                if (rowSelector.test(variables)) {
                     found = true;
                     break;
                 }
             }
 
-            if(!found) {
+            if (!found) {
                 continue;
             }
 
@@ -181,25 +195,6 @@ public class ChangeRoiPropertiesFromTableAlgorithm extends JIPipeIteratingAlgori
         }
 
         iterationStep.addOutputData(getFirstOutputSlot(), inputRois, progressInfo);
-    }
-
-    private static void writeROIMetadataToVariables(JIPipeExpressionVariablesMap variables, Map<String, String> roiProperties, int roiIndex, ROI2DListData inputRois, double x, double y, int z, int c, int t, Roi roi) {
-        variables.set("metadata", roiProperties);
-        for (Map.Entry<String, String> entry : roiProperties.entrySet()) {
-            variables.set("metadata." + entry.getKey(), entry.getValue());
-        }
-
-        variables.set("index", roiIndex);
-        variables.set("num_roi", inputRois.size());
-        variables.set("x", x);
-        variables.set("y", y);
-        variables.set("z", z);
-        variables.set("c", c);
-        variables.set("t", t);
-        variables.set("fill_color", roi.getFillColor() != null ? ColorUtils.colorToHexString(roi.getFillColor()) : null);
-        variables.set("line_color", roi.getStrokeColor() != null ? ColorUtils.colorToHexString(roi.getStrokeColor()) : null);
-        variables.set("line_width", roi.getStrokeWidth());
-        variables.set("name", roi.getName());
     }
 
     @SetJIPipeDocumentation(name = "Match table row if ...", description = "Expression that matches the ROI to its correct table row. The first match (in table order) is used. If no match is found, the ROI is not changed.")

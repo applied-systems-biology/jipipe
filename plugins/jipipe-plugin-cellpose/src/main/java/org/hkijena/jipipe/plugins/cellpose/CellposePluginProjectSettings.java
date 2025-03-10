@@ -106,10 +106,10 @@ public class CellposePluginProjectSettings extends JIPipeDefaultProjectSettingsS
 
     @Override
     public void getEnvironmentDependencies(List<JIPipeEnvironment> target) {
-        if(cellpose2Environment.isEnabled()) {
+        if (cellpose2Environment.isEnabled()) {
             target.add(cellpose2Environment.getContent());
         }
-        if(cellpose3Environment.isEnabled()) {
+        if (cellpose3Environment.isEnabled()) {
             target.add(cellpose3Environment.getContent());
         }
     }

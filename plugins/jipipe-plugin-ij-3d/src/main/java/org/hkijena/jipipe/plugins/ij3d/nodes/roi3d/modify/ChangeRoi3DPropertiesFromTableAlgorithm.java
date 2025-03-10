@@ -13,7 +13,6 @@
 
 package org.hkijena.jipipe.plugins.ij3d.nodes.roi3d.modify;
 
-import com.google.common.primitives.Doubles;
 import org.hkijena.jipipe.api.ConfigureJIPipeNode;
 import org.hkijena.jipipe.api.JIPipeProgressInfo;
 import org.hkijena.jipipe.api.SetJIPipeDocumentation;
@@ -30,22 +29,13 @@ import org.hkijena.jipipe.api.parameters.JIPipeParameter;
 import org.hkijena.jipipe.plugins.expressions.*;
 import org.hkijena.jipipe.plugins.expressions.custom.JIPipeCustomExpressionVariablesParameterVariablesInfo;
 import org.hkijena.jipipe.plugins.expressions.variables.JIPipeTextAnnotationsExpressionParameterVariablesInfo;
-import org.hkijena.jipipe.plugins.ij3d.IJ3DUtils;
 import org.hkijena.jipipe.plugins.ij3d.datatypes.ROI3D;
 import org.hkijena.jipipe.plugins.ij3d.datatypes.ROI3DListData;
-import org.hkijena.jipipe.plugins.ij3d.utils.AllROI3DMeasurementExpressionParameterVariablesInfo;
-import org.hkijena.jipipe.plugins.ij3d.utils.ROI3DMeasurementExpressionParameterVariablesInfo;
-import org.hkijena.jipipe.plugins.ij3d.utils.ROI3DMeasurementSetParameter;
-import org.hkijena.jipipe.plugins.imagejalgorithms.nodes.roi.modify.ChangeRoiPropertiesFromTableAlgorithm;
-import org.hkijena.jipipe.plugins.imagejdatatypes.datatypes.ImagePlusData;
 import org.hkijena.jipipe.plugins.parameters.library.collections.ParameterCollectionList;
 import org.hkijena.jipipe.plugins.parameters.library.collections.ParameterCollectionListTemplate;
 import org.hkijena.jipipe.plugins.tables.datatypes.ResultsTableData;
-import org.hkijena.jipipe.plugins.tables.datatypes.TableColumnData;
 import org.hkijena.jipipe.utils.StringUtils;
 
-import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.List;
 import java.util.Map;
 
@@ -120,13 +110,13 @@ public class ChangeRoi3DPropertiesFromTableAlgorithm extends JIPipeSimpleIterati
                     variables.set(inputMetadata.getColumnName(col), inputMetadata.getValueAt(tableRow, col));
                 }
                 variables.set("table.row", tableRow);
-                if(rowSelector.test(variables)) {
+                if (rowSelector.test(variables)) {
                     found = true;
                     break;
                 }
             }
 
-            if(!found) {
+            if (!found) {
                 continue;
             }
 
@@ -390,7 +380,7 @@ public class ChangeRoi3DPropertiesFromTableAlgorithm extends JIPipeSimpleIterati
         @SetJIPipeDocumentation(name = "Metadata value")
         @JIPipeParameter("metadata-value")
         @JIPipeExpressionParameterSettings(hint = "per ROI")
-        
+
         @AddJIPipeExpressionParameterVariable(fromClass = JIPipeTextAnnotationsExpressionParameterVariablesInfo.class)
         @AddJIPipeExpressionParameterVariable(name = "ROI number", key = "num_roi", description = "The number of ROI")
         @AddJIPipeExpressionParameterVariable(fromClass = JIPipeCustomExpressionVariablesParameterVariablesInfo.class)

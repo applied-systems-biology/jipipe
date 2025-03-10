@@ -14,7 +14,6 @@
 package org.hkijena.jipipe.plugins.settings;
 
 import org.hkijena.jipipe.JIPipe;
-import org.hkijena.jipipe.api.JIPipeAuthorMetadata;
 import org.hkijena.jipipe.api.OptionalJIPipeAuthorMetadata;
 import org.hkijena.jipipe.api.SetJIPipeDocumentation;
 import org.hkijena.jipipe.api.parameters.JIPipeParameter;
@@ -31,6 +30,10 @@ public class JIPipeProjectAuthorsApplicationSettings extends JIPipeDefaultApplic
     private OptionalJIPipeAuthorMetadata.List projectAuthors = new OptionalJIPipeAuthorMetadata.List();
     private boolean automaticallyAddToProjects = true;
     private boolean warnNoAuthors = true;
+
+    public static JIPipeProjectAuthorsApplicationSettings getInstance() {
+        return JIPipe.getSettings().getById(ID, JIPipeProjectAuthorsApplicationSettings.class);
+    }
 
     @SetJIPipeDocumentation(name = "Warn if no authors are configured", description = "Show a tooltip if no authors are configured")
     @JIPipeParameter("warn-no-authors")
@@ -65,10 +68,6 @@ public class JIPipeProjectAuthorsApplicationSettings extends JIPipeDefaultApplic
         this.projectAuthors = projectAuthors;
     }
 
-    public static JIPipeProjectAuthorsApplicationSettings getInstance() {
-        return JIPipe.getSettings().getById(ID, JIPipeProjectAuthorsApplicationSettings.class);
-    }
-
     @Override
     public JIPipeDefaultApplicationSettingsSheetCategory getDefaultCategory() {
         return JIPipeDefaultApplicationSettingsSheetCategory.General;
@@ -96,7 +95,7 @@ public class JIPipeProjectAuthorsApplicationSettings extends JIPipeDefaultApplic
 
     public boolean isConfigured() {
         for (OptionalJIPipeAuthorMetadata projectAuthor : projectAuthors) {
-            if(projectAuthor.isEnabled()) {
+            if (projectAuthor.isEnabled()) {
                 return true;
             }
         }

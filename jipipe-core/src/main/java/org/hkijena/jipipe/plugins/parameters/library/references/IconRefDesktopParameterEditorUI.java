@@ -33,10 +33,6 @@ public class IconRefDesktopParameterEditorUI extends JIPipeDesktopParameterEdito
     private static Set<String> availableAlgorithmIcons;
     private JButton currentlyDisplayed;
 
-    /**
-     * @param workbench       workbench
-     * @param parameterAccess the parameter
-     */
     public IconRefDesktopParameterEditorUI(InitializationParameters parameters) {
         super(parameters);
         initialize();

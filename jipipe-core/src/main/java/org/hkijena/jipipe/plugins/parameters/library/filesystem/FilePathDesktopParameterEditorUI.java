@@ -29,10 +29,6 @@ public class FilePathDesktopParameterEditorUI extends JIPipeDesktopParameterEdit
 
     private JIPipeDesktopPathEditorComponent pathEditor;
 
-    /**
-     * @param workbench       workbench
-     * @param parameterAccess the parameter
-     */
     public FilePathDesktopParameterEditorUI(InitializationParameters parameters) {
         super(parameters);
         initialize();
@@ -51,7 +47,7 @@ public class FilePathDesktopParameterEditorUI extends JIPipeDesktopParameterEdit
 
     private void initialize() {
         setLayout(new BorderLayout());
-        pathEditor = new JIPipeDesktopPathEditorComponent(getDesktopWorkbench(),PathIOMode.Open, PathType.FilesOnly);
+        pathEditor = new JIPipeDesktopPathEditorComponent(getDesktopWorkbench(), PathIOMode.Open, PathType.FilesOnly);
         PathParameterSettings settings = getParameterAccess().getAnnotationOfType(PathParameterSettings.class);
         if (settings != null) {
             pathEditor.setIoMode(settings.ioMode());

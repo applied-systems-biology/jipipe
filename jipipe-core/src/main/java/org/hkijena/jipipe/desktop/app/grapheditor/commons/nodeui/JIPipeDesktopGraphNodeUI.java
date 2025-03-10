@@ -62,8 +62,8 @@ import java.awt.event.MouseEvent;
 import java.awt.event.MouseListener;
 import java.awt.event.MouseMotionListener;
 import java.awt.image.BufferedImage;
-import java.util.List;
 import java.util.*;
+import java.util.List;
 import java.util.stream.Collectors;
 
 /**
@@ -747,14 +747,13 @@ public class JIPipeDesktopGraphNodeUI extends JIPipeDesktopWorkbenchPanel implem
         try {
             if (getWorkbench().getProject() != null) {
                 boolean highlight = getWorkbench().getProject().getRunSetsConfiguration().getUuidCache().contains(getNode().getUUIDInParentGraph().toString());
-                if(highlight) {
+                if (highlight) {
                     g2.setStroke(JIPipeDesktopGraphCanvasUI.STROKE_THICK);
                     g2.setColor(COLOR_SLOT_CACHED);
                     g2.drawRect(0, 0, getWidth() - 1, getHeight() - 1);
                 }
             }
-        }
-        catch (Throwable e) {
+        } catch (Throwable e) {
             e.printStackTrace();
         }
 

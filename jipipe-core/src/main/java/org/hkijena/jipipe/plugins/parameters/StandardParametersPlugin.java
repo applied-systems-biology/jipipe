@@ -338,7 +338,7 @@ public class StandardParametersPlugin extends JIPipePrepackagedDefaultJavaPlugin
                 null,
                 "Margin (fixed size)",
                 "Places fixed-size objects into an area",
-                FixedMarginEditorUIDesktop.class);
+                FixedMarginEditorUI.class);
         registerParameterType("inner-margin",
                 InnerMargin.class,
                 InnerMargin.List.class,

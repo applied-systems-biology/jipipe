@@ -89,7 +89,7 @@ public class ImportOMEZARRFromURIAsImagePlusAlgorithm extends JIPipeSimpleIterat
         String n5Path = iterationStep.getInputData(getFirstInputSlot(), StringData.class, progressInfo).getData();
 
         // Add zarr:// if needed
-        if(!n5Path.startsWith("zarr://")) {
+        if (!n5Path.startsWith("zarr://")) {
             n5Path = "zarr://" + n5Path;
             progressInfo.log("Fixing path: " + n5Path);
         }

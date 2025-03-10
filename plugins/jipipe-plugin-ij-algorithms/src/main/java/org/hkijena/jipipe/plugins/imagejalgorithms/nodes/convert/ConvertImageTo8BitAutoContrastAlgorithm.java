@@ -14,7 +14,6 @@
 package org.hkijena.jipipe.plugins.imagejalgorithms.nodes.convert;
 
 import ij.ImagePlus;
-import ij.plugin.ImageJ_Updater;
 import ij.process.ImageProcessor;
 import org.hkijena.jipipe.JIPipe;
 import org.hkijena.jipipe.api.ConfigureJIPipeNode;
@@ -30,7 +29,6 @@ import org.hkijena.jipipe.api.parameters.JIPipeParameter;
 import org.hkijena.jipipe.api.parameters.JIPipeParameterAccess;
 import org.hkijena.jipipe.api.parameters.JIPipeParameterTree;
 import org.hkijena.jipipe.plugins.imagejalgorithms.nodes.contrast.HistogramContrastEnhancerAlgorithm;
-import org.hkijena.jipipe.plugins.imagejdatatypes.datatypes.ImagePlusData;
 import org.hkijena.jipipe.plugins.imagejdatatypes.datatypes.greyscale.ImagePlusGreyscale8UData;
 import org.hkijena.jipipe.plugins.imagejdatatypes.datatypes.greyscale.ImagePlusGreyscaleData;
 import org.hkijena.jipipe.plugins.imagejdatatypes.util.ImageJUtils;
@@ -98,7 +96,7 @@ public class ConvertImageTo8BitAutoContrastAlgorithm extends JIPipeSimpleIterati
 
     @Override
     public boolean isParameterUIVisible(JIPipeParameterTree tree, JIPipeParameterAccess access) {
-        if("custom-range".equalsIgnoreCase(access.getKey())) {
+        if ("custom-range".equalsIgnoreCase(access.getKey())) {
             return calibrationMode == ImageJCalibrationMode.Custom;
         }
         return super.isParameterUIVisible(tree, access);
@@ -114,7 +112,7 @@ public class ConvertImageTo8BitAutoContrastAlgorithm extends JIPipeSimpleIterati
             Vector2dParameter minMax = ImageJUtils.calibrate(imp, calibrationMode, customRange.getX(), customRange.getY());
             ImageJUtils.writeCalibrationToPixels(imp.getProcessor(), minMax.getX(), minMax.getY());
             ImageProcessor resultIp = ImageJUtils.convertToGreyscale8UIfNeeded(imp).getProcessor();
-            if(stretchHistogram) {
+            if (stretchHistogram) {
                 histogramContrastEnhancerAlgorithm.stretchHistogram(resultIp, 0.35, true);
             }
             return resultIp;

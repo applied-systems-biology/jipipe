@@ -66,7 +66,7 @@ public class LabelConnectedComponents {
                                 (x + dx < 0 || y + dy < 0 || x + dx >= width || y + dy >= height)) { // Bounds check
                             continue;
                         }
-                        if(connectivity == Neighborhood2D.FourConnected && Math.abs(dx) + Math.abs(dy) != 1) {
+                        if (connectivity == Neighborhood2D.FourConnected && Math.abs(dx) + Math.abs(dy) != 1) {
                             continue;
                         }
 

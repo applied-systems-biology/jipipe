@@ -169,7 +169,7 @@ public class JIPipeCLIPipelineRun {
 
             JIPipeParameterAccess access;
 
-            if(!StringUtils.isNullOrEmpty(nodeId)) {
+            if (!StringUtils.isNullOrEmpty(nodeId)) {
                 System.out.println("Setting parameter nodeId='" + nodeId + "' parameterId='" + parameterId + "' to " + entry.getValue());
 
                 JIPipeGraphNode node = project.getGraph().findNode(nodeId);
@@ -183,8 +183,7 @@ public class JIPipeCLIPipelineRun {
                 if (access == null) {
                     throw new RuntimeException("Could not find parameter parameterId='" + parameterId + "' in nodeId='" + nodeId + "'. Check if the UUID or alias ID are provided in the pipeline.");
                 }
-            }
-            else {
+            } else {
                 System.out.println("Setting global parameter parameterId='" + parameterId + "' to " + entry.getValue());
                 access = project.getMetadata().getGlobalParameters().get(parameterId);
 

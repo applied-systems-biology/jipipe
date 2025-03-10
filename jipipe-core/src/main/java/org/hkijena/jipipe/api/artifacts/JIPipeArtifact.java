@@ -283,36 +283,33 @@ public class JIPipeArtifact extends AbstractJIPipeParameterCollection implements
 
     @Override
     public void reportValidity(JIPipeValidationReportContext reportContext, JIPipeValidationReport report) {
-        if(StringUtils.isNullOrEmpty(artifactId)) {
+        if (StringUtils.isNullOrEmpty(artifactId)) {
             report.report(new JIPipeValidationReportEntry(JIPipeValidationReportEntryLevel.Error, reportContext, "Invalid artifact ID", "The artifact ID cannot be empty!"));
-        }
-        else {
-            if(!artifactId.matches("[a-z]+[a-z0-9_]*")) {
+        } else {
+            if (!artifactId.matches("[a-z]+[a-z0-9_]*")) {
                 report.report(new JIPipeValidationReportEntry(JIPipeValidationReportEntryLevel.Error, reportContext, "Invalid artifact ID", "The artifact ID must be lowercase and can only contain alphanumeric characters and underscores!"));
             }
         }
-        if(StringUtils.isNullOrEmpty(version)) {
+        if (StringUtils.isNullOrEmpty(version)) {
             report.report(new JIPipeValidationReportEntry(JIPipeValidationReportEntryLevel.Error, reportContext, "Invalid version", "The version cannot be empty!"));
-        }
-        else {
-            if(!StringUtils.isValidVersion(version)) {
+        } else {
+            if (!StringUtils.isValidVersion(version)) {
                 report.report(new JIPipeValidationReportEntry(JIPipeValidationReportEntryLevel.Error, reportContext, "Invalid version", "The version is not valid!"));
             }
         }
     }
 
     public String getVersionWithoutRevision() {
-        if(StringUtils.isValidVersion(version)) {
+        if (StringUtils.isValidVersion(version)) {
             int[] items = VersionUtils.getVersionComponents(version);
             int lastItem = items[items.length - 1];
 
             // JIPipe-style revisions start at 1000
-            if(lastItem >= 1000) {
+            if (lastItem >= 1000) {
                 int[] s = new int[items.length - 1];
                 System.arraycopy(items, 0, s, 0, items.length - 1);
                 return Arrays.stream(s).boxed().map(Object::toString).collect(Collectors.joining("."));
-            }
-            else {
+            } else {
                 // No revision part
                 return version;
             }
@@ -321,12 +318,12 @@ public class JIPipeArtifact extends AbstractJIPipeParameterCollection implements
     }
 
     public int getVersionRevision() {
-        if(StringUtils.isValidVersion(version)) {
+        if (StringUtils.isValidVersion(version)) {
             int[] items = VersionUtils.getVersionComponents(version);
             int lastItem = items[items.length - 1];
 
             // JIPipe-style revisions start at 1000
-            if(lastItem >= 1000) {
+            if (lastItem >= 1000) {
                 return lastItem;
             }
         }

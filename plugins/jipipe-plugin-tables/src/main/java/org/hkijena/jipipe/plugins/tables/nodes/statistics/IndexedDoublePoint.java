@@ -14,7 +14,6 @@
 package org.hkijena.jipipe.plugins.tables.nodes.statistics;
 
 import org.apache.commons.math3.ml.clustering.Clusterable;
-import org.apache.commons.math3.ml.clustering.DoublePoint;
 
 import java.io.Serializable;
 import java.util.Arrays;
@@ -22,7 +21,9 @@ import java.util.List;
 
 public class IndexedDoublePoint implements Clusterable, Serializable {
 
-    /** Serializable version identifier. */
+    /**
+     * Serializable version identifier.
+     */
     private static final long serialVersionUID = 3946024775784901369L;
 
     /**
@@ -30,7 +31,9 @@ public class IndexedDoublePoint implements Clusterable, Serializable {
      */
     private final int sourceRow;
 
-    /** Point coordinates. */
+    /**
+     * Point coordinates.
+     */
     private final double[] point;
 
     /**
@@ -54,7 +57,7 @@ public class IndexedDoublePoint implements Clusterable, Serializable {
     public IndexedDoublePoint(int sourceRow, final int[] point) {
         this.sourceRow = sourceRow;
         this.point = new double[point.length];
-        for ( int i = 0; i < point.length; i++) {
+        for (int i = 0; i < point.length; i++) {
             this.point[i] = point[i];
         }
     }
@@ -84,12 +87,16 @@ public class IndexedDoublePoint implements Clusterable, Serializable {
         return sourceRow;
     }
 
-    /** {@inheritDoc} */
+    /**
+     * {@inheritDoc}
+     */
     public double[] getPoint() {
         return point;
     }
 
-    /** {@inheritDoc} */
+    /**
+     * {@inheritDoc}
+     */
     @Override
     public boolean equals(final Object other) {
         if (!(other instanceof IndexedDoublePoint)) {
@@ -98,13 +105,17 @@ public class IndexedDoublePoint implements Clusterable, Serializable {
         return Arrays.equals(point, ((IndexedDoublePoint) other).point);
     }
 
-    /** {@inheritDoc} */
+    /**
+     * {@inheritDoc}
+     */
     @Override
     public int hashCode() {
         return Arrays.hashCode(point);
     }
 
-    /** {@inheritDoc} */
+    /**
+     * {@inheritDoc}
+     */
     @Override
     public String toString() {
         return Arrays.toString(point);

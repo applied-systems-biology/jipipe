@@ -65,7 +65,7 @@ import java.util.stream.IntStream;
 @AddJIPipeNodeAlias(nodeTypeCategory = ImageJNodeTypeCategory.class, menuPath = "Plugins\nBio-Formats", aliasName = "Bio-Formats Importer")
 public class BioFormatsAnnotatorAlgorithm extends JIPipeSimpleIteratingAlgorithm {
 
-   private final BioFormatsSettings bioFormatsSettings;
+    private final BioFormatsSettings bioFormatsSettings;
     private OptionalTextAnnotationNameParameter seriesIdsAnnotation = new OptionalTextAnnotationNameParameter("Series IDs", true);
     private OptionalTextAnnotationNameParameter seriesNamesAnnotation = new OptionalTextAnnotationNameParameter("Series names", true);
     private OptionalTextAnnotationNameParameter maxSeriesIdAnnotation = new OptionalTextAnnotationNameParameter("Max Series", true);
@@ -137,7 +137,7 @@ public class BioFormatsAnnotatorAlgorithm extends JIPipeSimpleIteratingAlgorithm
             List<JIPipeTextAnnotation> textAnnotations = new ArrayList<>();
             List<JIPipeDataAnnotation> dataAnnotations = new ArrayList<>();
 
-            if(omeXMLDataAnnotation.isEnabled() && omexmlMetadata != null) {
+            if (omeXMLDataAnnotation.isEnabled() && omexmlMetadata != null) {
                 omeXMLDataAnnotation.addAnnotationIfEnabled(dataAnnotations, new XMLData(omexmlMetadata.dumpXML()));
             }
             maxSeriesIdAnnotation.addAnnotationIfEnabled(textAnnotations, String.valueOf(process.getSeriesCount() - 1));

@@ -18,7 +18,10 @@ import ij.process.ImageProcessor;
 import org.hkijena.jipipe.api.ConfigureJIPipeNode;
 import org.hkijena.jipipe.api.JIPipeProgressInfo;
 import org.hkijena.jipipe.api.SetJIPipeDocumentation;
-import org.hkijena.jipipe.api.nodes.*;
+import org.hkijena.jipipe.api.nodes.AddJIPipeInputSlot;
+import org.hkijena.jipipe.api.nodes.AddJIPipeOutputSlot;
+import org.hkijena.jipipe.api.nodes.JIPipeGraphNodeRunContext;
+import org.hkijena.jipipe.api.nodes.JIPipeNodeInfo;
 import org.hkijena.jipipe.api.nodes.algorithm.JIPipeSimpleIteratingAlgorithm;
 import org.hkijena.jipipe.api.nodes.categories.ImagesNodeTypeCategory;
 import org.hkijena.jipipe.api.nodes.iterationstep.JIPipeIterationContext;
@@ -47,37 +50,6 @@ public class SeparateTouchingLabels2DAlgorithm extends JIPipeSimpleIteratingAlgo
     public SeparateTouchingLabels2DAlgorithm(SeparateTouchingLabels2DAlgorithm other) {
         super(other);
         this.neighborhood = other.neighborhood;
-    }
-
-    @SetJIPipeDocumentation(name = "Neighborhood", description = "The neighborhood of each pixel that is checked")
-    @JIPipeParameter("neighborhood")
-    public Neighborhood2D getNeighborhood() {
-        return neighborhood;
-    }
-
-    @JIPipeParameter("neighborhood")
-    public void setNeighborhood(Neighborhood2D neighborhood) {
-        this.neighborhood = neighborhood;
-    }
-
-    @Override
-    protected void runIteration(JIPipeSingleIterationStep iterationStep, JIPipeIterationContext iterationContext, JIPipeGraphNodeRunContext runContext, JIPipeProgressInfo progressInfo) {
-        ImagePlus inputImage = iterationStep.getInputData(getFirstInputSlot(), ImagePlusGreyscaleData.class, progressInfo).getImage();
-        ImagePlus outputImage = inputImage.duplicate();
-        ImagePlus borders = ImageJUtils.newBlankOf(inputImage, BitDepth.Grayscale8u);
-
-        ImageJUtils.forEachIndexedZCTSlice(inputImage, (ip, index) -> {
-            ImageProcessor outputIp = ImageJUtils.getSliceZero(outputImage, index);
-            ImageProcessor borderIp = ImageJUtils.getSliceZero(borders, index);
-
-            apply(ip, outputIp, borderIp, neighborhood);
-
-        }, progressInfo);
-
-        outputImage.copyScale(inputImage);
-        borders.copyScale(outputImage);
-        iterationStep.addOutputData("Labels", new ImagePlusGreyscaleData(outputImage), progressInfo);
-        iterationStep.addOutputData("Borders", new ImagePlusGreyscaleMaskData(borders), progressInfo);
     }
 
     public static void apply(ImageProcessor ip, ImageProcessor outputIp, ImageProcessor borderIp, Neighborhood2D neighborhood) {
@@ -122,5 +94,36 @@ public class SeparateTouchingLabels2DAlgorithm extends JIPipeSimpleIteratingAlgo
             }
         }
 
+    }
+
+    @SetJIPipeDocumentation(name = "Neighborhood", description = "The neighborhood of each pixel that is checked")
+    @JIPipeParameter("neighborhood")
+    public Neighborhood2D getNeighborhood() {
+        return neighborhood;
+    }
+
+    @JIPipeParameter("neighborhood")
+    public void setNeighborhood(Neighborhood2D neighborhood) {
+        this.neighborhood = neighborhood;
+    }
+
+    @Override
+    protected void runIteration(JIPipeSingleIterationStep iterationStep, JIPipeIterationContext iterationContext, JIPipeGraphNodeRunContext runContext, JIPipeProgressInfo progressInfo) {
+        ImagePlus inputImage = iterationStep.getInputData(getFirstInputSlot(), ImagePlusGreyscaleData.class, progressInfo).getImage();
+        ImagePlus outputImage = inputImage.duplicate();
+        ImagePlus borders = ImageJUtils.newBlankOf(inputImage, BitDepth.Grayscale8u);
+
+        ImageJUtils.forEachIndexedZCTSlice(inputImage, (ip, index) -> {
+            ImageProcessor outputIp = ImageJUtils.getSliceZero(outputImage, index);
+            ImageProcessor borderIp = ImageJUtils.getSliceZero(borders, index);
+
+            apply(ip, outputIp, borderIp, neighborhood);
+
+        }, progressInfo);
+
+        outputImage.copyScale(inputImage);
+        borders.copyScale(outputImage);
+        iterationStep.addOutputData("Labels", new ImagePlusGreyscaleData(outputImage), progressInfo);
+        iterationStep.addOutputData("Borders", new ImagePlusGreyscaleMaskData(borders), progressInfo);
     }
 }

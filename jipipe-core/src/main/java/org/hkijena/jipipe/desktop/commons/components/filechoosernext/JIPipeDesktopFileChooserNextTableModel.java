@@ -13,18 +13,16 @@ import java.time.LocalDateTime;
 import java.time.ZoneId;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.stream.Stream;
 
 public class JIPipeDesktopFileChooserNextTableModel implements TableModel {
 
     private final Path directory;
     private final boolean showFiles;
     private final boolean showHidden;
-    private boolean successful = false;
-
     private final List<Path> children = new ArrayList<>();
     private final TLongList sizes = new TLongArrayList();
     private final List<LocalDateTime> dates = new ArrayList<>();
+    private boolean successful = false;
 
     public JIPipeDesktopFileChooserNextTableModel(Path directory, boolean showFiles, boolean showHidden) {
         this.directory = directory;
@@ -43,7 +41,7 @@ public class JIPipeDesktopFileChooserNextTableModel implements TableModel {
                 for (Path path : PathUtils.listDirectory(directory)) {
                     try {
 
-                        if(!showHidden && (path.getFileName().toString().startsWith(".") || Files.isHidden(path))) {
+                        if (!showHidden && (path.getFileName().toString().startsWith(".") || Files.isHidden(path))) {
                             continue;
                         }
 
@@ -52,7 +50,7 @@ public class JIPipeDesktopFileChooserNextTableModel implements TableModel {
                         if (Files.isDirectory(path)) {
                             size = -PathUtils.listDirectory(path).size();
                         } else {
-                            if(!showFiles) {
+                            if (!showFiles) {
                                 continue;
                             }
                             size = Files.size(path);

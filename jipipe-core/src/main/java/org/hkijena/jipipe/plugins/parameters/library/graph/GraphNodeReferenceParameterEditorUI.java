@@ -11,7 +11,6 @@ import org.hkijena.jipipe.utils.UIUtils;
 
 import javax.swing.*;
 import java.awt.*;
-import java.util.Collections;
 import java.util.UUID;
 
 public class GraphNodeReferenceParameterEditorUI extends JIPipeDesktopParameterEditorUI {
@@ -34,18 +33,17 @@ public class GraphNodeReferenceParameterEditorUI extends JIPipeDesktopParameterE
 
     private void selectNode() {
         JIPipeProject project = getWorkbench().getProject();
-        if(project != null) {
+        if (project != null) {
             JIPipeGraphNode node = JIPipeDesktopPickNodeDialog.showDialog(getDesktopWorkbench().getWindow(),
                     Sets.union(project.getGraph().getGraphNodes(), project.getCompartments().values()),
                     null,
                     "Select node");
-            if(node != null) {
+            if (node != null) {
                 GraphNodeReferenceParameter parameter = new GraphNodeReferenceParameter();
                 parameter.setNodeUUID(node.getUUIDInParentGraph().toString());
                 setParameter(parameter, true);
             }
-        }
-        else {
+        } else {
             JOptionPane.showMessageDialog(this, "Unable to find project", "Edit node reference", JOptionPane.ERROR_MESSAGE);
         }
     }
@@ -58,32 +56,29 @@ public class GraphNodeReferenceParameterEditorUI extends JIPipeDesktopParameterE
     @Override
     public void reload() {
         GraphNodeReferenceParameter parameter = getParameter(GraphNodeReferenceParameter.class);
-        if(parameter != null && !StringUtils.isNullOrEmpty(parameter.getNodeUUID())) {
+        if (parameter != null && !StringUtils.isNullOrEmpty(parameter.getNodeUUID())) {
             JIPipeProject project = getWorkbench().getProject();
-            if(project != null) {
+            if (project != null) {
                 JIPipeGraphNode node = project.getGraph().getNodeByUUID(UUID.fromString(parameter.getNodeUUID()));
-                if(node == null) {
+                if (node == null) {
                     // Might be a compartment?
                     node = project.getCompartments().get(UUID.fromString(parameter.getNodeUUID()));
                 }
-                if(node != null) {
+                if (node != null) {
                     selectButton.setEnabled(true);
                     selectButton.setText(node.getDisplayName());
                     selectButton.setIcon(JIPipe.getNodes().getIconFor(node.getInfo()));
-                }
-                else {
+                } else {
                     selectButton.setEnabled(true);
                     selectButton.setText("<Not found>");
                     selectButton.setIcon(UIUtils.getIconFromResources("actions/rectangle-xmark.png"));
                 }
-            }
-            else {
+            } else {
                 selectButton.setEnabled(false);
                 selectButton.setText("<Unsupported>");
                 selectButton.setIcon(UIUtils.getIconFromResources("actions/rectangle-xmark.png"));
             }
-        }
-        else {
+        } else {
             selectButton.setEnabled(true);
             selectButton.setText("None");
             selectButton.setIcon(UIUtils.getIconFromResources("actions/rectangle-xmark.png"));

@@ -15,7 +15,6 @@ package org.hkijena.jipipe.desktop.app.grapheditor.flavors.compartments;
 
 import org.hkijena.jipipe.JIPipe;
 import org.hkijena.jipipe.api.compartments.algorithms.JIPipeProjectCompartment;
-import org.hkijena.jipipe.api.compartments.algorithms.JIPipeProjectCompartmentOutput;
 import org.hkijena.jipipe.api.nodes.JIPipeGraphNode;
 import org.hkijena.jipipe.api.project.JIPipeProject;
 import org.hkijena.jipipe.desktop.app.JIPipeDesktopProjectWorkbench;
@@ -289,14 +288,14 @@ public class JIPipeDesktopCompartmentsGraphEditorUI extends AbstractJIPipeDeskto
 
     @Override
     public void beforeOpenContextMenu(JPopupMenu menu) {
-        if(getGraph().isProjectCompartmentGraph() && getSelection().stream().anyMatch(ui -> ui.getNode() instanceof JIPipeProjectCompartment)) {
+        if (getGraph().isProjectCompartmentGraph() && getSelection().stream().anyMatch(ui -> ui.getNode() instanceof JIPipeProjectCompartment)) {
             menu.addSeparator();
             JMenu runSetsMenu = new JMenu("Run sets ...");
             menu.add(runSetsMenu);
 
             Set<JIPipeGraphNode> selectedOutputs = new HashSet<>();
             for (JIPipeDesktopGraphNodeUI ui : getSelection()) {
-                if(ui.getNode() instanceof JIPipeProjectCompartment) {
+                if (ui.getNode() instanceof JIPipeProjectCompartment) {
                     selectedOutputs.add(ui.getNode());
                 }
             }

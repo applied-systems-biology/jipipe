@@ -14,7 +14,6 @@
 package org.hkijena.jipipe.desktop;
 
 import net.imagej.ImageJ;
-import net.imagej.patcher.LegacyInjector;
 import org.hkijena.jipipe.JIPipe;
 import org.hkijena.jipipe.JIPipeGUICommand;
 import org.hkijena.jipipe.desktop.app.JIPipeDesktopProjectWindow;

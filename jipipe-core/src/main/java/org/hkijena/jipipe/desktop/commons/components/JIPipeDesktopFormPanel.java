@@ -16,8 +16,6 @@ package org.hkijena.jipipe.desktop.commons.components;
 import com.google.common.collect.Sets;
 import org.hkijena.jipipe.api.events.AbstractJIPipeEvent;
 import org.hkijena.jipipe.api.events.JIPipeEventEmitter;
-import org.hkijena.jipipe.api.parameters.JIPipeParameterCollection;
-import org.hkijena.jipipe.desktop.app.JIPipeDesktopWorkbench;
 import org.hkijena.jipipe.desktop.commons.components.markup.JIPipeDesktopMarkdownReader;
 import org.hkijena.jipipe.desktop.commons.components.tabs.JIPipeDesktopTabPane;
 import org.hkijena.jipipe.desktop.commons.theme.JIPipeDesktopModernMetalTheme;
@@ -36,8 +34,8 @@ import java.awt.event.FocusAdapter;
 import java.awt.event.FocusEvent;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
-import java.util.List;
 import java.util.*;
+import java.util.List;
 import java.util.concurrent.atomic.AtomicBoolean;
 
 import static org.hkijena.jipipe.utils.UIUtils.UI_PADDING;
@@ -187,6 +185,53 @@ public class JIPipeDesktopFormPanel extends JPanel {
         }
     }
 
+    /**
+     * Shows a parameter collection inside a modal dialog
+     *
+     * @return if the user clicked "OK"
+     */
+    public static boolean showDialog(Component parent, JIPipeDesktopFormPanel formPanel, String title) {
+        JDialog dialog = new JDialog(SwingUtilities.getWindowAncestor(parent));
+        dialog.setIconImage(UIUtils.getJIPipeIcon128());
+
+        JPanel panel = new JPanel(new BorderLayout(8, 8));
+        panel.setBorder(BorderFactory.createEmptyBorder(4, 4, 4, 4));
+        panel.add(formPanel, BorderLayout.CENTER);
+
+        JPanel buttonPanel = new JPanel();
+        buttonPanel.setLayout(new BoxLayout(buttonPanel, BoxLayout.X_AXIS));
+        buttonPanel.add(Box.createHorizontalGlue());
+
+        AtomicBoolean clickedOK = new AtomicBoolean(false);
+
+        JButton cancelButton = new JButton("Cancel", UIUtils.getIconFromResources("actions/cancel.png"));
+        cancelButton.addActionListener(e -> {
+            clickedOK.set(false);
+            dialog.setVisible(false);
+        });
+        buttonPanel.add(cancelButton);
+
+        JButton confirmButton = new JButton("OK", UIUtils.getIconFromResources("actions/checkmark.png"));
+        confirmButton.addActionListener(e -> {
+            clickedOK.set(true);
+            dialog.setVisible(false);
+        });
+        buttonPanel.add(confirmButton);
+
+        panel.add(buttonPanel, BorderLayout.SOUTH);
+
+        dialog.setContentPane(panel);
+        dialog.setTitle(title);
+        dialog.setModal(true);
+        dialog.pack();
+        dialog.setSize(new Dimension(800, 600));
+        dialog.setLocationRelativeTo(parent);
+        UIUtils.addEscapeListener(dialog);
+        dialog.setVisible(true);
+
+        return clickedOK.get();
+    }
+
     public List<GroupHeaderPanel> getGroupHeaderPanels() {
         return Collections.unmodifiableList(groupHeaderPanels);
     }
@@ -239,7 +284,6 @@ public class JIPipeDesktopFormPanel extends JPanel {
     public ContextHelpEventEmitter getContextHelpEventEmitter() {
         return contextHelpEventEmitter;
     }
-
 
     @Override
     public void setOpaque(boolean isOpaque) {
@@ -309,53 +353,6 @@ public class JIPipeDesktopFormPanel extends JPanel {
         entries.add(new FormPanelEntry(numRows, description, component, propertiesComponent, false));
         ++numRows;
         return component;
-    }
-
-    /**
-     * Shows a parameter collection inside a modal dialog
-     *
-     * @return if the user clicked "OK"
-     */
-    public static boolean showDialog(Component parent, JIPipeDesktopFormPanel formPanel, String title) {
-        JDialog dialog = new JDialog(SwingUtilities.getWindowAncestor(parent));
-        dialog.setIconImage(UIUtils.getJIPipeIcon128());
-
-        JPanel panel = new JPanel(new BorderLayout(8, 8));
-        panel.setBorder(BorderFactory.createEmptyBorder(4, 4, 4, 4));
-        panel.add(formPanel, BorderLayout.CENTER);
-
-        JPanel buttonPanel = new JPanel();
-        buttonPanel.setLayout(new BoxLayout(buttonPanel, BoxLayout.X_AXIS));
-        buttonPanel.add(Box.createHorizontalGlue());
-
-        AtomicBoolean clickedOK = new AtomicBoolean(false);
-
-        JButton cancelButton = new JButton("Cancel", UIUtils.getIconFromResources("actions/cancel.png"));
-        cancelButton.addActionListener(e -> {
-            clickedOK.set(false);
-            dialog.setVisible(false);
-        });
-        buttonPanel.add(cancelButton);
-
-        JButton confirmButton = new JButton("OK", UIUtils.getIconFromResources("actions/checkmark.png"));
-        confirmButton.addActionListener(e -> {
-            clickedOK.set(true);
-            dialog.setVisible(false);
-        });
-        buttonPanel.add(confirmButton);
-
-        panel.add(buttonPanel, BorderLayout.SOUTH);
-
-        dialog.setContentPane(panel);
-        dialog.setTitle(title);
-        dialog.setModal(true);
-        dialog.pack();
-        dialog.setSize(new Dimension(800, 600));
-        dialog.setLocationRelativeTo(parent);
-        UIUtils.addEscapeListener(dialog);
-        dialog.setVisible(true);
-
-        return clickedOK.get();
     }
 
     private Component createAndAddEntryPropertiesComponent(Component component, Component description, int row, MarkdownText documentation) {

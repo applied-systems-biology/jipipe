@@ -131,7 +131,7 @@ public class Cellpose3DenoiseTrainingNoiseSettings extends AbstractJIPipeParamet
 
     @Override
     public boolean isParameterUIVisible(JIPipeParameterTree tree, JIPipeParameterAccess access) {
-        if(access.getKey().startsWith("custom-") && noiseType != Cellpose3DenoiseTrainingNoiseType.Custom) {
+        if (access.getKey().startsWith("custom-") && noiseType != Cellpose3DenoiseTrainingNoiseType.Custom) {
             return false;
         }
         return super.isParameterUIVisible(tree, access);

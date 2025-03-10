@@ -42,11 +42,11 @@ public class VersionUtils {
      */
     public static String getJIPipeVersion() {
         String version = CorePlugin.class.getPackage().getImplementationVersion();
-        if(version == null) {
+        if (version == null) {
             return FALLBACK_VERSION;
         }
         // Remove "-SNAPSHOT" or other classifiers if they are present
-        if(version.contains("-")) {
+        if (version.contains("-")) {
             return version.substring(0, version.indexOf("-"));
         }
         return version;
@@ -80,7 +80,7 @@ public class VersionUtils {
         int numComponents = Arrays.stream(versions).mapToInt(v -> v.length).max().orElse(0);
         for (int[] version : versions) {
             TIntList intList = new TIntArrayList(version);
-            while(intList.size() < numComponents) {
+            while (intList.size() < numComponents) {
                 intList.add(0);
             }
             result.add(intList.toArray());

@@ -6,7 +6,6 @@ import org.hkijena.jipipe.desktop.app.JIPipeDesktopProjectWorkbench;
 import org.hkijena.jipipe.desktop.app.JIPipeDesktopProjectWorkbenchPanel;
 import org.hkijena.jipipe.desktop.commons.components.renderers.JIPipeDesktopAlgorithmListCellRenderer;
 import org.hkijena.jipipe.utils.UIUtils;
-import org.hkijena.jipipe.utils.debounce.StaticDebouncer;
 
 import javax.swing.*;
 import java.awt.*;
@@ -30,7 +29,7 @@ public class JIPipeDesktopMultiAlgorithmCacheBrowserUI extends JIPipeDesktopProj
         refreshContentPanel();
 
         algorithmComboBox.addActionListener(e -> {
-           refreshContentPanel();
+            refreshContentPanel();
         });
     }
 
@@ -102,11 +101,6 @@ public class JIPipeDesktopMultiAlgorithmCacheBrowserUI extends JIPipeDesktopProj
         }
     }
 
-    public void setDisplayedAlgorithms(List<JIPipeAlgorithm> displayedAlgorithms) {
-        this.displayedAlgorithms = displayedAlgorithms;
-        updateComboBox();
-    }
-
     private void updateComboBox() {
         Object item = algorithmComboBox.getSelectedItem();
         boolean found = false;
@@ -121,11 +115,10 @@ public class JIPipeDesktopMultiAlgorithmCacheBrowserUI extends JIPipeDesktopProj
         }
 
         algorithmComboBox.setModel(model);
-        if(found) {
+        if (found) {
             algorithmComboBox.setSelectedItem(item);
-        }
-        else {
-            if(model.getSize() > 0) {
+        } else {
+            if (model.getSize() > 0) {
                 algorithmComboBox.setSelectedIndex(0);
             }
         }
@@ -133,5 +126,10 @@ public class JIPipeDesktopMultiAlgorithmCacheBrowserUI extends JIPipeDesktopProj
 
     public List<JIPipeAlgorithm> getDisplayedAlgorithms() {
         return Collections.unmodifiableList(displayedAlgorithms);
+    }
+
+    public void setDisplayedAlgorithms(List<JIPipeAlgorithm> displayedAlgorithms) {
+        this.displayedAlgorithms = displayedAlgorithms;
+        updateComboBox();
     }
 }

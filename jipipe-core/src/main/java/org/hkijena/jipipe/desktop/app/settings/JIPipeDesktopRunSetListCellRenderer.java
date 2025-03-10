@@ -13,12 +13,9 @@
 
 package org.hkijena.jipipe.desktop.app.settings;
 
-import org.hkijena.jipipe.api.grouping.JIPipeGraphWrapperAlgorithm;
 import org.hkijena.jipipe.api.project.JIPipeProject;
 import org.hkijena.jipipe.api.project.JIPipeProjectRunSetsConfiguration;
 import org.hkijena.jipipe.api.run.JIPipeProjectRunSet;
-import org.hkijena.jipipe.api.runtimepartitioning.JIPipeRuntimePartition;
-import org.hkijena.jipipe.api.runtimepartitioning.JIPipeRuntimePartitionConfiguration;
 import org.hkijena.jipipe.desktop.commons.components.icons.SolidColorIcon;
 import org.hkijena.jipipe.utils.StringUtils;
 import org.hkijena.jipipe.utils.UIUtils;
@@ -93,7 +90,7 @@ public class JIPipeDesktopRunSetListCellRenderer extends JPanel implements ListC
             colorIcon.setFillColor(value.getColor().isEnabled() ? value.getColor().getContent() : Color.WHITE);
 
             indicatorPanel.add(new JLabel(StringUtils.formatPluralS(value.getNodes().size(), "node"), UIUtils.getIconFromResources("actions/graph-node.png"), JLabel.LEFT));
-            if(!value.canResolveAllNodes(project)) {
+            if (!value.canResolveAllNodes(project)) {
                 indicatorPanel.add(Box.createHorizontalStrut(8));
                 indicatorPanel.add(new JLabel("Issues detected", UIUtils.getIconFromResources("emblems/warning.png"), JLabel.LEFT));
             }

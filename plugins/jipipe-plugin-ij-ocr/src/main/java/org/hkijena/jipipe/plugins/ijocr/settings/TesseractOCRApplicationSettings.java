@@ -23,7 +23,6 @@ import org.hkijena.jipipe.api.parameters.JIPipeParameter;
 import org.hkijena.jipipe.api.settings.JIPipeDefaultApplicationSettingsSheetCategory;
 import org.hkijena.jipipe.api.settings.JIPipeDefaultApplicationsSettingsSheet;
 import org.hkijena.jipipe.plugins.expressions.JIPipeExpressionParameter;
-import org.hkijena.jipipe.plugins.ijocr.OCRPlugin;
 import org.hkijena.jipipe.plugins.ijocr.environments.OptionalTesseractOCREnvironment;
 import org.hkijena.jipipe.plugins.ijocr.environments.TesseractOCREnvironment;
 import org.hkijena.jipipe.plugins.parameters.library.jipipe.JIPipeArtifactQueryParameter;
@@ -97,7 +96,7 @@ public class TesseractOCRApplicationSettings extends JIPipeDefaultApplicationsSe
 
     @Override
     public Icon getIcon() {
-        return  UIUtils.getIconFromResources("actions/text_outer_style.png");
+        return UIUtils.getIconFromResources("actions/text_outer_style.png");
     }
 
     @Override

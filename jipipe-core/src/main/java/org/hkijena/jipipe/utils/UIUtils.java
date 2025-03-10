@@ -55,8 +55,8 @@ import org.jdesktop.swingx.JXTable;
 import org.scijava.Disposable;
 
 import javax.imageio.ImageIO;
-import javax.swing.Timer;
 import javax.swing.*;
+import javax.swing.Timer;
 import javax.swing.border.Border;
 import javax.swing.border.CompoundBorder;
 import javax.swing.border.EmptyBorder;
@@ -85,8 +85,8 @@ import java.net.URL;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
-import java.util.List;
 import java.util.*;
+import java.util.List;
 import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.function.Predicate;
 import java.util.function.Supplier;
@@ -429,10 +429,9 @@ public class UIUtils {
     }
 
     public static Color getIconBaseColor() {
-        if(DARK_THEME) {
+        if (DARK_THEME) {
             return new Color(0xDFDFDF);
-        }
-        else {
+        } else {
             return new Color(0x333333);
         }
     }
@@ -2240,7 +2239,7 @@ public class UIUtils {
     public static void setNodeExpandedState(JTree tree, DefaultMutableTreeNode node, boolean expanded) {
         ArrayList<TreeNode> list = Collections.list(node.children());
         for (TreeNode treeNode : list) {
-            if(treeNode instanceof DefaultMutableTreeNode) {
+            if (treeNode instanceof DefaultMutableTreeNode) {
                 setNodeExpandedState(tree, (DefaultMutableTreeNode) treeNode, expanded);
             }
         }

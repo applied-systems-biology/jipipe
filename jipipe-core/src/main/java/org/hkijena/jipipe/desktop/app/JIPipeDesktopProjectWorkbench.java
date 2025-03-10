@@ -65,8 +65,8 @@ import org.jdesktop.swingx.JXStatusBar;
 import org.jdesktop.swingx.plaf.basic.BasicStatusBarUI;
 import org.scijava.Context;
 
-import javax.swing.Timer;
 import javax.swing.*;
+import javax.swing.Timer;
 import java.awt.*;
 import java.awt.event.KeyEvent;
 import java.awt.event.WindowAdapter;
@@ -77,8 +77,8 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
-import java.util.List;
 import java.util.*;
+import java.util.List;
 import java.util.concurrent.atomic.AtomicBoolean;
 
 /**
@@ -102,12 +102,12 @@ public class JIPipeDesktopProjectWorkbench extends JPanel implements JIPipeDeskt
     private final JIPipeDesktopNotificationButton notificationButton = new JIPipeDesktopNotificationButton(this);
     private final Map<JIPipeGraphNode, Timer> algorithmUpdateTimers = new WeakHashMap<>();
     private final JIPipeNodeDatabase nodeDatabase;
+    private final JIPipeRunnableQueue backupQueue = new JIPipeRunnableQueue("Backups");
     public JIPipeDesktopTabPane documentTabPane;
     private JLabel statusText;
     private JIPipeDesktopReloadableValidityChecker validityCheckerPanel;
     private JIPipeDesktopPluginValidityCheckerPanel pluginValidityCheckerPanel;
     private boolean projectModified;
-    private final JIPipeRunnableQueue backupQueue = new JIPipeRunnableQueue("Backups");
     private JButton openProjectOverviewButton;
 
     /**
@@ -144,7 +144,6 @@ public class JIPipeDesktopProjectWorkbench extends JPanel implements JIPipeDeskt
         // Install the run notifier
         JIPipeDesktopRunnableQueueNotifier.install();
     }
-
 
 
     /**
@@ -212,18 +211,17 @@ public class JIPipeDesktopProjectWorkbench extends JPanel implements JIPipeDeskt
     }
 
     private void restoreTabs(boolean isNewProject) {
-        if(isNewProject || !JIPipeGeneralUIApplicationSettings.getInstance().isSwitchToProjectInfoOnUnknownProject()) {
+        if (isNewProject || !JIPipeGeneralUIApplicationSettings.getInstance().isSwitchToProjectInfoOnUnknownProject()) {
             restoreTabsFromProjectMetadata();
-        }
-        else {
-            if(!project.getMetadata().hasKnownGlobalAuthor()) {
+        } else {
+            if (!project.getMetadata().hasKnownGlobalAuthor()) {
                 documentTabPane.closeAllTabs(false);
                 documentTabPane.selectSingletonTab(TAB_COMPARTMENT_EDITOR);
                 documentTabPane.selectSingletonTab(TAB_PROJECT_OVERVIEW);
 
                 // Display message popup for the user
                 EdgedBalloonStyle style = new EdgedBalloonStyle(UIManager.getColor("TextField.background"), JIPipeDesktopModernMetalTheme.PRIMARY5);
-                JPanel content = new JPanel(new BorderLayout(8,8));
+                JPanel content = new JPanel(new BorderLayout(8, 8));
                 content.setOpaque(false);
                 content.add(UIUtils.createJLabel("JIPipe switched you to the project overview", 16), BorderLayout.NORTH);
                 content.add(new JLabel("<html>" +
@@ -232,7 +230,7 @@ public class JIPipeDesktopProjectWorkbench extends JPanel implements JIPipeDeskt
                         "your info on saving them.</i></html>"), BorderLayout.CENTER);
                 JPanel buttons = UIUtils.boxHorizontal();
                 buttons.setOpaque(false);
-                content.add(buttons , BorderLayout.SOUTH);
+                content.add(buttons, BorderLayout.SOUTH);
                 BalloonTip balloonTip = new BalloonTip(
                         openProjectOverviewButton,
                         content,
@@ -244,29 +242,28 @@ public class JIPipeDesktopProjectWorkbench extends JPanel implements JIPipeDeskt
                 );
                 balloonTip.setVisible(false);
 
-                buttons.add( UIUtils.createButton("Never do this again", UIUtils.getIconFromResources("actions/cancel.png"), () -> {
+                buttons.add(UIUtils.createButton("Never do this again", UIUtils.getIconFromResources("actions/cancel.png"), () -> {
                     balloonTip.closeBalloon();
                     JIPipeGeneralUIApplicationSettings.getInstance().setSwitchToProjectInfoOnUnknownProject(false);
                     JIPipe.getInstance().getApplicationSettingsRegistry().saveLater();
                     restoreTabsFromProjectMetadata();
                 }));
                 buttons.add(Box.createHorizontalGlue());
-                buttons.add( UIUtils.createButton("This is my project", UIUtils.getIconFromResources("actions/im-user-online.png"), () -> {
+                buttons.add(UIUtils.createButton("This is my project", UIUtils.getIconFromResources("actions/im-user-online.png"), () -> {
                     balloonTip.closeBalloon();
                     restoreTabsFromProjectMetadata();
 
-                    if(!JIPipeProjectAuthorsApplicationSettings.getInstance().isConfigured()) {
-                        if(JOptionPane.showConfirmDialog(this, "<html>You did not setup the application-wide authors yet,<br/>" +
-                                "meaning that JIPipe will be unable to associate your projects to you.<br/><br/>" +
-                                "Do you want to setup the authors now (you only need to do this once!)?</html>",
+                    if (!JIPipeProjectAuthorsApplicationSettings.getInstance().isConfigured()) {
+                        if (JOptionPane.showConfirmDialog(this, "<html>You did not setup the application-wide authors yet,<br/>" +
+                                        "meaning that JIPipe will be unable to associate your projects to you.<br/><br/>" +
+                                        "Do you want to setup the authors now (you only need to do this once!)?</html>",
                                 "Missing author information",
                                 JOptionPane.YES_NO_OPTION,
                                 JOptionPane.QUESTION_MESSAGE) == JOptionPane.YES_OPTION) {
                             openApplicationSettings("/General/Project authors");
                         }
-                    }
-                    else {
-                        if(JOptionPane.showConfirmDialog(this, "<html>The project needs to be saved to update the author information.<br/>" +
+                    } else {
+                        if (JOptionPane.showConfirmDialog(this, "<html>The project needs to be saved to update the author information.<br/>" +
                                         "Do you want to save the project now?</html>",
                                 "Update author information",
                                 JOptionPane.YES_NO_OPTION,
@@ -275,7 +272,7 @@ public class JIPipeDesktopProjectWorkbench extends JPanel implements JIPipeDeskt
                         }
                     }
                 }));
-                buttons.add( UIUtils.createButton("Thanks!", UIUtils.getIconFromResources("actions/checkbox.png"), balloonTip::closeBalloon));
+                buttons.add(UIUtils.createButton("Thanks!", UIUtils.getIconFromResources("actions/checkbox.png"), balloonTip::closeBalloon));
 
                 JButton closeButton = new JButton(UIUtils.getIconFromResources("actions/window-close.png"));
                 closeButton.setBorder(BorderFactory.createEmptyBorder(4, 4, 4, 4));
@@ -286,8 +283,7 @@ public class JIPipeDesktopProjectWorkbench extends JPanel implements JIPipeDeskt
                     getProjectWindow().registerBalloon(balloonTip);
                     balloonTip.setVisible(true);
                 });
-            }
-            else {
+            } else {
                 // Author is known. Proceed as usual.
                 restoreTabsFromProjectMetadata();
             }
@@ -1153,13 +1149,15 @@ public class JIPipeDesktopProjectWorkbench extends JPanel implements JIPipeDeskt
         buttonPanel.add(Box.createHorizontalGlue());
 
         JButton closeButton = new JButton("Close", UIUtils.getIconFromResources("actions/message-close.png"));
-        closeButton.addActionListener(e -> { dialog.setVisible(false); });
+        closeButton.addActionListener(e -> {
+            dialog.setVisible(false);
+        });
         buttonPanel.add(closeButton);
 
         contentPanel.add(buttonPanel, BorderLayout.SOUTH);
         buttonPanel.setBorder(BorderFactory.createEmptyBorder(8, 8, 8, 8));
 
-        if(navigateToCategory != null) {
+        if (navigateToCategory != null) {
             projectSettingsComponents.selectNode(navigateToCategory);
         }
 

@@ -198,7 +198,7 @@ public class PathUtils {
 
     public static List<Path> listDirectory(Path directory) throws IOException {
         List<Path> result = new ArrayList<>();
-        try(Stream<Path> stream = Files.list(directory)) {
+        try (Stream<Path> stream = Files.list(directory)) {
             stream.forEach(result::add);
         }
         return result;
@@ -651,15 +651,14 @@ public class PathUtils {
     }
 
     public static void deleteIfExists(Path path, JIPipeProgressInfo progressInfo) {
-        if(Files.isRegularFile(path)) {
+        if (Files.isRegularFile(path)) {
             try {
                 progressInfo.log("Deleting " + path);
                 Files.delete(path);
             } catch (IOException e) {
                 throw new RuntimeException(e);
             }
-        }
-        else if(Files.isDirectory(path)) {
+        } else if (Files.isDirectory(path)) {
             progressInfo.log("Deleting " + path);
             deleteDirectoryRecursively(path, progressInfo);
         }

@@ -137,7 +137,7 @@ public class JIPipeAuthorMetadata extends AbstractJIPipeParameterCollection {
                     stringBuilder.append("<div><strong>Contact:</strong> ").append(HtmlEscapers.htmlEscaper().escape(author.getContact())).append("</div>");
                 }
             }
-            if(!StringUtils.isNullOrEmpty(author.getOrcid())) {
+            if (!StringUtils.isNullOrEmpty(author.getOrcid())) {
                 stringBuilder.append("<div><strong>ORCID:</strong> <a href=\"").append(author.getOrcidUrl()).append("\">").append(author.getOrcidUrl()).append("</a></div>");
             }
             if (!StringUtils.isNullOrEmpty(author.getWebsite())) {
@@ -173,8 +173,8 @@ public class JIPipeAuthorMetadata extends AbstractJIPipeParameterCollection {
     }
 
     public String getOrcidUrl() {
-        if(!StringUtils.isNullOrEmpty(getOrcid())) {
-            if(getOrcid().startsWith("http") || getOrcid().contains("orcid.org")) {
+        if (!StringUtils.isNullOrEmpty(getOrcid())) {
+            if (getOrcid().startsWith("http") || getOrcid().contains("orcid.org")) {
                 return getOrcid();
             }
             return "https://orcid.org/" + getOrcid();
@@ -184,12 +184,13 @@ public class JIPipeAuthorMetadata extends AbstractJIPipeParameterCollection {
 
     /**
      * A fuzzy equals method that attempts to check if the authors are the same
+     *
      * @param other the other author
      * @return if they are likely the same
      */
     public boolean fuzzyEquals(JIPipeAuthorMetadata other) {
         // ORCID is the best qualifier, try this first
-        if(!StringUtils.isNullOrEmpty(getOrcidUrl()) && !StringUtils.isNullOrEmpty(other.getOrcidUrl())) {
+        if (!StringUtils.isNullOrEmpty(getOrcidUrl()) && !StringUtils.isNullOrEmpty(other.getOrcidUrl())) {
             return getOrcidUrl().equalsIgnoreCase(other.getOrcidUrl());
         }
 
@@ -340,20 +341,20 @@ public class JIPipeAuthorMetadata extends AbstractJIPipeParameterCollection {
     }
 
     public void mergeWith(JIPipeAuthorMetadata other) {
-        if(StringUtils.isNullOrEmpty(orcid) && !StringUtils.isNullOrEmpty(other.getOrcid())) {
+        if (StringUtils.isNullOrEmpty(orcid) && !StringUtils.isNullOrEmpty(other.getOrcid())) {
             orcid = other.getOrcid();
         }
-        if(!StringUtils.isNullOrEmpty(title) && !StringUtils.isNullOrEmpty(other.getTitle())) {
+        if (!StringUtils.isNullOrEmpty(title) && !StringUtils.isNullOrEmpty(other.getTitle())) {
             title = other.getTitle();
         }
-        if(!StringUtils.isNullOrEmpty(website) && !StringUtils.isNullOrEmpty(other.getWebsite())) {
+        if (!StringUtils.isNullOrEmpty(website) && !StringUtils.isNullOrEmpty(other.getWebsite())) {
             website = other.getWebsite();
         }
-        if(!StringUtils.isNullOrEmpty(contact) && !StringUtils.isNullOrEmpty(other.getContact())) {
+        if (!StringUtils.isNullOrEmpty(contact) && !StringUtils.isNullOrEmpty(other.getContact())) {
             contact = other.getContact();
         }
         for (String affiliation : other.getAffiliations()) {
-            if(!affiliations.contains(affiliation)) {
+            if (!affiliations.contains(affiliation)) {
                 affiliations.add(affiliation);
             }
         }

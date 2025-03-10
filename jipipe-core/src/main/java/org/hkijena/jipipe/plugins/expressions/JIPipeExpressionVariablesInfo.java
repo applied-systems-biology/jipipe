@@ -101,7 +101,7 @@ public interface JIPipeExpressionVariablesInfo {
     /**
      * Returns the list of known variables for the user interface.
      *
-     * @param workbench
+     * @param workbench       the workbench
      * @param parameterTree   the parameter tree that contains the access. can be null.
      * @param parameterAccess the parameter access that holds the {@link AbstractExpressionParameter} instance. can be null.
      * @return the set of variables

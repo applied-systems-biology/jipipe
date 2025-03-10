@@ -80,7 +80,7 @@ public class OmniposePluginProjectSettings extends JIPipeDefaultProjectSettingsS
 
     @Override
     public void getEnvironmentDependencies(List<JIPipeEnvironment> target) {
-        if(omnipose0Environment.isEnabled()) {
+        if (omnipose0Environment.isEnabled()) {
             target.add(omnipose0Environment.getContent());
         }
     }

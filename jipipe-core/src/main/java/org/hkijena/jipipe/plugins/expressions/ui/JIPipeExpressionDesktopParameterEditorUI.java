@@ -33,8 +33,8 @@ import org.hkijena.jipipe.utils.UIUtils;
 import javax.swing.*;
 import javax.swing.event.DocumentEvent;
 import java.awt.*;
-import java.util.List;
 import java.util.*;
+import java.util.List;
 
 import static org.hkijena.jipipe.plugins.expressions.JIPipeExpressionParameterVariableInfo.ANNOTATIONS_VARIABLE;
 
@@ -44,8 +44,8 @@ public class JIPipeExpressionDesktopParameterEditorUI extends JIPipeDesktopParam
 
     private final AbstractTokenMaker tokenMaker;
     private final Set<JIPipeExpressionParameterVariableInfo> variables = new HashSet<>();
-    private RSyntaxTextArea expressionEditor;
     private final JPanel editPanel = UIUtils.boxHorizontal();
+    private RSyntaxTextArea expressionEditor;
 
     public JIPipeExpressionDesktopParameterEditorUI(InitializationParameters parameters) {
         super(parameters);
@@ -154,7 +154,7 @@ public class JIPipeExpressionDesktopParameterEditorUI extends JIPipeDesktopParam
 
     private JIPipeGraphNode searchForNodeInParents() {
         for (JIPipeParameterCollection source : getParameterTree().getRegisteredSources()) {
-            if(source instanceof JIPipeGraphNode) {
+            if (source instanceof JIPipeGraphNode) {
                 return (JIPipeGraphNode) source;
             }
         }
@@ -210,14 +210,14 @@ public class JIPipeExpressionDesktopParameterEditorUI extends JIPipeDesktopParam
 
         // Special handling of global parameters (associated to nodes)
         JIPipeGraphNode graphNode = searchForNodeInParents();
-        if(graphNode instanceof JIPipeAlgorithm) {
+        if (graphNode instanceof JIPipeAlgorithm) {
             Set<String> usedKeys = new HashSet<>();
             for (JIPipeExpressionParameterVariableInfo variable : variables) {
                 usedKeys.add(variable.getKey());
             }
 
             // Add custom variables
-            if(((JIPipeAlgorithm) graphNode).isEnableDefaultCustomExpressionVariables()) {
+            if (((JIPipeAlgorithm) graphNode).isEnableDefaultCustomExpressionVariables()) {
                 for (JIPipeExpressionParameterVariableInfo variable : JIPipeCustomExpressionVariablesParameterVariablesInfo.VARIABLES) {
                     if (!usedKeys.contains(variable.getKey()) || StringUtils.isNullOrEmpty(variable.getKey())) {
                         variables.add(variable);
@@ -236,17 +236,17 @@ public class JIPipeExpressionDesktopParameterEditorUI extends JIPipeDesktopParam
 
             // Add custom global variables
             JIPipeProject project = getWorkbench().getProject();
-            if(project != null) {
+            if (project != null) {
                 for (Map.Entry<String, JIPipeParameterAccess> entry : project.getMetadata().getGlobalParameters().getParameters().entrySet()) {
                     variables.add(new JIPipeExpressionParameterVariableInfo("_global." + entry.getKey(), StringUtils.orElse(entry.getValue().getName(), entry.getKey()), entry.getValue().getDescription()));
                 }
             }
 
             // Handling of iterating algorithms (adds annotations)
-            if(graphNode instanceof JIPipeIterationStepAlgorithm) {
+            if (graphNode instanceof JIPipeIterationStepAlgorithm) {
                 // Generated annotations map
                 variables.add(new JIPipeExpressionParameterVariableInfo("_local.annotations", "Text annotations (map)", "The text annotations of the current iteration step as map"));
-                if(!usedKeys.contains(ANNOTATIONS_VARIABLE.getKey()) || StringUtils.isNullOrEmpty(ANNOTATIONS_VARIABLE.getKey())) {
+                if (!usedKeys.contains(ANNOTATIONS_VARIABLE.getKey()) || StringUtils.isNullOrEmpty(ANNOTATIONS_VARIABLE.getKey())) {
                     variables.add(ANNOTATIONS_VARIABLE);
                 }
             }

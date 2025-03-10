@@ -97,7 +97,7 @@ public class FilamentsPluginProjectSettings extends JIPipeDefaultProjectSettings
 
     @Override
     public void getEnvironmentDependencies(List<JIPipeEnvironment> target) {
-        if(projectDefaultTSOAXEnvironment.isEnabled()) {
+        if (projectDefaultTSOAXEnvironment.isEnabled()) {
             target.add(projectDefaultTSOAXEnvironment.getContent());
         }
     }

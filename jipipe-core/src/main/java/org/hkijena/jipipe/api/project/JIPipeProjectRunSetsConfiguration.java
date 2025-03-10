@@ -10,9 +10,9 @@ import org.hkijena.jipipe.plugins.parameters.library.graph.GraphNodeReferencePar
 import java.util.*;
 
 public class JIPipeProjectRunSetsConfiguration {
-    private List<JIPipeProjectRunSet> runSets = new ArrayList<>();
     private final RunSetsModifiedEventEmitter modifiedEventEmitter = new RunSetsModifiedEventEmitter();
     private final Set<String> uuidCache = new HashSet<>();
+    private List<JIPipeProjectRunSet> runSets = new ArrayList<>();
 
     @JsonGetter("run-sets")
     public List<JIPipeProjectRunSet> getRunSets() {
@@ -46,7 +46,7 @@ public class JIPipeProjectRunSetsConfiguration {
         uuidCache.clear();
         for (JIPipeProjectRunSet runSet : runSets) {
             for (GraphNodeReferenceParameter node : runSet.getNodes()) {
-                if(node.isSet()) {
+                if (node.isSet()) {
                     uuidCache.add(node.getNodeUUID());
                 }
             }
@@ -73,6 +73,10 @@ public class JIPipeProjectRunSetsConfiguration {
         }
     }
 
+    public interface RunSetsModifiedEventListener {
+        void onRunSetsModified(RunSetsModifiedEvent event);
+    }
+
     public static class RunSetsModifiedEvent extends AbstractJIPipeEvent {
         private final JIPipeProjectRunSetsConfiguration runSetsConfiguration;
 
@@ -84,10 +88,6 @@ public class JIPipeProjectRunSetsConfiguration {
         public JIPipeProjectRunSetsConfiguration getRunSetsConfiguration() {
             return runSetsConfiguration;
         }
-    }
-
-    public interface RunSetsModifiedEventListener {
-        void onRunSetsModified(RunSetsModifiedEvent event);
     }
 
     public static class RunSetsModifiedEventEmitter extends JIPipeEventEmitter<RunSetsModifiedEvent, RunSetsModifiedEventListener> {

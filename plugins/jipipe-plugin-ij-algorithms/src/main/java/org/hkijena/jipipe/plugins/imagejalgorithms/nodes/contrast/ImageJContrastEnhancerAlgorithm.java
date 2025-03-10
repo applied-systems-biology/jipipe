@@ -13,11 +13,8 @@
 
 package org.hkijena.jipipe.plugins.imagejalgorithms.nodes.contrast;
 
-import ij.CompositeImage;
-import ij.IJ;
 import ij.ImagePlus;
-import ij.ImageStack;
-import ij.process.*;
+import ij.process.ImageProcessor;
 import org.hkijena.jipipe.JIPipe;
 import org.hkijena.jipipe.api.ConfigureJIPipeNode;
 import org.hkijena.jipipe.api.JIPipeProgressInfo;
@@ -36,8 +33,6 @@ import org.hkijena.jipipe.plugins.imagejdatatypes.util.ImageJUtils;
 import org.hkijena.jipipe.plugins.parameters.library.primitives.vectors.Vector2dParameter;
 import org.hkijena.jipipe.plugins.parameters.library.primitives.vectors.VectorParameterSettings;
 import org.hkijena.jipipe.utils.ImageJCalibrationMode;
-
-import static ij.measure.Measurements.MIN_MAX;
 
 
 @SetJIPipeDocumentation(name = "Apply ImageJ auto-contrast per slice", description = "Applies the ImageJ contrast enhancer per slice (writing the pixel values). Applies optional histogram stretching.")
@@ -103,11 +98,11 @@ public class ImageJContrastEnhancerAlgorithm extends JIPipeSimpleIteratingAlgori
         ImagePlus image = iterationStep.getInputData(getFirstInputSlot(), ImagePlusGreyscaleData.class, progressInfo).getImage();
         HistogramContrastEnhancerAlgorithm histogramContrastEnhancerAlgorithm = JIPipe.createNode(HistogramContrastEnhancerAlgorithm.class);
         ImagePlus result = ImageJUtils.generateForEachIndexedZCTSlice(image, (ip, index) -> {
-            ImagePlus imp =  new ImagePlus("slice", ip.duplicate());
+            ImagePlus imp = new ImagePlus("slice", ip.duplicate());
             Vector2dParameter minMax = ImageJUtils.calibrate(imp, calibrationMode, customRange.getX(), customRange.getY());
             ImageJUtils.writeCalibrationToPixels(imp.getProcessor(), minMax.getX(), minMax.getY());
             ImageProcessor resultIp = imp.getProcessor();
-            if(stretchHistogram) {
+            if (stretchHistogram) {
                 histogramContrastEnhancerAlgorithm.stretchHistogram(resultIp, 0.35, true);
             }
             return resultIp;

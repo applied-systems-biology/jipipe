@@ -13,8 +13,8 @@
 
 package org.hkijena.jipipe.plugins.tables.nodes.statistics;
 
-import org.apache.commons.math3.ml.clustering.*;
-import org.apache.commons.math3.random.JDKRandomGenerator;
+import org.apache.commons.math3.ml.clustering.Cluster;
+import org.apache.commons.math3.ml.clustering.DBSCANClusterer;
 import org.hkijena.jipipe.api.AddJIPipeCitation;
 import org.hkijena.jipipe.api.ConfigureJIPipeNode;
 import org.hkijena.jipipe.api.JIPipeProgressInfo;
@@ -52,11 +52,11 @@ import java.util.List;
 @AddJIPipeOutputSlot(value = ResultsTableData.class, name = "Centers", create = true, description = "The cluster centers")
 public class DBSCANClusteringAlgorithm extends JIPipeSimpleIteratingAlgorithm {
 
+    private final OutputSettings outputSettings;
+    private final ClusteringSettings clusteringSettings;
     private int epsilon = 0;
     private int minNumPoints = 0;
     private TableColumnSourceExpressionParameter.List inputColumns = new TableColumnSourceExpressionParameter.List();
-    private final OutputSettings outputSettings;
-    private final ClusteringSettings clusteringSettings;
 
 
     public DBSCANClusteringAlgorithm(JIPipeNodeInfo info) {
@@ -77,6 +77,30 @@ public class DBSCANClusteringAlgorithm extends JIPipeSimpleIteratingAlgorithm {
         registerSubParameters(outputSettings, clusteringSettings);
     }
 
+    public static double estimateEpsilon(List<IndexedDoublePoint> points) {
+        if (points.isEmpty()) return 0.0;
+
+        double minX = Double.POSITIVE_INFINITY, maxX = Double.NEGATIVE_INFINITY;
+        double minY = Double.POSITIVE_INFINITY, maxY = Double.NEGATIVE_INFINITY;
+
+        for (IndexedDoublePoint point : points) {
+            double[] coords = point.getPoint();
+            minX = Math.min(minX, coords[0]);
+            maxX = Math.max(maxX, coords[0]);
+            minY = Math.min(minY, coords[1]);
+            maxY = Math.max(maxY, coords[1]);
+        }
+
+        // Bounding box diagonal as reference
+        double diagonal = Math.sqrt(Math.pow(maxX - minX, 2) + Math.pow(maxY - minY, 2));
+        return diagonal * 0.05; // 5% of diagonal as epsilon
+    }
+
+    public static int estimateMinPoints(List<IndexedDoublePoint> points) {
+        int dimensions = points.get(0).getPoint().length;
+        return Math.max(3, dimensions + 1); // Dimensionality + 1 rule
+    }
+
     @Override
     protected void runIteration(JIPipeSingleIterationStep iterationStep, JIPipeIterationContext iterationContext, JIPipeGraphNodeRunContext runContext, JIPipeProgressInfo progressInfo) {
         ResultsTableData tableData = new ResultsTableData(iterationStep.getInputData(getFirstInputSlot(), ResultsTableData.class, progressInfo));
@@ -86,10 +110,9 @@ public class DBSCANClusteringAlgorithm extends JIPipeSimpleIteratingAlgorithm {
         List<TableColumnData> inputColumns_ = new ArrayList<>();
         for (TableColumnSourceExpressionParameter inputColumn : inputColumns) {
             TableColumnData columnData = inputColumn.pickOrGenerateColumn(tableData, variablesMap);
-            if(columnData != null) {
+            if (columnData != null) {
                 inputColumns_.add(columnData);
-            }
-            else {
+            } else {
                 throw new RuntimeException("Unable to find/generate column " + inputColumn.getValue().getExpression());
             }
         }
@@ -101,7 +124,7 @@ public class DBSCANClusteringAlgorithm extends JIPipeSimpleIteratingAlgorithm {
             for (int col = 0; col < inputColumns_.size(); col++) {
                 TableColumnData columnData = inputColumns_.get(col);
                 double value = columnData.getRowAsDouble(row);
-                if(Double.isNaN(value) || Double.isInfinite(value)) {
+                if (Double.isNaN(value) || Double.isInfinite(value)) {
                     value = 0;
                 }
                 arr[col] = value;
@@ -135,10 +158,10 @@ public class DBSCANClusteringAlgorithm extends JIPipeSimpleIteratingAlgorithm {
 
             // Write into original
             for (IndexedDoublePoint point : cluster.getPoints()) {
-                if(outputColumnClusterId >= 0) {
+                if (outputColumnClusterId >= 0) {
                     tableData.setValueAt(clusterId, point.getSourceRow(), outputColumnClusterId);
                 }
-                if(outputColumnClusterSize >= 0) {
+                if (outputColumnClusterSize >= 0) {
                     tableData.setValueAt(cluster.getPoints().size(), point.getSourceRow(), outputColumnClusterSize);
                 }
             }
@@ -162,34 +185,10 @@ public class DBSCANClusteringAlgorithm extends JIPipeSimpleIteratingAlgorithm {
         iterationStep.addOutputData("Centers", clusterCentersTable, progressInfo);
     }
 
-    public static double estimateEpsilon(List<IndexedDoublePoint> points) {
-        if (points.isEmpty()) return 0.0;
-
-        double minX = Double.POSITIVE_INFINITY, maxX = Double.NEGATIVE_INFINITY;
-        double minY = Double.POSITIVE_INFINITY, maxY = Double.NEGATIVE_INFINITY;
-
-        for (IndexedDoublePoint point : points) {
-            double[] coords = point.getPoint();
-            minX = Math.min(minX, coords[0]);
-            maxX = Math.max(maxX, coords[0]);
-            minY = Math.min(minY, coords[1]);
-            maxY = Math.max(maxY, coords[1]);
-        }
-
-        // Bounding box diagonal as reference
-        double diagonal = Math.sqrt(Math.pow(maxX - minX, 2) + Math.pow(maxY - minY, 2));
-        return diagonal * 0.05; // 5% of diagonal as epsilon
-    }
-
-    public static int estimateMinPoints(List<IndexedDoublePoint> points) {
-        int dimensions = points.get(0).getPoint().length;
-        return Math.max(3, dimensions + 1); // Dimensionality + 1 rule
-    }
-
     @Override
     public void reportValidity(JIPipeValidationReportContext reportContext, JIPipeValidationReport report) {
         super.reportValidity(reportContext, report);
-        if(inputColumns.isEmpty()) {
+        if (inputColumns.isEmpty()) {
             report.report(new JIPipeValidationReportEntry(JIPipeValidationReportEntryLevel.Error,
                     reportContext,
                     "Input columns cannot be empty!",

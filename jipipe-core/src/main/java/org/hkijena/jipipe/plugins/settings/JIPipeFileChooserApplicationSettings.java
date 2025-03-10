@@ -739,7 +739,7 @@ public class JIPipeFileChooserApplicationSettings extends JIPipeDefaultApplicati
                 result = getLastParametersDirectory();
                 break;
         }
-        if(workbench != null && workbench.getProject() != null && workbench.getProject().getWorkDirectory() != null && result.equals(Paths.get("").toAbsolutePath())) {
+        if (workbench != null && workbench.getProject() != null && workbench.getProject().getWorkDirectory() != null && result.equals(Paths.get("").toAbsolutePath())) {
             result = workbench.getProject().getWorkDirectory();
         }
         return result;

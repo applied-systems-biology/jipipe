@@ -65,8 +65,8 @@ import java.io.StringWriter;
 import java.lang.reflect.Field;
 import java.nio.charset.StandardCharsets;
 import java.nio.file.Path;
-import java.util.List;
 import java.util.*;
+import java.util.List;
 import java.util.function.BiConsumer;
 import java.util.function.BiFunction;
 import java.util.function.Consumer;
@@ -1797,7 +1797,7 @@ public class ImageJUtils {
     }
 
     public static void writeCalibrationToPixels(ImageProcessor ip, double min, double max) {
-        if(ip instanceof ByteProcessor) {
+        if (ip instanceof ByteProcessor) {
             min = Math.max(0, min);
             max = Math.min(255, max);
             byte[] pixels = (byte[]) ip.getPixels();
@@ -1808,8 +1808,7 @@ public class ImageJUtils {
                 value = (int) (min + k * (max - min));
                 pixels[i] = (byte) value;
             }
-        }
-        else if(ip instanceof ShortProcessor) {
+        } else if (ip instanceof ShortProcessor) {
             min = Math.max(0, min);
             max = Math.min(65535, max);
             short[] pixels = (short[]) ip.getPixels();
@@ -1820,26 +1819,23 @@ public class ImageJUtils {
                 value = (int) (min + k * (max - min));
                 pixels[i] = (short) value;
             }
-        }
-        else if(ip instanceof FloatProcessor) {
-            if(Double.isInfinite(min) || Double.isInfinite(max)) {
+        } else if (ip instanceof FloatProcessor) {
+            if (Double.isInfinite(min) || Double.isInfinite(max)) {
                 // Unable to resolve
                 return;
             }
             float[] pixels = (float[]) ip.getPixels();
             for (int i = 0; i < pixels.length; i++) {
                 float value = pixels[i];
-                if(!Float.isNaN(value) ) {
+                if (!Float.isNaN(value)) {
                     double k = (value - min) / (max - min);
                     value = (float) (min + k * (max - min));
                     pixels[i] = value;
                 }
             }
-        }
-        else if(ip instanceof ColorProcessor) {
+        } else if (ip instanceof ColorProcessor) {
             // Do nothing
-        }
-        else {
+        } else {
             throw new UnsupportedOperationException("Unsupported processor: " + ip);
         }
     }

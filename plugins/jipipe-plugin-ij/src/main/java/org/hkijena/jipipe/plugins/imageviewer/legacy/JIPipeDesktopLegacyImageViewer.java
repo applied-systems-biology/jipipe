@@ -46,8 +46,8 @@ import org.scijava.Disposable;
 import javax.swing.*;
 import java.awt.*;
 import java.lang.reflect.Modifier;
-import java.util.List;
 import java.util.*;
+import java.util.List;
 
 public class JIPipeDesktopLegacyImageViewer extends JPanel implements JIPipeDesktopWorkbenchAccess, Disposable {
 

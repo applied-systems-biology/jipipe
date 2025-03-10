@@ -31,10 +31,6 @@ public class UIPlotDataSeriesColumnEnumDesktopParameterEditorUI extends JIPipeDe
 
     private JComboBox<TableColumnData> comboBox;
 
-    /**
-     * @param workbench       workbench
-     * @param parameterAccess the parameter
-     */
     public UIPlotDataSeriesColumnEnumDesktopParameterEditorUI(InitializationParameters parameters) {
         super(parameters);
         initialize();

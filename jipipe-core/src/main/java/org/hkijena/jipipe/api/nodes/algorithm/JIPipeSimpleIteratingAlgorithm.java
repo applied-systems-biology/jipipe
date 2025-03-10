@@ -108,6 +108,7 @@ public abstract class JIPipeSimpleIteratingAlgorithm extends JIPipeParameterSlot
 
     /**
      * If true, allow the execution of an empty iteration step if all inputs are optional and are empty
+     *
      * @return whether empty iteration steps are allowed
      */
     protected boolean isAllowEmptyIterationStep() {
@@ -182,7 +183,7 @@ public abstract class JIPipeSimpleIteratingAlgorithm extends JIPipeParameterSlot
                 }
             }
 
-            if(!hasData && isAllowEmptyIterationStep()) {
+            if (!hasData && isAllowEmptyIterationStep()) {
                 progressInfo.log("Fully empty, but node allowed empty iteration steps -> unlocking");
                 hasData = true;
             }

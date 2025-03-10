@@ -73,15 +73,15 @@ import org.jetbrains.annotations.NotNull;
 import org.jfree.graphics2d.svg.SVGGraphics2D;
 import org.scijava.Disposable;
 
-import javax.swing.FocusManager;
 import javax.swing.*;
+import javax.swing.FocusManager;
 import java.awt.*;
 import java.awt.dnd.DropTarget;
 import java.awt.event.*;
 import java.awt.geom.AffineTransform;
 import java.awt.image.BufferedImage;
-import java.util.List;
 import java.util.*;
+import java.util.List;
 import java.util.concurrent.locks.StampedLock;
 import java.util.stream.Collectors;
 
@@ -2391,16 +2391,14 @@ public class JIPipeDesktopGraphCanvasUI extends JLayeredPane implements JIPipeDe
 
         // Above node paint
         if (currentTool != null) {
-            if(currentTool instanceof JIPipeAnnotationGraphNodeTool && ((JIPipeAnnotationGraphNodeTool<?>) currentTool).isDrawWithAntialiasing()) {
+            if (currentTool instanceof JIPipeAnnotationGraphNodeTool && ((JIPipeAnnotationGraphNodeTool<?>) currentTool).isDrawWithAntialiasing()) {
                 try {
                     graphics2D.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
                     currentTool.paintAfterNodesAndEdges(graphics2D);
-                }
-                finally {
+                } finally {
                     graphics2D.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_OFF);
                 }
-            }
-            else {
+            } else {
                 currentTool.paintAfterNodesAndEdges(graphics2D);
             }
         }

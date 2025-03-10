@@ -17,23 +17,23 @@ import ij.IJ;
 import ij.ImagePlus;
 import ij.Prefs;
 import ij.WindowManager;
-import ij.gui.Line;
 import ij.gui.*;
+import ij.gui.Line;
 import loci.formats.MetadataTools;
 import loci.formats.meta.IMetadata;
 import loci.formats.meta.MetadataStore;
 import loci.formats.ome.OMEXMLMetadata;
 import ome.units.UNITS;
 import ome.units.quantity.Length;
+import ome.xml.model.*;
 import ome.xml.model.Point;
 import ome.xml.model.Polygon;
 import ome.xml.model.Shape;
-import ome.xml.model.*;
 import ome.xml.model.primitives.NonNegativeInteger;
 import org.hkijena.jipipe.plugins.imagejdatatypes.datatypes.ROI2DListData;
 
-import java.awt.Rectangle;
 import java.awt.*;
+import java.awt.Rectangle;
 import java.util.ArrayList;
 import java.util.List;
 

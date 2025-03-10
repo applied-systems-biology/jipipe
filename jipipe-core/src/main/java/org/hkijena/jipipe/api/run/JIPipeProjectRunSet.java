@@ -13,7 +13,6 @@ import org.hkijena.jipipe.plugins.parameters.library.colors.OptionalColorParamet
 import org.hkijena.jipipe.plugins.parameters.library.graph.GraphNodeReferenceParameter;
 import org.hkijena.jipipe.plugins.parameters.library.markup.HTMLText;
 import org.hkijena.jipipe.utils.StringUtils;
-import org.jetbrains.annotations.NotNull;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -95,7 +94,7 @@ public class JIPipeProjectRunSet extends AbstractJIPipeParameterCollection {
 
     public boolean canResolveAllNodes(JIPipeProject project) {
         for (GraphNodeReferenceParameter node : nodes) {
-            if(node.resolve(project) == null) {
+            if (node.resolve(project) == null) {
                 return false;
             }
         }
@@ -106,10 +105,9 @@ public class JIPipeProjectRunSet extends AbstractJIPipeParameterCollection {
         List<JIPipeGraphNode> result = new ArrayList<>();
         for (GraphNodeReferenceParameter node : nodes) {
             JIPipeGraphNode resolved = node.resolve(project);
-            if(resolved instanceof JIPipeProjectCompartment) {
+            if (resolved instanceof JIPipeProjectCompartment) {
                 result.addAll(((JIPipeProjectCompartment) resolved).getOutputNodes().values());
-            }
-            else if(resolved != null) {
+            } else if (resolved != null) {
                 result.add(resolved);
             }
         }
@@ -129,7 +127,7 @@ public class JIPipeProjectRunSet extends AbstractJIPipeParameterCollection {
     public void addNodes(Set<JIPipeGraphNode> nodes, JIPipeProjectRunSetsConfiguration configuration) {
         Set<String> existing = getNodeUUIDs();
         for (JIPipeGraphNode node : nodes) {
-            if(!existing.contains(node.getUUIDInParentGraph().toString())) {
+            if (!existing.contains(node.getUUIDInParentGraph().toString())) {
                 this.nodes.add(new GraphNodeReferenceParameter(node));
             }
         }

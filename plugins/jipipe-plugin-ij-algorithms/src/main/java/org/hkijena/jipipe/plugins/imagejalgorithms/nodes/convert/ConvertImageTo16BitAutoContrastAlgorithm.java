@@ -29,7 +29,6 @@ import org.hkijena.jipipe.api.parameters.JIPipeParameter;
 import org.hkijena.jipipe.api.parameters.JIPipeParameterAccess;
 import org.hkijena.jipipe.api.parameters.JIPipeParameterTree;
 import org.hkijena.jipipe.plugins.imagejalgorithms.nodes.contrast.HistogramContrastEnhancerAlgorithm;
-import org.hkijena.jipipe.plugins.imagejdatatypes.datatypes.ImagePlusData;
 import org.hkijena.jipipe.plugins.imagejdatatypes.datatypes.greyscale.ImagePlusGreyscale16UData;
 import org.hkijena.jipipe.plugins.imagejdatatypes.datatypes.greyscale.ImagePlusGreyscale8UData;
 import org.hkijena.jipipe.plugins.imagejdatatypes.datatypes.greyscale.ImagePlusGreyscaleData;
@@ -98,7 +97,7 @@ public class ConvertImageTo16BitAutoContrastAlgorithm extends JIPipeSimpleIterat
 
     @Override
     public boolean isParameterUIVisible(JIPipeParameterTree tree, JIPipeParameterAccess access) {
-        if("custom-range".equalsIgnoreCase(access.getKey())) {
+        if ("custom-range".equalsIgnoreCase(access.getKey())) {
             return calibrationMode == ImageJCalibrationMode.Custom;
         }
         return super.isParameterUIVisible(tree, access);
@@ -109,9 +108,9 @@ public class ConvertImageTo16BitAutoContrastAlgorithm extends JIPipeSimpleIterat
         ImagePlus image = iterationStep.getInputData(getFirstInputSlot(), ImagePlusGreyscaleData.class, progressInfo).getImage();
         HistogramContrastEnhancerAlgorithm histogramContrastEnhancerAlgorithm = JIPipe.createNode(HistogramContrastEnhancerAlgorithm.class);
         ImagePlus result = ImageJUtils.generateForEachIndexedZCTSlice(image, (ip, index) -> {
-            ImagePlus imp =  new ImagePlus("slice", ip.duplicate());
+            ImagePlus imp = new ImagePlus("slice", ip.duplicate());
 
-            if(imp.getBitDepth() < 16) {
+            if (imp.getBitDepth() < 16) {
                 // We need to up-convert the 16-bit image, otherwise makes no sense
                 imp = ImageJUtils.convertToGrayscale16UIfNeeded(imp);
             }
@@ -119,7 +118,7 @@ public class ConvertImageTo16BitAutoContrastAlgorithm extends JIPipeSimpleIterat
             Vector2dParameter minMax = ImageJUtils.calibrate(imp, calibrationMode, customRange.getX(), customRange.getY());
             ImageJUtils.writeCalibrationToPixels(imp.getProcessor(), minMax.getX(), minMax.getY());
             ImageProcessor resultIp = ImageJUtils.convertToGrayscale16UIfNeeded(imp).getProcessor();
-            if(stretchHistogram) {
+            if (stretchHistogram) {
                 histogramContrastEnhancerAlgorithm.stretchHistogram(resultIp, 0.35, true);
             }
             return resultIp;

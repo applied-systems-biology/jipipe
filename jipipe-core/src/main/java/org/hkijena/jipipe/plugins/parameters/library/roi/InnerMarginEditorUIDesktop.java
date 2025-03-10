@@ -31,11 +31,6 @@ public class InnerMarginEditorUIDesktop extends JIPipeDesktopParameterEditorUI {
     private boolean skipNextReload = false;
     private JIPipeDesktopParameterFormPanel parameterPanel;
 
-    /**
-     * @param workbench       workbench
-     * @param parameterTree   the parameter tree
-     * @param parameterAccess the parameter
-     */
     public InnerMarginEditorUIDesktop(InitializationParameters parameters) {
         super(parameters);
         initialize();

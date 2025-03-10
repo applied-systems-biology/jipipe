@@ -29,10 +29,6 @@ public class AnchorDesktopParameterEditorUI extends JIPipeDesktopParameterEditor
     private final Map<Anchor, JToggleButton> anchorSelectionMap = new HashMap<>();
     private boolean skipNextReload = false;
 
-    /**
-     * @param workbench       workbench
-     * @param parameterAccess the parameter
-     */
     public AnchorDesktopParameterEditorUI(InitializationParameters parameters) {
         super(parameters);
         initialize();

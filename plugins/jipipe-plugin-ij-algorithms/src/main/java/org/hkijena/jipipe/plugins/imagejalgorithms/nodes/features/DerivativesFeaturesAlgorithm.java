@@ -28,7 +28,6 @@ import org.hkijena.jipipe.api.nodes.categories.ImagesNodeTypeCategory;
 import org.hkijena.jipipe.api.nodes.iterationstep.JIPipeIterationContext;
 import org.hkijena.jipipe.api.nodes.iterationstep.JIPipeSingleIterationStep;
 import org.hkijena.jipipe.api.parameters.JIPipeParameter;
-import org.hkijena.jipipe.plugins.imagejalgorithms.utils.ImageJAlgorithmUtils;
 import org.hkijena.jipipe.plugins.imagejalgorithms.utils.ImageScienceUtils;
 import org.hkijena.jipipe.plugins.imagejdatatypes.datatypes.ImagePlusData;
 import org.hkijena.jipipe.plugins.imagejdatatypes.datatypes.greyscale.ImagePlusGreyscaleData;
@@ -72,110 +71,6 @@ public class DerivativesFeaturesAlgorithm extends JIPipeSimpleIteratingAlgorithm
         this.smoothingScale = other.smoothingScale;
         this.isotropicGaussian = other.isotropicGaussian;
         this.force2D = other.force2D;
-    }
-
-    @Override
-    protected void runIteration(JIPipeSingleIterationStep iterationStep, JIPipeIterationContext iterationContext, JIPipeGraphNodeRunContext runContext, JIPipeProgressInfo progressInfo) {
-        ImagePlus input = iterationStep.getInputData(getFirstInputSlot(), ImagePlusGreyscaleData.class, progressInfo).getImage();
-
-        if(force2D) {
-            Map<ImageSliceIndex, ImageProcessor> resultMap = new HashMap<>();
-            ImageJUtils.forEachIndexedZCTSliceWithProgress(input, (ip, index, sliceProgress) -> {
-                ImagePlus sliceImp = new ImagePlus("slice", ip);
-                sliceImp.copyScale(input);
-                ImagePlus resultSlice = applyDerivatives(sliceImp, sliceProgress);
-                resultMap.put(index, resultSlice.getProcessor());
-            }, progressInfo);
-            ImagePlus result = ImageJUtils.mergeMappedSlices(resultMap);
-            result.copyScale(input);
-            iterationStep.addOutputData(getFirstOutputSlot(), new ImagePlusData(result), progressInfo);
-        }
-        else {
-            ImagePlus result = applyDerivatives(input, progressInfo);
-            iterationStep.addOutputData(getFirstOutputSlot(), new ImagePlusData(result), progressInfo);
-        }
-    }
-
-    private ImagePlus applyDerivatives(ImagePlus input, JIPipeProgressInfo progressInfo) {
-        final Image image = Image.wrap(input);
-        final Aspects aspects = image.aspects();
-        if (!isotropicGaussian) {
-            image.aspects(new Aspects());
-        }
-        final Image output = new FloatImage(image);
-        run(output, smoothingScale, xOrder, yOrder, zOrder, progressInfo);
-        output.aspects(aspects);
-        return ImageScienceUtils.unwrap(output, input);
-    }
-
-    @SetJIPipeDocumentation(name = "Force 2D", description = "If enabled, each 2D image slice is processed individually.")
-    @JIPipeParameter(value = "force-2d", important = true)
-    public boolean isForce2D() {
-        return force2D;
-    }
-
-    @JIPipeParameter("force-2d")
-    public void setForce2D(boolean force2D) {
-        this.force2D = force2D;
-    }
-
-    @SetJIPipeDocumentation(name = "Isotropic Gaussian smoothing", description = "Use the voxel width, height, and depth specified in the image properties (calibration). " +
-            "That is, each dimension is assigned its own smoothing scale, computed by dividing the scale as specified in the plugin dialog by the specified pixel/voxel size for that dimension.")
-    @JIPipeParameter("isotropic-gaussian")
-    public boolean isIsotropicGaussian() {
-        return isotropicGaussian;
-    }
-
-    @JIPipeParameter("isotropic-gaussian")
-    public void setIsotropicGaussian(boolean isotropicGaussian) {
-        this.isotropicGaussian = isotropicGaussian;
-    }
-
-    @SetJIPipeDocumentation(name = "x-Order", description = "The differentiation order (up tp 10) in the x-dimension. " +
-            "Order 0 in any dimension implies that only smoothing is applied in that dimension. The differentiation operation is carried out for each time frame and channel in a 5D image.")
-    @JIPipeParameter("x-order")
-    public int getxOrder() {
-        return xOrder;
-    }
-
-    @JIPipeParameter("x-order")
-    public void setxOrder(int xOrder) {
-        this.xOrder = xOrder;
-    }
-
-    @SetJIPipeDocumentation(name = "y-Order", description = "The differentiation order (up tp 10) in the y-dimension. " +
-            "Order 0 in any dimension implies that only smoothing is applied in that dimension. The differentiation operation is carried out for each time frame and channel in a 5D image.")
-    @JIPipeParameter("y-order")
-    public int getyOrder() {
-        return yOrder;
-    }
-
-    @JIPipeParameter("y-order")
-    public void setyOrder(int yOrder) {
-        this.yOrder = yOrder;
-    }
-
-    @SetJIPipeDocumentation(name = "z-Order", description = "The differentiation order (up tp 10) in the z-dimension. " +
-            "Order 0 in any dimension implies that only smoothing is applied in that dimension. The differentiation operation is carried out for each time frame and channel in a 5D image.")
-    @JIPipeParameter("z-order")
-    public int getzOrder() {
-        return zOrder;
-    }
-
-    @JIPipeParameter("z-order")
-    public void setzOrder(int zOrder) {
-        this.zOrder = zOrder;
-    }
-
-    @SetJIPipeDocumentation(name = "Smoothing scale", description = "The standard deviation of the Gaussian kernel. Must be larger than zero.")
-    @JIPipeParameter("smoothing-scale")
-    public double getSmoothingScale() {
-        return smoothingScale;
-    }
-
-    @JIPipeParameter("smoothing-scale")
-    public void setSmoothingScale(double smoothingScale) {
-        this.smoothingScale = smoothingScale;
     }
 
     public static Image run(final Image image, final double scale, final int xorder, final int yorder, final int zorder, JIPipeProgressInfo progressInfo) {
@@ -496,6 +391,109 @@ public class DerivativesFeaturesAlgorithm extends JIPipeSimpleIteratingAlgorithm
             throw new IllegalArgumentException("Differentiation order out of range in y-dimension");
         if (zorder < 0 || zorder > Differentiator.MAX_ORDER)
             throw new IllegalArgumentException("Differentiation order out of range in z-dimension");
+    }
+
+    @Override
+    protected void runIteration(JIPipeSingleIterationStep iterationStep, JIPipeIterationContext iterationContext, JIPipeGraphNodeRunContext runContext, JIPipeProgressInfo progressInfo) {
+        ImagePlus input = iterationStep.getInputData(getFirstInputSlot(), ImagePlusGreyscaleData.class, progressInfo).getImage();
+
+        if (force2D) {
+            Map<ImageSliceIndex, ImageProcessor> resultMap = new HashMap<>();
+            ImageJUtils.forEachIndexedZCTSliceWithProgress(input, (ip, index, sliceProgress) -> {
+                ImagePlus sliceImp = new ImagePlus("slice", ip);
+                sliceImp.copyScale(input);
+                ImagePlus resultSlice = applyDerivatives(sliceImp, sliceProgress);
+                resultMap.put(index, resultSlice.getProcessor());
+            }, progressInfo);
+            ImagePlus result = ImageJUtils.mergeMappedSlices(resultMap);
+            result.copyScale(input);
+            iterationStep.addOutputData(getFirstOutputSlot(), new ImagePlusData(result), progressInfo);
+        } else {
+            ImagePlus result = applyDerivatives(input, progressInfo);
+            iterationStep.addOutputData(getFirstOutputSlot(), new ImagePlusData(result), progressInfo);
+        }
+    }
+
+    private ImagePlus applyDerivatives(ImagePlus input, JIPipeProgressInfo progressInfo) {
+        final Image image = Image.wrap(input);
+        final Aspects aspects = image.aspects();
+        if (!isotropicGaussian) {
+            image.aspects(new Aspects());
+        }
+        final Image output = new FloatImage(image);
+        run(output, smoothingScale, xOrder, yOrder, zOrder, progressInfo);
+        output.aspects(aspects);
+        return ImageScienceUtils.unwrap(output, input);
+    }
+
+    @SetJIPipeDocumentation(name = "Force 2D", description = "If enabled, each 2D image slice is processed individually.")
+    @JIPipeParameter(value = "force-2d", important = true)
+    public boolean isForce2D() {
+        return force2D;
+    }
+
+    @JIPipeParameter("force-2d")
+    public void setForce2D(boolean force2D) {
+        this.force2D = force2D;
+    }
+
+    @SetJIPipeDocumentation(name = "Isotropic Gaussian smoothing", description = "Use the voxel width, height, and depth specified in the image properties (calibration). " +
+            "That is, each dimension is assigned its own smoothing scale, computed by dividing the scale as specified in the plugin dialog by the specified pixel/voxel size for that dimension.")
+    @JIPipeParameter("isotropic-gaussian")
+    public boolean isIsotropicGaussian() {
+        return isotropicGaussian;
+    }
+
+    @JIPipeParameter("isotropic-gaussian")
+    public void setIsotropicGaussian(boolean isotropicGaussian) {
+        this.isotropicGaussian = isotropicGaussian;
+    }
+
+    @SetJIPipeDocumentation(name = "x-Order", description = "The differentiation order (up tp 10) in the x-dimension. " +
+            "Order 0 in any dimension implies that only smoothing is applied in that dimension. The differentiation operation is carried out for each time frame and channel in a 5D image.")
+    @JIPipeParameter("x-order")
+    public int getxOrder() {
+        return xOrder;
+    }
+
+    @JIPipeParameter("x-order")
+    public void setxOrder(int xOrder) {
+        this.xOrder = xOrder;
+    }
+
+    @SetJIPipeDocumentation(name = "y-Order", description = "The differentiation order (up tp 10) in the y-dimension. " +
+            "Order 0 in any dimension implies that only smoothing is applied in that dimension. The differentiation operation is carried out for each time frame and channel in a 5D image.")
+    @JIPipeParameter("y-order")
+    public int getyOrder() {
+        return yOrder;
+    }
+
+    @JIPipeParameter("y-order")
+    public void setyOrder(int yOrder) {
+        this.yOrder = yOrder;
+    }
+
+    @SetJIPipeDocumentation(name = "z-Order", description = "The differentiation order (up tp 10) in the z-dimension. " +
+            "Order 0 in any dimension implies that only smoothing is applied in that dimension. The differentiation operation is carried out for each time frame and channel in a 5D image.")
+    @JIPipeParameter("z-order")
+    public int getzOrder() {
+        return zOrder;
+    }
+
+    @JIPipeParameter("z-order")
+    public void setzOrder(int zOrder) {
+        this.zOrder = zOrder;
+    }
+
+    @SetJIPipeDocumentation(name = "Smoothing scale", description = "The standard deviation of the Gaussian kernel. Must be larger than zero.")
+    @JIPipeParameter("smoothing-scale")
+    public double getSmoothingScale() {
+        return smoothingScale;
+    }
+
+    @JIPipeParameter("smoothing-scale")
+    public void setSmoothingScale(double smoothingScale) {
+        this.smoothingScale = smoothingScale;
     }
 
 }

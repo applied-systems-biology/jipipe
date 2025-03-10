@@ -28,18 +28,13 @@ import java.util.Set;
 /**
  * Editor for {@link FixedMargin}
  */
-public class FixedMarginEditorUIDesktop extends JIPipeDesktopParameterEditorUI {
+public class FixedMarginEditorUI extends JIPipeDesktopParameterEditorUI {
 
     private final Map<Anchor, JToggleButton> anchorSelectionMap = new HashMap<>();
     private boolean skipNextReload = false;
     private JIPipeDesktopParameterFormPanel parameterPanel;
 
-    /**
-     * @param workbench       workbench
-     * @param parameterTree   the parameter tree
-     * @param parameterAccess the parameter
-     */
-    public FixedMarginEditorUIDesktop(InitializationParameters parameters) {
+    public FixedMarginEditorUI(InitializationParameters parameters) {
         super(parameters);
         initialize();
         reload();

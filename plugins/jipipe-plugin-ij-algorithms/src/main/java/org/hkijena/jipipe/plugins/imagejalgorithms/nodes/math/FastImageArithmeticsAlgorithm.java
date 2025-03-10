@@ -395,97 +395,81 @@ public class FastImageArithmeticsAlgorithm extends JIPipeIteratingAlgorithm {
     }
 
     private Object applySliceModeFunction(Object o, int bitDepth) {
-        if(o instanceof ImageProcessor) {
+        if (o instanceof ImageProcessor) {
             return ((ImageProcessor) o).getStats().mode;
-        }
-        else if(o instanceof Number) {
+        } else if (o instanceof Number) {
             return o;
-        }
-        else {
+        } else {
             throw new UnsupportedOperationException("Unsupported argument: " + o);
         }
     }
 
     private Object applySliceKurtosisFunction(Object o, int bitDepth) {
-        if(o instanceof ImageProcessor) {
+        if (o instanceof ImageProcessor) {
             return ((ImageProcessor) o).getStatistics().kurtosis;
-        }
-        else if(o instanceof Number) {
+        } else if (o instanceof Number) {
             return o;
-        }
-        else {
+        } else {
             throw new UnsupportedOperationException("Unsupported argument: " + o);
         }
     }
 
     private Object applySliceSkewnessFunction(Object o, int bitDepth) {
-        if(o instanceof ImageProcessor) {
+        if (o instanceof ImageProcessor) {
             return ((ImageProcessor) o).getStatistics().skewness;
-        }
-        else if(o instanceof Number) {
+        } else if (o instanceof Number) {
             return o;
-        }
-        else {
+        } else {
             throw new UnsupportedOperationException("Unsupported argument: " + o);
         }
     }
 
     private Object applySliceStdDevFunction(Object o, int bitDepth) {
-        if(o instanceof ImageProcessor) {
+        if (o instanceof ImageProcessor) {
             return ((ImageProcessor) o).getStats().stdDev;
-        }
-        else if(o instanceof Number) {
+        } else if (o instanceof Number) {
             return o;
-        }
-        else {
+        } else {
             throw new UnsupportedOperationException("Unsupported argument: " + o);
         }
     }
 
     private Object applySliceMedianFunction(Object o, int bitDepth) {
-        if(o instanceof ImageProcessor) {
+        if (o instanceof ImageProcessor) {
             return ((ImageProcessor) o).getStatistics().median;
-        }
-        else if(o instanceof Number) {
+        } else if (o instanceof Number) {
             return o;
-        }
-        else {
+        } else {
             throw new UnsupportedOperationException("Unsupported argument: " + o);
         }
     }
 
     private Object applySliceMeanFunction(Object o, int bitDepth) {
-        if(o instanceof ImageProcessor) {
+        if (o instanceof ImageProcessor) {
             return ((ImageProcessor) o).getStats().mean;
-        }
-        else if(o instanceof Number) {
+        } else if (o instanceof Number) {
             return o;
-        }
-        else {
+        } else {
             throw new UnsupportedOperationException("Unsupported argument: " + o);
         }
     }
 
     private Object applySliceMaxFunction(Object o, int bitDepth) {
-        if(o instanceof ImageProcessor) {
+        if (o instanceof ImageProcessor) {
             return ((ImageProcessor) o).getStats().max;
-        }
-        else if(o instanceof Number) {
+        } else if (o instanceof Number) {
             return o;
-        }
-        else {
+        } else {
             throw new UnsupportedOperationException("Unsupported argument: " + o);
         }
     }
 
     private Object applySliceMinFunction(Object o, int bitDepth) {
-        if(o instanceof ImageProcessor) {
+        if (o instanceof ImageProcessor) {
             return ((ImageProcessor) o).getStats().min;
-        }
-        else if(o instanceof Number) {
+        } else if (o instanceof Number) {
             return o;
-        }
-        else {
+        } else {
             throw new UnsupportedOperationException("Unsupported argument: " + o);
         }
     }

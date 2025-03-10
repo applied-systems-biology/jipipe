@@ -143,9 +143,9 @@ public class JIPipeProjectMetadata extends JIPipeStandardMetadata {
 
     public boolean hasKnownGlobalAuthor() {
         for (OptionalJIPipeAuthorMetadata projectAuthor : JIPipeProjectAuthorsApplicationSettings.getInstance().getProjectAuthors()) {
-            if(projectAuthor.isEnabled())  {
+            if (projectAuthor.isEnabled()) {
                 for (JIPipeAuthorMetadata author : getAuthors()) {
-                    if(author.fuzzyEquals(projectAuthor.getContent())) {
+                    if (author.fuzzyEquals(projectAuthor.getContent())) {
                         return true;
                     }
                 }

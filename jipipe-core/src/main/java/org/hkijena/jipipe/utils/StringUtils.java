@@ -658,7 +658,7 @@ public class StringUtils {
     }
 
     public static String wrapHtml(String text) {
-        if(!text.trim().startsWith("<html>")) {
+        if (!text.trim().startsWith("<html>")) {
             return "<html>" + text + "</html>";
         }
         return text;

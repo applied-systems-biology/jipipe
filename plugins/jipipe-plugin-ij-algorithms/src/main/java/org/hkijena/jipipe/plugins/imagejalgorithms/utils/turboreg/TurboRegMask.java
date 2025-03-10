@@ -96,24 +96,6 @@ public class TurboRegMask
         return (mask);
     }
 
-    /**
-     * Return the pyramid as a <code>Stack</code> object. A single pyramid
-     * level consists of
-     * <p>
-     * <table border="1">
-     * <tr><th><code>isTarget</code></th>
-     * <th>ML*</th>
-     * <th>ML</th></tr>
-     * <tr><td>true</td>
-     * <td>mask samples</td>
-     * <td>mask samples</td></tr>
-     * <tr><td>false</td>
-     * <td>mask samples</td>
-     * <td>mask samples</td></tr>
-     * </table>
-     *
-     * @see TurboRegImage#getPyramid()
-     **/
     public Stack<float[]> getPyramid(
     ) {
         return (pyramid);

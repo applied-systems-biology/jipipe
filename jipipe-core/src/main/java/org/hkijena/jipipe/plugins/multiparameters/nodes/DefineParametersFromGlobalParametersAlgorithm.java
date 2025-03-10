@@ -17,7 +17,10 @@ import org.hkijena.jipipe.api.ConfigureJIPipeNode;
 import org.hkijena.jipipe.api.JIPipeProgressInfo;
 import org.hkijena.jipipe.api.SetJIPipeDocumentation;
 import org.hkijena.jipipe.api.data.JIPipeData;
-import org.hkijena.jipipe.api.nodes.*;
+import org.hkijena.jipipe.api.nodes.AddJIPipeInputSlot;
+import org.hkijena.jipipe.api.nodes.AddJIPipeOutputSlot;
+import org.hkijena.jipipe.api.nodes.JIPipeGraphNodeRunContext;
+import org.hkijena.jipipe.api.nodes.JIPipeNodeInfo;
 import org.hkijena.jipipe.api.nodes.algorithm.JIPipeSimpleIteratingAlgorithm;
 import org.hkijena.jipipe.api.nodes.categories.DataSourceNodeTypeCategory;
 import org.hkijena.jipipe.api.nodes.iterationstep.JIPipeIterationContext;
@@ -71,7 +74,7 @@ public class DefineParametersFromGlobalParametersAlgorithm extends JIPipeSimpleI
     @Override
     protected void runIteration(JIPipeSingleIterationStep iterationStep, JIPipeIterationContext iterationContext, JIPipeGraphNodeRunContext runContext, JIPipeProgressInfo progressInfo) {
         JIPipeProject project = getProject();
-        if(project == null) {
+        if (project == null) {
             progressInfo.log("WARNING: Project is null! Cannot extract parameters.");
             return;
         }
@@ -80,7 +83,7 @@ public class DefineParametersFromGlobalParametersAlgorithm extends JIPipeSimpleI
         JIPipeExpressionVariablesMap variablesMap = new JIPipeExpressionVariablesMap(iterationStep);
         for (Map.Entry<String, JIPipeParameterAccess> entry : project.getMetadata().getGlobalParameters().getParameters().entrySet()) {
             variablesMap.put(entry.getKey(), entry.getValue().get(Object.class));
-            if(filter.test(variablesMap)) {
+            if (filter.test(variablesMap)) {
                 parametersData.getParameterData().put(entry.getKey(), entry.getValue().get(Object.class));
             }
         }

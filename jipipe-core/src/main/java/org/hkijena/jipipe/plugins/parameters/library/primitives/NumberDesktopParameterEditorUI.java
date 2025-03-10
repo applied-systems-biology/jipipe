@@ -31,10 +31,6 @@ import java.util.Objects;
 public class NumberDesktopParameterEditorUI extends JIPipeDesktopParameterEditorUI {
     private JTextField numberField;
 
-    /**
-     * @param workbench       workbench
-     * @param parameterAccess the parameter
-     */
     public NumberDesktopParameterEditorUI(InitializationParameters parameters) {
         super(parameters);
         initialize();

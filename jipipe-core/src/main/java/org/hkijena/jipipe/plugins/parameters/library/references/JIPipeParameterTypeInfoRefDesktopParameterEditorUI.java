@@ -27,10 +27,6 @@ import java.awt.*;
 public class JIPipeParameterTypeInfoRefDesktopParameterEditorUI extends JIPipeDesktopParameterEditorUI {
     private JButton currentlyDisplayed;
 
-    /**
-     * @param workbench       workbench
-     * @param parameterAccess the parameter
-     */
     public JIPipeParameterTypeInfoRefDesktopParameterEditorUI(InitializationParameters parameters) {
         super(parameters);
         initialize();

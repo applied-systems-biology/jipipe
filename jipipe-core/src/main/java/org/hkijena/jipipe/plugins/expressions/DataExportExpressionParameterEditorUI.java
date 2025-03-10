@@ -8,7 +8,6 @@ import org.hkijena.jipipe.utils.UIUtils;
 
 import javax.swing.*;
 import javax.swing.filechooser.FileNameExtensionFilter;
-import java.nio.file.Path;
 
 public class DataExportExpressionParameterEditorUI extends JIPipeExpressionDesktopParameterEditorUI {
     public DataExportExpressionParameterEditorUI(InitializationParameters parameters) {
@@ -18,26 +17,27 @@ public class DataExportExpressionParameterEditorUI extends JIPipeExpressionDeskt
 
     private void initialize() {
         JButton setPathButton = new JButton("Select", UIUtils.getIconFromResources("actions/fileopen.png"));
-        setPathButton.addActionListener(e -> { openPath(); });
+        setPathButton.addActionListener(e -> {
+            openPath();
+        });
         getEditPanel().add(setPathButton);
     }
 
     private void openPath() {
         PathIOMode ioMode = PathIOMode.Save;
         PathType pathType = PathType.FilesAndDirectories;
-        String[] extensions = new String[] {};
+        String[] extensions = new String[]{};
         PathParameterSettings settings = getParameterAccess().getAnnotationOfType(PathParameterSettings.class);
-        if(settings != null) {
+        if (settings != null) {
             ioMode = settings.ioMode();
             pathType = settings.pathMode();
             extensions = settings.extensions();
         }
 
         DataExportExpressionParameter selectedPath;
-        if(extensions == null || extensions.length == 0) {
+        if (extensions == null || extensions.length == 0) {
             selectedPath = DataExportExpressionParameter.showPathChooser(getDesktopWorkbench().getWindow(), getWorkbench(), "Select path", pathType);
-        }
-        else {
+        } else {
             FileNameExtensionFilter filter = new FileNameExtensionFilter("Supported files", extensions);
             selectedPath = DataExportExpressionParameter.showPathChooser(getDesktopWorkbench().getWindow(), getWorkbench(), "Select path", pathType, filter);
         }

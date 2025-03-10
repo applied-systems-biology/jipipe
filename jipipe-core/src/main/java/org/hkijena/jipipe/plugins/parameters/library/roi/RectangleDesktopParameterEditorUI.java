@@ -28,10 +28,6 @@ public class RectangleDesktopParameterEditorUI extends JIPipeDesktopParameterEdi
     private JSpinner widthSpinner;
     private JSpinner heightSpinner;
 
-    /**
-     * @param workbench       workbench
-     * @param parameterAccess the parameter
-     */
     public RectangleDesktopParameterEditorUI(InitializationParameters parameters) {
         super(parameters);
         initialize();

@@ -21,7 +21,10 @@ import org.hkijena.jipipe.api.ConfigureJIPipeNode;
 import org.hkijena.jipipe.api.JIPipeProgressInfo;
 import org.hkijena.jipipe.api.SetJIPipeDocumentation;
 import org.hkijena.jipipe.api.data.storage.JIPipeZIPWriteDataStorage;
-import org.hkijena.jipipe.api.nodes.*;
+import org.hkijena.jipipe.api.nodes.AddJIPipeInputSlot;
+import org.hkijena.jipipe.api.nodes.AddJIPipeOutputSlot;
+import org.hkijena.jipipe.api.nodes.JIPipeGraphNodeRunContext;
+import org.hkijena.jipipe.api.nodes.JIPipeNodeInfo;
 import org.hkijena.jipipe.api.nodes.algorithm.JIPipeSimpleIteratingAlgorithm;
 import org.hkijena.jipipe.api.nodes.categories.ExportNodeTypeCategory;
 import org.hkijena.jipipe.api.nodes.iterationstep.JIPipeIterationContext;
@@ -47,7 +50,10 @@ import org.janelia.saalfeldlab.n5.ij.N5ScalePyramidExporter;
 
 import java.io.IOException;
 import java.nio.file.Path;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.List;
+import java.util.Map;
 
 @SetJIPipeDocumentation(name = "Export OME ZARR", description = "Writes an OME ZARR into a directory or ZIP file")
 @ConfigureJIPipeNode(nodeTypeCategory = ExportNodeTypeCategory.class, menuPath = "Images")
@@ -78,8 +84,8 @@ public class ExportImagePlusAsOMEZARRAlgorithm extends JIPipeSimpleIteratingAlgo
     protected void runIteration(JIPipeSingleIterationStep iterationStep, JIPipeIterationContext iterationContext, JIPipeGraphNodeRunContext runContext, JIPipeProgressInfo progressInfo) {
         OMEImageData omeImageData = iterationStep.getInputData(getFirstInputSlot(), OMEImageData.class, progressInfo);
         ImagePlus imp = omeImageData.getImage();
-        int[] defaultChunkSize = ZARRUtils.computeOptimalChunkSizes(new int[] { imp.getWidth(), imp.getHeight(), imp.getNChannels(), imp.getNSlices(), imp.getNFrames() });
-        if(chunkSizeExpression.isEnabled()) {
+        int[] defaultChunkSize = ZARRUtils.computeOptimalChunkSizes(new int[]{imp.getWidth(), imp.getHeight(), imp.getNChannels(), imp.getNSlices(), imp.getNFrames()});
+        if (chunkSizeExpression.isEnabled()) {
             JIPipeExpressionVariablesMap variablesMap = new JIPipeExpressionVariablesMap(iterationStep);
             variablesMap.putCommonVariables(iterationStep);
             variablesMap.put("default.cz.x", defaultChunkSize[0]);
@@ -112,7 +118,7 @@ public class ExportImagePlusAsOMEZARRAlgorithm extends JIPipeSimpleIteratingAlgo
                 new ArrayList<>(iterationStep.getMergedTextAnnotations().values()));
 
 
-        if(outputFormat == OutputFormat.ZippedZARR) {
+        if (outputFormat == OutputFormat.ZippedZARR) {
             // Add extensions and delete existing file/directory
             outputPath = PathUtils.ensureExtension(outputPath, ".zarr.zip");
             PathUtils.deleteIfExists(outputPath, progressInfo);
@@ -121,16 +127,15 @@ public class ExportImagePlusAsOMEZARRAlgorithm extends JIPipeSimpleIteratingAlgo
             String uri = ZARRUtils.pathToZARRURI(outputPath);
 
             // Create a temporary storage
-            try(JIPipeZIPWriteDataStorage storage = new JIPipeZIPWriteDataStorage(progressInfo.resolve("ZIP"), outputPath)) {
+            try (JIPipeZIPWriteDataStorage storage = new JIPipeZIPWriteDataStorage(progressInfo.resolve("ZIP"), outputPath)) {
                 Path tmpPath = storage.getFileSystemPath();
-                writeZARR(imp, omeImageData.getMetadata(), updatedChunkSize,tmpPath, progressInfo);
+                writeZARR(imp, omeImageData.getMetadata(), updatedChunkSize, tmpPath, progressInfo);
             } catch (IOException e) {
                 throw new RuntimeException(e);
             }
 
             iterationStep.addOutputData(getFirstOutputSlot(), new URIData(uri), progressInfo);
-        }
-        else if(outputFormat == OutputFormat.ZARRDirectory) {
+        } else if (outputFormat == OutputFormat.ZARRDirectory) {
 
             // Add extensions and delete existing file/directory
             outputPath = PathUtils.ensureExtension(outputPath, ".zarr");
@@ -143,8 +148,7 @@ public class ExportImagePlusAsOMEZARRAlgorithm extends JIPipeSimpleIteratingAlgo
             writeZARR(imp, omeImageData.getMetadata(), updatedChunkSize, outputPath, progressInfo);
 
             iterationStep.addOutputData(getFirstOutputSlot(), new URIData(uri), progressInfo);
-        }
-        else {
+        } else {
             throw new RuntimeException("Unsupported output format " + outputFormat);
         }
 
@@ -165,7 +169,7 @@ public class ExportImagePlusAsOMEZARRAlgorithm extends JIPipeSimpleIteratingAlgo
         progressInfo.log("Exporting ZARR to " + path + " (URI " + ZARRUtils.pathToZARRURI(path) + ")");
         exporter.run();
 
-        if(metadata != null) {
+        if (metadata != null) {
             ZARRUtils.writeOMEXMLToZARR(path, metadata, progressInfo);
         }
     }

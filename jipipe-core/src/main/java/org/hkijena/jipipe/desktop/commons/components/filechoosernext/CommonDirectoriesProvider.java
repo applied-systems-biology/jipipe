@@ -2,12 +2,8 @@ package org.hkijena.jipipe.desktop.commons.components.filechoosernext;
 
 import org.apache.commons.lang3.SystemUtils;
 
-import java.nio.file.DirectoryStream;
-import java.nio.file.FileSystems;
-import java.nio.file.Files;
-import java.nio.file.Path;
-import java.nio.file.Paths;
 import java.io.IOException;
+import java.nio.file.*;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
@@ -71,7 +67,7 @@ public class CommonDirectoriesProvider {
 
         String userName = System.getProperty("user.name");
 
-        if(userName != null) {
+        if (userName != null) {
             mounts.addAll(scanMountDirectory(Paths.get("/media/" + userName)));
         }
 
@@ -108,7 +104,8 @@ public class CommonDirectoriesProvider {
             if (stream != null) {
                 try {
                     stream.close();
-                } catch (IOException ignored) {}
+                } catch (IOException ignored) {
+                }
             }
         }
 
@@ -129,7 +126,8 @@ public class CommonDirectoriesProvider {
             if (stream != null) {
                 try {
                     stream.close();
-                } catch (IOException ignored) {}
+                } catch (IOException ignored) {
+                }
             }
         }
     }

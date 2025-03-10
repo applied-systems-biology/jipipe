@@ -75,7 +75,7 @@ public class OMEROPluginProjectSettings extends JIPipeDefaultProjectSettingsShee
 
     @Override
     public void getEnvironmentDependencies(List<JIPipeEnvironment> target) {
-        if(projectDefaultEnvironment.isEnabled()) {
+        if (projectDefaultEnvironment.isEnabled()) {
             target.add(projectDefaultEnvironment.getContent());
         }
     }

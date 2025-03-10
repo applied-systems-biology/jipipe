@@ -30,11 +30,6 @@ public class ColorDesktopParameterEditorUI extends JIPipeDesktopParameterEditorU
     private boolean isReloading = false;
     private JButton currentlyDisplayed;
 
-
-    /**
-     * @param workbench       workbench
-     * @param parameterAccess the parameter
-     */
     public ColorDesktopParameterEditorUI(InitializationParameters parameters) {
         super(parameters);
         initialize();

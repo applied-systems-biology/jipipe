@@ -37,8 +37,8 @@ import org.hkijena.jipipe.utils.debounce.StaticDebouncer;
 import javax.swing.*;
 import javax.swing.tree.DefaultMutableTreeNode;
 import java.awt.*;
-import java.util.List;
 import java.util.*;
+import java.util.List;
 import java.util.stream.Collectors;
 
 /**

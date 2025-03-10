@@ -34,10 +34,6 @@ public class JIPipeNodeInfoRefDesktopParameterEditorUI extends JIPipeDesktopPara
     private JButton currentlyDisplayed;
     private JDialog pickerDialog;
 
-    /**
-     * @param workbench       workbench
-     * @param parameterAccess the parameter
-     */
     public JIPipeNodeInfoRefDesktopParameterEditorUI(InitializationParameters parameters) {
         super(parameters);
         initialize();

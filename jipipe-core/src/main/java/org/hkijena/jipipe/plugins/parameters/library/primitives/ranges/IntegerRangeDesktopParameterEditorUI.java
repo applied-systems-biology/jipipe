@@ -37,10 +37,6 @@ public class IntegerRangeDesktopParameterEditorUI extends JIPipeDesktopParameter
     private JTextField rangeStringEditor;
     private boolean isUpdating = false;
 
-    /**
-     * @param workbench       workbench
-     * @param parameterAccess the parameter
-     */
     public IntegerRangeDesktopParameterEditorUI(InitializationParameters parameters) {
         super(parameters);
         initialize();

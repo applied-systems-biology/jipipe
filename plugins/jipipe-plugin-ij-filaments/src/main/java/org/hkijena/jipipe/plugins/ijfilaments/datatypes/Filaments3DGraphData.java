@@ -69,8 +69,8 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
 import java.nio.file.Path;
-import java.util.List;
 import java.util.*;
+import java.util.List;
 import java.util.function.Predicate;
 import java.util.stream.Collectors;
 
@@ -520,11 +520,11 @@ public class Filaments3DGraphData extends SimpleGraph<FilamentVertex, FilamentEd
     /**
      * Measures an edge that might not exist
      *
-     * @param sourceVertex   the source vertex
-     * @param targetVertex  the target vertex
-     * @param target the map where results will be stored
-     * @param prefix the prefix for the map keys
-     * @param unit   the unit for physical sizes
+     * @param sourceVertex the source vertex
+     * @param targetVertex the target vertex
+     * @param target       the map where results will be stored
+     * @param prefix       the prefix for the map keys
+     * @param unit         the unit for physical sizes
      */
     public void measureNewEdge(FilamentVertex sourceVertex, FilamentVertex targetVertex, Map<String, Object> target, String prefix, String unit) {
         target.put(prefix + "uuid", "");
@@ -560,8 +560,8 @@ public class Filaments3DGraphData extends SimpleGraph<FilamentVertex, FilamentEd
     /**
      * Gets the length of an edge that might not exist yet in the specified unit
      *
-     * @param edgeSource the source vertex
-     * @param edgeTarget the target vertex
+     * @param edgeSource       the source vertex
+     * @param edgeTarget       the target vertex
      * @param usePhysicalSizes if the length should be returned in pixels or in the physical size
      * @param unit             the unit (any supported by {@link org.hkijena.jipipe.plugins.parameters.library.quantities.Quantity})
      * @return the length of the edge
@@ -1107,8 +1107,7 @@ public class Filaments3DGraphData extends SimpleGraph<FilamentVertex, FilamentEd
                 maxC = Math.max(maxC, vertex.getNonSpatialLocation().getChannel());
                 maxT = Math.max(maxT, vertex.getNonSpatialLocation().getFrame());
             }
-        }
-        else {
+        } else {
             for (FilamentVertex vertex : vertexSet()) {
                 maxX = (int) Math.max(maxX, vertex.getXMax(true));
                 maxY = (int) Math.max(maxY, vertex.getYMax(true));

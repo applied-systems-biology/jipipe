@@ -28,10 +28,6 @@ public class PasswordDesktopParameterEditorUI extends JIPipeDesktopParameterEdit
 
     private final JIPipeDesktopFancyPasswordField passwordField = new JIPipeDesktopFancyPasswordField(new JLabel(UIUtils.getIconFromResources("actions/pgp-keys.png")));
 
-    /**
-     * @param workbench       workbench
-     * @param parameterAccess the parameter
-     */
     public PasswordDesktopParameterEditorUI(InitializationParameters parameters) {
         super(parameters);
         initialize();

@@ -5,7 +5,6 @@ import org.hkijena.jipipe.utils.StringUtils;
 import javax.swing.*;
 import javax.swing.table.TableCellRenderer;
 import java.awt.*;
-import java.nio.file.Path;
 
 public class JIPipeDesktopFileChooserNextSizeTableCellRenderer extends JLabel implements TableCellRenderer {
 
@@ -18,26 +17,22 @@ public class JIPipeDesktopFileChooserNextSizeTableCellRenderer extends JLabel im
     @Override
     public Component getTableCellRendererComponent(JTable table, Object value, boolean isSelected, boolean hasFocus, int row, int column) {
 
-        if(value instanceof Number) {
+        if (value instanceof Number) {
             long size = ((Number) value).longValue();
-            if(size == 0) {
+            if (size == 0) {
                 setText("");
-            }
-            else if(size < 0) {
+            } else if (size < 0) {
                 setText((-size) + " elements");
-            }
-            else {
+            } else {
                 setText(StringUtils.formatSize(size));
             }
-        }
-        else {
+        } else {
             setText("");
         }
 
-        if(isSelected) {
+        if (isSelected) {
             setBackground(UIManager.getColor("List.selectionBackground"));
-        }
-        else {
+        } else {
             setBackground(UIManager.getColor("List.background"));
         }
         return this;

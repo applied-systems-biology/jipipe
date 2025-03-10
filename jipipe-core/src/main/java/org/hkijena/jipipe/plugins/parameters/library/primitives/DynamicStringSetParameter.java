@@ -13,8 +13,8 @@
 
 package org.hkijena.jipipe.plugins.parameters.library.primitives;
 
-import org.hkijena.jipipe.plugins.parameters.api.enums.DynamicSetParameterSettings;
 import org.hkijena.jipipe.plugins.parameters.api.enums.DynamicSetParameter;
+import org.hkijena.jipipe.plugins.parameters.api.enums.DynamicSetParameterSettings;
 
 import java.util.Set;
 

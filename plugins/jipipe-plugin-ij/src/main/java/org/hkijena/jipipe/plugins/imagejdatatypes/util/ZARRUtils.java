@@ -24,7 +24,6 @@ import net.imglib2.RandomAccessibleInterval;
 import net.imglib2.img.display.imagej.ImageJFunctions;
 import net.imglib2.type.numeric.NumericType;
 import ome.xml.meta.OMEXMLMetadata;
-import org.hkijena.jipipe.JIPipe;
 import org.hkijena.jipipe.api.JIPipeProgressInfo;
 import org.hkijena.jipipe.utils.PathUtils;
 import org.janelia.saalfeldlab.n5.ij.N5IJUtils;
@@ -35,7 +34,6 @@ import java.io.IOException;
 import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.nio.file.Path;
-import java.nio.file.Paths;
 import java.util.List;
 
 public class ZARRUtils {
@@ -140,7 +138,7 @@ public class ZARRUtils {
 
     public static OMEXMLMetadata readOMEXMLFromZARR(Path localZarrPath, JIPipeProgressInfo progressInfo) throws IOException {
         Path xmlPath = localZarrPath.resolve("OME").resolve("METADATA.ome.xml");
-        if(Files.isRegularFile(xmlPath)) {
+        if (Files.isRegularFile(xmlPath)) {
             progressInfo.log("Reading OME XML metadata from " + xmlPath.toAbsolutePath() + " (QuPath flavor)");
             String omeXml = new String(Files.readAllBytes(xmlPath));
             try {
@@ -150,8 +148,7 @@ public class ZARRUtils {
             } catch (DependencyException | ServiceException e) {
                 throw new RuntimeException(e);
             }
-        }
-        else {
+        } else {
             return null;
         }
     }
@@ -163,12 +160,10 @@ public class ZARRUtils {
                 toImport.add(node);
             } else if (node.getMetadata().getClass().getSimpleName().equalsIgnoreCase("OmeNgffMetadata")) {
                 progressInfo.log("- Detected OME NGFF " + node.getMetadata() + " at " + node.getPath());
-            }
-            else if(node.getMetadata() instanceof N5DatasetMetadata) {
+            } else if (node.getMetadata() instanceof N5DatasetMetadata) {
                 progressInfo.log("- Detected dataset " + node.getMetadata() + " at " + node.getPath());
                 toImport.add(node);
-            }
-            else {
+            } else {
                 progressInfo.log("- Detected unknown " + node.getMetadata() + " at " + node.getPath());
             }
         } else {

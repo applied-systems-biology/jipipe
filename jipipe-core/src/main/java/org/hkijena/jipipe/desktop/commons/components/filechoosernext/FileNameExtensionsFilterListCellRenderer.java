@@ -16,10 +16,9 @@ public class FileNameExtensionsFilterListCellRenderer extends JLabel implements 
 
         setText(value.getDescription());
 
-        if(isSelected) {
+        if (isSelected) {
             setBackground(UIManager.getColor("List.selectionBackground"));
-        }
-        else {
+        } else {
             setBackground(UIManager.getColor("List.background"));
         }
         return this;

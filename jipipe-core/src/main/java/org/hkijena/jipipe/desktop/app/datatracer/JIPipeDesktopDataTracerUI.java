@@ -35,13 +35,12 @@ import org.hkijena.jipipe.desktop.commons.components.tabs.JIPipeDesktopTabPane;
 import org.hkijena.jipipe.desktop.commons.components.window.JIPipeDesktopAlwaysOnTopToggle;
 import org.hkijena.jipipe.utils.UIUtils;
 import org.hkijena.jipipe.utils.data.OwningStore;
-import org.jdesktop.swingx.JXStatusBar;
 import org.scijava.Disposable;
 
 import javax.swing.*;
 import java.awt.*;
-import java.util.List;
 import java.util.*;
+import java.util.List;
 import java.util.stream.Collectors;
 
 public class JIPipeDesktopDataTracerUI extends JIPipeDesktopProjectWorkbenchPanel implements JIPipeRunnable.InterruptedEventListener, JIPipeRunnable.FinishedEventListener, Disposable, JIPipeCache.ModifiedEventListener {
@@ -56,9 +55,8 @@ public class JIPipeDesktopDataTracerUI extends JIPipeDesktopProjectWorkbenchPane
     private final JToolBar toolBar = new JToolBar();
     private final JToolBar statusBar = new JToolBar();
     private final JIPipeDesktopMessagePanel messagePanel = new JIPipeDesktopMessagePanel();
-    private Map<Integer, Map<String, Map<String, JIPipeDataTable>>> resultMap = Collections.emptyMap();
     private final JIPipeDesktopTabPane tabPane = new JIPipeDesktopTabPane();
-
+    private Map<Integer, Map<String, Map<String, JIPipeDataTable>>> resultMap = Collections.emptyMap();
     private JScrollPane graphScrollPane;
 
     public JIPipeDesktopDataTracerUI(JIPipeDesktopProjectWorkbench workbench, JIPipeGraphNode targetNode, String targetSlotName, UUID targetNodeUUID, JIPipeDataTable targetTable, int targetTableRow) {

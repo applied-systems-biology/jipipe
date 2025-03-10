@@ -36,10 +36,6 @@ public class TableColumnGeneratorDesktopParameterEditorUI extends JIPipeDesktopP
     private JToggleButton numericColumnToggle;
     private JToggleButton textColumnToggle;
 
-    /**
-     * @param workbench       workbench
-     * @param parameterAccess the parameter
-     */
     public TableColumnGeneratorDesktopParameterEditorUI(InitializationParameters parameters) {
         super(parameters);
         initialize();

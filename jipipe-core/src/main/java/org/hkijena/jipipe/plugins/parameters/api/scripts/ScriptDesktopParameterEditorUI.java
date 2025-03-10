@@ -56,10 +56,6 @@ public class ScriptDesktopParameterEditorUI extends JIPipeDesktopParameterEditor
     private Component pathEditorComponent;
     private JButton closeExternalEditorsButton;
 
-    /**
-     * @param workbench       workbench
-     * @param parameterAccess the parameter
-     */
     public ScriptDesktopParameterEditorUI(InitializationParameters parameters) {
         super(parameters);
         initialize();

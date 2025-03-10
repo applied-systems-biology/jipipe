@@ -16,7 +16,6 @@ package org.hkijena.jipipe.api.history;
 import org.hkijena.jipipe.api.AbstractJIPipeRunnable;
 import org.hkijena.jipipe.api.nodes.JIPipeGraph;
 import org.hkijena.jipipe.api.project.JIPipeProject;
-import org.hkijena.jipipe.api.run.JIPipeRunnable;
 import org.hkijena.jipipe.api.run.JIPipeRunnableQueue;
 import org.hkijena.jipipe.plugins.settings.JIPipeHistoryJournalApplicationSettings;
 import org.hkijena.jipipe.utils.UIUtils;

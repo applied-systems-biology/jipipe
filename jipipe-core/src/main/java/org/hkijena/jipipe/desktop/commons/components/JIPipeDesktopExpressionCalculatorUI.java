@@ -22,8 +22,8 @@ import java.awt.event.FocusEvent;
 import java.awt.event.FocusListener;
 import java.awt.event.KeyAdapter;
 import java.awt.event.KeyEvent;
-import java.util.List;
 import java.util.*;
+import java.util.List;
 
 public class JIPipeDesktopExpressionCalculatorUI extends JIPipeDesktopWorkbenchPanel {
 

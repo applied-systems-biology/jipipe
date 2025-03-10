@@ -52,8 +52,8 @@ import java.awt.*;
 import java.io.IOException;
 import java.lang.annotation.Annotation;
 import java.nio.file.Path;
-import java.util.List;
 import java.util.*;
+import java.util.List;
 
 @SetJIPipeDocumentation(name = "Paths to JIPipe project parameters", description = "Stores the incoming paths into parameters. This node supports path and string parameters.")
 @AddJIPipeInputSlot(value = PathData.class, name = "Input")

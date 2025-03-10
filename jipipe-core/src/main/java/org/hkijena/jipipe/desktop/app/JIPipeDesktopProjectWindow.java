@@ -367,7 +367,7 @@ public class JIPipeDesktopProjectWindow extends JFrame {
                         try {
                             JIPipeProject project = new JIPipeProject();
                             getProgressInfo().log("Loading project " + path);
-                            if(Files.size(path) > 3 * 1024 * 1024) {
+                            if (Files.size(path) > 3 * 1024 * 1024) {
                                 getProgressInfo().log("INFO: File size is " + (Files.size(path) / 1024 / 1024) + " MB. Loading this project may take long.");
                                 getProgressInfo().log("INFO: Consider down-sizing your projects if you experience performance issues.");
                             }
@@ -375,7 +375,7 @@ public class JIPipeDesktopProjectWindow extends JFrame {
                             project.setWorkDirectory(path.getParent());
                             project.validateUserDirectories(notifications);
 
-                            if(getProgressInfo().isCancelled()) {
+                            if (getProgressInfo().isCancelled()) {
                                 return;
                             }
 

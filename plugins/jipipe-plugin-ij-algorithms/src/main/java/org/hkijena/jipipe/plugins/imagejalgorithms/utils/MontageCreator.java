@@ -40,8 +40,8 @@ import org.hkijena.jipipe.utils.StringUtils;
 
 import java.awt.*;
 import java.awt.image.BufferedImage;
-import java.util.List;
 import java.util.*;
+import java.util.List;
 import java.util.stream.Collectors;
 
 /**

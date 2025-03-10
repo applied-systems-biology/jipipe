@@ -97,7 +97,7 @@ public class OCRPluginProjectSettings extends JIPipeDefaultProjectSettingsSheet 
 
     @Override
     public void getEnvironmentDependencies(List<JIPipeEnvironment> target) {
-        if(projectDefaultEnvironment.isEnabled()) {
+        if (projectDefaultEnvironment.isEnabled()) {
             target.add(projectDefaultEnvironment.getContent());
         }
     }

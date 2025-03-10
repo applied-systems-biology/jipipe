@@ -33,8 +33,8 @@ import org.hkijena.jipipe.utils.UIUtils;
 import javax.swing.*;
 import javax.swing.tree.*;
 import java.awt.*;
-import java.util.List;
 import java.util.*;
+import java.util.List;
 import java.util.stream.Collectors;
 
 /**
@@ -310,7 +310,7 @@ public class JIPipeDesktopProjectSettingsUI extends JPanel {
             if (subParameter == project.getMetadata().getDirectories()) {
                 return false;
             }
-            if(subParameter == project.getMetadata().getGlobalParameters()) {
+            if (subParameter == project.getMetadata().getGlobalParameters()) {
                 return false;
             }
             return super.isParameterUIVisible(tree, subParameter);
@@ -420,7 +420,7 @@ public class JIPipeDesktopProjectSettingsUI extends JPanel {
 
         @Override
         public boolean isParameterUIVisible(JIPipeParameterTree tree, JIPipeParameterCollection subParameter) {
-            if(subParameter == project.getMetadata().getGlobalParameters()) {
+            if (subParameter == project.getMetadata().getGlobalParameters()) {
                 return true;
             }
             return false;

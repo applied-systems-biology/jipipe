@@ -34,10 +34,6 @@ public class EnumDesktopParameterEditorUI extends JIPipeDesktopParameterEditorUI
     private boolean isComboBox = true;
     private EnumItemInfo enumItemInfo = new DefaultEnumItemInfo();
 
-    /**
-     * @param workbench       workbench
-     * @param parameterAccess the parameter
-     */
     public EnumDesktopParameterEditorUI(InitializationParameters parameters) {
         super(parameters);
         initialize();

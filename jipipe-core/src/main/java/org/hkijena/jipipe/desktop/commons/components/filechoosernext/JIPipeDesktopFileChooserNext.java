@@ -17,7 +17,10 @@ import org.jdesktop.swingx.decorator.HighlighterFactory;
 import javax.swing.*;
 import javax.swing.filechooser.FileNameExtensionFilter;
 import java.awt.*;
-import java.awt.event.*;
+import java.awt.event.KeyAdapter;
+import java.awt.event.KeyEvent;
+import java.awt.event.MouseAdapter;
+import java.awt.event.MouseEvent;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
@@ -38,9 +41,7 @@ public class JIPipeDesktopFileChooserNext extends JPanel {
     private final JButton breadcrumbPathEditorConfirmButton;
     private final JIPipeWorkbench workbench;
     private final Path initialDirectory;
-    private Path currentDirectory;
     private final FileChooserHistory history = new FileChooserHistory();
-    boolean breadcrumbEditMode = false;
     private final JCheckBoxMenuItem showHiddenToggle = new JCheckBoxMenuItem("Show hidden items");
     private final JPopupMenu entriesPopupMenu = new JPopupMenu();
     private final PathIOMode ioMode;
@@ -50,10 +51,12 @@ public class JIPipeDesktopFileChooserNext extends JPanel {
     private final JIPipeDesktopFancyTextField selectedPathEditor;
     private final JComboBox<FileNameExtensionFilter> extensionFilterComboBox = new JComboBox<>();
     private final JIPipeDesktopFormPanel bottomPanel = new JIPipeDesktopFormPanel(JIPipeDesktopFormPanel.NONE);
-    private Consumer<List<Path>> callbackConfirm;
     private final JIPipeDesktopFancyTextField textFilterEditor;
     private final JIPipeFileChooserApplicationSettings settings;
     private final JCheckBox autoAddExtension = new JCheckBox("Automatically add file extensions", true);
+    boolean breadcrumbEditMode = false;
+    private Path currentDirectory;
+    private Consumer<List<Path>> callbackConfirm;
 
 
     public JIPipeDesktopFileChooserNext(JIPipeWorkbench workbench, Path initialDirectory, PathIOMode ioMode, PathType pathType, boolean multiple, FileNameExtensionFilter... extensionFilters) {
@@ -78,6 +81,123 @@ public class JIPipeDesktopFileChooserNext extends JPanel {
         initialize();
         setCurrentDirectory(initialDirectory);
         refreshSidePanel();
+    }
+
+    public static Path showDialogSingle(Component parent, JIPipeWorkbench workbench, String title, Path initialDirectory, PathIOMode ioMode, PathType pathType, FileNameExtensionFilter... extensionFilters) {
+        List<Path> paths = showDialog(parent, workbench, title, initialDirectory, ioMode, pathType, false, extensionFilters);
+        if (paths.isEmpty()) {
+            return null;
+        }
+        return paths.get(0);
+    }
+
+    public static List<Path> showDialog(Component parent, JIPipeWorkbench workbench, String title, Path initialDirectory, PathIOMode ioMode, PathType pathType, boolean multiple, FileNameExtensionFilter... extensionFilters) {
+        JDialog dialog = new JDialog(parent != null ? SwingUtilities.getWindowAncestor(parent) : null);
+        UIUtils.addEscapeListener(dialog);
+        dialog.setTitle(title);
+        dialog.setModal(true);
+        dialog.setDefaultCloseOperation(WindowConstants.DISPOSE_ON_CLOSE);
+        dialog.setIconImage(UIUtils.getJIPipeIcon128());
+
+        JPanel mainPanel = new JPanel(new BorderLayout());
+
+        JIPipeDesktopFileChooserNext panel = new JIPipeDesktopFileChooserNext(workbench, initialDirectory, ioMode, pathType, multiple, extensionFilters);
+        mainPanel.add(panel, BorderLayout.CENTER);
+
+        List<Path> result = new ArrayList<>();
+
+        panel.setCallbackConfirm((paths) -> {
+            result.addAll(paths);
+            dialog.setVisible(false);
+        });
+
+        JPanel buttonPanel = UIUtils.boxHorizontal(
+                Box.createHorizontalGlue(),
+                UIUtils.createButton("Cancel", UIUtils.getIconFromResources("actions/cancel.png"), () -> dialog.setVisible(false)),
+                UIUtils.createButton(ioMode.name(), UIUtils.getIconFromResources("actions/check.png"), panel::doCallbackConfirmIfValid)
+        );
+        buttonPanel.setBorder(BorderFactory.createEmptyBorder(16, 4, 4, 4));
+        panel.bottomPanel.addWideToForm(buttonPanel);
+
+        dialog.setContentPane(mainPanel);
+        dialog.pack();
+        dialog.setSize(1024, 768);
+        dialog.setLocationRelativeTo(parent);
+        SwingUtilities.invokeLater(panel::refresh);
+        if (pathType != PathType.DirectoriesOnly && ioMode == PathIOMode.Save) {
+            SwingUtilities.invokeLater(panel::focusPathEditor);
+        }
+        dialog.setVisible(true);
+
+        return result;
+    }
+
+    public static void main(String[] args) {
+
+        registerKnownFileType("SVG image", UIUtils.getIconFromResources("mimetypes/svg.png"), ".svg");
+
+        JIPipeDesktopUITheme.ModernLight.install();
+        List<Path> paths = JIPipeDesktopFileChooserNext.showDialog(null, null, "Test dialog", Paths.get(""), PathIOMode.Open, PathType.FilesOnly, true, UIUtils.EXTENSION_FILTER_SVG);
+        if (paths.isEmpty()) {
+            System.out.println("No paths selected");
+        } else {
+            System.out.println(paths.stream().map(Object::toString).collect(Collectors.joining("; ")));
+        }
+        System.exit(0);
+    }
+
+    /**
+     * Registers a new path type
+     *
+     * @param name            the name
+     * @param icon            the icon. If 32x32, the icon itself is used. Otherwise, it is combined with the default file icon
+     * @param extension       the extension (including dot)
+     * @param otherExtensions other extensions (including dot)
+     */
+    public static void registerKnownFileType(String name, Icon icon, String extension, String... otherExtensions) {
+        Set<String> extensions = new HashSet<>(Arrays.asList(otherExtensions));
+        extensions.add(extension);
+
+        Icon finalIcon;
+        if (icon.getIconWidth() < 32) {
+            // Create a combined icon
+            finalIcon = new CompositeIcon(UIUtils.getIcon32FromResources("file.png"),
+                    icon,
+                    16 - icon.getIconWidth() / 2,
+                    16 - icon.getIconHeight() / 2);
+        } else {
+            finalIcon = icon;
+        }
+
+        JIPipeDesktopFileChooserNextPathTypeMetadata metadata = new JIPipeDesktopFileChooserNextPathTypeMetadata(name, PathType.FilesOnly, extensions, finalIcon);
+        KNOWN_PATH_TYPES.add(metadata);
+    }
+
+    /**
+     * Registers a new path type
+     *
+     * @param name            the name
+     * @param icon            the icon. If 32x32, the icon itself is used. Otherwise, it is combined with the default file icon
+     * @param extension       the extension (including dot)
+     * @param otherExtensions other extensions (including dot)
+     */
+    public static void registerKnownDirectoryType(String name, Icon icon, String extension, String... otherExtensions) {
+        Set<String> extensions = new HashSet<>(Arrays.asList(otherExtensions));
+        extensions.add(extension);
+
+        Icon finalIcon;
+        if (icon.getIconWidth() < 32) {
+            // Create a combined icon
+            finalIcon = new CompositeIcon(UIUtils.getIcon32FromResources("places/folder2-purple.png"),
+                    icon,
+                    16 - icon.getIconWidth() / 2,
+                    19 - icon.getIconHeight() / 2);
+        } else {
+            finalIcon = icon;
+        }
+
+        JIPipeDesktopFileChooserNextPathTypeMetadata metadata = new JIPipeDesktopFileChooserNextPathTypeMetadata(name, PathType.DirectoriesOnly, extensions, finalIcon);
+        KNOWN_PATH_TYPES.add(metadata);
     }
 
     private JLabel getPathTypeLabel(PathType pathType) {
@@ -401,7 +521,7 @@ public class JIPipeDesktopFileChooserNext extends JPanel {
             bottomPanel.addToForm(extensionFilterComboBox, new JLabel("Filter"));
 
             // Add auto extensions
-            if(ioMode == PathIOMode.Save) {
+            if (ioMode == PathIOMode.Save) {
                 bottomPanel.addWideToForm(autoAddExtension);
             }
         }
@@ -642,55 +762,6 @@ public class JIPipeDesktopFileChooserNext extends JPanel {
         breadcrumbToolBar.repaint(50);
     }
 
-    public static Path showDialogSingle(Component parent, JIPipeWorkbench workbench, String title, Path initialDirectory, PathIOMode ioMode, PathType pathType, FileNameExtensionFilter... extensionFilters) {
-        List<Path> paths = showDialog(parent, workbench, title, initialDirectory, ioMode, pathType, false, extensionFilters);
-        if (paths.isEmpty()) {
-            return null;
-        }
-        return paths.get(0);
-    }
-
-    public static List<Path> showDialog(Component parent, JIPipeWorkbench workbench, String title, Path initialDirectory, PathIOMode ioMode, PathType pathType, boolean multiple, FileNameExtensionFilter... extensionFilters) {
-        JDialog dialog = new JDialog(parent != null ? SwingUtilities.getWindowAncestor(parent) : null);
-        UIUtils.addEscapeListener(dialog);
-        dialog.setTitle(title);
-        dialog.setModal(true);
-        dialog.setDefaultCloseOperation(WindowConstants.DISPOSE_ON_CLOSE);
-        dialog.setIconImage(UIUtils.getJIPipeIcon128());
-
-        JPanel mainPanel = new JPanel(new BorderLayout());
-
-        JIPipeDesktopFileChooserNext panel = new JIPipeDesktopFileChooserNext(workbench, initialDirectory, ioMode, pathType, multiple, extensionFilters);
-        mainPanel.add(panel, BorderLayout.CENTER);
-
-        List<Path> result = new ArrayList<>();
-
-        panel.setCallbackConfirm((paths) -> {
-            result.addAll(paths);
-            dialog.setVisible(false);
-        });
-
-        JPanel buttonPanel = UIUtils.boxHorizontal(
-                Box.createHorizontalGlue(),
-                UIUtils.createButton("Cancel", UIUtils.getIconFromResources("actions/cancel.png"), () -> dialog.setVisible(false)),
-                UIUtils.createButton(ioMode.name(), UIUtils.getIconFromResources("actions/check.png"), panel::doCallbackConfirmIfValid)
-        );
-        buttonPanel.setBorder(BorderFactory.createEmptyBorder(16, 4, 4, 4));
-        panel.bottomPanel.addWideToForm(buttonPanel);
-
-        dialog.setContentPane(mainPanel);
-        dialog.pack();
-        dialog.setSize(1024, 768);
-        dialog.setLocationRelativeTo(parent);
-        SwingUtilities.invokeLater(panel::refresh);
-        if(pathType != PathType.DirectoriesOnly && ioMode == PathIOMode.Save) {
-            SwingUtilities.invokeLater(panel::focusPathEditor);
-        }
-        dialog.setVisible(true);
-
-        return result;
-    }
-
     private void focusPathEditor() {
         selectedPathEditor.getTextField().requestFocusInWindow();
     }
@@ -816,20 +887,6 @@ public class JIPipeDesktopFileChooserNext extends JPanel {
         return results;
     }
 
-    public static void main(String[] args) {
-
-        registerKnownFileType("SVG image", UIUtils.getIconFromResources("mimetypes/svg.png"), ".svg");
-
-        JIPipeDesktopUITheme.ModernLight.install();
-        List<Path> paths = JIPipeDesktopFileChooserNext.showDialog(null, null, "Test dialog", Paths.get(""), PathIOMode.Open, PathType.FilesOnly, true, UIUtils.EXTENSION_FILTER_SVG);
-        if (paths.isEmpty()) {
-            System.out.println("No paths selected");
-        } else {
-            System.out.println(paths.stream().map(Object::toString).collect(Collectors.joining("; ")));
-        }
-        System.exit(0);
-    }
-
     public Path getCurrentDirectory() {
         return currentDirectory;
     }
@@ -857,61 +914,5 @@ public class JIPipeDesktopFileChooserNext extends JPanel {
 
     public JIPipeWorkbench getWorkbench() {
         return workbench;
-    }
-
-    /**
-     * Registers a new path type
-     *
-     * @param name            the name
-     * @param icon            the icon. If 32x32, the icon itself is used. Otherwise, it is combined with the default file icon
-     * @param extension       the extension (including dot)
-     * @param otherExtensions other extensions (including dot)
-     */
-    public static void registerKnownFileType(String name, Icon icon, String extension, String... otherExtensions) {
-        Set<String> extensions = new HashSet<>(Arrays.asList(otherExtensions));
-        extensions.add(extension);
-
-        Icon finalIcon;
-        if(icon.getIconWidth() < 32) {
-            // Create a combined icon
-            finalIcon = new CompositeIcon(UIUtils.getIcon32FromResources("file.png"),
-                    icon,
-                    16 - icon.getIconWidth() / 2,
-                    16 - icon.getIconHeight() / 2 );
-        }
-        else {
-            finalIcon = icon;
-        }
-
-        JIPipeDesktopFileChooserNextPathTypeMetadata metadata = new JIPipeDesktopFileChooserNextPathTypeMetadata(name, PathType.FilesOnly, extensions, finalIcon);
-        KNOWN_PATH_TYPES.add(metadata);
-    }
-
-    /**
-     * Registers a new path type
-     *
-     * @param name            the name
-     * @param icon            the icon. If 32x32, the icon itself is used. Otherwise, it is combined with the default file icon
-     * @param extension       the extension (including dot)
-     * @param otherExtensions other extensions (including dot)
-     */
-    public static void registerKnownDirectoryType(String name, Icon icon, String extension, String... otherExtensions) {
-        Set<String> extensions = new HashSet<>(Arrays.asList(otherExtensions));
-        extensions.add(extension);
-
-        Icon finalIcon;
-        if(icon.getIconWidth() < 32) {
-            // Create a combined icon
-            finalIcon = new CompositeIcon(UIUtils.getIcon32FromResources("places/folder2-purple.png"),
-                    icon,
-                    16 - icon.getIconWidth() / 2,
-                    19 - icon.getIconHeight() / 2 );
-        }
-        else {
-            finalIcon = icon;
-        }
-
-        JIPipeDesktopFileChooserNextPathTypeMetadata metadata = new JIPipeDesktopFileChooserNextPathTypeMetadata(name, PathType.DirectoriesOnly, extensions, finalIcon);
-        KNOWN_PATH_TYPES.add(metadata);
     }
 }

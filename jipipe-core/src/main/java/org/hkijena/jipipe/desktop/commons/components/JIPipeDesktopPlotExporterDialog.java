@@ -59,7 +59,7 @@ public class JIPipeDesktopPlotExporterDialog extends JDialog {
                     insets = UIUtils.UI_PADDING;
                 }
             });
-            pathEditor = new JIPipeDesktopPathEditorComponent(null,PathIOMode.Save, PathType.FilesOnly);
+            pathEditor = new JIPipeDesktopPathEditorComponent(null, PathIOMode.Save, PathType.FilesOnly);
             add(pathEditor, new GridBagConstraints() {
                 {
                     gridx = 1;

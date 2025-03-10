@@ -19,7 +19,7 @@ import java.util.List;
 
 public class CellposeModelInfo {
     private String modelNameOrPath;
-//    private String sizeModelNameOrPath;
+    //    private String sizeModelNameOrPath;
     private boolean modelPretrained;
     private List<JIPipeTextAnnotation> annotationList;
 

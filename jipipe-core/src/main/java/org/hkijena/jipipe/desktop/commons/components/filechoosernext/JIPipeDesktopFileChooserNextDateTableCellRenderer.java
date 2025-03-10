@@ -18,17 +18,15 @@ public class JIPipeDesktopFileChooserNextDateTableCellRenderer extends JLabel im
     @Override
     public Component getTableCellRendererComponent(JTable table, Object value, boolean isSelected, boolean hasFocus, int row, int column) {
 
-        if(value instanceof LocalDateTime) {
-          setText(StringUtils.formatDateTime((LocalDateTime) value));
-        }
-        else {
+        if (value instanceof LocalDateTime) {
+            setText(StringUtils.formatDateTime((LocalDateTime) value));
+        } else {
             setText("");
         }
 
-        if(isSelected) {
+        if (isSelected) {
             setBackground(UIManager.getColor("List.selectionBackground"));
-        }
-        else {
+        } else {
             setBackground(UIManager.getColor("List.background"));
         }
         return this;

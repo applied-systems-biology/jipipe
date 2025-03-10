@@ -140,7 +140,7 @@ public class JIPipeExpressionVariablesMap extends HashMap<String, Object> {
     }
 
     public JIPipeExpressionVariablesMap putGlobalVariables(JIPipeProject project) {
-        if(project == null) {
+        if (project == null) {
             return this;
         }
         for (Entry<String, JIPipeParameterAccess> entry : project.getMetadata().getGlobalParameters().getParameters().entrySet()) {
@@ -150,7 +150,7 @@ public class JIPipeExpressionVariablesMap extends HashMap<String, Object> {
     }
 
     public JIPipeExpressionVariablesMap putCommonVariables(JIPipeSingleIterationStep iterationStep) {
-        if(iterationStep.getNode() instanceof JIPipeAlgorithm) {
+        if (iterationStep.getNode() instanceof JIPipeAlgorithm) {
             JIPipeAlgorithm node = (JIPipeAlgorithm) iterationStep.getNode();
             putCommonVariables(node);
         }
@@ -166,7 +166,7 @@ public class JIPipeExpressionVariablesMap extends HashMap<String, Object> {
     }
 
     public JIPipeExpressionVariablesMap putCommonVariables(JIPipeMultiIterationStep iterationStep) {
-        if(iterationStep.getNode() instanceof JIPipeAlgorithm) {
+        if (iterationStep.getNode() instanceof JIPipeAlgorithm) {
             JIPipeAlgorithm node = (JIPipeAlgorithm) iterationStep.getNode();
             putCommonVariables(node);
         }

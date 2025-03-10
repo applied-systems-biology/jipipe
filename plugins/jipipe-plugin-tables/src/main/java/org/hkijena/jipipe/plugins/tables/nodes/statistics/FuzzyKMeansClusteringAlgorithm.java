@@ -14,7 +14,8 @@
 package org.hkijena.jipipe.plugins.tables.nodes.statistics;
 
 import org.apache.commons.math3.linear.RealMatrix;
-import org.apache.commons.math3.ml.clustering.*;
+import org.apache.commons.math3.ml.clustering.CentroidCluster;
+import org.apache.commons.math3.ml.clustering.FuzzyKMeansClusterer;
 import org.apache.commons.math3.random.JDKRandomGenerator;
 import org.hkijena.jipipe.api.AddJIPipeCitation;
 import org.hkijena.jipipe.api.ConfigureJIPipeNode;
@@ -53,11 +54,11 @@ import java.util.List;
 @AddJIPipeOutputSlot(value = ResultsTableData.class, name = "Centers", create = true, description = "The cluster centers (best-matching)")
 public class FuzzyKMeansClusteringAlgorithm extends JIPipeSimpleIteratingAlgorithm {
 
+    private final OutputSettings outputSettings;
+    private final ClusteringSettings clusteringSettings;
     private int k = 3;
     private double fuzziness = 5;
     private TableColumnSourceExpressionParameter.List inputColumns = new TableColumnSourceExpressionParameter.List();
-    private final OutputSettings outputSettings;
-    private final ClusteringSettings clusteringSettings;
 
 
     public FuzzyKMeansClusteringAlgorithm(JIPipeNodeInfo info) {
@@ -87,10 +88,9 @@ public class FuzzyKMeansClusteringAlgorithm extends JIPipeSimpleIteratingAlgorit
         List<TableColumnData> inputColumns_ = new ArrayList<>();
         for (TableColumnSourceExpressionParameter inputColumn : inputColumns) {
             TableColumnData columnData = inputColumn.pickOrGenerateColumn(tableData, variablesMap);
-            if(columnData != null) {
+            if (columnData != null) {
                 inputColumns_.add(columnData);
-            }
-            else {
+            } else {
                 throw new RuntimeException("Unable to find/generate column " + inputColumn.getValue().getExpression());
             }
         }
@@ -109,7 +109,7 @@ public class FuzzyKMeansClusteringAlgorithm extends JIPipeSimpleIteratingAlgorit
             for (int col = 0; col < inputColumns_.size(); col++) {
                 TableColumnData columnData = inputColumns_.get(col);
                 double value = columnData.getRowAsDouble(row);
-                if(Double.isNaN(value) || Double.isInfinite(value)) {
+                if (Double.isNaN(value) || Double.isInfinite(value)) {
                     value = 0;
                 }
                 arr[col] = value;
@@ -136,13 +136,13 @@ public class FuzzyKMeansClusteringAlgorithm extends JIPipeSimpleIteratingAlgorit
 
             // Write into original
             for (IndexedDoublePoint point : cluster.getPoints()) {
-                if(outputColumnClusterId >= 0) {
+                if (outputColumnClusterId >= 0) {
                     tableData.setValueAt(clusterId, point.getSourceRow(), outputColumnClusterId);
                 }
-                if(outputColumnClusterSize >= 0) {
+                if (outputColumnClusterSize >= 0) {
                     tableData.setValueAt(cluster.getPoints().size(), point.getSourceRow(), outputColumnClusterSize);
                 }
-                if(outputColumnDistanceToCenter >= 0) {
+                if (outputColumnDistanceToCenter >= 0) {
                     double distanceToCenter = clusteringSettings.distanceMeasure.getDistanceMeasure().compute(cluster.getCenter().getPoint(), point.getPoint());
                     tableData.setValueAt(distanceToCenter, point.getSourceRow(), outputColumnDistanceToCenter);
                 }
@@ -164,10 +164,9 @@ public class FuzzyKMeansClusteringAlgorithm extends JIPipeSimpleIteratingAlgorit
         // Add columns (memberships)
         int outputColumnMembership1 = -1;
         for (int i = 0; i < centroid.size(); i++) {
-            if(i > 0) {
+            if (i > 0) {
                 tableData.addNumericColumn(outputSettings.membershipPrefix + (i + 1));
-            }
-            else {
+            } else {
                 outputColumnMembership1 = tableData.addNumericColumn(outputSettings.membershipPrefix + (i + 1));
             }
         }
@@ -188,7 +187,7 @@ public class FuzzyKMeansClusteringAlgorithm extends JIPipeSimpleIteratingAlgorit
     @Override
     public void reportValidity(JIPipeValidationReportContext reportContext, JIPipeValidationReport report) {
         super.reportValidity(reportContext, report);
-        if(inputColumns.isEmpty()) {
+        if (inputColumns.isEmpty()) {
             report.report(new JIPipeValidationReportEntry(JIPipeValidationReportEntryLevel.Error,
                     reportContext,
                     "Input columns cannot be empty!",

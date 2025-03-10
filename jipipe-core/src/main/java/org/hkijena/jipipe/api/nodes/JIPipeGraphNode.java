@@ -56,8 +56,8 @@ import javax.swing.*;
 import java.awt.*;
 import java.io.IOException;
 import java.nio.file.Path;
-import java.util.List;
 import java.util.*;
+import java.util.List;
 import java.util.stream.Collectors;
 
 /**
@@ -1291,10 +1291,9 @@ public abstract class JIPipeGraphNode extends AbstractJIPipeParameterCollection 
     }
 
     public JIPipeProject getProject() {
-        if(getRuntimeProject() == null && getParentGraph() != null) {
+        if (getRuntimeProject() == null && getParentGraph() != null) {
             return getParentGraph().getProject();
-        }
-        else {
+        } else {
             return getRuntimeProject();
         }
     }

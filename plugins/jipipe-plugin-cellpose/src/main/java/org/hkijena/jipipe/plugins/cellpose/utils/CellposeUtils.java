@@ -20,7 +20,6 @@ import gnu.trove.list.TIntList;
 import gnu.trove.list.array.TIntArrayList;
 import ij.IJ;
 import ij.ImagePlus;
-import ij.ImageStack;
 import ij.gui.PolygonRoi;
 import ij.gui.Roi;
 import ij.process.ImageProcessor;
@@ -29,10 +28,6 @@ import org.hkijena.jipipe.api.annotation.JIPipeTextAnnotation;
 import org.hkijena.jipipe.api.data.JIPipeInputDataSlot;
 import org.hkijena.jipipe.api.data.storage.JIPipeFileSystemWriteDataStorage;
 import org.hkijena.jipipe.api.nodes.JIPipeGraphNode;
-import org.hkijena.jipipe.api.validation.JIPipeValidationReportEntry;
-import org.hkijena.jipipe.api.validation.JIPipeValidationReportEntryLevel;
-import org.hkijena.jipipe.api.validation.JIPipeValidationRuntimeException;
-import org.hkijena.jipipe.api.validation.contexts.GraphNodeValidationReportContext;
 import org.hkijena.jipipe.plugins.cellpose.datatypes.CellposeModelData;
 import org.hkijena.jipipe.plugins.imagejdatatypes.datatypes.ImagePlusData;
 import org.hkijena.jipipe.plugins.imagejdatatypes.datatypes.OMEImageData;
@@ -153,7 +148,7 @@ public class CellposeUtils {
                 final boolean isRGB = img.getType() == ImagePlus.COLOR_RGB;
                 final boolean isMultiChannel = img.getNChannels() > 1;
 
-                if(enableMultiChannel) {
+                if (enableMultiChannel) {
                     if (isRGB ^ isMultiChannel || !isRGB) {
                         rowProgress.log("3D mode, multichannel (multichannel XOR RGB) -> Image will be split by frame.");
                         CellposeImageInfo info = new CellposeImageInfo(row);
@@ -172,8 +167,7 @@ public class CellposeUtils {
                         }, progressInfo);
                         runWith3D.add(info);
                     }
-                }
-                else {
+                } else {
                     CellposeImageInfo info = new CellposeImageInfo(row);
                     ImageJUtils.forEachIndexedCTStack(img, (sliceImage, index, sliceProcess) -> {
                         saveInputImage(row, ImageJUtils.convertToGreyscaleIfNeeded(sliceImage), io3DPath, index, info);
@@ -253,13 +247,13 @@ public class CellposeUtils {
                         int targetC = c;
                         int targetZ = z;
                         int targetT = t;
-                        if(sourceIndex.getC() >= 0) {
+                        if (sourceIndex.getC() >= 0) {
                             targetC = sourceIndex.getC();
                         }
-                        if(sourceIndex.getZ() >= 0) {
+                        if (sourceIndex.getZ() >= 0) {
                             targetZ = sourceIndex.getZ();
                         }
-                        if(sourceIndex.getT() >= 0) {
+                        if (sourceIndex.getT() >= 0) {
                             targetT = sourceIndex.getT();
                         }
                         progressInfo.log("Assigning local slice (c=" + c + ", z=" + z + ", t=" + t + ") to final location (c=" + targetC + ", z=" + targetZ + ", t=" + targetT + ")");

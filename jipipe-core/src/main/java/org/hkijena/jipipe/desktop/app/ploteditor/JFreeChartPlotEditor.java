@@ -56,8 +56,8 @@ import javax.swing.table.TableModel;
 import java.awt.*;
 import java.io.IOException;
 import java.nio.file.Path;
-import java.util.List;
 import java.util.*;
+import java.util.List;
 
 /**
  * User interface for displaying and creating plots

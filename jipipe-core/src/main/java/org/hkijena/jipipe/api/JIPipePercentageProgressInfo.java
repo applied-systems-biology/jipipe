@@ -26,16 +26,16 @@ public class JIPipePercentageProgressInfo extends JIPipeProgressInfo {
     public JIPipePercentageProgressInfo() {
     }
 
+    public JIPipePercentageProgressInfo(JIPipeProgressInfo other) {
+        super(other);
+    }
+
     public long getNotifyInterval() {
         return notifyInterval;
     }
 
     public void setNotifyInterval(long notifyInterval) {
         this.notifyInterval = notifyInterval;
-    }
-
-    public JIPipePercentageProgressInfo(JIPipeProgressInfo other) {
-        super(other);
     }
 
     public void logPercentage(double value, double max) {

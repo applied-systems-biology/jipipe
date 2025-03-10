@@ -49,6 +49,7 @@ import java.util.Vector;
 @AddJIPipeCitation("see https://imagescience.org/meijering/software/featurej/structure/")
 public class StructureFeatureAlgorithm extends JIPipeSimpleIteratingAlgorithm {
 
+    private static final double TWOPI = 2 * Math.PI;
     private double smoothing = 1.0;
     private double integrationScale = 3;
     private boolean force2D = false;
@@ -74,104 +75,6 @@ public class StructureFeatureAlgorithm extends JIPipeSimpleIteratingAlgorithm {
         this.integrationScale = other.integrationScale;
         this.force2D = other.force2D;
         this.isotropicGaussian = other.isotropicGaussian;
-    }
-
-    @Override
-    public boolean supportsParallelization() {
-        return true;
-    }
-
-    @Override
-    protected void runIteration(JIPipeSingleIterationStep iterationStep, JIPipeIterationContext iterationContext, JIPipeGraphNodeRunContext runContext, JIPipeProgressInfo progressInfo) {
-        ImagePlus input = iterationStep.getInputData(getFirstInputSlot(), ImagePlusGreyscaleData.class, progressInfo).getImage();
-
-        if (force2D) {
-            Map<ImageSliceIndex, ImageProcessor> resultSmallestMap = new HashMap<>();
-            Map<ImageSliceIndex, ImageProcessor> resultLargestMap = new HashMap<>();
-            ImageJUtils.forEachIndexedZCTSliceWithProgress(input, (imp, index, sliceProgress) -> {
-                ImagePlus slice = new ImagePlus("slice", imp);
-                slice.copyScale(input);
-                Vector<Image> eigenImages = applyHessian(slice, sliceProgress);
-                resultSmallestMap.put(index, ImageScienceUtils.unwrap(eigenImages.get(1), input).getProcessor());
-                resultLargestMap.put(index, ImageScienceUtils.unwrap(eigenImages.get(0), input).getProcessor());
-            }, progressInfo);
-            ImagePlus resultSmallest = ImageJUtils.mergeMappedSlices(resultSmallestMap);
-            ImagePlus resultLargest = ImageJUtils.mergeMappedSlices(resultLargestMap);
-            resultSmallest.copyScale(input);
-            resultLargest.copyScale(input);
-            iterationStep.addOutputData("Smallest", new ImagePlusData(resultSmallest), progressInfo);
-            iterationStep.addOutputData("Largest", new ImagePlusData(resultLargest), progressInfo);
-        } else {
-            Vector<Image> eigenImages = applyHessian(input, progressInfo);
-            if (eigenImages.size() == 2) {
-                ImagePlus smallest = ImageScienceUtils.unwrap(eigenImages.get(1), input);
-                ImagePlus largest = ImageScienceUtils.unwrap(eigenImages.get(0), input);
-                iterationStep.addOutputData("Smallest", new ImagePlusData(smallest), progressInfo);
-                iterationStep.addOutputData("Largest", new ImagePlusData(largest), progressInfo);
-            } else if (eigenImages.size() == 3) {
-                ImagePlus smallest = ImageScienceUtils.unwrap(eigenImages.get(2), input);
-                ImagePlus middle = ImageScienceUtils.unwrap(eigenImages.get(1), input);
-                ImagePlus largest = ImageScienceUtils.unwrap(eigenImages.get(0), input);
-                iterationStep.addOutputData("Smallest", new ImagePlusData(smallest), progressInfo);
-                iterationStep.addOutputData("Middle", new ImagePlusData(middle), progressInfo);
-                iterationStep.addOutputData("Largest", new ImagePlusData(largest), progressInfo);
-            }
-        }
-    }
-
-    private Vector<Image> applyHessian(ImagePlus input, JIPipeProgressInfo progressInfo) {
-        final Image image = Image.wrap(input);
-        if (!isotropicGaussian) {
-            image.aspects(new Aspects());
-        }
-        return run(new FloatImage(image), smoothing, integrationScale, progressInfo);
-    }
-
-    @SetJIPipeDocumentation(name = "Isotropic Gaussian smoothing", description = "Use the voxel width, height, and depth specified in the image properties (calibration). " +
-            "That is, each dimension is assigned its own smoothing scale, computed by dividing the scale as specified in the plugin dialog by the specified pixel/voxel size for that dimension.")
-    @JIPipeParameter("isotropic-gaussian")
-    public boolean isIsotropicGaussian() {
-        return isotropicGaussian;
-    }
-
-    @JIPipeParameter("isotropic-gaussian")
-    public void setIsotropicGaussian(boolean isotropicGaussian) {
-        this.isotropicGaussian = isotropicGaussian;
-    }
-
-    @SetJIPipeDocumentation(name = "Force 2D", description = "If enabled, each 2D image slice is processed individually.")
-    @JIPipeParameter(value = "force-2d", important = true)
-    public boolean isForce2D() {
-        return force2D;
-    }
-
-    @JIPipeParameter("force-2d")
-    public void setForce2D(boolean force2D) {
-        this.force2D = force2D;
-    }
-
-    @JIPipeParameter("smoothing-scale")
-    @SetJIPipeDocumentation(name = "Smoothing scale", description = "The standard deviation of the Gaussian derivative kernels used for computing the elements of the structure tensor. Must be larger than zero. " +
-            "In order to enforce physical isotropy, for each dimension, the scale is divided by the size of the image elements (aspect ratio) in that dimension.")
-    public double getSmoothing() {
-        return smoothing;
-    }
-
-    @JIPipeParameter("smoothing-scale")
-    public void setSmoothing(double smoothing) {
-        this.smoothing = smoothing;
-    }
-
-    @SetJIPipeDocumentation(name = "Integration scale", description = "The standard deviation of the Gaussian kernel used for smoothing the elements of the structure tensor. Must be larger than zero. " +
-            "In order to enforce physical isotropy, for each dimension, the scale is divided by the size of the image elements (aspect ratio) in that dimension.")
-    @JIPipeParameter("integration-scale")
-    public double getIntegrationScale() {
-        return integrationScale;
-    }
-
-    @JIPipeParameter("integration-scale")
-    public void setIntegrationScale(double integrationScale) {
-        this.integrationScale = integrationScale;
     }
 
     public static Vector<Image> run(final Image image, final double sscale, final double iscale, JIPipeProgressInfo progressInfo) {
@@ -409,5 +312,101 @@ public class StructureFeatureAlgorithm extends JIPipeSimpleIteratingAlgorithm {
         return eigenimages;
     }
 
-    private static final double TWOPI = 2 * Math.PI;
+    @Override
+    public boolean supportsParallelization() {
+        return true;
+    }
+
+    @Override
+    protected void runIteration(JIPipeSingleIterationStep iterationStep, JIPipeIterationContext iterationContext, JIPipeGraphNodeRunContext runContext, JIPipeProgressInfo progressInfo) {
+        ImagePlus input = iterationStep.getInputData(getFirstInputSlot(), ImagePlusGreyscaleData.class, progressInfo).getImage();
+
+        if (force2D) {
+            Map<ImageSliceIndex, ImageProcessor> resultSmallestMap = new HashMap<>();
+            Map<ImageSliceIndex, ImageProcessor> resultLargestMap = new HashMap<>();
+            ImageJUtils.forEachIndexedZCTSliceWithProgress(input, (imp, index, sliceProgress) -> {
+                ImagePlus slice = new ImagePlus("slice", imp);
+                slice.copyScale(input);
+                Vector<Image> eigenImages = applyHessian(slice, sliceProgress);
+                resultSmallestMap.put(index, ImageScienceUtils.unwrap(eigenImages.get(1), input).getProcessor());
+                resultLargestMap.put(index, ImageScienceUtils.unwrap(eigenImages.get(0), input).getProcessor());
+            }, progressInfo);
+            ImagePlus resultSmallest = ImageJUtils.mergeMappedSlices(resultSmallestMap);
+            ImagePlus resultLargest = ImageJUtils.mergeMappedSlices(resultLargestMap);
+            resultSmallest.copyScale(input);
+            resultLargest.copyScale(input);
+            iterationStep.addOutputData("Smallest", new ImagePlusData(resultSmallest), progressInfo);
+            iterationStep.addOutputData("Largest", new ImagePlusData(resultLargest), progressInfo);
+        } else {
+            Vector<Image> eigenImages = applyHessian(input, progressInfo);
+            if (eigenImages.size() == 2) {
+                ImagePlus smallest = ImageScienceUtils.unwrap(eigenImages.get(1), input);
+                ImagePlus largest = ImageScienceUtils.unwrap(eigenImages.get(0), input);
+                iterationStep.addOutputData("Smallest", new ImagePlusData(smallest), progressInfo);
+                iterationStep.addOutputData("Largest", new ImagePlusData(largest), progressInfo);
+            } else if (eigenImages.size() == 3) {
+                ImagePlus smallest = ImageScienceUtils.unwrap(eigenImages.get(2), input);
+                ImagePlus middle = ImageScienceUtils.unwrap(eigenImages.get(1), input);
+                ImagePlus largest = ImageScienceUtils.unwrap(eigenImages.get(0), input);
+                iterationStep.addOutputData("Smallest", new ImagePlusData(smallest), progressInfo);
+                iterationStep.addOutputData("Middle", new ImagePlusData(middle), progressInfo);
+                iterationStep.addOutputData("Largest", new ImagePlusData(largest), progressInfo);
+            }
+        }
+    }
+
+    private Vector<Image> applyHessian(ImagePlus input, JIPipeProgressInfo progressInfo) {
+        final Image image = Image.wrap(input);
+        if (!isotropicGaussian) {
+            image.aspects(new Aspects());
+        }
+        return run(new FloatImage(image), smoothing, integrationScale, progressInfo);
+    }
+
+    @SetJIPipeDocumentation(name = "Isotropic Gaussian smoothing", description = "Use the voxel width, height, and depth specified in the image properties (calibration). " +
+            "That is, each dimension is assigned its own smoothing scale, computed by dividing the scale as specified in the plugin dialog by the specified pixel/voxel size for that dimension.")
+    @JIPipeParameter("isotropic-gaussian")
+    public boolean isIsotropicGaussian() {
+        return isotropicGaussian;
+    }
+
+    @JIPipeParameter("isotropic-gaussian")
+    public void setIsotropicGaussian(boolean isotropicGaussian) {
+        this.isotropicGaussian = isotropicGaussian;
+    }
+
+    @SetJIPipeDocumentation(name = "Force 2D", description = "If enabled, each 2D image slice is processed individually.")
+    @JIPipeParameter(value = "force-2d", important = true)
+    public boolean isForce2D() {
+        return force2D;
+    }
+
+    @JIPipeParameter("force-2d")
+    public void setForce2D(boolean force2D) {
+        this.force2D = force2D;
+    }
+
+    @JIPipeParameter("smoothing-scale")
+    @SetJIPipeDocumentation(name = "Smoothing scale", description = "The standard deviation of the Gaussian derivative kernels used for computing the elements of the structure tensor. Must be larger than zero. " +
+            "In order to enforce physical isotropy, for each dimension, the scale is divided by the size of the image elements (aspect ratio) in that dimension.")
+    public double getSmoothing() {
+        return smoothing;
+    }
+
+    @JIPipeParameter("smoothing-scale")
+    public void setSmoothing(double smoothing) {
+        this.smoothing = smoothing;
+    }
+
+    @SetJIPipeDocumentation(name = "Integration scale", description = "The standard deviation of the Gaussian kernel used for smoothing the elements of the structure tensor. Must be larger than zero. " +
+            "In order to enforce physical isotropy, for each dimension, the scale is divided by the size of the image elements (aspect ratio) in that dimension.")
+    @JIPipeParameter("integration-scale")
+    public double getIntegrationScale() {
+        return integrationScale;
+    }
+
+    @JIPipeParameter("integration-scale")
+    public void setIntegrationScale(double integrationScale) {
+        this.integrationScale = integrationScale;
+    }
 }

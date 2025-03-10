@@ -32,10 +32,6 @@ public class ImageJDataExporterRefDesktopParameterEditorUI extends JIPipeDesktop
     private JIPipeDesktopImageJDataExporterPicker picker;
     private JButton currentlyDisplayed;
 
-    /**
-     * @param workbench       workbench
-     * @param parameterAccess the parameter
-     */
     public ImageJDataExporterRefDesktopParameterEditorUI(InitializationParameters parameters) {
         super(parameters);
         initialize();

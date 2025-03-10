@@ -51,14 +51,14 @@ import org.hkijena.jipipe.utils.ui.CopyImageToClipboard;
 import org.hkijena.jipipe.utils.ui.JIPipeDesktopDockPanel;
 
 import javax.imageio.ImageIO;
-import javax.swing.Timer;
 import javax.swing.*;
+import javax.swing.Timer;
 import java.awt.*;
 import java.awt.image.BufferedImage;
 import java.io.IOException;
 import java.nio.file.Path;
-import java.util.List;
 import java.util.*;
+import java.util.List;
 
 public class JIPipeDesktopLegacyImageViewerPanel2D extends JPanel implements JIPipeDesktopWorkbenchAccess {
 
@@ -143,11 +143,11 @@ public class JIPipeDesktopLegacyImageViewerPanel2D extends JPanel implements JIP
 
     public List<CompositeLayer> getOrderedCompositeBlendLayers() {
         return Collections.unmodifiableList(orderedCompositeBlendLayers);
-    }    private final Timer animationTimer = new Timer(250, e -> animateNextSlice());
+    }
 
     public Map<Integer, CompositeLayer> getCompositeBlendLayers() {
         return Collections.unmodifiableMap(compositeBlendLayers);
-    }
+    }    private final Timer animationTimer = new Timer(250, e -> animateNextSlice());
 
     public void dispose() {
         animationTimer.stop();
@@ -287,17 +287,6 @@ public class JIPipeDesktopLegacyImageViewerPanel2D extends JPanel implements JIP
         animationStackToggle.setSelected(false);
     }
 
-
-//    public void setRotationEnabled(boolean enabled) {
-//        rotateLeftButton.setVisible(enabled);
-//        rotateRightButton.setVisible(enabled);
-//        if (!enabled) {
-//            rotation = 0;
-//            refreshImageInfo();
-//            refreshSlice();
-//        }
-//    }
-
     private void addSliderToForm(JSlider slider, JLabel label, JToggleButton animation, String name, String labelFormat) {
 
         // configure slider
@@ -371,6 +360,17 @@ public class JIPipeDesktopLegacyImageViewerPanel2D extends JPanel implements JIP
 
         bottomPanel.addToForm(contentPanel, descriptionPanel, null);
     }
+
+
+//    public void setRotationEnabled(boolean enabled) {
+//        rotateLeftButton.setVisible(enabled);
+//        rotateRightButton.setVisible(enabled);
+//        if (!enabled) {
+//            rotation = 0;
+//            refreshImageInfo();
+//            refreshSlice();
+//        }
+//    }
 
     public void buildRibbon(JIPipeDesktopRibbon ribbon) {
         buildViewRibbon(ribbon);

@@ -69,8 +69,8 @@ import java.awt.datatransfer.Clipboard;
 import java.awt.datatransfer.StringSelection;
 import java.awt.image.BufferedImage;
 import java.nio.file.Path;
-import java.util.List;
 import java.util.*;
+import java.util.List;
 
 import static org.hkijena.jipipe.desktop.app.grapheditor.flavors.pipeline.JIPipeDesktopPipelineGraphEditorUI.DOCK_NODE_CONTEXT_HELP;
 
@@ -87,7 +87,7 @@ public class JIPipeDesktopProjectOverviewUI extends JIPipeDesktopProjectWorkbenc
     private final JIPipeDesktopParameterFormPanel userParametersPanel;
     private final JIPipeDesktopMultiAlgorithmCacheBrowserUI resultsPanel;
     private final JIPipeDesktopRibbon userParametersRibbon = new JIPipeDesktopRibbon(2);
-
+    private final JIPipeDesktopDockPanel dockPanel = new JIPipeDesktopDockPanel();
     private JTextField licenseInfo;
     private JTextField projectName;
     private JTextField projectStats;
@@ -97,7 +97,6 @@ public class JIPipeDesktopProjectOverviewUI extends JIPipeDesktopProjectWorkbenc
     private JButton copyCitationButton;
     private JButton copyDependencyCitationsButton;
     private JButton showAcknowledgedAuthorsButton;
-    private final JIPipeDesktopDockPanel dockPanel = new JIPipeDesktopDockPanel();
 
     /**
      * Creates a new instance
@@ -253,7 +252,7 @@ public class JIPipeDesktopProjectOverviewUI extends JIPipeDesktopProjectWorkbenc
     private void editProjectDescription() {
         JIPipeDesktopHTMLEditor editor = new JIPipeDesktopHTMLEditor(getDesktopProjectWorkbench(), JIPipeDesktopHTMLEditor.Mode.Full, JIPipeDesktopHTMLEditor.WITH_SCROLL_BAR);
         editor.setText(getProject().getMetadata().getDescription().getHtml());
-        if(UIUtils.showConfirmDialog(this, "Edit project description", new Dimension(800,600), editor)) {
+        if (UIUtils.showConfirmDialog(this, "Edit project description", new Dimension(800, 600), editor)) {
             getProject().getMetadata().setDescription(new HTMLText(editor.getHTML()));
             refreshCenterPanel();
         }
@@ -305,7 +304,7 @@ public class JIPipeDesktopProjectOverviewUI extends JIPipeDesktopProjectWorkbenc
 
                     if (!accelerationUpgrades.isEmpty()) {
                         accelerationUpgrades = Collections.singletonList(JIPipeArtifactsRegistry.selectPreferredArtifactByClassifier(accelerationUpgrades));
-                        if(accelerationUpgrades.get(0).getFullId().equals(current.getFullId())) {
+                        if (accelerationUpgrades.get(0).getFullId().equals(current.getFullId())) {
                             accelerationUpgrades = Collections.emptyList();
                         }
                     }
@@ -354,14 +353,14 @@ public class JIPipeDesktopProjectOverviewUI extends JIPipeDesktopProjectWorkbenc
                 JComboBox<String> comboBox = comboBoxes.get(i);
                 String selectedItem = StringUtils.nullToEmpty(comboBox.getSelectedItem());
 
-                if(!StringUtils.isNullOrEmpty(selectedItem) && !"Keep as-is".equals(selectedItem)) {
+                if (!StringUtils.isNullOrEmpty(selectedItem) && !"Keep as-is".equals(selectedItem)) {
                     upgrade.environment.setArtifactQuery(new JIPipeArtifactQueryParameter(selectedItem));
                     ++numSuccesses;
                 }
             }
 
-            if(numSuccesses > 0) {
-                JOptionPane.showMessageDialog(this,  StringUtils.wrapHtml(StringUtils.formatPluralS(numSuccesses, "artifact") + " were updated.<br/>JIPipe will automatically take care of downloading and setting up the artifacts."));
+            if (numSuccesses > 0) {
+                JOptionPane.showMessageDialog(this, StringUtils.wrapHtml(StringUtils.formatPluralS(numSuccesses, "artifact") + " were updated.<br/>JIPipe will automatically take care of downloading and setting up the artifacts."));
                 refreshCenterPanel();
             }
 
@@ -374,22 +373,8 @@ public class JIPipeDesktopProjectOverviewUI extends JIPipeDesktopProjectWorkbenc
         refreshCenterPanel();
     }
 
-    private static class ArtifactUpgrade {
-        private final JIPipeArtifactEnvironment environment;
-        private final JIPipeArtifact current;
-        private final List<JIPipeArtifact> revisionUpgrades;
-        private final List<JIPipeArtifact> accelerationUpgrades;
-
-        public ArtifactUpgrade(JIPipeArtifactEnvironment environment, JIPipeArtifact current, List<JIPipeArtifact> revisionUpgrades, List<JIPipeArtifact> accelerationUpgrades) {
-            this.environment = environment;
-            this.current = current;
-            this.revisionUpgrades = revisionUpgrades;
-            this.accelerationUpgrades = accelerationUpgrades;
-        }
-    }
-
     private void createRunSetsPanel() {
-        if(!getProject().getRunSetsConfiguration().getRunSets().isEmpty()) {
+        if (!getProject().getRunSetsConfiguration().getRunSets().isEmpty()) {
             JPanel listPanel = UIUtils.boxVertical();
             for (JIPipeProjectRunSet runSet : getProject().getRunSetsConfiguration().getRunSets()) {
                 JPanel outputPanel = new JPanel(new BorderLayout(16, 0));
@@ -398,11 +383,11 @@ public class JIPipeDesktopProjectOverviewUI extends JIPipeDesktopProjectWorkbenc
                         new RoundedLineBorder(UIUtils.getControlBorderColor(), 1, 4)
                 ));
                 Color color = null;
-                if(runSet.getColor().isEnabled()) {
+                if (runSet.getColor().isEnabled()) {
                     color = runSet.getColor().getContent();
                 }
                 outputPanel.add(new JLabel(new SolidColorIcon(8, 32, color != null ? color : UIManager.getColor("Panel.background"), UIUtils.getControlBorderColor())), BorderLayout.WEST);
-                outputPanel.add(new JLabel(runSet.getDisplayName(),  UIUtils.getIconFromResources("actions/debug-run.png"), JLabel.LEFT), BorderLayout.CENTER);
+                outputPanel.add(new JLabel(runSet.getDisplayName(), UIUtils.getIconFromResources("actions/debug-run.png"), JLabel.LEFT), BorderLayout.CENTER);
 
                 JButton runButton = new JButton("Run", UIUtils.getIconFromResources("actions/run-play.png"));
                 JPopupMenu runMenu = UIUtils.addPopupMenuToButton(runButton);
@@ -422,10 +407,9 @@ public class JIPipeDesktopProjectOverviewUI extends JIPipeDesktopProjectWorkbenc
                         UIUtils.createButton("Help", UIUtils.getIconFromResources("actions/help.png"), () -> {
                             dockPanel.activatePanel(DOCK_NODE_CONTEXT_HELP, true);
                             JIPipeDesktopFormHelpPanel helpPanel = dockPanel.getPanelComponent(DOCK_NODE_CONTEXT_HELP, JIPipeDesktopFormHelpPanel.class);
-                            if(!StringUtils.isNullOrEmpty(runSet.getDescription().toPlainText())) {
+                            if (!StringUtils.isNullOrEmpty(runSet.getDescription().toPlainText())) {
                                 helpPanel.showContent(new MarkdownText("# " + runSet.getDisplayName() + "\n\n" + runSet.getDescription().getBody()));
-                            }
-                            else {
+                            } else {
                                 helpPanel.showContent(new MarkdownText("# " + runSet.getDisplayName() + "\n\n*No description provided*"));
                             }
                         }),
@@ -443,7 +427,7 @@ public class JIPipeDesktopProjectOverviewUI extends JIPipeDesktopProjectWorkbenc
 
     private void doRun(JIPipeProjectRunSet runSet) {
         List<JIPipeAlgorithm> nodes = JIPipeUtils.filterAlgorithmsList(runSet.resolveNodes(getProject()));
-        if(nodes.isEmpty()) {
+        if (nodes.isEmpty()) {
             JOptionPane.showMessageDialog(this, "Unable to run the set '" + runSet.getDisplayName() + "'. No nodes found.", "Run set", JOptionPane.ERROR_MESSAGE);
             return;
         }
@@ -452,7 +436,7 @@ public class JIPipeDesktopProjectOverviewUI extends JIPipeDesktopProjectWorkbenc
 
     private void doShowResults(JIPipeProjectRunSet runSet) {
         List<JIPipeAlgorithm> nodes = JIPipeUtils.filterAlgorithmsList(runSet.resolveNodes(getProject()));
-        if(nodes.isEmpty()) {
+        if (nodes.isEmpty()) {
             JOptionPane.showMessageDialog(this, "Unable to run the set '" + runSet.getDisplayName() + "'. No nodes found.", "Run set", JOptionPane.ERROR_MESSAGE);
             return;
         }
@@ -465,10 +449,9 @@ public class JIPipeDesktopProjectOverviewUI extends JIPipeDesktopProjectWorkbenc
             }
         }
 
-        if(nodesToDo.isEmpty()) {
+        if (nodesToDo.isEmpty()) {
             showResults(nodes);
-        }
-        else {
+        } else {
             JComboBox<String> options = new JComboBox<>(new String[]{"Update cache (default)", "Cache intermediate results"});
             JIPipeDesktopFormPanel formPanel = new JIPipeDesktopFormPanel(JIPipeDesktopFormPanel.NONE);
             formPanel.addWideToForm(new JLabel("<html>" +
@@ -490,7 +473,7 @@ public class JIPipeDesktopProjectOverviewUI extends JIPipeDesktopProjectWorkbenc
 
     private void doUpdateCache(JIPipeProjectRunSet runSet, boolean intermediateResults) {
         List<JIPipeAlgorithm> nodes = JIPipeUtils.filterAlgorithmsList(runSet.resolveNodes(getProject()));
-        if(nodes.isEmpty()) {
+        if (nodes.isEmpty()) {
             JOptionPane.showMessageDialog(this, "Unable to run the set '" + runSet.getDisplayName() + "'. No nodes found.", "Run set", JOptionPane.ERROR_MESSAGE);
             return;
         }
@@ -498,7 +481,7 @@ public class JIPipeDesktopProjectOverviewUI extends JIPipeDesktopProjectWorkbenc
     }
 
     private void createRunCompartmentsPanel() {
-        if(!getProject().getMetadata().isShowCompartmentsRunPanelInOverview()) {
+        if (!getProject().getMetadata().isShowCompartmentsRunPanelInOverview()) {
             return;
         }
         List<JIPipeProjectCompartmentOutput> outputList = new ArrayList<>();
@@ -1066,6 +1049,20 @@ public class JIPipeDesktopProjectOverviewUI extends JIPipeDesktopProjectWorkbenc
 
     private void openProjectReport() {
         getDesktopProjectWorkbench().openProjectReport();
+    }
+
+    private static class ArtifactUpgrade {
+        private final JIPipeArtifactEnvironment environment;
+        private final JIPipeArtifact current;
+        private final List<JIPipeArtifact> revisionUpgrades;
+        private final List<JIPipeArtifact> accelerationUpgrades;
+
+        public ArtifactUpgrade(JIPipeArtifactEnvironment environment, JIPipeArtifact current, List<JIPipeArtifact> revisionUpgrades, List<JIPipeArtifact> accelerationUpgrades) {
+            this.environment = environment;
+            this.current = current;
+            this.revisionUpgrades = revisionUpgrades;
+            this.accelerationUpgrades = accelerationUpgrades;
+        }
     }
 
 

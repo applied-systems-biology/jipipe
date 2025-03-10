@@ -12,7 +12,7 @@ public class JIPipeUtils {
     public static List<JIPipeAlgorithm> filterAlgorithmsList(Collection<? extends JIPipeGraphNode> collection) {
         List<JIPipeAlgorithm> algorithms = new ArrayList<>();
         for (JIPipeGraphNode node : collection) {
-            if(node instanceof JIPipeAlgorithm) {
+            if (node instanceof JIPipeAlgorithm) {
                 algorithms.add((JIPipeAlgorithm) node);
             }
         }

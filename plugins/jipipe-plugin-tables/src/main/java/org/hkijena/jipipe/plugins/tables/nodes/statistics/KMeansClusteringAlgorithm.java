@@ -13,7 +13,10 @@
 
 package org.hkijena.jipipe.plugins.tables.nodes.statistics;
 
-import org.apache.commons.math3.ml.clustering.*;
+import org.apache.commons.math3.ml.clustering.CentroidCluster;
+import org.apache.commons.math3.ml.clustering.Clusterer;
+import org.apache.commons.math3.ml.clustering.KMeansPlusPlusClusterer;
+import org.apache.commons.math3.ml.clustering.MultiKMeansPlusPlusClusterer;
 import org.apache.commons.math3.random.JDKRandomGenerator;
 import org.hkijena.jipipe.api.AddJIPipeCitation;
 import org.hkijena.jipipe.api.ConfigureJIPipeNode;
@@ -53,11 +56,11 @@ import java.util.List;
 @AddJIPipeOutputSlot(value = ResultsTableData.class, name = "Centers", create = true, description = "The cluster centers")
 public class KMeansClusteringAlgorithm extends JIPipeSimpleIteratingAlgorithm {
 
+    private final OutputSettings outputSettings;
+    private final ClusteringSettings clusteringSettings;
     private int k = 3;
     private int numTrials = 1;
     private TableColumnSourceExpressionParameter.List inputColumns = new TableColumnSourceExpressionParameter.List();
-    private final OutputSettings outputSettings;
-    private final ClusteringSettings clusteringSettings;
 
 
     public KMeansClusteringAlgorithm(JIPipeNodeInfo info) {
@@ -87,10 +90,9 @@ public class KMeansClusteringAlgorithm extends JIPipeSimpleIteratingAlgorithm {
         List<TableColumnData> inputColumns_ = new ArrayList<>();
         for (TableColumnSourceExpressionParameter inputColumn : inputColumns) {
             TableColumnData columnData = inputColumn.pickOrGenerateColumn(tableData, variablesMap);
-            if(columnData != null) {
+            if (columnData != null) {
                 inputColumns_.add(columnData);
-            }
-            else {
+            } else {
                 throw new RuntimeException("Unable to find/generate column " + inputColumn.getValue().getExpression());
             }
         }
@@ -103,10 +105,9 @@ public class KMeansClusteringAlgorithm extends JIPipeSimpleIteratingAlgorithm {
                 new JDKRandomGenerator(),
                 clusteringSettings.emptyClusterStrategy);
 
-        if(numTrials <= 1) {
+        if (numTrials <= 1) {
             clusterer = kMeansPlusPlusClusterer;
-        }
-        else {
+        } else {
             clusterer = new MultiKMeansPlusPlusClusterer<>(kMeansPlusPlusClusterer, numTrials);
         }
 
@@ -116,7 +117,7 @@ public class KMeansClusteringAlgorithm extends JIPipeSimpleIteratingAlgorithm {
             for (int col = 0; col < inputColumns_.size(); col++) {
                 TableColumnData columnData = inputColumns_.get(col);
                 double value = columnData.getRowAsDouble(row);
-                if(Double.isNaN(value) || Double.isInfinite(value)) {
+                if (Double.isNaN(value) || Double.isInfinite(value)) {
                     value = 0;
                 }
                 arr[col] = value;
@@ -143,13 +144,13 @@ public class KMeansClusteringAlgorithm extends JIPipeSimpleIteratingAlgorithm {
 
             // Write into original
             for (IndexedDoublePoint point : cluster.getPoints()) {
-                if(outputColumnClusterId >= 0) {
+                if (outputColumnClusterId >= 0) {
                     tableData.setValueAt(clusterId, point.getSourceRow(), outputColumnClusterId);
                 }
-                if(outputColumnClusterSize >= 0) {
+                if (outputColumnClusterSize >= 0) {
                     tableData.setValueAt(cluster.getPoints().size(), point.getSourceRow(), outputColumnClusterSize);
                 }
-                if(outputColumnDistanceToCenter >= 0) {
+                if (outputColumnDistanceToCenter >= 0) {
                     double distanceToCenter = clusteringSettings.distanceMeasure.getDistanceMeasure().compute(cluster.getCenter().getPoint(), point.getPoint());
                     tableData.setValueAt(distanceToCenter, point.getSourceRow(), outputColumnDistanceToCenter);
                 }
@@ -176,7 +177,7 @@ public class KMeansClusteringAlgorithm extends JIPipeSimpleIteratingAlgorithm {
     @Override
     public void reportValidity(JIPipeValidationReportContext reportContext, JIPipeValidationReport report) {
         super.reportValidity(reportContext, report);
-        if(inputColumns.isEmpty()) {
+        if (inputColumns.isEmpty()) {
             report.report(new JIPipeValidationReportEntry(JIPipeValidationReportEntryLevel.Error,
                     reportContext,
                     "Input columns cannot be empty!",

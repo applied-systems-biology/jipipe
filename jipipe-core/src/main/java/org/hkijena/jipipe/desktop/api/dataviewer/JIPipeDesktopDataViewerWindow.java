@@ -360,10 +360,9 @@ public class JIPipeDesktopDataViewerWindow extends JFrame implements JIPipeDeskt
     private void traceData() {
         if (isDisplayingLocallyCachedData()) {
             JIPipeDataContext dataContext = dataTableBrowser.getLocalDataTable().getDataContext(currentDataRow);
-            if(dataContext != null) {
+            if (dataContext != null) {
                 JIPipeDesktopDataTracerUI.openWindow((JIPipeDesktopProjectWorkbench) getDesktopWorkbench(), dataContext.getId());
-            }
-            else {
+            } else {
                 UIUtils.showErrorDialog(getDesktopWorkbench(), this, new NullPointerException("No data trace could be found!"));
             }
         }

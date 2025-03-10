@@ -15,7 +15,6 @@ package org.hkijena.jipipe.plugins.imagejalgorithms.nodes.math;
 
 import ij.ImagePlus;
 import ij.ImageStack;
-import ij.plugin.filter.EDM;
 import imagescience.feature.Hessian;
 import imagescience.image.Aspects;
 import imagescience.image.FloatImage;

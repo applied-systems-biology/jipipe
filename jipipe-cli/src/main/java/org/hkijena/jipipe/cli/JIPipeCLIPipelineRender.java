@@ -1,7 +1,5 @@
 package org.hkijena.jipipe.cli;
 
-import com.fasterxml.jackson.databind.JsonNode;
-import com.google.common.collect.ImmutableList;
 import net.imagej.ImageJ;
 import org.hkijena.jipipe.JIPipe;
 import org.hkijena.jipipe.JIPipeRegistryIssues;
@@ -15,11 +13,9 @@ import org.hkijena.jipipe.desktop.app.JIPipeDesktopDummyWorkbench;
 import org.hkijena.jipipe.desktop.app.JIPipeDesktopWorkbench;
 import org.hkijena.jipipe.desktop.app.grapheditor.commons.JIPipeDesktopGraphCanvasUI;
 import org.hkijena.jipipe.plugins.settings.JIPipeExtensionApplicationSettings;
-import org.hkijena.jipipe.utils.json.JsonUtils;
 
 import javax.imageio.ImageIO;
 import java.awt.image.BufferedImage;
-import java.io.File;
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
@@ -79,7 +75,7 @@ public class JIPipeCLIPipelineRender {
             JIPipeCLIHelp.showHelp();
             return;
         }
-        if(outputFile == null) {
+        if (outputFile == null) {
             throw new NullPointerException("Output file not set!");
         }
 
@@ -104,20 +100,20 @@ public class JIPipeCLIPipelineRender {
 
         JIPipeProjectCompartment targetCompartment = null;
         for (Map.Entry<UUID, JIPipeProjectCompartment> entry : project.getCompartments().entrySet()) {
-            if(entry.getValue().getProjectCompartmentUUID().toString().equalsIgnoreCase(compartmentNameOrUUID)) {
+            if (entry.getValue().getProjectCompartmentUUID().toString().equalsIgnoreCase(compartmentNameOrUUID)) {
                 targetCompartment = entry.getValue();
                 break;
             }
         }
-        if(targetCompartment == null) {
+        if (targetCompartment == null) {
             for (Map.Entry<UUID, JIPipeProjectCompartment> entry : project.getCompartments().entrySet()) {
-                if(entry.getValue().getName().equalsIgnoreCase(compartmentNameOrUUID)) {
+                if (entry.getValue().getName().equalsIgnoreCase(compartmentNameOrUUID)) {
                     targetCompartment = entry.getValue();
                     break;
                 }
             }
         }
-        if(targetCompartment == null) {
+        if (targetCompartment == null) {
             System.err.println("Compartment " + compartmentNameOrUUID + " not found!");
             JIPipeCLIHelp.showHelp();
             return;
