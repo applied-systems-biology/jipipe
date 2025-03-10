@@ -13,9 +13,7 @@
 
 package org.hkijena.jipipe.plugins.tables.nodes.statistics;
 
-import org.apache.commons.math3.ml.clustering.CentroidCluster;
-import org.apache.commons.math3.ml.clustering.DoublePoint;
-import org.apache.commons.math3.ml.clustering.KMeansPlusPlusClusterer;
+import org.apache.commons.math3.ml.clustering.*;
 import org.apache.commons.math3.random.JDKRandomGenerator;
 import org.hkijena.jipipe.api.AddJIPipeCitation;
 import org.hkijena.jipipe.api.ConfigureJIPipeNode;
@@ -55,6 +53,7 @@ import java.util.List;
 public class KMeansClusteringAlgorithm extends JIPipeSimpleIteratingAlgorithm {
 
     private int k = 3;
+    private int numTrials = 1;
     private TableColumnSourceExpressionParameter.List inputColumns = new TableColumnSourceExpressionParameter.List();
     private final OutputSettings outputSettings;
     private final ClusteringSettings clusteringSettings;
@@ -70,6 +69,7 @@ public class KMeansClusteringAlgorithm extends JIPipeSimpleIteratingAlgorithm {
     public KMeansClusteringAlgorithm(KMeansClusteringAlgorithm other) {
         super(other);
         this.k = other.k;
+        this.numTrials = other.numTrials;
         this.inputColumns = new TableColumnSourceExpressionParameter.List(other.inputColumns);
 
         this.outputSettings = new OutputSettings(other.outputSettings);
@@ -95,11 +95,20 @@ public class KMeansClusteringAlgorithm extends JIPipeSimpleIteratingAlgorithm {
         }
 
         // Create the clusterer and the point array
-        KMeansPlusPlusClusterer<IndexedDoublePoint> clusterer = new KMeansPlusPlusClusterer<>(k,
+        Clusterer<IndexedDoublePoint> clusterer;
+        KMeansPlusPlusClusterer<IndexedDoublePoint> kMeansPlusPlusClusterer = new KMeansPlusPlusClusterer<>(k,
                 clusteringSettings.maxIterations,
                 clusteringSettings.distanceMeasure.getDistanceMeasure(),
                 new JDKRandomGenerator(),
                 clusteringSettings.emptyClusterStrategy);
+
+        if(numTrials <= 1) {
+            clusterer = kMeansPlusPlusClusterer;
+        }
+        else {
+            clusterer = new MultiKMeansPlusPlusClusterer<>(kMeansPlusPlusClusterer, numTrials);
+        }
+
         List<IndexedDoublePoint> points = new ArrayList<>();
         for (int row = 0; row < tableData.getRowCount(); row++) {
             double[] arr = new double[inputColumns_.size()];
@@ -126,7 +135,7 @@ public class KMeansClusteringAlgorithm extends JIPipeSimpleIteratingAlgorithm {
         int outputColumnClusterSize = outputSettings.outputColumnClusterSize.isEnabled() ? tableData.addNumericColumn(outputSettings.outputColumnClusterSize.getContent()) : -1;
         int outputColumnDistanceToCenter = outputSettings.outputColumnDistanceToCenter.isEnabled() ? tableData.addNumericColumn(outputSettings.outputColumnDistanceToCenter.getContent()) : -1;
 
-        List<CentroidCluster<IndexedDoublePoint>> centroid = clusterer.cluster(points);
+        List<CentroidCluster<IndexedDoublePoint>> centroid = (List<CentroidCluster<IndexedDoublePoint>>) clusterer.cluster(points);
         for (int i = 0; i < centroid.size(); i++) {
             final int clusterId = i + 1;
             CentroidCluster<IndexedDoublePoint> cluster = centroid.get(i);
@@ -198,6 +207,16 @@ public class KMeansClusteringAlgorithm extends JIPipeSimpleIteratingAlgorithm {
         this.k = k;
     }
 
+    @SetJIPipeDocumentation(name = "Number of trials", description = "If larger than one, use the Multi-K-Means algorithm that repeats clustering multiple times and returns the one with the lowest sum of variances over all clusters.")
+    @JIPipeParameter(value = "num-trials", important = true)
+    public int getNumTrials() {
+        return numTrials;
+    }
+
+    @JIPipeParameter("num-trials")
+    public void setNumTrials(int numTrials) {
+        this.numTrials = numTrials;
+    }
 
     @SetJIPipeDocumentation(name = "Input columns", description = "The list of columns that will be used to create the points. Please note that string columns and NA/infinite values are automatically replaced with zeroes.")
     @JIPipeParameter(value = "input-columns", important = true)
