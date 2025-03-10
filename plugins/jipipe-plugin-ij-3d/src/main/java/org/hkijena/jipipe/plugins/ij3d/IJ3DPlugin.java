@@ -167,6 +167,7 @@ public class IJ3DPlugin extends JIPipePrepackagedDefaultJavaPlugin {
         registerNodeType("ij3d-roi-remove-border", RemoveBorderRoi3DAlgorithm.class, UIUtils.getIconURLFromResources("actions/filter.png"));
 
         registerNodeType("ij3d-roi-change-properties-from-expressions", ChangeRoi3DPropertiesFromExpressionsAlgorithm.class, UIUtils.getIconURLFromResources("actions/stock_edit.png"));
+        registerNodeType("ij3d-roi-change-properties-from-table", ChangeRoi3DPropertiesFromTableAlgorithm.class, UIUtils.getIconURLFromResources("actions/stock_edit.png"));
         registerNodeType("ij3d-roi-change-properties", ChangeRoi3DPropertiesAlgorithm.class, UIUtils.getIconURLFromResources("actions/stock_edit.png"));
         registerNodeType("ij3d-roi-calculator", ROI3DCalculatorAlgorithm.class, UIUtils.getIconURLFromResources("actions/calculator.png"));
         registerNodeType("ij3d-roi-color-by-name", ColorRoi3DByNameAlgorithm.class, UIUtils.getIconURLFromResources("actions/fill-color.png"));
