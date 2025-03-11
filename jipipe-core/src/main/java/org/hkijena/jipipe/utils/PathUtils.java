@@ -351,8 +351,8 @@ public class PathUtils {
      * @return the base directory
      */
     public static Path getJIPipeUserDirBase() {
-        if (System.getProperties().containsKey("JIPIPE_OVERRIDE_USER_DIR_BASE")) {
-            return Paths.get(System.getProperties().getProperty("JIPIPE_OVERRIDE_USER_DIR_BASE"));
+        if (System.getenv().containsKey("JIPIPE_OVERRIDE_USER_DIR_BASE")) {
+            return Paths.get(System.getenv().get("JIPIPE_OVERRIDE_USER_DIR_BASE"));
         }
         if (JIPipe.OVERRIDE_USER_DIR_BASE != null) {
             return JIPipe.OVERRIDE_USER_DIR_BASE;
@@ -361,7 +361,7 @@ public class PathUtils {
             return Paths.get(System.getenv("APPDATA")).resolve("JIPipe")
                     .resolve("profiles");
         } else if (SystemUtils.IS_OS_LINUX) {
-            if (System.getProperties().containsKey("XDG_DATA_HOME") && !StringUtils.isNullOrEmpty(System.getProperty("XDG_DATA_HOME"))) {
+            if (System.getenv().containsKey("XDG_DATA_HOME") && !StringUtils.isNullOrEmpty(System.getProperty("XDG_DATA_HOME"))) {
                 return Paths.get(System.getProperty("XDG_DATA_HOME"))
                         .resolve("JIPipe")
                         .resolve("profiles");

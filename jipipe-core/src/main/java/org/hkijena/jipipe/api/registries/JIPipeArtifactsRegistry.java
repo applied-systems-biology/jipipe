@@ -384,7 +384,7 @@ public class JIPipeArtifactsRegistry {
                 return Paths.get(System.getenv("APPDATA")).resolve("JIPipe")
                         .resolve("artifacts");
             } else if (SystemUtils.IS_OS_LINUX) {
-                if (System.getProperties().containsKey("XDG_DATA_HOME") && !StringUtils.isNullOrEmpty(System.getProperty("XDG_DATA_HOME"))) {
+                if (System.getenv().containsKey("XDG_DATA_HOME") && !StringUtils.isNullOrEmpty(System.getProperty("XDG_DATA_HOME"))) {
                     return Paths.get(System.getProperty("XDG_DATA_HOME"))
                             .resolve("JIPipe")
                             .resolve("artifacts");
