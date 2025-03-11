@@ -767,6 +767,21 @@ public class JIPipeDesktopFileChooserNext extends JPanel {
     }
 
     public void doCallbackConfirmIfValid() {
+
+        // Special case if File dialog: If path is directory, then navigate there
+        if(pathType == PathType.FilesOnly) {
+            try {
+                if(!StringUtils.isNullOrEmpty(selectedPathEditor.getText())) {
+                    Path path = Paths.get(selectedPathEditor.getText());
+                    if(path.isAbsolute() && Files.isDirectory(path)) {
+                        setCurrentDirectory(path);
+                        selectedPathEditor.setText("");
+                    }
+                }
+            }
+            catch(Throwable ignored) {}
+        }
+
         List<Path> selectedPaths = getSelectedPaths();
         if (!selectedPaths.isEmpty()) {
             if (callbackConfirm != null) {
