@@ -16,7 +16,7 @@ package org.hkijena.jipipe.plugins.ilastik.environments;
 import org.apache.commons.lang3.SystemUtils;
 import org.hkijena.jipipe.api.JIPipeProgressInfo;
 import org.hkijena.jipipe.api.artifacts.JIPipeLocalArtifact;
-import org.hkijena.jipipe.api.environments.JIPipeArtifactProcessEnvironment;
+import org.hkijena.jipipe.api.environments.JIPipeProcessArtifactEnvironment;
 import org.hkijena.jipipe.plugins.expressions.JIPipeExpressionParameter;
 import org.hkijena.jipipe.plugins.ilastik.IlastikPlugin;
 import org.hkijena.jipipe.plugins.parameters.api.collections.ListParameter;
@@ -28,7 +28,7 @@ import java.nio.file.Path;
 /**
  * Parameter that describes a Python environment
  */
-public class IlastikEnvironment extends JIPipeArtifactProcessEnvironment {
+public class IlastikEnvironment extends JIPipeProcessArtifactEnvironment {
 
     public IlastikEnvironment() {
 

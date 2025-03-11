@@ -44,16 +44,16 @@ import java.util.Map;
 /**
  * An artifact environment that points at an executable
  */
-public abstract class JIPipeArtifactProcessEnvironment extends JIPipeArtifactEnvironment {
+public abstract class JIPipeProcessArtifactEnvironment extends JIPipeArtifactEnvironment {
     private JIPipeExpressionParameter arguments = new JIPipeExpressionParameter("cli_parameters");
     private Path executablePath = Paths.get("");
     private StringQueryExpressionAndStringPairParameter.List environmentVariables = new StringQueryExpressionAndStringPairParameter.List();
 
-    public JIPipeArtifactProcessEnvironment() {
+    public JIPipeProcessArtifactEnvironment() {
 
     }
 
-    public JIPipeArtifactProcessEnvironment(JIPipeArtifactProcessEnvironment other) {
+    public JIPipeProcessArtifactEnvironment(JIPipeProcessArtifactEnvironment other) {
         super(other);
         this.arguments = new JIPipeExpressionParameter(other.arguments);
         this.executablePath = other.executablePath;

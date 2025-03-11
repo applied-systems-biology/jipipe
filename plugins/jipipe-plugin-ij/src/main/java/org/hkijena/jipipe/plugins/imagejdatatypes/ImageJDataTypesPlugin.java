@@ -82,6 +82,8 @@ import org.hkijena.jipipe.plugins.imagejdatatypes.resultanalysis.ImageDataPrevie
 import org.hkijena.jipipe.plugins.imagejdatatypes.resultanalysis.ImportImageJPathDataDisplayOperation;
 import org.hkijena.jipipe.plugins.imagejdatatypes.resultanalysis.OMEImageDataPreview;
 import org.hkijena.jipipe.plugins.imagejdatatypes.resultanalysis.ROIDataPreview;
+import org.hkijena.jipipe.plugins.imagejdatatypes.settings.ImageSamplesApplicationSettings;
+import org.hkijena.jipipe.plugins.imagejdatatypes.settings.ImageSamplesProjectSettings;
 import org.hkijena.jipipe.plugins.imagejdatatypes.settings.ImageViewerUIROI2DDisplayApplicationSettings;
 import org.hkijena.jipipe.plugins.imagejdatatypes.tools.BioFormatsConfigTool;
 import org.hkijena.jipipe.plugins.imagejdatatypes.util.AVICompression;
@@ -410,6 +412,8 @@ public class ImageJDataTypesPlugin extends JIPipePrepackagedDefaultJavaPlugin {
 
         // Register settings
         registerApplicationSettingsSheet(new LegacyImageViewer2DUIApplicationSettings());
+        registerApplicationSettingsSheet(new ImageSamplesApplicationSettings());
+        registerProjectSettingsSheet(ImageSamplesProjectSettings.class);
 
         // Register data types
         registerDatatype("imagej-ome",
@@ -516,6 +520,7 @@ public class ImageJDataTypesPlugin extends JIPipePrepackagedDefaultJavaPlugin {
         registerNodeType("import-imagej-lut-from-file-as-rgb", ImportLUTAsRGBFromFileAlgorithm.class, UIUtils.getIconURLFromResources("data-types/lut.png"));
         registerNodeType("import-ome-zarr-from-zip-directory-as-imgplus", ImportOMEZARRFromZipDirectoryAsImagePlusAlgorithm.class, UIUtils.getIconURLFromResources("actions/zarr.png"));
         registerNodeType("import-ome-zarr-from-uri-as-imgplus", ImportOMEZARRFromURIAsImagePlusAlgorithm.class, UIUtils.getIconURLFromResources("actions/zarr.png"));
+        registerNodeType("import-imagej-sample", ImportImageJSampleAlgorithm.class);
 
         // Register algorithms
         registerNodeType("convert-imagej-image", ImageTypeConverter.class, UIUtils.getIconURLFromResources("actions/viewimage.png"));
@@ -538,6 +543,10 @@ public class ImageJDataTypesPlugin extends JIPipePrepackagedDefaultJavaPlugin {
                 "Color mode", "Available modes");
         registerEnumParameterType("import-imagej-bioformats:order", DimensionOrder.class,
                 "Order", "Available orders");
+        registerEnumParameterType("import-imagej-sample:sample",
+                ImportImageJSampleAlgorithm.Sample.class,
+                "ImageJ sample",
+                "A sample image from ImageJ");
 
         // Register additional file importers
         registerDatatypeOperation("path", new ImportImageJPathDataDisplayOperation());

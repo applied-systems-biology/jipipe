@@ -16,7 +16,7 @@ package org.hkijena.jipipe.plugins.ijfilaments.environments;
 import org.apache.commons.lang3.SystemUtils;
 import org.hkijena.jipipe.api.JIPipeProgressInfo;
 import org.hkijena.jipipe.api.artifacts.JIPipeLocalArtifact;
-import org.hkijena.jipipe.api.environments.JIPipeArtifactProcessEnvironment;
+import org.hkijena.jipipe.api.environments.JIPipeProcessArtifactEnvironment;
 import org.hkijena.jipipe.plugins.expressions.JIPipeExpressionParameter;
 import org.hkijena.jipipe.plugins.ijfilaments.FilamentsPlugin;
 import org.hkijena.jipipe.plugins.parameters.api.collections.ListParameter;
@@ -28,7 +28,7 @@ import java.nio.file.Path;
 /**
  * Parameter that describes a TSOAX environment
  */
-public class TSOAXEnvironment extends JIPipeArtifactProcessEnvironment {
+public class TSOAXEnvironment extends JIPipeProcessArtifactEnvironment {
 
     public TSOAXEnvironment() {
 

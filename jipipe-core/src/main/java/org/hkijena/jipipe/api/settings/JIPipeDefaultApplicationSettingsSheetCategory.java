@@ -23,6 +23,7 @@ import javax.swing.*;
 public enum JIPipeDefaultApplicationSettingsSheetCategory {
     General("General", UIUtils.getIconFromResources("actions/wrench.png")),
     Data("Data", UIUtils.getIconFromResources("actions/update-cache.png")),
+    Samples("Samples", UIUtils.getIconFromResources("actions/template.png")),
     Plugins("Plugins", UIUtils.getIconFromResources("actions/puzzle-piece.png")),
     ImageViewer("Image viewer", UIUtils.getIconFromResources("actions/image.png")),
     UI("User interface", UIUtils.getIconFromResources("actions/arrow-pointer.png"));

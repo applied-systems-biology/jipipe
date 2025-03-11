@@ -24,6 +24,7 @@ public enum JIPipeDefaultProjectSettingsSheetCategory {
     General("General", UIUtils.getIconFromResources("actions/wrench.png")),
     Data("Data", UIUtils.getIconFromResources("actions/update-cache.png")),
     Plugins("Plugins", UIUtils.getIconFromResources("actions/puzzle-piece.png")),
+    Samples("Samples", UIUtils.getIconFromResources("actions/template.png")),
     ImageViewer("Image viewer", UIUtils.getIconFromResources("actions/image.png")),
     UI("User interface", UIUtils.getIconFromResources("actions/arrow-pointer.png"));
 
