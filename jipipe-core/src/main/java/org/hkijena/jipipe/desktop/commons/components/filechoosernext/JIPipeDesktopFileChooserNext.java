@@ -268,7 +268,19 @@ public class JIPipeDesktopFileChooserNext extends JPanel {
 
         createSidePanelHeader("Bookmarks", UIUtils.makeButtonFlat25x25(UIUtils.createButton("", UIUtils.getIcon16FromResources("actions/add.png"), this::addBookmark)));
         for (FileChooserBookmark bookmark : settings.getBookmarks()) {
-            createSidePanelShortcut(bookmark.getName(), UIUtils.getIconFromResources("actions/bookmarks.png"), bookmark.getPath());
+            JButton button = createSidePanelShortcut(bookmark.getName(), UIUtils.getIconFromResources("actions/bookmarks.png"), bookmark.getPath());
+            JPopupMenu menu = UIUtils.addRightClickPopupMenuToButton(button);
+            menu.add(UIUtils.createMenuItem("Rename", "Renames the entry", UIUtils.getIconFromResources("actions/accessories-text-editor.png"), () -> {
+                String newName = JOptionPane.showInputDialog(this, "Set the new name of the entry", bookmark.getName());
+                if(!StringUtils.isNullOrEmpty(newName)) {
+                    bookmark.setName(newName);
+                    refreshSidePanel();
+                }
+            }));
+            menu.add(UIUtils.createMenuItem("Remove", "Removes the entry", UIUtils.getIconFromResources("actions/gtk-delete.png"), () -> {
+                settings.getBookmarks().remove(bookmark);
+                refreshSidePanel();
+            }));
         }
 
 
@@ -318,7 +330,7 @@ public class JIPipeDesktopFileChooserNext extends JPanel {
         createSidePanelShortcut(name, icon, path);
     }
 
-    private void createSidePanelShortcut(String name, Icon icon, Path path) {
+    private JButton createSidePanelShortcut(String name, Icon icon, Path path) {
         JButton button = new JButton(name, icon);
         button.setHorizontalAlignment(JButton.LEFT);
         button.addActionListener(e -> {
@@ -326,6 +338,7 @@ public class JIPipeDesktopFileChooserNext extends JPanel {
         });
         UIUtils.makeButtonFlat(button);
         sidePanel.addWideToForm(button);
+        return button;
     }
 
     private void createSidePanelHeader(String title, JComponent... components) {
