@@ -25,6 +25,7 @@ import org.hkijena.jipipe.api.JIPipeWorkbench;
 import org.hkijena.jipipe.api.run.JIPipeRunnableQueue;
 import org.hkijena.jipipe.desktop.app.JIPipeDesktopWorkbench;
 import org.hkijena.jipipe.desktop.app.JIPipeDesktopWorkbenchAccess;
+import org.hkijena.jipipe.desktop.app.running.JIPipeDesktopCompactRunnableQueueButton;
 import org.hkijena.jipipe.desktop.app.running.JIPipeDesktopRunExecuteUI;
 import org.hkijena.jipipe.desktop.app.running.JIPipeDesktopRunnableQueueButton;
 import org.hkijena.jipipe.desktop.commons.components.JIPipeDesktopFormPanel;
@@ -525,10 +526,7 @@ public class JIPipeDesktopLegacyImageViewerPanel2D extends JPanel implements JIP
     }
 
     public void buildStatusBar(JToolBar statusBar) {
-        JIPipeDesktopRunnableQueueButton runnerQueueUI = new JIPipeDesktopRunnableQueueButton(getDesktopWorkbench(), viewerRunnerQueue);
-        runnerQueueUI.makeFlat();
-        runnerQueueUI.setReadyLabel("Viewer");
-        UIUtils.addToStatusBarWithSeparator(statusBar, runnerQueueUI);
+        UIUtils.addToStatusBarWithSeparator(statusBar, new JIPipeDesktopCompactRunnableQueueButton(getDesktopWorkbench(), viewerRunnerQueue, "actions/tool_imageeffects.png"));
         for (JIPipeDesktopLegacyImageViewerPlugin2D plugin : imageViewer.getPlugins2D()) {
             plugin.buildStatusBar(statusBar);
         }

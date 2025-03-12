@@ -26,6 +26,7 @@ import org.hkijena.jipipe.desktop.app.JIPipeDesktopWorkbenchAccess;
 import org.hkijena.jipipe.desktop.app.datatracer.JIPipeDesktopDataTracerUI;
 import org.hkijena.jipipe.desktop.app.quickrun.JIPipeDesktopQuickRun;
 import org.hkijena.jipipe.desktop.app.quickrun.JIPipeDesktopQuickRunSettings;
+import org.hkijena.jipipe.desktop.app.running.JIPipeDesktopCompactRunnableQueueButton;
 import org.hkijena.jipipe.desktop.app.running.JIPipeDesktopRunExecuteUI;
 import org.hkijena.jipipe.desktop.app.running.JIPipeDesktopRunnableQueueButton;
 import org.hkijena.jipipe.desktop.commons.components.ribbon.JIPipeDesktopLargeButtonRibbonAction;
@@ -161,15 +162,8 @@ public class JIPipeDesktopDataViewerWindow extends JFrame implements JIPipeDeskt
         staticStatusBar.add(dataTypeInfoButton);
         staticStatusBar.addSeparator();
 
-        JIPipeDesktopRunnableQueueButton downloadQueueButton = new JIPipeDesktopRunnableQueueButton(getDesktopWorkbench(), downloaderQueue);
-        downloadQueueButton.makeFlat();
-        downloadQueueButton.setReadyLabel("Data");
-        downloadQueueButton.setTasksFinishedLabel("Data");
-        staticStatusBar.add(downloadQueueButton);
-        staticStatusBar.addSeparator();
-        JIPipeDesktopRunnableQueueButton globalQueueButton = new JIPipeDesktopRunnableQueueButton(getDesktopWorkbench());
-        globalQueueButton.makeFlat();
-        staticStatusBar.add(globalQueueButton);
+        staticStatusBar.add(new JIPipeDesktopCompactRunnableQueueButton(getDesktopWorkbench(), downloaderQueue, "actions/view-web-browser-dom-tree.png"));
+        staticStatusBar.add(new JIPipeDesktopCompactRunnableQueueButton(getDesktopWorkbench(), "actions/run-build.png"));
         staticStatusBar.addSeparator();
         staticStatusBar.add(toggleFocusView);
         staticStatusBar.add(new JIPipeDesktopAlwaysOnTopToggle(this));

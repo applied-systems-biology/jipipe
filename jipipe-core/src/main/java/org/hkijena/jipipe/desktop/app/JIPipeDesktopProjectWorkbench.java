@@ -479,35 +479,6 @@ public class JIPipeDesktopProjectWorkbench extends JPanel implements JIPipeDeskt
         authorProfileButton.setBorder(BorderFactory.createEmptyBorder(2, 8, 2, 8));
         statusBar.add(authorProfileButton);
 
-        statusBar.add(UIUtils.createVerticalSeparator());
-
-        // Snapshot/History control
-        JIPipeDesktopRunnableQueueButton snapshotQueueButton = new JIPipeDesktopRunnableQueueButton(this, project.getSnapshotQueue());
-        snapshotQueueButton.makeFlat();
-        snapshotQueueButton.setReadyLabel("History");
-        snapshotQueueButton.setTasksFinishedLabel("History");
-        snapshotQueueButton.setTaskSingleRunningLabel("Creating snapshot");
-        snapshotQueueButton.setTaskSingleEnqueuedRunningLabel("Creating snapshots (%d)");
-        statusBar.add(snapshotQueueButton);
-
-        // Backup control
-        JIPipeDesktopRunnableQueueButton backupQueueButton = new JIPipeDesktopRunnableQueueButton(this, backupQueue);
-        backupQueueButton.makeFlat();
-        backupQueueButton.setReadyLabel("Backup");
-        backupQueueButton.setTasksFinishedLabel("Backup");
-        backupQueueButton.setTaskSingleRunningLabel("Creating backup");
-        backupQueueButton.setTaskSingleEnqueuedRunningLabel("Creating backups (%d)");
-        statusBar.add(backupQueueButton);
-
-        // Thumbnail generation control
-        JIPipeDesktopRunnableQueueButton thumbnailQueueButton = new JIPipeDesktopRunnableQueueButton(this, JIPipeThumbnailGenerationQueue.getInstance().getRunnerQueue());
-        thumbnailQueueButton.makeFlat();
-        thumbnailQueueButton.setReadyLabel("Thumbnails");
-        thumbnailQueueButton.setTasksFinishedLabel("Thumbnails");
-        thumbnailQueueButton.setTaskSingleRunningLabel("Generating thumbnail");
-        thumbnailQueueButton.setTaskSingleEnqueuedRunningLabel("Generating thumbnails (%d)");
-        statusBar.add(thumbnailQueueButton);
-
         // Memory control
         JButton optionsButton = memoryOptionsControl.createOptionsButton();
         UIUtils.makeButtonFlat(optionsButton);
@@ -520,6 +491,18 @@ public class JIPipeDesktopProjectWorkbench extends JPanel implements JIPipeDeskt
 
         // Memory meter
         statusBar.add(new JIPipeDesktopMemoryStatusUI());
+
+        statusBar.add(UIUtils.createVerticalSeparator());
+
+        // Snapshot/History control
+        statusBar.add(new JIPipeDesktopCompactRunnableQueueButton(this, project.getSnapshotQueue(), "actions/clock-rotate-left.png"));
+
+        // Backup control
+        statusBar.add(new JIPipeDesktopCompactRunnableQueueButton(this, backupQueue, "actions/document-save-all.png"));
+
+        // Thumbnail generation control
+        statusBar.add(new JIPipeDesktopCompactRunnableQueueButton(this, JIPipeThumbnailGenerationQueue.getInstance().getRunnerQueue(), "actions/document-preview.png"));
+
 
 
         add(statusBar, BorderLayout.SOUTH);
