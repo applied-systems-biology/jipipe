@@ -20,6 +20,8 @@ import org.apache.commons.lang3.exception.ExceptionUtils;
 import org.hkijena.jipipe.JIPipe;
 import org.hkijena.jipipe.api.JIPipeProgressInfo;
 import org.hkijena.jipipe.api.artifacts.*;
+import org.hkijena.jipipe.api.events.AbstractJIPipeEvent;
+import org.hkijena.jipipe.api.events.JIPipeEventEmitter;
 import org.hkijena.jipipe.api.run.JIPipeRunnableQueue;
 import org.hkijena.jipipe.plugins.artifacts.JIPipeArtifactAccelerationPreference;
 import org.hkijena.jipipe.plugins.artifacts.JIPipeArtifactApplicationSettings;
@@ -41,11 +43,15 @@ import java.nio.file.attribute.BasicFileAttributes;
 import java.util.*;
 import java.util.concurrent.locks.StampedLock;
 import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 public class JIPipeArtifactsRegistry {
     private final JIPipe jiPipe;
     private final Map<String, JIPipeArtifact> cachedArtifacts = new HashMap<>();
+    private final Map<String, JIPipeRemoteArtifact> cachedRemoteArtifacts = new HashMap<>();
+    private final Map<String, JIPipeLocalArtifact> cachedLocalArtifacts = new HashMap<>();
     private final StampedLock lock = new StampedLock();
+    private final UpdatedEventEmitter updatedEventEmitter = new UpdatedEventEmitter();
 
     public JIPipeArtifactsRegistry(JIPipe jiPipe) {
         this.jiPipe = jiPipe;
@@ -102,6 +108,18 @@ public class JIPipeArtifactsRegistry {
 
     public Map<String, JIPipeArtifact> getCachedArtifacts() {
         return Collections.unmodifiableMap(cachedArtifacts);
+    }
+
+    public Map<String, JIPipeRemoteArtifact> getCachedRemoteArtifacts() {
+        return Collections.unmodifiableMap(cachedRemoteArtifacts);
+    }
+
+    public Map<String, JIPipeLocalArtifact> getCachedLocalArtifacts() {
+        return Collections.unmodifiableMap(cachedLocalArtifacts);
+    }
+
+    public UpdatedEventEmitter getUpdatedEventEmitter() {
+        return updatedEventEmitter;
     }
 
     /**
@@ -204,10 +222,13 @@ public class JIPipeArtifactsRegistry {
     public void updateCachedArtifacts(JIPipeProgressInfo progressInfo) {
         long stamp = lock.writeLock();
         try {
+            cachedRemoteArtifacts.clear();
+            cachedLocalArtifacts.clear();
             cachedArtifacts.clear();
             try {
                 for (JIPipeRemoteArtifact artifact : queryRemoteRepositories(null, null, null, progressInfo.resolve("Remote repository"))) {
                     cachedArtifacts.put(artifact.getFullId(), artifact);
+                    cachedRemoteArtifacts.put(artifact.getFullId(), artifact);
                 }
             } catch (Throwable e) {
                 e.printStackTrace();
@@ -215,10 +236,13 @@ public class JIPipeArtifactsRegistry {
             }
             for (JIPipeLocalArtifact artifact : queryLocalRepositories(null, null, null, progressInfo.resolve("Local repository"))) {
                 cachedArtifacts.put(artifact.getFullId(), artifact);
+                cachedLocalArtifacts.put(artifact.getFullId(), artifact);
             }
         } finally {
             lock.unlock(stamp);
         }
+
+        updatedEventEmitter.emit(new UpdatedEvent(this));
     }
 
     public List<JIPipeLocalArtifact> queryLocalRepositories(String groupId, String artifactId, String version, JIPipeProgressInfo progressInfo) {
@@ -275,80 +299,139 @@ public class JIPipeArtifactsRegistry {
     public List<JIPipeRemoteArtifact> queryRemoteRepositories(String groupId, String artifactId, String version, JIPipeProgressInfo progressInfo) {
         Map<String, JIPipeRemoteArtifact> downloadMap = new HashMap<>();
         for (JIPipeArtifactRepositoryReference repository : JIPipeArtifactApplicationSettings.getInstance().getRepositories()) {
-            Stack<String> tokens = new Stack<>();
-            tokens.add(null);
-            while (!tokens.isEmpty()) {
-                try {
-                    String token = tokens.pop();
-                    String urlString = repository.getUrl() + "/service/rest/v1/search/assets?repository=" + repository.getRepository();
-                    if (groupId != null) {
-                        urlString += "&group=" + groupId;
-                    }
-                    if (artifactId != null) {
-                        urlString += "&name=" + artifactId;
-                    }
-                    if (version != null) {
-                        urlString += "&version=" + version;
-                    }
-                    if (token != null) {
-                        urlString += "&continuationToken" + token;
-                    }
-                    progressInfo.log("Contacting " + urlString);
-                    URL url = new URL(urlString);
-                    HttpURLConnection conn = (HttpURLConnection) url.openConnection();
-                    conn.setConnectTimeout(1000);
-                    conn.setReadTimeout(5000);
-                    conn.setRequestMethod("GET");
-                    conn.setRequestProperty("Accept", "application/json");
-
-                    if (conn.getResponseCode() != 200) {
-                        progressInfo.log("Failed : HTTP error code : " + conn.getResponseCode());
-                        continue;
-                    }
-
-                    // Read JSON string data
-                    StringBuilder textBuilder = new StringBuilder();
-                    try (Reader reader = new BufferedReader(new InputStreamReader
-                            (conn.getInputStream(), StandardCharsets.UTF_8))) {
-                        int c = 0;
-                        while ((c = reader.read()) != -1) {
-                            textBuilder.append((char) c);
-                        }
-                    }
-                    conn.disconnect();
-
-                    // Read as JSON
-                    JsonNode rootNode = JsonUtils.readFromString(textBuilder.toString(), JsonNode.class);
-
-                    // Read items
-                    if (rootNode.has("items")) {
-                        for (JsonNode item : ImmutableList.copyOf(rootNode.get("items").elements())) {
-                            JIPipeRemoteArtifact download = new JIPipeRemoteArtifact();
-                            download.setUrl(item.get("downloadUrl").asText());
-                            download.setSize(item.get("fileSize").asLong());
-                            download.setArtifactId(item.get("maven2").get("artifactId").asText());
-                            download.setGroupId(item.get("maven2").get("groupId").asText());
-                            download.setClassifier(item.get("maven2").get("classifier").asText());
-                            download.setVersion(item.get("maven2").get("version").asText());
-
-                            if (!downloadMap.containsKey(download.getFullId())) {
-                                downloadMap.put(download.getFullId(), download);
-                                progressInfo.log("Found " + download.getFullId());
-                            }
-                        }
-                    }
-
-                    // Continuation token
-                    if (rootNode.has("continuationToken") && !rootNode.get("continuationToken").isNull()) {
-                        tokens.push(rootNode.get("continuationToken").asText());
-                    }
-
-                } catch (IOException e) {
-                    throw new RuntimeException(e);
+            progressInfo.log("Checking remote repository @ " + repository.getUrl());
+            try {
+                if (repository.getType() == JIPipeArtifactRepositoryType.SonatypeNexus) {
+                    querySonatypeNexusRepository(groupId, artifactId, version, progressInfo.resolve( "[SonatypeNexus] " + repository.getUrl() + "/" + repository.getRepository()), repository, downloadMap);
+                } else if (repository.getType() == JIPipeArtifactRepositoryType.LocalDirectory) {
+                    queryLocalDirectoryRepository(groupId, artifactId, version, progressInfo.resolve("[LocalDirectory] " + repository.getUrl()), repository, downloadMap);
+                } else {
+                    progressInfo.log("[ERROR] Unsupported repository type: " + repository.getType());
                 }
+            }
+            catch (Throwable e) {
+                progressInfo.log(e);
             }
         }
         return downloadMap.values().stream().sorted((o1, o2) -> VersionUtils.compareVersions(o1.getVersion(), o2.getVersion())).collect(Collectors.toList());
+    }
+
+    private static void queryLocalDirectoryRepository(String groupId, String artifactId, String version, JIPipeProgressInfo progressInfo, JIPipeArtifactRepositoryReference repository, Map<String, JIPipeRemoteArtifact> downloadMap) {
+        Path root = Paths.get(repository.getUrl());
+        try (Stream<Path> stream = Files.walk(root)) {
+            stream.forEach(path -> {
+                try {
+                    if (Files.isRegularFile(path) && (path.getFileName().toString().endsWith(".zip") || path.getFileName().toString().endsWith(".tar.gz"))) {
+                        Path relativePath = root.relativize(path);
+                        String pathVersion = PathUtils.getName(path, -2);
+                        String pathArtifactId = PathUtils.getName(relativePath, -3);
+                        Path groupIdPath = relativePath.subpath(0, relativePath.getNameCount() - 3);
+                        String pathGroupId = String.join(".", PathUtils.disassemble(groupIdPath));
+                        String pathClassifier = path.getFileName().toString().split("-")[2].split("\\.")[0];
+
+                        if(groupId != null && !groupId.equals(pathGroupId)) {
+                            return;
+                        }
+                        if(artifactId != null && !artifactId.equals(pathArtifactId)) {
+                            return;
+                        }
+                        if(version != null && !version.equals(pathVersion)) {
+                            return;
+                        }
+
+                        JIPipeRemoteArtifact remoteArtifact = new JIPipeRemoteArtifact();
+                        remoteArtifact.setArtifactId(pathArtifactId);
+                        remoteArtifact.setGroupId(pathGroupId);
+                        remoteArtifact.setVersion(pathVersion);
+                        remoteArtifact.setClassifier(pathClassifier);
+                        remoteArtifact.setUrl(path.toUri().toString());
+                        downloadMap.put(remoteArtifact.getFullId(), remoteArtifact);
+
+                        progressInfo.log("Found " + remoteArtifact.getFullId());
+                    }
+                }
+                catch (Throwable throwable) {
+                    progressInfo.log(throwable);
+                }
+            });
+        } catch (IOException e) {
+            throw new RuntimeException(e);
+        }
+    }
+
+    private static void querySonatypeNexusRepository(String groupId, String artifactId, String version, JIPipeProgressInfo progressInfo, JIPipeArtifactRepositoryReference repository, Map<String, JIPipeRemoteArtifact> downloadMap) {
+        Stack<String> tokens = new Stack<>();
+        tokens.add(null);
+        while (!tokens.isEmpty()) {
+            try {
+                String token = tokens.pop();
+                String urlString = repository.getUrl() + "/service/rest/v1/search/assets?repository=" + repository.getRepository();
+                if (groupId != null) {
+                    urlString += "&group=" + groupId;
+                }
+                if (artifactId != null) {
+                    urlString += "&name=" + artifactId;
+                }
+                if (version != null) {
+                    urlString += "&version=" + version;
+                }
+                if (token != null) {
+                    urlString += "&continuationToken" + token;
+                }
+                progressInfo.log("Contacting " + urlString);
+                URL url = new URL(urlString);
+                HttpURLConnection conn = (HttpURLConnection) url.openConnection();
+                conn.setConnectTimeout(1000);
+                conn.setReadTimeout(5000);
+                conn.setRequestMethod("GET");
+                conn.setRequestProperty("Accept", "application/json");
+
+                if (conn.getResponseCode() != 200) {
+                    progressInfo.log("Failed : HTTP error code : " + conn.getResponseCode());
+                    continue;
+                }
+
+                // Read JSON string data
+                StringBuilder textBuilder = new StringBuilder();
+                try (Reader reader = new BufferedReader(new InputStreamReader
+                        (conn.getInputStream(), StandardCharsets.UTF_8))) {
+                    int c = 0;
+                    while ((c = reader.read()) != -1) {
+                        textBuilder.append((char) c);
+                    }
+                }
+                conn.disconnect();
+
+                // Read as JSON
+                JsonNode rootNode = JsonUtils.readFromString(textBuilder.toString(), JsonNode.class);
+
+                // Read items
+                if (rootNode.has("items")) {
+                    for (JsonNode item : ImmutableList.copyOf(rootNode.get("items").elements())) {
+                        JIPipeRemoteArtifact download = new JIPipeRemoteArtifact();
+                        download.setUrl(item.get("downloadUrl").asText());
+                        download.setSize(item.get("fileSize").asLong());
+                        download.setArtifactId(item.get("maven2").get("artifactId").asText());
+                        download.setGroupId(item.get("maven2").get("groupId").asText());
+                        download.setClassifier(item.get("maven2").get("classifier").asText());
+                        download.setVersion(item.get("maven2").get("version").asText());
+
+                        if (!downloadMap.containsKey(download.getFullId())) {
+                            downloadMap.put(download.getFullId(), download);
+                            progressInfo.log("Found " + download.getFullId());
+                        }
+                    }
+                }
+
+                // Continuation token
+                if (rootNode.has("continuationToken") && !rootNode.get("continuationToken").isNull()) {
+                    tokens.push(rootNode.get("continuationToken").asText());
+                }
+
+            } catch (IOException e) {
+                throw new RuntimeException(e);
+            }
+        }
     }
 
     /**
@@ -412,6 +495,25 @@ public class JIPipeArtifactsRegistry {
             return artifacts.get(0);
         } else {
             return null;
+        }
+    }
+
+    public static class UpdatedEvent extends AbstractJIPipeEvent {
+
+        public UpdatedEvent(Object source) {
+            super(source);
+        }
+    }
+
+    public static interface UpdatedEventListener {
+        void onArtifactsRegistryUpdated(UpdatedEvent event);
+    }
+
+    public static class UpdatedEventEmitter extends JIPipeEventEmitter<UpdatedEvent, UpdatedEventListener> {
+
+        @Override
+        protected void call(UpdatedEventListener updatedEventListener, UpdatedEvent event) {
+            updatedEventListener.onArtifactsRegistryUpdated(event);
         }
     }
 }

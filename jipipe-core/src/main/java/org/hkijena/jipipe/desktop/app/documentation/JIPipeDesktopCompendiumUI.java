@@ -15,8 +15,10 @@ package org.hkijena.jipipe.desktop.app.documentation;
 
 import com.google.common.base.Charsets;
 import com.vladsch.flexmark.pdf.converter.PdfConverterExtension;
+import org.hkijena.jipipe.desktop.JIPipeDesktop;
 import org.hkijena.jipipe.desktop.commons.components.markup.JIPipeDesktopMarkdownReader;
 import org.hkijena.jipipe.desktop.commons.components.search.JIPipeDesktopSearchTextField;
+import org.hkijena.jipipe.plugins.parameters.library.markup.HTMLText;
 import org.hkijena.jipipe.plugins.parameters.library.markup.MarkdownText;
 import org.hkijena.jipipe.plugins.settings.JIPipeFileChooserApplicationSettings;
 import org.hkijena.jipipe.utils.JIPipeDesktopSplitPane;
@@ -83,7 +85,7 @@ public abstract class JIPipeDesktopCompendiumUI<T> extends JPanel {
         JPopupMenu exportMenu = UIUtils.addPopupMenuToButton(exportButton);
         JMenuItem saveMarkdown = new JMenuItem("as Markdown (*.md)", UIUtils.getIconFromResources("mimetypes/text-markdown.png"));
         saveMarkdown.addActionListener(e -> {
-            Path selectedPath = JIPipeFileChooserApplicationSettings.saveFile(this, null, JIPipeFileChooserApplicationSettings.LastDirectoryKey.Projects, "Save as Markdown (*.md)", UIUtils.EXTENSION_FILTER_MD);
+            Path selectedPath = JIPipeDesktop.saveFile(this, null, JIPipeFileChooserApplicationSettings.LastDirectoryKey.Projects, "Save as Markdown (*.md)", HTMLText.EMPTY, UIUtils.EXTENSION_FILTER_MD);
             if (selectedPath != null) {
                 try (BusyCursor cursor = new BusyCursor(this)) {
                     MarkdownText wholeCompendium = generateWholeCompendium(false);
@@ -99,7 +101,7 @@ public abstract class JIPipeDesktopCompendiumUI<T> extends JPanel {
 
         JMenuItem saveHTML = new JMenuItem("as HTML (*.html)", UIUtils.getIconFromResources("mimetypes/text-html.png"));
         saveHTML.addActionListener(e -> {
-            Path selectedPath = JIPipeFileChooserApplicationSettings.saveFile(this, null, JIPipeFileChooserApplicationSettings.LastDirectoryKey.Projects, "Save as HTML (*.html)", UIUtils.EXTENSION_FILTER_HTML);
+            Path selectedPath = JIPipeDesktop.saveFile(this, null, JIPipeFileChooserApplicationSettings.LastDirectoryKey.Projects, "Save as HTML (*.html)", HTMLText.EMPTY, UIUtils.EXTENSION_FILTER_HTML);
             if (selectedPath != null) {
                 try (BusyCursor cursor = new BusyCursor(this)) {
                     try {
@@ -115,7 +117,7 @@ public abstract class JIPipeDesktopCompendiumUI<T> extends JPanel {
 
         JMenuItem savePDF = new JMenuItem("as PDF (*.pdf)", UIUtils.getIconFromResources("mimetypes/application-pdf.png"));
         savePDF.addActionListener(e -> {
-            Path selectedPath = JIPipeFileChooserApplicationSettings.saveFile(this, null, JIPipeFileChooserApplicationSettings.LastDirectoryKey.Projects, "Save as Portable Document Format (*.pdf)", UIUtils.EXTENSION_FILTER_PDF);
+            Path selectedPath = JIPipeDesktop.saveFile(this, null, JIPipeFileChooserApplicationSettings.LastDirectoryKey.Projects, "Save as Portable Document Format (*.pdf)", HTMLText.EMPTY, UIUtils.EXTENSION_FILTER_PDF);
             if (selectedPath != null) {
                 try (BusyCursor cursor = new BusyCursor(this)) {
                     MarkdownText wholeCompendium = generateWholeCompendium(true);

@@ -37,6 +37,7 @@ public class JIPipeArtifactApplicationSettings extends JIPipeDefaultApplications
     private JIPipeArtifactRepositoryReferenceList repositories = new JIPipeArtifactRepositoryReferenceList();
     private OptionalPathParameter overrideInstallationPath = new OptionalPathParameter();
     private boolean autoConfigureAccelerationOnNextStartup = true;
+    private boolean showConnectionIssueBallon = true;
 
     public JIPipeArtifactApplicationSettings() {
         repositories.add(new JIPipeArtifactRepositoryReference("https://jipipe.hki-jena.de/nexus/", "jipipe-artifacts", JIPipeArtifactRepositoryType.SonatypeNexus));
@@ -44,6 +45,17 @@ public class JIPipeArtifactApplicationSettings extends JIPipeDefaultApplications
 
     public static JIPipeArtifactApplicationSettings getInstance() {
         return JIPipe.getSettings().getById(ID, JIPipeArtifactApplicationSettings.class);
+    }
+
+    @SetJIPipeDocumentation(name = "Show warning on connection issues", description = "If enabled, show a warning if repositories could not be contacted")
+    @JIPipeParameter("show-connection-issue-balloon")
+    public boolean isShowConnectionIssueBallon() {
+        return showConnectionIssueBallon;
+    }
+
+    @JIPipeParameter("show-connection-issue-balloon")
+    public void setShowConnectionIssueBallon(boolean showConnectionIssueBallon) {
+        this.showConnectionIssueBallon = showConnectionIssueBallon;
     }
 
     @SetJIPipeDocumentation(name = "Auto-configure acceleration on next startup", description = "Attempts to automatically determine the acceleration during the next JIPipe startup.")

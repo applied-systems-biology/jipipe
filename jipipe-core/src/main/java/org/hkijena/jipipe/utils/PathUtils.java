@@ -667,4 +667,21 @@ public class PathUtils {
     public static String getPathNameSafe(Path path) {
         return StringUtils.orElse(path.getFileName(), "Root");
     }
+
+    public static List<String> disassemble(Path path) {
+        List<String> result = new ArrayList<>();
+        for (int i = 0; i < path.getNameCount(); i++) {
+            result.add(path.getName(i).toString());
+        }
+        return result;
+    }
+
+    public static String getName(Path path, int i) {
+        if(i >= 0) {
+            return path.getName(i).toString();
+        }
+        else {
+            return path.getName(path.getNameCount() + i).toString();
+        }
+    }
 }

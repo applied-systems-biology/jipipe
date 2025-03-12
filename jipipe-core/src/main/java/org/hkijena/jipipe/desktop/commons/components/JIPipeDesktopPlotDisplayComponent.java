@@ -13,8 +13,10 @@
 
 package org.hkijena.jipipe.desktop.commons.components;
 
+import org.hkijena.jipipe.desktop.JIPipeDesktop;
 import org.hkijena.jipipe.desktop.app.ploteditor.JFreeChartPlotEditor;
 import org.hkijena.jipipe.desktop.commons.components.ribbon.JIPipeDesktopRibbon;
+import org.hkijena.jipipe.plugins.parameters.library.markup.HTMLText;
 import org.hkijena.jipipe.plugins.settings.JIPipeFileChooserApplicationSettings;
 import org.hkijena.jipipe.utils.UIUtils;
 import org.hkijena.jipipe.utils.ui.CopyImageToClipboard;
@@ -106,11 +108,11 @@ public class JIPipeDesktopPlotDisplayComponent extends JPanel {
             default:
                 throw new UnsupportedOperationException();
         }
-        Path path = JIPipeFileChooserApplicationSettings.saveFile(this,
+        Path path = JIPipeDesktop.saveFile(this,
                 plotBuilderUI.getDesktopWorkbench(),
                 JIPipeFileChooserApplicationSettings.LastDirectoryKey.Data,
                 "Export plot as " + fileFormat,
-                filter);
+                HTMLText.EMPTY, filter);
         Dimension size;
         if (currentSize) {
             size = getSize();

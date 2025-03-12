@@ -13,8 +13,10 @@
 
 package org.hkijena.jipipe.desktop.commons.components;
 
+import org.hkijena.jipipe.desktop.JIPipeDesktop;
 import org.hkijena.jipipe.desktop.app.JIPipeDesktopWorkbench;
 import org.hkijena.jipipe.desktop.app.JIPipeDesktopWorkbenchPanel;
+import org.hkijena.jipipe.plugins.parameters.library.markup.HTMLText;
 import org.hkijena.jipipe.plugins.settings.JIPipeFileChooserApplicationSettings;
 import org.hkijena.jipipe.plugins.settings.JIPipeRuntimeApplicationSettings;
 import org.hkijena.jipipe.utils.PathIOMode;
@@ -127,11 +129,11 @@ public class JIPipeDesktopPathEditorComponent extends JIPipeDesktopWorkbenchPane
      * Opens the file chooser
      */
     public void choosePath() {
-        Path selected = JIPipeFileChooserApplicationSettings.selectSingle(this,
+        Path selected = JIPipeDesktop.selectSingle(this,
                 getDesktopWorkbench(),
                 directoryKey,
                 "Change current value",
-                ioMode,
+                HTMLText.EMPTY, ioMode,
                 pathMode,
                 extensionFilters.toArray(new FileNameExtensionFilter[0]));
         if (selected != null)

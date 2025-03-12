@@ -33,6 +33,7 @@ import org.hkijena.jipipe.api.run.JIPipeProjectRunSet;
 import org.hkijena.jipipe.api.run.JIPipeRunnable;
 import org.hkijena.jipipe.api.run.JIPipeRunnableQueue;
 import org.hkijena.jipipe.api.settings.JIPipeProjectSettingsSheet;
+import org.hkijena.jipipe.desktop.JIPipeDesktop;
 import org.hkijena.jipipe.desktop.app.JIPipeDesktopProjectWorkbench;
 import org.hkijena.jipipe.desktop.app.JIPipeDesktopProjectWorkbenchPanel;
 import org.hkijena.jipipe.desktop.app.bookmarks.JIPipeDesktopBookmarkListPanel;
@@ -829,7 +830,7 @@ public class JIPipeDesktopProjectOverviewUI extends JIPipeDesktopProjectWorkbenc
     }
 
     private void addDirectoryParameter() {
-        Path path = JIPipeFileChooserApplicationSettings.openPath(this, getDesktopProjectWorkbench(), JIPipeFileChooserApplicationSettings.LastDirectoryKey.Data, "Add new project-wide path/directory");
+        Path path = JIPipeDesktop.openPath(this, getDesktopProjectWorkbench(), JIPipeFileChooserApplicationSettings.LastDirectoryKey.Data, "Add new project-wide path/directory", HTMLText.EMPTY);
         if (path != null) {
             JIPipeProjectDirectories.DirectoryEntry entry = new JIPipeProjectDirectories.DirectoryEntry();
             entry.setPath(path);

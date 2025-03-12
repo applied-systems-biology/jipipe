@@ -26,10 +26,12 @@ import org.hkijena.jipipe.api.nodes.iterationstep.JIPipeIterationContext;
 import org.hkijena.jipipe.api.nodes.iterationstep.JIPipeSingleIterationStep;
 import org.hkijena.jipipe.api.parameters.JIPipeParameter;
 import org.hkijena.jipipe.api.validation.JIPipeValidationRuntimeException;
+import org.hkijena.jipipe.desktop.JIPipeDesktop;
 import org.hkijena.jipipe.desktop.app.JIPipeDesktopProjectWorkbench;
 import org.hkijena.jipipe.desktop.app.JIPipeDesktopWorkbench;
 import org.hkijena.jipipe.desktop.app.JIPipeDummyWorkbench;
 import org.hkijena.jipipe.plugins.filesystem.dataypes.PathData;
+import org.hkijena.jipipe.plugins.parameters.library.markup.HTMLText;
 import org.hkijena.jipipe.plugins.settings.JIPipeFileChooserApplicationSettings;
 import org.hkijena.jipipe.utils.PathIOMode;
 import org.hkijena.jipipe.utils.PathType;
@@ -104,16 +106,16 @@ public class PathFromUserDataSource extends JIPipeSimpleIteratingAlgorithm {
                 try {
                     JIPipeWorkbench workbench = JIPipeDesktopProjectWorkbench.tryFindProjectWorkbench(getParentGraph(), new JIPipeDummyWorkbench());
                     if (multiple) {
-                        pathList.addAll(JIPipeFileChooserApplicationSettings.selectMulti(((JIPipeDesktopWorkbench) workbench).getWindow(),
+                        pathList.addAll(JIPipeDesktop.selectMulti(((JIPipeDesktopWorkbench) workbench).getWindow(),
                                 workbench, JIPipeFileChooserApplicationSettings.LastDirectoryKey.Data,
                                 getDisplayName(),
-                                pathIOMode,
+                                HTMLText.EMPTY, pathIOMode,
                                 pathType));
                     } else {
-                        Path path = JIPipeFileChooserApplicationSettings.selectSingle(((JIPipeDesktopWorkbench) workbench).getWindow(),
+                        Path path = JIPipeDesktop.selectSingle(((JIPipeDesktopWorkbench) workbench).getWindow(),
                                 workbench, JIPipeFileChooserApplicationSettings.LastDirectoryKey.Data,
                                 getDisplayName(),
-                                pathIOMode,
+                                HTMLText.EMPTY, pathIOMode,
                                 pathType);
                         if (path != null)
                             pathList.add(path);

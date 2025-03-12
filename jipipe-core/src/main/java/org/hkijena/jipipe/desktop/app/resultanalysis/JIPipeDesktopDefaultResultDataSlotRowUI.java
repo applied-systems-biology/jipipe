@@ -25,11 +25,13 @@ import org.hkijena.jipipe.api.data.serialization.JIPipeDataTableRowInfo;
 import org.hkijena.jipipe.api.data.storage.JIPipeFileSystemReadDataStorage;
 import org.hkijena.jipipe.api.data.storage.JIPipeFileSystemWriteDataStorage;
 import org.hkijena.jipipe.api.run.JIPipeRunnable;
+import org.hkijena.jipipe.desktop.JIPipeDesktop;
 import org.hkijena.jipipe.desktop.app.JIPipeDesktopProjectWorkbench;
 import org.hkijena.jipipe.desktop.app.running.JIPipeDesktopRunExecuteUI;
 import org.hkijena.jipipe.desktop.app.tableeditor.JIPipeDesktopTableEditor;
 import org.hkijena.jipipe.plugins.expressions.JIPipeExpressionEvaluator;
 import org.hkijena.jipipe.plugins.parameters.library.jipipe.DynamicDataImportOperationIdEnumParameter;
+import org.hkijena.jipipe.plugins.parameters.library.markup.HTMLText;
 import org.hkijena.jipipe.plugins.settings.JIPipeDefaultResultImporterApplicationSettings;
 import org.hkijena.jipipe.plugins.settings.JIPipeFileChooserApplicationSettings;
 import org.hkijena.jipipe.plugins.settings.JIPipeGeneralDataApplicationSettings;
@@ -209,7 +211,7 @@ public class JIPipeDesktopDefaultResultDataSlotRowUI extends JIPipeDesktopResult
     }
 
     private void exportAsFolder() {
-        Path path = JIPipeFileChooserApplicationSettings.saveDirectory(getDesktopWorkbench().getWindow(), getDesktopWorkbench(), JIPipeFileChooserApplicationSettings.LastDirectoryKey.Data, "Export " + getDisplayName());
+        Path path = JIPipeDesktop.saveDirectory(getDesktopWorkbench().getWindow(), getDesktopWorkbench(), JIPipeFileChooserApplicationSettings.LastDirectoryKey.Data, "Export " + getDisplayName(), HTMLText.EMPTY);
         if (path != null) {
             try {
                 Files.createDirectories(path);
@@ -255,7 +257,7 @@ public class JIPipeDesktopDefaultResultDataSlotRowUI extends JIPipeDesktopResult
     }
 
     private void exportToFolder() {
-        Path path = JIPipeFileChooserApplicationSettings.saveFile(getDesktopWorkbench().getWindow(), getDesktopWorkbench(), JIPipeFileChooserApplicationSettings.LastDirectoryKey.Data, "Export " + getDisplayName());
+        Path path = JIPipeDesktop.saveFile(getDesktopWorkbench().getWindow(), getDesktopWorkbench(), JIPipeFileChooserApplicationSettings.LastDirectoryKey.Data, "Export " + getDisplayName(), HTMLText.EMPTY);
         if (path != null) {
             JIPipeRunnable runnable = new JIPipeRunnable() {
                 private final UUID uuid = UUID.randomUUID();

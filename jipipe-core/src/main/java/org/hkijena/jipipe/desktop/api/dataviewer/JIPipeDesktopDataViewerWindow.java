@@ -20,6 +20,7 @@ import org.hkijena.jipipe.api.data.storage.JIPipeZIPWriteDataStorage;
 import org.hkijena.jipipe.api.nodes.JIPipeGraphNode;
 import org.hkijena.jipipe.api.run.JIPipeRunnable;
 import org.hkijena.jipipe.api.run.JIPipeRunnableQueue;
+import org.hkijena.jipipe.desktop.JIPipeDesktop;
 import org.hkijena.jipipe.desktop.app.JIPipeDesktopProjectWorkbench;
 import org.hkijena.jipipe.desktop.app.JIPipeDesktopWorkbench;
 import org.hkijena.jipipe.desktop.app.JIPipeDesktopWorkbenchAccess;
@@ -28,12 +29,12 @@ import org.hkijena.jipipe.desktop.app.quickrun.JIPipeDesktopQuickRun;
 import org.hkijena.jipipe.desktop.app.quickrun.JIPipeDesktopQuickRunSettings;
 import org.hkijena.jipipe.desktop.app.running.JIPipeDesktopCompactRunnableQueueButton;
 import org.hkijena.jipipe.desktop.app.running.JIPipeDesktopRunExecuteUI;
-import org.hkijena.jipipe.desktop.app.running.JIPipeDesktopRunnableQueueButton;
 import org.hkijena.jipipe.desktop.commons.components.ribbon.JIPipeDesktopLargeButtonRibbonAction;
 import org.hkijena.jipipe.desktop.commons.components.ribbon.JIPipeDesktopRibbon;
 import org.hkijena.jipipe.desktop.commons.components.ribbon.JIPipeDesktopSmallButtonRibbonAction;
 import org.hkijena.jipipe.desktop.commons.components.ribbon.JIPipeDesktopSmallToggleButtonRibbonAction;
 import org.hkijena.jipipe.desktop.commons.components.window.JIPipeDesktopAlwaysOnTopToggle;
+import org.hkijena.jipipe.plugins.parameters.library.markup.HTMLText;
 import org.hkijena.jipipe.plugins.settings.JIPipeFileChooserApplicationSettings;
 import org.hkijena.jipipe.plugins.settings.JIPipeRuntimeApplicationSettings;
 import org.hkijena.jipipe.plugins.tables.datatypes.ResultsTableData;
@@ -422,25 +423,25 @@ public class JIPipeDesktopDataViewerWindow extends JFrame implements JIPipeDeskt
     }
 
     private void exportDataTableToFolder() {
-        Path path = JIPipeFileChooserApplicationSettings.saveDirectory(this, workbench, JIPipeFileChooserApplicationSettings.LastDirectoryKey.Data, "Export data table into directory");
+        Path path = JIPipeDesktop.saveDirectory(this, workbench, JIPipeFileChooserApplicationSettings.LastDirectoryKey.Data, "Export data table into directory", HTMLText.EMPTY);
         ExportDataTableIntoDirectoryRun run = new ExportDataTableIntoDirectoryRun(dataTableBrowser, path);
         JIPipeDesktopRunExecuteUI.runInDialog(getDesktopWorkbench(), this, run);
     }
 
     private void exportDataTableToZip() {
-        Path path = JIPipeFileChooserApplicationSettings.saveFile(this, workbench, JIPipeFileChooserApplicationSettings.LastDirectoryKey.Data, "Export data table", UIUtils.EXTENSION_FILTER_ZIP);
+        Path path = JIPipeDesktop.saveFile(this, workbench, JIPipeFileChooserApplicationSettings.LastDirectoryKey.Data, "Export data table", HTMLText.EMPTY, UIUtils.EXTENSION_FILTER_ZIP);
         ExportDataTableToZipRun run = new ExportDataTableToZipRun(dataTableBrowser, path);
         JIPipeDesktopRunExecuteUI.runInDialog(getDesktopWorkbench(), this, run);
     }
 
     private void exportAsFilesIntoDirectory() {
-        Path path = JIPipeFileChooserApplicationSettings.saveDirectory(this, workbench, JIPipeFileChooserApplicationSettings.LastDirectoryKey.Data, "Export data into directory");
+        Path path = JIPipeDesktop.saveDirectory(this, workbench, JIPipeFileChooserApplicationSettings.LastDirectoryKey.Data, "Export data into directory", HTMLText.EMPTY);
         ExportDataIntoDirectoryRun run = new ExportDataIntoDirectoryRun(dataBrowser, path);
         JIPipeDesktopRunExecuteUI.runInDialog(getDesktopWorkbench(), this, run);
     }
 
     private void exportAsFilesCustom() {
-        Path path = JIPipeFileChooserApplicationSettings.saveFile(this, workbench, JIPipeFileChooserApplicationSettings.LastDirectoryKey.Data, "Export data");
+        Path path = JIPipeDesktop.saveFile(this, workbench, JIPipeFileChooserApplicationSettings.LastDirectoryKey.Data, "Export data", HTMLText.EMPTY);
         ExportDataWithCustomNameRun run = new ExportDataWithCustomNameRun(dataBrowser, path);
         JIPipeDesktopRunExecuteUI.runInDialog(getDesktopWorkbench(), this, run);
     }

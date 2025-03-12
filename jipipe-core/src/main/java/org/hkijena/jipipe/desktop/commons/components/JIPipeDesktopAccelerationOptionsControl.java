@@ -54,7 +54,7 @@ public class JIPipeDesktopAccelerationOptionsControl extends JButton implements 
             popupMenu.add(menuItem);
         }
         popupMenu.addSeparator();
-        popupMenu.add(UIUtils.createMenuItem("Configure", "Opens the application settings", UIUtils.getIconFromResources("actions/configure.png"), this::openApplicationSettings));
+        popupMenu.add(UIUtils.createMenuItem("Configure ...", "Opens the application settings", UIUtils.getIconFromResources("actions/configure.png"), this::openApplicationSettings));
     }
 
     private void openApplicationSettings() {

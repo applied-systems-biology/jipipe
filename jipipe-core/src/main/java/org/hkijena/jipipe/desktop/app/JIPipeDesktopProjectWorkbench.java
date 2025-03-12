@@ -30,6 +30,7 @@ import org.hkijena.jipipe.api.project.JIPipeArchiveProjectToDirectoryRun;
 import org.hkijena.jipipe.api.project.JIPipeArchiveProjectToZIPRun;
 import org.hkijena.jipipe.api.project.JIPipeProject;
 import org.hkijena.jipipe.api.run.JIPipeRunnableQueue;
+import org.hkijena.jipipe.desktop.JIPipeDesktop;
 import org.hkijena.jipipe.desktop.api.JIPipeMenuExtensionTarget;
 import org.hkijena.jipipe.desktop.app.backups.JIPipeDesktopBackupManagerPanel;
 import org.hkijena.jipipe.desktop.app.cache.JIPipeDesktopCacheBrowserUI;
@@ -58,6 +59,7 @@ import org.hkijena.jipipe.desktop.commons.components.tabs.JIPipeDesktopTabPane;
 import org.hkijena.jipipe.desktop.commons.notifications.JIPipeDesktopNotificationButton;
 import org.hkijena.jipipe.desktop.commons.notifications.JIPipeDesktopWorkbenchNotificationInboxUI;
 import org.hkijena.jipipe.desktop.commons.theme.JIPipeDesktopModernMetalTheme;
+import org.hkijena.jipipe.plugins.parameters.library.markup.HTMLText;
 import org.hkijena.jipipe.plugins.parameters.library.markup.MarkdownText;
 import org.hkijena.jipipe.plugins.settings.*;
 import org.hkijena.jipipe.utils.UIUtils;
@@ -485,6 +487,8 @@ public class JIPipeDesktopProjectWorkbench extends JPanel implements JIPipeDeskt
         statusBar.add(optionsButton);
         statusBar.add(Box.createHorizontalStrut(4));
 
+        // Artifacts control
+        statusBar.add(new JIPipeDesktopArtifactsOptionsControl(this));
 
         // Acceleration control
         statusBar.add(new JIPipeDesktopAccelerationOptionsControl(this));
@@ -906,14 +910,14 @@ public class JIPipeDesktopProjectWorkbench extends JPanel implements JIPipeDeskt
     }
 
     private void archiveProjectAsDirectory() {
-        Path directory = JIPipeFileChooserApplicationSettings.saveDirectory(this, this, JIPipeFileChooserApplicationSettings.LastDirectoryKey.Projects, "Archive project as directory");
+        Path directory = JIPipeDesktop.saveDirectory(this, this, JIPipeFileChooserApplicationSettings.LastDirectoryKey.Projects, "Archive project as directory", HTMLText.EMPTY);
         if (directory != null) {
             JIPipeDesktopRunExecuteUI.runInDialog(this, this, new JIPipeArchiveProjectToDirectoryRun(getProject(), directory));
         }
     }
 
     private void archiveProjectAsZIP() {
-        Path file = JIPipeFileChooserApplicationSettings.saveFile(this, this, JIPipeFileChooserApplicationSettings.LastDirectoryKey.Projects, "Archive project as ZIP", UIUtils.EXTENSION_FILTER_ZIP);
+        Path file = JIPipeDesktop.saveFile(this, this, JIPipeFileChooserApplicationSettings.LastDirectoryKey.Projects, "Archive project as ZIP", HTMLText.EMPTY, UIUtils.EXTENSION_FILTER_ZIP);
         if (file != null) {
             JIPipeDesktopRunExecuteUI.runInDialog(this, this, new JIPipeArchiveProjectToZIPRun(getProject(), file));
         }
@@ -948,7 +952,7 @@ public class JIPipeDesktopProjectWorkbench extends JPanel implements JIPipeDeskt
 
 
     public void restoreCacheFromZIPOrDirectory() {
-        Path path = JIPipeFileChooserApplicationSettings.openPath(this, this, JIPipeFileChooserApplicationSettings.LastDirectoryKey.Projects, "Select exported cache (ZIP/directory)");
+        Path path = JIPipeDesktop.openPath(this, this, JIPipeFileChooserApplicationSettings.LastDirectoryKey.Projects, "Select exported cache (ZIP/directory)", HTMLText.EMPTY);
         if (path != null) {
             if (Files.isRegularFile(path)) {
                 // Load into cache with a run

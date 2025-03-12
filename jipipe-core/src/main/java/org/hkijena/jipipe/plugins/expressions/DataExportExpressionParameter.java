@@ -18,8 +18,10 @@ import org.hkijena.jipipe.api.JIPipeWorkbench;
 import org.hkijena.jipipe.api.annotation.JIPipeTextAnnotation;
 import org.hkijena.jipipe.api.annotation.JIPipeTextAnnotationMergeMode;
 import org.hkijena.jipipe.api.project.JIPipeProject;
+import org.hkijena.jipipe.desktop.JIPipeDesktop;
 import org.hkijena.jipipe.desktop.app.JIPipeDesktopProjectWorkbench;
 import org.hkijena.jipipe.plugins.expressions.variables.JIPipeTextAnnotationsExpressionParameterVariablesInfo;
+import org.hkijena.jipipe.plugins.parameters.library.markup.HTMLText;
 import org.hkijena.jipipe.plugins.settings.JIPipeFileChooserApplicationSettings;
 import org.hkijena.jipipe.utils.PathType;
 import org.hkijena.jipipe.utils.StringUtils;
@@ -73,13 +75,13 @@ public class DataExportExpressionParameter extends JIPipeExpressionParameter {
         Path path;
         switch (pathType) {
             case DirectoriesOnly:
-                path = JIPipeFileChooserApplicationSettings.saveDirectory(parent, workbench, JIPipeFileChooserApplicationSettings.LastDirectoryKey.Data, title);
+                path = JIPipeDesktop.saveDirectory(parent, workbench, JIPipeFileChooserApplicationSettings.LastDirectoryKey.Data, title, HTMLText.EMPTY);
                 break;
             case FilesOnly:
-                path = JIPipeFileChooserApplicationSettings.saveFile(parent, workbench, JIPipeFileChooserApplicationSettings.LastDirectoryKey.Data, title, extensions);
+                path = JIPipeDesktop.saveFile(parent, workbench, JIPipeFileChooserApplicationSettings.LastDirectoryKey.Data, title, HTMLText.EMPTY, extensions);
                 break;
             case FilesAndDirectories:
-                path = JIPipeFileChooserApplicationSettings.savePath(parent, workbench, JIPipeFileChooserApplicationSettings.LastDirectoryKey.Data, title);
+                path = JIPipeDesktop.savePath(parent, workbench, JIPipeFileChooserApplicationSettings.LastDirectoryKey.Data, title, HTMLText.EMPTY);
                 break;
             default:
                 throw new IllegalArgumentException("Unsupported path type: " + pathType);

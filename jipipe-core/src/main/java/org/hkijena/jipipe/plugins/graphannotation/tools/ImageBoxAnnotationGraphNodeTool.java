@@ -15,9 +15,11 @@ package org.hkijena.jipipe.plugins.graphannotation.tools;
 
 import ij.IJ;
 import org.hkijena.jipipe.api.nodes.annotation.JIPipeAnnotationGraphNodeTool;
+import org.hkijena.jipipe.desktop.JIPipeDesktop;
 import org.hkijena.jipipe.desktop.app.grapheditor.JIPipeGraphViewMode;
 import org.hkijena.jipipe.plugins.graphannotation.nodes.ImageBoxAnnotationGraphNode;
 import org.hkijena.jipipe.plugins.parameters.library.images.ImageParameter;
+import org.hkijena.jipipe.plugins.parameters.library.markup.HTMLText;
 import org.hkijena.jipipe.plugins.settings.JIPipeFileChooserApplicationSettings;
 import org.hkijena.jipipe.utils.BufferedImageUtils;
 import org.hkijena.jipipe.utils.UIUtils;
@@ -38,10 +40,10 @@ public class ImageBoxAnnotationGraphNodeTool extends JIPipeAnnotationGraphNodeTo
     @Override
     protected ImageBoxAnnotationGraphNode createAndConfigureNode(Point firstPoint, Point secondPoint) {
         ImageBoxAnnotationGraphNode node = super.createAndConfigureNode(firstPoint, secondPoint);
-        Path path = JIPipeFileChooserApplicationSettings.openFile(getDesktopWorkbench().getWindow(),
+        Path path = JIPipeDesktop.openFile(getDesktopWorkbench().getWindow(),
                 getDesktopWorkbench(), JIPipeFileChooserApplicationSettings.LastDirectoryKey.External,
                 "Open image",
-                UIUtils.EXTENSION_FILTER_IMAGEIO_IMAGES);
+                HTMLText.EMPTY, UIUtils.EXTENSION_FILTER_IMAGEIO_IMAGES);
         if (path != null) {
             try {
                 BufferedImage image = ImageIO.read(path.toFile());

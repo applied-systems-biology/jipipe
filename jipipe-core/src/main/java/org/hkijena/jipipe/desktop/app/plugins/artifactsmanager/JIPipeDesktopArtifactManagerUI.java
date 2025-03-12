@@ -20,6 +20,7 @@ import org.hkijena.jipipe.api.run.JIPipeRunnable;
 import org.hkijena.jipipe.api.run.JIPipeRunnableQueue;
 import org.hkijena.jipipe.api.validation.JIPipeValidationReport;
 import org.hkijena.jipipe.api.validation.contexts.UnspecifiedValidationReportContext;
+import org.hkijena.jipipe.desktop.JIPipeDesktop;
 import org.hkijena.jipipe.desktop.app.JIPipeDesktopWorkbench;
 import org.hkijena.jipipe.desktop.app.JIPipeDesktopWorkbenchPanel;
 import org.hkijena.jipipe.desktop.app.running.JIPipeDesktopRunExecuteUI;
@@ -28,6 +29,7 @@ import org.hkijena.jipipe.desktop.commons.components.JIPipeDesktopFormPanel;
 import org.hkijena.jipipe.desktop.commons.components.JIPipeDesktopMessagePanel;
 import org.hkijena.jipipe.desktop.commons.components.JIPipeDesktopParameterFormPanel;
 import org.hkijena.jipipe.desktop.commons.components.search.JIPipeDesktopSearchTextField;
+import org.hkijena.jipipe.plugins.parameters.library.markup.HTMLText;
 import org.hkijena.jipipe.plugins.parameters.library.markup.MarkdownText;
 import org.hkijena.jipipe.plugins.settings.JIPipeFileChooserApplicationSettings;
 import org.hkijena.jipipe.utils.ArchiveUtils;
@@ -169,6 +171,9 @@ public class JIPipeDesktopArtifactManagerUI extends JIPipeDesktopWorkbenchPanel 
             propertyPanel.addToForm(UIUtils.createReadonlyBorderlessTextField(artifact.getClassifier()), new JLabel("Label"));
             propertyPanel.addToForm(UIUtils.createReadonlyBorderlessTextField(artifact.getGroupId()), new JLabel("Publisher"));
             propertyPanel.addToForm(UIUtils.createReadonlyBorderlessTextField(artifact.isCompatible() ? "Yes" : "No"), new JLabel("Compatible"));
+            if (artifact instanceof JIPipeRemoteArtifact) {
+                propertyPanel.addToForm(UIUtils.createReadonlyBorderlessTextField(((JIPipeRemoteArtifact) artifact).getUrl()), new JLabel("URL"));
+            }
             if (artifact.isRequireGPU()) {
                 propertyPanel.addToForm(new JLabel("Requires GPU", UIUtils.getIconFromResources("devices/device_pci.png"), JLabel.LEFT), new JLabel("Additional info"));
             }
@@ -208,7 +213,7 @@ public class JIPipeDesktopArtifactManagerUI extends JIPipeDesktopWorkbenchPanel 
     }
 
     private void installArtifactManually() {
-        Path archiveFile = JIPipeFileChooserApplicationSettings.openFile(this, getDesktopWorkbench(), JIPipeFileChooserApplicationSettings.LastDirectoryKey.External, "Manually install artifact", UIUtils.EXTENSION_FILTER_ARCHIVE);
+        Path archiveFile = JIPipeDesktop.openFile(this, getDesktopWorkbench(), JIPipeFileChooserApplicationSettings.LastDirectoryKey.External, "Manually install artifact", HTMLText.EMPTY, UIUtils.EXTENSION_FILTER_ARCHIVE);
         if (archiveFile != null) {
             JIPipeArtifact dummyArtifact = new JIPipeArtifact();
 

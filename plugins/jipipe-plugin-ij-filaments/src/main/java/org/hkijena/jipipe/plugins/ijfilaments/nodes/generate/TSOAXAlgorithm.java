@@ -24,11 +24,13 @@ import org.hkijena.jipipe.api.validation.JIPipeValidationReport;
 import org.hkijena.jipipe.api.validation.JIPipeValidationReportContext;
 import org.hkijena.jipipe.api.validation.JIPipeValidationReportEntry;
 import org.hkijena.jipipe.api.validation.JIPipeValidationReportEntryLevel;
+import org.hkijena.jipipe.desktop.JIPipeDesktop;
 import org.hkijena.jipipe.desktop.api.nodes.AddJIPipeDesktopNodeQuickAction;
 import org.hkijena.jipipe.desktop.app.grapheditor.commons.JIPipeDesktopGraphCanvasUI;
 import org.hkijena.jipipe.plugins.ijfilaments.FilamentsPlugin;
 import org.hkijena.jipipe.plugins.ijfilaments.environments.OptionalTSOAXEnvironment;
 import org.hkijena.jipipe.plugins.ijfilaments.environments.TSOAXEnvironment;
+import org.hkijena.jipipe.plugins.parameters.library.markup.HTMLText;
 import org.hkijena.jipipe.plugins.parameters.library.primitives.optional.OptionalTextAnnotationNameParameter;
 import org.hkijena.jipipe.plugins.settings.JIPipeFileChooserApplicationSettings;
 import org.hkijena.jipipe.utils.StringUtils;
@@ -216,10 +218,10 @@ public abstract class TSOAXAlgorithm extends JIPipeSimpleIteratingAlgorithm {
     @AddJIPipeDesktopNodeQuickAction(name = "Save TSOAX parameters *.txt", description = "Saves parameters into the TSOAX parameters file format",
             icon = "actions/document-export.png", buttonIcon = "actions/filesave.png", buttonText = "Save")
     public void saveParametersDesktopQuickAction(JIPipeDesktopGraphCanvasUI canvasUI) {
-        Path filePath = JIPipeFileChooserApplicationSettings.saveFile(canvasUI.getDesktopWorkbench().getWindow(),
+        Path filePath = JIPipeDesktop.saveFile(canvasUI.getDesktopWorkbench().getWindow(),
                 canvasUI.getDesktopWorkbench(), JIPipeFileChooserApplicationSettings.LastDirectoryKey.Data,
                 "Save TSOAX parameters",
-                UIUtils.EXTENSION_FILTER_TXT);
+                HTMLText.EMPTY, UIUtils.EXTENSION_FILTER_TXT);
         if (filePath != null) {
             saveParameterFile(filePath);
             canvasUI.getDesktopWorkbench().sendStatusBarText("Saved parameters to " + filePath);
@@ -229,10 +231,10 @@ public abstract class TSOAXAlgorithm extends JIPipeSimpleIteratingAlgorithm {
     @AddJIPipeDesktopNodeQuickAction(name = "Load TSOAX parameters *.txt", description = "Loads parameters from a file in the TSOAX parameters format",
             icon = "actions/document-export.png", buttonIcon = "actions/fileopen.png", buttonText = "Open")
     public void loadParametersDesktopQuickAction(JIPipeDesktopGraphCanvasUI canvasUI) {
-        Path filePath = JIPipeFileChooserApplicationSettings.openFile(canvasUI.getDesktopWorkbench().getWindow(),
+        Path filePath = JIPipeDesktop.openFile(canvasUI.getDesktopWorkbench().getWindow(),
                 canvasUI.getDesktopWorkbench(), JIPipeFileChooserApplicationSettings.LastDirectoryKey.Data,
                 "Open TSOAX parameters",
-                UIUtils.EXTENSION_FILTER_TXT);
+                HTMLText.EMPTY, UIUtils.EXTENSION_FILTER_TXT);
         if (filePath != null) {
             openParameterFile(filePath);
             emitParameterUIChangedEvent();

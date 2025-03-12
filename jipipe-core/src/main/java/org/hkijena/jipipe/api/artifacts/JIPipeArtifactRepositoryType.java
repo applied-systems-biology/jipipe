@@ -14,5 +14,6 @@
 package org.hkijena.jipipe.api.artifacts;
 
 public enum JIPipeArtifactRepositoryType {
-    SonatypeNexus
+    SonatypeNexus,
+    LocalDirectory
 }

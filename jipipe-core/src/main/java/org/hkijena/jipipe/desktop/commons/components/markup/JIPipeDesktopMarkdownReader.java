@@ -22,6 +22,8 @@ import com.vladsch.flexmark.pdf.converter.PdfConverterExtension;
 import com.vladsch.flexmark.util.data.MutableDataHolder;
 import com.vladsch.flexmark.util.data.MutableDataSet;
 import org.hkijena.jipipe.JIPipe;
+import org.hkijena.jipipe.desktop.JIPipeDesktop;
+import org.hkijena.jipipe.plugins.parameters.library.markup.HTMLText;
 import org.hkijena.jipipe.plugins.parameters.library.markup.MarkdownText;
 import org.hkijena.jipipe.plugins.settings.JIPipeFileChooserApplicationSettings;
 import org.hkijena.jipipe.plugins.settings.JIPipeGeneralUIApplicationSettings;
@@ -160,7 +162,7 @@ public class JIPipeDesktopMarkdownReader extends JPanel {
 
             JMenuItem saveMarkdown = new JMenuItem("as Markdown (*.md)", UIUtils.getIconFromResources("mimetypes/text-markdown.png"));
             saveMarkdown.addActionListener(e -> {
-                Path selectedPath = JIPipeFileChooserApplicationSettings.saveFile(this, null, JIPipeFileChooserApplicationSettings.LastDirectoryKey.Projects, "Save as Markdown (*.md)", UIUtils.EXTENSION_FILTER_MD);
+                Path selectedPath = JIPipeDesktop.saveFile(this, null, JIPipeFileChooserApplicationSettings.LastDirectoryKey.Projects, "Save as Markdown (*.md)", HTMLText.EMPTY, UIUtils.EXTENSION_FILTER_MD);
                 if (selectedPath != null) {
                     try {
                         Files.write(selectedPath, document.getMarkdown().getBytes(Charsets.UTF_8));
@@ -173,7 +175,7 @@ public class JIPipeDesktopMarkdownReader extends JPanel {
 
             JMenuItem saveHTML = new JMenuItem("as HTML (*.html)", UIUtils.getIconFromResources("mimetypes/text-html.png"));
             saveHTML.addActionListener(e -> {
-                Path selectedPath = JIPipeFileChooserApplicationSettings.saveFile(this, null, JIPipeFileChooserApplicationSettings.LastDirectoryKey.Projects, "Save as HTML (*.html)", UIUtils.EXTENSION_FILTER_HTML);
+                Path selectedPath = JIPipeDesktop.saveFile(this, null, JIPipeFileChooserApplicationSettings.LastDirectoryKey.Projects, "Save as HTML (*.html)", HTMLText.EMPTY, UIUtils.EXTENSION_FILTER_HTML);
                 if (selectedPath != null) {
                     try {
                         Files.write(selectedPath, toHTML().getBytes(Charsets.UTF_8));
@@ -186,7 +188,7 @@ public class JIPipeDesktopMarkdownReader extends JPanel {
 
             JMenuItem savePDF = new JMenuItem("as PDF (*.pdf)", UIUtils.getIconFromResources("mimetypes/application-pdf.png"));
             savePDF.addActionListener(e -> {
-                Path selectedPath = JIPipeFileChooserApplicationSettings.saveFile(this, null, JIPipeFileChooserApplicationSettings.LastDirectoryKey.Projects, "Save as Portable Document Format (*.pdf)", UIUtils.EXTENSION_FILTER_PDF);
+                Path selectedPath = JIPipeDesktop.saveFile(this, null, JIPipeFileChooserApplicationSettings.LastDirectoryKey.Projects, "Save as Portable Document Format (*.pdf)", HTMLText.EMPTY, UIUtils.EXTENSION_FILTER_PDF);
                 if (selectedPath != null) {
                     PdfConverterExtension.exportToPdf(selectedPath.toString(), toHTML(), "", OPTIONS);
                 }

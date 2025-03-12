@@ -14,8 +14,10 @@
 package org.hkijena.jipipe.plugins.parameters.library.images;
 
 import ij.IJ;
+import org.hkijena.jipipe.desktop.JIPipeDesktop;
 import org.hkijena.jipipe.desktop.api.JIPipeDesktopParameterEditorUI;
 import org.hkijena.jipipe.desktop.commons.components.pickers.JIPipeDesktopIconPickerDialog;
+import org.hkijena.jipipe.plugins.parameters.library.markup.HTMLText;
 import org.hkijena.jipipe.plugins.parameters.library.references.IconRefDesktopParameterEditorUI;
 import org.hkijena.jipipe.plugins.settings.JIPipeFileChooserApplicationSettings;
 import org.hkijena.jipipe.utils.BufferedImageUtils;
@@ -66,10 +68,10 @@ public class ImageDesktopParameterEditorUI extends JIPipeDesktopParameterEditorU
     }
 
     private void importImageFile() {
-        Path path = JIPipeFileChooserApplicationSettings.openFile(getDesktopWorkbench().getWindow(),
+        Path path = JIPipeDesktop.openFile(getDesktopWorkbench().getWindow(),
                 getDesktopWorkbench(), JIPipeFileChooserApplicationSettings.LastDirectoryKey.External,
                 "Open image",
-                UIUtils.EXTENSION_FILTER_IMAGEIO_IMAGES);
+                HTMLText.EMPTY, UIUtils.EXTENSION_FILTER_IMAGEIO_IMAGES);
         if (path != null) {
             try {
                 BufferedImage image = ImageIO.read(path.toFile());

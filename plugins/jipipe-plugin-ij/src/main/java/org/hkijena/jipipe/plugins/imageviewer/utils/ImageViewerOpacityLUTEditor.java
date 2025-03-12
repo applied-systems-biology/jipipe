@@ -16,10 +16,12 @@ package org.hkijena.jipipe.plugins.imageviewer.utils;
 import ij.IJ;
 import ij.ImagePlus;
 import ij.process.LUT;
+import org.hkijena.jipipe.desktop.JIPipeDesktop;
 import org.hkijena.jipipe.desktop.commons.components.icons.SolidColorIcon;
 import org.hkijena.jipipe.plugins.imagejdatatypes.datatypes.LUTData;
 import org.hkijena.jipipe.plugins.imagejdatatypes.util.ImageJUtils;
 import org.hkijena.jipipe.plugins.imageviewer.legacy.JIPipeDesktopLegacyImageViewer;
+import org.hkijena.jipipe.plugins.parameters.library.markup.HTMLText;
 import org.hkijena.jipipe.plugins.settings.JIPipeFileChooserApplicationSettings;
 import org.hkijena.jipipe.utils.ColorUtils;
 import org.hkijena.jipipe.utils.UIUtils;
@@ -298,7 +300,7 @@ public abstract class ImageViewerOpacityLUTEditor extends JPanel implements Thum
     }
 
     private void importLUTFromJSON() {
-        Path path = JIPipeFileChooserApplicationSettings.openFile(this, getImageViewerPanel().getDesktopWorkbench(), JIPipeFileChooserApplicationSettings.LastDirectoryKey.Data, "Import LUT", UIUtils.EXTENSION_FILTER_JSON);
+        Path path = JIPipeDesktop.openFile(this, getImageViewerPanel().getDesktopWorkbench(), JIPipeFileChooserApplicationSettings.LastDirectoryKey.Data, "Import LUT", HTMLText.EMPTY, UIUtils.EXTENSION_FILTER_JSON);
         if (path != null) {
             LUTData lutData = JsonUtils.readFromFile(path, LUTData.class);
             importLUT(lutData);
@@ -307,7 +309,7 @@ public abstract class ImageViewerOpacityLUTEditor extends JPanel implements Thum
     }
 
     private void exportLUTToJSON() {
-        Path path = JIPipeFileChooserApplicationSettings.saveFile(this, getImageViewerPanel().getDesktopWorkbench(), JIPipeFileChooserApplicationSettings.LastDirectoryKey.Data, "Export LUT", UIUtils.EXTENSION_FILTER_JSON);
+        Path path = JIPipeDesktop.saveFile(this, getImageViewerPanel().getDesktopWorkbench(), JIPipeFileChooserApplicationSettings.LastDirectoryKey.Data, "Export LUT", HTMLText.EMPTY, UIUtils.EXTENSION_FILTER_JSON);
         if (path != null) {
             LUTData lutData = new LUTData();
             for (int i = 0; i < slider.getModel().getThumbCount(); i++) {
@@ -319,7 +321,7 @@ public abstract class ImageViewerOpacityLUTEditor extends JPanel implements Thum
     }
 
     private void importLUTFromPNG() {
-        Path path = JIPipeFileChooserApplicationSettings.openFile(this, getImageViewerPanel().getDesktopWorkbench(), JIPipeFileChooserApplicationSettings.LastDirectoryKey.Data, "Import LUT", UIUtils.EXTENSION_FILTER_PNG);
+        Path path = JIPipeDesktop.openFile(this, getImageViewerPanel().getDesktopWorkbench(), JIPipeFileChooserApplicationSettings.LastDirectoryKey.Data, "Import LUT", HTMLText.EMPTY, UIUtils.EXTENSION_FILTER_PNG);
         if (path != null) {
             ImagePlus img = IJ.openImage(path.toString());
             LUT lut = ImageJUtils.lutFromImage(img);
@@ -329,7 +331,7 @@ public abstract class ImageViewerOpacityLUTEditor extends JPanel implements Thum
     }
 
     private void exportLUTToPNG() {
-        Path path = JIPipeFileChooserApplicationSettings.saveFile(this, getImageViewerPanel().getDesktopWorkbench(), JIPipeFileChooserApplicationSettings.LastDirectoryKey.Data, "Export LUT", UIUtils.EXTENSION_FILTER_PNG);
+        Path path = JIPipeDesktop.saveFile(this, getImageViewerPanel().getDesktopWorkbench(), JIPipeFileChooserApplicationSettings.LastDirectoryKey.Data, "Export LUT", HTMLText.EMPTY, UIUtils.EXTENSION_FILTER_PNG);
         if (path != null) {
             LUT lut = generateLUT();
             ImagePlus img = ImageJUtils.lutToImage(lut, 256, 1);

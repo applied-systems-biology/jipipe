@@ -29,6 +29,7 @@ import org.hkijena.jipipe.api.events.AbstractJIPipeEvent;
 import org.hkijena.jipipe.api.events.JIPipeEventEmitter;
 import org.hkijena.jipipe.api.parameters.JIPipeDynamicParameterCollection;
 import org.hkijena.jipipe.api.parameters.JIPipeMutableParameterAccess;
+import org.hkijena.jipipe.desktop.JIPipeDesktop;
 import org.hkijena.jipipe.desktop.app.JIPipeDesktopDummyWorkbench;
 import org.hkijena.jipipe.desktop.commons.components.JIPipeDesktopColorChooserButton;
 import org.hkijena.jipipe.desktop.commons.components.JIPipeDesktopFormPanel;
@@ -43,6 +44,7 @@ import org.hkijena.jipipe.plugins.imageviewer.legacy.api.JIPipeDesktopLegacyImag
 import org.hkijena.jipipe.plugins.imageviewer.legacy.plugins2d.roimanager.ROIManagerPlugin2D;
 import org.hkijena.jipipe.plugins.imageviewer.utils.viewer2d.ImageViewerPanelCanvas2D;
 import org.hkijena.jipipe.plugins.imageviewer.utils.viewer2d.ImageViewerPanelCanvas2DTool;
+import org.hkijena.jipipe.plugins.parameters.library.markup.HTMLText;
 import org.hkijena.jipipe.plugins.parameters.library.ranges.*;
 import org.hkijena.jipipe.plugins.settings.JIPipeFileChooserApplicationSettings;
 import org.hkijena.jipipe.utils.BufferedImageUtils;
@@ -244,10 +246,10 @@ public class MaskDrawerPlugin2D extends JIPipeDesktopLegacyImageViewerPlugin2D i
     }
 
     private void importMask() {
-        Path selectedFile = JIPipeFileChooserApplicationSettings.openFile(getViewerPanel(),
+        Path selectedFile = JIPipeDesktop.openFile(getViewerPanel(),
                 getWorkbench(), JIPipeFileChooserApplicationSettings.LastDirectoryKey.Data,
                 "Import mask",
-                UIUtils.EXTENSION_FILTER_TIFF);
+                HTMLText.EMPTY, UIUtils.EXTENSION_FILTER_TIFF);
         if (selectedFile != null) {
             try (BusyCursor cursor = new BusyCursor(getViewerPanel())) {
                 ImagePlus image = IJ.openImage(selectedFile.toString());
@@ -276,10 +278,10 @@ public class MaskDrawerPlugin2D extends JIPipeDesktopLegacyImageViewerPlugin2D i
     }
 
     private void exportMask() {
-        Path selectedFile = JIPipeFileChooserApplicationSettings.saveFile(getViewerPanel(),
+        Path selectedFile = JIPipeDesktop.saveFile(getViewerPanel(),
                 getWorkbench(), JIPipeFileChooserApplicationSettings.LastDirectoryKey.Data,
                 "Export mask",
-                UIUtils.EXTENSION_FILTER_TIFF);
+                HTMLText.EMPTY, UIUtils.EXTENSION_FILTER_TIFF);
         if (selectedFile != null) {
             try (BusyCursor cursor = new BusyCursor(getViewerPanel())) {
                 ImagePlus image = new ImagePlus("Mask", getCurrentMaskSlice());

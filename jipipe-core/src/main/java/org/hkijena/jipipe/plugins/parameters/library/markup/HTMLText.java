@@ -28,6 +28,9 @@ import java.util.Objects;
 @JsonDeserialize(using = HTMLText.Deserializer.class)
 @JsonSerialize(using = HTMLText.Serializer.class)
 public class HTMLText {
+
+    public static final HTMLText EMPTY = new HTMLText();
+
     private final String html;
     private String body;
     private String plainText;

@@ -15,10 +15,12 @@ package org.hkijena.jipipe.desktop.app.ploteditor;
 
 import ij.measure.ResultsTable;
 import org.hkijena.jipipe.api.parameters.JIPipeParameterCollection;
+import org.hkijena.jipipe.desktop.JIPipeDesktop;
 import org.hkijena.jipipe.desktop.app.JIPipeDesktopWorkbench;
 import org.hkijena.jipipe.desktop.app.JIPipeDesktopWorkbenchPanel;
 import org.hkijena.jipipe.desktop.app.tableeditor.JIPipeDesktopTableEditor;
 import org.hkijena.jipipe.desktop.commons.components.tabs.JIPipeDesktopTabPane;
+import org.hkijena.jipipe.plugins.parameters.library.markup.HTMLText;
 import org.hkijena.jipipe.plugins.plots.datatypes.JFreeChartPlotDataSeries;
 import org.hkijena.jipipe.plugins.settings.JIPipeFileChooserApplicationSettings;
 import org.hkijena.jipipe.plugins.tables.datatypes.ResultsTableData;
@@ -122,7 +124,7 @@ public class JIPipeDesktopPlotAvailableDataManagerUI extends JIPipeDesktopWorkbe
     }
 
     private void importDataCSV() {
-        Path selectedPath = JIPipeFileChooserApplicationSettings.openFile(this, getDesktopWorkbench(), JIPipeFileChooserApplicationSettings.LastDirectoryKey.Projects, "Import CSV table (*.csv)", UIUtils.EXTENSION_FILTER_CSV);
+        Path selectedPath = JIPipeDesktop.openFile(this, getDesktopWorkbench(), JIPipeFileChooserApplicationSettings.LastDirectoryKey.Projects, "Import CSV table (*.csv)", HTMLText.EMPTY, UIUtils.EXTENSION_FILTER_CSV);
         if (selectedPath != null) {
             String fileName = selectedPath.getFileName().toString();
             try {
