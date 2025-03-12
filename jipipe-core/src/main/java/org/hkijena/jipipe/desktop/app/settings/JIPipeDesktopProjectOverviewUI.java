@@ -841,7 +841,7 @@ public class JIPipeDesktopProjectOverviewUI extends JIPipeDesktopProjectWorkbenc
                         "You can also request that the path must exist."), "Add new project-wide path/directory", JIPipeDesktopParameterFormPanel.DEFAULT_DIALOG_FLAGS)) {
                     if (StringUtils.isNullOrEmpty(entry.getKey())) {
                         JOptionPane.showMessageDialog(this, "No key was provided", "Add new project-wide path/directory", JOptionPane.ERROR_MESSAGE);
-                        break;
+                        continue;
                     }
                     if (getProject().getMetadata().getDirectories().getDirectoriesAsInstance().stream().anyMatch(e -> Objects.equals(e.getKey(), entry.getKey()))) {
                         JOptionPane.showMessageDialog(this, "The key already exists", "Add new project-wide path/directory", JOptionPane.ERROR_MESSAGE);
@@ -849,6 +849,9 @@ public class JIPipeDesktopProjectOverviewUI extends JIPipeDesktopProjectWorkbenc
                     }
                     getProject().getMetadata().getDirectories().getDirectories().addFromTemplate(entry);
                     refreshParameters();
+                    break;
+                }
+                else {
                     break;
                 }
             }
