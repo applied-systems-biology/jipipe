@@ -53,7 +53,7 @@ import org.hkijena.jipipe.desktop.api.dataviewer.JIPipeDesktopDataViewer;
 import org.hkijena.jipipe.desktop.api.dataviewer.JIPipeDesktopDefaultDataViewer;
 import org.hkijena.jipipe.desktop.api.registries.JIPipeCustomMenuRegistry;
 import org.hkijena.jipipe.desktop.app.JIPipeDesktopProjectWindow;
-import org.hkijena.jipipe.desktop.app.running.JIPipeDesktopRunnableLogsCollection;
+import org.hkijena.jipipe.desktop.app.running.logs.JIPipeDesktopRunnableLogsCollection;
 import org.hkijena.jipipe.plugins.artifacts.JIPipeArtifactAccelerationPreference;
 import org.hkijena.jipipe.plugins.artifacts.JIPipeArtifactApplicationSettings;
 import org.hkijena.jipipe.plugins.parameters.library.jipipe.DynamicDataDisplayOperationIdEnumParameter;

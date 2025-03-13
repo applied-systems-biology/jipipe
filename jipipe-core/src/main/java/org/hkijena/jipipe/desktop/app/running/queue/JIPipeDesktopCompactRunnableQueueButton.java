@@ -11,7 +11,7 @@
  * See the LICENSE file provided with the code for the full license.
  */
 
-package org.hkijena.jipipe.desktop.app.running;
+package org.hkijena.jipipe.desktop.app.running.queue;
 
 import org.hkijena.jipipe.api.JIPipeWorkbench;
 import org.hkijena.jipipe.api.run.JIPipeRunnable;

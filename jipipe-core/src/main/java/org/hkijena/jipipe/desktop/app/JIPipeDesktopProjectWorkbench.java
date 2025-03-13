@@ -50,6 +50,12 @@ import org.hkijena.jipipe.desktop.app.project.JIPipeDesktopLoadResultZipIntoCach
 import org.hkijena.jipipe.desktop.app.quickrun.JIPipeDesktopQuickRun;
 import org.hkijena.jipipe.desktop.app.quickrun.JIPipeDesktopQuickRunSettings;
 import org.hkijena.jipipe.desktop.app.running.*;
+import org.hkijena.jipipe.desktop.app.running.logs.JIPipeDesktopLogViewer;
+import org.hkijena.jipipe.desktop.app.running.logs.JIPipeDesktopRunnableLogsButton;
+import org.hkijena.jipipe.desktop.app.running.logs.JIPipeDesktopRunnableLogsCollection;
+import org.hkijena.jipipe.desktop.app.running.queue.JIPipeDesktopCompactRunnableQueueButton;
+import org.hkijena.jipipe.desktop.app.running.queue.JIPipeDesktopRunnableQueueButton;
+import org.hkijena.jipipe.desktop.app.running.queue.JIPipeDesktopRunnableQueueNotifier;
 import org.hkijena.jipipe.desktop.app.settings.JIPipeDesktopApplicationSettingsUI;
 import org.hkijena.jipipe.desktop.app.settings.JIPipeDesktopProjectOverviewUI;
 import org.hkijena.jipipe.desktop.app.settings.JIPipeDesktopProjectSettingsUI;

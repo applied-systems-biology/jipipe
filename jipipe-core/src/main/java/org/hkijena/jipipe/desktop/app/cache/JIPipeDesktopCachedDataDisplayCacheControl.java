@@ -19,7 +19,7 @@ import org.hkijena.jipipe.api.project.JIPipeProject;
 import org.hkijena.jipipe.api.run.JIPipeRunnable;
 import org.hkijena.jipipe.api.run.JIPipeRunnableQueue;
 import org.hkijena.jipipe.desktop.app.JIPipeDesktopProjectWorkbench;
-import org.hkijena.jipipe.desktop.app.running.JIPipeDesktopRunnableQueueButton;
+import org.hkijena.jipipe.desktop.app.running.queue.JIPipeDesktopRunnableQueueButton;
 import org.hkijena.jipipe.utils.UIUtils;
 import org.scijava.Disposable;
 

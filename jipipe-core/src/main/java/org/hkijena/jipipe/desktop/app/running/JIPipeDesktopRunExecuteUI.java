@@ -25,7 +25,7 @@ import javax.swing.*;
 import java.awt.*;
 
 /**
- * UI that executes an {@link JIPipeRunnable}
+ * UI that executes an {@link JIPipeRunnable} and shows the progress in a dialog
  */
 public class JIPipeDesktopRunExecuteUI extends JIPipeDesktopWorkbenchPanel implements JIPipeRunnable.StartedEventListener, JIPipeRunnable.InterruptedEventListener, JIPipeRunnable.ProgressEventListener, JIPipeRunnable.FinishedEventListener {
     private final JIPipeRunnableQueue queue;

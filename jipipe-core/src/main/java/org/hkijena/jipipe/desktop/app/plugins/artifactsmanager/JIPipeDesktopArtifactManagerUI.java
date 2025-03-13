@@ -24,7 +24,7 @@ import org.hkijena.jipipe.desktop.JIPipeDesktop;
 import org.hkijena.jipipe.desktop.app.JIPipeDesktopWorkbench;
 import org.hkijena.jipipe.desktop.app.JIPipeDesktopWorkbenchPanel;
 import org.hkijena.jipipe.desktop.app.running.JIPipeDesktopRunExecuteUI;
-import org.hkijena.jipipe.desktop.app.running.JIPipeDesktopRunnableQueueButton;
+import org.hkijena.jipipe.desktop.app.running.queue.JIPipeDesktopRunnableQueueButton;
 import org.hkijena.jipipe.desktop.commons.components.JIPipeDesktopFormPanel;
 import org.hkijena.jipipe.desktop.commons.components.JIPipeDesktopMessagePanel;
 import org.hkijena.jipipe.desktop.commons.components.JIPipeDesktopParameterFormPanel;

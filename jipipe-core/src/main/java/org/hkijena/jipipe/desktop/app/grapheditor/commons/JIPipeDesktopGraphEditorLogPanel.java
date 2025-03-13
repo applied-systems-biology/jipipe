@@ -2,7 +2,7 @@ package org.hkijena.jipipe.desktop.app.grapheditor.commons;
 
 import org.hkijena.jipipe.desktop.app.JIPipeDesktopWorkbench;
 import org.hkijena.jipipe.desktop.app.JIPipeDesktopWorkbenchPanel;
-import org.hkijena.jipipe.desktop.app.running.JIPipeDesktopRunnableQueuePanelUI;
+import org.hkijena.jipipe.desktop.app.running.queue.JIPipeDesktopRunnableQueuePanelUI;
 
 import javax.swing.*;
 import java.awt.*;

@@ -27,7 +27,7 @@ import org.hkijena.jipipe.desktop.app.JIPipeDesktopWorkbenchAccess;
 import org.hkijena.jipipe.desktop.app.datatracer.JIPipeDesktopDataTracerUI;
 import org.hkijena.jipipe.desktop.app.quickrun.JIPipeDesktopQuickRun;
 import org.hkijena.jipipe.desktop.app.quickrun.JIPipeDesktopQuickRunSettings;
-import org.hkijena.jipipe.desktop.app.running.JIPipeDesktopCompactRunnableQueueButton;
+import org.hkijena.jipipe.desktop.app.running.queue.JIPipeDesktopCompactRunnableQueueButton;
 import org.hkijena.jipipe.desktop.app.running.JIPipeDesktopRunExecuteUI;
 import org.hkijena.jipipe.desktop.commons.components.ribbon.JIPipeDesktopLargeButtonRibbonAction;
 import org.hkijena.jipipe.desktop.commons.components.ribbon.JIPipeDesktopRibbon;

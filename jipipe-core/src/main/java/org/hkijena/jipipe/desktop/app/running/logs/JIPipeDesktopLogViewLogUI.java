@@ -11,7 +11,7 @@
  * See the LICENSE file provided with the code for the full license.
  */
 
-package org.hkijena.jipipe.desktop.app.running;
+package org.hkijena.jipipe.desktop.app.running.logs;
 
 import com.google.common.base.CharMatcher;
 import org.hkijena.jipipe.api.run.JIPipeRunnableLogEntry;
