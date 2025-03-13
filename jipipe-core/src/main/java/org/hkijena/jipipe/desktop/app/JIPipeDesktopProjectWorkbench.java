@@ -1031,10 +1031,12 @@ public class JIPipeDesktopProjectWorkbench extends JPanel implements JIPipeDeskt
     }
 
     public void runWholeProject() {
-        JIPipeDesktopRunSettingsUI ui = new JIPipeDesktopRunSettingsUI(this);
-        documentTabPane.addTab("Run", UIUtils.getIconFromResources("actions/run-build.png"), ui,
-                JIPipeDesktopTabPane.CloseMode.withAskOnCloseButton, true);
-        documentTabPane.switchToLastTab();
+//        JIPipeDesktopCustomRunSettingsUI ui = new JIPipeDesktopCustomRunSettingsUI(this);
+//        documentTabPane.addTab("Run", UIUtils.getIconFromResources("actions/run-build.png"), ui,
+//                JIPipeDesktopTabPane.CloseMode.withAskOnCloseButton, true);
+//        documentTabPane.switchToLastTab();
+        JIPipeDesktopRunNextWindow runNextWindow = new JIPipeDesktopRunNextWindow(this);
+        runNextWindow.setVisible(true);
     }
 
     /**

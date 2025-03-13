@@ -52,14 +52,14 @@ import java.util.stream.Collectors;
 /**
  * Settings UI for {@link JIPipeGraphRunConfiguration}
  */
-public class JIPipeDesktopRunSettingsUI extends JIPipeDesktopProjectWorkbenchPanel implements JIPipeRunnable.FinishedEventListener, JIPipeRunnable.InterruptedEventListener {
+public class JIPipeDesktopCustomRunSettingsUI extends JIPipeDesktopProjectWorkbenchPanel implements JIPipeRunnable.FinishedEventListener, JIPipeRunnable.InterruptedEventListener {
 
     private JIPipeGraphRun run;
 
     /**
      * @param workbenchUI workbench UI
      */
-    public JIPipeDesktopRunSettingsUI(JIPipeDesktopProjectWorkbench workbenchUI) {
+    public JIPipeDesktopCustomRunSettingsUI(JIPipeDesktopProjectWorkbench workbenchUI) {
         super(workbenchUI);
         initialize();
         JIPipeRunnableQueue.getInstance().getFinishedEventEmitter().subscribeWeak(this);

@@ -35,6 +35,7 @@ import org.hkijena.jipipe.desktop.api.JIPipeDesktopMenuExtension;
 import org.hkijena.jipipe.desktop.api.JIPipeMenuExtensionTarget;
 import org.hkijena.jipipe.desktop.app.JIPipeDesktopWorkbench;
 import org.hkijena.jipipe.desktop.commons.components.JIPipeDesktopFormPanel;
+import org.hkijena.jipipe.desktop.commons.components.JIPipeDesktopPathEditorComponent;
 import org.hkijena.jipipe.desktop.commons.components.JIPipeDesktopUserFriendlyErrorUI;
 import org.hkijena.jipipe.desktop.commons.components.JIPipeDesktopValidityReportUI;
 import org.hkijena.jipipe.desktop.commons.components.icons.SolidColorIcon;
@@ -1206,6 +1207,31 @@ public class UIUtils {
             }
         });
     }
+
+    /**
+     * Installs an event to the window that asks the user before the window is closes
+     *
+     * @param window  the window
+     * @param message the close message
+     * @param title   the close message title
+     * @param askOnClose only ask if condition is true
+     */
+    public static void setToAskOnClose(JFrame window, String message, String title, Supplier<Boolean> askOnClose) {
+        window.setDefaultCloseOperation(WindowConstants.DO_NOTHING_ON_CLOSE);
+        window.addWindowListener(new WindowAdapter() {
+            @Override
+            public void windowClosing(WindowEvent windowEvent) {
+                if(!askOnClose.get()) {
+                    windowEvent.getWindow().dispose();
+                }
+                else if (JOptionPane.showConfirmDialog(windowEvent.getComponent(), message, title,
+                        JOptionPane.YES_NO_OPTION, JOptionPane.QUESTION_MESSAGE) == JOptionPane.YES_OPTION) {
+                    windowEvent.getWindow().dispose();
+                }
+            }
+        });
+    }
+
 
     /**
      * Installs an event to the window that asks the user before the window is closes
@@ -2525,10 +2551,22 @@ public class UIUtils {
         return button;
     }
 
-    public static void makeButtonHighlightedSuccess(JButton button) {
+    public static Border createSuccessBorder() {
+        return BorderFactory.createCompoundBorder(BorderFactory.createEmptyBorder(1, 1, 1, 1),
+                BorderFactory.createCompoundBorder(new RoundedLineBorder(JIPipeNotificationAction.Style.Success.getBackground(), 1, 5),
+                        BorderFactory.createEmptyBorder(3, 3, 3, 3)));
+    }
+
+    public static <T extends AbstractButton> T makeButtonHighlightedSuccess(T button) {
         button.setBorder(BorderFactory.createCompoundBorder(BorderFactory.createEmptyBorder(1, 1, 1, 1),
                 BorderFactory.createCompoundBorder(new RoundedLineBorder(JIPipeNotificationAction.Style.Success.getBackground(), 1, 5),
                         BorderFactory.createEmptyBorder(3, 3, 3, 3))));
+        return button;
+    }
+
+    public static <T extends JComponent> T setFontSize(T component, int fontSize) {
+        component.setFont(new Font(Font.DIALOG, Font.PLAIN, fontSize));
+        return component;
     }
 
     public static Border createButtonBorder(Color color) {
@@ -2619,6 +2657,13 @@ public class UIUtils {
         return panel;
     }
 
+    public static JPanel borderNorthCenter(JComponent north, JComponent center) {
+        JPanel panel = new JPanel(new BorderLayout());
+        panel.add(north, BorderLayout.NORTH);
+        panel.add(center, BorderLayout.CENTER);
+        return panel;
+    }
+
     public static <T> DefaultComboBoxModel<T> toComboBoxModel(Collection<T> elements) {
         DefaultComboBoxModel<T> model = new DefaultComboBoxModel<>();
         for (T element : elements) {
@@ -2634,6 +2679,18 @@ public class UIUtils {
             model.addElement(element);
         }
         return model;
+    }
+
+    public static <T extends JComponent> T setStandardControlBorder(T component) {
+        component.setBorder(createControlBorder());
+        return component;
+    }
+
+    public static JPanel wrapInEmptyBorder(JComponent component, int borderSize) {
+        JPanel panel = new JPanel(new BorderLayout());
+        panel.setBorder(createEmptyBorder(borderSize));
+        panel.add(component, BorderLayout.CENTER);
+        return panel;
     }
 
     public static class DragThroughMouseListener implements MouseListener, MouseMotionListener {

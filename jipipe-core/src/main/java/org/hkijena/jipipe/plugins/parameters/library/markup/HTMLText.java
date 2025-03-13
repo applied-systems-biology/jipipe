@@ -20,6 +20,7 @@ import com.fasterxml.jackson.databind.*;
 import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
 import com.fasterxml.jackson.databind.annotation.JsonSerialize;
 import org.apache.commons.text.WordUtils;
+import org.hkijena.jipipe.utils.StringUtils;
 import org.jsoup.Jsoup;
 
 import java.io.IOException;
@@ -134,6 +135,10 @@ public class HTMLText {
             }
         }
         return plainText;
+    }
+
+    public boolean isEmpty() {
+        return StringUtils.isNullOrEmpty(toPlainText().trim());
     }
 
     public static class Deserializer extends JsonDeserializer<HTMLText> {
