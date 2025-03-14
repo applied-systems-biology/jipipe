@@ -53,18 +53,18 @@ import org.hkijena.jipipe.utils.StringUtils;
 import java.nio.file.Path;
 import java.util.*;
 
-@SetJIPipeDocumentation(name = "Upload image to OMERO", description = "Uploads an image to OMERO.")
+@SetJIPipeDocumentation(name = "Upload image to OMERO dataset", description = "Uploads an image into an OMERO dataset.")
 @ConfigureJIPipeNode(nodeTypeCategory = ExportNodeTypeCategory.class, menuPath = "Images")
 @AddJIPipeInputSlot(value = OMEImageData.class, name = "Images", create = true, description = "The image(s) to upload")
 @AddJIPipeInputSlot(value = OMERODatasetReferenceData.class, name = "Target dataset", create = true, description = "The data set where the image(s) will be stored")
 @AddJIPipeOutputSlot(value = OMEROImageReferenceData.class, name = "Images", create = true, description = "Reference to the uploaded image(s)")
-public class UploadOMEROImageAlgorithm extends JIPipeIteratingAlgorithm implements OMEROCredentialAccessNode {
+public class UploadOMEROImageToDatasetAlgorithm extends JIPipeIteratingAlgorithm implements OMEROCredentialAccessNode {
     private final AnnotationsToOMEROKeyValuePairExporter keyValuePairExporter;
     private final AnnotationsToOMEROTagExporter tagExporter;
     private OptionalOMEROCredentialsEnvironment overrideCredentials = new OptionalOMEROCredentialsEnvironment();
     private DataExportExpressionParameter fileNameGenerator = new DataExportExpressionParameter("auto_file_name");
 
-    public UploadOMEROImageAlgorithm(JIPipeNodeInfo info) {
+    public UploadOMEROImageToDatasetAlgorithm(JIPipeNodeInfo info) {
         super(info);
         this.keyValuePairExporter = new AnnotationsToOMEROKeyValuePairExporter();
         registerSubParameter(keyValuePairExporter);
@@ -72,7 +72,7 @@ public class UploadOMEROImageAlgorithm extends JIPipeIteratingAlgorithm implemen
         registerSubParameter(tagExporter);
     }
 
-    public UploadOMEROImageAlgorithm(UploadOMEROImageAlgorithm other) {
+    public UploadOMEROImageToDatasetAlgorithm(UploadOMEROImageToDatasetAlgorithm other) {
         super(other);
         this.overrideCredentials = new OptionalOMEROCredentialsEnvironment(other.overrideCredentials);
         this.fileNameGenerator = new DataExportExpressionParameter(other.fileNameGenerator);

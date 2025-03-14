@@ -35,7 +35,7 @@ import org.hkijena.jipipe.plugins.omero.nodes.download.DownloadOMEROImageAlgorit
 import org.hkijena.jipipe.plugins.omero.nodes.download.DownloadOMEROTableAlgorithm;
 import org.hkijena.jipipe.plugins.omero.nodes.manage.OMEROCreateDatasetAlgorithm;
 import org.hkijena.jipipe.plugins.omero.nodes.navigate.*;
-import org.hkijena.jipipe.plugins.omero.nodes.upload.UploadOMEROImageAlgorithm;
+import org.hkijena.jipipe.plugins.omero.nodes.upload.UploadOMEROImageToDatasetAlgorithm;
 import org.hkijena.jipipe.plugins.omero.nodes.upload.UploadOMEROTableAlgorithm;
 import org.hkijena.jipipe.plugins.omero.viewers.OMERODataViewer;
 import org.hkijena.jipipe.plugins.parameters.library.jipipe.PluginCategoriesEnumParameter;
@@ -249,7 +249,7 @@ public class OMEROPlugin extends JIPipePrepackagedDefaultJavaPlugin {
         registerNodeType("omero-download-image", DownloadOMEROImageAlgorithm.class, UIUtils.getIconURLFromResources("apps/omero-monochrome.png"));
         registerNodeType("omero-download-table", DownloadOMEROTableAlgorithm.class, UIUtils.getIconURLFromResources("apps/omero-monochrome.png"));
 
-        registerNodeType("omero-upload-image", UploadOMEROImageAlgorithm.class, UIUtils.getIconURLFromResources("apps/omero-monochrome.png"));
+        registerNodeType("omero-upload-image", UploadOMEROImageToDatasetAlgorithm.class, UIUtils.getIconURLFromResources("apps/omero-monochrome.png"));
         registerNodeType("omero-upload-table", UploadOMEROTableAlgorithm.class, UIUtils.getIconURLFromResources("apps/omero-monochrome.png"));
     }
 
