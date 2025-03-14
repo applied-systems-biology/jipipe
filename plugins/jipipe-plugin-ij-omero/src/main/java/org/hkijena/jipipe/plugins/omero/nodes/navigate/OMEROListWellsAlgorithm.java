@@ -17,8 +17,9 @@ import omero.gateway.LoginCredentials;
 import omero.gateway.SecurityContext;
 import omero.gateway.exception.DSAccessException;
 import omero.gateway.exception.DSOutOfServiceException;
-import omero.gateway.model.DatasetData;
-import omero.gateway.model.ImageData;
+import omero.gateway.model.PlateData;
+import omero.gateway.model.ScreenData;
+import omero.gateway.model.WellData;
 import org.hkijena.jipipe.api.ConfigureJIPipeNode;
 import org.hkijena.jipipe.api.JIPipeProgressInfo;
 import org.hkijena.jipipe.api.SetJIPipeDocumentation;
@@ -42,28 +43,29 @@ import org.hkijena.jipipe.plugins.expressions.variables.JIPipeTextAnnotationsExp
 import org.hkijena.jipipe.plugins.omero.OMEROCredentialAccessNode;
 import org.hkijena.jipipe.plugins.omero.OMEROCredentialsEnvironment;
 import org.hkijena.jipipe.plugins.omero.OptionalOMEROCredentialsEnvironment;
-import org.hkijena.jipipe.plugins.omero.datatypes.OMERODatasetReferenceData;
-import org.hkijena.jipipe.plugins.omero.datatypes.OMEROImageReferenceData;
+import org.hkijena.jipipe.plugins.omero.datatypes.OMEROPlateReferenceData;
+import org.hkijena.jipipe.plugins.omero.datatypes.OMEROScreenReferenceData;
+import org.hkijena.jipipe.plugins.omero.datatypes.OMEROWellReferenceData;
 import org.hkijena.jipipe.plugins.omero.util.OMEROGateway;
 import org.hkijena.jipipe.plugins.omero.util.OMEROUtils;
 
 import java.util.ArrayList;
 import java.util.List;
 
-@SetJIPipeDocumentation(name = "List OMERO images", description = "Returns the ID(s) of images(s) according to search criteria. Requires project IDs as input.")
-@AddJIPipeInputSlot(value = OMERODatasetReferenceData.class, name = "Datasets", create = true)
-@AddJIPipeOutputSlot(value = OMEROImageReferenceData.class, name = "Images", create = true)
+@SetJIPipeDocumentation(name = "List OMERO wells", description = "Returns the ID(s) of wells according to search criteria.")
+@AddJIPipeInputSlot(value = OMEROPlateReferenceData.class, name = "Plates", create = true)
+@AddJIPipeOutputSlot(value = OMEROWellReferenceData.class, name = "Wells", create = true)
 @ConfigureJIPipeNode(nodeTypeCategory = FileSystemNodeTypeCategory.class, menuPath = "OMERO")
-public class OMEROListImagesAlgorithm extends JIPipeSingleIterationAlgorithm implements OMEROCredentialAccessNode {
+public class OMEROListWellsAlgorithm extends JIPipeSingleIterationAlgorithm implements OMEROCredentialAccessNode {
 
     private OptionalOMEROCredentialsEnvironment overrideCredentials = new OptionalOMEROCredentialsEnvironment();
     private JIPipeExpressionParameter filters = new JIPipeExpressionParameter("");
 
-    public OMEROListImagesAlgorithm(JIPipeNodeInfo info) {
+    public OMEROListWellsAlgorithm(JIPipeNodeInfo info) {
         super(info);
     }
 
-    public OMEROListImagesAlgorithm(OMEROListImagesAlgorithm other) {
+    public OMEROListWellsAlgorithm(OMEROListWellsAlgorithm other) {
         super(other);
         this.overrideCredentials = new OptionalOMEROCredentialsEnvironment(other.overrideCredentials);
         this.filters = new JIPipeExpressionParameter(other.filters);
@@ -76,24 +78,31 @@ public class OMEROListImagesAlgorithm extends JIPipeSingleIterationAlgorithm imp
         progressInfo.log("Connecting to " + credentials.getUser().getUsername() + "@" + credentials.getServer().getHost());
         try (OMEROGateway gateway = new OMEROGateway(credentials, progressInfo)) {
             for (int row = 0; row < getFirstInputSlot().getRowCount(); row++) {
-                JIPipeProgressInfo rowProgress = progressInfo.resolveAndLog("OMERO dataset", row, getFirstInputSlot().getRowCount());
-                long datasetId = getFirstInputSlot().getData(row, OMERODatasetReferenceData.class, rowProgress).getDatasetId();
-                DatasetData datasetData = gateway.getDataset(datasetId, -1);
-                SecurityContext context = new SecurityContext(datasetData.getGroupId());
-                progressInfo.log("Listing images in dataset ID=" + datasetData.getId());
+                JIPipeProgressInfo rowProgress = progressInfo.resolveAndLog("OMERO plate", row, getFirstInputSlot().getRowCount());
+                long plateId = getFirstInputSlot().getData(row, OMEROPlateReferenceData.class, rowProgress).getPlateId();
+                PlateData plateData1 = gateway.getPlate(plateId, -1);
+                SecurityContext context = new SecurityContext(plateData1.getGroupId());
+                progressInfo.log("Listing wells in plate ID=" + plateData1.getId());
 
-                for (Object obj : datasetData.getImages()) {
-                    if (obj instanceof ImageData) {
-                        ImageData imageData = (ImageData) obj;
+                for (WellData wellData : gateway.getBrowseFacility().getWells(context, plateId)) {
+                    if(wellData != null) {
                         JIPipeExpressionVariablesMap variables = new JIPipeExpressionVariablesMap(iterationStep);
                         variables.putAnnotations(getFirstInputSlot().getTextAnnotations(row));
-                        variables.put("name", imageData.getName());
-                        variables.put("description", imageData.getDescription());
-                        variables.put("id", imageData.getId());
-                        variables.put("kv_pairs", OMEROUtils.getKeyValuePairs(gateway.getMetadataFacility(), context, imageData));
-                        variables.put("tags", new ArrayList<>(OMEROUtils.getTags(gateway.getMetadataFacility(), context, imageData)));
+
+                        variables.put("well.type", wellData.getWellType());
+                        variables.put("well.status", wellData.getStatus());
+                        variables.put("well.row", wellData.getRow());
+                        variables.put("well.column", wellData.getColumn());
+                        variables.put("well.color.r", wellData.getRed());
+                        variables.put("well.color.g", wellData.getGreen());
+                        variables.put("well.color.b", wellData.getBlue());
+                        variables.put("well.color.a", wellData.getBlue());
+
+                        variables.put("id", wellData.getId());
+                        variables.put("kv_pairs", OMEROUtils.getKeyValuePairs(gateway.getMetadataFacility(), context, wellData));
+                        variables.put("tags", new ArrayList<>(OMEROUtils.getTags(gateway.getMetadataFacility(), context, wellData)));
                         if (filters.test(variables)) {
-                            getFirstOutputSlot().addData(new OMEROImageReferenceData(imageData, environment), getFirstInputSlot().getDataContext(row).branch(this), rowProgress);
+                            getFirstOutputSlot().addData(new OMEROWellReferenceData(wellData, environment), getFirstInputSlot().getDataContext(row).branch(this), rowProgress);
                         }
                     }
                 }
@@ -114,15 +123,21 @@ public class OMEROListImagesAlgorithm extends JIPipeSingleIterationAlgorithm imp
         this.overrideCredentials = overrideCredentials;
     }
 
-    @SetJIPipeDocumentation(name = "Keep image if", description = "Allows to filter the returned images")
+    @SetJIPipeDocumentation(name = "Keep plate if", description = "Allows to filter the returned images")
     @JIPipeParameter("filter")
-    @JIPipeExpressionParameterSettings(hint = "per OMERO image")
+    @JIPipeExpressionParameterSettings(hint = "per OMERO plate")
     @AddJIPipeExpressionParameterVariable(fromClass = JIPipeTextAnnotationsExpressionParameterVariablesInfo.class)
     @AddJIPipeExpressionParameterVariable(name = "OMERO tags", description = "List of OMERO tag names associated with the data object", key = "tags")
     @AddJIPipeExpressionParameterVariable(name = "OMERO key-value pairs", description = "Map containing OMERO key-value pairs with the data object", key = "kv_pairs")
-    @AddJIPipeExpressionParameterVariable(name = "OMERO image name", description = "Name of the image", key = "name")
-    @AddJIPipeExpressionParameterVariable(name = "OMERO image description", description = "Description of the image", key = "description")
-    @AddJIPipeExpressionParameterVariable(name = "OMERO image id", description = "ID of the image", key = "id")
+    @AddJIPipeExpressionParameterVariable(name = "OMERO well id", description = "ID of the well", key = "id")
+    @AddJIPipeExpressionParameterVariable(name = "OMERO well type", description = "Type of the well", key = "well.type")
+    @AddJIPipeExpressionParameterVariable(name = "OMERO well status", description = "Status of the well", key = "well.status")
+    @AddJIPipeExpressionParameterVariable(name = "OMERO well row", description = "Row location of the well", key = "well.row")
+    @AddJIPipeExpressionParameterVariable(name = "OMERO well column", description = "Column location of the well", key = "well.column")
+    @AddJIPipeExpressionParameterVariable(name = "OMERO well color red", description = "Red of the well", key = "well.color.r")
+    @AddJIPipeExpressionParameterVariable(name = "OMERO well color green", description = "Green of the well", key = "well.color.g")
+    @AddJIPipeExpressionParameterVariable(name = "OMERO well color blue", description = "Blue of the well", key = "well.color.b")
+    @AddJIPipeExpressionParameterVariable(name = "OMERO well color alpha", description = "Alpha of the well", key = "well.color.a")
     public JIPipeExpressionParameter getFilters() {
         return filters;
     }

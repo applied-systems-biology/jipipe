@@ -17,7 +17,7 @@ import omero.gateway.LoginCredentials;
 import omero.gateway.SecurityContext;
 import omero.gateway.exception.DSAccessException;
 import omero.gateway.exception.DSOutOfServiceException;
-import omero.gateway.model.DatasetData;
+import omero.gateway.model.WellData;
 import org.hkijena.jipipe.api.ConfigureJIPipeNode;
 import org.hkijena.jipipe.api.JIPipeProgressInfo;
 import org.hkijena.jipipe.api.SetJIPipeDocumentation;
@@ -28,42 +28,47 @@ import org.hkijena.jipipe.api.nodes.AddJIPipeInputSlot;
 import org.hkijena.jipipe.api.nodes.AddJIPipeOutputSlot;
 import org.hkijena.jipipe.api.nodes.JIPipeGraphNodeRunContext;
 import org.hkijena.jipipe.api.nodes.JIPipeNodeInfo;
-import org.hkijena.jipipe.api.nodes.algorithm.JIPipeSimpleIteratingAlgorithm;
+import org.hkijena.jipipe.api.nodes.algorithm.JIPipeSingleIterationAlgorithm;
 import org.hkijena.jipipe.api.nodes.categories.AnnotationsNodeTypeCategory;
 import org.hkijena.jipipe.api.nodes.iterationstep.JIPipeIterationContext;
-import org.hkijena.jipipe.api.nodes.iterationstep.JIPipeSingleIterationStep;
+import org.hkijena.jipipe.api.nodes.iterationstep.JIPipeMultiIterationStep;
 import org.hkijena.jipipe.api.parameters.JIPipeParameter;
 import org.hkijena.jipipe.api.validation.JIPipeValidationReport;
 import org.hkijena.jipipe.api.validation.JIPipeValidationReportContext;
 import org.hkijena.jipipe.plugins.omero.OMEROCredentialAccessNode;
 import org.hkijena.jipipe.plugins.omero.OMEROCredentialsEnvironment;
 import org.hkijena.jipipe.plugins.omero.OptionalOMEROCredentialsEnvironment;
-import org.hkijena.jipipe.plugins.omero.datatypes.OMERODatasetReferenceData;
+import org.hkijena.jipipe.plugins.omero.datatypes.OMEROWellReferenceData;
 import org.hkijena.jipipe.plugins.omero.parameters.OMEROKeyValuePairToAnnotationImporter;
 import org.hkijena.jipipe.plugins.omero.parameters.OMEROTagToAnnotationImporter;
 import org.hkijena.jipipe.plugins.omero.util.OMEROGateway;
 import org.hkijena.jipipe.plugins.parameters.library.primitives.StringParameterSettings;
 import org.hkijena.jipipe.plugins.parameters.library.primitives.optional.OptionalTextAnnotationNameParameter;
+import org.hkijena.jipipe.utils.ColorUtils;
 import org.hkijena.jipipe.utils.ResourceUtils;
+import org.hkijena.jipipe.utils.StringUtils;
 
+import java.awt.*;
 import java.util.ArrayList;
 import java.util.List;
 
-@SetJIPipeDocumentation(name = "Annotate dataset with OMERO metadata", description = "Annotates an OMERO dataset ID with OMERO metadata.")
+@SetJIPipeDocumentation(name = "Annotate well with OMERO metadata", description = "Annotates an OMERO well ID with OMERO metadata.")
 @ConfigureJIPipeNode(nodeTypeCategory = AnnotationsNodeTypeCategory.class, menuPath = "For OMERO")
-@AddJIPipeInputSlot(value = OMERODatasetReferenceData.class, name = "Datasets", create = true)
-@AddJIPipeOutputSlot(value = OMERODatasetReferenceData.class, name = "Datasets", create = true)
-public class AnnotateOMERODatasetReferenceAlgorithm extends JIPipeSimpleIteratingAlgorithm implements OMEROCredentialAccessNode {
+@AddJIPipeInputSlot(value = OMEROWellReferenceData.class, name = "Wells", create = true)
+@AddJIPipeOutputSlot(value = OMEROWellReferenceData.class, name = "Wells", create = true)
+public class AnnotateOMEROWellReferenceAlgorithm extends JIPipeSingleIterationAlgorithm implements OMEROCredentialAccessNode {
 
     private final OMEROKeyValuePairToAnnotationImporter keyValuePairToAnnotationImporter;
     private final OMEROTagToAnnotationImporter tagToAnnotationImporter;
     private OptionalOMEROCredentialsEnvironment overrideCredentials = new OptionalOMEROCredentialsEnvironment();
-    private OptionalTextAnnotationNameParameter nameAnnotation = new OptionalTextAnnotationNameParameter("Dataset name", true);
-    private OptionalTextAnnotationNameParameter descriptionAnnotation = new OptionalTextAnnotationNameParameter("Dataset description", true);
-    private OptionalTextAnnotationNameParameter idAnnotation = new OptionalTextAnnotationNameParameter("#OMERO:Dataset_ID", true);
+    private OptionalTextAnnotationNameParameter rowAnnotation = new OptionalTextAnnotationNameParameter("Well row", true);
+    private OptionalTextAnnotationNameParameter columnAnnotation = new OptionalTextAnnotationNameParameter("Well column", true);
+    private OptionalTextAnnotationNameParameter colorAnnotation = new OptionalTextAnnotationNameParameter("Well color", true);
+    private OptionalTextAnnotationNameParameter typeAnnotation = new OptionalTextAnnotationNameParameter("Well type", true);
+    private OptionalTextAnnotationNameParameter idAnnotation = new OptionalTextAnnotationNameParameter("#OMERO:Well_ID", true);
     private JIPipeTextAnnotationMergeMode annotationMergeMode = JIPipeTextAnnotationMergeMode.OverwriteExisting;
 
-    public AnnotateOMERODatasetReferenceAlgorithm(JIPipeNodeInfo info) {
+    public AnnotateOMEROWellReferenceAlgorithm(JIPipeNodeInfo info) {
         super(info);
         this.keyValuePairToAnnotationImporter = new OMEROKeyValuePairToAnnotationImporter();
         registerSubParameter(keyValuePairToAnnotationImporter);
@@ -71,53 +76,60 @@ public class AnnotateOMERODatasetReferenceAlgorithm extends JIPipeSimpleIteratin
         registerSubParameter(tagToAnnotationImporter);
     }
 
-    public AnnotateOMERODatasetReferenceAlgorithm(AnnotateOMERODatasetReferenceAlgorithm other) {
+    public AnnotateOMEROWellReferenceAlgorithm(AnnotateOMEROWellReferenceAlgorithm other) {
         super(other);
         this.keyValuePairToAnnotationImporter = new OMEROKeyValuePairToAnnotationImporter(other.keyValuePairToAnnotationImporter);
         registerSubParameter(keyValuePairToAnnotationImporter);
         this.tagToAnnotationImporter = new OMEROTagToAnnotationImporter(other.tagToAnnotationImporter);
         registerSubParameter(tagToAnnotationImporter);
         this.overrideCredentials = new OptionalOMEROCredentialsEnvironment(other.overrideCredentials);
-        this.nameAnnotation = new OptionalTextAnnotationNameParameter(other.nameAnnotation);
-        this.descriptionAnnotation = new OptionalTextAnnotationNameParameter(other.descriptionAnnotation);
+        this.rowAnnotation = new OptionalTextAnnotationNameParameter(other.rowAnnotation);
+        this.columnAnnotation = new OptionalTextAnnotationNameParameter(other.columnAnnotation);
         this.idAnnotation = new OptionalTextAnnotationNameParameter(other.idAnnotation);
         this.annotationMergeMode = other.annotationMergeMode;
+        this.colorAnnotation = new OptionalTextAnnotationNameParameter(other.colorAnnotation);
+        this.typeAnnotation = new OptionalTextAnnotationNameParameter(other.typeAnnotation);
     }
 
     @Override
-    public void getEnvironmentDependencies(List<JIPipeEnvironment> target) {
-        super.getEnvironmentDependencies(target);
-        target.add(getConfiguredOMEROCredentialsEnvironment());
-    }
-
-    @Override
-    protected void runIteration(JIPipeSingleIterationStep iterationStep, JIPipeIterationContext iterationContext, JIPipeGraphNodeRunContext runContext, JIPipeProgressInfo progressInfo) {
+    protected void runIteration(JIPipeMultiIterationStep iterationStep, JIPipeIterationContext iterationContext, JIPipeGraphNodeRunContext runContext, JIPipeProgressInfo progressInfo) {
         OMEROCredentialsEnvironment environment = getConfiguredOMEROCredentialsEnvironment();
         LoginCredentials credentials = environment.toLoginCredentials();
         progressInfo.log("Connecting to " + credentials.getUser().getUsername() + "@" + credentials.getServer().getHost());
-
         try (OMEROGateway gateway = new OMEROGateway(credentials, progressInfo)) {
-            long datasetId = iterationStep.getInputData(getFirstInputSlot(), OMERODatasetReferenceData.class, progressInfo).getDatasetId();
-            DatasetData datasetData = gateway.getDataset(datasetId, -1);
-            SecurityContext context = new SecurityContext(datasetData.getGroupId());
+            for (int row = 0; row < getFirstInputSlot().getRowCount(); row++) {
+                JIPipeProgressInfo rowProgress = progressInfo.resolveAndLog("OMERO well", row, getFirstInputSlot().getRowCount());
+                long wellId = getFirstInputSlot().getData(row, OMEROWellReferenceData.class, rowProgress).getWellId();
+                WellData wellData = gateway.getWell(wellId, -1);
+                SecurityContext context = new SecurityContext(wellData.getGroupId());
 
-            List<JIPipeTextAnnotation> annotations = new ArrayList<>();
+                List<JIPipeTextAnnotation> annotations = new ArrayList<>();
 
-            try {
-                tagToAnnotationImporter.createAnnotations(annotations, gateway.getMetadataFacility(), context, datasetData);
-                keyValuePairToAnnotationImporter.createAnnotations(annotations, gateway.getMetadataFacility(), context, datasetData);
-            } catch (DSOutOfServiceException | DSAccessException e) {
-                throw new RuntimeException(e);
+                try {
+                    tagToAnnotationImporter.createAnnotations(annotations, gateway.getMetadataFacility(), context, wellData);
+                    keyValuePairToAnnotationImporter.createAnnotations(annotations, gateway.getMetadataFacility(), context, wellData);
+                } catch (DSOutOfServiceException | DSAccessException e) {
+                    throw new RuntimeException(e);
+                }
+
+                if (rowAnnotation.isEnabled()) {
+                    annotations.add(new JIPipeTextAnnotation(rowAnnotation.getContent(), String.valueOf(wellData.getRow())));
+                }
+                if (columnAnnotation.isEnabled()) {
+                    annotations.add(new JIPipeTextAnnotation(columnAnnotation.getContent(), String.valueOf(wellData.getColumn())));
+                }
+                if (typeAnnotation.isEnabled()) {
+                    annotations.add(new JIPipeTextAnnotation(typeAnnotation.getContent(), StringUtils.nullToEmpty(wellData.getWellType())));
+                }
+                if (colorAnnotation.isEnabled()) {
+                    annotations.add(new JIPipeTextAnnotation(colorAnnotation.getContent(), ColorUtils.colorToHexString(new Color(wellData.getRed(), wellData.getGreen(), wellData.getBlue(), wellData.getAlpha()))));
+                }
+                if (idAnnotation.isEnabled()) {
+                    annotations.add(new JIPipeTextAnnotation(idAnnotation.getContent(), String.valueOf(wellData.getId())));
+                }
+
+                iterationStep.addOutputData(getFirstOutputSlot(), new OMEROWellReferenceData(wellData, environment), annotations, annotationMergeMode, rowProgress);
             }
-
-            if (nameAnnotation.isEnabled()) {
-                annotations.add(new JIPipeTextAnnotation(nameAnnotation.getContent(), datasetData.getName()));
-            }
-            if (idAnnotation.isEnabled()) {
-                annotations.add(new JIPipeTextAnnotation(idAnnotation.getContent(), String.valueOf(datasetData.getId())));
-            }
-
-            iterationStep.addOutputData(getFirstOutputSlot(), new OMERODatasetReferenceData(datasetData, environment), annotations, annotationMergeMode, progressInfo);
         }
     }
 
@@ -132,29 +144,50 @@ public class AnnotateOMERODatasetReferenceAlgorithm extends JIPipeSimpleIteratin
         this.overrideCredentials = overrideCredentials;
     }
 
+    @SetJIPipeDocumentation(name = "Annotate with well color", description = "If enabled, annotate with the well color")
+    @JIPipeParameter("color-annotation")
+    public OptionalTextAnnotationNameParameter getColorAnnotation() {
+        return colorAnnotation;
+    }
 
-    @SetJIPipeDocumentation(name = "Annotate with dataset name", description = "Optional annotation type where the dataset name is written.")
-    @JIPipeParameter("name-annotation")
+    @JIPipeParameter("color-annotation")
+    public void setColorAnnotation(OptionalTextAnnotationNameParameter colorAnnotation) {
+        this.colorAnnotation = colorAnnotation;
+    }
+
+    @SetJIPipeDocumentation(name = "Annotate with well type", description = "If enabled, annotate with the well type")
+    @JIPipeParameter("type-annotation")
+    public OptionalTextAnnotationNameParameter getTypeAnnotation() {
+        return typeAnnotation;
+    }
+
+    @JIPipeParameter("type-annotation")
+    public void setTypeAnnotation(OptionalTextAnnotationNameParameter typeAnnotation) {
+        this.typeAnnotation = typeAnnotation;
+    }
+
+    @SetJIPipeDocumentation(name = "Annotate with well row", description = "If enabled, annotate with the well row")
+    @JIPipeParameter("row-annotation")
     @StringParameterSettings(monospace = true, icon = ResourceUtils.RESOURCE_BASE_PATH + "/icons/data-types/annotation.png")
-    public OptionalTextAnnotationNameParameter getNameAnnotation() {
-        return nameAnnotation;
+    public OptionalTextAnnotationNameParameter getRowAnnotation() {
+        return rowAnnotation;
     }
 
-    @JIPipeParameter("name-annotation")
-    public void setNameAnnotation(OptionalTextAnnotationNameParameter nameAnnotation) {
-        this.nameAnnotation = nameAnnotation;
+    @JIPipeParameter("row-annotation")
+    public void setRowAnnotation(OptionalTextAnnotationNameParameter rowAnnotation) {
+        this.rowAnnotation = rowAnnotation;
     }
 
-    @SetJIPipeDocumentation(name = "Annotate with dataset description", description = "Optional annotation type where the dataset description is written.")
-    @JIPipeParameter("description-annotation")
+    @SetJIPipeDocumentation(name = "Annotate with well column", description = "If enabled, annotate with the well column")
+    @JIPipeParameter("column-annotation")
     @StringParameterSettings(monospace = true, icon = ResourceUtils.RESOURCE_BASE_PATH + "/icons/data-types/annotation.png")
-    public OptionalTextAnnotationNameParameter getDescriptionAnnotation() {
-        return descriptionAnnotation;
+    public OptionalTextAnnotationNameParameter getColumnAnnotation() {
+        return columnAnnotation;
     }
 
-    @JIPipeParameter("description-annotation")
-    public void setDescriptionAnnotation(OptionalTextAnnotationNameParameter descriptionAnnotation) {
-        this.descriptionAnnotation = descriptionAnnotation;
+    @JIPipeParameter("column-annotation")
+    public void setColumnAnnotation(OptionalTextAnnotationNameParameter columnAnnotation) {
+        this.columnAnnotation = columnAnnotation;
     }
 
     @SetJIPipeDocumentation(name = "Import key-value pairs", description = "OMERO key-value pairs can be imported into annotations")
@@ -169,7 +202,7 @@ public class AnnotateOMERODatasetReferenceAlgorithm extends JIPipeSimpleIteratin
         return tagToAnnotationImporter;
     }
 
-    @SetJIPipeDocumentation(name = "Annotate with OMERO dataset ID", description = "If enabled, adds the OMERO dataset ID as annotation")
+    @SetJIPipeDocumentation(name = "Annotate with OMERO well ID", description = "If enabled, adds the OMERO well ID as annotation")
     @JIPipeParameter("id-annotation")
     public OptionalTextAnnotationNameParameter getIdAnnotation() {
         return idAnnotation;
@@ -199,5 +232,9 @@ public class AnnotateOMERODatasetReferenceAlgorithm extends JIPipeSimpleIteratin
         }
     }
 
-
+    @Override
+    public void getEnvironmentDependencies(List<JIPipeEnvironment> target) {
+        super.getEnvironmentDependencies(target);
+        target.add(getConfiguredOMEROCredentialsEnvironment());
+    }
 }

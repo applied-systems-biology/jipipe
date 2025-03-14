@@ -15,11 +15,14 @@ package org.hkijena.jipipe.plugins.omero.nodes.navigate;
 
 import omero.gateway.LoginCredentials;
 import omero.gateway.SecurityContext;
-import omero.gateway.model.DatasetData;
+import omero.gateway.exception.DSAccessException;
+import omero.gateway.exception.DSOutOfServiceException;
 import omero.gateway.model.ProjectData;
+import omero.gateway.model.ScreenData;
 import org.hkijena.jipipe.api.ConfigureJIPipeNode;
 import org.hkijena.jipipe.api.JIPipeProgressInfo;
 import org.hkijena.jipipe.api.SetJIPipeDocumentation;
+import org.hkijena.jipipe.api.data.context.JIPipeDataContext;
 import org.hkijena.jipipe.api.environments.JIPipeEnvironment;
 import org.hkijena.jipipe.api.nodes.AddJIPipeInputSlot;
 import org.hkijena.jipipe.api.nodes.AddJIPipeOutputSlot;
@@ -40,73 +43,100 @@ import org.hkijena.jipipe.plugins.expressions.variables.JIPipeTextAnnotationsExp
 import org.hkijena.jipipe.plugins.omero.OMEROCredentialAccessNode;
 import org.hkijena.jipipe.plugins.omero.OMEROCredentialsEnvironment;
 import org.hkijena.jipipe.plugins.omero.OptionalOMEROCredentialsEnvironment;
-import org.hkijena.jipipe.plugins.omero.datatypes.OMERODatasetReferenceData;
+import org.hkijena.jipipe.plugins.omero.datatypes.OMEROGroupReferenceData;
 import org.hkijena.jipipe.plugins.omero.datatypes.OMEROProjectReferenceData;
+import org.hkijena.jipipe.plugins.omero.datatypes.OMEROScreenReferenceData;
 import org.hkijena.jipipe.plugins.omero.util.OMEROGateway;
 import org.hkijena.jipipe.plugins.omero.util.OMEROUtils;
 
 import java.util.ArrayList;
 import java.util.List;
 
-@SetJIPipeDocumentation(name = "List OMERO datasets", description = "Returns the ID(s) of dataset(s) according to search criteria. Requires project IDs as input.")
-@AddJIPipeInputSlot(value = OMEROProjectReferenceData.class, name = "Projects", create = true)
-@AddJIPipeOutputSlot(value = OMERODatasetReferenceData.class, name = "Datasets", create = true)
+@SetJIPipeDocumentation(name = "List OMERO screens", description = "Returns the ID(s) of screens(s) according to search criteria.")
+@AddJIPipeInputSlot(value = OMEROGroupReferenceData.class, name = "Group", create = true, description = "The group to be utilized. If not provided, the user's default group is used.", optional = true)
+@AddJIPipeOutputSlot(value = OMEROScreenReferenceData.class, name = "Screens", create = true)
 @ConfigureJIPipeNode(nodeTypeCategory = FileSystemNodeTypeCategory.class, menuPath = "OMERO")
-public class OMEROListDatasetsAlgorithm extends JIPipeSingleIterationAlgorithm implements OMEROCredentialAccessNode {
+public class OMEROListScreensAlgorithm extends JIPipeSingleIterationAlgorithm implements OMEROCredentialAccessNode {
 
     private OptionalOMEROCredentialsEnvironment overrideCredentials = new OptionalOMEROCredentialsEnvironment();
     private JIPipeExpressionParameter filters = new JIPipeExpressionParameter("");
 
-    public OMEROListDatasetsAlgorithm(JIPipeNodeInfo info) {
+    public OMEROListScreensAlgorithm(JIPipeNodeInfo info) {
         super(info);
     }
 
-    public OMEROListDatasetsAlgorithm(OMEROListDatasetsAlgorithm other) {
+    public OMEROListScreensAlgorithm(OMEROListScreensAlgorithm other) {
         super(other);
         this.overrideCredentials = new OptionalOMEROCredentialsEnvironment(other.overrideCredentials);
         this.filters = new JIPipeExpressionParameter(other.filters);
     }
 
     @Override
+    protected boolean isAllowEmptyIterationStep() {
+        return true;
+    }
+
+    @Override
     protected void runIteration(JIPipeMultiIterationStep iterationStep, JIPipeIterationContext iterationContext, JIPipeGraphNodeRunContext runContext, JIPipeProgressInfo progressInfo) {
+
         OMEROCredentialsEnvironment environment = getConfiguredOMEROCredentialsEnvironment();
         LoginCredentials credentials = environment.toLoginCredentials();
         progressInfo.log("Connecting to " + credentials.getUser().getUsername() + "@" + credentials.getServer().getHost());
-        try (OMEROGateway gateway = new OMEROGateway(credentials, progressInfo)) {
-            for (int row = 0; row < getFirstInputSlot().getRowCount(); row++) {
-                JIPipeProgressInfo rowProgress = progressInfo.resolveAndLog("OMERO project", row, getFirstInputSlot().getRowCount());
-                long projectId = getFirstInputSlot().getData(row, OMEROProjectReferenceData.class, rowProgress).getProjectId();
-                rowProgress.log("Listing datasets in project ID=" + projectId);
-                ProjectData projectData = gateway.getProject(projectId, -1);
-                SecurityContext context = new SecurityContext(projectData.getGroupId());
-                for (DatasetData dataset : projectData.getDatasets()) {
-                    JIPipeExpressionVariablesMap variables = new JIPipeExpressionVariablesMap(iterationStep);
-                    variables.putAnnotations(getFirstInputSlot().getTextAnnotations(row));
-                    variables.put("name", dataset.getName());
-                    variables.put("description", dataset.getDescription());
-                    variables.put("id", dataset.getId());
-                    variables.put("kv_pairs", OMEROUtils.getKeyValuePairs(gateway.getMetadataFacility(), context, dataset));
-                    variables.put("tags", new ArrayList<>(OMEROUtils.getTags(gateway.getMetadataFacility(), context, dataset)));
 
-                    if (filters.test(variables)) {
-                        getFirstOutputSlot().addData(new OMERODatasetReferenceData(dataset, environment), getFirstInputSlot().getDataContext(row).branch(this), rowProgress);
-                    }
+        try (OMEROGateway gateway = new OMEROGateway(credentials, progressInfo)) {
+            if (getFirstInputSlot().getRowCount() > 0) {
+                for (int row = 0; row < getFirstInputSlot().getRowCount(); row++) {
+                    JIPipeProgressInfo rowProgress = progressInfo.resolveAndLog("OMERO group", row, getFirstInputSlot().getRowCount());
+                    long groupId = getFirstInputSlot().getData(row, OMEROGroupReferenceData.class, rowProgress).getGroupId();
+                    processGroupId(rowProgress, groupId, gateway, row, environment);
+                }
+            } else {
+                JIPipeProgressInfo rowProgress = progressInfo.resolveAndLog("OMERO default group (" + gateway.getUser().getGroupId() + ")");
+                long groupId = gateway.getUser().getGroupId();
+                processGroupId(rowProgress, groupId, gateway, -1, environment);
+            }
+        }
+    }
+
+    private void processGroupId(JIPipeProgressInfo progressInfo, long groupId, OMEROGateway gateway, int row, OMEROCredentialsEnvironment environment) {
+        SecurityContext context = new SecurityContext(groupId);
+        try {
+            for (ScreenData screenData : gateway.getBrowseFacility().getScreens(context)) {
+                JIPipeExpressionVariablesMap variables = new JIPipeExpressionVariablesMap(this);
+                if (row >= 0) {
+                    variables.putAnnotations(getFirstInputSlot().getTextAnnotations(row));
+                }
+                variables.put("name", screenData.getName());
+                variables.put("description", screenData.getDescription());
+                variables.put("protocol.identifier", screenData.getProtocolIdentifier());
+                variables.put("protocol.description", screenData.getProtocolDescription());
+                variables.put("reagent.identifier", screenData.getReagentSetIdentifier());
+                variables.put("reagent.description", screenData.getReagentSetDescripion());
+                variables.put("id", screenData.getId());
+                variables.put("kv_pairs", OMEROUtils.getKeyValuePairs(gateway.getMetadataFacility(), context, screenData));
+                variables.put("tags", new ArrayList<>(OMEROUtils.getTags(gateway.getMetadataFacility(), context, screenData)));
+                if (filters.test(variables)) {
+                    getFirstOutputSlot().addData(new OMEROScreenReferenceData(screenData, environment), JIPipeDataContext.create(this), progressInfo);
                 }
             }
-        } catch (Exception e) {
+        } catch (DSOutOfServiceException | DSAccessException e) {
             throw new RuntimeException(e);
         }
     }
 
-    @SetJIPipeDocumentation(name = "Keep dataset if", description = "Allows to filter the returned data sets")
+    @SetJIPipeDocumentation(name = "Keep screen if", description = "Allows to filter the returned projects")
     @JIPipeParameter("filter")
-    @JIPipeExpressionParameterSettings(hint = "per OMERO data set")
+    @JIPipeExpressionParameterSettings(hint = "per OMERO screen")
     @AddJIPipeExpressionParameterVariable(fromClass = JIPipeTextAnnotationsExpressionParameterVariablesInfo.class)
     @AddJIPipeExpressionParameterVariable(name = "OMERO tags", description = "List of OMERO tag names associated with the data object", key = "tags")
     @AddJIPipeExpressionParameterVariable(name = "OMERO key-value pairs", description = "Map containing OMERO key-value pairs with the data object", key = "kv_pairs")
-    @AddJIPipeExpressionParameterVariable(name = "OMERO dataset name", description = "Name of the data set", key = "name")
-    @AddJIPipeExpressionParameterVariable(name = "OMERO dataset description", description = "Name of the data set", key = "description")
-    @AddJIPipeExpressionParameterVariable(name = "OMERO dataset id", description = "ID of the data set", key = "id")
+    @AddJIPipeExpressionParameterVariable(name = "OMERO screen name", description = "Name of the screen", key = "name")
+    @AddJIPipeExpressionParameterVariable(name = "OMERO screen description", description = "Description of the screen", key = "description")
+    @AddJIPipeExpressionParameterVariable(name = "OMERO screen protocol identifier", description = "Identifier of the protocol", key = "protocol.identifier")
+    @AddJIPipeExpressionParameterVariable(name = "OMERO screen protocol description", description = "Description of the protocol", key = "protocol.description")
+    @AddJIPipeExpressionParameterVariable(name = "OMERO screen reagent identifier", description = "Identifier of the reagent", key = "reagent.identifier")
+    @AddJIPipeExpressionParameterVariable(name = "OMERO screen reagent description", description = "Description of the reagent", key = "reagent.description")
+    @AddJIPipeExpressionParameterVariable(name = "OMERO screen id", description = "ID of the screen", key = "id")
     public JIPipeExpressionParameter getFilters() {
         return filters;
     }

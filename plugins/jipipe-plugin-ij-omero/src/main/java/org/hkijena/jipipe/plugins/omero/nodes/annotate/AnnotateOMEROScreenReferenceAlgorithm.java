@@ -17,7 +17,7 @@ import omero.gateway.LoginCredentials;
 import omero.gateway.SecurityContext;
 import omero.gateway.exception.DSAccessException;
 import omero.gateway.exception.DSOutOfServiceException;
-import omero.gateway.model.ProjectData;
+import omero.gateway.model.ScreenData;
 import org.hkijena.jipipe.api.ConfigureJIPipeNode;
 import org.hkijena.jipipe.api.JIPipeProgressInfo;
 import org.hkijena.jipipe.api.SetJIPipeDocumentation;
@@ -38,32 +38,37 @@ import org.hkijena.jipipe.api.validation.JIPipeValidationReportContext;
 import org.hkijena.jipipe.plugins.omero.OMEROCredentialAccessNode;
 import org.hkijena.jipipe.plugins.omero.OMEROCredentialsEnvironment;
 import org.hkijena.jipipe.plugins.omero.OptionalOMEROCredentialsEnvironment;
-import org.hkijena.jipipe.plugins.omero.datatypes.OMEROProjectReferenceData;
+import org.hkijena.jipipe.plugins.omero.datatypes.OMEROScreenReferenceData;
 import org.hkijena.jipipe.plugins.omero.parameters.OMEROKeyValuePairToAnnotationImporter;
 import org.hkijena.jipipe.plugins.omero.parameters.OMEROTagToAnnotationImporter;
 import org.hkijena.jipipe.plugins.omero.util.OMEROGateway;
 import org.hkijena.jipipe.plugins.parameters.library.primitives.StringParameterSettings;
 import org.hkijena.jipipe.plugins.parameters.library.primitives.optional.OptionalTextAnnotationNameParameter;
 import org.hkijena.jipipe.utils.ResourceUtils;
+import org.hkijena.jipipe.utils.StringUtils;
 
 import java.util.ArrayList;
 import java.util.List;
 
-@SetJIPipeDocumentation(name = "Annotate project with OMERO metadata", description = "Annotates an OMERO project ID with OMERO metadata.")
+@SetJIPipeDocumentation(name = "Annotate screen with OMERO metadata", description = "Annotates an OMERO screen ID with OMERO metadata.")
 @ConfigureJIPipeNode(nodeTypeCategory = AnnotationsNodeTypeCategory.class, menuPath = "For OMERO")
-@AddJIPipeInputSlot(value = OMEROProjectReferenceData.class, name = "Projects", create = true)
-@AddJIPipeOutputSlot(value = OMEROProjectReferenceData.class, name = "Projects", create = true)
-public class AnnotateOMEROProjectReferenceAlgorithm extends JIPipeSingleIterationAlgorithm implements OMEROCredentialAccessNode {
+@AddJIPipeInputSlot(value = OMEROScreenReferenceData.class, name = "Screens", create = true)
+@AddJIPipeOutputSlot(value = OMEROScreenReferenceData.class, name = "Screens", create = true)
+public class AnnotateOMEROScreenReferenceAlgorithm extends JIPipeSingleIterationAlgorithm implements OMEROCredentialAccessNode {
 
     private final OMEROKeyValuePairToAnnotationImporter keyValuePairToAnnotationImporter;
     private final OMEROTagToAnnotationImporter tagToAnnotationImporter;
     private OptionalOMEROCredentialsEnvironment overrideCredentials = new OptionalOMEROCredentialsEnvironment();
-    private OptionalTextAnnotationNameParameter idAnnotation = new OptionalTextAnnotationNameParameter("#OMERO:Project_ID", true);
-    private OptionalTextAnnotationNameParameter nameAnnotation = new OptionalTextAnnotationNameParameter("Project name", true);
-    private OptionalTextAnnotationNameParameter descriptionAnnotation = new OptionalTextAnnotationNameParameter("Project description", true);
+    private OptionalTextAnnotationNameParameter nameAnnotation = new OptionalTextAnnotationNameParameter("Screen title", true);
+    private OptionalTextAnnotationNameParameter descriptionAnnotation = new OptionalTextAnnotationNameParameter("Screen description", true);
+    private OptionalTextAnnotationNameParameter protocolIdAnnotation = new OptionalTextAnnotationNameParameter("Protocol ID", true);
+    private OptionalTextAnnotationNameParameter protocolDescriptionAnnotation = new OptionalTextAnnotationNameParameter("Protocol description", false);
+    private OptionalTextAnnotationNameParameter reagentSetIdAnnotation = new OptionalTextAnnotationNameParameter("Reagent ID", true);
+    private OptionalTextAnnotationNameParameter reagentSetDescriptionAnnotation = new OptionalTextAnnotationNameParameter("Reagent description", false);
+    private OptionalTextAnnotationNameParameter idAnnotation = new OptionalTextAnnotationNameParameter("#OMERO:Screen_ID", true);
     private JIPipeTextAnnotationMergeMode annotationMergeMode = JIPipeTextAnnotationMergeMode.OverwriteExisting;
 
-    public AnnotateOMEROProjectReferenceAlgorithm(JIPipeNodeInfo info) {
+    public AnnotateOMEROScreenReferenceAlgorithm(JIPipeNodeInfo info) {
         super(info);
         this.keyValuePairToAnnotationImporter = new OMEROKeyValuePairToAnnotationImporter();
         registerSubParameter(keyValuePairToAnnotationImporter);
@@ -71,7 +76,7 @@ public class AnnotateOMEROProjectReferenceAlgorithm extends JIPipeSingleIteratio
         registerSubParameter(tagToAnnotationImporter);
     }
 
-    public AnnotateOMEROProjectReferenceAlgorithm(AnnotateOMEROProjectReferenceAlgorithm other) {
+    public AnnotateOMEROScreenReferenceAlgorithm(AnnotateOMEROScreenReferenceAlgorithm other) {
         super(other);
         this.keyValuePairToAnnotationImporter = new OMEROKeyValuePairToAnnotationImporter(other.keyValuePairToAnnotationImporter);
         registerSubParameter(keyValuePairToAnnotationImporter);
@@ -82,6 +87,10 @@ public class AnnotateOMEROProjectReferenceAlgorithm extends JIPipeSingleIteratio
         this.descriptionAnnotation = new OptionalTextAnnotationNameParameter(other.descriptionAnnotation);
         this.idAnnotation = new OptionalTextAnnotationNameParameter(other.idAnnotation);
         this.annotationMergeMode = other.annotationMergeMode;
+        this.protocolIdAnnotation = new OptionalTextAnnotationNameParameter(other.protocolIdAnnotation);
+        this.protocolDescriptionAnnotation = new OptionalTextAnnotationNameParameter(other.protocolDescriptionAnnotation);
+        this.reagentSetIdAnnotation = new OptionalTextAnnotationNameParameter(other.reagentSetIdAnnotation);
+        this.reagentSetDescriptionAnnotation = new OptionalTextAnnotationNameParameter(other.reagentSetDescriptionAnnotation);
     }
 
     @Override
@@ -91,31 +100,43 @@ public class AnnotateOMEROProjectReferenceAlgorithm extends JIPipeSingleIteratio
         progressInfo.log("Connecting to " + credentials.getUser().getUsername() + "@" + credentials.getServer().getHost());
         try (OMEROGateway gateway = new OMEROGateway(credentials, progressInfo)) {
             for (int row = 0; row < getFirstInputSlot().getRowCount(); row++) {
-                JIPipeProgressInfo rowProgress = progressInfo.resolveAndLog("OMERO project", row, getFirstInputSlot().getRowCount());
-                long projectId = getFirstInputSlot().getData(row, OMEROProjectReferenceData.class, rowProgress).getProjectId();
-                ProjectData projectData = gateway.getProject(projectId, -1);
-                SecurityContext context = new SecurityContext(projectData.getGroupId());
+                JIPipeProgressInfo rowProgress = progressInfo.resolveAndLog("OMERO screen", row, getFirstInputSlot().getRowCount());
+                long screenId = getFirstInputSlot().getData(row, OMEROScreenReferenceData.class, rowProgress).getScreenId();
+                ScreenData screenData = gateway.getScreen(screenId, -1);
+                SecurityContext context = new SecurityContext(screenData.getGroupId());
 
                 List<JIPipeTextAnnotation> annotations = new ArrayList<>();
 
                 try {
-                    tagToAnnotationImporter.createAnnotations(annotations, gateway.getMetadataFacility(), context, projectData);
-                    keyValuePairToAnnotationImporter.createAnnotations(annotations, gateway.getMetadataFacility(), context, projectData);
+                    tagToAnnotationImporter.createAnnotations(annotations, gateway.getMetadataFacility(), context, screenData);
+                    keyValuePairToAnnotationImporter.createAnnotations(annotations, gateway.getMetadataFacility(), context, screenData);
                 } catch (DSOutOfServiceException | DSAccessException e) {
                     throw new RuntimeException(e);
                 }
 
                 if (nameAnnotation.isEnabled()) {
-                    annotations.add(new JIPipeTextAnnotation(nameAnnotation.getContent(), projectData.getName()));
+                    annotations.add(new JIPipeTextAnnotation(nameAnnotation.getContent(), screenData.getName()));
                 }
                 if (descriptionAnnotation.isEnabled()) {
-                    annotations.add(new JIPipeTextAnnotation(descriptionAnnotation.getContent(), projectData.getDescription()));
+                    annotations.add(new JIPipeTextAnnotation(descriptionAnnotation.getContent(), screenData.getDescription()));
+                }
+                if (protocolIdAnnotation.isEnabled()) {
+                    annotations.add(new JIPipeTextAnnotation(protocolIdAnnotation.getContent(), StringUtils.nullToEmpty(screenData.getProtocolIdentifier())));
+                }
+                if (protocolDescriptionAnnotation.isEnabled()) {
+                    annotations.add(new JIPipeTextAnnotation(protocolDescriptionAnnotation.getContent(), StringUtils.nullToEmpty(screenData.getProtocolDescription())));
+                }
+                if (reagentSetIdAnnotation.isEnabled()) {
+                    annotations.add(new JIPipeTextAnnotation(reagentSetIdAnnotation.getContent(), StringUtils.nullToEmpty(screenData.getReagentSetIdentifier())));
+                }
+                if (reagentSetDescriptionAnnotation.isEnabled()) {
+                    annotations.add(new JIPipeTextAnnotation(reagentSetDescriptionAnnotation.getContent(), StringUtils.nullToEmpty(screenData.getReagentSetDescripion())));
                 }
                 if (idAnnotation.isEnabled()) {
-                    annotations.add(new JIPipeTextAnnotation(idAnnotation.getContent(), String.valueOf(projectData.getId())));
+                    annotations.add(new JIPipeTextAnnotation(idAnnotation.getContent(), String.valueOf(screenData.getId())));
                 }
 
-                iterationStep.addOutputData(getFirstOutputSlot(), new OMEROProjectReferenceData(projectData, environment), annotations, annotationMergeMode, rowProgress);
+                iterationStep.addOutputData(getFirstOutputSlot(), new OMEROScreenReferenceData(screenData, environment), annotations, annotationMergeMode, rowProgress);
             }
         }
     }
@@ -131,8 +152,51 @@ public class AnnotateOMEROProjectReferenceAlgorithm extends JIPipeSingleIteratio
         this.overrideCredentials = overrideCredentials;
     }
 
+    @SetJIPipeDocumentation(name = "Annotate with protocol description", description = "If enabled, annotate with the protocol description")
+    @JIPipeParameter("protocol-description-annotation")
+    public OptionalTextAnnotationNameParameter getProtocolDescriptionAnnotation() {
+        return protocolDescriptionAnnotation;
+    }
 
-    @SetJIPipeDocumentation(name = "Annotate with project name", description = "Optional annotation type where the project name is written.")
+    @JIPipeParameter("protocol-description-annotation")
+    public void setProtocolDescriptionAnnotation(OptionalTextAnnotationNameParameter protocolDescriptionAnnotation) {
+        this.protocolDescriptionAnnotation = protocolDescriptionAnnotation;
+    }
+
+    @SetJIPipeDocumentation(name = "Annotate with protocol ID", description = "If enabled, annotate with the protocol ID")
+    @JIPipeParameter("protocol-id-annotation")
+    public OptionalTextAnnotationNameParameter getProtocolIdAnnotation() {
+        return protocolIdAnnotation;
+    }
+
+    @JIPipeParameter("protocol-id-annotation")
+    public void setProtocolIdAnnotation(OptionalTextAnnotationNameParameter protocolIdAnnotation) {
+        this.protocolIdAnnotation = protocolIdAnnotation;
+    }
+
+    @SetJIPipeDocumentation(name = "Annotate with reagent set description", description = "If enabled, annotate with the reagent set description")
+    @JIPipeParameter("reagent-set-description-annotation")
+    public OptionalTextAnnotationNameParameter getReagentSetDescriptionAnnotation() {
+        return reagentSetDescriptionAnnotation;
+    }
+
+    @JIPipeParameter("reagent-set-description-annotation")
+    public void setReagentSetDescriptionAnnotation(OptionalTextAnnotationNameParameter reagentSetDescriptionAnnotation) {
+        this.reagentSetDescriptionAnnotation = reagentSetDescriptionAnnotation;
+    }
+
+    @SetJIPipeDocumentation(name = "Annotate with reagent set ID", description = "If enabled, annotate with the reagent set ID")
+    @JIPipeParameter("reagent-set-id-annotation")
+    public OptionalTextAnnotationNameParameter getReagentSetIdAnnotation() {
+        return reagentSetIdAnnotation;
+    }
+
+    @JIPipeParameter("reagent-set-id-annotation")
+    public void setReagentSetIdAnnotation(OptionalTextAnnotationNameParameter reagentSetIdAnnotation) {
+        this.reagentSetIdAnnotation = reagentSetIdAnnotation;
+    }
+
+    @SetJIPipeDocumentation(name = "Annotate with screen name", description = "Optional annotation type where the screen title is written.")
     @JIPipeParameter("name-annotation")
     @StringParameterSettings(monospace = true, icon = ResourceUtils.RESOURCE_BASE_PATH + "/icons/data-types/annotation.png")
     public OptionalTextAnnotationNameParameter getNameAnnotation() {
@@ -144,7 +208,7 @@ public class AnnotateOMEROProjectReferenceAlgorithm extends JIPipeSingleIteratio
         this.nameAnnotation = nameAnnotation;
     }
 
-    @SetJIPipeDocumentation(name = "Annotate with project description", description = "Optional annotation type where the project description is written.")
+    @SetJIPipeDocumentation(name = "Annotate with screen description", description = "Optional annotation type where the screen description is written.")
     @JIPipeParameter("description-annotation")
     @StringParameterSettings(monospace = true, icon = ResourceUtils.RESOURCE_BASE_PATH + "/icons/data-types/annotation.png")
     public OptionalTextAnnotationNameParameter getDescriptionAnnotation() {
@@ -168,7 +232,7 @@ public class AnnotateOMEROProjectReferenceAlgorithm extends JIPipeSingleIteratio
         return tagToAnnotationImporter;
     }
 
-    @SetJIPipeDocumentation(name = "Annotate with OMERO project ID", description = "If enabled, adds the OMERO project ID as annotation")
+    @SetJIPipeDocumentation(name = "Annotate with OMERO screen ID", description = "If enabled, adds the OMERO screen ID as annotation")
     @JIPipeParameter("id-annotation")
     public OptionalTextAnnotationNameParameter getIdAnnotation() {
         return idAnnotation;

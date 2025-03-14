@@ -49,6 +49,7 @@ public class OMEROWellReferenceData implements JIPipeData {
     private int red;
     private int green;
     private int blue;
+    private int alpha;
 
     public OMEROWellReferenceData() {
     }
@@ -66,6 +67,7 @@ public class OMEROWellReferenceData implements JIPipeData {
         this.red = wellData.getRed();
         this.green = wellData.getGreen();
         this.blue = wellData.getBlue();
+        this.alpha = wellData.getAlpha();
         this.url = OMEROUtils.tryGetWebClientURL(environment.getWebclientUrl(), "well", wellId);
     }
 
@@ -78,12 +80,22 @@ public class OMEROWellReferenceData implements JIPipeData {
         }
     }
 
-    @JsonGetter("blue")
+    @JsonGetter("color-alpha")
+    public int getAlpha() {
+        return alpha;
+    }
+
+    @JsonSetter("color-alpha")
+    public void setAlpha(int alpha) {
+        this.alpha = alpha;
+    }
+
+    @JsonGetter("color-blue")
     public int getBlue() {
         return blue;
     }
 
-    @JsonSetter("blue")
+    @JsonSetter("color-blue")
     public void setBlue(int blue) {
         this.blue = blue;
     }
@@ -98,22 +110,22 @@ public class OMEROWellReferenceData implements JIPipeData {
         this.column = column;
     }
 
-    @JsonGetter("green")
+    @JsonGetter("color-green")
     public int getGreen() {
         return green;
     }
 
-    @JsonSetter("green")
+    @JsonSetter("color-green")
     public void setGreen(int green) {
         this.green = green;
     }
 
-    @JsonGetter("red")
+    @JsonGetter("color-red")
     public int getRed() {
         return red;
     }
 
-    @JsonSetter("red")
+    @JsonSetter("color-red")
     public void setRed(int red) {
         this.red = red;
     }

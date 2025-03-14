@@ -19,6 +19,8 @@ import omero.gateway.exception.DSAccessException;
 import omero.gateway.exception.DSOutOfServiceException;
 import omero.gateway.model.DatasetData;
 import omero.gateway.model.ImageData;
+import omero.gateway.model.PlateData;
+import omero.gateway.model.ScreenData;
 import org.hkijena.jipipe.api.ConfigureJIPipeNode;
 import org.hkijena.jipipe.api.JIPipeProgressInfo;
 import org.hkijena.jipipe.api.SetJIPipeDocumentation;
@@ -44,26 +46,28 @@ import org.hkijena.jipipe.plugins.omero.OMEROCredentialsEnvironment;
 import org.hkijena.jipipe.plugins.omero.OptionalOMEROCredentialsEnvironment;
 import org.hkijena.jipipe.plugins.omero.datatypes.OMERODatasetReferenceData;
 import org.hkijena.jipipe.plugins.omero.datatypes.OMEROImageReferenceData;
+import org.hkijena.jipipe.plugins.omero.datatypes.OMEROPlateReferenceData;
+import org.hkijena.jipipe.plugins.omero.datatypes.OMEROScreenReferenceData;
 import org.hkijena.jipipe.plugins.omero.util.OMEROGateway;
 import org.hkijena.jipipe.plugins.omero.util.OMEROUtils;
 
 import java.util.ArrayList;
 import java.util.List;
 
-@SetJIPipeDocumentation(name = "List OMERO images", description = "Returns the ID(s) of images(s) according to search criteria. Requires project IDs as input.")
-@AddJIPipeInputSlot(value = OMERODatasetReferenceData.class, name = "Datasets", create = true)
-@AddJIPipeOutputSlot(value = OMEROImageReferenceData.class, name = "Images", create = true)
+@SetJIPipeDocumentation(name = "List OMERO plates", description = "Returns the ID(s) of plates(s) according to search criteria.")
+@AddJIPipeInputSlot(value = OMEROScreenReferenceData.class, name = "Screens", create = true)
+@AddJIPipeOutputSlot(value = OMEROPlateReferenceData.class, name = "Plates", create = true)
 @ConfigureJIPipeNode(nodeTypeCategory = FileSystemNodeTypeCategory.class, menuPath = "OMERO")
-public class OMEROListImagesAlgorithm extends JIPipeSingleIterationAlgorithm implements OMEROCredentialAccessNode {
+public class OMEROListPlatesAlgorithm extends JIPipeSingleIterationAlgorithm implements OMEROCredentialAccessNode {
 
     private OptionalOMEROCredentialsEnvironment overrideCredentials = new OptionalOMEROCredentialsEnvironment();
     private JIPipeExpressionParameter filters = new JIPipeExpressionParameter("");
 
-    public OMEROListImagesAlgorithm(JIPipeNodeInfo info) {
+    public OMEROListPlatesAlgorithm(JIPipeNodeInfo info) {
         super(info);
     }
 
-    public OMEROListImagesAlgorithm(OMEROListImagesAlgorithm other) {
+    public OMEROListPlatesAlgorithm(OMEROListPlatesAlgorithm other) {
         super(other);
         this.overrideCredentials = new OptionalOMEROCredentialsEnvironment(other.overrideCredentials);
         this.filters = new JIPipeExpressionParameter(other.filters);
@@ -76,24 +80,23 @@ public class OMEROListImagesAlgorithm extends JIPipeSingleIterationAlgorithm imp
         progressInfo.log("Connecting to " + credentials.getUser().getUsername() + "@" + credentials.getServer().getHost());
         try (OMEROGateway gateway = new OMEROGateway(credentials, progressInfo)) {
             for (int row = 0; row < getFirstInputSlot().getRowCount(); row++) {
-                JIPipeProgressInfo rowProgress = progressInfo.resolveAndLog("OMERO dataset", row, getFirstInputSlot().getRowCount());
-                long datasetId = getFirstInputSlot().getData(row, OMERODatasetReferenceData.class, rowProgress).getDatasetId();
-                DatasetData datasetData = gateway.getDataset(datasetId, -1);
+                JIPipeProgressInfo rowProgress = progressInfo.resolveAndLog("OMERO screen", row, getFirstInputSlot().getRowCount());
+                long screenId = getFirstInputSlot().getData(row, OMEROScreenReferenceData.class, rowProgress).getScreenId();
+                ScreenData datasetData = gateway.getScreen(screenId, -1);
                 SecurityContext context = new SecurityContext(datasetData.getGroupId());
-                progressInfo.log("Listing images in dataset ID=" + datasetData.getId());
+                progressInfo.log("Listing plates in screen ID=" + datasetData.getId());
 
-                for (Object obj : datasetData.getImages()) {
-                    if (obj instanceof ImageData) {
-                        ImageData imageData = (ImageData) obj;
+                for (PlateData plateData : datasetData.getPlates()) {
+                    if (plateData != null) {
                         JIPipeExpressionVariablesMap variables = new JIPipeExpressionVariablesMap(iterationStep);
                         variables.putAnnotations(getFirstInputSlot().getTextAnnotations(row));
-                        variables.put("name", imageData.getName());
-                        variables.put("description", imageData.getDescription());
-                        variables.put("id", imageData.getId());
-                        variables.put("kv_pairs", OMEROUtils.getKeyValuePairs(gateway.getMetadataFacility(), context, imageData));
-                        variables.put("tags", new ArrayList<>(OMEROUtils.getTags(gateway.getMetadataFacility(), context, imageData)));
+                        variables.put("name", plateData.getName());
+                        variables.put("description", plateData.getDescription());
+                        variables.put("id", plateData.getId());
+                        variables.put("kv_pairs", OMEROUtils.getKeyValuePairs(gateway.getMetadataFacility(), context, plateData));
+                        variables.put("tags", new ArrayList<>(OMEROUtils.getTags(gateway.getMetadataFacility(), context, plateData)));
                         if (filters.test(variables)) {
-                            getFirstOutputSlot().addData(new OMEROImageReferenceData(imageData, environment), getFirstInputSlot().getDataContext(row).branch(this), rowProgress);
+                            getFirstOutputSlot().addData(new OMEROPlateReferenceData(plateData, environment), getFirstInputSlot().getDataContext(row).branch(this), rowProgress);
                         }
                     }
                 }
@@ -114,15 +117,15 @@ public class OMEROListImagesAlgorithm extends JIPipeSingleIterationAlgorithm imp
         this.overrideCredentials = overrideCredentials;
     }
 
-    @SetJIPipeDocumentation(name = "Keep image if", description = "Allows to filter the returned images")
+    @SetJIPipeDocumentation(name = "Keep plate if", description = "Allows to filter the returned images")
     @JIPipeParameter("filter")
-    @JIPipeExpressionParameterSettings(hint = "per OMERO image")
+    @JIPipeExpressionParameterSettings(hint = "per OMERO plate")
     @AddJIPipeExpressionParameterVariable(fromClass = JIPipeTextAnnotationsExpressionParameterVariablesInfo.class)
     @AddJIPipeExpressionParameterVariable(name = "OMERO tags", description = "List of OMERO tag names associated with the data object", key = "tags")
     @AddJIPipeExpressionParameterVariable(name = "OMERO key-value pairs", description = "Map containing OMERO key-value pairs with the data object", key = "kv_pairs")
-    @AddJIPipeExpressionParameterVariable(name = "OMERO image name", description = "Name of the image", key = "name")
-    @AddJIPipeExpressionParameterVariable(name = "OMERO image description", description = "Description of the image", key = "description")
-    @AddJIPipeExpressionParameterVariable(name = "OMERO image id", description = "ID of the image", key = "id")
+    @AddJIPipeExpressionParameterVariable(name = "OMERO plate name", description = "Name of the plate", key = "name")
+    @AddJIPipeExpressionParameterVariable(name = "OMERO plate description", description = "Description of the plate", key = "description")
+    @AddJIPipeExpressionParameterVariable(name = "OMERO plate id", description = "ID of the plate", key = "id")
     public JIPipeExpressionParameter getFilters() {
         return filters;
     }

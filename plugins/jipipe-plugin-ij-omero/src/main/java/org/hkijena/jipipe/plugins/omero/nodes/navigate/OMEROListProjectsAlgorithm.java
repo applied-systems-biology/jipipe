@@ -46,6 +46,7 @@ import org.hkijena.jipipe.plugins.omero.datatypes.OMEROGroupReferenceData;
 import org.hkijena.jipipe.plugins.omero.datatypes.OMEROProjectReferenceData;
 import org.hkijena.jipipe.plugins.omero.util.OMEROGateway;
 import org.hkijena.jipipe.plugins.omero.util.OMEROUtils;
+import org.hkijena.jipipe.utils.StringUtils;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -105,6 +106,7 @@ public class OMEROListProjectsAlgorithm extends JIPipeSingleIterationAlgorithm i
                     variables.putAnnotations(getFirstInputSlot().getTextAnnotations(row));
                 }
                 variables.put("name", project.getName());
+                variables.put("description", project.getDescription());
                 variables.put("id", project.getId());
                 variables.put("kv_pairs", OMEROUtils.getKeyValuePairs(gateway.getMetadataFacility(), context, project));
                 variables.put("tags", new ArrayList<>(OMEROUtils.getTags(gateway.getMetadataFacility(), context, project)));
@@ -119,11 +121,12 @@ public class OMEROListProjectsAlgorithm extends JIPipeSingleIterationAlgorithm i
 
     @SetJIPipeDocumentation(name = "Keep project if", description = "Allows to filter the returned projects")
     @JIPipeParameter("filter")
-    @JIPipeExpressionParameterSettings(hint = "per OMERO data set")
+    @JIPipeExpressionParameterSettings(hint = "per OMERO project")
     @AddJIPipeExpressionParameterVariable(fromClass = JIPipeTextAnnotationsExpressionParameterVariablesInfo.class)
     @AddJIPipeExpressionParameterVariable(name = "OMERO tags", description = "List of OMERO tag names associated with the data object", key = "tags")
     @AddJIPipeExpressionParameterVariable(name = "OMERO key-value pairs", description = "Map containing OMERO key-value pairs with the data object", key = "kv_pairs")
     @AddJIPipeExpressionParameterVariable(name = "OMERO project name", description = "Name of the project", key = "name")
+    @AddJIPipeExpressionParameterVariable(name = "OMERO project description", description = "Description of the project", key = "description")
     @AddJIPipeExpressionParameterVariable(name = "OMERO project id", description = "ID of the project", key = "id")
     public JIPipeExpressionParameter getFilters() {
         return filters;

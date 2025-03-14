@@ -15,7 +15,6 @@ package org.hkijena.jipipe.plugins.omero.datatypes;
 
 import com.fasterxml.jackson.annotation.JsonGetter;
 import com.fasterxml.jackson.annotation.JsonSetter;
-import omero.gateway.model.ProjectData;
 import omero.gateway.model.ScreenData;
 import org.hkijena.jipipe.api.JIPipeProgressInfo;
 import org.hkijena.jipipe.api.SetJIPipeDocumentation;
@@ -45,8 +44,8 @@ public class OMEROScreenReferenceData implements JIPipeData {
     private String url;
     private String protocolDescription;
     private String protocolIdentifier;
-    private String reagentDescription;
-    private String reagentIdentifier;
+    private String reagentSetDescription;
+    private String reagentSetIdentifier;
 
     public OMEROScreenReferenceData() {
     }
@@ -62,8 +61,8 @@ public class OMEROScreenReferenceData implements JIPipeData {
         this.url = OMEROUtils.tryGetWebClientURL(environment.getWebclientUrl(), "screen", screenId);
         this.protocolDescription = screenData.getProtocolDescription();
         this.protocolIdentifier = screenData.getProtocolIdentifier();
-        this.reagentDescription = screenData.getReagentSetDescripion();
-        this.reagentIdentifier = screenData.getReagentSetIdentifier();
+        this.reagentSetDescription = screenData.getReagentSetDescripion();
+        this.reagentSetIdentifier = screenData.getReagentSetIdentifier();
     }
 
     public static OMEROScreenReferenceData importData(JIPipeReadDataStorage storage, JIPipeProgressInfo progressInfo) {
@@ -95,24 +94,24 @@ public class OMEROScreenReferenceData implements JIPipeData {
         this.protocolIdentifier = protocolIdentifier;
     }
 
-    @JsonGetter("reagent-description")
-    public String getReagentDescription() {
-        return reagentDescription;
+    @JsonGetter("reagent-set-description")
+    public String getReagentSetDescription() {
+        return reagentSetDescription;
     }
 
-    @JsonSetter("reagent-description")
-    public void setReagentDescription(String reagentDescription) {
-        this.reagentDescription = reagentDescription;
+    @JsonSetter("reagent-set-description")
+    public void setReagentSetDescription(String reagentSetDescription) {
+        this.reagentSetDescription = reagentSetDescription;
     }
 
-    @JsonGetter("reagent-identifier")
-    public String getReagentIdentifier() {
-        return reagentIdentifier;
+    @JsonGetter("reagent-set-identifier")
+    public String getReagentSetIdentifier() {
+        return reagentSetIdentifier;
     }
 
-    @JsonSetter("reagent-identifier")
-    public void setReagentIdentifier(String reagentIdentifier) {
-        this.reagentIdentifier = reagentIdentifier;
+    @JsonSetter("reagent-set-identifier")
+    public void setReagentSetIdentifier(String reagentSetIdentifier) {
+        this.reagentSetIdentifier = reagentSetIdentifier;
     }
 
     @JsonGetter("description")

@@ -60,13 +60,13 @@ public class OMERODataViewer extends JIPipeDesktopDataViewer {
         } else if (data instanceof OMEROImageReferenceData) {
             this.currentUrl = ((OMEROImageReferenceData) data).getUrl();
             formPanel.addToForm(new JIPipeDesktopReadonlyCopyableTextField(((OMEROImageReferenceData) data).getName(), true), new JLabel("Name"));
-            formPanel.addToForm(new JIPipeDesktopReadonlyCopyableTextField(((OMEROImageReferenceData) data).getDescription(), true), new JLabel("Description"));
+            formPanel.addToForm(UIUtils.createReadonlyTextPane(((OMEROImageReferenceData) data).getDescription()), new JLabel("Description"));
             formPanel.addToForm(new JIPipeDesktopReadonlyCopyableTextField(((OMEROImageReferenceData) data).getImageId() + "", true), new JLabel("Image ID"));
             formPanel.addToForm(new JIPipeDesktopReadonlyCopyableTextField(((OMEROImageReferenceData) data).getUrl(), true), new JLabel("URL"));
         } else if (data instanceof OMEROProjectReferenceData) {
             this.currentUrl = ((OMEROProjectReferenceData) data).getUrl();
             formPanel.addToForm(new JIPipeDesktopReadonlyCopyableTextField(((OMEROProjectReferenceData) data).getName(), true), new JLabel("Name"));
-            formPanel.addToForm(new JIPipeDesktopReadonlyCopyableTextField(((OMEROProjectReferenceData) data).getDescription(), true), new JLabel("Description"));
+            formPanel.addToForm(UIUtils.createReadonlyTextPane(((OMEROProjectReferenceData) data).getDescription()), new JLabel("Description"));
             formPanel.addToForm(new JIPipeDesktopReadonlyCopyableTextField(((OMEROProjectReferenceData) data).getProjectId() + "", true), new JLabel("Project ID"));
             formPanel.addToForm(new JIPipeDesktopReadonlyCopyableTextField(((OMEROProjectReferenceData) data).getUrl(), true), new JLabel("URL"));
         }
@@ -79,11 +79,11 @@ public class OMERODataViewer extends JIPipeDesktopDataViewer {
         else if (data instanceof OMEROScreenReferenceData) {
             this.currentUrl = ((OMEROScreenReferenceData) data).getUrl();
             formPanel.addToForm(new JIPipeDesktopReadonlyCopyableTextField(((OMEROScreenReferenceData) data).getName(), true), new JLabel("Name"));
-            formPanel.addToForm(new JIPipeDesktopReadonlyCopyableTextField(((OMEROScreenReferenceData) data).getDescription(), true), new JLabel("Description"));
+            formPanel.addToForm(UIUtils.createReadonlyTextPane(((OMEROScreenReferenceData) data).getDescription()), new JLabel("Description"));
             formPanel.addToForm(new JIPipeDesktopReadonlyCopyableTextField(((OMEROScreenReferenceData) data).getProtocolIdentifier(), true), new JLabel("Protocol identifier"));
-            formPanel.addToForm(new JIPipeDesktopReadonlyCopyableTextField(((OMEROScreenReferenceData) data).getProtocolDescription(), true), new JLabel("Protocol description"));
-            formPanel.addToForm(new JIPipeDesktopReadonlyCopyableTextField(((OMEROScreenReferenceData) data).getReagentIdentifier(), true), new JLabel("Reagent identifier"));
-            formPanel.addToForm(new JIPipeDesktopReadonlyCopyableTextField(((OMEROScreenReferenceData) data).getReagentDescription(), true), new JLabel("Reagent description"));
+            formPanel.addToForm(UIUtils.createReadonlyTextPane(((OMEROScreenReferenceData) data).getProtocolDescription()), new JLabel("Protocol description"));
+            formPanel.addToForm(new JIPipeDesktopReadonlyCopyableTextField(((OMEROScreenReferenceData) data).getReagentSetIdentifier(), true), new JLabel("Reagent set identifier"));
+            formPanel.addToForm(UIUtils.createReadonlyTextPane(((OMEROScreenReferenceData) data).getReagentSetDescription()), new JLabel("Reagent set description"));
             formPanel.addToForm(new JIPipeDesktopReadonlyCopyableTextField(((OMEROScreenReferenceData) data).getScreenId() + "", true), new JLabel("Screen ID"));
             formPanel.addToForm(new JIPipeDesktopReadonlyCopyableTextField(((OMEROScreenReferenceData) data).getUrl(), true), new JLabel("URL"));
         }
@@ -94,9 +94,13 @@ public class OMERODataViewer extends JIPipeDesktopDataViewer {
             formPanel.addToForm(new JIPipeDesktopReadonlyCopyableTextField(((OMEROWellReferenceData) data).getWellType(), true), new JLabel("Well type"));
             formPanel.addToForm(new JIPipeDesktopReadonlyCopyableTextField(((OMEROWellReferenceData) data).getStatus(), true), new JLabel("Status"));
             formPanel.addToForm(new JIPipeDesktopReadonlyCopyableTextField(((OMEROWellReferenceData) data).getRow() + ", " + ((OMEROWellReferenceData) data).getColumn(), true), new JLabel("Row, Column"));
-            formPanel.addToForm(new JIPipeDesktopReadonlyCopyableTextField(((OMEROWellReferenceData) data).getRed() + ", " + ((OMEROWellReferenceData) data).getGreen() + ", " + ((OMEROWellReferenceData) data).getBlue(), true), new JLabel("Red, Green, Blue"));
+            formPanel.addToForm(new JIPipeDesktopReadonlyCopyableTextField(((OMEROWellReferenceData) data).getRed() + ", " + ((OMEROWellReferenceData) data).getGreen() + ", " + ((OMEROWellReferenceData) data).getBlue() + ", " + ((OMEROWellReferenceData) data).getAlpha(), true), new JLabel("RGBA color"));
             formPanel.addToForm(new JIPipeDesktopReadonlyCopyableTextField(((OMEROWellReferenceData) data).getUrl(), true), new JLabel("URL"));
         }
+
+        formPanel.addVerticalGlue();
+        formPanel.revalidate();
+        formPanel.repaint();
     }
 
     @Override
