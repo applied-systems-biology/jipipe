@@ -70,6 +70,11 @@ public class OMEROListProjectsAlgorithm extends JIPipeSingleIterationAlgorithm i
     }
 
     @Override
+    protected boolean isAllowEmptyIterationStep() {
+        return true;
+    }
+
+    @Override
     protected void runIteration(JIPipeMultiIterationStep iterationStep, JIPipeIterationContext iterationContext, JIPipeGraphNodeRunContext runContext, JIPipeProgressInfo progressInfo) {
 
         OMEROCredentialsEnvironment environment = getConfiguredOMEROCredentialsEnvironment();

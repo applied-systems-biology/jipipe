@@ -35,6 +35,7 @@ import java.nio.file.Path;
 @JIPipeDataStorageDocumentation(humanReadableDescription = "Contains a single *.json file that stores the <pre>image-id</pre> in a JSON object.",
         jsonSchemaURL = "https://jipipe.org/schemas/datatypes/omero-image-reference-data.schema.json")
 public class OMEROImageReferenceData implements JIPipeData {
+    private String description;
     private long imageId;
     private String name;
     private String url;
@@ -49,6 +50,7 @@ public class OMEROImageReferenceData implements JIPipeData {
     public OMEROImageReferenceData(ImageData imageData, OMEROCredentialsEnvironment environment) {
         this.imageId = imageData.getId();
         this.name = imageData.getName();
+        this.description = imageData.getDescription();
         this.url = OMEROUtils.tryGetWebClientURL(environment.getWebclientUrl(), "image", imageId);
     }
 
@@ -59,6 +61,16 @@ public class OMEROImageReferenceData implements JIPipeData {
         } catch (IOException e) {
             throw new RuntimeException(e);
         }
+    }
+
+    @JsonGetter("description")
+    public String getDescription() {
+        return description;
+    }
+
+    @JsonSetter("description")
+    public void setDescription(String description) {
+        this.description = description;
     }
 
     @JsonGetter("image-id")

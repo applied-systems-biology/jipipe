@@ -15,6 +15,7 @@ package org.hkijena.jipipe.plugins.omero.datatypes;
 
 import com.fasterxml.jackson.annotation.JsonGetter;
 import com.fasterxml.jackson.annotation.JsonSetter;
+import omero.gateway.model.PlateData;
 import omero.gateway.model.ProjectData;
 import org.hkijena.jipipe.api.JIPipeProgressInfo;
 import org.hkijena.jipipe.api.SetJIPipeDocumentation;
@@ -32,47 +33,46 @@ import java.io.IOException;
 import java.nio.file.Path;
 
 /**
- * Data that stores a reference to an OMERO project
+ * Data that stores a reference to an OMERO plate
  */
-@SetJIPipeDocumentation(name = "OMERO Project", description = "An OMERO project ID")
-@JIPipeDataStorageDocumentation(humanReadableDescription = "Contains a single *.json file that stores the <pre>project-id</pre> in a JSON object.",
-        jsonSchemaURL = "https://jipipe.org/schemas/datatypes/omero-project-reference-data.schema.json")
-public class OMEROProjectReferenceData implements JIPipeData {
-    private long projectId;
+@SetJIPipeDocumentation(name = "OMERO Plate", description = "An OMERO plate ID")
+@JIPipeDataStorageDocumentation(humanReadableDescription = "Contains a single *.json file that stores the <pre>plate-id</pre> in a JSON object.",
+        jsonSchemaURL = "https://jipipe.org/schemas/datatypes/omero-plate-reference-data.schema.json")
+public class OMEROPlateReferenceData implements JIPipeData {
+    private long plateId;
     private String name;
-    private String description;
     private String url;
 
-    public OMEROProjectReferenceData() {
+    public OMEROPlateReferenceData() {
     }
 
-    public OMEROProjectReferenceData(long projectId) {
-        this.projectId = projectId;
+    public OMEROPlateReferenceData(long plateId) {
+        this.plateId = plateId;
     }
 
-    public OMEROProjectReferenceData(ProjectData projectData, OMEROCredentialsEnvironment environment) {
-        this.projectId = projectData.getId();
-        this.name = projectData.getName();
-        this.url = OMEROUtils.tryGetWebClientURL(environment.getWebclientUrl(), "project", projectId);
+    public OMEROPlateReferenceData(PlateData plateData, OMEROCredentialsEnvironment environment) {
+        this.plateId = plateData.getId();
+        this.name = plateData.getName();
+        this.url = OMEROUtils.tryGetWebClientURL(environment.getWebclientUrl(), "plate", plateId);
     }
 
-    public static OMEROProjectReferenceData importData(JIPipeReadDataStorage storage, JIPipeProgressInfo progressInfo) {
+    public static OMEROPlateReferenceData importData(JIPipeReadDataStorage storage, JIPipeProgressInfo progressInfo) {
         Path targetFile = PathUtils.findFileByExtensionIn(storage.getFileSystemPath(), ".json");
         try {
-            return JsonUtils.getObjectMapper().readerFor(OMEROProjectReferenceData.class).readValue(targetFile.toFile());
+            return JsonUtils.getObjectMapper().readerFor(OMEROPlateReferenceData.class).readValue(targetFile.toFile());
         } catch (IOException e) {
             throw new RuntimeException(e);
         }
     }
 
-    @JsonGetter("project-id")
-    public long getProjectId() {
-        return projectId;
+    @JsonGetter("plate-id")
+    public long getPlateId() {
+        return plateId;
     }
 
-    @JsonSetter("project-id")
-    public void setProjectId(long projectId) {
-        this.projectId = projectId;
+    @JsonSetter("plate-id")
+    public void setPlateId(long plateId) {
+        this.plateId = plateId;
     }
 
     @JsonGetter("name")
@@ -83,16 +83,6 @@ public class OMEROProjectReferenceData implements JIPipeData {
     @JsonSetter("name")
     public void setName(String name) {
         this.name = name;
-    }
-
-    @JsonGetter("description")
-    public String getDescription() {
-        return description;
-    }
-
-    @JsonSetter("description")
-    public void setDescription(String description) {
-        this.description = description;
     }
 
     @JsonGetter("url")
@@ -117,15 +107,15 @@ public class OMEROProjectReferenceData implements JIPipeData {
 
     @Override
     public JIPipeData duplicate(JIPipeProgressInfo progressInfo) {
-        return new OMEROProjectReferenceData(projectId);
+        return new OMEROPlateReferenceData(plateId);
     }
 
     @Override
     public String toString() {
         if (StringUtils.isNullOrEmpty(name)) {
-            return "OMERO project ID=" + projectId;
+            return "OMERO plate ID=" + plateId;
         } else {
-            return "OMERO project '" + name + "' [ID=" + projectId + "]";
+            return "OMERO plate '" + name + "' [ID=" + plateId + "]";
         }
     }
 }
