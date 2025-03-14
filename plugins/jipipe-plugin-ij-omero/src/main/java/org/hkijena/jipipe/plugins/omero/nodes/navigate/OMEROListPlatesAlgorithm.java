@@ -24,6 +24,8 @@ import omero.gateway.model.ScreenData;
 import org.hkijena.jipipe.api.ConfigureJIPipeNode;
 import org.hkijena.jipipe.api.JIPipeProgressInfo;
 import org.hkijena.jipipe.api.SetJIPipeDocumentation;
+import org.hkijena.jipipe.api.annotation.JIPipeDataAnnotationMergeMode;
+import org.hkijena.jipipe.api.annotation.JIPipeTextAnnotationMergeMode;
 import org.hkijena.jipipe.api.environments.JIPipeEnvironment;
 import org.hkijena.jipipe.api.nodes.AddJIPipeInputSlot;
 import org.hkijena.jipipe.api.nodes.AddJIPipeOutputSlot;
@@ -96,7 +98,13 @@ public class OMEROListPlatesAlgorithm extends JIPipeSingleIterationAlgorithm imp
                         variables.put("kv_pairs", OMEROUtils.getKeyValuePairs(gateway.getMetadataFacility(), context, plateData));
                         variables.put("tags", new ArrayList<>(OMEROUtils.getTags(gateway.getMetadataFacility(), context, plateData)));
                         if (filters.test(variables)) {
-                            getFirstOutputSlot().addData(new OMEROPlateReferenceData(plateData, environment), getFirstInputSlot().getDataContext(row).branch(this), rowProgress);
+                            getFirstOutputSlot().addData(new OMEROPlateReferenceData(plateData, environment),
+                                    getFirstInputSlot().getTextAnnotations(row),
+                                    JIPipeTextAnnotationMergeMode.OverwriteExisting,
+                                    getFirstInputSlot().getDataAnnotations(row),
+                                    JIPipeDataAnnotationMergeMode.OverwriteExisting,
+                                    getFirstInputSlot().getDataContext(row).branch(this),
+                                    rowProgress);
                         }
                     }
                 }

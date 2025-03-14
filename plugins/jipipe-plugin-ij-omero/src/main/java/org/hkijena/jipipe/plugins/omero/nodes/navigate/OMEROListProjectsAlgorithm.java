@@ -21,6 +21,8 @@ import omero.gateway.model.ProjectData;
 import org.hkijena.jipipe.api.ConfigureJIPipeNode;
 import org.hkijena.jipipe.api.JIPipeProgressInfo;
 import org.hkijena.jipipe.api.SetJIPipeDocumentation;
+import org.hkijena.jipipe.api.annotation.JIPipeDataAnnotationMergeMode;
+import org.hkijena.jipipe.api.annotation.JIPipeTextAnnotationMergeMode;
 import org.hkijena.jipipe.api.data.context.JIPipeDataContext;
 import org.hkijena.jipipe.api.environments.JIPipeEnvironment;
 import org.hkijena.jipipe.api.nodes.AddJIPipeInputSlot;
@@ -111,7 +113,13 @@ public class OMEROListProjectsAlgorithm extends JIPipeSingleIterationAlgorithm i
                 variables.put("kv_pairs", OMEROUtils.getKeyValuePairs(gateway.getMetadataFacility(), context, project));
                 variables.put("tags", new ArrayList<>(OMEROUtils.getTags(gateway.getMetadataFacility(), context, project)));
                 if (filters.test(variables)) {
-                    getFirstOutputSlot().addData(new OMEROProjectReferenceData(project, environment), JIPipeDataContext.create(this), progressInfo);
+                    getFirstOutputSlot().addData(new OMEROProjectReferenceData(project, environment),
+                            getFirstInputSlot().getTextAnnotations(row),
+                            JIPipeTextAnnotationMergeMode.OverwriteExisting,
+                            getFirstInputSlot().getDataAnnotations(row),
+                            JIPipeDataAnnotationMergeMode.OverwriteExisting,
+                            JIPipeDataContext.create(this),
+                            progressInfo);
                 }
             }
         } catch (DSOutOfServiceException | DSAccessException e) {

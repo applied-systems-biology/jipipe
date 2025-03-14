@@ -47,9 +47,11 @@ import org.hkijena.jipipe.plugins.parameters.library.primitives.optional.Optiona
 import org.hkijena.jipipe.utils.ColorUtils;
 import org.hkijena.jipipe.utils.ResourceUtils;
 import org.hkijena.jipipe.utils.StringUtils;
+import org.hkijena.jipipe.utils.json.JsonUtils;
 
 import java.awt.*;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 
 @SetJIPipeDocumentation(name = "Annotate well with OMERO metadata", description = "Annotates an OMERO well ID with OMERO metadata.")
@@ -122,7 +124,7 @@ public class AnnotateOMEROWellReferenceAlgorithm extends JIPipeSingleIterationAl
                     annotations.add(new JIPipeTextAnnotation(typeAnnotation.getContent(), StringUtils.nullToEmpty(wellData.getWellType())));
                 }
                 if (colorAnnotation.isEnabled()) {
-                    annotations.add(new JIPipeTextAnnotation(colorAnnotation.getContent(), ColorUtils.colorToHexString(new Color(wellData.getRed(), wellData.getGreen(), wellData.getBlue(), wellData.getAlpha()))));
+                    annotations.add(new JIPipeTextAnnotation(colorAnnotation.getContent(), JsonUtils.toJsonString(Arrays.asList(wellData.getRed(),wellData.getGreen(), wellData.getBlue() ,wellData.getAlpha()))));
                 }
                 if (idAnnotation.isEnabled()) {
                     annotations.add(new JIPipeTextAnnotation(idAnnotation.getContent(), String.valueOf(wellData.getId())));

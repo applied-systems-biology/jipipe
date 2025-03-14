@@ -20,6 +20,8 @@ import omero.gateway.model.ProjectData;
 import org.hkijena.jipipe.api.ConfigureJIPipeNode;
 import org.hkijena.jipipe.api.JIPipeProgressInfo;
 import org.hkijena.jipipe.api.SetJIPipeDocumentation;
+import org.hkijena.jipipe.api.annotation.JIPipeDataAnnotationMergeMode;
+import org.hkijena.jipipe.api.annotation.JIPipeTextAnnotationMergeMode;
 import org.hkijena.jipipe.api.environments.JIPipeEnvironment;
 import org.hkijena.jipipe.api.nodes.AddJIPipeInputSlot;
 import org.hkijena.jipipe.api.nodes.AddJIPipeOutputSlot;
@@ -89,7 +91,13 @@ public class OMEROListDatasetsAlgorithm extends JIPipeSingleIterationAlgorithm i
                     variables.put("tags", new ArrayList<>(OMEROUtils.getTags(gateway.getMetadataFacility(), context, dataset)));
 
                     if (filters.test(variables)) {
-                        getFirstOutputSlot().addData(new OMERODatasetReferenceData(dataset, environment), getFirstInputSlot().getDataContext(row).branch(this), rowProgress);
+                        getFirstOutputSlot().addData(new OMERODatasetReferenceData(dataset, environment),
+                                getFirstInputSlot().getTextAnnotations(row),
+                                JIPipeTextAnnotationMergeMode.OverwriteExisting,
+                                getFirstInputSlot().getDataAnnotations(row),
+                                JIPipeDataAnnotationMergeMode.OverwriteExisting,
+                                getFirstInputSlot().getDataContext(row).branch(this),
+                                rowProgress);
                     }
                 }
             }

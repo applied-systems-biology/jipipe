@@ -22,6 +22,8 @@ import omero.gateway.model.ImageData;
 import org.hkijena.jipipe.api.ConfigureJIPipeNode;
 import org.hkijena.jipipe.api.JIPipeProgressInfo;
 import org.hkijena.jipipe.api.SetJIPipeDocumentation;
+import org.hkijena.jipipe.api.annotation.JIPipeDataAnnotationMergeMode;
+import org.hkijena.jipipe.api.annotation.JIPipeTextAnnotationMergeMode;
 import org.hkijena.jipipe.api.environments.JIPipeEnvironment;
 import org.hkijena.jipipe.api.nodes.AddJIPipeInputSlot;
 import org.hkijena.jipipe.api.nodes.AddJIPipeOutputSlot;
@@ -50,20 +52,20 @@ import org.hkijena.jipipe.plugins.omero.util.OMEROUtils;
 import java.util.ArrayList;
 import java.util.List;
 
-@SetJIPipeDocumentation(name = "List OMERO images", description = "Returns the ID(s) of images(s) according to search criteria. Requires project IDs as input.")
+@SetJIPipeDocumentation(name = "List OMERO images in dataset", description = "Returns the ID(s) of images(s) according to search criteria.")
 @AddJIPipeInputSlot(value = OMERODatasetReferenceData.class, name = "Datasets", create = true)
 @AddJIPipeOutputSlot(value = OMEROImageReferenceData.class, name = "Images", create = true)
 @ConfigureJIPipeNode(nodeTypeCategory = FileSystemNodeTypeCategory.class, menuPath = "OMERO")
-public class OMEROListImagesAlgorithm extends JIPipeSingleIterationAlgorithm implements OMEROCredentialAccessNode {
+public class OMEROListDatasetImagesAlgorithm extends JIPipeSingleIterationAlgorithm implements OMEROCredentialAccessNode {
 
     private OptionalOMEROCredentialsEnvironment overrideCredentials = new OptionalOMEROCredentialsEnvironment();
     private JIPipeExpressionParameter filters = new JIPipeExpressionParameter("");
 
-    public OMEROListImagesAlgorithm(JIPipeNodeInfo info) {
+    public OMEROListDatasetImagesAlgorithm(JIPipeNodeInfo info) {
         super(info);
     }
 
-    public OMEROListImagesAlgorithm(OMEROListImagesAlgorithm other) {
+    public OMEROListDatasetImagesAlgorithm(OMEROListDatasetImagesAlgorithm other) {
         super(other);
         this.overrideCredentials = new OptionalOMEROCredentialsEnvironment(other.overrideCredentials);
         this.filters = new JIPipeExpressionParameter(other.filters);
@@ -93,7 +95,13 @@ public class OMEROListImagesAlgorithm extends JIPipeSingleIterationAlgorithm imp
                         variables.put("kv_pairs", OMEROUtils.getKeyValuePairs(gateway.getMetadataFacility(), context, imageData));
                         variables.put("tags", new ArrayList<>(OMEROUtils.getTags(gateway.getMetadataFacility(), context, imageData)));
                         if (filters.test(variables)) {
-                            getFirstOutputSlot().addData(new OMEROImageReferenceData(imageData, environment), getFirstInputSlot().getDataContext(row).branch(this), rowProgress);
+                            getFirstOutputSlot().addData(new OMEROImageReferenceData(imageData, environment),
+                                    getFirstInputSlot().getTextAnnotations(row),
+                                    JIPipeTextAnnotationMergeMode.OverwriteExisting,
+                                    getFirstInputSlot().getDataAnnotations(row),
+                                    JIPipeDataAnnotationMergeMode.OverwriteExisting,
+                                    getFirstInputSlot().getDataContext(row).branch(this),
+                                    rowProgress);
                         }
                     }
                 }

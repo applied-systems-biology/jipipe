@@ -231,7 +231,8 @@ public class OMEROPlugin extends JIPipePrepackagedDefaultJavaPlugin {
         registerNodeType("omero-list-group-ids", OMEROListGroupsAlgorithm.class, UIUtils.getIconURLFromResources("actions/search.png"));
         registerNodeType("omero-list-project-ids", OMEROListProjectsAlgorithm.class, UIUtils.getIconURLFromResources("actions/search.png"));
         registerNodeType("omero-list-dataset-ids", OMEROListDatasetsAlgorithm.class, UIUtils.getIconURLFromResources("actions/search.png"));
-        registerNodeType("omero-list-image-ids", OMEROListImagesAlgorithm.class, UIUtils.getIconURLFromResources("actions/search.png"));
+        registerNodeType("omero-list-image-ids", OMEROListDatasetImagesAlgorithm.class, UIUtils.getIconURLFromResources("actions/search.png"));
+        registerNodeType("omero-list-well-image-ids", OMEROListWellImagesAlgorithm.class, UIUtils.getIconURLFromResources("actions/search.png"));
         registerNodeType("omero-list-screen-ids", OMEROListScreensAlgorithm.class, UIUtils.getIconURLFromResources("actions/search.png"));
         registerNodeType("omero-list-plate-ids", OMEROListPlatesAlgorithm.class, UIUtils.getIconURLFromResources("actions/search.png"));
         registerNodeType("omero-list-well-ids", OMEROListWellsAlgorithm.class, UIUtils.getIconURLFromResources("actions/search.png"));
