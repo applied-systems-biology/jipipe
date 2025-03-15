@@ -419,6 +419,7 @@ public abstract class JIPipeIteratingAlgorithm extends JIPipeParameterSlotAlgori
             }
             else if(!partition.isEnableParallelization() || runContext.getThreadPool() == null
                     || runContext.getThreadPool().getMaxThreads() <= 1) {
+                doParallelization = false;
                 progressInfo.log("[INFO] Parallelization was DISABLED due to run or partition settings");
             }
         }
