@@ -23,7 +23,7 @@ import java.util.List;
 
 public class VersionUtils {
 
-    public static final String FALLBACK_VERSION = "5.1.0";
+    public static final String FALLBACK_VERSION = "5.1.1";
 
     /**
      * Returns a version string for a class
