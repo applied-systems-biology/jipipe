@@ -17,6 +17,7 @@ import com.fasterxml.jackson.core.JsonProcessingException;
 import gnu.trove.set.TIntSet;
 import gnu.trove.set.hash.TIntHashSet;
 import org.hkijena.jipipe.api.JIPipeDataBatchGenerationResult;
+import org.hkijena.jipipe.api.JIPipeFixedThreadPool;
 import org.hkijena.jipipe.api.JIPipeProgressInfo;
 import org.hkijena.jipipe.api.SetJIPipeDocumentation;
 import org.hkijena.jipipe.api.annotation.JIPipeDataAnnotationMergeMode;
@@ -34,6 +35,7 @@ import org.hkijena.jipipe.api.validation.*;
 import org.hkijena.jipipe.api.validation.contexts.GraphNodeValidationReportContext;
 import org.hkijena.jipipe.plugins.expressions.JIPipeExpressionVariablesMap;
 import org.hkijena.jipipe.plugins.parameters.library.pairs.StringQueryExpressionAndStringPairParameter;
+import org.hkijena.jipipe.plugins.parameters.library.primitives.optional.OptionalIntegerParameter;
 import org.hkijena.jipipe.plugins.parameters.library.primitives.ranges.IntegerRange;
 import org.hkijena.jipipe.utils.ParameterUtils;
 import org.hkijena.jipipe.utils.ResourceUtils;
@@ -54,6 +56,7 @@ import java.util.concurrent.Future;
 public abstract class JIPipeSimpleIteratingAlgorithm extends JIPipeParameterSlotAlgorithm implements JIPipeParallelizedAlgorithm, JIPipeIterationStepAlgorithm, JIPipeAdaptiveParametersAlgorithm {
     private JIPipeSimpleIteratingAlgorithmIterationStepGenerationSettings iterationStepGenerationSettings = new JIPipeSimpleIteratingAlgorithmIterationStepGenerationSettings();
     private JIPipeAdaptiveParameterSettings adaptiveParameterSettings = new JIPipeAdaptiveParameterSettings();
+    private OptionalIntegerParameter localParallelizationNumThreads = new OptionalIntegerParameter(false, 1);
 
     /**
      * Creates a new instance
@@ -89,6 +92,7 @@ public abstract class JIPipeSimpleIteratingAlgorithm extends JIPipeParameterSlot
         super(other);
         this.iterationStepGenerationSettings = new JIPipeSimpleIteratingAlgorithmIterationStepGenerationSettings(other.iterationStepGenerationSettings);
         this.adaptiveParameterSettings = new JIPipeAdaptiveParameterSettings(other.adaptiveParameterSettings);
+        this.localParallelizationNumThreads = new OptionalIntegerParameter(other.localParallelizationNumThreads);
         adaptiveParameterSettings.setNode(this);
         registerSubParameter(iterationStepGenerationSettings);
         registerSubParameter(adaptiveParameterSettings);
@@ -205,8 +209,10 @@ public abstract class JIPipeSimpleIteratingAlgorithm extends JIPipeParameterSlot
         final int numIterationSteps = iterationSteps.size();
         JIPipeRuntimePartition partition = runContext.getGraphRun().getRuntimePartition(getRuntimePartition());
 
-        if (!supportsParallelization() || !partition.isEnableParallelization() || runContext.getThreadPool() == null ||
-                runContext.getThreadPool().getMaxThreads() <= 1 || iterationSteps.size() <= 1 || hasAdaptiveParameters) {
+        // Determine if we should enable parallelization
+        boolean doParallelization = shouldDoParallelization(runContext, progressInfo, iterationSteps, hasAdaptiveParameters, partition);
+
+        if (!doParallelization) {
             for (int i = 0; i < iterationSteps.size(); i++) {
                 if (progressInfo.isCancelled())
                     return;
@@ -235,21 +241,60 @@ public abstract class JIPipeSimpleIteratingAlgorithm extends JIPipeParameterSlot
                     }
                 });
             }
+
+            JIPipeFixedThreadPool threadPool = runContext.getThreadPool();
+            if(threadPool == null  || threadPool.getMaxThreads() < getLocalParallelizationNumThreads().getContent()) {
+                progressInfo.log("Creating new thread pool with " + getLocalParallelizationNumThreads().getContent() + " threads");
+                threadPool = new JIPipeFixedThreadPool(getLocalParallelizationNumThreads().getContent());
+            }
+
             progressInfo.log(String.format("Running %d batches (batch size %d) in parallel. Available threads = %d",
                     tasks.size(),
                     getParallelizationBatchSize(),
-                    runContext.getThreadPool().getMaxThreads()));
-            for (Future<Exception> batch : runContext.getThreadPool().scheduleBatches(tasks, getParallelizationBatchSize())) {
-                try {
-                    Exception exception = batch.get();
-                    if (exception != null)
-                        throw new RuntimeException(exception);
-                } catch (InterruptedException | ExecutionException e) {
-                    throw new RuntimeException(e);
+                    threadPool.getMaxThreads()));
+
+            try {
+                for (Future<Exception> batch : threadPool.scheduleBatches(tasks, getParallelizationBatchSize())) {
+                    try {
+                        Exception exception = batch.get();
+                        if (exception != null)
+                            throw new RuntimeException(exception);
+                    } catch (InterruptedException | ExecutionException e) {
+                        throw new RuntimeException(e);
+                    }
+                }
+            }
+            finally {
+                if(threadPool != runContext.getThreadPool()) {
+                    threadPool.shutdown();
                 }
             }
         }
 
+    }
+
+    private boolean shouldDoParallelization(JIPipeGraphNodeRunContext runContext, JIPipeProgressInfo progressInfo, List<JIPipeSingleIterationStep> iterationSteps, boolean hasAdaptiveParameters, JIPipeRuntimePartition partition) {
+        boolean doParallelization = iterationSteps.size() > 1 && supportsParallelization();
+        if(doParallelization && hasAdaptiveParameters) {
+            doParallelization = false;
+            progressInfo.log("[INFO] Parallelization was DISABLED due to usage of adaptive parameters");
+        }
+        if(doParallelization) {
+            if(localParallelizationNumThreads.isEnabled()) {
+                if(localParallelizationNumThreads.getContent() > 1) {
+                    progressInfo.log("[INFO] Local node-wide parallelization enabled via parameter");
+                }
+                else {
+                    doParallelization = false;
+                    progressInfo.log("[INFO] Local node-wide parallelization DISABLED, as number of threads is " + localParallelizationNumThreads.getContent());
+                }
+            }
+            else if(!partition.isEnableParallelization() || runContext.getThreadPool() == null
+                    || runContext.getThreadPool().getMaxThreads() <= 1) {
+                progressInfo.log("[INFO] Parallelization was DISABLED due to run or partition settings");
+            }
+        }
+        return doParallelization;
     }
 
     private void uploadAdaptiveParameters(JIPipeSingleIterationStep iterationStep, JIPipeParameterTree tree, Map<String, Object> parameterBackups, JIPipeProgressInfo progressInfo) {
@@ -370,6 +415,17 @@ public abstract class JIPipeSimpleIteratingAlgorithm extends JIPipeParameterSlot
         return iterationStepGenerationSettings;
     }
 
+    @SetJIPipeDocumentation(name = "Local parallelization", description = "If enabled, override the partition- and run-wide parallelization settings and apply parallelization only on this node.")
+    @JIPipeParameter(value = "jipipe:local-parallelization-num-threads", pinned = true)
+    public OptionalIntegerParameter getLocalParallelizationNumThreads() {
+        return localParallelizationNumThreads;
+    }
+
+    @JIPipeParameter("jipipe:local-parallelization-num-threads")
+    public void setLocalParallelizationNumThreads(OptionalIntegerParameter localParallelizationNumThreads) {
+        this.localParallelizationNumThreads = localParallelizationNumThreads;
+    }
+
     @Override
     public boolean isParameterUIVisible(JIPipeParameterTree tree, JIPipeParameterCollection subParameter) {
         if (ParameterUtils.isHiddenLocalParameterCollection(tree, subParameter, "jipipe:data-batch-generation", "jipipe:adaptive-parameters")) {
@@ -381,6 +437,9 @@ public abstract class JIPipeSimpleIteratingAlgorithm extends JIPipeParameterSlot
     @Override
     public boolean isParameterUIVisible(JIPipeParameterTree tree, JIPipeParameterAccess access) {
         if (ParameterUtils.isHiddenLocalParameter(tree, access, "jipipe:parallelization:enabled")) {
+            return false;
+        }
+        if("jipipe:local-parallelization-num-threads".equals(access.getKey()) && !supportsParallelization()) {
             return false;
         }
         return super.isParameterUIVisible(tree, access);
