@@ -373,9 +373,12 @@ public abstract class JIPipeIteratingAlgorithm extends JIPipeParameterSlotAlgori
             }
 
             JIPipeFixedThreadPool threadPool = runContext.getThreadPool();
-            if(threadPool == null || threadPool.getMaxThreads() < getLocalParallelizationNumThreads().getContent()) {
-                progressInfo.log("Creating new thread pool with " + getLocalParallelizationNumThreads().getContent() + " threads");
-                threadPool = new JIPipeFixedThreadPool(getLocalParallelizationNumThreads().getContent());
+            boolean isCustomThreadPool = false;
+            if(threadPool == null) {
+                int numThreads = Math.max(1, getLocalParallelizationNumThreads().getContent());
+                progressInfo.log("Creating new thread pool with " + numThreads + " threads");
+                threadPool = new JIPipeFixedThreadPool(numThreads);
+                isCustomThreadPool = true;
             }
 
             try {
@@ -394,7 +397,7 @@ public abstract class JIPipeIteratingAlgorithm extends JIPipeParameterSlotAlgori
                 }
             }
             finally {
-                if(threadPool != runContext.getThreadPool()) {
+                if(isCustomThreadPool) {
                     threadPool.shutdown();
                 }
             }
