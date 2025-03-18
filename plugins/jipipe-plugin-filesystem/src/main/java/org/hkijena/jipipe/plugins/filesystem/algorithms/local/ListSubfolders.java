@@ -122,7 +122,7 @@ public class ListSubfolders extends JIPipeSimpleIteratingAlgorithm {
         }
     }
 
-    @SetJIPipeDocumentation(name = "Filters", description = "You can optionally filter the result folders. " +
+    @SetJIPipeDocumentation(name = "Keep path if ...", description = "You can optionally filter the result folders. " +
             "The filters are connected via a logical OR operation. An empty list disables filtering. " +
             "Annotations are available as variables.")
     @JIPipeParameter("filters")
