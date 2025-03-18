@@ -93,7 +93,7 @@ public class JIPipeArtifactsRegistry {
                     }
                 } else {
                     // Look for CPU
-                    if (!candidate.isRequireGPU()) {
+                    if (!candidate.isRequireGPU() && bestCandidate.isRequireGPU()) {
                         bestCandidate = candidate;
                     }
                 }
