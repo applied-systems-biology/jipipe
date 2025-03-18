@@ -19,11 +19,13 @@ import org.hkijena.jipipe.plugins.core.CorePlugin;
 
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Comparator;
 import java.util.List;
 
 public class VersionUtils {
 
     public static final String FALLBACK_VERSION = "5.1.3";
+    public static final Comparator<? super String> VERSION_COMPARATOR = new VersionComparator();
 
     /**
      * Returns a version string for a class
@@ -86,5 +88,13 @@ public class VersionUtils {
             result.add(intList.toArray());
         }
         return result;
+    }
+
+    public static class VersionComparator implements Comparator<String> {
+
+        @Override
+        public int compare(String o1, String o2) {
+            return compareVersions(o1, o2);
+        }
     }
 }
