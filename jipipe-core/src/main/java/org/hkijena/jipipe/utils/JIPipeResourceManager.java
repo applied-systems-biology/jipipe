@@ -136,12 +136,19 @@ public class JIPipeResourceManager {
      * @return the URL or null if the icon does not exists
      */
     public URL getIconURLFromResources(String iconName) {
+        URL resource = null;
         if (UIUtils.DARK_THEME) {
-            URL resource = resourceClass.getResource(darkIcons16BasePath + "/" + iconName);
-            if (resource != null)
+            resource = resourceClass.getResource(darkIcons16BasePath + "/" + iconName);
+            if (resource != null) {
                 return resource;
+            }
         }
-        return resourceClass.getResource(icons16BasePath + "/" + iconName);
+        resource = resourceClass.getResource(icons16BasePath + "/" + iconName);
+        if(resource == null) {
+            resource = UIUtils.getIcon16URLFromResources("missing.png");
+            System.err.println(this + ": unable to find icon16 " + iconName);
+        }
+        return resource;
     }
 
     /**
@@ -161,12 +168,19 @@ public class JIPipeResourceManager {
      * @return the URL or null if the icon does not exists
      */
     public URL getIcon32URLFromResources(String iconName) {
+        URL resource = null;
         if (UIUtils.DARK_THEME) {
-            URL resource = resourceClass.getResource(darkIcons32BasePath + "/" + iconName);
-            if (resource != null)
+            resource = resourceClass.getResource(darkIcons32BasePath + "/" + iconName);
+            if (resource != null) {
                 return resource;
+            }
         }
-        return resourceClass.getResource(icons32BasePath + "/" + iconName);
+        resource = resourceClass.getResource(icons32BasePath + "/" + iconName);
+        if(resource == null) {
+            resource = UIUtils.getIcon32URLFromResources("missing.png");
+            System.err.println(this + ": unable to find icon32 " + iconName);
+        }
+        return resource;
     }
 
     /**
@@ -176,12 +190,19 @@ public class JIPipeResourceManager {
      * @return the URL or null if the icon does not exists
      */
     public URL getIcon64URLFromResources(String iconName) {
+        URL resource = null;
         if (UIUtils.DARK_THEME) {
-            URL resource = resourceClass.getResource(darkIcons64BasePath + "/" + iconName);
-            if (resource != null)
+            resource = resourceClass.getResource(darkIcons64BasePath + "/" + iconName);
+            if (resource != null) {
                 return resource;
+            }
         }
-        return resourceClass.getResource(icons64BasePath + "/" + iconName);
+        resource = resourceClass.getResource(icons64BasePath + "/" + iconName);
+        if(resource == null) {
+            resource = UIUtils.getIcon64URLFromResources("missing.png");
+            System.err.println(this + ": unable to find icon64 " + iconName);
+        }
+        return resource;
     }
 
     /**
@@ -191,12 +212,19 @@ public class JIPipeResourceManager {
      * @return the URL or null if the icon does not exists
      */
     public URL getIcon128URLFromResources(String iconName) {
+        URL resource = null;
         if (UIUtils.DARK_THEME) {
-            URL resource = resourceClass.getResource(darkIcons128BasePath + "/" + iconName);
-            if (resource != null)
+            resource = resourceClass.getResource(darkIcons128BasePath + "/" + iconName);
+            if (resource != null) {
                 return resource;
+            }
         }
-        return resourceClass.getResource(icons128BasePath + "/" + iconName);
+        resource = resourceClass.getResource(icons128BasePath + "/" + iconName);
+        if(resource == null) {
+            resource = UIUtils.getIcon128URLFromResources("missing.png");
+            System.err.println(this + ": unable to find icon128 " + iconName);
+        }
+        return resource;
     }
 
     /**
