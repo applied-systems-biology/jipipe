@@ -21,9 +21,12 @@ import org.hkijena.jipipe.api.artifacts.JIPipeArtifactRepositoryType;
 import org.hkijena.jipipe.api.parameters.JIPipeParameter;
 import org.hkijena.jipipe.api.settings.JIPipeDefaultApplicationSettingsSheetCategory;
 import org.hkijena.jipipe.api.settings.JIPipeDefaultApplicationsSettingsSheet;
+import org.hkijena.jipipe.plugins.parameters.library.filesystem.PathParameterSettings;
 import org.hkijena.jipipe.plugins.parameters.library.primitives.optional.OptionalPathParameter;
 import org.hkijena.jipipe.plugins.parameters.library.primitives.vectors.Vector2iParameter;
 import org.hkijena.jipipe.plugins.parameters.library.primitives.vectors.VectorParameterSettings;
+import org.hkijena.jipipe.utils.PathIOMode;
+import org.hkijena.jipipe.utils.PathType;
 import org.hkijena.jipipe.utils.UIUtils;
 
 import javax.swing.*;
@@ -122,6 +125,7 @@ public class JIPipeArtifactApplicationSettings extends JIPipeDefaultApplications
     @SetJIPipeDocumentation(name = "Override installation path", description = "If enabled, store downloaded artifacts in a different directory. " +
             "By default, they will be stored in %APPDATA%/JIPipe/artifacts (Windows), $HOME/.local/share/JIPipe/artifacts (Linux), and $HOME/Library/Application Support/")
     @JIPipeParameter("override-installation-path")
+    @PathParameterSettings(ioMode = PathIOMode.Open, pathMode = PathType.DirectoriesOnly)
     public OptionalPathParameter getOverrideInstallationPath() {
         return overrideInstallationPath;
     }
