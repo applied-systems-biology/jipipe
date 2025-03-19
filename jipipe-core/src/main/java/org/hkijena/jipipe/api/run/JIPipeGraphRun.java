@@ -195,11 +195,13 @@ public class JIPipeGraphRun extends AbstractJIPipeRunnable implements JIPipeGrap
             progressInfo.log("Outputs will be written to " + configuration.getOutputPath());
         }
 
+        // List of all environments
+        List<JIPipeEnvironment> allEnvironments = new ArrayList<>();
+
         if (parent == null) {
-            progressInfo.log("Preparing artifacts ...");
+            progressInfo.log("Preparing artifacts and environments ...");
 
             // Gather all environments from all active nodes
-            List<JIPipeEnvironment> allEnvironments = new ArrayList<>();
             for (JIPipeGraphNode graphNode : graph.getGraphNodes()) {
                 graphNode.getEnvironmentDependencies(allEnvironments);
             }
@@ -304,6 +306,11 @@ public class JIPipeGraphRun extends AbstractJIPipeRunnable implements JIPipeGrap
                 entry.getKey().applyConfigurationFromArtifactAndSetLastArtifact((JIPipeLocalArtifact) artifact, progressInfo);
             }
 
+            // Apply additional configuration steps
+            for (JIPipeEnvironment environment : allEnvironments) {
+                environment.runPreconfigure(this, progressInfo);
+            }
+
         }
 
         boolean runFailed = false;
@@ -345,6 +352,17 @@ public class JIPipeGraphRun extends AbstractJIPipeRunnable implements JIPipeGrap
             // Postprocessing
             if (parent == null) {
                 progressInfo.log("Postprocessing steps ...");
+
+                // Postprocess environments
+                for (JIPipeEnvironment environment : allEnvironments) {
+                    try {
+                        environment.runPostprocessing(this, progressInfo);
+                    }
+                    catch (Throwable e) {
+                        progressInfo.log(e);
+                    }
+                }
+
                 try {
                     if (configuration.getOutputPath() != null && configuration.isStoreToDisk())
                         project.saveProject(configuration.getOutputPath().resolve("project.jip"));

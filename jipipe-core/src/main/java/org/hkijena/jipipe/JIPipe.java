@@ -162,6 +162,7 @@ public class JIPipe extends AbstractService implements JIPipeService {
     private LogService logService;
     @Parameter
     private PluginService pluginService;
+    private JIPipeMode mode = JIPipeMode.GUI;
 
     public JIPipe() {
         recentProjectsRegistry = new JIPipeRecentProjectsRegistry(this);
@@ -301,7 +302,7 @@ public class JIPipe extends AbstractService implements JIPipeService {
     public static JIPipe ensureInstance(Context context) {
         if (getInstance() != null)
             return getInstance();
-        JIPipe instance = JIPipe.createInstance(context);
+        JIPipe instance = JIPipe.createInstance(context, JIPipeMode.GUI);
         JIPipe.getInstance().initialize();
         return instance;
     }
@@ -311,12 +312,27 @@ public class JIPipe extends AbstractService implements JIPipeService {
      * Will create a new JIPipe instance, so be careful.
      * We recommend using the ensureInstance() method.
      *
+     * Initializes JIPipe with GUI mode.
+     *
      * @param context the context
      */
     public static JIPipe createInstance(Context context) {
+        return createInstance(context, JIPipeMode.GUI);
+    }
+
+    /**
+     * Helper to create JIPipe from a context.
+     * Will create a new JIPipe instance, so be careful.
+     * We recommend using the ensureInstance() method.
+     *
+     * @param context the context
+     * @param mode the mode
+     */
+    public static JIPipe createInstance(Context context, JIPipeMode mode) {
         PluginService pluginService = context.getService(PluginService.class);
         try {
             instance = (JIPipe) pluginService.getPlugin(JIPipe.class).createInstance();
+            instance.mode = mode;
             context.inject(instance);
             instance.setContext(context);
         } catch (InstantiableException e) {
@@ -1659,5 +1675,9 @@ public class JIPipe extends AbstractService implements JIPipeService {
     @Override
     public JIPipeRecentProjectsRegistry getRecentProjectsRegistry() {
         return recentProjectsRegistry;
+    }
+
+    public JIPipeMode getMode() {
+        return mode;
     }
 }
