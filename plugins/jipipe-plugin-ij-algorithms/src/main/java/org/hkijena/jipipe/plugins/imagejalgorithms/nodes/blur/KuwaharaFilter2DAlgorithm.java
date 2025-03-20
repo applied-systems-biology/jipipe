@@ -30,6 +30,7 @@ import org.hkijena.jipipe.api.nodes.categories.ImagesNodeTypeCategory;
 import org.hkijena.jipipe.api.nodes.iterationstep.JIPipeIterationContext;
 import org.hkijena.jipipe.api.nodes.iterationstep.JIPipeSingleIterationStep;
 import org.hkijena.jipipe.api.parameters.JIPipeParameter;
+import org.hkijena.jipipe.plugins.imagejalgorithms.utils.Kuwahara_LinearStructure_Filter_v3;
 import org.hkijena.jipipe.plugins.imagejdatatypes.datatypes.ImagePlusData;
 import org.hkijena.jipipe.plugins.imagejdatatypes.datatypes.greyscale.ImagePlusGreyscale32FData;
 import org.hkijena.jipipe.plugins.imagejdatatypes.util.ImageJUtils;
@@ -45,18 +46,20 @@ import java.util.List;
  * Wrapper around {@link RankFilters}
  */
 @SetJIPipeDocumentation(name = "Kuwahara filter 2D", description = "Applies a Kuwahara filter, a noise-reduction filter that preserves edges. " +
+        "Also supports the linear Kuwahara algorithm. " +
         "If higher-dimensional data is provided, the filter is applied to each 2D slice.")
 @ConfigureJIPipeNode(menuPath = "Filter", nodeTypeCategory = ImagesNodeTypeCategory.class)
 @AddJIPipeInputSlot(value = ImagePlusGreyscale32FData.class, name = "Input", create = true)
 @AddJIPipeOutputSlot(value = ImagePlusGreyscale32FData.class, name = "Output", create = true)
 @AddJIPipeNodeAlias(nodeTypeCategory = ImageJNodeTypeCategory.class, menuPath = "Process\nFilters", aliasName = "Kuwahara Filter")
+@AddJIPipeNodeAlias(nodeTypeCategory = ImageJNodeTypeCategory.class, menuPath = "Process\nFilters", aliasName = "Linear Kuwahara")
 public class KuwaharaFilter2DAlgorithm extends JIPipeSimpleIteratingAlgorithm {
 
     private int numberOfAngles = 30;
     private int lineLength = 11;
     private Criterion criterion = Criterion.Variance;
     private OptionalDataAnnotationNameParameter kernelDataAnnotation = new OptionalDataAnnotationNameParameter("Kernels", false);
-
+    private boolean linearKuwahara = false;
 
     public KuwaharaFilter2DAlgorithm(JIPipeNodeInfo info) {
         super(info);
@@ -68,6 +71,7 @@ public class KuwaharaFilter2DAlgorithm extends JIPipeSimpleIteratingAlgorithm {
         this.lineLength = other.lineLength;
         this.criterion = other.criterion;
         this.kernelDataAnnotation = new OptionalDataAnnotationNameParameter(other.kernelDataAnnotation);
+        this.linearKuwahara = other.linearKuwahara;
     }
 
     @Override
@@ -78,19 +82,42 @@ public class KuwaharaFilter2DAlgorithm extends JIPipeSimpleIteratingAlgorithm {
     @Override
     protected void runIteration(JIPipeSingleIterationStep iterationStep, JIPipeIterationContext iterationContext, JIPipeGraphNodeRunContext runContext, JIPipeProgressInfo progressInfo) {
         ImagePlus inputImg = iterationStep.getInputData(getFirstInputSlot(), ImagePlusGreyscale32FData.class, progressInfo).getImage();
+        ImagePlus outputImg;
+        ImageStack kernel;
 
-        Kuwahara kuwahara = new Kuwahara();
-        kuwahara.setSize(lineLength);
-        kuwahara.setNumberOfAngles(numberOfAngles);
-        kuwahara.setCriterionMethod(criterion.nativeValue);
+        if(linearKuwahara) {
+            progressInfo.log("Using linear Kuwahara implementation");
 
-        ImageStack kernel = kuwahara.createKernel(lineLength, numberOfAngles);
+            Kuwahara_LinearStructure_Filter_v3 kuwahara = new Kuwahara_LinearStructure_Filter_v3();
+            kuwahara.setSize(lineLength);
+            kuwahara.setnAngles(numberOfAngles);
+            kuwahara.setCriterionMethod(criterion.nativeValue);
 
-        ImagePlus outputImg = ImageJUtils.generateForEachIndexedZCTSlice(inputImg, (ip, index) -> {
-            ImageProcessor copy = ip.duplicate();
-            kuwahara.filter(copy, kernel);
-            return copy;
-        }, progressInfo);
+            kernel = kuwahara.createKernel(lineLength, numberOfAngles);
+
+            outputImg = ImageJUtils.generateForEachIndexedZCTSlice(inputImg, (ip, index) -> {
+                ImageProcessor copy = ip.duplicate();
+                kuwahara.filter(copy, kernel);
+                return copy;
+            }, progressInfo);
+        }
+        else {
+            progressInfo.log("Using regular Kuwahara implementation");
+            Kuwahara kuwahara = new Kuwahara();
+            kuwahara.setSize(lineLength);
+            kuwahara.setNumberOfAngles(numberOfAngles);
+            kuwahara.setCriterionMethod(criterion.nativeValue);
+
+            kernel = kuwahara.createKernel(lineLength, numberOfAngles);
+
+            outputImg = ImageJUtils.generateForEachIndexedZCTSlice(inputImg, (ip, index) -> {
+                ImageProcessor copy = ip.duplicate();
+                kuwahara.filter(copy, kernel);
+                return copy;
+            }, progressInfo);
+        }
+
+
 
         List<JIPipeDataAnnotation> dataAnnotations = new ArrayList<>();
         if(kernelDataAnnotation.isEnabled()) {
