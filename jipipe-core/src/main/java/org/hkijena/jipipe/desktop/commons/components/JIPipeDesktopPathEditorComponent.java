@@ -103,9 +103,9 @@ public class JIPipeDesktopPathEditorComponent extends JIPipeDesktopWorkbenchPane
             }
         });
 
-        JButton selectButton = new JButton(UIUtils.getIconFromResources("actions/document-open-folder.png"));
+        JButton selectButton = new JButton("Select", UIUtils.getIconFromResources("actions/document-open-folder.png"));
         selectButton.setToolTipText("Select from filesystem");
-        UIUtils.makeButtonFlat25x25(selectButton);
+        UIUtils.makeButtonFlat(selectButton);
         selectButton.setBorder(null);
         add(selectButton, new GridBagConstraints() {
             {

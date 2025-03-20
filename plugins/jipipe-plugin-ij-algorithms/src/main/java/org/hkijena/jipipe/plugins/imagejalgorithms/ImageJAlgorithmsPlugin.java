@@ -1316,7 +1316,7 @@ public class ImageJAlgorithmsPlugin extends JIPipePrepackagedDefaultJavaPlugin {
         registerNodeType("ij1-feature-featurej-hessian", HessianFeatureAlgorithm.class, UIUtils.getIconURLFromResources("actions/insert-math-expression.png"));
         registerNodeType("ij1-feature-featurej-structure", StructureFeatureAlgorithm.class, UIUtils.getIconURLFromResources("actions/insert-math-expression.png"));
         registerNodeType("ij1-math-hessian2d", Hessian2DAlgorithm.class, UIUtils.getIconURLFromResources("actions/insert-math-expression.png"));
-
+        registerNodeType("ij1-feature-shadows-2d", Shadows2DAlgorithm.class, UIUtils.getIconURLFromResources("actions/object-tweak-duplicate.png"));
 
         registerEnumParameterType("ij1-feature-vesselness-frangi:slicing-mode", FrangiVesselnessFeatures.SlicingMode.class,
                 "Slicing mode", "Available slicing modes");
@@ -1330,6 +1330,10 @@ public class ImageJAlgorithmsPlugin extends JIPipePrepackagedDefaultJavaPlugin {
                 "MFC mode", "Available modes");
         registerEnumParameterType("ij1-orientationj-gradient", OrientationJGradientOperator.class,
                 "OrientationJ gradient operator", "A gradient operator");
+        registerEnumParameterType("ij1-feature-shadows-2d:direction",
+                Shadows2DAlgorithm.Direction.class,
+                "Shadow direction",
+                "A direction");
     }
 
     private void registerContrastAlgorithms() {
