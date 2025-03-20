@@ -129,6 +129,7 @@ import org.hkijena.jipipe.plugins.imagejalgorithms.nodes.segment.ClassicWatershe
 import org.hkijena.jipipe.plugins.imagejalgorithms.nodes.segment.RidgeDetector2DAlgorithm;
 import org.hkijena.jipipe.plugins.imagejalgorithms.nodes.segment.SeededWatershedSegmentationAlgorithm;
 import org.hkijena.jipipe.plugins.imagejalgorithms.nodes.sharpen.LaplacianSharpen2DAlgorithm;
+import org.hkijena.jipipe.plugins.imagejalgorithms.nodes.sharpen.UnsharpMasking2DAlgorithm;
 import org.hkijena.jipipe.plugins.imagejalgorithms.nodes.statistics.*;
 import org.hkijena.jipipe.plugins.imagejalgorithms.nodes.threshold.*;
 import org.hkijena.jipipe.plugins.imagejalgorithms.nodes.threshold.color.ColorThresholdExpression2D;
@@ -1160,6 +1161,7 @@ public class ImageJAlgorithmsPlugin extends JIPipePrepackagedDefaultJavaPlugin {
 
     private void registerSharpenAlgorithms() {
         registerNodeType("ij1-sharpen-laplacian2d", LaplacianSharpen2DAlgorithm.class, UIUtils.getIconURLFromResources("actions/insert-math-expression.png"));
+        registerNodeType("ij1-unsharp-mask-2d", UnsharpMasking2DAlgorithm.class, UIUtils.getIconURLFromResources("actions/insert-math-expression.png"));
     }
 
     private void registerBackgroundAlgorithms() {
