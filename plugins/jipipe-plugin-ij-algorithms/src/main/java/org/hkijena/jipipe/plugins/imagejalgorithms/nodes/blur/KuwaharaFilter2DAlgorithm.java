@@ -45,7 +45,7 @@ import java.util.List;
 /**
  * Wrapper around {@link RankFilters}
  */
-@SetJIPipeDocumentation(name = "Kuwahara filter 2D", description = "Applies a Kuwahara filter, a noise-reduction filter that preserves edges. " +
+@SetJIPipeDocumentation(name = "Kuwahara filter 2D (square/linear)", description = "Applies a Kuwahara filter, a noise-reduction filter that preserves edges. " +
         "Also supports the linear Kuwahara algorithm. " +
         "If higher-dimensional data is provided, the filter is applied to each 2D slice.")
 @ConfigureJIPipeNode(menuPath = "Filter", nodeTypeCategory = ImagesNodeTypeCategory.class)
@@ -126,6 +126,17 @@ public class KuwaharaFilter2DAlgorithm extends JIPipeSimpleIteratingAlgorithm {
 
         iterationStep.addOutputData(getFirstOutputSlot(), new ImagePlusData(outputImg), Collections.emptyList(), JIPipeTextAnnotationMergeMode.OverwriteExisting,
                 dataAnnotations, JIPipeDataAnnotationMergeMode.Merge, progressInfo);
+    }
+
+    @SetJIPipeDocumentation(name = "Linear Kuwahara", description = "Use Kuwahara filter that uses linear kernels rather than square ones")
+    @JIPipeParameter(value = "linear-kuwahara", important = true)
+    public boolean isLinearKuwahara() {
+        return linearKuwahara;
+    }
+
+    @JIPipeParameter("linear-kuwahara")
+    public void setLinearKuwahara(boolean linearKuwahara) {
+        this.linearKuwahara = linearKuwahara;
     }
 
     @SetJIPipeDocumentation(name = "Number of angles", description = "The number of angles. " +
