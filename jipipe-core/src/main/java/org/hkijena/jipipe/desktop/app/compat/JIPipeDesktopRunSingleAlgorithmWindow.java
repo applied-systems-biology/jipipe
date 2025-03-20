@@ -400,7 +400,7 @@ public class JIPipeDesktopRunSingleAlgorithmWindow extends JFrame implements JIP
         String parameters = getRun().getParametersString();
         String inputs = getRun().getInputsString();
         String outputs = getRun().getOutputsString();
-        String macro = String.format("run(\"Run JIPipe algorithm\", \"nodeId=%s, threads=%d, parameters=%s, inputs=%s, outputs=%s\");",
+        String macro = String.format("run(\"Run JIPipe node\", \"nodeId=%s, threads=%d, parameters=%s, inputs=%s, outputs=%s\");",
                 getAlgorithmId(),
                 numThreads,
                 MacroUtils.escapeString(parameters),
