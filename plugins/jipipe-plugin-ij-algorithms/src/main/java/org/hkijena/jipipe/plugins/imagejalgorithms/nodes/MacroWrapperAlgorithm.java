@@ -142,12 +142,12 @@ public class MacroWrapperAlgorithm extends JIPipeIteratingAlgorithm {
         registerSubParameter(macroParameters);
 
         // Importer settings
-        inputToImageJExporters = new InputSlotMapParameterCollection(ImageJDataExporterRef.class, this, this::getDefaultExporterRef, false);
+        inputToImageJExporters = new InputSlotMapParameterCollection(ImageJDataExportOperationRef.class, this, this::getDefaultExporterRef, false);
         other.inputToImageJExporters.copyTo(inputToImageJExporters);
         registerSubParameter(inputToImageJExporters);
 
         // Exporter settings
-        outputFromImageJImporters = new OutputSlotMapParameterCollection(ImageJDataImporterRef.class, this, this::getDefaultImporterRef, false);
+        outputFromImageJImporters = new OutputSlotMapParameterCollection(ImageJDataImportOperationRef.class, this, this::getDefaultImporterRef, false);
         other.outputFromImageJImporters.copyTo(outputFromImageJImporters);
         registerSubParameter(outputFromImageJImporters);
     }
