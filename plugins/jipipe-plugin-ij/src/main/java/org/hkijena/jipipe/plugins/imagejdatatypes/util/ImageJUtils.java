@@ -29,6 +29,7 @@ import ij.gui.Overlay;
 import ij.gui.PolygonRoi;
 import ij.gui.Roi;
 import ij.plugin.PlugIn;
+import ij.plugin.RoiScaler;
 import ij.plugin.filter.AVI_Writer;
 import ij.plugin.filter.Convolver;
 import ij.process.*;
@@ -2704,6 +2705,26 @@ public class ImageJUtils {
 
         result.copyScale(img);
         return result;
+    }
+
+    public static Roi scaleRoiAroundOrigin(Roi roi, double sx, double sy, double originX, double originY) {
+        // Step 1: Compute current position and offset
+        Rectangle bounds = roi.getBounds();
+        double dx = bounds.x - originX;
+        double dy = bounds.y - originY;
+
+        // Step 2: Move ROI so that origin becomes (0, 0) in local space
+        roi.setLocation(originX, originY);
+
+        // Step 3: Scale the ROI around the new origin (its new (0, 0))
+        Roi scaled = RoiScaler.scale(roi, sx, sy, false);
+
+        // Step 4: Move ROI back to compensate for the initial offset scaled by the scale factors
+        double newX = originX + dx * sx;
+        double newY = originY + dy * sy;
+        scaled.setLocation((int) Math.round(newX), (int) Math.round(newY));
+
+        return scaled;
     }
 }
 
