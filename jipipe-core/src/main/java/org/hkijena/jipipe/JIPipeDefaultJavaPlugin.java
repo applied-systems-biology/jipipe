@@ -24,6 +24,7 @@ import org.hkijena.jipipe.api.data.JIPipeData;
 import org.hkijena.jipipe.api.data.JIPipeDataConverter;
 import org.hkijena.jipipe.api.data.JIPipeLegacyDataImportOperation;
 import org.hkijena.jipipe.api.data.JIPipeLegacyDataOperation;
+import org.hkijena.jipipe.api.data.serialization.JIPipeDataTableInfo;
 import org.hkijena.jipipe.api.environments.JIPipeEnvironment;
 import org.hkijena.jipipe.api.environments.JIPipeExternalEnvironmentInstaller;
 import org.hkijena.jipipe.api.environments.JIPipeExternalEnvironmentSettings;
@@ -81,6 +82,7 @@ import java.net.URISyntaxException;
 import java.net.URL;
 import java.nio.file.Path;
 import java.nio.file.Paths;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Set;
 import java.util.function.Consumer;
@@ -96,6 +98,8 @@ public abstract class JIPipeDefaultJavaPlugin extends AbstractService implements
 
     private final JIPipeStandardMetadata metadata;
     private JIPipe registry;
+    private boolean reachedPostprocessing;
+    private final List<Runnable> postprocessingTasks = new ArrayList<>();
 
     /**
      * Creates a new instance
@@ -730,7 +734,7 @@ public abstract class JIPipeDefaultJavaPlugin extends AbstractService implements
     /**
      * Registers a node as node example based on a node instance
      * The configurator function is run prior to the registration
-     * Must be run within postprocess()
+     * Can be run in postprocess() or during registration (in this case the method is postponed until postprocessing)
      *
      * @param nodeClass    the node class
      * @param name         the name of the example
@@ -738,14 +742,22 @@ public abstract class JIPipeDefaultJavaPlugin extends AbstractService implements
      * @param <T>          the node type
      */
     public <T extends JIPipeGraphNode> void registerNodeExample(Class<T> nodeClass, String name, Consumer<T> configurator) {
-        JIPipeGraph graph = new JIPipeGraph();
-        T node = JIPipe.createNode(nodeClass);
-        configurator.accept(node);
-        graph.insertNode(node);
-        JIPipeNodeTemplate template = new JIPipeNodeTemplate();
-        template.setName(name);
-        template.setData(JsonUtils.toJsonString(graph));
-        registerNodeExample(template);
+        Runnable task = () -> {
+            JIPipeGraph graph = new JIPipeGraph();
+            T node = JIPipe.createNode(nodeClass);
+            configurator.accept(node);
+            graph.insertNode(node);
+            JIPipeNodeTemplate template = new JIPipeNodeTemplate();
+            template.setName(name);
+            template.setData(JsonUtils.toJsonString(graph));
+            registerNodeExample(template);
+        };
+        if(reachedPostprocessing) {
+            task.run();
+        }
+        else {
+            postprocessingTasks.add(task);
+        }
     }
 
     /**
@@ -998,6 +1010,19 @@ public abstract class JIPipeDefaultJavaPlugin extends AbstractService implements
      */
     public void registerFileChooserKnownDirectoryType(String name, String icon16Name, String extension, String... otherExtensions) {
         JIPipeDesktopFileChooserNext.registerKnownDirectoryType(name, UIUtils.getIconFromResources(icon16Name), extension, otherExtensions);
+    }
+
+    @Override
+    public void postprocess(JIPipeProgressInfo progressInfo) {
+        this.reachedPostprocessing = true;
+        JIPipeJavaPlugin.super.postprocess(progressInfo);
+
+        if(!postprocessingTasks.isEmpty()) {
+            progressInfo.log("Running " + postprocessingTasks.size() + " scheduled postprocessing tasks ...");
+            for (Runnable task : postprocessingTasks) {
+                task.run();
+            }
+        }
     }
 
     @Override

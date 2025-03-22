@@ -95,7 +95,7 @@ public class LineMirror2DFromRoiAlgorithm extends JIPipeIteratingAlgorithm {
             if (polygon.npoints != 2) {
                 ROI2DListData single = new ROI2DListData();
                 single.add(roi);
-                single.outline(RoiOutline.OrientedLine);
+                single.outline(RoiOutline.OrientedLine, false);
                 polygon = single.get(0).getFloatPolygon();
             }
             if (polygon.npoints != 2) {

@@ -24,10 +24,8 @@ import gnu.trove.list.array.TShortArrayList;
 import gnu.trove.map.TIntIntMap;
 import gnu.trove.map.hash.TIntIntHashMap;
 import ij.*;
-import ij.gui.ImageCanvas;
-import ij.gui.Overlay;
-import ij.gui.PolygonRoi;
-import ij.gui.Roi;
+import ij.gui.*;
+import ij.measure.Measurements;
 import ij.plugin.PlugIn;
 import ij.plugin.RoiScaler;
 import ij.plugin.filter.AVI_Writer;
@@ -2725,6 +2723,128 @@ public class ImageJUtils {
         scaled.setLocation((int) Math.round(newX), (int) Math.round(newY));
 
         return scaled;
+    }
+
+    public static void copyRoiAttributesAndLocation(Roi source, Roi target) {
+        target.copyAttributes(source);
+        target.setPosition(source.getPosition());
+        target.setPosition(source.getPosition(), source.getZPosition(), source.getZPosition());
+    }
+
+    /**
+     * Port of the fitCircle function from {@link ij.plugin.Selection}
+     *
+     * @param roi input Roi
+     * @return output Roi (null if no circle can be fit)
+     */
+    public static Roi fitCircleToRoi(Roi roi) {
+        if (roi.isArea()) {      //create circle with the same area and centroid
+            ROI2DListData listData = new ROI2DListData();
+            listData.add(roi);
+            ImagePlus dummyImage = listData.createDummyImage();
+            ImageProcessor ip = dummyImage.getProcessor();
+            ip.setRoi(roi);
+            ImageStatistics stats = ImageStatistics.getStatistics(ip, Measurements.AREA + Measurements.CENTROID, null);
+            double r = Math.sqrt(stats.pixelCount / Math.PI);
+            int d = (int) Math.round(2.0 * r);
+            Roi roi2 = new OvalRoi((int) Math.round(stats.xCentroid - r), (int) Math.round(stats.yCentroid - r), d, d);
+            copyRoiAttributesAndLocation(roi, roi2);
+            return roi2;
+        }
+
+        Polygon poly = roi.getPolygon();
+        int n = poly.npoints;
+        int[] x = poly.xpoints;
+        int[] y = poly.ypoints;
+        if (n < 3) {
+            return null;
+        }
+
+        // calculate point centroid
+        double sumx = 0, sumy = 0;
+        for (int i = 0; i < n; i++) {
+            sumx = sumx + poly.xpoints[i];
+            sumy = sumy + poly.ypoints[i];
+        }
+        double meanx = sumx / n;
+        double meany = sumy / n;
+
+        // calculate moments
+        double[] X = new double[n], Y = new double[n];
+        double Mxx = 0, Myy = 0, Mxy = 0, Mxz = 0, Myz = 0, Mzz = 0;
+        for (int i = 0; i < n; i++) {
+            X[i] = x[i] - meanx;
+            Y[i] = y[i] - meany;
+            double Zi = X[i] * X[i] + Y[i] * Y[i];
+            Mxy = Mxy + X[i] * Y[i];
+            Mxx = Mxx + X[i] * X[i];
+            Myy = Myy + Y[i] * Y[i];
+            Mxz = Mxz + X[i] * Zi;
+            Myz = Myz + Y[i] * Zi;
+            Mzz = Mzz + Zi * Zi;
+        }
+        Mxx = Mxx / n;
+        Myy = Myy / n;
+        Mxy = Mxy / n;
+        Mxz = Mxz / n;
+        Myz = Myz / n;
+        Mzz = Mzz / n;
+
+        // calculate the coefficients of the characteristic polynomial
+        double Mz = Mxx + Myy;
+        double Cov_xy = Mxx * Myy - Mxy * Mxy;
+        double Mxz2 = Mxz * Mxz;
+        double Myz2 = Myz * Myz;
+        double A2 = 4 * Cov_xy - 3 * Mz * Mz - Mzz;
+        double A1 = Mzz * Mz + 4 * Cov_xy * Mz - Mxz2 - Myz2 - Mz * Mz * Mz;
+        double A0 = Mxz2 * Myy + Myz2 * Mxx - Mzz * Cov_xy - 2 * Mxz * Myz * Mxy + Mz * Mz * Cov_xy;
+        double A22 = A2 + A2;
+        double epsilon = 1e-12;
+        double ynew = 1e+20;
+        int IterMax = 20;
+        double xnew = 0;
+        int iterations = 0;
+
+        // Newton's method starting at x=0
+        for (int iter = 1; iter <= IterMax; iter++) {
+            iterations = iter;
+            double yold = ynew;
+            ynew = A0 + xnew * (A1 + xnew * (A2 + 4. * xnew * xnew));
+            if (Math.abs(ynew) > Math.abs(yold)) {
+                if (IJ.debugMode) IJ.log("Fit Circle: wrong direction: |ynew| > |yold|");
+                xnew = 0;
+                break;
+            }
+            double Dy = A1 + xnew * (A22 + 16 * xnew * xnew);
+            double xold = xnew;
+            xnew = xold - ynew / Dy;
+            if (Math.abs((xnew - xold) / xnew) < epsilon)
+                break;
+            if (iter >= IterMax) {
+                if (IJ.debugMode) IJ.log("Fit Circle: will not converge");
+                xnew = 0;
+            }
+            if (xnew < 0) {
+                if (IJ.debugMode) IJ.log("Fit Circle: negative root:  x = " + xnew);
+                xnew = 0;
+            }
+        }
+        if (IJ.debugMode) IJ.log("Fit Circle: n=" + n + ", xnew=" + IJ.d2s(xnew, 2) + ", iterations=" + iterations);
+
+        // calculate the circle parameters
+        double DET = xnew * xnew - xnew * Mz + Cov_xy;
+        double CenterX = (Mxz * (Myy - xnew) - Myz * Mxy) / (2 * DET);
+        double CenterY = (Myz * (Mxx - xnew) - Mxz * Mxy) / (2 * DET);
+        double radius = Math.sqrt(CenterX * CenterX + CenterY * CenterY + Mz + 2 * xnew);
+        if (Double.isNaN(radius)) {
+            return null;
+        }
+        CenterX = CenterX + meanx;
+        CenterY = CenterY + meany;
+
+        Roi result = new OvalRoi((int) Math.round(CenterX - radius), (int) Math.round(CenterY - radius), (int) Math.round(2 * radius), (int) Math.round(2 * radius));
+        copyRoiAttributesAndLocation(roi, result);
+        return result;
     }
 }
 

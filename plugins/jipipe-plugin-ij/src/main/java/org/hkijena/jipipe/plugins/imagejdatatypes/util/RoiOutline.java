@@ -23,7 +23,7 @@ public enum RoiOutline {
     BoundingRectangle("Bounding rectangle"),
     MinimumBoundingRectangle("Minimum bounding rectangle"),
     OrientedLine("Oriented line"),
-    ;
+    Circle("Fit circle");
 
     private final String label;
 

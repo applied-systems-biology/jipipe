@@ -49,6 +49,7 @@ public class RemoveBorderRoisAlgorithm extends JIPipeIteratingAlgorithm {
 
     private Margin borderDefinition = new Margin();
     private RoiOutline outline = RoiOutline.ClosedPolygon;
+    private boolean ignoreErrors = false;
 
     /**
      * Instantiates a new node type.
@@ -73,12 +74,13 @@ public class RemoveBorderRoisAlgorithm extends JIPipeIteratingAlgorithm {
         super(other);
         this.borderDefinition = new Margin(other.borderDefinition);
         this.outline = other.outline;
+        this.ignoreErrors = other.ignoreErrors;
     }
 
     @Override
     protected void runIteration(JIPipeSingleIterationStep iterationStep, JIPipeIterationContext iterationContext, JIPipeGraphNodeRunContext runContext, JIPipeProgressInfo progressInfo) {
         ROI2DListData data = (ROI2DListData) iterationStep.getInputData("ROI", ROI2DListData.class, progressInfo).duplicate(progressInfo);
-        data.outline(outline);
+        data.outline(outline, ignoreErrors);
         ImagePlus reference = iterationStep.getInputData("Image", ImagePlusData.class, progressInfo).getImage();
         JIPipeExpressionVariablesMap variables = new JIPipeExpressionVariablesMap(iterationStep);
         Rectangle inside = borderDefinition.getInsideArea(new Rectangle(0, 0, reference.getWidth(), reference.getHeight()), variables);
@@ -94,6 +96,17 @@ public class RemoveBorderRoisAlgorithm extends JIPipeIteratingAlgorithm {
         });
 
         iterationStep.addOutputData(getFirstOutputSlot(), data, progressInfo);
+    }
+
+    @SetJIPipeDocumentation(name = "Ignore errors", description = "If enabled, skip ROI that cannot be outlined")
+    @JIPipeParameter("ignore-errors")
+    public boolean isIgnoreErrors() {
+        return ignoreErrors;
+    }
+
+    @JIPipeParameter("ignore-errors")
+    public void setIgnoreErrors(boolean ignoreErrors) {
+        this.ignoreErrors = ignoreErrors;
     }
 
     @SetJIPipeDocumentation(name = "Border", description = "Defines the rectangle that is created within the image boundaries separate inside and outside. " +
