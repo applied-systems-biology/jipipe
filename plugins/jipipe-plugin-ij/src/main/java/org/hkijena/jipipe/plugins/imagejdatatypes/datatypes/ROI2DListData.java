@@ -1270,8 +1270,20 @@ public class ROI2DListData extends ArrayList<Roi> implements JIPipeData, NapariO
                         }
                     }
                     break;
-                    case Circle:
+                    case FitCircle:
                         outlined = ImageJUtils.fitCircleToRoi(roi);
+                        break;
+                    case FitEllipse:
+                        outlined = ImageJUtils.fitEllipseToRoi(roi);
+                        break;
+                    case FitSpline:
+                        outlined = ImageJUtils.fitSplineToRoi(roi, false, false);
+                        break;
+                    case DeleteFitSpline:
+                        outlined = ImageJUtils.fitSplineToRoi(roi, false, true);
+                        break;
+                    case FitSplineStraighten:
+                        outlined = ImageJUtils.fitSplineToRoi(roi, true, false);
                         break;
                     default:
                         throw new UnsupportedOperationException("Unsupported: " + outline);

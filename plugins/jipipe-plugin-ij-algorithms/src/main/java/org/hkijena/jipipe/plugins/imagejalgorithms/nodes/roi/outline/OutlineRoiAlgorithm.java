@@ -37,6 +37,8 @@ import org.hkijena.jipipe.plugins.imagejdatatypes.util.RoiOutline;
         "<li>Convert to minimum bounding rectangle (rotated rectangle)</li>" +
         "<li>Convert to oriented line</li>" +
         "<li>Convert to fitted circle</li>" +
+        "<li>Convert to fitted ellipse</li>" +
+        "<li>Apply split fitting to polygons</li>" +
         "</ul>")
 @ConfigureJIPipeNode(nodeTypeCategory = RoiNodeTypeCategory.class, menuPath = "Outline")
 @AddJIPipeInputSlot(value = ROI2DListData.class, name = "Input", create = true)

@@ -23,7 +23,11 @@ public enum RoiOutline {
     BoundingRectangle("Bounding rectangle"),
     MinimumBoundingRectangle("Minimum bounding rectangle"),
     OrientedLine("Oriented line"),
-    Circle("Fit circle");
+    FitCircle("Fit circle"),
+    FitEllipse("Fit ellipse"),
+    FitSpline("Fit spline"),
+    DeleteFitSpline("Remove spline fit"),
+    FitSplineStraighten("Fit spline (straightening)");
 
     private final String label;
 

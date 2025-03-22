@@ -2731,6 +2731,137 @@ public class ImageJUtils {
         target.setPosition(source.getPosition(), source.getZPosition(), source.getZPosition());
     }
 
+    static PolygonRoi trimPolygon(PolygonRoi roi, double length) {
+        int[] x = roi.getXCoordinates();
+        int[] y = roi.getYCoordinates();
+        int n = roi.getNCoordinates();
+        x = ImageJMathUtils.lineSmooth(x, n);
+        y = ImageJMathUtils.lineSmooth(y, n);
+        float[] curvature = ImageJMathUtils.getCurvature(x, y, n, ImageJMathUtils.DEFAULT_CURVATURE_KERNEL);
+        Rectangle r = roi.getBounds();
+        double threshold = ImageJMathUtils.rodbard(length);
+        //IJ.log("trim: "+length+" "+threshold);
+        double distance = Math.sqrt((x[1]-x[0])*(x[1]-x[0])+(y[1]-y[0])*(y[1]-y[0]));
+        x[0] += r.x; y[0]+=r.y;
+        int i2 = 1;
+        int x1,y1,x2=0,y2=0;
+        for (int i=1; i<n-1; i++) {
+            x1=x[i]; y1=y[i]; x2=x[i+1]; y2=y[i+1];
+            distance += Math.sqrt((x2-x1)*(x2-x1)+(y2-y1)*(y2-y1)) + 1;
+            distance += curvature[i]*2;
+            if (distance>=threshold) {
+                x[i2] = x2 + r.x;
+                y[i2] = y2 + r.y;
+                i2++;
+                distance = 0.0;
+            }
+        }
+        int type = roi.getType()==Roi.FREELINE?Roi.POLYLINE:Roi.POLYGON;
+        if (type==Roi.POLYLINE && distance>0.0) {
+            x[i2] = x2 + r.x;
+            y[i2] = y2 + r.y;
+            i2++;
+        }
+        return new PolygonRoi(x, y, i2, type);
+    }
+
+    public static PolygonRoi trimFloatPolygon(PolygonRoi roi, double length) {
+        FloatPolygon poly = roi.getFloatPolygon();
+        float[] x = poly.xpoints;
+        float[] y = poly.ypoints;
+        int n = poly.npoints;
+        x = ImageJMathUtils.lineSmooth(x, n);
+        y = ImageJMathUtils.lineSmooth(y, n);
+        float[] curvature = ImageJMathUtils.getCurvature(x, y, n, ImageJMathUtils.DEFAULT_CURVATURE_KERNEL);
+        double threshold = ImageJMathUtils.rodbard(length);
+        //IJ.log("trim: "+length+" "+threshold);
+        double distance = Math.sqrt((x[1]-x[0])*(x[1]-x[0])+(y[1]-y[0])*(y[1]-y[0]));
+        int i2 = 1;
+        double x1,y1,x2=0,y2=0;
+        for (int i=1; i<n-1; i++) {
+            x1=x[i]; y1=y[i]; x2=x[i+1]; y2=y[i+1];
+            distance += Math.sqrt((x2-x1)*(x2-x1)+(y2-y1)*(y2-y1)) + 1;
+            distance += curvature[i]*2;
+            if (distance>=threshold) {
+                x[i2] = (float)x2;
+                y[i2] = (float)y2;
+                i2++;
+                distance = 0.0;
+            }
+        }
+        int type = roi.getType()==Roi.FREELINE?Roi.POLYLINE:Roi.POLYGON;
+        if (type==Roi.POLYLINE && distance>0.0) {
+            x[i2] = (float)x2;
+            y[i2] = (float)y2;
+            i2++;
+        }
+        return new PolygonRoi(x, y, i2, type);
+    }
+
+    /**
+     * Port of the fitSpline function from {@link ij.plugin.Selection}
+     *
+     * @param roi input Roi
+     * @return output Roi (null if no circle can be fit)
+     */
+    public static Roi fitSplineToRoi(Roi roi, boolean straighten, boolean remove) {
+        int type = roi.getType();
+        boolean segmentedSelection = type == Roi.POLYGON || type == Roi.POLYLINE;
+        if (!(segmentedSelection || type == Roi.FREEROI || type == Roi.TRACED_ROI || type == Roi.FREELINE)) {
+            return null;
+        }
+        if (roi instanceof EllipseRoi)
+            return null;
+        PolygonRoi p = (PolygonRoi) roi.clone();
+        if (!segmentedSelection && p.getNCoordinates() > 3) {
+            if (p.subPixelResolution())
+                p = trimFloatPolygon(p, p.getUncalibratedLength());
+            else
+                p = trimPolygon(p, p.getUncalibratedLength());
+        }
+        if (straighten)
+            p.fitSplineForStraightening();
+        else if (remove)
+            p.removeSplineFit();
+        else
+            p.fitSpline();
+
+        return p;
+    }
+
+    /**
+     * Port of the createEllipse function from {@link ij.plugin.Selection}
+     *
+     * @param roi input Roi
+     * @return output Roi (null if no circle can be fit)
+     */
+    public static Roi fitEllipseToRoi(Roi roi) {
+        if (roi.isLine()) {
+            return null;
+        }
+
+        ROI2DListData listData = new ROI2DListData();
+        listData.add(roi);
+        ImagePlus dummyImage = listData.createDummyImage();
+        ImageProcessor ip = dummyImage.getProcessor();
+        ip.setRoi(roi);
+
+        int options = Measurements.CENTROID + Measurements.ELLIPSE;
+        ImageStatistics stats = ImageStatistics.getStatistics(ip, options, null);
+        double dx = stats.major * Math.cos(stats.angle / 180.0 * Math.PI) / 2.0;
+        double dy = -stats.major * Math.sin(stats.angle / 180.0 * Math.PI) / 2.0;
+        double x1 = stats.xCentroid - dx;
+        double x2 = stats.xCentroid + dx;
+        double y1 = stats.yCentroid - dy;
+        double y2 = stats.yCentroid + dy;
+        double aspectRatio = stats.minor / stats.major;
+
+        Roi roi2 = new EllipseRoi(x1, y1, x2, y2, aspectRatio);
+        copyRoiAttributesAndLocation(roi, roi2);
+
+        return roi2;
+    }
+
     /**
      * Port of the fitCircle function from {@link ij.plugin.Selection}
      *
