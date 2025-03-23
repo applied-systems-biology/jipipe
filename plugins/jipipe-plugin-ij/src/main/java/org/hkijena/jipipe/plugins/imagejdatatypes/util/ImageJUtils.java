@@ -3078,5 +3078,37 @@ public class ImageJUtils {
         return points;
     }
 
+    public static Roi areaToLine(Roi roi) {
+        if (roi == null || !roi.isArea()) {
+            return null;
+        }
+        Polygon p = roi.getPolygon();
+        FloatPolygon fp = (roi.subPixelResolution()) ? roi.getFloatPolygon() : null;
+        if (p == null && fp == null)
+            return null;
+        int type1 = roi.getType();
+        if (type1 == Roi.COMPOSITE) {
+            return null;
+        }
+//        if (fp == null && type1 == Roi.TRACED_ROI) {
+//            for (int i = 0; i < p.npoints; i++) {
+//                if (p.xpoints[i] >= imp.getWidth()) {
+//                    p.xpoints[i] = imp.getWidth() - 1;
+//                }
+//                if (p.ypoints[i] >= imp.getHeight()) {
+//                    p.ypoints[i] = imp.getHeight() - 1;
+//                }
+//            }
+//        }
+        int type2 = Roi.POLYLINE;
+        if (type1 == Roi.OVAL || type1 == Roi.FREEROI || type1 == Roi.TRACED_ROI
+                || ((roi instanceof PolygonRoi) && ((PolygonRoi) roi).isSplineFit()))
+            type2 = Roi.FREELINE;
+        Roi roi2 = fp == null ? new PolygonRoi(p, type2) : new PolygonRoi(fp, type2);
+        copyRoiAttributesAndLocation(roi, roi2);
+        Rectangle2D.Double bounds = roi.getFloatBounds();
+        roi2.setLocation(bounds.x - 0.5, bounds.y - 0.5);    //area and line roi coordinates are 0.5 pxl different
+        return roi2;
+    }
 }
 

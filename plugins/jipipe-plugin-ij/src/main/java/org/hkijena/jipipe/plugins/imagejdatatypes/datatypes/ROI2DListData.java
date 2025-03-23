@@ -1285,6 +1285,12 @@ public class ROI2DListData extends ArrayList<Roi> implements JIPipeData, NapariO
                     case FitSplineStraighten:
                         outlined = ImageJUtils.fitSplineToRoi(roi, true, false);
                         break;
+                    case AreaToLine:
+                        outlined = ImageJUtils.areaToLine(roi);
+                        break;
+                    case LineToArea:
+                        outlined = Roi.convertLineToArea(roi);
+                        break;
                     default:
                         throw new UnsupportedOperationException("Unsupported: " + outline);
                 }
