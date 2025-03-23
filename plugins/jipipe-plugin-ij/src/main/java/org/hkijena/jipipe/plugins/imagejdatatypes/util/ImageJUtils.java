@@ -54,6 +54,7 @@ import javax.swing.*;
 import java.awt.*;
 import java.awt.geom.AffineTransform;
 import java.awt.geom.PathIterator;
+import java.awt.geom.Point2D;
 import java.awt.geom.Rectangle2D;
 import java.awt.image.BufferedImage;
 import java.awt.image.DataBufferByte;
@@ -2741,23 +2742,27 @@ public class ImageJUtils {
         Rectangle r = roi.getBounds();
         double threshold = ImageJMathUtils.rodbard(length);
         //IJ.log("trim: "+length+" "+threshold);
-        double distance = Math.sqrt((x[1]-x[0])*(x[1]-x[0])+(y[1]-y[0])*(y[1]-y[0]));
-        x[0] += r.x; y[0]+=r.y;
+        double distance = Math.sqrt((x[1] - x[0]) * (x[1] - x[0]) + (y[1] - y[0]) * (y[1] - y[0]));
+        x[0] += r.x;
+        y[0] += r.y;
         int i2 = 1;
-        int x1,y1,x2=0,y2=0;
-        for (int i=1; i<n-1; i++) {
-            x1=x[i]; y1=y[i]; x2=x[i+1]; y2=y[i+1];
-            distance += Math.sqrt((x2-x1)*(x2-x1)+(y2-y1)*(y2-y1)) + 1;
-            distance += curvature[i]*2;
-            if (distance>=threshold) {
+        int x1, y1, x2 = 0, y2 = 0;
+        for (int i = 1; i < n - 1; i++) {
+            x1 = x[i];
+            y1 = y[i];
+            x2 = x[i + 1];
+            y2 = y[i + 1];
+            distance += Math.sqrt((x2 - x1) * (x2 - x1) + (y2 - y1) * (y2 - y1)) + 1;
+            distance += curvature[i] * 2;
+            if (distance >= threshold) {
                 x[i2] = x2 + r.x;
                 y[i2] = y2 + r.y;
                 i2++;
                 distance = 0.0;
             }
         }
-        int type = roi.getType()==Roi.FREELINE?Roi.POLYLINE:Roi.POLYGON;
-        if (type==Roi.POLYLINE && distance>0.0) {
+        int type = roi.getType() == Roi.FREELINE ? Roi.POLYLINE : Roi.POLYGON;
+        if (type == Roi.POLYLINE && distance > 0.0) {
             x[i2] = x2 + r.x;
             y[i2] = y2 + r.y;
             i2++;
@@ -2775,24 +2780,27 @@ public class ImageJUtils {
         float[] curvature = ImageJMathUtils.getCurvature(x, y, n, ImageJMathUtils.DEFAULT_CURVATURE_KERNEL);
         double threshold = ImageJMathUtils.rodbard(length);
         //IJ.log("trim: "+length+" "+threshold);
-        double distance = Math.sqrt((x[1]-x[0])*(x[1]-x[0])+(y[1]-y[0])*(y[1]-y[0]));
+        double distance = Math.sqrt((x[1] - x[0]) * (x[1] - x[0]) + (y[1] - y[0]) * (y[1] - y[0]));
         int i2 = 1;
-        double x1,y1,x2=0,y2=0;
-        for (int i=1; i<n-1; i++) {
-            x1=x[i]; y1=y[i]; x2=x[i+1]; y2=y[i+1];
-            distance += Math.sqrt((x2-x1)*(x2-x1)+(y2-y1)*(y2-y1)) + 1;
-            distance += curvature[i]*2;
-            if (distance>=threshold) {
-                x[i2] = (float)x2;
-                y[i2] = (float)y2;
+        double x1, y1, x2 = 0, y2 = 0;
+        for (int i = 1; i < n - 1; i++) {
+            x1 = x[i];
+            y1 = y[i];
+            x2 = x[i + 1];
+            y2 = y[i + 1];
+            distance += Math.sqrt((x2 - x1) * (x2 - x1) + (y2 - y1) * (y2 - y1)) + 1;
+            distance += curvature[i] * 2;
+            if (distance >= threshold) {
+                x[i2] = (float) x2;
+                y[i2] = (float) y2;
                 i2++;
                 distance = 0.0;
             }
         }
-        int type = roi.getType()==Roi.FREELINE?Roi.POLYLINE:Roi.POLYGON;
-        if (type==Roi.POLYLINE && distance>0.0) {
-            x[i2] = (float)x2;
-            y[i2] = (float)y2;
+        int type = roi.getType() == Roi.FREELINE ? Roi.POLYLINE : Roi.POLYGON;
+        if (type == Roi.POLYLINE && distance > 0.0) {
+            x[i2] = (float) x2;
+            y[i2] = (float) y2;
             i2++;
         }
         return new PolygonRoi(x, y, i2, type);
@@ -2979,18 +2987,18 @@ public class ImageJUtils {
     }
 
     public static Roi interpolateRoi(Roi roi, double interval, boolean smooth, boolean adjust) {
-        if (roi.getType()==Roi.POINT)
+        if (roi.getType() == Roi.POINT)
             return null;
         int sign = adjust ? -1 : 1;
         Roi newRoi = null;
-        if (roi instanceof ShapeRoi && ((ShapeRoi)roi).getRois().length>1) {
+        if (roi instanceof ShapeRoi && ((ShapeRoi) roi).getRois().length > 1) {
             // handle composite roi, thanks to Michael Ellis
             Roi[] rois = ((ShapeRoi) roi).getRois();
             ShapeRoi newShapeRoi = null;
             for (Roi roi2 : rois) {
-                FloatPolygon fPoly = roi2.getInterpolatedPolygon(interval,smooth);
-                PolygonRoi polygon = new PolygonRoi(fPoly,PolygonRoi.POLYGON);
-                if (newShapeRoi==null) // First Roi is the outer boundary
+                FloatPolygon fPoly = roi2.getInterpolatedPolygon(interval, smooth);
+                PolygonRoi polygon = new PolygonRoi(fPoly, PolygonRoi.POLYGON);
+                if (newShapeRoi == null) // First Roi is the outer boundary
                     newShapeRoi = new ShapeRoi(polygon);
                 else {
                     // Assume subsequent Rois are holes to be subtracted
@@ -3001,25 +3009,74 @@ public class ImageJUtils {
             }
             newRoi = newShapeRoi;
         } else {
-            FloatPolygon poly = roi.getInterpolatedPolygon(sign*interval, smooth);
+            FloatPolygon poly = roi.getInterpolatedPolygon(sign * interval, smooth);
             int t = roi.getType();
-            int type = roi.isLine()?Roi.FREELINE:Roi.FREEROI;
-            if (t==Roi.POLYGON && interval>1.0)
+            int type = roi.isLine() ? Roi.FREELINE : Roi.FREEROI;
+            if (t == Roi.POLYGON && interval > 1.0)
                 type = Roi.POLYGON;
-            if ((t==Roi.RECTANGLE||t==Roi.OVAL||t==Roi.FREEROI) && interval>=8.0)
+            if ((t == Roi.RECTANGLE || t == Roi.OVAL || t == Roi.FREEROI) && interval >= 8.0)
                 type = Roi.POLYGON;
-            if ((t==Roi.LINE||t==Roi.FREELINE) && interval>=8.0)
+            if ((t == Roi.LINE || t == Roi.FREELINE) && interval >= 8.0)
                 type = Roi.POLYLINE;
-            if (t==Roi.POLYLINE && interval>=8.0)
+            if (t == Roi.POLYLINE && interval >= 8.0)
                 type = Roi.POLYLINE;
 //            ImageCanvas ic = null;
 //            if (poly.npoints<=150 && ic!=null && ic.getMagnification()>=12.0)
 //                type = roi.isLine()?Roi.POLYLINE:Roi.POLYGON;
-            newRoi = new PolygonRoi(poly,type);
+            newRoi = new PolygonRoi(poly, type);
         }
 
         copyRoiAttributesAndLocation(roi, newRoi);
         return newRoi;
     }
+
+    public static List<Point2D> getContourPoints(Roi roi) {
+        List<Point2D> points = new ArrayList<>();
+
+        if (roi == null) return points;
+
+        if (roi instanceof PointRoi) {
+            PointRoi pointRoi = (PointRoi) roi;
+            float[] x = pointRoi.getFloatPolygon().xpoints;
+            float[] y = pointRoi.getFloatPolygon().ypoints;
+            for (int i = 0; i < pointRoi.getNCoordinates(); i++) {
+                points.add(new Point2D.Float(x[i], y[i]));
+            }
+
+        } else if (roi instanceof PolygonRoi) {
+            PolygonRoi polyRoi = (PolygonRoi) roi;
+            float[] x = polyRoi.getFloatPolygon().xpoints;
+            float[] y = polyRoi.getFloatPolygon().ypoints;
+            for (int i = 0; i < polyRoi.getNCoordinates(); i++) {
+                points.add(new Point2D.Float(x[i], y[i]));
+            }
+
+        } else if (roi instanceof ShapeRoi) {
+            ShapeRoi shapeRoi = (ShapeRoi) roi;
+            PathIterator it = shapeRoi.getShape().getPathIterator(null, 0.5);
+            float[] coords = new float[6];
+            while (!it.isDone()) {
+                int type = it.currentSegment(coords);
+                if (type != PathIterator.SEG_CLOSE) {
+                    points.add(new Point2D.Float(coords[0], coords[1]));
+                }
+                it.next();
+            }
+
+        } else if (roi instanceof Line) {
+            Line line = (Line) roi;
+            points.add(new Point2D.Float((float) line.x1d, (float) line.y1d));
+            points.add(new Point2D.Float((float) line.x2d, (float) line.y2d));
+
+        } else {
+            Polygon poly = roi.getPolygon();
+            for (int i = 0; i < poly.npoints; i++) {
+                points.add(new Point2D.Float(poly.xpoints[i], poly.ypoints[i]));
+            }
+        }
+
+        return points;
+    }
+
 }
 
