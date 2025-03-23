@@ -23,6 +23,7 @@ import org.hkijena.jipipe.api.nodes.iterationstep.JIPipeIterationContext;
 import org.hkijena.jipipe.api.nodes.iterationstep.JIPipeSingleIterationStep;
 import org.hkijena.jipipe.api.parameters.JIPipeParameter;
 import org.hkijena.jipipe.plugins.imagejdatatypes.datatypes.ROI2DListData;
+import org.hkijena.jipipe.plugins.imagejdatatypes.util.InvalidRoiOutlineBehavior;
 import org.hkijena.jipipe.plugins.imagejdatatypes.util.RoiOutline;
 
 /**
@@ -46,7 +47,7 @@ import org.hkijena.jipipe.plugins.imagejdatatypes.util.RoiOutline;
 public class OutlineRoiAlgorithm extends JIPipeSimpleIteratingAlgorithm {
 
     private RoiOutline outline = RoiOutline.ClosedPolygon;
-    private boolean ignoreErrors = false;
+    private InvalidRoiOutlineBehavior errorBehavior = InvalidRoiOutlineBehavior.Error;
 
     public OutlineRoiAlgorithm(JIPipeNodeInfo info) {
         super(info);
@@ -55,13 +56,13 @@ public class OutlineRoiAlgorithm extends JIPipeSimpleIteratingAlgorithm {
     public OutlineRoiAlgorithm(OutlineRoiAlgorithm other) {
         super(other);
         this.outline = other.outline;
-        this.ignoreErrors = other.ignoreErrors;
+        this.errorBehavior = other.errorBehavior;
     }
 
     @Override
     protected void runIteration(JIPipeSingleIterationStep iterationStep, JIPipeIterationContext iterationContext, JIPipeGraphNodeRunContext runContext, JIPipeProgressInfo progressInfo) {
         ROI2DListData data = (ROI2DListData) iterationStep.getInputData(getFirstInputSlot(), ROI2DListData.class, progressInfo).duplicate(progressInfo);
-        data.outline(outline, ignoreErrors);
+        data.outline(outline, errorBehavior);
         iterationStep.addOutputData(getFirstOutputSlot(), data, progressInfo);
     }
 
@@ -76,14 +77,14 @@ public class OutlineRoiAlgorithm extends JIPipeSimpleIteratingAlgorithm {
         this.outline = outline;
     }
 
-    @SetJIPipeDocumentation(name = "Ignore errors", description = "If enabled, skip ROI that cannot be outlined")
-    @JIPipeParameter("ignore-errors")
-    public boolean isIgnoreErrors() {
-        return ignoreErrors;
+    @SetJIPipeDocumentation(name = "Error handling", description = "What to do if a ROI could not be processed")
+    @JIPipeParameter("error-behavior")
+    public InvalidRoiOutlineBehavior getErrorBehavior() {
+        return errorBehavior;
     }
 
-    @JIPipeParameter("ignore-errors")
-    public void setIgnoreErrors(boolean ignoreErrors) {
-        this.ignoreErrors = ignoreErrors;
+    @JIPipeParameter("error-behavior")
+    public void setErrorBehavior(InvalidRoiOutlineBehavior errorBehavior) {
+        this.errorBehavior = errorBehavior;
     }
 }

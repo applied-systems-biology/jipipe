@@ -1210,10 +1210,10 @@ public class ROI2DListData extends ArrayList<Roi> implements JIPipeData, NapariO
      * Outlines all {@link Roi} in this list by the specified algorithm.
      * All {@link Roi} are replaced by their outline.
      *
-     * @param outline      the method
-     * @param ignoreErrors if errors or null ROIs should be ignored
+     * @param outline       the method
+     * @param errorBehavior what to do on errors
      */
-    public void outline(RoiOutline outline, boolean ignoreErrors) {
+    public void outline(RoiOutline outline, InvalidRoiOutlineBehavior errorBehavior) {
         ImmutableList<Roi> input = ImmutableList.copyOf(this);
         clear();
         for (Roi roi : input) {
@@ -1290,7 +1290,7 @@ public class ROI2DListData extends ArrayList<Roi> implements JIPipeData, NapariO
                 }
             }
             catch (Exception e) {
-                if(!ignoreErrors) {
+                if(errorBehavior == InvalidRoiOutlineBehavior.Error) {
                     throw e;
                 }
             }
@@ -1301,6 +1301,15 @@ public class ROI2DListData extends ArrayList<Roi> implements JIPipeData, NapariO
 
                 // Add to list
                 add(outlined);
+            }
+            else if( errorBehavior == InvalidRoiOutlineBehavior.KeepOriginal) {
+                add(roi);
+            }
+            else if(errorBehavior == InvalidRoiOutlineBehavior.Skip) {
+                // Do nothing
+            }
+            else {
+                throw new NullPointerException("Unable to outline ROI " + roi);
             }
         }
     }

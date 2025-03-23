@@ -115,6 +115,7 @@ import org.hkijena.jipipe.plugins.imagejalgorithms.nodes.roi.merge.MergeRoiLists
 import org.hkijena.jipipe.plugins.imagejalgorithms.nodes.roi.merge.MergeRoiListsPairwiseOrAlgorithm;
 import org.hkijena.jipipe.plugins.imagejalgorithms.nodes.roi.merge.MergeRoiListsUnorderedAlgorithm;
 import org.hkijena.jipipe.plugins.imagejalgorithms.nodes.roi.modify.*;
+import org.hkijena.jipipe.plugins.imagejalgorithms.nodes.roi.outline.InterpolateRoiAlgorithm;
 import org.hkijena.jipipe.plugins.imagejalgorithms.nodes.roi.outline.OutlineRoiAlgorithm;
 import org.hkijena.jipipe.plugins.imagejalgorithms.nodes.roi.outline.OutlineRoiConcaveHullMoreiraSantosAlgorithm;
 import org.hkijena.jipipe.plugins.imagejalgorithms.nodes.roi.properties.ExtractROIMetadataAlgorithm;
@@ -922,6 +923,7 @@ public class ImageJAlgorithmsPlugin extends JIPipePrepackagedDefaultJavaPlugin {
             registerNodeExample(OutlineRoiAlgorithm.class, outline.toString(), node -> node.setOutline(outline));
         }
         registerNodeType("ij1-roi-outline-concave-hull-moreira-santos", OutlineRoiConcaveHullMoreiraSantosAlgorithm.class, UIUtils.getIconURLFromResources("actions/draw-connector.png"));
+        registerNodeType("ij1-roi-interpolate", InterpolateRoiAlgorithm.class, UIUtils.getIconURLFromResources("actions/draw-connector.png"));
 
         registerNodeType("ij1-roi-crop-list", CropRoiListAlgorithm.class, UIUtils.getIconURLFromResources("actions/image-crop.png"));
         registerNodeType("ij1-roi-to-centroid", RoiToCentroidAlgorithm.class, UIUtils.getIconURLFromResources("actions/draw-connector.png"));
@@ -1168,6 +1170,8 @@ public class ImageJAlgorithmsPlugin extends JIPipePrepackagedDefaultJavaPlugin {
                         "<li>Minimum bounding rectangle: outline the ROI with its minimum bounding rectangle. The rectangle is rotated to minimize its area.</li>" +
                         "<li>Oriented line: Finds the minimum bounding rectangle and chooses the center of the two short sides as the endpoint of a line.</li>" +
                         "</ul>");
+        registerEnumParameterType("ij1:invalid-roi-outline-behavior", InvalidRoiOutlineBehavior.class,
+                "Invalid ROI outline behavior", "What should be done if a ROI processing/outlining operation could not be applied to a ROI");
     }
 
     private void registerSharpenAlgorithms() {
