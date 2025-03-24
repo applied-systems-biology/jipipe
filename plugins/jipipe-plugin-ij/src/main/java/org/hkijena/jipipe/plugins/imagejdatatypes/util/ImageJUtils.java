@@ -25,11 +25,13 @@ import gnu.trove.map.TIntIntMap;
 import gnu.trove.map.hash.TIntIntHashMap;
 import ij.*;
 import ij.gui.*;
+import ij.measure.Calibration;
 import ij.measure.Measurements;
 import ij.plugin.PlugIn;
 import ij.plugin.RoiScaler;
 import ij.plugin.filter.AVI_Writer;
 import ij.plugin.filter.Convolver;
+import ij.plugin.filter.EDM;
 import ij.process.*;
 import org.hkijena.jipipe.api.JIPipeProgressInfo;
 import org.hkijena.jipipe.api.data.thumbnails.JIPipeImageThumbnailData;
@@ -3109,6 +3111,15 @@ public class ImageJUtils {
         Rectangle2D.Double bounds = roi.getFloatBounds();
         roi2.setLocation(bounds.x - 0.5, bounds.y - 0.5);    //area and line roi coordinates are 0.5 pxl different
         return roi2;
+    }
+
+    public static Roi makeBand(Roi roi, double size) {
+        int dxy = (int) (size * 1.5);
+        ROI2DListData listData = new ROI2DListData();
+        ImagePlus dummyImage = listData.createDummyImage();
+        dummyImage = expandImageCanvas(dummyImage, Color.BLACK, dummyImage.getWidth() + 2 * dxy,  dummyImage.getHeight() + 2 * dxy, Anchor.CenterCenter);
+
+        listData.toMask(true, true, 1, )
     }
 }
 
