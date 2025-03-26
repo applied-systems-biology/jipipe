@@ -115,6 +115,9 @@ import org.hkijena.jipipe.plugins.imagejalgorithms.nodes.roi.merge.MergeRoiLists
 import org.hkijena.jipipe.plugins.imagejalgorithms.nodes.roi.merge.MergeRoiListsPairwiseOrAlgorithm;
 import org.hkijena.jipipe.plugins.imagejalgorithms.nodes.roi.merge.MergeRoiListsUnorderedAlgorithm;
 import org.hkijena.jipipe.plugins.imagejalgorithms.nodes.roi.modify.*;
+import org.hkijena.jipipe.plugins.imagejalgorithms.nodes.roi.outline.InterpolateRoiAlgorithm;
+import org.hkijena.jipipe.plugins.imagejalgorithms.nodes.roi.outline.OutlineRoiAlgorithm;
+import org.hkijena.jipipe.plugins.imagejalgorithms.nodes.roi.outline.OutlineRoiConcaveHullMoreiraSantosAlgorithm;
 import org.hkijena.jipipe.plugins.imagejalgorithms.nodes.roi.properties.ExtractROIMetadataAlgorithm;
 import org.hkijena.jipipe.plugins.imagejalgorithms.nodes.roi.properties.RemoveROIMetadataAlgorithm;
 import org.hkijena.jipipe.plugins.imagejalgorithms.nodes.roi.properties.SetROIMetadataFromTableAlgorithm;
@@ -129,6 +132,7 @@ import org.hkijena.jipipe.plugins.imagejalgorithms.nodes.segment.ClassicWatershe
 import org.hkijena.jipipe.plugins.imagejalgorithms.nodes.segment.RidgeDetector2DAlgorithm;
 import org.hkijena.jipipe.plugins.imagejalgorithms.nodes.segment.SeededWatershedSegmentationAlgorithm;
 import org.hkijena.jipipe.plugins.imagejalgorithms.nodes.sharpen.LaplacianSharpen2DAlgorithm;
+import org.hkijena.jipipe.plugins.imagejalgorithms.nodes.sharpen.UnsharpMasking2DAlgorithm;
 import org.hkijena.jipipe.plugins.imagejalgorithms.nodes.statistics.*;
 import org.hkijena.jipipe.plugins.imagejalgorithms.nodes.threshold.*;
 import org.hkijena.jipipe.plugins.imagejalgorithms.nodes.threshold.color.ColorThresholdExpression2D;
@@ -913,8 +917,14 @@ public class ImageJAlgorithmsPlugin extends JIPipePrepackagedDefaultJavaPlugin {
         registerNodeType("ij1-roi-calculator", RoiCalculatorAlgorithm.class, UIUtils.getIconURLFromResources("actions/calculator.png"));
         registerNodeType("ij1-roi-to-mask-unreferenced", UnreferencedRoiToMaskAlgorithm.class, UIUtils.getIconURLFromResources("actions/segment.png"));
         registerNodeType("ij1-roi-to-mask", RoiToMaskAlgorithm.class, UIUtils.getIconURLFromResources("actions/segment.png"));
+
         registerNodeType("ij1-roi-outline", OutlineRoiAlgorithm.class, UIUtils.getIconURLFromResources("actions/draw-connector.png"));
+        for (RoiOutline outline : RoiOutline.values()) {
+            registerNodeExample(OutlineRoiAlgorithm.class, outline.toString(), node -> node.setOutline(outline));
+        }
         registerNodeType("ij1-roi-outline-concave-hull-moreira-santos", OutlineRoiConcaveHullMoreiraSantosAlgorithm.class, UIUtils.getIconURLFromResources("actions/draw-connector.png"));
+        registerNodeType("ij1-roi-interpolate", InterpolateRoiAlgorithm.class, UIUtils.getIconURLFromResources("actions/draw-connector.png"));
+
         registerNodeType("ij1-roi-crop-list", CropRoiListAlgorithm.class, UIUtils.getIconURLFromResources("actions/image-crop.png"));
         registerNodeType("ij1-roi-to-centroid", RoiToCentroidAlgorithm.class, UIUtils.getIconURLFromResources("actions/draw-connector.png"));
         registerNodeType("ij1-roi-remove-bordering", RemoveBorderRoisAlgorithm.class, UIUtils.getIconURLFromResources("actions/bordertool.png"));
@@ -969,6 +979,7 @@ public class ImageJAlgorithmsPlugin extends JIPipePrepackagedDefaultJavaPlugin {
         registerNodeType("ij1-roi-remove-metadata", RemoveROIMetadataAlgorithm.class, UIUtils.getIconURLFromResources("actions/filter.png"));
         registerNodeType("ij1-roi-flatten", FlattenRoiAlgorithm.class, UIUtils.getIconURLFromResources("actions/layer-flatten-z.png"));
         registerNodeType("ij1-roi-enlarge-shrink", EnlargeShrinkRoiAlgorithm.class, UIUtils.getIconURLFromResources("actions/zoom-draw.png"));
+        registerNodeType("ij1-roi-transform-2d", TransformRoiFromExpressionsAlgorithm.class, UIUtils.getIconURLFromResources("actions/dialog-transform.png"));
 
         registerNodeType("ij1-roi-draw-rectangle", DrawRectangleRoiAlgorithm.class, UIUtils.getIconURLFromResources("actions/draw-rectangle.png"));
         registerNodeType("ij1-roi-draw-oval", DrawOvalRoiAlgorithm.class, UIUtils.getIconURLFromResources("actions/draw-ellipse.png"));
@@ -978,6 +989,8 @@ public class ImageJAlgorithmsPlugin extends JIPipePrepackagedDefaultJavaPlugin {
 
 //        registerNodeType("ij1-roi-register-max-brightness", RegisterRoiToImageByBrightnessAlgorithm.class, UIUtils.getIconURLFromResources("actions/cm_search.png"));
         registerNodeType("ij1-roi-extract-profile", ExtractROIProfileAlgorithm.class, UIUtils.getIconURLFromResources("actions/draw-line.png"));
+
+        registerNodeType("ij1-roi-convert-to-table", ConvertRoiToTableAlgorithm.class, UIUtils.getIconURLFromResources("actions/table.png"));
 
         registerEnumParameterType("ij1-roi-draw-line:roi-type", DrawLineOvalRectangleRoiAlgorithm.RoiType.class, "ROI type", "Available ROI types");
         registerEnumParameterType("ij1-roi-flood-fill:mode",
@@ -1117,6 +1130,9 @@ public class ImageJAlgorithmsPlugin extends JIPipePrepackagedDefaultJavaPlugin {
         registerNodeType("ij1-threshold-manual2d-16u", ManualThreshold16U2DAlgorithm.class, UIUtils.getIconURLFromResources("actions/segment.png"));
         registerNodeType("ij1-threshold-manual2d-32f", ManualThreshold32F2DAlgorithm.class, UIUtils.getIconURLFromResources("actions/segment.png"));
         registerNodeType("ij1-threshold-auto2d", AutoThreshold2DAlgorithm.class, UIUtils.getIconURLFromResources("actions/segment.png"));
+        for (AutoThresholder.Method method : AutoThresholder.Method.values()) {
+            registerNodeExample(AutoThreshold2DAlgorithm.class, method.name(), node -> node.setMethod(method));
+        }
         registerNodeType("ij1-threshold-expression2d-8u", CustomAutoThreshold2D8UAlgorithm.class, UIUtils.getIconURLFromResources("actions/segment.png"));
         registerNodeType("ij1-threshold-expression2d-16u", CustomAutoThreshold2D16UAlgorithm.class, UIUtils.getIconURLFromResources("actions/segment.png"));
         registerNodeType("ij1-threshold-expression2d-32f", CustomAutoThreshold2D32FAlgorithm.class, UIUtils.getIconURLFromResources("actions/segment.png"));
@@ -1156,10 +1172,13 @@ public class ImageJAlgorithmsPlugin extends JIPipePrepackagedDefaultJavaPlugin {
                         "<li>Minimum bounding rectangle: outline the ROI with its minimum bounding rectangle. The rectangle is rotated to minimize its area.</li>" +
                         "<li>Oriented line: Finds the minimum bounding rectangle and chooses the center of the two short sides as the endpoint of a line.</li>" +
                         "</ul>");
+        registerEnumParameterType("ij1:invalid-roi-outline-behavior", InvalidRoiOutlineBehavior.class,
+                "Invalid ROI outline behavior", "What should be done if a ROI processing/outlining operation could not be applied to a ROI");
     }
 
     private void registerSharpenAlgorithms() {
         registerNodeType("ij1-sharpen-laplacian2d", LaplacianSharpen2DAlgorithm.class, UIUtils.getIconURLFromResources("actions/insert-math-expression.png"));
+        registerNodeType("ij1-unsharp-mask-2d", UnsharpMasking2DAlgorithm.class, UIUtils.getIconURLFromResources("actions/insert-math-expression.png"));
     }
 
     private void registerBackgroundAlgorithms() {
@@ -1316,7 +1335,7 @@ public class ImageJAlgorithmsPlugin extends JIPipePrepackagedDefaultJavaPlugin {
         registerNodeType("ij1-feature-featurej-hessian", HessianFeatureAlgorithm.class, UIUtils.getIconURLFromResources("actions/insert-math-expression.png"));
         registerNodeType("ij1-feature-featurej-structure", StructureFeatureAlgorithm.class, UIUtils.getIconURLFromResources("actions/insert-math-expression.png"));
         registerNodeType("ij1-math-hessian2d", Hessian2DAlgorithm.class, UIUtils.getIconURLFromResources("actions/insert-math-expression.png"));
-
+        registerNodeType("ij1-feature-shadows-2d", Shadows2DAlgorithm.class, UIUtils.getIconURLFromResources("actions/object-tweak-duplicate.png"));
 
         registerEnumParameterType("ij1-feature-vesselness-frangi:slicing-mode", FrangiVesselnessFeatures.SlicingMode.class,
                 "Slicing mode", "Available slicing modes");
@@ -1330,6 +1349,10 @@ public class ImageJAlgorithmsPlugin extends JIPipePrepackagedDefaultJavaPlugin {
                 "MFC mode", "Available modes");
         registerEnumParameterType("ij1-orientationj-gradient", OrientationJGradientOperator.class,
                 "OrientationJ gradient operator", "A gradient operator");
+        registerEnumParameterType("ij1-feature-shadows-2d:direction",
+                Shadows2DAlgorithm.Direction.class,
+                "Shadow direction",
+                "A direction");
     }
 
     private void registerContrastAlgorithms() {
@@ -1389,6 +1412,9 @@ public class ImageJAlgorithmsPlugin extends JIPipePrepackagedDefaultJavaPlugin {
         registerNodeType("ij1-blur-median2d-rgb", MedianRGB2DAlgorithm.class, UIUtils.getIconURLFromResources("actions/insert-math-expression.png"));
         registerNodeType("ij1-blur-median2d", MedianFilter2DAlgorithm.class, UIUtils.getIconURLFromResources("actions/insert-math-expression.png"));
         registerNodeType("ij1-blur-median3d", MedianFilter3DAlgorithm.class, UIUtils.getIconURLFromResources("actions/insert-math-expression.png"));
+        registerNodeType("ij1-filter-kuwahara2d", KuwaharaFilter2DAlgorithm.class, UIUtils.getIconURLFromResources("actions/insert-math-expression.png"));
+
+        registerEnumParameterType("ij1-filter-kuwahara2d:criterion", KuwaharaFilter2DAlgorithm.Criterion.class, "Kuwahara criterion", "Available criteria");
     }
 
     @Override

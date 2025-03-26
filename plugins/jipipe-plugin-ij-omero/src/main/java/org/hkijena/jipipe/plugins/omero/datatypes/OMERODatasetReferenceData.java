@@ -37,6 +37,7 @@ import java.nio.file.Path;
 public class OMERODatasetReferenceData implements JIPipeData {
     private long datasetId;
     private String name;
+    private String description;
     private String url;
 
     public OMERODatasetReferenceData() {
@@ -79,6 +80,16 @@ public class OMERODatasetReferenceData implements JIPipeData {
     @JsonSetter("name")
     public void setName(String name) {
         this.name = name;
+    }
+
+    @JsonGetter("description")
+    public String getDescription() {
+        return description;
+    }
+
+    @JsonSetter("description")
+    public void setDescription(String description) {
+        this.description = description;
     }
 
     @JsonGetter("url")

@@ -38,8 +38,8 @@ import java.awt.geom.Point2D;
 /**
  * Wrapper around {@link ij.plugin.frame.RoiManager}
  */
-@SetJIPipeDocumentation(name = "Rotate 2D ROI", description = "Rotates all ROI in the ROI list.")
-@ConfigureJIPipeNode(nodeTypeCategory = RoiNodeTypeCategory.class, menuPath = "Modify")
+@SetJIPipeDocumentation(name = "Rotate 2D ROI (old)", description = "Rotates all ROI in the ROI list. A newer algorithm that allows to do scaling/rotating/translation in one is available.")
+@ConfigureJIPipeNode(nodeTypeCategory = RoiNodeTypeCategory.class, menuPath = "Transform")
 @AddJIPipeInputSlot(value = ROI2DListData.class, name = "Input", create = true)
 @AddJIPipeInputSlot(value = ImagePlusData.class, name = "Reference", create = true, optional = true)
 @AddJIPipeOutputSlot(value = ROI2DListData.class, name = "Output", create = true)
@@ -100,7 +100,7 @@ public class RotateRoiAlgorithm extends JIPipeIteratingAlgorithm {
         this.angle = angle;
     }
 
-    @SetJIPipeDocumentation(name = "Center (X)", description = "The rotation center in X coordinates")
+    @SetJIPipeDocumentation(name = "Origin (X)", description = "The rotation center in X coordinates")
     @JIPipeParameter("center-x")
     @AddJIPipeExpressionParameterVariable(fromClass = JIPipeTextAnnotationsExpressionParameterVariablesInfo.class)
     @AddJIPipeExpressionParameterVariable(fromClass = Image5DExpressionParameterVariablesInfo.class)
@@ -113,7 +113,7 @@ public class RotateRoiAlgorithm extends JIPipeIteratingAlgorithm {
         this.centerX = centerX;
     }
 
-    @SetJIPipeDocumentation(name = "Center (Y)", description = "The rotation center in Y coordinates")
+    @SetJIPipeDocumentation(name = "Origin (Y)", description = "The rotation center in Y coordinates")
     @JIPipeParameter("center-y")
     @AddJIPipeExpressionParameterVariable(fromClass = JIPipeTextAnnotationsExpressionParameterVariablesInfo.class)
     @AddJIPipeExpressionParameterVariable(fromClass = Image5DExpressionParameterVariablesInfo.class)

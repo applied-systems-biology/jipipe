@@ -90,7 +90,7 @@ public class JIPipeRunAlgorithmCommand extends DynamicCommand implements Initial
             if (!JIPipe.isInstantiated() && withSplash) {
                 SwingUtilities.invokeLater(() -> JIPipeDesktopSplashScreen.getInstance().showSplash(getContext()));
             }
-            JIPipe jiPipe = JIPipe.createInstance(getContext());
+            JIPipe jiPipe = JIPipe.createInstance(getContext(), JIPipeMode.GUI);
             JIPipeDesktopSplashScreen.getInstance().setJIPipe(JIPipe.getInstance());
             jiPipe.initialize(extensionSettings, issues, true);
             SwingUtilities.invokeLater(() -> JIPipeDesktopSplashScreen.getInstance().hideSplash());

@@ -140,7 +140,7 @@ public class JIPipeArtifact extends AbstractJIPipeParameterCollection implements
         if ("any".equalsIgnoreCase(getClassifier())) {
             return true;
         } else if (SystemUtils.IS_OS_WINDOWS) {
-            if (!getClassifier().contains("windows")) {
+            if (!getClassifier().contains("windows") && !getClassifier().contains("win32") && !getClassifier().contains("win64")) {
                 return false;
             }
             if (SystemUtils.OS_ARCH == null) {

@@ -193,6 +193,81 @@ public class OMEROGateway implements AutoCloseable {
         return null;
     }
 
+    public PlateData getPlate(long plateId, int groupId) {
+        if (groupId >= 0) {
+            try {
+                Collection<PlateData> plates = browseFacility.getPlates(new SecurityContext(groupId), Collections.singletonList(plateId));
+                if (!plates.isEmpty()) {
+                    return plates.iterator().next();
+                }
+            } catch (DSOutOfServiceException | DSAccessException e) {
+                throw new RuntimeException(e);
+            }
+        } else {
+            for (GroupData group : user.getGroups()) {
+                try {
+                    Collection<PlateData> plates = browseFacility.getPlates(new SecurityContext(group.getId()), Collections.singletonList(plateId));
+                    if (!plates.isEmpty()) {
+                        return plates.iterator().next();
+                    }
+                } catch (DSOutOfServiceException | DSAccessException e) {
+                    throw new RuntimeException(e);
+                }
+            }
+        }
+        return null;
+    }
+
+    public ScreenData getScreen(long screenId, int groupId) {
+        if (groupId >= 0) {
+            try {
+                Collection<ScreenData> screens = browseFacility.getScreens(new SecurityContext(groupId), Collections.singletonList(screenId));
+                if (!screens.isEmpty()) {
+                    return screens.iterator().next();
+                }
+            } catch (DSOutOfServiceException | DSAccessException e) {
+                throw new RuntimeException(e);
+            }
+        } else {
+            for (GroupData group : user.getGroups()) {
+                try {
+                    Collection<ScreenData> screens = browseFacility.getScreens(new SecurityContext(group.getId()), Collections.singletonList(screenId));
+                    if (!screens.isEmpty()) {
+                        return screens.iterator().next();
+                    }
+                } catch (DSOutOfServiceException | DSAccessException e) {
+                    throw new RuntimeException(e);
+                }
+            }
+        }
+        return null;
+    }
+
+    public WellData getWell(long wellId, int groupId) {
+        if (groupId >= 0) {
+            try {
+                Collection<WellData> wells = browseFacility.getWells(new SecurityContext(groupId), Collections.singletonList(wellId));
+                if (!wells.isEmpty()) {
+                    return wells.iterator().next();
+                }
+            } catch (DSOutOfServiceException | DSAccessException e) {
+                throw new RuntimeException(e);
+            }
+        } else {
+            for (GroupData group : user.getGroups()) {
+                try {
+                    Collection<WellData> wells = browseFacility.getWells(new SecurityContext(group.getId()), Collections.singletonList(wellId));
+                    if (!wells.isEmpty()) {
+                        return wells.iterator().next();
+                    }
+                } catch (DSOutOfServiceException | DSAccessException e) {
+                    throw new RuntimeException(e);
+                }
+            }
+        }
+        return null;
+    }
+
     public Map<String, TagAnnotationData> getKnownTags(SecurityContext context) throws DSOutOfServiceException, ServerError {
         IQueryPrx qs = gateway.getQueryService(context);
         List<IObject> tmp = qs.findAll(TagAnnotation.class.getSimpleName(), null);
@@ -225,4 +300,7 @@ public class OMEROGateway implements AutoCloseable {
             dataManagerFacility.attachAnnotation(context, tagAnnotationData, data);
         }
     }
+
+
+
 }

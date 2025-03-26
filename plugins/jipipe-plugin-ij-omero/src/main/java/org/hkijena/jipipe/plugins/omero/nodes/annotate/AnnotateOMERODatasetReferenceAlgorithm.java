@@ -59,6 +59,7 @@ public class AnnotateOMERODatasetReferenceAlgorithm extends JIPipeSimpleIteratin
     private final OMEROTagToAnnotationImporter tagToAnnotationImporter;
     private OptionalOMEROCredentialsEnvironment overrideCredentials = new OptionalOMEROCredentialsEnvironment();
     private OptionalTextAnnotationNameParameter nameAnnotation = new OptionalTextAnnotationNameParameter("Dataset name", true);
+    private OptionalTextAnnotationNameParameter descriptionAnnotation = new OptionalTextAnnotationNameParameter("Dataset description", true);
     private OptionalTextAnnotationNameParameter idAnnotation = new OptionalTextAnnotationNameParameter("#OMERO:Dataset_ID", true);
     private JIPipeTextAnnotationMergeMode annotationMergeMode = JIPipeTextAnnotationMergeMode.OverwriteExisting;
 
@@ -78,6 +79,7 @@ public class AnnotateOMERODatasetReferenceAlgorithm extends JIPipeSimpleIteratin
         registerSubParameter(tagToAnnotationImporter);
         this.overrideCredentials = new OptionalOMEROCredentialsEnvironment(other.overrideCredentials);
         this.nameAnnotation = new OptionalTextAnnotationNameParameter(other.nameAnnotation);
+        this.descriptionAnnotation = new OptionalTextAnnotationNameParameter(other.descriptionAnnotation);
         this.idAnnotation = new OptionalTextAnnotationNameParameter(other.idAnnotation);
         this.annotationMergeMode = other.annotationMergeMode;
     }
@@ -141,6 +143,18 @@ public class AnnotateOMERODatasetReferenceAlgorithm extends JIPipeSimpleIteratin
     @JIPipeParameter("name-annotation")
     public void setNameAnnotation(OptionalTextAnnotationNameParameter nameAnnotation) {
         this.nameAnnotation = nameAnnotation;
+    }
+
+    @SetJIPipeDocumentation(name = "Annotate with dataset description", description = "Optional annotation type where the dataset description is written.")
+    @JIPipeParameter("description-annotation")
+    @StringParameterSettings(monospace = true, icon = ResourceUtils.RESOURCE_BASE_PATH + "/icons/data-types/annotation.png")
+    public OptionalTextAnnotationNameParameter getDescriptionAnnotation() {
+        return descriptionAnnotation;
+    }
+
+    @JIPipeParameter("description-annotation")
+    public void setDescriptionAnnotation(OptionalTextAnnotationNameParameter descriptionAnnotation) {
+        this.descriptionAnnotation = descriptionAnnotation;
     }
 
     @SetJIPipeDocumentation(name = "Import key-value pairs", description = "OMERO key-value pairs can be imported into annotations")

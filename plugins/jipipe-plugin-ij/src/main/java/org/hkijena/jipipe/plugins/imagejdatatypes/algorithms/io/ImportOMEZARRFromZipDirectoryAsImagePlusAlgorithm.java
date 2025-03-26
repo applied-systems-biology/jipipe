@@ -45,6 +45,7 @@ import org.hkijena.jipipe.plugins.imagejdatatypes.datatypes.ROI2DListData;
 import org.hkijena.jipipe.plugins.imagejdatatypes.util.ROIHandler;
 import org.hkijena.jipipe.plugins.imagejdatatypes.util.ZARRUtils;
 import org.hkijena.jipipe.plugins.parameters.library.primitives.optional.OptionalTextAnnotationNameParameter;
+import org.hkijena.jipipe.utils.StringUtils;
 import org.janelia.saalfeldlab.n5.N5Reader;
 import org.janelia.saalfeldlab.n5.ij.N5Importer;
 import org.janelia.saalfeldlab.n5.universe.N5DatasetDiscoverer;
@@ -122,7 +123,27 @@ public class ImportOMEZARRFromZipDirectoryAsImagePlusAlgorithm extends JIPipeSim
 
         if (datasetFilter.isEnabled()) {
             JIPipeExpressionVariablesMap variablesMap = new JIPipeExpressionVariablesMap(iterationStep);
-            toImport.removeIf(node -> !datasetFilter.getContent().evaluateToBoolean(variablesMap));
+            toImport.removeIf(node -> {
+
+                String path = node.getPath();
+                String name = node.toString();
+                String metadataClass = node.getMetadata() != null ? node.getMetadata().getClass().getCanonicalName() : null;
+                String fullPath = n5Path + "?" + node.getPath();
+
+                variablesMap.put("path", path);
+                variablesMap.put("name", name);
+                variablesMap.put("full_path", fullPath);
+                variablesMap.put("metadata_class", StringUtils.nullToEmpty(metadataClass));
+
+                boolean result = !datasetFilter.getContent().evaluateToBoolean(variablesMap);
+                if(result) {
+                    progressInfo.log("Node " + fullPath + " -> will not be imported");
+                }
+                else {
+                    progressInfo.log("Node " + fullPath + " -> will imported");
+                }
+                return result;
+            });
         }
 
         // Import the datasets
@@ -174,6 +195,9 @@ public class ImportOMEZARRFromZipDirectoryAsImagePlusAlgorithm extends JIPipeSim
     @AddJIPipeExpressionParameterVariable(fromClass = JIPipeTextAnnotationsExpressionParameterVariablesInfo.class)
     @AddJIPipeExpressionParameterVariable(fromClass = JIPipeCustomExpressionVariablesParameterVariablesInfo.class)
     @AddJIPipeExpressionParameterVariable(key = "path", name = "Dataset path", description = "The internal path of the dataset")
+    @AddJIPipeExpressionParameterVariable(key = "name", name = "Dataset name", description = "The name of the dataset")
+    @AddJIPipeExpressionParameterVariable(key = "full_path", name = "Dataset full path", description = "The full path of the dataset")
+    @AddJIPipeExpressionParameterVariable(key = "metadata_class", name = "Dataset metadata class", description = "The metadata class of the dataset (empty if not present)")
     public OptionalJIPipeExpressionParameter getDatasetFilter() {
         return datasetFilter;
     }

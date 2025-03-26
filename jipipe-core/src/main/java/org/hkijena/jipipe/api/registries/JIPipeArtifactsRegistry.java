@@ -69,36 +69,46 @@ public class JIPipeArtifactsRegistry {
         Vector2iParameter accelerationPreferenceVersions = JIPipeArtifactApplicationSettings.getInstance().getAccelerationPreferenceVersions();
         boolean wantsGPU = accelerationPreference != JIPipeArtifactAccelerationPreference.CPU;
 
-        // First find something with CPU if possible
-        for (JIPipeArtifact candidate : candidates) {
-            if (candidate.isCompatible() && !candidate.isRequireGPU()) {
-                bestCandidate = candidate;
+        Map<String, List<JIPipeArtifact>> byVersion = candidates.stream().collect(Collectors.groupingBy(JIPipeArtifact::getVersion));
+        List<String> sortedVersions = byVersion.keySet().stream().sorted(VersionUtils.VERSION_COMPARATOR.reversed()).collect(Collectors.toList());
+
+        for (String version : sortedVersions) {
+            List<JIPipeArtifact> artifactsForVersion = byVersion.get(version);
+
+            // First find something with CPU if possible
+            for (JIPipeArtifact candidate : artifactsForVersion) {
+                if (candidate.isCompatible() && !candidate.isRequireGPU()) {
+                    bestCandidate = candidate;
+                    break;
+                }
+            }
+
+            if(wantsGPU) {
+                // Optimize for better GPU (go inverse as newer versions are first)
+                for (JIPipeArtifact candidate : artifactsForVersion) {
+                    if (candidate.isCompatible()) {
+                        if (bestCandidate == null) {
+                            // take anything
+                            bestCandidate = candidate;
+                        } else {
+                            // Look for GPU
+                            if (candidate.isRequireGPU() && candidate.isGPUCompatible(accelerationPreference, accelerationPreferenceVersions)) {
+                                if (!bestCandidate.isRequireGPU()) {
+                                    bestCandidate = candidate;
+                                } else if (candidate.getGPUVersion(accelerationPreference.getPrefix()) > bestCandidate.getGPUVersion(accelerationPreference.getPrefix())) {
+                                    bestCandidate = candidate;
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+
+            if(bestCandidate != null) {
                 break;
             }
         }
 
-        // Optimize for better GPU
-        for (JIPipeArtifact candidate : candidates) {
-            if (candidate.isCompatible()) {
-                if (bestCandidate == null) {
-                    bestCandidate = candidate;
-                } else if (wantsGPU) {
-                    // Look for GPU
-                    if (candidate.isRequireGPU() && candidate.isGPUCompatible(accelerationPreference, accelerationPreferenceVersions)) {
-                        if (!bestCandidate.isRequireGPU()) {
-                            bestCandidate = candidate;
-                        } else if (candidate.getGPUVersion(accelerationPreference.getPrefix()) > bestCandidate.getGPUVersion(accelerationPreference.getPrefix())) {
-                            bestCandidate = candidate;
-                        }
-                    }
-                } else {
-                    // Look for CPU
-                    if (!candidate.isRequireGPU()) {
-                        bestCandidate = candidate;
-                    }
-                }
-            }
-        }
         return bestCandidate;
     }
 

@@ -1210,75 +1210,113 @@ public class ROI2DListData extends ArrayList<Roi> implements JIPipeData, NapariO
      * Outlines all {@link Roi} in this list by the specified algorithm.
      * All {@link Roi} are replaced by their outline.
      *
-     * @param outline the method
+     * @param outline       the method
+     * @param errorBehavior what to do on errors
      */
-    public void outline(RoiOutline outline) {
+    public void outline(RoiOutline outline, InvalidRoiOutlineBehavior errorBehavior) {
         ImmutableList<Roi> input = ImmutableList.copyOf(this);
         clear();
         for (Roi roi : input) {
-            Roi outlined;
-            switch (outline) {
-                case Polygon:
-                    outlined = new PolygonRoi(roi.getFloatPolygon(), Roi.POLYGON);
-                    break;
-                case ClosedPolygon:
-                    outlined = new PolygonRoi(roi.getFloatPolygon("close"), Roi.POLYGON);
-                    break;
-                case ConvexHull:
-                    outlined = new PolygonRoi(roi.getConvexHull(), Roi.POLYGON);
-                    break;
-                case BoundingRectangle: {
-                    Rectangle b = roi.getBounds();
-                    outlined = new PolygonRoi(new int[]{b.x, b.x + b.width, b.x + b.width, b.x},
-                            new int[]{b.y, b.y, b.y + b.height, b.y + b.height},
-                            4,
-                            Roi.POLYGON);
-                }
-                break;
-                case MinimumBoundingRectangle: {
-                    outlined = calculateMinimumBoundingRectangle(roi);
-                }
-                break;
-                case OrientedLine: {
-                    Roi tmp = calculateMinimumBoundingRectangle(roi);
-                    FloatPolygon mbr = tmp.getFloatPolygon();
-
-                    // Extract the points of the rectangle
-                    float x1 = mbr.xpoints[0], y1 = mbr.ypoints[0];
-                    float x2 = mbr.xpoints[1], y2 = mbr.ypoints[1];
-                    float x3 = mbr.xpoints[2], y3 = mbr.ypoints[2];
-                    float x4 = mbr.xpoints[3], y4 = mbr.ypoints[3];
-
-                    // Calculate lengths of sides
-                    float width = (float) Point2D.distance(x1, y1, x2, y2);  // Horizontal side
-                    float height = (float) Point2D.distance(x2, y2, x3, y3); // Vertical side
-
-                    if (width <= height) {
-                        // Horizontal sides are shorter or it's a square
-                        Point2D.Float midpoint1 = new Point2D.Float((x1 + x2) / 2, (y1 + y2) / 2);
-                        Point2D.Float midpoint2 = new Point2D.Float((x3 + x4) / 2, (y3 + y4) / 2);
-
-                        outlined = new Line(midpoint1.x, midpoint1.y, midpoint2.x, midpoint2.y);
-                    } else {
-                        // Vertical sides are shorter
-                        Point2D.Float midpoint1 = new Point2D.Float((x2 + x3) / 2, (y2 + y3) / 2);
-                        Point2D.Float midpoint2 = new Point2D.Float((x4 + x1) / 2, (y4 + y1) / 2);
-
-                        outlined = new Line(midpoint1.x, midpoint1.y, midpoint2.x, midpoint2.y);
+            Roi outlined = null;
+            try {
+                switch (outline) {
+                    case Polygon:
+                        outlined = new PolygonRoi(roi.getFloatPolygon(), Roi.POLYGON);
+                        break;
+                    case ClosedPolygon:
+                        outlined = new PolygonRoi(roi.getFloatPolygon("close"), Roi.POLYGON);
+                        break;
+                    case ConvexHull:
+                        outlined = new PolygonRoi(roi.getConvexHull(), Roi.POLYGON);
+                        break;
+                    case BoundingRectangle: {
+                        Rectangle b = roi.getBounds();
+                        outlined = new PolygonRoi(new int[]{b.x, b.x + b.width, b.x + b.width, b.x},
+                                new int[]{b.y, b.y, b.y + b.height, b.y + b.height},
+                                4,
+                                Roi.POLYGON);
                     }
+                    break;
+                    case MinimumBoundingRectangle: {
+                        outlined = calculateMinimumBoundingRectangle(roi);
+                    }
+                    break;
+                    case OrientedLine: {
+                        Roi tmp = calculateMinimumBoundingRectangle(roi);
+                        FloatPolygon mbr = tmp.getFloatPolygon();
+
+                        // Extract the points of the rectangle
+                        float x1 = mbr.xpoints[0], y1 = mbr.ypoints[0];
+                        float x2 = mbr.xpoints[1], y2 = mbr.ypoints[1];
+                        float x3 = mbr.xpoints[2], y3 = mbr.ypoints[2];
+                        float x4 = mbr.xpoints[3], y4 = mbr.ypoints[3];
+
+                        // Calculate lengths of sides
+                        float width = (float) Point2D.distance(x1, y1, x2, y2);  // Horizontal side
+                        float height = (float) Point2D.distance(x2, y2, x3, y3); // Vertical side
+
+                        if (width <= height) {
+                            // Horizontal sides are shorter or it's a square
+                            Point2D.Float midpoint1 = new Point2D.Float((x1 + x2) / 2, (y1 + y2) / 2);
+                            Point2D.Float midpoint2 = new Point2D.Float((x3 + x4) / 2, (y3 + y4) / 2);
+
+                            outlined = new Line(midpoint1.x, midpoint1.y, midpoint2.x, midpoint2.y);
+                        } else {
+                            // Vertical sides are shorter
+                            Point2D.Float midpoint1 = new Point2D.Float((x2 + x3) / 2, (y2 + y3) / 2);
+                            Point2D.Float midpoint2 = new Point2D.Float((x4 + x1) / 2, (y4 + y1) / 2);
+
+                            outlined = new Line(midpoint1.x, midpoint1.y, midpoint2.x, midpoint2.y);
+                        }
+                    }
+                    break;
+                    case FitCircle:
+                        outlined = ImageJUtils.fitCircleToRoi(roi);
+                        break;
+                    case FitEllipse:
+                        outlined = ImageJUtils.fitEllipseToRoi(roi);
+                        break;
+                    case FitSpline:
+                        outlined = ImageJUtils.fitSplineToRoi(roi, false, false);
+                        break;
+                    case DeleteFitSpline:
+                        outlined = ImageJUtils.fitSplineToRoi(roi, false, true);
+                        break;
+                    case FitSplineStraighten:
+                        outlined = ImageJUtils.fitSplineToRoi(roi, true, false);
+                        break;
+                    case AreaToLine:
+                        outlined = ImageJUtils.areaToLine(roi);
+                        break;
+                    case LineToArea:
+                        outlined = Roi.convertLineToArea(roi);
+                        break;
+                    default:
+                        throw new UnsupportedOperationException("Unsupported: " + outline);
                 }
-                break;
-                default:
-                    throw new UnsupportedOperationException("Unsupported: " + outline);
+            }
+            catch (Exception e) {
+                if(errorBehavior == InvalidRoiOutlineBehavior.Error) {
+                    throw e;
+                }
             }
 
-            // Restore information
-            outlined.copyAttributes(roi);
-            outlined.setPosition(roi.getPosition());
-            outlined.setPosition(roi.getCPosition(), roi.getZPosition(), roi.getTPosition());
+            if(outlined != null) {
+                // Restore information
+                ImageJUtils.copyRoiAttributesAndLocation(roi, outlined);
 
-            // Add to list
-            add(outlined);
+                // Add to list
+                add(outlined);
+            }
+            else if( errorBehavior == InvalidRoiOutlineBehavior.KeepOriginal) {
+                add(roi);
+            }
+            else if(errorBehavior == InvalidRoiOutlineBehavior.Skip) {
+                // Do nothing
+            }
+            else {
+                throw new NullPointerException("Unable to outline ROI " + roi);
+            }
         }
     }
 

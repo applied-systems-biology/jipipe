@@ -91,6 +91,15 @@ public abstract class JIPipeSingleIterationAlgorithm extends JIPipeParameterSlot
         registerSubParameter(adaptiveParameterSettings);
     }
 
+    /**
+     * If true, allow the execution of an empty iteration step if all inputs are optional and are empty
+     *
+     * @return whether empty iteration steps are allowed
+     */
+    protected boolean isAllowEmptyIterationStep() {
+        return false;
+    }
+
     @Override
     public JIPipeIterationStepGenerationSettings getGenerationSettingsInterface() {
         return iterationStepGenerationSettings;
@@ -154,7 +163,15 @@ public abstract class JIPipeSingleIterationAlgorithm extends JIPipeParameterSlot
         }
 
         // Special case: No input slots
-        if (getDataInputSlotCount() == 0) {
+        boolean doEmptyIterationStep = false;
+        if(getDataInputSlotCount() == 0) {
+            doEmptyIterationStep = true;
+        }
+        else if(isAllowEmptyIterationStep() && getDataInputSlots().stream().allMatch(slot -> slot.getInfo().isOptional() && slot.isEmpty())) {
+            doEmptyIterationStep = true;
+        }
+
+        if (doEmptyIterationStep) {
             if (progressInfo.isCancelled())
                 return;
             final int row = 0;

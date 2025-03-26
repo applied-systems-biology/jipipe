@@ -82,7 +82,7 @@ public class JIPipeGUICommand implements Command {
         JIPipeRegistryIssues issues = new JIPipeRegistryIssues();
         try {
             if (JIPipe.getInstance() == null) {
-                JIPipe jiPipe = JIPipe.createInstance(context);
+                JIPipe jiPipe = JIPipe.createInstance(context, JIPipeMode.GUI);
                 JIPipeDesktopSplashScreen.getInstance().setJIPipe(JIPipe.getInstance());
                 jiPipe.initialize(extensionSettings, issues, true);
             }

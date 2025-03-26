@@ -91,18 +91,23 @@ public class ListSubfolders extends JIPipeSimpleIteratingAlgorithm {
         if (!StringUtils.isNullOrEmpty(subFolder)) {
             inputPath = inputPath.resolve(subFolder);
         }
+        Stream<Path> stream = null;
         try {
-            Stream<Path> stream;
             if (recursive) {
                 FileVisitOption[] options;
-                if (recursiveFollowsLinks)
+                if (recursiveFollowsLinks) {
                     options = new FileVisitOption[]{FileVisitOption.FOLLOW_LINKS};
-                else
+                } else {
                     options = new FileVisitOption[0];
+                }
                 stream = Files.walk(inputPath, options).filter(Files::isDirectory);
-            } else
+            } else {
                 stream = Files.list(inputPath).filter(Files::isDirectory);
-            for (Path file : stream.collect(Collectors.toList())) {
+            }
+            for (Path file : stream.collect(Collectors.toSet())) {
+                if(progressInfo.isCanceled()) {
+                    return;
+                }
                 if (filters.test(file, expressionVariables)) {
                     iterationStep.addOutputData(getFirstOutputSlot(), new FileData(file), progressInfo);
                 }
@@ -110,9 +115,14 @@ public class ListSubfolders extends JIPipeSimpleIteratingAlgorithm {
         } catch (IOException e) {
             throw new RuntimeException(e);
         }
+        finally {
+            if(stream != null) {
+                stream.close();
+            }
+        }
     }
 
-    @SetJIPipeDocumentation(name = "Filters", description = "You can optionally filter the result folders. " +
+    @SetJIPipeDocumentation(name = "Keep path if ...", description = "You can optionally filter the result folders. " +
             "The filters are connected via a logical OR operation. An empty list disables filtering. " +
             "Annotations are available as variables.")
     @JIPipeParameter("filters")

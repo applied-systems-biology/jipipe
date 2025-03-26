@@ -20,6 +20,8 @@ import omero.gateway.model.ProjectData;
 import org.hkijena.jipipe.api.ConfigureJIPipeNode;
 import org.hkijena.jipipe.api.JIPipeProgressInfo;
 import org.hkijena.jipipe.api.SetJIPipeDocumentation;
+import org.hkijena.jipipe.api.annotation.JIPipeDataAnnotationMergeMode;
+import org.hkijena.jipipe.api.annotation.JIPipeTextAnnotationMergeMode;
 import org.hkijena.jipipe.api.environments.JIPipeEnvironment;
 import org.hkijena.jipipe.api.nodes.AddJIPipeInputSlot;
 import org.hkijena.jipipe.api.nodes.AddJIPipeOutputSlot;
@@ -83,12 +85,19 @@ public class OMEROListDatasetsAlgorithm extends JIPipeSingleIterationAlgorithm i
                     JIPipeExpressionVariablesMap variables = new JIPipeExpressionVariablesMap(iterationStep);
                     variables.putAnnotations(getFirstInputSlot().getTextAnnotations(row));
                     variables.put("name", dataset.getName());
+                    variables.put("description", dataset.getDescription());
                     variables.put("id", dataset.getId());
                     variables.put("kv_pairs", OMEROUtils.getKeyValuePairs(gateway.getMetadataFacility(), context, dataset));
                     variables.put("tags", new ArrayList<>(OMEROUtils.getTags(gateway.getMetadataFacility(), context, dataset)));
 
                     if (filters.test(variables)) {
-                        getFirstOutputSlot().addData(new OMERODatasetReferenceData(dataset, environment), getFirstInputSlot().getDataContext(row).branch(this), rowProgress);
+                        getFirstOutputSlot().addData(new OMERODatasetReferenceData(dataset, environment),
+                                getFirstInputSlot().getTextAnnotations(row),
+                                JIPipeTextAnnotationMergeMode.OverwriteExisting,
+                                getFirstInputSlot().getDataAnnotations(row),
+                                JIPipeDataAnnotationMergeMode.OverwriteExisting,
+                                getFirstInputSlot().getDataContext(row).branch(this),
+                                rowProgress);
                     }
                 }
             }
@@ -104,6 +113,7 @@ public class OMEROListDatasetsAlgorithm extends JIPipeSingleIterationAlgorithm i
     @AddJIPipeExpressionParameterVariable(name = "OMERO tags", description = "List of OMERO tag names associated with the data object", key = "tags")
     @AddJIPipeExpressionParameterVariable(name = "OMERO key-value pairs", description = "Map containing OMERO key-value pairs with the data object", key = "kv_pairs")
     @AddJIPipeExpressionParameterVariable(name = "OMERO dataset name", description = "Name of the data set", key = "name")
+    @AddJIPipeExpressionParameterVariable(name = "OMERO dataset description", description = "Name of the data set", key = "description")
     @AddJIPipeExpressionParameterVariable(name = "OMERO dataset id", description = "ID of the data set", key = "id")
     public JIPipeExpressionParameter getFilters() {
         return filters;

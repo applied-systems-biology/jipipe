@@ -40,6 +40,8 @@ import java.nio.file.Path;
 public class OMEROAnnotationReferenceData implements JIPipeData {
     private long annotationId;
     private String name;
+    private String description;
+    private String contentString;
     private String url;
 
     public OMEROAnnotationReferenceData() {
@@ -51,6 +53,8 @@ public class OMEROAnnotationReferenceData implements JIPipeData {
 
     public OMEROAnnotationReferenceData(AnnotationData annotationData, OMEROCredentialsEnvironment environment) {
         this.annotationId = annotationData.getId();
+        this.description = annotationData.getDescription();
+        this.contentString = annotationData.getContentAsString();
         this.url = OMEROUtils.tryGetWebClientURL(environment.getWebclientUrl(), "annotation", annotationId);
     }
 
@@ -81,6 +85,26 @@ public class OMEROAnnotationReferenceData implements JIPipeData {
     @JsonSetter("name")
     public void setName(String name) {
         this.name = name;
+    }
+
+    @JsonGetter("description")
+    public String getDescription() {
+        return description;
+    }
+
+    @JsonSetter("description")
+    public void setDescription(String description) {
+        this.description = description;
+    }
+
+    @JsonGetter("content-string")
+    public String getContentString() {
+        return contentString;
+    }
+
+    @JsonSetter("content-string")
+    public void setContentString(String contentString) {
+        this.contentString = contentString;
     }
 
     @JsonGetter("url")

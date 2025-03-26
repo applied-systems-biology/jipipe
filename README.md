@@ -25,9 +25,13 @@ The project consists of following parts:
 * **JIPipe-Annotation** provides algorithms and data types for handling annotation data.
 * **JIPipe-Filesystem** provides algorithms and data types for handling filesystem data.
 * **JIPipe-IJ** integrates ImageJ data types.
+* **JIPipe-CLIJ** integrates CLIJ2.
 * **JIPipe-IJ-Algorithms** integrates ImageJ algorithms.
 * **JIPipe-IJ-Multi-Template-Matching** integrates the ImageJ multi-template matching plugin.
 * **JIPipe-IJ-OMERO** integrates OMERO.
+* **JIPipe-IJ-OCR** integrates TesseractOCR.
+* **JIPipe-Filaments** filament processing library.
+* **JIPipe-IJ-Trackmate** integrates Trackmate.
 * **JIPipe-Multiparameters** provides algorithms and data types for handling parameter data. It contains the data source algorithms to define parameters.
 * **JIPipe-Plots** provides data types and algorithms for generating plots.
 * **JIPipe-Python** provides a Python-scripting node.
@@ -36,8 +40,11 @@ The project consists of following parts:
 * **JIPipe-Utils** provides some helpful utility extensions.
 * **JIPipe-Forms** provides core functions to allow user interaction during pipeline runs.
 * **JIPipe-Cellpose** provides integration of [Cellpose](https://cellpose.org/)
-* **JIPipe-Launcher** provides a JAR file that launches JIPipe from outside of ImageJ
-* **IJ-Updater-CLI** is an alternative way to trigger ImageJ updates. This is used within the installer tools.
+* **JIPipe-Omnipose** integrates Omnipose.
+* **JIPipe-IMP** in-development library for Photoshop-like image manipulation.
+* **JIPipe-OpenCV** integrates OpenCV (in-development).
+* **JIPipe-Scene-3D** creation and export of 3D scenes.
+* **JIPipe-Desktop** provides a JAR file that launches JIPipe from outside of ImageJ
 
 You can use the **JIPipe-Launcher** project to setup a development environment, as this project depends on all
 libraries.
@@ -48,7 +55,7 @@ the JIPipe runtime.
 
 You will need following packages:
 
-* Java 21
+* Java 8
 * Maven
 
 ### Generate packages
@@ -79,25 +86,10 @@ cd dist/zip
 ./build.sh
 ```
 
-### Generating installers
-
-This repository comes with scripts to generate installers for Linux, Mac, and Windows. These installers assume that 
-you have built JIPipe (`mvn package`).
-
-Following requirements are needed for these installers to work:
-
-* Windows: The installer utilizes [NSIS](https://sourceforge.net/projects/nsis/) and requires some additional libraries (see README in `dist/jipipe-windows-installer`)
-* Mac: The installer requires [Platypus](https://sveinbjorn.org/platypus)
-* Linux: You need to `mvn package` the `jipipe-installer-linux` project
-
 ## Running JIPipe in an IDE
 
 This repository comes with a project `jipipe-desktop` that allows you to run and debug JIPipe inside your IDE.
 You just have to run the `main()` function inside `JIPipeDesktopMain`.
-
-You might need to add `--add-opens=java.base/java.lang=ALL-UNNAMED` as VM option, due to known issues with ImageJ's class patching
-mechanism (see https://forum.image.sc/t/imagej-legacy-error/23013/10). SciJava is already providing a newer version of 
-the legacy patcher, so the other fix is not needed anymore.
 
 ## Generate JavaDocs (Optional)
 
@@ -108,6 +100,12 @@ mvn javadoc:aggregate
 The JavaDoc will be put into the `target/site` folder.
 
 ## Troubleshooting
+
+### Unable to run in Java21 from IDE
+
+You might need to add `--add-opens=java.base/java.lang=ALL-UNNAMED` as VM option, due to known issues with ImageJ's class patching
+mechanism (see https://forum.image.sc/t/imagej-legacy-error/23013/10). SciJava is already providing a newer version of
+the legacy patcher, so the other fix is not needed anymore.
 
 ### Missing Maven dependencies
 

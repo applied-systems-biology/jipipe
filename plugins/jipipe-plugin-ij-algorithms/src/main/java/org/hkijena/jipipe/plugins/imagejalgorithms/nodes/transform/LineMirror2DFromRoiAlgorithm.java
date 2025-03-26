@@ -21,6 +21,7 @@ import org.hkijena.jipipe.plugins.imagejalgorithms.utils.LineMirror;
 import org.hkijena.jipipe.plugins.imagejdatatypes.datatypes.ImagePlusData;
 import org.hkijena.jipipe.plugins.imagejdatatypes.datatypes.ROI2DListData;
 import org.hkijena.jipipe.plugins.imagejdatatypes.util.ImageJUtils;
+import org.hkijena.jipipe.plugins.imagejdatatypes.util.InvalidRoiOutlineBehavior;
 import org.hkijena.jipipe.plugins.imagejdatatypes.util.RoiOutline;
 import org.hkijena.jipipe.plugins.parameters.library.primitives.optional.OptionalTextAnnotationNameParameter;
 
@@ -95,7 +96,7 @@ public class LineMirror2DFromRoiAlgorithm extends JIPipeIteratingAlgorithm {
             if (polygon.npoints != 2) {
                 ROI2DListData single = new ROI2DListData();
                 single.add(roi);
-                single.outline(RoiOutline.OrientedLine);
+                single.outline(RoiOutline.OrientedLine, InvalidRoiOutlineBehavior.Error);
                 polygon = single.get(0).getFloatPolygon();
             }
             if (polygon.npoints != 2) {

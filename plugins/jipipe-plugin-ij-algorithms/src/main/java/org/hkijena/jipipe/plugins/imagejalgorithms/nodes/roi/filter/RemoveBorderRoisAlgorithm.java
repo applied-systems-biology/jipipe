@@ -30,6 +30,7 @@ import org.hkijena.jipipe.api.parameters.JIPipeParameter;
 import org.hkijena.jipipe.plugins.expressions.JIPipeExpressionVariablesMap;
 import org.hkijena.jipipe.plugins.imagejdatatypes.datatypes.ImagePlusData;
 import org.hkijena.jipipe.plugins.imagejdatatypes.datatypes.ROI2DListData;
+import org.hkijena.jipipe.plugins.imagejdatatypes.util.InvalidRoiOutlineBehavior;
 import org.hkijena.jipipe.plugins.imagejdatatypes.util.RoiOutline;
 import org.hkijena.jipipe.plugins.parameters.library.roi.Anchor;
 import org.hkijena.jipipe.plugins.parameters.library.roi.Margin;
@@ -49,6 +50,8 @@ public class RemoveBorderRoisAlgorithm extends JIPipeIteratingAlgorithm {
 
     private Margin borderDefinition = new Margin();
     private RoiOutline outline = RoiOutline.ClosedPolygon;
+    private InvalidRoiOutlineBehavior errorBehavior = InvalidRoiOutlineBehavior.Error;
+
 
     /**
      * Instantiates a new node type.
@@ -73,12 +76,13 @@ public class RemoveBorderRoisAlgorithm extends JIPipeIteratingAlgorithm {
         super(other);
         this.borderDefinition = new Margin(other.borderDefinition);
         this.outline = other.outline;
+        this.errorBehavior = other.errorBehavior;
     }
 
     @Override
     protected void runIteration(JIPipeSingleIterationStep iterationStep, JIPipeIterationContext iterationContext, JIPipeGraphNodeRunContext runContext, JIPipeProgressInfo progressInfo) {
         ROI2DListData data = (ROI2DListData) iterationStep.getInputData("ROI", ROI2DListData.class, progressInfo).duplicate(progressInfo);
-        data.outline(outline);
+        data.outline(outline, errorBehavior);
         ImagePlus reference = iterationStep.getInputData("Image", ImagePlusData.class, progressInfo).getImage();
         JIPipeExpressionVariablesMap variables = new JIPipeExpressionVariablesMap(iterationStep);
         Rectangle inside = borderDefinition.getInsideArea(new Rectangle(0, 0, reference.getWidth(), reference.getHeight()), variables);
@@ -94,6 +98,17 @@ public class RemoveBorderRoisAlgorithm extends JIPipeIteratingAlgorithm {
         });
 
         iterationStep.addOutputData(getFirstOutputSlot(), data, progressInfo);
+    }
+
+    @SetJIPipeDocumentation(name = "Error handling", description = "What to do if a ROI could not be processed")
+    @JIPipeParameter("error-behavior")
+    public InvalidRoiOutlineBehavior getErrorBehavior() {
+        return errorBehavior;
+    }
+
+    @JIPipeParameter("error-behavior")
+    public void setErrorBehavior(InvalidRoiOutlineBehavior errorBehavior) {
+        this.errorBehavior = errorBehavior;
     }
 
     @SetJIPipeDocumentation(name = "Border", description = "Defines the rectangle that is created within the image boundaries separate inside and outside. " +

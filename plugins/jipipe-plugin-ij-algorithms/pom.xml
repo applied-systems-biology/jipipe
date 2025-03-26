@@ -4,12 +4,12 @@
     <parent>
         <artifactId>pom-jipipe</artifactId>
         <groupId>org.hkijena</groupId>
-        <version>5.0.0-SNAPSHOT</version>
+        <version>5.2.0-SNAPSHOT</version>
         <relativePath>../../pom.xml</relativePath>
     </parent>
 
     <artifactId>jipipe-plugin-ij-algorithms</artifactId>
-    <version>5.0.0-SNAPSHOT</version>
+    <version>5.2.0-SNAPSHOT</version>
 
     <name>jipipe-plugin-ij-algorithms</name>
     <description>JIPipe ImageJ Algorithms</description>
@@ -80,6 +80,17 @@
 
     <dependencyManagement>
         <dependencies>
+            <dependency>
+                <groupId>sc.fiji</groupId>
+                <artifactId>Trainable_Segmentation</artifactId>
+                <version>3.3.2</version>
+                <exclusions>
+                    <exclusion>
+                        <groupId>jakarta.activation</groupId>
+                        <artifactId>jakarta.activation-api</artifactId>
+                    </exclusion>
+                </exclusions>
+            </dependency>
             <dependency>
                 <groupId>sc.fiji</groupId>
                 <artifactId>Feature_Detection</artifactId>
@@ -269,6 +280,17 @@
         <dependency>
             <groupId>sc.fiji</groupId>
             <artifactId>register_virtual_stack_slices</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>sc.fiji</groupId>
+            <artifactId>Trainable_Segmentation</artifactId>
+            <version>4.0.0</version>
+            <exclusions>
+                <exclusion>
+                    <groupId>jakarta.activation</groupId>
+                    <artifactId>jakarta.activation-api</artifactId>
+                </exclusion>
+            </exclusions>
         </dependency>
 <!--        <dependency>-->
 <!--            <groupId>com.github.miura</groupId>-->

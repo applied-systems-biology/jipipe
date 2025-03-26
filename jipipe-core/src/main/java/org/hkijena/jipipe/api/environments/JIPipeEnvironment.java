@@ -15,9 +15,11 @@ package org.hkijena.jipipe.api.environments;
 
 import com.fasterxml.jackson.annotation.JsonGetter;
 import com.fasterxml.jackson.annotation.JsonSetter;
+import org.hkijena.jipipe.api.JIPipeProgressInfo;
 import org.hkijena.jipipe.api.SetJIPipeDocumentation;
 import org.hkijena.jipipe.api.parameters.AbstractJIPipeParameterCollection;
 import org.hkijena.jipipe.api.parameters.JIPipeParameter;
+import org.hkijena.jipipe.api.run.JIPipeGraphRun;
 import org.hkijena.jipipe.api.validation.JIPipeValidatable;
 import org.hkijena.jipipe.utils.StringUtils;
 
@@ -92,5 +94,23 @@ public abstract class JIPipeEnvironment extends AbstractJIPipeParameterCollectio
     @JsonSetter("source")
     public void setSource(String source) {
         this.source = source;
+    }
+
+    /**
+     * Executed at the start of the run and after artifacts are configured
+     * @param run the run that executes the step
+     * @param progressInfo the progress info
+     */
+    public void runPreconfigure(JIPipeGraphRun run, JIPipeProgressInfo progressInfo) {
+
+    }
+
+    /**
+     * Executed after the end of the run (regardless if it failed or was successful)
+     * @param run the run that executes the step
+     * @param progressInfo the progress info
+     */
+    public void runPostprocessing(JIPipeGraphRun run, JIPipeProgressInfo progressInfo) {
+
     }
 }
