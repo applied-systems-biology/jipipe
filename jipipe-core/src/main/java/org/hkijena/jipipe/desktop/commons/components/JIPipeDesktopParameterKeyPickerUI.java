@@ -113,7 +113,14 @@ public class JIPipeDesktopParameterKeyPickerUI extends JPanel {
         DefaultListModel<Object> model = new DefaultListModel<>();
 
         // Add all node instances
-        Map<UUID, List<JIPipeGraphNode>> byCompartment = nodeInstances.stream().collect(Collectors.groupingBy(JIPipeGraphNode::getCompartmentUUIDInParentGraph));
+        UUID dummy = UUID.randomUUID();
+        Map<UUID, List<JIPipeGraphNode>> byCompartment = nodeInstances.stream().collect(Collectors.groupingBy(jiPipeGraphNode -> {
+            UUID uuid = jiPipeGraphNode.getCompartmentUUIDInParentGraph();
+            if(uuid == null) {
+                uuid = dummy;
+            }
+            return uuid;
+        }));
         for (Map.Entry<UUID, List<JIPipeGraphNode>> entry : byCompartment.entrySet()) {
             entry.getValue().stream().sorted(Comparator.comparing(JIPipeGraphNode::getName))
                     .filter(node -> nodeSearchField.test(node.getName() + " " + node.getInfo().getDescription().getBody()))
