@@ -1383,11 +1383,12 @@ public class ImageJAlgorithmsPlugin extends JIPipePrepackagedDefaultJavaPlugin {
         registerNodeType("ij1-blur-gaussian2d", GaussianBlur2DAlgorithm.class, UIUtils.getIconURLFromResources("actions/insert-math-expression.png"));
         registerNodeType("ij1-blur-gaussian3d", GaussianBlur3DAlgorithm.class, UIUtils.getIconURLFromResources("actions/insert-math-expression.png"));
         registerNodeType("ij1-blur-box2d", BoxFilter2DAlgorithm.class, UIUtils.getIconURLFromResources("actions/insert-math-expression.png"));
+        registerNodeType("ij1-blur-box2d-v2", BoxFilter2Dv2Algorithm.class, UIUtils.getIconURLFromResources("actions/insert-math-expression.png"));
         registerNodeType("ij1-blur-box3d", BoxFilter3DAlgorithm.class, UIUtils.getIconURLFromResources("actions/insert-math-expression.png"));
-        registerNodeType("ij1-blur-median2d-8u", MedianBlurGreyscale8U2DAlgorithm.class, UIUtils.getIconURLFromResources("actions/insert-math-expression.png"));
-        registerNodeType("ij1-blur-median2d-rgb", MedianBlurRGB2DAlgorithm.class, UIUtils.getIconURLFromResources("actions/insert-math-expression.png"));
-        registerNodeType("ij1-blur-median2d", MedianBlurFilter2DAlgorithm.class, UIUtils.getIconURLFromResources("actions/insert-math-expression.png"));
-        registerNodeType("ij1-blur-median3d", MedianBlurFilter3DAlgorithm.class, UIUtils.getIconURLFromResources("actions/insert-math-expression.png"));
+        registerNodeType("ij1-blur-median2d-8u", MedianGreyscale8U2DAlgorithm.class, UIUtils.getIconURLFromResources("actions/insert-math-expression.png"));
+        registerNodeType("ij1-blur-median2d-rgb", MedianRGB2DAlgorithm.class, UIUtils.getIconURLFromResources("actions/insert-math-expression.png"));
+        registerNodeType("ij1-blur-median2d", MedianFilter2DAlgorithm.class, UIUtils.getIconURLFromResources("actions/insert-math-expression.png"));
+        registerNodeType("ij1-blur-median3d", MedianFilter3DAlgorithm.class, UIUtils.getIconURLFromResources("actions/insert-math-expression.png"));
     }
 
     @Override

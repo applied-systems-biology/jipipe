@@ -39,7 +39,7 @@ import org.hkijena.jipipe.plugins.imagejdatatypes.datatypes.ImagePlusData;
 @AddJIPipeInputSlot(value = ImagePlusData.class, name = "Input", create = true)
 @AddJIPipeOutputSlot(value = ImagePlusData.class, name = "Output", create = true)
 @AddJIPipeNodeAlias(nodeTypeCategory = ImageJNodeTypeCategory.class, menuPath = "Plugins\nProcess", aliasName = "Median (3D)")
-public class MedianBlurFilter3DAlgorithm extends JIPipeSimpleIteratingAlgorithm {
+public class MedianFilter3DAlgorithm extends JIPipeSimpleIteratingAlgorithm {
 
     private float radiusX = 2;
     private float radiusY = -1;
@@ -50,7 +50,7 @@ public class MedianBlurFilter3DAlgorithm extends JIPipeSimpleIteratingAlgorithm 
      *
      * @param info the info
      */
-    public MedianBlurFilter3DAlgorithm(JIPipeNodeInfo info) {
+    public MedianFilter3DAlgorithm(JIPipeNodeInfo info) {
         super(info);
     }
 
@@ -59,7 +59,7 @@ public class MedianBlurFilter3DAlgorithm extends JIPipeSimpleIteratingAlgorithm 
      *
      * @param other the other
      */
-    public MedianBlurFilter3DAlgorithm(MedianBlurFilter3DAlgorithm other) {
+    public MedianFilter3DAlgorithm(MedianFilter3DAlgorithm other) {
         super(other);
         this.radiusX = other.radiusX;
         this.radiusY = other.radiusY;

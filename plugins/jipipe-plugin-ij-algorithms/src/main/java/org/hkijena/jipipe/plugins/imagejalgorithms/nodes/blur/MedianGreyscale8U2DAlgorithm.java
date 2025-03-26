@@ -39,7 +39,7 @@ import org.hkijena.jipipe.plugins.imagejdatatypes.util.ImageJUtils;
 @ConfigureJIPipeNode(menuPath = "Filter", nodeTypeCategory = ImagesNodeTypeCategory.class)
 @AddJIPipeInputSlot(value = ImagePlusGreyscale8UData.class, name = "Input", create = true)
 @AddJIPipeOutputSlot(value = ImagePlusGreyscale8UData.class, name = "Output", create = true)
-public class MedianBlurGreyscale8U2DAlgorithm extends JIPipeSimpleIteratingAlgorithm {
+public class MedianGreyscale8U2DAlgorithm extends JIPipeSimpleIteratingAlgorithm {
 
 
     /**
@@ -47,7 +47,7 @@ public class MedianBlurGreyscale8U2DAlgorithm extends JIPipeSimpleIteratingAlgor
      *
      * @param info the info
      */
-    public MedianBlurGreyscale8U2DAlgorithm(JIPipeNodeInfo info) {
+    public MedianGreyscale8U2DAlgorithm(JIPipeNodeInfo info) {
         super(info);
     }
 
@@ -56,7 +56,7 @@ public class MedianBlurGreyscale8U2DAlgorithm extends JIPipeSimpleIteratingAlgor
      *
      * @param other the other
      */
-    public MedianBlurGreyscale8U2DAlgorithm(MedianBlurGreyscale8U2DAlgorithm other) {
+    public MedianGreyscale8U2DAlgorithm(MedianGreyscale8U2DAlgorithm other) {
         super(other);
     }
 
