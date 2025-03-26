@@ -53,38 +53,38 @@ public class RoiMakeBandAlgorithm extends JIPipeSimpleIteratingAlgorithm {
 
     @Override
     protected void runIteration(JIPipeSingleIterationStep iterationStep, JIPipeIterationContext iterationContext, JIPipeGraphNodeRunContext runContext, JIPipeProgressInfo progressInfo) {
-        ROI2DListData inputData = iterationStep.getInputData(getFirstInputSlot(), ROI2DListData.class, progressInfo);
-        ROI2DListData outputData = new ROI2DListData();
-        for (Roi roi : inputData) {
-            Roi currentRoi = roi;
-            for (int i = 0; i < iterations; i++) {
-                Roi outlined = null;
-                try {
-                    outlined =  ImageJUtils.makeBand(roi, size);
-                    currentRoi = outlined;
-                } catch (Exception e) {
-                    if(errorBehavior == InvalidRoiOutlineBehavior.Error) {
-                        throw new RuntimeException(e);
-                    }
-                }
-                if(outlined != null) {
-                    currentRoi = outlined;
-                    outputData.add(outlined);
-                }
-                else if(errorBehavior == InvalidRoiOutlineBehavior.Skip) {
-                    // Do nothing
-                    break;
-                }
-                else if(errorBehavior == InvalidRoiOutlineBehavior.KeepOriginal) {
-                    outputData.add(roi);
-                    break;
-                }
-                else {
-                    throw new NullPointerException("Unable to interpolate ROI " + roi);
-                }
-            }
-        }
-        iterationStep.addOutputData(getFirstOutputSlot(), outputData, progressInfo);
+//        ROI2DListData inputData = iterationStep.getInputData(getFirstInputSlot(), ROI2DListData.class, progressInfo);
+//        ROI2DListData outputData = new ROI2DListData();
+//        for (Roi roi : inputData) {
+//            Roi currentRoi = roi;
+//            for (int i = 0; i < iterations; i++) {
+//                Roi outlined = null;
+//                try {
+//                    outlined =  ImageJUtils.makeBand(roi, size);
+//                    currentRoi = outlined;
+//                } catch (Exception e) {
+//                    if(errorBehavior == InvalidRoiOutlineBehavior.Error) {
+//                        throw new RuntimeException(e);
+//                    }
+//                }
+//                if(outlined != null) {
+//                    currentRoi = outlined;
+//                    outputData.add(outlined);
+//                }
+//                else if(errorBehavior == InvalidRoiOutlineBehavior.Skip) {
+//                    // Do nothing
+//                    break;
+//                }
+//                else if(errorBehavior == InvalidRoiOutlineBehavior.KeepOriginal) {
+//                    outputData.add(roi);
+//                    break;
+//                }
+//                else {
+//                    throw new NullPointerException("Unable to interpolate ROI " + roi);
+//                }
+//            }
+//        }
+//        iterationStep.addOutputData(getFirstOutputSlot(), outputData, progressInfo);
     }
 
     @SetJIPipeDocumentation(name = "Iterations", description = "The number of iterations")

@@ -108,7 +108,7 @@ public class ImageJContrastEnhancerAlgorithm extends JIPipeSimpleIteratingAlgori
             return resultIp;
         }, progressInfo);
         result.copyScale(image);
-        iterationStep.addOutputData(getFirstOutputSlot(), new ImagePlusGreyscale8UData(result), progressInfo);
+        iterationStep.addOutputData(getFirstOutputSlot(), new ImagePlusData(result), progressInfo);
     }
 
 

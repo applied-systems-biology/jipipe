@@ -3113,13 +3113,13 @@ public class ImageJUtils {
         return roi2;
     }
 
-    public static Roi makeBand(Roi roi, double size) {
-        int dxy = (int) (size * 1.5);
-        ROI2DListData listData = new ROI2DListData();
-        ImagePlus dummyImage = listData.createDummyImage();
-        dummyImage = expandImageCanvas(dummyImage, Color.BLACK, dummyImage.getWidth() + 2 * dxy,  dummyImage.getHeight() + 2 * dxy, Anchor.CenterCenter);
-
-        listData.toMask(true, true, 1, )
-    }
+//    public static Roi makeBand(Roi roi, double size) {
+//        int dxy = (int) (size * 1.5);
+//        ROI2DListData listData = new ROI2DListData();
+//        ImagePlus dummyImage = listData.createDummyImage();
+//        dummyImage = expandImageCanvas(dummyImage, Color.BLACK, dummyImage.getWidth() + 2 * dxy,  dummyImage.getHeight() + 2 * dxy, Anchor.CenterCenter);
+//
+//        listData.toMask(true, true, 1, )
+//    }
 }
 

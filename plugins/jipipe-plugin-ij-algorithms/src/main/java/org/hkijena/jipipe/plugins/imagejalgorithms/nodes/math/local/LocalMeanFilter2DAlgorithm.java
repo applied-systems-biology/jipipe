@@ -11,10 +11,9 @@
  * See the LICENSE file provided with the code for the full license.
  */
 
-package org.hkijena.jipipe.plugins.imagejalgorithms.nodes.blur;
+package org.hkijena.jipipe.plugins.imagejalgorithms.nodes.math.local;
 
 import ij.ImagePlus;
-import ij.plugin.filter.Convolver;
 import ij.plugin.filter.RankFilters;
 import org.hkijena.jipipe.api.ConfigureJIPipeNode;
 import org.hkijena.jipipe.api.JIPipeProgressInfo;
@@ -29,29 +28,36 @@ import org.hkijena.jipipe.api.parameters.JIPipeParameter;
 import org.hkijena.jipipe.plugins.imagejdatatypes.datatypes.ImagePlusData;
 import org.hkijena.jipipe.plugins.imagejdatatypes.util.ImageJUtils;
 
-import java.util.Arrays;
-
 
 /**
  * Wrapper around {@link RankFilters}
  */
-@SetJIPipeDocumentation(name = "Box filter 2D", description = "Applies a box (local average) filter. " +
-        "Unlike local mean, this filter uses a filter kernel where all pixels have the same weight. " +
+@SetJIPipeDocumentation(name = "Local mean 2D", description = "Calculates the local mean around each pixel. This is also referred as greyscale dilation. " +
         "If a multi-channel image is provided, the operation is applied to each channel. " +
         "If higher-dimensional data is provided, the filter is applied to each 2D slice.")
-@ConfigureJIPipeNode(menuPath = "Filter", nodeTypeCategory = ImagesNodeTypeCategory.class)
+@ConfigureJIPipeNode(menuPath = "Math\nLocal", nodeTypeCategory = ImagesNodeTypeCategory.class)
 @AddJIPipeInputSlot(value = ImagePlusData.class, name = "Input", create = true)
 @AddJIPipeOutputSlot(value = ImagePlusData.class, name = "Output", create = true)
-@AddJIPipeNodeAlias(nodeTypeCategory = ImageJNodeTypeCategory.class, menuPath = "Process", aliasName = "Smooth (any radius)")
-public class BoxFilter2Dv2Algorithm extends JIPipeSimpleIteratingAlgorithm {
+@AddJIPipeNodeAlias(nodeTypeCategory = ImageJNodeTypeCategory.class, menuPath = "Process\nFilters", aliasName = "Mean...")
+public class LocalMeanFilter2DAlgorithm extends JIPipeSimpleIteratingAlgorithm {
 
     private double radius = 1;
 
-    public BoxFilter2Dv2Algorithm(JIPipeNodeInfo info) {
+    /**
+     * Instantiates a new node type.
+     *
+     * @param info the info
+     */
+    public LocalMeanFilter2DAlgorithm(JIPipeNodeInfo info) {
         super(info);
     }
 
-    public BoxFilter2Dv2Algorithm(BoxFilter2Dv2Algorithm other) {
+    /**
+     * Instantiates a new node type.
+     *
+     * @param other the other
+     */
+    public LocalMeanFilter2DAlgorithm(LocalMeanFilter2DAlgorithm other) {
         super(other);
         this.radius = other.radius;
     }
@@ -65,16 +71,8 @@ public class BoxFilter2Dv2Algorithm extends JIPipeSimpleIteratingAlgorithm {
     protected void runIteration(JIPipeSingleIterationStep iterationStep, JIPipeIterationContext iterationContext, JIPipeGraphNodeRunContext runContext, JIPipeProgressInfo progressInfo) {
         ImagePlusData inputData = iterationStep.getInputData(getFirstInputSlot(), ImagePlusData.class, progressInfo);
         ImagePlus img = inputData.getDuplicateImage();
-        Convolver convolver = new Convolver();
-        final int kernelSize = (int) (radius * 2 + 1);
-        float[] kernel = new float[kernelSize * kernelSize];
-        Arrays.fill(kernel, 1);
-
-        convolver.setNormalize(true);
-        ImageJUtils.forEachSlice(img, imp -> {
-            ImageJUtils.convolveSlice(convolver, kernelSize, kernelSize, kernel, imp);
-        }, progressInfo);
-
+        RankFilters rankFilters = new RankFilters();
+        ImageJUtils.forEachSlice(img, ip -> rankFilters.rank(ip, radius, RankFilters.MEAN), progressInfo);
         iterationStep.addOutputData(getFirstOutputSlot(), new ImagePlusData(img), progressInfo);
     }
 
