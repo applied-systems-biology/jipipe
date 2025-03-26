@@ -42,9 +42,10 @@ import org.hkijena.jipipe.plugins.expressions.JIPipeExpressionParameter;
 import org.hkijena.jipipe.plugins.expressions.JIPipeExpressionParameterSettings;
 import org.hkijena.jipipe.plugins.imagejdatatypes.datatypes.ImagePlusData;
 import org.hkijena.jipipe.plugins.imagejdatatypes.datatypes.greyscale.ImagePlusGreyscaleData;
+import org.hkijena.jipipe.plugins.imagejdatatypes.util.ImageJIterationUtils;
 import org.hkijena.jipipe.plugins.imagejdatatypes.util.ImageJUtils;
-import org.hkijena.jipipe.plugins.imagejdatatypes.util.ImageSliceIndex;
-import org.hkijena.jipipe.plugins.imagejdatatypes.util.OptionalBitDepth;
+import org.hkijena.jipipe.plugins.imagejdatatypes.util.dimensions.ImageSliceIndex;
+import org.hkijena.jipipe.plugins.imagejdatatypes.util.dimensions.OptionalBitDepth;
 import org.hkijena.jipipe.utils.StringUtils;
 import org.hkijena.jipipe.utils.scripting.MacroUtils;
 import org.jgrapht.Graphs;
@@ -148,7 +149,7 @@ public class FastImageArithmeticsAlgorithm extends JIPipeIteratingAlgorithm {
 
         ImagePlus referenceImage = inputImagesMap.values().iterator().next();
         int finalTargetBitDepth = targetBitDepth;
-        ImagePlus outputImage = ImageJUtils.generateForEachIndexedZCTSlice(referenceImage, (referenceIp, index) ->
+        ImagePlus outputImage = ImageJIterationUtils.generateForEachIndexedZCTSlice(referenceImage, (referenceIp, index) ->
                 applyAST(inputImagesMap,
                         astNode,
                         index,

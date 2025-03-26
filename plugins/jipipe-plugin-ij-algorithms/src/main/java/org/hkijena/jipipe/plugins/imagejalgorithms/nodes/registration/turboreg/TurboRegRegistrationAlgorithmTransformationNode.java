@@ -1,7 +1,7 @@
 package org.hkijena.jipipe.plugins.imagejalgorithms.nodes.registration.turboreg;
 
 import org.hkijena.jipipe.plugins.imagejalgorithms.utils.turboreg.TurboRegTransformationInfo;
-import org.hkijena.jipipe.plugins.imagejdatatypes.util.ImageSliceIndex;
+import org.hkijena.jipipe.plugins.imagejdatatypes.util.dimensions.ImageSliceIndex;
 
 class TurboRegRegistrationAlgorithmTransformationNode {
     private final ImageSliceIndex sourceIndex;

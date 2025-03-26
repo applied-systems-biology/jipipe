@@ -44,8 +44,9 @@ import org.hkijena.jipipe.plugins.imagejalgorithms.utils.HoughLineSegments;
 import org.hkijena.jipipe.plugins.imagejdatatypes.datatypes.ROI2DListData;
 import org.hkijena.jipipe.plugins.imagejdatatypes.datatypes.greyscale.ImagePlusGreyscaleData;
 import org.hkijena.jipipe.plugins.imagejdatatypes.datatypes.greyscale.ImagePlusGreyscaleMaskData;
+import org.hkijena.jipipe.plugins.imagejdatatypes.util.ImageJIterationUtils;
 import org.hkijena.jipipe.plugins.imagejdatatypes.util.ImageJUtils;
-import org.hkijena.jipipe.plugins.imagejdatatypes.util.ImageSliceIndex;
+import org.hkijena.jipipe.plugins.imagejdatatypes.util.dimensions.ImageSliceIndex;
 import org.hkijena.jipipe.plugins.tables.datatypes.ResultsTableData;
 import org.hkijena.jipipe.utils.json.JsonUtils;
 
@@ -136,7 +137,7 @@ public class LineSegmentsHoughDetection2DAlgorithm extends JIPipeSimpleIterating
         Map<ImageSliceIndex, ImageProcessor> outputAccumulatorSlices = new HashMap<>();
         ROI2DListData outputPeaks = new ROI2DListData();
 
-        ImageJUtils.forEachIndexedZCTSliceWithProgress(inputMask, (ip, index, sliceProgress) -> {
+        ImageJIterationUtils.forEachIndexedZCTSliceWithProgress(inputMask, (ip, index, sliceProgress) -> {
 
             ImageProcessor bw = ip.duplicate();
             final int numPeakIterations = nmsAlgorithm == HoughLinesNMSAlgorithm.HoughArray ? 1 : this.numPeaks;

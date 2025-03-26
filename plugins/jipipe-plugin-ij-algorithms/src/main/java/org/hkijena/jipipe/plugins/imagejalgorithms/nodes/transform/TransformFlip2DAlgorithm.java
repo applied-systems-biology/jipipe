@@ -27,7 +27,7 @@ import org.hkijena.jipipe.api.nodes.iterationstep.JIPipeIterationContext;
 import org.hkijena.jipipe.api.nodes.iterationstep.JIPipeSingleIterationStep;
 import org.hkijena.jipipe.api.parameters.JIPipeParameter;
 import org.hkijena.jipipe.plugins.imagejdatatypes.datatypes.ImagePlusData;
-import org.hkijena.jipipe.plugins.imagejdatatypes.util.ImageJUtils;
+import org.hkijena.jipipe.plugins.imagejdatatypes.util.ImageJIterationUtils;
 
 import java.awt.*;
 
@@ -74,7 +74,7 @@ public class TransformFlip2DAlgorithm extends JIPipeSimpleIteratingAlgorithm {
         ImagePlus img = inputData.getDuplicateImage();
         boolean fliph = flipMode == FlipMode.Horizontal || flipMode == FlipMode.Both;
         boolean flipv = flipMode == FlipMode.Vertical || flipMode == FlipMode.Both;
-        ImageJUtils.forEachSlice(img, ip -> {
+        ImageJIterationUtils.forEachSlice(img, ip -> {
             Calibration cal = img.getCalibration();
             boolean transformOrigin = cal.xOrigin != 0 || cal.yOrigin != 0;
             if (fliph) {

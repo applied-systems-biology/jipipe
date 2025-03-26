@@ -26,7 +26,7 @@ import org.hkijena.jipipe.api.nodes.categories.ImagesNodeTypeCategory;
 import org.hkijena.jipipe.api.nodes.iterationstep.JIPipeIterationContext;
 import org.hkijena.jipipe.api.nodes.iterationstep.JIPipeSingleIterationStep;
 import org.hkijena.jipipe.plugins.imagejdatatypes.datatypes.fft.ImagePlusFFT2DData;
-import org.hkijena.jipipe.plugins.imagejdatatypes.util.ImageJUtils;
+import org.hkijena.jipipe.plugins.imagejdatatypes.util.ImageJIterationUtils;
 
 /**
  * Applies a FFT forward transformation
@@ -60,7 +60,7 @@ public class FFT2DSwapQuadrants extends JIPipeSimpleIteratingAlgorithm {
     protected void runIteration(JIPipeSingleIterationStep iterationStep, JIPipeIterationContext iterationContext, JIPipeGraphNodeRunContext runContext, JIPipeProgressInfo progressInfo) {
         ImagePlus fft = iterationStep.getInputData(getFirstInputSlot(), ImagePlusFFT2DData.class, progressInfo).getDuplicateImage();
         FHT fht = new FHT(new FloatProcessor(1, 1));
-        ImageJUtils.forEachSlice(fft, fht::swapQuadrants, progressInfo);
+        ImageJIterationUtils.forEachSlice(fft, fht::swapQuadrants, progressInfo);
         iterationStep.addOutputData(getFirstOutputSlot(), new ImagePlusFFT2DData(fft), progressInfo);
     }
 

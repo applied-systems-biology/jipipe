@@ -46,7 +46,7 @@ import org.hkijena.jipipe.api.parameters.JIPipeParameter;
 import org.hkijena.jipipe.plugins.expressions.JIPipeExpressionParameter;
 import org.hkijena.jipipe.plugins.expressions.JIPipeExpressionVariablesMap;
 import org.hkijena.jipipe.plugins.imagejdatatypes.datatypes.greyscale.ImagePlusGreyscaleData;
-import org.hkijena.jipipe.plugins.imagejdatatypes.util.ImageJUtils;
+import org.hkijena.jipipe.plugins.imagejdatatypes.util.ImageJIterationUtils;
 
 @SetJIPipeDocumentation(name = "Filter labels by thickness 2D", description = "Filter labels by their thickness as estimated by a EDT per label")
 @ConfigureJIPipeNode(menuPath = "Labels\nFilter", nodeTypeCategory = ImagesNodeTypeCategory.class)
@@ -77,7 +77,7 @@ public class FilterLabelsByThicknessAlgorithm extends JIPipeIteratingAlgorithm {
 
         if (image.getBitDepth() == 8) {
             ByteProcessor tempProcessor = new ByteProcessor(image.getWidth(), image.getHeight());
-            ImageJUtils.forEachIndexedZCTSliceWithProgress(image, (ip, index, stackProgress) -> {
+            ImageJIterationUtils.forEachIndexedZCTSliceWithProgress(image, (ip, index, stackProgress) -> {
 
                 // Collect existing labels
                 byte[] pixels = (byte[]) ip.getPixels();
@@ -143,7 +143,7 @@ public class FilterLabelsByThicknessAlgorithm extends JIPipeIteratingAlgorithm {
             }, progressInfo.resolve("Processing"));
         } else if (image.getBitDepth() == 16) {
             ByteProcessor tempProcessor = new ByteProcessor(image.getWidth(), image.getHeight());
-            ImageJUtils.forEachIndexedZCTSliceWithProgress(image, (ip, index, stackProgress) -> {
+            ImageJIterationUtils.forEachIndexedZCTSliceWithProgress(image, (ip, index, stackProgress) -> {
                 // Collect existing labels
                 short[] pixels = (short[]) ip.getPixels();
                 TIntSet existingLabels = new TIntHashSet();
@@ -208,7 +208,7 @@ public class FilterLabelsByThicknessAlgorithm extends JIPipeIteratingAlgorithm {
             }, progressInfo.resolve("Processing"));
         } else if (image.getBitDepth() == 32) {
             ByteProcessor tempProcessor = new ByteProcessor(image.getWidth(), image.getHeight());
-            ImageJUtils.forEachIndexedZCTSliceWithProgress(image, (ip, index, stackProgress) -> {
+            ImageJIterationUtils.forEachIndexedZCTSliceWithProgress(image, (ip, index, stackProgress) -> {
                 // Collect existing labels
                 float[] pixels = (float[]) ip.getPixels();
                 TFloatSet existingLabels = new TFloatHashSet();

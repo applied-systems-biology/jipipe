@@ -28,6 +28,7 @@ import org.hkijena.jipipe.api.nodes.iterationstep.JIPipeIterationContext;
 import org.hkijena.jipipe.api.nodes.iterationstep.JIPipeSingleIterationStep;
 import org.hkijena.jipipe.plugins.imagejdatatypes.datatypes.color.ImagePlusColorHSBData;
 import org.hkijena.jipipe.plugins.imagejdatatypes.datatypes.greyscale.ImagePlusGreyscale8UData;
+import org.hkijena.jipipe.plugins.imagejdatatypes.util.ImageJIterationUtils;
 import org.hkijena.jipipe.plugins.imagejdatatypes.util.ImageJUtils;
 
 
@@ -58,7 +59,7 @@ public class MergeHSBChannelsAlgorithm extends JIPipeIteratingAlgorithm {
         }
         ImagePlus output = IJ.createHyperStack("HSB", imageH.getWidth(), imageH.getHeight(), imageH.getNChannels(), imageH.getNSlices(), imageH.getNFrames(), 24);
         output.copyScale(imageH);
-        ImageJUtils.forEachIndexedZCTSlice(output, (targetIp, index) -> {
+        ImageJIterationUtils.forEachIndexedZCTSlice(output, (targetIp, index) -> {
             byte[] sourceH = (byte[]) ImageJUtils.getSliceZero(imageH, index).getPixels();
             byte[] sourceS = (byte[]) ImageJUtils.getSliceZero(imageS, index).getPixels();
             byte[] sourceB = (byte[]) ImageJUtils.getSliceZero(imageB, index).getPixels();

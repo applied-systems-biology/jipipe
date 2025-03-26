@@ -35,8 +35,9 @@ import org.hkijena.jipipe.plugins.ijfilaments.datatypes.Filaments3DGraphData;
 import org.hkijena.jipipe.plugins.ijfilaments.environments.TSOAXEnvironment;
 import org.hkijena.jipipe.plugins.ijfilaments.util.TSOAXUtils;
 import org.hkijena.jipipe.plugins.imagejdatatypes.datatypes.greyscale.ImagePlusGreyscaleData;
+import org.hkijena.jipipe.plugins.imagejdatatypes.util.ImageJIterationUtils;
 import org.hkijena.jipipe.plugins.imagejdatatypes.util.ImageJUtils;
-import org.hkijena.jipipe.plugins.imagejdatatypes.util.ImageSliceIndex;
+import org.hkijena.jipipe.plugins.imagejdatatypes.util.dimensions.ImageSliceIndex;
 import org.hkijena.jipipe.plugins.parameters.library.primitives.optional.OptionalTextAnnotationNameParameter;
 import org.hkijena.jipipe.plugins.tables.datatypes.ResultsTableData;
 import org.hkijena.jipipe.utils.PathUtils;
@@ -105,7 +106,7 @@ public class TSOAX2DAlgorithm extends TSOAXAlgorithm {
             Path inputDir = workDirectory.resolve("input");
             PathUtils.createDirectories(inputDir.resolve("img"));
 
-            ImageJUtils.forEachIndexedCTStack(byZImg, (subStack, index, ctProgress) -> {
+            ImageJIterationUtils.forEachIndexedCTStack(byZImg, (subStack, index, ctProgress) -> {
                 Path imageFile = inputDir.resolve("img").resolve("c" + index.getC() + "t" + index.getT() + ".tif");
                 IJ.saveAsTiff(subStack, imageFile.toString());
             }, byZProgress.resolve("Writing inputs"));

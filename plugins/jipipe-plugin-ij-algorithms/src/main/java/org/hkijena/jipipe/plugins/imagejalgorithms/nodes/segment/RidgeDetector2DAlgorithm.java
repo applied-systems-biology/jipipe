@@ -37,8 +37,8 @@ import org.hkijena.jipipe.api.parameters.JIPipeParameterTree;
 import org.hkijena.jipipe.plugins.imagejdatatypes.datatypes.ROI2DListData;
 import org.hkijena.jipipe.plugins.imagejdatatypes.datatypes.greyscale.ImagePlusGreyscaleData;
 import org.hkijena.jipipe.plugins.imagejdatatypes.datatypes.greyscale.ImagePlusGreyscaleMaskData;
-import org.hkijena.jipipe.plugins.imagejdatatypes.util.ImageJUtils;
-import org.hkijena.jipipe.plugins.imagejdatatypes.util.ImageSliceIndex;
+import org.hkijena.jipipe.plugins.imagejdatatypes.util.ImageJIterationUtils;
+import org.hkijena.jipipe.plugins.imagejdatatypes.util.dimensions.ImageSliceIndex;
 
 import java.awt.*;
 
@@ -106,7 +106,7 @@ public class RidgeDetector2DAlgorithm extends JIPipeSimpleIteratingAlgorithm {
 
         ROI2DListData outputLines = new ROI2DListData();
         ROI2DListData outputJunctions = new ROI2DListData();
-        ImagePlus outputMask = ImageJUtils.generateForEachIndexedZCTSlice(inputImage, (ip, index) -> {
+        ImagePlus outputMask = ImageJIterationUtils.generateForEachIndexedZCTSlice(inputImage, (ip, index) -> {
             double sigma_ = sigma;
             double lowerThreshold_ = lowerThreshold;
             double upperThreshold_ = upperThreshold;

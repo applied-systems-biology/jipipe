@@ -22,6 +22,7 @@ import org.hkijena.jipipe.api.parameters.AbstractJIPipeParameterCollection;
 import org.hkijena.jipipe.api.parameters.JIPipeParameter;
 import org.hkijena.jipipe.plugins.ij3d.datatypes.ROI3D;
 import org.hkijena.jipipe.plugins.ij3d.datatypes.ROI3DListData;
+import org.hkijena.jipipe.plugins.imagejdatatypes.util.ImageJIterationUtils;
 import org.hkijena.jipipe.plugins.imagejdatatypes.util.ImageJUtils;
 import org.hkijena.jipipe.plugins.parameters.library.colors.OptionalColorParameter;
 import org.hkijena.jipipe.plugins.parameters.library.primitives.NumberParameterSettings;
@@ -107,7 +108,7 @@ public class Roi3DDrawer extends AbstractJIPipeParameterCollection {
 
         if (drawOver) {
             ImagePlus rgbImage = ImageJUtils.duplicate(referenceImage);
-            ImageJUtils.forEachIndexedZCTSlice(rgbImage, (outputIp, index) -> {
+            ImageJIterationUtils.forEachIndexedZCTSlice(rgbImage, (outputIp, index) -> {
                 ImageProcessor colorIp = ImageJUtils.getSliceZero(rgbLabels, index);
                 int[] outputPixels = (int[]) outputIp.getPixels();
                 int[] colorPixels = (int[]) colorIp.getPixels();

@@ -54,6 +54,7 @@ import org.hkijena.jipipe.plugins.imagejdatatypes.datatypes.ImagePlusData;
 import org.hkijena.jipipe.plugins.imagejdatatypes.datatypes.d3.greyscale.ImagePlus3DGreyscale16UData;
 import org.hkijena.jipipe.plugins.imagejdatatypes.datatypes.d3.greyscale.ImagePlus3DGreyscaleMaskData;
 import org.hkijena.jipipe.plugins.imagejdatatypes.datatypes.greyscale.ImagePlusGreyscale16UData;
+import org.hkijena.jipipe.plugins.imagejdatatypes.util.ImageJIterationUtils;
 import org.hkijena.jipipe.plugins.imagejdatatypes.util.ImageJUtils;
 import org.hkijena.jipipe.plugins.omnipose.OmniposeEnvironmentAccessNode;
 import org.hkijena.jipipe.plugins.omnipose.OmniposePlugin;
@@ -515,7 +516,7 @@ public class Omnipose0TrainingAlgorithm extends JIPipeSingleIterationAlgorithm i
 
     private void saveImagesToPath(Path dir, AtomicInteger imageCounter, JIPipeProgressInfo rowProgress, ImagePlus image, ImagePlus mask) {
         if (image.getStackSize() > 1 && !enable3DSegmentation) {
-            ImageJUtils.forEachIndexedZCTSlice(image, (ip, index) -> {
+            ImageJIterationUtils.forEachIndexedZCTSlice(image, (ip, index) -> {
                 ImageProcessor maskSlice = ImageJUtils.getSliceZero(mask, index);
                 ImagePlus maskSliceImage = new ImagePlus("slice", maskSlice);
                 ImagePlus imageSliceImage = new ImagePlus("slice", ip);

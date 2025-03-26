@@ -33,7 +33,7 @@ import org.hkijena.jipipe.api.parameters.JIPipeParameter;
 import org.hkijena.jipipe.plugins.imagejdatatypes.datatypes.ImagePlusData;
 import org.hkijena.jipipe.plugins.imagejdatatypes.datatypes.ROI2DListData;
 import org.hkijena.jipipe.plugins.imagejdatatypes.datatypes.d2.ImagePlus2DData;
-import org.hkijena.jipipe.plugins.imagejdatatypes.util.ImageJUtils;
+import org.hkijena.jipipe.plugins.imagejdatatypes.util.ImageJIterationUtils;
 import org.hkijena.jipipe.plugins.parameters.library.colors.OptionalColorParameter;
 import org.hkijena.jipipe.plugins.parameters.library.primitives.optional.OptionalTextAnnotationNameParameter;
 import org.hkijena.jipipe.plugins.parameters.library.roi.Anchor;
@@ -83,7 +83,7 @@ public class ExtractFromROIAlgorithm extends JIPipeIteratingAlgorithm {
         ImagePlusData image = iterationStep.getInputData("Image", ImagePlusData.class, progressInfo);
         ROI2DListData rois = iterationStep.getInputData("ROI", ROI2DListData.class, progressInfo);
 
-        ImageJUtils.forEachIndexedZCTSlice(image.getImage(), (processor, index) -> {
+        ImageJIterationUtils.forEachIndexedZCTSlice(image.getImage(), (processor, index) -> {
             for (Roi roi : rois) {
                 if (ROI2DListData.isVisibleIn(roi, index, false, false, false)) {
                     ImageProcessor resultProcessor;

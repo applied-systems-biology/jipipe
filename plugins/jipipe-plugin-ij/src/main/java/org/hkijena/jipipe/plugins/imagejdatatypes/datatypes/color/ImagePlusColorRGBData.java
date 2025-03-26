@@ -26,7 +26,7 @@ import org.hkijena.jipipe.plugins.imagejdatatypes.colorspace.RGBColorSpace;
 import org.hkijena.jipipe.plugins.imagejdatatypes.converters.ImplicitImageTypeConverter;
 import org.hkijena.jipipe.plugins.imagejdatatypes.datatypes.ImagePlusData;
 import org.hkijena.jipipe.plugins.imagejdatatypes.datatypes.ImageTypeInfo;
-import org.hkijena.jipipe.plugins.imagejdatatypes.util.ImageDimensions;
+import org.hkijena.jipipe.plugins.imagejdatatypes.util.dimensions.ImageDimensions;
 import org.hkijena.jipipe.plugins.imagejdatatypes.util.ImageJUtils;
 
 /**

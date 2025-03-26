@@ -36,8 +36,8 @@ import org.hkijena.jipipe.plugins.expressions.JIPipeExpressionVariablesMap;
 import org.hkijena.jipipe.plugins.expressions.variables.JIPipeTextAnnotationsExpressionParameterVariablesInfo;
 import org.hkijena.jipipe.plugins.imagejdatatypes.datatypes.ImagePlusData;
 import org.hkijena.jipipe.plugins.imagejdatatypes.datatypes.ROI2DListData;
-import org.hkijena.jipipe.plugins.imagejdatatypes.util.Image5DExpressionParameterVariablesInfo;
-import org.hkijena.jipipe.plugins.imagejdatatypes.util.ImageJUtils;
+import org.hkijena.jipipe.plugins.imagejdatatypes.util.ShapeUtils;
+import org.hkijena.jipipe.plugins.imagejdatatypes.util.expressions.Image5DExpressionParameterVariablesInfo;
 import org.hkijena.jipipe.plugins.parameters.library.collections.ParameterCollectionList;
 import org.hkijena.jipipe.plugins.parameters.library.collections.ParameterCollectionListTemplate;
 
@@ -109,7 +109,7 @@ public class DrawLineOvalRectangleRoiAlgorithm extends JIPipeIteratingAlgorithm 
                 }
                 break;
                 case Oval: {
-                    Rectangle2D.Double rectangle = ImageJUtils.pointsToRectangle(x1, y1, x2, y2);
+                    Rectangle2D.Double rectangle = ShapeUtils.pointsToRectangle(x1, y1, x2, y2);
                     OvalRoi roi = new OvalRoi(rectangle.x, rectangle.y, rectangle.width, rectangle.height);
                     roiProperties.applyTo(roi, variables);
                     target.add(roi);
@@ -118,7 +118,7 @@ public class DrawLineOvalRectangleRoiAlgorithm extends JIPipeIteratingAlgorithm 
                 case Rectangle: {
                     double arcWidth = entry.getArcWidth().evaluateToDouble(variables);
                     double arcHeight = entry.getArcHeight().evaluateToDouble(variables);
-                    Rectangle2D.Double rectangle = ImageJUtils.pointsToRectangle(x1, y1, x2, y2);
+                    Rectangle2D.Double rectangle = ShapeUtils.pointsToRectangle(x1, y1, x2, y2);
                     if (arcWidth <= 0 && arcHeight <= 0) {
                         ShapeRoi roi = new ShapeRoi(rectangle);
                         roiProperties.applyTo(roi, variables);

@@ -19,7 +19,7 @@ import ij.process.ByteProcessor;
 import ij.process.ImageProcessor;
 import org.hkijena.jipipe.api.JIPipeProgressInfo;
 import org.hkijena.jipipe.plugins.imagejdatatypes.datatypes.ROI2DListData;
-import org.hkijena.jipipe.plugins.imagejdatatypes.util.ImageJUtils;
+import org.hkijena.jipipe.plugins.imagejdatatypes.util.ImageJIterationUtils;
 
 
 public enum ImageROITargetArea {
@@ -40,7 +40,7 @@ public enum ImageROITargetArea {
     public static ImagePlus createWhiteMask(ImagePlus img) {
         ImagePlus result = IJ.createImage(img.getTitle(), img.getWidth(), img.getHeight(), img.getStackSize(), 8);
         result.setDimensions(img.getNChannels(), img.getNSlices(), img.getNFrames());
-        ImageJUtils.forEachIndexedZCTSlice(result, (processor, index) -> {
+        ImageJIterationUtils.forEachIndexedZCTSlice(result, (processor, index) -> {
             processor.setValue(255);
             processor.setRoi(0, 0, processor.getWidth(), processor.getHeight());
             processor.fill();

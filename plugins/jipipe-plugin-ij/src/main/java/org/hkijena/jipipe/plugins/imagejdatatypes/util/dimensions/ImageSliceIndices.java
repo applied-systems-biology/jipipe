@@ -11,7 +11,7 @@
  * See the LICENSE file provided with the code for the full license.
  */
 
-package org.hkijena.jipipe.plugins.imagejdatatypes.util;
+package org.hkijena.jipipe.plugins.imagejdatatypes.util.dimensions;
 
 import gnu.trove.list.TIntList;
 import gnu.trove.list.array.TIntArrayList;

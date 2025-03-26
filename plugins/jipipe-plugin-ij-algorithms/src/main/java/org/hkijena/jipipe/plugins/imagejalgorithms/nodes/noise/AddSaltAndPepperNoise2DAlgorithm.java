@@ -27,7 +27,7 @@ import org.hkijena.jipipe.api.nodes.iterationstep.JIPipeSingleIterationStep;
 import org.hkijena.jipipe.api.parameters.JIPipeParameter;
 import org.hkijena.jipipe.plugins.imagejdatatypes.datatypes.ImagePlusData;
 import org.hkijena.jipipe.plugins.imagejdatatypes.datatypes.greyscale.ImagePlusGreyscale8UData;
-import org.hkijena.jipipe.plugins.imagejdatatypes.util.ImageJUtils;
+import org.hkijena.jipipe.plugins.imagejdatatypes.util.ImageJIterationUtils;
 
 /**
  * Wrapper around {@link ij.process.ImageProcessor}
@@ -71,7 +71,7 @@ public class AddSaltAndPepperNoise2DAlgorithm extends JIPipeSimpleIteratingAlgor
         ImagePlusData inputData = iterationStep.getInputData(getFirstInputSlot(), ImagePlusGreyscale8UData.class, progressInfo);
         ImagePlus img = inputData.getDuplicateImage();
         SaltAndPepper saltAndPepper = new SaltAndPepper();
-        ImageJUtils.forEachSlice(img, ip -> saltAndPepper.add(ip, percent / 100.0), progressInfo);
+        ImageJIterationUtils.forEachSlice(img, ip -> saltAndPepper.add(ip, percent / 100.0), progressInfo);
         iterationStep.addOutputData(getFirstOutputSlot(), new ImagePlusData(img), progressInfo);
     }
 

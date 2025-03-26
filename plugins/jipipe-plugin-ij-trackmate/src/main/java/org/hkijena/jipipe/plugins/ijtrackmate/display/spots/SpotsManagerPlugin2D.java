@@ -37,7 +37,7 @@ import org.hkijena.jipipe.plugins.ijtrackmate.nodes.spots.MeasureSpotsNode;
 import org.hkijena.jipipe.plugins.ijtrackmate.parameters.SpotFeature;
 import org.hkijena.jipipe.plugins.ijtrackmate.settings.ImageViewerUISpotsDisplayApplicationSettings;
 import org.hkijena.jipipe.plugins.ijtrackmate.utils.SpotDrawer;
-import org.hkijena.jipipe.plugins.imagejdatatypes.util.ImageSliceIndex;
+import org.hkijena.jipipe.plugins.imagejdatatypes.util.dimensions.ImageSliceIndex;
 import org.hkijena.jipipe.plugins.imageviewer.legacy.JIPipeDesktopLegacyImageViewer;
 import org.hkijena.jipipe.plugins.imageviewer.legacy.api.JIPipeDesktopLegacyImageViewerPlugin2D;
 import org.hkijena.jipipe.plugins.parameters.library.markup.HTMLText;

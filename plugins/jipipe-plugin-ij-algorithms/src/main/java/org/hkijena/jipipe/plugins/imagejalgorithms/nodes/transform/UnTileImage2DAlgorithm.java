@@ -32,6 +32,7 @@ import org.hkijena.jipipe.api.nodes.iterationstep.JIPipeIterationContext;
 import org.hkijena.jipipe.api.nodes.iterationstep.JIPipeMultiIterationStep;
 import org.hkijena.jipipe.api.parameters.JIPipeParameter;
 import org.hkijena.jipipe.plugins.imagejdatatypes.datatypes.ImagePlusData;
+import org.hkijena.jipipe.plugins.imagejdatatypes.util.ImageJIterationUtils;
 import org.hkijena.jipipe.plugins.imagejdatatypes.util.ImageJUtils;
 import org.hkijena.jipipe.plugins.parameters.library.primitives.optional.OptionalTextAnnotationNameParameter;
 
@@ -155,7 +156,7 @@ public class UnTileImage2DAlgorithm extends JIPipeMergingAlgorithm {
         for (Map.Entry<ImagePlus, Point> entry : imageLocations.entrySet()) {
             ImagePlus tile = ImageJUtils.convertToSameTypeIfNeeded(entry.getKey(), mergedImage, true);
             JIPipeProgressInfo tileProgress = progressInfo.resolveAndLog("Writing tile " + entry.getKey() + " [" + tile + "] " + " to " + entry.getValue());
-            ImageJUtils.forEachIndexedZCTSlice(tile, (sourceIp, index) -> {
+            ImageJIterationUtils.forEachIndexedZCTSlice(tile, (sourceIp, index) -> {
                 ImageProcessor targetIp = ImageJUtils.getSliceZero(mergedImage, index);
                 targetIp.insert(sourceIp, entry.getValue().x, entry.getValue().y);
             }, tileProgress);

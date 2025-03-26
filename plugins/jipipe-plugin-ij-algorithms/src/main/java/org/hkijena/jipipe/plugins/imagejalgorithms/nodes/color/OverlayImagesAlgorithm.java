@@ -41,6 +41,7 @@ import org.hkijena.jipipe.api.validation.contexts.GraphNodeValidationReportConte
 import org.hkijena.jipipe.plugins.imagejdatatypes.datatypes.ImagePlusData;
 import org.hkijena.jipipe.plugins.imagejdatatypes.datatypes.color.ImagePlusColorRGBData;
 import org.hkijena.jipipe.plugins.imagejdatatypes.datatypes.greyscale.ImagePlusGreyscale8UData;
+import org.hkijena.jipipe.plugins.imagejdatatypes.util.ImageJIterationUtils;
 import org.hkijena.jipipe.plugins.imagejdatatypes.util.ImageJUtils;
 import org.hkijena.jipipe.plugins.parameters.library.graph.InputSlotMapParameterCollection;
 
@@ -139,7 +140,7 @@ public class OverlayImagesAlgorithm extends JIPipeIteratingAlgorithm {
         final int st = inputImages.get(0).getNFrames();
         ImagePlus resultImage = IJ.createHyperStack(getDisplayName(), sx, sy, sc, sz, st, 24);
 
-        ImageJUtils.forEachIndexedZCTSlice(resultImage, (resultIp, index) -> {
+        ImageJIterationUtils.forEachIndexedZCTSlice(resultImage, (resultIp, index) -> {
             for (JIPipeDataSlot inputSlot : getInputSlots()) {
                 Channel channel = channelMap.get(inputSlot);
                 ImagePlus inputImage = channelInputMap.get(inputSlot);

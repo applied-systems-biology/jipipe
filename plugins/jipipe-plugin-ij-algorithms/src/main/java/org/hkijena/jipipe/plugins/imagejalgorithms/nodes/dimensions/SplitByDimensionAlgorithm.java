@@ -31,7 +31,8 @@ import org.hkijena.jipipe.api.nodes.iterationstep.JIPipeSingleIterationStep;
 import org.hkijena.jipipe.api.parameters.JIPipeParameter;
 import org.hkijena.jipipe.plugins.expressions.JIPipeExpressionVariablesMap;
 import org.hkijena.jipipe.plugins.imagejdatatypes.datatypes.ImagePlusData;
-import org.hkijena.jipipe.plugins.imagejdatatypes.util.HyperstackDimension;
+import org.hkijena.jipipe.plugins.imagejdatatypes.util.ImageJIterationUtils;
+import org.hkijena.jipipe.plugins.imagejdatatypes.util.dimensions.HyperstackDimension;
 import org.hkijena.jipipe.plugins.imagejdatatypes.util.ImageJUtils;
 import org.hkijena.jipipe.plugins.parameters.library.graph.OutputSlotMapParameterCollection;
 import org.hkijena.jipipe.plugins.parameters.library.primitives.optional.OptionalIntegerRange;
@@ -82,7 +83,7 @@ public class SplitByDimensionAlgorithm extends JIPipeSimpleIteratingAlgorithm {
                 JIPipeProgressInfo stackProgressInfo = progressInfo.resolveAndLog("Output channel", c, img.getNChannels());
                 ImageStack stack = new ImageStack(img.getWidth(), img.getHeight(), img.getNFrames() * img.getNSlices());
                 int finalC = c;
-                ImageJUtils.forEachIndexedZCTSlice(img, (ip, index) -> {
+                ImageJIterationUtils.forEachIndexedZCTSlice(img, (ip, index) -> {
                     if (index.getC() != finalC)
                         return;
                     int stackIndex = ImageJUtils.oneSliceIndexToOneStackIndex(1, index.getZ() + 1, index.getT() + 1, 1, img.getNSlices(), img.getNFrames());
@@ -110,7 +111,7 @@ public class SplitByDimensionAlgorithm extends JIPipeSimpleIteratingAlgorithm {
                 JIPipeProgressInfo stackProgressInfo = progressInfo.resolveAndLog("Output slice", z, img.getNSlices());
                 ImageStack stack = new ImageStack(img.getWidth(), img.getHeight(), img.getNFrames() * img.getNChannels());
                 int finalZ = z;
-                ImageJUtils.forEachIndexedZCTSlice(img, (ip, index) -> {
+                ImageJIterationUtils.forEachIndexedZCTSlice(img, (ip, index) -> {
                     if (index.getZ() != finalZ)
                         return;
                     int stackIndex = ImageJUtils.oneSliceIndexToOneStackIndex(1 + index.getC(), 1, index.getT() + 1, img.getNChannels(), 1, img.getNFrames());
@@ -138,7 +139,7 @@ public class SplitByDimensionAlgorithm extends JIPipeSimpleIteratingAlgorithm {
                 JIPipeProgressInfo stackProgressInfo = progressInfo.resolveAndLog("Output slice", t, img.getNFrames());
                 ImageStack stack = new ImageStack(img.getWidth(), img.getHeight(), img.getNSlices() * img.getNChannels());
                 int finalT = t;
-                ImageJUtils.forEachIndexedZCTSlice(img, (ip, index) -> {
+                ImageJIterationUtils.forEachIndexedZCTSlice(img, (ip, index) -> {
                     if (index.getT() != finalT)
                         return;
                     int stackIndex = ImageJUtils.oneSliceIndexToOneStackIndex(1 + index.getC(), 1 + index.getZ(), 1, img.getNChannels(), img.getNSlices(), 1);

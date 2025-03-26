@@ -36,7 +36,7 @@ import org.hkijena.jipipe.plugins.expressions.custom.JIPipeCustomExpressionVaria
 import org.hkijena.jipipe.plugins.expressions.variables.JIPipeTextAnnotationsExpressionParameterVariablesInfo;
 import org.hkijena.jipipe.plugins.imagejalgorithms.nodes.roi.modify.ChangeRoiPropertiesFromExpressionsAlgorithm;
 import org.hkijena.jipipe.plugins.imagejdatatypes.datatypes.ROI2DListData;
-import org.hkijena.jipipe.plugins.imagejdatatypes.util.ImageJUtils;
+import org.hkijena.jipipe.plugins.imagejdatatypes.util.ImageJROIUtils;
 import org.hkijena.jipipe.plugins.parameters.library.primitives.StringParameterSettings;
 import org.hkijena.jipipe.plugins.parameters.library.primitives.optional.OptionalStringParameter;
 import org.hkijena.jipipe.utils.ColorUtils;
@@ -92,7 +92,7 @@ public class ExplodeRoiAlgorithm extends JIPipeSimpleIteratingAlgorithm {
             if (generatedAnnotation.isEnabled() && !StringUtils.isNullOrEmpty(generatedAnnotation.getContent())) {
 
                 // Make metadata accessible
-                Map<String, String> roiProperties = ImageJUtils.getRoiProperties(roi);
+                Map<String, String> roiProperties = ImageJROIUtils.getRoiProperties(roi);
                 variables.set("metadata", roiProperties);
                 for (Map.Entry<String, String> entry : roiProperties.entrySet()) {
                     variables.set("metadata." + entry.getKey(), entry.getValue());

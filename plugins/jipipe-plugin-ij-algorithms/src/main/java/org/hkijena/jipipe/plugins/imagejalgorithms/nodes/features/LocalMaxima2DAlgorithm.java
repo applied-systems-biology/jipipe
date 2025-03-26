@@ -28,7 +28,7 @@ import org.hkijena.jipipe.api.nodes.iterationstep.JIPipeIterationContext;
 import org.hkijena.jipipe.api.nodes.iterationstep.JIPipeSingleIterationStep;
 import org.hkijena.jipipe.api.parameters.JIPipeParameter;
 import org.hkijena.jipipe.plugins.imagejdatatypes.datatypes.ImagePlusData;
-import org.hkijena.jipipe.plugins.imagejdatatypes.util.ImageJUtils;
+import org.hkijena.jipipe.plugins.imagejdatatypes.util.ImageJIterationUtils;
 
 /**
  * Wrapper around {@link ij.plugin.filter.MaximumFinder}
@@ -84,7 +84,7 @@ public class LocalMaxima2DAlgorithm extends JIPipeSimpleIteratingAlgorithm {
 
         ImageStack resultStack = new ImageStack(img.getWidth(), img.getHeight(), img.getStackSize());
         MaximumFinder maximumFinder = new MaximumFinder();
-        ImageJUtils.forEachIndexedSlice(img, (imp, index) -> {
+        ImageJIterationUtils.forEachIndexedSlice(img, (imp, index) -> {
             ByteProcessor maxima = maximumFinder.findMaxima(imp,
                     heightTolerance,
                     strict,

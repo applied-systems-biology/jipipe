@@ -34,7 +34,7 @@ import org.hkijena.jipipe.plugins.expressions.*;
 import org.hkijena.jipipe.plugins.expressions.custom.JIPipeCustomExpressionVariablesParameterVariablesInfo;
 import org.hkijena.jipipe.plugins.expressions.variables.JIPipeTextAnnotationsExpressionParameterVariablesInfo;
 import org.hkijena.jipipe.plugins.imagejdatatypes.datatypes.ROI2DListData;
-import org.hkijena.jipipe.plugins.imagejdatatypes.util.ImageJUtils;
+import org.hkijena.jipipe.plugins.imagejdatatypes.util.ImageJROIUtils;
 import org.hkijena.jipipe.plugins.tables.datatypes.ResultsTableData;
 import org.hkijena.jipipe.utils.ColorUtils;
 import org.hkijena.jipipe.utils.StringUtils;
@@ -137,7 +137,7 @@ public class ChangeRoiPropertiesFromTableAlgorithm extends JIPipeIteratingAlgori
             t = roi.getTPosition();
 
             // Make metadata accessible
-            Map<String, String> roiProperties = ImageJUtils.getRoiProperties(roi);
+            Map<String, String> roiProperties = ImageJROIUtils.getRoiProperties(roi);
             writeROIMetadataToVariables(variables, roiProperties, roiIndex, inputRois, x, y, z, c, t, roi);
 
             // Find a matching column

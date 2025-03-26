@@ -13,7 +13,6 @@
 
 package org.hkijena.jipipe.plugins.imagejdatatypes.util;
 
-import com.fasterxml.jackson.databind.JsonNode;
 import com.google.common.collect.ImmutableList;
 import com.google.common.collect.Iterables;
 import gnu.trove.list.TIntList;
@@ -25,99 +24,45 @@ import gnu.trove.map.TIntIntMap;
 import gnu.trove.map.hash.TIntIntHashMap;
 import ij.*;
 import ij.gui.*;
-import ij.measure.Calibration;
-import ij.measure.Measurements;
 import ij.plugin.PlugIn;
 import ij.plugin.RoiScaler;
 import ij.plugin.filter.AVI_Writer;
 import ij.plugin.filter.Convolver;
-import ij.plugin.filter.EDM;
 import ij.process.*;
 import org.hkijena.jipipe.api.JIPipeProgressInfo;
 import org.hkijena.jipipe.api.data.thumbnails.JIPipeImageThumbnailData;
 import org.hkijena.jipipe.api.validation.JIPipeValidationRuntimeException;
 import org.hkijena.jipipe.plugins.imagejdatatypes.colorspace.ColorSpace;
 import org.hkijena.jipipe.plugins.imagejdatatypes.datatypes.ImagePlusData;
-import org.hkijena.jipipe.plugins.imagejdatatypes.datatypes.ROI2DListData;
 import org.hkijena.jipipe.plugins.imagejdatatypes.datatypes.color.ImagePlusColorRGBData;
 import org.hkijena.jipipe.plugins.imagejdatatypes.datatypes.greyscale.ImagePlusGreyscale16UData;
 import org.hkijena.jipipe.plugins.imagejdatatypes.datatypes.greyscale.ImagePlusGreyscale32FData;
 import org.hkijena.jipipe.plugins.imagejdatatypes.datatypes.greyscale.ImagePlusGreyscale8UData;
-import org.hkijena.jipipe.plugins.imagejdatatypes.util.measure.ImageStatisticsSetParameter;
-import org.hkijena.jipipe.plugins.imagejdatatypes.util.measure.Measurement;
+import org.hkijena.jipipe.plugins.imagejdatatypes.util.dimensions.BitDepth;
+import org.hkijena.jipipe.plugins.imagejdatatypes.util.dimensions.HyperstackDimension;
+import org.hkijena.jipipe.plugins.imagejdatatypes.util.dimensions.ImageSliceIndex;
 import org.hkijena.jipipe.plugins.parameters.library.colors.ColorMap;
 import org.hkijena.jipipe.plugins.parameters.library.primitives.vectors.Vector2dParameter;
 import org.hkijena.jipipe.plugins.parameters.library.quantities.Quantity;
 import org.hkijena.jipipe.plugins.parameters.library.roi.Anchor;
-import org.hkijena.jipipe.plugins.tables.datatypes.ResultsTableData;
 import org.hkijena.jipipe.utils.*;
 
 import javax.swing.*;
 import java.awt.*;
 import java.awt.geom.AffineTransform;
 import java.awt.geom.PathIterator;
-import java.awt.geom.Point2D;
-import java.awt.geom.Rectangle2D;
 import java.awt.image.BufferedImage;
 import java.awt.image.DataBufferByte;
-import java.io.ByteArrayInputStream;
 import java.io.IOException;
-import java.io.InputStream;
-import java.io.StringWriter;
-import java.lang.reflect.Field;
-import java.nio.charset.StandardCharsets;
 import java.nio.file.Path;
 import java.util.*;
 import java.util.List;
-import java.util.function.BiConsumer;
-import java.util.function.BiFunction;
-import java.util.function.Consumer;
 import java.util.stream.Collectors;
 
 /**
  * Utility functions for ImageJ
  */
 public class ImageJUtils {
-
-    /**
-     * Creates a Rectangle from two points (x1, y1) and (x2, y2).
-     *
-     * @param x1 the x-coordinate of the first point
-     * @param y1 the y-coordinate of the first point
-     * @param x2 the x-coordinate of the second point
-     * @param y2 the y-coordinate of the second point
-     * @return a Rectangle object representing the area between the two points
-     */
-    public static Rectangle pointsToRectangle(int x1, int y1, int x2, int y2) {
-        // Calculate the top-left corner and dimensions
-        int x = Math.min(x1, x2);
-        int y = Math.min(y1, y2);
-        int width = Math.abs(x2 - x1);
-        int height = Math.abs(y2 - y1);
-
-        // Create and return the Rectangle
-        return new Rectangle(x, y, width, height);
-    }
-
-    /**
-     * Creates a Rectangle2D.Double from two points (x1, y1) and (x2, y2).
-     *
-     * @param x1 the x-coordinate of the first point
-     * @param y1 the y-coordinate of the first point
-     * @param x2 the x-coordinate of the second point
-     * @param y2 the y-coordinate of the second point
-     * @return a Rectangle2D.Double object representing the area between the two points
-     */
-    public static Rectangle2D.Double pointsToRectangle(double x1, double y1, double x2, double y2) {
-        // Calculate the top-left corner and dimensions
-        double x = Math.min(x1, x2);
-        double y = Math.min(y1, y2);
-        double width = Math.abs(x2 - x1);
-        double height = Math.abs(y2 - y1);
-
-        // Create and return the Rectangle2D.Double
-        return new Rectangle2D.Double(x, y, width, height);
-    }
 
 
     public static ImageProcessor extractFromProcessor(ImageProcessor processor, Rectangle source) {
@@ -126,31 +71,6 @@ public class ImageJUtils {
             return processor.crop();
         } finally {
             processor.setRoi((Roi) null);
-        }
-    }
-
-    public static ResultsTableData measureROI(Roi roi, ImagePlus reference, boolean physicalUnits, Measurement... statistics) {
-        ImageStatisticsSetParameter statisticsSetParameter = new ImageStatisticsSetParameter();
-        if (statistics.length > 0) {
-            statisticsSetParameter.getValues().clear();
-            for (Measurement statistic : statistics) {
-                statisticsSetParameter.getValues().add(statistic);
-            }
-        }
-        ROI2DListData dummy = new ROI2DListData();
-        dummy.add(roi);
-        return dummy.measure(reference, statisticsSetParameter, true, physicalUnits);
-    }
-
-    public static Roi intersectROI(Roi roi1, Roi roi2) {
-        ROI2DListData dummy = new ROI2DListData();
-        dummy.add(roi1);
-        dummy.add(roi2);
-        dummy.logicalAnd();
-        if (!dummy.isEmpty()) {
-            return dummy.get(0);
-        } else {
-            return null;
         }
     }
 
@@ -179,30 +99,6 @@ public class ImageJUtils {
     }
 
     /**
-     * Returns the properties of a {@link Roi} as map
-     *
-     * @param roi the roi
-     * @return the properties
-     */
-    public static Map<String, String> getRoiProperties(Roi roi) {
-        Properties props = new Properties();
-        String properties = roi.getProperties();
-        if (!StringUtils.isNullOrEmpty(properties)) {
-            try {
-                InputStream is = new ByteArrayInputStream(properties.getBytes(StandardCharsets.UTF_8));
-                props.load(is);
-            } catch (Exception e) {
-                e.printStackTrace();
-            }
-        }
-        HashMap<String, String> map = new HashMap<>();
-        for (Map.Entry<Object, Object> entry : props.entrySet()) {
-            map.put("" + entry.getKey(), "" + entry.getValue());
-        }
-        return map;
-    }
-
-    /**
      * Returns the persistent properties of a {@link ImagePlus} as map
      *
      * @param imagePlus the image
@@ -216,50 +112,6 @@ public class ImageJUtils {
             }
         }
         return map;
-    }
-
-    /**
-     * Sets the properties of a {@link Roi} from a map
-     *
-     * @param roi        the roi
-     * @param properties the properties
-     */
-    public static void setRoiProperties(Roi roi, Map<String, String> properties) {
-        Properties props = new Properties();
-        for (Map.Entry<String, String> entry : properties.entrySet()) {
-            props.setProperty(StringUtils.nullToEmpty(entry.getKey()).replace(' ', '_').replace('=', '_').replace(':', '_'), entry.getValue());
-        }
-        try {
-            StringWriter writer = new StringWriter();
-            props.store(writer, null);
-            writer.flush();
-            roi.setProperties(writer.toString());
-        } catch (IOException e) {
-            throw new RuntimeException(e);
-        }
-    }
-
-    /**
-     * Sets ROI properties from a JSON string or
-     *
-     * @param roi        the ROI
-     * @param properties the properties (must be JSON, or is set as value of fallbackKey). If empty, nothing happens.
-     */
-    public static void setRoiPropertiesFromString(Roi roi, String properties, String fallbackKey) {
-        if (!StringUtils.isNullOrEmpty(properties)) {
-            Map<String, String> map = new HashMap<>();
-            try {
-                JsonNode jsonNode = SerializationUtils.jsonStringToObject(properties, JsonNode.class);
-                for (Map.Entry<String, JsonNode> entry : ImmutableList.copyOf(jsonNode.fields())) {
-                    map.put(entry.getKey(), entry.getValue().asText());
-                }
-            } catch (Exception ignored) {
-                map.put(fallbackKey, properties);
-            }
-            if (!map.isEmpty()) {
-                setRoiProperties(roi, map);
-            }
-        }
     }
 
     /**
@@ -506,7 +358,7 @@ public class ImageJUtils {
      */
     public static void convertRGBToLAB(ImagePlus img, JIPipeProgressInfo progressInfo) {
         ColorSpaceConverter converter = new ColorSpaceConverter();
-        forEachSlice(img, ip -> {
+        ImageJIterationUtils.forEachSlice(img, ip -> {
             int width = ip.getWidth();
             int height = ip.getHeight();
             int[] pixels = (int[]) ip.getPixels();
@@ -532,7 +384,7 @@ public class ImageJUtils {
      */
     public static void convertLABToRGB(ImagePlus img, JIPipeProgressInfo progressInfo) {
         ColorSpaceConverter converter = new ColorSpaceConverter();
-        forEachSlice(img, ip -> {
+        ImageJIterationUtils.forEachSlice(img, ip -> {
             int width = ip.getWidth();
             int height = ip.getHeight();
             int[] pixels = (int[]) ip.getPixels();
@@ -558,7 +410,7 @@ public class ImageJUtils {
      * @param progressInfo the progress info
      */
     public static void convertRGBToHSB(ImagePlus img, JIPipeProgressInfo progressInfo) {
-        forEachSlice(img, ip -> {
+        ImageJIterationUtils.forEachSlice(img, ip -> {
             int width = ip.getWidth();
             int height = ip.getHeight();
             int c, r, g, b;
@@ -585,7 +437,7 @@ public class ImageJUtils {
      * @param progressInfo the progress info
      */
     public static void convertHSBToRGB(ImagePlus img, JIPipeProgressInfo progressInfo) {
-        forEachSlice(img, ip -> {
+        ImageJIterationUtils.forEachSlice(img, ip -> {
             int width = ip.getWidth();
             int height = ip.getHeight();
             int c, H, S, B;
@@ -711,7 +563,7 @@ public class ImageJUtils {
             return new ImagePlus(target.getTitle(), target.getProcessor());
         } else {
             ImageStack stack = new ImageStack(target.getWidth(), target.getHeight(), reference.getNChannels() * reference.getNFrames() * reference.getNSlices());
-            forEachIndexedZCTSlice(reference, (referenceProcessor, referenceIndex) -> {
+            ImageJIterationUtils.forEachIndexedZCTSlice(reference, (referenceProcessor, referenceIndex) -> {
                 if (copySlices) {
                     int z = Math.min(target.getNSlices() - 1, referenceIndex.getZ());
                     int c = Math.min(target.getNChannels() - 1, referenceIndex.getC());
@@ -865,7 +717,7 @@ public class ImageJUtils {
                 width = (rotations % 2 == 0) ? img.getWidth() : img.getHeight();
                 height = (rotations % 2 == 0) ? img.getHeight() : img.getWidth();
                 stack = new ImageStack(width, height, img.getStack().getColorModel());
-                forEachSlice(img, ip -> {
+                ImageJIterationUtils.forEachSlice(img, ip -> {
                     ImageProcessor processor = ip;
                     for (int i = 0; i < rotations; i++) {
                         processor = processor.rotateLeft();
@@ -877,7 +729,7 @@ public class ImageJUtils {
                 width = (rotations % 2 == 0) ? img.getWidth() : img.getHeight();
                 height = (rotations % 2 == 0) ? img.getHeight() : img.getWidth();
                 stack = new ImageStack(width, height, img.getStack().getColorModel());
-                forEachSlice(img, ip -> {
+                ImageJIterationUtils.forEachSlice(img, ip -> {
                     ImageProcessor processor = ip;
                     for (int i = 0; i < rotations; i++) {
                         processor = processor.rotateRight();
@@ -925,7 +777,7 @@ public class ImageJUtils {
 
                 // Expand the image
                 ImagePlus imagePlus = expandImageCanvas(img, background, newWidth, newHeight, Anchor.CenterCenter);
-                forEachSlice(imagePlus, ip -> {
+                ImageJIterationUtils.forEachSlice(imagePlus, ip -> {
                     ip.setColor(background);
                     ip.rotate(degrees);
                     ip.fillOutside(roi);
@@ -936,7 +788,7 @@ public class ImageJUtils {
                 return imagePlus;
             } else {
                 ImagePlus imagePlus = duplicate(img);
-                forEachSlice(imagePlus, ip -> {
+                ImageJIterationUtils.forEachSlice(imagePlus, ip -> {
                     ip.setColor(background);
                     ip.rotate(degrees);
                     ip.fillOutside(roi);
@@ -946,25 +798,6 @@ public class ImageJUtils {
                     imagePlus.setRoi(roi);
                 return imagePlus;
             }
-        }
-    }
-
-    /**
-     * Runs the function for each slice
-     *
-     * @param img          the image
-     * @param function     the function
-     * @param progressInfo the progress
-     */
-    public static void forEachSlice(ImagePlus img, Consumer<ImageProcessor> function, JIPipeProgressInfo progressInfo) {
-        if (img.hasImageStack()) {
-            for (int i = 0; i < img.getImageStackSize(); ++i) {
-                ImageProcessor ip = img.getImageStack().getProcessor(i + 1);
-                progressInfo.resolveAndLog("Slice", i, img.getImageStackSize());
-                function.accept(ip);
-            }
-        } else {
-            function.accept(img.getProcessor());
         }
     }
 
@@ -1034,7 +867,7 @@ public class ImageJUtils {
         if (!ImageJUtils.imagesHaveSameSize(src, target) || src.getBitDepth() != target.getBitDepth()) {
             throw new IllegalArgumentException("Source and target must have same size and bit depth!");
         }
-        ImageJUtils.forEachIndexedZCTSlice(target, (targetProcessor, index) -> {
+        ImageJIterationUtils.forEachIndexedZCTSlice(target, (targetProcessor, index) -> {
             ImageProcessor sourceProcessor = ImageJUtils.getSliceZero(src, index);
             targetProcessor.copyBits(sourceProcessor, 0, 0, Blitter.COPY);
         }, progressInfo);
@@ -1141,54 +974,6 @@ public class ImageJUtils {
         ImagePlus combined = new ImagePlus("combined", stack);
         combined.setDimensions(distinctC.size(), distinctZ.size(), distinctT.size());
         return combined;
-    }
-
-    /**
-     * Runs the function for each slice
-     *
-     * @param img          the image
-     * @param function     the function
-     * @param progressInfo the progress
-     */
-    public static void forEachIndexedSlice(ImagePlus img, BiConsumer<ImageProcessor, Integer> function, JIPipeProgressInfo progressInfo) {
-        if (img.hasImageStack()) {
-            for (int i = 0; i < img.getStack().size(); ++i) {
-                if (progressInfo.isCancelled())
-                    return;
-                ImageProcessor ip = img.getImageStack().getProcessor(i + 1);
-                progressInfo.resolveAndLog("Slice", i, img.getStackSize());
-                function.accept(ip, i);
-            }
-        } else {
-            function.accept(img.getProcessor(), 0);
-        }
-    }
-
-    /**
-     * Runs the function for each Z, C, and T slice.
-     *
-     * @param img          the image
-     * @param function     the function. The indices are ZERO-based
-     * @param progressInfo the progress
-     */
-    public static void forEachIndexedZCTSlice(ImagePlus img, BiConsumer<ImageProcessor, ImageSliceIndex> function, JIPipeProgressInfo progressInfo) {
-        if (img.hasImageStack()) {
-            int iterationIndex = 0;
-            for (int t = 0; t < img.getNFrames(); t++) {
-                for (int z = 0; z < img.getNSlices(); z++) {
-                    for (int c = 0; c < img.getNChannels(); c++) {
-                        if (progressInfo.isCancelled())
-                            return;
-                        int index = img.getStackIndex(c + 1, z + 1, t + 1);
-                        progressInfo.resolveAndLog("Slice", iterationIndex++, img.getStackSize()).log("z=" + z + ", c=" + c + ", t=" + t);
-                        ImageProcessor processor = img.getImageStack().getProcessor(index);
-                        function.accept(processor, new ImageSliceIndex(c, z, t));
-                    }
-                }
-            }
-        } else {
-            function.accept(img.getProcessor(), new ImageSliceIndex(0, 0, 0));
-        }
     }
 
     /**
@@ -1304,104 +1089,6 @@ public class ImageJUtils {
 
 
     /**
-     * Runs the function for each C, and T slice.
-     *
-     * @param img          the image
-     * @param function     the function. The indices are ZERO-based (Z is always -1)
-     * @param progressInfo the progress
-     */
-    public static void forEachIndexedCTStack(ImagePlus img, TriConsumer<ImagePlus, ImageSliceIndex, JIPipeProgressInfo> function, JIPipeProgressInfo progressInfo) {
-        if (img.hasImageStack()) {
-            int iterationIndex = 0;
-            for (int t = 0; t < img.getNFrames(); t++) {
-                for (int c = 0; c < img.getNChannels(); c++) {
-                    if (progressInfo.isCancelled())
-                        return;
-                    ImagePlus cube = extractCTStack(img, c, t);
-                    progressInfo.resolveAndLog("Frame/Channel", iterationIndex, img.getNChannels() * img.getNFrames()).log("c=" + c + ", t=" + t);
-                    JIPipeProgressInfo stackProgress = progressInfo.resolveAndLog("Frame/Channel", iterationIndex, img.getNChannels() * img.getNFrames()).resolve("c=" + c + ", t=" + t);
-                    function.accept(cube, new ImageSliceIndex(c, -1, t), stackProgress);
-                    ++iterationIndex;
-                }
-            }
-        } else {
-            function.accept(img, new ImageSliceIndex(0, -1, 0), progressInfo);
-        }
-    }
-
-    public static void forEachIndexedZTStack(ImagePlus img, TriConsumer<ImagePlus, ImageSliceIndex, JIPipeProgressInfo> function, JIPipeProgressInfo progressInfo) {
-        if (img.hasImageStack()) {
-            int iterationIndex = 0;
-            for (int t = 0; t < img.getNFrames(); t++) {
-                for (int z = 0; z < img.getNSlices(); z++) {
-                    if (progressInfo.isCancelled())
-                        return;
-                    ImagePlus cube = extractZTStack(img, z, t);
-                    progressInfo.resolveAndLog("Z/Channel", iterationIndex, img.getNSlices() * img.getNFrames()).log("z=" + z + ", t=" + t);
-                    JIPipeProgressInfo stackProgress = progressInfo.resolveAndLog("Z/Channel", iterationIndex, img.getNChannels() * img.getNFrames()).resolve("z=" + z + ", t=" + t);
-                    function.accept(cube, new ImageSliceIndex(-1, z, t), stackProgress);
-                    ++iterationIndex;
-                }
-            }
-        } else {
-            function.accept(img, new ImageSliceIndex(-1, 0, 0), progressInfo);
-        }
-    }
-
-
-    /**
-     * Runs the function for each T hyperstack
-     *
-     * @param img          the image
-     * @param function     the function. The indices are ZERO-based (Z is always -1)
-     * @param progressInfo the progress
-     */
-    public static void forEachIndexedTHyperStack(ImagePlus img, TriConsumer<ImagePlus, ImageSliceIndex, JIPipeProgressInfo> function, JIPipeProgressInfo progressInfo) {
-        if (img.hasImageStack()) {
-            int iterationIndex = 0;
-            for (int t = 0; t < img.getNFrames(); t++) {
-                if (progressInfo.isCancelled())
-                    return;
-                ImagePlus cube = extractTHyperStack(img, t);
-                progressInfo.resolveAndLog("Frame", iterationIndex, img.getNFrames()).log("t=" + t);
-                JIPipeProgressInfo stackProgress = progressInfo.resolveAndLog("Frame", iterationIndex, img.getNChannels() * img.getNFrames()).resolve("t=" + t);
-                function.accept(cube, new ImageSliceIndex(-1, -1, t), stackProgress);
-                ++iterationIndex;
-            }
-        } else {
-            function.accept(img, new ImageSliceIndex(-1, -1, 0), progressInfo);
-        }
-    }
-
-    /**
-     * Runs the function for each Z, C, and T slice.
-     *
-     * @param img          the image
-     * @param function     the function. The indices are ZERO-based
-     * @param progressInfo the progress
-     */
-    public static void forEachIndexedZCTSliceWithProgress(ImagePlus img, TriConsumer<ImageProcessor, ImageSliceIndex, JIPipeProgressInfo> function, JIPipeProgressInfo progressInfo) {
-        if (img.hasImageStack()) {
-            int iterationIndex = 0;
-            for (int t = 0; t < img.getNFrames(); t++) {
-                for (int z = 0; z < img.getNSlices(); z++) {
-                    for (int c = 0; c < img.getNChannels(); c++) {
-                        if (progressInfo.isCancelled())
-                            return;
-                        int index = img.getStackIndex(c + 1, z + 1, t + 1);
-                        JIPipeProgressInfo stackProgress = progressInfo.resolveAndLog("Slice", iterationIndex++, img.getStackSize()).resolve("z=" + z + ", c=" + c + ", t=" + t);
-                        ImageProcessor processor = img.getImageStack().getProcessor(index);
-                        function.accept(processor, new ImageSliceIndex(c, z, t), stackProgress);
-                    }
-                }
-            }
-        } else {
-            function.accept(img.getProcessor(), new ImageSliceIndex(0, 0, 0), progressInfo);
-        }
-    }
-
-
-    /**
      * Sets the slice of an image to the processor based on the index. Handles all configurations of images.
      *
      * @param image     the image
@@ -1415,68 +1102,6 @@ public class ImageJUtils {
             image.setProcessor(processor);
         } else {
             image.getStack().setProcessor(processor, image.getStackIndex(index.getC() + 1, index.getZ() + 1, index.getT() + 1));
-        }
-    }
-
-    /**
-     * Runs the function for each Z, C, and T slice.
-     *
-     * @param sourceImage  the image
-     * @param function     the function. The indices are ZERO-based. Should return the result slice for this index
-     * @param progressInfo the progress
-     */
-    public static ImagePlus generateForEachIndexedZCTSlice(ImagePlus sourceImage, BiFunction<ImageProcessor, ImageSliceIndex, ImageProcessor> function, JIPipeProgressInfo progressInfo) {
-        if (sourceImage.hasImageStack()) {
-            ImageStack stack = new ImageStack(sourceImage.getWidth(), sourceImage.getHeight(), sourceImage.getStackSize());
-            int iterationIndex = 0;
-            for (int t = 0; t < sourceImage.getNFrames(); t++) {
-                for (int z = 0; z < sourceImage.getNSlices(); z++) {
-                    for (int c = 0; c < sourceImage.getNChannels(); c++) {
-                        if (progressInfo.isCancelled())
-                            return null;
-                        int index = sourceImage.getStackIndex(c + 1, z + 1, t + 1);
-                        progressInfo.resolveAndLog("Slice", iterationIndex++, sourceImage.getStackSize()).log("z=" + z + ", c=" + c + ", t=" + t);
-                        ImageProcessor processor = sourceImage.getImageStack().getProcessor(index);
-                        ImageProcessor resultProcessor = function.apply(processor, new ImageSliceIndex(c, z, t));
-                        stack.setProcessor(resultProcessor, index);
-                    }
-                }
-            }
-            ImagePlus resultImage = new ImagePlus(sourceImage.getTitle(), stack);
-            resultImage.setDimensions(sourceImage.getNChannels(), sourceImage.getNSlices(), sourceImage.getNFrames());
-            resultImage.copyScale(sourceImage);
-            return resultImage;
-        } else {
-            ImageProcessor processor = function.apply(sourceImage.getProcessor(), new ImageSliceIndex(0, 0, 0));
-            ImagePlus resultImage = new ImagePlus(sourceImage.getTitle(), processor);
-            resultImage.copyScale(sourceImage);
-            return resultImage;
-        }
-    }
-
-    /**
-     * Runs the function for each Z and T slice.
-     * The function consumes a map from channel index to the channel slice.
-     * The slice index channel is always set to -1
-     *
-     * @param img          the image
-     * @param function     the function. The indices are ZERO-based
-     * @param progressInfo the progress
-     */
-    @Deprecated
-    public static void forEachIndexedZTSlice(ImagePlus img, BiConsumer<Map<Integer, ImageProcessor>, ImageSliceIndex> function, JIPipeProgressInfo progressInfo) {
-        int iterationIndex = 0;
-        for (int t = 0; t < img.getNFrames(); t++) {
-            for (int z = 0; z < img.getNSlices(); z++) {
-                Map<Integer, ImageProcessor> channels = new HashMap<>();
-                for (int c = 0; c < img.getNChannels(); c++) {
-                    if (progressInfo.isCancelled())
-                        return;
-                    progressInfo.resolveAndLog("Slice", iterationIndex++, img.getStackSize()).log("z=" + z + ", c=" + c + ", t=" + t);
-                    channels.put(c, img.getStack().getProcessor(img.getStackIndex(c + 1, z + 1, t + 1)));
-                }
-                function.accept(channels, new ImageSliceIndex(-1, z, t));
-            }
         }
     }
 
@@ -1733,14 +1358,14 @@ public class ImageJUtils {
 
     public static Map<ImageSliceIndex, DisplayRange> readCalibration(ImagePlus imagePlus) {
         Map<ImageSliceIndex, DisplayRange> result = new HashMap<>();
-        ImageJUtils.forEachIndexedZCTSlice(imagePlus, (ip, index) -> {
+        ImageJIterationUtils.forEachIndexedZCTSlice(imagePlus, (ip, index) -> {
             result.put(index, new DisplayRange(ip.getMin(), ip.getMax()));
         }, new JIPipeProgressInfo());
         return result;
     }
 
     public static void writeCalibration(ImagePlus imagePlus, Map<ImageSliceIndex, DisplayRange> calibrationMap) {
-        ImageJUtils.forEachIndexedZCTSlice(imagePlus, (ip, index) -> {
+        ImageJIterationUtils.forEachIndexedZCTSlice(imagePlus, (ip, index) -> {
             DisplayRange displayRange = calibrationMap.getOrDefault(index, null);
             if (displayRange != null) {
                 ip.setMinAndMax(displayRange.getDisplayedMin(), displayRange.getDisplayedMax());
@@ -2455,27 +2080,6 @@ public class ImageJUtils {
     }
 
     /**
-     * Uses reflection to manually set the canvas of a {@link Roi}
-     * Please note that the image of the Roi will be set.
-     *
-     * @param roi       the ROI
-     * @param imagePlus the image
-     * @param canvas    the canvas
-     */
-    public static void setRoiCanvas(Roi roi, ImagePlus imagePlus, ImageCanvas canvas) {
-        // First set the image
-        roi.setImage(imagePlus);
-        // We have to set the canvas or overlay rendering will fail
-        try {
-            Field field = Roi.class.getDeclaredField("ic");
-            field.setAccessible(true);
-            field.set(roi, canvas);
-        } catch (IllegalAccessException | NoSuchFieldException e) {
-            throw new RuntimeException(e);
-        }
-    }
-
-    /**
      * Renders a non-RGB image to RGB, including LUT
      *
      * @param inputImage   the input image
@@ -2486,7 +2090,7 @@ public class ImageJUtils {
         if (inputImage.getType() == ImagePlus.COLOR_RGB)
             return inputImage;
         ImageStack stack = new ImageStack(inputImage.getWidth(), inputImage.getHeight(), inputImage.getStackSize());
-        forEachIndexedZCTSlice(inputImage, (ip, slice) -> {
+        ImageJIterationUtils.forEachIndexedZCTSlice(inputImage, (ip, slice) -> {
             ColorProcessor colorProcessor = new ColorProcessor(ip.getBufferedImage());
             stack.setProcessor(colorProcessor, slice.zeroSliceIndexToOneStackIndex(inputImage));
         }, progressInfo);
@@ -2667,7 +2271,7 @@ public class ImageJUtils {
         ImagePlus croppedImg;
         if (img.hasImageStack()) {
             ImageStack result = new ImageStack(cropped.width, cropped.height, img.getStackSize());
-            forEachIndexedZCTSlice(img, (imp, index) -> {
+            ImageJIterationUtils.forEachIndexedZCTSlice(img, (imp, index) -> {
                 imp.setRoi(cropped);
                 ImageProcessor croppedImage = imp.crop();
                 imp.resetRoi();
@@ -2728,392 +2332,7 @@ public class ImageJUtils {
         return scaled;
     }
 
-    public static void copyRoiAttributesAndLocation(Roi source, Roi target) {
-        target.copyAttributes(source);
-        target.setPosition(source.getPosition());
-        target.setPosition(source.getPosition(), source.getZPosition(), source.getZPosition());
-    }
-
-    static PolygonRoi trimPolygon(PolygonRoi roi, double length) {
-        int[] x = roi.getXCoordinates();
-        int[] y = roi.getYCoordinates();
-        int n = roi.getNCoordinates();
-        x = ImageJMathUtils.lineSmooth(x, n);
-        y = ImageJMathUtils.lineSmooth(y, n);
-        float[] curvature = ImageJMathUtils.getCurvature(x, y, n, ImageJMathUtils.DEFAULT_CURVATURE_KERNEL);
-        Rectangle r = roi.getBounds();
-        double threshold = ImageJMathUtils.rodbard(length);
-        //IJ.log("trim: "+length+" "+threshold);
-        double distance = Math.sqrt((x[1] - x[0]) * (x[1] - x[0]) + (y[1] - y[0]) * (y[1] - y[0]));
-        x[0] += r.x;
-        y[0] += r.y;
-        int i2 = 1;
-        int x1, y1, x2 = 0, y2 = 0;
-        for (int i = 1; i < n - 1; i++) {
-            x1 = x[i];
-            y1 = y[i];
-            x2 = x[i + 1];
-            y2 = y[i + 1];
-            distance += Math.sqrt((x2 - x1) * (x2 - x1) + (y2 - y1) * (y2 - y1)) + 1;
-            distance += curvature[i] * 2;
-            if (distance >= threshold) {
-                x[i2] = x2 + r.x;
-                y[i2] = y2 + r.y;
-                i2++;
-                distance = 0.0;
-            }
-        }
-        int type = roi.getType() == Roi.FREELINE ? Roi.POLYLINE : Roi.POLYGON;
-        if (type == Roi.POLYLINE && distance > 0.0) {
-            x[i2] = x2 + r.x;
-            y[i2] = y2 + r.y;
-            i2++;
-        }
-        return new PolygonRoi(x, y, i2, type);
-    }
-
-    public static PolygonRoi trimFloatPolygon(PolygonRoi roi, double length) {
-        FloatPolygon poly = roi.getFloatPolygon();
-        float[] x = poly.xpoints;
-        float[] y = poly.ypoints;
-        int n = poly.npoints;
-        x = ImageJMathUtils.lineSmooth(x, n);
-        y = ImageJMathUtils.lineSmooth(y, n);
-        float[] curvature = ImageJMathUtils.getCurvature(x, y, n, ImageJMathUtils.DEFAULT_CURVATURE_KERNEL);
-        double threshold = ImageJMathUtils.rodbard(length);
-        //IJ.log("trim: "+length+" "+threshold);
-        double distance = Math.sqrt((x[1] - x[0]) * (x[1] - x[0]) + (y[1] - y[0]) * (y[1] - y[0]));
-        int i2 = 1;
-        double x1, y1, x2 = 0, y2 = 0;
-        for (int i = 1; i < n - 1; i++) {
-            x1 = x[i];
-            y1 = y[i];
-            x2 = x[i + 1];
-            y2 = y[i + 1];
-            distance += Math.sqrt((x2 - x1) * (x2 - x1) + (y2 - y1) * (y2 - y1)) + 1;
-            distance += curvature[i] * 2;
-            if (distance >= threshold) {
-                x[i2] = (float) x2;
-                y[i2] = (float) y2;
-                i2++;
-                distance = 0.0;
-            }
-        }
-        int type = roi.getType() == Roi.FREELINE ? Roi.POLYLINE : Roi.POLYGON;
-        if (type == Roi.POLYLINE && distance > 0.0) {
-            x[i2] = (float) x2;
-            y[i2] = (float) y2;
-            i2++;
-        }
-        return new PolygonRoi(x, y, i2, type);
-    }
-
-    /**
-     * Port of the fitSpline function from {@link ij.plugin.Selection}
-     *
-     * @param roi input Roi
-     * @return output Roi (null if no circle can be fit)
-     */
-    public static Roi fitSplineToRoi(Roi roi, boolean straighten, boolean remove) {
-        int type = roi.getType();
-        boolean segmentedSelection = type == Roi.POLYGON || type == Roi.POLYLINE;
-        if (!(segmentedSelection || type == Roi.FREEROI || type == Roi.TRACED_ROI || type == Roi.FREELINE)) {
-            return null;
-        }
-        if (roi instanceof EllipseRoi)
-            return null;
-        PolygonRoi p = (PolygonRoi) roi.clone();
-        if (!segmentedSelection && p.getNCoordinates() > 3) {
-            if (p.subPixelResolution())
-                p = trimFloatPolygon(p, p.getUncalibratedLength());
-            else
-                p = trimPolygon(p, p.getUncalibratedLength());
-        }
-        if (straighten)
-            p.fitSplineForStraightening();
-        else if (remove)
-            p.removeSplineFit();
-        else
-            p.fitSpline();
-
-        return p;
-    }
-
-    /**
-     * Port of the createEllipse function from {@link ij.plugin.Selection}
-     *
-     * @param roi input Roi
-     * @return output Roi (null if no circle can be fit)
-     */
-    public static Roi fitEllipseToRoi(Roi roi) {
-        if (roi.isLine()) {
-            return null;
-        }
-
-        ROI2DListData listData = new ROI2DListData();
-        listData.add(roi);
-        ImagePlus dummyImage = listData.createDummyImage();
-        ImageProcessor ip = dummyImage.getProcessor();
-        ip.setRoi(roi);
-
-        int options = Measurements.CENTROID + Measurements.ELLIPSE;
-        ImageStatistics stats = ImageStatistics.getStatistics(ip, options, null);
-        double dx = stats.major * Math.cos(stats.angle / 180.0 * Math.PI) / 2.0;
-        double dy = -stats.major * Math.sin(stats.angle / 180.0 * Math.PI) / 2.0;
-        double x1 = stats.xCentroid - dx;
-        double x2 = stats.xCentroid + dx;
-        double y1 = stats.yCentroid - dy;
-        double y2 = stats.yCentroid + dy;
-        double aspectRatio = stats.minor / stats.major;
-
-        Roi roi2 = new EllipseRoi(x1, y1, x2, y2, aspectRatio);
-        copyRoiAttributesAndLocation(roi, roi2);
-
-        return roi2;
-    }
-
-    /**
-     * Port of the fitCircle function from {@link ij.plugin.Selection}
-     *
-     * @param roi input Roi
-     * @return output Roi (null if no circle can be fit)
-     */
-    public static Roi fitCircleToRoi(Roi roi) {
-        if (roi.isArea()) {      //create circle with the same area and centroid
-            ROI2DListData listData = new ROI2DListData();
-            listData.add(roi);
-            ImagePlus dummyImage = listData.createDummyImage();
-            ImageProcessor ip = dummyImage.getProcessor();
-            ip.setRoi(roi);
-            ImageStatistics stats = ImageStatistics.getStatistics(ip, Measurements.AREA + Measurements.CENTROID, null);
-            double r = Math.sqrt(stats.pixelCount / Math.PI);
-            int d = (int) Math.round(2.0 * r);
-            Roi roi2 = new OvalRoi((int) Math.round(stats.xCentroid - r), (int) Math.round(stats.yCentroid - r), d, d);
-            copyRoiAttributesAndLocation(roi, roi2);
-            return roi2;
-        }
-
-        Polygon poly = roi.getPolygon();
-        int n = poly.npoints;
-        int[] x = poly.xpoints;
-        int[] y = poly.ypoints;
-        if (n < 3) {
-            return null;
-        }
-
-        // calculate point centroid
-        double sumx = 0, sumy = 0;
-        for (int i = 0; i < n; i++) {
-            sumx = sumx + poly.xpoints[i];
-            sumy = sumy + poly.ypoints[i];
-        }
-        double meanx = sumx / n;
-        double meany = sumy / n;
-
-        // calculate moments
-        double[] X = new double[n], Y = new double[n];
-        double Mxx = 0, Myy = 0, Mxy = 0, Mxz = 0, Myz = 0, Mzz = 0;
-        for (int i = 0; i < n; i++) {
-            X[i] = x[i] - meanx;
-            Y[i] = y[i] - meany;
-            double Zi = X[i] * X[i] + Y[i] * Y[i];
-            Mxy = Mxy + X[i] * Y[i];
-            Mxx = Mxx + X[i] * X[i];
-            Myy = Myy + Y[i] * Y[i];
-            Mxz = Mxz + X[i] * Zi;
-            Myz = Myz + Y[i] * Zi;
-            Mzz = Mzz + Zi * Zi;
-        }
-        Mxx = Mxx / n;
-        Myy = Myy / n;
-        Mxy = Mxy / n;
-        Mxz = Mxz / n;
-        Myz = Myz / n;
-        Mzz = Mzz / n;
-
-        // calculate the coefficients of the characteristic polynomial
-        double Mz = Mxx + Myy;
-        double Cov_xy = Mxx * Myy - Mxy * Mxy;
-        double Mxz2 = Mxz * Mxz;
-        double Myz2 = Myz * Myz;
-        double A2 = 4 * Cov_xy - 3 * Mz * Mz - Mzz;
-        double A1 = Mzz * Mz + 4 * Cov_xy * Mz - Mxz2 - Myz2 - Mz * Mz * Mz;
-        double A0 = Mxz2 * Myy + Myz2 * Mxx - Mzz * Cov_xy - 2 * Mxz * Myz * Mxy + Mz * Mz * Cov_xy;
-        double A22 = A2 + A2;
-        double epsilon = 1e-12;
-        double ynew = 1e+20;
-        int IterMax = 20;
-        double xnew = 0;
-        int iterations = 0;
-
-        // Newton's method starting at x=0
-        for (int iter = 1; iter <= IterMax; iter++) {
-            iterations = iter;
-            double yold = ynew;
-            ynew = A0 + xnew * (A1 + xnew * (A2 + 4. * xnew * xnew));
-            if (Math.abs(ynew) > Math.abs(yold)) {
-                if (IJ.debugMode) IJ.log("Fit Circle: wrong direction: |ynew| > |yold|");
-                xnew = 0;
-                break;
-            }
-            double Dy = A1 + xnew * (A22 + 16 * xnew * xnew);
-            double xold = xnew;
-            xnew = xold - ynew / Dy;
-            if (Math.abs((xnew - xold) / xnew) < epsilon)
-                break;
-            if (iter >= IterMax) {
-                if (IJ.debugMode) IJ.log("Fit Circle: will not converge");
-                xnew = 0;
-            }
-            if (xnew < 0) {
-                if (IJ.debugMode) IJ.log("Fit Circle: negative root:  x = " + xnew);
-                xnew = 0;
-            }
-        }
-        if (IJ.debugMode) IJ.log("Fit Circle: n=" + n + ", xnew=" + IJ.d2s(xnew, 2) + ", iterations=" + iterations);
-
-        // calculate the circle parameters
-        double DET = xnew * xnew - xnew * Mz + Cov_xy;
-        double CenterX = (Mxz * (Myy - xnew) - Myz * Mxy) / (2 * DET);
-        double CenterY = (Myz * (Mxx - xnew) - Mxz * Mxy) / (2 * DET);
-        double radius = Math.sqrt(CenterX * CenterX + CenterY * CenterY + Mz + 2 * xnew);
-        if (Double.isNaN(radius)) {
-            return null;
-        }
-        CenterX = CenterX + meanx;
-        CenterY = CenterY + meany;
-
-        Roi result = new OvalRoi((int) Math.round(CenterX - radius), (int) Math.round(CenterY - radius), (int) Math.round(2 * radius), (int) Math.round(2 * radius));
-        copyRoiAttributesAndLocation(roi, result);
-        return result;
-    }
-
-    public static Roi interpolateRoi(Roi roi, double interval, boolean smooth, boolean adjust) {
-        if (roi.getType() == Roi.POINT)
-            return null;
-        int sign = adjust ? -1 : 1;
-        Roi newRoi = null;
-        if (roi instanceof ShapeRoi && ((ShapeRoi) roi).getRois().length > 1) {
-            // handle composite roi, thanks to Michael Ellis
-            Roi[] rois = ((ShapeRoi) roi).getRois();
-            ShapeRoi newShapeRoi = null;
-            for (Roi roi2 : rois) {
-                FloatPolygon fPoly = roi2.getInterpolatedPolygon(interval, smooth);
-                PolygonRoi polygon = new PolygonRoi(fPoly, PolygonRoi.POLYGON);
-                if (newShapeRoi == null) // First Roi is the outer boundary
-                    newShapeRoi = new ShapeRoi(polygon);
-                else {
-                    // Assume subsequent Rois are holes to be subtracted
-                    ShapeRoi tempRoi = new ShapeRoi(polygon);
-                    tempRoi.not(newShapeRoi);
-                    newShapeRoi = tempRoi;
-                }
-            }
-            newRoi = newShapeRoi;
-        } else {
-            FloatPolygon poly = roi.getInterpolatedPolygon(sign * interval, smooth);
-            int t = roi.getType();
-            int type = roi.isLine() ? Roi.FREELINE : Roi.FREEROI;
-            if (t == Roi.POLYGON && interval > 1.0)
-                type = Roi.POLYGON;
-            if ((t == Roi.RECTANGLE || t == Roi.OVAL || t == Roi.FREEROI) && interval >= 8.0)
-                type = Roi.POLYGON;
-            if ((t == Roi.LINE || t == Roi.FREELINE) && interval >= 8.0)
-                type = Roi.POLYLINE;
-            if (t == Roi.POLYLINE && interval >= 8.0)
-                type = Roi.POLYLINE;
-//            ImageCanvas ic = null;
-//            if (poly.npoints<=150 && ic!=null && ic.getMagnification()>=12.0)
-//                type = roi.isLine()?Roi.POLYLINE:Roi.POLYGON;
-            newRoi = new PolygonRoi(poly, type);
-        }
-
-        copyRoiAttributesAndLocation(roi, newRoi);
-        return newRoi;
-    }
-
-    public static List<Point2D> getContourPoints(Roi roi) {
-        List<Point2D> points = new ArrayList<>();
-
-        if (roi == null) return points;
-
-        if (roi instanceof PointRoi) {
-            PointRoi pointRoi = (PointRoi) roi;
-            float[] x = pointRoi.getFloatPolygon().xpoints;
-            float[] y = pointRoi.getFloatPolygon().ypoints;
-            for (int i = 0; i < pointRoi.getNCoordinates(); i++) {
-                points.add(new Point2D.Float(x[i], y[i]));
-            }
-
-        } else if (roi instanceof PolygonRoi) {
-            PolygonRoi polyRoi = (PolygonRoi) roi;
-            float[] x = polyRoi.getFloatPolygon().xpoints;
-            float[] y = polyRoi.getFloatPolygon().ypoints;
-            for (int i = 0; i < polyRoi.getNCoordinates(); i++) {
-                points.add(new Point2D.Float(x[i], y[i]));
-            }
-
-        } else if (roi instanceof ShapeRoi) {
-            ShapeRoi shapeRoi = (ShapeRoi) roi;
-            PathIterator it = shapeRoi.getShape().getPathIterator(null, 0.5);
-            float[] coords = new float[6];
-            while (!it.isDone()) {
-                int type = it.currentSegment(coords);
-                if (type != PathIterator.SEG_CLOSE) {
-                    points.add(new Point2D.Float(coords[0], coords[1]));
-                }
-                it.next();
-            }
-
-        } else if (roi instanceof Line) {
-            Line line = (Line) roi;
-            points.add(new Point2D.Float((float) line.x1d, (float) line.y1d));
-            points.add(new Point2D.Float((float) line.x2d, (float) line.y2d));
-
-        } else {
-            Polygon poly = roi.getPolygon();
-            for (int i = 0; i < poly.npoints; i++) {
-                points.add(new Point2D.Float(poly.xpoints[i], poly.ypoints[i]));
-            }
-        }
-
-        return points;
-    }
-
-    public static Roi areaToLine(Roi roi) {
-        if (roi == null || !roi.isArea()) {
-            return null;
-        }
-        Polygon p = roi.getPolygon();
-        FloatPolygon fp = (roi.subPixelResolution()) ? roi.getFloatPolygon() : null;
-        if (p == null && fp == null)
-            return null;
-        int type1 = roi.getType();
-        if (type1 == Roi.COMPOSITE) {
-            return null;
-        }
-//        if (fp == null && type1 == Roi.TRACED_ROI) {
-//            for (int i = 0; i < p.npoints; i++) {
-//                if (p.xpoints[i] >= imp.getWidth()) {
-//                    p.xpoints[i] = imp.getWidth() - 1;
-//                }
-//                if (p.ypoints[i] >= imp.getHeight()) {
-//                    p.ypoints[i] = imp.getHeight() - 1;
-//                }
-//            }
-//        }
-        int type2 = Roi.POLYLINE;
-        if (type1 == Roi.OVAL || type1 == Roi.FREEROI || type1 == Roi.TRACED_ROI
-                || ((roi instanceof PolygonRoi) && ((PolygonRoi) roi).isSplineFit()))
-            type2 = Roi.FREELINE;
-        Roi roi2 = fp == null ? new PolygonRoi(p, type2) : new PolygonRoi(fp, type2);
-        copyRoiAttributesAndLocation(roi, roi2);
-        Rectangle2D.Double bounds = roi.getFloatBounds();
-        roi2.setLocation(bounds.x - 0.5, bounds.y - 0.5);    //area and line roi coordinates are 0.5 pxl different
-        return roi2;
-    }
-
-//    public static Roi makeBand(Roi roi, double size) {
+    //    public static Roi makeBand(Roi roi, double size) {
 //        int dxy = (int) (size * 1.5);
 //        ROI2DListData listData = new ROI2DListData();
 //        ImagePlus dummyImage = listData.createDummyImage();

@@ -28,6 +28,7 @@ import org.hkijena.jipipe.api.nodes.iterationstep.JIPipeIterationContext;
 import org.hkijena.jipipe.api.nodes.iterationstep.JIPipeSingleIterationStep;
 import org.hkijena.jipipe.plugins.imagejdatatypes.datatypes.color.ImagePlusColorLABData;
 import org.hkijena.jipipe.plugins.imagejdatatypes.datatypes.greyscale.ImagePlusGreyscale8UData;
+import org.hkijena.jipipe.plugins.imagejdatatypes.util.ImageJIterationUtils;
 import org.hkijena.jipipe.plugins.imagejdatatypes.util.ImageJUtils;
 
 @SetJIPipeDocumentation(name = "Merge LAB channels", description = "Merges three greyscale images into one LAB image.")
@@ -57,7 +58,7 @@ public class MergeLABChannelsAlgorithm extends JIPipeIteratingAlgorithm {
         }
         ImagePlus output = IJ.createHyperStack("LAB", imageL.getWidth(), imageL.getHeight(), imageL.getNChannels(), imageL.getNSlices(), imageL.getNFrames(), 24);
         output.copyScale(imageL);
-        ImageJUtils.forEachIndexedZCTSlice(output, (targetIp, index) -> {
+        ImageJIterationUtils.forEachIndexedZCTSlice(output, (targetIp, index) -> {
             byte[] sourceL = (byte[]) ImageJUtils.getSliceZero(imageL, index).getPixels();
             byte[] sourceA = (byte[]) ImageJUtils.getSliceZero(imageA, index).getPixels();
             byte[] sourceB = (byte[]) ImageJUtils.getSliceZero(imageB, index).getPixels();

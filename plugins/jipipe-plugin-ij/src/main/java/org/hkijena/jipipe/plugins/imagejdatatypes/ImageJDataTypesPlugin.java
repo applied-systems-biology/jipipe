@@ -87,8 +87,8 @@ import org.hkijena.jipipe.plugins.imagejdatatypes.settings.ImageSamplesProjectSe
 import org.hkijena.jipipe.plugins.imagejdatatypes.settings.ImageViewerUIROI2DDisplayApplicationSettings;
 import org.hkijena.jipipe.plugins.imagejdatatypes.tools.BioFormatsConfigTool;
 import org.hkijena.jipipe.plugins.imagejdatatypes.util.AVICompression;
-import org.hkijena.jipipe.plugins.imagejdatatypes.util.BitDepth;
-import org.hkijena.jipipe.plugins.imagejdatatypes.util.OptionalBitDepth;
+import org.hkijena.jipipe.plugins.imagejdatatypes.util.dimensions.BitDepth;
+import org.hkijena.jipipe.plugins.imagejdatatypes.util.dimensions.OptionalBitDepth;
 import org.hkijena.jipipe.plugins.imagejdatatypes.util.ROIElementDrawingMode;
 import org.hkijena.jipipe.plugins.imageviewer.settings.ImageViewerGeneralUIApplicationSettings;
 import org.hkijena.jipipe.plugins.imageviewer.settings.LegacyImageViewer2DUIApplicationSettings;

@@ -33,6 +33,7 @@ import org.hkijena.jipipe.api.validation.JIPipeValidationRuntimeException;
 import org.hkijena.jipipe.api.validation.contexts.GraphNodeValidationReportContext;
 import org.hkijena.jipipe.plugins.imagejdatatypes.datatypes.greyscale.ImagePlusGreyscale8UData;
 import org.hkijena.jipipe.plugins.imagejdatatypes.datatypes.greyscale.ImagePlusGreyscaleData;
+import org.hkijena.jipipe.plugins.imagejdatatypes.util.ImageJIterationUtils;
 import org.hkijena.jipipe.plugins.imagejdatatypes.util.ImageJUtils;
 import org.hkijena.jipipe.plugins.parameters.library.util.LogicalOperation;
 
@@ -65,7 +66,7 @@ public class BitwiseLogicalOperationAlgorithm extends JIPipeIteratingAlgorithm {
                     "All input images in the same batch should have the same width, height, number of slices, number of frames, and number of channels."));
         }
         if (logicalOperation == LogicalOperation.LogicalAnd) {
-            ImageJUtils.forEachIndexedZCTSlice(img, (ip1, index) -> {
+            ImageJIterationUtils.forEachIndexedZCTSlice(img, (ip1, index) -> {
                 ImageProcessor ip2 = ImageJUtils.getSliceZero(second, index);
                 byte[] pixels1 = (byte[]) ip1.getPixels();
                 byte[] pixels2 = (byte[]) ip2.getPixels();
@@ -74,7 +75,7 @@ public class BitwiseLogicalOperationAlgorithm extends JIPipeIteratingAlgorithm {
                 }
             }, progressInfo);
         } else if (logicalOperation == LogicalOperation.LogicalOr) {
-            ImageJUtils.forEachIndexedZCTSlice(img, (ip1, index) -> {
+            ImageJIterationUtils.forEachIndexedZCTSlice(img, (ip1, index) -> {
                 ImageProcessor ip2 = ImageJUtils.getSliceZero(second, index);
                 byte[] pixels1 = (byte[]) ip1.getPixels();
                 byte[] pixels2 = (byte[]) ip2.getPixels();
@@ -83,7 +84,7 @@ public class BitwiseLogicalOperationAlgorithm extends JIPipeIteratingAlgorithm {
                 }
             }, progressInfo);
         } else if (logicalOperation == LogicalOperation.LogicalXor) {
-            ImageJUtils.forEachIndexedZCTSlice(img, (ip1, index) -> {
+            ImageJIterationUtils.forEachIndexedZCTSlice(img, (ip1, index) -> {
                 ImageProcessor ip2 = ImageJUtils.getSliceZero(second, index);
                 byte[] pixels1 = (byte[]) ip1.getPixels();
                 byte[] pixels2 = (byte[]) ip2.getPixels();

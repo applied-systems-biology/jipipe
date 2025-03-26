@@ -28,6 +28,7 @@ import org.hkijena.jipipe.api.nodes.iterationstep.JIPipeSingleIterationStep;
 import org.hkijena.jipipe.api.parameters.JIPipeParameter;
 import org.hkijena.jipipe.plugins.imagejdatatypes.datatypes.ImagePlusData;
 import org.hkijena.jipipe.plugins.imagejdatatypes.datatypes.d2.greyscale.ImagePlus2DGreyscale32FData;
+import org.hkijena.jipipe.plugins.imagejdatatypes.util.ImageJIterationUtils;
 import org.hkijena.jipipe.plugins.imagejdatatypes.util.ImageJUtils;
 
 /**
@@ -86,7 +87,7 @@ public class ConvolveByImage2DAlgorithm extends JIPipeIteratingAlgorithm {
         int kernelHeight = imgKernel.getHeight();
 
         convolver.setNormalize(normalize);
-        ImageJUtils.forEachSlice(img, imp -> {
+        ImageJIterationUtils.forEachSlice(img, imp -> {
             ImageJUtils.convolveSlice(convolver, kernelWidth, kernelHeight, kernel, imp);
         }, progressInfo);
 

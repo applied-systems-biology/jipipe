@@ -39,6 +39,7 @@ import org.hkijena.jipipe.api.validation.contexts.GraphNodeValidationReportConte
 import org.hkijena.jipipe.plugins.imagejalgorithms.utils.ImageJAlgorithmUtils;
 import org.hkijena.jipipe.plugins.imagejdatatypes.datatypes.greyscale.ImagePlusGreyscaleData;
 import org.hkijena.jipipe.plugins.imagejdatatypes.datatypes.greyscale.ImagePlusGreyscaleMaskData;
+import org.hkijena.jipipe.plugins.imagejdatatypes.util.ImageJIterationUtils;
 import org.hkijena.jipipe.plugins.imagejdatatypes.util.ImageJUtils;
 import org.hkijena.jipipe.plugins.parameters.library.primitives.BooleanParameterSettings;
 
@@ -89,7 +90,7 @@ public class FilterLabelsByMaskAlgorithm extends JIPipeIteratingAlgorithm {
         }
 
         TIntSet labelsToKeep = new TIntHashSet();
-        ImageJUtils.forEachIndexedZCTSlice(labelImage, (labelProcessor, index) -> {
+        ImageJIterationUtils.forEachIndexedZCTSlice(labelImage, (labelProcessor, index) -> {
             labelsToKeep.clear();
             int z = Math.min(index.getZ(), maskImage.getNSlices() - 1);
             int c = Math.min(index.getC(), maskImage.getNChannels() - 1);

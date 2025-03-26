@@ -29,8 +29,9 @@ import org.hkijena.jipipe.api.nodes.iterationstep.JIPipeIterationContext;
 import org.hkijena.jipipe.api.nodes.iterationstep.JIPipeSingleIterationStep;
 import org.hkijena.jipipe.api.parameters.JIPipeParameter;
 import org.hkijena.jipipe.plugins.imagejdatatypes.datatypes.greyscale.ImagePlusGreyscaleData;
+import org.hkijena.jipipe.plugins.imagejdatatypes.util.ImageJIterationUtils;
 import org.hkijena.jipipe.plugins.imagejdatatypes.util.ImageJUtils;
-import org.hkijena.jipipe.plugins.imagejdatatypes.util.ImageSliceIndex;
+import org.hkijena.jipipe.plugins.imagejdatatypes.util.dimensions.ImageSliceIndex;
 
 import java.awt.*;
 import java.util.HashMap;
@@ -377,7 +378,7 @@ public class FFTBandPassFilter extends JIPipeSimpleIteratingAlgorithm {
         ImagePlus imp = iterationStep.getInputData(getFirstInputSlot(), ImagePlusGreyscaleData.class, progressInfo).getImage();
         Map<ImageSliceIndex, ImageProcessor> outputMap = new HashMap<>();
         Map<ImageSliceIndex, ImageProcessor> filterMap = new HashMap<>();
-        ImageJUtils.forEachIndexedZCTSlice(imp, (ip, index) -> {
+        ImageJIterationUtils.forEachIndexedZCTSlice(imp, (ip, index) -> {
             doFilter(ip, index, outputMap, filterMap, progressInfo, imp.getBitDepth());
         }, progressInfo);
 

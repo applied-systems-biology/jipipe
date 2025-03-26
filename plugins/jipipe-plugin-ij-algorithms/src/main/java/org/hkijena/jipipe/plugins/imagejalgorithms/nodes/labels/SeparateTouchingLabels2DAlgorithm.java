@@ -30,7 +30,8 @@ import org.hkijena.jipipe.api.parameters.JIPipeParameter;
 import org.hkijena.jipipe.plugins.imagejalgorithms.parameters.Neighborhood2D;
 import org.hkijena.jipipe.plugins.imagejdatatypes.datatypes.greyscale.ImagePlusGreyscaleData;
 import org.hkijena.jipipe.plugins.imagejdatatypes.datatypes.greyscale.ImagePlusGreyscaleMaskData;
-import org.hkijena.jipipe.plugins.imagejdatatypes.util.BitDepth;
+import org.hkijena.jipipe.plugins.imagejdatatypes.util.ImageJIterationUtils;
+import org.hkijena.jipipe.plugins.imagejdatatypes.util.dimensions.BitDepth;
 import org.hkijena.jipipe.plugins.imagejdatatypes.util.ImageJUtils;
 
 @SetJIPipeDocumentation(name = "Separate touching labels", description = "Finds pixels that border two different label values and sets them to the background value. " +
@@ -113,7 +114,7 @@ public class SeparateTouchingLabels2DAlgorithm extends JIPipeSimpleIteratingAlgo
         ImagePlus outputImage = inputImage.duplicate();
         ImagePlus borders = ImageJUtils.newBlankOf(inputImage, BitDepth.Grayscale8u);
 
-        ImageJUtils.forEachIndexedZCTSlice(inputImage, (ip, index) -> {
+        ImageJIterationUtils.forEachIndexedZCTSlice(inputImage, (ip, index) -> {
             ImageProcessor outputIp = ImageJUtils.getSliceZero(outputImage, index);
             ImageProcessor borderIp = ImageJUtils.getSliceZero(borders, index);
 

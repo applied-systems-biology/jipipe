@@ -27,6 +27,7 @@ import org.hkijena.jipipe.api.nodes.iterationstep.JIPipeSingleIterationStep;
 import org.hkijena.jipipe.api.parameters.JIPipeParameter;
 import org.hkijena.jipipe.plugins.imagejalgorithms.utils.SimpleImageAndRoiIteratingAlgorithm;
 import org.hkijena.jipipe.plugins.imagejdatatypes.datatypes.ImagePlusData;
+import org.hkijena.jipipe.plugins.imagejdatatypes.util.ImageJIterationUtils;
 import org.hkijena.jipipe.plugins.imagejdatatypes.util.ImageJUtils;
 
 import java.awt.*;
@@ -55,7 +56,7 @@ public class SetToValueAlgorithm extends SimpleImageAndRoiIteratingAlgorithm {
         image = ImageJUtils.channelsToRGB(image);
         if (image.getType() == ImagePlus.COLOR_RGB) {
             Color color = new Color((int) value);
-            ImageJUtils.forEachIndexedZCTSlice(image, (ip, index) -> {
+            ImageJIterationUtils.forEachIndexedZCTSlice(image, (ip, index) -> {
                 ImageProcessor roi = getMask(iterationStep, index, progressInfo);
                 ColorProcessor colorProcessor = (ColorProcessor) ip;
                 ip.resetRoi();
@@ -63,7 +64,7 @@ public class SetToValueAlgorithm extends SimpleImageAndRoiIteratingAlgorithm {
                 ip.fill(roi);
             }, progressInfo);
         } else {
-            ImageJUtils.forEachIndexedZCTSlice(image, (ip, index) -> {
+            ImageJIterationUtils.forEachIndexedZCTSlice(image, (ip, index) -> {
                 ImageProcessor roi = getMask(iterationStep, index, progressInfo);
                 ip.resetRoi();
                 ip.setValue(value);

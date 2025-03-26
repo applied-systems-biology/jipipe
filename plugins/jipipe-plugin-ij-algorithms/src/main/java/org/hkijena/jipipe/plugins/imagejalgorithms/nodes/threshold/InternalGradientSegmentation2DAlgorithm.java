@@ -41,6 +41,7 @@ import org.hkijena.jipipe.plugins.imagejalgorithms.nodes.contrast.CLAHEContrastE
 import org.hkijena.jipipe.plugins.imagejdatatypes.datatypes.ImagePlusData;
 import org.hkijena.jipipe.plugins.imagejdatatypes.datatypes.greyscale.ImagePlusGreyscaleData;
 import org.hkijena.jipipe.plugins.imagejdatatypes.datatypes.greyscale.ImagePlusGreyscaleMaskData;
+import org.hkijena.jipipe.plugins.imagejdatatypes.util.ImageJIterationUtils;
 import org.hkijena.jipipe.plugins.imagejdatatypes.util.ImageJUtils;
 
 
@@ -126,7 +127,7 @@ public class InternalGradientSegmentation2DAlgorithm extends JIPipeSimpleIterati
         CLAHEContrastEnhancer contrastEnhancerCopy = new CLAHEContrastEnhancer(contrastEnhancer);
         AutoThreshold2DAlgorithm autoThresholdingCopy = new AutoThreshold2DAlgorithm(autoThresholding);
 
-        ImageJUtils.forEachIndexedSlice(img, (imp, index) -> {
+        ImageJIterationUtils.forEachIndexedSlice(img, (imp, index) -> {
             ImagePlus slice = new ImagePlus("slice", imp);
             ImagePlus processedSlice = ImageJUtils.duplicate(slice);
 

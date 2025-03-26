@@ -31,7 +31,7 @@ import org.hkijena.jipipe.api.parameters.JIPipeParameter;
 import org.hkijena.jipipe.plugins.imagejalgorithms.nodes.blur.GaussianBlur2DAlgorithm;
 import org.hkijena.jipipe.plugins.imagejdatatypes.datatypes.ImagePlusData;
 import org.hkijena.jipipe.plugins.imagejdatatypes.datatypes.greyscale.ImagePlusGreyscale32FData;
-import org.hkijena.jipipe.plugins.imagejdatatypes.util.ImageJUtils;
+import org.hkijena.jipipe.plugins.imagejdatatypes.util.ImageJIterationUtils;
 
 /**
  * Applies illumination correction
@@ -80,7 +80,7 @@ public class IlluminationCorrection2DAlgorithm extends JIPipeSimpleIteratingAlgo
         gaussianAlgorithmCopy.run(runContext, progressInfo);
         ImagePlus background = gaussianAlgorithmCopy.getFirstOutputSlot().getData(0, ImagePlusGreyscale32FData.class, progressInfo).getImage();
 
-        ImageJUtils.forEachSlice(background, imp -> {
+        ImageJIterationUtils.forEachSlice(background, imp -> {
             double max = imp.getStatistics().max;
             imp.multiply(1.0 / max);
         }, progressInfo);

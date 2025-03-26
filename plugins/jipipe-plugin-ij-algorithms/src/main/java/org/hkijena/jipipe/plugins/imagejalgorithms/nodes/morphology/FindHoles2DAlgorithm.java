@@ -30,6 +30,7 @@ import org.hkijena.jipipe.api.nodes.iterationstep.JIPipeSingleIterationStep;
 import org.hkijena.jipipe.api.parameters.JIPipeParameter;
 import org.hkijena.jipipe.plugins.imagejdatatypes.datatypes.ROI2DListData;
 import org.hkijena.jipipe.plugins.imagejdatatypes.datatypes.greyscale.ImagePlusGreyscaleMaskData;
+import org.hkijena.jipipe.plugins.imagejdatatypes.util.ImageJIterationUtils;
 import org.hkijena.jipipe.plugins.imagejdatatypes.util.ImageJUtils;
 
 @SetJIPipeDocumentation(name = "Find holes 2D", description = "Find holes by extracting the ROI located in the image and utilizing the fact that ROI cannot have holes. " + "If a multi-channel image is provided, the operation is applied to each channel. " +
@@ -58,7 +59,7 @@ public class FindHoles2DAlgorithm extends JIPipeSimpleIteratingAlgorithm {
         ImagePlus img = iterationStep.getInputData(getFirstInputSlot(), ImagePlusGreyscaleMaskData.class, progressInfo).getDuplicateImage();
         // Convert mask to ROI
         ROI2DListData roiList = new ROI2DListData();
-        ImageJUtils.forEachIndexedZCTSlice(img, (ip, index) -> {
+        ImageJIterationUtils.forEachIndexedZCTSlice(img, (ip, index) -> {
             ImageProcessor ip2 = ip.duplicate();
             int threshold = ip2.isInvertedLut() ? 255 : 0;
             if (isBlackBackground())
@@ -78,7 +79,7 @@ public class FindHoles2DAlgorithm extends JIPipeSimpleIteratingAlgorithm {
         ImagePlus roiMask = roiList.toMask(img, true, false, 1);
 
         // Subtract mask from roi mask
-        ImageJUtils.forEachIndexedZCTSlice(img, (ip, index) -> {
+        ImageJIterationUtils.forEachIndexedZCTSlice(img, (ip, index) -> {
             ImageProcessor ip2 = ImageJUtils.getSliceZero(roiMask, index);
             byte[] roiMaskPixels = (byte[]) ip2.getPixels();
             byte[] maskPixels = (byte[]) ip.getPixels();

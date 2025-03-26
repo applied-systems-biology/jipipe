@@ -13,7 +13,7 @@
 
 package org.hkijena.jipipe.plugins.cellpose.utils;
 
-import org.hkijena.jipipe.plugins.imagejdatatypes.util.ImageSliceIndex;
+import org.hkijena.jipipe.plugins.imagejdatatypes.util.dimensions.ImageSliceIndex;
 
 import java.util.HashMap;
 import java.util.Map;

@@ -33,7 +33,7 @@ import org.hkijena.jipipe.plugins.expressions.JIPipeExpressionVariablesMap;
 import org.hkijena.jipipe.plugins.expressions.TableColumnSourceExpressionParameter;
 import org.hkijena.jipipe.plugins.imagejalgorithms.nodes.roi.draw.VisualROIProperties;
 import org.hkijena.jipipe.plugins.imagejdatatypes.datatypes.ROI2DListData;
-import org.hkijena.jipipe.plugins.imagejdatatypes.util.ImageJUtils;
+import org.hkijena.jipipe.plugins.imagejdatatypes.util.ImageJROIUtils;
 import org.hkijena.jipipe.plugins.tables.datatypes.ResultsTableData;
 import org.hkijena.jipipe.plugins.tables.datatypes.TableColumnData;
 import org.hkijena.jipipe.utils.StringUtils;
@@ -227,7 +227,7 @@ public class TableToRectangularROIAlgorithm extends JIPipeSimpleIteratingAlgorit
         }
         roi.setPosition(c, z, t);
         roi.setName(StringUtils.orElse(name, "Unnamed"));
-        ImageJUtils.setRoiPropertiesFromString(roi, metadata, "metadata_");
+        ImageJROIUtils.setRoiPropertiesFromString(roi, metadata, "metadata_");
         roiProperties.applyTo(roi, variables);
         rois.add(roi);
     }

@@ -27,7 +27,7 @@ import org.hkijena.jipipe.api.nodes.iterationstep.JIPipeIterationContext;
 import org.hkijena.jipipe.api.nodes.iterationstep.JIPipeSingleIterationStep;
 import org.hkijena.jipipe.api.parameters.JIPipeParameter;
 import org.hkijena.jipipe.plugins.imagejdatatypes.datatypes.ROI2DListData;
-import org.hkijena.jipipe.plugins.imagejdatatypes.util.ImageJUtils;
+import org.hkijena.jipipe.plugins.imagejdatatypes.util.ImageJROIUtils;
 import org.hkijena.jipipe.plugins.parameters.library.primitives.optional.OptionalStringParameter;
 import org.hkijena.jipipe.plugins.tables.datatypes.ResultsTableData;
 import org.hkijena.jipipe.utils.StringUtils;
@@ -61,7 +61,7 @@ public class ExtractROIMetadataAlgorithm extends JIPipeSimpleIteratingAlgorithm 
         ResultsTableData table = new ResultsTableData();
         for (int i = 0; i < rois.size(); i++) {
             Roi roi = rois.get(i);
-            Map<String, String> map = ImageJUtils.getRoiProperties(roi);
+            Map<String, String> map = ImageJROIUtils.getRoiProperties(roi);
             int row = table.addRow();
             if (nameColumn.isEnabled()) {
                 table.setValueAt(StringUtils.orElse(roi.getName(), "Unnamed"), row, nameColumn.getContent());

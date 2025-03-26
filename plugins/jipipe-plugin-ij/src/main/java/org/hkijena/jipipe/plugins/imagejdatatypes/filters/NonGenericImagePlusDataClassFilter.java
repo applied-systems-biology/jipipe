@@ -15,13 +15,13 @@ package org.hkijena.jipipe.plugins.imagejdatatypes.filters;
 
 import org.apache.commons.lang3.reflect.ConstructorUtils;
 import org.hkijena.jipipe.plugins.imagejdatatypes.datatypes.ImagePlusData;
-import org.hkijena.jipipe.plugins.imagejdatatypes.util.ImageDimensions;
+import org.hkijena.jipipe.plugins.imagejdatatypes.util.dimensions.ImageDimensions;
 import org.hkijena.jipipe.utils.classfilters.ClassFilter;
 
 /**
  * Filters for image types that can be used for creating new instances.
  * These {@link org.hkijena.jipipe.plugins.imagejdatatypes.datatypes.ImagePlusData} are identified by their
- * {@link org.hkijena.jipipe.plugins.imagejdatatypes.util.ImageDimensions} constructor.
+ * {@link ImageDimensions} constructor.
  */
 public class NonGenericImagePlusDataClassFilter implements ClassFilter {
     @Override

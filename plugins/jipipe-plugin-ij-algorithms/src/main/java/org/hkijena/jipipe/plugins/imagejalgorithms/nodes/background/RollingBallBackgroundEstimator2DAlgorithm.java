@@ -28,7 +28,7 @@ import org.hkijena.jipipe.api.nodes.iterationstep.JIPipeIterationContext;
 import org.hkijena.jipipe.api.nodes.iterationstep.JIPipeSingleIterationStep;
 import org.hkijena.jipipe.api.parameters.JIPipeParameter;
 import org.hkijena.jipipe.plugins.imagejdatatypes.datatypes.ImagePlusData;
-import org.hkijena.jipipe.plugins.imagejdatatypes.util.ImageJUtils;
+import org.hkijena.jipipe.plugins.imagejdatatypes.util.ImageJIterationUtils;
 
 
 /**
@@ -80,7 +80,7 @@ public class RollingBallBackgroundEstimator2DAlgorithm extends JIPipeSimpleItera
         ImagePlusData inputData = iterationStep.getInputData(getFirstInputSlot(), ImagePlusData.class, progressInfo);
         ImagePlus img = inputData.getDuplicateImage();
         BackgroundSubtracter backgroundSubtracter = new BackgroundSubtracter();
-        ImageJUtils.forEachSlice(img, ip -> {
+        ImageJIterationUtils.forEachSlice(img, ip -> {
             if (ip instanceof ColorProcessor && !separateChannels) {
                 backgroundSubtracter.rollingBallBrightnessBackground((ColorProcessor) ip,
                         radius,

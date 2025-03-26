@@ -29,7 +29,7 @@ import org.hkijena.jipipe.api.parameters.JIPipeParameter;
 import org.hkijena.jipipe.plugins.imagejalgorithms.parameters.Neighborhood2D;
 import org.hkijena.jipipe.plugins.imagejalgorithms.utils.LabelConnectedComponents;
 import org.hkijena.jipipe.plugins.imagejdatatypes.datatypes.greyscale.ImagePlusGreyscaleData;
-import org.hkijena.jipipe.plugins.imagejdatatypes.util.ImageJUtils;
+import org.hkijena.jipipe.plugins.imagejdatatypes.util.ImageJIterationUtils;
 
 @SetJIPipeDocumentation(name = "Split labels (connected components) 2D", description = "Splits labels that have the same value, but are not in the same connected component. " +
         "Please note that that all label values will be re-assigned.")
@@ -63,7 +63,7 @@ public class SplitLabelsConnectedComponents2DAlgorithm extends JIPipeSimpleItera
     @Override
     protected void runIteration(JIPipeSingleIterationStep iterationStep, JIPipeIterationContext iterationContext, JIPipeGraphNodeRunContext runContext, JIPipeProgressInfo progressInfo) {
         ImagePlus inputImage = iterationStep.getInputData(getFirstInputSlot(), ImagePlusGreyscaleData.class, progressInfo).getImage();
-        ImagePlus result = ImageJUtils.generateForEachIndexedZCTSlice(inputImage, (ip, index) -> LabelConnectedComponents.process(ip, connectivity), progressInfo);
+        ImagePlus result = ImageJIterationUtils.generateForEachIndexedZCTSlice(inputImage, (ip, index) -> LabelConnectedComponents.process(ip, connectivity), progressInfo);
         iterationStep.addOutputData(getFirstOutputSlot(), new ImagePlusGreyscaleData(result), progressInfo);
     }
 }

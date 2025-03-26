@@ -33,8 +33,9 @@ import org.hkijena.jipipe.api.nodes.iterationstep.JIPipeSingleIterationStep;
 import org.hkijena.jipipe.api.parameters.JIPipeParameter;
 import org.hkijena.jipipe.plugins.imagejdatatypes.colorspace.ColorSpace;
 import org.hkijena.jipipe.plugins.imagejdatatypes.datatypes.ImagePlusData;
+import org.hkijena.jipipe.plugins.imagejdatatypes.util.ImageJIterationUtils;
 import org.hkijena.jipipe.plugins.imagejdatatypes.util.ImageJUtils;
-import org.hkijena.jipipe.plugins.imagejdatatypes.util.ImageSliceIndex;
+import org.hkijena.jipipe.plugins.imagejdatatypes.util.dimensions.ImageSliceIndex;
 import org.hkijena.jipipe.plugins.tables.datatypes.ResultsTableData;
 import org.hkijena.jipipe.utils.StringUtils;
 
@@ -99,7 +100,7 @@ public class MultipleImagesToTableAlgorithm extends JIPipeIteratingAlgorithm {
         ImagePlus referenceImage = inputImages.values().iterator().next().getImage();
 
         if (applyPerSlice) {
-            ImageJUtils.forEachIndexedZCTSlice(referenceImage, (referenceImp, index) -> {
+            ImageJIterationUtils.forEachIndexedZCTSlice(referenceImage, (referenceImp, index) -> {
                 ResultsTableData resultsTable = new ResultsTableData();
                 prepareResultsTable(resultsTable);
                 resultsTable.addRows(referenceImp.getWidth() * referenceImp.getHeight());
@@ -124,7 +125,7 @@ public class MultipleImagesToTableAlgorithm extends JIPipeIteratingAlgorithm {
             resultsTable.addRows(referenceImage.getWidth() * referenceImage.getHeight() * referenceImage.getNFrames() * referenceImage.getNChannels() * referenceImage.getNSlices());
 
             int[] counter = new int[1];
-            ImageJUtils.forEachIndexedZCTSlice(referenceImage, (referenceImp, index) -> {
+            ImageJIterationUtils.forEachIndexedZCTSlice(referenceImage, (referenceImp, index) -> {
 
                 List<ImageProcessor> processors = new ArrayList<>();
                 List<String> slotNames = new ArrayList<>();

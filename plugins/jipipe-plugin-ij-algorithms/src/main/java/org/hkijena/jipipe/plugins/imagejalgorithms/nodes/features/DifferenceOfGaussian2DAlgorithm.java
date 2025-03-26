@@ -32,7 +32,7 @@ import org.hkijena.jipipe.api.nodes.iterationstep.JIPipeSingleIterationStep;
 import org.hkijena.jipipe.api.parameters.JIPipeParameter;
 import org.hkijena.jipipe.plugins.imagejdatatypes.datatypes.ImagePlusData;
 import org.hkijena.jipipe.plugins.imagejdatatypes.datatypes.greyscale.ImagePlusGreyscale32FData;
-import org.hkijena.jipipe.plugins.imagejdatatypes.util.ImageJUtils;
+import org.hkijena.jipipe.plugins.imagejdatatypes.util.ImageJIterationUtils;
 
 /**
  * Wrapper around {@link GaussianBlur}
@@ -71,7 +71,7 @@ public class DifferenceOfGaussian2DAlgorithm extends JIPipeSimpleIteratingAlgori
         ImagePlusData inputData = iterationStep.getInputData(getFirstInputSlot(), ImagePlusGreyscale32FData.class, progressInfo);
         ImagePlus img = inputData.getDuplicateImage();
         GaussianBlur gaussianBlur = new GaussianBlur();
-        ImageJUtils.forEachSlice(img, ip -> {
+        ImageJIterationUtils.forEachSlice(img, ip -> {
             double accuracy = (ip instanceof ByteProcessor || ip instanceof ColorProcessor) ? 0.002 : 0.0002;
             ImageProcessor larger = ip.duplicate();
             gaussianBlur.blurGaussian(ip, sigma0X, sigma0Y > 0 ? sigma0Y : sigma0X, accuracy);

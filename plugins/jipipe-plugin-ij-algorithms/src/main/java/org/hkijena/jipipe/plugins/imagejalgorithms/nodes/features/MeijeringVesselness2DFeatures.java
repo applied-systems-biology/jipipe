@@ -41,6 +41,7 @@ import org.hkijena.jipipe.api.validation.JIPipeValidationReportEntryLevel;
 import org.hkijena.jipipe.api.validation.contexts.ParameterValidationReportContext;
 import org.hkijena.jipipe.plugins.imagejdatatypes.datatypes.ImagePlusData;
 import org.hkijena.jipipe.plugins.imagejdatatypes.datatypes.greyscale.ImagePlusGreyscale32FData;
+import org.hkijena.jipipe.plugins.imagejdatatypes.util.ImageJIterationUtils;
 import org.hkijena.jipipe.plugins.imagejdatatypes.util.ImageJUtils;
 import org.hkijena.jipipe.plugins.parameters.library.primitives.NumberParameterSettings;
 import org.hkijena.jipipe.plugins.parameters.library.primitives.list.DoubleList;
@@ -100,12 +101,12 @@ public class MeijeringVesselness2DFeatures extends JIPipeSimpleIteratingAlgorith
 
         if (invert) {
             img = ImageJUtils.duplicate(img);
-            ImageJUtils.forEachSlice(img, ImageProcessor::invert, progressInfo);
+            ImageJIterationUtils.forEachSlice(img, ImageProcessor::invert, progressInfo);
         }
 
         ImageStack stack = new ImageStack(img.getWidth(), img.getHeight(), img.getProcessor().getColorModel());
         ImagePlus finalImg = img;
-        ImageJUtils.forEachIndexedSlice(img, (imp, index) -> {
+        ImageJIterationUtils.forEachIndexedSlice(img, (imp, index) -> {
             progressInfo.log("Slice " + index + "/" + finalImg.getStackSize());
             ImagePlus slice = new ImagePlus("slice", imp);
             ImagePlus processedSlice = processSlice(slice);

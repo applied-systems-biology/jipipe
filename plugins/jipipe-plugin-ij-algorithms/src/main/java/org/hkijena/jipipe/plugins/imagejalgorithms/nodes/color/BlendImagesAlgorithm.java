@@ -38,7 +38,8 @@ import org.hkijena.jipipe.api.validation.JIPipeValidationRuntimeException;
 import org.hkijena.jipipe.api.validation.contexts.GraphNodeValidationReportContext;
 import org.hkijena.jipipe.plugins.imagejdatatypes.datatypes.ImagePlusData;
 import org.hkijena.jipipe.plugins.imagejdatatypes.datatypes.color.ImagePlusColorRGBData;
-import org.hkijena.jipipe.plugins.imagejdatatypes.util.ImageBlendLayer;
+import org.hkijena.jipipe.plugins.imagejdatatypes.util.ImageJIterationUtils;
+import org.hkijena.jipipe.plugins.imagejdatatypes.util.blending.ImageBlendLayer;
 import org.hkijena.jipipe.plugins.imagejdatatypes.util.ImageJUtils;
 import org.hkijena.jipipe.plugins.parameters.library.graph.InputSlotMapParameterCollection;
 
@@ -134,7 +135,7 @@ public class BlendImagesAlgorithm extends JIPipeIteratingAlgorithm {
         List<JIPipeInputDataSlot> sortedSlots = getDataInputSlots().stream().sorted(Comparator.comparing(slot -> channelMap.get(slot).getPriority())
                 .thenComparing(slot -> getDataInputSlots().indexOf(slot))).collect(Collectors.toList());
 
-        ImageJUtils.forEachIndexedZCTSlice(resultImage, (resultIp, index) -> {
+        ImageJIterationUtils.forEachIndexedZCTSlice(resultImage, (resultIp, index) -> {
             for (JIPipeDataSlot inputSlot : sortedSlots) {
                 ImageBlendLayer layer = channelMap.get(inputSlot);
                 ImagePlus inputImage = channelInputMap.get(inputSlot);

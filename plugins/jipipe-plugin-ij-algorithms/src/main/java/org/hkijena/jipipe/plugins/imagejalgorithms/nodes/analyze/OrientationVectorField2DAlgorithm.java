@@ -37,8 +37,9 @@ import org.hkijena.jipipe.plugins.imagejalgorithms.utils.OrientationJStructureTe
 import org.hkijena.jipipe.plugins.imagejalgorithms.utils.OrientationJVectorFieldType;
 import org.hkijena.jipipe.plugins.imagejdatatypes.datatypes.ROI2DListData;
 import org.hkijena.jipipe.plugins.imagejdatatypes.datatypes.greyscale.ImagePlusGreyscaleData;
+import org.hkijena.jipipe.plugins.imagejdatatypes.util.ImageJIterationUtils;
 import org.hkijena.jipipe.plugins.imagejdatatypes.util.ImageJUtils;
-import org.hkijena.jipipe.plugins.imagejdatatypes.util.ImageSliceIndex;
+import org.hkijena.jipipe.plugins.imagejdatatypes.util.dimensions.ImageSliceIndex;
 import org.hkijena.jipipe.plugins.tables.datatypes.ResultsTableData;
 import orientation.*;
 import orientation.imageware.Builder;
@@ -207,7 +208,7 @@ public class OrientationVectorField2DAlgorithm extends JIPipeSimpleIteratingAlgo
         ROI2DListData overlay = new ROI2DListData();
         ResultsTableData results = new ResultsTableData();
 
-        ImageJUtils.forEachIndexedZCTSliceWithProgress(inputImage, (ip, index, sliceProgress) -> {
+        ImageJIterationUtils.forEachIndexedZCTSliceWithProgress(inputImage, (ip, index, sliceProgress) -> {
             OrientationJLogWrapper log = new OrientationJLogWrapper(sliceProgress);
             OrientationParameters params = new OrientationParameters(OrientationService.VECTORFIELD);
 

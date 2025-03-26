@@ -34,7 +34,7 @@ import org.hkijena.jipipe.plugins.ijweka.parameters.collections.WekaTiling2DSett
 import org.hkijena.jipipe.plugins.imagejalgorithms.nodes.transform.TileImage2DAlgorithm;
 import org.hkijena.jipipe.plugins.imagejalgorithms.nodes.transform.UnTileImage2DAlgorithm;
 import org.hkijena.jipipe.plugins.imagejdatatypes.datatypes.ImagePlusData;
-import org.hkijena.jipipe.plugins.imagejdatatypes.util.ImageJUtils;
+import org.hkijena.jipipe.plugins.imagejdatatypes.util.ImageJIterationUtils;
 import org.hkijena.jipipe.plugins.parameters.library.primitives.optional.OptionalIntegerParameter;
 import org.hkijena.jipipe.plugins.parameters.library.primitives.optional.OptionalTextAnnotationNameParameter;
 import org.hkijena.jipipe.utils.IJLogToJIPipeProgressInfoPump;
@@ -94,7 +94,7 @@ public class WekaClassification2DAlgorithm extends JIPipeIteratingAlgorithm {
 
         ImageStack stack = new ImageStack(image.getWidth(), image.getHeight(), image.getNSlices() * image.getNChannels() * image.getNChannels());
         try (IJLogToJIPipeProgressInfoPump pump = new IJLogToJIPipeProgressInfoPump(progressInfo.resolve("Weka"))) {
-            ImageJUtils.forEachIndexedZCTSlice(image, (ip, index) -> {
+            ImageJIterationUtils.forEachIndexedZCTSlice(image, (ip, index) -> {
                 ImagePlus wholeSlice = new ImagePlus(image.getTitle() + " " + index, ip);
                 ImagePlus classified;
                 if (tilingSettings.isApplyTiling()) {

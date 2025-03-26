@@ -31,9 +31,9 @@ import org.hkijena.jipipe.api.validation.JIPipeValidationReportContext;
 import org.hkijena.jipipe.api.validation.JIPipeValidationReportEntry;
 import org.hkijena.jipipe.api.validation.JIPipeValidationReportEntryLevel;
 import org.hkijena.jipipe.plugins.imagejdatatypes.datatypes.ImagePlusData;
-import org.hkijena.jipipe.plugins.imagejdatatypes.util.HyperstackDimension;
-import org.hkijena.jipipe.plugins.imagejdatatypes.util.ImageJUtils;
-import org.hkijena.jipipe.plugins.imagejdatatypes.util.ImageSliceIndex;
+import org.hkijena.jipipe.plugins.imagejdatatypes.util.ImageJIterationUtils;
+import org.hkijena.jipipe.plugins.imagejdatatypes.util.dimensions.HyperstackDimension;
+import org.hkijena.jipipe.plugins.imagejdatatypes.util.dimensions.ImageSliceIndex;
 
 /**
  * Algorithm that reorders Hyperstack dimensions
@@ -119,7 +119,7 @@ public class ReorderDimensionsAlgorithm extends JIPipeSimpleIteratingAlgorithm {
                 throw new UnsupportedOperationException();
         }
 
-        ImageJUtils.forEachIndexedZCTSlice(image, (ip, sourceIndex) -> {
+        ImageJIterationUtils.forEachIndexedZCTSlice(image, (ip, sourceIndex) -> {
             int z, c, t;
             switch (targetZ) {
                 case Channel:

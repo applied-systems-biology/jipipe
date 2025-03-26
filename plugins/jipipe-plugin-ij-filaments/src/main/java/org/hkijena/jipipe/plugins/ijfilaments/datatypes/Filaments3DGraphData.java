@@ -43,7 +43,8 @@ import org.hkijena.jipipe.plugins.ij3d.utils.ExtendedObjectCreator3D;
 import org.hkijena.jipipe.plugins.ijfilaments.display.FilamentsManagerPlugin2D;
 import org.hkijena.jipipe.plugins.ijfilaments.util.*;
 import org.hkijena.jipipe.plugins.imagejdatatypes.datatypes.ROI2DListData;
-import org.hkijena.jipipe.plugins.imagejdatatypes.util.BitDepth;
+import org.hkijena.jipipe.plugins.imagejdatatypes.util.ImageJIterationUtils;
+import org.hkijena.jipipe.plugins.imagejdatatypes.util.dimensions.BitDepth;
 import org.hkijena.jipipe.plugins.imagejdatatypes.util.ImageJUtils;
 import org.hkijena.jipipe.plugins.imageviewer.legacy.api.JIPipeDesktopLegacyImageViewerOverlay;
 import org.hkijena.jipipe.plugins.imageviewer.legacy.api.JIPipeDesktopLegacyImageViewerPlugin;
@@ -1137,7 +1138,7 @@ public class Filaments3DGraphData extends SimpleGraph<FilamentVertex, FilamentEd
         ROI3DListData result = new ROI3DListData();
 
         ImagePlus blankCanvas = createBlankCanvas("", 8);
-        ImageJUtils.forEachIndexedCTStack(blankCanvas, (imp, index, ctProgress) -> {
+        ImageJIterationUtils.forEachIndexedCTStack(blankCanvas, (imp, index, ctProgress) -> {
             ExtendedObjectCreator3D objectCreator3D = new ExtendedObjectCreator3D(ImageHandler.wrap(imp));
             for (int i = 0; i < connectedSets.size(); i++) {
                 if (ctProgress.isCancelled())
@@ -1344,7 +1345,7 @@ public class Filaments3DGraphData extends SimpleGraph<FilamentVertex, FilamentEd
         }
 
         // Draw
-        ImageJUtils.forEachIndexedZCTSlice(reference, (ip, index) -> {
+        ImageJIterationUtils.forEachIndexedZCTSlice(reference, (ip, index) -> {
 
             final int z = index.getZ();
             final int c = index.getC();
@@ -1420,7 +1421,7 @@ public class Filaments3DGraphData extends SimpleGraph<FilamentVertex, FilamentEd
             progressInfo.log("Exporting " + this);
             FilamentsDrawer filamentsDrawer = new FilamentsDrawer();
             ImagePlus rendered = ImageJUtils.newBlankOf(imp, BitDepth.ColorRGB);
-            ImageJUtils.forEachIndexedZCTSlice(rendered, (ip, index) -> {
+            ImageJIterationUtils.forEachIndexedZCTSlice(rendered, (ip, index) -> {
                 filamentsDrawer.drawFilamentsOnProcessor(this, (ColorProcessor) ip, index.getZ(), index.getC(), index.getT());
             }, progressInfo);
             IJ.saveAsTiff(rendered, outputFile.toString());

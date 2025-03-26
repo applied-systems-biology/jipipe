@@ -28,7 +28,7 @@ import org.hkijena.jipipe.api.nodes.categories.ImagesNodeTypeCategory;
 import org.hkijena.jipipe.api.nodes.iterationstep.JIPipeIterationContext;
 import org.hkijena.jipipe.api.nodes.iterationstep.JIPipeSingleIterationStep;
 import org.hkijena.jipipe.plugins.imagejdatatypes.datatypes.greyscale.ImagePlusGreyscaleMaskData;
-import org.hkijena.jipipe.plugins.imagejdatatypes.util.ImageJUtils;
+import org.hkijena.jipipe.plugins.imagejdatatypes.util.ImageJIterationUtils;
 
 @SetJIPipeDocumentation(name = "Convexify", description = "Converts a 2D mask image into its convex hull. " +
         "If higher-dimensional data is provided, the filter is applied to each 2D slice.")
@@ -62,7 +62,7 @@ public class ConvexifyAlgorithm extends JIPipeSimpleIteratingAlgorithm {
     protected void runIteration(JIPipeSingleIterationStep iterationStep, JIPipeIterationContext iterationContext, JIPipeGraphNodeRunContext runContext, JIPipeProgressInfo progressInfo) {
         ImagePlus inputImage = iterationStep.getInputData(getFirstInputSlot(), ImagePlusGreyscaleMaskData.class, progressInfo).getImage();
         ImageStack stack = new ImageStack(inputImage.getWidth(), inputImage.getHeight(), inputImage.getStackSize());
-        ImageJUtils.forEachIndexedZCTSlice(inputImage, (ip, index) -> {
+        ImageJIterationUtils.forEachIndexedZCTSlice(inputImage, (ip, index) -> {
             ImageProcessor convexify = Convexity.convexify(ip);
             stack.setProcessor(convexify, index.zeroSliceIndexToOneStackIndex(inputImage));
         }, progressInfo);

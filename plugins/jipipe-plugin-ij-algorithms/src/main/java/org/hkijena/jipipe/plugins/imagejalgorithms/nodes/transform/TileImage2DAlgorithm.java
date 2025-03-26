@@ -33,7 +33,7 @@ import org.hkijena.jipipe.api.nodes.iterationstep.JIPipeIterationContext;
 import org.hkijena.jipipe.api.nodes.iterationstep.JIPipeSingleIterationStep;
 import org.hkijena.jipipe.api.parameters.JIPipeParameter;
 import org.hkijena.jipipe.plugins.imagejdatatypes.datatypes.ImagePlusData;
-import org.hkijena.jipipe.plugins.imagejdatatypes.util.ImageJUtils;
+import org.hkijena.jipipe.plugins.imagejdatatypes.util.ImageJIterationUtils;
 import org.hkijena.jipipe.plugins.parameters.library.primitives.optional.OptionalTextAnnotationNameParameter;
 
 import java.awt.*;
@@ -138,7 +138,7 @@ public class TileImage2DAlgorithm extends JIPipeSimpleIteratingAlgorithm {
                 JIPipeProgressInfo tileProgress = progressInfo.resolveAndLog("Tile", x + y * nTilesX, nTilesX * nTilesY);
                 ImageStack tileStack = new ImageStack(realTileSizeX, realTileSizeY, img.getStackSize());
                 ImagePlus finalImg = img;
-                ImageJUtils.forEachIndexedZCTSlice(img, (ip, index) -> {
+                ImageJIterationUtils.forEachIndexedZCTSlice(img, (ip, index) -> {
                     ip.setRoi(roi);
                     ImageProcessor crop = ip.crop();
                     ip.setRoi((Roi) null);

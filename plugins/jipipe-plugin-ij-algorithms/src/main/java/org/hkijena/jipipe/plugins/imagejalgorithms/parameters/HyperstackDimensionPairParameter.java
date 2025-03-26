@@ -13,7 +13,7 @@
 
 package org.hkijena.jipipe.plugins.imagejalgorithms.parameters;
 
-import org.hkijena.jipipe.plugins.imagejdatatypes.util.HyperstackDimension;
+import org.hkijena.jipipe.plugins.imagejdatatypes.util.dimensions.HyperstackDimension;
 import org.hkijena.jipipe.plugins.parameters.api.collections.ListParameter;
 import org.hkijena.jipipe.plugins.parameters.api.pairs.PairParameter;
 

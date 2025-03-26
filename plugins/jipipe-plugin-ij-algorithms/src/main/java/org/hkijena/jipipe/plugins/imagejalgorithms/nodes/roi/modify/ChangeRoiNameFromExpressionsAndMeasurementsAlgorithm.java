@@ -33,6 +33,7 @@ import org.hkijena.jipipe.api.parameters.JIPipeParameterTree;
 import org.hkijena.jipipe.plugins.expressions.*;
 import org.hkijena.jipipe.plugins.imagejdatatypes.datatypes.ImagePlusData;
 import org.hkijena.jipipe.plugins.imagejdatatypes.datatypes.ROI2DListData;
+import org.hkijena.jipipe.plugins.imagejdatatypes.util.ImageJROIUtils;
 import org.hkijena.jipipe.plugins.imagejdatatypes.util.ImageJUtils;
 import org.hkijena.jipipe.plugins.imagejdatatypes.util.measure.ImageStatisticsSetParameter;
 import org.hkijena.jipipe.plugins.imagejdatatypes.util.measure.MeasurementColumn;
@@ -94,7 +95,7 @@ public class ChangeRoiNameFromExpressionsAndMeasurementsAlgorithm extends JIPipe
             }
 
             // Make metadata accessible
-            Map<String, String> roiProperties = ImageJUtils.getRoiProperties(roi);
+            Map<String, String> roiProperties = ImageJROIUtils.getRoiProperties(roi);
             variables.set("metadata", roiProperties);
             for (Map.Entry<String, String> entry : roiProperties.entrySet()) {
                 variables.set("metadata." + entry.getKey(), entry.getValue());

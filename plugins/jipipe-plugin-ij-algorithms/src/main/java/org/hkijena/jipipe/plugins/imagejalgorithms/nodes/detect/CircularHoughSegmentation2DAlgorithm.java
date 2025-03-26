@@ -35,7 +35,7 @@ import org.hkijena.jipipe.plugins.imagejalgorithms.utils.Hough_Circle;
 import org.hkijena.jipipe.plugins.imagejdatatypes.datatypes.greyscale.ImagePlusGreyscale8UData;
 import org.hkijena.jipipe.plugins.imagejdatatypes.datatypes.greyscale.ImagePlusGreyscaleData;
 import org.hkijena.jipipe.plugins.imagejdatatypes.datatypes.greyscale.ImagePlusGreyscaleMaskData;
-import org.hkijena.jipipe.plugins.imagejdatatypes.util.ImageJUtils;
+import org.hkijena.jipipe.plugins.imagejdatatypes.util.ImageJIterationUtils;
 import org.hkijena.jipipe.plugins.tables.datatypes.ResultsTableData;
 
 
@@ -154,7 +154,7 @@ public class CircularHoughSegmentation2DAlgorithm extends JIPipeSimpleIteratingA
         ImageStack stack = new ImageStack(img.getWidth(), img.getHeight(), img.getProcessor().getColorModel());
         ResultsTableData measurements = new ResultsTableData();
 
-        ImageJUtils.forEachIndexedSlice(img, (imp, index) -> {
+        ImageJIterationUtils.forEachIndexedSlice(img, (imp, index) -> {
             progressInfo.log("Slice " + index + "/" + img.getStackSize());
             ImagePlus slice = new ImagePlus("slice", imp);
             // Apply Hough circle transform

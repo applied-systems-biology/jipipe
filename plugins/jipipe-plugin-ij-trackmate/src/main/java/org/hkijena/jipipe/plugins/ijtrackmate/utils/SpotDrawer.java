@@ -24,8 +24,9 @@ import org.hkijena.jipipe.api.parameters.AbstractJIPipeParameterCollection;
 import org.hkijena.jipipe.api.parameters.JIPipeParameter;
 import org.hkijena.jipipe.plugins.ijtrackmate.datatypes.SpotsCollectionData;
 import org.hkijena.jipipe.plugins.ijtrackmate.parameters.SpotFeature;
+import org.hkijena.jipipe.plugins.imagejdatatypes.util.ImageJROIUtils;
 import org.hkijena.jipipe.plugins.imagejdatatypes.util.ImageJUtils;
-import org.hkijena.jipipe.plugins.imagejdatatypes.util.ImageSliceIndex;
+import org.hkijena.jipipe.plugins.imagejdatatypes.util.dimensions.ImageSliceIndex;
 import org.hkijena.jipipe.plugins.imagejdatatypes.util.RoiDrawer;
 import org.hkijena.jipipe.plugins.parameters.library.primitives.BooleanParameterSettings;
 
@@ -86,7 +87,7 @@ public class SpotDrawer extends AbstractJIPipeParameterCollection {
 
         // Create overlay
         SpotOverlay spotOverlay = new SpotOverlay(spotsCollectionData.getModel(), spotsCollectionData.getImage(), displaySettings);
-        ImageJUtils.setRoiCanvas(spotOverlay, imagePlus, dummyCanvas);
+        ImageJROIUtils.setRoiCanvas(spotOverlay, imagePlus, dummyCanvas);
         spotOverlay.setSpotSelection(selected);
 
         // Draw

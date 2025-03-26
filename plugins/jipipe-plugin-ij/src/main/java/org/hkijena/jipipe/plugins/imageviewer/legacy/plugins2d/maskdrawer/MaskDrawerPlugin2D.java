@@ -37,8 +37,9 @@ import org.hkijena.jipipe.desktop.commons.components.JIPipeDesktopParameterFormP
 import org.hkijena.jipipe.desktop.commons.components.icons.SolidColorIcon;
 import org.hkijena.jipipe.desktop.commons.components.ribbon.*;
 import org.hkijena.jipipe.plugins.imagejdatatypes.datatypes.ROI2DListData;
+import org.hkijena.jipipe.plugins.imagejdatatypes.util.ImageJIterationUtils;
 import org.hkijena.jipipe.plugins.imagejdatatypes.util.ImageJUtils;
-import org.hkijena.jipipe.plugins.imagejdatatypes.util.ImageSliceIndex;
+import org.hkijena.jipipe.plugins.imagejdatatypes.util.dimensions.ImageSliceIndex;
 import org.hkijena.jipipe.plugins.imageviewer.legacy.JIPipeDesktopLegacyImageViewer;
 import org.hkijena.jipipe.plugins.imageviewer.legacy.api.JIPipeDesktopLegacyImageViewerPlugin2D;
 import org.hkijena.jipipe.plugins.imageviewer.legacy.plugins2d.roimanager.ROIManagerPlugin2D;
@@ -525,7 +526,7 @@ public class MaskDrawerPlugin2D extends JIPipeDesktopLegacyImageViewerPlugin2D i
         ImageSliceIndex currentIndex = getViewerPanel2D().getCurrentSliceIndex();
 
         try (BusyCursor cursor = new BusyCursor(getViewerPanel())) {
-            ImageJUtils.forEachIndexedZCTSlice(mask, (ip, index) -> {
+            ImageJIterationUtils.forEachIndexedZCTSlice(mask, (ip, index) -> {
                 if (index.equals(currentIndex))
                     return;
                 if (index.getZ() < zRange.getMin() || index.getZ() > zRange.getMax())

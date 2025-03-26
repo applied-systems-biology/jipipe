@@ -28,7 +28,7 @@ import org.hkijena.jipipe.api.parameters.JIPipeParameter;
 import org.hkijena.jipipe.plugins.imagejdatatypes.datatypes.ImagePlusData;
 import org.hkijena.jipipe.plugins.imagejdatatypes.datatypes.greyscale.ImagePlusGreyscale32FData;
 import org.hkijena.jipipe.plugins.imagejdatatypes.datatypes.greyscale.ImagePlusGreyscaleMaskData;
-import org.hkijena.jipipe.plugins.imagejdatatypes.util.ImageJUtils;
+import org.hkijena.jipipe.plugins.imagejdatatypes.util.ImageJIterationUtils;
 
 /**
  * Wrapper around {@link EDM}
@@ -97,7 +97,7 @@ public class ApplyDistanceTransform2DAlgorithm extends JIPipeSimpleIteratingAlgo
         ImagePlusData inputData = iterationStep.getInputData(getFirstInputSlot(), ImagePlusGreyscaleMaskData.class, progressInfo);
         ImagePlus img = inputData.getImage();
         EDM edm = new EDM();
-        ImagePlus result = ImageJUtils.generateForEachIndexedZCTSlice(img, (ip, index) -> edm.makeFloatEDM(ip, backgroundValue, edgesAreBackground), progressInfo);
+        ImagePlus result = ImageJIterationUtils.generateForEachIndexedZCTSlice(img, (ip, index) -> edm.makeFloatEDM(ip, backgroundValue, edgesAreBackground), progressInfo);
         result.copyScale(img);
         iterationStep.addOutputData(getFirstOutputSlot(), new ImagePlusGreyscale32FData(result), progressInfo);
     }

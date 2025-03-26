@@ -38,8 +38,8 @@ import org.hkijena.jipipe.api.validation.*;
 import org.hkijena.jipipe.api.validation.contexts.ParameterValidationReportContext;
 import org.hkijena.jipipe.plugins.imagejdatatypes.datatypes.ImagePlusData;
 import org.hkijena.jipipe.plugins.imagejdatatypes.datatypes.greyscale.ImagePlusGreyscaleData;
-import org.hkijena.jipipe.plugins.imagejdatatypes.util.ImageJUtils;
-import org.hkijena.jipipe.plugins.imagejdatatypes.util.ImageSliceIndex;
+import org.hkijena.jipipe.plugins.imagejdatatypes.util.ImageJIterationUtils;
+import org.hkijena.jipipe.plugins.imagejdatatypes.util.dimensions.ImageSliceIndex;
 import org.hkijena.jipipe.plugins.parameters.library.graph.OutputSlotMapParameterCollection;
 import org.hkijena.jipipe.plugins.parameters.library.primitives.StringParameterSettings;
 import org.hkijena.jipipe.utils.ResourceUtils;
@@ -143,7 +143,7 @@ public class SplitChannelsAlgorithm extends JIPipeSimpleIteratingAlgorithm {
         // First, we need to ensure that we only have 2D grayscale planes
         // This means we have to completely decompose the image
         Map<ImageSliceIndex, ImageProcessor> decomposedSlices = new HashMap<>();
-        ImageJUtils.forEachIndexedZTSlice(image, (channels, sliceIndex) -> {
+        ImageJIterationUtils.forEachIndexedZTSlice(image, (channels, sliceIndex) -> {
             // Decompose potential nested color processors
             // We might need to add some channels as we de-compose color processors
             int correctedChannel = 0;

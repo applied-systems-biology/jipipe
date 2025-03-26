@@ -28,7 +28,7 @@ import org.hkijena.jipipe.api.parameters.JIPipeParameter;
 import org.hkijena.jipipe.plugins.imagejdatatypes.datatypes.ImagePlusData;
 import org.hkijena.jipipe.plugins.imagejdatatypes.datatypes.greyscale.ImagePlusGreyscale8UData;
 import org.hkijena.jipipe.plugins.imagejdatatypes.datatypes.greyscale.ImagePlusGreyscaleMaskData;
-import org.hkijena.jipipe.plugins.imagejdatatypes.util.ImageJUtils;
+import org.hkijena.jipipe.plugins.imagejdatatypes.util.ImageJIterationUtils;
 
 /**
  * Wrapper around {@link EDM}
@@ -58,7 +58,7 @@ public class Voronoi2DAlgorithm extends JIPipeSimpleIteratingAlgorithm {
         ImagePlus img = inputData.getDuplicateImage();
         EDM edm = new EDM();
         edm.setup("voronoi", img);
-        ImageJUtils.forEachSlice(img, ip -> {
+        ImageJIterationUtils.forEachSlice(img, ip -> {
             edm.run(ip);
             if (binarize) {
                 ip.threshold(0);

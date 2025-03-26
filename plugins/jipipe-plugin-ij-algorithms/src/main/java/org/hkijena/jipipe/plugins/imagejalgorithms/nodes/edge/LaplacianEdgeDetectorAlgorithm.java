@@ -30,7 +30,7 @@ import org.hkijena.jipipe.api.nodes.iterationstep.JIPipeSingleIterationStep;
 import org.hkijena.jipipe.api.parameters.JIPipeParameter;
 import org.hkijena.jipipe.plugins.imagejdatatypes.datatypes.ImagePlusData;
 import org.hkijena.jipipe.plugins.imagejdatatypes.datatypes.greyscale.ImagePlusGreyscale32FData;
-import org.hkijena.jipipe.plugins.imagejdatatypes.util.ImageJUtils;
+import org.hkijena.jipipe.plugins.imagejdatatypes.util.ImageJIterationUtils;
 
 /**
  * Wrapper around {@link ImageProcessor}
@@ -116,7 +116,7 @@ public class LaplacianEdgeDetectorAlgorithm extends JIPipeSimpleIteratingAlgorit
                 throw new UnsupportedOperationException();
         }
 
-        ImageJUtils.forEachSlice(img, imp -> {
+        ImageJIterationUtils.forEachSlice(img, imp -> {
             convolver.convolve(imp, kernel, 3, 3);
             if (removeNegativeValues) {
                 float[] pixels = (float[]) imp.getPixels();

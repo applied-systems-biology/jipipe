@@ -32,8 +32,8 @@ import org.hkijena.jipipe.plugins.expressions.JIPipeExpressionVariablesMap;
 import org.hkijena.jipipe.plugins.imagejdatatypes.datatypes.ImagePlusData;
 import org.hkijena.jipipe.plugins.imagejdatatypes.datatypes.greyscale.ImagePlusGreyscale32FData;
 import org.hkijena.jipipe.plugins.imagejdatatypes.datatypes.greyscale.ImagePlusGreyscaleData;
-import org.hkijena.jipipe.plugins.imagejdatatypes.util.HyperstackDimension;
-import org.hkijena.jipipe.plugins.imagejdatatypes.util.VectorPixel5DExpressionParameterVariablesInfo;
+import org.hkijena.jipipe.plugins.imagejdatatypes.util.dimensions.HyperstackDimension;
+import org.hkijena.jipipe.plugins.imagejdatatypes.util.expressions.VectorPixel5DExpressionParameterVariablesInfo;
 
 import java.util.ArrayList;
 import java.util.List;

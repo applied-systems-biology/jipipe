@@ -15,8 +15,6 @@ package org.hkijena.jipipe.plugins.imagejalgorithms.nodes.sharpen;
 
 import ij.ImagePlus;
 import ij.plugin.filter.GaussianBlur;
-import ij.plugin.filter.UnsharpMask;
-import ij.process.FloatProcessor;
 import ij.process.ImageProcessor;
 import org.hkijena.jipipe.api.ConfigureJIPipeNode;
 import org.hkijena.jipipe.api.JIPipeProgressInfo;
@@ -28,11 +26,9 @@ import org.hkijena.jipipe.api.nodes.categories.ImagesNodeTypeCategory;
 import org.hkijena.jipipe.api.nodes.iterationstep.JIPipeIterationContext;
 import org.hkijena.jipipe.api.nodes.iterationstep.JIPipeSingleIterationStep;
 import org.hkijena.jipipe.api.parameters.JIPipeParameter;
-import org.hkijena.jipipe.plugins.imagejdatatypes.datatypes.ImagePlusData;
 import org.hkijena.jipipe.plugins.imagejdatatypes.datatypes.greyscale.ImagePlusGreyscale32FData;
-import org.hkijena.jipipe.plugins.imagejdatatypes.util.ImageJUtils;
+import org.hkijena.jipipe.plugins.imagejdatatypes.util.ImageJIterationUtils;
 
-import java.awt.*;
 import java.util.Arrays;
 
 
@@ -67,7 +63,7 @@ public class UnsharpMasking2DAlgorithm extends JIPipeSimpleIteratingAlgorithm {
     protected void runIteration(JIPipeSingleIterationStep iterationStep, JIPipeIterationContext iterationContext, JIPipeGraphNodeRunContext runContext, JIPipeProgressInfo progressInfo) {
         ImagePlusGreyscale32FData inputData = iterationStep.getInputData(getFirstInputSlot(), ImagePlusGreyscale32FData.class, progressInfo);
         ImagePlus img = inputData.getDuplicateImage();
-        ImageJUtils.forEachSlice(img, this::applyUnsharpMask, progressInfo);
+        ImageJIterationUtils.forEachSlice(img, this::applyUnsharpMask, progressInfo);
         iterationStep.addOutputData(getFirstOutputSlot(), new ImagePlusGreyscale32FData(img), progressInfo);
     }
 

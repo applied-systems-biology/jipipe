@@ -32,7 +32,8 @@ import org.hkijena.jipipe.plugins.ijfilaments.datatypes.Filaments3DGraphData;
 import org.hkijena.jipipe.plugins.ijfilaments.util.FilamentsDrawer;
 import org.hkijena.jipipe.plugins.imagejdatatypes.datatypes.ImagePlusData;
 import org.hkijena.jipipe.plugins.imagejdatatypes.datatypes.color.ImagePlusColorRGBData;
-import org.hkijena.jipipe.plugins.imagejdatatypes.util.BitDepth;
+import org.hkijena.jipipe.plugins.imagejdatatypes.util.ImageJIterationUtils;
+import org.hkijena.jipipe.plugins.imagejdatatypes.util.dimensions.BitDepth;
 import org.hkijena.jipipe.plugins.imagejdatatypes.util.ImageJUtils;
 
 @SetJIPipeDocumentation(name = "Convert filaments to RGB", description = "Visualizes filaments by rendering them onto an RGB image")
@@ -90,7 +91,7 @@ public class ConvertFilamentsToRGBAlgorithm extends JIPipeIteratingAlgorithm {
         } else {
             reference = ImageJUtils.convertToColorRGBIfNeeded(reference);
         }
-        ImageJUtils.forEachIndexedZCTSlice(reference, (ip, index) -> {
+        ImageJIterationUtils.forEachIndexedZCTSlice(reference, (ip, index) -> {
             filamentsDrawer.drawFilamentsOnProcessor(filaments3DGraphData, (ColorProcessor) ip, index.getZ(), index.getC(), index.getT());
         }, progressInfo);
         iterationStep.addOutputData("Output", new ImagePlusColorRGBData(reference), progressInfo);

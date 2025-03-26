@@ -31,7 +31,7 @@ import org.hkijena.jipipe.api.nodes.iterationstep.JIPipeSingleIterationStep;
 import org.hkijena.jipipe.api.parameters.JIPipeParameter;
 import org.hkijena.jipipe.plugins.imagejalgorithms.utils.ImageJAlgorithmUtils;
 import org.hkijena.jipipe.plugins.imagejdatatypes.datatypes.greyscale.ImagePlusGreyscaleData;
-import org.hkijena.jipipe.plugins.imagejdatatypes.util.ImageJUtils;
+import org.hkijena.jipipe.plugins.imagejdatatypes.util.ImageJIterationUtils;
 import org.hkijena.jipipe.plugins.parameters.library.primitives.optional.OptionalTextAnnotationNameParameter;
 
 import java.util.ArrayList;
@@ -63,7 +63,7 @@ public class SeparateLabelsAlgorithm extends JIPipeSimpleIteratingAlgorithm {
             final int label = allLabels[i];
             ImagePlus result = img.duplicate();
             result.setTitle(img.getTitle() + " label=" + label);
-            ImageJUtils.forEachIndexedZCTSlice(result, (ip, index) -> {
+            ImageJIterationUtils.forEachIndexedZCTSlice(result, (ip, index) -> {
                 ImageJAlgorithmUtils.removeLabelsExcept(ip, new int[]{label});
             }, labelProgress);
             result.copyScale(img);

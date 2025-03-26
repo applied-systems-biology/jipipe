@@ -32,7 +32,7 @@ import org.hkijena.jipipe.plugins.ijfilaments.util.FilamentVertex;
 import org.hkijena.jipipe.plugins.ijfilaments.util.NonSpatialPoint3d;
 import org.hkijena.jipipe.plugins.ijfilaments.util.Point3d;
 import org.hkijena.jipipe.plugins.imagejdatatypes.datatypes.ImagePlusData;
-import org.hkijena.jipipe.plugins.imagejdatatypes.util.ImageJUtils;
+import org.hkijena.jipipe.plugins.imagejdatatypes.util.ImageJIterationUtils;
 import org.hkijena.jipipe.plugins.parameters.library.quantities.Quantity;
 import org.hkijena.jipipe.utils.StringUtils;
 
@@ -61,7 +61,7 @@ public class SkeletonToFilaments3DAlgorithm extends JIPipeSimpleIteratingAlgorit
 
         Calibration calibration = skeleton.getCalibration();
 
-        ImageJUtils.forEachIndexedCTStack(skeleton, (imp, index, ctProgress) -> {
+        ImageJIterationUtils.forEachIndexedCTStack(skeleton, (imp, index, ctProgress) -> {
             Map<Point3d, FilamentVertex> vertexMap = new HashMap<>();
 
             // percentage tracking

@@ -32,8 +32,9 @@ import org.hkijena.jipipe.plugins.imagejalgorithms.parameters.ImageROITargetArea
 import org.hkijena.jipipe.plugins.imagejalgorithms.utils.ImageJAlgorithmUtils;
 import org.hkijena.jipipe.plugins.imagejdatatypes.datatypes.ImagePlusData;
 import org.hkijena.jipipe.plugins.imagejdatatypes.datatypes.ROI2DListData;
+import org.hkijena.jipipe.plugins.imagejdatatypes.util.ImageJIterationUtils;
 import org.hkijena.jipipe.plugins.imagejdatatypes.util.ImageJUtils;
-import org.hkijena.jipipe.plugins.imagejdatatypes.util.ImageSliceIndex;
+import org.hkijena.jipipe.plugins.imagejdatatypes.util.dimensions.ImageSliceIndex;
 
 @SetJIPipeDocumentation(name = "Insert image (masked)", description = "Overlays the target image with the source image according to a mask or ROI.")
 @ConfigureJIPipeNode(nodeTypeCategory = ImagesNodeTypeCategory.class)
@@ -70,7 +71,7 @@ public class MergeImagesAlgorithm extends JIPipeIteratingAlgorithm {
                     "All input images in the same batch should have the same width, height, number of slices, number of frames, and number of channels."));
         }
 
-        ImageJUtils.forEachIndexedZCTSlice(output, (ip, index) -> {
+        ImageJIterationUtils.forEachIndexedZCTSlice(output, (ip, index) -> {
             ImageProcessor mask = getMask(iterationStep, index, progressInfo);
             ImageProcessor srcProcessor = ImageJUtils.getSliceZero(src, index);
             for (int y = 0; y < ip.getHeight(); y++) {

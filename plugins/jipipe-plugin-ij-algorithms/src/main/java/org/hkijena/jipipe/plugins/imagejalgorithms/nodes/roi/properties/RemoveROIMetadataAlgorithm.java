@@ -31,7 +31,7 @@ import org.hkijena.jipipe.plugins.expressions.JIPipeExpressionParameter;
 import org.hkijena.jipipe.plugins.expressions.JIPipeExpressionVariablesMap;
 import org.hkijena.jipipe.plugins.expressions.variables.JIPipeTextAnnotationsExpressionParameterVariablesInfo;
 import org.hkijena.jipipe.plugins.imagejdatatypes.datatypes.ROI2DListData;
-import org.hkijena.jipipe.plugins.imagejdatatypes.util.ImageJUtils;
+import org.hkijena.jipipe.plugins.imagejdatatypes.util.ImageJROIUtils;
 
 import java.util.HashSet;
 import java.util.Map;
@@ -60,7 +60,7 @@ public class RemoveROIMetadataAlgorithm extends JIPipeSimpleIteratingAlgorithm {
         JIPipeExpressionVariablesMap variables = new JIPipeExpressionVariablesMap(iterationStep);
 
         for (Roi roi : rois) {
-            Map<String, String> map = ImageJUtils.getRoiProperties(roi);
+            Map<String, String> map = ImageJROIUtils.getRoiProperties(roi);
             Set<String> toRemove = new HashSet<>();
             for (Map.Entry<String, String> entry : map.entrySet()) {
                 variables.set("metadata." + entry.getKey(), entry.getValue());
@@ -75,7 +75,7 @@ public class RemoveROIMetadataAlgorithm extends JIPipeSimpleIteratingAlgorithm {
             for (String key : toRemove) {
                 map.remove(key);
             }
-            ImageJUtils.setRoiProperties(roi, map);
+            ImageJROIUtils.setRoiProperties(roi, map);
         }
         iterationStep.addOutputData(getFirstOutputSlot(), rois, progressInfo);
     }

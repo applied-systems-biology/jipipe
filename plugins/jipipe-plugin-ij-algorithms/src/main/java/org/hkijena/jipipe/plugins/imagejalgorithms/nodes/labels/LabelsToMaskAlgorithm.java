@@ -28,6 +28,7 @@ import org.hkijena.jipipe.api.nodes.iterationstep.JIPipeIterationContext;
 import org.hkijena.jipipe.api.nodes.iterationstep.JIPipeSingleIterationStep;
 import org.hkijena.jipipe.plugins.imagejdatatypes.datatypes.greyscale.ImagePlusGreyscaleData;
 import org.hkijena.jipipe.plugins.imagejdatatypes.datatypes.greyscale.ImagePlusGreyscaleMaskData;
+import org.hkijena.jipipe.plugins.imagejdatatypes.util.ImageJIterationUtils;
 import org.hkijena.jipipe.plugins.imagejdatatypes.util.ImageJUtils;
 
 @SetJIPipeDocumentation(name = "Convert labels to mask", description = "Converts a label image to a mask")
@@ -57,7 +58,7 @@ public class LabelsToMaskAlgorithm extends JIPipeSimpleIteratingAlgorithm {
                 inputImage.getNChannels(),
                 inputImage.getNSlices(),
                 inputImage.getNFrames());
-        ImageJUtils.forEachIndexedZCTSlice(inputImage, (labelIp, index) -> {
+        ImageJIterationUtils.forEachIndexedZCTSlice(inputImage, (labelIp, index) -> {
             ImageProcessor maskIp = ImageJUtils.getSliceZero(outputImage, index);
             for (int y = 0; y < labelIp.getHeight(); y++) {
                 for (int x = 0; x < labelIp.getWidth(); x++) {

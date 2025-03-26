@@ -31,6 +31,7 @@ import org.hkijena.jipipe.api.parameters.JIPipeParameterTree;
 import org.hkijena.jipipe.plugins.imagejalgorithms.nodes.contrast.HistogramContrastEnhancerAlgorithm;
 import org.hkijena.jipipe.plugins.imagejdatatypes.datatypes.greyscale.ImagePlusGreyscale8UData;
 import org.hkijena.jipipe.plugins.imagejdatatypes.datatypes.greyscale.ImagePlusGreyscaleData;
+import org.hkijena.jipipe.plugins.imagejdatatypes.util.ImageJIterationUtils;
 import org.hkijena.jipipe.plugins.imagejdatatypes.util.ImageJUtils;
 import org.hkijena.jipipe.plugins.parameters.library.primitives.vectors.Vector2dParameter;
 import org.hkijena.jipipe.plugins.parameters.library.primitives.vectors.VectorParameterSettings;
@@ -106,7 +107,7 @@ public class ConvertImageTo8BitAutoContrastAlgorithm extends JIPipeSimpleIterati
     protected void runIteration(JIPipeSingleIterationStep iterationStep, JIPipeIterationContext iterationContext, JIPipeGraphNodeRunContext runContext, JIPipeProgressInfo progressInfo) {
         ImagePlus image = iterationStep.getInputData(getFirstInputSlot(), ImagePlusGreyscaleData.class, progressInfo).getImage();
         HistogramContrastEnhancerAlgorithm histogramContrastEnhancerAlgorithm = JIPipe.createNode(HistogramContrastEnhancerAlgorithm.class);
-        ImagePlus result = ImageJUtils.generateForEachIndexedZCTSlice(image, (ip, index) -> {
+        ImagePlus result = ImageJIterationUtils.generateForEachIndexedZCTSlice(image, (ip, index) -> {
             // 8-bit is the lowest, so always write the calibration first and then convert
             ImagePlus imp = new ImagePlus("slice", ip.duplicate());
             Vector2dParameter minMax = ImageJUtils.calibrate(imp, calibrationMode, customRange.getX(), customRange.getY());

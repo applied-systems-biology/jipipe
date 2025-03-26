@@ -37,7 +37,7 @@ import org.hkijena.jipipe.plugins.expressions.variables.JIPipeTextAnnotationsExp
 import org.hkijena.jipipe.plugins.imagejalgorithms.nodes.roi.measure.RoiStatisticsAlgorithm;
 import org.hkijena.jipipe.plugins.imagejdatatypes.datatypes.ImagePlusData;
 import org.hkijena.jipipe.plugins.imagejdatatypes.datatypes.ROI2DListData;
-import org.hkijena.jipipe.plugins.imagejdatatypes.util.ImageJUtils;
+import org.hkijena.jipipe.plugins.imagejdatatypes.util.ImageJROIUtils;
 import org.hkijena.jipipe.plugins.imagejdatatypes.util.measure.AllMeasurementExpressionParameterVariablesInfo;
 import org.hkijena.jipipe.plugins.imagejdatatypes.util.measure.ImageStatisticsSetParameter;
 import org.hkijena.jipipe.plugins.imagejdatatypes.util.measure.MeasurementExpressionParameterVariablesInfo;
@@ -130,7 +130,7 @@ public class SetRoiMetadataByStatisticsAlgorithm extends JIPipeIteratingAlgorith
         // Apply filter
         for (int row = 0; row < statistics.getRowCount(); row++) {
             Roi roi = rois.get(row);
-            Map<String, String> roiProperties = ImageJUtils.getRoiProperties(roi);
+            Map<String, String> roiProperties = ImageJROIUtils.getRoiProperties(roi);
             variableSet.set("metadata", roiProperties);
             for (Map.Entry<String, String> entry : roiProperties.entrySet()) {
                 variableSet.set("metadata." + entry.getKey(), entry.getValue());
@@ -145,7 +145,7 @@ public class SetRoiMetadataByStatisticsAlgorithm extends JIPipeIteratingAlgorith
                 String value = property.value.evaluateToString(variableSet);
                 roiProperties.put(property.key, value);
             }
-            ImageJUtils.setRoiProperties(roi, roiProperties);
+            ImageJROIUtils.setRoiProperties(roi, roiProperties);
         }
 
         iterationStep.addOutputData(getFirstOutputSlot(), rois, progressInfo);

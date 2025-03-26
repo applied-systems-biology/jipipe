@@ -29,8 +29,9 @@ import org.hkijena.jipipe.plugins.imagejalgorithms.utils.ImageScienceUtils;
 import org.hkijena.jipipe.plugins.imagejdatatypes.datatypes.ImagePlusData;
 import org.hkijena.jipipe.plugins.imagejdatatypes.datatypes.greyscale.ImagePlusGreyscale32FData;
 import org.hkijena.jipipe.plugins.imagejdatatypes.datatypes.greyscale.ImagePlusGreyscaleData;
+import org.hkijena.jipipe.plugins.imagejdatatypes.util.ImageJIterationUtils;
 import org.hkijena.jipipe.plugins.imagejdatatypes.util.ImageJUtils;
-import org.hkijena.jipipe.plugins.imagejdatatypes.util.ImageSliceIndex;
+import org.hkijena.jipipe.plugins.imagejdatatypes.util.dimensions.ImageSliceIndex;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -387,7 +388,7 @@ public class HessianFeatureAlgorithm extends JIPipeSimpleIteratingAlgorithm {
         if (force2D) {
             Map<ImageSliceIndex, ImageProcessor> resultSmallestMap = new HashMap<>();
             Map<ImageSliceIndex, ImageProcessor> resultLargestMap = new HashMap<>();
-            ImageJUtils.forEachIndexedZCTSliceWithProgress(input, (imp, index, sliceProgress) -> {
+            ImageJIterationUtils.forEachIndexedZCTSliceWithProgress(input, (imp, index, sliceProgress) -> {
                 ImagePlus slice = new ImagePlus("slice", imp);
                 slice.copyScale(input);
                 Vector<Image> eigenImages = applyHessian(slice, sliceProgress);

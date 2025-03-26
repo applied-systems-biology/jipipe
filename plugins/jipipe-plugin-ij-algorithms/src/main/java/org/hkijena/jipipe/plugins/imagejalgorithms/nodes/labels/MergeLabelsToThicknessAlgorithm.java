@@ -49,8 +49,8 @@ import org.hkijena.jipipe.plugins.imagejalgorithms.utils.ImageJAlgorithmUtils;
 import org.hkijena.jipipe.plugins.imagejdatatypes.datatypes.ROI2DListData;
 import org.hkijena.jipipe.plugins.imagejdatatypes.datatypes.greyscale.ImagePlusGreyscaleData;
 import org.hkijena.jipipe.plugins.imagejdatatypes.datatypes.greyscale.ImagePlusGreyscaleMaskData;
-import org.hkijena.jipipe.plugins.imagejdatatypes.util.ImageJUtils;
-import org.hkijena.jipipe.plugins.imagejdatatypes.util.ImageSliceIndex;
+import org.hkijena.jipipe.plugins.imagejdatatypes.util.ImageJIterationUtils;
+import org.hkijena.jipipe.plugins.imagejdatatypes.util.dimensions.ImageSliceIndex;
 import org.hkijena.jipipe.plugins.parameters.library.util.SortOrder;
 
 @SetJIPipeDocumentation(name = "Merge labels (min thickness) 2D", description = "Merges labels until the thickness of the label reaches a minimum threshold. If the image has multiple slices, the algorithm is applied per slice.")
@@ -100,7 +100,7 @@ public class MergeLabelsToThicknessAlgorithm extends JIPipeIteratingAlgorithm {
 
         if (image.getBitDepth() == 8) {
             ByteProcessor tempProcessor = new ByteProcessor(image.getWidth(), image.getHeight());
-            ImageJUtils.forEachIndexedZCTSliceWithProgress(image, (ip, index, stackProgress) -> {
+            ImageJIterationUtils.forEachIndexedZCTSliceWithProgress(image, (ip, index, stackProgress) -> {
                 ImageProcessor mask = getMask(ip.getWidth(),
                         ip.getHeight(),
                         finalRoiInput,
@@ -183,7 +183,7 @@ public class MergeLabelsToThicknessAlgorithm extends JIPipeIteratingAlgorithm {
             }, progressInfo.resolve("Processing"));
         } else if (image.getBitDepth() == 16) {
             ByteProcessor tempProcessor = new ByteProcessor(image.getWidth(), image.getHeight());
-            ImageJUtils.forEachIndexedZCTSliceWithProgress(image, (ip, index, stackProgress) -> {
+            ImageJIterationUtils.forEachIndexedZCTSliceWithProgress(image, (ip, index, stackProgress) -> {
                 ImageProcessor mask = getMask(ip.getWidth(),
                         ip.getHeight(),
                         finalRoiInput,
@@ -266,7 +266,7 @@ public class MergeLabelsToThicknessAlgorithm extends JIPipeIteratingAlgorithm {
             }, progressInfo.resolve("Processing"));
         } else if (image.getBitDepth() == 32) {
             ByteProcessor tempProcessor = new ByteProcessor(image.getWidth(), image.getHeight());
-            ImageJUtils.forEachIndexedZCTSliceWithProgress(image, (ip, index, stackProgress) -> {
+            ImageJIterationUtils.forEachIndexedZCTSliceWithProgress(image, (ip, index, stackProgress) -> {
                 ImageProcessor mask = getMask(ip.getWidth(),
                         ip.getHeight(),
                         finalRoiInput,

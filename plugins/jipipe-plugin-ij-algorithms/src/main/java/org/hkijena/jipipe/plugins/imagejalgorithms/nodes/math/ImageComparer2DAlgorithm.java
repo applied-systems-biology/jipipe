@@ -35,6 +35,7 @@ import org.hkijena.jipipe.api.validation.contexts.GraphNodeValidationReportConte
 import org.hkijena.jipipe.api.validation.contexts.ParameterValidationReportContext;
 import org.hkijena.jipipe.plugins.imagejdatatypes.datatypes.ImagePlusData;
 import org.hkijena.jipipe.plugins.imagejdatatypes.datatypes.greyscale.ImagePlusGreyscaleMaskData;
+import org.hkijena.jipipe.plugins.imagejdatatypes.util.ImageJIterationUtils;
 import org.hkijena.jipipe.plugins.imagejdatatypes.util.ImageJUtils;
 import org.hkijena.jipipe.plugins.parameters.library.graph.InputSlotMapParameterCollection;
 
@@ -134,7 +135,7 @@ public class ImageComparer2DAlgorithm extends JIPipeIteratingAlgorithm {
 
         ImagePlus finalLeftOperand = leftOperand;
         ImagePlus finalRightOperand = rightOperand;
-        ImageJUtils.forEachIndexedZCTSlice(result, (resultIp, index) -> {
+        ImageJIterationUtils.forEachIndexedZCTSlice(result, (resultIp, index) -> {
             ImageProcessor leftIp = ImageJUtils.getSliceZero(finalLeftOperand, index);
             ImageProcessor rightIp = ImageJUtils.getSliceZero(finalRightOperand, index);
             for (int y = 0; y < resultIp.getHeight(); y++) {

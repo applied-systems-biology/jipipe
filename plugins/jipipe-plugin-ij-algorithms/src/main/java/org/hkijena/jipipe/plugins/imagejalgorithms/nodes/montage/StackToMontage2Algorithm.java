@@ -32,7 +32,7 @@ import org.hkijena.jipipe.plugins.imagejalgorithms.utils.Image5DSliceIndexExpres
 import org.hkijena.jipipe.plugins.imagejalgorithms.utils.MontageCreator;
 import org.hkijena.jipipe.plugins.imagejdatatypes.datatypes.ImagePlusData;
 import org.hkijena.jipipe.plugins.imagejdatatypes.datatypes.d2.ImagePlus2DData;
-import org.hkijena.jipipe.plugins.imagejdatatypes.util.ImageJUtils;
+import org.hkijena.jipipe.plugins.imagejdatatypes.util.ImageJIterationUtils;
 
 import java.util.ArrayList;
 import java.util.Collections;
@@ -71,7 +71,7 @@ public class StackToMontage2Algorithm extends JIPipeIteratingAlgorithm {
     protected void runIteration(JIPipeSingleIterationStep iterationStep, JIPipeIterationContext iterationContext, JIPipeGraphNodeRunContext runContext, JIPipeProgressInfo progressInfo) {
         List<MontageCreator.InputEntry> inputEntries = new ArrayList<>();
         ImagePlus stack = iterationStep.getInputData(getFirstInputSlot(), ImagePlusData.class, progressInfo).getImage();
-        ImageJUtils.forEachIndexedZCTSlice(stack, (ip, index) -> {
+        ImageJIterationUtils.forEachIndexedZCTSlice(stack, (ip, index) -> {
             JIPipeExpressionVariablesMap variables = new JIPipeExpressionVariablesMap(iterationStep);
             Image5DSliceIndexExpressionParameterVariablesInfo.apply(variables, stack, index);
 

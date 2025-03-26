@@ -43,6 +43,7 @@ import org.hkijena.jipipe.plugins.imagejdatatypes.datatypes.ROI2DListData;
 import org.hkijena.jipipe.plugins.imagejdatatypes.datatypes.greyscale.ImagePlusGreyscale8UData;
 import org.hkijena.jipipe.plugins.imagejdatatypes.datatypes.greyscale.ImagePlusGreyscaleData;
 import org.hkijena.jipipe.plugins.imagejdatatypes.datatypes.greyscale.ImagePlusGreyscaleMaskData;
+import org.hkijena.jipipe.plugins.imagejdatatypes.util.ImageJIterationUtils;
 import org.hkijena.jipipe.plugins.imagejdatatypes.util.ImageJUtils;
 import org.hkijena.jipipe.plugins.imagejdatatypes.util.measure.ImageStatisticsSetParameter;
 import org.hkijena.jipipe.plugins.imagejdatatypes.util.measure.MeasurementExpressionParameterVariablesInfo;
@@ -146,7 +147,7 @@ public class IterativeThresholdByROIStatistics2DAlgorithm extends JIPipeIteratin
         List<Integer> detectedThresholds = new ArrayList<>();
         ROI2DListData outputROI = new ROI2DListData();
         ImageStack outputStack = new ImageStack(inputImage.getWidth(), inputImage.getHeight(), inputImage.getStackSize());
-        ImageJUtils.forEachIndexedZCTSlice(inputImage, (inputIp, index) -> {
+        ImageJIterationUtils.forEachIndexedZCTSlice(inputImage, (inputIp, index) -> {
             ImageProcessor referenceIp = ImageJUtils.getClosestSliceZero(referenceImage, index);
             List<ThresholdingResult> results = new ArrayList<>();
             for (int i = 0; i < thresholds.size(); i++) {

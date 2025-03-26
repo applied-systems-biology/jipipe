@@ -27,7 +27,7 @@ import org.hkijena.jipipe.api.nodes.iterationstep.JIPipeSingleIterationStep;
 import org.hkijena.jipipe.api.parameters.JIPipeParameter;
 import org.hkijena.jipipe.plugins.imagejdatatypes.datatypes.ImagePlusData;
 import org.hkijena.jipipe.plugins.imagejdatatypes.datatypes.greyscale.ImagePlusGreyscale32FData;
-import org.hkijena.jipipe.plugins.imagejdatatypes.util.ImageJUtils;
+import org.hkijena.jipipe.plugins.imagejdatatypes.util.ImageJIterationUtils;
 
 /**
  * Wrapper around {@link RankFilters}
@@ -72,7 +72,7 @@ public class RemoveNaNFilter2DAlgorithm extends JIPipeSimpleIteratingAlgorithm {
         ImagePlusData inputData = iterationStep.getInputData(getFirstInputSlot(), ImagePlusData.class, progressInfo);
         ImagePlus img = inputData.getDuplicateImage();
         RankFilters rankFilters = new RankFilters();
-        ImageJUtils.forEachSlice(img, ip -> rankFilters.rank(ip, radius, RankFilters.REMOVE_NAN), progressInfo);
+        ImageJIterationUtils.forEachSlice(img, ip -> rankFilters.rank(ip, radius, RankFilters.REMOVE_NAN), progressInfo);
         iterationStep.addOutputData(getFirstOutputSlot(), new ImagePlusData(img), progressInfo);
     }
 

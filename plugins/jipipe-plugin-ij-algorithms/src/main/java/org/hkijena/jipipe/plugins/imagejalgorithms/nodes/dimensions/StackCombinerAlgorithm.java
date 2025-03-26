@@ -30,7 +30,8 @@ import org.hkijena.jipipe.api.validation.JIPipeValidationReportEntryLevel;
 import org.hkijena.jipipe.api.validation.JIPipeValidationRuntimeException;
 import org.hkijena.jipipe.api.validation.contexts.GraphNodeValidationReportContext;
 import org.hkijena.jipipe.plugins.imagejdatatypes.datatypes.ImagePlusData;
-import org.hkijena.jipipe.plugins.imagejdatatypes.util.HyperstackDimension;
+import org.hkijena.jipipe.plugins.imagejdatatypes.util.ImageJIterationUtils;
+import org.hkijena.jipipe.plugins.imagejdatatypes.util.dimensions.HyperstackDimension;
 import org.hkijena.jipipe.plugins.imagejdatatypes.util.ImageJUtils;
 
 @SetJIPipeDocumentation(name = "Combine stacks", description = "Combines the incoming stacks into one by adding the corresponding slices of the second stack to the first one. " +
@@ -95,7 +96,7 @@ public class StackCombinerAlgorithm extends JIPipeIteratingAlgorithm {
         int nSlices = target.getNSlices();
         ImageStack stack = new ImageStack(target.getWidth(), target.getHeight(), src.getStackSize() + target.getStackSize());
         copyOriginalImage(progressInfo, target, nChannels, nFrames, nSlices, stack);
-        ImageJUtils.forEachIndexedZCTSlice(src, (ip, index) -> {
+        ImageJIterationUtils.forEachIndexedZCTSlice(src, (ip, index) -> {
             int targetIndex = ImageJUtils.oneSliceIndexToOneStackIndex(index.getC() + 1,
                     index.getZ() + 1,
                     index.getT() + target.getNFrames() + 1,
@@ -130,7 +131,7 @@ public class StackCombinerAlgorithm extends JIPipeIteratingAlgorithm {
         int nSlices = target.getNSlices() + src.getNSlices();
         ImageStack stack = new ImageStack(target.getWidth(), target.getHeight(), src.getStackSize() + target.getStackSize());
         copyOriginalImage(progressInfo, target, nChannels, nFrames, nSlices, stack);
-        ImageJUtils.forEachIndexedZCTSlice(src, (ip, index) -> {
+        ImageJIterationUtils.forEachIndexedZCTSlice(src, (ip, index) -> {
             int targetIndex = ImageJUtils.oneSliceIndexToOneStackIndex(index.getC() + 1,
                     index.getZ() + target.getNSlices() + 1,
                     index.getT() + 1,
@@ -165,7 +166,7 @@ public class StackCombinerAlgorithm extends JIPipeIteratingAlgorithm {
         int nSlices = target.getNSlices();
         ImageStack stack = new ImageStack(target.getWidth(), target.getHeight(), src.getStackSize() + target.getStackSize());
         copyOriginalImage(progressInfo, target, nChannels, nFrames, nSlices, stack);
-        ImageJUtils.forEachIndexedZCTSlice(src, (ip, index) -> {
+        ImageJIterationUtils.forEachIndexedZCTSlice(src, (ip, index) -> {
             int targetIndex = ImageJUtils.oneSliceIndexToOneStackIndex(index.getC() + target.getNChannels() + 1,
                     index.getZ() + 1,
                     index.getT() + 1,
@@ -181,7 +182,7 @@ public class StackCombinerAlgorithm extends JIPipeIteratingAlgorithm {
     }
 
     private void copyOriginalImage(JIPipeProgressInfo progressInfo, ImagePlus target, int nChannels, int nFrames, int nSlices, ImageStack stack) {
-        ImageJUtils.forEachIndexedZCTSlice(target, (ip, index) -> {
+        ImageJIterationUtils.forEachIndexedZCTSlice(target, (ip, index) -> {
             int targetIndex = ImageJUtils.oneSliceIndexToOneStackIndex(index.getC() + 1,
                     index.getZ() + 1,
                     index.getT() + 1,

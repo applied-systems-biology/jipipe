@@ -33,8 +33,9 @@ import org.hkijena.jipipe.api.parameters.JIPipeParameter;
 import org.hkijena.jipipe.plugins.imagejalgorithms.utils.OrientationJLogWrapper;
 import org.hkijena.jipipe.plugins.imagejalgorithms.utils.OrientationJStructureTensorParameters;
 import org.hkijena.jipipe.plugins.imagejdatatypes.datatypes.greyscale.ImagePlusGreyscaleData;
+import org.hkijena.jipipe.plugins.imagejdatatypes.util.ImageJIterationUtils;
 import org.hkijena.jipipe.plugins.imagejdatatypes.util.ImageJUtils;
-import org.hkijena.jipipe.plugins.imagejdatatypes.util.ImageSliceIndex;
+import org.hkijena.jipipe.plugins.imagejdatatypes.util.dimensions.ImageSliceIndex;
 import orientation.*;
 import orientation.imageware.Builder;
 import orientation.imageware.ImageWare;
@@ -108,7 +109,7 @@ public class OrientationFeatures2DAlgorithm extends JIPipeSimpleIteratingAlgorit
         Map<ImageSliceIndex, ImageProcessor> gradientXSlices = new HashMap<>();
         Map<ImageSliceIndex, ImageProcessor> gradientYSlices = new HashMap<>();
 
-        ImageJUtils.forEachIndexedZCTSliceWithProgress(inputImage, (ip, index, sliceProgress) -> {
+        ImageJIterationUtils.forEachIndexedZCTSliceWithProgress(inputImage, (ip, index, sliceProgress) -> {
             OrientationJLogWrapper log = new OrientationJLogWrapper(sliceProgress);
             OrientationParameters params = new OrientationParameters(OrientationService.ANALYSIS);
 

@@ -34,6 +34,7 @@ import org.hkijena.jipipe.api.nodes.iterationstep.JIPipeMultiIterationStep;
 import org.hkijena.jipipe.api.parameters.JIPipeParameter;
 import org.hkijena.jipipe.plugins.imagejdatatypes.datatypes.ImagePlusData;
 import org.hkijena.jipipe.plugins.imagejdatatypes.datatypes.d2.ImagePlus2DData;
+import org.hkijena.jipipe.plugins.imagejdatatypes.util.ImageJIterationUtils;
 import org.hkijena.jipipe.plugins.imagejdatatypes.util.ImageJUtils;
 import org.hkijena.jipipe.plugins.parameters.library.primitives.optional.OptionalStringParameter;
 import org.hkijena.jipipe.plugins.parameters.library.roi.Anchor;
@@ -97,7 +98,7 @@ public class AssembleExtractedROIAlgorithm extends JIPipeMergingAlgorithm {
                 int finalT = t;
                 Rectangle bounds = xyAnchor.getRectangle(new Point(x, y), roiImage.getImage().getWidth(), roiImage.getImage().getHeight());
                 ImageProcessor roiProcessor = convertedRoiImage.getProcessor();
-                ImageJUtils.forEachIndexedZCTSlice(targetImage.getImage(), (processor, index) -> {
+                ImageJIterationUtils.forEachIndexedZCTSlice(targetImage.getImage(), (processor, index) -> {
                     if (finalZ != 0 && finalZ != (index.getZ() + 1))
                         return;
                     if (finalC != 0 && finalC != (index.getC() + 1))

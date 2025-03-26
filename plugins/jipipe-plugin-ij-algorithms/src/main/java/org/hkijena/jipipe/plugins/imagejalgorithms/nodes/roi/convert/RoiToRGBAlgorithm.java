@@ -35,6 +35,8 @@ import org.hkijena.jipipe.plugins.imagejdatatypes.datatypes.ImagePlusData;
 import org.hkijena.jipipe.plugins.imagejdatatypes.datatypes.ROI2DListData;
 import org.hkijena.jipipe.plugins.imagejdatatypes.datatypes.color.ImagePlusColorRGBData;
 import org.hkijena.jipipe.plugins.imagejdatatypes.util.*;
+import org.hkijena.jipipe.plugins.imagejdatatypes.util.dimensions.BitDepth;
+import org.hkijena.jipipe.plugins.imagejdatatypes.util.dimensions.ImageSliceIndex;
 import org.hkijena.jipipe.plugins.parameters.library.colors.OptionalColorParameter;
 import org.hkijena.jipipe.plugins.parameters.library.primitives.FontFamilyParameter;
 import org.hkijena.jipipe.plugins.parameters.library.primitives.NumberParameterSettings;
@@ -158,14 +160,14 @@ public class RoiToRGBAlgorithm extends JIPipeIteratingAlgorithm {
             rois = new ROI2DListData(rois);
             ImageCanvas canvas = ImageJUtils.createZoomedDummyCanvas(reference, magnification);
             for (Roi roi : rois) {
-                ImageJUtils.setRoiCanvas(roi, reference, canvas);
+                ImageJROIUtils.setRoiCanvas(roi, reference, canvas);
             }
             ROI2DListData finalRois = rois;
             final int targetWidth = (int) (magnification * reference.getWidth());
             final int targetHeight = (int) (magnification * reference.getHeight());
             ImageStack targetStack = new ImageStack(targetWidth, targetHeight, reference.getStackSize());
             ImagePlus finalReference = reference;
-            ImageJUtils.forEachIndexedZCTSlice(reference, (sourceIp, index) -> {
+            ImageJIterationUtils.forEachIndexedZCTSlice(reference, (sourceIp, index) -> {
                 drawScaledRoi(finalReference, drawer, finalRois, targetStack, sourceIp, index);
             }, progressInfo);
 

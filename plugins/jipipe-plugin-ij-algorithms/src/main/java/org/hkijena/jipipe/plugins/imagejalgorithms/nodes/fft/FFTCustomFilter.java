@@ -29,8 +29,9 @@ import org.hkijena.jipipe.api.nodes.iterationstep.JIPipeIterationContext;
 import org.hkijena.jipipe.api.nodes.iterationstep.JIPipeSingleIterationStep;
 import org.hkijena.jipipe.plugins.imagejdatatypes.datatypes.fft.ImagePlusFFTData;
 import org.hkijena.jipipe.plugins.imagejdatatypes.datatypes.greyscale.ImagePlusGreyscaleData;
+import org.hkijena.jipipe.plugins.imagejdatatypes.util.ImageJIterationUtils;
 import org.hkijena.jipipe.plugins.imagejdatatypes.util.ImageJUtils;
-import org.hkijena.jipipe.plugins.imagejdatatypes.util.ImageSliceIndex;
+import org.hkijena.jipipe.plugins.imagejdatatypes.util.dimensions.ImageSliceIndex;
 
 import java.awt.*;
 import java.util.HashMap;
@@ -120,7 +121,7 @@ public class FFTCustomFilter extends JIPipeIteratingAlgorithm {
         ImagePlus impFilter = iterationStep.getInputData("Filter", ImagePlusFFTData.class, progressInfo).getImage();
 
         Map<ImageSliceIndex, ImageProcessor> outputSlices = new HashMap<>();
-        ImageJUtils.forEachIndexedZCTSliceWithProgress(impInput, (ip2, index, sliceProgress) -> {
+        ImageJIterationUtils.forEachIndexedZCTSliceWithProgress(impInput, (ip2, index, sliceProgress) -> {
             ImageProcessor ip = ip2.duplicate();
             ImageProcessor filter = ImageJUtils.getSliceZeroSafe(impFilter, index).duplicate();
 

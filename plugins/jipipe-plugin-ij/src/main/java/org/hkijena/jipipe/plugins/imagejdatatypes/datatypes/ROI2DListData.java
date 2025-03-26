@@ -41,6 +41,8 @@ import org.hkijena.jipipe.api.validation.JIPipeValidationRuntimeException;
 import org.hkijena.jipipe.api.validation.contexts.UnspecifiedValidationReportContext;
 import org.hkijena.jipipe.plugins.expressions.JIPipeExpressionVariablesMap;
 import org.hkijena.jipipe.plugins.imagejdatatypes.util.*;
+import org.hkijena.jipipe.plugins.imagejdatatypes.util.dimensions.BitDepth;
+import org.hkijena.jipipe.plugins.imagejdatatypes.util.dimensions.ImageSliceIndex;
 import org.hkijena.jipipe.plugins.imagejdatatypes.util.measure.CustomAnalyzer;
 import org.hkijena.jipipe.plugins.imagejdatatypes.util.measure.ImageMeasurementUtils;
 import org.hkijena.jipipe.plugins.imagejdatatypes.util.measure.ImageStatisticsSetParameter;
@@ -989,7 +991,7 @@ public class ROI2DListData extends ArrayList<Roi> implements JIPipeData, NapariO
      * @param defaultLineColor     default line color
      */
     public void draw(ImagePlus rgbImage, boolean ignoreZ, boolean ignoreC, boolean ignoreT, ROIElementDrawingMode drawOutline, ROIElementDrawingMode fillOutline, int defaultLineThickness, Color defaultFillColor, Color defaultLineColor) {
-        ImageJUtils.forEachIndexedZCTSlice(rgbImage, (processor, index) -> {
+        ImageJIterationUtils.forEachIndexedZCTSlice(rgbImage, (processor, index) -> {
             for (Roi roi : this) {
                 int rz = ignoreZ ? 0 : roi.getZPosition();
                 int rc = ignoreC ? 0 : roi.getCPosition();
@@ -1271,22 +1273,22 @@ public class ROI2DListData extends ArrayList<Roi> implements JIPipeData, NapariO
                     }
                     break;
                     case FitCircle:
-                        outlined = ImageJUtils.fitCircleToRoi(roi);
+                        outlined = ImageJROIUtils.fitCircleToRoi(roi);
                         break;
                     case FitEllipse:
-                        outlined = ImageJUtils.fitEllipseToRoi(roi);
+                        outlined = ImageJROIUtils.fitEllipseToRoi(roi);
                         break;
                     case FitSpline:
-                        outlined = ImageJUtils.fitSplineToRoi(roi, false, false);
+                        outlined = ImageJROIUtils.fitSplineToRoi(roi, false, false);
                         break;
                     case DeleteFitSpline:
-                        outlined = ImageJUtils.fitSplineToRoi(roi, false, true);
+                        outlined = ImageJROIUtils.fitSplineToRoi(roi, false, true);
                         break;
                     case FitSplineStraighten:
-                        outlined = ImageJUtils.fitSplineToRoi(roi, true, false);
+                        outlined = ImageJROIUtils.fitSplineToRoi(roi, true, false);
                         break;
                     case AreaToLine:
-                        outlined = ImageJUtils.areaToLine(roi);
+                        outlined = ImageJROIUtils.areaToLine(roi);
                         break;
                     case LineToArea:
                         outlined = Roi.convertLineToArea(roi);
@@ -1303,7 +1305,7 @@ public class ROI2DListData extends ArrayList<Roi> implements JIPipeData, NapariO
 
             if(outlined != null) {
                 // Restore information
-                ImageJUtils.copyRoiAttributesAndLocation(roi, outlined);
+                ImageJROIUtils.copyRoiAttributesAndLocation(roi, outlined);
 
                 // Add to list
                 add(outlined);

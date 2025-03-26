@@ -30,6 +30,7 @@ import org.hkijena.jipipe.api.parameters.JIPipeParameter;
 import org.hkijena.jipipe.plugins.imagejalgorithms.parameters.Neighborhood2D;
 import org.hkijena.jipipe.plugins.imagejdatatypes.datatypes.greyscale.ImagePlusGreyscaleData;
 import org.hkijena.jipipe.plugins.imagejdatatypes.datatypes.greyscale.ImagePlusGreyscaleMaskData;
+import org.hkijena.jipipe.plugins.imagejdatatypes.util.ImageJIterationUtils;
 import org.hkijena.jipipe.plugins.imagejdatatypes.util.ImageJUtils;
 import org.hkijena.jipipe.plugins.parameters.library.primitives.BooleanParameterSettings;
 
@@ -89,7 +90,7 @@ public class MorphologicalReconstruction2DAlgorithm extends JIPipeIteratingAlgor
         maskImage = ImageJUtils.ensureEqualSize(maskImage, markerImage, true);
 
         ImagePlus finalMaskImage = maskImage;
-        ImagePlus resultImage = ImageJUtils.generateForEachIndexedZCTSlice(markerImage, (markerProcessor, index) -> {
+        ImagePlus resultImage = ImageJIterationUtils.generateForEachIndexedZCTSlice(markerImage, (markerProcessor, index) -> {
             ImageProcessor maskProcessor = ImageJUtils.getSliceZero(finalMaskImage, index);
             if (applyDilation)
                 return Reconstruction.reconstructByDilation(markerProcessor, maskProcessor, connectivity.getNativeValue());

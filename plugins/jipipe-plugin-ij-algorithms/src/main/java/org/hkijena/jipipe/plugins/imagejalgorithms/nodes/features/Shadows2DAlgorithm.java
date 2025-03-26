@@ -1,6 +1,5 @@
 package org.hkijena.jipipe.plugins.imagejalgorithms.nodes.features;
 
-import ij.ImageJ;
 import ij.ImagePlus;
 import ij.plugin.filter.Shadows;
 import ij.process.ImageProcessor;
@@ -16,7 +15,7 @@ import org.hkijena.jipipe.api.nodes.iterationstep.JIPipeIterationContext;
 import org.hkijena.jipipe.api.nodes.iterationstep.JIPipeSingleIterationStep;
 import org.hkijena.jipipe.api.parameters.JIPipeParameter;
 import org.hkijena.jipipe.plugins.imagejdatatypes.datatypes.ImagePlusData;
-import org.hkijena.jipipe.plugins.imagejdatatypes.util.ImageJUtils;
+import org.hkijena.jipipe.plugins.imagejdatatypes.util.ImageJIterationUtils;
 
 @SetJIPipeDocumentation(name = "Shadows 2D", description = "Produces a shadows effect in the given direction")
 @ConfigureJIPipeNode(nodeTypeCategory = ImagesNodeTypeCategory.class, menuPath = "Features")
@@ -43,7 +42,7 @@ public class Shadows2DAlgorithm extends JIPipeSimpleIteratingAlgorithm {
     protected void runIteration(JIPipeSingleIterationStep iterationStep, JIPipeIterationContext iterationContext, JIPipeGraphNodeRunContext runContext, JIPipeProgressInfo progressInfo) {
         ImagePlus inputImage = iterationStep.getInputData(getFirstInputSlot(), ImagePlusData.class, progressInfo).getImage();
         Shadows shadows = new Shadows();
-        ImagePlus outputImage = ImageJUtils.generateForEachIndexedZCTSlice(inputImage, (ip, index) -> {
+        ImagePlus outputImage = ImageJIterationUtils.generateForEachIndexedZCTSlice(inputImage, (ip, index) -> {
             ImageProcessor outputIp =  ip.duplicate();
             for (int i = 0; i < iterations; i++) {
                switch (direction) {

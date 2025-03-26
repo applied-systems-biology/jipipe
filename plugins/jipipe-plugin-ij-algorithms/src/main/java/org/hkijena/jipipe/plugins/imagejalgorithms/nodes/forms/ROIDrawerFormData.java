@@ -25,7 +25,7 @@ import org.hkijena.jipipe.desktop.app.JIPipeDesktopWorkbench;
 import org.hkijena.jipipe.plugins.forms.datatypes.FormData;
 import org.hkijena.jipipe.plugins.imagejdatatypes.datatypes.ImagePlusData;
 import org.hkijena.jipipe.plugins.imagejdatatypes.datatypes.ROI2DListData;
-import org.hkijena.jipipe.plugins.imagejdatatypes.util.ImageJUtils;
+import org.hkijena.jipipe.plugins.imagejdatatypes.util.ImageJIterationUtils;
 import org.hkijena.jipipe.plugins.imageviewer.legacy.JIPipeDesktopLegacyImageViewer;
 import org.hkijena.jipipe.plugins.imageviewer.legacy.plugins2d.CalibrationPlugin2D;
 import org.hkijena.jipipe.plugins.imageviewer.legacy.plugins2d.LUTManagerPlugin2D;
@@ -108,7 +108,7 @@ public class ROIDrawerFormData extends FormData {
         getImageViewerPanel();
 
         ImagePlus targetMask = maskDrawerPlugin.getMask();
-        ImageJUtils.forEachIndexedZCTSlice(targetMask, (targetProcessor, index) -> {
+        ImageJIterationUtils.forEachIndexedZCTSlice(targetMask, (targetProcessor, index) -> {
             targetProcessor.setValue(0);
             targetProcessor.fillRect(0, 0, targetProcessor.getWidth(), targetProcessor.getHeight());
         }, new JIPipeProgressInfo());

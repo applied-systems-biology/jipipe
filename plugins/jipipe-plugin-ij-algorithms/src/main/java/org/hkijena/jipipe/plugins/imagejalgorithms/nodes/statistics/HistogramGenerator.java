@@ -32,7 +32,7 @@ import org.hkijena.jipipe.api.nodes.iterationstep.JIPipeIterationContext;
 import org.hkijena.jipipe.api.nodes.iterationstep.JIPipeSingleIterationStep;
 import org.hkijena.jipipe.api.parameters.JIPipeParameter;
 import org.hkijena.jipipe.plugins.imagejdatatypes.datatypes.ImagePlusData;
-import org.hkijena.jipipe.plugins.imagejdatatypes.util.ImageJUtils;
+import org.hkijena.jipipe.plugins.imagejdatatypes.util.ImageJIterationUtils;
 import org.hkijena.jipipe.plugins.tables.datatypes.ResultsTableData;
 import org.hkijena.jipipe.utils.StringUtils;
 
@@ -81,7 +81,7 @@ public class HistogramGenerator extends JIPipeSimpleIteratingAlgorithm {
     protected void runIteration(JIPipeSingleIterationStep iterationStep, JIPipeIterationContext iterationContext, JIPipeGraphNodeRunContext runContext, JIPipeProgressInfo progressInfo) {
         if (applyPerSlice) {
             ImagePlusData inputData = iterationStep.getInputData(getFirstInputSlot(), ImagePlusData.class, progressInfo);
-            ImageJUtils.forEachIndexedSlice(inputData.getImage(), (imp, index) -> {
+            ImageJIterationUtils.forEachIndexedSlice(inputData.getImage(), (imp, index) -> {
                 TDoubleDoubleMap histogram;
                 if (imp instanceof ColorProcessor) {
                     histogram = getColorHistogram((ColorProcessor) imp);
@@ -102,7 +102,7 @@ public class HistogramGenerator extends JIPipeSimpleIteratingAlgorithm {
         } else {
             final TDoubleDoubleMap histogram = new TDoubleDoubleHashMap();
             ImagePlusData inputData = iterationStep.getInputData(getFirstInputSlot(), ImagePlusData.class, progressInfo);
-            ImageJUtils.forEachSlice(inputData.getImage(), imp -> {
+            ImageJIterationUtils.forEachSlice(inputData.getImage(), imp -> {
                 TDoubleDoubleMap sliceHistogram;
                 if (imp instanceof ColorProcessor) {
                     sliceHistogram = getColorHistogram((ColorProcessor) imp);

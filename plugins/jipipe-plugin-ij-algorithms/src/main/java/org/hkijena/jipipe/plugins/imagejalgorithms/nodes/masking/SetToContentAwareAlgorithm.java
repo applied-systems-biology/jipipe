@@ -28,7 +28,7 @@ import org.hkijena.jipipe.plugins.imagejalgorithms.parameters.ImageROITargetArea
 import org.hkijena.jipipe.plugins.imagejalgorithms.utils.ContentAwareFill;
 import org.hkijena.jipipe.plugins.imagejalgorithms.utils.SimpleImageAndRoiIteratingAlgorithm;
 import org.hkijena.jipipe.plugins.imagejdatatypes.datatypes.ImagePlusData;
-import org.hkijena.jipipe.plugins.imagejdatatypes.util.ImageJUtils;
+import org.hkijena.jipipe.plugins.imagejdatatypes.util.ImageJIterationUtils;
 
 @SetJIPipeDocumentation(name = "Set to content aware 2D", description = "Sets pixels of the input image inside the masked area to a generated value. Please review the 'Methods' parameter to find out more about the methods.")
 @ConfigureJIPipeNode(menuPath = "Masking", nodeTypeCategory = ImagesNodeTypeCategory.class)
@@ -52,7 +52,7 @@ public class SetToContentAwareAlgorithm extends SimpleImageAndRoiIteratingAlgori
     @Override
     protected void runIteration(JIPipeSingleIterationStep iterationStep, JIPipeIterationContext iterationContext, JIPipeGraphNodeRunContext runContext, JIPipeProgressInfo progressInfo) {
         ImagePlus image = iterationStep.getInputData("Input", ImagePlusData.class, progressInfo).getDuplicateImage();
-        ImageJUtils.forEachIndexedZCTSlice(image, (ip, index) -> {
+        ImageJIterationUtils.forEachIndexedZCTSlice(image, (ip, index) -> {
             ImageProcessor mask = getMask(iterationStep, index, progressInfo);
             switch (method) {
                 case ClosestPixel:

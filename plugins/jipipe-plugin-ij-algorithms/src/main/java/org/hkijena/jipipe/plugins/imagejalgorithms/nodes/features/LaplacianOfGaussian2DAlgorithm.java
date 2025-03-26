@@ -29,7 +29,7 @@ import org.hkijena.jipipe.api.nodes.iterationstep.JIPipeSingleIterationStep;
 import org.hkijena.jipipe.api.parameters.JIPipeParameter;
 import org.hkijena.jipipe.plugins.imagejdatatypes.datatypes.ImagePlusData;
 import org.hkijena.jipipe.plugins.imagejdatatypes.datatypes.greyscale.ImagePlusGreyscale32FData;
-import org.hkijena.jipipe.plugins.imagejdatatypes.util.ImageJUtils;
+import org.hkijena.jipipe.plugins.imagejdatatypes.util.ImageJIterationUtils;
 
 /**
  * Based on code by Dimiter Prodanov
@@ -64,7 +64,7 @@ public class LaplacianOfGaussian2DAlgorithm extends JIPipeSimpleIteratingAlgorit
         ImagePlus img = inputData.getDuplicateImage();
         int sz = 2 * radius + 1;
         float[] kernel2 = computeKernel2D();
-        ImageJUtils.forEachSlice(img, ip -> {
+        ImageJIterationUtils.forEachSlice(img, ip -> {
             Convolver con = new Convolver();
             con.convolveFloat(ip, kernel2, sz, sz);
             double sigma2 = (sz - 1) / 6.0;

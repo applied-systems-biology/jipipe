@@ -47,8 +47,9 @@ import org.hkijena.jipipe.plugins.imagejdatatypes.datatypes.ROI2DListData;
 import org.hkijena.jipipe.plugins.imagejdatatypes.datatypes.greyscale.ImagePlusGreyscale32FData;
 import org.hkijena.jipipe.plugins.imagejdatatypes.datatypes.greyscale.ImagePlusGreyscaleData;
 import org.hkijena.jipipe.plugins.imagejdatatypes.datatypes.greyscale.ImagePlusGreyscaleMaskData;
+import org.hkijena.jipipe.plugins.imagejdatatypes.util.ImageJIterationUtils;
 import org.hkijena.jipipe.plugins.imagejdatatypes.util.ImageJUtils;
-import org.hkijena.jipipe.plugins.imagejdatatypes.util.ImageSliceIndex;
+import org.hkijena.jipipe.plugins.imagejdatatypes.util.dimensions.ImageSliceIndex;
 import org.hkijena.jipipe.plugins.parameters.library.primitives.StringParameterSettings;
 import org.hkijena.jipipe.plugins.tables.datatypes.ResultsTableData;
 
@@ -118,7 +119,7 @@ public class KeyValueHistogramGenerator extends JIPipeIteratingAlgorithm {
         }
 
         // Bucket the pixel values
-        ImageJUtils.forEachIndexedZCTSlice(keyImage, (keyIp, index) -> {
+        ImageJIterationUtils.forEachIndexedZCTSlice(keyImage, (keyIp, index) -> {
             ImageProcessor mask = getMask(keyIp.getWidth(),
                     keyIp.getHeight(),
                     finalRoiInput,

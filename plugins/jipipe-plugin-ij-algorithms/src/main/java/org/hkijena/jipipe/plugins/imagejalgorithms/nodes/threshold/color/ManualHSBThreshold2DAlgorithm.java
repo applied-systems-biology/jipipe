@@ -33,6 +33,7 @@ import org.hkijena.jipipe.plugins.imagejalgorithms.utils.HSBHueTrackBackground;
 import org.hkijena.jipipe.plugins.imagejalgorithms.utils.WhiteToRedTrackBackground;
 import org.hkijena.jipipe.plugins.imagejdatatypes.datatypes.color.ImagePlusColorHSBData;
 import org.hkijena.jipipe.plugins.imagejdatatypes.datatypes.greyscale.ImagePlusGreyscaleMaskData;
+import org.hkijena.jipipe.plugins.imagejdatatypes.util.ImageJIterationUtils;
 import org.hkijena.jipipe.plugins.imagejdatatypes.util.ImageJUtils;
 import org.hkijena.jipipe.plugins.parameters.library.primitives.optional.OptionalTextAnnotationNameParameter;
 import org.hkijena.jipipe.plugins.parameters.library.ranges.IntNumberRangeParameter;
@@ -97,7 +98,7 @@ public class ManualHSBThreshold2DAlgorithm extends JIPipeSimpleIteratingAlgorith
         int minB = brightnessThreshold.getMin();
         int maxB = brightnessThreshold.getMax();
 
-        ImageJUtils.forEachIndexedZCTSlice(img, (ip, index) -> {
+        ImageJIterationUtils.forEachIndexedZCTSlice(img, (ip, index) -> {
 
             ImageProcessor mask = ImageJUtils.getSliceZero(result, index);
             for (int y = 0; y < ip.getHeight(); y++) {

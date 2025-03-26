@@ -37,8 +37,8 @@ import org.hkijena.jipipe.plugins.expressions.JIPipeExpressionVariablesMap;
 import org.hkijena.jipipe.plugins.expressions.custom.JIPipeCustomExpressionVariablesParameterVariablesInfo;
 import org.hkijena.jipipe.plugins.expressions.variables.JIPipeTextAnnotationsExpressionParameterVariablesInfo;
 import org.hkijena.jipipe.plugins.imagejdatatypes.datatypes.ImagePlusData;
-import org.hkijena.jipipe.plugins.imagejdatatypes.util.Image5DExpressionParameterVariablesInfo;
-import org.hkijena.jipipe.plugins.imagejdatatypes.util.ImageJUtils;
+import org.hkijena.jipipe.plugins.imagejdatatypes.util.ImageJIterationUtils;
+import org.hkijena.jipipe.plugins.imagejdatatypes.util.expressions.Image5DExpressionParameterVariablesInfo;
 import org.hkijena.jipipe.plugins.parameters.library.primitives.optional.OptionalTextAnnotationNameParameter;
 
 import java.awt.*;
@@ -146,7 +146,7 @@ public class TileImage2Dv2Algorithm extends JIPipeSimpleIteratingAlgorithm {
                 JIPipeProgressInfo tileProgress = progressInfo.resolveAndLog("Tile", x + y * nTilesX, nTilesX * nTilesY);
                 ImageStack tileStack = new ImageStack(realTileSizeX, realTileSizeY, img.getStackSize());
                 ImagePlus finalImg = img;
-                ImageJUtils.forEachIndexedZCTSlice(img, (ip, index) -> {
+                ImageJIterationUtils.forEachIndexedZCTSlice(img, (ip, index) -> {
                     ip.setRoi(roi);
                     ImageProcessor crop = ip.crop();
                     ip.setRoi((Roi) null);

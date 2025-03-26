@@ -39,8 +39,9 @@ import org.hkijena.jipipe.plugins.imagejalgorithms.utils.LegacyHoughLines;
 import org.hkijena.jipipe.plugins.imagejdatatypes.datatypes.ROI2DListData;
 import org.hkijena.jipipe.plugins.imagejdatatypes.datatypes.greyscale.ImagePlusGreyscaleData;
 import org.hkijena.jipipe.plugins.imagejdatatypes.datatypes.greyscale.ImagePlusGreyscaleMaskData;
+import org.hkijena.jipipe.plugins.imagejdatatypes.util.ImageJIterationUtils;
 import org.hkijena.jipipe.plugins.imagejdatatypes.util.ImageJUtils;
-import org.hkijena.jipipe.plugins.imagejdatatypes.util.ImageSliceIndex;
+import org.hkijena.jipipe.plugins.imagejdatatypes.util.dimensions.ImageSliceIndex;
 import org.hkijena.jipipe.plugins.parameters.library.primitives.optional.OptionalFloatParameter;
 import org.hkijena.jipipe.plugins.parameters.library.primitives.optional.OptionalIntegerParameter;
 import org.hkijena.jipipe.plugins.tables.datatypes.ResultsTableData;
@@ -105,7 +106,7 @@ public class LinesHoughDetection2DAlgorithm extends JIPipeSimpleIteratingAlgorit
         Map<ImageSliceIndex, ImageProcessor> outputMaskSlices = new HashMap<>();
         Map<ImageSliceIndex, ImageProcessor> outputAccumulatorSlices = new HashMap<>();
 
-        ImageJUtils.forEachIndexedZCTSlice(inputMask, (ip, index) -> {
+        ImageJIterationUtils.forEachIndexedZCTSlice(inputMask, (ip, index) -> {
             LegacyHoughLines houghLines = new LegacyHoughLines(neighborhoodSize, maxTheta);
             houghLines.initialise(ip.getWidth(), ip.getHeight());
             houghLines.addPoints(ip, pixelThreshold.isEnabled(), pixelThreshold.getContent());

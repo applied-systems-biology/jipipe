@@ -28,8 +28,9 @@ import org.hkijena.jipipe.plugins.expressions.variables.JIPipeTextAnnotationsExp
 import org.hkijena.jipipe.plugins.imagejalgorithms.nodes.transform.ScaleMode;
 import org.hkijena.jipipe.plugins.imagejalgorithms.nodes.transform.TransformScale2DAlgorithm;
 import org.hkijena.jipipe.plugins.imagejalgorithms.parameters.InterpolationMethod;
+import org.hkijena.jipipe.plugins.imagejdatatypes.util.ImageJIterationUtils;
 import org.hkijena.jipipe.plugins.imagejdatatypes.util.ImageJUtils;
-import org.hkijena.jipipe.plugins.imagejdatatypes.util.ImageSliceIndex;
+import org.hkijena.jipipe.plugins.imagejdatatypes.util.dimensions.ImageSliceIndex;
 import org.hkijena.jipipe.plugins.parameters.library.colors.OptionalColorParameter;
 import org.hkijena.jipipe.plugins.parameters.library.primitives.FontFamilyParameter;
 import org.hkijena.jipipe.plugins.parameters.library.primitives.optional.OptionalIntegerParameter;
@@ -248,7 +249,7 @@ public class MontageCreator extends AbstractJIPipeParameterCollection {
         final ImagePlus targetImage = IJ.createHyperStack("Montage", outputWidth, outputHeight, numC, numZ, numT, consensusBitDepth);
 
         // Color canvas
-        ImageJUtils.forEachSlice(targetImage, ip -> {
+        ImageJIterationUtils.forEachSlice(targetImage, ip -> {
             if (canvasParameters.borderSize > 0) {
                 // Use border color instead
                 ip.setColor(canvasParameters.borderColor);
@@ -280,14 +281,14 @@ public class MontageCreator extends AbstractJIPipeParameterCollection {
                 if (topLabel) {
                     int finalImgAreaH = imgAreaH;
                     int finalGridHeight = gridHeight;
-                    ImageJUtils.forEachSlice(targetImage, ip -> {
+                    ImageJIterationUtils.forEachSlice(targetImage, ip -> {
                         ip.setColor(canvasParameters.canvasBackgroundColor);
                         ip.setRoi(new Rectangle(imgX, row * finalGridHeight + canvasParameters.borderSize, imageWidth, finalImgAreaH));
                         ip.fill();
                     }, mergingProgress.resolve("Prepare canvas"));
                 } else {
                     int finalImgAreaH = imgAreaH;
-                    ImageJUtils.forEachSlice(targetImage, ip -> {
+                    ImageJIterationUtils.forEachSlice(targetImage, ip -> {
                         ip.setColor(canvasParameters.canvasBackgroundColor);
                         ip.setRoi(new Rectangle(imgX, finalImgY, imageWidth, finalImgAreaH));
                         ip.fill();
@@ -303,7 +304,7 @@ public class MontageCreator extends AbstractJIPipeParameterCollection {
                 processedImage = rawImage;
             } else {
                 // Scaling the image
-                processedImage = ImageJUtils.generateForEachIndexedZCTSlice(rawImage, (ip, index) -> TransformScale2DAlgorithm.scaleProcessor(ip,
+                processedImage = ImageJIterationUtils.generateForEachIndexedZCTSlice(rawImage, (ip, index) -> TransformScale2DAlgorithm.scaleProcessor(ip,
                         imageWidth,
                         imageHeight,
                         imageParameters.interpolationMethod,
@@ -327,7 +328,7 @@ public class MontageCreator extends AbstractJIPipeParameterCollection {
                     new Rectangle(0, 0, imageWidth, imageHeight));
 
             // Draw image
-            ImageJUtils.forEachIndexedZCTSlice(processedImage, (sourceIp, index) -> {
+            ImageJIterationUtils.forEachIndexedZCTSlice(processedImage, (sourceIp, index) -> {
                 ImageProcessor targetIp = ImageJUtils.getSliceZero(targetImage, index);
                 targetIp.setRoi((Roi) null);
                 targetIp.insert(sourceIp, imgX + finalRect.x, finalImgY + finalRect.y);
@@ -338,7 +339,7 @@ public class MontageCreator extends AbstractJIPipeParameterCollection {
                 Rectangle drawArea = new Rectangle(imgX, row * gridHeight + canvasParameters.borderSize, imageWidth, imageHeight + labelBorder);
                 Font lf = labelFont;
                 FontMetrics finalLabelFontMetrics = labelFontMetrics;
-                ImageJUtils.forEachIndexedZCTSlice(processedImage, (sourceIp, index) -> {
+                ImageJIterationUtils.forEachIndexedZCTSlice(processedImage, (sourceIp, index) -> {
                     ImageProcessor targetIp = ImageJUtils.getSliceZero(targetImage, index);
                     targetIp.setRoi((Roi) null);
                     String label = labelledImage.labels.get(index);

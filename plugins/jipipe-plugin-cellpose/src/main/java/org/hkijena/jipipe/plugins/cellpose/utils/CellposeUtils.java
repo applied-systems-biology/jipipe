@@ -32,8 +32,9 @@ import org.hkijena.jipipe.plugins.cellpose.datatypes.CellposeModelData;
 import org.hkijena.jipipe.plugins.imagejdatatypes.datatypes.ImagePlusData;
 import org.hkijena.jipipe.plugins.imagejdatatypes.datatypes.OMEImageData;
 import org.hkijena.jipipe.plugins.imagejdatatypes.datatypes.ROI2DListData;
+import org.hkijena.jipipe.plugins.imagejdatatypes.util.ImageJIterationUtils;
 import org.hkijena.jipipe.plugins.imagejdatatypes.util.ImageJUtils;
-import org.hkijena.jipipe.plugins.imagejdatatypes.util.ImageSliceIndex;
+import org.hkijena.jipipe.plugins.imagejdatatypes.util.dimensions.ImageSliceIndex;
 import org.hkijena.jipipe.plugins.python.PythonEnvironment;
 import org.hkijena.jipipe.plugins.python.PythonUtils;
 import org.hkijena.jipipe.utils.PathUtils;
@@ -152,7 +153,7 @@ public class CellposeUtils {
                     if (isRGB ^ isMultiChannel || !isRGB) {
                         rowProgress.log("3D mode, multichannel (multichannel XOR RGB) -> Image will be split by frame.");
                         CellposeImageInfo info = new CellposeImageInfo(row);
-                        ImageJUtils.forEachIndexedTHyperStack(img, (sliceImage, index, sliceProgress) -> {
+                        ImageJIterationUtils.forEachIndexedTHyperStack(img, (sliceImage, index, sliceProgress) -> {
                             saveInputImage(row, sliceImage, io3DPath, index, info);
                         }, progressInfo);
                         runWith3D.add(info);
@@ -162,14 +163,14 @@ public class CellposeUtils {
                         rowProgress.log("CONVERTING TO GREYSCALE, AS CHANNEL SLICES ARE CONSIDERED MORE IMPORTANT");
                         rowProgress.log("^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^");
                         CellposeImageInfo info = new CellposeImageInfo(row);
-                        ImageJUtils.forEachIndexedTHyperStack(img, (sliceImage, index, sliceProgress) -> {
+                        ImageJIterationUtils.forEachIndexedTHyperStack(img, (sliceImage, index, sliceProgress) -> {
                             saveInputImage(row, ImageJUtils.convertToGreyscaleIfNeeded(sliceImage), io3DPath, index, info);
                         }, progressInfo);
                         runWith3D.add(info);
                     }
                 } else {
                     CellposeImageInfo info = new CellposeImageInfo(row);
-                    ImageJUtils.forEachIndexedCTStack(img, (sliceImage, index, sliceProcess) -> {
+                    ImageJIterationUtils.forEachIndexedCTStack(img, (sliceImage, index, sliceProcess) -> {
                         saveInputImage(row, ImageJUtils.convertToGreyscaleIfNeeded(sliceImage), io3DPath, index, info);
                     }, progressInfo);
                     runWith3D.add(info);
@@ -179,7 +180,7 @@ public class CellposeUtils {
                     // Split into stacks per frame
                     CellposeImageInfo info = new CellposeImageInfo(row);
                     rowProgress.log("3D mode not active, multichannel -> Image will be split into multi-channel images + split by frame.");
-                    ImageJUtils.forEachIndexedZTStack(img, (sliceImage, index, stackProgress) -> {
+                    ImageJIterationUtils.forEachIndexedZTStack(img, (sliceImage, index, stackProgress) -> {
                         saveInputImage(row, sliceImage, io2DPath, index, info);
                     }, progressInfo);
                     runWith2D.add(info);
@@ -188,7 +189,7 @@ public class CellposeUtils {
                     // Split everything into 2D slices
                     rowProgress.log("3D mode not active, no multichannel -> Image will be split into 2D slices.");
                     CellposeImageInfo info = new CellposeImageInfo(row);
-                    ImageJUtils.forEachIndexedZCTSlice(img, (ip, index) -> {
+                    ImageJIterationUtils.forEachIndexedZCTSlice(img, (ip, index) -> {
                         saveInputImage(row, new ImagePlus("slice", ip), io2DPath, index, info);
                     }, rowProgress);
                 }

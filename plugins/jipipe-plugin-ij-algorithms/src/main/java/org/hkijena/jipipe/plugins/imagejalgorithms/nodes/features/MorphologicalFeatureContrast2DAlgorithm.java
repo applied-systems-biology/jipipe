@@ -34,8 +34,9 @@ import org.hkijena.jipipe.api.parameters.JIPipeParameter;
 import org.hkijena.jipipe.plugins.imagejdatatypes.datatypes.ImagePlusData;
 import org.hkijena.jipipe.plugins.imagejdatatypes.datatypes.greyscale.ImagePlusGreyscale32FData;
 import org.hkijena.jipipe.plugins.imagejdatatypes.datatypes.greyscale.ImagePlusGreyscaleData;
+import org.hkijena.jipipe.plugins.imagejdatatypes.util.ImageJIterationUtils;
 import org.hkijena.jipipe.plugins.imagejdatatypes.util.ImageJUtils;
-import org.hkijena.jipipe.plugins.imagejdatatypes.util.ImageSliceIndex;
+import org.hkijena.jipipe.plugins.imagejdatatypes.util.dimensions.ImageSliceIndex;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -74,7 +75,7 @@ public class MorphologicalFeatureContrast2DAlgorithm extends JIPipeSimpleIterati
         Map<ImageSliceIndex, ImageProcessor> processorMap = new HashMap<>();
         Strel strelR1 = structureElement.fromRadius(radius1);
         Strel strelR2 = structureElement.fromRadius(radius2);
-        ImageJUtils.forEachIndexedZCTSlice(inputImage, (ip, index) -> {
+        ImageJIterationUtils.forEachIndexedZCTSlice(inputImage, (ip, index) -> {
             FloatProcessor upperMFC = null;
             FloatProcessor lowerMFC = null;
 

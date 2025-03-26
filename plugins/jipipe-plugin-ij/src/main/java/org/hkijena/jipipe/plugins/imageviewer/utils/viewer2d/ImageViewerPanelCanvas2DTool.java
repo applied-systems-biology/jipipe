@@ -13,7 +13,7 @@
 
 package org.hkijena.jipipe.plugins.imageviewer.utils.viewer2d;
 
-import org.hkijena.jipipe.plugins.imagejdatatypes.util.ImageSliceIndex;
+import org.hkijena.jipipe.plugins.imagejdatatypes.util.dimensions.ImageSliceIndex;
 
 import javax.swing.*;
 import java.awt.*;

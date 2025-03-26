@@ -32,9 +32,10 @@ import org.hkijena.jipipe.plugins.expressions.JIPipeExpressionParameter;
 import org.hkijena.jipipe.plugins.expressions.JIPipeExpressionParameterSettings;
 import org.hkijena.jipipe.plugins.expressions.JIPipeExpressionVariablesMap;
 import org.hkijena.jipipe.plugins.imagejdatatypes.datatypes.ImagePlusData;
+import org.hkijena.jipipe.plugins.imagejdatatypes.util.ImageJIterationUtils;
 import org.hkijena.jipipe.plugins.imagejdatatypes.util.ImageJUtils;
-import org.hkijena.jipipe.plugins.imagejdatatypes.util.OptionalBitDepth;
-import org.hkijena.jipipe.plugins.imagejdatatypes.util.PixelCoordinate5DExpressionParameterVariablesInfo;
+import org.hkijena.jipipe.plugins.imagejdatatypes.util.dimensions.OptionalBitDepth;
+import org.hkijena.jipipe.plugins.imagejdatatypes.util.expressions.PixelCoordinate5DExpressionParameterVariablesInfo;
 import org.hkijena.jipipe.plugins.parameters.library.primitives.optional.OptionalIntegerParameter;
 import org.hkijena.jipipe.utils.ImageJCalibrationMode;
 
@@ -123,7 +124,7 @@ public class GenerateMissingImageFromMathExpression2D extends JIPipeMissingDataG
             variableSet.set("num_c", overwriteSizeC);
             variableSet.set("num_t", overwriteSizeT);
 
-            ImageJUtils.forEachIndexedZCTSlice(img, (ip, index) -> {
+            ImageJIterationUtils.forEachIndexedZCTSlice(img, (ip, index) -> {
                 for (int y = 0; y < ip.getHeight(); y++) {
                     for (int x = 0; x < ip.getWidth(); x++) {
                         variableSet.set("z", (double) index.getZ());

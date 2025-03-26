@@ -31,8 +31,9 @@ import org.hkijena.jipipe.plugins.imagejalgorithms.parameters.Neighborhood3D;
 import org.hkijena.jipipe.plugins.imagejalgorithms.utils.ImageJAlgorithmUtils;
 import org.hkijena.jipipe.plugins.imagejdatatypes.datatypes.ImagePlusData;
 import org.hkijena.jipipe.plugins.imagejdatatypes.datatypes.ROI2DListData;
+import org.hkijena.jipipe.plugins.imagejdatatypes.util.ImageJIterationUtils;
 import org.hkijena.jipipe.plugins.imagejdatatypes.util.ImageJUtils;
-import org.hkijena.jipipe.plugins.imagejdatatypes.util.ImageSliceIndex;
+import org.hkijena.jipipe.plugins.imagejdatatypes.util.dimensions.ImageSliceIndex;
 import org.hkijena.jipipe.plugins.parameters.library.roi.Margin;
 import org.hkijena.jipipe.plugins.tables.datatypes.ResultsTableData;
 import org.hkijena.jipipe.utils.ColorUtils;
@@ -64,7 +65,7 @@ public class IJ3DUtils {
     }
 
     public static void forEach3DIn5DIO(ImagePlus imagePlus, TriConsumer<ImageHandler, ImageSliceIndex, JIPipeProgressInfo> operation, JIPipeProgressInfo progressInfo) {
-        ImageJUtils.forEachIndexedCTStack(imagePlus, (imp, index, ctProgress) -> {
+        ImageJIterationUtils.forEachIndexedCTStack(imagePlus, (imp, index, ctProgress) -> {
             ImageHandler imageHandler = ImageHandler.wrap(imp);
             operation.accept(imageHandler, index, ctProgress);
 
@@ -81,7 +82,7 @@ public class IJ3DUtils {
 
     public static ImagePlus forEach3DIn5DGenerate(ImagePlus sourceImage, TriFunction<ImageHandler, ImageSliceIndex, JIPipeProgressInfo, ImageHandler> operation, JIPipeProgressInfo progressInfo) {
         Map<ImageSliceIndex, ImageProcessor> mappedOutputSlices = new HashMap<>();
-        ImageJUtils.forEachIndexedCTStack(sourceImage, (imp, index, ctProgress) -> {
+        ImageJIterationUtils.forEachIndexedCTStack(sourceImage, (imp, index, ctProgress) -> {
             ImageHandler input = ImageHandler.wrap(imp);
             ImageHandler result = operation.apply(input, index, ctProgress);
 

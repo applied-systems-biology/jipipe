@@ -39,8 +39,8 @@ import org.hkijena.jipipe.plugins.ijocr.utils.TesseractLanguagesSupplier;
 import org.hkijena.jipipe.plugins.ijocr.utils.TesseractOCREngineMode;
 import org.hkijena.jipipe.plugins.ijocr.utils.TesseractPageSegmentationMethod;
 import org.hkijena.jipipe.plugins.imagejdatatypes.datatypes.greyscale.ImagePlusGreyscaleData;
-import org.hkijena.jipipe.plugins.imagejdatatypes.util.ImageJUtils;
-import org.hkijena.jipipe.plugins.imagejdatatypes.util.ImagePlusPropertiesExpressionParameterVariablesInfo;
+import org.hkijena.jipipe.plugins.imagejdatatypes.util.ImageJIterationUtils;
+import org.hkijena.jipipe.plugins.imagejdatatypes.util.expressions.ImagePlusPropertiesExpressionParameterVariablesInfo;
 import org.hkijena.jipipe.plugins.parameters.api.enums.DynamicSetParameterSettings;
 import org.hkijena.jipipe.plugins.parameters.library.primitives.DynamicStringSetParameter;
 import org.hkijena.jipipe.plugins.tables.datatypes.ResultsTableData;
@@ -106,7 +106,7 @@ public class TesseractOCRAlgorithm extends JIPipeSimpleIteratingAlgorithm {
 
         ResultsTableData output = new ResultsTableData();
         String finalLanguagesString = languagesString;
-        ImageJUtils.forEachIndexedZCTSliceWithProgress(inputImage, (ip, index, sliceProcess) -> {
+        ImageJIterationUtils.forEachIndexedZCTSliceWithProgress(inputImage, (ip, index, sliceProcess) -> {
             Path tmpPath = PathUtils.resolveAndMakeSubDirectory(scratchBase, index.getC() + "_" + index.getZ() + "_" + index.getT());
             Path tmpImagePath = tmpPath.resolve("img.png");
             IJ.saveAs(new ImagePlus("slice", ip), "PNG", tmpImagePath.toString());

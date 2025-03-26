@@ -27,6 +27,7 @@ import org.hkijena.jipipe.api.nodes.iterationstep.JIPipeSingleIterationStep;
 import org.hkijena.jipipe.api.parameters.JIPipeParameter;
 import org.hkijena.jipipe.plugins.imagejalgorithms.utils.SimpleImageAndRoiIteratingAlgorithm;
 import org.hkijena.jipipe.plugins.imagejdatatypes.datatypes.ImagePlusData;
+import org.hkijena.jipipe.plugins.imagejdatatypes.util.ImageJIterationUtils;
 import org.hkijena.jipipe.plugins.imagejdatatypes.util.ImageJUtils;
 
 import java.awt.*;
@@ -54,7 +55,7 @@ public class SetToColorAlgorithm extends SimpleImageAndRoiIteratingAlgorithm {
         ImagePlus image = iterationStep.getInputData("Input", ImagePlusData.class, progressInfo).getDuplicateImage();
         image = ImageJUtils.channelsToRGB(image);
         if (image.getType() == ImagePlus.COLOR_RGB) {
-            ImageJUtils.forEachIndexedZCTSlice(image, (ip, index) -> {
+            ImageJIterationUtils.forEachIndexedZCTSlice(image, (ip, index) -> {
                 ImageProcessor roi = getMask(iterationStep, index, progressInfo);
                 ColorProcessor colorProcessor = (ColorProcessor) ip;
                 ip.resetRoi();
@@ -63,7 +64,7 @@ public class SetToColorAlgorithm extends SimpleImageAndRoiIteratingAlgorithm {
             }, progressInfo);
         } else {
             double value = (color.getRed() + color.getGreen() + color.getBlue()) / 3.0;
-            ImageJUtils.forEachIndexedZCTSlice(image, (ip, index) -> {
+            ImageJIterationUtils.forEachIndexedZCTSlice(image, (ip, index) -> {
                 ImageProcessor roi = getMask(iterationStep, index, progressInfo);
                 ip.resetRoi();
                 ip.setValue(value);

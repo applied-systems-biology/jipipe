@@ -45,7 +45,7 @@ import org.hkijena.jipipe.plugins.imagejdatatypes.datatypes.ImagePlusData;
 import org.hkijena.jipipe.plugins.imagejdatatypes.datatypes.ROI2DListData;
 import org.hkijena.jipipe.plugins.imagejdatatypes.datatypes.greyscale.ImagePlusGreyscale32FData;
 import org.hkijena.jipipe.plugins.imagejdatatypes.datatypes.greyscale.ImagePlusGreyscaleMaskData;
-import org.hkijena.jipipe.plugins.imagejdatatypes.util.ImageJUtils;
+import org.hkijena.jipipe.plugins.imagejdatatypes.util.ImageJIterationUtils;
 import org.hkijena.jipipe.plugins.parameters.library.primitives.optional.OptionalTextAnnotationNameParameter;
 
 import java.util.ArrayList;
@@ -159,7 +159,7 @@ public class CustomAutoThreshold2D32Fv2Algorithm extends JIPipeIteratingAlgorith
         List<Float> minThresholds = new ArrayList<>();
         List<Float> maxThresholds = new ArrayList<>();
         TFloatArrayList pixels = new TFloatArrayList(inputImage.getWidth() * inputImage.getHeight());
-        ImageJUtils.forEachIndexedZCTSlice(inputImage, (ip, index) -> {
+        ImageJIterationUtils.forEachIndexedZCTSlice(inputImage, (ip, index) -> {
             ImageProcessor mask = ImageJAlgorithmUtils.getMaskProcessorFromMaskOrROI(sourceArea,
                     inputImage.getWidth(),
                     inputImage.getHeight(),
@@ -199,7 +199,7 @@ public class CustomAutoThreshold2D32Fv2Algorithm extends JIPipeIteratingAlgorith
             }
         }
 
-        ImageJUtils.forEachIndexedZCTSlice(inputImage, (ip, index) -> {
+        ImageJIterationUtils.forEachIndexedZCTSlice(inputImage, (ip, index) -> {
             // Get target processor and threshold
             ByteProcessor targetProcessor = (ByteProcessor) (outputImage.hasImageStack() ?
                     outputImage.getStack().getProcessor(outputImage.getStackIndex(index.getC() + 1, index.getZ() + 1, index.getT() + 1))
@@ -216,7 +216,7 @@ public class CustomAutoThreshold2D32Fv2Algorithm extends JIPipeIteratingAlgorith
     private void thresholdCombineStatistics(JIPipeSingleIterationStep iterationStep, JIPipeProgressInfo progressInfo, ImagePlus inputImage, ImagePlus outputImage, JIPipeExpressionVariablesMap parameters, ROI2DListData finalRoiInput, ImagePlus finalMaskInput) {
         TFloatArrayList pixels = new TFloatArrayList(inputImage.getWidth() * inputImage.getHeight() *
                 inputImage.getNFrames() * inputImage.getNChannels() * inputImage.getNSlices());
-        ImageJUtils.forEachIndexedZCTSlice(inputImage, (ip, index) -> {
+        ImageJIterationUtils.forEachIndexedZCTSlice(inputImage, (ip, index) -> {
             ImageProcessor mask = ImageJAlgorithmUtils.getMaskProcessorFromMaskOrROI(sourceArea,
                     inputImage.getWidth(),
                     inputImage.getHeight(),
@@ -238,7 +238,7 @@ public class CustomAutoThreshold2D32Fv2Algorithm extends JIPipeIteratingAlgorith
             annotations.add(maxThresholdParameters.thresholdAnnotation.createAnnotation("" + maxThreshold));
         }
 
-        ImageJUtils.forEachIndexedZCTSlice(inputImage, (ip, index) -> {
+        ImageJIterationUtils.forEachIndexedZCTSlice(inputImage, (ip, index) -> {
             // Get target processor and threshold
             ByteProcessor targetProcessor = (ByteProcessor) (outputImage.hasImageStack() ?
                     outputImage.getStack().getProcessor(outputImage.getStackIndex(index.getC() + 1, index.getZ() + 1, index.getT() + 1))
@@ -256,7 +256,7 @@ public class CustomAutoThreshold2D32Fv2Algorithm extends JIPipeIteratingAlgorith
         List<Float> minThresholds = new ArrayList<>();
         List<Float> maxThresholds = new ArrayList<>();
         TFloatArrayList pixels = new TFloatArrayList(inputImage.getWidth() * inputImage.getHeight());
-        ImageJUtils.forEachIndexedZCTSlice(inputImage, (ip, index) -> {
+        ImageJIterationUtils.forEachIndexedZCTSlice(inputImage, (ip, index) -> {
             ImageProcessor mask = ImageJAlgorithmUtils.getMaskProcessorFromMaskOrROI(sourceArea,
                     inputImage.getWidth(),
                     inputImage.getHeight(),

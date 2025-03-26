@@ -11,16 +11,15 @@
  * See the LICENSE file provided with the code for the full license.
  */
 
-package org.hkijena.jipipe.plugins.imagejdatatypes.util;
+package org.hkijena.jipipe.plugins.imagejdatatypes.util.dimensions;
 
 import org.hkijena.jipipe.plugins.parameters.api.enums.EnumParameterSettings;
 
 /**
  * Enum of ImageJ bit depths
  */
-@EnumParameterSettings(itemInfo = OptionalBitDepthEnumItemInfo.class)
-public enum OptionalBitDepth {
-    None("", 0),
+@EnumParameterSettings(itemInfo = BitDepthEnumItemInfo.class)
+public enum BitDepth {
     Grayscale8u("8-bit", 8),
     Grayscale16u("16-bit", 16),
     Grayscale32f("32-bit", 32),
@@ -29,7 +28,7 @@ public enum OptionalBitDepth {
     private final String typeName;
     private final int bitDepth;
 
-    OptionalBitDepth(String typeName, int bitDepth) {
+    BitDepth(String typeName, int bitDepth) {
 
         this.typeName = typeName;
         this.bitDepth = bitDepth;
@@ -38,8 +37,6 @@ public enum OptionalBitDepth {
     @Override
     public String toString() {
         switch (this) {
-            case None:
-                return "None selected";
             case ColorRGB:
                 return "24-bit Color (RGB)";
             case Grayscale8u:

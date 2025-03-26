@@ -30,8 +30,8 @@ import org.hkijena.jipipe.api.nodes.iterationstep.JIPipeSingleIterationStep;
 import org.hkijena.jipipe.api.parameters.JIPipeParameter;
 import org.hkijena.jipipe.plugins.imagejdatatypes.colorspace.ColorSpace;
 import org.hkijena.jipipe.plugins.imagejdatatypes.datatypes.ImagePlusData;
-import org.hkijena.jipipe.plugins.imagejdatatypes.util.ImageJUtils;
-import org.hkijena.jipipe.plugins.imagejdatatypes.util.ImageSliceIndex;
+import org.hkijena.jipipe.plugins.imagejdatatypes.util.ImageJIterationUtils;
+import org.hkijena.jipipe.plugins.imagejdatatypes.util.dimensions.ImageSliceIndex;
 import org.hkijena.jipipe.plugins.tables.datatypes.ResultsTableData;
 import org.hkijena.jipipe.utils.StringUtils;
 
@@ -75,7 +75,7 @@ public class ImageToTableAlgorithm extends JIPipeSimpleIteratingAlgorithm {
     protected void runIteration(JIPipeSingleIterationStep iterationStep, JIPipeIterationContext iterationContext, JIPipeGraphNodeRunContext runContext, JIPipeProgressInfo progressInfo) {
         if (applyPerSlice) {
             ImagePlusData inputData = iterationStep.getInputData(getFirstInputSlot(), ImagePlusData.class, progressInfo);
-            ImageJUtils.forEachIndexedZCTSlice(inputData.getImage(), (imp, index) -> {
+            ImageJIterationUtils.forEachIndexedZCTSlice(inputData.getImage(), (imp, index) -> {
                 ResultsTableData resultsTable = new ResultsTableData();
                 prepareResultsTable(inputData, resultsTable);
                 resultsTable.addRows(imp.getWidth() * imp.getHeight());
@@ -94,7 +94,7 @@ public class ImageToTableAlgorithm extends JIPipeSimpleIteratingAlgorithm {
             resultsTable.addRows(inputData.getWidth() * inputData.getHeight() * inputData.getNFrames() * inputData.getNChannels() * inputData.getNSlices());
 
             int[] counter = new int[1];
-            ImageJUtils.forEachIndexedZCTSlice(inputData.getImage(), (imp, index) -> {
+            ImageJIterationUtils.forEachIndexedZCTSlice(inputData.getImage(), (imp, index) -> {
                 writePixelsToTable(resultsTable, imp, inputData.getColorSpace(), index, counter[0]);
                 counter[0] += imp.getWidth() * imp.getHeight();
             }, progressInfo);

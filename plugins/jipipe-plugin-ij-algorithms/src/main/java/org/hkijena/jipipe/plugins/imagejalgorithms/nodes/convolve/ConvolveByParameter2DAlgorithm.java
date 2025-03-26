@@ -32,6 +32,7 @@ import org.hkijena.jipipe.api.validation.JIPipeValidationReportEntryLevel;
 import org.hkijena.jipipe.api.validation.contexts.ParameterValidationReportContext;
 import org.hkijena.jipipe.plugins.imagejdatatypes.datatypes.ImagePlusData;
 import org.hkijena.jipipe.plugins.imagejdatatypes.datatypes.greyscale.ImagePlusGreyscaleData;
+import org.hkijena.jipipe.plugins.imagejdatatypes.util.ImageJIterationUtils;
 import org.hkijena.jipipe.plugins.imagejdatatypes.util.ImageJUtils;
 import org.hkijena.jipipe.plugins.parameters.library.matrix.Matrix2DFloat;
 
@@ -94,7 +95,7 @@ public class ConvolveByParameter2DAlgorithm extends JIPipeSimpleIteratingAlgorit
             }
         }
         convolver.setNormalize(normalize);
-        ImageJUtils.forEachSlice(img, imp -> {
+        ImageJIterationUtils.forEachSlice(img, imp -> {
             ImageJUtils.convolveSlice(convolver, kernelWidth, kernelHeight, kernel, imp);
         }, progressInfo);
 

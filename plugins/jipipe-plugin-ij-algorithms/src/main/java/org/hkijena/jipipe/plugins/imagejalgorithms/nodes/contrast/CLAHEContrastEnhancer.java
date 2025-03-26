@@ -27,7 +27,7 @@ import org.hkijena.jipipe.api.nodes.iterationstep.JIPipeIterationContext;
 import org.hkijena.jipipe.api.nodes.iterationstep.JIPipeSingleIterationStep;
 import org.hkijena.jipipe.api.parameters.JIPipeParameter;
 import org.hkijena.jipipe.plugins.imagejdatatypes.datatypes.ImagePlusData;
-import org.hkijena.jipipe.plugins.imagejdatatypes.util.ImageJUtils;
+import org.hkijena.jipipe.plugins.imagejdatatypes.util.ImageJIterationUtils;
 
 
 /**
@@ -78,7 +78,7 @@ public class CLAHEContrastEnhancer extends JIPipeSimpleIteratingAlgorithm {
 
         if (inputData.getImage().hasImageStack()) {
             ImageStack stack = new ImageStack(inputData.getImage().getWidth(), inputData.getImage().getHeight(), inputData.getImage().getProcessor().getColorModel());
-            ImageJUtils.forEachIndexedSlice(inputData.getImage(), (imp, index) -> {
+            ImageJIterationUtils.forEachIndexedSlice(inputData.getImage(), (imp, index) -> {
                 ImagePlus slice = new ImagePlus("slice", imp.duplicate());
                 clahe.run(slice, blockRadius, bins, maxSlope, null, true);
                 stack.addSlice(slice.getProcessor());

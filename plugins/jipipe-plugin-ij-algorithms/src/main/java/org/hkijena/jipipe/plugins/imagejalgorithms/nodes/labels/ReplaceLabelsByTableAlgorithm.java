@@ -34,7 +34,7 @@ import org.hkijena.jipipe.plugins.expressions.OptionalJIPipeExpressionParameter;
 import org.hkijena.jipipe.plugins.expressions.TableColumnSourceExpressionParameter;
 import org.hkijena.jipipe.plugins.expressions.variables.JIPipeTextAnnotationsExpressionParameterVariablesInfo;
 import org.hkijena.jipipe.plugins.imagejdatatypes.datatypes.greyscale.ImagePlusGreyscale32FData;
-import org.hkijena.jipipe.plugins.imagejdatatypes.util.ImageJUtils;
+import org.hkijena.jipipe.plugins.imagejdatatypes.util.ImageJIterationUtils;
 import org.hkijena.jipipe.plugins.tables.datatypes.ResultsTableData;
 import org.hkijena.jipipe.plugins.tables.datatypes.TableColumnData;
 
@@ -129,7 +129,7 @@ public class ReplaceLabelsByTableAlgorithm extends JIPipeIteratingAlgorithm {
             defaultMapping = 0;
         }
 
-        ImageJUtils.forEachIndexedZCTSlice(outputImage, (ip, index) -> {
+        ImageJIterationUtils.forEachIndexedZCTSlice(outputImage, (ip, index) -> {
             float[] pixels = (float[]) ip.getPixels();
             for (int i = 0; i < pixels.length; i++) {
                 float value = pixels[i];

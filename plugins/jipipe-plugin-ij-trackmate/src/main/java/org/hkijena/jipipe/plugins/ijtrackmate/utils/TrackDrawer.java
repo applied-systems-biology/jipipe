@@ -24,8 +24,9 @@ import org.hkijena.jipipe.api.parameters.JIPipeParameter;
 import org.hkijena.jipipe.plugins.ijtrackmate.datatypes.TrackCollectionData;
 import org.hkijena.jipipe.plugins.ijtrackmate.parameters.EdgeFeature;
 import org.hkijena.jipipe.plugins.ijtrackmate.parameters.TrackFeature;
+import org.hkijena.jipipe.plugins.imagejdatatypes.util.ImageJROIUtils;
 import org.hkijena.jipipe.plugins.imagejdatatypes.util.ImageJUtils;
-import org.hkijena.jipipe.plugins.imagejdatatypes.util.ImageSliceIndex;
+import org.hkijena.jipipe.plugins.imagejdatatypes.util.dimensions.ImageSliceIndex;
 import org.jgrapht.graph.DefaultWeightedEdge;
 
 import java.awt.*;
@@ -103,7 +104,7 @@ public class TrackDrawer extends AbstractJIPipeParameterCollection {
 
         // Create overlay
         TrackOverlay trackOverlay = new TrackOverlay(trackCollectionData.getModel(), trackCollectionData.getImage(), displaySettings);
-        ImageJUtils.setRoiCanvas(trackOverlay, imagePlus, dummyCanvas);
+        ImageJROIUtils.setRoiCanvas(trackOverlay, imagePlus, dummyCanvas);
         trackOverlay.setHighlight(selected);
 
         // Draw

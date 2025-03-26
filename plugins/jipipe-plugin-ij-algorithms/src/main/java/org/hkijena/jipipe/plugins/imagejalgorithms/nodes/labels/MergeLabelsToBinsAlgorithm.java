@@ -35,7 +35,7 @@ import org.hkijena.jipipe.api.nodes.iterationstep.JIPipeSingleIterationStep;
 import org.hkijena.jipipe.api.parameters.JIPipeParameter;
 import org.hkijena.jipipe.plugins.imagejdatatypes.datatypes.greyscale.ImagePlusGreyscale32FData;
 import org.hkijena.jipipe.plugins.imagejdatatypes.datatypes.greyscale.ImagePlusGreyscaleData;
-import org.hkijena.jipipe.plugins.imagejdatatypes.util.ImageJUtils;
+import org.hkijena.jipipe.plugins.imagejdatatypes.util.ImageJIterationUtils;
 import org.hkijena.jipipe.plugins.parameters.library.util.SortOrder;
 
 import java.util.ArrayList;
@@ -70,7 +70,7 @@ public class MergeLabelsToBinsAlgorithm extends JIPipeIteratingAlgorithm {
     protected void runIteration(JIPipeSingleIterationStep iterationStep, JIPipeIterationContext iterationContext, JIPipeGraphNodeRunContext runContext, JIPipeProgressInfo progressInfo) {
         ImagePlus outputImage = iterationStep.getInputData("Input", ImagePlusGreyscale32FData.class, progressInfo).getDuplicateImage();
 
-        ImageJUtils.forEachIndexedZCTSlice(outputImage, (ip, index) -> {
+        ImageJIterationUtils.forEachIndexedZCTSlice(outputImage, (ip, index) -> {
             float[] pixels = (float[]) ip.getPixels();
 
             if (equalizeFrequencies) {

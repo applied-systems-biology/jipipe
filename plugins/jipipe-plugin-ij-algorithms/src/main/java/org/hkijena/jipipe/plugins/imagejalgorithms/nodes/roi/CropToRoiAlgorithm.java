@@ -32,8 +32,9 @@ import org.hkijena.jipipe.api.nodes.iterationstep.JIPipeSingleIterationStep;
 import org.hkijena.jipipe.api.parameters.JIPipeParameter;
 import org.hkijena.jipipe.plugins.imagejdatatypes.datatypes.ImagePlusData;
 import org.hkijena.jipipe.plugins.imagejdatatypes.datatypes.ROI2DListData;
+import org.hkijena.jipipe.plugins.imagejdatatypes.util.ImageJIterationUtils;
 import org.hkijena.jipipe.plugins.imagejdatatypes.util.ImageJUtils;
-import org.hkijena.jipipe.plugins.imagejdatatypes.util.ImageSliceIndex;
+import org.hkijena.jipipe.plugins.imagejdatatypes.util.dimensions.ImageSliceIndex;
 import org.hkijena.jipipe.plugins.parameters.library.primitives.optional.OptionalTextAnnotationNameParameter;
 import org.hkijena.jipipe.utils.json.JsonUtils;
 
@@ -174,7 +175,7 @@ public class CropToRoiAlgorithm extends JIPipeIteratingAlgorithm {
         int finalMaxC = maxC;
         int finalMinT = minT;
         int finalMaxT = maxT;
-        ImageJUtils.forEachIndexedZCTSlice(input, (imp, index) -> {
+        ImageJIterationUtils.forEachIndexedZCTSlice(input, (imp, index) -> {
             int z = index.getZ() + 1;
             int c = index.getC() + 1;
             int t = index.getT() + 1;

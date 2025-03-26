@@ -28,6 +28,7 @@ import org.hkijena.jipipe.api.nodes.iterationstep.JIPipeSingleIterationStep;
 import org.hkijena.jipipe.api.parameters.JIPipeParameter;
 import org.hkijena.jipipe.plugins.imagejalgorithms.utils.ImageJAlgorithmUtils;
 import org.hkijena.jipipe.plugins.imagejdatatypes.datatypes.greyscale.ImagePlusGreyscaleData;
+import org.hkijena.jipipe.plugins.imagejdatatypes.util.ImageJIterationUtils;
 import org.hkijena.jipipe.plugins.imagejdatatypes.util.ImageJUtils;
 import org.hkijena.jipipe.plugins.imagejdatatypes.util.measure.ImageStatisticsSetParameter;
 import org.hkijena.jipipe.plugins.tables.datatypes.ResultsTableData;
@@ -80,7 +81,7 @@ public class ExtractLabelStatisticsAlgorithm extends JIPipeIteratingAlgorithm {
 
         ResultsTableData result = new ResultsTableData();
 
-        ImageJUtils.forEachIndexedZCTSlice(reference, (referenceProcessor, index) -> {
+        ImageJIterationUtils.forEachIndexedZCTSlice(reference, (referenceProcessor, index) -> {
             int z = Math.min(index.getZ(), labels.getNSlices() - 1);
             int c = Math.min(index.getC(), labels.getNChannels() - 1);
             int t = Math.min(index.getT(), labels.getNFrames() - 1);

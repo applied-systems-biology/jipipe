@@ -33,8 +33,8 @@ import org.hkijena.jipipe.plugins.expressions.JIPipeExpressionVariablesMap;
 import org.hkijena.jipipe.plugins.expressions.OptionalJIPipeExpressionParameter;
 import org.hkijena.jipipe.plugins.imagejalgorithms.parameters.InterpolationMethod;
 import org.hkijena.jipipe.plugins.imagejdatatypes.datatypes.ImagePlusData;
-import org.hkijena.jipipe.plugins.imagejdatatypes.util.ImageJUtils;
-import org.hkijena.jipipe.plugins.imagejdatatypes.util.ImagePlusPropertiesExpressionParameterVariablesInfo;
+import org.hkijena.jipipe.plugins.imagejdatatypes.util.ImageJIterationUtils;
+import org.hkijena.jipipe.plugins.imagejdatatypes.util.expressions.ImagePlusPropertiesExpressionParameterVariablesInfo;
 import org.hkijena.jipipe.plugins.parameters.library.roi.Anchor;
 
 import java.awt.*;
@@ -185,7 +185,7 @@ public class TransformScale2DAlgorithm extends JIPipeSimpleIteratingAlgorithm {
                 ImageStack result = new ImageStack(sx, sy, img.getStackSize());
                 int finalSx = sx;
                 int finalSy = sy;
-                ImageJUtils.forEachIndexedZCTSlice(img, (imp, index) -> {
+                ImageJIterationUtils.forEachIndexedZCTSlice(img, (imp, index) -> {
                     ImageProcessor resized = scaleProcessor(imp, finalSx, finalSy, interpolationMethod, interpolationMethod != InterpolationMethod.None, scaleMode, anchor, background);
                     result.setProcessor(resized, index.zeroSliceIndexToOneStackIndex(img));
                 }, progressInfo);

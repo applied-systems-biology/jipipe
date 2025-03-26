@@ -31,7 +31,7 @@ import org.hkijena.jipipe.api.nodes.iterationstep.JIPipeSingleIterationStep;
 import org.hkijena.jipipe.api.parameters.JIPipeParameter;
 import org.hkijena.jipipe.plugins.ij3d.datatypes.ROI3DListData;
 import org.hkijena.jipipe.plugins.imagejdatatypes.datatypes.greyscale.ImagePlusGreyscaleData;
-import org.hkijena.jipipe.plugins.imagejdatatypes.util.ImageJUtils;
+import org.hkijena.jipipe.plugins.imagejdatatypes.util.ImageJIterationUtils;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -69,7 +69,7 @@ public class Roi3DFromLabelsAlgorithm extends JIPipeSimpleIteratingAlgorithm {
 
         ROI3DListData roiList = new ROI3DListData();
 
-        ImageJUtils.forEachIndexedCTStack(inputLabels, (labels, index, stackProgress) -> {
+        ImageJIterationUtils.forEachIndexedCTStack(inputLabels, (labels, index, stackProgress) -> {
             progressInfo.log("Detecting connected components ...");
             ImageHandler imageHandler = ImageHandler.wrap(labels);
 

@@ -30,7 +30,7 @@ import org.hkijena.jipipe.api.nodes.iterationstep.JIPipeSingleIterationStep;
 import org.hkijena.jipipe.api.parameters.JIPipeParameter;
 import org.hkijena.jipipe.plugins.imagejdatatypes.datatypes.ImagePlusData;
 import org.hkijena.jipipe.plugins.imagejdatatypes.datatypes.ROI2DListData;
-import org.hkijena.jipipe.plugins.imagejdatatypes.util.ImageJUtils;
+import org.hkijena.jipipe.plugins.imagejdatatypes.util.ImageJIterationUtils;
 
 import java.awt.*;
 
@@ -78,7 +78,7 @@ public class RoiFloodFillAlgorithm extends JIPipeIteratingAlgorithm {
         ImagePlus inputImage = iterationStep.getInputData("Image", ImagePlusData.class, progressInfo).getImage();
 
         ROI2DListData outputRoi = new ROI2DListData();
-        ImageJUtils.forEachIndexedZCTSlice(inputImage, (ip, index) -> {
+        ImageJIterationUtils.forEachIndexedZCTSlice(inputImage, (ip, index) -> {
             for (Roi roi : inputRoi) {
                 ImagePlus wrapper = new ImagePlus("slice", ip);
                 ROI2DListData collection = new ROI2DListData();

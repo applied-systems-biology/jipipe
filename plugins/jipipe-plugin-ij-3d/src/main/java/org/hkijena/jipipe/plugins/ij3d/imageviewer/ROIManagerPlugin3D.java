@@ -36,8 +36,9 @@ import org.hkijena.jipipe.desktop.commons.components.ribbon.JIPipeDesktopSmallTo
 import org.hkijena.jipipe.plugins.ij3d.datatypes.ROI3D;
 import org.hkijena.jipipe.plugins.ij3d.datatypes.ROI3DListData;
 import org.hkijena.jipipe.plugins.imagejdatatypes.datatypes.ROI2DListData;
+import org.hkijena.jipipe.plugins.imagejdatatypes.util.ImageJROIUtils;
 import org.hkijena.jipipe.plugins.imagejdatatypes.util.ImageJUtils;
-import org.hkijena.jipipe.plugins.imagejdatatypes.util.ImageSliceIndex;
+import org.hkijena.jipipe.plugins.imagejdatatypes.util.dimensions.ImageSliceIndex;
 import org.hkijena.jipipe.plugins.imagejdatatypes.util.ROIElementDrawingMode;
 import org.hkijena.jipipe.plugins.imagejdatatypes.util.RoiDrawer;
 import org.hkijena.jipipe.plugins.imageviewer.legacy.JIPipeDesktopLegacyImageViewer;
@@ -428,7 +429,7 @@ public class ROIManagerPlugin3D extends JIPipeDesktopLegacyImageViewerPlugin2D {
                 renderedRois.put(sliceIndex, rendered);
             }
             for (Roi roi : rendered) {
-                ImageJUtils.setRoiCanvas(roi, getCurrentImagePlus(), getViewerPanel2D().getZoomedDummyCanvas());
+                ImageJROIUtils.setRoiCanvas(roi, getCurrentImagePlus(), getViewerPanel2D().getZoomedDummyCanvas());
             }
             roiDrawer.drawOverlayOnGraphics(rendered, graphics2D, renderArea, sliceIndex, Collections.emptySet(), getViewerPanel2D().getCanvas().getZoom());
         }
@@ -447,7 +448,7 @@ public class ROIManagerPlugin3D extends JIPipeDesktopLegacyImageViewerPlugin2D {
             ImageCanvas canvas = ImageJUtils.createZoomedDummyCanvas(getCurrentImagePlus(), magnification);
             for (Roi roi : rendered) {
                 Roi clone = (Roi) roi.clone();
-                ImageJUtils.setRoiCanvas(clone, getCurrentImagePlus(), canvas);
+                ImageJROIUtils.setRoiCanvas(clone, getCurrentImagePlus(), canvas);
                 copy.add(clone);
             }
             roiDrawer.drawOverlayOnGraphics(copy, graphics, new Rectangle(0, 0, image.getWidth(), image.getHeight()), sliceIndex, Collections.emptySet(), magnification);

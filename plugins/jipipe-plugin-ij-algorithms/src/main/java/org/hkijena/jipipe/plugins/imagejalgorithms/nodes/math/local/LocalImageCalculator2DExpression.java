@@ -37,8 +37,9 @@ import org.hkijena.jipipe.plugins.expressions.JIPipeExpressionParameterSettings;
 import org.hkijena.jipipe.plugins.expressions.JIPipeExpressionVariablesMap;
 import org.hkijena.jipipe.plugins.imagejalgorithms.parameters.SourceWrapMode;
 import org.hkijena.jipipe.plugins.imagejdatatypes.datatypes.greyscale.ImagePlusGreyscale32FData;
+import org.hkijena.jipipe.plugins.imagejdatatypes.util.ImageJIterationUtils;
 import org.hkijena.jipipe.plugins.imagejdatatypes.util.ImageJUtils;
-import org.hkijena.jipipe.plugins.imagejdatatypes.util.PixelCoordinate5DExpressionParameterVariablesInfo;
+import org.hkijena.jipipe.plugins.imagejdatatypes.util.expressions.PixelCoordinate5DExpressionParameterVariablesInfo;
 import org.hkijena.jipipe.utils.ImageJCalibrationMode;
 
 import java.util.ArrayList;
@@ -113,7 +114,7 @@ public class LocalImageCalculator2DExpression extends JIPipeIteratingAlgorithm {
         Map<String, ImageProcessor> processorMap = new HashMap<>();
 
         ImagePlus result = IJ.createHyperStack("Output", width, height, nC, nZ, nT, 32);
-        ImageJUtils.forEachIndexedZCTSlice(referenceImage, (ip_, index) -> {
+        ImageJIterationUtils.forEachIndexedZCTSlice(referenceImage, (ip_, index) -> {
             parameters.set("z", index.getZ());
             parameters.set("c", index.getC());
             parameters.set("t", index.getT());

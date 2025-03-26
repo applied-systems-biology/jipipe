@@ -42,6 +42,7 @@ import org.hkijena.jipipe.plugins.imagejdatatypes.datatypes.ImagePlusData;
 import org.hkijena.jipipe.plugins.imagejdatatypes.datatypes.ROI2DListData;
 import org.hkijena.jipipe.plugins.imagejdatatypes.datatypes.greyscale.ImagePlusGreyscale8UData;
 import org.hkijena.jipipe.plugins.imagejdatatypes.datatypes.greyscale.ImagePlusGreyscaleMaskData;
+import org.hkijena.jipipe.plugins.imagejdatatypes.util.ImageJIterationUtils;
 import org.hkijena.jipipe.plugins.imagejdatatypes.util.ImageJUtils;
 import org.hkijena.jipipe.plugins.parameters.library.primitives.optional.OptionalTextAnnotationNameParameter;
 
@@ -133,7 +134,7 @@ public class CustomAutoThreshold2D8UAlgorithm extends JIPipeIteratingAlgorithm {
         if (thresholdMode == AutoThreshold2DAlgorithm.SliceThresholdMode.ApplyPerSlice) {
             List<Integer> thresholds = new ArrayList<>();
             TByteArrayList pixels = new TByteArrayList(img.getWidth() * img.getHeight());
-            ImageJUtils.forEachIndexedZCTSlice(img, (ip, index) -> {
+            ImageJIterationUtils.forEachIndexedZCTSlice(img, (ip, index) -> {
                 ImageProcessor mask = ImageJAlgorithmUtils.getMaskProcessorFromMaskOrROI(sourceArea,
                         img.getWidth(),
                         img.getHeight(),
@@ -165,7 +166,7 @@ public class CustomAutoThreshold2D8UAlgorithm extends JIPipeIteratingAlgorithm {
         } else if (thresholdMode == AutoThreshold2DAlgorithm.SliceThresholdMode.CombineSliceStatistics) {
             TByteArrayList pixels = new TByteArrayList(img.getWidth() * img.getHeight() *
                     img.getNFrames() * img.getNChannels() * img.getNSlices());
-            ImageJUtils.forEachIndexedZCTSlice(img, (ip, index) -> {
+            ImageJIterationUtils.forEachIndexedZCTSlice(img, (ip, index) -> {
                 ImageProcessor mask = ImageJAlgorithmUtils.getMaskProcessorFromMaskOrROI(sourceArea,
                         img.getWidth(),
                         img.getHeight(),
@@ -181,7 +182,7 @@ public class CustomAutoThreshold2D8UAlgorithm extends JIPipeIteratingAlgorithm {
             if (thresholdAnnotation.isEnabled()) {
                 annotations.add(thresholdAnnotation.createAnnotation("" + threshold));
             }
-            ImageJUtils.forEachSlice(img, ip -> {
+            ImageJIterationUtils.forEachSlice(img, ip -> {
                 ip.threshold(threshold);
             }, progressInfo);
             iterationStep.addOutputData(getFirstOutputSlot(),
@@ -192,7 +193,7 @@ public class CustomAutoThreshold2D8UAlgorithm extends JIPipeIteratingAlgorithm {
         } else if (thresholdMode == AutoThreshold2DAlgorithm.SliceThresholdMode.CombineThresholdPerSlice) {
             List<Integer> thresholds = new ArrayList<>();
             TByteArrayList pixels = new TByteArrayList(img.getWidth() * img.getHeight());
-            ImageJUtils.forEachIndexedZCTSlice(img, (ip, index) -> {
+            ImageJIterationUtils.forEachIndexedZCTSlice(img, (ip, index) -> {
                 ImageProcessor mask = ImageJAlgorithmUtils.getMaskProcessorFromMaskOrROI(sourceArea,
                         img.getWidth(),
                         img.getHeight(),
@@ -216,7 +217,7 @@ public class CustomAutoThreshold2D8UAlgorithm extends JIPipeIteratingAlgorithm {
             if (thresholdAnnotation.isEnabled()) {
                 annotations.add(thresholdAnnotation.createAnnotation("" + threshold));
             }
-            ImageJUtils.forEachSlice(img, ip -> {
+            ImageJIterationUtils.forEachSlice(img, ip -> {
                 ip.threshold(threshold);
             }, progressInfo);
             iterationStep.addOutputData(getFirstOutputSlot(),

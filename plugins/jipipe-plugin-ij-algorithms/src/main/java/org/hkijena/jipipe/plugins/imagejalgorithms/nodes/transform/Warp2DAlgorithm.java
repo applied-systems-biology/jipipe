@@ -34,8 +34,8 @@ import org.hkijena.jipipe.api.validation.JIPipeValidationRuntimeException;
 import org.hkijena.jipipe.api.validation.contexts.GraphNodeValidationReportContext;
 import org.hkijena.jipipe.plugins.imagejdatatypes.datatypes.ImagePlusData;
 import org.hkijena.jipipe.plugins.imagejdatatypes.datatypes.greyscale.ImagePlusGreyscale32FData;
-import org.hkijena.jipipe.plugins.imagejdatatypes.util.HyperstackDimension;
-import org.hkijena.jipipe.plugins.imagejdatatypes.util.ImageJUtils;
+import org.hkijena.jipipe.plugins.imagejdatatypes.util.ImageJIterationUtils;
+import org.hkijena.jipipe.plugins.imagejdatatypes.util.dimensions.HyperstackDimension;
 
 @SetJIPipeDocumentation(name = "Warp 2D", description = "Warps the image by applying a 2-channel vector field of relative coordinates where the pixels should be copied to." +
         " The vector field should either have the " +
@@ -174,7 +174,7 @@ public class Warp2DAlgorithm extends JIPipeIteratingAlgorithm {
             }
         }
 
-        ImageJUtils.forEachIndexedZCTSlice(img, (inputProcessor, index) -> {
+        ImageJIterationUtils.forEachIndexedZCTSlice(img, (inputProcessor, index) -> {
             // Get the result processor
             ImageProcessor resultProcessor;
             if (result.hasImageStack())

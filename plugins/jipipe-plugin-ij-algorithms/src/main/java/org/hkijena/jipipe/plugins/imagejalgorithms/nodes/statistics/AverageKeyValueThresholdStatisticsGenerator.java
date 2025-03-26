@@ -38,6 +38,7 @@ import org.hkijena.jipipe.api.validation.JIPipeValidationRuntimeException;
 import org.hkijena.jipipe.api.validation.contexts.GraphNodeValidationReportContext;
 import org.hkijena.jipipe.plugins.imagejdatatypes.datatypes.greyscale.ImagePlusGreyscale32FData;
 import org.hkijena.jipipe.plugins.imagejdatatypes.datatypes.greyscale.ImagePlusGreyscaleData;
+import org.hkijena.jipipe.plugins.imagejdatatypes.util.ImageJIterationUtils;
 import org.hkijena.jipipe.plugins.imagejdatatypes.util.ImageJUtils;
 import org.hkijena.jipipe.plugins.parameters.library.primitives.BooleanParameterSettings;
 import org.hkijena.jipipe.plugins.parameters.library.primitives.StringParameterSettings;
@@ -84,7 +85,7 @@ public class AverageKeyValueThresholdStatisticsGenerator extends JIPipeIterating
         }
 
         // Bucket the pixel values => which key has which values
-        ImageJUtils.forEachIndexedZCTSlice(keyImage, (keyIp, index) -> {
+        ImageJIterationUtils.forEachIndexedZCTSlice(keyImage, (keyIp, index) -> {
             ImageProcessor valueIp = ImageJUtils.getSliceZero(valueImage, index);
             float[] keyPixels = (float[]) keyIp.getPixels();
             float[] valuePixels = (float[]) valueIp.getPixels();

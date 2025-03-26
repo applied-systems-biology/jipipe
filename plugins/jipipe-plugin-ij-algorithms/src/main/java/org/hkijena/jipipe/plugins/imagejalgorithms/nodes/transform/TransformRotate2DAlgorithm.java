@@ -29,7 +29,7 @@ import org.hkijena.jipipe.api.nodes.iterationstep.JIPipeIterationContext;
 import org.hkijena.jipipe.api.nodes.iterationstep.JIPipeSingleIterationStep;
 import org.hkijena.jipipe.api.parameters.JIPipeParameter;
 import org.hkijena.jipipe.plugins.imagejdatatypes.datatypes.ImagePlusData;
-import org.hkijena.jipipe.plugins.imagejdatatypes.util.ImageJUtils;
+import org.hkijena.jipipe.plugins.imagejdatatypes.util.ImageJIterationUtils;
 
 /**
  * Wrapper around {@link ImageProcessor}
@@ -75,7 +75,7 @@ public class TransformRotate2DAlgorithm extends JIPipeSimpleIteratingAlgorithm {
         ImagePlusData inputData = iterationStep.getInputData(getFirstInputSlot(), ImagePlusData.class, progressInfo);
         ImagePlus imp = inputData.getDuplicateImage();
         for (int i = 0; i < rotations; ++i) {
-            ImageJUtils.forEachSlice(imp, ip -> {
+            ImageJIterationUtils.forEachSlice(imp, ip -> {
                 Calibration cal = imp.getCalibration();
                 boolean transformOrigin = cal.xOrigin != 0 || cal.yOrigin != 0;
                 StackProcessor sp = new StackProcessor(imp.getStack(), ip);

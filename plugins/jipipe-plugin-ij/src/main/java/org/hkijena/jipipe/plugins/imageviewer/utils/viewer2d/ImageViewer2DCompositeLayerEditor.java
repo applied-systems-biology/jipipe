@@ -14,7 +14,7 @@
 package org.hkijena.jipipe.plugins.imageviewer.utils.viewer2d;
 
 import org.hkijena.jipipe.desktop.commons.components.JIPipeDesktopFormPanel;
-import org.hkijena.jipipe.plugins.imagejdatatypes.util.ImageBlendMode;
+import org.hkijena.jipipe.plugins.imagejdatatypes.util.blending.ImageBlendMode;
 import org.hkijena.jipipe.plugins.imageviewer.legacy.impl.JIPipeDesktopLegacyImageViewerPanel2D;
 import org.hkijena.jipipe.utils.UIUtils;
 

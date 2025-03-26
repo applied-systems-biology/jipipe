@@ -27,7 +27,7 @@ import org.hkijena.jipipe.api.nodes.iterationstep.JIPipeSingleIterationStep;
 import org.hkijena.jipipe.plugins.imagejdatatypes.datatypes.ImagePlusData;
 import org.hkijena.jipipe.plugins.imagejdatatypes.datatypes.greyscale.ImagePlusGreyscale8UData;
 import org.hkijena.jipipe.plugins.imagejdatatypes.datatypes.greyscale.ImagePlusGreyscaleMaskData;
-import org.hkijena.jipipe.plugins.imagejdatatypes.util.ImageJUtils;
+import org.hkijena.jipipe.plugins.imagejdatatypes.util.ImageJIterationUtils;
 
 /**
  * Wrapper around {@link EDM}
@@ -66,7 +66,7 @@ public class UltimateErodedPoints2DAlgorithm extends JIPipeSimpleIteratingAlgori
         ImagePlus img = inputData.getDuplicateImage();
         EDM edm = new EDM();
         edm.setup("points", img);
-        ImageJUtils.forEachSlice(img, edm::run, progressInfo);
+        ImageJIterationUtils.forEachSlice(img, edm::run, progressInfo);
         iterationStep.addOutputData(getFirstOutputSlot(), new ImagePlusGreyscale8UData(img), progressInfo);
     }
 }

@@ -34,8 +34,8 @@ import org.hkijena.jipipe.plugins.imagejalgorithms.utils.ImageJAlgorithmUtils;
 import org.hkijena.jipipe.plugins.imagejdatatypes.datatypes.ROI2DListData;
 import org.hkijena.jipipe.plugins.imagejdatatypes.datatypes.greyscale.ImagePlusGreyscaleData;
 import org.hkijena.jipipe.plugins.imagejdatatypes.datatypes.greyscale.ImagePlusGreyscaleMaskData;
-import org.hkijena.jipipe.plugins.imagejdatatypes.util.ImageJUtils;
-import org.hkijena.jipipe.plugins.imagejdatatypes.util.ImageSliceIndex;
+import org.hkijena.jipipe.plugins.imagejdatatypes.util.ImageJIterationUtils;
+import org.hkijena.jipipe.plugins.imagejdatatypes.util.dimensions.ImageSliceIndex;
 import org.hkijena.jipipe.plugins.parameters.library.primitives.BooleanParameterSettings;
 import org.hkijena.jipipe.utils.ArrayUtils;
 
@@ -90,7 +90,7 @@ public class MergeSmallLabelsAlgorithm extends JIPipeIteratingAlgorithm {
 
         if (image.getBitDepth() == 8) {
             TByteIntMap counts = new TByteIntHashMap();
-            ImageJUtils.forEachIndexedZCTSlice(image, (ip, index) -> {
+            ImageJIterationUtils.forEachIndexedZCTSlice(image, (ip, index) -> {
                 ImageProcessor mask = getMask(ip.getWidth(),
                         ip.getHeight(),
                         finalRoiInput,
@@ -169,7 +169,7 @@ public class MergeSmallLabelsAlgorithm extends JIPipeIteratingAlgorithm {
             }
 
             // Apply remapping
-            ImageJUtils.forEachIndexedZCTSlice(image, (ip, index) -> {
+            ImageJIterationUtils.forEachIndexedZCTSlice(image, (ip, index) -> {
                 byte[] pixels = (byte[]) ip.getPixels();
                 for (int i = 0; i < pixels.length; i++) {
                     pixels[i] = remapping.get(pixels[i]);
@@ -177,7 +177,7 @@ public class MergeSmallLabelsAlgorithm extends JIPipeIteratingAlgorithm {
             }, progressInfo.resolve("Apply remapping"));
         } else if (image.getBitDepth() == 16) {
             TShortIntMap counts = new TShortIntHashMap();
-            ImageJUtils.forEachIndexedZCTSlice(image, (ip, index) -> {
+            ImageJIterationUtils.forEachIndexedZCTSlice(image, (ip, index) -> {
                 ImageProcessor mask = getMask(ip.getWidth(),
                         ip.getHeight(),
                         finalRoiInput,
@@ -256,7 +256,7 @@ public class MergeSmallLabelsAlgorithm extends JIPipeIteratingAlgorithm {
             }
 
             // Apply remapping
-            ImageJUtils.forEachIndexedZCTSlice(image, (ip, index) -> {
+            ImageJIterationUtils.forEachIndexedZCTSlice(image, (ip, index) -> {
                 short[] pixels = (short[]) ip.getPixels();
                 for (int i = 0; i < pixels.length; i++) {
                     pixels[i] = remapping.get(pixels[i]);
@@ -264,7 +264,7 @@ public class MergeSmallLabelsAlgorithm extends JIPipeIteratingAlgorithm {
             }, progressInfo.resolve("Apply remapping"));
         } else if (image.getBitDepth() == 32) {
             TFloatIntMap counts = new TFloatIntHashMap();
-            ImageJUtils.forEachIndexedZCTSlice(image, (ip, index) -> {
+            ImageJIterationUtils.forEachIndexedZCTSlice(image, (ip, index) -> {
                 ImageProcessor mask = getMask(ip.getWidth(),
                         ip.getHeight(),
                         finalRoiInput,
@@ -345,7 +345,7 @@ public class MergeSmallLabelsAlgorithm extends JIPipeIteratingAlgorithm {
             }
 
             // Apply remapping
-            ImageJUtils.forEachIndexedZCTSlice(image, (ip, index) -> {
+            ImageJIterationUtils.forEachIndexedZCTSlice(image, (ip, index) -> {
                 float[] pixels = (float[]) ip.getPixels();
                 for (int i = 0; i < pixels.length; i++) {
                     pixels[i] = remapping.get(pixels[i]);

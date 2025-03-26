@@ -38,8 +38,10 @@ import org.hkijena.jipipe.plugins.imagejalgorithms.parameters.Neighborhood3D;
 import org.hkijena.jipipe.plugins.imagejdatatypes.datatypes.ImagePlusData;
 import org.hkijena.jipipe.plugins.imagejdatatypes.datatypes.ROI2DListData;
 import org.hkijena.jipipe.plugins.imagejdatatypes.datatypes.greyscale.ImagePlusGreyscaleMaskData;
+import org.hkijena.jipipe.plugins.imagejdatatypes.util.ImageJIterationUtils;
+import org.hkijena.jipipe.plugins.imagejdatatypes.util.ImageJROIUtils;
 import org.hkijena.jipipe.plugins.imagejdatatypes.util.ImageJUtils;
-import org.hkijena.jipipe.plugins.imagejdatatypes.util.ImageSliceIndex;
+import org.hkijena.jipipe.plugins.imagejdatatypes.util.dimensions.ImageSliceIndex;
 import org.hkijena.jipipe.plugins.imagejdatatypes.util.measure.ImageStatisticsSetParameter;
 import org.hkijena.jipipe.plugins.imagejdatatypes.util.measure.Measurement;
 import org.hkijena.jipipe.plugins.tables.datatypes.ResultsTableData;
@@ -377,7 +379,7 @@ public class ImageJAlgorithmUtils {
                     return ImageROITargetArea.createWhiteMask(img.getImage());
                 } else {
                     ImagePlus mask = rois.toMask(img.getImage(), true, false, 1);
-                    ImageJUtils.forEachIndexedZCTSlice(mask, (ip, index) -> {
+                    ImageJIterationUtils.forEachIndexedZCTSlice(mask, (ip, index) -> {
                         ip.invert();
                     }, progressInfo.resolve("Invert mask"));
                     return ImageJUtils.ensureEqualSize(mask, img.getImage(), true);
@@ -391,7 +393,7 @@ public class ImageJAlgorithmUtils {
             case OutsideMask: {
                 ImagePlusData img = iterationStep.getInputData(imageSlotName, ImagePlusData.class, progressInfo);
                 ImagePlus mask = iterationStep.getInputData("Mask", ImagePlusData.class, progressInfo).getDuplicateImage();
-                ImageJUtils.forEachIndexedZCTSlice(mask, (ip, index) -> {
+                ImageJIterationUtils.forEachIndexedZCTSlice(mask, (ip, index) -> {
                     ip.invert();
                 }, progressInfo.resolve("Invert mask"));
                 return ImageJUtils.ensureEqualSize(mask, img.getImage(), true);
@@ -467,14 +469,14 @@ public class ImageJAlgorithmUtils {
         if (ROI2DRelationMeasurement.includes(measurements, ROI2DRelationMeasurement.Colocalization) ||
                 ROI2DRelationMeasurement.includes(measurements, ROI2DRelationMeasurement.PercentageColocalization)) {
 
-            Roi intersection = ImageJUtils.intersectROI(roi1, roi2);
+            Roi intersection = ImageJROIUtils.intersectROI(roi1, roi2);
             if (intersection != null) {
-                double intersectionArea = ImageJUtils.measureROI(intersection, reference, physicalUnits, Measurement.Area).getValueAsDouble(0, "Area");
+                double intersectionArea = ImageJROIUtils.measureROI(intersection, reference, physicalUnits, Measurement.Area).getValueAsDouble(0, "Area");
                 if (ROI2DRelationMeasurement.includes(measurements, ROI2DRelationMeasurement.Colocalization)) {
                     target.setValueAt(intersectionArea, row, columnPrefix + "Colocalization");
                 }
                 if (ROI2DRelationMeasurement.includes(measurements, ROI2DRelationMeasurement.PercentageColocalization)) {
-                    double roi1Area = ImageJUtils.measureROI(roi1, reference, physicalUnits, Measurement.Area).getValueAsDouble(0, "Area");
+                    double roi1Area = ImageJROIUtils.measureROI(roi1, reference, physicalUnits, Measurement.Area).getValueAsDouble(0, "Area");
                     double percentage = roi1Area / intersectionArea * 100;
                     if (!Double.isFinite(percentage))
                         percentage = 0;
@@ -495,9 +497,9 @@ public class ImageJAlgorithmUtils {
             target.setValueAt(value ? 1 : 0, row, columnPrefix + "OverlapsBox");
         }
         if (ROI2DRelationMeasurement.includes(measurements, ROI2DRelationMeasurement.Includes)) {
-            Roi intersection = ImageJUtils.intersectROI(roi1, roi2);
-            double intersectionArea = ImageJUtils.measureROI(intersection, reference, physicalUnits, Measurement.Area).getValueAsDouble(0, "Area");
-            double roi2Area = ImageJUtils.measureROI(roi2, reference, physicalUnits, Measurement.Area).getValueAsDouble(0, "Area");
+            Roi intersection = ImageJROIUtils.intersectROI(roi1, roi2);
+            double intersectionArea = ImageJROIUtils.measureROI(intersection, reference, physicalUnits, Measurement.Area).getValueAsDouble(0, "Area");
+            double roi2Area = ImageJROIUtils.measureROI(roi2, reference, physicalUnits, Measurement.Area).getValueAsDouble(0, "Area");
             boolean value = intersectionArea == roi2Area;
             target.setValueAt(value ? 1 : 0, row, columnPrefix + "Includes");
         }
@@ -559,7 +561,7 @@ public class ImageJAlgorithmUtils {
             target.setValueAt(arr.length, row, columnPrefix + "PolygonDistanceNumDistances");
         }
         if (ROI2DRelationMeasurement.includes(measurements, ROI2DRelationMeasurement.IntersectionStats)) {
-            Roi intersection = ImageJUtils.intersectROI(roi1, roi2);
+            Roi intersection = ImageJROIUtils.intersectROI(roi1, roi2);
             if (intersection != null) {
                 generateROIRowMeasurements(reference, -1, intersection, new ImageStatisticsSetParameter(), physicalUnits, target, row, "Intersection.");
             }

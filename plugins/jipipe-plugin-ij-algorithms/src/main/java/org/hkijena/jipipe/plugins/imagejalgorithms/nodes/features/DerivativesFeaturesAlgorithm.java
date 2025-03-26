@@ -31,8 +31,9 @@ import org.hkijena.jipipe.api.parameters.JIPipeParameter;
 import org.hkijena.jipipe.plugins.imagejalgorithms.utils.ImageScienceUtils;
 import org.hkijena.jipipe.plugins.imagejdatatypes.datatypes.ImagePlusData;
 import org.hkijena.jipipe.plugins.imagejdatatypes.datatypes.greyscale.ImagePlusGreyscaleData;
+import org.hkijena.jipipe.plugins.imagejdatatypes.util.ImageJIterationUtils;
 import org.hkijena.jipipe.plugins.imagejdatatypes.util.ImageJUtils;
-import org.hkijena.jipipe.plugins.imagejdatatypes.util.ImageSliceIndex;
+import org.hkijena.jipipe.plugins.imagejdatatypes.util.dimensions.ImageSliceIndex;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -399,7 +400,7 @@ public class DerivativesFeaturesAlgorithm extends JIPipeSimpleIteratingAlgorithm
 
         if (force2D) {
             Map<ImageSliceIndex, ImageProcessor> resultMap = new HashMap<>();
-            ImageJUtils.forEachIndexedZCTSliceWithProgress(input, (ip, index, sliceProgress) -> {
+            ImageJIterationUtils.forEachIndexedZCTSliceWithProgress(input, (ip, index, sliceProgress) -> {
                 ImagePlus sliceImp = new ImagePlus("slice", ip);
                 sliceImp.copyScale(input);
                 ImagePlus resultSlice = applyDerivatives(sliceImp, sliceProgress);

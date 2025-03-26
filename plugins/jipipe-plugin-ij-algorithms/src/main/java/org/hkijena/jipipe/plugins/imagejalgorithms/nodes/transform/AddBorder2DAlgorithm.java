@@ -35,6 +35,7 @@ import org.hkijena.jipipe.plugins.expressions.JIPipeExpressionVariablesMap;
 import org.hkijena.jipipe.plugins.expressions.variables.JIPipeTextAnnotationsExpressionParameterVariablesInfo;
 import org.hkijena.jipipe.plugins.imagejdatatypes.datatypes.ImagePlusData;
 import org.hkijena.jipipe.plugins.imagejdatatypes.parameters.ImageQueryExpressionVariablesInfo;
+import org.hkijena.jipipe.plugins.imagejdatatypes.util.ImageJIterationUtils;
 import org.hkijena.jipipe.plugins.imagejdatatypes.util.ImageJUtils;
 
 import java.awt.*;
@@ -77,7 +78,7 @@ public class AddBorder2DAlgorithm extends JIPipeSimpleIteratingAlgorithm {
         int height = img.getHeight() + top + bottom;
         ImagePlus result = IJ.createHyperStack(img.getTitle() + "-border", width, height, img.getNChannels(), img.getNSlices(), img.getNFrames(), img.getBitDepth());
 
-        ImageJUtils.forEachIndexedZCTSlice(result, (resultIp, index) -> {
+        ImageJIterationUtils.forEachIndexedZCTSlice(result, (resultIp, index) -> {
             ImageProcessor sourceIp = ImageJUtils.getSliceZero(img, index);
             if (borderMode == BorderMode.Constant) {
                 // Constant: Fill first

@@ -33,6 +33,7 @@ import org.hkijena.jipipe.plugins.ij3d.datatypes.ROI3DListData;
 import org.hkijena.jipipe.plugins.imagejalgorithms.parameters.Neighborhood3D;
 import org.hkijena.jipipe.plugins.imagejalgorithms.utils.ImageJAlgorithmUtils;
 import org.hkijena.jipipe.plugins.imagejdatatypes.datatypes.greyscale.ImagePlusGreyscaleMaskData;
+import org.hkijena.jipipe.plugins.imagejdatatypes.util.ImageJIterationUtils;
 import org.hkijena.jipipe.plugins.imagejdatatypes.util.ImageJUtils;
 
 import java.util.ArrayList;
@@ -79,12 +80,12 @@ public class FindParticles3DAlgorithm extends JIPipeSimpleIteratingAlgorithm {
 
         if (!blackBackground) {
             maskImage = ImageJUtils.duplicate(maskImage);
-            ImageJUtils.forEachIndexedZCTSlice(maskImage, (ip, index) -> ip.invert(), progressInfo.resolve("Invert mask"));
+            ImageJIterationUtils.forEachIndexedZCTSlice(maskImage, (ip, index) -> ip.invert(), progressInfo.resolve("Invert mask"));
         }
 
         ROI3DListData roiList = new ROI3DListData();
 
-        ImageJUtils.forEachIndexedCTStack(maskImage, (imp, index, stackProgress) -> {
+        ImageJIterationUtils.forEachIndexedCTStack(maskImage, (imp, index, stackProgress) -> {
             progressInfo.log("Detecting connected components ...");
             ImagePlus labels = ImageJAlgorithmUtils.connectedComponents3D(imp, neighborhood, 32);
             ImageFloat imageHandler = new ImageFloat(labels);

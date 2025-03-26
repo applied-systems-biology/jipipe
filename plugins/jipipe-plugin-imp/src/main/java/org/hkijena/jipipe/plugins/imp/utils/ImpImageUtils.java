@@ -14,7 +14,7 @@
 package org.hkijena.jipipe.plugins.imp.utils;
 
 import org.hkijena.jipipe.api.JIPipeProgressInfo;
-import org.hkijena.jipipe.plugins.imagejdatatypes.util.ImageSliceIndex;
+import org.hkijena.jipipe.plugins.imagejdatatypes.util.dimensions.ImageSliceIndex;
 import org.hkijena.jipipe.plugins.imp.datatypes.ImpImageData;
 
 import java.awt.image.BufferedImage;

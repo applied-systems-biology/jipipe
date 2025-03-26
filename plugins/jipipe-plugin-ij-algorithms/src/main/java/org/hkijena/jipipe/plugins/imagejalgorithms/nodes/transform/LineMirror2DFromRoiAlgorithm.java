@@ -20,7 +20,7 @@ import org.hkijena.jipipe.api.parameters.JIPipeParameter;
 import org.hkijena.jipipe.plugins.imagejalgorithms.utils.LineMirror;
 import org.hkijena.jipipe.plugins.imagejdatatypes.datatypes.ImagePlusData;
 import org.hkijena.jipipe.plugins.imagejdatatypes.datatypes.ROI2DListData;
-import org.hkijena.jipipe.plugins.imagejdatatypes.util.ImageJUtils;
+import org.hkijena.jipipe.plugins.imagejdatatypes.util.ImageJIterationUtils;
 import org.hkijena.jipipe.plugins.imagejdatatypes.util.InvalidRoiOutlineBehavior;
 import org.hkijena.jipipe.plugins.imagejdatatypes.util.RoiOutline;
 import org.hkijena.jipipe.plugins.parameters.library.primitives.optional.OptionalTextAnnotationNameParameter;
@@ -108,7 +108,7 @@ public class LineMirror2DFromRoiAlgorithm extends JIPipeIteratingAlgorithm {
             int y1_ = (int) polygon.ypoints[0];
             int y2_ = (int) polygon.ypoints[1];
 
-            ImagePlus result = ImageJUtils.generateForEachIndexedZCTSlice(srcImage, (srcIp, index) -> {
+            ImagePlus result = ImageJIterationUtils.generateForEachIndexedZCTSlice(srcImage, (srcIp, index) -> {
                 ImageProcessor targetIp = srcIp.duplicate();
                 LineMirror.mirrorImage(targetIp, x1_, y1_, x2_, y2_, mode);
                 return targetIp;

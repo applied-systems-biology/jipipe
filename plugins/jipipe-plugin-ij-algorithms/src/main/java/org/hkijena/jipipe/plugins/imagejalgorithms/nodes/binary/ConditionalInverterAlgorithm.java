@@ -32,7 +32,7 @@ import org.hkijena.jipipe.api.parameters.JIPipeParameterAccess;
 import org.hkijena.jipipe.api.parameters.JIPipeParameterTree;
 import org.hkijena.jipipe.plugins.expressions.*;
 import org.hkijena.jipipe.plugins.imagejdatatypes.datatypes.greyscale.ImagePlusGreyscaleMaskData;
-import org.hkijena.jipipe.plugins.imagejdatatypes.util.ImageJUtils;
+import org.hkijena.jipipe.plugins.imagejdatatypes.util.ImageJIterationUtils;
 
 import java.util.HashSet;
 import java.util.Set;
@@ -71,7 +71,7 @@ public class ConditionalInverterAlgorithm extends JIPipeSimpleIteratingAlgorithm
         variables.set("t", -1);
         variables.set("title", img.getTitle());
         if (applyPerSlice) {
-            ImageJUtils.forEachIndexedZCTSlice(img, (ip, index) -> {
+            ImageJIterationUtils.forEachIndexedZCTSlice(img, (ip, index) -> {
                 double[] nums = new double[2];
                 byte[] arr = (byte[]) ip.getPixels();
                 for (byte b : arr) {
@@ -91,7 +91,7 @@ public class ConditionalInverterAlgorithm extends JIPipeSimpleIteratingAlgorithm
             }, progressInfo);
         } else {
             double[] nums = new double[2];
-            ImageJUtils.forEachIndexedZCTSlice(img, (ip, index) -> {
+            ImageJIterationUtils.forEachIndexedZCTSlice(img, (ip, index) -> {
                 byte[] arr = (byte[]) ip.getPixels();
                 for (byte b : arr) {
                     int val = Byte.toUnsignedInt(b);
@@ -106,7 +106,7 @@ public class ConditionalInverterAlgorithm extends JIPipeSimpleIteratingAlgorithm
             variables.set("num_black", nums[0]);
 
             if (condition.test(variables)) {
-                ImageJUtils.forEachSlice(img, ImageProcessor::invert, progressInfo);
+                ImageJIterationUtils.forEachSlice(img, ImageProcessor::invert, progressInfo);
             }
         }
 

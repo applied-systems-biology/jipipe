@@ -35,8 +35,8 @@ import org.hkijena.jipipe.plugins.imagejalgorithms.parameters.Neighborhood2D;
 import org.hkijena.jipipe.plugins.imagejalgorithms.utils.ImageJAlgorithmUtils;
 import org.hkijena.jipipe.plugins.imagejdatatypes.datatypes.ROI2DListData;
 import org.hkijena.jipipe.plugins.imagejdatatypes.datatypes.greyscale.ImagePlusGreyscaleData;
-import org.hkijena.jipipe.plugins.imagejdatatypes.util.ImageJUtils;
-import org.hkijena.jipipe.plugins.imagejdatatypes.util.ImageSliceIndex;
+import org.hkijena.jipipe.plugins.imagejdatatypes.util.ImageJIterationUtils;
+import org.hkijena.jipipe.plugins.imagejdatatypes.util.dimensions.ImageSliceIndex;
 
 import java.util.HashSet;
 import java.util.Set;
@@ -74,7 +74,7 @@ public class LabelsToROIAlgorithm extends JIPipeSimpleIteratingAlgorithm {
 
         JIPipeExpressionVariablesMap variables = new JIPipeExpressionVariablesMap(iterationStep);
 
-        ImageJUtils.forEachIndexedZCTSlice(labelsImage, (ip, index) -> {
+        ImageJIterationUtils.forEachIndexedZCTSlice(labelsImage, (ip, index) -> {
             if (method == Method.ProtectedFloodfill)
                 executeProtectedFloodfill(rois, variables, ip, index, progressInfo);
             else

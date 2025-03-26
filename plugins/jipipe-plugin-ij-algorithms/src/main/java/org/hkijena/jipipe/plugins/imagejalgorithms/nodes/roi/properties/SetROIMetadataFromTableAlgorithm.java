@@ -29,7 +29,7 @@ import org.hkijena.jipipe.api.parameters.JIPipeParameter;
 import org.hkijena.jipipe.plugins.expressions.JIPipeExpressionVariablesMap;
 import org.hkijena.jipipe.plugins.expressions.TableColumnSourceExpressionParameter;
 import org.hkijena.jipipe.plugins.imagejdatatypes.datatypes.ROI2DListData;
-import org.hkijena.jipipe.plugins.imagejdatatypes.util.ImageJUtils;
+import org.hkijena.jipipe.plugins.imagejdatatypes.util.ImageJROIUtils;
 import org.hkijena.jipipe.plugins.tables.datatypes.ResultsTableData;
 import org.hkijena.jipipe.plugins.tables.datatypes.TableColumnData;
 
@@ -72,13 +72,13 @@ public class SetROIMetadataFromTableAlgorithm extends JIPipeIteratingAlgorithm {
                 throw new IndexOutOfBoundsException("There is no ROI with index " + roiIndex);
             }
             Roi roi = rois.get(i);
-            Map<String, String> properties = clearBeforeWrite ? new HashMap<>() : ImageJUtils.getRoiProperties(roi);
+            Map<String, String> properties = clearBeforeWrite ? new HashMap<>() : ImageJROIUtils.getRoiProperties(roi);
             for (String columnName : metadata.getColumnNames()) {
                 if (roiIndexColumn.getKey() == TableColumnSourceExpressionParameter.TableSourceType.ExistingColumn && columnName.equals(indexColumn.getLabel()))
                     continue;
                 properties.put(columnName, metadata.getValueAsString(i, columnName));
             }
-            ImageJUtils.setRoiProperties(roi, properties);
+            ImageJROIUtils.setRoiProperties(roi, properties);
         }
 
         iterationStep.addOutputData(getFirstOutputSlot(), rois, progressInfo);

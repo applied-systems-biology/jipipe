@@ -32,7 +32,7 @@ import org.hkijena.jipipe.plugins.ijfilaments.util.FilamentVertex;
 import org.hkijena.jipipe.plugins.ijfilaments.util.NonSpatialPoint3d;
 import org.hkijena.jipipe.plugins.ijfilaments.util.Point3d;
 import org.hkijena.jipipe.plugins.imagejdatatypes.datatypes.ImagePlusData;
-import org.hkijena.jipipe.plugins.imagejdatatypes.util.ImageJUtils;
+import org.hkijena.jipipe.plugins.imagejdatatypes.util.ImageJIterationUtils;
 import org.hkijena.jipipe.plugins.parameters.library.quantities.Quantity;
 import org.hkijena.jipipe.utils.StringUtils;
 
@@ -65,7 +65,7 @@ public class SkeletonToFilaments2DAlgorithm extends JIPipeSimpleIteratingAlgorit
 
         Calibration calibration = skeleton.getCalibration();
 
-        ImageJUtils.forEachIndexedZCTSlice(skeleton, (ip, index) -> {
+        ImageJIterationUtils.forEachIndexedZCTSlice(skeleton, (ip, index) -> {
             Map<Point, FilamentVertex> vertexMap = new HashMap<>();
 
             // Collect vertices

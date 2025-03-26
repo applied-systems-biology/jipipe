@@ -34,7 +34,7 @@ import org.hkijena.jipipe.plugins.expressions.JIPipeExpressionVariablesMap;
 import org.hkijena.jipipe.plugins.expressions.TableColumnSourceExpressionParameter;
 import org.hkijena.jipipe.plugins.imagejalgorithms.nodes.roi.draw.VisualROIProperties;
 import org.hkijena.jipipe.plugins.imagejdatatypes.datatypes.ROI2DListData;
-import org.hkijena.jipipe.plugins.imagejdatatypes.util.ImageJUtils;
+import org.hkijena.jipipe.plugins.imagejdatatypes.util.ImageJROIUtils;
 import org.hkijena.jipipe.plugins.parameters.library.colors.OptionalColorParameter;
 import org.hkijena.jipipe.plugins.parameters.library.primitives.FontFamilyParameter;
 import org.hkijena.jipipe.plugins.parameters.library.primitives.FontStyleParameter;
@@ -180,7 +180,7 @@ public class TableToTextROIAlgorithm extends JIPipeSimpleIteratingAlgorithm {
                         width + left + right,
                         height + top + bottom));
                 backgroundRoi.setName(StringUtils.orElse(name, "Unnamed"));
-                ImageJUtils.setRoiPropertiesFromString(backgroundRoi, metadata, "metadata_");
+                ImageJROIUtils.setRoiPropertiesFromString(backgroundRoi, metadata, "metadata_");
                 roiProperties.applyTo(backgroundRoi, variables);
                 backgroundRoi.setFillColor(backgroundColor.getContent());
                 backgroundRoi.setStrokeColor(backgroundColor.getContent());
@@ -189,7 +189,7 @@ public class TableToTextROIAlgorithm extends JIPipeSimpleIteratingAlgorithm {
 
             TextRoi textRoi = new TextRoi(x, y, width, height, text, font);
             textRoi.setName(StringUtils.orElse(name, "Unnamed"));
-            ImageJUtils.setRoiPropertiesFromString(textRoi, metadata, "metadata_");
+            ImageJROIUtils.setRoiPropertiesFromString(textRoi, metadata, "metadata_");
             textRoi.setAngle(angle);
             textRoi.setAntialiased(antialiased);
             textRoi.setPosition(c, z, t);

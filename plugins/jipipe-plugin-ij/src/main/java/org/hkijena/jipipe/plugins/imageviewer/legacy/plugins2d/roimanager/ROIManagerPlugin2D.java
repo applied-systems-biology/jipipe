@@ -32,8 +32,9 @@ import org.hkijena.jipipe.desktop.commons.components.ribbon.*;
 import org.hkijena.jipipe.desktop.commons.components.tabs.JIPipeDesktopTabPane;
 import org.hkijena.jipipe.plugins.imagejdatatypes.datatypes.ROI2DListData;
 import org.hkijena.jipipe.plugins.imagejdatatypes.settings.ImageViewerUIROI2DDisplayApplicationSettings;
+import org.hkijena.jipipe.plugins.imagejdatatypes.util.ImageJROIUtils;
 import org.hkijena.jipipe.plugins.imagejdatatypes.util.ImageJUtils;
-import org.hkijena.jipipe.plugins.imagejdatatypes.util.ImageSliceIndex;
+import org.hkijena.jipipe.plugins.imagejdatatypes.util.dimensions.ImageSliceIndex;
 import org.hkijena.jipipe.plugins.imagejdatatypes.util.ROIEditor;
 import org.hkijena.jipipe.plugins.imagejdatatypes.util.RoiDrawer;
 import org.hkijena.jipipe.plugins.imageviewer.legacy.JIPipeDesktopLegacyImageViewer;
@@ -98,7 +99,7 @@ public class ROIManagerPlugin2D extends JIPipeDesktopLegacyImageViewerPlugin2D {
             }
         }
         for (Roi roi : rois) {
-            ImageJUtils.setRoiCanvas(roi, getCurrentImagePlus(), getViewerPanel2D().getZoomedDummyCanvas());
+            ImageJROIUtils.setRoiCanvas(roi, getCurrentImagePlus(), getViewerPanel2D().getZoomedDummyCanvas());
         }
         updateListModel(true, Collections.emptySet());
     }
@@ -224,7 +225,7 @@ public class ROIManagerPlugin2D extends JIPipeDesktopLegacyImageViewerPlugin2D {
         table.addStringColumn("ROI Index");
         for (int i = 0; i < rois.size(); i++) {
             Roi roi = rois.get(i);
-            Map<String, String> map = ImageJUtils.getRoiProperties(roi);
+            Map<String, String> map = ImageJROIUtils.getRoiProperties(roi);
             int row = table.addRow();
             table.setValueAt(StringUtils.orElse(roi.getName(), "Unnamed"), row, "ROI Name");
             table.setValueAt(i, row, "ROI Index");
@@ -342,7 +343,7 @@ public class ROIManagerPlugin2D extends JIPipeDesktopLegacyImageViewerPlugin2D {
     public void postprocessDraw(Graphics2D graphics2D, Rectangle renderArea, ImageSliceIndex sliceIndex) {
         if (displayROIViewMenuItem.getState() && renderROIAsOverlayViewMenuItem.getState()) {
             for (Roi roi : rois) {
-                ImageJUtils.setRoiCanvas(roi, getCurrentImagePlus(), getViewerPanel2D().getZoomedDummyCanvas());
+                ImageJROIUtils.setRoiCanvas(roi, getCurrentImagePlus(), getViewerPanel2D().getZoomedDummyCanvas());
             }
             roiDrawer.drawOverlayOnGraphics(rois, graphics2D, renderArea, sliceIndex, new HashSet<>(roiListControl.getSelectedValuesList()), getViewerPanel2D().getCanvas().getZoom());
         }
@@ -360,7 +361,7 @@ public class ROIManagerPlugin2D extends JIPipeDesktopLegacyImageViewerPlugin2D {
             ImageCanvas canvas = ImageJUtils.createZoomedDummyCanvas(getCurrentImagePlus(), magnification);
             for (Roi roi : rois) {
                 Roi clone = (Roi) roi.clone();
-                ImageJUtils.setRoiCanvas(clone, getCurrentImagePlus(), canvas);
+                ImageJROIUtils.setRoiCanvas(clone, getCurrentImagePlus(), canvas);
                 copy.add(clone);
             }
             roiDrawer.drawOverlayOnGraphics(copy, graphics, new Rectangle(0, 0, image.getWidth(), image.getHeight()), sliceIndex, new HashSet<>(roiListControl.getSelectedValuesList()), magnification);
@@ -634,7 +635,7 @@ public class ROIManagerPlugin2D extends JIPipeDesktopLegacyImageViewerPlugin2D {
     public void importROIs(ROI2DListData rois, boolean deferUploadSlice) {
         for (Roi roi : rois) {
             Roi clone = (Roi) roi.clone();
-            ImageJUtils.setRoiCanvas(clone, getCurrentImagePlus(), getViewerPanel2D().getZoomedDummyCanvas());
+            ImageJROIUtils.setRoiCanvas(clone, getCurrentImagePlus(), getViewerPanel2D().getZoomedDummyCanvas());
             this.rois.add(clone);
         }
         updateListModel(deferUploadSlice, Collections.emptySet());

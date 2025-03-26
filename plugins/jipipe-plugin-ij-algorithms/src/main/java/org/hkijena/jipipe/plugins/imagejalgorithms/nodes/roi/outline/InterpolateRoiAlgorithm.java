@@ -27,9 +27,8 @@ import org.hkijena.jipipe.api.nodes.iterationstep.JIPipeIterationContext;
 import org.hkijena.jipipe.api.nodes.iterationstep.JIPipeSingleIterationStep;
 import org.hkijena.jipipe.api.parameters.JIPipeParameter;
 import org.hkijena.jipipe.plugins.imagejdatatypes.datatypes.ROI2DListData;
-import org.hkijena.jipipe.plugins.imagejdatatypes.util.ImageJUtils;
+import org.hkijena.jipipe.plugins.imagejdatatypes.util.ImageJROIUtils;
 import org.hkijena.jipipe.plugins.imagejdatatypes.util.InvalidRoiOutlineBehavior;
-import org.hkijena.jipipe.plugins.imagejdatatypes.util.RoiOutline;
 
 /**
  * Wrapper around {@link ij.plugin.frame.RoiManager}
@@ -64,7 +63,7 @@ public class InterpolateRoiAlgorithm extends JIPipeSimpleIteratingAlgorithm {
         for (Roi roi : inputData) {
             Roi outlined = null;
             try {
-                outlined =  ImageJUtils.interpolateRoi(roi, interval, smooth, adjust);
+                outlined =  ImageJROIUtils.interpolateRoi(roi, interval, smooth, adjust);
             } catch (Exception e) {
                 if(errorBehavior == InvalidRoiOutlineBehavior.Error) {
                     throw new RuntimeException(e);

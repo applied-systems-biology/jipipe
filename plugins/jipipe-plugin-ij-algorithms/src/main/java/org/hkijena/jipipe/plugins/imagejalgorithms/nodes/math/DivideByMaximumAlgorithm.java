@@ -26,6 +26,7 @@ import org.hkijena.jipipe.api.nodes.iterationstep.JIPipeSingleIterationStep;
 import org.hkijena.jipipe.api.parameters.JIPipeParameter;
 import org.hkijena.jipipe.plugins.imagejdatatypes.datatypes.ImagePlusData;
 import org.hkijena.jipipe.plugins.imagejdatatypes.datatypes.greyscale.ImagePlusGreyscale32FData;
+import org.hkijena.jipipe.plugins.imagejdatatypes.util.ImageJIterationUtils;
 import org.hkijena.jipipe.plugins.imagejdatatypes.util.ImageJUtils;
 import org.hkijena.jipipe.utils.ImageJCalibrationMode;
 
@@ -71,8 +72,8 @@ public class DivideByMaximumAlgorithm extends JIPipeSimpleIteratingAlgorithm {
         ImagePlusData inputData = iterationStep.getInputData(getFirstInputSlot(), ImagePlusGreyscale32FData.class, progressInfo);
         ImagePlus img = inputData.getDuplicateImage();
         double[] max = new double[]{Double.NEGATIVE_INFINITY};
-        ImageJUtils.forEachSlice(img, ip -> max[0] = Math.max(ip.getStats().max, max[0]), progressInfo);
-        ImageJUtils.forEachSlice(img, ip -> ip.multiply(1.0 / max[0]), progressInfo);
+        ImageJIterationUtils.forEachSlice(img, ip -> max[0] = Math.max(ip.getStats().max, max[0]), progressInfo);
+        ImageJIterationUtils.forEachSlice(img, ip -> ip.multiply(1.0 / max[0]), progressInfo);
         if (recalibrate) {
             ImageJUtils.calibrate(img, ImageJCalibrationMode.AutomaticImageJ, 0, 1);
         }

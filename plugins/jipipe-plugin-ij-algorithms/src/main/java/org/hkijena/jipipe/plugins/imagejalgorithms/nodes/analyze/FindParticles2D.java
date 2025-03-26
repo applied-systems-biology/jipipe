@@ -34,7 +34,7 @@ import org.hkijena.jipipe.api.parameters.JIPipeParameter;
 import org.hkijena.jipipe.plugins.imagejalgorithms.parameters.Neighborhood2D;
 import org.hkijena.jipipe.plugins.imagejdatatypes.datatypes.ROI2DListData;
 import org.hkijena.jipipe.plugins.imagejdatatypes.datatypes.greyscale.ImagePlusGreyscaleMaskData;
-import org.hkijena.jipipe.plugins.imagejdatatypes.util.ImageJUtils;
+import org.hkijena.jipipe.plugins.imagejdatatypes.util.ImageJIterationUtils;
 import org.hkijena.jipipe.plugins.imagejdatatypes.util.measure.ImageStatisticsSetParameter;
 import org.hkijena.jipipe.plugins.imagejdatatypes.util.measure.Measurement;
 import org.hkijena.jipipe.plugins.parameters.library.primitives.optional.OptionalStringParameter;
@@ -159,7 +159,7 @@ public class FindParticles2D extends JIPipeSimpleIteratingAlgorithm {
 
             if (splitSlices) {
                 int finalOptions = options;
-                ImageJUtils.forEachIndexedZCTSlice(inputData.getImage(), (ip, index) -> {
+                ImageJIterationUtils.forEachIndexedZCTSlice(inputData.getImage(), (ip, index) -> {
                     RoiManager manager = new RoiManager(true);
                     ResultsTable table = new ResultsTable();
                     ParticleAnalyzer.setRoiManager(manager);
@@ -211,7 +211,7 @@ public class FindParticles2D extends JIPipeSimpleIteratingAlgorithm {
                 ImagePlus roiReferenceImage = inputData.getDuplicateImage();
 
                 int finalOptions = options;
-                ImageJUtils.forEachIndexedZCTSlice(inputData.getImage(), (ip, index) -> {
+                ImageJIterationUtils.forEachIndexedZCTSlice(inputData.getImage(), (ip, index) -> {
                     RoiManager manager = new RoiManager(true);
                     ResultsTable table = new ResultsTable();
                     ParticleAnalyzer.setRoiManager(manager);

@@ -34,8 +34,9 @@ import org.hkijena.jipipe.api.parameters.JIPipeParameter;
 import org.hkijena.jipipe.plugins.imagejdatatypes.datatypes.ImagePlusData;
 import org.hkijena.jipipe.plugins.imagejdatatypes.datatypes.greyscale.ImagePlusGreyscale32FData;
 import org.hkijena.jipipe.plugins.imagejdatatypes.datatypes.greyscale.ImagePlusGreyscaleData;
+import org.hkijena.jipipe.plugins.imagejdatatypes.util.ImageJIterationUtils;
 import org.hkijena.jipipe.plugins.imagejdatatypes.util.ImageJUtils;
-import org.hkijena.jipipe.plugins.imagejdatatypes.util.ImageSliceIndex;
+import org.hkijena.jipipe.plugins.imagejdatatypes.util.dimensions.ImageSliceIndex;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -70,7 +71,7 @@ public class MorphologicalTextureContrast2DAlgorithm extends JIPipeSimpleIterati
         Map<ImageSliceIndex, ImageProcessor> processorMap = new HashMap<>();
         Strel strelR1 = structureElement.fromRadius(radius1);
         Strel strelR2 = structureElement.fromRadius(radius2);
-        ImageJUtils.forEachIndexedZCTSlice(inputImage, (ip, index) -> {
+        ImageJIterationUtils.forEachIndexedZCTSlice(inputImage, (ip, index) -> {
             FloatProcessor left = (FloatProcessor) Morphology.Operation.OPENING.apply(Morphology.Operation.CLOSING.apply(ip, strelR1), strelR2);
             FloatProcessor right = (FloatProcessor) Morphology.Operation.CLOSING.apply(Morphology.Operation.OPENING.apply(ip, strelR1), strelR2);
             FloatProcessor result = new FloatProcessor(inputImage.getWidth(), inputImage.getHeight());

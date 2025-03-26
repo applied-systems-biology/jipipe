@@ -18,8 +18,8 @@ import org.hkijena.jipipe.plugins.expressions.JIPipeExpressionParameter;
 import org.hkijena.jipipe.plugins.expressions.JIPipeExpressionVariablesMap;
 import org.hkijena.jipipe.plugins.imagejalgorithms.utils.LineMirror;
 import org.hkijena.jipipe.plugins.imagejdatatypes.datatypes.ImagePlusData;
-import org.hkijena.jipipe.plugins.imagejdatatypes.util.ImageJUtils;
-import org.hkijena.jipipe.plugins.imagejdatatypes.util.ImagePlusPropertiesExpressionParameterVariablesInfo;
+import org.hkijena.jipipe.plugins.imagejdatatypes.util.ImageJIterationUtils;
+import org.hkijena.jipipe.plugins.imagejdatatypes.util.expressions.ImagePlusPropertiesExpressionParameterVariablesInfo;
 
 @SetJIPipeDocumentation(name = "Mirror image over line 2D (Expressions)", description = "The two endpoints of a line a provided via expressions. " +
         "The resulting line is used as axis to mirror the image pixels. " +
@@ -117,7 +117,7 @@ public class LineMirror2DFromExpressionsAlgorithm extends JIPipeSimpleIteratingA
         int x2_ = x2.evaluateToInteger(variablesMap);
         int y1_ = y1.evaluateToInteger(variablesMap);
         int y2_ = y2.evaluateToInteger(variablesMap);
-        ImageJUtils.forEachIndexedZCTSlice(img, (ip, index) -> {
+        ImageJIterationUtils.forEachIndexedZCTSlice(img, (ip, index) -> {
             LineMirror.mirrorImage(ip, x1_, y1_, x2_, y2_, mode);
         }, progressInfo);
         iterationStep.addOutputData(getFirstOutputSlot(), new ImagePlusData(img), progressInfo);

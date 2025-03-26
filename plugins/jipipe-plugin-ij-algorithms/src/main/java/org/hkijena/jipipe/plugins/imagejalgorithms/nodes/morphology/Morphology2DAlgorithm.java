@@ -38,7 +38,7 @@ import org.hkijena.jipipe.plugins.imagejalgorithms.nodes.transform.AddBorder2DAl
 import org.hkijena.jipipe.plugins.imagejdatatypes.datatypes.ImagePlusData;
 import org.hkijena.jipipe.plugins.imagejdatatypes.datatypes.greyscale.ImagePlusGreyscaleMaskData;
 import org.hkijena.jipipe.plugins.imagejdatatypes.parameters.ImageQueryExpressionVariablesInfo;
-import org.hkijena.jipipe.plugins.imagejdatatypes.util.ImageJUtils;
+import org.hkijena.jipipe.plugins.imagejdatatypes.util.ImageJIterationUtils;
 
 import java.awt.*;
 import java.util.ArrayList;
@@ -122,7 +122,7 @@ public class Morphology2DAlgorithm extends JIPipeSimpleIteratingAlgorithm {
         Strel strel = element.fromRadius(radius);
         ImageStack outputStack = new ImageStack(originalImg.getWidth(), originalImg.getHeight(), originalImg.getProcessor().getColorModel());
         Rectangle finalCrop = crop;
-        ImageJUtils.forEachSlice(img, ip -> {
+        ImageJIterationUtils.forEachSlice(img, ip -> {
             // apply morphological operation
             ImageProcessor resultProcessor = operation.apply(ip, strel);
 

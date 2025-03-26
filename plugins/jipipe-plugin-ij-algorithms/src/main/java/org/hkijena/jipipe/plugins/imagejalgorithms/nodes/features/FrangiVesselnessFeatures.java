@@ -31,6 +31,7 @@ import org.hkijena.jipipe.api.nodes.iterationstep.JIPipeSingleIterationStep;
 import org.hkijena.jipipe.api.parameters.JIPipeParameter;
 import org.hkijena.jipipe.plugins.imagejdatatypes.datatypes.ImagePlusData;
 import org.hkijena.jipipe.plugins.imagejdatatypes.datatypes.greyscale.ImagePlusGreyscale32FData;
+import org.hkijena.jipipe.plugins.imagejdatatypes.util.ImageJIterationUtils;
 import org.hkijena.jipipe.plugins.imagejdatatypes.util.ImageJUtils;
 
 
@@ -89,7 +90,7 @@ public class FrangiVesselnessFeatures extends JIPipeSimpleIteratingAlgorithm {
 
         if (invert) {
             img = ImageJUtils.duplicate(img);
-            ImageJUtils.forEachSlice(img, ImageProcessor::invert, progressInfo);
+            ImageJIterationUtils.forEachSlice(img, ImageProcessor::invert, progressInfo);
         }
 
         Frangi_<FloatType> frangi = new Frangi_<>();
@@ -117,7 +118,7 @@ public class FrangiVesselnessFeatures extends JIPipeSimpleIteratingAlgorithm {
                     multiTaskProgress);
         } else if (slicingMode == SlicingMode.ApplyPer2DSlice) {
             ImageStack stack = new ImageStack(img.getWidth(), img.getHeight(), img.getProcessor().getColorModel());
-            ImageJUtils.forEachIndexedSlice(img, (imp, index) -> {
+            ImageJIterationUtils.forEachIndexedSlice(img, (imp, index) -> {
                 ImagePlus slice = new ImagePlus("slice", imp);
                 ImagePlus processedSlice = frangi.process(slice,
                         numScales,

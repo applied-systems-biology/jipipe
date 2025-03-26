@@ -42,6 +42,7 @@ import org.hkijena.jipipe.plugins.expressions.JIPipeExpressionVariablesMap;
 import org.hkijena.jipipe.plugins.imagejdatatypes.datatypes.ImagePlusData;
 import org.hkijena.jipipe.plugins.imagejdatatypes.datatypes.ROI2DListData;
 import org.hkijena.jipipe.plugins.imagejdatatypes.datatypes.d2.ImagePlus2DData;
+import org.hkijena.jipipe.plugins.imagejdatatypes.util.ImageJIterationUtils;
 import org.hkijena.jipipe.plugins.imagejdatatypes.util.ImageJUtils;
 import org.hkijena.jipipe.plugins.parameters.library.colors.OptionalColorParameter;
 import org.hkijena.jipipe.plugins.parameters.library.primitives.ranges.IntegerRange;
@@ -231,7 +232,7 @@ public class MultiTemplateMatchingAlgorithm extends JIPipeMergingAlgorithm {
         if (assembleTemplatesBackground.isEnabled()) {
             if (target.getType() == ImagePlus.COLOR_RGB) {
                 Color color = assembleTemplatesBackground.getContent();
-                ImageJUtils.forEachSlice(target, ip -> {
+                ImageJIterationUtils.forEachSlice(target, ip -> {
                     ColorProcessor colorProcessor = (ColorProcessor) ip;
                     ip.setRoi(0, 0, ip.getWidth(), ip.getHeight());
                     colorProcessor.setColor(color);
@@ -241,7 +242,7 @@ public class MultiTemplateMatchingAlgorithm extends JIPipeMergingAlgorithm {
             } else {
                 Color color = assembleTemplatesBackground.getContent();
                 double value = (color.getRed() + color.getGreen() + color.getBlue()) / 3.0;
-                ImageJUtils.forEachSlice(target, ip -> ip.set(value), progressInfo);
+                ImageJIterationUtils.forEachSlice(target, ip -> ip.set(value), progressInfo);
             }
         }
 

@@ -35,7 +35,7 @@ import org.hkijena.jipipe.plugins.expressions.TableCellExpressionParameterVariab
 import org.hkijena.jipipe.plugins.expressions.TableColumnSourceExpressionParameter;
 import org.hkijena.jipipe.plugins.imagejalgorithms.nodes.roi.draw.VisualROIProperties;
 import org.hkijena.jipipe.plugins.imagejdatatypes.datatypes.ROI2DListData;
-import org.hkijena.jipipe.plugins.imagejdatatypes.util.ImageJUtils;
+import org.hkijena.jipipe.plugins.imagejdatatypes.util.ImageJROIUtils;
 import org.hkijena.jipipe.plugins.tables.datatypes.ResultsTableData;
 import org.hkijena.jipipe.plugins.tables.datatypes.TableColumnData;
 import org.hkijena.jipipe.utils.StringUtils;
@@ -132,7 +132,7 @@ public class TableToCircularROIAlgorithm extends JIPipeSimpleIteratingAlgorithm 
             Roi roi = new OvalRoi(x, y, r * 2, r * 2);
             roi.setPosition(c, z, t);
             roi.setName(StringUtils.orElse(name, "Unnamed"));
-            ImageJUtils.setRoiPropertiesFromString(roi, metadata, "metadata_");
+            ImageJROIUtils.setRoiPropertiesFromString(roi, metadata, "metadata_");
             roiProperties.applyTo(roi, variables);
             rois.add(roi);
         }

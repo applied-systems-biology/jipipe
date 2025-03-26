@@ -33,6 +33,7 @@ import org.hkijena.jipipe.plugins.ijtrackmate.datatypes.TrackCollectionData;
 import org.hkijena.jipipe.plugins.ijtrackmate.utils.TrackDrawer;
 import org.hkijena.jipipe.plugins.imagejdatatypes.datatypes.ImagePlusData;
 import org.hkijena.jipipe.plugins.imagejdatatypes.datatypes.color.ImagePlusColorRGBData;
+import org.hkijena.jipipe.plugins.imagejdatatypes.util.ImageJIterationUtils;
 import org.hkijena.jipipe.plugins.imagejdatatypes.util.ImageJUtils;
 import org.hkijena.jipipe.utils.BufferedImageUtils;
 
@@ -75,7 +76,7 @@ public class TracksToRGBNode extends JIPipeIteratingAlgorithm {
         final int targetWidth = (int) (magnification * reference.getWidth());
         final int targetHeight = (int) (magnification * reference.getHeight());
         ImageStack targetStack = new ImageStack(targetWidth, targetHeight, reference.getStackSize());
-        ImageJUtils.forEachIndexedZCTSlice(reference, (sourceIp, index) -> {
+        ImageJIterationUtils.forEachIndexedZCTSlice(reference, (sourceIp, index) -> {
             ImageProcessor scaledSourceIp = magnification != 1.0 ? sourceIp.resize((int) (magnification * sourceIp.getWidth()), (int) (magnification * sourceIp.getHeight()), false) : sourceIp;
             BufferedImage bufferedImage = BufferedImageUtils.copyBufferedImageToARGB(scaledSourceIp.getBufferedImage());
             Graphics2D graphics2D = bufferedImage.createGraphics();

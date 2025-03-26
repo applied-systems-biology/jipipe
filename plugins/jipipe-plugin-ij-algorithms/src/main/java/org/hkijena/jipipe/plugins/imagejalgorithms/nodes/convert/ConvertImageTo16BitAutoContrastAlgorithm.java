@@ -32,6 +32,7 @@ import org.hkijena.jipipe.plugins.imagejalgorithms.nodes.contrast.HistogramContr
 import org.hkijena.jipipe.plugins.imagejdatatypes.datatypes.greyscale.ImagePlusGreyscale16UData;
 import org.hkijena.jipipe.plugins.imagejdatatypes.datatypes.greyscale.ImagePlusGreyscale8UData;
 import org.hkijena.jipipe.plugins.imagejdatatypes.datatypes.greyscale.ImagePlusGreyscaleData;
+import org.hkijena.jipipe.plugins.imagejdatatypes.util.ImageJIterationUtils;
 import org.hkijena.jipipe.plugins.imagejdatatypes.util.ImageJUtils;
 import org.hkijena.jipipe.plugins.parameters.library.primitives.vectors.Vector2dParameter;
 import org.hkijena.jipipe.plugins.parameters.library.primitives.vectors.VectorParameterSettings;
@@ -107,7 +108,7 @@ public class ConvertImageTo16BitAutoContrastAlgorithm extends JIPipeSimpleIterat
     protected void runIteration(JIPipeSingleIterationStep iterationStep, JIPipeIterationContext iterationContext, JIPipeGraphNodeRunContext runContext, JIPipeProgressInfo progressInfo) {
         ImagePlus image = iterationStep.getInputData(getFirstInputSlot(), ImagePlusGreyscaleData.class, progressInfo).getImage();
         HistogramContrastEnhancerAlgorithm histogramContrastEnhancerAlgorithm = JIPipe.createNode(HistogramContrastEnhancerAlgorithm.class);
-        ImagePlus result = ImageJUtils.generateForEachIndexedZCTSlice(image, (ip, index) -> {
+        ImagePlus result = ImageJIterationUtils.generateForEachIndexedZCTSlice(image, (ip, index) -> {
             ImagePlus imp = new ImagePlus("slice", ip.duplicate());
 
             if (imp.getBitDepth() < 16) {

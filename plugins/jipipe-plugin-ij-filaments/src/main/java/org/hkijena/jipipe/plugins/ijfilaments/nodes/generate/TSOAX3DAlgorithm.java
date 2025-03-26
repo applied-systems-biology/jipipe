@@ -33,6 +33,7 @@ import org.hkijena.jipipe.plugins.ijfilaments.datatypes.Filaments3DGraphData;
 import org.hkijena.jipipe.plugins.ijfilaments.environments.TSOAXEnvironment;
 import org.hkijena.jipipe.plugins.ijfilaments.util.TSOAXUtils;
 import org.hkijena.jipipe.plugins.imagejdatatypes.datatypes.greyscale.ImagePlusGreyscaleData;
+import org.hkijena.jipipe.plugins.imagejdatatypes.util.ImageJIterationUtils;
 import org.hkijena.jipipe.plugins.imagejdatatypes.util.ImageJUtils;
 import org.hkijena.jipipe.plugins.strings.StringData;
 import org.hkijena.jipipe.plugins.tables.datatypes.ResultsTableData;
@@ -83,7 +84,7 @@ public class TSOAX3DAlgorithm extends TSOAXAlgorithm {
         Path inputDir = workDirectory.resolve("input");
         PathUtils.createDirectories(inputDir.resolve("img"));
 
-        ImageJUtils.forEachIndexedCTStack(img, (subStack, index, ctProgress) -> {
+        ImageJIterationUtils.forEachIndexedCTStack(img, (subStack, index, ctProgress) -> {
             Path imageFile = inputDir.resolve("img").resolve("c" + index.getC() + "t" + index.getT() + ".tif");
             IJ.saveAsTiff(subStack, imageFile.toString());
         }, progressInfo.resolve("Writing inputs"));

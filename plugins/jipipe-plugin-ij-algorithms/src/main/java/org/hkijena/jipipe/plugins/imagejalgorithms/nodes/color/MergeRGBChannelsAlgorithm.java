@@ -28,6 +28,7 @@ import org.hkijena.jipipe.api.nodes.iterationstep.JIPipeIterationContext;
 import org.hkijena.jipipe.api.nodes.iterationstep.JIPipeSingleIterationStep;
 import org.hkijena.jipipe.plugins.imagejdatatypes.datatypes.color.ImagePlusColorRGBData;
 import org.hkijena.jipipe.plugins.imagejdatatypes.datatypes.greyscale.ImagePlusGreyscale8UData;
+import org.hkijena.jipipe.plugins.imagejdatatypes.util.ImageJIterationUtils;
 import org.hkijena.jipipe.plugins.imagejdatatypes.util.ImageJUtils;
 
 @SetJIPipeDocumentation(name = "Merge RGB channels", description = "Merges three greyscale images into one RGB image.")
@@ -57,7 +58,7 @@ public class MergeRGBChannelsAlgorithm extends JIPipeIteratingAlgorithm {
         }
         ImagePlus output = IJ.createHyperStack("RGB", imageR.getWidth(), imageR.getHeight(), imageR.getNChannels(), imageR.getNSlices(), imageR.getNFrames(), 24);
         output.copyScale(imageR);
-        ImageJUtils.forEachIndexedZCTSlice(output, (targetIp, index) -> {
+        ImageJIterationUtils.forEachIndexedZCTSlice(output, (targetIp, index) -> {
             byte[] sourceR = (byte[]) ImageJUtils.getSliceZero(imageR, index).getPixels();
             byte[] sourceG = (byte[]) ImageJUtils.getSliceZero(imageG, index).getPixels();
             byte[] sourceB = (byte[]) ImageJUtils.getSliceZero(imageB, index).getPixels();

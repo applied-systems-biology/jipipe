@@ -30,6 +30,7 @@ import org.hkijena.jipipe.api.parameters.JIPipeParameter;
 import org.hkijena.jipipe.plugins.expressions.JIPipeExpressionVariablesMap;
 import org.hkijena.jipipe.plugins.imagejalgorithms.utils.ImageJAlgorithmUtils;
 import org.hkijena.jipipe.plugins.imagejdatatypes.datatypes.greyscale.ImagePlusGreyscaleData;
+import org.hkijena.jipipe.plugins.imagejdatatypes.util.ImageJIterationUtils;
 import org.hkijena.jipipe.plugins.imagejdatatypes.util.ImageJUtils;
 import org.hkijena.jipipe.plugins.parameters.library.primitives.BooleanParameterSettings;
 import org.hkijena.jipipe.plugins.parameters.library.primitives.ranges.IntegerRange;
@@ -86,7 +87,7 @@ public class FilterLabelsByIdAlgorithm extends JIPipeSimpleIteratingAlgorithm {
         outputImage.setTitle(inputImage.getTitle());
         int[] ints = Ints.toArray(values.getIntegers(0, 0, new JIPipeExpressionVariablesMap(iterationStep)));
         if (keepValues) {
-            ImageJUtils.forEachIndexedZCTSlice(outputImage, (ip, index) -> ImageJAlgorithmUtils.removeLabelsExcept(ip, ints), progressInfo);
+            ImageJIterationUtils.forEachIndexedZCTSlice(outputImage, (ip, index) -> ImageJAlgorithmUtils.removeLabelsExcept(ip, ints), progressInfo);
         } else {
             LabelImages.replaceLabels(outputImage, ints, 0);
         }

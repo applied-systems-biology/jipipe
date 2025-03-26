@@ -13,7 +13,7 @@ import org.hkijena.jipipe.api.nodes.categories.RoiNodeTypeCategory;
 import org.hkijena.jipipe.api.nodes.iterationstep.JIPipeIterationContext;
 import org.hkijena.jipipe.api.nodes.iterationstep.JIPipeSingleIterationStep;
 import org.hkijena.jipipe.plugins.imagejdatatypes.datatypes.ROI2DListData;
-import org.hkijena.jipipe.plugins.imagejdatatypes.util.ImageJUtils;
+import org.hkijena.jipipe.plugins.imagejdatatypes.util.ImageJROIUtils;
 import org.hkijena.jipipe.plugins.tables.datatypes.ResultsTableData;
 
 import java.awt.geom.Point2D;
@@ -52,11 +52,11 @@ public class ConvertRoiToTableAlgorithm extends JIPipeSimpleIteratingAlgorithm {
             data.put("ROI.C", roi.getCPosition());
             data.put("ROI.Z", roi.getZPosition());
             data.put("ROI.T", roi.getTPosition());
-            for (Map.Entry<String, String> entry : ImageJUtils.getRoiProperties(roi).entrySet()) {
+            for (Map.Entry<String, String> entry : ImageJROIUtils.getRoiProperties(roi).entrySet()) {
                 data.put("ROI.Metadata." + entry.getKey(), entry.getValue());
             }
 
-            for (Point2D point : ImageJUtils.getContourPoints(roi)) {
+            for (Point2D point : ImageJROIUtils.getContourPoints(roi)) {
                 data.put("X", point.getX());
                 data.put("Y", point.getY());
                 outputData.addRow(data);

@@ -31,7 +31,7 @@ import org.hkijena.jipipe.api.nodes.iterationstep.JIPipeSingleIterationStep;
 import org.hkijena.jipipe.api.parameters.JIPipeParameter;
 import org.hkijena.jipipe.plugins.imagejalgorithms.parameters.Neighborhood2D;
 import org.hkijena.jipipe.plugins.imagejdatatypes.datatypes.greyscale.ImagePlusGreyscaleData;
-import org.hkijena.jipipe.plugins.imagejdatatypes.util.ImageJUtils;
+import org.hkijena.jipipe.plugins.imagejdatatypes.util.ImageJIterationUtils;
 
 @SetJIPipeDocumentation(name = "Grayscale attribute filtering 2D", description = "Attribute filters aim at removing components of an image based on a certain size criterion, rather than on intensity. " +
         "The most common and useful criterion is the number of pixels/voxels (i.e., the area or volume). " +
@@ -70,7 +70,7 @@ public class GrayscaleAttributeFiltering2DAlgorithm extends JIPipeIteratingAlgor
     @Override
     protected void runIteration(JIPipeSingleIterationStep iterationStep, JIPipeIterationContext iterationContext, JIPipeGraphNodeRunContext runContext, JIPipeProgressInfo progressInfo) {
         ImagePlus inputImg = iterationStep.getInputData(getFirstInputSlot(), ImagePlusGreyscaleData.class, progressInfo).getImage();
-        ImagePlus outputImg = ImageJUtils.generateForEachIndexedZCTSlice(inputImg, (image, index) -> {
+        ImagePlus outputImg = ImageJIterationUtils.generateForEachIndexedZCTSlice(inputImg, (image, index) -> {
             ImageProcessor result;
 
             // Identify image to process (original, or inverted)

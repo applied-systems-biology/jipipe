@@ -29,6 +29,7 @@ import org.hkijena.jipipe.api.nodes.iterationstep.JIPipeIterationContext;
 import org.hkijena.jipipe.api.nodes.iterationstep.JIPipeSingleIterationStep;
 import org.hkijena.jipipe.plugins.imagejdatatypes.datatypes.greyscale.ImagePlusGreyscaleData;
 import org.hkijena.jipipe.plugins.imagejdatatypes.datatypes.greyscale.ImagePlusGreyscaleMaskData;
+import org.hkijena.jipipe.plugins.imagejdatatypes.util.ImageJIterationUtils;
 import org.hkijena.jipipe.plugins.imagejdatatypes.util.ImageJUtils;
 
 @SetJIPipeDocumentation(name = "Impose maxima 2D", description = "Repeatedly dilate the input image until regional maxima fit the maxima mask.")
@@ -65,7 +66,7 @@ public class ImposeMaxima2DAlgorithm extends JIPipeIteratingAlgorithm {
         ImagePlus maximaImage = iterationStep.getInputData("Maxima", ImagePlusGreyscaleMaskData.class, progressInfo).getImage();
 
         ImageStack stack = new ImageStack(inputImage.getWidth(), inputImage.getHeight(), inputImage.getStackSize());
-        ImageJUtils.forEachIndexedZCTSlice(inputImage, (ip, index) -> {
+        ImageJIterationUtils.forEachIndexedZCTSlice(inputImage, (ip, index) -> {
             ImageProcessor maximaSlice = ImageJUtils.getSliceZero(maximaImage, index);
             ImageProcessor resultProcessor = MinimaAndMaxima.imposeMaxima(ip, maximaSlice);
             stack.setProcessor(resultProcessor, index.zeroSliceIndexToOneStackIndex(inputImage));

@@ -33,7 +33,7 @@ import org.hkijena.jipipe.api.parameters.JIPipeParameter;
 import org.hkijena.jipipe.plugins.imagejalgorithms.utils.Kuwahara_LinearStructure_Filter_v3;
 import org.hkijena.jipipe.plugins.imagejdatatypes.datatypes.ImagePlusData;
 import org.hkijena.jipipe.plugins.imagejdatatypes.datatypes.greyscale.ImagePlusGreyscale32FData;
-import org.hkijena.jipipe.plugins.imagejdatatypes.util.ImageJUtils;
+import org.hkijena.jipipe.plugins.imagejdatatypes.util.ImageJIterationUtils;
 import org.hkijena.jipipe.plugins.parameters.library.primitives.optional.OptionalDataAnnotationNameParameter;
 import trainableSegmentation.filters.Kuwahara;
 
@@ -95,7 +95,7 @@ public class KuwaharaFilter2DAlgorithm extends JIPipeSimpleIteratingAlgorithm {
 
             kernel = kuwahara.createKernel(lineLength, numberOfAngles);
 
-            outputImg = ImageJUtils.generateForEachIndexedZCTSlice(inputImg, (ip, index) -> {
+            outputImg = ImageJIterationUtils.generateForEachIndexedZCTSlice(inputImg, (ip, index) -> {
                 ImageProcessor copy = ip.duplicate();
                 kuwahara.filter(copy, kernel);
                 return copy;
@@ -110,7 +110,7 @@ public class KuwaharaFilter2DAlgorithm extends JIPipeSimpleIteratingAlgorithm {
 
             kernel = kuwahara.createKernel(lineLength, numberOfAngles);
 
-            outputImg = ImageJUtils.generateForEachIndexedZCTSlice(inputImg, (ip, index) -> {
+            outputImg = ImageJIterationUtils.generateForEachIndexedZCTSlice(inputImg, (ip, index) -> {
                 ImageProcessor copy = ip.duplicate();
                 kuwahara.filter(copy, kernel);
                 return copy;

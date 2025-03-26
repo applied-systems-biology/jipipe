@@ -17,7 +17,7 @@ import ij.ImagePlus;
 import ij.ImageStack;
 import org.hkijena.jipipe.plugins.imagejalgorithms.nodes.registration.turboreg.AdvancedTurboRegParameters;
 import org.hkijena.jipipe.plugins.imagejdatatypes.util.ImageJUtils;
-import org.hkijena.jipipe.plugins.imagejdatatypes.util.ImageSliceIndex;
+import org.hkijena.jipipe.plugins.imagejdatatypes.util.dimensions.ImageSliceIndex;
 
 public class TurboRegUtils {
 

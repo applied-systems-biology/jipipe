@@ -32,7 +32,7 @@ import org.hkijena.jipipe.plugins.imagejalgorithms.utils.BlackToWhiteTrackBackgr
 import org.hkijena.jipipe.plugins.imagejdatatypes.datatypes.ImagePlusData;
 import org.hkijena.jipipe.plugins.imagejdatatypes.datatypes.greyscale.ImagePlusGreyscale16UData;
 import org.hkijena.jipipe.plugins.imagejdatatypes.datatypes.greyscale.ImagePlusGreyscaleMaskData;
-import org.hkijena.jipipe.plugins.imagejdatatypes.util.ImageJUtils;
+import org.hkijena.jipipe.plugins.imagejdatatypes.util.ImageJIterationUtils;
 import org.hkijena.jipipe.plugins.parameters.library.primitives.optional.OptionalTextAnnotationNameParameter;
 import org.hkijena.jipipe.plugins.parameters.library.ranges.IntNumberRangeParameter;
 import org.hkijena.jipipe.plugins.parameters.library.ranges.NumberRangeInvertedMode;
@@ -91,7 +91,7 @@ public class ManualThreshold16U2DAlgorithm extends JIPipeSimpleIteratingAlgorith
         ImagePlus img = inputData.getDuplicateImage();
         int minThreshold = threshold.getMin();
         int maxThreshold = threshold.getMax();
-        ImageJUtils.forEachSlice(img, ip -> {
+        ImageJIterationUtils.forEachSlice(img, ip -> {
             for (int i = 0; i < ip.getPixelCount(); i++) {
                 int v = ip.get(i);
                 if (v > maxThreshold)

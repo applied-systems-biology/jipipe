@@ -42,6 +42,7 @@ import org.hkijena.jipipe.plugins.expressions.JIPipeExpressionVariablesMap;
 import org.hkijena.jipipe.plugins.imagejalgorithms.nodes.labels.LabelOverlapStatisticsVariablesInfo;
 import org.hkijena.jipipe.plugins.imagejalgorithms.utils.ImageJAlgorithmUtils;
 import org.hkijena.jipipe.plugins.imagejdatatypes.datatypes.greyscale.ImagePlusGreyscaleData;
+import org.hkijena.jipipe.plugins.imagejdatatypes.util.ImageJIterationUtils;
 import org.hkijena.jipipe.plugins.imagejdatatypes.util.ImageJUtils;
 import org.hkijena.jipipe.plugins.imagejdatatypes.util.measure.ImageStatisticsSetParameter;
 import org.hkijena.jipipe.plugins.tables.datatypes.ResultsTableData;
@@ -167,7 +168,7 @@ public class FilterLabelsByOverlapAlgorithm extends JIPipeIteratingAlgorithm {
         final Calibration targetLabelsCalibration = settings.measureInPhysicalUnits ? targetLabels.getCalibration() : null;
         final Calibration otherLabelsCalibration = settings.measureInPhysicalUnits ? otherLabels.getCalibration() : null;
 
-        ImageJUtils.forEachIndexedZCTSlice(targetLabels, (targetLabelProcessor, index) -> {
+        ImageJIterationUtils.forEachIndexedZCTSlice(targetLabels, (targetLabelProcessor, index) -> {
             ImageProcessor outputProcessor = targetLabelProcessor.duplicate();
             ImageProcessor otherLabelProcessor = ImageJUtils.getClosestSliceZero(otherLabels, index);
 

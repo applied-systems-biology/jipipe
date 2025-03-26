@@ -27,6 +27,7 @@ import org.hkijena.jipipe.api.nodes.iterationstep.JIPipeIterationContext;
 import org.hkijena.jipipe.api.nodes.iterationstep.JIPipeSingleIterationStep;
 import org.hkijena.jipipe.api.parameters.JIPipeParameter;
 import org.hkijena.jipipe.plugins.imagejdatatypes.datatypes.ImagePlusData;
+import org.hkijena.jipipe.plugins.imagejdatatypes.util.ImageJIterationUtils;
 import org.hkijena.jipipe.plugins.imagejdatatypes.util.ImageJUtils;
 
 import java.util.Arrays;
@@ -71,7 +72,7 @@ public class BoxFilter2Dv2Algorithm extends JIPipeSimpleIteratingAlgorithm {
         Arrays.fill(kernel, 1);
 
         convolver.setNormalize(true);
-        ImageJUtils.forEachSlice(img, imp -> {
+        ImageJIterationUtils.forEachSlice(img, imp -> {
             ImageJUtils.convolveSlice(convolver, kernelSize, kernelSize, kernel, imp);
         }, progressInfo);
 
