@@ -6,6 +6,7 @@ import ij.IJ;
 import ij.ImagePlus;
 import ij.gui.*;
 import ij.measure.Measurements;
+import ij.plugin.RoiScaler;
 import ij.process.FloatPolygon;
 import ij.process.ImageProcessor;
 import ij.process.ImageStatistics;
@@ -527,5 +528,25 @@ public class ImageJROIUtils {
         Rectangle2D.Double bounds = roi.getFloatBounds();
         roi2.setLocation(bounds.x - 0.5, bounds.y - 0.5);    //area and line roi coordinates are 0.5 pxl different
         return roi2;
+    }
+
+    public static Roi scaleRoiAroundOrigin(Roi roi, double sx, double sy, double originX, double originY) {
+        // Step 1: Compute current position and offset
+        Rectangle bounds = roi.getBounds();
+        double dx = bounds.x - originX;
+        double dy = bounds.y - originY;
+
+        // Step 2: Move ROI so that origin becomes (0, 0) in local space
+        roi.setLocation(originX, originY);
+
+        // Step 3: Scale the ROI around the new origin (its new (0, 0))
+        Roi scaled = RoiScaler.scale(roi, sx, sy, false);
+
+        // Step 4: Move ROI back to compensate for the initial offset scaled by the scale factors
+        double newX = originX + dx * sx;
+        double newY = originY + dy * sy;
+        scaled.setLocation((int) Math.round(newX), (int) Math.round(newY));
+
+        return scaled;
     }
 }

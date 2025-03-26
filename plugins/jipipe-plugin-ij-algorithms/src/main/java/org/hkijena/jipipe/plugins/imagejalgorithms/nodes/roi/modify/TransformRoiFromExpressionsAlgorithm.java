@@ -37,7 +37,6 @@ import org.hkijena.jipipe.plugins.imagejdatatypes.datatypes.ImagePlusData;
 import org.hkijena.jipipe.plugins.imagejdatatypes.datatypes.ROI2DListData;
 import org.hkijena.jipipe.plugins.imagejdatatypes.util.ImageJROIUtils;
 import org.hkijena.jipipe.plugins.imagejdatatypes.util.expressions.Image5DExpressionParameterVariablesInfo2;
-import org.hkijena.jipipe.plugins.imagejdatatypes.util.ImageJUtils;
 import org.hkijena.jipipe.plugins.imagejdatatypes.util.measure.ImageStatisticsSetParameter;
 import org.hkijena.jipipe.plugins.imagejdatatypes.util.measure.MeasurementExpressionParameterVariablesInfo;
 import org.hkijena.jipipe.plugins.tables.datatypes.ResultsTableData;
@@ -186,7 +185,7 @@ public class TransformRoiFromExpressionsAlgorithm extends JIPipeIteratingAlgorit
                 inputRois.set(i, roi);
             }
             if (scaleX != 1.0 || scaleY != 1.0) {
-                roi = ImageJUtils.scaleRoiAroundOrigin(roi, scaleX, scaleY, centerX, centerY);
+                roi = ImageJROIUtils.scaleRoiAroundOrigin(roi, scaleX, scaleY, centerX, centerY);
                 inputRois.set(i, roi);
             }
 

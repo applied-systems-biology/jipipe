@@ -11,7 +11,7 @@
  * See the LICENSE file provided with the code for the full license.
  */
 
-package org.hkijena.jipipe.plugins.imageviewer.legacy.impl;
+package org.hkijena.jipipe.plugins.imageviewer.legacy;
 
 import ij.IJ;
 import ij.ImagePlus;
@@ -41,13 +41,13 @@ import org.hkijena.jipipe.plugins.imagejdatatypes.util.*;
 import org.hkijena.jipipe.plugins.imagejdatatypes.util.blending.ImageBlendLayer;
 import org.hkijena.jipipe.plugins.imagejdatatypes.util.dimensions.HyperstackDimension;
 import org.hkijena.jipipe.plugins.imagejdatatypes.util.dimensions.ImageSliceIndex;
-import org.hkijena.jipipe.plugins.imageviewer.legacy.JIPipeDesktopLegacyImageViewer;
 import org.hkijena.jipipe.plugins.imageviewer.legacy.api.JIPipeDesktopLegacyImageViewerPlugin2D;
 import org.hkijena.jipipe.plugins.imageviewer.legacy.runs.RawImage2DExporterRun;
 import org.hkijena.jipipe.plugins.imageviewer.legacy.runs.Stack2DExporterRun;
 import org.hkijena.jipipe.plugins.imageviewer.legacy.runs.Stack2DRendererRun;
 import org.hkijena.jipipe.plugins.imageviewer.legacy.runs.Video2DExporterRun;
 import org.hkijena.jipipe.plugins.imageviewer.settings.LegacyImageViewer2DUIApplicationSettings;
+import org.hkijena.jipipe.plugins.imageviewer.utils.viewer2d.ImageViewer2DSliceStatistics;
 import org.hkijena.jipipe.plugins.imageviewer.utils.viewer2d.ImageViewerPanelCanvas2D;
 import org.hkijena.jipipe.plugins.parameters.library.markup.HTMLText;
 import org.hkijena.jipipe.plugins.settings.JIPipeFileChooserApplicationSettings;
@@ -87,7 +87,7 @@ public class JIPipeDesktopLegacyImageViewerPanel2D extends JPanel implements JIP
     private final JIPipeDesktopCheckBoxRibbonAction exportDisplayedScaleToggle = new JIPipeDesktopCheckBoxRibbonAction("Export as displayed", "If enabled, " +
             "the snapshot is exported exactly as displayed (including the size)", true, cb -> {
     });
-    private final Map<ImageSliceIndex, ImageStatistics> statisticsMap = new HashMap<>();
+    private final Map<ImageSliceIndex, ImageViewer2DSliceStatistics> statisticsMap = new HashMap<>();
     private final JPanel viewerPanel = new JPanel(new BorderLayout());
     private final JIPipeRunnableQueue viewerRunnerQueue = new JIPipeRunnableQueue("Image Viewer 2D");
     private final List<CompositeLayer> orderedCompositeBlendLayers = new ArrayList<>();
@@ -1016,7 +1016,7 @@ public class JIPipeDesktopLegacyImageViewerPanel2D extends JPanel implements JIP
         return currentSlice;
     }
 
-    public ImageStatistics getCurrentSliceStats() {
+    public ImageViewer2DSliceStatistics getCurrentSliceStats() {
         if (getImagePlus() != null && getCurrentSliceIndex() != null) {
             return getSliceStats(getCurrentSliceIndex());
         } else {
@@ -1024,12 +1024,12 @@ public class JIPipeDesktopLegacyImageViewerPanel2D extends JPanel implements JIP
         }
     }
 
-    public ImageStatistics getSliceStats(ImageSliceIndex sliceIndex) {
+    public ImageViewer2DSliceStatistics getSliceStats(ImageSliceIndex sliceIndex) {
         if (getImagePlus() != null) {
-            ImageStatistics stats = statisticsMap.getOrDefault(sliceIndex, null);
+            ImageViewer2DSliceStatistics stats = statisticsMap.getOrDefault(sliceIndex, null);
             if (stats == null) {
                 ImageProcessor processor = ImageJUtils.getSliceZeroSafe(image.getImage(), sliceIndex);
-                stats = processor.getStats();
+                stats = new ImageViewer2DSliceStatistics(processor);
                 statisticsMap.put(sliceIndex, stats);
             }
             return stats;

@@ -16,7 +16,7 @@ package org.hkijena.jipipe.plugins.imageviewer.legacy.plugins2d;
 import org.hkijena.jipipe.desktop.commons.components.JIPipeDesktopFormPanel;
 import org.hkijena.jipipe.desktop.commons.components.ribbon.JIPipeDesktopRibbon;
 import org.hkijena.jipipe.plugins.imageviewer.legacy.JIPipeDesktopLegacyImageViewer;
-import org.hkijena.jipipe.plugins.imageviewer.legacy.impl.JIPipeDesktopLegacyImageViewerPanel2D;
+import org.hkijena.jipipe.plugins.imageviewer.legacy.JIPipeDesktopLegacyImageViewerPanel2D;
 import org.hkijena.jipipe.plugins.imageviewer.utils.viewer2d.ImageViewer2DCompositeLayerEditor;
 import org.hkijena.jipipe.utils.UIUtils;
 import org.hkijena.jipipe.utils.ui.JIPipeDesktopDockPanel;

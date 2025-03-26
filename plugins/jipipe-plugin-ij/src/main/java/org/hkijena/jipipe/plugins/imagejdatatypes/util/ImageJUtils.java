@@ -25,7 +25,6 @@ import gnu.trove.map.hash.TIntIntHashMap;
 import ij.*;
 import ij.gui.*;
 import ij.plugin.PlugIn;
-import ij.plugin.RoiScaler;
 import ij.plugin.filter.AVI_Writer;
 import ij.plugin.filter.Convolver;
 import ij.process.*;
@@ -2312,26 +2311,6 @@ public class ImageJUtils {
         return result;
     }
 
-    public static Roi scaleRoiAroundOrigin(Roi roi, double sx, double sy, double originX, double originY) {
-        // Step 1: Compute current position and offset
-        Rectangle bounds = roi.getBounds();
-        double dx = bounds.x - originX;
-        double dy = bounds.y - originY;
-
-        // Step 2: Move ROI so that origin becomes (0, 0) in local space
-        roi.setLocation(originX, originY);
-
-        // Step 3: Scale the ROI around the new origin (its new (0, 0))
-        Roi scaled = RoiScaler.scale(roi, sx, sy, false);
-
-        // Step 4: Move ROI back to compensate for the initial offset scaled by the scale factors
-        double newX = originX + dx * sx;
-        double newY = originY + dy * sy;
-        scaled.setLocation((int) Math.round(newX), (int) Math.round(newY));
-
-        return scaled;
-    }
-
     //    public static Roi makeBand(Roi roi, double size) {
 //        int dxy = (int) (size * 1.5);
 //        ROI2DListData listData = new ROI2DListData();
@@ -2340,5 +2319,71 @@ public class ImageJUtils {
 //
 //        listData.toMask(true, true, 1, )
 //    }
+
+    public static ImageJHistogram computeGrayscaleHistogram(ImageProcessor ip) {
+        int width = ip.getWidth();
+        int height = ip.getHeight();
+        int size = width * height;
+
+        long[] histogram;
+        double min, max;
+        int value;
+
+        if (ip instanceof ByteProcessor) {
+            histogram = new long[256];
+            min = 0;
+            max = 255;
+            for (int i = 0; i < size; i++) {
+                value = ip.get(i) & 0xff;
+                histogram[value]++;
+            }
+        } else if (ip instanceof ShortProcessor) {
+            histogram = new long[65536];
+            min = 0;
+            max = 65535;
+            for (int i = 0; i < size; i++) {
+                value = ip.get(i) & 0xffff;
+                histogram[value]++;
+            }
+        } else if (ip instanceof FloatProcessor) {
+            float[] pixels = (float[]) ip.getPixels();
+            min = Double.POSITIVE_INFINITY;
+            max = Double.NEGATIVE_INFINITY;
+            for (float f : pixels) {
+                if (f < min) min = f;
+                if (f > max) max = f;
+            }
+
+            if (min == max) {
+                histogram = new long[1];
+                histogram[0] = size;
+            } else {
+                histogram = new long[256];
+                double scale = 255.0 / (max - min);
+                for (float f : pixels) {
+                    int bin = (int) ((f - min) * scale);
+                    if (bin < 0) bin = 0;
+                    if (bin > 255) bin = 255;
+                    histogram[bin]++;
+                }
+            }
+        } else if (ip instanceof ColorProcessor) {
+            histogram = new long[256];
+            min = 0;
+            max = 255;
+            for (int i = 0; i < size; i++) {
+                int c = ((ColorProcessor) ip).get(i);
+                int r = (c >> 16) & 0xff;
+                int g = (c >> 8) & 0xff;
+                int b = c & 0xff;
+                int gray = (r + g + b) / 3;
+                histogram[gray]++;
+            }
+        } else {
+            throw new IllegalArgumentException("Unsupported ImageProcessor type: " + ip.getClass());
+        }
+
+        return new ImageJHistogram(min, max, histogram);
+    }
 }
 

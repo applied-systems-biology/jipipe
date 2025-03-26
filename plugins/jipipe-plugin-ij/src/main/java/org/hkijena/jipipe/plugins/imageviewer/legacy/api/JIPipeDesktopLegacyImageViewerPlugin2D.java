@@ -16,7 +16,7 @@ package org.hkijena.jipipe.plugins.imageviewer.legacy.api;
 import ij.process.ImageProcessor;
 import org.hkijena.jipipe.plugins.imagejdatatypes.util.dimensions.ImageSliceIndex;
 import org.hkijena.jipipe.plugins.imageviewer.legacy.JIPipeDesktopLegacyImageViewer;
-import org.hkijena.jipipe.plugins.imageviewer.legacy.impl.JIPipeDesktopLegacyImageViewerPanel2D;
+import org.hkijena.jipipe.plugins.imageviewer.legacy.JIPipeDesktopLegacyImageViewerPanel2D;
 
 import java.awt.*;
 import java.awt.image.BufferedImage;

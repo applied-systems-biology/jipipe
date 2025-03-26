@@ -16,7 +16,6 @@ package org.hkijena.jipipe.plugins.imageviewer.utils.viewer2d;
 import ij.ImagePlus;
 import ij.process.ImageProcessor;
 import ij.process.ImageStatistics;
-import org.hkijena.jipipe.desktop.commons.theme.JIPipeDesktopModernMetalTheme;
 import org.hkijena.jipipe.plugins.imagejdatatypes.util.ImageJUtils;
 import org.hkijena.jipipe.plugins.imageviewer.legacy.plugins2d.CalibrationPlugin2D;
 import org.hkijena.jipipe.utils.ImageJCalibrationMode;
@@ -39,7 +38,7 @@ public class ImageViewer2DDisplayRangeControl extends JPanel implements ThumbLis
 
     private final CalibrationPlugin2D calibrationPlugin;
     private JXMultiThumbSlider<DisplayRangeStop> slider;
-    private TrackRenderer trackRenderer;
+    private ImageViewer2DDisplayRangeControlTrackRenderer trackRenderer;
     private boolean isUpdating = false;
     private double customMin;
     private double customMax;
@@ -57,7 +56,7 @@ public class ImageViewer2DDisplayRangeControl extends JPanel implements ThumbLis
 
     private void initialize() {
         setLayout(new BorderLayout());
-        trackRenderer = new TrackRenderer(this);
+        trackRenderer = new ImageViewer2DDisplayRangeControlTrackRenderer(this);
         initializeToolbar();
         slider = new JXMultiThumbSlider<>();
         slider.setPreferredSize(new Dimension(100, 72));
@@ -196,7 +195,7 @@ public class ImageViewer2DDisplayRangeControl extends JPanel implements ThumbLis
             }
         }
 
-        // Calibratrion update
+        // Calibration update
         if (clearCustom || mode != ImageJCalibrationMode.Custom) {
             isUpdating = true;
             ImageProcessor currentSlice = getCalibrationPlugin().getCurrentSlice();
@@ -206,7 +205,7 @@ public class ImageViewer2DDisplayRangeControl extends JPanel implements ThumbLis
                             mode,
                             minSelectableValue,
                             maxSelectableValue,
-                            getCalibrationPlugin().getViewerPanel2D().getCurrentSliceStats());
+                            getCalibrationPlugin().getViewerPanel2D().getCurrentSliceStats().getImageStatistics());
                     customMin = calibration[0];
                     customMax = calibration[1];
                 }
@@ -324,155 +323,4 @@ public class ImageViewer2DDisplayRangeControl extends JPanel implements ThumbLis
         }
     }
 
-    public static class TrackRenderer extends JComponent implements org.jdesktop.swingx.multislider.TrackRenderer {
-
-        public static final Color COLOR_SELECTED = JIPipeDesktopModernMetalTheme.PRIMARY5;
-        public static final Color COLOR_UNSELECTED = UIManager.getColor("Button.borderColor");
-        private final ImageViewer2DDisplayRangeControl displayRangeControl;
-        private JXMultiThumbSlider<DisplayRangeStop> slider;
-        private boolean logarithmic = true;
-
-        public TrackRenderer(ImageViewer2DDisplayRangeControl displayRangeControl) {
-            this.displayRangeControl = displayRangeControl;
-        }
-
-        @Override
-        public void paint(Graphics g) {
-            super.paint(g);
-            paintComponent(g);
-        }
-
-        @Override
-        protected void paintComponent(Graphics gfx) {
-            Graphics2D g = (Graphics2D) gfx;
-            g.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
-            int w = slider.getWidth() - 2 * ThumbRenderer.SIZE;
-            int h = slider.getHeight() - 22;
-            g.setColor(getBackground());
-            g.fillRect(0, 0, slider.getWidth(), slider.getHeight());
-            g.setColor(UIManager.getColor("Button.borderColor"));
-            g.drawLine(0, h, w + 2 * ThumbRenderer.SIZE, h);
-            g.setColor(COLOR_SELECTED);
-            ImageProcessor slice = displayRangeControl.getCalibrationPlugin().getViewerPanel2D().getCurrentSlice();
-            ImageStatistics statistics = displayRangeControl.getCalibrationPlugin().getViewerPanel2D().getCurrentSliceStats();
-            if (statistics != null && slice != null) {
-                long[] histogram = statistics.getHistogram();
-                if (histogram.length > 0) {
-                    int selectedXMin = Integer.MAX_VALUE;
-                    int selectedXMax = Integer.MIN_VALUE;
-                    for (int i = 0; i < 2; i++) {
-                        Thumb<DisplayRangeStop> thumb = slider.getModel().getThumbAt(i);
-                        float position = Math.max(0, Math.min(thumb.getPosition(), 1));
-                        int x = ThumbRenderer.SIZE - 1 + (int) (w * position);
-                        selectedXMin = Math.min(x, selectedXMin);
-                        selectedXMax = Math.max(x, selectedXMax);
-                    }
-
-                    double binSize = 1.0 * w / histogram.length;
-                    int binMaxHeight = h - 8;
-                    long max = 1;
-                    for (long l : histogram) {
-                        max = Math.max(l, max);
-                    }
-                    double lmax = Math.log(max);
-                    for (int i = 0; i < histogram.length; i++) {
-                        int binHeight;
-                        if (logarithmic)
-                            binHeight = (int) Math.round((Math.log(histogram[i]) / lmax) * binMaxHeight);
-                        else
-                            binHeight = (int) (Math.round(1.0 * histogram[i] / max) * binMaxHeight);
-                        int x = (int) (i * binSize) + ThumbRenderer.SIZE;
-                        if (x >= selectedXMin && x <= selectedXMax)
-                            g.setColor(COLOR_SELECTED);
-                        else
-                            g.setColor(COLOR_UNSELECTED);
-                        g.fillRect(x, binMaxHeight - binHeight + 8, (int) binSize + 1, binHeight);
-                    }
-                }
-            }
-            g.setColor(UIManager.getColor("Label.foreground"));
-
-            DecimalFormat format;
-            if (displayRangeControl.getCalibrationPlugin().getCurrentImagePlus() == null) {
-                return;
-            }
-            if (displayRangeControl.calibrationPlugin.getCurrentImagePlus().getType() == ImagePlus.GRAY32) {
-                format = DECIMAL_FORMAT_FLOAT;
-            } else {
-                format = DECIMAL_FORMAT_INT;
-            }
-
-            // Draw the position bar
-            for (int i = 0; i < 2; i++) {
-                Thumb<DisplayRangeStop> thumb = slider.getModel().getThumbAt(i);
-                float position = Math.max(0, Math.min(thumb.getPosition(), 1));
-                int x = ThumbRenderer.SIZE - 1 + (int) (w * position);
-                g.fillRect(x, 4, 2, h + 4);
-            }
-
-            // Draw the label text (requires statistics)
-            if (statistics != null) {
-                String valueMin = format.format(displayRangeControl.minSelectableValue + slider.getModel().getThumbAt(0).getPosition() *
-                        (displayRangeControl.maxSelectableValue - displayRangeControl.minSelectableValue));
-                String valueMax = format.format(displayRangeControl.minSelectableValue + slider.getModel().getThumbAt(1).getPosition() *
-                        (displayRangeControl.maxSelectableValue - displayRangeControl.minSelectableValue));
-                int valueMinWidth = g.getFontMetrics().stringWidth(valueMin);
-                int valueMaxWidth = g.getFontMetrics().stringWidth(valueMax);
-                float positionMin = Math.max(0, Math.min(slider.getModel().getThumbAt(0).getPosition(), 1));
-                float positionMax = Math.max(0, Math.min(slider.getModel().getThumbAt(1).getPosition(), 1));
-
-                if (positionMin < positionMax) {
-                    // First
-                    int valuePositionMinX = ThumbRenderer.SIZE - 1 + (int) (w * positionMin);
-                    valuePositionMinX = Math.max(0, Math.min(w - valueMinWidth, valuePositionMinX - (valueMinWidth / 2)));
-                    g.drawString(valueMin, valuePositionMinX, h + 18);
-
-                    // Second
-                    int valuePositionMaxX = ThumbRenderer.SIZE - 1 + (int) (w * positionMax);
-                    valuePositionMaxX = Math.max(0, Math.min(w - valueMaxWidth, valuePositionMaxX - (valueMaxWidth / 2)));
-                    valuePositionMaxX = Math.max(valuePositionMaxX, valuePositionMinX + valueMinWidth + 8);
-                    g.drawString(valueMax, valuePositionMaxX, h + 18);
-
-                } else {
-                    // First
-                    int valuePositionMaxX = ThumbRenderer.SIZE - 1 + (int) (w * positionMax);
-                    valuePositionMaxX = Math.max(0, Math.min(w - valueMaxWidth, valuePositionMaxX - (valueMaxWidth / 2)));
-                    g.drawString(valueMax, valuePositionMaxX, h + 18);
-
-                    // Second
-                    int valuePositionMinX = ThumbRenderer.SIZE - 1 + (int) (w * positionMin);
-                    valuePositionMinX = Math.max(0, Math.min(w - valueMinWidth, valuePositionMinX - (valueMinWidth / 2)));
-                    valuePositionMinX = Math.max(valuePositionMinX, valuePositionMaxX + valueMaxWidth + 8);
-                    g.drawString(valueMin, valuePositionMinX, h + 18);
-                }
-            }
-
-//            for (int i = 0; i < 2; i++) {
-//                Thumb<DisplayRangeStop> thumb = slider.getModel().getThumbAt(i);
-//                float position = Math.max(0, Math.min(thumb.getPosition(), 1));
-//                int x = ThumbRenderer.SIZE - 1 + (int) (w * position);
-//                g.fillRect(x, 4, 2, h + 4);
-//                if (statistics != null) {
-//
-//                    String value =
-//                    int stringWidth = g.getFontMetrics().stringWidth(value + "");
-//                    g.drawString("" + value, Math.max(0, Math.min(w - stringWidth, x - (stringWidth / 2))), h + 18);
-//                }
-//            }
-        }
-
-        @Override
-        public JComponent getRendererComponent(JXMultiThumbSlider slider) {
-            this.slider = slider;
-            return this;
-        }
-
-        public boolean isLogarithmic() {
-            return logarithmic;
-        }
-
-        public void setLogarithmic(boolean logarithmic) {
-            this.logarithmic = logarithmic;
-        }
-    }
 }
