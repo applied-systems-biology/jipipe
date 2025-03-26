@@ -16,6 +16,7 @@ package org.hkijena.jipipe.desktop.app.settings.project;
 import org.hkijena.jipipe.api.SetJIPipeDocumentation;
 import org.hkijena.jipipe.api.parameters.*;
 import org.hkijena.jipipe.api.project.JIPipeProject;
+import org.hkijena.jipipe.api.project.JIPipeProjectInfoParameters;
 import org.hkijena.jipipe.utils.ResourceUtils;
 
 import java.util.Collections;
@@ -31,6 +32,7 @@ public class JIPipeDesktopMergedProjectSettings extends AbstractJIPipeParameterC
         this.userDirectoriesSettings = new JIPipeDesktopMergedProjectSettingsUserDirectories(project);
         registerSubParameter(userDirectoriesSettings);
         registerSubParameter(project.getMetadata().getGlobalParameters());
+        registerSubParameter(project.getPipelineParameters());
     }
 
     @Override
@@ -57,9 +59,18 @@ public class JIPipeDesktopMergedProjectSettings extends AbstractJIPipeParameterC
         return project.getMetadata().getGlobalParameters();
     }
 
+    @SetJIPipeDocumentation(name = "Referenced parameters", description = "Parameters that are referenced from nodes in the pipeline.")
+    @JIPipeParameter("referenced-parameters")
+    public JIPipeProjectInfoParameters getPipelineParameters() {
+        return project.getPipelineParameters();
+    }
+
     @Override
     public boolean isParameterUIVisible(JIPipeParameterTree tree, JIPipeParameterCollection subParameter) {
         if (subParameter == project.getMetadata().getGlobalParameters() && project.getMetadata().getGlobalParameters().getParameters().isEmpty()) {
+            return false;
+        }
+        if (subParameter == project.getPipelineParameters() && project.getPipelineParameters().getParameters().isEmpty()) {
             return false;
         }
         return super.isParameterUIVisible(tree, subParameter);
