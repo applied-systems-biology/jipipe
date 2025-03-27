@@ -69,7 +69,6 @@ public class JIPipeExpressionDesktopParameterEditorUI extends JIPipeDesktopParam
 
         JButton functionBuilder = new JButton("Edit", UIUtils.getIconFromResources("actions/edit.png"));
         functionBuilder.addActionListener(e -> editInFunctionBuilder());
-        editPanel.add(functionBuilder);
         editPanel.setOpaque(false);
 
         if (settings == null || !settings.withoutEditorButton()) {
