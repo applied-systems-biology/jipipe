@@ -162,6 +162,7 @@ import org.hkijena.jipipe.plugins.imagejdatatypes.util.measure.MeasurementColumn
 import org.hkijena.jipipe.plugins.parameters.library.jipipe.PluginCategoriesEnumParameter;
 import org.hkijena.jipipe.plugins.parameters.library.markup.HTMLText;
 import org.hkijena.jipipe.plugins.parameters.library.primitives.list.StringList;
+import org.hkijena.jipipe.plugins.parameters.library.util.LogicalOperation;
 import org.hkijena.jipipe.plugins.strings.StringsPlugin;
 import org.hkijena.jipipe.plugins.tables.TablesPlugin;
 import org.hkijena.jipipe.utils.ImageJCalibrationMode;
@@ -918,6 +919,13 @@ public class ImageJAlgorithmsPlugin extends JIPipePrepackagedDefaultJavaPlugin {
         registerNodeType("ij1-roi-combine", MergeRoiListsOrderedAlgorithm.class, UIUtils.getIconURLFromResources("actions/merge.png"));
         registerNodeType("ij1-roi-merge-pairwise-or", MergeRoiListsPairwiseOrAlgorithm.class, UIUtils.getIconURLFromResources("actions/asterisk.png"));
         registerNodeType("ij1-roi-calculator", RoiCalculatorAlgorithm.class, UIUtils.getIconURLFromResources("actions/calculator.png"));
+        registerNodeExample(RoiCalculatorAlgorithm.class, "Merge into one ROI", node -> {
+            node.setOperation(LogicalOperation.LogicalOr);
+            node.setSplitAfterwards(false);
+            node.setApplyPerChannel(false);
+            node.setApplyPerFrame(false);
+            node.setApplyPerSlice(false);
+        });
         registerNodeType("ij1-roi-to-mask-unreferenced", UnreferencedRoiToMaskAlgorithm.class, UIUtils.getIconURLFromResources("actions/segment.png"));
         registerNodeType("ij1-roi-to-mask", RoiToMaskAlgorithm.class, UIUtils.getIconURLFromResources("actions/segment.png"));
 
