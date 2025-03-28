@@ -2385,5 +2385,9 @@ public class ImageJUtils {
 
         return new ImageJHistogram(min, max, histogram);
     }
+
+    public static void copyAttributes(ImagePlus src, ImagePlus target) {
+        target.copyAttributes(src);
+    }
 }
 
