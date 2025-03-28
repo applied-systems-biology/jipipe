@@ -12,6 +12,8 @@
  */
 package org.hkijena.jipipe.desktop.commons.components.markup;
 
+import org.hkijena.jipipe.utils.UIUtils;
+
 import javax.imageio.ImageIO;
 import javax.swing.*;
 import javax.swing.event.DocumentEvent;
@@ -695,13 +697,21 @@ public class JIPipeDesktopExtendedImageView extends View {
         } else {  // BEGIN: Modified code...
             String b64 = getBASE64Image();
             BufferedImage newBufferedImage = null;
-            try (ByteArrayInputStream bais = new ByteArrayInputStream(Base64.getDecoder().decode(b64))) {
-                newBufferedImage = ImageIO.read(bais);
-            } catch (IOException ex) {
-                ex.printStackTrace(); // Consider proper error handling here
+            try {
+                try (ByteArrayInputStream bais = new ByteArrayInputStream(Base64.getDecoder().decode(b64))) {
+                    newBufferedImage = ImageIO.read(bais);
+                } catch (IOException ex) {
+                    ex.printStackTrace(); // Consider proper error handling here
+                }
+            } catch (Exception ignored) {
             }
             newImage = newBufferedImage;
         }  // FINISH: Modified code...
+
+        if(newImage == null) {
+            newImage = UIUtils.getIcon16FromResources("missing.png").getImage();
+        }
+
         image = newImage;
     }
 
