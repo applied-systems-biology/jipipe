@@ -1127,9 +1127,18 @@ public class ImageJAlgorithmsPlugin extends JIPipePrepackagedDefaultJavaPlugin {
         registerNodeType("ij1-dimensions-reslice", ResliceAlgorithm.class, UIUtils.getIconURLFromResources("actions/draw-cuboid.png"));
         registerNodeType("ij1-dimensions-merge-2d-to-hyperstack", Merge2DToHyperstackAlgorithm.class, UIUtils.getIconURLFromResources("actions/merge.png"));
         registerNodeType("ij1-dimensions-reorder-hyperstack-slices", ReorderHyperstackSlicesExpressionAlgorithm.class, UIUtils.getIconURLFromResources("actions/draw-cuboid.png"));
+        registerNodeType("ij1-dimensions-extended-depth-of-focus", ExtendedDepthOfFocusProjectorAlgorithm.class, UIUtils.getIconURLFromResources("actions/view-continuous.png"));
 
         registerEnumParameterType("ij1-dimensions-zproject:method", ZProjectorAlgorithm.Method.class,
                 "Method", "Available methods");
+        registerEnumParameterType("ij1-dimensions-extended-depth-of-focus:scoring-method",
+                ExtendedDepthOfFocusProjectorAlgorithm.ScoringMethod.class,
+                "Extended depth of focus scoring method",
+                "A scoring method");
+        registerEnumParameterType("ij1-dimensions-extended-depth-of-focus:selection-method",
+                ExtendedDepthOfFocusProjectorAlgorithm.SelectionMethod.class,
+                "Extended depth of focus score selection method",
+                "Select by minimum or maximum score");
     }
 
     private void registerThresholdAlgorithms() {
