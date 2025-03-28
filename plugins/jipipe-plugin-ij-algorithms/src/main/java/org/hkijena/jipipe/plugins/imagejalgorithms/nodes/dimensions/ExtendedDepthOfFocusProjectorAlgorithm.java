@@ -28,6 +28,7 @@ import org.hkijena.jipipe.plugins.expressions.JIPipeExpressionVariablesMap;
 import org.hkijena.jipipe.plugins.expressions.variables.JIPipeTextAnnotationsExpressionParameterVariablesInfo;
 import org.hkijena.jipipe.plugins.imagejdatatypes.datatypes.ImagePlusData;
 import org.hkijena.jipipe.plugins.imagejdatatypes.datatypes.greyscale.ImagePlusGreyscaleData;
+import org.hkijena.jipipe.plugins.imagejdatatypes.util.ImageJUtils;
 import org.hkijena.jipipe.plugins.imagejdatatypes.util.dimensions.HyperstackDimension;
 import org.hkijena.jipipe.plugins.parameters.library.primitives.optional.OptionalIntegerRange;
 
@@ -35,15 +36,13 @@ import org.hkijena.jipipe.plugins.parameters.library.primitives.optional.Optiona
 @SetJIPipeDocumentation(name = "Custom extended depth of focus (Z/C/T)", description = "Performs a Z, C, or T-Projection ")
 @ConfigureJIPipeNode(menuPath = "Dimensions", nodeTypeCategory = ImagesNodeTypeCategory.class)
 @AddJIPipeInputSlot(value = ImagePlusData.class, name = "Input", create = true)
-@AddJIPipeInputSlot(value = ImagePlusGreyscaleData.class, name = "Score", create = true, description = "Optional image that scores each pixel. Must have the exact same size as the input. If not provided, one of the fallback functions is used.", optional = true)
+@AddJIPipeInputSlot(value = ImagePlusGreyscaleData.class, name = "Score", create = true, description = "Optional image that scores each pixel. Must have the exact same size as the input. If not provided, the fallback method is used.", optional = true)
 @AddJIPipeOutputSlot(value = ImagePlusData.class, name = "Output", create = true)
 public class ExtendedDepthOfFocusProjectorAlgorithm extends JIPipeSimpleIteratingAlgorithm {
 
     private ScoringMethod fallbackScoringMethod = ScoringMethod.Tenengrad;
     private SelectionMethod selectionMethod = SelectionMethod.Maximum;
     private HyperstackDimension projectedAxis = HyperstackDimension.Depth;
-
-    private OptionalIntegerRange restrictToIndices = new OptionalIntegerRange();
 
     public ExtendedDepthOfFocusProjectorAlgorithm(JIPipeNodeInfo info) {
         super(info);
@@ -54,7 +53,6 @@ public class ExtendedDepthOfFocusProjectorAlgorithm extends JIPipeSimpleIteratin
         this.projectedAxis = other.projectedAxis;
         this.selectionMethod = other.selectionMethod;
         this.fallbackScoringMethod = other.fallbackScoringMethod;
-        this.restrictToIndices = new OptionalIntegerRange(other.restrictToIndices);
     }
 
     @Override
@@ -64,10 +62,18 @@ public class ExtendedDepthOfFocusProjectorAlgorithm extends JIPipeSimpleIteratin
 
     @Override
     protected void runIteration(JIPipeSingleIterationStep iterationStep, JIPipeIterationContext iterationContext, JIPipeGraphNodeRunContext runContext, JIPipeProgressInfo progressInfo) {
-        ImagePlusData inputData = iterationStep.getInputData(getFirstInputSlot(), ImagePlusData.class, progressInfo);
-        ImagePlus img = inputData.getDuplicateImage();
+        ImagePlus score = ImageJUtils.unwrap(iterationStep.getInputData("Score", ImagePlusGreyscaleData.class, progressInfo));
+        ImagePlus img = iterationStep.getInputData("Input", ImagePlusData.class, progressInfo).getImage();
 
-        JIPipeExpressionVariablesMap variables = new JIPipeExpressionVariablesMap(iterationStep);
+        // Rotate the image if needed
+        if(projectedAxis == HyperstackDimension.Channel) {
+            img = ImageJUtils.duplicate(img);
+            img.setDimensions();
+        }
+
+        if(score == null) {
+
+        }
 
 //        ImagePlus result;
 //        if (img.getStackSize() > 1) {
@@ -94,134 +100,6 @@ public class ExtendedDepthOfFocusProjectorAlgorithm extends JIPipeSimpleIteratin
 //        iterationStep.addOutputData(getFirstOutputSlot(), new ImagePlusData(result), progressInfo);
     }
 
-//    private ImagePlus processFrame(ImagePlus img, JIPipeExpressionVariablesMap variables, JIPipeProgressInfo progressInfo) {
-//        final int newDepth = img.getNSlices();
-//        final int newFrames = 1;
-//        final int newChannels = img.getNChannels();
-//        final ImageStack resultStack = new ImageStack(img.getWidth(), img.getHeight(), newDepth * newChannels * newFrames);
-//
-//        // Generate the source slice indices
-//        List<Integer> sourceIndices;
-//        if (restrictToIndices.isEnabled()) {
-//            sourceIndices = restrictToIndices.getContent().getIntegers(0, img.getNFrames() - 1, variables);
-//        } else {
-//            sourceIndices = new ArrayList<>();
-//            for (int i = 0; i < img.getNFrames(); i++) {
-//                sourceIndices.add(i);
-//            }
-//        }
-//
-//        for (int z = 0; z < newDepth; z++) {
-//            for (int c = 0; c < newChannels; c++) {
-//                ImageSliceIndex firstSliceIndex = new ImageSliceIndex(c, z, 0);
-//                progressInfo.log(firstSliceIndex.toString());
-//
-//                // Extract the T slices into the stack
-//                ImageStack extracted = new ImageStack(img.getWidth(), img.getHeight());
-//                for (int t : sourceIndices) {
-//                    ImageProcessor processor = ImageJUtils.getSliceZero(img, c, z, t);
-//                    extracted.addSlice(processor);
-//                }
-//
-//                // C-project the stack
-//                ImagePlus extractedImp = new ImagePlus("stack", extracted);
-//                ImagePlus projected = ZProjector.run(extractedImp, method.getNativeValue());
-//
-//                resultStack.setProcessor(projected.getProcessor(), ImageJUtils.zeroSliceIndexToOneStackIndex(c, z, 0, newChannels, newDepth, newFrames));
-//            }
-//        }
-//
-//        ImagePlus projected = new ImagePlus(img.getTitle() + " projected " + projectedAxis, resultStack);
-//        projected.copyScale(img);
-//        projected.setDimensions(newChannels, newDepth, newFrames);
-//        return projected;
-//    }
-//
-//    private ImagePlus processDepth(ImagePlus img, JIPipeExpressionVariablesMap variables, JIPipeProgressInfo progressInfo) {
-//        final int newDepth = 1;
-//        final int newFrames = img.getNFrames();
-//        final int newChannels = img.getNChannels();
-//        final ImageStack resultStack = new ImageStack(img.getWidth(), img.getHeight(), newDepth * newChannels * newFrames);
-//
-//        // Generate the source slice indices
-//        List<Integer> sourceIndices;
-//        if (restrictToIndices.isEnabled()) {
-//            sourceIndices = restrictToIndices.getContent().getIntegers(0, img.getNSlices() - 1, variables);
-//        } else {
-//            sourceIndices = new ArrayList<>();
-//            for (int i = 0; i < img.getNSlices(); i++) {
-//                sourceIndices.add(i);
-//            }
-//        }
-//
-//        for (int c = 0; c < newChannels; c++) {
-//            for (int t = 0; t < newFrames; t++) {
-//                ImageSliceIndex firstSliceIndex = new ImageSliceIndex(c, 0, t);
-//                progressInfo.log(firstSliceIndex.toString());
-//
-//                // Extract the Z slices into the stack
-//                ImageStack extracted = new ImageStack(img.getWidth(), img.getHeight());
-//                for (int z : sourceIndices) {
-//                    ImageProcessor processor = ImageJUtils.getSliceZero(img, c, z, t);
-//                    extracted.addSlice(processor);
-//                }
-//
-//                // Z-project the stack
-//                ImagePlus extractedImp = new ImagePlus("stack", extracted);
-//                ImagePlus projected = ZProjector.run(extractedImp, method.getNativeValue());
-//
-//                resultStack.setProcessor(projected.getProcessor(), ImageJUtils.zeroSliceIndexToOneStackIndex(c, 0, t, newChannels, newDepth, newFrames));
-//            }
-//        }
-//
-//        ImagePlus projected = new ImagePlus(img.getTitle() + " projected " + projectedAxis, resultStack);
-//        projected.copyScale(img);
-//        projected.setDimensions(newChannels, newDepth, newFrames);
-//        return projected;
-//    }
-//
-//    private ImagePlus processChannel(ImagePlus img, JIPipeExpressionVariablesMap variables, JIPipeProgressInfo progressInfo) {
-//        final int newDepth = img.getNSlices();
-//        final int newFrames = img.getNFrames();
-//        final int newChannels = 1;
-//        final ImageStack resultStack = new ImageStack(img.getWidth(), img.getHeight(), newDepth * newChannels * newFrames);
-//
-//        // Generate the source slice indices
-//        List<Integer> sourceIndices;
-//        if (restrictToIndices.isEnabled()) {
-//            sourceIndices = restrictToIndices.getContent().getIntegers(0, img.getNChannels() - 1, variables);
-//        } else {
-//            sourceIndices = new ArrayList<>();
-//            for (int i = 0; i < img.getNChannels(); i++) {
-//                sourceIndices.add(i);
-//            }
-//        }
-//
-//        for (int z = 0; z < newDepth; z++) {
-//            for (int t = 0; t < newFrames; t++) {
-//                ImageSliceIndex firstSliceIndex = new ImageSliceIndex(0, z, t);
-//                progressInfo.log(firstSliceIndex.toString());
-//
-//                // Extract the C slices into the stack
-//                ImageStack extracted = new ImageStack(img.getWidth(), img.getHeight());
-//                for (int c : sourceIndices) {
-//                    ImageProcessor processor = ImageJUtils.getSliceZero(img, c, z, t);
-//                    extracted.addSlice(processor);
-//                }
-//
-//                // C-project the stack
-//                ImagePlus extractedImp = new ImagePlus("stack", extracted);
-//                ImagePlus projected = ZProjector.run(extractedImp, method.getNativeValue());
-//
-//                resultStack.setProcessor(projected.getProcessor(), ImageJUtils.zeroSliceIndexToOneStackIndex(0, z, t, newChannels, newDepth, newFrames));
-//            }
-//        }
-//
-//        ImagePlus projected = new ImagePlus(img.getTitle() + " projected " + projectedAxis, resultStack);
-//        projected.copyScale(img);
-//        projected.setDimensions(newChannels, newDepth, newFrames);
-//        return projected;
-//    }
 
     @SetJIPipeDocumentation(name = "Fallback scoring method", description = "The scoring method that is applied per 2D plane if no custom score image is provided. Variance applies a local variance filter, while Tenengrad calculates the Sobel gradient.")
     @JIPipeParameter("fallback-scoring-method")
@@ -254,18 +132,6 @@ public class ExtendedDepthOfFocusProjectorAlgorithm extends JIPipeSimpleIteratin
     @JIPipeParameter("projected-axis")
     public void setProjectedAxis(HyperstackDimension projectedAxis) {
         this.projectedAxis = projectedAxis;
-    }
-
-    @SetJIPipeDocumentation(name = "Restrict to indices", description = "If enabled, allows to restrict to specific projected indices")
-    @JIPipeParameter("restrict-to-indices")
-    @AddJIPipeExpressionParameterVariable(fromClass = JIPipeTextAnnotationsExpressionParameterVariablesInfo.class)
-    public OptionalIntegerRange getRestrictToIndices() {
-        return restrictToIndices;
-    }
-
-    @JIPipeParameter("restrict-to-indices")
-    public void setRestrictToIndices(OptionalIntegerRange restrictToIndices) {
-        this.restrictToIndices = restrictToIndices;
     }
 
     public enum SelectionMethod {
