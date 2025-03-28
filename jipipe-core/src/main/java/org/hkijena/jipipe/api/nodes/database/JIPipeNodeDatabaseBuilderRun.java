@@ -20,6 +20,7 @@ import org.hkijena.jipipe.api.compartments.algorithms.JIPipeProjectCompartment;
 import org.hkijena.jipipe.api.nodes.JIPipeGraphNode;
 import org.hkijena.jipipe.api.nodes.JIPipeNodeExample;
 import org.hkijena.jipipe.api.nodes.JIPipeNodeInfo;
+import org.hkijena.jipipe.api.nodes.JIPipeNodeMenuLocation;
 import org.hkijena.jipipe.api.nodes.categories.InternalNodeTypeCategory;
 import org.hkijena.jipipe.api.registries.JIPipeNodeRegistry;
 
@@ -65,6 +66,14 @@ public class JIPipeNodeDatabaseBuilderRun extends AbstractJIPipeRunnable {
                 for (int i = 0; i < examples.size(); i++) {
                     JIPipeNodeExample example = examples.get(i);
                     CreateNewNodeByExampleDatabaseEntry newEntry = new CreateNewNodeByExampleDatabaseEntry("create-node-by-example:" + entry.getKey() + ":[" + i + "]", example);
+                    newEntries.add(newEntry);
+                    CACHED_GLOBAL_ENTRIES.add(newEntry);
+                }
+                // Add node alias creation
+                List<JIPipeNodeMenuLocation> aliases = nodeInfo.getAliases();
+                for (int i = 0; i < aliases.size(); i++) {
+                    JIPipeNodeMenuLocation alias = aliases.get(i);
+                    CreateNewNodeByInfoAliasDatabaseEntry newEntry = new CreateNewNodeByInfoAliasDatabaseEntry("create-node-by-info:" + entry.getKey() + ":alias-" + i, nodeInfo, alias);
                     newEntries.add(newEntry);
                     CACHED_GLOBAL_ENTRIES.add(newEntry);
                 }

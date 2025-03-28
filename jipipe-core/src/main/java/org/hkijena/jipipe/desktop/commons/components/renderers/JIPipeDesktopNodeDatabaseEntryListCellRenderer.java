@@ -16,6 +16,7 @@ package org.hkijena.jipipe.desktop.commons.components.renderers;
 import org.hkijena.jipipe.api.nodes.JIPipeNodeInfo;
 import org.hkijena.jipipe.api.nodes.JIPipeNodeMenuLocation;
 import org.hkijena.jipipe.api.nodes.database.CreateNewNodeByExampleDatabaseEntry;
+import org.hkijena.jipipe.api.nodes.database.CreateNewNodeByInfoAliasDatabaseEntry;
 import org.hkijena.jipipe.api.nodes.database.CreateNewNodeByInfoDatabaseEntry;
 import org.hkijena.jipipe.api.nodes.database.JIPipeNodeDatabaseEntry;
 import org.hkijena.jipipe.desktop.commons.components.icons.SolidColorIcon;
@@ -118,6 +119,24 @@ public class JIPipeDesktopNodeDatabaseEntryListCellRenderer extends JPanel imple
             } else {
                 StringBuilder builder = new StringBuilder();
                 builder.append("Alias: ");
+                List<JIPipeNodeMenuLocation> alternativeMenuLocations = info.getAliases();
+                for (int i = 0; i < alternativeMenuLocations.size(); i++) {
+                    if (i > 0) {
+                        builder.append(", ");
+                    }
+                    JIPipeNodeMenuLocation location = alternativeMenuLocations.get(i);
+                    builder.append(location.getCategory().getName()).append(" > ").append(String.join(" > ", location.getMenuPath().split("\n")))
+                            .append(" > ").append(StringUtils.orElse(location.getAlternativeName(), info.getName()));
+                }
+                alternativeLabel.setText(builder.toString());
+            }
+        } else if (obj instanceof CreateNewNodeByInfoAliasDatabaseEntry) {
+            JIPipeNodeInfo info = ((CreateNewNodeByInfoAliasDatabaseEntry) obj).getNodeInfo();
+            alternativeLabel.setForeground(JIPipeDesktopModernMetalTheme.PRIMARY6);
+            if (info.getAliases().isEmpty()) {
+                alternativeLabel.setText("");
+            } else {
+                StringBuilder builder = new StringBuilder();
                 List<JIPipeNodeMenuLocation> alternativeMenuLocations = info.getAliases();
                 for (int i = 0; i < alternativeMenuLocations.size(); i++) {
                     if (i > 0) {

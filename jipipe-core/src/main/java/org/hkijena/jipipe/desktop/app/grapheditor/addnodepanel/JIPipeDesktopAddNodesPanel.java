@@ -356,6 +356,9 @@ public class JIPipeDesktopAddNodesPanel extends JIPipeDesktopWorkbenchPanel {
                 if (entry instanceof CreateNewNodeByInfoDatabaseEntry) {
                     popupMenu.add(UIUtils.createMenuItem(entry.getName(), TooltipUtils.getAlgorithmTooltip(((CreateNewNodeByInfoDatabaseEntry) entry).getNodeInfo(), true),
                             entry.getIcon(), () -> insertAtCursor(entry)));
+                } else if (entry instanceof CreateNewNodeByInfoAliasDatabaseEntry) {
+                    popupMenu.add(UIUtils.createMenuItem(entry.getName(), TooltipUtils.getAlgorithmTooltip(((CreateNewNodeByInfoAliasDatabaseEntry) entry).getNodeInfo(), true),
+                            entry.getIcon(), () -> insertAtCursor(entry)));
                 } else if (entry instanceof CreateNewNodesByTemplateDatabaseEntry) {
                     popupMenu.add(UIUtils.createMenuItem(entry.getName(), TooltipUtils.getAlgorithmTooltip(((CreateNewNodesByTemplateDatabaseEntry) entry).getTemplate(), true),
                             entry.getIcon(), () -> insertAtCursor(entry)));
@@ -556,6 +559,8 @@ public class JIPipeDesktopAddNodesPanel extends JIPipeDesktopWorkbenchPanel {
         graphEditorUI.getDockPanel().activatePanel(JIPipeDesktopPipelineGraphEditorUI.DOCK_NODE_CONTEXT_HELP, false);
         if (entry instanceof CreateNewNodeByInfoDatabaseEntry) {
             helpPanel.showContent(entry.getName(), TooltipUtils.getAlgorithmDocumentation(((CreateNewNodeByInfoDatabaseEntry) entry).getNodeInfo()));
+        } else if (entry instanceof CreateNewNodeByInfoAliasDatabaseEntry) {
+            helpPanel.showContent(entry.getName(), TooltipUtils.getAlgorithmDocumentation(((CreateNewNodeByInfoAliasDatabaseEntry) entry).getNodeInfo()));
         } else if (entry instanceof CreateNewNodeByExampleDatabaseEntry) {
             helpPanel.showContent(entry.getName(), TooltipUtils.getAlgorithmDocumentation(((CreateNewNodeByExampleDatabaseEntry) entry).getExample().getNodeInfo()));
         } else if (entry instanceof CreateNewCompartmentNodeDatabaseEntry) {

@@ -107,6 +107,8 @@ public class JIPipeDesktopLegacyAddNodePanel extends JIPipeDesktopWorkbenchPanel
         algorithmList.addListSelectionListener(e -> {
             if (algorithmList.getSelectedValue() instanceof CreateNewNodeByInfoDatabaseEntry) {
                 selectNodeInfo(((CreateNewNodeByInfoDatabaseEntry) algorithmList.getSelectedValue()).getNodeInfo());
+            } else if (algorithmList.getSelectedValue() instanceof CreateNewNodeByInfoAliasDatabaseEntry) {
+                selectNodeInfo(((CreateNewNodeByInfoDatabaseEntry) algorithmList.getSelectedValue()).getNodeInfo());
             } else if (algorithmList.getSelectedValue() instanceof CreateNewNodeByExampleDatabaseEntry) {
                 selectNodeExample(((CreateNewNodeByExampleDatabaseEntry) algorithmList.getSelectedValue()).getExample());
             }

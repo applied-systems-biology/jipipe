@@ -39,6 +39,11 @@ public class JIPipeDesktopAddNodeTransferHandler extends TransferHandler {
                 if (obj instanceof CreateNewNodeByInfoDatabaseEntry) {
                     JIPipeNodeInfo info = ((CreateNewNodeByInfoDatabaseEntry) obj).getNodeInfo();
                     graph.insertNode(info.newInstance());
+                } else if (obj instanceof CreateNewNodeByInfoAliasDatabaseEntry) {
+                    JIPipeNodeInfo info = ((CreateNewNodeByInfoAliasDatabaseEntry) obj).getNodeInfo();
+                    JIPipeGraphNode node = info.newInstance();
+                    node.setCustomName(obj.getName());
+                    graph.insertNode(node);
                 } else if (obj instanceof CreateNewNodeByExampleDatabaseEntry) {
                     JIPipeNodeExample example = ((CreateNewNodeByExampleDatabaseEntry) obj).getExample();
                     JIPipeNodeInfo info = example.getNodeInfo();
