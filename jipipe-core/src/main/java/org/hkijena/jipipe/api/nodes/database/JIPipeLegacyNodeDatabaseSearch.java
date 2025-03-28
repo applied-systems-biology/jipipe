@@ -119,6 +119,7 @@ public class JIPipeLegacyNodeDatabaseSearch {
         List<String> textTokens = buildTokens(Collections.singletonList(text));
         List<JIPipeNodeDatabaseEntry> result = new ArrayList<>();
         TObjectDoubleMap<JIPipeNodeDatabaseEntry> rankMap = new TObjectDoubleHashMap<>();
+
         for (JIPipeNodeDatabaseEntry entry : nodeDatabase.getEntries()) {
             if (!entry.getVisibility().matches(role))
                 continue;

@@ -23,6 +23,7 @@ import org.hkijena.jipipe.api.nodes.JIPipeNodeInfo;
 import org.hkijena.jipipe.api.nodes.JIPipeNodeMenuLocation;
 import org.hkijena.jipipe.api.nodes.categories.InternalNodeTypeCategory;
 import org.hkijena.jipipe.api.registries.JIPipeNodeRegistry;
+import org.hkijena.jipipe.utils.StringUtils;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -73,9 +74,12 @@ public class JIPipeNodeDatabaseBuilderRun extends AbstractJIPipeRunnable {
                 List<JIPipeNodeMenuLocation> aliases = nodeInfo.getAliases();
                 for (int i = 0; i < aliases.size(); i++) {
                     JIPipeNodeMenuLocation alias = aliases.get(i);
-                    CreateNewNodeByInfoAliasDatabaseEntry newEntry = new CreateNewNodeByInfoAliasDatabaseEntry("create-node-by-info:" + entry.getKey() + ":alias-" + i, nodeInfo, alias);
-                    newEntries.add(newEntry);
-                    CACHED_GLOBAL_ENTRIES.add(newEntry);
+                    if(!StringUtils.isNullOrEmpty(alias.getAlternativeName())) {
+                        // Add as alias if name is different
+                        CreateNewNodeByInfoAliasDatabaseEntry newEntry = new CreateNewNodeByInfoAliasDatabaseEntry("create-node-by-info:" + entry.getKey() + ":alias-" + i, nodeInfo, alias);
+                        newEntries.add(newEntry);
+                        CACHED_GLOBAL_ENTRIES.add(newEntry);
+                    }
                 }
             }
 
