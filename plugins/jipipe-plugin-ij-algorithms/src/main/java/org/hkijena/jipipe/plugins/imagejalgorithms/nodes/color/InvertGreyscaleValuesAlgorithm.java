@@ -25,30 +25,27 @@ import org.hkijena.jipipe.api.nodes.categories.ImagesNodeTypeCategory;
 import org.hkijena.jipipe.api.nodes.iterationstep.JIPipeIterationContext;
 import org.hkijena.jipipe.api.nodes.iterationstep.JIPipeSingleIterationStep;
 import org.hkijena.jipipe.plugins.imagejdatatypes.datatypes.ImagePlusData;
+import org.hkijena.jipipe.plugins.imagejdatatypes.datatypes.greyscale.ImagePlusGreyscaleData;
 import org.hkijena.jipipe.plugins.imagejdatatypes.util.ImageJIterationUtils;
 
 /**
- * Wrapper around {@link ij.process.ImageProcessor}
+ * Wrapper around {@link ImageProcessor}
  */
-@SetJIPipeDocumentation(name = "Invert colors", description = "Inverts the colors/values p of an image. With 8-bit images, p=255-p.\n" +
-        "With RGB images, converts each pixel to three 8-bit pixels and uses p=255-p.\n" +
+@SetJIPipeDocumentation(name = "Invert pixel values", description = "Inverts the values p of an image. With 8-bit images, p=255-p.\n" +
         "With 16-bit images, p=65535-p, or p=255-p, p=1024-p, etc. if an \"Unsigned 16-bit range\" is set using the \"Set\" option of the Image>Adjust>Brightness/ Contrast dialog.\n" +
         "With 32-bit images, p=max-(p-min), where 'min' and 'max' are the minimum and maximum displayed pixel values.")
 @ConfigureJIPipeNode(menuPath = "Colors", nodeTypeCategory = ImagesNodeTypeCategory.class)
-@AddJIPipeInputSlot(value = ImagePlusData.class, name = "Input", create = true)
-@AddJIPipeOutputSlot(value = ImagePlusData.class, name = "Output", create = true)
-@AddJIPipeNodeAlias(nodeTypeCategory = ImageJNodeTypeCategory.class, menuPath = "Edit", aliasName = "Invert")
-@AddJIPipeNodeAlias(nodeTypeCategory = ImagesNodeTypeCategory.class, aliasName = "Invert values")
-@AddJIPipeNodeAlias(nodeTypeCategory = ImagesNodeTypeCategory.class, aliasName = "Invert greyscale values")
-@AddJIPipeNodeAlias(nodeTypeCategory = ImagesNodeTypeCategory.class, aliasName = "Invert color values")
-public class InvertColorsAlgorithm extends JIPipeSimpleIteratingAlgorithm {
+@AddJIPipeInputSlot(value = ImagePlusGreyscaleData.class, name = "Input", create = true)
+@AddJIPipeOutputSlot(value = ImagePlusGreyscaleData.class, name = "Output", create = true)
+@AddJIPipeNodeAlias(nodeTypeCategory = ImageJNodeTypeCategory.class, menuPath = "Edit", aliasName = "Invert (greyscale)")
+public class InvertGreyscaleValuesAlgorithm extends JIPipeSimpleIteratingAlgorithm {
 
     /**
      * Instantiates a new node type.
      *
      * @param info the info
      */
-    public InvertColorsAlgorithm(JIPipeNodeInfo info) {
+    public InvertGreyscaleValuesAlgorithm(JIPipeNodeInfo info) {
         super(info);
     }
 
@@ -57,16 +54,16 @@ public class InvertColorsAlgorithm extends JIPipeSimpleIteratingAlgorithm {
      *
      * @param other the other
      */
-    public InvertColorsAlgorithm(InvertColorsAlgorithm other) {
+    public InvertGreyscaleValuesAlgorithm(InvertGreyscaleValuesAlgorithm other) {
         super(other);
     }
 
     @Override
     protected void runIteration(JIPipeSingleIterationStep iterationStep, JIPipeIterationContext iterationContext, JIPipeGraphNodeRunContext runContext, JIPipeProgressInfo progressInfo) {
-        ImagePlusData inputData = iterationStep.getInputData(getFirstInputSlot(), ImagePlusData.class, progressInfo);
+        ImagePlusData inputData = iterationStep.getInputData(getFirstInputSlot(), ImagePlusGreyscaleData.class, progressInfo);
         ImagePlus img = inputData.getDuplicateImage();
         ImageJIterationUtils.forEachSlice(img, ImageProcessor::invert, progressInfo);
-        iterationStep.addOutputData(getFirstOutputSlot(), new ImagePlusData(img), progressInfo);
+        iterationStep.addOutputData(getFirstOutputSlot(), new ImagePlusGreyscaleData(img), progressInfo);
     }
 
     @Override

@@ -1395,7 +1395,9 @@ public class ImageJAlgorithmsPlugin extends JIPipePrepackagedDefaultJavaPlugin {
         registerParameterType("ij1-color-blend-images:layer", ImageBlendLayer.class, "Layer settings", "Settings for a layer");
         registerEnumParameterType("ij1-color-blend-images:blend-mode", ImageBlendMode.class, "Layer blend mode", "Blend mode for the layer");
 
-        registerNodeType("ij1-color-invert", InvertColorsAlgorithm.class, UIUtils.getIconURLFromResources("actions/invertimage.png"));
+        registerNodeType("ij1-color-invert", InvertImageAlgorithm.class, UIUtils.getIconURLFromResources("actions/invertimage.png"));
+        registerNodeType("ij1-color-invert-greyscale", InvertGreyscaleValuesAlgorithm.class, UIUtils.getIconURLFromResources("actions/invertimage.png"));
+        registerNodeType("ij1-color-invert-rgb", InvertRGBColorsAlgorithm.class, UIUtils.getIconURLFromResources("actions/invertimage.png"));
         registerNodeType("ij1-color-merge-channels", MergeChannelsAlgorithm.class, UIUtils.getIconURLFromResources("actions/merge.png"));
         registerNodeType("ij1-color-overlay-channels", OverlayImagesAlgorithm.class, UIUtils.getIconURLFromResources("actions/merge.png"));
         registerNodeType("ij1-color-blend-images", BlendImagesAlgorithm.class, UIUtils.getIconURLFromResources("actions/merge.png"));
