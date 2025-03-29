@@ -278,12 +278,26 @@ public class JIPipeProjectHistoryJournal implements JIPipeHistoryJournal {
 
         @Override
         public void run() {
-            JIPipeGraph graphCopy = new JIPipeGraph(graph);
-            JIPipeGraph compartmentGraphCopy = new JIPipeGraph(compartmentGraph);
+            // We try up to 5 times
+            for (int i = 0; i < 5; i++) {
+                try {
+                    JIPipeGraph graphCopy = new JIPipeGraph(graph);
+                    JIPipeGraph compartmentGraphCopy = new JIPipeGraph(compartmentGraph);
 
-            SwingUtilities.invokeLater(() -> {
-                historyJournal.addSnapshot(new Snapshot(historyJournal, dateTime, name, description, icon, graphCopy, compartmentGraphCopy));
-            });
+                    SwingUtilities.invokeLater(() -> {
+                        historyJournal.addSnapshot(new Snapshot(historyJournal, dateTime, name, description, icon, graphCopy, compartmentGraphCopy));
+                    });
+
+                    break;
+                }
+                catch (Exception ignored) {}
+
+                try {
+                    Thread.sleep(50);
+                } catch (InterruptedException ignored) {
+                }
+            }
+
         }
     }
 }

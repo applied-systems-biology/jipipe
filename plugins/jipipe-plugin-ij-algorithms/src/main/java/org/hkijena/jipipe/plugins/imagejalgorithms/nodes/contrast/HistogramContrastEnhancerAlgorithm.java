@@ -29,6 +29,8 @@ import org.hkijena.jipipe.api.nodes.iterationstep.JIPipeIterationContext;
 import org.hkijena.jipipe.api.nodes.iterationstep.JIPipeSingleIterationStep;
 import org.hkijena.jipipe.api.parameters.JIPipeParameter;
 import org.hkijena.jipipe.plugins.imagejdatatypes.datatypes.ImagePlusData;
+import org.hkijena.jipipe.plugins.imagejdatatypes.util.ImageJUtils;
+import org.hkijena.jipipe.utils.ImageJCalibrationMode;
 
 import static ij.measure.Measurements.MIN_MAX;
 
@@ -80,6 +82,9 @@ public class HistogramContrastEnhancerAlgorithm extends JIPipeSimpleIteratingAlg
                 }
                 break;
         }
+
+        // Do calibration afterward
+        ImageJUtils.calibrate(img, ImageJCalibrationMode.AutomaticImageJ, 0, 0);
 
         iterationStep.addOutputData(getFirstOutputSlot(), new ImagePlusData(img), progressInfo);
     }
