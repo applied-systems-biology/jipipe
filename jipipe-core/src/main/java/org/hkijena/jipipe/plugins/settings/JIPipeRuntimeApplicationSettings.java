@@ -38,6 +38,7 @@ public class JIPipeRuntimeApplicationSettings extends JIPipeDefaultApplicationsS
     private boolean allowSkipAlgorithmsWithoutInput = true;
     private boolean allowCache = true;
     private OptionalPathParameter tempDirectory = new OptionalPathParameter();
+    private boolean perProjectTempDirectory = true;
     private int defaultRunThreads = 1;
     private int defaultQuickRunThreads = 1;
     private int logLimit = 15;
@@ -96,6 +97,17 @@ public class JIPipeRuntimeApplicationSettings extends JIPipeDefaultApplicationsS
      */
     public static Path getTemporaryFile(String prefix, String suffix) {
         return PathUtils.createSubTempFilePath(getTemporaryBaseDirectory(), prefix, suffix);
+    }
+
+    @SetJIPipeDocumentation(name = "Temporary directory per project", description = "If enable, store temporary files are stored next to the current project file if possible")
+    @JIPipeParameter("per-project-temp-directory")
+    public boolean isPerProjectTempDirectory() {
+        return perProjectTempDirectory;
+    }
+
+    @JIPipeParameter("per-project-temp-directory")
+    public void setPerProjectTempDirectory(boolean perProjectTempDirectory) {
+        this.perProjectTempDirectory = perProjectTempDirectory;
     }
 
     @SetJIPipeDocumentation(name = "Automatically skip algorithms without input", description = "If enabled, algorithms and their dependents without " +

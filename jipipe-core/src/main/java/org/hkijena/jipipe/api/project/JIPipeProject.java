@@ -296,7 +296,7 @@ public class JIPipeProject implements JIPipeValidatable {
     public Path getTemporaryBaseDirectory() {
         JIPipeDataStorageProjectSettings settings = getSettingsSheet(JIPipeDataStorageProjectSettings.class);
         Path output;
-        if (settings.isForceGlobalTempDirectory()) {
+        if (settings.isForceGlobalTempDirectory() || !JIPipeRuntimeApplicationSettings.getInstance().isPerProjectTempDirectory()) {
             output = JIPipeRuntimeApplicationSettings.getTemporaryBaseDirectory();
         } else if (settings.getOverrideTempDirectory().isEnabled() && settings.getOverrideTempDirectory().getContent() != null && settings.getOverrideTempDirectory().getContent().isAbsolute()) {
             output = settings.getOverrideTempDirectory().getContent();
