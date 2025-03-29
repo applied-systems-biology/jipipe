@@ -60,7 +60,7 @@ public class StringDataViewer extends JIPipeDesktopDataViewer {
         JIPipeDesktopRibbon.Band toolsBand = generalTask.getOrCreateBand("Tools");
         editBand.add(new JIPipeDesktopLargeButtonRibbonAction("Undo", "Reverts the last action", UIUtils.getIcon32FromResources("actions/edit-undo.png"), editorPane::undoLastAction));
         editBand.add(new JIPipeDesktopLargeButtonRibbonAction("Redo", "Repeats the last action", UIUtils.getIcon32FromResources("actions/edit-redo.png"), editorPane::redoLastAction));
-        if (getDataBrowser().getDataClass() == XMLData.class) {
+        if ( XMLData.class.isAssignableFrom(getDataBrowser().getDataClass())) {
             toolsBand.add(new JIPipeDesktopLargeButtonRibbonAction("Prettify", "Formats the XML data", UIUtils.getIcon32FromResources("actions/format-text-code.png"), this::formatXML));
         }
         toolsBand.add(new JIPipeDesktopLargeButtonRibbonAction("External editor", "Opens the text in an external editor", UIUtils.getIcon32FromResources("actions/open-in-new-window.png"), this::openInExternalEditor));
