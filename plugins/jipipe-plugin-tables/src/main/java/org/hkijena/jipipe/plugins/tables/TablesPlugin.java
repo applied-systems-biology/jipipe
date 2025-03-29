@@ -215,6 +215,7 @@ public class TablesPlugin extends JIPipePrepackagedDefaultJavaPlugin {
         registerNodeType("table-convert-to-histogram-key-value", ApplyExpressionPerLabelAlgorithm.class, UIUtils.getIconURLFromResources("actions/statistics.png"));
         registerNodeType("table-convert-to-histogram", TableToHistogramAlgorithm.class, UIUtils.getIconURLFromResources("actions/statistics.png"));
         registerNodeType("table-convert-to-histogram-2", TableToHistogram2Algorithm.class, UIUtils.getIconURLFromResources("actions/statistics.png"));
+        registerNodeType("table-convert-to-count-column-value-occurrences", TableColumnToCountAlgorithm.class, UIUtils.getIconURLFromResources("actions/statistics.png"));
         registerNodeType("table-rows-kmeans-clustering", KMeansClusteringAlgorithm.class, UIUtils.getIconURLFromResources("actions/statistics.png"));
         registerNodeType("table-rows-dbscan-clustering", DBSCANClusteringAlgorithm.class, UIUtils.getIconURLFromResources("actions/statistics.png"));
         registerNodeType("table-rows-fuzzy-kmeans-clustering", FuzzyKMeansClusteringAlgorithm.class, UIUtils.getIconURLFromResources("actions/statistics.png"));

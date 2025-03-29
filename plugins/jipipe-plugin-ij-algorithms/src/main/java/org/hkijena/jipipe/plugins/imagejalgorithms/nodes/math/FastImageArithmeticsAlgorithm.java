@@ -1547,6 +1547,7 @@ public class FastImageArithmeticsAlgorithm extends JIPipeIteratingAlgorithm {
     public void configureTwoInputExample(String expr) {
         JIPipeMutableSlotConfiguration mutableSlotConfiguration = (JIPipeMutableSlotConfiguration) getSlotConfiguration();
         mutableSlotConfiguration.addSlot(new JIPipeDataSlotInfo(ImagePlusGreyscaleData.class, JIPipeSlotType.Input, "I2", ""), true);
+        setExpression(new JIPipeExpressionParameter(expr));
     }
 
     public static class FastImageArithmeticsTokenMaker extends JIPipeExpressionEvaluatorSyntaxTokenMaker {
