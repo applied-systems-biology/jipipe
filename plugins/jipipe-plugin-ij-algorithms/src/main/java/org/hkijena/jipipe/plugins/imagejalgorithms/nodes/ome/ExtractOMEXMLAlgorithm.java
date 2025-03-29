@@ -25,12 +25,13 @@ import org.hkijena.jipipe.api.nodes.categories.ImagesNodeTypeCategory;
 import org.hkijena.jipipe.api.nodes.iterationstep.JIPipeIterationContext;
 import org.hkijena.jipipe.api.nodes.iterationstep.JIPipeSingleIterationStep;
 import org.hkijena.jipipe.plugins.imagejdatatypes.datatypes.OMEImageData;
+import org.hkijena.jipipe.plugins.imagejdatatypes.datatypes.OMEXMLData;
 import org.hkijena.jipipe.plugins.strings.XMLData;
 
 @SetJIPipeDocumentation(name = "Extract OME XML", description = "Extracts the OME metadata XML from an OME image")
 @ConfigureJIPipeNode(nodeTypeCategory = ImagesNodeTypeCategory.class, menuPath = "Convert")
 @AddJIPipeInputSlot(value = OMEImageData.class, name = "Input", create = true)
-@AddJIPipeOutputSlot(value = XMLData.class, name = "Output", create = true)
+@AddJIPipeOutputSlot(value = OMEXMLData.class, name = "Output", create = true)
 public class ExtractOMEXMLAlgorithm extends JIPipeSimpleIteratingAlgorithm {
     public ExtractOMEXMLAlgorithm(JIPipeNodeInfo info) {
         super(info);
@@ -43,6 +44,6 @@ public class ExtractOMEXMLAlgorithm extends JIPipeSimpleIteratingAlgorithm {
     @Override
     protected void runIteration(JIPipeSingleIterationStep iterationStep, JIPipeIterationContext iterationContext, JIPipeGraphNodeRunContext runContext, JIPipeProgressInfo progressInfo) {
         OMEImageData inputData = iterationStep.getInputData(getFirstInputSlot(), OMEImageData.class, progressInfo);
-        iterationStep.addOutputData(getFirstOutputSlot(), new XMLData(inputData.getMetadata().dumpXML()), progressInfo);
+        iterationStep.addOutputData(getFirstOutputSlot(), new OMEXMLData(inputData.getMetadata().dumpXML()), progressInfo);
     }
 }

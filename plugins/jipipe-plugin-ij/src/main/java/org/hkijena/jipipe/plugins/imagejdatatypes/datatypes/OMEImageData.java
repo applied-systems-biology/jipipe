@@ -67,6 +67,7 @@ import java.awt.image.BufferedImage;
 import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.IOException;
+import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.ArrayList;
 import java.util.Collections;
@@ -1108,5 +1109,10 @@ public class OMEImageData implements JIPipeData {
         ImagePlus imp = ImageJUtils.duplicate(image);
         imp.setTitle(getImage().getTitle());
         return imp;
+    }
+
+
+    public String getMetadataAsString() {
+        return getMetadata().dumpXML();
     }
 }

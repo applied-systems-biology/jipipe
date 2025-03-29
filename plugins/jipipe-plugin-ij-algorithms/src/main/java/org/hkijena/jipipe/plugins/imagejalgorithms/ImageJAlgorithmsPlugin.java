@@ -81,10 +81,7 @@ import org.hkijena.jipipe.plugins.imagejalgorithms.nodes.noise.AddNoise2DAlgorit
 import org.hkijena.jipipe.plugins.imagejalgorithms.nodes.noise.AddSaltAndPepperNoise2DAlgorithm;
 import org.hkijena.jipipe.plugins.imagejalgorithms.nodes.noise.DespeckleFilter2DAlgorithm;
 import org.hkijena.jipipe.plugins.imagejalgorithms.nodes.noise.RemoveOutliersFilter2DAlgorithm;
-import org.hkijena.jipipe.plugins.imagejalgorithms.nodes.ome.AnnotateOMEWithMetadataAlgorithm;
-import org.hkijena.jipipe.plugins.imagejalgorithms.nodes.ome.ExtractOMEROIAlgorithm;
-import org.hkijena.jipipe.plugins.imagejalgorithms.nodes.ome.ExtractOMEXMLAlgorithm;
-import org.hkijena.jipipe.plugins.imagejalgorithms.nodes.ome.OMEMetadataToTableAlgorithm;
+import org.hkijena.jipipe.plugins.imagejalgorithms.nodes.ome.*;
 import org.hkijena.jipipe.plugins.imagejalgorithms.nodes.opticalflow.MSEBlockFlowAlgorithm;
 import org.hkijena.jipipe.plugins.imagejalgorithms.nodes.opticalflow.MSEGaussianFlowAlgorithm;
 import org.hkijena.jipipe.plugins.imagejalgorithms.nodes.opticalflow.PMCCBlockFlowAlgorithm;
@@ -634,6 +631,7 @@ public class ImageJAlgorithmsPlugin extends JIPipePrepackagedDefaultJavaPlugin {
         registerNodeType("ome-image-from-image-plus", OMEImageFromImagePlus.class);
 
         registerNodeType("ome-annotate-with-metadata", AnnotateOMEWithMetadataAlgorithm.class, UIUtils.getIconURLFromResources("actions/tag.png"));
+        registerNodeType("ome-annotate-data-with-metadata", AnnotateDataWithOMEMetadataAlgorithm.class, UIUtils.getIconURLFromResources("actions/tag.png"));
         registerNodeType("ome-extract-metadata-as-table", OMEMetadataToTableAlgorithm.class, UIUtils.getIconURLFromResources("actions/table.png"));
 
         // Register enum parameters

@@ -423,6 +423,7 @@ public class ImageJDataTypesPlugin extends JIPipePrepackagedDefaultJavaPlugin {
                 OMEImageDataPreview.class,
                 new OpenInImageJDataDisplayOperation(),
                 new OpenInImageJ3DViewerDataDisplayOperation());
+        registerDatatype("ome-xml", OMEXMLData.class, UIUtils.getIconURLFromResources("data-types/ome-xml.png"));
         registerImageJDataImporter("ome-image-from-image-window", new OMEImageFromImageWindowImageJImporter(), ImagePlusWindowImageJImporterUI.class);
         registerImageJDataExporter("ome-image-to-image-window", new OMEImageToImageWindowImageJExporter(), DefaultImageJDataExporterUI.class);
 
@@ -604,6 +605,8 @@ public class ImageJDataTypesPlugin extends JIPipePrepackagedDefaultJavaPlugin {
         registerDatatypeConversion(new PlotToImageTypeConverter());
         registerDatatypeConversion(new ImageToLUTTypeConverter());
         registerDatatypeConversion(new LUTToImageTypeConverter());
+        registerDatatypeConversion(new OMEImageToOMEXMLTypeConverter());
+        registerDatatypeConversion(new XMLToOMEXMLTypeConverter());
 
         Set<Class<? extends JIPipeData>> dataTypes = getRegistry().getDatatypeRegistry().getRegisteredDataTypes().values()
                 .stream().filter(ImagePlusData.class::isAssignableFrom).collect(Collectors.toSet());
