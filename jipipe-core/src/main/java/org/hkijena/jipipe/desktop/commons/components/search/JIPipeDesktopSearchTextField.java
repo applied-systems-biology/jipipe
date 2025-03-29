@@ -75,7 +75,14 @@ public class JIPipeDesktopSearchTextField extends JPanel implements Predicate<St
         buttonPanel.setBackground(UIManager.getColor("TextField.background"));
         buttonPanel.setLayout(new BoxLayout(buttonPanel, BoxLayout.X_AXIS));
         add(buttonPanel, BorderLayout.EAST);
-        addButton("Clear search", UIUtils.getIconFromResources("actions/edit-clear.png"), (searchTextField) -> searchTextField.setText(""));
+        addButton("Clear search", UIUtils.getIconFromResources("actions/edit-clear.png"), (searchTextField) -> {
+            clear();
+        });
+    }
+
+    public void clear() {
+        setText("");
+        textField.requestFocusInWindow();
     }
 
     public void addButton(String name, Icon icon, Consumer<JIPipeDesktopSearchTextField> action) {
