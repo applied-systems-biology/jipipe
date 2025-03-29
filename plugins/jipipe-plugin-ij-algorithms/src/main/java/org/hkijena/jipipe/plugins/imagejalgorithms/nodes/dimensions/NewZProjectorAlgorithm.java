@@ -152,6 +152,7 @@ public class NewZProjectorAlgorithm extends JIPipeSimpleIteratingAlgorithm {
         ImagePlus projected = new ImagePlus(img.getTitle() + " projected " + projectedAxis, resultStack);
         projected.copyScale(img);
         projected.setDimensions(newChannels, newDepth, newFrames);
+        projected = ImageJUtils.copyLUTsIfNeeded(img, projected);
         return projected;
     }
 
@@ -195,6 +196,7 @@ public class NewZProjectorAlgorithm extends JIPipeSimpleIteratingAlgorithm {
         ImagePlus projected = new ImagePlus(img.getTitle() + " projected " + projectedAxis, resultStack);
         projected.copyScale(img);
         projected.setDimensions(newChannels, newDepth, newFrames);
+        projected = ImageJUtils.copyLUTsIfNeeded(img, projected);
         return projected;
     }
 

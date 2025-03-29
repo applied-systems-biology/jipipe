@@ -127,10 +127,13 @@ public class ExtendedDepthOfFocusProjectorAlgorithm extends JIPipeIteratingAlgor
                 break;
                 case Depth: {
                     result = processDepth(img, score, progressInfo);
+                    result = ImageJUtils.copyLUTsIfNeeded(img, result);
                 }
                 break;
                 case Frame: {
                     result = processFrame(img, score, progressInfo);
+                    ImageJUtils.copyLUTs(img, result);
+                    result = ImageJUtils.copyLUTsIfNeeded(img, result);
                 }
                 break;
                 default:

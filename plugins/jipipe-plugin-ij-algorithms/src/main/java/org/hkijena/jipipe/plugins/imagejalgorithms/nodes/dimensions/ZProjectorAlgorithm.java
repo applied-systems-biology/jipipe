@@ -26,6 +26,7 @@ import org.hkijena.jipipe.api.nodes.iterationstep.JIPipeIterationContext;
 import org.hkijena.jipipe.api.nodes.iterationstep.JIPipeSingleIterationStep;
 import org.hkijena.jipipe.api.parameters.JIPipeParameter;
 import org.hkijena.jipipe.plugins.imagejdatatypes.datatypes.ImagePlusData;
+import org.hkijena.jipipe.plugins.imagejdatatypes.util.ImageJUtils;
 
 
 /**
@@ -80,6 +81,7 @@ public class ZProjectorAlgorithm extends JIPipeSimpleIteratingAlgorithm {
             int start = startSlice >= 0 ? startSlice + 1 : 1;
             int end = stopSlice >= 0 ? Math.min(img.getStackSize(), stopSlice + 1) : img.getStackSize();
             result = ZProjector.run(img, method.toString() + (projectAllHyperstackTimePoints ? " all" : ""), start, end);
+            result = ImageJUtils.copyLUTsIfNeeded(img, result);
         } else {
             result = img;
         }

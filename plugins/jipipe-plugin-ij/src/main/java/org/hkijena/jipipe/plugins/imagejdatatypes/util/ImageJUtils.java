@@ -2144,6 +2144,7 @@ public class ImageJUtils {
     }
 
     public static LUT[] getChannelLUT(ImagePlus image) {
+        ImageSliceIndex original = new ImageSliceIndex(image.getC(), image.getZ(), image.getT());
         LUT[] luts = new LUT[image.getNChannels()];
         for (int c = 0; c < image.getNChannels(); c++) {
             if (image.isComposite()) {
@@ -2164,7 +2165,7 @@ public class ImageJUtils {
                 }
             }
         }
-        image.setPosition(1, 1, 1);
+        image.setPosition(original.getC(), original.getZ(), original.getT());
         return luts;
     }
 
@@ -2179,6 +2180,12 @@ public class ImageJUtils {
         setLut(image, lut, channels);
     }
 
+    /**
+     * Sets the lut of the specified channels
+     * @param image the image
+     * @param lut the LUT
+     * @param channels the channels (zero-based). If empty or null, all channels will be modified.
+     */
     public static void setLut(ImagePlus image, LUT lut, Set<Integer> channels) {
         // Standard LUT
         ImageSliceIndex original = new ImageSliceIndex(image.getC(), image.getZ(), image.getT());
@@ -2192,6 +2199,7 @@ public class ImageJUtils {
                     for (int t = 0; t < image.getNFrames(); t++) {
                         image.setPosition(c + 1, z + 1, t + 1);
                         image.getProcessor().setLut(lut);
+//                        getSliceZero(image, c, z, t).setLut(lut);
                     }
                 }
             }
@@ -2388,6 +2396,26 @@ public class ImageJUtils {
 
     public static void copyAttributes(ImagePlus src, ImagePlus target) {
         target.copyAttributes(src);
+    }
+
+    public static void copyLUTs(ImagePlus src, ImagePlus target) {
+        LUT[] luts = ImageJUtils.getChannelLUT(src);
+        for (int c = 0; c < Math.min(luts.length, target.getNChannels()); c++) {
+            setLut(target, luts[c], Collections.singleton(c));
+        }
+    }
+
+    public static ImagePlus copyLUTsIfNeeded(ImagePlus img, ImagePlus projected) {
+        if(img.isComposite()) {
+            if(!projected.isComposite()) {
+                projected = new CompositeImage(projected);
+            }
+            copyLUTs(img, projected);
+        }
+        else {
+            copyLUTs(img, projected);
+        }
+        return projected;
     }
 }
 
