@@ -89,6 +89,7 @@ import java.nio.file.Paths;
 import java.util.*;
 import java.util.List;
 import java.util.concurrent.atomic.AtomicBoolean;
+import java.util.function.Consumer;
 import java.util.function.Predicate;
 import java.util.function.Supplier;
 import java.util.stream.Collectors;
@@ -785,6 +786,26 @@ public class UIUtils {
                 super.mouseClicked(mouseEvent);
                 if (mouseEvent.getButton() == MouseEvent.BUTTON3) {
                     popupMenu.revalidate();
+                    popupMenu.show(mouseEvent.getComponent(), mouseEvent.getX(), mouseEvent.getY());
+                }
+            }
+        });
+    }
+
+    /**
+     * Adds an existing popup menu to a button
+     * Adds a function that is run before the popup is shown
+     *
+     * @param target target button
+     */
+    public static void addReloadableRightClickPopupMenuToComponent(Component target, JPopupMenu popupMenu, Consumer<JPopupMenu> reloadFunction) {
+        target.addMouseListener(new MouseAdapter() {
+            @Override
+            public void mouseClicked(MouseEvent mouseEvent) {
+                super.mouseClicked(mouseEvent);
+                if (mouseEvent.getButton() == MouseEvent.BUTTON3) {
+                    popupMenu.revalidate();
+                    reloadFunction.accept(popupMenu);
                     popupMenu.show(mouseEvent.getComponent(), mouseEvent.getX(), mouseEvent.getY());
                 }
             }

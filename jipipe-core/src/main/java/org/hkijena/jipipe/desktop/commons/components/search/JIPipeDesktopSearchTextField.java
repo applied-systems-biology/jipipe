@@ -33,7 +33,7 @@ public class JIPipeDesktopSearchTextField extends JPanel implements Predicate<St
 
     public static final int ANIMATION_DELAY = 80;
     public static final double ANIMATION_SPEED = 0.05;
-    private final JXTextField textField = new JXTextField();
+    private final JTextField textField = new JTextField();
     private final JPanel buttonPanel = new JPanel();
     private final Timer attentionAnimationTimer;
     private String[] searchStrings = new String[0];
@@ -68,7 +68,13 @@ public class JIPipeDesktopSearchTextField extends JPanel implements Predicate<St
         setBackground(UIManager.getColor("TextField.background"));
         setBorder(UIUtils.createControlBorder());
 
-        textField.setPrompt("Search ...");
+
+        JButton searchButton = new JButton(UIUtils.getIconInvertedFromResources("actions/search.png"));
+        searchButton.addActionListener(e -> { textField.requestFocusInWindow(); textField.selectAll(); });
+        UIUtils.makeButtonFlat25x25(searchButton);
+
+        add(searchButton, BorderLayout.WEST);
+
         textField.setBorder(null);
         add(textField, BorderLayout.CENTER);
 
@@ -112,7 +118,7 @@ public class JIPipeDesktopSearchTextField extends JPanel implements Predicate<St
         textField.setText(text);
     }
 
-    public JXTextField getTextField() {
+    public JTextField getTextField() {
         return textField;
     }
 

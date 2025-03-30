@@ -733,7 +733,7 @@ public class JIPipeDesktopAddNodesPanel extends JIPipeDesktopWorkbenchPanel {
     }
 
     public void focusSearchBar() {
-        JXTextField textField = searchField.getTextField();
+        JTextField textField = searchField.getTextField();
         textField.selectAll();
         textField.grabFocus();
         textField.requestFocus();
