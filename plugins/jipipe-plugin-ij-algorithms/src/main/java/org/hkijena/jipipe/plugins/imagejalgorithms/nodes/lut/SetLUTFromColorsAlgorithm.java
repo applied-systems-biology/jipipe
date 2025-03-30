@@ -59,28 +59,13 @@ public class SetLUTFromColorsAlgorithm extends JIPipeSimpleIteratingAlgorithm {
         this.restrictToChannels = new OptionalIntegerRange(other.restrictToChannels);
     }
 
-    public static LUT createGradientLUT(Color firstColor, Color secondColor) {
-        byte[] rLut = new byte[256];
-        byte[] gLut = new byte[256];
-        byte[] bLut = new byte[256];
-        double dr = (secondColor.getRed() - firstColor.getRed()) / 256.0;
-        double dg = (secondColor.getGreen() - firstColor.getGreen()) / 256.0;
-        double db = (secondColor.getBlue() - firstColor.getBlue()) / 256.0;
-        for (int i = 0; i < 256; i++) {
-            rLut[i] = (byte) (firstColor.getRed() + dr * i);
-            gLut[i] = (byte) (firstColor.getGreen() + dg * i);
-            bLut[i] = (byte) (firstColor.getBlue() + db * i);
-        }
-        return new LUT(rLut, gLut, bLut);
-    }
-
     @Override
     protected void runIteration(JIPipeSingleIterationStep iterationStep, JIPipeIterationContext iterationContext, JIPipeGraphNodeRunContext runContext, JIPipeProgressInfo progressInfo) {
         ImagePlusData data = iterationStep.getInputData(getFirstInputSlot(), ImagePlusGreyscaleData.class, progressInfo);
         if (duplicateImage)
             data = (ImagePlusData) data.duplicate(progressInfo);
         data.ensureComposite();
-        LUT lut = createGradientLUT(firstColor, secondColor);
+        LUT lut = ImageJUtils.createGradientLUT(firstColor, secondColor);
         ImagePlus image = data.getImage();
         Set<Integer> channels = new HashSet<>();
         if (restrictToChannels.isEnabled()) {

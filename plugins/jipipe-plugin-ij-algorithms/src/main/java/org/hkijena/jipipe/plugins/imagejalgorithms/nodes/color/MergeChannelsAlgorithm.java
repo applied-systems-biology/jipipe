@@ -50,14 +50,14 @@ import java.util.Set;
 /**
  * Wrapper around {@link ImageProcessor}
  */
-@SetJIPipeDocumentation(name = "Merge channels", description = "Merges each greyscale image plane into a multi-channel image. ")
+@SetJIPipeDocumentation(name = "Merge channels (classic)", description = "Merges each greyscale image plane into a multi-channel image. " +
+        "Implements the standard ImageJ algorithm for merging channels that either creates an RGB or a composite image. " +
+        "We recommend to use Blend images for creating renders and Merge channels (composite) that provide more options for the specific use cases.")
 @ConfigureJIPipeNode(menuPath = "Colors", nodeTypeCategory = ImagesNodeTypeCategory.class)
 @AddJIPipeInputSlot(value = ImagePlusGreyscaleData.class, name = "Input")
 @AddJIPipeOutputSlot(value = ImagePlusData.class, name = "Output")
 @AddJIPipeNodeAlias(nodeTypeCategory = ImageJNodeTypeCategory.class, menuPath = "Image\nColor", aliasName = "Merge Channels...")
 public class MergeChannelsAlgorithm extends JIPipeIteratingAlgorithm {
-
-    private static final RGBStackMerge RGB_STACK_MERGE = new RGBStackMerge();
     private final InputSlotMapParameterCollection channelColorAssignment;
     private boolean createComposite = false;
 
@@ -107,6 +107,8 @@ public class MergeChannelsAlgorithm extends JIPipeIteratingAlgorithm {
 
     @Override
     protected void runIteration(JIPipeSingleIterationStep iterationStep, JIPipeIterationContext iterationContext, JIPipeGraphNodeRunContext runContext, JIPipeProgressInfo progressInfo) {
+        RGBStackMerge rgbStackMerge = new RGBStackMerge();
+        
         ImagePlus[] images = new ImagePlus[ChannelColor.values().length];
         ImagePlus firstImage = null;
         for (int i = 0; i < ChannelColor.values().length; ++i) {
@@ -205,10 +207,10 @@ public class MergeChannelsAlgorithm extends JIPipeIteratingAlgorithm {
         if (isRGB && extraIChannels > 0) {
             imp2 = mergeUsingRGBProjection(firstImage, images, composite);
         } else if ((composite && !isRGB) || mergeHyperstacks) {
-            imp2 = RGB_STACK_MERGE.mergeHyperstacks(images, true);
+            imp2 = rgbStackMerge.mergeHyperstacks(images, true);
             if (imp2 == null) return;
         } else {
-            ImageStack rgb = RGB_STACK_MERGE.mergeStacks(width, height, stackSize, stacks[0], stacks[1], stacks[2], true);
+            ImageStack rgb = rgbStackMerge.mergeStacks(width, height, stackSize, stacks[0], stacks[1], stacks[2], true);
             imp2 = new ImagePlus("RGB", rgb);
             if (composite) {
                 imp2 = CompositeConverter.makeComposite(imp2);
