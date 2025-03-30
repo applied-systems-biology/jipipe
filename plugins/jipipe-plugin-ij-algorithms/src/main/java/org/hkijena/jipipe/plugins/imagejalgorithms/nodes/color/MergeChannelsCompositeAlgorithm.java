@@ -39,6 +39,10 @@ import org.hkijena.jipipe.plugins.imagejdatatypes.util.ImageJIterationUtils;
 import org.hkijena.jipipe.plugins.imagejdatatypes.util.ImageJUtils;
 import org.hkijena.jipipe.plugins.imagejdatatypes.util.dimensions.ImageSliceIndex;
 import org.hkijena.jipipe.plugins.parameters.library.graph.InputSlotMapParameterCollection;
+import org.hkijena.jipipe.plugins.parameters.library.primitives.vectors.Vector2dParameter;
+import org.hkijena.jipipe.plugins.parameters.library.primitives.vectors.Vector2iParameter;
+import org.hkijena.jipipe.plugins.parameters.library.primitives.vectors.VectorParameterSettings;
+import org.hkijena.jipipe.utils.ImageJCalibrationMode;
 
 import java.awt.*;
 import java.util.*;
@@ -54,7 +58,9 @@ import java.util.List;
 public class MergeChannelsCompositeAlgorithm extends JIPipeIteratingAlgorithm {
 
     private final InputSlotMapParameterCollection channelColorAssignment;
-
+    private boolean autoCalibrate = false;
+    private ImageJCalibrationMode calibrationMode = ImageJCalibrationMode.AutomaticImageJ;
+    private Vector2dParameter customRange = new Vector2dParameter();
 
     /**
      * Instantiates a new node type.
@@ -81,6 +87,10 @@ public class MergeChannelsCompositeAlgorithm extends JIPipeIteratingAlgorithm {
         channelColorAssignment = new InputSlotMapParameterCollection(Color.class, this, this::getNewChannelColor, false);
         other.channelColorAssignment.copyTo(channelColorAssignment);
         registerSubParameter(channelColorAssignment);
+
+        this.calibrationMode = other.calibrationMode;
+        this.autoCalibrate = other.autoCalibrate;
+        this.customRange = new Vector2dParameter(other.customRange);
     }
 
     private Color getNewChannelColor(JIPipeDataSlotInfo info) {
@@ -125,6 +135,12 @@ public class MergeChannelsCompositeAlgorithm extends JIPipeIteratingAlgorithm {
             ImageJUtils.setLut(imp2, lut, Collections.singleton(c));
         }
 
+        if(autoCalibrate) {
+            for (int c = 0; c < imp2.getNChannels(); c++) {
+                ImageJUtils.calibrate(imp2, calibrationMode, customRange.getX(), customRange.getY(), Collections.singleton(c));
+            }
+        }
+
         iterationStep.addOutputData(getFirstOutputSlot(), new ImagePlusData(imp2), progressInfo);
     }
 
@@ -132,5 +148,39 @@ public class MergeChannelsCompositeAlgorithm extends JIPipeIteratingAlgorithm {
     @JIPipeParameter("channel-color-assignments")
     public InputSlotMapParameterCollection getChannelColorAssignment() {
         return channelColorAssignment;
+    }
+
+    @SetJIPipeDocumentation(name = "Adjust displayed contrast", description = "If enabled, apply contrast enhancement")
+    @JIPipeParameter("auto-calibrate")
+    public boolean isAutoCalibrate() {
+        return autoCalibrate;
+    }
+
+    @JIPipeParameter("auto-calibrate")
+    public void setAutoCalibrate(boolean autoCalibrate) {
+        this.autoCalibrate = autoCalibrate;
+    }
+
+    @SetJIPipeDocumentation(name = "Calibration mode", description = "Calibration mode that should be applied")
+    @JIPipeParameter("calibration-mode")
+    public ImageJCalibrationMode getCalibrationMode() {
+        return calibrationMode;
+    }
+
+    @JIPipeParameter("calibration-mode")
+    public void setCalibrationMode(ImageJCalibrationMode calibrationMode) {
+        this.calibrationMode = calibrationMode;
+    }
+
+    @SetJIPipeDocumentation(name = "Calibration custom range", description = "If the calibration is set to custom, use the specified range")
+    @JIPipeParameter("calibration-custom-range")
+    @VectorParameterSettings(xLabel = "Min", yLabel = "Max")
+    public Vector2dParameter getCustomRange() {
+        return customRange;
+    }
+
+    @JIPipeParameter("calibration-custom-range")
+    public void setCustomRange(Vector2dParameter customRange) {
+        this.customRange = customRange;
     }
 }

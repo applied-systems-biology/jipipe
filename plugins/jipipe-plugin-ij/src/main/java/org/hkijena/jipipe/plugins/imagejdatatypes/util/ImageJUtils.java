@@ -2208,6 +2208,30 @@ public class ImageJUtils {
         image.setPosition(original.getC(), original.getZ(), original.getT());
     }
 
+    public static void calibrate(ImagePlus image, ImageJCalibrationMode calibrationMode, double min, double max, Set<Integer> channels) {
+        // Standard LUT
+        ImageSliceIndex original = new ImageSliceIndex(image.getC(), image.getZ(), image.getT());
+        for (int c = 0; c < image.getNChannels(); c++) {
+            if (channels == null || channels.isEmpty() || channels.contains(c)) {
+                image.setPosition(c + 1, 1, 1);
+//                if (image.isComposite()) {
+//                    CompositeImage compositeImage = (CompositeImage) image;
+//                    compositeImage.setChannelLut(lut, c + 1);
+//                }
+//                for (int z = 0; z < image.getNSlices(); z++) {
+//                    for (int t = 0; t < image.getNFrames(); t++) {
+//                        image.setPosition(c + 1, z + 1, t + 1);
+//                        image.getProcessor().setLut(lut);
+////                        getSliceZero(image, c, z, t).setLut(lut);
+//                    }
+//                }c
+                calibrate(image, calibrationMode, min, max);
+            }
+        }
+
+        image.setPosition(original.getC(), original.getZ(), original.getT());
+    }
+
     public static Map<ImageSliceIndex, ImageProcessor> splitIntoSlices(ImagePlus image) {
         Map<ImageSliceIndex, ImageProcessor> result = new HashMap<>();
         for (int c = 0; c < image.getNChannels(); c++) {
