@@ -72,6 +72,8 @@ public class JIPipeDesktopSearchTextField extends JPanel implements Predicate<St
         JButton searchButton = new JButton(UIUtils.getIconInvertedFromResources("actions/search.png"));
         searchButton.addActionListener(e -> { textField.requestFocusInWindow(); textField.selectAll(); });
         UIUtils.makeButtonFlat25x25(searchButton);
+        searchButton.setRequestFocusEnabled(false);
+        searchButton.setFocusable(false);
 
         add(searchButton, BorderLayout.WEST);
 
