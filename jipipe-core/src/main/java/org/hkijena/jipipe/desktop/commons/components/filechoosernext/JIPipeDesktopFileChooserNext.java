@@ -723,7 +723,14 @@ public class JIPipeDesktopFileChooserNext extends JPanel {
 
             Path current = currentDirectory;
             do {
-                JButton navigateButton = new JButton(StringUtils.orElse(current.getFileName(), "/"));
+                String name;
+                if (current.getFileName() != null) {
+                    name = current.getFileName().toString();
+                } else {
+                    name = current.toString();
+                }
+
+                JButton navigateButton = new JButton(StringUtils.orElse(name, "/"));
                 navigateButton.setBorder(BorderFactory.createEmptyBorder(3, 3, 3, 3));
                 navigateButton.setCursor(Cursor.getPredefinedCursor(Cursor.DEFAULT_CURSOR));
 
