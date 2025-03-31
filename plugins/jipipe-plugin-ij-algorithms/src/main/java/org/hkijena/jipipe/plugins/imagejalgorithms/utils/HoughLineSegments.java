@@ -32,7 +32,7 @@ import java.util.List;
 
 /**
  * Implementation of Octave's Hough Line segments
- * Based on code by Hartmut Gimpel <hg_code@gmx.de>
+ * Based on code by Hartmut Gimpel (hg_code@gmx.de)
  */
 public class HoughLineSegments {
 
