@@ -74,7 +74,7 @@ public class StringDesktopParameterEditorUI extends JIPipeDesktopParameterEditor
                     iconLabel = new JLabel(imageIcon);
                 }
 
-                JIPipeDesktopFancyTextField textField = new JIPipeDesktopFancyTextField(iconLabel, prompt, true);
+                JIPipeDesktopFancyTextField textField = new JIPipeDesktopFancyTextField(iconLabel, prompt, false);
                 textComponent = textField.getTextField();
                 add(textField, BorderLayout.CENTER);
             }
