@@ -52,6 +52,7 @@ import java.awt.geom.AffineTransform;
 import java.awt.geom.PathIterator;
 import java.awt.image.BufferedImage;
 import java.awt.image.DataBufferByte;
+import java.awt.image.DataBufferInt;
 import java.io.IOException;
 import java.nio.file.Path;
 import java.util.*;
@@ -839,20 +840,22 @@ public class ImageJUtils {
             mask = mask.resize(target.getWidth(), target.getHeight(), false);
         }
         byte[] sourcePixels = (byte[]) mask.getPixels();
-        byte[] targetPixels = ((DataBufferByte) target.getRaster().getDataBuffer()).getData();
+        int[] targetPixels = ((DataBufferInt) target.getRaster().getDataBuffer()).getData();
 
         for (int i = 0; i < sourcePixels.length; i++) {
+            int argb = sourcePixels[i];
             if (Byte.toUnsignedInt(sourcePixels[i]) > 0) {
-                targetPixels[i * 4] = (byte) foreground.getAlpha(); // A
-                targetPixels[i * 4 + 1] = (byte) foreground.getBlue(); // B
-                targetPixels[i * 4 + 2] = (byte) foreground.getGreen(); // G
-                targetPixels[i * 4 + 3] = (byte) foreground.getRed(); // R
+                argb = (foreground.getAlpha() << 24) |
+                        (foreground.getRed() << 16) |
+                        (foreground.getGreen() << 8) |
+                        foreground.getBlue();
             } else {
-                targetPixels[i * 4] = (byte) background.getAlpha(); // A
-                targetPixels[i * 4 + 1] = (byte) background.getBlue(); // B
-                targetPixels[i * 4 + 2] = (byte) background.getGreen(); // G
-                targetPixels[i * 4 + 3] = (byte) background.getRed(); // R
+                argb = (background.getAlpha() << 24) |
+                        (background.getRed() << 16) |
+                        (background.getGreen() << 8) |
+                        background.getBlue();
             }
+            targetPixels[i] = argb;
         }
     }
 

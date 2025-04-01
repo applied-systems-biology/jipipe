@@ -107,7 +107,7 @@ public class PencilMaskDrawer2DTool extends MaskDrawer2DTool implements MouseCli
         final int pencilHeight = ((Number) pencilSizeYSpinner.getModel().getValue()).intValue();
         if (currentPencil == null || currentPencil.getWidth() != pencilWidth || currentPencil.getHeight() != pencilHeight) {
             currentPencil = IJ.createImage("Pencil", pencilWidth, pencilHeight, 1, 8);
-            currentPencilGhost = new BufferedImage(pencilWidth, pencilHeight, BufferedImage.TYPE_4BYTE_ABGR);
+            currentPencilGhost = new BufferedImage(pencilWidth, pencilHeight, BufferedImage.TYPE_INT_ARGB);
         }
         ByteProcessor processor = (ByteProcessor) currentPencil.getProcessor();
 

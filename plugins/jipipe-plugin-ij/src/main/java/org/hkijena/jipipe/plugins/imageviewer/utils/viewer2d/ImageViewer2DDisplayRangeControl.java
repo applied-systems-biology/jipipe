@@ -205,7 +205,7 @@ public class ImageViewer2DDisplayRangeControl extends JPanel implements ThumbLis
                             mode,
                             minSelectableValue,
                             maxSelectableValue,
-                            getCalibrationPlugin().getViewerPanel2D().getCurrentSliceStats().getImageStatistics());
+                            getCalibrationPlugin().getViewerPanel2D().getCurrentSliceStats().getFastImageStatistics());
                     customMin = calibration[0];
                     customMax = calibration[1];
                 }

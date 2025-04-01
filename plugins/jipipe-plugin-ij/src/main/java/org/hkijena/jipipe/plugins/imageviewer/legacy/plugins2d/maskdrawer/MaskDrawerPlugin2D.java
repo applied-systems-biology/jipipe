@@ -300,7 +300,16 @@ public class MaskDrawerPlugin2D extends JIPipeDesktopLegacyImageViewerPlugin2D i
         currentTool.onHighlightColorChanged();
     }
 
+    private void ensureMaskPreview() {
+        if(getCurrentImagePlus() != null) {
+            currentMaskSlicePreview = new BufferedImage(getCurrentImagePlus().getWidth(),
+                    getCurrentImagePlus().getHeight(),
+                    BufferedImage.TYPE_INT_ARGB);
+        }
+    }
+
     public void recalculateMaskPreview() {
+        ensureMaskPreview();
         if (currentMaskSlice == null || currentMaskSlicePreview == null)
             return;
         ImageJUtils.maskToBufferedImage(currentMaskSlice, currentMaskSlicePreview, maskColor, ColorUtils.WHITE_TRANSPARENT);
@@ -355,9 +364,7 @@ public class MaskDrawerPlugin2D extends JIPipeDesktopLegacyImageViewerPlugin2D i
                 } else {
                     mask = maskGenerator.apply(getCurrentImagePlus());
                 }
-                currentMaskSlicePreview = new BufferedImage(getCurrentImagePlus().getWidth(),
-                        getCurrentImagePlus().getHeight(),
-                        BufferedImage.TYPE_4BYTE_ABGR);
+                currentMaskSlicePreview = null;
                 currentMaskSlice = mask.getProcessor();
                 setMask(mask);
             }
@@ -599,9 +606,9 @@ public class MaskDrawerPlugin2D extends JIPipeDesktopLegacyImageViewerPlugin2D i
         int c = Math.min(mask.getNChannels() - 1, sliceIndex.getC());
         int t = Math.min(mask.getNFrames() - 1, sliceIndex.getT());
         ImageProcessor selectedMaskSlice = ImageJUtils.getSliceZero(mask, c, z, t);
-        BufferedImage renderedMask = new BufferedImage(mask.getWidth(), mask.getHeight(), BufferedImage.TYPE_4BYTE_ABGR);
+        BufferedImage renderedMask = new BufferedImage(mask.getWidth(), mask.getHeight(), BufferedImage.TYPE_INT_ARGB);
         if (magnification != 1.0) {
-            renderedMask = BufferedImageUtils.toBufferedImage(renderedMask.getScaledInstance(image.getWidth(), image.getHeight(), Image.SCALE_DEFAULT), BufferedImage.TYPE_4BYTE_ABGR);
+            renderedMask = BufferedImageUtils.toBufferedImage(renderedMask.getScaledInstance(image.getWidth(), image.getHeight(), Image.SCALE_DEFAULT), BufferedImage.TYPE_INT_ARGB);
         }
         ImageJUtils.maskToBufferedImage(selectedMaskSlice, renderedMask, maskColor, ColorUtils.WHITE_TRANSPARENT);
         Graphics2D graphics = image.createGraphics();

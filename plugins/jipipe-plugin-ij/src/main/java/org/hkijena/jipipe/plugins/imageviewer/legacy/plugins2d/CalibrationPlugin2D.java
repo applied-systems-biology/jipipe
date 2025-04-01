@@ -161,7 +161,7 @@ public class CalibrationPlugin2D extends GeneralImageViewerPanelPlugin2D {
                 displayRangeCalibrationControl.getMode(),
                 displayRangeCalibrationControl.getCustomMin(),
                 displayRangeCalibrationControl.getCustomMax(),
-                getViewerPanel2D().getSliceStats(new ImageSliceIndex(c, z, t)).getImageStatistics());
+                getViewerPanel2D().getSliceStats(new ImageSliceIndex(c, z, t)).getFastImageStatistics());
         return processor;
     }
 

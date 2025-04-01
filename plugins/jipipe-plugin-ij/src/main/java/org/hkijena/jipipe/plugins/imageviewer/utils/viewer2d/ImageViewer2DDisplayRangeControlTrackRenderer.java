@@ -104,7 +104,7 @@ public class ImageViewer2DDisplayRangeControlTrackRenderer extends JComponent im
         // Draw the label text (requires statistics)
         if(currentSliceStats != null) {
 
-            ImageStatistics statistics = currentSliceStats.getImageStatistics();
+            ImageStatistics statistics = currentSliceStats.getFastImageStatistics();
             if (statistics != null) {
                 g.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
                 String valueMin = format.format(displayRangeControl.getMinSelectableValue() + slider.getModel().getThumbAt(0).getPosition() *
