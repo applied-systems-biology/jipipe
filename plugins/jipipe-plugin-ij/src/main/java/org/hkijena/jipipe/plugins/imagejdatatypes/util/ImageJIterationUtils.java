@@ -130,7 +130,7 @@ public class ImageJIterationUtils {
      * Runs the function for each T hyperstack
      *
      * @param img          the image
-     * @param function     the function. The indices are ZERO-based (Z is always -1)
+     * @param function     the function. The indices are ZERO-based
      * @param progressInfo the progress
      */
     public static void forEachIndexedTHyperStack(ImagePlus img, TriConsumer<ImagePlus, ImageSliceIndex, JIPipeProgressInfo> function, JIPipeProgressInfo progressInfo) {
@@ -141,12 +141,60 @@ public class ImageJIterationUtils {
                     return;
                 ImagePlus cube = ImageJUtils.extractTHyperStack(img, t);
                 progressInfo.resolveAndLog("Frame", iterationIndex, img.getNFrames()).log("t=" + t);
-                JIPipeProgressInfo stackProgress = progressInfo.resolveAndLog("Frame", iterationIndex, img.getNChannels() * img.getNFrames()).resolve("t=" + t);
+                JIPipeProgressInfo stackProgress = progressInfo.resolveAndLog("Frame", iterationIndex, img.getNFrames()).resolve("t=" + t);
                 function.accept(cube, new ImageSliceIndex(-1, -1, t), stackProgress);
                 ++iterationIndex;
             }
         } else {
             function.accept(img, new ImageSliceIndex(-1, -1, 0), progressInfo);
+        }
+    }
+
+    /**
+     * Runs the function for each C hyperstack
+     *
+     * @param img          the image
+     * @param function     the function. The indices are ZERO-based
+     * @param progressInfo the progress
+     */
+    public static void forEachIndexedCHyperStack(ImagePlus img, TriConsumer<ImagePlus, ImageSliceIndex, JIPipeProgressInfo> function, JIPipeProgressInfo progressInfo) {
+        if (img.hasImageStack()) {
+            int iterationIndex = 0;
+            for (int c = 0; c < img.getNChannels(); c++) {
+                if (progressInfo.isCancelled())
+                    return;
+                ImagePlus cube = ImageJUtils.extractCHyperStack(img, c);
+                progressInfo.resolveAndLog("Channel", iterationIndex, img.getNFrames()).log("c=" + c);
+                JIPipeProgressInfo stackProgress = progressInfo.resolveAndLog("Channel", iterationIndex, img.getNChannels()).resolve("c=" + c);
+                function.accept(cube, new ImageSliceIndex(c, -1, -1), stackProgress);
+                ++iterationIndex;
+            }
+        } else {
+            function.accept(img, new ImageSliceIndex(0, -1, -1), progressInfo);
+        }
+    }
+
+    /**
+     * Runs the function for each Z hyperstack
+     *
+     * @param img          the image
+     * @param function     the function. The indices are ZERO-based
+     * @param progressInfo the progress
+     */
+    public static void forEachIndexedZHyperStack(ImagePlus img, TriConsumer<ImagePlus, ImageSliceIndex, JIPipeProgressInfo> function, JIPipeProgressInfo progressInfo) {
+        if (img.hasImageStack()) {
+            int iterationIndex = 0;
+            for (int z = 0; z < img.getNSlices(); z++) {
+                if (progressInfo.isCancelled())
+                    return;
+                ImagePlus cube = ImageJUtils.extractZHyperStack(img, z);
+                progressInfo.resolveAndLog("Slice", iterationIndex, img.getNFrames()).log("z=" + z);
+                JIPipeProgressInfo stackProgress = progressInfo.resolveAndLog("Slice", iterationIndex, img.getNSlices()).resolve("z=" + z);
+                function.accept(cube, new ImageSliceIndex(-1, z, -1), stackProgress);
+                ++iterationIndex;
+            }
+        } else {
+            function.accept(img, new ImageSliceIndex(-1, 0, -1), progressInfo);
         }
     }
 

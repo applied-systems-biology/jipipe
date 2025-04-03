@@ -1076,12 +1076,39 @@ public class ImageJUtils {
         return result;
     }
 
-    public static ImagePlus extractTHyperStack(ImagePlus img, int t) {
+    public static ImagePlus extractTHyperStack(ImagePlus img, final int t) {
         Map<ImageSliceIndex, ImageProcessor> sliceMap = new HashMap<>();
         for (int c = 0; c < img.getNChannels(); c++) {
             for (int z = 0; z < img.getNSlices(); z++) {
                 ImageProcessor processor = getSliceZero(img, c, z, t);
                 sliceMap.put(new ImageSliceIndex(c, z, 0), processor);
+            }
+        }
+        ImagePlus result = mergeMappedSlices(sliceMap);
+        result.copyScale(img);
+        return result;
+    }
+
+
+    public static ImagePlus extractCHyperStack(ImagePlus img, final int c) {
+        Map<ImageSliceIndex, ImageProcessor> sliceMap = new HashMap<>();
+        for (int t = 0; t < img.getNFrames(); t++) {
+            for (int z = 0; z < img.getNSlices(); z++) {
+                ImageProcessor processor = getSliceZero(img, c, z, t);
+                sliceMap.put(new ImageSliceIndex(0, z, t), processor);
+            }
+        }
+        ImagePlus result = mergeMappedSlices(sliceMap);
+        result.copyScale(img);
+        return result;
+    }
+
+    public static ImagePlus extractZHyperStack(ImagePlus img, final int z) {
+        Map<ImageSliceIndex, ImageProcessor> sliceMap = new HashMap<>();
+        for (int t = 0; t < img.getNFrames(); t++) {
+            for (int c = 0; c < img.getNChannels(); c++) {
+                ImageProcessor processor = getSliceZero(img, c, z, t);
+                sliceMap.put(new ImageSliceIndex(c, 0, t), processor);
             }
         }
         ImagePlus result = mergeMappedSlices(sliceMap);

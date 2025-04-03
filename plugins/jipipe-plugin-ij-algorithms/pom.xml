@@ -227,6 +227,10 @@
         </dependency>
         <dependency>
             <groupId>sc.fiji</groupId>
+            <artifactId>CorrectBleach_</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>sc.fiji</groupId>
             <artifactId>imagescience</artifactId>
         </dependency>
         <dependency>
