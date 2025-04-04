@@ -31,10 +31,7 @@ import java.net.MalformedURLException;
 import java.net.URL;
 import java.nio.file.Files;
 import java.nio.file.Path;
-import java.util.ArrayList;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Set;
+import java.util.*;
 
 @JsonSerialize(using = JIPipeDesktopEasyInstallExternalEnvironmentInstallerPackage.Serializer.class)
 public class JIPipeDesktopEasyInstallExternalEnvironmentInstallerPackage {
@@ -90,7 +87,7 @@ public class JIPipeDesktopEasyInstallExternalEnvironmentInstallerPackage {
             } else {
                 Set<String> supported = new HashSet<>();
                 for (JsonNode element : ImmutableList.copyOf(operatingSystemsNode.elements())) {
-                    supported.add(element.textValue().toLowerCase());
+                    supported.add(element.textValue().toLowerCase(Locale.ROOT));
                 }
                 availablePackage.setSupportsLinux(supported.contains("linux"));
                 availablePackage.setSupportsMacOS(supported.contains("macos") || supported.contains("osx"));

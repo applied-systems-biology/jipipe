@@ -132,9 +132,9 @@ public class BooleanFormData extends ParameterFormData {
                     this.value = true;
                 else if (falseString.isEnabled() && value.equals(falseString.getContent()))
                     this.value = false;
-                else if (value.toLowerCase().startsWith("t"))
+                else if (value.toLowerCase(Locale.ROOT).startsWith("t"))
                     this.value = true;
-                else if (value.toLowerCase().startsWith("f"))
+                else if (value.toLowerCase(Locale.ROOT).startsWith("f"))
                     this.value = false;
                 else if (NumberUtils.isCreatable(annotation.getValue())) {
                     if (NumberUtils.createInteger(annotation.getValue()) > 0)

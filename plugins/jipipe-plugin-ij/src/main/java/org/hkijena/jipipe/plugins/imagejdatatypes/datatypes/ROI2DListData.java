@@ -167,7 +167,7 @@ public class ROI2DListData extends ArrayList<Roi> implements JIPipeData, NapariO
         // Code adapted from ImageJ RoiManager
         ROI2DListData result = new ROI2DListData();
 
-        if (fileName.toString().toLowerCase().endsWith(".roi")) {
+        if (fileName.toString().toLowerCase(Locale.ROOT).endsWith(".roi")) {
             try {
                 Roi roi = new RoiDecoder(fileName.toString()).getRoi();
                 if (roi != null)

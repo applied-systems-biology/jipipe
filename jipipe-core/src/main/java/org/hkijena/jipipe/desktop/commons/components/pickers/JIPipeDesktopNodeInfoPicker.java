@@ -216,7 +216,7 @@ public class JIPipeDesktopNodeInfoPicker extends JPanel {
             return true;
         String name = nodeInfo.getName() + " " + nodeInfo.getDescription();
         for (String str : strings) {
-            if (name.toLowerCase().contains(str.toLowerCase()))
+            if (name.toLowerCase(Locale.ROOT).contains(str.toLowerCase(Locale.ROOT)))
                 return true;
         }
         return false;

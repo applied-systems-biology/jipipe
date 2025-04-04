@@ -17,10 +17,8 @@ import com.fasterxml.jackson.annotation.JsonGetter;
 import com.fasterxml.jackson.annotation.JsonSetter;
 
 import java.awt.*;
-import java.util.Comparator;
-import java.util.HashMap;
+import java.util.*;
 import java.util.List;
-import java.util.Map;
 
 public class ColorUtils {
     public static final Map<String, Color> COLOR_MAP;
@@ -202,7 +200,7 @@ public class ColorUtils {
             String[] components = colorString.replace(" ", "").split(",");
             return new Color(Integer.parseInt(components[0]), Integer.parseInt(components[1]), Integer.parseInt(components[2]));
         } else {
-            return COLOR_MAP.get(colorString.toLowerCase().replace(" ", "").replace("_", ""));
+            return COLOR_MAP.get(colorString.toLowerCase(Locale.ROOT).replace(" ", "").replace("_", ""));
         }
     }
 

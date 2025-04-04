@@ -45,7 +45,7 @@ public abstract class ParameterImageJ2ModuleInput<ModuleType, JIPipeType> extend
     @Override
     public void install(ImageJ2OpNode node, ModuleItem<?> moduleItem) {
         if (!node.moduleItemIsParameter(moduleItem)) {
-            String parameterKey = StringUtils.makeUniqueString(StringUtils.orElse(moduleItem.getPersistKey(), moduleItem.getName()).toLowerCase().replace(' ', '-'),
+            String parameterKey = StringUtils.makeUniqueString(StringUtils.orElse(moduleItem.getPersistKey(), moduleItem.getName()).toLowerCase(Locale.ROOT).replace(' ', '-'),
                     "-",
                     node.getModuleParameters().getParameters().keySet());
             String parameterName = WordUtils.capitalize(String.join(" ", org.apache.commons.lang3.StringUtils.splitByCharacterTypeCamelCase(moduleItem.getName())));

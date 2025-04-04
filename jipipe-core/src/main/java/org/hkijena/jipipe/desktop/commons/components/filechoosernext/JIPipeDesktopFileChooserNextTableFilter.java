@@ -8,6 +8,7 @@ import javax.swing.filechooser.FileNameExtensionFilter;
 import javax.swing.table.TableModel;
 import java.nio.file.Files;
 import java.nio.file.Path;
+import java.util.Locale;
 
 public class JIPipeDesktopFileChooserNextTableFilter extends RowFilter<TableModel, Integer> {
 
@@ -35,12 +36,12 @@ public class JIPipeDesktopFileChooserNextTableFilter extends RowFilter<TableMode
     @Override
     public boolean include(Entry<? extends TableModel, ? extends Integer> entry) {
         Path path = (Path) entry.getValue(0);
-        String fileNameLc = path.getFileName().toString().toLowerCase();
+        String fileNameLc = path.getFileName().toString().toLowerCase(Locale.ROOT);
 
         if (extensionFilter != null && !Files.isDirectory(path)) {
             boolean found = false;
             for (String extension : extensionFilter.getExtensions()) {
-                if (fileNameLc.endsWith("." + extension.toLowerCase())) {
+                if (fileNameLc.endsWith("." + extension.toLowerCase(Locale.ROOT))) {
                     found = true;
                     break;
                 }
@@ -51,7 +52,7 @@ public class JIPipeDesktopFileChooserNextTableFilter extends RowFilter<TableMode
         }
 
         if (!StringUtils.isNullOrEmpty(textFilter)) {
-            if (!fileNameLc.contains(textFilter.toLowerCase())) {
+            if (!fileNameLc.contains(textFilter.toLowerCase(Locale.ROOT))) {
                 return false;
             }
         }

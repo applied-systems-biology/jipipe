@@ -47,7 +47,7 @@ public class CreateSpotTrackerNodeInfo implements JIPipeNodeInfo {
     private final JIPipeDynamicParameterCollection parameters = new JIPipeDynamicParameterCollection();
 
     public CreateSpotTrackerNodeInfo(SpotTrackerFactory spotTrackerFactory) {
-        this.id = "trackmate-create-spot-tracker-" + spotTrackerFactory.getKey().toLowerCase().replace('_', '-');
+        this.id = "trackmate-create-spot-tracker-" + spotTrackerFactory.getKey().toLowerCase(Locale.ROOT).replace('_', '-');
         this.name = spotTrackerFactory.getName();
         this.description = new HTMLText(spotTrackerFactory.getInfoText());
         this.spotTrackerFactory = spotTrackerFactory;
@@ -57,8 +57,8 @@ public class CreateSpotTrackerNodeInfo implements JIPipeNodeInfo {
                 continue;
             }
             JIPipeParameterTypeInfo parameterTypeInfo = JIPipe.getParameterTypes().getInfoByFieldClass(entry.getValue().getClass());
-            String key = entry.getKey().toLowerCase().replace('_', '-');
-            String name = StringUtils.capitalize(entry.getKey().replace('_', ' ').toLowerCase());
+            String key = entry.getKey().toLowerCase(Locale.ROOT).replace('_', '-');
+            String name = StringUtils.capitalize(entry.getKey().replace('_', ' ').toLowerCase(Locale.ROOT));
             Class<?> fieldClass;
             SettingsIO settingsIO;
             if (parameterTypeInfo != null) {

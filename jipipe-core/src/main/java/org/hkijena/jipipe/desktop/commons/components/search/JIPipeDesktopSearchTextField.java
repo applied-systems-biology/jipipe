@@ -23,6 +23,7 @@ import javax.swing.event.DocumentEvent;
 import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.util.Locale;
 import java.util.function.Consumer;
 import java.util.function.Predicate;
 
@@ -157,7 +158,7 @@ public class JIPipeDesktopSearchTextField extends JPanel implements Predicate<St
         if (s == null)
             s = "";
         for (String searchString : getSearchStrings()) {
-            if (!s.toLowerCase().contains(searchString.toLowerCase()))
+            if (!s.toLowerCase(Locale.ROOT).contains(searchString.toLowerCase(Locale.ROOT)))
                 return false;
         }
         return true;

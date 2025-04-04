@@ -215,7 +215,7 @@ public class LegacyImageCalculator2DAlgorithm extends JIPipeIteratingAlgorithm {
                 case Divide:
                     return "div";
                 default:
-                    return this.toString().toLowerCase();
+                    return this.toString().toLowerCase(Locale.ROOT);
             }
         }
     }

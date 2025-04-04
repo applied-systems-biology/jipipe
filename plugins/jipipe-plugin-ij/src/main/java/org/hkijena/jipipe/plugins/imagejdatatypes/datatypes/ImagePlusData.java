@@ -90,7 +90,7 @@ public class ImagePlusData implements JIPipeData {
                     "JIPipe needs to load the image from a folder, but it could not find any matching file.",
                     "Please contact the JIPipe developers about this issue.");
         }
-        String fileName = targetFile.toString().toLowerCase();
+        String fileName = targetFile.toString().toLowerCase(Locale.ROOT);
         ImagePlus outputImage;
         if ((fileName.endsWith(".tiff") || fileName.endsWith(".tif")) && ImageJDataTypesApplicationSettings.getInstance().isUseBioFormats()) {
             OMEImageData omeImageData = OMEImageData.importData(storage, progressInfo);

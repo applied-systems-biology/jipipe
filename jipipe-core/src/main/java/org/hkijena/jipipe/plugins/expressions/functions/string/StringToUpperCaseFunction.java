@@ -19,6 +19,7 @@ import org.hkijena.jipipe.plugins.expressions.JIPipeExpressionVariablesMap;
 import org.hkijena.jipipe.plugins.expressions.ParameterInfo;
 
 import java.util.List;
+import java.util.Locale;
 
 @SetJIPipeDocumentation(name = "String to uppercase", description = "Converts a string to a uppercase string")
 public class StringToUpperCaseFunction extends ExpressionFunction {
@@ -45,6 +46,6 @@ public class StringToUpperCaseFunction extends ExpressionFunction {
     @Override
     public Object evaluate(List<Object> parameters, JIPipeExpressionVariablesMap variables) {
         String text = "" + parameters.get(0);
-        return text.toUpperCase();
+        return text.toUpperCase(Locale.ROOT);
     }
 }

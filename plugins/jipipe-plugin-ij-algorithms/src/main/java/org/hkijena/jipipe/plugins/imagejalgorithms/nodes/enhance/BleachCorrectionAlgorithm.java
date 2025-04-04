@@ -25,6 +25,7 @@ import org.hkijena.jipipe.plugins.expressions.AddJIPipeExpressionParameterVariab
 import org.hkijena.jipipe.plugins.expressions.JIPipeExpressionParameterSettings;
 import org.hkijena.jipipe.plugins.expressions.JIPipeExpressionVariablesMap;
 import org.hkijena.jipipe.plugins.expressions.OptionalJIPipeExpressionParameter;
+import org.hkijena.jipipe.plugins.imagejdatatypes.datatypes.ImagePlusData;
 import org.hkijena.jipipe.plugins.imagejdatatypes.datatypes.ROI2DListData;
 import org.hkijena.jipipe.plugins.imagejdatatypes.datatypes.greyscale.ImagePlusGreyscaleData;
 import org.hkijena.jipipe.plugins.imagejdatatypes.util.ImageJIterationUtils;
@@ -62,10 +63,10 @@ public class BleachCorrectionAlgorithm extends JIPipeIteratingAlgorithm {
         ImagePlus originalImage = iterationStep.getInputData("Input", ImagePlusGreyscaleData.class, progressInfo).getImage();
         ROI2DListData inputRoi = iterationStep.getInputData("ROI", ROI2DListData.class, progressInfo);
         Roi curROI = null;
-        if(inputRoi != null) {
+        if (inputRoi != null) {
             ROI2DListData tmp = new ROI2DListData();
             tmp.addAll(inputRoi);
-            if(tmp.size() > 1) {
+            if (tmp.size() > 1) {
                 tmp.logicalOr();
             }
             curROI = tmp.get(0);
@@ -109,6 +110,8 @@ public class BleachCorrectionAlgorithm extends JIPipeIteratingAlgorithm {
         ImagePlus resultImg = ImageJUtils.mergeMappedSlices(resultMap);
         ImageJUtils.copyAttributes(originalImage, resultImg);
         ImageJUtils.copyLUTs(originalImage, resultImg);
+
+        iterationStep.addOutputData(getFirstOutputSlot(), new ImagePlusData(resultImg), progressInfo);
     }
 
     private static void copyChannelToResultsMap(ImagePlus imp, ImageSliceIndex index, Map<ImageSliceIndex, ImageProcessor> resultMap) {
@@ -319,8 +322,7 @@ public class BleachCorrectionAlgorithm extends JIPipeIteratingAlgorithm {
                 }
             }
         } else {
-            if (verbose)
-                progressInfo.log("Original Int" + "\t" + "Corrected Int" + "\t" + "Ratio");
+            progressInfo.log("Original Int" + "\t" + "Corrected Int" + "\t" + "Ratio");
 
             for (int i = 0; i < imp.getStackSize(); i++) {
                 curip = imp.getImageStack().getProcessor(i + 1);
@@ -334,11 +336,9 @@ public class BleachCorrectionAlgorithm extends JIPipeIteratingAlgorithm {
                 double corint = curip.getStatistics().mean;
 
                 //for testing
-                if (verbose) {
-                    String monitor = Double.toString(orgint) + "\t" + Double.toString(corint) + "\t" +
-                            Double.toString(ratio);
-                    progressInfo.log(monitor);
-                }
+                String monitor = orgint + "\t" + corint + "\t" +
+                        ratio;
+                progressInfo.log(monitor);
             }
         }
 
@@ -410,7 +410,7 @@ public class BleachCorrectionAlgorithm extends JIPipeIteratingAlgorithm {
                         ipA = stack.getProcessor(i * zframes + j + 1);
                         ipA.applyTable(F);
                     }
-                    progressInfo.log("corrected time point: " + Integer.toString(i + 1));
+                    progressInfo.log("corrected time point: " + (i + 1));
                 }
             }
 
@@ -424,7 +424,7 @@ public class BleachCorrectionAlgorithm extends JIPipeIteratingAlgorithm {
                     hA = ipA.getHistogram();
                     F = m.matchHistograms(hA, hB);
                     ipA.applyTable(F);
-                    progressInfo.log("corrected frame: " + Integer.toString(i + 1));
+                    progressInfo.log("corrected frame: " + (i + 1));
                 }
             }
         }
@@ -449,8 +449,7 @@ public class BleachCorrectionAlgorithm extends JIPipeIteratingAlgorithm {
             zframes = impdimA[3];
             timeframes = impdimA[4];
             if ((zframes * timeframes) != imp.getStackSize()) {
-                IJ.showMessage("slice and time frames do not match with the length of the stack. Please correct!");
-                return null;
+                throw new RuntimeException("slice and time frames do not match with the length of the stack. Please correct!");
             }
         }
 
@@ -477,7 +476,7 @@ public class BleachCorrectionAlgorithm extends JIPipeIteratingAlgorithm {
                     currentInt = imgstat.mean;
                     ratio = referenceInt / currentInt;
                     curip.multiply(ratio);
-                    progressInfo.log("frame" + Integer.toString(i + 1) + "mean int=" + currentInt + " ratio=" + ratio);
+                    progressInfo.log("frame" + (i + 1) + "mean int=" + currentInt + " ratio=" + ratio);
                 }
 
             }
@@ -505,7 +504,7 @@ public class BleachCorrectionAlgorithm extends JIPipeIteratingAlgorithm {
                         curip.setRoi(0, 0, imp.getWidth(), imp.getHeight());
                         curip.multiply(ratio);
                     }
-                    progressInfo.log("frame" + Integer.toString(i + 1) + "mean int=" + currentInt + " ratio=" + ratio);
+                    progressInfo.log("frame" + (i + 1) + "mean int=" + currentInt + " ratio=" + ratio);
                 }
             }
         }

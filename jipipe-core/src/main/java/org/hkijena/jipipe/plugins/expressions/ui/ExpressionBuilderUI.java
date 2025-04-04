@@ -480,45 +480,45 @@ public class ExpressionBuilderUI extends JIPipeDesktopWorkbenchPanel {
             if (value instanceof JIPipeExpressionParameterVariableInfo) {
                 JIPipeExpressionParameterVariableInfo variable = (JIPipeExpressionParameterVariableInfo) value;
                 for (String string : filterStrings) {
-                    if (variable.getKey().toLowerCase().contains(string.toLowerCase()))
+                    if (variable.getKey().toLowerCase(Locale.ROOT).contains(string.toLowerCase(Locale.ROOT)))
                         --result[0];
-                    if (variable.getKey().toLowerCase().startsWith(string.toLowerCase()))
+                    if (variable.getKey().toLowerCase(Locale.ROOT).startsWith(string.toLowerCase(Locale.ROOT)))
                         result[0] -= 2;
-                    if (variable.getName().toLowerCase().contains(string.toLowerCase()))
+                    if (variable.getName().toLowerCase(Locale.ROOT).contains(string.toLowerCase(Locale.ROOT)))
                         --result[1];
-                    if (variable.getDescription().toLowerCase().contains(string.toLowerCase()))
+                    if (variable.getDescription().toLowerCase(Locale.ROOT).contains(string.toLowerCase(Locale.ROOT)))
                         --result[2];
                 }
             } else if (value instanceof ExpressionConstantEntry) {
                 ExpressionConstantEntry constantEntry = (ExpressionConstantEntry) value;
                 for (String string : filterStrings) {
-                    if (constantEntry.getConstant().getName().toLowerCase().contains(string.toLowerCase()))
+                    if (constantEntry.getConstant().getName().toLowerCase(Locale.ROOT).contains(string.toLowerCase(Locale.ROOT)))
                         --result[0];
-                    if (constantEntry.getConstant().getName().toLowerCase().startsWith(string.toLowerCase()))
+                    if (constantEntry.getConstant().getName().toLowerCase(Locale.ROOT).startsWith(string.toLowerCase(Locale.ROOT)))
                         result[0] -= 2;
-                    if (constantEntry.getName().toLowerCase().contains(string.toLowerCase()))
+                    if (constantEntry.getName().toLowerCase(Locale.ROOT).contains(string.toLowerCase(Locale.ROOT)))
                         --result[1];
-                    if (constantEntry.getDescription().toLowerCase().contains(string.toLowerCase()))
+                    if (constantEntry.getDescription().toLowerCase(Locale.ROOT).contains(string.toLowerCase(Locale.ROOT)))
                         --result[2];
                 }
             } else if (value instanceof ExpressionOperatorEntry) {
                 ExpressionOperatorEntry operatorEntry = (ExpressionOperatorEntry) value;
                 for (String string : filterStrings) {
-                    if (operatorEntry.getOperator().getSymbol().toLowerCase().contains(string.toLowerCase()))
+                    if (operatorEntry.getOperator().getSymbol().toLowerCase(Locale.ROOT).contains(string.toLowerCase(Locale.ROOT)))
                         --result[0];
-                    if (operatorEntry.getName().toLowerCase().contains(string.toLowerCase()))
+                    if (operatorEntry.getName().toLowerCase(Locale.ROOT).contains(string.toLowerCase(Locale.ROOT)))
                         --result[1];
-                    if (operatorEntry.getDescription().toLowerCase().contains(string.toLowerCase()))
+                    if (operatorEntry.getDescription().toLowerCase(Locale.ROOT).contains(string.toLowerCase(Locale.ROOT)))
                         --result[2];
                 }
             } else if (value instanceof JIPipeExpressionRegistry.ExpressionFunctionEntry) {
                 JIPipeExpressionRegistry.ExpressionFunctionEntry functionEntry = (JIPipeExpressionRegistry.ExpressionFunctionEntry) value;
                 for (String string : filterStrings) {
-                    if (functionEntry.getFunction().getName().toLowerCase().contains(string.toLowerCase()))
+                    if (functionEntry.getFunction().getName().toLowerCase(Locale.ROOT).contains(string.toLowerCase(Locale.ROOT)))
                         --result[0];
-                    if (functionEntry.getName().toLowerCase().contains(string.toLowerCase()))
+                    if (functionEntry.getName().toLowerCase(Locale.ROOT).contains(string.toLowerCase(Locale.ROOT)))
                         --result[1];
-                    if (functionEntry.getDescription().toLowerCase().contains(string.toLowerCase()))
+                    if (functionEntry.getDescription().toLowerCase(Locale.ROOT).contains(string.toLowerCase(Locale.ROOT)))
                         --result[2];
                 }
             }

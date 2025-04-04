@@ -19,6 +19,7 @@ import org.hkijena.jipipe.utils.StringUtils;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Locale;
 
 public class WeightedTokens {
 
@@ -38,7 +39,7 @@ public class WeightedTokens {
     public void add(String text, int weight) {
         if (StringUtils.isNullOrEmpty(text))
             return;
-        text = text.toLowerCase().replace('\n', ' ');
+        text = text.toLowerCase(Locale.ROOT).replace('\n', ' ');
         for (String s : text.split(" ")) {
             if (!StringUtils.isNullOrEmpty(s)) {
                 tokens.add(s);

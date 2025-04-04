@@ -134,7 +134,7 @@ public class SpotsManagerPlugin2D extends JIPipeDesktopLegacyImageViewerPlugin2D
                 SpotFeature.VALUE_LABELS.keySet().stream().sorted(NaturalOrderComparator.INSTANCE).forEach(key -> {
                     String name = SpotFeature.VALUE_LABELS.get(key);
                     JMenuItem colorByMenuEntry = new JMenuItem(name);
-                    colorByMenuEntry.setToolTipText("Colors the spots by their " + name.toLowerCase());
+                    colorByMenuEntry.setToolTipText("Colors the spots by their " + name.toLowerCase(Locale.ROOT));
                     colorByMenuEntry.addActionListener(e -> {
                         spotDrawer.setStrokeColorFeature(new SpotFeature(key));
                         spotDrawer.setUniformStrokeColor(false);
@@ -160,7 +160,7 @@ public class SpotsManagerPlugin2D extends JIPipeDesktopLegacyImageViewerPlugin2D
                 SpotFeature.VALUE_LABELS.keySet().stream().sorted(NaturalOrderComparator.INSTANCE).forEach(key -> {
                     String name = SpotFeature.VALUE_LABELS.get(key);
                     JMenuItem setLabelMenuEntry = new JMenuItem(name);
-                    setLabelMenuEntry.setToolTipText("Set the displayed label to " + name.toLowerCase());
+                    setLabelMenuEntry.setToolTipText("Set the displayed label to " + name.toLowerCase(Locale.ROOT));
                     setLabelMenuEntry.addActionListener(e -> {
                         spotDrawer.getLabelSettings().setDrawName(false);
                         spotDrawer.getLabelSettings().setDrawnFeature(new SpotFeature(key));

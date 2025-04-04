@@ -667,9 +667,9 @@ public class JIPipeDesktopTableEditor extends JIPipeDesktopWorkbenchPanel {
                     value = NumberUtils.createDouble(editingValue);
                 } else if (StringUtils.isNullOrEmpty(editingValue)) {
                     value = 0d;
-                } else if (editingValue.toLowerCase().startsWith("-inf")) {
+                } else if (editingValue.toLowerCase(Locale.ROOT).startsWith("-inf")) {
                     value = Double.NEGATIVE_INFINITY;
-                } else if (editingValue.toLowerCase().startsWith("inf")) {
+                } else if (editingValue.toLowerCase(Locale.ROOT).startsWith("inf")) {
                     value = Double.POSITIVE_INFINITY;
                 } else if (editingValue.equalsIgnoreCase("na") || editingValue.equalsIgnoreCase("nan")) {
                     value = Double.NaN;

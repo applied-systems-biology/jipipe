@@ -45,7 +45,7 @@ public class CreateSpotDetectorNodeInfo implements JIPipeNodeInfo {
     private final Map<String, SettingsIO> settingsIOMap = new HashMap<>();
 
     public CreateSpotDetectorNodeInfo(SpotDetectorFactory<?> spotDetectorFactory) {
-        this.id = "trackmate-create-spot-detector-" + spotDetectorFactory.getKey().toLowerCase().replace('_', '-');
+        this.id = "trackmate-create-spot-detector-" + spotDetectorFactory.getKey().toLowerCase(Locale.ROOT).replace('_', '-');
         this.name = spotDetectorFactory.getName();
         this.description = new HTMLText(spotDetectorFactory.getInfoText());
         this.spotDetectorFactory = spotDetectorFactory;
@@ -54,8 +54,8 @@ public class CreateSpotDetectorNodeInfo implements JIPipeNodeInfo {
             if (parameterTypeInfo == null) {
                 throw new UnsupportedOperationException("Cannot resolve parameter " + entry.getKey() + "=" + entry.getValue());
             }
-            String key = entry.getKey().toLowerCase().replace('_', '-');
-            String name = StringUtils.capitalize(entry.getKey().replace('_', ' ').toLowerCase());
+            String key = entry.getKey().toLowerCase(Locale.ROOT).replace('_', '-');
+            String name = StringUtils.capitalize(entry.getKey().replace('_', ' ').toLowerCase(Locale.ROOT));
             JIPipeMutableParameterAccess parameterAccess = parameters.addParameter(key, entry.getValue().getClass(), name, description.getBody());
             parameterAccess.set(parameterTypeInfo.duplicate(entry.getValue()));
 

@@ -39,14 +39,14 @@ public class TrackSpotFeatureVariablesInfo implements JIPipeExpressionVariablesI
             for (Map.Entry<String, String> entry : TrackFeature.VALUE_LABELS.entrySet()) {
                 String key = entry.getKey();
                 String name = entry.getValue();
-                String variableName = "track." + key.toLowerCase();
+                String variableName = "track." + key.toLowerCase(Locale.ROOT);
                 VARIABLES.add(new JIPipeExpressionParameterVariableInfo(variableName, name, "The TrackMate " + key + " track feature"));
                 TRACK_KEY_TO_VARIABLE_MAP.put(key, variableName);
             }
             for (Map.Entry<String, String> entry : SpotFeature.VALUE_LABELS.entrySet()) {
                 String key = entry.getKey();
                 String name = entry.getValue();
-                String variableName = "spot." + key.toLowerCase();
+                String variableName = "spot." + key.toLowerCase(Locale.ROOT);
                 VARIABLES.add(new JIPipeExpressionParameterVariableInfo(variableName, name, "The TrackMate " + key + " spot feature"));
                 SPOT_KEY_TO_VARIABLE_MAP.put(key, variableName);
             }

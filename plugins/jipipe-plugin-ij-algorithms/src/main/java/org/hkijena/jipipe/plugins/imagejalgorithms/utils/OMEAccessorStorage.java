@@ -80,7 +80,7 @@ public class OMEAccessorStorage {
                         continue outer;
                     }
                     String parameterId = "param-" + parameterIndex + "-" + String.join("-",
-                            org.apache.commons.lang3.StringUtils.splitByCharacterTypeCamelCase(parameterName)).toLowerCase();
+                            org.apache.commons.lang3.StringUtils.splitByCharacterTypeCamelCase(parameterName)).toLowerCase(Locale.ROOT);
                     parameterIds[parameterIndex] = parameterId;
                     parameterClasses[parameterIndex] = parameterClass;
 

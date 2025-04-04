@@ -23,6 +23,7 @@ import java.net.URL;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.Collection;
+import java.util.Locale;
 import java.util.Random;
 import java.util.function.Predicate;
 import java.util.regex.Pattern;
@@ -47,7 +48,7 @@ public class StringUtils {
         if (StringUtils.isNullOrEmpty(text)) {
             return false;
         }
-        return text.toLowerCase().startsWith("-inf") || text.toLowerCase().startsWith("inf") || text.equalsIgnoreCase("nan") || text.equalsIgnoreCase("na");
+        return text.toLowerCase(Locale.ROOT).startsWith("-inf") || text.toLowerCase(Locale.ROOT).startsWith("inf") || text.equalsIgnoreCase("nan") || text.equalsIgnoreCase("na");
     }
 
     public static boolean isValidInteger(String text) {
@@ -279,7 +280,7 @@ public class StringUtils {
     public static String safeJsonify(String input) {
         if (input == null)
             return null;
-        char[] arr = input.trim().toLowerCase().toCharArray();
+        char[] arr = input.trim().toLowerCase(Locale.ROOT).toCharArray();
         for (int i = 0; i < arr.length; i++) {
             if (!Character.isLetterOrDigit(arr[i]) && arr[i] != '-') {
                 arr[i] = '-';
@@ -311,7 +312,7 @@ public class StringUtils {
     public static String jsonify(String input) {
         if (input == null)
             return null;
-        input = input.trim().toLowerCase();
+        input = input.trim().toLowerCase(Locale.ROOT);
         for (char c : INVALID_JSONIFY_CHARACTERS) {
             input = input.replace(c, '-');
         }
@@ -558,9 +559,9 @@ public class StringUtils {
             value = NumberUtils.createDouble(str);
         } else if (StringUtils.isNullOrEmpty(str)) {
             value = 0d;
-        } else if (str.toLowerCase().startsWith("-inf")) {
+        } else if (str.toLowerCase(Locale.ROOT).startsWith("-inf")) {
             value = Double.NEGATIVE_INFINITY;
-        } else if (str.toLowerCase().startsWith("inf")) {
+        } else if (str.toLowerCase(Locale.ROOT).startsWith("inf")) {
             value = Double.POSITIVE_INFINITY;
         } else if (str.equalsIgnoreCase("na") || str.equalsIgnoreCase("nan")) {
             value = Double.NaN;
@@ -578,9 +579,9 @@ public class StringUtils {
             value = NumberUtils.createDouble(str);
         } else if (StringUtils.isNullOrEmpty(str)) {
             value = 0d;
-        } else if (str.toLowerCase().startsWith("-inf")) {
+        } else if (str.toLowerCase(Locale.ROOT).startsWith("-inf")) {
             value = Double.NEGATIVE_INFINITY;
-        } else if (str.toLowerCase().startsWith("inf")) {
+        } else if (str.toLowerCase(Locale.ROOT).startsWith("inf")) {
             value = Double.POSITIVE_INFINITY;
         } else if (str.equalsIgnoreCase("na") || str.equalsIgnoreCase("nan")) {
             value = Double.NaN;
@@ -609,9 +610,9 @@ public class StringUtils {
             value = NumberUtils.createDouble(str);
         } else if (StringUtils.isNullOrEmpty(str)) {
             value = 0d;
-        } else if (str.toLowerCase().startsWith("-inf")) {
+        } else if (str.toLowerCase(Locale.ROOT).startsWith("-inf")) {
             value = Double.NEGATIVE_INFINITY;
-        } else if (str.toLowerCase().startsWith("inf")) {
+        } else if (str.toLowerCase(Locale.ROOT).startsWith("inf")) {
             value = Double.POSITIVE_INFINITY;
         } else if (str.equalsIgnoreCase("na") || str.equalsIgnoreCase("nan")) {
             value = Double.NaN;
@@ -629,9 +630,9 @@ public class StringUtils {
             value = NumberUtils.createFloat(str);
         } else if (StringUtils.isNullOrEmpty(str)) {
             value = 0f;
-        } else if (str.toLowerCase().startsWith("-inf")) {
+        } else if (str.toLowerCase(Locale.ROOT).startsWith("-inf")) {
             value = Float.NEGATIVE_INFINITY;
-        } else if (str.toLowerCase().startsWith("inf")) {
+        } else if (str.toLowerCase(Locale.ROOT).startsWith("inf")) {
             value = Float.POSITIVE_INFINITY;
         } else if (str.equalsIgnoreCase("na") || str.equalsIgnoreCase("nan")) {
             value = Float.NaN;

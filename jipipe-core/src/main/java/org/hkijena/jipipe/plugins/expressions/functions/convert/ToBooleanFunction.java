@@ -21,6 +21,7 @@ import org.hkijena.jipipe.plugins.expressions.ParameterInfo;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
+import java.util.Locale;
 
 @SetJIPipeDocumentation(name = "Convert to boolean", description = "Converts the input to a boolean value. If the input is a number, all values >= 1 are converted to TRUE. Values < 1 are converted to FALSE. If the value is a string, then 'TRUE', 'T', 'ON', 'YES' and 'Y' are converted to TRUE (case-insensitive). Other values are converted to FALSE. " +
         "If the parameter is an array, all values are converted to booleans.")
@@ -58,7 +59,7 @@ public class ToBooleanFunction extends ExpressionFunction {
         } else if (value instanceof Number) {
             return ((Number) value).doubleValue() >= 1;
         } else {
-            String str = ("" + value).toLowerCase();
+            String str = ("" + value).toLowerCase(Locale.ROOT);
             return str.equals("true") || str.equals("t") || str.equals("on") || str.equals("yes") || str.equals("y");
         }
     }

@@ -47,7 +47,7 @@ public class GraphNodeParameterReferenceAccessGroupList extends AbstractJIPipePa
                 }
             }
 
-            String groupKey = StringUtils.makeUniqueString(("" + group.getName()).toLowerCase(), "-", childCollections::containsKey);
+            String groupKey = StringUtils.makeUniqueString(("" + group.getName()).toLowerCase(Locale.ROOT), "-", childCollections::containsKey);
             childCollections.put(groupKey, collection);
         }
     }

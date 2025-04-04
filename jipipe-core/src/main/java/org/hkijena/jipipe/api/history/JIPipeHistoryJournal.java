@@ -22,10 +22,7 @@ import org.hkijena.jipipe.api.nodes.JIPipeGraphNode;
 import org.hkijena.jipipe.utils.UIUtils;
 
 import javax.swing.*;
-import java.util.Collection;
-import java.util.List;
-import java.util.Set;
-import java.util.UUID;
+import java.util.*;
 import java.util.stream.Collectors;
 
 /**
@@ -133,7 +130,7 @@ public interface JIPipeHistoryJournal {
      */
     default void snapshotBeforeAddSlot(JIPipeGraphNode node, JIPipeDataSlotInfo info, UUID compartment) {
         snapshot("Add slot",
-                "Add " + info.getSlotType().name().toLowerCase() + " slot " + info.getName() + " into " + node.getDisplayName(),
+                "Add " + info.getSlotType().name().toLowerCase(Locale.ROOT) + " slot " + info.getName() + " into " + node.getDisplayName(),
                 compartment,
                 UIUtils.getIconFromResources("actions/list-add.png"));
     }
@@ -147,7 +144,7 @@ public interface JIPipeHistoryJournal {
      */
     default void snapshotBeforeRemoveSlot(JIPipeGraphNode node, JIPipeDataSlotInfo info, UUID compartment) {
         snapshot("Remove slot",
-                "Remove " + info.getSlotType().name().toLowerCase() + " slot " + info.getName() + " from " + node.getDisplayName(),
+                "Remove " + info.getSlotType().name().toLowerCase(Locale.ROOT) + " slot " + info.getName() + " from " + node.getDisplayName(),
                 compartment,
                 UIUtils.getIconFromResources("actions/delete.png"));
     }

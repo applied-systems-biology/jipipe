@@ -5,6 +5,7 @@ import org.hkijena.jipipe.utils.PathType;
 import javax.swing.*;
 import java.nio.file.Files;
 import java.nio.file.Path;
+import java.util.Locale;
 import java.util.Set;
 import java.util.function.Predicate;
 
@@ -39,7 +40,7 @@ public class JIPipeDesktopFileChooserNextPathTypeMetadata implements Predicate<P
             return false;
         }
         for (String extension : extensions) {
-            if (path.getFileName().toString().toLowerCase().endsWith(extension.toLowerCase())) {
+            if (path.getFileName().toString().toLowerCase(Locale.ROOT).endsWith(extension.toLowerCase(Locale.ROOT))) {
                 return true;
             }
         }

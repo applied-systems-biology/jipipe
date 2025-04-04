@@ -43,7 +43,7 @@ public class JIPipeLegacyNodeDatabaseSearch {
         for (String text_ : texts) {
             if (StringUtils.isNullOrEmpty(text_))
                 continue;
-            String text = text_.toLowerCase().replace('\n', ' ');
+            String text = text_.toLowerCase(Locale.ROOT).replace('\n', ' ');
             for (String s : text.split(" ")) {
                 if (!StringUtils.isNullOrEmpty(s)) {
                     tokens.add(s);
@@ -83,7 +83,7 @@ public class JIPipeLegacyNodeDatabaseSearch {
             for (int j = 0; j < tokens.size(); j++) {
                 String token = tokens.getToken(j);
 
-                if (token.toLowerCase().contains(textToken.toLowerCase())) {
+                if (token.toLowerCase(Locale.ROOT).contains(textToken.toLowerCase(Locale.ROOT))) {
                     foundToken = true;
                 }
 
@@ -107,7 +107,7 @@ public class JIPipeLegacyNodeDatabaseSearch {
         }
 
         // rank exact name matching
-        if (entry.getName().toLowerCase().startsWith(text.toLowerCase())) {
+        if (entry.getName().toLowerCase(Locale.ROOT).startsWith(text.toLowerCase(Locale.ROOT))) {
             rank *= 1.2 + text.length() / 10.0;
         }
 

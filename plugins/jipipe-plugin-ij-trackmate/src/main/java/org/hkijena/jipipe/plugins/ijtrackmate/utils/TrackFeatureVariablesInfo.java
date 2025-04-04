@@ -37,7 +37,7 @@ public class TrackFeatureVariablesInfo implements JIPipeExpressionVariablesInfo 
             for (Map.Entry<String, String> entry : TrackFeature.VALUE_LABELS.entrySet()) {
                 String key = entry.getKey();
                 String name = entry.getValue();
-                String variableName = key.toLowerCase();
+                String variableName = key.toLowerCase(Locale.ROOT);
                 VARIABLES.add(new JIPipeExpressionParameterVariableInfo(variableName, name, "The TrackMate " + key + " track feature"));
                 VARIABLES.add(new JIPipeExpressionParameterVariableInfo("all." + variableName, "All " + name, "All values of TrackMate " + key + " track feature"));
                 KEY_TO_VARIABLE_MAP.put(key, variableName);

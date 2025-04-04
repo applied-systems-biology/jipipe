@@ -103,25 +103,25 @@ public class NodeTemplateBox extends JIPipeDesktopWorkbenchPanel implements Node
         String nameHayStack;
         String name2HayStack;
         String descriptionHayStack;
-        nameHayStack = StringUtils.orElse(template.getName(), "").toLowerCase();
-//        name2HayStack = StringUtils.orElse(template.getNodeInfo().getName(), "").toLowerCase();
-        descriptionHayStack = StringUtils.orElse(template.getDescription().getBody(), "").toLowerCase();
+        nameHayStack = StringUtils.orElse(template.getName(), "").toLowerCase(Locale.ROOT);
+//        name2HayStack = StringUtils.orElse(template.getNodeInfo().getName(), "").toLowerCase(Locale.ROOT);
+        descriptionHayStack = StringUtils.orElse(template.getDescription().getBody(), "").toLowerCase(Locale.ROOT);
 
-        nameHayStack = nameHayStack.toLowerCase();
-//        name2HayStack = name2HayStack.toLowerCase();
-        descriptionHayStack = descriptionHayStack.toLowerCase();
+        nameHayStack = nameHayStack.toLowerCase(Locale.ROOT);
+//        name2HayStack = name2HayStack.toLowerCase(Locale.ROOT);
+        descriptionHayStack = descriptionHayStack.toLowerCase(Locale.ROOT);
 
         int[] ranks = new int[3];
 
         for (int i = 0; i < searchStrings.length; i++) {
             String string = searchStrings[i];
-            if (nameHayStack.contains(string.toLowerCase()))
+            if (nameHayStack.contains(string.toLowerCase(Locale.ROOT)))
                 --ranks[0];
-            if (i == 0 && nameHayStack.startsWith(string.toLowerCase()))
+            if (i == 0 && nameHayStack.startsWith(string.toLowerCase(Locale.ROOT)))
                 ranks[0] -= 2;
-//            if (name2HayStack.contains(string.toLowerCase()))
+//            if (name2HayStack.contains(string.toLowerCase(Locale.ROOT)))
 //                --ranks[1];
-            if (descriptionHayStack.contains(string.toLowerCase()))
+            if (descriptionHayStack.contains(string.toLowerCase(Locale.ROOT)))
                 --ranks[2];
         }
 

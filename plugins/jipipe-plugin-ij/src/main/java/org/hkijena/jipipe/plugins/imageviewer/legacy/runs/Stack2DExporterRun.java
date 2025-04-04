@@ -63,7 +63,7 @@ public class Stack2DExporterRun extends AbstractJIPipeRunnable {
                 for (int z = 0; z < image.getNSlices(); z++) {
                     if (progressInfo.isCancelled())
                         return;
-                    String fileName = String.format("%sc%d_t%d_z%d.%s", StringUtils.isNullOrEmpty(baseName) ? "" : baseName + "_", c, t, z, formatName.toLowerCase());
+                    String fileName = String.format("%sc%d_t%d_z%d.%s", StringUtils.isNullOrEmpty(baseName) ? "" : baseName + "_", c, t, z, formatName.toLowerCase(Locale.ROOT));
                     progressInfo.incrementProgress();
                     progressInfo.log(fileName);
                     BufferedImage bufferedImage = viewerPanel.getViewerPanel2D().generateSlice(c, z,

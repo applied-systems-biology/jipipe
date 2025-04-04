@@ -237,7 +237,7 @@ public class JIPipeDesktopPathEditorComponent extends JIPipeDesktopWorkbenchPane
             else if ("jipc".equals(extension))
                 extensionFilters.add(UIUtils.EXTENSION_FILTER_JIPC);
             else
-                extensionFilters.add(new FileNameExtensionFilter(extension.toUpperCase() + " file (*." + extension + ")", extension));
+                extensionFilters.add(new FileNameExtensionFilter(extension.toUpperCase(Locale.ROOT) + " file (*." + extension + ")", extension));
         }
     }
 

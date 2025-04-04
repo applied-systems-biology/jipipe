@@ -28,6 +28,7 @@ import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.HashMap;
 import java.util.List;
+import java.util.Locale;
 import java.util.Map;
 import java.util.stream.Collectors;
 import java.util.zip.ZipEntry;
@@ -202,7 +203,7 @@ public class ArchiveUtils {
         // Normalize the entry name to use forward slashes (as is common in archives)
         String targetEntryName = internalPath.toString().replace('\\', '/');
         // Get the archive file name in lower-case for extension checking
-        String fileName = archivePath.getFileName().toString().toLowerCase();
+        String fileName = archivePath.getFileName().toString().toLowerCase(Locale.ROOT);
 
         try (InputStream fis = Files.newInputStream(archivePath);
              BufferedInputStream bis = new BufferedInputStream(fis)) {

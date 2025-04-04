@@ -32,6 +32,7 @@ import java.awt.*;
 import java.awt.image.BufferedImage;
 import java.io.IOException;
 import java.nio.file.Path;
+import java.util.Locale;
 
 /**
  * Displays a plot
@@ -123,7 +124,7 @@ public class JIPipeDesktopPlotDisplayComponent extends JPanel {
             JFreeChart chart = chartPanel.getChart();
             switch (fileFormat) {
                 case PNG:
-                    if (JIPipeFileChooserApplicationSettings.getInstance().isAddFileExtension() && !path.toString().toLowerCase().endsWith(".png")) {
+                    if (JIPipeFileChooserApplicationSettings.getInstance().isAddFileExtension() && !path.toString().toLowerCase(Locale.ROOT).endsWith(".png")) {
                         path = path.getParent().resolve(path.getFileName() + ".png");
                     }
                     try {
@@ -136,7 +137,7 @@ public class JIPipeDesktopPlotDisplayComponent extends JPanel {
                     }
                     break;
                 case JPEG:
-                    if (JIPipeFileChooserApplicationSettings.getInstance().isAddFileExtension() && !path.toString().toLowerCase().endsWith(".jpg")) {
+                    if (JIPipeFileChooserApplicationSettings.getInstance().isAddFileExtension() && !path.toString().toLowerCase(Locale.ROOT).endsWith(".jpg")) {
                         path = path.getParent().resolve(path.getFileName() + ".jpg");
                     }
                     try {
@@ -149,7 +150,7 @@ public class JIPipeDesktopPlotDisplayComponent extends JPanel {
                     }
                     break;
                 case SVG: {
-                    if (JIPipeFileChooserApplicationSettings.getInstance().isAddFileExtension() && !path.toString().toLowerCase().endsWith(".svg")) {
+                    if (JIPipeFileChooserApplicationSettings.getInstance().isAddFileExtension() && !path.toString().toLowerCase(Locale.ROOT).endsWith(".svg")) {
                         path = path.getParent().resolve(path.getFileName() + ".svg");
                     }
                     int w = size.width;

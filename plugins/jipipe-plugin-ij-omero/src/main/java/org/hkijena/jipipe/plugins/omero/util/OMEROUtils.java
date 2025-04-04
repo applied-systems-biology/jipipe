@@ -186,7 +186,7 @@ public class OMEROUtils {
 
     public static String tryGetWebClientURL(String webclientUrl, String type, long id) {
         if (!StringUtils.isNullOrEmpty(webclientUrl)) {
-            webclientUrl = webclientUrl.trim().toLowerCase();
+            webclientUrl = webclientUrl.trim().toLowerCase(Locale.ROOT);
             if (StringUtils.isNullOrEmpty(webclientUrl)) {
                 return null;
             }

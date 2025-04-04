@@ -30,6 +30,7 @@ import java.nio.file.Paths;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
+import java.util.Locale;
 import java.util.stream.Collectors;
 
 /**
@@ -143,7 +144,7 @@ public class JIPipeDesktop {
                     outer:
                     for (FileNameExtensionFilter extensionFilter : extensionFilters) {
                         for (String extension : extensionFilter.getExtensions()) {
-                            if (path.toString().toLowerCase().endsWith(extension)) {
+                            if (path.toString().toLowerCase(Locale.ROOT).endsWith(extension)) {
                                 found = true;
                                 break outer;
                             }
@@ -175,7 +176,7 @@ public class JIPipeDesktop {
                     FileNameExtensionFilter fileNameExtensionFilter = (FileNameExtensionFilter) fileChooser.getFileFilter();
                     boolean found = false;
                     for (String extension : fileNameExtensionFilter.getExtensions()) {
-                        if (path.toString().toLowerCase().endsWith(extension)) {
+                        if (path.toString().toLowerCase(Locale.ROOT).endsWith(extension)) {
                             found = true;
                             break;
                         }
@@ -205,7 +206,7 @@ public class JIPipeDesktop {
                     FileNameExtensionFilter fileNameExtensionFilter = (FileNameExtensionFilter) fileChooser.getFileFilter();
                     boolean found = false;
                     for (String extension : fileNameExtensionFilter.getExtensions()) {
-                        if (path.toString().toLowerCase().endsWith(extension)) {
+                        if (path.toString().toLowerCase(Locale.ROOT).endsWith(extension)) {
                             found = true;
                             break;
                         }

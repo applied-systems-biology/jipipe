@@ -84,6 +84,7 @@ import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Locale;
 import java.util.Set;
 import java.util.function.Consumer;
 import java.util.function.Function;
@@ -594,7 +595,7 @@ public abstract class JIPipeDefaultJavaPlugin extends AbstractService implements
      */
     public void registerTableColumnOperationAndExpressionFunction(String id, ColumnOperation operation, String name, String shortName, String description) {
         registry.getExpressionRegistry().registerColumnOperation(id, operation, name, shortName, description);
-        registerExpressionFunction(new ColumnOperationAdapterFunction(operation, shortName.toUpperCase().replace(' ', '_')), name, description);
+        registerExpressionFunction(new ColumnOperationAdapterFunction(operation, shortName.toUpperCase(Locale.ROOT).replace(' ', '_')), name, description);
     }
 
     /**

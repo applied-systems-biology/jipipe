@@ -888,7 +888,7 @@ public class JIPipeDesktopFileChooserNext extends JPanel {
                             boolean anyMatch = false;
                             for (String extension : ((FileNameExtensionFilter) filter).getExtensions()) {
                                 if (!StringUtils.isNullOrEmpty(extension) && !"*".equals(extension)) {
-                                    if (fileName.toLowerCase().endsWith(extension.toLowerCase())) {
+                                    if (fileName.toLowerCase(Locale.ROOT).endsWith(extension.toLowerCase(Locale.ROOT))) {
                                         anyMatch = true;
                                         break;
                                     }

@@ -357,7 +357,7 @@ public class TracksManagerPlugin2D extends JIPipeDesktopLegacyImageViewerPlugin2
                 EdgeFeature.VALUE_LABELS.keySet().stream().sorted(NaturalOrderComparator.INSTANCE).forEach(key -> {
                     String name = EdgeFeature.VALUE_LABELS.get(key);
                     JMenuItem colorByMenuEntry = new JMenuItem("Edge: " + name);
-                    colorByMenuEntry.setToolTipText("Colors the track edges by their " + name.toLowerCase());
+                    colorByMenuEntry.setToolTipText("Colors the track edges by their " + name.toLowerCase(Locale.ROOT));
                     colorByMenuEntry.addActionListener(e -> {
                         trackDrawer.setStrokeColorMode(TrackDrawer.StrokeColorMode.PerEdge);
                         trackDrawer.setStrokeColorEdgeFeature(new EdgeFeature(key));
@@ -370,7 +370,7 @@ public class TracksManagerPlugin2D extends JIPipeDesktopLegacyImageViewerPlugin2
                 TrackFeature.VALUE_LABELS.keySet().stream().sorted(NaturalOrderComparator.INSTANCE).forEach(key -> {
                     String name = TrackFeature.VALUE_LABELS.get(key);
                     JMenuItem colorByMenuEntry = new JMenuItem("Track: " + name);
-                    colorByMenuEntry.setToolTipText("Colors the tracks by their " + name.toLowerCase());
+                    colorByMenuEntry.setToolTipText("Colors the tracks by their " + name.toLowerCase(Locale.ROOT));
                     colorByMenuEntry.addActionListener(e -> {
                         trackDrawer.setStrokeColorMode(TrackDrawer.StrokeColorMode.PerTrack);
                         trackDrawer.setStrokeColorTrackFeature(new TrackFeature(key));

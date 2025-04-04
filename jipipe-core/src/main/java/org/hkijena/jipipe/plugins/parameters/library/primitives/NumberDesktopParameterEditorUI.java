@@ -23,6 +23,7 @@ import org.hkijena.jipipe.utils.UIUtils;
 import javax.swing.*;
 import javax.swing.event.DocumentEvent;
 import java.awt.*;
+import java.util.Locale;
 import java.util.Objects;
 
 /**
@@ -158,7 +159,7 @@ public class NumberDesktopParameterEditorUI extends JIPipeDesktopParameterEditor
                 getParameterAccess().getFieldClass() == double.class || getParameterAccess().getFieldClass() == Double.class) {
             if (StringUtils.isNullOrEmpty(text))
                 return false;
-            return text.toLowerCase().startsWith("-inf") || text.toLowerCase().startsWith("inf") || text.equalsIgnoreCase("nan") || text.equalsIgnoreCase("na");
+            return text.toLowerCase(Locale.ROOT).startsWith("-inf") || text.toLowerCase(Locale.ROOT).startsWith("inf") || text.equalsIgnoreCase("nan") || text.equalsIgnoreCase("na");
         }
         return false;
     }
@@ -170,9 +171,9 @@ public class NumberDesktopParameterEditorUI extends JIPipeDesktopParameterEditor
                 getParameterAccess().getFieldClass() == double.class || getParameterAccess().getFieldClass() == Double.class) {
             if (StringUtils.isNullOrEmpty(text))
                 return 0;
-            if (text.toLowerCase().startsWith("-inf"))
+            if (text.toLowerCase(Locale.ROOT).startsWith("-inf"))
                 return Double.NEGATIVE_INFINITY;
-            if (text.toLowerCase().startsWith("inf"))
+            if (text.toLowerCase(Locale.ROOT).startsWith("inf"))
                 return Double.POSITIVE_INFINITY;
             if (text.equalsIgnoreCase("nan") || text.equalsIgnoreCase("na"))
                 return Double.NaN;

@@ -26,6 +26,7 @@ import javax.swing.*;
 import java.awt.*;
 import java.io.IOException;
 import java.nio.file.Path;
+import java.util.Locale;
 
 /**
  * Dialog that exports plots as image
@@ -164,7 +165,7 @@ public class JIPipeDesktopPlotExporterDialog extends JDialog {
 
         switch ((FileFormat) plotExportFormat.getSelectedItem()) {
             case PNG:
-                if (JIPipeFileChooserApplicationSettings.getInstance().isAddFileExtension() && !path.toString().toLowerCase().endsWith(".png")) {
+                if (JIPipeFileChooserApplicationSettings.getInstance().isAddFileExtension() && !path.toString().toLowerCase(Locale.ROOT).endsWith(".png")) {
                     path = path.getParent().resolve(path.getFileName() + ".png");
                 }
                 try {
@@ -177,7 +178,7 @@ public class JIPipeDesktopPlotExporterDialog extends JDialog {
                 }
                 break;
             case JPEG:
-                if (JIPipeFileChooserApplicationSettings.getInstance().isAddFileExtension() && !path.toString().toLowerCase().endsWith(".jpg")) {
+                if (JIPipeFileChooserApplicationSettings.getInstance().isAddFileExtension() && !path.toString().toLowerCase(Locale.ROOT).endsWith(".jpg")) {
                     path = path.getParent().resolve(path.getFileName() + ".jpg");
                 }
                 try {
@@ -190,7 +191,7 @@ public class JIPipeDesktopPlotExporterDialog extends JDialog {
                 }
                 break;
             case SVG: {
-                if (JIPipeFileChooserApplicationSettings.getInstance().isAddFileExtension() && !path.toString().toLowerCase().endsWith(".svg")) {
+                if (JIPipeFileChooserApplicationSettings.getInstance().isAddFileExtension() && !path.toString().toLowerCase(Locale.ROOT).endsWith(".svg")) {
                     path = path.getParent().resolve(path.getFileName() + ".svg");
                 }
                 int w = ((Number) plotWidth.getValue()).intValue();
