@@ -48,6 +48,7 @@ public class JIPipeDesktopAddNodeTransferHandler extends TransferHandler {
                     JIPipeNodeExample example = ((CreateNewNodeByExampleDatabaseEntry) obj).getExample();
                     JIPipeNodeInfo info = example.getNodeInfo();
                     JIPipeGraphNode node = info.newInstance();
+                    node.setCustomName(info.getName() + ": " + example.getNodeTemplate().getName());
                     if (node instanceof JIPipeAlgorithm) {
                         ((JIPipeAlgorithm) node).loadExample(example);
                     }
