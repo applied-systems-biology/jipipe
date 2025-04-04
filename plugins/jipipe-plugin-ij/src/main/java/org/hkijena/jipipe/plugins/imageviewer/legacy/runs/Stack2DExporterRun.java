@@ -24,6 +24,7 @@ import java.awt.image.BufferedImage;
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
+import java.util.Locale;
 
 public class Stack2DExporterRun extends AbstractJIPipeRunnable {
     private final JIPipeDesktopLegacyImageViewer viewerPanel;

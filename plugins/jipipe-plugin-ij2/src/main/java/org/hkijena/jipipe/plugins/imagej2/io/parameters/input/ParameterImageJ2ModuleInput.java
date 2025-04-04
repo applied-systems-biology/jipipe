@@ -26,6 +26,8 @@ import org.scijava.module.Module;
 import org.scijava.module.ModuleItem;
 import org.scijava.service.AbstractService;
 
+import java.util.Locale;
+
 /**
  * Handles input parameters (passed from/to JIPipe parameters)
  *

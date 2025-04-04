@@ -811,6 +811,10 @@ public class ImageJAlgorithmsPlugin extends JIPipePrepackagedDefaultJavaPlugin {
 
         registerNodeType("iji-export-image-to-web", ExportImageAlgorithm.class, UIUtils.getIconURLFromResources("actions/document-export.png"));
         registerNodeType("iji-export-image-v2", ExportImage2Algorithm.class, UIUtils.getIconURLFromResources("actions/document-export.png"));
+        for (ExportImageAlgorithm.FileFormat format : ExportImageAlgorithm.FileFormat.values()) {
+            registerNodeExample(ExportImage2Algorithm.class, format.name(), node -> node.setFileFormat(format));
+        }
+
         registerNodeType("iji-export-image-to-web:directory-slot", ExportImageDirectorySlotAlgorithm.class, UIUtils.getIconURLFromResources("actions/document-export.png"));
         registerNodeType("iji-export-roi-list", ExportROIAlgorithm.class, UIUtils.getIconURLFromResources("actions/document-export.png"));
         registerNodeType("iji-export-roi-list-v2", ExportROIAlgorithm2.class, UIUtils.getIconURLFromResources("actions/document-export.png"));
@@ -818,6 +822,9 @@ public class ImageJAlgorithmsPlugin extends JIPipePrepackagedDefaultJavaPlugin {
         registerNodeType("iji-export-table-v2", ExportTableAlgorithm2.class, UIUtils.getIconURLFromResources("actions/document-export.png"));
         registerNodeType("iji-export-table-as-xlsx", ExportTableAsXLSXAlgorithm.class, UIUtils.getIconURLFromResources("actions/document-export.png"));
         registerNodeType("iji-export-table-as-xlsx-v2", ExportTableAsXLSXAlgorithm2.class, UIUtils.getIconURLFromResources("actions/document-export.png"));
+        for (ExportTableAlgorithm.FileFormat format : ExportTableAlgorithm.FileFormat.values()) {
+            registerNodeExample(ExportTableAlgorithm2.class, format.name(), node -> node.setFileFormat(format));
+        }
 
         registerNodeType("ij-import-from-imagej", RunImageJImporterAlgorithm.class, UIUtils.getIconURLFromResources("apps/imagej.png"));
         registerNodeType("ij-export-to-imagej", RunImageJExporterAlgorithm.class, UIUtils.getIconURLFromResources("apps/imagej.png"));

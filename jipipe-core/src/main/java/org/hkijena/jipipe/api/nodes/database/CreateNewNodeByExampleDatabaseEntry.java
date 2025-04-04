@@ -169,6 +169,7 @@ public class CreateNewNodeByExampleDatabaseEntry implements JIPipeNodeDatabaseEn
         if (canvasUI.getHistoryJournal() != null) {
             canvasUI.getHistoryJournal().snapshotBeforeAddNode(copy, canvasUI.getCompartmentUUID());
         }
+        copy.setCustomName(copy.getInfo().getName() + ": " + example.getNodeTemplate().getName());
         canvasUI.getGraph().insertNode(copy, canvasUI.getCompartmentUUID());
         return Collections.singleton(canvasUI.getNodeUIs().get(copy));
     }

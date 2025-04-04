@@ -34,6 +34,7 @@ import org.hkijena.jipipe.utils.StringUtils;
 
 import java.awt.*;
 import java.util.Collections;
+import java.util.Locale;
 
 @SetJIPipeDocumentation(name = "Boolean input form", description = "A form element that allows the user to input a boolean (true/false) value")
 public class BooleanFormData extends ParameterFormData {
