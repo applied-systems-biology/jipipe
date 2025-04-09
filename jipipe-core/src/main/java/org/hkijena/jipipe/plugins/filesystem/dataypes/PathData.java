@@ -28,8 +28,6 @@ import org.hkijena.jipipe.api.data.thumbnails.JIPipeThumbnailData;
 import org.hkijena.jipipe.utils.PathUtils;
 import org.hkijena.jipipe.utils.json.JsonUtils;
 
-import javax.swing.*;
-import java.awt.*;
 import java.io.IOException;
 import java.nio.file.InvalidPathException;
 import java.nio.file.Path;
@@ -88,18 +86,6 @@ public class PathData implements JIPipeData {
     @Override
     public JIPipeData duplicate(JIPipeProgressInfo progressInfo) {
         return new PathData(path);
-    }
-
-    @Override
-    public Component preview(int width, int height) {
-        String name = "N/A";
-        if (path != null) {
-            try {
-                name = Paths.get(path).getFileName().toString();
-            } catch (InvalidPathException e) {
-            }
-        }
-        return new JLabel(name);
     }
 
     @Override

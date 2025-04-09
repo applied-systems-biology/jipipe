@@ -90,11 +90,6 @@ public abstract class FormData extends AbstractJIPipeParameterCollection impleme
         }
     }
 
-    @Override
-    public Component preview(int width, int height) {
-        return null;
-    }
-
     /**
      * Gets a component that acts as the editor for the form data.
      * This is presented to the user

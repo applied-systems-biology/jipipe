@@ -226,19 +226,6 @@ public interface JIPipeData extends Closeable, AutoCloseable {
     JIPipeData duplicate(JIPipeProgressInfo progressInfo);
 
     /**
-     * This function generates a preview component for usage within the GUI
-     * Can return null
-     *
-     * @param width  the target width
-     * @param height the target height
-     * @return the component or null if none should be available
-     */
-    @Deprecated
-    default Component preview(int width, int height) {
-        return null;
-    }
-
-    /**
      * This function generates a thumbnail for this data
      * Can return null
      *

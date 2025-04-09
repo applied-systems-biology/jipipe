@@ -29,8 +29,6 @@ import org.hkijena.jipipe.plugins.imagejdatatypes.datatypes.ImageTypeInfo;
 import org.hkijena.jipipe.plugins.imagejdatatypes.datatypes.d2.ImagePlus2DData;
 import org.hkijena.jipipe.plugins.imagejdatatypes.util.ImageJUtils;
 
-import java.awt.*;
-
 /**
  * A colored image without dimension.
  * It acts as base and intermediate type between colored images. The convertFrom(data) method copies the color space
@@ -71,11 +69,6 @@ public class ImagePlus2DColorData extends ImagePlus2DData {
         } else {
             return new ImagePlus2DColorData(image, data.getColorSpace());
         }
-    }
-
-    @Override
-    public Component preview(int width, int height) {
-        return ImageJUtils.generatePreview(this.getImage(), getColorSpace(), width, height);
     }
 
     @Override

@@ -61,13 +61,11 @@ import org.hkijena.jipipe.plugins.imagejdatatypes.util.dimensions.ImageSliceInde
 import org.hkijena.jipipe.plugins.imagejdatatypes.util.ROIHandler;
 import org.hkijena.jipipe.utils.PathUtils;
 
-import javax.swing.*;
 import java.awt.*;
 import java.awt.image.BufferedImage;
 import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.IOException;
-import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.ArrayList;
 import java.util.Collections;
@@ -970,48 +968,6 @@ public class OMEImageData implements JIPipeData {
             }
         } catch (FormatException | IOException e) {
             WindowTools.reportException(e);
-        }
-    }
-
-    @Override
-    public Component preview(int width, int height) {
-        if (image != null) {
-            double factorX = 1.0 * width / image.getWidth();
-            double factorY = 1.0 * height / image.getHeight();
-            double factor = Math.max(factorX, factorY);
-            boolean smooth = factor < 0;
-            int imageWidth = (int) (image.getWidth() * factor);
-            int imageHeight = (int) (image.getHeight() * factor);
-            ImagePlus rgbImage = ImageJUtils.channelsToRGB(image);
-            if (rgbImage.getStackSize() != 1) {
-                // Reduce processing time
-                rgbImage = new ImagePlus("Preview", rgbImage.getProcessor());
-            }
-            if (rgbImage == image) {
-                rgbImage = ImageJUtils.duplicate(rgbImage);
-            }
-            // ROI rendering
-            if (rois != null && !rois.isEmpty()) {
-                rgbImage = ImageJUtils.convertToColorRGBIfNeeded(rgbImage);
-                rois.draw(rgbImage.getProcessor(),
-                        new ImageSliceIndex(0, 0, 0),
-                        false,
-                        false,
-                        false,
-                        true,
-                        false,
-                        false,
-                        1,
-                        Color.RED,
-                        Color.YELLOW,
-                        Collections.emptyList());
-            }
-
-            ImageProcessor resized = rgbImage.getProcessor().resize(imageWidth, imageHeight, smooth);
-            BufferedImage bufferedImage = resized.getBufferedImage();
-            return new JLabel(new ImageIcon(bufferedImage));
-        } else {
-            return new JLabel("N/A");
         }
     }
 

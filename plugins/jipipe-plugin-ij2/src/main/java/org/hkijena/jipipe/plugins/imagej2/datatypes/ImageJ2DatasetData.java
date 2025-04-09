@@ -32,7 +32,6 @@ import org.hkijena.jipipe.api.validation.JIPipeValidationRuntimeException;
 import org.hkijena.jipipe.plugins.imagejdatatypes.datatypes.ImagePlusData;
 import org.hkijena.jipipe.utils.PathUtils;
 
-import java.awt.*;
 import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.nio.file.Path;
@@ -80,11 +79,6 @@ public class ImageJ2DatasetData implements JIPipeData {
     @Override
     public JIPipeData duplicate(JIPipeProgressInfo progressInfo) {
         return new ImageJ2DatasetData(dataset.duplicate());
-    }
-
-    @Override
-    public Component preview(int width, int height) {
-        return wrap().preview(width, height);
     }
 
     @Override

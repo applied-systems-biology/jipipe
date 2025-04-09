@@ -40,7 +40,6 @@ import org.hkijena.jipipe.plugins.settings.JIPipeGeneralDataApplicationSettings;
 import org.hkijena.jipipe.plugins.tables.datatypes.AnnotationTableData;
 import org.hkijena.jipipe.utils.StringUtils;
 
-import javax.swing.*;
 import javax.swing.event.TableModelEvent;
 import javax.swing.event.TableModelListener;
 import javax.swing.table.TableModel;
@@ -1721,32 +1720,6 @@ public class JIPipeDataTable implements JIPipeData, TableModel {
     @Override
     public JIPipeData duplicate(JIPipeProgressInfo progressInfo) {
         return new JIPipeDataTable(this, false, new JIPipeProgressInfo());
-    }
-
-    @Override
-    public Component preview(int width, int height) {
-        if (isEmpty()) {
-            return JIPipeData.super.preview(width, height);
-        } else {
-            JIPipeProgressInfo progressInfo = new JIPipeProgressInfo();
-            JPanel panel = new JPanel(new GridBagLayout());
-            for (int i = 0; i < Math.min(9, getRowCount()); i++) {
-                JIPipeDataItemStore virtualData = getDataItemStore(i);
-
-                GridBagConstraints constraints = new GridBagConstraints();
-                constraints.gridx = i % 3;
-                constraints.gridy = i / 3;
-                constraints.weightx = 1;
-                constraints.weighty = 1;
-                constraints.anchor = GridBagConstraints.CENTER;
-
-                Component preview = virtualData.getData(progressInfo).preview(width / 3, height / 3);
-                if (preview == null)
-                    preview = new JLabel("N/A");
-                panel.add(preview, constraints);
-            }
-            return panel;
-        }
     }
 
     @Override

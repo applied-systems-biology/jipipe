@@ -26,10 +26,6 @@ import org.hkijena.jipipe.api.data.thumbnails.JIPipeIconLabelThumbnailData;
 import org.hkijena.jipipe.api.data.thumbnails.JIPipeThumbnailData;
 import org.hkijena.jipipe.api.data.utils.JIPipeSerializedJsonObjectData;
 import org.hkijena.jipipe.plugins.tables.datatypes.ResultsTableData;
-import org.hkijena.jipipe.utils.UIUtils;
-
-import javax.swing.*;
-import java.awt.*;
 
 @SetJIPipeDocumentation(name = "Iteration step status", description = "Structural data indicating the status of a iteration step")
 @LabelAsJIPipeHidden
@@ -66,11 +62,6 @@ public class DataBatchStatusData extends JIPipeSerializedJsonObjectData {
     @Override
     public JIPipeData duplicate(JIPipeProgressInfo progressInfo) {
         return new DataBatchStatusData(this);
-    }
-
-    @Override
-    public Component preview(int width, int height) {
-        return new JLabel(getStatusMessage(), UIUtils.getIconFromResources(isStatusValid() ? "emblems/vcs-normal.png" : "emblems/warning.png"), JLabel.LEFT);
     }
 
     @Override

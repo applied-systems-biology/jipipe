@@ -51,7 +51,6 @@ import org.jfree.chart.axis.ValueAxis;
 import org.jfree.graphics2d.svg.SVGGraphics2D;
 import org.jfree.graphics2d.svg.SVGUtils;
 
-import javax.swing.*;
 import java.awt.*;
 import java.awt.image.BufferedImage;
 import java.io.IOException;
@@ -189,17 +188,6 @@ public abstract class JFreeChartPlotData extends AbstractJIPipeParameterCollecti
             }
         }
         axis.setRange(_min, _max);
-    }
-
-    @Override
-    public Component preview(int width, int height) {
-        BufferedImage image = getChart().createBufferedImage(exportWidth, exportHeight);
-        double factorX = 1.0 * width / image.getWidth();
-        double factorY = 1.0 * height / image.getHeight();
-        double factor = Math.max(factorX, factorY);
-        int imageWidth = (int) (image.getWidth() * factor);
-        int imageHeight = (int) (image.getHeight() * factor);
-        return new JLabel(new ImageIcon(image.getScaledInstance(imageWidth, imageHeight, Image.SCALE_SMOOTH)));
     }
 
     @Override

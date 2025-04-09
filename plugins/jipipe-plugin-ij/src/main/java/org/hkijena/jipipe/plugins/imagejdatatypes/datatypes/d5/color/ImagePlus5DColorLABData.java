@@ -30,8 +30,6 @@ import org.hkijena.jipipe.plugins.imagejdatatypes.datatypes.color.ImagePlusColor
 import org.hkijena.jipipe.plugins.imagejdatatypes.util.dimensions.ImageDimensions;
 import org.hkijena.jipipe.plugins.imagejdatatypes.util.ImageJUtils;
 
-import java.awt.*;
-
 /**
  * RGB color 5D image
  */
@@ -84,11 +82,6 @@ public class ImagePlus5DColorLABData extends ImagePlus5DColorData {
     @Override
     public ColorSpace getColorSpace() {
         return LABColorSpace.INSTANCE;
-    }
-
-    @Override
-    public Component preview(int width, int height) {
-        return ImageJUtils.generatePreview(this.getImage(), getColorSpace(), width, height);
     }
 
     @Override

@@ -625,24 +625,6 @@ public class ROI2DListData extends ArrayList<Roi> implements JIPipeData, NapariO
     }
 
     @Override
-    public Component preview(int width, int height) {
-        ImagePlus mask;
-        if (isEmpty()) {
-            mask = IJ.createImage("empty", "8-bit", width, height, 1);
-        } else {
-            ROI2DListData copy = new ROI2DListData(this);
-            copy.flatten();
-            copy.crop(true, false, false, false);
-            Margin margin = new Margin();
-            mask = copy.toRGBImage(margin, ROIElementDrawingMode.Always, ROIElementDrawingMode.IfAvailable, 1, Color.RED, Color.RED);
-//            mask.setLut(LUT.createLutFromColor(Color.RED));
-        }
-        if (mask.getWidth() * mask.getHeight() == 0)
-            return null;
-        return new ImagePlusData(mask).preview(width, height);
-    }
-
-    @Override
     public JIPipeThumbnailData createThumbnail(int width, int height, JIPipeProgressInfo progressInfo) {
         ImagePlus mask;
         if (isEmpty()) {

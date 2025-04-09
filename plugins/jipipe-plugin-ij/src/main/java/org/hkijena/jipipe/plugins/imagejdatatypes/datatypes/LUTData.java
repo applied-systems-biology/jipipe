@@ -204,11 +204,6 @@ public class LUTData implements JIPipeData {
     }
 
     @Override
-    public Component preview(int width, int height) {
-        return new ImagePlusData(toImage(width, height)).preview(width, height);
-    }
-
-    @Override
     public JIPipeThumbnailData createThumbnail(int width, int height, JIPipeProgressInfo progressInfo) {
         return new ImagePlusData(toImage(width, height)).createThumbnail(width, height, progressInfo);
     }

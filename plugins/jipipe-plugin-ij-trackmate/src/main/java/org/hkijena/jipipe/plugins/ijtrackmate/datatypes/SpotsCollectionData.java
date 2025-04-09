@@ -33,9 +33,7 @@ import org.hkijena.jipipe.plugins.imagejdatatypes.util.ImageJUtils;
 import org.hkijena.jipipe.plugins.imagejdatatypes.util.dimensions.ImageSliceIndex;
 import org.hkijena.jipipe.plugins.parameters.library.colors.ColorMap;
 
-import javax.swing.*;
 import java.awt.*;
-import java.awt.image.BufferedImage;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
@@ -108,47 +106,6 @@ public class SpotsCollectionData extends ModelData {
 
     public void recalculateSpotFeatureRange() {
         spotFeatureRanges.clear();
-    }
-
-    @Override
-    public Component preview(int width, int height) {
-        ImagePlus image = getImage();
-        double factorX = 1.0 * width / image.getWidth();
-        double factorY = 1.0 * height / image.getHeight();
-        double factor = Math.max(factorX, factorY);
-        boolean smooth = factor < 0;
-        int imageWidth = (int) (image.getWidth() * factor);
-        int imageHeight = (int) (image.getHeight() * factor);
-        ImagePlus rgbImage = ImageJUtils.channelsToRGB(image);
-        rgbImage = ImageJUtils.convertToColorRGBIfNeeded(rgbImage);
-
-        // ROI rendering
-        ROI2DListData rois = spotsToROIList();
-        int dMax = 1;
-        for (Roi roi : rois) {
-            int d = roi.getZPosition() + roi.getCPosition() + roi.getTPosition();
-            dMax = Math.max(d, dMax);
-        }
-        for (Roi roi : rois) {
-            int d = roi.getZPosition() + roi.getCPosition() + roi.getTPosition();
-            roi.setStrokeColor(ColorMap.hsv.apply(1.0 * d / dMax));
-        }
-        rois.draw(rgbImage.getProcessor(),
-                new ImageSliceIndex(0, 0, 0),
-                true,
-                true,
-                true,
-                true,
-                false,
-                false,
-                1,
-                Color.RED,
-                Color.YELLOW,
-                Collections.emptyList());
-
-        ImageProcessor resized = rgbImage.getProcessor().resize(imageWidth, imageHeight, smooth);
-        BufferedImage bufferedImage = resized.getBufferedImage();
-        return new JLabel(new ImageIcon(bufferedImage));
     }
 
     @Override

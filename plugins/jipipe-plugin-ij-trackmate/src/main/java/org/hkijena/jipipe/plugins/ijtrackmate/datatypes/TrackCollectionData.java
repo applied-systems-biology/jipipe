@@ -34,7 +34,6 @@ import org.hkijena.jipipe.plugins.imagejdatatypes.datatypes.ROI2DListData;
 import org.hkijena.jipipe.plugins.imagejdatatypes.util.ImageJUtils;
 import org.jgrapht.graph.DefaultWeightedEdge;
 
-import javax.swing.*;
 import java.awt.*;
 import java.awt.image.BufferedImage;
 import java.lang.reflect.Field;
@@ -255,42 +254,6 @@ public class TrackCollectionData extends SpotsCollectionData {
 
     public void recalculateTrackFeatureRanges() {
         this.trackFeatureRanges.clear();
-    }
-
-    @Override
-    public Component preview(int width, int height) {
-        ImagePlus image = getImage();
-        double factorX = 1.0 * width / image.getWidth();
-        double factorY = 1.0 * height / image.getHeight();
-        double factor = Math.max(factorX, factorY);
-//        boolean smooth = factor < 0;
-        int imageWidth = (int) (image.getWidth() * factor);
-        int imageHeight = (int) (image.getHeight() * factor);
-        ImagePlus rgbImage = ImageJUtils.channelsToRGB(image);
-        rgbImage = ImageJUtils.convertToColorRGBIfNeeded(rgbImage);
-
-        computeTrackFeatures(new JIPipeProgressInfo());
-
-        // ROI rendering
-        BufferedImage bufferedImage = rgbImage.getBufferedImage();
-        DisplaySettings displaySettings = new DisplaySettings();
-        displaySettings.setLineThickness(5);
-        displaySettings.setTrackDisplayMode(DisplaySettings.TrackDisplayMode.FULL);
-        displaySettings.setTrackColorBy(DisplaySettings.TrackMateObject.TRACKS, "TRACK_ID");
-        displaySettings.setTrackMinMax(0, getTrackModel().nTracks(true));
-        TrackOverlay overlay = new TrackOverlay(getModel(), rgbImage, displaySettings);
-        try {
-            Field field = Roi.class.getDeclaredField("ic");
-            field.setAccessible(true);
-            field.set(overlay, new ImageCanvas(getImage()));
-        } catch (IllegalAccessException | NoSuchFieldException e) {
-            throw new RuntimeException(e);
-        }
-        Graphics2D graphics = bufferedImage.createGraphics();
-        overlay.drawOverlay(graphics);
-        graphics.dispose();
-        Image scaledInstance = bufferedImage.getScaledInstance(imageWidth, imageHeight, Image.SCALE_DEFAULT);
-        return new JLabel(new ImageIcon(scaledInstance));
     }
 
     @Override

@@ -59,7 +59,6 @@ import javax.swing.event.TableModelEvent;
 import javax.swing.event.TableModelListener;
 import javax.swing.table.TableColumnModel;
 import javax.swing.table.TableModel;
-import java.awt.*;
 import java.io.IOException;
 import java.lang.reflect.Field;
 import java.nio.file.Files;
@@ -495,16 +494,6 @@ public class ResultsTableData implements JIPipeData, TableModel {
             tableDict.put(colName, copy);
         }
         return tableDict;
-    }
-
-    @Override
-    public Component preview(int width, int height) {
-        if (getRowCount() == 0 || getColumnCount() == 0)
-            return null;
-        String text = String.format("<html><strong>%d rows<br/>%d columns</strong><br/>%s</html>", getRowCount(), getColumnCount(), String.join(", ", getColumnNames()));
-        JLabel label = new JLabel(text);
-        label.setSize(label.getPreferredSize());
-        return label;
     }
 
     @Override

@@ -30,8 +30,6 @@ import org.hkijena.jipipe.plugins.imagejdatatypes.datatypes.color.ColorImageData
 import org.hkijena.jipipe.plugins.imagejdatatypes.datatypes.d5.ImagePlus5DData;
 import org.hkijena.jipipe.plugins.imagejdatatypes.util.ImageJUtils;
 
-import java.awt.*;
-
 /**
  * A colored image without dimension.
  * It acts as base and intermediate type between colored images. The convertFrom(data) method copies the color space
@@ -72,11 +70,6 @@ public class ImagePlus5DColorData extends ImagePlus5DData implements ColorImageD
         } else {
             return new ImagePlus5DColorData(image, data.getColorSpace());
         }
-    }
-
-    @Override
-    public Component preview(int width, int height) {
-        return ImageJUtils.generatePreview(this.getImage(), getColorSpace(), width, height);
     }
 
     @Override

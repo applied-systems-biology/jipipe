@@ -30,8 +30,6 @@ import org.hkijena.jipipe.plugins.imagejdatatypes.datatypes.ImageTypeInfo;
 import org.hkijena.jipipe.plugins.imagejdatatypes.util.dimensions.ImageDimensions;
 import org.hkijena.jipipe.plugins.imagejdatatypes.util.ImageJUtils;
 
-import java.awt.*;
-
 /**
  * HSV colored image without dimension.
  * These image data types exist to address general processing solely based on bit-depth (e.g. process all 2D image planes).
@@ -96,11 +94,6 @@ public class ImagePlusColorHSBData extends ImagePlusColorData {
     @Override
     public ColorSpace getColorSpace() {
         return HSBColorSpace.INSTANCE;
-    }
-
-    @Override
-    public Component preview(int width, int height) {
-        return ImageJUtils.generatePreview(this.getImage(), getColorSpace(), width, height);
     }
 
     @Override

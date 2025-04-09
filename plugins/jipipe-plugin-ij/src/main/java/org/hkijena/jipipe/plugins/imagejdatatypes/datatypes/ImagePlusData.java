@@ -41,9 +41,7 @@ import org.hkijena.jipipe.plugins.imagejdatatypes.util.dimensions.ImageSliceInde
 import org.hkijena.jipipe.utils.PathUtils;
 import org.hkijena.jipipe.utils.ReflectionUtils;
 
-import javax.swing.*;
 import java.awt.*;
-import java.awt.image.BufferedImage;
 import java.io.FileNotFoundException;
 import java.nio.file.Path;
 import java.util.*;
@@ -347,7 +345,7 @@ public class ImagePlusData implements JIPipeData {
         double factorX = 1.0 * width / image.getWidth();
         double factorY = 1.0 * height / image.getHeight();
         double factor = Math.min(factorX, factorY);
-        boolean smooth = false;
+        boolean smooth = factor < 1;
         int imageWidth = (int) Math.max(1, image.getWidth() * factor);
         int imageHeight = (int) Math.max(1, image.getHeight() * factor);
         ImagePlus rgbImage = ImageJUtils.channelsToRGB(image);
@@ -399,66 +397,6 @@ public class ImagePlusData implements JIPipeData {
 
         ImageProcessor resized = rgbImage.getProcessor().resize(imageWidth, imageHeight, smooth);
         return new JIPipeImageThumbnailData(resized);
-    }
-
-    @Override
-    public Component preview(int width, int height) {
-        double factorX = 1.0 * width / image.getWidth();
-        double factorY = 1.0 * height / image.getHeight();
-        double factor = Math.min(factorX, factorY);
-        boolean smooth = factor < 0;
-        int imageWidth = (int) Math.max(1, image.getWidth() * factor);
-        int imageHeight = (int) Math.max(1, image.getHeight() * factor);
-        ImagePlus rgbImage = ImageJUtils.channelsToRGB(image);
-        if (rgbImage.getStackSize() != 1) {
-            // Reduce processing time
-            rgbImage = new ImagePlus("Preview", rgbImage.getProcessor().duplicate()); // The duplicate is important (calibration!)
-        }
-        if (rgbImage == image) {
-            rgbImage = ImageJUtils.duplicate(rgbImage);
-        }
-//            if (rgbImage.getType() != ImagePlus.COLOR_RGB) {
-//                ImageJUtils.calibrate(rgbImage, ImageJCalibrationMode.AutomaticImageJ, 0, 1);
-//            }
-        if (rgbImage.getType() != ImagePlus.COLOR_RGB) {
-            // Copy LUT
-            rgbImage.setLut(image.getProcessor().getLut());
-
-            // Render to RGB
-            rgbImage = ImageJUtils.renderToRGBWithLUTIfNeeded(rgbImage, new JIPipeProgressInfo());
-        } else {
-            // Convert to RGB if necessary (HSB, LAB, ...)
-            getColorSpace().convertToRGB(rgbImage, new JIPipeProgressInfo());
-        }
-
-        // ROI rendering
-        ROI2DListData rois = new ROI2DListData();
-        if (image.getRoi() != null)
-            rois.add(image.getRoi());
-        if (image.getOverlay() != null) {
-            rois.addAll(Arrays.asList(image.getOverlay().toArray()));
-        }
-        if (!rois.isEmpty()) {
-            if (rgbImage == image || rgbImage.getProcessor() == image.getProcessor()) {
-                rgbImage = ImageJUtils.duplicate(rgbImage);
-            }
-            rois.draw(rgbImage.getProcessor(),
-                    new ImageSliceIndex(0, 0, 0),
-                    false,
-                    false,
-                    false,
-                    true,
-                    false,
-                    false,
-                    1,
-                    Color.RED,
-                    Color.YELLOW,
-                    Collections.emptyList());
-        }
-
-        ImageProcessor resized = rgbImage.getProcessor().resize(imageWidth, imageHeight, smooth);
-        BufferedImage bufferedImage = resized.getBufferedImage();
-        return new JLabel(new ImageIcon(bufferedImage));
     }
 
     @Override

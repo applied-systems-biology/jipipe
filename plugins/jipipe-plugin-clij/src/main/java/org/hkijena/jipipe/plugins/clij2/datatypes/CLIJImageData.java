@@ -28,8 +28,6 @@ import org.hkijena.jipipe.plugins.clij2.CLIJPluginApplicationSettings;
 import org.hkijena.jipipe.plugins.imagejdatatypes.datatypes.ImagePlusData;
 import org.hkijena.jipipe.plugins.imagejdatatypes.util.ImageJUtils;
 
-import java.awt.*;
-
 /**
  * Contains a CLIJ image
  */
@@ -94,16 +92,6 @@ public class CLIJImageData implements JIPipeData {
             e.printStackTrace();
         }
         image = null;
-    }
-
-    @Override
-    public Component preview(int width, int height) {
-        ImagePlusData data = pull();
-        if (data != null) {
-            return data.preview(width, height);
-        } else {
-            return null;
-        }
     }
 
     @Override

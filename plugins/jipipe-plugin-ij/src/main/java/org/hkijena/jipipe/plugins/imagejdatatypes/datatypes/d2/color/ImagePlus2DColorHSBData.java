@@ -30,8 +30,6 @@ import org.hkijena.jipipe.plugins.imagejdatatypes.datatypes.color.ImagePlusColor
 import org.hkijena.jipipe.plugins.imagejdatatypes.util.dimensions.ImageDimensions;
 import org.hkijena.jipipe.plugins.imagejdatatypes.util.ImageJUtils;
 
-import java.awt.*;
-
 /**
  * RGB colored 2D image
  */
@@ -81,11 +79,6 @@ public class ImagePlus2DColorHSBData extends ImagePlus2DColorData {
     @Override
     public ColorSpace getColorSpace() {
         return HSBColorSpace.INSTANCE;
-    }
-
-    @Override
-    public Component preview(int width, int height) {
-        return ImageJUtils.generatePreview(this.getImage(), getColorSpace(), width, height);
     }
 
     @Override

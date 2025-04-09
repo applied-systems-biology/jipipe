@@ -22,7 +22,6 @@ import org.hkijena.jipipe.api.data.storage.JIPipeReadDataStorage;
 import org.hkijena.jipipe.api.data.storage.JIPipeWriteDataStorage;
 import org.hkijena.jipipe.api.data.thumbnails.JIPipeThumbnailData;
 
-import java.awt.*;
 import java.lang.ref.WeakReference;
 
 /**
@@ -55,16 +54,6 @@ public class JIPipeWeakDataReferenceData implements JIPipeData {
     @Override
     public JIPipeData duplicate(JIPipeProgressInfo progressInfo) {
         return new JIPipeWeakDataReferenceData(dataReference.get());
-    }
-
-    @Override
-    public Component preview(int width, int height) {
-        JIPipeData data = dataReference.get();
-        if (data != null) {
-            return data.preview(width, height);
-        } else {
-            return null;
-        }
     }
 
     @Override
