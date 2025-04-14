@@ -19,7 +19,7 @@ import org.hkijena.jipipe.api.data.JIPipeDataConverter;
 import org.hkijena.jipipe.plugins.imagejdatatypes.datatypes.OMEImageData;
 import org.hkijena.jipipe.plugins.strings.XMLData;
 
-public class OmeImageToOMEXMLTypeConverter implements JIPipeDataConverter {
+public class OMEImageToXMLTypeConverter implements JIPipeDataConverter {
     @Override
     public Class<? extends JIPipeData> getInputType() {
         return OMEImageData.class;

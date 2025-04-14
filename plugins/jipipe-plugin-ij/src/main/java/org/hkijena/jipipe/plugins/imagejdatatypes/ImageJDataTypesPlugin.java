@@ -602,7 +602,7 @@ public class ImageJDataTypesPlugin extends JIPipePrepackagedDefaultJavaPlugin {
         registerDatatypeConversion(new ImagePlusToOMEImageTypeConverter());
         registerDatatypeConversion(new OMEImageToImagePlusTypeConverter());
         registerDatatypeConversion(new OMEImageToROITypeConverter());
-        registerDatatypeConversion(new OmeImageToOMEXMLTypeConverter());
+        registerDatatypeConversion(new OMEImageToXMLTypeConverter());
         registerDatatypeConversion(new PlotToImageTypeConverter());
         registerDatatypeConversion(new ImageToLUTTypeConverter());
         registerDatatypeConversion(new LUTToImageTypeConverter());
