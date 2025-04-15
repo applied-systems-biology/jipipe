@@ -99,8 +99,7 @@ public class JIPipeLegacyNodeDatabaseSearch {
             }
 
             if (!foundToken) {
-                // Reject if text token does not match at all
-                return 0;
+                rank += 1.0; // Add penalty instead of rejecting
             }
 
             rank -= textTokenWeight * bestDistanceTokenWeight;
