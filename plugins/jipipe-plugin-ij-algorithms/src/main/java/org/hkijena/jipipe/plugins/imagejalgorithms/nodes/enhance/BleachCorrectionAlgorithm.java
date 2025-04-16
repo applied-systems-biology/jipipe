@@ -197,8 +197,8 @@ public class BleachCorrectionAlgorithm extends JIPipeIteratingAlgorithm {
         double lastframeint = yA[yA.length - 1];
         double guess_a = firstframeint - lastframeint;
         if (guess_a <= 0) {
-            IJ.error("This sequence seems to be not decaying");
-            return null;
+            throw new RuntimeException("This sequence seems to be not decaying");
+
         }
         double guess_c = lastframeint;
         double maxiteration = 2000;

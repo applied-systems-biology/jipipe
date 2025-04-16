@@ -54,6 +54,7 @@ import org.hkijena.jipipe.plugins.imagejalgorithms.nodes.dimensions.*;
 import org.hkijena.jipipe.plugins.imagejalgorithms.nodes.edge.CannyEdgeDetectorAlgorithm;
 import org.hkijena.jipipe.plugins.imagejalgorithms.nodes.edge.LaplacianEdgeDetectorAlgorithm;
 import org.hkijena.jipipe.plugins.imagejalgorithms.nodes.edge.SobelEdgeDetectorAlgorithm;
+import org.hkijena.jipipe.plugins.imagejalgorithms.nodes.enhance.BleachCorrectionAlgorithm;
 import org.hkijena.jipipe.plugins.imagejalgorithms.nodes.features.*;
 import org.hkijena.jipipe.plugins.imagejalgorithms.nodes.fft.FFT2DForwardTransform;
 import org.hkijena.jipipe.plugins.imagejalgorithms.nodes.fft.FFT2DInverseTransform;
@@ -623,6 +624,7 @@ public class ImageJAlgorithmsPlugin extends JIPipePrepackagedDefaultJavaPlugin {
         registerMetadataAlgorithms();
         registerRegistrationAlgorithms();
         registerMaskingAlgorithms();
+        registerEnhancementAlgorithms();
 
         registerNodeType("ij1-generate-missing-results-table", GenerateMissingTablesAlgorithm.class, UIUtils.getIconURLFromResources("actions/image-auto-adjust.png"));
         registerNodeType("ij1-generate-missing-results-table-2", GenerateMissingTablesAlgorithm2.class, UIUtils.getIconURLFromResources("actions/image-auto-adjust.png"));
@@ -647,6 +649,11 @@ public class ImageJAlgorithmsPlugin extends JIPipePrepackagedDefaultJavaPlugin {
         // Register examples
         registerNodeExamplesFromResources(RESOURCES, "examples");
         registerProjectTemplatesFromResources(RESOURCES, "templates");
+    }
+
+    private void registerEnhancementAlgorithms() {
+        registerNodeType("ij1-enhance-bleach-correction", BleachCorrectionAlgorithm.class, UIUtils.getIconURLFromResources("actions/wand-magic-sparkles.png"));
+        registerEnumParameterType("ij1-enhance-bleach-correction:method", BleachCorrectionAlgorithm.Method.class, "Bleach correction method", "Available methods");
     }
 
     private void registerMaskingAlgorithms() {
