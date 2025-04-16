@@ -24,7 +24,7 @@ import java.util.List;
 
 public class VersionUtils {
 
-    public static final String FALLBACK_VERSION = "5.2.1";
+    public static final String FALLBACK_VERSION = "5.3.0";
     public static final Comparator<? super String> VERSION_COMPARATOR = new VersionComparator();
 
     /**
