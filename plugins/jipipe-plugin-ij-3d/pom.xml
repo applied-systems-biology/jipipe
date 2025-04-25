@@ -4,12 +4,12 @@
     <parent>
         <artifactId>pom-jipipe</artifactId>
         <groupId>org.hkijena</groupId>
-        <version>5.3.0-SNAPSHOT</version>
+        <version>5.3.0</version>
         <relativePath>../../pom.xml</relativePath>
     </parent>
 
     <artifactId>jipipe-plugin-ij-3d</artifactId>
-    <version>5.3.0-SNAPSHOT</version>
+    <version>5.3.0</version>
 
     <name>jipipe-plugin-ij-3d</name>
     <description>JIPipe 3D ImageJ Suite Integration</description>
@@ -58,7 +58,7 @@
     <scm>
         <connection>scm:git:https://github.com/applied-systems-biology/jipipe.git</connection>
         <developerConnection>scm:git:https://github.com/applied-systems-biology/jipipe.git</developerConnection>
-        <tag>HEAD</tag>
+        <tag>pom-jipipe-5.3.0</tag>
         <url>https://github.com/applied-systems-biology/jipipe</url>
     </scm>
     <issueManagement>
@@ -83,27 +83,27 @@
             <dependency>
                 <groupId>org.hkijena</groupId>
                 <artifactId>jipipe-core</artifactId>
-                <version>5.3.0-SNAPSHOT</version>
+                <version>5.3.0</version>
             </dependency>
             <dependency>
                 <groupId>org.hkijena</groupId>
                 <artifactId>jipipe-plugin-filesystem</artifactId>
-                <version>5.3.0-SNAPSHOT</version>
+                <version>5.3.0</version>
             </dependency>
             <dependency>
                 <groupId>org.hkijena</groupId>
                 <artifactId>jipipe-plugin-ij</artifactId>
-                <version>5.3.0-SNAPSHOT</version>
+                <version>5.3.0</version>
             </dependency>
             <dependency>
                 <groupId>org.hkijena</groupId>
                 <artifactId>jipipe-plugin-ij-algorithms</artifactId>
-                <version>5.3.0-SNAPSHOT</version>
+                <version>5.3.0</version>
             </dependency>
             <dependency>
                 <groupId>org.hkijena</groupId>
                 <artifactId>jipipe-plugin-scene-3d</artifactId>
-                <version>5.3.0-SNAPSHOT</version>
+                <version>5.3.0</version>
             </dependency>
             <dependency>
                 <groupId>org.framagit.mcib3d</groupId>

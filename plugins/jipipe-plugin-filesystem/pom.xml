@@ -4,12 +4,12 @@
     <parent>
         <artifactId>pom-jipipe</artifactId>
         <groupId>org.hkijena</groupId>
-        <version>5.3.0-SNAPSHOT</version>
+        <version>5.3.0</version>
         <relativePath>../../pom.xml</relativePath>
     </parent>
 
     <artifactId>jipipe-plugin-filesystem</artifactId>
-    <version>5.3.0-SNAPSHOT</version>
+    <version>5.3.0</version>
 
     <name>jipipe-plugin-filesystem</name>
     <description>JIPipe Filesystem Processing</description>
@@ -58,7 +58,7 @@
     <scm>
         <connection>scm:git:https://github.com/applied-systems-biology/jipipe.git</connection>
         <developerConnection>scm:git:https://github.com/applied-systems-biology/jipipe.git</developerConnection>
-        <tag>HEAD</tag>
+        <tag>pom-jipipe-5.3.0</tag>
         <url>https://github.com/applied-systems-biology/jipipe</url>
     </scm>
     <issueManagement>
