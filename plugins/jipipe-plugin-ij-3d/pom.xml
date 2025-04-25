@@ -4,12 +4,12 @@
     <parent>
         <artifactId>pom-jipipe</artifactId>
         <groupId>org.hkijena</groupId>
-        <version>5.3.0-SNAPSHOT</version>
+        <version>5.3.1-SNAPSHOT</version>
         <relativePath>../../pom.xml</relativePath>
     </parent>
 
     <artifactId>jipipe-plugin-ij-3d</artifactId>
-    <version>5.3.0-SNAPSHOT</version>
+    <version>5.3.1-SNAPSHOT</version>
 
     <name>jipipe-plugin-ij-3d</name>
     <description>JIPipe 3D ImageJ Suite Integration</description>
@@ -83,27 +83,27 @@
             <dependency>
                 <groupId>org.hkijena</groupId>
                 <artifactId>jipipe-core</artifactId>
-                <version>5.3.0-SNAPSHOT</version>
+                <version>5.3.1-SNAPSHOT</version>
             </dependency>
             <dependency>
                 <groupId>org.hkijena</groupId>
                 <artifactId>jipipe-plugin-filesystem</artifactId>
-                <version>5.3.0-SNAPSHOT</version>
+                <version>5.3.1-SNAPSHOT</version>
             </dependency>
             <dependency>
                 <groupId>org.hkijena</groupId>
                 <artifactId>jipipe-plugin-ij</artifactId>
-                <version>5.3.0-SNAPSHOT</version>
+                <version>5.3.1-SNAPSHOT</version>
             </dependency>
             <dependency>
                 <groupId>org.hkijena</groupId>
                 <artifactId>jipipe-plugin-ij-algorithms</artifactId>
-                <version>5.3.0-SNAPSHOT</version>
+                <version>5.3.1-SNAPSHOT</version>
             </dependency>
             <dependency>
                 <groupId>org.hkijena</groupId>
                 <artifactId>jipipe-plugin-scene-3d</artifactId>
-                <version>5.3.0-SNAPSHOT</version>
+                <version>5.3.1-SNAPSHOT</version>
             </dependency>
             <dependency>
                 <groupId>org.framagit.mcib3d</groupId>
