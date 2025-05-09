@@ -108,7 +108,7 @@ See the LICENSE file provided with this code for the full license.
             <dependency>
                 <groupId>com.google.guava</groupId>
                 <artifactId>guava</artifactId>
-                <version>26.0-jre</version>
+                <version>32.0.0-jre</version>
             </dependency>
             <dependency>
                 <groupId>com.fasterxml.jackson.core</groupId>
