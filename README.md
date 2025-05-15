@@ -55,7 +55,7 @@ the JIPipe runtime.
 
 You will need following packages:
 
-* Java 8
+* Java 21
 * Maven
 
 ### Generate packages
