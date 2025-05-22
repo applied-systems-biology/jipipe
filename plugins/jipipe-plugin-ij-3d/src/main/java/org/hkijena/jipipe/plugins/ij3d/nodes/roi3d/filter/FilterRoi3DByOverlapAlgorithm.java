@@ -141,7 +141,7 @@ public class FilterRoi3DByOverlapAlgorithm extends JIPipeIteratingAlgorithm {
             copy1.addAll(roi1List);
             copy2.addAll(roi2List);
             ROI3DListData filtered = applyFilter(copy2, copy1, roi2Settings, imageHandler, variables, progressInfo.resolve("Filter ROI 2"));
-            iterationStep.addOutputData("ROI 1", filtered, progressInfo);
+            iterationStep.addOutputData("ROI 2", filtered, progressInfo);
         }
     }
 
