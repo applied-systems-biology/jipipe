@@ -84,4 +84,8 @@ public class CefPlugin extends JIPipePrepackagedDefaultJavaPlugin {
     public static CefApp getApp() {
         return app;
     }
+
+    public static boolean hasCef() {
+        return app != null;
+    }
 }

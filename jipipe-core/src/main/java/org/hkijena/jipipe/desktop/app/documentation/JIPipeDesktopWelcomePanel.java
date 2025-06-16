@@ -31,6 +31,7 @@ import org.hkijena.jipipe.desktop.commons.components.renderers.JIPipeDesktopTemp
 import org.hkijena.jipipe.desktop.commons.components.search.JIPipeDesktopSearchTextField;
 import org.hkijena.jipipe.desktop.commons.components.tabs.JIPipeDesktopTabPane;
 import org.hkijena.jipipe.desktop.commons.theme.JIPipeDesktopRoundedButtonUI;
+import org.hkijena.jipipe.plugins.cef.CefPlugin;
 import org.hkijena.jipipe.utils.*;
 import org.hkijena.jipipe.utils.ui.RoundedLineBorder;
 
@@ -267,6 +268,7 @@ public class JIPipeDesktopWelcomePanel extends JIPipeDesktopProjectWorkbenchPane
         technicalInfo.addToForm(UIUtils.createReadonlyBorderlessTextField(JIPipe.getNodes().getRegisteredNodeInfos().size() + " algorithms"), new JLabel("Registered node types"), null);
         technicalInfo.addToForm(UIUtils.createReadonlyBorderlessTextField(JIPipe.getDataTypes().getRegisteredDataTypes().size() + " types"), new JLabel("Registered data types"), null);
         technicalInfo.addToForm(UIUtils.createReadonlyBorderlessTextField(JIPipe.getJIPipeUserDir().toString()), new JLabel("Profile directory"), null);
+        technicalInfo.addToForm(UIUtils.createReadonlyBorderlessTextField(CefPlugin.hasCef() ? "Yes" : "No"), new JLabel("CEF"), null);
 
         technicalInfo.setMaximumSize(new Dimension(300, 200));
 
