@@ -116,6 +116,11 @@
                 <artifactId>balloontip</artifactId>
                 <version>1.2.4.1</version>
             </dependency>
+            <dependency>
+                <groupId>me.friwi</groupId>
+                <artifactId>jcefmaven</artifactId>
+                <version>135.0.20</version>
+            </dependency>
         </dependencies>
     </dependencyManagement>
 
@@ -263,6 +268,11 @@
         <dependency>
             <groupId>org.janelia.saalfeldlab</groupId>
             <artifactId>n5-ij</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>me.friwi</groupId>
+            <artifactId>jcefmaven</artifactId>
+            <version>135.0.20</version>
         </dependency>
     </dependencies>
 
