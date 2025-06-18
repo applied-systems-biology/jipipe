@@ -146,6 +146,14 @@ if [ ! -e "./dependencies/OrientationJ_.jar" ]; then
 	mkdir -p "./dependencies"
 	wget -O ./dependencies/OrientationJ_.jar https://bigwww.epfl.ch/demo/orientation/OrientationJ_.jar
 fi
+if [ ! -e "./dependencies/jcefmaven-135.0.20.jar" ]; then
+	mkdir -p "./dependencies"
+	wget -O ./dependencies/jcefmaven-135.0.20.jar https://repo1.maven.org/maven2/me/friwi/jcefmaven/135.0.20/jcefmaven-135.0.20.jar
+fi
+if [ ! -e "./dependencies/jcef-api-jcef-ca49ada+cef-135.0.20+ge7de5c3+chromium-135.0.7049.85.jar" ]; then
+	mkdir -p "./dependencies"
+	wget -O ./dependencies/jcef-api-jcef-ca49ada+cef-135.0.20+ge7de5c3+chromium-135.0.7049.85.jar https://repo1.maven.org/maven2/me/friwi/jcef-api/jcef-ca49ada+cef-135.0.20+ge7de5c3+chromium-135.0.7049.85/jcef-api-jcef-ca49ada+cef-135.0.20+ge7de5c3+chromium-135.0.7049.85.jar
+fi
 if [ ! -e "./dependencies/LICENSE_Javaluator.html" ]; then
 	mkdir -p "./dependencies"
 	wget -O ./dependencies/LICENSE_Javaluator.html https://opensource.org/licenses/lgpl-3.0.html
