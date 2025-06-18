@@ -30,7 +30,6 @@ import java.util.function.Supplier;
 public class DynamicEnumDesktopParameterEditorUI extends JIPipeDesktopParameterEditorUI {
 
     private JComboBox<Object> comboBox;
-    private boolean isComboBox;
     private JButton currentlyDisplayed;
 
     public DynamicEnumDesktopParameterEditorUI(InitializationParameters parameters) {
@@ -47,14 +46,8 @@ public class DynamicEnumDesktopParameterEditorUI extends JIPipeDesktopParameterE
     @Override
     public void reload() {
         DynamicEnumParameter<Object> parameter = getParameter(DynamicEnumParameter.class);
-        if (isComboBox) {
-            if (!Objects.equals(parameter.getValue(), comboBox.getSelectedItem())) {
-                comboBox.setSelectedItem(parameter.getValue());
-            }
-        } else {
-            currentlyDisplayed.setIcon(parameter.renderIcon(parameter.getValue()));
-            currentlyDisplayed.setToolTipText(parameter.renderTooltip(parameter.getValue()));
-            currentlyDisplayed.setText(parameter.renderLabel(parameter.getValue()));
+        if (!Objects.equals(parameter.getValue(), comboBox.getSelectedItem())) {
+            comboBox.setSelectedItem(parameter.getValue());
         }
     }
 
@@ -62,9 +55,6 @@ public class DynamicEnumDesktopParameterEditorUI extends JIPipeDesktopParameterE
         setLayout(new BorderLayout());
 
         EnumParameterSettings enumSettings = getParameterAccess().getAnnotationOfType(EnumParameterSettings.class);
-        if (enumSettings != null) {
-            isComboBox = !enumSettings.searchable();
-        }
 
         DynamicEnumParameter<Object> parameter = getParameter(DynamicEnumParameter.class);
         Object[] values;
@@ -81,34 +71,26 @@ public class DynamicEnumDesktopParameterEditorUI extends JIPipeDesktopParameterE
             }
         }
 
-        if (isComboBox) {
-            comboBox = new JComboBox<>(values);
-            comboBox.setEditable(parameter.isEditable());
-            comboBox.setSelectedItem(parameter.getValue());
-            comboBox.addActionListener(e -> {
-                parameter.setValue(comboBox.getSelectedItem());
-                setParameter(parameter, false);
-            });
-            comboBox.setRenderer(new Renderer(parameter));
-            add(comboBox, BorderLayout.CENTER);
-        } else {
-            currentlyDisplayed = new JButton();
-            currentlyDisplayed.setHorizontalAlignment(SwingConstants.LEFT);
-            currentlyDisplayed.addActionListener(e -> pickEnum());
-            UIUtils.setStandardButtonBorder(currentlyDisplayed);
-            add(currentlyDisplayed, BorderLayout.CENTER);
+        comboBox = new JComboBox<>(values);
+        comboBox.setEditable(parameter.isEditable());
+        comboBox.setSelectedItem(parameter.getValue());
+        comboBox.addActionListener(e -> {
+            parameter.setValue(comboBox.getSelectedItem());
+            setParameter(parameter, false);
+        });
+        comboBox.setRenderer(new Renderer(parameter));
+        add(comboBox, BorderLayout.CENTER);
 
-            JButton selectButton = new JButton(UIUtils.getIconFromResources("actions/edit.png"));
-            UIUtils.setStandardButtonBorder(selectButton);
-            selectButton.setToolTipText("Select value");
-            selectButton.addActionListener(e -> pickEnum());
-            add(selectButton, BorderLayout.EAST);
-        }
+        JButton selectButton = new JButton(UIUtils.getIconFromResources("actions/edit.png"));
+        UIUtils.setStandardButtonBorder(selectButton);
+        selectButton.setToolTipText("Select value");
+        selectButton.addActionListener(e -> pickEnum());
+        add(selectButton, BorderLayout.EAST);
     }
 
     private void pickEnum() {
         DynamicEnumParameter target = getParameterAccess().get(DynamicEnumParameter.class);
-        Object selected = JIPipeDesktopPickDynamicEnumValueDialog.showDialog(getDesktopWorkbench().getWindow(), target, target.getValue(), "Select value");
+        Object selected = JIPipeDesktopPickDynamicEnumValueDialog.showDialog(this, target, target.getValue(), "Select value");
         if (selected != null) {
             target.setValue(selected);
             setParameter(target, true);

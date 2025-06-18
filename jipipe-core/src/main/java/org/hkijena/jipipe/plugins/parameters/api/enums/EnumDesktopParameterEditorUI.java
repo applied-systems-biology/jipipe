@@ -31,7 +31,6 @@ public class EnumDesktopParameterEditorUI extends JIPipeDesktopParameterEditorUI
 
     private JComboBox<Object> comboBox;
     private JButton currentlyDisplayed;
-    private boolean isComboBox = true;
     private EnumItemInfo enumItemInfo = new DefaultEnumItemInfo();
 
     public EnumDesktopParameterEditorUI(InitializationParameters parameters) {
@@ -48,15 +47,8 @@ public class EnumDesktopParameterEditorUI extends JIPipeDesktopParameterEditorUI
     @Override
     public void reload() {
         Object target = getParameterAccess().get(Object.class);
-
-        if (isComboBox) {
-            if (!Objects.equals(target, comboBox.getSelectedItem())) {
-                comboBox.setSelectedItem(target);
-            }
-        } else {
-            currentlyDisplayed.setIcon(enumItemInfo.getIcon(target));
-            currentlyDisplayed.setToolTipText(enumItemInfo.getTooltip(target));
-            currentlyDisplayed.setText(enumItemInfo.getLabel(target));
+        if (!Objects.equals(target, comboBox.getSelectedItem())) {
+            comboBox.setSelectedItem(target);
         }
     }
 
@@ -68,37 +60,28 @@ public class EnumDesktopParameterEditorUI extends JIPipeDesktopParameterEditorUI
         EnumParameterSettings settings = getParameterAccess().getAnnotationOfType(EnumParameterSettings.class);
         if (settings != null) {
             enumItemInfo = (EnumItemInfo) ReflectionUtils.newInstance(settings.itemInfo());
-            isComboBox = !settings.searchable();
         }
 
-        if (isComboBox) {
-            Arrays.sort(values, Comparator.comparing(enumItemInfo::getLabel));
-            comboBox = new JComboBox<>(values);
-            comboBox.setSelectedItem(getParameterAccess().get(Object.class));
-            comboBox.addActionListener(e -> {
-                setParameter(comboBox.getSelectedItem(), false);
-            });
-            comboBox.setRenderer(new Renderer(enumItemInfo));
-            add(comboBox, BorderLayout.CENTER);
-        } else {
-            currentlyDisplayed = new JButton();
-            currentlyDisplayed.setHorizontalAlignment(SwingConstants.LEFT);
-            currentlyDisplayed.addActionListener(e -> pickEnum());
-            UIUtils.setStandardButtonBorder(currentlyDisplayed);
-            add(currentlyDisplayed, BorderLayout.CENTER);
+        Arrays.sort(values, Comparator.comparing(enumItemInfo::getLabel));
+        comboBox = new JComboBox<>(values);
+        comboBox.setSelectedItem(getParameterAccess().get(Object.class));
+        comboBox.addActionListener(e -> {
+            setParameter(comboBox.getSelectedItem(), false);
+        });
+        comboBox.setRenderer(new Renderer(enumItemInfo));
+        add(comboBox, BorderLayout.CENTER);
 
-            JButton selectButton = new JButton(UIUtils.getIconFromResources("actions/edit.png"));
-            UIUtils.setStandardButtonBorder(selectButton);
-            selectButton.setToolTipText("Select value");
-            selectButton.addActionListener(e -> pickEnum());
-            add(selectButton, BorderLayout.EAST);
-        }
+        JButton selectButton = new JButton(UIUtils.getIconFromResources("actions/search.png"));
+        UIUtils.setStandardButtonBorder(selectButton);
+        selectButton.setToolTipText("Select value");
+        selectButton.addActionListener(e -> pickEnum());
+        add(selectButton, BorderLayout.EAST);
     }
 
     private void pickEnum() {
         Object[] values = getParameterAccess().getFieldClass().getEnumConstants();
         Object target = getParameterAccess().get(Object.class);
-        Object selected = JIPipeDesktopPickEnumValueDialog.showDialog(getDesktopWorkbench().getWindow(), Arrays.asList(values), enumItemInfo, target, "Select value");
+        Object selected = JIPipeDesktopPickEnumValueDialog.showDialog(this, Arrays.asList(values), enumItemInfo, target, "Select value");
         if (selected != null) {
             setParameter(selected, true);
         }

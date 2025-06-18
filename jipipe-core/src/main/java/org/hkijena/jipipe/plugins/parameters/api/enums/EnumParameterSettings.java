@@ -31,7 +31,9 @@ public @interface EnumParameterSettings {
     /**
      * If enabled, the {@link EnumDesktopParameterEditorUI} will display a button with the enum value that opens a window for searching
      *
+     * @deprecated new parameter editor UI implementations always have a search button
      * @return if the enum items should be searchable
      */
+    @Deprecated
     boolean searchable() default false;
 }
