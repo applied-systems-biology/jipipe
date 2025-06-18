@@ -21,19 +21,20 @@ def write_generator(f):
     # Cleaning up old package
     wl()
     wl("rm -r package")
-    wl("mkdir package")
+    wl("mkdir -p package/plugins/JIPipe")
+    wl("mkdir -p package/jars")
 
     # Copy component jars
     wl("for component in " + " ".join(json_data["jipipe-modules"]) + "; do")
-    wl("cp -v ../../$component/target/$component-$JIPIPE_VERSION-SNAPSHOT.jar package/$component-$JIPIPE_VERSION.jar", tab=1)
-    wl("cp -v ../../$component/target/$component-$JIPIPE_VERSION.jar package/$component-$JIPIPE_VERSION.jar", tab=1)
-    wl("cp -v ../../plugins/$component/target/$component-$JIPIPE_VERSION-SNAPSHOT.jar package/$component-$JIPIPE_VERSION.jar", tab=1)
-    wl("cp -v ../../plugins/$component/target/$component-$JIPIPE_VERSION.jar package/$component-$JIPIPE_VERSION.jar", tab=1)
+    wl("cp -v ../../$component/target/$component-$JIPIPE_VERSION-SNAPSHOT.jar package/plugins/JIPipe/$component-$JIPIPE_VERSION.jar", tab=1)
+    wl("cp -v ../../$component/target/$component-$JIPIPE_VERSION.jar package/plugins/JIPipe/$component-$JIPIPE_VERSION.jar", tab=1)
+    wl("cp -v ../../plugins/$component/target/$component-$JIPIPE_VERSION-SNAPSHOT.jar package/plugins/JIPipe/$component-$JIPIPE_VERSION.jar", tab=1)
+    wl("cp -v ../../plugins/$component/target/$component-$JIPIPE_VERSION.jar package/plugin/JIPipe/$component-$JIPIPE_VERSION.jar", tab=1)
     wl("done")
     wl()
 
     # Copy dependencies
-    wl("cp -rv ./dependencies ./package/dependencies")
+    wl("cp -rv ./dependencies/* ./package/jars/")
     # wl("cp -rv $OPENCV_DIR/*.jar ./package/dependencies")
 
     # Copy other things

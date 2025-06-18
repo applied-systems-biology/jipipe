@@ -78,10 +78,6 @@ if [ ! -e "./dependencies/flexmark-ext-tables-0.62.2.jar" ]; then
 	mkdir -p "./dependencies"
 	wget -O ./dependencies/flexmark-ext-tables-0.62.2.jar https://maven.scijava.org/service/local/repositories/central/content/com/vladsch/flexmark/flexmark-ext-tables/0.62.2/flexmark-ext-tables-0.62.2.jar
 fi
-if [ ! -e "./dependencies/jgrapht-core-1.4.0.jar" ]; then
-	mkdir -p "./dependencies"
-	wget -O ./dependencies/jgrapht-core-1.4.0.jar https://maven.scijava.org/service/local/repositories/central/content/org/jgrapht/jgrapht-core/1.4.0/jgrapht-core-1.4.0.jar
-fi
 if [ ! -e "./dependencies/jgrapht-io-1.4.0.jar" ]; then
 	mkdir -p "./dependencies"
 	wget -O ./dependencies/jgrapht-io-1.4.0.jar https://maven.scijava.org/service/local/repositories/central/content/org/jgrapht/jgrapht-io/1.4.0/jgrapht-io-1.4.0.jar
@@ -184,15 +180,16 @@ if [ ! -e "./dependencies/LICENSE_OrientationJ.txt" ]; then
 fi
 
 rm -r package
-mkdir package
+mkdir -p package/plugins/JIPipe
+mkdir -p package/jars
 for component in jipipe-core jipipe-desktop jipipe-cli jipipe-plugin-clij jipipe-plugin-filesystem jipipe-plugin-ij jipipe-plugin-ij2 jipipe-plugin-ij-omero jipipe-plugin-ij-algorithms jipipe-plugin-ij-weka jipipe-plugin-ij-multi-template-matching jipipe-plugin-ij-trackmate jipipe-plugin-ij-3d jipipe-plugin-ij-filaments jipipe-plugin-ij-ocr jipipe-plugin-python jipipe-plugin-plots jipipe-plugin-tables jipipe-plugin-annotations jipipe-plugin-utils jipipe-plugin-strings jipipe-plugin-forms jipipe-plugin-r jipipe-plugin-cellpose jipipe-plugin-omnipose jipipe-plugin-scene-3d jipipe-plugin-imp jipipe-plugin-ilastik jipipe-plugin-opencv; do
-	cp -v ../../$component/target/$component-$JIPIPE_VERSION-SNAPSHOT.jar package/$component-$JIPIPE_VERSION.jar
-	cp -v ../../$component/target/$component-$JIPIPE_VERSION.jar package/$component-$JIPIPE_VERSION.jar
-	cp -v ../../plugins/$component/target/$component-$JIPIPE_VERSION-SNAPSHOT.jar package/$component-$JIPIPE_VERSION.jar
-	cp -v ../../plugins/$component/target/$component-$JIPIPE_VERSION.jar package/$component-$JIPIPE_VERSION.jar
+	cp -v ../../$component/target/$component-$JIPIPE_VERSION-SNAPSHOT.jar package/plugins/JIPipe/$component-$JIPIPE_VERSION.jar
+	cp -v ../../$component/target/$component-$JIPIPE_VERSION.jar package/plugins/JIPipe/$component-$JIPIPE_VERSION.jar
+	cp -v ../../plugins/$component/target/$component-$JIPIPE_VERSION-SNAPSHOT.jar package/plugins/JIPipe/$component-$JIPIPE_VERSION.jar
+	cp -v ../../plugins/$component/target/$component-$JIPIPE_VERSION.jar package/plugin/JIPipe/$component-$JIPIPE_VERSION.jar
 done
 
-cp -rv ./dependencies ./package/dependencies
+cp -rv ./dependencies/* ./package/jars/
 cp -v README.txt package
 cp -v ../../LICENSE package/LICENSE_JIPipe.txt
 rm -r JIPipe-$JIPIPE_VERSION.zip

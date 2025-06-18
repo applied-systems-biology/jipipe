@@ -19,7 +19,6 @@
     "flexmark-ext-autolink-0.62.2.jar": "https://maven.scijava.org/service/local/repositories/central/content/com/vladsch/flexmark/flexmark-ext-autolink/0.62.2/flexmark-ext-autolink-0.62.2.jar",
     "flexmark-0.62.2.jar": "https://maven.scijava.org/service/local/repositories/central/content/com/vladsch/flexmark/flexmark/0.62.2/flexmark-0.62.2.jar",
     "flexmark-ext-tables-0.62.2.jar": "https://maven.scijava.org/service/local/repositories/central/content/com/vladsch/flexmark/flexmark-ext-tables/0.62.2/flexmark-ext-tables-0.62.2.jar",
-    "jgrapht-core-1.4.0.jar": "https://maven.scijava.org/service/local/repositories/central/content/org/jgrapht/jgrapht-core/1.4.0/jgrapht-core-1.4.0.jar",
     "jgrapht-io-1.4.0.jar": "https://maven.scijava.org/service/local/repositories/central/content/org/jgrapht/jgrapht-io/1.4.0/jgrapht-io-1.4.0.jar",
     "autolink-0.10.0.jar": "https://maven.scijava.org/service/local/repositories/central/content/org/nibor/autolink/autolink/0.10.0/autolink-0.10.0.jar",
     "openhtmltopdf-jsoup-dom-converter-1.0.0.jar": "https://maven.scijava.org/service/local/repositories/central/content/com/openhtmltopdf/openhtmltopdf-jsoup-dom-converter/1.0.0/openhtmltopdf-jsoup-dom-converter-1.0.0.jar",
@@ -77,5 +76,5 @@
     "jipipe-plugin-ilastik",
     "jipipe-plugin-opencv"
   ],
-  "jipipe-version": "4.0.1"
+  "jipipe-version": "6.0.0"
 }

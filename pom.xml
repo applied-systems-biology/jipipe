@@ -127,7 +127,7 @@ See the LICENSE file provided with this code for the full license.
             </dependency>
             <dependency>
                 <groupId>org.slf4j</groupId>
-                <artifactId>slf4j-simple</artifactId>
+                <artifactId>slf4j-jdk14</artifactId>
                 <version>1.7.36</version>
             </dependency>
             <dependency>
