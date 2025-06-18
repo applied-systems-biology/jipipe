@@ -91,6 +91,9 @@ cd dist/zip
 This repository comes with a project `jipipe-desktop` that allows you to run and debug JIPipe inside your IDE.
 You just have to run the `main()` function inside `JIPipeDesktopMain`.
 
+You might need to add `--add-opens=java.base/java.lang=ALL-UNNAMED` as a VM option, due to known issues with ImageJ's class patching
+mechanism (see https://forum.image.sc/t/imagej-legacy-error/23013/10). Apply this fix if JIPipe-Desktop refuses to start.
+
 ## Generate JavaDocs (Optional)
 
 ```bash
@@ -101,20 +104,10 @@ The JavaDoc will be put into the `target/site` folder.
 
 ## Troubleshooting
 
-### Unable to run in Java21 from IDE
-
-You might need to add `--add-opens=java.base/java.lang=ALL-UNNAMED` as VM option, due to known issues with ImageJ's class patching
-mechanism (see https://forum.image.sc/t/imagej-legacy-error/23013/10). SciJava is already providing a newer version of
-the legacy patcher, so the other fix is not needed anymore.
-
 ### Missing Maven dependencies
 
 Sometimes Maven fails to download certain dependencies if run from CLI. We have experienced that using an IDE 
 can resolve this.
-
-### Maven complains about Java version
-
-Only Java 8 is supported. This means that you have to run Maven with Java 8. Other versions will not work.
 
 ## Nullpointer exception on launching in IDE
 
