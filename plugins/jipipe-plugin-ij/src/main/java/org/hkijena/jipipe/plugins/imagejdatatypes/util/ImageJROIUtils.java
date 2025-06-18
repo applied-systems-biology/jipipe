@@ -148,7 +148,7 @@ public class ImageJROIUtils {
     public static void copyRoiAttributesAndLocation(Roi source, Roi target) {
         target.copyAttributes(source);
         target.setPosition(source.getPosition());
-        target.setPosition(source.getPosition(), source.getZPosition(), source.getZPosition());
+        target.setPosition(source.getCPosition(), source.getZPosition(), source.getZPosition());
     }
 
     static PolygonRoi trimPolygon(PolygonRoi roi, double length) {
