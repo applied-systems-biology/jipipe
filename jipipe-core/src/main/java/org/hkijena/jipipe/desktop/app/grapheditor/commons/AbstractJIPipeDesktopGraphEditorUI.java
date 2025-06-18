@@ -875,6 +875,12 @@ public abstract class AbstractJIPipeDesktopGraphEditorUI extends JIPipeDesktopWo
      */
     public abstract void beforeOpenContextMenu(JPopupMenu menu);
 
+    /**
+     * Triggered by the canvas if an empty region is double-clicked
+     * @param mouseEvent the mouse event
+     */
+    public abstract void onCanvasEmptyDoubleClick(MouseEvent mouseEvent);
+
 
 //    @Override
 //    public void onSearchBoxSelectedEvent(JIPipeDesktopNodeDatabaseSearchBox.SelectedEvent event) {

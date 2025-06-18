@@ -47,6 +47,7 @@ import org.hkijena.jipipe.utils.json.JsonUtils;
 import org.hkijena.jipipe.utils.ui.JIPipeDesktopDockPanel;
 
 import javax.swing.*;
+import java.awt.event.MouseEvent;
 import java.util.*;
 import java.util.stream.Collectors;
 
@@ -304,6 +305,11 @@ public class JIPipeDesktopCompartmentsGraphEditorUI extends AbstractJIPipeDeskto
                     selectedOutputs,
                     getProjectWorkbench());
         }
+    }
+
+    @Override
+    public void onCanvasEmptyDoubleClick(MouseEvent mouseEvent) {
+        addCompartment();
     }
 
     @Override

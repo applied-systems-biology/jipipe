@@ -33,6 +33,7 @@ import org.hkijena.jipipe.utils.UIUtils;
 
 import javax.swing.*;
 import java.awt.*;
+import java.awt.event.KeyEvent;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 import java.lang.reflect.InvocationTargetException;
@@ -115,11 +116,11 @@ public class JIPipeDesktopNodeFinderDialogUI extends JDialog {
         if (index >= 0) {
             JIPipeNodeDatabaseEntry entry = nodeList.getModel().getElementAt(index);
             nodeList.setSelectedIndex(index);
-            openEntryMenu(entry, e.getPoint());
+            openEntryMenu(entry, e.getPoint(), false);
         }
     }
 
-    private void openEntryMenu(JIPipeNodeDatabaseEntry entry, Point location) {
+    private void openEntryMenu(JIPipeNodeDatabaseEntry entry, Point location, boolean fromKeyboard) {
         JPopupMenu menu = new JPopupMenu();
         if (!entry.exists()) {
             menu.add(UIUtils.createMenuItem("Add new to graph", "Adds the selected node", UIUtils.getIconFromResources("actions/node-add.png"), () -> addEntryToGraph(entry)));
@@ -166,7 +167,16 @@ public class JIPipeDesktopNodeFinderDialogUI extends JDialog {
             }
 
         }
+
         menu.show(nodeList, location.x, location.y);
+
+        if(fromKeyboard) {
+            JMenuItem firstItem = (JMenuItem) menu.getComponent(0);
+
+            SwingUtilities.invokeLater(() -> {
+                MenuSelectionManager.defaultManager().setSelectedPath(new MenuElement[]{menu, firstItem});
+            });
+        }
     }
 
     private void addAndConnectEntry(JIPipeNodeDatabaseEntry entry, JIPipeDataSlotInfo slotInfo) {
@@ -285,7 +295,7 @@ public class JIPipeDesktopNodeFinderDialogUI extends JDialog {
             Point point = nodeList.indexToLocation(0);
             point.x += nodeList.getWidth() - 32;
             point.y += JIPipeDesktopNodeFinderDatasetListCellRenderer.CELL_HEIGHT;
-            openEntryMenu(nodeList.getModel().getElementAt(0), point);
+            openEntryMenu(nodeList.getModel().getElementAt(0), point, true);
         }
     }
 

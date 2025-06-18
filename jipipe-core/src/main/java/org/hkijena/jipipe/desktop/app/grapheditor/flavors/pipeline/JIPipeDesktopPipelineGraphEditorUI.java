@@ -45,6 +45,7 @@ import org.hkijena.jipipe.desktop.app.grapheditor.flavors.pipeline.contextmenu.*
 import org.hkijena.jipipe.desktop.app.grapheditor.flavors.pipeline.dragdrop.JIPipeCreatePipelineNodesFromDraggedDataDragAndDropBehavior;
 import org.hkijena.jipipe.desktop.app.grapheditor.flavors.pipeline.properties.JIPipeDesktopPipelineParametersPanel;
 import org.hkijena.jipipe.desktop.app.grapheditor.flavors.pipeline.properties.JIPipeDesktopPipelineQuickGuidePanel;
+import org.hkijena.jipipe.desktop.app.grapheditor.nodefinder.JIPipeDesktopNodeFinderDialogUI;
 import org.hkijena.jipipe.desktop.app.history.JIPipeDesktopHistoryJournalUI;
 import org.hkijena.jipipe.desktop.app.settings.JIPipeDesktopRunSetsListEditor;
 import org.hkijena.jipipe.desktop.commons.components.JIPipeDesktopExpressionCalculatorUI;
@@ -60,6 +61,7 @@ import org.hkijena.jipipe.utils.json.JsonUtils;
 import org.hkijena.jipipe.utils.ui.JIPipeDesktopDockPanel;
 
 import javax.swing.*;
+import java.awt.event.MouseEvent;
 import java.lang.reflect.Method;
 import java.net.URL;
 import java.util.*;
@@ -429,6 +431,12 @@ public class JIPipeDesktopPipelineGraphEditorUI extends AbstractJIPipeDesktopGra
                     getSelection().stream().map(JIPipeDesktopGraphNodeUI::getNode).filter(node -> node.getInfo().isRunnable()).collect(Collectors.toSet()),
                     getDesktopWorkbench());
         }
+    }
+
+    @Override
+    public void onCanvasEmptyDoubleClick(MouseEvent mouseEvent) {
+        JIPipeDesktopNodeFinderDialogUI dialogUI = new JIPipeDesktopNodeFinderDialogUI(getCanvasUI(), null);
+        dialogUI.setVisible(true);
     }
 
     @Override

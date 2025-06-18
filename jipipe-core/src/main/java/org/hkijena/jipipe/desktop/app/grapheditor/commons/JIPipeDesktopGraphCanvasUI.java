@@ -1433,8 +1433,12 @@ public class JIPipeDesktopGraphCanvasUI extends JLayeredPane implements JIPipeDe
         }
 
         if (SwingUtilities.isLeftMouseButton(mouseEvent) && mouseEvent.getClickCount() == 2) {
-            if (ui != null)
+            if (ui != null) {
                 defaultNodeUIActionRequestedEventEmitter.emit(new JIPipeDesktopGraphNodeUI.DefaultNodeUIActionRequestedEvent(ui));
+            }
+            else if(graphEditorUI != null) {
+                graphEditorUI.onCanvasEmptyDoubleClick(mouseEvent);
+            }
         } else if (SwingUtilities.isLeftMouseButton(mouseEvent)) {
             setGraphEditCursor(new Point(mouseEvent.getX(), mouseEvent.getY()));
             requestFocusInWindow();

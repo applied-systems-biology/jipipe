@@ -27,6 +27,7 @@ import org.hkijena.jipipe.utils.UIUtils;
 import org.hkijena.jipipe.utils.ui.JIPipeDesktopDockPanel;
 
 import javax.swing.*;
+import java.awt.event.MouseEvent;
 import java.util.Map;
 
 public class JIPipeDesktopRunSingleAlgorithmSettingsPanelIOEditor extends AbstractJIPipeDesktopGraphEditorUI implements JIPipeGraphNode.NodeSlotsChangedEventListener {
@@ -104,6 +105,11 @@ public class JIPipeDesktopRunSingleAlgorithmSettingsPanelIOEditor extends Abstra
 
     @Override
     public void beforeOpenContextMenu(JPopupMenu menu) {
+
+    }
+
+    @Override
+    public void onCanvasEmptyDoubleClick(MouseEvent mouseEvent) {
 
     }
 
