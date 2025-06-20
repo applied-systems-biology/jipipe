@@ -89,7 +89,7 @@ public class JIPipeRecentProjectsRegistry {
     }
 
     public Path getPropertyFile() {
-        return JIPipe.getJIPipeUserDir().resolve("recent-projects.txt");
+        return JIPipe.getJIPipeUserDir(false).resolve("recent-projects.txt");
     }
 
     public void reload() {
@@ -124,7 +124,7 @@ public class JIPipeRecentProjectsRegistry {
     }
 
     public void migrateFromLegacy() {
-        Path propertyFile = JIPipeApplicationSettingsRegistry.getPropertyFile();
+        Path propertyFile = JIPipeApplicationSettingsRegistry.getPropertyFile(false);
         boolean success = false;
         if (Files.exists(propertyFile)) {
             try {

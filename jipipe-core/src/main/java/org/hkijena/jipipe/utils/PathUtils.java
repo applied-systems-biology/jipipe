@@ -25,10 +25,8 @@ import java.io.IOException;
 import java.nio.file.*;
 import java.nio.file.attribute.BasicFileAttributes;
 import java.nio.file.attribute.PosixFilePermission;
-import java.util.ArrayList;
-import java.util.Arrays;
+import java.util.*;
 import java.util.List;
-import java.util.Set;
 import java.util.function.Predicate;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
@@ -384,7 +382,36 @@ public class PathUtils {
      * @return the JIPipe user directory
      */
     public static Path getJIPipeUserDir() {
-        Path result = getJIPipeUserDirBase().resolve(VersionUtils.getJIPipeVersion());
+        return getJIPipeUserDir(false);
+    }
+
+    /**
+     * Returns the JIPipe user directory
+     *
+     * @return the JIPipe user directory
+     */
+    public static Path getJIPipeUserDir(boolean allowOldProfile) {
+        final Path profileBasePath = PathUtils.getJIPipeUserDirBase();
+        final String currentVersion = VersionUtils.getJIPipeVersion();
+        Path result = profileBasePath.resolve(currentVersion);
+
+        if (allowOldProfile && !Files.isDirectory(result) && Files.isDirectory(profileBasePath)) {
+            // Collect all profile directories
+            Map<String, Path> allProfileDirectories = new HashMap<>();
+            for (Path path : PathUtils.listSubDirectories(profileBasePath)) {
+                if (!Objects.equals(currentVersion, path.getFileName().toString()) && StringUtils.compareVersions(currentVersion, path.getFileName().toString()) > 0) {
+                    allProfileDirectories.put(path.getFileName().toString(), path);
+                }
+            }
+
+            // Find the newest version
+            List<String> sortedAllVersions = allProfileDirectories.keySet().stream().sorted(StringUtils::compareVersions).collect(Collectors.toList());
+            if (!sortedAllVersions.isEmpty()) {
+                String previousVersion = sortedAllVersions.get(sortedAllVersions.size() - 1);
+                result = profileBasePath.resolve(previousVersion);
+            }
+        }
+
         try {
             Files.createDirectories(result);
         } catch (IOException e) {
@@ -415,7 +442,7 @@ public class PathUtils {
     public static Path absoluteToJIPipeUserDirRelative(Path path) {
         if (!path.isAbsolute())
             return path;
-        return getJIPipeUserDir().relativize(path);
+        return getJIPipeUserDir(false).relativize(path);
     }
 
     /**
@@ -428,7 +455,7 @@ public class PathUtils {
     public static Path relativeJIPipeUserDirToAbsolute(Path path) {
         if (path.isAbsolute())
             return path;
-        return getJIPipeUserDir().resolve(path);
+        return getJIPipeUserDir(false).resolve(path);
     }
 
     /**

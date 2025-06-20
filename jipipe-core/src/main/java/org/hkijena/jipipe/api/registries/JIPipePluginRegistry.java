@@ -87,7 +87,7 @@ public class JIPipePluginRegistry {
      * @return The location of the file where the settings are stored
      */
     public static Path getPropertyFile() {
-        return JIPipe.getJIPipeUserDir().resolve("plugins.json");
+        return JIPipe.getJIPipeUserDir(false).resolve("plugins.json");
     }
 
     public void initialize() {

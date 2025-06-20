@@ -35,7 +35,6 @@ import org.hkijena.jipipe.desktop.api.JIPipeDesktopMenuExtension;
 import org.hkijena.jipipe.desktop.api.JIPipeMenuExtensionTarget;
 import org.hkijena.jipipe.desktop.app.JIPipeDesktopWorkbench;
 import org.hkijena.jipipe.desktop.commons.components.JIPipeDesktopFormPanel;
-import org.hkijena.jipipe.desktop.commons.components.JIPipeDesktopPathEditorComponent;
 import org.hkijena.jipipe.desktop.commons.components.JIPipeDesktopUserFriendlyErrorUI;
 import org.hkijena.jipipe.desktop.commons.components.JIPipeDesktopValidityReportUI;
 import org.hkijena.jipipe.desktop.commons.components.icons.SolidColorIcon;
@@ -498,7 +497,7 @@ public class UIUtils {
     }
 
     public static JIPipeDesktopUITheme getThemeFromRawSettings() {
-        Path propertyFile = JIPipeApplicationSettingsRegistry.getPropertyFile();
+        Path propertyFile = JIPipeApplicationSettingsRegistry.getPropertyFile(true);
         JIPipeDesktopUITheme theme = JIPipeDesktopUITheme.ModernLight;
         if (Files.exists(propertyFile)) {
             try {

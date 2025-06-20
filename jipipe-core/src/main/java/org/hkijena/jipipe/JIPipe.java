@@ -616,8 +616,8 @@ public class JIPipe extends AbstractService implements JIPipeService {
      *
      * @return the JIPipe user directory
      */
-    public static Path getJIPipeUserDir() {
-        return PathUtils.getJIPipeUserDir();
+    public static Path getJIPipeUserDir(boolean allowOldProfile) {
+        return PathUtils.getJIPipeUserDir(allowOldProfile);
     }
 
     /**
@@ -1113,8 +1113,8 @@ public class JIPipe extends AbstractService implements JIPipeService {
     }
 
     private boolean applyProfileUpgrades(JIPipeProgressInfo progressInfo) {
-        boolean settingsExist = Files.isRegularFile(PathUtils.getJIPipeUserDir().resolve("settings.json"));
-        boolean childDirsExist = !PathUtils.listSubDirectories(PathUtils.getJIPipeUserDir()).isEmpty();
+        boolean settingsExist = Files.isRegularFile(PathUtils.getJIPipeUserDir(false).resolve("settings.json"));
+        boolean childDirsExist = !PathUtils.listSubDirectories(PathUtils.getJIPipeUserDir(false)).isEmpty();
 
         if (!settingsExist && !childDirsExist) {
             // Check for a profile from an older version

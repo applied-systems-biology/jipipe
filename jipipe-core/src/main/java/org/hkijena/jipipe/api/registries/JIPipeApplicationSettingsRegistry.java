@@ -64,7 +64,7 @@ public class JIPipeApplicationSettingsRegistry {
      * @return the node. Never null.
      */
     public static JsonNode getRawNode() {
-        Path propertyFile = getPropertyFile();
+        Path propertyFile = getPropertyFile(false);
         if (Files.exists(propertyFile)) {
             try {
                 return JsonUtils.getObjectMapper().readTree(propertyFile.toFile());
@@ -78,8 +78,8 @@ public class JIPipeApplicationSettingsRegistry {
     /**
      * @return The location of the file where the settings are stored
      */
-    public static Path getPropertyFile() {
-        return JIPipe.getJIPipeUserDir().resolve("settings.json");
+    public static Path getPropertyFile(boolean loadFromOldProfile) {
+        return JIPipe.getJIPipeUserDir(loadFromOldProfile).resolve("settings.json");
     }
 
 
@@ -169,7 +169,7 @@ public class JIPipeApplicationSettingsRegistry {
      * Saves the settings to the default settings file
      */
     public void save() {
-        save(getPropertyFile());
+        save(getPropertyFile(false));
         changedEventEmitter.emit(new ChangedEvent(this));
     }
 
@@ -205,7 +205,7 @@ public class JIPipeApplicationSettingsRegistry {
      * Reloads the settings from the default file if it exists
      */
     public void reload() {
-        load(getPropertyFile());
+        load(getPropertyFile(false));
     }
 
     public JIPipe getJIPipe() {
