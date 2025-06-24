@@ -22,6 +22,7 @@ import gnu.trove.map.hash.TDoubleObjectHashMap;
 import gnu.trove.set.TDoubleSet;
 import gnu.trove.set.hash.TDoubleHashSet;
 import org.hkijena.jipipe.api.ConfigureJIPipeNode;
+import org.hkijena.jipipe.api.JIPipePercentageProgressInfo;
 import org.hkijena.jipipe.api.JIPipeProgressInfo;
 import org.hkijena.jipipe.api.SetJIPipeDocumentation;
 import org.hkijena.jipipe.api.nodes.AddJIPipeInputSlot;
@@ -145,28 +146,37 @@ public class CopyFilamentsAcrossZCTAlgorithm extends JIPipeIteratingAlgorithm {
         // Copy starting vertices relationships
         if (copyOriginalEdges) {
             progressInfo.log("Copying original edges");
-            copyOriginalEdges(progressInfo, startVerticesList, verticesForLocationsMap, inputGraph, outputGraph);
+            copyOriginalEdges(startVerticesList, verticesForLocationsMap, inputGraph, outputGraph, progressInfo);
         }
 
         // Connect new vertices to their start vertices
         if (connectNewVerticesToStart) {
             progressInfo.log("Connecting start vertices directly to new vertices");
-            connectNewVerticesToStart(startVerticesList, verticesForLocationsMap, outputGraph, variablesMap);
+            connectNewVerticesToStart(startVerticesList, verticesForLocationsMap, outputGraph, variablesMap, progressInfo);
         }
 
         // Create linear connection over related vertices
         if (connectOverDimensionLinear) {
             progressInfo.log("Creating linear connections");
-            connectVerticesLinear(startVerticesList, verticesForLocationsMap, outputGraph, variablesMap);
+            connectVerticesLinear(startVerticesList, verticesForLocationsMap, outputGraph, variablesMap, progressInfo);
         }
 
         // Output
         iterationStep.addOutputData(getFirstOutputSlot(), outputGraph, progressInfo);
     }
 
-    private void connectVerticesLinear(ImmutableList<FilamentVertex> startVerticesList, Map<FilamentVertex, TDoubleObjectMap<FilamentVertex>> verticesForLocationsMap, Filaments3DGraphData outputGraph, JIPipeExpressionVariablesMap variablesMap) {
+    private void connectVerticesLinear(ImmutableList<FilamentVertex> startVerticesList, Map<FilamentVertex, TDoubleObjectMap<FilamentVertex>> verticesForLocationsMap, Filaments3DGraphData outputGraph, JIPipeExpressionVariablesMap variablesMap, JIPipeProgressInfo progressInfo) {
         List<FilamentEdgeMetadataEntry> metadataEntries = connectOverDimensionLinearSettings.getMetadata().mapToCollection(FilamentEdgeMetadataEntry.class);
-        for (FilamentVertex startVertex : startVerticesList) {
+        JIPipePercentageProgressInfo percentage = progressInfo.percentage("Linear connections");
+        percentage.log("Start vertices: " + startVerticesList.size());
+        for (int j = 0; j < startVerticesList.size(); j++) {
+            percentage.logPercentage(j, startVerticesList.size());
+            FilamentVertex startVertex = startVerticesList.get(j);
+
+            if (progressInfo.isCanceled()) {
+                return;
+            }
+
             TDoubleObjectMap<FilamentVertex> startVertexAtLocations = verticesForLocationsMap.get(startVertex);
             if (startVertexAtLocations == null) {
                 continue;
@@ -176,6 +186,10 @@ public class CopyFilamentsAcrossZCTAlgorithm extends JIPipeIteratingAlgorithm {
             Arrays.sort(keys);
 
             for (int i = 0; i < keys.length - 1; i++) {
+                if (progressInfo.isCanceled()) {
+                    return;
+                }
+
                 FilamentVertex current = startVertexAtLocations.get(keys[i]);
                 FilamentVertex next = startVertexAtLocations.get(keys[i + 1]);
 
@@ -199,16 +213,26 @@ public class CopyFilamentsAcrossZCTAlgorithm extends JIPipeIteratingAlgorithm {
         }
     }
 
-    private void connectNewVerticesToStart(ImmutableList<FilamentVertex> startVerticesList, Map<FilamentVertex, TDoubleObjectMap<FilamentVertex>> verticesForLocationsMap, Filaments3DGraphData outputGraph, JIPipeExpressionVariablesMap variablesMap) {
+    private void connectNewVerticesToStart(ImmutableList<FilamentVertex> startVerticesList, Map<FilamentVertex, TDoubleObjectMap<FilamentVertex>> verticesForLocationsMap, Filaments3DGraphData outputGraph, JIPipeExpressionVariablesMap variablesMap, JIPipeProgressInfo progressInfo) {
+        JIPipePercentageProgressInfo percentage = progressInfo.percentage("Start-to-new connections");
+        percentage.log("Start vertices: " + startVerticesList.size());
         List<FilamentEdgeMetadataEntry> metadataEntries = connectNewVerticesToStartSettings.getMetadata().mapToCollection(FilamentEdgeMetadataEntry.class);
-        for (FilamentVertex startVertex : startVerticesList) {
+        for (int i = 0; i < startVerticesList.size(); i++) {
+            percentage.logPercentage(i, startVerticesList.size());
+            FilamentVertex startVertex = startVerticesList.get(i);
             TDoubleObjectMap<FilamentVertex> startVertexAtLocations = verticesForLocationsMap.get(startVertex);
             if (startVertexAtLocations == null) {
                 continue;
             }
+            if (progressInfo.isCanceled()) {
+                return;
+            }
             for (FilamentVertex newVertex : startVertexAtLocations.valueCollection()) {
                 if (newVertex == startVertex) {
                     continue;
+                }
+                if (progressInfo.isCanceled()) {
+                    return;
                 }
 
                 // Filter (if enabled)
@@ -231,17 +255,28 @@ public class CopyFilamentsAcrossZCTAlgorithm extends JIPipeIteratingAlgorithm {
         }
     }
 
-    private void copyOriginalEdges(JIPipeProgressInfo progressInfo, ImmutableList<FilamentVertex> startVerticesList, Map<FilamentVertex, TDoubleObjectMap<FilamentVertex>> verticesForLocationsMap, Filaments3DGraphData inputGraph, Filaments3DGraphData outputGraph) {
+    private void copyOriginalEdges(ImmutableList<FilamentVertex> startVerticesList, Map<FilamentVertex, TDoubleObjectMap<FilamentVertex>> verticesForLocationsMap, Filaments3DGraphData inputGraph, Filaments3DGraphData outputGraph, JIPipeProgressInfo progressInfo) {
+        JIPipePercentageProgressInfo percentage = progressInfo.percentage("Copy original edges");
+        percentage.log("Start vertices: " + startVerticesList.size());
+
         for (int i = 0; i < startVerticesList.size(); i++) {
             final FilamentVertex startVertex = startVerticesList.get(i);
             TDoubleObjectMap<FilamentVertex> startVertexAtLocations = verticesForLocationsMap.get(startVertex);
             if (startVertexAtLocations == null) {
                 continue;
             }
+            if (progressInfo.isCanceled()) {
+                return;
+            }
             double[] startVertexLocations = startVertexAtLocations.keys();
 
             JIPipeProgressInfo vertexProgress = progressInfo.resolveAndLog("Vertex " + startVertex.getUuid(), i, startVerticesList.size());
             for (FilamentEdge edge : inputGraph.edgesOf(startVertex)) {
+
+                if (progressInfo.isCanceled()) {
+                    return;
+                }
+
                 FilamentVertex startSource = inputGraph.getEdgeSource(edge);
                 FilamentVertex startTarget = inputGraph.getEdgeTarget(edge);
 
