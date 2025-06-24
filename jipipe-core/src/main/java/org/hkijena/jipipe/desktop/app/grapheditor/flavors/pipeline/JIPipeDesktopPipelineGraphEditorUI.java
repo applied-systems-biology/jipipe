@@ -214,8 +214,8 @@ public class JIPipeDesktopPipelineGraphEditorUI extends AbstractJIPipeDesktopGra
                 true,
                 0, new JIPipeDesktopExpressionCalculatorUI(getDesktopWorkbench()));
         getDockPanel().addDockPanel(AbstractJIPipeDesktopGraphEditorUI.DOCK_MAP,
-                "Overview map",
-                UIUtils.getIcon32FromResources("actions/zoom.png"),
+                "Navigator",
+                UIUtils.getIcon32FromResources("actions/compass.png"),
                 JIPipeDesktopDockPanel.PanelLocation.TopLeft,
                 true,
                 0, new JIPipeDesktopGraphEditorMinimap(this));
