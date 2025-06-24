@@ -68,6 +68,7 @@ import org.hkijena.jipipe.desktop.commons.theme.JIPipeDesktopModernMetalTheme;
 import org.hkijena.jipipe.plugins.parameters.library.markup.HTMLText;
 import org.hkijena.jipipe.plugins.parameters.library.markup.MarkdownText;
 import org.hkijena.jipipe.plugins.settings.*;
+import org.hkijena.jipipe.utils.StringUtils;
 import org.hkijena.jipipe.utils.UIUtils;
 import org.jdesktop.swingx.JXStatusBar;
 import org.jdesktop.swingx.plaf.basic.BasicStatusBarUI;
@@ -514,7 +515,6 @@ public class JIPipeDesktopProjectWorkbench extends JPanel implements JIPipeDeskt
         statusBar.add(new JIPipeDesktopCompactRunnableQueueButton(this, JIPipeThumbnailGenerationQueue.getInstance().getRunnerQueue(), "actions/document-preview.png"));
 
 
-
         add(statusBar, BorderLayout.SOUTH);
     }
 
@@ -723,6 +723,20 @@ public class JIPipeDesktopProjectWorkbench extends JPanel implements JIPipeDeskt
         JButton openCompartmentsButton = new JButton("Compartments", UIUtils.getIconFromResources("actions/graph-compartments.png"));
         openCompartmentsButton.setToolTipText("Opens the compartment editor if it was closed or switches to the existing tab if it is currently open.");
         openCompartmentsButton.addActionListener(e -> documentTabPane.selectSingletonTab(TAB_COMPARTMENT_EDITOR));
+        JPopupMenu compartmentsPopupMenu = new JPopupMenu();
+        UIUtils.addReloadableRightClickPopupMenuToButton(openCompartmentsButton, compartmentsPopupMenu, () -> {
+            compartmentsPopupMenu.removeAll();
+            for (JIPipeGraphNode node : project.getCompartmentGraph().traverse()) {
+                if (node instanceof JIPipeProjectCompartment) {
+                    compartmentsPopupMenu.add(UIUtils.createMenuItem(StringUtils.orElse(node.getName(), "Unnamed"),
+                            StringUtils.orElse(node.getCustomDescription().toPlainText(), "No description provided"),
+                            UIUtils.getIconFromResources("actions/graph-compartment.png"),
+                            () -> {
+                                getOrOpenPipelineEditorTab((JIPipeProjectCompartment) node, true);
+                            }));
+                }
+            }
+        });
         UIUtils.setStandardButtonBorder(openCompartmentsButton);
         menu.add(openCompartmentsButton);
 
