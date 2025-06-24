@@ -202,8 +202,7 @@ public abstract class AbstractJIPipeDesktopGraphEditorUI extends JIPipeDesktopWo
         mainPanel.add(scrollPane, BorderLayout.CENTER);
         mainPanel.add(toolBar, BorderLayout.NORTH);
 
-        dockPanel.setFloatingPanelMarginTop(40);
-        dockPanel.setBackgroundComponent(mainPanel);
+        dockPanel.setMainComponent(mainPanel);
         dockPanel.getStateSavedEventEmitter().subscribe(this);
         dockPanel.setShowToolbarLabels(graphUISettings.getDockLayoutSettings().isShowToolbarLabels());
         dockPanel.getParameterChangedEventEmitter().subscribeLambda((emitter, event) -> {

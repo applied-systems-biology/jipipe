@@ -24,7 +24,7 @@ public class FrameTest {
 
         JIPipeDesktopDockPanel dockPanel = new JIPipeDesktopDockPanel();
         frame.setContentPane(dockPanel);
-        dockPanel.setBackgroundComponent(textPane);
+        dockPanel.setMainComponent(textPane);
 
         dockPanel.addDockPanel("P1", "Panel 1", UIUtils.getIcon32FromResources("actions/1.png"), JIPipeDesktopDockPanel.PanelLocation.TopLeft, false, 0, new JTextArea("Panel 1"));
         dockPanel.addDockPanel("P2", "Panel 2", UIUtils.getIcon32FromResources("actions/2.png"), JIPipeDesktopDockPanel.PanelLocation.TopLeft, false, 0, new JTextArea("Panel 2"));

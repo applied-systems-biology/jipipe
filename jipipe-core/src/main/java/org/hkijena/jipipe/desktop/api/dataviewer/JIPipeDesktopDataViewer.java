@@ -68,7 +68,7 @@ public abstract class JIPipeDesktopDataViewer extends JIPipeDesktopWorkbenchPane
         errorPanel.add(UIUtils.createInfoLabel(text,
                 subtext,
                 UIUtils.getIcon32FromResources("actions/circle-xmark.png")), BorderLayout.CENTER);
-        dockPanel.setBackgroundComponent(errorPanel);
+        dockPanel.setMainComponent(errorPanel);
     }
 
     /**

@@ -252,7 +252,7 @@ public class JIPipeDesktopPipelineGraphEditorUI extends AbstractJIPipeDesktopGra
         getDockPanel().addDockPanel(AbstractJIPipeDesktopGraphEditorUI.DOCK_LOG,
                 "Log",
                 UIUtils.getIcon32FromResources("actions/rabbitvcs-show_log.png"),
-                JIPipeDesktopDockPanel.PanelLocation.BottomRight,
+                JIPipeDesktopDockPanel.PanelLocation.BottomBottom,
                 false,
                 0, new JIPipeDesktopGraphEditorLogPanel(getDesktopWorkbench()));
         getDockPanel().addDockPanel(DOCK_ERRORS,
@@ -482,7 +482,7 @@ public class JIPipeDesktopPipelineGraphEditorUI extends AbstractJIPipeDesktopGra
         state.put(DOCK_NODE_TEMPLATES, false, JIPipeDesktopDockPanel.PanelLocation.BottomLeft);
         state.put(DOCK_HISTORY, false, JIPipeDesktopDockPanel.PanelLocation.BottomLeft);
 
-        state.put(DOCK_LOG, false, JIPipeDesktopDockPanel.PanelLocation.BottomRight);
+        state.put(DOCK_LOG, false, JIPipeDesktopDockPanel.PanelLocation.BottomBottom);
         state.put(DOCK_ERRORS, false, JIPipeDesktopDockPanel.PanelLocation.BottomRight);
         state.put(DOCK_NODE_CONTEXT_PARAMETERS, true, JIPipeDesktopDockPanel.PanelLocation.TopRight);
         state.put(DOCK_NODE_CONTEXT_SLOT_MANAGER, false, JIPipeDesktopDockPanel.PanelLocation.TopRight);

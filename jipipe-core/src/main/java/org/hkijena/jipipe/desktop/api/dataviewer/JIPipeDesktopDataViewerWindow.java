@@ -207,7 +207,7 @@ public class JIPipeDesktopDataViewerWindow extends JFrame implements JIPipeDeskt
         boolean hasNewViewer = false;
         if (currentDataViewer == null) {
             currentDataViewer = (JIPipeDesktopDataViewer) ReflectionUtils.newInstance(viewerClass, this);
-            dockPanel.setBackgroundComponent(currentDataViewer);
+            dockPanel.setMainComponent(currentDataViewer);
             hasNewViewer = true;
         }
 
@@ -256,7 +256,7 @@ public class JIPipeDesktopDataViewerWindow extends JFrame implements JIPipeDeskt
 
     private void destroyCurrentViewer() {
         dockPanel.removeAllPanels();
-        dockPanel.setBackgroundComponent(new JPanel());
+        dockPanel.setMainComponent(new JPanel());
         currentDataViewer.dispose();
         currentDataViewer = null;
     }

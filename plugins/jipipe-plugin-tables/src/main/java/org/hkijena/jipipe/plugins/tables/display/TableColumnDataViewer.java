@@ -38,7 +38,7 @@ public class TableColumnDataViewer extends JIPipeDesktopDataViewer {
 
     @Override
     public void rebuildDock(JIPipeDesktopDockPanel dockPanel) {
-        dockPanel.setBackgroundComponent(tableEditor);
+        dockPanel.setMainComponent(tableEditor);
     }
 
     @Override

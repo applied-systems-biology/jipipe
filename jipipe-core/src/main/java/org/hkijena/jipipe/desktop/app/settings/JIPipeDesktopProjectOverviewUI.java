@@ -785,7 +785,7 @@ public class JIPipeDesktopProjectOverviewUI extends JIPipeDesktopProjectWorkbenc
         dockPanel.addDockPanel(AbstractJIPipeDesktopGraphEditorUI.DOCK_LOG,
                 "Log",
                 UIUtils.getIcon32FromResources("actions/rabbitvcs-show_log.png"),
-                JIPipeDesktopDockPanel.PanelLocation.BottomRight,
+                JIPipeDesktopDockPanel.PanelLocation.BottomBottom,
                 false,
                 0, new JIPipeDesktopGraphEditorLogPanel(getDesktopWorkbench()));
         dockPanel.addDockPanel(AbstractJIPipeDesktopGraphEditorUI.DOCK_ERRORS,
@@ -804,7 +804,7 @@ public class JIPipeDesktopProjectOverviewUI extends JIPipeDesktopProjectWorkbenc
             dockPanel.activatePanel(DOCK_NODE_CONTEXT_HELP, true);
         });
 
-        dockPanel.setBackgroundComponent(centerPanel);
+        dockPanel.setMainComponent(centerPanel);
         add(dockPanel, BorderLayout.CENTER);
     }
 
