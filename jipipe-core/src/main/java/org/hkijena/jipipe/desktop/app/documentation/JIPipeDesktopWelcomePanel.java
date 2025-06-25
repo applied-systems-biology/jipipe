@@ -241,7 +241,7 @@ public class JIPipeDesktopWelcomePanel extends JIPipeDesktopProjectWorkbenchPane
         toolBar.add(openSourceCodeButton);
         toolBar.add(Box.createHorizontalStrut(4));
 
-        JButton reportIssueButton = new JButton("Report issue", UIUtils.getIconFromResources("actions/bug.png"));
+        JButton reportIssueButton = new JButton("Report issue", UIUtils.getIconFromResources("actions/mail-message.png"));
         reportIssueButton.setAlignmentY(JComponent.BOTTOM_ALIGNMENT);
         reportIssueButton.setToolTipText("https://github.com/applied-systems-biology/jipipe/issues");
         reportIssueButton.addActionListener(e -> UIUtils.openWebsite("https://github.com/applied-systems-biology/jipipe/issues"));
@@ -337,7 +337,7 @@ public class JIPipeDesktopWelcomePanel extends JIPipeDesktopProjectWorkbenchPane
     private void initRecentProjects(JIPipeDesktopDockPanel dockPanel) {
         dockPanel.addDockPanel("RECENT",
                 "Recent",
-                UIUtils.getIcon32FromResources("actions/view-calendar-time-spent.png"),
+                UIUtils.getIcon32FromResources("actions/tag-recents.png"),
                 JIPipeDesktopDockPanel.PanelLocation.TopLeft,
                 true,
                 0,
