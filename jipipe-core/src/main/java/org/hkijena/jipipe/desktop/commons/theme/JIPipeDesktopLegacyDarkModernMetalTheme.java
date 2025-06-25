@@ -27,7 +27,7 @@ import java.awt.*;
 import java.util.Arrays;
 import java.util.List;
 
-public class JIPipeDesktopDarkModernMetalTheme extends DefaultMetalTheme {
+public class JIPipeDesktopLegacyDarkModernMetalTheme extends DefaultMetalTheme {
     public static final Color TRANSPARENT = new Color(0, 0, 0, 0);
     public static final ColorUIResource PRIMARY1 =
             new ColorUIResource(0x5d85ae); // Progress bar text, focus
@@ -67,7 +67,7 @@ public class JIPipeDesktopDarkModernMetalTheme extends DefaultMetalTheme {
     /**
      * Creates an instance of {@code OceanTheme}
      */
-    public JIPipeDesktopDarkModernMetalTheme() {
+    public JIPipeDesktopLegacyDarkModernMetalTheme() {
     }
 
     /**

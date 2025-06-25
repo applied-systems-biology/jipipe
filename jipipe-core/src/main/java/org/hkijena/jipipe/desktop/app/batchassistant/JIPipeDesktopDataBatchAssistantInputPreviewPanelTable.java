@@ -28,7 +28,7 @@ import org.hkijena.jipipe.desktop.api.data.JIPipeDesktopDataDisplayOperation;
 import org.hkijena.jipipe.desktop.api.dataviewer.JIPipeDesktopDataViewerWindow;
 import org.hkijena.jipipe.desktop.app.cache.JIPipeDesktopDataTableRowDisplayUtil;
 import org.hkijena.jipipe.desktop.app.datatracer.JIPipeDesktopDataTracerUI;
-import org.hkijena.jipipe.desktop.commons.theme.JIPipeDesktopModernMetalTheme;
+import org.hkijena.jipipe.desktop.commons.theme.JIPipeDesktopLegacyModernMetalTheme;
 import org.hkijena.jipipe.plugins.tables.datatypes.AnnotationTableData;
 import org.hkijena.jipipe.utils.StringUtils;
 import org.hkijena.jipipe.utils.UIUtils;
@@ -80,7 +80,7 @@ public class JIPipeDesktopDataBatchAssistantInputPreviewPanelTable extends JPane
                 true,
                 true,
                 true,
-                true), BorderFactory.createLineBorder(JIPipeDesktopModernMetalTheme.MEDIUM_GRAY)));
+                true), BorderFactory.createLineBorder(JIPipeDesktopLegacyModernMetalTheme.MEDIUM_GRAY)));
 
 //        JToolBar toolBar = new JToolBar();
 //        toolBar.setFloatable(false);

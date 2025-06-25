@@ -13,7 +13,7 @@
 
 package org.hkijena.jipipe.utils.ui;
 
-import org.hkijena.jipipe.desktop.commons.theme.JIPipeDesktopModernMetalTheme;
+import org.hkijena.jipipe.desktop.commons.theme.JIPipeDesktopLegacyModernMetalTheme;
 
 import javax.swing.*;
 import javax.swing.plaf.UIResource;
@@ -43,12 +43,12 @@ public class CheckBoxIcon implements Icon, UIResource, Serializable {
 
         if (model.isEnabled()) {
             if (model.isSelected()) {
-                g.setColor(JIPipeDesktopModernMetalTheme.PRIMARY5);
+                g.setColor(JIPipeDesktopLegacyModernMetalTheme.PRIMARY5);
                 g.fillRoundRect(x, y, controlSize - 1, controlSize - 1, 2, 2);
             } else {
                 g.setColor(backgroundInactive);
                 g.fillRoundRect(x, y, controlSize - 1, controlSize - 1, 2, 2);
-                g.setColor(JIPipeDesktopModernMetalTheme.DARK_GRAY);
+                g.setColor(JIPipeDesktopLegacyModernMetalTheme.DARK_GRAY);
                 g.drawRoundRect(x, y, controlSize - 2, controlSize - 2, 2, 2);
                 g.setColor(c.getForeground());
             }

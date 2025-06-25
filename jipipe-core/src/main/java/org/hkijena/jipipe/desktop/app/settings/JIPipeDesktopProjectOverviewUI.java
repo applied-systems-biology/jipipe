@@ -54,7 +54,7 @@ import org.hkijena.jipipe.desktop.commons.components.markup.JIPipeDesktopHTMLEdi
 import org.hkijena.jipipe.desktop.commons.components.markup.JIPipeDesktopMarkdownReader;
 import org.hkijena.jipipe.desktop.commons.components.parameters.JIPipeDesktopDynamicParameterEditorDialog;
 import org.hkijena.jipipe.desktop.commons.components.ribbon.JIPipeDesktopRibbon;
-import org.hkijena.jipipe.desktop.commons.theme.JIPipeDesktopModernMetalTheme;
+import org.hkijena.jipipe.desktop.commons.theme.JIPipeDesktopLegacyModernMetalTheme;
 import org.hkijena.jipipe.plugins.parameters.api.optional.OptionalParameter;
 import org.hkijena.jipipe.plugins.parameters.library.jipipe.JIPipeArtifactQueryParameter;
 import org.hkijena.jipipe.plugins.parameters.library.markup.HTMLText;
@@ -727,7 +727,7 @@ public class JIPipeDesktopProjectOverviewUI extends JIPipeDesktopProjectWorkbenc
         }
         toolBar.add(Box.createHorizontalStrut(8));
         toolBar.setBorder(BorderFactory.createMatteBorder(0, 0, 1, 0, UIUtils.getControlBorderColor()));
-        toolBar.setBackground(ColorUtils.mix(JIPipeDesktopModernMetalTheme.PRIMARY5, ColorUtils.scaleHSV(UIManager.getColor("Panel.background"), 1, 1, 0.98f), 0.92));
+        toolBar.setBackground(ColorUtils.mix(JIPipeDesktopLegacyModernMetalTheme.PRIMARY5, ColorUtils.scaleHSV(UIManager.getColor("Panel.background"), 1, 1, 0.98f), 0.92));
 
         panel.add(toolBar, BorderLayout.NORTH);
         panel.add(center, BorderLayout.CENTER);

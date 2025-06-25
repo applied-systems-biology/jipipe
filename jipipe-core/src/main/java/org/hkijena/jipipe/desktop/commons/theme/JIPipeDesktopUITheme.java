@@ -56,7 +56,7 @@ public enum JIPipeDesktopUITheme {
                 try {
                     UIManager.setLookAndFeel(UIManager.getCrossPlatformLookAndFeelClassName());
                     UIManager.put("swing.boldMetal", Boolean.FALSE);
-                    UIManager.put("Button.borderColor", JIPipeDesktopModernMetalTheme.MEDIUM_GRAY);
+                    UIManager.put("Button.borderColor", JIPipeDesktopLegacyModernMetalTheme.MEDIUM_GRAY);
                 } catch (ClassNotFoundException | InstantiationException | IllegalAccessException |
                          UnsupportedLookAndFeelException e) {
                     e.printStackTrace();
@@ -64,7 +64,9 @@ public enum JIPipeDesktopUITheme {
                 break;
             case ModernLight:
                 try {
-                    MetalLookAndFeel.setCurrentTheme(new JIPipeDesktopModernMetalTheme());
+//                    MetalLookAndFeel.setCurrentTheme(new JIPipeDesktopLegacyModernMetalTheme());
+                    MetalLookAndFeel.setCurrentTheme(new JIPipeDesktopModernMetalTheme(new JIPipeDesktopModernThemeStyle()));
+
                     UIManager.setLookAndFeel(UIManager.getCrossPlatformLookAndFeelClassName());
                     UIManager.put("swing.boldMetal", Boolean.FALSE);
                     UIManager.put("ScrollBarUI", JIPipeDesktopArrowLessScrollBarUI.class.getName());
@@ -77,7 +79,7 @@ public enum JIPipeDesktopUITheme {
                 break;
             case ModernDark:
                 try {
-                    MetalLookAndFeel.setCurrentTheme(new JIPipeDesktopDarkModernMetalTheme());
+                    MetalLookAndFeel.setCurrentTheme(new JIPipeDesktopLegacyDarkModernMetalTheme());
                     UIManager.setLookAndFeel(UIManager.getCrossPlatformLookAndFeelClassName());
                     UIManager.put("swing.boldMetal", Boolean.FALSE);
                     UIManager.put("ScrollBarUI", JIPipeDesktopArrowLessScrollBarUI.class.getName());
@@ -89,7 +91,7 @@ public enum JIPipeDesktopUITheme {
                 }
                 break;
             default:
-                UIManager.put("Button.borderColor", JIPipeDesktopModernMetalTheme.MEDIUM_GRAY);
+                UIManager.put("Button.borderColor", JIPipeDesktopLegacyModernMetalTheme.MEDIUM_GRAY);
                 break;
         }
         IS_UPDATING_THEME = false;

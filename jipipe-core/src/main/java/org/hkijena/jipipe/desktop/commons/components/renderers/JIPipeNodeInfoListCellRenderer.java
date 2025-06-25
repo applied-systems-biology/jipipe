@@ -17,7 +17,7 @@ import org.hkijena.jipipe.JIPipe;
 import org.hkijena.jipipe.api.nodes.JIPipeNodeInfo;
 import org.hkijena.jipipe.api.nodes.JIPipeNodeMenuLocation;
 import org.hkijena.jipipe.desktop.commons.components.icons.SolidColorIcon;
-import org.hkijena.jipipe.desktop.commons.theme.JIPipeDesktopModernMetalTheme;
+import org.hkijena.jipipe.desktop.commons.theme.JIPipeDesktopLegacyModernMetalTheme;
 import org.hkijena.jipipe.utils.StringUtils;
 import org.hkijena.jipipe.utils.UIUtils;
 
@@ -54,7 +54,7 @@ public class JIPipeNodeInfoListCellRenderer extends JPanel implements ListCellRe
         pathLabel = new JLabel();
         pathLabel.setForeground(Color.GRAY);
         alternativeLabel = new JLabel();
-        alternativeLabel.setForeground(JIPipeDesktopModernMetalTheme.PRIMARY6);
+        alternativeLabel.setForeground(JIPipeDesktopLegacyModernMetalTheme.PRIMARY6);
         alternativeLabel.setFont(new Font(Font.DIALOG, Font.ITALIC, 12));
 
         add(new JLabel(nodeColor), new GridBagConstraints() {

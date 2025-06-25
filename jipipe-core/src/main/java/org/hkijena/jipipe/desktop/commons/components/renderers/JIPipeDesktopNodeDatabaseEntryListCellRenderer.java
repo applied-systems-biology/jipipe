@@ -20,7 +20,7 @@ import org.hkijena.jipipe.api.nodes.database.CreateNewNodeByInfoAliasDatabaseEnt
 import org.hkijena.jipipe.api.nodes.database.CreateNewNodeByInfoDatabaseEntry;
 import org.hkijena.jipipe.api.nodes.database.JIPipeNodeDatabaseEntry;
 import org.hkijena.jipipe.desktop.commons.components.icons.SolidColorIcon;
-import org.hkijena.jipipe.desktop.commons.theme.JIPipeDesktopModernMetalTheme;
+import org.hkijena.jipipe.desktop.commons.theme.JIPipeDesktopLegacyModernMetalTheme;
 import org.hkijena.jipipe.utils.StringUtils;
 
 import javax.swing.*;
@@ -56,7 +56,7 @@ public class JIPipeDesktopNodeDatabaseEntryListCellRenderer extends JPanel imple
         pathLabel = new JLabel();
         pathLabel.setForeground(Color.GRAY);
         alternativeLabel = new JLabel();
-        alternativeLabel.setForeground(JIPipeDesktopModernMetalTheme.PRIMARY6);
+        alternativeLabel.setForeground(JIPipeDesktopLegacyModernMetalTheme.PRIMARY6);
         alternativeLabel.setFont(new Font(Font.DIALOG, Font.ITALIC, 12));
 
         add(new JLabel(nodeColor), new GridBagConstraints() {
@@ -113,7 +113,7 @@ public class JIPipeDesktopNodeDatabaseEntryListCellRenderer extends JPanel imple
 
         if (obj instanceof CreateNewNodeByInfoDatabaseEntry) {
             JIPipeNodeInfo info = ((CreateNewNodeByInfoDatabaseEntry) obj).getNodeInfo();
-            alternativeLabel.setForeground(JIPipeDesktopModernMetalTheme.PRIMARY6);
+            alternativeLabel.setForeground(JIPipeDesktopLegacyModernMetalTheme.PRIMARY6);
             if (info.getAliases().isEmpty()) {
                 alternativeLabel.setText("");
             } else {
@@ -132,7 +132,7 @@ public class JIPipeDesktopNodeDatabaseEntryListCellRenderer extends JPanel imple
             }
         } else if (obj instanceof CreateNewNodeByInfoAliasDatabaseEntry) {
             JIPipeNodeInfo info = ((CreateNewNodeByInfoAliasDatabaseEntry) obj).getNodeInfo();
-            alternativeLabel.setForeground(JIPipeDesktopModernMetalTheme.PRIMARY6);
+            alternativeLabel.setForeground(JIPipeDesktopLegacyModernMetalTheme.PRIMARY6);
             if (info.getAliases().isEmpty()) {
                 alternativeLabel.setText("");
             } else {
@@ -149,7 +149,7 @@ public class JIPipeDesktopNodeDatabaseEntryListCellRenderer extends JPanel imple
                 alternativeLabel.setText(builder.toString());
             }
         } else if (obj instanceof CreateNewNodeByExampleDatabaseEntry) {
-            alternativeLabel.setForeground(JIPipeDesktopModernMetalTheme.PRIMARY5);
+            alternativeLabel.setForeground(JIPipeDesktopLegacyModernMetalTheme.PRIMARY5);
             alternativeLabel.setText("Example");
         }
 

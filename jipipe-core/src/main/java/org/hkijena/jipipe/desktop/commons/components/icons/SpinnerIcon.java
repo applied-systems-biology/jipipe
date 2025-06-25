@@ -13,7 +13,7 @@
 
 package org.hkijena.jipipe.desktop.commons.components.icons;
 
-import org.hkijena.jipipe.desktop.commons.theme.JIPipeDesktopModernMetalTheme;
+import org.hkijena.jipipe.desktop.commons.theme.JIPipeDesktopLegacyModernMetalTheme;
 import org.hkijena.jipipe.utils.ColorUtils;
 import org.hkijena.jipipe.utils.UIUtils;
 
@@ -53,8 +53,8 @@ public class SpinnerIcon implements Icon {
         Color baseColor = UIUtils.DARK_THEME ? new Color(0xdfdfdf) : new Color(0x444444);
         colors = ColorUtils.renderGradient(Arrays.asList(
                 new ColorUtils.GradientStop(0.0f, baseColor),
-                new ColorUtils.GradientStop(0.75f, JIPipeDesktopModernMetalTheme.PRIMARY5),
-                new ColorUtils.GradientStop(1.0f, JIPipeDesktopModernMetalTheme.PRIMARY6)), numLines);
+                new ColorUtils.GradientStop(0.75f, JIPipeDesktopLegacyModernMetalTheme.PRIMARY5),
+                new ColorUtils.GradientStop(1.0f, JIPipeDesktopLegacyModernMetalTheme.PRIMARY6)), numLines);
     }
 
     public static void main(String[] args) {

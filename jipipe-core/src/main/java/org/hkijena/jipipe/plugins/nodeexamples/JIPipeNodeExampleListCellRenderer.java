@@ -15,7 +15,7 @@ package org.hkijena.jipipe.plugins.nodeexamples;
 
 import org.hkijena.jipipe.api.nodes.JIPipeNodeExample;
 import org.hkijena.jipipe.desktop.commons.components.icons.SolidColorIcon;
-import org.hkijena.jipipe.desktop.commons.theme.JIPipeDesktopModernMetalTheme;
+import org.hkijena.jipipe.desktop.commons.theme.JIPipeDesktopLegacyModernMetalTheme;
 import org.hkijena.jipipe.utils.StringUtils;
 import org.hkijena.jipipe.utils.UIUtils;
 
@@ -51,7 +51,7 @@ public class JIPipeNodeExampleListCellRenderer extends JPanel implements ListCel
         descriptionLabel = new JLabel();
         descriptionLabel.setForeground(Color.GRAY);
         sourceLabel = new JLabel();
-        sourceLabel.setForeground(JIPipeDesktopModernMetalTheme.PRIMARY6);
+        sourceLabel.setForeground(JIPipeDesktopLegacyModernMetalTheme.PRIMARY6);
         sourceLabel.setFont(new Font(Font.DIALOG, Font.ITALIC, 12));
 
         add(new JLabel(nodeColor), new GridBagConstraints() {

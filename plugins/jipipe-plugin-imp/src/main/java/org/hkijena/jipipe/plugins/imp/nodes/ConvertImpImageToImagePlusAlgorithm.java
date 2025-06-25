@@ -28,7 +28,7 @@ import org.hkijena.jipipe.api.nodes.categories.ImagesNodeTypeCategory;
 import org.hkijena.jipipe.api.nodes.iterationstep.JIPipeIterationContext;
 import org.hkijena.jipipe.api.nodes.iterationstep.JIPipeSingleIterationStep;
 import org.hkijena.jipipe.api.parameters.JIPipeParameter;
-import org.hkijena.jipipe.desktop.commons.theme.JIPipeDesktopModernMetalTheme;
+import org.hkijena.jipipe.desktop.commons.theme.JIPipeDesktopLegacyModernMetalTheme;
 import org.hkijena.jipipe.plugins.imagejdatatypes.datatypes.ImagePlusData;
 import org.hkijena.jipipe.plugins.imp.datatypes.ImpImageData;
 import org.hkijena.jipipe.plugins.imp.utils.ImpImageUtils;
@@ -46,7 +46,7 @@ public class ConvertImpImageToImagePlusAlgorithm extends JIPipeSimpleIteratingAl
     private boolean createCheckerboard = true;
     private int checkerboardSize = 10;
     private Color checkerboardColor1 = Color.WHITE;
-    private Color checkerboardColor2 = JIPipeDesktopModernMetalTheme.GRAY;
+    private Color checkerboardColor2 = JIPipeDesktopLegacyModernMetalTheme.GRAY;
 
     public ConvertImpImageToImagePlusAlgorithm(JIPipeNodeInfo info) {
         super(info);

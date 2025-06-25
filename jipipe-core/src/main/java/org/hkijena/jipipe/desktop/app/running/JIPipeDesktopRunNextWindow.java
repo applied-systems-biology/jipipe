@@ -36,7 +36,7 @@ import org.hkijena.jipipe.desktop.commons.components.JIPipeDesktopPathEditorComp
 import org.hkijena.jipipe.desktop.commons.components.JIPipeDesktopToggleButtonPanel;
 import org.hkijena.jipipe.desktop.commons.components.icons.SolidColorIcon;
 import org.hkijena.jipipe.desktop.commons.components.markup.JIPipeDesktopHTMLEditorKit;
-import org.hkijena.jipipe.desktop.commons.theme.JIPipeDesktopModernMetalTheme;
+import org.hkijena.jipipe.desktop.commons.theme.JIPipeDesktopLegacyModernMetalTheme;
 import org.hkijena.jipipe.plugins.settings.JIPipeRuntimeApplicationSettings;
 import org.hkijena.jipipe.utils.*;
 import org.hkijena.jipipe.utils.ui.RoundedLineBorder;
@@ -297,7 +297,7 @@ public class JIPipeDesktopRunNextWindow extends JFrame implements JIPipeDesktopP
         }
         toolBar.add(Box.createHorizontalStrut(8));
         toolBar.setBorder(BorderFactory.createMatteBorder(0, 0, 1, 0, UIUtils.getControlBorderColor()));
-        toolBar.setBackground(ColorUtils.mix(JIPipeDesktopModernMetalTheme.PRIMARY5, ColorUtils.scaleHSV(UIManager.getColor("Panel.background"), 1, 1, 0.98f), 0.92));
+        toolBar.setBackground(ColorUtils.mix(JIPipeDesktopLegacyModernMetalTheme.PRIMARY5, ColorUtils.scaleHSV(UIManager.getColor("Panel.background"), 1, 1, 0.98f), 0.92));
 
         panel.add(toolBar, BorderLayout.NORTH);
         panel.add(center, BorderLayout.CENTER);

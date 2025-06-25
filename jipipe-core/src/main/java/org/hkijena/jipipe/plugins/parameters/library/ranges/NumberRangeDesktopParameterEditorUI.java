@@ -16,7 +16,7 @@ package org.hkijena.jipipe.plugins.parameters.library.ranges;
 import org.apache.commons.lang3.math.NumberUtils;
 import org.hkijena.jipipe.desktop.api.JIPipeDesktopParameterEditorUI;
 import org.hkijena.jipipe.desktop.commons.components.JIPipeDesktopDocumentChangeListener;
-import org.hkijena.jipipe.desktop.commons.theme.JIPipeDesktopModernMetalTheme;
+import org.hkijena.jipipe.desktop.commons.theme.JIPipeDesktopLegacyModernMetalTheme;
 import org.hkijena.jipipe.utils.ReflectionUtils;
 import org.hkijena.jipipe.utils.StringUtils;
 import org.jdesktop.swingx.JXMultiThumbSlider;
@@ -273,7 +273,7 @@ public class NumberRangeDesktopParameterEditorUI extends JIPipeDesktopParameterE
             int x1 = ThumbRenderer.SIZE - 1 + (int) (w * position1);
 
             // Range indicator
-            g.setColor(JIPipeDesktopModernMetalTheme.PRIMARY5);
+            g.setColor(JIPipeDesktopLegacyModernMetalTheme.PRIMARY5);
             switch (invertedMode) {
                 case SwitchMinMax:
                     g.fillRect(Math.min(x0, x1), 1, Math.abs(x1 - x0), ThumbRenderer.SIZE + 1);

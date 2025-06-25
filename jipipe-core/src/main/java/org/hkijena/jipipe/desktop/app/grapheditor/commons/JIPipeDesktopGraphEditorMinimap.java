@@ -14,7 +14,7 @@
 package org.hkijena.jipipe.desktop.app.grapheditor.commons;
 
 import org.hkijena.jipipe.desktop.app.JIPipeDesktopWorkbenchPanel;
-import org.hkijena.jipipe.desktop.commons.theme.JIPipeDesktopModernMetalTheme;
+import org.hkijena.jipipe.desktop.commons.theme.JIPipeDesktopLegacyModernMetalTheme;
 import org.hkijena.jipipe.plugins.settings.JIPipeGeneralUIApplicationSettings;
 
 import javax.swing.*;
@@ -156,7 +156,7 @@ public class JIPipeDesktopGraphEditorMinimap extends JIPipeDesktopWorkbenchPanel
         // Draw current scroll position
         g.setColor(AREA_FILL_COLOR);
         g.fillRect(viewX + scrollX, viewY + scrollY, scrollWidth, scrollHeight);
-        g.setColor(JIPipeDesktopModernMetalTheme.PRIMARY5);
+        g.setColor(JIPipeDesktopLegacyModernMetalTheme.PRIMARY5);
         ((Graphics2D) g).setStroke(new BasicStroke(2));
         g.drawRect(viewX + scrollX, viewY + scrollY, scrollWidth, scrollHeight);
 

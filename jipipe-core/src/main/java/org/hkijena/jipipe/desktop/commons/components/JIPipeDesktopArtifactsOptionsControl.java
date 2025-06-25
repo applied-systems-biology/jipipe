@@ -22,7 +22,7 @@ import org.hkijena.jipipe.api.registries.JIPipeArtifactsRegistry;
 import org.hkijena.jipipe.desktop.JIPipeDesktop;
 import org.hkijena.jipipe.desktop.app.JIPipeDesktopProjectWorkbench;
 import org.hkijena.jipipe.desktop.app.plugins.artifactsmanager.JIPipeDesktopArtifactManagerUI;
-import org.hkijena.jipipe.desktop.commons.theme.JIPipeDesktopModernMetalTheme;
+import org.hkijena.jipipe.desktop.commons.theme.JIPipeDesktopLegacyModernMetalTheme;
 import org.hkijena.jipipe.plugins.artifacts.JIPipeArtifactApplicationSettings;
 import org.hkijena.jipipe.plugins.parameters.library.markup.HTMLText;
 import org.hkijena.jipipe.plugins.settings.JIPipeFileChooserApplicationSettings;
@@ -57,7 +57,7 @@ public class JIPipeDesktopArtifactsOptionsControl extends JButton implements JIP
     }
 
     private void initializeBalloon() {
-        EdgedBalloonStyle style = new EdgedBalloonStyle(UIManager.getColor("TextField.background"), JIPipeDesktopModernMetalTheme.PRIMARY5);
+        EdgedBalloonStyle style = new EdgedBalloonStyle(UIManager.getColor("TextField.background"), JIPipeDesktopLegacyModernMetalTheme.PRIMARY5);
         JPanel content = new JPanel(new BorderLayout(8, 8));
         content.setOpaque(false);
         content.add(UIUtils.createJLabel("No connection to artifacts repository", 16), BorderLayout.NORTH);

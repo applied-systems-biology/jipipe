@@ -29,7 +29,7 @@ import org.hkijena.jipipe.desktop.app.grapheditor.commons.contextmenu.NodeUICont
 import org.hkijena.jipipe.desktop.app.grapheditor.commons.nodeui.JIPipeDesktopGraphNodeUI;
 import org.hkijena.jipipe.desktop.commons.components.icons.SolidColorIcon;
 import org.hkijena.jipipe.desktop.commons.components.renderers.JIPipeDesktopGenericListCellRenderer;
-import org.hkijena.jipipe.desktop.commons.theme.JIPipeDesktopModernMetalTheme;
+import org.hkijena.jipipe.desktop.commons.theme.JIPipeDesktopLegacyModernMetalTheme;
 import org.hkijena.jipipe.plugins.parameters.library.markup.HTMLText;
 import org.hkijena.jipipe.plugins.parameters.library.pairs.StringAndStringPairParameter;
 import org.hkijena.jipipe.plugins.settings.JIPipeFileChooserApplicationSettings;
@@ -991,7 +991,7 @@ public abstract class AbstractJIPipeDesktopGraphEditorUI extends JIPipeDesktopWo
             });
 
             alternativeLabel = new JLabel();
-            alternativeLabel.setForeground(JIPipeDesktopModernMetalTheme.PRIMARY6);
+            alternativeLabel.setForeground(JIPipeDesktopLegacyModernMetalTheme.PRIMARY6);
             alternativeLabel.setFont(new Font(Font.DIALOG, Font.ITALIC, 12));
             add(alternativeLabel, new GridBagConstraints() {
                 {
@@ -1030,7 +1030,7 @@ public abstract class AbstractJIPipeDesktopGraphEditorUI extends JIPipeDesktopWo
                 algorithmLabel.setIcon(JIPipe.getNodes().getIconFor(info));
                 menuLabel.setText(menuPath);
 
-                alternativeLabel.setForeground(JIPipeDesktopModernMetalTheme.PRIMARY6);
+                alternativeLabel.setForeground(JIPipeDesktopLegacyModernMetalTheme.PRIMARY6);
                 if (info.getAliases().isEmpty()) {
                     alternativeLabel.setText("");
                 } else {
@@ -1079,7 +1079,7 @@ public abstract class AbstractJIPipeDesktopGraphEditorUI extends JIPipeDesktopWo
                 algorithmLabel.setIcon(JIPipe.getNodes().getIconFor(info));
                 menuLabel.setText(menuPath);
 
-                alternativeLabel.setForeground(JIPipeDesktopModernMetalTheme.PRIMARY5);
+                alternativeLabel.setForeground(JIPipeDesktopLegacyModernMetalTheme.PRIMARY5);
                 alternativeLabel.setText("Example");
 
             }

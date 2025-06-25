@@ -255,7 +255,7 @@ public class JIPipeDesktopCustomTabbedPaneUI extends BasicTabbedPaneUI {
 //        }
 
         if (isSelected) {
-            g.setColor(JIPipeDesktopModernMetalTheme.PRIMARY5);
+            g.setColor(JIPipeDesktopLegacyModernMetalTheme.PRIMARY5);
             g.fillRect(0, bottom - 1, w, 2);
         }
 
@@ -433,7 +433,7 @@ public class JIPipeDesktopCustomTabbedPaneUI extends BasicTabbedPaneUI {
 //        }
 
         if (tabPane.getSelectedIndex() == tabIndex) {
-            g.setColor(JIPipeDesktopModernMetalTheme.PRIMARY5);
+            g.setColor(JIPipeDesktopLegacyModernMetalTheme.PRIMARY5);
             g.fillRect(0, 1, 5, bottom);
         }
 
@@ -682,7 +682,7 @@ public class JIPipeDesktopCustomTabbedPaneUI extends BasicTabbedPaneUI {
         g.drawLine(right, 0, right, bottom);
 
         if (tabPane.getSelectedIndex() == tabIndex) {
-            g.setColor(JIPipeDesktopModernMetalTheme.PRIMARY5);
+            g.setColor(JIPipeDesktopLegacyModernMetalTheme.PRIMARY5);
             g.fillRect(right - 4, 1, 5, bottom);
         }
 
@@ -918,7 +918,7 @@ public class JIPipeDesktopCustomTabbedPaneUI extends BasicTabbedPaneUI {
             g.setColor(selectHighlight);
         }
 
-        g.setColor(UIUtils.DARK_THEME ? JIPipeDesktopDarkModernMetalTheme.GRAY : JIPipeDesktopModernMetalTheme.GRAY);
+        g.setColor(UIUtils.DARK_THEME ? JIPipeDesktopLegacyDarkModernMetalTheme.GRAY : JIPipeDesktopLegacyModernMetalTheme.GRAY);
 
         // Draw unbroken line if tabs are not on TOP, OR
         // selected tab is not in run adjacent to content, OR
@@ -943,10 +943,10 @@ public class JIPipeDesktopCustomTabbedPaneUI extends BasicTabbedPaneUI {
             }
 
             // Draw in-between
-            g.setColor(JIPipeDesktopModernMetalTheme.PRIMARY5);
+            g.setColor(JIPipeDesktopLegacyModernMetalTheme.PRIMARY5);
             g.drawLine(selRect.x + 1, y, selRect.x + selRect.width - 1, y);
 
-            g.setColor(UIUtils.DARK_THEME ? JIPipeDesktopDarkModernMetalTheme.GRAY : JIPipeDesktopModernMetalTheme.GRAY);
+            g.setColor(UIUtils.DARK_THEME ? JIPipeDesktopLegacyDarkModernMetalTheme.GRAY : JIPipeDesktopLegacyModernMetalTheme.GRAY);
 
             if (selRect.x + selRect.width < right - 1) {
                 if (leftToRight && !lastInRun) {

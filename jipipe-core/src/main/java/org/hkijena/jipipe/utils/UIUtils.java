@@ -15,7 +15,6 @@ package org.hkijena.jipipe.utils;
 
 import com.fasterxml.jackson.databind.JsonNode;
 import com.google.common.primitives.Ints;
-import ij.IJ;
 import net.java.balloontip.BalloonTip;
 import net.java.balloontip.styles.EdgedBalloonStyle;
 import org.apache.commons.lang3.SystemUtils;
@@ -42,7 +41,7 @@ import org.hkijena.jipipe.desktop.commons.components.markup.JIPipeDesktopHTMLEdi
 import org.hkijena.jipipe.desktop.commons.components.markup.JIPipeDesktopMarkdownReader;
 import org.hkijena.jipipe.desktop.commons.components.window.JIPipeDesktopAlwaysOnTopToggle;
 import org.hkijena.jipipe.desktop.commons.notifications.JIPipeDesktopGenericNotificationInboxUI;
-import org.hkijena.jipipe.desktop.commons.theme.JIPipeDesktopModernMetalTheme;
+import org.hkijena.jipipe.desktop.commons.theme.JIPipeDesktopLegacyModernMetalTheme;
 import org.hkijena.jipipe.desktop.commons.theme.JIPipeDesktopUITheme;
 import org.hkijena.jipipe.plugins.parameters.library.markup.HTMLText;
 import org.hkijena.jipipe.plugins.parameters.library.markup.MarkdownText;
@@ -262,7 +261,7 @@ public class UIUtils {
 
     public static Color getControlBorderColor() {
         if (!DARK_THEME) {
-            return JIPipeDesktopModernMetalTheme.MEDIUM_GRAY;
+            return JIPipeDesktopLegacyModernMetalTheme.MEDIUM_GRAY;
         } else {
             return Color.DARK_GRAY;
         }
@@ -272,7 +271,7 @@ public class UIUtils {
         if (CONTROL_BORDER == null) {
             if (!DARK_THEME) {
                 CONTROL_BORDER = BorderFactory.createCompoundBorder(BorderFactory.createEmptyBorder(1, 1, 1, 1),
-                        new RoundedLineBorder(JIPipeDesktopModernMetalTheme.MEDIUM_GRAY, 1, 5));
+                        new RoundedLineBorder(JIPipeDesktopLegacyModernMetalTheme.MEDIUM_GRAY, 1, 5));
             } else {
                 CONTROL_BORDER = BorderFactory.createCompoundBorder(BorderFactory.createEmptyBorder(1, 1, 1, 1),
                         new RoundedLineBorder(Color.DARK_GRAY, 1, 5));
@@ -298,7 +297,7 @@ public class UIUtils {
     public static Border createPanelBorder() {
         if (PANEL_BORDER == null) {
             if (!DARK_THEME) {
-                PANEL_BORDER = BorderFactory.createCompoundBorder(BorderFactory.createLineBorder(JIPipeDesktopModernMetalTheme.MEDIUM_GRAY, 1),
+                PANEL_BORDER = BorderFactory.createCompoundBorder(BorderFactory.createLineBorder(JIPipeDesktopLegacyModernMetalTheme.MEDIUM_GRAY, 1),
                         BorderFactory.createEmptyBorder(1, 1, 1, 1));
             } else {
                 PANEL_BORDER = BorderFactory.createCompoundBorder(BorderFactory.createLineBorder(Color.DARK_GRAY, 1),
@@ -310,7 +309,7 @@ public class UIUtils {
 
     public static Border createPanelBorder(int left, int top, int right, int bottom) {
         if (!DARK_THEME) {
-            return BorderFactory.createCompoundBorder(BorderFactory.createLineBorder(JIPipeDesktopModernMetalTheme.MEDIUM_GRAY, 1),
+            return BorderFactory.createCompoundBorder(BorderFactory.createLineBorder(JIPipeDesktopLegacyModernMetalTheme.MEDIUM_GRAY, 1),
                     BorderFactory.createEmptyBorder(top, left, bottom, right));
         } else {
             return BorderFactory.createCompoundBorder(BorderFactory.createLineBorder(Color.DARK_GRAY, 1),
@@ -335,7 +334,7 @@ public class UIUtils {
     }
 
     public static void addBalloonToComponent(AbstractButton button, String text) {
-        EdgedBalloonStyle style = new EdgedBalloonStyle(UIManager.getColor("TextField.background"), JIPipeDesktopModernMetalTheme.PRIMARY5);
+        EdgedBalloonStyle style = new EdgedBalloonStyle(UIManager.getColor("TextField.background"), JIPipeDesktopLegacyModernMetalTheme.PRIMARY5);
         final BalloonTip balloonTip = new BalloonTip(
                 button,
                 new JLabel(text.startsWith("<html>") ? text : StringUtils.wordWrappedHTML(text, 100)),

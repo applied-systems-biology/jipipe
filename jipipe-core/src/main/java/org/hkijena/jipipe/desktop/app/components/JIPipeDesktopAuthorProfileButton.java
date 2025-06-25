@@ -9,7 +9,7 @@ import org.hkijena.jipipe.api.registries.JIPipeApplicationSettingsRegistry;
 import org.hkijena.jipipe.desktop.app.JIPipeDesktopProjectWorkbench;
 import org.hkijena.jipipe.desktop.app.JIPipeDesktopWorkbench;
 import org.hkijena.jipipe.desktop.app.JIPipeDesktopWorkbenchAccess;
-import org.hkijena.jipipe.desktop.commons.theme.JIPipeDesktopModernMetalTheme;
+import org.hkijena.jipipe.desktop.commons.theme.JIPipeDesktopLegacyModernMetalTheme;
 import org.hkijena.jipipe.plugins.parameters.api.optional.OptionalParameter;
 import org.hkijena.jipipe.plugins.settings.JIPipeProjectAuthorsApplicationSettings;
 import org.hkijena.jipipe.utils.UIUtils;
@@ -72,7 +72,7 @@ public class JIPipeDesktopAuthorProfileButton extends JButton implements JIPipeD
     }
 
     private void initializeBalloon() {
-        EdgedBalloonStyle style = new EdgedBalloonStyle(UIManager.getColor("TextField.background"), JIPipeDesktopModernMetalTheme.PRIMARY5);
+        EdgedBalloonStyle style = new EdgedBalloonStyle(UIManager.getColor("TextField.background"), JIPipeDesktopLegacyModernMetalTheme.PRIMARY5);
         JPanel content = new JPanel(new BorderLayout(8, 8));
         content.setOpaque(false);
         content.add(UIUtils.createJLabel("Missing author information", 16), BorderLayout.NORTH);

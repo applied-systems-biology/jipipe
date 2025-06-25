@@ -17,7 +17,7 @@ import ij.plugin.filter.GaussianBlur;
 import ij.process.ByteProcessor;
 import ij.process.ColorProcessor;
 import org.hkijena.jipipe.api.validation.JIPipeValidationRuntimeException;
-import org.hkijena.jipipe.desktop.commons.theme.JIPipeDesktopModernMetalTheme;
+import org.hkijena.jipipe.desktop.commons.theme.JIPipeDesktopLegacyModernMetalTheme;
 
 import javax.imageio.ImageIO;
 import java.awt.*;
@@ -170,7 +170,7 @@ public class BufferedImageUtils {
     }
 
     public static BufferedImage convertAlphaToCheckerboard(Image originalImage, int checkerSize) {
-        return convertAlphaToCheckerboard(originalImage, checkerSize, Color.WHITE, JIPipeDesktopModernMetalTheme.GRAY);
+        return convertAlphaToCheckerboard(originalImage, checkerSize, Color.WHITE, JIPipeDesktopLegacyModernMetalTheme.GRAY);
     }
 
     public static BufferedImage convertAlphaToCheckerboard(Image originalImage, int checkerSize, Color checkerColor1, Color checkerColor2) {

@@ -16,7 +16,7 @@ package org.hkijena.jipipe.desktop.app.ploteditor;
 import org.hkijena.jipipe.desktop.app.JIPipeDesktopWorkbench;
 import org.hkijena.jipipe.desktop.app.JIPipeDesktopWorkbenchPanel;
 import org.hkijena.jipipe.desktop.commons.components.JIPipeDesktopParameterFormPanel;
-import org.hkijena.jipipe.desktop.commons.theme.JIPipeDesktopModernMetalTheme;
+import org.hkijena.jipipe.desktop.commons.theme.JIPipeDesktopLegacyModernMetalTheme;
 import org.hkijena.jipipe.utils.UIUtils;
 
 import javax.swing.*;
@@ -55,7 +55,7 @@ public class JIPipeDesktopPlotSeriesEditorUI extends JIPipeDesktopWorkbenchPanel
         JPanel titlePanel = new JPanel();
         titlePanel.setLayout(new BoxLayout(titlePanel, BoxLayout.LINE_AXIS));
         titlePanel.setBorder(UIUtils.createControlBorder());
-        titlePanel.setBackground(JIPipeDesktopModernMetalTheme.MEDIUM_GRAY);
+        titlePanel.setBackground(JIPipeDesktopLegacyModernMetalTheme.MEDIUM_GRAY);
         titlePanel.setOpaque(true);
 
         moveDownButton = new JButton(UIUtils.getIconFromResources("actions/caret-down.png"));

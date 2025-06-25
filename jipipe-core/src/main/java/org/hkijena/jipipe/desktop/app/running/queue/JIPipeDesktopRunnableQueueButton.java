@@ -20,7 +20,7 @@ import org.hkijena.jipipe.api.run.JIPipeRunnableWorker;
 import org.hkijena.jipipe.desktop.app.JIPipeDesktopWorkbench;
 import org.hkijena.jipipe.desktop.app.JIPipeDesktopWorkbenchAccess;
 import org.hkijena.jipipe.desktop.commons.components.icons.JIPipeDesktopRunnableQueueSpinnerIcon;
-import org.hkijena.jipipe.desktop.commons.theme.JIPipeDesktopModernMetalTheme;
+import org.hkijena.jipipe.desktop.commons.theme.JIPipeDesktopLegacyModernMetalTheme;
 import org.hkijena.jipipe.utils.UIUtils;
 
 import javax.swing.*;
@@ -220,7 +220,7 @@ public class JIPipeDesktopRunnableQueueButton extends JButton implements JIPipeD
                         perc = 0;
                     if (perc > 1)
                         perc = 1;
-                    g.setColor(JIPipeDesktopModernMetalTheme.PRIMARY5);
+                    g.setColor(JIPipeDesktopLegacyModernMetalTheme.PRIMARY5);
                     g.fillRect(15, getHeight() - 6, (int) ((getWidth() - 15 * 2) * perc), 2);
                 }
             } else {
@@ -232,7 +232,7 @@ public class JIPipeDesktopRunnableQueueButton extends JButton implements JIPipeD
                         perc = 0;
                     if (perc > 1)
                         perc = 1;
-                    g.setColor(JIPipeDesktopModernMetalTheme.PRIMARY5);
+                    g.setColor(JIPipeDesktopLegacyModernMetalTheme.PRIMARY5);
                     g.fillRect(22, getHeight() - 4, (int) ((getWidth() - 22) * perc), 2);
                 }
             }

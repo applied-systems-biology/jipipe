@@ -59,7 +59,7 @@ import org.hkijena.jipipe.desktop.app.settings.JIPipeDesktopRuntimePartitionList
 import org.hkijena.jipipe.desktop.commons.components.JIPipeDesktopAddAlgorithmSlotPanel;
 import org.hkijena.jipipe.desktop.commons.components.JIPipeDesktopZoomViewPort;
 import org.hkijena.jipipe.desktop.commons.components.renderers.JIPipeDesktopDropShadowRenderer;
-import org.hkijena.jipipe.desktop.commons.theme.JIPipeDesktopModernMetalTheme;
+import org.hkijena.jipipe.desktop.commons.theme.JIPipeDesktopLegacyModernMetalTheme;
 import org.hkijena.jipipe.plugins.core.nodes.JIPipeCommentNode;
 import org.hkijena.jipipe.plugins.parameters.library.roi.Anchor;
 import org.hkijena.jipipe.plugins.settings.JIPipeGraphEditorUIApplicationSettings;
@@ -2707,7 +2707,7 @@ public class JIPipeDesktopGraphCanvasUI extends JLayeredPane implements JIPipeDe
         if (edgeIds.isEmpty()) {
             return;
         }
-        g.setPaint(JIPipeDesktopModernMetalTheme.PRIMARY5);
+        g.setPaint(JIPipeDesktopLegacyModernMetalTheme.PRIMARY5);
         g.setStroke(new BasicStroke((int) Math.round(2 * zoom), BasicStroke.CAP_ROUND, BasicStroke.JOIN_ROUND));
 
         for (JIPipeDataSlot dataSlot : highlightedEdges.keySet()) {

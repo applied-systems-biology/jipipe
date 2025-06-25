@@ -18,7 +18,7 @@ import org.hkijena.jipipe.api.events.AbstractJIPipeEvent;
 import org.hkijena.jipipe.api.events.JIPipeEventEmitter;
 import org.hkijena.jipipe.desktop.commons.components.markup.JIPipeDesktopMarkdownReader;
 import org.hkijena.jipipe.desktop.commons.components.tabs.JIPipeDesktopTabPane;
-import org.hkijena.jipipe.desktop.commons.theme.JIPipeDesktopModernMetalTheme;
+import org.hkijena.jipipe.desktop.commons.theme.JIPipeDesktopLegacyModernMetalTheme;
 import org.hkijena.jipipe.plugins.parameters.library.markup.MarkdownText;
 import org.hkijena.jipipe.utils.ColorUtils;
 import org.hkijena.jipipe.utils.JIPipeDesktopSplitPane;
@@ -736,7 +736,7 @@ public class JIPipeDesktopFormPanel extends JPanel {
         public GroupHeaderPanel(String text, Icon icon, int marginTop) {
             this.marginTop = marginTop;
 
-            this.backgroundColor = ColorUtils.mix(JIPipeDesktopModernMetalTheme.PRIMARY5, ColorUtils.scaleHSV(UIManager.getColor("Panel.background"), 1, 1, 0.98f), 0.92);
+            this.backgroundColor = ColorUtils.mix(JIPipeDesktopLegacyModernMetalTheme.PRIMARY5, ColorUtils.scaleHSV(UIManager.getColor("Panel.background"), 1, 1, 0.98f), 0.92);
             this.borderColor = backgroundColor;
 
             setBorder(BorderFactory.createEmptyBorder(marginTop, 0, 8, 0));

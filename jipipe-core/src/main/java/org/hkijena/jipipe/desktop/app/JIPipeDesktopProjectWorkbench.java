@@ -64,7 +64,7 @@ import org.hkijena.jipipe.desktop.commons.components.markup.JIPipeDesktopMarkdow
 import org.hkijena.jipipe.desktop.commons.components.tabs.JIPipeDesktopTabPane;
 import org.hkijena.jipipe.desktop.commons.notifications.JIPipeDesktopNotificationButton;
 import org.hkijena.jipipe.desktop.commons.notifications.JIPipeDesktopWorkbenchNotificationInboxUI;
-import org.hkijena.jipipe.desktop.commons.theme.JIPipeDesktopModernMetalTheme;
+import org.hkijena.jipipe.desktop.commons.theme.JIPipeDesktopLegacyModernMetalTheme;
 import org.hkijena.jipipe.plugins.parameters.library.markup.HTMLText;
 import org.hkijena.jipipe.plugins.parameters.library.markup.MarkdownText;
 import org.hkijena.jipipe.plugins.settings.*;
@@ -80,7 +80,6 @@ import java.awt.*;
 import java.awt.event.KeyEvent;
 import java.awt.event.WindowAdapter;
 import java.awt.event.WindowEvent;
-import java.io.IOException;
 import java.net.URI;
 import java.nio.file.Files;
 import java.nio.file.Path;
@@ -229,7 +228,7 @@ public class JIPipeDesktopProjectWorkbench extends JPanel implements JIPipeDeskt
                 documentTabPane.selectSingletonTab(TAB_PROJECT_OVERVIEW);
 
                 // Display message popup for the user
-                EdgedBalloonStyle style = new EdgedBalloonStyle(UIManager.getColor("TextField.background"), JIPipeDesktopModernMetalTheme.PRIMARY5);
+                EdgedBalloonStyle style = new EdgedBalloonStyle(UIManager.getColor("TextField.background"), JIPipeDesktopLegacyModernMetalTheme.PRIMARY5);
                 JPanel content = new JPanel(new BorderLayout(8, 8));
                 content.setOpaque(false);
                 content.add(UIUtils.createJLabel("JIPipe switched you to the project overview", 16), BorderLayout.NORTH);
