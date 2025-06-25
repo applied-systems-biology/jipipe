@@ -399,11 +399,7 @@ public class ScriptDesktopParameterEditorUI extends JIPipeDesktopParameterEditor
             timer.start();
 
             // Open the standard editor
-            try {
-                Desktop.getDesktop().open(targetFile.toFile());
-            } catch (IOException e) {
-                throw new RuntimeException(e);
-            }
+            UIUtils.desktopOpenFile(targetFile.toFile());
         }
 
         private void updateWatchService() {

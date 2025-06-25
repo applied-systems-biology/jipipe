@@ -78,6 +78,7 @@ import java.awt.datatransfer.StringSelection;
 import java.awt.datatransfer.Transferable;
 import java.awt.event.*;
 import java.awt.image.BufferedImage;
+import java.io.File;
 import java.io.IOException;
 import java.net.URI;
 import java.net.URISyntaxException;
@@ -323,13 +324,7 @@ public class UIUtils {
                 if (e.getDescription() != null && e.getDescription().startsWith("#")) {
                     // Not supported
                 } else {
-                    if (Desktop.isDesktopSupported()) {
-                        try {
-                            Desktop.getDesktop().browse(e.getURL().toURI());
-                        } catch (Exception e1) {
-                            throw new RuntimeException(e1);
-                        }
-                    }
+                    desktopOpenURL(e.getURL().toString(), true);
                 }
             }
         });
@@ -2087,15 +2082,95 @@ public class UIUtils {
     private static void addHyperlinkListener(JTextPane textPane) {
         textPane.addHyperlinkListener(e -> {
             if (e.getEventType() == HyperlinkEvent.EventType.ACTIVATED) {
-                if (Desktop.isDesktopSupported()) {
-                    try {
-                        Desktop.getDesktop().browse(e.getURL().toURI());
-                    } catch (Exception e1) {
-                        throw new RuntimeException(e1);
-                    }
-                }
+                desktopOpenURL(e.getURL().toString(), true);
             }
         });
+    }
+
+    public static void desktopOpenURL(URI url, boolean promptUser) {
+        desktopOpenURL(url.toString(), promptUser);
+    }
+
+    public static void desktopOpenURL(String url, boolean promptUser) {
+        if (promptUser) {
+            int response = JOptionPane.showConfirmDialog(null,
+                    "Do you want to open this URL?\n" + url,
+                    "Open URL",
+                    JOptionPane.YES_NO_OPTION);
+            if (response != JOptionPane.YES_OPTION) {
+                return;
+            }
+        }
+
+        try {
+            if (Desktop.isDesktopSupported() && Desktop.getDesktop().isSupported(Desktop.Action.BROWSE)) {
+                Desktop.getDesktop().browse(URI.create(url));
+                return;
+            }
+        } catch (Exception e) {
+            System.err.println("Desktop browse failed: " + e.getMessage());
+        }
+
+        if (!desktopTryPlatformSpecificOpen(url)) {
+            desktopFallbackToClipboard(url, "URL");
+        }
+    }
+
+    public static void desktopOpenFile(Path file) {
+        desktopOpenFile(file.toFile());
+    }
+
+    public static void desktopOpenFile(File file) {
+        String path = file.getAbsolutePath();
+        try {
+            if (Desktop.isDesktopSupported() && Desktop.getDesktop().isSupported(Desktop.Action.OPEN)) {
+                Desktop.getDesktop().open(file);
+                return;
+            }
+        } catch (Exception e) {
+            System.err.println("Desktop open failed: " + e.getMessage());
+        }
+
+        if (!desktopTryPlatformSpecificOpen(path)) {
+            desktopFallbackToClipboard(path, "file path");
+        }
+    }
+
+    private static boolean desktopTryPlatformSpecificOpen(String target) {
+        ProcessBuilder pb = null;
+
+        if (SystemUtils.IS_OS_WINDOWS) {
+            pb = new ProcessBuilder("rundll32", "url.dll,FileProtocolHandler", target);
+        } else if (SystemUtils.IS_OS_MAC) {
+            pb = new ProcessBuilder("open", target);
+        } else if (SystemUtils.IS_OS_LINUX || SystemUtils.IS_OS_UNIX) {
+            pb = new ProcessBuilder("xdg-open", target);
+        }
+
+        if (pb != null) {
+            try {
+                pb.start();
+                return true;
+            } catch (IOException e) {
+                System.err.println("Platform-specific open failed: " + e.getMessage());
+            }
+        }
+
+        return false;
+    }
+
+    private static void desktopFallbackToClipboard(String text, String label) {
+        try {
+            Toolkit.getDefaultToolkit()
+                    .getSystemClipboard()
+                    .setContents(new StringSelection(text), null);
+            JOptionPane.showMessageDialog(null,
+                    "Could not open the " + label + ". The " + label + " has been copied to your clipboard:\n" + text,
+                    "Fallback: Copied to Clipboard",
+                    JOptionPane.INFORMATION_MESSAGE);
+        } catch (HeadlessException | IllegalStateException e) {
+            System.err.println("Clipboard fallback failed: " + e.getMessage());
+        }
     }
 
     /**
@@ -2434,32 +2509,6 @@ public class UIUtils {
         }
 
         return ret;
-    }
-
-    /**
-     * Opens a website with given URL
-     *
-     * @param url the URL
-     */
-    public static void openWebsite(String url) {
-        try {
-            Desktop.getDesktop().browse(new URI(url));
-        } catch (IOException | URISyntaxException e) {
-            IJ.handleException(e);
-        }
-    }
-
-    /**
-     * Opens a website with given URL
-     *
-     * @param path the file
-     */
-    public static void openFileInNative(Path path) {
-        try {
-            Desktop.getDesktop().open(path.toFile());
-        } catch (IOException e) {
-            IJ.handleException(e);
-        }
     }
 
     /**

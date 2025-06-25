@@ -53,7 +53,6 @@ import org.hkijena.jipipe.utils.json.JsonUtils;
 import org.jgrapht.graph.DefaultEdge;
 import org.jgrapht.traverse.TopologicalOrderIterator;
 
-import java.awt.*;
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
@@ -886,11 +885,7 @@ public class JIPipeGraphRun extends AbstractJIPipeRunnable implements JIPipeGrap
                         "The inputs and graph were exported to " + outputDir,
                 new JIPipeNotificationAction("Open directory", "Opens the directory containing the inputs",
                         UIUtils.getIconFromResources("actions/document-open-folder.png"), workbench -> {
-                    try {
-                        Desktop.getDesktop().open(outputDir.toFile());
-                    } catch (IOException e) {
-                        IJ.handleException(e);
-                    }
+                    UIUtils.desktopOpenFile(outputDir.toFile());
                 })));
 
         progressInfo = progressInfo.resolve("Export failed inputs");

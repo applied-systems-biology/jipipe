@@ -217,7 +217,7 @@ public class JIPipeDesktopWelcomePanel extends JIPipeDesktopProjectWorkbenchPane
         JButton openWebsiteButton = new JButton("Visit our website", UIUtils.getIconFromResources("actions/web-browser.png"));
         openWebsiteButton.setAlignmentY(JComponent.BOTTOM_ALIGNMENT);
         openWebsiteButton.setToolTipText("https://www.jipipe.org/");
-        openWebsiteButton.addActionListener(e -> UIUtils.openWebsite("https://www.jipipe.org/"));
+        openWebsiteButton.addActionListener(e -> UIUtils.desktopOpenURL("https://www.jipipe.org/", true));
         openWebsiteButton.setOpaque(false);
         openWebsiteButton.setBackground(new Color(0, 0, 0, 0));
         toolBar.add(openWebsiteButton);
@@ -226,7 +226,7 @@ public class JIPipeDesktopWelcomePanel extends JIPipeDesktopProjectWorkbenchPane
         JButton openCommunityButton = new JButton("Community", UIUtils.getIconFromResources("actions/dialog-messages.png"));
         openCommunityButton.setAlignmentY(JComponent.BOTTOM_ALIGNMENT);
         openCommunityButton.setToolTipText("https://forum.image.sc/tag/jipipe");
-        openCommunityButton.addActionListener(e -> UIUtils.openWebsite("https://forum.image.sc/tag/jipipe"));
+        openCommunityButton.addActionListener(e -> UIUtils.desktopOpenURL("https://forum.image.sc/tag/jipipe", true));
         openCommunityButton.setOpaque(false);
         openCommunityButton.setBackground(new Color(0, 0, 0, 0));
         toolBar.add(openCommunityButton);
@@ -235,7 +235,7 @@ public class JIPipeDesktopWelcomePanel extends JIPipeDesktopProjectWorkbenchPane
         JButton openSourceCodeButton = new JButton("Source code", UIUtils.getIconFromResources("actions/dialog-xml-editor.png"));
         openSourceCodeButton.setAlignmentY(JComponent.BOTTOM_ALIGNMENT);
         openSourceCodeButton.setToolTipText("https://github.com/applied-systems-biology/jipipe/");
-        openSourceCodeButton.addActionListener(e -> UIUtils.openWebsite("https://github.com/applied-systems-biology/jipipe/"));
+        openSourceCodeButton.addActionListener(e -> UIUtils.desktopOpenURL("https://github.com/applied-systems-biology/jipipe/", true));
         openSourceCodeButton.setOpaque(false);
         openSourceCodeButton.setBackground(new Color(0, 0, 0, 0));
         toolBar.add(openSourceCodeButton);
@@ -244,7 +244,7 @@ public class JIPipeDesktopWelcomePanel extends JIPipeDesktopProjectWorkbenchPane
         JButton reportIssueButton = new JButton("Report issue", UIUtils.getIconFromResources("actions/mail-message.png"));
         reportIssueButton.setAlignmentY(JComponent.BOTTOM_ALIGNMENT);
         reportIssueButton.setToolTipText("https://github.com/applied-systems-biology/jipipe/issues");
-        reportIssueButton.addActionListener(e -> UIUtils.openWebsite("https://github.com/applied-systems-biology/jipipe/issues"));
+        reportIssueButton.addActionListener(e -> UIUtils.desktopOpenURL("https://github.com/applied-systems-biology/jipipe/issues", true));
         reportIssueButton.setOpaque(false);
         reportIssueButton.setBackground(new Color(0, 0, 0, 0));
         toolBar.add(reportIssueButton);

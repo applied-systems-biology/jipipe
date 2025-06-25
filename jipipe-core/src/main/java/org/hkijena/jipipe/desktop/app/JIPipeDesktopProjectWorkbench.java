@@ -899,11 +899,7 @@ public class JIPipeDesktopProjectWorkbench extends JPanel implements JIPipeDeskt
     }
 
     private void openManual() {
-        try {
-            Desktop.getDesktop().browse(URI.create("https://www.jipipe.org/"));
-        } catch (IOException e) {
-            throw new RuntimeException(e);
-        }
+        UIUtils.desktopOpenURL(URI.create("https://www.jipipe.org/documentation"), true);
     }
 
     private void archiveProject() {
@@ -990,7 +986,7 @@ public class JIPipeDesktopProjectWorkbench extends JPanel implements JIPipeDeskt
                     "Open project folder", JOptionPane.ERROR_MESSAGE);
             return;
         }
-        UIUtils.openFileInNative(getProject().getWorkDirectory());
+        UIUtils.desktopOpenFile(getProject().getWorkDirectory());
     }
 
     public void openCacheBrowser() {

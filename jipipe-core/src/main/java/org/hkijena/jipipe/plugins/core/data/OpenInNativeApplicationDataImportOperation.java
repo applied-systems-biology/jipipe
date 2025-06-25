@@ -73,7 +73,7 @@ public class OpenInNativeApplicationDataImportOperation implements JIPipeLegacyD
             return null;
         Path targetFile = PathUtils.findFileByExtensionIn(rowStorageFolder, extensions);
         if (targetFile != null) {
-            UIUtils.openFileInNative(targetFile);
+            UIUtils.desktopOpenFile(targetFile);
         }
         return null;
     }

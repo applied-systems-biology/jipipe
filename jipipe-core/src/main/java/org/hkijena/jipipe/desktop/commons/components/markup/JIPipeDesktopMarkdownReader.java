@@ -135,13 +135,7 @@ public class JIPipeDesktopMarkdownReader extends JPanel {
                 if (e.getDescription() != null && e.getDescription().startsWith("#")) {
                     SwingUtilities.invokeLater(() -> scrollToReference(e.getDescription().substring(1)));
                 } else {
-                    if (Desktop.isDesktopSupported()) {
-                        try {
-                            Desktop.getDesktop().browse(e.getURL().toURI());
-                        } catch (Exception e1) {
-                            throw new RuntimeException(e1);
-                        }
-                    }
+                    UIUtils.desktopOpenURL(e.getURL().toString(), true);
                 }
             }
         });

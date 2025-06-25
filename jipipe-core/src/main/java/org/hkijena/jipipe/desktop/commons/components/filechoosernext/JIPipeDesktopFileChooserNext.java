@@ -570,11 +570,7 @@ public class JIPipeDesktopFileChooserNext extends JPanel {
 
         if (path != null) {
             entriesPopupMenu.add(UIUtils.createMenuItem("Open in default application", "Opens the selected item in the system-wide default application", UIUtils.getIconFromResources("actions/fileopen.png"), () -> {
-                try {
-                    Desktop desktop = Desktop.getDesktop();
-                    desktop.open(path.toFile());
-                } catch (Exception ex) {
-                }
+                UIUtils.desktopOpenFile(path);
             }));
             entriesPopupMenu.add(UIUtils.createMenuItem("Copy path", "Copies the full path to the clipboard", UIUtils.getIconFromResources("actions/url-copy.png"), () -> {
                 UIUtils.copyToClipboard(path.toString());
@@ -589,11 +585,7 @@ public class JIPipeDesktopFileChooserNext extends JPanel {
     }
 
     private void openCurrentDirectoryInSystem() {
-        try {
-            Desktop desktop = Desktop.getDesktop();
-            desktop.open(currentDirectory.toFile());
-        } catch (Exception ex) {
-        }
+        UIUtils.desktopOpenFile(currentDirectory);
     }
 
     private void navigateSelected() {

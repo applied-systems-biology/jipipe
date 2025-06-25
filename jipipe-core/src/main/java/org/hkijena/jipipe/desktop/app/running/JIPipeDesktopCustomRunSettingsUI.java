@@ -397,19 +397,11 @@ public class JIPipeDesktopCustomRunSettingsUI extends JIPipeDesktopProjectWorkbe
     }
 
     private void openLog() {
-        try {
-            Desktop.getDesktop().open(run.getConfiguration().getOutputPath().resolve("log.txt").toFile());
-        } catch (IOException e) {
-            throw new RuntimeException(e);
-        }
+        UIUtils.desktopOpenFile(run.getConfiguration().getOutputPath().resolve("log.txt").toFile());
     }
 
     private void openOutputFolder() {
-        try {
-            Desktop.getDesktop().open(run.getConfiguration().getOutputPath().toFile());
-        } catch (IOException e) {
-            throw new RuntimeException(e);
-        }
+        UIUtils.desktopOpenFile(run.getConfiguration().getOutputPath().toFile());
     }
 
     private void openResults() {

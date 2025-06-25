@@ -142,7 +142,7 @@ public class CLIJControlPanel extends JIPipeDesktopWorkbenchPanel {
 
         JButton openWebsiteButton = new JButton("CLIJ2 website", UIUtils.getIconFromResources("actions/web-browser.png"));
         openWebsiteButton.setToolTipText("https://clij.github.io/");
-        openWebsiteButton.addActionListener(e -> UIUtils.openWebsite("https://clij.github.io/"));
+        openWebsiteButton.addActionListener(e -> UIUtils.desktopOpenURL("https://clij.github.io/", true));
         openWebsiteButton.setOpaque(false);
         openWebsiteButton.setBackground(new Color(0, 0, 0, 0));
         toolBar.add(openWebsiteButton);

@@ -129,8 +129,8 @@ public class JIPipeDesktopRunSingleAlgorithmWindow extends JFrame implements JIP
         manualButton.setToolTipText("Opens the documentation for the single algorithm run feature. " + HELP_URL);
         manualButton.addActionListener(e -> {
             try {
-                Desktop.getDesktop().browse(new URI(HELP_URL));
-            } catch (IOException | URISyntaxException ex) {
+                UIUtils.desktopOpenURL(new URI(HELP_URL), true);
+            } catch (URISyntaxException ex) {
                 ex.printStackTrace();
             }
         });

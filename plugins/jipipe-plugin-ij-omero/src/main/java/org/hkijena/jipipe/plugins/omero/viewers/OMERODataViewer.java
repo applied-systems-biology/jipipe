@@ -33,11 +33,7 @@ public class OMERODataViewer extends JIPipeDesktopDataViewer {
 
     private void openUrl() {
         if (!StringUtils.isEmpty(currentUrl)) {
-            try {
-                Desktop.getDesktop().browse(new URI(currentUrl));
-            } catch (Exception e) {
-                UIUtils.showErrorDialog(getDesktopWorkbench(), this, e);
-            }
+            UIUtils.desktopOpenURL(currentUrl, false);
         }
     }
 

@@ -207,7 +207,7 @@ public class JIPipeDesktopResultDataSlotTableUI extends JIPipeDesktopProjectWork
     }
 
     private void openResultsFolder() {
-        UIUtils.openFileInNative(slot.getSlotStoragePath());
+        UIUtils.desktopOpenFile(slot.getSlotStoragePath());
     }
 
     private void exportFilesByMetadata() {
