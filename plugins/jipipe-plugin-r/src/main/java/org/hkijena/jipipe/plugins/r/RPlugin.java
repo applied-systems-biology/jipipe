@@ -21,6 +21,7 @@ import org.hkijena.jipipe.JIPipeDependency;
 import org.hkijena.jipipe.JIPipeJavaPlugin;
 import org.hkijena.jipipe.JIPipeMutableDependency;
 import org.hkijena.jipipe.api.JIPipeProgressInfo;
+import org.hkijena.jipipe.api.parameters.JIPipeParameterArchetype;
 import org.hkijena.jipipe.api.project.JIPipeProject;
 import org.hkijena.jipipe.plugins.JIPipePrepackagedDefaultJavaPlugin;
 import org.hkijena.jipipe.plugins.core.CorePlugin;
@@ -124,7 +125,7 @@ public class RPlugin extends JIPipePrepackagedDefaultJavaPlugin {
                 UIUtils.getIconFromResources("apps/rlogo_icon.png"));
         registerParameterType("optional-r-environment",
                 OptionalREnvironment.class,
-                null,
+                JIPipeParameterArchetype.OptionalValue, null,
                 null,
                 "Optional R environment",
                 "An optional R environment",
@@ -136,7 +137,7 @@ public class RPlugin extends JIPipePrepackagedDefaultJavaPlugin {
 
         registerParameterType("r-script",
                 RScriptParameter.class,
-                null,
+                JIPipeParameterArchetype.Value, null,
                 null,
                 "R script",
                 "An R script",

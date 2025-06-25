@@ -312,11 +312,7 @@ public class JIPipeDesktopArtifactManagerUI extends JIPipeDesktopWorkbenchPanel 
         } catch (IOException e) {
             throw new RuntimeException(e);
         }
-        try {
-            Desktop.getDesktop().open(localRepositoryPath.toFile());
-        } catch (IOException e) {
-            throw new RuntimeException(e);
-        }
+        UIUtils.desktopOpenFile(localRepositoryPath.toFile());
     }
 
     private void updateArtifactsList() {

@@ -58,11 +58,7 @@ public class OpenContainingFolderDataImportOperation implements JIPipeLegacyData
 
     @Override
     public JIPipeData show(JIPipeDataSlot slot, JIPipeDataTableRowInfo row, String dataAnnotationName, Path rowStorageFolder, String compartmentName, String algorithmName, String displayName, JIPipeDesktopWorkbench workbench, JIPipeProgressInfo progressInfo) {
-        try {
-            Desktop.getDesktop().open(Objects.requireNonNull(rowStorageFolder.toFile()));
-        } catch (IOException e) {
-            throw new RuntimeException(e);
-        }
+        UIUtils.desktopOpenFile(Objects.requireNonNull(rowStorageFolder.toFile()));
         return null;
     }
 }

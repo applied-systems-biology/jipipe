@@ -18,6 +18,7 @@ import org.hkijena.jipipe.JIPipeDependency;
 import org.hkijena.jipipe.JIPipeJavaPlugin;
 import org.hkijena.jipipe.JIPipeMutableDependency;
 import org.hkijena.jipipe.api.JIPipeProgressInfo;
+import org.hkijena.jipipe.api.parameters.JIPipeParameterArchetype;
 import org.hkijena.jipipe.plugins.JIPipePrepackagedDefaultJavaPlugin;
 import org.hkijena.jipipe.plugins.annotation.algorithms.*;
 import org.hkijena.jipipe.plugins.annotation.datasources.AnnotationTableFromFile;
@@ -94,7 +95,7 @@ public class AnnotationsPlugin extends JIPipePrepackagedDefaultJavaPlugin {
                 SimplifyAnnotationsAlgorithm.AnnotationRemovalMode.class,
                 "Combined annotation action",
                 "Determines how combined annotations are processed.");
-        registerParameterType("annotate-split-by-annotation:filter", AnnotationFilterExpression.class, "Annotation filter", "A filter expression");
+        registerParameterType("annotate-split-by-annotation:filter", AnnotationFilterExpression.class, JIPipeParameterArchetype.Value, "Annotation filter", "A filter expression");
 
         registerNodeType("merge-slots", MergeDataSlots.class);
         registerNodeType("annotation-table-from-file", AnnotationTableFromFile.class);

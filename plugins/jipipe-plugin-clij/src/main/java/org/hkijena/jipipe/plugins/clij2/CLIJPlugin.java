@@ -20,6 +20,7 @@ import org.hkijena.jipipe.*;
 import org.hkijena.jipipe.api.JIPipeAuthorMetadata;
 import org.hkijena.jipipe.api.JIPipeProgressInfo;
 import org.hkijena.jipipe.api.compat.DefaultImageJDataExporterUI;
+import org.hkijena.jipipe.api.parameters.JIPipeParameterArchetype;
 import org.hkijena.jipipe.plugins.JIPipePrepackagedDefaultJavaPlugin;
 import org.hkijena.jipipe.plugins.clij2.algorithms.Clij2ExecuteKernelIterating;
 import org.hkijena.jipipe.plugins.clij2.algorithms.Clij2ExecuteKernelSimpleIterating;
@@ -216,7 +217,7 @@ public class CLIJPlugin extends JIPipePrepackagedDefaultJavaPlugin {
     public void register(JIPipe jiPipe, Context context, JIPipeProgressInfo progressInfo) {
         registerParameterType("clij2:opencl-kernel",
                 OpenCLKernelScript.class,
-                null,
+                JIPipeParameterArchetype.Value, null,
                 null,
                 "OpenCL Kernel",
                 "A OpenCL kernel",

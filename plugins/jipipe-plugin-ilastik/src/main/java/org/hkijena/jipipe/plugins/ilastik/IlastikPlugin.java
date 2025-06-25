@@ -24,6 +24,7 @@ import org.hkijena.jipipe.api.artifacts.JIPipeArtifact;
 import org.hkijena.jipipe.api.artifacts.JIPipeArtifactRepositoryInstallArtifactRun;
 import org.hkijena.jipipe.api.artifacts.JIPipeLocalArtifact;
 import org.hkijena.jipipe.api.artifacts.JIPipeRemoteArtifact;
+import org.hkijena.jipipe.api.parameters.JIPipeParameterArchetype;
 import org.hkijena.jipipe.api.project.JIPipeProject;
 import org.hkijena.jipipe.api.validation.contexts.UnspecifiedValidationReportContext;
 import org.hkijena.jipipe.desktop.app.JIPipeDesktopWorkbench;
@@ -358,7 +359,7 @@ public class IlastikPlugin extends JIPipePrepackagedDefaultJavaPlugin {
                 RESOURCES.getIconFromResources("ilastik.png"));
         registerParameterType("optional-ilastik-environment",
                 OptionalIlastikEnvironment.class,
-                null,
+                JIPipeParameterArchetype.Value, null,
                 null,
                 "Optional Ilastik environment",
                 "An optional Ilastik environment",

@@ -197,7 +197,7 @@ public class JIPipeResultCopyFilesByMetadataExporterRun extends JIPipeDesktopWor
                     "Export slot data",
                     JOptionPane.YES_NO_OPTION,
                     JOptionPane.QUESTION_MESSAGE) == JOptionPane.YES_OPTION) {
-                UIUtils.openFileInNative(outputPath);
+                UIUtils.desktopOpenFile(outputPath);
             }
         }
     }

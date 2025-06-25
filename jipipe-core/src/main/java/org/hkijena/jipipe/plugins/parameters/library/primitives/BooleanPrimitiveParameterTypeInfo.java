@@ -13,7 +13,12 @@
 
 package org.hkijena.jipipe.plugins.parameters.library.primitives;
 
+import org.hkijena.jipipe.api.parameters.JIPipeParameterArchetype;
+import org.hkijena.jipipe.api.parameters.JIPipeParameterTypeAllowedValueInfo;
 import org.hkijena.jipipe.api.parameters.JIPipeParameterTypeInfo;
+
+import java.util.Collections;
+import java.util.List;
 
 /**
  * Info for {@link Boolean}
@@ -47,5 +52,15 @@ public class BooleanPrimitiveParameterTypeInfo implements JIPipeParameterTypeInf
     @Override
     public String getDescription() {
         return "A value that can be true or false";
+    }
+
+    @Override
+    public List<JIPipeParameterTypeAllowedValueInfo> getAllowedValues() {
+        return Collections.emptyList();
+    }
+
+    @Override
+    public JIPipeParameterArchetype getArchetype() {
+        return JIPipeParameterArchetype.Value;
     }
 }

@@ -16,6 +16,7 @@ package org.hkijena.jipipe.plugins.dataenvironment;
 import org.hkijena.jipipe.JIPipe;
 import org.hkijena.jipipe.JIPipeJavaPlugin;
 import org.hkijena.jipipe.api.JIPipeProgressInfo;
+import org.hkijena.jipipe.api.parameters.JIPipeParameterArchetype;
 import org.hkijena.jipipe.plugins.JIPipePrepackagedDefaultJavaPlugin;
 import org.hkijena.jipipe.plugins.parameters.library.markup.HTMLText;
 import org.hkijena.jipipe.plugins.parameters.library.primitives.list.StringList;
@@ -53,7 +54,7 @@ public class DataDirectoriesPlugin extends JIPipePrepackagedDefaultJavaPlugin {
                 UIUtils.getIconFromResources("actions/vcs-update-cvs-cervisia.png"));
         registerParameterType("optional-data-directory",
                 OptionalJIPipeDataDirectoryEnvironment.class,
-                "Optional data directory",
+                JIPipeParameterArchetype.OptionalValue, "Optional data directory",
                 "Directory containing data");
     }
 

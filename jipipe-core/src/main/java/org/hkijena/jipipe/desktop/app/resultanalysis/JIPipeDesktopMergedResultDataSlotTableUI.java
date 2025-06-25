@@ -207,11 +207,11 @@ public class JIPipeDesktopMergedResultDataSlotTableUI extends JIPipeDesktopProje
 
     private void openResultsFolder() {
         if (slots.size() == 1) {
-            UIUtils.openFileInNative(slots.get(0).getSlotStoragePath());
+            UIUtils.desktopOpenFile(slots.get(0).getSlotStoragePath());
         } else if (slots.stream().map(JIPipeDataSlot::getNode).distinct().count() == 1) {
-            UIUtils.openFileInNative(slots.get(0).getSlotStoragePath().getParent());
+            UIUtils.desktopOpenFile(slots.get(0).getSlotStoragePath().getParent());
         } else {
-            UIUtils.openFileInNative(storagePath);
+            UIUtils.desktopOpenFile(storagePath);
         }
     }
 

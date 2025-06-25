@@ -72,7 +72,7 @@ public class JIPipeDesktopDataTableToZIPExporterRun extends JIPipeDesktopWorkben
                     "Export data table as *.zip",
                     JOptionPane.YES_NO_OPTION,
                     JOptionPane.QUESTION_MESSAGE) == JOptionPane.YES_OPTION) {
-                UIUtils.openFileInNative(outputZipFile);
+                UIUtils.desktopOpenFile(outputZipFile);
             }
         }
     }

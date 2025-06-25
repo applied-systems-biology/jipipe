@@ -25,7 +25,7 @@ import javax.swing.*;
 public class OpenPathDataDisplayOperation implements JIPipeDesktopDataDisplayOperation {
     @Override
     public void display(JIPipeData data, String displayName, JIPipeDesktopWorkbench desktopWorkbench, JIPipeDataSource source) {
-        UIUtils.openFileInNative(((PathData) data).toPath());
+        UIUtils.desktopOpenFile(((PathData) data).toPath());
     }
 
     @Override

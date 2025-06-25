@@ -21,6 +21,7 @@ import org.hkijena.jipipe.JIPipeJavaPlugin;
 import org.hkijena.jipipe.JIPipeMutableDependency;
 import org.hkijena.jipipe.api.JIPipeAuthorMetadata;
 import org.hkijena.jipipe.api.JIPipeProgressInfo;
+import org.hkijena.jipipe.api.parameters.JIPipeParameterArchetype;
 import org.hkijena.jipipe.plugins.JIPipePrepackagedDefaultJavaPlugin;
 import org.hkijena.jipipe.plugins.core.CorePlugin;
 import org.hkijena.jipipe.plugins.filesystem.FilesystemPlugin;
@@ -147,13 +148,12 @@ public class TrackMatePlugin extends JIPipePrepackagedDefaultJavaPlugin {
     public void register(JIPipe jiPipe, Context context, JIPipeProgressInfo progressInfo) {
         PluginService service = context.getService(PluginService.class);
 
-        registerParameters();
-
         // Moved to different class to prevent crash if TrackMate is not available
         TrackMateUtils.registerSpotFeatures(progressInfo);
         TrackMateUtils.registerTrackFeatures(progressInfo);
         TrackMateUtils.registerEdgeFeatures(progressInfo);
 
+        registerParameters();
         registerDataTypes();
 
         // Moved to different class to prevent crash if TrackMate is not available
@@ -165,12 +165,12 @@ public class TrackMatePlugin extends JIPipePrepackagedDefaultJavaPlugin {
     }
 
     private void registerParameters() {
-        registerParameterType("trackmate-spot-feature", SpotFeature.class, "TrackMate spot feature", "A spot feature");
-        registerParameterType("trackmate-track-feature", TrackFeature.class, "TrackMate track feature", "A track feature");
-        registerParameterType("trackmate-edge-feature", EdgeFeature.class, "TrackMate edge feature", "An edge feature");
+        registerParameterType("trackmate-spot-feature", SpotFeature.class, JIPipeParameterArchetype.SingleSelect, "TrackMate spot feature", "A spot feature");
+        registerParameterType("trackmate-track-feature", TrackFeature.class, JIPipeParameterArchetype.SingleSelect, "TrackMate track feature", "A track feature");
+        registerParameterType("trackmate-edge-feature", EdgeFeature.class, JIPipeParameterArchetype.SingleSelect, "TrackMate edge feature", "An edge feature");
         registerParameterType("trackmate-spot-feature-penalty",
                 SpotFeaturePenaltyParameter.class,
-                SpotFeaturePenaltyParameter.List.class,
+                JIPipeParameterArchetype.SingleSelect, SpotFeaturePenaltyParameter.List.class,
                 null,
                 null,
                 "TrackMate spot feature penalty",
@@ -178,7 +178,7 @@ public class TrackMatePlugin extends JIPipePrepackagedDefaultJavaPlugin {
                 null);
         registerParameterType("trackmate-spot-feature-filter",
                 SpotFeatureFilterParameter.class,
-                SpotFeatureFilterParameter.List.class,
+                JIPipeParameterArchetype.SingleSelect, SpotFeatureFilterParameter.List.class,
                 null,
                 null,
                 "TrackMate spot feature filter",
@@ -186,7 +186,7 @@ public class TrackMatePlugin extends JIPipePrepackagedDefaultJavaPlugin {
                 null);
         registerParameterType("trackmate-track-feature-filter",
                 TrackFeatureFilterParameter.class,
-                TrackFeatureFilterParameter.List.class,
+                JIPipeParameterArchetype.SingleSelect, TrackFeatureFilterParameter.List.class,
                 null,
                 null,
                 "TrackMate track feature filter",

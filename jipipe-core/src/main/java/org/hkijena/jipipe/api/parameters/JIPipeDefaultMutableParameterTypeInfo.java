@@ -13,13 +13,15 @@
 
 package org.hkijena.jipipe.api.parameters;
 
+import java.util.ArrayList;
+import java.util.List;
 import java.util.function.Function;
 import java.util.function.Supplier;
 
 /**
  * Standard implementation of {@link JIPipeParameterTypeInfo}
  */
-public class JIPipeDefaultParameterTypeInfo implements JIPipeParameterTypeInfo {
+public class JIPipeDefaultMutableParameterTypeInfo implements JIPipeParameterTypeInfo {
 
     private String id;
     private Class<?> fieldClass;
@@ -27,6 +29,8 @@ public class JIPipeDefaultParameterTypeInfo implements JIPipeParameterTypeInfo {
     private Function<Object, Object> duplicateFunction;
     private String name;
     private String description;
+    private List<JIPipeParameterTypeAllowedValueInfo> allowedValues = new ArrayList<>();
+    private JIPipeParameterArchetype archetype = JIPipeParameterArchetype.Unknown;
 
 
     /**
@@ -36,14 +40,16 @@ public class JIPipeDefaultParameterTypeInfo implements JIPipeParameterTypeInfo {
      * @param duplicateFunction    a function that creates a deep copy
      * @param name                 the name
      * @param description          the description
+     * @param archetype the archetype
      */
-    public JIPipeDefaultParameterTypeInfo(String id, Class<?> fieldClass, Supplier<Object> newInstanceGenerator, Function<Object, Object> duplicateFunction, String name, String description) {
+    public JIPipeDefaultMutableParameterTypeInfo(String id, Class<?> fieldClass, Supplier<Object> newInstanceGenerator, Function<Object, Object> duplicateFunction, String name, String description, JIPipeParameterArchetype archetype) {
         this.id = id;
         this.fieldClass = fieldClass;
         this.newInstanceGenerator = newInstanceGenerator;
         this.duplicateFunction = duplicateFunction;
         this.name = name;
         this.description = description;
+        this.archetype = archetype;
     }
 
     @Override
@@ -76,5 +82,55 @@ public class JIPipeDefaultParameterTypeInfo implements JIPipeParameterTypeInfo {
     @Override
     public String getDescription() {
         return description;
+    }
+
+    public void setId(String id) {
+        this.id = id;
+    }
+
+    public void setFieldClass(Class<?> fieldClass) {
+        this.fieldClass = fieldClass;
+    }
+
+    public Supplier<Object> getNewInstanceGenerator() {
+        return newInstanceGenerator;
+    }
+
+    public void setNewInstanceGenerator(Supplier<Object> newInstanceGenerator) {
+        this.newInstanceGenerator = newInstanceGenerator;
+    }
+
+    public Function<Object, Object> getDuplicateFunction() {
+        return duplicateFunction;
+    }
+
+    public void setDuplicateFunction(Function<Object, Object> duplicateFunction) {
+        this.duplicateFunction = duplicateFunction;
+    }
+
+    public void setName(String name) {
+        this.name = name;
+    }
+
+    public void setDescription(String description) {
+        this.description = description;
+    }
+
+    @Override
+    public List<JIPipeParameterTypeAllowedValueInfo> getAllowedValues() {
+        return allowedValues;
+    }
+
+    public void setAllowedValues(List<JIPipeParameterTypeAllowedValueInfo> allowedValues) {
+        this.allowedValues = allowedValues;
+    }
+
+    @Override
+    public JIPipeParameterArchetype getArchetype() {
+        return archetype;
+    }
+
+    public void setArchetype(JIPipeParameterArchetype archetype) {
+        this.archetype = archetype;
     }
 }

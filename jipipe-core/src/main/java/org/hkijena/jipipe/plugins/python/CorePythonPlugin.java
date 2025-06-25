@@ -18,6 +18,7 @@ import org.hkijena.jipipe.JIPipeDependency;
 import org.hkijena.jipipe.JIPipeJavaPlugin;
 import org.hkijena.jipipe.JIPipeMutableDependency;
 import org.hkijena.jipipe.api.JIPipeProgressInfo;
+import org.hkijena.jipipe.api.parameters.JIPipeParameterArchetype;
 import org.hkijena.jipipe.api.project.JIPipeProject;
 import org.hkijena.jipipe.plugins.JIPipePrepackagedDefaultJavaPlugin;
 import org.hkijena.jipipe.plugins.parameters.library.jipipe.PluginCategoriesEnumParameter;
@@ -110,7 +111,7 @@ public class CorePythonPlugin extends JIPipePrepackagedDefaultJavaPlugin {
                 UIUtils.getIconFromResources("apps/python.png"));
         registerParameterType("optional-python-environment",
                 OptionalPythonEnvironment.class,
-                null,
+                JIPipeParameterArchetype.OptionalValue, null,
                 null,
                 "Optional Python environment",
                 "An optional Python environment",
@@ -126,7 +127,7 @@ public class CorePythonPlugin extends JIPipePrepackagedDefaultJavaPlugin {
                 UIUtils.getIconFromResources("actions/plugins.png"));
         registerParameterType("optional-" + JIPipePythonAdapterLibraryEnvironment.ENVIRONMENT_ID,
                 OptionalJIPipePythonAdapterLibraryEnvironment.class,
-                null,
+                JIPipeParameterArchetype.OptionalValue, null,
                 null,
                 "Optional JIPipe Python adapter library",
                 "An optional JIPipe Python adapter library",

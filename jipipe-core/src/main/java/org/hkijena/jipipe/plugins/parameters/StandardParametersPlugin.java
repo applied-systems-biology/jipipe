@@ -25,6 +25,7 @@ import org.hkijena.jipipe.api.JIPipeProgressInfo;
 import org.hkijena.jipipe.api.OptionalJIPipeAuthorMetadata;
 import org.hkijena.jipipe.api.grouping.JIPipeGraphWrapperAlgorithm;
 import org.hkijena.jipipe.api.nodes.JIPipeColumMatching;
+import org.hkijena.jipipe.api.parameters.JIPipeParameterArchetype;
 import org.hkijena.jipipe.api.parameters.JIPipeParameterCollection;
 import org.hkijena.jipipe.api.parameters.JIPipeParameterCollectionVisibilities;
 import org.hkijena.jipipe.api.runtimepartitioning.RuntimePartitionReferenceDesktopParameterEditorUI;
@@ -137,7 +138,7 @@ public class StandardParametersPlugin extends JIPipePrepackagedDefaultJavaPlugin
         registerParameterEditor(JIPipeParameterCollection.class, JIPipeParameterCollectionDesktopParameterEditorUI.class);
         registerParameterType("jipipe:imagej-update-site",
                 JIPipeImageJUpdateSiteDependency.class,
-                JIPipeImageJUpdateSiteDependency.List.class,
+                JIPipeParameterArchetype.Value, JIPipeImageJUpdateSiteDependency.List.class,
                 null,
                 null,
                 "ImageJ update site",
@@ -173,27 +174,27 @@ public class StandardParametersPlugin extends JIPipePrepackagedDefaultJavaPlugin
     }
 
     private void registerVectorParameters() {
-        registerParameterType("vector2d", Vector2dParameter.class, "2D Vector (Double)", "2D vector containing double values", VectorDesktopParameterEditorUI.class);
-        registerParameterType("vector2i", Vector2iParameter.class, "2D Vector (Integer)", "2D vector containing integer values", VectorDesktopParameterEditorUI.class);
-        registerParameterType("vector3d", Vector3dParameter.class, "3D Vector (Double)", "3D vector containing double values", VectorDesktopParameterEditorUI.class);
-        registerParameterType("vector3i", Vector3iParameter.class, "3D Vector (Integer)", "3D vector containing integer values", VectorDesktopParameterEditorUI.class);
-        registerParameterType("optional-vector2d", OptionalVector2dParameter.class, "Optional 2D Vector (Double)", "2D vector containing double values");
-        registerParameterType("optional-vector2i", OptionalVector2iParameter.class, "Optional 2D Vector (Integer)", "2D vector containing integers values");
-        registerParameterType("optional-vector3d", OptionalVector3dParameter.class, "Optional 3D Vector (Double)", "3D vector containing double values");
-        registerParameterType("optional-vector3i", OptionalVector3iParameter.class, "Optional 3D Vector (Double)", "3D vector containing integers values");
-        registerParameterType("vector2d-list", Vector2dParameter.List.class, "2D Vector list (Double)", "2D vector containing double values");
-        registerParameterType("vector2i-list", Vector2iParameter.List.class, "2D Vector list (Integer)", "2D vector containing integers values");
-        registerParameterType("vector3d-list", Vector3dParameter.List.class, "3D Vector list (Double)", "3D vector containing double values");
-        registerParameterType("vector3i-list", Vector3iParameter.List.class, "3D Vector list (Double)", "3D vector containing integers values");
+        registerParameterType("vector2d", Vector2dParameter.class, JIPipeParameterArchetype.Value, "2D Vector (Double)", "2D vector containing double values", VectorDesktopParameterEditorUI.class);
+        registerParameterType("vector2i", Vector2iParameter.class, JIPipeParameterArchetype.Value, "2D Vector (Integer)", "2D vector containing integer values", VectorDesktopParameterEditorUI.class);
+        registerParameterType("vector3d", Vector3dParameter.class, JIPipeParameterArchetype.Value, "3D Vector (Double)", "3D vector containing double values", VectorDesktopParameterEditorUI.class);
+        registerParameterType("vector3i", Vector3iParameter.class, JIPipeParameterArchetype.Value, "3D Vector (Integer)", "3D vector containing integer values", VectorDesktopParameterEditorUI.class);
+        registerParameterType("optional-vector2d", OptionalVector2dParameter.class, JIPipeParameterArchetype.OptionalValue, "Optional 2D Vector (Double)", "2D vector containing double values");
+        registerParameterType("optional-vector2i", OptionalVector2iParameter.class, JIPipeParameterArchetype.OptionalValue, "Optional 2D Vector (Integer)", "2D vector containing integers values");
+        registerParameterType("optional-vector3d", OptionalVector3dParameter.class, JIPipeParameterArchetype.OptionalValue, "Optional 3D Vector (Double)", "3D vector containing double values");
+        registerParameterType("optional-vector3i", OptionalVector3iParameter.class, JIPipeParameterArchetype.OptionalValue, "Optional 3D Vector (Double)", "3D vector containing integers values");
+        registerParameterType("vector2d-list", Vector2dParameter.List.class, JIPipeParameterArchetype.List, "2D Vector list (Double)", "2D vector containing double values");
+        registerParameterType("vector2i-list", Vector2iParameter.List.class, JIPipeParameterArchetype.List, "2D Vector list (Integer)", "2D vector containing integers values");
+        registerParameterType("vector3d-list", Vector3dParameter.List.class, JIPipeParameterArchetype.List, "3D Vector list (Double)", "3D vector containing double values");
+        registerParameterType("vector3i-list", Vector3iParameter.List.class, JIPipeParameterArchetype.List, "3D Vector list (Double)", "3D vector containing integers values");
     }
 
     private void registerImageParameters() {
-        registerParameterType("image", ImageParameter.class, "Image", "An image", ImageDesktopParameterEditorUI.class);
+        registerParameterType("image", ImageParameter.class, JIPipeParameterArchetype.Value, "Image", "An image", ImageDesktopParameterEditorUI.class);
     }
 
     private void registerQuantityParameters() {
-        registerParameterType("quantity", Quantity.class, "Quantity", "A value with a unit", QuantityDesktopParameterEditorUI.class);
-        registerParameterType("optional-quantity", OptionalQuantity.class, "Optional quantity", "A value with a unit");
+        registerParameterType("quantity", Quantity.class, JIPipeParameterArchetype.Value, "Quantity", "A value with a unit", QuantityDesktopParameterEditorUI.class);
+        registerParameterType("optional-quantity", OptionalQuantity.class, JIPipeParameterArchetype.OptionalValue, "Optional quantity", "A value with a unit");
         registerEnumParameterType("quantity-image-unit", Quantity.LengthUnit.class, "Length unit", "A length unit");
     }
 
@@ -201,14 +202,14 @@ public class StandardParametersPlugin extends JIPipePrepackagedDefaultJavaPlugin
         registerParameterEditor(NumberRangeParameter.class, NumberRangeDesktopParameterEditorUI.class);
         registerParameterType("number-range-float",
                 FloatNumberRangeParameter.class,
-                null,
+                JIPipeParameterArchetype.Range, null,
                 null,
                 "Number range (float)",
                 "A range of numbers",
                 null);
         registerParameterType("number-range-integer",
                 IntNumberRangeParameter.class,
-                null,
+                JIPipeParameterArchetype.Range, null,
                 null,
                 "Number range (int)",
                 "A range of numbers",
@@ -224,14 +225,14 @@ public class StandardParametersPlugin extends JIPipePrepackagedDefaultJavaPlugin
         registerParameterEditor(ScriptParameter.class, ScriptDesktopParameterEditorUI.class);
         registerParameterType("ij-macro-code",
                 ImageJMacro.class,
-                null,
+                JIPipeParameterArchetype.Value, null,
                 null,
                 "ImageJ macro",
                 "An ImageJ macro code",
                 null);
         registerParameterType("python-code",
                 PythonScript.class,
-                null,
+                JIPipeParameterArchetype.Value, null,
                 null,
                 "Python script",
                 "A Python script",
@@ -241,7 +242,7 @@ public class StandardParametersPlugin extends JIPipePrepackagedDefaultJavaPlugin
     private void registerPatternParameters() {
         registerParameterType("string-pattern-extraction",
                 StringPatternExtraction.class,
-                StringPatternExtraction.List.class,
+                JIPipeParameterArchetype.Value, StringPatternExtraction.List.class,
                 null,
                 null,
                 "String pattern extraction",
@@ -253,6 +254,7 @@ public class StandardParametersPlugin extends JIPipePrepackagedDefaultJavaPlugin
         registerParameterEditor(FunctionParameter.class, FunctionDesktopParameterEditorUI.class);
         registerParameterType("jipipe-trait:string-pattern-extraction:jipipe-trait:function",
                 StringPatternExtractionFunction.class,
+                JIPipeParameterArchetype.Value,
                 StringPatternExtractionFunction.List.class,
                 null,
                 null,
@@ -282,7 +284,7 @@ public class StandardParametersPlugin extends JIPipePrepackagedDefaultJavaPlugin
         registerParameterEditor(Matrix2D.class, Matrix2DDesktopParameterEditorUI.class);
         registerParameterType("matrix2d-float",
                 Matrix2DFloat.class,
-                Matrix2DFloat::new,
+                JIPipeParameterArchetype.Value, Matrix2DFloat::new,
                 p -> new Matrix2DFloat((Matrix2DFloat) p),
                 "2D matrix (float)",
                 "A matrix containing float numbers",
@@ -295,7 +297,7 @@ public class StandardParametersPlugin extends JIPipePrepackagedDefaultJavaPlugin
 
         registerParameterType("parameter-collection-list",
                 ParameterCollectionList.class,
-                "Parameter collection list",
+                JIPipeParameterArchetype.List, "Parameter collection list",
                 "A list of parameter collections",
                 DesktopParameterCollectionListEditorUI.class);
     }
@@ -304,28 +306,28 @@ public class StandardParametersPlugin extends JIPipePrepackagedDefaultJavaPlugin
         // Other JIPipe parameters
         registerParameterType("parameter-visibilities",
                 JIPipeParameterCollectionVisibilities.class,
-                JIPipeParameterCollectionVisibilities::new,
+                JIPipeParameterArchetype.MultiSelect, JIPipeParameterCollectionVisibilities::new,
                 v -> new JIPipeParameterCollectionVisibilities((JIPipeParameterCollectionVisibilities) v),
                 "Parameter visibilities",
                 "Determines which parameters are visible to users",
                 JIPipeParameterCollectionVisibilitiesDesktopParameterEditorUI.class);
         registerParameterType("parameter-table",
                 ParameterTable.class,
-                ParameterTable::new,
+                JIPipeParameterArchetype.Value, ParameterTable::new,
                 t -> new ParameterTable((ParameterTable) t),
                 "Parameter table",
                 "A table that contains parameters",
                 DesktopParameterTableEditorUI.class);
         registerParameterType("int-modification",
                 NumericFunctionExpression.class,
-                NumericFunctionExpression::new,
+                JIPipeParameterArchetype.Value, NumericFunctionExpression::new,
                 t -> new NumericFunctionExpression((NumericFunctionExpression) t),
                 "Integer modification",
                 "Modifies an integer",
                 null);
         registerParameterType("margin",
                 Margin.class,
-                Margin.List.class,
+                JIPipeParameterArchetype.Value, Margin.List.class,
                 null,
                 null,
                 "Margin",
@@ -333,7 +335,7 @@ public class StandardParametersPlugin extends JIPipePrepackagedDefaultJavaPlugin
                 MarginDesktopParameterEditorUI.class);
         registerParameterType("fixed-margin",
                 FixedMargin.class,
-                FixedMargin.List.class,
+                JIPipeParameterArchetype.Value, FixedMargin.List.class,
                 null,
                 null,
                 "Margin (fixed size)",
@@ -341,7 +343,7 @@ public class StandardParametersPlugin extends JIPipePrepackagedDefaultJavaPlugin
                 FixedMarginEditorUI.class);
         registerParameterType("inner-margin",
                 InnerMargin.class,
-                InnerMargin.List.class,
+                JIPipeParameterArchetype.Value, InnerMargin.List.class,
                 null,
                 null,
                 "Margin (inner)",
@@ -349,7 +351,7 @@ public class StandardParametersPlugin extends JIPipePrepackagedDefaultJavaPlugin
                 InnerMarginEditorUIDesktop.class);
         registerParameterType("anchor",
                 Anchor.class,
-                null,
+                JIPipeParameterArchetype.Value, null,
                 null,
                 "Anchor",
                 "An anchor to a position within a rectangle",
@@ -361,105 +363,105 @@ public class StandardParametersPlugin extends JIPipePrepackagedDefaultJavaPlugin
         registerParameterEditor(OptionalParameter.class, OptionalDesktopParameterEditorUI.class);
         registerParameterType("optional-boolean",
                 OptionalBooleanParameter.class,
-                OptionalBooleanParameter::new,
+                JIPipeParameterArchetype.OptionalValue, OptionalBooleanParameter::new,
                 o -> new OptionalBooleanParameter((OptionalBooleanParameter) o),
                 "Optional boolean",
                 "An optional boolean value",
                 null);
         registerParameterType("optional-byte",
                 OptionalByteParameter.class,
-                OptionalByteParameter::new,
+                JIPipeParameterArchetype.OptionalValue, OptionalByteParameter::new,
                 o -> new OptionalByteParameter((OptionalByteParameter) o),
                 "Optional byte",
                 "An optional byte value",
                 null);
         registerParameterType("optional-double",
                 OptionalDoubleParameter.class,
-                OptionalDoubleParameter::new,
+                JIPipeParameterArchetype.OptionalValue, OptionalDoubleParameter::new,
                 o -> new OptionalDoubleParameter((OptionalDoubleParameter) o),
                 "Optional double",
                 "An optional double value",
                 null);
         registerParameterType("optional-float",
                 OptionalFloatParameter.class,
-                OptionalFloatParameter::new,
+                JIPipeParameterArchetype.OptionalValue, OptionalFloatParameter::new,
                 o -> new OptionalFloatParameter((OptionalFloatParameter) o),
                 "Optional float",
                 "An optional float value",
                 null);
         registerParameterType("optional-integer",
                 OptionalIntegerParameter.class,
-                OptionalIntegerParameter::new,
+                JIPipeParameterArchetype.OptionalValue, OptionalIntegerParameter::new,
                 o -> new OptionalIntegerParameter((OptionalIntegerParameter) o),
                 "Optional integer",
                 "An optional integer value",
                 null);
         registerParameterType("optional-long",
                 OptionalLongParameter.class,
-                OptionalLongParameter::new,
+                JIPipeParameterArchetype.OptionalValue, OptionalLongParameter::new,
                 o -> new OptionalLongParameter((OptionalLongParameter) o),
                 "Optional long",
                 "An optional long value",
                 null);
         registerParameterType("optional-short",
                 OptionalShortParameter.class,
-                OptionalShortParameter::new,
+                JIPipeParameterArchetype.OptionalValue, OptionalShortParameter::new,
                 o -> new OptionalShortParameter((OptionalShortParameter) o),
                 "Optional short",
                 "An optional short value",
                 null);
         registerParameterType("optional-string",
                 OptionalStringParameter.class,
-                OptionalStringParameter::new,
+                JIPipeParameterArchetype.OptionalValue, OptionalStringParameter::new,
                 o -> new OptionalStringParameter((OptionalStringParameter) o),
                 "Optional string",
                 "An optional string value",
                 null);
         registerParameterType("optional-color",
                 OptionalColorParameter.class,
-                OptionalColorParameter::new,
+                JIPipeParameterArchetype.OptionalValue, OptionalColorParameter::new,
                 o -> new OptionalColorParameter((OptionalColorParameter) o),
                 "Optional color",
                 "An optional color value",
                 null);
         registerParameterType("optional-color-map",
                 OptionalColorMapParameter.class,
-                OptionalColorMapParameter::new,
+                JIPipeParameterArchetype.OptionalValue, OptionalColorMapParameter::new,
                 o -> new OptionalColorMapParameter((OptionalColorMapParameter) o),
                 "Optional color map",
                 "An optional color map",
                 null);
         registerParameterType("optional-path",
                 OptionalPathParameter.class,
-                OptionalPathParameter::new,
+                JIPipeParameterArchetype.OptionalValue, OptionalPathParameter::new,
                 o -> new OptionalPathParameter((OptionalPathParameter) o),
                 "Optional path",
                 "An optional path",
                 null);
         registerParameterType("optional-int-modification",
                 OptionalIntModificationParameter.class,
-                OptionalIntModificationParameter::new,
+                JIPipeParameterArchetype.OptionalValue, OptionalIntModificationParameter::new,
                 o -> new OptionalIntModificationParameter((OptionalIntModificationParameter) o),
                 "Optional integer modification",
                 "An optional integer modification",
                 null);
         registerParameterType("optional-annotation-name",
                 OptionalTextAnnotationNameParameter.class,
-                null,
+                JIPipeParameterArchetype.OptionalValue, null,
                 null,
                 "Optional annotation name",
                 "An optional annotation name",
                 null);
         registerParameterType("optional-data-annotation-name",
                 OptionalDataAnnotationNameParameter.class,
-                null,
+                JIPipeParameterArchetype.OptionalValue, null,
                 null,
                 "Optional data annotation name",
                 "An optional data annotation name",
                 null);
         registerParameterType("optional-integer-range",
                 OptionalIntegerRange.class,
-                null,
+                JIPipeParameterArchetype.OptionalValue, null,
                 null,
                 "Optional integer range",
                 "An optional range of integers",
@@ -472,32 +474,32 @@ public class StandardParametersPlugin extends JIPipePrepackagedDefaultJavaPlugin
         registerParameterEditor(DynamicSetParameter.class, DynamicSetDesktopParameterEditorUI.class);
         registerParameterType("string-enum",
                 DynamicStringEnumParameter.class,
-                DynamicStringEnumParameter::new,
+                JIPipeParameterArchetype.SingleSelect, DynamicStringEnumParameter::new,
                 p -> new DynamicStringEnumParameter((DynamicStringEnumParameter) p),
                 "String selection",
                 "A selection of available strings",
                 null);
         registerParameterType("data-display-operation-id-enum",
                 DynamicDataDisplayOperationIdEnumParameter.class,
-                null,
+                JIPipeParameterArchetype.SingleSelect, null,
                 null,
                 "Data display operation",
                 "A selection of data display operations",
                 null);
         registerParameterType("data-import-operation-id-enum",
                 DynamicDataImportOperationIdEnumParameter.class,
-                null,
+                JIPipeParameterArchetype.SingleSelect, null,
                 null,
                 "Data import operation",
                 "A selection of data import operations",
                 null);
         registerParameterType("dynamic-string-set",
                 DynamicStringSetParameter.class,
-                "String set selection",
+                JIPipeParameterArchetype.MultiSelect, "String set selection",
                 "A set of strings from which a subset can be selected");
         registerParameterType("font-family-enum",
                 FontFamilyParameter.class,
-                FontFamilyParameter::new,
+                JIPipeParameterArchetype.SingleSelect, FontFamilyParameter::new,
                 p -> new FontFamilyParameter((FontFamilyParameter) p),
                 "Font family",
                 "Available font families",
@@ -536,7 +538,7 @@ public class StandardParametersPlugin extends JIPipePrepackagedDefaultJavaPlugin
 
         registerParameterType("plugin-categories-enum",
                 PluginCategoriesEnumParameter.class,
-                PluginCategoriesEnumParameter.List.class,
+                JIPipeParameterArchetype.SingleSelect, PluginCategoriesEnumParameter.List.class,
                 null,
                 null,
                 "Categories",
@@ -545,7 +547,7 @@ public class StandardParametersPlugin extends JIPipePrepackagedDefaultJavaPlugin
 
         registerParameterType("size-fit-mode",
                 SizeFitMode.class,
-                "Size fit mode",
+                JIPipeParameterArchetype.SingleSelect, "Size fit mode",
                 "Algorithms to fit objects into other objects");
     }
 
@@ -554,7 +556,7 @@ public class StandardParametersPlugin extends JIPipePrepackagedDefaultJavaPlugin
         registerParameterEditor(PairParameter.class, PairDesktopParameterEditorUI.class);
         registerParameterType("string-query-expression:string:pair",
                 StringQueryExpressionAndStringPairParameter.class,
-                StringQueryExpressionAndStringPairParameter.List.class,
+                JIPipeParameterArchetype.Value, StringQueryExpressionAndStringPairParameter.List.class,
                 StringQueryExpressionAndStringPairParameter::new,
                 r -> new StringQueryExpressionAndStringPairParameter((StringQueryExpressionAndStringPairParameter) r),
                 "String query / string pair",
@@ -562,7 +564,7 @@ public class StandardParametersPlugin extends JIPipePrepackagedDefaultJavaPlugin
                 null);
         registerParameterType("string-query-expression:string-query-expression:pair",
                 StringQueryExpressionAndStringQueryPairParameter.class,
-                StringQueryExpressionAndStringQueryPairParameter.List.class,
+                JIPipeParameterArchetype.Value, StringQueryExpressionAndStringQueryPairParameter.List.class,
                 StringQueryExpressionAndStringQueryPairParameter::new,
                 r -> new StringQueryExpressionAndStringQueryPairParameter((StringQueryExpressionAndStringQueryPairParameter) r),
                 "String query pair",
@@ -570,7 +572,7 @@ public class StandardParametersPlugin extends JIPipePrepackagedDefaultJavaPlugin
                 null);
         registerParameterType("integer:integer:pair",
                 IntegerAndIntegerPairParameter.class,
-                IntegerAndIntegerPairParameter.List.class,
+                JIPipeParameterArchetype.Value, IntegerAndIntegerPairParameter.List.class,
                 IntegerAndIntegerPairParameter::new,
                 r -> new IntegerAndIntegerPairParameter((IntegerAndIntegerPairParameter) r),
                 "Integer pair",
@@ -578,7 +580,7 @@ public class StandardParametersPlugin extends JIPipePrepackagedDefaultJavaPlugin
                 null);
         registerParameterType("double:double:pair",
                 DoubleAndDoublePairParameter.class,
-                DoubleAndDoublePairParameter.List.class,
+                JIPipeParameterArchetype.Value, DoubleAndDoublePairParameter.List.class,
                 null,
                 null,
                 "Double pair",
@@ -586,7 +588,7 @@ public class StandardParametersPlugin extends JIPipePrepackagedDefaultJavaPlugin
                 null);
         registerParameterType("string-query-expression:sort-order:pair",
                 StringQueryExpressionAndSortOrderPairParameter.class,
-                StringQueryExpressionAndSortOrderPairParameter.List.class,
+                JIPipeParameterArchetype.Value, StringQueryExpressionAndSortOrderPairParameter.List.class,
                 StringQueryExpressionAndSortOrderPairParameter::new,
                 r -> new StringQueryExpressionAndSortOrderPairParameter((StringQueryExpressionAndSortOrderPairParameter) r),
                 "String predicate to sort order",
@@ -594,7 +596,7 @@ public class StandardParametersPlugin extends JIPipePrepackagedDefaultJavaPlugin
                 null);
         registerParameterType("string:string:pair",
                 StringAndStringPairParameter.class,
-                StringAndStringPairParameter.List.class,
+                JIPipeParameterArchetype.Value, StringAndStringPairParameter.List.class,
                 null,
                 null,
                 "String pair",
@@ -602,7 +604,7 @@ public class StandardParametersPlugin extends JIPipePrepackagedDefaultJavaPlugin
                 null);
         registerParameterType("expression:expression:pair",
                 ExpressionAndExpressionPairParameter.class,
-                ExpressionAndExpressionPairParameter.List.class,
+                JIPipeParameterArchetype.Value, ExpressionAndExpressionPairParameter.List.class,
                 null,
                 null,
                 "Expression pair",
@@ -614,7 +616,7 @@ public class StandardParametersPlugin extends JIPipePrepackagedDefaultJavaPlugin
         // Generating parameters
         registerParameterType("integer-range",
                 IntegerRange.class,
-                IntegerRange::new,
+                JIPipeParameterArchetype.Value, IntegerRange::new,
                 f -> new IntegerRange((IntegerRange) f),
                 "Integer range string",
                 "Describes a range of whole numbers via a string. The string must have following format: " +
@@ -624,7 +626,7 @@ public class StandardParametersPlugin extends JIPipePrepackagedDefaultJavaPlugin
                 IntegerRangeDesktopParameterEditorUI.class);
         registerParameterType("integer-range:int:pair",
                 IntRangeAndIntegerPairParameter.class,
-                IntRangeAndIntegerPairParameter.List.class,
+                JIPipeParameterArchetype.Value, IntRangeAndIntegerPairParameter.List.class,
                 null,
                 null,
                 "Integer range to integer pair",
@@ -639,65 +641,65 @@ public class StandardParametersPlugin extends JIPipePrepackagedDefaultJavaPlugin
         // JIPipe registry reference types
         registerParameterType("data-type",
                 JIPipeDataInfoRef.class,
-                JIPipeDataInfoRef::new,
+                JIPipeParameterArchetype.Value, JIPipeDataInfoRef::new,
                 r -> new JIPipeDataInfoRef((JIPipeDataInfoRef) r),
                 "Data type",
                 "Reference to a data type",
                 JIPipeDataInfoRefDesktopParameterEditorUI.class);
         registerParameterType("optional-data-type",
                 OptionalDataInfoRefParameter.class,
-                null,
+                JIPipeParameterArchetype.OptionalValue, null,
                 null,
                 "Optional data type",
                 "Optional reference to a data type",
                 null);
         registerParameterType("algorithm-type",
                 JIPipeNodeInfoRef.class,
-                JIPipeNodeInfoRef::new,
+                JIPipeParameterArchetype.Value, JIPipeNodeInfoRef::new,
                 r -> new JIPipeNodeInfoRef((JIPipeNodeInfoRef) r),
                 "Algorithm type",
                 "Reference to an algorithm type",
                 JIPipeNodeInfoRefDesktopParameterEditorUI.class);
         registerParameterType("optional-node-type",
                 OptionalNodeInfoRefParameter.class,
-                null,
+                JIPipeParameterArchetype.OptionalValue, null,
                 null,
                 "Optional node type",
                 "Optional reference to a node type",
                 null);
         registerParameterType("imagej-importer",
                 ImageJDataImporterRef.class,
-                "ImageJ importer",
+                JIPipeParameterArchetype.Value, "ImageJ importer",
                 "Operation that import data from ImageJ",
                 ImageJDataImporterRefDesktopParameterEditorUI.class);
         registerParameterType("imagej-exporter",
                 ImageJDataExporterRef.class,
-                "ImageJ exporter",
+                JIPipeParameterArchetype.Value, "ImageJ exporter",
                 "Operation that exports data into ImageJ",
                 ImageJDataExporterRefDesktopParameterEditorUI.class);
         registerParameterType("imagej-importer-configurable",
                 ImageJDataImportOperationRef.class,
-                "ImageJ importer (configurable)",
+                JIPipeParameterArchetype.Value, "ImageJ importer (configurable)",
                 "Operation that import data from ImageJ",
                 ImageJDataImportOperationRefDesktopParameterEditorUI.class);
         registerParameterType("imagej-exporter-configurable",
                 ImageJDataExportOperationRef.class,
-                "ImageJ exporter (configurable)",
+                JIPipeParameterArchetype.Value, "ImageJ exporter (configurable)",
                 "Operation that exports data into ImageJ",
                 ImageJDataExportOperationRefDesktopParameterEditorUI.class);
         registerParameterType("parameter-type",
                 JIPipeParameterTypeInfoRef.class,
-                "Parameter type",
+                JIPipeParameterArchetype.Value, "Parameter type",
                 "A parameter type",
                 JIPipeParameterTypeInfoRefDesktopParameterEditorUI.class);
         registerParameterType("runtime-partition-reference",
                 RuntimePartitionReferenceParameter.class,
-                "Runtime partition",
+                JIPipeParameterArchetype.Reference, "Runtime partition",
                 "A reference to a project runtime partition",
                 RuntimePartitionReferenceDesktopParameterEditorUI.class);
         registerParameterType("artifact-query",
                 JIPipeArtifactQueryParameter.class,
-                JIPipeArtifactQueryParameter::new,
+                JIPipeParameterArchetype.Value, JIPipeArtifactQueryParameter::new,
                 p -> new JIPipeArtifactQueryParameter((JIPipeArtifactQueryParameter) p),
                 "Artifact query",
                 "Queries an artifact from the artifact repository. " +
@@ -707,7 +709,7 @@ public class StandardParametersPlugin extends JIPipePrepackagedDefaultJavaPlugin
         // Icon types
         registerParameterType("algorithm-type-icon",
                 IconRef.class,
-                IconRef::new,
+                JIPipeParameterArchetype.Value, IconRef::new,
                 r -> new IconRef((IconRef) r),
                 "Algorithm type icon",
                 "Reference to an algorithm type icon",
@@ -716,7 +718,7 @@ public class StandardParametersPlugin extends JIPipePrepackagedDefaultJavaPlugin
         // Metadata
         registerParameterType("author",
                 JIPipeAuthorMetadata.class,
-                JIPipeAuthorMetadata.List.class,
+                JIPipeParameterArchetype.Value, JIPipeAuthorMetadata.List.class,
                 null,
                 null,
                 "Author",
@@ -724,7 +726,7 @@ public class StandardParametersPlugin extends JIPipePrepackagedDefaultJavaPlugin
                 JIPipeAuthorMetadataDesktopParameterEditorUI.class);
         registerParameterType("optional-author",
                 OptionalJIPipeAuthorMetadata.class,
-                OptionalJIPipeAuthorMetadata.List.class,
+                JIPipeParameterArchetype.OptionalValue, OptionalJIPipeAuthorMetadata.List.class,
                 null,
                 null,
                 "Optional author",
@@ -734,7 +736,7 @@ public class StandardParametersPlugin extends JIPipePrepackagedDefaultJavaPlugin
         // Node templates
         registerParameterType("node-template",
                 JIPipeNodeTemplate.class,
-                JIPipeNodeTemplate.List.class,
+                JIPipeParameterArchetype.Value, JIPipeNodeTemplate.List.class,
                 null,
                 null,
                 "Node template",
@@ -744,7 +746,7 @@ public class StandardParametersPlugin extends JIPipePrepackagedDefaultJavaPlugin
         // File chooser
         registerParameterType("file-chooser-bookmark",
                 FileChooserBookmark.class,
-                FileChooserBookmarkList.class,
+                JIPipeParameterArchetype.Value, FileChooserBookmarkList.class,
                 null,
                 null,
                 "File chooser bookmark",
@@ -754,7 +756,7 @@ public class StandardParametersPlugin extends JIPipePrepackagedDefaultJavaPlugin
         // Graph node reference
         registerParameterType("graph-node-reference",
                 GraphNodeReferenceParameter.class,
-                GraphNodeReferenceParameter.List.class,
+                JIPipeParameterArchetype.Reference, GraphNodeReferenceParameter.List.class,
                 null,
                 null,
                 "Graph node reference",
@@ -765,26 +767,26 @@ public class StandardParametersPlugin extends JIPipePrepackagedDefaultJavaPlugin
     private void registerCommonJavaTypes() {
         // Register other common Java classes
         registerParameterEditor(Enum.class, EnumDesktopParameterEditorUI.class);
-        registerParameterType("string", String.class, StringList.class, () -> "", s -> s, "String", "A text value", StringDesktopParameterEditorUI.class);
-        registerParameterType("password", PasswordParameter.class, null, null, "Password", "A password", PasswordDesktopParameterEditorUI.class);
-        registerParameterType("path", Path.class, PathList.class, () -> Paths.get(""), p -> p, "Filesystem path", "A path", FilePathDesktopParameterEditorUI.class);
-        registerParameterType("file", File.class, () -> new File(""), f -> f, "Filesystem path", "A path", FileDesktopParameterEditorUI.class);
-        registerParameterType("color", Color.class, () -> Color.WHITE, c -> c, "Color", "A color", ColorDesktopParameterEditorUI.class);
-        registerParameterType("color-list", ColorListParameter.class, "Color list", "A list of colors");
-        registerParameterType("rectangle", Rectangle.class, RectangleList.class, Rectangle::new, o -> new Rectangle((Rectangle) o), "Rectangle", "A rectangle", RectangleDesktopParameterEditorUI.class);
+        registerParameterType("string", String.class, JIPipeParameterArchetype.Value, StringList.class, () -> "", s -> s, "String", "A text value", StringDesktopParameterEditorUI.class);
+        registerParameterType("password", PasswordParameter.class, JIPipeParameterArchetype.Value, null, null, "Password", "A password", PasswordDesktopParameterEditorUI.class);
+        registerParameterType("path", Path.class, JIPipeParameterArchetype.Value, PathList.class, () -> Paths.get(""), p -> p, "Filesystem path", "A path", FilePathDesktopParameterEditorUI.class);
+        registerParameterType("file", File.class, JIPipeParameterArchetype.Value, () -> new File(""), f -> f, "Filesystem path", "A path", FileDesktopParameterEditorUI.class);
+        registerParameterType("color", Color.class, JIPipeParameterArchetype.Value, () -> Color.WHITE, c -> c, "Color", "A color", ColorDesktopParameterEditorUI.class);
+        registerParameterType("color-list", ColorListParameter.class, JIPipeParameterArchetype.Value, "Color list", "A list of colors");
+        registerParameterType("rectangle", Rectangle.class, JIPipeParameterArchetype.Value, RectangleList.class, Rectangle::new, o -> new Rectangle((Rectangle) o), "Rectangle", "A rectangle", RectangleDesktopParameterEditorUI.class);
         registerColorJsonSerializer();
         registerRectangleJsonSerializer();
         // Compound types
         registerParameterType("string-or-double",
                 StringOrDouble.class,
-                null,
+                JIPipeParameterArchetype.Value, null,
                 null,
                 "String/Double",
                 "An object that can either hold a string or double.",
                 StringOrDoubleDesktopParameterEditorUI.class);
         registerParameterType("html-text",
                 HTMLText.class,
-                null,
+                JIPipeParameterArchetype.Value, null,
                 null,
                 "HTML text",
                 "A formatted text",

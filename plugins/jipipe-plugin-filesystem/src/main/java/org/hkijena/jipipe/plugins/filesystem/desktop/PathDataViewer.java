@@ -46,19 +46,11 @@ public class PathDataViewer extends JIPipeDesktopDataViewer {
     }
 
     private void openParentPath() {
-        try {
-            Desktop.getDesktop().open(new File(currentPath).getParentFile());
-        } catch (IOException e) {
-            UIUtils.showErrorDialog(getDesktopWorkbench(), this, e);
-        }
+        UIUtils.desktopOpenFile(Paths.get(currentPath).getParent());
     }
 
     private void openPath() {
-        try {
-            Desktop.getDesktop().open(new File(currentPath));
-        } catch (IOException e) {
-            UIUtils.showErrorDialog(getDesktopWorkbench(), this, e);
-        }
+        UIUtils.desktopOpenFile(Paths.get(currentPath));
     }
 
     @Override

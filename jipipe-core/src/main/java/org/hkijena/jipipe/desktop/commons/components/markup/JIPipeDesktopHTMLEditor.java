@@ -281,7 +281,7 @@ public class JIPipeDesktopHTMLEditor extends JIPipeDesktopWorkbenchPanel {
                         return;
                     }
                     if (JOptionPane.showConfirmDialog(this, "Do you really want to visit " + e.getURL() + "?", "Visit URL", JOptionPane.YES_NO_OPTION, JOptionPane.QUESTION_MESSAGE) == JOptionPane.YES_OPTION) {
-                        Desktop.getDesktop().browse(e.getURL().toURI());
+                        UIUtils.desktopOpenURL(e.getURL().toURI(), false);
                     }
                 } catch (Exception ex) {
                     ex.printStackTrace();

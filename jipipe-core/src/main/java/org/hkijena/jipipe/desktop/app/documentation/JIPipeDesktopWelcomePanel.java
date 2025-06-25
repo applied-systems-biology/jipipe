@@ -33,6 +33,7 @@ import org.hkijena.jipipe.desktop.commons.components.tabs.JIPipeDesktopTabPane;
 import org.hkijena.jipipe.desktop.commons.theme.JIPipeDesktopRoundedButtonUI;
 import org.hkijena.jipipe.plugins.cef.CefPlugin;
 import org.hkijena.jipipe.utils.*;
+import org.hkijena.jipipe.utils.ui.JIPipeDesktopDockPanel;
 import org.hkijena.jipipe.utils.ui.RoundedLineBorder;
 
 import javax.imageio.ImageIO;
@@ -79,15 +80,16 @@ public class JIPipeDesktopWelcomePanel extends JIPipeDesktopProjectWorkbenchPane
 
     private void initialize() {
         setLayout(new BorderLayout());
-        JIPipeDesktopSplitPane splitPane = new JIPipeDesktopSplitPane(JIPipeDesktopSplitPane.LEFT_RIGHT, JIPipeDesktopSplitPane.RATIO_1_TO_3);
+        JIPipeDesktopDockPanel dockPanel = new  JIPipeDesktopDockPanel();
 
-        initializeRecentProjectsAndTemplates(splitPane);
-        initializeHero(splitPane);
+        initRecentProjects(dockPanel);
+        initTemplateList(dockPanel);
+        initializeHero(dockPanel);
 
-        add(splitPane, BorderLayout.CENTER);
+        add(dockPanel, BorderLayout.CENTER);
     }
 
-    private void initializeHero(JIPipeDesktopSplitPane splitPane) {
+    private void initializeHero(JIPipeDesktopDockPanel dockPanel) {
         BufferedImage backgroundImage;
         try {
             if (UIUtils.DARK_THEME) {
@@ -109,7 +111,7 @@ public class JIPipeDesktopWelcomePanel extends JIPipeDesktopProjectWorkbenchPane
         heroPanel.add(Box.createVerticalGlue());
         initializeHeroBottomPanel(heroPanel);
 
-        splitPane.setRightComponent(heroPanel);
+        dockPanel.setMainComponent(heroPanel);
     }
 
     private void initializeHeroSecondaryActions(JPanel heroPanel) {
@@ -215,7 +217,7 @@ public class JIPipeDesktopWelcomePanel extends JIPipeDesktopProjectWorkbenchPane
         JButton openWebsiteButton = new JButton("Visit our website", UIUtils.getIconFromResources("actions/web-browser.png"));
         openWebsiteButton.setAlignmentY(JComponent.BOTTOM_ALIGNMENT);
         openWebsiteButton.setToolTipText("https://www.jipipe.org/");
-        openWebsiteButton.addActionListener(e -> UIUtils.openWebsite("https://www.jipipe.org/"));
+        openWebsiteButton.addActionListener(e -> UIUtils.desktopOpenURL("https://www.jipipe.org/", true));
         openWebsiteButton.setOpaque(false);
         openWebsiteButton.setBackground(new Color(0, 0, 0, 0));
         toolBar.add(openWebsiteButton);
@@ -224,7 +226,7 @@ public class JIPipeDesktopWelcomePanel extends JIPipeDesktopProjectWorkbenchPane
         JButton openCommunityButton = new JButton("Community", UIUtils.getIconFromResources("actions/dialog-messages.png"));
         openCommunityButton.setAlignmentY(JComponent.BOTTOM_ALIGNMENT);
         openCommunityButton.setToolTipText("https://forum.image.sc/tag/jipipe");
-        openCommunityButton.addActionListener(e -> UIUtils.openWebsite("https://forum.image.sc/tag/jipipe"));
+        openCommunityButton.addActionListener(e -> UIUtils.desktopOpenURL("https://forum.image.sc/tag/jipipe", true));
         openCommunityButton.setOpaque(false);
         openCommunityButton.setBackground(new Color(0, 0, 0, 0));
         toolBar.add(openCommunityButton);
@@ -233,16 +235,16 @@ public class JIPipeDesktopWelcomePanel extends JIPipeDesktopProjectWorkbenchPane
         JButton openSourceCodeButton = new JButton("Source code", UIUtils.getIconFromResources("actions/dialog-xml-editor.png"));
         openSourceCodeButton.setAlignmentY(JComponent.BOTTOM_ALIGNMENT);
         openSourceCodeButton.setToolTipText("https://github.com/applied-systems-biology/jipipe/");
-        openSourceCodeButton.addActionListener(e -> UIUtils.openWebsite("https://github.com/applied-systems-biology/jipipe/"));
+        openSourceCodeButton.addActionListener(e -> UIUtils.desktopOpenURL("https://github.com/applied-systems-biology/jipipe/", true));
         openSourceCodeButton.setOpaque(false);
         openSourceCodeButton.setBackground(new Color(0, 0, 0, 0));
         toolBar.add(openSourceCodeButton);
         toolBar.add(Box.createHorizontalStrut(4));
 
-        JButton reportIssueButton = new JButton("Report issue", UIUtils.getIconFromResources("actions/bug.png"));
+        JButton reportIssueButton = new JButton("Report issue", UIUtils.getIconFromResources("actions/mail-message.png"));
         reportIssueButton.setAlignmentY(JComponent.BOTTOM_ALIGNMENT);
         reportIssueButton.setToolTipText("https://github.com/applied-systems-biology/jipipe/issues");
-        reportIssueButton.addActionListener(e -> UIUtils.openWebsite("https://github.com/applied-systems-biology/jipipe/issues"));
+        reportIssueButton.addActionListener(e -> UIUtils.desktopOpenURL("https://github.com/applied-systems-biology/jipipe/issues", true));
         reportIssueButton.setOpaque(false);
         reportIssueButton.setBackground(new Color(0, 0, 0, 0));
         toolBar.add(reportIssueButton);
@@ -282,19 +284,7 @@ public class JIPipeDesktopWelcomePanel extends JIPipeDesktopProjectWorkbenchPane
         heroPanel.add(logoPanel);
     }
 
-    private void initializeRecentProjectsAndTemplates(JIPipeDesktopSplitPane splitPane) {
-        JIPipeDesktopTabPane tabPane = new JIPipeDesktopTabPane(true, JIPipeDesktopTabPane.TabPlacement.Left);
-
-        // Recent projects list
-        initRecentProjects(tabPane);
-
-        // Template list
-        initTemplateList(tabPane);
-
-        splitPane.setLeftComponent(tabPane);
-    }
-
-    private void initTemplateList(JIPipeDesktopTabPane tabPane) {
+    private void initTemplateList(JIPipeDesktopDockPanel dockPanel) {
         JPanel panel = new JPanel(new BorderLayout());
 
         templateList.setCellRenderer(new JIPipeDesktopTemplateProjectListCellRenderer());
@@ -331,21 +321,27 @@ public class JIPipeDesktopWelcomePanel extends JIPipeDesktopProjectWorkbenchPane
         panel.add(templateListScrollPane, BorderLayout.CENTER);
         panel.add(toolBar, BorderLayout.NORTH);
 
-        tabPane.addTab("Examples",
-                UIUtils.getIconFromResources("actions/graduation-cap.png"),
-                panel,
-                JIPipeDesktopTabPane.CloseMode.withoutCloseButton);
+        dockPanel.addDockPanel("EXAMPLES",
+                "Examples",
+                UIUtils.getIcon32FromResources("actions/graduation-cap.png"),
+                JIPipeDesktopDockPanel.PanelLocation.TopLeft,
+                false,
+                1,
+                panel);
     }
 
     private void downloadTemplates() {
         JIPipeDesktopRunExecuteUI.runInDialog(getDesktopWorkbench(), getDesktopWorkbench().getWindow(), new JIPipeDesktopProjectTemplateDownloaderRun(getDesktopWorkbench()));
     }
 
-    private void initRecentProjects(JIPipeDesktopTabPane tabPane) {
-        tabPane.addTab("Recent",
-                UIUtils.getIconFromResources("actions/view-calendar-time-spent.png"),
-                new JIPipeDesktopRecentProjectsListPanel(getDesktopProjectWorkbench()),
-                JIPipeDesktopTabPane.CloseMode.withoutCloseButton);
+    private void initRecentProjects(JIPipeDesktopDockPanel dockPanel) {
+        dockPanel.addDockPanel("RECENT",
+                "Recent",
+                UIUtils.getIcon32FromResources("actions/tag-recents.png"),
+                JIPipeDesktopDockPanel.PanelLocation.TopLeft,
+                true,
+                0,
+                new JIPipeDesktopRecentProjectsListPanel(getDesktopProjectWorkbench()));
     }
 
     @Override

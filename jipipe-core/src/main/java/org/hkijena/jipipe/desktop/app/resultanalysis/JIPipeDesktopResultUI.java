@@ -159,19 +159,11 @@ public class JIPipeDesktopResultUI extends JIPipeDesktopProjectWorkbenchPanel {
     }
 
     private void openLog() {
-        try {
-            Desktop.getDesktop().open(storagePath.resolve("log.txt").toFile());
-        } catch (IOException e) {
-            throw new RuntimeException(e);
-        }
+        UIUtils.desktopOpenFile(storagePath.resolve("log.txt").toFile());
     }
 
     private void openOutputFolder() {
-        try {
-            Desktop.getDesktop().open(storagePath.toFile());
-        } catch (IOException e) {
-            throw new RuntimeException(e);
-        }
+        UIUtils.desktopOpenFile(storagePath.toFile());
     }
 
 }

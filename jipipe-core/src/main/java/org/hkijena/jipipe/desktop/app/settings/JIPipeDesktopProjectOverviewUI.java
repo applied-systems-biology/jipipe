@@ -671,7 +671,7 @@ public class JIPipeDesktopProjectOverviewUI extends JIPipeDesktopProjectWorkbenc
 
         popupMenu.addSeparator();
         popupMenu.add(UIUtils.createMenuItem("Learn more ...", "Open https://choosealicense.com/", UIUtils.getIconFromResources("actions/web-browser.png"), () -> {
-            UIUtils.openWebsite("https://choosealicense.com/");
+            UIUtils.desktopOpenURL("https://choosealicense.com/", true);
         }));
 
         addToTipsPanel(tipsPanel, "Make your project reusable", "Set the license of your project (preferably to CC-BY-4.0), " +
@@ -964,7 +964,7 @@ public class JIPipeDesktopProjectOverviewUI extends JIPipeDesktopProjectWorkbenc
         toolBar.setOpaque(false);
 
         openWebsiteButton = new JButton("Visit website", UIUtils.getIconFromResources("actions/web-browser.png"));
-        openWebsiteButton.addActionListener(e -> UIUtils.openWebsite(getProject().getMetadata().getWebsite()));
+        openWebsiteButton.addActionListener(e -> UIUtils.desktopOpenURL(getProject().getMetadata().getWebsite(), true));
         openWebsiteButton.setOpaque(false);
         openWebsiteButton.setBackground(new Color(0, 0, 0, 0));
         toolBar.add(openWebsiteButton);

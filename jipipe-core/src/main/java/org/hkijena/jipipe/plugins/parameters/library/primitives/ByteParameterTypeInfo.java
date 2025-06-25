@@ -13,7 +13,12 @@
 
 package org.hkijena.jipipe.plugins.parameters.library.primitives;
 
+import org.hkijena.jipipe.api.parameters.JIPipeParameterArchetype;
+import org.hkijena.jipipe.api.parameters.JIPipeParameterTypeAllowedValueInfo;
 import org.hkijena.jipipe.api.parameters.JIPipeParameterTypeInfo;
+
+import java.util.Collections;
+import java.util.List;
 
 /**
  * Info for {@link Byte}
@@ -47,5 +52,15 @@ public class ByteParameterTypeInfo implements JIPipeParameterTypeInfo {
     @Override
     public String getDescription() {
         return "An integral number (maximum allowed range is " + Byte.MIN_VALUE + " to " + Byte.MAX_VALUE + ")";
+    }
+
+    @Override
+    public List<JIPipeParameterTypeAllowedValueInfo> getAllowedValues() {
+        return Collections.emptyList();
+    }
+
+    @Override
+    public JIPipeParameterArchetype getArchetype() {
+        return JIPipeParameterArchetype.Value;
     }
 }

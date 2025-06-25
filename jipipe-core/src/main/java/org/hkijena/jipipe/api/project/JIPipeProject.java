@@ -39,7 +39,10 @@ import org.hkijena.jipipe.api.history.JIPipeProjectHistoryJournal;
 import org.hkijena.jipipe.api.nodes.*;
 import org.hkijena.jipipe.api.notifications.JIPipeNotification;
 import org.hkijena.jipipe.api.notifications.JIPipeNotificationInbox;
+import org.hkijena.jipipe.api.parameters.JIPipeParameterAccess;
 import org.hkijena.jipipe.api.parameters.JIPipeParameterCollection;
+import org.hkijena.jipipe.api.parameters.JIPipeParameterTree;
+import org.hkijena.jipipe.api.parameters.JIPipeParameterTypeInfo;
 import org.hkijena.jipipe.api.run.JIPipeRunnableQueue;
 import org.hkijena.jipipe.api.runtimepartitioning.JIPipeRuntimePartition;
 import org.hkijena.jipipe.api.runtimepartitioning.JIPipeRuntimePartitionConfiguration;
@@ -805,54 +808,23 @@ public class JIPipeProject implements JIPipeValidatable {
         generator.writeObjectField("runtime-partitions", runtimePartitions);
         generator.writeObjectField("run-sets", runSetsConfiguration);
 
+        // Write automated project documentations
+        generator.writeObjectFieldStart("jipipe:doc:parameters");
+        writeParameterDocumentationJson(generator);
+        generator.writeEndObject();
+
         // Write settings
         generator.writeObjectFieldStart("settings");
-        for (Map.Entry<String, JIPipeProjectSettingsSheet> entry : settingsSheets.entrySet()) {
-            generator.writeObjectFieldStart(entry.getKey());
-            entry.getValue().serializeToJsonGenerator(generator);
-            generator.writeEndObject();
-        }
-        for (Map.Entry<String, JsonNode> entry : unloadedSettingsSheets.entrySet()) {
-            if (!settingsSheets.containsKey(entry.getKey())) {
-                generator.writeObjectField(entry.getKey(), entry.getValue());
-            }
-        }
-
+        writeSettingsJson(generator);
         generator.writeEndObject();
 
         // Write list of external environments
-        List<JIPipeEnvironment> externalEnvironments = new ArrayList<>();
-        for (JIPipeGraphNode graphNode : getGraph().getGraphNodes()) {
-            graphNode.getEnvironmentDependencies(externalEnvironments);
-        }
-        generator.writeArrayFieldStart("external-environments");
-        for (JIPipeEnvironment environment : Sets.newHashSet(externalEnvironments)) {
-            generator.writeObject(environment);
-        }
-        generator.writeEndArray();
+        writeExternalEnvironmentsJson(generator);
 
         // Write additional metadata
         if (!getAdditionalMetadata().isEmpty()) {
             generator.writeObjectFieldStart("additional-metadata");
-            for (Map.Entry<String, JIPipeMetadataObject> entry : getAdditionalMetadata().entrySet()) {
-                String typeId = JIPipe.getInstance().getMetadataRegistry().getId(entry.getValue().getClass());
-
-                if (typeId != null) {
-                    if (entry.getValue() instanceof JIPipeParameterCollection) {
-                        generator.writeObjectFieldStart(entry.getKey());
-                        generator.writeObjectField("jipipe:type", typeId);
-                        ParameterUtils.serializeParametersToJson((JIPipeParameterCollection) entry.getValue(), generator);
-                        generator.writeEndObject();
-                    } else {
-                        generator.writeObjectFieldStart(entry.getKey());
-                        generator.writeObjectField("jipipe:type", typeId);
-                        generator.writeObjectField("data", entry.getValue());
-                        generator.writeEndObject();
-                    }
-                } else {
-                    System.err.println("Unable to serialize " + entry.getValue() + " as metadata object: not registered!");
-                }
-            }
+            writeAdditionalMetadataJson(generator);
             generator.writeEndObject();
         }
 
@@ -863,6 +835,142 @@ public class JIPipeProject implements JIPipeValidatable {
         generator.writeObjectField("compartment-graph", compartmentGraph);
         generator.writeEndObject();
         generator.writeEndObject();
+    }
+
+    private void writeParameterDocumentationJson(JsonGenerator generator) throws IOException {
+        Map<String, String> parameterAssignment = new HashMap<>();
+        Map<String, Map<String, Object>> parameterDocumentation = new HashMap<>();
+
+        // Global parameters
+        for (JIPipeParameterAccess access : getMetadata().getGlobalParameters().getParameters().values()) {
+            String globalKey = "/" + access.getKey();
+            String typeId = JIPipe.getParameterTypes().getInfoByFieldClass(access.getFieldClass()).getId();
+
+            parameterAssignment.put(globalKey, typeId);
+            Map<String, Object> documentation = new HashMap<>();
+            createParameterInstanceDocumentation(access, documentation);
+            if(!documentation.isEmpty()) {
+                parameterDocumentation.put(globalKey, documentation);
+            }
+        }
+
+        // Node parameters
+        for (UUID uuid : graph.getGraphNodeUUIDs()) {
+            JIPipeGraphNode node = graph.getNodeByUUID(uuid);
+            if(node.getInfo().isRunnable()) {
+                JIPipeParameterTree tree = new JIPipeParameterTree(node);
+                for (Map.Entry<String, JIPipeParameterAccess> entry : tree.getParameters().entrySet()) {
+                    JIPipeParameterAccess access = entry.getValue();
+                    String globalKey = uuid + "/" + entry.getKey();
+                    String typeId = JIPipe.getParameterTypes().getInfoByFieldClass(access.getFieldClass()).getId();
+
+                    parameterAssignment.put(globalKey, typeId);
+
+                    Map<String, Object> documentation = new HashMap<>();
+                    createParameterInstanceDocumentation(access, documentation);
+                    if(!documentation.isEmpty()) {
+                        parameterDocumentation.put(globalKey, documentation);
+                    }
+                }
+            }
+        }
+
+        generator.writeObjectField("types", parameterAssignment);
+        generator.writeObjectField("docs", parameterDocumentation);
+
+        generator.writeObjectFieldStart("ref");
+        for (String parameterTypeId : new HashSet<>(parameterAssignment.values())) {
+            JIPipeParameterTypeInfo info = JIPipe.getParameterTypes().getInfoById(parameterTypeId);
+            generator.writeObjectFieldStart(parameterTypeId);
+            generator.writeStringField("name", info.getName());
+            generator.writeStringField("description", info.getDescription());
+            generator.writeStringField("class", info.getFieldClass().getCanonicalName());
+            generator.writeObjectField("allowed-values", info.getAllowedValues());
+            generator.writeObjectField("archetype", info.getArchetype());
+            generator.writeEndObject();
+        }
+        generator.writeEndObject();
+
+    }
+
+    private void createParameterInstanceDocumentation(JIPipeParameterAccess access, Map<String, Object> documentation) {
+        if(!StringUtils.isNullOrEmpty(access.getName())) {
+            documentation.put("name", access.getName());
+        }
+        if(!StringUtils.isNullOrEmpty(access.getDescription())) {
+            documentation.put("description", access.getDescription());
+        }
+        if(access.isImportant()) {
+            documentation.put("important", access.isImportant());
+        }
+        if(access.isPinned()) {
+            documentation.put("pinned", access.isPinned());
+        }
+        if(access.isHidden()) {
+            documentation.put("hidden", access.isHidden());
+        }
+    }
+
+    /**
+     * Writes the additional metadata into JSON format
+     * @param generator the generator
+     * @throws IOException the exception
+     */
+    private void writeAdditionalMetadataJson(JsonGenerator generator) throws IOException {
+        for (Map.Entry<String, JIPipeMetadataObject> entry : getAdditionalMetadata().entrySet()) {
+            String typeId = JIPipe.getInstance().getMetadataRegistry().getId(entry.getValue().getClass());
+
+            if (typeId != null) {
+                if (entry.getValue() instanceof JIPipeParameterCollection) {
+                    generator.writeObjectFieldStart(entry.getKey());
+                    generator.writeObjectField("jipipe:type", typeId);
+                    ParameterUtils.serializeParametersToJson((JIPipeParameterCollection) entry.getValue(), generator);
+                    generator.writeEndObject();
+                } else {
+                    generator.writeObjectFieldStart(entry.getKey());
+                    generator.writeObjectField("jipipe:type", typeId);
+                    generator.writeObjectField("data", entry.getValue());
+                    generator.writeEndObject();
+                }
+            } else {
+                System.err.println("Unable to serialize " + entry.getValue() + " as metadata object: not registered!");
+            }
+        }
+    }
+
+    /**
+     * Write information about external environments into JSON
+     * @param generator the generator
+     * @throws IOException exceptions
+     */
+    private void writeExternalEnvironmentsJson(JsonGenerator generator) throws IOException {
+        List<JIPipeEnvironment> externalEnvironments = new ArrayList<>();
+        for (JIPipeGraphNode graphNode : getGraph().getGraphNodes()) {
+            graphNode.getEnvironmentDependencies(externalEnvironments);
+        }
+        generator.writeArrayFieldStart("external-environments");
+        for (JIPipeEnvironment environment : Sets.newHashSet(externalEnvironments)) {
+            generator.writeObject(environment);
+        }
+        generator.writeEndArray();
+    }
+
+    /**
+     * Write the project settings into JSON
+     * @param generator the generator
+     * @throws IOException exceptions
+     */
+    private void writeSettingsJson(JsonGenerator generator) throws IOException {
+        for (Map.Entry<String, JIPipeProjectSettingsSheet> entry : settingsSheets.entrySet()) {
+            generator.writeObjectFieldStart(entry.getKey());
+            entry.getValue().serializeToJsonGenerator(generator);
+            generator.writeEndObject();
+        }
+        for (Map.Entry<String, JsonNode> entry : unloadedSettingsSheets.entrySet()) {
+            if (!settingsSheets.containsKey(entry.getKey())) {
+                generator.writeObjectField(entry.getKey(), entry.getValue());
+            }
+        }
     }
 
     /**

@@ -29,6 +29,7 @@ import org.hkijena.jipipe.api.JIPipeProgressInfo;
 import org.hkijena.jipipe.api.data.JIPipeDataSlotInfo;
 import org.hkijena.jipipe.api.data.JIPipeDefaultMutableSlotConfiguration;
 import org.hkijena.jipipe.api.data.JIPipeSlotType;
+import org.hkijena.jipipe.api.parameters.JIPipeParameterArchetype;
 import org.hkijena.jipipe.plugins.JIPipePrepackagedDefaultJavaPlugin;
 import org.hkijena.jipipe.plugins.core.CorePlugin;
 import org.hkijena.jipipe.plugins.forms.FormsPlugin;
@@ -591,8 +592,8 @@ public class ImageJAlgorithmsPlugin extends JIPipePrepackagedDefaultJavaPlugin {
 
         registerEnumParameterType("ij1-export-image-to-web:file-format", ExportImageAlgorithm.FileFormat.class, "File format", "Exported file format.");
         registerEnumParameterType("ij1-export-table:file-format", ExportTableAlgorithm.FileFormat.class, "File format", "Exported file format.");
-        registerParameterType("ome-accessor-type", OMEAccessorTypeEnumParameter.class, "OME metadata key", "Metadata from OME");
-        registerParameterType("ome-accessor", OMEAccessorParameter.class, "OME metadata query", "Queries metadata from OME", OMEAccessorDesktopParameterEditorUI.class);
+        registerParameterType("ome-accessor-type", OMEAccessorTypeEnumParameter.class, JIPipeParameterArchetype.Value, "OME metadata key", "Metadata from OME");
+        registerParameterType("ome-accessor", OMEAccessorParameter.class, JIPipeParameterArchetype.Value, "OME metadata query", "Queries metadata from OME", OMEAccessorDesktopParameterEditorUI.class);
 
         registerIOAlgorithms();
         registerBlurAlgorithms();
@@ -850,14 +851,14 @@ public class ImageJAlgorithmsPlugin extends JIPipePrepackagedDefaultJavaPlugin {
     private void registerGlobalParameters() {
         registerParameterType("ij1:measurement-column-sort-order",
                 MeasurementColumnSortOrder.class,
-                MeasurementColumnSortOrder::new,
+                JIPipeParameterArchetype.Value, MeasurementColumnSortOrder::new,
                 o -> new MeasurementColumnSortOrder((MeasurementColumnSortOrder) o),
                 "Measurement column sort order",
                 "Describes how a data is sorted by a measurement column",
                 null);
         registerParameterType("ij1:measurement-column-sort-order-list",
                 MeasurementColumnSortOrder.List.class,
-                MeasurementColumnSortOrder.List::new,
+                JIPipeParameterArchetype.List, MeasurementColumnSortOrder.List::new,
                 o -> new MeasurementColumnSortOrder.List((MeasurementColumnSortOrder.List) o),
                 "Measurement column sort order list",
                 "List of measurement column sort orders",
@@ -874,7 +875,7 @@ public class ImageJAlgorithmsPlugin extends JIPipePrepackagedDefaultJavaPlugin {
         registerEnumParameterType("ij1-calibration-mode", ImageJCalibrationMode.class,
                 "Contrast calibration", "Methods to apply display range calibration");
         registerParameterType("ij1-measurement-set", ImageStatisticsSetParameter.class,
-                null,
+                JIPipeParameterArchetype.MultiSelect, null,
                 null,
                 "Measurements",
                 "Selectable measurements",
@@ -885,7 +886,7 @@ public class ImageJAlgorithmsPlugin extends JIPipePrepackagedDefaultJavaPlugin {
                 "Dimension assigned to a plane within a Hyperstack");
         registerParameterType("ij1-hyperstack-dimension:pair",
                 HyperstackDimensionPairParameter.class,
-                HyperstackDimensionPairParameter.List.class,
+                JIPipeParameterArchetype.Value, HyperstackDimensionPairParameter.List.class,
                 null,
                 null,
                 "Hyperstack dimension",
@@ -915,14 +916,14 @@ public class ImageJAlgorithmsPlugin extends JIPipePrepackagedDefaultJavaPlugin {
                 "Measurements of similarity/error between two binary or label images.");
         registerParameterType("ij1-overlap-statistics:set",
                 OverlapStatisticsSetParameter.class,
-                "Overlap statistics set",
+                JIPipeParameterArchetype.MultiSelect, "Overlap statistics set",
                 "Measurements of similarity/error between two binary or label images.");
     }
 
     private void registerROIAlgorithms() {
         registerEnumParameterType("ij-roi-relation-measurement", ROI2DRelationMeasurement.class, "2D relation measurement", "Relation between two 2D objects");
         registerEnumParameterType("ij-roi-relation-measurement-column", ROI2DRelationMeasurementColumn.class, "2D relation measurement column", "Relation between two 2D objects");
-        registerParameterType("ij-roi-relation-measurement-set", ROI2DRelationMeasurementSetParameter.class, "2D relation measurements", "A selection of measurements between two 2D objects");
+        registerParameterType("ij-roi-relation-measurement-set", ROI2DRelationMeasurementSetParameter.class, JIPipeParameterArchetype.MultiSelect, "2D relation measurements", "A selection of measurements between two 2D objects");
 
         registerNodeType("ij1-roi-from-rectangles", DefineRectangularRoiAlgorithm.class, UIUtils.getIconURLFromResources("actions/draw-rectangle.png"));
         registerNodeType("ij1-roi-from-rectangles-referenced", ReferencedDefineRectangularRoiAlgorithm.class, UIUtils.getIconURLFromResources("actions/draw-rectangle.png"));
@@ -1416,8 +1417,8 @@ public class ImageJAlgorithmsPlugin extends JIPipePrepackagedDefaultJavaPlugin {
     }
 
     private void registerColorAlgorithms() {
-        registerParameterType("ij1-color-overlay-channels:channel", OverlayImagesAlgorithm.Channel.class, "Channel settings", "Settings for a channel");
-        registerParameterType("ij1-color-blend-images:layer", ImageBlendLayer.class, "Layer settings", "Settings for a layer");
+        registerParameterType("ij1-color-overlay-channels:channel", OverlayImagesAlgorithm.Channel.class, JIPipeParameterArchetype.Value, "Channel settings", "Settings for a channel");
+        registerParameterType("ij1-color-blend-images:layer", ImageBlendLayer.class, JIPipeParameterArchetype.Value, "Layer settings", "Settings for a layer");
         registerEnumParameterType("ij1-color-blend-images:blend-mode", ImageBlendMode.class, "Layer blend mode", "Blend mode for the layer");
 
         registerNodeType("ij1-color-invert", InvertImageAlgorithm.class, UIUtils.getIconURLFromResources("actions/invertimage.png"));

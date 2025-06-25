@@ -20,6 +20,7 @@ import org.hkijena.jipipe.api.compat.DataTableImageJDataImporter;
 import org.hkijena.jipipe.api.data.JIPipeData;
 import org.hkijena.jipipe.api.data.JIPipeDataInfo;
 import org.hkijena.jipipe.api.data.JIPipeLegacyDataOperation;
+import org.hkijena.jipipe.api.parameters.JIPipeParameterArchetype;
 import org.hkijena.jipipe.plugins.JIPipePrepackagedDefaultJavaPlugin;
 import org.hkijena.jipipe.plugins.core.CorePlugin;
 import org.hkijena.jipipe.plugins.core.data.OpenInNativeApplicationDataImportOperation;
@@ -204,7 +205,7 @@ public class PlotsPlugin extends JIPipePrepackagedDefaultJavaPlugin implements J
                 "Available histogram types");
         registerParameterType("plot-data:series-column",
                 UIPlotDataSeriesColumnEnum.class,
-                UIPlotDataSeriesColumnEnum::new,
+                JIPipeParameterArchetype.Value, UIPlotDataSeriesColumnEnum::new,
                 c -> c,
                 "Data column",
                 "A data column to be plot",

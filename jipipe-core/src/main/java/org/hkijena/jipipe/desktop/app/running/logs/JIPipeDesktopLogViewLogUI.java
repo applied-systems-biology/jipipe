@@ -104,7 +104,7 @@ public class JIPipeDesktopLogViewLogUI extends JIPipeDesktopWorkbenchPanel {
         Path tempFile = JIPipeRuntimeApplicationSettings.getTemporaryFile("log", ".txt");
         try {
             Files.write(tempFile, logEntry.getLog().getBytes(StandardCharsets.UTF_8));
-            Desktop.getDesktop().open(tempFile.toFile());
+            UIUtils.desktopOpenFile(tempFile.toFile());
         } catch (IOException e) {
             throw new RuntimeException(e);
         }
