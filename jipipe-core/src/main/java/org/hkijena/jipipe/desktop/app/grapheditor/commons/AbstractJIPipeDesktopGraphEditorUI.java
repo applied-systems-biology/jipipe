@@ -67,7 +67,7 @@ public abstract class AbstractJIPipeDesktopGraphEditorUI extends JIPipeDesktopWo
         JIPipeDesktopGraphNodeUI.NodeUIActionRequestedEventListener,
         JIPipeDesktopDockPanel.StateSavedEventListener, JIPipeDesktopDockPanel.PanelSideVisibilityChangedEventListener {
 
-    public static final String DOCK_LOG = "LOG";
+    public static final String DOCK_LOG = "LOG_v2";
     public static final String DOCK_HISTORY = "HISTORY";
     public static final String DOCK_BOOKMARKS = "BOOKMARKS";
     public static final String DOCK_MAP = "MAP";
