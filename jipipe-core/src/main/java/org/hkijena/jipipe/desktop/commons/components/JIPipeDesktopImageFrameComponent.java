@@ -26,6 +26,7 @@ public class JIPipeDesktopImageFrameComponent extends JPanel {
     private SizeFitMode mode;
     private boolean center;
     private BufferedImage backgroundImage;
+    private Interpolation interpolation = Interpolation.Bilinear;
 
     private double scaleFactor = 1;
 
@@ -34,6 +35,7 @@ public class JIPipeDesktopImageFrameComponent extends JPanel {
         this.withGrid = withGrid;
         this.mode = mode;
         this.center = center;
+        this.interpolation = Interpolation.Bilinear;
         setOpaque(false);
     }
 
@@ -52,6 +54,14 @@ public class JIPipeDesktopImageFrameComponent extends JPanel {
 
     public void setScaleFactor(double scaleFactor) {
         this.scaleFactor = scaleFactor;
+    }
+
+    public Interpolation getInterpolation() {
+        return interpolation;
+    }
+
+    public void setInterpolation(Interpolation interpolation) {
+        this.interpolation = interpolation;
     }
 
     public boolean isWithGrid() {
@@ -81,7 +91,20 @@ public class JIPipeDesktopImageFrameComponent extends JPanel {
     @Override
     public void paint(Graphics g) {
         Graphics2D g2 = (Graphics2D) g;
-        g2.setRenderingHint(RenderingHints.KEY_INTERPOLATION, RenderingHints.VALUE_INTERPOLATION_BICUBIC);
+
+        switch (interpolation) {
+            case None:
+                g2.setRenderingHint(RenderingHints.KEY_INTERPOLATION, RenderingHints.VALUE_INTERPOLATION_NEAREST_NEIGHBOR);
+                break;
+            case Bilinear:
+                g2.setRenderingHint(RenderingHints.KEY_INTERPOLATION, RenderingHints.VALUE_INTERPOLATION_BILINEAR);
+                break;
+            case Bicubic:
+                g2.setRenderingHint(RenderingHints.KEY_INTERPOLATION, RenderingHints.VALUE_INTERPOLATION_BICUBIC);
+                break;
+        }
+
+//        g2.setRenderingHint(RenderingHints.KEY_INTERPOLATION, RenderingHints.VALUE_INTERPOLATION_BICUBIC);
         if (isOpaque()) {
             if (UIUtils.DARK_THEME) {
                 g.setColor(Color.BLACK);
@@ -113,6 +136,12 @@ public class JIPipeDesktopImageFrameComponent extends JPanel {
         }
 
         super.paint(g);
+    }
+
+    public enum Interpolation {
+        None,
+        Bilinear,
+        Bicubic
     }
 
 }
