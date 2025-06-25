@@ -1,0 +1,43 @@
+# --- Java bytecode and native libs ---
+*.class         binary
+*.jar           binary
+*.war           binary
+*.ear           binary
+*.dll           binary
+*.so            binary
+*.dylib         binary
+
+# --- Image formats ---
+*.png           -text
+*.jpg           -text
+*.jpeg          -text
+*.gif           -text
+*.bmp           -text
+*.ico           -text
+*.svg           -text  # may be text, but treat as binary for consistency
+*.webp          -text
+
+# --- Audio/video assets (e.g. for UI feedback) ---
+*.wav           -text
+*.mp3           -text
+*.ogg           -text
+*.flac          -text
+
+# --- Fonts ---
+*.ttf           -text
+*.otf           -text
+*.woff          -text
+*.woff2         -text
+
+# --- Misc binary data (e.g., serialized or embedded resources) ---
+*.dat           -text
+*.bin           -text
+*.pdf           -text
+*.zip           -text
+*.gz            -text
+*.7z            -text
+*.tar           -text
+
+# --- Don't normalize line endings on shell or batch scripts ---
+*.sh            text eol=lf
+*.bat           text eol=crlf
