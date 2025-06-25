@@ -17,6 +17,7 @@ import org.hkijena.jipipe.api.parameters.JIPipeParameterArchetype;
 import org.hkijena.jipipe.api.parameters.JIPipeParameterTypeAllowedValueInfo;
 import org.hkijena.jipipe.api.parameters.JIPipeParameterTypeInfo;
 
+import java.util.Collections;
 import java.util.List;
 
 /**
@@ -55,7 +56,7 @@ public class BooleanParameterTypeInfo implements JIPipeParameterTypeInfo {
 
     @Override
     public List<JIPipeParameterTypeAllowedValueInfo> getAllowedValues() {
-        return List.of();
+        return Collections.emptyList();
     }
 
     @Override
