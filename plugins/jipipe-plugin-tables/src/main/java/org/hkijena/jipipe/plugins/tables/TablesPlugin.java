@@ -20,6 +20,7 @@ import org.hkijena.jipipe.JIPipeDependency;
 import org.hkijena.jipipe.JIPipeJavaPlugin;
 import org.hkijena.jipipe.JIPipeMutableDependency;
 import org.hkijena.jipipe.api.JIPipeProgressInfo;
+import org.hkijena.jipipe.api.parameters.JIPipeParameterArchetype;
 import org.hkijena.jipipe.plugins.JIPipePrepackagedDefaultJavaPlugin;
 import org.hkijena.jipipe.plugins.annotation.AnnotationsPlugin;
 import org.hkijena.jipipe.plugins.core.CorePlugin;
@@ -232,14 +233,14 @@ public class TablesPlugin extends JIPipePrepackagedDefaultJavaPlugin {
                 "Determines if the column is numeric or contains text values");
         registerParameterType("table-column-generator",
                 TableColumnGeneratorParameter.class,
-                TableColumnGeneratorParameter::new,
+                JIPipeParameterArchetype.Value, TableColumnGeneratorParameter::new,
                 p -> new TableColumnGeneratorParameter((TableColumnGeneratorParameter) p),
                 "Column generator",
                 "Defines a column generator",
                 TableColumnGeneratorDesktopParameterEditorUI.class);
         registerParameterType("results-table",
                 ResultsTableData.class,
-                ResultsTableDataList.class,
+                JIPipeParameterArchetype.Value, ResultsTableDataList.class,
                 null,
                 null,
                 "Results table",
@@ -247,20 +248,20 @@ public class TablesPlugin extends JIPipePrepackagedDefaultJavaPlugin {
                 ResultsTableDataDesktopParameterEditorUI.class);
 
         // Operators
-        registerParameterType("integrating-table-column-operator", TableColumnIntegrationParameter.class, "Column integration operation", "Operation that integrates columns");
-        registerParameterType("converting-table-column-operator", TableColumnConversionParameter.class, "Column converting operation", "Operation that converts columns");
+        registerParameterType("integrating-table-column-operator", TableColumnIntegrationParameter.class, JIPipeParameterArchetype.Value, "Column integration operation", "Operation that integrates columns");
+        registerParameterType("converting-table-column-operator", TableColumnConversionParameter.class, JIPipeParameterArchetype.Value, "Column converting operation", "Operation that converts columns");
 
         // Processors
         registerParameterType("integrating-table-column-processor",
                 IntegratingTableColumnProcessorParameter.class,
-                IntegratingTableColumnProcessorParameter::new,
+                JIPipeParameterArchetype.Value, IntegratingTableColumnProcessorParameter::new,
                 p -> new IntegratingTableColumnProcessorParameter((IntegratingTableColumnProcessorParameter) p),
                 "Column integration processor",
                 "Defines a processor that integrates a column",
                 null);
         registerParameterType("integrating-table-column-processor-list",
                 IntegratingTableColumnProcessorParameterList.class,
-                IntegratingTableColumnProcessorParameterList::new,
+                JIPipeParameterArchetype.List, IntegratingTableColumnProcessorParameterList::new,
                 p -> new IntegratingTableColumnProcessorParameterList((IntegratingTableColumnProcessorParameterList) p),
                 "Column integration processor list",
                 "Defines processors that integrate columns",
@@ -268,14 +269,14 @@ public class TablesPlugin extends JIPipePrepackagedDefaultJavaPlugin {
 
         registerParameterType("converting-table-column-processor",
                 ConvertingTableColumnProcessorParameter.class,
-                ConvertingTableColumnProcessorParameter::new,
+                JIPipeParameterArchetype.Value, ConvertingTableColumnProcessorParameter::new,
                 p -> new ConvertingTableColumnProcessorParameter((ConvertingTableColumnProcessorParameter) p),
                 "Column integration processor",
                 "Defines a processor that apply a function to each cell",
                 null);
         registerParameterType("expression-table-column-processor",
                 ExpressionTableColumnProcessorParameter.class,
-                ExpressionTableColumnProcessorParameterList.class,
+                JIPipeParameterArchetype.Value, ExpressionTableColumnProcessorParameterList.class,
                 ExpressionTableColumnProcessorParameter::new,
                 p -> new ExpressionTableColumnProcessorParameter((ExpressionTableColumnProcessorParameter) p),
                 "Column expression processor",
@@ -283,28 +284,28 @@ public class TablesPlugin extends JIPipePrepackagedDefaultJavaPlugin {
                 null);
         registerParameterType("converting-table-column-processor-list",
                 ConvertingTableColumnProcessorParameterList.class,
-                ConvertingTableColumnProcessorParameterList::new,
+                JIPipeParameterArchetype.List, ConvertingTableColumnProcessorParameterList::new,
                 p -> new ConvertingTableColumnProcessorParameterList((ConvertingTableColumnProcessorParameterList) p),
                 "Column conversion processor list",
                 "Defines processors that apply a function to each cell",
                 null);
         registerParameterType("table-column-generator-column-processor",
                 TableColumnGeneratorProcessor.class,
-                TableColumnGeneratorProcessor::new,
+                JIPipeParameterArchetype.Value, TableColumnGeneratorProcessor::new,
                 p -> new TableColumnGeneratorProcessor((TableColumnGeneratorProcessor) p),
                 "Column generator processor",
                 "Defines a processor that generates a column",
                 null);
         registerParameterType("table-column-generator-column-processor-list",
                 TableColumnGeneratorProcessorParameterList.class,
-                TableColumnGeneratorProcessorParameterList::new,
+                JIPipeParameterArchetype.List, TableColumnGeneratorProcessorParameterList::new,
                 p -> new TableColumnGeneratorProcessorParameterList((TableColumnGeneratorProcessorParameterList) p),
                 "Column generator processor list",
                 "Defines multiple columns to be generated",
                 null);
         registerParameterType("table-column-expression-generator-column-processor",
                 ExpressionTableColumnGeneratorProcessor.class,
-                ExpressionTableColumnGeneratorProcessorParameterList.class,
+                JIPipeParameterArchetype.Value, ExpressionTableColumnGeneratorProcessorParameterList.class,
                 null,
                 null,
                 "Column generator (expression)",

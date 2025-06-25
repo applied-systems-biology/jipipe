@@ -13,7 +13,11 @@
 
 package org.hkijena.jipipe.plugins.parameters.library.primitives;
 
+import org.hkijena.jipipe.api.parameters.JIPipeParameterArchetype;
+import org.hkijena.jipipe.api.parameters.JIPipeParameterTypeAllowedValueInfo;
 import org.hkijena.jipipe.api.parameters.JIPipeParameterTypeInfo;
+
+import java.util.List;
 
 /**
  * Info for {@link Double}
@@ -47,5 +51,15 @@ public class DoubleParameterTypeInfo implements JIPipeParameterTypeInfo {
     @Override
     public String getDescription() {
         return "A 64-bit floating point number";
+    }
+
+     @Override
+    public List<JIPipeParameterTypeAllowedValueInfo> getAllowedValues() {
+        return List.of();
+    }
+
+    @Override
+    public JIPipeParameterArchetype getArchetype() {
+        return JIPipeParameterArchetype.Value;
     }
 }

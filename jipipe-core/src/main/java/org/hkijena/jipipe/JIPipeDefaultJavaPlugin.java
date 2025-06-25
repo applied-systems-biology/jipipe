@@ -24,7 +24,6 @@ import org.hkijena.jipipe.api.data.JIPipeData;
 import org.hkijena.jipipe.api.data.JIPipeDataConverter;
 import org.hkijena.jipipe.api.data.JIPipeLegacyDataImportOperation;
 import org.hkijena.jipipe.api.data.JIPipeLegacyDataOperation;
-import org.hkijena.jipipe.api.data.serialization.JIPipeDataTableInfo;
 import org.hkijena.jipipe.api.environments.JIPipeEnvironment;
 import org.hkijena.jipipe.api.environments.JIPipeExternalEnvironmentInstaller;
 import org.hkijena.jipipe.api.environments.JIPipeExternalEnvironmentSettings;
@@ -36,7 +35,8 @@ import org.hkijena.jipipe.api.nodes.JIPipeNodeTypeCategory;
 import org.hkijena.jipipe.api.nodes.annotation.JIPipeAnnotationGraphNode;
 import org.hkijena.jipipe.api.nodes.annotation.JIPipeAnnotationGraphNodeTool;
 import org.hkijena.jipipe.api.nodes.infos.JIPipeJavaNodeInfo;
-import org.hkijena.jipipe.api.parameters.JIPipeDefaultParameterTypeInfo;
+import org.hkijena.jipipe.api.parameters.JIPipeDefaultMutableParameterTypeInfo;
+import org.hkijena.jipipe.api.parameters.JIPipeParameterArchetype;
 import org.hkijena.jipipe.api.parameters.JIPipeParameterGenerator;
 import org.hkijena.jipipe.api.parameters.JIPipeParameterTypeInfo;
 import org.hkijena.jipipe.api.project.JIPipeProjectMetadata;
@@ -61,6 +61,7 @@ import org.hkijena.jipipe.plugins.core.CorePlugin;
 import org.hkijena.jipipe.plugins.expressions.ExpressionFunction;
 import org.hkijena.jipipe.plugins.expressions.functions.ColumnOperationAdapterFunction;
 import org.hkijena.jipipe.plugins.parameters.api.collections.ListParameter;
+import org.hkijena.jipipe.plugins.parameters.api.enums.EnumParameter;
 import org.hkijena.jipipe.plugins.parameters.api.enums.EnumParameterGenerator;
 import org.hkijena.jipipe.plugins.parameters.api.enums.EnumParameterTypeInfo;
 import org.hkijena.jipipe.plugins.parameters.library.jipipe.JIPipeDesktopExternalEnvironmentParameterEditorUI;
@@ -440,19 +441,30 @@ public abstract class JIPipeDefaultJavaPlugin extends AbstractService implements
      *
      * @param id                   Unique ID of this parameter type
      * @param parameterClass       Parameter class
+     * @param archetype the archetype
      * @param newInstanceGenerator Function that creates a new instance
      * @param duplicateFunction    Function that copies an existing instance
      * @param name                 Parameter class name
      * @param description          Description for the parameter type
      * @param uiClass              Parameter editor UI. Can be null if the editor is already provided.
      */
-    public void registerParameterType(String id, Class<?> parameterClass, Supplier<Object> newInstanceGenerator, Function<Object, Object> duplicateFunction, String name, String description, Class<? extends JIPipeDesktopParameterEditorUI> uiClass) {
-        JIPipeDefaultParameterTypeInfo info = new JIPipeDefaultParameterTypeInfo(id,
+    public void registerParameterType(String id, Class<?> parameterClass, JIPipeParameterArchetype archetype, Supplier<Object> newInstanceGenerator, Function<Object, Object> duplicateFunction, String name, String description, Class<? extends JIPipeDesktopParameterEditorUI> uiClass) {
+        JIPipeDefaultMutableParameterTypeInfo info = new JIPipeDefaultMutableParameterTypeInfo(id,
                 parameterClass,
                 newInstanceGenerator != null ? newInstanceGenerator : () -> ReflectionUtils.newInstance(parameterClass),
                 duplicateFunction != null ? duplicateFunction : o -> ReflectionUtils.newInstance(parameterClass, o),
                 name,
-                description);
+                description,
+                archetype);
+        if(EnumParameter.class.isAssignableFrom(parameterClass)) {
+            try {
+                EnumParameter parameter = (EnumParameter) parameterClass.newInstance();
+                info.setAllowedValues(parameter.getAllowedValueInfos());
+            }
+            catch (Exception e) {
+                JIPipe.getInstance().getProgressInfo().log(e);
+            }
+        }
         registerParameterType(info, uiClass);
     }
 
@@ -462,11 +474,12 @@ public abstract class JIPipeDefaultJavaPlugin extends AbstractService implements
      *
      * @param id             Unique ID of this parameter type
      * @param parameterClass Parameter class
+     * @param archetype the archetype
      * @param name           Parameter class name
      * @param description    Description for the parameter type
      */
-    public void registerParameterType(String id, Class<?> parameterClass, String name, String description) {
-        registerParameterType(id, parameterClass, null, null, name, description, null);
+    public void registerParameterType(String id, Class<?> parameterClass, JIPipeParameterArchetype archetype, String name, String description) {
+        registerParameterType(id, parameterClass, archetype, null, null, name, description, null);
     }
 
     /**
@@ -475,37 +488,48 @@ public abstract class JIPipeDefaultJavaPlugin extends AbstractService implements
      *
      * @param id             Unique ID of this parameter type
      * @param parameterClass Parameter class
+     * @param archetype the archetype
      * @param name           Parameter class name
      * @param description    Description for the parameter type
      * @param uiClass        Parameter editor UI. Can be null if the editor is already provided.
      */
-    public void registerParameterType(String id, Class<?> parameterClass, String name, String description, Class<? extends JIPipeDesktopParameterEditorUI> uiClass) {
-        registerParameterType(id, parameterClass, null, null, name, description, uiClass);
+    public void registerParameterType(String id, Class<?> parameterClass, JIPipeParameterArchetype archetype, String name, String description, Class<? extends JIPipeDesktopParameterEditorUI> uiClass) {
+        registerParameterType(id, parameterClass, archetype, null, null, name, description, uiClass);
     }
 
     /**
      * Registers a new parameter type and respective editors
      *
+     * @param <T>                  parameter class
      * @param id                   Unique ID of this parameter type
      * @param parameterClass       Parameter class
+     * @param archetype the archetype
      * @param listClass            Optional list class. If not null this creates a registration entry for the equivalent list entry
      * @param newInstanceGenerator Function that creates a new instance. If null, the function calls the default constructor
      * @param duplicateFunction    Function that copies an existing instance. If null, the function calls the copy constructor
      * @param name                 Parameter class name
      * @param description          Description for the parameter type
      * @param uiClass              Parameter editor UI. Can be null if the editor is already provided.
-     * @param <T>                  parameter class
      */
-    public <T> void registerParameterType(String id, Class<T> parameterClass, Class<? extends ListParameter<T>> listClass, Supplier<Object> newInstanceGenerator, Function<Object, Object> duplicateFunction, String name, String description, Class<? extends JIPipeDesktopParameterEditorUI> uiClass) {
-        JIPipeDefaultParameterTypeInfo info = new JIPipeDefaultParameterTypeInfo(id,
+    public <T> void registerParameterType(String id, Class<T> parameterClass, JIPipeParameterArchetype archetype, Class<? extends ListParameter<T>> listClass, Supplier<Object> newInstanceGenerator, Function<Object, Object> duplicateFunction, String name, String description, Class<? extends JIPipeDesktopParameterEditorUI> uiClass) {
+        JIPipeDefaultMutableParameterTypeInfo info = new JIPipeDefaultMutableParameterTypeInfo(id,
                 parameterClass,
                 newInstanceGenerator != null ? newInstanceGenerator : () -> ReflectionUtils.newInstance(parameterClass),
                 duplicateFunction != null ? duplicateFunction : o -> ReflectionUtils.newInstance(parameterClass, o),
                 name,
-                description);
+                description, archetype);
+        if(EnumParameter.class.isAssignableFrom(parameterClass)) {
+            try {
+                EnumParameter parameter = (EnumParameter) parameterClass.newInstance();
+                info.setAllowedValues(parameter.getAllowedValueInfos());
+            }
+            catch (Exception e) {
+                JIPipe.getInstance().getProgressInfo().log(e);
+            }
+        }
         registerParameterType(info, uiClass);
         if (listClass != null) {
-            registerParameterType(id + "-list", listClass, () -> ReflectionUtils.newInstance(listClass),
+            registerParameterType(id + "-list", listClass, JIPipeParameterArchetype.List, () -> ReflectionUtils.newInstance(listClass),
                     o -> ReflectionUtils.newInstance(listClass, o),
                     "List of " + name,
                     description,
@@ -539,7 +563,7 @@ public abstract class JIPipeDefaultJavaPlugin extends AbstractService implements
             registerParameterEditor(info.getFieldClass(), uiClass);
         }
         if (listClass != null) {
-            registerParameterType(info.getId() + "-list", listClass, () -> ReflectionUtils.newInstance(listClass),
+            registerParameterType(info.getId() + "-list", listClass, JIPipeParameterArchetype.List, () -> ReflectionUtils.newInstance(listClass),
                     o -> ReflectionUtils.newInstance(listClass, o),
                     "List of " + info.getName(),
                     info.getDescription(),
@@ -946,7 +970,7 @@ public abstract class JIPipeDefaultJavaPlugin extends AbstractService implements
                                                                                               String name,
                                                                                               String description,
                                                                                               Icon icon) {
-        registerParameterType(id, environmentClass, listClass, null, null, name, description, JIPipeDesktopExternalEnvironmentParameterEditorUI.class);
+        registerParameterType(id, environmentClass, JIPipeParameterArchetype.Reference, listClass, null, null, name, description, JIPipeDesktopExternalEnvironmentParameterEditorUI.class);
         registry.getExternalEnvironmentRegistry().registerEnvironment(environmentClass, settings);
     }
 

@@ -16,6 +16,7 @@ package org.hkijena.jipipe.plugins.processes;
 import org.hkijena.jipipe.JIPipe;
 import org.hkijena.jipipe.JIPipeJavaPlugin;
 import org.hkijena.jipipe.api.JIPipeProgressInfo;
+import org.hkijena.jipipe.api.parameters.JIPipeParameterArchetype;
 import org.hkijena.jipipe.plugins.JIPipePrepackagedDefaultJavaPlugin;
 import org.hkijena.jipipe.plugins.parameters.library.markup.HTMLText;
 import org.hkijena.jipipe.plugins.parameters.library.primitives.list.StringList;
@@ -63,7 +64,7 @@ public class ProcessesPlugin extends JIPipePrepackagedDefaultJavaPlugin {
                 UIUtils.getIconFromResources("apps/utilities-terminal.png"));
         registerParameterType("optional-process-environment",
                 OptionalProcessEnvironment.class,
-                null,
+                JIPipeParameterArchetype.OptionalValue, null,
                 null,
                 "Optional process environment",
                 "An optional process environment",

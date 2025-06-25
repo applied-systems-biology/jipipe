@@ -16,6 +16,7 @@ package org.hkijena.jipipe.plugins.expressions;
 import org.hkijena.jipipe.JIPipe;
 import org.hkijena.jipipe.JIPipeJavaPlugin;
 import org.hkijena.jipipe.api.JIPipeProgressInfo;
+import org.hkijena.jipipe.api.parameters.JIPipeParameterArchetype;
 import org.hkijena.jipipe.plugins.JIPipePrepackagedDefaultJavaPlugin;
 import org.hkijena.jipipe.plugins.expressions.functions.*;
 import org.hkijena.jipipe.plugins.expressions.functions.collections.*;
@@ -74,6 +75,7 @@ public class ExpressionPlugin extends JIPipePrepackagedDefaultJavaPlugin {
     public void register(JIPipe jiPipe, Context context, JIPipeProgressInfo progressInfo) {
         registerParameterType("expression",
                 JIPipeExpressionParameter.class,
+                JIPipeParameterArchetype.Value,
                 JIPipeExpressionParameter.List.class,
                 null,
                 null,
@@ -83,11 +85,11 @@ public class ExpressionPlugin extends JIPipePrepackagedDefaultJavaPlugin {
         registerParameterEditor(JIPipeExpressionParameter.class, JIPipeExpressionDesktopParameterEditorUI.class);
         registerParameterType("optional-expression",
                 OptionalJIPipeExpressionParameter.class,
-                "Optional expression",
+                JIPipeParameterArchetype.OptionalValue, "Optional expression",
                 "A mathematical or conditional logic expression");
         registerParameterType("table-column-source",
                 TableColumnSourceExpressionParameter.class,
-                TableColumnSourceExpressionParameter.List.class,
+                JIPipeParameterArchetype.Value, TableColumnSourceExpressionParameter.List.class,
                 null,
                 null,
                 "Column source",
@@ -99,42 +101,42 @@ public class ExpressionPlugin extends JIPipePrepackagedDefaultJavaPlugin {
                 "Type of column source");
         registerParameterType("annotation-query-expression",
                 AnnotationQueryExpression.class,
-                null,
+                JIPipeParameterArchetype.Value, null,
                 null,
                 "Annotation query expression",
                 "An expression that is used to filter annotations",
                 JIPipeExpressionDesktopParameterEditorUI.class);
         registerParameterType("data-annotation-query-expression",
                 DataAnnotationQueryExpression.class,
-                null,
+                JIPipeParameterArchetype.Value, null,
                 null,
                 "Data annotation query expression",
                 "An expression that is used to filter annotations",
                 JIPipeExpressionDesktopParameterEditorUI.class);
         registerParameterType("string-query-expression",
                 StringQueryExpression.class,
-                null,
+                JIPipeParameterArchetype.Value, null,
                 null,
                 "String query expression",
                 "An expression that is used to filter strings",
                 JIPipeExpressionDesktopParameterEditorUI.class);
         registerParameterType("table-cell-value-query-expression",
                 TableCellValueQueryExpression.class,
-                null,
+                JIPipeParameterArchetype.Value, null,
                 null,
                 "Table cell value query expression",
                 "An expression that tests for table cells",
                 JIPipeExpressionDesktopParameterEditorUI.class);
         registerParameterType("path-query-expression",
                 PathQueryExpression.class,
-                null,
+                JIPipeParameterArchetype.Value, null,
                 null,
                 "Path query expression",
                 "An expression that is used to filter paths",
                 JIPipeExpressionDesktopParameterEditorUI.class);
         registerParameterType("named-string-query-expression",
                 NamedStringQueryExpression.class,
-                NamedStringQueryExpression.List.class,
+                JIPipeParameterArchetype.Value, NamedStringQueryExpression.List.class,
                 null,
                 null,
                 "Named string query expression",
@@ -142,21 +144,21 @@ public class ExpressionPlugin extends JIPipePrepackagedDefaultJavaPlugin {
                 null);
         registerParameterType("string-map-query-expression",
                 StringMapQueryExpression.class,
-                null,
+                JIPipeParameterArchetype.Value, null,
                 null,
                 "String map query expression",
                 "An expression that is used to query string-string key value pairs",
                 JIPipeExpressionDesktopParameterEditorUI.class);
         registerParameterType("annotation-generator-expression",
                 AnnotationGeneratorExpression.class,
-                null,
+                JIPipeParameterArchetype.Value, null,
                 null,
                 "Annotation generator expression",
                 "An expression that is used to generate annotations",
                 JIPipeExpressionDesktopParameterEditorUI.class);
         registerParameterType("named-annotation-generator-expression",
                 NamedTextAnnotationGeneratorExpression.class,
-                NamedTextAnnotationGeneratorExpression.List.class,
+                JIPipeParameterArchetype.Value, NamedTextAnnotationGeneratorExpression.List.class,
                 null,
                 null,
                 "Named annotation generator expression",
@@ -164,11 +166,11 @@ public class ExpressionPlugin extends JIPipePrepackagedDefaultJavaPlugin {
                 null);
         registerParameterType("data-row-query-expression",
                 DataRowQueryExpression.class,
-                "Data row query",
+                JIPipeParameterArchetype.Value, "Data row query",
                 "");
         registerParameterType("data-export-expression",
                 DataExportExpressionParameter.class,
-                "Data export expression",
+                JIPipeParameterArchetype.Value, "Data export expression",
                 "Used for exporting data",
                 DataExportExpressionParameterEditorUI.class);
         registerExpressionFunction(new ContainsStringPredicateFunction());

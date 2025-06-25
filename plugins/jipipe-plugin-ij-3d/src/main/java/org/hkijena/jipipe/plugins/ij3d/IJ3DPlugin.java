@@ -16,6 +16,7 @@ package org.hkijena.jipipe.plugins.ij3d;
 import com.google.common.collect.Sets;
 import org.hkijena.jipipe.*;
 import org.hkijena.jipipe.api.JIPipeProgressInfo;
+import org.hkijena.jipipe.api.parameters.JIPipeParameterArchetype;
 import org.hkijena.jipipe.plugins.JIPipePrepackagedDefaultJavaPlugin;
 import org.hkijena.jipipe.plugins.core.CorePlugin;
 import org.hkijena.jipipe.plugins.filesystem.FilesystemPlugin;
@@ -133,10 +134,10 @@ public class IJ3DPlugin extends JIPipePrepackagedDefaultJavaPlugin {
 
         registerEnumParameterType("ij3d-measurement", ROI3DMeasurement.class, "3D Measurement", "A 3D object measurement");
         registerEnumParameterType("ij3d-measurement-column", ROI3DMeasurementColumn.class, "3D measurement column", "A 3D object measurement column");
-        registerParameterType("ij3d-measurement-set", ROI3DMeasurementSetParameter.class, "3D Measurements", "A selection of 3D object measurements");
+        registerParameterType("ij3d-measurement-set", ROI3DMeasurementSetParameter.class, JIPipeParameterArchetype.MultiSelect, "3D Measurements", "A selection of 3D object measurements");
         registerEnumParameterType("ij3d-relation-measurement", ROI3DRelationMeasurement.class, "3D relation measurement", "Relation between two 3D objects");
         registerEnumParameterType("ij3d-relation-measurement-column", ROI3DRelationMeasurementColumn.class, "3D relation measurement column", "Relation between two 3D objects");
-        registerParameterType("ij3d-relation-measurement-set", ROI3DRelationMeasurementSetParameter.class, "3D relation measurements", "A selection of measurements between two 3D objects");
+        registerParameterType("ij3d-relation-measurement-set", ROI3DRelationMeasurementSetParameter.class, JIPipeParameterArchetype.MultiSelect, "3D relation measurements", "A selection of measurements between two 3D objects");
         registerEnumParameterType("ij3d-roi-outline", ROI3DOutline.class, "3D ROI outline", "Outline algorithm for 3D ROI");
 
         registerDatatype("roi-3d-list", ROI3DListData.class, RESOURCES.getIcon16URLFromResources("data-type-roi3d.png"), new AddROI3DToManagerDataDisplayOperation());

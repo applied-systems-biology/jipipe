@@ -19,6 +19,7 @@ import org.hkijena.jipipe.JIPipeDependency;
 import org.hkijena.jipipe.JIPipeJavaPlugin;
 import org.hkijena.jipipe.JIPipeMutableDependency;
 import org.hkijena.jipipe.api.JIPipeProgressInfo;
+import org.hkijena.jipipe.api.parameters.JIPipeParameterArchetype;
 import org.hkijena.jipipe.api.project.JIPipeProject;
 import org.hkijena.jipipe.plugins.JIPipePrepackagedDefaultJavaPlugin;
 import org.hkijena.jipipe.plugins.core.CorePlugin;
@@ -123,7 +124,7 @@ public class OCRPlugin extends JIPipePrepackagedDefaultJavaPlugin {
                 UIUtils.getIconFromResources("actions/text_outer_style.png"));
         registerParameterType("optional-tesseract-ocr-environment",
                 OptionalTesseractOCREnvironment.class,
-                "Optional Tesseract OCR Environment",
+                JIPipeParameterArchetype.OptionalValue, "Optional Tesseract OCR Environment",
                 "Installation of Tesseract OCR");
 
         registerApplicationSettingsSheet(tesseractOCRApplicationSettings);

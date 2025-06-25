@@ -22,6 +22,7 @@ import org.hkijena.jipipe.api.JIPipeAuthorMetadata;
 import org.hkijena.jipipe.api.JIPipeProgressInfo;
 import org.hkijena.jipipe.api.compat.ui.FileImageJDataImporterUI;
 import org.hkijena.jipipe.api.compat.ui.FolderImageJDataExporterUI;
+import org.hkijena.jipipe.api.parameters.JIPipeParameterArchetype;
 import org.hkijena.jipipe.api.project.JIPipeProject;
 import org.hkijena.jipipe.plugins.JIPipePrepackagedDefaultJavaPlugin;
 import org.hkijena.jipipe.plugins.cellpose.algorithms.ImportCellposeModelFromFileAlgorithm;
@@ -183,12 +184,12 @@ public class CellposePlugin extends JIPipePrepackagedDefaultJavaPlugin {
         registerDatatype("cellpose-size-model-v2", CellposeSizeModelData.class, UIUtils.getIconURLFromResources("data-types/cellpose-size-model.png"));
 
         registerEnumParameterType("cellpose-2.x-pretrained-model", PretrainedCellpose2SegmentationModel.class, "Cellpose 2.x pretrained model", "A pretrained model provided with Cellpose 2.x");
-        registerParameterType("cellpose-2.x-pretrained-model-list", PretrainedCellpose2SegmentationModelList.class, "Cellpose 2.x pretrained model list", "A list of pretrained Cellpose 2.x models");
+        registerParameterType("cellpose-2.x-pretrained-model-list", PretrainedCellpose2SegmentationModelList.class, JIPipeParameterArchetype.List, "Cellpose 2.x pretrained model list", "A list of pretrained Cellpose 2.x models");
 
         registerEnumParameterType("cellpose-3.x-pretrained-segmentation-model", PretrainedCellpose3SegmentationModel.class, "Cellpose 3.x pretrained segmentation model", "A pretrained segmentation model provided with Cellpose 3.x");
-        registerParameterType("cellpose-3.x-pretrained-segmentation-model-list", PretrainedCellpose3SegmentationModelList.class, "Cellpose 3.x pretrained segmentation model list", "A list of pretrained segmentation Cellpose 3.x models");
+        registerParameterType("cellpose-3.x-pretrained-segmentation-model-list", PretrainedCellpose3SegmentationModelList.class, JIPipeParameterArchetype.List, "Cellpose 3.x pretrained segmentation model list", "A list of pretrained segmentation Cellpose 3.x models");
         registerEnumParameterType("cellpose-3.x-pretrained-denoise-model", PretrainedCellpose3DenoiseModel.class, "Cellpose 3.x pretrained segmentation model", "A pretrained segmentation model provided with Cellpose 3.x");
-        registerParameterType("cellpose-3.x-pretrained-denoise-model-list", PretrainedCellpose3DenoiseModelList.class, "Cellpose 3.x pretrained denoise model list", "A list of pretrained denoise Cellpose 3.x models");
+        registerParameterType("cellpose-3.x-pretrained-denoise-model-list", PretrainedCellpose3DenoiseModelList.class, JIPipeParameterArchetype.List, "Cellpose 3.x pretrained denoise model list", "A list of pretrained denoise Cellpose 3.x models");
         registerEnumParameterType("cellpose-3.x-denoise-noise-type", Cellpose3DenoiseTrainingNoiseType.class, "Cellpose 3.x noise type", "Available noise types for denoising");
 
         registerNodeType("import-cellpose-model-v2", ImportCellposeModelFromFileAlgorithm.class);

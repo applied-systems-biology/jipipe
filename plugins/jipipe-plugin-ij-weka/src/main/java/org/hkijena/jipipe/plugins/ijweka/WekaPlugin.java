@@ -20,6 +20,7 @@ import org.hkijena.jipipe.JIPipeJavaPlugin;
 import org.hkijena.jipipe.JIPipeMutableDependency;
 import org.hkijena.jipipe.api.JIPipeAuthorMetadata;
 import org.hkijena.jipipe.api.JIPipeProgressInfo;
+import org.hkijena.jipipe.api.parameters.JIPipeParameterArchetype;
 import org.hkijena.jipipe.plugins.JIPipePrepackagedDefaultJavaPlugin;
 import org.hkijena.jipipe.plugins.core.CorePlugin;
 import org.hkijena.jipipe.plugins.filesystem.FilesystemPlugin;
@@ -132,10 +133,10 @@ public class WekaPlugin extends JIPipePrepackagedDefaultJavaPlugin {
 
         // Register new parameters
         registerEnumParameterType("weka-feature-2d", WekaFeature2D.class, "Weka Feature 2D", "A 2D Weka feature");
-        registerParameterType("weka-feature-set-2d", WekaFeatureSet2D.class, "Weka Feature set 2D", "A collection of Weka 2D features");
+        registerParameterType("weka-feature-set-2d", WekaFeatureSet2D.class, JIPipeParameterArchetype.MultiSelect, "Weka Feature set 2D", "A collection of Weka 2D features");
         registerEnumParameterType("weka-feature-3d", WekaFeature3D.class, "Weka Feature 3D", "A 2D Weka feature");
-        registerParameterType("weka-feature-set-3d", WekaFeatureSet3D.class, "Weka Feature set 3D", "A collection of Weka 3D features");
-        registerParameterType("weka-classifier", WekaClassifierParameter.class, "Weka classifier", "Settings for a Weka classifier", WekaClassifierDesktopParameterEditorUI.class);
+        registerParameterType("weka-feature-set-3d", WekaFeatureSet3D.class, JIPipeParameterArchetype.MultiSelect, "Weka Feature set 3D", "A collection of Weka 3D features");
+        registerParameterType("weka-classifier", WekaClassifierParameter.class, JIPipeParameterArchetype.Value, "Weka classifier", "Settings for a Weka classifier", WekaClassifierDesktopParameterEditorUI.class);
 
         // Register data types
         registerDatatype("weka-model", WekaModelData.class, wekaModelIcon);

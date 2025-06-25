@@ -13,8 +13,13 @@
 
 package org.hkijena.jipipe.plugins.parameters.api.enums;
 
+import org.hkijena.jipipe.api.parameters.JIPipeParameterArchetype;
+import org.hkijena.jipipe.api.parameters.JIPipeParameterTypeAllowedValueInfo;
 import org.hkijena.jipipe.api.parameters.JIPipeParameterTypeInfo;
 import org.hkijena.jipipe.utils.ReflectionUtils;
+
+import java.util.ArrayList;
+import java.util.List;
 
 /**
  * Helper class to register {@link Enum} parameters
@@ -25,6 +30,7 @@ public class EnumParameterTypeInfo implements JIPipeParameterTypeInfo {
     private final Class<? extends Enum<?>> fieldClass;
     private final String name;
     private final String description;
+    private final List<JIPipeParameterTypeAllowedValueInfo> allowedValues = new ArrayList<>();
 
     /**
      * @param id          the id
@@ -37,6 +43,13 @@ public class EnumParameterTypeInfo implements JIPipeParameterTypeInfo {
         this.fieldClass = fieldClass;
         this.name = name;
         this.description = description;
+        try {
+            for (Enum enumValue : ReflectionUtils.getEnumValues(fieldClass)) {
+                allowedValues.add(new JIPipeParameterTypeAllowedValueInfo(enumValue.name()));
+            }
+        } catch (NoSuchFieldException | IllegalAccessException e) {
+            throw new RuntimeException(e);
+        }
     }
 
     @Override
@@ -71,5 +84,15 @@ public class EnumParameterTypeInfo implements JIPipeParameterTypeInfo {
     @Override
     public String getDescription() {
         return description;
+    }
+
+    @Override
+    public List<JIPipeParameterTypeAllowedValueInfo> getAllowedValues() {
+        return allowedValues;
+    }
+
+    @Override
+    public JIPipeParameterArchetype getArchetype() {
+        return JIPipeParameterArchetype.SingleSelect;
     }
 }

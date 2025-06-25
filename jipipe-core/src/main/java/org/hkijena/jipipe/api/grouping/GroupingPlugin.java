@@ -20,6 +20,7 @@ import org.hkijena.jipipe.api.grouping.parameters.GraphNodeParameterReferenceGro
 import org.hkijena.jipipe.api.grouping.parameters.GraphNodeParameterReferenceGroupCollectionDesktopParameterEditorUI;
 import org.hkijena.jipipe.api.grouping.parameters.NodeGroupContents;
 import org.hkijena.jipipe.api.grouping.parameters.NodeGroupContentsDesktopParameterEditorUI;
+import org.hkijena.jipipe.api.parameters.JIPipeParameterArchetype;
 import org.hkijena.jipipe.plugins.JIPipePrepackagedDefaultJavaPlugin;
 import org.hkijena.jipipe.plugins.parameters.library.markup.HTMLText;
 import org.hkijena.jipipe.plugins.parameters.library.primitives.list.StringList;
@@ -60,14 +61,14 @@ public class GroupingPlugin extends JIPipePrepackagedDefaultJavaPlugin {
 
         registerParameterType("node-group:content",
                 NodeGroupContents.class,
-                null,
+                JIPipeParameterArchetype.Object, null,
                 null,
                 "Group content",
                 "Node group contents",
                 NodeGroupContentsDesktopParameterEditorUI.class);
         registerParameterType("graph-node-parameters",
                 GraphNodeParameterReferenceGroupCollection.class,
-                null,
+                JIPipeParameterArchetype.Reference, null,
                 null,
                 "Exported parameters",
                 "Organizes parameters sourced from another graph",

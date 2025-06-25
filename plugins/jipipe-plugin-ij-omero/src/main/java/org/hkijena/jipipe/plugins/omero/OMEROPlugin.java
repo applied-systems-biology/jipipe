@@ -20,6 +20,7 @@ import org.hkijena.jipipe.JIPipeJavaPlugin;
 import org.hkijena.jipipe.JIPipeMutableDependency;
 import org.hkijena.jipipe.api.JIPipeAuthorMetadata;
 import org.hkijena.jipipe.api.JIPipeProgressInfo;
+import org.hkijena.jipipe.api.parameters.JIPipeParameterArchetype;
 import org.hkijena.jipipe.api.project.JIPipeProject;
 import org.hkijena.jipipe.api.validation.JIPipeValidationReport;
 import org.hkijena.jipipe.api.validation.JIPipeValidationReportEntry;
@@ -196,7 +197,7 @@ public class OMEROPlugin extends JIPipePrepackagedDefaultJavaPlugin {
                 RESOURCES.getIconFromResources("omero.png"));
         registerParameterType("optional-omero-credentials",
                 OptionalOMEROCredentialsEnvironment.class,
-                "Optimal OMERO credentials",
+                JIPipeParameterArchetype.OptionalValue, "Optimal OMERO credentials",
                 "Optional OMERO credentials");
         registerProjectSettingsSheet(OMEROPluginProjectSettings.class);
 

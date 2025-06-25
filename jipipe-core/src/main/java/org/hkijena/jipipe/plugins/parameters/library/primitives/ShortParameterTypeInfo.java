@@ -13,7 +13,11 @@
 
 package org.hkijena.jipipe.plugins.parameters.library.primitives;
 
+import org.hkijena.jipipe.api.parameters.JIPipeParameterArchetype;
+import org.hkijena.jipipe.api.parameters.JIPipeParameterTypeAllowedValueInfo;
 import org.hkijena.jipipe.api.parameters.JIPipeParameterTypeInfo;
+
+import java.util.List;
 
 /**
  * Info for {@link Short}
@@ -47,5 +51,15 @@ public class ShortParameterTypeInfo implements JIPipeParameterTypeInfo {
     @Override
     public String getDescription() {
         return "An integral number ranging from " + Short.MIN_VALUE + " to " + Short.MAX_VALUE;
+    }
+
+    @Override
+    public List<JIPipeParameterTypeAllowedValueInfo> getAllowedValues() {
+        return List.of();
+    }
+
+    @Override
+    public JIPipeParameterArchetype getArchetype() {
+        return JIPipeParameterArchetype.Value;
     }
 }

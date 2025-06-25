@@ -15,6 +15,8 @@ package org.hkijena.jipipe.plugins.parameters.api.enums;
 
 import com.fasterxml.jackson.annotation.JsonGetter;
 import com.fasterxml.jackson.annotation.JsonSetter;
+import org.hkijena.jipipe.api.parameters.JIPipeParameterTypeAllowedValueInfo;
+import org.hkijena.jipipe.utils.StringUtils;
 
 import javax.swing.*;
 import java.util.*;
@@ -25,7 +27,7 @@ import java.util.*;
  * items. Alternatively, use allowedValues to supply items.
  * allowedValues is preferred. If allowedValues is null, you have to use {@link DynamicEnumParameterSettings}.
  */
-public abstract class DynamicSetParameter<T> {
+public abstract class DynamicSetParameter<T> implements EnumParameter {
     private Set<T> values = new HashSet<>();
     private Set<T> allowedValues = new TreeSet<>();
     private boolean collapsed = false;
@@ -76,6 +78,15 @@ public abstract class DynamicSetParameter<T> {
 
     public void setAllowedValues(List<T> allowedValues) {
         this.allowedValues = new TreeSet<>(allowedValues);
+    }
+
+    @Override
+    public List<JIPipeParameterTypeAllowedValueInfo> getAllowedValueInfos() {
+        List<JIPipeParameterTypeAllowedValueInfo> result = new  ArrayList<>();
+        for (T allowedValue : allowedValues) {
+            result.add(new JIPipeParameterTypeAllowedValueInfo(StringUtils.orElse(allowedValue, "")));
+        }
+        return  result;
     }
 
     /**

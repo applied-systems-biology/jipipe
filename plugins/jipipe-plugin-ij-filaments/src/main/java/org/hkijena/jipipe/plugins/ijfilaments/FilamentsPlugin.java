@@ -19,6 +19,7 @@ import org.hkijena.jipipe.JIPipeDependency;
 import org.hkijena.jipipe.JIPipeJavaPlugin;
 import org.hkijena.jipipe.JIPipeMutableDependency;
 import org.hkijena.jipipe.api.JIPipeProgressInfo;
+import org.hkijena.jipipe.api.parameters.JIPipeParameterArchetype;
 import org.hkijena.jipipe.api.project.JIPipeProject;
 import org.hkijena.jipipe.plugins.JIPipePrepackagedDefaultJavaPlugin;
 import org.hkijena.jipipe.plugins.core.CorePlugin;
@@ -150,7 +151,7 @@ public class FilamentsPlugin extends JIPipePrepackagedDefaultJavaPlugin {
                 RESOURCES.getIconFromResources("tsoax.png"));
         registerParameterType("optional-tsoax-environment",
                 OptionalTSOAXEnvironment.class,
-                "Optional TSOAX Environment",
+                JIPipeParameterArchetype.OptionalValue, "Optional TSOAX Environment",
                 "Installation of TSOAX");
 
         registerNodeTypeCategory(new FilamentsNodeTypeCategory());

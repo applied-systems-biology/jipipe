@@ -20,6 +20,7 @@ import org.hkijena.jipipe.JIPipeJavaPlugin;
 import org.hkijena.jipipe.JIPipeMutableDependency;
 import org.hkijena.jipipe.api.JIPipeAuthorMetadata;
 import org.hkijena.jipipe.api.JIPipeProgressInfo;
+import org.hkijena.jipipe.api.parameters.JIPipeParameterArchetype;
 import org.hkijena.jipipe.api.project.JIPipeProject;
 import org.hkijena.jipipe.plugins.JIPipePrepackagedDefaultJavaPlugin;
 import org.hkijena.jipipe.plugins.cellpose.CellposePlugin;
@@ -167,7 +168,7 @@ public class OmniposePlugin extends JIPipePrepackagedDefaultJavaPlugin {
 
         // Modern data types and algorithms
         registerEnumParameterType("omnipose-0.x-pretrained-model", PretrainedOmnipose0Model.class, "Omnipose 2.x pretrained model", "A pretrained model provided with Omnipose 0.x");
-        registerParameterType("omnipose-0.x-pretrained-model-list", PretrainedOmnipose0ModelList.class, "Omnipose 2.x pretrained model list", "A list of pretrained Omnipose 0.x models");
+        registerParameterType("omnipose-0.x-pretrained-model-list", PretrainedOmnipose0ModelList.class, JIPipeParameterArchetype.List, "Omnipose 2.x pretrained model list", "A list of pretrained Omnipose 0.x models");
 
         registerNodeType("import-omnipose-0.x-pretrained-model", ImportPretrainedOmnipose0ModelAlgorithm.class);
         registerNodeType("omnipose-inference-0.x", Omnipose0InferenceAlgorithm.class, RESOURCES.getIcon16URLFromResources("omnipose.png"));
