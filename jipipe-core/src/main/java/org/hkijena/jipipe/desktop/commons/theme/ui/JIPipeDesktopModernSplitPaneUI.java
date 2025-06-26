@@ -28,11 +28,6 @@ public class JIPipeDesktopModernSplitPaneUI extends BasicSplitPaneUI {
     }
 
     @Override
-    public BasicSplitPaneDivider createDefaultDivider() {
-        return new JIPipeDesktopModernSplitPaneDividerUI(this);
-    }
-
-    @Override
     protected void installDefaults() {
         super.installDefaults();
         splitPane.setBorder(null); // Remove default borders

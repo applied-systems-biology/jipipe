@@ -148,7 +148,7 @@ public class JIPipeDesktopDockPanel extends JPanel implements JIPipeDesktopSplit
     }
 
     private void initializeRightPanel() {
-        layeredPaneRight.setBorder(UIUtils.createPanelBorder(1, 0, 0, 0));
+        layeredPaneRight.setBorder(null);
         layeredPaneRight.add(rightResizerPanel, BorderLayout.WEST);
         rightResizerPanel.setCursor(Cursor.getPredefinedCursor(Cursor.MOVE_CURSOR));
         rightResizerPanel.setPreferredSize(new Dimension(RESIZE_HANDLE_SIZE, 64));
@@ -171,7 +171,7 @@ public class JIPipeDesktopDockPanel extends JPanel implements JIPipeDesktopSplit
 
     private void initializeLeftPanel() {
 //        leftFloatingPanel.setOpaque(false);
-        layeredPaneLeft.setBorder(UIUtils.createPanelBorder(0, 0, 1, 0));
+        layeredPaneLeft.setBorder(null);
         layeredPaneLeft.add(leftResizerPanel, BorderLayout.EAST);
         leftResizerPanel.setCursor(Cursor.getPredefinedCursor(Cursor.MOVE_CURSOR));
         leftResizerPanel.setPreferredSize(new Dimension(RESIZE_HANDLE_SIZE, 64));

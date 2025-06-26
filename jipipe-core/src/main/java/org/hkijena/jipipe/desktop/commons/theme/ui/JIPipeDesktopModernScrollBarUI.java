@@ -58,4 +58,30 @@ public class JIPipeDesktopModernScrollBarUI extends BasicScrollBarUI {
         return jbutton;
     }
 
+    @Override
+    protected void paintTrack(Graphics g, JComponent c, Rectangle trackBounds) {
+    }
+
+    @Override
+    protected void paintThumb(Graphics g, JComponent c, Rectangle thumbBounds)
+    {
+        Graphics2D g2d = (Graphics2D) g;
+
+        if(thumbBounds.isEmpty() || !scrollbar.isEnabled())     {
+            return;
+        }
+
+        int w = thumbBounds.width;
+        int h = thumbBounds.height;
+
+        g.translate(thumbBounds.x, thumbBounds.y);
+
+        g.setColor(thumbColor);
+        Object oldAntialiasing = g2d.getRenderingHint(RenderingHints.KEY_ANTIALIASING);
+        g2d.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
+        g2d.fillRoundRect(1, 0, w - 3, h - 1, 3, 3);
+        g2d.setRenderingHint(RenderingHints.KEY_ANTIALIASING, oldAntialiasing);
+
+        g.translate(-thumbBounds.x, -thumbBounds.y);
+    }
 }
