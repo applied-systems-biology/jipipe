@@ -86,7 +86,7 @@ public class JIPipeDesktopMarkdownReader extends JPanel {
 
     /**
      * @param withToolbar if a toolbar should be shown
-     * @param document    initialize with document
+     * @param document    initialize with a document
      */
     public JIPipeDesktopMarkdownReader(boolean withToolbar, MarkdownText document) {
         this(withToolbar, document, CSS_RULES, CSS_RULES_DARK);
@@ -94,7 +94,7 @@ public class JIPipeDesktopMarkdownReader extends JPanel {
 
     /**
      * @param withToolbar if a toolbar should be shown
-     * @param document    initialize with document
+     * @param document    initialize with a document
      */
     public JIPipeDesktopMarkdownReader(boolean withToolbar, MarkdownText document, List<String> cssRules, List<String> cssRulesDark) {
         this.cssRules = cssRules;

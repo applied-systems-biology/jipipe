@@ -14,6 +14,7 @@
 package org.hkijena.jipipe.desktop.app.grapheditor.addnodepanel;
 
 import org.hkijena.jipipe.api.nodes.database.JIPipeNodeDatabaseEntry;
+import org.hkijena.jipipe.desktop.commons.theme.JIPipeDesktopModernThemeStyle;
 import org.hkijena.jipipe.utils.StringUtils;
 import org.hkijena.jipipe.utils.UIUtils;
 
@@ -36,17 +37,19 @@ public class JIPipeDesktopAddNodePanelEntryListCellRenderer extends JPanel imple
     private JLabel descriptionLabel;
     private JLabel pathLabel;
     private JLabel pinLabel;
+    private final JIPipeDesktopModernThemeStyle style;
 
     /**
      * Creates a new renderer
      */
     public JIPipeDesktopAddNodePanelEntryListCellRenderer(JComponent parent, JIPipeDesktopAddNodesPanel addNodePanel) {
+        this.style = JIPipeDesktopModernThemeStyle.getCurrent();
         this.parent = parent;
         this.addNodePanel = addNodePanel;
         this.defaultBorder = BorderFactory.createCompoundBorder(UIUtils.createEmptyBorder(4),
                 UIUtils.createControlBorder());
         this.selectedBorder = BorderFactory.createCompoundBorder(UIUtils.createEmptyBorder(4),
-                UIUtils.createControlBorder(UIUtils.COLOR_SUCCESS));
+                UIUtils.createControlBorder(style.getSuccessColor()));
         setOpaque(true);
         setBorder(defaultBorder);
         initialize();
@@ -57,10 +60,10 @@ public class JIPipeDesktopAddNodePanelEntryListCellRenderer extends JPanel imple
         nodeIcon = new JLabel();
         nameLabel = new JLabel();
         descriptionLabel = new JLabel();
-        descriptionLabel.setForeground(Color.GRAY);
+        descriptionLabel.setForeground(style.getTextMuted());
         descriptionLabel.setFont(new Font(Font.DIALOG, Font.PLAIN, 10));
         pathLabel = new JLabel();
-        pathLabel.setForeground(Color.GRAY);
+        pathLabel.setForeground(style.getTextMuted());
         pathLabel.setFont(new Font(Font.DIALOG, Font.ITALIC, 10));
         pinLabel = new JLabel();
 
