@@ -11,7 +11,7 @@
  * See the LICENSE file provided with the code for the full license.
  */
 
-package org.hkijena.jipipe.desktop.commons.theme;
+package org.hkijena.jipipe.desktop.commons.theme.ui;
 
 import javax.swing.*;
 import javax.swing.plaf.ComponentUI;

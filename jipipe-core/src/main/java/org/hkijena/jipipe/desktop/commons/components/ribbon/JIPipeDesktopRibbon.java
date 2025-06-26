@@ -14,7 +14,7 @@
 package org.hkijena.jipipe.desktop.commons.components.ribbon;
 
 import org.hkijena.jipipe.desktop.commons.components.tabs.JIPipeDesktopTabPane;
-import org.hkijena.jipipe.desktop.commons.theme.JIPipeDesktopCustomTabbedPaneUI;
+import org.hkijena.jipipe.desktop.commons.theme.ui.JIPipeDesktopModernTabbedPaneUI;
 import org.hkijena.jipipe.desktop.commons.theme.JIPipeDesktopUITheme;
 import org.hkijena.jipipe.utils.UIUtils;
 
@@ -74,7 +74,7 @@ public class JIPipeDesktopRibbon extends JPanel {
                         new Band("Band 3"),
                         new Band("Band 4"),
                         new Band("Band 5")));
-        panel.tabPane.getTabbedPane().setUI(new JIPipeDesktopCustomTabbedPaneUI());
+        panel.tabPane.getTabbedPane().setUI(new JIPipeDesktopModernTabbedPaneUI());
 
         frame.getContentPane().add(panel, BorderLayout.NORTH);
         frame.pack();

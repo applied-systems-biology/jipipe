@@ -13,6 +13,10 @@
 
 package org.hkijena.jipipe.desktop.commons.theme;
 
+import org.hkijena.jipipe.desktop.commons.theme.ui.JIPipeDesktopModernScrollBarUI;
+import org.hkijena.jipipe.desktop.commons.theme.ui.JIPipeDesktopModernSliderUI;
+import org.hkijena.jipipe.desktop.commons.theme.ui.JIPipeDesktopModernSpinnerUI;
+import org.hkijena.jipipe.desktop.commons.theme.ui.JIPipeDesktopModernSplitPaneUI;
 import org.hkijena.jipipe.utils.UIUtils;
 
 import javax.swing.*;
@@ -65,13 +69,13 @@ public enum JIPipeDesktopUITheme {
             case ModernLight:
                 try {
 //                    MetalLookAndFeel.setCurrentTheme(new JIPipeDesktopLegacyModernMetalTheme());
-                    MetalLookAndFeel.setCurrentTheme(new JIPipeDesktopModernMetalTheme(new JIPipeDesktopModernThemeStyle()));
+                    JIPipeDesktopModernThemeStyle style = new JIPipeDesktopModernThemeStyle();
+                    MetalLookAndFeel.setCurrentTheme(new JIPipeDesktopModernMetalTheme(style));
+                    UIManager.put("style", style);
 
                     UIManager.setLookAndFeel(UIManager.getCrossPlatformLookAndFeelClassName());
                     UIManager.put("swing.boldMetal", Boolean.FALSE);
-                    UIManager.put("ScrollBarUI", JIPipeDesktopArrowLessScrollBarUI.class.getName());
-                    UIManager.put("SliderUI", JIPipeDesktopModernSliderUI.class.getName());
-                    UIManager.put("SpinnerUI", JIPipeDesktopModernSpinnerUI.class.getName());
+                    installModernUIs();
                 } catch (ClassNotFoundException | InstantiationException | IllegalAccessException |
                          UnsupportedLookAndFeelException e) {
                     e.printStackTrace();
@@ -82,9 +86,7 @@ public enum JIPipeDesktopUITheme {
                     MetalLookAndFeel.setCurrentTheme(new JIPipeDesktopLegacyDarkModernMetalTheme());
                     UIManager.setLookAndFeel(UIManager.getCrossPlatformLookAndFeelClassName());
                     UIManager.put("swing.boldMetal", Boolean.FALSE);
-                    UIManager.put("ScrollBarUI", JIPipeDesktopArrowLessScrollBarUI.class.getName());
-                    UIManager.put("SliderUI", JIPipeDesktopModernSliderUI.class.getName());
-                    UIManager.put("SpinnerUI", JIPipeDesktopModernSpinnerUI.class.getName());
+                    installModernUIs();
                 } catch (ClassNotFoundException | InstantiationException | IllegalAccessException |
                          UnsupportedLookAndFeelException e) {
                     e.printStackTrace();
@@ -107,6 +109,13 @@ public enum JIPipeDesktopUITheme {
             });
             INSTALLED_LISTENER = true;
         }
+    }
+
+    private static void installModernUIs() {
+        UIManager.put("ScrollBarUI", JIPipeDesktopModernScrollBarUI.class.getName());
+        UIManager.put("SliderUI", JIPipeDesktopModernSliderUI.class.getName());
+        UIManager.put("SpinnerUI", JIPipeDesktopModernSpinnerUI.class.getName());
+        UIManager.put("SplitPaneUI", JIPipeDesktopModernSplitPaneUI.class.getName());
     }
 
     public boolean isModern() {

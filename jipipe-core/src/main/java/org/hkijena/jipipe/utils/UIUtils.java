@@ -2859,6 +2859,10 @@ public class UIUtils {
         return panel;
     }
 
+    public static boolean currentThemeIsModern() {
+        return JIPipe.getInstance() == null || JIPipeGeneralUIApplicationSettings.getInstance() == null || JIPipeGeneralUIApplicationSettings.getInstance().getTheme().isModern();
+    }
+
     public static class DragThroughMouseListener implements MouseListener, MouseMotionListener {
         private final Component component;
         private final Component target;

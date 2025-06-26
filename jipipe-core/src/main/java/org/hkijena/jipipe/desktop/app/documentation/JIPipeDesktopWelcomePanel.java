@@ -30,7 +30,7 @@ import org.hkijena.jipipe.desktop.commons.components.JIPipeDesktopImageFrameComp
 import org.hkijena.jipipe.desktop.commons.components.renderers.JIPipeDesktopTemplateProjectListCellRenderer;
 import org.hkijena.jipipe.desktop.commons.components.search.JIPipeDesktopSearchTextField;
 import org.hkijena.jipipe.desktop.commons.components.tabs.JIPipeDesktopTabPane;
-import org.hkijena.jipipe.desktop.commons.theme.JIPipeDesktopRoundedButtonUI;
+import org.hkijena.jipipe.desktop.commons.theme.ui.JIPipeDesktopRoundedButtonUI;
 import org.hkijena.jipipe.plugins.cef.CefPlugin;
 import org.hkijena.jipipe.utils.*;
 import org.hkijena.jipipe.utils.ui.JIPipeDesktopDockPanel;

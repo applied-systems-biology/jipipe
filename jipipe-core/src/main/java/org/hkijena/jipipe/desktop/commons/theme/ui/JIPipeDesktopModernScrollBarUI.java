@@ -11,25 +11,24 @@
  * See the LICENSE file provided with the code for the full license.
  */
 
-package org.hkijena.jipipe.desktop.commons.theme;
+package org.hkijena.jipipe.desktop.commons.theme.ui;
 
-import org.hkijena.jipipe.JIPipe;
-import org.hkijena.jipipe.plugins.settings.JIPipeGeneralUIApplicationSettings;
+import org.hkijena.jipipe.utils.UIUtils;
 
 import javax.swing.*;
 import javax.swing.plaf.ComponentUI;
 import javax.swing.plaf.basic.BasicScrollBarUI;
 import java.awt.*;
 
-public class JIPipeDesktopArrowLessScrollBarUI extends BasicScrollBarUI {
+public class JIPipeDesktopModernScrollBarUI extends BasicScrollBarUI {
     public static ComponentUI createUI(JComponent c) {
-        return new JIPipeDesktopArrowLessScrollBarUI();
+        return new JIPipeDesktopModernScrollBarUI();
     }
 
     @Override
     protected JButton createDecreaseButton(int orientation) {
         try {
-            if (JIPipe.getInstance() == null || JIPipeGeneralUIApplicationSettings.getInstance() == null || JIPipeGeneralUIApplicationSettings.getInstance().getTheme().isModern())
+            if (UIUtils.currentThemeIsModern())
                 return createZeroButton();
             else
                 return super.createDecreaseButton(orientation);
@@ -41,7 +40,7 @@ public class JIPipeDesktopArrowLessScrollBarUI extends BasicScrollBarUI {
     @Override
     protected JButton createIncreaseButton(int orientation) {
         try {
-            if (JIPipe.getInstance() == null || JIPipeGeneralUIApplicationSettings.getInstance() == null || JIPipeGeneralUIApplicationSettings.getInstance().getTheme().isModern())
+            if (UIUtils.currentThemeIsModern())
                 return createZeroButton();
             else
                 return super.createIncreaseButton(orientation);

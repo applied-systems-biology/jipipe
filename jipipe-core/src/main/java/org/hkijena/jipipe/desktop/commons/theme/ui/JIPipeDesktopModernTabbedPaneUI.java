@@ -11,8 +11,10 @@
  * See the LICENSE file provided with the code for the full license.
  */
 
-package org.hkijena.jipipe.desktop.commons.theme;
+package org.hkijena.jipipe.desktop.commons.theme.ui;
 
+import org.hkijena.jipipe.desktop.commons.theme.JIPipeDesktopLegacyDarkModernMetalTheme;
+import org.hkijena.jipipe.desktop.commons.theme.JIPipeDesktopLegacyModernMetalTheme;
 import org.hkijena.jipipe.utils.UIUtils;
 
 import javax.swing.*;
@@ -25,7 +27,7 @@ import java.awt.*;
 /**
  * {@link javax.swing.plaf.metal.MetalTabbedPaneUI} without the slants
  */
-public class JIPipeDesktopCustomTabbedPaneUI extends BasicTabbedPaneUI {
+public class JIPipeDesktopModernTabbedPaneUI extends BasicTabbedPaneUI {
 
     protected int minTabWidth = 40;
     protected Color tabAreaBackground;
@@ -254,10 +256,10 @@ public class JIPipeDesktopCustomTabbedPaneUI extends BasicTabbedPaneUI {
 //            }
 //        }
 
-        if (isSelected) {
-            g.setColor(JIPipeDesktopLegacyModernMetalTheme.PRIMARY5);
-            g.fillRect(0, bottom - 1, w, 2);
-        }
+//        if (isSelected) {
+//            g.setColor(JIPipeDesktopLegacyModernMetalTheme.PRIMARY5);
+//            g.fillRect(0, bottom - 1, w, 2);
+//        }
 
         g.translate(-x, -y);
     }
@@ -1176,7 +1178,7 @@ public class JIPipeDesktopCustomTabbedPaneUI extends BasicTabbedPaneUI {
     public class TabbedPaneLayout extends BasicTabbedPaneUI.TabbedPaneLayout {
 
         public TabbedPaneLayout() {
-            JIPipeDesktopCustomTabbedPaneUI.this.super();
+            JIPipeDesktopModernTabbedPaneUI.this.super();
         }
 
         protected void normalizeTabRuns(int tabPlacement, int tabCount,

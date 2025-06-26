@@ -2,12 +2,14 @@ package org.hkijena.jipipe.desktop.commons.theme;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
 
+import javax.swing.*;
 import java.awt.*;
 
 public class JIPipeDesktopModernThemeStyle {
 
     @JsonProperty("name")
-    private String name = "Metal Default";
+    private String name = "Light";
+
     @JsonProperty("brightness")
     private JIPipeDesktopUIThemeBrightness brightness = JIPipeDesktopUIThemeBrightness.Light;
 
@@ -18,48 +20,129 @@ public class JIPipeDesktopModernThemeStyle {
     @JsonProperty("icon-theme-accent")
     private JIPipeDesktopUIIconVariant accentIconTheme = JIPipeDesktopUIIconVariant.LightAccent;
 
-    // Colors
-    @JsonProperty("window-background")
-    private Color windowBackground = new Color(238, 238, 238);
-    @JsonProperty("panel-background")
-    private Color panelBackground = new Color(238, 238, 238);
-    @JsonProperty("border-color")
-    private Color borderColor = new Color(172, 168, 153);
-    @JsonProperty("foreground")
-    private Color foreground = Color.BLACK;
-    @JsonProperty("foreground-secondary")
-    private Color secondaryForeground = new Color(100, 100, 100);
+    /*
+     * Basic colors
+     */
 
+    @JsonProperty("primary")
+    private Color primaryColor = new Color(0x8EBFEF);
+    @JsonProperty("secondary")
+    private Color secondaryColor = new Color(0xaa87de);
+    @JsonProperty("success")
+    private Color successColor = new Color(0x369650);
+    @JsonProperty("danger")
+    private Color dangerColor = new Color(0xE55765);
+    @JsonProperty("warning")
+    private Color warningColor = new Color(0xE58457);
+
+    /*
+     * Text colors
+     */
+
+    @JsonProperty("foreground")
+    private Color textForeground = new Color(0);
+    @JsonProperty("foreground-secondary")
+    private Color textMuted = new Color(0x6c707e);
+    @JsonProperty("foreground-inverted")
+    private Color textForegroundInverted = new Color(0xFFFFFF);
+    @JsonProperty("foreground-secondary-inverted")
+    private Color textMutedInverted = new Color(0xebecf0);
+
+    /*
+     * Panels/windows
+     */
+    @JsonProperty("window-background")
+    private Color windowBackground = new Color(0xEBECF0);
+    @JsonProperty("panel-background")
+    private Color panelBackground = new Color(0xFFFFFF);
+    @JsonProperty("menu-background")
+    private Color menuBackground = new Color(0xFFFFFF);
+    @JsonProperty("border-color")
+    private Color borderColor = new Color(0xebecf0);
+
+    /*
+     * Scroll bar
+     */
+    @JsonProperty("scrollbar-thumb")
+    private Color scrollBarThumb = new Color(0xd7d7d7);
+
+    /*
+     * Tab panel
+     */
+    @JsonProperty("tab-selected-background")
+    private Color tabSelectedBackground = new Color(0xE1EAFF);
+
+    /*
+     * Selection
+     */
     @JsonProperty("selection-background")
-    private Color selectionBackground = new Color(184, 207, 229);
+    private Color selectionBackground = new Color(0xDFE1E5);
+    @JsonProperty("selection-highlight")
+    private Color selectionHighlight = new Color(0xE1EAFF);
     @JsonProperty("selection-foreground")
     private Color selectionForeground = Color.BLACK;
-    @JsonProperty("primary")
-    private Color primaryColor = new Color(142, 191, 239);
-    @JsonProperty("focus-ring")
-    private Color focusRing = new Color(64, 158, 255);
-    @JsonProperty("hover-highlight")
-    private Color hoverHighlight = new Color(220, 240, 255);
 
+    /*
+     * Lists/tables
+     */
+    @JsonProperty("list-alternate-background")
+    private Color listAlternateBackground = new Color(0xF5F8FE);
+
+    /*
+     * Buttons
+     */
     @JsonProperty("button-background")
-    private Color buttonBackground = new Color(214, 217, 223);
-    @JsonProperty("button-hover")
-    private Color buttonHover = new Color(202, 215, 235);
-    @JsonProperty("button-pressed")
-    private Color buttonPressed = new Color(184, 207, 229);
+    private Color buttonBackground = Color.WHITE;
 
-    @JsonProperty("text-field-background")
-    private Color textFieldBackground = Color.WHITE;
-    @JsonProperty("text-field-foreground")
-    private Color textFieldForeground = Color.BLACK;
+    @JsonProperty("button-toggled")
+    private Color buttonToggled = new Color(0xCFCCD5);
 
-    @JsonProperty("divider-color")
-    private Color dividerColor = new Color(172, 168, 153);
+    /*
+     * Forms/fields
+     */
+    @JsonProperty("form-background")
+    private Color formBackground = Color.WHITE;
+    @JsonProperty("form-foreground")
+    private Color formForeground = Color.BLACK;
+
+    /*
+     * Viewports
+     */
+    @JsonProperty("viewport-background")
+    private Color viewportBackground = Color.WHITE;
+
+    /*
+     * Tooltips
+     */
 
     @JsonProperty("tooltip-background")
-    private Color tooltipBackground = new Color(255, 255, 225);
+    private Color tooltipBackground = new Color(0xFFFFFF);
     @JsonProperty("tooltip-foreground")
     private Color tooltipForeground = Color.BLACK;
+
+    public Color getViewportBackground() {
+        return viewportBackground;
+    }
+
+    public void setViewportBackground(Color viewportBackground) {
+        this.viewportBackground = viewportBackground;
+    }
+
+    public Color getSelectionHighlight() {
+        return selectionHighlight;
+    }
+
+    public void setSelectionHighlight(Color selectionHighlight) {
+        this.selectionHighlight = selectionHighlight;
+    }
+
+    public Color getTabSelectedBackground() {
+        return tabSelectedBackground;
+    }
+
+    public void setTabSelectedBackground(Color tabSelectedBackground) {
+        this.tabSelectedBackground = tabSelectedBackground;
+    }
 
     public String getName() {
         return name;
@@ -67,6 +150,14 @@ public class JIPipeDesktopModernThemeStyle {
 
     public void setName(String name) {
         this.name = name;
+    }
+
+    public Color getMenuBackground() {
+        return menuBackground;
+    }
+
+    public void setMenuBackground(Color menuBackground) {
+        this.menuBackground = menuBackground;
     }
 
     public JIPipeDesktopUIThemeBrightness getBrightness() {
@@ -101,6 +192,62 @@ public class JIPipeDesktopModernThemeStyle {
         this.accentIconTheme = accentIconTheme;
     }
 
+    public Color getPrimaryColor() {
+        return primaryColor;
+    }
+
+    public void setPrimaryColor(Color primaryColor) {
+        this.primaryColor = primaryColor;
+    }
+
+    public Color getSecondaryColor() {
+        return secondaryColor;
+    }
+
+    public void setSecondaryColor(Color secondaryColor) {
+        this.secondaryColor = secondaryColor;
+    }
+
+    public Color getSuccessColor() {
+        return successColor;
+    }
+
+    public void setSuccessColor(Color successColor) {
+        this.successColor = successColor;
+    }
+
+    public Color getDangerColor() {
+        return dangerColor;
+    }
+
+    public void setDangerColor(Color dangerColor) {
+        this.dangerColor = dangerColor;
+    }
+
+    public Color getWarningColor() {
+        return warningColor;
+    }
+
+    public void setWarningColor(Color warningColor) {
+        this.warningColor = warningColor;
+    }
+
+    public Color getTextForeground() {
+        return textForeground;
+    }
+
+    public void setTextForeground(Color textForeground) {
+        this.textForeground = textForeground;
+    }
+
+    public Color getTextMuted() {
+        return textMuted;
+    }
+
+    public void setTextMuted(Color textMuted) {
+        this.textMuted = textMuted;
+    }
+
     public Color getWindowBackground() {
         return windowBackground;
     }
@@ -125,20 +272,12 @@ public class JIPipeDesktopModernThemeStyle {
         this.borderColor = borderColor;
     }
 
-    public Color getForeground() {
-        return foreground;
+    public Color getScrollBarThumb() {
+        return scrollBarThumb;
     }
 
-    public void setForeground(Color foreground) {
-        this.foreground = foreground;
-    }
-
-    public Color getSecondaryForeground() {
-        return secondaryForeground;
-    }
-
-    public void setSecondaryForeground(Color secondaryForeground) {
-        this.secondaryForeground = secondaryForeground;
+    public void setScrollBarThumb(Color scrollBarThumb) {
+        this.scrollBarThumb = scrollBarThumb;
     }
 
     public Color getSelectionBackground() {
@@ -157,30 +296,6 @@ public class JIPipeDesktopModernThemeStyle {
         this.selectionForeground = selectionForeground;
     }
 
-    public Color getPrimaryColor() {
-        return primaryColor;
-    }
-
-    public void setPrimaryColor(Color primaryColor) {
-        this.primaryColor = primaryColor;
-    }
-
-    public Color getFocusRing() {
-        return focusRing;
-    }
-
-    public void setFocusRing(Color focusRing) {
-        this.focusRing = focusRing;
-    }
-
-    public Color getHoverHighlight() {
-        return hoverHighlight;
-    }
-
-    public void setHoverHighlight(Color hoverHighlight) {
-        this.hoverHighlight = hoverHighlight;
-    }
-
     public Color getButtonBackground() {
         return buttonBackground;
     }
@@ -189,44 +304,28 @@ public class JIPipeDesktopModernThemeStyle {
         this.buttonBackground = buttonBackground;
     }
 
-    public Color getButtonHover() {
-        return buttonHover;
+    public Color getButtonToggled() {
+        return buttonToggled;
     }
 
-    public void setButtonHover(Color buttonHover) {
-        this.buttonHover = buttonHover;
+    public void setButtonToggled(Color buttonToggled) {
+        this.buttonToggled = buttonToggled;
     }
 
-    public Color getButtonPressed() {
-        return buttonPressed;
+    public Color getFormBackground() {
+        return formBackground;
     }
 
-    public void setButtonPressed(Color buttonPressed) {
-        this.buttonPressed = buttonPressed;
+    public void setFormBackground(Color formBackground) {
+        this.formBackground = formBackground;
     }
 
-    public Color getTextFieldBackground() {
-        return textFieldBackground;
+    public Color getFormForeground() {
+        return formForeground;
     }
 
-    public void setTextFieldBackground(Color textFieldBackground) {
-        this.textFieldBackground = textFieldBackground;
-    }
-
-    public Color getTextFieldForeground() {
-        return textFieldForeground;
-    }
-
-    public void setTextFieldForeground(Color textFieldForeground) {
-        this.textFieldForeground = textFieldForeground;
-    }
-
-    public Color getDividerColor() {
-        return dividerColor;
-    }
-
-    public void setDividerColor(Color dividerColor) {
-        this.dividerColor = dividerColor;
+    public void setFormForeground(Color formForeground) {
+        this.formForeground = formForeground;
     }
 
     public Color getTooltipBackground() {
@@ -245,7 +344,35 @@ public class JIPipeDesktopModernThemeStyle {
         this.tooltipForeground = tooltipForeground;
     }
 
-    public boolean isDark() {
-        return brightness == JIPipeDesktopUIThemeBrightness.Dark;
+    public Color getTextForegroundInverted() {
+        return textForegroundInverted;
+    }
+
+    public void setTextForegroundInverted(Color textForegroundInverted) {
+        this.textForegroundInverted = textForegroundInverted;
+    }
+
+    public Color getTextMutedInverted() {
+        return textMutedInverted;
+    }
+
+    public void setTextMutedInverted(Color textMutedInverted) {
+        this.textMutedInverted = textMutedInverted;
+    }
+
+    public Color getListAlternateBackground() {
+        return listAlternateBackground;
+    }
+
+    public void setListAlternateBackground(Color listAlternateBackground) {
+        this.listAlternateBackground = listAlternateBackground;
+    }
+
+    public static JIPipeDesktopModernThemeStyle getCurrent() {
+        Object style = UIManager.get("style");
+        if(style instanceof JIPipeDesktopModernThemeStyle) {
+            return (JIPipeDesktopModernThemeStyle) style;
+        }
+        return new JIPipeDesktopModernThemeStyle();
     }
 }

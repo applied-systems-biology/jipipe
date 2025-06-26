@@ -17,12 +17,11 @@ import com.google.common.collect.BiMap;
 import com.google.common.collect.HashBiMap;
 import com.google.common.collect.ImmutableBiMap;
 import com.google.common.collect.ImmutableList;
-import org.hkijena.jipipe.JIPipe;
 import org.hkijena.jipipe.api.events.AbstractJIPipeEvent;
 import org.hkijena.jipipe.api.events.JIPipeEventEmitter;
 import org.hkijena.jipipe.api.parameters.AbstractJIPipeParameterCollection;
 import org.hkijena.jipipe.api.parameters.JIPipeParameter;
-import org.hkijena.jipipe.desktop.commons.theme.JIPipeDesktopCustomTabbedPaneUI;
+import org.hkijena.jipipe.desktop.commons.theme.ui.JIPipeDesktopModernTabbedPaneUI;
 import org.hkijena.jipipe.plugins.settings.JIPipeGeneralUIApplicationSettings;
 import org.hkijena.jipipe.utils.StringUtils;
 import org.hkijena.jipipe.utils.UIUtils;
@@ -78,6 +77,7 @@ public class JIPipeDesktopTabPane extends JPanel implements Disposable {
 
     private void initialize() {
         setLayout(new BorderLayout());
+        setOpaque(false);
         tabbedPane = new JIPipeDesktopDnDTabbedPane(tabPlacement.nativeValue);
         tabbedPane.setTabLayoutPolicy(JTabbedPane.SCROLL_TAB_LAYOUT);
         tabbedPane.addChangeListener(e -> updateTabHistory());
@@ -102,8 +102,8 @@ public class JIPipeDesktopTabPane extends JPanel implements Disposable {
                 }
             }
         });
-        if (JIPipe.getInstance() != null && JIPipeGeneralUIApplicationSettings.getInstance().getTheme().isModern()) {
-            tabbedPane.setUI(new JIPipeDesktopCustomTabbedPaneUI());
+        if (UIUtils.currentThemeIsModern()) {
+            tabbedPane.setUI(new JIPipeDesktopModernTabbedPaneUI());
         }
         add(tabbedPane, BorderLayout.CENTER);
         addComponentListener(new ComponentAdapter() {

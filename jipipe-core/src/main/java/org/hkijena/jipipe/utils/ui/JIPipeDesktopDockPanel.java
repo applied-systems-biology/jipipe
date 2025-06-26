@@ -7,6 +7,7 @@ import org.hkijena.jipipe.api.events.AbstractJIPipeEvent;
 import org.hkijena.jipipe.api.events.JIPipeEventEmitter;
 import org.hkijena.jipipe.api.parameters.JIPipeParameterCollection;
 import org.hkijena.jipipe.desktop.commons.components.JIPipeDesktopVerticalToolBar;
+import org.hkijena.jipipe.desktop.commons.theme.JIPipeDesktopModernThemeStyle;
 import org.hkijena.jipipe.utils.JIPipeDesktopSplitPane;
 import org.hkijena.jipipe.utils.UIUtils;
 import org.jetbrains.annotations.NotNull;
@@ -27,7 +28,7 @@ public class JIPipeDesktopDockPanel extends JPanel implements JIPipeDesktopSplit
 
     public static final int UI_ORDER_PINNED = -100;
     public static final int UI_ORDER_DEFAULT = 0;
-    private static final int RESIZE_HANDLE_SIZE = 4;
+    private static final int RESIZE_HANDLE_SIZE = 6;
     private final JIPipeDesktopVerticalToolBar leftToolBar = new JIPipeDesktopVerticalToolBar();
     private final JIPipeDesktopVerticalToolBar rightToolBar = new JIPipeDesktopVerticalToolBar();
     private final JLayeredPane layeredPane = new JLayeredPane();
@@ -60,6 +61,8 @@ public class JIPipeDesktopDockPanel extends JPanel implements JIPipeDesktopSplit
     private boolean alwaysShowLeftPanel = false;
     private boolean alwaysShowRightPanel = false;
     private JComponent mainComponent;
+    private final boolean usingModernTheme = UIUtils.currentThemeIsModern();
+    private final JIPipeDesktopModernThemeStyle style = JIPipeDesktopModernThemeStyle.getCurrent();
 
     public JIPipeDesktopDockPanel() {
         super(new BorderLayout());
@@ -71,8 +74,19 @@ public class JIPipeDesktopDockPanel extends JPanel implements JIPipeDesktopSplit
         add(leftToolBar, BorderLayout.WEST);
         add(rightToolBar, BorderLayout.EAST);
 
-        rightToolBar.setBorder(UIUtils.createPanelBorder(0, 0, 1, 0));
-        leftToolBar.setBorder(UIUtils.createPanelBorder(1, 0, 0, 0));
+        if(usingModernTheme) {
+            JIPipeDesktopModernThemeStyle style = JIPipeDesktopModernThemeStyle.getCurrent();
+            setBackground(style.getWindowBackground());
+
+            rightToolBar.setOpaque(false);
+            rightToolBar.setBorder(BorderFactory.createEmptyBorder());
+            leftToolBar.setOpaque(false);
+            leftToolBar.setBorder(BorderFactory.createEmptyBorder());
+        }
+        else {
+            rightToolBar.setBorder(UIUtils.createPanelBorder(0, 0, 1, 0));
+            leftToolBar.setBorder(UIUtils.createPanelBorder(1, 0, 0, 0));
+        }
 
         JPopupMenu toolbarContextMenu = new JPopupMenu();
         UIUtils.addReloadableRightClickPopupMenuToComponent(leftToolBar, toolbarContextMenu, (menu) -> reloadContextMenu(menu, false));
@@ -94,9 +108,9 @@ public class JIPipeDesktopDockPanel extends JPanel implements JIPipeDesktopSplit
         initializeRightPanel();
         initializeBottomPanel();
 
-        leftSplitPane.setDividerSize(12);
-        rightSplitPane.setDividerSize(12);
-        mainSplitPane.setDividerSize(12);
+        leftSplitPane.setDividerSize(RESIZE_HANDLE_SIZE);
+        rightSplitPane.setDividerSize(RESIZE_HANDLE_SIZE);
+        mainSplitPane.setDividerSize(RESIZE_HANDLE_SIZE);
 
         addComponentListener(new ComponentAdapter() {
             @Override
@@ -139,8 +153,7 @@ public class JIPipeDesktopDockPanel extends JPanel implements JIPipeDesktopSplit
         rightResizerPanel.setCursor(Cursor.getPredefinedCursor(Cursor.MOVE_CURSOR));
         rightResizerPanel.setPreferredSize(new Dimension(RESIZE_HANDLE_SIZE, 64));
         rightResizerPanel.setMinimumSize(new Dimension(RESIZE_HANDLE_SIZE, 32));
-//        rightResizerPanel.setBackground(Color.RED);
-        rightResizerPanel.setOpaque(false);
+        rightResizerPanel.setBackground(style.getWindowBackground());
 
         rightResizerPanel.addMouseMotionListener(new MouseAdapter() {
             @Override
@@ -163,8 +176,7 @@ public class JIPipeDesktopDockPanel extends JPanel implements JIPipeDesktopSplit
         leftResizerPanel.setCursor(Cursor.getPredefinedCursor(Cursor.MOVE_CURSOR));
         leftResizerPanel.setPreferredSize(new Dimension(RESIZE_HANDLE_SIZE, 64));
         leftResizerPanel.setMinimumSize(new Dimension(RESIZE_HANDLE_SIZE, 32));
-//        leftResizerPanel.setBackground(Color.RED);
-        leftResizerPanel.setOpaque(false);
+        leftResizerPanel.setBackground(style.getWindowBackground());
 
         leftResizerPanel.addMouseMotionListener(new MouseAdapter() {
             @Override
@@ -466,6 +478,7 @@ public class JIPipeDesktopDockPanel extends JPanel implements JIPipeDesktopSplit
 
     private JToggleButton createToggleButton(Panel panel) {
         JToggleButton button = new JToggleButton(panel.getIcon());
+        button.setOpaque(false);
         button.setSelected(panel.isDisplayed());
         button.setBorder(UIUtils.createEmptyBorder(4));
         button.setToolTipText(panel.getName());

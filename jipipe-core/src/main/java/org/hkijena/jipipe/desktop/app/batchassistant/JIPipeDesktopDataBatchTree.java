@@ -18,7 +18,7 @@ import org.hkijena.jipipe.api.nodes.iterationstep.JIPipeMultiIterationStep;
 import org.hkijena.jipipe.desktop.app.JIPipeDesktopWorkbench;
 import org.hkijena.jipipe.desktop.app.JIPipeDesktopWorkbenchPanel;
 import org.hkijena.jipipe.desktop.app.cache.cachetree.JIPipeDesktopCacheStateTreeCellRenderer;
-import org.hkijena.jipipe.desktop.commons.theme.JIPipeDesktopArrowLessScrollBarUI;
+import org.hkijena.jipipe.desktop.commons.theme.ui.JIPipeDesktopModernScrollBarUI;
 import org.hkijena.jipipe.utils.UIUtils;
 
 import javax.swing.*;
@@ -75,8 +75,8 @@ public class JIPipeDesktopDataBatchTree extends JIPipeDesktopWorkbenchPanel {
         tree = new JTree();
         tree.setCellRenderer(new JIPipeDesktopCacheStateTreeCellRenderer());
         treeScollPane = new JScrollPane(tree);
-        treeScollPane.getVerticalScrollBar().setUI(new JIPipeDesktopArrowLessScrollBarUI());
-        treeScollPane.getHorizontalScrollBar().setUI(new JIPipeDesktopArrowLessScrollBarUI());
+        treeScollPane.getVerticalScrollBar().setUI(new JIPipeDesktopModernScrollBarUI());
+        treeScollPane.getHorizontalScrollBar().setUI(new JIPipeDesktopModernScrollBarUI());
         add(treeScollPane, BorderLayout.CENTER);
     }
 
