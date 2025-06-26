@@ -22,7 +22,6 @@ import org.hkijena.jipipe.api.events.JIPipeEventEmitter;
 import org.hkijena.jipipe.api.project.JIPipeProjectMetadata;
 import org.hkijena.jipipe.api.project.JIPipeProjectTemplate;
 import org.hkijena.jipipe.utils.PathUtils;
-import org.hkijena.jipipe.utils.UIUtils;
 import org.hkijena.jipipe.utils.json.JsonUtils;
 
 import java.io.IOException;
@@ -61,7 +60,7 @@ public class JIPipeProjectTemplateRegistry {
     }
 
     public void register(Path file) throws IOException {
-        if (UIUtils.EXTENSION_FILTER_ZIP.accept(file.toFile())) {
+        if (PathUtils.EXTENSION_FILTER_ZIP.accept(file.toFile())) {
             try (JIPipeZIPReadDataStorage storage = new JIPipeZIPReadDataStorage(new JIPipeProgressInfo(), file)) {
                 Path projectFile = storage.findFileByExtension(".jip").get();
                 JsonNode node = JsonUtils.getObjectMapper().readerFor(JsonNode.class).readValue(storage.open(projectFile));

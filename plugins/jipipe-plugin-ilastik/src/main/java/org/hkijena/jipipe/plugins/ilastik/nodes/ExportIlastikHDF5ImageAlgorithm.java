@@ -39,7 +39,6 @@ import org.hkijena.jipipe.plugins.parameters.library.primitives.StringParameterS
 import org.hkijena.jipipe.plugins.parameters.library.primitives.optional.OptionalStringParameter;
 import org.hkijena.jipipe.utils.PathType;
 import org.hkijena.jipipe.utils.PathUtils;
-import org.hkijena.jipipe.utils.UIUtils;
 
 import java.nio.file.Path;
 import java.util.ArrayList;
@@ -142,7 +141,7 @@ public class ExportIlastikHDF5ImageAlgorithm extends JIPipeSimpleIteratingAlgori
                 canvasUI.getWorkbench(),
                 "Select output file",
                 PathType.FilesOnly,
-                UIUtils.EXTENSION_FILTER_HDF5);
+                PathUtils.EXTENSION_FILTER_HDF5);
         if (result != null) {
             setHdf5Path(result);
             emitParameterChangedEvent("hdf5-path");

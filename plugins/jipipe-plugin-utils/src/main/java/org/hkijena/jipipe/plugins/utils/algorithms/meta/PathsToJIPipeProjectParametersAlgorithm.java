@@ -45,9 +45,9 @@ import org.hkijena.jipipe.plugins.parameters.library.graph.InputSlotMapParameter
 import org.hkijena.jipipe.plugins.parameters.library.markup.HTMLText;
 import org.hkijena.jipipe.plugins.parameters.library.primitives.StringParameterSettings;
 import org.hkijena.jipipe.plugins.settings.JIPipeFileChooserApplicationSettings;
+import org.hkijena.jipipe.utils.PathUtils;
 import org.hkijena.jipipe.utils.ResourceUtils;
 import org.hkijena.jipipe.utils.StringUtils;
-import org.hkijena.jipipe.utils.UIUtils;
 
 import javax.swing.*;
 import java.awt.*;
@@ -107,7 +107,7 @@ public class PathsToJIPipeProjectParametersAlgorithm extends JIPipeIteratingAlgo
     @SetJIPipeDocumentation(name = "Load parameters from project", description = "Loads parameters from a project file")
     public void importParametersFromProject(JIPipeWorkbench workbench) {
         Window window = ((JIPipeDesktopWorkbench) workbench).getWindow();
-        Path projectFile = JIPipeDesktop.openFile(window, workbench, JIPipeFileChooserApplicationSettings.LastDirectoryKey.Projects, "Import JIPipe project", HTMLText.EMPTY, UIUtils.EXTENSION_FILTER_JIP);
+        Path projectFile = JIPipeDesktop.openFile(window, workbench, JIPipeFileChooserApplicationSettings.LastDirectoryKey.Projects, "Import JIPipe project", HTMLText.EMPTY, PathUtils.EXTENSION_FILTER_JIP);
         if (projectFile != null) {
             try {
                 JIPipeProject project = JIPipeProject.loadProject(projectFile, new UnspecifiedValidationReportContext(), new JIPipeValidationReport(), new JIPipeNotificationInbox());

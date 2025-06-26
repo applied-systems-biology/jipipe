@@ -30,7 +30,6 @@ import org.hkijena.jipipe.plugins.filesystem.dataypes.FileData;
 import org.hkijena.jipipe.plugins.tables.datatypes.ResultsTableData;
 import org.hkijena.jipipe.utils.PathType;
 import org.hkijena.jipipe.utils.PathUtils;
-import org.hkijena.jipipe.utils.UIUtils;
 
 import java.nio.file.Path;
 import java.util.ArrayList;
@@ -122,8 +121,8 @@ public class ExportTableAlgorithm2 extends JIPipeIteratingAlgorithm {
                 canvasUI.getWorkbench(),
                 "Select output file",
                 PathType.FilesOnly,
-                UIUtils.EXTENSION_FILTER_CSV,
-                UIUtils.EXTENSION_FILTER_XLSX);
+                PathUtils.EXTENSION_FILTER_CSV,
+                PathUtils.EXTENSION_FILTER_XLSX);
         if (result != null) {
             setFilePath(result);
             emitParameterChangedEvent("file-path");

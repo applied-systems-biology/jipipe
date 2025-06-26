@@ -43,7 +43,6 @@ import org.hkijena.jipipe.plugins.imagejdatatypes.util.ZARRUtils;
 import org.hkijena.jipipe.plugins.strings.URIData;
 import org.hkijena.jipipe.utils.PathType;
 import org.hkijena.jipipe.utils.PathUtils;
-import org.hkijena.jipipe.utils.UIUtils;
 import org.hkijena.jipipe.utils.json.JsonUtils;
 import org.janelia.saalfeldlab.n5.ij.N5Importer;
 import org.janelia.saalfeldlab.n5.ij.N5ScalePyramidExporter;
@@ -256,7 +255,7 @@ public class ExportImagePlusAsOMEZARRAlgorithm extends JIPipeSimpleIteratingAlgo
 
     @AddJIPipeDesktopNodeQuickAction(name = "Export to zipped ZARR directory", description = "Selects where the data should be exported", icon = "actions/document-export.png", buttonIcon = "actions/color-select.png", buttonText = "Select")
     public void selectOutputZipDesktopQuickAction(JIPipeDesktopGraphCanvasUI canvasUI) {
-        DataExportExpressionParameter result = DataExportExpressionParameter.showPathChooser(canvasUI.getDesktopWorkbench().getWindow(), canvasUI.getWorkbench(), "Select output file", PathType.FilesOnly, UIUtils.EXTENSION_FILTER_ZARR_ZIP);
+        DataExportExpressionParameter result = DataExportExpressionParameter.showPathChooser(canvasUI.getDesktopWorkbench().getWindow(), canvasUI.getWorkbench(), "Select output file", PathType.FilesOnly, PathUtils.EXTENSION_FILTER_ZARR_ZIP);
         if (result != null) {
             setOutputFormat(OutputFormat.ZippedZARR);
             setFilePath(result);

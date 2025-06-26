@@ -37,6 +37,7 @@ import org.hkijena.jipipe.plugins.parameters.library.markup.HTMLText;
 import org.hkijena.jipipe.plugins.parameters.library.markup.MarkdownText;
 import org.hkijena.jipipe.plugins.settings.JIPipeFileChooserApplicationSettings;
 import org.hkijena.jipipe.plugins.settings.JIPipeNodeTemplateApplicationSettings;
+import org.hkijena.jipipe.utils.PathUtils;
 import org.hkijena.jipipe.utils.StringUtils;
 import org.hkijena.jipipe.utils.UIUtils;
 import org.hkijena.jipipe.utils.json.JsonUtils;
@@ -303,7 +304,7 @@ public class NodeTemplateBox extends JIPipeDesktopWorkbenchPanel implements Node
         if (templateJList.getSelectedValuesList().isEmpty()) {
             return;
         }
-        Path path = JIPipeDesktop.saveFile(this, getDesktopWorkbench(), JIPipeFileChooserApplicationSettings.LastDirectoryKey.Projects, "Export templates", HTMLText.EMPTY, UIUtils.EXTENSION_FILTER_JSON);
+        Path path = JIPipeDesktop.saveFile(this, getDesktopWorkbench(), JIPipeFileChooserApplicationSettings.LastDirectoryKey.Projects, "Export templates", HTMLText.EMPTY, PathUtils.EXTENSION_FILTER_JSON);
         if (path != null) {
             try {
                 Files.write(path, JsonUtils.toPrettyJsonString(templateJList.getSelectedValuesList()).getBytes(StandardCharsets.UTF_8));
@@ -314,7 +315,7 @@ public class NodeTemplateBox extends JIPipeDesktopWorkbenchPanel implements Node
     }
 
     private void importTemplates() {
-        Path path = JIPipeDesktop.openFile(this, getDesktopWorkbench(), JIPipeFileChooserApplicationSettings.LastDirectoryKey.Projects, "Import templates", HTMLText.EMPTY, UIUtils.EXTENSION_FILTER_JSON);
+        Path path = JIPipeDesktop.openFile(this, getDesktopWorkbench(), JIPipeFileChooserApplicationSettings.LastDirectoryKey.Projects, "Import templates", HTMLText.EMPTY, PathUtils.EXTENSION_FILTER_JSON);
         if (path != null) {
             try {
                 JsonNode node = JsonUtils.getObjectMapper().readerFor(JsonNode.class).readValue(path.toFile());

@@ -47,6 +47,7 @@ import org.hkijena.jipipe.plugins.settings.JIPipeFileChooserApplicationSettings;
 import org.hkijena.jipipe.plugins.tables.datatypes.DoubleArrayTableColumnData;
 import org.hkijena.jipipe.plugins.tables.datatypes.StringArrayTableColumnData;
 import org.hkijena.jipipe.plugins.tables.datatypes.TableColumnData;
+import org.hkijena.jipipe.utils.PathUtils;
 import org.hkijena.jipipe.utils.ReflectionUtils;
 import org.hkijena.jipipe.utils.StringUtils;
 import org.hkijena.jipipe.utils.UIUtils;
@@ -154,7 +155,7 @@ public class JFreeChartPlotEditor extends JIPipeDesktopWorkbenchPanel implements
     }
 
     private void savePlot() {
-        Path path = JIPipeDesktop.saveFile(this, getDesktopWorkbench(), JIPipeFileChooserApplicationSettings.LastDirectoryKey.Data, "Save plot", HTMLText.EMPTY, UIUtils.EXTENSION_FILTER_ZIP);
+        Path path = JIPipeDesktop.saveFile(this, getDesktopWorkbench(), JIPipeFileChooserApplicationSettings.LastDirectoryKey.Data, "Save plot", HTMLText.EMPTY, PathUtils.EXTENSION_FILTER_ZIP);
         if (UIUtils.checkAndAskIfFileExists(this, path, "Save plot")) {
             JIPipeProgressInfo progressInfo = new JIPipeProgressInfo();
             try (JIPipeZIPWriteDataStorage storage = new JIPipeZIPWriteDataStorage(progressInfo, path)) {
@@ -166,7 +167,7 @@ public class JFreeChartPlotEditor extends JIPipeDesktopWorkbenchPanel implements
     }
 
     private void openPlot() {
-        Path path = JIPipeDesktop.openFile(this, getDesktopWorkbench(), JIPipeFileChooserApplicationSettings.LastDirectoryKey.Data, "Open plot", HTMLText.EMPTY, UIUtils.EXTENSION_FILTER_ZIP);
+        Path path = JIPipeDesktop.openFile(this, getDesktopWorkbench(), JIPipeFileChooserApplicationSettings.LastDirectoryKey.Data, "Open plot", HTMLText.EMPTY, PathUtils.EXTENSION_FILTER_ZIP);
         if (path != null) {
             JIPipeProgressInfo progressInfo = new JIPipeProgressInfo();
             try (JIPipeZIPReadDataStorage storage = new JIPipeZIPReadDataStorage(progressInfo, path)) {

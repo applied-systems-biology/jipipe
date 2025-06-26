@@ -32,10 +32,7 @@ import org.hkijena.jipipe.desktop.commons.components.search.JIPipeDesktopSearchT
 import org.hkijena.jipipe.plugins.parameters.library.markup.HTMLText;
 import org.hkijena.jipipe.plugins.parameters.library.markup.MarkdownText;
 import org.hkijena.jipipe.plugins.settings.JIPipeFileChooserApplicationSettings;
-import org.hkijena.jipipe.utils.ArchiveUtils;
-import org.hkijena.jipipe.utils.JIPipeDesktopSplitPane;
-import org.hkijena.jipipe.utils.StringUtils;
-import org.hkijena.jipipe.utils.UIUtils;
+import org.hkijena.jipipe.utils.*;
 import org.hkijena.jipipe.utils.json.JsonUtils;
 
 import javax.swing.*;
@@ -213,7 +210,7 @@ public class JIPipeDesktopArtifactManagerUI extends JIPipeDesktopWorkbenchPanel 
     }
 
     private void installArtifactManually() {
-        Path archiveFile = JIPipeDesktop.openFile(this, getDesktopWorkbench(), JIPipeFileChooserApplicationSettings.LastDirectoryKey.External, "Manually install artifact", HTMLText.EMPTY, UIUtils.EXTENSION_FILTER_ARCHIVE);
+        Path archiveFile = JIPipeDesktop.openFile(this, getDesktopWorkbench(), JIPipeFileChooserApplicationSettings.LastDirectoryKey.External, "Manually install artifact", HTMLText.EMPTY, PathUtils.EXTENSION_FILTER_ARCHIVE);
         if (archiveFile != null) {
             JIPipeArtifact dummyArtifact = new JIPipeArtifact();
 

@@ -34,10 +34,7 @@ import org.hkijena.jipipe.plugins.parameters.library.markup.HTMLText;
 import org.hkijena.jipipe.plugins.parameters.library.pairs.StringAndStringPairParameter;
 import org.hkijena.jipipe.plugins.settings.JIPipeFileChooserApplicationSettings;
 import org.hkijena.jipipe.plugins.settings.JIPipeGraphEditorUIApplicationSettings;
-import org.hkijena.jipipe.utils.ReflectionUtils;
-import org.hkijena.jipipe.utils.StringUtils;
-import org.hkijena.jipipe.utils.TooltipUtils;
-import org.hkijena.jipipe.utils.UIUtils;
+import org.hkijena.jipipe.utils.*;
 import org.hkijena.jipipe.utils.json.JsonUtils;
 import org.hkijena.jipipe.utils.ui.CopyImageToClipboard;
 import org.hkijena.jipipe.utils.ui.JIPipeDesktopDockPanel;
@@ -576,7 +573,7 @@ public abstract class AbstractJIPipeDesktopGraphEditorUI extends JIPipeDesktopWo
 
     private void createScreenshotSVG() {
         SVGGraphics2D screenshot = canvasUI.createScreenshotSVG();
-        Path selectedPath = JIPipeDesktop.saveFile(this, getDesktopWorkbench(), JIPipeFileChooserApplicationSettings.LastDirectoryKey.Projects, "Export graph as SVG (*.svg)", HTMLText.EMPTY, UIUtils.EXTENSION_FILTER_SVG);
+        Path selectedPath = JIPipeDesktop.saveFile(this, getDesktopWorkbench(), JIPipeFileChooserApplicationSettings.LastDirectoryKey.Projects, "Export graph as SVG (*.svg)", HTMLText.EMPTY, PathUtils.EXTENSION_FILTER_SVG);
         if (selectedPath != null) {
             try {
                 SVGUtils.writeToSVG(selectedPath.toFile(), screenshot.getSVGElement());
@@ -589,7 +586,7 @@ public abstract class AbstractJIPipeDesktopGraphEditorUI extends JIPipeDesktopWo
 
     private void createScreenshotPNG() {
         BufferedImage screenshot = canvasUI.createScreenshotPNG();
-        Path selectedPath = JIPipeDesktop.saveFile(this, getDesktopWorkbench(), JIPipeFileChooserApplicationSettings.LastDirectoryKey.Projects, "Export graph as PNG (*.png)", HTMLText.EMPTY, UIUtils.EXTENSION_FILTER_PNG);
+        Path selectedPath = JIPipeDesktop.saveFile(this, getDesktopWorkbench(), JIPipeFileChooserApplicationSettings.LastDirectoryKey.Projects, "Export graph as PNG (*.png)", HTMLText.EMPTY, PathUtils.EXTENSION_FILTER_PNG);
         if (selectedPath != null) {
             try {
                 ImageIO.write(screenshot, "PNG", selectedPath.toFile());

@@ -51,6 +51,7 @@ import org.hkijena.jipipe.plugins.settings.JIPipeFileChooserApplicationSettings;
 import org.hkijena.jipipe.plugins.settings.JIPipeGeneralDataApplicationSettings;
 import org.hkijena.jipipe.plugins.tables.datatypes.ResultsTableData;
 import org.hkijena.jipipe.utils.MenuManager;
+import org.hkijena.jipipe.utils.PathUtils;
 import org.hkijena.jipipe.utils.StringUtils;
 import org.hkijena.jipipe.utils.UIUtils;
 import org.hkijena.jipipe.utils.data.Store;
@@ -425,7 +426,7 @@ public class JIPipeDesktopDataBatchAssistantDataTableUI extends JIPipeDesktopWor
     }
 
     private void exportAsJIPipeSlotZIP() {
-        Path outputZipFile = JIPipeDesktop.saveFile(this, getDesktopWorkbench(), JIPipeFileChooserApplicationSettings.LastDirectoryKey.Data, "Export as JIPipe data table (*.zip)", HTMLText.EMPTY, UIUtils.EXTENSION_FILTER_ZIP);
+        Path outputZipFile = JIPipeDesktop.saveFile(this, getDesktopWorkbench(), JIPipeFileChooserApplicationSettings.LastDirectoryKey.Data, "Export as JIPipe data table (*.zip)", HTMLText.EMPTY, PathUtils.EXTENSION_FILTER_ZIP);
         if (outputZipFile != null) {
             if (Files.isRegularFile(outputZipFile)) {
                 if (JOptionPane.showConfirmDialog(getDesktopWorkbench().getWindow(),
@@ -443,7 +444,7 @@ public class JIPipeDesktopDataBatchAssistantDataTableUI extends JIPipeDesktopWor
     }
 
     private void exportAsCSV() {
-        Path path = JIPipeDesktop.saveFile(this, getDesktopWorkbench(), JIPipeFileChooserApplicationSettings.LastDirectoryKey.Projects, "Export as *.csv", HTMLText.EMPTY, UIUtils.EXTENSION_FILTER_CSV);
+        Path path = JIPipeDesktop.saveFile(this, getDesktopWorkbench(), JIPipeFileChooserApplicationSettings.LastDirectoryKey.Projects, "Export as *.csv", HTMLText.EMPTY, PathUtils.EXTENSION_FILTER_CSV);
         if (path != null) {
             ResultsTableData tableData = dataTableModel.getDataTable().toAnnotationTable(true);
             tableData.saveAsCSV(path);

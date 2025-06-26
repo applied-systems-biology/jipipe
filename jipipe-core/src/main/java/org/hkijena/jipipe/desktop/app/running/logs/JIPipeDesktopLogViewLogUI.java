@@ -23,6 +23,7 @@ import org.hkijena.jipipe.desktop.commons.notifications.JIPipeDesktopGenericNoti
 import org.hkijena.jipipe.plugins.parameters.library.markup.HTMLText;
 import org.hkijena.jipipe.plugins.settings.JIPipeFileChooserApplicationSettings;
 import org.hkijena.jipipe.plugins.settings.JIPipeRuntimeApplicationSettings;
+import org.hkijena.jipipe.utils.PathUtils;
 import org.hkijena.jipipe.utils.UIUtils;
 
 import javax.swing.*;
@@ -111,7 +112,7 @@ public class JIPipeDesktopLogViewLogUI extends JIPipeDesktopWorkbenchPanel {
     }
 
     private void exportLog() {
-        Path path = JIPipeDesktop.saveFile(this, getDesktopWorkbench(), JIPipeFileChooserApplicationSettings.LastDirectoryKey.Data, "Export log", HTMLText.EMPTY, UIUtils.EXTENSION_FILTER_TXT);
+        Path path = JIPipeDesktop.saveFile(this, getDesktopWorkbench(), JIPipeFileChooserApplicationSettings.LastDirectoryKey.Data, "Export log", HTMLText.EMPTY, PathUtils.EXTENSION_FILTER_TXT);
         if (path != null) {
             try {
                 Files.write(path, logEntry.getLog().getBytes(StandardCharsets.UTF_8));

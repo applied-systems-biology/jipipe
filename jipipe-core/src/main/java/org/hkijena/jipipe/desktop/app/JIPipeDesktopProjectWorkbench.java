@@ -69,6 +69,7 @@ import org.hkijena.jipipe.desktop.commons.theme.JIPipeDesktopModernThemeStyle;
 import org.hkijena.jipipe.plugins.parameters.library.markup.HTMLText;
 import org.hkijena.jipipe.plugins.parameters.library.markup.MarkdownText;
 import org.hkijena.jipipe.plugins.settings.*;
+import org.hkijena.jipipe.utils.PathUtils;
 import org.hkijena.jipipe.utils.StringUtils;
 import org.hkijena.jipipe.utils.UIUtils;
 import org.jdesktop.swingx.JXStatusBar;
@@ -317,7 +318,7 @@ public class JIPipeDesktopProjectWorkbench extends JPanel implements JIPipeDeskt
 
     private void initialize(boolean showIntroduction, boolean isNewProject) {
         setLayout(new BorderLayout());
-        setBackground(JIPipeDesktopModernThemeStyle.getCurrent().getWindowBackground());
+        setBackground(UIUtils.CURRENT_STYLE.getWindowBackground());
 
         // Initialize JIPipe logger
         JIPipeDesktopRunnableLogsCollection.getInstance();
@@ -934,7 +935,7 @@ public class JIPipeDesktopProjectWorkbench extends JPanel implements JIPipeDeskt
     }
 
     private void archiveProjectAsZIP() {
-        Path file = JIPipeDesktop.saveFile(this, this, JIPipeFileChooserApplicationSettings.LastDirectoryKey.Projects, "Archive project as ZIP", HTMLText.EMPTY, UIUtils.EXTENSION_FILTER_ZIP);
+        Path file = JIPipeDesktop.saveFile(this, this, JIPipeFileChooserApplicationSettings.LastDirectoryKey.Projects, "Archive project as ZIP", HTMLText.EMPTY, PathUtils.EXTENSION_FILTER_ZIP);
         if (file != null) {
             JIPipeDesktopRunExecuteUI.runInDialog(this, this, new JIPipeArchiveProjectToZIPRun(getProject(), file));
         }

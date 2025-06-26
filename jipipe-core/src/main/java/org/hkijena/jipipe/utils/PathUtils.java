@@ -20,6 +20,7 @@ import org.hkijena.jipipe.JIPipe;
 import org.hkijena.jipipe.api.JIPipeProgressInfo;
 
 import javax.swing.*;
+import javax.swing.filechooser.FileNameExtensionFilter;
 import java.awt.*;
 import java.io.IOException;
 import java.nio.file.*;
@@ -36,6 +37,33 @@ import java.util.stream.Stream;
  */
 public class PathUtils {
 
+    public static final FileNameExtensionFilter EXTENSION_FILTER_CSV = new FileNameExtensionFilter("CSV table (*.csv)", "csv");
+    public static final FileNameExtensionFilter EXTENSION_FILTER_TSV = new FileNameExtensionFilter("TSV table (*.tsv)", "tsv");
+    public static final FileNameExtensionFilter EXTENSION_FILTER_XLSX = new FileNameExtensionFilter("Excel table (*.xlsx)", "xlsx");
+    public static final FileNameExtensionFilter EXTENSION_FILTER_PNG = new FileNameExtensionFilter("PNG image (*.png)", "png");
+    public static final FileNameExtensionFilter EXTENSION_FILTER_IMAGEIO_IMAGES = new FileNameExtensionFilter("Image file (*.png, *.jpg, *.jpeg, *.bmp)", "png", "jpg", "jpeg", "bmp");
+    public static final FileNameExtensionFilter EXTENSION_FILTER_SVG = new FileNameExtensionFilter("SVG image (*.svg)", "svg");
+    public static final FileNameExtensionFilter EXTENSION_FILTER_MD = new FileNameExtensionFilter("Markdown text (*.md)", "md");
+    public static final FileNameExtensionFilter EXTENSION_FILTER_PDF = new FileNameExtensionFilter("Portable document format (*.pdf)", "pdf");
+    public static final FileNameExtensionFilter EXTENSION_FILTER_HTML = new FileNameExtensionFilter("HTML document (*.html, *.htm)", "html", "htm");
+    public static final FileNameExtensionFilter EXTENSION_FILTER_JPEG = new FileNameExtensionFilter("JPEG image (*.jpg, *.jpeg)", "jpg", "jpeg");
+    public static final FileNameExtensionFilter EXTENSION_FILTER_BMP = new FileNameExtensionFilter("Bitmap image (*.bmp)", "bmp");
+    public static final FileNameExtensionFilter EXTENSION_FILTER_TIFF = new FileNameExtensionFilter("TIFF image (*.tif, *.tiff)", "tif", "tiff");
+    public static final FileNameExtensionFilter EXTENSION_FILTER_OME_TIFF = new FileNameExtensionFilter("OME TIFF image (*.ome.tif, *.ome.tiff)", "ome.tif", "ome.tiff");
+    public static final FileNameExtensionFilter EXTENSION_FILTER_JIP = new FileNameExtensionFilter("JIPipe project (*.jip)", "jip");
+    public static final FileNameExtensionFilter EXTENSION_FILTER_JIPE = new FileNameExtensionFilter("JIPipe extension (*.jipe)", "jipe");
+    public static final FileNameExtensionFilter EXTENSION_FILTER_JIPC = new FileNameExtensionFilter("JIPipe compartment (*.jipc)", "jipc");
+    public static final FileNameExtensionFilter EXTENSION_FILTER_JSON = new FileNameExtensionFilter("JSON file (*.json)", "json");
+    public static final FileNameExtensionFilter EXTENSION_FILTER_TXT = new FileNameExtensionFilter("Text file (*.txt)", "txt", "log");
+    public static final FileNameExtensionFilter EXTENSION_FILTER_ZIP = new FileNameExtensionFilter("ZIP file (*.zip)", "zip");
+    public static final FileNameExtensionFilter EXTENSION_FILTER_TAR_GZ = new FileNameExtensionFilter("GZipped TAR file (*.tar.gz)", "tar.gz");
+    public static final FileNameExtensionFilter EXTENSION_FILTER_ARCHIVE = new FileNameExtensionFilter("Archive (*.zip, *.tar.gz)", "zip", "gz");
+    public static final FileNameExtensionFilter EXTENSION_FILTER_ROI_ZIP = new FileNameExtensionFilter("ImageJ ROIs (*.zip)", "zip");
+    public static final FileNameExtensionFilter EXTENSION_FILTER_ROI = new FileNameExtensionFilter("ImageJ ROI (*.roi)", "roi");
+    public static final FileNameExtensionFilter EXTENSION_FILTER_ROIS = new FileNameExtensionFilter("ImageJ ROI (*.roi, *.zip)", "roi", "zip");
+    public static final FileNameExtensionFilter EXTENSION_FILTER_AVI = new FileNameExtensionFilter("Video file (*.avi)", "avi");
+    public static final FileNameExtensionFilter EXTENSION_FILTER_HDF5 = new FileNameExtensionFilter("HDF5 data (*.hdf5, *.h5)", "hdf5", "h5");
+    public static final FileNameExtensionFilter EXTENSION_FILTER_ZARR_ZIP = new FileNameExtensionFilter("ZARR ZIP (*.zarr.zip)", "zarr.zip");
     private static final String RANDOM_TMP_CHARACTERS = "abcdefghijklmnopqrstuvwxyz0123456789";
     private static final int RANDOM_TMP_LENGTH = 7;
 

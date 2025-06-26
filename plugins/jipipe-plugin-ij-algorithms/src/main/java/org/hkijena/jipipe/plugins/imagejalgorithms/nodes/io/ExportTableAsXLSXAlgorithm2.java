@@ -186,7 +186,7 @@ public class ExportTableAsXLSXAlgorithm2 extends JIPipeMergingAlgorithm {
                 canvasUI.getWorkbench(),
                 "Select output file",
                 PathType.FilesOnly,
-                UIUtils.EXTENSION_FILTER_XLSX);
+                PathUtils.EXTENSION_FILTER_XLSX);
         if (result != null) {
             setFilePath(result);
             emitParameterChangedEvent("file-path");

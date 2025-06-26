@@ -38,6 +38,7 @@ import org.hkijena.jipipe.plugins.parameters.library.markup.HTMLText;
 import org.hkijena.jipipe.plugins.parameters.library.markup.MarkdownText;
 import org.hkijena.jipipe.plugins.settings.JIPipeFileChooserApplicationSettings;
 import org.hkijena.jipipe.plugins.tables.datatypes.ResultsTableData;
+import org.hkijena.jipipe.utils.PathUtils;
 import org.hkijena.jipipe.utils.UIUtils;
 import org.hkijena.jipipe.utils.ui.JIPipeDesktopDockPanel;
 import org.jgrapht.alg.connectivity.ConnectivityInspector;
@@ -247,7 +248,7 @@ public class FilamentsManagerPlugin2D extends JIPipeDesktopLegacyImageViewerPlug
     }
 
     private void importFilamentsFromFile() {
-        Path path = JIPipeDesktop.openFile(getViewerPanel(), getWorkbench(), JIPipeFileChooserApplicationSettings.LastDirectoryKey.Data, "Import filaments", HTMLText.EMPTY, UIUtils.EXTENSION_FILTER_ZIP);
+        Path path = JIPipeDesktop.openFile(getViewerPanel(), getWorkbench(), JIPipeFileChooserApplicationSettings.LastDirectoryKey.Data, "Import filaments", HTMLText.EMPTY, PathUtils.EXTENSION_FILTER_ZIP);
         if (path != null && displayFilamentsViewMenuItem.getState()) {
             JIPipeProgressInfo progressInfo = new JIPipeProgressInfo();
             try (JIPipeZIPReadDataStorage storage = new JIPipeZIPReadDataStorage(progressInfo, path)) {
@@ -265,7 +266,7 @@ public class FilamentsManagerPlugin2D extends JIPipeDesktopLegacyImageViewerPlug
     }
 
     private void exportFilamentsToFile(Filaments3DGraphData filaments) {
-        FileNameExtensionFilter[] fileNameExtensionFilters = new FileNameExtensionFilter[]{UIUtils.EXTENSION_FILTER_ZIP};
+        FileNameExtensionFilter[] fileNameExtensionFilters = new FileNameExtensionFilter[]{PathUtils.EXTENSION_FILTER_ZIP};
         Path path = JIPipeDesktop.saveFile(getViewerPanel(), getWorkbench(), JIPipeFileChooserApplicationSettings.LastDirectoryKey.Data, "Export filaments", HTMLText.EMPTY, fileNameExtensionFilters);
         if (path != null) {
             JIPipeProgressInfo progressInfo = new JIPipeProgressInfo();

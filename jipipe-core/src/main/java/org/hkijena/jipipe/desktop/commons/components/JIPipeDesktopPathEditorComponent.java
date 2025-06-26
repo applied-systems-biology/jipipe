@@ -19,10 +19,7 @@ import org.hkijena.jipipe.desktop.app.JIPipeDesktopWorkbenchPanel;
 import org.hkijena.jipipe.plugins.parameters.library.markup.HTMLText;
 import org.hkijena.jipipe.plugins.settings.JIPipeFileChooserApplicationSettings;
 import org.hkijena.jipipe.plugins.settings.JIPipeRuntimeApplicationSettings;
-import org.hkijena.jipipe.utils.PathIOMode;
-import org.hkijena.jipipe.utils.PathType;
-import org.hkijena.jipipe.utils.StringUtils;
-import org.hkijena.jipipe.utils.UIUtils;
+import org.hkijena.jipipe.utils.*;
 
 import javax.swing.*;
 import javax.swing.event.DocumentEvent;
@@ -217,25 +214,25 @@ public class JIPipeDesktopPathEditorComponent extends JIPipeDesktopWorkbenchPane
         extensionFilters.clear();
         for (String extension : extensions) {
             if ("csv".equals(extension))
-                extensionFilters.add(UIUtils.EXTENSION_FILTER_CSV);
+                extensionFilters.add(PathUtils.EXTENSION_FILTER_CSV);
             else if ("png".equals(extension))
-                extensionFilters.add(UIUtils.EXTENSION_FILTER_PNG);
+                extensionFilters.add(PathUtils.EXTENSION_FILTER_PNG);
             else if ("svg".equals(extension))
-                extensionFilters.add(UIUtils.EXTENSION_FILTER_SVG);
+                extensionFilters.add(PathUtils.EXTENSION_FILTER_SVG);
             else if ("md".equals(extension))
-                extensionFilters.add(UIUtils.EXTENSION_FILTER_MD);
+                extensionFilters.add(PathUtils.EXTENSION_FILTER_MD);
             else if ("pdf".equals(extension))
-                extensionFilters.add(UIUtils.EXTENSION_FILTER_PDF);
+                extensionFilters.add(PathUtils.EXTENSION_FILTER_PDF);
             else if ("html".equals(extension))
-                extensionFilters.add(UIUtils.EXTENSION_FILTER_HTML);
+                extensionFilters.add(PathUtils.EXTENSION_FILTER_HTML);
             else if ("jpeg".equals(extension))
-                extensionFilters.add(UIUtils.EXTENSION_FILTER_JPEG);
+                extensionFilters.add(PathUtils.EXTENSION_FILTER_JPEG);
             else if ("jip".equals(extension))
-                extensionFilters.add(UIUtils.EXTENSION_FILTER_JIP);
+                extensionFilters.add(PathUtils.EXTENSION_FILTER_JIP);
             else if ("jipe".equals(extension))
-                extensionFilters.add(UIUtils.EXTENSION_FILTER_JIPE);
+                extensionFilters.add(PathUtils.EXTENSION_FILTER_JIPE);
             else if ("jipc".equals(extension))
-                extensionFilters.add(UIUtils.EXTENSION_FILTER_JIPC);
+                extensionFilters.add(PathUtils.EXTENSION_FILTER_JIPC);
             else
                 extensionFilters.add(new FileNameExtensionFilter(extension.toUpperCase(Locale.ROOT) + " file (*." + extension + ")", extension));
         }

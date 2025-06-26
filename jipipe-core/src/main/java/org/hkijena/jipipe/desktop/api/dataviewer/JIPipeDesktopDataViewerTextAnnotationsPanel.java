@@ -20,6 +20,7 @@ import org.hkijena.jipipe.desktop.app.tableeditor.JIPipeDesktopTableEditor;
 import org.hkijena.jipipe.plugins.parameters.library.markup.HTMLText;
 import org.hkijena.jipipe.plugins.settings.JIPipeFileChooserApplicationSettings;
 import org.hkijena.jipipe.plugins.tables.datatypes.ResultsTableData;
+import org.hkijena.jipipe.utils.PathUtils;
 import org.hkijena.jipipe.utils.UIUtils;
 import org.jdesktop.swingx.JXTable;
 
@@ -100,7 +101,7 @@ public class JIPipeDesktopDataViewerTextAnnotationsPanel extends JIPipeDesktopWo
         Path path = JIPipeDesktop.saveFile(this,
                 getDesktopWorkbench(), JIPipeFileChooserApplicationSettings.LastDirectoryKey.Data,
                 "Export as *.xlsx",
-                HTMLText.EMPTY, UIUtils.EXTENSION_FILTER_XLSX);
+                HTMLText.EMPTY, PathUtils.EXTENSION_FILTER_XLSX);
         if (path != null) {
             currentData.saveAsXLSX(path);
         }
@@ -119,7 +120,7 @@ public class JIPipeDesktopDataViewerTextAnnotationsPanel extends JIPipeDesktopWo
         Path path = JIPipeDesktop.saveFile(this,
                 getDesktopWorkbench(), JIPipeFileChooserApplicationSettings.LastDirectoryKey.Data,
                 "Export as *.csv",
-                HTMLText.EMPTY, UIUtils.EXTENSION_FILTER_CSV);
+                HTMLText.EMPTY, PathUtils.EXTENSION_FILTER_CSV);
         if (path != null) {
             currentData.saveAsCSV(path);
         }

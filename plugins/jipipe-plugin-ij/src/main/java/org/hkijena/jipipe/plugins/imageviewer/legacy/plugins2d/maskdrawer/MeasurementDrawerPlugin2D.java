@@ -35,6 +35,7 @@ import org.hkijena.jipipe.plugins.imageviewer.legacy.JIPipeDesktopLegacyImageVie
 import org.hkijena.jipipe.plugins.parameters.library.markup.HTMLText;
 import org.hkijena.jipipe.plugins.settings.JIPipeFileChooserApplicationSettings;
 import org.hkijena.jipipe.plugins.tables.datatypes.ResultsTableData;
+import org.hkijena.jipipe.utils.PathUtils;
 import org.hkijena.jipipe.utils.UIUtils;
 import org.jdesktop.swingx.JXTable;
 
@@ -123,9 +124,9 @@ public class MeasurementDrawerPlugin2D extends MaskDrawerPlugin2D implements Mas
         if (lastMeasurements == null) {
             return;
         }
-        Path selectedPath = JIPipeDesktop.saveFile(getViewerPanel(), getWorkbench(), JIPipeFileChooserApplicationSettings.LastDirectoryKey.Projects, "Export table", HTMLText.EMPTY, UIUtils.EXTENSION_FILTER_CSV, UIUtils.EXTENSION_FILTER_XLSX);
+        Path selectedPath = JIPipeDesktop.saveFile(getViewerPanel(), getWorkbench(), JIPipeFileChooserApplicationSettings.LastDirectoryKey.Projects, "Export table", HTMLText.EMPTY, PathUtils.EXTENSION_FILTER_CSV, PathUtils.EXTENSION_FILTER_XLSX);
         if (selectedPath != null) {
-            if (UIUtils.EXTENSION_FILTER_XLSX.accept(selectedPath.toFile())) {
+            if (PathUtils.EXTENSION_FILTER_XLSX.accept(selectedPath.toFile())) {
                 lastMeasurements.saveAsXLSX(selectedPath);
             } else {
                 lastMeasurements.saveAsCSV(selectedPath);

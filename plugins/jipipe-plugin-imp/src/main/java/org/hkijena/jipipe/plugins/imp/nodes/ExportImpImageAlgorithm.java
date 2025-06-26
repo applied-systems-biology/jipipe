@@ -32,7 +32,6 @@ import org.hkijena.jipipe.plugins.imp.datatypes.ImpImageOutputFormat;
 import org.hkijena.jipipe.plugins.imp.utils.ImpImageUtils;
 import org.hkijena.jipipe.utils.PathType;
 import org.hkijena.jipipe.utils.PathUtils;
-import org.hkijena.jipipe.utils.UIUtils;
 
 import javax.imageio.ImageIO;
 import java.awt.image.BufferedImage;
@@ -138,11 +137,11 @@ public class ExportImpImageAlgorithm extends JIPipeIteratingAlgorithm {
                 canvasUI.getWorkbench(),
                 "Select output file",
                 PathType.FilesOnly,
-                UIUtils.EXTENSION_FILTER_PNG,
-                UIUtils.EXTENSION_FILTER_BMP,
-                UIUtils.EXTENSION_FILTER_TIFF,
-                UIUtils.EXTENSION_FILTER_AVI,
-                UIUtils.EXTENSION_FILTER_JPEG);
+                PathUtils.EXTENSION_FILTER_PNG,
+                PathUtils.EXTENSION_FILTER_BMP,
+                PathUtils.EXTENSION_FILTER_TIFF,
+                PathUtils.EXTENSION_FILTER_AVI,
+                PathUtils.EXTENSION_FILTER_JPEG);
         if (result != null) {
             setFilePath(result);
             emitParameterChangedEvent("file-path");

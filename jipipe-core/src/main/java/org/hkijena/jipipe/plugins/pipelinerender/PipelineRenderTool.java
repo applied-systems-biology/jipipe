@@ -24,6 +24,7 @@ import org.hkijena.jipipe.desktop.commons.components.JIPipeDesktopParameterFormP
 import org.hkijena.jipipe.plugins.parameters.library.markup.HTMLText;
 import org.hkijena.jipipe.plugins.parameters.library.markup.MarkdownText;
 import org.hkijena.jipipe.plugins.settings.JIPipeFileChooserApplicationSettings;
+import org.hkijena.jipipe.utils.PathUtils;
 import org.hkijena.jipipe.utils.UIUtils;
 
 import java.nio.file.Path;
@@ -57,7 +58,7 @@ public class PipelineRenderTool extends JIPipeDesktopMenuExtension {
                 document,
                 getText(),
                 JIPipeDesktopParameterFormPanel.WITH_SEARCH_BAR | JIPipeDesktopParameterFormPanel.WITH_SCROLLING | JIPipeDesktopParameterFormPanel.WITH_DOCUMENTATION)) {
-            Path path = JIPipeDesktop.saveFile(getDesktopWorkbench().getWindow(), getDesktopWorkbench(), JIPipeFileChooserApplicationSettings.LastDirectoryKey.External, getText(), HTMLText.EMPTY, UIUtils.EXTENSION_FILTER_PNG);
+            Path path = JIPipeDesktop.saveFile(getDesktopWorkbench().getWindow(), getDesktopWorkbench(), JIPipeFileChooserApplicationSettings.LastDirectoryKey.External, getText(), HTMLText.EMPTY, PathUtils.EXTENSION_FILTER_PNG);
             if (path != null) {
                 JIPipeDesktopRunExecuteUI.runInDialog(getDesktopWorkbench(), getDesktopWorkbench().getWindow(), new RenderPipelineRun(project, path, settings));
             }

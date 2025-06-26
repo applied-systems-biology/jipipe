@@ -44,6 +44,7 @@ import org.hkijena.jipipe.plugins.parameters.library.markup.HTMLText;
 import org.hkijena.jipipe.plugins.parameters.library.markup.MarkdownText;
 import org.hkijena.jipipe.plugins.settings.JIPipeFileChooserApplicationSettings;
 import org.hkijena.jipipe.plugins.tables.datatypes.ResultsTableData;
+import org.hkijena.jipipe.utils.PathUtils;
 import org.hkijena.jipipe.utils.StringUtils;
 import org.hkijena.jipipe.utils.UIUtils;
 import org.hkijena.jipipe.utils.ui.JIPipeDesktopDockPanel;
@@ -301,7 +302,7 @@ public class ROIManagerPlugin2D extends JIPipeDesktopLegacyImageViewerPlugin2D {
     }
 
     private void importROIsFromFile() {
-        Path path = JIPipeDesktop.openFile(getViewerPanel(), getDesktopWorkbench(), JIPipeFileChooserApplicationSettings.LastDirectoryKey.Data, "Import ROI", HTMLText.EMPTY, UIUtils.EXTENSION_FILTER_ROIS);
+        Path path = JIPipeDesktop.openFile(getViewerPanel(), getDesktopWorkbench(), JIPipeFileChooserApplicationSettings.LastDirectoryKey.Data, "Import ROI", HTMLText.EMPTY, PathUtils.EXTENSION_FILTER_ROIS);
         if (path != null) {
             ROI2DListData importedROIs = ROI2DListData.loadRoiListFromFile(path);
             importROIs(importedROIs, false);
@@ -318,9 +319,9 @@ public class ROIManagerPlugin2D extends JIPipeDesktopLegacyImageViewerPlugin2D {
     private void exportROIsToFile(ROI2DListData rois) {
         FileNameExtensionFilter[] fileNameExtensionFilters;
         if (rois.size() == 1) {
-            fileNameExtensionFilters = new FileNameExtensionFilter[]{UIUtils.EXTENSION_FILTER_ROI, UIUtils.EXTENSION_FILTER_ROI_ZIP};
+            fileNameExtensionFilters = new FileNameExtensionFilter[]{PathUtils.EXTENSION_FILTER_ROI, PathUtils.EXTENSION_FILTER_ROI_ZIP};
         } else {
-            fileNameExtensionFilters = new FileNameExtensionFilter[]{UIUtils.EXTENSION_FILTER_ROI_ZIP};
+            fileNameExtensionFilters = new FileNameExtensionFilter[]{PathUtils.EXTENSION_FILTER_ROI_ZIP};
         }
         Path path = JIPipeDesktop.saveFile(getViewerPanel(), getDesktopWorkbench(), JIPipeFileChooserApplicationSettings.LastDirectoryKey.Data, "Export ROI", HTMLText.EMPTY, fileNameExtensionFilters);
         if (path != null) {

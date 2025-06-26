@@ -54,6 +54,7 @@ public enum JIPipeDesktopUITheme {
      */
     public void install() {
         UIUtils.DARK_THEME = isDark;
+        UIUtils.CURRENT_THEME = this;
         IS_UPDATING_THEME = true;
         switch (this) {
             case Metal:
@@ -72,6 +73,7 @@ public enum JIPipeDesktopUITheme {
                     JIPipeDesktopModernThemeStyle style = new JIPipeDesktopModernThemeStyle();
                     MetalLookAndFeel.setCurrentTheme(new JIPipeDesktopModernMetalTheme(style));
                     UIManager.put("style", style);
+                    UIUtils.CURRENT_STYLE = style;
 
                     UIManager.setLookAndFeel(UIManager.getCrossPlatformLookAndFeelClassName());
                     UIManager.put("swing.boldMetal", Boolean.FALSE);

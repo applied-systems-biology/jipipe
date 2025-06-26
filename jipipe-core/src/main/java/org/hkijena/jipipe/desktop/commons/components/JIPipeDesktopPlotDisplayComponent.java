@@ -18,6 +18,7 @@ import org.hkijena.jipipe.desktop.app.ploteditor.JFreeChartPlotEditor;
 import org.hkijena.jipipe.desktop.commons.components.ribbon.JIPipeDesktopRibbon;
 import org.hkijena.jipipe.plugins.parameters.library.markup.HTMLText;
 import org.hkijena.jipipe.plugins.settings.JIPipeFileChooserApplicationSettings;
+import org.hkijena.jipipe.utils.PathUtils;
 import org.hkijena.jipipe.utils.UIUtils;
 import org.hkijena.jipipe.utils.ui.CopyImageToClipboard;
 import org.jfree.chart.ChartPanel;
@@ -98,13 +99,13 @@ public class JIPipeDesktopPlotDisplayComponent extends JPanel {
         FileNameExtensionFilter filter;
         switch (fileFormat) {
             case PNG:
-                filter = UIUtils.EXTENSION_FILTER_PNG;
+                filter = PathUtils.EXTENSION_FILTER_PNG;
                 break;
             case SVG:
-                filter = UIUtils.EXTENSION_FILTER_SVG;
+                filter = PathUtils.EXTENSION_FILTER_SVG;
                 break;
             case JPEG:
-                filter = UIUtils.EXTENSION_FILTER_JPEG;
+                filter = PathUtils.EXTENSION_FILTER_JPEG;
                 break;
             default:
                 throw new UnsupportedOperationException();

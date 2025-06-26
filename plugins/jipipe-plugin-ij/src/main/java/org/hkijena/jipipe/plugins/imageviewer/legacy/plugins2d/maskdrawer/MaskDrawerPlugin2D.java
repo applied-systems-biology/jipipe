@@ -50,6 +50,7 @@ import org.hkijena.jipipe.plugins.parameters.library.ranges.*;
 import org.hkijena.jipipe.plugins.settings.JIPipeFileChooserApplicationSettings;
 import org.hkijena.jipipe.utils.BufferedImageUtils;
 import org.hkijena.jipipe.utils.ColorUtils;
+import org.hkijena.jipipe.utils.PathUtils;
 import org.hkijena.jipipe.utils.UIUtils;
 import org.hkijena.jipipe.utils.ui.BusyCursor;
 import org.hkijena.jipipe.utils.ui.JIPipeDesktopDockPanel;
@@ -250,7 +251,7 @@ public class MaskDrawerPlugin2D extends JIPipeDesktopLegacyImageViewerPlugin2D i
         Path selectedFile = JIPipeDesktop.openFile(getViewerPanel(),
                 getWorkbench(), JIPipeFileChooserApplicationSettings.LastDirectoryKey.Data,
                 "Import mask",
-                HTMLText.EMPTY, UIUtils.EXTENSION_FILTER_TIFF);
+                HTMLText.EMPTY, PathUtils.EXTENSION_FILTER_TIFF);
         if (selectedFile != null) {
             try (BusyCursor cursor = new BusyCursor(getViewerPanel())) {
                 ImagePlus image = IJ.openImage(selectedFile.toString());
@@ -282,7 +283,7 @@ public class MaskDrawerPlugin2D extends JIPipeDesktopLegacyImageViewerPlugin2D i
         Path selectedFile = JIPipeDesktop.saveFile(getViewerPanel(),
                 getWorkbench(), JIPipeFileChooserApplicationSettings.LastDirectoryKey.Data,
                 "Export mask",
-                HTMLText.EMPTY, UIUtils.EXTENSION_FILTER_TIFF);
+                HTMLText.EMPTY, PathUtils.EXTENSION_FILTER_TIFF);
         if (selectedFile != null) {
             try (BusyCursor cursor = new BusyCursor(getViewerPanel())) {
                 ImagePlus image = new ImagePlus("Mask", getCurrentMaskSlice());

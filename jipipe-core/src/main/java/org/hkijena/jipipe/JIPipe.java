@@ -1208,7 +1208,7 @@ public class JIPipe extends AbstractService implements JIPipeService {
                 Files.createDirectories(examplesDir);
             Files.walk(examplesDir).forEach(path -> {
                 if (Files.isRegularFile(path)) {
-                    if (UIUtils.EXTENSION_FILTER_JIP.accept(path.toFile()) || UIUtils.EXTENSION_FILTER_ZIP.accept(path.toFile())) {
+                    if (PathUtils.EXTENSION_FILTER_JIP.accept(path.toFile()) || PathUtils.EXTENSION_FILTER_ZIP.accept(path.toFile())) {
                         try {
                             progressInfo.log("[Project templates] Importing template from " + path);
                             projectTemplateRegistry.register(path);
@@ -1232,7 +1232,7 @@ public class JIPipe extends AbstractService implements JIPipeService {
                 Files.createDirectories(examplesDir);
             Files.walk(examplesDir).forEach(path -> {
                 if (Files.isRegularFile(path)) {
-                    if (UIUtils.EXTENSION_FILTER_JSON.accept(path.toFile())) {
+                    if (PathUtils.EXTENSION_FILTER_JSON.accept(path.toFile())) {
                         try {
                             progressInfo.log("[Node examples] Importing node template list from " + path);
                             for (JIPipeNodeTemplate template : JsonUtils.getObjectMapper().readValue(path.toFile(), JIPipeNodeTemplate.List.class)) {

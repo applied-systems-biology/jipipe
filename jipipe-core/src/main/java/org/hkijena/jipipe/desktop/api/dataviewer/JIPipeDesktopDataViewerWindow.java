@@ -429,7 +429,7 @@ public class JIPipeDesktopDataViewerWindow extends JFrame implements JIPipeDeskt
     }
 
     private void exportDataTableToZip() {
-        Path path = JIPipeDesktop.saveFile(this, workbench, JIPipeFileChooserApplicationSettings.LastDirectoryKey.Data, "Export data table", HTMLText.EMPTY, UIUtils.EXTENSION_FILTER_ZIP);
+        Path path = JIPipeDesktop.saveFile(this, workbench, JIPipeFileChooserApplicationSettings.LastDirectoryKey.Data, "Export data table", HTMLText.EMPTY, PathUtils.EXTENSION_FILTER_ZIP);
         ExportDataTableToZipRun run = new ExportDataTableToZipRun(dataTableBrowser, path);
         JIPipeDesktopRunExecuteUI.runInDialog(getDesktopWorkbench(), this, run);
     }

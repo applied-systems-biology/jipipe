@@ -14,7 +14,7 @@ import javax.swing.plaf.FontUIResource;
 import javax.swing.plaf.IconUIResource;
 import javax.swing.plaf.metal.DefaultMetalTheme;
 import java.awt.*;
-import java.util.Arrays;
+import java.util.*;
 import java.util.List;
 
 public class JIPipeDesktopModernMetalTheme extends DefaultMetalTheme {
@@ -123,7 +123,10 @@ public class JIPipeDesktopModernMetalTheme extends DefaultMetalTheme {
             }
         }
         
-        configureShadows(table);
+        configureLightAndShadows(table);
+        configureForeground(table);
+        configureSelection(table);
+        configureFocus(table);
 
         configureLabel(table);
         configurePanel(table);
@@ -162,17 +165,24 @@ public class JIPipeDesktopModernMetalTheme extends DefaultMetalTheme {
         configureTree(table);
 
         // Helper for colors (overwrite all colors with RED!)
+        List<String> missingKeys = new ArrayList<>();
         for (Object key : ImmutableList.copyOf(table.keySet())) {
             Object value = table.get(key);
             if(value instanceof ColorUIResource) {
                if(((ColorUIResource) value).getRed() == 255 && ((ColorUIResource) value).getGreen() == 0 && ((ColorUIResource) value).getBlue() == 0) {
-                   System.out.println("LAF KEY NOT SET: " + key);
+                   missingKeys.add(key.toString());
                }
             }
         }
+        missingKeys.sort(Comparator.naturalOrder());
+        for (String missingKey : missingKeys) {
+            System.out.println("Missing key: " + missingKey);
+        }
+
 
 //        System.exit(0);
     }
+
 
     private void configureTableHeader(UIDefaults table) {
         table.put("TableHeader.focusCellBackground", toResource(style.getSelectionHighlight()));
@@ -218,8 +228,6 @@ public class JIPipeDesktopModernMetalTheme extends DefaultMetalTheme {
 
     private void configureTextField(UIDefaults table) {
         table.put("TextField.background", toResource(style.getFormBackground()));
-        table.put("TextField.foreground", toResource(style.getTextForeground()));
-        table.put("TextField.inactiveForeground", toResource(style.getTextMuted()));
         table.put("TextField.border", toResource(textFieldBorder));
     }
 
@@ -235,6 +243,9 @@ public class JIPipeDesktopModernMetalTheme extends DefaultMetalTheme {
         table.put("SplitPane.oneTouchButtonsOpaque", Boolean.FALSE);
         table.put("SplitPane.dividerFocusColor", toResource(style.getWindowBackground()));
         table.put("SplitPane.border", toResource(BorderFactory.createEmptyBorder()));
+        table.put("SplitPane.background", toResource(style.getWindowBackground()));
+
+        table.put("SplitPaneDivider.border", BorderFactory.createEmptyBorder());
     }
 
     private void configureViewport(UIDefaults table) {
@@ -352,8 +363,8 @@ public class JIPipeDesktopModernMetalTheme extends DefaultMetalTheme {
     private void configureTabbedPane(UIDefaults table) {
         table.put("TabbedPane.font", toResource(defaultFont));
         table.put("TabbedPane.background", toResource(style.getWindowBackground()));
-        table.put("TabbedPane.borderHightlightColor", toResource(style.getPanelBackground()));
-        table.put("TabbedPane.contentAreaColor", toResource(style.getPanelBackground()));
+        table.put("TabbedPane.borderHightlightColor", toResource(style.getWindowBackground()));
+        table.put("TabbedPane.contentAreaColor", toResource(style.getWindowBackground()));
         table.put("TabbedPane.contentBorderInsets", new Insets(2, 2, 3, 3));
         table.put("TabbedPane.selected", toResource(style.getSelectionHighlight()));
         table.put("TabbedPane.tabAreaBackground", toResource(style.getWindowBackground()));
@@ -386,11 +397,40 @@ public class JIPipeDesktopModernMetalTheme extends DefaultMetalTheme {
         table.put("CheckBox.icon", toResource(new CheckBoxIcon(style.getTextForegroundInverted())));
     }
 
-    private void configureShadows(UIDefaults table) {
-        // Disable all shadows
+    private void configureLightAndShadows(UIDefaults table) {
         for (Object o : ImmutableList.copyOf(table.keySet())) {
-            if(o.toString().endsWith(".shadow")) {
+            if(o.toString().toLowerCase(Locale.ROOT).endsWith("shadow") || o.toString().toLowerCase(Locale.ROOT).endsWith("light")) {
                 table.put(o, null);
+            }
+        }
+    }
+
+    private void configureFocus(UIDefaults table) {
+        for (Object o : ImmutableList.copyOf(table.keySet())) {
+            if(o.toString().endsWith(".focus")) {
+                table.put(o, style.getPrimaryColor());
+            }
+        }
+    }
+
+    private void configureSelection(UIDefaults table) {
+        for (Object o : ImmutableList.copyOf(table.keySet())) {
+            if(o.toString().endsWith(".selectionBackground")) {
+                table.put(o, toResource(style.getSelectionBackground()));
+            }
+            else if (o.toString().endsWith(".selectionForeground")) {
+                table.put(o, toResource(style.getTextForeground()));
+            }
+        }
+    }
+
+    private void configureForeground(UIDefaults table) {
+        for (Object o : ImmutableList.copyOf(table.keySet())) {
+            if(o.toString().endsWith(".foreground")) {
+                table.put(o, toResource(style.getTextForeground()));
+            }
+            else if (o.toString().endsWith(".inactiveForeground") || o.toString().endsWith(".disabledText")) {
+                table.put(o, toResource(style.getTextMuted()));
             }
         }
     }
@@ -423,6 +463,9 @@ public class JIPipeDesktopModernMetalTheme extends DefaultMetalTheme {
         table.put("Button.border", toResource(buttonBorder));
         table.put("Button.borderColor", toResource(style.getBorderColor()));
         table.put("Button.focus", toResource(style.getButtonToggled()));
+        table.put("Button.highlight", style.getSelectionHighlight());
+        table.put("Button.disabledText", toResource(style.getTextMuted()));
+        table.put("Button.select", toResource(style.getButtonToggled()));
     }
 
     private static IconUIResource toResource(Icon icon) {

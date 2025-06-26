@@ -26,7 +26,6 @@ import org.hkijena.jipipe.api.JIPipeWorkbench;
 import org.hkijena.jipipe.api.data.JIPipeDataInfo;
 import org.hkijena.jipipe.api.data.JIPipeDataSlot;
 import org.hkijena.jipipe.api.nodes.JIPipeNodeInfo;
-import org.hkijena.jipipe.api.notifications.JIPipeNotificationAction;
 import org.hkijena.jipipe.api.notifications.JIPipeNotificationInbox;
 import org.hkijena.jipipe.api.registries.JIPipeApplicationSettingsRegistry;
 import org.hkijena.jipipe.api.validation.JIPipeValidationReport;
@@ -42,7 +41,9 @@ import org.hkijena.jipipe.desktop.commons.components.markup.JIPipeDesktopMarkdow
 import org.hkijena.jipipe.desktop.commons.components.window.JIPipeDesktopAlwaysOnTopToggle;
 import org.hkijena.jipipe.desktop.commons.notifications.JIPipeDesktopGenericNotificationInboxUI;
 import org.hkijena.jipipe.desktop.commons.theme.JIPipeDesktopLegacyModernMetalTheme;
+import org.hkijena.jipipe.desktop.commons.theme.JIPipeDesktopModernThemeStyle;
 import org.hkijena.jipipe.desktop.commons.theme.JIPipeDesktopUITheme;
+import org.hkijena.jipipe.desktop.commons.theme.helpers.JIPipeDesktopIslandPanel;
 import org.hkijena.jipipe.plugins.parameters.library.markup.HTMLText;
 import org.hkijena.jipipe.plugins.parameters.library.markup.MarkdownText;
 import org.hkijena.jipipe.plugins.settings.JIPipeGeneralDataApplicationSettings;
@@ -62,7 +63,6 @@ import javax.swing.border.EmptyBorder;
 import javax.swing.event.AncestorEvent;
 import javax.swing.event.AncestorListener;
 import javax.swing.event.HyperlinkEvent;
-import javax.swing.filechooser.FileNameExtensionFilter;
 import javax.swing.text.*;
 import javax.swing.text.html.HTMLDocument;
 import javax.swing.text.html.HTMLEditorKit;
@@ -98,34 +98,6 @@ import java.util.stream.Collectors;
  */
 public class UIUtils {
 
-    public static final FileNameExtensionFilter EXTENSION_FILTER_CSV = new FileNameExtensionFilter("CSV table (*.csv)", "csv");
-
-    public static final FileNameExtensionFilter EXTENSION_FILTER_TSV = new FileNameExtensionFilter("TSV table (*.tsv)", "tsv");
-    public static final FileNameExtensionFilter EXTENSION_FILTER_XLSX = new FileNameExtensionFilter("Excel table (*.xlsx)", "xlsx");
-    public static final FileNameExtensionFilter EXTENSION_FILTER_PNG = new FileNameExtensionFilter("PNG image (*.png)", "png");
-    public static final FileNameExtensionFilter EXTENSION_FILTER_IMAGEIO_IMAGES = new FileNameExtensionFilter("Image file (*.png, *.jpg, *.jpeg, *.bmp)", "png", "jpg", "jpeg", "bmp");
-    public static final FileNameExtensionFilter EXTENSION_FILTER_SVG = new FileNameExtensionFilter("SVG image (*.svg)", "svg");
-    public static final FileNameExtensionFilter EXTENSION_FILTER_MD = new FileNameExtensionFilter("Markdown text (*.md)", "md");
-    public static final FileNameExtensionFilter EXTENSION_FILTER_PDF = new FileNameExtensionFilter("Portable document format (*.pdf)", "pdf");
-    public static final FileNameExtensionFilter EXTENSION_FILTER_HTML = new FileNameExtensionFilter("HTML document (*.html, *.htm)", "html", "htm");
-    public static final FileNameExtensionFilter EXTENSION_FILTER_JPEG = new FileNameExtensionFilter("JPEG image (*.jpg, *.jpeg)", "jpg", "jpeg");
-    public static final FileNameExtensionFilter EXTENSION_FILTER_BMP = new FileNameExtensionFilter("Bitmap image (*.bmp)", "bmp");
-    public static final FileNameExtensionFilter EXTENSION_FILTER_TIFF = new FileNameExtensionFilter("TIFF image (*.tif, *.tiff)", "tif", "tiff");
-    public static final FileNameExtensionFilter EXTENSION_FILTER_OME_TIFF = new FileNameExtensionFilter("OME TIFF image (*.ome.tif, *.ome.tiff)", "ome.tif", "ome.tiff");
-    public static final FileNameExtensionFilter EXTENSION_FILTER_JIP = new FileNameExtensionFilter("JIPipe project (*.jip)", "jip");
-    public static final FileNameExtensionFilter EXTENSION_FILTER_JIPE = new FileNameExtensionFilter("JIPipe extension (*.jipe)", "jipe");
-    public static final FileNameExtensionFilter EXTENSION_FILTER_JIPC = new FileNameExtensionFilter("JIPipe compartment (*.jipc)", "jipc");
-    public static final FileNameExtensionFilter EXTENSION_FILTER_JSON = new FileNameExtensionFilter("JSON file (*.json)", "json");
-    public static final FileNameExtensionFilter EXTENSION_FILTER_TXT = new FileNameExtensionFilter("Text file (*.txt)", "txt", "log");
-    public static final FileNameExtensionFilter EXTENSION_FILTER_ZIP = new FileNameExtensionFilter("ZIP file (*.zip)", "zip");
-    public static final FileNameExtensionFilter EXTENSION_FILTER_TAR_GZ = new FileNameExtensionFilter("GZipped TAR file (*.tar.gz)", "tar.gz");
-    public static final FileNameExtensionFilter EXTENSION_FILTER_ARCHIVE = new FileNameExtensionFilter("Archive (*.zip, *.tar.gz)", "zip", "gz");
-    public static final FileNameExtensionFilter EXTENSION_FILTER_ROI_ZIP = new FileNameExtensionFilter("ImageJ ROIs (*.zip)", "zip");
-    public static final FileNameExtensionFilter EXTENSION_FILTER_ROI = new FileNameExtensionFilter("ImageJ ROI (*.roi)", "roi");
-    public static final FileNameExtensionFilter EXTENSION_FILTER_ROIS = new FileNameExtensionFilter("ImageJ ROI (*.roi, *.zip)", "roi", "zip");
-    public static final FileNameExtensionFilter EXTENSION_FILTER_AVI = new FileNameExtensionFilter("Video file (*.avi)", "avi");
-    public static final FileNameExtensionFilter EXTENSION_FILTER_HDF5 = new FileNameExtensionFilter("HDF5 data (*.hdf5, *.h5)", "hdf5", "h5");
-    public static final FileNameExtensionFilter EXTENSION_FILTER_ZARR_ZIP = new FileNameExtensionFilter("ZARR ZIP (*.zarr.zip)", "zarr.zip");
     public static final Insets UI_PADDING = new Insets(4, 4, 4, 4);
     public static final Map<String, ImageIcon> ICON_FROM_RESOURCES_CACHE = new HashMap<>();
     public static final Map<String, ImageIcon> ICON_INVERTED_FROM_RESOURCES_CACHE = new HashMap<>();
@@ -134,6 +106,8 @@ public class UIUtils {
     public static final Color COLOR_ERROR = new Color(0xa51d2d);
     public static final Color COLOR_SUCCESS = new Color(0x5CB85C);
     public static boolean DARK_THEME = false;
+    public static JIPipeDesktopUITheme CURRENT_THEME = JIPipeDesktopUITheme.ModernLight;
+    public static JIPipeDesktopModernThemeStyle CURRENT_STYLE = new  JIPipeDesktopModernThemeStyle();
     private static Theme RSYNTAX_THEME_DEFAULT;
     private static Theme RSYNTAX_THEME_DARK;
     private static Border CONTROL_BORDER;
@@ -2683,13 +2657,13 @@ public class UIUtils {
 
     public static Border createSuccessBorder() {
         return BorderFactory.createCompoundBorder(BorderFactory.createEmptyBorder(1, 1, 1, 1),
-                BorderFactory.createCompoundBorder(new RoundedLineBorder(JIPipeNotificationAction.Style.Success.getBackground(), 1, 5),
+                BorderFactory.createCompoundBorder(new RoundedLineBorder(UIUtils.CURRENT_STYLE.getSuccessColor(), 1, 5),
                         BorderFactory.createEmptyBorder(3, 3, 3, 3)));
     }
 
     public static <T extends AbstractButton> T makeButtonHighlightedSuccess(T button) {
         button.setBorder(BorderFactory.createCompoundBorder(BorderFactory.createEmptyBorder(1, 1, 1, 1),
-                BorderFactory.createCompoundBorder(new RoundedLineBorder(JIPipeNotificationAction.Style.Success.getBackground(), 1, 5),
+                BorderFactory.createCompoundBorder(new RoundedLineBorder(UIUtils.CURRENT_STYLE.getSuccessColor(), 1, 5),
                         BorderFactory.createEmptyBorder(3, 3, 3, 3))));
         return button;
     }
@@ -2860,7 +2834,28 @@ public class UIUtils {
     }
 
     public static boolean currentThemeIsModern() {
-        return JIPipe.getInstance() == null || JIPipeGeneralUIApplicationSettings.getInstance() == null || JIPipeGeneralUIApplicationSettings.getInstance().getTheme().isModern();
+        return CURRENT_THEME.isModern();
+    }
+
+    /**
+     * If a modern theme is running, wrap the panel in a {@link org.hkijena.jipipe.desktop.commons.theme.helpers.JIPipeDesktopIslandPanel}.
+     * Otherwise, return the panel.
+     * Will check if the panel is already an island panel.
+     * @param panel the panel
+     * @return the wrapped panel
+     */
+    public static JComponent wrapInIslandPanelIfNeeded(JComponent panel) {
+        if(currentThemeIsModern()) {
+            if(panel instanceof JIPipeDesktopIslandPanel) {
+                return panel;
+            }
+            else {
+                return new JIPipeDesktopIslandPanel(panel);
+            }
+        }
+        else {
+            return panel;
+        }
     }
 
     public static class DragThroughMouseListener implements MouseListener, MouseMotionListener {

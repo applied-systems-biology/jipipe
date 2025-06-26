@@ -367,12 +367,4 @@ public class JIPipeDesktopModernThemeStyle {
     public void setListAlternateBackground(Color listAlternateBackground) {
         this.listAlternateBackground = listAlternateBackground;
     }
-
-    public static JIPipeDesktopModernThemeStyle getCurrent() {
-        Object style = UIManager.get("style");
-        if(style instanceof JIPipeDesktopModernThemeStyle) {
-            return (JIPipeDesktopModernThemeStyle) style;
-        }
-        return new JIPipeDesktopModernThemeStyle();
-    }
 }

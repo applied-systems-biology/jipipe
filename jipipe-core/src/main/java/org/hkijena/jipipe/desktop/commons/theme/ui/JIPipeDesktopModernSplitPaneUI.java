@@ -15,6 +15,7 @@ package org.hkijena.jipipe.desktop.commons.theme.ui;
 
 import com.formdev.flatlaf.ui.FlatSplitPaneUI;
 import org.hkijena.jipipe.desktop.commons.theme.JIPipeDesktopModernThemeStyle;
+import org.hkijena.jipipe.utils.UIUtils;
 
 import javax.swing.*;
 import javax.swing.plaf.ComponentUI;
@@ -31,6 +32,6 @@ public class JIPipeDesktopModernSplitPaneUI extends BasicSplitPaneUI {
     protected void installDefaults() {
         super.installDefaults();
         splitPane.setBorder(null); // Remove default borders
-        splitPane.setBackground(JIPipeDesktopModernThemeStyle.getCurrent().getWindowBackground());
+        splitPane.setBackground(UIUtils.CURRENT_STYLE.getWindowBackground());
     }
 }

@@ -33,7 +33,7 @@ import org.hkijena.jipipe.plugins.filesystem.dataypes.FileData;
 import org.hkijena.jipipe.plugins.parameters.library.primitives.list.StringList;
 import org.hkijena.jipipe.plugins.parameters.library.primitives.optional.OptionalTextAnnotationNameParameter;
 import org.hkijena.jipipe.plugins.tables.datatypes.ResultsTableData;
-import org.hkijena.jipipe.utils.UIUtils;
+import org.hkijena.jipipe.utils.PathUtils;
 
 import java.util.*;
 
@@ -77,11 +77,11 @@ public class ImportResultsTableAlgorithm extends JIPipeSimpleIteratingAlgorithm 
         FileData fileData = iterationStep.getInputData(getFirstInputSlot(), FileData.class, progressInfo);
         FileFormat format = fileFormat;
         if (format == FileFormat.Auto) {
-            if (UIUtils.EXTENSION_FILTER_CSV.accept(fileData.toPath().toFile())) {
+            if (PathUtils.EXTENSION_FILTER_CSV.accept(fileData.toPath().toFile())) {
                 format = FileFormat.CSV;
-            } else if (UIUtils.EXTENSION_FILTER_TSV.accept(fileData.toPath().toFile())) {
+            } else if (PathUtils.EXTENSION_FILTER_TSV.accept(fileData.toPath().toFile())) {
                 format = FileFormat.XLSX;
-            } else if (UIUtils.EXTENSION_FILTER_XLSX.accept(fileData.toPath().toFile())) {
+            } else if (PathUtils.EXTENSION_FILTER_XLSX.accept(fileData.toPath().toFile())) {
                 format = FileFormat.XLSX;
             } else {
                 throw new UnsupportedOperationException("Unknown file format: " + fileData.getPath());

@@ -34,6 +34,7 @@ import org.hkijena.jipipe.plugins.settings.JIPipeFileChooserApplicationSettings;
 import org.hkijena.jipipe.plugins.settings.JIPipeTableViewerUIApplicationSettings;
 import org.hkijena.jipipe.plugins.tables.ConvertingColumnOperation;
 import org.hkijena.jipipe.plugins.tables.datatypes.ResultsTableData;
+import org.hkijena.jipipe.utils.PathUtils;
 import org.hkijena.jipipe.utils.StringUtils;
 import org.hkijena.jipipe.utils.UIUtils;
 import org.hkijena.jipipe.utils.ui.BusyCursor;
@@ -270,10 +271,10 @@ public class JIPipeDesktopTableEditor extends JIPipeDesktopWorkbenchPanel {
     }
 
     private void openTableFromFile() {
-        Path fileName = JIPipeDesktop.openFile(this, getDesktopWorkbench(), JIPipeFileChooserApplicationSettings.LastDirectoryKey.Projects, "Open table", HTMLText.EMPTY, UIUtils.EXTENSION_FILTER_CSV, UIUtils.EXTENSION_FILTER_XLSX);
+        Path fileName = JIPipeDesktop.openFile(this, getDesktopWorkbench(), JIPipeFileChooserApplicationSettings.LastDirectoryKey.Projects, "Open table", HTMLText.EMPTY, PathUtils.EXTENSION_FILTER_CSV, PathUtils.EXTENSION_FILTER_XLSX);
         if (fileName != null) {
             ResultsTableData tableData;
-            if (UIUtils.EXTENSION_FILTER_XLSX.accept(fileName.toFile())) {
+            if (PathUtils.EXTENSION_FILTER_XLSX.accept(fileName.toFile())) {
                 tableData = ResultsTableData.fromXLSX(fileName).values().iterator().next();
             } else {
                 tableData = ResultsTableData.fromCSV(fileName);
@@ -570,9 +571,9 @@ public class JIPipeDesktopTableEditor extends JIPipeDesktopWorkbenchPanel {
     }
 
     private void exportTableToFile() {
-        Path selectedPath = JIPipeDesktop.saveFile(this, getDesktopWorkbench(), JIPipeFileChooserApplicationSettings.LastDirectoryKey.Projects, "Export table", HTMLText.EMPTY, UIUtils.EXTENSION_FILTER_CSV, UIUtils.EXTENSION_FILTER_XLSX);
+        Path selectedPath = JIPipeDesktop.saveFile(this, getDesktopWorkbench(), JIPipeFileChooserApplicationSettings.LastDirectoryKey.Projects, "Export table", HTMLText.EMPTY, PathUtils.EXTENSION_FILTER_CSV, PathUtils.EXTENSION_FILTER_XLSX);
         if (selectedPath != null) {
-            if (UIUtils.EXTENSION_FILTER_XLSX.accept(selectedPath.toFile())) {
+            if (PathUtils.EXTENSION_FILTER_XLSX.accept(selectedPath.toFile())) {
                 tableModel.saveAsXLSX(selectedPath);
             } else {
                 tableModel.saveAsCSV(selectedPath);

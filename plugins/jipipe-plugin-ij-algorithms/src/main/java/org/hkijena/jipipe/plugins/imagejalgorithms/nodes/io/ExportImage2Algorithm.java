@@ -37,7 +37,6 @@ import org.hkijena.jipipe.plugins.imagejdatatypes.util.dimensions.HyperstackDime
 import org.hkijena.jipipe.plugins.imagejdatatypes.util.ImageJUtils;
 import org.hkijena.jipipe.utils.PathType;
 import org.hkijena.jipipe.utils.PathUtils;
-import org.hkijena.jipipe.utils.UIUtils;
 
 import java.nio.file.Path;
 import java.util.ArrayList;
@@ -241,11 +240,11 @@ public class ExportImage2Algorithm extends JIPipeIteratingAlgorithm {
                 canvasUI.getWorkbench(),
                 "Select output file",
                 PathType.FilesOnly,
-                UIUtils.EXTENSION_FILTER_PNG,
-                UIUtils.EXTENSION_FILTER_BMP,
-                UIUtils.EXTENSION_FILTER_TIFF,
-                UIUtils.EXTENSION_FILTER_AVI,
-                UIUtils.EXTENSION_FILTER_JPEG);
+                PathUtils.EXTENSION_FILTER_PNG,
+                PathUtils.EXTENSION_FILTER_BMP,
+                PathUtils.EXTENSION_FILTER_TIFF,
+                PathUtils.EXTENSION_FILTER_AVI,
+                PathUtils.EXTENSION_FILTER_JPEG);
         if (result != null) {
             setFilePath(result);
             emitParameterChangedEvent("file-path");

@@ -33,8 +33,8 @@ import org.hkijena.jipipe.plugins.ijfilaments.environments.TSOAXEnvironment;
 import org.hkijena.jipipe.plugins.parameters.library.markup.HTMLText;
 import org.hkijena.jipipe.plugins.parameters.library.primitives.optional.OptionalTextAnnotationNameParameter;
 import org.hkijena.jipipe.plugins.settings.JIPipeFileChooserApplicationSettings;
+import org.hkijena.jipipe.utils.PathUtils;
 import org.hkijena.jipipe.utils.StringUtils;
-import org.hkijena.jipipe.utils.UIUtils;
 
 import javax.swing.*;
 import java.io.BufferedWriter;
@@ -221,7 +221,7 @@ public abstract class TSOAXAlgorithm extends JIPipeSimpleIteratingAlgorithm {
         Path filePath = JIPipeDesktop.saveFile(canvasUI.getDesktopWorkbench().getWindow(),
                 canvasUI.getDesktopWorkbench(), JIPipeFileChooserApplicationSettings.LastDirectoryKey.Data,
                 "Save TSOAX parameters",
-                HTMLText.EMPTY, UIUtils.EXTENSION_FILTER_TXT);
+                HTMLText.EMPTY, PathUtils.EXTENSION_FILTER_TXT);
         if (filePath != null) {
             saveParameterFile(filePath);
             canvasUI.getDesktopWorkbench().sendStatusBarText("Saved parameters to " + filePath);
@@ -234,7 +234,7 @@ public abstract class TSOAXAlgorithm extends JIPipeSimpleIteratingAlgorithm {
         Path filePath = JIPipeDesktop.openFile(canvasUI.getDesktopWorkbench().getWindow(),
                 canvasUI.getDesktopWorkbench(), JIPipeFileChooserApplicationSettings.LastDirectoryKey.Data,
                 "Open TSOAX parameters",
-                HTMLText.EMPTY, UIUtils.EXTENSION_FILTER_TXT);
+                HTMLText.EMPTY, PathUtils.EXTENSION_FILTER_TXT);
         if (filePath != null) {
             openParameterFile(filePath);
             emitParameterUIChangedEvent();

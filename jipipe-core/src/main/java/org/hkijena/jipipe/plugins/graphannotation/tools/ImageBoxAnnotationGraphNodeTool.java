@@ -22,7 +22,7 @@ import org.hkijena.jipipe.plugins.parameters.library.images.ImageParameter;
 import org.hkijena.jipipe.plugins.parameters.library.markup.HTMLText;
 import org.hkijena.jipipe.plugins.settings.JIPipeFileChooserApplicationSettings;
 import org.hkijena.jipipe.utils.BufferedImageUtils;
-import org.hkijena.jipipe.utils.UIUtils;
+import org.hkijena.jipipe.utils.PathUtils;
 
 import javax.imageio.ImageIO;
 import javax.swing.*;
@@ -43,7 +43,7 @@ public class ImageBoxAnnotationGraphNodeTool extends JIPipeAnnotationGraphNodeTo
         Path path = JIPipeDesktop.openFile(getDesktopWorkbench().getWindow(),
                 getDesktopWorkbench(), JIPipeFileChooserApplicationSettings.LastDirectoryKey.External,
                 "Open image",
-                HTMLText.EMPTY, UIUtils.EXTENSION_FILTER_IMAGEIO_IMAGES);
+                HTMLText.EMPTY, PathUtils.EXTENSION_FILTER_IMAGEIO_IMAGES);
         if (path != null) {
             try {
                 BufferedImage image = ImageIO.read(path.toFile());

@@ -485,7 +485,7 @@ public class JIPipeDesktopExtendedDataTableUI extends JIPipeDesktopWorkbenchPane
     private void exportAsJIPipeSlotZIP() {
         JIPipeDataTable dataTable = dataTableStore.get();
         if (dataTable != null) {
-            Path outputZipFile = JIPipeDesktop.saveFile(this, getDesktopWorkbench(), JIPipeFileChooserApplicationSettings.LastDirectoryKey.Data, "Export as JIPipe data table (*.zip)", HTMLText.EMPTY, UIUtils.EXTENSION_FILTER_ZIP);
+            Path outputZipFile = JIPipeDesktop.saveFile(this, getDesktopWorkbench(), JIPipeFileChooserApplicationSettings.LastDirectoryKey.Data, "Export as JIPipe data table (*.zip)", HTMLText.EMPTY, PathUtils.EXTENSION_FILTER_ZIP);
             if (outputZipFile != null) {
                 outputZipFile = PathUtils.ensureExtension(outputZipFile, ".zip");
                 if (Files.isRegularFile(outputZipFile)) {
@@ -505,10 +505,10 @@ public class JIPipeDesktopExtendedDataTableUI extends JIPipeDesktopWorkbenchPane
     }
 
     private void exportMetadataAsFiles() {
-        Path path = JIPipeDesktop.saveFile(this, getDesktopWorkbench(), JIPipeFileChooserApplicationSettings.LastDirectoryKey.Projects, "Export as file", HTMLText.EMPTY, UIUtils.EXTENSION_FILTER_CSV, UIUtils.EXTENSION_FILTER_XLSX);
+        Path path = JIPipeDesktop.saveFile(this, getDesktopWorkbench(), JIPipeFileChooserApplicationSettings.LastDirectoryKey.Projects, "Export as file", HTMLText.EMPTY, PathUtils.EXTENSION_FILTER_CSV, PathUtils.EXTENSION_FILTER_XLSX);
         if (path != null) {
             ResultsTableData tableData = dataTableModel.getDataTable().toAnnotationTable(true);
-            if (UIUtils.EXTENSION_FILTER_XLSX.accept(path.toFile())) {
+            if (PathUtils.EXTENSION_FILTER_XLSX.accept(path.toFile())) {
                 tableData.saveAsXLSX(path);
             } else {
                 tableData.saveAsCSV(path);

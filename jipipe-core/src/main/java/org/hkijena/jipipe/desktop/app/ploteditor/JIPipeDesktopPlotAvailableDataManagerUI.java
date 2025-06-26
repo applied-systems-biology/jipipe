@@ -25,6 +25,7 @@ import org.hkijena.jipipe.plugins.plots.datatypes.JFreeChartPlotDataSeries;
 import org.hkijena.jipipe.plugins.settings.JIPipeFileChooserApplicationSettings;
 import org.hkijena.jipipe.plugins.tables.datatypes.ResultsTableData;
 import org.hkijena.jipipe.plugins.tables.datatypes.TableColumnData;
+import org.hkijena.jipipe.utils.PathUtils;
 import org.hkijena.jipipe.utils.UIUtils;
 
 import javax.swing.*;
@@ -124,7 +125,7 @@ public class JIPipeDesktopPlotAvailableDataManagerUI extends JIPipeDesktopWorkbe
     }
 
     private void importDataCSV() {
-        Path selectedPath = JIPipeDesktop.openFile(this, getDesktopWorkbench(), JIPipeFileChooserApplicationSettings.LastDirectoryKey.Projects, "Import CSV table (*.csv)", HTMLText.EMPTY, UIUtils.EXTENSION_FILTER_CSV);
+        Path selectedPath = JIPipeDesktop.openFile(this, getDesktopWorkbench(), JIPipeFileChooserApplicationSettings.LastDirectoryKey.Projects, "Import CSV table (*.csv)", HTMLText.EMPTY, PathUtils.EXTENSION_FILTER_CSV);
         if (selectedPath != null) {
             String fileName = selectedPath.getFileName().toString();
             try {

@@ -62,7 +62,6 @@ public class JIPipeDesktopDockPanel extends JPanel implements JIPipeDesktopSplit
     private boolean alwaysShowRightPanel = false;
     private JComponent mainComponent;
     private final boolean usingModernTheme = UIUtils.currentThemeIsModern();
-    private final JIPipeDesktopModernThemeStyle style = JIPipeDesktopModernThemeStyle.getCurrent();
 
     public JIPipeDesktopDockPanel() {
         super(new BorderLayout());
@@ -75,8 +74,7 @@ public class JIPipeDesktopDockPanel extends JPanel implements JIPipeDesktopSplit
         add(rightToolBar, BorderLayout.EAST);
 
         if(usingModernTheme) {
-            JIPipeDesktopModernThemeStyle style = JIPipeDesktopModernThemeStyle.getCurrent();
-            setBackground(style.getWindowBackground());
+            setBackground(UIUtils.CURRENT_STYLE.getWindowBackground());
 
             rightToolBar.setOpaque(false);
             rightToolBar.setBorder(BorderFactory.createEmptyBorder());
@@ -149,11 +147,12 @@ public class JIPipeDesktopDockPanel extends JPanel implements JIPipeDesktopSplit
 
     private void initializeRightPanel() {
         layeredPaneRight.setBorder(null);
+        layeredPaneRight.setBackground(UIUtils.CURRENT_STYLE.getWindowBackground());
         layeredPaneRight.add(rightResizerPanel, BorderLayout.WEST);
         rightResizerPanel.setCursor(Cursor.getPredefinedCursor(Cursor.MOVE_CURSOR));
         rightResizerPanel.setPreferredSize(new Dimension(RESIZE_HANDLE_SIZE, 64));
         rightResizerPanel.setMinimumSize(new Dimension(RESIZE_HANDLE_SIZE, 32));
-        rightResizerPanel.setBackground(style.getWindowBackground());
+        rightResizerPanel.setBackground(UIUtils.CURRENT_STYLE.getWindowBackground());
 
         rightResizerPanel.addMouseMotionListener(new MouseAdapter() {
             @Override
@@ -172,11 +171,12 @@ public class JIPipeDesktopDockPanel extends JPanel implements JIPipeDesktopSplit
     private void initializeLeftPanel() {
 //        leftFloatingPanel.setOpaque(false);
         layeredPaneLeft.setBorder(null);
+        layeredPaneLeft.setBackground(UIUtils.CURRENT_STYLE.getWindowBackground());
         layeredPaneLeft.add(leftResizerPanel, BorderLayout.EAST);
         leftResizerPanel.setCursor(Cursor.getPredefinedCursor(Cursor.MOVE_CURSOR));
         leftResizerPanel.setPreferredSize(new Dimension(RESIZE_HANDLE_SIZE, 64));
         leftResizerPanel.setMinimumSize(new Dimension(RESIZE_HANDLE_SIZE, 32));
-        leftResizerPanel.setBackground(style.getWindowBackground());
+        leftResizerPanel.setBackground(UIUtils.CURRENT_STYLE.getWindowBackground());
 
         leftResizerPanel.addMouseMotionListener(new MouseAdapter() {
             @Override
@@ -328,12 +328,12 @@ public class JIPipeDesktopDockPanel extends JPanel implements JIPipeDesktopSplit
 
         if (leftContent.size() >= 2) {
             // create split pane
-            leftSplitPane.setLeftComponent(leftContent.get(0));
-            leftSplitPane.setRightComponent(leftContent.get(1));
+            leftSplitPane.setLeftComponent(UIUtils.wrapInIslandPanelIfNeeded(leftContent.get(0)));
+            leftSplitPane.setRightComponent(UIUtils.wrapInIslandPanelIfNeeded(leftContent.get(1)));
             leftPanelContent = leftSplitPane;
         } else if (leftContent.size() == 1) {
             // use directly
-            leftPanelContent = leftContent.get(0);
+            leftPanelContent = UIUtils.wrapInIslandPanelIfNeeded(leftContent.get(0));
             leftSplitPane.setLeftComponent(new JPanel());
             leftSplitPane.setRightComponent(new JPanel());
         } else {
@@ -343,12 +343,12 @@ public class JIPipeDesktopDockPanel extends JPanel implements JIPipeDesktopSplit
 
         if (rightContent.size() >= 2) {
             // create split pane
-            rightSplitPane.setLeftComponent(rightContent.get(0));
-            rightSplitPane.setRightComponent(rightContent.get(1));
+            rightSplitPane.setLeftComponent(UIUtils.wrapInIslandPanelIfNeeded(rightContent.get(0)));
+            rightSplitPane.setRightComponent(UIUtils.wrapInIslandPanelIfNeeded(rightContent.get(1)));
             rightPanelContent = rightSplitPane;
         } else if (rightContent.size() == 1) {
             // use directly
-            rightPanelContent = rightContent.get(0);
+            rightPanelContent = UIUtils.wrapInIslandPanelIfNeeded(rightContent.get(0));
             rightSplitPane.setLeftComponent(new JPanel());
             rightSplitPane.setRightComponent(new JPanel());
         } else {
@@ -394,12 +394,12 @@ public class JIPipeDesktopDockPanel extends JPanel implements JIPipeDesktopSplit
             }
 
             if (bottomPanel != null) {
-                mainSplitPane.setTopComponent(mainComponent);
-                mainSplitPane.setBottomComponent(bottomPanel.getComponent());
+                mainSplitPane.setTopComponent(UIUtils.wrapInIslandPanelIfNeeded(mainComponent));
+                mainSplitPane.setBottomComponent(UIUtils.wrapInIslandPanelIfNeeded(bottomPanel.getComponent()));
                 mainSplitPane.applyRatio();
                 layeredPaneMain.add(mainSplitPane, BorderLayout.CENTER);
             } else {
-                layeredPaneMain.add(mainComponent, BorderLayout.CENTER);
+                layeredPaneMain.add(UIUtils.wrapInIslandPanelIfNeeded(mainComponent), BorderLayout.CENTER);
             }
         }
 

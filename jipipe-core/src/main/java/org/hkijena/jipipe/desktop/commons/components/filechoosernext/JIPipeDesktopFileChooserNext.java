@@ -142,7 +142,7 @@ public class JIPipeDesktopFileChooserNext extends JPanel {
         registerKnownFileType("SVG image", UIUtils.getIconFromResources("mimetypes/svg.png"), ".svg");
 
         JIPipeDesktopUITheme.ModernLight.install();
-        List<Path> paths = JIPipeDesktopFileChooserNext.showDialog(null, null, "Test dialog", HTMLText.EMPTY, Paths.get(""), PathIOMode.Open, PathType.FilesOnly, true, UIUtils.EXTENSION_FILTER_SVG);
+        List<Path> paths = JIPipeDesktopFileChooserNext.showDialog(null, null, "Test dialog", HTMLText.EMPTY, Paths.get(""), PathIOMode.Open, PathType.FilesOnly, true, PathUtils.EXTENSION_FILTER_SVG);
         if (paths.isEmpty()) {
             System.out.println("No paths selected");
         } else {

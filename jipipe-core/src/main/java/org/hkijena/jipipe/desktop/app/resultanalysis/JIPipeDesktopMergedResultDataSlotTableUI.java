@@ -47,6 +47,7 @@ import org.hkijena.jipipe.plugins.parameters.library.markup.HTMLText;
 import org.hkijena.jipipe.plugins.settings.JIPipeFileChooserApplicationSettings;
 import org.hkijena.jipipe.plugins.settings.JIPipeGeneralDataApplicationSettings;
 import org.hkijena.jipipe.plugins.tables.datatypes.AnnotationTableData;
+import org.hkijena.jipipe.utils.PathUtils;
 import org.hkijena.jipipe.utils.TooltipUtils;
 import org.hkijena.jipipe.utils.UIUtils;
 import org.jdesktop.swingx.JXTable;
@@ -231,13 +232,13 @@ public class JIPipeDesktopMergedResultDataSlotTableUI extends JIPipeDesktopProje
     }
 
     private void exportMetadataAsFiles() {
-        Path path = JIPipeDesktop.saveFile(this, getDesktopWorkbench(), JIPipeFileChooserApplicationSettings.LastDirectoryKey.Projects, "Export as file", HTMLText.EMPTY, UIUtils.EXTENSION_FILTER_CSV, UIUtils.EXTENSION_FILTER_XLSX);
+        Path path = JIPipeDesktop.saveFile(this, getDesktopWorkbench(), JIPipeFileChooserApplicationSettings.LastDirectoryKey.Projects, "Export as file", HTMLText.EMPTY, PathUtils.EXTENSION_FILTER_CSV, PathUtils.EXTENSION_FILTER_XLSX);
         if (path != null) {
             AnnotationTableData tableData = new AnnotationTableData();
             for (JIPipeDataTableInfo exportedDataTable : mergedDataTable.getAddedTables()) {
                 tableData.addRows(exportedDataTable.toAnnotationTable());
             }
-            if (UIUtils.EXTENSION_FILTER_XLSX.accept(path.toFile())) {
+            if (PathUtils.EXTENSION_FILTER_XLSX.accept(path.toFile())) {
                 tableData.saveAsXLSX(path);
             } else {
                 tableData.saveAsCSV(path);

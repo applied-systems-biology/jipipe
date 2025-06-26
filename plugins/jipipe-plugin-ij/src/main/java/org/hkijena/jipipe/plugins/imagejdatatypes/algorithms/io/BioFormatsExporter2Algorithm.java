@@ -32,7 +32,6 @@ import org.hkijena.jipipe.plugins.imagejdatatypes.datatypes.OMEImageData;
 import org.hkijena.jipipe.plugins.imagejdatatypes.parameters.OMEExporterSettings;
 import org.hkijena.jipipe.utils.PathType;
 import org.hkijena.jipipe.utils.PathUtils;
-import org.hkijena.jipipe.utils.UIUtils;
 
 import java.nio.file.Path;
 import java.util.ArrayList;
@@ -108,7 +107,7 @@ public class BioFormatsExporter2Algorithm extends JIPipeSimpleIteratingAlgorithm
 
     @AddJIPipeDesktopNodeQuickAction(name = "Configure exported path", description = "Selects where the data should be exported", icon = "actions/document-export.png", buttonIcon = "actions/color-select.png", buttonText = "Select")
     public void selectFilePathDesktopQuickAction(JIPipeDesktopGraphCanvasUI canvasUI) {
-        DataExportExpressionParameter result = DataExportExpressionParameter.showPathChooser(canvasUI.getDesktopWorkbench().getWindow(), canvasUI.getWorkbench(), "Select output file", PathType.FilesOnly, UIUtils.EXTENSION_FILTER_OME_TIFF);
+        DataExportExpressionParameter result = DataExportExpressionParameter.showPathChooser(canvasUI.getDesktopWorkbench().getWindow(), canvasUI.getWorkbench(), "Select output file", PathType.FilesOnly, PathUtils.EXTENSION_FILTER_OME_TIFF);
         if (result != null) {
             setFilePath(result);
             emitParameterChangedEvent("file-path");

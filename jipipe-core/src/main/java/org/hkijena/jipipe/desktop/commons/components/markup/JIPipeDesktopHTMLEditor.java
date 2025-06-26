@@ -27,6 +27,7 @@ import org.hkijena.jipipe.desktop.commons.components.icons.OverlayJIPipeDesktopC
 import org.hkijena.jipipe.plugins.parameters.library.markup.HTMLText;
 import org.hkijena.jipipe.plugins.settings.JIPipeFileChooserApplicationSettings;
 import org.hkijena.jipipe.utils.BufferedImageUtils;
+import org.hkijena.jipipe.utils.PathUtils;
 import org.hkijena.jipipe.utils.StringUtils;
 import org.hkijena.jipipe.utils.UIUtils;
 import org.hkijena.jipipe.utils.scripting.MacroUtils;
@@ -472,7 +473,7 @@ public class JIPipeDesktopHTMLEditor extends JIPipeDesktopWorkbenchPanel {
     }
 
     private void insertImageFromFile() {
-        Path path = JIPipeDesktop.openFile(this, getDesktopWorkbench(), JIPipeFileChooserApplicationSettings.LastDirectoryKey.Data, "Insert image from file", HTMLText.EMPTY, UIUtils.EXTENSION_FILTER_IMAGEIO_IMAGES);
+        Path path = JIPipeDesktop.openFile(this, getDesktopWorkbench(), JIPipeFileChooserApplicationSettings.LastDirectoryKey.Data, "Insert image from file", HTMLText.EMPTY, PathUtils.EXTENSION_FILTER_IMAGEIO_IMAGES);
         if (path != null) {
             try {
                 insertImage(ImageIO.read(path.toFile()));

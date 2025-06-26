@@ -22,6 +22,7 @@ import org.hkijena.jipipe.desktop.app.tableeditor.JIPipeDesktopTableEditor;
 import org.hkijena.jipipe.plugins.parameters.library.markup.HTMLText;
 import org.hkijena.jipipe.plugins.settings.JIPipeFileChooserApplicationSettings;
 import org.hkijena.jipipe.plugins.tables.datatypes.ResultsTableData;
+import org.hkijena.jipipe.utils.PathUtils;
 import org.hkijena.jipipe.utils.UIUtils;
 import org.jdesktop.swingx.JXTable;
 
@@ -85,7 +86,7 @@ public class JIPipeDesktopCachedDataViewerAnnotationInfoPanel extends JIPipeDesk
     private void exportAsCSV() {
         if (currentData == null)
             return;
-        Path path = JIPipeDesktop.saveFile(this, getDesktopWorkbench(), JIPipeFileChooserApplicationSettings.LastDirectoryKey.Data, "Export as *.csv", HTMLText.EMPTY, UIUtils.EXTENSION_FILTER_CSV);
+        Path path = JIPipeDesktop.saveFile(this, getDesktopWorkbench(), JIPipeFileChooserApplicationSettings.LastDirectoryKey.Data, "Export as *.csv", HTMLText.EMPTY, PathUtils.EXTENSION_FILTER_CSV);
         if (path != null) {
             currentData.saveAsCSV(path);
         }

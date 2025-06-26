@@ -32,7 +32,6 @@ import org.hkijena.jipipe.plugins.imagejdatatypes.datatypes.ROI2DListData;
 import org.hkijena.jipipe.utils.PathType;
 import org.hkijena.jipipe.utils.PathUtils;
 import org.hkijena.jipipe.utils.StringUtils;
-import org.hkijena.jipipe.utils.UIUtils;
 
 import java.nio.file.Path;
 import java.util.*;
@@ -122,7 +121,7 @@ public class ExportROIAlgorithm2 extends JIPipeIteratingAlgorithm {
                 canvasUI.getWorkbench(),
                 "Select output file",
                 PathType.FilesOnly,
-                UIUtils.EXTENSION_FILTER_ROIS);
+                PathUtils.EXTENSION_FILTER_ROIS);
         if (result != null) {
             setFilePath(result);
             emitParameterChangedEvent("file-path");
