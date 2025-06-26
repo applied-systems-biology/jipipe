@@ -29,7 +29,7 @@ import javax.swing.*;
 public class JIPipeDummyWorkbench implements JIPipeWorkbench {
 
     private final JFrame frame = new JFrame();
-    private final JIPipeDesktopTabPane tabPane = new JIPipeDesktopTabPane(true, JIPipeDesktopTabPane.TabPlacement.Top);
+    private final JIPipeDesktopTabPane tabPane = new JIPipeDesktopTabPane(true, JIPipeDesktopTabPane.Style.Top);
     private final JIPipeNotificationInbox notificationInbox = new JIPipeNotificationInbox();
 
 

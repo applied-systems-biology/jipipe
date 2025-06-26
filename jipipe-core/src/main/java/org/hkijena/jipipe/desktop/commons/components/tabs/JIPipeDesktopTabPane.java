@@ -21,6 +21,7 @@ import org.hkijena.jipipe.api.events.AbstractJIPipeEvent;
 import org.hkijena.jipipe.api.events.JIPipeEventEmitter;
 import org.hkijena.jipipe.api.parameters.AbstractJIPipeParameterCollection;
 import org.hkijena.jipipe.api.parameters.JIPipeParameter;
+import org.hkijena.jipipe.desktop.commons.theme.ui.JIPipeDesktopModernPillTabbedPaneUI;
 import org.hkijena.jipipe.desktop.commons.theme.ui.JIPipeDesktopModernTabbedPaneUI;
 import org.hkijena.jipipe.plugins.settings.JIPipeGeneralUIApplicationSettings;
 import org.hkijena.jipipe.utils.StringUtils;
@@ -56,29 +57,29 @@ public class JIPipeDesktopTabPane extends JPanel implements Disposable {
      */
     private final BiMap<String, SingletonTab> singletonTabs = HashBiMap.create();
     private final BiMap<String, DocumentTab> singletonTabInstances = HashBiMap.create();
-    private final TabPlacement tabPlacement;
+    private final Style style;
     private JIPipeDesktopDnDTabbedPane tabbedPane;
     private boolean enableTabContextMenu = true;
     private Border tabPanelBorder = BorderFactory.createEmptyBorder(4, 0, 4, 0);
     private boolean scrollable;
 
     public JIPipeDesktopTabPane() {
-        this(true, TabPlacement.Top);
+        this(true, Style.Top);
     }
 
     /**
      * Creates a new instance
      */
-    public JIPipeDesktopTabPane(boolean scrollable, TabPlacement tabPlacement) {
+    public JIPipeDesktopTabPane(boolean scrollable, Style style) {
         this.scrollable = scrollable;
-        this.tabPlacement = tabPlacement;
+        this.style = style;
         initialize();
     }
 
     private void initialize() {
         setLayout(new BorderLayout());
         setOpaque(false);
-        tabbedPane = new JIPipeDesktopDnDTabbedPane(tabPlacement.nativeValue);
+        tabbedPane = new JIPipeDesktopDnDTabbedPane(style.nativeValue);
         tabbedPane.setTabLayoutPolicy(JTabbedPane.SCROLL_TAB_LAYOUT);
         tabbedPane.addChangeListener(e -> updateTabHistory());
         tabbedPane.addMouseListener(new MouseAdapter() {
@@ -103,7 +104,12 @@ public class JIPipeDesktopTabPane extends JPanel implements Disposable {
             }
         });
         if (UIUtils.currentThemeIsModern()) {
-            tabbedPane.setUI(new JIPipeDesktopModernTabbedPaneUI());
+            if(style == Style.TopPill) {
+                tabbedPane.setUI(new JIPipeDesktopModernPillTabbedPaneUI());
+            }
+            else {
+                tabbedPane.setUI(new JIPipeDesktopModernTabbedPaneUI());
+            }
         }
         add(tabbedPane, BorderLayout.CENTER);
         addComponentListener(new ComponentAdapter() {
@@ -686,8 +692,8 @@ public class JIPipeDesktopTabPane extends JPanel implements Disposable {
         this.enableTabContextMenu = enableTabContextMenu;
     }
 
-    public TabPlacement getTabPlacement() {
-        return tabPlacement;
+    public Style getTabPlacement() {
+        return style;
     }
 
     /**
@@ -718,15 +724,16 @@ public class JIPipeDesktopTabPane extends JPanel implements Disposable {
         Selected
     }
 
-    public enum TabPlacement {
+    public enum Style {
         Top(JTabbedPane.TOP),
+        TopPill(JTabbedPane.TOP),
         Right(JTabbedPane.RIGHT),
         Left(JTabbedPane.LEFT),
         Bottom(JTabbedPane.BOTTOM);
 
         private final int nativeValue;
 
-        TabPlacement(int nativeValue) {
+        Style(int nativeValue) {
 
             this.nativeValue = nativeValue;
         }
@@ -802,7 +809,7 @@ public class JIPipeDesktopTabPane extends JPanel implements Disposable {
             // Title label
             titleLabel = new JLabel("");
             titleLabel.setIcon(icon);
-            if (documentTabPane.tabPlacement == TabPlacement.Right || documentTabPane.tabPlacement == TabPlacement.Left) {
+            if (documentTabPane.style == Style.Right || documentTabPane.style == Style.Left) {
                 titleLabel.setHorizontalTextPosition(JLabel.CENTER);
                 titleLabel.setVerticalTextPosition(JLabel.BOTTOM);
                 titleLabel.setFont(new Font(Font.DIALOG, Font.PLAIN, 11));

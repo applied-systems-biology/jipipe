@@ -70,7 +70,7 @@ public class JIPipeDesktopRunSingleAlgorithmSettingsPanelIOEditor extends Abstra
     }
 
     private void initialize() {
-        JIPipeDesktopTabPane propertyPanel = new JIPipeDesktopTabPane(true, JIPipeDesktopTabPane.TabPlacement.Top);
+        JIPipeDesktopTabPane propertyPanel = new JIPipeDesktopTabPane(true, JIPipeDesktopTabPane.Style.Top);
         propertyPanel.addTab("Inputs",
                 UIUtils.getIconFromResources("data-types/slot.png"),
                 inputsPanel,

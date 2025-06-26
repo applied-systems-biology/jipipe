@@ -14,8 +14,6 @@
 package org.hkijena.jipipe.desktop.commons.components.ribbon;
 
 import org.hkijena.jipipe.desktop.commons.components.tabs.JIPipeDesktopTabPane;
-import org.hkijena.jipipe.desktop.commons.theme.ui.JIPipeDesktopModernTabbedPaneUI;
-import org.hkijena.jipipe.desktop.commons.theme.JIPipeDesktopUITheme;
 import org.hkijena.jipipe.utils.UIUtils;
 
 import javax.swing.*;
@@ -31,7 +29,7 @@ import java.util.function.Consumer;
 public class JIPipeDesktopRibbon extends JPanel {
 
     public static final Border DEFAULT_BORDER = BorderFactory.createEmptyBorder(2, 2, 2, 2);
-    private final JIPipeDesktopTabPane tabPane = new JIPipeDesktopTabPane(true, JIPipeDesktopTabPane.TabPlacement.Top);
+    private final JIPipeDesktopTabPane tabPane = new JIPipeDesktopTabPane(true, JIPipeDesktopTabPane.Style.Top);
     private int numRows;
     private List<Task> tasks;
 
@@ -44,42 +42,6 @@ public class JIPipeDesktopRibbon extends JPanel {
         this.tasks = new ArrayList<>(Arrays.asList(tasks));
         initialize();
         rebuildRibbon();
-    }
-
-    public static void main(String[] args) {
-
-        JIPipeDesktopUITheme.ModernLight.install();
-
-        JFrame frame = new JFrame();
-        frame.setContentPane(new JPanel(new BorderLayout()));
-
-        JIPipeDesktopRibbon panel = new JIPipeDesktopRibbon(new Task("Task 1",
-                new Band("Band 1",
-                        new JIPipeDesktopLargeButtonRibbonAction("Action", "", UIUtils.getIcon32FromResources("module-imagej.png"), () -> {
-                        }),
-                        new JIPipeDesktopSmallButtonRibbonAction("Button 1", "", UIUtils.getIconFromResources("actions/configure.png"), () -> {
-                        }),
-                        new JIPipeDesktopSmallButtonRibbonAction("Button 2", "", UIUtils.getIconFromResources("actions/configure.png"), () -> {
-                        }),
-                        new JIPipeDesktopSmallButtonRibbonAction("Button 3", "", UIUtils.getIconFromResources("actions/configure.png"), () -> {
-                        })),
-                new Band("Band 2",
-                        new JIPipeDesktopSmallButtonRibbonAction("Button 1", "", UIUtils.getIconFromResources("actions/configure.png"), () -> {
-                        }),
-                        new JIPipeDesktopSmallButtonRibbonAction("Button 2", "", UIUtils.getIconFromResources("actions/configure.png"), () -> {
-                        }),
-                        new JIPipeDesktopSmallButtonRibbonAction("Button 3", "", UIUtils.getIconFromResources("actions/configure.png"), () -> {
-                        }))),
-                new Task("Task 2",
-                        new Band("Band 3"),
-                        new Band("Band 4"),
-                        new Band("Band 5")));
-        panel.tabPane.getTabbedPane().setUI(new JIPipeDesktopModernTabbedPaneUI());
-
-        frame.getContentPane().add(panel, BorderLayout.NORTH);
-        frame.pack();
-        frame.setSize(1024, 768);
-        frame.setVisible(true);
     }
 
     private void initialize() {

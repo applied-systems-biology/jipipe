@@ -13,10 +13,7 @@
 
 package org.hkijena.jipipe.desktop.commons.theme;
 
-import org.hkijena.jipipe.desktop.commons.theme.ui.JIPipeDesktopModernScrollBarUI;
-import org.hkijena.jipipe.desktop.commons.theme.ui.JIPipeDesktopModernSliderUI;
-import org.hkijena.jipipe.desktop.commons.theme.ui.JIPipeDesktopModernSpinnerUI;
-import org.hkijena.jipipe.desktop.commons.theme.ui.JIPipeDesktopModernSplitPaneUI;
+import org.hkijena.jipipe.desktop.commons.theme.ui.*;
 import org.hkijena.jipipe.utils.UIUtils;
 
 import javax.swing.*;
@@ -118,6 +115,7 @@ public enum JIPipeDesktopUITheme {
         UIManager.put("SliderUI", JIPipeDesktopModernSliderUI.class.getName());
         UIManager.put("SpinnerUI", JIPipeDesktopModernSpinnerUI.class.getName());
         UIManager.put("SplitPaneUI", JIPipeDesktopModernSplitPaneUI.class.getName());
+        UIManager.put("ToggleButtonUI", JIPipeDesktopModernToggleButtonUI.class.getName());
     }
 
     public boolean isModern() {

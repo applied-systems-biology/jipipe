@@ -141,7 +141,7 @@ public class JIPipeDesktopFormPanel extends JPanel {
         // Determine the component that will be displayed in the help pane
         Component helpComponent;
         if ((flags & TABBED_DOCUMENTATION) == TABBED_DOCUMENTATION) {
-            documentationTabPane = new JIPipeDesktopTabPane(false, JIPipeDesktopTabPane.TabPlacement.Top);
+            documentationTabPane = new JIPipeDesktopTabPane(false, JIPipeDesktopTabPane.Style.Top);
             documentationTabPane.addTab("Documentation", UIUtils.getIconFromResources("actions/help.png"), helpPanel, JIPipeDesktopTabPane.CloseMode.withoutCloseButton);
             helpComponent = documentationTabPane;
         } else {

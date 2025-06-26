@@ -71,6 +71,8 @@ public class JIPipeDesktopModernThemeStyle {
      */
     @JsonProperty("tab-selected-background")
     private Color tabSelectedBackground = new Color(0xE1EAFF);
+    @JsonProperty("tab-selected-background")
+    private Color tabSelectedHighlight = new Color(0xa0bdf8);
 
     /*
      * Selection
@@ -142,6 +144,14 @@ public class JIPipeDesktopModernThemeStyle {
 
     public void setTabSelectedBackground(Color tabSelectedBackground) {
         this.tabSelectedBackground = tabSelectedBackground;
+    }
+
+    public Color getTabSelectedHighlight() {
+        return tabSelectedHighlight;
+    }
+
+    public void setTabSelectedHighlight(Color tabSelectedHighlight) {
+        this.tabSelectedHighlight = tabSelectedHighlight;
     }
 
     public String getName() {

@@ -43,7 +43,6 @@ import org.jdesktop.swingx.JXTable;
 import javax.swing.*;
 import javax.swing.table.DefaultTableModel;
 import java.awt.*;
-import java.io.IOException;
 import java.nio.file.Files;
 import java.util.*;
 import java.util.List;
@@ -130,7 +129,7 @@ public class JIPipeDesktopCustomRunSettingsUI extends JIPipeDesktopProjectWorkbe
 
         JIPipeDesktopSplitPane splitPane = new JIPipeDesktopSplitPane(JIPipeDesktopSplitPane.LEFT_RIGHT, new JIPipeDesktopSplitPane.DynamicSidebarRatio(600, false));
         JIPipeDesktopSplitPane splitPane1 = new JIPipeDesktopSplitPane(JIPipeDesktopSplitPane.TOP_BOTTOM, JIPipeDesktopSplitPane.RATIO_1_TO_1);
-        JIPipeDesktopTabPane tabPane = new JIPipeDesktopTabPane(true, JIPipeDesktopTabPane.TabPlacement.Left);
+        JIPipeDesktopTabPane tabPane = new JIPipeDesktopTabPane(true, JIPipeDesktopTabPane.Style.Left);
         JPanel centerPanel = new JPanel(new BorderLayout());
         centerPanel.add(tabPane, BorderLayout.CENTER);
 

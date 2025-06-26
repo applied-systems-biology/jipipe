@@ -65,7 +65,6 @@ import org.hkijena.jipipe.desktop.commons.components.tabs.JIPipeDesktopTabPane;
 import org.hkijena.jipipe.desktop.commons.notifications.JIPipeDesktopNotificationButton;
 import org.hkijena.jipipe.desktop.commons.notifications.JIPipeDesktopWorkbenchNotificationInboxUI;
 import org.hkijena.jipipe.desktop.commons.theme.JIPipeDesktopLegacyModernMetalTheme;
-import org.hkijena.jipipe.desktop.commons.theme.JIPipeDesktopModernThemeStyle;
 import org.hkijena.jipipe.plugins.parameters.library.markup.HTMLText;
 import org.hkijena.jipipe.plugins.parameters.library.markup.MarkdownText;
 import org.hkijena.jipipe.plugins.settings.*;
@@ -323,7 +322,7 @@ public class JIPipeDesktopProjectWorkbench extends JPanel implements JIPipeDeskt
         // Initialize JIPipe logger
         JIPipeDesktopRunnableLogsCollection.getInstance();
 
-        documentTabPane = new JIPipeDesktopTabPane(true, JIPipeDesktopTabPane.TabPlacement.Top);
+        documentTabPane = new JIPipeDesktopTabPane(true, JIPipeDesktopTabPane.Style.TopPill);
         documentTabPane.setTabPanelBorder(BorderFactory.createEmptyBorder(12, 4, 12, 4));
         documentTabPane.registerSingletonTab(TAB_INTRODUCTION,
                 "Getting started",

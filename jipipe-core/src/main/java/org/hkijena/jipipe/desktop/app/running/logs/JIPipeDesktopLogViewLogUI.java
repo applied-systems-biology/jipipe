@@ -72,7 +72,7 @@ public class JIPipeDesktopLogViewLogUI extends JIPipeDesktopWorkbenchPanel {
         toolBar.setFloatable(false);
 
         add(toolBar, BorderLayout.NORTH);
-        JIPipeDesktopTabPane tabPane = new JIPipeDesktopTabPane(false, JIPipeDesktopTabPane.TabPlacement.Right);
+        JIPipeDesktopTabPane tabPane = new JIPipeDesktopTabPane(false, JIPipeDesktopTabPane.Style.Right);
         add(tabPane, BorderLayout.CENTER);
 
         // Init reader

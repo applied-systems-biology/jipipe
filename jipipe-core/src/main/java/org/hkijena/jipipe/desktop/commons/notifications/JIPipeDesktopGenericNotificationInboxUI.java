@@ -108,7 +108,7 @@ public class JIPipeDesktopGenericNotificationInboxUI extends JIPipeDesktopWorkbe
 
     private void initialize() {
         setLayout(new BorderLayout());
-        JIPipeDesktopTabPane documentTabPane = new JIPipeDesktopTabPane(true, JIPipeDesktopTabPane.TabPlacement.Left);
+        JIPipeDesktopTabPane documentTabPane = new JIPipeDesktopTabPane(true, JIPipeDesktopTabPane.Style.Left);
 
         documentTabPane.addTab("Current",
                 UIUtils.getIcon32FromResources("actions/bell.png"),

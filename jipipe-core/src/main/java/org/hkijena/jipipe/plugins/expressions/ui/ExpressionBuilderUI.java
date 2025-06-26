@@ -62,7 +62,7 @@ public class ExpressionBuilderUI extends JIPipeDesktopWorkbenchPanel {
     private final JList<Object> commandPaletteList = new JList<>();
     private final List<ExpressionOperatorEntry> operatorEntryList;
     private final List<ExpressionConstantEntry> constantEntryList;
-    private final JIPipeDesktopTabPane tabPane = new JIPipeDesktopTabPane(true, JIPipeDesktopTabPane.TabPlacement.Top);
+    private final JIPipeDesktopTabPane tabPane = new JIPipeDesktopTabPane(true, JIPipeDesktopTabPane.Style.Top);
     private RSyntaxTextArea expressionEditor;
     private ExpressionBuilderInserterUI lastVariableInserter;
 

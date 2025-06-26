@@ -40,7 +40,6 @@ import javax.swing.*;
 import java.awt.*;
 import java.awt.datatransfer.Clipboard;
 import java.awt.datatransfer.StringSelection;
-import java.io.IOException;
 import java.net.URI;
 import java.net.URISyntaxException;
 import java.util.Comparator;
@@ -103,7 +102,7 @@ public class JIPipeDesktopRunSingleAlgorithmWindow extends JFrame implements JIP
         this.settingsPanel = new JPanel(new BorderLayout());
         settingsContainer.add(settingsPanel, BorderLayout.CENTER);
 
-        tabPane = new JIPipeDesktopTabPane(true, JIPipeDesktopTabPane.TabPlacement.Top);
+        tabPane = new JIPipeDesktopTabPane(true, JIPipeDesktopTabPane.Style.Top);
         setContentPane(tabPane);
 
         JIPipeDesktopSplitPane splitPane = new JIPipeDesktopSplitPane(JSplitPane.HORIZONTAL_SPLIT, listPanel, settingsContainer, JIPipeDesktopSplitPane.RATIO_1_TO_3);

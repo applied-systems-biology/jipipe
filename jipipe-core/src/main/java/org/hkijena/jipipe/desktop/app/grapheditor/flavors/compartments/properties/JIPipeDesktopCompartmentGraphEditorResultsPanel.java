@@ -33,7 +33,7 @@ public class JIPipeDesktopCompartmentGraphEditorResultsPanel extends JIPipeDeskt
     private final JIPipeDesktopCompartmentsGraphEditorUI graphEditorUI;
     private final Map<String, JIPipeDesktopAlgorithmCacheBrowserUI> cacheBrowsers = new HashMap<>();
     private final Map<String, JIPipeDesktopTabPane.DocumentTab> cacheBrowserTabs = new HashMap<>();
-    private final JIPipeDesktopTabPane tabPane = new JIPipeDesktopTabPane(true, JIPipeDesktopTabPane.TabPlacement.Bottom);
+    private final JIPipeDesktopTabPane tabPane = new JIPipeDesktopTabPane(true, JIPipeDesktopTabPane.Style.Bottom);
 
     public JIPipeDesktopCompartmentGraphEditorResultsPanel(JIPipeDesktopProjectWorkbench workbench, JIPipeProjectCompartment compartment, JIPipeDesktopCompartmentsGraphEditorUI graphEditorUI) {
         super(workbench);

@@ -59,7 +59,7 @@ public class JIPipeDesktopFlexContentPanel extends JPanel {
             pinToolBar.setFloatable(false);
         }
         if ((flags & WITH_SIDEBAR) == WITH_SIDEBAR) {
-            sideBar = new JIPipeDesktopTabPane(false, JIPipeDesktopTabPane.TabPlacement.Right);
+            sideBar = new JIPipeDesktopTabPane(false, JIPipeDesktopTabPane.Style.Right);
         }
         initialize();
         rebuildLayout();
@@ -149,14 +149,14 @@ public class JIPipeDesktopFlexContentPanel extends JPanel {
 
     private JIPipeDesktopTabPane ensureSideBar() {
         if (sideBar == null) {
-            sideBar = new JIPipeDesktopTabPane(false, JIPipeDesktopTabPane.TabPlacement.Right);
+            sideBar = new JIPipeDesktopTabPane(false, JIPipeDesktopTabPane.Style.Right);
         }
         return sideBar;
     }
 
     public JIPipeDesktopTabPane getSideBar() {
         if (sideBar == null) {
-            sideBar = new JIPipeDesktopTabPane(false, JIPipeDesktopTabPane.TabPlacement.Right);
+            sideBar = new JIPipeDesktopTabPane(false, JIPipeDesktopTabPane.Style.Right);
             rebuildLayout();
         }
         return sideBar;

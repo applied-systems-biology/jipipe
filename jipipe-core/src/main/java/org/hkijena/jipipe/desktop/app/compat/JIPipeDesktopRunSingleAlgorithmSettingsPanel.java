@@ -43,7 +43,7 @@ public class JIPipeDesktopRunSingleAlgorithmSettingsPanel extends JIPipeDesktopW
 
     private void initialize() {
         setLayout(new BorderLayout());
-        JIPipeDesktopTabPane tabPane = new JIPipeDesktopTabPane(true, JIPipeDesktopTabPane.TabPlacement.Top);
+        JIPipeDesktopTabPane tabPane = new JIPipeDesktopTabPane(true, JIPipeDesktopTabPane.Style.Top);
         add(tabPane, BorderLayout.CENTER);
 
         JIPipeDesktopAlgorithmCompendiumUI algorithmCompendiumUI = new JIPipeDesktopAlgorithmCompendiumUI();

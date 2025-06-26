@@ -366,7 +366,8 @@ public class JIPipeDesktopModernMetalTheme extends DefaultMetalTheme {
         table.put("TabbedPane.borderHightlightColor", toResource(style.getWindowBackground()));
         table.put("TabbedPane.contentAreaColor", toResource(style.getWindowBackground()));
         table.put("TabbedPane.contentBorderInsets", new Insets(2, 2, 3, 3));
-        table.put("TabbedPane.selected", toResource(style.getSelectionHighlight()));
+        table.put("TabbedPane.selected", toResource(style.getTabSelectedBackground()));
+        table.put("TabbedPane.selectHighlight", toResource(style.getTabSelectedHighlight()));
         table.put("TabbedPane.tabAreaBackground", toResource(style.getWindowBackground()));
         table.put("TabbedPane.tabAreaInsets", new Insets(2, 2, 0, 6));
         table.put("TabbedPane.unselectedBackground", toResource(style.getWindowBackground()));
