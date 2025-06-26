@@ -1,0 +1,10 @@
+name: icon-recolor
+channels:
+  - conda-forge
+dependencies:
+  - numpy
+  - pillow
+  - python=3.11
+  - scikit-image
+  - scikit-learn
+prefix: /home/rgerst/miniforge3/envs/icon-recolor
