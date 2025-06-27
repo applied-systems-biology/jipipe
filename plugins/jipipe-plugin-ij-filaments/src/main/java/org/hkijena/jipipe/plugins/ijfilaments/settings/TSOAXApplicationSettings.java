@@ -96,7 +96,7 @@ public class TSOAXApplicationSettings extends JIPipeDefaultApplicationsSettingsS
 
     @Override
     public Icon getIcon() {
-        return FilamentsPlugin.RESOURCES.getIconFromResources("tsoax.png");
+        return FilamentsPlugin.RESOURCES.getIcon16FromResources("tsoax.png");
     }
 
     @Override

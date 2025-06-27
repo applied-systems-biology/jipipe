@@ -25,7 +25,6 @@ import org.hkijena.jipipe.api.parameters.AbstractJIPipeParameterCollection;
 import org.hkijena.jipipe.api.parameters.JIPipeParameter;
 import org.hkijena.jipipe.api.run.JIPipeGraphRun;
 import org.hkijena.jipipe.api.validation.*;
-import org.hkijena.jipipe.api.validation.contexts.GraphNodeValidationReportContext;
 import org.hkijena.jipipe.api.validation.contexts.UnspecifiedValidationReportContext;
 import org.hkijena.jipipe.desktop.app.JIPipeDesktopProjectWorkbench;
 import org.hkijena.jipipe.desktop.app.JIPipeDesktopWorkbench;
@@ -38,8 +37,6 @@ import org.hkijena.jipipe.plugins.parameters.library.primitives.StringParameterS
 import org.hkijena.jipipe.utils.StringUtils;
 
 import javax.swing.*;
-import java.awt.event.WindowAdapter;
-import java.awt.event.WindowEvent;
 import java.util.concurrent.atomic.AtomicBoolean;
 
 public class OMEROCredentialsEnvironment extends JIPipeEnvironment {
@@ -66,7 +63,7 @@ public class OMEROCredentialsEnvironment extends JIPipeEnvironment {
 
     @Override
     public Icon getIcon() {
-        return OMEROPlugin.RESOURCES.getIconFromResources("omero.png");
+        return OMEROPlugin.RESOURCES.getIcon16FromResources("omero.png");
     }
 
     @Override

@@ -194,7 +194,7 @@ public class OMEROPlugin extends JIPipePrepackagedDefaultJavaPlugin {
                 "omero-credentials",
                 "OMERO Credentials",
                 "Credentials for an OMERO server",
-                RESOURCES.getIconFromResources("omero.png"));
+                RESOURCES.getIcon16FromResources("omero.png"));
         registerParameterType("optional-omero-credentials",
                 OptionalOMEROCredentialsEnvironment.class,
                 JIPipeParameterArchetype.OptionalValue, "Optimal OMERO credentials",
@@ -202,14 +202,14 @@ public class OMEROPlugin extends JIPipePrepackagedDefaultJavaPlugin {
         registerProjectSettingsSheet(OMEROPluginProjectSettings.class);
 
         // Data types
-        registerDatatype("omero-group-id", OMEROGroupReferenceData.class, RESOURCES.getIconURLFromResources("omero-group.png"));
-        registerDatatype("omero-project-id", OMEROProjectReferenceData.class, RESOURCES.getIconURLFromResources("omero-project.png"));
-        registerDatatype("omero-dataset-id", OMERODatasetReferenceData.class, RESOURCES.getIconURLFromResources("omero-dataset.png"));
-        registerDatatype("omero-image-id", OMEROImageReferenceData.class, RESOURCES.getIconURLFromResources("omero-image.png"));
-        registerDatatype("omero-annotation-id", OMEROAnnotationReferenceData.class, RESOURCES.getIconURLFromResources("omero-annotation.png"));
-        registerDatatype("omero-screen-id", OMEROScreenReferenceData.class, RESOURCES.getIconURLFromResources("omero-screen.png"));
-        registerDatatype("omero-plate-id", OMEROPlateReferenceData.class, RESOURCES.getIconURLFromResources("omero-plate.png"));
-        registerDatatype("omero-well-id", OMEROWellReferenceData.class, RESOURCES.getIconURLFromResources("omero-well.png"));
+        registerDatatype("omero-group-id", OMEROGroupReferenceData.class, RESOURCES.getIcon16URLFromResources("omero-group.png"));
+        registerDatatype("omero-project-id", OMEROProjectReferenceData.class, RESOURCES.getIcon16URLFromResources("omero-project.png"));
+        registerDatatype("omero-dataset-id", OMERODatasetReferenceData.class, RESOURCES.getIcon16URLFromResources("omero-dataset.png"));
+        registerDatatype("omero-image-id", OMEROImageReferenceData.class, RESOURCES.getIcon16URLFromResources("omero-image.png"));
+        registerDatatype("omero-annotation-id", OMEROAnnotationReferenceData.class, RESOURCES.getIcon16URLFromResources("omero-annotation.png"));
+        registerDatatype("omero-screen-id", OMEROScreenReferenceData.class, RESOURCES.getIcon16URLFromResources("omero-screen.png"));
+        registerDatatype("omero-plate-id", OMEROPlateReferenceData.class, RESOURCES.getIcon16URLFromResources("omero-plate.png"));
+        registerDatatype("omero-well-id", OMEROWellReferenceData.class, RESOURCES.getIcon16URLFromResources("omero-well.png"));
 
         registerDefaultDataTypeViewer(OMEROGroupReferenceData.class, OMERODataViewer.class);
         registerDefaultDataTypeViewer(OMEROProjectReferenceData.class, OMERODataViewer.class);

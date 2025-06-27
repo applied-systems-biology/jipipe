@@ -356,7 +356,7 @@ public class IlastikPlugin extends JIPipePrepackagedDefaultJavaPlugin {
                 "ilastik-environment",
                 "Ilastik environment",
                 "An Ilastik environment",
-                RESOURCES.getIconFromResources("ilastik.png"));
+                RESOURCES.getIcon16FromResources("ilastik.png"));
         registerParameterType("optional-ilastik-environment",
                 OptionalIlastikEnvironment.class,
                 JIPipeParameterArchetype.Value, null,

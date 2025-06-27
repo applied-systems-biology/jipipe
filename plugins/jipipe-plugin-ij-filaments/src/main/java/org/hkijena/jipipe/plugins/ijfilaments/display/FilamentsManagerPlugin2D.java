@@ -444,7 +444,7 @@ public class FilamentsManagerPlugin2D extends JIPipeDesktopLegacyImageViewerPlug
             setLayout(new BoxLayout(this, BoxLayout.X_AXIS));
             setBorder(BorderFactory.createEmptyBorder(4, 2, 4, 2));
             this.roiInfoLabel = new JLabel();
-            roiInfoLabel.setIcon(FilamentsPlugin.RESOURCES.getIconFromResources("data-type-filaments.png"));
+            roiInfoLabel.setIcon(FilamentsPlugin.RESOURCES.getIcon16FromResources("data-type-filaments.png"));
             roiInfoLabel.setBorder(BorderFactory.createEmptyBorder(4, 4, 4, 4));
             add(roiInfoLabel);
             add(Box.createHorizontalGlue());

@@ -39,7 +39,7 @@ public class TrackListCellRenderer extends JPanel implements ListCellRenderer<In
     private void initialize() {
         setOpaque(true);
         setLayout(new GridBagLayout());
-        iconLabel.setIcon(TrackMatePlugin.RESOURCES.getIconFromResources("trackscheme.png"));
+        iconLabel.setIcon(TrackMatePlugin.RESOURCES.getIcon16FromResources("trackscheme.png"));
         infoLabel.setFont(new Font(Font.DIALOG, Font.PLAIN, 10));
         add(iconLabel, new GridBagConstraints() {
             {

@@ -63,7 +63,7 @@ public class IlastikEnvironment extends JIPipeProcessArtifactEnvironment {
 
     @Override
     public Icon getNonArtifactIcon() {
-        return IlastikPlugin.RESOURCES.getIconFromResources("ilastik.png");
+        return IlastikPlugin.RESOURCES.getIcon16FromResources("ilastik.png");
     }
 
     /**

@@ -511,7 +511,7 @@ public class TracksManagerPlugin2D extends JIPipeDesktopLegacyImageViewerPlugin2
             setLayout(new BoxLayout(this, BoxLayout.X_AXIS));
             setBorder(BorderFactory.createEmptyBorder(4, 2, 4, 2));
             this.roiInfoLabel = new JLabel();
-            roiInfoLabel.setIcon(TrackMatePlugin.RESOURCES.getIconFromResources("trackmate-tracker.png"));
+            roiInfoLabel.setIcon(TrackMatePlugin.RESOURCES.getIcon16FromResources("trackmate-tracker.png"));
             roiInfoLabel.setBorder(BorderFactory.createEmptyBorder(4, 4, 4, 4));
             add(roiInfoLabel);
             add(Box.createHorizontalGlue());

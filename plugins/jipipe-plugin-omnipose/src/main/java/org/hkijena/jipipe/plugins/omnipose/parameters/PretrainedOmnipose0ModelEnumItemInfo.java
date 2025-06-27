@@ -22,7 +22,7 @@ import javax.swing.*;
 public class PretrainedOmnipose0ModelEnumItemInfo implements EnumItemInfo {
     @Override
     public Icon getIcon(Object value) {
-        return OmniposePlugin.RESOURCES.getIconFromResources("omnipose.png");
+        return OmniposePlugin.RESOURCES.getIcon16FromResources("omnipose.png");
     }
 
     @Override

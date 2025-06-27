@@ -68,7 +68,7 @@ public class ImageViewerUISpotsDisplayApplicationSettings extends JIPipeDefaultA
 
     @Override
     public Icon getIcon() {
-        return TrackMatePlugin.RESOURCES.getIconFromResources("trackmate-tracker.png");
+        return TrackMatePlugin.RESOURCES.getIcon16FromResources("trackmate-tracker.png");
     }
 
     @Override

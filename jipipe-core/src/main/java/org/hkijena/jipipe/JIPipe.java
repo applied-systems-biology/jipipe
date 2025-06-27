@@ -120,7 +120,7 @@ public class JIPipe extends AbstractService implements JIPipeService {
     public static boolean NO_SETTINGS_AUTOSAVE = false;
 
     /**
-     * Allows to override the directory where profiles are located (needs to be done before init!)
+     * Allows overriding the directory where profiles are located (needs to be done before init!)
      * Overridden by the JIPIPE_OVERRIDE_USER_DIR_BASE environment variable
      */
     public static Path OVERRIDE_USER_DIR_BASE = null;

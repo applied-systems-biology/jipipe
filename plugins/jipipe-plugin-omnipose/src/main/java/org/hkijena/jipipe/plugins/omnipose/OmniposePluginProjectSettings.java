@@ -65,7 +65,7 @@ public class OmniposePluginProjectSettings extends JIPipeDefaultProjectSettingsS
 
     @Override
     public Icon getIcon() {
-        return OmniposePlugin.RESOURCES.getIconFromResources("omnipose.png");
+        return OmniposePlugin.RESOURCES.getIcon16FromResources("omnipose.png");
     }
 
     @Override

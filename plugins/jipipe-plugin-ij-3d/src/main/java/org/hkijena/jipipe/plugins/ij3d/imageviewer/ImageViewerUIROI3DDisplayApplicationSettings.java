@@ -69,7 +69,7 @@ public class ImageViewerUIROI3DDisplayApplicationSettings extends JIPipeDefaultA
 
     @Override
     public Icon getIcon() {
-        return IJ3DPlugin.RESOURCES.getIconFromResources("data-type-roi3d.png");
+        return IJ3DPlugin.RESOURCES.getIcon16FromResources("data-type-roi3d.png");
     }
 
     @Override

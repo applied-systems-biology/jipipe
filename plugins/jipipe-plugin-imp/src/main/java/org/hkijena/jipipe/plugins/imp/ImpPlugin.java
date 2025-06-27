@@ -85,7 +85,7 @@ public class ImpPlugin extends JIPipePrepackagedDefaultJavaPlugin {
 
     @Override
     public void register(JIPipe jiPipe, Context context, JIPipeProgressInfo progressInfo) {
-        registerDatatype("imp-image", ImpImageData.class, RESOURCES.getIconURLFromResources("imp-image.png"));
+        registerDatatype("imp-image", ImpImageData.class, RESOURCES.getIcon16URLFromResources("imp-image.png"));
         registerDefaultDataTypeViewer(ImpImageData.class, ImpImageDataViewer.class);
         registerDatatypeConversion(new ImageJImageToImpImageDataTypeConverter());
         registerDatatypeConversion(new ImpImageToImageJImageDataTypeConverter());

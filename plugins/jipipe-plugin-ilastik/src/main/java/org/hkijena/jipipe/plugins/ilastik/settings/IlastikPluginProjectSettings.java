@@ -82,7 +82,7 @@ public class IlastikPluginProjectSettings extends JIPipeDefaultProjectSettingsSh
 
     @Override
     public Icon getIcon() {
-        return IlastikPlugin.RESOURCES.getIconFromResources("ilastik.png");
+        return IlastikPlugin.RESOURCES.getIcon16FromResources("ilastik.png");
     }
 
     @Override

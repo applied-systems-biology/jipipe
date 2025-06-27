@@ -148,7 +148,7 @@ public class FilamentsPlugin extends JIPipePrepackagedDefaultJavaPlugin {
                 "tsoax-environment",
                 "TSOAX Environment",
                 "Installation of TSOAX",
-                RESOURCES.getIconFromResources("tsoax.png"));
+                RESOURCES.getIcon16FromResources("tsoax.png"));
         registerParameterType("optional-tsoax-environment",
                 OptionalTSOAXEnvironment.class,
                 JIPipeParameterArchetype.OptionalValue, "Optional TSOAX Environment",

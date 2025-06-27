@@ -68,7 +68,7 @@ public class ImageViewerUIFilamentDisplayApplicationSettings extends JIPipeDefau
 
     @Override
     public Icon getIcon() {
-        return FilamentsPlugin.RESOURCES.getIconFromResources("data-type-filaments.png");
+        return FilamentsPlugin.RESOURCES.getIcon16FromResources("data-type-filaments.png");
     }
 
     @Override
