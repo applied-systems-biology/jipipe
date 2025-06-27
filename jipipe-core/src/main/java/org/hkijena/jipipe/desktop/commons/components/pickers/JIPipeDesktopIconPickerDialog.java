@@ -80,7 +80,7 @@ public class JIPipeDesktopIconPickerDialog extends JDialog implements MouseListe
 
         iconList = new JList<>();
         iconList.setModel(new DefaultListModel<>());
-        iconList.setCellRenderer(new JIPipeDesktopIconNameListCellRenderer(prefix));
+        iconList.setCellRenderer(new JIPipeDesktopIconNameListCellRenderer());
         iconList.setModel(new DefaultListModel<>());
         iconList.addListSelectionListener(e -> selectedIcon = iconList.getSelectedValue());
         iconList.addMouseListener(this);

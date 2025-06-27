@@ -821,95 +821,13 @@ public class JIPipeDesktopModernTabbedPaneUI extends BasicTabbedPaneUI {
                                        Rectangle[] rects, int tabIndex,
                                        Rectangle iconRect, Rectangle textRect,
                                        boolean isSelected) {
-//        if ( tabPane.hasFocus() && isSelected ) {
-//            Rectangle tabRect = rects[tabIndex];
-//            boolean lastInRun = isLastInRun( tabIndex );
-//            g.setColor( focus );
-//            g.translate( tabRect.x, tabRect.y );
-//            int right = tabRect.width - 1;
-//            int bottom = tabRect.height - 1;
-//            boolean leftToRight = MetalUtils.isLeftToRight(tabPane);
-//            switch ( tabPlacement ) {
-//                case RIGHT:
-//                    g.drawLine( right - 6,2 , right - 2,6 );         // slant
-//                    g.drawLine( 1,2 , right - 6,2 );                 // top
-//                    g.drawLine( right - 2,6 , right - 2,bottom );    // right
-//                    g.drawLine( 1,2 , 1,bottom );                    // left
-//                    g.drawLine( 1,bottom , right - 2,bottom );       // bottom
-//                    break;
-//                case BOTTOM:
-//                    if ( leftToRight ) {
-//                        g.drawLine( 2, bottom - 6, 6, bottom - 2 );   // slant
-//                        g.drawLine( 6, bottom - 2,
-//                                right, bottom - 2 );              // bottom
-//                        g.drawLine( 2, 0, 2, bottom - 6 );            // left
-//                        g.drawLine( 2, 0, right, 0 );                 // top
-//                        g.drawLine( right, 0, right, bottom - 2 );    // right
-//                    } else {
-//                        g.drawLine( right - 2, bottom - 6,
-//                                right - 6, bottom - 2 );          // slant
-//                        g.drawLine( right - 2, 0,
-//                                right - 2, bottom - 6 );          // right
-//                        if ( lastInRun ) {
-//                            // last tab in run
-//                            g.drawLine( 2, bottom - 2,
-//                                    right - 6, bottom - 2 );      // bottom
-//                            g.drawLine( 2, 0, right - 2, 0 );         // top
-//                            g.drawLine( 2, 0, 2, bottom - 2 );        // left
-//                        } else {
-//                            g.drawLine( 1, bottom - 2,
-//                                    right - 6, bottom - 2 );      // bottom
-//                            g.drawLine( 1, 0, right - 2, 0 );         // top
-//                            g.drawLine( 1, 0, 1, bottom - 2 );        // left
-//                        }
-//                    }
-//                    break;
-//                case LEFT:
-//                    g.drawLine( 2, 6, 6, 2 );                         // slant
-//                    g.drawLine( 2, 6, 2, bottom - 1);                 // left
-//                    g.drawLine( 6, 2, right, 2 );                     // top
-//                    g.drawLine( right, 2, right, bottom - 1 );        // right
-//                    g.drawLine( 2, bottom - 1,
-//                            right, bottom - 1 );                  // bottom
-//                    break;
-//                case TOP:
-//                default:
-//                    if ( leftToRight ) {
-////                        g.drawLine( 2, 6, 6, 2 );                     // slant
-////                        g.drawLine( 2, 2, 2, bottom - 1);             // left
-////                        g.drawLine( 2, 2, right, 2 );                 // top
-////                        g.drawLine( right, 2, right, bottom - 1 );    // right
-////                        g.drawLine( 2, bottom - 1,
-////                                right, bottom - 1 );              // bottom
-//                        g.setColor(ModernMetalTheme.PRIMARY6);
-//                        g.fillRect(1, tabRect.height - 2, tabRect.width - 1, 5);
-//                    }
-//                    else {
-//                        g.drawLine( right - 2, 6, right - 6, 2 );     // slant
-//                        g.drawLine( right - 2, 6,
-//                                right - 2, bottom - 1);           // right
-//                        if ( lastInRun ) {
-//                            // last tab in run
-//                            g.drawLine( right - 6, 2, 2, 2 );         // top
-//                            g.drawLine( 2, 2, 2, bottom - 1 );        // left
-//                            g.drawLine( right - 2, bottom - 1,
-//                                    2, bottom - 1 );              // bottom
-//                        }
-//                        else {
-//                            g.drawLine( right - 6, 2, 1, 2 );         // top
-//                            g.drawLine( 1, 2, 1, bottom - 1 );        // left
-//                            g.drawLine( right - 2, bottom - 1,
-//                                    1, bottom - 1 );              // bottom
-//                        }
-//                    }
-//            }
-//            g.translate( -tabRect.x, -tabRect.y );
-//        }
     }
 
     protected void paintContentBorderTopEdge(Graphics g, int tabPlacement,
                                              int selectedIndex,
                                              int x, int y, int w, int h) {
+
+
         boolean leftToRight = tabPane.getComponentOrientation().isLeftToRight();
         int right = x + w - 1;
         Rectangle selRect = selectedIndex < 0 ? null :
@@ -989,122 +907,16 @@ public class JIPipeDesktopModernTabbedPaneUI extends BasicTabbedPaneUI {
     protected void paintContentBorderBottomEdge(Graphics g, int tabPlacement,
                                                 int selectedIndex,
                                                 int x, int y, int w, int h) {
-        boolean leftToRight = tabPane.getComponentOrientation().isLeftToRight();
-        int bottom = y + h - 1;
-        int right = x + w - 1;
-        Rectangle selRect = selectedIndex < 0 ? null :
-                getTabBounds(selectedIndex, calcRect);
-
-        g.setColor(darkShadow);
-
-        // Draw unbroken line if tabs are not on BOTTOM, OR
-        // selected tab is not in run adjacent to content, OR
-        // selected tab is not visible (SCROLL_TAB_LAYOUT)
-        //
-        if (tabPlacement != BOTTOM || selectedIndex < 0 ||
-                (selRect.y - 1 > h) ||
-                (selRect.x < x || selRect.x > x + w)) {
-            if (ocean && tabPlacement == BOTTOM) {
-                g.setColor(oceanSelectedBorderColor);
-            }
-            g.drawLine(x, y + h - 1, x + w - 1, y + h - 1);
-        } else {
-            // Break line to show visual connection to selected tab
-            boolean lastInRun = isLastInRun(selectedIndex);
-
-            if (ocean) {
-                g.setColor(oceanSelectedBorderColor);
-            }
-
-            if (leftToRight || lastInRun) {
-                g.drawLine(x, bottom, selRect.x, bottom);
-            } else {
-                g.drawLine(x, bottom, selRect.x - 1, bottom);
-            }
-
-            if (selRect.x + selRect.width < x + w - 2) {
-                if (leftToRight && !lastInRun) {
-                    g.drawLine(selRect.x + selRect.width, bottom,
-                            right, bottom);
-                } else {
-                    g.drawLine(selRect.x + selRect.width - 1, bottom,
-                            right, bottom);
-                }
-            }
-        }
     }
 
     protected void paintContentBorderLeftEdge(Graphics g, int tabPlacement,
                                               int selectedIndex,
                                               int x, int y, int w, int h) {
-        Rectangle selRect = selectedIndex < 0 ? null :
-                getTabBounds(selectedIndex, calcRect);
-        if (ocean) {
-            g.setColor(oceanSelectedBorderColor);
-        } else {
-            g.setColor(selectHighlight);
-        }
-
-        // Draw unbroken line if tabs are not on LEFT, OR
-        // selected tab is not in run adjacent to content, OR
-        // selected tab is not visible (SCROLL_TAB_LAYOUT)
-        //
-        if (tabPlacement != LEFT || selectedIndex < 0 ||
-                (selRect.x + selRect.width + 1 < x) ||
-                (selRect.y < y || selRect.y > y + h)) {
-            g.drawLine(x, y + 1, x, y + h - 2);
-            if (ocean && tabPlacement == LEFT) {
-                g.setColor(MetalLookAndFeel.getWhite());
-                g.drawLine(x + 1, y, x + 1, y + h - 2);
-            }
-        } else {
-            // Break line to show visual connection to selected tab
-            g.drawLine(x, y, x, selRect.y + 1);
-            if (selRect.y + selRect.height < y + h - 2) {
-                g.drawLine(x, selRect.y + selRect.height + 1,
-                        x, y + h + 2);
-            }
-            if (ocean) {
-                g.setColor(MetalLookAndFeel.getWhite());
-                g.drawLine(x + 1, y + 1, x + 1, selRect.y + 1);
-                if (selRect.y + selRect.height < y + h - 2) {
-                    g.drawLine(x + 1, selRect.y + selRect.height + 1,
-                            x + 1, y + h + 2);
-                }
-            }
-        }
     }
 
     protected void paintContentBorderRightEdge(Graphics g, int tabPlacement,
                                                int selectedIndex,
                                                int x, int y, int w, int h) {
-        Rectangle selRect = selectedIndex < 0 ? null :
-                getTabBounds(selectedIndex, calcRect);
-
-        g.setColor(darkShadow);
-        // Draw unbroken line if tabs are not on RIGHT, OR
-        // selected tab is not in run adjacent to content, OR
-        // selected tab is not visible (SCROLL_TAB_LAYOUT)
-        //
-        if (tabPlacement != RIGHT || selectedIndex < 0 ||
-                (selRect.x - 1 > w) ||
-                (selRect.y < y || selRect.y > y + h)) {
-            if (ocean && tabPlacement == RIGHT) {
-                g.setColor(oceanSelectedBorderColor);
-            }
-            g.drawLine(x + w - 1, y, x + w - 1, y + h - 1);
-        } else {
-            // Break line to show visual connection to selected tab
-            if (ocean) {
-                g.setColor(oceanSelectedBorderColor);
-            }
-            g.drawLine(x + w - 1, y, x + w - 1, selRect.y);
-
-            if (selRect.y + selRect.height < y + h - 2) {
-                g.drawLine(x + w - 1, selRect.y + selRect.height,
-                        x + w - 1, y + h - 2);
-            }
-        }
     }
 
     protected int calculateMaxTabHeight(int tabPlacement) {

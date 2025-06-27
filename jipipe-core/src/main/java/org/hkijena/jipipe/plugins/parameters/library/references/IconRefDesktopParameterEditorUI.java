@@ -44,8 +44,8 @@ public class IconRefDesktopParameterEditorUI extends JIPipeDesktopParameterEdito
     public static Set<String> getAvailableIcons() {
         if (availableAlgorithmIcons == null) {
             availableAlgorithmIcons = new HashSet<>();
-            Set<String> rawIcons = ResourceUtils.walkInternalResourceFolder("icons/");
-            String basePath = ResourceUtils.getResourcePath("icons/");
+            Set<String> rawIcons = ResourceUtils.walkInternalResourceFolder("icons/light/icons-16/");
+            String basePath = ResourceUtils.getResourcePath("icons/light/icons-16/");
             for (String rawIcon : rawIcons) {
                 if (rawIcon.endsWith(".png"))
                     availableAlgorithmIcons.add(rawIcon.substring(basePath.length()));
@@ -86,14 +86,8 @@ public class IconRefDesktopParameterEditorUI extends JIPipeDesktopParameterEdito
     public void reload() {
         IconRef ref = getParameter(IconRef.class);
         if (!StringUtils.isNullOrEmpty(ref.getIconName())) {
-            URL resource = ResourceUtils.getPluginResource("icons/" + ref.getIconName());
-            if (resource != null) {
-                currentlyDisplayed.setText(ref.getIconName());
-                currentlyDisplayed.setIcon(new ImageIcon(resource));
-            } else {
-                currentlyDisplayed.setText("<Invalid: " + ref.getIconName() + ">");
-                currentlyDisplayed.setIcon(JIPipe.RESOURCES.getIcon16("actions/configure.png"));
-            }
+            currentlyDisplayed.setText(ref.getIconName());
+            currentlyDisplayed.setIcon(JIPipe.RESOURCES.getIcon16(ref.getIconName()));
         } else {
             currentlyDisplayed.setText("<None selected>");
             currentlyDisplayed.setIcon(JIPipe.RESOURCES.getIcon16("actions/configure.png"));
