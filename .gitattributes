@@ -14,7 +14,7 @@
 *.gif           -text
 *.bmp           -text
 *.ico           -text
-*.svg           -text  # may be text, but treat as binary for consistency
+*.svg           -text
 *.webp          -text
 
 # --- Audio/video assets (e.g. for UI feedback) ---

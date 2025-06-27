@@ -60,6 +60,7 @@ public class JIPipeDesktopAuthorProfileButton extends JButton implements JIPipeD
 //        popupMenu.add(UIUtils.createMenuItem("Configure ...", "Configures the application-wide authors", UIUtils.getIconFromResources("actions/configure.png"), this::showSettings));
 
         // Initialize tooltip
+        setOpaque(false);
         initializeBalloon();
         addActionListener(e -> {
             showSettings();
