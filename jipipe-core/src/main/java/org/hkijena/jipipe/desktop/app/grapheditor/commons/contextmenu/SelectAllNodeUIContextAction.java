@@ -16,6 +16,7 @@ package org.hkijena.jipipe.desktop.app.grapheditor.commons.contextmenu;
 import org.hkijena.jipipe.desktop.app.grapheditor.commons.JIPipeDesktopGraphCanvasUI;
 import org.hkijena.jipipe.desktop.app.grapheditor.commons.nodeui.JIPipeDesktopGraphNodeUI;
 import org.hkijena.jipipe.utils.UIUtils;
+import org.hkijena.jipipe.JIPipe;
 
 import javax.swing.*;
 import java.awt.event.InputEvent;
@@ -45,7 +46,7 @@ public class SelectAllNodeUIContextAction implements NodeUIContextAction {
 
     @Override
     public Icon getIcon() {
-        return UIUtils.getIconFromResources("actions/edit-select-all.png");
+        return JIPipe.RESOURCES.getIcon16("actions/edit-select-all.png");
     }
 
     @Override

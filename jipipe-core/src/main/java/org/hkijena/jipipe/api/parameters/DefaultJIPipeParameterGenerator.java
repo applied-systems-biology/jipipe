@@ -22,6 +22,7 @@ import org.hkijena.jipipe.desktop.app.JIPipeDesktopWorkbench;
 import org.hkijena.jipipe.desktop.commons.components.JIPipeDesktopParameterFormPanel;
 import org.hkijena.jipipe.plugins.parameters.library.markup.MarkdownText;
 import org.hkijena.jipipe.utils.UIUtils;
+import org.hkijena.jipipe.JIPipe;
 
 import javax.swing.*;
 import java.awt.*;
@@ -89,14 +90,14 @@ public abstract class DefaultJIPipeParameterGenerator extends AbstractJIPipePara
             buttonPanel.setLayout(new BoxLayout(buttonPanel, BoxLayout.X_AXIS));
             buttonPanel.add(Box.createHorizontalGlue());
 
-            JButton cancelButton = new JButton("Cancel", UIUtils.getIconFromResources("actions/cancel.png"));
+            JButton cancelButton = new JButton("Cancel", JIPipe.RESOURCES.getIcon16("actions/cancel.png"));
             cancelButton.addActionListener(e -> {
                 this.cancelled = true;
                 this.setVisible(false);
             });
             buttonPanel.add(cancelButton);
 
-            JButton confirmButton = new JButton("Generate", UIUtils.getIconFromResources("actions/run-build.png"));
+            JButton confirmButton = new JButton("Generate", JIPipe.RESOURCES.getIcon16("actions/run-build.png"));
             confirmButton.addActionListener(e -> {
                 JIPipeValidationReport report = new JIPipeValidationReport();
                 generator.reportValidity(new UnspecifiedValidationReportContext(), report);

@@ -13,7 +13,9 @@
 
 package org.hkijena.jipipe.desktop.commons.components.renderers;
 
+import org.hkijena.jipipe.JIPipe;
 import org.hkijena.jipipe.utils.UIUtils;
+import org.hkijena.jipipe.JIPipe;
 
 import javax.swing.*;
 import java.awt.*;
@@ -21,7 +23,7 @@ import java.awt.*;
 public class JIPipeDesktopWindowListCellRenderer<T extends Frame> extends JLabel implements ListCellRenderer<T> {
 
     public JIPipeDesktopWindowListCellRenderer() {
-        setIcon(UIUtils.getIconFromResources("actions/window.png"));
+        setIcon(JIPipe.RESOURCES.getIcon16("actions/window.png"));
     }
 
     @Override

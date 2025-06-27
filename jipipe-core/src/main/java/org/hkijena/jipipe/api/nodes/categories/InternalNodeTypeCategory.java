@@ -15,6 +15,7 @@ package org.hkijena.jipipe.api.nodes.categories;
 
 import org.hkijena.jipipe.api.nodes.JIPipeNodeTypeCategory;
 import org.hkijena.jipipe.utils.UIUtils;
+import org.hkijena.jipipe.JIPipe;
 
 import javax.swing.*;
 import java.awt.*;
@@ -43,7 +44,7 @@ public class InternalNodeTypeCategory implements JIPipeNodeTypeCategory {
 
     @Override
     public Icon getIcon() {
-        return UIUtils.getIconFromResources("actions/configure.png");
+        return JIPipe.RESOURCES.getIcon16("actions/configure.png");
     }
 
     @Override

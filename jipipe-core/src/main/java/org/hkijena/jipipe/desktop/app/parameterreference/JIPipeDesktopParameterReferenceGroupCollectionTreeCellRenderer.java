@@ -20,6 +20,7 @@ import org.hkijena.jipipe.api.grouping.parameters.GraphNodeParameterReferenceGro
 import org.hkijena.jipipe.api.parameters.JIPipeParameterAccess;
 import org.hkijena.jipipe.utils.StringUtils;
 import org.hkijena.jipipe.utils.UIUtils;
+import org.hkijena.jipipe.JIPipe;
 
 import javax.swing.*;
 import javax.swing.tree.DefaultMutableTreeNode;
@@ -85,9 +86,9 @@ public class JIPipeDesktopParameterReferenceGroupCollectionTreeCellRenderer exte
             mainLabel.setText(StringUtils.orElse(group.getName(), "<No name>"));
             infoLabel.setText(group.getContent().size() == 1 ? "1 parameter" : group.getContent().size() + " parameters");
             if (StringUtils.isNullOrEmpty(group.getName())) {
-                iconLabel.setIcon(UIUtils.getIconFromResources("emblems/warning.png"));
+                iconLabel.setIcon(JIPipe.RESOURCES.getIcon16("emblems/warning.png"));
             } else {
-                iconLabel.setIcon(UIUtils.getIconFromResources("actions/configure.png"));
+                iconLabel.setIcon(JIPipe.RESOURCES.getIcon16("actions/configure.png"));
             }
         } else if (o instanceof GraphNodeParameterReference) {
             GraphNodeParameterReference reference = (GraphNodeParameterReference) o;
@@ -95,11 +96,11 @@ public class JIPipeDesktopParameterReferenceGroupCollectionTreeCellRenderer exte
             if (access != null) {
                 mainLabel.setText(reference.getName(editorUI.getParameterTree()));
                 infoLabel.setText(JIPipe.getParameterTypes().getInfoByFieldClass(access.getFieldClass()).getName());
-                iconLabel.setIcon(UIUtils.getIconFromResources("data-types/parameters.png"));
+                iconLabel.setIcon(JIPipe.RESOURCES.getIcon16("data-types/parameters.png"));
             } else {
                 mainLabel.setText("Not found!");
                 infoLabel.setText("No parameter " + reference.getPath());
-                iconLabel.setIcon(UIUtils.getIconFromResources("emblems/vcs-conflicting.png"));
+                iconLabel.setIcon(JIPipe.RESOURCES.getIcon16("emblems/vcs-conflicting.png"));
             }
         } else {
             infoLabel.setText(null);

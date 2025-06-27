@@ -17,6 +17,7 @@ import org.hkijena.jipipe.desktop.commons.components.JIPipeDesktopFormPanel;
 import org.hkijena.jipipe.plugins.imagejdatatypes.util.blending.ImageBlendMode;
 import org.hkijena.jipipe.plugins.imageviewer.legacy.JIPipeDesktopLegacyImageViewerPanel2D;
 import org.hkijena.jipipe.utils.UIUtils;
+import org.hkijena.jipipe.JIPipe;
 
 import javax.swing.*;
 import java.awt.*;
@@ -44,7 +45,7 @@ public class ImageViewer2DCompositeLayerEditor extends JPanel {
         // Priority controls
         JPanel priorityControlsPanel = new JPanel(new BorderLayout());
 
-        JButton priorityUpButton = new JButton(UIUtils.getIconFromResources("actions/caret-up.png"));
+        JButton priorityUpButton = new JButton(JIPipe.RESOURCES.getIcon16("actions/caret-up.png"));
         UIUtils.makeButtonFlat25x25(priorityUpButton);
         priorityUpButton.addActionListener(e -> moveLayerPriorityUp());
         priorityControlsPanel.add(priorityUpButton, BorderLayout.NORTH);
@@ -54,7 +55,7 @@ public class ImageViewer2DCompositeLayerEditor extends JPanel {
         channelLabel.setHorizontalAlignment(SwingConstants.CENTER);
         priorityControlsPanel.add(channelLabel, BorderLayout.CENTER);
 
-        JButton priorityDownButton = new JButton(UIUtils.getIconFromResources("actions/caret-down.png"));
+        JButton priorityDownButton = new JButton(JIPipe.RESOURCES.getIcon16("actions/caret-down.png"));
         UIUtils.makeButtonFlat25x25(priorityDownButton);
         priorityDownButton.addActionListener(e -> moveLayerPriorityDown());
         priorityControlsPanel.add(priorityDownButton, BorderLayout.SOUTH);

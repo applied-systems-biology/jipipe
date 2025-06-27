@@ -27,6 +27,7 @@ import org.hkijena.jipipe.plugins.python.adapter.JIPipePythonAdapterLibraryEnvir
 import org.hkijena.jipipe.plugins.python.adapter.JIPipePythonPluginAdapterApplicationSettings;
 import org.hkijena.jipipe.plugins.python.adapter.OptionalJIPipePythonAdapterLibraryEnvironment;
 import org.hkijena.jipipe.utils.UIUtils;
+import org.hkijena.jipipe.JIPipe;
 
 import javax.swing.*;
 import java.util.List;
@@ -112,7 +113,7 @@ public class PythonPluginProjectSettings extends JIPipeDefaultProjectSettingsShe
 
     @Override
     public Icon getIcon() {
-        return UIUtils.getIconFromResources("apps/python.png");
+        return JIPipe.RESOURCES.getIcon16("apps/python.png");
     }
 
     @Override

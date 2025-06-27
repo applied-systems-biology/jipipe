@@ -19,6 +19,7 @@ import org.hkijena.jipipe.desktop.app.JIPipeDesktopProjectWorkbench;
 import org.hkijena.jipipe.plugins.artifacts.JIPipeArtifactAccelerationPreference;
 import org.hkijena.jipipe.plugins.artifacts.JIPipeArtifactApplicationSettings;
 import org.hkijena.jipipe.utils.UIUtils;
+import org.hkijena.jipipe.JIPipe;
 
 import javax.swing.*;
 
@@ -38,7 +39,7 @@ public class JIPipeDesktopAccelerationOptionsControl extends JButton implements 
     private void initialize() {
         UIUtils.makeButtonFlat(this);
         setToolTipText("Setup the preferred acceleration method");
-        setIcon(UIUtils.getIconFromResources("actions/speedometer.png"));
+        setIcon(JIPipe.RESOURCES.getIcon16("actions/speedometer.png"));
         UIUtils.addReloadablePopupMenuToButton(this, popupMenu, this::reloadMenu);
     }
 
@@ -54,7 +55,7 @@ public class JIPipeDesktopAccelerationOptionsControl extends JButton implements 
             popupMenu.add(menuItem);
         }
         popupMenu.addSeparator();
-        popupMenu.add(UIUtils.createMenuItem("Configure ...", "Opens the application settings", UIUtils.getIconFromResources("actions/configure.png"), this::openApplicationSettings));
+        popupMenu.add(UIUtils.createMenuItem("Configure ...", "Opens the application settings", JIPipe.RESOURCES.getIcon16("actions/configure.png"), this::openApplicationSettings));
     }
 
     private void openApplicationSettings() {

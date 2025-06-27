@@ -13,6 +13,7 @@
 
 package org.hkijena.jipipe.desktop.app.settings;
 
+import org.hkijena.jipipe.JIPipe;
 import org.hkijena.jipipe.api.SetJIPipeDocumentation;
 import org.hkijena.jipipe.api.environments.JIPipeEnvironment;
 import org.hkijena.jipipe.api.parameters.JIPipeParameter;
@@ -29,6 +30,7 @@ import org.hkijena.jipipe.desktop.commons.components.JIPipeDesktopParameterFormP
 import org.hkijena.jipipe.plugins.parameters.library.markup.MarkdownText;
 import org.hkijena.jipipe.utils.JIPipeDesktopSplitPane;
 import org.hkijena.jipipe.utils.UIUtils;
+import org.hkijena.jipipe.JIPipe;
 
 import javax.swing.*;
 import javax.swing.tree.*;
@@ -135,7 +137,7 @@ public class JIPipeDesktopProjectSettingsUI extends JPanel {
                 contentPanel.add(parameterPanel, BorderLayout.CENTER);
             } else {
                 JIPipeDesktopFormPanel formPanel = new JIPipeDesktopFormPanel(JIPipeDesktopFormPanel.WITH_SCROLLING);
-                formPanel.addWideToForm(new JLabel("<html><h1>" + node.label + "</h1></html>", UIUtils.getIcon32FromResources("actions/configure.png"), SwingConstants.LEFT));
+                formPanel.addWideToForm(new JLabel("<html><h1>" + node.label + "</h1></html>", JIPipe.RESOURCES.getIcon32("actions/configure.png"), SwingConstants.LEFT));
                 node.sheets.stream().sorted(Comparator.comparing(JIPipeProjectSettingsSheet::getName)).forEach(sheet -> {
                     JButton goToCategoryButton = new JButton("<html><span style=\"font-size: 16px;\">" + sheet.getName() + "</span><br/>" + sheet.getDescription() + "</html>", sheet.getIcon());
                     goToCategoryButton.setHorizontalAlignment(SwingConstants.LEFT);
@@ -250,7 +252,7 @@ public class JIPipeDesktopProjectSettingsUI extends JPanel {
 
         @Override
         public Icon getIcon() {
-            return UIUtils.getIconFromResources("actions/folder.png");
+            return JIPipe.RESOURCES.getIcon16("actions/folder.png");
         }
 
         @Override
@@ -284,7 +286,7 @@ public class JIPipeDesktopProjectSettingsUI extends JPanel {
 
         @Override
         public Icon getIcon() {
-            return UIUtils.getIconFromResources("actions/circle-info.png");
+            return JIPipe.RESOURCES.getIcon16("actions/circle-info.png");
         }
 
         @Override
@@ -348,7 +350,7 @@ public class JIPipeDesktopProjectSettingsUI extends JPanel {
 
         @Override
         public Icon getIcon() {
-            return UIUtils.getIconFromResources("actions/database-lock.png");
+            return JIPipe.RESOURCES.getIcon16("actions/database-lock.png");
         }
 
         @Override
@@ -400,7 +402,7 @@ public class JIPipeDesktopProjectSettingsUI extends JPanel {
 
         @Override
         public Icon getIcon() {
-            return UIUtils.getIconFromResources("actions/configure_toolbars.png");
+            return JIPipe.RESOURCES.getIcon16("actions/configure_toolbars.png");
         }
 
         @Override

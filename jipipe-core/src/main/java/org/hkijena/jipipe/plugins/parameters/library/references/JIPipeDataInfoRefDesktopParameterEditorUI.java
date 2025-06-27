@@ -21,6 +21,7 @@ import org.hkijena.jipipe.desktop.commons.components.pickers.JIPipeDesktopDataTy
 import org.hkijena.jipipe.utils.ReflectionUtils;
 import org.hkijena.jipipe.utils.TooltipUtils;
 import org.hkijena.jipipe.utils.UIUtils;
+import org.hkijena.jipipe.JIPipe;
 import org.hkijena.jipipe.utils.classfilters.AnyClassFilter;
 import org.hkijena.jipipe.utils.classfilters.ClassFilter;
 
@@ -54,7 +55,7 @@ public class JIPipeDataInfoRefDesktopParameterEditorUI extends JIPipeDesktopPara
         UIUtils.setStandardButtonBorder(currentlyDisplayed);
         add(currentlyDisplayed, BorderLayout.CENTER);
 
-        JButton selectButton = new JButton(UIUtils.getIconFromResources("actions/edit.png"));
+        JButton selectButton = new JButton(JIPipe.RESOURCES.getIcon16("actions/edit.png"));
         UIUtils.setStandardButtonBorder(selectButton);
         selectButton.setToolTipText("Select data type");
         selectButton.addActionListener(e -> pickDataInfo());
@@ -91,7 +92,7 @@ public class JIPipeDataInfoRefDesktopParameterEditorUI extends JIPipeDesktopPara
                 picker.setSelectedDataTypes(Collections.singleton(info));
         } else {
             currentlyDisplayed.setText("None selected");
-            currentlyDisplayed.setIcon(UIUtils.getIconFromResources("emblems/vcs-conflicting.png"));
+            currentlyDisplayed.setIcon(JIPipe.RESOURCES.getIcon16("emblems/vcs-conflicting.png"));
             if (!pickerDialog.isVisible())
                 picker.setSelectedDataTypes(Collections.emptySet());
         }

@@ -13,12 +13,14 @@
 
 package org.hkijena.jipipe.plugins.parameters.library.jipipe;
 
+import org.hkijena.jipipe.JIPipe;
 import org.hkijena.jipipe.api.JIPipeAuthorMetadata;
 import org.hkijena.jipipe.desktop.api.JIPipeDesktopParameterEditorUI;
 import org.hkijena.jipipe.desktop.commons.components.JIPipeDesktopDocumentChangeListener;
 import org.hkijena.jipipe.desktop.commons.components.JIPipeDesktopParameterFormPanel;
 import org.hkijena.jipipe.plugins.parameters.library.markup.MarkdownText;
 import org.hkijena.jipipe.utils.UIUtils;
+import org.hkijena.jipipe.JIPipe;
 import org.jdesktop.swingx.JXTextField;
 
 import javax.swing.*;
@@ -67,7 +69,7 @@ public class JIPipeAuthorMetadataDesktopParameterEditorUI extends JIPipeDesktopP
 
         add(Box.createHorizontalStrut(8));
 
-        JButton editButton = new JButton("Edit", UIUtils.getIconFromResources("actions/stock_edit.png"));
+        JButton editButton = new JButton("Edit", JIPipe.RESOURCES.getIcon16("actions/stock_edit.png"));
         UIUtils.setStandardButtonBorder(editButton);
         editButton.setToolTipText("Shows the full editor");
         editButton.addActionListener(e -> {

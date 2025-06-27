@@ -20,6 +20,7 @@ import org.hkijena.jipipe.api.settings.JIPipeDefaultProjectSettingsSheet;
 import org.hkijena.jipipe.api.settings.JIPipeDefaultProjectSettingsSheetCategory;
 import org.hkijena.jipipe.plugins.parameters.library.primitives.optional.OptionalPathParameter;
 import org.hkijena.jipipe.utils.UIUtils;
+import org.hkijena.jipipe.JIPipe;
 
 import javax.swing.*;
 import java.util.List;
@@ -64,7 +65,7 @@ public class JIPipeDataStorageProjectSettings extends JIPipeDefaultProjectSettin
 
     @Override
     public Icon getIcon() {
-        return UIUtils.getIconFromResources("actions/folder-tree.png");
+        return JIPipe.RESOURCES.getIcon16("actions/folder-tree.png");
     }
 
     @Override

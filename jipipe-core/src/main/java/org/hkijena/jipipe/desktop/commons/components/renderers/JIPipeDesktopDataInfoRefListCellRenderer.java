@@ -16,6 +16,7 @@ package org.hkijena.jipipe.desktop.commons.components.renderers;
 import org.hkijena.jipipe.JIPipe;
 import org.hkijena.jipipe.plugins.parameters.library.references.JIPipeDataInfoRef;
 import org.hkijena.jipipe.utils.UIUtils;
+import org.hkijena.jipipe.JIPipe;
 
 import javax.swing.*;
 import java.awt.*;
@@ -43,7 +44,7 @@ public class JIPipeDesktopDataInfoRefListCellRenderer extends JLabel implements 
             setIcon(JIPipe.getDataTypes().getIconFor(value.getInfo().getDataClass()));
         } else {
             setText("Nothing selected");
-            setIcon(UIUtils.getIconFromResources("emblems/vcs-conflicting.png"));
+            setIcon(JIPipe.RESOURCES.getIcon16("emblems/vcs-conflicting.png"));
         }
 
         if (isSelected) {

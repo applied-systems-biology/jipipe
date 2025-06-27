@@ -39,6 +39,7 @@ import org.hkijena.jipipe.plugins.imageviewer.legacy.plugins2d.maskdrawer.Measur
 import org.hkijena.jipipe.plugins.imageviewer.legacy.plugins2d.roimanager.ROIManagerPlugin2D;
 import org.hkijena.jipipe.utils.ReflectionUtils;
 import org.hkijena.jipipe.utils.UIUtils;
+import org.hkijena.jipipe.JIPipe;
 import org.hkijena.jipipe.utils.ui.JIPipeDesktopDockPanel;
 import org.scijava.Disposable;
 
@@ -64,7 +65,7 @@ public class JIPipeDesktopLegacyImageViewer extends JPanel implements JIPipeDesk
     private final List<JIPipeDesktopLegacyImageViewerPlugin2D> plugins2D = new ArrayList<>();
 
     private final Map<Class<? extends JIPipeDesktopLegacyImageViewerPlugin>, JIPipeDesktopLegacyImageViewerPlugin> pluginMap = new HashMap<>();
-    private final JLabel imageInfoLabel = new JLabel(UIUtils.getIconFromResources("actions/viewimage.png"));
+    private final JLabel imageInfoLabel = new JLabel(JIPipe.RESOURCES.getIcon16("actions/viewimage.png"));
     private final List<Object> overlays = new ArrayList<>();
     private ImagePlusData image;
     private JIPipeDataSource dataSource;
@@ -302,7 +303,7 @@ public class JIPipeDesktopLegacyImageViewer extends JPanel implements JIPipeDesk
 
     public void setError(String errorMessage) {
         if (errorMessage != null) {
-            JLabel errorLabel2D = new JLabel(errorMessage, UIUtils.getIconFromResources("emblems/no-data.png"), JLabel.LEFT);
+            JLabel errorLabel2D = new JLabel(errorMessage, JIPipe.RESOURCES.getIcon16("emblems/no-data.png"), JLabel.LEFT);
             imageViewerPanel2D.getCanvas().setError(errorLabel2D);
         } else {
             imageViewerPanel2D.getCanvas().setError(null);

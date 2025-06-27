@@ -22,6 +22,7 @@ import org.hkijena.jipipe.desktop.app.JIPipeDesktopProjectWorkbench;
 import org.hkijena.jipipe.desktop.app.JIPipeDesktopProjectWorkbenchPanel;
 import org.hkijena.jipipe.desktop.commons.theme.JIPipeDesktopLegacyModernMetalTheme;
 import org.hkijena.jipipe.utils.UIUtils;
+import org.hkijena.jipipe.JIPipe;
 import org.hkijena.jipipe.utils.data.WeakStore;
 import org.jdesktop.swingx.border.DropShadowBorder;
 import org.scijava.Disposable;
@@ -67,7 +68,7 @@ public class JIPipeDesktopDataTracerNodeOutputUI extends JIPipeDesktopProjectWor
             topPanel.setBackground(COLOR_HIGHLIGHT);
         }
 
-        JButton compartmentButton = new JButton(node.getCompartmentDisplayName(), UIUtils.getIconFromResources("actions/graph-compartment.png"));
+        JButton compartmentButton = new JButton(node.getCompartmentDisplayName(), JIPipe.RESOURCES.getIcon16("actions/graph-compartment.png"));
         compartmentButton.setOpaque(false);
         initializeContextMenu(UIUtils.addPopupMenuToButton(compartmentButton));
         topPanel.add(compartmentButton);
@@ -94,7 +95,7 @@ public class JIPipeDesktopDataTracerNodeOutputUI extends JIPipeDesktopProjectWor
     }
 
     private void initializeContextMenu(JPopupMenu contextMenu) {
-        contextMenu.add(UIUtils.createMenuItem("Go to node", "Jumps to the referenced node", UIUtils.getIconFromResources("actions/go-jump.png"), this::goToNode));
+        contextMenu.add(UIUtils.createMenuItem("Go to node", "Jumps to the referenced node", JIPipe.RESOURCES.getIcon16("actions/go-jump.png"), this::goToNode));
     }
 
     private void goToNode() {

@@ -17,6 +17,7 @@ import org.hkijena.jipipe.desktop.api.JIPipeDesktopMenuExtension;
 import org.hkijena.jipipe.desktop.api.JIPipeMenuExtensionTarget;
 import org.hkijena.jipipe.desktop.app.JIPipeDesktopWorkbench;
 import org.hkijena.jipipe.utils.UIUtils;
+import org.hkijena.jipipe.JIPipe;
 
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
@@ -31,7 +32,7 @@ public class RunNapariDesktopMenuExtension extends JIPipeDesktopMenuExtension im
     public RunNapariDesktopMenuExtension(JIPipeDesktopWorkbench workbench) {
         super(workbench);
         setText("Run Napari");
-        setIcon(UIUtils.getIconFromResources("apps/napari.png"));
+        setIcon(JIPipe.RESOURCES.getIcon16("apps/napari.png"));
         setToolTipText("Starts a new instance of Napari.");
         addActionListener(this);
     }

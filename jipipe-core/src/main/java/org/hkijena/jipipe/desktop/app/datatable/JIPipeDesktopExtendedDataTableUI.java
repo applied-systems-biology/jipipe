@@ -59,6 +59,7 @@ import org.hkijena.jipipe.plugins.tables.datatypes.ResultsTableData;
 import org.hkijena.jipipe.utils.PathUtils;
 import org.hkijena.jipipe.utils.StringUtils;
 import org.hkijena.jipipe.utils.UIUtils;
+import org.hkijena.jipipe.JIPipe;
 import org.hkijena.jipipe.utils.data.OwningStore;
 import org.hkijena.jipipe.utils.data.Store;
 import org.hkijena.jipipe.utils.debounce.StaticDebouncer;
@@ -225,11 +226,11 @@ public class JIPipeDesktopExtendedDataTableUI extends JIPipeDesktopWorkbenchPane
             if (dataAnnotationColumn >= 0) {
                 JIPipeDataAnnotation dataAnnotation = dataTable.getDataAnnotation(modelRow, dataAnnotationColumn);
                 popupMenu.add(UIUtils.createMenuItem("Show data annotation", "Shows the data annotation '" + dataAnnotation.getName() + "'",
-                        UIUtils.getIconFromResources("actions/search.png"), () -> handleSlotRowDefaultAction(viewRow, viewCol)));
+                        JIPipe.RESOURCES.getIcon16("actions/search.png"), () -> handleSlotRowDefaultAction(viewRow, viewCol)));
             }
 
             // Show/open with controls
-            popupMenu.add(UIUtils.createMenuItem("Show", "Shows the data", UIUtils.getIconFromResources("actions/search.png"), () -> handleSlotRowDefaultAction(viewRow, 0)));
+            popupMenu.add(UIUtils.createMenuItem("Show", "Shows the data", JIPipe.RESOURCES.getIcon16("actions/search.png"), () -> handleSlotRowDefaultAction(viewRow, 0)));
 
             {
                 JMenu openWithMenu = new JMenu();
@@ -262,7 +263,7 @@ public class JIPipeDesktopExtendedDataTableUI extends JIPipeDesktopWorkbenchPane
             if (getDesktopWorkbench() instanceof JIPipeDesktopProjectWorkbench) {
                 popupMenu.add(UIUtils.createMenuItem("Trace ...",
                         "Allows to trace how the selected data was generated",
-                        UIUtils.getIconFromResources("actions/footsteps.png"),
+                        JIPipe.RESOURCES.getIcon16("actions/footsteps.png"),
                         () -> traceData(dataTable.getDataContext(modelRow).getId())));
             }
 
@@ -270,7 +271,7 @@ public class JIPipeDesktopExtendedDataTableUI extends JIPipeDesktopWorkbenchPane
             if (objectAtColumn instanceof String) {
                 popupMenu.addSeparator();
                 popupMenu.add(UIUtils.createMenuItem("Copy string representation", "Copies the string '" + objectAtColumn + "' into the clipboard",
-                        UIUtils.getIconFromResources("actions/edit-copy.png"), () -> UIUtils.copyToClipboard(StringUtils.nullToEmpty(objectAtColumn))));
+                        JIPipe.RESOURCES.getIcon16("actions/edit-copy.png"), () -> UIUtils.copyToClipboard(StringUtils.nullToEmpty(objectAtColumn))));
             }
 
             // Annotations
@@ -281,18 +282,18 @@ public class JIPipeDesktopExtendedDataTableUI extends JIPipeDesktopWorkbenchPane
                 String annotationNameAndValue = annotationName + "=" + annotationValue;
                 String filterExpression = annotationName + " == " + "\"" + MacroUtils.escapeString(annotationValue) + "\"";
                 popupMenu.add(UIUtils.createMenuItem("Copy " + annotationName + " name", "Copies the string '" + annotationName + "' into the clipboard",
-                        UIUtils.getIconFromResources("actions/edit-copy.png"), () -> UIUtils.copyToClipboard(StringUtils.nullToEmpty(annotationName))));
+                        JIPipe.RESOURCES.getIcon16("actions/edit-copy.png"), () -> UIUtils.copyToClipboard(StringUtils.nullToEmpty(annotationName))));
                 popupMenu.add(UIUtils.createMenuItem("Copy " + annotationName + " value", "Copies the string '" + annotationValue + "' into the clipboard",
-                        UIUtils.getIconFromResources("actions/edit-copy.png"), () -> UIUtils.copyToClipboard(StringUtils.nullToEmpty(annotationValue))));
+                        JIPipe.RESOURCES.getIcon16("actions/edit-copy.png"), () -> UIUtils.copyToClipboard(StringUtils.nullToEmpty(annotationValue))));
                 popupMenu.add(UIUtils.createMenuItem("Copy " + annotationName + " name and value", "Copies the string '" + annotationNameAndValue + "' into the clipboard",
-                        UIUtils.getIconFromResources("actions/edit-copy.png"), () -> UIUtils.copyToClipboard(StringUtils.nullToEmpty(annotationNameAndValue))));
+                        JIPipe.RESOURCES.getIcon16("actions/edit-copy.png"), () -> UIUtils.copyToClipboard(StringUtils.nullToEmpty(annotationNameAndValue))));
                 popupMenu.add(UIUtils.createMenuItem("Copy " + annotationName + " as filter", "Copies the string '" + filterExpression + "' into the clipboard",
-                        UIUtils.getIconFromResources("actions/filter.png"), () -> UIUtils.copyToClipboard(StringUtils.nullToEmpty(filterExpression))));
+                        JIPipe.RESOURCES.getIcon16("actions/filter.png"), () -> UIUtils.copyToClipboard(StringUtils.nullToEmpty(filterExpression))));
             }
 
             popupMenu.addSeparator();
 
-            popupMenu.add(UIUtils.createMenuItem("Export", "Exports the data", UIUtils.getIconFromResources("actions/document-export.png"),
+            popupMenu.add(UIUtils.createMenuItem("Export", "Exports the data", JIPipe.RESOURCES.getIcon16("actions/document-export.png"),
                     () -> {
                         Path path = JIPipeDesktop.saveFile(this, getDesktopWorkbench(), JIPipeFileChooserApplicationSettings.LastDirectoryKey.Data, "Export row " + modelRow, HTMLText.EMPTY);
                         if (path != null) {
@@ -306,7 +307,7 @@ public class JIPipeDesktopExtendedDataTableUI extends JIPipeDesktopWorkbenchPane
 
             if (dataAnnotationColumn >= 0) {
                 JIPipeDataAnnotation dataAnnotation = dataTable.getDataAnnotation(modelRow, dataAnnotationColumn);
-                popupMenu.add(UIUtils.createMenuItem("Export " + dataAnnotation.getName(), "Exports the data annotation '" + dataAnnotation.getName() + "'", UIUtils.getIconFromResources("actions/document-export.png"),
+                popupMenu.add(UIUtils.createMenuItem("Export " + dataAnnotation.getName(), "Exports the data annotation '" + dataAnnotation.getName() + "'", JIPipe.RESOURCES.getIcon16("actions/document-export.png"),
                         () -> {
                             Path path = JIPipeDesktop.saveFile(this, getDesktopWorkbench(), JIPipeFileChooserApplicationSettings.LastDirectoryKey.Data, "Export row " + modelRow, HTMLText.EMPTY);
                             if (path != null) {
@@ -340,7 +341,7 @@ public class JIPipeDesktopExtendedDataTableUI extends JIPipeDesktopWorkbenchPane
 
         searchTextField.addActionListener(e -> reloadTable());
         searchTextField.addButton("Open expression editor",
-                UIUtils.getIconFromResources("actions/insert-math-expression.png"),
+                JIPipe.RESOURCES.getIcon16("actions/insert-math-expression.png"),
                 this::openSearchExpressionEditor);
         searchToolbar.add(searchTextField);
     }
@@ -355,13 +356,13 @@ public class JIPipeDesktopExtendedDataTableUI extends JIPipeDesktopWorkbenchPane
         JIPipeDesktopRibbon.Band previewBand = viewTask.getOrCreateBand("Previews");
 
         // Table band
-        tableBand.add(new JIPipeDesktopLargeButtonRibbonAction("Open as tab", "Opens the current table in a new tab", UIUtils.getIcon32FromResources("actions/open-in-new-window.png"), this::openTableInNewTab));
-        tableBand.add(new JIPipeDesktopLargeButtonRibbonAction("Filter", "Opens the current filtered table in a new tab", UIUtils.getIcon32FromResources("actions/view-filter.png"), this::openFilteredTableInNewTab));
-        tableBand.add(new JIPipeDesktopSmallButtonRibbonAction("Fit columns", "Fits the table columns to their contents", UIUtils.getIconFromResources("actions/zoom-fit-width.png"), table::packAll));
-        tableBand.add(new JIPipeDesktopSmallButtonRibbonAction("Compact columns", "Auto-size columns to the default size", UIUtils.getIconFromResources("actions/zoom-fit-width.png"), () -> UIUtils.packDataTable(table)));
+        tableBand.add(new JIPipeDesktopLargeButtonRibbonAction("Open as tab", "Opens the current table in a new tab", JIPipe.RESOURCES.getIcon32("actions/open-in-new-window.png"), this::openTableInNewTab));
+        tableBand.add(new JIPipeDesktopLargeButtonRibbonAction("Filter", "Opens the current filtered table in a new tab", JIPipe.RESOURCES.getIcon32("actions/view-filter.png"), this::openFilteredTableInNewTab));
+        tableBand.add(new JIPipeDesktopSmallButtonRibbonAction("Fit columns", "Fits the table columns to their contents", JIPipe.RESOURCES.getIcon16("actions/zoom-fit-width.png"), table::packAll));
+        tableBand.add(new JIPipeDesktopSmallButtonRibbonAction("Compact columns", "Auto-size columns to the default size", JIPipe.RESOURCES.getIcon16("actions/zoom-fit-width.png"), () -> UIUtils.packDataTable(table)));
 
         // Preview band
-        previewBand.add(new JIPipeDesktopSmallToggleButtonRibbonAction("Enable previews", "Allows to toggle previews on and off", UIUtils.getIconFromResources("actions/zoom.png"), JIPipeGeneralDataApplicationSettings.getInstance().isGenerateCachePreviews(), (toggle) -> {
+        previewBand.add(new JIPipeDesktopSmallToggleButtonRibbonAction("Enable previews", "Allows to toggle previews on and off", JIPipe.RESOURCES.getIcon16("actions/zoom.png"), JIPipeGeneralDataApplicationSettings.getInstance().isGenerateCachePreviews(), (toggle) -> {
             JIPipeGeneralDataApplicationSettings.getInstance().setGenerateCachePreviews(toggle.isSelected());
             reloadTable();
         }));
@@ -375,15 +376,15 @@ public class JIPipeDesktopExtendedDataTableUI extends JIPipeDesktopWorkbenchPane
         JIPipeDesktopRibbon.Band tableBand = exportTask.getOrCreateBand("Table");
 
         // Data band
-        dataBand.add(new JIPipeDesktopLargeButtonRibbonAction("As files", "Exports all data as files named according to annotations", UIUtils.getIcon32FromResources("actions/document-export.png"), this::exportByMetadataExporter));
+        dataBand.add(new JIPipeDesktopLargeButtonRibbonAction("As files", "Exports all data as files named according to annotations", JIPipe.RESOURCES.getIcon32("actions/document-export.png"), this::exportByMetadataExporter));
 
         // Metadata band
-        metadataBand.add(new JIPipeDesktopSmallButtonRibbonAction("To CSV/Excel", "Exports the text annotations as table", UIUtils.getIcon16FromResources("actions/table.png"), this::exportMetadataAsFiles));
-        metadataBand.add(new JIPipeDesktopSmallButtonRibbonAction("Open as table", "Opens the text annotations as table", UIUtils.getIcon16FromResources("actions/open-in-new-window.png"), this::exportMetadataAsTableEditor));
+        metadataBand.add(new JIPipeDesktopSmallButtonRibbonAction("To CSV/Excel", "Exports the text annotations as table", JIPipe.RESOURCES.getIcon16("actions/table.png"), this::exportMetadataAsFiles));
+        metadataBand.add(new JIPipeDesktopSmallButtonRibbonAction("Open as table", "Opens the text annotations as table", JIPipe.RESOURCES.getIcon16("actions/open-in-new-window.png"), this::exportMetadataAsTableEditor));
 
         // Table band
-        tableBand.add(new JIPipeDesktopSmallButtonRibbonAction("As ZIP", "Exports the whole table as ZIP file", UIUtils.getIcon16FromResources("actions/package.png"), this::exportAsJIPipeSlotZIP));
-        tableBand.add(new JIPipeDesktopSmallButtonRibbonAction("As directory", "Exports the whole table as directory", UIUtils.getIcon16FromResources("actions/folder-open.png"), this::exportAsJIPipeSlotDirectory));
+        tableBand.add(new JIPipeDesktopSmallButtonRibbonAction("As ZIP", "Exports the whole table as ZIP file", JIPipe.RESOURCES.getIcon16("actions/package.png"), this::exportAsJIPipeSlotZIP));
+        tableBand.add(new JIPipeDesktopSmallButtonRibbonAction("As directory", "Exports the whole table as directory", JIPipe.RESOURCES.getIcon16("actions/folder-open.png"), this::exportAsJIPipeSlotDirectory));
     }
 
     private void openFilteredTableInNewTab() {
@@ -409,7 +410,7 @@ public class JIPipeDesktopExtendedDataTableUI extends JIPipeDesktopWorkbenchPane
                 }
             }
             getDesktopWorkbench().getDocumentTabPane().addTab(name,
-                    UIUtils.getIconFromResources("data-types/data-table.png"),
+                    JIPipe.RESOURCES.getIcon16("data-types/data-table.png"),
                     new JIPipeDesktopExtendedDataTableUI(getDesktopWorkbench(), new OwningStore<>(copy), true, false),
                     JIPipeDesktopTabPane.CloseMode.withSilentCloseButton,
                     true);
@@ -420,7 +421,7 @@ public class JIPipeDesktopExtendedDataTableUI extends JIPipeDesktopWorkbenchPane
     private void openTableInNewTab() {
         String name = "Cache: " + getDataTable().getDisplayName();
         getDesktopWorkbench().getDocumentTabPane().addTab(name,
-                UIUtils.getIconFromResources("actions/database.png"),
+                JIPipe.RESOURCES.getIcon16("actions/database.png"),
                 new JIPipeDesktopExtendedDataTableUI(getDesktopWorkbench(), dataTableStore, true, false),
                 JIPipeDesktopTabPane.CloseMode.withSilentCloseButton,
                 true);
@@ -627,7 +628,7 @@ public class JIPipeDesktopExtendedDataTableUI extends JIPipeDesktopWorkbenchPane
                 if (dataTable != null) {
                     String info = dataTable.getDataAnnotationColumnNames().get(toDataAnnotationColumnIndex(modelColumn));
                     String html = String.format("<html><table><tr><td><img src=\"%s\"/></td><td>%s</tr>",
-                            UIUtils.getIconFromResources("data-types/data-annotation.png"),
+                            JIPipe.RESOURCES.getIcon16("data-types/data-annotation.png"),
                             info);
                     return defaultRenderer.getTableCellRendererComponent(table, html, isSelected, hasFocus, row, column);
                 } else {
@@ -639,7 +640,7 @@ public class JIPipeDesktopExtendedDataTableUI extends JIPipeDesktopWorkbenchPane
                     if (annotationColumnIndex < dataTable.getTextAnnotationColumnNames().size()) {
                         String info = dataTable.getTextAnnotationColumnNames().get(annotationColumnIndex);
                         String html = String.format("<html><table><tr><td><img src=\"%s\"/></td><td>%s</tr>",
-                                UIUtils.getIconFromResources("data-types/annotation.png"),
+                                JIPipe.RESOURCES.getIcon16("data-types/annotation.png"),
                                 info);
                         return defaultRenderer.getTableCellRendererComponent(table, html, isSelected, hasFocus, row, column);
                     } else {

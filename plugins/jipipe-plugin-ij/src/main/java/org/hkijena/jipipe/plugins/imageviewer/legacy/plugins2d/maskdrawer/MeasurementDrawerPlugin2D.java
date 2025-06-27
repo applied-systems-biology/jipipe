@@ -37,6 +37,7 @@ import org.hkijena.jipipe.plugins.settings.JIPipeFileChooserApplicationSettings;
 import org.hkijena.jipipe.plugins.tables.datatypes.ResultsTableData;
 import org.hkijena.jipipe.utils.PathUtils;
 import org.hkijena.jipipe.utils.UIUtils;
+import org.hkijena.jipipe.JIPipe;
 import org.jdesktop.swingx.JXTable;
 
 import javax.swing.*;
@@ -104,12 +105,12 @@ public class MeasurementDrawerPlugin2D extends MaskDrawerPlugin2D implements Mas
 
         JIPipeDesktopRibbon.Task maskTask = ribbon.getOrCreateTask("Mask");
         JIPipeDesktopRibbon.Band measureBand = maskTask.getOrCreateBand("Measure");
-        measureBand.add(new JIPipeDesktopLargeButtonRibbonAction("Measure", "Measures the image/mask now", UIUtils.getIcon32FromResources("actions/statistics.png"), this::measureCurrentMask));
-        measureBand.add(new JIPipeDesktopSmallButtonRibbonAction("Settings ...", "Opens the settings for the measurement tool", UIUtils.getIconFromResources("actions/configure.png"), this::showSettings));
+        measureBand.add(new JIPipeDesktopLargeButtonRibbonAction("Measure", "Measures the image/mask now", JIPipe.RESOURCES.getIcon32("actions/statistics.png"), this::measureCurrentMask));
+        measureBand.add(new JIPipeDesktopSmallButtonRibbonAction("Settings ...", "Opens the settings for the measurement tool", JIPipe.RESOURCES.getIcon16("actions/configure.png"), this::showSettings));
         measureBand.add(new JIPipeDesktopRibbon.Action(autoMeasureToggle, 1, new Insets(2, 2, 2, 2)));
 
-        measureBand.add(new JIPipeDesktopSmallButtonRibbonAction("Export to file", "Exports the measurements to *.csv/*.xlsx", UIUtils.getIconFromResources("actions/filesave.png"), this::exportMeasurementsToFile));
-        measureBand.add(new JIPipeDesktopSmallButtonRibbonAction("Open in editor", "Opens the measurements in a table editor", UIUtils.getIconFromResources("actions/open-in-new-window.png"), this::exportMeasurementsToEditor));
+        measureBand.add(new JIPipeDesktopSmallButtonRibbonAction("Export to file", "Exports the measurements to *.csv/*.xlsx", JIPipe.RESOURCES.getIcon16("actions/filesave.png"), this::exportMeasurementsToFile));
+        measureBand.add(new JIPipeDesktopSmallButtonRibbonAction("Open in editor", "Opens the measurements in a table editor", JIPipe.RESOURCES.getIcon16("actions/open-in-new-window.png"), this::exportMeasurementsToEditor));
 
     }
 
@@ -188,7 +189,7 @@ public class MeasurementDrawerPlugin2D extends MaskDrawerPlugin2D implements Mas
 
     @Override
     public Icon getPanelIcon() {
-        return UIUtils.getIcon32FromResources("actions/measure.png");
+        return JIPipe.RESOURCES.getIcon32("actions/measure.png");
     }
 
     @Override

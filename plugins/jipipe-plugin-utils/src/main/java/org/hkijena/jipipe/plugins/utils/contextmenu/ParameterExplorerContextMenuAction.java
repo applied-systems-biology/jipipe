@@ -18,6 +18,7 @@ import org.hkijena.jipipe.desktop.app.grapheditor.commons.contextmenu.NodeUICont
 import org.hkijena.jipipe.desktop.app.grapheditor.commons.nodeui.JIPipeDesktopGraphNodeUI;
 import org.hkijena.jipipe.desktop.commons.components.parameters.JIPipeDesktopParameterExplorerWindow;
 import org.hkijena.jipipe.utils.UIUtils;
+import org.hkijena.jipipe.JIPipe;
 
 import javax.swing.*;
 import java.util.Set;
@@ -48,7 +49,7 @@ public class ParameterExplorerContextMenuAction implements NodeUIContextAction {
 
     @Override
     public Icon getIcon() {
-        return UIUtils.getIconFromResources("actions/dialog-icon-preview.png");
+        return JIPipe.RESOURCES.getIcon16("actions/dialog-icon-preview.png");
     }
 
 }

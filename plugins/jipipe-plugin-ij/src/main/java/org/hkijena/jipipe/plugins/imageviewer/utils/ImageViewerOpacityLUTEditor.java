@@ -26,6 +26,7 @@ import org.hkijena.jipipe.plugins.settings.JIPipeFileChooserApplicationSettings;
 import org.hkijena.jipipe.utils.ColorUtils;
 import org.hkijena.jipipe.utils.PathUtils;
 import org.hkijena.jipipe.utils.UIUtils;
+import org.hkijena.jipipe.JIPipe;
 import org.hkijena.jipipe.utils.json.JsonUtils;
 import org.jdesktop.swingx.JXMultiThumbSlider;
 import org.jdesktop.swingx.multislider.Thumb;
@@ -172,7 +173,7 @@ public abstract class ImageViewerOpacityLUTEditor extends JPanel implements Thum
                 0,
                 0));
 
-        JButton addThumbButton = new JButton(UIUtils.getIconFromResources("actions/color-add.png"));
+        JButton addThumbButton = new JButton(JIPipe.RESOURCES.getIcon16("actions/color-add.png"));
         addThumbButton.setToolTipText("Add color");
         UIUtils.makeButtonFlat(addThumbButton);
         addThumbButton.setHorizontalAlignment(SwingConstants.LEFT);
@@ -189,7 +190,7 @@ public abstract class ImageViewerOpacityLUTEditor extends JPanel implements Thum
                 0,
                 0));
 
-        deleteThumbButton = new JButton(UIUtils.getIconFromResources("actions/color-remove.png"));
+        deleteThumbButton = new JButton(JIPipe.RESOURCES.getIcon16("actions/color-remove.png"));
         deleteThumbButton.setToolTipText("Remove color");
         UIUtils.makeButtonFlat(deleteThumbButton);
         deleteThumbButton.setHorizontalAlignment(SwingConstants.LEFT);
@@ -223,43 +224,43 @@ public abstract class ImageViewerOpacityLUTEditor extends JPanel implements Thum
                 0));
 
         // Menu items
-        JButton invertColorsButton = new JButton("Invert", UIUtils.getIconFromResources("actions/object-inverse.png"));
+        JButton invertColorsButton = new JButton("Invert", JIPipe.RESOURCES.getIcon16("actions/object-inverse.png"));
         UIUtils.makeButtonFlat(invertColorsButton);
         invertColorsButton.addActionListener(e -> invertColors());
         toolBar.add(invertColorsButton);
 
-        JButton setToColorBlackButton = new JButton("Black", UIUtils.getIconFromResources("actions/eye-slash.png"));
+        JButton setToColorBlackButton = new JButton("Black", JIPipe.RESOURCES.getIcon16("actions/eye-slash.png"));
         UIUtils.makeButtonFlat(setToColorBlackButton);
         setToColorBlackButton.addActionListener(e -> setToUniformColor(Color.BLACK));
         toolBar.add(setToColorBlackButton);
 
-        JButton resetColorButton = new JButton("Reset", UIUtils.getIconFromResources("actions/undo.png"));
+        JButton resetColorButton = new JButton("Reset", JIPipe.RESOURCES.getIcon16("actions/undo.png"));
         UIUtils.makeButtonFlat(resetColorButton);
         resetColorButton.addActionListener(e -> resetLUT());
         toolBar.add(resetColorButton);
 
-        JButton moreButton = new JButton("More ...", UIUtils.getIconFromResources("actions/configure.png"));
+        JButton moreButton = new JButton("More ...", JIPipe.RESOURCES.getIcon16("actions/configure.png"));
         UIUtils.makeButtonFlat(moreButton);
         toolBar.add(moreButton);
         JPopupMenu moreMenu = UIUtils.addPopupMenuToButton(moreButton);
 
-        JMenuItem setColorsButton = new JMenuItem("Set to color", UIUtils.getIconFromResources("actions/stock_edit.png"));
+        JMenuItem setColorsButton = new JMenuItem("Set to color", JIPipe.RESOURCES.getIcon16("actions/stock_edit.png"));
         setColorsButton.addActionListener(e -> setToUniformColorByDialog());
         moreMenu.add(setColorsButton);
 
-        JMenuItem exportLUTToJSONButton = new JMenuItem("Export LUT as *.json", UIUtils.getIconFromResources("actions/document-export.png"));
+        JMenuItem exportLUTToJSONButton = new JMenuItem("Export LUT as *.json", JIPipe.RESOURCES.getIcon16("actions/document-export.png"));
         exportLUTToJSONButton.addActionListener(e -> exportLUTToJSON());
         moreMenu.add(exportLUTToJSONButton);
 
-        JMenuItem exportLUTToPNGButton = new JMenuItem("Export LUT as *.png", UIUtils.getIconFromResources("actions/document-export.png"));
+        JMenuItem exportLUTToPNGButton = new JMenuItem("Export LUT as *.png", JIPipe.RESOURCES.getIcon16("actions/document-export.png"));
         exportLUTToPNGButton.addActionListener(e -> exportLUTToPNG());
         moreMenu.add(exportLUTToPNGButton);
 
-        JMenuItem importLUTFromJSONButton = new JMenuItem("Import LUT from *.json", UIUtils.getIconFromResources("actions/document-import.png"));
+        JMenuItem importLUTFromJSONButton = new JMenuItem("Import LUT from *.json", JIPipe.RESOURCES.getIcon16("actions/document-import.png"));
         importLUTFromJSONButton.addActionListener(e -> importLUTFromJSON());
         moreMenu.add(importLUTFromJSONButton);
 
-        JMenuItem importLUTFromPNGButton = new JMenuItem("Import LUT from *.png", UIUtils.getIconFromResources("actions/document-import.png"));
+        JMenuItem importLUTFromPNGButton = new JMenuItem("Import LUT from *.png", JIPipe.RESOURCES.getIcon16("actions/document-import.png"));
         importLUTFromPNGButton.addActionListener(e -> importLUTFromPNG());
         moreMenu.add(importLUTFromPNGButton);
     }

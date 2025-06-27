@@ -23,6 +23,7 @@ import org.hkijena.jipipe.plugins.imageviewer.legacy.JIPipeDesktopLegacyImageVie
 import org.hkijena.jipipe.plugins.imageviewer.utils.viewer2d.ImageViewer2DDisplayRangeControl;
 import org.hkijena.jipipe.utils.ImageJCalibrationMode;
 import org.hkijena.jipipe.utils.UIUtils;
+import org.hkijena.jipipe.JIPipe;
 import org.hkijena.jipipe.utils.ui.JIPipeDesktopDockPanel;
 import org.hkijena.jipipe.utils.ui.RoundedLineBorder;
 
@@ -94,7 +95,7 @@ public class CalibrationPlugin2D extends GeneralImageViewerPanelPlugin2D {
 
     @Override
     public void buildPanel(JIPipeDesktopFormPanel formPanel) {
-        formPanel.addGroupHeader("Display range", UIUtils.getIconFromResources("actions/contrast.png"));
+        formPanel.addGroupHeader("Display range", JIPipe.RESOURCES.getIcon16("actions/contrast.png"));
 //        headerPanel.addColumn(autoCalibrateButton);
 //        formPanel.addToForm(calibrationModes, new JLabel("Presets"), null);
         JPanel buttonsPanel = new JPanel();

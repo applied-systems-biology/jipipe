@@ -17,6 +17,7 @@ import com.google.common.collect.BiMap;
 import com.google.common.collect.HashBiMap;
 import com.google.common.collect.ImmutableBiMap;
 import com.google.common.collect.ImmutableList;
+import org.hkijena.jipipe.JIPipe;
 import org.hkijena.jipipe.api.events.AbstractJIPipeEvent;
 import org.hkijena.jipipe.api.events.JIPipeEventEmitter;
 import org.hkijena.jipipe.api.parameters.AbstractJIPipeParameterCollection;
@@ -26,6 +27,7 @@ import org.hkijena.jipipe.desktop.commons.theme.ui.JIPipeDesktopModernTabbedPane
 import org.hkijena.jipipe.plugins.settings.JIPipeGeneralUIApplicationSettings;
 import org.hkijena.jipipe.utils.StringUtils;
 import org.hkijena.jipipe.utils.UIUtils;
+import org.hkijena.jipipe.JIPipe;
 import org.jdesktop.swingx.JXStatusBar;
 import org.jdesktop.swingx.plaf.basic.BasicStatusBarUI;
 import org.scijava.Disposable;
@@ -272,34 +274,34 @@ public class JIPipeDesktopTabPane extends JPanel implements Disposable {
         DocumentTab tab = new DocumentTab(this, title, icon, tabPanel, component, closeMode, popupMenu);
         tabPanel.setDocumentTab(tab); // Important: connects all events
 
-        JMenuItem closeItem = new JMenuItem("Close", UIUtils.getIconFromResources("actions/tab-close.png"));
+        JMenuItem closeItem = new JMenuItem("Close", JIPipe.RESOURCES.getIcon16("actions/tab-close.png"));
         closeItem.addActionListener(e -> closeTab(tab));
         popupMenu.add(closeItem);
 
-        JMenuItem closeOthersItem = new JMenuItem("Close other tabs", UIUtils.getIconFromResources("actions/tab-close-other.png"));
+        JMenuItem closeOthersItem = new JMenuItem("Close other tabs", JIPipe.RESOURCES.getIcon16("actions/tab-close-other.png"));
         closeOthersItem.addActionListener(e -> closeAllTabsExcept(tab, false));
         popupMenu.add(closeOthersItem);
 
-        JMenuItem closeAllItem = new JMenuItem("Close all tabs", UIUtils.getIconFromResources("actions/tab-close-other.png"));
+        JMenuItem closeAllItem = new JMenuItem("Close all tabs", JIPipe.RESOURCES.getIcon16("actions/tab-close-other.png"));
         closeAllItem.addActionListener(e -> closeAllTabs(false));
         popupMenu.add(closeAllItem);
 
-        JMenuItem closeLeftItem = new JMenuItem("Close tabs to the left", UIUtils.getIconFromResources("actions/view-left-close.png"));
+        JMenuItem closeLeftItem = new JMenuItem("Close tabs to the left", JIPipe.RESOURCES.getIcon16("actions/view-left-close.png"));
         closeLeftItem.addActionListener(e -> closeAllTabsToTheLeft(tab, false));
         popupMenu.add(closeLeftItem);
 
-        JMenuItem closeRightItem = new JMenuItem("Close tabs to the right", UIUtils.getIconFromResources("actions/view-right-close.png"));
+        JMenuItem closeRightItem = new JMenuItem("Close tabs to the right", JIPipe.RESOURCES.getIcon16("actions/view-right-close.png"));
         closeRightItem.addActionListener(e -> closeAllTabsToTheRight(tab, false));
         popupMenu.add(closeRightItem);
 
         popupMenu.addSeparator();
 
-        JMenuItem detachItem = new JMenuItem("Detach tab", UIUtils.getIconFromResources("actions/tab-detach.png"));
+        JMenuItem detachItem = new JMenuItem("Detach tab", JIPipe.RESOURCES.getIcon16("actions/tab-detach.png"));
         detachItem.addActionListener(e -> detachTab(this, tab, true));
         popupMenu.add(detachItem);
 
         if (closeMode != CloseMode.withoutCloseButton) {
-            JButton closeButton = new JButton(UIUtils.getIconFromResources("actions/tab-close-2.png"));
+            JButton closeButton = new JButton(JIPipe.RESOURCES.getIcon16("actions/tab-close-2.png"));
             closeButton.setToolTipText("Close tab");
             closeButton.setBorder(null);
             closeButton.setBackground(UIManager.getColor("TextArea.background"));
@@ -314,7 +316,7 @@ public class JIPipeDesktopTabPane extends JPanel implements Disposable {
             closeItem.setEnabled(false);
         }
         if (allowRename) {
-            JMenuItem renameButton = new JMenuItem("Rename", UIUtils.getIconFromResources("actions/tag.png"));
+            JMenuItem renameButton = new JMenuItem("Rename", JIPipe.RESOURCES.getIcon16("actions/tag.png"));
             UIUtils.makeButtonBorderlessWithoutMargin(renameButton);
             renameButton.addActionListener(e -> {
                 String newName = JOptionPane.showInputDialog(this, "Rename tab '" + tab.getTitle() + "' to ...", tab.getTitle());
@@ -427,9 +429,9 @@ public class JIPipeDesktopTabPane extends JPanel implements Disposable {
         statusBar.putClientProperty(BasicStatusBarUI.AUTO_ADD_SEPARATOR, false);
 
         statusBar.add(new JLabel("Detached tab from '" + UIUtils.getAWTWindowTitle(SwingUtilities.getWindowAncestor(this)) + "'",
-                UIUtils.getIconFromResources("actions/window-duplicate.png"), SwingConstants.LEFT));
+                JIPipe.RESOURCES.getIcon16("actions/window-duplicate.png"), SwingConstants.LEFT));
         statusBar.add(Box.createHorizontalGlue(), new JXStatusBar.Constraint(JXStatusBar.Constraint.ResizeBehavior.FILL));
-        JButton reAttachButton = new JButton("Reattach", UIUtils.getIconFromResources("actions/tab_breakoff.png"));
+        JButton reAttachButton = new JButton("Reattach", JIPipe.RESOURCES.getIcon16("actions/tab_breakoff.png"));
         reAttachButton.addActionListener(e -> {
             frame.setVisible(false);
             frame.setContentPane(new JPanel());

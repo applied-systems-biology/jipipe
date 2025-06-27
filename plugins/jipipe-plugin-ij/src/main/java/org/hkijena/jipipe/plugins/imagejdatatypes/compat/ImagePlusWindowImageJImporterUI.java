@@ -21,6 +21,7 @@ import org.hkijena.jipipe.desktop.app.JIPipeDesktopWorkbench;
 import org.hkijena.jipipe.desktop.commons.components.JIPipeDesktopDocumentChangeListener;
 import org.hkijena.jipipe.utils.StringUtils;
 import org.hkijena.jipipe.utils.UIUtils;
+import org.hkijena.jipipe.JIPipe;
 
 import javax.swing.*;
 import javax.swing.event.DocumentEvent;
@@ -59,7 +60,7 @@ public class ImagePlusWindowImageJImporterUI extends ImageJDataImporterUI {
         imageSelection.setToolTipText("The name of the image that should be imported. If you leave this empty, the currently active image will be used.");
         add(imageSelection, BorderLayout.CENTER);
 
-        JButton reloadButton = new JButton(UIUtils.getIconFromResources("actions/view-refresh.png"));
+        JButton reloadButton = new JButton(JIPipe.RESOURCES.getIcon16("actions/view-refresh.png"));
         reloadButton.setToolTipText("Reload list of available images");
         reloadButton.addActionListener(e -> reloadList());
         UIUtils.makeButtonFlat25x25(reloadButton);

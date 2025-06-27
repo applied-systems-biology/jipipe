@@ -23,6 +23,7 @@ import org.hkijena.jipipe.plugins.imagejalgorithms.ImageJAlgorithmsPlugin;
 import org.hkijena.jipipe.plugins.imagejalgorithms.utils.OMEAccessorTemplate;
 import org.hkijena.jipipe.plugins.parameters.library.markup.MarkdownText;
 import org.hkijena.jipipe.utils.UIUtils;
+import org.hkijena.jipipe.JIPipe;
 
 import javax.swing.*;
 import java.awt.*;
@@ -55,13 +56,13 @@ public class OMEAccessorDesktopParameterEditorUI extends JIPipeDesktopParameterE
         templatePanel.add(templateButtonsPanel, BorderLayout.EAST);
         templateButtonsPanel.setLayout(new BoxLayout(templateButtonsPanel, BoxLayout.X_AXIS));
 
-        JButton selectTemplateButton = new JButton(UIUtils.getIconFromResources("actions/edit.png"));
+        JButton selectTemplateButton = new JButton(JIPipe.RESOURCES.getIcon16("actions/edit.png"));
         UIUtils.setStandardButtonBorder(selectTemplateButton);
         selectTemplateButton.setToolTipText("Select value");
         selectTemplateButton.addActionListener(e -> pickTemplate());
         templateButtonsPanel.add(selectTemplateButton);
 
-        JButton showTemplateHelp = new JButton(UIUtils.getIconFromResources("actions/help.png"));
+        JButton showTemplateHelp = new JButton(JIPipe.RESOURCES.getIcon16("actions/help.png"));
         UIUtils.setStandardButtonBorder(showTemplateHelp);
         showTemplateHelp.addActionListener(e -> showTemplateHelp());
         templateButtonsPanel.add(showTemplateHelp);

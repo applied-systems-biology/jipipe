@@ -19,6 +19,7 @@ import org.hkijena.jipipe.api.parameters.JIPipeParameterTree;
 import org.hkijena.jipipe.desktop.api.JIPipeDesktopParameterEditorUI;
 import org.hkijena.jipipe.desktop.commons.components.JIPipeDesktopFormPanel;
 import org.hkijena.jipipe.utils.UIUtils;
+import org.hkijena.jipipe.JIPipe;
 import org.hkijena.jipipe.utils.ui.RoundedLineBorder;
 
 import javax.swing.*;
@@ -36,7 +37,7 @@ public class ListDesktopParameterEditorUI extends JIPipeDesktopParameterEditorUI
     private final JLabel emptyLabel = UIUtils.createInfoLabel("This list is empty", "Click <i>Add</i> to insert a new item.");
     private final List<EntryComponents> entryComponentsList = new ArrayList<>();
     private final Set<EntryComponents> selectedEntryComponents = new HashSet<>();
-    private final JToggleButton reorderModeButton = new JToggleButton("Reorder", UIUtils.getIconFromResources("actions/object-order-lower.png"));
+    private final JToggleButton reorderModeButton = new JToggleButton("Reorder", JIPipe.RESOURCES.getIcon16("actions/object-order-lower.png"));
     private JIPipeDesktopFormPanel formPanel;
     private int lastClickedIndex = -1;
 
@@ -55,24 +56,24 @@ public class ListDesktopParameterEditorUI extends JIPipeDesktopParameterEditorUI
         toolBar.add(Box.createHorizontalStrut(4));
         JLabel nameLabel = new JLabel(getParameterAccess().getName());
         if (getParameterAccess().isImportant()) {
-            nameLabel.setIcon(UIUtils.getIconFromResources("emblems/important.png"));
+            nameLabel.setIcon(JIPipe.RESOURCES.getIcon16("emblems/important.png"));
         }
         toolBar.add(nameLabel);
 
         toolBar.add(Box.createHorizontalGlue());
 
-        JButton addButton = new JButton("Add", UIUtils.getIconFromResources("actions/list-add.png"));
+        JButton addButton = new JButton("Add", JIPipe.RESOURCES.getIcon16("actions/list-add.png"));
         addButton.addActionListener(e -> addNewEntry());
         toolBar.add(addButton);
 
-        JButton removeButton = new JButton("Remove", UIUtils.getIconFromResources("actions/delete.png"));
+        JButton removeButton = new JButton("Remove", JIPipe.RESOURCES.getIcon16("actions/delete.png"));
         removeButton.addActionListener(e -> removeSelectedEntries());
         toolBar.add(removeButton);
 
         reorderModeButton.addActionListener(e -> reload());
         toolBar.add(reorderModeButton);
 
-        JButton menuButton = new JButton(UIUtils.getIconFromResources("actions/hamburger-menu.png"));
+        JButton menuButton = new JButton(JIPipe.RESOURCES.getIcon16("actions/hamburger-menu.png"));
         menuButton.setToolTipText("Show additional options");
         JPopupMenu menu = UIUtils.addPopupMenuToButton(menuButton);
         toolBar.add(menuButton);
@@ -105,21 +106,21 @@ public class ListDesktopParameterEditorUI extends JIPipeDesktopParameterEditorUI
 
     private void initializeMoreMenu(JPopupMenu menu) {
 
-        JMenuItem selectAllItem = new JMenuItem("Select all", UIUtils.getIconFromResources("actions/edit-select-all.png"));
+        JMenuItem selectAllItem = new JMenuItem("Select all", JIPipe.RESOURCES.getIcon16("actions/edit-select-all.png"));
         selectAllItem.addActionListener(e -> selectAll());
         menu.add(selectAllItem);
 
-        JMenuItem selectNoneItem = new JMenuItem("Clear selection", UIUtils.getIconFromResources("actions/edit-select-none.png"));
+        JMenuItem selectNoneItem = new JMenuItem("Clear selection", JIPipe.RESOURCES.getIcon16("actions/edit-select-none.png"));
         selectNoneItem.addActionListener(e -> selectNone());
         menu.add(selectNoneItem);
 
-        JMenuItem invertSelectionItem = new JMenuItem("Invert selection", UIUtils.getIconFromResources("actions/edit-select-invert.png"));
+        JMenuItem invertSelectionItem = new JMenuItem("Invert selection", JIPipe.RESOURCES.getIcon16("actions/edit-select-invert.png"));
         invertSelectionItem.addActionListener(e -> invertSelection());
         menu.add(invertSelectionItem);
 
         menu.addSeparator();
 
-        JMenuItem clearItem = new JMenuItem("Clear", UIUtils.getIconFromResources("actions/clear-brush.png"));
+        JMenuItem clearItem = new JMenuItem("Clear", JIPipe.RESOURCES.getIcon16("actions/clear-brush.png"));
         clearItem.setToolTipText("Removes all items");
         clearItem.addActionListener(e -> clearList());
         menu.add(clearItem);
@@ -201,26 +202,26 @@ public class ListDesktopParameterEditorUI extends JIPipeDesktopParameterEditorUI
             EntryComponents entryComponents = new EntryComponents();
 
             if (reorderModeButton.isSelected()) {
-                JButton moveUpButton = new JButton(UIUtils.getIconFromResources("actions/sort-up.png"));
+                JButton moveUpButton = new JButton(JIPipe.RESOURCES.getIcon16("actions/sort-up.png"));
                 moveUpButton.setToolTipText("Move entry up");
                 UIUtils.makeButtonFlat25x25(moveUpButton);
                 moveUpButton.addActionListener(e -> moveEntryUp(entry));
                 buttonPanel.add(moveUpButton, new GridBagConstraints(0, 0, 1, 1, 0, 0, GridBagConstraints.WEST, GridBagConstraints.NONE, new Insets(0, 0, 0, 0), 0, 0));
 
-//                JButton removeButton = new JButton(UIUtils.getIconFromResources("actions/close-tab.png"));
+//                JButton removeButton = new JButton(JIPipe.RESOURCES.getIcon16("actions/close-tab.png"));
 //                removeButton.setToolTipText("Remove entry");
 //                UIUtils.makeBorderlessWithoutMargin(removeButton);
 //                removeButton.addActionListener(e -> removeEntry(entry));
 //                buttonPanel.add(removeButton, BorderLayout.CENTER);
 
-                JButton moveDownButton = new JButton(UIUtils.getIconFromResources("actions/sort-down.png"));
+                JButton moveDownButton = new JButton(JIPipe.RESOURCES.getIcon16("actions/sort-down.png"));
                 moveDownButton.setToolTipText("Move entry down");
                 UIUtils.makeButtonFlat25x25(moveDownButton);
                 moveDownButton.addActionListener(e -> moveEntryDown(entry));
                 buttonPanel.add(moveDownButton, new GridBagConstraints(0, 2, 1, 1, 0, 0, GridBagConstraints.WEST, GridBagConstraints.NONE, new Insets(0, 0, 0, 0), 0, 0));
             }
 
-            JButton handleButton = new JButton(UIUtils.getIconInvertedFromResources("actions/grip-lines.png"));
+            JButton handleButton = new JButton(JIPipe.RESOURCES.getIcon16Inverted("actions/grip-lines.png"));
             handleButton.setCursor(Cursor.getPredefinedCursor(Cursor.HAND_CURSOR));
             handleButton.setOpaque(false);
             UIUtils.makeButtonFlat25x25(handleButton);
@@ -232,16 +233,16 @@ public class ListDesktopParameterEditorUI extends JIPipeDesktopParameterEditorUI
             buttonPanel.add(handleButton, new GridBagConstraints(0, 1, 1, 1, 0, 0, GridBagConstraints.WEST, GridBagConstraints.NONE, new Insets(0, 0, 0, 0), 0, 0));
 
             JPopupMenu handleMenu = UIUtils.addRightClickPopupMenuToButton(handleButton);
-            handleMenu.add(UIUtils.createMenuItem("Delete", "Removes this item", UIUtils.getIconFromResources("actions/delete.png"), () -> {
+            handleMenu.add(UIUtils.createMenuItem("Delete", "Removes this item", JIPipe.RESOURCES.getIcon16("actions/delete.png"), () -> {
                 selectedEntryComponents.clear();
                 selectedEntryComponents.add(entryComponentsList.get(finalI));
                 removeSelectedEntries();
             }));
             handleMenu.addSeparator();
-            handleMenu.add(UIUtils.createMenuItem("Move up", "Moves this item one position up", UIUtils.getIconFromResources("actions/sort-up.png"), () -> {
+            handleMenu.add(UIUtils.createMenuItem("Move up", "Moves this item one position up", JIPipe.RESOURCES.getIcon16("actions/sort-up.png"), () -> {
                 moveEntryUp(entry);
             }));
-            handleMenu.add(UIUtils.createMenuItem("Move down", "Moves this item one position down", UIUtils.getIconFromResources("actions/sort-down.png"), () -> {
+            handleMenu.add(UIUtils.createMenuItem("Move down", "Moves this item one position down", JIPipe.RESOURCES.getIcon16("actions/sort-down.png"), () -> {
                 moveEntryUp(entry);
             }));
 

@@ -13,11 +13,13 @@
 
 package org.hkijena.jipipe.desktop.app.grapheditor.commons.contextmenu;
 
+import org.hkijena.jipipe.JIPipe;
 import org.hkijena.jipipe.api.data.JIPipeDataSlot;
 import org.hkijena.jipipe.api.nodes.JIPipeAlgorithm;
 import org.hkijena.jipipe.desktop.app.grapheditor.commons.JIPipeDesktopGraphCanvasUI;
 import org.hkijena.jipipe.desktop.app.grapheditor.commons.nodeui.JIPipeDesktopGraphNodeUI;
 import org.hkijena.jipipe.utils.UIUtils;
+import org.hkijena.jipipe.JIPipe;
 
 import javax.swing.*;
 import java.util.Set;
@@ -62,7 +64,7 @@ public class DisableVirtualOutputNodeUIContextAction implements NodeUIContextAct
 
     @Override
     public Icon getIcon() {
-        return UIUtils.getIconFromResources("devices/media-memory.png");
+        return JIPipe.RESOURCES.getIcon16("devices/media-memory.png");
     }
 
 }

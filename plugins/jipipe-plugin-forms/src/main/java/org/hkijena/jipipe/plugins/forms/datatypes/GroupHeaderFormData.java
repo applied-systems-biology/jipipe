@@ -23,6 +23,7 @@ import org.hkijena.jipipe.api.validation.JIPipeValidationReportContext;
 import org.hkijena.jipipe.desktop.app.JIPipeDesktopWorkbench;
 import org.hkijena.jipipe.desktop.commons.components.JIPipeDesktopFormPanel;
 import org.hkijena.jipipe.utils.UIUtils;
+import org.hkijena.jipipe.JIPipe;
 
 import java.awt.*;
 
@@ -52,7 +53,7 @@ public class GroupHeaderFormData extends ParameterFormData {
 
     @Override
     public Component getEditor(JIPipeDesktopWorkbench workbench) {
-        JIPipeDesktopFormPanel.GroupHeaderPanel panel = new JIPipeDesktopFormPanel.GroupHeaderPanel(getName(), UIUtils.getIconFromResources("actions/configure.png"), 8);
+        JIPipeDesktopFormPanel.GroupHeaderPanel panel = new JIPipeDesktopFormPanel.GroupHeaderPanel(getName(), JIPipe.RESOURCES.getIcon16("actions/configure.png"), 8);
         panel.addDescriptionRow(getDescription().getHtml());
         return panel;
     }

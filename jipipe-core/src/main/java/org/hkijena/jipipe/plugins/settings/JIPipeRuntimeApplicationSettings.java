@@ -24,6 +24,7 @@ import org.hkijena.jipipe.utils.PathIOMode;
 import org.hkijena.jipipe.utils.PathType;
 import org.hkijena.jipipe.utils.PathUtils;
 import org.hkijena.jipipe.utils.UIUtils;
+import org.hkijena.jipipe.JIPipe;
 
 import javax.swing.*;
 import java.io.IOException;
@@ -211,7 +212,7 @@ public class JIPipeRuntimeApplicationSettings extends JIPipeDefaultApplicationsS
 
     @Override
     public Icon getIcon() {
-        return UIUtils.getIconFromResources("actions/play.png");
+        return JIPipe.RESOURCES.getIcon16("actions/play.png");
     }
 
     @Override

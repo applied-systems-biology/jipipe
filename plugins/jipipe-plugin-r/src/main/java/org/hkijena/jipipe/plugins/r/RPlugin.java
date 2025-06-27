@@ -36,6 +36,7 @@ import org.hkijena.jipipe.plugins.r.parameters.RScriptParameter;
 import org.hkijena.jipipe.plugins.r.ui.RTokenMaker;
 import org.hkijena.jipipe.utils.JIPipeResourceManager;
 import org.hkijena.jipipe.utils.UIUtils;
+import org.hkijena.jipipe.JIPipe;
 import org.scijava.Context;
 import org.scijava.plugin.Plugin;
 
@@ -109,7 +110,7 @@ public class RPlugin extends JIPipePrepackagedDefaultJavaPlugin {
 
     @Override
     public List<ImageIcon> getSplashIcons() {
-        return Arrays.asList(UIUtils.getIcon32FromResources("apps/rlogo_icon.png"));
+        return Arrays.asList(JIPipe.RESOURCES.getIcon32("apps/rlogo_icon.png"));
     }
 
     @Override
@@ -122,7 +123,7 @@ public class RPlugin extends JIPipePrepackagedDefaultJavaPlugin {
                 REnvironment.ENVIRONMENT_ID,
                 "R environment",
                 "A R environment",
-                UIUtils.getIconFromResources("apps/rlogo_icon.png"));
+                JIPipe.RESOURCES.getIcon16("apps/rlogo_icon.png"));
         registerParameterType("optional-r-environment",
                 OptionalREnvironment.class,
                 JIPipeParameterArchetype.OptionalValue, null,
@@ -146,11 +147,11 @@ public class RPlugin extends JIPipePrepackagedDefaultJavaPlugin {
         registerProjectSettingsSheet(RPluginProjectSettings.class);
 
 
-        registerNodeType("r-script-iterating", IteratingRScriptAlgorithm.class, UIUtils.getIconURLFromResources("apps/rlogo_icon.png"));
-        registerNodeType("r-script-merging", MergingRScriptAlgorithm.class, UIUtils.getIconURLFromResources("apps/rlogo_icon.png"));
+        registerNodeType("r-script-iterating", IteratingRScriptAlgorithm.class, JIPipe.RESOURCES.getIcon16URL("apps/rlogo_icon.png"));
+        registerNodeType("r-script-merging", MergingRScriptAlgorithm.class, JIPipe.RESOURCES.getIcon16URL("apps/rlogo_icon.png"));
 
         registerEnumParameterType("r-import-dataset:dataset", ImportRDatasetAlgorithm.Dataset.class, "R dataset", "A dataset from the R datasets package");
-        registerNodeType("r-import-dataset", ImportRDatasetAlgorithm.class, UIUtils.getIconURLFromResources("apps/rlogo_icon.png"));
+        registerNodeType("r-import-dataset", ImportRDatasetAlgorithm.class, JIPipe.RESOURCES.getIcon16URL("apps/rlogo_icon.png"));
 
         registerNodeExamplesFromResources(RESOURCES, "examples");
     }

@@ -14,6 +14,7 @@
 package org.hkijena.jipipe.desktop.app.cache;
 
 import org.apache.commons.lang3.math.NumberUtils;
+import org.hkijena.jipipe.JIPipe;
 import org.hkijena.jipipe.api.JIPipeProgressInfo;
 import org.hkijena.jipipe.api.cache.JIPipeCache;
 import org.hkijena.jipipe.api.data.JIPipeData;
@@ -32,6 +33,7 @@ import org.hkijena.jipipe.desktop.commons.components.window.JIPipeDesktopAlwaysO
 import org.hkijena.jipipe.plugins.settings.JIPipeGeneralUIApplicationSettings;
 import org.hkijena.jipipe.utils.StringUtils;
 import org.hkijena.jipipe.utils.UIUtils;
+import org.hkijena.jipipe.JIPipe;
 import org.hkijena.jipipe.utils.data.Store;
 import org.hkijena.jipipe.utils.data.WeakStore;
 import org.hkijena.jipipe.utils.debounce.StaticDebouncer;
@@ -101,11 +103,11 @@ public abstract class JIPipeDesktopLegacyCacheDataViewerWindow extends JFrame im
     }
 
     private void initialize() {
-        previousRowButton = new JButton(UIUtils.getIconFromResources("actions/caret-up.png"));
+        previousRowButton = new JButton(JIPipe.RESOURCES.getIcon16("actions/caret-up.png"));
         previousRowButton.setToolTipText("<html>Go to previous data row<br/>Ctrl+Up</html>");
         previousRowButton.addActionListener(e -> gotoPreviousRow());
         UIUtils.makeButtonFlat25x25(previousRowButton);
-        nextRowButton = new JButton(UIUtils.getIconFromResources("actions/caret-down.png"));
+        nextRowButton = new JButton(JIPipe.RESOURCES.getIcon16("actions/caret-down.png"));
         nextRowButton.setToolTipText("<html>Go to next data row<br/>Ctrl+Down</html>");
         nextRowButton.addActionListener(e -> gotoNextRow());
         UIUtils.makeButtonFlat25x25(nextRowButton);
@@ -134,12 +136,12 @@ public abstract class JIPipeDesktopLegacyCacheDataViewerWindow extends JFrame im
         inputMap.put(KeyStroke.getKeyStroke(KeyEvent.VK_DOWN, InputEvent.CTRL_DOWN_MASK), "next-row");
 
         // Create a standard error label
-        standardErrorLabel = new JLabel(UIUtils.getIconFromResources("emblems/no-data.png"));
+        standardErrorLabel = new JLabel(JIPipe.RESOURCES.getIcon16("emblems/no-data.png"));
     }
 
     private void reloadInfoLabelMenu() {
         rowInfoLabelMenu.removeAll();
-        JMenuItem setRowItem = new JMenuItem("Go to row ...", UIUtils.getIconFromResources("actions/go-jump.png"));
+        JMenuItem setRowItem = new JMenuItem("Go to row ...", JIPipe.RESOURCES.getIcon16("actions/go-jump.png"));
         setRowItem.addActionListener(e -> gotoUserDefinedRow());
         rowInfoLabelMenu.add(setRowItem);
 

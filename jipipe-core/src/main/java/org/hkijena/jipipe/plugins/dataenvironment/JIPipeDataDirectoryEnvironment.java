@@ -27,6 +27,7 @@ import org.hkijena.jipipe.api.validation.JIPipeValidationReportEntryLevel;
 import org.hkijena.jipipe.plugins.parameters.api.collections.ListParameter;
 import org.hkijena.jipipe.utils.StringUtils;
 import org.hkijena.jipipe.utils.UIUtils;
+import org.hkijena.jipipe.JIPipe;
 
 import javax.swing.*;
 import java.nio.file.Files;
@@ -69,7 +70,7 @@ public class JIPipeDataDirectoryEnvironment extends JIPipeArtifactEnvironment {
 
     @Override
     public Icon getIcon() {
-        return UIUtils.getIconFromResources("actions/vcs-update-cvs-cervisia.png");
+        return JIPipe.RESOURCES.getIcon16("actions/vcs-update-cvs-cervisia.png");
     }
 
     @Override

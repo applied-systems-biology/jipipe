@@ -40,6 +40,7 @@ import org.hkijena.jipipe.utils.EnvironmentVariablesSource;
 import org.hkijena.jipipe.utils.PathUtils;
 import org.hkijena.jipipe.utils.StringUtils;
 import org.hkijena.jipipe.utils.UIUtils;
+import org.hkijena.jipipe.JIPipe;
 
 import javax.swing.*;
 import java.nio.file.Files;
@@ -179,9 +180,9 @@ public class REnvironment extends JIPipeArtifactEnvironment {
     @Override
     public Icon getIcon() {
         if (isLoadFromArtifact()) {
-            return UIUtils.getIconFromResources("actions/run-install.png");
+            return JIPipe.RESOURCES.getIcon16("actions/run-install.png");
         } else {
-            return UIUtils.getIconFromResources("apps/rlogo_icon.png");
+            return JIPipe.RESOURCES.getIcon16("apps/rlogo_icon.png");
         }
     }
 

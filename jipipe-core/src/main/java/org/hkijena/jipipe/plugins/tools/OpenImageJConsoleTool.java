@@ -18,6 +18,7 @@ import org.hkijena.jipipe.desktop.api.JIPipeMenuExtensionTarget;
 import org.hkijena.jipipe.desktop.app.JIPipeDesktopWorkbench;
 import org.hkijena.jipipe.desktop.commons.components.tabs.JIPipeDesktopTabPane;
 import org.hkijena.jipipe.utils.UIUtils;
+import org.hkijena.jipipe.JIPipe;
 import org.scijava.ui.UIService;
 import org.scijava.ui.UserInterface;
 import org.scijava.ui.swing.console.SwingConsolePane;
@@ -32,7 +33,7 @@ public class OpenImageJConsoleTool extends JIPipeDesktopMenuExtension {
         super(workbench);
         setText("Open console");
         setToolTipText("Opens the stdout/stderr console.");
-        setIcon(UIUtils.getIconFromResources("actions/akonadiconsole.png"));
+        setIcon(JIPipe.RESOURCES.getIcon16("actions/akonadiconsole.png"));
         addActionListener(e -> showImageJ());
     }
 
@@ -44,7 +45,7 @@ public class OpenImageJConsoleTool extends JIPipeDesktopMenuExtension {
         } else {
             SwingConsolePane swingConsolePane = new SwingConsolePane(getDesktopWorkbench().getContext());
             getDesktopWorkbench().getDocumentTabPane().addTab("Console",
-                    UIUtils.getIconFromResources("actions/akonadiconsole.png"),
+                    JIPipe.RESOURCES.getIcon16("actions/akonadiconsole.png"),
                     swingConsolePane.getComponent(),
                     JIPipeDesktopTabPane.CloseMode.withSilentCloseButton);
         }

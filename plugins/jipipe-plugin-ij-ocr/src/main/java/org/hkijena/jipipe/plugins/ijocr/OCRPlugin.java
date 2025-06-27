@@ -37,6 +37,7 @@ import org.hkijena.jipipe.plugins.parameters.library.primitives.list.StringList;
 import org.hkijena.jipipe.plugins.strings.StringsPlugin;
 import org.hkijena.jipipe.plugins.tables.TablesPlugin;
 import org.hkijena.jipipe.utils.UIUtils;
+import org.hkijena.jipipe.JIPipe;
 import org.scijava.Context;
 import org.scijava.plugin.Plugin;
 
@@ -121,7 +122,7 @@ public class OCRPlugin extends JIPipePrepackagedDefaultJavaPlugin {
                 "tesseract-ocr-environment",
                 "Tesseract OCR Environment",
                 "Installation of Tesseract OCR",
-                UIUtils.getIconFromResources("actions/text_outer_style.png"));
+                JIPipe.RESOURCES.getIcon16("actions/text_outer_style.png"));
         registerParameterType("optional-tesseract-ocr-environment",
                 OptionalTesseractOCREnvironment.class,
                 JIPipeParameterArchetype.OptionalValue, "Optional Tesseract OCR Environment",
@@ -132,7 +133,7 @@ public class OCRPlugin extends JIPipePrepackagedDefaultJavaPlugin {
 
         registerEnumParameterType("tesseract-ocr-psm", TesseractPageSegmentationMethod.class, "Tesseract OCR Page Segmentation Method", "Methods for page segmentation");
         registerEnumParameterType("tesseract-ocr-oem", TesseractOCREngineMode.class, "Tesseract OCR Engine Mode", "OCR engine modes");
-        registerNodeType("tesseract-ocr", TesseractOCRAlgorithm.class, UIUtils.getIconURLFromResources("actions/text_outer_style.png"));
+        registerNodeType("tesseract-ocr", TesseractOCRAlgorithm.class, JIPipe.RESOURCES.getIcon16URL("actions/text_outer_style.png"));
     }
 
 

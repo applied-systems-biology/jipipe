@@ -17,6 +17,7 @@ import org.hkijena.jipipe.desktop.api.JIPipeDesktopParameterEditorUI;
 import org.hkijena.jipipe.desktop.app.tableeditor.JIPipeDesktopTableEditor;
 import org.hkijena.jipipe.plugins.tables.datatypes.ResultsTableData;
 import org.hkijena.jipipe.utils.UIUtils;
+import org.hkijena.jipipe.JIPipe;
 
 import javax.swing.*;
 import java.awt.*;
@@ -33,7 +34,7 @@ public class ResultsTableDataDesktopParameterEditorUI extends JIPipeDesktopParam
 
     private void initialize() {
         setLayout(new BorderLayout());
-        JButton editButton = new JButton("Edit table", UIUtils.getIconFromResources("actions/edit.png"));
+        JButton editButton = new JButton("Edit table", JIPipe.RESOURCES.getIcon16("actions/edit.png"));
         editButton.addActionListener(e -> editParameters());
         add(editButton, BorderLayout.CENTER);
     }

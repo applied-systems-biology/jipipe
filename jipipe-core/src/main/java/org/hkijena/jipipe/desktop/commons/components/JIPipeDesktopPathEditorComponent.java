@@ -13,6 +13,7 @@
 
 package org.hkijena.jipipe.desktop.commons.components;
 
+import org.hkijena.jipipe.JIPipe;
 import org.hkijena.jipipe.desktop.JIPipeDesktop;
 import org.hkijena.jipipe.desktop.app.JIPipeDesktopWorkbench;
 import org.hkijena.jipipe.desktop.app.JIPipeDesktopWorkbenchPanel;
@@ -87,7 +88,7 @@ public class JIPipeDesktopPathEditorComponent extends JIPipeDesktopWorkbenchPane
             }
         });
 
-        generateRandomButton = new JButton(UIUtils.getIconFromResources("actions/random.png"));
+        generateRandomButton = new JButton(JIPipe.RESOURCES.getIcon16("actions/random.png"));
         generateRandomButton.setToolTipText("Generate random file or folder");
         UIUtils.makeButtonFlat25x25(generateRandomButton);
         generateRandomButton.setBorder(null);
@@ -100,7 +101,7 @@ public class JIPipeDesktopPathEditorComponent extends JIPipeDesktopWorkbenchPane
             }
         });
 
-        JButton selectButton = new JButton("Select", UIUtils.getIconFromResources("actions/document-open-folder.png"));
+        JButton selectButton = new JButton("Select", JIPipe.RESOURCES.getIcon16("actions/document-open-folder.png"));
         selectButton.setToolTipText("Select from filesystem");
         add(selectButton, new GridBagConstraints() {
             {

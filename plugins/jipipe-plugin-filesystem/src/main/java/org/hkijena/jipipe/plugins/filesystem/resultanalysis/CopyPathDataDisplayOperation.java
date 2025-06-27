@@ -19,6 +19,7 @@ import org.hkijena.jipipe.desktop.api.data.JIPipeDesktopDataDisplayOperation;
 import org.hkijena.jipipe.desktop.app.JIPipeDesktopWorkbench;
 import org.hkijena.jipipe.plugins.filesystem.dataypes.PathData;
 import org.hkijena.jipipe.utils.UIUtils;
+import org.hkijena.jipipe.JIPipe;
 
 import javax.swing.*;
 import java.awt.*;
@@ -49,7 +50,7 @@ public class CopyPathDataDisplayOperation implements JIPipeDesktopDataDisplayOpe
 
     @Override
     public Icon getIcon() {
-        return UIUtils.getIconFromResources("actions/edit-copy.png");
+        return JIPipe.RESOURCES.getIcon16("actions/edit-copy.png");
     }
 
     @Override

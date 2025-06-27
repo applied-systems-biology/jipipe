@@ -14,6 +14,7 @@
 package org.hkijena.jipipe.desktop.commons.notifications;
 
 import com.google.common.collect.ImmutableList;
+import org.hkijena.jipipe.JIPipe;
 import org.hkijena.jipipe.api.notifications.JIPipeNotification;
 import org.hkijena.jipipe.api.notifications.JIPipeNotificationInbox;
 import org.hkijena.jipipe.desktop.app.JIPipeDesktopProjectWorkbench;
@@ -21,6 +22,7 @@ import org.hkijena.jipipe.desktop.app.JIPipeDesktopWorkbench;
 import org.hkijena.jipipe.desktop.commons.components.icons.JIPipeDesktopAnimatedIcon;
 import org.hkijena.jipipe.plugins.settings.JIPipeNotificationUIApplicationSettings;
 import org.hkijena.jipipe.utils.UIUtils;
+import org.hkijena.jipipe.JIPipe;
 
 import javax.swing.*;
 import javax.swing.Timer;
@@ -103,8 +105,8 @@ public class JIPipeDesktopNotificationButton extends JButton implements JIPipeNo
     private void initialize() {
         UIUtils.setStandardButtonBorder(this);
 
-        warningIcon = new JIPipeDesktopAnimatedIcon(this, UIUtils.getIconFromResources("emblems/emblem-important.png"),
-                UIUtils.getIconFromResources("emblems/warning.png"),
+        warningIcon = new JIPipeDesktopAnimatedIcon(this, JIPipe.RESOURCES.getIcon16("emblems/emblem-important.png"),
+                JIPipe.RESOURCES.getIcon16("emblems/warning.png"),
                 100, 0.05);
         setIcon(warningIcon);
         setHorizontalAlignment(LEFT);

@@ -24,6 +24,7 @@ import org.hkijena.jipipe.desktop.app.plugins.pluginsmanager.JIPipeDesktopPlugin
 import org.hkijena.jipipe.desktop.commons.components.JIPipeDesktopFormPanel;
 import org.hkijena.jipipe.desktop.commons.components.JIPipeDesktopMessagePanel;
 import org.hkijena.jipipe.utils.UIUtils;
+import org.hkijena.jipipe.JIPipe;
 import org.hkijena.jipipe.utils.VersionUtils;
 import org.hkijena.jipipe.utils.ui.RoundedLineBorder;
 
@@ -83,7 +84,7 @@ public class JIPipeDesktopInvalidProjectDependenciesInfoDialog extends JDialog i
 
         formPanel.setBorder(BorderFactory.createEmptyBorder(16, 16, 16, 16));
 
-        formPanel.addWideToForm(UIUtils.createJLabel("Potential issues detected", UIUtils.getIcon32FromResources("dialog-warning.png"), 28));
+        formPanel.addWideToForm(UIUtils.createJLabel("Potential issues detected", JIPipe.RESOURCES.getIcon32("dialog-warning.png"), 28));
         formPanel.addWideToForm(UIUtils.createBorderlessReadonlyTextPane("The project '" + fileName.toString() + "' might not be loadable due to invalid or missing dependencies. " +
                 "If the required extensions are available, you can choose to activate them (requires a restart of ImageJ or JIPipe). " +
                 "If you want, you can also ignore this message. " +
@@ -92,12 +93,12 @@ public class JIPipeDesktopInvalidProjectDependenciesInfoDialog extends JDialog i
         if (!missingDependencySet.isEmpty()) {
             formPanel.addWideToForm(Box.createVerticalStrut(32));
             formPanel.addWideToForm(UIUtils.createJLabel("Missing JIPipe plugins", 22));
-            formPanel.addWideToForm(UIUtils.createJLabel(missingDependencySet.size() + " plugins are not present/activated. Please cancel the operation and activate the following plugins via the JIPipe plugin manager:", UIUtils.getIconFromResources("emblems/emblem-important-blue.png")));
+            formPanel.addWideToForm(UIUtils.createJLabel(missingDependencySet.size() + " plugins are not present/activated. Please cancel the operation and activate the following plugins via the JIPipe plugin manager:", JIPipe.RESOURCES.getIcon16("emblems/emblem-important-blue.png")));
 
             for (JIPipeDependency dependency : missingDependencySet) {
                 JPanel dependencyPanel = new JPanel(new GridBagLayout());
                 dependencyPanel.setBorder(BorderFactory.createCompoundBorder(new RoundedLineBorder(UIManager.getColor("Button.borderColor"), 1, 2), BorderFactory.createEmptyBorder(8, 8, 8, 8)));
-                dependencyPanel.add(UIUtils.createJLabel(dependency.getMetadata().getName(), UIUtils.getIcon32FromResources("module-json.png"), 16), new GridBagConstraints(0, 0, 1, 1, 1, 0, GridBagConstraints.NORTHWEST, GridBagConstraints.HORIZONTAL, insets, 0, 0));
+                dependencyPanel.add(UIUtils.createJLabel(dependency.getMetadata().getName(), JIPipe.RESOURCES.getIcon32("module-json.png"), 16), new GridBagConstraints(0, 0, 1, 1, 1, 0, GridBagConstraints.NORTHWEST, GridBagConstraints.HORIZONTAL, insets, 0, 0));
                 JTextField idField = UIUtils.createReadonlyBorderlessTextField("ID: " + dependency.getDependencyId() + ", version: " + dependency.getDependencyVersion());
                 idField.setFont(new Font(Font.MONOSPACED, Font.PLAIN, 11));
                 dependencyPanel.add(idField, new GridBagConstraints(0, 1, 1, 1, 1, 0, GridBagConstraints.NORTHWEST, GridBagConstraints.HORIZONTAL, insets, 0, 0));
@@ -108,7 +109,7 @@ public class JIPipeDesktopInvalidProjectDependenciesInfoDialog extends JDialog i
                 if (extension != null) {
                     if (VersionUtils.compareVersions(extension.getDependencyVersion(), dependency.getDependencyVersion()) == -1) {
                         dependencyPanel.add(UIUtils.createJLabel("Installed version too old (" + extension.getDependencyVersion() + " < " + dependency.getDependencyVersion() + ")",
-                                UIUtils.getIconFromResources("emblems/emblem-rabbitvcs-conflicted.png")), new GridBagConstraints(1,
+                                JIPipe.RESOURCES.getIcon16("emblems/emblem-rabbitvcs-conflicted.png")), new GridBagConstraints(1,
                                 0,
                                 1,
                                 1,
@@ -121,7 +122,7 @@ public class JIPipeDesktopInvalidProjectDependenciesInfoDialog extends JDialog i
                                 0));
                     } else {
                         dependencyPanel.add(UIUtils.createJLabel("Plugin not activated",
-                                UIUtils.getIconFromResources("emblems/emblem-rabbitvcs-eerror.png")), new GridBagConstraints(1,
+                                JIPipe.RESOURCES.getIcon16("emblems/emblem-rabbitvcs-eerror.png")), new GridBagConstraints(1,
                                 0,
                                 1,
                                 1,
@@ -135,7 +136,7 @@ public class JIPipeDesktopInvalidProjectDependenciesInfoDialog extends JDialog i
                     }
                 } else {
                     dependencyPanel.add(UIUtils.createJLabel("Plugin not installed",
-                            UIUtils.getIconFromResources("emblems/emblem-rabbitvcs-conflicted.png")), new GridBagConstraints(1,
+                            JIPipe.RESOURCES.getIcon16("emblems/emblem-rabbitvcs-conflicted.png")), new GridBagConstraints(1,
                             0,
                             1,
                             1,
@@ -173,14 +174,14 @@ public class JIPipeDesktopInvalidProjectDependenciesInfoDialog extends JDialog i
         buttonPanel.setLayout(new BoxLayout(buttonPanel, BoxLayout.X_AXIS));
         buttonPanel.add(Box.createHorizontalGlue());
 
-        JButton cancelButton = new JButton("Cancel", UIUtils.getIconFromResources("actions/cancel.png"));
+        JButton cancelButton = new JButton("Cancel", JIPipe.RESOURCES.getIcon16("actions/cancel.png"));
         cancelButton.addActionListener(e -> {
             continueLoading = false;
             setVisible(false);
         });
         buttonPanel.add(cancelButton);
 
-        JButton startUpdaterButton = new JButton("Start ImageJ updater", UIUtils.getIconFromResources("apps/imagej.png"));
+        JButton startUpdaterButton = new JButton("Start ImageJ updater", JIPipe.RESOURCES.getIcon16("apps/imagej.png"));
         startUpdaterButton.addActionListener(e -> {
             ImageJUpdater updater = new ImageJUpdater();
             JIPipe.getInstance().getContext().inject(updater);
@@ -188,13 +189,13 @@ public class JIPipeDesktopInvalidProjectDependenciesInfoDialog extends JDialog i
         });
         buttonPanel.add(startUpdaterButton);
 
-        JButton startPluginManagerButton = new JButton("Start plugin manager", UIUtils.getIconFromResources("apps/jipipe.png"));
+        JButton startPluginManagerButton = new JButton("Start plugin manager", JIPipe.RESOURCES.getIcon16("apps/jipipe.png"));
         startPluginManagerButton.addActionListener(e -> {
             JIPipeDesktopPluginManagerUI.show(workbench);
         });
         buttonPanel.add(startPluginManagerButton);
 
-        JButton confirmButton = new JButton("Ignore and load project anyway", UIUtils.getIconFromResources("actions/document-open-folder.png"));
+        JButton confirmButton = new JButton("Ignore and load project anyway", JIPipe.RESOURCES.getIcon16("actions/document-open-folder.png"));
         confirmButton.addActionListener(e -> {
             continueLoading = true;
             setVisible(false);

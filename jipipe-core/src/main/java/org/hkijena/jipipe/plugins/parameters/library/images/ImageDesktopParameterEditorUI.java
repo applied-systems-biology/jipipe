@@ -24,6 +24,7 @@ import org.hkijena.jipipe.utils.BufferedImageUtils;
 import org.hkijena.jipipe.utils.PathUtils;
 import org.hkijena.jipipe.utils.ResourceUtils;
 import org.hkijena.jipipe.utils.UIUtils;
+import org.hkijena.jipipe.JIPipe;
 
 import javax.imageio.ImageIO;
 import javax.swing.*;
@@ -46,15 +47,15 @@ public class ImageDesktopParameterEditorUI extends JIPipeDesktopParameterEditorU
         setLayout(new BorderLayout());
         add(imagePreview, BorderLayout.WEST);
 
-        JButton importButton = new JButton("Import", UIUtils.getIconFromResources("actions/document-import.png"));
+        JButton importButton = new JButton("Import", JIPipe.RESOURCES.getIcon16("actions/document-import.png"));
         JPopupMenu importMenu = UIUtils.addPopupMenuToButton(importButton);
         add(importButton, BorderLayout.CENTER);
 
-        JMenuItem openImageItem = new JMenuItem("Open from file ...", UIUtils.getIconFromResources("actions/document-open-folder.png"));
+        JMenuItem openImageItem = new JMenuItem("Open from file ...", JIPipe.RESOURCES.getIcon16("actions/document-open-folder.png"));
         openImageItem.addActionListener(e -> importImageFile());
         importMenu.add(openImageItem);
 
-        JMenuItem importIconItem = new JMenuItem("Load icon", UIUtils.getIconFromResources("actions/view_icon.png"));
+        JMenuItem importIconItem = new JMenuItem("Load icon", JIPipe.RESOURCES.getIcon16("actions/view_icon.png"));
         importIconItem.addActionListener(e -> importIcon());
         importMenu.add(importIconItem);
     }
@@ -62,7 +63,7 @@ public class ImageDesktopParameterEditorUI extends JIPipeDesktopParameterEditorU
     private void importIcon() {
         String picked = JIPipeDesktopIconPickerDialog.showDialog(this, ResourceUtils.getResourcePath("icons"), IconRefDesktopParameterEditorUI.getAvailableIcons());
         if (picked != null) {
-            ImageIcon icon = UIUtils.getIconFromResources(picked);
+            ImageIcon icon = JIPipe.RESOURCES.getIcon16(picked);
             BufferedImage bufferedImage = BufferedImageUtils.toBufferedImage(icon.getImage(), BufferedImage.TYPE_INT_ARGB);
             importImage(bufferedImage);
         }
@@ -118,7 +119,7 @@ public class ImageDesktopParameterEditorUI extends JIPipeDesktopParameterEditorU
         ImageParameter parameter = getParameter(ImageParameter.class);
         if (parameter.getImage() == null) {
             imagePreview.setText("NA");
-            imagePreview.setIcon(UIUtils.getIconFromResources("emblems/vcs-conflicting.png"));
+            imagePreview.setIcon(JIPipe.RESOURCES.getIcon16("emblems/vcs-conflicting.png"));
         } else {
             imagePreview.setText("");
             BufferedImage thumbnail = BufferedImageUtils.scaleImageToFit(parameter.getImage(), 64, 64);

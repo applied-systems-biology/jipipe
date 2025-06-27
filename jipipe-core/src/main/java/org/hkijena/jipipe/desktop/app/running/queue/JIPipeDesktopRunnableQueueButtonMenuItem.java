@@ -18,6 +18,7 @@ import org.hkijena.jipipe.api.run.JIPipeRunnable;
 import org.hkijena.jipipe.api.run.JIPipeRunnableQueue;
 import org.hkijena.jipipe.api.run.JIPipeRunnableWorker;
 import org.hkijena.jipipe.utils.UIUtils;
+import org.hkijena.jipipe.JIPipe;
 
 import javax.swing.*;
 import java.awt.*;
@@ -30,7 +31,7 @@ public class JIPipeDesktopRunnableQueueButtonMenuItem extends JMenuItem implemen
     private final JLabel iconLabel = new JLabel();
     private final JLabel statusLabel = new JLabel();
     private final JProgressBar progressBar = new JProgressBar();
-    private final JButton cancelButton = new JButton(UIUtils.getIcon32FromResources("actions/cancel.png"));
+    private final JButton cancelButton = new JButton(JIPipe.RESOURCES.getIcon32("actions/cancel.png"));
     private JIPipeRunnableWorker worker;
 
     public JIPipeDesktopRunnableQueueButtonMenuItem(JIPipeRunnableQueue runnerQueue, JIPipeRunnableWorker worker) {
@@ -79,10 +80,10 @@ public class JIPipeDesktopRunnableQueueButtonMenuItem extends JMenuItem implemen
         }
         if (worker.isDone()) {
             if (worker.isCancelled()) {
-                iconLabel.setIcon(UIUtils.getIconFromResources("emblems/emblem-error.png"));
+                iconLabel.setIcon(JIPipe.RESOURCES.getIcon16("emblems/emblem-error.png"));
                 statusLabel.setText("Cancelled.");
             } else {
-                iconLabel.setIcon(UIUtils.getIconFromResources("emblems/emblem-success.png"));
+                iconLabel.setIcon(JIPipe.RESOURCES.getIcon16("emblems/emblem-success.png"));
                 statusLabel.setText("Done.");
             }
             progressBar.setMaximum(1);
@@ -92,7 +93,7 @@ public class JIPipeDesktopRunnableQueueButtonMenuItem extends JMenuItem implemen
             worker = null;
         } else if (runnerQueue.getCurrentRunWorker() == worker) {
             cancelButton.setEnabled(true);
-            iconLabel.setIcon(UIUtils.getIconFromResources("emblems/emblem-insync-syncing.png"));
+            iconLabel.setIcon(JIPipe.RESOURCES.getIcon16("emblems/emblem-insync-syncing.png"));
             if (status != null) {
                 progressBar.setIndeterminate(false);
                 progressBar.setMaximum(status.getMaxProgress());
@@ -105,7 +106,7 @@ public class JIPipeDesktopRunnableQueueButtonMenuItem extends JMenuItem implemen
                 progressBar.setIndeterminate(true);
             }
         } else {
-            iconLabel.setIcon(UIUtils.getIconFromResources("emblems/emblem-hourglass.png"));
+            iconLabel.setIcon(JIPipe.RESOURCES.getIcon16("emblems/emblem-hourglass.png"));
             cancelButton.setEnabled(true);
             statusLabel.setText("Enqueued.");
             progressBar.setMaximum(1);

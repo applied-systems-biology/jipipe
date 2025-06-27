@@ -16,6 +16,7 @@ package org.hkijena.jipipe.utils.ui;
 import com.google.common.collect.BiMap;
 import com.google.common.collect.HashBiMap;
 import org.hkijena.jipipe.utils.UIUtils;
+import org.hkijena.jipipe.JIPipe;
 
 import javax.swing.*;
 import java.awt.*;
@@ -66,14 +67,14 @@ public class DotSlideshow extends JPanel {
         dots.clear();
 
         bottomPanel.add(Box.createHorizontalGlue());
-        JButton previousButton = new JButton(UIUtils.getIconFromResources("actions/caret-left.png"));
+        JButton previousButton = new JButton(JIPipe.RESOURCES.getIcon16("actions/caret-left.png"));
         UIUtils.makeButtonFlat25x25(previousButton);
         previousButton.addActionListener(e -> previousSlide());
         bottomPanel.add(previousButton);
         for (String key : slideOrder) {
             JRadioButton radioButton = new JRadioButton("");
-            radioButton.setIcon(UIUtils.getIconFromResources("actions/xfce-wm-unstick.png"));
-            radioButton.setSelectedIcon(UIUtils.getIconFromResources("actions/xfce-wm-stick.png"));
+            radioButton.setIcon(JIPipe.RESOURCES.getIcon16("actions/xfce-wm-unstick.png"));
+            radioButton.setSelectedIcon(JIPipe.RESOURCES.getIcon16("actions/xfce-wm-stick.png"));
             radioButton.setOpaque(false);
             buttonGroup.add(radioButton);
             radioButton.addActionListener(e -> {
@@ -82,7 +83,7 @@ public class DotSlideshow extends JPanel {
             bottomPanel.add(radioButton);
             dots.put(key, radioButton);
         }
-        JButton nextButton = new JButton(UIUtils.getIconFromResources("actions/caret-right.png"));
+        JButton nextButton = new JButton(JIPipe.RESOURCES.getIcon16("actions/caret-right.png"));
         UIUtils.makeButtonFlat25x25(nextButton);
         nextButton.addActionListener(e -> nextSlide());
         bottomPanel.add(nextButton);

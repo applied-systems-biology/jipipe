@@ -13,9 +13,11 @@
 
 package org.hkijena.jipipe.plugins.parameters.library.auth;
 
+import org.hkijena.jipipe.JIPipe;
 import org.hkijena.jipipe.desktop.api.JIPipeDesktopParameterEditorUI;
 import org.hkijena.jipipe.desktop.commons.components.JIPipeDesktopFancyPasswordField;
 import org.hkijena.jipipe.utils.UIUtils;
+import org.hkijena.jipipe.JIPipe;
 
 import javax.swing.*;
 import java.awt.*;
@@ -26,7 +28,7 @@ import java.util.Objects;
  */
 public class PasswordDesktopParameterEditorUI extends JIPipeDesktopParameterEditorUI {
 
-    private final JIPipeDesktopFancyPasswordField passwordField = new JIPipeDesktopFancyPasswordField(new JLabel(UIUtils.getIconFromResources("actions/pgp-keys.png")));
+    private final JIPipeDesktopFancyPasswordField passwordField = new JIPipeDesktopFancyPasswordField(new JLabel(JIPipe.RESOURCES.getIcon16("actions/pgp-keys.png")));
 
     public PasswordDesktopParameterEditorUI(InitializationParameters parameters) {
         super(parameters);

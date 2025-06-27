@@ -13,10 +13,12 @@
 
 package org.hkijena.jipipe.desktop.app.grapheditor.flavors.pipeline.contextmenu;
 
+import org.hkijena.jipipe.JIPipe;
 import org.hkijena.jipipe.desktop.app.grapheditor.commons.JIPipeDesktopGraphCanvasUI;
 import org.hkijena.jipipe.desktop.app.grapheditor.commons.contextmenu.NodeUIContextAction;
 import org.hkijena.jipipe.desktop.app.grapheditor.commons.nodeui.JIPipeDesktopGraphNodeUI;
 import org.hkijena.jipipe.utils.UIUtils;
+import org.hkijena.jipipe.JIPipe;
 
 import javax.swing.*;
 import java.awt.event.InputEvent;
@@ -55,7 +57,7 @@ public class AlgorithmGraphPasteNodeUIContextAction implements NodeUIContextActi
 
     @Override
     public Icon getIcon() {
-        return UIUtils.getIconFromResources("actions/edit-paste.png");
+        return JIPipe.RESOURCES.getIcon16("actions/edit-paste.png");
     }
 
     @Override

@@ -13,6 +13,7 @@
 
 package org.hkijena.jipipe.plugins.tables.display;
 
+import org.hkijena.jipipe.JIPipe;
 import org.hkijena.jipipe.api.JIPipeProgressInfo;
 import org.hkijena.jipipe.api.data.JIPipeDataItemStore;
 import org.hkijena.jipipe.api.data.sources.JIPipeDataTableDataSource;
@@ -22,6 +23,7 @@ import org.hkijena.jipipe.desktop.app.cache.JIPipeDesktopLegacyCacheDataViewerWi
 import org.hkijena.jipipe.desktop.app.tableeditor.JIPipeDesktopTableEditor;
 import org.hkijena.jipipe.plugins.tables.datatypes.ResultsTableData;
 import org.hkijena.jipipe.utils.UIUtils;
+import org.hkijena.jipipe.JIPipe;
 
 import javax.swing.*;
 
@@ -40,12 +42,12 @@ public class TableViewerLegacyCacheDataViewerWindow extends JIPipeDesktopLegacyC
 
     private void initialize() {
         tableEditor = new JIPipeDesktopTableEditor(getWorkbench(), new ResultsTableData());
-        errorLabel = new JLabel(UIUtils.getIconFromResources("emblems/no-data.png"));
+        errorLabel = new JLabel(JIPipe.RESOURCES.getIcon16("emblems/no-data.png"));
 //        tableEditor.getToolBar().add(errorLabel, 0);
 //
 //        annotationInfoPanel = new JIPipeDesktopCachedDataViewerAnnotationInfoPanel(getWorkbench());
 //        tableEditor.getSideBar().addTab("Annotations",
-//                UIUtils.getIconFromResources("data-types/annotation.png"),
+//                JIPipe.RESOURCES.getIcon16("data-types/annotation.png"),
 //                annotationInfoPanel,
 //                JIPipeDesktopTabPane.CloseMode.withoutCloseButton);
 

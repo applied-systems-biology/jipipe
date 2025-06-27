@@ -20,6 +20,7 @@ import org.hkijena.jipipe.desktop.app.grapheditor.commons.AbstractJIPipeDesktopG
 import org.hkijena.jipipe.desktop.commons.components.JIPipeDesktopFormPanel;
 import org.hkijena.jipipe.desktop.commons.components.JIPipeDesktopUserFriendlyErrorUI;
 import org.hkijena.jipipe.utils.UIUtils;
+import org.hkijena.jipipe.JIPipe;
 
 import java.awt.*;
 
@@ -38,7 +39,7 @@ public class JIPipeDesktopGraphEditorErrorPanel extends JIPipeDesktopWorkbenchPa
         setLayout(new BorderLayout());
 
         errorUI = new JIPipeDesktopUserFriendlyErrorUI(getDesktopWorkbench(), null, JIPipeDesktopFormPanel.WITH_SCROLLING);
-        errorUI.getToolBar().add(UIUtils.createButton("Clear", UIUtils.getIconFromResources("actions/clear-brush.png"), this::clearItems));
+        errorUI.getToolBar().add(UIUtils.createButton("Clear", JIPipe.RESOURCES.getIcon16("actions/clear-brush.png"), this::clearItems));
         add(errorUI, BorderLayout.CENTER);
     }
 

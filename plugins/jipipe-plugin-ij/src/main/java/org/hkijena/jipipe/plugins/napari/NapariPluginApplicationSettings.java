@@ -23,6 +23,7 @@ import org.hkijena.jipipe.plugins.parameters.library.jipipe.JIPipeArtifactQueryP
 import org.hkijena.jipipe.plugins.python.OptionalPythonEnvironment;
 import org.hkijena.jipipe.plugins.python.PythonEnvironment;
 import org.hkijena.jipipe.utils.UIUtils;
+import org.hkijena.jipipe.JIPipe;
 
 import javax.swing.*;
 
@@ -54,7 +55,7 @@ public class NapariPluginApplicationSettings extends JIPipeDefaultApplicationsSe
 
     @Override
     public Icon getIcon() {
-        return UIUtils.getIconFromResources("apps/napari.png");
+        return JIPipe.RESOURCES.getIcon16("apps/napari.png");
     }
 
     @Override

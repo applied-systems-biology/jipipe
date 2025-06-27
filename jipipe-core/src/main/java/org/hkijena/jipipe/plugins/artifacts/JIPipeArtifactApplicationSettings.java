@@ -28,6 +28,7 @@ import org.hkijena.jipipe.plugins.parameters.library.primitives.vectors.VectorPa
 import org.hkijena.jipipe.utils.PathIOMode;
 import org.hkijena.jipipe.utils.PathType;
 import org.hkijena.jipipe.utils.UIUtils;
+import org.hkijena.jipipe.JIPipe;
 
 import javax.swing.*;
 
@@ -147,7 +148,7 @@ public class JIPipeArtifactApplicationSettings extends JIPipeDefaultApplications
 
     @Override
     public Icon getIcon() {
-        return UIUtils.getIconFromResources("actions/run-install.png");
+        return JIPipe.RESOURCES.getIcon16("actions/run-install.png");
     }
 
     @Override

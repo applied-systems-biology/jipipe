@@ -13,6 +13,7 @@
 
 package org.hkijena.jipipe.desktop.api.dataviewer;
 
+import org.hkijena.jipipe.JIPipe;
 import org.hkijena.jipipe.desktop.JIPipeDesktop;
 import org.hkijena.jipipe.desktop.app.JIPipeDesktopWorkbench;
 import org.hkijena.jipipe.desktop.app.JIPipeDesktopWorkbenchPanel;
@@ -22,6 +23,7 @@ import org.hkijena.jipipe.plugins.settings.JIPipeFileChooserApplicationSettings;
 import org.hkijena.jipipe.plugins.tables.datatypes.ResultsTableData;
 import org.hkijena.jipipe.utils.PathUtils;
 import org.hkijena.jipipe.utils.UIUtils;
+import org.hkijena.jipipe.JIPipe;
 import org.jdesktop.swingx.JXTable;
 
 import javax.swing.*;
@@ -70,23 +72,23 @@ public class JIPipeDesktopDataViewerTextAnnotationsPanel extends JIPipeDesktopWo
         toolBar.setFloatable(false);
         toolBar.add(Box.createHorizontalGlue());
 
-        JButton menuButton = new JButton(UIUtils.getIconFromResources("actions/hamburger-menu.png"));
+        JButton menuButton = new JButton(JIPipe.RESOURCES.getIcon16("actions/hamburger-menu.png"));
         menuButton.setToolTipText("Menu");
         UIUtils.makeButtonFlat25x25(menuButton);
         JPopupMenu popupMenu = UIUtils.addPopupMenuToButton(menuButton);
 
         popupMenu.add(UIUtils.createMenuItem("Open in editor",
                 "Opens the table in a dedicated editor window",
-                UIUtils.getIconFromResources("actions/open-in-new-window.png"),
+                JIPipe.RESOURCES.getIcon16("actions/open-in-new-window.png"),
                 this::exportToTableEditor));
         popupMenu.addSeparator();
         popupMenu.add(UIUtils.createMenuItem("Export as *.csv",
                 "Exports the table as CSV file",
-                UIUtils.getIconFromResources("actions/document-export.png"),
+                JIPipe.RESOURCES.getIcon16("actions/document-export.png"),
                 this::exportAsCSV));
         popupMenu.add(UIUtils.createMenuItem("Export as *.xlsx",
                 "Exports the table as Excel file",
-                UIUtils.getIconFromResources("actions/document-export.png"),
+                JIPipe.RESOURCES.getIcon16("actions/document-export.png"),
                 this::exportAsXLSX));
 
         toolBar.add(menuButton);

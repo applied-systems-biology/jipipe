@@ -52,13 +52,13 @@ public class MaskToROIDrawerPlugin2D extends MaskDrawerPlugin2D {
 
 //        getCurrentGroupHeader().setDescription("Please note that you have to click 'Add to ROI manager' to create a ROI.");
 //
-//        JButton clearButton = new JButton("Clear", UIUtils.getIconFromResources("actions/clear_left.png"));
+//        JButton clearButton = new JButton("Clear", JIPipe.RESOURCES.getIcon16("actions/clear_left.png"));
 //        clearButton.addActionListener(e -> clearCurrentMask());
 //        getCurrentGroupHeader().addColumn(clearButton);
 //
 //        ROIManagerPlugin roiManager = getViewerPanel().getPlugin(ROIManagerPlugin.class);
 //        if (roiManager != null) {
-//            JButton addAsROIButton = new JButton("Add to ROI manager", UIUtils.getIconFromResources("actions/list-add.png"));
+//            JButton addAsROIButton = new JButton("Add to ROI manager", JIPipe.RESOURCES.getIcon16("actions/list-add.png"));
 //            addAsROIButton.addActionListener(e -> addToROIManager());
 //            getCurrentGroupHeader().addColumn(addAsROIButton);
 //        }

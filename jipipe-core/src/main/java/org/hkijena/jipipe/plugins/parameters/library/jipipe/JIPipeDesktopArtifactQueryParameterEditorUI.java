@@ -20,6 +20,7 @@ import org.hkijena.jipipe.desktop.commons.components.JIPipeDesktopPickEnumValueD
 import org.hkijena.jipipe.plugins.parameters.api.enums.EnumItemInfo;
 import org.hkijena.jipipe.utils.StringUtils;
 import org.hkijena.jipipe.utils.UIUtils;
+import org.hkijena.jipipe.JIPipe;
 
 import javax.swing.*;
 import java.awt.*;
@@ -51,7 +52,7 @@ public class JIPipeDesktopArtifactQueryParameterEditorUI extends JIPipeDesktopPa
     private void initialize() {
         setLayout(new BorderLayout());
         button.setHorizontalAlignment(SwingConstants.LEFT);
-        button.setIcon(UIUtils.getIconFromResources("actions/run-install.png"));
+        button.setIcon(JIPipe.RESOURCES.getIcon16("actions/run-install.png"));
         button.addActionListener(e -> {
             selectArtifact();
         });
@@ -84,7 +85,7 @@ public class JIPipeDesktopArtifactQueryParameterEditorUI extends JIPipeDesktopPa
 
         @Override
         public Icon getIcon(Object value) {
-            return UIUtils.getIconFromResources("actions/run-install.png");
+            return JIPipe.RESOURCES.getIcon16("actions/run-install.png");
         }
 
         @Override

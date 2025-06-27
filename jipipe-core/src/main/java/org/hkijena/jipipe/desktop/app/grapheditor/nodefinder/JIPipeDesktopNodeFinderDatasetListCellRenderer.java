@@ -18,6 +18,7 @@ import org.hkijena.jipipe.api.notifications.JIPipeNotificationAction;
 import org.hkijena.jipipe.desktop.commons.theme.JIPipeDesktopModernThemeStyle;
 import org.hkijena.jipipe.desktop.commons.theme.ui.JIPipeDesktopRoundedButtonUI;
 import org.hkijena.jipipe.utils.UIUtils;
+import org.hkijena.jipipe.JIPipe;
 import org.hkijena.jipipe.utils.ui.RoundedLineBorder;
 
 import javax.swing.*;
@@ -64,7 +65,7 @@ public class JIPipeDesktopNodeFinderDatasetListCellRenderer extends JPanel imple
 
         addButton.setOpaque(false);
         addButton.setUI(new JIPipeDesktopRoundedButtonUI(3, UIUtils.CURRENT_STYLE.getSuccessColor(), UIUtils.CURRENT_STYLE.getSuccessColor().darker()));
-        addButton.setIcon(UIUtils.getIconFromResources("actions/add.png"));
+        addButton.setIcon(JIPipe.RESOURCES.getIcon16("actions/add.png"));
 //        addButton.setFont(new Font(Font.DIALOG, Font.PLAIN, 12));
 //        addButton.setBackground(JIPipeNotificationAction.Style.Success.getBackground());
 //        addButton.setForeground(JIPipeNotificationAction.Style.Success.getText());

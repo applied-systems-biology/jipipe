@@ -25,6 +25,7 @@ import org.hkijena.jipipe.plugins.parameters.library.markup.HTMLText;
 import org.hkijena.jipipe.plugins.settings.JIPipeFileChooserApplicationSettings;
 import org.hkijena.jipipe.utils.StringUtils;
 import org.hkijena.jipipe.utils.UIUtils;
+import org.hkijena.jipipe.JIPipe;
 import org.hkijena.jipipe.utils.json.JsonUtils;
 
 import javax.swing.*;
@@ -42,7 +43,7 @@ public class ExportNodeJsonsTool extends JIPipeDesktopMenuExtension {
         super(workbench);
         setText("Export all nodes as graph JSON");
         setToolTipText("Exports all available nodes as copy-able JSON into a directory.");
-        setIcon(UIUtils.getIconFromResources("actions/bug.png"));
+        setIcon(JIPipe.RESOURCES.getIcon16("actions/bug.png"));
         addActionListener(e -> runExportTool());
     }
 

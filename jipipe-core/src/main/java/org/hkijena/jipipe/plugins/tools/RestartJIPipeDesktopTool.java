@@ -18,6 +18,7 @@ import org.hkijena.jipipe.desktop.api.JIPipeDesktopMenuExtension;
 import org.hkijena.jipipe.desktop.api.JIPipeMenuExtensionTarget;
 import org.hkijena.jipipe.desktop.app.JIPipeDesktopWorkbench;
 import org.hkijena.jipipe.utils.UIUtils;
+import org.hkijena.jipipe.JIPipe;
 
 import javax.swing.*;
 
@@ -30,7 +31,7 @@ public class RestartJIPipeDesktopTool extends JIPipeDesktopMenuExtension {
     public RestartJIPipeDesktopTool(JIPipeDesktopWorkbench workbench) {
         super(workbench);
         setText("Restart JIPipe");
-        setIcon(UIUtils.getIconFromResources("apps/jipipe.png"));
+        setIcon(JIPipe.RESOURCES.getIcon16("apps/jipipe.png"));
         addActionListener(e -> {
             if (JOptionPane.showConfirmDialog(workbench.getWindow(), "Do you really want to restart JIPipe? You will lose all unsaved changes.", "Restart JIPipe", JOptionPane.YES_NO_OPTION) == JOptionPane.YES_OPTION) {
                 JIPipe.restartGUI();

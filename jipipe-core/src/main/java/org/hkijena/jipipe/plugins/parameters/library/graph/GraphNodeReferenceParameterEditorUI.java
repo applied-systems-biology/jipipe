@@ -8,6 +8,7 @@ import org.hkijena.jipipe.desktop.api.JIPipeDesktopParameterEditorUI;
 import org.hkijena.jipipe.desktop.commons.components.pickers.JIPipeDesktopPickNodeDialog;
 import org.hkijena.jipipe.utils.StringUtils;
 import org.hkijena.jipipe.utils.UIUtils;
+import org.hkijena.jipipe.JIPipe;
 
 import javax.swing.*;
 import java.awt.*;
@@ -28,7 +29,7 @@ public class GraphNodeReferenceParameterEditorUI extends JIPipeDesktopParameterE
 
         setLayout(new BorderLayout());
         add(selectButton, BorderLayout.CENTER);
-        add(UIUtils.createButton("", UIUtils.getIconFromResources("actions/edit.png"), this::selectNode), BorderLayout.EAST);
+        add(UIUtils.createButton("", JIPipe.RESOURCES.getIcon16("actions/edit.png"), this::selectNode), BorderLayout.EAST);
     }
 
     private void selectNode() {
@@ -71,17 +72,17 @@ public class GraphNodeReferenceParameterEditorUI extends JIPipeDesktopParameterE
                 } else {
                     selectButton.setEnabled(true);
                     selectButton.setText("<Not found>");
-                    selectButton.setIcon(UIUtils.getIconFromResources("actions/rectangle-xmark.png"));
+                    selectButton.setIcon(JIPipe.RESOURCES.getIcon16("actions/rectangle-xmark.png"));
                 }
             } else {
                 selectButton.setEnabled(false);
                 selectButton.setText("<Unsupported>");
-                selectButton.setIcon(UIUtils.getIconFromResources("actions/rectangle-xmark.png"));
+                selectButton.setIcon(JIPipe.RESOURCES.getIcon16("actions/rectangle-xmark.png"));
             }
         } else {
             selectButton.setEnabled(true);
             selectButton.setText("None");
-            selectButton.setIcon(UIUtils.getIconFromResources("actions/rectangle-xmark.png"));
+            selectButton.setIcon(JIPipe.RESOURCES.getIcon16("actions/rectangle-xmark.png"));
         }
     }
 }

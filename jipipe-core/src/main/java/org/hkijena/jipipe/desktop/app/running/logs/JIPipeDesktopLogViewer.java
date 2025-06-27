@@ -19,6 +19,7 @@ import org.hkijena.jipipe.desktop.app.JIPipeDesktopProjectWorkbenchPanel;
 import org.hkijena.jipipe.utils.JIPipeDesktopSplitPane;
 import org.hkijena.jipipe.utils.StringUtils;
 import org.hkijena.jipipe.utils.UIUtils;
+import org.hkijena.jipipe.JIPipe;
 
 import javax.swing.*;
 import java.awt.*;
@@ -55,12 +56,12 @@ public class JIPipeDesktopLogViewer extends JIPipeDesktopProjectWorkbenchPanel i
         leftToolbar.setFloatable(false);
         leftPanel.add(leftToolbar, BorderLayout.NORTH);
 
-        JButton clearButton = new JButton("Clear", UIUtils.getIconFromResources("actions/edit-clear.png"));
+        JButton clearButton = new JButton("Clear", JIPipe.RESOURCES.getIcon16("actions/edit-clear.png"));
         clearButton.addActionListener(e -> JIPipeDesktopRunnableLogsCollection.getInstance().clear());
         leftToolbar.add(clearButton);
 
         leftToolbar.add(UIUtils.createButton("Mark all as read",
-                UIUtils.getIconFromResources("actions/check-double.png"),
+                JIPipe.RESOURCES.getIcon16("actions/check-double.png"),
                 () -> JIPipeDesktopRunnableLogsCollection.getInstance().markAllAsRead()));
 
         // Split pane
@@ -173,14 +174,14 @@ public class JIPipeDesktopLogViewer extends JIPipeDesktopProjectWorkbenchPanel i
             timeLabel.setText(StringUtils.formatDateTime(value.getDateTime()));
             if (value.isSuccess()) {
                 if (value.getNotifications().isEmpty()) {
-                    nameLabel.setIcon(UIUtils.getIconFromResources("emblems/emblem-rabbitvcs-normal.png"));
+                    nameLabel.setIcon(JIPipe.RESOURCES.getIcon16("emblems/emblem-rabbitvcs-normal.png"));
                     successLabel.setText("Successful");
                 } else {
-                    nameLabel.setIcon(UIUtils.getIconFromResources("emblems/warning.png"));
+                    nameLabel.setIcon(JIPipe.RESOURCES.getIcon16("emblems/warning.png"));
                     successLabel.setText("Successful (" + value.getNotifications().getNotifications().size() + " warnings)");
                 }
             } else {
-                nameLabel.setIcon(UIUtils.getIconFromResources("emblems/vcs-conflicting.png"));
+                nameLabel.setIcon(JIPipe.RESOURCES.getIcon16("emblems/vcs-conflicting.png"));
                 successLabel.setText("Failed");
             }
 

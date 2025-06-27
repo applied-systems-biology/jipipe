@@ -29,6 +29,7 @@ import org.hkijena.jipipe.plugins.settings.JIPipeFileChooserApplicationSettings;
 import org.hkijena.jipipe.plugins.settings.JIPipeGeneralUIApplicationSettings;
 import org.hkijena.jipipe.utils.PathUtils;
 import org.hkijena.jipipe.utils.UIUtils;
+import org.hkijena.jipipe.JIPipe;
 
 import javax.swing.*;
 import javax.swing.event.HyperlinkEvent;
@@ -152,10 +153,10 @@ public class JIPipeDesktopMarkdownReader extends JPanel {
         if (withToolbar) {
             toolBar.setFloatable(false);
 
-            JButton exportButton = new JButton("Export", UIUtils.getIconFromResources("actions/filesave.png"));
+            JButton exportButton = new JButton("Export", JIPipe.RESOURCES.getIcon16("actions/filesave.png"));
             JPopupMenu exportMenu = UIUtils.addPopupMenuToButton(exportButton);
 
-            JMenuItem saveMarkdown = new JMenuItem("as Markdown (*.md)", UIUtils.getIconFromResources("mimetypes/text-markdown.png"));
+            JMenuItem saveMarkdown = new JMenuItem("as Markdown (*.md)", JIPipe.RESOURCES.getIcon16("mimetypes/text-markdown.png"));
             saveMarkdown.addActionListener(e -> {
                 Path selectedPath = JIPipeDesktop.saveFile(this, null, JIPipeFileChooserApplicationSettings.LastDirectoryKey.Projects, "Save as Markdown (*.md)", HTMLText.EMPTY, PathUtils.EXTENSION_FILTER_MD);
                 if (selectedPath != null) {
@@ -168,7 +169,7 @@ public class JIPipeDesktopMarkdownReader extends JPanel {
             });
             exportMenu.add(saveMarkdown);
 
-            JMenuItem saveHTML = new JMenuItem("as HTML (*.html)", UIUtils.getIconFromResources("mimetypes/text-html.png"));
+            JMenuItem saveHTML = new JMenuItem("as HTML (*.html)", JIPipe.RESOURCES.getIcon16("mimetypes/text-html.png"));
             saveHTML.addActionListener(e -> {
                 Path selectedPath = JIPipeDesktop.saveFile(this, null, JIPipeFileChooserApplicationSettings.LastDirectoryKey.Projects, "Save as HTML (*.html)", HTMLText.EMPTY, PathUtils.EXTENSION_FILTER_HTML);
                 if (selectedPath != null) {
@@ -181,7 +182,7 @@ public class JIPipeDesktopMarkdownReader extends JPanel {
             });
             exportMenu.add(saveHTML);
 
-            JMenuItem savePDF = new JMenuItem("as PDF (*.pdf)", UIUtils.getIconFromResources("mimetypes/application-pdf.png"));
+            JMenuItem savePDF = new JMenuItem("as PDF (*.pdf)", JIPipe.RESOURCES.getIcon16("mimetypes/application-pdf.png"));
             savePDF.addActionListener(e -> {
                 Path selectedPath = JIPipeDesktop.saveFile(this, null, JIPipeFileChooserApplicationSettings.LastDirectoryKey.Projects, "Save as Portable Document Format (*.pdf)", HTMLText.EMPTY, PathUtils.EXTENSION_FILTER_PDF);
                 if (selectedPath != null) {
@@ -192,7 +193,7 @@ public class JIPipeDesktopMarkdownReader extends JPanel {
 
             toolBar.add(exportButton);
 
-//        JButton printButton = new JButton("Print", UIUtils.getIconFromResources("print.png"));
+//        JButton printButton = new JButton("Print", JIPipe.RESOURCES.getIcon16("print.png"));
 //        printButton.addActionListener(e -> {
 //            try {
 //                content.print();

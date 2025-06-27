@@ -24,6 +24,7 @@ import org.hkijena.jipipe.plugins.dataenvironment.OptionalJIPipeDataDirectoryEnv
 import org.hkijena.jipipe.plugins.expressions.JIPipeExpressionParameter;
 import org.hkijena.jipipe.plugins.parameters.library.jipipe.JIPipeArtifactQueryParameter;
 import org.hkijena.jipipe.utils.UIUtils;
+import org.hkijena.jipipe.JIPipe;
 
 import javax.swing.*;
 
@@ -56,7 +57,7 @@ public class ImageSamplesApplicationSettings extends JIPipeDefaultApplicationsSe
 
     @Override
     public Icon getIcon() {
-        return UIUtils.getIconFromResources("actions/image.png");
+        return JIPipe.RESOURCES.getIcon16("actions/image.png");
     }
 
     @Override

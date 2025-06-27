@@ -15,6 +15,7 @@ package org.hkijena.jipipe.desktop.commons.components;
 
 import org.hkijena.jipipe.utils.StringUtils;
 import org.hkijena.jipipe.utils.UIUtils;
+import org.hkijena.jipipe.JIPipe;
 import org.jdesktop.swingx.JXTextField;
 
 import javax.swing.*;
@@ -46,7 +47,7 @@ public class JIPipeDesktopFancyReadOnlyTextField extends JPanel {
         add(textField, BorderLayout.CENTER);
 
         {
-            JButton clearButton = new JButton(UIUtils.getIconFromResources("actions/copy.png"));
+            JButton clearButton = new JButton(JIPipe.RESOURCES.getIcon16("actions/copy.png"));
             clearButton.setOpaque(false);
             clearButton.setToolTipText("Copy to clipboard");
             clearButton.addActionListener(e -> UIUtils.copyToClipboard(StringUtils.nullToEmpty(textField.getText())));

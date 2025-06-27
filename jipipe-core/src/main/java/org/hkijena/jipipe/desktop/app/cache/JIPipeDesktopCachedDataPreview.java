@@ -13,11 +13,13 @@
 
 package org.hkijena.jipipe.desktop.app.cache;
 
+import org.hkijena.jipipe.JIPipe;
 import org.hkijena.jipipe.api.data.JIPipeDataItemStore;
 import org.hkijena.jipipe.api.data.thumbnails.JIPipeThumbnailData;
 import org.hkijena.jipipe.api.data.thumbnails.JIPipeThumbnailGenerationQueue;
 import org.hkijena.jipipe.plugins.settings.JIPipeGeneralDataApplicationSettings;
 import org.hkijena.jipipe.utils.UIUtils;
+import org.hkijena.jipipe.JIPipe;
 import org.hkijena.jipipe.utils.data.Store;
 import org.hkijena.jipipe.utils.data.WeakStore;
 
@@ -111,7 +113,7 @@ public class JIPipeDesktopCachedDataPreview extends JPanel implements JIPipeThum
     private void initialize() {
         setOpaque(false);
         setLayout(new BorderLayout());
-        JLabel label = new JLabel("Please wait ...", UIUtils.getIconFromResources("actions/hourglass-half.png"), JLabel.LEFT);
+        JLabel label = new JLabel("Please wait ...", JIPipe.RESOURCES.getIcon16("actions/hourglass-half.png"), JLabel.LEFT);
         add(label, BorderLayout.CENTER);
 
         JIPipeThumbnailGenerationQueue.getInstance().getThumbnailGeneratedEventEmitter().subscribe(this);

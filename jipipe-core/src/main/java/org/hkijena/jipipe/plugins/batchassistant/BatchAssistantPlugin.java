@@ -20,6 +20,7 @@ import org.hkijena.jipipe.plugins.JIPipePrepackagedDefaultJavaPlugin;
 import org.hkijena.jipipe.plugins.parameters.library.markup.HTMLText;
 import org.hkijena.jipipe.plugins.parameters.library.primitives.list.StringList;
 import org.hkijena.jipipe.utils.UIUtils;
+import org.hkijena.jipipe.JIPipe;
 import org.scijava.Context;
 import org.scijava.plugin.Plugin;
 
@@ -47,7 +48,7 @@ public class BatchAssistantPlugin extends JIPipePrepackagedDefaultJavaPlugin {
 
     @Override
     public void register(JIPipe jiPipe, Context context, JIPipeProgressInfo progressInfo) {
-        registerDatatype("jipipe:data-batch-status", DataBatchStatusData.class, UIUtils.getIconURLFromResources("actions/help-info.png"));
+        registerDatatype("jipipe:data-batch-status", DataBatchStatusData.class, JIPipe.RESOURCES.getIcon16URL("actions/help-info.png"));
     }
 
     @Override

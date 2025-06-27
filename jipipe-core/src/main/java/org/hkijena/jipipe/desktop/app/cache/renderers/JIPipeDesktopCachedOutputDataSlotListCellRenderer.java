@@ -16,6 +16,7 @@ package org.hkijena.jipipe.desktop.app.cache.renderers;
 import org.hkijena.jipipe.JIPipe;
 import org.hkijena.jipipe.api.data.JIPipeDataSlot;
 import org.hkijena.jipipe.utils.UIUtils;
+import org.hkijena.jipipe.JIPipe;
 
 import javax.swing.*;
 import java.awt.*;
@@ -44,7 +45,7 @@ public class JIPipeDesktopCachedOutputDataSlotListCellRenderer extends JLabel im
             setIcon(JIPipe.getDataTypes().getIconFor(slot.getAcceptedDataType()));
         } else {
             setText("All outputs");
-            setIcon(UIUtils.getIconFromResources("actions/edit-select-all.png"));
+            setIcon(JIPipe.RESOURCES.getIcon16("actions/edit-select-all.png"));
         }
 
         // Update status

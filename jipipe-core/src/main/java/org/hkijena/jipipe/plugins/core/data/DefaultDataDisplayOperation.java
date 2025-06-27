@@ -23,6 +23,7 @@ import org.hkijena.jipipe.desktop.api.data.JIPipeDesktopDataDisplayOperation;
 import org.hkijena.jipipe.desktop.api.dataviewer.JIPipeDesktopDataViewerWindow;
 import org.hkijena.jipipe.desktop.app.JIPipeDesktopWorkbench;
 import org.hkijena.jipipe.utils.UIUtils;
+import org.hkijena.jipipe.JIPipe;
 
 import javax.swing.*;
 
@@ -68,6 +69,6 @@ public class DefaultDataDisplayOperation implements JIPipeDesktopDataDisplayOper
 
     @Override
     public Icon getIcon() {
-        return UIUtils.getIconFromResources("actions/zoom.png");
+        return JIPipe.RESOURCES.getIcon16("actions/zoom.png");
     }
 }

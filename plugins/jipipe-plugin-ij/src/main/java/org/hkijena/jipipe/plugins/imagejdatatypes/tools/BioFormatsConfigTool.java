@@ -19,6 +19,7 @@ import org.hkijena.jipipe.desktop.api.JIPipeDesktopMenuExtension;
 import org.hkijena.jipipe.desktop.api.JIPipeMenuExtensionTarget;
 import org.hkijena.jipipe.desktop.app.JIPipeDesktopWorkbench;
 import org.hkijena.jipipe.utils.UIUtils;
+import org.hkijena.jipipe.JIPipe;
 
 public class BioFormatsConfigTool extends JIPipeDesktopMenuExtension {
     /**
@@ -30,7 +31,7 @@ public class BioFormatsConfigTool extends JIPipeDesktopMenuExtension {
         super(workbench);
         setText("Configure Bio-Formats");
         setToolTipText("Opens the Bio-Formats configuration tool.");
-        setIcon(UIUtils.getIconFromResources("apps/bioformats.png"));
+        setIcon(JIPipe.RESOURCES.getIcon16("apps/bioformats.png"));
         addActionListener(e -> showConfigWindow());
     }
 

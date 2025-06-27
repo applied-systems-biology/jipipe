@@ -45,6 +45,7 @@ import org.hkijena.jipipe.plugins.parameters.api.enums.EnumItemInfo;
 import org.hkijena.jipipe.plugins.parameters.api.enums.EnumParameterSettings;
 import org.hkijena.jipipe.plugins.parameters.library.primitives.ranges.IntegerRange;
 import org.hkijena.jipipe.utils.UIUtils;
+import org.hkijena.jipipe.JIPipe;
 
 import javax.swing.*;
 import java.nio.file.Path;
@@ -602,11 +603,11 @@ public class JIPipeGraphWrapperAlgorithm extends JIPipeAlgorithm implements JIPi
         public Icon getIcon(Object value) {
             switch ((IterationMode) value) {
                 case MergingDataBatch:
-                    return UIUtils.getIconFromResources("actions/rabbitvcs-merge.png");
+                    return JIPipe.RESOURCES.getIcon16("actions/rabbitvcs-merge.png");
                 case IteratingDataBatch:
-                    return UIUtils.getIconFromResources("actions/media-playlist-normal.png");
+                    return JIPipe.RESOURCES.getIcon16("actions/media-playlist-normal.png");
                 case PassThrough:
-                    return UIUtils.getIconFromResources("actions/draw-arrow-forward.png");
+                    return JIPipe.RESOURCES.getIcon16("actions/draw-arrow-forward.png");
                 default:
                     throw new UnsupportedOperationException();
             }

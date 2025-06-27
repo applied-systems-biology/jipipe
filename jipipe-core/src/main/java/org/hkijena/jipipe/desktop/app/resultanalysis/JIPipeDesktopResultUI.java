@@ -13,6 +13,7 @@
 
 package org.hkijena.jipipe.desktop.app.resultanalysis;
 
+import org.hkijena.jipipe.JIPipe;
 import org.hkijena.jipipe.api.compartments.algorithms.JIPipeProjectCompartment;
 import org.hkijena.jipipe.api.data.JIPipeDataSlot;
 import org.hkijena.jipipe.api.nodes.JIPipeGraphNode;
@@ -22,6 +23,7 @@ import org.hkijena.jipipe.desktop.app.JIPipeDesktopProjectWorkbench;
 import org.hkijena.jipipe.desktop.app.JIPipeDesktopProjectWorkbenchPanel;
 import org.hkijena.jipipe.utils.JIPipeDesktopSplitPane;
 import org.hkijena.jipipe.utils.UIUtils;
+import org.hkijena.jipipe.JIPipe;
 
 import javax.swing.*;
 import javax.swing.tree.DefaultMutableTreeNode;
@@ -147,11 +149,11 @@ public class JIPipeDesktopResultUI extends JIPipeDesktopProjectWorkbenchPanel {
         JToolBar toolBar = new JToolBar();
         toolBar.setFloatable(false);
 
-        JButton openFolderButton = new JButton("Open output folder", UIUtils.getIconFromResources("actions/document-open-folder.png"));
+        JButton openFolderButton = new JButton("Open output folder", JIPipe.RESOURCES.getIcon16("actions/document-open-folder.png"));
         openFolderButton.addActionListener(e -> openOutputFolder());
         toolBar.add(openFolderButton);
 
-        JButton openLogButton = new JButton("Open log", UIUtils.getIconFromResources("actions/show_log.png"));
+        JButton openLogButton = new JButton("Open log", JIPipe.RESOURCES.getIcon16("actions/show_log.png"));
         openLogButton.addActionListener(e -> openLog());
         toolBar.add(openLogButton);
 

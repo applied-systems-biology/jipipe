@@ -22,6 +22,7 @@ import org.hkijena.jipipe.desktop.app.JIPipeDesktopWorkbench;
 import org.hkijena.jipipe.plugins.ij3d.datatypes.ROI3DListData;
 import org.hkijena.jipipe.utils.ReflectionUtils;
 import org.hkijena.jipipe.utils.UIUtils;
+import org.hkijena.jipipe.JIPipe;
 
 import javax.swing.*;
 
@@ -66,6 +67,6 @@ public class AddROI3DToManagerDataDisplayOperation implements JIPipeDesktopDataD
 
     @Override
     public Icon getIcon() {
-        return UIUtils.getIconFromResources("actions/open-in-new-window.png");
+        return JIPipe.RESOURCES.getIcon16("actions/open-in-new-window.png");
     }
 }

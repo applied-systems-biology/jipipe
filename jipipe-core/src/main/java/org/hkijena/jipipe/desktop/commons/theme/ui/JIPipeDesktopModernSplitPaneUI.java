@@ -16,6 +16,7 @@ package org.hkijena.jipipe.desktop.commons.theme.ui;
 import com.formdev.flatlaf.ui.FlatSplitPaneUI;
 import org.hkijena.jipipe.desktop.commons.theme.JIPipeDesktopModernThemeStyle;
 import org.hkijena.jipipe.utils.UIUtils;
+import org.hkijena.jipipe.JIPipe;
 
 import javax.swing.*;
 import javax.swing.plaf.ComponentUI;

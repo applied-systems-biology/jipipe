@@ -13,12 +13,14 @@
 
 package org.hkijena.jipipe.plugins.parameters;
 
+import org.hkijena.jipipe.JIPipe;
 import org.hkijena.jipipe.desktop.api.JIPipeDesktopMenuExtension;
 import org.hkijena.jipipe.desktop.api.JIPipeMenuExtensionTarget;
 import org.hkijena.jipipe.desktop.app.JIPipeDesktopWorkbench;
 import org.hkijena.jipipe.desktop.commons.components.tabs.JIPipeDesktopTabPane;
 import org.hkijena.jipipe.utils.ParameterUITester;
 import org.hkijena.jipipe.utils.UIUtils;
+import org.hkijena.jipipe.JIPipe;
 
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
@@ -36,14 +38,14 @@ public class ParameterTesterJIPipeDesktopMenuExtension extends JIPipeDesktopMenu
         super(workbench);
         setText("Show all parameter editors");
         setToolTipText("Opens a UI that shows all parameter types and their editors. This is useful for development.");
-        setIcon(UIUtils.getIconFromResources("actions/bug.png"));
+        setIcon(JIPipe.RESOURCES.getIcon16("actions/bug.png"));
         addActionListener(this);
     }
 
     @Override
     public void actionPerformed(ActionEvent e) {
         ParameterUITester tester = new ParameterUITester(getDesktopWorkbench());
-        getDesktopWorkbench().getDocumentTabPane().addTab("Registered JIPipe parameters", UIUtils.getIconFromResources("actions/bug.png"),
+        getDesktopWorkbench().getDocumentTabPane().addTab("Registered JIPipe parameters", JIPipe.RESOURCES.getIcon16("actions/bug.png"),
                 tester, JIPipeDesktopTabPane.CloseMode.withSilentCloseButton, true);
         getDesktopWorkbench().getDocumentTabPane().switchToLastTab();
     }

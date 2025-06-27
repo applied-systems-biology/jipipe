@@ -13,9 +13,11 @@
 
 package org.hkijena.jipipe.plugins.parameters.library.patterns;
 
+import org.hkijena.jipipe.JIPipe;
 import org.hkijena.jipipe.desktop.api.JIPipeDesktopParameterEditorUI;
 import org.hkijena.jipipe.desktop.commons.components.JIPipeDesktopDocumentChangeListener;
 import org.hkijena.jipipe.utils.UIUtils;
+import org.hkijena.jipipe.JIPipe;
 import org.jdesktop.swingx.JXTextField;
 
 import javax.swing.*;
@@ -60,17 +62,17 @@ public class StringPatternExtractionDesktopParameterEditorUI extends JIPipeDeskt
         ButtonGroup group = new ButtonGroup();
         addFilterModeSelection(filter,
                 group,
-                UIUtils.getIconFromResources("actions/color-select.png"),
+                JIPipe.RESOURCES.getIcon16("actions/color-select.png"),
                 StringPatternExtraction.Mode.SplitAndPick,
                 "Split string and picks the n-th component. The first index is zero.");
         addFilterModeSelection(filter,
                 group,
-                UIUtils.getIconFromResources("actions/edit-select-text.png"),
+                JIPipe.RESOURCES.getIcon16("actions/edit-select-text.png"),
                 StringPatternExtraction.Mode.SplitAndFind,
                 "Split string and picks the component that matches the RegEx string.");
         addFilterModeSelection(filter,
                 group,
-                UIUtils.getIconFromResources("actions/code-context.png"),
+                JIPipe.RESOURCES.getIcon16("actions/code-context.png"),
                 StringPatternExtraction.Mode.Regex,
                 "Use a RegEx matcher to extract the pattern. This requires at least one RegEx group defined by a bracket around the expression.");
         revalidate();

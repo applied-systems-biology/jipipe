@@ -18,11 +18,13 @@ import ij.Prefs;
 import mslinks.ShellLink;
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.lang3.SystemUtils;
+import org.hkijena.jipipe.JIPipe;
 import org.hkijena.jipipe.desktop.api.JIPipeDesktopMenuExtension;
 import org.hkijena.jipipe.desktop.api.JIPipeMenuExtensionTarget;
 import org.hkijena.jipipe.desktop.app.JIPipeDesktopWorkbench;
 import org.hkijena.jipipe.utils.ResourceUtils;
 import org.hkijena.jipipe.utils.UIUtils;
+import org.hkijena.jipipe.JIPipe;
 
 import javax.swing.*;
 import javax.swing.filechooser.FileSystemView;
@@ -46,7 +48,7 @@ public class CreateLaunchersTool extends JIPipeDesktopMenuExtension {
         super(workbench);
         setText("Create launchers");
         setToolTipText("Creates files that can open JIPipe directly (without ImageJ)");
-        setIcon(UIUtils.getIconFromResources("apps/jipipe.png"));
+        setIcon(JIPipe.RESOURCES.getIcon16("apps/jipipe.png"));
         addActionListener(e -> createLaunchers());
     }
 

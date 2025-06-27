@@ -13,11 +13,13 @@
 
 package org.hkijena.jipipe.plugins.tools;
 
+import org.hkijena.jipipe.JIPipe;
 import org.hkijena.jipipe.desktop.api.JIPipeDesktopMenuExtension;
 import org.hkijena.jipipe.desktop.api.JIPipeMenuExtensionTarget;
 import org.hkijena.jipipe.desktop.app.JIPipeDesktopProjectWorkbench;
 import org.hkijena.jipipe.desktop.app.JIPipeDesktopWorkbench;
 import org.hkijena.jipipe.utils.UIUtils;
+import org.hkijena.jipipe.JIPipe;
 
 public class RebuildAliasIdsTool extends JIPipeDesktopMenuExtension {
     /**
@@ -30,7 +32,7 @@ public class RebuildAliasIdsTool extends JIPipeDesktopMenuExtension {
         setText("Force rebuild alias IDs");
         setToolTipText("Rebuilds the node alias IDs for all nodes. This can help if the " +
                 "generated alias IDs are too long.");
-        setIcon(UIUtils.getIconFromResources("actions/tag.png"));
+        setIcon(JIPipe.RESOURCES.getIcon16("actions/tag.png"));
         addActionListener(e -> rebuildIds());
     }
 

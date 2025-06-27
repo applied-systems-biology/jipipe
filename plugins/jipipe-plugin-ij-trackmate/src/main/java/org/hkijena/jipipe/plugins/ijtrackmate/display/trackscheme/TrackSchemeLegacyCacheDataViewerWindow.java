@@ -26,6 +26,7 @@ import org.hkijena.jipipe.desktop.commons.components.JIPipeDesktopFlexContentPan
 import org.hkijena.jipipe.desktop.commons.components.tabs.JIPipeDesktopTabPane;
 import org.hkijena.jipipe.plugins.ijtrackmate.datatypes.TrackCollectionData;
 import org.hkijena.jipipe.utils.UIUtils;
+import org.hkijena.jipipe.JIPipe;
 
 import javax.swing.*;
 import java.awt.*;
@@ -49,7 +50,7 @@ public class TrackSchemeLegacyCacheDataViewerWindow extends JIPipeDesktopLegacyC
 
         flexContentPanel.getToolBar().add(getStandardErrorLabel());
         flexContentPanel.getSideBar().addTab("Annotations",
-                UIUtils.getIconFromResources("data-types/annotation.png"),
+                JIPipe.RESOURCES.getIcon16("data-types/annotation.png"),
                 annotationInfoPanel,
                 JIPipeDesktopTabPane.CloseMode.withoutCloseButton);
     }

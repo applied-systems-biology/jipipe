@@ -45,6 +45,7 @@ import org.hkijena.jipipe.plugins.parameters.library.primitives.list.StringList;
 import org.hkijena.jipipe.utils.JIPipeResourceManager;
 import org.hkijena.jipipe.utils.ReflectionUtils;
 import org.hkijena.jipipe.utils.UIUtils;
+import org.hkijena.jipipe.JIPipe;
 import org.scijava.Context;
 import org.scijava.plugin.Plugin;
 
@@ -194,7 +195,7 @@ public class OMEROPlugin extends JIPipePrepackagedDefaultJavaPlugin {
                 "omero-credentials",
                 "OMERO Credentials",
                 "Credentials for an OMERO server",
-                RESOURCES.getIcon16FromResources("omero.png"));
+                RESOURCES.getIcon16("omero.png"));
         registerParameterType("optional-omero-credentials",
                 OptionalOMEROCredentialsEnvironment.class,
                 JIPipeParameterArchetype.OptionalValue, "Optimal OMERO credentials",
@@ -202,14 +203,14 @@ public class OMEROPlugin extends JIPipePrepackagedDefaultJavaPlugin {
         registerProjectSettingsSheet(OMEROPluginProjectSettings.class);
 
         // Data types
-        registerDatatype("omero-group-id", OMEROGroupReferenceData.class, RESOURCES.getIcon16URLFromResources("omero-group.png"));
-        registerDatatype("omero-project-id", OMEROProjectReferenceData.class, RESOURCES.getIcon16URLFromResources("omero-project.png"));
-        registerDatatype("omero-dataset-id", OMERODatasetReferenceData.class, RESOURCES.getIcon16URLFromResources("omero-dataset.png"));
-        registerDatatype("omero-image-id", OMEROImageReferenceData.class, RESOURCES.getIcon16URLFromResources("omero-image.png"));
-        registerDatatype("omero-annotation-id", OMEROAnnotationReferenceData.class, RESOURCES.getIcon16URLFromResources("omero-annotation.png"));
-        registerDatatype("omero-screen-id", OMEROScreenReferenceData.class, RESOURCES.getIcon16URLFromResources("omero-screen.png"));
-        registerDatatype("omero-plate-id", OMEROPlateReferenceData.class, RESOURCES.getIcon16URLFromResources("omero-plate.png"));
-        registerDatatype("omero-well-id", OMEROWellReferenceData.class, RESOURCES.getIcon16URLFromResources("omero-well.png"));
+        registerDatatype("omero-group-id", OMEROGroupReferenceData.class, RESOURCES.getIcon16URL("omero-group.png"));
+        registerDatatype("omero-project-id", OMEROProjectReferenceData.class, RESOURCES.getIcon16URL("omero-project.png"));
+        registerDatatype("omero-dataset-id", OMERODatasetReferenceData.class, RESOURCES.getIcon16URL("omero-dataset.png"));
+        registerDatatype("omero-image-id", OMEROImageReferenceData.class, RESOURCES.getIcon16URL("omero-image.png"));
+        registerDatatype("omero-annotation-id", OMEROAnnotationReferenceData.class, RESOURCES.getIcon16URL("omero-annotation.png"));
+        registerDatatype("omero-screen-id", OMEROScreenReferenceData.class, RESOURCES.getIcon16URL("omero-screen.png"));
+        registerDatatype("omero-plate-id", OMEROPlateReferenceData.class, RESOURCES.getIcon16URL("omero-plate.png"));
+        registerDatatype("omero-well-id", OMEROWellReferenceData.class, RESOURCES.getIcon16URL("omero-well.png"));
 
         registerDefaultDataTypeViewer(OMEROGroupReferenceData.class, OMERODataViewer.class);
         registerDefaultDataTypeViewer(OMEROProjectReferenceData.class, OMERODataViewer.class);
@@ -229,34 +230,34 @@ public class OMEROPlugin extends JIPipePrepackagedDefaultJavaPlugin {
         registerNodeType("omero-plate-id-definition", OMEROPlateReferenceDataSource.class);
         registerNodeType("omero-well-id-definition", OMEROWellReferenceDataSource.class);
 
-        registerNodeType("omero-list-group-ids", OMEROListGroupsAlgorithm.class, UIUtils.getIconURLFromResources("actions/search.png"));
-        registerNodeType("omero-list-project-ids", OMEROListProjectsAlgorithm.class, UIUtils.getIconURLFromResources("actions/search.png"));
-        registerNodeType("omero-list-dataset-ids", OMEROListDatasetsAlgorithm.class, UIUtils.getIconURLFromResources("actions/search.png"));
-        registerNodeType("omero-list-image-ids", OMEROListDatasetImagesAlgorithm.class, UIUtils.getIconURLFromResources("actions/search.png"));
-        registerNodeType("omero-list-well-image-ids", OMEROListWellImagesAlgorithm.class, UIUtils.getIconURLFromResources("actions/search.png"));
-        registerNodeType("omero-list-screen-ids", OMEROListScreensAlgorithm.class, UIUtils.getIconURLFromResources("actions/search.png"));
-        registerNodeType("omero-list-plate-ids", OMEROListPlatesAlgorithm.class, UIUtils.getIconURLFromResources("actions/search.png"));
-        registerNodeType("omero-list-well-ids", OMEROListWellsAlgorithm.class, UIUtils.getIconURLFromResources("actions/search.png"));
+        registerNodeType("omero-list-group-ids", OMEROListGroupsAlgorithm.class, JIPipe.RESOURCES.getIcon16URL("actions/search.png"));
+        registerNodeType("omero-list-project-ids", OMEROListProjectsAlgorithm.class, JIPipe.RESOURCES.getIcon16URL("actions/search.png"));
+        registerNodeType("omero-list-dataset-ids", OMEROListDatasetsAlgorithm.class, JIPipe.RESOURCES.getIcon16URL("actions/search.png"));
+        registerNodeType("omero-list-image-ids", OMEROListDatasetImagesAlgorithm.class, JIPipe.RESOURCES.getIcon16URL("actions/search.png"));
+        registerNodeType("omero-list-well-image-ids", OMEROListWellImagesAlgorithm.class, JIPipe.RESOURCES.getIcon16URL("actions/search.png"));
+        registerNodeType("omero-list-screen-ids", OMEROListScreensAlgorithm.class, JIPipe.RESOURCES.getIcon16URL("actions/search.png"));
+        registerNodeType("omero-list-plate-ids", OMEROListPlatesAlgorithm.class, JIPipe.RESOURCES.getIcon16URL("actions/search.png"));
+        registerNodeType("omero-list-well-ids", OMEROListWellsAlgorithm.class, JIPipe.RESOURCES.getIcon16URL("actions/search.png"));
 
-        registerNodeType("omero-annotate-dataset-from-remote", AnnotateOMERODatasetReferenceAlgorithm.class, UIUtils.getIconURLFromResources("actions/tag.png"));
-        registerNodeType("omero-annotate-image-from-remote", AnnotateOMEROImageReferenceAlgorithm.class, UIUtils.getIconURLFromResources("actions/tag.png"));
-        registerNodeType("omero-annotate-project-from-remote", AnnotateOMEROProjectReferenceAlgorithm.class, UIUtils.getIconURLFromResources("actions/tag.png"));
-        registerNodeType("omero-annotate-screen-from-remote", AnnotateOMEROScreenReferenceAlgorithm.class, UIUtils.getIconURLFromResources("actions/tag.png"));
-        registerNodeType("omero-annotate-plate-from-remote", AnnotateOMEROPlateReferenceAlgorithm.class, UIUtils.getIconURLFromResources("actions/tag.png"));
-        registerNodeType("omero-annotate-well-from-remote", AnnotateOMEROWellReferenceAlgorithm.class, UIUtils.getIconURLFromResources("actions/tag.png"));
+        registerNodeType("omero-annotate-dataset-from-remote", AnnotateOMERODatasetReferenceAlgorithm.class, JIPipe.RESOURCES.getIcon16URL("actions/tag.png"));
+        registerNodeType("omero-annotate-image-from-remote", AnnotateOMEROImageReferenceAlgorithm.class, JIPipe.RESOURCES.getIcon16URL("actions/tag.png"));
+        registerNodeType("omero-annotate-project-from-remote", AnnotateOMEROProjectReferenceAlgorithm.class, JIPipe.RESOURCES.getIcon16URL("actions/tag.png"));
+        registerNodeType("omero-annotate-screen-from-remote", AnnotateOMEROScreenReferenceAlgorithm.class, JIPipe.RESOURCES.getIcon16URL("actions/tag.png"));
+        registerNodeType("omero-annotate-plate-from-remote", AnnotateOMEROPlateReferenceAlgorithm.class, JIPipe.RESOURCES.getIcon16URL("actions/tag.png"));
+        registerNodeType("omero-annotate-well-from-remote", AnnotateOMEROWellReferenceAlgorithm.class, JIPipe.RESOURCES.getIcon16URL("actions/tag.png"));
 
-        registerNodeType("omero-create-dataset", OMEROCreateDatasetAlgorithm.class, UIUtils.getIconURLFromResources("actions/group-new.png"));
+        registerNodeType("omero-create-dataset", OMEROCreateDatasetAlgorithm.class, JIPipe.RESOURCES.getIcon16URL("actions/group-new.png"));
 
-        registerNodeType("omero-download-image", DownloadOMEROImageAlgorithm.class, UIUtils.getIconURLFromResources("apps/omero-monochrome.png"));
-        registerNodeType("omero-download-table", DownloadOMEROTableAlgorithm.class, UIUtils.getIconURLFromResources("apps/omero-monochrome.png"));
+        registerNodeType("omero-download-image", DownloadOMEROImageAlgorithm.class, JIPipe.RESOURCES.getIcon16URL("apps/omero-monochrome.png"));
+        registerNodeType("omero-download-table", DownloadOMEROTableAlgorithm.class, JIPipe.RESOURCES.getIcon16URL("apps/omero-monochrome.png"));
 
-        registerNodeType("omero-upload-image", UploadOMEROImageToDatasetAlgorithm.class, UIUtils.getIconURLFromResources("apps/omero-monochrome.png"));
-        registerNodeType("omero-upload-table", UploadOMEROTableAlgorithm.class, UIUtils.getIconURLFromResources("apps/omero-monochrome.png"));
+        registerNodeType("omero-upload-image", UploadOMEROImageToDatasetAlgorithm.class, JIPipe.RESOURCES.getIcon16URL("apps/omero-monochrome.png"));
+        registerNodeType("omero-upload-table", UploadOMEROTableAlgorithm.class, JIPipe.RESOURCES.getIcon16URL("apps/omero-monochrome.png"));
     }
 
     @Override
     public List<ImageIcon> getSplashIcons() {
-        return Arrays.asList(RESOURCES.getIcon32FromResources("omero.png"));
+        return Arrays.asList(RESOURCES.getIcon32("omero.png"));
     }
 
     @Override

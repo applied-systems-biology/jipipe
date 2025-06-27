@@ -16,6 +16,7 @@ package org.hkijena.jipipe.desktop.app.history;
 import org.hkijena.jipipe.api.history.JIPipeHistoryJournal;
 import org.hkijena.jipipe.api.history.JIPipeHistoryJournalSnapshot;
 import org.hkijena.jipipe.utils.UIUtils;
+import org.hkijena.jipipe.JIPipe;
 
 import javax.swing.*;
 import java.awt.*;
@@ -40,15 +41,15 @@ public class JIPipeDesktopHistoryJournalUI extends JPanel implements JIPipeHisto
         JToolBar toolBar = new JToolBar();
         toolBar.setFloatable(false);
 
-        JButton undoButton = new JButton("Undo", UIUtils.getIconFromResources("actions/edit-undo.png"));
+        JButton undoButton = new JButton("Undo", JIPipe.RESOURCES.getIcon16("actions/edit-undo.png"));
         undoButton.addActionListener(e -> getHistoryJournal().undo(null));
         toolBar.add(undoButton);
 
-        JButton redoButton = new JButton("Redo", UIUtils.getIconFromResources("actions/edit-redo.png"));
+        JButton redoButton = new JButton("Redo", JIPipe.RESOURCES.getIcon16("actions/edit-redo.png"));
         redoButton.addActionListener(e -> getHistoryJournal().redo(null));
         toolBar.add(redoButton);
 
-        JButton selectButton = new JButton("Go to", UIUtils.getIconFromResources("actions/go-jump.png"));
+        JButton selectButton = new JButton("Go to", JIPipe.RESOURCES.getIcon16("actions/go-jump.png"));
         selectButton.addActionListener(e -> {
             JIPipeHistoryJournalSnapshot snapshot = snapshotJList.getSelectedValue();
             if (snapshot != null && !(snapshot instanceof JIPipeDesktopCurrentStateSnapshot)) {
@@ -59,11 +60,11 @@ public class JIPipeDesktopHistoryJournalUI extends JPanel implements JIPipeHisto
 
         toolBar.add(Box.createHorizontalGlue());
 
-        JButton clearButton = new JButton("Clear", UIUtils.getIconFromResources("actions/clear-brush.png"));
+        JButton clearButton = new JButton("Clear", JIPipe.RESOURCES.getIcon16("actions/clear-brush.png"));
         clearButton.addActionListener(e -> clearSnapshots());
         toolBar.add(clearButton);
 
-        JButton createSnapshotButton = new JButton("Snapshot", UIUtils.getIconFromResources("actions/filesave.png"));
+        JButton createSnapshotButton = new JButton("Snapshot", JIPipe.RESOURCES.getIcon16("actions/filesave.png"));
         createSnapshotButton.addActionListener(e -> createSnapshot());
         toolBar.add(createSnapshotButton);
 
@@ -81,7 +82,7 @@ public class JIPipeDesktopHistoryJournalUI extends JPanel implements JIPipeHisto
     }
 
     private void createSnapshot() {
-        historyJournal.snapshot("Manual snapshot", "Created via the Journal interface", null, UIUtils.getIconFromResources("actions/filesave.png"));
+        historyJournal.snapshot("Manual snapshot", "Created via the Journal interface", null, JIPipe.RESOURCES.getIcon16("actions/filesave.png"));
     }
 
     public void reloadList() {

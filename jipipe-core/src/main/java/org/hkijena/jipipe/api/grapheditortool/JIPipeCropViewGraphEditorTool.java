@@ -13,8 +13,10 @@
 
 package org.hkijena.jipipe.api.grapheditortool;
 
+import org.hkijena.jipipe.JIPipe;
 import org.hkijena.jipipe.desktop.app.grapheditor.commons.AbstractJIPipeDesktopGraphEditorUI;
 import org.hkijena.jipipe.utils.UIUtils;
+import org.hkijena.jipipe.JIPipe;
 
 import javax.swing.*;
 import java.awt.event.KeyEvent;
@@ -36,7 +38,7 @@ public class JIPipeCropViewGraphEditorTool implements JIPipeActionGraphEditorToo
 
     @Override
     public Icon getIcon() {
-        return UIUtils.getIconFromResources("actions/zoom-original.png");
+        return JIPipe.RESOURCES.getIcon16("actions/zoom-original.png");
     }
 
     @Override
@@ -60,7 +62,7 @@ public class JIPipeCropViewGraphEditorTool implements JIPipeActionGraphEditorToo
             graphEditor.getHistoryJournal().snapshot("Center view to nodes",
                     "Apply center view to nodes",
                     graphEditor.getCompartment(),
-                    UIUtils.getIconFromResources("actions/view-restore.png"));
+                    JIPipe.RESOURCES.getIcon16("actions/view-restore.png"));
         }
         graphEditor.getCanvasUI().crop(true);
     }

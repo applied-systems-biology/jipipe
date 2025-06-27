@@ -19,8 +19,10 @@ import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.*;
 import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
 import com.fasterxml.jackson.databind.annotation.JsonSerialize;
+import org.hkijena.jipipe.JIPipe;
 import org.hkijena.jipipe.plugins.parameters.api.enums.EnumParameterSettings;
 import org.hkijena.jipipe.utils.UIUtils;
+import org.hkijena.jipipe.JIPipe;
 
 import javax.swing.*;
 import java.awt.*;
@@ -65,7 +67,7 @@ public class FontFamilyParameter extends DynamicStringEnumParameter {
 
     @Override
     public Icon renderIcon(String value) {
-        return UIUtils.getIconFromResources("actions/dialog-text-and-font.png");
+        return JIPipe.RESOURCES.getIcon16("actions/dialog-text-and-font.png");
     }
 
     public Font toFont(int style, int size) {

@@ -27,6 +27,7 @@ import org.hkijena.jipipe.desktop.app.grapheditor.commons.JIPipeDesktopGraphCanv
 import org.hkijena.jipipe.desktop.app.grapheditor.commons.nodeui.JIPipeDesktopGraphNodeUI;
 import org.hkijena.jipipe.utils.StringUtils;
 import org.hkijena.jipipe.utils.UIUtils;
+import org.hkijena.jipipe.JIPipe;
 
 import javax.swing.*;
 import java.util.*;
@@ -46,7 +47,7 @@ public class GroupNodeUIContextAction implements NodeUIContextAction {
         if (canvasUI.getHistoryJournal() != null) {
             Set<JIPipeGraphNode> nodes = selection.stream().map(JIPipeDesktopGraphNodeUI::getNode).collect(Collectors.toSet());
             UUID compartment = nodes.stream().map(JIPipeGraphNode::getUUIDInParentGraph).findFirst().orElse(null);
-            canvasUI.getHistoryJournal().snapshot("Group", "Grouped nodes", compartment, UIUtils.getIconFromResources("actions/object-group.png"));
+            canvasUI.getHistoryJournal().snapshot("Group", "Grouped nodes", compartment, JIPipe.RESOURCES.getIcon16("actions/object-group.png"));
         }
         Set<JIPipeGraphNode> algorithms = selection.stream().map(JIPipeDesktopGraphNodeUI::getNode).collect(Collectors.toSet());
         JIPipeGraph originalGraph = canvasUI.getGraph();
@@ -164,7 +165,7 @@ public class GroupNodeUIContextAction implements NodeUIContextAction {
 
     @Override
     public Icon getIcon() {
-        return UIUtils.getIconFromResources("actions/object-group.png");
+        return JIPipe.RESOURCES.getIcon16("actions/object-group.png");
     }
 
 }

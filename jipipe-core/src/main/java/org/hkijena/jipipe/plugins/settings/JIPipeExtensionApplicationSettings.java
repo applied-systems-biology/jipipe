@@ -23,6 +23,7 @@ import org.hkijena.jipipe.api.registries.JIPipeApplicationSettingsRegistry;
 import org.hkijena.jipipe.api.settings.JIPipeDefaultApplicationSettingsSheetCategory;
 import org.hkijena.jipipe.api.settings.JIPipeDefaultApplicationsSettingsSheet;
 import org.hkijena.jipipe.utils.UIUtils;
+import org.hkijena.jipipe.JIPipe;
 import org.hkijena.jipipe.utils.json.JsonUtils;
 
 import javax.swing.*;
@@ -119,7 +120,7 @@ public class JIPipeExtensionApplicationSettings extends JIPipeDefaultApplication
 
     @Override
     public Icon getIcon() {
-        return UIUtils.getIconFromResources("actions/plugins.png");
+        return JIPipe.RESOURCES.getIcon16("actions/plugins.png");
     }
 
     @Override

@@ -42,6 +42,7 @@ import org.hkijena.jipipe.utils.PathUtils;
 import org.hkijena.jipipe.utils.ReflectionUtils;
 import org.hkijena.jipipe.utils.StringUtils;
 import org.hkijena.jipipe.utils.UIUtils;
+import org.hkijena.jipipe.JIPipe;
 import org.hkijena.jipipe.utils.debounce.StaticDebouncer;
 import org.hkijena.jipipe.utils.ui.JIPipeDesktopDockPanel;
 import org.jdesktop.swingx.JXStatusBar;
@@ -74,7 +75,7 @@ public class JIPipeDesktopDataViewerWindow extends JFrame implements JIPipeDeskt
     private final JToolBar staticStatusBar = new JToolBar();
     private final JToolBar dynamicStatusBar = new JToolBar();
     private final JButton dataTypeInfoButton = new JButton();
-    private final JToggleButton toggleFocusView = new JToggleButton(UIUtils.getIconFromResources("actions/view-fullscreen.png"));
+    private final JToggleButton toggleFocusView = new JToggleButton(JIPipe.RESOURCES.getIcon16("actions/view-fullscreen.png"));
     private final JIPipeDesktopSmallToggleButtonRibbonAction toggleAutoRefreshFromCache;
     private final StaticDebouncer refreshFromCacheDebouncer;
     private JIPipeDataBrowser dataBrowser;
@@ -88,7 +89,7 @@ public class JIPipeDesktopDataViewerWindow extends JFrame implements JIPipeDeskt
 
     public JIPipeDesktopDataViewerWindow(JIPipeDesktopWorkbench workbench) {
         this.workbench = workbench;
-        this.toggleAutoRefreshFromCache = new JIPipeDesktopSmallToggleButtonRibbonAction("Auto-refresh", "If enabled, automatically update the displayed data when the cache changes", UIUtils.getIconFromResources("actions/view-refresh.png"), true, (button) -> {
+        this.toggleAutoRefreshFromCache = new JIPipeDesktopSmallToggleButtonRibbonAction("Auto-refresh", "If enabled, automatically update the displayed data when the cache changes", JIPipe.RESOURCES.getIcon16("actions/view-refresh.png"), true, (button) -> {
             if (button.isSelected()) {
                 refreshFromLocalCache();
             }
@@ -250,7 +251,7 @@ public class JIPipeDesktopDataViewerWindow extends JFrame implements JIPipeDeskt
             dataTypeInfoButton.setIcon(JIPipe.getDataTypes().getIconFor(dataBrowser.getDataClass()));
         } else {
             dataTypeInfoButton.setText("No data");
-            dataTypeInfoButton.setIcon(UIUtils.getIconFromResources("emblems/emblem-unavailable.png"));
+            dataTypeInfoButton.setIcon(JIPipe.RESOURCES.getIcon16("emblems/emblem-unavailable.png"));
         }
     }
 
@@ -290,7 +291,7 @@ public class JIPipeDesktopDataViewerWindow extends JFrame implements JIPipeDeskt
             if (!dockPanel.containsPanel("TEXT_ANNOTATIONS")) {
                 JIPipeDesktopDataViewerTextAnnotationsPanel panel = new JIPipeDesktopDataViewerTextAnnotationsPanel(getDesktopWorkbench());
                 dockPanel.addDockPanel("TEXT_ANNOTATIONS", "Annotations",
-                        UIUtils.getIcon32FromResources("actions/tag.png"),
+                        JIPipe.RESOURCES.getIcon32("actions/tag.png"),
                         JIPipeDesktopDockPanel.PanelLocation.TopLeft,
                         false,
                         0,
@@ -319,35 +320,35 @@ public class JIPipeDesktopDataViewerWindow extends JFrame implements JIPipeDeskt
             // Browsing through rows
             dataBand.add(new JIPipeDesktopSmallButtonRibbonAction("Previous",
                     "Go to the previous data item",
-                    UIUtils.getIconFromResources("actions/caret-up.png"),
+                    JIPipe.RESOURCES.getIcon16("actions/caret-up.png"),
                     this::goToPreviousData));
             dataBand.add(new JIPipeDesktopSmallButtonRibbonAction(String.format("Row %d/%d", currentDataRow + 1, dataTableInfo.getRowCount()),
                     "More options",
-                    UIUtils.getIconFromResources("actions/object-rows.png")));
+                    JIPipe.RESOURCES.getIcon16("actions/object-rows.png")));
             dataBand.add(new JIPipeDesktopSmallButtonRibbonAction("Next",
                     "Go to the next data item",
-                    UIUtils.getIconFromResources("actions/caret-down.png"),
+                    JIPipe.RESOURCES.getIcon16("actions/caret-down.png"),
                     this::goToNextData));
         }
         if (isDisplayingLocallyCachedData()) {
             JIPipeDesktopRibbon.Band cacheBand = generalTask.addBand("Cache");
-            cacheBand.addLargeMenuButton("Update cache", "Updates the cache of the node that generated the data", UIUtils.getIcon32FromResources("actions/database.png"),
-                    UIUtils.createMenuItem("Update cache", "Runs the pipeline up until this algorithm and caches the results. Nothing is written to disk.", UIUtils.getIconFromResources("actions/database.png"), this::doLocalUpdateCache),
-                    UIUtils.createMenuItem("Cache intermediate results", "Runs the pipeline up until this algorithm and caches the results (including intermediate results). Nothing is written to disk.", UIUtils.getIconFromResources("actions/cache-intermediate-results.png"), this::doLocalUpdateCacheIntermediateResults));
-            cacheBand.addLargeButton("Trace", "Shows all predecessors of this data if available. Requires an unbroken chain of data (i.e. use Cache intermediate results)", UIUtils.getIcon32FromResources("actions/footsteps.png"), this::traceData);
+            cacheBand.addLargeMenuButton("Update cache", "Updates the cache of the node that generated the data", JIPipe.RESOURCES.getIcon32("actions/database.png"),
+                    UIUtils.createMenuItem("Update cache", "Runs the pipeline up until this algorithm and caches the results. Nothing is written to disk.", JIPipe.RESOURCES.getIcon16("actions/database.png"), this::doLocalUpdateCache),
+                    UIUtils.createMenuItem("Cache intermediate results", "Runs the pipeline up until this algorithm and caches the results (including intermediate results). Nothing is written to disk.", JIPipe.RESOURCES.getIcon16("actions/cache-intermediate-results.png"), this::doLocalUpdateCacheIntermediateResults));
+            cacheBand.addLargeButton("Trace", "Shows all predecessors of this data if available. Requires an unbroken chain of data (i.e. use Cache intermediate results)", JIPipe.RESOURCES.getIcon32("actions/footsteps.png"), this::traceData);
             cacheBand.add(toggleAutoRefreshFromCache);
-            cacheBand.addSmallButton("Refresh", "Updates the current data with the newest in cache if possible", UIUtils.getIconFromResources("actions/view-refresh.png"), this::refreshFromLocalCache);
+            cacheBand.addSmallButton("Refresh", "Updates the current data with the newest in cache if possible", JIPipe.RESOURCES.getIcon16("actions/view-refresh.png"), this::refreshFromLocalCache);
 
         }
         if (dataBrowser != null) {
             JIPipeDesktopRibbon.Task exportTask = ribbon.addTask("Export");
             JIPipeDesktopRibbon.Band dataBand = exportTask.addBand("Data");
-            dataBand.add(new JIPipeDesktopLargeButtonRibbonAction("As files", "Exports the data as file(s) according to a custom-set name", UIUtils.getIcon32FromResources("actions/document-export.png"), this::exportAsFilesCustom));
-            dataBand.add(new JIPipeDesktopLargeButtonRibbonAction("Into directory", "Exports the data as file(s) into a directory using JIPipe's standard naming", UIUtils.getIcon32FromResources("actions/folder-new.png"), this::exportAsFilesIntoDirectory));
+            dataBand.add(new JIPipeDesktopLargeButtonRibbonAction("As files", "Exports the data as file(s) according to a custom-set name", JIPipe.RESOURCES.getIcon32("actions/document-export.png"), this::exportAsFilesCustom));
+            dataBand.add(new JIPipeDesktopLargeButtonRibbonAction("Into directory", "Exports the data as file(s) into a directory using JIPipe's standard naming", JIPipe.RESOURCES.getIcon32("actions/folder-new.png"), this::exportAsFilesIntoDirectory));
             if (dataTableBrowser != null) {
                 JIPipeDesktopRibbon.Band tableBand = exportTask.addBand("Data table (" + StringUtils.formatPluralS(dataTableInfo.getRowCount(), "row") + ")");
-                tableBand.add(new JIPipeDesktopLargeButtonRibbonAction("As *.zip", "Exports the data table into a *.zip file", UIUtils.getIcon32FromResources("actions/document-export.png"), this::exportDataTableToZip));
-                tableBand.add(new JIPipeDesktopLargeButtonRibbonAction("Into directory", "Exports the data as file(s) into a directory using JIPipe's standard naming", UIUtils.getIcon32FromResources("actions/folder-new.png"), this::exportDataTableToFolder));
+                tableBand.add(new JIPipeDesktopLargeButtonRibbonAction("As *.zip", "Exports the data table into a *.zip file", JIPipe.RESOURCES.getIcon32("actions/document-export.png"), this::exportDataTableToZip));
+                tableBand.add(new JIPipeDesktopLargeButtonRibbonAction("Into directory", "Exports the data as file(s) into a directory using JIPipe's standard naming", JIPipe.RESOURCES.getIcon32("actions/folder-new.png"), this::exportDataTableToFolder));
             }
         }
     }

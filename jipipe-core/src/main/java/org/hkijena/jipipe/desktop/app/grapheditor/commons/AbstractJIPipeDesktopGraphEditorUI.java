@@ -225,13 +225,13 @@ public abstract class AbstractJIPipeDesktopGraphEditorUI extends JIPipeDesktopWo
 
     private void initializeCommonToolbar() {
         if (getHistoryJournal() != null) {
-            JButton undoButton = new JButton(UIUtils.getIconFromResources("actions/undo.png"));
+            JButton undoButton = new JButton(JIPipe.RESOURCES.getIcon16("actions/undo.png"));
             undoButton.setToolTipText("<html>Undo<br><i>Ctrl-Z</i></html>");
             UIUtils.makeButtonFlatWithSize(undoButton, 32, 3);
             undoButton.addActionListener(e -> undo());
             toolBar.add(undoButton);
 
-            JButton redoButton = new JButton(UIUtils.getIconFromResources("actions/edit-redo.png"));
+            JButton redoButton = new JButton(JIPipe.RESOURCES.getIcon16("actions/edit-redo.png"));
             redoButton.setToolTipText("<html>Redo<br><i>Ctrl-Shift-Z</i></html>");
             UIUtils.makeButtonFlatWithSize(redoButton, 32, 3);
             redoButton.addActionListener(e -> redo());
@@ -240,7 +240,7 @@ public abstract class AbstractJIPipeDesktopGraphEditorUI extends JIPipeDesktopWo
             toolBar.addSeparator();
         }
         {
-            JToggleButton lockAnnotationsToggle = new JToggleButton(UIUtils.getIconFromResources("actions/lock-comments.png"));
+            JToggleButton lockAnnotationsToggle = new JToggleButton(JIPipe.RESOURCES.getIcon16("actions/lock-comments.png"));
             UIUtils.makeButtonFlatWithSize(lockAnnotationsToggle, 32, 32);
             lockAnnotationsToggle.setToolTipText("If enabled, you will not be able to accidentally select or modify graph annotations");
             lockAnnotationsToggle.addActionListener(e -> {
@@ -259,14 +259,14 @@ public abstract class AbstractJIPipeDesktopGraphEditorUI extends JIPipeDesktopWo
 
         JPopupMenu layoutMenu = new JPopupMenu();
 
-        JButton layoutButton = new JButton(UIUtils.getIconFromResources("actions/sidebar.png"));
+        JButton layoutButton = new JButton(JIPipe.RESOURCES.getIcon16("actions/sidebar.png"));
         UIUtils.makeButtonFlatWithSize(layoutButton, 32, 3);
         toolBar.add(layoutButton);
 
         UIUtils.addReloadablePopupMenuToButton(layoutButton, layoutMenu, () -> {
             layoutMenu.removeAll();
 
-            layoutMenu.add(UIUtils.createMenuItem("Reset layout", "Resets the layout", UIUtils.getIconFromResources("actions/edit-clear-history.png"), () -> {
+            layoutMenu.add(UIUtils.createMenuItem("Reset layout", "Resets the layout", JIPipe.RESOURCES.getIcon16("actions/edit-clear-history.png"), () -> {
                 restoreDefaultDockState();
                 saveDockStateToSettings();
             }));
@@ -274,28 +274,28 @@ public abstract class AbstractJIPipeDesktopGraphEditorUI extends JIPipeDesktopWo
             if (getDockStateTemplates() != null) {
 
                 for (StringAndStringPairParameter template : getDockStateTemplates()) {
-                    layoutMenu.add(UIUtils.createMenuItem(template.getKey(), "Loads the layout", UIUtils.getIconFromResources("actions/sidebar.png"), () -> restoreDockStateTemplate(template.getValue())));
+                    layoutMenu.add(UIUtils.createMenuItem(template.getKey(), "Loads the layout", JIPipe.RESOURCES.getIcon16("actions/sidebar.png"), () -> restoreDockStateTemplate(template.getValue())));
                 }
 
                 layoutMenu.addSeparator();
 
-                layoutMenu.add(UIUtils.createMenuItem("Save layout ...", "Saves the current layout", UIUtils.getIconFromResources("actions/filesave.png"), this::createDockStateTemplate));
-                layoutMenu.add(UIUtils.createMenuItem("Manage layouts ...", "Manages the list of layouts", UIUtils.getIconFromResources("actions/configure.png"), this::manageDockStateTemplates));
+                layoutMenu.add(UIUtils.createMenuItem("Save layout ...", "Saves the current layout", JIPipe.RESOURCES.getIcon16("actions/filesave.png"), this::createDockStateTemplate));
+                layoutMenu.add(UIUtils.createMenuItem("Manage layouts ...", "Manages the list of layouts", JIPipe.RESOURCES.getIcon16("actions/configure.png"), this::manageDockStateTemplates));
             }
 
             layoutMenu.addSeparator();
 
-            JMenuItem autoLayoutItem = new JMenuItem("Auto-layout all nodes", UIUtils.getIconFromResources("actions/distribute-unclump.png"));
+            JMenuItem autoLayoutItem = new JMenuItem("Auto-layout all nodes", JIPipe.RESOURCES.getIcon16("actions/distribute-unclump.png"));
             autoLayoutItem.addActionListener(e -> {
                 if (getHistoryJournal() != null) {
-                    getHistoryJournal().snapshot("Auto-layout", "Apply auto-layout", getCompartment(), UIUtils.getIconFromResources("actions/distribute-unclump.png"));
+                    getHistoryJournal().snapshot("Auto-layout", "Apply auto-layout", getCompartment(), JIPipe.RESOURCES.getIcon16("actions/distribute-unclump.png"));
                 }
                 canvasUI.autoLayoutAll();
             });
             layoutMenu.add(autoLayoutItem);
 
             JCheckBoxMenuItem layoutOnConnectItem = new JCheckBoxMenuItem("Layout nodes on connect",
-                    UIUtils.getIconFromResources("actions/connector-avoid.png"),
+                    JIPipe.RESOURCES.getIcon16("actions/connector-avoid.png"),
                     JIPipeGraphEditorUIApplicationSettings.getInstance().isLayoutAfterConnect());
             layoutOnConnectItem.setToolTipText("Auto-layout layout on making data slot connections");
             layoutOnConnectItem.addActionListener(e -> {
@@ -305,7 +305,7 @@ public abstract class AbstractJIPipeDesktopGraphEditorUI extends JIPipeDesktopWo
             layoutMenu.add(layoutOnConnectItem);
 
             JCheckBoxMenuItem layoutOnAlgorithmFinderItem = new JCheckBoxMenuItem("Layout nodes on 'Find matching node'",
-                    UIUtils.getIconFromResources("actions/connector-avoid.png"),
+                    JIPipe.RESOURCES.getIcon16("actions/connector-avoid.png"),
                     JIPipeGraphEditorUIApplicationSettings.getInstance().isLayoutAfterAlgorithmFinder());
             layoutOnAlgorithmFinderItem.setToolTipText("Auto-layout layout on utilizing the 'Find matching node' feature");
             layoutOnAlgorithmFinderItem.addActionListener(e -> {
@@ -335,7 +335,7 @@ public abstract class AbstractJIPipeDesktopGraphEditorUI extends JIPipeDesktopWo
                 Collections.emptyList(),
                 "Delete layout templates",
                 "Please select the layout to delete",
-                new JIPipeDesktopGenericListCellRenderer<>(kv -> new JIPipeDesktopGenericListCellRenderer.RenderedItem(UIUtils.getIconFromResources("actions/sidebar.png"), kv.getKey())),
+                new JIPipeDesktopGenericListCellRenderer<>(kv -> new JIPipeDesktopGenericListCellRenderer.RenderedItem(JIPipe.RESOURCES.getIcon16("actions/sidebar.png"), kv.getKey())),
                 ListSelectionMode.MultipleInterval);
         getDockStateTemplates().removeAll(toDelete);
         JIPipe.getSettings().save();
@@ -353,17 +353,17 @@ public abstract class AbstractJIPipeDesktopGraphEditorUI extends JIPipeDesktopWo
     protected abstract void restoreDefaultDockState();
 
     private void initializeCommonToolbarExport() {
-        JButton snapshotButton = new JButton(UIUtils.getIconFromResources("actions/camera.png"));
+        JButton snapshotButton = new JButton(JIPipe.RESOURCES.getIcon16("actions/camera.png"));
         UIUtils.makeButtonFlatWithSize(snapshotButton, 32, 3);
         JPopupMenu popupMenu = UIUtils.addPopupMenuToButton(snapshotButton);
 
-        JMenuItem exportToClipboardItem = new JMenuItem("Copy snapshot to clipboard", UIUtils.getIconFromResources("actions/edit-copy.png"));
+        JMenuItem exportToClipboardItem = new JMenuItem("Copy snapshot to clipboard", JIPipe.RESOURCES.getIcon16("actions/edit-copy.png"));
         exportToClipboardItem.addActionListener(e -> createScreenshotClipboard());
         popupMenu.add(exportToClipboardItem);
-        JMenuItem exportAsPngItem = new JMenuItem("Export as *.png", UIUtils.getIconFromResources("actions/viewimage.png"));
+        JMenuItem exportAsPngItem = new JMenuItem("Export as *.png", JIPipe.RESOURCES.getIcon16("actions/viewimage.png"));
         exportAsPngItem.addActionListener(e -> createScreenshotPNG());
         popupMenu.add(exportAsPngItem);
-        JMenuItem exportAsSvgItem = new JMenuItem("Export as *.svg", UIUtils.getIconFromResources("actions/viewimage.png"));
+        JMenuItem exportAsSvgItem = new JMenuItem("Export as *.svg", JIPipe.RESOURCES.getIcon16("actions/viewimage.png"));
         exportAsSvgItem.addActionListener(e -> createScreenshotSVG());
         popupMenu.add(exportAsSvgItem);
 
@@ -377,7 +377,7 @@ public abstract class AbstractJIPipeDesktopGraphEditorUI extends JIPipeDesktopWo
         zoomPanel.setPreferredSize(new Dimension(100, 32));
         zoomPanel.setMaximumSize(new Dimension(100, 32));
 
-        JButton zoomOutButton = new JButton(UIUtils.getIconFromResources("actions/square-minus.png"));
+        JButton zoomOutButton = new JButton(JIPipe.RESOURCES.getIcon16("actions/square-minus.png"));
         UIUtils.makeButtonFlat25x25(zoomOutButton);
         zoomOutButton.setToolTipText("<html>Zoom out<br><i>Ctrl-NumPad -</i></html>");
         zoomOutButton.addActionListener(e -> canvasUI.zoomOut());
@@ -391,14 +391,14 @@ public abstract class AbstractJIPipeDesktopGraphEditorUI extends JIPipeDesktopWo
         zoomButton.setBorder(null);
         JPopupMenu zoomMenu = UIUtils.addPopupMenuToButton(zoomButton);
         for (double zoom = 0.1; zoom <= 3; zoom += 0.25) {
-            JMenuItem changeZoomItem = new JMenuItem((int) (zoom * 100) + "%", UIUtils.getIconFromResources("actions/zoom.png"));
+            JMenuItem changeZoomItem = new JMenuItem((int) (zoom * 100) + "%", JIPipe.RESOURCES.getIcon16("actions/zoom.png"));
             double finalZoom = zoom;
             changeZoomItem.addActionListener(e -> canvasUI.setZoom(finalZoom));
             zoomMenu.add(changeZoomItem);
         }
         zoomMenu.addSeparator();
         zoomMenu.add(UIUtils.createMenuItem("Reset zoom", "Resets the zoom to 100%",
-                UIUtils.getIconFromResources("actions/edit-reset.png"), () -> canvasUI.setZoom(1)));
+                JIPipe.RESOURCES.getIcon16("actions/edit-reset.png"), () -> canvasUI.setZoom(1)));
         JMenuItem changeZoomToItem = new JMenuItem("Set zoom value ...");
         changeZoomToItem.addActionListener(e -> {
             String zoomInput = JOptionPane.showInputDialog(this, "Please enter a new zoom value (in %)", (int) (canvasUI.getZoom() * 100) + "%");
@@ -415,7 +415,7 @@ public abstract class AbstractJIPipeDesktopGraphEditorUI extends JIPipeDesktopWo
         zoomMenu.add(changeZoomToItem);
         zoomPanel.add(zoomButton, BorderLayout.CENTER);
 
-        JButton zoomInButton = new JButton(UIUtils.getIconFromResources("actions/square-plus.png"));
+        JButton zoomInButton = new JButton(JIPipe.RESOURCES.getIcon16("actions/square-plus.png"));
         UIUtils.makeButtonFlat25x25(zoomInButton);
         zoomInButton.setToolTipText("<html>Zoom in<br><i>Ctrl-NumPad +</i></html>");
         zoomInButton.addActionListener(e -> canvasUI.zoomIn());

@@ -22,6 +22,7 @@ import org.hkijena.jipipe.desktop.app.JIPipeDesktopProjectWorkbench;
 import org.hkijena.jipipe.desktop.app.JIPipeDesktopProjectWorkbenchAccess;
 import org.hkijena.jipipe.desktop.app.JIPipeDesktopWorkbench;
 import org.hkijena.jipipe.utils.UIUtils;
+import org.hkijena.jipipe.JIPipe;
 import org.hkijena.jipipe.utils.debounce.StaticDebouncer;
 
 import javax.swing.*;
@@ -48,37 +49,37 @@ public class JIPipeDesktopCacheManagerUI extends JButton implements JIPipeDeskto
     private void initialize() {
         setLayout(new BorderLayout());
         setOpaque(false);
-        setIcon(UIUtils.getIconFromResources("actions/database.png"));
+        setIcon(JIPipe.RESOURCES.getIcon16("actions/database.png"));
         UIUtils.addReloadablePopupMenuToButton(this, menu, this::reloadMenu);
     }
 
     private void reloadMenu() {
         menu.removeAll();
 
-        JMenuItem openCacheBrowser = new JMenuItem("Open cache browser", UIUtils.getIconFromResources("actions/zoom.png"));
+        JMenuItem openCacheBrowser = new JMenuItem("Open cache browser", JIPipe.RESOURCES.getIcon16("actions/zoom.png"));
         openCacheBrowser.addActionListener(e -> getDesktopProjectWorkbench().openCacheBrowser());
         menu.add(openCacheBrowser);
 
         menu.addSeparator();
 
-        JMenuItem readCache = new JMenuItem("Restore cache from ZIP/directory", UIUtils.getIconFromResources("actions/document-import.png"));
+        JMenuItem readCache = new JMenuItem("Restore cache from ZIP/directory", JIPipe.RESOURCES.getIcon16("actions/document-import.png"));
         readCache.addActionListener(e -> getDesktopProjectWorkbench().restoreCacheFromZIPOrDirectory());
         menu.add(readCache);
 
-        JMenuItem writeCacheToDirectory = new JMenuItem("Export cache to ZIP/directory", UIUtils.getIconFromResources("actions/document-export.png"));
+        JMenuItem writeCacheToDirectory = new JMenuItem("Export cache to ZIP/directory", JIPipe.RESOURCES.getIcon16("actions/document-export.png"));
         writeCacheToDirectory.addActionListener(e -> getDesktopProjectWorkbench().saveProjectAndCache("Export cache", false));
         menu.add(writeCacheToDirectory);
 
         if (!getProject().getCache().isEmpty()) {
             menu.addSeparator();
 
-            JMenuItem clearOutdated = new JMenuItem("Clear outdated", UIUtils.getIconFromResources("actions/clock.png"));
+            JMenuItem clearOutdated = new JMenuItem("Clear outdated", JIPipe.RESOURCES.getIcon16("actions/clock.png"));
             clearOutdated.setToolTipText("Removes all cached items that are have no representation in the project graph, anymore. " +
                     "This includes items where the algorithm parameters have been changed.");
             clearOutdated.addActionListener(e -> JIPipeRunnableQueue.getInstance().enqueue(new JIPipeCacheClearOutdatedRun(getProject().getCache())));
             menu.add(clearOutdated);
 
-            JMenuItem clearAll = new JMenuItem("Clear all", UIUtils.getIconFromResources("actions/delete.png"));
+            JMenuItem clearAll = new JMenuItem("Clear all", JIPipe.RESOURCES.getIcon16("actions/delete.png"));
             clearAll.setToolTipText("Removes all cached items.");
             clearAll.addActionListener(e -> JIPipeRunnableQueue.getInstance().enqueue(new JIPipeCacheClearAllRun(getProject().getCache())));
             menu.add(clearAll);

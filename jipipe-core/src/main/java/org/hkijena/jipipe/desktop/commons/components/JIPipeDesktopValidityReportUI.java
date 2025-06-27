@@ -13,6 +13,7 @@
 
 package org.hkijena.jipipe.desktop.commons.components;
 
+import org.hkijena.jipipe.JIPipe;
 import org.hkijena.jipipe.api.validation.JIPipeValidationReport;
 import org.hkijena.jipipe.desktop.app.JIPipeDesktopWorkbench;
 import org.hkijena.jipipe.desktop.app.JIPipeDesktopWorkbenchPanel;
@@ -20,6 +21,7 @@ import org.hkijena.jipipe.desktop.commons.components.markup.JIPipeDesktopMarkdow
 import org.hkijena.jipipe.plugins.parameters.library.markup.MarkdownText;
 import org.hkijena.jipipe.utils.JIPipeDesktopSplitPane;
 import org.hkijena.jipipe.utils.UIUtils;
+import org.hkijena.jipipe.JIPipe;
 
 import javax.swing.*;
 import java.awt.*;
@@ -96,7 +98,7 @@ public class JIPipeDesktopValidityReportUI extends JIPipeDesktopWorkbenchPanel {
         // Create alternative panel
         everythingValidPanel = new JPanel(new BorderLayout());
         {
-            JLabel label = new JLabel("No issues found", UIUtils.getIcon64FromResources("check-circle-green.png"), JLabel.LEFT);
+            JLabel label = new JLabel("No issues found", JIPipe.RESOURCES.getIcon64("check-circle-green.png"), JLabel.LEFT);
             label.setFont(label.getFont().deriveFont(26.0f));
             everythingValidPanel.add(label, BorderLayout.CENTER);
         }

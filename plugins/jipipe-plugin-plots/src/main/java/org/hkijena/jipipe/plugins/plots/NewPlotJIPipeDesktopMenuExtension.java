@@ -19,6 +19,7 @@ import org.hkijena.jipipe.desktop.app.JIPipeDesktopWorkbench;
 import org.hkijena.jipipe.desktop.app.ploteditor.JFreeChartPlotEditor;
 import org.hkijena.jipipe.desktop.commons.components.tabs.JIPipeDesktopTabPane;
 import org.hkijena.jipipe.utils.UIUtils;
+import org.hkijena.jipipe.JIPipe;
 
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
@@ -35,14 +36,14 @@ public class NewPlotJIPipeDesktopMenuExtension extends JIPipeDesktopMenuExtensio
     public NewPlotJIPipeDesktopMenuExtension(JIPipeDesktopWorkbench workbench) {
         super(workbench);
         setText("New plot");
-        setIcon(UIUtils.getIconFromResources("data-types/data-type-plot.png"));
+        setIcon(JIPipe.RESOURCES.getIcon16("data-types/data-type-plot.png"));
         addActionListener(this);
     }
 
     @Override
     public void actionPerformed(ActionEvent e) {
         JFreeChartPlotEditor plotBuilderUI = new JFreeChartPlotEditor(getDesktopWorkbench());
-        getDesktopWorkbench().getDocumentTabPane().addTab("Plot", UIUtils.getIconFromResources("data-types/data-type-plot.png"),
+        getDesktopWorkbench().getDocumentTabPane().addTab("Plot", JIPipe.RESOURCES.getIcon16("data-types/data-type-plot.png"),
                 plotBuilderUI, JIPipeDesktopTabPane.CloseMode.withAskOnCloseButton, true);
         getDesktopWorkbench().getDocumentTabPane().switchToLastTab();
     }

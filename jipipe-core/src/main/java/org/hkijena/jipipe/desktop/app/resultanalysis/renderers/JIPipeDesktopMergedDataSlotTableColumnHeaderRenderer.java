@@ -13,9 +13,11 @@
 
 package org.hkijena.jipipe.desktop.app.resultanalysis.renderers;
 
+import org.hkijena.jipipe.JIPipe;
 import org.hkijena.jipipe.api.data.serialization.JIPipeDataTableInfo;
 import org.hkijena.jipipe.api.data.serialization.JIPipeMergedDataTableInfo;
 import org.hkijena.jipipe.utils.UIUtils;
+import org.hkijena.jipipe.JIPipe;
 
 import javax.swing.*;
 import javax.swing.table.TableCellRenderer;
@@ -42,13 +44,13 @@ public class JIPipeDesktopMergedDataSlotTableColumnHeaderRenderer implements Tab
         } else if (dataTable.toDataAnnotationColumnIndex(column) != -1) {
             String info = dataTable.getDataAnnotationColumns().get(dataTable.toDataAnnotationColumnIndex(column));
             String html = String.format("<html><table><tr><td><img src=\"%s\"/></td><td>%s</tr>",
-                    UIUtils.getIconFromResources("data-types/data-annotation.png"),
+                    JIPipe.RESOURCES.getIcon16("data-types/data-annotation.png"),
                     info);
             return defaultRenderer.getTableCellRendererComponent(table, html, isSelected, hasFocus, row, column);
         } else {
             String info = dataTable.getAnnotationColumns().get(dataTable.toAnnotationColumnIndex(column));
             String html = String.format("<html><table><tr><td><img src=\"%s\"/></td><td>%s</tr>",
-                    UIUtils.getIconFromResources("data-types/annotation.png"),
+                    JIPipe.RESOURCES.getIcon16("data-types/annotation.png"),
                     info);
             return defaultRenderer.getTableCellRendererComponent(table, html, isSelected, hasFocus, row, column);
         }

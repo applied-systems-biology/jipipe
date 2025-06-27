@@ -14,6 +14,7 @@
 package org.hkijena.jipipe.plugins.multiparameters.datatypes;
 
 import org.fife.ui.rtextarea.RTextScrollPane;
+import org.hkijena.jipipe.JIPipe;
 import org.hkijena.jipipe.api.JIPipeProgressInfo;
 import org.hkijena.jipipe.api.parameters.JIPipeDummyParameterCollection;
 import org.hkijena.jipipe.api.parameters.JIPipeDynamicParameterCollection;
@@ -25,6 +26,7 @@ import org.hkijena.jipipe.desktop.commons.components.tabs.JIPipeDesktopTabPane;
 import org.hkijena.jipipe.plugins.parameters.library.markup.MarkdownText;
 import org.hkijena.jipipe.plugins.tables.datatypes.ResultsTableData;
 import org.hkijena.jipipe.utils.UIUtils;
+import org.hkijena.jipipe.JIPipe;
 import org.hkijena.jipipe.utils.json.JsonUtils;
 import org.scijava.ui.swing.script.EditorPane;
 
@@ -98,21 +100,21 @@ public class ParametersDataViewerPanel extends JIPipeDesktopWorkbenchPanel {
         RTextScrollPane scrollPane = new RTextScrollPane(jsonViewer, true);
         scrollPane.setFoldIndicatorEnabled(true);
         tabPane.addTab("JSON view",
-                UIUtils.getIconFromResources("actions/dialog-xml-editor.png"),
+                JIPipe.RESOURCES.getIcon16("actions/dialog-xml-editor.png"),
                 scrollPane,
                 JIPipeDesktopTabPane.CloseMode.withoutCloseButton);
     }
 
     private void initializeTableViewer() {
         tabPane.addTab("Table view",
-                UIUtils.getIconFromResources("actions/table.png"),
+                JIPipe.RESOURCES.getIcon16("actions/table.png"),
                 tableViewer,
                 JIPipeDesktopTabPane.CloseMode.withoutCloseButton);
     }
 
     private void initializeGUIViewer() {
         tabPane.addTab("Graphical view",
-                UIUtils.getIconFromResources("actions/followmouse.png"),
+                JIPipe.RESOURCES.getIcon16("actions/followmouse.png"),
                 guiViewer,
                 JIPipeDesktopTabPane.CloseMode.withoutCloseButton);
 

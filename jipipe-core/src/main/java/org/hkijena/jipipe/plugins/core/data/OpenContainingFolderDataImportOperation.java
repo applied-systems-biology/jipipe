@@ -20,6 +20,7 @@ import org.hkijena.jipipe.api.data.JIPipeLegacyDataImportOperation;
 import org.hkijena.jipipe.api.data.serialization.JIPipeDataTableRowInfo;
 import org.hkijena.jipipe.desktop.app.JIPipeDesktopWorkbench;
 import org.hkijena.jipipe.utils.UIUtils;
+import org.hkijena.jipipe.JIPipe;
 
 import javax.swing.*;
 import java.awt.*;
@@ -53,7 +54,7 @@ public class OpenContainingFolderDataImportOperation implements JIPipeLegacyData
 
     @Override
     public Icon getIcon() {
-        return UIUtils.getIconFromResources("actions/document-open-folder.png");
+        return JIPipe.RESOURCES.getIcon16("actions/document-open-folder.png");
     }
 
     @Override

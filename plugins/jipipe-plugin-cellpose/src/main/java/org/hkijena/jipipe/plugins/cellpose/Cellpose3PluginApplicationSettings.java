@@ -28,6 +28,7 @@ import org.hkijena.jipipe.plugins.parameters.library.jipipe.JIPipeArtifactQueryP
 import org.hkijena.jipipe.plugins.python.OptionalPythonEnvironment;
 import org.hkijena.jipipe.plugins.python.PythonEnvironment;
 import org.hkijena.jipipe.utils.UIUtils;
+import org.hkijena.jipipe.JIPipe;
 
 import javax.swing.*;
 
@@ -120,7 +121,7 @@ public class Cellpose3PluginApplicationSettings extends JIPipeDefaultApplication
 
     @Override
     public Icon getIcon() {
-        return UIUtils.getIconFromResources("apps/cellpose.png");
+        return JIPipe.RESOURCES.getIcon16("apps/cellpose.png");
     }
 
     @Override

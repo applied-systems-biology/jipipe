@@ -27,6 +27,7 @@ import org.hkijena.jipipe.desktop.commons.components.JIPipeDesktopParameterFormP
 import org.hkijena.jipipe.desktop.commons.components.tabs.JIPipeDesktopTabPane;
 import org.hkijena.jipipe.plugins.parameters.library.markup.MarkdownText;
 import org.hkijena.jipipe.utils.UIUtils;
+import org.hkijena.jipipe.JIPipe;
 
 import javax.swing.*;
 import java.awt.*;
@@ -74,10 +75,10 @@ public class JIPipeDesktopRuntimePartitionListEditor extends JIPipeDesktopProjec
         toolBar.setFloatable(false);
 
         toolBar.add(Box.createHorizontalGlue());
-        toolBar.add(UIUtils.createButton("Add", UIUtils.getIconFromResources("actions/add.png"), this::addNewItem));
-        toolBar.add(UIUtils.createButton("Remove", UIUtils.getIconFromResources("actions/trash-empty.png"), this::removeSelectedItems));
+        toolBar.add(UIUtils.createButton("Add", JIPipe.RESOURCES.getIcon16("actions/add.png"), this::addNewItem));
+        toolBar.add(UIUtils.createButton("Remove", JIPipe.RESOURCES.getIcon16("actions/trash-empty.png"), this::removeSelectedItems));
         toolBar.addSeparator();
-        toolBar.add(UIUtils.createButton("Edit", UIUtils.getIconFromResources("actions/edit.png"), this::editSelectedItem));
+        toolBar.add(UIUtils.createButton("Edit", JIPipe.RESOURCES.getIcon16("actions/edit.png"), this::editSelectedItem));
 
         add(toolBar, BorderLayout.NORTH);
 

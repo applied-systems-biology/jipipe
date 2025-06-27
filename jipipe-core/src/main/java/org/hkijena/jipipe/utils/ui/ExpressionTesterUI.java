@@ -31,6 +31,7 @@ import org.hkijena.jipipe.plugins.expressions.ui.JIPipeExpressionDesktopParamete
 import org.hkijena.jipipe.plugins.parameters.library.markup.MarkdownText;
 import org.hkijena.jipipe.utils.JIPipeDesktopSplitPane;
 import org.hkijena.jipipe.utils.UIUtils;
+import org.hkijena.jipipe.JIPipe;
 import org.hkijena.jipipe.utils.json.JsonUtils;
 
 import javax.swing.*;
@@ -71,7 +72,7 @@ public class ExpressionTesterUI extends JIPipeDesktopWorkbenchPanel {
         JPanel bottomPanel = new JPanel(new BorderLayout());
         bottomPanel.add(expressionEditor, BorderLayout.CENTER);
 
-        JButton runButton = new JButton("Evaluate", UIUtils.getIconFromResources("actions/run-build.png"));
+        JButton runButton = new JButton("Evaluate", JIPipe.RESOURCES.getIcon16("actions/run-build.png"));
         runButton.addActionListener(e -> evaluate());
         bottomPanel.add(runButton, BorderLayout.EAST);
 

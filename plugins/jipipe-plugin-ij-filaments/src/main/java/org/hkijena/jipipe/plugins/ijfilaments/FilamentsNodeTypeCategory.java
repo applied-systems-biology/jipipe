@@ -15,6 +15,7 @@ package org.hkijena.jipipe.plugins.ijfilaments;
 
 import org.hkijena.jipipe.api.nodes.JIPipeNodeTypeCategory;
 import org.hkijena.jipipe.utils.UIUtils;
+import org.hkijena.jipipe.JIPipe;
 
 import javax.swing.*;
 import java.awt.*;
@@ -47,7 +48,7 @@ public class FilamentsNodeTypeCategory implements JIPipeNodeTypeCategory {
 
     @Override
     public Icon getIcon() {
-        return UIUtils.getIconFromResources("actions/path-mode-spiro.png");
+        return JIPipe.RESOURCES.getIcon16("actions/path-mode-spiro.png");
     }
 
     @Override

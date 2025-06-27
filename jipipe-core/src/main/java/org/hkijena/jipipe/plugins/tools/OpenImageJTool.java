@@ -14,10 +14,12 @@
 package org.hkijena.jipipe.plugins.tools;
 
 import ij.ImageJ;
+import org.hkijena.jipipe.JIPipe;
 import org.hkijena.jipipe.desktop.api.JIPipeDesktopMenuExtension;
 import org.hkijena.jipipe.desktop.api.JIPipeMenuExtensionTarget;
 import org.hkijena.jipipe.desktop.app.JIPipeDesktopWorkbench;
 import org.hkijena.jipipe.utils.UIUtils;
+import org.hkijena.jipipe.JIPipe;
 
 public class OpenImageJTool extends JIPipeDesktopMenuExtension {
     /**
@@ -29,7 +31,7 @@ public class OpenImageJTool extends JIPipeDesktopMenuExtension {
         super(workbench);
         setText("Open ImageJ");
         setToolTipText("Opens ImageJ (useful if you started JIPipe outside of ImageJ).");
-        setIcon(UIUtils.getIconFromResources("apps/imagej.png"));
+        setIcon(JIPipe.RESOURCES.getIcon16("apps/imagej.png"));
         addActionListener(e -> showImageJ());
     }
 

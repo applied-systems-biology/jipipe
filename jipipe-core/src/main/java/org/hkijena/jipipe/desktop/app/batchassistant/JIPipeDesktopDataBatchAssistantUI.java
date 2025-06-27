@@ -15,6 +15,7 @@ package org.hkijena.jipipe.desktop.app.batchassistant;
 
 import com.google.common.collect.HashMultimap;
 import com.google.common.collect.Multimap;
+import org.hkijena.jipipe.JIPipe;
 import org.hkijena.jipipe.api.AbstractJIPipeRunnable;
 import org.hkijena.jipipe.api.JIPipeDataBatchGenerationResult;
 import org.hkijena.jipipe.api.JIPipeProgressInfo;
@@ -48,6 +49,7 @@ import org.hkijena.jipipe.plugins.batchassistant.DataBatchStatusData;
 import org.hkijena.jipipe.plugins.strings.StringData;
 import org.hkijena.jipipe.utils.JIPipeDesktopSplitPane;
 import org.hkijena.jipipe.utils.UIUtils;
+import org.hkijena.jipipe.JIPipe;
 import org.hkijena.jipipe.utils.data.Store;
 import org.hkijena.jipipe.utils.data.WeakStore;
 import org.hkijena.jipipe.utils.debounce.StaticDebouncer;
@@ -291,7 +293,7 @@ public class JIPipeDesktopDataBatchAssistantUI extends JIPipeDesktopProjectWorkb
                 JIPipeDesktopParameterFormPanel.WITH_SCROLLING | JIPipeDesktopParameterFormPanel.WITH_DOCUMENTATION | JIPipeDesktopParameterFormPanel.DOCUMENTATION_NO_UI | JIPipeDesktopParameterFormPanel.NO_EMPTY_GROUP_HEADERS);
         toggleParameterPanelAdvancedMode(parameterPanel, SHOW_ADVANCED_SETTINGS);
 
-        JIPipeDesktopFormPanel.GroupHeaderPanel groupHeaderPanel = new JIPipeDesktopFormPanel.GroupHeaderPanel("Settings", UIUtils.getIconFromResources("actions/configure.png"), 4);
+        JIPipeDesktopFormPanel.GroupHeaderPanel groupHeaderPanel = new JIPipeDesktopFormPanel.GroupHeaderPanel("Settings", JIPipe.RESOURCES.getIcon16("actions/configure.png"), 4);
 
         JCheckBox advancedSettingsCheck = new JCheckBox("Advanced settings");
         advancedSettingsCheck.setOpaque(false);
@@ -334,18 +336,18 @@ public class JIPipeDesktopDataBatchAssistantUI extends JIPipeDesktopProjectWorkb
 
         toolBar.add(Box.createHorizontalGlue());
 
-        JButton updateCacheButton = new JButton("Update predecessor cache", UIUtils.getIconFromResources("actions/cache-predecessors.png"));
+        JButton updateCacheButton = new JButton("Update predecessor cache", JIPipe.RESOURCES.getIcon16("actions/cache-predecessors.png"));
         updateCacheButton.setToolTipText("Runs the pipeline up until the predecessors of the selected node. Nothing is written to disk.");
         updateCacheButton.addActionListener(e -> updatePredecessorCache());
         toolBar.add(updateCacheButton);
         topPanel.add(toolBar);
 
-        JButton refreshButton = new JButton("Refresh", UIUtils.getIconFromResources("actions/view-refresh.png"));
+        JButton refreshButton = new JButton("Refresh", JIPipe.RESOURCES.getIcon16("actions/view-refresh.png"));
         refreshButton.setToolTipText("Refreshes the preview of generated batches");
         refreshButton.addActionListener(e -> refreshBatchPreview());
         toolBar.add(refreshButton);
 
-        JToggleButton autoRefreshButton = new JToggleButton(UIUtils.getIconFromResources("actions/quickopen-function.png"));
+        JToggleButton autoRefreshButton = new JToggleButton(JIPipe.RESOURCES.getIcon16("actions/quickopen-function.png"));
         autoRefreshButton.setToolTipText("Auto refresh");
         autoRefreshButton.setSelected(autoRefresh);
         autoRefreshButton.addActionListener(e -> {

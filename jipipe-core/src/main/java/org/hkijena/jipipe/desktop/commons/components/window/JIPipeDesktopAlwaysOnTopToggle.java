@@ -13,27 +13,29 @@
 
 package org.hkijena.jipipe.desktop.commons.components.window;
 
+import org.hkijena.jipipe.JIPipe;
 import org.hkijena.jipipe.utils.UIUtils;
+import org.hkijena.jipipe.JIPipe;
 
 import javax.swing.*;
 
 public class JIPipeDesktopAlwaysOnTopToggle extends JToggleButton {
     public JIPipeDesktopAlwaysOnTopToggle(JWindow window) {
-        super(UIUtils.getIconFromResources("actions/window-pin.png"));
+        super(JIPipe.RESOURCES.getIcon16("actions/window-pin.png"));
         setToolTipText("Make window always on top");
         setSelected(window.isAlwaysOnTop());
         addActionListener(e -> window.setAlwaysOnTop(isSelected()));
     }
 
     public JIPipeDesktopAlwaysOnTopToggle(JFrame window) {
-        super(UIUtils.getIconFromResources("actions/window-pin.png"));
+        super(JIPipe.RESOURCES.getIcon16("actions/window-pin.png"));
         setToolTipText("Make window always on top");
         setSelected(window.isAlwaysOnTop());
         addActionListener(e -> window.setAlwaysOnTop(isSelected()));
     }
 
     public JIPipeDesktopAlwaysOnTopToggle(JDialog window) {
-        super(UIUtils.getIconFromResources("actions/window-pin.png"));
+        super(JIPipe.RESOURCES.getIcon16("actions/window-pin.png"));
         setToolTipText("Make window always on top");
         setSelected(window.isAlwaysOnTop());
         addActionListener(e -> window.setAlwaysOnTop(isSelected()));

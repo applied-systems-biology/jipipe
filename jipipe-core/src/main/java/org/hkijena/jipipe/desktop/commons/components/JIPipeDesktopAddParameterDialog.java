@@ -25,6 +25,7 @@ import org.hkijena.jipipe.plugins.parameters.library.markup.MarkdownText;
 import org.hkijena.jipipe.utils.JIPipeDesktopSplitPane;
 import org.hkijena.jipipe.utils.StringUtils;
 import org.hkijena.jipipe.utils.UIUtils;
+import org.hkijena.jipipe.JIPipe;
 
 import javax.swing.*;
 import java.awt.*;
@@ -142,7 +143,7 @@ public class JIPipeDesktopAddParameterDialog extends JIPipeDesktopWorkbenchPanel
         buttonPanel.setLayout(new BoxLayout(buttonPanel, BoxLayout.X_AXIS));
         buttonPanel.add(Box.createHorizontalGlue());
 
-        JButton cancelButton = new JButton("Cancel", UIUtils.getIconFromResources("actions/cancel.png"));
+        JButton cancelButton = new JButton("Cancel", JIPipe.RESOURCES.getIcon16("actions/cancel.png"));
         cancelButton.addActionListener(e -> {
             if (dialog != null) {
                 dialog.setVisible(false);
@@ -150,7 +151,7 @@ public class JIPipeDesktopAddParameterDialog extends JIPipeDesktopWorkbenchPanel
         });
         buttonPanel.add(cancelButton);
 
-        JButton confirmButton = new JButton("Add", UIUtils.getIconFromResources("actions/list-add.png"));
+        JButton confirmButton = new JButton("Add", JIPipe.RESOURCES.getIcon16("actions/list-add.png"));
         confirmButton.addActionListener(e -> addParameter());
         confirmButton.addKeyListener(new KeyAdapter() {
             @Override

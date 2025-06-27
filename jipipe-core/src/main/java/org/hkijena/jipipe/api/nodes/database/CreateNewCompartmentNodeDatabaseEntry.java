@@ -19,6 +19,7 @@ import org.hkijena.jipipe.desktop.app.grapheditor.commons.nodeui.JIPipeDesktopGr
 import org.hkijena.jipipe.desktop.app.grapheditor.flavors.compartments.JIPipeDesktopCompartmentsGraphEditorUI;
 import org.hkijena.jipipe.plugins.parameters.library.markup.HTMLText;
 import org.hkijena.jipipe.utils.UIUtils;
+import org.hkijena.jipipe.JIPipe;
 
 import javax.swing.*;
 import java.awt.*;
@@ -71,7 +72,7 @@ public class CreateNewCompartmentNodeDatabaseEntry implements JIPipeNodeDatabase
 
     @Override
     public Icon getIcon() {
-        return UIUtils.getIconFromResources("actions/graph-compartment.png");
+        return JIPipe.RESOURCES.getIcon16("actions/graph-compartment.png");
     }
 
     @Override

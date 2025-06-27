@@ -28,6 +28,7 @@ import org.hkijena.jipipe.desktop.commons.components.JIPipeDesktopParameterFormP
 import org.hkijena.jipipe.utils.ReflectionUtils;
 import org.hkijena.jipipe.utils.StringUtils;
 import org.hkijena.jipipe.utils.UIUtils;
+import org.hkijena.jipipe.JIPipe;
 
 import javax.swing.*;
 import java.awt.*;
@@ -63,7 +64,7 @@ public class JIPipeDesktopExternalEnvironmentParameterEditorUI extends JIPipeDes
         buttonPanel.setLayout(new BoxLayout(buttonPanel, BoxLayout.X_AXIS));
         add(buttonPanel, BorderLayout.EAST);
 
-        JButton configureButton = new JButton("Configure ...", UIUtils.getIconFromResources("actions/configure.png"));
+        JButton configureButton = new JButton("Configure ...", JIPipe.RESOURCES.getIcon16("actions/configure.png"));
         configureButton.setBackground(getBackground());
         configureButton.setBorder(BorderFactory.createCompoundBorder(BorderFactory.createMatteBorder(0, 1, 0, 0,
                         UIManager.getColor("Separator.foreground")),
@@ -91,7 +92,7 @@ public class JIPipeDesktopExternalEnvironmentParameterEditorUI extends JIPipeDes
 
         ExternalEnvironmentParameterSettings settings = getParameterAccess().getAnnotationOfType(ExternalEnvironmentParameterSettings.class);
 
-        JMenuItem editMenuItem = UIUtils.createMenuItem("Edit", "Edits the current environment", UIUtils.getIconFromResources("actions/edit.png"), this::editEnvironment);
+        JMenuItem editMenuItem = UIUtils.createMenuItem("Edit", "Edits the current environment", JIPipe.RESOURCES.getIcon16("actions/edit.png"), this::editEnvironment);
         menuItems.add(editMenuItem);
 
         if (settings == null || settings.allowManagePreset()) {
@@ -110,7 +111,7 @@ public class JIPipeDesktopExternalEnvironmentParameterEditorUI extends JIPipeDes
                 menuItems.add(presetMenu);
             }
 
-            JMenuItem savePresetItem = new JMenuItem("Save as preset ...", UIUtils.getIconFromResources("actions/filesave.png"));
+            JMenuItem savePresetItem = new JMenuItem("Save as preset ...", JIPipe.RESOURCES.getIcon16("actions/filesave.png"));
             savePresetItem.addActionListener(e -> saveAsPreset());
             menuItems.add(savePresetItem);
         }
@@ -119,7 +120,7 @@ public class JIPipeDesktopExternalEnvironmentParameterEditorUI extends JIPipeDes
             for (JIPipeArtifact artifact : JIPipe.getArtifacts().queryCachedArtifacts(settings.artifactFilters())) {
                 if (artifact.isCompatible()) {
                     menuItems.add(UIUtils.createMenuItem("Artifact " + artifact.getFullId(), "Uses the predefined artifact " + artifact.getFullId(),
-                            UIUtils.getIconFromResources("actions/run-install.png"), () -> {
+                            JIPipe.RESOURCES.getIcon16("actions/run-install.png"), () -> {
                                 loadArtifact(artifact);
                             }));
                 }

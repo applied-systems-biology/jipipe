@@ -13,6 +13,7 @@
 
 package org.hkijena.jipipe.desktop.app.compat;
 
+import org.hkijena.jipipe.JIPipe;
 import org.hkijena.jipipe.api.compat.SingleImageJAlgorithmRunConfiguration;
 import org.hkijena.jipipe.api.nodes.JIPipeGraphNode;
 import org.hkijena.jipipe.api.nodes.JIPipeNodeInfo;
@@ -24,6 +25,7 @@ import org.hkijena.jipipe.desktop.commons.components.markup.JIPipeDesktopMarkdow
 import org.hkijena.jipipe.desktop.commons.components.tabs.JIPipeDesktopTabPane;
 import org.hkijena.jipipe.utils.TooltipUtils;
 import org.hkijena.jipipe.utils.UIUtils;
+import org.hkijena.jipipe.JIPipe;
 
 import java.awt.*;
 
@@ -49,13 +51,13 @@ public class JIPipeDesktopRunSingleAlgorithmSettingsPanel extends JIPipeDesktopW
         JIPipeDesktopAlgorithmCompendiumUI algorithmCompendiumUI = new JIPipeDesktopAlgorithmCompendiumUI();
 
         tabPane.addTab("Documentation",
-                UIUtils.getIconFromResources("actions/help.png"),
+                JIPipe.RESOURCES.getIcon16("actions/help.png"),
                 new JIPipeDesktopMarkdownReader(true, algorithmCompendiumUI.generateCompendiumFor(nodeInfo, true)),
                 JIPipeDesktopTabPane.CloseMode.withoutCloseButton);
         JIPipeDesktopRunSingleAlgorithmSettingsPanelIOEditor ioEditor = new JIPipeDesktopRunSingleAlgorithmSettingsPanelIOEditor(this);
-        tabPane.addTab("Data inputs/outputs", UIUtils.getIconFromResources("actions/database.png"), ioEditor, JIPipeDesktopTabPane.CloseMode.withoutCloseButton);
+        tabPane.addTab("Data inputs/outputs", JIPipe.RESOURCES.getIcon16("actions/database.png"), ioEditor, JIPipeDesktopTabPane.CloseMode.withoutCloseButton);
         tabPane.addTab("Parameters",
-                UIUtils.getIconFromResources("actions/configuration.png"),
+                JIPipe.RESOURCES.getIcon16("actions/configuration.png"),
                 new JIPipeDesktopParameterFormPanel(getDesktopWorkbench(),
                         node,
                         TooltipUtils.getAlgorithmDocumentation(node),

@@ -22,6 +22,7 @@ import org.hkijena.jipipe.api.settings.JIPipeDefaultApplicationsSettingsSheet;
 import org.hkijena.jipipe.plugins.parameters.api.enums.DynamicEnumParameter;
 import org.hkijena.jipipe.plugins.parameters.library.primitives.list.StringList;
 import org.hkijena.jipipe.utils.UIUtils;
+import org.hkijena.jipipe.JIPipe;
 
 import javax.swing.*;
 import java.util.ArrayList;
@@ -91,7 +92,7 @@ public class JIPipeProjectDefaultsApplicationSettings extends JIPipeDefaultAppli
 
     @Override
     public Icon getIcon() {
-        return UIUtils.getIconFromResources("actions/project-development.png");
+        return JIPipe.RESOURCES.getIcon16("actions/project-development.png");
     }
 
     @Override
@@ -139,7 +140,7 @@ public class JIPipeProjectDefaultsApplicationSettings extends JIPipeDefaultAppli
 
         @Override
         public Icon renderIcon(String value) {
-            return UIUtils.getIconFromResources("mimetypes/application-jipipe.png");
+            return JIPipe.RESOURCES.getIcon16("mimetypes/application-jipipe.png");
         }
     }
 }

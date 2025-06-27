@@ -19,6 +19,7 @@ import org.hkijena.jipipe.api.nodes.JIPipeGraphNode;
 import org.hkijena.jipipe.desktop.app.resultanalysis.JIPipeDesktopResultAlgorithmTree;
 import org.hkijena.jipipe.utils.StringUtils;
 import org.hkijena.jipipe.utils.UIUtils;
+import org.hkijena.jipipe.JIPipe;
 
 import javax.swing.*;
 import javax.swing.tree.DefaultMutableTreeNode;
@@ -29,8 +30,8 @@ import java.awt.*;
  * Renders the tree in {@link JIPipeDesktopResultAlgorithmTree}
  */
 public class JIPipeDesktopCacheStateTreeCellRenderer extends JLabel implements TreeCellRenderer {
-    private final Icon compartmentIcon = UIUtils.getIconFromResources("data-types/graph-compartment.png");
-    private final Icon rootIcon = UIUtils.getIconFromResources("actions/database.png");
+    private final Icon compartmentIcon = JIPipe.RESOURCES.getIcon16("data-types/graph-compartment.png");
+    private final Icon rootIcon = JIPipe.RESOURCES.getIcon16("actions/database.png");
 
     /**
      * Creates new renderer

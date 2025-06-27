@@ -34,6 +34,7 @@ import org.hkijena.jipipe.plugins.parameters.library.references.IconRef;
 import org.hkijena.jipipe.plugins.parameters.library.references.IconRefDesktopParameterEditorUI;
 import org.hkijena.jipipe.utils.StringUtils;
 import org.hkijena.jipipe.utils.UIUtils;
+import org.hkijena.jipipe.JIPipe;
 import org.hkijena.jipipe.utils.json.JsonUtils;
 
 import javax.swing.*;
@@ -307,10 +308,10 @@ public class JIPipeNodeTemplate extends AbstractJIPipeParameterCollection {
     }
 
     public ImageIcon getIconImage() {
-        ImageIcon icon = UIUtils.getIconFromResources("actions/configure.png");
+        ImageIcon icon = JIPipe.RESOURCES.getIcon16("actions/configure.png");
         if (getIcon() != null && !StringUtils.isNullOrEmpty(getIcon().getIconName())) {
             try {
-                icon = UIUtils.getIconFromResources(getIcon().getIconName());
+                icon = JIPipe.RESOURCES.getIcon16(getIcon().getIconName());
             } catch (Throwable e) {
 
             }

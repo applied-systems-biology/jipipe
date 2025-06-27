@@ -24,6 +24,7 @@ import org.hkijena.jipipe.plugins.settings.JIPipeFileChooserApplicationSettings;
 import org.hkijena.jipipe.utils.JIPipeDesktopSplitPane;
 import org.hkijena.jipipe.utils.PathUtils;
 import org.hkijena.jipipe.utils.UIUtils;
+import org.hkijena.jipipe.JIPipe;
 import org.hkijena.jipipe.utils.ui.BusyCursor;
 
 import javax.swing.*;
@@ -81,10 +82,10 @@ public abstract class JIPipeDesktopCompendiumUI<T> extends JPanel {
         searchField.addActionListener(e -> reloadList());
         toolBar.add(searchField);
 
-        JButton exportButton = new JButton(UIUtils.getIconFromResources("actions/document-export.png"));
+        JButton exportButton = new JButton(JIPipe.RESOURCES.getIcon16("actions/document-export.png"));
         exportButton.setToolTipText("Export whole compendium");
         JPopupMenu exportMenu = UIUtils.addPopupMenuToButton(exportButton);
-        JMenuItem saveMarkdown = new JMenuItem("as Markdown (*.md)", UIUtils.getIconFromResources("mimetypes/text-markdown.png"));
+        JMenuItem saveMarkdown = new JMenuItem("as Markdown (*.md)", JIPipe.RESOURCES.getIcon16("mimetypes/text-markdown.png"));
         saveMarkdown.addActionListener(e -> {
             Path selectedPath = JIPipeDesktop.saveFile(this, null, JIPipeFileChooserApplicationSettings.LastDirectoryKey.Projects, "Save as Markdown (*.md)", HTMLText.EMPTY, PathUtils.EXTENSION_FILTER_MD);
             if (selectedPath != null) {
@@ -100,7 +101,7 @@ public abstract class JIPipeDesktopCompendiumUI<T> extends JPanel {
         });
         exportMenu.add(saveMarkdown);
 
-        JMenuItem saveHTML = new JMenuItem("as HTML (*.html)", UIUtils.getIconFromResources("mimetypes/text-html.png"));
+        JMenuItem saveHTML = new JMenuItem("as HTML (*.html)", JIPipe.RESOURCES.getIcon16("mimetypes/text-html.png"));
         saveHTML.addActionListener(e -> {
             Path selectedPath = JIPipeDesktop.saveFile(this, null, JIPipeFileChooserApplicationSettings.LastDirectoryKey.Projects, "Save as HTML (*.html)", HTMLText.EMPTY, PathUtils.EXTENSION_FILTER_HTML);
             if (selectedPath != null) {
@@ -116,7 +117,7 @@ public abstract class JIPipeDesktopCompendiumUI<T> extends JPanel {
         });
         exportMenu.add(saveHTML);
 
-        JMenuItem savePDF = new JMenuItem("as PDF (*.pdf)", UIUtils.getIconFromResources("mimetypes/application-pdf.png"));
+        JMenuItem savePDF = new JMenuItem("as PDF (*.pdf)", JIPipe.RESOURCES.getIcon16("mimetypes/application-pdf.png"));
         savePDF.addActionListener(e -> {
             Path selectedPath = JIPipeDesktop.saveFile(this, null, JIPipeFileChooserApplicationSettings.LastDirectoryKey.Projects, "Save as Portable Document Format (*.pdf)", HTMLText.EMPTY, PathUtils.EXTENSION_FILTER_PDF);
             if (selectedPath != null) {

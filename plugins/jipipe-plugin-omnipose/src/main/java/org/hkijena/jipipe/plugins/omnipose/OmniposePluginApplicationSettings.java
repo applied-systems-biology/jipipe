@@ -80,7 +80,7 @@ public class OmniposePluginApplicationSettings extends JIPipeDefaultApplications
 
     @Override
     public Icon getIcon() {
-        return OmniposePlugin.RESOURCES.getIcon16FromResources("omnipose.png");
+        return OmniposePlugin.RESOURCES.getIcon16("omnipose.png");
     }
 
     @Override

@@ -16,6 +16,7 @@ package org.hkijena.jipipe.desktop.app.project.templatedownloader;
 import org.hkijena.jipipe.JIPipe;
 import org.hkijena.jipipe.desktop.commons.components.JIPipeDesktopFormPanel;
 import org.hkijena.jipipe.utils.UIUtils;
+import org.hkijena.jipipe.JIPipe;
 import org.hkijena.jipipe.utils.ui.RoundedLineBorder;
 
 import javax.swing.*;
@@ -46,11 +47,11 @@ public class JIPipeDesktopProjectTemplateDownloaderUI extends JDialog {
 
         formPanel.setBorder(BorderFactory.createEmptyBorder(16, 16, 16, 16));
 
-        formPanel.addWideToForm(UIUtils.createJLabel("Download project templates", UIUtils.getIcon32FromResources("install.png"), 28));
+        formPanel.addWideToForm(UIUtils.createJLabel("Download project templates", JIPipe.RESOURCES.getIcon32("install.png"), 28));
 
         formPanel.addWideToForm(Box.createVerticalStrut(16));
-        formPanel.addWideToForm(UIUtils.createJLabel("Please select which templates should be downloaded", UIUtils.getIconFromResources("emblems/emblem-important-blue.png")));
-        formPanel.addWideToForm(UIUtils.createJLabel("We recommend to always review the download URL", UIUtils.getIconFromResources("emblems/emblem-important-blue.png")));
+        formPanel.addWideToForm(UIUtils.createJLabel("Please select which templates should be downloaded", JIPipe.RESOURCES.getIcon16("emblems/emblem-important-blue.png")));
+        formPanel.addWideToForm(UIUtils.createJLabel("We recommend to always review the download URL", JIPipe.RESOURCES.getIcon16("emblems/emblem-important-blue.png")));
 
         formPanel.addWideToForm(Box.createVerticalStrut(32));
         formPanel.addWideToForm(UIUtils.createJLabel("Available templates", 22));
@@ -59,7 +60,7 @@ public class JIPipeDesktopProjectTemplateDownloaderUI extends JDialog {
         List<JIPipeDesktopProjectTemplateDownloaderPackage> existingPackages = installer.getAvailablePackages().stream().filter(p -> JIPipe.getInstance().getProjectTemplateRegistry().getRegisteredTemplates().containsKey(p.getId())).collect(Collectors.toList());
 
         if (newPackages.isEmpty()) {
-            formPanel.addWideToForm(UIUtils.createJLabel("No additional templates found.", UIUtils.getIconFromResources("emblems/emblem-important-blue.png")));
+            formPanel.addWideToForm(UIUtils.createJLabel("No additional templates found.", JIPipe.RESOURCES.getIcon16("emblems/emblem-important-blue.png")));
         } else {
             for (JIPipeDesktopProjectTemplateDownloaderPackage availablePackage : newPackages) {
                 addPackagePanel(availablePackage);
@@ -85,7 +86,7 @@ public class JIPipeDesktopProjectTemplateDownloaderUI extends JDialog {
     private void addPackagePanel(JIPipeDesktopProjectTemplateDownloaderPackage availablePackage) {
         JPanel panel = new JPanel(new GridBagLayout());
         panel.setBorder(BorderFactory.createCompoundBorder(new RoundedLineBorder(UIManager.getColor("Button.borderColor"), 1, 2), BorderFactory.createEmptyBorder(8, 8, 8, 8)));
-        panel.add(UIUtils.createJLabel(availablePackage.getName(), UIUtils.getIcon32FromResources("jipipe-file.png"), 16), new GridBagConstraints(0, 0, 1, 1, 1, 0, GridBagConstraints.NORTHWEST, GridBagConstraints.HORIZONTAL, new Insets(4, 4, 4, 4), 0, 0));
+        panel.add(UIUtils.createJLabel(availablePackage.getName(), JIPipe.RESOURCES.getIcon32("jipipe-file.png"), 16), new GridBagConstraints(0, 0, 1, 1, 1, 0, GridBagConstraints.NORTHWEST, GridBagConstraints.HORIZONTAL, new Insets(4, 4, 4, 4), 0, 0));
 
         panel.add(UIUtils.createBorderlessReadonlyTextPane(availablePackage.getDescription(), false), new GridBagConstraints(0, 1, 1, 1, 1, 0, GridBagConstraints.NORTHWEST, GridBagConstraints.HORIZONTAL, new Insets(4, 4, 4, 4), 0, 0));
         panel.add(UIUtils.createBorderlessReadonlyTextPane("<html><a href=\"" + availablePackage.getWebsite() + "\">" + availablePackage.getWebsite() + "</a></html>", false),
@@ -117,14 +118,14 @@ public class JIPipeDesktopProjectTemplateDownloaderUI extends JDialog {
         buttonPanel.setLayout(new BoxLayout(buttonPanel, BoxLayout.X_AXIS));
         buttonPanel.add(Box.createHorizontalGlue());
 
-        JButton cancelButton = new JButton("Cancel", UIUtils.getIconFromResources("actions/cancel.png"));
+        JButton cancelButton = new JButton("Cancel", JIPipe.RESOURCES.getIcon16("actions/cancel.png"));
         cancelButton.addActionListener(e -> {
             targetPackages.clear();
             setVisible(false);
         });
         buttonPanel.add(cancelButton);
 
-        JButton downloadButton = new JButton("Download selected templates", UIUtils.getIconFromResources("actions/download.png"));
+        JButton downloadButton = new JButton("Download selected templates", JIPipe.RESOURCES.getIcon16("actions/download.png"));
         downloadButton.addActionListener(e -> {
             setVisible(false);
         });

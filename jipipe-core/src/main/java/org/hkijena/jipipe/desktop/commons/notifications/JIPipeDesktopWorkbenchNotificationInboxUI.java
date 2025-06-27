@@ -13,6 +13,7 @@
 
 package org.hkijena.jipipe.desktop.commons.notifications;
 
+import org.hkijena.jipipe.JIPipe;
 import org.hkijena.jipipe.api.notifications.JIPipeNotification;
 import org.hkijena.jipipe.api.notifications.JIPipeNotificationInbox;
 import org.hkijena.jipipe.desktop.app.JIPipeDesktopWorkbench;
@@ -24,6 +25,7 @@ import org.hkijena.jipipe.plugins.parameters.library.markup.MarkdownText;
 import org.hkijena.jipipe.plugins.settings.JIPipeNotificationUIApplicationSettings;
 import org.hkijena.jipipe.utils.JIPipeDesktopSplitPane;
 import org.hkijena.jipipe.utils.UIUtils;
+import org.hkijena.jipipe.JIPipe;
 
 import javax.swing.*;
 import java.awt.*;
@@ -99,7 +101,7 @@ public class JIPipeDesktopWorkbenchNotificationInboxUI extends JIPipeDesktopWork
             noNotificationPanel.setLayout(new BorderLayout());
             noNotificationPanel.setBorder(UIUtils.createControlBorder());
 
-            JLabel label = new JLabel("No notifications", UIUtils.getIcon64FromResources("check-circle-green.png"), JLabel.LEFT);
+            JLabel label = new JLabel("No notifications", JIPipe.RESOURCES.getIcon64("check-circle-green.png"), JLabel.LEFT);
             label.setFont(label.getFont().deriveFont(26.0f));
             label.setBorder(BorderFactory.createEmptyBorder(4, 4, 4, 4));
             noNotificationPanel.add(label, BorderLayout.CENTER);
@@ -124,17 +126,17 @@ public class JIPipeDesktopWorkbenchNotificationInboxUI extends JIPipeDesktopWork
         JIPipeDesktopTabPane documentTabPane = new JIPipeDesktopTabPane(true, JIPipeDesktopTabPane.Style.Left);
 
         documentTabPane.addTab("Current",
-                UIUtils.getIcon32FromResources("actions/bell.png"),
+                JIPipe.RESOURCES.getIcon32("actions/bell.png"),
                 notificationsPanel,
                 JIPipeDesktopTabPane.CloseMode.withoutCloseButton,
                 false);
         documentTabPane.addTab("Dismissed",
-                UIUtils.getIcon32FromResources("actions/checkmark.png"),
+                JIPipe.RESOURCES.getIcon32("actions/checkmark.png"),
                 dismissedNotificationsPanel,
                 JIPipeDesktopTabPane.CloseMode.withoutCloseButton,
                 false);
         documentTabPane.addTab("Hidden",
-                UIUtils.getIcon32FromResources("actions/eye-slash.png"),
+                JIPipe.RESOURCES.getIcon32("actions/eye-slash.png"),
                 hiddenNotificationsPanel,
                 JIPipeDesktopTabPane.CloseMode.withoutCloseButton,
                 false);

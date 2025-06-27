@@ -17,6 +17,7 @@ import org.hkijena.jipipe.desktop.commons.components.ribbon.JIPipeDesktopRibbon;
 import org.hkijena.jipipe.plugins.imageviewer.legacy.api.JIPipeDesktopLegacyImageViewerPlugin2D;
 import org.hkijena.jipipe.plugins.imageviewer.utils.viewer2d.ImageViewerPanelCanvas2DTool;
 import org.hkijena.jipipe.utils.UIUtils;
+import org.hkijena.jipipe.JIPipe;
 import org.hkijena.jipipe.utils.ui.JIPipeDesktopDockPanel;
 
 import javax.swing.*;
@@ -97,7 +98,7 @@ public abstract class MaskDrawer2DTool extends JIPipeDesktopLegacyImageViewerPlu
 
     @Override
     public Icon getPanelIcon() {
-        return UIUtils.getIcon32FromResources("actions/configure3.png");
+        return JIPipe.RESOURCES.getIcon32("actions/configure3.png");
     }
 
     @Override

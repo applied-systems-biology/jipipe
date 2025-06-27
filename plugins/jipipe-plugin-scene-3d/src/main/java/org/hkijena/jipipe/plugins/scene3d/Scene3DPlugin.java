@@ -28,6 +28,7 @@ import org.hkijena.jipipe.plugins.scene3d.datatypes.Scene3DData;
 import org.hkijena.jipipe.plugins.scene3d.nodes.*;
 import org.hkijena.jipipe.utils.JIPipeResourceManager;
 import org.hkijena.jipipe.utils.UIUtils;
+import org.hkijena.jipipe.JIPipe;
 import org.scijava.Context;
 import org.scijava.plugin.Plugin;
 
@@ -85,13 +86,13 @@ public class Scene3DPlugin extends JIPipePrepackagedDefaultJavaPlugin {
 
     @Override
     public void register(JIPipe jiPipe, Context context, JIPipeProgressInfo progressInfo) {
-        registerDatatype("scene-3d", Scene3DData.class, RESOURCES.getIcon16URLFromResources("data-type-scene3d.png"));
+        registerDatatype("scene-3d", Scene3DData.class, RESOURCES.getIcon16URL("data-type-scene3d.png"));
 
-        registerNodeType("mask-to-3d-mesh", MaskTo3DMeshAlgorithm.class, UIUtils.getIconURLFromResources("actions/shape-cuboid.png"));
-        registerNodeType("export-3d-scene-to-collada", ExportScene3DToColladaAlgorithm.class, UIUtils.getIconURLFromResources("actions/document-export.png"));
-        registerNodeType("export-3d-scene-to-collada-v2", ExportScene3DToColladaAlgorithm2.class, UIUtils.getIconURLFromResources("actions/document-export.png"));
-        registerNodeType("group-scene-3d", GroupSceneAlgorithm.class, UIUtils.getIconURLFromResources("actions/object-group.png"));
-        registerNodeType("merge-scene-3d", MergeScenesAlgorithm.class, UIUtils.getIconURLFromResources("actions/rabbitvcs-merge.png"));
+        registerNodeType("mask-to-3d-mesh", MaskTo3DMeshAlgorithm.class, JIPipe.RESOURCES.getIcon16URL("actions/shape-cuboid.png"));
+        registerNodeType("export-3d-scene-to-collada", ExportScene3DToColladaAlgorithm.class, JIPipe.RESOURCES.getIcon16URL("actions/document-export.png"));
+        registerNodeType("export-3d-scene-to-collada-v2", ExportScene3DToColladaAlgorithm2.class, JIPipe.RESOURCES.getIcon16URL("actions/document-export.png"));
+        registerNodeType("group-scene-3d", GroupSceneAlgorithm.class, JIPipe.RESOURCES.getIcon16URL("actions/object-group.png"));
+        registerNodeType("merge-scene-3d", MergeScenesAlgorithm.class, JIPipe.RESOURCES.getIcon16URL("actions/rabbitvcs-merge.png"));
 
         registerNodeType("scene-3d-create-sphere", CreateSphereMeshAlgorithm.class);
         registerNodeType("scene-3d-create-line", CreateLineMeshAlgorithm.class);

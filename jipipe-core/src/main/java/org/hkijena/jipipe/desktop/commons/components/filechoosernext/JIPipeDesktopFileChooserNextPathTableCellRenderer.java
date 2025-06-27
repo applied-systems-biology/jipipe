@@ -1,6 +1,7 @@
 package org.hkijena.jipipe.desktop.commons.components.filechoosernext;
 
 import org.hkijena.jipipe.utils.UIUtils;
+import org.hkijena.jipipe.JIPipe;
 
 import javax.swing.*;
 import javax.swing.table.TableCellRenderer;
@@ -27,7 +28,7 @@ public class JIPipeDesktopFileChooserNextPathTableCellRenderer extends JLabel im
                     setIcon(getFileIcon(path));
                 }
             } catch (Throwable e) {
-                setIcon(UIUtils.getIcon32FromResources("file-error.png"));
+                setIcon(JIPipe.RESOURCES.getIcon32("file-error.png"));
             }
             setText((path).getFileName().toString());
         } else {
@@ -48,13 +49,13 @@ public class JIPipeDesktopFileChooserNextPathTableCellRenderer extends JLabel im
                 return pathType.getIcon();
             }
         }
-        return UIUtils.getIcon32FromResources("file.png");
+        return JIPipe.RESOURCES.getIcon32("file.png");
     }
 
     private Icon getDirectoryIcon(Path path) {
         try {
             if (path.getFileName().toString().startsWith(".") || Files.isHidden(path)) {
-                return UIUtils.getIcon32FromResources("places/folder2-hidden.png");
+                return JIPipe.RESOURCES.getIcon32("places/folder2-hidden.png");
             }
         } catch (Throwable ignored) {
 
@@ -64,6 +65,6 @@ public class JIPipeDesktopFileChooserNextPathTableCellRenderer extends JLabel im
                 return pathType.getIcon();
             }
         }
-        return UIUtils.getIcon32FromResources("places/folder2.png");
+        return JIPipe.RESOURCES.getIcon32("places/folder2.png");
     }
 }

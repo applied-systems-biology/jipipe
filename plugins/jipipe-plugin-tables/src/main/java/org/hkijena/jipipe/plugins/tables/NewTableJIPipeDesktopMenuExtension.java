@@ -21,6 +21,7 @@ import org.hkijena.jipipe.desktop.app.tableeditor.JIPipeDesktopTableEditor;
 import org.hkijena.jipipe.desktop.commons.components.tabs.JIPipeDesktopTabPane;
 import org.hkijena.jipipe.plugins.tables.datatypes.ResultsTableData;
 import org.hkijena.jipipe.utils.UIUtils;
+import org.hkijena.jipipe.JIPipe;
 
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
@@ -37,14 +38,14 @@ public class NewTableJIPipeDesktopMenuExtension extends JIPipeDesktopMenuExtensi
     public NewTableJIPipeDesktopMenuExtension(JIPipeDesktopWorkbench workbench) {
         super(workbench);
         setText("New table");
-        setIcon(UIUtils.getIconFromResources("data-types/results-table.png"));
+        setIcon(JIPipe.RESOURCES.getIcon16("data-types/results-table.png"));
         addActionListener(this);
     }
 
     @Override
     public void actionPerformed(ActionEvent e) {
         JIPipeDesktopTableEditor tableAnalyzerUI = new JIPipeDesktopTableEditor((JIPipeDesktopProjectWorkbench) getDesktopWorkbench(), new ResultsTableData());
-        getDesktopWorkbench().getDocumentTabPane().addTab("Table", UIUtils.getIconFromResources("data-types/results-table.png"),
+        getDesktopWorkbench().getDocumentTabPane().addTab("Table", JIPipe.RESOURCES.getIcon16("data-types/results-table.png"),
                 tableAnalyzerUI, JIPipeDesktopTabPane.CloseMode.withAskOnCloseButton, true);
         getDesktopWorkbench().getDocumentTabPane().switchToLastTab();
     }

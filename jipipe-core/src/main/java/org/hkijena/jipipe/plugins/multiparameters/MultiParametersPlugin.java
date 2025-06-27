@@ -25,6 +25,7 @@ import org.hkijena.jipipe.plugins.parameters.library.markup.HTMLText;
 import org.hkijena.jipipe.plugins.parameters.library.primitives.list.StringList;
 import org.hkijena.jipipe.utils.ResourceUtils;
 import org.hkijena.jipipe.utils.UIUtils;
+import org.hkijena.jipipe.JIPipe;
 import org.scijava.Context;
 import org.scijava.plugin.Plugin;
 
@@ -59,7 +60,7 @@ public class MultiParametersPlugin extends JIPipePrepackagedDefaultJavaPlugin {
         registerDefaultDataTypeViewer(ParametersData.class, ParametersDataViewer.class);
 
         // Register nodes
-        registerNodeType("convert-parameters-data-to-results-table-data", ConvertParametersToTableAlgorithm.class, UIUtils.getIconURLFromResources("data-types/results-table.png"));
+        registerNodeType("convert-parameters-data-to-results-table-data", ConvertParametersToTableAlgorithm.class, JIPipe.RESOURCES.getIcon16URL("data-types/results-table.png"));
     }
 
     @Override

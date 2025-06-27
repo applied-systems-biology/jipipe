@@ -17,6 +17,7 @@ import org.hkijena.jipipe.desktop.commons.components.tabs.JIPipeDesktopTabListCe
 import org.hkijena.jipipe.desktop.commons.components.tabs.JIPipeDesktopTabPane;
 import org.hkijena.jipipe.plugins.tables.datatypes.ResultsTableData;
 import org.hkijena.jipipe.utils.UIUtils;
+import org.hkijena.jipipe.JIPipe;
 import org.jdesktop.swingx.JXTable;
 
 import javax.swing.*;
@@ -69,7 +70,7 @@ public class JIPipeDesktopJIPipeMergeTablesDialogUI extends JDialog {
 
         buttonPanel.add(Box.createHorizontalGlue());
 
-        JButton calculateButton = new JButton("Merge", UIUtils.getIconFromResources("actions/document-import.png"));
+        JButton calculateButton = new JButton("Merge", JIPipe.RESOURCES.getIcon16("actions/document-import.png"));
         calculateButton.addActionListener(e -> calculate());
         buttonPanel.add(calculateButton);
 

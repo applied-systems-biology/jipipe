@@ -15,6 +15,7 @@ package org.hkijena.jipipe.desktop.commons.components;
 
 import com.google.common.html.HtmlEscapers;
 import org.hkijena.jipipe.utils.UIUtils;
+import org.hkijena.jipipe.JIPipe;
 
 import javax.swing.*;
 import javax.swing.border.Border;

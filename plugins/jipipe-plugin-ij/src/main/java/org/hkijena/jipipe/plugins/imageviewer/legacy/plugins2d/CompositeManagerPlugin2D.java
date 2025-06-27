@@ -19,6 +19,7 @@ import org.hkijena.jipipe.plugins.imageviewer.legacy.JIPipeDesktopLegacyImageVie
 import org.hkijena.jipipe.plugins.imageviewer.legacy.JIPipeDesktopLegacyImageViewerPanel2D;
 import org.hkijena.jipipe.plugins.imageviewer.utils.viewer2d.ImageViewer2DCompositeLayerEditor;
 import org.hkijena.jipipe.utils.UIUtils;
+import org.hkijena.jipipe.JIPipe;
 import org.hkijena.jipipe.utils.ui.JIPipeDesktopDockPanel;
 
 import javax.swing.*;
@@ -31,8 +32,8 @@ public class CompositeManagerPlugin2D extends GeneralImageViewerPanelPlugin2D {
     @Override
     public void buildPanel(JIPipeDesktopFormPanel formPanel) {
         if (getCurrentImage() != null && getCurrentImage().getNChannels() > 1) {
-            JIPipeDesktopFormPanel.GroupHeaderPanel headerPanel = formPanel.addGroupHeader("Composite display", UIUtils.getIconFromResources("actions/channelmixer.png"));
-            JToggleButton compositeToggle = new JToggleButton("Enabled", UIUtils.getIconFromResources("actions/eye.png"));
+            JIPipeDesktopFormPanel.GroupHeaderPanel headerPanel = formPanel.addGroupHeader("Composite display", JIPipe.RESOURCES.getIcon16("actions/channelmixer.png"));
+            JToggleButton compositeToggle = new JToggleButton("Enabled", JIPipe.RESOURCES.getIcon16("actions/eye.png"));
             compositeToggle.setSelected(getViewerPanel2D().isComposite());
             compositeToggle.addActionListener(e -> getViewerPanel2D().setComposite(compositeToggle.isSelected()));
             headerPanel.addToTitlePanel(compositeToggle);

@@ -8,6 +8,7 @@ import org.hkijena.jipipe.desktop.commons.components.ribbon.JIPipeDesktopLargeBu
 import org.hkijena.jipipe.desktop.commons.components.ribbon.JIPipeDesktopRibbon;
 import org.hkijena.jipipe.plugins.filesystem.dataypes.PathData;
 import org.hkijena.jipipe.utils.UIUtils;
+import org.hkijena.jipipe.JIPipe;
 
 import javax.swing.*;
 import java.awt.*;
@@ -41,8 +42,8 @@ public class PathDataViewer extends JIPipeDesktopDataViewer {
     public void rebuildRibbon(JIPipeDesktopRibbon ribbon) {
         JIPipeDesktopRibbon.Task generalTask = ribbon.getOrCreateTask("General");
         JIPipeDesktopRibbon.Band pathBand = generalTask.getOrCreateBand("Path");
-        pathBand.add(new JIPipeDesktopLargeButtonRibbonAction("Open path", "Opens the path", UIUtils.getIcon32FromResources("actions/document-open.png"), this::openPath));
-        pathBand.add(new JIPipeDesktopLargeButtonRibbonAction("Open parent", "Opens the path's parent directory", UIUtils.getIcon32FromResources("actions/go-parent-folder.png"), this::openParentPath));
+        pathBand.add(new JIPipeDesktopLargeButtonRibbonAction("Open path", "Opens the path", JIPipe.RESOURCES.getIcon32("actions/document-open.png"), this::openPath));
+        pathBand.add(new JIPipeDesktopLargeButtonRibbonAction("Open parent", "Opens the path's parent directory", JIPipe.RESOURCES.getIcon32("actions/go-parent-folder.png"), this::openParentPath));
     }
 
     private void openParentPath() {
@@ -63,13 +64,13 @@ public class PathDataViewer extends JIPipeDesktopDataViewer {
                 pathParentTextField.setText(path.getParent().toString());
                 if (Files.isRegularFile(path)) {
                     pathTypeLabel.setText("File");
-                    pathTypeLabel.setIcon(UIUtils.getIconFromResources("actions/file.png"));
+                    pathTypeLabel.setIcon(JIPipe.RESOURCES.getIcon16("actions/file.png"));
                 } else if (Files.isDirectory(path)) {
                     pathTypeLabel.setText("Folder");
-                    pathTypeLabel.setIcon(UIUtils.getIconFromResources("actions/folder.png"));
+                    pathTypeLabel.setIcon(JIPipe.RESOURCES.getIcon16("actions/folder.png"));
                 } else {
                     pathTypeLabel.setText("Unknown");
-                    pathTypeLabel.setIcon(UIUtils.getIconFromResources("actions/circle-question.png"));
+                    pathTypeLabel.setIcon(JIPipe.RESOURCES.getIcon16("actions/circle-question.png"));
                 }
             } catch (Exception e) {
                 pathParentTextField.setText(ERROR_PLACEHOLDER_TEXT);

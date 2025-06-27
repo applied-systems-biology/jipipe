@@ -16,6 +16,7 @@ package org.hkijena.jipipe.plugins.ij3d.imageviewer;
 import org.hkijena.jipipe.plugins.ij3d.datatypes.ROI3D;
 import org.hkijena.jipipe.plugins.ij3d.datatypes.ROI3DListData;
 import org.hkijena.jipipe.utils.UIUtils;
+import org.hkijena.jipipe.JIPipe;
 
 import javax.swing.*;
 import java.util.List;
@@ -32,7 +33,7 @@ public class ROIManagerPlugin3DInfoContextPanel extends ROIManagerPlugin3DSelect
     private void initialize() {
         setLayout(new BoxLayout(this, BoxLayout.X_AXIS));
         setBorder(BorderFactory.createEmptyBorder(4, 2, 4, 2));
-        roiInfoLabel.setIcon(UIUtils.getIconFromResources("data-types/roi.png"));
+        roiInfoLabel.setIcon(JIPipe.RESOURCES.getIcon16("data-types/roi.png"));
         roiInfoLabel.setBorder(BorderFactory.createEmptyBorder(4, 4, 4, 4));
         add(roiInfoLabel);
         add(Box.createHorizontalGlue());

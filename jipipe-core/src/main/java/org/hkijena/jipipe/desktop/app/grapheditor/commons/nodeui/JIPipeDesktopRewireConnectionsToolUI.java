@@ -24,6 +24,7 @@ import org.hkijena.jipipe.desktop.commons.components.search.JIPipeDesktopSearchT
 import org.hkijena.jipipe.utils.JIPipeDesktopSplitPane;
 import org.hkijena.jipipe.utils.StringUtils;
 import org.hkijena.jipipe.utils.UIUtils;
+import org.hkijena.jipipe.JIPipe;
 
 import javax.swing.*;
 import java.awt.*;
@@ -75,10 +76,10 @@ public class JIPipeDesktopRewireConnectionsToolUI extends JDialog {
 
         getContentPane().add(splitPane, BorderLayout.CENTER);
 
-        JButton rewireButton = new JButton("Rewire", UIUtils.getIconFromResources("actions/checkmark.png"));
+        JButton rewireButton = new JButton("Rewire", JIPipe.RESOURCES.getIcon16("actions/checkmark.png"));
         rewireButton.addActionListener(e -> applyRewire());
 
-        JButton cancelButton = new JButton("Cancel", UIUtils.getIconFromResources("actions/cancel.png"));
+        JButton cancelButton = new JButton("Cancel", JIPipe.RESOURCES.getIcon16("actions/cancel.png"));
         cancelButton.addActionListener(e -> setVisible(false));
 
         JPanel buttonPanel = UIUtils.boxHorizontal(Box.createHorizontalGlue(), cancelButton, rewireButton);
@@ -141,7 +142,7 @@ public class JIPipeDesktopRewireConnectionsToolUI extends JDialog {
             graphCanvasUI.getHistoryJournal().snapshot("Rewire connection(s)",
                     "Rewire connections of " + currentSlot.getDisplayName() + " to " + selectedAlternative.getDisplayName(),
                     compartment,
-                    UIUtils.getIconFromResources("actions/go-jump.png"));
+                    JIPipe.RESOURCES.getIcon16("actions/go-jump.png"));
         }
 
         // Simulation OK. Apply in real graph
@@ -182,7 +183,7 @@ public class JIPipeDesktopRewireConnectionsToolUI extends JDialog {
     }
 
     private void initializeAlternativesPanel(JIPipeDesktopFormPanel alternativesPanel, JList<JIPipeDataSlot> alternativesList) {
-        JIPipeDesktopFormPanel.GroupHeaderPanel groupHeader = alternativesPanel.addGroupHeader("Compatible targets", UIUtils.getIconFromResources("actions/go-jump.png"));
+        JIPipeDesktopFormPanel.GroupHeaderPanel groupHeader = alternativesPanel.addGroupHeader("Compatible targets", JIPipe.RESOURCES.getIcon16("actions/go-jump.png"));
         groupHeader.addDescriptionRow("Please select a compatible slot where the selected connections will be moved to. Please note that this list will be empty of no compatible targets can be found.");
         JScrollPane scrollPane = new JScrollPane(alternativesList);
         alternativesList.setCellRenderer(new JIPipeDesktopDataSlotListCellRenderer());
@@ -280,7 +281,7 @@ public class JIPipeDesktopRewireConnectionsToolUI extends JDialog {
 
 
     private void initializeConnectionsList(JIPipeDesktopFormPanel connectionsList) {
-        JIPipeDesktopFormPanel.GroupHeaderPanel groupHeader = connectionsList.addGroupHeader("List of rewired connections", UIUtils.getIconFromResources("actions/lines-connector.png"));
+        JIPipeDesktopFormPanel.GroupHeaderPanel groupHeader = connectionsList.addGroupHeader("List of rewired connections", JIPipe.RESOURCES.getIcon16("actions/lines-connector.png"));
         groupHeader.addDescriptionRow("You have the option to only move specific connections to another output.");
         for (JIPipeDataSlot currentConnection : currentConnections) {
             JCheckBox checkBox;

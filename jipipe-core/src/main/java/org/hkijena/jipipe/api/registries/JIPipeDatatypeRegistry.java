@@ -39,6 +39,7 @@ import org.hkijena.jipipe.desktop.app.resultanalysis.JIPipeDesktopResultDataSlot
 import org.hkijena.jipipe.plugins.settings.JIPipeGeneralDataApplicationSettings;
 import org.hkijena.jipipe.utils.ReflectionUtils;
 import org.hkijena.jipipe.utils.UIUtils;
+import org.hkijena.jipipe.JIPipe;
 import org.jgrapht.Graph;
 import org.jgrapht.GraphPath;
 import org.jgrapht.alg.shortestpath.DijkstraShortestPath;
@@ -78,8 +79,8 @@ public class JIPipeDatatypeRegistry {
      */
     public JIPipeDatatypeRegistry(JIPipe jiPipe) {
         this.jiPipe = jiPipe;
-        this.defaultIconURL = UIUtils.getIconURLFromResources("data-types/data-type.png");
-        this.defaultIcon = UIUtils.getIconFromResources("data-types/data-type.png");
+        this.defaultIconURL = JIPipe.RESOURCES.getIcon16URL("data-types/data-type.png");
+        this.defaultIcon = JIPipe.RESOURCES.getIcon16("data-types/data-type.png");
     }
 
     /**

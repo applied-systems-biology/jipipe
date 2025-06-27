@@ -13,6 +13,7 @@ import org.hkijena.jipipe.desktop.commons.theme.JIPipeDesktopLegacyModernMetalTh
 import org.hkijena.jipipe.plugins.parameters.api.optional.OptionalParameter;
 import org.hkijena.jipipe.plugins.settings.JIPipeProjectAuthorsApplicationSettings;
 import org.hkijena.jipipe.utils.UIUtils;
+import org.hkijena.jipipe.JIPipe;
 
 import javax.swing.*;
 import java.awt.*;
@@ -39,25 +40,25 @@ public class JIPipeDesktopAuthorProfileButton extends JButton implements JIPipeD
         List<JIPipeAuthorMetadata> activeAuthors = settings.getProjectAuthors().stream().filter(OptionalParameter::isEnabled).map(OptionalParameter::getContent).collect(Collectors.toList());
         if (settings.getProjectAuthors().isEmpty() && activeAuthors.isEmpty()) {
             setText("Unknown author");
-            setIcon(UIUtils.getIconFromResources("actions/im-kick-user.png"));
+            setIcon(JIPipe.RESOURCES.getIcon16("actions/im-kick-user.png"));
         } else if (activeAuthors.isEmpty()) {
             setText("None");
-            setIcon(UIUtils.getIconFromResources("actions/im-kick-user.png"));
+            setIcon(JIPipe.RESOURCES.getIcon16("actions/im-kick-user.png"));
         } else if (activeAuthors.size() == 1) {
             JIPipeAuthorMetadata authorMetadata = activeAuthors.get(0);
             setText(authorMetadata.getFirstName() + " " + authorMetadata.getLastName());
-            setIcon(UIUtils.getIconFromResources("actions/icon_user.png"));
+            setIcon(JIPipe.RESOURCES.getIcon16("actions/icon_user.png"));
         } else {
             JIPipeAuthorMetadata authorMetadata = activeAuthors.get(0);
             setText("<html>" + authorMetadata.getFirstName() + " " + authorMetadata.getLastName() + " <i>et al.</i></html>");
-            setIcon(UIUtils.getIconFromResources("actions/user-group.png"));
+            setIcon(JIPipe.RESOURCES.getIcon16("actions/user-group.png"));
         }
 
     }
 
     private void initialize() {
 //        JPopupMenu popupMenu = UIUtils.addPopupMenuToButton(this);
-//        popupMenu.add(UIUtils.createMenuItem("Configure ...", "Configures the application-wide authors", UIUtils.getIconFromResources("actions/configure.png"), this::showSettings));
+//        popupMenu.add(UIUtils.createMenuItem("Configure ...", "Configures the application-wide authors", JIPipe.RESOURCES.getIcon16("actions/configure.png"), this::showSettings));
 
         // Initialize tooltip
         setOpaque(false);
@@ -81,9 +82,9 @@ public class JIPipeDesktopAuthorProfileButton extends JButton implements JIPipeD
                 "You only have to do this once and JIPipe will automatically add you<br/>" +
                 "as author to your projects with appropriate affiliations.</html>"), BorderLayout.CENTER);
         JPanel buttons = UIUtils.boxHorizontal(
-                UIUtils.createButton("Ask never", UIUtils.getIconFromResources("actions/cancel.png"), this::disableWarning),
-                UIUtils.createButton("Dismiss", UIUtils.getIconFromResources("actions/clock.png"), this::closeBalloon),
-                UIUtils.createButton("Configure", UIUtils.getIconFromResources("actions/configure.png"), this::showSettings)
+                UIUtils.createButton("Ask never", JIPipe.RESOURCES.getIcon16("actions/cancel.png"), this::disableWarning),
+                UIUtils.createButton("Dismiss", JIPipe.RESOURCES.getIcon16("actions/clock.png"), this::closeBalloon),
+                UIUtils.createButton("Configure", JIPipe.RESOURCES.getIcon16("actions/configure.png"), this::showSettings)
         );
         buttons.setOpaque(false);
         content.add(buttons, BorderLayout.SOUTH);
@@ -98,7 +99,7 @@ public class JIPipeDesktopAuthorProfileButton extends JButton implements JIPipeD
         );
         balloonTip.setVisible(false);
 
-        JButton closeButton = new JButton(UIUtils.getIconFromResources("actions/window-close.png"));
+        JButton closeButton = new JButton(JIPipe.RESOURCES.getIcon16("actions/window-close.png"));
         closeButton.setBorder(BorderFactory.createEmptyBorder(4, 4, 4, 4));
         closeButton.setOpaque(false);
         balloonTip.setCloseButton(closeButton, false);

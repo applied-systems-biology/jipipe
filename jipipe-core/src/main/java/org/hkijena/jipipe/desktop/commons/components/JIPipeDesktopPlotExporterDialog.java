@@ -13,10 +13,12 @@
 
 package org.hkijena.jipipe.desktop.commons.components;
 
+import org.hkijena.jipipe.JIPipe;
 import org.hkijena.jipipe.plugins.settings.JIPipeFileChooserApplicationSettings;
 import org.hkijena.jipipe.utils.PathIOMode;
 import org.hkijena.jipipe.utils.PathType;
 import org.hkijena.jipipe.utils.UIUtils;
+import org.hkijena.jipipe.JIPipe;
 import org.jfree.chart.ChartUtils;
 import org.jfree.chart.JFreeChart;
 import org.jfree.graphics2d.svg.SVGGraphics2D;
@@ -138,11 +140,11 @@ public class JIPipeDesktopPlotExporterDialog extends JDialog {
         buttonPanel.setLayout(new BoxLayout(buttonPanel, BoxLayout.LINE_AXIS));
         buttonPanel.add(Box.createHorizontalGlue());
 
-        JButton cancelButton = new JButton("Cancel", UIUtils.getIconFromResources("actions/cancel.png"));
+        JButton cancelButton = new JButton("Cancel", JIPipe.RESOURCES.getIcon16("actions/cancel.png"));
         cancelButton.addActionListener(e -> setVisible(false));
         buttonPanel.add(cancelButton);
 
-        JButton exportButton = new JButton("Export", UIUtils.getIconFromResources("actions/filesave.png"));
+        JButton exportButton = new JButton("Export", JIPipe.RESOURCES.getIcon16("actions/filesave.png"));
         exportButton.setDefaultCapable(true);
         exportButton.addActionListener(e -> exportPlot());
         buttonPanel.add(exportButton);
@@ -234,7 +236,7 @@ public class JIPipeDesktopPlotExporterDialog extends JDialog {
         }
 
         public Icon toIcon() {
-            return UIUtils.getIconFromResources("actions/viewimage.png");
+            return JIPipe.RESOURCES.getIcon16("actions/viewimage.png");
         }
     }
 }

@@ -18,6 +18,7 @@ import org.hkijena.jipipe.desktop.app.grapheditor.commons.JIPipeDesktopGraphCanv
 import org.hkijena.jipipe.desktop.app.grapheditor.commons.nodeui.JIPipeDesktopGraphNodeUI;
 import org.hkijena.jipipe.desktop.commons.components.pickers.JIPipeDesktopPickNodeDialog;
 import org.hkijena.jipipe.utils.UIUtils;
+import org.hkijena.jipipe.JIPipe;
 
 import javax.swing.*;
 import java.awt.event.InputEvent;
@@ -62,7 +63,7 @@ public class SelectAndMoveNodeHereNodeUIContextAction implements NodeUIContextAc
 
     @Override
     public Icon getIcon() {
-        return UIUtils.getIconFromResources("actions/transform-move.png");
+        return JIPipe.RESOURCES.getIcon16("actions/transform-move.png");
     }
 
     @Override

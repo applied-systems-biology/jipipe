@@ -24,6 +24,7 @@ import org.hkijena.jipipe.plugins.imageviewer.legacy.JIPipeDesktopLegacyImageVie
 import org.hkijena.jipipe.plugins.imageviewer.utils.ImageViewerLUTEditor;
 import org.hkijena.jipipe.plugins.imageviewer.utils.viewer2d.ImageViewer2DLUTEditor;
 import org.hkijena.jipipe.utils.UIUtils;
+import org.hkijena.jipipe.JIPipe;
 import org.hkijena.jipipe.utils.ui.BusyCursor;
 import org.hkijena.jipipe.utils.ui.JIPipeDesktopDockPanel;
 
@@ -61,15 +62,15 @@ public class LUTManagerPlugin2D extends GeneralImageViewerPanelPlugin2D {
             return;
         }
         if (getCurrentImagePlus().getType() == ImagePlus.COLOR_256 || getCurrentImagePlus().getType() == ImagePlus.COLOR_RGB) {
-            JIPipeDesktopFormPanel.GroupHeaderPanel headerPanel = formPanel.addGroupHeader("LUT", UIUtils.getIconFromResources("actions/color-gradient.png"));
-            JButton toRGBButton = new JButton("Split channels", UIUtils.getIconFromResources("actions/channelmixer.png"));
+            JIPipeDesktopFormPanel.GroupHeaderPanel headerPanel = formPanel.addGroupHeader("LUT", JIPipe.RESOURCES.getIcon16("actions/color-gradient.png"));
+            JButton toRGBButton = new JButton("Split channels", JIPipe.RESOURCES.getIcon16("actions/channelmixer.png"));
             headerPanel.addToTitlePanel(toRGBButton);
             toRGBButton.addActionListener(e -> splitChannels());
         } else {
 
-            JIPipeDesktopFormPanel.GroupHeaderPanel headerPanel = formPanel.addGroupHeader("LUT", UIUtils.getIconFromResources("actions/color-gradient.png"));
+            JIPipeDesktopFormPanel.GroupHeaderPanel headerPanel = formPanel.addGroupHeader("LUT", JIPipe.RESOURCES.getIcon16("actions/color-gradient.png"));
             if (getCurrentImagePlus().getNChannels() == 3) {
-                JButton toRGBButton = new JButton("Convert to RGB", UIUtils.getIconFromResources("actions/colors-rgb.png"));
+                JButton toRGBButton = new JButton("Convert to RGB", JIPipe.RESOURCES.getIcon16("actions/colors-rgb.png"));
                 headerPanel.addToTitlePanel(toRGBButton);
                 toRGBButton.addActionListener(e -> convertImageToRGB());
             }

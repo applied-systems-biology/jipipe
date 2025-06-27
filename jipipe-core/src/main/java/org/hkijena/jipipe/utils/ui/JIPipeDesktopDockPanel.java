@@ -3,6 +3,7 @@ package org.hkijena.jipipe.utils.ui;
 import com.fasterxml.jackson.annotation.JsonGetter;
 import com.fasterxml.jackson.annotation.JsonSetter;
 import com.google.common.collect.ImmutableList;
+import org.hkijena.jipipe.JIPipe;
 import org.hkijena.jipipe.api.events.AbstractJIPipeEvent;
 import org.hkijena.jipipe.api.events.JIPipeEventEmitter;
 import org.hkijena.jipipe.api.parameters.JIPipeParameterCollection;
@@ -10,6 +11,7 @@ import org.hkijena.jipipe.desktop.commons.components.JIPipeDesktopVerticalToolBa
 import org.hkijena.jipipe.desktop.commons.theme.JIPipeDesktopModernThemeStyle;
 import org.hkijena.jipipe.utils.JIPipeDesktopSplitPane;
 import org.hkijena.jipipe.utils.UIUtils;
+import org.hkijena.jipipe.JIPipe;
 import org.jetbrains.annotations.NotNull;
 
 import javax.swing.*;
@@ -497,19 +499,19 @@ public class JIPipeDesktopDockPanel extends JPanel implements JIPipeDesktopSplit
             button.setMaximumSize(new Dimension(Short.MAX_VALUE, 64));
         }
         JPopupMenu popupMenu = UIUtils.addRightClickPopupMenuToButton(button);
-        popupMenu.add(UIUtils.createMenuItem("Top left", "Move the panel to the top left anchor", UIUtils.getIconFromResources("actions/dock-top-left.png"), () -> {
+        popupMenu.add(UIUtils.createMenuItem("Top left", "Move the panel to the top left anchor", JIPipe.RESOURCES.getIcon16("actions/dock-top-left.png"), () -> {
             movePanelToLocation(panel, PanelLocation.TopLeft, true);
         }));
-        popupMenu.add(UIUtils.createMenuItem("Bottom left", "Move the panel to the bottom left anchor", UIUtils.getIconFromResources("actions/dock-bottom-left.png"), () -> {
+        popupMenu.add(UIUtils.createMenuItem("Bottom left", "Move the panel to the bottom left anchor", JIPipe.RESOURCES.getIcon16("actions/dock-bottom-left.png"), () -> {
             movePanelToLocation(panel, PanelLocation.BottomLeft, true);
         }));
-        popupMenu.add(UIUtils.createMenuItem("Top right", "Move the panel to the top right anchor", UIUtils.getIconFromResources("actions/dock-top-right.png"), () -> {
+        popupMenu.add(UIUtils.createMenuItem("Top right", "Move the panel to the top right anchor", JIPipe.RESOURCES.getIcon16("actions/dock-top-right.png"), () -> {
             movePanelToLocation(panel, PanelLocation.TopRight, true);
         }));
-        popupMenu.add(UIUtils.createMenuItem("Bottom right", "Move the panel to the bottom right anchor", UIUtils.getIconFromResources("actions/dock-bottom-right.png"), () -> {
+        popupMenu.add(UIUtils.createMenuItem("Bottom right", "Move the panel to the bottom right anchor", JIPipe.RESOURCES.getIcon16("actions/dock-bottom-right.png"), () -> {
             movePanelToLocation(panel, PanelLocation.BottomRight, true);
         }));
-        popupMenu.add(UIUtils.createMenuItem("Bottom", "Move the panel to the bottom anchor", UIUtils.getIconFromResources("actions/go-bottom.png"), () -> {
+        popupMenu.add(UIUtils.createMenuItem("Bottom", "Move the panel to the bottom anchor", JIPipe.RESOURCES.getIcon16("actions/go-bottom.png"), () -> {
             movePanelToLocation(panel, PanelLocation.BottomBottom, true);
         }));
 

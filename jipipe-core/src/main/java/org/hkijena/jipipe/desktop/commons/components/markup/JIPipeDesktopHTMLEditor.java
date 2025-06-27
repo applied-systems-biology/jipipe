@@ -15,6 +15,7 @@ package org.hkijena.jipipe.desktop.commons.components.markup;
 
 import ij.process.ColorProcessor;
 import ij.process.ImageProcessor;
+import org.hkijena.jipipe.JIPipe;
 import org.hkijena.jipipe.api.parameters.JIPipeDynamicParameterCollection;
 import org.hkijena.jipipe.desktop.JIPipeDesktop;
 import org.hkijena.jipipe.desktop.app.JIPipeDesktopWorkbench;
@@ -30,6 +31,7 @@ import org.hkijena.jipipe.utils.BufferedImageUtils;
 import org.hkijena.jipipe.utils.PathUtils;
 import org.hkijena.jipipe.utils.StringUtils;
 import org.hkijena.jipipe.utils.UIUtils;
+import org.hkijena.jipipe.JIPipe;
 import org.hkijena.jipipe.utils.scripting.MacroUtils;
 import org.scijava.ui.swing.script.EditorPane;
 
@@ -361,7 +363,7 @@ public class JIPipeDesktopHTMLEditor extends JIPipeDesktopWorkbenchPanel {
 
         // Color selection
         foregroundColorButton = new JIPipeDesktopColorChooserButton("");
-        foregroundColorButton.setIcon(new OverlayJIPipeDesktopColorIcon(UIUtils.getIconFromResources("actions/format-stroke-color.png"),
+        foregroundColorButton.setIcon(new OverlayJIPipeDesktopColorIcon(JIPipe.RESOURCES.getIcon16("actions/format-stroke-color.png"),
                 new Rectangle(0, 14, 16, 2), true, false));
         UIUtils.makeButtonFlat25x25(foregroundColorButton);
         foregroundColorButton.setToolTipText("Set color");
@@ -376,26 +378,26 @@ public class JIPipeDesktopHTMLEditor extends JIPipeDesktopWorkbenchPanel {
         });
 
         // Compact mode selection
-        modeButton = new JButton(UIUtils.getIconFromResources("actions/caret-down.png"));
+        modeButton = new JButton(JIPipe.RESOURCES.getIcon16("actions/caret-down.png"));
         modeButton.setHorizontalTextPosition(SwingConstants.LEFT);
         UIUtils.makeButtonFlat(modeButton);
         JPopupMenu modeMenu = UIUtils.addPopupMenuToButton(modeButton);
         {
-            JMenuItem compactModeItem = new JMenuItem("Compact", UIUtils.getIconFromResources("actions/edit-select-text.png"));
+            JMenuItem compactModeItem = new JMenuItem("Compact", JIPipe.RESOURCES.getIcon16("actions/edit-select-text.png"));
             compactModeItem.addActionListener(e -> setMode(Mode.Compact));
             modeMenu.add(compactModeItem);
 
-            JMenuItem fullModeItem = new JMenuItem("Full", UIUtils.getIconFromResources("actions/edit-select-text.png"));
+            JMenuItem fullModeItem = new JMenuItem("Full", JIPipe.RESOURCES.getIcon16("actions/edit-select-text.png"));
             fullModeItem.addActionListener(e -> setMode(Mode.Full));
             modeMenu.add(fullModeItem);
 
-            JMenuItem htmlModeItem = new JMenuItem("HTML code", UIUtils.getIconFromResources("actions/format-text-code.png"));
+            JMenuItem htmlModeItem = new JMenuItem("HTML code", JIPipe.RESOURCES.getIcon16("actions/format-text-code.png"));
             htmlModeItem.addActionListener(e -> setMode(Mode.HTML));
             modeMenu.add(htmlModeItem);
         }
 
         // Edit in dialog button
-        editInDialogButton = new JButton(UIUtils.getIconFromResources("actions/open-in-new-window.png"));
+        editInDialogButton = new JButton(JIPipe.RESOURCES.getIcon16("actions/open-in-new-window.png"));
         UIUtils.makeButtonFlat25x25(editInDialogButton);
         editInDialogButton.setToolTipText("Edit in dedicated window");
         editInDialogButton.addActionListener(e -> {
@@ -406,27 +408,27 @@ public class JIPipeDesktopHTMLEditor extends JIPipeDesktopWorkbenchPanel {
         });
 
         // Insert image
-        insertImageButton = new JButton("Image", UIUtils.getIconFromResources("actions/insert-image.png"));
+        insertImageButton = new JButton("Image", JIPipe.RESOURCES.getIcon16("actions/insert-image.png"));
         UIUtils.makeButtonFlat(insertImageButton);
         JPopupMenu insertImageMenu = UIUtils.addPopupMenuToButton(insertImageButton);
         {
-            JMenuItem insertImageFromFileItem = new JMenuItem("Embed from file ...", UIUtils.getIconFromResources("actions/document-open-folder.png"));
+            JMenuItem insertImageFromFileItem = new JMenuItem("Embed from file ...", JIPipe.RESOURCES.getIcon16("actions/document-open-folder.png"));
             insertImageFromFileItem.addActionListener(e -> insertImageFromFile());
             insertImageMenu.add(insertImageFromFileItem);
 
-            JMenuItem insertImageFromClipboardItem = new JMenuItem("Embed from clipboard", UIUtils.getIconFromResources("actions/edit-paste.png"));
+            JMenuItem insertImageFromClipboardItem = new JMenuItem("Embed from clipboard", JIPipe.RESOURCES.getIcon16("actions/edit-paste.png"));
             insertImageFromClipboardItem.addActionListener(e -> insertImageFromClipboard());
             insertImageMenu.add(insertImageFromClipboardItem);
 
             insertImageMenu.addSeparator();
 
-            JMenuItem insertImageFromURL = new JMenuItem("Link from URL", UIUtils.getIconFromResources("actions/edit-link.png"));
+            JMenuItem insertImageFromURL = new JMenuItem("Link from URL", JIPipe.RESOURCES.getIcon16("actions/edit-link.png"));
             insertImageFromURL.addActionListener(e -> insertImageURL());
             insertImageMenu.add(insertImageFromURL);
         }
 
         // Insert link
-        insertLinkButton = new JButton("Link", UIUtils.getIconFromResources("actions/insert-link.png"));
+        insertLinkButton = new JButton("Link", JIPipe.RESOURCES.getIcon16("actions/insert-link.png"));
         UIUtils.makeButtonFlat(insertLinkButton);
         insertLinkButton.addActionListener(e -> insertLink());
     }
@@ -495,7 +497,7 @@ public class JIPipeDesktopHTMLEditor extends JIPipeDesktopWorkbenchPanel {
         if (base64.length() > 128 * 1024) {
             Object result = JOptionPane.showInputDialog(this, "The image has a size of " + image.getWidth() + " x " + image.getHeight() + " pixels (" + (base64.length() / 1024) + "KB)." +
                             "Images of this size can impact the performance of the editor.\nIn the following setting, you can downscale the image to a specified data size or scale.", "Insert image", JOptionPane.WARNING_MESSAGE,
-                    UIUtils.getIconFromResources("apps/jipipe.png"), new Object[]{
+                    JIPipe.RESOURCES.getIcon16("apps/jipipe.png"), new Object[]{
                             "512KB",
                             "256KB",
                             "128KB",
@@ -719,7 +721,7 @@ public class JIPipeDesktopHTMLEditor extends JIPipeDesktopWorkbenchPanel {
             wysiwygEditorPane.requestFocusInWindow();
         });
         button.setText("");
-        button.setIcon(UIUtils.getIconFromResources(icon));
+        button.setIcon(JIPipe.RESOURCES.getIcon16(icon));
         button.setToolTipText(name);
         UIUtils.makeButtonFlat25x25(button);
         updatedButtons.put(button, toggled);

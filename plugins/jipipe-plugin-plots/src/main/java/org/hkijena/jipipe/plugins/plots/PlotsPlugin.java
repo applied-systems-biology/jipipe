@@ -40,6 +40,7 @@ import org.hkijena.jipipe.plugins.plots.viewers.JFreeChartPlotDataViewer;
 import org.hkijena.jipipe.plugins.tables.TablesPlugin;
 import org.hkijena.jipipe.utils.ResourceUtils;
 import org.hkijena.jipipe.utils.UIUtils;
+import org.hkijena.jipipe.JIPipe;
 import org.scijava.Context;
 import org.scijava.plugin.Plugin;
 
@@ -196,7 +197,7 @@ public class PlotsPlugin extends JIPipePrepackagedDefaultJavaPlugin implements J
                 STANDARD_DATA_OPERATIONS);
 
         // Register algorithms to create plots
-        registerNodeType("plot-from-table", PlotTablesAlgorithm.class, UIUtils.getIconURLFromResources("actions/office-chart-area.png"));
+        registerNodeType("plot-from-table", PlotTablesAlgorithm.class, JIPipe.RESOURCES.getIcon16URL("actions/office-chart-area.png"));
 
         // Register parameters
         registerEnumParameterType("plot-histogram:type",
@@ -218,7 +219,7 @@ public class PlotsPlugin extends JIPipePrepackagedDefaultJavaPlugin implements J
             return;
         if (Modifier.isAbstract(dataInfo.getDataClass().getModifiers()))
             return;
-        registerNodeType(new PlotTables2AlgorithmInfo(dataInfo), UIUtils.getIconURLFromResources("actions/office-chart-area.png"));
+        registerNodeType(new PlotTables2AlgorithmInfo(dataInfo), JIPipe.RESOURCES.getIcon16URL("actions/office-chart-area.png"));
     }
 
     @Override

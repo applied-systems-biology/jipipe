@@ -15,11 +15,13 @@ package org.hkijena.jipipe.api.runtimepartitioning;
 
 import com.fasterxml.jackson.annotation.JsonGetter;
 import com.fasterxml.jackson.annotation.JsonSetter;
+import org.hkijena.jipipe.JIPipe;
 import org.hkijena.jipipe.desktop.commons.components.icons.SolidColorIcon;
 import org.hkijena.jipipe.plugins.expressions.functions.math.RandomFunction;
 import org.hkijena.jipipe.plugins.parameters.library.colors.OptionalColorParameter;
 import org.hkijena.jipipe.utils.StringUtils;
 import org.hkijena.jipipe.utils.UIUtils;
+import org.hkijena.jipipe.JIPipe;
 
 import javax.swing.*;
 import java.awt.*;
@@ -160,7 +162,7 @@ public class JIPipeRuntimePartitionConfiguration {
         if (runtimePartition.getColor().isEnabled()) {
             return new SolidColorIcon(16, 16, runtimePartition.getColor().getContent());
         } else {
-            return UIUtils.getIconFromResources("actions/runtime-partition.png");
+            return JIPipe.RESOURCES.getIcon16("actions/runtime-partition.png");
         }
     }
 }

@@ -21,6 +21,7 @@ import org.hkijena.jipipe.desktop.app.JIPipeDesktopWorkbench;
 import org.hkijena.jipipe.desktop.app.JIPipeDesktopWorkbenchAccess;
 import org.hkijena.jipipe.desktop.commons.theme.JIPipeDesktopLegacyModernMetalTheme;
 import org.hkijena.jipipe.utils.UIUtils;
+import org.hkijena.jipipe.JIPipe;
 
 import javax.swing.*;
 import java.awt.*;
@@ -41,11 +42,11 @@ public class JIPipeDesktopCompactRunnableQueueButton extends JButton implements 
     private int lastMaxProgress;
 
     public JIPipeDesktopCompactRunnableQueueButton(JIPipeDesktopWorkbench desktopWorkbench, String iconName) {
-        this(desktopWorkbench, JIPipeRunnableQueue.getInstance(), UIUtils.getIconInvertedFromResources(iconName), UIUtils.getIconFromResources(iconName));
+        this(desktopWorkbench, JIPipeRunnableQueue.getInstance(), JIPipe.RESOURCES.getIcon16Inverted(iconName), JIPipe.RESOURCES.getIcon16(iconName));
     }
 
     public JIPipeDesktopCompactRunnableQueueButton(JIPipeDesktopWorkbench desktopWorkbench, JIPipeRunnableQueue runnerQueue, String iconName) {
-        this(desktopWorkbench, runnerQueue, UIUtils.getIconInvertedFromResources(iconName), UIUtils.getIconFromResources(iconName));
+        this(desktopWorkbench, runnerQueue, JIPipe.RESOURCES.getIcon16Inverted(iconName), JIPipe.RESOURCES.getIcon16(iconName));
     }
 
     public JIPipeDesktopCompactRunnableQueueButton(JIPipeDesktopWorkbench desktopWorkbench, Icon iconInactive, Icon iconActive) {
@@ -88,7 +89,7 @@ public class JIPipeDesktopCompactRunnableQueueButton extends JButton implements 
 
         if (runnerQueue.size() > 0) {
 
-            JMenuItem cancelAllItem = new JMenuItem("Cancel all tasks", UIUtils.getIcon32FromResources("actions/stock_calc-cancel.png"));
+            JMenuItem cancelAllItem = new JMenuItem("Cancel all tasks", JIPipe.RESOURCES.getIcon32("actions/stock_calc-cancel.png"));
             cancelAllItem.setMaximumSize(new Dimension(Short.MAX_VALUE, 48));
             cancelAllItem.setToolTipText("Cancels all running and queued tasks");
             cancelAllItem.addActionListener(e -> {
@@ -99,7 +100,7 @@ public class JIPipeDesktopCompactRunnableQueueButton extends JButton implements 
             menu.add(cancelAllItem);
 
             if (runnerQueue.size() > 1) {
-                JMenuItem cancelQueuedItem = new JMenuItem("Cancel only enqueued tasks", UIUtils.getIcon32FromResources("actions/rabbitvcs-clear.png"));
+                JMenuItem cancelQueuedItem = new JMenuItem("Cancel only enqueued tasks", JIPipe.RESOURCES.getIcon32("actions/rabbitvcs-clear.png"));
                 cancelQueuedItem.setMaximumSize(new Dimension(Short.MAX_VALUE, 48));
                 cancelQueuedItem.setToolTipText("Cancels enqueued tasks. Currently running operations are not cancelled.");
                 cancelQueuedItem.addActionListener(e -> {
@@ -118,14 +119,14 @@ public class JIPipeDesktopCompactRunnableQueueButton extends JButton implements 
                 menu.add(new JIPipeDesktopRunnableQueueButtonMenuItem(runnerQueue, runWorker));
             }
         } else {
-            JMenuItem noTasksItem = new JMenuItem("There are currently no tasks running", UIUtils.getIcon32FromResources("emblems/vcs-normal.png"));
+            JMenuItem noTasksItem = new JMenuItem("There are currently no tasks running", JIPipe.RESOURCES.getIcon32("emblems/vcs-normal.png"));
             noTasksItem.setMaximumSize(new Dimension(Short.MAX_VALUE, 48));
             menu.add(noTasksItem);
         }
 
 //        if (workbench instanceof JIPipeProjectWorkbench && isOnGlobalRunnerQueue()) {
 //            menu.addSeparator();
-//            JMenuItem openLogsItem = new JMenuItem("Open logs", UIUtils.getIcon32FromResources("actions/rabbitvcs-show_log.png"));
+//            JMenuItem openLogsItem = new JMenuItem("Open logs", JIPipe.RESOURCES.getIcon32("actions/rabbitvcs-show_log.png"));
 //            openLogsItem.setMaximumSize(new Dimension(Short.MAX_VALUE, 48));
 //            openLogsItem.addActionListener(e -> workbench.getDocumentTabPane().selectSingletonTab(JIPipeProjectWorkbench.TAB_LOG));
 //            menu.add(openLogsItem);

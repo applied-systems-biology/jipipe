@@ -13,10 +13,12 @@
 
 package org.hkijena.jipipe.desktop.app.grapheditor.commons.contextmenu.navigation;
 
+import org.hkijena.jipipe.JIPipe;
 import org.hkijena.jipipe.desktop.app.grapheditor.commons.JIPipeDesktopGraphCanvasUI;
 import org.hkijena.jipipe.desktop.app.grapheditor.commons.contextmenu.NodeUIContextAction;
 import org.hkijena.jipipe.desktop.app.grapheditor.commons.nodeui.JIPipeDesktopGraphNodeUI;
 import org.hkijena.jipipe.utils.UIUtils;
+import org.hkijena.jipipe.JIPipe;
 
 import javax.swing.*;
 import java.awt.*;
@@ -57,7 +59,7 @@ public class MoveNodeUIDownContextAction implements NodeUIContextAction {
 
     @Override
     public Icon getIcon() {
-        return UIUtils.getIconFromResources("actions/go-down.png");
+        return JIPipe.RESOURCES.getIcon16("actions/go-down.png");
     }
 
     @Override

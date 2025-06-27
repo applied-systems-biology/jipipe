@@ -20,6 +20,7 @@ import org.hkijena.jipipe.api.settings.JIPipeDefaultApplicationSettingsSheetCate
 import org.hkijena.jipipe.api.settings.JIPipeDefaultApplicationsSettingsSheet;
 import org.hkijena.jipipe.plugins.imagejdatatypes.util.RoiDrawer;
 import org.hkijena.jipipe.utils.UIUtils;
+import org.hkijena.jipipe.JIPipe;
 
 import javax.swing.*;
 
@@ -80,7 +81,7 @@ public class ImageViewerUIROI2DDisplayApplicationSettings extends JIPipeDefaultA
 
     @Override
     public Icon getIcon() {
-        return UIUtils.getIconFromResources("actions/roi.png");
+        return JIPipe.RESOURCES.getIcon16("actions/roi.png");
     }
 
     @Override

@@ -39,6 +39,7 @@ import org.hkijena.jipipe.plugins.strings.nodes.xml.ExtractTextFromXMLAlgorithm;
 import org.hkijena.jipipe.plugins.strings.nodes.xml.ExtractXPathDataAsTableAlgorithm;
 import org.hkijena.jipipe.plugins.strings.nodes.xml.PrettifyXMLAlgorithm;
 import org.hkijena.jipipe.utils.UIUtils;
+import org.hkijena.jipipe.JIPipe;
 import org.scijava.Context;
 import org.scijava.plugin.Plugin;
 
@@ -81,13 +82,13 @@ public class StringsPlugin extends JIPipePrepackagedDefaultJavaPlugin {
 
     @Override
     public void register(JIPipe jiPipe, Context context, JIPipeProgressInfo progressInfo) {
-        registerDatatype("string", StringData.class, UIUtils.getIconURLFromResources("data-types/string.png"),
+        registerDatatype("string", StringData.class, JIPipe.RESOURCES.getIcon16URL("data-types/string.png"),
                 new OpenInNativeApplicationDataImportOperation(".txt"));
-        registerDatatype("xml", XMLData.class, UIUtils.getIconURLFromResources("data-types/xml.png"),
+        registerDatatype("xml", XMLData.class, JIPipe.RESOURCES.getIcon16URL("data-types/xml.png"),
                 new OpenInNativeApplicationDataImportOperation(".xml"));
-        registerDatatype("json", JsonData.class, UIUtils.getIconURLFromResources("data-types/json.png"),
+        registerDatatype("json", JsonData.class, JIPipe.RESOURCES.getIcon16URL("data-types/json.png"),
                 new OpenInNativeApplicationDataImportOperation(".json"));
-        registerDatatype("uri", URIData.class, UIUtils.getIconURLFromResources("data-types/path.png"),
+        registerDatatype("uri", URIData.class, JIPipe.RESOURCES.getIcon16URL("data-types/path.png"),
                 new OpenInNativeApplicationDataImportOperation(".uri"));
         registerDatatypeConversion(new StringDataConverter(XMLData.class));
         registerDatatypeConversion(new StringDataConverter(JsonData.class));
@@ -99,19 +100,19 @@ public class StringsPlugin extends JIPipePrepackagedDefaultJavaPlugin {
         registerNodeType("import-xml-from-file", ImportXMLAlgorithm.class);
         registerNodeType("import-json-from-file", ImportJsonAlgorithm.class);
 
-        registerNodeType("json-annotate-with-json-data", AnnotateWithJsonDataAlgorithm.class, UIUtils.getIconURLFromResources("actions/tag.png"));
-        registerNodeType("json-extract-data-as-table-json-path", ExtractJsonDataAsTableAlgorithm.class, UIUtils.getIconURLFromResources("actions/table.png"));
-        registerNodeType("json-extract-text-from-json-path", ExtractTextFromJsonAlgorithm.class, UIUtils.getIconURLFromResources("actions/insert-math-expression.png"));
+        registerNodeType("json-annotate-with-json-data", AnnotateWithJsonDataAlgorithm.class, JIPipe.RESOURCES.getIcon16URL("actions/tag.png"));
+        registerNodeType("json-extract-data-as-table-json-path", ExtractJsonDataAsTableAlgorithm.class, JIPipe.RESOURCES.getIcon16URL("actions/table.png"));
+        registerNodeType("json-extract-text-from-json-path", ExtractTextFromJsonAlgorithm.class, JIPipe.RESOURCES.getIcon16URL("actions/insert-math-expression.png"));
 
-        registerNodeType("json-annotate-with-text-data", AnnotateWithTextDataAlgorithm.class, UIUtils.getIconURLFromResources("actions/tag.png"));
-        registerNodeType("text-process-expression", ProcessTextDataAlgorithm.class, UIUtils.getIconURLFromResources("actions/insert-math-expression.png"));
-        registerNodeType("table-to-csv-text", TableToCSVTextAlgorithm.class, UIUtils.getIconURLFromResources("actions/reload.png"));
-        registerNodeType("text-to-table-expression", TextDataToTableAlgorithm.class, UIUtils.getIconURLFromResources("actions/table.png"));
+        registerNodeType("json-annotate-with-text-data", AnnotateWithTextDataAlgorithm.class, JIPipe.RESOURCES.getIcon16URL("actions/tag.png"));
+        registerNodeType("text-process-expression", ProcessTextDataAlgorithm.class, JIPipe.RESOURCES.getIcon16URL("actions/insert-math-expression.png"));
+        registerNodeType("table-to-csv-text", TableToCSVTextAlgorithm.class, JIPipe.RESOURCES.getIcon16URL("actions/reload.png"));
+        registerNodeType("text-to-table-expression", TextDataToTableAlgorithm.class, JIPipe.RESOURCES.getIcon16URL("actions/table.png"));
 
-        registerNodeType("xml-annotate-with-xml-data", AnnotateWithXPathDataAlgorithm.class, UIUtils.getIconURLFromResources("actions/tag.png"));
-        registerNodeType("xml-extract-text-from-xpath", ExtractTextFromXMLAlgorithm.class, UIUtils.getIconURLFromResources("actions/insert-math-expression.png"));
-        registerNodeType("xml-extract-data-as-table-xpath", ExtractXPathDataAsTableAlgorithm.class, UIUtils.getIconURLFromResources("actions/table.png"));
-        registerNodeType("xml-prettify", PrettifyXMLAlgorithm.class, UIUtils.getIconURLFromResources("actions/format-justify-left.png"));
+        registerNodeType("xml-annotate-with-xml-data", AnnotateWithXPathDataAlgorithm.class, JIPipe.RESOURCES.getIcon16URL("actions/tag.png"));
+        registerNodeType("xml-extract-text-from-xpath", ExtractTextFromXMLAlgorithm.class, JIPipe.RESOURCES.getIcon16URL("actions/insert-math-expression.png"));
+        registerNodeType("xml-extract-data-as-table-xpath", ExtractXPathDataAsTableAlgorithm.class, JIPipe.RESOURCES.getIcon16URL("actions/table.png"));
+        registerNodeType("xml-prettify", PrettifyXMLAlgorithm.class, JIPipe.RESOURCES.getIcon16URL("actions/format-justify-left.png"));
     }
 
     @Override

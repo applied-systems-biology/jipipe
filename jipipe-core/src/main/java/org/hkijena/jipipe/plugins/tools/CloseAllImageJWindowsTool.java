@@ -14,10 +14,12 @@
 package org.hkijena.jipipe.plugins.tools;
 
 import ij.WindowManager;
+import org.hkijena.jipipe.JIPipe;
 import org.hkijena.jipipe.desktop.api.JIPipeDesktopMenuExtension;
 import org.hkijena.jipipe.desktop.api.JIPipeMenuExtensionTarget;
 import org.hkijena.jipipe.desktop.app.JIPipeDesktopWorkbench;
 import org.hkijena.jipipe.utils.UIUtils;
+import org.hkijena.jipipe.JIPipe;
 
 public class CloseAllImageJWindowsTool extends JIPipeDesktopMenuExtension {
     /**
@@ -29,7 +31,7 @@ public class CloseAllImageJWindowsTool extends JIPipeDesktopMenuExtension {
         super(workbench);
         setText("Close all ImageJ windows");
         setToolTipText("Closes all open ImageJ-related windows.");
-        setIcon(UIUtils.getIconFromResources("actions/close-tab.png"));
+        setIcon(JIPipe.RESOURCES.getIcon16("actions/close-tab.png"));
         addActionListener(e -> closeImageJWindows());
     }
 

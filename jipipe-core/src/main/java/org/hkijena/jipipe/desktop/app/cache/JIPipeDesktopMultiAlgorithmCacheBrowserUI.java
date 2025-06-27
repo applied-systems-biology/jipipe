@@ -1,11 +1,13 @@
 package org.hkijena.jipipe.desktop.app.cache;
 
+import org.hkijena.jipipe.JIPipe;
 import org.hkijena.jipipe.api.nodes.JIPipeAlgorithm;
 import org.hkijena.jipipe.api.nodes.JIPipeGraphNode;
 import org.hkijena.jipipe.desktop.app.JIPipeDesktopProjectWorkbench;
 import org.hkijena.jipipe.desktop.app.JIPipeDesktopProjectWorkbenchPanel;
 import org.hkijena.jipipe.desktop.commons.components.renderers.JIPipeDesktopAlgorithmListCellRenderer;
 import org.hkijena.jipipe.utils.UIUtils;
+import org.hkijena.jipipe.JIPipe;
 
 import javax.swing.*;
 import java.awt.*;
@@ -56,8 +58,8 @@ public class JIPipeDesktopMultiAlgorithmCacheBrowserUI extends JIPipeDesktopProj
         algorithmComboBox.setRenderer(new JIPipeDesktopAlgorithmListCellRenderer());
 
         JPanel topPanel = new JPanel(new BorderLayout());
-        topPanel.add(UIUtils.createButton("", UIUtils.getIconFromResources("actions/caret-left.png"), this::goToPrevious), BorderLayout.WEST);
-        topPanel.add(UIUtils.createButton("", UIUtils.getIconFromResources("actions/caret-right.png"), this::goToNext), BorderLayout.EAST);
+        topPanel.add(UIUtils.createButton("", JIPipe.RESOURCES.getIcon16("actions/caret-left.png"), this::goToPrevious), BorderLayout.WEST);
+        topPanel.add(UIUtils.createButton("", JIPipe.RESOURCES.getIcon16("actions/caret-right.png"), this::goToNext), BorderLayout.EAST);
         topPanel.add(algorithmComboBox, BorderLayout.CENTER);
         topPanel.setBorder(BorderFactory.createMatteBorder(0, 0, 1, 0, UIUtils.getControlBorderColor()));
 

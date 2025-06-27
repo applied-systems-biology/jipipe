@@ -21,6 +21,7 @@ import org.hkijena.jipipe.desktop.commons.components.renderers.JIPipeDesktopData
 import org.hkijena.jipipe.plugins.tables.ColumnContentType;
 import org.hkijena.jipipe.plugins.tables.datatypes.TableColumnData;
 import org.hkijena.jipipe.utils.UIUtils;
+import org.hkijena.jipipe.JIPipe;
 
 import javax.swing.*;
 import java.util.ArrayList;
@@ -68,8 +69,8 @@ public class TableColumnGeneratorDesktopParameterEditorUI extends JIPipeDesktopP
         add(comboBox);
 
         ButtonGroup buttonGroup = new ButtonGroup();
-        numericColumnToggle = addToggle(buttonGroup, UIUtils.getIconFromResources("actions/edit-select-number.png"), "Numeric column");
-        textColumnToggle = addToggle(buttonGroup, UIUtils.getIconFromResources("actions/edit-select-text.png"), "Text column");
+        numericColumnToggle = addToggle(buttonGroup, JIPipe.RESOURCES.getIcon16("actions/edit-select-number.png"), "Numeric column");
+        textColumnToggle = addToggle(buttonGroup, JIPipe.RESOURCES.getIcon16("actions/edit-select-text.png"), "Text column");
     }
 
     private void writeValueToParameter() {

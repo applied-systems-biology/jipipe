@@ -34,6 +34,7 @@ import org.hkijena.jipipe.utils.JIPipeDesktopSplitPane;
 import org.hkijena.jipipe.utils.PathUtils;
 import org.hkijena.jipipe.utils.StringUtils;
 import org.hkijena.jipipe.utils.UIUtils;
+import org.hkijena.jipipe.JIPipe;
 
 import javax.swing.*;
 import javax.swing.tree.DefaultMutableTreeNode;
@@ -97,7 +98,7 @@ public class JIPipeDesktopBackupManagerPanel extends JIPipeDesktopWorkbenchPanel
         toolBar.add(limitToCurrentProjectFilter);
         toolBar.addSeparator();
         toolBar.add(new JIPipeDesktopRunnableQueueButton(getDesktopWorkbench(), BACKUP_QUEUE));
-        toolBar.add(UIUtils.createStandardButton("Reload", UIUtils.getIconFromResources("actions/reload.png"), this::reloadBackups));
+        toolBar.add(UIUtils.createStandardButton("Reload", JIPipe.RESOURCES.getIcon16("actions/reload.png"), this::reloadBackups));
 
         backupTree.setCellRenderer(new JIPipeDesktopBackupManagerTreeCellRenderer());
         backupTree.addTreeSelectionListener(e -> {
@@ -124,35 +125,35 @@ public class JIPipeDesktopBackupManagerPanel extends JIPipeDesktopWorkbenchPanel
 
     private void refreshSidebar() {
         propertiesPanel.clear();
-        JIPipeDesktopFormPanel.GroupHeaderPanel generalHeader = propertiesPanel.addGroupHeader("Backups", UIUtils.getIconFromResources("actions/filesave.png"));
+        JIPipeDesktopFormPanel.GroupHeaderPanel generalHeader = propertiesPanel.addGroupHeader("Backups", JIPipe.RESOURCES.getIcon16("actions/filesave.png"));
         generalHeader.addDescriptionRow("Here you can manage the collection of backups automatically created by JIPipe. " +
                 "You can enable/disable backups and change the interval in the application settings.");
 
-        propertiesPanel.addWideToForm(UIUtils.createLeftAlignedButton("Open backup directory", UIUtils.getIconFromResources("actions/folder-open.png"), this::openBackupFolder));
-        propertiesPanel.addWideToForm(UIUtils.createLeftAlignedButton("Remove old backups", UIUtils.getIconFromResources("actions/clear-brush.png"), this::removeOldBackups));
-        propertiesPanel.addWideToForm(UIUtils.createLeftAlignedButton("Remove backups without project file", UIUtils.getIconFromResources("actions/delete.png"), this::removeUnnamedBackups));
-        propertiesPanel.addWideToForm(UIUtils.createLeftAlignedButton("Remove backups with project file", UIUtils.getIconFromResources("actions/delete.png"), this::removeNamedBackups));
+        propertiesPanel.addWideToForm(UIUtils.createLeftAlignedButton("Open backup directory", JIPipe.RESOURCES.getIcon16("actions/folder-open.png"), this::openBackupFolder));
+        propertiesPanel.addWideToForm(UIUtils.createLeftAlignedButton("Remove old backups", JIPipe.RESOURCES.getIcon16("actions/clear-brush.png"), this::removeOldBackups));
+        propertiesPanel.addWideToForm(UIUtils.createLeftAlignedButton("Remove backups without project file", JIPipe.RESOURCES.getIcon16("actions/delete.png"), this::removeUnnamedBackups));
+        propertiesPanel.addWideToForm(UIUtils.createLeftAlignedButton("Remove backups with project file", JIPipe.RESOURCES.getIcon16("actions/delete.png"), this::removeNamedBackups));
 
         if (backupTree.getSelectionCount() > 0) {
-            propertiesPanel.addGroupHeader("Selection (" + backupTree.getSelectionCount() + " items)", UIUtils.getIconFromResources("actions/edit-select-all.png"));
-            propertiesPanel.addWideToForm(UIUtils.createLeftAlignedButton("Delete selection", UIUtils.getIconFromResources("actions/delete.png"), this::deleteSelection));
+            propertiesPanel.addGroupHeader("Selection (" + backupTree.getSelectionCount() + " items)", JIPipe.RESOURCES.getIcon16("actions/edit-select-all.png"));
+            propertiesPanel.addWideToForm(UIUtils.createLeftAlignedButton("Delete selection", JIPipe.RESOURCES.getIcon16("actions/delete.png"), this::deleteSelection));
         }
 
         if (backupTree.getLastSelectedPathComponent() != null) {
             DefaultMutableTreeNode node = (DefaultMutableTreeNode) backupTree.getLastSelectedPathComponent();
             if (node.getUserObject() instanceof JIPipeProjectBackupItemCollection) {
-                propertiesPanel.addGroupHeader("Backup collection", UIUtils.getIconFromResources("mimetypes/application-jipipe.png"));
+                propertiesPanel.addGroupHeader("Backup collection", JIPipe.RESOURCES.getIcon16("mimetypes/application-jipipe.png"));
                 JIPipeProjectBackupItemCollection itemCollection = (JIPipeProjectBackupItemCollection) node.getUserObject();
                 propertiesPanel.addToForm(UIUtils.createReadonlyTextField("" + itemCollection.getBackupItemList().size()), new JLabel("Backup count"));
                 propertiesPanel.addToForm(UIUtils.createReadonlyTextField(itemCollection.getSessionId()), new JLabel("Session ID"));
                 propertiesPanel.addToForm(UIUtils.createReadonlyTextField(itemCollection.getOriginalProjectPath()), new JLabel("Original project path"));
 
             } else if (node.getUserObject() instanceof JIPipeProjectBackupItem) {
-                propertiesPanel.addGroupHeader("Backup", UIUtils.getIconFromResources("actions/clock.png"));
+                propertiesPanel.addGroupHeader("Backup", JIPipe.RESOURCES.getIcon16("actions/clock.png"));
                 JIPipeProjectBackupItem backupItem = (JIPipeProjectBackupItem) node.getUserObject();
                 propertiesPanel.addToForm(UIUtils.createReadonlyTextField(backupItem.getOriginalProjectPath()), new JLabel("Original project path"));
                 propertiesPanel.addToForm(UIUtils.createReadonlyTextField(backupItem.getBackupTime().format(DateTimeFormatter.ISO_LOCAL_DATE_TIME)), new JLabel("Modification time"));
-                propertiesPanel.addWideToForm(UIUtils.createLeftAlignedButton("Restore", UIUtils.getIconFromResources("actions/fileopen.png"), () -> restoreBackup(backupItem)));
+                propertiesPanel.addWideToForm(UIUtils.createLeftAlignedButton("Restore", JIPipe.RESOURCES.getIcon16("actions/fileopen.png"), () -> restoreBackup(backupItem)));
             }
         }
 

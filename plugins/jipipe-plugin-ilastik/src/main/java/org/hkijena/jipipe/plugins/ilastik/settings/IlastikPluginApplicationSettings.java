@@ -120,7 +120,7 @@ public class IlastikPluginApplicationSettings extends JIPipeDefaultApplicationsS
 
     @Override
     public Icon getIcon() {
-        return IlastikPlugin.RESOURCES.getIcon16FromResources("ilastik.png");
+        return IlastikPlugin.RESOURCES.getIcon16("ilastik.png");
     }
 
     @Override

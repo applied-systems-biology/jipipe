@@ -22,6 +22,7 @@ import org.hkijena.jipipe.plugins.nodeexamples.JIPipeNodeExampleListCellRenderer
 import org.hkijena.jipipe.plugins.nodetemplate.NodeTemplatesRefreshedEvent;
 import org.hkijena.jipipe.plugins.nodetemplate.NodeTemplatesRefreshedEventListener;
 import org.hkijena.jipipe.utils.UIUtils;
+import org.hkijena.jipipe.JIPipe;
 import org.hkijena.jipipe.utils.ui.JIPipeDesktopDockPanel;
 
 import javax.swing.*;
@@ -64,7 +65,7 @@ public class JIPipeDesktopNodeExamplesUI extends JIPipeDesktopProjectWorkbenchPa
 
         toolBar.add(Box.createHorizontalGlue());
 
-        JButton loadExampleButton = new JButton("Load example", UIUtils.getIconFromResources("actions/document-open-folder.png"));
+        JButton loadExampleButton = new JButton("Load example", JIPipe.RESOURCES.getIcon16("actions/document-open-folder.png"));
         loadExampleButton.addActionListener(e -> loadExample());
         toolBar.add(loadExampleButton);
     }

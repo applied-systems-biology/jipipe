@@ -171,6 +171,7 @@ import org.hkijena.jipipe.plugins.tables.TablesPlugin;
 import org.hkijena.jipipe.utils.ImageJCalibrationMode;
 import org.hkijena.jipipe.utils.JIPipeResourceManager;
 import org.hkijena.jipipe.utils.UIUtils;
+import org.hkijena.jipipe.JIPipe;
 import org.scijava.Context;
 import org.scijava.plugin.Plugin;
 import sc.fiji.coloc.algorithms.AutoThresholdRegression;
@@ -627,19 +628,19 @@ public class ImageJAlgorithmsPlugin extends JIPipePrepackagedDefaultJavaPlugin {
         registerMaskingAlgorithms();
         registerEnhancementAlgorithms();
 
-        registerNodeType("ij1-generate-missing-results-table", GenerateMissingTablesAlgorithm.class, UIUtils.getIconURLFromResources("actions/image-auto-adjust.png"));
-        registerNodeType("ij1-generate-missing-results-table-2", GenerateMissingTablesAlgorithm2.class, UIUtils.getIconURLFromResources("actions/image-auto-adjust.png"));
-        registerNodeType("ij1-generate-filter-kernel", GenerateStructureElement2DAlgorithm.class, UIUtils.getIconURLFromResources("actions/morphology.png"));
-        registerNodeType("ij1-generate-filter-kernel-3d", GenerateStructureElement3DAlgorithm.class, UIUtils.getIconURLFromResources("actions/morphology.png"));
-        registerNodeType("ij1-data-to-preview", DataToPreviewAlgorithm.class, UIUtils.getIconURLFromResources("actions/viewimage.png"));
-        registerNodeType("render-jipipe-project", RenderJIPipeProjectAlgorithm.class, UIUtils.getIconURLFromResources("actions/viewimage.png"));
-        registerNodeType("external-imagej-macro", MacroWrapperAlgorithm.class, UIUtils.getIconURLFromResources("apps/imagej.png"));
+        registerNodeType("ij1-generate-missing-results-table", GenerateMissingTablesAlgorithm.class, JIPipe.RESOURCES.getIcon16URL("actions/image-auto-adjust.png"));
+        registerNodeType("ij1-generate-missing-results-table-2", GenerateMissingTablesAlgorithm2.class, JIPipe.RESOURCES.getIcon16URL("actions/image-auto-adjust.png"));
+        registerNodeType("ij1-generate-filter-kernel", GenerateStructureElement2DAlgorithm.class, JIPipe.RESOURCES.getIcon16URL("actions/morphology.png"));
+        registerNodeType("ij1-generate-filter-kernel-3d", GenerateStructureElement3DAlgorithm.class, JIPipe.RESOURCES.getIcon16URL("actions/morphology.png"));
+        registerNodeType("ij1-data-to-preview", DataToPreviewAlgorithm.class, JIPipe.RESOURCES.getIcon16URL("actions/viewimage.png"));
+        registerNodeType("render-jipipe-project", RenderJIPipeProjectAlgorithm.class, JIPipe.RESOURCES.getIcon16URL("actions/viewimage.png"));
+        registerNodeType("external-imagej-macro", MacroWrapperAlgorithm.class, JIPipe.RESOURCES.getIcon16URL("apps/imagej.png"));
 
         registerNodeType("ome-image-from-image-plus", OMEImageFromImagePlus.class);
 
-        registerNodeType("ome-annotate-with-metadata", AnnotateOMEWithMetadataAlgorithm.class, UIUtils.getIconURLFromResources("actions/tag.png"));
-        registerNodeType("ome-annotate-data-with-metadata", AnnotateDataWithOMEMetadataAlgorithm.class, UIUtils.getIconURLFromResources("actions/tag.png"));
-        registerNodeType("ome-extract-metadata-as-table", OMEMetadataToTableAlgorithm.class, UIUtils.getIconURLFromResources("actions/table.png"));
+        registerNodeType("ome-annotate-with-metadata", AnnotateOMEWithMetadataAlgorithm.class, JIPipe.RESOURCES.getIcon16URL("actions/tag.png"));
+        registerNodeType("ome-annotate-data-with-metadata", AnnotateDataWithOMEMetadataAlgorithm.class, JIPipe.RESOURCES.getIcon16URL("actions/tag.png"));
+        registerNodeType("ome-extract-metadata-as-table", OMEMetadataToTableAlgorithm.class, JIPipe.RESOURCES.getIcon16URL("actions/table.png"));
 
         // Register enum parameters
         registerGlobalEnums();
@@ -653,14 +654,14 @@ public class ImageJAlgorithmsPlugin extends JIPipePrepackagedDefaultJavaPlugin {
     }
 
     private void registerEnhancementAlgorithms() {
-        registerNodeType("ij1-enhance-bleach-correction", BleachCorrectionAlgorithm.class, UIUtils.getIconURLFromResources("actions/wand-magic-sparkles.png"));
+        registerNodeType("ij1-enhance-bleach-correction", BleachCorrectionAlgorithm.class, JIPipe.RESOURCES.getIcon16URL("actions/wand-magic-sparkles.png"));
         registerEnumParameterType("ij1-enhance-bleach-correction:method", BleachCorrectionAlgorithm.Method.class, "Bleach correction method", "Available methods");
     }
 
     private void registerMaskingAlgorithms() {
-        registerNodeType("ij1-color-set-to-color", SetToColorAlgorithm.class, UIUtils.getIconURLFromResources("actions/color-fill.png"));
-        registerNodeType("ij1-color-set-to-grayscale-value", SetToValueAlgorithm.class, UIUtils.getIconURLFromResources("actions/color-fill.png"));
-        registerNodeType("ij1-color-set-to-content-aware-2d", SetToContentAwareAlgorithm.class, UIUtils.getIconURLFromResources("actions/color-fill.png"));
+        registerNodeType("ij1-color-set-to-color", SetToColorAlgorithm.class, JIPipe.RESOURCES.getIcon16URL("actions/color-fill.png"));
+        registerNodeType("ij1-color-set-to-grayscale-value", SetToValueAlgorithm.class, JIPipe.RESOURCES.getIcon16URL("actions/color-fill.png"));
+        registerNodeType("ij1-color-set-to-content-aware-2d", SetToContentAwareAlgorithm.class, JIPipe.RESOURCES.getIcon16URL("actions/color-fill.png"));
         registerEnumParameterType("ij1-color-set-to-content-aware-2d:method", SetToContentAwareAlgorithm.Method.class, "Method", "Content-aware fill method");
     }
 
@@ -671,12 +672,12 @@ public class ImageJAlgorithmsPlugin extends JIPipePrepackagedDefaultJavaPlugin {
 //        registerEnumParameterType("ij1-bunwarpj-registration:max-scale-deformation", BUnwarpJMaxScaleDeformation.class, "BUnwarpJ max scale deformation", "");
 //        registerEnumParameterType("ij1-bunwarpj-registration:min-scale-deformation", BUnwarpJMinScaleDeformation.class, "BUnwarpJ min scale deformation", "");
 //        registerEnumParameterType("ij1-bunwarpj-registration:mode", BUnwarpJMode.class, "BUnwarpJ mode", "");
-//        registerNodeType("ij1-simple-image-registration", SimpleImageRegistrationAlgorithm.class, UIUtils.getIconURLFromResources("actions/transform-shear-right.png"));
+//        registerNodeType("ij1-simple-image-registration", SimpleImageRegistrationAlgorithm.class, JIPipe.RESOURCES.getIcon16URL("actions/transform-shear-right.png"));
 
         registerEnumParameterType("ij1-turbo-reg:transformation-type", TurboRegTransformationType.class, "TurboReg transformation", "Transformation type");
         registerEnumParameterType("ij1-turbo-reg-image-registration:rule-type", TurboRegRegistrationAlgorithmRuleType.class, "TurboReg registration rule type", "Determines the behavior of the algorithm");
-        registerNodeType("ij1-turbo-reg-image-registration", TurboRegRegistration2DReferencedAlgorithm.class, UIUtils.getIconURLFromResources("actions/transform-shear-right.png"));
-        registerNodeType("ij1-turbo-reg-image-registration-io", TurboRegRegistration2DSingleAlgorithm.class, UIUtils.getIconURLFromResources("actions/transform-shear-right.png"));
+        registerNodeType("ij1-turbo-reg-image-registration", TurboRegRegistration2DReferencedAlgorithm.class, JIPipe.RESOURCES.getIcon16URL("actions/transform-shear-right.png"));
+        registerNodeType("ij1-turbo-reg-image-registration-io", TurboRegRegistration2DSingleAlgorithm.class, JIPipe.RESOURCES.getIcon16URL("actions/transform-shear-right.png"));
     }
 
     @Override
@@ -710,32 +711,32 @@ public class ImageJAlgorithmsPlugin extends JIPipePrepackagedDefaultJavaPlugin {
     }
 
     private void registerMetadataAlgorithms() {
-        registerNodeType("ij1-image-extract-metadata", ExtractImageMetadataAlgorithm.class, UIUtils.getIconURLFromResources("actions/cm_extractfiles.png"));
-        registerNodeType("ij1-image-set-metadata-from-table", SetImageMetadataFromTableAlgorithm.class, UIUtils.getIconURLFromResources("actions/cm_packfiles.png"));
-        registerNodeType("ij1-image-remove-metadata", RemoveImageMetadataAlgorithm.class, UIUtils.getIconURLFromResources("actions/filter.png"));
-        registerNodeType("ij1-image-set-properties-from-expressions", ChangeImageMetadataFromExpressionsAlgorithm.class, UIUtils.getIconURLFromResources("actions/edit.png"));
+        registerNodeType("ij1-image-extract-metadata", ExtractImageMetadataAlgorithm.class, JIPipe.RESOURCES.getIcon16URL("actions/cm_extractfiles.png"));
+        registerNodeType("ij1-image-set-metadata-from-table", SetImageMetadataFromTableAlgorithm.class, JIPipe.RESOURCES.getIcon16URL("actions/cm_packfiles.png"));
+        registerNodeType("ij1-image-remove-metadata", RemoveImageMetadataAlgorithm.class, JIPipe.RESOURCES.getIcon16URL("actions/filter.png"));
+        registerNodeType("ij1-image-set-properties-from-expressions", ChangeImageMetadataFromExpressionsAlgorithm.class, JIPipe.RESOURCES.getIcon16URL("actions/edit.png"));
     }
 
     private void registerColocalizationAlgorithms() {
         registerEnumParameterType("ij1-colocalization-coloc2:auto-threshold-regression-implementation",
                 AutoThresholdRegression.Implementation.class, "Auto threshold regression implementation", "Coloc2 Auto threshold regression");
-        registerNodeType("ij1-colocalization-coloc2", Coloc2Node.class, UIUtils.getIconURLFromResources("actions/color-gradient.png"));
+        registerNodeType("ij1-colocalization-coloc2", Coloc2Node.class, JIPipe.RESOURCES.getIcon16URL("actions/color-gradient.png"));
     }
 
     private void registerCalibrationAlgorithms() {
         registerEnumParameterType("ij1-calibration-draw-scale-bar:location", ScaleBarGenerator.ScaleBarPosition.class, "Scale bar location", "Location of the scale bar");
 
-        registerNodeType("ij1-calibration-set-physical-dimensions", SetPhysicalDimensionsAlgorithm.class, UIUtils.getIconURLFromResources("actions/draw-geometry-show-measuring-info.png"));
-        registerNodeType("ij1-calibration-copy-physical-dimensions", CopyPhysicalDimensionsBetweenImagesAlgorithm.class, UIUtils.getIconURLFromResources("actions/draw-geometry-show-measuring-info.png"));
-        registerNodeType("ij1-calibration-set-physical-dimensions-from-expressions", SetPhysicalDimensionsByExpressionsAlgorithm.class, UIUtils.getIconURLFromResources("actions/draw-geometry-show-measuring-info.png"));
-        registerNodeType("ij1-calibration-set-physical-dimensions-from-annotations", SetPhysicalDimensionsByAnnotationsAlgorithm.class, UIUtils.getIconURLFromResources("actions/draw-geometry-show-measuring-info.png"));
-        registerNodeType("ij1-calibration-draw-scale-bar", DrawScaleBarAlgorithm.class, UIUtils.getIconURLFromResources("actions/draw-geometry-show-measuring-info.png"));
+        registerNodeType("ij1-calibration-set-physical-dimensions", SetPhysicalDimensionsAlgorithm.class, JIPipe.RESOURCES.getIcon16URL("actions/draw-geometry-show-measuring-info.png"));
+        registerNodeType("ij1-calibration-copy-physical-dimensions", CopyPhysicalDimensionsBetweenImagesAlgorithm.class, JIPipe.RESOURCES.getIcon16URL("actions/draw-geometry-show-measuring-info.png"));
+        registerNodeType("ij1-calibration-set-physical-dimensions-from-expressions", SetPhysicalDimensionsByExpressionsAlgorithm.class, JIPipe.RESOURCES.getIcon16URL("actions/draw-geometry-show-measuring-info.png"));
+        registerNodeType("ij1-calibration-set-physical-dimensions-from-annotations", SetPhysicalDimensionsByAnnotationsAlgorithm.class, JIPipe.RESOURCES.getIcon16URL("actions/draw-geometry-show-measuring-info.png"));
+        registerNodeType("ij1-calibration-draw-scale-bar", DrawScaleBarAlgorithm.class, JIPipe.RESOURCES.getIcon16URL("actions/draw-geometry-show-measuring-info.png"));
     }
 
     private void registerSegmentationAlgorithms() {
-        registerNodeType("ij1-segment-classic-watershed", ClassicWatershedSegmentationAlgorithm.class, UIUtils.getIconURLFromResources("actions/view-object-histogram-linear.png"));
-        registerNodeType("ij1-segment-seeded-watershed", SeededWatershedSegmentationAlgorithm.class, UIUtils.getIconURLFromResources("actions/view-object-histogram-linear.png"));
-        registerNodeType("ij1-segment-ridge-detector-2d", RidgeDetector2DAlgorithm.class, UIUtils.getIconURLFromResources("actions/draw-geometry-mirror.png"));
+        registerNodeType("ij1-segment-classic-watershed", ClassicWatershedSegmentationAlgorithm.class, JIPipe.RESOURCES.getIcon16URL("actions/view-object-histogram-linear.png"));
+        registerNodeType("ij1-segment-seeded-watershed", SeededWatershedSegmentationAlgorithm.class, JIPipe.RESOURCES.getIcon16URL("actions/view-object-histogram-linear.png"));
+        registerNodeType("ij1-segment-ridge-detector-2d", RidgeDetector2DAlgorithm.class, JIPipe.RESOURCES.getIcon16URL("actions/draw-geometry-mirror.png"));
         registerEnumParameterType("ij1-segment-ridge-detector-2d:overlap-resolver", OverlapOption.class, "Overlap detector", "Method for overlap detection");
     }
 
@@ -743,109 +744,109 @@ public class ImageJAlgorithmsPlugin extends JIPipePrepackagedDefaultJavaPlugin {
         registerEnumParameterType("ij1-label-color-maps:common-label-maps", ColorMaps.CommonLabelMaps.class, "Color map", "A color map for labels");
         registerEnumParameterType("ij1-labels-to-roi:method", LabelsToROIAlgorithm.Method.class, "Label to ROI method", "A method that converts a label image to ROI");
 
-        registerNodeType("ij1-labels-to-rgb", LabelsToRGBAlgorithm.class, UIUtils.getIconURLFromResources("actions/colormanagement.png"));
-        registerNodeType("ij1-labels-to-roi", LabelsToROIAlgorithm.class, UIUtils.getIconURLFromResources("actions/roi.png"));
-        registerNodeType("ij1-labels-to-mask", LabelsToMaskAlgorithm.class, UIUtils.getIconURLFromResources("data-types/imgplus-2d-greyscale-mask.png"));
-        registerNodeType("ij1-labels-get-label-boundaries", GetLabelBoundariesAlgorithm.class, UIUtils.getIconURLFromResources("actions/object-stroke.png"));
-        registerNodeType("ij1-labels-remove-border-labels", RemoveBorderLabelsAlgorithm.class, UIUtils.getIconURLFromResources("actions/filter.png"));
-        registerNodeType("ij1-labels-replace-labels", ReplaceLabelsAlgorithm.class, UIUtils.getIconURLFromResources("actions/edit.png"));
-        registerNodeType("ij1-labels-replace-labels-by-table", ReplaceLabelsByTableAlgorithm.class, UIUtils.getIconURLFromResources("actions/edit.png"));
-        registerNodeType("ij1-labels-merge-labels", MergeLabelsAlgorithm.class, UIUtils.getIconURLFromResources("actions/merge.png"));
-        registerNodeType("ij1-labels-filter-labels-by-id", FilterLabelsByIdAlgorithm.class, UIUtils.getIconURLFromResources("actions/filter.png"));
-        registerNodeType("ij1-labels-filter-filter-by-expression-2d", FilterLabelsByExpression2DAlgorithm.class, UIUtils.getIconURLFromResources("actions/filter.png"));
-        registerNodeType("ij1-labels-filter-filter-by-expression-3d", FilterLabelsByExpression3DAlgorithm.class, UIUtils.getIconURLFromResources("actions/filter.png"));
-        registerNodeType("ij1-labels-crop-labels", CropLabelsAlgorithm.class, UIUtils.getIconURLFromResources("actions/image-crop.png"));
-        registerNodeType("ij1-labels-remap", RemapLabelsAlgorithm.class, UIUtils.getIconURLFromResources("actions/object-visible.png"));
-        registerNodeType("ij1-labels-expand-labels", ExpandLabelsAlgorithm.class, UIUtils.getIconURLFromResources("actions/object-tweak-push.png"));
-        registerNodeType("ij1-labels-separate-touching-labels", SeparateTouchingLabels2DAlgorithm.class, UIUtils.getIconURLFromResources("actions/object-tweak-push.png"));
-        registerNodeType("ij1-labels-remove-largest-label", RemoveLargestLabelAlgorithm.class, UIUtils.getIconURLFromResources("actions/filter.png"));
-        registerNodeType("ij1-labels-keep-largest-label", KeepLargestLabelAlgorithm.class, UIUtils.getIconURLFromResources("actions/filter.png"));
-        registerNodeType("ij1-labels-dilate-labels", DilateLabelsAlgorithm.class, UIUtils.getIconURLFromResources("actions/morphology.png"));
-        registerNodeType("ij1-labels-extract-statistics", ExtractLabelStatisticsAlgorithm.class, UIUtils.getIconURLFromResources("actions/insert-math-expression.png"));
-        registerNodeType("ij1-labels-filter-by-statistics", FilterLabelsByStatisticsAlgorithm.class, UIUtils.getIconURLFromResources("actions/filter.png"));
-        registerNodeType("ij1-labels-filter-by-mask", FilterLabelsByMaskAlgorithm.class, UIUtils.getIconURLFromResources("actions/filter.png"));
-        registerNodeType("ij1-labels-filter-by-overlap", FilterLabelsByOverlapAlgorithm.class, UIUtils.getIconURLFromResources("actions/filter.png"));
-        registerNodeType("ij1-labels-overlap-statistics", OverlapMeasureLabelsAlgorithm.class, UIUtils.getIconURLFromResources("actions/insert-math-expression.png"));
-        registerNodeType("ij1-labels-annotate-with-overlap-statistics", AnnotateWithOverlapMeasureLabelsAlgorithm.class, UIUtils.getIconURLFromResources("actions/insert-math-expression.png"));
-        registerNodeType("ij1-labels-merge-small-labels", MergeSmallLabelsAlgorithm.class, UIUtils.getIconURLFromResources("actions/insert-math-expression.png"));
-        registerNodeType("ij1-labels-merge-labels-to-thickness", MergeLabelsToThicknessAlgorithm.class, UIUtils.getIconURLFromResources("actions/insert-math-expression.png"));
-        registerNodeType("ij1-labels-merge-labels-to-bins", MergeLabelsToBinsAlgorithm.class, UIUtils.getIconURLFromResources("actions/insert-math-expression.png"));
-        registerNodeType("ij1-labels-filter-labels-by-thickness", FilterLabelsByThicknessAlgorithm.class, UIUtils.getIconURLFromResources("actions/filter.png"));
-        registerNodeType("ij1-labels-separate", SeparateLabelsAlgorithm.class, UIUtils.getIconURLFromResources("actions/split.png"));
-        registerNodeType("ij1-labels-split-connected-components-2d", SplitLabelsConnectedComponents2DAlgorithm.class, UIUtils.getIconURLFromResources("actions/split.png"));
+        registerNodeType("ij1-labels-to-rgb", LabelsToRGBAlgorithm.class, JIPipe.RESOURCES.getIcon16URL("actions/colormanagement.png"));
+        registerNodeType("ij1-labels-to-roi", LabelsToROIAlgorithm.class, JIPipe.RESOURCES.getIcon16URL("actions/roi.png"));
+        registerNodeType("ij1-labels-to-mask", LabelsToMaskAlgorithm.class, JIPipe.RESOURCES.getIcon16URL("data-types/imgplus-2d-greyscale-mask.png"));
+        registerNodeType("ij1-labels-get-label-boundaries", GetLabelBoundariesAlgorithm.class, JIPipe.RESOURCES.getIcon16URL("actions/object-stroke.png"));
+        registerNodeType("ij1-labels-remove-border-labels", RemoveBorderLabelsAlgorithm.class, JIPipe.RESOURCES.getIcon16URL("actions/filter.png"));
+        registerNodeType("ij1-labels-replace-labels", ReplaceLabelsAlgorithm.class, JIPipe.RESOURCES.getIcon16URL("actions/edit.png"));
+        registerNodeType("ij1-labels-replace-labels-by-table", ReplaceLabelsByTableAlgorithm.class, JIPipe.RESOURCES.getIcon16URL("actions/edit.png"));
+        registerNodeType("ij1-labels-merge-labels", MergeLabelsAlgorithm.class, JIPipe.RESOURCES.getIcon16URL("actions/merge.png"));
+        registerNodeType("ij1-labels-filter-labels-by-id", FilterLabelsByIdAlgorithm.class, JIPipe.RESOURCES.getIcon16URL("actions/filter.png"));
+        registerNodeType("ij1-labels-filter-filter-by-expression-2d", FilterLabelsByExpression2DAlgorithm.class, JIPipe.RESOURCES.getIcon16URL("actions/filter.png"));
+        registerNodeType("ij1-labels-filter-filter-by-expression-3d", FilterLabelsByExpression3DAlgorithm.class, JIPipe.RESOURCES.getIcon16URL("actions/filter.png"));
+        registerNodeType("ij1-labels-crop-labels", CropLabelsAlgorithm.class, JIPipe.RESOURCES.getIcon16URL("actions/image-crop.png"));
+        registerNodeType("ij1-labels-remap", RemapLabelsAlgorithm.class, JIPipe.RESOURCES.getIcon16URL("actions/object-visible.png"));
+        registerNodeType("ij1-labels-expand-labels", ExpandLabelsAlgorithm.class, JIPipe.RESOURCES.getIcon16URL("actions/object-tweak-push.png"));
+        registerNodeType("ij1-labels-separate-touching-labels", SeparateTouchingLabels2DAlgorithm.class, JIPipe.RESOURCES.getIcon16URL("actions/object-tweak-push.png"));
+        registerNodeType("ij1-labels-remove-largest-label", RemoveLargestLabelAlgorithm.class, JIPipe.RESOURCES.getIcon16URL("actions/filter.png"));
+        registerNodeType("ij1-labels-keep-largest-label", KeepLargestLabelAlgorithm.class, JIPipe.RESOURCES.getIcon16URL("actions/filter.png"));
+        registerNodeType("ij1-labels-dilate-labels", DilateLabelsAlgorithm.class, JIPipe.RESOURCES.getIcon16URL("actions/morphology.png"));
+        registerNodeType("ij1-labels-extract-statistics", ExtractLabelStatisticsAlgorithm.class, JIPipe.RESOURCES.getIcon16URL("actions/insert-math-expression.png"));
+        registerNodeType("ij1-labels-filter-by-statistics", FilterLabelsByStatisticsAlgorithm.class, JIPipe.RESOURCES.getIcon16URL("actions/filter.png"));
+        registerNodeType("ij1-labels-filter-by-mask", FilterLabelsByMaskAlgorithm.class, JIPipe.RESOURCES.getIcon16URL("actions/filter.png"));
+        registerNodeType("ij1-labels-filter-by-overlap", FilterLabelsByOverlapAlgorithm.class, JIPipe.RESOURCES.getIcon16URL("actions/filter.png"));
+        registerNodeType("ij1-labels-overlap-statistics", OverlapMeasureLabelsAlgorithm.class, JIPipe.RESOURCES.getIcon16URL("actions/insert-math-expression.png"));
+        registerNodeType("ij1-labels-annotate-with-overlap-statistics", AnnotateWithOverlapMeasureLabelsAlgorithm.class, JIPipe.RESOURCES.getIcon16URL("actions/insert-math-expression.png"));
+        registerNodeType("ij1-labels-merge-small-labels", MergeSmallLabelsAlgorithm.class, JIPipe.RESOURCES.getIcon16URL("actions/insert-math-expression.png"));
+        registerNodeType("ij1-labels-merge-labels-to-thickness", MergeLabelsToThicknessAlgorithm.class, JIPipe.RESOURCES.getIcon16URL("actions/insert-math-expression.png"));
+        registerNodeType("ij1-labels-merge-labels-to-bins", MergeLabelsToBinsAlgorithm.class, JIPipe.RESOURCES.getIcon16URL("actions/insert-math-expression.png"));
+        registerNodeType("ij1-labels-filter-labels-by-thickness", FilterLabelsByThicknessAlgorithm.class, JIPipe.RESOURCES.getIcon16URL("actions/filter.png"));
+        registerNodeType("ij1-labels-separate", SeparateLabelsAlgorithm.class, JIPipe.RESOURCES.getIcon16URL("actions/split.png"));
+        registerNodeType("ij1-labels-split-connected-components-2d", SplitLabelsConnectedComponents2DAlgorithm.class, JIPipe.RESOURCES.getIcon16URL("actions/split.png"));
     }
 
     private void registerConverterAlgorithms() {
-        registerNodeType("ij-convert-image", ConvertImageAlgorithm.class, UIUtils.getIconURLFromResources("actions/view-refresh.png"));
-        registerNodeType("ij-convert-image-to-8-bit", ConvertImageTo8BitAlgorithm.class, UIUtils.getIconURLFromResources("data-types/imgplus-greyscale-8u.png"));
-        registerNodeType("ij-convert-image-to-16-bit", ConvertImageTo16BitAlgorithm.class, UIUtils.getIconURLFromResources("data-types/imgplus-greyscale-16u.png"));
-        registerNodeType("ij-convert-image-to-32-bit", ConvertImageTo32BitAlgorithm.class, UIUtils.getIconURLFromResources("data-types/imgplus-greyscale-32f.png"));
-        registerNodeType("ij-convert-image-to-hsb-colors", ConvertImageToHSBAlgorithm.class, UIUtils.getIconURLFromResources("data-types/imgplus-color-hsb.png"));
-        registerNodeType("ij-convert-image-to-rgb-colors", ConvertImageToRGBAlgorithm.class, UIUtils.getIconURLFromResources("data-types/imgplus-color-rgb.png"));
-        registerNodeType("ij-convert-image-to-lab-colors", ConvertImageToLABAlgorithm.class, UIUtils.getIconURLFromResources("data-types/imgplus-color-lab.png"));
-        registerNodeType("ij1-convert-image-to-table", ImageToTableAlgorithm.class, UIUtils.getIconURLFromResources("actions/table.png"));
-        registerNodeType("ij1-convert-multiple-images-to-table", MultipleImagesToTableAlgorithm.class, UIUtils.getIconURLFromResources("actions/table.png"));
-        registerNodeType("ij1-convert-table-to-image", TableToImageAlgorithm.class, UIUtils.getIconURLFromResources("actions/table.png"));
-        registerNodeType("ij1-convert-image-to-matrix", ImageToMatrixAlgorithm.class, UIUtils.getIconURLFromResources("actions/table.png"));
-        registerNodeType("ij1-convert-matrix-to-image", MatrixToImageAlgorithm.class, UIUtils.getIconURLFromResources("actions/table.png"));
-        registerNodeType("ij1-convert-table-column-to-image", TableColumnToImageAlgorithm.class, UIUtils.getIconURLFromResources("actions/table.png"));
-        registerNodeType("ij1-convert-image-to-table-column", ImageToTableColumnAlgorithm.class, UIUtils.getIconURLFromResources("actions/table.png"));
-        registerNodeType("ij1-extract-ome-image-xml", ExtractOMEXMLAlgorithm.class, UIUtils.getIconURLFromResources("actions/dialog-xml-editor.png"));
-        registerNodeType("ij1-extract-ome-image-roi", ExtractOMEROIAlgorithm.class, UIUtils.getIconURLFromResources("actions/roi.png"));
+        registerNodeType("ij-convert-image", ConvertImageAlgorithm.class, JIPipe.RESOURCES.getIcon16URL("actions/view-refresh.png"));
+        registerNodeType("ij-convert-image-to-8-bit", ConvertImageTo8BitAlgorithm.class, JIPipe.RESOURCES.getIcon16URL("data-types/imgplus-greyscale-8u.png"));
+        registerNodeType("ij-convert-image-to-16-bit", ConvertImageTo16BitAlgorithm.class, JIPipe.RESOURCES.getIcon16URL("data-types/imgplus-greyscale-16u.png"));
+        registerNodeType("ij-convert-image-to-32-bit", ConvertImageTo32BitAlgorithm.class, JIPipe.RESOURCES.getIcon16URL("data-types/imgplus-greyscale-32f.png"));
+        registerNodeType("ij-convert-image-to-hsb-colors", ConvertImageToHSBAlgorithm.class, JIPipe.RESOURCES.getIcon16URL("data-types/imgplus-color-hsb.png"));
+        registerNodeType("ij-convert-image-to-rgb-colors", ConvertImageToRGBAlgorithm.class, JIPipe.RESOURCES.getIcon16URL("data-types/imgplus-color-rgb.png"));
+        registerNodeType("ij-convert-image-to-lab-colors", ConvertImageToLABAlgorithm.class, JIPipe.RESOURCES.getIcon16URL("data-types/imgplus-color-lab.png"));
+        registerNodeType("ij1-convert-image-to-table", ImageToTableAlgorithm.class, JIPipe.RESOURCES.getIcon16URL("actions/table.png"));
+        registerNodeType("ij1-convert-multiple-images-to-table", MultipleImagesToTableAlgorithm.class, JIPipe.RESOURCES.getIcon16URL("actions/table.png"));
+        registerNodeType("ij1-convert-table-to-image", TableToImageAlgorithm.class, JIPipe.RESOURCES.getIcon16URL("actions/table.png"));
+        registerNodeType("ij1-convert-image-to-matrix", ImageToMatrixAlgorithm.class, JIPipe.RESOURCES.getIcon16URL("actions/table.png"));
+        registerNodeType("ij1-convert-matrix-to-image", MatrixToImageAlgorithm.class, JIPipe.RESOURCES.getIcon16URL("actions/table.png"));
+        registerNodeType("ij1-convert-table-column-to-image", TableColumnToImageAlgorithm.class, JIPipe.RESOURCES.getIcon16URL("actions/table.png"));
+        registerNodeType("ij1-convert-image-to-table-column", ImageToTableColumnAlgorithm.class, JIPipe.RESOURCES.getIcon16URL("actions/table.png"));
+        registerNodeType("ij1-extract-ome-image-xml", ExtractOMEXMLAlgorithm.class, JIPipe.RESOURCES.getIcon16URL("actions/dialog-xml-editor.png"));
+        registerNodeType("ij1-extract-ome-image-roi", ExtractOMEROIAlgorithm.class, JIPipe.RESOURCES.getIcon16URL("actions/roi.png"));
 
-        registerNodeType("ij-convert-image-to-8-bit-ij-auto-contrast", ConvertImageTo8BitAutoContrastAlgorithm.class, UIUtils.getIconURLFromResources("data-types/imgplus-greyscale-8u.png"));
-        registerNodeType("ij-convert-image-to-16-bit-ij-auto-contrast", ConvertImageTo16BitAutoContrastAlgorithm.class, UIUtils.getIconURLFromResources("data-types/imgplus-greyscale-16u.png"));
+        registerNodeType("ij-convert-image-to-8-bit-ij-auto-contrast", ConvertImageTo8BitAutoContrastAlgorithm.class, JIPipe.RESOURCES.getIcon16URL("data-types/imgplus-greyscale-8u.png"));
+        registerNodeType("ij-convert-image-to-16-bit-ij-auto-contrast", ConvertImageTo16BitAutoContrastAlgorithm.class, JIPipe.RESOURCES.getIcon16URL("data-types/imgplus-greyscale-16u.png"));
     }
 
     private void registerFormAlgorithms() {
-        registerNodeType("ij-form-draw-mask", DrawMaskAlgorithm.class, UIUtils.getIconURLFromResources("actions/draw-brush.png"));
-        registerNodeType("ij-form-draw-rois", DrawROIAlgorithm.class, UIUtils.getIconURLFromResources("actions/draw-brush.png"));
+        registerNodeType("ij-form-draw-mask", DrawMaskAlgorithm.class, JIPipe.RESOURCES.getIcon16URL("actions/draw-brush.png"));
+        registerNodeType("ij-form-draw-rois", DrawROIAlgorithm.class, JIPipe.RESOURCES.getIcon16URL("actions/draw-brush.png"));
     }
 
     private void registerOpticalFlowAlgorithms() {
-        registerNodeType("ij-optical-flow-mse-block-flow", MSEBlockFlowAlgorithm.class, UIUtils.getIconURLFromResources("actions/object-tweak-rotate.png"));
-        registerNodeType("ij-optical-flow-mse-gaussian-flow", MSEGaussianFlowAlgorithm.class, UIUtils.getIconURLFromResources("actions/object-tweak-rotate.png"));
-        registerNodeType("ij-optical-flow-pmcc-block-flow", PMCCBlockFlowAlgorithm.class, UIUtils.getIconURLFromResources("actions/object-tweak-rotate.png"));
+        registerNodeType("ij-optical-flow-mse-block-flow", MSEBlockFlowAlgorithm.class, JIPipe.RESOURCES.getIcon16URL("actions/object-tweak-rotate.png"));
+        registerNodeType("ij-optical-flow-mse-gaussian-flow", MSEGaussianFlowAlgorithm.class, JIPipe.RESOURCES.getIcon16URL("actions/object-tweak-rotate.png"));
+        registerNodeType("ij-optical-flow-pmcc-block-flow", PMCCBlockFlowAlgorithm.class, JIPipe.RESOURCES.getIcon16URL("actions/object-tweak-rotate.png"));
     }
 
     private void registerIOAlgorithms() {
-        registerNodeType("ij-imgplus-from-gui", ImagePlusFromGUI.class, UIUtils.getIconURLFromResources("apps/imagej.png"));
-        registerNodeType("ij-imgplus-to-gui", ImagePlusToGUI.class, UIUtils.getIconURLFromResources("apps/imagej.png"));
-        registerNodeType("ij-results-table-from-gui", ResultsTableFromGUI.class, UIUtils.getIconURLFromResources("apps/imagej.png"));
-        registerNodeType("ij-results-table-to-gui", ResultsTableToGUI.class, UIUtils.getIconURLFromResources("apps/imagej.png"));
-        registerNodeType("ij-roi-from-gui", ROIFromGUI.class, UIUtils.getIconURLFromResources("apps/imagej.png"));
-        registerNodeType("ij-roi-to-gui", ROIToGUI.class, UIUtils.getIconURLFromResources("apps/imagej.png"));
-        registerNodeType("ij-import-stack", ImageStackFromFolder.class, UIUtils.getIconURLFromResources("apps/imagej.png"));
+        registerNodeType("ij-imgplus-from-gui", ImagePlusFromGUI.class, JIPipe.RESOURCES.getIcon16URL("apps/imagej.png"));
+        registerNodeType("ij-imgplus-to-gui", ImagePlusToGUI.class, JIPipe.RESOURCES.getIcon16URL("apps/imagej.png"));
+        registerNodeType("ij-results-table-from-gui", ResultsTableFromGUI.class, JIPipe.RESOURCES.getIcon16URL("apps/imagej.png"));
+        registerNodeType("ij-results-table-to-gui", ResultsTableToGUI.class, JIPipe.RESOURCES.getIcon16URL("apps/imagej.png"));
+        registerNodeType("ij-roi-from-gui", ROIFromGUI.class, JIPipe.RESOURCES.getIcon16URL("apps/imagej.png"));
+        registerNodeType("ij-roi-to-gui", ROIToGUI.class, JIPipe.RESOURCES.getIcon16URL("apps/imagej.png"));
+        registerNodeType("ij-import-stack", ImageStackFromFolder.class, JIPipe.RESOURCES.getIcon16URL("apps/imagej.png"));
 
-        registerNodeType("iji-export-image-to-web", ExportImageAlgorithm.class, UIUtils.getIconURLFromResources("actions/document-export.png"));
-        registerNodeType("iji-export-image-v2", ExportImage2Algorithm.class, UIUtils.getIconURLFromResources("actions/document-export.png"));
+        registerNodeType("iji-export-image-to-web", ExportImageAlgorithm.class, JIPipe.RESOURCES.getIcon16URL("actions/document-export.png"));
+        registerNodeType("iji-export-image-v2", ExportImage2Algorithm.class, JIPipe.RESOURCES.getIcon16URL("actions/document-export.png"));
         for (ExportImageAlgorithm.FileFormat format : ExportImageAlgorithm.FileFormat.values()) {
             registerNodeExample(ExportImage2Algorithm.class, format.name(), node -> node.setFileFormat(format));
         }
 
-        registerNodeType("iji-export-image-to-web:directory-slot", ExportImageDirectorySlotAlgorithm.class, UIUtils.getIconURLFromResources("actions/document-export.png"));
-        registerNodeType("iji-export-roi-list", ExportROIAlgorithm.class, UIUtils.getIconURLFromResources("actions/document-export.png"));
-        registerNodeType("iji-export-roi-list-v2", ExportROIAlgorithm2.class, UIUtils.getIconURLFromResources("actions/document-export.png"));
-        registerNodeType("iji-export-table", ExportTableAlgorithm.class, UIUtils.getIconURLFromResources("actions/document-export.png"));
-        registerNodeType("iji-export-table-v2", ExportTableAlgorithm2.class, UIUtils.getIconURLFromResources("actions/document-export.png"));
-        registerNodeType("iji-export-table-as-xlsx", ExportTableAsXLSXAlgorithm.class, UIUtils.getIconURLFromResources("actions/document-export.png"));
-        registerNodeType("iji-export-table-as-xlsx-v2", ExportTableAsXLSXAlgorithm2.class, UIUtils.getIconURLFromResources("actions/document-export.png"));
+        registerNodeType("iji-export-image-to-web:directory-slot", ExportImageDirectorySlotAlgorithm.class, JIPipe.RESOURCES.getIcon16URL("actions/document-export.png"));
+        registerNodeType("iji-export-roi-list", ExportROIAlgorithm.class, JIPipe.RESOURCES.getIcon16URL("actions/document-export.png"));
+        registerNodeType("iji-export-roi-list-v2", ExportROIAlgorithm2.class, JIPipe.RESOURCES.getIcon16URL("actions/document-export.png"));
+        registerNodeType("iji-export-table", ExportTableAlgorithm.class, JIPipe.RESOURCES.getIcon16URL("actions/document-export.png"));
+        registerNodeType("iji-export-table-v2", ExportTableAlgorithm2.class, JIPipe.RESOURCES.getIcon16URL("actions/document-export.png"));
+        registerNodeType("iji-export-table-as-xlsx", ExportTableAsXLSXAlgorithm.class, JIPipe.RESOURCES.getIcon16URL("actions/document-export.png"));
+        registerNodeType("iji-export-table-as-xlsx-v2", ExportTableAsXLSXAlgorithm2.class, JIPipe.RESOURCES.getIcon16URL("actions/document-export.png"));
         for (ExportTableAlgorithm.FileFormat format : ExportTableAlgorithm.FileFormat.values()) {
             registerNodeExample(ExportTableAlgorithm2.class, format.name(), node -> node.setFileFormat(format));
         }
 
-        registerNodeType("ij-import-from-imagej", RunImageJImporterAlgorithm.class, UIUtils.getIconURLFromResources("apps/imagej.png"));
-        registerNodeType("ij-export-to-imagej", RunImageJExporterAlgorithm.class, UIUtils.getIconURLFromResources("apps/imagej.png"));
+        registerNodeType("ij-import-from-imagej", RunImageJImporterAlgorithm.class, JIPipe.RESOURCES.getIcon16URL("apps/imagej.png"));
+        registerNodeType("ij-export-to-imagej", RunImageJExporterAlgorithm.class, JIPipe.RESOURCES.getIcon16URL("apps/imagej.png"));
     }
 
     private void registerLUTAlgorithms() {
-        registerNodeType("ij1-remove-lut", RemoveLUTAlgorithm.class, UIUtils.getIconURLFromResources("actions/paint-gradient-linear.png"));
-        registerNodeType("ij1-apply-lut", ApplyLUTAlgorithm.class, UIUtils.getIconURLFromResources("actions/paint-gradient-linear.png"));
-        registerNodeType("ij1-set-lut-from-colors", SetLUTFromColorsAlgorithm.class, UIUtils.getIconURLFromResources("actions/paint-gradient-linear.png"));
-        registerNodeType("ij1-set-lut-from-color-map", SetLUTFromColorMapAlgorithm.class, UIUtils.getIconURLFromResources("actions/paint-gradient-linear.png"));
-        registerNodeType("ij1-set-lut-from-color-image", SetLUTFromImageAlgorithm.class, UIUtils.getIconURLFromResources("actions/paint-gradient-linear.png"));
-        registerNodeType("ij1-invert-lut", LUTInverterAlgorithm.class, UIUtils.getIconURLFromResources("actions/object-inverse.png"));
-        registerNodeType("ij1-render-color-map", GenerateLUTImageFromColorMap.class, UIUtils.getIconURLFromResources("actions/paint-gradient-linear.png"));
+        registerNodeType("ij1-remove-lut", RemoveLUTAlgorithm.class, JIPipe.RESOURCES.getIcon16URL("actions/paint-gradient-linear.png"));
+        registerNodeType("ij1-apply-lut", ApplyLUTAlgorithm.class, JIPipe.RESOURCES.getIcon16URL("actions/paint-gradient-linear.png"));
+        registerNodeType("ij1-set-lut-from-colors", SetLUTFromColorsAlgorithm.class, JIPipe.RESOURCES.getIcon16URL("actions/paint-gradient-linear.png"));
+        registerNodeType("ij1-set-lut-from-color-map", SetLUTFromColorMapAlgorithm.class, JIPipe.RESOURCES.getIcon16URL("actions/paint-gradient-linear.png"));
+        registerNodeType("ij1-set-lut-from-color-image", SetLUTFromImageAlgorithm.class, JIPipe.RESOURCES.getIcon16URL("actions/paint-gradient-linear.png"));
+        registerNodeType("ij1-invert-lut", LUTInverterAlgorithm.class, JIPipe.RESOURCES.getIcon16URL("actions/object-inverse.png"));
+        registerNodeType("ij1-render-color-map", GenerateLUTImageFromColorMap.class, JIPipe.RESOURCES.getIcon16URL("actions/paint-gradient-linear.png"));
     }
 
     private void registerGlobalParameters() {
@@ -925,17 +926,17 @@ public class ImageJAlgorithmsPlugin extends JIPipePrepackagedDefaultJavaPlugin {
         registerEnumParameterType("ij-roi-relation-measurement-column", ROI2DRelationMeasurementColumn.class, "2D relation measurement column", "Relation between two 2D objects");
         registerParameterType("ij-roi-relation-measurement-set", ROI2DRelationMeasurementSetParameter.class, JIPipeParameterArchetype.MultiSelect, "2D relation measurements", "A selection of measurements between two 2D objects");
 
-        registerNodeType("ij1-roi-from-rectangles", DefineRectangularRoiAlgorithm.class, UIUtils.getIconURLFromResources("actions/draw-rectangle.png"));
-        registerNodeType("ij1-roi-from-rectangles-referenced", ReferencedDefineRectangularRoiAlgorithm.class, UIUtils.getIconURLFromResources("actions/draw-rectangle.png"));
-        registerNodeType("ij1-roi-append-rectangles", AppendRectangularRoiAlgorithm.class, UIUtils.getIconURLFromResources("actions/draw-rectangle.png"));
-        registerNodeType("ij1-roi-append-rectangles-referenced", ReferencedAppendRectangularRoiAlgorithm.class, UIUtils.getIconURLFromResources("actions/draw-rectangle.png"));
-        registerNodeType("ij1-roi-split", SplitRoiAlgorithm.class, UIUtils.getIconURLFromResources("actions/split.png"));
-        registerNodeType("ij1-roi-split-into-connected-components", SplitRoiConnectedComponentsAlgorithm.class, UIUtils.getIconURLFromResources("actions/split.png"));
-        registerNodeType("ij1-roi-explode", ExplodeRoiAlgorithm.class, UIUtils.getIconURLFromResources("actions/split.png"));
-        registerNodeType("ij1-roi-merge", MergeRoiListsUnorderedAlgorithm.class, UIUtils.getIconURLFromResources("actions/merge.png"));
-        registerNodeType("ij1-roi-combine", MergeRoiListsOrderedAlgorithm.class, UIUtils.getIconURLFromResources("actions/merge.png"));
-        registerNodeType("ij1-roi-merge-pairwise-or", MergeRoiListsPairwiseOrAlgorithm.class, UIUtils.getIconURLFromResources("actions/asterisk.png"));
-        registerNodeType("ij1-roi-calculator", RoiCalculatorAlgorithm.class, UIUtils.getIconURLFromResources("actions/calculator.png"));
+        registerNodeType("ij1-roi-from-rectangles", DefineRectangularRoiAlgorithm.class, JIPipe.RESOURCES.getIcon16URL("actions/draw-rectangle.png"));
+        registerNodeType("ij1-roi-from-rectangles-referenced", ReferencedDefineRectangularRoiAlgorithm.class, JIPipe.RESOURCES.getIcon16URL("actions/draw-rectangle.png"));
+        registerNodeType("ij1-roi-append-rectangles", AppendRectangularRoiAlgorithm.class, JIPipe.RESOURCES.getIcon16URL("actions/draw-rectangle.png"));
+        registerNodeType("ij1-roi-append-rectangles-referenced", ReferencedAppendRectangularRoiAlgorithm.class, JIPipe.RESOURCES.getIcon16URL("actions/draw-rectangle.png"));
+        registerNodeType("ij1-roi-split", SplitRoiAlgorithm.class, JIPipe.RESOURCES.getIcon16URL("actions/split.png"));
+        registerNodeType("ij1-roi-split-into-connected-components", SplitRoiConnectedComponentsAlgorithm.class, JIPipe.RESOURCES.getIcon16URL("actions/split.png"));
+        registerNodeType("ij1-roi-explode", ExplodeRoiAlgorithm.class, JIPipe.RESOURCES.getIcon16URL("actions/split.png"));
+        registerNodeType("ij1-roi-merge", MergeRoiListsUnorderedAlgorithm.class, JIPipe.RESOURCES.getIcon16URL("actions/merge.png"));
+        registerNodeType("ij1-roi-combine", MergeRoiListsOrderedAlgorithm.class, JIPipe.RESOURCES.getIcon16URL("actions/merge.png"));
+        registerNodeType("ij1-roi-merge-pairwise-or", MergeRoiListsPairwiseOrAlgorithm.class, JIPipe.RESOURCES.getIcon16URL("actions/asterisk.png"));
+        registerNodeType("ij1-roi-calculator", RoiCalculatorAlgorithm.class, JIPipe.RESOURCES.getIcon16URL("actions/calculator.png"));
         registerNodeExample(RoiCalculatorAlgorithm.class, "Merge into one ROI", node -> {
             node.setOperation(LogicalOperation.LogicalOr);
             node.setSplitAfterwards(false);
@@ -943,82 +944,82 @@ public class ImageJAlgorithmsPlugin extends JIPipePrepackagedDefaultJavaPlugin {
             node.setApplyPerFrame(false);
             node.setApplyPerSlice(false);
         });
-        registerNodeType("ij1-roi-to-mask-unreferenced", UnreferencedRoiToMaskAlgorithm.class, UIUtils.getIconURLFromResources("actions/segment.png"));
-        registerNodeType("ij1-roi-to-mask", RoiToMaskAlgorithm.class, UIUtils.getIconURLFromResources("actions/segment.png"));
+        registerNodeType("ij1-roi-to-mask-unreferenced", UnreferencedRoiToMaskAlgorithm.class, JIPipe.RESOURCES.getIcon16URL("actions/segment.png"));
+        registerNodeType("ij1-roi-to-mask", RoiToMaskAlgorithm.class, JIPipe.RESOURCES.getIcon16URL("actions/segment.png"));
 
-        registerNodeType("ij1-roi-outline", OutlineRoiAlgorithm.class, UIUtils.getIconURLFromResources("actions/draw-connector.png"));
+        registerNodeType("ij1-roi-outline", OutlineRoiAlgorithm.class, JIPipe.RESOURCES.getIcon16URL("actions/draw-connector.png"));
         for (RoiOutline outline : RoiOutline.values()) {
             registerNodeExample(OutlineRoiAlgorithm.class, outline.toString(), node -> node.setOutline(outline));
         }
-        registerNodeType("ij1-roi-outline-concave-hull-moreira-santos", OutlineRoiConcaveHullMoreiraSantosAlgorithm.class, UIUtils.getIconURLFromResources("actions/draw-connector.png"));
-        registerNodeType("ij1-roi-interpolate", InterpolateRoiAlgorithm.class, UIUtils.getIconURLFromResources("actions/draw-connector.png"));
+        registerNodeType("ij1-roi-outline-concave-hull-moreira-santos", OutlineRoiConcaveHullMoreiraSantosAlgorithm.class, JIPipe.RESOURCES.getIcon16URL("actions/draw-connector.png"));
+        registerNodeType("ij1-roi-interpolate", InterpolateRoiAlgorithm.class, JIPipe.RESOURCES.getIcon16URL("actions/draw-connector.png"));
 
-        registerNodeType("ij1-roi-crop-list", CropRoiListAlgorithm.class, UIUtils.getIconURLFromResources("actions/image-crop.png"));
-        registerNodeType("ij1-roi-to-centroid", RoiToCentroidAlgorithm.class, UIUtils.getIconURLFromResources("actions/draw-connector.png"));
-        registerNodeType("ij1-roi-remove-bordering", RemoveBorderRoisAlgorithm.class, UIUtils.getIconURLFromResources("actions/bordertool.png"));
-        registerNodeType("ij1-roi-statistics", RoiStatisticsAlgorithm.class, UIUtils.getIconURLFromResources("actions/statistics.png"));
-        registerNodeType("ij1-roi-relation-2d", ExtractRoi2DRelationStatisticsAlgorithm.class, UIUtils.getIconURLFromResources("actions/statistics.png"));
-        registerNodeType("ij1-roi-count", CountROIAlgorithm.class, UIUtils.getIconURLFromResources("actions/statistics.png"));
-        registerNodeType("ij1-roi-filter-statistics", FilterRoiByStatisticsAlgorithm.class, UIUtils.getIconURLFromResources("actions/filter.png"));
-        registerNodeType("ij1-roi-filter-slice", SliceROIListAlgorithm.class, UIUtils.getIconURLFromResources("actions/filter.png"));
-        registerNodeType("ij1-roi-filter-by-name", FilterRoiByNameAlgorithm.class, UIUtils.getIconURLFromResources("actions/filter.png"));
-        registerNodeType("ij1-roi-color-statistics", ColorRoiByStatisticsAlgorithm.class, UIUtils.getIconURLFromResources("actions/fill-color.png"));
-        registerNodeType("ij1-roi-color-by-name", ColorRoiByNameAlgorithm.class, UIUtils.getIconURLFromResources("actions/fill-color.png"));
-        registerNodeType("ij1-roi-sort-and-extract-statistics", SortAndExtractRoiByStatisticsAlgorithm.class, UIUtils.getIconURLFromResources("actions/view-sort.png"));
-        registerNodeType("ij1-roi-sort-and-extract-statistics-2", SortAndExtractRoiByStatisticsAlgorithm2.class, UIUtils.getIconURLFromResources("actions/view-sort.png"));
-        registerNodeType("ij1-roi-sort-by-statistics-expression", SortRoiListByExpressionsAndMeasurementsAlgorithm.class, UIUtils.getIconURLFromResources("actions/view-sort.png"));
-        registerNodeType("ij1-roi-set-properties", ChangeRoiPropertiesAlgorithm.class, UIUtils.getIconURLFromResources("actions/document-edit.png"));
-        registerNodeType("ij1-roi-scale", ScaleRoiAlgorithm.class, UIUtils.getIconURLFromResources("actions/transform-scale.png"));
-        registerNodeType("ij1-roi-rotate", RotateRoiAlgorithm.class, UIUtils.getIconURLFromResources("actions/transform-rotate.png"));
-        registerNodeType("ij1-roi-set-properties-from-annotation", ChangeRoiPropertiesFromAnnotationsAlgorithm.class, UIUtils.getIconURLFromResources("actions/document-edit.png"));
-        registerNodeType("ij1-roi-set-properties-from-expressions", ChangeRoiPropertiesFromExpressionsAlgorithm.class, UIUtils.getIconURLFromResources("actions/document-edit.png"));
-        registerNodeType("ij1-roi-set-properties-from-table", ChangeRoiPropertiesFromTableAlgorithm.class, UIUtils.getIconURLFromResources("actions/document-edit.png"));
-        registerNodeType("ij1-roi-to-rgb-unreferenced", UnreferencedRoiToRGBAlgorithm.class, UIUtils.getIconURLFromResources("actions/color-management.png"));
-        registerNodeType("ij1-roi-to-rgb", RoiToRGBAlgorithm.class, UIUtils.getIconURLFromResources("actions/color-management.png"));
-        registerNodeType("ij1-roi-filter-statistics-script", FilterRoiByStatisticsScriptAlgorithm.class, UIUtils.getIconURLFromResources("apps/python.png"));
-        registerNodeType("ij1-roi-filter-and-merge-statistics-script", FilterAndMergeRoiByStatisticsScriptAlgorithm.class, UIUtils.getIconURLFromResources("apps/python.png"));
-        registerNodeType("ij1-roi-from-table-rectangular", TableToRectangularROIAlgorithm.class, UIUtils.getIconURLFromResources("actions/draw-rectangle.png"));
-        registerNodeType("ij1-roi-from-table-circle", TableToCircularROIAlgorithm.class, UIUtils.getIconURLFromResources("actions/draw-circle.png"));
-        registerNodeType("ij1-roi-from-table-line", TableToLineROIAlgorithm.class, UIUtils.getIconURLFromResources("actions/draw-line.png"));
-        registerNodeType("ij1-roi-from-table-point", TableToPointROIAlgorithm.class, UIUtils.getIconURLFromResources("actions/labplot-xy-curve-points.png"));
-        registerNodeType("ij1-roi-from-table-text", TableToTextROIAlgorithm.class, UIUtils.getIconURLFromResources("actions/edit-select-text.png"));
-        registerNodeType("ij1-roi-set-image", SetRoiImageAlgorithm.class, UIUtils.getIconURLFromResources("actions/viewimage.png"));
-        registerNodeType("ij1-roi-get-image", GetRoiImageAlgorithm.class, UIUtils.getIconURLFromResources("actions/viewimage.png"));
-        registerNodeType("ij1-roi-unset-image", UnsetRoiImageAlgorithm.class, UIUtils.getIconURLFromResources("actions/delete.png"));
-        registerNodeType("ij1-roi-from-mask", MaskToRoiAlgorithm.class, UIUtils.getIconURLFromResources("data-types/imgplus-2d-greyscale-mask.png"));
-        registerNodeType("ij1-roi-extract-from-roi", ExtractFromROIAlgorithm.class, UIUtils.getIconURLFromResources("actions/image-crop.png"));
-        registerNodeType("ij1-roi-assemble-from-roi", AssembleExtractedROIAlgorithm.class, UIUtils.getIconURLFromResources("actions/insert-image.png"));
-        registerNodeType("ij1-roi-to-annotations", RoiPropertiesToAnnotationsAlgorithm.class, UIUtils.getIconURLFromResources("actions/tag.png"));
-        registerNodeType("ij1-roi-filter-by-overlap", FilterROIByOverlapAlgorithm.class, UIUtils.getIconURLFromResources("actions/filter.png"));
-        registerNodeType("ij1-roi-generate-name", ChangeRoiNameFromExpressionsAndMeasurementsAlgorithm.class, UIUtils.getIconURLFromResources("actions/tag.png"));
-        registerNodeType("ij1-roi-filter-roi-lists", FilterROIListsAlgorithm.class, UIUtils.getIconURLFromResources("actions/filter.png"));
-        registerNodeType("ij1-roi-dimension-reorder", ReorderRoiDimensionsAlgorithm.class, UIUtils.getIconURLFromResources("actions/split.png"));
-        registerNodeType("ij1-roi-generate-missing", GenerateMissingRoiListsAlgorithm.class, UIUtils.getIconURLFromResources("actions/image-auto-adjust.png"));
-        registerNodeType("ij1-roi-remove-overlay", RemoveOverlayAlgorithm.class, UIUtils.getIconURLFromResources("actions/editclear.png"));
-        registerNodeType("ij1-roi-render-overlay", RenderOverlayAlgorithm.class, UIUtils.getIconURLFromResources("actions/color-management.png"));
-        registerNodeType("ij1-roi-set-overlay", SetOverlayAlgorithm.class, UIUtils.getIconURLFromResources("actions/roi.png"));
-        registerNodeType("ij1-roi-extract-overlay", ExtractOverlayAlgorithm.class, UIUtils.getIconURLFromResources("actions/roi.png"));
-        registerNodeType("ij1-roi-to-labels-expression", ROIToLabelsExpressionAlgorithm.class, UIUtils.getIconURLFromResources("actions/object-tweak-jitter-color.png"));
-        registerNodeType("ij1-roi-to-labels-name", ROIToLabelsByNameAlgorithm.class, UIUtils.getIconURLFromResources("actions/object-tweak-jitter-color.png"));
-        registerNodeType("ij1-roi-flood-fill", RoiFloodFillAlgorithm.class, UIUtils.getIconURLFromResources("actions/color-fill.png"));
-        registerNodeType("ij1-roi-extract-metadata", ExtractROIMetadataAlgorithm.class, UIUtils.getIconURLFromResources("actions/cm_extractfiles.png"));
-        registerNodeType("ij1-roi-set-metadata-from-table", SetROIMetadataFromTableAlgorithm.class, UIUtils.getIconURLFromResources("actions/cm_packfiles.png"));
-        registerNodeType("ij1-roi-set-metadata-from-statistics-expression", SetRoiMetadataByStatisticsAlgorithm.class, UIUtils.getIconURLFromResources("actions/cm_packfiles.png"));
-        registerNodeType("ij1-roi-remove-metadata", RemoveROIMetadataAlgorithm.class, UIUtils.getIconURLFromResources("actions/filter.png"));
-        registerNodeType("ij1-roi-flatten", FlattenRoiAlgorithm.class, UIUtils.getIconURLFromResources("actions/layer-flatten-z.png"));
-        registerNodeType("ij1-roi-enlarge-shrink", EnlargeShrinkRoiAlgorithm.class, UIUtils.getIconURLFromResources("actions/zoom-draw.png"));
-        registerNodeType("ij1-roi-transform-2d", TransformRoiFromExpressionsAlgorithm.class, UIUtils.getIconURLFromResources("actions/dialog-transform.png"));
+        registerNodeType("ij1-roi-crop-list", CropRoiListAlgorithm.class, JIPipe.RESOURCES.getIcon16URL("actions/image-crop.png"));
+        registerNodeType("ij1-roi-to-centroid", RoiToCentroidAlgorithm.class, JIPipe.RESOURCES.getIcon16URL("actions/draw-connector.png"));
+        registerNodeType("ij1-roi-remove-bordering", RemoveBorderRoisAlgorithm.class, JIPipe.RESOURCES.getIcon16URL("actions/bordertool.png"));
+        registerNodeType("ij1-roi-statistics", RoiStatisticsAlgorithm.class, JIPipe.RESOURCES.getIcon16URL("actions/statistics.png"));
+        registerNodeType("ij1-roi-relation-2d", ExtractRoi2DRelationStatisticsAlgorithm.class, JIPipe.RESOURCES.getIcon16URL("actions/statistics.png"));
+        registerNodeType("ij1-roi-count", CountROIAlgorithm.class, JIPipe.RESOURCES.getIcon16URL("actions/statistics.png"));
+        registerNodeType("ij1-roi-filter-statistics", FilterRoiByStatisticsAlgorithm.class, JIPipe.RESOURCES.getIcon16URL("actions/filter.png"));
+        registerNodeType("ij1-roi-filter-slice", SliceROIListAlgorithm.class, JIPipe.RESOURCES.getIcon16URL("actions/filter.png"));
+        registerNodeType("ij1-roi-filter-by-name", FilterRoiByNameAlgorithm.class, JIPipe.RESOURCES.getIcon16URL("actions/filter.png"));
+        registerNodeType("ij1-roi-color-statistics", ColorRoiByStatisticsAlgorithm.class, JIPipe.RESOURCES.getIcon16URL("actions/fill-color.png"));
+        registerNodeType("ij1-roi-color-by-name", ColorRoiByNameAlgorithm.class, JIPipe.RESOURCES.getIcon16URL("actions/fill-color.png"));
+        registerNodeType("ij1-roi-sort-and-extract-statistics", SortAndExtractRoiByStatisticsAlgorithm.class, JIPipe.RESOURCES.getIcon16URL("actions/view-sort.png"));
+        registerNodeType("ij1-roi-sort-and-extract-statistics-2", SortAndExtractRoiByStatisticsAlgorithm2.class, JIPipe.RESOURCES.getIcon16URL("actions/view-sort.png"));
+        registerNodeType("ij1-roi-sort-by-statistics-expression", SortRoiListByExpressionsAndMeasurementsAlgorithm.class, JIPipe.RESOURCES.getIcon16URL("actions/view-sort.png"));
+        registerNodeType("ij1-roi-set-properties", ChangeRoiPropertiesAlgorithm.class, JIPipe.RESOURCES.getIcon16URL("actions/document-edit.png"));
+        registerNodeType("ij1-roi-scale", ScaleRoiAlgorithm.class, JIPipe.RESOURCES.getIcon16URL("actions/transform-scale.png"));
+        registerNodeType("ij1-roi-rotate", RotateRoiAlgorithm.class, JIPipe.RESOURCES.getIcon16URL("actions/transform-rotate.png"));
+        registerNodeType("ij1-roi-set-properties-from-annotation", ChangeRoiPropertiesFromAnnotationsAlgorithm.class, JIPipe.RESOURCES.getIcon16URL("actions/document-edit.png"));
+        registerNodeType("ij1-roi-set-properties-from-expressions", ChangeRoiPropertiesFromExpressionsAlgorithm.class, JIPipe.RESOURCES.getIcon16URL("actions/document-edit.png"));
+        registerNodeType("ij1-roi-set-properties-from-table", ChangeRoiPropertiesFromTableAlgorithm.class, JIPipe.RESOURCES.getIcon16URL("actions/document-edit.png"));
+        registerNodeType("ij1-roi-to-rgb-unreferenced", UnreferencedRoiToRGBAlgorithm.class, JIPipe.RESOURCES.getIcon16URL("actions/color-management.png"));
+        registerNodeType("ij1-roi-to-rgb", RoiToRGBAlgorithm.class, JIPipe.RESOURCES.getIcon16URL("actions/color-management.png"));
+        registerNodeType("ij1-roi-filter-statistics-script", FilterRoiByStatisticsScriptAlgorithm.class, JIPipe.RESOURCES.getIcon16URL("apps/python.png"));
+        registerNodeType("ij1-roi-filter-and-merge-statistics-script", FilterAndMergeRoiByStatisticsScriptAlgorithm.class, JIPipe.RESOURCES.getIcon16URL("apps/python.png"));
+        registerNodeType("ij1-roi-from-table-rectangular", TableToRectangularROIAlgorithm.class, JIPipe.RESOURCES.getIcon16URL("actions/draw-rectangle.png"));
+        registerNodeType("ij1-roi-from-table-circle", TableToCircularROIAlgorithm.class, JIPipe.RESOURCES.getIcon16URL("actions/draw-circle.png"));
+        registerNodeType("ij1-roi-from-table-line", TableToLineROIAlgorithm.class, JIPipe.RESOURCES.getIcon16URL("actions/draw-line.png"));
+        registerNodeType("ij1-roi-from-table-point", TableToPointROIAlgorithm.class, JIPipe.RESOURCES.getIcon16URL("actions/labplot-xy-curve-points.png"));
+        registerNodeType("ij1-roi-from-table-text", TableToTextROIAlgorithm.class, JIPipe.RESOURCES.getIcon16URL("actions/edit-select-text.png"));
+        registerNodeType("ij1-roi-set-image", SetRoiImageAlgorithm.class, JIPipe.RESOURCES.getIcon16URL("actions/viewimage.png"));
+        registerNodeType("ij1-roi-get-image", GetRoiImageAlgorithm.class, JIPipe.RESOURCES.getIcon16URL("actions/viewimage.png"));
+        registerNodeType("ij1-roi-unset-image", UnsetRoiImageAlgorithm.class, JIPipe.RESOURCES.getIcon16URL("actions/delete.png"));
+        registerNodeType("ij1-roi-from-mask", MaskToRoiAlgorithm.class, JIPipe.RESOURCES.getIcon16URL("data-types/imgplus-2d-greyscale-mask.png"));
+        registerNodeType("ij1-roi-extract-from-roi", ExtractFromROIAlgorithm.class, JIPipe.RESOURCES.getIcon16URL("actions/image-crop.png"));
+        registerNodeType("ij1-roi-assemble-from-roi", AssembleExtractedROIAlgorithm.class, JIPipe.RESOURCES.getIcon16URL("actions/insert-image.png"));
+        registerNodeType("ij1-roi-to-annotations", RoiPropertiesToAnnotationsAlgorithm.class, JIPipe.RESOURCES.getIcon16URL("actions/tag.png"));
+        registerNodeType("ij1-roi-filter-by-overlap", FilterROIByOverlapAlgorithm.class, JIPipe.RESOURCES.getIcon16URL("actions/filter.png"));
+        registerNodeType("ij1-roi-generate-name", ChangeRoiNameFromExpressionsAndMeasurementsAlgorithm.class, JIPipe.RESOURCES.getIcon16URL("actions/tag.png"));
+        registerNodeType("ij1-roi-filter-roi-lists", FilterROIListsAlgorithm.class, JIPipe.RESOURCES.getIcon16URL("actions/filter.png"));
+        registerNodeType("ij1-roi-dimension-reorder", ReorderRoiDimensionsAlgorithm.class, JIPipe.RESOURCES.getIcon16URL("actions/split.png"));
+        registerNodeType("ij1-roi-generate-missing", GenerateMissingRoiListsAlgorithm.class, JIPipe.RESOURCES.getIcon16URL("actions/image-auto-adjust.png"));
+        registerNodeType("ij1-roi-remove-overlay", RemoveOverlayAlgorithm.class, JIPipe.RESOURCES.getIcon16URL("actions/editclear.png"));
+        registerNodeType("ij1-roi-render-overlay", RenderOverlayAlgorithm.class, JIPipe.RESOURCES.getIcon16URL("actions/color-management.png"));
+        registerNodeType("ij1-roi-set-overlay", SetOverlayAlgorithm.class, JIPipe.RESOURCES.getIcon16URL("actions/roi.png"));
+        registerNodeType("ij1-roi-extract-overlay", ExtractOverlayAlgorithm.class, JIPipe.RESOURCES.getIcon16URL("actions/roi.png"));
+        registerNodeType("ij1-roi-to-labels-expression", ROIToLabelsExpressionAlgorithm.class, JIPipe.RESOURCES.getIcon16URL("actions/object-tweak-jitter-color.png"));
+        registerNodeType("ij1-roi-to-labels-name", ROIToLabelsByNameAlgorithm.class, JIPipe.RESOURCES.getIcon16URL("actions/object-tweak-jitter-color.png"));
+        registerNodeType("ij1-roi-flood-fill", RoiFloodFillAlgorithm.class, JIPipe.RESOURCES.getIcon16URL("actions/color-fill.png"));
+        registerNodeType("ij1-roi-extract-metadata", ExtractROIMetadataAlgorithm.class, JIPipe.RESOURCES.getIcon16URL("actions/cm_extractfiles.png"));
+        registerNodeType("ij1-roi-set-metadata-from-table", SetROIMetadataFromTableAlgorithm.class, JIPipe.RESOURCES.getIcon16URL("actions/cm_packfiles.png"));
+        registerNodeType("ij1-roi-set-metadata-from-statistics-expression", SetRoiMetadataByStatisticsAlgorithm.class, JIPipe.RESOURCES.getIcon16URL("actions/cm_packfiles.png"));
+        registerNodeType("ij1-roi-remove-metadata", RemoveROIMetadataAlgorithm.class, JIPipe.RESOURCES.getIcon16URL("actions/filter.png"));
+        registerNodeType("ij1-roi-flatten", FlattenRoiAlgorithm.class, JIPipe.RESOURCES.getIcon16URL("actions/layer-flatten-z.png"));
+        registerNodeType("ij1-roi-enlarge-shrink", EnlargeShrinkRoiAlgorithm.class, JIPipe.RESOURCES.getIcon16URL("actions/zoom-draw.png"));
+        registerNodeType("ij1-roi-transform-2d", TransformRoiFromExpressionsAlgorithm.class, JIPipe.RESOURCES.getIcon16URL("actions/dialog-transform.png"));
 
-        registerNodeType("ij1-roi-draw-rectangle", DrawRectangleRoiAlgorithm.class, UIUtils.getIconURLFromResources("actions/draw-rectangle.png"));
-        registerNodeType("ij1-roi-draw-oval", DrawOvalRoiAlgorithm.class, UIUtils.getIconURLFromResources("actions/draw-ellipse.png"));
-        registerNodeType("ij1-roi-draw-text", DrawTextRoiAlgorithm.class, UIUtils.getIconURLFromResources("actions/draw-text.png"));
-        registerNodeType("ij1-roi-draw-line", DrawLineOvalRectangleRoiAlgorithm.class, UIUtils.getIconURLFromResources("actions/draw-line.png"));
-        registerNodeType("ij1-roi-draw-scalebar", DrawScaleBarRoiAlgorithm.class, UIUtils.getIconURLFromResources("actions/draw-geometry-show-measuring-info.png"));
+        registerNodeType("ij1-roi-draw-rectangle", DrawRectangleRoiAlgorithm.class, JIPipe.RESOURCES.getIcon16URL("actions/draw-rectangle.png"));
+        registerNodeType("ij1-roi-draw-oval", DrawOvalRoiAlgorithm.class, JIPipe.RESOURCES.getIcon16URL("actions/draw-ellipse.png"));
+        registerNodeType("ij1-roi-draw-text", DrawTextRoiAlgorithm.class, JIPipe.RESOURCES.getIcon16URL("actions/draw-text.png"));
+        registerNodeType("ij1-roi-draw-line", DrawLineOvalRectangleRoiAlgorithm.class, JIPipe.RESOURCES.getIcon16URL("actions/draw-line.png"));
+        registerNodeType("ij1-roi-draw-scalebar", DrawScaleBarRoiAlgorithm.class, JIPipe.RESOURCES.getIcon16URL("actions/draw-geometry-show-measuring-info.png"));
 
-//        registerNodeType("ij1-roi-register-max-brightness", RegisterRoiToImageByBrightnessAlgorithm.class, UIUtils.getIconURLFromResources("actions/cm_search.png"));
-        registerNodeType("ij1-roi-extract-profile", ExtractROIProfileAlgorithm.class, UIUtils.getIconURLFromResources("actions/draw-line.png"));
+//        registerNodeType("ij1-roi-register-max-brightness", RegisterRoiToImageByBrightnessAlgorithm.class, JIPipe.RESOURCES.getIcon16URL("actions/cm_search.png"));
+        registerNodeType("ij1-roi-extract-profile", ExtractROIProfileAlgorithm.class, JIPipe.RESOURCES.getIcon16URL("actions/draw-line.png"));
 
-        registerNodeType("ij1-roi-convert-to-table", ConvertRoiToTableAlgorithm.class, UIUtils.getIconURLFromResources("actions/table.png"));
+        registerNodeType("ij1-roi-convert-to-table", ConvertRoiToTableAlgorithm.class, JIPipe.RESOURCES.getIcon16URL("actions/table.png"));
 
         registerEnumParameterType("ij1-roi-draw-line:roi-type", DrawLineOvalRectangleRoiAlgorithm.RoiType.class, "ROI type", "Available ROI types");
         registerEnumParameterType("ij1-roi-flood-fill:mode",
@@ -1048,31 +1049,31 @@ public class ImageJAlgorithmsPlugin extends JIPipePrepackagedDefaultJavaPlugin {
     }
 
     private void registerConvolutionAlgorithms() {
-        registerNodeType("ij1-convolve-convolve2d-parameter", ConvolveByParameter2DAlgorithm.class, UIUtils.getIconURLFromResources("actions/insert-math-expression.png"));
-        registerNodeType("ij1-convolve-convolve2d-slot", ConvolveByImage2DAlgorithm.class, UIUtils.getIconURLFromResources("actions/insert-math-expression.png"));
+        registerNodeType("ij1-convolve-convolve2d-parameter", ConvolveByParameter2DAlgorithm.class, JIPipe.RESOURCES.getIcon16URL("actions/insert-math-expression.png"));
+        registerNodeType("ij1-convolve-convolve2d-slot", ConvolveByImage2DAlgorithm.class, JIPipe.RESOURCES.getIcon16URL("actions/insert-math-expression.png"));
     }
 
     private void registerTransformationAlgorithms() {
-        registerNodeType("ij1-transform-flip2d", TransformFlip2DAlgorithm.class, UIUtils.getIconURLFromResources("actions/object-flip-horizontal.png"));
-        registerNodeType("ij1-transform-rotate2d", TransformRotate2DAlgorithm.class, UIUtils.getIconURLFromResources("actions/transform-rotate.png"));
-        registerNodeType("ij1-transform-rotate2d-free", TransformRotateFree2DAlgorithm.class, UIUtils.getIconURLFromResources("actions/transform-rotate.png"));
-        registerNodeType("ij1-transform-scale2d", TransformScale2DAlgorithm.class, UIUtils.getIconURLFromResources("actions/transform-scale.png"));
-        registerNodeType("ij1-transform-scale3d", TransformScale3DAlgorithm.class, UIUtils.getIconURLFromResources("actions/transform-scale.png"));
-        registerNodeType("ij1-transform-crop2d", TransformCrop2DAlgorithm.class, UIUtils.getIconURLFromResources("actions/image-crop.png"));
-        registerNodeType("ij1-transform-crop-to-roi", CropToRoiAlgorithm.class, UIUtils.getIconURLFromResources("actions/image-crop.png"));
-        registerNodeType("ij1-transform-expand2d", TransformExpandCanvas2DAlgorithm.class, UIUtils.getIconURLFromResources("actions/transform-scale.png"));
-        registerNodeType("ij1-transform-equalize-expand2d", TransformEqualCanvasSize2DAlgorithm.class, UIUtils.getIconURLFromResources("actions/transform-scale.png"));
-        registerNodeType("ij1-transform-equalize-dimensions", TransformEqualizeDimensionsAlgorithm.class, UIUtils.getIconURLFromResources("actions/transform-scale.png"));
-        registerNodeType("ij1-transform-equalize-dimensions-max-io", TransformEqualizeDimensionsToMaxAlgorithm.class, UIUtils.getIconURLFromResources("actions/transform-scale.png"));
-        registerNodeType("ij1-transform-set-dimensions", TransformSetHyperstackDimensionsAlgorithm.class, UIUtils.getIconURLFromResources("actions/transform-scale.png"));
-        registerNodeType("ij1-transform-warp2d", Warp2DAlgorithm.class, UIUtils.getIconURLFromResources("actions/object-tweak-rotate.png"));
-        registerNodeType("ij1-overlay", MergeImagesAlgorithm.class, UIUtils.getIconURLFromResources("actions/insert-image.png"));
-        registerNodeType("ij1-transform-tile-2d", TileImage2DAlgorithm.class, UIUtils.getIconURLFromResources("actions/grid-rectangular.png"));
-        registerNodeType("ij1-transform-tile-2d-v2", TileImage2Dv2Algorithm.class, UIUtils.getIconURLFromResources("actions/grid-rectangular.png"));
-        registerNodeType("ij1-transform-un-tile-2d", UnTileImage2DAlgorithm.class, UIUtils.getIconURLFromResources("actions/grid-rectangular.png"));
-        registerNodeType("ij1-transform-add-border-2d", AddBorder2DAlgorithm.class, UIUtils.getIconURLFromResources("actions/bordertool.png"));
-        registerNodeType("ij1-transform-line-mirror-by-expression", LineMirror2DFromExpressionsAlgorithm.class, UIUtils.getIconURLFromResources("actions/draw-geometry-mirror.png"));
-        registerNodeType("ij1-transform-line-mirror-by-roi", LineMirror2DFromRoiAlgorithm.class, UIUtils.getIconURLFromResources("actions/draw-geometry-mirror.png"));
+        registerNodeType("ij1-transform-flip2d", TransformFlip2DAlgorithm.class, JIPipe.RESOURCES.getIcon16URL("actions/object-flip-horizontal.png"));
+        registerNodeType("ij1-transform-rotate2d", TransformRotate2DAlgorithm.class, JIPipe.RESOURCES.getIcon16URL("actions/transform-rotate.png"));
+        registerNodeType("ij1-transform-rotate2d-free", TransformRotateFree2DAlgorithm.class, JIPipe.RESOURCES.getIcon16URL("actions/transform-rotate.png"));
+        registerNodeType("ij1-transform-scale2d", TransformScale2DAlgorithm.class, JIPipe.RESOURCES.getIcon16URL("actions/transform-scale.png"));
+        registerNodeType("ij1-transform-scale3d", TransformScale3DAlgorithm.class, JIPipe.RESOURCES.getIcon16URL("actions/transform-scale.png"));
+        registerNodeType("ij1-transform-crop2d", TransformCrop2DAlgorithm.class, JIPipe.RESOURCES.getIcon16URL("actions/image-crop.png"));
+        registerNodeType("ij1-transform-crop-to-roi", CropToRoiAlgorithm.class, JIPipe.RESOURCES.getIcon16URL("actions/image-crop.png"));
+        registerNodeType("ij1-transform-expand2d", TransformExpandCanvas2DAlgorithm.class, JIPipe.RESOURCES.getIcon16URL("actions/transform-scale.png"));
+        registerNodeType("ij1-transform-equalize-expand2d", TransformEqualCanvasSize2DAlgorithm.class, JIPipe.RESOURCES.getIcon16URL("actions/transform-scale.png"));
+        registerNodeType("ij1-transform-equalize-dimensions", TransformEqualizeDimensionsAlgorithm.class, JIPipe.RESOURCES.getIcon16URL("actions/transform-scale.png"));
+        registerNodeType("ij1-transform-equalize-dimensions-max-io", TransformEqualizeDimensionsToMaxAlgorithm.class, JIPipe.RESOURCES.getIcon16URL("actions/transform-scale.png"));
+        registerNodeType("ij1-transform-set-dimensions", TransformSetHyperstackDimensionsAlgorithm.class, JIPipe.RESOURCES.getIcon16URL("actions/transform-scale.png"));
+        registerNodeType("ij1-transform-warp2d", Warp2DAlgorithm.class, JIPipe.RESOURCES.getIcon16URL("actions/object-tweak-rotate.png"));
+        registerNodeType("ij1-overlay", MergeImagesAlgorithm.class, JIPipe.RESOURCES.getIcon16URL("actions/insert-image.png"));
+        registerNodeType("ij1-transform-tile-2d", TileImage2DAlgorithm.class, JIPipe.RESOURCES.getIcon16URL("actions/grid-rectangular.png"));
+        registerNodeType("ij1-transform-tile-2d-v2", TileImage2Dv2Algorithm.class, JIPipe.RESOURCES.getIcon16URL("actions/grid-rectangular.png"));
+        registerNodeType("ij1-transform-un-tile-2d", UnTileImage2DAlgorithm.class, JIPipe.RESOURCES.getIcon16URL("actions/grid-rectangular.png"));
+        registerNodeType("ij1-transform-add-border-2d", AddBorder2DAlgorithm.class, JIPipe.RESOURCES.getIcon16URL("actions/bordertool.png"));
+        registerNodeType("ij1-transform-line-mirror-by-expression", LineMirror2DFromExpressionsAlgorithm.class, JIPipe.RESOURCES.getIcon16URL("actions/draw-geometry-mirror.png"));
+        registerNodeType("ij1-transform-line-mirror-by-roi", LineMirror2DFromRoiAlgorithm.class, JIPipe.RESOURCES.getIcon16URL("actions/draw-geometry-mirror.png"));
 
         registerEnumParameterType("ij1-transform-flip2d:flip-mode", TransformFlip2DAlgorithm.FlipMode.class,
                 "Flip mode", "Available modes");
@@ -1090,30 +1091,30 @@ public class ImageJAlgorithmsPlugin extends JIPipePrepackagedDefaultJavaPlugin {
     }
 
     private void registerFFTAlgorithms() {
-        registerNodeType("ij1-fft-forward2d", FFT2DForwardTransform.class, UIUtils.getIconURLFromResources("actions/insert-math-expression.png"));
-        registerNodeType("ij1-fft-inverse2d", FFT2DInverseTransform.class, UIUtils.getIconURLFromResources("actions/insert-math-expression.png"));
-        registerNodeType("ij1-fft-swap2d", FFT2DSwapQuadrants.class, UIUtils.getIconURLFromResources("actions/insert-math-expression.png"));
-        registerNodeType("ij1-fft-bandpass2d", FFTBandPassFilter.class, UIUtils.getIconURLFromResources("actions/insert-math-expression.png"));
-//        registerNodeType("ij1-fft-custom2d", FFTCustomFilter.class, UIUtils.getIconURLFromResources("actions/insert-math-expression.png"));
+        registerNodeType("ij1-fft-forward2d", FFT2DForwardTransform.class, JIPipe.RESOURCES.getIcon16URL("actions/insert-math-expression.png"));
+        registerNodeType("ij1-fft-inverse2d", FFT2DInverseTransform.class, JIPipe.RESOURCES.getIcon16URL("actions/insert-math-expression.png"));
+        registerNodeType("ij1-fft-swap2d", FFT2DSwapQuadrants.class, JIPipe.RESOURCES.getIcon16URL("actions/insert-math-expression.png"));
+        registerNodeType("ij1-fft-bandpass2d", FFTBandPassFilter.class, JIPipe.RESOURCES.getIcon16URL("actions/insert-math-expression.png"));
+//        registerNodeType("ij1-fft-custom2d", FFTCustomFilter.class, JIPipe.RESOURCES.getIcon16URL("actions/insert-math-expression.png"));
 
         registerEnumParameterType("ij1-fft-bandpass2d:stripe-suppression", FFTBandPassFilter.SuppressStripesMode.class, "Suppress stripes", "Available modes");
     }
 
     private void registerAnalysisAlgorithms() {
-        registerNodeType("ij1-analyze-find-particles2d", FindParticles2D.class, UIUtils.getIconURLFromResources("actions/tool_elliptical_selection.png"));
-        registerNodeType("ij1-analyze-skeleton-2d3d", AnalyzeSkeleton2D3DAlgorithm.class, UIUtils.getIconURLFromResources("actions/object-to-path.png"));
-        registerNodeType("ij1-analyze-image-statistics", ImageStatisticsAlgorithm.class, UIUtils.getIconURLFromResources("actions/statistics.png"));
-        registerNodeType("ij1-analyze-image-statistics-expression", ImageStatisticsExpressionAlgorithm.class, UIUtils.getIconURLFromResources("actions/statistics.png"));
-        registerNodeType("ij1-analyze-annotate-by-image-statistics-expression", AnnotateByImageStatisticsExpressionAlgorithm.class, UIUtils.getIconURLFromResources("actions/statistics.png"));
-        registerNodeType("ij1-analyze-statistics-histogram", HistogramGenerator.class, UIUtils.getIconURLFromResources("actions/office-chart-bar.png"));
-        registerNodeType("ij1-analyze-statistics-key-value-avg", KeyValueAveragesGenerator.class, UIUtils.getIconURLFromResources("actions/office-chart-bar.png"));
-        registerNodeType("ij1-analyze-statistics-histogram-key-value", KeyValueHistogramGenerator.class, UIUtils.getIconURLFromResources("actions/office-chart-bar.png"));
-        registerNodeType("ij1-analyze-statistics-threshold-value", KeyValueThresholdStatisticsGenerator.class, UIUtils.getIconURLFromResources("data-types/imgplus-2d-greyscale-mask.png"));
-        registerNodeType("ij1-analyze-statistics-threshold-value-fast", FastKeyValueThresholdStatisticsGenerator.class, UIUtils.getIconURLFromResources("data-types/imgplus-2d-greyscale-mask.png"));
-        registerNodeType("ij1-analyze-statistics-threshold-value-fast-avg", AverageKeyValueThresholdStatisticsGenerator.class, UIUtils.getIconURLFromResources("data-types/imgplus-2d-greyscale-mask.png"));
-        registerNodeType("ij1-analyze-statistics-threshold-partition-key-value", KeyValueThresholdPartitionGenerator.class, UIUtils.getIconURLFromResources("actions/office-chart-bar.png"));
-        registerNodeType("ij1-analyze-statistics-threshold-partition-key-value-avg", KeyValueThresholdPartitionAveragesGenerator.class, UIUtils.getIconURLFromResources("actions/office-chart-bar.png"));
-        registerNodeType("ij1-analyze-orientationj-vector-field-2d", OrientationVectorField2DAlgorithm.class, UIUtils.getIconURLFromResources("actions/insert-math-expression.png"));
+        registerNodeType("ij1-analyze-find-particles2d", FindParticles2D.class, JIPipe.RESOURCES.getIcon16URL("actions/tool_elliptical_selection.png"));
+        registerNodeType("ij1-analyze-skeleton-2d3d", AnalyzeSkeleton2D3DAlgorithm.class, JIPipe.RESOURCES.getIcon16URL("actions/object-to-path.png"));
+        registerNodeType("ij1-analyze-image-statistics", ImageStatisticsAlgorithm.class, JIPipe.RESOURCES.getIcon16URL("actions/statistics.png"));
+        registerNodeType("ij1-analyze-image-statistics-expression", ImageStatisticsExpressionAlgorithm.class, JIPipe.RESOURCES.getIcon16URL("actions/statistics.png"));
+        registerNodeType("ij1-analyze-annotate-by-image-statistics-expression", AnnotateByImageStatisticsExpressionAlgorithm.class, JIPipe.RESOURCES.getIcon16URL("actions/statistics.png"));
+        registerNodeType("ij1-analyze-statistics-histogram", HistogramGenerator.class, JIPipe.RESOURCES.getIcon16URL("actions/office-chart-bar.png"));
+        registerNodeType("ij1-analyze-statistics-key-value-avg", KeyValueAveragesGenerator.class, JIPipe.RESOURCES.getIcon16URL("actions/office-chart-bar.png"));
+        registerNodeType("ij1-analyze-statistics-histogram-key-value", KeyValueHistogramGenerator.class, JIPipe.RESOURCES.getIcon16URL("actions/office-chart-bar.png"));
+        registerNodeType("ij1-analyze-statistics-threshold-value", KeyValueThresholdStatisticsGenerator.class, JIPipe.RESOURCES.getIcon16URL("data-types/imgplus-2d-greyscale-mask.png"));
+        registerNodeType("ij1-analyze-statistics-threshold-value-fast", FastKeyValueThresholdStatisticsGenerator.class, JIPipe.RESOURCES.getIcon16URL("data-types/imgplus-2d-greyscale-mask.png"));
+        registerNodeType("ij1-analyze-statistics-threshold-value-fast-avg", AverageKeyValueThresholdStatisticsGenerator.class, JIPipe.RESOURCES.getIcon16URL("data-types/imgplus-2d-greyscale-mask.png"));
+        registerNodeType("ij1-analyze-statistics-threshold-partition-key-value", KeyValueThresholdPartitionGenerator.class, JIPipe.RESOURCES.getIcon16URL("actions/office-chart-bar.png"));
+        registerNodeType("ij1-analyze-statistics-threshold-partition-key-value-avg", KeyValueThresholdPartitionAveragesGenerator.class, JIPipe.RESOURCES.getIcon16URL("actions/office-chart-bar.png"));
+        registerNodeType("ij1-analyze-orientationj-vector-field-2d", OrientationVectorField2DAlgorithm.class, JIPipe.RESOURCES.getIcon16URL("actions/insert-math-expression.png"));
 
         registerEnumParameterType("ij1-analyze-statistics-histogram:multi-channel-mode", HistogramGenerator.MultiChannelMode.class,
                 "Multichannel mode", "Available modes");
@@ -1123,28 +1124,28 @@ public class ImageJAlgorithmsPlugin extends JIPipePrepackagedDefaultJavaPlugin {
     }
 
     private void registerDimensionAlgorithms() {
-        registerNodeType("ij1-dimensions-stack-to-2d", StackTo2DAlgorithm.class, UIUtils.getIconURLFromResources("actions/layer-bottom.png"));
-        registerNodeType("ij1-dimensions-stacksplitter", StackSplitterAlgorithm.class, UIUtils.getIconURLFromResources("actions/split.png"));
-        registerNodeType("ij1-dimensions-hyper-stackslicer", HyperstackSlicerAlgorithm.class, UIUtils.getIconURLFromResources("actions/split.png"));
-        registerNodeType("ij1-dimensions-hyper-stacksplitter", SplitByDimensionAlgorithm.class, UIUtils.getIconURLFromResources("actions/split.png"));
-        registerNodeType("ij1-dimensions-expression-slicer", ExpressionSlicerAlgorithm.class, UIUtils.getIconURLFromResources("actions/split.png"));
-        registerNodeType("ij1-dimensions-stackmerger", CreateStackAlgorithm.class, UIUtils.getIconURLFromResources("actions/draw-cuboid.png"));
-        registerNodeType("ij1-dimensions-stacks-to-dimension", StackToDimensionMergerAlgorithm.class, UIUtils.getIconURLFromResources("actions/draw-cuboid.png"));
-        registerNodeType("ij1-dimensions-stacks-to-dimension-2", StackToDimensionMerger2Algorithm.class, UIUtils.getIconURLFromResources("actions/draw-cuboid.png"));
-        registerNodeType("ij1-dimensions-stackinverter", StackInverterAlgorithm.class, UIUtils.getIconURLFromResources("actions/layer-previous.png"));
-        registerNodeType("ij1-dimensions-zproject", ZProjectorAlgorithm.class, UIUtils.getIconURLFromResources("actions/layer-bottom.png"));
-        registerNodeType("ij1-dimensions-zproject-2", NewZProjectorAlgorithm.class, UIUtils.getIconURLFromResources("actions/layer-bottom.png"));
-        registerNodeType("ij1-dimensions-stack2montage", StackToMontageAlgorithm.class, UIUtils.getIconURLFromResources("actions/view-grid.png"));
-        registerNodeType("ij1-dimensions-stack2montage-v2", StackToMontage2Algorithm.class, UIUtils.getIconURLFromResources("actions/view-grid.png"));
-        registerNodeType("ij1-dimensions-montage2stack", MontageToStackAlgorithm.class, UIUtils.getIconURLFromResources("actions/view-grid.png"));
-        registerNodeType("ij1-dimensions-reorder", ReorderDimensionsAlgorithm.class, UIUtils.getIconURLFromResources("actions/split.png"));
-        registerNodeType("ij1-dimensions-stack-combine", StackCombinerAlgorithm.class, UIUtils.getIconURLFromResources("actions/split.png"));
-        registerNodeType("ij1-dimensions-inpput2montage", InputImagesToMontage.class, UIUtils.getIconURLFromResources("actions/view-grid.png"));
-        registerNodeType("ij1-dimensions-input2montage-v2", InputImagesToMontage2.class, UIUtils.getIconURLFromResources("actions/view-grid.png"));
-        registerNodeType("ij1-dimensions-reslice", ResliceAlgorithm.class, UIUtils.getIconURLFromResources("actions/draw-cuboid.png"));
-        registerNodeType("ij1-dimensions-merge-2d-to-hyperstack", Merge2DToHyperstackAlgorithm.class, UIUtils.getIconURLFromResources("actions/merge.png"));
-        registerNodeType("ij1-dimensions-reorder-hyperstack-slices", ReorderHyperstackSlicesExpressionAlgorithm.class, UIUtils.getIconURLFromResources("actions/draw-cuboid.png"));
-        registerNodeType("ij1-dimensions-extended-depth-of-focus", ExtendedDepthOfFocusProjectorAlgorithm.class, UIUtils.getIconURLFromResources("actions/view-continuous.png"));
+        registerNodeType("ij1-dimensions-stack-to-2d", StackTo2DAlgorithm.class, JIPipe.RESOURCES.getIcon16URL("actions/layer-bottom.png"));
+        registerNodeType("ij1-dimensions-stacksplitter", StackSplitterAlgorithm.class, JIPipe.RESOURCES.getIcon16URL("actions/split.png"));
+        registerNodeType("ij1-dimensions-hyper-stackslicer", HyperstackSlicerAlgorithm.class, JIPipe.RESOURCES.getIcon16URL("actions/split.png"));
+        registerNodeType("ij1-dimensions-hyper-stacksplitter", SplitByDimensionAlgorithm.class, JIPipe.RESOURCES.getIcon16URL("actions/split.png"));
+        registerNodeType("ij1-dimensions-expression-slicer", ExpressionSlicerAlgorithm.class, JIPipe.RESOURCES.getIcon16URL("actions/split.png"));
+        registerNodeType("ij1-dimensions-stackmerger", CreateStackAlgorithm.class, JIPipe.RESOURCES.getIcon16URL("actions/draw-cuboid.png"));
+        registerNodeType("ij1-dimensions-stacks-to-dimension", StackToDimensionMergerAlgorithm.class, JIPipe.RESOURCES.getIcon16URL("actions/draw-cuboid.png"));
+        registerNodeType("ij1-dimensions-stacks-to-dimension-2", StackToDimensionMerger2Algorithm.class, JIPipe.RESOURCES.getIcon16URL("actions/draw-cuboid.png"));
+        registerNodeType("ij1-dimensions-stackinverter", StackInverterAlgorithm.class, JIPipe.RESOURCES.getIcon16URL("actions/layer-previous.png"));
+        registerNodeType("ij1-dimensions-zproject", ZProjectorAlgorithm.class, JIPipe.RESOURCES.getIcon16URL("actions/layer-bottom.png"));
+        registerNodeType("ij1-dimensions-zproject-2", NewZProjectorAlgorithm.class, JIPipe.RESOURCES.getIcon16URL("actions/layer-bottom.png"));
+        registerNodeType("ij1-dimensions-stack2montage", StackToMontageAlgorithm.class, JIPipe.RESOURCES.getIcon16URL("actions/view-grid.png"));
+        registerNodeType("ij1-dimensions-stack2montage-v2", StackToMontage2Algorithm.class, JIPipe.RESOURCES.getIcon16URL("actions/view-grid.png"));
+        registerNodeType("ij1-dimensions-montage2stack", MontageToStackAlgorithm.class, JIPipe.RESOURCES.getIcon16URL("actions/view-grid.png"));
+        registerNodeType("ij1-dimensions-reorder", ReorderDimensionsAlgorithm.class, JIPipe.RESOURCES.getIcon16URL("actions/split.png"));
+        registerNodeType("ij1-dimensions-stack-combine", StackCombinerAlgorithm.class, JIPipe.RESOURCES.getIcon16URL("actions/split.png"));
+        registerNodeType("ij1-dimensions-inpput2montage", InputImagesToMontage.class, JIPipe.RESOURCES.getIcon16URL("actions/view-grid.png"));
+        registerNodeType("ij1-dimensions-input2montage-v2", InputImagesToMontage2.class, JIPipe.RESOURCES.getIcon16URL("actions/view-grid.png"));
+        registerNodeType("ij1-dimensions-reslice", ResliceAlgorithm.class, JIPipe.RESOURCES.getIcon16URL("actions/draw-cuboid.png"));
+        registerNodeType("ij1-dimensions-merge-2d-to-hyperstack", Merge2DToHyperstackAlgorithm.class, JIPipe.RESOURCES.getIcon16URL("actions/merge.png"));
+        registerNodeType("ij1-dimensions-reorder-hyperstack-slices", ReorderHyperstackSlicesExpressionAlgorithm.class, JIPipe.RESOURCES.getIcon16URL("actions/draw-cuboid.png"));
+        registerNodeType("ij1-dimensions-extended-depth-of-focus", ExtendedDepthOfFocusProjectorAlgorithm.class, JIPipe.RESOURCES.getIcon16URL("actions/view-continuous.png"));
 
         registerEnumParameterType("ij1-dimensions-zproject:method", ZProjectorAlgorithm.Method.class,
                 "Method", "Available methods");
@@ -1159,37 +1160,37 @@ public class ImageJAlgorithmsPlugin extends JIPipePrepackagedDefaultJavaPlugin {
     }
 
     private void registerThresholdAlgorithms() {
-        registerNodeType("ij1-threshold-manual2d-color-hsb", ManualHSBThreshold2DAlgorithm.class, UIUtils.getIconURLFromResources("actions/segment.png"));
-        registerNodeType("ij1-threshold-manual2d-color-rgb", ManualRGBThreshold2DAlgorithm.class, UIUtils.getIconURLFromResources("actions/segment.png"));
-        registerNodeType("ij1-threshold-manual2d-color-lab", ManualLABThreshold2DAlgorithm.class, UIUtils.getIconURLFromResources("actions/segment.png"));
-        registerNodeType("ij1-threshold-manual2d-8u", ManualThreshold8U2DAlgorithm.class, UIUtils.getIconURLFromResources("actions/segment.png"));
-        registerNodeType("ij1-threshold-percentile2d-8u", PercentileThreshold8U2DAlgorithm.class, UIUtils.getIconURLFromResources("actions/segment.png"));
-        registerNodeType("ij1-threshold-manual2d-16u", ManualThreshold16U2DAlgorithm.class, UIUtils.getIconURLFromResources("actions/segment.png"));
-        registerNodeType("ij1-threshold-manual2d-32f", ManualThreshold32F2DAlgorithm.class, UIUtils.getIconURLFromResources("actions/segment.png"));
-        registerNodeType("ij1-threshold-auto2d", AutoThreshold2DAlgorithm.class, UIUtils.getIconURLFromResources("actions/segment.png"));
+        registerNodeType("ij1-threshold-manual2d-color-hsb", ManualHSBThreshold2DAlgorithm.class, JIPipe.RESOURCES.getIcon16URL("actions/segment.png"));
+        registerNodeType("ij1-threshold-manual2d-color-rgb", ManualRGBThreshold2DAlgorithm.class, JIPipe.RESOURCES.getIcon16URL("actions/segment.png"));
+        registerNodeType("ij1-threshold-manual2d-color-lab", ManualLABThreshold2DAlgorithm.class, JIPipe.RESOURCES.getIcon16URL("actions/segment.png"));
+        registerNodeType("ij1-threshold-manual2d-8u", ManualThreshold8U2DAlgorithm.class, JIPipe.RESOURCES.getIcon16URL("actions/segment.png"));
+        registerNodeType("ij1-threshold-percentile2d-8u", PercentileThreshold8U2DAlgorithm.class, JIPipe.RESOURCES.getIcon16URL("actions/segment.png"));
+        registerNodeType("ij1-threshold-manual2d-16u", ManualThreshold16U2DAlgorithm.class, JIPipe.RESOURCES.getIcon16URL("actions/segment.png"));
+        registerNodeType("ij1-threshold-manual2d-32f", ManualThreshold32F2DAlgorithm.class, JIPipe.RESOURCES.getIcon16URL("actions/segment.png"));
+        registerNodeType("ij1-threshold-auto2d", AutoThreshold2DAlgorithm.class, JIPipe.RESOURCES.getIcon16URL("actions/segment.png"));
         for (AutoThresholder.Method method : AutoThresholder.Method.values()) {
             registerNodeExample(AutoThreshold2DAlgorithm.class, method.name(), node -> node.setMethod(method));
         }
-        registerNodeType("ij1-threshold-expression2d-8u", CustomAutoThreshold2D8UAlgorithm.class, UIUtils.getIconURLFromResources("actions/segment.png"));
-        registerNodeType("ij1-threshold-expression2d-16u", CustomAutoThreshold2D16UAlgorithm.class, UIUtils.getIconURLFromResources("actions/segment.png"));
-        registerNodeType("ij1-threshold-expression2d-32f", CustomAutoThreshold2D32FAlgorithm.class, UIUtils.getIconURLFromResources("actions/segment.png"));
-        registerNodeType("ij1-threshold-expression2d-8u-v2", CustomAutoThreshold2D8Uv2Algorithm.class, UIUtils.getIconURLFromResources("actions/segment.png"));
-        registerNodeType("ij1-threshold-expression2d-16u-v2", CustomAutoThreshold2D16Uv2Algorithm.class, UIUtils.getIconURLFromResources("actions/segment.png"));
-        registerNodeType("ij1-threshold-expression2d-32f-v2", CustomAutoThreshold2D32Fv2Algorithm.class, UIUtils.getIconURLFromResources("actions/segment.png"));
-        registerNodeType("ij1-threshold-expression2d-color", ColorThresholdExpression2D.class, UIUtils.getIconURLFromResources("actions/segment.png"));
-        registerNodeType("ij1-threshold-local-auto2d", LocalAutoThreshold2DAlgorithm.class, UIUtils.getIconURLFromResources("actions/segment.png"));
-        registerNodeType("ij1-threshold-local-auto2d-bernsen", BernsenLocalAutoThreshold2DAlgorithm.class, UIUtils.getIconURLFromResources("actions/segment.png"));
-        registerNodeType("ij1-threshold-local-auto2d-niblack", NiblackLocalAutoThreshold2DAlgorithm.class, UIUtils.getIconURLFromResources("actions/segment.png"));
-        registerNodeType("ij1-threshold-local-auto2d-sauvola", SauvolaLocalAutoThreshold2DAlgorithm.class, UIUtils.getIconURLFromResources("actions/segment.png"));
-        registerNodeType("ij1-threshold-local-auto2d-phansalkar", PhansalkarLocalAutoThreshold2DAlgorithm.class, UIUtils.getIconURLFromResources("actions/segment.png"));
-        registerNodeType("ij1-threshold-local-auto2d-contrast", ContrastLocalAutoThreshold2DAlgorithm.class, UIUtils.getIconURLFromResources("actions/segment.png"));
-        registerNodeType("threshold-brightspots2d", BrightSpotsSegmentation2DAlgorithm.class, UIUtils.getIconURLFromResources("actions/segment.png"));
-        registerNodeType("threshold-hessian2d", HessianSegmentation2DAlgorithm.class, UIUtils.getIconURLFromResources("actions/segment.png"));
-        registerNodeType("threshold-hough2d", CircularHoughSegmentation2DAlgorithm.class, UIUtils.getIconURLFromResources("actions/segment.png"));
-        registerNodeType("threshold-hough2d-fast", FastCircularHoughSegmentation2DAlgorithm.class, UIUtils.getIconURLFromResources("actions/segment.png"));
-        registerNodeType("threshold-internalgradient2d", InternalGradientSegmentation2DAlgorithm.class, UIUtils.getIconURLFromResources("actions/segment.png"));
-        registerNodeType("threshold-by-annotation", ThresholdByAnnotation2DAlgorithm.class, UIUtils.getIconURLFromResources("actions/segment.png"));
-        registerNodeType("threshold-iterative-by-roi-statistics-2d", IterativeThresholdByROIStatistics2DAlgorithm.class, UIUtils.getIconURLFromResources("actions/segment.png"));
+        registerNodeType("ij1-threshold-expression2d-8u", CustomAutoThreshold2D8UAlgorithm.class, JIPipe.RESOURCES.getIcon16URL("actions/segment.png"));
+        registerNodeType("ij1-threshold-expression2d-16u", CustomAutoThreshold2D16UAlgorithm.class, JIPipe.RESOURCES.getIcon16URL("actions/segment.png"));
+        registerNodeType("ij1-threshold-expression2d-32f", CustomAutoThreshold2D32FAlgorithm.class, JIPipe.RESOURCES.getIcon16URL("actions/segment.png"));
+        registerNodeType("ij1-threshold-expression2d-8u-v2", CustomAutoThreshold2D8Uv2Algorithm.class, JIPipe.RESOURCES.getIcon16URL("actions/segment.png"));
+        registerNodeType("ij1-threshold-expression2d-16u-v2", CustomAutoThreshold2D16Uv2Algorithm.class, JIPipe.RESOURCES.getIcon16URL("actions/segment.png"));
+        registerNodeType("ij1-threshold-expression2d-32f-v2", CustomAutoThreshold2D32Fv2Algorithm.class, JIPipe.RESOURCES.getIcon16URL("actions/segment.png"));
+        registerNodeType("ij1-threshold-expression2d-color", ColorThresholdExpression2D.class, JIPipe.RESOURCES.getIcon16URL("actions/segment.png"));
+        registerNodeType("ij1-threshold-local-auto2d", LocalAutoThreshold2DAlgorithm.class, JIPipe.RESOURCES.getIcon16URL("actions/segment.png"));
+        registerNodeType("ij1-threshold-local-auto2d-bernsen", BernsenLocalAutoThreshold2DAlgorithm.class, JIPipe.RESOURCES.getIcon16URL("actions/segment.png"));
+        registerNodeType("ij1-threshold-local-auto2d-niblack", NiblackLocalAutoThreshold2DAlgorithm.class, JIPipe.RESOURCES.getIcon16URL("actions/segment.png"));
+        registerNodeType("ij1-threshold-local-auto2d-sauvola", SauvolaLocalAutoThreshold2DAlgorithm.class, JIPipe.RESOURCES.getIcon16URL("actions/segment.png"));
+        registerNodeType("ij1-threshold-local-auto2d-phansalkar", PhansalkarLocalAutoThreshold2DAlgorithm.class, JIPipe.RESOURCES.getIcon16URL("actions/segment.png"));
+        registerNodeType("ij1-threshold-local-auto2d-contrast", ContrastLocalAutoThreshold2DAlgorithm.class, JIPipe.RESOURCES.getIcon16URL("actions/segment.png"));
+        registerNodeType("threshold-brightspots2d", BrightSpotsSegmentation2DAlgorithm.class, JIPipe.RESOURCES.getIcon16URL("actions/segment.png"));
+        registerNodeType("threshold-hessian2d", HessianSegmentation2DAlgorithm.class, JIPipe.RESOURCES.getIcon16URL("actions/segment.png"));
+        registerNodeType("threshold-hough2d", CircularHoughSegmentation2DAlgorithm.class, JIPipe.RESOURCES.getIcon16URL("actions/segment.png"));
+        registerNodeType("threshold-hough2d-fast", FastCircularHoughSegmentation2DAlgorithm.class, JIPipe.RESOURCES.getIcon16URL("actions/segment.png"));
+        registerNodeType("threshold-internalgradient2d", InternalGradientSegmentation2DAlgorithm.class, JIPipe.RESOURCES.getIcon16URL("actions/segment.png"));
+        registerNodeType("threshold-by-annotation", ThresholdByAnnotation2DAlgorithm.class, JIPipe.RESOURCES.getIcon16URL("actions/segment.png"));
+        registerNodeType("threshold-iterative-by-roi-statistics-2d", IterativeThresholdByROIStatistics2DAlgorithm.class, JIPipe.RESOURCES.getIcon16URL("actions/segment.png"));
 
         registerEnumParameterType(AutoThresholder.Method.class.getCanonicalName(), AutoThresholder.Method.class,
                 "Auto threshold method", "Available methods");
@@ -1214,12 +1215,12 @@ public class ImageJAlgorithmsPlugin extends JIPipePrepackagedDefaultJavaPlugin {
     }
 
     private void registerSharpenAlgorithms() {
-        registerNodeType("ij1-sharpen-laplacian2d", LaplacianSharpen2DAlgorithm.class, UIUtils.getIconURLFromResources("actions/insert-math-expression.png"));
-        registerNodeType("ij1-unsharp-mask-2d", UnsharpMasking2DAlgorithm.class, UIUtils.getIconURLFromResources("actions/insert-math-expression.png"));
+        registerNodeType("ij1-sharpen-laplacian2d", LaplacianSharpen2DAlgorithm.class, JIPipe.RESOURCES.getIcon16URL("actions/insert-math-expression.png"));
+        registerNodeType("ij1-unsharp-mask-2d", UnsharpMasking2DAlgorithm.class, JIPipe.RESOURCES.getIcon16URL("actions/insert-math-expression.png"));
     }
 
     private void registerBackgroundAlgorithms() {
-        registerNodeType("ij1-background-rollingball2d", RollingBallBackgroundEstimator2DAlgorithm.class, UIUtils.getIconURLFromResources("actions/insert-math-expression.png"));
+        registerNodeType("ij1-background-rollingball2d", RollingBallBackgroundEstimator2DAlgorithm.class, JIPipe.RESOURCES.getIcon16URL("actions/insert-math-expression.png"));
 
         registerEnumParameterType("ij1-background-rollingball2d:background-type", RollingBallBackgroundEstimator2DAlgorithm.BackgroundType.class,
                 "Background type", "Available background types");
@@ -1228,48 +1229,48 @@ public class ImageJAlgorithmsPlugin extends JIPipePrepackagedDefaultJavaPlugin {
     }
 
     private void registerNoiseAlgorithms() {
-        registerNodeType("ij1-noise-addnormalnoise2d", AddNoise2DAlgorithm.class, UIUtils.getIconURLFromResources("actions/insert-math-expression.png"));
-        registerNodeType("ij1-noise-add-salt-and-pepper-noise2d", AddSaltAndPepperNoise2DAlgorithm.class, UIUtils.getIconURLFromResources("actions/insert-math-expression.png"));
-        registerNodeType("ij1-noise-despeckle2d", DespeckleFilter2DAlgorithm.class, UIUtils.getIconURLFromResources("actions/image-auto-adjust.png"));
-        registerNodeType("ij1-noise-removeoutliers2d", RemoveOutliersFilter2DAlgorithm.class, UIUtils.getIconURLFromResources("actions/draw-eraser.png"));
+        registerNodeType("ij1-noise-addnormalnoise2d", AddNoise2DAlgorithm.class, JIPipe.RESOURCES.getIcon16URL("actions/insert-math-expression.png"));
+        registerNodeType("ij1-noise-add-salt-and-pepper-noise2d", AddSaltAndPepperNoise2DAlgorithm.class, JIPipe.RESOURCES.getIcon16URL("actions/insert-math-expression.png"));
+        registerNodeType("ij1-noise-despeckle2d", DespeckleFilter2DAlgorithm.class, JIPipe.RESOURCES.getIcon16URL("actions/image-auto-adjust.png"));
+        registerNodeType("ij1-noise-removeoutliers2d", RemoveOutliersFilter2DAlgorithm.class, JIPipe.RESOURCES.getIcon16URL("actions/draw-eraser.png"));
 
         registerEnumParameterType("ij1-noise-removeoutliers2d:mode", RemoveOutliersFilter2DAlgorithm.Mode.class,
                 "Mode", "Available modes");
     }
 
     private void registerBinaryAlgorithms() {
-        registerNodeType("ij1-binary-dtwatershed2d", DistanceTransformWatershed2DAlgorithm.class, UIUtils.getIconURLFromResources("actions/insert-math-expression.png"));
-        registerNodeType("ij1-binary-voronoi2d", Voronoi2DAlgorithm.class, UIUtils.getIconURLFromResources("actions/insert-math-expression.png"));
-        registerNodeType("ij1-binary-uep2d", UltimateErodedPoints2DAlgorithm.class, UIUtils.getIconURLFromResources("actions/insert-math-expression.png"));
-        registerNodeType("ij1-binary-bitwise", BitwiseLogicalOperationAlgorithm.class, UIUtils.getIconURLFromResources("actions/object-tweak-paint.png"));
-        registerNodeType("ij1-binary-connected-component-labeling-2d", ConnectedComponentsLabeling2DAlgorithm.class, UIUtils.getIconURLFromResources("actions/object-tweak-jitter-color.png"));
-        registerNodeType("ij1-binary-connected-component-labeling-3d", ConnectedComponentsLabeling3DAlgorithm.class, UIUtils.getIconURLFromResources("actions/object-tweak-jitter-color.png"));
-        registerNodeType("ij1-binary-binarize", BinarizeAlgorithm.class, UIUtils.getIconURLFromResources("actions/segment.png"));
-        registerNodeType("ij1-binary-convexify", ConvexifyAlgorithm.class, UIUtils.getIconURLFromResources("actions/draw-polygon.png"));
-        registerNodeType("ij1-binary-keep-largest-region", KeepLargestRegionAlgorithm.class, UIUtils.getIconURLFromResources("actions/filter.png"));
-        registerNodeType("ij1-binary-remove-largest-region", RemoveLargestRegionAlgorithm.class, UIUtils.getIconURLFromResources("actions/filter.png"));
-        registerNodeType("ij1-binary-volume-opening-2d", VolumeOpening2DAlgorithm.class, UIUtils.getIconURLFromResources("actions/filter.png"));
-        registerNodeType("ij1-binary-volume-opening-3d", VolumeOpening3DAlgorithm.class, UIUtils.getIconURLFromResources("actions/filter.png"));
-        registerNodeType("ij1-binary-conditional-invert", ConditionalInverterAlgorithm.class, UIUtils.getIconURLFromResources("actions/invertimage.png"));
-        registerNodeType("ij1-binary-hough-lines", LinesHoughDetection2DAlgorithm.class, UIUtils.getIconURLFromResources("actions/draw-geometry-line-segment.png"));
-        registerNodeType("ij1-binary-hough-line-segments", LineSegmentsHoughDetection2DAlgorithm.class, UIUtils.getIconURLFromResources("actions/draw-geometry-line-segment.png"));
-        registerNodeType("ij1-binary-hough-lines-global", GlobalLinesHoughDetection2DAlgorithm.class, UIUtils.getIconURLFromResources("actions/draw-geometry-line-segment.png"));
+        registerNodeType("ij1-binary-dtwatershed2d", DistanceTransformWatershed2DAlgorithm.class, JIPipe.RESOURCES.getIcon16URL("actions/insert-math-expression.png"));
+        registerNodeType("ij1-binary-voronoi2d", Voronoi2DAlgorithm.class, JIPipe.RESOURCES.getIcon16URL("actions/insert-math-expression.png"));
+        registerNodeType("ij1-binary-uep2d", UltimateErodedPoints2DAlgorithm.class, JIPipe.RESOURCES.getIcon16URL("actions/insert-math-expression.png"));
+        registerNodeType("ij1-binary-bitwise", BitwiseLogicalOperationAlgorithm.class, JIPipe.RESOURCES.getIcon16URL("actions/object-tweak-paint.png"));
+        registerNodeType("ij1-binary-connected-component-labeling-2d", ConnectedComponentsLabeling2DAlgorithm.class, JIPipe.RESOURCES.getIcon16URL("actions/object-tweak-jitter-color.png"));
+        registerNodeType("ij1-binary-connected-component-labeling-3d", ConnectedComponentsLabeling3DAlgorithm.class, JIPipe.RESOURCES.getIcon16URL("actions/object-tweak-jitter-color.png"));
+        registerNodeType("ij1-binary-binarize", BinarizeAlgorithm.class, JIPipe.RESOURCES.getIcon16URL("actions/segment.png"));
+        registerNodeType("ij1-binary-convexify", ConvexifyAlgorithm.class, JIPipe.RESOURCES.getIcon16URL("actions/draw-polygon.png"));
+        registerNodeType("ij1-binary-keep-largest-region", KeepLargestRegionAlgorithm.class, JIPipe.RESOURCES.getIcon16URL("actions/filter.png"));
+        registerNodeType("ij1-binary-remove-largest-region", RemoveLargestRegionAlgorithm.class, JIPipe.RESOURCES.getIcon16URL("actions/filter.png"));
+        registerNodeType("ij1-binary-volume-opening-2d", VolumeOpening2DAlgorithm.class, JIPipe.RESOURCES.getIcon16URL("actions/filter.png"));
+        registerNodeType("ij1-binary-volume-opening-3d", VolumeOpening3DAlgorithm.class, JIPipe.RESOURCES.getIcon16URL("actions/filter.png"));
+        registerNodeType("ij1-binary-conditional-invert", ConditionalInverterAlgorithm.class, JIPipe.RESOURCES.getIcon16URL("actions/invertimage.png"));
+        registerNodeType("ij1-binary-hough-lines", LinesHoughDetection2DAlgorithm.class, JIPipe.RESOURCES.getIcon16URL("actions/draw-geometry-line-segment.png"));
+        registerNodeType("ij1-binary-hough-line-segments", LineSegmentsHoughDetection2DAlgorithm.class, JIPipe.RESOURCES.getIcon16URL("actions/draw-geometry-line-segment.png"));
+        registerNodeType("ij1-binary-hough-lines-global", GlobalLinesHoughDetection2DAlgorithm.class, JIPipe.RESOURCES.getIcon16URL("actions/draw-geometry-line-segment.png"));
         registerEnumParameterType("ij1-hough-nms-algorithm", HoughLinesNMSAlgorithm.class, "NMS algorithm", "NMS algorithm for Hough");
     }
 
     private void registerMorphologyAlgorithms() {
-//        registerNodeType("ij1-morph-binary-operation2d", MorphologyBinary2DAlgorithm.class, UIUtils.getIconURLFromResources("actions/morphology.png"));
-        registerNodeType("ij1-morph-operation2d", Morphology2DAlgorithm.class, UIUtils.getIconURLFromResources("actions/morphology.png"));
-        registerNodeType("ij1-morph-operation3d", Morphology3DAlgorithm.class, UIUtils.getIconURLFromResources("actions/morphology.png"));
-        registerNodeType("ij1-morph-binary-fillholes2d", MorphologyFillHoles2DAlgorithm.class, UIUtils.getIconURLFromResources("actions/object-fill.png"));
-        registerNodeType("ij1-morph-binary-outline2d", MorphologyOutline2DAlgorithm.class, UIUtils.getIconURLFromResources("actions/draw-connector.png"));
-        registerNodeType("ij1-morph-binary-skeletonize2d", MorphologySkeletonize2DAlgorithm.class, UIUtils.getIconURLFromResources("actions/object-to-path.png"));
-        registerNodeType("ij1-morph-binary-skeletonize3d", MorphologySkeletonize3DAlgorithm.class, UIUtils.getIconURLFromResources("actions/object-to-path.png"));
-        registerNodeType("ij1-morph-reconstruct-2d", MorphologicalReconstruction2DAlgorithm.class, UIUtils.getIconURLFromResources("actions/insert-math-expression.png"));
-        registerNodeType("ij1-morph-reconstruct-3d", MorphologicalReconstruction3DAlgorithm.class, UIUtils.getIconURLFromResources("actions/insert-math-expression.png"));
-        registerNodeType("ij1-morph-find-holes-3d", FindHoles2DAlgorithm.class, UIUtils.getIconURLFromResources("actions/object-tweak-randomize.png"));
-        registerNodeType("ij1-morph-grayscale-attribute-filtering-2d", GrayscaleAttributeFiltering2DAlgorithm.class, UIUtils.getIconURLFromResources("actions/filter.png"));
-        registerNodeType("ij1-morph-grayscale-attribute-filtering-3d", GrayscaleAttributeFiltering3DAlgorithm.class, UIUtils.getIconURLFromResources("actions/filter.png"));
+//        registerNodeType("ij1-morph-binary-operation2d", MorphologyBinary2DAlgorithm.class, JIPipe.RESOURCES.getIcon16URL("actions/morphology.png"));
+        registerNodeType("ij1-morph-operation2d", Morphology2DAlgorithm.class, JIPipe.RESOURCES.getIcon16URL("actions/morphology.png"));
+        registerNodeType("ij1-morph-operation3d", Morphology3DAlgorithm.class, JIPipe.RESOURCES.getIcon16URL("actions/morphology.png"));
+        registerNodeType("ij1-morph-binary-fillholes2d", MorphologyFillHoles2DAlgorithm.class, JIPipe.RESOURCES.getIcon16URL("actions/object-fill.png"));
+        registerNodeType("ij1-morph-binary-outline2d", MorphologyOutline2DAlgorithm.class, JIPipe.RESOURCES.getIcon16URL("actions/draw-connector.png"));
+        registerNodeType("ij1-morph-binary-skeletonize2d", MorphologySkeletonize2DAlgorithm.class, JIPipe.RESOURCES.getIcon16URL("actions/object-to-path.png"));
+        registerNodeType("ij1-morph-binary-skeletonize3d", MorphologySkeletonize3DAlgorithm.class, JIPipe.RESOURCES.getIcon16URL("actions/object-to-path.png"));
+        registerNodeType("ij1-morph-reconstruct-2d", MorphologicalReconstruction2DAlgorithm.class, JIPipe.RESOURCES.getIcon16URL("actions/insert-math-expression.png"));
+        registerNodeType("ij1-morph-reconstruct-3d", MorphologicalReconstruction3DAlgorithm.class, JIPipe.RESOURCES.getIcon16URL("actions/insert-math-expression.png"));
+        registerNodeType("ij1-morph-find-holes-3d", FindHoles2DAlgorithm.class, JIPipe.RESOURCES.getIcon16URL("actions/object-tweak-randomize.png"));
+        registerNodeType("ij1-morph-grayscale-attribute-filtering-2d", GrayscaleAttributeFiltering2DAlgorithm.class, JIPipe.RESOURCES.getIcon16URL("actions/filter.png"));
+        registerNodeType("ij1-morph-grayscale-attribute-filtering-3d", GrayscaleAttributeFiltering3DAlgorithm.class, JIPipe.RESOURCES.getIcon16URL("actions/filter.png"));
 
         registerEnumParameterType("ij1-morph-binary-operation2d:operation", MorphologyBinary2DAlgorithm.Operation.class,
                 "Operation", "Available operations");
@@ -1290,54 +1291,54 @@ public class ImageJAlgorithmsPlugin extends JIPipePrepackagedDefaultJavaPlugin {
     }
 
     private void registerMathAlgorithms() {
-        registerNodeType("ij1-math-round-32f", RoundFloatImageAlgorithm.class, UIUtils.getIconURLFromResources("actions/insert-math-expression.png"));
-        registerNodeType("ij1-math-math2d", LegacyApplyMath2DAlgorithm.class, UIUtils.getIconURLFromResources("actions/insert-math-expression.png"));
-        registerNodeType("ij1-math-transform2d", ApplyTransform2DAlgorithm.class, UIUtils.getIconURLFromResources("actions/insert-math-expression.png"));
-        registerNodeType("ij1-math-math2d-expression", ApplyMathExpression2DAlgorithm.class, UIUtils.getIconURLFromResources("actions/insert-math-expression.png"));
-        registerNodeType("ij1-math-math2d-expression-color", ApplyColorMathExpression2DExpression.class, UIUtils.getIconURLFromResources("actions/insert-math-expression.png"));
-        registerNodeType("ij1-math-vector-expression", ApplyVectorMathExpression2DAlgorithm.class, UIUtils.getIconURLFromResources("actions/insert-math-expression.png"));
-        registerNodeType("ij1-math-edt2d", ApplyDistanceTransform2DAlgorithm.class, UIUtils.getIconURLFromResources("actions/insert-math-expression.png"));
-        registerNodeType("ij1-math-local-variance2d", LocalVarianceFilter2DAlgorithm.class, UIUtils.getIconURLFromResources("actions/insert-math-expression.png"));
-        registerNodeType("ij1-math-local-maximum2d", LocalMaximumFilter2DAlgorithm.class, UIUtils.getIconURLFromResources("actions/insert-math-expression.png"));
-        registerNodeType("ij1-math-local-minimum2d", LocalMinimumFilter2DAlgorithm.class, UIUtils.getIconURLFromResources("actions/insert-math-expression.png"));
-        registerNodeType("ij1-math-local-variance3d", LocalVarianceFilter3DAlgorithm.class, UIUtils.getIconURLFromResources("actions/insert-math-expression.png"));
-        registerNodeType("ij1-math-local-maximum3d", LocalMaximumFilter3DAlgorithm.class, UIUtils.getIconURLFromResources("actions/insert-math-expression.png"));
-        registerNodeType("ij1-math-local-minimum3d", LocalMinimumFilter3DAlgorithm.class, UIUtils.getIconURLFromResources("actions/insert-math-expression.png"));
-        registerNodeType("ij1-math-local-imagecalculator2d-expression", LocalImageCalculator2DExpression.class, UIUtils.getIconURLFromResources("actions/calculator.png"));
-        registerNodeType("ij1-math-replace-nan-by-median2d", RemoveNaNFilter2DAlgorithm.class, UIUtils.getIconURLFromResources("actions/insert-math-expression.png"));
-        registerNodeType("ij1-math-imagecalculator2d", LegacyImageCalculator2DAlgorithm.class, UIUtils.getIconURLFromResources("actions/calculator.png"));
-        registerNodeType("ij1-math-fast-image-arithmetics", FastImageArithmeticsAlgorithm.class, UIUtils.getIconURLFromResources("actions/calculator.png"));
-        registerNodeType("ij1-math-imagecalculator2d-merging", LegacyImageCalculator2DMergingAlgorithm.class, UIUtils.getIconURLFromResources("actions/calculator.png"));
-        registerNodeType("ij1-math-compare-images-2d", ImageComparer2DAlgorithm.class, UIUtils.getIconURLFromResources("actions/calculator.png"));
-        registerNodeType("ij1-math-imagecalculator2d-expression", ImageCalculator2DExpression.class, UIUtils.getIconURLFromResources("actions/calculator.png"));
-        registerNodeType("ij1-math-divide-by-maximum", DivideByMaximumAlgorithm.class, UIUtils.getIconURLFromResources("actions/insert-math-expression.png"));
-        registerNodeType("ij1-math-local-mean2d", LocalMeanFilter2DAlgorithm.class, UIUtils.getIconURLFromResources("actions/insert-math-expression.png"));
-        registerNodeType("ij1-math-local-mean3d", LocalMeanFilter3DAlgorithm.class, UIUtils.getIconURLFromResources("actions/insert-math-expression.png"));
+        registerNodeType("ij1-math-round-32f", RoundFloatImageAlgorithm.class, JIPipe.RESOURCES.getIcon16URL("actions/insert-math-expression.png"));
+        registerNodeType("ij1-math-math2d", LegacyApplyMath2DAlgorithm.class, JIPipe.RESOURCES.getIcon16URL("actions/insert-math-expression.png"));
+        registerNodeType("ij1-math-transform2d", ApplyTransform2DAlgorithm.class, JIPipe.RESOURCES.getIcon16URL("actions/insert-math-expression.png"));
+        registerNodeType("ij1-math-math2d-expression", ApplyMathExpression2DAlgorithm.class, JIPipe.RESOURCES.getIcon16URL("actions/insert-math-expression.png"));
+        registerNodeType("ij1-math-math2d-expression-color", ApplyColorMathExpression2DExpression.class, JIPipe.RESOURCES.getIcon16URL("actions/insert-math-expression.png"));
+        registerNodeType("ij1-math-vector-expression", ApplyVectorMathExpression2DAlgorithm.class, JIPipe.RESOURCES.getIcon16URL("actions/insert-math-expression.png"));
+        registerNodeType("ij1-math-edt2d", ApplyDistanceTransform2DAlgorithm.class, JIPipe.RESOURCES.getIcon16URL("actions/insert-math-expression.png"));
+        registerNodeType("ij1-math-local-variance2d", LocalVarianceFilter2DAlgorithm.class, JIPipe.RESOURCES.getIcon16URL("actions/insert-math-expression.png"));
+        registerNodeType("ij1-math-local-maximum2d", LocalMaximumFilter2DAlgorithm.class, JIPipe.RESOURCES.getIcon16URL("actions/insert-math-expression.png"));
+        registerNodeType("ij1-math-local-minimum2d", LocalMinimumFilter2DAlgorithm.class, JIPipe.RESOURCES.getIcon16URL("actions/insert-math-expression.png"));
+        registerNodeType("ij1-math-local-variance3d", LocalVarianceFilter3DAlgorithm.class, JIPipe.RESOURCES.getIcon16URL("actions/insert-math-expression.png"));
+        registerNodeType("ij1-math-local-maximum3d", LocalMaximumFilter3DAlgorithm.class, JIPipe.RESOURCES.getIcon16URL("actions/insert-math-expression.png"));
+        registerNodeType("ij1-math-local-minimum3d", LocalMinimumFilter3DAlgorithm.class, JIPipe.RESOURCES.getIcon16URL("actions/insert-math-expression.png"));
+        registerNodeType("ij1-math-local-imagecalculator2d-expression", LocalImageCalculator2DExpression.class, JIPipe.RESOURCES.getIcon16URL("actions/calculator.png"));
+        registerNodeType("ij1-math-replace-nan-by-median2d", RemoveNaNFilter2DAlgorithm.class, JIPipe.RESOURCES.getIcon16URL("actions/insert-math-expression.png"));
+        registerNodeType("ij1-math-imagecalculator2d", LegacyImageCalculator2DAlgorithm.class, JIPipe.RESOURCES.getIcon16URL("actions/calculator.png"));
+        registerNodeType("ij1-math-fast-image-arithmetics", FastImageArithmeticsAlgorithm.class, JIPipe.RESOURCES.getIcon16URL("actions/calculator.png"));
+        registerNodeType("ij1-math-imagecalculator2d-merging", LegacyImageCalculator2DMergingAlgorithm.class, JIPipe.RESOURCES.getIcon16URL("actions/calculator.png"));
+        registerNodeType("ij1-math-compare-images-2d", ImageComparer2DAlgorithm.class, JIPipe.RESOURCES.getIcon16URL("actions/calculator.png"));
+        registerNodeType("ij1-math-imagecalculator2d-expression", ImageCalculator2DExpression.class, JIPipe.RESOURCES.getIcon16URL("actions/calculator.png"));
+        registerNodeType("ij1-math-divide-by-maximum", DivideByMaximumAlgorithm.class, JIPipe.RESOURCES.getIcon16URL("actions/insert-math-expression.png"));
+        registerNodeType("ij1-math-local-mean2d", LocalMeanFilter2DAlgorithm.class, JIPipe.RESOURCES.getIcon16URL("actions/insert-math-expression.png"));
+        registerNodeType("ij1-math-local-mean3d", LocalMeanFilter3DAlgorithm.class, JIPipe.RESOURCES.getIcon16URL("actions/insert-math-expression.png"));
 
-        registerNodeType("ij1-math-regional-minima-2d", RegionalMinima2DAlgorithm.class, UIUtils.getIconURLFromResources("actions/insert-math-expression.png"));
-        registerNodeType("ij1-math-regional-maxima-2d", RegionalMaxima2DAlgorithm.class, UIUtils.getIconURLFromResources("actions/insert-math-expression.png"));
-        registerNodeType("ij1-math-regional-minima-3d", RegionalMinima3DAlgorithm.class, UIUtils.getIconURLFromResources("actions/insert-math-expression.png"));
-        registerNodeType("ij1-math-regional-maxima-3d", RegionalMaxima3DAlgorithm.class, UIUtils.getIconURLFromResources("actions/insert-math-expression.png"));
-        registerNodeType("ij1-math-extended-minima-2d", ExtendedMinima2DAlgorithm.class, UIUtils.getIconURLFromResources("actions/insert-math-expression.png"));
-        registerNodeType("ij1-math-extended-maxima-2d", ExtendedMaxima2DAlgorithm.class, UIUtils.getIconURLFromResources("actions/insert-math-expression.png"));
-        registerNodeType("ij1-math-extended-minima-3d", ExtendedMinima3DAlgorithm.class, UIUtils.getIconURLFromResources("actions/insert-math-expression.png"));
-        registerNodeType("ij1-math-extended-maxima-3d", ExtendedMaxima3DAlgorithm.class, UIUtils.getIconURLFromResources("actions/insert-math-expression.png"));
+        registerNodeType("ij1-math-regional-minima-2d", RegionalMinima2DAlgorithm.class, JIPipe.RESOURCES.getIcon16URL("actions/insert-math-expression.png"));
+        registerNodeType("ij1-math-regional-maxima-2d", RegionalMaxima2DAlgorithm.class, JIPipe.RESOURCES.getIcon16URL("actions/insert-math-expression.png"));
+        registerNodeType("ij1-math-regional-minima-3d", RegionalMinima3DAlgorithm.class, JIPipe.RESOURCES.getIcon16URL("actions/insert-math-expression.png"));
+        registerNodeType("ij1-math-regional-maxima-3d", RegionalMaxima3DAlgorithm.class, JIPipe.RESOURCES.getIcon16URL("actions/insert-math-expression.png"));
+        registerNodeType("ij1-math-extended-minima-2d", ExtendedMinima2DAlgorithm.class, JIPipe.RESOURCES.getIcon16URL("actions/insert-math-expression.png"));
+        registerNodeType("ij1-math-extended-maxima-2d", ExtendedMaxima2DAlgorithm.class, JIPipe.RESOURCES.getIcon16URL("actions/insert-math-expression.png"));
+        registerNodeType("ij1-math-extended-minima-3d", ExtendedMinima3DAlgorithm.class, JIPipe.RESOURCES.getIcon16URL("actions/insert-math-expression.png"));
+        registerNodeType("ij1-math-extended-maxima-3d", ExtendedMaxima3DAlgorithm.class, JIPipe.RESOURCES.getIcon16URL("actions/insert-math-expression.png"));
 
-        registerNodeType("ij1-math-impose-maxima-2d", ImposeMaxima2DAlgorithm.class, UIUtils.getIconURLFromResources("actions/insert-math-expression.png"));
-        registerNodeType("ij1-math-impose-maxima-3d", ImposeMaxima3DAlgorithm.class, UIUtils.getIconURLFromResources("actions/insert-math-expression.png"));
+        registerNodeType("ij1-math-impose-maxima-2d", ImposeMaxima2DAlgorithm.class, JIPipe.RESOURCES.getIcon16URL("actions/insert-math-expression.png"));
+        registerNodeType("ij1-math-impose-maxima-3d", ImposeMaxima3DAlgorithm.class, JIPipe.RESOURCES.getIcon16URL("actions/insert-math-expression.png"));
 
-        registerNodeType("ij1-math-generate-from-expression", GenerateFromMathExpression2D.class, UIUtils.getIconURLFromResources("actions/insert-math-expression.png"));
-        registerNodeType("ij1-math-generate-vector-from-expression", GenerateVectorFromMathExpression.class, UIUtils.getIconURLFromResources("actions/insert-math-expression.png"));
-        registerNodeType("ij-imgplus-from-matrix", ImageFromMatrix2DAlgorithm.class, UIUtils.getIconURLFromResources("actions/table.png"));
+        registerNodeType("ij1-math-generate-from-expression", GenerateFromMathExpression2D.class, JIPipe.RESOURCES.getIcon16URL("actions/insert-math-expression.png"));
+        registerNodeType("ij1-math-generate-vector-from-expression", GenerateVectorFromMathExpression.class, JIPipe.RESOURCES.getIcon16URL("actions/insert-math-expression.png"));
+        registerNodeType("ij-imgplus-from-matrix", ImageFromMatrix2DAlgorithm.class, JIPipe.RESOURCES.getIcon16URL("actions/table.png"));
 
-        registerNodeType("ij1-math-generate-missing-from-expression", GenerateMissingImageFromMathExpression2D.class, UIUtils.getIconURLFromResources("actions/insert-math-expression.png"));
-        registerNodeType("ij1-math-generate-missing-zero-image", GenerateMissingZeroImage.class, UIUtils.getIconURLFromResources("actions/add.png"));
-        registerNodeType("ij1-generate-zero-image", GenerateZeroImage.class, UIUtils.getIconURLFromResources("data-types/imgplus.png"));
+        registerNodeType("ij1-math-generate-missing-from-expression", GenerateMissingImageFromMathExpression2D.class, JIPipe.RESOURCES.getIcon16URL("actions/insert-math-expression.png"));
+        registerNodeType("ij1-math-generate-missing-zero-image", GenerateMissingZeroImage.class, JIPipe.RESOURCES.getIcon16URL("actions/add.png"));
+        registerNodeType("ij1-generate-zero-image", GenerateZeroImage.class, JIPipe.RESOURCES.getIcon16URL("data-types/imgplus.png"));
 
-        registerNodeType("ij-math-chamfer-distance-map-2d", ChamferDistanceMap2DAlgorithm.class, UIUtils.getIconURLFromResources("actions/insert-math-expression.png"));
-        registerNodeType("ij-math-chamfer-distance-map-3d", ChamferDistanceMap3DAlgorithm.class, UIUtils.getIconURLFromResources("actions/insert-math-expression.png"));
-        registerNodeType("ij-math-label-chamfer-distance-map-3d", LabelChamferDistanceMap3DAlgorithm.class, UIUtils.getIconURLFromResources("actions/insert-math-expression.png"));
-        registerNodeType("ij-math-geodesic-distance-map-2d", GeodesicDistanceMap2DAlgorithm.class, UIUtils.getIconURLFromResources("actions/insert-math-expression.png"));
+        registerNodeType("ij-math-chamfer-distance-map-2d", ChamferDistanceMap2DAlgorithm.class, JIPipe.RESOURCES.getIcon16URL("actions/insert-math-expression.png"));
+        registerNodeType("ij-math-chamfer-distance-map-3d", ChamferDistanceMap3DAlgorithm.class, JIPipe.RESOURCES.getIcon16URL("actions/insert-math-expression.png"));
+        registerNodeType("ij-math-label-chamfer-distance-map-3d", LabelChamferDistanceMap3DAlgorithm.class, JIPipe.RESOURCES.getIcon16URL("actions/insert-math-expression.png"));
+        registerNodeType("ij-math-geodesic-distance-map-2d", GeodesicDistanceMap2DAlgorithm.class, JIPipe.RESOURCES.getIcon16URL("actions/insert-math-expression.png"));
 
         registerEnumParameterType("ij-math-chamfer-distance-map-2d:weights", ChamferWeights.class, "Chamfer weights (2D)", "Predefined weights for the Chamfer distance map");
         registerEnumParameterType("ij-math-chamfer-distance-map-23:weights", ChamferWeights3D.class, "Chamfer weights (3D)", "Predefined weights for the Chamfer distance map");
@@ -1359,22 +1360,22 @@ public class ImageJAlgorithmsPlugin extends JIPipePrepackagedDefaultJavaPlugin {
     }
 
     private void registerFeatureAlgorithms() {
-        registerNodeType("ij1-feature-vesselness-frangi", FrangiVesselnessFeatures.class, UIUtils.getIconURLFromResources("actions/insert-math-expression.png"));
-        registerNodeType("feature-vesselness-meijering2d", MeijeringVesselness2DFeatures.class, UIUtils.getIconURLFromResources("actions/insert-math-expression.png"));
-        registerNodeType("ij1-feature-maxima-local-2d", LocalMaxima2DAlgorithm.class, UIUtils.getIconURLFromResources("actions/insert-math-expression.png"));
-        registerNodeType("ij1-feature-difference-of-gaussian", DifferenceOfGaussian2DAlgorithm.class, UIUtils.getIconURLFromResources("actions/insert-math-expression.png"));
-        registerNodeType("ij1-feature-laplacian-of-gaussian", LaplacianOfGaussian2DAlgorithm.class, UIUtils.getIconURLFromResources("actions/insert-math-expression.png"));
-        registerNodeType("ij1-feature-directional-filter-2d", DirectionalFilter2DAlgorithm.class, UIUtils.getIconURLFromResources("actions/object-tweak-rotate.png"));
-        registerNodeType("ij1-feature-mtc-2d", MorphologicalTextureContrast2DAlgorithm.class, UIUtils.getIconURLFromResources("actions/insert-math-expression.png"));
-        registerNodeType("ij1-feature-amf-2d", AlternatingMorphologicalFilters2DAlgorithm.class, UIUtils.getIconURLFromResources("actions/insert-math-expression.png"));
-        registerNodeType("ij1-feature-mfc-2d", MorphologicalFeatureContrast2DAlgorithm.class, UIUtils.getIconURLFromResources("actions/insert-math-expression.png"));
-        registerNodeType("ij1-feature-harris-corner-2d", CornerHarris2DAlgorithm.class, UIUtils.getIconURLFromResources("actions/insert-math-expression.png"));
-        registerNodeType("ij1-feature-orientationj-2d", OrientationFeatures2DAlgorithm.class, UIUtils.getIconURLFromResources("actions/insert-math-expression.png"));
-        registerNodeType("ij1-feature-featurej-derivatives", DerivativesFeaturesAlgorithm.class, UIUtils.getIconURLFromResources("actions/insert-math-expression.png"));
-        registerNodeType("ij1-feature-featurej-hessian", HessianFeatureAlgorithm.class, UIUtils.getIconURLFromResources("actions/insert-math-expression.png"));
-        registerNodeType("ij1-feature-featurej-structure", StructureFeatureAlgorithm.class, UIUtils.getIconURLFromResources("actions/insert-math-expression.png"));
-        registerNodeType("ij1-math-hessian2d", Hessian2DAlgorithm.class, UIUtils.getIconURLFromResources("actions/insert-math-expression.png"));
-        registerNodeType("ij1-feature-shadows-2d", Shadows2DAlgorithm.class, UIUtils.getIconURLFromResources("actions/object-tweak-duplicate.png"));
+        registerNodeType("ij1-feature-vesselness-frangi", FrangiVesselnessFeatures.class, JIPipe.RESOURCES.getIcon16URL("actions/insert-math-expression.png"));
+        registerNodeType("feature-vesselness-meijering2d", MeijeringVesselness2DFeatures.class, JIPipe.RESOURCES.getIcon16URL("actions/insert-math-expression.png"));
+        registerNodeType("ij1-feature-maxima-local-2d", LocalMaxima2DAlgorithm.class, JIPipe.RESOURCES.getIcon16URL("actions/insert-math-expression.png"));
+        registerNodeType("ij1-feature-difference-of-gaussian", DifferenceOfGaussian2DAlgorithm.class, JIPipe.RESOURCES.getIcon16URL("actions/insert-math-expression.png"));
+        registerNodeType("ij1-feature-laplacian-of-gaussian", LaplacianOfGaussian2DAlgorithm.class, JIPipe.RESOURCES.getIcon16URL("actions/insert-math-expression.png"));
+        registerNodeType("ij1-feature-directional-filter-2d", DirectionalFilter2DAlgorithm.class, JIPipe.RESOURCES.getIcon16URL("actions/object-tweak-rotate.png"));
+        registerNodeType("ij1-feature-mtc-2d", MorphologicalTextureContrast2DAlgorithm.class, JIPipe.RESOURCES.getIcon16URL("actions/insert-math-expression.png"));
+        registerNodeType("ij1-feature-amf-2d", AlternatingMorphologicalFilters2DAlgorithm.class, JIPipe.RESOURCES.getIcon16URL("actions/insert-math-expression.png"));
+        registerNodeType("ij1-feature-mfc-2d", MorphologicalFeatureContrast2DAlgorithm.class, JIPipe.RESOURCES.getIcon16URL("actions/insert-math-expression.png"));
+        registerNodeType("ij1-feature-harris-corner-2d", CornerHarris2DAlgorithm.class, JIPipe.RESOURCES.getIcon16URL("actions/insert-math-expression.png"));
+        registerNodeType("ij1-feature-orientationj-2d", OrientationFeatures2DAlgorithm.class, JIPipe.RESOURCES.getIcon16URL("actions/insert-math-expression.png"));
+        registerNodeType("ij1-feature-featurej-derivatives", DerivativesFeaturesAlgorithm.class, JIPipe.RESOURCES.getIcon16URL("actions/insert-math-expression.png"));
+        registerNodeType("ij1-feature-featurej-hessian", HessianFeatureAlgorithm.class, JIPipe.RESOURCES.getIcon16URL("actions/insert-math-expression.png"));
+        registerNodeType("ij1-feature-featurej-structure", StructureFeatureAlgorithm.class, JIPipe.RESOURCES.getIcon16URL("actions/insert-math-expression.png"));
+        registerNodeType("ij1-math-hessian2d", Hessian2DAlgorithm.class, JIPipe.RESOURCES.getIcon16URL("actions/insert-math-expression.png"));
+        registerNodeType("ij1-feature-shadows-2d", Shadows2DAlgorithm.class, JIPipe.RESOURCES.getIcon16URL("actions/object-tweak-duplicate.png"));
 
         registerEnumParameterType("ij1-feature-vesselness-frangi:slicing-mode", FrangiVesselnessFeatures.SlicingMode.class,
                 "Slicing mode", "Available slicing modes");
@@ -1395,25 +1396,25 @@ public class ImageJAlgorithmsPlugin extends JIPipePrepackagedDefaultJavaPlugin {
     }
 
     private void registerContrastAlgorithms() {
-        registerNodeType("ij1-contrast-clahe", CLAHEContrastEnhancer.class, UIUtils.getIconURLFromResources("actions/contrast.png"));
-        registerNodeType("ij1-contrast-illumination-correction2d", IlluminationCorrection2DAlgorithm.class, UIUtils.getIconURLFromResources("actions/contrast.png"));
-        registerNodeType("ij1-contrast-calibrate", DisplayRangeCalibrationAlgorithm.class, UIUtils.getIconURLFromResources("actions/contrast.png"));
-        registerNodeType("ij1-contrast-apply-displayed-contrast", ApplyDisplayContrastAlgorithm.class, UIUtils.getIconURLFromResources("actions/contrast.png"));
-        registerNodeType("ij1-contrast-histogram-enhancer", HistogramContrastEnhancerAlgorithm.class, UIUtils.getIconURLFromResources("actions/contrast.png"));
-        registerNodeType("ij1-contrast-apply-ij-per-slice", ImageJContrastEnhancerAlgorithm.class, UIUtils.getIconURLFromResources("actions/contrast.png"));
+        registerNodeType("ij1-contrast-clahe", CLAHEContrastEnhancer.class, JIPipe.RESOURCES.getIcon16URL("actions/contrast.png"));
+        registerNodeType("ij1-contrast-illumination-correction2d", IlluminationCorrection2DAlgorithm.class, JIPipe.RESOURCES.getIcon16URL("actions/contrast.png"));
+        registerNodeType("ij1-contrast-calibrate", DisplayRangeCalibrationAlgorithm.class, JIPipe.RESOURCES.getIcon16URL("actions/contrast.png"));
+        registerNodeType("ij1-contrast-apply-displayed-contrast", ApplyDisplayContrastAlgorithm.class, JIPipe.RESOURCES.getIcon16URL("actions/contrast.png"));
+        registerNodeType("ij1-contrast-histogram-enhancer", HistogramContrastEnhancerAlgorithm.class, JIPipe.RESOURCES.getIcon16URL("actions/contrast.png"));
+        registerNodeType("ij1-contrast-apply-ij-per-slice", ImageJContrastEnhancerAlgorithm.class, JIPipe.RESOURCES.getIcon16URL("actions/contrast.png"));
 
         registerEnumParameterType(HistogramContrastEnhancerAlgorithm.Method.class.getCanonicalName(), HistogramContrastEnhancerAlgorithm.Method.class,
                 "Histogram contrast enhancer method", "Available methods");
     }
 
     private void registerEdgeAlgorithms() {
-        registerNodeType("ij1-edge-sobel", SobelEdgeDetectorAlgorithm.class, UIUtils.getIconURLFromResources("actions/path-offset-dynamic.png"));
-        registerNodeType("ij1-edge-laplacian", LaplacianEdgeDetectorAlgorithm.class, UIUtils.getIconURLFromResources("actions/path-offset-dynamic.png"));
+        registerNodeType("ij1-edge-sobel", SobelEdgeDetectorAlgorithm.class, JIPipe.RESOURCES.getIcon16URL("actions/path-offset-dynamic.png"));
+        registerNodeType("ij1-edge-laplacian", LaplacianEdgeDetectorAlgorithm.class, JIPipe.RESOURCES.getIcon16URL("actions/path-offset-dynamic.png"));
         registerEnumParameterType("ij1-edge-laplacian:mode",
                 LaplacianEdgeDetectorAlgorithm.Mode.class,
                 "Laplacian type",
                 "The type of laplacian");
-        registerNodeType("ij1-edge-canny", CannyEdgeDetectorAlgorithm.class, UIUtils.getIconURLFromResources("actions/path-offset-dynamic.png"));
+        registerNodeType("ij1-edge-canny", CannyEdgeDetectorAlgorithm.class, JIPipe.RESOURCES.getIcon16URL("actions/path-offset-dynamic.png"));
     }
 
     private void registerColorAlgorithms() {
@@ -1421,11 +1422,11 @@ public class ImageJAlgorithmsPlugin extends JIPipePrepackagedDefaultJavaPlugin {
         registerParameterType("ij1-color-blend-images:layer", ImageBlendLayer.class, JIPipeParameterArchetype.Value, "Layer settings", "Settings for a layer");
         registerEnumParameterType("ij1-color-blend-images:blend-mode", ImageBlendMode.class, "Layer blend mode", "Blend mode for the layer");
 
-        registerNodeType("ij1-color-invert", InvertImageAlgorithm.class, UIUtils.getIconURLFromResources("actions/invertimage.png"));
-        registerNodeType("ij1-color-invert-greyscale", InvertGreyscaleValuesAlgorithm.class, UIUtils.getIconURLFromResources("actions/invertimage.png"));
-        registerNodeType("ij1-color-invert-rgb", InvertRGBColorsAlgorithm.class, UIUtils.getIconURLFromResources("actions/invertimage.png"));
-        registerNodeType("ij1-color-merge-channels", MergeChannelsAlgorithm.class, UIUtils.getIconURLFromResources("actions/merge.png"));
-        registerNodeType("ij1-color-merge-channels-composite", MergeChannelsAlgorithm.class, UIUtils.getIconURLFromResources("actions/merge.png"));
+        registerNodeType("ij1-color-invert", InvertImageAlgorithm.class, JIPipe.RESOURCES.getIcon16URL("actions/invertimage.png"));
+        registerNodeType("ij1-color-invert-greyscale", InvertGreyscaleValuesAlgorithm.class, JIPipe.RESOURCES.getIcon16URL("actions/invertimage.png"));
+        registerNodeType("ij1-color-invert-rgb", InvertRGBColorsAlgorithm.class, JIPipe.RESOURCES.getIcon16URL("actions/invertimage.png"));
+        registerNodeType("ij1-color-merge-channels", MergeChannelsAlgorithm.class, JIPipe.RESOURCES.getIcon16URL("actions/merge.png"));
+        registerNodeType("ij1-color-merge-channels-composite", MergeChannelsAlgorithm.class, JIPipe.RESOURCES.getIcon16URL("actions/merge.png"));
         for (int c = 2; c <= 7; c++) {
             int finalC = c;
             registerNodeExample(MergeChannelsCompositeAlgorithm.class, "Merge " + c + " channels", node -> {
@@ -1436,35 +1437,35 @@ public class ImageJAlgorithmsPlugin extends JIPipePrepackagedDefaultJavaPlugin {
                 }
             });
         }
-        registerNodeType("ij1-color-overlay-channels", MergeChannelsCompositeAlgorithm.class, UIUtils.getIconURLFromResources("actions/merge.png"));
-        registerNodeType("ij1-color-blend-images", BlendImagesAlgorithm.class, UIUtils.getIconURLFromResources("actions/merge.png"));
+        registerNodeType("ij1-color-overlay-channels", MergeChannelsCompositeAlgorithm.class, JIPipe.RESOURCES.getIcon16URL("actions/merge.png"));
+        registerNodeType("ij1-color-blend-images", BlendImagesAlgorithm.class, JIPipe.RESOURCES.getIcon16URL("actions/merge.png"));
         registerNodeType("ij1-color-arrange-channels", ArrangeChannelsAlgorithm.class);
-        registerNodeType("ij1-color-split-channels", SplitChannelsAlgorithm.class, UIUtils.getIconURLFromResources("actions/split.png"));
-        registerNodeType("ij1-color-split-channels-2", NewSplitChannelsAlgorithm.class, UIUtils.getIconURLFromResources("actions/split.png"));
-        registerNodeType("ij1-color-split-channels-by-table", SplitChannelsByTableAlgorithm.class, UIUtils.getIconURLFromResources("actions/split.png"));
-        registerNodeType("ij1-color-combine-rgb", CombineChannelsToRGBAlgorithm.class, UIUtils.getIconURLFromResources("actions/colors-rgb.png"));
-        registerNodeType("ij1-color-merge-channels-rgb", MergeRGBChannelsAlgorithm.class, UIUtils.getIconURLFromResources("actions/colors-rgb.png"));
-        registerNodeType("ij1-color-merge-channels-hsb", MergeHSBChannelsAlgorithm.class, UIUtils.getIconURLFromResources("actions/colors-rgb.png"));
-        registerNodeType("ij1-color-merge-channels-lab", MergeLABChannelsAlgorithm.class, UIUtils.getIconURLFromResources("actions/colors-rgb.png"));
-        registerNodeType("ij1-color-split-rgb", SplitRGBChannelsAlgorithm.class, UIUtils.getIconURLFromResources("actions/channelmixer.png"));
-        registerNodeType("ij1-color-to-rgb", RenderImageToRGBAlgorithm.class, UIUtils.getIconURLFromResources("data-types/imgplus-color-rgb.png"));
-        registerNodeType("ij1-color-to-greyscale-expression", ColorToGreyscaleExpression2D.class, UIUtils.getIconURLFromResources("actions/color-picker-grey.png"));
+        registerNodeType("ij1-color-split-channels", SplitChannelsAlgorithm.class, JIPipe.RESOURCES.getIcon16URL("actions/split.png"));
+        registerNodeType("ij1-color-split-channels-2", NewSplitChannelsAlgorithm.class, JIPipe.RESOURCES.getIcon16URL("actions/split.png"));
+        registerNodeType("ij1-color-split-channels-by-table", SplitChannelsByTableAlgorithm.class, JIPipe.RESOURCES.getIcon16URL("actions/split.png"));
+        registerNodeType("ij1-color-combine-rgb", CombineChannelsToRGBAlgorithm.class, JIPipe.RESOURCES.getIcon16URL("actions/colors-rgb.png"));
+        registerNodeType("ij1-color-merge-channels-rgb", MergeRGBChannelsAlgorithm.class, JIPipe.RESOURCES.getIcon16URL("actions/colors-rgb.png"));
+        registerNodeType("ij1-color-merge-channels-hsb", MergeHSBChannelsAlgorithm.class, JIPipe.RESOURCES.getIcon16URL("actions/colors-rgb.png"));
+        registerNodeType("ij1-color-merge-channels-lab", MergeLABChannelsAlgorithm.class, JIPipe.RESOURCES.getIcon16URL("actions/colors-rgb.png"));
+        registerNodeType("ij1-color-split-rgb", SplitRGBChannelsAlgorithm.class, JIPipe.RESOURCES.getIcon16URL("actions/channelmixer.png"));
+        registerNodeType("ij1-color-to-rgb", RenderImageToRGBAlgorithm.class, JIPipe.RESOURCES.getIcon16URL("data-types/imgplus-color-rgb.png"));
+        registerNodeType("ij1-color-to-greyscale-expression", ColorToGreyscaleExpression2D.class, JIPipe.RESOURCES.getIcon16URL("actions/color-picker-grey.png"));
 
         registerEnumParameterType("ij1-color-merge-channels:channel-color", MergeChannelsAlgorithm.ChannelColor.class,
                 "Channel color", "Available channel colors");
     }
 
     private void registerBlurAlgorithms() {
-        registerNodeType("ij1-blur-gaussian2d", GaussianBlur2DAlgorithm.class, UIUtils.getIconURLFromResources("actions/insert-math-expression.png"));
-        registerNodeType("ij1-blur-gaussian3d", GaussianBlur3DAlgorithm.class, UIUtils.getIconURLFromResources("actions/insert-math-expression.png"));
-        registerNodeType("ij1-blur-box2d", BoxFilter2DAlgorithm.class, UIUtils.getIconURLFromResources("actions/insert-math-expression.png"));
-        registerNodeType("ij1-blur-box2d-v2", BoxFilter2Dv2Algorithm.class, UIUtils.getIconURLFromResources("actions/insert-math-expression.png"));
-        registerNodeType("ij1-blur-box3d", BoxFilter3DAlgorithm.class, UIUtils.getIconURLFromResources("actions/insert-math-expression.png"));
-        registerNodeType("ij1-blur-median2d-8u", MedianGreyscale8U2DAlgorithm.class, UIUtils.getIconURLFromResources("actions/insert-math-expression.png"));
-        registerNodeType("ij1-blur-median2d-rgb", MedianRGB2DAlgorithm.class, UIUtils.getIconURLFromResources("actions/insert-math-expression.png"));
-        registerNodeType("ij1-blur-median2d", MedianFilter2DAlgorithm.class, UIUtils.getIconURLFromResources("actions/insert-math-expression.png"));
-        registerNodeType("ij1-blur-median3d", MedianFilter3DAlgorithm.class, UIUtils.getIconURLFromResources("actions/insert-math-expression.png"));
-        registerNodeType("ij1-filter-kuwahara2d", KuwaharaFilter2DAlgorithm.class, UIUtils.getIconURLFromResources("actions/insert-math-expression.png"));
+        registerNodeType("ij1-blur-gaussian2d", GaussianBlur2DAlgorithm.class, JIPipe.RESOURCES.getIcon16URL("actions/insert-math-expression.png"));
+        registerNodeType("ij1-blur-gaussian3d", GaussianBlur3DAlgorithm.class, JIPipe.RESOURCES.getIcon16URL("actions/insert-math-expression.png"));
+        registerNodeType("ij1-blur-box2d", BoxFilter2DAlgorithm.class, JIPipe.RESOURCES.getIcon16URL("actions/insert-math-expression.png"));
+        registerNodeType("ij1-blur-box2d-v2", BoxFilter2Dv2Algorithm.class, JIPipe.RESOURCES.getIcon16URL("actions/insert-math-expression.png"));
+        registerNodeType("ij1-blur-box3d", BoxFilter3DAlgorithm.class, JIPipe.RESOURCES.getIcon16URL("actions/insert-math-expression.png"));
+        registerNodeType("ij1-blur-median2d-8u", MedianGreyscale8U2DAlgorithm.class, JIPipe.RESOURCES.getIcon16URL("actions/insert-math-expression.png"));
+        registerNodeType("ij1-blur-median2d-rgb", MedianRGB2DAlgorithm.class, JIPipe.RESOURCES.getIcon16URL("actions/insert-math-expression.png"));
+        registerNodeType("ij1-blur-median2d", MedianFilter2DAlgorithm.class, JIPipe.RESOURCES.getIcon16URL("actions/insert-math-expression.png"));
+        registerNodeType("ij1-blur-median3d", MedianFilter3DAlgorithm.class, JIPipe.RESOURCES.getIcon16URL("actions/insert-math-expression.png"));
+        registerNodeType("ij1-filter-kuwahara2d", KuwaharaFilter2DAlgorithm.class, JIPipe.RESOURCES.getIcon16URL("actions/insert-math-expression.png"));
 
         registerEnumParameterType("ij1-filter-kuwahara2d:criterion", KuwaharaFilter2DAlgorithm.Criterion.class, "Kuwahara criterion", "Available criteria");
     }

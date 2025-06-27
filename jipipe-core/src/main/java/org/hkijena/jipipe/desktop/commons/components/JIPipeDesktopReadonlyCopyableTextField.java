@@ -13,7 +13,9 @@
 
 package org.hkijena.jipipe.desktop.commons.components;
 
+import org.hkijena.jipipe.JIPipe;
 import org.hkijena.jipipe.utils.UIUtils;
+import org.hkijena.jipipe.JIPipe;
 
 import javax.swing.*;
 import java.awt.*;
@@ -40,7 +42,7 @@ public class JIPipeDesktopReadonlyCopyableTextField extends JPanel {
             textField.setFont(new Font(Font.MONOSPACED, Font.PLAIN, 12));
         }
 
-        copyButton = new JButton(UIUtils.getIconFromResources("actions/edit-copy.png"));
+        copyButton = new JButton(JIPipe.RESOURCES.getIcon16("actions/edit-copy.png"));
         copyButton.setToolTipText("Copy current value");
         copyButton.addActionListener(e -> copyCurrentValue());
         UIUtils.makeButtonFlat25x25(copyButton);
@@ -52,9 +54,9 @@ public class JIPipeDesktopReadonlyCopyableTextField extends JPanel {
         StringSelection selection = new StringSelection(textField.getText());
         Clipboard clipboard = Toolkit.getDefaultToolkit().getSystemClipboard();
         clipboard.setContents(selection, selection);
-        copyButton.setIcon(UIUtils.getIconFromResources("emblems/checkmark.png"));
+        copyButton.setIcon(JIPipe.RESOURCES.getIcon16("emblems/checkmark.png"));
         Timer timer = new Timer(500, e -> {
-            copyButton.setIcon(UIUtils.getIconFromResources("actions/edit-copy.png"));
+            copyButton.setIcon(JIPipe.RESOURCES.getIcon16("actions/edit-copy.png"));
         });
         timer.setRepeats(false);
         timer.start();

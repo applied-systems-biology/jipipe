@@ -26,6 +26,7 @@ import org.hkijena.jipipe.plugins.ijocr.environments.OptionalTesseractOCREnviron
 import org.hkijena.jipipe.plugins.ijocr.environments.TesseractOCREnvironment;
 import org.hkijena.jipipe.plugins.parameters.library.jipipe.JIPipeArtifactQueryParameter;
 import org.hkijena.jipipe.utils.UIUtils;
+import org.hkijena.jipipe.JIPipe;
 
 import javax.swing.*;
 import java.util.List;
@@ -82,7 +83,7 @@ public class OCRPluginProjectSettings extends JIPipeDefaultProjectSettingsSheet 
 
     @Override
     public Icon getIcon() {
-        return UIUtils.getIconFromResources("actions/text_outer_style.png");
+        return JIPipe.RESOURCES.getIcon16("actions/text_outer_style.png");
     }
 
     @Override

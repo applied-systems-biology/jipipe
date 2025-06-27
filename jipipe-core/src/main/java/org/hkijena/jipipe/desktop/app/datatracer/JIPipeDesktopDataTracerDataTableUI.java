@@ -41,6 +41,7 @@ import org.hkijena.jipipe.plugins.settings.JIPipeFileChooserApplicationSettings;
 import org.hkijena.jipipe.plugins.settings.JIPipeGeneralDataApplicationSettings;
 import org.hkijena.jipipe.utils.StringUtils;
 import org.hkijena.jipipe.utils.UIUtils;
+import org.hkijena.jipipe.JIPipe;
 import org.hkijena.jipipe.utils.data.Store;
 import org.hkijena.jipipe.utils.scripting.MacroUtils;
 import org.jdesktop.swingx.JXTable;
@@ -174,11 +175,11 @@ public class JIPipeDesktopDataTracerDataTableUI extends JIPipeDesktopWorkbenchPa
             if (dataAnnotationColumn >= 0) {
                 JIPipeDataAnnotation dataAnnotation = dataTable.getDataAnnotation(modelRow, dataAnnotationColumn);
                 popupMenu.add(UIUtils.createMenuItem("Show data annotation", "Shows the data annotation '" + dataAnnotation.getName() + "'",
-                        UIUtils.getIconFromResources("actions/search.png"), () -> handleSlotRowDefaultAction(viewRow, viewCol)));
+                        JIPipe.RESOURCES.getIcon16("actions/search.png"), () -> handleSlotRowDefaultAction(viewRow, viewCol)));
             }
 
             // Show/open with controls
-            popupMenu.add(UIUtils.createMenuItem("Show", "Shows the data", UIUtils.getIconFromResources("actions/search.png"), () -> handleSlotRowDefaultAction(viewRow, 0)));
+            popupMenu.add(UIUtils.createMenuItem("Show", "Shows the data", JIPipe.RESOURCES.getIcon16("actions/search.png"), () -> handleSlotRowDefaultAction(viewRow, 0)));
 
             {
                 JMenu openWithMenu = new JMenu();
@@ -211,7 +212,7 @@ public class JIPipeDesktopDataTracerDataTableUI extends JIPipeDesktopWorkbenchPa
             if (getDesktopWorkbench() instanceof JIPipeDesktopProjectWorkbench) {
                 popupMenu.add(UIUtils.createMenuItem("Trace ...",
                         "Allows to trace how the selected data was generated",
-                        UIUtils.getIconFromResources("actions/footsteps.png"),
+                        JIPipe.RESOURCES.getIcon16("actions/footsteps.png"),
                         () -> traceData(dataTable.getDataContext(modelRow).getId())));
             }
 
@@ -219,7 +220,7 @@ public class JIPipeDesktopDataTracerDataTableUI extends JIPipeDesktopWorkbenchPa
             if (objectAtColumn instanceof String) {
                 popupMenu.addSeparator();
                 popupMenu.add(UIUtils.createMenuItem("Copy string representation", "Copies the string '" + objectAtColumn + "' into the clipboard",
-                        UIUtils.getIconFromResources("actions/edit-copy.png"), () -> UIUtils.copyToClipboard(StringUtils.nullToEmpty(objectAtColumn))));
+                        JIPipe.RESOURCES.getIcon16("actions/edit-copy.png"), () -> UIUtils.copyToClipboard(StringUtils.nullToEmpty(objectAtColumn))));
             }
 
             // Annotations
@@ -230,18 +231,18 @@ public class JIPipeDesktopDataTracerDataTableUI extends JIPipeDesktopWorkbenchPa
                 String annotationNameAndValue = annotationName + "=" + annotationValue;
                 String filterExpression = annotationName + " == " + "\"" + MacroUtils.escapeString(annotationValue) + "\"";
                 popupMenu.add(UIUtils.createMenuItem("Copy " + annotationName + " name", "Copies the string '" + annotationName + "' into the clipboard",
-                        UIUtils.getIconFromResources("actions/edit-copy.png"), () -> UIUtils.copyToClipboard(StringUtils.nullToEmpty(annotationName))));
+                        JIPipe.RESOURCES.getIcon16("actions/edit-copy.png"), () -> UIUtils.copyToClipboard(StringUtils.nullToEmpty(annotationName))));
                 popupMenu.add(UIUtils.createMenuItem("Copy " + annotationName + " value", "Copies the string '" + annotationValue + "' into the clipboard",
-                        UIUtils.getIconFromResources("actions/edit-copy.png"), () -> UIUtils.copyToClipboard(StringUtils.nullToEmpty(annotationValue))));
+                        JIPipe.RESOURCES.getIcon16("actions/edit-copy.png"), () -> UIUtils.copyToClipboard(StringUtils.nullToEmpty(annotationValue))));
                 popupMenu.add(UIUtils.createMenuItem("Copy " + annotationName + " name and value", "Copies the string '" + annotationNameAndValue + "' into the clipboard",
-                        UIUtils.getIconFromResources("actions/edit-copy.png"), () -> UIUtils.copyToClipboard(StringUtils.nullToEmpty(annotationNameAndValue))));
+                        JIPipe.RESOURCES.getIcon16("actions/edit-copy.png"), () -> UIUtils.copyToClipboard(StringUtils.nullToEmpty(annotationNameAndValue))));
                 popupMenu.add(UIUtils.createMenuItem("Copy " + annotationName + " as filter", "Copies the string '" + filterExpression + "' into the clipboard",
-                        UIUtils.getIconFromResources("actions/filter.png"), () -> UIUtils.copyToClipboard(StringUtils.nullToEmpty(filterExpression))));
+                        JIPipe.RESOURCES.getIcon16("actions/filter.png"), () -> UIUtils.copyToClipboard(StringUtils.nullToEmpty(filterExpression))));
             }
 
             popupMenu.addSeparator();
 
-            popupMenu.add(UIUtils.createMenuItem("Export", "Exports the data", UIUtils.getIconFromResources("actions/document-export.png"),
+            popupMenu.add(UIUtils.createMenuItem("Export", "Exports the data", JIPipe.RESOURCES.getIcon16("actions/document-export.png"),
                     () -> {
                         Path path = JIPipeDesktop.saveFile(this, getDesktopWorkbench(), JIPipeFileChooserApplicationSettings.LastDirectoryKey.Data, "Export row " + modelRow, HTMLText.EMPTY);
                         if (path != null) {
@@ -255,7 +256,7 @@ public class JIPipeDesktopDataTracerDataTableUI extends JIPipeDesktopWorkbenchPa
 
             if (dataAnnotationColumn >= 0) {
                 JIPipeDataAnnotation dataAnnotation = dataTable.getDataAnnotation(modelRow, dataAnnotationColumn);
-                popupMenu.add(UIUtils.createMenuItem("Export " + dataAnnotation.getName(), "Exports the data annotation '" + dataAnnotation.getName() + "'", UIUtils.getIconFromResources("actions/document-export.png"),
+                popupMenu.add(UIUtils.createMenuItem("Export " + dataAnnotation.getName(), "Exports the data annotation '" + dataAnnotation.getName() + "'", JIPipe.RESOURCES.getIcon16("actions/document-export.png"),
                         () -> {
                             Path path = JIPipeDesktop.saveFile(this, getDesktopWorkbench(), JIPipeFileChooserApplicationSettings.LastDirectoryKey.Data, "Export row " + modelRow, HTMLText.EMPTY);
                             if (path != null) {
@@ -367,7 +368,7 @@ public class JIPipeDesktopDataTracerDataTableUI extends JIPipeDesktopWorkbenchPa
                 if (dataTable != null) {
                     String info = dataTable.getDataAnnotationColumnNames().get(toDataAnnotationColumnIndex(modelColumn));
                     String html = String.format("<html><table><tr><td><img src=\"%s\"/></td><td>%s</tr>",
-                            UIUtils.getIconFromResources("data-types/data-annotation.png"),
+                            JIPipe.RESOURCES.getIcon16("data-types/data-annotation.png"),
                             info);
                     return defaultRenderer.getTableCellRendererComponent(table, html, isSelected, hasFocus, row, column);
                 } else {
@@ -379,7 +380,7 @@ public class JIPipeDesktopDataTracerDataTableUI extends JIPipeDesktopWorkbenchPa
                     if (annotationColumnIndex < dataTable.getTextAnnotationColumnNames().size()) {
                         String info = dataTable.getTextAnnotationColumnNames().get(annotationColumnIndex);
                         String html = String.format("<html><table><tr><td><img src=\"%s\"/></td><td>%s</tr>",
-                                UIUtils.getIconFromResources("data-types/annotation.png"),
+                                JIPipe.RESOURCES.getIcon16("data-types/annotation.png"),
                                 info);
                         return defaultRenderer.getTableCellRendererComponent(table, html, isSelected, hasFocus, row, column);
                     } else {

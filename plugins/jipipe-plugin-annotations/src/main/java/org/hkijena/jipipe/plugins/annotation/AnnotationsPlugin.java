@@ -32,6 +32,7 @@ import org.hkijena.jipipe.plugins.tables.display.OpenResultsTableInJIPipeTabData
 import org.hkijena.jipipe.utils.JIPipeResourceManager;
 import org.hkijena.jipipe.utils.ResourceUtils;
 import org.hkijena.jipipe.utils.UIUtils;
+import org.hkijena.jipipe.JIPipe;
 import org.scijava.Context;
 import org.scijava.plugin.Plugin;
 
@@ -99,33 +100,33 @@ public class AnnotationsPlugin extends JIPipePrepackagedDefaultJavaPlugin {
 
         registerNodeType("merge-slots", MergeDataSlots.class);
         registerNodeType("annotation-table-from-file", AnnotationTableFromFile.class);
-        registerNodeType("annotate-set", AnnotateByExpression.class, UIUtils.getIconURLFromResources("actions/tag.png"));
-        registerNodeType("annotate-set-single", SetSingleAnnotation.class, UIUtils.getIconURLFromResources("actions/tag.png"));
-        registerNodeType("annotate-remove", RemoveAnnotationAlgorithm.class, UIUtils.getIconURLFromResources("actions/entry-delete.png"));
-        registerNodeType("annotate-split-by-annotation", SplitByAnnotation.class, UIUtils.getIconURLFromResources("actions/split.png"));
-        registerNodeType("annotate-filter-by-annotation", FilterByAnnotation.class, UIUtils.getIconURLFromResources("actions/filter.png"));
-        registerNodeType("annotate-filter-by-annotation-if-else", FilterByAnnotationIfElse.class, UIUtils.getIconURLFromResources("actions/filter.png"));
-        registerNodeType("data-to-annotation-table", ConvertToAnnotationTable.class, UIUtils.getIconURLFromResources("data-types/annotation-table.png"));
-        registerNodeType("annotate-with-data-string", AnnotateWithDataString.class, UIUtils.getIconURLFromResources("data-types/data-type.png"));
-        registerNodeType("extract-and-replace-annotation", ExtractAndReplaceAnnotation.class, UIUtils.getIconURLFromResources("actions/edit-find-replace.png"));
-        registerNodeType("modify-annotation-script", ModifyAnnotationScript.class, UIUtils.getIconURLFromResources("apps/python.png"));
-        registerNodeType("annotate-split-by-annotation-script", SplitByAnnotationScript.class, UIUtils.getIconURLFromResources("apps/python.png"));
-        registerNodeType("annotation-merge", MergeAnnotations.class, UIUtils.getIconURLFromResources("actions/merge.png"));
-        registerNodeType("annotate-with-annotation-table", AnnotateWithAnnotationTable.class, UIUtils.getIconURLFromResources("data-types/annotation-table.png"));
-        registerNodeType("generate-unique-annotation", GenerateUniqueAnnotation.class, UIUtils.getIconURLFromResources("actions/tools-wizard.png"));
-        registerNodeType("generate-unique-random-annotation", GenerateRandomUniqueAnnotation.class, UIUtils.getIconURLFromResources("actions/random.png"));
-        registerNodeType("remove-array-annotations", RemoveArrayAnnotationsAlgorithm.class, UIUtils.getIconURLFromResources("actions/filter.png"));
-        registerNodeType("remove-na-annotation-columns", RemoveNAAnnotationColumnsAlgorithm.class, UIUtils.getIconURLFromResources("actions/filter.png"));
-        registerNodeType("annotate-with-data", AnnotateWithData.class, UIUtils.getIconURLFromResources("actions/database.png"));
-        registerNodeType("remove-data-annotations", RemoveDataAnnotations.class, UIUtils.getIconURLFromResources("actions/entry-delete.png"));
-        registerNodeType("extract-data-annotation", ExtractDataAnnotation.class, UIUtils.getIconURLFromResources("actions/archive-extract.png"));
-        registerNodeType("convert-data-annotation-to-string-annotation", DataAnnotationToStringAnnotation.class, UIUtils.getIconURLFromResources("actions/tag.png"));
-        registerNodeType("rename-annotation", RenameAnnotation.class, UIUtils.getIconURLFromResources("actions/edit-find-replace.png"));
-        registerNodeType("rename-data-annotation", RenameDataAnnotation.class, UIUtils.getIconURLFromResources("actions/edit-find-replace.png"));
-        registerNodeType("annotate-with-source-slot", AnnotateWithSourceSlot.class, UIUtils.getIconURLFromResources("actions/distribute-graph-directed.png"));
-        registerNodeType("simplify-annotations", SimplifyAnnotationsAlgorithm.class, UIUtils.getIconURLFromResources("actions/image-auto-adjust.png"));
-        registerNodeType("overwrite-annotations", OverwriteAnnotations.class, UIUtils.getIconURLFromResources("actions/editcopy.png"));
-        registerNodeType("annotate-by-project-paths", AnnotateByProjectPaths.class, UIUtils.getIconURLFromResources("actions/stock_folder-copy.png"));
+        registerNodeType("annotate-set", AnnotateByExpression.class, JIPipe.RESOURCES.getIcon16URL("actions/tag.png"));
+        registerNodeType("annotate-set-single", SetSingleAnnotation.class, JIPipe.RESOURCES.getIcon16URL("actions/tag.png"));
+        registerNodeType("annotate-remove", RemoveAnnotationAlgorithm.class, JIPipe.RESOURCES.getIcon16URL("actions/entry-delete.png"));
+        registerNodeType("annotate-split-by-annotation", SplitByAnnotation.class, JIPipe.RESOURCES.getIcon16URL("actions/split.png"));
+        registerNodeType("annotate-filter-by-annotation", FilterByAnnotation.class, JIPipe.RESOURCES.getIcon16URL("actions/filter.png"));
+        registerNodeType("annotate-filter-by-annotation-if-else", FilterByAnnotationIfElse.class, JIPipe.RESOURCES.getIcon16URL("actions/filter.png"));
+        registerNodeType("data-to-annotation-table", ConvertToAnnotationTable.class, JIPipe.RESOURCES.getIcon16URL("data-types/annotation-table.png"));
+        registerNodeType("annotate-with-data-string", AnnotateWithDataString.class, JIPipe.RESOURCES.getIcon16URL("data-types/data-type.png"));
+        registerNodeType("extract-and-replace-annotation", ExtractAndReplaceAnnotation.class, JIPipe.RESOURCES.getIcon16URL("actions/edit-find-replace.png"));
+        registerNodeType("modify-annotation-script", ModifyAnnotationScript.class, JIPipe.RESOURCES.getIcon16URL("apps/python.png"));
+        registerNodeType("annotate-split-by-annotation-script", SplitByAnnotationScript.class, JIPipe.RESOURCES.getIcon16URL("apps/python.png"));
+        registerNodeType("annotation-merge", MergeAnnotations.class, JIPipe.RESOURCES.getIcon16URL("actions/merge.png"));
+        registerNodeType("annotate-with-annotation-table", AnnotateWithAnnotationTable.class, JIPipe.RESOURCES.getIcon16URL("data-types/annotation-table.png"));
+        registerNodeType("generate-unique-annotation", GenerateUniqueAnnotation.class, JIPipe.RESOURCES.getIcon16URL("actions/tools-wizard.png"));
+        registerNodeType("generate-unique-random-annotation", GenerateRandomUniqueAnnotation.class, JIPipe.RESOURCES.getIcon16URL("actions/random.png"));
+        registerNodeType("remove-array-annotations", RemoveArrayAnnotationsAlgorithm.class, JIPipe.RESOURCES.getIcon16URL("actions/filter.png"));
+        registerNodeType("remove-na-annotation-columns", RemoveNAAnnotationColumnsAlgorithm.class, JIPipe.RESOURCES.getIcon16URL("actions/filter.png"));
+        registerNodeType("annotate-with-data", AnnotateWithData.class, JIPipe.RESOURCES.getIcon16URL("actions/database.png"));
+        registerNodeType("remove-data-annotations", RemoveDataAnnotations.class, JIPipe.RESOURCES.getIcon16URL("actions/entry-delete.png"));
+        registerNodeType("extract-data-annotation", ExtractDataAnnotation.class, JIPipe.RESOURCES.getIcon16URL("actions/archive-extract.png"));
+        registerNodeType("convert-data-annotation-to-string-annotation", DataAnnotationToStringAnnotation.class, JIPipe.RESOURCES.getIcon16URL("actions/tag.png"));
+        registerNodeType("rename-annotation", RenameAnnotation.class, JIPipe.RESOURCES.getIcon16URL("actions/edit-find-replace.png"));
+        registerNodeType("rename-data-annotation", RenameDataAnnotation.class, JIPipe.RESOURCES.getIcon16URL("actions/edit-find-replace.png"));
+        registerNodeType("annotate-with-source-slot", AnnotateWithSourceSlot.class, JIPipe.RESOURCES.getIcon16URL("actions/distribute-graph-directed.png"));
+        registerNodeType("simplify-annotations", SimplifyAnnotationsAlgorithm.class, JIPipe.RESOURCES.getIcon16URL("actions/image-auto-adjust.png"));
+        registerNodeType("overwrite-annotations", OverwriteAnnotations.class, JIPipe.RESOURCES.getIcon16URL("actions/editcopy.png"));
+        registerNodeType("annotate-by-project-paths", AnnotateByProjectPaths.class, JIPipe.RESOURCES.getIcon16URL("actions/stock_folder-copy.png"));
 
         registerNodeExamplesFromResources(RESOURCES, "examples");
     }

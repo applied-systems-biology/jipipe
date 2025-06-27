@@ -17,6 +17,7 @@ import org.hkijena.jipipe.api.compartments.algorithms.JIPipeProjectCompartment;
 import org.hkijena.jipipe.api.nodes.JIPipeGraphNode;
 import org.hkijena.jipipe.utils.StringUtils;
 import org.hkijena.jipipe.utils.UIUtils;
+import org.hkijena.jipipe.JIPipe;
 
 import javax.swing.*;
 import java.awt.*;
@@ -89,7 +90,7 @@ public class JIPipeDesktopBookmarkedNodeListCellRenderer extends JPanel implemen
         if (node instanceof JIPipeProjectCompartment) {
             descriptionLabel.setText("<html>" + StringUtils.orElse(node.getCustomDescription().getBody(), "No description given") + "</html>");
             nameLabel.setText(node.getName());
-            nodeIcon.setIcon(UIUtils.getIconFromResources("data-types/graph-compartment.png"));
+            nodeIcon.setIcon(JIPipe.RESOURCES.getIcon16("data-types/graph-compartment.png"));
             compartmentLabel.setIcon(null);
             compartmentLabel.setText("Compartment");
         } else if (node != null) {
@@ -97,7 +98,7 @@ public class JIPipeDesktopBookmarkedNodeListCellRenderer extends JPanel implemen
             nameLabel.setText(node.getName());
             JIPipeProjectCompartment compartment = node.getProjectCompartment();
             if (compartment != null) {
-                compartmentLabel.setIcon(UIUtils.getIconFromResources("data-types/graph-compartment.png"));
+                compartmentLabel.setIcon(JIPipe.RESOURCES.getIcon16("data-types/graph-compartment.png"));
                 compartmentLabel.setText(compartment.getName());
             } else {
                 compartmentLabel.setIcon(null);

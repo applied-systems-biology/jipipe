@@ -69,7 +69,7 @@ public class JIPipeDesktopLegacyImageViewerPanel2D extends JPanel implements JIP
     public static final String DOCK_PANEL_PREFIX = "LEGACY_IMAGE_VIEWER2D_";
     private final JIPipeDesktopLegacyImageViewer imageViewer;
     private final JIPipeDesktopSmallButtonRibbonAction zoomStatusButton = new JIPipeDesktopSmallButtonRibbonAction("100%", "The status of the zoom",
-            UIUtils.getIconFromResources("actions/transform-move-vertical.png"));
+            JIPipe.RESOURCES.getIcon16("actions/transform-move-vertical.png"));
     private final LegacyImageViewer2DUIApplicationSettings settings;
     private final JLabel stackSliderLabel = new JLabel("Slice (Z)");
     private final JLabel channelSliderLabel = new JLabel("Channel (C)");
@@ -78,9 +78,9 @@ public class JIPipeDesktopLegacyImageViewerPanel2D extends JPanel implements JIP
     private final JSlider stackSlider = new JSlider(1, 100, 1);
     private final JSlider channelSlider = new JSlider(1, 100, 1);
     private final JSlider frameSlider = new JSlider(1, 100, 1);
-    private final JToggleButton animationStackToggle = new JToggleButton(UIUtils.getIconFromResources("actions/play.png"));
-    private final JToggleButton animationChannelToggle = new JToggleButton(UIUtils.getIconFromResources("actions/play.png"));
-    private final JToggleButton animationFrameToggle = new JToggleButton(UIUtils.getIconFromResources("actions/play.png"));
+    private final JToggleButton animationStackToggle = new JToggleButton(JIPipe.RESOURCES.getIcon16("actions/play.png"));
+    private final JToggleButton animationChannelToggle = new JToggleButton(JIPipe.RESOURCES.getIcon16("actions/play.png"));
+    private final JToggleButton animationFrameToggle = new JToggleButton(JIPipe.RESOURCES.getIcon16("actions/play.png"));
     private final JSpinner animationFPSControl = new JSpinner(new SpinnerNumberModel(24, 0.01, 1000, 0.1));
     private final JIPipeDesktopWorkbench workbench;
     private final JIPipeDesktopCheckBoxRibbonAction exportDisplayedScaleToggle = new JIPipeDesktopCheckBoxRibbonAction("Export as displayed", "If enabled, " +
@@ -313,7 +313,7 @@ public class JIPipeDesktopLegacyImageViewerPanel2D extends JPanel implements JIP
         JPanel descriptionPanel = new JPanel();
         descriptionPanel.setLayout(new BoxLayout(descriptionPanel, BoxLayout.X_AXIS));
 
-        JButton editButton = new JButton(UIUtils.getIconFromResources("actions/go-jump.png"));
+        JButton editButton = new JButton(JIPipe.RESOURCES.getIcon16("actions/go-jump.png"));
         editButton.setToolTipText("Jump to slice");
         UIUtils.makeButtonFlat25x25(editButton);
         editButton.addActionListener(e -> {
@@ -338,7 +338,7 @@ public class JIPipeDesktopLegacyImageViewerPanel2D extends JPanel implements JIP
         rightPanel.setLayout(new BoxLayout(rightPanel, BoxLayout.X_AXIS));
         contentPanel.add(rightPanel, BorderLayout.EAST);
 
-        JButton lastFrame = new JButton(UIUtils.getIconFromResources("actions/caret-left.png"));
+        JButton lastFrame = new JButton(JIPipe.RESOURCES.getIcon16("actions/caret-left.png"));
         UIUtils.makeButtonFlat25x25(lastFrame);
         lastFrame.setToolTipText("Go one slice back");
         lastFrame.addActionListener(e -> {
@@ -346,7 +346,7 @@ public class JIPipeDesktopLegacyImageViewerPanel2D extends JPanel implements JIP
         });
         rightPanel.add(lastFrame);
 
-        JButton nextFrame = new JButton(UIUtils.getIconFromResources("actions/caret-right.png"));
+        JButton nextFrame = new JButton(JIPipe.RESOURCES.getIcon16("actions/caret-right.png"));
         UIUtils.makeButtonFlat25x25(nextFrame);
         nextFrame.setToolTipText("Go one slice forward");
         nextFrame.addActionListener(e -> {
@@ -390,26 +390,26 @@ public class JIPipeDesktopLegacyImageViewerPanel2D extends JPanel implements JIP
     private void buildAnimationRibbon(JIPipeDesktopRibbon ribbon) {
         JIPipeDesktopRibbon.Task animationTask = ribbon.getOrCreateTask("Animation");
         JIPipeDesktopRibbon.Band exportBand = animationTask.getOrCreateBand("Export");
-        exportBand.addLargeButton("To movie", "Exports the all slices as image file", UIUtils.getIcon32FromResources("actions/filmgrain.png"), this::exportVideo);
+        exportBand.addLargeButton("To movie", "Exports the all slices as image file", JIPipe.RESOURCES.getIcon32("actions/filmgrain.png"), this::exportVideo);
         exportBand.addComponent(UIUtils.boxHorizontal(new JLabel("FPS"), Box.createHorizontalStrut(8), animationFPSControl), 1, new Insets(2, 2, 2, 2));
     }
 
     private void buildViewRibbon(JIPipeDesktopRibbon ribbon) {
         JIPipeDesktopRibbon.Task generalTask = ribbon.getOrCreateTask("General");
         JIPipeDesktopRibbon.Band viewBand = generalTask.getOrCreateBand("View");
-        viewBand.addLargeButton("Fit", "Fits the image into the view", UIUtils.getIcon32FromResources("actions/zoom-select-fit.png"), this::fitImageToScreen);
-        viewBand.addLargeButton("Center", "Centers the image into the view", UIUtils.getIcon32FromResources("actions/zoom-center-page.png"), () -> canvas.centerImage());
+        viewBand.addLargeButton("Fit", "Fits the image into the view", JIPipe.RESOURCES.getIcon32("actions/zoom-select-fit.png"), this::fitImageToScreen);
+        viewBand.addLargeButton("Center", "Centers the image into the view", JIPipe.RESOURCES.getIcon32("actions/zoom-center-page.png"), () -> canvas.centerImage());
 
         // Zoom buttons
-        viewBand.addSmallButton("Zoom in", "Increases the zoom", UIUtils.getIconFromResources("actions/magnifying-glass-plus.png"), this::increaseZoom);
+        viewBand.addSmallButton("Zoom in", "Increases the zoom", JIPipe.RESOURCES.getIcon16("actions/magnifying-glass-plus.png"), this::increaseZoom);
         viewBand.add(zoomStatusButton);
-        viewBand.addSmallButton("Zoom out", "Decreases the zoom", UIUtils.getIconFromResources("actions/magnifying-glass-minus.png"), this::decreaseZoom);
+        viewBand.addSmallButton("Zoom out", "Decreases the zoom", JIPipe.RESOURCES.getIcon16("actions/magnifying-glass-minus.png"), this::decreaseZoom);
     }
 
     private void createZoomMenu(JButton button) {
         JPopupMenu zoomMenu = UIUtils.addPopupMenuToButton(button);
         for (double zoom = 0.5; zoom <= 2; zoom += 0.25) {
-            JMenuItem changeZoomItem = new JMenuItem((int) (zoom * 100) + "%", UIUtils.getIconFromResources("actions/zoom.png"));
+            JMenuItem changeZoomItem = new JMenuItem((int) (zoom * 100) + "%", JIPipe.RESOURCES.getIcon16("actions/zoom.png"));
             double finalZoom = zoom;
             changeZoomItem.addActionListener(e -> {
                 canvas.setZoom(finalZoom);
@@ -440,23 +440,23 @@ public class JIPipeDesktopLegacyImageViewerPanel2D extends JPanel implements JIP
         JIPipeDesktopRibbon.Band imageBand = exportTask.getOrCreateBand("Image");
         JIPipeDesktopRibbon.Band snapshotBand = exportTask.getOrCreateBand("Snapshot");
 
-        imageBand.addLargeMenuButton("ImageJ", "Open the image in ImageJ", UIUtils.getIcon32FromResources("apps/imagej2.png"),
-                UIUtils.createMenuItem("Raw image", "Use the raw image", UIUtils.getIconFromResources("actions/image.png"), this::exportRawImageToImageJ),
-                UIUtils.createMenuItem("Rendered image", "Render the image (as displayed) and export that to ImageJ", UIUtils.getIconFromResources("actions/image.png"), this::exportRenderedImageToImageJ));
-        imageBand.addLargeMenuButton("3D viewer", "Opens the image in the ImageJ 3D viewer", UIUtils.getIcon32FromResources("apps/imagej2.png"),
-                UIUtils.createMenuItem("Raw image", "Use the raw image", UIUtils.getIconFromResources("actions/image.png"), this::exportRawImageToImageJ3DViewer),
-                UIUtils.createMenuItem("Rendered image", "Render the image (as displayed) and export that to ImageJ", UIUtils.getIconFromResources("actions/image.png"), this::exportRenderedImageToImageJ3DViewer));
-        imageBand.addLargeMenuButton("Napari", "Opens the image in Napari", UIUtils.getIcon32FromResources("apps/napari.png"),
-                UIUtils.createMenuItem("Raw image", "Use the raw image", UIUtils.getIconFromResources("actions/image.png"), this::exportToRawImageNapari),
-                UIUtils.createMenuItem("Rendered image", "Render the image (as displayed) and export that to Napari", UIUtils.getIconFromResources("actions/image.png"), this::exportRenderedImageToNapari));
+        imageBand.addLargeMenuButton("ImageJ", "Open the image in ImageJ", JIPipe.RESOURCES.getIcon32("apps/imagej2.png"),
+                UIUtils.createMenuItem("Raw image", "Use the raw image", JIPipe.RESOURCES.getIcon16("actions/image.png"), this::exportRawImageToImageJ),
+                UIUtils.createMenuItem("Rendered image", "Render the image (as displayed) and export that to ImageJ", JIPipe.RESOURCES.getIcon16("actions/image.png"), this::exportRenderedImageToImageJ));
+        imageBand.addLargeMenuButton("3D viewer", "Opens the image in the ImageJ 3D viewer", JIPipe.RESOURCES.getIcon32("apps/imagej2.png"),
+                UIUtils.createMenuItem("Raw image", "Use the raw image", JIPipe.RESOURCES.getIcon16("actions/image.png"), this::exportRawImageToImageJ3DViewer),
+                UIUtils.createMenuItem("Rendered image", "Render the image (as displayed) and export that to ImageJ", JIPipe.RESOURCES.getIcon16("actions/image.png"), this::exportRenderedImageToImageJ3DViewer));
+        imageBand.addLargeMenuButton("Napari", "Opens the image in Napari", JIPipe.RESOURCES.getIcon32("apps/napari.png"),
+                UIUtils.createMenuItem("Raw image", "Use the raw image", JIPipe.RESOURCES.getIcon16("actions/image.png"), this::exportToRawImageNapari),
+                UIUtils.createMenuItem("Rendered image", "Render the image (as displayed) and export that to Napari", JIPipe.RESOURCES.getIcon16("actions/image.png"), this::exportRenderedImageToNapari));
 
-        imageBand.addLargeMenuButton("Save TIFF", "Exports the image as *.tif", UIUtils.getIcon32FromResources("actions/filesave.png"),
-                UIUtils.createMenuItem("Raw image", "Save the raw image", UIUtils.getIconFromResources("actions/filesave.png"), this::saveRawImageToTiff),
-                UIUtils.createMenuItem("Rendered image", "Save the rendered image (as displayed)", UIUtils.getIconFromResources("actions/filesave.png"), this::saveRenderedImageToTiff));
-        snapshotBand.addLargeButton("To clipboard", "Exports a snapshot of the current slice to the clipboard", UIUtils.getIcon32FromResources("actions/edit-copy.png"), this::copyCurrentSliceToClipboard);
-        snapshotBand.addSmallButton("To PNG (current)", "Exports the current slice as image file", UIUtils.getIconFromResources("actions/viewimage.png"), this::exportCurrentSliceToPNG);
-        snapshotBand.addSmallButton("To PNG (all)", "Exports the all slices as image file", UIUtils.getIconFromResources("actions/qlipper.png"), this::exportAllSlicesToPNG);
-        snapshotBand.addSmallButton("To movie", "Exports the all slices as image file", UIUtils.getIconFromResources("actions/filmgrain.png"), this::exportVideo);
+        imageBand.addLargeMenuButton("Save TIFF", "Exports the image as *.tif", JIPipe.RESOURCES.getIcon32("actions/filesave.png"),
+                UIUtils.createMenuItem("Raw image", "Save the raw image", JIPipe.RESOURCES.getIcon16("actions/filesave.png"), this::saveRawImageToTiff),
+                UIUtils.createMenuItem("Rendered image", "Save the rendered image (as displayed)", JIPipe.RESOURCES.getIcon16("actions/filesave.png"), this::saveRenderedImageToTiff));
+        snapshotBand.addLargeButton("To clipboard", "Exports a snapshot of the current slice to the clipboard", JIPipe.RESOURCES.getIcon32("actions/edit-copy.png"), this::copyCurrentSliceToClipboard);
+        snapshotBand.addSmallButton("To PNG (current)", "Exports the current slice as image file", JIPipe.RESOURCES.getIcon16("actions/viewimage.png"), this::exportCurrentSliceToPNG);
+        snapshotBand.addSmallButton("To PNG (all)", "Exports the all slices as image file", JIPipe.RESOURCES.getIcon16("actions/qlipper.png"), this::exportAllSlicesToPNG);
+        snapshotBand.addSmallButton("To movie", "Exports the all slices as image file", JIPipe.RESOURCES.getIcon16("actions/filmgrain.png"), this::exportVideo);
         snapshotBand.add(exportDisplayedScaleToggle);
     }
 

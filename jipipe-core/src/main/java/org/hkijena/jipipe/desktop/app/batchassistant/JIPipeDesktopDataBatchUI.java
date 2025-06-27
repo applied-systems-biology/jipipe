@@ -28,6 +28,7 @@ import org.hkijena.jipipe.desktop.app.JIPipeDesktopProjectWorkbenchPanel;
 import org.hkijena.jipipe.desktop.app.datatable.JIPipeDesktopExtendedDataTableUI;
 import org.hkijena.jipipe.desktop.commons.components.JIPipeDesktopFormPanel;
 import org.hkijena.jipipe.utils.UIUtils;
+import org.hkijena.jipipe.JIPipe;
 import org.hkijena.jipipe.utils.data.OwningStore;
 
 import javax.swing.*;
@@ -62,7 +63,7 @@ public class JIPipeDesktopDataBatchUI extends JIPipeDesktopProjectWorkbenchPanel
 
         JIPipeDesktopFormPanel metaDataList = new JIPipeDesktopFormPanel(null, JIPipeDesktopFormPanel.NONE);
         for (JIPipeTextAnnotation annotation : batch.getMergedTextAnnotations().values()) {
-            JLabel title = new JLabel(annotation.getName(), UIUtils.getIconFromResources("data-types/annotation.png"), JLabel.LEFT);
+            JLabel title = new JLabel(annotation.getName(), JIPipe.RESOURCES.getIcon16("data-types/annotation.png"), JLabel.LEFT);
             JTextField content = UIUtils.createReadonlyBorderlessTextField(WordUtils.abbreviate(annotation.getValue(), 50, 70, " ..."));
             content.setToolTipText(annotation.getValue());
             metaDataList.addToForm(content, title, null);
@@ -89,9 +90,9 @@ public class JIPipeDesktopDataBatchUI extends JIPipeDesktopProjectWorkbenchPanel
 
             JLabel statusLabel;
             if (rows.isEmpty()) {
-                statusLabel = new JLabel("Missing!", UIUtils.getIconFromResources("emblems/vcs-conflicting.png"), JLabel.LEFT);
+                statusLabel = new JLabel("Missing!", JIPipe.RESOURCES.getIcon16("emblems/vcs-conflicting.png"), JLabel.LEFT);
             } else {
-                Icon icon = (node instanceof JIPipeIteratingAlgorithm && rows.size() > 1) ? UIUtils.getIconFromResources("emblems/vcs-conflicting.png") : UIUtils.getIconFromResources("emblems/vcs-normal.png");
+                Icon icon = (node instanceof JIPipeIteratingAlgorithm && rows.size() > 1) ? JIPipe.RESOURCES.getIcon16("emblems/vcs-conflicting.png") : JIPipe.RESOURCES.getIcon16("emblems/vcs-normal.png");
                 statusLabel = new JLabel(rows.size() == 1 ? "1 item" : rows.size() + " items", icon, JLabel.LEFT);
             }
 

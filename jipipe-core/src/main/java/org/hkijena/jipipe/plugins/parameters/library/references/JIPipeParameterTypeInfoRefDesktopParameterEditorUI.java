@@ -17,6 +17,7 @@ import org.hkijena.jipipe.api.parameters.JIPipeParameterTypeInfo;
 import org.hkijena.jipipe.desktop.api.JIPipeDesktopParameterEditorUI;
 import org.hkijena.jipipe.desktop.commons.components.pickers.JIPipeDesktopParameterTypeInfoPicker;
 import org.hkijena.jipipe.utils.UIUtils;
+import org.hkijena.jipipe.JIPipe;
 
 import javax.swing.*;
 import java.awt.*;
@@ -41,7 +42,7 @@ public class JIPipeParameterTypeInfoRefDesktopParameterEditorUI extends JIPipeDe
         UIUtils.setStandardButtonBorder(currentlyDisplayed);
         add(currentlyDisplayed, BorderLayout.CENTER);
 
-        JButton selectButton = new JButton(UIUtils.getIconFromResources("actions/edit.png"));
+        JButton selectButton = new JButton(JIPipe.RESOURCES.getIcon16("actions/edit.png"));
         UIUtils.setStandardButtonBorder(selectButton);
         selectButton.setToolTipText("Select parameter type");
         selectButton.addActionListener(e -> pickNodeInfo());
@@ -55,10 +56,10 @@ public class JIPipeParameterTypeInfoRefDesktopParameterEditorUI extends JIPipeDe
         if (info != null) {
             currentlyDisplayed.setText(info.getName());
             currentlyDisplayed.setToolTipText(info.getDescription());
-            currentlyDisplayed.setIcon(UIUtils.getIconFromResources("data-types/parameters.png"));
+            currentlyDisplayed.setIcon(JIPipe.RESOURCES.getIcon16("data-types/parameters.png"));
         } else {
             currentlyDisplayed.setText("None selected");
-            currentlyDisplayed.setIcon(UIUtils.getIconFromResources("emblems/vcs-conflicting.png"));
+            currentlyDisplayed.setIcon(JIPipe.RESOURCES.getIcon16("emblems/vcs-conflicting.png"));
         }
     }
 

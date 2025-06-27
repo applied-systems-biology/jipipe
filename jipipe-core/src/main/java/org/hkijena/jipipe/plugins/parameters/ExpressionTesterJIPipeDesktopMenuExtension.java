@@ -18,6 +18,7 @@ import org.hkijena.jipipe.desktop.api.JIPipeMenuExtensionTarget;
 import org.hkijena.jipipe.desktop.app.JIPipeDesktopWorkbench;
 import org.hkijena.jipipe.desktop.commons.components.tabs.JIPipeDesktopTabPane;
 import org.hkijena.jipipe.utils.UIUtils;
+import org.hkijena.jipipe.JIPipe;
 import org.hkijena.jipipe.utils.ui.ExpressionTesterUI;
 
 import java.awt.event.ActionEvent;
@@ -36,14 +37,14 @@ public class ExpressionTesterJIPipeDesktopMenuExtension extends JIPipeDesktopMen
         super(workbench);
         setText("Calculator");
         setToolTipText("Allows to evaluate mathematical and logical expressions.");
-        setIcon(UIUtils.getIconFromResources("actions/calculator.png"));
+        setIcon(JIPipe.RESOURCES.getIcon16("actions/calculator.png"));
         addActionListener(this);
     }
 
     @Override
     public void actionPerformed(ActionEvent e) {
         ExpressionTesterUI tester = new ExpressionTesterUI(getDesktopWorkbench());
-        getDesktopWorkbench().getDocumentTabPane().addTab("Calculator", UIUtils.getIconFromResources("actions/calculator.png"),
+        getDesktopWorkbench().getDocumentTabPane().addTab("Calculator", JIPipe.RESOURCES.getIcon16("actions/calculator.png"),
                 tester, JIPipeDesktopTabPane.CloseMode.withSilentCloseButton, true);
         getDesktopWorkbench().getDocumentTabPane().switchToLastTab();
     }

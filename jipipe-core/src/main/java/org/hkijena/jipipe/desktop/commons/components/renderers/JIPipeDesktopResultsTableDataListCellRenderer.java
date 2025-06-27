@@ -13,8 +13,10 @@
 
 package org.hkijena.jipipe.desktop.commons.components.renderers;
 
+import org.hkijena.jipipe.JIPipe;
 import org.hkijena.jipipe.plugins.tables.datatypes.ResultsTableData;
 import org.hkijena.jipipe.utils.UIUtils;
+import org.hkijena.jipipe.JIPipe;
 
 import javax.swing.*;
 import java.awt.*;
@@ -26,7 +28,7 @@ public class JIPipeDesktopResultsTableDataListCellRenderer extends JLabel implem
 
     public JIPipeDesktopResultsTableDataListCellRenderer() {
         setOpaque(true);
-        setIcon(UIUtils.getIconFromResources("data-types/results-table.png"));
+        setIcon(JIPipe.RESOURCES.getIcon16("data-types/results-table.png"));
         setBorder(BorderFactory.createEmptyBorder(4, 4, 4, 4));
     }
 

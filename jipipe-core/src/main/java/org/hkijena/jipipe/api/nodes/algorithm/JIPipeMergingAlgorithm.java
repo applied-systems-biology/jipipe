@@ -17,6 +17,7 @@ import com.fasterxml.jackson.core.JsonProcessingException;
 import com.google.common.primitives.Ints;
 import gnu.trove.set.TIntSet;
 import gnu.trove.set.hash.TIntHashSet;
+import org.hkijena.jipipe.JIPipe;
 import org.hkijena.jipipe.api.AddJIPipeDocumentationDescription;
 import org.hkijena.jipipe.api.JIPipeDataBatchGenerationResult;
 import org.hkijena.jipipe.api.JIPipeProgressInfo;
@@ -45,6 +46,7 @@ import org.hkijena.jipipe.utils.ParameterUtils;
 import org.hkijena.jipipe.utils.ResourceUtils;
 import org.hkijena.jipipe.utils.StringUtils;
 import org.hkijena.jipipe.utils.UIUtils;
+import org.hkijena.jipipe.JIPipe;
 import org.hkijena.jipipe.utils.json.JsonUtils;
 import org.hkijena.jipipe.utils.ui.ViewOnlyMenuItem;
 
@@ -367,7 +369,7 @@ public abstract class JIPipeMergingAlgorithm extends JIPipeParameterSlotAlgorith
     public ImageIcon getUIInputSlotIcon(String slotName) {
         JIPipeInputDataSlot inputSlot = getInputSlot(slotName);
         if (inputSlot != null && inputSlot.getInfo().getRole() == JIPipeDataSlotRole.Data) {
-            return UIUtils.getIconInvertedFromResources("actions/merge-down.png");
+            return JIPipe.RESOURCES.getIcon16Inverted("actions/merge-down.png");
         }
         return super.getUIInputSlotIcon(slotName);
     }
@@ -378,7 +380,7 @@ public abstract class JIPipeMergingAlgorithm extends JIPipeParameterSlotAlgorith
         JIPipeInputDataSlot inputSlot = getInputSlot(slotName);
         if (inputSlot != null && inputSlot.getInfo().getRole() == JIPipeDataSlotRole.Data) {
             target.add(new ViewOnlyMenuItem("<html>Many-to-Many processing<br/><small>The data within this slot is merged based on annotations (N inputs produce M outputs)</small>",
-                    UIUtils.getIconFromResources("actions/merge-down.png")));
+                    JIPipe.RESOURCES.getIcon16("actions/merge-down.png")));
         }
     }
 

@@ -15,6 +15,7 @@ package org.hkijena.jipipe.desktop.app.cache.exporters;
 
 import ij.IJ;
 import org.apache.commons.lang3.exception.ExceptionUtils;
+import org.hkijena.jipipe.JIPipe;
 import org.hkijena.jipipe.api.JIPipeProgressInfo;
 import org.hkijena.jipipe.api.SetJIPipeDocumentation;
 import org.hkijena.jipipe.api.annotation.JIPipeDataByMetadataExporter;
@@ -32,6 +33,7 @@ import org.hkijena.jipipe.plugins.settings.JIPipeDataExporterApplicationSettings
 import org.hkijena.jipipe.plugins.settings.JIPipeFileChooserApplicationSettings;
 import org.hkijena.jipipe.utils.StringUtils;
 import org.hkijena.jipipe.utils.UIUtils;
+import org.hkijena.jipipe.JIPipe;
 
 import javax.swing.*;
 import java.awt.*;
@@ -81,14 +83,14 @@ public class JIPipeDesktopDataTableToFilesByMetadataExporterRun extends JIPipeDe
         buttonPanel.setLayout(new BoxLayout(buttonPanel, BoxLayout.X_AXIS));
         buttonPanel.add(Box.createHorizontalGlue());
 
-        JButton cancelButton = new JButton("Cancel", UIUtils.getIconFromResources("actions/cancel.png"));
+        JButton cancelButton = new JButton("Cancel", JIPipe.RESOURCES.getIcon16("actions/cancel.png"));
         cancelButton.addActionListener(e -> {
             confirmation.set(false);
             editorDialog.setVisible(false);
         });
         buttonPanel.add(cancelButton);
 
-        JButton confirmButton = new JButton("Export", UIUtils.getIconFromResources("actions/document-export.png"));
+        JButton confirmButton = new JButton("Export", JIPipe.RESOURCES.getIcon16("actions/document-export.png"));
         confirmButton.addActionListener(e -> {
             confirmation.set(true);
             editorDialog.setVisible(false);

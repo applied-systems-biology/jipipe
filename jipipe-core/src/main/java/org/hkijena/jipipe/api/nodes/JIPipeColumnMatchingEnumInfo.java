@@ -13,9 +13,11 @@
 
 package org.hkijena.jipipe.api.nodes;
 
+import org.hkijena.jipipe.JIPipe;
 import org.hkijena.jipipe.plugins.parameters.api.enums.EnumItemInfo;
 import org.hkijena.jipipe.utils.StringUtils;
 import org.hkijena.jipipe.utils.UIUtils;
+import org.hkijena.jipipe.JIPipe;
 
 import javax.swing.*;
 
@@ -25,13 +27,13 @@ public class JIPipeColumnMatchingEnumInfo implements EnumItemInfo {
         JIPipeColumMatching columMatching = (JIPipeColumMatching) value;
         switch (columMatching) {
             case Custom:
-                return UIUtils.getIconFromResources("actions/insert-math-expression.png");
+                return JIPipe.RESOURCES.getIcon16("actions/insert-math-expression.png");
             case MergeAll:
-                return UIUtils.getIconFromResources("actions/n-to-1.png");
+                return JIPipe.RESOURCES.getIcon16("actions/n-to-1.png");
             case PrefixHashUnion:
-                return UIUtils.getIconFromResources("actions/irc-channel-active.png");
+                return JIPipe.RESOURCES.getIcon16("actions/irc-channel-active.png");
             default:
-                return UIUtils.getIconFromResources("actions/configure.png");
+                return JIPipe.RESOURCES.getIcon16("actions/configure.png");
         }
     }
 

@@ -18,6 +18,7 @@ import org.hkijena.jipipe.desktop.api.JIPipeDesktopParameterEditorUI;
 import org.hkijena.jipipe.desktop.commons.components.JIPipeDesktopFormPanel;
 import org.hkijena.jipipe.utils.StringUtils;
 import org.hkijena.jipipe.utils.UIUtils;
+import org.hkijena.jipipe.JIPipe;
 
 import javax.swing.*;
 import java.awt.*;
@@ -75,7 +76,7 @@ public class PairDesktopParameterEditorUI extends JIPipeDesktopParameterEditorUI
                 add(Box.createHorizontalStrut(4));
             add(keyEditor);
             if (singleRowChevron)
-                add(new JLabel(UIUtils.getIconFromResources("actions/caret-right.png")));
+                add(new JLabel(JIPipe.RESOURCES.getIcon16("actions/caret-right.png")));
             add(new JLabel(valueLabel));
             if (!StringUtils.isNullOrEmpty(valueLabel))
                 add(Box.createHorizontalStrut(4));

@@ -14,6 +14,7 @@
 package org.hkijena.jipipe.plugins.expressions;
 
 import org.hkijena.jipipe.utils.UIUtils;
+import org.hkijena.jipipe.JIPipe;
 
 import javax.swing.*;
 import java.awt.*;
@@ -50,12 +51,12 @@ public class OperatorSelectorList extends JList<ExpressionOperatorEntry> {
         buttonPanel.setLayout(new BoxLayout(buttonPanel, BoxLayout.X_AXIS));
         buttonPanel.add(Box.createHorizontalGlue());
 
-        JButton cancelButton = new JButton("Cancel", UIUtils.getIconFromResources("actions/cancel.png"));
+        JButton cancelButton = new JButton("Cancel", JIPipe.RESOURCES.getIcon16("actions/cancel.png"));
         cancelButton.addActionListener(e -> dialog.setVisible(false));
         buttonPanel.add(cancelButton);
 
         AtomicBoolean confirmed = new AtomicBoolean(false);
-        JButton confirmButton = new JButton("Pick", UIUtils.getIconFromResources("actions/checkmark.png"));
+        JButton confirmButton = new JButton("Pick", JIPipe.RESOURCES.getIcon16("actions/checkmark.png"));
         confirmButton.addActionListener(e -> {
             confirmed.set(true);
             dialog.setVisible(false);
@@ -102,7 +103,7 @@ public class OperatorSelectorList extends JList<ExpressionOperatorEntry> {
 
             Insets border = new Insets(2, 4, 2, 2);
 
-            JLabel iconLabel = new JLabel(UIUtils.getIconFromResources("actions/irc-operator.png"));
+            JLabel iconLabel = new JLabel(JIPipe.RESOURCES.getIcon16("actions/irc-operator.png"));
             add(iconLabel, new GridBagConstraints() {
                 {
                     gridx = 0;

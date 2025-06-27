@@ -13,6 +13,7 @@
 
 package org.hkijena.jipipe.api.runtimepartitioning;
 
+import org.hkijena.jipipe.JIPipe;
 import org.hkijena.jipipe.api.environments.JIPipeExternalEnvironmentInstaller;
 import org.hkijena.jipipe.api.run.JIPipeRunnable;
 import org.hkijena.jipipe.api.run.JIPipeRunnableQueue;
@@ -22,6 +23,7 @@ import org.hkijena.jipipe.desktop.app.settings.JIPipeDesktopRuntimePartitionList
 import org.hkijena.jipipe.desktop.commons.components.icons.SolidColorIcon;
 import org.hkijena.jipipe.utils.StringUtils;
 import org.hkijena.jipipe.utils.UIUtils;
+import org.hkijena.jipipe.JIPipe;
 
 import javax.swing.*;
 import java.awt.*;
@@ -56,7 +58,7 @@ public class RuntimePartitionReferenceDesktopParameterEditorUI extends JIPipeDes
         buttonPanel.setLayout(new BoxLayout(buttonPanel, BoxLayout.X_AXIS));
         add(buttonPanel, BorderLayout.EAST);
 
-        JButton configureButton = new JButton("Configure ...", UIUtils.getIconFromResources("actions/configure.png"));
+        JButton configureButton = new JButton("Configure ...", JIPipe.RESOURCES.getIcon16("actions/configure.png"));
         configureButton.setBackground(getBackground());
         configureButton.setBorder(BorderFactory.createCompoundBorder(BorderFactory.createMatteBorder(0, 1, 0, 0,
                         UIManager.getColor("Separator.foreground")),
@@ -70,7 +72,7 @@ public class RuntimePartitionReferenceDesktopParameterEditorUI extends JIPipeDes
     private void reloadConfigMenu() {
         configureMenu.removeAll();
         if (getDesktopWorkbench() instanceof JIPipeDesktopProjectWorkbench) {
-            configureMenu.add(UIUtils.createMenuItem("Edit current", "Edits the current partition", UIUtils.getIconFromResources("actions/edit.png"), this::editCurrentPartition));
+            configureMenu.add(UIUtils.createMenuItem("Edit current", "Edits the current partition", JIPipe.RESOURCES.getIcon16("actions/edit.png"), this::editCurrentPartition));
             configureMenu.addSeparator();
             RuntimePartitionReferenceParameter parameter = getParameter(RuntimePartitionReferenceParameter.class);
             int index = parameter.getIndex();
@@ -124,11 +126,11 @@ public class RuntimePartitionReferenceDesktopParameterEditorUI extends JIPipeDes
         if (getDesktopWorkbench() instanceof JIPipeDesktopProjectWorkbench) {
             int index = parameter.getIndex();
             JIPipeRuntimePartition partition = ((JIPipeDesktopProjectWorkbench) getDesktopWorkbench()).getProject().getRuntimePartitions().get(index);
-            nameLabel.setIcon(partition.getColor().isEnabled() ? new SolidColorIcon(16, 16, partition.getColor().getContent()) : UIUtils.getIconFromResources("actions/runtime-partition.png"));
+            nameLabel.setIcon(partition.getColor().isEnabled() ? new SolidColorIcon(16, 16, partition.getColor().getContent()) : JIPipe.RESOURCES.getIcon16("actions/runtime-partition.png"));
             nameLabel.setText(index <= 0 ? StringUtils.orElse(partition.getName(), "Default") : StringUtils.orElse(partition.getName(), "Partition " + index));
         } else {
             int index = parameter.getIndex();
-            nameLabel.setIcon(UIUtils.getIconFromResources("actions/runtime-partition.png"));
+            nameLabel.setIcon(JIPipe.RESOURCES.getIcon16("actions/runtime-partition.png"));
             nameLabel.setText(index <= 0 ? "Default" : "Partition " + index);
         }
     }

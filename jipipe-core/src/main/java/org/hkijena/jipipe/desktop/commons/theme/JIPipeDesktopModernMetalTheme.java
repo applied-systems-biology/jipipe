@@ -1,7 +1,9 @@
 package org.hkijena.jipipe.desktop.commons.theme;
 
 import com.google.common.collect.ImmutableList;
+import org.hkijena.jipipe.JIPipe;
 import org.hkijena.jipipe.utils.UIUtils;
+import org.hkijena.jipipe.JIPipe;
 import org.hkijena.jipipe.utils.ui.CheckBoxIcon;
 import org.hkijena.jipipe.utils.ui.CheckBoxMenuItemIcon;
 import org.hkijena.jipipe.utils.ui.RoundedLineBorder;
@@ -44,8 +46,8 @@ public class JIPipeDesktopModernMetalTheme extends DefaultMetalTheme {
         focusBorder = new BorderUIResource.LineBorderUIResource(getPrimary1());
 
         // TODO: Icon init
-        directoryIcon = UIUtils.getIconFromResources("places/folder-blue.png");
-        fileIcon = UIUtils.getIconFromResources("mimetypes/gtk-file.png");
+        directoryIcon = JIPipe.RESOURCES.getIcon16("places/folder-blue.png");
+        fileIcon = JIPipe.RESOURCES.getIcon16("mimetypes/gtk-file.png");
         
     }
 
@@ -255,8 +257,8 @@ public class JIPipeDesktopModernMetalTheme extends DefaultMetalTheme {
 
     private void configureTree(UIDefaults table) {
         table.put("Tree.closedIcon", toResource(directoryIcon));
-        table.put("Tree.collapsedIcon", toResource(UIUtils.getIcon8FromResources("tree-expand.png")));
-        table.put("Tree.expandedIcon", toResource(UIUtils.getIcon8FromResources("tree-shrink.png")));
+        table.put("Tree.collapsedIcon", toResource(JIPipe.RESOURCES.getIcon8("tree-expand.png")));
+        table.put("Tree.expandedIcon", toResource(JIPipe.RESOURCES.getIcon8("tree-shrink.png")));
         table.put("Tree.leafIcon", toResource(fileIcon));
         table.put("Tree.openIcon", toResource(directoryIcon));
         table.put("Tree.selectionBorderColor", toResource(getPrimary1()));
@@ -363,12 +365,12 @@ public class JIPipeDesktopModernMetalTheme extends DefaultMetalTheme {
 
     private void configureInternalFrame(UIDefaults table) {
         table.put("InternalFrame.activeTitleBackground", toResource(style.getTabSelectedBackground()));
-        table.put("InternalFrame.closeIcon", toResource(UIUtils.getIconFromResources("actions/close-tab.png")));
-        table.put("InternalFrame.iconifyIcon", toResource(UIUtils.getIconFromResources("actions/xfce-wm-minimize.png")));
-        table.put("InternalFrame.minimizeIcon", toResource(UIUtils.getIconFromResources("actions/xfce-wm-minimize.png")));
-        table.put("InternalFrame.icon", toResource(UIUtils.getIconFromResources("actions/hamburger-menu.png")));
-        table.put("InternalFrame.maximizeIcon", toResource(UIUtils.getIconFromResources("actions/xfce-wm-maximize.png")));
-        table.put("InternalFrame.paletteCloseIcon", toResource(UIUtils.getIconFromResources("actions/close-tab.png")));
+        table.put("InternalFrame.closeIcon", toResource(JIPipe.RESOURCES.getIcon16("actions/close-tab.png")));
+        table.put("InternalFrame.iconifyIcon", toResource(JIPipe.RESOURCES.getIcon16("actions/xfce-wm-minimize.png")));
+        table.put("InternalFrame.minimizeIcon", toResource(JIPipe.RESOURCES.getIcon16("actions/xfce-wm-minimize.png")));
+        table.put("InternalFrame.icon", toResource(JIPipe.RESOURCES.getIcon16("actions/hamburger-menu.png")));
+        table.put("InternalFrame.maximizeIcon", toResource(JIPipe.RESOURCES.getIcon16("actions/xfce-wm-maximize.png")));
+        table.put("InternalFrame.paletteCloseIcon", toResource(JIPipe.RESOURCES.getIcon16("actions/close-tab.png")));
         table.put("InternalFrame.activeTitleForeground", toResource(style.getTextForeground()));
         table.put("InternalFrame.inactiveTitleBackground", toResource(style.getFormDisabledBackground()));
         table.put("InternalFrame.borderColor", toResource(style.getBorderColor()));
@@ -437,10 +439,10 @@ public class JIPipeDesktopModernMetalTheme extends DefaultMetalTheme {
     }
 
     private void configureOptionPane(UIDefaults table) {
-        table.put("OptionPane.errorIcon", toResource(UIUtils.getIcon32FromResources("dialog-error.png")));
-        table.put("OptionPane.informationIcon", toResource(UIUtils.getIcon32FromResources("dialog-info.png")));
-        table.put("OptionPane.questionIcon", toResource(UIUtils.getIcon32FromResources("dialog-question.png")));
-        table.put("OptionPane.warningIcon", toResource(UIUtils.getIcon32FromResources("dialog-warning.png")));
+        table.put("OptionPane.errorIcon", toResource(JIPipe.RESOURCES.getIcon32("dialog-error.png")));
+        table.put("OptionPane.informationIcon", toResource(JIPipe.RESOURCES.getIcon32("dialog-info.png")));
+        table.put("OptionPane.questionIcon", toResource(JIPipe.RESOURCES.getIcon32("dialog-question.png")));
+        table.put("OptionPane.warningIcon", toResource(JIPipe.RESOURCES.getIcon32("dialog-warning.png")));
         table.put("OptionPane.background", toResource(style.getFormBackground()));
         table.put("OptionPane.errorDialog.border.background", toResource(style.getFormBackground()));
         table.put("OptionPane.errorDialog.titlePane.background", toResource(style.getFormBackground()));
@@ -452,17 +454,17 @@ public class JIPipeDesktopModernMetalTheme extends DefaultMetalTheme {
     }
 
     private void configureFileView(UIDefaults table) {
-        table.put("FileView.computerIcon", toResource(UIUtils.getIconFromResources("devices/computer.png")));
+        table.put("FileView.computerIcon", toResource(JIPipe.RESOURCES.getIcon16("devices/computer.png")));
         table.put("FileView.directoryIcon", toResource(directoryIcon));
-        table.put("FileView.hardDriveIcon", toResource(UIUtils.getIconFromResources("devices/drive-harddisk.png")));
+        table.put("FileView.hardDriveIcon", toResource(JIPipe.RESOURCES.getIcon16("devices/drive-harddisk.png")));
         table.put("FileView.fileIcon", toResource(fileIcon));
-        table.put("FileView.floppyDriveIcon", toResource(UIUtils.getIconFromResources("devices/media-floppy.png")));
+        table.put("FileView.floppyDriveIcon", toResource(JIPipe.RESOURCES.getIcon16("devices/media-floppy.png")));
     }
 
     private void configureFileChooser(UIDefaults table) {
-        table.put("FileChooser.homeFolderIcon", toResource(UIUtils.getIconFromResources("actions/go-home.png")));
-        table.put("FileChooser.newFolderIcon", toResource(UIUtils.getIconFromResources("actions/folder-new.png")));
-        table.put("FileChooser.upFolderIcon", toResource(UIUtils.getIconFromResources("actions/go-parent-folder.png")));
+        table.put("FileChooser.homeFolderIcon", toResource(JIPipe.RESOURCES.getIcon16("actions/go-home.png")));
+        table.put("FileChooser.newFolderIcon", toResource(JIPipe.RESOURCES.getIcon16("actions/folder-new.png")));
+        table.put("FileChooser.upFolderIcon", toResource(JIPipe.RESOURCES.getIcon16("actions/go-parent-folder.png")));
     }
 
     private void configureProgressBar(UIDefaults table) {

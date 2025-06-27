@@ -19,6 +19,7 @@ import org.hkijena.jipipe.desktop.api.data.JIPipeDesktopDataDisplayOperation;
 import org.hkijena.jipipe.desktop.app.JIPipeDesktopWorkbench;
 import org.hkijena.jipipe.plugins.core.data.DefaultDataDisplayOperation;
 import org.hkijena.jipipe.utils.UIUtils;
+import org.hkijena.jipipe.JIPipe;
 
 import javax.swing.*;
 
@@ -51,6 +52,6 @@ public class OpenPlotInJIPipeDataDisplayOperation implements JIPipeDesktopDataDi
 
     @Override
     public Icon getIcon() {
-        return UIUtils.getIconFromResources("apps/jipipe.png");
+        return JIPipe.RESOURCES.getIcon16("apps/jipipe.png");
     }
 }

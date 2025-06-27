@@ -13,6 +13,7 @@
 
 package org.hkijena.jipipe.api.validation.contexts;
 
+import org.hkijena.jipipe.JIPipe;
 import org.hkijena.jipipe.api.JIPipeWorkbench;
 import org.hkijena.jipipe.api.nodes.JIPipeGraph;
 import org.hkijena.jipipe.api.nodes.JIPipeGraphNode;
@@ -22,6 +23,7 @@ import org.hkijena.jipipe.desktop.app.JIPipeDesktopProjectWorkbench;
 import org.hkijena.jipipe.desktop.app.grapheditor.flavors.pipeline.JIPipeDesktopPipelineGraphEditorUI;
 import org.hkijena.jipipe.desktop.commons.components.tabs.JIPipeDesktopTabPane;
 import org.hkijena.jipipe.utils.UIUtils;
+import org.hkijena.jipipe.JIPipe;
 
 import javax.swing.*;
 import java.util.UUID;
@@ -84,6 +86,6 @@ public class GraphNodeValidationReportContext extends NavigableJIPipeValidationR
 
     @Override
     public Icon renderIcon() {
-        return UIUtils.getIconFromResources("actions/graph-node.png");
+        return JIPipe.RESOURCES.getIcon16("actions/graph-node.png");
     }
 }

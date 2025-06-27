@@ -43,6 +43,7 @@ import org.hkijena.jipipe.plugins.parameters.library.markup.HTMLText;
 import org.hkijena.jipipe.plugins.parameters.library.primitives.list.StringList;
 import org.hkijena.jipipe.utils.JIPipeResourceManager;
 import org.hkijena.jipipe.utils.UIUtils;
+import org.hkijena.jipipe.JIPipe;
 import org.scijava.Context;
 import org.scijava.plugin.Plugin;
 import org.scijava.plugin.PluginInfo;
@@ -210,7 +211,7 @@ public class CLIJPlugin extends JIPipePrepackagedDefaultJavaPlugin {
 
     @Override
     public List<ImageIcon> getSplashIcons() {
-        return Arrays.asList(UIUtils.getIcon32FromResources("apps/clij.png"));
+        return Arrays.asList(JIPipe.RESOURCES.getIcon32("apps/clij.png"));
     }
 
     @Override
@@ -224,17 +225,17 @@ public class CLIJPlugin extends JIPipePrepackagedDefaultJavaPlugin {
                 null);
         registerDatatype("clij2-image",
                 CLIJImageData.class,
-                UIUtils.getIconURLFromResources("data-types/clij2-image.png"));
+                JIPipe.RESOURCES.getIcon16URL("data-types/clij2-image.png"));
         registerDefaultDataTypeViewer(CLIJImageData.class, CLIJImageDataViewer.class);
         registerDatatypeConversion(new CLIJImageToImagePlusDataConverter(ImagePlusData.class));
         registerDatatypeConversion(new ImagePlusDataToCLIJImageDataConverter());
         registerImageJDataImporter("clij2-image-from-window", new CLIJ2DataFromImageWindowImageJImporter(), ImagePlusWindowImageJImporterUI.class);
         registerImageJDataExporter("clij2-to-window", new CLIIJ2DataToImageWindowImageJExporter(), DefaultImageJDataExporterUI.class);
         registerAlgorithms(progressInfo);
-        registerNodeType("clij-execute-kernel-iterating", Clij2ExecuteKernelIterating.class, UIUtils.getIconURLFromResources("apps/clij.png"));
-        registerNodeType("clij-execute-kernel-simple-iterating", Clij2ExecuteKernelSimpleIterating.class, UIUtils.getIconURLFromResources("apps/clij.png"));
-        registerNodeType("clij-push-to-gpu", Clij2PushAlgorithm.class, UIUtils.getIconURLFromResources("apps/clij.png"));
-        registerNodeType("clij-pull-from-gpu", Clij2PullAlgorithm.class, UIUtils.getIconURLFromResources("apps/clij.png"));
+        registerNodeType("clij-execute-kernel-iterating", Clij2ExecuteKernelIterating.class, JIPipe.RESOURCES.getIcon16URL("apps/clij.png"));
+        registerNodeType("clij-execute-kernel-simple-iterating", Clij2ExecuteKernelSimpleIterating.class, JIPipe.RESOURCES.getIcon16URL("apps/clij.png"));
+        registerNodeType("clij-push-to-gpu", Clij2PushAlgorithm.class, JIPipe.RESOURCES.getIcon16URL("apps/clij.png"));
+        registerNodeType("clij-pull-from-gpu", Clij2PullAlgorithm.class, JIPipe.RESOURCES.getIcon16URL("apps/clij.png"));
 
         registerApplicationSettingsSheet(new CLIJPluginApplicationSettings());
         registerMenuExtension(CLIJControlPanelJIPipeDesktopMenuExtension.class);
@@ -258,7 +259,7 @@ public class CLIJPlugin extends JIPipePrepackagedDefaultJavaPlugin {
                     progressInfo.log("Node has no data slots. Skipping.");
                     continue;
                 }
-                registerNodeType(nodeInfo, UIUtils.getIconURLFromResources("apps/clij.png"));
+                registerNodeType(nodeInfo, JIPipe.RESOURCES.getIcon16URL("apps/clij.png"));
             } catch (Exception e) {
                 moduleProgress.log("Unable to register module:");
                 moduleProgress.log(e.toString());

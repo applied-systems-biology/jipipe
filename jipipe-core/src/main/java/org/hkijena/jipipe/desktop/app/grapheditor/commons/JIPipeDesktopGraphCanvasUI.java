@@ -66,6 +66,7 @@ import org.hkijena.jipipe.plugins.settings.JIPipeGraphEditorUIApplicationSetting
 import org.hkijena.jipipe.utils.PointRange;
 import org.hkijena.jipipe.utils.StringUtils;
 import org.hkijena.jipipe.utils.UIUtils;
+import org.hkijena.jipipe.JIPipe;
 import org.hkijena.jipipe.utils.json.JsonUtils;
 import org.hkijena.jipipe.utils.ui.ScreenImage;
 import org.hkijena.jipipe.utils.ui.ScreenImageSVG;
@@ -127,7 +128,7 @@ public class JIPipeDesktopGraphCanvasUI extends JLayeredPane implements JIPipeDe
     private static final Color COLOR_EDGE_CONVERT = new Color(0x2957C2);
     private final JIPipeDesktopWorkbench desktopWorkbench;
     private final AbstractJIPipeDesktopGraphEditorUI graphEditorUI;
-    private final ImageIcon cursorImage = UIUtils.getIconFromResources("actions/target.png");
+    private final ImageIcon cursorImage = JIPipe.RESOURCES.getIcon16("actions/target.png");
     private final JIPipeGraph graph;
     private final BiMap<JIPipeGraphNode, JIPipeDesktopGraphNodeUI> nodeUIs = HashBiMap.create();
     private final Set<JIPipeDesktopGraphNodeUI> selection = new LinkedHashSet<>();
@@ -138,7 +139,7 @@ public class JIPipeDesktopGraphCanvasUI extends JLayeredPane implements JIPipeDe
     private final Color improvedStrokeBackgroundColor = UIManager.getColor("Panel.background");
     private final Color smartEdgeSlotBackground = UIManager.getColor("EditorPane.background");
     private final Color smartEdgeSlotForeground = UIManager.getColor("Label.foreground");
-    private final ImageIcon lockIcon = UIUtils.getIconInvertedFromResources("actions/lock.png");
+    private final ImageIcon lockIcon = JIPipe.RESOURCES.getIcon16Inverted("actions/lock.png");
     private final JIPipeGraphViewMode viewMode = JIPipeGraphViewMode.VerticalCompact;
     private final Map<?, ?> desktopRenderingHints = UIUtils.getDesktopRenderingHints();
     private final ZoomChangedEventEmitter zoomChangedEventEmitter = new ZoomChangedEventEmitter();
@@ -581,7 +582,7 @@ public class JIPipeDesktopGraphCanvasUI extends JLayeredPane implements JIPipeDe
                     getHistoryJournal().snapshot("Send selected nodes to foreground",
                             "Sent a selection of graph annotations to the foreground",
                             getCompartmentUUID(),
-                            UIUtils.getIconFromResources("actions/object-order-front.png"));
+                            JIPipe.RESOURCES.getIcon16("actions/object-order-front.png"));
                 }
 
                 ((JIPipeAnnotationGraphNode) nodeUI.getNode()).setzOrder(Integer.MAX_VALUE);
@@ -603,7 +604,7 @@ public class JIPipeDesktopGraphCanvasUI extends JLayeredPane implements JIPipeDe
                     getHistoryJournal().snapshot("Send selected nodes to background",
                             "Sent a selection of graph annotations to the background",
                             getCompartmentUUID(),
-                            UIUtils.getIconFromResources("actions/object-order-back.png"));
+                            JIPipe.RESOURCES.getIcon16("actions/object-order-back.png"));
                 }
 
                 ((JIPipeAnnotationGraphNode) nodeUI.getNode()).setzOrder(Integer.MIN_VALUE);
@@ -634,7 +635,7 @@ public class JIPipeDesktopGraphCanvasUI extends JLayeredPane implements JIPipeDe
             getHistoryJournal().snapshot("Raise selected nodes",
                     "Raised a selection of graph annotations",
                     getCompartmentUUID(),
-                    UIUtils.getIconFromResources("actions/object-order-raise.png"));
+                    JIPipe.RESOURCES.getIcon16("actions/object-order-raise.png"));
         } else {
             return;
         }
@@ -682,7 +683,7 @@ public class JIPipeDesktopGraphCanvasUI extends JLayeredPane implements JIPipeDe
             getHistoryJournal().snapshot("Lowered selected nodes",
                     "Lowered a selection of graph annotations",
                     getCompartmentUUID(),
-                    UIUtils.getIconFromResources("actions/object-order-lower.png"));
+                    JIPipe.RESOURCES.getIcon16("actions/object-order-lower.png"));
         } else {
             return;
         }
@@ -915,7 +916,7 @@ public class JIPipeDesktopGraphCanvasUI extends JLayeredPane implements JIPipeDe
     private void createMoveSnapshotIfNeeded() {
         if (!hasDragSnapshot) {
             if (getHistoryJournal() != null) {
-                getHistoryJournal().snapshot("Move nodes", "Nodes were dragged with the mouse", getCompartmentUUID(), UIUtils.getIconFromResources("actions/transform-move.png"));
+                getHistoryJournal().snapshot("Move nodes", "Nodes were dragged with the mouse", getCompartmentUUID(), JIPipe.RESOURCES.getIcon16("actions/transform-move.png"));
             }
             hasDragSnapshot = true;
         }
@@ -1515,7 +1516,7 @@ public class JIPipeDesktopGraphCanvasUI extends JLayeredPane implements JIPipeDe
                 if (partitionIds.size() == 1) {
                     JIPipeRuntimePartition runtimePartition = project.getRuntimePartitions().get(partitionIds.iterator().next());
                     menu.add(UIUtils.createMenuItem("Edit partition '" + project.getRuntimePartitions().getFullName(runtimePartition) + "'",
-                            "Edit the partition configuration", UIUtils.getIconFromResources("actions/edit.png"), () -> {
+                            "Edit the partition configuration", JIPipe.RESOURCES.getIcon16("actions/edit.png"), () -> {
                                 JIPipeDesktopRuntimePartitionListEditor.editRuntimePartition(getDesktopWorkbench(), runtimePartition);
                             }));
                 }
@@ -1527,7 +1528,7 @@ public class JIPipeDesktopGraphCanvasUI extends JLayeredPane implements JIPipeDe
                     partitionMenu.add(item);
                 }
                 partitionMenu.addSeparator();
-                partitionMenu.add(UIUtils.createMenuItem("Create new partition", "Creates a new partition", UIUtils.getIconFromResources("actions/add.png"), () -> {
+                partitionMenu.add(UIUtils.createMenuItem("Create new partition", "Creates a new partition", JIPipe.RESOURCES.getIcon16("actions/add.png"), () -> {
                     JIPipeRuntimePartition runtimePartition = project.getRuntimePartitions().add();
                     JIPipeDesktopRuntimePartitionListEditor.editRuntimePartition(getDesktopWorkbench(), runtimePartition);
                 }));

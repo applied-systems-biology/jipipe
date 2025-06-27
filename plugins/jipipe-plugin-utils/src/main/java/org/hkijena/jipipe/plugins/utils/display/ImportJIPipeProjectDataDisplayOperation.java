@@ -20,6 +20,7 @@ import org.hkijena.jipipe.desktop.app.JIPipeDesktopProjectWindow;
 import org.hkijena.jipipe.desktop.app.JIPipeDesktopWorkbench;
 import org.hkijena.jipipe.plugins.filesystem.dataypes.PathData;
 import org.hkijena.jipipe.utils.UIUtils;
+import org.hkijena.jipipe.JIPipe;
 
 import javax.swing.*;
 import java.nio.file.Path;
@@ -54,6 +55,6 @@ public class ImportJIPipeProjectDataDisplayOperation implements JIPipeDesktopDat
 
     @Override
     public Icon getIcon() {
-        return UIUtils.getIconFromResources("actions/albumfolder-importdir.png");
+        return JIPipe.RESOURCES.getIcon16("actions/albumfolder-importdir.png");
     }
 }

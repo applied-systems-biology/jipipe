@@ -27,6 +27,7 @@ import org.hkijena.jipipe.plugins.parameters.library.primitives.optional.Optiona
 import org.hkijena.jipipe.utils.PathUtils;
 import org.hkijena.jipipe.utils.StringUtils;
 import org.hkijena.jipipe.utils.UIUtils;
+import org.hkijena.jipipe.JIPipe;
 import org.hkijena.jipipe.utils.json.JsonUtils;
 
 import javax.swing.*;
@@ -194,7 +195,7 @@ public class JIPipeBackupApplicationSettings extends JIPipeDefaultApplicationsSe
 
     @Override
     public Icon getIcon() {
-        return UIUtils.getIconFromResources("actions/filesave.png");
+        return JIPipe.RESOURCES.getIcon16("actions/filesave.png");
     }
 
     @Override

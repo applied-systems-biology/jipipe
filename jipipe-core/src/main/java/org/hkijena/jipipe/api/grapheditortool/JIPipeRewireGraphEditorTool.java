@@ -13,6 +13,7 @@
 
 package org.hkijena.jipipe.api.grapheditortool;
 
+import org.hkijena.jipipe.JIPipe;
 import org.hkijena.jipipe.api.JIPipeGraphType;
 import org.hkijena.jipipe.api.compartments.algorithms.JIPipeProjectCompartmentOutput;
 import org.hkijena.jipipe.api.data.JIPipeDataSlot;
@@ -24,6 +25,7 @@ import org.hkijena.jipipe.desktop.app.grapheditor.commons.nodeui.JIPipeDesktopGr
 import org.hkijena.jipipe.desktop.app.grapheditor.commons.nodeui.triggers.JIPipeDesktopGraphNodeUISlotActiveArea;
 import org.hkijena.jipipe.utils.PointRange;
 import org.hkijena.jipipe.utils.UIUtils;
+import org.hkijena.jipipe.JIPipe;
 
 import javax.swing.*;
 import java.awt.*;
@@ -52,7 +54,7 @@ public class JIPipeRewireGraphEditorTool implements JIPipeToggleableGraphEditorT
 
     @Override
     public Icon getIcon() {
-        return UIUtils.getIconFromResources("actions/edit-node.png");
+        return JIPipe.RESOURCES.getIcon16("actions/edit-node.png");
     }
 
     @Override
@@ -262,7 +264,7 @@ public class JIPipeRewireGraphEditorTool implements JIPipeToggleableGraphEditorT
             graphCanvasUI.getHistoryJournal().snapshot("Rewire connection(s)",
                     "Rewire connections of " + currentSlot.getDisplayName() + " to " + selectedAlternative.getDisplayName(),
                     compartment,
-                    UIUtils.getIconFromResources("actions/go-jump.png"));
+                    JIPipe.RESOURCES.getIcon16("actions/go-jump.png"));
         }
 
         // Simulation OK. Apply in real graph

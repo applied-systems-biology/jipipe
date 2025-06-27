@@ -13,10 +13,12 @@
 
 package org.hkijena.jipipe.desktop.commons.components;
 
+import org.hkijena.jipipe.JIPipe;
 import org.hkijena.jipipe.desktop.commons.components.search.JIPipeDesktopSearchTextField;
 import org.hkijena.jipipe.plugins.parameters.api.enums.EnumDesktopParameterEditorUI;
 import org.hkijena.jipipe.plugins.parameters.api.enums.EnumItemInfo;
 import org.hkijena.jipipe.utils.UIUtils;
+import org.hkijena.jipipe.JIPipe;
 
 import javax.swing.*;
 import java.awt.*;
@@ -101,14 +103,14 @@ public class JIPipeDesktopPickEnumValueDialog extends JDialog {
         buttonPanel.setLayout(new BoxLayout(buttonPanel, BoxLayout.X_AXIS));
         buttonPanel.add(Box.createHorizontalGlue());
 
-        JButton cancelButton = new JButton("Cancel", UIUtils.getIconFromResources("actions/cancel.png"));
+        JButton cancelButton = new JButton("Cancel", JIPipe.RESOURCES.getIcon16("actions/cancel.png"));
         cancelButton.addActionListener(e -> {
             canceled = true;
             setVisible(false);
         });
         buttonPanel.add(cancelButton);
 
-        confirmButton = new JButton("Select", UIUtils.getIconFromResources("actions/color-select.png"));
+        confirmButton = new JButton("Select", JIPipe.RESOURCES.getIcon16("actions/color-select.png"));
         confirmButton.addActionListener(e -> pickValue());
         confirmButton.addKeyListener(new KeyAdapter() {
             @Override

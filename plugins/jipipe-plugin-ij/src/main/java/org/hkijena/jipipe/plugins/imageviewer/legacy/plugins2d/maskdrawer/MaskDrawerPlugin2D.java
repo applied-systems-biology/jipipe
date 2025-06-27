@@ -52,6 +52,7 @@ import org.hkijena.jipipe.utils.BufferedImageUtils;
 import org.hkijena.jipipe.utils.ColorUtils;
 import org.hkijena.jipipe.utils.PathUtils;
 import org.hkijena.jipipe.utils.UIUtils;
+import org.hkijena.jipipe.JIPipe;
 import org.hkijena.jipipe.utils.ui.BusyCursor;
 import org.hkijena.jipipe.utils.ui.JIPipeDesktopDockPanel;
 import org.hkijena.jipipe.utils.ui.RoundedLineBorder;
@@ -502,14 +503,14 @@ public class MaskDrawerPlugin2D extends JIPipeDesktopLegacyImageViewerPlugin2D i
         buttonPanel.setLayout(new BoxLayout(buttonPanel, BoxLayout.X_AXIS));
         buttonPanel.add(Box.createHorizontalGlue());
 
-        JButton cancelButton = new JButton("Cancel", UIUtils.getIconFromResources("actions/cancel.png"));
+        JButton cancelButton = new JButton("Cancel", JIPipe.RESOURCES.getIcon16("actions/cancel.png"));
         cancelButton.addActionListener(e -> {
             canceled.set(true);
             dialog.setVisible(false);
         });
         buttonPanel.add(cancelButton);
 
-        JButton confirmButton = new JButton("OK", UIUtils.getIconFromResources("actions/button_ok.png"));
+        JButton confirmButton = new JButton("OK", JIPipe.RESOURCES.getIcon16("actions/button_ok.png"));
         confirmButton.addActionListener(e -> {
             canceled.set(false);
             dialog.setVisible(false);
@@ -619,7 +620,7 @@ public class MaskDrawerPlugin2D extends JIPipeDesktopLegacyImageViewerPlugin2D i
 
     @Override
     public Icon getPanelIcon() {
-        return UIUtils.getIcon32FromResources("actions/configure3.png");
+        return JIPipe.RESOURCES.getIcon32("actions/configure3.png");
     }
 
     @Override
@@ -663,24 +664,24 @@ public class MaskDrawerPlugin2D extends JIPipeDesktopLegacyImageViewerPlugin2D i
 
         // Modify menu
         JIPipeDesktopRibbon.Band modifyMaskBand = maskTask.addBand("Modify");
-        modifyMaskBand.add(new JIPipeDesktopLargeButtonRibbonAction("Process ...", "Apply a morphological operation", UIUtils.getIcon32FromResources("actions/configure.png"),
-                UIUtils.createMenuItem("Invert", "Inverts the mask", UIUtils.getIconFromResources("actions/object-inverse.png"), this::applyInvert),
+        modifyMaskBand.add(new JIPipeDesktopLargeButtonRibbonAction("Process ...", "Apply a morphological operation", JIPipe.RESOURCES.getIcon32("actions/configure.png"),
+                UIUtils.createMenuItem("Invert", "Inverts the mask", JIPipe.RESOURCES.getIcon16("actions/object-inverse.png"), this::applyInvert),
                 null,
-                UIUtils.createMenuItem("Watershed", "Applies a distance transform watershed", UIUtils.getIconFromResources("actions/object-tweak-randomize.png"), this::applyWatershed),
+                UIUtils.createMenuItem("Watershed", "Applies a distance transform watershed", JIPipe.RESOURCES.getIcon16("actions/object-tweak-randomize.png"), this::applyWatershed),
                 null,
-                UIUtils.createMenuItem("Dilation", "Applies a 3x3 morphological dilation", UIUtils.getIconFromResources("actions/object-tweak-paint.png"), this::applyDilate),
-                UIUtils.createMenuItem("Erosion", "Applies a 3x3 morphological erosion", UIUtils.getIconFromResources("actions/object-tweak-paint.png"), this::applyErode),
-                UIUtils.createMenuItem("Opening", "Applies a 3x3 morphological opening", UIUtils.getIconFromResources("actions/object-tweak-paint.png"), this::applyOpen),
-                UIUtils.createMenuItem("Closing", "Applies a 3x3 morphological closing", UIUtils.getIconFromResources("actions/object-tweak-paint.png"), this::applyClose)));
-        modifyMaskBand.add(new JIPipeDesktopSmallButtonRibbonAction("Copy to ...", "Copies the current slice to another position", UIUtils.getIconFromResources("actions/edit-duplicate.png"), this::copySlice));
-        modifyMaskBand.add(new JIPipeDesktopSmallButtonRibbonAction("Clear", "Sets the whole mask to zero", UIUtils.getIconFromResources("actions/tool_color_eraser.png"), this::clearCurrentMask));
+                UIUtils.createMenuItem("Dilation", "Applies a 3x3 morphological dilation", JIPipe.RESOURCES.getIcon16("actions/object-tweak-paint.png"), this::applyDilate),
+                UIUtils.createMenuItem("Erosion", "Applies a 3x3 morphological erosion", JIPipe.RESOURCES.getIcon16("actions/object-tweak-paint.png"), this::applyErode),
+                UIUtils.createMenuItem("Opening", "Applies a 3x3 morphological opening", JIPipe.RESOURCES.getIcon16("actions/object-tweak-paint.png"), this::applyOpen),
+                UIUtils.createMenuItem("Closing", "Applies a 3x3 morphological closing", JIPipe.RESOURCES.getIcon16("actions/object-tweak-paint.png"), this::applyClose)));
+        modifyMaskBand.add(new JIPipeDesktopSmallButtonRibbonAction("Copy to ...", "Copies the current slice to another position", JIPipe.RESOURCES.getIcon16("actions/edit-duplicate.png"), this::copySlice));
+        modifyMaskBand.add(new JIPipeDesktopSmallButtonRibbonAction("Clear", "Sets the whole mask to zero", JIPipe.RESOURCES.getIcon16("actions/tool_color_eraser.png"), this::clearCurrentMask));
 
         // Import/Export menu
         JIPipeDesktopRibbon.Band fileImportExportBand = maskTask.addBand("Import/Export");
 
-        fileImportExportBand.add(new JIPipeDesktopSmallButtonRibbonAction("Import mask", "Imports the mask slice from a *.tif file", UIUtils.getIconFromResources("actions/document-import.png"), this::importMask));
-        fileImportExportBand.add(new JIPipeDesktopSmallButtonRibbonAction("Export mask", "Exports the mask slice to a *.tif file", UIUtils.getIconFromResources("actions/document-export.png"), this::exportMask));
-        fileImportExportBand.add(new JIPipeDesktopSmallButtonRibbonAction("To ROI", "Exports the mask to the ROI manager", UIUtils.getIconFromResources("data-types/roi.png"), this::addToROIManager));
+        fileImportExportBand.add(new JIPipeDesktopSmallButtonRibbonAction("Import mask", "Imports the mask slice from a *.tif file", JIPipe.RESOURCES.getIcon16("actions/document-import.png"), this::importMask));
+        fileImportExportBand.add(new JIPipeDesktopSmallButtonRibbonAction("Export mask", "Exports the mask slice to a *.tif file", JIPipe.RESOURCES.getIcon16("actions/document-export.png"), this::exportMask));
+        fileImportExportBand.add(new JIPipeDesktopSmallButtonRibbonAction("To ROI", "Exports the mask to the ROI manager", JIPipe.RESOURCES.getIcon16("data-types/roi.png"), this::addToROIManager));
 
     }
 

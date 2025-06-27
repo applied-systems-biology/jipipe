@@ -20,6 +20,7 @@ import org.hkijena.jipipe.api.compat.ImageJDataExporterUI;
 import org.hkijena.jipipe.api.nodes.JIPipeGraphNode;
 import org.hkijena.jipipe.desktop.commons.components.pickers.JIPipeDesktopImageJDataExporterPicker;
 import org.hkijena.jipipe.utils.UIUtils;
+import org.hkijena.jipipe.JIPipe;
 import org.hkijena.jipipe.utils.ui.RoundedLineBorder;
 
 import javax.swing.*;
@@ -55,7 +56,7 @@ public class JIPipeDesktopRunSingleAlgorithmSettingsPanelIOEditorOutputUI extend
         selectExporterButton.addActionListener(e -> pickExporter());
         JPanel editExporterPanel = new JPanel(new BorderLayout());
         editExporterPanel.add(selectExporterButton, BorderLayout.CENTER);
-        JButton pickExporterButton = new JButton(UIUtils.getIconFromResources("actions/edit.png"));
+        JButton pickExporterButton = new JButton(JIPipe.RESOURCES.getIcon16("actions/edit.png"));
         pickExporterButton.addActionListener(e -> pickExporter());
         editExporterPanel.add(pickExporterButton, BorderLayout.EAST);
         UIUtils.makeButtonFlat25x25(pickExporterButton);

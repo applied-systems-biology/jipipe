@@ -20,6 +20,7 @@ import org.hkijena.jipipe.api.parameters.JIPipeParameterTree;
 import org.hkijena.jipipe.api.settings.JIPipeApplicationSettingsSheet;
 import org.hkijena.jipipe.api.settings.JIPipeDefaultApplicationSettingsSheetCategory;
 import org.hkijena.jipipe.utils.UIUtils;
+import org.hkijena.jipipe.JIPipe;
 
 import javax.swing.*;
 import java.util.Map;
@@ -54,7 +55,7 @@ public class JIPipeDataExporterApplicationSettings extends JIPipeDataByMetadataE
 
     @Override
     public Icon getIcon() {
-        return UIUtils.getIconFromResources("actions/document-export.png");
+        return JIPipe.RESOURCES.getIcon16("actions/document-export.png");
     }
 
     @Override

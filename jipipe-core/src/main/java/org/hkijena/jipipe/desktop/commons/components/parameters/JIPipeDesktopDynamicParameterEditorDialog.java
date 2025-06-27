@@ -30,6 +30,7 @@ import org.hkijena.jipipe.plugins.parameters.library.references.JIPipeParameterT
 import org.hkijena.jipipe.utils.JIPipeDesktopSplitPane;
 import org.hkijena.jipipe.utils.StringUtils;
 import org.hkijena.jipipe.utils.UIUtils;
+import org.hkijena.jipipe.JIPipe;
 
 import javax.swing.*;
 import java.awt.*;
@@ -116,7 +117,7 @@ public class JIPipeDesktopDynamicParameterEditorDialog extends JDialog implement
 
         initializeAddButton(toolBar);
 
-        JButton removeButton = new JButton("Remove", UIUtils.getIconFromResources("actions/delete.png"));
+        JButton removeButton = new JButton("Remove", JIPipe.RESOURCES.getIcon16("actions/delete.png"));
         removeButton.addActionListener(e -> removeSelectedItems());
         toolBar.add(removeButton);
 
@@ -177,17 +178,17 @@ public class JIPipeDesktopDynamicParameterEditorDialog extends JDialog implement
         }
 
         if (quickAccessParameterTypes.isEmpty()) {
-            JButton addButton = new JButton("Add", UIUtils.getIconFromResources("actions/add.png"));
+            JButton addButton = new JButton("Add", JIPipe.RESOURCES.getIcon16("actions/add.png"));
             addButton.addActionListener(e -> addParameterByPicker());
             toolBar.add(addButton);
         } else {
-            JButton addButton = new JButton("Add", UIUtils.getIconFromResources("actions/add.png"));
+            JButton addButton = new JButton("Add", JIPipe.RESOURCES.getIcon16("actions/add.png"));
             JPopupMenu popupMenu = UIUtils.addPopupMenuToButton(addButton);
-            popupMenu.add(UIUtils.createMenuItem("Search ...", null, UIUtils.getIconFromResources("actions/search.png"), this::addParameterByPicker));
+            popupMenu.add(UIUtils.createMenuItem("Search ...", null, JIPipe.RESOURCES.getIcon16("actions/search.png"), this::addParameterByPicker));
             popupMenu.addSeparator();
             for (Class<?> parameterType : quickAccessParameterTypes) {
                 JIPipeParameterTypeInfo info = JIPipe.getParameterTypes().getInfoByFieldClass(parameterType);
-                popupMenu.add(UIUtils.createMenuItem(info.getName(), info.getDescription(), UIUtils.getIconFromResources("actions/add.png"), () -> addParameterByFieldClass(parameterType)));
+                popupMenu.add(UIUtils.createMenuItem(info.getName(), info.getDescription(), JIPipe.RESOURCES.getIcon16("actions/add.png"), () -> addParameterByFieldClass(parameterType)));
             }
             toolBar.add(addButton);
         }
@@ -233,13 +234,13 @@ public class JIPipeDesktopDynamicParameterEditorDialog extends JDialog implement
         buttonPanel.setLayout(new BoxLayout(buttonPanel, BoxLayout.X_AXIS));
         buttonPanel.add(Box.createHorizontalGlue());
 
-        JButton cancelButton = new JButton("Cancel", UIUtils.getIconFromResources("actions/cancel.png"));
+        JButton cancelButton = new JButton("Cancel", JIPipe.RESOURCES.getIcon16("actions/cancel.png"));
         cancelButton.addActionListener(e -> {
             this.setVisible(false);
         });
         buttonPanel.add(cancelButton);
 
-        JButton confirmButton = new JButton("OK", UIUtils.getIconFromResources("actions/dialog-ok.png"));
+        JButton confirmButton = new JButton("OK", JIPipe.RESOURCES.getIcon16("actions/dialog-ok.png"));
         confirmButton.addActionListener(e -> {
             if (checkSettings()) {
                 copyEntriesToParameterCollection();
@@ -391,7 +392,7 @@ public class JIPipeDesktopDynamicParameterEditorDialog extends JDialog implement
 
         private void initialize() {
             setLayout(new GridBagLayout());
-            JLabel parameterIcon = new JLabel(UIUtils.getIconFromResources("data-types/parameters.png"));
+            JLabel parameterIcon = new JLabel(JIPipe.RESOURCES.getIcon16("data-types/parameters.png"));
             nameLabel = new JLabel();
             typeLabel = new JLabel();
             idLabel = new JLabel();

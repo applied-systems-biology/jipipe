@@ -123,7 +123,7 @@ public class TrackMateUtils {
             try {
                 SpotTrackerFactory instance = info.createInstance();
                 CreateSpotTrackerNodeInfo nodeInfo = new CreateSpotTrackerNodeInfo(instance);
-                trackMateExtension.registerNodeType(nodeInfo, TrackMatePlugin.RESOURCES.getIcon16URLFromResources("trackmate.png"));
+                trackMateExtension.registerNodeType(nodeInfo, TrackMatePlugin.RESOURCES.getIcon16URL("trackmate.png"));
                 SPOT_TRACKERS.put(instance.getKey(), info);
             } catch (Throwable throwable) {
                 detectorProgress.log("Unable to register: " + throwable.getMessage());
@@ -138,7 +138,7 @@ public class TrackMateUtils {
             try {
                 SpotDetectorFactory instance = info.createInstance();
                 CreateSpotDetectorNodeInfo nodeInfo = new CreateSpotDetectorNodeInfo(instance);
-                trackMateExtension.registerNodeType(nodeInfo, TrackMatePlugin.RESOURCES.getIcon16URLFromResources("trackmate.png"));
+                trackMateExtension.registerNodeType(nodeInfo, TrackMatePlugin.RESOURCES.getIcon16URL("trackmate.png"));
                 SPOT_DETECTORS.put(instance.getKey(), info);
             } catch (Throwable throwable) {
                 detectorProgress.log("Unable to register: " + throwable.getMessage());

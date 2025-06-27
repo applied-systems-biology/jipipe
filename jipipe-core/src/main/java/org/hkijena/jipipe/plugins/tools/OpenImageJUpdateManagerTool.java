@@ -19,6 +19,7 @@ import org.hkijena.jipipe.desktop.api.JIPipeDesktopMenuExtension;
 import org.hkijena.jipipe.desktop.api.JIPipeMenuExtensionTarget;
 import org.hkijena.jipipe.desktop.app.JIPipeDesktopWorkbench;
 import org.hkijena.jipipe.utils.UIUtils;
+import org.hkijena.jipipe.JIPipe;
 
 public class OpenImageJUpdateManagerTool extends JIPipeDesktopMenuExtension {
     /**
@@ -30,7 +31,7 @@ public class OpenImageJUpdateManagerTool extends JIPipeDesktopMenuExtension {
         super(workbench);
         setText("Open ImageJ Update Manager");
         setToolTipText("Opens the ImageJ update manager");
-        setIcon(UIUtils.getIconFromResources("apps/imagej.png"));
+        setIcon(JIPipe.RESOURCES.getIcon16("apps/imagej.png"));
         addActionListener(e -> showImageJ());
     }
 

@@ -34,6 +34,7 @@ import org.hkijena.jipipe.plugins.parameters.library.markup.MarkdownText;
 import org.hkijena.jipipe.utils.JIPipeDesktopSplitPane;
 import org.hkijena.jipipe.utils.StringUtils;
 import org.hkijena.jipipe.utils.UIUtils;
+import org.hkijena.jipipe.JIPipe;
 
 import javax.swing.*;
 import java.awt.*;
@@ -92,7 +93,7 @@ public class JIPipeDesktopLegacyAddNodePanel extends JIPipeDesktopWorkbenchPanel
         toolBar.add(searchField);
 
         if (isDocked) {
-            JButton openWindowButton = new JButton(UIUtils.getIconFromResources("actions/open-in-new-window.png"));
+            JButton openWindowButton = new JButton(JIPipe.RESOURCES.getIcon16("actions/open-in-new-window.png"));
             openWindowButton.setToolTipText("Open in new window");
             openWindowButton.addActionListener(e -> openNewToolBoxWindow(getDesktopWorkbench(), SwingUtilities.getWindowAncestor(this)));
             toolBar.add(openWindowButton);

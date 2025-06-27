@@ -51,6 +51,7 @@ import org.hkijena.jipipe.utils.PathUtils;
 import org.hkijena.jipipe.utils.ReflectionUtils;
 import org.hkijena.jipipe.utils.StringUtils;
 import org.hkijena.jipipe.utils.UIUtils;
+import org.hkijena.jipipe.JIPipe;
 import org.hkijena.jipipe.utils.ui.JIPipeDesktopDockPanel;
 import org.scijava.Priority;
 
@@ -117,7 +118,7 @@ public class JFreeChartPlotEditor extends JIPipeDesktopWorkbenchPanel implements
     public void rebuildDock(JIPipeDesktopDockPanel dockPanel) {
         dockPanel.addDockPanel("SETTINGS",
                 "Settings",
-                UIUtils.getIcon32FromResources("actions/configure.png"),
+                JIPipe.RESOURCES.getIcon32("actions/configure.png"),
                 JIPipeDesktopDockPanel.PanelLocation.TopRight,
                 true,
                 0,
@@ -127,14 +128,14 @@ public class JFreeChartPlotEditor extends JIPipeDesktopWorkbenchPanel implements
                         JIPipeDesktopParameterFormPanel.WITH_DOCUMENTATION | JIPipeDesktopParameterFormPanel.DOCUMENTATION_NO_UI | JIPipeDesktopParameterFormPanel.WITH_SCROLLING));
         dockPanel.addDockPanel("SERIES",
                 "Series",
-                UIUtils.getIcon32FromResources("actions/stock_select-column.png"),
+                JIPipe.RESOURCES.getIcon32("actions/stock_select-column.png"),
                 JIPipeDesktopDockPanel.PanelLocation.BottomRight,
                 false,
                 0,
                 new JIPipePlotSeriesListEditorUI(getDesktopWorkbench(), this));
         dockPanel.addDockPanel("DATA",
                 "Data",
-                UIUtils.getIcon32FromResources("actions/table.png"),
+                JIPipe.RESOURCES.getIcon32("actions/table.png"),
                 JIPipeDesktopDockPanel.PanelLocation.BottomRight,
                 false,
                 0,
@@ -143,8 +144,8 @@ public class JFreeChartPlotEditor extends JIPipeDesktopWorkbenchPanel implements
 
     public void rebuildRibbon(JIPipeDesktopRibbon ribbon) {
         JIPipeDesktopRibbon.Band generalPlotBand = ribbon.getOrCreateTask("General").getOrCreateBand("Plot");
-        generalPlotBand.addLargeButton("Open", "Loads the plot from a *.zip file", UIUtils.getIcon32FromResources("actions/document-open.png"), this::openPlot);
-        generalPlotBand.addLargeButton("Save", "Saves the plot to a *.zip file", UIUtils.getIcon32FromResources("actions/filesave.png"), this::savePlot);
+        generalPlotBand.addLargeButton("Open", "Loads the plot from a *.zip file", JIPipe.RESOURCES.getIcon32("actions/document-open.png"), this::openPlot);
+        generalPlotBand.addLargeButton("Save", "Saves the plot to a *.zip file", JIPipe.RESOURCES.getIcon32("actions/filesave.png"), this::savePlot);
 
         plotReader.rebuildRibbon(ribbon);
     }

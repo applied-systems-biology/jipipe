@@ -22,6 +22,7 @@ import org.hkijena.jipipe.api.parameters.JIPipeParameter;
 import org.hkijena.jipipe.api.settings.JIPipeDefaultApplicationSettingsSheetCategory;
 import org.hkijena.jipipe.api.settings.JIPipeDefaultApplicationsSettingsSheet;
 import org.hkijena.jipipe.utils.UIUtils;
+import org.hkijena.jipipe.JIPipe;
 
 import javax.swing.*;
 import java.util.List;
@@ -75,7 +76,7 @@ public class JIPipeProcessesPluginApplicationSettings extends JIPipeDefaultAppli
 
     @Override
     public Icon getIcon() {
-        return UIUtils.getIconFromResources("apps/utilities-terminal.png");
+        return JIPipe.RESOURCES.getIcon16("apps/utilities-terminal.png");
     }
 
     @Override

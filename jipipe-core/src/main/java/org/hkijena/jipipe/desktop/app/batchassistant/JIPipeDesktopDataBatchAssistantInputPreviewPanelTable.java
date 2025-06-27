@@ -32,6 +32,7 @@ import org.hkijena.jipipe.desktop.commons.theme.JIPipeDesktopLegacyModernMetalTh
 import org.hkijena.jipipe.plugins.tables.datatypes.AnnotationTableData;
 import org.hkijena.jipipe.utils.StringUtils;
 import org.hkijena.jipipe.utils.UIUtils;
+import org.hkijena.jipipe.JIPipe;
 import org.hkijena.jipipe.utils.data.Store;
 import org.hkijena.jipipe.utils.ui.ViewOnlyMenuItem;
 import org.jdesktop.swingx.JXTable;
@@ -98,8 +99,8 @@ public class JIPipeDesktopDataBatchAssistantInputPreviewPanelTable extends JPane
         Collection<Store<JIPipeDataTable>> stores = previewPanel.getDataBatchAssistantUI().getCurrentCache().get(inputSlot.getName());
 
         if (stores.isEmpty()) {
-//            add(UIUtils.createInfoLabel("No cached data", "Please run 'Update predecessor cache'", UIUtils.getIcon32FromResources("actions/update-cache.png")), BorderLayout.CENTER);
-            JButton updateCacheButton = new JButton("<html><strong>No cached data</strong><br/>Click here to update the predecessor cache</html>", UIUtils.getIcon32FromResources("actions/cache-predecessors.png"));
+//            add(UIUtils.createInfoLabel("No cached data", "Please run 'Update predecessor cache'", JIPipe.RESOURCES.getIcon32("actions/update-cache.png")), BorderLayout.CENTER);
+            JButton updateCacheButton = new JButton("<html><strong>No cached data</strong><br/>Click here to update the predecessor cache</html>", JIPipe.RESOURCES.getIcon32("actions/cache-predecessors.png"));
             updateCacheButton.setHorizontalAlignment(SwingConstants.LEFT);
             updateCacheButton.addActionListener(e -> previewPanel.getDataBatchAssistantUI().updatePredecessorCache());
             updateCacheButton.setBorder(BorderFactory.createEmptyBorder(4, 4, 4, 4));
@@ -121,17 +122,17 @@ public class JIPipeDesktopDataBatchAssistantInputPreviewPanelTable extends JPane
         // Optional info
         if (inputSlot.getInfo().isOptional()) {
             menu.add(new ViewOnlyMenuItem("<html>Optional slot<br><small>This slot requires no input connections.</small></html>",
-                    UIUtils.getIconFromResources("actions/checkbox.png")));
+                    JIPipe.RESOURCES.getIcon16("actions/checkbox.png")));
         }
 
         // Role information item
         if (inputSlot.getInfo().getRole() == JIPipeDataSlotRole.Parameters) {
             ViewOnlyMenuItem roleInfoItem = new ViewOnlyMenuItem("<html>Parameter-like data<br><small>This slot contains parametric data that is not considered for iteration step generation.</small></html>",
-                    UIUtils.getIconFromResources("actions/wrench.png"));
+                    JIPipe.RESOURCES.getIcon16("actions/wrench.png"));
             menu.add(roleInfoItem);
         } else if (inputSlot.getInfo().getRole() == JIPipeDataSlotRole.ParametersLooping) {
             ViewOnlyMenuItem roleInfoItem = new ViewOnlyMenuItem("<html>Parameter-like data<br><small>This slot contains parametric data that is not considered for iteration step generation. Workloads may be repeated per input of this slot.</small></html>",
-                    UIUtils.getIconFromResources("actions/wrench.png"));
+                    JIPipe.RESOURCES.getIcon16("actions/wrench.png"));
             menu.add(roleInfoItem);
         }
 
@@ -242,7 +243,7 @@ public class JIPipeDesktopDataBatchAssistantInputPreviewPanelTable extends JPane
             }
         });
         JPopupMenu popupMenu = UIUtils.addRightClickPopupMenuToComponent(table);
-        popupMenu.add(UIUtils.createMenuItem("Copy cell value", "Copies the value of the highlighted cell", UIUtils.getIconFromResources("actions/edit-copy.png"), () -> {
+        popupMenu.add(UIUtils.createMenuItem("Copy cell value", "Copies the value of the highlighted cell", JIPipe.RESOURCES.getIcon16("actions/edit-copy.png"), () -> {
             int viewRow = table.getSelectedRow();
             int viewColumn = table.getSelectedColumn();
             if (viewRow >= 0 && viewColumn >= 0) {
@@ -254,7 +255,7 @@ public class JIPipeDesktopDataBatchAssistantInputPreviewPanelTable extends JPane
                 }
             }
         }));
-        popupMenu.add(UIUtils.createMenuItem("Copy annotation name", "Copies the column name of the highlighted column", UIUtils.getIconFromResources("actions/edit-copy.png"), () -> {
+        popupMenu.add(UIUtils.createMenuItem("Copy annotation name", "Copies the column name of the highlighted column", JIPipe.RESOURCES.getIcon16("actions/edit-copy.png"), () -> {
             int viewColumn = table.getSelectedColumn();
             if (viewColumn >= 0) {
                 int modelColumn = table.convertColumnIndexToModel(viewColumn);
@@ -262,8 +263,8 @@ public class JIPipeDesktopDataBatchAssistantInputPreviewPanelTable extends JPane
             }
         }));
         popupMenu.addSeparator();
-        popupMenu.add(UIUtils.createMenuItem("Trace data ...", "Allows to trace how the selected data was generated", UIUtils.getIconFromResources("actions/footsteps.png"), this::traceSelectedData));
-        popupMenu.add(UIUtils.createMenuItem("Display data ...", "Displays the selected data", UIUtils.getIconFromResources("actions/search.png"), this::displaySelectedData));
+        popupMenu.add(UIUtils.createMenuItem("Trace data ...", "Allows to trace how the selected data was generated", JIPipe.RESOURCES.getIcon16("actions/footsteps.png"), this::traceSelectedData));
+        popupMenu.add(UIUtils.createMenuItem("Display data ...", "Displays the selected data", JIPipe.RESOURCES.getIcon16("actions/search.png"), this::displaySelectedData));
 
     }
 
@@ -395,15 +396,15 @@ public class JIPipeDesktopDataBatchAssistantInputPreviewPanelTable extends JPane
                         setIcon(JIPipe.getDataTypes().getIconFor(dataItemStore.getDataClass()));
                     } else {
                         setText("NA");
-                        setIcon(UIUtils.getIconFromResources("actions/circle-xmark.png"));
+                        setIcon(JIPipe.RESOURCES.getIcon16("actions/circle-xmark.png"));
                     }
                 } else {
                     if (iterationStepIndex == Integer.MAX_VALUE) {
-                        setIcon(UIUtils.getIconInvertedFromResources("actions/go-right.png"));
+                        setIcon(JIPipe.RESOURCES.getIcon16Inverted("actions/go-right.png"));
                         setForeground(Color.BLUE);
                         setText(indices.stream().sorted().map(Object::toString).collect(Collectors.joining(", ")));
                     } else if (iterationStepIndex >= 0) {
-                        setIcon(UIUtils.getIconInvertedFromResources("actions/go-right.png"));
+                        setIcon(JIPipe.RESOURCES.getIcon16Inverted("actions/go-right.png"));
                         setText(String.valueOf(iterationStepIndex));
                         setBackground(Color.getHSBColor(1.0f * iterationStepIndex / previewPanelTable.iterationStepGenerationResult.getDataBatches().size(), 0.3f, 0.7f));
                         setForeground(Color.WHITE);
@@ -453,7 +454,7 @@ public class JIPipeDesktopDataBatchAssistantInputPreviewPanelTable extends JPane
                 html = "Iteration step";
             } else {
                 html = String.format("<html><table><tr><td><img src=\"%s\"/></td><td>%s</tr>",
-                        UIUtils.getIconFromResources("data-types/annotation.png"),
+                        JIPipe.RESOURCES.getIcon16("data-types/annotation.png"),
                         StringUtils.nullToEmpty(value));
             }
 

@@ -18,6 +18,7 @@ import org.hkijena.jipipe.api.registries.JIPipeExpressionRegistry;
 import org.hkijena.jipipe.plugins.tables.SummarizingColumnOperation;
 import org.hkijena.jipipe.plugins.tables.datatypes.ResultsTableData;
 import org.hkijena.jipipe.utils.UIUtils;
+import org.hkijena.jipipe.JIPipe;
 import org.hkijena.jipipe.utils.ui.BusyCursor;
 
 import javax.swing.*;
@@ -74,7 +75,7 @@ public class JIPipeDesktopSummarizeTableColumnsDialogUI extends JDialog {
             });
 
             JLabel label = new JLabel(inputTableModel.getColumnName(columnIndex),
-                    UIUtils.getIconFromResources("actions/stock_select-column.png"), JLabel.LEFT);
+                    JIPipe.RESOURCES.getIcon16("actions/stock_select-column.png"), JLabel.LEFT);
             columnPanel.add(label, new GridBagConstraints() {
                 {
                     gridx = 1;
@@ -95,7 +96,7 @@ public class JIPipeDesktopSummarizeTableColumnsDialogUI extends JDialog {
 
         buttonPanel.add(Box.createHorizontalGlue());
 
-        JButton calculateButton = new JButton("Calculate", UIUtils.getIconFromResources("actions/statistics.png"));
+        JButton calculateButton = new JButton("Calculate", JIPipe.RESOURCES.getIcon16("actions/statistics.png"));
         calculateButton.addActionListener(e -> calculate());
         buttonPanel.add(calculateButton);
 
@@ -153,13 +154,13 @@ public class JIPipeDesktopSummarizeTableColumnsDialogUI extends JDialog {
 
             if (value instanceof JIPipeExpressionRegistry.ColumnOperationEntry) {
                 setText(((JIPipeExpressionRegistry.ColumnOperationEntry) value).getName());
-                setIcon(UIUtils.getIconFromResources("actions/statistics.png"));
+                setIcon(JIPipe.RESOURCES.getIcon16("actions/statistics.png"));
             } else if (value instanceof CategorizeColumnRole) {
                 setText("Use as category");
-                setIcon(UIUtils.getIconFromResources("actions/filter.png"));
+                setIcon(JIPipe.RESOURCES.getIcon16("actions/filter.png"));
             } else {
                 setText("Ignore column");
-                setIcon(UIUtils.getIconFromResources("actions/cancel.png"));
+                setIcon(JIPipe.RESOURCES.getIcon16("actions/cancel.png"));
             }
 
             if (isSelected) {

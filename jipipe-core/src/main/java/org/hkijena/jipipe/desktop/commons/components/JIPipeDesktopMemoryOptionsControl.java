@@ -13,9 +13,11 @@
 
 package org.hkijena.jipipe.desktop.commons.components;
 
+import org.hkijena.jipipe.JIPipe;
 import org.hkijena.jipipe.desktop.app.JIPipeDesktopProjectWorkbench;
 import org.hkijena.jipipe.desktop.app.JIPipeDesktopProjectWorkbenchPanel;
 import org.hkijena.jipipe.utils.UIUtils;
+import org.hkijena.jipipe.JIPipe;
 
 import javax.swing.*;
 
@@ -32,11 +34,11 @@ public class JIPipeDesktopMemoryOptionsControl extends JIPipeDesktopProjectWorkb
     }
 
     public JButton createOptionsButton() {
-        JButton button = new JButton("Memory", UIUtils.getIconFromResources("devices/media-memory.png"));
+        JButton button = new JButton("Memory", JIPipe.RESOURCES.getIcon16("devices/media-memory.png"));
         JPopupMenu menu = new JPopupMenu();
         UIUtils.addReloadablePopupMenuToButton(button, menu, () -> {
             menu.removeAll();
-            JMenuItem gcItem = new JMenuItem("Clean memory", UIUtils.getIconFromResources("actions/clear-brush.png"));
+            JMenuItem gcItem = new JMenuItem("Clean memory", JIPipe.RESOURCES.getIcon16("actions/clear-brush.png"));
             gcItem.setToolTipText("Runs the garbage collector (GC) that attempts to clean unused memory. Please note that this will shortly freeze the application.");
             gcItem.addActionListener(e -> {
                 System.gc();

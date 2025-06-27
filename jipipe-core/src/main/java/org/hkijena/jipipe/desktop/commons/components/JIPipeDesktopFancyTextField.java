@@ -13,7 +13,9 @@
 
 package org.hkijena.jipipe.desktop.commons.components;
 
+import org.hkijena.jipipe.JIPipe;
 import org.hkijena.jipipe.utils.UIUtils;
+import org.hkijena.jipipe.JIPipe;
 import org.jdesktop.swingx.JXTextField;
 
 import javax.swing.*;
@@ -47,7 +49,7 @@ public class JIPipeDesktopFancyTextField extends JPanel {
         add(textField, BorderLayout.CENTER);
 
         if (withClearButton) {
-            JButton clearButton = new JButton(UIUtils.getIconFromResources("actions/edit-clear.png"));
+            JButton clearButton = new JButton(JIPipe.RESOURCES.getIcon16("actions/edit-clear.png"));
             clearButton.setOpaque(false);
             clearButton.setToolTipText("Clear");
             clearButton.addActionListener(e -> setText(""));

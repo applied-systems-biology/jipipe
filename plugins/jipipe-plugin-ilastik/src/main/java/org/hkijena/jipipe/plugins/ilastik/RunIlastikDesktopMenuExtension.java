@@ -30,7 +30,7 @@ public class RunIlastikDesktopMenuExtension extends JIPipeDesktopMenuExtension i
     public RunIlastikDesktopMenuExtension(JIPipeDesktopWorkbench workbench) {
         super(workbench);
         setText("Run Ilastik");
-        setIcon(IlastikPlugin.RESOURCES.getIcon16FromResources("ilastik.png"));
+        setIcon(IlastikPlugin.RESOURCES.getIcon16("ilastik.png"));
         setToolTipText("Starts a new instance of Ilastik.");
         addActionListener(this);
     }

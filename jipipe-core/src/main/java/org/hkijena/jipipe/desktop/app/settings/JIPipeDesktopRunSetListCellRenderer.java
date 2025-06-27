@@ -19,6 +19,7 @@ import org.hkijena.jipipe.api.run.JIPipeProjectRunSet;
 import org.hkijena.jipipe.desktop.commons.components.icons.SolidColorIcon;
 import org.hkijena.jipipe.utils.StringUtils;
 import org.hkijena.jipipe.utils.UIUtils;
+import org.hkijena.jipipe.JIPipe;
 
 import javax.swing.*;
 import java.awt.*;
@@ -89,10 +90,10 @@ public class JIPipeDesktopRunSetListCellRenderer extends JPanel implements ListC
             nameLabel.setText(StringUtils.orElse(value.getName(), "Unnamed"));
             colorIcon.setFillColor(value.getColor().isEnabled() ? value.getColor().getContent() : Color.WHITE);
 
-            indicatorPanel.add(new JLabel(StringUtils.formatPluralS(value.getNodes().size(), "node"), UIUtils.getIconFromResources("actions/graph-node.png"), JLabel.LEFT));
+            indicatorPanel.add(new JLabel(StringUtils.formatPluralS(value.getNodes().size(), "node"), JIPipe.RESOURCES.getIcon16("actions/graph-node.png"), JLabel.LEFT));
             if (!value.canResolveAllNodes(project)) {
                 indicatorPanel.add(Box.createHorizontalStrut(8));
-                indicatorPanel.add(new JLabel("Issues detected", UIUtils.getIconFromResources("emblems/warning.png"), JLabel.LEFT));
+                indicatorPanel.add(new JLabel("Issues detected", JIPipe.RESOURCES.getIcon16("emblems/warning.png"), JLabel.LEFT));
             }
         }
 

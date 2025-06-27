@@ -13,9 +13,11 @@
 
 package org.hkijena.jipipe.desktop.app.grapheditor.commons.contextmenu;
 
+import org.hkijena.jipipe.JIPipe;
 import org.hkijena.jipipe.desktop.app.grapheditor.commons.JIPipeDesktopGraphCanvasUI;
 import org.hkijena.jipipe.desktop.app.grapheditor.commons.nodeui.JIPipeDesktopGraphNodeUI;
 import org.hkijena.jipipe.utils.UIUtils;
+import org.hkijena.jipipe.JIPipe;
 
 import javax.swing.*;
 import java.util.Set;
@@ -51,7 +53,7 @@ public class RemoveBookmarkNodeUIContextAction implements NodeUIContextAction {
 
     @Override
     public Icon getIcon() {
-        return UIUtils.getIconFromResources("actions/bookmark-remove.png");
+        return JIPipe.RESOURCES.getIcon16("actions/bookmark-remove.png");
     }
 
 }

@@ -13,12 +13,14 @@
 
 package org.hkijena.jipipe.api.history;
 
+import org.hkijena.jipipe.JIPipe;
 import org.hkijena.jipipe.api.AbstractJIPipeRunnable;
 import org.hkijena.jipipe.api.nodes.JIPipeGraph;
 import org.hkijena.jipipe.api.project.JIPipeProject;
 import org.hkijena.jipipe.api.run.JIPipeRunnableQueue;
 import org.hkijena.jipipe.plugins.settings.JIPipeHistoryJournalApplicationSettings;
 import org.hkijena.jipipe.utils.UIUtils;
+import org.hkijena.jipipe.JIPipe;
 
 import javax.swing.*;
 import java.time.LocalDateTime;
@@ -98,7 +100,7 @@ public class JIPipeProjectHistoryJournal implements JIPipeHistoryJournal {
                         LocalDateTime.now(),
                         "Before undo",
                         "A snapshot of the current version",
-                        UIUtils.getIconFromResources("actions/edit-undo.png"),
+                        JIPipe.RESOURCES.getIcon16("actions/edit-undo.png"),
                         copy,
                         compartmentGraph));
             }

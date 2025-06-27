@@ -19,6 +19,7 @@ import org.hkijena.jipipe.api.data.sources.JIPipeDataTableDataSource;
 import org.hkijena.jipipe.desktop.app.JIPipeDesktopWorkbench;
 import org.hkijena.jipipe.desktop.app.cache.JIPipeDesktopLegacyCacheDataViewerWindow;
 import org.hkijena.jipipe.utils.UIUtils;
+import org.hkijena.jipipe.JIPipe;
 
 import javax.swing.*;
 import java.awt.*;
@@ -42,7 +43,7 @@ public class ParametersLegacyDataViewerWindow extends JIPipeDesktopLegacyCacheDa
         getContentPane().add(toolBar, BorderLayout.NORTH);
 
         // Error label
-        errorLabel = new JLabel(UIUtils.getIconFromResources("emblems/no-data.png"));
+        errorLabel = new JLabel(JIPipe.RESOURCES.getIcon16("emblems/no-data.png"));
         toolBar.add(errorLabel);
         toolBar.add(Box.createHorizontalGlue());
 

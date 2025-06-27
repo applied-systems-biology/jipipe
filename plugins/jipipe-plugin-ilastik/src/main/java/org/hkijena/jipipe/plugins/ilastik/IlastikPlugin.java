@@ -48,6 +48,7 @@ import org.hkijena.jipipe.plugins.parameters.library.markup.HTMLText;
 import org.hkijena.jipipe.plugins.parameters.library.primitives.list.StringList;
 import org.hkijena.jipipe.utils.JIPipeResourceManager;
 import org.hkijena.jipipe.utils.UIUtils;
+import org.hkijena.jipipe.JIPipe;
 import org.scijava.Context;
 import org.scijava.plugin.Plugin;
 
@@ -339,7 +340,7 @@ public class IlastikPlugin extends JIPipePrepackagedDefaultJavaPlugin {
 
     @Override
     public List<ImageIcon> getSplashIcons() {
-        return Arrays.asList(RESOURCES.getIcon32FromResources("ilastik.png"));
+        return Arrays.asList(RESOURCES.getIcon32("ilastik.png"));
     }
 
     @Override
@@ -348,7 +349,7 @@ public class IlastikPlugin extends JIPipePrepackagedDefaultJavaPlugin {
         registerApplicationSettingsSheet(settings);
         registerProjectSettingsSheet(IlastikPluginProjectSettings.class);
         registerMenuExtension(RunIlastikDesktopMenuExtension.class);
-        registerDatatype("ilastik-model", IlastikModelData.class, RESOURCES.getIcon16URLFromResources("ilastik-model.png"));
+        registerDatatype("ilastik-model", IlastikModelData.class, RESOURCES.getIcon16URL("ilastik-model.png"));
 
         registerEnvironment(IlastikEnvironment.class,
                 IlastikEnvironment.List.class,
@@ -356,7 +357,7 @@ public class IlastikPlugin extends JIPipePrepackagedDefaultJavaPlugin {
                 "ilastik-environment",
                 "Ilastik environment",
                 "An Ilastik environment",
-                RESOURCES.getIcon16FromResources("ilastik.png"));
+                RESOURCES.getIcon16("ilastik.png"));
         registerParameterType("optional-ilastik-environment",
                 OptionalIlastikEnvironment.class,
                 JIPipeParameterArchetype.Value, null,
@@ -372,9 +373,9 @@ public class IlastikPlugin extends JIPipePrepackagedDefaultJavaPlugin {
 
         registerNodeType("import-ilastik-model", ImportIlastikModel.class);
         registerNodeType("import-ilastik-hdf5-image", ImportIlastikHDF5ImageAlgorithm.class);
-        registerNodeType("export-ilastik-hdf5-image", ExportIlastikHDF5ImageAlgorithm.class, UIUtils.getIconURLFromResources("actions/document-export.png"));
-        registerNodeType("ilastik-pixel-classification", IlastikPixelClassificationAlgorithm.class, UIUtils.getIconURLFromResources("actions/insert-math-expression.png"));
-//        registerNodeType("ilastik-autocontext", IlastikAutoContextAlgorithm.class, UIUtils.getIconURLFromResources("actions/insert-math-expression.png"));
-//        registerNodeType("ilastik-object-classification", IlastikObjectClassificationAlgorithm.class, UIUtils.getIconURLFromResources("actions/insert-math-expression.png"));
+        registerNodeType("export-ilastik-hdf5-image", ExportIlastikHDF5ImageAlgorithm.class, JIPipe.RESOURCES.getIcon16URL("actions/document-export.png"));
+        registerNodeType("ilastik-pixel-classification", IlastikPixelClassificationAlgorithm.class, JIPipe.RESOURCES.getIcon16URL("actions/insert-math-expression.png"));
+//        registerNodeType("ilastik-autocontext", IlastikAutoContextAlgorithm.class, JIPipe.RESOURCES.getIcon16URL("actions/insert-math-expression.png"));
+//        registerNodeType("ilastik-object-classification", IlastikObjectClassificationAlgorithm.class, JIPipe.RESOURCES.getIcon16URL("actions/insert-math-expression.png"));
     }
 }

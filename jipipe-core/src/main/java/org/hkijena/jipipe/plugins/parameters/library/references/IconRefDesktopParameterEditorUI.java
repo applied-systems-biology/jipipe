@@ -13,11 +13,13 @@
 
 package org.hkijena.jipipe.plugins.parameters.library.references;
 
+import org.hkijena.jipipe.JIPipe;
 import org.hkijena.jipipe.desktop.api.JIPipeDesktopParameterEditorUI;
 import org.hkijena.jipipe.desktop.commons.components.pickers.JIPipeDesktopIconPickerDialog;
 import org.hkijena.jipipe.utils.ResourceUtils;
 import org.hkijena.jipipe.utils.StringUtils;
 import org.hkijena.jipipe.utils.UIUtils;
+import org.hkijena.jipipe.JIPipe;
 
 import javax.swing.*;
 import java.awt.*;
@@ -61,7 +63,7 @@ public class IconRefDesktopParameterEditorUI extends JIPipeDesktopParameterEdito
         UIUtils.setStandardButtonBorder(currentlyDisplayed);
         add(currentlyDisplayed, BorderLayout.CENTER);
 
-        JButton selectButton = new JButton(UIUtils.getIconFromResources("actions/edit.png"));
+        JButton selectButton = new JButton(JIPipe.RESOURCES.getIcon16("actions/edit.png"));
         UIUtils.setStandardButtonBorder(selectButton);
         selectButton.setToolTipText("Select icon");
         selectButton.addActionListener(e -> pickIcon());
@@ -90,11 +92,11 @@ public class IconRefDesktopParameterEditorUI extends JIPipeDesktopParameterEdito
                 currentlyDisplayed.setIcon(new ImageIcon(resource));
             } else {
                 currentlyDisplayed.setText("<Invalid: " + ref.getIconName() + ">");
-                currentlyDisplayed.setIcon(UIUtils.getIconFromResources("actions/configure.png"));
+                currentlyDisplayed.setIcon(JIPipe.RESOURCES.getIcon16("actions/configure.png"));
             }
         } else {
             currentlyDisplayed.setText("<None selected>");
-            currentlyDisplayed.setIcon(UIUtils.getIconFromResources("actions/configure.png"));
+            currentlyDisplayed.setIcon(JIPipe.RESOURCES.getIcon16("actions/configure.png"));
         }
     }
 }

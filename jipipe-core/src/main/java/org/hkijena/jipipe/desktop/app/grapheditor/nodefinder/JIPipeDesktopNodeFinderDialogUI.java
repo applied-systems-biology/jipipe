@@ -30,6 +30,7 @@ import org.hkijena.jipipe.desktop.commons.components.search.JIPipeDesktopSearchT
 import org.hkijena.jipipe.plugins.settings.JIPipeGraphEditorUIApplicationSettings;
 import org.hkijena.jipipe.utils.TooltipUtils;
 import org.hkijena.jipipe.utils.UIUtils;
+import org.hkijena.jipipe.JIPipe;
 
 import javax.swing.*;
 import java.awt.*;
@@ -48,8 +49,8 @@ public class JIPipeDesktopNodeFinderDialogUI extends JDialog {
     private final JIPipeDataSlot querySlot;
     private final JIPipeGraph queryGraph;
     private final UUID queryCompartment;
-    private final JToggleButton findExistingNodesToggle = new JToggleButton(UIUtils.getIconFromResources("actions/find.png"));
-    private final JToggleButton createNodesToggle = new JToggleButton(UIUtils.getIconFromResources("actions/add.png"));
+    private final JToggleButton findExistingNodesToggle = new JToggleButton(JIPipe.RESOURCES.getIcon16("actions/find.png"));
+    private final JToggleButton createNodesToggle = new JToggleButton(JIPipe.RESOURCES.getIcon16("actions/add.png"));
     private final JList<JIPipeNodeDatabaseEntry> nodeList = new JList<>();
     private final JIPipeRunnableQueue queue = new JIPipeRunnableQueue("Node finder");
     private final JIPipeGraphEditorUIApplicationSettings settings;
@@ -123,7 +124,7 @@ public class JIPipeDesktopNodeFinderDialogUI extends JDialog {
     private void openEntryMenu(JIPipeNodeDatabaseEntry entry, Point location, boolean fromKeyboard) {
         JPopupMenu menu = new JPopupMenu();
         if (!entry.exists()) {
-            menu.add(UIUtils.createMenuItem("Add new to graph", "Adds the selected node", UIUtils.getIconFromResources("actions/node-add.png"), () -> addEntryToGraph(entry)));
+            menu.add(UIUtils.createMenuItem("Add new to graph", "Adds the selected node", JIPipe.RESOURCES.getIcon16("actions/node-add.png"), () -> addEntryToGraph(entry)));
         }
         if (querySlot != null) {
             if (querySlot.isInput()) {
@@ -142,7 +143,7 @@ public class JIPipeDesktopNodeFinderDialogUI extends JDialog {
                     menu.addSeparator();
                     menu.add(UIUtils.createMenuItem("Connect to new slot",
                             "Connect to a new slot. Add the node if required.",
-                            UIUtils.getIconFromResources("actions/add.png"),
+                            JIPipe.RESOURCES.getIcon16("actions/add.png"),
                             () -> addAndConnectEntry(entry, null)));
                 }
             } else {
@@ -161,7 +162,7 @@ public class JIPipeDesktopNodeFinderDialogUI extends JDialog {
                     menu.addSeparator();
                     menu.add(UIUtils.createMenuItem("Connect to new slot",
                             "Connect to a new slot. Add the node if required.",
-                            UIUtils.getIconFromResources("actions/add.png"),
+                            JIPipe.RESOURCES.getIcon16("actions/add.png"),
                             () -> addAndConnectEntry(entry, null)));
                 }
             }
@@ -240,7 +241,7 @@ public class JIPipeDesktopNodeFinderDialogUI extends JDialog {
             JLabel algorithmNameLabel = new JLabel(queryNode.getName(), JIPipe.getNodes().getIconFor(queryNode.getInfo()), JLabel.LEFT);
             algorithmNameLabel.setToolTipText(TooltipUtils.getAlgorithmTooltip(queryNode.getInfo()));
             infoToolbar.add(algorithmNameLabel);
-            JLabel arrowLabel = new JLabel(UIUtils.getIconFromResources("actions/caret-right.png"));
+            JLabel arrowLabel = new JLabel(JIPipe.RESOURCES.getIcon16("actions/caret-right.png"));
             infoToolbar.add(arrowLabel);
             JLabel slotNameLabel = new JLabel(querySlot.getName(), JIPipe.getDataTypes().getIconFor(querySlot.getAcceptedDataType()), JLabel.LEFT);
             slotNameLabel.setToolTipText(TooltipUtils.getDataTableTooltip(querySlot));

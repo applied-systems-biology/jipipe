@@ -30,6 +30,7 @@ import org.hkijena.jipipe.plugins.dataenvironment.OptionalJIPipeDataDirectoryEnv
 import org.hkijena.jipipe.plugins.imagejdatatypes.datatypes.ImagePlusData;
 import org.hkijena.jipipe.plugins.parameters.library.jipipe.JIPipeArtifactQueryParameter;
 import org.hkijena.jipipe.utils.UIUtils;
+import org.hkijena.jipipe.JIPipe;
 
 import javax.swing.*;
 import java.util.List;
@@ -93,7 +94,7 @@ public class ImageSamplesProjectSettings extends JIPipeDefaultProjectSettingsShe
 
     @Override
     public Icon getIcon() {
-        return UIUtils.getIconFromResources("actions/image.png");
+        return JIPipe.RESOURCES.getIcon16("actions/image.png");
     }
 
     @Override

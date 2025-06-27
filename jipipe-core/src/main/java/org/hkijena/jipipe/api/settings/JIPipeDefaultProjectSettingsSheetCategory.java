@@ -13,7 +13,9 @@
 
 package org.hkijena.jipipe.api.settings;
 
+import org.hkijena.jipipe.JIPipe;
 import org.hkijena.jipipe.utils.UIUtils;
+import org.hkijena.jipipe.JIPipe;
 
 import javax.swing.*;
 
@@ -21,12 +23,12 @@ import javax.swing.*;
  * Pre-defined application setting sheet categories to be used with {@link JIPipeDefaultProjectSettingsSheet}
  */
 public enum JIPipeDefaultProjectSettingsSheetCategory {
-    General("General", UIUtils.getIconFromResources("actions/wrench.png")),
-    Data("Data", UIUtils.getIconFromResources("actions/update-cache.png")),
-    Plugins("Plugins", UIUtils.getIconFromResources("actions/puzzle-piece.png")),
-    Samples("Samples", UIUtils.getIconFromResources("actions/template.png")),
-    ImageViewer("Image viewer", UIUtils.getIconFromResources("actions/image.png")),
-    UI("User interface", UIUtils.getIconFromResources("actions/arrow-pointer.png"));
+    General("General", JIPipe.RESOURCES.getIcon16("actions/wrench.png")),
+    Data("Data", JIPipe.RESOURCES.getIcon16("actions/update-cache.png")),
+    Plugins("Plugins", JIPipe.RESOURCES.getIcon16("actions/puzzle-piece.png")),
+    Samples("Samples", JIPipe.RESOURCES.getIcon16("actions/template.png")),
+    ImageViewer("Image viewer", JIPipe.RESOURCES.getIcon16("actions/image.png")),
+    UI("User interface", JIPipe.RESOURCES.getIcon16("actions/arrow-pointer.png"));
 
     private final String category;
     private final Icon icon;

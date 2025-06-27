@@ -40,6 +40,7 @@ import org.hkijena.jipipe.plugins.parameters.library.primitives.list.StringList;
 import org.hkijena.jipipe.utils.JIPipeResourceManager;
 import org.hkijena.jipipe.utils.ResourceUtils;
 import org.hkijena.jipipe.utils.UIUtils;
+import org.hkijena.jipipe.JIPipe;
 import org.scijava.Context;
 import org.scijava.plugin.Plugin;
 
@@ -134,45 +135,45 @@ public class FilesystemPlugin extends JIPipePrepackagedDefaultJavaPlugin {
         registerNodeType("select-path-interactive", PathFromUserDataSource.class);
         registerNodeType("project-user-directory", ProjectUserFolderDataSource.class);
 
-        registerNodeType("path-extract-filename", ExtractFileName.class, UIUtils.getIconURLFromResources("data-types/files.png"));
-        registerNodeType("path-extract-parent", ExtractParent.class, UIUtils.getIconURLFromResources("actions/go-parent-folder.png"));
-        registerNodeType("path-relativize", RelativizePaths.class, UIUtils.getIconURLFromResources("data-types/path.png"));
-        registerNodeType("path-relativize-by-parameter", RelativizeByParameter.class, UIUtils.getIconURLFromResources("data-types/path.png"));
-        registerNodeType("path-concatenate", ConcatenatePaths.class, UIUtils.getIconURLFromResources("actions/list-add.png"));
-        registerNodeType("path-concatenate-by-parameter", ConcatenateByParameter.class, UIUtils.getIconURLFromResources("actions/list-add.png"));
-        registerNodeType("folder-mkdir", CreateDirectory.class, UIUtils.getIconURLFromResources("actions/folder-new.png"));
-        registerNodeType("path-rename-string", RenameByString.class, UIUtils.getIconURLFromResources("actions/tag.png"));
-        registerNodeType("path-copy", CopyPath.class, UIUtils.getIconURLFromResources("actions/edit-copy.png"));
-        registerNodeType("path-filter", FilterPaths.class, UIUtils.getIconURLFromResources("actions/filter.png"));
-        registerNodeType("folder-list-files", ListFiles.class, UIUtils.getIconURLFromResources("actions/view-list-details.png"));
-        registerNodeType("folder-list-subfolders", ListSubfolders.class, UIUtils.getIconURLFromResources("actions/view-list-details.png"));
-        registerNodeType("data-to-output-path", ConvertDataToOutputPath.class, UIUtils.getIconURLFromResources("actions/folder-new.png"));
-        registerNodeType("modify-path", ModifyPath.class, UIUtils.getIconURLFromResources("actions/insert-math-expression.png"));
+        registerNodeType("path-extract-filename", ExtractFileName.class, JIPipe.RESOURCES.getIcon16URL("data-types/files.png"));
+        registerNodeType("path-extract-parent", ExtractParent.class, JIPipe.RESOURCES.getIcon16URL("actions/go-parent-folder.png"));
+        registerNodeType("path-relativize", RelativizePaths.class, JIPipe.RESOURCES.getIcon16URL("data-types/path.png"));
+        registerNodeType("path-relativize-by-parameter", RelativizeByParameter.class, JIPipe.RESOURCES.getIcon16URL("data-types/path.png"));
+        registerNodeType("path-concatenate", ConcatenatePaths.class, JIPipe.RESOURCES.getIcon16URL("actions/list-add.png"));
+        registerNodeType("path-concatenate-by-parameter", ConcatenateByParameter.class, JIPipe.RESOURCES.getIcon16URL("actions/list-add.png"));
+        registerNodeType("folder-mkdir", CreateDirectory.class, JIPipe.RESOURCES.getIcon16URL("actions/folder-new.png"));
+        registerNodeType("path-rename-string", RenameByString.class, JIPipe.RESOURCES.getIcon16URL("actions/tag.png"));
+        registerNodeType("path-copy", CopyPath.class, JIPipe.RESOURCES.getIcon16URL("actions/edit-copy.png"));
+        registerNodeType("path-filter", FilterPaths.class, JIPipe.RESOURCES.getIcon16URL("actions/filter.png"));
+        registerNodeType("folder-list-files", ListFiles.class, JIPipe.RESOURCES.getIcon16URL("actions/view-list-details.png"));
+        registerNodeType("folder-list-subfolders", ListSubfolders.class, JIPipe.RESOURCES.getIcon16URL("actions/view-list-details.png"));
+        registerNodeType("data-to-output-path", ConvertDataToOutputPath.class, JIPipe.RESOURCES.getIcon16URL("actions/folder-new.png"));
+        registerNodeType("modify-path", ModifyPath.class, JIPipe.RESOURCES.getIcon16URL("actions/insert-math-expression.png"));
 
-        registerNodeType("export-data-by-parameter", ExportDataByParameter.class, UIUtils.getIconURLFromResources("actions/document-export.png"));
-        registerNodeType("export-data-by-parameter-v2", ExportDataByParameter2.class, UIUtils.getIconURLFromResources("actions/document-export.png"));
-        registerNodeType("export-data", ExportData.class, UIUtils.getIconURLFromResources("actions/document-export.png"));
-        registerNodeType("export-data-table-by-parameter", ExportDataTableByParameter.class, UIUtils.getIconURLFromResources("actions/document-export.png"));
-        registerNodeType("export-data-table", ExportDataTable.class, UIUtils.getIconURLFromResources("actions/document-export.png"));
-        registerNodeType("import-data-from-slot-folder", ImportDataTableDirectory.class, UIUtils.getIconURLFromResources("actions/document-import.png"));
-        registerNodeType("import-data-table-from-archive", ImportDataTableArchive.class, UIUtils.getIconURLFromResources("actions/document-import.png"));
-        registerNodeType("import-data-from-row-folder", ImportDataRowFolder.class, UIUtils.getIconURLFromResources("actions/document-import.png"));
+        registerNodeType("export-data-by-parameter", ExportDataByParameter.class, JIPipe.RESOURCES.getIcon16URL("actions/document-export.png"));
+        registerNodeType("export-data-by-parameter-v2", ExportDataByParameter2.class, JIPipe.RESOURCES.getIcon16URL("actions/document-export.png"));
+        registerNodeType("export-data", ExportData.class, JIPipe.RESOURCES.getIcon16URL("actions/document-export.png"));
+        registerNodeType("export-data-table-by-parameter", ExportDataTableByParameter.class, JIPipe.RESOURCES.getIcon16URL("actions/document-export.png"));
+        registerNodeType("export-data-table", ExportDataTable.class, JIPipe.RESOURCES.getIcon16URL("actions/document-export.png"));
+        registerNodeType("import-data-from-slot-folder", ImportDataTableDirectory.class, JIPipe.RESOURCES.getIcon16URL("actions/document-import.png"));
+        registerNodeType("import-data-table-from-archive", ImportDataTableArchive.class, JIPipe.RESOURCES.getIcon16URL("actions/document-import.png"));
+        registerNodeType("import-data-from-row-folder", ImportDataRowFolder.class, JIPipe.RESOURCES.getIcon16URL("actions/document-import.png"));
 
-        registerNodeType("annotation-to-path", AnnotationToPath.class, UIUtils.getIconURLFromResources("data-types/path.png"));
+        registerNodeType("annotation-to-path", AnnotationToPath.class, JIPipe.RESOURCES.getIcon16URL("data-types/path.png"));
 
-        registerNodeType("folder-annotate-by-name", SimpleFolderAnnotationGenerator.class, UIUtils.getIconURLFromResources("actions/image-auto-adjust.png"));
-        registerNodeType("file-annotate-by-name", SimpleFileAnnotationGenerator.class, UIUtils.getIconURLFromResources("actions/image-auto-adjust.png"));
-        registerNodeType("path-to-annotation-simple", SimplePathAnnotationGenerator.class, UIUtils.getIconURLFromResources("actions/image-auto-adjust.png"));
+        registerNodeType("folder-annotate-by-name", SimpleFolderAnnotationGenerator.class, JIPipe.RESOURCES.getIcon16URL("actions/image-auto-adjust.png"));
+        registerNodeType("file-annotate-by-name", SimpleFileAnnotationGenerator.class, JIPipe.RESOURCES.getIcon16URL("actions/image-auto-adjust.png"));
+        registerNodeType("path-to-annotation-simple", SimplePathAnnotationGenerator.class, JIPipe.RESOURCES.getIcon16URL("actions/image-auto-adjust.png"));
 
-        registerNodeType("annotation-table-to-paths", AnnotationTableToPaths.class, UIUtils.getIconURLFromResources("data-types/path.png"));
-        registerNodeType("annotate-with-path-properties", AnnotateWithPathProperties.class, UIUtils.getIconURLFromResources("data-types/path.png"));
+        registerNodeType("annotation-table-to-paths", AnnotationTableToPaths.class, JIPipe.RESOURCES.getIcon16URL("data-types/path.png"));
+        registerNodeType("annotate-with-path-properties", AnnotateWithPathProperties.class, JIPipe.RESOURCES.getIcon16URL("data-types/path.png"));
 
-        registerNodeType("path-modify-with-expression", ModifyPathWithExpression.class, UIUtils.getIconURLFromResources("actions/insert-math-expression.png"));
-        registerNodeType("get-exported-path", ConvertToExportedPath.class, UIUtils.getIconURLFromResources("actions/reload.png"));
+        registerNodeType("path-modify-with-expression", ModifyPathWithExpression.class, JIPipe.RESOURCES.getIcon16URL("actions/insert-math-expression.png"));
+        registerNodeType("get-exported-path", ConvertToExportedPath.class, JIPipe.RESOURCES.getIcon16URL("actions/reload.png"));
 
         // ZARR
-        registerNodeType("list-zarr-directory-zip-datasets", ListZARRDirectoryZIPDatasetsAlgorithm.class, UIUtils.getIconURLFromResources("actions/zarr.png"));
-        registerNodeType("list-zarr-uri-datasets", ListZARRURIDatasetsAlgorithm.class, UIUtils.getIconURLFromResources("actions/zarr.png"));
+        registerNodeType("list-zarr-directory-zip-datasets", ListZARRDirectoryZIPDatasetsAlgorithm.class, JIPipe.RESOURCES.getIcon16URL("actions/zarr.png"));
+        registerNodeType("list-zarr-uri-datasets", ListZARRURIDatasetsAlgorithm.class, JIPipe.RESOURCES.getIcon16URL("actions/zarr.png"));
 
         registerNodeExamplesFromResources(RESOURCES, "examples");
     }

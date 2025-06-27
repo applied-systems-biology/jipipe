@@ -18,6 +18,7 @@ import org.hkijena.jipipe.api.data.JIPipeDataSlot;
 import org.hkijena.jipipe.api.data.JIPipeDataSlotInfo;
 import org.hkijena.jipipe.api.nodes.JIPipeGraphNode;
 import org.hkijena.jipipe.utils.UIUtils;
+import org.hkijena.jipipe.JIPipe;
 
 import javax.swing.*;
 import java.awt.*;
@@ -43,13 +44,13 @@ public class JIPipeDesktopInheritedSlotListCellRenderer extends JLabel implement
     public Component getListCellRendererComponent(JList<? extends String> list, String value, int index, boolean isSelected, boolean cellHasFocus) {
 
         if (value == null || value.isEmpty()) {
-            setIcon(UIUtils.getIconFromResources("actions/cancel.png"));
+            setIcon(JIPipe.RESOURCES.getIcon16("actions/cancel.png"));
             setText("<No inheritance>");
         } else if ("*".equals(value)) {
             if (!algorithm.getInputSlotOrder().isEmpty()) {
                 setIcon(JIPipe.getDataTypes().getIconFor(algorithm.getFirstInputSlot().getAcceptedDataType()));
             } else {
-                setIcon(UIUtils.getIconFromResources("actions/cancel.png"));
+                setIcon(JIPipe.RESOURCES.getIcon16("actions/cancel.png"));
             }
             setText("<First data slot>");
         } else {

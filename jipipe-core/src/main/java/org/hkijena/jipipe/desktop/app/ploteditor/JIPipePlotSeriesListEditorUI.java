@@ -18,6 +18,7 @@ import org.hkijena.jipipe.desktop.app.JIPipeDesktopWorkbench;
 import org.hkijena.jipipe.desktop.app.JIPipeDesktopWorkbenchPanel;
 import org.hkijena.jipipe.desktop.commons.components.JIPipeDesktopFormPanel;
 import org.hkijena.jipipe.utils.UIUtils;
+import org.hkijena.jipipe.JIPipe;
 
 import javax.swing.*;
 import java.awt.*;
@@ -46,7 +47,7 @@ public class JIPipePlotSeriesListEditorUI extends JIPipeDesktopWorkbenchPanel im
     private void initialize() {
         setLayout(new BorderLayout());
         JToolBar toolBar = new JToolBar();
-        JButton addSeriesButton = new JButton("Add series", UIUtils.getIconFromResources("actions/list-add.png"));
+        JButton addSeriesButton = new JButton("Add series", JIPipe.RESOURCES.getIcon16("actions/list-add.png"));
         addSeriesButton.addActionListener(e -> plotBuilderUI.addSeries());
         toolBar.add(addSeriesButton);
         toolBar.setFloatable(false);

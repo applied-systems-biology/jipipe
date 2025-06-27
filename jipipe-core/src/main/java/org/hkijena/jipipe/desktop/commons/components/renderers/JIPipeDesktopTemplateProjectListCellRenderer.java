@@ -13,8 +13,10 @@
 
 package org.hkijena.jipipe.desktop.commons.components.renderers;
 
+import org.hkijena.jipipe.JIPipe;
 import org.hkijena.jipipe.api.project.JIPipeProjectTemplate;
 import org.hkijena.jipipe.utils.UIUtils;
+import org.hkijena.jipipe.JIPipe;
 
 import javax.swing.*;
 import java.awt.*;
@@ -37,7 +39,7 @@ public class JIPipeDesktopTemplateProjectListCellRenderer extends JPanel impleme
 
     private void initialize() {
         setLayout(new GridBagLayout());
-        iconLabel = new JLabel(UIUtils.getIcon32FromResources("jipipe-file.png"));
+        iconLabel = new JLabel(JIPipe.RESOURCES.getIcon32("jipipe-file.png"));
         nameLabel = new JLabel();
         nameLabel.setFont(new Font(Font.DIALOG, Font.PLAIN, 12));
         pathLabel = new JLabel();

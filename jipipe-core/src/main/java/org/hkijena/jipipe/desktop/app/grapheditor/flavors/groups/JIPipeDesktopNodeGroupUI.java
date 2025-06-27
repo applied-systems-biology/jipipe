@@ -19,6 +19,7 @@ import org.hkijena.jipipe.desktop.app.JIPipeDesktopWorkbenchPanel;
 import org.hkijena.jipipe.desktop.app.grapheditor.flavors.pipeline.JIPipeDesktopPipelineGraphEditorUI;
 import org.hkijena.jipipe.desktop.commons.components.tabs.JIPipeDesktopTabPane;
 import org.hkijena.jipipe.utils.UIUtils;
+import org.hkijena.jipipe.JIPipe;
 import org.scijava.Disposable;
 
 import java.awt.*;
@@ -57,7 +58,7 @@ public class JIPipeDesktopNodeGroupUI extends JIPipeDesktopWorkbenchPanel implem
         if (compartmentUIs.isEmpty()) {
             JIPipeDesktopNodeGroupUI compartmentUI = new JIPipeDesktopNodeGroupUI(workbench, nodeGroup);
             JIPipeDesktopTabPane.DocumentTab documentTab = workbench.getDocumentTabPane().addTab(nodeGroup.getName(),
-                    UIUtils.getIconFromResources("actions/object-group.png"),
+                    JIPipe.RESOURCES.getIcon16("actions/object-group.png"),
                     compartmentUI,
                     JIPipeDesktopTabPane.CloseMode.withSilentCloseButton,
                     false);

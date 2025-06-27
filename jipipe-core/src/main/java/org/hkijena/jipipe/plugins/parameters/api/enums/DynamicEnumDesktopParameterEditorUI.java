@@ -13,10 +13,12 @@
 
 package org.hkijena.jipipe.plugins.parameters.api.enums;
 
+import org.hkijena.jipipe.JIPipe;
 import org.hkijena.jipipe.desktop.api.JIPipeDesktopParameterEditorUI;
 import org.hkijena.jipipe.desktop.commons.components.JIPipeDesktopPickDynamicEnumValueDialog;
 import org.hkijena.jipipe.utils.ReflectionUtils;
 import org.hkijena.jipipe.utils.UIUtils;
+import org.hkijena.jipipe.JIPipe;
 
 import javax.swing.*;
 import java.awt.*;
@@ -81,7 +83,7 @@ public class DynamicEnumDesktopParameterEditorUI extends JIPipeDesktopParameterE
         comboBox.setRenderer(new Renderer(parameter));
         add(comboBox, BorderLayout.CENTER);
 
-        JButton selectButton = new JButton(UIUtils.getIconFromResources("actions/edit.png"));
+        JButton selectButton = new JButton(JIPipe.RESOURCES.getIcon16("actions/edit.png"));
         UIUtils.setStandardButtonBorder(selectButton);
         selectButton.setToolTipText("Select value");
         selectButton.addActionListener(e -> pickEnum());

@@ -13,10 +13,12 @@
 
 package org.hkijena.jipipe.api.grouping.parameters;
 
+import org.hkijena.jipipe.JIPipe;
 import org.hkijena.jipipe.desktop.api.JIPipeDesktopParameterEditorUI;
 import org.hkijena.jipipe.desktop.app.parameterreference.JIPipeDesktopGraphNodeParameterReferenceGroupCollectionEditorUI;
 import org.hkijena.jipipe.utils.OKCancelDialog;
 import org.hkijena.jipipe.utils.UIUtils;
+import org.hkijena.jipipe.JIPipe;
 
 import javax.swing.*;
 import java.awt.*;
@@ -33,7 +35,7 @@ public class GraphNodeParameterReferenceGroupCollectionDesktopParameterEditorUI 
 
     private void initialize() {
         setLayout(new BorderLayout());
-        JButton editGraphButton = new JButton("Edit parameter references", UIUtils.getIconFromResources("actions/edit.png"));
+        JButton editGraphButton = new JButton("Edit parameter references", JIPipe.RESOURCES.getIcon16("actions/edit.png"));
         editGraphButton.addActionListener(e -> editParameters());
         add(editGraphButton, BorderLayout.CENTER);
     }

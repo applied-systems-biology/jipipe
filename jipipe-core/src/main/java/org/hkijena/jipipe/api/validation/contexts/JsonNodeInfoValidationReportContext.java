@@ -16,6 +16,7 @@ package org.hkijena.jipipe.api.validation.contexts;
 import org.hkijena.jipipe.api.grouping.JsonNodeInfo;
 import org.hkijena.jipipe.api.validation.JIPipeValidationReportContext;
 import org.hkijena.jipipe.utils.UIUtils;
+import org.hkijena.jipipe.JIPipe;
 
 import javax.swing.*;
 
@@ -39,6 +40,6 @@ public class JsonNodeInfoValidationReportContext extends JIPipeValidationReportC
 
     @Override
     public Icon renderIcon() {
-        return UIUtils.getIconFromResources("actions/graph-node.png");
+        return JIPipe.RESOURCES.getIcon16("actions/graph-node.png");
     }
 }

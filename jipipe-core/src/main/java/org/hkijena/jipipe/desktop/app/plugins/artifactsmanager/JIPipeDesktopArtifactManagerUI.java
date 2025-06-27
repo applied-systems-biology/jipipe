@@ -149,21 +149,21 @@ public class JIPipeDesktopArtifactManagerUI extends JIPipeDesktopWorkbenchPanel 
                     "You have pending changes",
                     false,
                     true,
-                    UIUtils.createButton("Revert", UIUtils.getIconFromResources("actions/edit-undo.png"), this::revertChanges),
-                    UIUtils.createButton("Apply", UIUtils.getIconFromResources("actions/check.png"), this::applyChanges));
+                    UIUtils.createButton("Revert", JIPipe.RESOURCES.getIcon16("actions/edit-undo.png"), this::revertChanges),
+                    UIUtils.createButton("Apply", JIPipe.RESOURCES.getIcon16("actions/check.png"), this::applyChanges));
             propertyPanel.addWideToForm(messagePanel);
         }
 
         propertyPanel.addGroupHeader("Artifacts", "A variety of external tools are managed via the artifacts system that automatically downloads and applies the " +
                 "correct version of the dependency based on project metadata.\n\n" +
-                "Artifacts are automatically downloaded to a directory shared across multiple JIPipe instances.", false, UIUtils.getIconFromResources("actions/help-info.png"));
-        propertyPanel.addWideToForm(UIUtils.createButton("Open artifacts directory", UIUtils.getIconFromResources("actions/folder-open.png"), this::openArtifactsDirectory));
-        propertyPanel.addWideToForm(UIUtils.createButton("Install artifact manually", UIUtils.getIconFromResources("actions/run-install.png"), this::installArtifactManually));
+                "Artifacts are automatically downloaded to a directory shared across multiple JIPipe instances.", false, JIPipe.RESOURCES.getIcon16("actions/help-info.png"));
+        propertyPanel.addWideToForm(UIUtils.createButton("Open artifacts directory", JIPipe.RESOURCES.getIcon16("actions/folder-open.png"), this::openArtifactsDirectory));
+        propertyPanel.addWideToForm(UIUtils.createButton("Install artifact manually", JIPipe.RESOURCES.getIcon16("actions/run-install.png"), this::installArtifactManually));
 
         ArtifactEntry selectedValue = artifactEntryJList.getSelectedValue();
         if (selectedValue != null) {
             JIPipeArtifact artifact = selectedValue.artifact;
-            propertyPanel.addGroupHeader(artifact.getArtifactId(), UIUtils.getIconFromResources("actions/run-install.png"));
+            propertyPanel.addGroupHeader(artifact.getArtifactId(), JIPipe.RESOURCES.getIcon16("actions/run-install.png"));
             propertyPanel.addToForm(UIUtils.createReadonlyBorderlessTextField(artifact.getVersion()), new JLabel("Version"));
             propertyPanel.addToForm(UIUtils.createReadonlyBorderlessTextField(artifact.getClassifier()), new JLabel("Label"));
             propertyPanel.addToForm(UIUtils.createReadonlyBorderlessTextField(artifact.getGroupId()), new JLabel("Publisher"));
@@ -172,18 +172,18 @@ public class JIPipeDesktopArtifactManagerUI extends JIPipeDesktopWorkbenchPanel 
                 propertyPanel.addToForm(UIUtils.createReadonlyBorderlessTextField(((JIPipeRemoteArtifact) artifact).getUrl()), new JLabel("URL"));
             }
             if (artifact.isRequireGPU()) {
-                propertyPanel.addToForm(new JLabel("Requires GPU", UIUtils.getIconFromResources("devices/device_pci.png"), JLabel.LEFT), new JLabel("Additional info"));
+                propertyPanel.addToForm(new JLabel("Requires GPU", JIPipe.RESOURCES.getIcon16("devices/device_pci.png"), JLabel.LEFT), new JLabel("Additional info"));
             }
 
             if (artifact instanceof JIPipeRemoteArtifact) {
                 if (selectedValue.isToggleInstallationStatus()) {
-                    propertyPanel.addToForm(UIUtils.createLeftAlignedButton("Mark for installation", UIUtils.getIconFromResources("emblems/checkbox-checked.png"), () -> {
+                    propertyPanel.addToForm(UIUtils.createLeftAlignedButton("Mark for installation", JIPipe.RESOURCES.getIcon16("emblems/checkbox-checked.png"), () -> {
                         selectedValue.setToggleInstallationStatus(false);
                         updateSelectionPanel();
                         artifactEntryJList.repaint(50);
                     }), new JLabel("Status"));
                 } else {
-                    propertyPanel.addToForm(UIUtils.createLeftAlignedButton("Mark for installation", UIUtils.getIconFromResources("emblems/checkbox-unchecked.png"), () -> {
+                    propertyPanel.addToForm(UIUtils.createLeftAlignedButton("Mark for installation", JIPipe.RESOURCES.getIcon16("emblems/checkbox-unchecked.png"), () -> {
                         selectedValue.setToggleInstallationStatus(true);
                         updateSelectionPanel();
                         artifactEntryJList.repaint(50);
@@ -191,13 +191,13 @@ public class JIPipeDesktopArtifactManagerUI extends JIPipeDesktopWorkbenchPanel 
                 }
             } else {
                 if (selectedValue.isToggleInstallationStatus()) {
-                    propertyPanel.addToForm(UIUtils.createLeftAlignedButton("Keep installed", UIUtils.getIconFromResources("emblems/checkbox-unchecked.png"), () -> {
+                    propertyPanel.addToForm(UIUtils.createLeftAlignedButton("Keep installed", JIPipe.RESOURCES.getIcon16("emblems/checkbox-unchecked.png"), () -> {
                         selectedValue.setToggleInstallationStatus(false);
                         updateSelectionPanel();
                         artifactEntryJList.repaint(50);
                     }), new JLabel("Status"));
                 } else {
-                    propertyPanel.addToForm(UIUtils.createLeftAlignedButton("Keep installed", UIUtils.getIconFromResources("emblems/checkbox-checked.png"), () -> {
+                    propertyPanel.addToForm(UIUtils.createLeftAlignedButton("Keep installed", JIPipe.RESOURCES.getIcon16("emblems/checkbox-checked.png"), () -> {
                         selectedValue.setToggleInstallationStatus(true);
                         updateSelectionPanel();
                         artifactEntryJList.repaint(50);
@@ -435,20 +435,20 @@ public class JIPipeDesktopArtifactManagerUI extends JIPipeDesktopWorkbenchPanel 
             infoLabel.setForeground(UIManager.getColor("Label.disabledForeground"));
             if (value.getArtifact() instanceof JIPipeRemoteArtifact) {
                 if (value.isToggleInstallationStatus()) {
-                    statusLabel.setIcon(UIUtils.getIconFromResources("emblems/checkbox-checked.png"));
+                    statusLabel.setIcon(JIPipe.RESOURCES.getIcon16("emblems/checkbox-checked.png"));
                     infoLabel.setForeground(new Color(0x26a269));
                     infoLabel.setText("Install");
                 } else {
-                    statusLabel.setIcon(UIUtils.getIconFromResources("emblems/checkbox-unchecked.png"));
+                    statusLabel.setIcon(JIPipe.RESOURCES.getIcon16("emblems/checkbox-unchecked.png"));
                     infoLabel.setText("Not installed");
                 }
             } else {
                 if (value.isToggleInstallationStatus()) {
-                    statusLabel.setIcon(UIUtils.getIconFromResources("emblems/checkbox-unchecked.png"));
+                    statusLabel.setIcon(JIPipe.RESOURCES.getIcon16("emblems/checkbox-unchecked.png"));
                     infoLabel.setForeground(new Color(0xc64600));
                     infoLabel.setText("Uninstall");
                 } else {
-                    statusLabel.setIcon(UIUtils.getIconFromResources("emblems/checkbox-checked.png"));
+                    statusLabel.setIcon(JIPipe.RESOURCES.getIcon16("emblems/checkbox-checked.png"));
                     infoLabel.setText("Installed");
                 }
             }

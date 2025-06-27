@@ -14,6 +14,7 @@
 package org.hkijena.jipipe.desktop.app.grapheditor.flavors.compartments.properties;
 
 import com.google.common.collect.ImmutableList;
+import org.hkijena.jipipe.JIPipe;
 import org.hkijena.jipipe.api.compartments.algorithms.JIPipeProjectCompartment;
 import org.hkijena.jipipe.api.compartments.algorithms.JIPipeProjectCompartmentOutput;
 import org.hkijena.jipipe.desktop.app.JIPipeDesktopProjectWorkbench;
@@ -22,6 +23,7 @@ import org.hkijena.jipipe.desktop.app.cache.JIPipeDesktopAlgorithmCacheBrowserUI
 import org.hkijena.jipipe.desktop.app.grapheditor.flavors.compartments.JIPipeDesktopCompartmentsGraphEditorUI;
 import org.hkijena.jipipe.desktop.commons.components.tabs.JIPipeDesktopTabPane;
 import org.hkijena.jipipe.utils.UIUtils;
+import org.hkijena.jipipe.JIPipe;
 
 import java.awt.*;
 import java.util.HashMap;
@@ -63,7 +65,7 @@ public class JIPipeDesktopCompartmentGraphEditorResultsPanel extends JIPipeDeskt
                 cacheBrowsers.put(entry.getKey(), ui);
                 cacheBrowserTabs.put(entry.getKey(),
                         tabPane.addTab(entry.getKey(),
-                                UIUtils.getIconFromResources("actions/graph-compartment.png"),
+                                JIPipe.RESOURCES.getIcon16("actions/graph-compartment.png"),
                                 ui,
                                 JIPipeDesktopTabPane.CloseMode.withoutCloseButton));
             }

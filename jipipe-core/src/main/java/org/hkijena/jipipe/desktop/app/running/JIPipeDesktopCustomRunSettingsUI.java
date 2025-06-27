@@ -38,6 +38,7 @@ import org.hkijena.jipipe.utils.JIPipeDesktopSplitPane;
 import org.hkijena.jipipe.utils.ResourceUtils;
 import org.hkijena.jipipe.utils.StringUtils;
 import org.hkijena.jipipe.utils.UIUtils;
+import org.hkijena.jipipe.JIPipe;
 import org.jdesktop.swingx.JXTable;
 
 import javax.swing.*;
@@ -92,7 +93,7 @@ public class JIPipeDesktopCustomRunSettingsUI extends JIPipeDesktopProjectWorkbe
         // Create button panel
         JIPipeDesktopMessagePanel messagePanel = new JIPipeDesktopMessagePanel();
 
-        JButton runButton = new JButton("Retry", UIUtils.getIconFromResources("actions/view-refresh.png"));
+        JButton runButton = new JButton("Retry", JIPipe.RESOURCES.getIcon16("actions/view-refresh.png"));
         runButton.setFont(new Font(Font.DIALOG, Font.PLAIN, 16));
         runButton.addActionListener(e -> {
             report.clear();
@@ -143,7 +144,7 @@ public class JIPipeDesktopCustomRunSettingsUI extends JIPipeDesktopProjectWorkbe
         splitPane1.setBottomComponent(new JIPipeDesktopMarkdownReader(false, MarkdownText.fromPluginResource("documentation/run.md", new HashMap<>())));
         splitPane1.applyRatio();
 
-        JButton runButton = new JButton("Run now", UIUtils.getIconFromResources("actions/run-build.png"));
+        JButton runButton = new JButton("Run now", JIPipe.RESOURCES.getIcon16("actions/run-build.png"));
         runButton.setFont(new Font(Font.DIALOG, Font.PLAIN, 16));
         runButton.addActionListener(e -> runNow());
 
@@ -171,7 +172,7 @@ public class JIPipeDesktopCustomRunSettingsUI extends JIPipeDesktopProjectWorkbe
 
 
         // General settings tab
-        tabPane.addTab("General", UIUtils.getIcon32FromResources("actions/configure.png"), new JIPipeDesktopParameterFormPanel(getDesktopProjectWorkbench(),
+        tabPane.addTab("General", JIPipe.RESOURCES.getIcon32("actions/configure.png"), new JIPipeDesktopParameterFormPanel(getDesktopProjectWorkbench(),
                 run.getConfiguration(),
                 new MarkdownText(),
                 JIPipeDesktopParameterFormPanel.WITH_SCROLLING), JIPipeDesktopTabPane.CloseMode.withoutCloseButton);
@@ -201,7 +202,7 @@ public class JIPipeDesktopCustomRunSettingsUI extends JIPipeDesktopProjectWorkbe
 
     private void createWrittenResultsPanel(JIPipeDesktopTabPane tabPane, Set<JIPipeDataSlot> remainingOutputs) {
         JIPipeDesktopFormPanel infoPanel = new JIPipeDesktopFormPanel(JIPipeDesktopFormPanel.WITH_SCROLLING);
-        tabPane.addTab("Exported", UIUtils.getIcon32FromResources("actions/stock_save.png"), infoPanel, JIPipeDesktopTabPane.CloseMode.withoutCloseButton);
+        tabPane.addTab("Exported", JIPipe.RESOURCES.getIcon32("actions/stock_save.png"), infoPanel, JIPipeDesktopTabPane.CloseMode.withoutCloseButton);
         createOutputsManagerPanel(infoPanel, remainingOutputs);
         infoPanel.addVerticalGlue();
     }
@@ -212,7 +213,7 @@ public class JIPipeDesktopCustomRunSettingsUI extends JIPipeDesktopProjectWorkbe
                 "There are nodes that generate large intermediate results. Please go to the 'Performance optimization' tab if you want to disable writing the outputs to the cache/hard drive.",
                 true,
                 false);
-        tabPane.addTab("Performance", UIUtils.getIcon32FromResources("actions/speedometer.png"), infoPanel, JIPipeDesktopTabPane.CloseMode.withoutCloseButton);
+        tabPane.addTab("Performance", JIPipe.RESOURCES.getIcon32("actions/speedometer.png"), infoPanel, JIPipeDesktopTabPane.CloseMode.withoutCloseButton);
         createOutputsManagerPanel(infoPanel, heavyIntermediateOutputs);
         infoPanel.addVerticalGlue();
     }
@@ -223,7 +224,7 @@ public class JIPipeDesktopCustomRunSettingsUI extends JIPipeDesktopProjectWorkbe
                 "Not all nodes can be executed, which may or may not be intended. Please review the 'Skipped nodes' tab.",
                 true,
                 false);
-        tabPane.addTab("Skipped", UIUtils.getIcon32FromResources("emblems/vcs-conflicting.png"), infoPanel, JIPipeDesktopTabPane.CloseMode.withoutCloseButton);
+        tabPane.addTab("Skipped", JIPipe.RESOURCES.getIcon32("emblems/vcs-conflicting.png"), infoPanel, JIPipeDesktopTabPane.CloseMode.withoutCloseButton);
 
         DefaultTableModel model = new DefaultTableModel();
         model.setColumnIdentifiers(new Object[]{"Compartment", "Node name"});
@@ -264,7 +265,7 @@ public class JIPipeDesktopCustomRunSettingsUI extends JIPipeDesktopProjectWorkbe
                             runAlgorithm.getOutputSlot(outputSlot.getName()).getInfo().setStoreToDisk(checkBox.isSelected());
                         });
                         JLabel compartmentLabel = new JLabel(node.getCompartmentDisplayName(),
-                                UIUtils.getIconFromResources("data-types/graph-compartment.png"), JLabel.LEFT);
+                                JIPipe.RESOURCES.getIcon16("data-types/graph-compartment.png"), JLabel.LEFT);
                         JLabel nodeLabel = new JLabel(node.getName(), JIPipe.getNodes().getIconFor(node.getInfo()), JLabel.LEFT);
                         contentPanel.add(nodeLabel, new GridBagConstraints() {
                             {
@@ -304,7 +305,7 @@ public class JIPipeDesktopCustomRunSettingsUI extends JIPipeDesktopProjectWorkbe
             toolBar.add(new JLabel("Deselect items to disable saving to HDD"));
             toolBar.add(Box.createHorizontalGlue());
 
-            JButton selectAllButton = new JButton("Select all", UIUtils.getIconFromResources("actions/stock_select-all.png"));
+            JButton selectAllButton = new JButton("Select all", JIPipe.RESOURCES.getIcon16("actions/stock_select-all.png"));
             selectAllButton.addActionListener(e -> {
                 for (JCheckBox checkBox : checkBoxes) {
                     checkBox.setSelected(true);
@@ -317,7 +318,7 @@ public class JIPipeDesktopCustomRunSettingsUI extends JIPipeDesktopProjectWorkbe
             });
             toolBar.add(selectAllButton);
 
-            JButton selectNoneButton = new JButton("Select none", UIUtils.getIconFromResources("actions/cancel.png"));
+            JButton selectNoneButton = new JButton("Select none", JIPipe.RESOURCES.getIcon16("actions/cancel.png"));
             selectNoneButton.addActionListener(e -> {
                 for (JCheckBox checkBox : checkBoxes) {
                     checkBox.setSelected(false);
@@ -381,11 +382,11 @@ public class JIPipeDesktopCustomRunSettingsUI extends JIPipeDesktopProjectWorkbe
 
         JToolBar toolBar = new JToolBar();
         toolBar.setFloatable(false);
-        JButton openFolderButton = new JButton("Open output folder", UIUtils.getIconFromResources("actions/document-open-folder.png"));
+        JButton openFolderButton = new JButton("Open output folder", JIPipe.RESOURCES.getIcon16("actions/document-open-folder.png"));
         openFolderButton.addActionListener(e -> openOutputFolder());
         toolBar.add(openFolderButton);
         if (Files.isRegularFile(run.getConfiguration().getOutputPath().resolve("log.txt"))) {
-            JButton openLogButton = new JButton("Open log", UIUtils.getIconFromResources("actions/find.png"));
+            JButton openLogButton = new JButton("Open log", JIPipe.RESOURCES.getIcon16("actions/find.png"));
             openLogButton.addActionListener(e -> openLog());
             toolBar.add(openLogButton);
         }

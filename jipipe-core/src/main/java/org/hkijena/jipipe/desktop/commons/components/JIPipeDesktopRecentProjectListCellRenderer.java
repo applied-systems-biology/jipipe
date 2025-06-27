@@ -14,6 +14,7 @@
 package org.hkijena.jipipe.desktop.commons.components;
 
 import org.hkijena.jipipe.utils.UIUtils;
+import org.hkijena.jipipe.JIPipe;
 
 import javax.swing.*;
 import java.awt.*;
@@ -37,7 +38,7 @@ public class JIPipeDesktopRecentProjectListCellRenderer extends JPanel implement
 
     private void initialize() {
         setLayout(new GridBagLayout());
-        iconLabel = new JLabel(UIUtils.getIcon32FromResources("jipipe-file.png"));
+        iconLabel = new JLabel(JIPipe.RESOURCES.getIcon32("jipipe-file.png"));
         nameLabel = new JLabel();
         nameLabel.setFont(new Font(Font.DIALOG, Font.PLAIN, 12));
         pathLabel = new JLabel();

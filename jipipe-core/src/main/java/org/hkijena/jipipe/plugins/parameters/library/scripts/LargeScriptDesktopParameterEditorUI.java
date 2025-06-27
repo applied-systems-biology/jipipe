@@ -14,11 +14,13 @@
 package org.hkijena.jipipe.plugins.parameters.library.scripts;
 
 import org.fife.ui.rtextarea.RTextScrollPane;
+import org.hkijena.jipipe.JIPipe;
 import org.hkijena.jipipe.desktop.api.JIPipeDesktopParameterEditorUI;
 import org.hkijena.jipipe.desktop.commons.components.JIPipeDesktopDocumentChangeListener;
 import org.hkijena.jipipe.plugins.parameters.api.scripts.ScriptParameter;
 import org.hkijena.jipipe.utils.CustomEditorPane;
 import org.hkijena.jipipe.utils.UIUtils;
+import org.hkijena.jipipe.JIPipe;
 
 import javax.swing.*;
 import javax.swing.event.DocumentEvent;
@@ -73,11 +75,11 @@ public class LargeScriptDesktopParameterEditorUI extends JIPipeDesktopParameterE
 
         toolBar.add(Box.createHorizontalGlue());
 
-        JButton undoButton = new JButton("Undo", UIUtils.getIconFromResources("actions/undo.png"));
+        JButton undoButton = new JButton("Undo", JIPipe.RESOURCES.getIcon16("actions/undo.png"));
         undoButton.addActionListener(e -> textArea.undoLastAction());
         toolBar.add(undoButton);
 
-        JButton redoButton = new JButton("Redo", UIUtils.getIconFromResources("actions/edit-redo.png"));
+        JButton redoButton = new JButton("Redo", JIPipe.RESOURCES.getIcon16("actions/edit-redo.png"));
         redoButton.addActionListener(e -> textArea.redoLastAction());
         toolBar.add(redoButton);
 

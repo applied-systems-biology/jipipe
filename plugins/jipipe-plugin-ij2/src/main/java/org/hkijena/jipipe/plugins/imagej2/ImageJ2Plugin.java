@@ -40,6 +40,7 @@ import org.hkijena.jipipe.plugins.parameters.library.jipipe.PluginCategoriesEnum
 import org.hkijena.jipipe.plugins.parameters.library.markup.HTMLText;
 import org.hkijena.jipipe.plugins.parameters.library.primitives.list.StringList;
 import org.hkijena.jipipe.utils.UIUtils;
+import org.hkijena.jipipe.JIPipe;
 import org.scijava.Context;
 import org.scijava.Priority;
 import org.scijava.plugin.Plugin;
@@ -170,7 +171,7 @@ public class ImageJ2Plugin extends JIPipePrepackagedDefaultJavaPlugin {
     @Override
     public void register(JIPipe jiPipe, Context context, JIPipeProgressInfo progressInfo) {
         // Images
-        registerDatatype("ij2-dataset", ImageJ2DatasetData.class, UIUtils.getIconURLFromResources("data-types/ij2-image.png"));
+        registerDatatype("ij2-dataset", ImageJ2DatasetData.class, JIPipe.RESOURCES.getIcon16URL("data-types/ij2-image.png"));
         registerDatatypeConversion(new ImageJ1ToImageJ2Converter());
         registerDatatypeConversion(new ImageJ2ToImageJ1Converter());
         registerImageJDataImporter("ij2-dataset-from-window", new IJ2DataFromImageWindowImageJImporter(), ImagePlusWindowImageJImporterUI.class);
@@ -179,31 +180,31 @@ public class ImageJ2Plugin extends JIPipePrepackagedDefaultJavaPlugin {
         registerDefaultDataTypeViewer(ImageJ2DatasetData.class, ImageJ2DatasetDataViewer.class);
 
         // Shapes
-        registerDatatype("ij2-shape", ImageJ2ShapeData.class, UIUtils.getIconURLFromResources("data-types/ij2-shape.png"));
-        registerDatatype("ij2-shape-empty", EmptyImageJ2ShapeData.class, UIUtils.getIconURLFromResources("data-types/ij2-shape.png"));
-        registerDatatype("ij2-shape-rectangle", RectangleImageJ2ShapeData.class, UIUtils.getIconURLFromResources("data-types/ij2-shape.png"));
-        registerDatatype("ij2-shape-centered-rectangle", CenteredRectangleImageJ2ShapeData.class, UIUtils.getIconURLFromResources("data-types/ij2-shape.png"));
-        registerDatatype("ij2-shape-periodic-line", PeriodicLineImageJ2ShapeData.class, UIUtils.getIconURLFromResources("data-types/ij2-shape.png"));
-        registerDatatype("ij2-shape-pair-of-points", PairOfPointsImageJ2ShapeData.class, UIUtils.getIconURLFromResources("data-types/ij2-shape.png"));
-        registerDatatype("ij2-shape-hypersphere", HyperSphereImageJ2ShapeData.class, UIUtils.getIconURLFromResources("data-types/ij2-shape.png"));
-        registerDatatype("ij2-shape-horizontal-line", HorizontalLineImageJ2ShapeData.class, UIUtils.getIconURLFromResources("data-types/ij2-shape.png"));
-        registerDatatype("ij2-shape-diamond-tips", DiamondTipsImageJ2ShapeData.class, UIUtils.getIconURLFromResources("data-types/ij2-shape.png"));
-        registerDatatype("ij2-shape-diamond", DiamondImageJ2ShapeData.class, UIUtils.getIconURLFromResources("data-types/ij2-shape.png"));
+        registerDatatype("ij2-shape", ImageJ2ShapeData.class, JIPipe.RESOURCES.getIcon16URL("data-types/ij2-shape.png"));
+        registerDatatype("ij2-shape-empty", EmptyImageJ2ShapeData.class, JIPipe.RESOURCES.getIcon16URL("data-types/ij2-shape.png"));
+        registerDatatype("ij2-shape-rectangle", RectangleImageJ2ShapeData.class, JIPipe.RESOURCES.getIcon16URL("data-types/ij2-shape.png"));
+        registerDatatype("ij2-shape-centered-rectangle", CenteredRectangleImageJ2ShapeData.class, JIPipe.RESOURCES.getIcon16URL("data-types/ij2-shape.png"));
+        registerDatatype("ij2-shape-periodic-line", PeriodicLineImageJ2ShapeData.class, JIPipe.RESOURCES.getIcon16URL("data-types/ij2-shape.png"));
+        registerDatatype("ij2-shape-pair-of-points", PairOfPointsImageJ2ShapeData.class, JIPipe.RESOURCES.getIcon16URL("data-types/ij2-shape.png"));
+        registerDatatype("ij2-shape-hypersphere", HyperSphereImageJ2ShapeData.class, JIPipe.RESOURCES.getIcon16URL("data-types/ij2-shape.png"));
+        registerDatatype("ij2-shape-horizontal-line", HorizontalLineImageJ2ShapeData.class, JIPipe.RESOURCES.getIcon16URL("data-types/ij2-shape.png"));
+        registerDatatype("ij2-shape-diamond-tips", DiamondTipsImageJ2ShapeData.class, JIPipe.RESOURCES.getIcon16URL("data-types/ij2-shape.png"));
+        registerDatatype("ij2-shape-diamond", DiamondImageJ2ShapeData.class, JIPipe.RESOURCES.getIcon16URL("data-types/ij2-shape.png"));
 
         registerNodeType("ij2-create-shape", CreateIJ2ShapeAlgorithm.class);
 
         // Out of bounds factory
-        registerDatatype("ij2-out-of-bounds-factory", ImageJ2OutOfBoundsFactoryData.class, UIUtils.getIconURLFromResources("data-types/ij2-out-of-bounds-factory.png"));
-        registerDatatype("ij2-out-of-bounds-factory-empty", EmptyImageJ2OutOfBoundsFactory.class, UIUtils.getIconURLFromResources("data-types/ij2-out-of-bounds-factory.png"));
-        registerDatatype("ij2-out-of-bounds-factory-mirror", MirrorImageJ2OutOfBoundsFactoryData.class, UIUtils.getIconURLFromResources("data-types/ij2-out-of-bounds-factory.png"));
-        registerDatatype("ij2-out-of-bounds-factory-periodic", PeriodicImageJ2OutOfBoundsFactoryData.class, UIUtils.getIconURLFromResources("data-types/ij2-out-of-bounds-factory.png"));
-        registerDatatype("ij2-out-of-bounds-factory-border", BorderImageJ2OutOfBoundsFactoryData.class, UIUtils.getIconURLFromResources("data-types/ij2-out-of-bounds-factory.png"));
-        registerDatatype("ij2-out-of-bounds-factory-constant-byte", ByteConstantValueImageJ2OutOfBoundsFactoryData.class, UIUtils.getIconURLFromResources("data-types/ij2-out-of-bounds-factory.png"));
-        registerDatatype("ij2-out-of-bounds-factory-constant-short", ShortConstantValueImageJ2OutOfBoundsFactoryData.class, UIUtils.getIconURLFromResources("data-types/ij2-out-of-bounds-factory.png"));
-        registerDatatype("ij2-out-of-bounds-factory-constant-int", IntegerConstantValueImageJ2OutOfBoundsFactoryData.class, UIUtils.getIconURLFromResources("data-types/ij2-out-of-bounds-factory.png"));
-        registerDatatype("ij2-out-of-bounds-factory-constant-long", LongConstantValueImageJ2OutOfBoundsFactoryData.class, UIUtils.getIconURLFromResources("data-types/ij2-out-of-bounds-factory.png"));
-        registerDatatype("ij2-out-of-bounds-factory-constant-float", FloatConstantValueImageJ2OutOfBoundsFactoryData.class, UIUtils.getIconURLFromResources("data-types/ij2-out-of-bounds-factory.png"));
-        registerDatatype("ij2-out-of-bounds-factory-constant-double", DoubleConstantValueImageJ2OutOfBoundsFactoryData.class, UIUtils.getIconURLFromResources("data-types/ij2-out-of-bounds-factory.png"));
+        registerDatatype("ij2-out-of-bounds-factory", ImageJ2OutOfBoundsFactoryData.class, JIPipe.RESOURCES.getIcon16URL("data-types/ij2-out-of-bounds-factory.png"));
+        registerDatatype("ij2-out-of-bounds-factory-empty", EmptyImageJ2OutOfBoundsFactory.class, JIPipe.RESOURCES.getIcon16URL("data-types/ij2-out-of-bounds-factory.png"));
+        registerDatatype("ij2-out-of-bounds-factory-mirror", MirrorImageJ2OutOfBoundsFactoryData.class, JIPipe.RESOURCES.getIcon16URL("data-types/ij2-out-of-bounds-factory.png"));
+        registerDatatype("ij2-out-of-bounds-factory-periodic", PeriodicImageJ2OutOfBoundsFactoryData.class, JIPipe.RESOURCES.getIcon16URL("data-types/ij2-out-of-bounds-factory.png"));
+        registerDatatype("ij2-out-of-bounds-factory-border", BorderImageJ2OutOfBoundsFactoryData.class, JIPipe.RESOURCES.getIcon16URL("data-types/ij2-out-of-bounds-factory.png"));
+        registerDatatype("ij2-out-of-bounds-factory-constant-byte", ByteConstantValueImageJ2OutOfBoundsFactoryData.class, JIPipe.RESOURCES.getIcon16URL("data-types/ij2-out-of-bounds-factory.png"));
+        registerDatatype("ij2-out-of-bounds-factory-constant-short", ShortConstantValueImageJ2OutOfBoundsFactoryData.class, JIPipe.RESOURCES.getIcon16URL("data-types/ij2-out-of-bounds-factory.png"));
+        registerDatatype("ij2-out-of-bounds-factory-constant-int", IntegerConstantValueImageJ2OutOfBoundsFactoryData.class, JIPipe.RESOURCES.getIcon16URL("data-types/ij2-out-of-bounds-factory.png"));
+        registerDatatype("ij2-out-of-bounds-factory-constant-long", LongConstantValueImageJ2OutOfBoundsFactoryData.class, JIPipe.RESOURCES.getIcon16URL("data-types/ij2-out-of-bounds-factory.png"));
+        registerDatatype("ij2-out-of-bounds-factory-constant-float", FloatConstantValueImageJ2OutOfBoundsFactoryData.class, JIPipe.RESOURCES.getIcon16URL("data-types/ij2-out-of-bounds-factory.png"));
+        registerDatatype("ij2-out-of-bounds-factory-constant-double", DoubleConstantValueImageJ2OutOfBoundsFactoryData.class, JIPipe.RESOURCES.getIcon16URL("data-types/ij2-out-of-bounds-factory.png"));
         registerEnumParameterType("ij2-out-of-bounds-mirror-factory:boundary",
                 OutOfBoundsMirrorFactory.Boundary.class,
                 "Mirror boundary",
@@ -221,7 +222,7 @@ public class ImageJ2Plugin extends JIPipePrepackagedDefaultJavaPlugin {
                     progressInfo.log("Node has no data slots. Skipping.");
                     continue;
                 }
-                registerNodeType(nodeInfo, UIUtils.getIconURLFromResources("apps/imagej2.png"));
+                registerNodeType(nodeInfo, JIPipe.RESOURCES.getIcon16URL("apps/imagej2.png"));
             } catch (Exception e) {
                 moduleProgress.log("Unable to register module:");
                 moduleProgress.log(e.toString());
@@ -231,7 +232,7 @@ public class ImageJ2Plugin extends JIPipePrepackagedDefaultJavaPlugin {
 
     @Override
     public List<ImageIcon> getSplashIcons() {
-        return Collections.singletonList(UIUtils.getIcon32FromResources("apps/imglib2.png"));
+        return Collections.singletonList(JIPipe.RESOURCES.getIcon32("apps/imglib2.png"));
     }
 
     @Override

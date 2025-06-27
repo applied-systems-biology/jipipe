@@ -13,6 +13,7 @@
 
 package org.hkijena.jipipe.desktop.app.grapheditor.flavors.compartments.properties;
 
+import org.hkijena.jipipe.JIPipe;
 import org.hkijena.jipipe.api.compartments.algorithms.JIPipeProjectCompartment;
 import org.hkijena.jipipe.api.nodes.JIPipeGraphNode;
 import org.hkijena.jipipe.desktop.app.JIPipeDesktopProjectWorkbench;
@@ -22,6 +23,7 @@ import org.hkijena.jipipe.desktop.commons.components.JIPipeDesktopFormPanel;
 import org.hkijena.jipipe.desktop.commons.components.JIPipeDesktopParameterFormPanel;
 import org.hkijena.jipipe.utils.TooltipUtils;
 import org.hkijena.jipipe.utils.UIUtils;
+import org.hkijena.jipipe.JIPipe;
 
 import javax.swing.*;
 import java.awt.*;
@@ -52,7 +54,7 @@ public class JIPipeDesktopCompartmentsParametersPanel extends JIPipeDesktopProje
 
         if (node instanceof JIPipeProjectCompartment) {
             // Edit contents button
-            JButton editContentsButton = UIUtils.createButton("Edit contents", UIUtils.getIconFromResources("actions/edit.png"), this::editContents);
+            JButton editContentsButton = UIUtils.createButton("Edit contents", JIPipe.RESOURCES.getIcon16("actions/edit.png"), this::editContents);
             UIUtils.makeButtonHighlightedSuccess(editContentsButton);
             parametersUI.getToolBar().add(editContentsButton);
         }

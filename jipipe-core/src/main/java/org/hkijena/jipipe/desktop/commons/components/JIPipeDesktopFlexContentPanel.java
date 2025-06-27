@@ -18,6 +18,7 @@ import org.hkijena.jipipe.desktop.commons.components.ribbon.JIPipeDesktopRibbon;
 import org.hkijena.jipipe.desktop.commons.components.tabs.JIPipeDesktopTabPane;
 import org.hkijena.jipipe.utils.JIPipeDesktopSplitPane;
 import org.hkijena.jipipe.utils.UIUtils;
+import org.hkijena.jipipe.JIPipe;
 
 import javax.swing.*;
 import java.awt.*;
@@ -34,7 +35,7 @@ public class JIPipeDesktopFlexContentPanel extends JPanel {
 
     public static final int WITH_PIN_TOOLBAR = 4;
     public static final int WITH_SIDEBAR = 8;
-    private final JToggleButton sideBarToggle = new JToggleButton(UIUtils.getIcon16FromResources("actions/sidebar.png"));
+    private final JToggleButton sideBarToggle = new JToggleButton(JIPipe.RESOURCES.getIcon16("actions/sidebar.png"));
     private final JPanel contentPanel = new JPanel(new BorderLayout());
     private JIPipeDesktopRibbon ribbon;
     private JToolBar toolBar;

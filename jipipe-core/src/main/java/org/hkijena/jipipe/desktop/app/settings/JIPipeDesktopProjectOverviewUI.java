@@ -160,7 +160,7 @@ public class JIPipeDesktopProjectOverviewUI extends JIPipeDesktopProjectWorkbenc
         projectName.setText(StringUtils.orElse(getProject().getMetadata().getName(), "Unnamed project"));
         projectAuthors.removeAll();
         for (JIPipeAuthorMetadata author : getProject().getMetadata().getAuthors()) {
-            JButton authorButton = new JButton(author.toString(), UIUtils.getIconFromResources("actions/im-user.png"));
+            JButton authorButton = new JButton(author.toString(), JIPipe.RESOURCES.getIcon16("actions/im-user.png"));
             authorButton.setToolTipText("Click to show more information");
             authorButton.addActionListener(e -> {
                 JIPipeAuthorMetadata.openAuthorInfoWindow(getDesktopWorkbench().getWindow(), getProject().getMetadata().getAuthors(), author);
@@ -213,11 +213,11 @@ public class JIPipeDesktopProjectOverviewUI extends JIPipeDesktopProjectWorkbenc
         tipsPanel.setLayout(new BoxLayout(tipsPanel, BoxLayout.X_AXIS));
 
         if (!StringUtils.isNullOrEmpty(getProject().getMetadata().getDescription().toPlainText())) {
-            addPanelToCenterPanel(UIUtils.getIcon32FromResources("status/messagebox_info.png"), "Description", descriptionReader, UIUtils.makeButtonTransparent(UIUtils.createButton("", UIUtils.getIconFromResources("actions/edit.png"), this::editProjectDescription)));
+            addPanelToCenterPanel(JIPipe.RESOURCES.getIcon32("status/messagebox_info.png"), "Description", descriptionReader, UIUtils.makeButtonTransparent(UIUtils.createButton("", JIPipe.RESOURCES.getIcon16("actions/edit.png"), this::editProjectDescription)));
             descriptionReader.setText(getProject().getMetadata().getDescription().getHtml());
         } else {
             addToTipsPanel(tipsPanel, "Write a description", "Write a workflow description to help people who are unfamiliar with your pipeline.",
-                    UIUtils.makeButtonTransparent(UIUtils.createButton("Edit metadata", UIUtils.getIconFromResources("actions/edit.png"), this::editProjectDescription)));
+                    UIUtils.makeButtonTransparent(UIUtils.createButton("Edit metadata", JIPipe.RESOURCES.getIcon16("actions/edit.png"), this::editProjectDescription)));
         }
 
         if (StringUtils.isNullOrEmpty(getProject().getMetadata().getLicense())) {
@@ -316,7 +316,7 @@ public class JIPipeDesktopProjectOverviewUI extends JIPipeDesktopProjectWorkbenc
         if (!upgrades.isEmpty()) {
             addToTipsPanel(tipsPanel, "Update third-party artifacts", "Your project has some non-optimal configurations regarding " + StringUtils.formatPluralS(upgrades.size(), "third-party artifact") +
                             ". Alternatives were detected that may allow to utilize your hardware better or contain important bugfixes.",
-                    UIUtils.makeButtonTransparent(UIUtils.createButton("Review updates", UIUtils.getIconFromResources("actions/list-check.png"), () -> upgradeArtifacts(upgrades))));
+                    UIUtils.makeButtonTransparent(UIUtils.createButton("Review updates", JIPipe.RESOURCES.getIcon16("actions/list-check.png"), () -> upgradeArtifacts(upgrades))));
         }
     }
 
@@ -338,7 +338,7 @@ public class JIPipeDesktopProjectOverviewUI extends JIPipeDesktopProjectWorkbenc
             comboBox.addItem("Keep as-is");
             comboBoxes.add(comboBox);
 
-            formPanel.addToForm(comboBox, new JLabel(artifactUpgrade.current.getFullId(), UIUtils.getIconFromResources("actions/run-build-install.png"), JLabel.LEFT));
+            formPanel.addToForm(comboBox, new JLabel(artifactUpgrade.current.getFullId(), JIPipe.RESOURCES.getIcon16("actions/run-build-install.png"), JLabel.LEFT));
         }
         int numSuccesses = 0;
         if (JIPipeDesktopFormPanel.showDialog(this, formPanel, "Update third-party artifacts")) {
@@ -381,24 +381,24 @@ public class JIPipeDesktopProjectOverviewUI extends JIPipeDesktopProjectWorkbenc
                     color = runSet.getColor().getContent();
                 }
                 outputPanel.add(new JLabel(new SolidColorIcon(8, 32, color != null ? color : UIManager.getColor("Panel.background"), UIUtils.getControlBorderColor())), BorderLayout.WEST);
-                outputPanel.add(new JLabel(runSet.getDisplayName(), UIUtils.getIconFromResources("actions/debug-run.png"), JLabel.LEFT), BorderLayout.CENTER);
+                outputPanel.add(new JLabel(runSet.getDisplayName(), JIPipe.RESOURCES.getIcon16("actions/debug-run.png"), JLabel.LEFT), BorderLayout.CENTER);
 
-                JButton runButton = new JButton("Run", UIUtils.getIconFromResources("actions/run-play.png"));
+                JButton runButton = new JButton("Run", JIPipe.RESOURCES.getIcon16("actions/run-play.png"));
                 JPopupMenu runMenu = UIUtils.addPopupMenuToButton(runButton);
-                runMenu.add(UIUtils.createMenuItem("Update cache (default)", "Runs the output and stores the results in the memory cache", UIUtils.getIcon16FromResources("actions/update-cache.png"), () -> {
+                runMenu.add(UIUtils.createMenuItem("Update cache (default)", "Runs the output and stores the results in the memory cache", JIPipe.RESOURCES.getIcon16("actions/update-cache.png"), () -> {
                     doUpdateCache(runSet, false);
                 }));
                 runMenu.add(UIUtils.createMenuItem("Cache intermediate results", "Runs the output and stores the results and intermediate" +
-                        " results in the memory cache (memory-intensive for large workflows!)", UIUtils.getIcon16FromResources("actions/cache-intermediate-results.png"), () -> {
+                        " results in the memory cache (memory-intensive for large workflows!)", JIPipe.RESOURCES.getIcon16("actions/cache-intermediate-results.png"), () -> {
                     doUpdateCache(runSet, true);
                 }));
                 runMenu.addSeparator();
-                runMenu.add(UIUtils.createMenuItem("Run (no cache)", "Runs the output without caching any results in memory", UIUtils.getIcon16FromResources("actions/play.png"), () -> {
+                runMenu.add(UIUtils.createMenuItem("Run (no cache)", "Runs the output without caching any results in memory", JIPipe.RESOURCES.getIcon16("actions/play.png"), () -> {
                     doRun(runSet);
                 }));
 
                 outputPanel.add(UIUtils.boxHorizontal(
-                        UIUtils.createButton("Help", UIUtils.getIconFromResources("actions/help.png"), () -> {
+                        UIUtils.createButton("Help", JIPipe.RESOURCES.getIcon16("actions/help.png"), () -> {
                             dockPanel.activatePanel(DOCK_NODE_CONTEXT_HELP, true);
                             JIPipeDesktopFormHelpPanel helpPanel = dockPanel.getPanelComponent(DOCK_NODE_CONTEXT_HELP, JIPipeDesktopFormHelpPanel.class);
                             if (!StringUtils.isNullOrEmpty(runSet.getDescription().toPlainText())) {
@@ -407,7 +407,7 @@ public class JIPipeDesktopProjectOverviewUI extends JIPipeDesktopProjectWorkbenc
                                 helpPanel.showContent(new MarkdownText("# " + runSet.getDisplayName() + "\n\n*No description provided*"));
                             }
                         }),
-                        UIUtils.createButton("Show results", UIUtils.getIconFromResources("actions/update-cache.png"), () -> {
+                        UIUtils.createButton("Show results", JIPipe.RESOURCES.getIcon16("actions/update-cache.png"), () -> {
                             doShowResults(runSet);
                         }),
                         runButton
@@ -415,7 +415,7 @@ public class JIPipeDesktopProjectOverviewUI extends JIPipeDesktopProjectWorkbenc
 
                 listPanel.add(outputPanel);
             }
-            addPanelToCenterPanel(UIUtils.getIcon32FromResources("actions/run-play.png"), "Run predefined node sets", listPanel);
+            addPanelToCenterPanel(JIPipe.RESOURCES.getIcon32("actions/run-play.png"), "Run predefined node sets", listPanel);
         }
     }
 
@@ -507,28 +507,28 @@ public class JIPipeDesktopProjectOverviewUI extends JIPipeDesktopProjectWorkbenc
                     color = output.getProjectOverviewColor().getContent();
                 }
                 outputPanel.add(new JLabel(new SolidColorIcon(8, 32, color != null ? color : UIManager.getColor("Panel.background"), UIUtils.getControlBorderColor())), BorderLayout.WEST);
-                outputPanel.add(new JLabel(output.getDisplayName(), UIUtils.getIconFromResources("actions/graph-compartment.png"), JLabel.LEFT), BorderLayout.CENTER);
+                outputPanel.add(new JLabel(output.getDisplayName(), JIPipe.RESOURCES.getIcon16("actions/graph-compartment.png"), JLabel.LEFT), BorderLayout.CENTER);
 
-                JButton runButton = new JButton("Run", UIUtils.getIconFromResources("actions/run-play.png"));
+                JButton runButton = new JButton("Run", JIPipe.RESOURCES.getIcon16("actions/run-play.png"));
                 JPopupMenu runMenu = UIUtils.addPopupMenuToButton(runButton);
-                runMenu.add(UIUtils.createMenuItem("Update cache (default)", "Runs the output and stores the results in the memory cache", UIUtils.getIcon16FromResources("actions/update-cache.png"), () -> {
+                runMenu.add(UIUtils.createMenuItem("Update cache (default)", "Runs the output and stores the results in the memory cache", JIPipe.RESOURCES.getIcon16("actions/update-cache.png"), () -> {
                     doUpdateCache(Collections.singletonList(output), false);
                 }));
                 runMenu.add(UIUtils.createMenuItem("Cache intermediate results", "Runs the output and stores the results and intermediate" +
-                        " results in the memory cache (memory-intensive for large workflows!)", UIUtils.getIcon16FromResources("actions/cache-intermediate-results.png"), () -> {
+                        " results in the memory cache (memory-intensive for large workflows!)", JIPipe.RESOURCES.getIcon16("actions/cache-intermediate-results.png"), () -> {
                     doUpdateCache(Collections.singletonList(output), true);
                 }));
                 runMenu.addSeparator();
-                runMenu.add(UIUtils.createMenuItem("Run (no cache)", "Runs the output without caching any results in memory", UIUtils.getIcon16FromResources("actions/play.png"), () -> {
+                runMenu.add(UIUtils.createMenuItem("Run (no cache)", "Runs the output without caching any results in memory", JIPipe.RESOURCES.getIcon16("actions/play.png"), () -> {
                     doRun(Collections.singletonList(output));
                 }));
 
                 outputPanel.add(UIUtils.boxHorizontal(
-                        UIUtils.createButton("Go to", UIUtils.getIconFromResources("actions/go-jump.png"), () -> {
+                        UIUtils.createButton("Go to", JIPipe.RESOURCES.getIcon16("actions/go-jump.png"), () -> {
                             getDesktopProjectWorkbench().getOrOpenPipelineEditorTab(output.getProjectCompartment(), true);
                         }),
                         Box.createHorizontalStrut(16),
-                        UIUtils.createButton("Help", UIUtils.getIconFromResources("actions/help.png"), () -> {
+                        UIUtils.createButton("Help", JIPipe.RESOURCES.getIcon16("actions/help.png"), () -> {
                             dockPanel.activatePanel(DOCK_NODE_CONTEXT_HELP, true);
                             JIPipeDesktopFormHelpPanel helpPanel = dockPanel.getPanelComponent(DOCK_NODE_CONTEXT_HELP, JIPipeDesktopFormHelpPanel.class);
                             if (!StringUtils.isNullOrEmpty(output.getProjectCompartment().getCustomDescription().toPlainText().trim()) || !StringUtils.isNullOrEmpty(output.getCustomDescription().toPlainText().trim())) {
@@ -538,7 +538,7 @@ public class JIPipeDesktopProjectOverviewUI extends JIPipeDesktopProjectWorkbenc
                             }
 
                         }),
-                        UIUtils.createButton("Show results", UIUtils.getIconFromResources("actions/update-cache.png"), () -> {
+                        UIUtils.createButton("Show results", JIPipe.RESOURCES.getIcon16("actions/update-cache.png"), () -> {
                             doShowResults(output);
                         }),
                         runButton
@@ -547,7 +547,7 @@ public class JIPipeDesktopProjectOverviewUI extends JIPipeDesktopProjectWorkbenc
                 listPanel.add(outputPanel);
             }
 
-            addPanelToCenterPanel(UIUtils.getIcon32FromResources("actions/run-play.png"), "Run compartment", listPanel);
+            addPanelToCenterPanel(JIPipe.RESOURCES.getIcon32("actions/run-play.png"), "Run compartment", listPanel);
         }
     }
 
@@ -618,7 +618,7 @@ public class JIPipeDesktopProjectOverviewUI extends JIPipeDesktopProjectWorkbenc
         if (numHits > 0) {
             addToTipsPanel(tipsPanel, "Let compartments output data", "If you setup at least one output for each compartment, you can pass data to other compartments. " +
                             "Additionally, you will be able to run the outputs from the Compartments view and from here.",
-                    UIUtils.makeButtonTransparent(UIUtils.createButton("Show compartments", UIUtils.getIconFromResources("actions/graph-compartments.png"), this::openCompartmentsEditor)));
+                    UIUtils.makeButtonTransparent(UIUtils.createButton("Show compartments", JIPipe.RESOURCES.getIcon16("actions/graph-compartments.png"), this::openCompartmentsEditor)));
         }
     }
 
@@ -629,7 +629,7 @@ public class JIPipeDesktopProjectOverviewUI extends JIPipeDesktopProjectWorkbenc
         if (nodeCount > 30 && compartmentCount == 1) {
             addToTipsPanel(tipsPanel, "Consider organizing your project", "Use compartments to split your pipeline into smaller units, so it is easier " +
                             "to navigate through your project.",
-                    UIUtils.makeButtonTransparent(UIUtils.createButton("Show compartments", UIUtils.getIconFromResources("actions/graph-compartments.png"), this::openCompartmentsEditor)));
+                    UIUtils.makeButtonTransparent(UIUtils.createButton("Show compartments", JIPipe.RESOURCES.getIcon16("actions/graph-compartments.png"), this::openCompartmentsEditor)));
         }
     }
 
@@ -638,7 +638,7 @@ public class JIPipeDesktopProjectOverviewUI extends JIPipeDesktopProjectWorkbenc
     }
 
     private void createLicenseTip(JPanel tipsPanel) {
-        JButton button = UIUtils.makeButtonTransparent(UIUtils.createButton("Choose a license", UIUtils.getIconFromResources("actions/edit.png"), () -> {
+        JButton button = UIUtils.makeButtonTransparent(UIUtils.createButton("Choose a license", JIPipe.RESOURCES.getIcon16("actions/edit.png"), () -> {
         }));
         JPopupMenu popupMenu = UIUtils.addPopupMenuToButton(button);
         for (String license : Arrays.asList(
@@ -656,14 +656,14 @@ public class JIPipeDesktopProjectOverviewUI extends JIPipeDesktopProjectWorkbenc
                 "EPL-2.0",
                 "Unlicense"
         )) {
-            popupMenu.add(UIUtils.createMenuItem(license, "Set the license to " + license, UIUtils.getIconFromResources("actions/copyright.png"), () -> {
+            popupMenu.add(UIUtils.createMenuItem(license, "Set the license to " + license, JIPipe.RESOURCES.getIcon16("actions/copyright.png"), () -> {
                 getProject().getMetadata().setLicense(license);
                 refreshAll();
             }));
         }
 
         popupMenu.addSeparator();
-        popupMenu.add(UIUtils.createMenuItem("Learn more ...", "Open https://choosealicense.com/", UIUtils.getIconFromResources("actions/web-browser.png"), () -> {
+        popupMenu.add(UIUtils.createMenuItem("Learn more ...", "Open https://choosealicense.com/", JIPipe.RESOURCES.getIcon16("actions/web-browser.png"), () -> {
             UIUtils.desktopOpenURL("https://choosealicense.com/", true);
         }));
 
@@ -678,7 +678,7 @@ public class JIPipeDesktopProjectOverviewUI extends JIPipeDesktopProjectWorkbenc
                 new RoundedLineBorder(UIUtils.getControlBorderColor(), 1, 4)
         ));
         JLabel titleLabel = new JLabel(title);
-        titleLabel.setIcon(UIUtils.getIcon32FromResources("status/starred.png"));
+        titleLabel.setIcon(JIPipe.RESOURCES.getIcon32("status/starred.png"));
         titleLabel.setFont(titleLabel.getFont().deriveFont(Font.BOLD, 14));
         titleLabel.setBorder(BorderFactory.createEmptyBorder(0, 0, 16, 0));
         panel.add(titleLabel, BorderLayout.NORTH);
@@ -744,52 +744,52 @@ public class JIPipeDesktopProjectOverviewUI extends JIPipeDesktopProjectWorkbenc
 
         dockPanel.addDockPanel("PARAMETERS",
                 "Parameters",
-                UIUtils.getIcon32FromResources("actions/configure3.png"),
+                JIPipe.RESOURCES.getIcon32("actions/configure3.png"),
                 JIPipeDesktopDockPanel.PanelLocation.TopRight,
                 true,
                 0,
                 userParametersContainer);
-        dockPanel.addDockPanel("RESULTS", "Results", UIUtils.getIcon32FromResources("actions/network-server-database.png"),
+        dockPanel.addDockPanel("RESULTS", "Results", JIPipe.RESOURCES.getIcon32("actions/network-server-database.png"),
                 JIPipeDesktopDockPanel.PanelLocation.TopRight,
                 false,
                 0,
                 resultsPanel);
         dockPanel.addDockPanel("PARTITIONS",
                 "Partitions",
-                UIUtils.getIcon32FromResources("actions/runtime-partition.png"),
+                JIPipe.RESOURCES.getIcon32("actions/runtime-partition.png"),
                 JIPipeDesktopDockPanel.PanelLocation.BottomLeft,
                 false,
                 0,
                 runtimePartitionsPanel);
         dockPanel.addDockPanel("RUN_SETS",
                 "Run sets",
-                UIUtils.getIcon32FromResources("actions/debug-run.png"),
+                JIPipe.RESOURCES.getIcon32("actions/debug-run.png"),
                 JIPipeDesktopDockPanel.PanelLocation.BottomLeft,
                 false,
                 0,
                 runSetsEditor);
         dockPanel.addDockPanel("BOOKMARKS",
                 "Bookmarks",
-                UIUtils.getIcon32FromResources("actions/bookmark.png"),
+                JIPipe.RESOURCES.getIcon32("actions/bookmark.png"),
                 JIPipeDesktopDockPanel.PanelLocation.BottomLeft,
                 false,
                 0,
                 new JIPipeDesktopBookmarkListPanel(getDesktopWorkbench(), getProject().getGraph(), null, null));
         dockPanel.addDockPanel(AbstractJIPipeDesktopGraphEditorUI.DOCK_LOG,
                 "Log",
-                UIUtils.getIcon32FromResources("actions/rabbitvcs-show_log.png"),
+                JIPipe.RESOURCES.getIcon32("actions/rabbitvcs-show_log.png"),
                 JIPipeDesktopDockPanel.PanelLocation.BottomBottom,
                 false,
                 0, new JIPipeDesktopGraphEditorLogPanel(getDesktopWorkbench()));
         dockPanel.addDockPanel(AbstractJIPipeDesktopGraphEditorUI.DOCK_ERRORS,
                 "Errors",
-                UIUtils.getIcon32FromResources("actions/dialog-warning-2.png"),
+                JIPipe.RESOURCES.getIcon32("actions/dialog-warning-2.png"),
                 JIPipeDesktopDockPanel.PanelLocation.BottomRight,
                 false,
                 0, new JIPipeDesktopGraphEditorErrorPanel(getDesktopWorkbench(), null));
         dockPanel.addDockPanel(DOCK_NODE_CONTEXT_HELP,
                 "Documentation",
-                UIUtils.getIcon32FromResources("actions/help-question.png"),
+                JIPipe.RESOURCES.getIcon32("actions/help-question.png"),
                 JIPipeDesktopDockPanel.PanelLocation.BottomRight,
                 true,
                 0, userParametersPanel.getHelpPanel());
@@ -812,13 +812,13 @@ public class JIPipeDesktopProjectOverviewUI extends JIPipeDesktopProjectWorkbenc
     private void initializeUserParametersPanel() {
         JIPipeDesktopRibbon.Task parametersTask = userParametersRibbon.getOrCreateTask("Parameters");
         JIPipeDesktopRibbon.Band modifyParametersBand = parametersTask.getOrCreateBand("Modify");
-        modifyParametersBand.addLargeButton("Global", "Add/edit custom global parameters", UIUtils.getIcon32FromResources("actions/configure3.png"), this::editGlobalParameters);
-        modifyParametersBand.addLargeButton("References", "Reference parameters from the pipeline", UIUtils.getIcon32FromResources("actions/edit-link.png"), this::editReferencedParameters);
-        modifyParametersBand.addLargeMenuButton("Directories", "Modify global directories", UIUtils.getIcon32FromResources("actions/document-open-folder.png"),
-                UIUtils.createMenuItem("Add new directory ...", "Adds an existing path/directory as new entry into the directory list", UIUtils.getIconFromResources("actions/add.png"), this::addDirectoryParameter),
-                UIUtils.createMenuItem("Configure ...", "Opens the relevant page in the project settings", UIUtils.getIconFromResources("actions/configure.png"), this::editDirectoryParameters));
+        modifyParametersBand.addLargeButton("Global", "Add/edit custom global parameters", JIPipe.RESOURCES.getIcon32("actions/configure3.png"), this::editGlobalParameters);
+        modifyParametersBand.addLargeButton("References", "Reference parameters from the pipeline", JIPipe.RESOURCES.getIcon32("actions/edit-link.png"), this::editReferencedParameters);
+        modifyParametersBand.addLargeMenuButton("Directories", "Modify global directories", JIPipe.RESOURCES.getIcon32("actions/document-open-folder.png"),
+                UIUtils.createMenuItem("Add new directory ...", "Adds an existing path/directory as new entry into the directory list", JIPipe.RESOURCES.getIcon16("actions/add.png"), this::addDirectoryParameter),
+                UIUtils.createMenuItem("Configure ...", "Opens the relevant page in the project settings", JIPipe.RESOURCES.getIcon16("actions/configure.png"), this::editDirectoryParameters));
         JIPipeDesktopRibbon.Band viewBand = parametersTask.getOrCreateBand("View");
-        viewBand.addLargeButton("Refresh", "Refreshes the parameters", UIUtils.getIcon32FromResources("actions/stock_refresh.png"), this::refreshAll);
+        viewBand.addLargeButton("Refresh", "Refreshes the parameters", JIPipe.RESOURCES.getIcon32("actions/stock_refresh.png"), this::refreshAll);
         userParametersRibbon.rebuildRibbon();
     }
 
@@ -885,11 +885,11 @@ public class JIPipeDesktopProjectOverviewUI extends JIPipeDesktopProjectWorkbenc
         buttonPanel.setLayout(new BoxLayout(buttonPanel, BoxLayout.X_AXIS));
         buttonPanel.add(Box.createHorizontalGlue());
 
-        JButton cancelButton = new JButton("Cancel", UIUtils.getIconFromResources("actions/cancel.png"));
+        JButton cancelButton = new JButton("Cancel", JIPipe.RESOURCES.getIcon16("actions/cancel.png"));
         cancelButton.addActionListener(e -> dialog.setVisible(false));
         buttonPanel.add(cancelButton);
 
-        JButton confirmButton = new JButton("Save", UIUtils.getIconFromResources("actions/filesave.png"));
+        JButton confirmButton = new JButton("Save", JIPipe.RESOURCES.getIcon16("actions/filesave.png"));
         confirmButton.addActionListener(e -> {
             getProject().getPipelineParameters().setExportedParameters(copy);
             dialog.setVisible(false);
@@ -919,7 +919,7 @@ public class JIPipeDesktopProjectOverviewUI extends JIPipeDesktopProjectWorkbenc
         projectName.setFont(new Font(Font.DIALOG, Font.PLAIN, 16));
         projectName.setBorder(BorderFactory.createEmptyBorder(8, 8, 8, 8));
         nameAndAuthorPanel.addWideToForm(UIUtils.boxHorizontal(projectName,
-                UIUtils.makeButtonTransparent(UIUtils.createButton("", UIUtils.getIcon16FromResources("actions/edit.png"), this::editProjectMetadata))), null);
+                UIUtils.makeButtonTransparent(UIUtils.createButton("", JIPipe.RESOURCES.getIcon16("actions/edit.png"), this::editProjectMetadata))), null);
 
         projectAuthors = new JPanel();
         projectAuthors.setLayout(new BoxLayout(projectAuthors, BoxLayout.X_AXIS));
@@ -956,14 +956,14 @@ public class JIPipeDesktopProjectOverviewUI extends JIPipeDesktopProjectWorkbenc
         toolBar.setLayout(new BoxLayout(toolBar, BoxLayout.X_AXIS));
         toolBar.setOpaque(false);
 
-        openWebsiteButton = new JButton("Visit website", UIUtils.getIconFromResources("actions/web-browser.png"));
+        openWebsiteButton = new JButton("Visit website", JIPipe.RESOURCES.getIcon16("actions/web-browser.png"));
         openWebsiteButton.addActionListener(e -> UIUtils.desktopOpenURL(getProject().getMetadata().getWebsite(), true));
         openWebsiteButton.setOpaque(false);
         openWebsiteButton.setBackground(new Color(0, 0, 0, 0));
         toolBar.add(openWebsiteButton);
         toolBar.add(Box.createHorizontalStrut(4));
 
-        copyCitationButton = new JButton("Copy citation", UIUtils.getIconFromResources("actions/edit-copy.png"));
+        copyCitationButton = new JButton("Copy citation", JIPipe.RESOURCES.getIcon16("actions/edit-copy.png"));
         copyCitationButton.addActionListener(e -> {
             StringSelection selection = new StringSelection(getProject().getMetadata().getCitation());
             Clipboard clipboard = Toolkit.getDefaultToolkit().getSystemClipboard();
@@ -974,7 +974,7 @@ public class JIPipeDesktopProjectOverviewUI extends JIPipeDesktopProjectWorkbenc
         toolBar.add(copyCitationButton);
         toolBar.add(Box.createHorizontalStrut(4));
 
-        copyDependencyCitationsButton = new JButton("Copy cited sources", UIUtils.getIconFromResources("actions/edit-copy.png"));
+        copyDependencyCitationsButton = new JButton("Copy cited sources", JIPipe.RESOURCES.getIcon16("actions/edit-copy.png"));
         copyDependencyCitationsButton.addActionListener(e -> {
             StringBuilder stringBuilder = new StringBuilder();
             for (String dependencyCitation : getProject().getMetadata().getDependencyCitations()) {
@@ -989,7 +989,7 @@ public class JIPipeDesktopProjectOverviewUI extends JIPipeDesktopProjectWorkbenc
         toolBar.add(copyDependencyCitationsButton);
         toolBar.add(Box.createHorizontalStrut(4));
 
-        showAcknowledgedAuthorsButton = new JButton("Show acknowledgements", UIUtils.getIconFromResources("actions/view-process-users.png"));
+        showAcknowledgedAuthorsButton = new JButton("Show acknowledgements", JIPipe.RESOURCES.getIcon16("actions/view-process-users.png"));
         showAcknowledgedAuthorsButton.addActionListener(e -> {
             JIPipeAuthorMetadata.openAuthorInfoWindow(this,
                     getProject().getMetadata().getAcknowledgements(),
@@ -1002,28 +1002,28 @@ public class JIPipeDesktopProjectOverviewUI extends JIPipeDesktopProjectWorkbenc
 
         toolBar.add(Box.createHorizontalGlue());
 
-        JButton reportButton = new JButton("Generate report", UIUtils.getIconFromResources("actions/document-preview.png"));
+        JButton reportButton = new JButton("Generate report", JIPipe.RESOURCES.getIcon16("actions/document-preview.png"));
         reportButton.setOpaque(false);
         reportButton.setBackground(new Color(0, 0, 0, 0));
         reportButton.setToolTipText("Opens a report that contains information about this project.");
         reportButton.addActionListener(e -> openProjectReport());
         toolBar.add(reportButton);
 
-        JButton refreshButton = new JButton("Refresh", UIUtils.getIconFromResources("actions/view-refresh.png"));
+        JButton refreshButton = new JButton("Refresh", JIPipe.RESOURCES.getIcon16("actions/view-refresh.png"));
         refreshButton.setOpaque(false);
         refreshButton.setBackground(new Color(0, 0, 0, 0));
         refreshButton.setToolTipText("Updates the contents of this page.");
         refreshButton.addActionListener(e -> refreshAll());
         toolBar.add(refreshButton);
 
-        JButton openSettingsButton = new JButton("Application settings", UIUtils.getIconFromResources("actions/open-in-new-window.png"));
+        JButton openSettingsButton = new JButton("Application settings", JIPipe.RESOURCES.getIcon16("actions/open-in-new-window.png"));
         openSettingsButton.setOpaque(false);
         openSettingsButton.setBackground(new Color(0, 0, 0, 0));
         openSettingsButton.setToolTipText("Opens the JIPipe application settings dialog");
         openSettingsButton.addActionListener(e -> getDesktopProjectWorkbench().openApplicationSettings(null));
         toolBar.add(openSettingsButton);
 
-        JButton openProjectSettingsButton = new JButton("Project settings", UIUtils.getIconFromResources("actions/configure.png"));
+        JButton openProjectSettingsButton = new JButton("Project settings", JIPipe.RESOURCES.getIcon16("actions/configure.png"));
         openProjectSettingsButton.setOpaque(false);
         openProjectSettingsButton.setBackground(new Color(0, 0, 0, 0));
         openProjectSettingsButton.setToolTipText("Opens the project settings dialog");
@@ -1033,7 +1033,7 @@ public class JIPipeDesktopProjectOverviewUI extends JIPipeDesktopProjectWorkbenc
         });
         toolBar.add(openProjectSettingsButton);
 
-        JButton runProjectButton = new JButton("Run project", UIUtils.getIconFromResources("actions/play.png"));
+        JButton runProjectButton = new JButton("Run project", JIPipe.RESOURCES.getIcon16("actions/play.png"));
         runProjectButton.setOpaque(false);
         runProjectButton.setBackground(new Color(0, 0, 0, 0));
         runProjectButton.setBorder(UIUtils.createButtonBorder(new Color(0x5CB85C)));

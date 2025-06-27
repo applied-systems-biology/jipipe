@@ -13,6 +13,7 @@
 
 package org.hkijena.jipipe.desktop.app.cache;
 
+import org.hkijena.jipipe.JIPipe;
 import org.hkijena.jipipe.api.nodes.JIPipeGraphNode;
 import org.hkijena.jipipe.api.parameters.JIPipeParameterCollection;
 import org.hkijena.jipipe.api.project.JIPipeProject;
@@ -21,6 +22,7 @@ import org.hkijena.jipipe.api.run.JIPipeRunnableQueue;
 import org.hkijena.jipipe.desktop.app.JIPipeDesktopProjectWorkbench;
 import org.hkijena.jipipe.desktop.app.running.queue.JIPipeDesktopRunnableQueueButton;
 import org.hkijena.jipipe.utils.UIUtils;
+import org.hkijena.jipipe.JIPipe;
 import org.scijava.Disposable;
 
 import javax.swing.*;
@@ -100,17 +102,17 @@ public class JIPipeDesktopCachedDataDisplayCacheControl implements Disposable,
     }
 
     private void initialize() {
-        updateCacheButton = new JButton("Update", UIUtils.getIconFromResources("actions/run-play.png"));
+        updateCacheButton = new JButton("Update", JIPipe.RESOURCES.getIcon16("actions/run-play.png"));
         updateCacheButton.setToolTipText("Updates the cache, so the currently viewed data is updated.");
 
         JPopupMenu menu = UIUtils.addPopupMenuToButton(updateCacheButton);
 
-        JMenuItem updateCacheItem = new JMenuItem("Update cache", UIUtils.getIconFromResources("actions/database.png"));
+        JMenuItem updateCacheItem = new JMenuItem("Update cache", JIPipe.RESOURCES.getIcon16("actions/database.png"));
         updateCacheButton.setToolTipText("Updates the node that contains this viewed data. Intermediate results are discarded.");
         updateCacheItem.addActionListener(e -> workbench.runUpdateCache(node));
         menu.add(updateCacheItem);
 
-        JMenuItem cacheIntermediateResultsItem = new JMenuItem("Cache intermediate results", UIUtils.getIconFromResources("actions/cache-intermediate-results.png"));
+        JMenuItem cacheIntermediateResultsItem = new JMenuItem("Cache intermediate results", JIPipe.RESOURCES.getIcon16("actions/cache-intermediate-results.png"));
         updateCacheButton.setToolTipText("Updates the node that contains this viewed data. Intermediate results are also cached.");
         cacheIntermediateResultsItem.addActionListener(e -> workbench.runCacheIntermediateResults(node));
         menu.add(cacheIntermediateResultsItem);

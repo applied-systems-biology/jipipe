@@ -15,6 +15,7 @@ package org.hkijena.jipipe.plugins.imagejdatatypes.util.dimensions;
 
 import org.hkijena.jipipe.plugins.parameters.api.enums.EnumItemInfo;
 import org.hkijena.jipipe.utils.UIUtils;
+import org.hkijena.jipipe.JIPipe;
 
 import javax.swing.*;
 
@@ -24,15 +25,15 @@ public class OptionalBitDepthEnumItemInfo implements EnumItemInfo {
         if (value instanceof OptionalBitDepth) {
             switch ((OptionalBitDepth) value) {
                 case Grayscale32f:
-                    return UIUtils.getIconFromResources("data-types/imgplus-greyscale-32f.png");
+                    return JIPipe.RESOURCES.getIcon16("data-types/imgplus-greyscale-32f.png");
                 case Grayscale16u:
-                    return UIUtils.getIconFromResources("data-types/imgplus-greyscale-16u.png");
+                    return JIPipe.RESOURCES.getIcon16("data-types/imgplus-greyscale-16u.png");
                 case Grayscale8u:
-                    return UIUtils.getIconFromResources("data-types/imgplus-greyscale-8u.png");
+                    return JIPipe.RESOURCES.getIcon16("data-types/imgplus-greyscale-8u.png");
                 case ColorRGB:
-                    return UIUtils.getIconFromResources("data-types/imgplus-color-rgb.png");
+                    return JIPipe.RESOURCES.getIcon16("data-types/imgplus-color-rgb.png");
                 case None:
-                    return UIUtils.getIconFromResources("data-types/imgplus.png");
+                    return JIPipe.RESOURCES.getIcon16("data-types/imgplus.png");
             }
         }
         return null;

@@ -34,6 +34,7 @@ import org.hkijena.jipipe.plugins.forms.datatypes.ParameterFormData;
 import org.hkijena.jipipe.plugins.parameters.library.markup.MarkdownText;
 import org.hkijena.jipipe.utils.JIPipeDesktopSplitPane;
 import org.hkijena.jipipe.utils.UIUtils;
+import org.hkijena.jipipe.JIPipe;
 import org.jdesktop.swingx.JXTable;
 
 import javax.swing.*;
@@ -55,7 +56,7 @@ public class FormsDialog extends JFrame {
     private final JLabel unvisitedLabel = new JLabel(new SolidColorIcon(16, 16, DataBatchStatusTableCellRenderer.getColorUnvisited()));
     private final JLabel visitedLabel = new JLabel(new SolidColorIcon(16, 16, DataBatchStatusTableCellRenderer.getColorVisited()));
     private final JLabel invalidLabel = new JLabel(new SolidColorIcon(16, 16, DataBatchStatusTableCellRenderer.getColorInvalid()));
-    private final JToggleButton visitedButton = new JToggleButton("Reviewed", UIUtils.getIconFromResources("actions/eye.png"));
+    private final JToggleButton visitedButton = new JToggleButton("Reviewed", JIPipe.RESOURCES.getIcon16("actions/eye.png"));
     private final MarkdownText documentation;
     private boolean cancelled = false;
     private JIPipeDesktopSimpleDataBatchTableUI iterationStepTableUI;
@@ -226,7 +227,7 @@ public class FormsDialog extends JFrame {
 
         // Create preview tab
         tabPane.addTab("View data",
-                UIUtils.getIconFromResources("actions/zoom.png"),
+                JIPipe.RESOURCES.getIcon16("actions/zoom.png"),
                 new JIPipeDesktopDataBatchBrowserUI(getWorkbench(), iterationStepList.get(selectedRow)),
                 JIPipeDesktopTabPane.CloseMode.withoutCloseButton,
                 false);
@@ -240,7 +241,7 @@ public class FormsDialog extends JFrame {
                 errorUI.displayErrors(report);
                 errorUI.addVerticalGlue();
                 tabPane.addTab(TAB_ISSUES_DETECTED,
-                        UIUtils.getIconFromResources("actions/dialog-warning.png"),
+                        JIPipe.RESOURCES.getIcon16("actions/dialog-warning.png"),
                         errorUI,
                         JIPipeDesktopTabPane.CloseMode.withSilentCloseButton,
                         false);
@@ -272,7 +273,7 @@ public class FormsDialog extends JFrame {
                         formPanel = new JIPipeDesktopFormPanel(documentation,
                                 JIPipeDesktopFormPanel.WITH_DOCUMENTATION | JIPipeDesktopFormPanel.DOCUMENTATION_BELOW | JIPipeDesktopFormPanel.WITH_SCROLLING);
                         tabPane.addTab(tab,
-                                UIUtils.getIconFromResources("actions/settings.png"),
+                                JIPipe.RESOURCES.getIcon16("actions/settings.png"),
                                 formPanel,
                                 JIPipeDesktopTabPane.CloseMode.withoutCloseButton,
                                 false);
@@ -290,7 +291,7 @@ public class FormsDialog extends JFrame {
                 } else {
                     // Create a separate GUI tab
                     tabPane.addTab(tab,
-                            UIUtils.getIconFromResources("actions/settings.png"),
+                            JIPipe.RESOURCES.getIcon16("actions/settings.png"),
                             formData.getEditor(getWorkbench()),
                             JIPipeDesktopTabPane.CloseMode.withoutCloseButton,
                             false);
@@ -380,22 +381,22 @@ public class FormsDialog extends JFrame {
 
         buttonBar.add(Box.createHorizontalGlue());
 
-        JButton previousButton = new JButton("Previous", UIUtils.getIconFromResources("actions/go-previous.png"));
+        JButton previousButton = new JButton("Previous", JIPipe.RESOURCES.getIcon16("actions/go-previous.png"));
         previousButton.addActionListener(e -> gotoPreviousBatch());
         buttonBar.add(previousButton);
         visitedButton.setToolTipText("Mark/un-mark the current entry as reviewed.");
         visitedButton.addActionListener(e -> toggleBatchVisited());
         buttonBar.add(visitedButton);
-        JButton nextButton = new JButton("Next", UIUtils.getIconFromResources("actions/go-next.png"));
+        JButton nextButton = new JButton("Next", JIPipe.RESOURCES.getIcon16("actions/go-next.png"));
         nextButton.addActionListener(e -> gotoNextBatch());
         buttonBar.add(nextButton);
 
         buttonBar.add(Box.createHorizontalStrut(8));
 
-        JButton applyToButton = new JButton("Apply to ...", UIUtils.getIconFromResources("actions/tools-wizard.png"));
+        JButton applyToButton = new JButton("Apply to ...", JIPipe.RESOURCES.getIcon16("actions/tools-wizard.png"));
         JPopupMenu applyToMenu = UIUtils.addPopupMenuToButton(applyToButton);
 
-        JMenuItem applyToAllButton = new JMenuItem("All iteration steps", UIUtils.getIconFromResources("actions/dialog-layers.png"));
+        JMenuItem applyToAllButton = new JMenuItem("All iteration steps", JIPipe.RESOURCES.getIcon16("actions/dialog-layers.png"));
         applyToAllButton.addActionListener(e -> {
             if (JOptionPane.showConfirmDialog(this,
                     "Do you really want to copy the current settings to all other batches?\n" +
@@ -409,7 +410,7 @@ public class FormsDialog extends JFrame {
         applyToAllButton.setToolTipText("Applies the current settings to all iteration steps, including ones that have been already visited.");
         applyToMenu.add(applyToAllButton);
 
-        JMenuItem applyToAllRemainingButton = new JMenuItem("All data remaining batches", UIUtils.getIconFromResources("actions/dialog-layers.png"));
+        JMenuItem applyToAllRemainingButton = new JMenuItem("All data remaining batches", JIPipe.RESOURCES.getIcon16("actions/dialog-layers.png"));
         applyToAllRemainingButton.addActionListener(e -> {
             if (iterationStepStatuses.stream().noneMatch(iterationStepStatus -> iterationStepStatus == DataBatchStatus.Unvisited)) {
                 JOptionPane.showMessageDialog(this,
@@ -431,10 +432,10 @@ public class FormsDialog extends JFrame {
 
         buttonBar.add(applyToButton);
 
-        JButton resetButton = new JButton("Reset ...", UIUtils.getIconFromResources("actions/clear-brush.png"));
+        JButton resetButton = new JButton("Reset ...", JIPipe.RESOURCES.getIcon16("actions/clear-brush.png"));
         JPopupMenu resetMenu = UIUtils.addPopupMenuToButton(resetButton);
 
-        JMenuItem resetVisitedItem = new JMenuItem("'Reviewed' status only", UIUtils.getIconFromResources("actions/eye-slash.png"));
+        JMenuItem resetVisitedItem = new JMenuItem("'Reviewed' status only", JIPipe.RESOURCES.getIcon16("actions/eye-slash.png"));
         resetVisitedItem.setToolTipText("Marks all iteration steps as not reviewed. This will not change any settings.");
         resetVisitedItem.addActionListener(e -> {
             if (JOptionPane.showConfirmDialog(this,
@@ -454,7 +455,7 @@ public class FormsDialog extends JFrame {
         resetMenu.add(resetVisitedItem);
         resetMenu.addSeparator();
 
-        JMenuItem resetCurrentItem = new JMenuItem("Current batch", UIUtils.getIconFromResources("actions/clear-brush.png"));
+        JMenuItem resetCurrentItem = new JMenuItem("Current batch", JIPipe.RESOURCES.getIcon16("actions/clear-brush.png"));
         resetCurrentItem.setToolTipText("Resets the settings of the currently viewed iteration step.");
         resetCurrentItem.addActionListener(e -> {
             if (JOptionPane.showConfirmDialog(this,
@@ -467,7 +468,7 @@ public class FormsDialog extends JFrame {
         });
         resetMenu.add(resetCurrentItem);
 
-        JMenuItem resetAllItem = new JMenuItem("All batches", UIUtils.getIconFromResources("actions/clear-brush.png"));
+        JMenuItem resetAllItem = new JMenuItem("All batches", JIPipe.RESOURCES.getIcon16("actions/clear-brush.png"));
         resetAllItem.setToolTipText("Resets the settings of all iteration steps.");
         resetAllItem.addActionListener(e -> {
             if (JOptionPane.showConfirmDialog(this,
@@ -480,7 +481,7 @@ public class FormsDialog extends JFrame {
         });
         resetMenu.add(resetAllItem);
 
-        JMenuItem resetUnvisitedItem = new JMenuItem("Non-reviewed batches", UIUtils.getIconFromResources("actions/clear-brush.png"));
+        JMenuItem resetUnvisitedItem = new JMenuItem("Non-reviewed batches", JIPipe.RESOURCES.getIcon16("actions/clear-brush.png"));
         resetUnvisitedItem.setToolTipText("Resets the settings of all iteration steps that are not reviewed.");
         resetUnvisitedItem.addActionListener(e -> {
             if (JOptionPane.showConfirmDialog(this,
@@ -497,11 +498,11 @@ public class FormsDialog extends JFrame {
 
         buttonBar.add(Box.createHorizontalStrut(8));
 
-        JButton cancelButton = new JButton("Cancel", UIUtils.getIconFromResources("actions/dialog-cancel.png"));
+        JButton cancelButton = new JButton("Cancel", JIPipe.RESOURCES.getIcon16("actions/dialog-cancel.png"));
         cancelButton.addActionListener(e -> cancelDialog());
         buttonBar.add(cancelButton);
 
-        JButton finishButton = new JButton("Finish", UIUtils.getIconFromResources("actions/dialog-apply.png"));
+        JButton finishButton = new JButton("Finish", JIPipe.RESOURCES.getIcon16("actions/dialog-apply.png"));
         finishButton.addActionListener(e -> finishDialog());
         buttonBar.add(finishButton);
 

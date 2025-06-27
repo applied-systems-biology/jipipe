@@ -23,6 +23,7 @@ import org.hkijena.jipipe.desktop.app.cache.JIPipeDesktopLegacyCacheDataViewerWi
 import org.hkijena.jipipe.plugins.ijtrackmate.datatypes.SpotDetectorData;
 import org.hkijena.jipipe.plugins.ijtrackmate.datatypes.SpotTrackerData;
 import org.hkijena.jipipe.utils.UIUtils;
+import org.hkijena.jipipe.JIPipe;
 import org.scijava.ui.swing.script.EditorPane;
 
 import javax.swing.*;
@@ -52,7 +53,7 @@ public class TrackmateLegacyCacheDataViewerWindow extends JIPipeDesktopLegacyCac
         textArea.setTabSize(4);
         textArea.setEditable(false);
         getWorkbench().getContext().inject(textArea);
-        errorLabel = new JLabel(UIUtils.getIconFromResources("emblems/no-data.png"));
+        errorLabel = new JLabel(JIPipe.RESOURCES.getIcon16("emblems/no-data.png"));
         getToolBar().add(errorLabel, 0);
 
         add(toolBar, BorderLayout.NORTH);

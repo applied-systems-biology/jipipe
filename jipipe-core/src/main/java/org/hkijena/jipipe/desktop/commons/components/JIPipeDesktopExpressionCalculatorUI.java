@@ -4,6 +4,7 @@ import org.fife.ui.rsyntaxtextarea.RSyntaxDocument;
 import org.fife.ui.rsyntaxtextarea.RSyntaxTextArea;
 import org.fife.ui.rsyntaxtextarea.TokenMaker;
 import org.fife.ui.rsyntaxtextarea.TokenMakerFactory;
+import org.hkijena.jipipe.JIPipe;
 import org.hkijena.jipipe.desktop.app.JIPipeDesktopWorkbench;
 import org.hkijena.jipipe.desktop.app.JIPipeDesktopWorkbenchPanel;
 import org.hkijena.jipipe.plugins.expressions.JIPipeExpressionEvaluatorSyntaxTokenMaker;
@@ -13,6 +14,7 @@ import org.hkijena.jipipe.plugins.expressions.JIPipeExpressionVariablesMap;
 import org.hkijena.jipipe.plugins.expressions.ui.ExpressionBuilderUI;
 import org.hkijena.jipipe.utils.StringUtils;
 import org.hkijena.jipipe.utils.UIUtils;
+import org.hkijena.jipipe.JIPipe;
 import org.hkijena.jipipe.utils.json.JsonUtils;
 import org.hkijena.jipipe.utils.scripting.MacroUtils;
 
@@ -43,8 +45,8 @@ public class JIPipeDesktopExpressionCalculatorUI extends JIPipeDesktopWorkbenchP
 
         JToolBar toolBar = new JToolBar();
         toolBar.setFloatable(false);
-        toolBar.add(UIUtils.createButton("Clear", UIUtils.getIconFromResources("actions/edit-clear-all.png"), this::clearAll));
-        toolBar.add(UIUtils.createButton("Set variable", UIUtils.getIconFromResources("actions/math0.png"), this::setVariableAssistant));
+        toolBar.add(UIUtils.createButton("Clear", JIPipe.RESOURCES.getIcon16("actions/edit-clear-all.png"), this::clearAll));
+        toolBar.add(UIUtils.createButton("Set variable", JIPipe.RESOURCES.getIcon16("actions/math0.png"), this::setVariableAssistant));
         add(toolBar, BorderLayout.NORTH);
 
         TokenMakerFactory tokenMakerFactory = new TokenMakerFactory() {
@@ -99,9 +101,9 @@ public class JIPipeDesktopExpressionCalculatorUI extends JIPipeDesktopWorkbenchP
 
 
         JPanel buttonsPanel = UIUtils.boxHorizontal(
-                UIUtils.createIconOnlyButton("Open in expression editor", UIUtils.getIconFromResources("actions/edit.png"), this::showExpressionEditor),
+                UIUtils.createIconOnlyButton("Open in expression editor", JIPipe.RESOURCES.getIcon16("actions/edit.png"), this::showExpressionEditor),
                 UIUtils.createIconOnlyButton("<html>Execute expression<br>" +
-                        "<i>Shortcut: Ctrl+Enter / Shift+Enter</i></html>", UIUtils.getIconFromResources("actions/run-install.png"), this::evaluate)
+                        "<i>Shortcut: Ctrl+Enter / Shift+Enter</i></html>", JIPipe.RESOURCES.getIcon16("actions/run-install.png"), this::evaluate)
         );
         buttonsPanel.setBackground(UIManager.getColor("TextArea.background"));
 
@@ -189,7 +191,7 @@ public class JIPipeDesktopExpressionCalculatorUI extends JIPipeDesktopWorkbenchP
                 value = JsonUtils.toJsonString(resultItem.result);
             }
 
-            JButton copyValueButton = UIUtils.createButton("", UIUtils.getIconFromResources("actions/edit-copy.png"), () -> {
+            JButton copyValueButton = UIUtils.createButton("", JIPipe.RESOURCES.getIcon16("actions/edit-copy.png"), () -> {
                 UIUtils.copyToClipboard(value);
             });
             UIUtils.makeButtonBorderlessWithoutMargin(copyValueButton);

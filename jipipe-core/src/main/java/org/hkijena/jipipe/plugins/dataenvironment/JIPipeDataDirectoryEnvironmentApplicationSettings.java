@@ -22,6 +22,7 @@ import org.hkijena.jipipe.api.parameters.JIPipeParameter;
 import org.hkijena.jipipe.api.settings.JIPipeDefaultApplicationSettingsSheetCategory;
 import org.hkijena.jipipe.api.settings.JIPipeDefaultApplicationsSettingsSheet;
 import org.hkijena.jipipe.utils.UIUtils;
+import org.hkijena.jipipe.JIPipe;
 
 import javax.swing.*;
 import java.util.Collections;
@@ -69,7 +70,7 @@ public class JIPipeDataDirectoryEnvironmentApplicationSettings extends JIPipeDef
 
     @Override
     public Icon getIcon() {
-        return UIUtils.getIconFromResources("actions/vcs-update-cvs-cervisia.png");
+        return JIPipe.RESOURCES.getIcon16("actions/vcs-update-cvs-cervisia.png");
     }
 
     @Override

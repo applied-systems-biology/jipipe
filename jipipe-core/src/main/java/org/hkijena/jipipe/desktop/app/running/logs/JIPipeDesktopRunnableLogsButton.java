@@ -13,6 +13,7 @@
 
 package org.hkijena.jipipe.desktop.app.running.logs;
 
+import org.hkijena.jipipe.JIPipe;
 import org.hkijena.jipipe.api.JIPipeWorkbench;
 import org.hkijena.jipipe.api.run.JIPipeRunnableLogEntry;
 import org.hkijena.jipipe.desktop.app.JIPipeDesktopProjectWorkbench;
@@ -20,6 +21,7 @@ import org.hkijena.jipipe.desktop.app.JIPipeDesktopWorkbench;
 import org.hkijena.jipipe.desktop.app.JIPipeDesktopWorkbenchAccess;
 import org.hkijena.jipipe.desktop.commons.components.icons.JIPipeDesktopAnimatedIcon;
 import org.hkijena.jipipe.utils.UIUtils;
+import org.hkijena.jipipe.JIPipe;
 
 import javax.swing.*;
 import java.awt.event.MouseAdapter;
@@ -40,10 +42,10 @@ public class JIPipeDesktopRunnableLogsButton extends JButton implements JIPipeDe
     }
 
     private void initialize() {
-        warningIcon = new JIPipeDesktopAnimatedIcon(this, UIUtils.getIconFromResources("emblems/emblem-important.png"),
-                UIUtils.getIconFromResources("emblems/warning.png"),
+        warningIcon = new JIPipeDesktopAnimatedIcon(this, JIPipe.RESOURCES.getIcon16("emblems/emblem-important.png"),
+                JIPipe.RESOURCES.getIcon16("emblems/warning.png"),
                 100, 0.05);
-        setIcon(UIUtils.getIconFromResources("actions/rabbitvcs-show_log.png"));
+        setIcon(JIPipe.RESOURCES.getIcon16("actions/rabbitvcs-show_log.png"));
         UIUtils.setStandardButtonBorder(this);
         addActionListener(e -> openLogs());
 
@@ -52,8 +54,8 @@ public class JIPipeDesktopRunnableLogsButton extends JButton implements JIPipeDe
             public void mouseClicked(MouseEvent e) {
                 if (SwingUtilities.isRightMouseButton(e)) {
                     JPopupMenu menu = new JPopupMenu();
-                    menu.add(UIUtils.createMenuItem("Mark all as read", "Marks all entries as read", UIUtils.getIconFromResources("actions/check-double.png"), this::markAllAsRead));
-                    menu.add(UIUtils.createMenuItem("Clear", "Removes all entries", UIUtils.getIconFromResources("actions/edit-clear-history.png"), this::clear));
+                    menu.add(UIUtils.createMenuItem("Mark all as read", "Marks all entries as read", JIPipe.RESOURCES.getIcon16("actions/check-double.png"), this::markAllAsRead));
+                    menu.add(UIUtils.createMenuItem("Clear", "Removes all entries", JIPipe.RESOURCES.getIcon16("actions/edit-clear-history.png"), this::clear));
                 }
             }
 
@@ -88,7 +90,7 @@ public class JIPipeDesktopRunnableLogsButton extends JButton implements JIPipeDe
 
         if (count == 0) {
             setText("Logs");
-            setIcon(UIUtils.getIconFromResources("actions/rabbitvcs-show_log.png"));
+            setIcon(JIPipe.RESOURCES.getIcon16("actions/rabbitvcs-show_log.png"));
             warningIcon.stop();
         } else if (countWithWarnings > 0) {
             setText("Logs (" + count + ")");
@@ -96,7 +98,7 @@ public class JIPipeDesktopRunnableLogsButton extends JButton implements JIPipeDe
             warningIcon.start();
         } else {
             setText("Logs (" + count + ")");
-            setIcon(UIUtils.getIconFromResources("emblems/emblem-important-blue.png"));
+            setIcon(JIPipe.RESOURCES.getIcon16("emblems/emblem-important-blue.png"));
             warningIcon.stop();
         }
     }

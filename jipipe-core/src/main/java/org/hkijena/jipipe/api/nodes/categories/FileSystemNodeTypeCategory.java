@@ -15,6 +15,7 @@ package org.hkijena.jipipe.api.nodes.categories;
 
 import org.hkijena.jipipe.api.nodes.JIPipeNodeTypeCategory;
 import org.hkijena.jipipe.utils.UIUtils;
+import org.hkijena.jipipe.JIPipe;
 
 import javax.swing.*;
 import java.awt.*;
@@ -48,7 +49,7 @@ public class FileSystemNodeTypeCategory implements JIPipeNodeTypeCategory {
 
     @Override
     public Icon getIcon() {
-        return UIUtils.getIconFromResources("devices/drive-harddisk.png");
+        return JIPipe.RESOURCES.getIcon16("devices/drive-harddisk.png");
     }
 
     @Override

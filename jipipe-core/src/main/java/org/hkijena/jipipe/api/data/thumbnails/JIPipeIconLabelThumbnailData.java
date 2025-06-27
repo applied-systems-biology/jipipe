@@ -15,6 +15,7 @@ package org.hkijena.jipipe.api.data.thumbnails;
 
 import com.fasterxml.jackson.annotation.JsonGetter;
 import com.fasterxml.jackson.annotation.JsonSetter;
+import org.hkijena.jipipe.JIPipe;
 import org.hkijena.jipipe.api.JIPipeProgressInfo;
 import org.hkijena.jipipe.api.LabelAsJIPipeHidden;
 import org.hkijena.jipipe.api.SetJIPipeDocumentation;
@@ -23,6 +24,7 @@ import org.hkijena.jipipe.api.data.JIPipeDataStorageDocumentation;
 import org.hkijena.jipipe.api.data.storage.JIPipeReadDataStorage;
 import org.hkijena.jipipe.api.data.utils.JIPipeSerializedJsonObjectData;
 import org.hkijena.jipipe.utils.UIUtils;
+import org.hkijena.jipipe.JIPipe;
 
 import javax.swing.*;
 import java.awt.*;
@@ -80,7 +82,7 @@ public class JIPipeIconLabelThumbnailData extends JIPipeSerializedJsonObjectData
     public Component renderToComponent(int width, int height) {
         JLabel label = new JLabel(text);
         try {
-            ImageIcon iconFromResources = UIUtils.getIconFromResources(icon);
+            ImageIcon iconFromResources = JIPipe.RESOURCES.getIcon16(icon);
             label.setIcon(iconFromResources);
         } catch (NullPointerException e) {
             e.printStackTrace();

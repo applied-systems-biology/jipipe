@@ -13,11 +13,13 @@
 
 package org.hkijena.jipipe.desktop.commons.notifications;
 
+import org.hkijena.jipipe.JIPipe;
 import org.hkijena.jipipe.api.JIPipeWorkbench;
 import org.hkijena.jipipe.api.notifications.JIPipeNotificationInbox;
 import org.hkijena.jipipe.desktop.app.JIPipeDesktopWorkbench;
 import org.hkijena.jipipe.desktop.commons.components.icons.JIPipeDesktopAnimatedIcon;
 import org.hkijena.jipipe.utils.UIUtils;
+import org.hkijena.jipipe.JIPipe;
 
 import javax.swing.*;
 
@@ -59,7 +61,7 @@ public class JIPipeDesktopGenericNotificationButton extends JButton implements J
 
         if (inbox.isEmpty()) {
             setText("");
-            setIcon(UIUtils.getIconFromResources("actions/circle-check.png"));
+            setIcon(JIPipe.RESOURCES.getIcon16("actions/circle-check.png"));
         } else {
             setText("Notifications");
             setIcon(warningIcon);
@@ -70,8 +72,8 @@ public class JIPipeDesktopGenericNotificationButton extends JButton implements J
     private void initialize() {
         UIUtils.setStandardButtonBorder(this);
 
-        warningIcon = new JIPipeDesktopAnimatedIcon(this, UIUtils.getIconFromResources("emblems/emblem-important.png"),
-                UIUtils.getIconFromResources("emblems/warning.png"),
+        warningIcon = new JIPipeDesktopAnimatedIcon(this, JIPipe.RESOURCES.getIcon16("emblems/emblem-important.png"),
+                JIPipe.RESOURCES.getIcon16("emblems/warning.png"),
                 100, 0.05);
         setIcon(warningIcon);
         setHorizontalAlignment(LEFT);

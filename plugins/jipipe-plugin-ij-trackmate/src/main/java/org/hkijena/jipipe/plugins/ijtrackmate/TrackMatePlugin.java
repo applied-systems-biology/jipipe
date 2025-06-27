@@ -45,6 +45,7 @@ import org.hkijena.jipipe.plugins.parameters.library.markup.HTMLText;
 import org.hkijena.jipipe.plugins.parameters.library.primitives.list.StringList;
 import org.hkijena.jipipe.utils.JIPipeResourceManager;
 import org.hkijena.jipipe.utils.UIUtils;
+import org.hkijena.jipipe.JIPipe;
 import org.scijava.Context;
 import org.scijava.plugin.Plugin;
 import org.scijava.plugin.PluginService;
@@ -141,7 +142,7 @@ public class TrackMatePlugin extends JIPipePrepackagedDefaultJavaPlugin {
 
     @Override
     public List<ImageIcon> getSplashIcons() {
-        return Collections.singletonList(RESOURCES.getIcon32FromResources("trackmate.png"));
+        return Collections.singletonList(RESOURCES.getIcon32("trackmate.png"));
     }
 
     @Override
@@ -208,37 +209,37 @@ public class TrackMatePlugin extends JIPipePrepackagedDefaultJavaPlugin {
     }
 
     private void registerNodes() {
-        registerNodeType("trackmate-detector", SpotDetectorNode.class, RESOURCES.getIcon16URLFromResources("trackmate.png"));
-        registerNodeType("trackmate-tracking", TrackingNode.class, RESOURCES.getIcon16URLFromResources("trackmate.png"));
-//        registerNodeType("trackmate-tracker", TrackerNode.class, RESOURCES.getIcon16URLFromResources("trackmate.png"));
+        registerNodeType("trackmate-detector", SpotDetectorNode.class, RESOURCES.getIcon16URL("trackmate.png"));
+        registerNodeType("trackmate-tracking", TrackingNode.class, RESOURCES.getIcon16URL("trackmate.png"));
+//        registerNodeType("trackmate-tracker", TrackerNode.class, RESOURCES.getIcon16URL("trackmate.png"));
 
-        registerNodeType("trackmate-spots-to-roi", ConvertSpotsToRoiNode.class, UIUtils.getIconURLFromResources("actions/reload.png"));
-        registerNodeType("trackmate-filter-spots", SpotFilterNode.class, UIUtils.getIconURLFromResources("actions/filter.png"));
-        registerNodeType("trackmate-measure-spots", MeasureSpotsNode.class, UIUtils.getIconURLFromResources("actions/statistics.png"));
+        registerNodeType("trackmate-spots-to-roi", ConvertSpotsToRoiNode.class, JIPipe.RESOURCES.getIcon16URL("actions/reload.png"));
+        registerNodeType("trackmate-filter-spots", SpotFilterNode.class, JIPipe.RESOURCES.getIcon16URL("actions/filter.png"));
+        registerNodeType("trackmate-measure-spots", MeasureSpotsNode.class, JIPipe.RESOURCES.getIcon16URL("actions/statistics.png"));
 
-        registerNodeType("trackmate-tracks-to-roi", ConvertTracksToRoiNode.class, UIUtils.getIconURLFromResources("actions/reload.png"));
-        registerNodeType("trackmate-filter-tracks", TrackFilterNode.class, UIUtils.getIconURLFromResources("actions/filter.png"));
-        registerNodeType("trackmate-measure-tracks", MeasureTracksNode.class, UIUtils.getIconURLFromResources("actions/statistics.png"));
-        registerNodeType("trackmate-measure-edges", MeasureEdgesNode.class, UIUtils.getIconURLFromResources("actions/statistics.png"));
-        registerNodeType("trackmate-measure-branches", MeasureBranchesNode.class, UIUtils.getIconURLFromResources("actions/distribute-graph-directed.png"));
+        registerNodeType("trackmate-tracks-to-roi", ConvertTracksToRoiNode.class, JIPipe.RESOURCES.getIcon16URL("actions/reload.png"));
+        registerNodeType("trackmate-filter-tracks", TrackFilterNode.class, JIPipe.RESOURCES.getIcon16URL("actions/filter.png"));
+        registerNodeType("trackmate-measure-tracks", MeasureTracksNode.class, JIPipe.RESOURCES.getIcon16URL("actions/statistics.png"));
+        registerNodeType("trackmate-measure-edges", MeasureEdgesNode.class, JIPipe.RESOURCES.getIcon16URL("actions/statistics.png"));
+        registerNodeType("trackmate-measure-branches", MeasureBranchesNode.class, JIPipe.RESOURCES.getIcon16URL("actions/distribute-graph-directed.png"));
 
-        registerNodeType("trackmate-split-spots", SplitSpotsNode.class, UIUtils.getIconURLFromResources("actions/split.png"));
-        registerNodeType("trackmate-split-tracks", SplitTracksNode.class, UIUtils.getIconURLFromResources("actions/split.png"));
-        registerNodeType("trackmate-merge-spots", MergeSpotsNode.class, UIUtils.getIconURLFromResources("actions/merge.png"));
-        registerNodeType("trackmate-merge-tracks", MergeTracksNode.class, UIUtils.getIconURLFromResources("actions/merge.png"));
+        registerNodeType("trackmate-split-spots", SplitSpotsNode.class, JIPipe.RESOURCES.getIcon16URL("actions/split.png"));
+        registerNodeType("trackmate-split-tracks", SplitTracksNode.class, JIPipe.RESOURCES.getIcon16URL("actions/split.png"));
+        registerNodeType("trackmate-merge-spots", MergeSpotsNode.class, JIPipe.RESOURCES.getIcon16URL("actions/merge.png"));
+        registerNodeType("trackmate-merge-tracks", MergeTracksNode.class, JIPipe.RESOURCES.getIcon16URL("actions/merge.png"));
 
-        registerNodeType("trackmate-visualize-track-scheme", TrackSchemeRendererNode.class, RESOURCES.getIcon16URLFromResources("trackscheme.png"));
-        registerNodeType("trackmate-visualize-follow-spots", FollowSpotsPerTrackNode.class, RESOURCES.getIcon16URLFromResources("trackscheme.png"));
-        registerNodeType("trackmate-visualize-spots", SpotsToRGBNode.class, UIUtils.getIconURLFromResources("actions/color-management.png"));
-        registerNodeType("trackmate-visualize-tracks", TracksToRGBNode.class, UIUtils.getIconURLFromResources("actions/color-management.png"));
+        registerNodeType("trackmate-visualize-track-scheme", TrackSchemeRendererNode.class, RESOURCES.getIcon16URL("trackscheme.png"));
+        registerNodeType("trackmate-visualize-follow-spots", FollowSpotsPerTrackNode.class, RESOURCES.getIcon16URL("trackscheme.png"));
+        registerNodeType("trackmate-visualize-spots", SpotsToRGBNode.class, JIPipe.RESOURCES.getIcon16URL("actions/color-management.png"));
+        registerNodeType("trackmate-visualize-tracks", TracksToRGBNode.class, JIPipe.RESOURCES.getIcon16URL("actions/color-management.png"));
     }
 
     private void registerDataTypes() {
-        registerDatatype("trackmate-spot-detector", SpotDetectorData.class, RESOURCES.getIcon16URLFromResources("trackmate-spots.png"));
-        registerDatatype("trackmate-spot-tracker", SpotTrackerData.class, RESOURCES.getIcon16URLFromResources("trackmate-tracker.png"));
-        registerDatatype("trackmate-model", ModelData.class, RESOURCES.getIcon16URLFromResources("trackmate.png"));
-        registerDatatype("trackmate-spot-collection", SpotsCollectionData.class, RESOURCES.getIcon16URLFromResources("trackmate-spots.png"));
-        registerDatatype("trackmate-track-collection", TrackCollectionData.class, RESOURCES.getIcon16URLFromResources("trackmate-tracker.png"), new ShowTrackSchemeDataDisplayOperation());
+        registerDatatype("trackmate-spot-detector", SpotDetectorData.class, RESOURCES.getIcon16URL("trackmate-spots.png"));
+        registerDatatype("trackmate-spot-tracker", SpotTrackerData.class, RESOURCES.getIcon16URL("trackmate-tracker.png"));
+        registerDatatype("trackmate-model", ModelData.class, RESOURCES.getIcon16URL("trackmate.png"));
+        registerDatatype("trackmate-spot-collection", SpotsCollectionData.class, RESOURCES.getIcon16URL("trackmate-spots.png"));
+        registerDatatype("trackmate-track-collection", TrackCollectionData.class, RESOURCES.getIcon16URL("trackmate-tracker.png"), new ShowTrackSchemeDataDisplayOperation());
         registerDatatypeConversion(new SpotsToRoiConverter());
 
         registerDefaultDataTypeViewer(ModelData.class, TracksSpotsDataViewer.class);

@@ -107,6 +107,7 @@ import org.hkijena.jipipe.plugins.tables.display.OpenResultsTableInImageJDataDis
 import org.hkijena.jipipe.plugins.tables.display.OpenResultsTableInJIPipeTabDataDisplayOperation;
 import org.hkijena.jipipe.utils.ResourceUtils;
 import org.hkijena.jipipe.utils.UIUtils;
+import org.hkijena.jipipe.JIPipe;
 import org.scijava.Context;
 import org.scijava.plugin.Plugin;
 
@@ -382,7 +383,7 @@ public class ImageJDataTypesPlugin extends JIPipePrepackagedDefaultJavaPlugin {
 
     @Override
     public List<ImageIcon> getSplashIcons() {
-        return Arrays.asList(UIUtils.getIcon32FromResources("apps/bio-formats.png"));
+        return Arrays.asList(JIPipe.RESOURCES.getIcon32("apps/bio-formats.png"));
     }
 
 
@@ -418,12 +419,12 @@ public class ImageJDataTypesPlugin extends JIPipePrepackagedDefaultJavaPlugin {
         // Register data types
         registerDatatype("imagej-ome",
                 OMEImageData.class,
-                UIUtils.getIconURLFromResources("data-types/bioformats.png"),
+                JIPipe.RESOURCES.getIcon16URL("data-types/bioformats.png"),
                 null,
                 OMEImageDataPreview.class,
                 new OpenInImageJDataDisplayOperation(),
                 new OpenInImageJ3DViewerDataDisplayOperation());
-        registerDatatype("ome-xml", OMEXMLData.class, UIUtils.getIconURLFromResources("data-types/ome-xml.png"));
+        registerDatatype("ome-xml", OMEXMLData.class, JIPipe.RESOURCES.getIcon16URL("data-types/ome-xml.png"));
         registerImageJDataImporter("ome-image-from-image-window", new OMEImageFromImageWindowImageJImporter(), ImagePlusWindowImageJImporterUI.class);
         registerImageJDataExporter("ome-image-to-image-window", new OMEImageToImageWindowImageJExporter(), DefaultImageJDataExporterUI.class);
 
@@ -517,28 +518,28 @@ public class ImageJDataTypesPlugin extends JIPipePrepackagedDefaultJavaPlugin {
         registerEnumParameterType("import-imagej-results-table-from-file:file-format", ImportResultsTableAlgorithm.FileFormat.class, "File format", "A file format");
         registerNodeType("import-imagej-results-table-from-file", ImportResultsTableAlgorithm.class);
         registerNodeType("import-imagej-imgplus-from-file", ImportImagePlusAlgorithm.class);
-        registerNodeType("import-imagej-bioformats", BioFormatsImporterAlgorithm.class, UIUtils.getIconURLFromResources("apps/bioformats.png"));
-        registerNodeType("import-imagej-lut-from-file-as-rgb", ImportLUTAsRGBFromFileAlgorithm.class, UIUtils.getIconURLFromResources("data-types/lut.png"));
-        registerNodeType("import-ome-zarr-from-zip-directory-as-imgplus", ImportOMEZARRFromZipDirectoryAsImagePlusAlgorithm.class, UIUtils.getIconURLFromResources("actions/zarr.png"));
-        registerNodeType("import-ome-zarr-from-uri-as-imgplus", ImportOMEZARRFromURIAsImagePlusAlgorithm.class, UIUtils.getIconURLFromResources("actions/zarr.png"));
+        registerNodeType("import-imagej-bioformats", BioFormatsImporterAlgorithm.class, JIPipe.RESOURCES.getIcon16URL("apps/bioformats.png"));
+        registerNodeType("import-imagej-lut-from-file-as-rgb", ImportLUTAsRGBFromFileAlgorithm.class, JIPipe.RESOURCES.getIcon16URL("data-types/lut.png"));
+        registerNodeType("import-ome-zarr-from-zip-directory-as-imgplus", ImportOMEZARRFromZipDirectoryAsImagePlusAlgorithm.class, JIPipe.RESOURCES.getIcon16URL("actions/zarr.png"));
+        registerNodeType("import-ome-zarr-from-uri-as-imgplus", ImportOMEZARRFromURIAsImagePlusAlgorithm.class, JIPipe.RESOURCES.getIcon16URL("actions/zarr.png"));
         registerNodeType("import-imagej-sample", ImportImageJSampleAlgorithm.class);
         registerNodeType("import-ome-xml-from-bioformats", BioFormatsExtractOMEXMLAlgorithm.class);
 
         // Register algorithms
-        registerNodeType("convert-imagej-image", ImageTypeConverter.class, UIUtils.getIconURLFromResources("actions/viewimage.png"));
-        registerNodeType("export-imagej-bioformats", BioFormatsExporterAlgorithm.class, UIUtils.getIconURLFromResources("apps/bioformats.png"));
-        registerNodeType("export-imagej-bioformats-v2", BioFormatsExporter2Algorithm.class, UIUtils.getIconURLFromResources("apps/bioformats.png"));
-        registerNodeType("annotate-with-bioformats", BioFormatsAnnotatorAlgorithm.class, UIUtils.getIconURLFromResources("apps/bioformats.png"));
-        registerNodeType("set-imagej-bioformats-settings", SetBioFormatsExporterSettings.class, UIUtils.getIconURLFromResources("apps/bioformats.png"));
-        registerNodeType("image-properties-to-annotation", ImagePropertiesToAnnotationAlgorithm.class, UIUtils.getIconURLFromResources("data-types/annotation-table.png"));
-        registerNodeType("annotate-data-with-image-properties", AnnotateDataWithImagePropertiesAlgorithm.class, UIUtils.getIconURLFromResources("data-types/annotation-table.png"));
-        registerNodeType("ij1-export-ome-zarr", ExportImagePlusAsOMEZARRAlgorithm.class, UIUtils.getIconURLFromResources("actions/zarr.png"));
+        registerNodeType("convert-imagej-image", ImageTypeConverter.class, JIPipe.RESOURCES.getIcon16URL("actions/viewimage.png"));
+        registerNodeType("export-imagej-bioformats", BioFormatsExporterAlgorithm.class, JIPipe.RESOURCES.getIcon16URL("apps/bioformats.png"));
+        registerNodeType("export-imagej-bioformats-v2", BioFormatsExporter2Algorithm.class, JIPipe.RESOURCES.getIcon16URL("apps/bioformats.png"));
+        registerNodeType("annotate-with-bioformats", BioFormatsAnnotatorAlgorithm.class, JIPipe.RESOURCES.getIcon16URL("apps/bioformats.png"));
+        registerNodeType("set-imagej-bioformats-settings", SetBioFormatsExporterSettings.class, JIPipe.RESOURCES.getIcon16URL("apps/bioformats.png"));
+        registerNodeType("image-properties-to-annotation", ImagePropertiesToAnnotationAlgorithm.class, JIPipe.RESOURCES.getIcon16URL("data-types/annotation-table.png"));
+        registerNodeType("annotate-data-with-image-properties", AnnotateDataWithImagePropertiesAlgorithm.class, JIPipe.RESOURCES.getIcon16URL("data-types/annotation-table.png"));
+        registerNodeType("ij1-export-ome-zarr", ExportImagePlusAsOMEZARRAlgorithm.class, JIPipe.RESOURCES.getIcon16URL("actions/zarr.png"));
         registerEnumParameterType("ij1-export-ome-zarr:output-format", ExportImagePlusAsOMEZARRAlgorithm.OutputFormat.class, "ZARR Output format", "Output formats");
         registerEnumParameterType("ij1-export-ome-zarr:compression", ExportImagePlusAsOMEZARRAlgorithm.Compression.class, "ZARR Compression", "Available compression types");
 
-        registerNodeType("ij1-color-convert-to-rgb", ToRGBColorSpaceConverterAlgorithm.class, UIUtils.getIconURLFromResources("data-types/imgplus-color-rgb.png"));
-        registerNodeType("ij1-color-convert-to-hsb", ToHSBColorSpaceConverterAlgorithm.class, UIUtils.getIconURLFromResources("data-types/imgplus-color-hsb.png"));
-        registerNodeType("ij1-color-convert-to-lab", ToLABColorSpaceConverterAlgorithm.class, UIUtils.getIconURLFromResources("data-types/imgplus-color-lab.png"));
+        registerNodeType("ij1-color-convert-to-rgb", ToRGBColorSpaceConverterAlgorithm.class, JIPipe.RESOURCES.getIcon16URL("data-types/imgplus-color-rgb.png"));
+        registerNodeType("ij1-color-convert-to-hsb", ToHSBColorSpaceConverterAlgorithm.class, JIPipe.RESOURCES.getIcon16URL("data-types/imgplus-color-hsb.png"));
+        registerNodeType("ij1-color-convert-to-lab", ToLABColorSpaceConverterAlgorithm.class, JIPipe.RESOURCES.getIcon16URL("data-types/imgplus-color-lab.png"));
 
         // Register parameter editors
         registerEnumParameterType("import-imagej-bioformats:color-mode", OMEColorMode.class,

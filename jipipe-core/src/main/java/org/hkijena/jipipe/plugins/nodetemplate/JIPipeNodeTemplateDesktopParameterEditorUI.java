@@ -21,6 +21,7 @@ import org.hkijena.jipipe.desktop.api.JIPipeDesktopParameterEditorUI;
 import org.hkijena.jipipe.desktop.commons.components.JIPipeDesktopParameterFormPanel;
 import org.hkijena.jipipe.plugins.parameters.library.markup.MarkdownText;
 import org.hkijena.jipipe.utils.UIUtils;
+import org.hkijena.jipipe.JIPipe;
 
 import javax.swing.*;
 import java.awt.*;
@@ -37,7 +38,7 @@ public class JIPipeNodeTemplateDesktopParameterEditorUI extends JIPipeDesktopPar
 
     private void initialize() {
         setLayout(new BorderLayout());
-        JButton editButton = new JButton("Edit template", UIUtils.getIconFromResources("actions/edit.png"));
+        JButton editButton = new JButton("Edit template", JIPipe.RESOURCES.getIcon16("actions/edit.png"));
         editButton.addActionListener(e -> editParameters());
         add(editButton, BorderLayout.EAST);
         infoButton = new JButton();
@@ -70,11 +71,11 @@ public class JIPipeNodeTemplateDesktopParameterEditorUI extends JIPipeDesktopPar
                 infoButton.setIcon(JIPipe.getNodes().getIconFor(nodeInfo));
             } else {
                 infoButton.setText("<html>" + parameter.getName() + "<br/><i>" + graph.getGraphNodes().size() + " nodes</i></html>");
-                infoButton.setIcon(UIUtils.getIconFromResources("actions/distribute-graph.png"));
+                infoButton.setIcon(JIPipe.RESOURCES.getIcon16("actions/distribute-graph.png"));
             }
         } else {
             infoButton.setText("<html>" + parameter.getName() + "<br/><i><span style=\"color: red;\">Unable to load</span></i></html>");
-            infoButton.setIcon(UIUtils.getIconFromResources("emblems/vcs-conflicting.png"));
+            infoButton.setIcon(JIPipe.RESOURCES.getIcon16("emblems/vcs-conflicting.png"));
         }
     }
 }

@@ -16,6 +16,7 @@ package org.hkijena.jipipe.api.validation.contexts;
 import org.hkijena.jipipe.api.parameters.JIPipeParameterCollection;
 import org.hkijena.jipipe.api.validation.JIPipeValidationReportContext;
 import org.hkijena.jipipe.utils.UIUtils;
+import org.hkijena.jipipe.JIPipe;
 
 import javax.swing.*;
 
@@ -46,6 +47,6 @@ public class ParameterValidationReportContext extends JIPipeValidationReportCont
 
     @Override
     public Icon renderIcon() {
-        return UIUtils.getIconFromResources("actions/configure_toolbars.png");
+        return JIPipe.RESOURCES.getIcon16("actions/configure_toolbars.png");
     }
 }

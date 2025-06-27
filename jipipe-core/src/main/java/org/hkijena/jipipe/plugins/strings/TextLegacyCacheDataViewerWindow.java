@@ -14,6 +14,7 @@
 package org.hkijena.jipipe.plugins.strings;
 
 import org.fife.ui.rtextarea.RTextScrollPane;
+import org.hkijena.jipipe.JIPipe;
 import org.hkijena.jipipe.api.JIPipeProgressInfo;
 import org.hkijena.jipipe.api.data.JIPipeData;
 import org.hkijena.jipipe.api.data.JIPipeDataItemStore;
@@ -21,6 +22,7 @@ import org.hkijena.jipipe.api.data.sources.JIPipeDataTableDataSource;
 import org.hkijena.jipipe.desktop.app.JIPipeDesktopWorkbench;
 import org.hkijena.jipipe.desktop.app.cache.JIPipeDesktopLegacyCacheDataViewerWindow;
 import org.hkijena.jipipe.utils.UIUtils;
+import org.hkijena.jipipe.JIPipe;
 import org.scijava.ui.swing.script.EditorPane;
 
 import javax.swing.*;
@@ -50,7 +52,7 @@ public class TextLegacyCacheDataViewerWindow extends JIPipeDesktopLegacyCacheDat
         textArea.setTabSize(4);
         textArea.setEditable(false);
         getWorkbench().getContext().inject(textArea);
-        errorLabel = new JLabel(UIUtils.getIconFromResources("emblems/no-data.png"));
+        errorLabel = new JLabel(JIPipe.RESOURCES.getIcon16("emblems/no-data.png"));
         getToolBar().add(errorLabel, 0);
 
         add(toolBar, BorderLayout.NORTH);

@@ -15,6 +15,7 @@ package org.hkijena.jipipe.api.compartments.algorithms;
 
 import org.hkijena.jipipe.api.nodes.JIPipeNodeTypeCategory;
 import org.hkijena.jipipe.utils.UIUtils;
+import org.hkijena.jipipe.JIPipe;
 
 import javax.swing.*;
 import java.awt.*;
@@ -42,7 +43,7 @@ public class CompartmentNodeTypeCategory implements JIPipeNodeTypeCategory {
 
     @Override
     public Icon getIcon() {
-        return UIUtils.getIconFromResources("data-types/graph-compartment.png");
+        return JIPipe.RESOURCES.getIcon16("data-types/graph-compartment.png");
     }
 
     @Override

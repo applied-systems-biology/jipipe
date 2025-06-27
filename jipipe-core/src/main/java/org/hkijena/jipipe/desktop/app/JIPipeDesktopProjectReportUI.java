@@ -40,6 +40,7 @@ import org.hkijena.jipipe.plugins.parameters.library.primitives.list.StringList;
 import org.hkijena.jipipe.utils.JIPipeDesktopSplitPane;
 import org.hkijena.jipipe.utils.StringUtils;
 import org.hkijena.jipipe.utils.UIUtils;
+import org.hkijena.jipipe.JIPipe;
 
 import javax.swing.*;
 import java.awt.*;
@@ -69,7 +70,7 @@ public class JIPipeDesktopProjectReportUI extends JIPipeDesktopProjectWorkbenchP
                 new JIPipeDesktopSplitPane.DynamicSidebarRatio(300, true));
         add(splitPane, BorderLayout.CENTER);
 
-        JButton refreshButton = new JButton("Refresh", UIUtils.getIconFromResources("actions/view-refresh.png"));
+        JButton refreshButton = new JButton("Refresh", JIPipe.RESOURCES.getIcon16("actions/view-refresh.png"));
         refreshButton.addActionListener(e -> rebuildReport());
         markdownReader.getToolBar().add(refreshButton);
         markdownReader.getToolBar().add(new JIPipeDesktopRunnableQueueButton(getDesktopWorkbench(), queue));

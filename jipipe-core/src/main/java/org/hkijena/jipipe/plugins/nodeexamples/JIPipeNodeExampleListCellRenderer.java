@@ -13,11 +13,13 @@
 
 package org.hkijena.jipipe.plugins.nodeexamples;
 
+import org.hkijena.jipipe.JIPipe;
 import org.hkijena.jipipe.api.nodes.JIPipeNodeExample;
 import org.hkijena.jipipe.desktop.commons.components.icons.SolidColorIcon;
 import org.hkijena.jipipe.desktop.commons.theme.JIPipeDesktopLegacyModernMetalTheme;
 import org.hkijena.jipipe.utils.StringUtils;
 import org.hkijena.jipipe.utils.UIUtils;
+import org.hkijena.jipipe.JIPipe;
 
 import javax.swing.*;
 import java.awt.*;
@@ -101,7 +103,7 @@ public class JIPipeNodeExampleListCellRenderer extends JPanel implements ListCel
             nodeColor.setFillColor(info.getNodeTemplate().getFillColor());
             descriptionLabel.setText(info.getNodeTemplate().getDescription().getHtml());
             nameLabel.setText(info.getNodeTemplate().getName());
-            nodeIcon.setIcon(UIUtils.getIconFromResources(info.getNodeTemplate().getIcon().getIconName()));
+            nodeIcon.setIcon(JIPipe.RESOURCES.getIcon16(info.getNodeTemplate().getIcon().getIconName()));
             sourceLabel.setText(StringUtils.nullToEmpty(info.getSourceInfo()));
 
         } else {

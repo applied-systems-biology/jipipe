@@ -14,6 +14,7 @@
 package org.hkijena.jipipe.desktop.commons.theme.ui;
 
 import org.hkijena.jipipe.utils.UIUtils;
+import org.hkijena.jipipe.JIPipe;
 
 import javax.swing.*;
 import javax.swing.plaf.ComponentUI;
@@ -31,7 +32,7 @@ public class JIPipeDesktopModernSpinnerUI extends BasicSpinnerUI {
 
     @Override
     protected Component createPreviousButton() {
-        JButton button = new JButton(UIUtils.getIconFromResources("actions/caret-down.png"));
+        JButton button = new JButton(JIPipe.RESOURCES.getIcon16("actions/caret-down.png"));
         button.setBackground(UIManager.getColor("Spinner.background"));
         button.setPreferredSize(new Dimension(21, 14));
         button.setBorder(BorderFactory.createEmptyBorder(0, 4, 0, 4));
@@ -41,7 +42,7 @@ public class JIPipeDesktopModernSpinnerUI extends BasicSpinnerUI {
 
     @Override
     protected Component createNextButton() {
-        JButton button = new JButton(UIUtils.getIconFromResources("actions/caret-up.png"));
+        JButton button = new JButton(JIPipe.RESOURCES.getIcon16("actions/caret-up.png"));
         button.setBackground(UIManager.getColor("Spinner.background"));
         button.setPreferredSize(new Dimension(21, 14));
         button.setBorder(BorderFactory.createEmptyBorder(0, 4, 0, 4));

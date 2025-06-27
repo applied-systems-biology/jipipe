@@ -12,7 +12,9 @@
  */
 package org.hkijena.jipipe.desktop.commons.components.markup;
 
+import org.hkijena.jipipe.JIPipe;
 import org.hkijena.jipipe.utils.UIUtils;
+import org.hkijena.jipipe.JIPipe;
 
 import javax.imageio.ImageIO;
 import javax.swing.*;
@@ -709,7 +711,7 @@ public class JIPipeDesktopExtendedImageView extends View {
         }  // FINISH: Modified code...
 
         if(newImage == null) {
-            newImage = UIUtils.getIcon16FromResources("missing.png").getImage();
+            newImage = JIPipe.RESOURCES.getIcon16("missing.png").getImage();
         }
 
         image = newImage;

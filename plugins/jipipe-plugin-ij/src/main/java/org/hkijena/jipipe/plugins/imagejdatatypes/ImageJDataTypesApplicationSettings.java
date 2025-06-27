@@ -20,6 +20,7 @@ import org.hkijena.jipipe.api.settings.JIPipeDefaultApplicationSettingsSheetCate
 import org.hkijena.jipipe.api.settings.JIPipeDefaultApplicationsSettingsSheet;
 import org.hkijena.jipipe.plugins.imagejdatatypes.parameters.OMETIFFCompression;
 import org.hkijena.jipipe.utils.UIUtils;
+import org.hkijena.jipipe.JIPipe;
 
 import javax.swing.*;
 
@@ -80,7 +81,7 @@ public class ImageJDataTypesApplicationSettings extends JIPipeDefaultApplication
 
     @Override
     public Icon getIcon() {
-        return UIUtils.getIconFromResources("apps/imagej.png");
+        return JIPipe.RESOURCES.getIcon16("apps/imagej.png");
     }
 
     @Override

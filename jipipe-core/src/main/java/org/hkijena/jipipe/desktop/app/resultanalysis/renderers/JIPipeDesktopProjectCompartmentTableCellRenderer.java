@@ -13,8 +13,10 @@
 
 package org.hkijena.jipipe.desktop.app.resultanalysis.renderers;
 
+import org.hkijena.jipipe.JIPipe;
 import org.hkijena.jipipe.api.nodes.JIPipeGraphNode;
 import org.hkijena.jipipe.utils.UIUtils;
+import org.hkijena.jipipe.JIPipe;
 
 import javax.swing.*;
 import javax.swing.table.TableCellRenderer;
@@ -27,7 +29,7 @@ public class JIPipeDesktopProjectCompartmentTableCellRenderer extends JLabel imp
 
     public JIPipeDesktopProjectCompartmentTableCellRenderer() {
         setOpaque(true);
-        setIcon(UIUtils.getIconFromResources("data-types/graph-compartment.png"));
+        setIcon(JIPipe.RESOURCES.getIcon16("data-types/graph-compartment.png"));
         setBorder(BorderFactory.createEmptyBorder(4, 4, 4, 4));
     }
 

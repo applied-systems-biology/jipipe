@@ -19,6 +19,7 @@ import org.hkijena.jipipe.api.parameters.JIPipeParameter;
 import org.hkijena.jipipe.api.settings.JIPipeDefaultApplicationSettingsSheetCategory;
 import org.hkijena.jipipe.api.settings.JIPipeDefaultApplicationsSettingsSheet;
 import org.hkijena.jipipe.utils.UIUtils;
+import org.hkijena.jipipe.JIPipe;
 
 import javax.swing.*;
 
@@ -54,7 +55,7 @@ public class JIPipeTableViewerUIApplicationSettings extends JIPipeDefaultApplica
 
     @Override
     public Icon getIcon() {
-        return UIUtils.getIconFromResources("actions/table.png");
+        return JIPipe.RESOURCES.getIcon16("actions/table.png");
     }
 
     @Override

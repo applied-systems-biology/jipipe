@@ -13,6 +13,7 @@
 
 package org.hkijena.jipipe.api.history;
 
+import org.hkijena.jipipe.JIPipe;
 import org.hkijena.jipipe.api.compartments.algorithms.JIPipeProjectCompartment;
 import org.hkijena.jipipe.api.data.JIPipeDataSlot;
 import org.hkijena.jipipe.api.data.JIPipeDataSlotInfo;
@@ -20,6 +21,7 @@ import org.hkijena.jipipe.api.events.AbstractJIPipeEvent;
 import org.hkijena.jipipe.api.events.JIPipeEventEmitter;
 import org.hkijena.jipipe.api.nodes.JIPipeGraphNode;
 import org.hkijena.jipipe.utils.UIUtils;
+import org.hkijena.jipipe.JIPipe;
 
 import javax.swing.*;
 import java.util.*;
@@ -59,12 +61,12 @@ public interface JIPipeHistoryJournal {
             snapshot("Cut node",
                     "Node '" + nodes.iterator().next().getDisplayName() + "'",
                     compartment,
-                    UIUtils.getIconFromResources("actions/edit-cut.png"));
+                    JIPipe.RESOURCES.getIcon16("actions/edit-cut.png"));
         } else {
             snapshot("Cut node",
                     "Nodes " + nodes.stream().map(n -> "'" + n.getDisplayName() + "'").collect(Collectors.joining(", ")),
                     compartment,
-                    UIUtils.getIconFromResources("actions/edit-cut.png"));
+                    JIPipe.RESOURCES.getIcon16("actions/edit-cut.png"));
         }
     }
 
@@ -77,7 +79,7 @@ public interface JIPipeHistoryJournal {
         snapshot("Cut compartment",
                 "Compartment '" + compartment.getName() + "'",
                 compartment.getProjectCompartmentUUID(),
-                UIUtils.getIconFromResources("actions/edit-cut.png"));
+                JIPipe.RESOURCES.getIcon16("actions/edit-cut.png"));
     }
 
     /**
@@ -90,7 +92,7 @@ public interface JIPipeHistoryJournal {
         snapshot("Disconnect all slots",
                 "Disconnecting all edges from '" + slot.getDisplayName() + "'",
                 compartment,
-                UIUtils.getIconFromResources("actions/dialog-close.png"));
+                JIPipe.RESOURCES.getIcon16("actions/dialog-close.png"));
     }
 
     /**
@@ -104,7 +106,7 @@ public interface JIPipeHistoryJournal {
         snapshot("Disconnect slots",
                 "Disconnecting '" + source.getDisplayName() + "'" + " and '" + target.getDisplayName() + "'",
                 compartment,
-                UIUtils.getIconFromResources("actions/dialog-close.png"));
+                JIPipe.RESOURCES.getIcon16("actions/dialog-close.png"));
     }
 
     /**
@@ -118,7 +120,7 @@ public interface JIPipeHistoryJournal {
         snapshot("Connect slots",
                 "Connecting '" + source.getDisplayName() + "'" + " and '" + target.getDisplayName() + "'",
                 compartment,
-                UIUtils.getIconFromResources("actions/plug.png"));
+                JIPipe.RESOURCES.getIcon16("actions/plug.png"));
     }
 
     /**
@@ -132,7 +134,7 @@ public interface JIPipeHistoryJournal {
         snapshot("Add slot",
                 "Add " + info.getSlotType().name().toLowerCase(Locale.ROOT) + " slot " + info.getName() + " into " + node.getDisplayName(),
                 compartment,
-                UIUtils.getIconFromResources("actions/list-add.png"));
+                JIPipe.RESOURCES.getIcon16("actions/list-add.png"));
     }
 
     /**
@@ -146,7 +148,7 @@ public interface JIPipeHistoryJournal {
         snapshot("Remove slot",
                 "Remove " + info.getSlotType().name().toLowerCase(Locale.ROOT) + " slot " + info.getName() + " from " + node.getDisplayName(),
                 compartment,
-                UIUtils.getIconFromResources("actions/delete.png"));
+                JIPipe.RESOURCES.getIcon16("actions/delete.png"));
     }
 
     /**
@@ -159,7 +161,7 @@ public interface JIPipeHistoryJournal {
         snapshot("Label slot",
                 "Set the label of slot " + slot.getDisplayName(),
                 compartment,
-                UIUtils.getIconFromResources("actions/tag.png"));
+                JIPipe.RESOURCES.getIcon16("actions/tag.png"));
     }
 
     /**
@@ -172,7 +174,7 @@ public interface JIPipeHistoryJournal {
         snapshot("Move slot",
                 "Move slot " + slot.getDisplayName(),
                 compartment,
-                UIUtils.getIconFromResources("actions/transform-move.png"));
+                JIPipe.RESOURCES.getIcon16("actions/transform-move.png"));
     }
 
     /**
@@ -181,7 +183,7 @@ public interface JIPipeHistoryJournal {
      * @param slot the slot
      */
     default void snapshotBeforeEditSlot(JIPipeDataSlot slot, UUID compartment) {
-        snapshot("Edit slot", "Edited slot " + slot.getDisplayName(), compartment, UIUtils.getIconFromResources("actions/document-edit.png"));
+        snapshot("Edit slot", "Edited slot " + slot.getDisplayName(), compartment, JIPipe.RESOURCES.getIcon16("actions/document-edit.png"));
     }
 
     /**
@@ -194,7 +196,7 @@ public interface JIPipeHistoryJournal {
         snapshot("Add " + nodes.size() + " nodes",
                 "Added following nodes into the graph: " + nodes.stream().map(s -> "'" + s.getName() + "'").collect(Collectors.joining(", ")),
                 compartment,
-                UIUtils.getIconFromResources("actions/list-add.png"));
+                JIPipe.RESOURCES.getIcon16("actions/list-add.png"));
     }
 
     /**
@@ -207,7 +209,7 @@ public interface JIPipeHistoryJournal {
         snapshot("Paste " + nodes.size() + " nodes",
                 "Added following nodes into the graph: " + nodes.stream().map(s -> "'" + s.getName() + "'").collect(Collectors.joining(", ")),
                 compartment,
-                UIUtils.getIconFromResources("actions/edit-paste.png"));
+                JIPipe.RESOURCES.getIcon16("actions/edit-paste.png"));
     }
 
     /**
@@ -220,7 +222,7 @@ public interface JIPipeHistoryJournal {
         snapshot("Add node",
                 "Added a node '" + node.getName() + "' into the graph.",
                 compartment,
-                UIUtils.getIconFromResources("actions/list-add.png"));
+                JIPipe.RESOURCES.getIcon16("actions/list-add.png"));
     }
 
     /**
@@ -232,7 +234,7 @@ public interface JIPipeHistoryJournal {
         snapshot("Add compartment",
                 "Added a compartment '" + compartment + "'.",
                 null,
-                UIUtils.getIconFromResources("actions/list-add.png"));
+                JIPipe.RESOURCES.getIcon16("actions/list-add.png"));
     }
 
     /**
@@ -245,7 +247,7 @@ public interface JIPipeHistoryJournal {
         snapshot("Remove " + nodes.size() + " nodes",
                 "Removed following nodes from the graph: " + nodes.stream().map(s -> "'" + s.getName() + "'").collect(Collectors.joining(", ")),
                 compartment,
-                UIUtils.getIconFromResources("actions/delete.png"));
+                JIPipe.RESOURCES.getIcon16("actions/delete.png"));
     }
 
     /**
@@ -258,7 +260,7 @@ public interface JIPipeHistoryJournal {
         snapshot("Moved " + nodes.size() + " nodes",
                 "Moved following nodes: " + nodes.stream().map(s -> "'" + s.getName() + "'").collect(Collectors.joining(", ")),
                 compartment,
-                UIUtils.getIconFromResources("actions/transform-move.png"));
+                JIPipe.RESOURCES.getIcon16("actions/transform-move.png"));
     }
 
     /**
@@ -271,7 +273,7 @@ public interface JIPipeHistoryJournal {
         snapshot("Remove node",
                 "Removed a node '" + node.getName() + "' from the graph.",
                 compartment,
-                UIUtils.getIconFromResources("actions/delete.png"));
+                JIPipe.RESOURCES.getIcon16("actions/delete.png"));
     }
 
     /**
@@ -283,7 +285,7 @@ public interface JIPipeHistoryJournal {
         snapshot("Remove compartment",
                 "Removed compartment '" + compartment.getName() + "' from the graph.",
                 compartment.getProjectCompartmentUUID(),
-                UIUtils.getIconFromResources("actions/delete.png"));
+                JIPipe.RESOURCES.getIcon16("actions/delete.png"));
     }
 
     /**

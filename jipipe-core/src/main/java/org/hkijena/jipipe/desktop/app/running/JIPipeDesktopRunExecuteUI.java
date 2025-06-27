@@ -13,6 +13,7 @@
 
 package org.hkijena.jipipe.desktop.app.running;
 
+import org.hkijena.jipipe.JIPipe;
 import org.hkijena.jipipe.api.run.JIPipeRunnable;
 import org.hkijena.jipipe.api.run.JIPipeRunnableQueue;
 import org.hkijena.jipipe.desktop.app.JIPipeDesktopWorkbench;
@@ -20,6 +21,7 @@ import org.hkijena.jipipe.desktop.app.JIPipeDesktopWorkbenchPanel;
 import org.hkijena.jipipe.desktop.commons.components.icons.JIPipeDesktopRunnableQueueSpinnerIcon;
 import org.hkijena.jipipe.desktop.commons.notifications.JIPipeDesktopGenericNotificationButton;
 import org.hkijena.jipipe.utils.UIUtils;
+import org.hkijena.jipipe.JIPipe;
 
 import javax.swing.*;
 import java.awt.*;
@@ -108,11 +110,11 @@ public class JIPipeDesktopRunExecuteUI extends JIPipeDesktopWorkbenchPanel imple
 
         buttonPanel.add(new JIPipeDesktopGenericNotificationButton(getDesktopWorkbench(), run.getProgressInfo().getNotifications()));
 
-        cancelButton = new JButton("Cancel", UIUtils.getIconFromResources("actions/cancel.png"));
+        cancelButton = new JButton("Cancel", JIPipe.RESOURCES.getIcon16("actions/cancel.png"));
         cancelButton.addActionListener(e -> requestCancelRun());
         buttonPanel.add(cancelButton);
 
-        closeButton = new JButton("Close", UIUtils.getIconFromResources("actions/cancel.png"));
+        closeButton = new JButton("Close", JIPipe.RESOURCES.getIcon16("actions/cancel.png"));
         closeButton.addActionListener(e -> dialog.setVisible(false));
         closeButton.setVisible(false);
         buttonPanel.add(closeButton);

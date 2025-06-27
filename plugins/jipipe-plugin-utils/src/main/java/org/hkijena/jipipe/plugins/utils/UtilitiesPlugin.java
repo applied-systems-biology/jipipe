@@ -51,6 +51,7 @@ import org.hkijena.jipipe.plugins.utils.datatypes.PathDataToJIPipeOutputConverte
 import org.hkijena.jipipe.plugins.utils.display.ImportJIPipeProjectDataDisplayOperation;
 import org.hkijena.jipipe.utils.JIPipeResourceManager;
 import org.hkijena.jipipe.utils.UIUtils;
+import org.hkijena.jipipe.JIPipe;
 import org.scijava.Context;
 import org.scijava.plugin.Plugin;
 
@@ -99,49 +100,49 @@ public class UtilitiesPlugin extends JIPipePrepackagedDefaultJavaPlugin {
 
     @Override
     public void register(JIPipe jiPipe, Context context, JIPipeProgressInfo progressInfo) {
-        registerDatatype("jipipe-run-output", JIPipeOutputData.class, UIUtils.getIconURLFromResources("apps/jipipe.png"), new OpenPathDataDisplayOperation(), new CopyPathDataDisplayOperation(), new ImportJIPipeProjectDataDisplayOperation());
+        registerDatatype("jipipe-run-output", JIPipeOutputData.class, JIPipe.RESOURCES.getIcon16URL("apps/jipipe.png"), new OpenPathDataDisplayOperation(), new CopyPathDataDisplayOperation(), new ImportJIPipeProjectDataDisplayOperation());
         registerDatatypeConversion(new PathDataToJIPipeOutputConverter());
 
-        registerNodeType("merge-data-to-table", MergeDataToTableAlgorithm.class, UIUtils.getIconURLFromResources("data-types/data-table.png"));
-        registerNodeType("extract-table-to-data", ExtractTableAlgorithm.class, UIUtils.getIconURLFromResources("data-types/data.png"));
-        registerNodeType("data-table-annotate-with-properties", AnnotateWithDataTableProperties.class, UIUtils.getIconURLFromResources("data-types/data-table.png"));
-        registerNodeType("data-table-pull-annotations", PullDataTableAnnotations.class, UIUtils.getIconURLFromResources("actions/document-export.png"));
-        registerNodeType("data-table-push-annotations", PushDataTableAnnotations.class, UIUtils.getIconURLFromResources("actions/document-import.png"));
+        registerNodeType("merge-data-to-table", MergeDataToTableAlgorithm.class, JIPipe.RESOURCES.getIcon16URL("data-types/data-table.png"));
+        registerNodeType("extract-table-to-data", ExtractTableAlgorithm.class, JIPipe.RESOURCES.getIcon16URL("data-types/data.png"));
+        registerNodeType("data-table-annotate-with-properties", AnnotateWithDataTableProperties.class, JIPipe.RESOURCES.getIcon16URL("data-types/data-table.png"));
+        registerNodeType("data-table-pull-annotations", PullDataTableAnnotations.class, JIPipe.RESOURCES.getIcon16URL("actions/document-export.png"));
+        registerNodeType("data-table-push-annotations", PushDataTableAnnotations.class, JIPipe.RESOURCES.getIcon16URL("actions/document-import.png"));
 
-        registerNodeType("io-interface", IOInterfaceAlgorithm.class, UIUtils.getIconURLFromResources("devices/knemo-wireless-transmit-receive.png"));
-        registerNodeType("node-group", JIPipeNodeGroup.class, UIUtils.getIconURLFromResources("actions/object-group.png"));
-        registerNodeType("converter", ConverterAlgorithm.class, UIUtils.getIconURLFromResources("actions/view-refresh.png"));
-        registerNodeType("sort-rows-by-annotation", SortRowsByAnnotationsAlgorithm.class, UIUtils.getIconURLFromResources("actions/sort-name.png"));
-        registerNodeType("sort-rows-by-expression", SortRowsByExpressionAlgorithm.class, UIUtils.getIconURLFromResources("actions/sort-name.png"));
-        registerNodeType("jipipe-run-project", RunJIPipeProjectAlgorithm.class, UIUtils.getIconURLFromResources("actions/run-build.png"));
-        registerNodeType("jipipe-project-parameters", JIPipeProjectParameterDefinition.class, UIUtils.getIconURLFromResources("apps/jipipe.png"));
-        registerNodeType("jipipe-project-parameters-from-paths", PathsToJIPipeProjectParametersAlgorithm.class, UIUtils.getIconURLFromResources("apps/jipipe.png"));
-        registerNodeType("jipipe-output-get-slot-folder", GetJIPipeSlotFolderAlgorithm.class, UIUtils.getIconURLFromResources("actions/find.png"));
-        registerNodeType("jipipe-output-import-slot-folder", ImportJIPipeSlotFolderAlgorithm.class, UIUtils.getIconURLFromResources("actions/document-import.png"));
-        registerNodeType("select-data-table-rows", SelectDataTableRowsAlgorithm.class, UIUtils.getIconURLFromResources("actions/filter.png"));
-        registerNodeType("run-expression", RunExpressionAlgorithm.class, UIUtils.getIconURLFromResources("actions/insert-math-expression.png"));
-        registerNodeType("generate-placeholder-for-missing-data", UsePlaceholderForMissingDataAlgorithm.class, UIUtils.getIconURLFromResources("actions/glob.png"));
-        registerNodeType("data-batch-slicer", IterationStepSlicer.class, UIUtils.getIconURLFromResources("actions/filter.png"));
-        registerNodeType("data-slicer", DataSlicer.class, UIUtils.getIconURLFromResources("actions/filter.png"));
-        registerNodeType("distribute-data", DistributeDataRandomlyByPercentageAlgorithm.class, UIUtils.getIconURLFromResources("actions/distribute-randomize.png"));
-        registerNodeType("distribute-data-by-count", DistributeDataRandomlyByCountAlgorithm.class, UIUtils.getIconURLFromResources("actions/distribute-randomize.png"));
-        registerNodeType("data-to-string-data", ToDataStringAlgorithm.class, UIUtils.getIconURLFromResources("actions/edit-select-text.png"));
+        registerNodeType("io-interface", IOInterfaceAlgorithm.class, JIPipe.RESOURCES.getIcon16URL("devices/knemo-wireless-transmit-receive.png"));
+        registerNodeType("node-group", JIPipeNodeGroup.class, JIPipe.RESOURCES.getIcon16URL("actions/object-group.png"));
+        registerNodeType("converter", ConverterAlgorithm.class, JIPipe.RESOURCES.getIcon16URL("actions/view-refresh.png"));
+        registerNodeType("sort-rows-by-annotation", SortRowsByAnnotationsAlgorithm.class, JIPipe.RESOURCES.getIcon16URL("actions/sort-name.png"));
+        registerNodeType("sort-rows-by-expression", SortRowsByExpressionAlgorithm.class, JIPipe.RESOURCES.getIcon16URL("actions/sort-name.png"));
+        registerNodeType("jipipe-run-project", RunJIPipeProjectAlgorithm.class, JIPipe.RESOURCES.getIcon16URL("actions/run-build.png"));
+        registerNodeType("jipipe-project-parameters", JIPipeProjectParameterDefinition.class, JIPipe.RESOURCES.getIcon16URL("apps/jipipe.png"));
+        registerNodeType("jipipe-project-parameters-from-paths", PathsToJIPipeProjectParametersAlgorithm.class, JIPipe.RESOURCES.getIcon16URL("apps/jipipe.png"));
+        registerNodeType("jipipe-output-get-slot-folder", GetJIPipeSlotFolderAlgorithm.class, JIPipe.RESOURCES.getIcon16URL("actions/find.png"));
+        registerNodeType("jipipe-output-import-slot-folder", ImportJIPipeSlotFolderAlgorithm.class, JIPipe.RESOURCES.getIcon16URL("actions/document-import.png"));
+        registerNodeType("select-data-table-rows", SelectDataTableRowsAlgorithm.class, JIPipe.RESOURCES.getIcon16URL("actions/filter.png"));
+        registerNodeType("run-expression", RunExpressionAlgorithm.class, JIPipe.RESOURCES.getIcon16URL("actions/insert-math-expression.png"));
+        registerNodeType("generate-placeholder-for-missing-data", UsePlaceholderForMissingDataAlgorithm.class, JIPipe.RESOURCES.getIcon16URL("actions/glob.png"));
+        registerNodeType("data-batch-slicer", IterationStepSlicer.class, JIPipe.RESOURCES.getIcon16URL("actions/filter.png"));
+        registerNodeType("data-slicer", DataSlicer.class, JIPipe.RESOURCES.getIcon16URL("actions/filter.png"));
+        registerNodeType("distribute-data", DistributeDataRandomlyByPercentageAlgorithm.class, JIPipe.RESOURCES.getIcon16URL("actions/distribute-randomize.png"));
+        registerNodeType("distribute-data-by-count", DistributeDataRandomlyByCountAlgorithm.class, JIPipe.RESOURCES.getIcon16URL("actions/distribute-randomize.png"));
+        registerNodeType("data-to-string-data", ToDataStringAlgorithm.class, JIPipe.RESOURCES.getIcon16URL("actions/edit-select-text.png"));
 
-        registerNodeType("run-process-iterating", RunProcessIteratingAlgorithm.class, UIUtils.getIconURLFromResources("actions/cm_runterm.png"));
-        registerNodeType("run-process-merging", RunProcessMergingAlgorithm.class, UIUtils.getIconURLFromResources("actions/cm_runterm.png"));
+        registerNodeType("run-process-iterating", RunProcessIteratingAlgorithm.class, JIPipe.RESOURCES.getIcon16URL("actions/cm_runterm.png"));
+        registerNodeType("run-process-merging", RunProcessMergingAlgorithm.class, JIPipe.RESOURCES.getIcon16URL("actions/cm_runterm.png"));
 
-        registerNodeType("sleep", SleepAlgorithm.class, UIUtils.getIconURLFromResources("actions/clock.png"));
-        registerNodeType("duplicate", DuplicateDataAlgorithm.class, UIUtils.getIconURLFromResources("actions/edit-duplicate.png"));
+        registerNodeType("sleep", SleepAlgorithm.class, JIPipe.RESOURCES.getIcon16URL("actions/clock.png"));
+        registerNodeType("duplicate", DuplicateDataAlgorithm.class, JIPipe.RESOURCES.getIcon16URL("actions/edit-duplicate.png"));
 
-        registerNodeType("check-iteration-step-single", SingleIterationStepCheckerAlgorithm.class, UIUtils.getIconURLFromResources("actions/package.png"));
-        registerNodeType("check-iteration-step-multi", MultiIterationStepCheckerAlgorithm.class, UIUtils.getIconURLFromResources("actions/package.png"));
+        registerNodeType("check-iteration-step-single", SingleIterationStepCheckerAlgorithm.class, JIPipe.RESOURCES.getIcon16URL("actions/package.png"));
+        registerNodeType("check-iteration-step-multi", MultiIterationStepCheckerAlgorithm.class, JIPipe.RESOURCES.getIcon16URL("actions/package.png"));
 
-        registerNodeType("crasher-on-input", CrasherAlgorithm.class, UIUtils.getIconURLFromResources("actions/error.png"));
+        registerNodeType("crasher-on-input", CrasherAlgorithm.class, JIPipe.RESOURCES.getIcon16URL("actions/error.png"));
 
         // Comment node
         JIPipeJavaNodeInfo commentNodeInfo = new JIPipeJavaNodeInfo("jipipe:comment", JIPipeCommentNode.class);
         commentNodeInfo.setRunnable(false);
-        registerNodeType(commentNodeInfo, UIUtils.getIconURLFromResources("actions/edit-comment.png"));
+        registerNodeType(commentNodeInfo, JIPipe.RESOURCES.getIcon16URL("actions/edit-comment.png"));
 
         // Parameter explorer
         registerContextMenuAction(new ParameterExplorerContextMenuAction());

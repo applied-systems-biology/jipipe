@@ -14,6 +14,7 @@
 package org.hkijena.jipipe.plugins.expressions.ui;
 
 import org.fife.ui.rsyntaxtextarea.*;
+import org.hkijena.jipipe.JIPipe;
 import org.hkijena.jipipe.api.nodes.JIPipeAlgorithm;
 import org.hkijena.jipipe.api.nodes.JIPipeGraphNode;
 import org.hkijena.jipipe.api.nodes.iterationstep.JIPipeIterationStepAlgorithm;
@@ -29,6 +30,7 @@ import org.hkijena.jipipe.plugins.expressions.variables.UndefinedExpressionParam
 import org.hkijena.jipipe.utils.ReflectionUtils;
 import org.hkijena.jipipe.utils.StringUtils;
 import org.hkijena.jipipe.utils.UIUtils;
+import org.hkijena.jipipe.JIPipe;
 
 import javax.swing.*;
 import javax.swing.event.DocumentEvent;
@@ -67,7 +69,7 @@ public class JIPipeExpressionDesktopParameterEditorUI extends JIPipeDesktopParam
         JIPipeExpressionParameterSettings settings = getParameterAccess().getAnnotationOfType(JIPipeExpressionParameterSettings.class);
         setLayout(new BorderLayout());
 
-        JButton functionBuilder = new JButton("Edit", UIUtils.getIconFromResources("actions/edit.png"));
+        JButton functionBuilder = new JButton("Edit", JIPipe.RESOURCES.getIcon16("actions/edit.png"));
         functionBuilder.addActionListener(e -> editInFunctionBuilder());
         editPanel.setOpaque(false);
 

@@ -14,6 +14,7 @@
 package org.hkijena.jipipe.desktop.app.ploteditor;
 
 import ij.measure.ResultsTable;
+import org.hkijena.jipipe.JIPipe;
 import org.hkijena.jipipe.api.parameters.JIPipeParameterCollection;
 import org.hkijena.jipipe.desktop.JIPipeDesktop;
 import org.hkijena.jipipe.desktop.app.JIPipeDesktopWorkbench;
@@ -27,6 +28,7 @@ import org.hkijena.jipipe.plugins.tables.datatypes.ResultsTableData;
 import org.hkijena.jipipe.plugins.tables.datatypes.TableColumnData;
 import org.hkijena.jipipe.utils.PathUtils;
 import org.hkijena.jipipe.utils.UIUtils;
+import org.hkijena.jipipe.JIPipe;
 
 import javax.swing.*;
 import java.awt.*;
@@ -64,18 +66,18 @@ public class JIPipeDesktopPlotAvailableDataManagerUI extends JIPipeDesktopWorkbe
         setLayout(new BorderLayout());
         JToolBar toolBar = new JToolBar();
 
-        JButton importDataButton = new JButton("Import", UIUtils.getIconFromResources("actions/document-import.png"));
+        JButton importDataButton = new JButton("Import", JIPipe.RESOURCES.getIcon16("actions/document-import.png"));
         this.importPopupMenu = new JPopupMenu();
         UIUtils.addReloadablePopupMenuToButton(importDataButton, importPopupMenu, this::reloadImportPopupMenu);
         toolBar.add(importDataButton);
 
         toolBar.add(Box.createHorizontalGlue());
 
-        JButton removeSelectedDataButton = new JButton("Remove", UIUtils.getIconFromResources("actions/delete.png"));
+        JButton removeSelectedDataButton = new JButton("Remove", JIPipe.RESOURCES.getIcon16("actions/delete.png"));
         removeSelectedDataButton.addActionListener(e -> removeSelectedData());
         toolBar.add(removeSelectedDataButton);
 
-        JButton openSelectedDataButton = new JButton("Show", UIUtils.getIconFromResources("actions/find.png"));
+        JButton openSelectedDataButton = new JButton("Show", JIPipe.RESOURCES.getIcon16("actions/find.png"));
         openSelectedDataButton.addActionListener(e -> showSelectedData());
         toolBar.add(openSelectedDataButton);
 
@@ -103,7 +105,7 @@ public class JIPipeDesktopPlotAvailableDataManagerUI extends JIPipeDesktopWorkbe
     private void reloadImportPopupMenu() {
         importPopupMenu.removeAll();
 
-        JMenuItem importCSVItem = new JMenuItem("From *.csv", UIUtils.getIconFromResources("actions/document-open-folder.png"));
+        JMenuItem importCSVItem = new JMenuItem("From *.csv", JIPipe.RESOURCES.getIcon16("actions/document-open-folder.png"));
         importCSVItem.addActionListener(e -> importDataCSV());
         importPopupMenu.add(importCSVItem);
 
@@ -111,7 +113,7 @@ public class JIPipeDesktopPlotAvailableDataManagerUI extends JIPipeDesktopWorkbe
         if (!tableAnalyzers.isEmpty()) {
             importPopupMenu.addSeparator();
             for (JIPipeDesktopTabPane.DocumentTab tab : tableAnalyzers) {
-                JMenuItem importItem = new JMenuItem("Import from '" + tab.getTitle() + "'", UIUtils.getIconFromResources("data-types/results-table.png"));
+                JMenuItem importItem = new JMenuItem("Import from '" + tab.getTitle() + "'", JIPipe.RESOURCES.getIcon16("data-types/results-table.png"));
                 JIPipeDesktopTableEditor tableAnalyzerUI = (JIPipeDesktopTableEditor) tab.getContent();
                 importItem.addActionListener(e -> importDataTableAnalyzer(tableAnalyzerUI, tab.getTitle()));
                 importPopupMenu.add(importItem);

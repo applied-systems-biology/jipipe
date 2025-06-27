@@ -36,6 +36,7 @@ import org.hkijena.jipipe.plugins.parameters.library.markup.HTMLText;
 import org.hkijena.jipipe.plugins.parameters.library.primitives.list.StringList;
 import org.hkijena.jipipe.utils.JIPipeResourceManager;
 import org.hkijena.jipipe.utils.UIUtils;
+import org.hkijena.jipipe.JIPipe;
 import org.scijava.Context;
 import org.scijava.plugin.Plugin;
 
@@ -71,7 +72,7 @@ public class OpenCvPlugin extends JIPipePrepackagedDefaultJavaPlugin {
 
     @Override
     public List<ImageIcon> getSplashIcons() {
-        return Collections.singletonList(RESOURCES.getIcon32FromResources("opencv.png"));
+        return Collections.singletonList(RESOURCES.getIcon32("opencv.png"));
     }
 
     @Override
@@ -101,7 +102,7 @@ public class OpenCvPlugin extends JIPipePrepackagedDefaultJavaPlugin {
 
     @Override
     public void register(JIPipe jiPipe, Context context, JIPipeProgressInfo progressInfo) {
-        registerDatatype("opencv-image", OpenCvImageData.class, RESOURCES.getIcon16URLFromResources("opencv-image.png"));
+        registerDatatype("opencv-image", OpenCvImageData.class, RESOURCES.getIcon16URL("opencv-image.png"));
         registerDatatypeConversion(new ImageJToOpenCvDataTypeConverter());
         registerDatatypeConversion(new OpenCvToImageJDataTypeConverter());
 
@@ -111,15 +112,15 @@ public class OpenCvPlugin extends JIPipePrepackagedDefaultJavaPlugin {
         registerEnumParameterType("opencv-depth", OpenCvDepth.class, "OpenCV Depth", "An OpenCV depth (CV_[bit depth][data type Signed/Unsigned/Float])");
         registerEnumParameterType("opencv-border-type", OpenCvBorderType.class, "OpenCV Border Type", "An OpenCV border type");
 
-        registerNodeType("opencv-convert-depth", ConvertDepthAlgorithm.class, UIUtils.getIconURLFromResources("actions/gtk-convert.png"));
-        registerNodeType("opencv-convert-type", ConvertTypeAlgorithm.class, UIUtils.getIconURLFromResources("actions/gtk-convert.png"));
+        registerNodeType("opencv-convert-depth", ConvertDepthAlgorithm.class, JIPipe.RESOURCES.getIcon16URL("actions/gtk-convert.png"));
+        registerNodeType("opencv-convert-type", ConvertTypeAlgorithm.class, JIPipe.RESOURCES.getIcon16URL("actions/gtk-convert.png"));
 
         registerNodeType("opencv-generate-gabor", GaborKernelGenerator.class);
         registerNodeType("opencv-generate-gaussian", GaussianKernelGenerator.class);
 
-        registerNodeType("opencv-filter-bilateral", BilateralFilterAlgorithm.class, UIUtils.getIconURLFromResources("actions/insert-math-expression.png"));
+        registerNodeType("opencv-filter-bilateral", BilateralFilterAlgorithm.class, JIPipe.RESOURCES.getIcon16URL("actions/insert-math-expression.png"));
 
-        registerNodeType("opencv-photo-inpainting", InpaintingAlgorithm.class, UIUtils.getIconURLFromResources("actions/bandage.png"));
+        registerNodeType("opencv-photo-inpainting", InpaintingAlgorithm.class, JIPipe.RESOURCES.getIcon16URL("actions/bandage.png"));
         registerEnumParameterType("opencv-photo-inpainting:method", InpaintingAlgorithm.Method.class, "Inpainting method", "An inpainting method");
     }
 

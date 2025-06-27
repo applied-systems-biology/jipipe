@@ -20,6 +20,7 @@ import org.hkijena.jipipe.desktop.app.JIPipeDesktopProjectWorkbench;
 import org.hkijena.jipipe.desktop.app.grapheditor.commons.JIPipeDesktopGraphCanvasUI;
 import org.hkijena.jipipe.desktop.app.grapheditor.commons.nodeui.JIPipeDesktopGraphNodeUI;
 import org.hkijena.jipipe.utils.UIUtils;
+import org.hkijena.jipipe.JIPipe;
 
 import javax.swing.*;
 import java.util.Set;
@@ -39,7 +40,7 @@ public class JsonAlgorithmToGroupNodeUIContextAction implements NodeUIContextAct
         if (canvasUI.getHistoryJournal() != null) {
             Set<JIPipeGraphNode> nodes = selection.stream().map(JIPipeDesktopGraphNodeUI::getNode).collect(Collectors.toSet());
             UUID compartment = nodes.stream().map(JIPipeGraphNode::getUUIDInParentGraph).findFirst().orElse(null);
-            canvasUI.getHistoryJournal().snapshot("Convert to group", "Converted nodes into a group", compartment, UIUtils.getIconFromResources("actions/extract-archive.png"));
+            canvasUI.getHistoryJournal().snapshot("Convert to group", "Converted nodes into a group", compartment, JIPipe.RESOURCES.getIcon16("actions/extract-archive.png"));
         }
         for (JIPipeDesktopGraphNodeUI ui : selection) {
             if (ui.getNode() instanceof JsonAlgorithm) {
@@ -60,7 +61,7 @@ public class JsonAlgorithmToGroupNodeUIContextAction implements NodeUIContextAct
 
     @Override
     public Icon getIcon() {
-        return UIUtils.getIconFromResources("actions/extract-archive.png");
+        return JIPipe.RESOURCES.getIcon16("actions/extract-archive.png");
     }
 
 }

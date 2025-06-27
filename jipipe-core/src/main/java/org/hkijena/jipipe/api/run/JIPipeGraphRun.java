@@ -884,7 +884,7 @@ public class JIPipeGraphRun extends AbstractJIPipeRunnable implements JIPipeGrap
                         "The pipeline continued as setup within the runtime partition settings. " +
                         "The inputs and graph were exported to " + outputDir,
                 new JIPipeNotificationAction("Open directory", "Opens the directory containing the inputs",
-                        UIUtils.getIconFromResources("actions/document-open-folder.png"), workbench -> {
+                        JIPipe.RESOURCES.getIcon16("actions/document-open-folder.png"), workbench -> {
                     UIUtils.desktopOpenFile(outputDir.toFile());
                 })));
 

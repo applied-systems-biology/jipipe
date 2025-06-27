@@ -20,6 +20,7 @@ import org.hkijena.jipipe.desktop.commons.components.JIPipeDesktopParameterKeyPi
 import org.hkijena.jipipe.plugins.multiparameters.nodes.DefineParametersTableAlgorithm;
 import org.hkijena.jipipe.plugins.parameters.library.table.ParameterTable;
 import org.hkijena.jipipe.utils.UIUtils;
+import org.hkijena.jipipe.JIPipe;
 
 import javax.swing.*;
 import java.awt.event.KeyEvent;
@@ -71,6 +72,6 @@ public class AddNewParameterSetNodeUIContextAction implements NodeUIContextActio
 
     @Override
     public Icon getIcon() {
-        return UIUtils.getIconFromResources("data-types/parameters.png");
+        return JIPipe.RESOURCES.getIcon16("data-types/parameters.png");
     }
 }

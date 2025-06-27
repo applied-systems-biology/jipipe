@@ -16,6 +16,7 @@ package org.hkijena.jipipe.api.grouping.parameters;
 import org.hkijena.jipipe.desktop.api.JIPipeDesktopParameterEditorUI;
 import org.hkijena.jipipe.desktop.app.grapheditor.flavors.groups.JIPipeDesktopNodeGroupUI;
 import org.hkijena.jipipe.utils.UIUtils;
+import org.hkijena.jipipe.JIPipe;
 
 import javax.swing.*;
 import java.awt.*;
@@ -32,7 +33,7 @@ public class NodeGroupContentsDesktopParameterEditorUI extends JIPipeDesktopPara
 
     private void initialize() {
         setLayout(new BorderLayout());
-        JButton editGraphButton = new JButton("Edit graph", UIUtils.getIconFromResources("actions/edit.png"));
+        JButton editGraphButton = new JButton("Edit graph", JIPipe.RESOURCES.getIcon16("actions/edit.png"));
         editGraphButton.addActionListener(e -> editGraph());
         add(editGraphButton, BorderLayout.CENTER);
     }

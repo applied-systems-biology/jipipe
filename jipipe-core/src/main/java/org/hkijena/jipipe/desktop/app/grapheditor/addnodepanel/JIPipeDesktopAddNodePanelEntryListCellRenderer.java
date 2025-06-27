@@ -17,6 +17,7 @@ import org.hkijena.jipipe.api.nodes.database.JIPipeNodeDatabaseEntry;
 import org.hkijena.jipipe.desktop.commons.theme.JIPipeDesktopModernThemeStyle;
 import org.hkijena.jipipe.utils.StringUtils;
 import org.hkijena.jipipe.utils.UIUtils;
+import org.hkijena.jipipe.JIPipe;
 
 import javax.swing.*;
 import javax.swing.border.Border;
@@ -138,7 +139,7 @@ public class JIPipeDesktopAddNodePanelEntryListCellRenderer extends JPanel imple
             // Pinned items
             Set<String> pinnedNodeDatabaseEntries = addNodePanel.getPinnedNodeDatabaseEntries();
             if (pinnedNodeDatabaseEntries.contains(obj.getId())) {
-                pinLabel.setIcon(UIUtils.getIconInvertedFromResources("actions/window-pin.png"));
+                pinLabel.setIcon(JIPipe.RESOURCES.getIcon16Inverted("actions/window-pin.png"));
             } else {
                 pinLabel.setIcon(null);
             }

@@ -60,7 +60,7 @@ public class TSOAXEnvironment extends JIPipeProcessArtifactEnvironment {
 
     @Override
     public Icon getNonArtifactIcon() {
-        return FilamentsPlugin.RESOURCES.getIcon16FromResources("tsoax.png");
+        return FilamentsPlugin.RESOURCES.getIcon16("tsoax.png");
     }
 
     /**

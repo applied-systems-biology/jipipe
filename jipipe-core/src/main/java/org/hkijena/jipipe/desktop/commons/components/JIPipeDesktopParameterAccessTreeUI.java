@@ -23,6 +23,7 @@ import org.hkijena.jipipe.api.parameters.JIPipeParameterAccess;
 import org.hkijena.jipipe.api.parameters.JIPipeParameterTree;
 import org.hkijena.jipipe.desktop.commons.components.search.JIPipeDesktopSearchTextField;
 import org.hkijena.jipipe.utils.UIUtils;
+import org.hkijena.jipipe.JIPipe;
 
 import javax.swing.*;
 import javax.swing.tree.DefaultMutableTreeNode;
@@ -82,24 +83,24 @@ public class JIPipeDesktopParameterAccessTreeUI extends JPanel {
         JPanel buttonPanel = new JPanel();
         buttonPanel.setLayout(new BoxLayout(buttonPanel, BoxLayout.X_AXIS));
 
-        JButton collapseAllButton = new JButton("Collapse all", UIUtils.getIconFromResources("actions/collapse-all.png"));
+        JButton collapseAllButton = new JButton("Collapse all", JIPipe.RESOURCES.getIcon16("actions/collapse-all.png"));
         collapseAllButton.addActionListener(e -> UIUtils.setTreeExpandedState(ui.treeComponent, false));
         buttonPanel.add(collapseAllButton);
 
-        JButton expandAllButton = new JButton("Expand all", UIUtils.getIconFromResources("actions/expand-all.png"));
+        JButton expandAllButton = new JButton("Expand all", JIPipe.RESOURCES.getIcon16("actions/expand-all.png"));
         expandAllButton.addActionListener(e -> UIUtils.setTreeExpandedState(ui.treeComponent, true));
         buttonPanel.add(expandAllButton);
 
         buttonPanel.add(Box.createHorizontalGlue());
 
-        JButton cancelButton = new JButton("Cancel", UIUtils.getIconFromResources("actions/cancel.png"));
+        JButton cancelButton = new JButton("Cancel", JIPipe.RESOURCES.getIcon16("actions/cancel.png"));
         cancelButton.addActionListener(e -> {
             ui.treeComponent.clearSelection();
             dialog.setVisible(false);
         });
         buttonPanel.add(cancelButton);
 
-        JButton pickButton = new JButton("Select", UIUtils.getIconFromResources("actions/color-select.png"));
+        JButton pickButton = new JButton("Select", JIPipe.RESOURCES.getIcon16("actions/color-select.png"));
         pickButton.addActionListener(e -> dialog.setVisible(false));
         buttonPanel.add(pickButton);
 
@@ -231,7 +232,7 @@ public class JIPipeDesktopParameterAccessTreeUI extends JPanel {
                         icon = JIPipe.getNodes().getIconFor(info);
                     }
                     if (icon == null) {
-                        UIUtils.getIconFromResources("actions/object-group.png");
+                        JIPipe.RESOURCES.getIcon16("actions/object-group.png");
                     }
                     setIcon(icon);
                     String name = node.getName();
@@ -239,11 +240,11 @@ public class JIPipeDesktopParameterAccessTreeUI extends JPanel {
                         name = node.getKey();
                     setText(name);
                 } else if (userObject instanceof JIPipeProjectCompartment) {
-                    setIcon(UIUtils.getIconFromResources("data-types/graph-compartment.png"));
+                    setIcon(JIPipe.RESOURCES.getIcon16("data-types/graph-compartment.png"));
                     setText(((JIPipeProjectCompartment) userObject).getName());
                 } else if (userObject instanceof JIPipeParameterAccess) {
                     JIPipeParameterAccess access = (JIPipeParameterAccess) userObject;
-                    setIcon(UIUtils.getIconFromResources("data-types/parameters.png"));
+                    setIcon(JIPipe.RESOURCES.getIcon16("data-types/parameters.png"));
                     String name = access.getName();
                     if (name == null)
                         name = access.getKey();

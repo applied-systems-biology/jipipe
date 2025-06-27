@@ -34,6 +34,7 @@ import org.hkijena.jipipe.utils.CoreImageJUtils;
 import org.hkijena.jipipe.utils.JIPipeDesktopSplitPane;
 import org.hkijena.jipipe.utils.StringUtils;
 import org.hkijena.jipipe.utils.UIUtils;
+import org.hkijena.jipipe.JIPipe;
 
 import javax.swing.*;
 import java.awt.*;
@@ -177,7 +178,7 @@ public class JIPipeDesktopPluginManagerUI extends JIPipeDesktopWorkbenchPanel im
                     "You need to restart ImageJ/JIPipe",
                     false,
                     false,
-                    UIUtils.createButton("Close JIPipe", UIUtils.getIconFromResources("actions/gtk-close.png"), this::closeImageJ));
+                    UIUtils.createButton("Close JIPipe", JIPipe.RESOURCES.getIcon16("actions/gtk-close.png"), this::closeImageJ));
             propertyPanel.addWideToForm(messagePanel);
             propertyPanel.addVerticalGlue();
             return;
@@ -189,27 +190,27 @@ public class JIPipeDesktopPluginManagerUI extends JIPipeDesktopWorkbenchPanel im
                     "You have pending changes",
                     false,
                     false,
-                    UIUtils.createButton("Revert", UIUtils.getIconFromResources("actions/edit-undo.png"), this::revertChanges),
-                    UIUtils.createButton("Apply", UIUtils.getIconFromResources("actions/check.png"), this::applyChanges));
+                    UIUtils.createButton("Revert", JIPipe.RESOURCES.getIcon16("actions/edit-undo.png"), this::revertChanges),
+                    UIUtils.createButton("Apply", JIPipe.RESOURCES.getIcon16("actions/check.png"), this::applyChanges));
             propertyPanel.addWideToForm(messagePanel);
         }
 
         PluginEntry selectedValue = pluginEntryJList.getSelectedValue();
         if (selectedValue != null) {
             JIPipePlugin plugin = selectedValue.plugin;
-            propertyPanel.addGroupHeader(plugin.getMetadata().getName(), plugin.getMetadata().getDescription().getHtml(), false, UIUtils.getIconFromResources("actions/puzzle-piece.png"));
+            propertyPanel.addGroupHeader(plugin.getMetadata().getName(), plugin.getMetadata().getDescription().getHtml(), false, JIPipe.RESOURCES.getIcon16("actions/puzzle-piece.png"));
             if (plugin.isCorePlugin()) {
                 propertyPanel.addToForm(new JLabel("Always active"), new JLabel("Status"));
             } else {
                 if (!plugin.isActivated()) {
                     if (selectedValue.isToggleInstallationStatus()) {
-                        propertyPanel.addToForm(UIUtils.createLeftAlignedButton("Mark for activation", UIUtils.getIconFromResources("emblems/checkbox-checked.png"), () -> {
+                        propertyPanel.addToForm(UIUtils.createLeftAlignedButton("Mark for activation", JIPipe.RESOURCES.getIcon16("emblems/checkbox-checked.png"), () -> {
                             selectedValue.setToggleInstallationStatus(false);
                             updateSelectionPanel();
                             pluginEntryJList.repaint(50);
                         }), new JLabel("Status"));
                     } else {
-                        propertyPanel.addToForm(UIUtils.createLeftAlignedButton("Mark for activation", UIUtils.getIconFromResources("emblems/checkbox-unchecked.png"), () -> {
+                        propertyPanel.addToForm(UIUtils.createLeftAlignedButton("Mark for activation", JIPipe.RESOURCES.getIcon16("emblems/checkbox-unchecked.png"), () -> {
                             selectedValue.setToggleInstallationStatus(true);
                             updateSelectionPanel();
                             pluginEntryJList.repaint(50);
@@ -217,13 +218,13 @@ public class JIPipeDesktopPluginManagerUI extends JIPipeDesktopWorkbenchPanel im
                     }
                 } else {
                     if (selectedValue.isToggleInstallationStatus()) {
-                        propertyPanel.addToForm(UIUtils.createLeftAlignedButton("Keep activated", UIUtils.getIconFromResources("emblems/checkbox-unchecked.png"), () -> {
+                        propertyPanel.addToForm(UIUtils.createLeftAlignedButton("Keep activated", JIPipe.RESOURCES.getIcon16("emblems/checkbox-unchecked.png"), () -> {
                             selectedValue.setToggleInstallationStatus(false);
                             updateSelectionPanel();
                             pluginEntryJList.repaint(50);
                         }), new JLabel("Status"));
                     } else {
-                        propertyPanel.addToForm(UIUtils.createLeftAlignedButton("Keep activated", UIUtils.getIconFromResources("emblems/checkbox-checked.png"), () -> {
+                        propertyPanel.addToForm(UIUtils.createLeftAlignedButton("Keep activated", JIPipe.RESOURCES.getIcon16("emblems/checkbox-checked.png"), () -> {
                             selectedValue.setToggleInstallationStatus(true);
                             updateSelectionPanel();
                             pluginEntryJList.repaint(50);
@@ -250,19 +251,19 @@ public class JIPipeDesktopPluginManagerUI extends JIPipeDesktopWorkbenchPanel im
                         new JLabel("License"));
             }
             for (JIPipeImageJUpdateSiteDependency updateSiteDependency : plugin.getAllImageJUpdateSiteDependencies()) {
-                JButton button = UIUtils.createButton(updateSiteDependency.getName(), UIUtils.getIconFromResources("apps/imagej.png"), () -> {
+                JButton button = UIUtils.createButton(updateSiteDependency.getName(), JIPipe.RESOURCES.getIcon16("apps/imagej.png"), () -> {
 
                 });
                 button.setHorizontalAlignment(SwingConstants.LEFT);
                 JPopupMenu popupMenu = UIUtils.addPopupMenuToButton(button);
-                popupMenu.add(UIUtils.createMenuItem("Show info", "Shows information about the update site", UIUtils.getIconFromResources("actions/document-preview.png"), () -> {
+                popupMenu.add(UIUtils.createMenuItem("Show info", "Shows information about the update site", JIPipe.RESOURCES.getIcon16("actions/document-preview.png"), () -> {
                     showImageJUpdateSiteInfo(updateSiteDependency);
                 }));
                 propertyPanel.addToForm(button, new JLabel("ImageJ dependency"));
             }
         } else {
             propertyPanel.addGroupHeader("Plugins", "The JIPipe feature set can be extended with a variety of plugins. " +
-                    "Select items on the left-hand side to show more information about a plugin.", false, UIUtils.getIconFromResources("actions/help-info.png"));
+                    "Select items on the left-hand side to show more information about a plugin.", false, JIPipe.RESOURCES.getIcon16("actions/help-info.png"));
         }
 
         propertyPanel.addVerticalGlue();
@@ -301,7 +302,7 @@ public class JIPipeDesktopPluginManagerUI extends JIPipeDesktopWorkbenchPanel im
             JPanel authorsPanel = new JPanel(new GridLayout((int) Math.ceil(1.0 * authors.size() / 2), 2));
             authorsPanel.setLayout(new BoxLayout(authorsPanel, BoxLayout.Y_AXIS));
             for (JIPipeAuthorMetadata author : authors) {
-                JButton button = UIUtils.createButton(author.toString(), UIUtils.getIconFromResources("actions/im-user.png"), () -> {
+                JButton button = UIUtils.createButton(author.toString(), JIPipe.RESOURCES.getIcon16("actions/im-user.png"), () -> {
                     JIPipeAuthorMetadata.openAuthorInfoWindow(getDesktopWorkbench().getWindow(), authors, author);
                 });
                 UIUtils.makeButtonFlat(button);
@@ -362,24 +363,24 @@ public class JIPipeDesktopPluginManagerUI extends JIPipeDesktopWorkbenchPanel im
         Insets insets = new Insets(2, 2, 2, 2);
         JIPipeDesktopFormPanel formPanel = new JIPipeDesktopFormPanel(JIPipeDesktopFormPanel.WITH_SCROLLING);
         if (!pluginsToInstall.isEmpty()) {
-            formPanel.addGroupHeader("The following plugins will be activated", UIUtils.getIconFromResources("status/package-install.png"));
+            formPanel.addGroupHeader("The following plugins will be activated", JIPipe.RESOURCES.getIcon16("status/package-install.png"));
             pluginsToInstall.stream().sorted(Comparator.comparing((JIPipePlugin plugin) -> plugin.getMetadata().getName())).forEach((JIPipePlugin plugin) -> {
                 createPluginInfoEntry(plugin, insets, formPanel);
             });
         }
         if (!pluginsToUninstall.isEmpty()) {
-            formPanel.addGroupHeader("The following plugins will be deactivated", UIUtils.getIconFromResources("status/package-remove.png"));
+            formPanel.addGroupHeader("The following plugins will be deactivated", JIPipe.RESOURCES.getIcon16("status/package-remove.png"));
             pluginsToUninstall.stream().sorted(Comparator.comparing((JIPipePlugin plugin) -> plugin.getMetadata().getName())).forEach((JIPipePlugin plugin) -> {
                 createPluginInfoEntry(plugin, insets, formPanel);
             });
         }
         if (!pluginIdsNotFound.isEmpty()) {
-            formPanel.addGroupHeader("The following plugins could not be found", UIUtils.getIconFromResources("status/package-broken.png"));
+            formPanel.addGroupHeader("The following plugins could not be found", JIPipe.RESOURCES.getIcon16("status/package-broken.png"));
         }
         if (!updateSiteDependencies.isEmpty()) {
-            formPanel.addGroupHeader("Please ensure that the following ImageJ update sites (Plugins > ImageJ plugins) are activated", UIUtils.getIconFromResources("emblems/warning.png"));
+            formPanel.addGroupHeader("Please ensure that the following ImageJ update sites (Plugins > ImageJ plugins) are activated", JIPipe.RESOURCES.getIcon16("emblems/warning.png"));
             for (String name : updateSiteDependencies.keySet()) {
-                formPanel.addWideToForm(new JLabel(updateSiteDependencies.get(name).getName() + " (" + updateSiteDependencies.get(name).getUrl() + ")", UIUtils.getIconFromResources("apps/imagej.png"), JLabel.LEFT));
+                formPanel.addWideToForm(new JLabel(updateSiteDependencies.get(name).getName() + " (" + updateSiteDependencies.get(name).getUrl() + ")", JIPipe.RESOURCES.getIcon16("apps/imagej.png"), JLabel.LEFT));
             }
         }
         formPanel.addVerticalGlue();
@@ -394,10 +395,10 @@ public class JIPipeDesktopPluginManagerUI extends JIPipeDesktopWorkbenchPanel im
         // Create the button bar
         AtomicBoolean userAccepted = new AtomicBoolean(false);
         JPanel buttonBar = UIUtils.boxHorizontal(Box.createHorizontalGlue(),
-                UIUtils.createButton("Cancel", UIUtils.getIconFromResources("actions/dialog-cancel.png"), () -> {
+                UIUtils.createButton("Cancel", JIPipe.RESOURCES.getIcon16("actions/dialog-cancel.png"), () -> {
                     dialog.setVisible(false);
                 }),
-                UIUtils.createButton("Apply", UIUtils.getIconFromResources("actions/dialog-ok.png"), () -> {
+                UIUtils.createButton("Apply", JIPipe.RESOURCES.getIcon16("actions/dialog-ok.png"), () -> {
                     userAccepted.set(true);
                     dialog.setVisible(false);
                 }));
@@ -423,7 +424,7 @@ public class JIPipeDesktopPluginManagerUI extends JIPipeDesktopWorkbenchPanel im
 
     private void createPluginInfoEntry(JIPipePlugin plugin, Insets insets, JIPipeDesktopFormPanel formPanel) {
         JPanel pluginPanel = new JPanel(new GridBagLayout());
-        pluginPanel.add(new JLabel(UIUtils.getIconFromResources("actions/puzzle-piece.png")), new GridBagConstraints(0,
+        pluginPanel.add(new JLabel(JIPipe.RESOURCES.getIcon16("actions/puzzle-piece.png")), new GridBagConstraints(0,
                 0,
                 1,
                 1,
@@ -598,25 +599,25 @@ public class JIPipeDesktopPluginManagerUI extends JIPipeDesktopWorkbenchPanel im
         public Component getListCellRendererComponent(JList<? extends PluginEntry> list, PluginEntry value, int index, boolean isSelected, boolean cellHasFocus) {
             infoLabel.setForeground(UIManager.getColor("Label.disabledForeground"));
             if (value.getPlugin().isCorePlugin()) {
-                statusLabel.setIcon(UIUtils.getIconFromResources("emblems/checkbox-checked.png"));
+                statusLabel.setIcon(JIPipe.RESOURCES.getIcon16("emblems/checkbox-checked.png"));
                 infoLabel.setText("Core plugin");
             } else {
                 if (!value.getPlugin().isActivated()) {
                     if (value.isToggleInstallationStatus()) {
-                        statusLabel.setIcon(UIUtils.getIconFromResources("emblems/checkbox-checked.png"));
+                        statusLabel.setIcon(JIPipe.RESOURCES.getIcon16("emblems/checkbox-checked.png"));
                         infoLabel.setForeground(new Color(0x26a269));
                         infoLabel.setText("Activate");
                     } else {
-                        statusLabel.setIcon(UIUtils.getIconFromResources("emblems/checkbox-unchecked.png"));
+                        statusLabel.setIcon(JIPipe.RESOURCES.getIcon16("emblems/checkbox-unchecked.png"));
                         infoLabel.setText("Not activated");
                     }
                 } else {
                     if (value.isToggleInstallationStatus()) {
-                        statusLabel.setIcon(UIUtils.getIconFromResources("emblems/checkbox-unchecked.png"));
+                        statusLabel.setIcon(JIPipe.RESOURCES.getIcon16("emblems/checkbox-unchecked.png"));
                         infoLabel.setForeground(new Color(0xc64600));
                         infoLabel.setText("Deactivate");
                     } else {
-                        statusLabel.setIcon(UIUtils.getIconFromResources("emblems/checkbox-checked.png"));
+                        statusLabel.setIcon(JIPipe.RESOURCES.getIcon16("emblems/checkbox-checked.png"));
                         infoLabel.setText("Activated");
                     }
                 }

@@ -19,6 +19,7 @@ import org.hkijena.jipipe.desktop.commons.components.JIPipeDesktopFormPanel;
 import org.hkijena.jipipe.plugins.imagejdatatypes.util.dimensions.ImageSliceIndex;
 import org.hkijena.jipipe.plugins.imageviewer.utils.viewer2d.ImageViewerPanelCanvas2D;
 import org.hkijena.jipipe.utils.UIUtils;
+import org.hkijena.jipipe.JIPipe;
 import org.hkijena.jipipe.utils.ui.events.*;
 
 import javax.swing.*;
@@ -45,7 +46,7 @@ public class EllipseMaskDrawer2DTool extends MaskDrawer2DTool implements MouseCl
         super(plugin,
                 "Ellipse",
                 "Draws an ellipse between two points",
-                UIUtils.getIconFromResources("actions/draw-ellipse-whole.png"));
+                JIPipe.RESOURCES.getIcon16("actions/draw-ellipse-whole.png"));
         ImageViewerPanelCanvas2D canvas = getViewerPanel2D().getCanvas();
         canvas.getMouseClickedEventEmitter().subscribe(this);
         canvas.getMouseExitedEventEmitter().subscribe(this);

@@ -1,6 +1,7 @@
 package org.hkijena.jipipe.desktop.commons.theme.helpers;
 
 import org.hkijena.jipipe.utils.UIUtils;
+import org.hkijena.jipipe.JIPipe;
 
 import javax.swing.*;
 import javax.swing.border.EmptyBorder;

@@ -24,6 +24,7 @@ import org.hkijena.jipipe.plugins.parameters.library.jipipe.PluginCategoriesEnum
 import org.hkijena.jipipe.plugins.parameters.library.markup.HTMLText;
 import org.hkijena.jipipe.plugins.parameters.library.primitives.list.StringList;
 import org.hkijena.jipipe.utils.UIUtils;
+import org.hkijena.jipipe.JIPipe;
 import org.scijava.Context;
 import org.scijava.plugin.Plugin;
 
@@ -74,11 +75,11 @@ public class MultiParameterAlgorithmsPlugin extends JIPipePrepackagedDefaultJava
         registerNodeType("parameters-from-node", ExtractParametersAlgorithm.class);
         registerNodeType("parameters-from-global", DefineParametersFromGlobalParametersAlgorithm.class);
 
-        registerNodeType("parameters-to-annotations", ParametersToAnnotationsAlgorithm.class, UIUtils.getIconURLFromResources("data-types/parameters.png"));
-        registerNodeType("annotations-to-parameters", AnnotationsToParametersAlgorithm.class, UIUtils.getIconURLFromResources("data-types/parameters.png"));
-        registerNodeType("table-to-parameters", DefineParametersFromTableAlgorithm.class, UIUtils.getIconURLFromResources("data-types/parameters.png"));
-        registerNodeType("parameters-merge", MergeParametersAlgorithm.class, UIUtils.getIconURLFromResources("actions/rabbitvcs-merge.png"));
-        registerNodeType("parameters-multiply", MultiplyParametersAlgorithm.class, UIUtils.getIconURLFromResources("actions/asterisk.png"));
+        registerNodeType("parameters-to-annotations", ParametersToAnnotationsAlgorithm.class, JIPipe.RESOURCES.getIcon16URL("data-types/parameters.png"));
+        registerNodeType("annotations-to-parameters", AnnotationsToParametersAlgorithm.class, JIPipe.RESOURCES.getIcon16URL("data-types/parameters.png"));
+        registerNodeType("table-to-parameters", DefineParametersFromTableAlgorithm.class, JIPipe.RESOURCES.getIcon16URL("data-types/parameters.png"));
+        registerNodeType("parameters-merge", MergeParametersAlgorithm.class, JIPipe.RESOURCES.getIcon16URL("actions/rabbitvcs-merge.png"));
+        registerNodeType("parameters-multiply", MultiplyParametersAlgorithm.class, JIPipe.RESOURCES.getIcon16URL("actions/asterisk.png"));
     }
 
     @Override

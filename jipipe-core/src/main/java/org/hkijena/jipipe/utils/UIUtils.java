@@ -54,7 +54,6 @@ import org.hkijena.jipipe.utils.ui.RoundedLineBorder;
 import org.jdesktop.swingx.JXTable;
 import org.scijava.Disposable;
 
-import javax.imageio.ImageIO;
 import javax.swing.*;
 import javax.swing.Timer;
 import javax.swing.border.Border;
@@ -76,12 +75,10 @@ import java.awt.datatransfer.DataFlavor;
 import java.awt.datatransfer.StringSelection;
 import java.awt.datatransfer.Transferable;
 import java.awt.event.*;
-import java.awt.image.BufferedImage;
 import java.io.File;
 import java.io.IOException;
 import java.net.URI;
 import java.net.URISyntaxException;
-import java.net.URL;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
@@ -99,9 +96,6 @@ import java.util.stream.Collectors;
 public class UIUtils {
 
     public static final Insets UI_PADDING = new Insets(4, 4, 4, 4);
-    public static final Map<String, ImageIcon> ICON_FROM_RESOURCES_CACHE = new HashMap<>();
-    public static final Map<String, ImageIcon> ICON_INVERTED_FROM_RESOURCES_CACHE = new HashMap<>();
-    public static final Map<String, BufferedImage> IMAGE_FROM_RESOURCES_CACHE = new HashMap<>();
     public static final JMenuItem MENU_ITEM_SEPARATOR = null;
     public static final Color COLOR_ERROR = new Color(0xa51d2d);
     public static final Color COLOR_SUCCESS = new Color(0x5CB85C);
@@ -211,7 +205,7 @@ public class UIUtils {
 
     public static JLabel createInfoLabel(String text, String subtext) {
         JLabel label = new JLabel("<html><strong>" + text + "</strong><br/>" + subtext + "</html>",
-                UIUtils.getIcon32FromResources("info.png"), JLabel.LEFT);
+                JIPipe.RESOURCES.getIcon32("info.png"), JLabel.LEFT);
         label.setAlignmentX(0f);
         label.setBorder(BorderFactory.createEmptyBorder(8, 8, 8, 8));
         return label;
@@ -304,7 +298,7 @@ public class UIUtils {
     }
 
     public static Image getJIPipeIcon128() {
-        return UIUtils.getIcon128FromResources("jipipe.png").getImage();
+        return JIPipe.RESOURCES.getIcon128("jipipe.png").getImage();
     }
 
     public static void addBalloonToComponent(AbstractButton button, String text) {
@@ -320,7 +314,7 @@ public class UIUtils {
         );
         balloonTip.setVisible(false);
 
-        JButton closeButton = new JButton(UIUtils.getIconFromResources("actions/window-close.png"));
+        JButton closeButton = new JButton(JIPipe.RESOURCES.getIcon16("actions/window-close.png"));
         closeButton.setBorder(BorderFactory.createEmptyBorder(4, 4, 4, 4));
         closeButton.setOpaque(false);
 
@@ -332,7 +326,7 @@ public class UIUtils {
     }
 
     public static JButton createPopupHelpButton(String text) {
-        JButton helpButton = new JButton(UIUtils.getIconFromResources("actions/help.png"));
+        JButton helpButton = new JButton(JIPipe.RESOURCES.getIcon16("actions/help.png"));
         UIUtils.makeButtonFlat25x25(helpButton);
         helpButton.addActionListener(e -> {
             MarkdownText document = new MarkdownText(text);
@@ -343,7 +337,7 @@ public class UIUtils {
     }
 
     public static JButton createBalloonHelpButton(String text) {
-        JButton helpButton = new JButton(UIUtils.getIconFromResources("actions/help.png"));
+        JButton helpButton = new JButton(JIPipe.RESOURCES.getIcon16("actions/help.png"));
         UIUtils.makeButtonFlat25x25(helpButton);
         UIUtils.addBalloonToComponent(helpButton, text);
         helpButton.setOpaque(false);
@@ -380,7 +374,7 @@ public class UIUtils {
         }
         if (SystemTray.isSupported()) {
             SystemTray systemTray = SystemTray.getSystemTray();
-            TrayIcon trayIcon = new TrayIcon(UIUtils.getIcon32FromResources("apps/jipipe.png").getImage(), "JIPipe");
+            TrayIcon trayIcon = new TrayIcon(JIPipe.RESOURCES.getIcon32("apps/jipipe.png").getImage(), "JIPipe");
             trayIcon.setImageAutoSize(true);
             try {
                 systemTray.add(trayIcon);
@@ -478,83 +472,6 @@ public class UIUtils {
             }
         }
         return theme;
-    }
-
-    public static BufferedImage getImageFromResources(String path) {
-        BufferedImage image = IMAGE_FROM_RESOURCES_CACHE.getOrDefault(path, null);
-        if (image == null) {
-            try {
-                image = ImageIO.read(ResourceUtils.getPluginResource(path));
-                IMAGE_FROM_RESOURCES_CACHE.put(path, image);
-            } catch (IOException e) {
-                throw new RuntimeException(e);
-            }
-        }
-        return image;
-    }
-
-    public static BufferedImage getExtensionBuilderLogo400() {
-        if (DARK_THEME) {
-            try {
-                return ImageIO.read(ResourceUtils.getPluginResource("logo-extension-builder-400-dark.png"));
-            } catch (IOException e) {
-                throw new RuntimeException(e);
-            }
-        } else {
-            try {
-                return ImageIO.read(ResourceUtils.getPluginResource("logo-extension-builder-400.png"));
-            } catch (IOException e) {
-                throw new RuntimeException(e);
-            }
-        }
-    }
-
-    public static BufferedImage getLogo400() {
-        if (DARK_THEME) {
-            try {
-                return ImageIO.read(ResourceUtils.getPluginResource("logo-400-dark.png"));
-            } catch (IOException e) {
-                throw new RuntimeException(e);
-            }
-        } else {
-            try {
-                return ImageIO.read(ResourceUtils.getPluginResource("logo-400.png"));
-            } catch (IOException e) {
-                throw new RuntimeException(e);
-            }
-        }
-    }
-
-    public static BufferedImage getLogo() {
-        if (DARK_THEME) {
-            try {
-                return ImageIO.read(ResourceUtils.getPluginResource("logo-dark.png"));
-            } catch (IOException e) {
-                throw new RuntimeException(e);
-            }
-        } else {
-            try {
-                return ImageIO.read(ResourceUtils.getPluginResource("logo.png"));
-            } catch (IOException e) {
-                throw new RuntimeException(e);
-            }
-        }
-    }
-
-    public static BufferedImage getHeaderPanelBackground() {
-        if (DARK_THEME) {
-            try {
-                return ImageIO.read(ResourceUtils.getPluginResource("infoui-background-dark.png"));
-            } catch (IOException e) {
-                throw new RuntimeException(e);
-            }
-        } else {
-            try {
-                return ImageIO.read(ResourceUtils.getPluginResource("infoui-background.png"));
-            } catch (IOException e) {
-                throw new RuntimeException(e);
-            }
-        }
     }
 
     /**
@@ -850,243 +767,6 @@ public class UIUtils {
         JSeparator separator = new JSeparator(SwingConstants.VERTICAL);
         separator.setMaximumSize(new Dimension(1, Integer.MAX_VALUE));
         return separator;
-    }
-
-    /**
-     * Returns an icon from JIPipe resources
-     * If you want to utilize resources from your Java extension, use {@link JIPipeResourceManager}
-     *
-     * @param iconName relative to the icons/ plugin resource
-     * @return the icon instance
-     */
-    public static ImageIcon getIcon16FromResources(String iconName) {
-        return getIconFromResources(iconName);
-    }
-
-    /**
-     * Returns an icon from JIPipe resources
-     * If you want to utilize resources from your Java extension, use {@link JIPipeResourceManager}
-     *
-     * @param iconName relative to the icons/ plugin resource
-     * @return the icon instance
-     */
-    public static ImageIcon getIconInvertedFromResources(String iconName) {
-        String path = "icons/" + iconName;
-        ImageIcon icon = ICON_INVERTED_FROM_RESOURCES_CACHE.getOrDefault(path, null);
-        if (icon == null) {
-            URL url = ResourceUtils.getPluginResourceInverted(path);
-            if(url == null) {
-                System.err.println("Unable to find icon " + path + " (replacing with missing.png)");
-                url = ResourceUtils.getPluginResource("icons/missing.png");
-            }
-            icon = new ImageIcon(url);
-            ICON_INVERTED_FROM_RESOURCES_CACHE.put(path, icon);
-        }
-        return icon;
-    }
-
-    /**
-     * Returns an icon from JIPipe resources
-     * If you want to utilize resources from your Java extension, use {@link JIPipeResourceManager}
-     *
-     * @param iconName relative to the icons/ plugin resource
-     * @return the icon instance
-     */
-    public static ImageIcon getIconInverted32FromResources(String iconName) {
-        String path = "icons-32/" + iconName;
-        ImageIcon icon = ICON_INVERTED_FROM_RESOURCES_CACHE.getOrDefault(path, null);
-        if (icon == null) {
-            URL url = ResourceUtils.getPluginResourceInverted(path);
-            if(url == null) {
-                System.err.println("Unable to find icon " + path + " (replacing with missing.png)");
-                url = ResourceUtils.getPluginResource("icons-32/missing.png");
-            }
-            icon = new ImageIcon(url);
-            ICON_INVERTED_FROM_RESOURCES_CACHE.put(path, icon);
-        }
-        return icon;
-    }
-
-    /**
-     * Returns an icon from JIPipe resources
-     * If you want to utilize resources from your Java extension, use {@link JIPipeResourceManager}
-     *
-     * @param iconName relative to the icons/ plugin resource
-     * @return the icon instance
-     */
-    public static ImageIcon getIconInverted12FromResources(String iconName) {
-        String path = "icons-12/" + iconName;
-        ImageIcon icon = ICON_INVERTED_FROM_RESOURCES_CACHE.getOrDefault(path, null);
-        if (icon == null) {
-            URL url = ResourceUtils.getPluginResourceInverted(path);
-            if(url == null) {
-                System.err.println("Unable to find icon " + path + " (replacing with missing.png)");
-                url = ResourceUtils.getPluginResource("icons-12/missing.png");
-            }
-            icon = new ImageIcon(url);
-            ICON_INVERTED_FROM_RESOURCES_CACHE.put(path, icon);
-        }
-        return icon;
-    }
-
-    /**
-     * Returns an icon from JIPipe resources
-     * If you want to utilize resources from your Java extension, use {@link JIPipeResourceManager}
-     *
-     * @param iconName relative to the icons/ plugin resource
-     * @return the icon instance
-     */
-    public static ImageIcon getIconFromResources(String iconName) {
-        String path = "icons/" + iconName;
-        ImageIcon icon = ICON_FROM_RESOURCES_CACHE.getOrDefault(path, null);
-        if (icon == null) {
-            URL url = ResourceUtils.getPluginResource(path);
-            if(url == null) {
-                System.err.println("Unable to find icon " + path + " (replacing with missing.png)");
-                url = ResourceUtils.getPluginResource("icons/missing.png");
-            }
-            icon = new ImageIcon(url);
-            ICON_FROM_RESOURCES_CACHE.put(path, icon);
-        }
-        return icon;
-    }
-
-    /**
-     * Returns an icon from JIPipe resources
-     * If you want to utilize resources from your Java extension, use {@link JIPipeResourceManager}
-     *
-     * @param iconName relative to the icons/ plugin resource
-     * @return the icon instance
-     */
-    public static ImageIcon getIcon32FromResources(String iconName) {
-        String path = "icons-32/" + iconName;
-        ImageIcon icon = ICON_FROM_RESOURCES_CACHE.getOrDefault(path, null);
-        if (icon == null) {
-            URL url = ResourceUtils.getPluginResource(path);
-            if(url == null) {
-                System.err.println("Unable to find icon " + path + " (replacing with missing.png)");
-                url = ResourceUtils.getPluginResource("icons-32/missing.png");
-            }
-            icon = new ImageIcon(url);
-            ICON_FROM_RESOURCES_CACHE.put(path, icon);
-        }
-        return icon;
-    }
-
-    /**
-     * Returns an icon from JIPipe resources
-     * If you want to utilize resources from your Java extension, use {@link JIPipeResourceManager}
-     *
-     * @param iconName relative to the icons/ plugin resource
-     * @return the icon instance
-     */
-    public static ImageIcon getIcon12FromResources(String iconName) {
-        String path = "icons-12/" + iconName;
-        ImageIcon icon = ICON_FROM_RESOURCES_CACHE.getOrDefault(path, null);
-        if (icon == null) {
-            URL url = ResourceUtils.getPluginResource(path);
-            if(url == null) {
-                System.err.println("Unable to find icon " + path + " (replacing with missing.png)");
-                url = ResourceUtils.getPluginResource("icons-12/missing.png");
-            }
-            icon = new ImageIcon(url);
-            ICON_FROM_RESOURCES_CACHE.put(path, icon);
-        }
-        return icon;
-    }
-
-    /**
-     * Returns an icon from JIPipe resources
-     * If you want to utilize resources from your Java extension, use {@link JIPipeResourceManager}
-     *
-     * @param iconName relative to the icons/ plugin resource
-     * @return the icon instance
-     */
-    public static ImageIcon getIcon64FromResources(String iconName) {
-        String path = "icons-64/" + iconName;
-        ImageIcon icon = ICON_FROM_RESOURCES_CACHE.getOrDefault(path, null);
-        if (icon == null) {
-            URL url = ResourceUtils.getPluginResource(path);
-            if(url == null) {
-                System.err.println("Unable to find icon " + path + " (replacing with missing.png)");
-                url = ResourceUtils.getPluginResource("icons-64/missing.png");
-            }
-            icon = new ImageIcon(url);
-            ICON_FROM_RESOURCES_CACHE.put(path, icon);
-        }
-        return icon;
-    }
-
-    /**
-     * Returns an icon from JIPipe resources
-     * If you want to utilize resources from your Java extension, use {@link JIPipeResourceManager}
-     *
-     * @param iconName relative to the icons/ plugin resource
-     * @return the icon instance
-     */
-    public static ImageIcon getIcon128FromResources(String iconName) {
-        String path = "icons-128/" + iconName;
-        ImageIcon icon = ICON_FROM_RESOURCES_CACHE.getOrDefault(path, null);
-        if (icon == null) {
-            URL url = ResourceUtils.getPluginResource(path);
-            if(url == null) {
-                System.err.println("Unable to find icon " + path + " (replacing with missing.png)");
-                url = ResourceUtils.getPluginResource("icons-128/missing.png");
-            }
-            icon = new ImageIcon(url);
-            ICON_FROM_RESOURCES_CACHE.put(path, icon);
-        }
-        return icon;
-    }
-
-    /**
-     * Returns an icon from JIPipe resources
-     * If you want to utilize resources from your Java extension, use {@link JIPipeResourceManager}
-     *
-     * @param iconName relative to the icons/ plugin resource
-     * @return the icon instance
-     */
-    public static ImageIcon getIcon8FromResources(String iconName) {
-        String path = "icons-8/" + iconName;
-        ImageIcon icon = ICON_FROM_RESOURCES_CACHE.getOrDefault(path, null);
-        if (icon == null) {
-            URL url = ResourceUtils.getPluginResource(path);
-            if(url == null) {
-                System.err.println("Unable to find icon " + path + " (replacing with missing.png)");
-                url = ResourceUtils.getPluginResource("icons-8/missing.png");
-            }
-            icon = new ImageIcon(url);
-            ICON_FROM_RESOURCES_CACHE.put(path, icon);
-        }
-        return icon;
-    }
-
-    /**
-     * Returns an icon from JIPipe resources
-     * If you want to utilize resources from your Java extension, use {@link JIPipeResourceManager}
-     *
-     * @param iconName relative to the icons/ plugin resource
-     * @return the icon instance
-     */
-    public static URL getIconURLFromResources(String iconName) {
-        String path = "icons/" + iconName;
-        URL url = ResourceUtils.getPluginResource(path);
-        if(url == null) {
-            System.err.println("Unable to find icon " + path + " (replacing with missing.png)");
-            url = ResourceUtils.getPluginResource("icons/missing.png");
-        }
-        return url;
-    }
-
-    /**
-     * Returns an icon from JIPipe resources
-     * If you want to utilize resources from your Java extension, use {@link JIPipeResourceManager}
-     *
-     * @param iconName relative to the icons/ plugin resource
-     * @return the icon instance
-     */
-    public static URL getIcon16URLFromResources(String iconName) {
-        return getIconURLFromResources(iconName);
     }
 
     /**
@@ -1433,7 +1113,7 @@ public class UIUtils {
 
         JPanel messagePanel = new JPanel(new GridBagLayout());
         messagePanel.setBorder(BorderFactory.createEmptyBorder(16, 8, 16, 8));
-        messagePanel.add(new JLabel(UIUtils.getIcon32FromResources("dialog-warning.png")),
+        messagePanel.add(new JLabel(JIPipe.RESOURCES.getIcon32("dialog-warning.png")),
                 new GridBagConstraints(0, 0, 1, 1, 0, 0, GridBagConstraints.NORTHWEST, GridBagConstraints.NONE, new Insets(4, 4, 4, 4), 0, 0));
         messagePanel.add(createReadonlyBorderlessTextArea(infoText),
                 new GridBagConstraints(1, 0, 1, 1, 1, 1, GridBagConstraints.NORTHWEST, GridBagConstraints.BOTH, new Insets(4, 4, 4, 4), 0, 0));
@@ -1504,7 +1184,7 @@ public class UIUtils {
         if (infoText != null) {
             JPanel messagePanel = new JPanel(new GridBagLayout());
             messagePanel.setBorder(BorderFactory.createEmptyBorder(16, 8, 16, 8));
-            messagePanel.add(new JLabel(UIUtils.getIcon32FromResources("dialog-error.png")),
+            messagePanel.add(new JLabel(JIPipe.RESOURCES.getIcon32("dialog-error.png")),
                     new GridBagConstraints(0, 0, 1, 1, 0, 0, GridBagConstraints.NORTHWEST, GridBagConstraints.NONE, new Insets(4, 4, 4, 4), 0, 0));
             messagePanel.add(createReadonlyBorderlessTextArea(infoText),
                     new GridBagConstraints(1, 0, 1, 1, 1, 1, GridBagConstraints.NORTHWEST, GridBagConstraints.BOTH, new Insets(4, 4, 4, 4), 0, 0));
@@ -1611,14 +1291,14 @@ public class UIUtils {
 
         AtomicBoolean clickedOK = new AtomicBoolean(false);
 
-        JButton cancelButton = new JButton("Cancel", UIUtils.getIconFromResources("actions/cancel.png"));
+        JButton cancelButton = new JButton("Cancel", JIPipe.RESOURCES.getIcon16("actions/cancel.png"));
         cancelButton.addActionListener(e -> {
             clickedOK.set(false);
             dialog.setVisible(false);
         });
         buttonPanel.add(cancelButton);
 
-        JButton confirmButton = new JButton("OK", UIUtils.getIconFromResources("actions/checkmark.png"));
+        JButton confirmButton = new JButton("OK", JIPipe.RESOURCES.getIcon16("actions/checkmark.png"));
         confirmButton.addActionListener(e -> {
             clickedOK.set(true);
             dialog.setVisible(false);
@@ -1666,14 +1346,14 @@ public class UIUtils {
 
         AtomicBoolean confirmation = new AtomicBoolean(false);
 
-        JButton cancelButton = new JButton("Cancel", UIUtils.getIconFromResources("actions/cancel.png"));
+        JButton cancelButton = new JButton("Cancel", JIPipe.RESOURCES.getIcon16("actions/cancel.png"));
         cancelButton.addActionListener(e -> {
             confirmation.set(false);
             dialog.setVisible(false);
         });
         buttonPanel.add(cancelButton);
 
-        JButton confirmButton = new JButton("OK", UIUtils.getIconFromResources("actions/ok.png"));
+        JButton confirmButton = new JButton("OK", JIPipe.RESOURCES.getIcon16("actions/ok.png"));
         confirmButton.addActionListener(e -> {
             confirmation.set(true);
             dialog.setVisible(false);
@@ -1706,14 +1386,14 @@ public class UIUtils {
 
         AtomicBoolean confirmation = new AtomicBoolean(false);
 
-        JButton cancelButton = new JButton("Cancel", UIUtils.getIconFromResources("actions/cancel.png"));
+        JButton cancelButton = new JButton("Cancel", JIPipe.RESOURCES.getIcon16("actions/cancel.png"));
         cancelButton.addActionListener(e -> {
             confirmation.set(false);
             dialog.setVisible(false);
         });
         buttonPanel.add(cancelButton);
 
-        JButton confirmButton = new JButton("OK", UIUtils.getIconFromResources("actions/ok.png"));
+        JButton confirmButton = new JButton("OK", JIPipe.RESOURCES.getIcon16("actions/ok.png"));
         confirmButton.addActionListener(e -> {
             confirmation.set(true);
             dialog.setVisible(false);
@@ -1760,14 +1440,14 @@ public class UIUtils {
 
         AtomicBoolean confirmation = new AtomicBoolean(false);
 
-        JButton cancelButton = new JButton("Cancel", UIUtils.getIconFromResources("actions/cancel.png"));
+        JButton cancelButton = new JButton("Cancel", JIPipe.RESOURCES.getIcon16("actions/cancel.png"));
         cancelButton.addActionListener(e -> {
             confirmation.set(false);
             dialog.setVisible(false);
         });
         buttonPanel.add(cancelButton);
 
-        JButton confirmButton = new JButton("OK", UIUtils.getIconFromResources("actions/ok.png"));
+        JButton confirmButton = new JButton("OK", JIPipe.RESOURCES.getIcon16("actions/ok.png"));
         confirmButton.addActionListener(e -> {
             confirmation.set(true);
             dialog.setVisible(false);
@@ -2712,46 +2392,6 @@ public class UIUtils {
                 });
             }
         });
-    }
-
-    public static URL getIcon32URLFromResources(String iconName) {
-        String path = "icons-32/" + iconName;
-        URL url = ResourceUtils.getPluginResource(path);
-        if(url == null) {
-            System.err.println("Unable to find icon " + path + " (replacing with missing.png)");
-            url = ResourceUtils.getPluginResource("icons-32/missing.png");
-        }
-        return url;
-    }
-
-    public static URL getIcon64URLFromResources(String iconName) {
-        String path = "icons-64/" + iconName;
-        URL url = ResourceUtils.getPluginResource(path);
-        if(url == null) {
-            System.err.println("Unable to find icon " + path + " (replacing with missing.png)");
-            url = ResourceUtils.getPluginResource("icons-64/missing.png");
-        }
-        return url;
-    }
-
-    public static URL getIcon128URLFromResources(String iconName) {
-        String path = "icons-128/" + iconName;
-        URL url = ResourceUtils.getPluginResource(path);
-        if(url == null) {
-            System.err.println("Unable to find icon " + path + " (replacing with missing.png)");
-            url = ResourceUtils.getPluginResource("icons-128/missing.png");
-        }
-        return url;
-    }
-
-    public static URL getIcon8URLFromResources(String iconName) {
-        String path = "icons-8/" + iconName;
-        URL url = ResourceUtils.getPluginResource(path);
-        if(url == null) {
-            System.err.println("Unable to find icon " + path + " (replacing with missing.png)");
-            url = ResourceUtils.getPluginResource("icons-8/missing.png");
-        }
-        return url;
     }
 
     public static void makeNonOpaque(Component component, boolean recursive) {

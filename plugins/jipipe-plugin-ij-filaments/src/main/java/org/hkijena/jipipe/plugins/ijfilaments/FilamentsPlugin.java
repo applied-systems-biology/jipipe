@@ -59,6 +59,7 @@ import org.hkijena.jipipe.plugins.strings.StringsPlugin;
 import org.hkijena.jipipe.plugins.tables.TablesPlugin;
 import org.hkijena.jipipe.utils.JIPipeResourceManager;
 import org.hkijena.jipipe.utils.UIUtils;
+import org.hkijena.jipipe.JIPipe;
 import org.scijava.Context;
 import org.scijava.plugin.Plugin;
 
@@ -148,7 +149,7 @@ public class FilamentsPlugin extends JIPipePrepackagedDefaultJavaPlugin {
                 "tsoax-environment",
                 "TSOAX Environment",
                 "Installation of TSOAX",
-                RESOURCES.getIcon16FromResources("tsoax.png"));
+                RESOURCES.getIcon16("tsoax.png"));
         registerParameterType("optional-tsoax-environment",
                 OptionalTSOAXEnvironment.class,
                 JIPipeParameterArchetype.OptionalValue, "Optional TSOAX Environment",
@@ -159,7 +160,7 @@ public class FilamentsPlugin extends JIPipePrepackagedDefaultJavaPlugin {
         registerApplicationSettingsSheet(tsoaxApplicationSettings);
         registerProjectSettingsSheet(FilamentsPluginProjectSettings.class);
 
-        registerDatatype("filaments", Filaments3DGraphData.class, RESOURCES.getIcon16URLFromResources("data-type-filaments.png"));
+        registerDatatype("filaments", Filaments3DGraphData.class, RESOURCES.getIcon16URL("data-type-filaments.png"));
         registerDatatypeConversion(new FilamentsToRoiDataTypeConverter());
         registerDatatypeConversion(new FilamentsToRoi3dDataTypeConverter());
 
@@ -169,67 +170,67 @@ public class FilamentsPlugin extends JIPipePrepackagedDefaultJavaPlugin {
         registerEnumParameterType("filaments-cycle-finder-algorithm", CycleFinderAlgorithm.class, "Cycle finder algorithm", "An algorithm for finding cycles");
 
         registerNodeType("filaments-from-json", ImportFilamentsFromJsonAlgorithm.class);
-        registerNodeType("filaments-skeleton-to-filaments-2d3d-simplified", SkeletonToSimplifiedFilamentsFijiAlgorithm.class, UIUtils.getIconURLFromResources("actions/path-mode-spiro.png"));
-        registerNodeType("filaments-skeleton-to-filaments-2d", SkeletonToFilaments2DAlgorithm.class, UIUtils.getIconURLFromResources("actions/path-mode-spiro.png"));
-        registerNodeType("filaments-skeleton-to-filaments-3d", SkeletonToFilaments3DAlgorithm.class, UIUtils.getIconURLFromResources("actions/path-mode-spiro.png"));
+        registerNodeType("filaments-skeleton-to-filaments-2d3d-simplified", SkeletonToSimplifiedFilamentsFijiAlgorithm.class, JIPipe.RESOURCES.getIcon16URL("actions/path-mode-spiro.png"));
+        registerNodeType("filaments-skeleton-to-filaments-2d", SkeletonToFilaments2DAlgorithm.class, JIPipe.RESOURCES.getIcon16URL("actions/path-mode-spiro.png"));
+        registerNodeType("filaments-skeleton-to-filaments-3d", SkeletonToFilaments3DAlgorithm.class, JIPipe.RESOURCES.getIcon16URL("actions/path-mode-spiro.png"));
 
-        registerNodeType("filaments-set-vertex-properties", ChangeFilamentVertexPropertiesExpressionAlgorithm.class, UIUtils.getIconURLFromResources("actions/stock_edit.png"));
-        registerNodeType("filaments-set-edge-properties", ChangeFilamentEdgePropertiesExpressionAlgorithm.class, UIUtils.getIconURLFromResources("actions/stock_edit.png"));
-        registerNodeType("filaments-set-vertex-properties-2", ChangeFilamentVertexPropertiesManuallyAlgorithm.class, UIUtils.getIconURLFromResources("actions/stock_edit.png"));
-        registerNodeType("filaments-set-edge-properties-2", ChangeFilamentEdgePropertiesManuallyAlgorithm.class, UIUtils.getIconURLFromResources("actions/stock_edit.png"));
-        registerNodeType("filaments-flatten", FlattenFilamentsAlgorithm.class, UIUtils.getIconURLFromResources("actions/layer-flatten-z.png"));
+        registerNodeType("filaments-set-vertex-properties", ChangeFilamentVertexPropertiesExpressionAlgorithm.class, JIPipe.RESOURCES.getIcon16URL("actions/stock_edit.png"));
+        registerNodeType("filaments-set-edge-properties", ChangeFilamentEdgePropertiesExpressionAlgorithm.class, JIPipe.RESOURCES.getIcon16URL("actions/stock_edit.png"));
+        registerNodeType("filaments-set-vertex-properties-2", ChangeFilamentVertexPropertiesManuallyAlgorithm.class, JIPipe.RESOURCES.getIcon16URL("actions/stock_edit.png"));
+        registerNodeType("filaments-set-edge-properties-2", ChangeFilamentEdgePropertiesManuallyAlgorithm.class, JIPipe.RESOURCES.getIcon16URL("actions/stock_edit.png"));
+        registerNodeType("filaments-flatten", FlattenFilamentsAlgorithm.class, JIPipe.RESOURCES.getIcon16URL("actions/layer-flatten-z.png"));
 
-        registerNodeType("filaments-filter-vertices-by-properties", FilterFilamentVerticesByProperties.class, UIUtils.getIconURLFromResources("actions/filter.png"));
-        registerNodeType("filaments-filter-edges-by-properties", FilterFilamentEdgesByProperties.class, UIUtils.getIconURLFromResources("actions/filter.png"));
-        registerNodeType("filaments-filter-components-by-properties", FilterFilamentsByProperties.class, UIUtils.getIconURLFromResources("actions/filter.png"));
-        registerNodeType("filaments-filter-filaments-at-border", RemoveBorderFilaments.class, UIUtils.getIconURLFromResources("actions/filter.png"));
+        registerNodeType("filaments-filter-vertices-by-properties", FilterFilamentVerticesByProperties.class, JIPipe.RESOURCES.getIcon16URL("actions/filter.png"));
+        registerNodeType("filaments-filter-edges-by-properties", FilterFilamentEdgesByProperties.class, JIPipe.RESOURCES.getIcon16URL("actions/filter.png"));
+        registerNodeType("filaments-filter-components-by-properties", FilterFilamentsByProperties.class, JIPipe.RESOURCES.getIcon16URL("actions/filter.png"));
+        registerNodeType("filaments-filter-filaments-at-border", RemoveBorderFilaments.class, JIPipe.RESOURCES.getIcon16URL("actions/filter.png"));
 
-        registerNodeType("filaments-split-into-connected-components", SplitFilamentsIntoConnectedComponentsAlgorithm.class, UIUtils.getIconURLFromResources("actions/split.png"));
-        registerNodeType("filaments-split-into-cycles", SplitFilamentsIntoCyclesAlgorithm.class, UIUtils.getIconURLFromResources("actions/split.png"));
+        registerNodeType("filaments-split-into-connected-components", SplitFilamentsIntoConnectedComponentsAlgorithm.class, JIPipe.RESOURCES.getIcon16URL("actions/split.png"));
+        registerNodeType("filaments-split-into-cycles", SplitFilamentsIntoCyclesAlgorithm.class, JIPipe.RESOURCES.getIcon16URL("actions/split.png"));
 
-        registerNodeType("filaments-merge", MergeFilamentsAlgorithm.class, UIUtils.getIconURLFromResources("actions/merge.png"));
+        registerNodeType("filaments-merge", MergeFilamentsAlgorithm.class, JIPipe.RESOURCES.getIcon16URL("actions/merge.png"));
 
-        registerNodeType("filaments-convert-cycles-to-roi", ConvertFilamentCyclesToROIAlgorithm.class, UIUtils.getIconURLFromResources("actions/roi.png"));
-        registerNodeType("filaments-convert-to-roi", ConvertFilamentsToRoiAlgorithm.class, UIUtils.getIconURLFromResources("actions/roi.png"));
-        registerNodeType("filaments-convert-to-roi3d", ConvertFilamentsToRoi3DAlgorithm.class, UIUtils.getIconURLFromResources("actions/roi.png"));
-        registerNodeType("filaments-convert-to-mask", ConvertFilamentsToMaskAlgorithm.class, UIUtils.getIconURLFromResources("actions/reload.png"));
-        registerNodeType("filaments-convert-to-labels", ConvertFilamentsToLabelsAlgorithm.class, UIUtils.getIconURLFromResources("actions/reload.png"));
-        registerNodeType("filaments-convert-to-labels-v2", ConvertFilamentsToLabels2Algorithm.class, UIUtils.getIconURLFromResources("actions/reload.png"));
-        registerNodeType("filaments-convert-to-rgb", ConvertFilamentsToRGBAlgorithm.class, UIUtils.getIconURLFromResources("actions/color-management.png"));
-        registerNodeType("filaments-convert-to-scene-3d", ConvertFilamentsTo3DMeshAlgorithm.class, UIUtils.getIconURLFromResources("actions/shape-cuboid.png"));
-        registerNodeType("filaments-convert-roi2d-to-filaments", ConvertROIToFilamentsAlgorithm.class, UIUtils.getIconURLFromResources("actions/format-node-curve.png"));
+        registerNodeType("filaments-convert-cycles-to-roi", ConvertFilamentCyclesToROIAlgorithm.class, JIPipe.RESOURCES.getIcon16URL("actions/roi.png"));
+        registerNodeType("filaments-convert-to-roi", ConvertFilamentsToRoiAlgorithm.class, JIPipe.RESOURCES.getIcon16URL("actions/roi.png"));
+        registerNodeType("filaments-convert-to-roi3d", ConvertFilamentsToRoi3DAlgorithm.class, JIPipe.RESOURCES.getIcon16URL("actions/roi.png"));
+        registerNodeType("filaments-convert-to-mask", ConvertFilamentsToMaskAlgorithm.class, JIPipe.RESOURCES.getIcon16URL("actions/reload.png"));
+        registerNodeType("filaments-convert-to-labels", ConvertFilamentsToLabelsAlgorithm.class, JIPipe.RESOURCES.getIcon16URL("actions/reload.png"));
+        registerNodeType("filaments-convert-to-labels-v2", ConvertFilamentsToLabels2Algorithm.class, JIPipe.RESOURCES.getIcon16URL("actions/reload.png"));
+        registerNodeType("filaments-convert-to-rgb", ConvertFilamentsToRGBAlgorithm.class, JIPipe.RESOURCES.getIcon16URL("actions/color-management.png"));
+        registerNodeType("filaments-convert-to-scene-3d", ConvertFilamentsTo3DMeshAlgorithm.class, JIPipe.RESOURCES.getIcon16URL("actions/shape-cuboid.png"));
+        registerNodeType("filaments-convert-roi2d-to-filaments", ConvertROIToFilamentsAlgorithm.class, JIPipe.RESOURCES.getIcon16URL("actions/format-node-curve.png"));
 
-        registerNodeType("filaments-set-vertex-thickness-from-image", SetVertexRadiusFromImageAlgorithm.class, UIUtils.getIconURLFromResources("actions/draw-geometry-circle-from-radius.png"));
-        registerNodeType("filaments-set-vertex-intensity-from-image", SetVertexValueFromImageAlgorithm.class, UIUtils.getIconURLFromResources("actions/insert-math-expression.png"));
-        registerNodeType("filaments-set-vertex-metadata-from-image", SetVertexMetadataFromImageAlgorithm.class, UIUtils.getIconURLFromResources("actions/insert-math-expression.png"));
-        registerNodeType("filaments-set-vertex-calibration-from-image", SetVertexPhysicalSizeFromImageAlgorithm.class, UIUtils.getIconURLFromResources("actions/draw-geometry-show-measuring-info.png"));
-        registerNodeType("filaments-remove-duplicate-vertices", RemoveDuplicateVerticesAlgorithm.class, UIUtils.getIconURLFromResources("actions/merge.png"));
-        registerNodeType("filaments-smooth-downscale", SmoothFilamentsAlgorithm.class, UIUtils.getIconURLFromResources("actions/insert-math-expression.png"));
-        registerNodeType("filaments-simplify", SimplifyFilamentsAlgorithm.class, UIUtils.getIconURLFromResources("actions/distribute-graph-directed.png"));
-        registerNodeType("filaments-subdivide-edges", SubdivideFilamentEdges.class, UIUtils.getIconURLFromResources("actions/connector-ignore.png"));
-        registerNodeType("filaments-fix-overlaps-non-branching", FixOverlapsNonBranchingAlgorithm.class, UIUtils.getIconURLFromResources("actions/draw-geometry-line-perpendicular.png"));
-        registerNodeType("filaments-cycles-to-components", FilamentCyclesToComponentsAlgorithm.class, UIUtils.getIconURLFromResources("actions/circle-nodes.png"));
-        registerNodeType("filaments-set-metadata-to-component-index", SetFilamentMetadataToComponentIndexAlgorithm.class, UIUtils.getIconURLFromResources("actions/insert-math-expression.png"));
-        registerNodeType("filaments-find-linear-vertex-order", FindLinearFilamentVertexOrderAlgorithm.class, UIUtils.getIconURLFromResources("actions/draw-arrow.png"));
+        registerNodeType("filaments-set-vertex-thickness-from-image", SetVertexRadiusFromImageAlgorithm.class, JIPipe.RESOURCES.getIcon16URL("actions/draw-geometry-circle-from-radius.png"));
+        registerNodeType("filaments-set-vertex-intensity-from-image", SetVertexValueFromImageAlgorithm.class, JIPipe.RESOURCES.getIcon16URL("actions/insert-math-expression.png"));
+        registerNodeType("filaments-set-vertex-metadata-from-image", SetVertexMetadataFromImageAlgorithm.class, JIPipe.RESOURCES.getIcon16URL("actions/insert-math-expression.png"));
+        registerNodeType("filaments-set-vertex-calibration-from-image", SetVertexPhysicalSizeFromImageAlgorithm.class, JIPipe.RESOURCES.getIcon16URL("actions/draw-geometry-show-measuring-info.png"));
+        registerNodeType("filaments-remove-duplicate-vertices", RemoveDuplicateVerticesAlgorithm.class, JIPipe.RESOURCES.getIcon16URL("actions/merge.png"));
+        registerNodeType("filaments-smooth-downscale", SmoothFilamentsAlgorithm.class, JIPipe.RESOURCES.getIcon16URL("actions/insert-math-expression.png"));
+        registerNodeType("filaments-simplify", SimplifyFilamentsAlgorithm.class, JIPipe.RESOURCES.getIcon16URL("actions/distribute-graph-directed.png"));
+        registerNodeType("filaments-subdivide-edges", SubdivideFilamentEdges.class, JIPipe.RESOURCES.getIcon16URL("actions/connector-ignore.png"));
+        registerNodeType("filaments-fix-overlaps-non-branching", FixOverlapsNonBranchingAlgorithm.class, JIPipe.RESOURCES.getIcon16URL("actions/draw-geometry-line-perpendicular.png"));
+        registerNodeType("filaments-cycles-to-components", FilamentCyclesToComponentsAlgorithm.class, JIPipe.RESOURCES.getIcon16URL("actions/circle-nodes.png"));
+        registerNodeType("filaments-set-metadata-to-component-index", SetFilamentMetadataToComponentIndexAlgorithm.class, JIPipe.RESOURCES.getIcon16URL("actions/insert-math-expression.png"));
+        registerNodeType("filaments-find-linear-vertex-order", FindLinearFilamentVertexOrderAlgorithm.class, JIPipe.RESOURCES.getIcon16URL("actions/draw-arrow.png"));
 
-        registerNodeType("filaments-measure-vertices", MeasureVerticesAlgorithm.class, UIUtils.getIconURLFromResources("actions/statistics.png"));
-        registerNodeType("filaments-measure-edges", MeasureEdgesAlgorithm.class, UIUtils.getIconURLFromResources("actions/statistics.png"));
-        registerNodeType("filaments-measure-filaments", MeasureFilamentsAlgorithm.class, UIUtils.getIconURLFromResources("actions/statistics.png"));
+        registerNodeType("filaments-measure-vertices", MeasureVerticesAlgorithm.class, JIPipe.RESOURCES.getIcon16URL("actions/statistics.png"));
+        registerNodeType("filaments-measure-edges", MeasureEdgesAlgorithm.class, JIPipe.RESOURCES.getIcon16URL("actions/statistics.png"));
+        registerNodeType("filaments-measure-filaments", MeasureFilamentsAlgorithm.class, JIPipe.RESOURCES.getIcon16URL("actions/statistics.png"));
 
-        registerNodeType("filaments-erode-end-vertices", ErodeEndVerticesAlgorithm.class, UIUtils.getIconURLFromResources("actions/morphology.png"));
-        registerNodeType("filaments-grow-end-vertices", GrowEndVerticesAlgorithm.class, UIUtils.getIconURLFromResources("actions/draw-arrow.png"));
-        registerNodeType("filaments-connect-vertices", ConnectVerticesAlgorithm.class, UIUtils.getIconURLFromResources("actions/lines-connector.png"));
-        registerNodeType("filaments-connect-vertices-fast", ConnectVerticesFastAlgorithm.class, UIUtils.getIconURLFromResources("actions/lines-connector.png"));
-        registerNodeType("filaments-copy-across-zct", CopyFilamentsAcrossZCTAlgorithm.class, UIUtils.getIconURLFromResources("actions/insert-math-expression.png"));
+        registerNodeType("filaments-erode-end-vertices", ErodeEndVerticesAlgorithm.class, JIPipe.RESOURCES.getIcon16URL("actions/morphology.png"));
+        registerNodeType("filaments-grow-end-vertices", GrowEndVerticesAlgorithm.class, JIPipe.RESOURCES.getIcon16URL("actions/draw-arrow.png"));
+        registerNodeType("filaments-connect-vertices", ConnectVerticesAlgorithm.class, JIPipe.RESOURCES.getIcon16URL("actions/lines-connector.png"));
+        registerNodeType("filaments-connect-vertices-fast", ConnectVerticesFastAlgorithm.class, JIPipe.RESOURCES.getIcon16URL("actions/lines-connector.png"));
+        registerNodeType("filaments-copy-across-zct", CopyFilamentsAcrossZCTAlgorithm.class, JIPipe.RESOURCES.getIcon16URL("actions/insert-math-expression.png"));
 
-        registerNodeType("filaments-tsoax", TSOAX3DAlgorithm.class, UIUtils.getIconURLFromResources("actions/labplot-xy-fit-curve.png"));
-        registerNodeType("filaments-tsoax-2d", TSOAX2DAlgorithm.class, UIUtils.getIconURLFromResources("actions/labplot-xy-fit-curve.png"));
-        registerNodeType("tsoax-analyze-snakes", TSOAXResultAnalysisAlgorithm.class, UIUtils.getIconURLFromResources("actions/labplot-xy-fit-curve.png"));
+        registerNodeType("filaments-tsoax", TSOAX3DAlgorithm.class, JIPipe.RESOURCES.getIcon16URL("actions/labplot-xy-fit-curve.png"));
+        registerNodeType("filaments-tsoax-2d", TSOAX2DAlgorithm.class, JIPipe.RESOURCES.getIcon16URL("actions/labplot-xy-fit-curve.png"));
+        registerNodeType("tsoax-analyze-snakes", TSOAXResultAnalysisAlgorithm.class, JIPipe.RESOURCES.getIcon16URL("actions/labplot-xy-fit-curve.png"));
 
-        registerNodeType("filaments-remove-vertex-value-backups", RemoveVertexValueBackupsAlgorithm.class, UIUtils.getIconURLFromResources("actions/insert-math-expression.png"));
-        registerNodeType("filaments-restore-vertex-value-backups", RestoreVertexValueBackupAlgorithm.class, UIUtils.getIconURLFromResources("actions/insert-math-expression.png"));
+        registerNodeType("filaments-remove-vertex-value-backups", RemoveVertexValueBackupsAlgorithm.class, JIPipe.RESOURCES.getIcon16URL("actions/insert-math-expression.png"));
+        registerNodeType("filaments-restore-vertex-value-backups", RestoreVertexValueBackupAlgorithm.class, JIPipe.RESOURCES.getIcon16URL("actions/insert-math-expression.png"));
 
-        registerNodeType("filaments-set-overlay", SetOverlayFilamentsAlgorithm.class, UIUtils.getIconURLFromResources("actions/roi.png"));
+        registerNodeType("filaments-set-overlay", SetOverlayFilamentsAlgorithm.class, JIPipe.RESOURCES.getIcon16URL("actions/roi.png"));
     }
 
 

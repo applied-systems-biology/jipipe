@@ -28,6 +28,7 @@ import org.hkijena.jipipe.desktop.app.grapheditor.commons.nodeui.JIPipeDesktopGr
 import org.hkijena.jipipe.desktop.app.grapheditor.flavors.pipeline.JIPipeDesktopPipelineGraphEditorUI;
 import org.hkijena.jipipe.desktop.commons.components.tabs.JIPipeDesktopTabPane;
 import org.hkijena.jipipe.utils.UIUtils;
+import org.hkijena.jipipe.JIPipe;
 
 import javax.swing.*;
 import java.awt.*;
@@ -77,21 +78,21 @@ public class JIPipeDesktopBookmarkListPanel extends JIPipeDesktopWorkbenchPanel 
         JToolBar toolBar = new JToolBar();
         toolBar.setFloatable(false);
 
-        toolBar.add(UIUtils.createButton("Reload", UIUtils.getIconFromResources("actions/reload.png"), this::reloadList));
+        toolBar.add(UIUtils.createButton("Reload", JIPipe.RESOURCES.getIcon16("actions/reload.png"), this::reloadList));
 
         toolBar.add(Box.createHorizontalGlue());
 
         if (selectedNodes != null && !selectedNodes.isEmpty()) {
-            JButton removeButton = new JButton("Add", UIUtils.getIconFromResources("actions/bookmark.png"));
+            JButton removeButton = new JButton("Add", JIPipe.RESOURCES.getIcon16("actions/bookmark.png"));
             removeButton.addActionListener(e -> addSelectionAsBookmark());
             toolBar.add(removeButton);
         }
 
-        JButton removeButton = new JButton("Remove", UIUtils.getIconFromResources("actions/bookmark-remove.png"));
+        JButton removeButton = new JButton("Remove", JIPipe.RESOURCES.getIcon16("actions/bookmark-remove.png"));
         removeButton.addActionListener(e -> removeSelectedBookmarks());
         toolBar.add(removeButton);
 
-        runButton = new JButton("Run", UIUtils.getIconFromResources("actions/run-play.png"));
+        runButton = new JButton("Run", JIPipe.RESOURCES.getIcon16("actions/run-play.png"));
         JPopupMenu runMenu = UIUtils.addPopupMenuToButton(runButton);
         for (NodeUIContextAction entry : RUN_NODE_CONTEXT_MENU_ENTRIES) {
             if (entry == null)
@@ -109,7 +110,7 @@ public class JIPipeDesktopBookmarkListPanel extends JIPipeDesktopWorkbenchPanel 
             toolBar.add(runButton);
         }
 
-        JButton goToButton = new JButton("Go to bookmark", UIUtils.getIconFromResources("actions/go-jump.png"));
+        JButton goToButton = new JButton("Go to bookmark", JIPipe.RESOURCES.getIcon16("actions/go-jump.png"));
         goToButton.addActionListener(e -> goToBookmark(nodeJList.getSelectedValue()));
         toolBar.add(goToButton);
 

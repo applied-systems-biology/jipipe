@@ -15,6 +15,7 @@ package org.hkijena.jipipe.desktop.commons.components.renderers;
 
 import org.hkijena.jipipe.api.parameters.JIPipeParameterTypeInfo;
 import org.hkijena.jipipe.utils.UIUtils;
+import org.hkijena.jipipe.JIPipe;
 
 import javax.swing.*;
 import java.awt.*;
@@ -34,7 +35,7 @@ public class JIPipeParameterTypeInfoListCellRenderer extends JPanel implements L
         setOpaque(true);
         setLayout(new GridBagLayout());
         setBorder(BorderFactory.createEmptyBorder(4, 4, 4, 4));
-        iconLabel.setIcon(UIUtils.getIconFromResources("data-types/parameters.png"));
+        iconLabel.setIcon(JIPipe.RESOURCES.getIcon16("data-types/parameters.png"));
         descriptionLabel.setFont(new Font(Font.DIALOG, Font.ITALIC, 10));
         infoLabel.setFont(new Font(Font.MONOSPACED, Font.PLAIN, 10));
         infoLabel.setForeground(Color.GRAY);

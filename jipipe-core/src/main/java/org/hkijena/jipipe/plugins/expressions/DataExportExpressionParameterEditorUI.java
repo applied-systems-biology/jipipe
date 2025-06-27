@@ -1,10 +1,12 @@
 package org.hkijena.jipipe.plugins.expressions;
 
+import org.hkijena.jipipe.JIPipe;
 import org.hkijena.jipipe.plugins.expressions.ui.JIPipeExpressionDesktopParameterEditorUI;
 import org.hkijena.jipipe.plugins.parameters.library.filesystem.PathParameterSettings;
 import org.hkijena.jipipe.utils.PathIOMode;
 import org.hkijena.jipipe.utils.PathType;
 import org.hkijena.jipipe.utils.UIUtils;
+import org.hkijena.jipipe.JIPipe;
 
 import javax.swing.*;
 import javax.swing.filechooser.FileNameExtensionFilter;
@@ -16,7 +18,7 @@ public class DataExportExpressionParameterEditorUI extends JIPipeExpressionDeskt
     }
 
     private void initialize() {
-        JButton setPathButton = new JButton("Select", UIUtils.getIconFromResources("actions/fileopen.png"));
+        JButton setPathButton = new JButton("Select", JIPipe.RESOURCES.getIcon16("actions/fileopen.png"));
         setPathButton.addActionListener(e -> {
             openPath();
         });

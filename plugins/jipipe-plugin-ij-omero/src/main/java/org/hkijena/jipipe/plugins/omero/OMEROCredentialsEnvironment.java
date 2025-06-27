@@ -63,7 +63,7 @@ public class OMEROCredentialsEnvironment extends JIPipeEnvironment {
 
     @Override
     public Icon getIcon() {
-        return OMEROPlugin.RESOURCES.getIcon16FromResources("omero.png");
+        return OMEROPlugin.RESOURCES.getIcon16("omero.png");
     }
 
     @Override

@@ -28,6 +28,7 @@ import org.hkijena.jipipe.api.validation.JIPipeValidationReportContext;
 import org.hkijena.jipipe.api.validation.JIPipeValidationRuntimeException;
 import org.hkijena.jipipe.utils.ResourceUtils;
 import org.hkijena.jipipe.utils.UIUtils;
+import org.hkijena.jipipe.JIPipe;
 
 import javax.swing.*;
 import java.net.URL;
@@ -342,10 +343,10 @@ public class JIPipeNodeRegistry implements JIPipeValidatable, JIPipeService.Data
                 if (!info.getOutputSlots().isEmpty()) {
                     defaultIcon = JIPipe.getDataTypes().getIconFor(info.getOutputSlots().get(0).value());
                 } else {
-                    defaultIcon = UIUtils.getIconFromResources("actions/configure.png");
+                    defaultIcon = JIPipe.RESOURCES.getIcon16("actions/configure.png");
                 }
             } else {
-                defaultIcon = UIUtils.getIconFromResources("actions/configure.png");
+                defaultIcon = JIPipe.RESOURCES.getIcon16("actions/configure.png");
             }
             iconInstances.put(info, defaultIcon);
             icon = defaultIcon;

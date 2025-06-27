@@ -27,6 +27,7 @@ import org.hkijena.jipipe.plugins.parameters.library.pairs.StringAndStringPairPa
 import org.hkijena.jipipe.plugins.parameters.library.primitives.StringParameterSettings;
 import org.hkijena.jipipe.plugins.parameters.library.primitives.list.StringList;
 import org.hkijena.jipipe.utils.UIUtils;
+import org.hkijena.jipipe.JIPipe;
 
 import javax.swing.*;
 
@@ -341,7 +342,7 @@ public class JIPipeGraphEditorUIApplicationSettings extends JIPipeDefaultApplica
 
     @Override
     public Icon getIcon() {
-        return UIUtils.getIconFromResources("actions/distribute-graph.png");
+        return JIPipe.RESOURCES.getIcon16("actions/distribute-graph.png");
     }
 
     @Override

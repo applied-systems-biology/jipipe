@@ -19,6 +19,7 @@ import org.hkijena.jipipe.desktop.commons.components.ribbon.JIPipeDesktopRibbon;
 import org.hkijena.jipipe.plugins.imageviewer.legacy.JIPipeDesktopLegacyImageViewer;
 import org.hkijena.jipipe.plugins.imageviewer.utils.viewer2d.ImageViewerPanelCanvas2D;
 import org.hkijena.jipipe.utils.UIUtils;
+import org.hkijena.jipipe.JIPipe;
 import org.hkijena.jipipe.utils.ui.JIPipeDesktopDockPanel;
 
 import javax.swing.*;
@@ -26,7 +27,7 @@ import java.awt.*;
 
 public class PixelInfoPlugin2D extends GeneralImageViewerPanelPlugin2D implements ImageViewerPanelCanvas2D.PixelHoverEventListener {
 
-    private final JLabel pixelInfoLabel = new JLabel(UIUtils.getIconFromResources("actions/tool-pointer.png"), JLabel.LEFT);
+    private final JLabel pixelInfoLabel = new JLabel(JIPipe.RESOURCES.getIcon16("actions/tool-pointer.png"), JLabel.LEFT);
 
     public PixelInfoPlugin2D(JIPipeDesktopLegacyImageViewer viewerPanel) {
         super(viewerPanel);

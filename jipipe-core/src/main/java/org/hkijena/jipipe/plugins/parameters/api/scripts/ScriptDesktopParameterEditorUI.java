@@ -66,7 +66,7 @@ public class ScriptDesktopParameterEditorUI extends JIPipeDesktopParameterEditor
         setLayout(new BorderLayout());
         ScriptParameter code = getParameter(ScriptParameter.class);
         collapseInfoLabel = new JLabel("The code is hidden. Click the 'Collapse' button to show it",
-                UIUtils.getIconFromResources("actions/eye-slash.png"),
+                JIPipe.RESOURCES.getIcon16("actions/eye-slash.png"),
                 JLabel.LEFT);
         collapseInfoLabel.setFont(new Font(Font.DIALOG, Font.PLAIN, 12));
         textArea = new CustomEditorPane();
@@ -96,21 +96,21 @@ public class ScriptDesktopParameterEditorUI extends JIPipeDesktopParameterEditor
 
         toolBar.add(Box.createHorizontalGlue());
 
-        JToggleButton externalCodeToggle = new JToggleButton("Use external file", UIUtils.getIconFromResources("actions/edit-link.png"));
+        JToggleButton externalCodeToggle = new JToggleButton("Use external file", JIPipe.RESOURCES.getIcon16("actions/edit-link.png"));
         externalCodeToggle.setToolTipText("If enabled, the code is extracted from an external file.");
         externalCodeToggle.addActionListener(e -> toggleExternalCode());
         toolBar.add(externalCodeToggle);
 
-        JToggleButton collapseButton = new JToggleButton("Collapse", UIUtils.getIconFromResources("actions/eye-slash.png"));
+        JToggleButton collapseButton = new JToggleButton("Collapse", JIPipe.RESOURCES.getIcon16("actions/eye-slash.png"));
         collapseButton.setSelected(code.isCollapsed());
         collapseButton.addActionListener(e -> toggleCollapse());
         toolBar.add(collapseButton);
 
-        JButton openIdeButton = new JButton("Open in ...", UIUtils.getIconFromResources("actions/open-in-new-window.png"));
+        JButton openIdeButton = new JButton("Open in ...", JIPipe.RESOURCES.getIcon16("actions/open-in-new-window.png"));
         JPopupMenu popupMenu = UIUtils.addPopupMenuToButton(openIdeButton);
-        popupMenu.add(UIUtils.createMenuItem("New tab", "Opens the editor in a new tab", UIUtils.getIconFromResources("actions/tab-new.png"), this::openIDEInTab));
-        popupMenu.add(UIUtils.createMenuItem("New window", "Opens the editor in a new window", UIUtils.getIconFromResources("actions/window_new.png"), this::openIdeInNewWindow));
-        popupMenu.add(UIUtils.createMenuItem("External editor", "Opens the editor in an external application", UIUtils.getIconFromResources("actions/edit.png"), this::openExternalIde));
+        popupMenu.add(UIUtils.createMenuItem("New tab", "Opens the editor in a new tab", JIPipe.RESOURCES.getIcon16("actions/tab-new.png"), this::openIDEInTab));
+        popupMenu.add(UIUtils.createMenuItem("New window", "Opens the editor in a new window", JIPipe.RESOURCES.getIcon16("actions/window_new.png"), this::openIdeInNewWindow));
+        popupMenu.add(UIUtils.createMenuItem("External editor", "Opens the editor in an external application", JIPipe.RESOURCES.getIcon16("actions/edit.png"), this::openExternalIde));
         toolBar.add(openIdeButton);
 
         add(toolBar, BorderLayout.NORTH);
@@ -118,7 +118,7 @@ public class ScriptDesktopParameterEditorUI extends JIPipeDesktopParameterEditor
         setBorder(UIUtils.createControlBorder());
 
         closeExternalEditorsButton = new JButton("<html><strong>External editors are currently open</strong><br>Click this button to re-enable editing",
-                UIUtils.getIconFromResources("actions/unlock.png"));
+                JIPipe.RESOURCES.getIcon16("actions/unlock.png"));
         closeExternalEditorsButton.addActionListener(e -> closeExistingExternalEditors());
     }
 
@@ -315,7 +315,7 @@ public class ScriptDesktopParameterEditorUI extends JIPipeDesktopParameterEditor
             editorUI = new LargeScriptDesktopParameterEditorUI(new InitializationParameters(getDesktopWorkbench(), getParameterTree(), getParameterAccess()));
             ScriptParameter code = getParameter(ScriptParameter.class);
             getDesktopWorkbench().getDocumentTabPane().addTab(getParameterAccess().getName() + " (" + code.getLanguageName() + ")",
-                    UIUtils.getIconFromResources("actions/dialog-xml-editor.png"),
+                    JIPipe.RESOURCES.getIcon16("actions/dialog-xml-editor.png"),
                     editorUI,
                     JIPipeDesktopTabPane.CloseMode.withSilentCloseButton,
                     true);

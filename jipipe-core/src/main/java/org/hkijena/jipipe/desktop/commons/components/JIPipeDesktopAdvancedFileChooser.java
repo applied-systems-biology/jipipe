@@ -21,6 +21,7 @@ import org.hkijena.jipipe.plugins.settings.JIPipeFileChooserApplicationSettings;
 import org.hkijena.jipipe.utils.JIPipeDesktopSplitPane;
 import org.hkijena.jipipe.utils.StringUtils;
 import org.hkijena.jipipe.utils.UIUtils;
+import org.hkijena.jipipe.JIPipe;
 
 import javax.accessibility.AccessibleContext;
 import javax.swing.*;
@@ -101,7 +102,7 @@ public class JIPipeDesktopAdvancedFileChooser extends JPanel implements Property
         contentPanel.add(fileChooserComponent, BorderLayout.CENTER);
         initializeActionToolbar(actionToolBar);
 
-        pathField = new JIPipeDesktopFancyTextField(new JLabel(UIUtils.getIconFromResources("places/inode-directory.png")),
+        pathField = new JIPipeDesktopFancyTextField(new JLabel(JIPipe.RESOURCES.getIcon16("places/inode-directory.png")),
                 "Enter the directory here", true);
         pathField.getTextField().addKeyListener(new KeyAdapter() {
             @Override
@@ -161,7 +162,7 @@ public class JIPipeDesktopAdvancedFileChooser extends JPanel implements Property
         drillDownToolBar.setLayout(new BorderLayout());
         drillDownToolBar.add(pathField, BorderLayout.CENTER);
 
-        JButton acceptButton = new JButton(UIUtils.getIconFromResources("actions/ok.png"));
+        JButton acceptButton = new JButton(JIPipe.RESOURCES.getIcon16("actions/ok.png"));
         acceptButton.setToolTipText("Navigate to selected path");
         acceptButton.addActionListener(e -> {
             drillDownEditMode = false;
@@ -223,7 +224,7 @@ public class JIPipeDesktopAdvancedFileChooser extends JPanel implements Property
             pathButton.setCursor(Cursor.getPredefinedCursor(Cursor.DEFAULT_CURSOR));
             pathButton.setBorder(BorderFactory.createEmptyBorder(8, 4, 8, 2));
             drillDownToolBar.add(pathButton);
-            JButton nextButton = new JButton(UIUtils.getIconFromResources("actions/caret-right.png"));
+            JButton nextButton = new JButton(JIPipe.RESOURCES.getIcon16("actions/caret-right.png"));
             nextButton.setCursor(Cursor.getPredefinedCursor(Cursor.DEFAULT_CURSOR));
             nextButton.setBorder(BorderFactory.createEmptyBorder(8, 2, 8, 4));
             drillDownToolBar.add(nextButton);
@@ -258,7 +259,7 @@ public class JIPipeDesktopAdvancedFileChooser extends JPanel implements Property
             drillDownToolBar.add(pathButton);
             pathButton.addActionListener(e -> fileChooserComponent.setCurrentDirectory(path.toFile()));
 
-            JButton nextButton = new JButton(UIUtils.getIconFromResources("actions/caret-right.png"));
+            JButton nextButton = new JButton(JIPipe.RESOURCES.getIcon16("actions/caret-right.png"));
             nextButton.setCursor(Cursor.getPredefinedCursor(Cursor.DEFAULT_CURSOR));
             nextButton.setBorder(BorderFactory.createEmptyBorder(8, 2, 8, 4));
             drillDownToolBar.add(nextButton);
@@ -284,19 +285,19 @@ public class JIPipeDesktopAdvancedFileChooser extends JPanel implements Property
     }
 
     private void initializeActionToolbar(JToolBar actionToolbar) {
-        JButton goBackButton = new JButton(UIUtils.getIconFromResources("actions/back.png"));
+        JButton goBackButton = new JButton(JIPipe.RESOURCES.getIcon16("actions/back.png"));
         goBackButton.setToolTipText("Go back");
         goBackButton.addActionListener(e -> goBack());
         goBackButton.setBorder(BorderFactory.createEmptyBorder(8, 8, 8, 8));
         actionToolbar.add(goBackButton);
 
-        JButton goForwardButton = new JButton(UIUtils.getIconFromResources("actions/next.png"));
+        JButton goForwardButton = new JButton(JIPipe.RESOURCES.getIcon16("actions/next.png"));
         goForwardButton.setToolTipText("Go forward");
         goForwardButton.addActionListener(e -> goForward());
         goForwardButton.setBorder(BorderFactory.createEmptyBorder(8, 8, 8, 8));
         actionToolbar.add(goForwardButton);
 
-        JButton goUpButton = new JButton(UIUtils.getIconFromResources("actions/go-parent-folder.png"));
+        JButton goUpButton = new JButton(JIPipe.RESOURCES.getIcon16("actions/go-parent-folder.png"));
         goUpButton.setToolTipText("Go to parent directory");
         goUpButton.addActionListener(e -> goToParentDirectory());
         goUpButton.setBorder(BorderFactory.createEmptyBorder(8, 8, 8, 8));
@@ -304,7 +305,7 @@ public class JIPipeDesktopAdvancedFileChooser extends JPanel implements Property
 
         actionToolbar.addSeparator();
 
-        bookmarkToggle = new JToggleButton("Bookmark", UIUtils.getIconFromResources("actions/bookmark.png"));
+        bookmarkToggle = new JToggleButton("Bookmark", JIPipe.RESOURCES.getIcon16("actions/bookmark.png"));
         bookmarkToggle.setBorder(BorderFactory.createEmptyBorder(8, 3, 8, 3));
         bookmarkToggle.addActionListener(e -> {
             toggleBookmark(fileChooserComponent.getCurrentDirectory(), bookmarkToggle.isSelected());
@@ -316,14 +317,14 @@ public class JIPipeDesktopAdvancedFileChooser extends JPanel implements Property
 //            JButton newFolderButton = new JButton();
 //            newFolderButton.setAction(filePane.getNewFolderAction());
 //            newFolderButton.setText("New folder");
-//            newFolderButton.setIcon(UIUtils.getIconFromResources("actions/folder-new.png"));
+//            newFolderButton.setIcon(JIPipe.RESOURCES.getIcon16("actions/folder-new.png"));
 //            newFolderButton.setBorder(BorderFactory.createEmptyBorder(8, 3, 8, 3));
 //            actionToolbar.add(newFolderButton);
 //        }
 
         actionToolbar.add(Box.createHorizontalGlue());
 
-        JButton refreshButton = new JButton(UIUtils.getIconFromResources("actions/view-refresh.png"));
+        JButton refreshButton = new JButton(JIPipe.RESOURCES.getIcon16("actions/view-refresh.png"));
         refreshButton.setToolTipText("Refresh");
         refreshButton.addActionListener(e -> fileChooserComponent.rescanCurrentDirectory());
         refreshButton.setBorder(BorderFactory.createEmptyBorder(8, 8, 8, 8));
@@ -334,7 +335,7 @@ public class JIPipeDesktopAdvancedFileChooser extends JPanel implements Property
 //        ButtonGroup viewButtonGroup = new ButtonGroup();
 
 //        // List Button
-//        JToggleButton listViewButton = new JToggleButton(UIUtils.getIconFromResources("actions/view-list.png"));
+//        JToggleButton listViewButton = new JToggleButton(JIPipe.RESOURCES.getIcon16("actions/view-list.png"));
 //        listViewButton.setToolTipText("Display as list of items");
 //        listViewButton.setSelected(true);
 //        UIUtils.makeButtonFlat25x25(listViewButton);
@@ -343,7 +344,7 @@ public class JIPipeDesktopAdvancedFileChooser extends JPanel implements Property
 //        viewButtonGroup.add(listViewButton);
 //
 //        // Details Button
-//        JToggleButton detailsViewButton = new JToggleButton(UIUtils.getIconFromResources("actions/view-list-details.png"));
+//        JToggleButton detailsViewButton = new JToggleButton(JIPipe.RESOURCES.getIcon16("actions/view-list-details.png"));
 //        detailsViewButton.setToolTipText("Display as detailed list of items");
 //        UIUtils.makeButtonFlat25x25(detailsViewButton);
 //        detailsViewButton.addActionListener(filePane.getViewTypeAction(FilePane.VIEWTYPE_DETAILS));
@@ -458,9 +459,9 @@ public class JIPipeDesktopAdvancedFileChooser extends JPanel implements Property
         // Standard places
         addLinkCategory("Places");
         if (!SystemUtils.IS_OS_WINDOWS) {
-            addLink("Home", UIUtils.getIconFromResources("places/user-home.png"), fileSystemView.getHomeDirectory());
+            addLink("Home", JIPipe.RESOURCES.getIcon16("places/user-home.png"), fileSystemView.getHomeDirectory());
         } else {
-            addLink("Home", UIUtils.getIconFromResources("places/user-home.png"),
+            addLink("Home", JIPipe.RESOURCES.getIcon16("places/user-home.png"),
                     fileSystemView.getHomeDirectory().toPath().getParent().toFile());
         }
 //        boolean useShellFolder = FilePane.usesShellFolder(fileChooserComponent);
@@ -476,13 +477,13 @@ public class JIPipeDesktopAdvancedFileChooser extends JPanel implements Property
 //                    name = "Root";
 //                else
 //                    name = root.getName();
-//                addLink(name, UIUtils.getIconFromResources("places/folder-root.png"), root);
+//                addLink(name, JIPipe.RESOURCES.getIcon16("places/folder-root.png"), root);
 //            } else {
 //                Icon icon;
 //                if (fileSystemView.isFloppyDrive(root)) {
-//                    icon = UIUtils.getIconFromResources("devices/media-floppy.png");
+//                    icon = JIPipe.RESOURCES.getIcon16("devices/media-floppy.png");
 //                } else if (fileSystemView.isDrive(root)) {
-//                    icon = UIUtils.getIconFromResources("devices/drive-harddisk.png");
+//                    icon = JIPipe.RESOURCES.getIcon16("devices/drive-harddisk.png");
 //                } else if (fileSystemView.isComputerNode(root)) {
 //                    continue;
 //                } else {
@@ -493,7 +494,7 @@ public class JIPipeDesktopAdvancedFileChooser extends JPanel implements Property
 //                addLink(root.toString(), icon, root);
 //            }
 //        }
-        addLink("ImageJ", UIUtils.getIconFromResources("apps/imagej.png"),
+        addLink("ImageJ", JIPipe.RESOURCES.getIcon16("apps/imagej.png"),
                 Paths.get(Prefs.getImageJDir() != null ? Prefs.getImageJDir() : "").toAbsolutePath().toFile());
 
         if (JIPipe.isInstantiated() && !JIPipe.getInstance().isInitializing()) {
@@ -511,7 +512,7 @@ public class JIPipeDesktopAdvancedFileChooser extends JPanel implements Property
             for (Path path : lastDirectories) {
                 String name = renderPathLabel(path);
                 addLink(name,
-                        UIUtils.getIconFromResources("places/folder-recent.png"),
+                        JIPipe.RESOURCES.getIcon16("places/folder-recent.png"),
                         path.toFile());
             }
 
@@ -521,7 +522,7 @@ public class JIPipeDesktopAdvancedFileChooser extends JPanel implements Property
                 addLinkCategory("Bookmarks");
                 for (FileChooserBookmark bookmark : bookmarks) {
                     addLink(bookmark.getName(),
-                            UIUtils.getIconFromResources("actions/bookmark.png"),
+                            JIPipe.RESOURCES.getIcon16("actions/bookmark.png"),
                             bookmark.getPath().toFile());
                 }
             }

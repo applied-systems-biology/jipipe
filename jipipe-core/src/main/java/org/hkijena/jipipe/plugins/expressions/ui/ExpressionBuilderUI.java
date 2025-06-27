@@ -33,6 +33,7 @@ import org.hkijena.jipipe.plugins.settings.JIPipeFileChooserApplicationSettings;
 import org.hkijena.jipipe.utils.JIPipeDesktopSplitPane;
 import org.hkijena.jipipe.utils.StringUtils;
 import org.hkijena.jipipe.utils.UIUtils;
+import org.hkijena.jipipe.JIPipe;
 import org.hkijena.jipipe.utils.search.RankedData;
 import org.hkijena.jipipe.utils.search.RankingFunction;
 
@@ -93,12 +94,12 @@ public class ExpressionBuilderUI extends JIPipeDesktopWorkbenchPanel {
 
         buttonPanel.add(Box.createHorizontalGlue());
 
-        JButton cancelButton = new JButton("Discard", UIUtils.getIconFromResources("actions/cancel.png"));
+        JButton cancelButton = new JButton("Discard", JIPipe.RESOURCES.getIcon16("actions/cancel.png"));
         cancelButton.addActionListener(e -> dialog.setVisible(false));
         buttonPanel.add(cancelButton);
 
         AtomicBoolean confirmed = new AtomicBoolean(false);
-        JButton confirmButton = new JButton("Accept", UIUtils.getIconFromResources("actions/checkmark.png"));
+        JButton confirmButton = new JButton("Accept", JIPipe.RESOURCES.getIcon16("actions/checkmark.png"));
         confirmButton.addActionListener(e -> {
             if (expressionBuilderUI.checkInserterBeforeAccept()) {
                 confirmed.set(true);
@@ -151,7 +152,7 @@ public class ExpressionBuilderUI extends JIPipeDesktopWorkbenchPanel {
         // Create documentation
         tabPane.registerSingletonTab("DOCUMENTATION",
                 "Info",
-                UIUtils.getIconFromResources("actions/help-info.png"),
+                JIPipe.RESOURCES.getIcon16("actions/help-info.png"),
                 () -> new JIPipeDesktopMarkdownReader(false, MarkdownText.fromPluginResource("documentation/expression-editor.md", Collections.emptyMap())),
                 JIPipeDesktopTabPane.CloseMode.withoutCloseButton, JIPipeDesktopTabPane.SingletonTabMode.Selected);
 
@@ -199,13 +200,13 @@ public class ExpressionBuilderUI extends JIPipeDesktopWorkbenchPanel {
         JToolBar expressionAdditionalButtonsPanel = new JToolBar();
         expressionAdditionalButtonsPanel.setFloatable(false);
 
-        JButton insertVariableButton = new JButton("Insert variable", UIUtils.getIconFromResources("actions/variable.png"));
+        JButton insertVariableButton = new JButton("Insert variable", JIPipe.RESOURCES.getIcon16("actions/variable.png"));
         UIUtils.makeButtonFlat(insertVariableButton);
         insertVariableButton.addActionListener(e -> insertCustomVariable());
         insertVariableButton.setToolTipText("Inserts a custom variable");
         expressionAdditionalButtonsPanel.add(insertVariableButton);
 
-        JButton insertPathButton = new JButton("Insert path", UIUtils.getIconFromResources("actions/fileopen.png"));
+        JButton insertPathButton = new JButton("Insert path", JIPipe.RESOURCES.getIcon16("actions/fileopen.png"));
         UIUtils.makeButtonFlat(insertPathButton);
         insertPathButton.addActionListener(e -> insertPath());
         insertPathButton.setToolTipText("Inserts a path as raw string");
@@ -213,7 +214,7 @@ public class ExpressionBuilderUI extends JIPipeDesktopWorkbenchPanel {
 
         expressionAdditionalButtonsPanel.add(Box.createHorizontalGlue());
 
-        JButton insertBracketsButton = new JButton("Bracket selection", UIUtils.getIconFromResources("actions/object-group.png"));
+        JButton insertBracketsButton = new JButton("Bracket selection", JIPipe.RESOURCES.getIcon16("actions/object-group.png"));
         UIUtils.makeButtonFlat(insertBracketsButton);
         insertBracketsButton.addActionListener(e -> insertBrackets());
         expressionAdditionalButtonsPanel.add(insertBracketsButton);
@@ -275,18 +276,18 @@ public class ExpressionBuilderUI extends JIPipeDesktopWorkbenchPanel {
             ExpressionBuilderInserterUI inserterUI = new ExpressionBuilderInserterUI(this, value);
             if (value instanceof JIPipeExpressionParameterVariableInfo) {
                 title = "Variable " + ((JIPipeExpressionParameterVariableInfo) value).getName();
-                icon = UIUtils.getIconFromResources("actions/variable.png");
+                icon = JIPipe.RESOURCES.getIcon16("actions/variable.png");
                 lastVariableInserter = inserterUI;
             } else if (value instanceof ExpressionConstantEntry) {
                 title = "Constant " + ((ExpressionConstantEntry) value).getName();
-                icon = UIUtils.getIconFromResources("actions/insert-variable.png");
+                icon = JIPipe.RESOURCES.getIcon16("actions/insert-variable.png");
                 lastVariableInserter = inserterUI;
             } else if (value instanceof ExpressionOperatorEntry) {
                 title = "Operator " + ((ExpressionOperatorEntry) value).getName();
-                icon = UIUtils.getIconFromResources("actions/insert-operator.png");
+                icon = JIPipe.RESOURCES.getIcon16("actions/insert-operator.png");
             } else if (value instanceof JIPipeExpressionRegistry.ExpressionFunctionEntry) {
                 title = "Function " + ((JIPipeExpressionRegistry.ExpressionFunctionEntry) value).getName();
-                icon = UIUtils.getIconFromResources("actions/insert-math-expression.png");
+                icon = JIPipe.RESOURCES.getIcon16("actions/insert-math-expression.png");
             } else {
                 return;
             }

@@ -19,6 +19,7 @@ import org.hkijena.jipipe.desktop.app.JIPipeDesktopProjectWorkbench;
 import org.hkijena.jipipe.desktop.app.grapheditor.commons.JIPipeDesktopGraphCanvasUI;
 import org.hkijena.jipipe.desktop.app.grapheditor.commons.nodeui.JIPipeDesktopGraphNodeUI;
 import org.hkijena.jipipe.utils.UIUtils;
+import org.hkijena.jipipe.JIPipe;
 
 import javax.swing.*;
 import java.awt.event.InputEvent;
@@ -56,7 +57,7 @@ public class JIPipeDesktopCompartmentsCutNodeUIContextAction extends JIPipeDeskt
 
     @Override
     public Icon getIcon() {
-        return UIUtils.getIconFromResources("actions/edit-cut.png");
+        return JIPipe.RESOURCES.getIcon16("actions/edit-cut.png");
     }
 
     @Override

@@ -18,6 +18,7 @@ import org.hkijena.jipipe.api.parameters.JIPipeParameterTree;
 import org.hkijena.jipipe.desktop.api.JIPipeDesktopParameterEditorUI;
 import org.hkijena.jipipe.desktop.commons.components.JIPipeDesktopParameterFormPanel;
 import org.hkijena.jipipe.utils.UIUtils;
+import org.hkijena.jipipe.JIPipe;
 
 import javax.swing.*;
 import java.awt.*;
@@ -64,58 +65,58 @@ public class FixedMarginEditorUI extends JIPipeDesktopParameterEditorUI {
         ButtonGroup anchorGroup = new ButtonGroup();
 
         // Top
-        JToggleButton topLeft = new JToggleButton(UIUtils.getIconFromResources("actions/anchor-top-left.png"));
+        JToggleButton topLeft = new JToggleButton(JIPipe.RESOURCES.getIcon16("actions/anchor-top-left.png"));
         UIUtils.setStandardButtonBorder(topLeft);
         topLeft.setPreferredSize(new Dimension(25, 25));
         anchorGroup.add(topLeft);
         anchorPanel.add(topLeft);
         anchorSelectionMap.put(Anchor.TopLeft, topLeft);
 
-        JToggleButton topCenter = new JToggleButton(UIUtils.getIconFromResources("actions/anchor-top-center.png"));
+        JToggleButton topCenter = new JToggleButton(JIPipe.RESOURCES.getIcon16("actions/anchor-top-center.png"));
         UIUtils.setStandardButtonBorder(topCenter);
         anchorGroup.add(topCenter);
         anchorPanel.add(topCenter);
         anchorSelectionMap.put(Anchor.TopCenter, topCenter);
 
-        JToggleButton topRight = new JToggleButton(UIUtils.getIconFromResources("actions/anchor-top-right.png"));
+        JToggleButton topRight = new JToggleButton(JIPipe.RESOURCES.getIcon16("actions/anchor-top-right.png"));
         UIUtils.setStandardButtonBorder(topRight);
         anchorGroup.add(topRight);
         anchorPanel.add(topRight);
         anchorSelectionMap.put(Anchor.TopRight, topRight);
 
         // Center
-        JToggleButton centerLeft = new JToggleButton(UIUtils.getIconFromResources("actions/anchor-center-left.png"));
+        JToggleButton centerLeft = new JToggleButton(JIPipe.RESOURCES.getIcon16("actions/anchor-center-left.png"));
         UIUtils.setStandardButtonBorder(centerLeft);
         anchorGroup.add(centerLeft);
         anchorPanel.add(centerLeft);
         anchorSelectionMap.put(Anchor.CenterLeft, centerLeft);
 
-        JToggleButton centerCenter = new JToggleButton(UIUtils.getIconFromResources("actions/anchor-center-center.png"));
+        JToggleButton centerCenter = new JToggleButton(JIPipe.RESOURCES.getIcon16("actions/anchor-center-center.png"));
         UIUtils.setStandardButtonBorder(centerCenter);
         anchorGroup.add(centerCenter);
         anchorPanel.add(centerCenter);
         anchorSelectionMap.put(Anchor.CenterCenter, centerCenter);
 
-        JToggleButton centerRight = new JToggleButton(UIUtils.getIconFromResources("actions/anchor-center-right.png"));
+        JToggleButton centerRight = new JToggleButton(JIPipe.RESOURCES.getIcon16("actions/anchor-center-right.png"));
         UIUtils.setStandardButtonBorder(centerRight);
         anchorGroup.add(centerRight);
         anchorPanel.add(centerRight);
         anchorSelectionMap.put(Anchor.CenterRight, centerRight);
 
         // Bottom
-        JToggleButton bottomLeft = new JToggleButton(UIUtils.getIconFromResources("actions/anchor-bottom-left.png"));
+        JToggleButton bottomLeft = new JToggleButton(JIPipe.RESOURCES.getIcon16("actions/anchor-bottom-left.png"));
         UIUtils.setStandardButtonBorder(bottomLeft);
         anchorGroup.add(bottomLeft);
         anchorPanel.add(bottomLeft);
         anchorSelectionMap.put(Anchor.BottomLeft, bottomLeft);
 
-        JToggleButton bottomCenter = new JToggleButton(UIUtils.getIconFromResources("actions/anchor-bottom-center.png"));
+        JToggleButton bottomCenter = new JToggleButton(JIPipe.RESOURCES.getIcon16("actions/anchor-bottom-center.png"));
         UIUtils.setStandardButtonBorder(bottomCenter);
         anchorGroup.add(bottomCenter);
         anchorPanel.add(bottomCenter);
         anchorSelectionMap.put(Anchor.BottomCenter, bottomCenter);
 
-        JToggleButton bottomRight = new JToggleButton(UIUtils.getIconFromResources("actions/anchor-bottom-right.png"));
+        JToggleButton bottomRight = new JToggleButton(JIPipe.RESOURCES.getIcon16("actions/anchor-bottom-right.png"));
         UIUtils.setStandardButtonBorder(bottomRight);
         anchorGroup.add(bottomRight);
         anchorPanel.add(bottomRight);

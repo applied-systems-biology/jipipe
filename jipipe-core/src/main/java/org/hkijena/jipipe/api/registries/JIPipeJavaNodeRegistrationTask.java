@@ -20,6 +20,7 @@ import org.hkijena.jipipe.api.nodes.AddJIPipeOutputSlot;
 import org.hkijena.jipipe.api.nodes.JIPipeGraphNode;
 import org.hkijena.jipipe.api.nodes.infos.JIPipeJavaNodeInfo;
 import org.hkijena.jipipe.utils.UIUtils;
+import org.hkijena.jipipe.JIPipe;
 
 import java.net.URL;
 
@@ -64,7 +65,7 @@ public class JIPipeJavaNodeRegistrationTask extends JIPipeDefaultNodeRegistratio
         JIPipeJavaNodeInfo info = new JIPipeJavaNodeInfo(id, nodeClass);
         JIPipe.getNodes().register(info, source);
         if (nodeClass.getAnnotation(Deprecated.class) != null) {
-            JIPipe.getNodes().registerIcon(info, UIUtils.getIconURLFromResources("emblems/deprecated.png"));
+            JIPipe.getNodes().registerIcon(info, JIPipe.RESOURCES.getIcon16URL("emblems/deprecated.png"));
         } else {
             if (icon != null)
                 JIPipe.getNodes().registerIcon(info, icon);

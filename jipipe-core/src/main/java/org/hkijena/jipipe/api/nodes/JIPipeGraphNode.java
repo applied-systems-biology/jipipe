@@ -50,6 +50,7 @@ import org.hkijena.jipipe.utils.ParameterUtils;
 import org.hkijena.jipipe.utils.PathUtils;
 import org.hkijena.jipipe.utils.StringUtils;
 import org.hkijena.jipipe.utils.UIUtils;
+import org.hkijena.jipipe.JIPipe;
 import org.hkijena.jipipe.utils.ui.ViewOnlyMenuItem;
 
 import javax.swing.*;
@@ -1201,7 +1202,7 @@ public abstract class JIPipeGraphNode extends AbstractJIPipeParameterCollection 
     public ImageIcon getUIInputSlotIcon(String slotName) {
         JIPipeInputDataSlot inputSlot = getInputSlot(slotName);
         if (inputSlot != null && inputSlot.getInfo().getRole() == JIPipeDataSlotRole.ParametersLooping) {
-            return UIUtils.getIconInvertedFromResources("actions/reload.png");
+            return JIPipe.RESOURCES.getIcon16Inverted("actions/reload.png");
         }
         return null;
     }

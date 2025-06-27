@@ -13,6 +13,8 @@
 
 package org.hkijena.jipipe.utils;
 
+import org.hkijena.jipipe.JIPipe;
+
 import javax.swing.*;
 import java.awt.*;
 
@@ -48,13 +50,13 @@ public class OKCancelDialog extends JDialog {
         getContentPane().setLayout(new BorderLayout());
         getContentPane().add(editor, BorderLayout.CENTER);
 
-        JButton cancelButton = new JButton("Cancel", UIUtils.getIconFromResources("actions/cancel.png"));
+        JButton cancelButton = new JButton("Cancel", JIPipe.RESOURCES.getIcon16("actions/cancel.png"));
         cancelButton.addActionListener(e -> {
             cancelled = true;
             setVisible(false);
         });
 
-        JButton okButton = new JButton(okLabel, UIUtils.getIconFromResources("actions/checkmark.png"));
+        JButton okButton = new JButton(okLabel, JIPipe.RESOURCES.getIcon16("actions/checkmark.png"));
         okButton.addActionListener(e -> {
             cancelled = false;
             setVisible(false);

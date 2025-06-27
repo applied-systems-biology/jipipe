@@ -16,6 +16,7 @@ package org.hkijena.jipipe.api;
 import com.fasterxml.jackson.annotation.JsonGetter;
 import com.fasterxml.jackson.annotation.JsonSetter;
 import com.google.common.html.HtmlEscapers;
+import org.hkijena.jipipe.JIPipe;
 import org.hkijena.jipipe.api.parameters.AbstractJIPipeParameterCollection;
 import org.hkijena.jipipe.api.parameters.JIPipeParameter;
 import org.hkijena.jipipe.desktop.commons.components.markup.JIPipeDesktopMarkdownReader;
@@ -27,6 +28,7 @@ import org.hkijena.jipipe.plugins.parameters.library.primitives.StringParameterS
 import org.hkijena.jipipe.plugins.parameters.library.primitives.list.StringList;
 import org.hkijena.jipipe.utils.StringUtils;
 import org.hkijena.jipipe.utils.UIUtils;
+import org.hkijena.jipipe.JIPipe;
 
 import javax.swing.*;
 import java.awt.*;
@@ -156,7 +158,7 @@ public class JIPipeAuthorMetadata extends AbstractJIPipeParameterCollection {
                 stringBuilder.append(author.getCustomText().getBody());
             }
             JIPipeDesktopMarkdownReader reader = new JIPipeDesktopMarkdownReader(false, new MarkdownText(stringBuilder.toString()));
-            tabPane.addTab(author.toString(), UIUtils.getIconFromResources("actions/im-user.png"), reader, JIPipeDesktopTabPane.CloseMode.withoutCloseButton);
+            tabPane.addTab(author.toString(), JIPipe.RESOURCES.getIcon16("actions/im-user.png"), reader, JIPipeDesktopTabPane.CloseMode.withoutCloseButton);
             if (author == targetAuthor) {
                 tabPane.switchToLastTab();
             }

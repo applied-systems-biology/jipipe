@@ -27,6 +27,7 @@ import org.hkijena.jipipe.plugins.artifacts.JIPipeArtifactApplicationSettings;
 import org.hkijena.jipipe.plugins.parameters.library.markup.HTMLText;
 import org.hkijena.jipipe.plugins.settings.JIPipeFileChooserApplicationSettings;
 import org.hkijena.jipipe.utils.UIUtils;
+import org.hkijena.jipipe.JIPipe;
 
 import javax.swing.*;
 import java.awt.*;
@@ -52,7 +53,7 @@ public class JIPipeDesktopArtifactsOptionsControl extends JButton implements JIP
 
     private void initialize() {
         UIUtils.makeButtonFlat(this);
-        setIcon(UIUtils.getIconFromResources("actions/run-install.png"));
+        setIcon(JIPipe.RESOURCES.getIcon16("actions/run-install.png"));
         UIUtils.addReloadablePopupMenuToButton(this, popupMenu, this::reloadMenu);
     }
 
@@ -66,11 +67,11 @@ public class JIPipeDesktopArtifactsOptionsControl extends JButton implements JIP
                 "Please check your internet connection and try again by clicking <strong>Try again</strong>. <br/>" +
                 "If no internet is available, you can also connect JIPipe to a local repository.</html>"), BorderLayout.CENTER);
         JPanel buttons = UIUtils.boxHorizontal(
-                UIUtils.createButton("Never show this again", UIUtils.getIconFromResources("actions/cancel.png"), this::disableWarning),
+                UIUtils.createButton("Never show this again", JIPipe.RESOURCES.getIcon16("actions/cancel.png"), this::disableWarning),
                 Box.createHorizontalStrut(16),
-                UIUtils.createButton("Try again", UIUtils.getIconFromResources("actions/view-refresh.png"), this::refreshArtifacts),
-                UIUtils.createButton("Add local repository", UIUtils.getIconFromResources("actions/add-folder-to-archive.png"), this::addLocalRepository),
-                UIUtils.createButton("Dismiss", UIUtils.getIconFromResources("actions/clock.png"), this::closeBalloon)
+                UIUtils.createButton("Try again", JIPipe.RESOURCES.getIcon16("actions/view-refresh.png"), this::refreshArtifacts),
+                UIUtils.createButton("Add local repository", JIPipe.RESOURCES.getIcon16("actions/add-folder-to-archive.png"), this::addLocalRepository),
+                UIUtils.createButton("Dismiss", JIPipe.RESOURCES.getIcon16("actions/clock.png"), this::closeBalloon)
         );
         buttons.setOpaque(false);
         content.add(buttons, BorderLayout.SOUTH);
@@ -85,7 +86,7 @@ public class JIPipeDesktopArtifactsOptionsControl extends JButton implements JIP
         );
         balloonTip.setVisible(false);
 
-        JButton closeButton = new JButton(UIUtils.getIconFromResources("actions/window-close.png"));
+        JButton closeButton = new JButton(JIPipe.RESOURCES.getIcon16("actions/window-close.png"));
         closeButton.setBorder(BorderFactory.createEmptyBorder(4, 4, 4, 4));
         closeButton.setOpaque(false);
         balloonTip.setCloseButton(closeButton, false);
@@ -106,13 +107,13 @@ public class JIPipeDesktopArtifactsOptionsControl extends JButton implements JIP
     private void reloadMenu() {
         popupMenu.removeAll();
 
-        popupMenu.add(UIUtils.createMenuItem("Manage project artifacts ...", "Manages the artifact settings for this project", UIUtils.getIconFromResources("actions/configure.png"), this::openProjectSettings));
+        popupMenu.add(UIUtils.createMenuItem("Manage project artifacts ...", "Manages the artifact settings for this project", JIPipe.RESOURCES.getIcon16("actions/configure.png"), this::openProjectSettings));
         popupMenu.addSeparator();
-        popupMenu.add(UIUtils.createMenuItem("Install/uninstall ...", "Manage installed artifacts", UIUtils.getIconFromResources("actions/run-install.png"), this::manageArtifacts));
-        popupMenu.add(UIUtils.createMenuItem("Refresh", "Refreshes the list of installed and available artifacts", UIUtils.getIconFromResources("actions/view-refresh.png"), this::refreshArtifacts));
+        popupMenu.add(UIUtils.createMenuItem("Install/uninstall ...", "Manage installed artifacts", JIPipe.RESOURCES.getIcon16("actions/run-install.png"), this::manageArtifacts));
+        popupMenu.add(UIUtils.createMenuItem("Refresh", "Refreshes the list of installed and available artifacts", JIPipe.RESOURCES.getIcon16("actions/view-refresh.png"), this::refreshArtifacts));
         popupMenu.addSeparator();
-        popupMenu.add(UIUtils.createMenuItem("Add local directory ...", "Adds a local artifacts repository for offline use", UIUtils.getIconFromResources("actions/add-folder-to-archive.png"), this::addLocalRepository));
-        popupMenu.add(UIUtils.createMenuItem("More settings ...", "Opens the application settings", UIUtils.getIconFromResources("actions/configure.png"), this::openApplicationSettings));
+        popupMenu.add(UIUtils.createMenuItem("Add local directory ...", "Adds a local artifacts repository for offline use", JIPipe.RESOURCES.getIcon16("actions/add-folder-to-archive.png"), this::addLocalRepository));
+        popupMenu.add(UIUtils.createMenuItem("More settings ...", "Opens the application settings", JIPipe.RESOURCES.getIcon16("actions/configure.png"), this::openApplicationSettings));
     }
 
     private void openProjectSettings() {
@@ -149,11 +150,11 @@ public class JIPipeDesktopArtifactsOptionsControl extends JButton implements JIP
     private void updateText() {
         setToolTipText("Artifacts (" + JIPipe.getArtifacts().getCachedRemoteArtifacts().size() + " available, " + JIPipe.getArtifacts().getCachedLocalArtifacts().size() + " installed)");
        if(JIPipe.getArtifacts().getCachedRemoteArtifacts().isEmpty()) {
-           setIcon(UIUtils.getIconFromResources("actions/gtk-disconnect.png"));
+           setIcon(JIPipe.RESOURCES.getIcon16("actions/gtk-disconnect.png"));
            setText("Artifacts unavailable");
        }
        else {
-           setIcon(UIUtils.getIconFromResources("actions/run-install.png"));
+           setIcon(JIPipe.RESOURCES.getIcon16("actions/run-install.png"));
            setText("Artifacts");
        }
     }

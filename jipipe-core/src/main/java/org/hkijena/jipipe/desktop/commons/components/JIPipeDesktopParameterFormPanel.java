@@ -172,14 +172,14 @@ public class JIPipeDesktopParameterFormPanel extends JIPipeDesktopFormPanel impl
 
         AtomicBoolean clickedOK = new AtomicBoolean(false);
 
-        JButton cancelButton = new JButton("Cancel", UIUtils.getIconFromResources("actions/cancel.png"));
+        JButton cancelButton = new JButton("Cancel", JIPipe.RESOURCES.getIcon16("actions/cancel.png"));
         cancelButton.addActionListener(e -> {
             clickedOK.set(false);
             dialog.setVisible(false);
         });
         buttonPanel.add(cancelButton);
 
-        JButton confirmButton = new JButton("OK", UIUtils.getIconFromResources("actions/checkmark.png"));
+        JButton confirmButton = new JButton("OK", JIPipe.RESOURCES.getIcon16("actions/checkmark.png"));
         confirmButton.addActionListener(e -> {
             clickedOK.set(true);
             dialog.setVisible(false);
@@ -401,9 +401,9 @@ public class JIPipeDesktopParameterFormPanel extends JIPipeDesktopFormPanel impl
         JIPipeParameterTree.Node node = tree.getSourceNode(parameterCollection);
 
         CustomStateLessToggleButton collapseButton = new CustomStateLessToggleButton("Show content",
-                UIUtils.getIconFromResources("actions/caret-right.png"),
+                JIPipe.RESOURCES.getIcon16("actions/caret-right.png"),
                 "Hide content",
-                UIUtils.getIconFromResources("actions/caret-down.png"),
+                JIPipe.RESOURCES.getIcon16("actions/caret-down.png"),
                 node != null && !node.isCollapsed());
         collapseButton.setOpaque(false);
 
@@ -434,7 +434,7 @@ public class JIPipeDesktopParameterFormPanel extends JIPipeDesktopFormPanel impl
                     if (node != null && !StringUtils.isNullOrEmpty(node.getIconURL())) {
                         groupIcon = new ImageIcon(node.getResourceClass().getResource(node.getIconURL()));
                     } else {
-                        groupIcon = UIUtils.getIconFromResources("actions/configure.png");
+                        groupIcon = JIPipe.RESOURCES.getIcon16("actions/configure.png");
                     }
                 }
 
@@ -443,7 +443,7 @@ public class JIPipeDesktopParameterFormPanel extends JIPipeDesktopFormPanel impl
                 GroupHeaderPanel groupHeaderPanel = addGroupHeader(headerTitle, groupIcon);
 
                 {
-                    JButton helpButton = new JButton("Info", UIUtils.getIconFromResources("actions/help.png"));
+                    JButton helpButton = new JButton("Info", JIPipe.RESOURCES.getIcon16("actions/help.png"));
 
                     helpButton.addActionListener(e -> {
                         StringBuilder stringBuilder = new StringBuilder();
@@ -478,7 +478,7 @@ public class JIPipeDesktopParameterFormPanel extends JIPipeDesktopFormPanel impl
                 }
 
                 if (isModifiable) {
-                    JButton addButton = new JButton("Edit", UIUtils.getIconFromResources("actions/edit.png"));
+                    JButton addButton = new JButton("Edit", JIPipe.RESOURCES.getIcon16("actions/edit.png"));
                     addButton.addActionListener(e -> {
                         JIPipeDesktopDynamicParameterEditorDialog dialog = new JIPipeDesktopDynamicParameterEditorDialog(SwingUtilities.getWindowAncestor(this), desktopWorkbench, (JIPipeDynamicParameterCollection) parameterCollection);
                         dialog.setLocationRelativeTo(SwingUtilities.getWindowAncestor(this));
@@ -548,7 +548,7 @@ public class JIPipeDesktopParameterFormPanel extends JIPipeDesktopFormPanel impl
                 if (ui.isUILabelEnabled())
                     label.setText(parameterAccess.getName());
                 if (parameterAccess.isImportant())
-                    label.setIcon(UIUtils.getIconFromResources("emblems/important.png"));
+                    label.setIcon(JIPipe.RESOURCES.getIcon16("emblems/important.png"));
                 if (!isWithDocumentation())
                     label.setToolTipText("<html>" + documentation.getRenderedHTML() + "</html>");
                 labelPanel.add(label, BorderLayout.CENTER);
@@ -559,7 +559,7 @@ public class JIPipeDesktopParameterFormPanel extends JIPipeDesktopFormPanel impl
 
             // Editor if modifiable
 //            if (isModifiable) {
-//                JButton removeButton = new JButton(UIUtils.getIconFromResources("actions/close-tab.png"));
+//                JButton removeButton = new JButton(JIPipe.RESOURCES.getIcon16("actions/close-tab.png"));
 //                UIUtils.makeBorderlessWithoutMargin(removeButton);
 //                removeButton.addActionListener(e -> removeDynamicParameter(parameterAccess.getKey(), (JIPipeDynamicParameterCollection) parameterCollection));
 //                labelPanel.add(removeButton, BorderLayout.WEST);
@@ -613,7 +613,7 @@ public class JIPipeDesktopParameterFormPanel extends JIPipeDesktopFormPanel impl
 
         // Help
         if (documentation != null || component instanceof JIPipeDesktopParameterEditorUI) {
-            JButton helpButton = new JButton(UIUtils.getIconFromResources("actions/help-muted.png"));
+            JButton helpButton = new JButton(JIPipe.RESOURCES.getIcon16("actions/help-muted.png"));
             helpButton.setBorder(null);
             helpButton.addActionListener(e -> {
                 showDocumentation(documentation);
@@ -625,12 +625,12 @@ public class JIPipeDesktopParameterFormPanel extends JIPipeDesktopFormPanel impl
         // Options menu
         if (component instanceof JIPipeDesktopParameterEditorUI) {
             JIPipeDesktopParameterEditorUI editorUI = (JIPipeDesktopParameterEditorUI) component;
-            JButton optionsButton = new JButton(UIUtils.getIconFromResources("actions/draw-triangle4-muted.png"));
+            JButton optionsButton = new JButton(JIPipe.RESOURCES.getIcon16("actions/draw-triangle4-muted.png"));
             optionsButton.setBorder(null);
 
             JPopupMenu optionsMenu = UIUtils.addPopupMenuToButton(optionsButton);
 
-            JMenuItem copyItem = new JMenuItem("Copy", UIUtils.getIconFromResources("actions/edit-copy.png"));
+            JMenuItem copyItem = new JMenuItem("Copy", JIPipe.RESOURCES.getIcon16("actions/edit-copy.png"));
             copyItem.addActionListener(e -> {
                 Object parameter = editorUI.getParameter(Object.class);
                 UIUtils.copyToClipboard(JsonUtils.toJsonString(parameter));
@@ -638,7 +638,7 @@ public class JIPipeDesktopParameterFormPanel extends JIPipeDesktopFormPanel impl
             });
             optionsMenu.add(copyItem);
 
-            JMenuItem pasteItem = new JMenuItem("Paste", UIUtils.getIconFromResources("actions/edit-paste.png"));
+            JMenuItem pasteItem = new JMenuItem("Paste", JIPipe.RESOURCES.getIcon16("actions/edit-paste.png"));
             pasteItem.addActionListener(e -> {
                 try {
                     Object o = JsonUtils.readFromString(UIUtils.getStringFromClipboard(), editorUI.getParameterAccess().getFieldClass());
@@ -653,7 +653,7 @@ public class JIPipeDesktopParameterFormPanel extends JIPipeDesktopFormPanel impl
 
             // Set to default function
             if (displayedParameters instanceof JIPipeGraphNode) {
-                JMenuItem restoreDefaultItem = new JMenuItem("Restore to default value", UIUtils.getIconFromResources("actions/edit-undo.png"));
+                JMenuItem restoreDefaultItem = new JMenuItem("Restore to default value", JIPipe.RESOURCES.getIcon16("actions/edit-undo.png"));
                 restoreDefaultItem.addActionListener(e -> {
                     JIPipeParameterCollection defaultCollection = ((JIPipeGraphNode) displayedParameters).getInfo().newInstance();
                     JIPipeParameterTree defaultTree = new JIPipeParameterTree(defaultCollection);
@@ -663,7 +663,7 @@ public class JIPipeDesktopParameterFormPanel extends JIPipeDesktopFormPanel impl
                 optionsMenu.addSeparator();
                 optionsMenu.add(restoreDefaultItem);
             } else if (ReflectionUtils.hasDefaultConstructor(displayedParameters.getClass())) {
-                JMenuItem restoreDefaultItem = new JMenuItem("Restore to default value", UIUtils.getIconFromResources("actions/edit-undo.png"));
+                JMenuItem restoreDefaultItem = new JMenuItem("Restore to default value", JIPipe.RESOURCES.getIcon16("actions/edit-undo.png"));
                 restoreDefaultItem.addActionListener(e -> {
                     JIPipeParameterCollection defaultCollection = (JIPipeParameterCollection) ReflectionUtils.newInstance(displayedParameters.getClass());
                     JIPipeParameterTree defaultTree = new JIPipeParameterTree(defaultCollection);

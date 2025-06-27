@@ -18,6 +18,7 @@ import org.hkijena.jipipe.api.parameters.JIPipeParameterCollection;
 import org.hkijena.jipipe.api.parameters.JIPipeParameterTree;
 import org.hkijena.jipipe.desktop.api.JIPipeDesktopParameterEditorUI;
 import org.hkijena.jipipe.utils.UIUtils;
+import org.hkijena.jipipe.JIPipe;
 
 import javax.swing.*;
 
@@ -51,8 +52,8 @@ public class StringOrDoubleDesktopParameterEditorUI extends JIPipeDesktopParamet
         JIPipeParameterTree traversedParameterCollection = new JIPipeParameterTree(parameter);
 
         ButtonGroup buttonGroup = new ButtonGroup();
-        doubleToggle = addToggle(buttonGroup, UIUtils.getIconFromResources("actions/edit-select-number.png"), "Define a number");
-        stringToggle = addToggle(buttonGroup, UIUtils.getIconFromResources("actions/edit-select-text.png"), "Define a string");
+        doubleToggle = addToggle(buttonGroup, JIPipe.RESOURCES.getIcon16("actions/edit-select-number.png"), "Define a number");
+        stringToggle = addToggle(buttonGroup, JIPipe.RESOURCES.getIcon16("actions/edit-select-text.png"), "Define a string");
         add(Box.createHorizontalStrut(8));
 
         if (parameter.getMode() == StringOrDouble.Mode.Double) {

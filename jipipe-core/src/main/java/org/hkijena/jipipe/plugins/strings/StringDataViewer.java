@@ -20,6 +20,7 @@ import org.hkijena.jipipe.desktop.commons.components.ribbon.JIPipeDesktopLargeBu
 import org.hkijena.jipipe.desktop.commons.components.ribbon.JIPipeDesktopRibbon;
 import org.hkijena.jipipe.plugins.settings.JIPipeRuntimeApplicationSettings;
 import org.hkijena.jipipe.utils.UIUtils;
+import org.hkijena.jipipe.JIPipe;
 import org.hkijena.jipipe.utils.xml.XmlUtils;
 import org.scijava.ui.swing.script.EditorPane;
 
@@ -58,12 +59,12 @@ public class StringDataViewer extends JIPipeDesktopDataViewer {
         JIPipeDesktopRibbon.Task generalTask = ribbon.getOrCreateTask("General");
         JIPipeDesktopRibbon.Band editBand = generalTask.getOrCreateBand("Edit");
         JIPipeDesktopRibbon.Band toolsBand = generalTask.getOrCreateBand("Tools");
-        editBand.add(new JIPipeDesktopLargeButtonRibbonAction("Undo", "Reverts the last action", UIUtils.getIcon32FromResources("actions/edit-undo.png"), editorPane::undoLastAction));
-        editBand.add(new JIPipeDesktopLargeButtonRibbonAction("Redo", "Repeats the last action", UIUtils.getIcon32FromResources("actions/edit-redo.png"), editorPane::redoLastAction));
+        editBand.add(new JIPipeDesktopLargeButtonRibbonAction("Undo", "Reverts the last action", JIPipe.RESOURCES.getIcon32("actions/edit-undo.png"), editorPane::undoLastAction));
+        editBand.add(new JIPipeDesktopLargeButtonRibbonAction("Redo", "Repeats the last action", JIPipe.RESOURCES.getIcon32("actions/edit-redo.png"), editorPane::redoLastAction));
         if ( XMLData.class.isAssignableFrom(getDataBrowser().getDataClass())) {
-            toolsBand.add(new JIPipeDesktopLargeButtonRibbonAction("Prettify", "Formats the XML data", UIUtils.getIcon32FromResources("actions/format-text-code.png"), this::formatXML));
+            toolsBand.add(new JIPipeDesktopLargeButtonRibbonAction("Prettify", "Formats the XML data", JIPipe.RESOURCES.getIcon32("actions/format-text-code.png"), this::formatXML));
         }
-        toolsBand.add(new JIPipeDesktopLargeButtonRibbonAction("External editor", "Opens the text in an external editor", UIUtils.getIcon32FromResources("actions/open-in-new-window.png"), this::openInExternalEditor));
+        toolsBand.add(new JIPipeDesktopLargeButtonRibbonAction("External editor", "Opens the text in an external editor", JIPipe.RESOURCES.getIcon32("actions/open-in-new-window.png"), this::openInExternalEditor));
     }
 
     private void openInExternalEditor() {

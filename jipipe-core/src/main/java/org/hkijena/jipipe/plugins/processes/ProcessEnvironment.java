@@ -16,6 +16,7 @@ package org.hkijena.jipipe.plugins.processes;
 import com.fasterxml.jackson.annotation.JsonGetter;
 import com.fasterxml.jackson.annotation.JsonSetter;
 import org.apache.commons.lang3.SystemUtils;
+import org.hkijena.jipipe.JIPipe;
 import org.hkijena.jipipe.api.JIPipeWorkbench;
 import org.hkijena.jipipe.api.SetJIPipeDocumentation;
 import org.hkijena.jipipe.api.environments.JIPipeEnvironment;
@@ -37,6 +38,7 @@ import org.hkijena.jipipe.utils.EnvironmentVariablesSource;
 import org.hkijena.jipipe.utils.PathUtils;
 import org.hkijena.jipipe.utils.StringUtils;
 import org.hkijena.jipipe.utils.UIUtils;
+import org.hkijena.jipipe.JIPipe;
 
 import javax.swing.*;
 import java.nio.file.Files;
@@ -70,7 +72,7 @@ public class ProcessEnvironment extends JIPipeEnvironment {
 
     @Override
     public Icon getIcon() {
-        return UIUtils.getIconFromResources("apps/utilities-terminal.png");
+        return JIPipe.RESOURCES.getIcon16("apps/utilities-terminal.png");
     }
 
     @Override

@@ -16,6 +16,7 @@ package org.hkijena.jipipe.desktop.app.running.queue;
 import org.hkijena.jipipe.api.run.JIPipeRunnable;
 import org.hkijena.jipipe.api.run.JIPipeRunnableQueue;
 import org.hkijena.jipipe.utils.UIUtils;
+import org.hkijena.jipipe.JIPipe;
 
 import javax.swing.*;
 import java.awt.*;
@@ -62,7 +63,7 @@ public class JIPipeDesktopRunnableQueuePanelUI extends JPanel implements JIPipeR
         buttonPanel.add(progressBar);
         buttonPanel.add(Box.createHorizontalStrut(16));
 
-        cancelButton = new JButton("Cancel", UIUtils.getIconFromResources("actions/cancel.png"));
+        cancelButton = new JButton("Cancel", JIPipe.RESOURCES.getIcon16("actions/cancel.png"));
         cancelButton.addActionListener(e -> requestCancelRun());
         buttonPanel.add(cancelButton);
 

@@ -22,6 +22,7 @@ import org.hkijena.jipipe.desktop.api.JIPipeDesktopParameterEditorUI;
 import org.hkijena.jipipe.desktop.commons.components.JIPipeDesktopDocumentChangeListener;
 import org.hkijena.jipipe.plugins.expressions.*;
 import org.hkijena.jipipe.utils.UIUtils;
+import org.hkijena.jipipe.JIPipe;
 
 import javax.swing.*;
 import javax.swing.event.DocumentEvent;
@@ -46,7 +47,7 @@ public class IntegerRangeDesktopParameterEditorUI extends JIPipeDesktopParameter
     private void initialize() {
         setLayout(new BorderLayout());
 
-        expressionModeToggle = new JToggleButton(UIUtils.getIconFromResources("actions/insert-math-expression.png"));
+        expressionModeToggle = new JToggleButton(JIPipe.RESOURCES.getIcon16("actions/insert-math-expression.png"));
         expressionModeToggle.setToolTipText("If enabled, use a math expression instead of a range string.");
         expressionModeToggle.addActionListener(e -> {
             IntegerRange rangeString = getParameter(IntegerRange.class);

@@ -51,6 +51,6 @@ public class ShowTrackSchemeDataDisplayOperation implements JIPipeDesktopDataDis
 
     @Override
     public Icon getIcon() {
-        return TrackMatePlugin.RESOURCES.getIcon16FromResources("trackscheme.png");
+        return TrackMatePlugin.RESOURCES.getIcon16("trackscheme.png");
     }
 }

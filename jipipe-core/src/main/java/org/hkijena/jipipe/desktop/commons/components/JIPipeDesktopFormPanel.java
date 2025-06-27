@@ -14,6 +14,7 @@
 package org.hkijena.jipipe.desktop.commons.components;
 
 import com.google.common.collect.Sets;
+import org.hkijena.jipipe.JIPipe;
 import org.hkijena.jipipe.api.events.AbstractJIPipeEvent;
 import org.hkijena.jipipe.api.events.JIPipeEventEmitter;
 import org.hkijena.jipipe.desktop.commons.components.markup.JIPipeDesktopMarkdownReader;
@@ -24,6 +25,7 @@ import org.hkijena.jipipe.utils.ColorUtils;
 import org.hkijena.jipipe.utils.JIPipeDesktopSplitPane;
 import org.hkijena.jipipe.utils.StringUtils;
 import org.hkijena.jipipe.utils.UIUtils;
+import org.hkijena.jipipe.JIPipe;
 import org.jdesktop.swingx.JXPanel;
 import org.jdesktop.swingx.ScrollableSizeHint;
 import org.scijava.Disposable;
@@ -142,7 +144,7 @@ public class JIPipeDesktopFormPanel extends JPanel {
         Component helpComponent;
         if ((flags & TABBED_DOCUMENTATION) == TABBED_DOCUMENTATION) {
             documentationTabPane = new JIPipeDesktopTabPane(false, JIPipeDesktopTabPane.Style.Top);
-            documentationTabPane.addTab("Documentation", UIUtils.getIconFromResources("actions/help.png"), helpPanel, JIPipeDesktopTabPane.CloseMode.withoutCloseButton);
+            documentationTabPane.addTab("Documentation", JIPipe.RESOURCES.getIcon16("actions/help.png"), helpPanel, JIPipeDesktopTabPane.CloseMode.withoutCloseButton);
             helpComponent = documentationTabPane;
         } else {
             helpComponent = helpPanel;
@@ -204,14 +206,14 @@ public class JIPipeDesktopFormPanel extends JPanel {
 
         AtomicBoolean clickedOK = new AtomicBoolean(false);
 
-        JButton cancelButton = new JButton("Cancel", UIUtils.getIconFromResources("actions/cancel.png"));
+        JButton cancelButton = new JButton("Cancel", JIPipe.RESOURCES.getIcon16("actions/cancel.png"));
         cancelButton.addActionListener(e -> {
             clickedOK.set(false);
             dialog.setVisible(false);
         });
         buttonPanel.add(cancelButton);
 
-        JButton confirmButton = new JButton("OK", UIUtils.getIconFromResources("actions/checkmark.png"));
+        JButton confirmButton = new JButton("OK", JIPipe.RESOURCES.getIcon16("actions/checkmark.png"));
         confirmButton.addActionListener(e -> {
             clickedOK.set(true);
             dialog.setVisible(false);
@@ -445,7 +447,7 @@ public class JIPipeDesktopFormPanel extends JPanel {
 
     protected Component createEntryPropertiesComponent(Component component, Component description, int row, MarkdownText documentation) {
         if (documentation != null) {
-            JButton helpButton = new JButton(UIUtils.getIconFromResources("actions/help-muted.png"));
+            JButton helpButton = new JButton(JIPipe.RESOURCES.getIcon16("actions/help-muted.png"));
             helpButton.setBorder(null);
             helpButton.addActionListener(e -> {
                 showDocumentation(documentation);
@@ -796,7 +798,7 @@ public class JIPipeDesktopFormPanel extends JPanel {
         }
 
         public void addDescriptionPopupToTitlePanel(String text) {
-            JButton helpButton = new JButton("Info", UIUtils.getIconFromResources("actions/help.png"));
+            JButton helpButton = new JButton("Info", JIPipe.RESOURCES.getIcon16("actions/help.png"));
             UIUtils.addBalloonToComponent(helpButton, text);
             helpButton.setOpaque(false);
             addToTitlePanel(helpButton);

@@ -31,6 +31,7 @@ import org.hkijena.jipipe.plugins.python.installers.SelectCondaEnvPythonInstalle
 import org.hkijena.jipipe.plugins.python.installers.SelectSystemPythonInstaller;
 import org.hkijena.jipipe.plugins.python.installers.SelectVirtualEnvPythonInstaller;
 import org.hkijena.jipipe.utils.UIUtils;
+import org.hkijena.jipipe.JIPipe;
 import org.scijava.Context;
 import org.scijava.plugin.Plugin;
 
@@ -108,7 +109,7 @@ public class CorePythonPlugin extends JIPipePrepackagedDefaultJavaPlugin {
                 PythonEnvironment.ENVIRONMENT_ID,
                 "Python environment",
                 "A Python environment",
-                UIUtils.getIconFromResources("apps/python.png"));
+                JIPipe.RESOURCES.getIcon16("apps/python.png"));
         registerParameterType("optional-python-environment",
                 OptionalPythonEnvironment.class,
                 JIPipeParameterArchetype.OptionalValue, null,
@@ -124,7 +125,7 @@ public class CorePythonPlugin extends JIPipePrepackagedDefaultJavaPlugin {
                 JIPipePythonAdapterLibraryEnvironment.ENVIRONMENT_ID,
                 "JIPipe Python adapter library",
                 "Additional library for Python",
-                UIUtils.getIconFromResources("actions/plugins.png"));
+                JIPipe.RESOURCES.getIcon16("actions/plugins.png"));
         registerParameterType("optional-" + JIPipePythonAdapterLibraryEnvironment.ENVIRONMENT_ID,
                 OptionalJIPipePythonAdapterLibraryEnvironment.class,
                 JIPipeParameterArchetype.OptionalValue, null,
@@ -141,14 +142,14 @@ public class CorePythonPlugin extends JIPipePrepackagedDefaultJavaPlugin {
         registerApplicationSettingsSheet(adapterExtensionSettings);
         registerProjectSettingsSheet(PythonPluginProjectSettings.class);
 
-        registerEnvironmentInstaller(PythonEnvironment.class, SelectCondaEnvPythonInstaller.class, UIUtils.getIconFromResources("actions/project-open.png"));
-        registerEnvironmentInstaller(PythonEnvironment.class, SelectSystemPythonInstaller.class, UIUtils.getIconFromResources("actions/project-open.png"));
-        registerEnvironmentInstaller(PythonEnvironment.class, SelectVirtualEnvPythonInstaller.class, UIUtils.getIconFromResources("actions/project-open.png"));
+        registerEnvironmentInstaller(PythonEnvironment.class, SelectCondaEnvPythonInstaller.class, JIPipe.RESOURCES.getIcon16("actions/project-open.png"));
+        registerEnvironmentInstaller(PythonEnvironment.class, SelectSystemPythonInstaller.class, JIPipe.RESOURCES.getIcon16("actions/project-open.png"));
+        registerEnvironmentInstaller(PythonEnvironment.class, SelectVirtualEnvPythonInstaller.class, JIPipe.RESOURCES.getIcon16("actions/project-open.png"));
     }
 
     @Override
     public List<ImageIcon> getSplashIcons() {
-        return Arrays.asList(UIUtils.getIcon32FromResources("apps/python.png"));
+        return Arrays.asList(JIPipe.RESOURCES.getIcon32("apps/python.png"));
     }
 
     @Override

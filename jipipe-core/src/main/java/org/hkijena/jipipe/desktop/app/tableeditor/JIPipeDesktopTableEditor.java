@@ -37,6 +37,7 @@ import org.hkijena.jipipe.plugins.tables.datatypes.ResultsTableData;
 import org.hkijena.jipipe.utils.PathUtils;
 import org.hkijena.jipipe.utils.StringUtils;
 import org.hkijena.jipipe.utils.UIUtils;
+import org.hkijena.jipipe.JIPipe;
 import org.hkijena.jipipe.utils.ui.BusyCursor;
 import org.jdesktop.swingx.JXTable;
 
@@ -88,7 +89,7 @@ public class JIPipeDesktopTableEditor extends JIPipeDesktopWorkbenchPanel {
     public static ResultsTableData importTableFromCSV(Path fileName, JIPipeDesktopProjectWorkbench workbenchUI) {
         ResultsTableData tableData = ResultsTableData.fromCSV(fileName);
         // Create table analyzer
-        workbenchUI.getDocumentTabPane().addTab(fileName.getFileName().toString(), UIUtils.getIconFromResources("data-types/results-table.png"),
+        workbenchUI.getDocumentTabPane().addTab(fileName.getFileName().toString(), JIPipe.RESOURCES.getIcon16("data-types/results-table.png"),
                 new JIPipeDesktopTableEditor(workbenchUI, tableData), JIPipeDesktopTabPane.CloseMode.withAskOnCloseButton, true);
         return tableData;
     }
@@ -151,8 +152,8 @@ public class JIPipeDesktopTableEditor extends JIPipeDesktopWorkbenchPanel {
         JIPipeDesktopRibbon.Task rowsTask = ribbon.addTask("Rows");
         JIPipeDesktopRibbon.Band addBand = rowsTask.addBand("Add/Delete");
 
-        addBand.add(new JIPipeDesktopLargeButtonRibbonAction("Add row", "Adds a new row", UIUtils.getIcon32FromResources("actions/edit-table-insert-row-below.png"), this::addRow));
-        addBand.add(new JIPipeDesktopLargeButtonRibbonAction("Delete selection", "Deletes the selected rows", UIUtils.getIcon32FromResources("actions/delete.png"), this::removeSelectedRows));
+        addBand.add(new JIPipeDesktopLargeButtonRibbonAction("Add row", "Adds a new row", JIPipe.RESOURCES.getIcon32("actions/edit-table-insert-row-below.png"), this::addRow));
+        addBand.add(new JIPipeDesktopLargeButtonRibbonAction("Delete selection", "Deletes the selected rows", JIPipe.RESOURCES.getIcon32("actions/delete.png"), this::removeSelectedRows));
     }
 
     private void initializeSelectRibbonTask() {
@@ -161,18 +162,18 @@ public class JIPipeDesktopTableEditor extends JIPipeDesktopWorkbenchPanel {
         JIPipeDesktopRibbon.Band rowsBand = selectTask.addBand("Rows");
         JIPipeDesktopRibbon.Band columnsBand = selectTask.addBand("Columns");
 
-        generalBand.add(new JIPipeDesktopLargeButtonRibbonAction("Invert selection", "Inverts the selection", UIUtils.getIcon32FromResources("actions/edit-select-invert.png"), this::invertSelection));
+        generalBand.add(new JIPipeDesktopLargeButtonRibbonAction("Invert selection", "Inverts the selection", JIPipe.RESOURCES.getIcon32("actions/edit-select-invert.png"), this::invertSelection));
 
-        rowsBand.add(new JIPipeDesktopLargeButtonRibbonAction("Select whole row", "Expands the selection to the whole row", UIUtils.getIcon32FromResources("actions/stock_select-row.png"), this::selectWholeRow));
-        rowsBand.add(new JIPipeDesktopLargeButtonRibbonAction("Select equivalent rows", "Select all rows that contain the selection of values", UIUtils.getIcon32FromResources("actions/view-filter.png"), this::selectEquivalent));
+        rowsBand.add(new JIPipeDesktopLargeButtonRibbonAction("Select whole row", "Expands the selection to the whole row", JIPipe.RESOURCES.getIcon32("actions/stock_select-row.png"), this::selectWholeRow));
+        rowsBand.add(new JIPipeDesktopLargeButtonRibbonAction("Select equivalent rows", "Select all rows that contain the selection of values", JIPipe.RESOURCES.getIcon32("actions/view-filter.png"), this::selectEquivalent));
 
-        columnsBand.add(new JIPipeDesktopLargeButtonRibbonAction("Select whole column", "Expands the selection to the whole column", UIUtils.getIcon32FromResources("actions/stock_select-column.png"), this::selectWholeColumn));
+        columnsBand.add(new JIPipeDesktopLargeButtonRibbonAction("Select whole column", "Expands the selection to the whole column", JIPipe.RESOURCES.getIcon32("actions/stock_select-column.png"), this::selectWholeColumn));
     }
 
     private void initializeViewRibbonTask() {
         JIPipeDesktopRibbon.Task viewTask = ribbon.addTask("View");
         JIPipeDesktopRibbon.Band columnBand = viewTask.addBand("Columns");
-        columnBand.add(new JIPipeDesktopLargeButtonRibbonAction("Auto-size columns", "Resizes the selected columns, so they fit their contents.", UIUtils.getIcon32FromResources("actions/resizecol.png"), this::autoSizeColumns));
+        columnBand.add(new JIPipeDesktopLargeButtonRibbonAction("Auto-size columns", "Resizes the selected columns, so they fit their contents.", JIPipe.RESOURCES.getIcon32("actions/resizecol.png"), this::autoSizeColumns));
     }
 
     private void initializeColumnsRibbonTask() {
@@ -180,15 +181,15 @@ public class JIPipeDesktopTableEditor extends JIPipeDesktopWorkbenchPanel {
         JIPipeDesktopRibbon.Band addBand = columnsTask.addBand("Add/Delete");
         JIPipeDesktopRibbon.Band modifyBand = columnsTask.addBand("Modify");
 
-        addBand.add(new JIPipeDesktopLargeButtonRibbonAction("New string column", "Adds a new string column", UIUtils.getIcon32FromResources("actions/edit-table-insert-column-right.png"), () -> addColumn(true)));
-        addBand.add(new JIPipeDesktopLargeButtonRibbonAction("New numeric column", "Adds a new numeric column", UIUtils.getIcon32FromResources("actions/edit-table-insert-column-right.png"), () -> addColumn(false)));
-        addBand.add(new JIPipeDesktopSmallButtonRibbonAction("Duplicate", "Duplicates the selected columns", UIUtils.getIconFromResources("actions/edit-duplicate.png"), this::copyColumn));
-        addBand.add(new JIPipeDesktopSmallButtonRibbonAction("Delete", "Deletes the selected columns", UIUtils.getIconFromResources("actions/delete.png"), this::removeSelectedColumns));
+        addBand.add(new JIPipeDesktopLargeButtonRibbonAction("New string column", "Adds a new string column", JIPipe.RESOURCES.getIcon32("actions/edit-table-insert-column-right.png"), () -> addColumn(true)));
+        addBand.add(new JIPipeDesktopLargeButtonRibbonAction("New numeric column", "Adds a new numeric column", JIPipe.RESOURCES.getIcon32("actions/edit-table-insert-column-right.png"), () -> addColumn(false)));
+        addBand.add(new JIPipeDesktopSmallButtonRibbonAction("Duplicate", "Duplicates the selected columns", JIPipe.RESOURCES.getIcon16("actions/edit-duplicate.png"), this::copyColumn));
+        addBand.add(new JIPipeDesktopSmallButtonRibbonAction("Delete", "Deletes the selected columns", JIPipe.RESOURCES.getIcon16("actions/delete.png"), this::removeSelectedColumns));
 
-        modifyBand.add(new JIPipeDesktopLargeButtonRibbonAction("Rename", "Renames the selected column", UIUtils.getIcon32FromResources("actions/tag.png"), this::renameColumn));
-//        modifyBand.add(new LargeButtonAction("Combine", "Creates a new column that contains the values of the selected columns assigned by the pattern colum0=row0, column1=row0, ... for each row.", UIUtils.getIcon32FromResources("actions/rabbitvcs-merge.png"), this::addNewCombinedColumn));
-        modifyBand.add(new JIPipeDesktopSmallButtonRibbonAction("To string column", "Converts the column to a string column", UIUtils.getIcon16FromResources("actions/edit-select-text.png"), this::selectedColumnsToString));
-        modifyBand.add(new JIPipeDesktopSmallButtonRibbonAction("To numeric column", "Converts the column to a numeric column", UIUtils.getIcon16FromResources("actions/edit-select-number.png"), this::selectedColumnsToNumeric));
+        modifyBand.add(new JIPipeDesktopLargeButtonRibbonAction("Rename", "Renames the selected column", JIPipe.RESOURCES.getIcon32("actions/tag.png"), this::renameColumn));
+//        modifyBand.add(new LargeButtonAction("Combine", "Creates a new column that contains the values of the selected columns assigned by the pattern colum0=row0, column1=row0, ... for each row.", JIPipe.RESOURCES.getIcon32("actions/rabbitvcs-merge.png"), this::addNewCombinedColumn));
+        modifyBand.add(new JIPipeDesktopSmallButtonRibbonAction("To string column", "Converts the column to a string column", JIPipe.RESOURCES.getIcon16("actions/edit-select-text.png"), this::selectedColumnsToString));
+        modifyBand.add(new JIPipeDesktopSmallButtonRibbonAction("To numeric column", "Converts the column to a numeric column", JIPipe.RESOURCES.getIcon16("actions/edit-select-number.png"), this::selectedColumnsToNumeric));
     }
 
     private void initializeTableRibbonTask() {
@@ -198,24 +199,24 @@ public class JIPipeDesktopTableEditor extends JIPipeDesktopWorkbenchPanel {
         JIPipeDesktopRibbon.Band importExportBand = tableTask.addBand("Import/Export");
         JIPipeDesktopRibbon.Band dataBand = tableTask.addBand("Data");
 
-        generalBand.add(new JIPipeDesktopLargeButtonRibbonAction("Undo", "Reverts the last operation", UIUtils.getIcon32FromResources("actions/edit-undo.png"), this::undo));
+        generalBand.add(new JIPipeDesktopLargeButtonRibbonAction("Undo", "Reverts the last operation", JIPipe.RESOURCES.getIcon32("actions/edit-undo.png"), this::undo));
 
-        fileBand.add(new JIPipeDesktopLargeButtonRibbonAction("Open", "Opens a table from a file", UIUtils.getIcon32FromResources("actions/fileopen.png"), this::openTableFromFile));
-        fileBand.add(new JIPipeDesktopLargeButtonRibbonAction("Save", "Saves the table to a file", UIUtils.getIcon32FromResources("actions/document-save.png"), this::exportTableToFile));
+        fileBand.add(new JIPipeDesktopLargeButtonRibbonAction("Open", "Opens a table from a file", JIPipe.RESOURCES.getIcon32("actions/fileopen.png"), this::openTableFromFile));
+        fileBand.add(new JIPipeDesktopLargeButtonRibbonAction("Save", "Saves the table to a file", JIPipe.RESOURCES.getIcon32("actions/document-save.png"), this::exportTableToFile));
 
-        importExportBand.add(new JIPipeDesktopLargeButtonRibbonAction("Clone", "Creates a copy of the table in a new window", UIUtils.getIcon32FromResources("actions/entry-clone.png"), this::cloneTableToNewWindow));
-        importExportBand.add(new JIPipeDesktopSmallButtonRibbonAction("From ImageJ", "Imports a table from ImageJ", UIUtils.getIcon16FromResources("apps/imagej.png"), this::importTableFromImageJ));
-        importExportBand.add(new JIPipeDesktopSmallButtonRibbonAction("To ImageJ", "Exports the table to ImageJ", UIUtils.getIcon16FromResources("apps/imagej.png"), this::exportTableToImageJ));
+        importExportBand.add(new JIPipeDesktopLargeButtonRibbonAction("Clone", "Creates a copy of the table in a new window", JIPipe.RESOURCES.getIcon32("actions/entry-clone.png"), this::cloneTableToNewWindow));
+        importExportBand.add(new JIPipeDesktopSmallButtonRibbonAction("From ImageJ", "Imports a table from ImageJ", JIPipe.RESOURCES.getIcon16("apps/imagej.png"), this::importTableFromImageJ));
+        importExportBand.add(new JIPipeDesktopSmallButtonRibbonAction("To ImageJ", "Exports the table to ImageJ", JIPipe.RESOURCES.getIcon16("apps/imagej.png"), this::exportTableToImageJ));
 
-        dataBand.add(new JIPipeDesktopLargeButtonRibbonAction("Summarize", "Collapses the table into a one-row table by applying a sum operation on each column", UIUtils.getIcon32FromResources("actions/statistics.png"), this::summarizeColumns));
+        dataBand.add(new JIPipeDesktopLargeButtonRibbonAction("Summarize", "Collapses the table into a one-row table by applying a sum operation on each column", JIPipe.RESOURCES.getIcon32("actions/statistics.png"), this::summarizeColumns));
         {
-            JIPipeDesktopLargeButtonRibbonAction convertButton = new JIPipeDesktopLargeButtonRibbonAction("Apply function", "Applies a function to the selected table cells", UIUtils.getIcon32FromResources("actions/insert-math-expression.png"), () -> {
+            JIPipeDesktopLargeButtonRibbonAction convertButton = new JIPipeDesktopLargeButtonRibbonAction("Apply function", "Applies a function to the selected table cells", JIPipe.RESOURCES.getIcon32("actions/insert-math-expression.png"), () -> {
             });
             JPopupMenu convertMenu = new JPopupMenu();
             UIUtils.addReloadablePopupMenuToButton(convertButton.getButton(), convertMenu, () -> updateConvertMenu(convertButton.getButton(), convertMenu));
             dataBand.add(convertButton);
         }
-        dataBand.add(new JIPipeDesktopLargeButtonRibbonAction("Plot", "Creates a plot from this table", UIUtils.getIcon32FromResources("actions/labplot-xy-plot-two-axes.png"), this::createNewPlot));
+        dataBand.add(new JIPipeDesktopLargeButtonRibbonAction("Plot", "Creates a plot from this table", JIPipe.RESOURCES.getIcon32("actions/labplot-xy-plot-two-axes.png"), this::createNewPlot));
     }
 
     private void exportTableToImageJ() {
@@ -408,7 +409,7 @@ public class JIPipeDesktopTableEditor extends JIPipeDesktopWorkbenchPanel {
         for (JIPipeExpressionRegistry.ColumnOperationEntry entry :
                 JIPipe.getTableOperations().getTableColumnOperationsOfType(ConvertingColumnOperation.class)
                         .values().stream().sorted(Comparator.comparing(JIPipeExpressionRegistry.ColumnOperationEntry::getName)).collect(Collectors.toList())) {
-            JMenuItem item = new JMenuItem(entry.getName(), UIUtils.getIconFromResources("actions/configure.png"));
+            JMenuItem item = new JMenuItem(entry.getName(), JIPipe.RESOURCES.getIcon16("actions/configure.png"));
             item.setToolTipText(entry.getDescription());
             item.addActionListener(e -> {
                 createUndoSnapshot();

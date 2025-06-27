@@ -13,10 +13,12 @@
 
 package org.hkijena.jipipe.desktop.app.ploteditor;
 
+import org.hkijena.jipipe.JIPipe;
 import org.hkijena.jipipe.plugins.tables.datatypes.DoubleArrayTableColumnData;
 import org.hkijena.jipipe.plugins.tables.datatypes.StringArrayTableColumnData;
 import org.hkijena.jipipe.plugins.tables.datatypes.TableColumnData;
 import org.hkijena.jipipe.utils.UIUtils;
+import org.hkijena.jipipe.JIPipe;
 
 import javax.swing.*;
 import java.awt.*;
@@ -40,17 +42,17 @@ public class JIPipeDesktopPlotDataSeriesColumnListCellRenderer extends JLabel im
         if (value instanceof DoubleArrayTableColumnData) {
             DoubleArrayTableColumnData data = (DoubleArrayTableColumnData) value;
             setText(data.getLabel() + " (" + data.getData().length + " rows)");
-            setIcon(UIUtils.getIconFromResources("data-types/results-table.png"));
+            setIcon(JIPipe.RESOURCES.getIcon16("data-types/results-table.png"));
         } else if (value instanceof StringArrayTableColumnData) {
             StringArrayTableColumnData data = (StringArrayTableColumnData) value;
             setText(data.getLabel() + " (" + data.getData().length + " rows)");
-            setIcon(UIUtils.getIconFromResources("data-types/results-table.png"));
+            setIcon(JIPipe.RESOURCES.getIcon16("data-types/results-table.png"));
         } else if (value != null) {
             setText(value.getLabel());
-            setIcon(UIUtils.getIconFromResources("actions/configure.png"));
+            setIcon(JIPipe.RESOURCES.getIcon16("actions/configure.png"));
         } else {
             setText("None selected");
-            setIcon(UIUtils.getIconFromResources("emblems/vcs-conflicting.png"));
+            setIcon(JIPipe.RESOURCES.getIcon16("emblems/vcs-conflicting.png"));
         }
 
         if (isSelected) {

@@ -1,11 +1,13 @@
 package org.hkijena.jipipe.desktop.api.dataviewer;
 
+import org.hkijena.jipipe.JIPipe;
 import org.hkijena.jipipe.api.data.JIPipeData;
 import org.hkijena.jipipe.api.data.browser.JIPipeDataBrowser;
 import org.hkijena.jipipe.api.data.browser.JIPipeDataTableBrowser;
 import org.hkijena.jipipe.desktop.app.JIPipeDesktopWorkbenchPanel;
 import org.hkijena.jipipe.desktop.commons.components.ribbon.JIPipeDesktopRibbon;
 import org.hkijena.jipipe.utils.UIUtils;
+import org.hkijena.jipipe.JIPipe;
 import org.hkijena.jipipe.utils.ui.JIPipeDesktopDockPanel;
 import org.scijava.Disposable;
 
@@ -67,7 +69,7 @@ public abstract class JIPipeDesktopDataViewer extends JIPipeDesktopWorkbenchPane
         JPanel errorPanel = new JPanel(new BorderLayout());
         errorPanel.add(UIUtils.createInfoLabel(text,
                 subtext,
-                UIUtils.getIcon32FromResources("actions/circle-xmark.png")), BorderLayout.CENTER);
+                JIPipe.RESOURCES.getIcon32("actions/circle-xmark.png")), BorderLayout.CENTER);
         dockPanel.setMainComponent(errorPanel);
     }
 

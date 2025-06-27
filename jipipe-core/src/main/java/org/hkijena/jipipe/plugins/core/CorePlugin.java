@@ -46,6 +46,7 @@ import org.hkijena.jipipe.plugins.parameters.library.markup.HTMLText;
 import org.hkijena.jipipe.plugins.parameters.library.primitives.list.StringList;
 import org.hkijena.jipipe.utils.ResourceUtils;
 import org.hkijena.jipipe.utils.UIUtils;
+import org.hkijena.jipipe.JIPipe;
 import org.scijava.Context;
 import org.scijava.plugin.Plugin;
 
@@ -217,9 +218,9 @@ public class CorePlugin extends JIPipePrepackagedDefaultJavaPlugin {
 
     @Override
     public List<ImageIcon> getSplashIcons() {
-        return Arrays.asList(UIUtils.getIcon32FromResources("apps/imagej.png"),
-                UIUtils.getIcon32FromResources("apps/fiji.png"),
-                UIUtils.getIcon32FromResources("apps/scijava.png"));
+        return Arrays.asList(JIPipe.RESOURCES.getIcon32("apps/imagej.png"),
+                JIPipe.RESOURCES.getIcon32("apps/fiji.png"),
+                JIPipe.RESOURCES.getIcon32("apps/scijava.png"));
     }
 
     @Override

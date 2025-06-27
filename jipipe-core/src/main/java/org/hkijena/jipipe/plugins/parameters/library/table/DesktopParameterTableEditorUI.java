@@ -16,6 +16,7 @@ package org.hkijena.jipipe.plugins.parameters.library.table;
 import org.hkijena.jipipe.api.nodes.JIPipeGraphNode;
 import org.hkijena.jipipe.desktop.api.JIPipeDesktopParameterEditorUI;
 import org.hkijena.jipipe.utils.UIUtils;
+import org.hkijena.jipipe.JIPipe;
 import org.jdesktop.swingx.JXTable;
 
 import javax.swing.*;
@@ -47,7 +48,7 @@ public class DesktopParameterTableEditorUI extends JIPipeDesktopParameterEditorU
 
         toolBar.add(Box.createHorizontalGlue());
 
-        JButton editButton = new JButton("Edit parameters", UIUtils.getIconFromResources("actions/document-edit.png"));
+        JButton editButton = new JButton("Edit parameters", JIPipe.RESOURCES.getIcon16("actions/document-edit.png"));
         UIUtils.makeButtonHighlightedSuccess(editButton);
         editButton.setToolTipText("Opens a new window that allows to edit the parameter table");
         editButton.addActionListener(e -> openEditor());

@@ -18,6 +18,7 @@ import org.hkijena.jipipe.api.nodes.JIPipeAlgorithm;
 import org.hkijena.jipipe.desktop.app.grapheditor.commons.JIPipeDesktopGraphCanvasUI;
 import org.hkijena.jipipe.desktop.app.grapheditor.commons.nodeui.JIPipeDesktopGraphNodeUI;
 import org.hkijena.jipipe.utils.UIUtils;
+import org.hkijena.jipipe.JIPipe;
 
 import javax.swing.*;
 import java.util.Set;
@@ -62,7 +63,7 @@ public class DisableSaveOutputsNodeUIContextAction implements NodeUIContextActio
 
     @Override
     public Icon getIcon() {
-        return UIUtils.getIconFromResources("actions/no-save.png");
+        return JIPipe.RESOURCES.getIcon16("actions/no-save.png");
     }
 
 }

@@ -19,6 +19,7 @@ import org.hkijena.jipipe.api.data.JIPipeData;
 import org.hkijena.jipipe.desktop.api.JIPipeDesktopParameterEditorUI;
 import org.hkijena.jipipe.desktop.commons.components.pickers.JIPipeDesktopImageJDataImporterPicker;
 import org.hkijena.jipipe.utils.UIUtils;
+import org.hkijena.jipipe.JIPipe;
 
 import javax.swing.*;
 import java.awt.*;
@@ -46,7 +47,7 @@ public class ImageJDataImporterRefDesktopParameterEditorUI extends JIPipeDesktop
         UIUtils.setStandardButtonBorder(currentlyDisplayed);
         add(currentlyDisplayed, BorderLayout.CENTER);
 
-        JButton selectButton = new JButton(UIUtils.getIconFromResources("actions/edit.png"));
+        JButton selectButton = new JButton(JIPipe.RESOURCES.getIcon16("actions/edit.png"));
         UIUtils.setStandardButtonBorder(selectButton);
         selectButton.setToolTipText("Select algorithm type");
         selectButton.addActionListener(e -> pick());
@@ -66,7 +67,7 @@ public class ImageJDataImporterRefDesktopParameterEditorUI extends JIPipeDesktop
             currentlyDisplayed.setIcon(JIPipe.getDataTypes().getIconFor(importer.getImportedJIPipeDataType()));
         } else {
             currentlyDisplayed.setText("None selected");
-            currentlyDisplayed.setIcon(UIUtils.getIconFromResources("emblems/vcs-conflicting.png"));
+            currentlyDisplayed.setIcon(JIPipe.RESOURCES.getIcon16("emblems/vcs-conflicting.png"));
         }
     }
 

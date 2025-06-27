@@ -23,6 +23,7 @@ import org.hkijena.jipipe.desktop.app.JIPipeDesktopWorkbench;
 import org.hkijena.jipipe.plugins.imagejdatatypes.datatypes.ImagePlusData;
 import org.hkijena.jipipe.plugins.imagejdatatypes.datatypes.OMEImageData;
 import org.hkijena.jipipe.utils.UIUtils;
+import org.hkijena.jipipe.JIPipe;
 
 import javax.swing.*;
 
@@ -65,6 +66,6 @@ public class OpenInImageJDataDisplayOperation implements JIPipeDesktopDataDispla
 
     @Override
     public Icon getIcon() {
-        return UIUtils.getIconFromResources("apps/imagej.png");
+        return JIPipe.RESOURCES.getIcon16("apps/imagej.png");
     }
 }

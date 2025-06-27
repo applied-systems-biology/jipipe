@@ -20,6 +20,7 @@ import org.hkijena.jipipe.api.data.JIPipeLegacyDataImportOperation;
 import org.hkijena.jipipe.api.data.serialization.JIPipeDataTableRowInfo;
 import org.hkijena.jipipe.desktop.app.JIPipeDesktopWorkbench;
 import org.hkijena.jipipe.utils.UIUtils;
+import org.hkijena.jipipe.JIPipe;
 
 import javax.swing.*;
 import java.awt.*;
@@ -54,7 +55,7 @@ public class CopyContainingFolderDataImportOperation implements JIPipeLegacyData
 
     @Override
     public Icon getIcon() {
-        return UIUtils.getIconFromResources("actions/folder-copy.png");
+        return JIPipe.RESOURCES.getIcon16("actions/folder-copy.png");
     }
 
     @Override

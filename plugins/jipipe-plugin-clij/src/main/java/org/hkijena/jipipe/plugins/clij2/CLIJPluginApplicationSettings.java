@@ -28,6 +28,7 @@ import org.hkijena.jipipe.api.validation.JIPipeValidationRuntimeException;
 import org.hkijena.jipipe.api.validation.contexts.UnspecifiedValidationReportContext;
 import org.hkijena.jipipe.utils.ImageJCalibrationMode;
 import org.hkijena.jipipe.utils.UIUtils;
+import org.hkijena.jipipe.JIPipe;
 import org.scijava.Context;
 import org.scijava.log.LogService;
 
@@ -146,7 +147,7 @@ public class CLIJPluginApplicationSettings extends JIPipeDefaultApplicationsSett
 
     @Override
     public Icon getIcon() {
-        return UIUtils.getIconFromResources("apps/clij.png");
+        return JIPipe.RESOURCES.getIcon16("apps/clij.png");
     }
 
     @Override

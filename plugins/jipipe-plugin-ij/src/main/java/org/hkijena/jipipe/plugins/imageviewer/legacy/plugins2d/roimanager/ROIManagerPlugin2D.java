@@ -47,6 +47,7 @@ import org.hkijena.jipipe.plugins.tables.datatypes.ResultsTableData;
 import org.hkijena.jipipe.utils.PathUtils;
 import org.hkijena.jipipe.utils.StringUtils;
 import org.hkijena.jipipe.utils.UIUtils;
+import org.hkijena.jipipe.JIPipe;
 import org.hkijena.jipipe.utils.ui.JIPipeDesktopDockPanel;
 
 import javax.swing.*;
@@ -62,8 +63,8 @@ public class ROIManagerPlugin2D extends JIPipeDesktopLegacyImageViewerPlugin2D {
     private final ROI2DListData overlayRois = new ROI2DListData();
     private final JList<Roi> roiListControl = new JList<>();
     private final RoiDrawer roiDrawer = new RoiDrawer();
-    private final JIPipeDesktopLargeToggleButtonRibbonAction displayROIViewMenuItem = new JIPipeDesktopLargeToggleButtonRibbonAction("Display ROI", "Determines whether ROI are displayed", UIUtils.getIcon32FromResources("data-types/roi.png"));
-    private final JIPipeDesktopSmallToggleButtonRibbonAction renderROIAsOverlayViewMenuItem = new JIPipeDesktopSmallToggleButtonRibbonAction("Draw ROI as overlay", "If disabled, ROI are drawn as pixels directly into the displayed image.", UIUtils.getIconFromResources("actions/path-break-apart.png"));
+    private final JIPipeDesktopLargeToggleButtonRibbonAction displayROIViewMenuItem = new JIPipeDesktopLargeToggleButtonRibbonAction("Display ROI", "Determines whether ROI are displayed", JIPipe.RESOURCES.getIcon32("data-types/roi.png"));
+    private final JIPipeDesktopSmallToggleButtonRibbonAction renderROIAsOverlayViewMenuItem = new JIPipeDesktopSmallToggleButtonRibbonAction("Draw ROI as overlay", "If disabled, ROI are drawn as pixels directly into the displayed image.", JIPipe.RESOURCES.getIcon16("actions/path-break-apart.png"));
     private final List<ROIManagerPlugin2DSelectionContextPanel> selectionContextPanels = new ArrayList<>();
     private final JPanel selectionContentPanelUI = new JPanel();
     private ROI2DListData rois = new ROI2DListData();
@@ -195,7 +196,7 @@ public class ROIManagerPlugin2D extends JIPipeDesktopLegacyImageViewerPlugin2D {
         for (Roi roi : selected) {
             ROIEditor editor = new ROIEditor(roi);
             JIPipeDesktopParameterFormPanel parameterPanel = new JIPipeDesktopParameterFormPanel(getDesktopWorkbench(), editor, new MarkdownText("# Edit ROI"), JIPipeDesktopParameterFormPanel.WITH_SEARCH_BAR | JIPipeDesktopFormPanel.WITH_SCROLLING | JIPipeDesktopParameterFormPanel.WITH_DOCUMENTATION);
-            documentTabPane.addTab(roi.getName() + "", UIUtils.getIconFromResources("data-types/roi.png"), parameterPanel, JIPipeDesktopTabPane.CloseMode.withoutCloseButton, true);
+            documentTabPane.addTab(roi.getName() + "", JIPipe.RESOURCES.getIcon16("data-types/roi.png"), parameterPanel, JIPipeDesktopTabPane.CloseMode.withoutCloseButton, true);
             editors.add(editor);
         }
         if (UIUtils.showOKCancelDialog(getViewerPanel(), documentTabPane, "Edit ROI")) {
@@ -262,7 +263,7 @@ public class ROIManagerPlugin2D extends JIPipeDesktopLegacyImageViewerPlugin2D {
 
     //    private void createButtons(JMenuBar menuBar) {
 //        {
-//            JButton removeButton = new JButton("Delete", UIUtils.getIconFromResources("actions/delete.png"));
+//            JButton removeButton = new JButton("Delete", JIPipe.RESOURCES.getIcon16("actions/delete.png"));
 //            removeButton.setToolTipText("Remove selected ROIs");
 //            removeButton.addActionListener(e -> {
 //                if (roiListControl.getSelectedValuesList().isEmpty())
@@ -274,7 +275,7 @@ public class ROIManagerPlugin2D extends JIPipeDesktopLegacyImageViewerPlugin2D {
 //            menuBar.add(removeButton);
 //        }
 //        {
-//            JButton editButton = new JButton("Edit", UIUtils.getIconFromResources("actions/edit.png"));
+//            JButton editButton = new JButton("Edit", JIPipe.RESOURCES.getIcon16("actions/edit.png"));
 //            JPopupMenu editMenu = new JPopupMenu();
 //            UIUtils.addReloadablePopupMenuToComponent(editButton, editMenu, () -> reloadEditRoiMenu(editMenu));
 //            menuBar.add(editButton);
@@ -396,27 +397,27 @@ public class ROIManagerPlugin2D extends JIPipeDesktopLegacyImageViewerPlugin2D {
             JIPipeDesktopRibbon.Band measureBand = roiTask.getOrCreateBand("Measure");
 
             ROIPicker2DTool pickerTool = new ROIPicker2DTool(this);
-            JIPipeDesktopLargeToggleButtonRibbonAction pickerToggle = new JIPipeDesktopLargeToggleButtonRibbonAction("Pick", "Allows to select ROI via the mouse", UIUtils.getIcon32FromResources("actions/followmouse.png"));
+            JIPipeDesktopLargeToggleButtonRibbonAction pickerToggle = new JIPipeDesktopLargeToggleButtonRibbonAction("Pick", "Allows to select ROI via the mouse", JIPipe.RESOURCES.getIcon32("actions/followmouse.png"));
             pickerTool.addToggleButton(pickerToggle.getButton(), getViewerPanel2D().getCanvas());
             generalBand.add(pickerToggle);
 
-            generalBand.add(new JIPipeDesktopSmallButtonRibbonAction("Select all", "Selects all ROI", UIUtils.getIconFromResources("actions/edit-select-all.png"), this::selectAll));
-            generalBand.add(new JIPipeDesktopSmallButtonRibbonAction("Clear selection", "Deselects all ROI", UIUtils.getIconFromResources("actions/edit-select-none.png"), this::selectNone));
-            generalBand.add(new JIPipeDesktopSmallButtonRibbonAction("Invert selection", "Inverts the current selection", UIUtils.getIconFromResources("actions/edit-select-none.png"), this::invertSelection));
+            generalBand.add(new JIPipeDesktopSmallButtonRibbonAction("Select all", "Selects all ROI", JIPipe.RESOURCES.getIcon16("actions/edit-select-all.png"), this::selectAll));
+            generalBand.add(new JIPipeDesktopSmallButtonRibbonAction("Clear selection", "Deselects all ROI", JIPipe.RESOURCES.getIcon16("actions/edit-select-none.png"), this::selectNone));
+            generalBand.add(new JIPipeDesktopSmallButtonRibbonAction("Invert selection", "Inverts the current selection", JIPipe.RESOURCES.getIcon16("actions/edit-select-none.png"), this::invertSelection));
 
-            modifyBand.add(new JIPipeDesktopSmallButtonRibbonAction("Delete", "Deletes the selected ROI", UIUtils.getIconFromResources("actions/delete.png"), () -> removeSelectedROIs(false)));
+            modifyBand.add(new JIPipeDesktopSmallButtonRibbonAction("Delete", "Deletes the selected ROI", JIPipe.RESOURCES.getIcon16("actions/delete.png"), () -> removeSelectedROIs(false)));
 
-            JIPipeDesktopSmallButtonRibbonAction modifyEditAction = new JIPipeDesktopSmallButtonRibbonAction("Modify", "Modifies the selected ROI", UIUtils.getIconFromResources("actions/edit.png"), () -> {
+            JIPipeDesktopSmallButtonRibbonAction modifyEditAction = new JIPipeDesktopSmallButtonRibbonAction("Modify", "Modifies the selected ROI", JIPipe.RESOURCES.getIcon16("actions/edit.png"), () -> {
             });
             JPopupMenu modifyEditMenu = new JPopupMenu();
             UIUtils.addReloadablePopupMenuToButton(modifyEditAction.getButton(), modifyEditMenu, () -> reloadEditRoiMenu(modifyEditMenu));
             modifyBand.add(modifyEditAction);
 
-            measureBand.add(new JIPipeDesktopSmallButtonRibbonAction("Metadata", "Shows the metadata of the selected ROI as table", UIUtils.getIconFromResources("actions/tag.png"), this::showSelectedROIMetadata));
+            measureBand.add(new JIPipeDesktopSmallButtonRibbonAction("Metadata", "Shows the metadata of the selected ROI as table", JIPipe.RESOURCES.getIcon16("actions/tag.png"), this::showSelectedROIMetadata));
 
-            JIPipeDesktopSmallButtonRibbonAction measureAction = new JIPipeDesktopSmallButtonRibbonAction("Measure", "Measures the ROI and displays the results as table", UIUtils.getIconFromResources("actions/statistics.png"), this::measureSelectedROI);
+            JIPipeDesktopSmallButtonRibbonAction measureAction = new JIPipeDesktopSmallButtonRibbonAction("Measure", "Measures the ROI and displays the results as table", JIPipe.RESOURCES.getIcon16("actions/statistics.png"), this::measureSelectedROI);
             measureBand.add(measureAction);
-            measureBand.add(new JIPipeDesktopSmallButtonRibbonAction("Settings ...", "Opens the measurement settings", UIUtils.getIconFromResources("actions/configure.png"), this::openMeasurementSettings));
+            measureBand.add(new JIPipeDesktopSmallButtonRibbonAction("Settings ...", "Opens the measurement settings", JIPipe.RESOURCES.getIcon16("actions/configure.png"), this::openMeasurementSettings));
 
         }
 
@@ -426,25 +427,25 @@ public class ROIManagerPlugin2D extends JIPipeDesktopLegacyImageViewerPlugin2D {
             JIPipeDesktopRibbon.Band roiBand = roiTask.getOrCreateBand("View");
 
             // List band
-            listBand.add(new JIPipeDesktopSmallToggleButtonRibbonAction("Hide invisible", "Show only visible ROI in list", UIUtils.getIconFromResources("actions/eye-slash.png"), filterListHideInvisible, (toggle) -> {
+            listBand.add(new JIPipeDesktopSmallToggleButtonRibbonAction("Hide invisible", "Show only visible ROI in list", JIPipe.RESOURCES.getIcon16("actions/eye-slash.png"), filterListHideInvisible, (toggle) -> {
                 filterListHideInvisible = toggle.isSelected();
                 updateListModel();
             }));
-            listBand.add(new JIPipeDesktopSmallToggleButtonRibbonAction("Only selection", "Show only ROI that are selected", UIUtils.getIconFromResources("actions/edit-select-all.png"), filterListOnlySelected, (toggle) -> {
+            listBand.add(new JIPipeDesktopSmallToggleButtonRibbonAction("Only selection", "Show only ROI that are selected", JIPipe.RESOURCES.getIcon16("actions/edit-select-all.png"), filterListOnlySelected, (toggle) -> {
                 filterListOnlySelected = toggle.isSelected();
                 updateListModel();
             }));
 
             // ROI band
-            roiBand.add(new JIPipeDesktopSmallToggleButtonRibbonAction("Ignore Z", "If enabled, ROI ignore the Z axis", UIUtils.getIconFromResources("actions/layer-flatten-z.png"), roiDrawer.isIgnoreZ(), (toggle) -> {
+            roiBand.add(new JIPipeDesktopSmallToggleButtonRibbonAction("Ignore Z", "If enabled, ROI ignore the Z axis", JIPipe.RESOURCES.getIcon16("actions/layer-flatten-z.png"), roiDrawer.isIgnoreZ(), (toggle) -> {
                 roiDrawer.setIgnoreZ(toggle.isSelected());
                 uploadSliceToCanvas();
             }));
-            roiBand.add(new JIPipeDesktopSmallToggleButtonRibbonAction("Ignore C", "If enabled, ROI ignore the channel axis", UIUtils.getIconFromResources("actions/layer-flatten-c.png"), roiDrawer.isIgnoreC(), (toggle) -> {
+            roiBand.add(new JIPipeDesktopSmallToggleButtonRibbonAction("Ignore C", "If enabled, ROI ignore the channel axis", JIPipe.RESOURCES.getIcon16("actions/layer-flatten-c.png"), roiDrawer.isIgnoreC(), (toggle) -> {
                 roiDrawer.setIgnoreC(toggle.isSelected());
                 uploadSliceToCanvas();
             }));
-            roiBand.add(new JIPipeDesktopSmallToggleButtonRibbonAction("Ignore T", "If enabled, ROI ignore the time/frame axis", UIUtils.getIconFromResources("actions/layer-flatten-t.png"), roiDrawer.isIgnoreT(), (toggle) -> {
+            roiBand.add(new JIPipeDesktopSmallToggleButtonRibbonAction("Ignore T", "If enabled, ROI ignore the time/frame axis", JIPipe.RESOURCES.getIcon16("actions/layer-flatten-t.png"), roiDrawer.isIgnoreT(), (toggle) -> {
                 roiDrawer.setIgnoreT(toggle.isSelected());
                 uploadSliceToCanvas();
             }));
@@ -457,18 +458,18 @@ public class ROIManagerPlugin2D extends JIPipeDesktopLegacyImageViewerPlugin2D {
             renderingBand.add(displayROIViewMenuItem);
 
             renderingBand.add(renderROIAsOverlayViewMenuItem);
-            renderingBand.add(new JIPipeDesktopSmallButtonRibbonAction("More settings ...", "Opens more rendering settings", UIUtils.getIconFromResources("actions/configure.png"), this::openRoiDrawingSettings));
-            renderingBand.add(new JIPipeDesktopSmallButtonRibbonAction("Save settings", "Saves the current settings as default", UIUtils.getIconFromResources("actions/filesave.png"), this::saveDefaults));
+            renderingBand.add(new JIPipeDesktopSmallButtonRibbonAction("More settings ...", "Opens more rendering settings", JIPipe.RESOURCES.getIcon16("actions/configure.png"), this::openRoiDrawingSettings));
+            renderingBand.add(new JIPipeDesktopSmallButtonRibbonAction("Save settings", "Saves the current settings as default", JIPipe.RESOURCES.getIcon16("actions/filesave.png"), this::saveDefaults));
         }
 
         // Import/Export task
         {
             JIPipeDesktopRibbon.Band importExportBand = roiTask.getOrCreateBand("Import/Export");
 
-            importExportBand.add(new JIPipeDesktopLargeButtonRibbonAction("To ROI Manager", "Exports the ROI into the ImageJ ROI manager", UIUtils.getIcon32FromResources("apps/imagej2.png"), this::exportROIsToManager));
+            importExportBand.add(new JIPipeDesktopLargeButtonRibbonAction("To ROI Manager", "Exports the ROI into the ImageJ ROI manager", JIPipe.RESOURCES.getIcon32("apps/imagej2.png"), this::exportROIsToManager));
 
-            importExportBand.add(new JIPipeDesktopSmallButtonRibbonAction("Import from file", "Imports ROI from a *.roi or *.zip file", UIUtils.getIconFromResources("actions/fileopen.png"), this::importROIsFromFile));
-            importExportBand.add(new JIPipeDesktopSmallButtonRibbonAction("Export to file", "Exports ROI to a *.zip file", UIUtils.getIconFromResources("actions/filesave.png"), this::exportROIsToFile));
+            importExportBand.add(new JIPipeDesktopSmallButtonRibbonAction("Import from file", "Imports ROI from a *.roi or *.zip file", JIPipe.RESOURCES.getIcon16("actions/fileopen.png"), this::importROIsFromFile));
+            importExportBand.add(new JIPipeDesktopSmallButtonRibbonAction("Export to file", "Exports ROI to a *.zip file", JIPipe.RESOURCES.getIcon16("actions/filesave.png"), this::exportROIsToFile));
         }
     }
 
@@ -484,7 +485,7 @@ public class ROIManagerPlugin2D extends JIPipeDesktopLegacyImageViewerPlugin2D {
 
     @Override
     public Icon getPanelIcon() {
-        return UIUtils.getIcon32FromResources("actions/ellipse-5pts.png");
+        return JIPipe.RESOURCES.getIcon32("actions/ellipse-5pts.png");
     }
 
     private void reloadEditRoiMenu(JPopupMenu menu) {
@@ -526,7 +527,7 @@ public class ROIManagerPlugin2D extends JIPipeDesktopLegacyImageViewerPlugin2D {
         menu.add(setFillColorItem);
 
         int currentStrokeThickness = Math.max(1, selectedRois.stream().map(Roi::getStrokeWidth).min(Comparator.naturalOrder()).get().intValue());
-        JMenuItem setStrokeThicknessItem = new JMenuItem("Set line width ...", UIUtils.getIconFromResources("actions/transform-affect-stroke.png"));
+        JMenuItem setStrokeThicknessItem = new JMenuItem("Set line width ...", JIPipe.RESOURCES.getIcon16("actions/transform-affect-stroke.png"));
         setStrokeThicknessItem.addActionListener(e -> {
             Optional<Integer> value = UIUtils.getIntegerByDialog(getViewerPanel(), "Set line width", "Please put the line width here:", currentStrokeThickness, 1, Integer.MAX_VALUE);
             if (value.isPresent()) {
@@ -540,7 +541,7 @@ public class ROIManagerPlugin2D extends JIPipeDesktopLegacyImageViewerPlugin2D {
         menu.add(setStrokeThicknessItem);
 
         String currentName = selectedRois.stream().map(Roi::getName).filter(Objects::nonNull).findAny().orElse("");
-        JMenuItem setNameItem = new JMenuItem("Set name ...", UIUtils.getIconFromResources("actions/tag.png"));
+        JMenuItem setNameItem = new JMenuItem("Set name ...", JIPipe.RESOURCES.getIcon16("actions/tag.png"));
         setNameItem.addActionListener(e -> {
             String value = JOptionPane.showInputDialog(getViewerPanel(), "Please set the name of the ROIs:", currentName);
             if (value != null) {
@@ -556,7 +557,7 @@ public class ROIManagerPlugin2D extends JIPipeDesktopLegacyImageViewerPlugin2D {
         menu.addSeparator();
 
         int currentZPosition = Math.max(0, selectedRois.stream().map(Roi::getZPosition).min(Comparator.naturalOrder()).get());
-        JMenuItem setZPositionItem = new JMenuItem("Set Z position ...", UIUtils.getIconFromResources("actions/mark-location.png"));
+        JMenuItem setZPositionItem = new JMenuItem("Set Z position ...", JIPipe.RESOURCES.getIcon16("actions/mark-location.png"));
         setZPositionItem.addActionListener(e -> {
             Optional<Integer> value = UIUtils.getIntegerByDialog(getViewerPanel(), "Set Z position", "The first index is 1. Set it to zero to make the ROI appear on all Z planes.", currentZPosition, 0, Integer.MAX_VALUE);
             if (value.isPresent()) {
@@ -570,7 +571,7 @@ public class ROIManagerPlugin2D extends JIPipeDesktopLegacyImageViewerPlugin2D {
         menu.add(setZPositionItem);
 
         int currentCPosition = Math.max(0, selectedRois.stream().map(Roi::getZPosition).min(Comparator.naturalOrder()).get());
-        JMenuItem setCPositionItem = new JMenuItem("Set C position ...", UIUtils.getIconFromResources("actions/mark-location.png"));
+        JMenuItem setCPositionItem = new JMenuItem("Set C position ...", JIPipe.RESOURCES.getIcon16("actions/mark-location.png"));
         setCPositionItem.addActionListener(e -> {
             Optional<Integer> value = UIUtils.getIntegerByDialog(getViewerPanel(), "Set C position", "The first index is 1. Set it to zero to make the ROI appear on all channel planes.", currentCPosition, 0, Integer.MAX_VALUE);
             if (value.isPresent()) {
@@ -584,7 +585,7 @@ public class ROIManagerPlugin2D extends JIPipeDesktopLegacyImageViewerPlugin2D {
         menu.add(setCPositionItem);
 
         int currentTPosition = Math.max(0, selectedRois.stream().map(Roi::getZPosition).min(Comparator.naturalOrder()).get());
-        JMenuItem setTPositionItem = new JMenuItem("Set T position ...", UIUtils.getIconFromResources("actions/mark-location.png"));
+        JMenuItem setTPositionItem = new JMenuItem("Set T position ...", JIPipe.RESOURCES.getIcon16("actions/mark-location.png"));
         setTPositionItem.addActionListener(e -> {
             Optional<Integer> value = UIUtils.getIntegerByDialog(getViewerPanel(), "Set T position", "The first index is 1. Set it to zero to make the ROI appear on all frame planes.", currentTPosition, 0, Integer.MAX_VALUE);
             if (value.isPresent()) {

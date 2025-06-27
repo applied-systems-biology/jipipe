@@ -13,6 +13,7 @@
 
 package org.hkijena.jipipe.desktop.app.compat;
 
+import org.hkijena.jipipe.JIPipe;
 import org.hkijena.jipipe.api.compat.ImageJDataExportOperation;
 import org.hkijena.jipipe.api.compat.ImageJDataImportOperation;
 import org.hkijena.jipipe.api.history.JIPipeDummyGraphHistoryJournal;
@@ -24,6 +25,7 @@ import org.hkijena.jipipe.desktop.commons.components.tabs.JIPipeDesktopTabPane;
 import org.hkijena.jipipe.plugins.parameters.library.pairs.StringAndStringPairParameter;
 import org.hkijena.jipipe.plugins.settings.JIPipeGraphEditorUIApplicationSettings;
 import org.hkijena.jipipe.utils.UIUtils;
+import org.hkijena.jipipe.JIPipe;
 import org.hkijena.jipipe.utils.ui.JIPipeDesktopDockPanel;
 
 import javax.swing.*;
@@ -72,22 +74,22 @@ public class JIPipeDesktopRunSingleAlgorithmSettingsPanelIOEditor extends Abstra
     private void initialize() {
         JIPipeDesktopTabPane propertyPanel = new JIPipeDesktopTabPane(true, JIPipeDesktopTabPane.Style.Top);
         propertyPanel.addTab("Inputs",
-                UIUtils.getIconFromResources("data-types/slot.png"),
+                JIPipe.RESOURCES.getIcon16("data-types/slot.png"),
                 inputsPanel,
                 JIPipeDesktopTabPane.CloseMode.withoutCloseButton);
         propertyPanel.addTab("Outputs",
-                UIUtils.getIconFromResources("data-types/slot.png"),
+                JIPipe.RESOURCES.getIcon16("data-types/slot.png"),
                 outputsPanel,
                 JIPipeDesktopTabPane.CloseMode.withoutCloseButton);
         getDockPanel().addDockPanel("Inputs",
                 "Inputs",
-                UIUtils.getIconFromResources("data-types/slot.png"),
+                JIPipe.RESOURCES.getIcon16("data-types/slot.png"),
                 JIPipeDesktopDockPanel.PanelLocation.TopRight,
                 false,
                 0, inputsPanel);
         getDockPanel().addDockPanel("Outputs",
                 "Outputs",
-                UIUtils.getIconFromResources("data-types/slot.png"),
+                JIPipe.RESOURCES.getIcon16("data-types/slot.png"),
                 JIPipeDesktopDockPanel.PanelLocation.TopRight,
                 false,
                 0, outputsPanel);
@@ -126,7 +128,7 @@ public class JIPipeDesktopRunSingleAlgorithmSettingsPanelIOEditor extends Abstra
         inputsPanel.clear();
         outputsPanel.clear();
         if (!settingsPanel.getNode().getInputSlots().isEmpty()) {
-//            FormPanel.GroupHeaderPanel groupHeader = inputsPanel.addGroupHeader("Inputs", UIUtils.getIconFromResources("data-types/slot.png"));
+//            FormPanel.GroupHeaderPanel groupHeader = inputsPanel.addGroupHeader("Inputs", JIPipe.RESOURCES.getIcon16("data-types/slot.png"));
 //            groupHeader.setDescription("Please use the following items to assign inputs to the node. " +
 //                    "Please note that JIPipe provides multiple options how JIPipe can acquire data from ImageJ. " +
 //                    "To change the importer, click the 'Edit' button.");
@@ -141,7 +143,7 @@ public class JIPipeDesktopRunSingleAlgorithmSettingsPanelIOEditor extends Abstra
         }
         inputsPanel.addVerticalGlue();
         if (!settingsPanel.getNode().getOutputSlots().isEmpty()) {
-//            FormPanel.GroupHeaderPanel groupHeader = inputsPanel.addGroupHeader("Outputs", UIUtils.getIconFromResources("data-types/slot.png"));
+//            FormPanel.GroupHeaderPanel groupHeader = inputsPanel.addGroupHeader("Outputs", JIPipe.RESOURCES.getIcon16("data-types/slot.png"));
 //            groupHeader.setDescription("The following items refer to the generated outputs. " +
 //                    "Please note that JIPipe can export results back into ImageJ in multiple ways. " +
 //                    "To change the exporter, click the 'Edit' button.");

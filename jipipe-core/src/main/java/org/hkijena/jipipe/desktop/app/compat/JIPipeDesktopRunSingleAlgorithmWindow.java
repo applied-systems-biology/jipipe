@@ -32,6 +32,7 @@ import org.hkijena.jipipe.desktop.commons.components.tabs.JIPipeDesktopTabPane;
 import org.hkijena.jipipe.plugins.settings.JIPipeRuntimeApplicationSettings;
 import org.hkijena.jipipe.utils.JIPipeDesktopSplitPane;
 import org.hkijena.jipipe.utils.UIUtils;
+import org.hkijena.jipipe.JIPipe;
 import org.hkijena.jipipe.utils.scripting.MacroUtils;
 import org.scijava.Context;
 import org.scijava.command.CommandService;
@@ -113,7 +114,7 @@ public class JIPipeDesktopRunSingleAlgorithmWindow extends JFrame implements JIP
         initializeList(listPanel);
         initializeButtonPanel(settingsContainer);
 
-        tabPane.addTab("Run JIPipe node", UIUtils.getIconFromResources("apps/jipipe.png"), contentPanel, JIPipeDesktopTabPane.CloseMode.withoutCloseButton);
+        tabPane.addTab("Run JIPipe node", JIPipe.RESOURCES.getIcon16("apps/jipipe.png"), contentPanel, JIPipeDesktopTabPane.CloseMode.withoutCloseButton);
     }
 
     private void initializeMenu() {
@@ -122,9 +123,9 @@ public class JIPipeDesktopRunSingleAlgorithmWindow extends JFrame implements JIP
 
         JMenu helpMenu = new JMenu("Help");
         helpMenu.setPreferredSize(new Dimension(60, 32));
-        helpMenu.setIcon(UIUtils.getIconFromResources("actions/help.png"));
+        helpMenu.setIcon(JIPipe.RESOURCES.getIcon16("actions/help.png"));
 
-        JMenuItem manualButton = new JMenuItem("Open online documentation", UIUtils.getIconFromResources("actions/help.png"));
+        JMenuItem manualButton = new JMenuItem("Open online documentation", JIPipe.RESOURCES.getIcon16("actions/help.png"));
         manualButton.setToolTipText("Opens the documentation for the single algorithm run feature. " + HELP_URL);
         manualButton.addActionListener(e -> {
             try {
@@ -135,10 +136,10 @@ public class JIPipeDesktopRunSingleAlgorithmWindow extends JFrame implements JIP
         });
         helpMenu.add(manualButton);
 
-        JMenuItem algorithmCompendiumButton = new JMenuItem("Open node documentation", UIUtils.getIconFromResources("data-types/node.png"));
+        JMenuItem algorithmCompendiumButton = new JMenuItem("Open node documentation", JIPipe.RESOURCES.getIcon16("data-types/node.png"));
         algorithmCompendiumButton.addActionListener(e -> {
             getDocumentTabPane().addTab("Node documentation",
-                    UIUtils.getIconFromResources("actions/help.png"),
+                    JIPipe.RESOURCES.getIcon16("actions/help.png"),
                     new JIPipeDesktopAlgorithmCompendiumUI(),
                     JIPipeDesktopTabPane.CloseMode.withSilentCloseButton,
                     true);
@@ -146,10 +147,10 @@ public class JIPipeDesktopRunSingleAlgorithmWindow extends JFrame implements JIP
         });
         helpMenu.add(algorithmCompendiumButton);
 
-        JMenuItem datatypeCompendiumButton = new JMenuItem("Open data type documentation", UIUtils.getIconFromResources("data-types/data-type.png"));
+        JMenuItem datatypeCompendiumButton = new JMenuItem("Open data type documentation", JIPipe.RESOURCES.getIcon16("data-types/data-type.png"));
         datatypeCompendiumButton.addActionListener(e -> {
             getDocumentTabPane().addTab("Data type documentation",
-                    UIUtils.getIconFromResources("actions/help.png"),
+                    JIPipe.RESOURCES.getIcon16("actions/help.png"),
                     new JIPipeDataTypeCompendiumUI(),
                     JIPipeDesktopTabPane.CloseMode.withSilentCloseButton,
                     true);
@@ -252,14 +253,14 @@ public class JIPipeDesktopRunSingleAlgorithmWindow extends JFrame implements JIP
 //        reloadOutputSlots();
 //
 //        // Add parameter editor
-//        formPanel.addGroupHeader("Algorithm parameters", UIUtils.getIconFromResources("actions/wrench.png"));
+//        formPanel.addGroupHeader("Algorithm parameters", JIPipe.RESOURCES.getIcon16("actions/wrench.png"));
 //        formPanel.addWideToForm(new ParameterPanel(this, runSettings.getAlgorithm(), null, ParameterPanel.NONE), null);
 //
 //        formPanel.addVerticalGlue();
 //    }
 
 //    private void reloadRuntimeSettings() {
-//        formPanel.addGroupHeader("Runtime", UIUtils.getIconFromResources("actions/run-build.png"));
+//        formPanel.addGroupHeader("Runtime", JIPipe.RESOURCES.getIcon16("actions/run-build.png"));
 //        SpinnerNumberModel model = new SpinnerNumberModel(numThreads, 1, Integer.MAX_VALUE, 1);
 //        JSpinner spinner = new JSpinner(model);
 //        spinner.addChangeListener(e -> {
@@ -269,13 +270,13 @@ public class JIPipeDesktopRunSingleAlgorithmWindow extends JFrame implements JIP
 //    }
 //
 //    private void reloadInputSlots() {
-//        FormPanel.GroupHeaderPanel inputDataHeaderPanel = formPanel.addGroupHeader("Input data", UIUtils.getIconFromResources("data-types/data-type.png"));
+//        FormPanel.GroupHeaderPanel inputDataHeaderPanel = formPanel.addGroupHeader("Input data", JIPipe.RESOURCES.getIcon16("data-types/data-type.png"));
 //        boolean inputSlotsAreMutable = getAlgorithm().getSlotConfiguration() instanceof JIPipeMutableSlotConfiguration;
 //        boolean inputSlotsAreRemovable = false;
 //        if (inputSlotsAreMutable) {
 //            JIPipeDefaultMutableSlotConfiguration slotConfiguration = (JIPipeDefaultMutableSlotConfiguration) getAlgorithm().getSlotConfiguration();
 //            if (slotConfiguration.canAddInputSlot()) {
-//                JButton addButton = new JButton(UIUtils.getIconFromResources("actions/list-add.png"));
+//                JButton addButton = new JButton(JIPipe.RESOURCES.getIcon16("actions/list-add.png"));
 //                addButton.setToolTipText("Add new input");
 //                UIUtils.makeFlat25x25(addButton);
 //                addButton.addActionListener(e -> AddAlgorithmSlotPanel.showDialog(this, new JIPipeDummyGraphHistoryJournal(), getAlgorithm(), JIPipeSlotType.Input));
@@ -291,7 +292,7 @@ public class JIPipeDesktopRunSingleAlgorithmWindow extends JFrame implements JIP
 //            if (inputSlotsAreRemovable) {
 //                JIPipeMutableSlotConfiguration slotConfiguration = (JIPipeMutableSlotConfiguration) getAlgorithm().getSlotConfiguration();
 //                JPanel panel = new JPanel(new BorderLayout(8, 0));
-//                JButton removeButton = new JButton(UIUtils.getIconFromResources("actions/close-tab.png"));
+//                JButton removeButton = new JButton(JIPipe.RESOURCES.getIcon16("actions/close-tab.png"));
 //                UIUtils.makeBorderlessWithoutMargin(removeButton);
 //                removeButton.setToolTipText("Remove input slot");
 //                removeButton.addActionListener(e -> slotConfiguration.removeInputSlot(entry.getKey(), true));
@@ -310,13 +311,13 @@ public class JIPipeDesktopRunSingleAlgorithmWindow extends JFrame implements JIP
 //    }
 //
 //    private void reloadOutputSlots() {
-//        FormPanel.GroupHeaderPanel outputDataHeaderPanel = formPanel.addGroupHeader("Output data", UIUtils.getIconFromResources("data-types/data-type.png"));
+//        FormPanel.GroupHeaderPanel outputDataHeaderPanel = formPanel.addGroupHeader("Output data", JIPipe.RESOURCES.getIcon16("data-types/data-type.png"));
 //        boolean outputSlotsAreMutable = getAlgorithm().getSlotConfiguration() instanceof JIPipeMutableSlotConfiguration;
 //        boolean outputSlotsAreRemovable = false;
 //        if (outputSlotsAreMutable) {
 //            JIPipeMutableSlotConfiguration slotConfiguration = (JIPipeMutableSlotConfiguration) getAlgorithm().getSlotConfiguration();
 //            if (slotConfiguration.canAddInputSlot()) {
-//                JButton addButton = new JButton(UIUtils.getIconFromResources("actions/list-add.png"));
+//                JButton addButton = new JButton(JIPipe.RESOURCES.getIcon16("actions/list-add.png"));
 //                addButton.setToolTipText("Add new output");
 //                UIUtils.makeFlat25x25(addButton);
 //                addButton.addActionListener(e -> AddAlgorithmSlotPanel.showDialog(this, new JIPipeDummyGraphHistoryJournal(), getAlgorithm(), JIPipeSlotType.Input));
@@ -331,7 +332,7 @@ public class JIPipeDesktopRunSingleAlgorithmWindow extends JFrame implements JIP
 //            if (outputSlotsAreRemovable) {
 //                JIPipeMutableSlotConfiguration slotConfiguration = (JIPipeMutableSlotConfiguration) getAlgorithm().getSlotConfiguration();
 //                JPanel panel = new JPanel(new BorderLayout(8, 0));
-//                JButton removeButton = new JButton(UIUtils.getIconFromResources("actions/close-tab.png"));
+//                JButton removeButton = new JButton(JIPipe.RESOURCES.getIcon16("actions/close-tab.png"));
 //                UIUtils.makeBorderlessWithoutMargin(removeButton);
 //                removeButton.setToolTipText("Remove output slot");
 //                removeButton.addActionListener(e -> slotConfiguration.removeOutputSlot(outputSlot.getName(), true));
@@ -367,17 +368,17 @@ public class JIPipeDesktopRunSingleAlgorithmWindow extends JFrame implements JIP
 
         buttonPanel.add(Box.createHorizontalGlue());
 
-        JButton copyCommandButton = new JButton("Copy command", UIUtils.getIconFromResources("actions/edit-copy.png"));
+        JButton copyCommandButton = new JButton("Copy command", JIPipe.RESOURCES.getIcon16("actions/edit-copy.png"));
         copyCommandButton.addActionListener(e -> copyCommand());
         buttonPanel.add(copyCommandButton);
 
         buttonPanel.add(Box.createHorizontalStrut(8));
 
-        JButton cancelButton = new JButton("Cancel", UIUtils.getIconFromResources("actions/cancel.png"));
+        JButton cancelButton = new JButton("Cancel", JIPipe.RESOURCES.getIcon16("actions/cancel.png"));
         cancelButton.addActionListener(e -> this.setVisible(false));
         buttonPanel.add(cancelButton);
 
-        JButton confirmButton = new JButton("Run", UIUtils.getIconFromResources("actions/run-build.png"));
+        JButton confirmButton = new JButton("Run", JIPipe.RESOURCES.getIcon16("actions/run-build.png"));
         confirmButton.addActionListener(e -> runNow());
         buttonPanel.add(confirmButton);
 

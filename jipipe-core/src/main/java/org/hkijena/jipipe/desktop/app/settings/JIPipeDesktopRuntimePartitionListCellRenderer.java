@@ -19,6 +19,7 @@ import org.hkijena.jipipe.api.runtimepartitioning.JIPipeRuntimePartitionConfigur
 import org.hkijena.jipipe.desktop.commons.components.icons.SolidColorIcon;
 import org.hkijena.jipipe.utils.StringUtils;
 import org.hkijena.jipipe.utils.UIUtils;
+import org.hkijena.jipipe.JIPipe;
 
 import javax.swing.*;
 import java.awt.*;
@@ -96,16 +97,16 @@ public class JIPipeDesktopRuntimePartitionListCellRenderer extends JPanel implem
             colorIcon.setFillColor(value.getColor().isEnabled() ? value.getColor().getContent() : Color.WHITE);
 
             if (idx == 0) {
-                indicatorPanel.add(new JLabel(UIUtils.getIconFromResources("actions/lock.png")));
+                indicatorPanel.add(new JLabel(JIPipe.RESOURCES.getIcon16("actions/lock.png")));
             }
             if (value.getOutputSettings().isExportHeavyData() || value.getOutputSettings().isExportLightweightData()) {
-                indicatorPanel.add(new JLabel(UIUtils.getIconFromResources("actions/document-export.png")));
+                indicatorPanel.add(new JLabel(JIPipe.RESOURCES.getIcon16("actions/document-export.png")));
             }
             if (value.getIterationMode() == JIPipeGraphWrapperAlgorithm.IterationMode.IteratingDataBatch) {
-                indicatorPanel.add(new JLabel(UIUtils.getIconFromResources("actions/media-playlist-normal.png")));
+                indicatorPanel.add(new JLabel(JIPipe.RESOURCES.getIcon16("actions/media-playlist-normal.png")));
             }
             if (value.getIterationMode() == JIPipeGraphWrapperAlgorithm.IterationMode.MergingDataBatch) {
-                indicatorPanel.add(new JLabel(UIUtils.getIconFromResources("actions/rabbitvcs-merge.png")));
+                indicatorPanel.add(new JLabel(JIPipe.RESOURCES.getIcon16("actions/rabbitvcs-merge.png")));
             }
         }
 

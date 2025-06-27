@@ -19,6 +19,7 @@ import org.hkijena.jipipe.desktop.app.grapheditor.commons.JIPipeDesktopGraphCanv
 import org.hkijena.jipipe.desktop.app.grapheditor.commons.contextmenu.NodeUIContextAction;
 import org.hkijena.jipipe.desktop.app.grapheditor.commons.nodeui.JIPipeDesktopGraphNodeUI;
 import org.hkijena.jipipe.utils.UIUtils;
+import org.hkijena.jipipe.JIPipe;
 import org.hkijena.jipipe.utils.json.JsonUtils;
 
 import javax.swing.*;
@@ -57,7 +58,7 @@ public class AlgorithmGraphDuplicateNodeUIContextAction implements NodeUIContext
 
     @Override
     public Icon getIcon() {
-        return UIUtils.getIconFromResources("actions/edit-duplicate.png");
+        return JIPipe.RESOURCES.getIcon16("actions/edit-duplicate.png");
     }
 
     @Override

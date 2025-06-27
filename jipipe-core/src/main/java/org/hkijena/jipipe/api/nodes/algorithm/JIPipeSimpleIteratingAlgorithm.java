@@ -41,6 +41,7 @@ import org.hkijena.jipipe.utils.ParameterUtils;
 import org.hkijena.jipipe.utils.ResourceUtils;
 import org.hkijena.jipipe.utils.StringUtils;
 import org.hkijena.jipipe.utils.UIUtils;
+import org.hkijena.jipipe.JIPipe;
 import org.hkijena.jipipe.utils.json.JsonUtils;
 import org.hkijena.jipipe.utils.ui.ViewOnlyMenuItem;
 
@@ -354,7 +355,7 @@ public abstract class JIPipeSimpleIteratingAlgorithm extends JIPipeParameterSlot
 //    public ImageIcon getUIInputSlotIcon(String slotName) {
 //        JIPipeInputDataSlot inputSlot = getInputSlot(slotName);
 //        if(inputSlot != null && inputSlot.getInfo().getRole() == JIPipeDataSlotRole.Data) {
-//            return UIUtils.getIconInvertedFromResources("actions/1-to-n.png");
+//            return JIPipe.RESOURCES.getIcon16Inverted("actions/1-to-n.png");
 //        }
 //        return super.getUIInputSlotIcon(slotName);
 //    }
@@ -365,7 +366,7 @@ public abstract class JIPipeSimpleIteratingAlgorithm extends JIPipeParameterSlot
         JIPipeInputDataSlot inputSlot = getInputSlot(slotName);
         if (inputSlot != null && inputSlot.getInfo().getRole() == JIPipeDataSlotRole.Data) {
             target.add(new ViewOnlyMenuItem("<html>One-to-Many processing<br/><small>The data within this slot is processed one-by-one (1 input can produce N outputs)</small>",
-                    UIUtils.getIconFromResources("actions/1-to-n.png")));
+                    JIPipe.RESOURCES.getIcon16("actions/1-to-n.png")));
         }
     }
 

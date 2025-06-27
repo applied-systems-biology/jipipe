@@ -13,7 +13,9 @@
 
 package org.hkijena.jipipe.desktop.commons.theme;
 
+import org.hkijena.jipipe.JIPipe;
 import org.hkijena.jipipe.utils.UIUtils;
+import org.hkijena.jipipe.JIPipe;
 import org.hkijena.jipipe.utils.ui.CheckBoxIcon;
 import org.hkijena.jipipe.utils.ui.CheckBoxMenuItemIcon;
 import org.hkijena.jipipe.utils.ui.RoundedLineBorder;
@@ -78,8 +80,8 @@ public class JIPipeDesktopLegacyDarkModernMetalTheme extends DefaultMetalTheme {
      */
     public void addCustomEntriesToTable(UIDefaults table) {
         Object focusBorder = new BorderUIResource.LineBorderUIResource(getPrimary1());
-        Object directoryIcon = UIUtils.getIconFromResources("places/folder-blue.png");
-        Object fileIcon = UIUtils.getIconFromResources("mimetypes/application-x-kgeo.png");
+        Object directoryIcon = JIPipe.RESOURCES.getIcon16("places/folder-blue.png");
+        Object fileIcon = JIPipe.RESOURCES.getIcon16("mimetypes/application-x-kgeo.png");
         List<Object> sliderGradient = Arrays.asList(new Object[]{
                 .3f, .2f,
                 PRIMARY4, getWhite(), new ColorUIResource(SECONDARY2)});
@@ -125,25 +127,25 @@ public class JIPipeDesktopLegacyDarkModernMetalTheme extends DefaultMetalTheme {
 
                 // home2
                 "FileChooser.homeFolderIcon",
-                UIUtils.getIconFromResources("actions/go-home.png"),
+                JIPipe.RESOURCES.getIcon16("actions/go-home.png"),
                 // directory2
                 "FileChooser.newFolderIcon",
-                UIUtils.getIconFromResources("actions/folder-new.png"),
+                JIPipe.RESOURCES.getIcon16("actions/folder-new.png"),
                 // updir2
                 "FileChooser.upFolderIcon",
-                UIUtils.getIconFromResources("actions/go-parent-folder.png"),
+                JIPipe.RESOURCES.getIcon16("actions/go-parent-folder.png"),
 
                 // computer2
                 "FileView.computerIcon",
-                UIUtils.getIconFromResources("devices/computer.png"),
+                JIPipe.RESOURCES.getIcon16("devices/computer.png"),
                 "FileView.directoryIcon", directoryIcon,
                 // disk2
                 "FileView.hardDriveIcon",
-                UIUtils.getIconFromResources("devices/drive-harddisk.png"),
+                JIPipe.RESOURCES.getIcon16("devices/drive-harddisk.png"),
                 "FileView.fileIcon", fileIcon,
                 // floppy2
                 "FileView.floppyDriveIcon",
-                UIUtils.getIconFromResources("devices/media-floppy.png"),
+                JIPipe.RESOURCES.getIcon16("devices/media-floppy.png"),
 
                 "Label.disabledForeground", getInactiveControlTextColor(),
 
@@ -169,35 +171,35 @@ public class JIPipeDesktopLegacyDarkModernMetalTheme extends DefaultMetalTheme {
                 "InternalFrame.activeTitleBackground", new Color(0x31363b),
                 // close2
                 "InternalFrame.closeIcon",
-                UIUtils.getIconFromResources("actions/close-tab.png"),
+                JIPipe.RESOURCES.getIcon16("actions/close-tab.png"),
                 // minimize
                 "InternalFrame.iconifyIcon",
-                UIUtils.getIconFromResources("actions/xfce-wm-minimize.png"),
+                JIPipe.RESOURCES.getIcon16("actions/xfce-wm-minimize.png"),
                 // restore
                 "InternalFrame.minimizeIcon",
-                UIUtils.getIconFromResources("actions/xfce-wm-minimize.png"),
+                JIPipe.RESOURCES.getIcon16("actions/xfce-wm-minimize.png"),
                 // menubutton3
                 "InternalFrame.icon",
-                UIUtils.getIconFromResources("actions/hamburger-menu.png"),
+                JIPipe.RESOURCES.getIcon16("actions/hamburger-menu.png"),
                 // maximize2
                 "InternalFrame.maximizeIcon",
-                UIUtils.getIconFromResources("actions/xfce-wm-maximize.png"),
+                JIPipe.RESOURCES.getIcon16("actions/xfce-wm-maximize.png"),
                 // paletteclose
                 "InternalFrame.paletteCloseIcon",
-                UIUtils.getIconFromResources("actions/close-tab.png"),
+                JIPipe.RESOURCES.getIcon16("actions/close-tab.png"),
 
                 "List.focusCellHighlightBorder", focusBorder,
 
                 "MenuBarUI", "javax.swing.plaf.metal.MetalMenuBarUI",
 
                 "OptionPane.errorIcon",
-                UIUtils.getIcon32FromResources("dialog-error.png"),
+                JIPipe.RESOURCES.getIcon32("dialog-error.png"),
                 "OptionPane.informationIcon",
-                UIUtils.getIcon32FromResources("dialog-info.png"),
+                JIPipe.RESOURCES.getIcon32("dialog-info.png"),
                 "OptionPane.questionIcon",
-                UIUtils.getIcon32FromResources("dialog-question.png"),
+                JIPipe.RESOURCES.getIcon32("dialog-question.png"),
                 "OptionPane.warningIcon",
-                UIUtils.getIcon32FromResources("dialog-warning.png"),
+                JIPipe.RESOURCES.getIcon32("dialog-warning.png"),
 
                 "RadioButton.background", new Color(0x2a2e32),
                 "RadioButton.rollover", Boolean.TRUE,
@@ -271,8 +273,8 @@ public class JIPipeDesktopLegacyDarkModernMetalTheme extends DefaultMetalTheme {
                 "Tree.closedIcon", directoryIcon,
 
                 "Tree.background", new Color(0x1b1e20),
-                "Tree.collapsedIcon", UIUtils.getIcon8FromResources("tree-expand.png"),
-                "Tree.expandedIcon", UIUtils.getIcon8FromResources("tree-shrink.png"),
+                "Tree.collapsedIcon", JIPipe.RESOURCES.getIcon8("tree-expand.png"),
+                "Tree.expandedIcon", JIPipe.RESOURCES.getIcon8("tree-shrink.png"),
                 "Tree.leafIcon", fileIcon,
                 "Tree.openIcon", directoryIcon,
                 "Tree.selectionBorderColor", new Color(0x5d85ae),

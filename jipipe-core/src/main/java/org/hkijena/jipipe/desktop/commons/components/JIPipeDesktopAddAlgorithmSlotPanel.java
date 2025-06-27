@@ -22,6 +22,7 @@ import org.hkijena.jipipe.desktop.commons.components.renderers.JIPipeDesktopData
 import org.hkijena.jipipe.desktop.commons.components.search.JIPipeDesktopSearchTextField;
 import org.hkijena.jipipe.utils.StringUtils;
 import org.hkijena.jipipe.utils.UIUtils;
+import org.hkijena.jipipe.JIPipe;
 import org.jdesktop.swingx.JXTextField;
 
 import javax.swing.*;
@@ -203,7 +204,7 @@ public class JIPipeDesktopAddAlgorithmSlotPanel extends JPanel {
         buttonPanel.setLayout(new BoxLayout(buttonPanel, BoxLayout.X_AXIS));
         buttonPanel.add(Box.createHorizontalGlue());
 
-        JButton cancelButton = new JButton("Cancel", UIUtils.getIconFromResources("actions/cancel.png"));
+        JButton cancelButton = new JButton("Cancel", JIPipe.RESOURCES.getIcon16("actions/cancel.png"));
         cancelButton.addActionListener(e -> {
             if (dialog != null) {
                 dialog.setVisible(false);
@@ -211,7 +212,7 @@ public class JIPipeDesktopAddAlgorithmSlotPanel extends JPanel {
         });
         buttonPanel.add(cancelButton);
 
-        confirmButton = new JButton("Add", UIUtils.getIconFromResources("actions/list-add.png"));
+        confirmButton = new JButton("Add", JIPipe.RESOURCES.getIcon16("actions/list-add.png"));
         confirmButton.addActionListener(e -> addSlot());
         confirmButton.addKeyListener(new KeyAdapter() {
             @Override

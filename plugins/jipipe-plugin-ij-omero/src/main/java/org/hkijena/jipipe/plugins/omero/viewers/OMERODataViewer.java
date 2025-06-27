@@ -9,6 +9,7 @@ import org.hkijena.jipipe.desktop.commons.components.JIPipeDesktopReadonlyCopyab
 import org.hkijena.jipipe.desktop.commons.components.ribbon.JIPipeDesktopRibbon;
 import org.hkijena.jipipe.plugins.omero.datatypes.*;
 import org.hkijena.jipipe.utils.UIUtils;
+import org.hkijena.jipipe.JIPipe;
 
 import javax.swing.*;
 import java.awt.*;
@@ -28,7 +29,7 @@ public class OMERODataViewer extends JIPipeDesktopDataViewer {
     @Override
     public void rebuildRibbon(JIPipeDesktopRibbon ribbon) {
         JIPipeDesktopRibbon.Band generalOMEROBand = ribbon.getOrCreateTask("General").getOrCreateBand("OMERO");
-        generalOMEROBand.addLargeButton("Open URL", "Opens the URL to the OMERO entry in your web browser", UIUtils.getIcon32FromResources("actions/internet-amarok.png"), this::openUrl);
+        generalOMEROBand.addLargeButton("Open URL", "Opens the URL to the OMERO entry in your web browser", JIPipe.RESOURCES.getIcon32("actions/internet-amarok.png"), this::openUrl);
     }
 
     private void openUrl() {

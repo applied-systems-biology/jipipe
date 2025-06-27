@@ -26,6 +26,7 @@ import org.hkijena.jipipe.plugins.parameters.library.markup.MarkdownText;
 import org.hkijena.jipipe.plugins.settings.JIPipeFileChooserApplicationSettings;
 import org.hkijena.jipipe.utils.PathUtils;
 import org.hkijena.jipipe.utils.UIUtils;
+import org.hkijena.jipipe.JIPipe;
 
 import java.nio.file.Path;
 
@@ -43,7 +44,7 @@ public class PipelineRenderTool extends JIPipeDesktopMenuExtension {
         setText("Export whole pipeline as *.png");
         setToolTipText("Rebuilds the node alias IDs for all nodes. This can help if the " +
                 "generated alias IDs are too long.");
-        setIcon(UIUtils.getIconFromResources("actions/camera.png"));
+        setIcon(JIPipe.RESOURCES.getIcon16("actions/camera.png"));
         addActionListener(e -> runRenderTool());
     }
 

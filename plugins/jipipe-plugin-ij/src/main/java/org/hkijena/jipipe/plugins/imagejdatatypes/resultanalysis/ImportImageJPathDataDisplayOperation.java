@@ -20,6 +20,7 @@ import org.hkijena.jipipe.desktop.app.JIPipeDesktopWorkbench;
 import org.hkijena.jipipe.plugins.filesystem.dataypes.PathData;
 import org.hkijena.jipipe.utils.PathUtils;
 import org.hkijena.jipipe.utils.UIUtils;
+import org.hkijena.jipipe.JIPipe;
 import org.hkijena.jipipe.utils.json.JsonUtils;
 
 import javax.swing.*;
@@ -49,7 +50,7 @@ public class ImportImageJPathDataDisplayOperation implements JIPipeDesktopDataDi
 
     @Override
     public Icon getIcon() {
-        return UIUtils.getIconFromResources("apps/imagej.png");
+        return JIPipe.RESOURCES.getIcon16("apps/imagej.png");
     }
 
     private Path getTargetPath(Path rowStorageFolder) {

@@ -13,6 +13,7 @@
 
 package org.hkijena.jipipe.desktop.commons.notifications;
 
+import org.hkijena.jipipe.JIPipe;
 import org.hkijena.jipipe.api.notifications.JIPipeNotification;
 import org.hkijena.jipipe.api.notifications.JIPipeNotificationAction;
 import org.hkijena.jipipe.desktop.app.JIPipeDesktopWorkbenchPanel;
@@ -20,6 +21,7 @@ import org.hkijena.jipipe.desktop.commons.theme.ui.JIPipeDesktopRoundedButtonUI;
 import org.hkijena.jipipe.plugins.parameters.library.markup.MarkdownText;
 import org.hkijena.jipipe.plugins.settings.JIPipeNotificationUIApplicationSettings;
 import org.hkijena.jipipe.utils.UIUtils;
+import org.hkijena.jipipe.JIPipe;
 import org.hkijena.jipipe.utils.ui.RoundedLineBorder;
 
 import javax.swing.*;
@@ -63,20 +65,20 @@ public class JIPipeDesktopWorkbenchNotificationUI extends JIPipeDesktopWorkbench
         add(headerPanel, BorderLayout.NORTH);
 
         if (this.blocked) {
-            JButton unblockButton = new JButton("Unblock", UIUtils.getIconFromResources("actions/eye.png"));
+            JButton unblockButton = new JButton("Unblock", JIPipe.RESOURCES.getIcon16("actions/eye.png"));
             UIUtils.makeButtonBorderlessWithoutMargin(unblockButton);
             unblockButton.setToolTipText("Unblocks this type of notification");
             unblockButton.addActionListener(e -> unblock());
             headerPanel.add(unblockButton);
         } else {
-            JButton blockButton = new JButton(UIUtils.getIconFromResources("actions/eye-slash.png"));
+            JButton blockButton = new JButton(JIPipe.RESOURCES.getIcon16("actions/eye-slash.png"));
             UIUtils.makeButtonFlat25x25(blockButton);
             blockButton.setToolTipText("Blocks this type of notification");
             blockButton.addActionListener(e -> block());
             headerPanel.add(blockButton);
 
             if (!dismissed) {
-                JButton dismissButton = new JButton(UIUtils.getIconFromResources("actions/close-tab.png"));
+                JButton dismissButton = new JButton(JIPipe.RESOURCES.getIcon16("actions/close-tab.png"));
                 UIUtils.makeButtonFlat25x25(dismissButton);
                 dismissButton.setToolTipText("Dismisses this notification");
                 dismissButton.addActionListener(e -> notification.dismiss());

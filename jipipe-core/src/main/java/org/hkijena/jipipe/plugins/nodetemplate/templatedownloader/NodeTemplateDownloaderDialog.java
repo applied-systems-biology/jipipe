@@ -19,6 +19,7 @@ import org.hkijena.jipipe.desktop.app.JIPipeDesktopProjectWorkbench;
 import org.hkijena.jipipe.desktop.commons.components.JIPipeDesktopFormPanel;
 import org.hkijena.jipipe.utils.StringUtils;
 import org.hkijena.jipipe.utils.UIUtils;
+import org.hkijena.jipipe.JIPipe;
 import org.hkijena.jipipe.utils.ui.RoundedLineBorder;
 
 import javax.swing.*;
@@ -51,11 +52,11 @@ public class NodeTemplateDownloaderDialog extends JDialog {
 
         formPanel.setBorder(BorderFactory.createEmptyBorder(16, 16, 16, 16));
 
-        formPanel.addWideToForm(UIUtils.createJLabel("Download node templates", UIUtils.getIcon32FromResources("install.png"), 28));
+        formPanel.addWideToForm(UIUtils.createJLabel("Download node templates", JIPipe.RESOURCES.getIcon32("install.png"), 28));
 
         formPanel.addWideToForm(Box.createVerticalStrut(16));
-        formPanel.addWideToForm(UIUtils.createJLabel("Please select which templates should be downloaded", UIUtils.getIconFromResources("emblems/emblem-important-blue.png")));
-        formPanel.addWideToForm(UIUtils.createJLabel("We recommend to always review the download URL", UIUtils.getIconFromResources("emblems/emblem-important-blue.png")));
+        formPanel.addWideToForm(UIUtils.createJLabel("Please select which templates should be downloaded", JIPipe.RESOURCES.getIcon16("emblems/emblem-important-blue.png")));
+        formPanel.addWideToForm(UIUtils.createJLabel("We recommend to always review the download URL", JIPipe.RESOURCES.getIcon16("emblems/emblem-important-blue.png")));
 
         formPanel.addWideToForm(Box.createVerticalStrut(32));
         formPanel.addWideToForm(UIUtils.createJLabel("Available templates", 22));
@@ -74,7 +75,7 @@ public class NodeTemplateDownloaderDialog extends JDialog {
         List<NodeTemplateDownloaderPackage> existingPackages = installer.getAvailablePackages().stream().filter(p -> allSources.contains(p.getUrl())).collect(Collectors.toList());
 
         if (newPackages.isEmpty()) {
-            formPanel.addWideToForm(UIUtils.createJLabel("No new templates found.", UIUtils.getIconFromResources("emblems/emblem-important-blue.png")));
+            formPanel.addWideToForm(UIUtils.createJLabel("No new templates found.", JIPipe.RESOURCES.getIcon16("emblems/emblem-important-blue.png")));
         } else {
             for (NodeTemplateDownloaderPackage availablePackage : newPackages) {
                 addPackagePanel(availablePackage);
@@ -100,7 +101,7 @@ public class NodeTemplateDownloaderDialog extends JDialog {
     private void addPackagePanel(NodeTemplateDownloaderPackage availablePackage) {
         JPanel panel = new JPanel(new GridBagLayout());
         panel.setBorder(BorderFactory.createCompoundBorder(new RoundedLineBorder(UIManager.getColor("Button.borderColor"), 1, 2), BorderFactory.createEmptyBorder(8, 8, 8, 8)));
-        panel.add(UIUtils.createJLabel(availablePackage.getName(), UIUtils.getIcon32FromResources("data-types/node.png"), 16), new GridBagConstraints(0, 0, 1, 1, 1, 0, GridBagConstraints.NORTHWEST, GridBagConstraints.HORIZONTAL, new Insets(4, 4, 4, 4), 0, 0));
+        panel.add(UIUtils.createJLabel(availablePackage.getName(), JIPipe.RESOURCES.getIcon32("data-types/node.png"), 16), new GridBagConstraints(0, 0, 1, 1, 1, 0, GridBagConstraints.NORTHWEST, GridBagConstraints.HORIZONTAL, new Insets(4, 4, 4, 4), 0, 0));
 
         panel.add(UIUtils.createBorderlessReadonlyTextPane(availablePackage.getDescription(), false), new GridBagConstraints(0, 1, 1, 1, 1, 0, GridBagConstraints.NORTHWEST, GridBagConstraints.HORIZONTAL, new Insets(4, 4, 4, 4), 0, 0));
         panel.add(UIUtils.createBorderlessReadonlyTextPane("<html><a href=\"" + availablePackage.getWebsite() + "\">" + availablePackage.getWebsite() + "</a></html>", false),
@@ -132,14 +133,14 @@ public class NodeTemplateDownloaderDialog extends JDialog {
         buttonPanel.setLayout(new BoxLayout(buttonPanel, BoxLayout.X_AXIS));
         buttonPanel.add(Box.createHorizontalGlue());
 
-        JButton cancelButton = new JButton("Cancel", UIUtils.getIconFromResources("actions/cancel.png"));
+        JButton cancelButton = new JButton("Cancel", JIPipe.RESOURCES.getIcon16("actions/cancel.png"));
         cancelButton.addActionListener(e -> {
             targetPackages.clear();
             setVisible(false);
         });
         buttonPanel.add(cancelButton);
 
-        JButton downloadButton = new JButton("Download selected templates", UIUtils.getIconFromResources("actions/download.png"));
+        JButton downloadButton = new JButton("Download selected templates", JIPipe.RESOURCES.getIcon16("actions/download.png"));
         downloadButton.addActionListener(e -> {
             int response = JOptionPane.showOptionDialog(this,
                     "Where should the templates be stored? You can either save them globally or store them inside the current project.",

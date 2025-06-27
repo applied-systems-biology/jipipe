@@ -22,6 +22,7 @@ import org.hkijena.jipipe.api.registries.JIPipeExpressionRegistry;
 import org.hkijena.jipipe.plugins.parameters.api.enums.DynamicEnumParameter;
 import org.hkijena.jipipe.plugins.tables.ConvertingColumnOperation;
 import org.hkijena.jipipe.utils.UIUtils;
+import org.hkijena.jipipe.JIPipe;
 
 import javax.swing.*;
 import java.util.ArrayList;
@@ -112,6 +113,6 @@ public class TableColumnConversionParameter extends DynamicEnumParameter<Object>
 
     @Override
     public Icon renderIcon(Object value) {
-        return UIUtils.getIconFromResources("actions/formula.png");
+        return JIPipe.RESOURCES.getIcon16("actions/formula.png");
     }
 }

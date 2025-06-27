@@ -17,6 +17,7 @@ import ij.process.FloodFiller;
 import ij.process.ImageProcessor;
 import org.hkijena.jipipe.plugins.imageviewer.utils.viewer2d.ImageViewerPanelCanvas2D;
 import org.hkijena.jipipe.utils.UIUtils;
+import org.hkijena.jipipe.JIPipe;
 import org.hkijena.jipipe.utils.ui.BusyCursor;
 import org.hkijena.jipipe.utils.ui.events.MouseClickedEvent;
 import org.hkijena.jipipe.utils.ui.events.MouseClickedEventListener;
@@ -33,7 +34,7 @@ public class FloodFillMaskDrawer2DTool extends MaskDrawer2DTool implements Mouse
         super(plugin,
                 "Flood fill",
                 "Fills the selected area with the selected color",
-                UIUtils.getIconFromResources("actions/color-fill.png"));
+                JIPipe.RESOURCES.getIcon16("actions/color-fill.png"));
         ImageViewerPanelCanvas2D canvas = getViewerPanel2D().getCanvas();
         canvas.getMouseClickedEventEmitter().subscribe(this);
     }

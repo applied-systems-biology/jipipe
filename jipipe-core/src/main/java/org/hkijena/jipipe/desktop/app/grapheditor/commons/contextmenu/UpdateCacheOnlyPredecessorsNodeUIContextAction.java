@@ -27,6 +27,7 @@ import org.hkijena.jipipe.desktop.app.grapheditor.flavors.pipeline.actions.JIPip
 import org.hkijena.jipipe.desktop.app.quickrun.JIPipeDesktopQuickRun;
 import org.hkijena.jipipe.desktop.app.quickrun.JIPipeDesktopQuickRunSettings;
 import org.hkijena.jipipe.utils.UIUtils;
+import org.hkijena.jipipe.JIPipe;
 
 import javax.swing.*;
 import java.util.Set;
@@ -95,7 +96,7 @@ public class UpdateCacheOnlyPredecessorsNodeUIContextAction implements NodeUICon
 
     @Override
     public Icon getIcon() {
-        return UIUtils.getIconFromResources("actions/cache-predecessors.png");
+        return JIPipe.RESOURCES.getIcon16("actions/cache-predecessors.png");
     }
 
     @Override

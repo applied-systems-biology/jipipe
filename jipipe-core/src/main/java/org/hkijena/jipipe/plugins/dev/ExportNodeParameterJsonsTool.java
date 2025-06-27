@@ -31,6 +31,7 @@ import org.hkijena.jipipe.plugins.parameters.library.markup.HTMLText;
 import org.hkijena.jipipe.plugins.settings.JIPipeFileChooserApplicationSettings;
 import org.hkijena.jipipe.utils.StringUtils;
 import org.hkijena.jipipe.utils.UIUtils;
+import org.hkijena.jipipe.JIPipe;
 import org.hkijena.jipipe.utils.json.JsonUtils;
 
 import javax.swing.*;
@@ -49,7 +50,7 @@ public class ExportNodeParameterJsonsTool extends JIPipeDesktopMenuExtension {
         super(workbench);
         setText("Export all node properties JSON");
         setToolTipText("Exports all available as JSON describing the properties.");
-        setIcon(UIUtils.getIconFromResources("actions/bug.png"));
+        setIcon(JIPipe.RESOURCES.getIcon16("actions/bug.png"));
         addActionListener(e -> runExportTool());
     }
 

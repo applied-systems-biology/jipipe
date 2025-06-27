@@ -23,6 +23,7 @@ import org.hkijena.jipipe.plugins.parameters.library.markup.HTMLText;
 import org.hkijena.jipipe.plugins.settings.JIPipeFileChooserApplicationSettings;
 import org.hkijena.jipipe.utils.PathUtils;
 import org.hkijena.jipipe.utils.UIUtils;
+import org.hkijena.jipipe.JIPipe;
 
 import javax.swing.*;
 import java.io.IOException;
@@ -71,7 +72,7 @@ public class ExportCompartmentAsJsonNodeUIContextAction implements NodeUIContext
 
     @Override
     public Icon getIcon() {
-        return UIUtils.getIconFromResources("actions/document-export.png");
+        return JIPipe.RESOURCES.getIcon16("actions/document-export.png");
     }
 
 }

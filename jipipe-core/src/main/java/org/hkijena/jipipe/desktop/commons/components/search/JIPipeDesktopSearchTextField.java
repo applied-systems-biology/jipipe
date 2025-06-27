@@ -13,9 +13,11 @@
 
 package org.hkijena.jipipe.desktop.commons.components.search;
 
+import org.hkijena.jipipe.JIPipe;
 import org.hkijena.jipipe.desktop.commons.components.JIPipeDesktopDocumentChangeListener;
 import org.hkijena.jipipe.utils.ColorUtils;
 import org.hkijena.jipipe.utils.UIUtils;
+import org.hkijena.jipipe.JIPipe;
 import org.jdesktop.swingx.JXTextField;
 
 import javax.swing.*;
@@ -70,7 +72,7 @@ public class JIPipeDesktopSearchTextField extends JPanel implements Predicate<St
         setBorder(UIUtils.createControlBorder());
 
 
-        JButton searchButton = new JButton(UIUtils.getIconInvertedFromResources("actions/search.png"));
+        JButton searchButton = new JButton(JIPipe.RESOURCES.getIcon16Inverted("actions/search.png"));
         searchButton.addActionListener(e -> { textField.requestFocusInWindow(); textField.selectAll(); });
         UIUtils.makeButtonFlat25x25(searchButton);
         searchButton.setRequestFocusEnabled(false);
@@ -84,7 +86,7 @@ public class JIPipeDesktopSearchTextField extends JPanel implements Predicate<St
         buttonPanel.setBackground(UIManager.getColor("TextField.background"));
         buttonPanel.setLayout(new BoxLayout(buttonPanel, BoxLayout.X_AXIS));
         add(buttonPanel, BorderLayout.EAST);
-        addButton("Clear search", UIUtils.getIconFromResources("actions/edit-clear.png"), (searchTextField) -> {
+        addButton("Clear search", JIPipe.RESOURCES.getIcon16("actions/edit-clear.png"), (searchTextField) -> {
             clear();
         });
     }

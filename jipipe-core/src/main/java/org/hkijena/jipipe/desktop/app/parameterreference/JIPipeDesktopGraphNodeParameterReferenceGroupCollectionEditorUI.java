@@ -13,6 +13,7 @@
 
 package org.hkijena.jipipe.desktop.app.parameterreference;
 
+import org.hkijena.jipipe.JIPipe;
 import org.hkijena.jipipe.api.grouping.events.ParameterReferencesChangedEvent;
 import org.hkijena.jipipe.api.grouping.events.ParameterReferencesChangedEventListener;
 import org.hkijena.jipipe.api.grouping.parameters.GraphNodeParameterReference;
@@ -32,6 +33,7 @@ import org.hkijena.jipipe.desktop.commons.components.pickers.JIPipeDesktopPickNo
 import org.hkijena.jipipe.plugins.parameters.library.markup.MarkdownText;
 import org.hkijena.jipipe.utils.JIPipeDesktopSplitPane;
 import org.hkijena.jipipe.utils.UIUtils;
+import org.hkijena.jipipe.JIPipe;
 
 import javax.swing.*;
 import javax.swing.tree.DefaultMutableTreeNode;
@@ -134,22 +136,22 @@ public class JIPipeDesktopGraphNodeParameterReferenceGroupCollectionEditorUI ext
         JToolBar toolBar = new JToolBar();
         toolBar.setFloatable(false);
 
-        JButton refreshButton = new JButton(UIUtils.getIconFromResources("actions/view-refresh.png"));
+        JButton refreshButton = new JButton(JIPipe.RESOURCES.getIcon16("actions/view-refresh.png"));
         refreshButton.setToolTipText("Refresh");
         refreshButton.addActionListener(e -> refreshContent(true, null));
         toolBar.add(refreshButton);
 
         toolBar.add(Box.createHorizontalGlue());
 
-        JButton addGroupButton = new JButton("Add", UIUtils.getIconFromResources("actions/list-add.png"));
+        JButton addGroupButton = new JButton("Add", JIPipe.RESOURCES.getIcon16("actions/list-add.png"));
         JPopupMenu popupMenu = UIUtils.addPopupMenuToButton(addGroupButton);
-        popupMenu.add(UIUtils.createMenuItem("Add empty group", "Adds an empty group", UIUtils.getIconFromResources("actions/list-add.png"), this::addEmptyGroup));
+        popupMenu.add(UIUtils.createMenuItem("Add empty group", "Adds an empty group", JIPipe.RESOURCES.getIcon16("actions/list-add.png"), this::addEmptyGroup));
         popupMenu.addSeparator();
-        popupMenu.add(UIUtils.createMenuItem("Add parameter", "Adds a reference to a parameter", UIUtils.getIconFromResources("data-types/parameters.png"), this::addParameterReference));
-        popupMenu.add(UIUtils.createMenuItem("Add all parameters of node as group", "Add all parameters within a node as group", UIUtils.getIconFromResources("data-types/node.png"), this::addWholeNode));
+        popupMenu.add(UIUtils.createMenuItem("Add parameter", "Adds a reference to a parameter", JIPipe.RESOURCES.getIcon16("data-types/parameters.png"), this::addParameterReference));
+        popupMenu.add(UIUtils.createMenuItem("Add all parameters of node as group", "Add all parameters within a node as group", JIPipe.RESOURCES.getIcon16("data-types/node.png"), this::addWholeNode));
         toolBar.add(addGroupButton);
 
-        JButton removeButton = new JButton("Remove", UIUtils.getIconFromResources("actions/delete.png"));
+        JButton removeButton = new JButton("Remove", JIPipe.RESOURCES.getIcon16("actions/delete.png"));
         removeButton.addActionListener(e -> removeSelectedItems());
         toolBar.add(removeButton);
 
@@ -321,7 +323,7 @@ public class JIPipeDesktopGraphNodeParameterReferenceGroupCollectionEditorUI ext
         toolBar.setFloatable(false);
         toolBar.add(Box.createHorizontalGlue());
 
-        JButton addButton = new JButton("Add parameter reference ...", UIUtils.getIconFromResources("actions/add.png"));
+        JButton addButton = new JButton("Add parameter reference ...", JIPipe.RESOURCES.getIcon16("actions/add.png"));
         addButton.addActionListener(e -> addParameterReference(group));
         toolBar.add(addButton);
 

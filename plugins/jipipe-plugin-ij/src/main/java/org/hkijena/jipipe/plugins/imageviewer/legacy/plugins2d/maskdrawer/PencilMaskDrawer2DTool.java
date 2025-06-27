@@ -23,6 +23,7 @@ import org.hkijena.jipipe.plugins.imagejdatatypes.util.dimensions.ImageSliceInde
 import org.hkijena.jipipe.plugins.imageviewer.utils.viewer2d.ImageViewerPanelCanvas2D;
 import org.hkijena.jipipe.utils.ColorUtils;
 import org.hkijena.jipipe.utils.UIUtils;
+import org.hkijena.jipipe.JIPipe;
 import org.hkijena.jipipe.utils.ui.events.*;
 
 import javax.swing.*;
@@ -57,7 +58,7 @@ public class PencilMaskDrawer2DTool extends MaskDrawer2DTool implements MouseCli
         super(plugin,
                 "Pencil",
                 "Allows to draw free-hand",
-                UIUtils.getIconFromResources("actions/draw-brush.png"));
+                JIPipe.RESOURCES.getIcon16("actions/draw-brush.png"));
         ImageViewerPanelCanvas2D canvas = getViewerPanel2D().getCanvas();
         canvas.getMouseClickedEventEmitter().subscribe(this);
         canvas.getMouseExitedEventEmitter().subscribe(this);
@@ -73,7 +74,7 @@ public class PencilMaskDrawer2DTool extends MaskDrawer2DTool implements MouseCli
         pencilSizeXSpinner = new JSpinner(pencilSizeXModel);
         SpinnerNumberModel pencilSizeYModel = new SpinnerNumberModel(DEFAULT_SETTING_PENCIL_SIZE_Y, 1, Integer.MAX_VALUE, 1);
         pencilSizeYSpinner = new JSpinner(pencilSizeYModel);
-        pencilSizeYLinkToggle = new JToggleButton(UIUtils.getIconFromResources("actions/edit-link.png"), DEFAULT_SETTING_PENCIL_LINK_Y);
+        pencilSizeYLinkToggle = new JToggleButton(JIPipe.RESOURCES.getIcon16("actions/edit-link.png"), DEFAULT_SETTING_PENCIL_LINK_Y);
         pencilSizeYLinkToggle.setToolTipText("Keep the Y size the same as the X size");
         UIUtils.makeButtonFlat25x25(pencilSizeYLinkToggle);
 

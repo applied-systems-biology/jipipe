@@ -16,12 +16,14 @@ package org.hkijena.jipipe.desktop.app.tableeditor;
 import ij.WindowManager;
 import ij.measure.ResultsTable;
 import ij.text.TextWindow;
+import org.hkijena.jipipe.JIPipe;
 import org.hkijena.jipipe.desktop.app.JIPipeDesktopProjectWorkbench;
 import org.hkijena.jipipe.desktop.app.JIPipeDesktopWorkbench;
 import org.hkijena.jipipe.desktop.commons.components.renderers.JIPipeDesktopResultsTableDataListCellRenderer;
 import org.hkijena.jipipe.desktop.commons.components.tabs.JIPipeDesktopTabPane;
 import org.hkijena.jipipe.plugins.tables.datatypes.ResultsTableData;
 import org.hkijena.jipipe.utils.UIUtils;
+import org.hkijena.jipipe.JIPipe;
 import org.jdesktop.swingx.JXTable;
 
 import javax.swing.*;
@@ -84,13 +86,13 @@ public class JIPipeDesktopOpenTableFromImageJDialogUI extends JDialog {
         JPanel buttonPanel = new JPanel();
         buttonPanel.setLayout(new BoxLayout(buttonPanel, BoxLayout.LINE_AXIS));
 
-        JButton refreshButton = new JButton("Refresh", UIUtils.getIconFromResources("actions/view-refresh.png"));
+        JButton refreshButton = new JButton("Refresh", JIPipe.RESOURCES.getIcon16("actions/view-refresh.png"));
         refreshButton.addActionListener(e -> refreshList());
         buttonPanel.add(refreshButton);
 
         buttonPanel.add(Box.createHorizontalGlue());
 
-        JButton calculateButton = new JButton("Open in JIPipe", UIUtils.getIconFromResources("apps/jipipe.png"));
+        JButton calculateButton = new JButton("Open in JIPipe", JIPipe.RESOURCES.getIcon16("apps/jipipe.png"));
         calculateButton.addActionListener(e -> open());
         buttonPanel.add(calculateButton);
 
@@ -108,7 +110,7 @@ public class JIPipeDesktopOpenTableFromImageJDialogUI extends JDialog {
         if (tableSelection.getSelectedItem() instanceof ResultsTableData) {
             ResultsTableData tableData = (ResultsTableData) tableSelection.getSelectedItem();
             JIPipeDesktopTableEditor tableAnalyzerUI = new JIPipeDesktopTableEditor((JIPipeDesktopProjectWorkbench) workbench, tableData);
-            workbench.getDocumentTabPane().addTab("Table", UIUtils.getIconFromResources("data-types/results-table.png"),
+            workbench.getDocumentTabPane().addTab("Table", JIPipe.RESOURCES.getIcon16("data-types/results-table.png"),
                     tableAnalyzerUI, JIPipeDesktopTabPane.CloseMode.withAskOnCloseButton, true);
             workbench.getDocumentTabPane().switchToLastTab();
             setVisible(false);

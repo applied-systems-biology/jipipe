@@ -13,6 +13,7 @@
 
 package org.hkijena.jipipe.desktop.app.running;
 
+import org.hkijena.jipipe.JIPipe;
 import org.hkijena.jipipe.api.JIPipeWorkbench;
 import org.hkijena.jipipe.api.compartments.algorithms.JIPipeProjectCompartment;
 import org.hkijena.jipipe.api.compartments.algorithms.JIPipeProjectCompartmentOutput;
@@ -152,12 +153,12 @@ public class JIPipeDesktopRunNextWindow extends JFrame implements JIPipeDesktopP
 
 
         // Options
-        startingPageStorageModeSelection.addToggleButton("Custom", "Results are exported via exporter nodes", UIUtils.getIcon32FromResources("actions/document-export.png"), StartPageStorageMode.Discard);
-        startingPageStorageModeSelection.addToggleButton("Cache", "Results are stored in memory", UIUtils.getIcon32FromResources("actions/database.png"), StartPageStorageMode.Cache);
-        startingPageStorageModeSelection.addToggleButton("Filesystem", "Results are stored on the hard drive (in JIPipe format)", UIUtils.getIcon32FromResources("devices/drive-harddisk.png"), StartPageStorageMode.Filesystem);
+        startingPageStorageModeSelection.addToggleButton("Custom", "Results are exported via exporter nodes", JIPipe.RESOURCES.getIcon32("actions/document-export.png"), StartPageStorageMode.Discard);
+        startingPageStorageModeSelection.addToggleButton("Cache", "Results are stored in memory", JIPipe.RESOURCES.getIcon32("actions/database.png"), StartPageStorageMode.Cache);
+        startingPageStorageModeSelection.addToggleButton("Filesystem", "Results are stored on the hard drive (in JIPipe format)", JIPipe.RESOURCES.getIcon32("devices/drive-harddisk.png"), StartPageStorageMode.Filesystem);
 
-        startingPageIntermediateResultsModeSelection.addToggleButton("Discard", "Intermediate results are discarded", UIUtils.getIcon32FromResources("actions/edit-delete-remove.png"), false);
-        startingPageIntermediateResultsModeSelection.addToggleButton("Keep", "Intermediate results are also saved", UIUtils.getIcon32FromResources("actions/filesave.png"), true);
+        startingPageIntermediateResultsModeSelection.addToggleButton("Discard", "Intermediate results are discarded", JIPipe.RESOURCES.getIcon32("actions/edit-delete-remove.png"), false);
+        startingPageIntermediateResultsModeSelection.addToggleButton("Keep", "Intermediate results are also saved", JIPipe.RESOURCES.getIcon32("actions/filesave.png"), true);
 
         if (projectHasExporterNodes()) {
             startingPageStorageModeSelection.setSelectedValue(StartPageStorageMode.Discard);
@@ -168,9 +169,9 @@ public class JIPipeDesktopRunNextWindow extends JFrame implements JIPipeDesktopP
 
         // Create the button panel
         JPanel buttonPanel = UIUtils.boxHorizontal(
-                UIUtils.setFontSize(UIUtils.createButton("Cancel", UIUtils.getIconFromResources("actions/dialog-cancel.png"), () -> setVisible(false)), 16),
+                UIUtils.setFontSize(UIUtils.createButton("Cancel", JIPipe.RESOURCES.getIcon16("actions/dialog-cancel.png"), () -> setVisible(false)), 16),
                 Box.createHorizontalGlue(),
-                UIUtils.setFontSize(UIUtils.makeButtonHighlightedSuccess(UIUtils.createButton("Next", UIUtils.getIconFromResources("actions/check.png"), () -> confirmStartingPage())), 16)
+                UIUtils.setFontSize(UIUtils.makeButtonHighlightedSuccess(UIUtils.createButton("Next", JIPipe.RESOURCES.getIcon16("actions/check.png"), () -> confirmStartingPage())), 16)
         );
         startingPage.add(buttonPanel, BorderLayout.SOUTH);
 
@@ -236,11 +237,11 @@ public class JIPipeDesktopRunNextWindow extends JFrame implements JIPipeDesktopP
 
             // Add options
             startingPageStorageModeSelection.setBorder(UIUtils.createEmptyBorder(8));
-            addPanelToStartingPageOptionsPanel(UIUtils.getIcon32FromResources("actions/filesave.png"), "Select where to automatically store the results", startingPageStorageModeSelection);
+            addPanelToStartingPageOptionsPanel(JIPipe.RESOURCES.getIcon32("actions/filesave.png"), "Select where to automatically store the results", startingPageStorageModeSelection);
 
             startingPageIntermediateResultsModeSelection.setBorder(UIUtils.createEmptyBorder(8));
             if (startingPageStorageModeSelection.getSelectedValue() != StartPageStorageMode.Discard) {
-                addPanelToStartingPageOptionsPanel(UIUtils.getIcon32FromResources("actions/document-save-all.png"), "Select how to handle intermediate results", startingPageIntermediateResultsModeSelection);
+                addPanelToStartingPageOptionsPanel(JIPipe.RESOURCES.getIcon32("actions/document-save-all.png"), "Select how to handle intermediate results", startingPageIntermediateResultsModeSelection);
             }
 
             String outputPathTitle;
@@ -253,7 +254,7 @@ public class JIPipeDesktopRunNextWindow extends JFrame implements JIPipeDesktopP
                     outputPathTitle = "Select the output directory";
                     break;
             }
-            addPanelToStartingPageOptionsPanel(UIUtils.getIcon32FromResources("actions/document-open-folder.png"), outputPathTitle, UIUtils.wrapInEmptyBorder(startingPageOutputPath, 8));
+            addPanelToStartingPageOptionsPanel(JIPipe.RESOURCES.getIcon32("actions/document-open-folder.png"), outputPathTitle, UIUtils.wrapInEmptyBorder(startingPageOutputPath, 8));
 
         } else {
             // Description
@@ -271,7 +272,7 @@ public class JIPipeDesktopRunNextWindow extends JFrame implements JIPipeDesktopP
         UIUtils.registerHyperlinkHandler(descriptionReader);
         descriptionReader.setBorder(UIUtils.createEmptyBorder(8));
         addPanelToStartingPageOptionsPanel(
-                UIUtils.getIcon32FromResources("status/messagebox_info.png"),
+                JIPipe.RESOURCES.getIcon32("status/messagebox_info.png"),
                 title,
                 descriptionReader
         );
@@ -373,10 +374,10 @@ public class JIPipeDesktopRunNextWindow extends JFrame implements JIPipeDesktopP
                 shouldAskOnClose = false;
 
                 JPanel panel = new JPanel(new BorderLayout());
-                panel.add(UIUtils.createInfoLabel("Workflow finished", "The run finished successfully. You can now close this window.", UIUtils.getIcon64FromResources("check-circle-green.png")), BorderLayout.CENTER);
+                panel.add(UIUtils.createInfoLabel("Workflow finished", "The run finished successfully. You can now close this window.", JIPipe.RESOURCES.getIcon64("check-circle-green.png")), BorderLayout.CENTER);
                 JPanel buttonPanel = UIUtils.boxHorizontal(
                         Box.createHorizontalGlue(),
-                        UIUtils.setFontSize(UIUtils.makeButtonHighlightedSuccess(UIUtils.createButton("Close", UIUtils.getIconFromResources("actions/message-close.png"), () -> setVisible(false))), 16)
+                        UIUtils.setFontSize(UIUtils.makeButtonHighlightedSuccess(UIUtils.createButton("Close", JIPipe.RESOURCES.getIcon16("actions/message-close.png"), () -> setVisible(false))), 16)
                 );
                 panel.add(buttonPanel, BorderLayout.SOUTH);
 
@@ -416,13 +417,13 @@ public class JIPipeDesktopRunNextWindow extends JFrame implements JIPipeDesktopP
         public Component getListCellRendererComponent(JList<?> list, Object value, int index, boolean isSelected, boolean cellHasFocus) {
             Color color = null;
             if (value instanceof JIPipeProjectRunSet) {
-                nameLabel.setIcon(UIUtils.getIconFromResources("actions/debug-run.png"));
+                nameLabel.setIcon(JIPipe.RESOURCES.getIcon16("actions/debug-run.png"));
                 nameLabel.setText(((JIPipeProjectRunSet) value).getDisplayName());
             } else if (value instanceof JIPipeProjectCompartmentOutput) {
-                nameLabel.setIcon(UIUtils.getIconFromResources("actions/graph-compartment.png"));
+                nameLabel.setIcon(JIPipe.RESOURCES.getIcon16("actions/graph-compartment.png"));
                 nameLabel.setText(((JIPipeProjectCompartmentOutput) value).getDisplayName());
             } else {
-                nameLabel.setIcon(UIUtils.getIconFromResources("actions/configure.png"));
+                nameLabel.setIcon(JIPipe.RESOURCES.getIcon16("actions/configure.png"));
                 nameLabel.setText("Whole project/Customize");
             }
 

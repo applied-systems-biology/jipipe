@@ -16,6 +16,7 @@ package org.hkijena.jipipe.api.environments;
 import com.fasterxml.jackson.annotation.JsonGetter;
 import com.fasterxml.jackson.annotation.JsonSetter;
 import org.apache.commons.lang3.SystemUtils;
+import org.hkijena.jipipe.JIPipe;
 import org.hkijena.jipipe.api.JIPipeProgressInfo;
 import org.hkijena.jipipe.api.SetJIPipeDocumentation;
 import org.hkijena.jipipe.api.parameters.JIPipeParameter;
@@ -131,7 +132,7 @@ public abstract class JIPipeProcessArtifactEnvironment extends JIPipeArtifactEnv
     @Override
     public Icon getIcon() {
         if (isLoadFromArtifact()) {
-            return UIUtils.getIconFromResources("actions/run-install.png");
+            return JIPipe.RESOURCES.getIcon16("actions/run-install.png");
         } else {
             return getNonArtifactIcon();
         }

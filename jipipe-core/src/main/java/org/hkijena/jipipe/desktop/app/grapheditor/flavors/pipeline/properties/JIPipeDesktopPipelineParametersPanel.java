@@ -13,6 +13,7 @@
 
 package org.hkijena.jipipe.desktop.app.grapheditor.flavors.pipeline.properties;
 
+import org.hkijena.jipipe.JIPipe;
 import org.hkijena.jipipe.api.nodes.JIPipeAdaptiveParametersAlgorithm;
 import org.hkijena.jipipe.api.nodes.JIPipeGraphNode;
 import org.hkijena.jipipe.api.nodes.algorithm.JIPipeParameterSlotAlgorithm;
@@ -27,6 +28,7 @@ import org.hkijena.jipipe.desktop.commons.components.markup.JIPipeDesktopMarkdow
 import org.hkijena.jipipe.plugins.parameters.library.markup.MarkdownText;
 import org.hkijena.jipipe.utils.TooltipUtils;
 import org.hkijena.jipipe.utils.UIUtils;
+import org.hkijena.jipipe.JIPipe;
 
 import javax.swing.*;
 import java.awt.*;
@@ -64,8 +66,8 @@ public class JIPipeDesktopPipelineParametersPanel extends JIPipeDesktopWorkbench
         if (node instanceof JIPipeParameterSlotAlgorithm) {
 
             JButton menuButton = new JButton("External", ((JIPipeParameterSlotAlgorithm) node).getParameterSlotAlgorithmSettings().isHasParameterSlot() ?
-                    UIUtils.getIconFromResources("emblems/checkbox-checked.png") :
-                    UIUtils.getIconFromResources("emblems/checkbox-unchecked.png"));
+                    JIPipe.RESOURCES.getIcon16("emblems/checkbox-checked.png") :
+                    JIPipe.RESOURCES.getIcon16("emblems/checkbox-unchecked.png"));
             JPopupMenu popupMenu = UIUtils.addPopupMenuToButton(menuButton);
 
             JCheckBoxMenuItem toggle = new JCheckBoxMenuItem("Enable external parameters");
@@ -75,13 +77,13 @@ public class JIPipeDesktopPipelineParametersPanel extends JIPipeDesktopWorkbench
             toggle.addActionListener(e -> {
                 ((JIPipeParameterSlotAlgorithm) node).getParameterSlotAlgorithmSettings().setParameter("has-parameter-slot", toggle.isSelected());
                 menuButton.setIcon(toggle.isSelected() ?
-                        UIUtils.getIconFromResources("emblems/checkbox-checked.png") :
-                        UIUtils.getIconFromResources("emblems/checkbox-unchecked.png"));
+                        JIPipe.RESOURCES.getIcon16("emblems/checkbox-checked.png") :
+                        JIPipe.RESOURCES.getIcon16("emblems/checkbox-unchecked.png"));
             });
             popupMenu.add(toggle);
             popupMenu.addSeparator();
 
-            popupMenu.add(UIUtils.createMenuItem("Configure", "Configure external parameters", UIUtils.getIconFromResources("actions/configure.png"), () -> {
+            popupMenu.add(UIUtils.createMenuItem("Configure", "Configure external parameters", JIPipe.RESOURCES.getIcon16("actions/configure.png"), () -> {
                 JIPipeDesktopParameterFormPanel.showDialog(getDesktopWorkbench(),
                         ((JIPipeParameterSlotAlgorithm) node).getParameterSlotAlgorithmSettings(),
                         MarkdownText.fromPluginResource("documentation/multi-parameters.md", Collections.emptyMap()),
@@ -89,7 +91,7 @@ public class JIPipeDesktopPipelineParametersPanel extends JIPipeDesktopWorkbench
                         JIPipeDesktopParameterFormPanel.DEFAULT_DIALOG_FLAGS);
             }));
 
-            popupMenu.add(UIUtils.createMenuItem("What is this?", "Shows a help window", UIUtils.getIconFromResources("actions/help.png"), () -> {
+            popupMenu.add(UIUtils.createMenuItem("What is this?", "Shows a help window", JIPipe.RESOURCES.getIcon16("actions/help.png"), () -> {
                 JIPipeDesktopMarkdownReader.showDialog(MarkdownText.fromPluginResource("documentation/multi-parameters.md", Collections.emptyMap()),
                         true,
                         "About external parameters",
@@ -104,8 +106,8 @@ public class JIPipeDesktopPipelineParametersPanel extends JIPipeDesktopWorkbench
         if (node instanceof JIPipeAdaptiveParametersAlgorithm) {
 
             JButton menuButton = new JButton("Adaptive", ((JIPipeAdaptiveParametersAlgorithm) node).getAdaptiveParameterSettings().isEnabled() ?
-                    UIUtils.getIconFromResources("emblems/checkbox-checked.png") :
-                    UIUtils.getIconFromResources("emblems/checkbox-unchecked.png"));
+                    JIPipe.RESOURCES.getIcon16("emblems/checkbox-checked.png") :
+                    JIPipe.RESOURCES.getIcon16("emblems/checkbox-unchecked.png"));
             JPopupMenu popupMenu = UIUtils.addPopupMenuToButton(menuButton);
 
             JCheckBoxMenuItem toggle = new JCheckBoxMenuItem("Enable adaptive parameters");
@@ -114,13 +116,13 @@ public class JIPipeDesktopPipelineParametersPanel extends JIPipeDesktopWorkbench
             toggle.addActionListener(e -> {
                 ((JIPipeAdaptiveParametersAlgorithm) node).getAdaptiveParameterSettings().setParameter("enabled", toggle.isSelected());
                 menuButton.setIcon(toggle.isSelected() ?
-                        UIUtils.getIconFromResources("emblems/checkbox-checked.png") :
-                        UIUtils.getIconFromResources("emblems/checkbox-unchecked.png"));
+                        JIPipe.RESOURCES.getIcon16("emblems/checkbox-checked.png") :
+                        JIPipe.RESOURCES.getIcon16("emblems/checkbox-unchecked.png"));
             });
             popupMenu.add(toggle);
             popupMenu.addSeparator();
 
-            popupMenu.add(UIUtils.createMenuItem("Configure", "Configure external parameters", UIUtils.getIconFromResources("actions/configure.png"), () -> {
+            popupMenu.add(UIUtils.createMenuItem("Configure", "Configure external parameters", JIPipe.RESOURCES.getIcon16("actions/configure.png"), () -> {
                 JIPipeDesktopParameterFormPanel.showDialog(getDesktopWorkbench(),
                         ((JIPipeAdaptiveParametersAlgorithm) node).getAdaptiveParameterSettings(),
                         MarkdownText.fromPluginResource("documentation/adaptive-parameters.md", Collections.emptyMap()),
@@ -129,7 +131,7 @@ public class JIPipeDesktopPipelineParametersPanel extends JIPipeDesktopWorkbench
                 node.getParameterUIChangedEventEmitter().emit(new JIPipeParameterCollection.ParameterUIChangedEvent(node));
             }));
 
-            popupMenu.add(UIUtils.createMenuItem("What is this?", "Shows a help window", UIUtils.getIconFromResources("actions/help.png"), () -> {
+            popupMenu.add(UIUtils.createMenuItem("What is this?", "Shows a help window", JIPipe.RESOURCES.getIcon16("actions/help.png"), () -> {
                 JIPipeDesktopMarkdownReader.showDialog(MarkdownText.fromPluginResource("documentation/adaptive-parameters.md", Collections.emptyMap()),
                         true,
                         "About external parameters",
@@ -148,10 +150,10 @@ public class JIPipeDesktopPipelineParametersPanel extends JIPipeDesktopWorkbench
             for (JIPipeDesktopNodeQuickAction quickAction : quickActions) {
                 quickActionsMenu.add(UIUtils.createMenuItem(quickAction.getName(),
                         quickAction.getDescription(),
-                        UIUtils.getIconFromResources(quickAction.getIcon()),
+                        JIPipe.RESOURCES.getIcon16(quickAction.getIcon()),
                         () -> quickAction.getWorkload().accept(node, canvas)));
             }
-            JButton button = UIUtils.createButton("Tools", UIUtils.getIconFromResources("actions/quickopen.png"), null);
+            JButton button = UIUtils.createButton("Tools", JIPipe.RESOURCES.getIcon16("actions/quickopen.png"), null);
             UIUtils.makeButtonHighlightedSuccess(button);
             UIUtils.addPopupMenuToButton(button, quickActionsMenu);
 

@@ -18,6 +18,7 @@ import org.hkijena.jipipe.desktop.api.JIPipeMenuExtensionTarget;
 import org.hkijena.jipipe.desktop.app.JIPipeDesktopWorkbench;
 import org.hkijena.jipipe.plugins.settings.JIPipeBackupApplicationSettings;
 import org.hkijena.jipipe.utils.UIUtils;
+import org.hkijena.jipipe.JIPipe;
 
 public class TriggerBackupAllTool extends JIPipeDesktopMenuExtension {
     /**
@@ -29,7 +30,7 @@ public class TriggerBackupAllTool extends JIPipeDesktopMenuExtension {
         super(workbench);
         setText("Backup all open windows now");
         setToolTipText("Triggers the backup function for all open JIPipe windows");
-        setIcon(UIUtils.getIconFromResources("actions/filesave.png"));
+        setIcon(JIPipe.RESOURCES.getIcon16("actions/filesave.png"));
         addActionListener(e -> JIPipeBackupApplicationSettings.getInstance().backupAll());
     }
 

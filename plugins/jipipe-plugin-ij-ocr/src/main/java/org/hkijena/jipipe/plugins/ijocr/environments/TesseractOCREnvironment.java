@@ -21,6 +21,7 @@ import org.hkijena.jipipe.plugins.expressions.JIPipeExpressionParameter;
 import org.hkijena.jipipe.plugins.parameters.api.collections.ListParameter;
 import org.hkijena.jipipe.utils.PathUtils;
 import org.hkijena.jipipe.utils.UIUtils;
+import org.hkijena.jipipe.JIPipe;
 
 import javax.swing.*;
 import java.nio.file.Path;
@@ -60,7 +61,7 @@ public class TesseractOCREnvironment extends JIPipeProcessArtifactEnvironment {
 
     @Override
     public Icon getNonArtifactIcon() {
-        return UIUtils.getIconFromResources("actions/text_outer_style.png");
+        return JIPipe.RESOURCES.getIcon16("actions/text_outer_style.png");
     }
 
     /**

@@ -25,6 +25,7 @@ import org.hkijena.jipipe.desktop.api.JIPipeMenuExtensionTarget;
 import org.hkijena.jipipe.desktop.app.JIPipeDesktopProjectWorkbench;
 import org.hkijena.jipipe.desktop.app.JIPipeDesktopWorkbench;
 import org.hkijena.jipipe.utils.UIUtils;
+import org.hkijena.jipipe.JIPipe;
 import org.hkijena.jipipe.utils.ui.BusyCursor;
 
 import javax.swing.*;
@@ -40,7 +41,7 @@ public class DissolveCompartmentsTool extends JIPipeDesktopMenuExtension {
         super(workbench);
         setText("Dissolve compartments");
         setToolTipText("Merges all compartments into one large compartment. Compartment interfaces are converted into IO interface nodes.");
-        setIcon(UIUtils.getIconFromResources("actions/rabbitvcs-merge.png"));
+        setIcon(JIPipe.RESOURCES.getIcon16("actions/rabbitvcs-merge.png"));
         addActionListener(e -> dissolveCompartments());
     }
 

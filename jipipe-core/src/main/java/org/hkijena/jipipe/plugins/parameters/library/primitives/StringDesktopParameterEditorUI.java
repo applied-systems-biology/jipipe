@@ -13,11 +13,13 @@
 
 package org.hkijena.jipipe.plugins.parameters.library.primitives;
 
+import org.hkijena.jipipe.JIPipe;
 import org.hkijena.jipipe.desktop.api.JIPipeDesktopParameterEditorUI;
 import org.hkijena.jipipe.desktop.commons.components.JIPipeDesktopDocumentChangeListener;
 import org.hkijena.jipipe.desktop.commons.components.JIPipeDesktopFancyTextField;
 import org.hkijena.jipipe.utils.StringUtils;
 import org.hkijena.jipipe.utils.UIUtils;
+import org.hkijena.jipipe.JIPipe;
 
 import javax.swing.*;
 import javax.swing.event.DocumentEvent;
@@ -88,7 +90,7 @@ public class StringDesktopParameterEditorUI extends JIPipeDesktopParameterEditor
                 }
             });
         } else {
-            JButton editButton = new JButton("Show/Edit", UIUtils.getIconFromResources("actions/document-edit.png"));
+            JButton editButton = new JButton("Show/Edit", JIPipe.RESOURCES.getIcon16("actions/document-edit.png"));
             editButton.addActionListener(e -> editText());
             add(editButton, BorderLayout.CENTER);
         }
@@ -143,11 +145,11 @@ public class StringDesktopParameterEditorUI extends JIPipeDesktopParameterEditor
         buttonPanel.setLayout(new BoxLayout(buttonPanel, BoxLayout.X_AXIS));
         buttonPanel.add(Box.createHorizontalGlue());
 
-        JButton cancelButton = new JButton("Cancel", UIUtils.getIconFromResources("actions/cancel.png"));
+        JButton cancelButton = new JButton("Cancel", JIPipe.RESOURCES.getIcon16("actions/cancel.png"));
         cancelButton.addActionListener(e -> dialog.setVisible(false));
         buttonPanel.add(cancelButton);
 
-        JButton confirmButton = new JButton("Pick", UIUtils.getIconFromResources("actions/checkmark.png"));
+        JButton confirmButton = new JButton("Pick", JIPipe.RESOURCES.getIcon16("actions/checkmark.png"));
         confirmButton.addActionListener(e -> {
             setParameter(textComponent.getText(), false);
             dialog.setVisible(false);

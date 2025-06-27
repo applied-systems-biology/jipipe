@@ -16,6 +16,7 @@ package org.hkijena.jipipe.plugins.parameters.api.optional;
 import org.hkijena.jipipe.JIPipe;
 import org.hkijena.jipipe.desktop.api.JIPipeDesktopParameterEditorUI;
 import org.hkijena.jipipe.utils.UIUtils;
+import org.hkijena.jipipe.JIPipe;
 import org.hkijena.jipipe.utils.ui.RoundedLineBorder;
 
 import javax.swing.*;
@@ -47,13 +48,13 @@ public class OptionalDesktopParameterEditorUI extends JIPipeDesktopParameterEdit
         removeAll();
 
         // Create toggle button
-        JButton toggle = new JButton("Enabled", UIUtils.getIconFromResources("emblems/checkbox-checked.png"));
+        JButton toggle = new JButton("Enabled", JIPipe.RESOURCES.getIcon16("emblems/checkbox-checked.png"));
         toggle.setBorder(BorderFactory.createEmptyBorder(4, 8, 4, 16));
         toggle.setToolTipText("If enabled, the parameter is not ignored.");
         boolean selected = parameter.isEnabled();
 //        toggle.setSelected(parameter.isEnabled());
-        toggle.setIcon(selected ? UIUtils.getIconFromResources("emblems/checkbox-checked.png") :
-                UIUtils.getIconFromResources("emblems/checkbox-unchecked.png"));
+        toggle.setIcon(selected ? JIPipe.RESOURCES.getIcon16("emblems/checkbox-checked.png") :
+                JIPipe.RESOURCES.getIcon16("emblems/checkbox-unchecked.png"));
         toggle.addActionListener(e -> {
             parameter.setEnabled(!selected);
             setParameter(parameter, true);

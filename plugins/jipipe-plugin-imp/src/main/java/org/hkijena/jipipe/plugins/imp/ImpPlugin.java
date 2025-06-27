@@ -32,6 +32,7 @@ import org.hkijena.jipipe.plugins.parameters.library.markup.HTMLText;
 import org.hkijena.jipipe.plugins.parameters.library.primitives.list.StringList;
 import org.hkijena.jipipe.utils.JIPipeResourceManager;
 import org.hkijena.jipipe.utils.UIUtils;
+import org.hkijena.jipipe.JIPipe;
 import org.scijava.Context;
 import org.scijava.plugin.Plugin;
 
@@ -85,16 +86,16 @@ public class ImpPlugin extends JIPipePrepackagedDefaultJavaPlugin {
 
     @Override
     public void register(JIPipe jiPipe, Context context, JIPipeProgressInfo progressInfo) {
-        registerDatatype("imp-image", ImpImageData.class, RESOURCES.getIcon16URLFromResources("imp-image.png"));
+        registerDatatype("imp-image", ImpImageData.class, RESOURCES.getIcon16URL("imp-image.png"));
         registerDefaultDataTypeViewer(ImpImageData.class, ImpImageDataViewer.class);
         registerDatatypeConversion(new ImageJImageToImpImageDataTypeConverter());
         registerDatatypeConversion(new ImpImageToImageJImageDataTypeConverter());
 
         registerNodeType("import-imp-image", ImportImpImageAlgorithm.class);
-        registerNodeType("export-imp-image", ExportImpImageAlgorithm.class, UIUtils.getIconURLFromResources("actions/document-export.png"));
-        registerNodeType("split-imp-image-alpha", SplitImpAlphaChannelAlgorithm.class, UIUtils.getIconURLFromResources("actions/split.png"));
-        registerNodeType("set-imp-image-alpha", SetImpAlphaChannelAlgorithm.class, UIUtils.getIconURLFromResources("actions/adjusthsl.png"));
-        registerNodeType("convert-imp-to-imagej", ConvertImpImageToImagePlusAlgorithm.class, UIUtils.getIconURLFromResources("actions/cm_refresh.png"));
+        registerNodeType("export-imp-image", ExportImpImageAlgorithm.class, JIPipe.RESOURCES.getIcon16URL("actions/document-export.png"));
+        registerNodeType("split-imp-image-alpha", SplitImpAlphaChannelAlgorithm.class, JIPipe.RESOURCES.getIcon16URL("actions/split.png"));
+        registerNodeType("set-imp-image-alpha", SetImpAlphaChannelAlgorithm.class, JIPipe.RESOURCES.getIcon16URL("actions/adjusthsl.png"));
+        registerNodeType("convert-imp-to-imagej", ConvertImpImageToImagePlusAlgorithm.class, JIPipe.RESOURCES.getIcon16URL("actions/cm_refresh.png"));
 
         registerEnumParameterType("imp-image-output-format", ImpImageOutputFormat.class, "IMP image output format", "Output format supported by IMP");
     }

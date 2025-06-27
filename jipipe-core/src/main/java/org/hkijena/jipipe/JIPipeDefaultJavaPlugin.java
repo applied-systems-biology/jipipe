@@ -1008,7 +1008,7 @@ public abstract class JIPipeDefaultJavaPlugin extends AbstractService implements
      * @param otherExtensions other extensions (including dot)
      */
     public void registerFileChooserKnownFileType(String name, String icon16Name, String extension, String... otherExtensions) {
-        JIPipeDesktopFileChooserNext.registerKnownFileType(name, UIUtils.getIconFromResources(icon16Name), extension, otherExtensions);
+        JIPipeDesktopFileChooserNext.registerKnownFileType(name, JIPipe.RESOURCES.getIcon16(icon16Name), extension, otherExtensions);
     }
 
     /**
@@ -1034,7 +1034,7 @@ public abstract class JIPipeDefaultJavaPlugin extends AbstractService implements
      * @param otherExtensions other extensions (including dot)
      */
     public void registerFileChooserKnownDirectoryType(String name, String icon16Name, String extension, String... otherExtensions) {
-        JIPipeDesktopFileChooserNext.registerKnownDirectoryType(name, UIUtils.getIconFromResources(icon16Name), extension, otherExtensions);
+        JIPipeDesktopFileChooserNext.registerKnownDirectoryType(name, JIPipe.RESOURCES.getIcon16(icon16Name), extension, otherExtensions);
     }
 
     @Override

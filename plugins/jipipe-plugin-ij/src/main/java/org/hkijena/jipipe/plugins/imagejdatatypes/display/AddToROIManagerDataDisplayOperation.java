@@ -28,6 +28,7 @@ import org.hkijena.jipipe.plugins.imagejdatatypes.datatypes.ROI2DListData;
 import org.hkijena.jipipe.plugins.imagejdatatypes.util.ImageJUtils;
 import org.hkijena.jipipe.plugins.parameters.library.roi.Margin;
 import org.hkijena.jipipe.utils.UIUtils;
+import org.hkijena.jipipe.JIPipe;
 
 import javax.swing.*;
 import java.awt.*;
@@ -121,6 +122,6 @@ public class AddToROIManagerDataDisplayOperation implements JIPipeDesktopDataDis
 
     @Override
     public Icon getIcon() {
-        return UIUtils.getIconFromResources("apps/imagej.png");
+        return JIPipe.RESOURCES.getIcon16("apps/imagej.png");
     }
 }

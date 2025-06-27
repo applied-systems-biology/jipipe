@@ -13,11 +13,13 @@
 
 package org.hkijena.jipipe.desktop.app.tableeditor;
 
+import org.hkijena.jipipe.JIPipe;
 import org.hkijena.jipipe.desktop.app.JIPipeDesktopProjectWorkbench;
 import org.hkijena.jipipe.desktop.commons.components.JIPipeDesktopPathEditorComponent;
 import org.hkijena.jipipe.utils.PathIOMode;
 import org.hkijena.jipipe.utils.PathType;
 import org.hkijena.jipipe.utils.UIUtils;
+import org.hkijena.jipipe.JIPipe;
 
 import javax.swing.*;
 import java.awt.*;
@@ -90,11 +92,11 @@ public class JIPipeDesktopTableImporterDialog extends JDialog {
         buttonPanel.setLayout(new BoxLayout(buttonPanel, BoxLayout.LINE_AXIS));
         buttonPanel.add(Box.createHorizontalGlue());
 
-        JButton cancelButton = new JButton("Cancel", UIUtils.getIconFromResources("actions/cancel.png"));
+        JButton cancelButton = new JButton("Cancel", JIPipe.RESOURCES.getIcon16("actions/cancel.png"));
         cancelButton.addActionListener(e -> setVisible(false));
         buttonPanel.add(cancelButton);
 
-        JButton exportButton = new JButton("Import", UIUtils.getIconFromResources("actions/document-import.png"));
+        JButton exportButton = new JButton("Import", JIPipe.RESOURCES.getIcon16("actions/document-import.png"));
         exportButton.setDefaultCapable(true);
         exportButton.addActionListener(e -> {
             if (importFormat.getSelectedItem() == FileFormat.CSV) {
@@ -158,7 +160,7 @@ public class JIPipeDesktopTableImporterDialog extends JDialog {
 //                }
 //
 //                // Create table analyzer
-//                workbench.addTab(sheet.getSheetName(), UIUtils.getIconFromResources("data-types/results-table.png"),
+//                workbench.addTab(sheet.getSheetName(), JIPipe.RESOURCES.getIcon16("data-types/results-table.png"),
 //                        new JIPipeTableAnalyzerUI(workbench, tableModel), DocumentTabPane.CloseMode.withAskOnCloseButton, true);
 //            }
 //
@@ -188,9 +190,9 @@ public class JIPipeDesktopTableImporterDialog extends JDialog {
         public Icon toIcon() {
             switch (this) {
                 case CSV:
-                    return UIUtils.getIconFromResources("data-types/results-table.png");
+                    return JIPipe.RESOURCES.getIcon16("data-types/results-table.png");
 //                case XLSX:
-//                    return UIUtils.getIconFromResources("filetype-excel.png");
+//                    return JIPipe.RESOURCES.getIcon16("filetype-excel.png");
                 default:
                     throw new UnsupportedOperationException();
             }

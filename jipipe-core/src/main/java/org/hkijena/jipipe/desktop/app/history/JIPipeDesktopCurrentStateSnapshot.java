@@ -13,8 +13,10 @@
 
 package org.hkijena.jipipe.desktop.app.history;
 
+import org.hkijena.jipipe.JIPipe;
 import org.hkijena.jipipe.api.history.JIPipeHistoryJournalSnapshot;
 import org.hkijena.jipipe.utils.UIUtils;
+import org.hkijena.jipipe.JIPipe;
 
 import javax.swing.*;
 import java.time.LocalDateTime;
@@ -40,7 +42,7 @@ public class JIPipeDesktopCurrentStateSnapshot implements JIPipeHistoryJournalSn
 
     @Override
     public Icon getIcon() {
-        return UIUtils.getIconFromResources("actions/help-info.png");
+        return JIPipe.RESOURCES.getIcon16("actions/help-info.png");
     }
 
     @Override

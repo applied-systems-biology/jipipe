@@ -15,6 +15,7 @@ package org.hkijena.jipipe.plugins.parameters.api.matrix;
 
 import org.hkijena.jipipe.desktop.api.JIPipeDesktopParameterEditorUI;
 import org.hkijena.jipipe.utils.UIUtils;
+import org.hkijena.jipipe.JIPipe;
 
 import javax.swing.*;
 import javax.swing.table.DefaultTableModel;
@@ -44,7 +45,7 @@ public class Matrix2DDesktopParameterEditorUI extends JIPipeDesktopParameterEdit
 
         toolBar.add(Box.createHorizontalGlue());
 
-        JButton addRowButton = new JButton(UIUtils.getIconFromResources("actions/edit-table-insert-row-below.png"));
+        JButton addRowButton = new JButton(JIPipe.RESOURCES.getIcon16("actions/edit-table-insert-row-below.png"));
         addRowButton.setToolTipText("Add row");
         addRowButton.addActionListener(e -> {
             getParameter(Matrix2D.class).addRow();
@@ -52,7 +53,7 @@ public class Matrix2DDesktopParameterEditorUI extends JIPipeDesktopParameterEdit
         });
         toolBar.add(addRowButton);
 
-        JButton addColumnButton = new JButton(UIUtils.getIconFromResources("actions/edit-table-insert-column-right.png"));
+        JButton addColumnButton = new JButton(JIPipe.RESOURCES.getIcon16("actions/edit-table-insert-column-right.png"));
         addColumnButton.setToolTipText("Add column");
         addColumnButton.addActionListener(e -> {
             getParameter(Matrix2D.class).addColumn();
@@ -62,12 +63,12 @@ public class Matrix2DDesktopParameterEditorUI extends JIPipeDesktopParameterEdit
 
         toolBar.addSeparator();
 
-        JButton removeRowButton = new JButton(UIUtils.getIconFromResources("actions/edit-table-delete-row.png"));
+        JButton removeRowButton = new JButton(JIPipe.RESOURCES.getIcon16("actions/edit-table-delete-row.png"));
         removeRowButton.setToolTipText("Remove selected row");
         removeRowButton.addActionListener(e -> removeRow());
         toolBar.add(removeRowButton);
 
-        JButton removeColumnButton = new JButton(UIUtils.getIconFromResources("actions/edit-table-delete-column.png"));
+        JButton removeColumnButton = new JButton(JIPipe.RESOURCES.getIcon16("actions/edit-table-delete-column.png"));
         removeColumnButton.setToolTipText("Remove selected column");
         removeColumnButton.addActionListener(e -> removeColumn());
         toolBar.add(removeColumnButton);

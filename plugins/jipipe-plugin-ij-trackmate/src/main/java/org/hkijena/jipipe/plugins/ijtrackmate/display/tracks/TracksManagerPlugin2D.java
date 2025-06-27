@@ -50,6 +50,7 @@ import org.hkijena.jipipe.plugins.tables.datatypes.ResultsTableData;
 import org.hkijena.jipipe.utils.NaturalOrderComparator;
 import org.hkijena.jipipe.utils.PathUtils;
 import org.hkijena.jipipe.utils.UIUtils;
+import org.hkijena.jipipe.JIPipe;
 import org.hkijena.jipipe.utils.ui.JIPipeDesktopDockPanel;
 import org.jgrapht.graph.DefaultWeightedEdge;
 
@@ -65,7 +66,7 @@ import java.util.stream.Collectors;
 
 public class TracksManagerPlugin2D extends JIPipeDesktopLegacyImageViewerPlugin2D {
     private final JList<Integer> tracksListControl = new JList<>();
-    private final JIPipeDesktopSmallToggleButtonRibbonAction displayTracksViewMenuItem = new JIPipeDesktopSmallToggleButtonRibbonAction("Display tracks", "Determines whether tracks are displayed", UIUtils.getIconFromResources("actions/eye.png"));
+    private final JIPipeDesktopSmallToggleButtonRibbonAction displayTracksViewMenuItem = new JIPipeDesktopSmallToggleButtonRibbonAction("Display tracks", "Determines whether tracks are displayed", JIPipe.RESOURCES.getIcon16("actions/eye.png"));
     private final List<SelectionContextPanel> selectionContextPanels = new ArrayList<>();
     private final JPanel selectionContentPanelUI = new JPanel();
     private TrackCollectionData tracksCollection;
@@ -266,7 +267,7 @@ public class TracksManagerPlugin2D extends JIPipeDesktopLegacyImageViewerPlugin2
 
     @Override
     public Icon getPanelIcon() {
-        return TrackMatePlugin.RESOURCES.getIcon32FromResources("trackmate.png");
+        return TrackMatePlugin.RESOURCES.getIcon32("trackmate.png");
     }
 
     private void initialize() {
@@ -332,18 +333,18 @@ public class TracksManagerPlugin2D extends JIPipeDesktopLegacyImageViewerPlugin2
             JIPipeDesktopRibbon.Band measureBand = tracksTask.getOrCreateBand("Measure");
 
 //            ROIPickerTool pickerTool = new ROIPickerTool(this);
-//            LargeToggleButtonAction pickerToggle = new LargeToggleButtonAction("Pick", "Allows to select ROI via the mouse", UIUtils.getIcon32FromResources("actions/followmouse.png"));
+//            LargeToggleButtonAction pickerToggle = new LargeToggleButtonAction("Pick", "Allows to select ROI via the mouse", JIPipe.RESOURCES.getIcon32("actions/followmouse.png"));
 //            pickerTool.addToggleButton(pickerToggle.getButton(), getViewerPanel().getCanvas());
 //            generalBand.add(pickerToggle);
 
-            generalBand.add(new JIPipeDesktopSmallButtonRibbonAction("Select all", "Selects all tracks", UIUtils.getIconFromResources("actions/edit-select-all.png"), this::selectAll));
-            generalBand.add(new JIPipeDesktopSmallButtonRibbonAction("Clear selection", "Deselects all tracks", UIUtils.getIconFromResources("actions/edit-select-none.png"), this::selectNone));
-            generalBand.add(new JIPipeDesktopSmallButtonRibbonAction("Invert selection", "Inverts the current selection", UIUtils.getIconFromResources("actions/edit-select-none.png"), this::invertSelection));
+            generalBand.add(new JIPipeDesktopSmallButtonRibbonAction("Select all", "Selects all tracks", JIPipe.RESOURCES.getIcon16("actions/edit-select-all.png"), this::selectAll));
+            generalBand.add(new JIPipeDesktopSmallButtonRibbonAction("Clear selection", "Deselects all tracks", JIPipe.RESOURCES.getIcon16("actions/edit-select-none.png"), this::selectNone));
+            generalBand.add(new JIPipeDesktopSmallButtonRibbonAction("Invert selection", "Inverts the current selection", JIPipe.RESOURCES.getIcon16("actions/edit-select-none.png"), this::invertSelection));
 
-            modifyBand.add(new JIPipeDesktopSmallButtonRibbonAction("Delete", "Deletes the selected tracks", UIUtils.getIconFromResources("actions/delete.png"), () -> removeSelectedTracks(false)));
+            modifyBand.add(new JIPipeDesktopSmallButtonRibbonAction("Delete", "Deletes the selected tracks", JIPipe.RESOURCES.getIcon16("actions/delete.png"), () -> removeSelectedTracks(false)));
 
-            measureBand.add(new JIPipeDesktopSmallButtonRibbonAction("Measure edges", "Measures the tracks and displays the results as table", UIUtils.getIconFromResources("actions/statistics.png"), this::measureSelectedEdges));
-            measureBand.add(new JIPipeDesktopSmallButtonRibbonAction("Measure tracks", "Measures the tracks and displays the results as table", UIUtils.getIconFromResources("actions/statistics.png"), this::measureSelectedTracks));
+            measureBand.add(new JIPipeDesktopSmallButtonRibbonAction("Measure edges", "Measures the tracks and displays the results as table", JIPipe.RESOURCES.getIcon16("actions/statistics.png"), this::measureSelectedEdges));
+            measureBand.add(new JIPipeDesktopSmallButtonRibbonAction("Measure tracks", "Measures the tracks and displays the results as table", JIPipe.RESOURCES.getIcon16("actions/statistics.png"), this::measureSelectedTracks));
         }
         {
             JIPipeDesktopRibbon.Band generalBand = tracksTask.getOrCreateBand("View");
@@ -351,7 +352,7 @@ public class TracksManagerPlugin2D extends JIPipeDesktopLegacyImageViewerPlugin2
 
             generalBand.add(displayTracksViewMenuItem);
 
-            JIPipeDesktopSmallButtonRibbonAction colorButton = new JIPipeDesktopSmallButtonRibbonAction("Color by ...", "Allows to change how tracks are colored", UIUtils.getIconFromResources("actions/colors-rgb.png"));
+            JIPipeDesktopSmallButtonRibbonAction colorButton = new JIPipeDesktopSmallButtonRibbonAction("Color by ...", "Allows to change how tracks are colored", JIPipe.RESOURCES.getIcon16("actions/colors-rgb.png"));
             visualizationBand.add(colorButton);
             {
                 JPopupMenu colorByMenu = UIUtils.addPopupMenuToButton(colorButton.getButton());
@@ -382,7 +383,7 @@ public class TracksManagerPlugin2D extends JIPipeDesktopLegacyImageViewerPlugin2
                 });
             }
 
-            JIPipeDesktopSmallButtonRibbonAction displayModeButton = new JIPipeDesktopSmallButtonRibbonAction("Display mode", "Sets the display mode", UIUtils.getIconFromResources("actions/distribute-graph-directed.png"));
+            JIPipeDesktopSmallButtonRibbonAction displayModeButton = new JIPipeDesktopSmallButtonRibbonAction("Display mode", "Sets the display mode", JIPipe.RESOURCES.getIcon16("actions/distribute-graph-directed.png"));
             visualizationBand.add(displayModeButton);
             {
                 JPopupMenu displayMenu = UIUtils.addPopupMenuToButton(displayModeButton.getButton());
@@ -397,18 +398,18 @@ public class TracksManagerPlugin2D extends JIPipeDesktopLegacyImageViewerPlugin2
             }
             visualizationBand.add(new JIPipeDesktopRibbon.Action(new JPanel(), 1, new Insets(2, 2, 2, 2)));
 
-            visualizationBand.add(new JIPipeDesktopSmallButtonRibbonAction("More settings ...", "Opens a dialog where all available visualization settings can be changed", UIUtils.getIconFromResources("actions/configure.png"), this::openDrawingSettings));
-            visualizationBand.add(new JIPipeDesktopSmallButtonRibbonAction("Save settings", "Saves the current settings as default", UIUtils.getIconFromResources("actions/filesave.png"), this::saveDefaults));
+            visualizationBand.add(new JIPipeDesktopSmallButtonRibbonAction("More settings ...", "Opens a dialog where all available visualization settings can be changed", JIPipe.RESOURCES.getIcon16("actions/configure.png"), this::openDrawingSettings));
+            visualizationBand.add(new JIPipeDesktopSmallButtonRibbonAction("Save settings", "Saves the current settings as default", JIPipe.RESOURCES.getIcon16("actions/filesave.png"), this::saveDefaults));
         }
         {
             JIPipeDesktopRibbon.Band fileBand = tracksTask.getOrCreateBand("Import/Export");
 
-            fileBand.add(new JIPipeDesktopSmallButtonRibbonAction("Import from file", "Imports tracks from a file", UIUtils.getIconFromResources("actions/fileopen.png"), this::importTracksFromFile));
-            fileBand.add(new JIPipeDesktopSmallButtonRibbonAction("Export to file", "Exports ROI to a file", UIUtils.getIconFromResources("actions/filesave.png"), this::exportTracksToFile));
+            fileBand.add(new JIPipeDesktopSmallButtonRibbonAction("Import from file", "Imports tracks from a file", JIPipe.RESOURCES.getIcon16("actions/fileopen.png"), this::importTracksFromFile));
+            fileBand.add(new JIPipeDesktopSmallButtonRibbonAction("Export to file", "Exports ROI to a file", JIPipe.RESOURCES.getIcon16("actions/filesave.png"), this::exportTracksToFile));
         }
         {
             JIPipeDesktopRibbon.Band generalBand = tracksTask.addBand("Tools");
-            generalBand.add(new JIPipeDesktopLargeButtonRibbonAction("Track scheme", "Displays the track scheme", TrackMatePlugin.RESOURCES.getIcon32FromResources("trackscheme.png"), this::openTrackScheme));
+            generalBand.add(new JIPipeDesktopLargeButtonRibbonAction("Track scheme", "Displays the track scheme", TrackMatePlugin.RESOURCES.getIcon32("trackscheme.png"), this::openTrackScheme));
         }
     }
 
@@ -511,7 +512,7 @@ public class TracksManagerPlugin2D extends JIPipeDesktopLegacyImageViewerPlugin2
             setLayout(new BoxLayout(this, BoxLayout.X_AXIS));
             setBorder(BorderFactory.createEmptyBorder(4, 2, 4, 2));
             this.roiInfoLabel = new JLabel();
-            roiInfoLabel.setIcon(TrackMatePlugin.RESOURCES.getIcon16FromResources("trackmate-tracker.png"));
+            roiInfoLabel.setIcon(TrackMatePlugin.RESOURCES.getIcon16("trackmate-tracker.png"));
             roiInfoLabel.setBorder(BorderFactory.createEmptyBorder(4, 4, 4, 4));
             add(roiInfoLabel);
             add(Box.createHorizontalGlue());

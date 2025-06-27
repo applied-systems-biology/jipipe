@@ -21,6 +21,7 @@ import org.hkijena.jipipe.desktop.commons.components.JIPipeDesktopFormPanel;
 import org.hkijena.jipipe.plugins.imagejdatatypes.util.dimensions.ImageSliceIndex;
 import org.hkijena.jipipe.plugins.imageviewer.utils.viewer2d.ImageViewerPanelCanvas2D;
 import org.hkijena.jipipe.utils.UIUtils;
+import org.hkijena.jipipe.JIPipe;
 import org.hkijena.jipipe.utils.ui.events.*;
 
 import javax.swing.*;
@@ -49,7 +50,7 @@ public class PolygonMaskDrawer2DTool extends MaskDrawer2DTool implements MouseCl
                         "Add points with left click.\n" +
                         "Remove points with right click. Double right-click to cancel drawing.\n" +
                         "Draw by double-clicking.",
-                UIUtils.getIconFromResources("actions/draw-polyline.png"));
+                JIPipe.RESOURCES.getIcon16("actions/draw-polyline.png"));
         ImageViewerPanelCanvas2D canvas = getViewerPanel2D().getCanvas();
         canvas.getMouseClickedEventEmitter().subscribe(this);
         canvas.getMouseExitedEventEmitter().subscribe(this);

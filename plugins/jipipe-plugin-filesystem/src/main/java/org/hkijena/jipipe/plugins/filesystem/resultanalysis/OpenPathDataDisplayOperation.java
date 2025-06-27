@@ -19,6 +19,7 @@ import org.hkijena.jipipe.desktop.api.data.JIPipeDesktopDataDisplayOperation;
 import org.hkijena.jipipe.desktop.app.JIPipeDesktopWorkbench;
 import org.hkijena.jipipe.plugins.filesystem.dataypes.PathData;
 import org.hkijena.jipipe.utils.UIUtils;
+import org.hkijena.jipipe.JIPipe;
 
 import javax.swing.*;
 
@@ -50,6 +51,6 @@ public class OpenPathDataDisplayOperation implements JIPipeDesktopDataDisplayOpe
 
     @Override
     public Icon getIcon() {
-        return UIUtils.getIconFromResources("actions/folder-open.png");
+        return JIPipe.RESOURCES.getIcon16("actions/folder-open.png");
     }
 }

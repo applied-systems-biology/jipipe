@@ -13,12 +13,14 @@
 
 package org.hkijena.jipipe.plugins.tables.display;
 
+import org.hkijena.jipipe.JIPipe;
 import org.hkijena.jipipe.api.data.JIPipeData;
 import org.hkijena.jipipe.api.data.JIPipeDataSource;
 import org.hkijena.jipipe.desktop.api.data.JIPipeDesktopDataDisplayOperation;
 import org.hkijena.jipipe.desktop.app.JIPipeDesktopWorkbench;
 import org.hkijena.jipipe.plugins.core.data.DefaultDataDisplayOperation;
 import org.hkijena.jipipe.utils.UIUtils;
+import org.hkijena.jipipe.JIPipe;
 
 import javax.swing.*;
 
@@ -51,6 +53,6 @@ public class OpenResultsTableInJIPipeTabDataDisplayOperation implements JIPipeDe
 
     @Override
     public Icon getIcon() {
-        return UIUtils.getIconFromResources("apps/jipipe.png");
+        return JIPipe.RESOURCES.getIcon16("apps/jipipe.png");
     }
 }

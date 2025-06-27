@@ -26,6 +26,7 @@ import org.hkijena.jipipe.desktop.app.JIPipeDesktopProjectWorkbench;
 import org.hkijena.jipipe.plugins.settings.JIPipeGeneralDataApplicationSettings;
 import org.hkijena.jipipe.utils.BufferedImageUtils;
 import org.hkijena.jipipe.utils.UIUtils;
+import org.hkijena.jipipe.JIPipe;
 import org.hkijena.jipipe.utils.json.JsonUtils;
 
 import javax.imageio.ImageIO;
@@ -59,7 +60,7 @@ public abstract class JIPipeDesktopAsyncResultDataSlotPreview extends JIPipeDesk
     }
 
     private void initialize() {
-        JLabel label = new JLabel("Please wait ...", UIUtils.getIconFromResources("actions/hourglass-half.png"), JLabel.LEFT);
+        JLabel label = new JLabel("Please wait ...", JIPipe.RESOURCES.getIcon16("actions/hourglass-half.png"), JLabel.LEFT);
         add(label, BorderLayout.CENTER);
     }
 

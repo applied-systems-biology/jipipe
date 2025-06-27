@@ -15,6 +15,7 @@ package org.hkijena.jipipe.desktop.api.environments;
 
 import org.hkijena.jipipe.desktop.commons.components.JIPipeDesktopFormPanel;
 import org.hkijena.jipipe.utils.UIUtils;
+import org.hkijena.jipipe.JIPipe;
 import org.hkijena.jipipe.utils.ui.RoundedLineBorder;
 
 import javax.swing.*;
@@ -46,18 +47,18 @@ public class JIPipeDesktopEasyInstallExternalEnvironmentInstallerDialog extends 
 
         formPanel.setBorder(BorderFactory.createEmptyBorder(16, 16, 16, 16));
 
-        formPanel.addWideToForm(UIUtils.createJLabel(installer.getDialogHeading(), UIUtils.getIcon32FromResources("install.png"), 28));
+        formPanel.addWideToForm(UIUtils.createJLabel(installer.getDialogHeading(), JIPipe.RESOURCES.getIcon32("install.png"), 28));
         formPanel.addWideToForm(UIUtils.createBorderlessReadonlyTextPane(installer.getDialogDescription().getHtml(), false));
 
         formPanel.addWideToForm(Box.createVerticalStrut(16));
-        formPanel.addWideToForm(UIUtils.createJLabel("Please be aware that some downloads can be multiple gigabytes", UIUtils.getIconFromResources("emblems/emblem-important-blue.png")));
-        formPanel.addWideToForm(UIUtils.createJLabel("We recommend to always review the download URL", UIUtils.getIconFromResources("emblems/emblem-important-blue.png")));
+        formPanel.addWideToForm(UIUtils.createJLabel("Please be aware that some downloads can be multiple gigabytes", JIPipe.RESOURCES.getIcon16("emblems/emblem-important-blue.png")));
+        formPanel.addWideToForm(UIUtils.createJLabel("We recommend to always review the download URL", JIPipe.RESOURCES.getIcon16("emblems/emblem-important-blue.png")));
 
         formPanel.addWideToForm(Box.createVerticalStrut(32));
         formPanel.addWideToForm(UIUtils.createJLabel("Available packages", 22));
 
         if (supportedPackages.isEmpty()) {
-            formPanel.addWideToForm(UIUtils.createJLabel("No supported packages found.", UIUtils.getIconFromResources("emblems/emblem-rabbitvcs-conflicted.png")));
+            formPanel.addWideToForm(UIUtils.createJLabel("No supported packages found.", JIPipe.RESOURCES.getIcon16("emblems/emblem-rabbitvcs-conflicted.png")));
         } else {
             for (JIPipeDesktopEasyInstallExternalEnvironmentInstallerPackage availablePackage : supportedPackages) {
                 addPackagePanel(availablePackage);
@@ -83,7 +84,7 @@ public class JIPipeDesktopEasyInstallExternalEnvironmentInstallerDialog extends 
     private void addPackagePanel(JIPipeDesktopEasyInstallExternalEnvironmentInstallerPackage availablePackage) {
         JPanel panel = new JPanel(new GridBagLayout());
         panel.setBorder(BorderFactory.createCompoundBorder(new RoundedLineBorder(UIManager.getColor("Button.borderColor"), 1, 2), BorderFactory.createEmptyBorder(8, 8, 8, 8)));
-        panel.add(UIUtils.createJLabel(availablePackage.getName(), UIUtils.getIcon32FromResources("module-json.png"), 16), new GridBagConstraints(0, 0, 1, 1, 1, 0, GridBagConstraints.NORTHWEST, GridBagConstraints.HORIZONTAL, new Insets(4, 4, 4, 4), 0, 0));
+        panel.add(UIUtils.createJLabel(availablePackage.getName(), JIPipe.RESOURCES.getIcon32("module-json.png"), 16), new GridBagConstraints(0, 0, 1, 1, 1, 0, GridBagConstraints.NORTHWEST, GridBagConstraints.HORIZONTAL, new Insets(4, 4, 4, 4), 0, 0));
         String urlText;
         if (availablePackage.getUrlMultiPart() != null && !availablePackage.getUrlMultiPart().isEmpty()) {
             urlText = String.join("\n", availablePackage.getUrlMultiPart());
@@ -95,7 +96,7 @@ public class JIPipeDesktopEasyInstallExternalEnvironmentInstallerDialog extends 
         panel.add(idField, new GridBagConstraints(0, 2, 1, 1, 1, 0, GridBagConstraints.NORTHWEST, GridBagConstraints.HORIZONTAL, new Insets(4, 4, 4, 4), 0, 0));
         panel.add(UIUtils.createBorderlessReadonlyTextPane(availablePackage.getDescription(), false), new GridBagConstraints(0, 1, 1, 1, 1, 0, GridBagConstraints.NORTHWEST, GridBagConstraints.HORIZONTAL, new Insets(4, 4, 4, 4), 0, 0));
 
-        JButton installButton = new JButton("Install now", UIUtils.getIconFromResources("emblems/vcs-normal.png"));
+        JButton installButton = new JButton("Install now", JIPipe.RESOURCES.getIcon16("emblems/vcs-normal.png"));
         installButton.setFont(new Font(Font.DIALOG, Font.PLAIN, 22));
         installButton.addActionListener(e -> confirmInstallation(availablePackage));
         panel.add(installButton, new GridBagConstraints(1, 0, 1, 1, 0, 0, GridBagConstraints.NORTHWEST, GridBagConstraints.NONE, new Insets(4, 4, 4, 4), 0, 0));
@@ -115,7 +116,7 @@ public class JIPipeDesktopEasyInstallExternalEnvironmentInstallerDialog extends 
         buttonPanel.setLayout(new BoxLayout(buttonPanel, BoxLayout.X_AXIS));
         buttonPanel.add(Box.createHorizontalGlue());
 
-        JButton cancelButton = new JButton("Cancel", UIUtils.getIconFromResources("actions/cancel.png"));
+        JButton cancelButton = new JButton("Cancel", JIPipe.RESOURCES.getIcon16("actions/cancel.png"));
         cancelButton.addActionListener(e -> {
             targetPackage = null;
             setVisible(false);

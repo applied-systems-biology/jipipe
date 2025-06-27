@@ -39,6 +39,7 @@ import org.hkijena.jipipe.plugins.tables.datatypes.ResultsTableData;
 import org.hkijena.jipipe.utils.NaturalOrderComparator;
 import org.hkijena.jipipe.utils.StringUtils;
 import org.hkijena.jipipe.utils.UIUtils;
+import org.hkijena.jipipe.JIPipe;
 import org.hkijena.jipipe.utils.ui.BusyCursor;
 
 import javax.swing.*;
@@ -100,7 +101,7 @@ public class JIPipeDesktopDefaultResultDataSlotRowUI extends JIPipeDesktopResult
         add(Box.createHorizontalGlue());
 
         if (getRow().getDataAnnotations().size() > 0) {
-            JButton dataAnnotationButton = new JButton("Data annotations ...", UIUtils.getIconFromResources("data-types/data-annotation.png"));
+            JButton dataAnnotationButton = new JButton("Data annotations ...", JIPipe.RESOURCES.getIcon16("data-types/data-annotation.png"));
             JPopupMenu menu = UIUtils.addPopupMenuToButton(dataAnnotationButton);
 
             for (JIPipeDataAnnotationInfo dataAnnotation : getRow().getDataAnnotations()) {
@@ -120,32 +121,32 @@ public class JIPipeDesktopDefaultResultDataSlotRowUI extends JIPipeDesktopResult
             add(dataAnnotationButton);
         }
         if (!getRow().getTextAnnotations().isEmpty()) {
-            JButton annotationButton = new JButton("Annotations ...", UIUtils.getIconFromResources("data-types/annotation.png"));
+            JButton annotationButton = new JButton("Annotations ...", JIPipe.RESOURCES.getIcon16("data-types/annotation.png"));
             JPopupMenu annotationMenu = UIUtils.addPopupMenuToButton(annotationButton);
             {
-                JMenuItem toTableItem = new JMenuItem("Display as table", UIUtils.getIconFromResources("data-types/results-table.png"));
+                JMenuItem toTableItem = new JMenuItem("Display as table", JIPipe.RESOURCES.getIcon16("data-types/results-table.png"));
                 toTableItem.addActionListener(e -> displayAnnotationsAsTable(getRow().getTextAnnotations()));
                 annotationMenu.add(toTableItem);
             }
             for (JIPipeTextAnnotation annotation : getRow().getTextAnnotations()) {
                 JMenu entryMenu = new JMenu(annotation.getName());
-                entryMenu.setIcon(UIUtils.getIconFromResources("data-types/annotation.png"));
+                entryMenu.setIcon(JIPipe.RESOURCES.getIcon16("data-types/annotation.png"));
 
-                JMenuItem valueItem = new JMenuItem(StringUtils.nullToEmpty(annotation.getValue()), UIUtils.getIconFromResources("actions/equals.png"));
+                JMenuItem valueItem = new JMenuItem(StringUtils.nullToEmpty(annotation.getValue()), JIPipe.RESOURCES.getIcon16("actions/equals.png"));
                 valueItem.setEnabled(false);
                 entryMenu.add(valueItem);
 
                 entryMenu.addSeparator();
 
-                JMenuItem copyAnnotationNameItem = new JMenuItem("Copy name", UIUtils.getIconFromResources("actions/edit-copy.png"));
+                JMenuItem copyAnnotationNameItem = new JMenuItem("Copy name", JIPipe.RESOURCES.getIcon16("actions/edit-copy.png"));
                 copyAnnotationNameItem.addActionListener(e -> UIUtils.copyToClipboard(annotation.getName()));
                 entryMenu.add(copyAnnotationNameItem);
 
-                JMenuItem copyAnnotationNameAsVariableItem = new JMenuItem("Copy name as expression variable", UIUtils.getIconFromResources("actions/edit-copy.png"));
+                JMenuItem copyAnnotationNameAsVariableItem = new JMenuItem("Copy name as expression variable", JIPipe.RESOURCES.getIcon16("actions/edit-copy.png"));
                 copyAnnotationNameAsVariableItem.addActionListener(e -> UIUtils.copyToClipboard(JIPipeExpressionEvaluator.escapeVariable(annotation.getName())));
                 entryMenu.add(copyAnnotationNameAsVariableItem);
 
-                JMenuItem copyAnnotationValueItem = new JMenuItem("Copy value", UIUtils.getIconFromResources("actions/edit-copy.png"));
+                JMenuItem copyAnnotationValueItem = new JMenuItem("Copy value", JIPipe.RESOURCES.getIcon16("actions/edit-copy.png"));
                 copyAnnotationValueItem.addActionListener(e -> UIUtils.copyToClipboard(annotation.getValue()));
                 entryMenu.add(copyAnnotationValueItem);
 
@@ -154,15 +155,15 @@ public class JIPipeDesktopDefaultResultDataSlotRowUI extends JIPipeDesktopResult
             add(annotationButton);
         }
 
-        JButton exportButton = new JButton("Export", UIUtils.getIconFromResources("actions/document-export.png"));
+        JButton exportButton = new JButton("Export", JIPipe.RESOURCES.getIcon16("actions/document-export.png"));
         JPopupMenu exportMenu = UIUtils.addPopupMenuToButton(exportButton);
 
-        JMenuItem exportToFolderItem = new JMenuItem("Export to folder", UIUtils.getIconFromResources("actions/download.png"));
+        JMenuItem exportToFolderItem = new JMenuItem("Export to folder", JIPipe.RESOURCES.getIcon16("actions/download.png"));
         exportToFolderItem.setToolTipText("Saves the data to a folder. If multiple files are present, the names will be generated according to the selected name.");
         exportToFolderItem.addActionListener(e -> exportToFolder());
         exportMenu.add(exportToFolderItem);
 
-        JMenuItem exportAsFolderItem = new JMenuItem("Export as folder", UIUtils.getIconFromResources("actions/folder-new.png"));
+        JMenuItem exportAsFolderItem = new JMenuItem("Export as folder", JIPipe.RESOURCES.getIcon16("actions/folder-new.png"));
         exportAsFolderItem.setToolTipText("Saves the data into a new folder. Files will be named according to the data type standard.");
         exportAsFolderItem.addActionListener(e -> exportAsFolder());
         exportMenu.add(exportAsFolderItem);

@@ -18,6 +18,7 @@ import org.hkijena.jipipe.api.settings.JIPipeDefaultApplicationSettingsSheetCate
 import org.hkijena.jipipe.api.settings.JIPipeDefaultApplicationsSettingsSheet;
 import org.hkijena.jipipe.desktop.app.grapheditor.commons.AbstractJIPipeDesktopGraphEditorUI;
 import org.hkijena.jipipe.utils.UIUtils;
+import org.hkijena.jipipe.JIPipe;
 
 import javax.swing.*;
 
@@ -44,7 +45,7 @@ public class ImageViewerGeneralUIApplicationSettings extends JIPipeDefaultApplic
 
     @Override
     public Icon getIcon() {
-        return UIUtils.getIconFromResources("actions/configure.png");
+        return JIPipe.RESOURCES.getIcon16("actions/configure.png");
     }
 
     @Override

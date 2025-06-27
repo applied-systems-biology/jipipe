@@ -22,6 +22,7 @@ import org.hkijena.jipipe.desktop.app.running.JIPipeDesktopRunExecuteUI;
 import org.hkijena.jipipe.desktop.commons.components.renderers.JIPipeDesktopTemplateProjectListCellRenderer;
 import org.hkijena.jipipe.desktop.commons.components.search.JIPipeDesktopSearchTextField;
 import org.hkijena.jipipe.utils.UIUtils;
+import org.hkijena.jipipe.JIPipe;
 
 import javax.swing.*;
 import java.awt.*;
@@ -79,7 +80,7 @@ public class JIPipeDesktopJIPipeTemplateSelectionUI extends JDialog implements J
         JToolBar toolBar = new JToolBar();
         toolBar.setFloatable(false);
         toolBar.add(templateSearch);
-        JButton downloadTemplatesButton = new JButton("Get more templates", UIUtils.getIconFromResources("actions/download.png"));
+        JButton downloadTemplatesButton = new JButton("Get more templates", JIPipe.RESOURCES.getIcon16("actions/download.png"));
         downloadTemplatesButton.addActionListener(e -> downloadTemplates());
         toolBar.add(downloadTemplatesButton);
 
@@ -90,11 +91,11 @@ public class JIPipeDesktopJIPipeTemplateSelectionUI extends JDialog implements J
 
         buttonPanel.add(Box.createHorizontalGlue());
 
-        JButton cancelButton = new JButton("Cancel", UIUtils.getIconFromResources("actions/cancel.png"));
+        JButton cancelButton = new JButton("Cancel", JIPipe.RESOURCES.getIcon16("actions/cancel.png"));
         cancelButton.addActionListener(e -> setVisible(false));
         buttonPanel.add(cancelButton);
 
-        JButton exportButton = new JButton("New project", UIUtils.getIconFromResources("actions/document-new.png"));
+        JButton exportButton = new JButton("New project", JIPipe.RESOURCES.getIcon16("actions/document-new.png"));
         exportButton.setDefaultCapable(true);
         exportButton.addActionListener(e -> {
             isConfirmed = true;

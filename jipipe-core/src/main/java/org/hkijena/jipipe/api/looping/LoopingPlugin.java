@@ -21,6 +21,7 @@ import org.hkijena.jipipe.plugins.JIPipePrepackagedDefaultJavaPlugin;
 import org.hkijena.jipipe.plugins.parameters.library.markup.HTMLText;
 import org.hkijena.jipipe.plugins.parameters.library.primitives.list.StringList;
 import org.hkijena.jipipe.utils.UIUtils;
+import org.hkijena.jipipe.JIPipe;
 import org.scijava.Context;
 import org.scijava.plugin.Plugin;
 
@@ -47,8 +48,8 @@ public class LoopingPlugin extends JIPipePrepackagedDefaultJavaPlugin {
 
     @Override
     public void register(JIPipe jiPipe, Context context, JIPipeProgressInfo progressInfo) {
-        registerNodeType("loop:start", LoopStartNode.class, UIUtils.getIconURLFromResources("actions/run-build.png"));
-        registerNodeType("loop:end", LoopEndNode.class, UIUtils.getIconURLFromResources("actions/run-build-prune.png"));
+        registerNodeType("loop:start", LoopStartNode.class, JIPipe.RESOURCES.getIcon16URL("actions/run-build.png"));
+        registerNodeType("loop:end", LoopEndNode.class, JIPipe.RESOURCES.getIcon16URL("actions/run-build-prune.png"));
     }
 
     @Override

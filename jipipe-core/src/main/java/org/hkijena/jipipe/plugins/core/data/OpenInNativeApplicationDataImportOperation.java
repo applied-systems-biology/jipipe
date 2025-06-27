@@ -13,6 +13,7 @@
 
 package org.hkijena.jipipe.plugins.core.data;
 
+import org.hkijena.jipipe.JIPipe;
 import org.hkijena.jipipe.api.JIPipeProgressInfo;
 import org.hkijena.jipipe.api.data.JIPipeData;
 import org.hkijena.jipipe.api.data.JIPipeDataSlot;
@@ -21,6 +22,7 @@ import org.hkijena.jipipe.api.data.serialization.JIPipeDataTableRowInfo;
 import org.hkijena.jipipe.desktop.app.JIPipeDesktopWorkbench;
 import org.hkijena.jipipe.utils.PathUtils;
 import org.hkijena.jipipe.utils.UIUtils;
+import org.hkijena.jipipe.JIPipe;
 
 import javax.swing.*;
 import java.nio.file.Files;
@@ -64,7 +66,7 @@ public class OpenInNativeApplicationDataImportOperation implements JIPipeLegacyD
 
     @Override
     public Icon getIcon() {
-        return UIUtils.getIconFromResources("actions/quickopen.png");
+        return JIPipe.RESOURCES.getIcon16("actions/quickopen.png");
     }
 
     @Override

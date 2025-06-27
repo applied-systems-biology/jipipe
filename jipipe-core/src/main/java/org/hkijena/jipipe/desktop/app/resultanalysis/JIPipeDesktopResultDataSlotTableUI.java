@@ -47,6 +47,7 @@ import org.hkijena.jipipe.plugins.tables.datatypes.ResultsTableData;
 import org.hkijena.jipipe.utils.PathUtils;
 import org.hkijena.jipipe.utils.TooltipUtils;
 import org.hkijena.jipipe.utils.UIUtils;
+import org.hkijena.jipipe.JIPipe;
 import org.jdesktop.swingx.JXTable;
 
 import javax.swing.*;
@@ -156,18 +157,18 @@ public class JIPipeDesktopResultDataSlotTableUI extends JIPipeDesktopProjectWork
         JIPipeDesktopRibbon.Band dataBand = viewTask.addBand("Data");
 
         // Table band
-        tableBand.add(new JIPipeDesktopSmallButtonRibbonAction("Fit columns", "Fits the table columns to their contents", UIUtils.getIconFromResources("actions/zoom-fit-width.png"), table::packAll));
-        tableBand.add(new JIPipeDesktopSmallButtonRibbonAction("Compact columns", "Auto-size columns to the default size", UIUtils.getIconFromResources("actions/zoom-fit-width.png"), () -> UIUtils.packDataTable(table)));
+        tableBand.add(new JIPipeDesktopSmallButtonRibbonAction("Fit columns", "Fits the table columns to their contents", JIPipe.RESOURCES.getIcon16("actions/zoom-fit-width.png"), table::packAll));
+        tableBand.add(new JIPipeDesktopSmallButtonRibbonAction("Compact columns", "Auto-size columns to the default size", JIPipe.RESOURCES.getIcon16("actions/zoom-fit-width.png"), () -> UIUtils.packDataTable(table)));
 
         // Preview band
-        previewBand.add(new JIPipeDesktopSmallToggleButtonRibbonAction("Enable previews", "Allows to toggle previews on and off", UIUtils.getIconFromResources("actions/zoom.png"), JIPipeGeneralDataApplicationSettings.getInstance().isGenerateResultPreviews(), (toggle) -> {
+        previewBand.add(new JIPipeDesktopSmallToggleButtonRibbonAction("Enable previews", "Allows to toggle previews on and off", JIPipe.RESOURCES.getIcon16("actions/zoom.png"), JIPipeGeneralDataApplicationSettings.getInstance().isGenerateResultPreviews(), (toggle) -> {
             JIPipeGeneralDataApplicationSettings.getInstance().setGenerateResultPreviews(toggle.isSelected());
             reloadTable();
         }));
         previewBand.add(new JIPipeDesktopRibbon.Action(UIUtils.boxHorizontal(new JLabel("Size"), new JIPipeDesktopDataPreviewControlUI()), 1, new Insets(2, 2, 2, 2)));
 
         // Data band
-        dataBand.add(new JIPipeDesktopLargeButtonRibbonAction("Open directory", "Opens the directory that contains the displayed results", UIUtils.getIcon32FromResources("actions/folder-open.png"), this::openResultsFolder));
+        dataBand.add(new JIPipeDesktopLargeButtonRibbonAction("Open directory", "Opens the directory that contains the displayed results", JIPipe.RESOURCES.getIcon32("actions/folder-open.png"), this::openResultsFolder));
     }
 
     private void initializeExportRibbon() {
@@ -176,11 +177,11 @@ public class JIPipeDesktopResultDataSlotTableUI extends JIPipeDesktopProjectWork
         JIPipeDesktopRibbon.Band metadataBand = exportTask.addBand("Metadata");
 
         // Data band
-        dataBand.add(new JIPipeDesktopLargeButtonRibbonAction("As files", "Exports all data as files named according to annotations", UIUtils.getIcon32FromResources("actions/document-export.png"), this::exportFilesByMetadata));
+        dataBand.add(new JIPipeDesktopLargeButtonRibbonAction("As files", "Exports all data as files named according to annotations", JIPipe.RESOURCES.getIcon32("actions/document-export.png"), this::exportFilesByMetadata));
 
         // Metadata band
-        metadataBand.add(new JIPipeDesktopSmallButtonRibbonAction("To CSV/Excel", "Exports the text annotations as table", UIUtils.getIcon16FromResources("actions/table.png"), this::exportMetadataAsFiles));
-        metadataBand.add(new JIPipeDesktopSmallButtonRibbonAction("Open as table", "Opens the text annotations as table", UIUtils.getIcon16FromResources("actions/open-in-new-window.png"), this::exportMetadataAsTableEditor));
+        metadataBand.add(new JIPipeDesktopSmallButtonRibbonAction("To CSV/Excel", "Exports the text annotations as table", JIPipe.RESOURCES.getIcon16("actions/table.png"), this::exportMetadataAsFiles));
+        metadataBand.add(new JIPipeDesktopSmallButtonRibbonAction("Open as table", "Opens the text annotations as table", JIPipe.RESOURCES.getIcon16("actions/open-in-new-window.png"), this::exportMetadataAsTableEditor));
     }
 
     private void initializeToolbar(JPanel menuContainerPanel) {
@@ -191,7 +192,7 @@ public class JIPipeDesktopResultDataSlotTableUI extends JIPipeDesktopProjectWork
 
         searchTextField.addActionListener(e -> reloadTable());
         searchTextField.addButton("Open expression editor",
-                UIUtils.getIconFromResources("actions/insert-math-expression.png"),
+                JIPipe.RESOURCES.getIcon16("actions/insert-math-expression.png"),
                 this::openSearchExpressionEditor);
         searchToolbar.add(searchTextField);
     }

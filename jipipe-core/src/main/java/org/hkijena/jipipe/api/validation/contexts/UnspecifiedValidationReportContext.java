@@ -15,6 +15,7 @@ package org.hkijena.jipipe.api.validation.contexts;
 
 import org.hkijena.jipipe.api.validation.JIPipeValidationReportContext;
 import org.hkijena.jipipe.utils.UIUtils;
+import org.hkijena.jipipe.JIPipe;
 
 import javax.swing.*;
 
@@ -30,6 +31,6 @@ public class UnspecifiedValidationReportContext extends JIPipeValidationReportCo
 
     @Override
     public Icon renderIcon() {
-        return UIUtils.getIconFromResources("actions/dialog-warning.png");
+        return JIPipe.RESOURCES.getIcon16("actions/dialog-warning.png");
     }
 }

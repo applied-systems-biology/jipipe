@@ -13,11 +13,13 @@
 
 package org.hkijena.jipipe.desktop.app.ploteditor;
 
+import org.hkijena.jipipe.JIPipe;
 import org.hkijena.jipipe.desktop.app.JIPipeDesktopWorkbench;
 import org.hkijena.jipipe.desktop.app.JIPipeDesktopWorkbenchPanel;
 import org.hkijena.jipipe.desktop.commons.components.JIPipeDesktopParameterFormPanel;
 import org.hkijena.jipipe.desktop.commons.theme.JIPipeDesktopLegacyModernMetalTheme;
 import org.hkijena.jipipe.utils.UIUtils;
+import org.hkijena.jipipe.JIPipe;
 
 import javax.swing.*;
 import java.awt.*;
@@ -58,13 +60,13 @@ public class JIPipeDesktopPlotSeriesEditorUI extends JIPipeDesktopWorkbenchPanel
         titlePanel.setBackground(JIPipeDesktopLegacyModernMetalTheme.MEDIUM_GRAY);
         titlePanel.setOpaque(true);
 
-        moveDownButton = new JButton(UIUtils.getIconFromResources("actions/caret-down.png"));
+        moveDownButton = new JButton(JIPipe.RESOURCES.getIcon16("actions/caret-down.png"));
         UIUtils.makeButtonBorderlessWithoutMargin(moveDownButton);
         moveDownButton.setToolTipText("Move down");
         moveDownButton.addActionListener(e -> seriesBuilder.getPlotBuilderUI().moveSeriesDown(seriesBuilder));
         titlePanel.add(moveDownButton);
 
-        moveUpButton = new JButton(UIUtils.getIconFromResources("actions/caret-up.png"));
+        moveUpButton = new JButton(JIPipe.RESOURCES.getIcon16("actions/caret-up.png"));
         UIUtils.makeButtonBorderlessWithoutMargin(moveUpButton);
         moveUpButton.setToolTipText("Move up");
         moveUpButton.addActionListener(e -> seriesBuilder.getPlotBuilderUI().moveSeriesUp(seriesBuilder));
@@ -73,7 +75,7 @@ public class JIPipeDesktopPlotSeriesEditorUI extends JIPipeDesktopWorkbenchPanel
         titlePanel.add(Box.createHorizontalGlue());
         titlePanel.add(Box.createHorizontalStrut(8));
 
-        removeButton = new JButton(UIUtils.getIconFromResources("actions/delete.png"));
+        removeButton = new JButton(JIPipe.RESOURCES.getIcon16("actions/delete.png"));
         removeButton.setToolTipText("Remove series");
         removeButton.addActionListener(e -> removeSeries());
         UIUtils.makeButtonBorderlessWithoutMargin(removeButton);
@@ -107,10 +109,10 @@ public class JIPipeDesktopPlotSeriesEditorUI extends JIPipeDesktopWorkbenchPanel
 
     private void updateEnableDisableToggleButton() {
         if (seriesBuilder.isEnabled()) {
-            enableToggleButton.setIcon(UIUtils.getIconFromResources("actions/eye.png"));
+            enableToggleButton.setIcon(JIPipe.RESOURCES.getIcon16("actions/eye.png"));
             enableToggleButton.setToolTipText("Disable series");
         } else {
-            enableToggleButton.setIcon(UIUtils.getIconFromResources("actions/eye-slash.png"));
+            enableToggleButton.setIcon(JIPipe.RESOURCES.getIcon16("actions/eye-slash.png"));
             enableToggleButton.setToolTipText("Enable series");
         }
     }

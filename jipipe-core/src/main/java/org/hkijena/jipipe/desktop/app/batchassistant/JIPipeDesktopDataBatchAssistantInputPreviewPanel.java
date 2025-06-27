@@ -14,12 +14,14 @@
 package org.hkijena.jipipe.desktop.app.batchassistant;
 
 import com.google.common.collect.ImmutableList;
+import org.hkijena.jipipe.JIPipe;
 import org.hkijena.jipipe.api.JIPipeDataBatchGenerationResult;
 import org.hkijena.jipipe.api.data.JIPipeInputDataSlot;
 import org.hkijena.jipipe.desktop.app.JIPipeDesktopWorkbench;
 import org.hkijena.jipipe.desktop.app.JIPipeDesktopWorkbenchPanel;
 import org.hkijena.jipipe.desktop.commons.components.JIPipeDesktopFormPanel;
 import org.hkijena.jipipe.utils.UIUtils;
+import org.hkijena.jipipe.JIPipe;
 
 import javax.swing.*;
 import java.awt.*;
@@ -42,7 +44,7 @@ public class JIPipeDesktopDataBatchAssistantInputPreviewPanel extends JIPipeDesk
     private void initialize() {
         setLayout(new BorderLayout());
 
-        JIPipeDesktopFormPanel.GroupHeaderPanel groupHeaderPanel = new JIPipeDesktopFormPanel.GroupHeaderPanel("Input data", UIUtils.getIconFromResources("actions/insert-table.png"), 4);
+        JIPipeDesktopFormPanel.GroupHeaderPanel groupHeaderPanel = new JIPipeDesktopFormPanel.GroupHeaderPanel("Input data", JIPipe.RESOURCES.getIcon16("actions/insert-table.png"), 4);
 
 
         showAllInputsCheck.setOpaque(false);

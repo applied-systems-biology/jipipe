@@ -25,6 +25,7 @@ import org.hkijena.jipipe.plugins.parameters.library.markup.MarkdownText;
 import org.hkijena.jipipe.utils.JIPipeDesktopSplitPane;
 import org.hkijena.jipipe.utils.StringUtils;
 import org.hkijena.jipipe.utils.UIUtils;
+import org.hkijena.jipipe.JIPipe;
 import org.hkijena.jipipe.utils.json.JsonUtils;
 
 import javax.swing.*;
@@ -101,7 +102,7 @@ public class JIPipeDesktopParameterExplorerWindow extends JFrame implements JIPi
         typeIdLabel = new JIPipeDesktopReadonlyCopyableTextField("", true);
         typeDescriptionLabel = UIUtils.createReadonlyTextPane("");
 
-        formPanel.addGroupHeader("General info", UIUtils.getIconFromResources("actions/help-info.png"));
+        formPanel.addGroupHeader("General info", JIPipe.RESOURCES.getIcon16("actions/help-info.png"));
         formPanel.addToForm(nameLabel, new JLabel("Name"), new MarkdownText("The name of the parameter"));
         formPanel.addToForm(nameIdLabel, new JLabel("Unique ID"), new MarkdownText("The unique ID of the parameter. This is used for " +
                 "creating new parameter data."));
@@ -111,14 +112,14 @@ public class JIPipeDesktopParameterExplorerWindow extends JFrame implements JIPi
         formPanel.addToForm(typeDescriptionLabel, new JLabel("Type description"), new MarkdownText("A short description of the parameter data type."));
 
         // Current value
-        JIPipeDesktopFormPanel.GroupHeaderPanel editorHeader = formPanel.addGroupHeader("Current value", UIUtils.getIconFromResources("actions/edit.png"));
+        JIPipeDesktopFormPanel.GroupHeaderPanel editorHeader = formPanel.addGroupHeader("Current value", JIPipe.RESOURCES.getIcon16("actions/edit.png"));
 
-        JButton resetEditorButton = new JButton(UIUtils.getIconFromResources("actions/rabbitvcs-reset.png"));
+        JButton resetEditorButton = new JButton(JIPipe.RESOURCES.getIcon16("actions/rabbitvcs-reset.png"));
         resetEditorButton.setToolTipText("Reset value");
         resetEditorButton.addActionListener(e -> resetCurrentValue());
         editorHeader.addToTitlePanel(resetEditorButton);
 
-        JButton pasteCurrentValueJsonButton = new JButton(UIUtils.getIconFromResources("actions/edit-paste.png"));
+        JButton pasteCurrentValueJsonButton = new JButton(JIPipe.RESOURCES.getIcon16("actions/edit-paste.png"));
         pasteCurrentValueJsonButton.setToolTipText("Paste JSON data. This will set the current parameter according to the pasted JSON data.");
         pasteCurrentValueJsonButton.addActionListener(e -> pasteCurrentValueJson());
         editorHeader.addToTitlePanel(pasteCurrentValueJsonButton);
@@ -130,24 +131,24 @@ public class JIPipeDesktopParameterExplorerWindow extends JFrame implements JIPi
                 "This can be directly converted into parameter data."));
 
         // Value tester
-        JIPipeDesktopFormPanel.GroupHeaderPanel valueTesterHeader = formPanel.addGroupHeader("Value tester", UIUtils.getIconFromResources("actions/testbench.png"));
+        JIPipeDesktopFormPanel.GroupHeaderPanel valueTesterHeader = formPanel.addGroupHeader("Value tester", JIPipe.RESOURCES.getIcon16("actions/testbench.png"));
 
-        JButton resetTesterButton = new JButton(UIUtils.getIconFromResources("actions/rabbitvcs-reset.png"));
+        JButton resetTesterButton = new JButton(JIPipe.RESOURCES.getIcon16("actions/rabbitvcs-reset.png"));
         resetTesterButton.setToolTipText("Reset value");
         resetTesterButton.addActionListener(e -> resetTesterValue());
         valueTesterHeader.addToTitlePanel(resetTesterButton);
 
-        JButton pasteTesterValueJsonButton = new JButton(UIUtils.getIconFromResources("actions/edit-paste.png"));
+        JButton pasteTesterValueJsonButton = new JButton(JIPipe.RESOURCES.getIcon16("actions/edit-paste.png"));
         pasteTesterValueJsonButton.setToolTipText("Paste JSON data. This will set the tester value according to the pasted JSON data.");
         pasteTesterValueJsonButton.addActionListener(e -> pasteTesterValueJson());
         valueTesterHeader.addToTitlePanel(pasteTesterValueJsonButton);
 
-        JButton copyCurrentValueButton = new JButton(UIUtils.getIconFromResources("actions/down.png"));
+        JButton copyCurrentValueButton = new JButton(JIPipe.RESOURCES.getIcon16("actions/down.png"));
         copyCurrentValueButton.addActionListener(e -> copyCurrentValueIntoTester());
         copyCurrentValueButton.setToolTipText("Copy current value into the tester");
         valueTesterHeader.addToTitlePanel(copyCurrentValueButton);
 
-        JButton writeCurrentValueButton = new JButton(UIUtils.getIconFromResources("actions/up.png"));
+        JButton writeCurrentValueButton = new JButton(JIPipe.RESOURCES.getIcon16("actions/up.png"));
         writeCurrentValueButton.addActionListener(e -> writeTesterValueIntoCurrent());
         writeCurrentValueButton.setToolTipText("Write into current value");
         valueTesterHeader.addToTitlePanel(writeCurrentValueButton);

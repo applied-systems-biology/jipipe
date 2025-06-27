@@ -19,6 +19,7 @@ import org.hkijena.jipipe.api.registries.JIPipeRecentProjectsRegistry;
 import org.hkijena.jipipe.desktop.app.JIPipeDesktopProjectWindow;
 import org.hkijena.jipipe.desktop.app.documentation.JIPipeDesktopRecentProjectsListPanel;
 import org.hkijena.jipipe.utils.UIUtils;
+import org.hkijena.jipipe.JIPipe;
 
 import javax.swing.*;
 import java.nio.file.Path;
@@ -50,7 +51,7 @@ public class JIPipeDesktopRecentProjectsMenu extends JMenu implements JIPipeRece
             noProject.setEnabled(false);
             add(noProject);
         } else {
-            JMenuItem searchItem = new JMenuItem("Search ...", UIUtils.getIconFromResources("actions/search.png"));
+            JMenuItem searchItem = new JMenuItem("Search ...", JIPipe.RESOURCES.getIcon16("actions/search.png"));
             searchItem.addActionListener(e -> openProjectSearch());
             add(searchItem);
 

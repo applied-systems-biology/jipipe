@@ -13,6 +13,7 @@
 
 package org.hkijena.jipipe.api.nodes;
 
+import org.hkijena.jipipe.JIPipe;
 import org.hkijena.jipipe.api.parameters.JIPipeDummyParameterCollection;
 import org.hkijena.jipipe.api.parameters.JIPipeManualParameterAccess;
 import org.hkijena.jipipe.api.parameters.JIPipeParameterCollection;
@@ -24,6 +25,7 @@ import org.hkijena.jipipe.plugins.expressions.JIPipeExpressionVariablesInfo;
 import org.hkijena.jipipe.plugins.expressions.StringQueryExpression;
 import org.hkijena.jipipe.plugins.expressions.ui.JIPipeExpressionDesktopParameterEditorUI;
 import org.hkijena.jipipe.utils.UIUtils;
+import org.hkijena.jipipe.JIPipe;
 import org.hkijena.jipipe.utils.ui.RoundedLineBorder;
 
 import javax.swing.*;
@@ -48,13 +50,13 @@ public interface JIPipeAdaptiveParametersAlgorithm extends JIPipeParameterCollec
             JIPipeExpressionParameter adaptiveParameter = getAdaptiveParameterSettings().getAdaptiveParameter(key);
 
             if (adaptiveParameter != null) {
-                JMenuItem removeAdaptiveParameter = new JMenuItem("Make parameter static", UIUtils.getIconFromResources("actions/lock.png"));
+                JMenuItem removeAdaptiveParameter = new JMenuItem("Make parameter static", JIPipe.RESOURCES.getIcon16("actions/lock.png"));
                 removeAdaptiveParameter.addActionListener(e -> {
                     getAdaptiveParameterSettings().removeAdaptiveParameter(key);
                 });
                 menu.add(removeAdaptiveParameter);
             } else {
-                JMenuItem addAdaptiveParameter = new JMenuItem("Make parameter adaptive", UIUtils.getIconFromResources("actions/insert-math-expression.png"));
+                JMenuItem addAdaptiveParameter = new JMenuItem("Make parameter adaptive", JIPipe.RESOURCES.getIcon16("actions/insert-math-expression.png"));
                 addAdaptiveParameter.addActionListener(e -> {
                     getAdaptiveParameterSettings().addAdaptiveParameter(key);
                 });
@@ -105,7 +107,7 @@ public interface JIPipeAdaptiveParametersAlgorithm extends JIPipeParameterCollec
 
                 JIPipeExpressionDesktopParameterEditorUI newEditorUI = new JIPipeExpressionDesktopParameterEditorUI(
                         new JIPipeDesktopParameterEditorUI.InitializationParameters(parameterEditorUI.getDesktopWorkbench(), parameterPanel.getParameterTree(), dummy));
-                JLabel label = new JLabel("Adaptive", UIUtils.getIconFromResources("emblems/emblem-important-blue.png"), JLabel.LEFT);
+                JLabel label = new JLabel("Adaptive", JIPipe.RESOURCES.getIcon16("emblems/emblem-important-blue.png"), JLabel.LEFT);
                 label.setBorder(BorderFactory.createCompoundBorder(BorderFactory.createEmptyBorder(0, 4, 0, 4),
                         new RoundedLineBorder(new Color(0xE6E6E6), 1, 3)));
                 newEditorUI.add(label, BorderLayout.WEST);

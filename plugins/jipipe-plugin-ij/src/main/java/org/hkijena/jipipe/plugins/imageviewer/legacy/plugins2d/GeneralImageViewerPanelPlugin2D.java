@@ -16,6 +16,7 @@ package org.hkijena.jipipe.plugins.imageviewer.legacy.plugins2d;
 import org.hkijena.jipipe.plugins.imageviewer.legacy.JIPipeDesktopLegacyImageViewer;
 import org.hkijena.jipipe.plugins.imageviewer.legacy.api.JIPipeDesktopLegacyImageViewerPlugin2D;
 import org.hkijena.jipipe.utils.UIUtils;
+import org.hkijena.jipipe.JIPipe;
 import org.hkijena.jipipe.utils.ui.JIPipeDesktopDockPanel;
 
 import javax.swing.*;
@@ -32,7 +33,7 @@ public abstract class GeneralImageViewerPanelPlugin2D extends JIPipeDesktopLegac
 
     @Override
     public Icon getPanelIcon() {
-        return UIUtils.getIcon32FromResources("actions/configure.png");
+        return JIPipe.RESOURCES.getIcon32("actions/configure.png");
     }
 
     @Override

@@ -13,6 +13,7 @@
 
 package org.hkijena.jipipe.desktop.app.datatracer;
 
+import org.hkijena.jipipe.JIPipe;
 import org.hkijena.jipipe.api.JIPipeProgressInfo;
 import org.hkijena.jipipe.api.cache.JIPipeCache;
 import org.hkijena.jipipe.api.data.JIPipeDataTable;
@@ -34,6 +35,7 @@ import org.hkijena.jipipe.desktop.commons.components.JIPipeDesktopValidityReport
 import org.hkijena.jipipe.desktop.commons.components.tabs.JIPipeDesktopTabPane;
 import org.hkijena.jipipe.desktop.commons.components.window.JIPipeDesktopAlwaysOnTopToggle;
 import org.hkijena.jipipe.utils.UIUtils;
+import org.hkijena.jipipe.JIPipe;
 import org.hkijena.jipipe.utils.data.OwningStore;
 import org.scijava.Disposable;
 
@@ -172,7 +174,7 @@ public class JIPipeDesktopDataTracerUI extends JIPipeDesktopProjectWorkbenchPane
 
     private void initializeToolbar(JToolBar toolBar) {
         toolBar.add(Box.createHorizontalGlue());
-        toolBar.add(UIUtils.createButton("Refresh", UIUtils.getIconFromResources("actions/view-refresh.png"), this::rebuildContent));
+        toolBar.add(UIUtils.createButton("Refresh", JIPipe.RESOURCES.getIcon16("actions/view-refresh.png"), this::rebuildContent));
     }
 
     private void rebuildContent() {
@@ -214,7 +216,7 @@ public class JIPipeDesktopDataTracerUI extends JIPipeDesktopProjectWorkbenchPane
                 new OwningStore<>(tracedDataTable),
                 false,
                 false);
-        tabPane.addTab("Table view", UIUtils.getIconFromResources("/actions/table-list.png"), dataTableUI, JIPipeDesktopTabPane.CloseMode.withoutCloseButton);
+        tabPane.addTab("Table view", JIPipe.RESOURCES.getIcon16("/actions/table-list.png"), dataTableUI, JIPipeDesktopTabPane.CloseMode.withoutCloseButton);
 
     }
 
@@ -225,7 +227,7 @@ public class JIPipeDesktopDataTracerUI extends JIPipeDesktopProjectWorkbenchPane
         for (int i = 0; i < levels.size(); i++) {
             int level = levels.get(i);
             if (i != 0) {
-                JLabel separatorLabel = new JLabel(UIUtils.getIconFromResources("actions/merge-down.png"));
+                JLabel separatorLabel = new JLabel(JIPipe.RESOURCES.getIcon16("actions/merge-down.png"));
                 graphContentPanel.add(separatorLabel, new GridBagConstraints(0,
                         numRows++,
                         1,
@@ -295,7 +297,7 @@ public class JIPipeDesktopDataTracerUI extends JIPipeDesktopProjectWorkbenchPane
                     true);
         }
 
-        tabPane.addTab("Graph view", UIUtils.getIconFromResources("/actions/distribute-graph-directed.png"), graphScrollPane, JIPipeDesktopTabPane.CloseMode.withoutCloseButton);
+        tabPane.addTab("Graph view", JIPipe.RESOURCES.getIcon16("/actions/distribute-graph-directed.png"), graphScrollPane, JIPipeDesktopTabPane.CloseMode.withoutCloseButton);
 
         if (level0Panel != null) {
             JPanel finalLevel0Panel = level0Panel;

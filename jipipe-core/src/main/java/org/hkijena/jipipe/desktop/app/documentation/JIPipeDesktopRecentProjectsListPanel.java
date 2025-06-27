@@ -23,6 +23,7 @@ import org.hkijena.jipipe.desktop.app.JIPipeDesktopProjectWorkbenchPanel;
 import org.hkijena.jipipe.desktop.commons.components.JIPipeDesktopRecentProjectListCellRenderer;
 import org.hkijena.jipipe.desktop.commons.components.search.JIPipeDesktopSearchTextField;
 import org.hkijena.jipipe.utils.UIUtils;
+import org.hkijena.jipipe.JIPipe;
 
 import javax.swing.*;
 import java.awt.*;
@@ -75,11 +76,11 @@ public class JIPipeDesktopRecentProjectsListPanel extends JIPipeDesktopProjectWo
         toolbar.setFloatable(false);
         toolbar.add(recentProjectsSearch);
 
-        JButton menuButton = new JButton(UIUtils.getIconFromResources("actions/hamburger-menu.png"));
+        JButton menuButton = new JButton(JIPipe.RESOURCES.getIcon16("actions/hamburger-menu.png"));
         UIUtils.makeButtonFlat25x25(menuButton);
         JPopupMenu menu = UIUtils.addPopupMenuToButton(menuButton);
-        menu.add(UIUtils.createMenuItem("Delete selection", "Deletes the selected items", UIUtils.getIconFromResources("actions/editdelete.png"), this::deleteSelection));
-        menu.add(UIUtils.createMenuItem("Clear", "Deletes all items", UIUtils.getIconFromResources("actions/edit-clear-history.png"), this::clearAll));
+        menu.add(UIUtils.createMenuItem("Delete selection", "Deletes the selected items", JIPipe.RESOURCES.getIcon16("actions/editdelete.png"), this::deleteSelection));
+        menu.add(UIUtils.createMenuItem("Clear", "Deletes all items", JIPipe.RESOURCES.getIcon16("actions/edit-clear-history.png"), this::clearAll));
         toolbar.add(menuButton);
 
         recentProjectsSearch.addActionListener(e -> refreshRecentProjects());

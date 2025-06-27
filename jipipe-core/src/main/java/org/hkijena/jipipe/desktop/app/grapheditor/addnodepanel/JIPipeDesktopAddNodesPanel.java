@@ -37,6 +37,7 @@ import org.hkijena.jipipe.plugins.settings.JIPipeGraphEditorUIApplicationSetting
 import org.hkijena.jipipe.utils.StringUtils;
 import org.hkijena.jipipe.utils.TooltipUtils;
 import org.hkijena.jipipe.utils.UIUtils;
+import org.hkijena.jipipe.JIPipe;
 import org.hkijena.jipipe.utils.ui.JIPipeDesktopDockPanel;
 import org.jdesktop.swingx.JXTextField;
 import org.jgrapht.Graphs;
@@ -438,7 +439,7 @@ public class JIPipeDesktopAddNodesPanel extends JIPipeDesktopWorkbenchPanel {
                 });
                 subCategoryPathPanel.add(navigateButton);
 
-                JButton listButton = new JButton(UIUtils.getIcon8FromResources("caret-right.png"));
+                JButton listButton = new JButton(JIPipe.RESOURCES.getIcon8("caret-right.png"));
                 listButton.setBorder(UIUtils.createEmptyBorder(3));
                 subCategoryPathPanel.add(listButton);
                 JPopupMenu goToMenu = UIUtils.addPopupMenuToButton(listButton);
@@ -446,7 +447,7 @@ public class JIPipeDesktopAddNodesPanel extends JIPipeDesktopWorkbenchPanel {
                 for (String successor : successors) {
                     String[] successorPathComponents = successor.split("\n");
                     goToMenu.add(UIUtils.createMenuItem(successorPathComponents[successorPathComponents.length - 1], "Go to sub category",
-                            UIUtils.getIconFromResources("actions/tag.png"), () -> {
+                            JIPipe.RESOURCES.getIcon16("actions/tag.png"), () -> {
                                 if (mainCategoryHierarchy.containsVertex(successor)) {
                                     currentHierarchyVertex = successor;
                                     updateSubCategoryPanels();
@@ -522,22 +523,22 @@ public class JIPipeDesktopAddNodesPanel extends JIPipeDesktopWorkbenchPanel {
             Set<String> pinnedNodeDatabaseEntries = getPinnedNodeDatabaseEntries();
             List<JIPipeNodeDatabaseEntry> selectedValues = algorithmList.getSelectedValuesList();
             if (!selectedValues.isEmpty()) {
-                contextMenu.add(UIUtils.createMenuItem("Insert at cursor", "Inserts the node at the cursor", UIUtils.getIconFromResources("actions/add.png"), () -> {
+                contextMenu.add(UIUtils.createMenuItem("Insert at cursor", "Inserts the node at the cursor", JIPipe.RESOURCES.getIcon16("actions/add.png"), () -> {
                     insertAtCursor(selectedValues.get(0));
                 }));
                 UIUtils.addSeparatorIfNeeded(contextMenu);
                 if (selectedValues.stream().anyMatch(entry -> !pinnedNodeDatabaseEntries.contains(entry.getId()))) {
-                    contextMenu.add(UIUtils.createMenuItem("Pin", "Adds the item to the list of pinned items", UIUtils.getIconFromResources("actions/window-pin.png"), () -> {
+                    contextMenu.add(UIUtils.createMenuItem("Pin", "Adds the item to the list of pinned items", JIPipe.RESOURCES.getIcon16("actions/window-pin.png"), () -> {
                         pinNodes(selectedValues);
                     }));
                 }
                 if (selectedValues.stream().anyMatch(entry -> pinnedNodeDatabaseEntries.contains(entry.getId()))) {
-                    contextMenu.add(UIUtils.createMenuItem("Unpin", "Removes the item from the list of pinned items", UIUtils.getIconFromResources("actions/window-unpin.png"), () -> {
+                    contextMenu.add(UIUtils.createMenuItem("Unpin", "Removes the item from the list of pinned items", JIPipe.RESOURCES.getIcon16("actions/window-unpin.png"), () -> {
                         unpinNodes(selectedValues);
                     }));
                 }
                 contextMenu.addSeparator();
-                contextMenu.add(UIUtils.createMenuItem("Show documentation", "Displays the documentation of this node", UIUtils.getIconFromResources("actions/help.png"), () -> {
+                contextMenu.add(UIUtils.createMenuItem("Show documentation", "Displays the documentation of this node", JIPipe.RESOURCES.getIcon16("actions/help.png"), () -> {
                     showDocumentation(selectedValues.get(0));
                 }));
             }
@@ -551,7 +552,7 @@ public class JIPipeDesktopAddNodesPanel extends JIPipeDesktopWorkbenchPanel {
             helpPanel = new JIPipeDesktopFormHelpPanel();
             graphEditorUI.getDockPanel().addDockPanel(JIPipeDesktopPipelineGraphEditorUI.DOCK_NODE_CONTEXT_HELP,
                     "Documentation",
-                    UIUtils.getIcon32FromResources("actions/help-question.png"),
+                    JIPipe.RESOURCES.getIcon32("actions/help-question.png"),
                     JIPipeDesktopDockPanel.PanelLocation.BottomRight,
                     true,
                     0, helpPanel);
@@ -635,7 +636,7 @@ public class JIPipeDesktopAddNodesPanel extends JIPipeDesktopWorkbenchPanel {
         });
         toolBar.add(searchField);
 
-        JButton menuButton = new JButton(UIUtils.getIconFromResources("actions/hamburger-menu.png"));
+        JButton menuButton = new JButton(JIPipe.RESOURCES.getIcon16("actions/hamburger-menu.png"));
         UIUtils.makeButtonFlat25x25(menuButton);
         JPopupMenu menu = UIUtils.addPopupMenuToButton(menuButton);
         initializeToolbarMenu(menu);
@@ -862,7 +863,7 @@ public class JIPipeDesktopAddNodesPanel extends JIPipeDesktopWorkbenchPanel {
 
         @Override
         public Icon getIcon() {
-            return UIUtils.getIconFromResources("actions/star.png");
+            return JIPipe.RESOURCES.getIcon16("actions/star.png");
         }
 
         @Override
@@ -894,7 +895,7 @@ public class JIPipeDesktopAddNodesPanel extends JIPipeDesktopWorkbenchPanel {
 
         @Override
         public Icon getIcon() {
-            return UIUtils.getIconFromResources("actions/window-pin.png");
+            return JIPipe.RESOURCES.getIcon16("actions/window-pin.png");
         }
 
         @Override

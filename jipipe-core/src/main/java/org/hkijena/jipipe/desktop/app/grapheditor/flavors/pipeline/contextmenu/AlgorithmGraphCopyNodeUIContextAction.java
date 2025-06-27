@@ -14,11 +14,13 @@
 package org.hkijena.jipipe.desktop.app.grapheditor.flavors.pipeline.contextmenu;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
+import org.hkijena.jipipe.JIPipe;
 import org.hkijena.jipipe.api.nodes.JIPipeGraph;
 import org.hkijena.jipipe.desktop.app.grapheditor.commons.JIPipeDesktopGraphCanvasUI;
 import org.hkijena.jipipe.desktop.app.grapheditor.commons.contextmenu.NodeUIContextAction;
 import org.hkijena.jipipe.desktop.app.grapheditor.commons.nodeui.JIPipeDesktopGraphNodeUI;
 import org.hkijena.jipipe.utils.UIUtils;
+import org.hkijena.jipipe.JIPipe;
 import org.hkijena.jipipe.utils.json.JsonUtils;
 
 import javax.swing.*;
@@ -63,7 +65,7 @@ public class AlgorithmGraphCopyNodeUIContextAction implements NodeUIContextActio
 
     @Override
     public Icon getIcon() {
-        return UIUtils.getIconFromResources("actions/edit-copy.png");
+        return JIPipe.RESOURCES.getIcon16("actions/edit-copy.png");
     }
 
     @Override

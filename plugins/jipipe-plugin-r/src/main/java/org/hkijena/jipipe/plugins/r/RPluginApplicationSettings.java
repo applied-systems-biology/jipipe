@@ -24,6 +24,7 @@ import org.hkijena.jipipe.api.settings.JIPipeDefaultApplicationSettingsSheetCate
 import org.hkijena.jipipe.api.settings.JIPipeDefaultApplicationsSettingsSheet;
 import org.hkijena.jipipe.plugins.parameters.library.jipipe.JIPipeArtifactQueryParameter;
 import org.hkijena.jipipe.utils.UIUtils;
+import org.hkijena.jipipe.JIPipe;
 
 import javax.swing.*;
 import java.util.List;
@@ -105,7 +106,7 @@ public class RPluginApplicationSettings extends JIPipeDefaultApplicationsSetting
 
     @Override
     public Icon getIcon() {
-        return UIUtils.getIconFromResources("apps/rlogo_icon.png");
+        return JIPipe.RESOURCES.getIcon16("apps/rlogo_icon.png");
     }
 
     @Override

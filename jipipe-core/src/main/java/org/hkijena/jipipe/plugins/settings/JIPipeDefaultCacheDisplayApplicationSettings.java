@@ -18,6 +18,7 @@ import org.hkijena.jipipe.api.parameters.JIPipeDynamicParameterCollection;
 import org.hkijena.jipipe.api.settings.JIPipeApplicationSettingsSheet;
 import org.hkijena.jipipe.api.settings.JIPipeDefaultApplicationSettingsSheetCategory;
 import org.hkijena.jipipe.utils.UIUtils;
+import org.hkijena.jipipe.JIPipe;
 
 import javax.swing.*;
 
@@ -46,7 +47,7 @@ public class JIPipeDefaultCacheDisplayApplicationSettings extends JIPipeDynamicP
 
     @Override
     public Icon getIcon() {
-        return UIUtils.getIconFromResources("actions/zoom.png");
+        return JIPipe.RESOURCES.getIcon16("actions/zoom.png");
     }
 
     @Override

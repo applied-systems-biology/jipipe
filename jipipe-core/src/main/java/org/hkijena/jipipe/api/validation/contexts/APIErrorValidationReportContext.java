@@ -13,8 +13,10 @@
 
 package org.hkijena.jipipe.api.validation.contexts;
 
+import org.hkijena.jipipe.JIPipe;
 import org.hkijena.jipipe.api.validation.JIPipeValidationReportContext;
 import org.hkijena.jipipe.utils.UIUtils;
+import org.hkijena.jipipe.JIPipe;
 
 import javax.swing.*;
 
@@ -34,6 +36,6 @@ public class APIErrorValidationReportContext extends JIPipeValidationReportConte
 
     @Override
     public Icon renderIcon() {
-        return UIUtils.getIconFromResources("actions/bug.png");
+        return JIPipe.RESOURCES.getIcon16("actions/bug.png");
     }
 }

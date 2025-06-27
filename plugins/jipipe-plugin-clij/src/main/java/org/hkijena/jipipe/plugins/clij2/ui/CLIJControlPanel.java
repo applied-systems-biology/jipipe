@@ -26,6 +26,7 @@ import org.hkijena.jipipe.plugins.parameters.library.markup.MarkdownText;
 import org.hkijena.jipipe.utils.ResourceUtils;
 import org.hkijena.jipipe.utils.SizeFitMode;
 import org.hkijena.jipipe.utils.UIUtils;
+import org.hkijena.jipipe.JIPipe;
 
 import javax.swing.*;
 import java.awt.*;
@@ -79,9 +80,7 @@ public class CLIJControlPanel extends JIPipeDesktopWorkbenchPanel {
     }
 
     private void initializeHeaderPanel() {
-        JPanel headerPanel;
-        headerPanel = new JIPipeDesktopImageFrameComponent(UIUtils.getHeaderPanelBackground(), false, SizeFitMode.FitHeight, false);
-        headerPanel.setLayout(new BorderLayout());
+        JPanel headerPanel = new JPanel(new BorderLayout());
         headerPanel.setBorder(BorderFactory.createMatteBorder(0, 0, 1, 0, Color.DARK_GRAY));
         headerPanel.setPreferredSize(new Dimension(headerPanel.getPreferredSize().width, 200));
         JLabel logo = new JLabel(new ImageIcon(ResourceUtils.getPluginResource("extensions/clij2/clij_logo.png")));
@@ -115,10 +114,10 @@ public class CLIJControlPanel extends JIPipeDesktopWorkbenchPanel {
             CLIJConverterService clijConverterService = getDesktopWorkbench().getContext().getService(CLIJConverterService.class);
             if (clijConverterService.getCLIJ() == clij2.getCLIJ()) {
                 readyLabel.setText("Ready");
-                readyLabel.setIcon(UIUtils.getIconFromResources("emblems/vcs-normal.png"));
+                readyLabel.setIcon(JIPipe.RESOURCES.getIcon16("emblems/vcs-normal.png"));
             } else {
                 readyLabel.setText("Not ready");
-                readyLabel.setIcon(UIUtils.getIconFromResources("emblems/vcs-conflicting.png"));
+                readyLabel.setIcon(JIPipe.RESOURCES.getIcon16("emblems/vcs-conflicting.png"));
             }
         } catch (Exception e) {
             switchToUnsuccessfulLoad();
@@ -131,7 +130,7 @@ public class CLIJControlPanel extends JIPipeDesktopWorkbenchPanel {
         gpuMemory.setText("N/A");
         clearMemoryButton.setEnabled(false);
         readyLabel.setText("Not ready");
-        readyLabel.setIcon(UIUtils.getIconFromResources("emblems/vcs-conflicting.png"));
+        readyLabel.setIcon(JIPipe.RESOURCES.getIcon16("emblems/vcs-conflicting.png"));
     }
 
     private void initializeToolbar(JPanel topPanel) {
@@ -140,7 +139,7 @@ public class CLIJControlPanel extends JIPipeDesktopWorkbenchPanel {
         toolBar.setLayout(new BoxLayout(toolBar, BoxLayout.X_AXIS));
         toolBar.setOpaque(false);
 
-        JButton openWebsiteButton = new JButton("CLIJ2 website", UIUtils.getIconFromResources("actions/web-browser.png"));
+        JButton openWebsiteButton = new JButton("CLIJ2 website", JIPipe.RESOURCES.getIcon16("actions/web-browser.png"));
         openWebsiteButton.setToolTipText("https://clij.github.io/");
         openWebsiteButton.addActionListener(e -> UIUtils.desktopOpenURL("https://clij.github.io/", true));
         openWebsiteButton.setOpaque(false);
@@ -148,7 +147,7 @@ public class CLIJControlPanel extends JIPipeDesktopWorkbenchPanel {
         toolBar.add(openWebsiteButton);
         toolBar.add(Box.createHorizontalStrut(4));
 
-        JButton initializeButton = new JButton("Re-initialize", UIUtils.getIconFromResources("actions/plug.png"));
+        JButton initializeButton = new JButton("Re-initialize", JIPipe.RESOURCES.getIcon16("actions/plug.png"));
         initializeButton.setToolTipText("(Re)Initializes CLIJ2. This is required to run GPU operations.");
         initializeButton.addActionListener(e -> reinitializeCLIJ());
         initializeButton.setOpaque(false);
@@ -156,7 +155,7 @@ public class CLIJControlPanel extends JIPipeDesktopWorkbenchPanel {
         toolBar.add(initializeButton);
         toolBar.add(Box.createHorizontalStrut(4));
 
-        clearMemoryButton = new JButton("Clear memory", UIUtils.getIconFromResources("actions/delete.png"));
+        clearMemoryButton = new JButton("Clear memory", JIPipe.RESOURCES.getIcon16("actions/delete.png"));
         clearMemoryButton.setToolTipText("Clears all images from GPU memory. Please note that this can break running analyses and cached items.");
         clearMemoryButton.addActionListener(e -> clearMemory());
         clearMemoryButton.setOpaque(false);
@@ -166,7 +165,7 @@ public class CLIJControlPanel extends JIPipeDesktopWorkbenchPanel {
 
         toolBar.add(Box.createHorizontalGlue());
 
-        JButton refreshButton = new JButton("Refresh", UIUtils.getIconFromResources("actions/view-refresh.png"));
+        JButton refreshButton = new JButton("Refresh", JIPipe.RESOURCES.getIcon16("actions/view-refresh.png"));
         refreshButton.addActionListener(e -> refresh());
         refreshButton.setOpaque(false);
         refreshButton.setBackground(new Color(0, 0, 0, 0));

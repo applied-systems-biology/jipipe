@@ -20,6 +20,7 @@ import org.hkijena.jipipe.api.events.JIPipeEventEmitter;
 import org.hkijena.jipipe.api.nodes.JIPipeGraphNode;
 import org.hkijena.jipipe.desktop.commons.components.layouts.JIPipeDesktopFlowLayout;
 import org.hkijena.jipipe.utils.UIUtils;
+import org.hkijena.jipipe.JIPipe;
 
 import javax.swing.*;
 import java.awt.*;
@@ -46,19 +47,19 @@ public class JIPipeDesktopAlgorithmCacheBrowserOutputSelectorUI extends JPanel {
     private void initialize() {
         setLayout(new BorderLayout());
 
-        JButton previousButton = new JButton(UIUtils.getIconFromResources("actions/draw-triangle1.png"));
+        JButton previousButton = new JButton(JIPipe.RESOURCES.getIcon16("actions/draw-triangle1.png"));
         previousButton.setBorder(null);
         previousButton.addActionListener(e -> showPrevious());
         add(previousButton, BorderLayout.WEST);
 
-        JButton nextButton = new JButton(UIUtils.getIconFromResources("actions/draw-triangle2.png"));
+        JButton nextButton = new JButton(JIPipe.RESOURCES.getIcon16("actions/draw-triangle2.png"));
         nextButton.setBorder(null);
         nextButton.addActionListener(e -> showNext());
         add(nextButton, BorderLayout.EAST);
 
         JPanel wrapperPanel = new JPanel(new JIPipeDesktopFlowLayout(FlowLayout.CENTER));
         {
-            JToggleButton outputButton = new JToggleButton("All outputs", UIUtils.getIconFromResources("actions/stock_select-all.png"));
+            JToggleButton outputButton = new JToggleButton("All outputs", JIPipe.RESOURCES.getIcon16("actions/stock_select-all.png"));
             outputButton.setBorder(BorderFactory.createEmptyBorder(2, 2, 2, 2));
             wrapperPanel.add(outputButton);
             buttonMap.put("", outputButton);

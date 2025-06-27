@@ -13,6 +13,7 @@
 
 package org.hkijena.jipipe.desktop.app.cache;
 
+import org.hkijena.jipipe.JIPipe;
 import org.hkijena.jipipe.api.annotation.JIPipeTextAnnotation;
 import org.hkijena.jipipe.api.data.sources.JIPipeDataTableDataSource;
 import org.hkijena.jipipe.desktop.JIPipeDesktop;
@@ -24,6 +25,7 @@ import org.hkijena.jipipe.plugins.settings.JIPipeFileChooserApplicationSettings;
 import org.hkijena.jipipe.plugins.tables.datatypes.ResultsTableData;
 import org.hkijena.jipipe.utils.PathUtils;
 import org.hkijena.jipipe.utils.UIUtils;
+import org.hkijena.jipipe.JIPipe;
 import org.jdesktop.swingx.JXTable;
 
 import javax.swing.*;
@@ -59,14 +61,14 @@ public class JIPipeDesktopCachedDataViewerAnnotationInfoPanel extends JIPipeDesk
         JToolBar toolBar = new JToolBar();
         toolBar.setFloatable(false);
 
-        JButton exportButton = new JButton("Export", UIUtils.getIconFromResources("actions/document-export.png"));
+        JButton exportButton = new JButton("Export", JIPipe.RESOURCES.getIcon16("actions/document-export.png"));
         JPopupMenu exportMenu = UIUtils.addPopupMenuToButton(exportButton);
 
-        JMenuItem exportToEditorItem = new JMenuItem("Open in editor", UIUtils.getIconFromResources("actions/open-in-new-window.png"));
+        JMenuItem exportToEditorItem = new JMenuItem("Open in editor", JIPipe.RESOURCES.getIcon16("actions/open-in-new-window.png"));
         exportToEditorItem.addActionListener(e -> exportToTableEditor());
         exportMenu.add(exportToEditorItem);
 
-        JMenuItem exportAsCSVItem = new JMenuItem("as *.csv", UIUtils.getIconFromResources("data-types/results-table.png"));
+        JMenuItem exportAsCSVItem = new JMenuItem("as *.csv", JIPipe.RESOURCES.getIcon16("data-types/results-table.png"));
         exportAsCSVItem.addActionListener(e -> exportAsCSV());
         exportMenu.add(exportAsCSVItem);
 

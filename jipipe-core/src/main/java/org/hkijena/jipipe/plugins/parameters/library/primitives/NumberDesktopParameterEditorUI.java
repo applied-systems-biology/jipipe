@@ -14,11 +14,13 @@
 package org.hkijena.jipipe.plugins.parameters.library.primitives;
 
 import org.apache.commons.lang3.math.NumberUtils;
+import org.hkijena.jipipe.JIPipe;
 import org.hkijena.jipipe.desktop.api.JIPipeDesktopParameterEditorUI;
 import org.hkijena.jipipe.desktop.commons.components.JIPipeDesktopDocumentChangeListener;
 import org.hkijena.jipipe.plugins.expressions.JIPipeExpressionParameter;
 import org.hkijena.jipipe.utils.StringUtils;
 import org.hkijena.jipipe.utils.UIUtils;
+import org.hkijena.jipipe.JIPipe;
 
 import javax.swing.*;
 import javax.swing.event.DocumentEvent;
@@ -214,14 +216,14 @@ public class NumberDesktopParameterEditorUI extends JIPipeDesktopParameterEditor
 
         JPanel buttonPanel = new JPanel(new BorderLayout());
         buttonPanel.setBackground(UIManager.getColor("TextField.background"));
-        JButton buttonUp = new JButton(UIUtils.getIconFromResources("actions/caret-up.png"));
+        JButton buttonUp = new JButton(JIPipe.RESOURCES.getIcon16("actions/caret-up.png"));
         buttonUp.setBackground(UIManager.getColor("TextField.background"));
         buttonUp.setPreferredSize(new Dimension(21, 14));
         buttonUp.setBorder(BorderFactory.createEmptyBorder(0, 4, 0, 4));
         buttonUp.addActionListener(e -> increase());
         buttonPanel.add(buttonUp, BorderLayout.NORTH);
 
-        JButton buttonDown = new JButton(UIUtils.getIconFromResources("actions/caret-down.png"));
+        JButton buttonDown = new JButton(JIPipe.RESOURCES.getIcon16("actions/caret-down.png"));
         buttonDown.setBackground(UIManager.getColor("TextField.background"));
         buttonDown.setPreferredSize(new Dimension(21, 14));
         buttonDown.setBorder(BorderFactory.createEmptyBorder(0, 4, 0, 4));

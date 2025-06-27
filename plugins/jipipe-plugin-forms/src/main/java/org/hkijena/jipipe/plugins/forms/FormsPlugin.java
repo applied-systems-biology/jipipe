@@ -29,6 +29,7 @@ import org.hkijena.jipipe.plugins.parameters.library.primitives.list.StringList;
 import org.hkijena.jipipe.plugins.strings.StringsPlugin;
 import org.hkijena.jipipe.plugins.tables.TablesPlugin;
 import org.hkijena.jipipe.utils.UIUtils;
+import org.hkijena.jipipe.JIPipe;
 import org.scijava.Context;
 import org.scijava.plugin.Plugin;
 
@@ -94,27 +95,27 @@ public class FormsPlugin extends JIPipePrepackagedDefaultJavaPlugin {
 
     @Override
     public void register(JIPipe jiPipe, Context context, JIPipeProgressInfo progressInfo) {
-        registerDatatype("form", FormData.class, UIUtils.getIconURLFromResources("data-types/form.png"));
+        registerDatatype("form", FormData.class, JIPipe.RESOURCES.getIcon16URL("data-types/form.png"));
 
-        registerDatatype("group-header-form", GroupHeaderFormData.class, UIUtils.getIconURLFromResources("data-types/form.png"));
-        registerDatatype("string-form", StringFormData.class, UIUtils.getIconURLFromResources("data-types/form.png"));
-        registerDatatype("integer-form", IntegerFormData.class, UIUtils.getIconURLFromResources("data-types/form.png"));
-        registerDatatype("number-form", DoubleFormData.class, UIUtils.getIconURLFromResources("data-types/form.png"));
-        registerDatatype("boolean-form", BooleanFormData.class, UIUtils.getIconURLFromResources("data-types/form.png"));
-        registerDatatype("enum-form", EnumFormData.class, UIUtils.getIconURLFromResources("data-types/form.png"));
-        registerDatatype("path-form", PathFormData.class, UIUtils.getIconURLFromResources("data-types/form.png"));
+        registerDatatype("group-header-form", GroupHeaderFormData.class, JIPipe.RESOURCES.getIcon16URL("data-types/form.png"));
+        registerDatatype("string-form", StringFormData.class, JIPipe.RESOURCES.getIcon16URL("data-types/form.png"));
+        registerDatatype("integer-form", IntegerFormData.class, JIPipe.RESOURCES.getIcon16URL("data-types/form.png"));
+        registerDatatype("number-form", DoubleFormData.class, JIPipe.RESOURCES.getIcon16URL("data-types/form.png"));
+        registerDatatype("boolean-form", BooleanFormData.class, JIPipe.RESOURCES.getIcon16URL("data-types/form.png"));
+        registerDatatype("enum-form", EnumFormData.class, JIPipe.RESOURCES.getIcon16URL("data-types/form.png"));
+        registerDatatype("path-form", PathFormData.class, JIPipe.RESOURCES.getIcon16URL("data-types/form.png"));
 
-        registerNodeType("group-header-form", GroupHeaderFormGeneratorAlgorithm.class, UIUtils.getIconURLFromResources("data-types/form.png"));
-        registerNodeType("string-form", StringFormGeneratorAlgorithm.class, UIUtils.getIconURLFromResources("data-types/form.png"));
-        registerNodeType("integer-form", IntegerFormGeneratorAlgorithm.class, UIUtils.getIconURLFromResources("data-types/form.png"));
-        registerNodeType("number-form", DoubleFormGeneratorAlgorithm.class, UIUtils.getIconURLFromResources("data-types/form.png"));
-        registerNodeType("boolean-form", BooleanFormGeneratorAlgorithm.class, UIUtils.getIconURLFromResources("data-types/form.png"));
-        registerNodeType("enum-form", EnumFormGeneratorAlgorithm.class, UIUtils.getIconURLFromResources("data-types/form.png"));
-        registerNodeType("path-form", PathFormGeneratorAlgorithm.class, UIUtils.getIconURLFromResources("data-types/form.png"));
+        registerNodeType("group-header-form", GroupHeaderFormGeneratorAlgorithm.class, JIPipe.RESOURCES.getIcon16URL("data-types/form.png"));
+        registerNodeType("string-form", StringFormGeneratorAlgorithm.class, JIPipe.RESOURCES.getIcon16URL("data-types/form.png"));
+        registerNodeType("integer-form", IntegerFormGeneratorAlgorithm.class, JIPipe.RESOURCES.getIcon16URL("data-types/form.png"));
+        registerNodeType("number-form", DoubleFormGeneratorAlgorithm.class, JIPipe.RESOURCES.getIcon16URL("data-types/form.png"));
+        registerNodeType("boolean-form", BooleanFormGeneratorAlgorithm.class, JIPipe.RESOURCES.getIcon16URL("data-types/form.png"));
+        registerNodeType("enum-form", EnumFormGeneratorAlgorithm.class, JIPipe.RESOURCES.getIcon16URL("data-types/form.png"));
+        registerNodeType("path-form", PathFormGeneratorAlgorithm.class, JIPipe.RESOURCES.getIcon16URL("data-types/form.png"));
 
-        registerNodeType("form-processor-simple-iterating", SimpleIteratingFormProcessorAlgorithm.class, UIUtils.getIconURLFromResources("data-types/form.png"));
-        registerNodeType("form-processor-merging", MergingFormProcessorAlgorithm.class, UIUtils.getIconURLFromResources("data-types/form.png"));
-        registerNodeType("form-processor-iterating", IteratingFormProcessorAlgorithm.class, UIUtils.getIconURLFromResources("data-types/form.png"));
+        registerNodeType("form-processor-simple-iterating", SimpleIteratingFormProcessorAlgorithm.class, JIPipe.RESOURCES.getIcon16URL("data-types/form.png"));
+        registerNodeType("form-processor-merging", MergingFormProcessorAlgorithm.class, JIPipe.RESOURCES.getIcon16URL("data-types/form.png"));
+        registerNodeType("form-processor-iterating", IteratingFormProcessorAlgorithm.class, JIPipe.RESOURCES.getIcon16URL("data-types/form.png"));
     }
 
 }

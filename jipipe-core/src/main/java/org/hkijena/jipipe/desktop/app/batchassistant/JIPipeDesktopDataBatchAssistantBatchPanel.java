@@ -13,12 +13,14 @@
 
 package org.hkijena.jipipe.desktop.app.batchassistant;
 
+import org.hkijena.jipipe.JIPipe;
 import org.hkijena.jipipe.api.data.JIPipeData;
 import org.hkijena.jipipe.api.data.JIPipeDataTable;
 import org.hkijena.jipipe.desktop.app.JIPipeDesktopProjectWorkbench;
 import org.hkijena.jipipe.desktop.app.JIPipeDesktopProjectWorkbenchPanel;
 import org.hkijena.jipipe.desktop.commons.components.JIPipeDesktopFormPanel;
 import org.hkijena.jipipe.utils.UIUtils;
+import org.hkijena.jipipe.JIPipe;
 
 import java.awt.*;
 
@@ -36,7 +38,7 @@ public class JIPipeDesktopDataBatchAssistantBatchPanel extends JIPipeDesktopProj
     private void initialize() {
         setLayout(new BorderLayout());
 
-        JIPipeDesktopFormPanel.GroupHeaderPanel groupHeaderPanel = new JIPipeDesktopFormPanel.GroupHeaderPanel("Preview iteration steps", UIUtils.getIconFromResources("actions/format-list-ordered.png"), 4);
+        JIPipeDesktopFormPanel.GroupHeaderPanel groupHeaderPanel = new JIPipeDesktopFormPanel.GroupHeaderPanel("Preview iteration steps", JIPipe.RESOURCES.getIcon16("actions/format-list-ordered.png"), 4);
         groupHeaderPanel.addToTitlePanel(UIUtils.createBalloonHelpButton("The node will be executed for each of the following steps (1 step per row). Please review if the data is assigned as expected."));
 
         add(groupHeaderPanel, BorderLayout.NORTH);

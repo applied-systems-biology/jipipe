@@ -13,7 +13,9 @@
 
 package org.hkijena.jipipe.desktop.commons.components;
 
+import org.hkijena.jipipe.JIPipe;
 import org.hkijena.jipipe.utils.UIUtils;
+import org.hkijena.jipipe.JIPipe;
 import org.hkijena.jipipe.utils.ui.RoundedLineBorder;
 
 import javax.swing.*;
@@ -129,7 +131,7 @@ public class JIPipeDesktopMessagePanel extends JIPipeDesktopFormPanel {
                 }
             }
             if (withCloseButton) {
-                JButton closeButton = new JButton(UIUtils.getIconFromResources("actions/close-tab.png"));
+                JButton closeButton = new JButton(JIPipe.RESOURCES.getIcon16("actions/close-tab.png"));
                 UIUtils.makeButtonFlat25x25(closeButton);
                 closeButton.addActionListener(e -> {
                     closeMessage();

@@ -30,6 +30,7 @@ import org.hkijena.jipipe.plugins.imagejdatatypes.datatypes.ROI2DListData;
 import org.hkijena.jipipe.plugins.napari.NapariOverlay;
 import org.hkijena.jipipe.plugins.napari.NapariPlugin;
 import org.hkijena.jipipe.utils.UIUtils;
+import org.hkijena.jipipe.JIPipe;
 
 import javax.swing.*;
 import java.nio.file.Path;
@@ -122,6 +123,6 @@ public class OpenInNapariDataDisplayOperation implements JIPipeDesktopDataDispla
 
     @Override
     public Icon getIcon() {
-        return UIUtils.getIconFromResources("apps/napari.png");
+        return JIPipe.RESOURCES.getIcon16("apps/napari.png");
     }
 }

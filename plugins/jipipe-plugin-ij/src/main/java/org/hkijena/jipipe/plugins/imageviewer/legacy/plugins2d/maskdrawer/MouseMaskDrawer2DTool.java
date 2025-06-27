@@ -16,6 +16,7 @@ package org.hkijena.jipipe.plugins.imageviewer.legacy.plugins2d.maskdrawer;
 import org.hkijena.jipipe.desktop.commons.components.JIPipeDesktopFormPanel;
 import org.hkijena.jipipe.plugins.imageviewer.utils.viewer2d.ImageViewerPanelCanvas2D;
 import org.hkijena.jipipe.utils.UIUtils;
+import org.hkijena.jipipe.JIPipe;
 
 import javax.swing.*;
 import java.awt.*;
@@ -29,7 +30,7 @@ public class MouseMaskDrawer2DTool extends MaskDrawer2DTool {
         super(plugin,
                 "No tool",
                 "Allows to drag the canvas with the left mouse",
-                UIUtils.getIcon32FromResources("actions/hand.png"));
+                JIPipe.RESOURCES.getIcon32("actions/hand.png"));
     }
 
     @Override

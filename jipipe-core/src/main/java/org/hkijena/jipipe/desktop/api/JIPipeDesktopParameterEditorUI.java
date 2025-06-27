@@ -24,6 +24,7 @@ import org.hkijena.jipipe.desktop.app.grapheditor.commons.AbstractJIPipeDesktopG
 import org.hkijena.jipipe.desktop.app.grapheditor.commons.JIPipeDesktopGraphCanvasUI;
 import org.hkijena.jipipe.desktop.commons.components.JIPipeDesktopParameterFormPanel;
 import org.hkijena.jipipe.utils.UIUtils;
+import org.hkijena.jipipe.JIPipe;
 import org.scijava.Context;
 import org.scijava.Contextual;
 import org.scijava.Disposable;

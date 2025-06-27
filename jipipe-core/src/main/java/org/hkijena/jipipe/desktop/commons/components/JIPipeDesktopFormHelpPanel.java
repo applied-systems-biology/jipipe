@@ -1,9 +1,11 @@
 package org.hkijena.jipipe.desktop.commons.components;
 
+import org.hkijena.jipipe.JIPipe;
 import org.hkijena.jipipe.desktop.commons.components.markup.JIPipeDesktopMarkdownReader;
 import org.hkijena.jipipe.plugins.parameters.library.markup.MarkdownText;
 import org.hkijena.jipipe.utils.StringUtils;
 import org.hkijena.jipipe.utils.UIUtils;
+import org.hkijena.jipipe.JIPipe;
 
 import javax.swing.*;
 import java.awt.*;
@@ -11,7 +13,7 @@ import java.awt.*;
 public class JIPipeDesktopFormHelpPanel extends JPanel {
 
     private final JIPipeDesktopMarkdownReader contentReader = new JIPipeDesktopMarkdownReader(false);
-    private final JButton showDefaultButton = new JButton("Back", UIUtils.getIconFromResources("actions/previous.png"));
+    private final JButton showDefaultButton = new JButton("Back", JIPipe.RESOURCES.getIcon16("actions/previous.png"));
     private MarkdownText defaultContent;
     private String currentDocumentName;
     private MarkdownText currentContent;

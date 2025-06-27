@@ -13,10 +13,12 @@
 
 package org.hkijena.jipipe.desktop.app.backups;
 
+import org.hkijena.jipipe.JIPipe;
 import org.hkijena.jipipe.api.backups.JIPipeProjectBackupItem;
 import org.hkijena.jipipe.api.backups.JIPipeProjectBackupItemCollection;
 import org.hkijena.jipipe.desktop.app.resultanalysis.JIPipeDesktopResultAlgorithmTree;
 import org.hkijena.jipipe.utils.UIUtils;
+import org.hkijena.jipipe.JIPipe;
 
 import javax.swing.*;
 import javax.swing.tree.DefaultMutableTreeNode;
@@ -28,9 +30,9 @@ import java.time.format.DateTimeFormatter;
  * Renders the tree in {@link JIPipeDesktopResultAlgorithmTree}
  */
 public class JIPipeDesktopBackupManagerTreeCellRenderer extends JLabel implements TreeCellRenderer {
-    private final Icon rootIcon = UIUtils.getIconFromResources("places/folder-blue.png");
-    private final Icon collectionIcon = UIUtils.getIconFromResources("mimetypes/application-jipipe.png");
-    private final Icon backupIcon = UIUtils.getIconFromResources("actions/clock.png");
+    private final Icon rootIcon = JIPipe.RESOURCES.getIcon16("places/folder-blue.png");
+    private final Icon collectionIcon = JIPipe.RESOURCES.getIcon16("mimetypes/application-jipipe.png");
+    private final Icon backupIcon = JIPipe.RESOURCES.getIcon16("actions/clock.png");
 
     /**
      * Creates new renderer

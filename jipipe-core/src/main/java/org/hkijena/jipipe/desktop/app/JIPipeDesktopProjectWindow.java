@@ -48,6 +48,7 @@ import org.hkijena.jipipe.plugins.settings.JIPipeProjectDefaultsApplicationSetti
 import org.hkijena.jipipe.utils.PathUtils;
 import org.hkijena.jipipe.utils.StringUtils;
 import org.hkijena.jipipe.utils.UIUtils;
+import org.hkijena.jipipe.JIPipe;
 import org.hkijena.jipipe.utils.json.JsonUtils;
 import org.scijava.Context;
 
@@ -461,7 +462,7 @@ public class JIPipeDesktopProjectWindow extends JFrame {
                 if (selectedOption == JOptionPane.YES_OPTION) {
                     // Create a new tab
                     window.getProjectUI().getDocumentTabPane().addTab("Results",
-                            UIUtils.getIconFromResources("actions/document-open-folder.png"),
+                            JIPipe.RESOURCES.getIcon16("actions/document-open-folder.png"),
                             new JIPipeDesktopResultUI(window.projectUI, project, path),
                             JIPipeDesktopTabPane.CloseMode.withAskOnCloseButton,
                             true);

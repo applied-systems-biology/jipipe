@@ -14,6 +14,7 @@
 package org.hkijena.jipipe.desktop.commons.components.ribbon;
 
 import org.hkijena.jipipe.utils.UIUtils;
+import org.hkijena.jipipe.JIPipe;
 
 import javax.swing.*;
 import java.awt.*;

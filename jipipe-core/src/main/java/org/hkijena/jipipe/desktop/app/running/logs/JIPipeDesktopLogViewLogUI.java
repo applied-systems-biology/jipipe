@@ -25,6 +25,7 @@ import org.hkijena.jipipe.plugins.settings.JIPipeFileChooserApplicationSettings;
 import org.hkijena.jipipe.plugins.settings.JIPipeRuntimeApplicationSettings;
 import org.hkijena.jipipe.utils.PathUtils;
 import org.hkijena.jipipe.utils.UIUtils;
+import org.hkijena.jipipe.JIPipe;
 
 import javax.swing.*;
 import java.awt.*;
@@ -78,11 +79,11 @@ public class JIPipeDesktopLogViewLogUI extends JIPipeDesktopWorkbenchPanel {
         // Init reader
         logReader.setFont(new Font(Font.MONOSPACED, Font.PLAIN, 12));
         scrollPane = new JScrollPane(logReader);
-        tabPane.addTab("Log", UIUtils.getIcon32FromResources("actions/rabbitvcs-show_log.png"), scrollPane, JIPipeDesktopTabPane.CloseMode.withoutCloseButton);
+        tabPane.addTab("Log", JIPipe.RESOURCES.getIcon32("actions/rabbitvcs-show_log.png"), scrollPane, JIPipeDesktopTabPane.CloseMode.withoutCloseButton);
 
         // Init notifications
         tabPane.addTab("Notifications",
-                logEntry.getNotifications().isEmpty() ? UIUtils.getIcon32FromResources("actions/notifications.png") : UIUtils.getIcon32FromResources("status/dialog-error.png"),
+                logEntry.getNotifications().isEmpty() ? JIPipe.RESOURCES.getIcon32("actions/notifications.png") : JIPipe.RESOURCES.getIcon32("status/dialog-error.png"),
                 new JIPipeDesktopGenericNotificationInboxUI(getDesktopWorkbench(), logEntry.getNotifications()),
                 JIPipeDesktopTabPane.CloseMode.withoutCloseButton);
 
@@ -92,11 +93,11 @@ public class JIPipeDesktopLogViewLogUI extends JIPipeDesktopWorkbenchPanel {
 
         toolBar.add(Box.createHorizontalGlue());
 
-        JButton exportButton = new JButton("Export", UIUtils.getIconFromResources("actions/document-export.png"));
+        JButton exportButton = new JButton("Export", JIPipe.RESOURCES.getIcon16("actions/document-export.png"));
         exportButton.addActionListener(e -> exportLog());
         toolBar.add(exportButton);
 
-        JButton openInExternalToolButton = new JButton("Open in external editor", UIUtils.getIconFromResources("actions/open-in-new-window.png"));
+        JButton openInExternalToolButton = new JButton("Open in external editor", JIPipe.RESOURCES.getIcon16("actions/open-in-new-window.png"));
         openInExternalToolButton.addActionListener(e -> openLogInExternalTool());
         toolBar.add(openInExternalToolButton);
     }

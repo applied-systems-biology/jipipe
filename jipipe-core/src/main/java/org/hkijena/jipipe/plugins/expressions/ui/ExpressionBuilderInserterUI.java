@@ -14,11 +14,13 @@
 package org.hkijena.jipipe.plugins.expressions.ui;
 
 import com.google.common.html.HtmlEscapers;
+import org.hkijena.jipipe.JIPipe;
 import org.hkijena.jipipe.api.registries.JIPipeExpressionRegistry;
 import org.hkijena.jipipe.desktop.commons.components.JIPipeDesktopFormPanel;
 import org.hkijena.jipipe.plugins.expressions.*;
 import org.hkijena.jipipe.utils.StringUtils;
 import org.hkijena.jipipe.utils.UIUtils;
+import org.hkijena.jipipe.JIPipe;
 
 import javax.swing.*;
 import java.awt.*;
@@ -55,11 +57,11 @@ public class ExpressionBuilderInserterUI extends JPanel {
             JIPipeExpressionParameterVariableInfo variable = (JIPipeExpressionParameterVariableInfo) insertedObject;
             JIPipeDesktopFormPanel.GroupHeaderPanel groupHeader = inserterForm.addGroupHeader(String.format("<html><i style=\"color: #ffaf0a; \">Variable</i> %s (<code><strong>%s</strong></code>)</html>",
                     HtmlEscapers.htmlEscaper().escape(variable.getName()),
-                    HtmlEscapers.htmlEscaper().escape(variable.getKey())), UIUtils.getIconFromResources("actions/insert-function.png"));
+                    HtmlEscapers.htmlEscaper().escape(variable.getKey())), JIPipe.RESOURCES.getIcon16("actions/insert-function.png"));
             groupHeader.addDescriptionRow(variable.getDescription());
 
             if (!StringUtils.isNullOrEmpty(((JIPipeExpressionParameterVariableInfo) insertedObject).getKey())) {
-                JButton insertButton = new JButton("Insert", UIUtils.getIconFromResources("actions/insert-object.png"));
+                JButton insertButton = new JButton("Insert", JIPipe.RESOURCES.getIcon16("actions/insert-object.png"));
                 insertButton.addActionListener(e -> {
                     inserterCommitted = true;
                     expressionBuilderUI.insertVariableAtCaret(variable.getKey());
@@ -71,12 +73,12 @@ public class ExpressionBuilderInserterUI extends JPanel {
             ExpressionConstantEntry constantEntry = (ExpressionConstantEntry) insertedObject;
             JIPipeDesktopFormPanel.GroupHeaderPanel groupHeader = inserterForm.addGroupHeader(String.format("<html><i style=\"color: #0000ff; \">Constant</i> %s (<code><strong>%s</strong></code>)</html>",
                     HtmlEscapers.htmlEscaper().escape(constantEntry.getName()),
-                    HtmlEscapers.htmlEscaper().escape(constantEntry.getConstant().getName())), UIUtils.getIconFromResources("actions/insert-function.png"));
+                    HtmlEscapers.htmlEscaper().escape(constantEntry.getConstant().getName())), JIPipe.RESOURCES.getIcon16("actions/insert-function.png"));
             groupHeader.addDescriptionRow(constantEntry.getDescription());
 
             inserterButtonPanel.add(Box.createHorizontalGlue());
 
-            JButton insertSimilarVariable = new JButton("Insert variable with same name", UIUtils.getIconFromResources("actions/variable.png"));
+            JButton insertSimilarVariable = new JButton("Insert variable with same name", JIPipe.RESOURCES.getIcon16("actions/variable.png"));
             insertSimilarVariable.setToolTipText("Inserts a variable that has the same name as the constant.");
             insertSimilarVariable.addActionListener(e -> {
                 inserterCommitted = true;
@@ -84,7 +86,7 @@ public class ExpressionBuilderInserterUI extends JPanel {
             });
             inserterButtonPanel.add(insertSimilarVariable);
 
-            JButton insertButton = new JButton("Insert", UIUtils.getIconFromResources("actions/insert-object.png"));
+            JButton insertButton = new JButton("Insert", JIPipe.RESOURCES.getIcon16("actions/insert-object.png"));
             insertButton.setToolTipText("Inserts the constant.");
             insertButton.addActionListener(e -> {
                 inserterCommitted = true;
@@ -95,7 +97,7 @@ public class ExpressionBuilderInserterUI extends JPanel {
             ExpressionOperatorEntry operatorEntry = (ExpressionOperatorEntry) insertedObject;
             JIPipeDesktopFormPanel.GroupHeaderPanel groupHeader = inserterForm.addGroupHeader(String.format("<html><i style=\"color: #854745; \">Operator</i> %s (<code><strong>%s</strong></code>)</html>",
                     HtmlEscapers.htmlEscaper().escape(operatorEntry.getName()),
-                    HtmlEscapers.htmlEscaper().escape(operatorEntry.getSignature())), UIUtils.getIconFromResources("actions/insert-function.png"));
+                    HtmlEscapers.htmlEscaper().escape(operatorEntry.getSignature())), JIPipe.RESOURCES.getIcon16("actions/insert-function.png"));
             groupHeader.addDescriptionRow(operatorEntry.getDescription());
 
             inserterParameterEditorUIList = new ArrayList<>();
@@ -111,7 +113,7 @@ public class ExpressionBuilderInserterUI extends JPanel {
 
             inserterButtonPanel.add(Box.createHorizontalGlue());
 
-            JButton insertButton = new JButton("Insert", UIUtils.getIconFromResources("actions/insert-object.png"));
+            JButton insertButton = new JButton("Insert", JIPipe.RESOURCES.getIcon16("actions/insert-object.png"));
             insertButton.setToolTipText("Inserts the operator with parameters.");
             insertButton.addActionListener(e -> {
                 inserterCommitted = true;
@@ -119,7 +121,7 @@ public class ExpressionBuilderInserterUI extends JPanel {
             });
             inserterButtonPanel.add(insertButton);
 
-            JButton insertSymbolButton = new JButton("Insert only symbol", UIUtils.getIconFromResources("actions/format-text-symbol.png"));
+            JButton insertSymbolButton = new JButton("Insert only symbol", JIPipe.RESOURCES.getIcon16("actions/format-text-symbol.png"));
             insertSymbolButton.setToolTipText("Inserts the operator symbol.");
             insertSymbolButton.addActionListener(e -> {
                 inserterCommitted = true;
@@ -131,7 +133,7 @@ public class ExpressionBuilderInserterUI extends JPanel {
             ExpressionFunction function = functionEntry.getFunction();
             JIPipeDesktopFormPanel.GroupHeaderPanel groupHeader = inserterForm.addGroupHeader(String.format("<html><i style=\"color: #14A0B3; \">Function</i> %s (<code><strong>%s</strong></code>)</html>",
                     HtmlEscapers.htmlEscaper().escape(functionEntry.getName()),
-                    HtmlEscapers.htmlEscaper().escape(function.getSignature())), UIUtils.getIconFromResources("actions/insert-function.png"));
+                    HtmlEscapers.htmlEscaper().escape(function.getSignature())), JIPipe.RESOURCES.getIcon16("actions/insert-function.png"));
 
             StringBuilder descriptionBuilder = new StringBuilder();
             descriptionBuilder.append("<html>");
@@ -161,7 +163,7 @@ public class ExpressionBuilderInserterUI extends JPanel {
 
             inserterParameterEditorUIList = new ArrayList<>();
             if (function.getMinimumArgumentCount() < function.getMaximumArgumentCount()) {
-                JButton addParameterButton = new JButton("Add parameter", UIUtils.getIconFromResources("actions/list-add.png"));
+                JButton addParameterButton = new JButton("Add parameter", JIPipe.RESOURCES.getIcon16("actions/list-add.png"));
                 addParameterButton.addActionListener(e -> {
                     if (inserterParameterEditorUIList.size() < function.getMaximumArgumentCount()) {
                         ParameterInfo info = function.getParameterInfo(inserterParameterEditorUIList.size());
@@ -198,7 +200,7 @@ public class ExpressionBuilderInserterUI extends JPanel {
 
             inserterButtonPanel.add(Box.createHorizontalGlue());
 
-            JButton insertButton = new JButton("Insert", UIUtils.getIconFromResources("actions/insert-object.png"));
+            JButton insertButton = new JButton("Insert", JIPipe.RESOURCES.getIcon16("actions/insert-object.png"));
             insertButton.setToolTipText("Inserts the function with parameters.");
             insertButton.addActionListener(e -> {
                 inserterCommitted = true;
@@ -206,7 +208,7 @@ public class ExpressionBuilderInserterUI extends JPanel {
             });
             inserterButtonPanel.add(insertButton);
 
-            JButton insertSymbolButton = new JButton("Insert only symbol", UIUtils.getIconFromResources("actions/format-text-symbol.png"));
+            JButton insertSymbolButton = new JButton("Insert only symbol", JIPipe.RESOURCES.getIcon16("actions/format-text-symbol.png"));
             insertSymbolButton.setToolTipText("Inserts the function symbol.");
             insertSymbolButton.addActionListener(e -> {
                 inserterCommitted = true;
@@ -215,7 +217,7 @@ public class ExpressionBuilderInserterUI extends JPanel {
             inserterButtonPanel.add(insertSymbolButton);
         } else {
             inserterCommitted = true;
-            JIPipeDesktopFormPanel.GroupHeaderPanel groupHeader = inserterForm.addGroupHeader("Expression builder", UIUtils.getIconFromResources("actions/insert-function.png"));
+            JIPipeDesktopFormPanel.GroupHeaderPanel groupHeader = inserterForm.addGroupHeader("Expression builder", JIPipe.RESOURCES.getIcon16("actions/insert-function.png"));
             groupHeader.addDescriptionRow("Welcome to the expression builder that simplifies the creation of expressions. On the right-hand side you will find a list of all available functions and operators. " +
                     "Please note that the list of variables can be incomplete depending on various factors.");
         }

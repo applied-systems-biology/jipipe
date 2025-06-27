@@ -13,9 +13,11 @@
 
 package org.hkijena.jipipe.plugins.parameters.api.enums;
 
+import org.hkijena.jipipe.JIPipe;
 import org.hkijena.jipipe.desktop.api.JIPipeDesktopParameterEditorUI;
 import org.hkijena.jipipe.utils.ReflectionUtils;
 import org.hkijena.jipipe.utils.UIUtils;
+import org.hkijena.jipipe.JIPipe;
 
 import javax.swing.*;
 import java.awt.*;
@@ -118,7 +120,7 @@ public class DynamicSetDesktopParameterEditorUI extends JIPipeDesktopParameterEd
         }
 
         collapseInfoLabel = new JLabel("The available items are hidden. Click the 'Collapse' button to show it",
-                UIUtils.getIconFromResources("actions/eye-slash.png"),
+                JIPipe.RESOURCES.getIcon16("actions/eye-slash.png"),
                 JLabel.LEFT);
         collapseInfoLabel.setFont(new Font(Font.DIALOG, Font.PLAIN, 12));
         contentPanel.add(collapseInfoLabel);
@@ -128,21 +130,21 @@ public class DynamicSetDesktopParameterEditorUI extends JIPipeDesktopParameterEd
 
         JLabel nameLabel = new JLabel(getParameterAccess().getName());
         if (getParameterAccess().isImportant()) {
-            nameLabel.setIcon(UIUtils.getIconFromResources("emblems/important.png"));
+            nameLabel.setIcon(JIPipe.RESOURCES.getIcon16("emblems/important.png"));
         }
         toolBar.add(nameLabel);
         toolBar.add(Box.createHorizontalGlue());
 
         collapseToggle = new JToggleButton("Collapse",
-                UIUtils.getIconFromResources("actions/eye-slash.png"));
+                JIPipe.RESOURCES.getIcon16("actions/eye-slash.png"));
         toolBar.add(collapseToggle);
         collapseToggle.addActionListener(e -> saveCollapsedState());
 
-        JButton selectAllButton = new JButton("Select all", UIUtils.getIconFromResources("actions/stock_select-all.png"));
+        JButton selectAllButton = new JButton("Select all", JIPipe.RESOURCES.getIcon16("actions/stock_select-all.png"));
         selectAllButton.addActionListener(e -> selectAll());
         toolBar.add(selectAllButton);
 
-        JButton selectNoneButton = new JButton("Select none", UIUtils.getIconFromResources("actions/cancel.png"));
+        JButton selectNoneButton = new JButton("Select none", JIPipe.RESOURCES.getIcon16("actions/cancel.png"));
         selectNoneButton.addActionListener(e -> selectNone());
         toolBar.add(selectNoneButton);
 

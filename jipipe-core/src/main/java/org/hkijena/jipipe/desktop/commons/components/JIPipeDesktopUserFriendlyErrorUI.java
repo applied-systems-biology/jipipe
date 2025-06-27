@@ -13,6 +13,7 @@
 
 package org.hkijena.jipipe.desktop.commons.components;
 
+import org.hkijena.jipipe.JIPipe;
 import org.hkijena.jipipe.api.JIPipeWorkbench;
 import org.hkijena.jipipe.api.validation.*;
 import org.hkijena.jipipe.api.validation.contexts.UnspecifiedValidationReportContext;
@@ -23,6 +24,7 @@ import org.hkijena.jipipe.plugins.parameters.library.markup.MarkdownText;
 import org.hkijena.jipipe.utils.ColorUtils;
 import org.hkijena.jipipe.utils.StringUtils;
 import org.hkijena.jipipe.utils.UIUtils;
+import org.hkijena.jipipe.JIPipe;
 import org.hkijena.jipipe.utils.ui.RoundedLineBorder;
 
 import javax.swing.*;
@@ -60,7 +62,7 @@ public class JIPipeDesktopUserFriendlyErrorUI extends JIPipeDesktopFormPanel imp
         toolBar.add(Box.createHorizontalGlue());
 
         // Open in new window
-        JButton openInNewWindowButton = new JButton("Open in new window", UIUtils.getIconFromResources("actions/open-in-new-window.png"));
+        JButton openInNewWindowButton = new JButton("Open in new window", JIPipe.RESOURCES.getIcon16("actions/open-in-new-window.png"));
         openInNewWindowButton.addActionListener(e -> {
             String title = "Unnamed";
             if (getDesktopWorkbench().getWindow() instanceof JFrame) {
@@ -72,7 +74,7 @@ public class JIPipeDesktopUserFriendlyErrorUI extends JIPipeDesktopFormPanel imp
         toolBar.add(openInNewWindowButton);
 
         // Copy all
-        JButton copyAllButton = new JButton("Copy all", UIUtils.getIconFromResources("actions/edit-copy.png"));
+        JButton copyAllButton = new JButton("Copy all", JIPipe.RESOURCES.getIcon16("actions/edit-copy.png"));
         copyAllButton.addActionListener(e -> {
             StringBuilder stringBuilder = new StringBuilder();
             for (JIPipeValidationReportEntry reportEntry : report) {
@@ -160,7 +162,7 @@ public class JIPipeDesktopUserFriendlyErrorUI extends JIPipeDesktopFormPanel imp
                 } else {
                     fill = new Color(0xFDCDD1);
                 }
-                icon = UIUtils.getIcon32FromResources("actions/circle-xmark.png");
+                icon = JIPipe.RESOURCES.getIcon32("actions/circle-xmark.png");
                 border = ColorUtils.scaleHSV(fill, 1, 0.8f, 0.8f);
                 break;
             case Warning:
@@ -169,7 +171,7 @@ public class JIPipeDesktopUserFriendlyErrorUI extends JIPipeDesktopFormPanel imp
                 } else {
                     fill = new Color(0xFFEBCF);
                 }
-                icon = UIUtils.getIcon32FromResources("actions/dialog-warning.png");
+                icon = JIPipe.RESOURCES.getIcon32("actions/dialog-warning.png");
                 border = ColorUtils.scaleHSV(fill, 1, 0.8f, 0.8f);
                 break;
             case Info:
@@ -178,7 +180,7 @@ public class JIPipeDesktopUserFriendlyErrorUI extends JIPipeDesktopFormPanel imp
                 } else {
                     fill = new Color(0xBED0E6);
                 }
-                icon = UIUtils.getIcon32FromResources("actions/dialog-information.png");
+                icon = JIPipe.RESOURCES.getIcon32("actions/dialog-information.png");
                 border = ColorUtils.scaleHSV(fill, 1, 0.8f, 0.8f);
                 break;
             default:
@@ -229,7 +231,7 @@ public class JIPipeDesktopUserFriendlyErrorUI extends JIPipeDesktopFormPanel imp
             formPanel.addWideToForm(breadcrumb);
 
             if (contexts.isEmpty()) {
-                JButton button = new JButton("Internal", UIUtils.getIconFromResources("actions/system-run.png"));
+                JButton button = new JButton("Internal", JIPipe.RESOURCES.getIcon16("actions/system-run.png"));
                 button.setFont(new Font(Font.DIALOG, Font.PLAIN, 11));
                 button.setOpaque(false);
                 button.setBorder(null);
@@ -244,7 +246,7 @@ public class JIPipeDesktopUserFriendlyErrorUI extends JIPipeDesktopFormPanel imp
                         button.setBorder(null);
                         button.setFont(new Font(Font.DIALOG, Font.PLAIN, 11));
                         breadcrumb.add(button);
-                        breadcrumb.add(new JLabel(UIUtils.getIconFromResources("actions/draw-triangle2.png")));
+                        breadcrumb.add(new JLabel(JIPipe.RESOURCES.getIcon16("actions/draw-triangle2.png")));
                     } else {
                         JButton button = new JButton(context.renderName(), context.renderIcon());
                         button.setToolTipText(context.renderName());
@@ -265,7 +267,7 @@ public class JIPipeDesktopUserFriendlyErrorUI extends JIPipeDesktopFormPanel imp
             formPanel.addWideToForm(actionBar);
 
             if (navigationContext != null) {
-                JButton navigateButton = new JButton("Go to", UIUtils.getIconFromResources("actions/go-jump.png"));
+                JButton navigateButton = new JButton("Go to", JIPipe.RESOURCES.getIcon16("actions/go-jump.png"));
                 navigateButton.setOpaque(false);
                 NavigableJIPipeValidationReportContext finalNavigationContext = navigationContext;
                 navigateButton.addActionListener(e -> {
@@ -282,14 +284,14 @@ public class JIPipeDesktopUserFriendlyErrorUI extends JIPipeDesktopFormPanel imp
 
             actionBar.add(Box.createHorizontalGlue());
 
-            JButton detailsButton = new JButton("Show details", UIUtils.getIconFromResources("actions/find.png"));
+            JButton detailsButton = new JButton("Show details", JIPipe.RESOURCES.getIcon16("actions/find.png"));
             detailsButton.addActionListener(e -> {
                 JIPipeDesktopMarkdownReader.showDialog(new MarkdownText(entry.toReport()), true, entry.getTitle(), this, false);
             });
             detailsButton.setOpaque(false);
             actionBar.add(detailsButton);
 
-            JButton copyButton = new JButton("Copy", UIUtils.getIconFromResources("actions/edit-copy.png"));
+            JButton copyButton = new JButton("Copy", JIPipe.RESOURCES.getIcon16("actions/edit-copy.png"));
             copyButton.addActionListener(e -> UIUtils.copyToClipboard(entry.toReport()));
             copyButton.setOpaque(false);
             actionBar.add(copyButton);

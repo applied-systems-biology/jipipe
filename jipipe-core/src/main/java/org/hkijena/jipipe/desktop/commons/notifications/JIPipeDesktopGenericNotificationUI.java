@@ -19,6 +19,7 @@ import org.hkijena.jipipe.desktop.app.JIPipeDesktopWorkbenchPanel;
 import org.hkijena.jipipe.desktop.commons.theme.ui.JIPipeDesktopRoundedButtonUI;
 import org.hkijena.jipipe.plugins.parameters.library.markup.MarkdownText;
 import org.hkijena.jipipe.utils.UIUtils;
+import org.hkijena.jipipe.JIPipe;
 import org.hkijena.jipipe.utils.ui.RoundedLineBorder;
 
 import javax.swing.*;
@@ -61,7 +62,7 @@ public class JIPipeDesktopGenericNotificationUI extends JIPipeDesktopWorkbenchPa
         add(headerPanel, BorderLayout.NORTH);
 
         if (!dismissed && !blocked) {
-            JButton dismissButton = new JButton(UIUtils.getIconFromResources("actions/close-tab.png"));
+            JButton dismissButton = new JButton(JIPipe.RESOURCES.getIcon16("actions/close-tab.png"));
             UIUtils.makeButtonFlat25x25(dismissButton);
             dismissButton.setToolTipText("Dismisses this notification");
             dismissButton.addActionListener(e -> notification.dismiss());

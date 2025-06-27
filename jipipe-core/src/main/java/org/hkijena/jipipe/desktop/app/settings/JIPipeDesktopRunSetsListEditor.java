@@ -15,6 +15,7 @@ package org.hkijena.jipipe.desktop.app.settings;
 
 import com.google.common.collect.ImmutableList;
 import com.google.common.collect.Sets;
+import org.hkijena.jipipe.JIPipe;
 import org.hkijena.jipipe.api.compartments.algorithms.JIPipeProjectCompartment;
 import org.hkijena.jipipe.api.nodes.JIPipeAlgorithm;
 import org.hkijena.jipipe.api.nodes.JIPipeGraphNode;
@@ -28,6 +29,7 @@ import org.hkijena.jipipe.plugins.parameters.library.graph.GraphNodeReferencePar
 import org.hkijena.jipipe.plugins.parameters.library.markup.MarkdownText;
 import org.hkijena.jipipe.utils.StringUtils;
 import org.hkijena.jipipe.utils.UIUtils;
+import org.hkijena.jipipe.JIPipe;
 
 import javax.swing.*;
 import java.awt.*;
@@ -60,7 +62,7 @@ public class JIPipeDesktopRunSetsListEditor extends JIPipeDesktopProjectWorkbenc
     }
 
     public static void createRunSetsManagementContextMenu(JMenu menu, Set<JIPipeGraphNode> nodes, JIPipeDesktopWorkbench workbench) {
-        menu.add(UIUtils.createMenuItem("Assign to new run set ...", "Creates a new run set and afterwards adds the node to it", UIUtils.getIconFromResources("actions/add.png"), () -> {
+        menu.add(UIUtils.createMenuItem("Assign to new run set ...", "Creates a new run set and afterwards adds the node to it", JIPipe.RESOURCES.getIcon16("actions/add.png"), () -> {
             String newName = JOptionPane.showInputDialog(workbench.getWindow(), "Enter new run set name", "New run set", JOptionPane.PLAIN_MESSAGE);
             if (!StringUtils.isNullOrEmpty(newName)) {
                 JIPipeProjectRunSet runSet = new JIPipeProjectRunSet();
@@ -73,7 +75,7 @@ public class JIPipeDesktopRunSetsListEditor extends JIPipeDesktopProjectWorkbenc
                 workbench.getProject().getRunSetsConfiguration().add(runSet);
             }
         }));
-        menu.add(UIUtils.createMenuItem("Edit run sets", "Opens the run set editor panel", UIUtils.getIconFromResources("actions/edit.png"), () -> {
+        menu.add(UIUtils.createMenuItem("Edit run sets", "Opens the run set editor panel", JIPipe.RESOURCES.getIcon16("actions/edit.png"), () -> {
             workbench.getDocumentTabPane().selectSingletonTab(JIPipeDesktopProjectWorkbench.TAB_PROJECT_OVERVIEW);
             Component content = workbench.getDocumentTabPane().getSingletonTabInstances().get(JIPipeDesktopProjectWorkbench.TAB_PROJECT_OVERVIEW).getContent();
             if (content instanceof JIPipeDesktopProjectOverviewUI) {
@@ -114,13 +116,13 @@ public class JIPipeDesktopRunSetsListEditor extends JIPipeDesktopProjectWorkbenc
         JToolBar toolBar = new JToolBar();
         toolBar.setFloatable(false);
 
-        toolBar.add(UIUtils.createButton("", UIUtils.getIconFromResources("actions/caret-up.png"), this::sortItemUp));
-        toolBar.add(UIUtils.createButton("", UIUtils.getIconFromResources("actions/caret-down.png"), this::sortItemDown));
+        toolBar.add(UIUtils.createButton("", JIPipe.RESOURCES.getIcon16("actions/caret-up.png"), this::sortItemUp));
+        toolBar.add(UIUtils.createButton("", JIPipe.RESOURCES.getIcon16("actions/caret-down.png"), this::sortItemDown));
         toolBar.add(Box.createHorizontalGlue());
-        toolBar.add(UIUtils.createButton("Add", UIUtils.getIconFromResources("actions/add.png"), this::addNewItem));
-        toolBar.add(UIUtils.createButton("Remove", UIUtils.getIconFromResources("actions/trash-empty.png"), this::removeSelectedItems));
+        toolBar.add(UIUtils.createButton("Add", JIPipe.RESOURCES.getIcon16("actions/add.png"), this::addNewItem));
+        toolBar.add(UIUtils.createButton("Remove", JIPipe.RESOURCES.getIcon16("actions/trash-empty.png"), this::removeSelectedItems));
         toolBar.addSeparator();
-        toolBar.add(UIUtils.createButton("Edit", UIUtils.getIconFromResources("actions/edit.png"), this::editSelectedItem));
+        toolBar.add(UIUtils.createButton("Edit", JIPipe.RESOURCES.getIcon16("actions/edit.png"), this::editSelectedItem));
 
         add(toolBar, BorderLayout.NORTH);
 

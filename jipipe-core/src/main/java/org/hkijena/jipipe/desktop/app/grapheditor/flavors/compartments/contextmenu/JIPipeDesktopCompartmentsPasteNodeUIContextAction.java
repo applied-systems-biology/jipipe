@@ -14,6 +14,7 @@
 package org.hkijena.jipipe.desktop.app.grapheditor.flavors.compartments.contextmenu;
 
 import com.fasterxml.jackson.core.type.TypeReference;
+import org.hkijena.jipipe.JIPipe;
 import org.hkijena.jipipe.api.compartments.JIPipeExportedCompartment;
 import org.hkijena.jipipe.api.compartments.algorithms.JIPipeProjectCompartment;
 import org.hkijena.jipipe.api.project.JIPipeProject;
@@ -22,6 +23,7 @@ import org.hkijena.jipipe.desktop.app.grapheditor.commons.JIPipeDesktopGraphCanv
 import org.hkijena.jipipe.desktop.app.grapheditor.commons.contextmenu.NodeUIContextAction;
 import org.hkijena.jipipe.desktop.app.grapheditor.commons.nodeui.JIPipeDesktopGraphNodeUI;
 import org.hkijena.jipipe.utils.UIUtils;
+import org.hkijena.jipipe.JIPipe;
 import org.hkijena.jipipe.utils.json.JsonUtils;
 
 import javax.swing.*;
@@ -79,7 +81,7 @@ public class JIPipeDesktopCompartmentsPasteNodeUIContextAction implements NodeUI
 
     @Override
     public Icon getIcon() {
-        return UIUtils.getIconFromResources("actions/edit-paste.png");
+        return JIPipe.RESOURCES.getIcon16("actions/edit-paste.png");
     }
 
     @Override

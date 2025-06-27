@@ -13,9 +13,11 @@
 
 package org.hkijena.jipipe.api.validation.contexts;
 
+import org.hkijena.jipipe.JIPipe;
 import org.hkijena.jipipe.api.nodes.JIPipeGraph;
 import org.hkijena.jipipe.api.validation.JIPipeValidationReportContext;
 import org.hkijena.jipipe.utils.UIUtils;
+import org.hkijena.jipipe.JIPipe;
 
 import javax.swing.*;
 
@@ -39,6 +41,6 @@ public class GraphValidationReportContext extends JIPipeValidationReportContext 
 
     @Override
     public Icon renderIcon() {
-        return UIUtils.getIconFromResources("actions/distribute-graph-directed.png");
+        return JIPipe.RESOURCES.getIcon16("actions/distribute-graph-directed.png");
     }
 }

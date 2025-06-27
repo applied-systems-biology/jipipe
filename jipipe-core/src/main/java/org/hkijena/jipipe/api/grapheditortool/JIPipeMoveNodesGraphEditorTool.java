@@ -15,6 +15,7 @@ package org.hkijena.jipipe.api.grapheditortool;
 
 import org.hkijena.jipipe.desktop.app.grapheditor.commons.AbstractJIPipeDesktopGraphEditorUI;
 import org.hkijena.jipipe.utils.UIUtils;
+import org.hkijena.jipipe.JIPipe;
 
 import javax.swing.*;
 import java.awt.event.KeyEvent;
@@ -36,7 +37,7 @@ public class JIPipeMoveNodesGraphEditorTool implements JIPipeToggleableGraphEdit
 
     @Override
     public Icon getIcon() {
-        return UIUtils.getIconFromResources("actions/transform-move.png");
+        return JIPipe.RESOURCES.getIcon16("actions/transform-move.png");
     }
 
     @Override

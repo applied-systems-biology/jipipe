@@ -19,6 +19,7 @@ import org.hkijena.jipipe.desktop.api.JIPipeMenuExtensionTarget;
 import org.hkijena.jipipe.desktop.app.JIPipeDesktopWorkbench;
 import org.hkijena.jipipe.desktop.commons.components.tabs.JIPipeDesktopTabPane;
 import org.hkijena.jipipe.utils.UIUtils;
+import org.hkijena.jipipe.JIPipe;
 
 /**
  * Adds a menu item that allows to control CLIJ
@@ -32,7 +33,7 @@ public class CLIJControlPanelJIPipeDesktopMenuExtension extends JIPipeDesktopMen
     public CLIJControlPanelJIPipeDesktopMenuExtension(JIPipeDesktopWorkbench workbench) {
         super(workbench);
         setText("CLIJ2 control panel");
-        setIcon(UIUtils.getIconFromResources("apps/clij.png"));
+        setIcon(JIPipe.RESOURCES.getIcon16("apps/clij.png"));
         setToolTipText("Opens a control panel to setup CLIJ2");
         addActionListener(e -> openControlPanel());
     }
@@ -46,7 +47,7 @@ public class CLIJControlPanelJIPipeDesktopMenuExtension extends JIPipeDesktopMen
         }
         try {
             getDesktopWorkbench().getDocumentTabPane().addTab("CLIJ2 control panel",
-                    UIUtils.getIconFromResources("apps/clij.png"),
+                    JIPipe.RESOURCES.getIcon16("apps/clij.png"),
                     new CLIJControlPanel(getDesktopWorkbench()),
                     JIPipeDesktopTabPane.CloseMode.withSilentCloseButton,
                     false);

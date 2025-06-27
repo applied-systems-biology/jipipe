@@ -15,6 +15,7 @@ package org.hkijena.jipipe.plugins.python;
 
 import com.fasterxml.jackson.annotation.JsonGetter;
 import com.fasterxml.jackson.annotation.JsonSetter;
+import org.hkijena.jipipe.JIPipe;
 import org.hkijena.jipipe.api.JIPipeProgressInfo;
 import org.hkijena.jipipe.api.SetJIPipeDocumentation;
 import org.hkijena.jipipe.api.environments.JIPipeArtifactEnvironment;
@@ -110,9 +111,9 @@ public abstract class PythonPackageLibraryEnvironment extends JIPipeArtifactEnvi
     @Override
     public Icon getIcon() {
         if (isLoadFromArtifact()) {
-            return UIUtils.getIconFromResources("actions/run-install.png");
+            return JIPipe.RESOURCES.getIcon16("actions/run-install.png");
         } else {
-            return UIUtils.getIconFromResources("actions/plugins.png");
+            return JIPipe.RESOURCES.getIcon16("actions/plugins.png");
         }
     }
 

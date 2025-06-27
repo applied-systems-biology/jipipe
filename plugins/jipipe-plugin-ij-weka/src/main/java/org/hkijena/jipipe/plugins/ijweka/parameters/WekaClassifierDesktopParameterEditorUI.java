@@ -17,6 +17,7 @@ import org.hkijena.jipipe.desktop.api.JIPipeDesktopParameterEditorUI;
 import org.hkijena.jipipe.desktop.commons.components.JIPipeDesktopFormPanel;
 import org.hkijena.jipipe.plugins.parameters.library.markup.MarkdownText;
 import org.hkijena.jipipe.utils.UIUtils;
+import org.hkijena.jipipe.JIPipe;
 import weka.classifiers.Classifier;
 import weka.core.CustomDisplayStringProvider;
 import weka.core.OptionHandler;
@@ -48,13 +49,13 @@ public class WekaClassifierDesktopParameterEditorUI extends JIPipeDesktopParamet
         JPanel buttonPanel = new JPanel();
         buttonPanel.setLayout(new BoxLayout(buttonPanel, BoxLayout.X_AXIS));
 
-        JButton selectButton = new JButton(UIUtils.getIconFromResources("actions/edit.png"));
+        JButton selectButton = new JButton(JIPipe.RESOURCES.getIcon16("actions/edit.png"));
         UIUtils.setStandardButtonBorder(selectButton);
         selectButton.setToolTipText("Select classifier");
         selectButton.addActionListener(e -> pick());
         buttonPanel.add(selectButton);
 
-        JButton configureButton = new JButton(UIUtils.getIconFromResources("actions/configure.png"));
+        JButton configureButton = new JButton(JIPipe.RESOURCES.getIcon16("actions/configure.png"));
         UIUtils.setStandardButtonBorder(configureButton);
         configureButton.setToolTipText("Configure the classifier");
         configureButton.addActionListener(e -> pick());

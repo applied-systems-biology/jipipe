@@ -31,6 +31,7 @@ import org.hkijena.jipipe.plugins.python.algorithms.python.MergingPythonScriptAl
 import org.hkijena.jipipe.plugins.python.algorithms.python.PythonScriptAlgorithm;
 import org.hkijena.jipipe.utils.JIPipeResourceManager;
 import org.hkijena.jipipe.utils.UIUtils;
+import org.hkijena.jipipe.JIPipe;
 import org.scijava.Context;
 import org.scijava.plugin.Plugin;
 
@@ -76,13 +77,13 @@ public class PythonPlugin extends JIPipePrepackagedDefaultJavaPlugin {
     @Override
     public void register(JIPipe jiPipe, Context context, JIPipeProgressInfo progressInfo) {
 
-        registerNodeType("python-script", JythonScriptAlgorithm.class, UIUtils.getIconURLFromResources("apps/python.png"));
-        registerNodeType("python-script-iterating-simple", SimpleIteratingJythonScriptAlgorithm.class, UIUtils.getIconURLFromResources("apps/python.png"));
-        registerNodeType("python-script-iterating", IteratingJythonScriptAlgorithm.class, UIUtils.getIconURLFromResources("apps/python.png"));
-        registerNodeType("python-script-merging", MergingJythonScriptAlgorithm.class, UIUtils.getIconURLFromResources("apps/python.png"));
-        registerNodeType("cpython-script", PythonScriptAlgorithm.class, UIUtils.getIconURLFromResources("apps/python.png"));
-        registerNodeType("cpython-script-iterating", IteratingPythonScriptAlgorithm.class, UIUtils.getIconURLFromResources("apps/python.png"));
-        registerNodeType("cpython-script-merging", MergingPythonScriptAlgorithm.class, UIUtils.getIconURLFromResources("apps/python.png"));
+        registerNodeType("python-script", JythonScriptAlgorithm.class, JIPipe.RESOURCES.getIcon16URL("apps/python.png"));
+        registerNodeType("python-script-iterating-simple", SimpleIteratingJythonScriptAlgorithm.class, JIPipe.RESOURCES.getIcon16URL("apps/python.png"));
+        registerNodeType("python-script-iterating", IteratingJythonScriptAlgorithm.class, JIPipe.RESOURCES.getIcon16URL("apps/python.png"));
+        registerNodeType("python-script-merging", MergingJythonScriptAlgorithm.class, JIPipe.RESOURCES.getIcon16URL("apps/python.png"));
+        registerNodeType("cpython-script", PythonScriptAlgorithm.class, JIPipe.RESOURCES.getIcon16URL("apps/python.png"));
+        registerNodeType("cpython-script-iterating", IteratingPythonScriptAlgorithm.class, JIPipe.RESOURCES.getIcon16URL("apps/python.png"));
+        registerNodeType("cpython-script-merging", MergingPythonScriptAlgorithm.class, JIPipe.RESOURCES.getIcon16URL("apps/python.png"));
 
         registerNodeExamplesFromResources(RESOURCES, "examples");
     }

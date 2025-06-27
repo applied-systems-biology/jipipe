@@ -25,6 +25,7 @@ import org.hkijena.jipipe.api.project.JIPipeProject;
 import org.hkijena.jipipe.desktop.commons.components.search.JIPipeDesktopSearchTextField;
 import org.hkijena.jipipe.utils.JIPipeDesktopSplitPane;
 import org.hkijena.jipipe.utils.UIUtils;
+import org.hkijena.jipipe.JIPipe;
 
 import javax.swing.*;
 import javax.swing.tree.DefaultMutableTreeNode;
@@ -83,14 +84,14 @@ public class JIPipeDesktopParameterKeyPickerUI extends JPanel {
 
         buttonPanel.add(Box.createHorizontalGlue());
 
-        JButton cancelButton = new JButton("Cancel", UIUtils.getIconFromResources("actions/cancel.png"));
+        JButton cancelButton = new JButton("Cancel", JIPipe.RESOURCES.getIcon16("actions/cancel.png"));
         cancelButton.addActionListener(e -> {
             ui.treeComponent.clearSelection();
             dialog.setVisible(false);
         });
         buttonPanel.add(cancelButton);
 
-        JButton pickButton = new JButton("Select", UIUtils.getIconFromResources("actions/color-select.png"));
+        JButton pickButton = new JButton("Select", JIPipe.RESOURCES.getIcon16("actions/color-select.png"));
         pickButton.addActionListener(e -> {
             result.addAll(ui.getSelectedEntries());
             dialog.setVisible(false);
@@ -398,17 +399,17 @@ public class JIPipeDesktopParameterKeyPickerUI extends JPanel {
                 Object userObject = treeNode.getUserObject();
                 if (userObject instanceof JIPipeParameterTree.Node) {
                     JIPipeParameterTree.Node node = (JIPipeParameterTree.Node) userObject;
-                    setIcon(UIUtils.getIconFromResources("actions/folder.png"));
+                    setIcon(JIPipe.RESOURCES.getIcon16("actions/folder.png"));
                     String name = node.getName();
                     if (name == null)
                         name = node.getKey();
                     setText(name);
                 } else if (userObject instanceof JIPipeProjectCompartment) {
-                    setIcon(UIUtils.getIconFromResources("data-types/graph-compartment.png"));
+                    setIcon(JIPipe.RESOURCES.getIcon16("data-types/graph-compartment.png"));
                     setText(((JIPipeProjectCompartment) userObject).getName());
                 } else if (userObject instanceof JIPipeParameterAccess) {
                     JIPipeParameterAccess access = (JIPipeParameterAccess) userObject;
-                    setIcon(UIUtils.getIconFromResources("data-types/parameters.png"));
+                    setIcon(JIPipe.RESOURCES.getIcon16("data-types/parameters.png"));
                     String name = access.getName();
                     if (name == null)
                         name = access.getKey();

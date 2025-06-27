@@ -21,6 +21,7 @@ import org.hkijena.jipipe.api.settings.JIPipeDefaultApplicationsSettingsSheet;
 import org.hkijena.jipipe.plugins.parameters.api.pairs.PairParameterSettings;
 import org.hkijena.jipipe.plugins.parameters.library.pairs.IntegerAndIntegerPairParameter;
 import org.hkijena.jipipe.utils.UIUtils;
+import org.hkijena.jipipe.JIPipe;
 
 import javax.swing.*;
 
@@ -150,7 +151,7 @@ public class JIPipeGeneralDataApplicationSettings extends JIPipeDefaultApplicati
 
     @Override
     public Icon getIcon() {
-        return UIUtils.getIconFromResources("actions/settings.png");
+        return JIPipe.RESOURCES.getIcon16("actions/settings.png");
     }
 
     @Override

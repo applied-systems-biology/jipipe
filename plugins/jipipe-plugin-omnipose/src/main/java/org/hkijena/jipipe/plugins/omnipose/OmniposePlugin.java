@@ -158,7 +158,7 @@ public class OmniposePlugin extends JIPipePrepackagedDefaultJavaPlugin {
 
     @Override
     public List<ImageIcon> getSplashIcons() {
-        return Arrays.asList(RESOURCES.getIcon32FromResources("omnipose.png"));
+        return Arrays.asList(RESOURCES.getIcon32("omnipose.png"));
     }
 
     @Override
@@ -171,15 +171,15 @@ public class OmniposePlugin extends JIPipePrepackagedDefaultJavaPlugin {
         registerParameterType("omnipose-0.x-pretrained-model-list", PretrainedOmnipose0ModelList.class, JIPipeParameterArchetype.List, "Omnipose 2.x pretrained model list", "A list of pretrained Omnipose 0.x models");
 
         registerNodeType("import-omnipose-0.x-pretrained-model", ImportPretrainedOmnipose0ModelAlgorithm.class);
-        registerNodeType("omnipose-inference-0.x", Omnipose0InferenceAlgorithm.class, RESOURCES.getIcon16URLFromResources("omnipose.png"));
-        registerNodeType("omnipose-training-0.x", Omnipose0TrainingAlgorithm.class, RESOURCES.getIcon16URLFromResources("omnipose.png"));
+        registerNodeType("omnipose-inference-0.x", Omnipose0InferenceAlgorithm.class, RESOURCES.getIcon16URL("omnipose.png"));
+        registerNodeType("omnipose-training-0.x", Omnipose0TrainingAlgorithm.class, RESOURCES.getIcon16URL("omnipose.png"));
 
         // Legacy data types and algorithms
         registerEnumParameterType("omnipose-model", LegacyOmnipose0Model.class, "Omnipose model", "An Omnipose model");
         registerEnumParameterType("omnipose-pretrained-model", LegacyOmnipose0PretrainedModel.class, "Omnipose pre-trained model", "A pretrained model for Omnipose");
 
-        registerNodeType("omnipose", LegacyOmnipose0InferenceAlgorithm.class, RESOURCES.getIcon16URLFromResources("omnipose.png"));
-        registerNodeType("omnipose-training", LegacyOmnipose0TrainingAlgorithm.class, RESOURCES.getIcon16URLFromResources("omnipose.png"));
+        registerNodeType("omnipose", LegacyOmnipose0InferenceAlgorithm.class, RESOURCES.getIcon16URL("omnipose.png"));
+        registerNodeType("omnipose-training", LegacyOmnipose0TrainingAlgorithm.class, RESOURCES.getIcon16URL("omnipose.png"));
 
     }
 

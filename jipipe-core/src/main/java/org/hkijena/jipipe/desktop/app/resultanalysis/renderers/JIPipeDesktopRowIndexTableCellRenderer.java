@@ -31,7 +31,7 @@ public class JIPipeDesktopRowIndexTableCellRenderer extends JLabel implements Ta
     public JIPipeDesktopRowIndexTableCellRenderer() {
         setOpaque(true);
         setBorder(BorderFactory.createEmptyBorder(4, 4, 4, 4));
-//        setIcon(UIUtils.getIconFromResources("actions/database.png"));
+//        setIcon(JIPipe.RESOURCES.getIcon16("actions/database.png"));
     }
 
     @Override

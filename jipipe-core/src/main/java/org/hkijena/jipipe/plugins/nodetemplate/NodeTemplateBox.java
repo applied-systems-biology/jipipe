@@ -40,6 +40,7 @@ import org.hkijena.jipipe.plugins.settings.JIPipeNodeTemplateApplicationSettings
 import org.hkijena.jipipe.utils.PathUtils;
 import org.hkijena.jipipe.utils.StringUtils;
 import org.hkijena.jipipe.utils.UIUtils;
+import org.hkijena.jipipe.JIPipe;
 import org.hkijena.jipipe.utils.json.JsonUtils;
 import org.hkijena.jipipe.utils.search.RankedData;
 
@@ -183,20 +184,20 @@ public class NodeTemplateBox extends JIPipeDesktopWorkbenchPanel implements Node
 
         add(scrollPane, BorderLayout.CENTER);
 
-        JButton manageButton = new JButton(UIUtils.getIconFromResources("actions/hamburger-menu.png"));
+        JButton manageButton = new JButton(JIPipe.RESOURCES.getIcon16("actions/hamburger-menu.png"));
         UIUtils.makeButtonFlat25x25(manageButton);
         toolBar.add(manageButton);
         UIUtils.addReloadablePopupMenuToButton(manageButton, manageMenu, this::reloadManageMenu);
 
 //        if (nodesToAdd != null && !nodesToAdd.isEmpty() && canvasUI != null) {
-//            JButton addButton = new JButton("Create", UIUtils.getIconFromResources("actions/add.png"));
+//            JButton addButton = new JButton("Create", JIPipe.RESOURCES.getIcon16("actions/add.png"));
 //            addButton.addActionListener(e -> addTemplate());
 //            toolBar.add(addButton);
 //        }
 
 
 //        if (isDocked) {
-//            JButton openWindowButton = new JButton(UIUtils.getIconFromResources("actions/open-in-new-window.png"));
+//            JButton openWindowButton = new JButton(JIPipe.RESOURCES.getIcon16("actions/open-in-new-window.png"));
 //            openWindowButton.setToolTipText("Open in new window");
 //            openWindowButton.addActionListener(e -> openNewToolBoxWindow(getDesktopWorkbench()));
 //            toolBar.add(openWindowButton);
@@ -230,35 +231,35 @@ public class NodeTemplateBox extends JIPipeDesktopWorkbenchPanel implements Node
 
         if (!templateJList.getSelectedValuesList().isEmpty()) {
             if (canvasUI != null) {
-                manageMenu.add(UIUtils.createMenuItem("Insert", "Adds the selected nodes to the pipeline", UIUtils.getIconFromResources("actions/add.png"), this::addSelectedTemplatesToPipeline));
+                manageMenu.add(UIUtils.createMenuItem("Insert", "Adds the selected nodes to the pipeline", JIPipe.RESOURCES.getIcon16("actions/add.png"), this::addSelectedTemplatesToPipeline));
             }
 
-            JMenuItem editItem = new JMenuItem("Edit", UIUtils.getIconFromResources("actions/document-edit.png"));
+            JMenuItem editItem = new JMenuItem("Edit", JIPipe.RESOURCES.getIcon16("actions/document-edit.png"));
             editItem.addActionListener(e -> editSelected());
             manageMenu.add(editItem);
 
             if (project != null) {
-                JMenuItem copyToProjectItem = new JMenuItem("Copy to project", UIUtils.getIconFromResources("actions/edit-copy.png"));
+                JMenuItem copyToProjectItem = new JMenuItem("Copy to project", JIPipe.RESOURCES.getIcon16("actions/edit-copy.png"));
                 copyToProjectItem.addActionListener(e -> copySelectionToProject());
                 manageMenu.add(copyToProjectItem);
 
-                JMenuItem copyToGlobalItem = new JMenuItem("Copy to global storage", UIUtils.getIconFromResources("actions/edit-copy.png"));
+                JMenuItem copyToGlobalItem = new JMenuItem("Copy to global storage", JIPipe.RESOURCES.getIcon16("actions/edit-copy.png"));
                 copyToGlobalItem.addActionListener(e -> copySelectionToGlobal());
                 manageMenu.add(copyToGlobalItem);
             }
 
-            JMenuItem exportItem = new JMenuItem("Export", UIUtils.getIconFromResources("actions/document-export.png"));
+            JMenuItem exportItem = new JMenuItem("Export", JIPipe.RESOURCES.getIcon16("actions/document-export.png"));
             exportItem.addActionListener(e -> exportTemplates());
             manageMenu.add(exportItem);
 
-            JMenuItem deleteItem = new JMenuItem("Delete", UIUtils.getIconFromResources("actions/edit-delete.png"));
+            JMenuItem deleteItem = new JMenuItem("Delete", JIPipe.RESOURCES.getIcon16("actions/edit-delete.png"));
             deleteItem.addActionListener(e -> deleteSelection());
             manageMenu.add(deleteItem);
         }
 
         manageMenu.addSeparator();
 
-        JMenuItem selectAllItem = new JMenuItem("Select all", UIUtils.getIconFromResources("actions/edit-select-all.png"));
+        JMenuItem selectAllItem = new JMenuItem("Select all", JIPipe.RESOURCES.getIcon16("actions/edit-select-all.png"));
         selectAllItem.addActionListener(e -> {
             if (templateJList.getModel().getSize() > 0) {
                 templateJList.setSelectionInterval(0, templateJList.getModel().getSize() - 1);
@@ -268,17 +269,17 @@ public class NodeTemplateBox extends JIPipeDesktopWorkbenchPanel implements Node
 
         manageMenu.addSeparator();
 
-        JMenuItem importItem = new JMenuItem("Import from file", UIUtils.getIconFromResources("actions/document-import.png"));
+        JMenuItem importItem = new JMenuItem("Import from file", JIPipe.RESOURCES.getIcon16("actions/document-import.png"));
         importItem.addActionListener(e -> importTemplates());
         manageMenu.add(importItem);
 
-        JMenuItem downloadTemplatesItem = new JMenuItem("Download more templates", UIUtils.getIconFromResources("actions/download.png"));
+        JMenuItem downloadTemplatesItem = new JMenuItem("Download more templates", JIPipe.RESOURCES.getIcon16("actions/download.png"));
         downloadTemplatesItem.addActionListener(e -> downloadTemplates());
         manageMenu.add(downloadTemplatesItem);
 
         manageMenu.addSeparator();
 
-        JMenuItem refreshItem = new JMenuItem("Reload list", UIUtils.getIconFromResources("actions/view-refresh.png"));
+        JMenuItem refreshItem = new JMenuItem("Reload list", JIPipe.RESOURCES.getIcon16("actions/view-refresh.png"));
         refreshItem.addActionListener(e -> reloadTemplateList());
         manageMenu.add(refreshItem);
     }

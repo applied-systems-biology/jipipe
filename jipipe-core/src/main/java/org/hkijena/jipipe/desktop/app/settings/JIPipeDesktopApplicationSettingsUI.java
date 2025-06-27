@@ -23,6 +23,7 @@ import org.hkijena.jipipe.desktop.commons.components.JIPipeDesktopParameterFormP
 import org.hkijena.jipipe.plugins.parameters.library.markup.MarkdownText;
 import org.hkijena.jipipe.utils.JIPipeDesktopSplitPane;
 import org.hkijena.jipipe.utils.UIUtils;
+import org.hkijena.jipipe.JIPipe;
 
 import javax.swing.*;
 import javax.swing.tree.*;
@@ -110,7 +111,7 @@ public class JIPipeDesktopApplicationSettingsUI extends JIPipeDesktopWorkbenchPa
                 splitPane.setRightComponent(parameterPanel);
             } else {
                 JIPipeDesktopFormPanel formPanel = new JIPipeDesktopFormPanel(JIPipeDesktopFormPanel.WITH_SCROLLING);
-                formPanel.addWideToForm(new JLabel("<html><h1>" + node.label + "</h1></html>", UIUtils.getIcon32FromResources("actions/configure.png"), SwingConstants.LEFT));
+                formPanel.addWideToForm(new JLabel("<html><h1>" + node.label + "</h1></html>", JIPipe.RESOURCES.getIcon32("actions/configure.png"), SwingConstants.LEFT));
                 node.sheets.stream().sorted(Comparator.comparing(JIPipeApplicationSettingsSheet::getName)).forEach(sheet -> {
                     JButton goToCategoryButton = new JButton("<html><span style=\"font-size: 16px;\">" + sheet.getName() + "</span><br/>" + sheet.getDescription() + "</html>", sheet.getIcon());
                     goToCategoryButton.setHorizontalAlignment(SwingConstants.LEFT);

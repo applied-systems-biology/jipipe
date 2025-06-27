@@ -13,7 +13,9 @@
 
 package org.hkijena.jipipe.desktop.commons.components.renderers;
 
+import org.hkijena.jipipe.JIPipe;
 import org.hkijena.jipipe.utils.UIUtils;
+import org.hkijena.jipipe.JIPipe;
 
 import javax.swing.*;
 import java.awt.*;
@@ -27,9 +29,9 @@ public class JIPipeDesktopPathListCellRenderer extends JLabel implements ListCel
     private final Icon iconFolder;
 
     public JIPipeDesktopPathListCellRenderer() {
-        iconUnknown = UIUtils.getIconFromResources("data-types/path.png");
-        iconFile = UIUtils.getIconFromResources("data-types/file.png");
-        iconFolder = UIUtils.getIconFromResources("data-types/folder.png");
+        iconUnknown = JIPipe.RESOURCES.getIcon16("data-types/path.png");
+        iconFile = JIPipe.RESOURCES.getIcon16("data-types/file.png");
+        iconFolder = JIPipe.RESOURCES.getIcon16("data-types/folder.png");
         setBorder(BorderFactory.createEmptyBorder(4, 4, 4, 4));
         setOpaque(true);
     }

@@ -70,13 +70,13 @@ public class JIPipeDesktopFileChooserNext extends JPanel {
         this.ioMode = ioMode;
         this.pathType = pathType;
         this.multiple = multiple;
-        this.breadcrumbPathEditor = new JIPipeDesktopFancyTextField(new JLabel(UIUtils.getIconFromResources("places/inode-directory.png")),
+        this.breadcrumbPathEditor = new JIPipeDesktopFancyTextField(new JLabel(JIPipe.RESOURCES.getIcon16("places/inode-directory.png")),
                 "Enter the directory here", false);
-        this.textFilterEditor = new JIPipeDesktopFancyTextField(new JLabel(UIUtils.getIconFromResources("actions/view-filter.png")), "Filter ...", true);
+        this.textFilterEditor = new JIPipeDesktopFancyTextField(new JLabel(JIPipe.RESOURCES.getIcon16("actions/view-filter.png")), "Filter ...", true);
         this.textFilterEditor.addActionListener(e -> refreshFilter());
         this.selectedPathEditor = new JIPipeDesktopFancyTextField(getPathTypeLabel(pathType), "", false);
         this.breadcrumbPathEditorConfirmButton = UIUtils.createButton("",
-                UIUtils.getIconFromResources("actions/check.png"), this::confirmBreadcrumbPathEditor);
+                JIPipe.RESOURCES.getIcon16("actions/check.png"), this::confirmBreadcrumbPathEditor);
         UIUtils.makeButtonFlatWithSize(breadcrumbPathEditorConfirmButton, TOOLBAR_BUTTON_SIZE);
         this.settings = JIPipe.isInstantiated() ? JIPipeFileChooserApplicationSettings.getInstance() : new JIPipeFileChooserApplicationSettings();
 
@@ -118,8 +118,8 @@ public class JIPipeDesktopFileChooserNext extends JPanel {
 
         JPanel buttonPanel = UIUtils.boxHorizontal(
                 Box.createHorizontalGlue(),
-                UIUtils.createButton("Cancel", UIUtils.getIconFromResources("actions/cancel.png"), () -> dialog.setVisible(false)),
-                UIUtils.createButton(ioMode.name(), UIUtils.getIconFromResources("actions/check.png"), panel::doCallbackConfirmIfValid)
+                UIUtils.createButton("Cancel", JIPipe.RESOURCES.getIcon16("actions/cancel.png"), () -> dialog.setVisible(false)),
+                UIUtils.createButton(ioMode.name(), JIPipe.RESOURCES.getIcon16("actions/check.png"), panel::doCallbackConfirmIfValid)
         );
         buttonPanel.setBorder(BorderFactory.createEmptyBorder(16, 4, 4, 4));
         panel.bottomPanel.addWideToForm(buttonPanel);
@@ -139,7 +139,7 @@ public class JIPipeDesktopFileChooserNext extends JPanel {
 
     public static void main(String[] args) {
 
-        registerKnownFileType("SVG image", UIUtils.getIconFromResources("mimetypes/svg.png"), ".svg");
+        registerKnownFileType("SVG image", JIPipe.RESOURCES.getIcon16("mimetypes/svg.png"), ".svg");
 
         JIPipeDesktopUITheme.ModernLight.install();
         List<Path> paths = JIPipeDesktopFileChooserNext.showDialog(null, null, "Test dialog", HTMLText.EMPTY, Paths.get(""), PathIOMode.Open, PathType.FilesOnly, true, PathUtils.EXTENSION_FILTER_SVG);
@@ -166,7 +166,7 @@ public class JIPipeDesktopFileChooserNext extends JPanel {
         Icon finalIcon;
         if (icon.getIconWidth() < 32) {
             // Create a combined icon
-            finalIcon = new CompositeIcon(UIUtils.getIcon32FromResources("file.png"),
+            finalIcon = new CompositeIcon(JIPipe.RESOURCES.getIcon32("file.png"),
                     icon,
                     16 - icon.getIconWidth() / 2,
                     16 - icon.getIconHeight() / 2);
@@ -193,7 +193,7 @@ public class JIPipeDesktopFileChooserNext extends JPanel {
         Icon finalIcon;
         if (icon.getIconWidth() < 32) {
             // Create a combined icon
-            finalIcon = new CompositeIcon(UIUtils.getIcon32FromResources("places/folder2-purple.png"),
+            finalIcon = new CompositeIcon(JIPipe.RESOURCES.getIcon32("places/folder2-purple.png"),
                     icon,
                     16 - icon.getIconWidth() / 2,
                     19 - icon.getIconHeight() / 2);
@@ -208,11 +208,11 @@ public class JIPipeDesktopFileChooserNext extends JPanel {
     private JLabel getPathTypeLabel(PathType pathType) {
         switch (pathType) {
             case FilesOnly:
-                return new JLabel(UIUtils.getIconFromResources("data-types/file.png"));
+                return new JLabel(JIPipe.RESOURCES.getIcon16("data-types/file.png"));
             case DirectoriesOnly:
-                return new JLabel(UIUtils.getIconFromResources("places/inode-directory.png"));
+                return new JLabel(JIPipe.RESOURCES.getIcon16("places/inode-directory.png"));
             default:
-                return new JLabel(UIUtils.getIconFromResources("data-types/path.png"));
+                return new JLabel(JIPipe.RESOURCES.getIcon16("data-types/path.png"));
         }
     }
 
@@ -226,7 +226,7 @@ public class JIPipeDesktopFileChooserNext extends JPanel {
 
     private void refreshSidePanel() {
         sidePanel.clear();
-        createSidePanelHeader("Locations", UIUtils.makeButtonFlat25x25(UIUtils.createButton("", UIUtils.getIcon16FromResources("actions/view-refresh.png"), this::refreshSidePanel)));
+        createSidePanelHeader("Locations", UIUtils.makeButtonFlat25x25(UIUtils.createButton("", JIPipe.RESOURCES.getIcon16("actions/view-refresh.png"), this::refreshSidePanel)));
 
         CommonDirectoriesProvider provider = new CommonDirectoriesProvider();
         for (CommonDirectory directory : provider.getStaticDirectories()) {
@@ -236,8 +236,8 @@ public class JIPipeDesktopFileChooserNext extends JPanel {
             createSidePanelShortcut(directory);
         }
 
-        createSidePanelHeader("Recent", UIUtils.makeButtonFlat25x25(UIUtils.createButton("", UIUtils.getIcon16FromResources("actions/view-refresh.png"), this::refreshSidePanel)));
-        createSidePanelShortcut(PathUtils.getPathNameSafe(initialDirectory), UIUtils.getIconFromResources("actions/folder-open-recent.png"), initialDirectory);
+        createSidePanelHeader("Recent", UIUtils.makeButtonFlat25x25(UIUtils.createButton("", JIPipe.RESOURCES.getIcon16("actions/view-refresh.png"), this::refreshSidePanel)));
+        createSidePanelShortcut(PathUtils.getPathNameSafe(initialDirectory), JIPipe.RESOURCES.getIcon16("actions/folder-open-recent.png"), initialDirectory);
 
         Set<Path> knownDirectories = new HashSet<>();
         knownDirectories.add(initialDirectory.toAbsolutePath());
@@ -246,7 +246,7 @@ public class JIPipeDesktopFileChooserNext extends JPanel {
             Path directory = settings.getLastDirectoryBy(workbench, directoryKey);
             if (directory != null && Files.isDirectory(directory) && !StringUtils.isNullOrEmpty(directory)) {
                 if (!knownDirectories.contains(directory)) {
-                    createSidePanelShortcut(StringUtils.orElse(directory.getFileName(), "Root"), UIUtils.getIconFromResources("actions/folder-open-recent.png"), directory);
+                    createSidePanelShortcut(StringUtils.orElse(directory.getFileName(), "Root"), JIPipe.RESOURCES.getIcon16("actions/folder-open-recent.png"), directory);
                     knownDirectories.add(directory);
                 }
             }
@@ -264,25 +264,25 @@ public class JIPipeDesktopFileChooserNext extends JPanel {
                 }
             }
             if (!projectPaths.isEmpty()) {
-                createSidePanelHeader("Project", UIUtils.makeButtonFlat25x25(UIUtils.createButton("", UIUtils.getIcon16FromResources("actions/view-refresh.png"), this::refreshSidePanel)));
+                createSidePanelHeader("Project", UIUtils.makeButtonFlat25x25(UIUtils.createButton("", JIPipe.RESOURCES.getIcon16("actions/view-refresh.png"), this::refreshSidePanel)));
                 for (Map.Entry<String, Path> projectPath : projectPaths) {
-                    createSidePanelShortcut(projectPath.getKey(), UIUtils.getIconFromResources("actions/folder-open.png"), projectPath.getValue());
+                    createSidePanelShortcut(projectPath.getKey(), JIPipe.RESOURCES.getIcon16("actions/folder-open.png"), projectPath.getValue());
                 }
             }
         }
 
-        createSidePanelHeader("Bookmarks", UIUtils.makeButtonFlat25x25(UIUtils.createButton("", UIUtils.getIcon16FromResources("actions/add.png"), this::addBookmark)));
+        createSidePanelHeader("Bookmarks", UIUtils.makeButtonFlat25x25(UIUtils.createButton("", JIPipe.RESOURCES.getIcon16("actions/add.png"), this::addBookmark)));
         for (FileChooserBookmark bookmark : settings.getBookmarks()) {
-            JButton button = createSidePanelShortcut(bookmark.getName(), UIUtils.getIconFromResources("actions/bookmarks.png"), bookmark.getPath());
+            JButton button = createSidePanelShortcut(bookmark.getName(), JIPipe.RESOURCES.getIcon16("actions/bookmarks.png"), bookmark.getPath());
             JPopupMenu menu = UIUtils.addRightClickPopupMenuToButton(button);
-            menu.add(UIUtils.createMenuItem("Rename", "Renames the entry", UIUtils.getIconFromResources("actions/accessories-text-editor.png"), () -> {
+            menu.add(UIUtils.createMenuItem("Rename", "Renames the entry", JIPipe.RESOURCES.getIcon16("actions/accessories-text-editor.png"), () -> {
                 String newName = JOptionPane.showInputDialog(this, "Set the new name of the entry", bookmark.getName());
                 if (!StringUtils.isNullOrEmpty(newName)) {
                     bookmark.setName(newName);
                     refreshSidePanel();
                 }
             }));
-            menu.add(UIUtils.createMenuItem("Remove", "Removes the entry", UIUtils.getIconFromResources("actions/gtk-delete.png"), () -> {
+            menu.add(UIUtils.createMenuItem("Remove", "Removes the entry", JIPipe.RESOURCES.getIcon16("actions/gtk-delete.png"), () -> {
                 settings.getBookmarks().remove(bookmark);
                 refreshSidePanel();
             }));
@@ -308,12 +308,12 @@ public class JIPipeDesktopFileChooserNext extends JPanel {
         switch (directory.getType()) {
             case HOME: {
                 name = "Home";
-                icon = UIUtils.getIconFromResources("places/user-home.png");
+                icon = JIPipe.RESOURCES.getIcon16("places/user-home.png");
             }
             break;
             case ROOT: {
                 name = "Root";
-                icon = UIUtils.getIconFromResources("places/folder-root.png");
+                icon = JIPipe.RESOURCES.getIcon16("places/folder-root.png");
             }
             break;
             case DRIVE: {
@@ -322,12 +322,12 @@ public class JIPipeDesktopFileChooserNext extends JPanel {
                 } else {
                     name = directory.getPath().getFileName().toString();
                 }
-                icon = UIUtils.getIconFromResources("devices/drive-harddisk.png");
+                icon = JIPipe.RESOURCES.getIcon16("devices/drive-harddisk.png");
             }
             break;
             default: {
                 name = directory.getPath().getFileName().toString();
-                icon = UIUtils.getIconFromResources("places/inode-directory.png");
+                icon = JIPipe.RESOURCES.getIcon16("places/inode-directory.png");
             }
         }
 
@@ -539,7 +539,7 @@ public class JIPipeDesktopFileChooserNext extends JPanel {
         } else {
             JPanel panel = new JPanel(new BorderLayout());
             panel.add(selectedPathEditor, BorderLayout.CENTER);
-            panel.add(UIUtils.createButton("Use current directory", UIUtils.getIconFromResources("actions/edit-paste.png"), () -> {
+            panel.add(UIUtils.createButton("Use current directory", JIPipe.RESOURCES.getIcon16("actions/edit-paste.png"), () -> {
                 selectedPathEditor.setText(currentDirectory.toAbsolutePath().toString());
             }), BorderLayout.EAST);
             bottomPanel.addToForm(panel, new JLabel("Name"));
@@ -569,17 +569,17 @@ public class JIPipeDesktopFileChooserNext extends JPanel {
         entriesPopupMenu.removeAll();
 
         if (path != null) {
-            entriesPopupMenu.add(UIUtils.createMenuItem("Open in default application", "Opens the selected item in the system-wide default application", UIUtils.getIconFromResources("actions/fileopen.png"), () -> {
+            entriesPopupMenu.add(UIUtils.createMenuItem("Open in default application", "Opens the selected item in the system-wide default application", JIPipe.RESOURCES.getIcon16("actions/fileopen.png"), () -> {
                 UIUtils.desktopOpenFile(path);
             }));
-            entriesPopupMenu.add(UIUtils.createMenuItem("Copy path", "Copies the full path to the clipboard", UIUtils.getIconFromResources("actions/url-copy.png"), () -> {
+            entriesPopupMenu.add(UIUtils.createMenuItem("Copy path", "Copies the full path to the clipboard", JIPipe.RESOURCES.getIcon16("actions/url-copy.png"), () -> {
                 UIUtils.copyToClipboard(path.toString());
             }));
         }
 
         UIUtils.addSeparatorIfNeeded(entriesPopupMenu);
-        entriesPopupMenu.add(UIUtils.createMenuItem("Open current directory", "Opens the current directory in the system file manager", UIUtils.getIconFromResources("actions/fileopen.png"), this::openCurrentDirectoryInSystem));
-        entriesPopupMenu.add(UIUtils.createMenuItem("Refresh", "Refreshes the view", UIUtils.getIconFromResources("actions/view-refresh.png"), this::refresh));
+        entriesPopupMenu.add(UIUtils.createMenuItem("Open current directory", "Opens the current directory in the system file manager", JIPipe.RESOURCES.getIcon16("actions/fileopen.png"), this::openCurrentDirectoryInSystem));
+        entriesPopupMenu.add(UIUtils.createMenuItem("Refresh", "Refreshes the view", JIPipe.RESOURCES.getIcon16("actions/view-refresh.png"), this::refresh));
 
         entriesPopupMenu.show(entriesTable, e.getX(), e.getY());
     }
@@ -606,10 +606,10 @@ public class JIPipeDesktopFileChooserNext extends JPanel {
     }
 
     private void initializeToolbar(JToolBar toolbar) {
-        toolbar.add(UIUtils.makeButtonFlatWithSize(UIUtils.createButton("", UIUtils.getIconFromResources("actions/back.png"), this::goBack), TOOLBAR_BUTTON_SIZE));
-        toolbar.add(UIUtils.makeButtonFlatWithSize(UIUtils.createButton("", UIUtils.getIconFromResources("actions/next.png"), this::goNext), TOOLBAR_BUTTON_SIZE));
-        toolbar.add(UIUtils.makeButtonFlatWithSize(UIUtils.createButton("", UIUtils.getIconFromResources("actions/up.png"), this::goUp), TOOLBAR_BUTTON_SIZE));
-        toolbar.add(UIUtils.makeButtonFlatWithSize(UIUtils.createButton("", UIUtils.getIconFromResources("actions/view-refresh.png"), this::refresh), TOOLBAR_BUTTON_SIZE));
+        toolbar.add(UIUtils.makeButtonFlatWithSize(UIUtils.createButton("", JIPipe.RESOURCES.getIcon16("actions/back.png"), this::goBack), TOOLBAR_BUTTON_SIZE));
+        toolbar.add(UIUtils.makeButtonFlatWithSize(UIUtils.createButton("", JIPipe.RESOURCES.getIcon16("actions/next.png"), this::goNext), TOOLBAR_BUTTON_SIZE));
+        toolbar.add(UIUtils.makeButtonFlatWithSize(UIUtils.createButton("", JIPipe.RESOURCES.getIcon16("actions/up.png"), this::goUp), TOOLBAR_BUTTON_SIZE));
+        toolbar.add(UIUtils.makeButtonFlatWithSize(UIUtils.createButton("", JIPipe.RESOURCES.getIcon16("actions/view-refresh.png"), this::refresh), TOOLBAR_BUTTON_SIZE));
 
         toolbar.add(Box.createHorizontalGlue());
         textFilterEditor.setMaximumSize(new Dimension(200, 42));
@@ -617,9 +617,9 @@ public class JIPipeDesktopFileChooserNext extends JPanel {
         toolbar.add(textFilterEditor);
         toolbar.add(Box.createHorizontalGlue());
 
-        toolbar.add(UIUtils.makeButtonFlat(UIUtils.createButton("New directory", UIUtils.getIconFromResources("actions/archive-insert-directory.png"), this::createDirectory)));
+        toolbar.add(UIUtils.makeButtonFlat(UIUtils.createButton("New directory", JIPipe.RESOURCES.getIcon16("actions/archive-insert-directory.png"), this::createDirectory)));
 
-        JButton menuButton = UIUtils.makeButtonFlatWithSize(new JButton(UIUtils.getIcon16FromResources("actions/hamburger-menu.png")), TOOLBAR_BUTTON_SIZE);
+        JButton menuButton = UIUtils.makeButtonFlatWithSize(new JButton(JIPipe.RESOURCES.getIcon16("actions/hamburger-menu.png")), TOOLBAR_BUTTON_SIZE);
         JPopupMenu popupMenu = UIUtils.addPopupMenuToButton(menuButton);
         popupMenu.add(showHiddenToggle);
         toolbar.add(menuButton);
@@ -726,7 +726,7 @@ public class JIPipeDesktopFileChooserNext extends JPanel {
                 navigateButton.setBorder(BorderFactory.createEmptyBorder(3, 3, 3, 3));
                 navigateButton.setCursor(Cursor.getPredefinedCursor(Cursor.DEFAULT_CURSOR));
 
-                JButton listChildrenButton = new JButton(UIUtils.getIcon12FromResources("actions/go-right.png"));
+                JButton listChildrenButton = new JButton(JIPipe.RESOURCES.getIcon12("actions/go-right.png"));
                 listChildrenButton.setBorder(BorderFactory.createEmptyBorder(6, 3, 6, 3));
                 listChildrenButton.setCursor(Cursor.getPredefinedCursor(Cursor.DEFAULT_CURSOR));
 

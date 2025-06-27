@@ -21,6 +21,7 @@ import org.hkijena.jipipe.desktop.commons.components.JIPipeDesktopParameterFormP
 import org.hkijena.jipipe.desktop.commons.components.pickers.JIPipeDesktopImageJDataExporterPicker;
 import org.hkijena.jipipe.plugins.parameters.library.markup.MarkdownText;
 import org.hkijena.jipipe.utils.UIUtils;
+import org.hkijena.jipipe.JIPipe;
 
 import javax.swing.*;
 import java.awt.*;
@@ -51,13 +52,13 @@ public class ImageJDataExportOperationRefDesktopParameterEditorUI extends JIPipe
         JPanel buttonPanel = new JPanel();
         buttonPanel.setLayout(new BoxLayout(buttonPanel, BoxLayout.X_AXIS));
 
-        JButton selectButton = new JButton(UIUtils.getIconFromResources("actions/edit.png"));
+        JButton selectButton = new JButton(JIPipe.RESOURCES.getIcon16("actions/edit.png"));
         UIUtils.setStandardButtonBorder(selectButton);
         selectButton.setToolTipText("Select algorithm type");
         selectButton.addActionListener(e -> pick());
         buttonPanel.add(selectButton);
 
-        JButton configureButton = new JButton(UIUtils.getIconFromResources("actions/configure.png"));
+        JButton configureButton = new JButton(JIPipe.RESOURCES.getIcon16("actions/configure.png"));
         UIUtils.setStandardButtonBorder(configureButton);
         configureButton.setToolTipText("Configure the exporter");
         configureButton.addActionListener(e -> configure());
@@ -88,7 +89,7 @@ public class ImageJDataExportOperationRefDesktopParameterEditorUI extends JIPipe
             currentlyDisplayed.setIcon(JIPipe.getDataTypes().getIconFor(exporter.getExportedJIPipeDataType()));
         } else {
             currentlyDisplayed.setText("None selected");
-            currentlyDisplayed.setIcon(UIUtils.getIconFromResources("emblems/vcs-conflicting.png"));
+            currentlyDisplayed.setIcon(JIPipe.RESOURCES.getIcon16("emblems/vcs-conflicting.png"));
         }
     }
 

@@ -19,6 +19,7 @@ import org.hkijena.jipipe.api.parameters.JIPipeParameter;
 import org.hkijena.jipipe.api.settings.JIPipeDefaultProjectSettingsSheet;
 import org.hkijena.jipipe.api.settings.JIPipeDefaultProjectSettingsSheetCategory;
 import org.hkijena.jipipe.utils.UIUtils;
+import org.hkijena.jipipe.JIPipe;
 
 import javax.swing.*;
 import java.util.List;
@@ -60,7 +61,7 @@ public class OMEROPluginProjectSettings extends JIPipeDefaultProjectSettingsShee
 
     @Override
     public Icon getIcon() {
-        return UIUtils.getIconFromResources("apps/omero.png");
+        return JIPipe.RESOURCES.getIcon16("apps/omero.png");
     }
 
     @Override

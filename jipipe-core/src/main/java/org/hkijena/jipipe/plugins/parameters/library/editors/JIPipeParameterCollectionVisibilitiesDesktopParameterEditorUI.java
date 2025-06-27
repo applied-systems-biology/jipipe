@@ -20,6 +20,7 @@ import org.hkijena.jipipe.api.parameters.JIPipeParameterTree;
 import org.hkijena.jipipe.desktop.api.JIPipeDesktopParameterEditorUI;
 import org.hkijena.jipipe.desktop.commons.components.JIPipeDesktopFormPanel;
 import org.hkijena.jipipe.utils.UIUtils;
+import org.hkijena.jipipe.JIPipe;
 
 import javax.swing.*;
 import java.awt.*;
@@ -80,17 +81,17 @@ public class JIPipeParameterCollectionVisibilitiesDesktopParameterEditorUI exten
                         .getParameterTypeRegistry().createEditorInstance(parameterAccess, getDesktopWorkbench(), new JIPipeParameterTree(parameterAccess), null);
 
                 JPanel labelPanel = new JPanel(new BorderLayout(8, 8));
-                JToggleButton exportParameterToggle = new JToggleButton(UIUtils.getIconFromResources("actions/eye.png"));
+                JToggleButton exportParameterToggle = new JToggleButton(JIPipe.RESOURCES.getIcon16("actions/eye.png"));
                 UIUtils.makeButtonFlat25x25(exportParameterToggle);
                 exportParameterToggle.setToolTipText("If enabled, the parameter can be changed by the user.");
                 exportParameterToggle.setSelected(visibilities.isVisible(key));
-                exportParameterToggle.setIcon(exportParameterToggle.isSelected() ? UIUtils.getIconFromResources("actions/eye.png") :
-                        UIUtils.getIconFromResources("actions/eye-slash.png"));
+                exportParameterToggle.setIcon(exportParameterToggle.isSelected() ? JIPipe.RESOURCES.getIcon16("actions/eye.png") :
+                        JIPipe.RESOURCES.getIcon16("actions/eye-slash.png"));
                 JIPipeParameterCollectionVisibilities finalVisibilities = visibilities;
                 exportParameterToggle.addActionListener(e -> {
                     finalVisibilities.setVisibility(key, exportParameterToggle.isSelected());
-                    exportParameterToggle.setIcon(exportParameterToggle.isSelected() ? UIUtils.getIconFromResources("actions/eye.png") :
-                            UIUtils.getIconFromResources("actions/eye-slash.png"));
+                    exportParameterToggle.setIcon(exportParameterToggle.isSelected() ? JIPipe.RESOURCES.getIcon16("actions/eye.png") :
+                            JIPipe.RESOURCES.getIcon16("actions/eye-slash.png"));
                 });
                 labelPanel.add(exportParameterToggle, BorderLayout.WEST);
 

@@ -13,6 +13,7 @@
 
 package org.hkijena.jipipe.desktop.app.grapheditor.commons.properties;
 
+import org.hkijena.jipipe.JIPipe;
 import org.hkijena.jipipe.api.data.JIPipeDataSlot;
 import org.hkijena.jipipe.api.data.JIPipeMutableSlotConfiguration;
 import org.hkijena.jipipe.api.data.JIPipeSlotType;
@@ -23,6 +24,7 @@ import org.hkijena.jipipe.desktop.app.grapheditor.commons.AbstractJIPipeDesktopG
 import org.hkijena.jipipe.desktop.commons.components.JIPipeDesktopAddAlgorithmSlotPanel;
 import org.hkijena.jipipe.desktop.commons.components.JIPipeDesktopEditAlgorithmSlotPanel;
 import org.hkijena.jipipe.utils.UIUtils;
+import org.hkijena.jipipe.JIPipe;
 
 import javax.swing.*;
 import javax.swing.tree.DefaultMutableTreeNode;
@@ -70,7 +72,7 @@ public class JIPipeDesktopGraphNodeSlotEditorUI extends JPanel implements JIPipe
         add(toolBar, BorderLayout.NORTH);
 
         if (canModifyInputSlots()) {
-            JButton addInputButton = new JButton("Add input", UIUtils.getIconFromResources("actions/database.png"));
+            JButton addInputButton = new JButton("Add input", JIPipe.RESOURCES.getIcon16("actions/database.png"));
             addInputButton.addActionListener(e -> {
                 if (!JIPipeDesktopProjectWorkbench.canModifySlots(editorUI.getDesktopWorkbench()))
                     return;
@@ -80,7 +82,7 @@ public class JIPipeDesktopGraphNodeSlotEditorUI extends JPanel implements JIPipe
         }
 
         if (canModifyOutputSlots()) {
-            JButton addOutputButton = new JButton("Add output", UIUtils.getIconFromResources("actions/database.png"));
+            JButton addOutputButton = new JButton("Add output", JIPipe.RESOURCES.getIcon16("actions/database.png"));
             addOutputButton.addActionListener(e -> {
                 if (!JIPipeDesktopProjectWorkbench.canModifySlots(editorUI.getDesktopWorkbench()))
                     return;
@@ -91,7 +93,7 @@ public class JIPipeDesktopGraphNodeSlotEditorUI extends JPanel implements JIPipe
 
         toolBar.add(Box.createHorizontalGlue());
 
-        JButton relabelButton = new JButton("Label", UIUtils.getIconFromResources("actions/tag.png"));
+        JButton relabelButton = new JButton("Label", JIPipe.RESOURCES.getIcon16("actions/tag.png"));
         relabelButton.setToolTipText("Sets a custom name for this slot without deleting it");
         relabelButton.addActionListener(e -> relabelSlot());
         toolBar.add(relabelButton);
@@ -99,25 +101,25 @@ public class JIPipeDesktopGraphNodeSlotEditorUI extends JPanel implements JIPipe
         if (node.getSlotConfiguration() instanceof JIPipeMutableSlotConfiguration) {
 
             if (canModifyInputSlots() || canModifyOutputSlots()) {
-                JButton editButton = new JButton("Edit", UIUtils.getIconFromResources("actions/edit.png"));
+                JButton editButton = new JButton("Edit", JIPipe.RESOURCES.getIcon16("actions/edit.png"));
                 editButton.setToolTipText("Edit selected slot");
                 editButton.addActionListener(e -> editSlot());
                 toolBar.add(editButton);
             }
 
-            JButton moveUpButton = new JButton(UIUtils.getIconFromResources("actions/caret-up.png"));
+            JButton moveUpButton = new JButton(JIPipe.RESOURCES.getIcon16("actions/caret-up.png"));
             moveUpButton.setToolTipText("Move up");
             moveUpButton.addActionListener(e -> moveSlotUp());
             toolBar.add(moveUpButton);
 
-            JButton moveDownButton = new JButton(UIUtils.getIconFromResources("actions/caret-down.png"));
+            JButton moveDownButton = new JButton(JIPipe.RESOURCES.getIcon16("actions/caret-down.png"));
             moveDownButton.setToolTipText("Move down");
             moveDownButton.addActionListener(e -> moveSlotDown());
             toolBar.add(moveDownButton);
         }
 
         if (canModifyInputSlots() || canModifyOutputSlots()) {
-            JButton removeButton = new JButton(UIUtils.getIconFromResources("actions/delete.png"));
+            JButton removeButton = new JButton(JIPipe.RESOURCES.getIcon16("actions/delete.png"));
             removeButton.setToolTipText("Remove selected slots");
             removeButton.addActionListener(e -> removeSelectedSlots());
             toolBar.add(removeButton);

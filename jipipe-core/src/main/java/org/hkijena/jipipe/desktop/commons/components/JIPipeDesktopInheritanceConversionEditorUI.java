@@ -19,6 +19,7 @@ import org.hkijena.jipipe.api.data.JIPipeDataSlotInfo;
 import org.hkijena.jipipe.desktop.commons.components.renderers.JIPipeDesktopDataInfoListCellRenderer;
 import org.hkijena.jipipe.desktop.commons.components.renderers.JIPipeDesktopInheritanceConversionListCellRenderer;
 import org.hkijena.jipipe.utils.UIUtils;
+import org.hkijena.jipipe.JIPipe;
 
 import javax.swing.*;
 import java.awt.*;
@@ -57,11 +58,11 @@ public class JIPipeDesktopInheritanceConversionEditorUI extends JPanel {
 
         JToolBar toolBar = new JToolBar();
         toolBar.setFloatable(false);
-        JButton addButton = new JButton("Add", UIUtils.getIconFromResources("actions/list-add.png"));
+        JButton addButton = new JButton("Add", JIPipe.RESOURCES.getIcon16("actions/list-add.png"));
         addButton.addActionListener(e -> addEntry());
         toolBar.add(addButton);
 
-        JButton removeButton = new JButton(UIUtils.getIconFromResources("actions/delete.png"));
+        JButton removeButton = new JButton(JIPipe.RESOURCES.getIcon16("actions/delete.png"));
         removeButton.addActionListener(e -> removeSelectedEntries());
         toolBar.add(removeButton);
         add(toolBar, BorderLayout.NORTH);

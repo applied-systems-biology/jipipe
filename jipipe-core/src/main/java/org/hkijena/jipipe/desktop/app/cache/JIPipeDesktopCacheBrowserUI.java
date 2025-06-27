@@ -13,6 +13,7 @@
 
 package org.hkijena.jipipe.desktop.app.cache;
 
+import org.hkijena.jipipe.JIPipe;
 import org.hkijena.jipipe.api.JIPipeProgressInfo;
 import org.hkijena.jipipe.api.cache.JIPipeCache;
 import org.hkijena.jipipe.api.cache.JIPipeCacheClearAllRun;
@@ -31,6 +32,7 @@ import org.hkijena.jipipe.desktop.app.datatable.JIPipeDesktopExtendedDataTableUI
 import org.hkijena.jipipe.desktop.app.datatable.JIPipeDesktopExtendedMultiDataTableUI;
 import org.hkijena.jipipe.utils.JIPipeDesktopSplitPane;
 import org.hkijena.jipipe.utils.UIUtils;
+import org.hkijena.jipipe.JIPipe;
 import org.hkijena.jipipe.utils.data.WeakStore;
 import org.hkijena.jipipe.utils.debounce.StaticDebouncer;
 
@@ -148,11 +150,11 @@ public class JIPipeDesktopCacheBrowserUI extends JIPipeDesktopProjectWorkbenchPa
         JToolBar toolBar = new JToolBar();
         toolBar.setFloatable(false);
 
-        JButton clearOutdatedButton = new JButton("Clear outdated", UIUtils.getIconFromResources("actions/clear-brush.png"));
+        JButton clearOutdatedButton = new JButton("Clear outdated", JIPipe.RESOURCES.getIcon16("actions/clear-brush.png"));
         clearOutdatedButton.addActionListener(e -> JIPipeRunnableQueue.getInstance().enqueue(new JIPipeCacheClearOutdatedRun(getProject().getCache())));
         toolBar.add(clearOutdatedButton);
 
-        JButton clearAllButton = new JButton("Clear all", UIUtils.getIconFromResources("actions/clear-brush.png"));
+        JButton clearAllButton = new JButton("Clear all", JIPipe.RESOURCES.getIcon16("actions/clear-brush.png"));
         clearAllButton.addActionListener(e -> JIPipeRunnableQueue.getInstance().enqueue(new JIPipeCacheClearAllRun(getProject().getCache())));
         toolBar.add(clearAllButton);
 
