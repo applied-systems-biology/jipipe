@@ -46,7 +46,7 @@ public class JIPipeDesktopInheritanceConversionListCellRenderer extends JLabel i
                     "<table><tr>" +
                     "<td><img src=\"" + JIPipe.getDataTypes().getIconURLFor(from.getDataClass()) + "\" /></td>" +
                     "<td>" + from.getName() + "</td>" +
-                    "<td><img src=\"" + ResourceUtils.getPluginResource("icons/actions/caret-right.png") + "\" /></td>" +
+                    "<td><img src=\"" + JIPipe.RESOURCES.getIcon16URL("actions/caret-right.png") + "\" /></td>" +
                     "<td><img src=\"" + JIPipe.getDataTypes().getIconURLFor(to.getDataClass()) + "\" /></td>" +
                     "<td>" + to.getName() + "</td>" +
                     "</tr></table>" +

@@ -232,7 +232,7 @@ public class JIPipeDesktopCustomRunSettingsUI extends JIPipeDesktopProjectWorkbe
                 .collect(Collectors.toList())) {
             model.addRow(new Object[]{
                     StringUtils.createIconTextHTMLTable(algorithm.getCompartmentDisplayName(),
-                            ResourceUtils.getPluginResource("icons/data-types/graph-compartment.png")),
+                            JIPipe.RESOURCES.getIcon16URL("data-types/graph-compartment.png")),
                     algorithm.getName()
             });
         }

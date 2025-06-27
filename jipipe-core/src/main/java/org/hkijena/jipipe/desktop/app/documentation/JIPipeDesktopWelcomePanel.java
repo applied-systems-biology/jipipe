@@ -90,16 +90,7 @@ public class JIPipeDesktopWelcomePanel extends JIPipeDesktopProjectWorkbenchPane
     }
 
     private void initializeHero(JIPipeDesktopDockPanel dockPanel) {
-        BufferedImage backgroundImage;
-        try {
-            if (UIUtils.DARK_THEME) {
-                backgroundImage = ImageIO.read(ResourceUtils.getPluginResource("welcome-hero-dark.png"));
-            } else {
-                backgroundImage = ImageIO.read(ResourceUtils.getPluginResource("welcome-hero.png"));
-            }
-        } catch (Throwable e) {
-            backgroundImage = null;
-        }
+        BufferedImage backgroundImage = JIPipe.RESOURCES.getVariantResourceAsImage("welcome-hero.png");
         JPanel heroPanel = new JIPipeDesktopImageFrameComponent(backgroundImage, false, SizeFitMode.Cover, true);
         heroPanel.setLayout(new BoxLayout(heroPanel, BoxLayout.Y_AXIS));
 

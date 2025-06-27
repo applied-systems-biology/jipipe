@@ -55,12 +55,14 @@ public class MultiParametersPlugin extends JIPipePrepackagedDefaultJavaPlugin {
 
         // Register data types
         registerDatatype("parameters", ParametersData.class,
-                ResourceUtils.getPluginResource("icons/data-types/parameters.png"));
+                JIPipe.RESOURCES.getIcon16URL("data-types/parameters.png"));
         registerDatatypeConversion(new ParametersDataToResultsTableDataConverter());
         registerDefaultDataTypeViewer(ParametersData.class, ParametersDataViewer.class);
 
         // Register nodes
-        registerNodeType("convert-parameters-data-to-results-table-data", ConvertParametersToTableAlgorithm.class, JIPipe.RESOURCES.getIcon16URL("data-types/results-table.png"));
+        registerNodeType("convert-parameters-data-to-results-table-data",
+                ConvertParametersToTableAlgorithm.class,
+                JIPipe.RESOURCES.getIcon16URL("data-types/results-table.png"));
     }
 
     @Override

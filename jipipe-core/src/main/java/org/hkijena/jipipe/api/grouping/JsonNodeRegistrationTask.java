@@ -63,7 +63,7 @@ public class JsonNodeRegistrationTask extends JIPipeDefaultNodeRegistrationTask 
             JIPipe.getNodes().register(info, source);
             if (info.getCustomIcon().getIconName() != null) {
                 JIPipe.getNodes().registerIcon(info,
-                        ResourceUtils.getPluginResource("icons/" + info.getCustomIcon().getIconName()));
+                        JIPipe.RESOURCES.getIcon16URL(info.getCustomIcon().getIconName()));
             }
         } catch (IOException e) {
             throw new RuntimeException(e);

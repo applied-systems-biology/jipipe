@@ -292,7 +292,7 @@ public class JIPipeDesktopNodeInfoPicker extends JPanel {
             if (value != null) {
                 setText(StringUtils.createIconTextHTMLTable(value.getName(), JIPipe.getNodes().getIconURLFor(value)));
             } else {
-                setText(StringUtils.createIconTextHTMLTable("Select none", ResourceUtils.getPluginResource("icons/actions/stock_calc-cancel.png")));
+                setText(StringUtils.createIconTextHTMLTable("Select none", JIPipe.RESOURCES.getIcon16URL("actions/stock_calc-cancel.png")));
             }
             setSelected(isSelected);
             if (isSelected) {

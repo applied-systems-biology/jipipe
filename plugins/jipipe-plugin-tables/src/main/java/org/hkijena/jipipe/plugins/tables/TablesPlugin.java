@@ -145,26 +145,26 @@ public class TablesPlugin extends JIPipePrepackagedDefaultJavaPlugin {
     private void registerColumnSources() {
         registerDatatype("table-column-row-index",
                 RowIndexTableColumnData.class,
-                ResourceUtils.getPluginResource("icons/data-types/table-column.png"));
+                JIPipe.RESOURCES.getIcon16URL("data-types/table-column.png"));
         registerDatatype("table-column-zero",
                 ZeroTableColumnData.class,
-                ResourceUtils.getPluginResource("icons/data-types/table-column.png"));
+                JIPipe.RESOURCES.getIcon16URL("data-types/table-column.png"));
     }
 
     private void registerDataTypes() {
         registerDatatype("table-column",
                 TableColumnData.class,
-                ResourceUtils.getPluginResource("icons/data-types/table-column.png"),
+                JIPipe.RESOURCES.getIcon16URL("data-types/table-column.png"),
                 new OpenResultsTableInImageJDataDisplayOperation(),
                 new OpenResultsTableInJIPipeTabDataDisplayOperation());
         registerDatatype("table-column-numeric",
                 DoubleArrayTableColumnData.class,
-                ResourceUtils.getPluginResource("icons/data-types/table-column.png"),
+                JIPipe.RESOURCES.getIcon16URL("data-types/table-column.png"),
                 new OpenResultsTableInImageJDataDisplayOperation(),
                 new OpenResultsTableInJIPipeTabDataDisplayOperation());
         registerDatatype("table-column-string",
                 StringArrayTableColumnData.class,
-                ResourceUtils.getPluginResource("icons/data-types/table-column.png"),
+                JIPipe.RESOURCES.getIcon16URL("data-types/table-column.png"),
                 new OpenResultsTableInImageJDataDisplayOperation(),
                 new OpenResultsTableInJIPipeTabDataDisplayOperation());
         registerDatatypeConversion(new DoubleArrayColumnToTableConverter());

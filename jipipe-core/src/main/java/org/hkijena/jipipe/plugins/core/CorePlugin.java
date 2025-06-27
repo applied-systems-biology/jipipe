@@ -91,28 +91,28 @@ public class CorePlugin extends JIPipePrepackagedDefaultJavaPlugin {
     public void register(JIPipe jiPipe, Context context, JIPipeProgressInfo progressInfo) {
         registerDatatype("jipipe:data",
                 JIPipeData.class,
-                ResourceUtils.getPluginResource("icons/data-types/data-type.png"));
+                JIPipe.RESOURCES.getIcon16URL("data-types/data-type.png"));
         registerDatatype("jipipe:empty-data",
                 JIPipeEmptyData.class,
-                ResourceUtils.getPluginResource("icons/data-types/data-type.png"));
+                JIPipe.RESOURCES.getIcon16URL("data-types/data-type.png"));
         registerDatatype("jipipe:data-table",
                 JIPipeDataTable.class,
-                ResourceUtils.getPluginResource("icons/data-types/data-table.png"));
+                JIPipe.RESOURCES.getIcon16URL("data-types/data-table.png"));
         registerDatatype("jipipe:weak-reference",
                 JIPipeWeakDataReferenceData.class,
-                ResourceUtils.getPluginResource("icons/data-types/data-type.png"));
+                JIPipe.RESOURCES.getIcon16URL("data-types/data-type.png"));
         registerDatatype("jipipe:thumbnail-image",
                 JIPipeImageThumbnailData.class,
-                ResourceUtils.getPluginResource("icons/data-types/data-type.png"));
+                JIPipe.RESOURCES.getIcon16URL("data-types/data-type.png"));
         registerDatatype("jipipe:thumbnail-text",
                 JIPipeTextThumbnailData.class,
-                ResourceUtils.getPluginResource("icons/data-types/data-type.png"));
+                JIPipe.RESOURCES.getIcon16URL("data-types/data-type.png"));
         registerDatatype("jipipe:thumbnail-empty",
                 JIPipeEmptyThumbnailData.class,
-                ResourceUtils.getPluginResource("icons/data-types/data-type.png"));
+                JIPipe.RESOURCES.getIcon16URL("data-types/data-type.png"));
         registerDatatype("jipipe:thumbnail-grid",
                 JIPipeGridThumbnailData.class,
-                ResourceUtils.getPluginResource("icons/data-types/data-type.png"));
+                JIPipe.RESOURCES.getIcon16URL("data-types/data-type.png"));
 
         registerDefaultDataTypeViewer(JIPipeDataTable.class, JIPipeDataTableDataViewer.class);
 

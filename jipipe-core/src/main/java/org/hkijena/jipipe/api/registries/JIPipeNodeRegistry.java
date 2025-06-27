@@ -61,7 +61,7 @@ public class JIPipeNodeRegistry implements JIPipeValidatable, JIPipeService.Data
      */
     public JIPipeNodeRegistry(JIPipe jiPipe) {
         this.jiPipe = jiPipe;
-        this.defaultIconURL = ResourceUtils.getPluginResource("icons/actions/configure.png");
+        this.defaultIconURL = JIPipe.RESOURCES.getIcon16URL("actions/configure.png");
     }
 
     /**

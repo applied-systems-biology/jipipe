@@ -67,7 +67,7 @@ public class JIPipeCompartmentsPlugin extends JIPipePrepackagedDefaultJavaPlugin
         registerNodeType("jipipe:project-compartment", JIPipeProjectCompartment.class, JIPipe.RESOURCES.getIcon16URL("actions/graph-compartment.png"));
 
         registerDatatype("jipipe:compartment-output", JIPipeCompartmentOutputData.class,
-                ResourceUtils.getPluginResource("icons/data-types/graph-compartment.png"));
+                JIPipe.RESOURCES.getIcon16URL("data-types/graph-compartment.png"));
     }
 
     @Override

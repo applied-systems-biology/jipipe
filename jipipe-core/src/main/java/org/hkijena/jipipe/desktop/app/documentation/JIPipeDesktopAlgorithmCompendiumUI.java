@@ -177,17 +177,17 @@ public class JIPipeDesktopAlgorithmCompendiumUI extends JIPipeDesktopCompendiumU
         builder.append("<table>");
 
         if (access.isImportant()) {
-            builder.append("<tr><td><img src=\"").append(ResourceUtils.getPluginResource("icons/emblems/important.png")).append("\" /></td>");
+            builder.append("<tr><td><img src=\"").append(JIPipe.RESOURCES.getIcon16URL("emblems/important.png")).append("\" /></td>");
             builder.append("<td><strong>Important parameter</strong>: The developer marked this parameter as especially important</td></tr>\n\n");
         }
 
-        builder.append("<tr><td><img src=\"").append(ResourceUtils.getPluginResource("icons/actions/dialog-xml-editor.png")).append("\" /></td>");
+        builder.append("<tr><td><img src=\"").append(JIPipe.RESOURCES.getIcon16URL("actions/dialog-xml-editor.png")).append("\" /></td>");
         builder.append("<td><strong>Unique identifier</strong>: <code>");
         builder.append(HtmlEscapers.htmlEscaper().escape(access.getKey())).append("</code></td></tr>\n\n");
 
         JIPipeParameterTypeInfo info = JIPipe.getParameterTypes().getInfoByFieldClass(access.getFieldClass());
         if (info != null) {
-            builder.append("<td><img src=\"").append(ResourceUtils.getPluginResource("icons/data-types/data-type.png")).append("\" /></td>");
+            builder.append("<td><img src=\"").append(JIPipe.RESOURCES.getIcon16URL("data-types/data-type.png")).append("\" /></td>");
             builder.append("<td><strong>").append(HtmlEscapers.htmlEscaper().escape(info.getName())).append("</strong>: ");
             builder.append(HtmlEscapers.htmlEscaper().escape(info.getDescription())).append("</td></tr>");
         }

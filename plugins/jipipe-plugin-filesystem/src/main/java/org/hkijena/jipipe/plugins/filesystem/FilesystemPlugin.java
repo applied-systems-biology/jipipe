@@ -95,11 +95,11 @@ public class FilesystemPlugin extends JIPipePrepackagedDefaultJavaPlugin {
     @Override
     public void register(JIPipe jiPipe, Context context, JIPipeProgressInfo progressInfo) {
         // Register main data types
-        registerDatatype("path", PathData.class, ResourceUtils.getPluginResource("icons/data-types/path.png"),
+        registerDatatype("path", PathData.class, JIPipe.RESOURCES.getIcon16URL("data-types/path.png"),
                 null, FilesystemDataSlotPreview.class, new OpenPathDataDisplayOperation(), new CopyPathDataDisplayOperation());
-        registerDatatype("file", FileData.class, ResourceUtils.getPluginResource("icons/data-types/file.png"),
+        registerDatatype("file", FileData.class, JIPipe.RESOURCES.getIcon16URL("data-types/file.png"),
                 null, FilesystemDataSlotPreview.class, new OpenPathDataDisplayOperation(), new CopyPathDataDisplayOperation());
-        registerDatatype("folder", FolderData.class, ResourceUtils.getPluginResource("icons/data-types/folder.png"),
+        registerDatatype("folder", FolderData.class, JIPipe.RESOURCES.getIcon16URL("data-types/folder.png"),
                 null, FilesystemDataSlotPreview.class, new OpenPathDataDisplayOperation(), new CopyPathDataDisplayOperation());
 
         // Register viewer

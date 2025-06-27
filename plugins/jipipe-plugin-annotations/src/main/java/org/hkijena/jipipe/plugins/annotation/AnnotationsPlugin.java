@@ -84,7 +84,7 @@ public class AnnotationsPlugin extends JIPipePrepackagedDefaultJavaPlugin {
     private void registerDataTypes() {
         registerDatatype("annotation-table",
                 AnnotationTableData.class,
-                ResourceUtils.getPluginResource("icons/data-types/annotation-table.png"),
+                JIPipe.RESOURCES.getIcon16URL("data-types/annotation-table.png"),
                 new OpenResultsTableInImageJDataDisplayOperation(),
                 new OpenResultsTableInJIPipeTabDataDisplayOperation(),
                 new OpenInNativeApplicationDataImportOperation(".csv"));
