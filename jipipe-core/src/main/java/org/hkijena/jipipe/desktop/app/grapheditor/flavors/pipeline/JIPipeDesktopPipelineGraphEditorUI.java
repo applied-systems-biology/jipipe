@@ -199,55 +199,55 @@ public class JIPipeDesktopPipelineGraphEditorUI extends AbstractJIPipeDesktopGra
 
         getDockPanel().addDockPanel(AbstractJIPipeDesktopGraphEditorUI.DOCK_CALCULATOR,
                 "Calculator",
-                JIPipe.RESOURCES.getIcon32("actions/insert-math-expression.png"),
+                JIPipe.RESOURCES.getIcon24("actions/insert-math-expression.png"),
                 JIPipeDesktopDockPanel.PanelLocation.TopLeft,
                 true,
                 0, new JIPipeDesktopExpressionCalculatorUI(getDesktopWorkbench()));
         getDockPanel().addDockPanel(AbstractJIPipeDesktopGraphEditorUI.DOCK_MAP,
                 "Navigator",
-                JIPipe.RESOURCES.getIcon32("actions/compass.png"),
+                JIPipe.RESOURCES.getIcon24("actions/compass.png"),
                 JIPipeDesktopDockPanel.PanelLocation.TopLeft,
                 true,
                 0, new JIPipeDesktopGraphEditorMinimap(this));
 
         getDockPanel().addDockPanel(DOCK_QUICK_GUIDE,
                 "Quick guide",
-                JIPipe.RESOURCES.getIcon32("actions/help-about.png"),
+                JIPipe.RESOURCES.getIcon24("actions/help-about.png"),
                 JIPipeDesktopDockPanel.PanelLocation.BottomLeft,
                 true,
                 0, new JIPipeDesktopPipelineQuickGuidePanel(getDesktopWorkbench(), this));
         getDockPanel().addDockPanel(DOCK_ADD_NODES,
                 "Add nodes",
-                JIPipe.RESOURCES.getIcon32("actions/node-add.png"),
+                JIPipe.RESOURCES.getIcon24("actions/node-add.png"),
                 JIPipeDesktopDockPanel.PanelLocation.BottomLeft,
                 false,
                 JIPipeDesktopDockPanel.UI_ORDER_PINNED, new JIPipeDesktopAddNodesPanel(getDesktopWorkbench(), this));
         getDockPanel().addDockPanel(DOCK_NODE_TEMPLATES, "Templates",
-                JIPipe.RESOURCES.getIcon32("actions/star3.png"),
+                JIPipe.RESOURCES.getIcon24("actions/star3.png"),
                 JIPipeDesktopDockPanel.PanelLocation.BottomLeft,
                 false,
                 JIPipeDesktopDockPanel.UI_ORDER_PINNED, new NodeTemplateBox(getDesktopWorkbench(), true, getCanvasUI(), Collections.emptySet()));
         getDockPanel().addDockPanel(AbstractJIPipeDesktopGraphEditorUI.DOCK_BOOKMARKS,
                 "Bookmarks",
-                JIPipe.RESOURCES.getIcon32("actions/bookmarks.png"),
+                JIPipe.RESOURCES.getIcon24("actions/bookmarks.png"),
                 JIPipeDesktopDockPanel.PanelLocation.BottomLeft,
                 false,
                 0, new JIPipeDesktopBookmarkListPanel(getDesktopWorkbench(), getGraph(), this, null));
         getDockPanel().addDockPanel(AbstractJIPipeDesktopGraphEditorUI.DOCK_HISTORY,
                 "History",
-                JIPipe.RESOURCES.getIcon32("actions/edit-undo-history.png"),
+                JIPipe.RESOURCES.getIcon24("actions/edit-undo-history.png"),
                 JIPipeDesktopDockPanel.PanelLocation.BottomLeft,
                 false,
                 0, new JIPipeDesktopHistoryJournalUI(getHistoryJournal()));
         getDockPanel().addDockPanel(AbstractJIPipeDesktopGraphEditorUI.DOCK_LOG,
                 "Log",
-                JIPipe.RESOURCES.getIcon32("actions/rabbitvcs-show_log.png"),
+                JIPipe.RESOURCES.getIcon24("actions/rabbitvcs-show_log.png"),
                 JIPipeDesktopDockPanel.PanelLocation.BottomBottom,
                 false,
                 0, new JIPipeDesktopGraphEditorLogPanel(getDesktopWorkbench()));
         getDockPanel().addDockPanel(DOCK_ERRORS,
                 "Errors",
-                JIPipe.RESOURCES.getIcon32("actions/dialog-warning-2.png"),
+                JIPipe.RESOURCES.getIcon24("actions/dialog-warning-2.png"),
                 JIPipeDesktopDockPanel.PanelLocation.BottomRight,
                 false,
                 0, new JIPipeDesktopGraphEditorErrorPanel(getDesktopWorkbench(), this));
@@ -278,19 +278,19 @@ public class JIPipeDesktopPipelineGraphEditorUI extends AbstractJIPipeDesktopGra
         });
         getDockPanel().addDockPanel(DOCK_NODE_CONTEXT_PARAMETERS,
                 "Parameters",
-                JIPipe.RESOURCES.getIcon32("actions/configure3.png"),
+                JIPipe.RESOURCES.getIcon24("actions/configure3.png"),
                 JIPipeDesktopDockPanel.PanelLocation.TopRight,
                 true,
                 -80, parametersPanel);
         getDockPanel().addDockPanel(DOCK_NODE_CONTEXT_HELP,
                 "Documentation",
-                JIPipe.RESOURCES.getIcon32("actions/help-question.png"),
+                JIPipe.RESOURCES.getIcon24("actions/help-question.png"),
                 JIPipeDesktopDockPanel.PanelLocation.BottomRight,
                 true,
                 0, parametersPanel.getParametersUI().getHelpPanel());
         getDockPanel().addDockPanel(DOCK_NODE_CONTEXT_SLOT_MANAGER,
                 "Slots",
-                JIPipe.RESOURCES.getIcon32("actions/labplot-editbreaklayout.png"),
+                JIPipe.RESOURCES.getIcon24("actions/labplot-editbreaklayout.png"),
                 JIPipeDesktopDockPanel.PanelLocation.TopRight,
                 false,
                 -70, () -> new JIPipeDesktopGraphNodeSlotEditorUI(this, node));
@@ -299,7 +299,7 @@ public class JIPipeDesktopPipelineGraphEditorUI extends AbstractJIPipeDesktopGra
                 getDockPanel().addDockPanel(
                         DOCK_NODE_CONTEXT_INPUT_MANAGER,
                         "Inputs",
-                        JIPipe.RESOURCES.getIcon32("actions/input-management-2.png"),
+                        JIPipe.RESOURCES.getIcon24("actions/input-management-2.png"),
                         JIPipeDesktopDockPanel.PanelLocation.TopRight,
                         false,
                         -60, () -> new JIPipeDesktopDataBatchAssistantUI((JIPipeDesktopProjectWorkbench) getDesktopWorkbench(), node, () -> {
@@ -310,7 +310,7 @@ public class JIPipeDesktopPipelineGraphEditorUI extends AbstractJIPipeDesktopGra
                 getDockPanel().addDockPanel(
                         DOCK_NODE_CONTEXT_INPUT_MANAGER,
                         "Inputs",
-                        JIPipe.RESOURCES.getIcon32("actions/input-management-2.png"),
+                        JIPipe.RESOURCES.getIcon24("actions/input-management-2.png"),
                         JIPipeDesktopDockPanel.PanelLocation.TopRight,
                         false,
                         -60, new JIPipeDesktopParameterFormPanel(getDesktopWorkbench(), ((JIPipeIterationStepAlgorithm) node).getGenerationSettingsInterface(),
@@ -320,7 +320,7 @@ public class JIPipeDesktopPipelineGraphEditorUI extends AbstractJIPipeDesktopGra
         if (node instanceof JIPipeAlgorithm && getDesktopWorkbench() instanceof JIPipeDesktopProjectWorkbench) {
             getDockPanel().addDockPanel(DOCK_NODE_CONTEXT_RESULTS,
                     "Results",
-                    JIPipe.RESOURCES.getIcon32("actions/network-server-database.png"),
+                    JIPipe.RESOURCES.getIcon24("actions/network-server-database.png"),
                     JIPipeDesktopDockPanel.PanelLocation.TopRight,
                     false,
                     -50, () -> new JIPipeDesktopAlgorithmCacheBrowserUI((JIPipeDesktopProjectWorkbench) getDesktopWorkbench(),

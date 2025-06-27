@@ -83,13 +83,13 @@ public class JIPipeDesktopRunSingleAlgorithmSettingsPanelIOEditor extends Abstra
                 JIPipeDesktopTabPane.CloseMode.withoutCloseButton);
         getDockPanel().addDockPanel("Inputs",
                 "Inputs",
-                JIPipe.RESOURCES.getIcon16("data-types/slot.png"),
+                JIPipe.RESOURCES.getIcon24("data-types/slot.png"),
                 JIPipeDesktopDockPanel.PanelLocation.TopRight,
                 false,
                 0, inputsPanel);
         getDockPanel().addDockPanel("Outputs",
                 "Outputs",
-                JIPipe.RESOURCES.getIcon16("data-types/slot.png"),
+                JIPipe.RESOURCES.getIcon24("data-types/slot.png"),
                 JIPipeDesktopDockPanel.PanelLocation.TopRight,
                 false,
                 0, outputsPanel);

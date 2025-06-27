@@ -485,7 +485,7 @@ public class ROIManagerPlugin2D extends JIPipeDesktopLegacyImageViewerPlugin2D {
 
     @Override
     public Icon getPanelIcon() {
-        return JIPipe.RESOURCES.getIcon32("actions/ellipse-5pts.png");
+        return JIPipe.RESOURCES.getIcon24("actions/ellipse-5pts.png");
     }
 
     private void reloadEditRoiMenu(JPopupMenu menu) {

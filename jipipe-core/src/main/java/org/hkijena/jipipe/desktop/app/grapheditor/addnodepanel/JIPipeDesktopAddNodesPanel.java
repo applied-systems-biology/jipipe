@@ -552,7 +552,7 @@ public class JIPipeDesktopAddNodesPanel extends JIPipeDesktopWorkbenchPanel {
             helpPanel = new JIPipeDesktopFormHelpPanel();
             graphEditorUI.getDockPanel().addDockPanel(JIPipeDesktopPipelineGraphEditorUI.DOCK_NODE_CONTEXT_HELP,
                     "Documentation",
-                    JIPipe.RESOURCES.getIcon32("actions/help-question.png"),
+                    JIPipe.RESOURCES.getIcon24("actions/help-question.png"),
                     JIPipeDesktopDockPanel.PanelLocation.BottomRight,
                     true,
                     0, helpPanel);

@@ -118,7 +118,7 @@ public class JFreeChartPlotEditor extends JIPipeDesktopWorkbenchPanel implements
     public void rebuildDock(JIPipeDesktopDockPanel dockPanel) {
         dockPanel.addDockPanel("SETTINGS",
                 "Settings",
-                JIPipe.RESOURCES.getIcon32("actions/configure.png"),
+                JIPipe.RESOURCES.getIcon24("actions/configure.png"),
                 JIPipeDesktopDockPanel.PanelLocation.TopRight,
                 true,
                 0,
@@ -128,14 +128,14 @@ public class JFreeChartPlotEditor extends JIPipeDesktopWorkbenchPanel implements
                         JIPipeDesktopParameterFormPanel.WITH_DOCUMENTATION | JIPipeDesktopParameterFormPanel.DOCUMENTATION_NO_UI | JIPipeDesktopParameterFormPanel.WITH_SCROLLING));
         dockPanel.addDockPanel("SERIES",
                 "Series",
-                JIPipe.RESOURCES.getIcon32("actions/stock_select-column.png"),
+                JIPipe.RESOURCES.getIcon24("actions/stock_select-column.png"),
                 JIPipeDesktopDockPanel.PanelLocation.BottomRight,
                 false,
                 0,
                 new JIPipePlotSeriesListEditorUI(getDesktopWorkbench(), this));
         dockPanel.addDockPanel("DATA",
                 "Data",
-                JIPipe.RESOURCES.getIcon32("actions/table.png"),
+                JIPipe.RESOURCES.getIcon24("actions/table.png"),
                 JIPipeDesktopDockPanel.PanelLocation.BottomRight,
                 false,
                 0,

@@ -315,7 +315,7 @@ public class JIPipeDesktopWelcomePanel extends JIPipeDesktopProjectWorkbenchPane
 
         dockPanel.addDockPanel("EXAMPLES",
                 "Examples",
-                JIPipe.RESOURCES.getIcon32("actions/graduation-cap.png"),
+                JIPipe.RESOURCES.getIcon24("actions/graduation-cap.png"),
                 JIPipeDesktopDockPanel.PanelLocation.TopLeft,
                 false,
                 1,
@@ -329,7 +329,7 @@ public class JIPipeDesktopWelcomePanel extends JIPipeDesktopProjectWorkbenchPane
     private void initRecentProjects(JIPipeDesktopDockPanel dockPanel) {
         dockPanel.addDockPanel("RECENT",
                 "Recent",
-                JIPipe.RESOURCES.getIcon32("actions/tag-recents.png"),
+                JIPipe.RESOURCES.getIcon24("actions/tag-recents.png"),
                 JIPipeDesktopDockPanel.PanelLocation.TopLeft,
                 true,
                 0,

@@ -267,7 +267,7 @@ public class TracksManagerPlugin2D extends JIPipeDesktopLegacyImageViewerPlugin2
 
     @Override
     public Icon getPanelIcon() {
-        return TrackMatePlugin.RESOURCES.getIcon32("trackmate.png");
+        return TrackMatePlugin.RESOURCES.getIcon24("trackmate.png");
     }
 
     private void initialize() {

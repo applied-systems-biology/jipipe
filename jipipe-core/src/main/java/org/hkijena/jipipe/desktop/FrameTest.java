@@ -28,11 +28,11 @@ public class FrameTest {
         frame.setContentPane(dockPanel);
         dockPanel.setMainComponent(textPane);
 
-        dockPanel.addDockPanel("P1", "Panel 1", JIPipe.RESOURCES.getIcon32("actions/1.png"), JIPipeDesktopDockPanel.PanelLocation.TopLeft, false, 0, new JTextArea("Panel 1"));
-        dockPanel.addDockPanel("P2", "Panel 2", JIPipe.RESOURCES.getIcon32("actions/2.png"), JIPipeDesktopDockPanel.PanelLocation.TopLeft, false, 0, new JTextArea("Panel 2"));
-        dockPanel.addDockPanel("P3", "Panel 3", JIPipe.RESOURCES.getIcon32("actions/3.png"), JIPipeDesktopDockPanel.PanelLocation.BottomLeft, false, 0, new JTextArea("Panel 3"));
-        dockPanel.addDockPanel("P4", "Panel 4", JIPipe.RESOURCES.getIcon32("actions/4.png"), JIPipeDesktopDockPanel.PanelLocation.TopRight, false, 0, new JTextArea("Panel 4"));
-        dockPanel.addDockPanel("P5", "Panel 5", JIPipe.RESOURCES.getIcon32("actions/5.png"), JIPipeDesktopDockPanel.PanelLocation.BottomRight, false, 0, new JTextArea("Panel 5"));
+        dockPanel.addDockPanel("P1", "Panel 1", JIPipe.RESOURCES.getIcon24("actions/1.png"), JIPipeDesktopDockPanel.PanelLocation.TopLeft, false, 0, new JTextArea("Panel 1"));
+        dockPanel.addDockPanel("P2", "Panel 2", JIPipe.RESOURCES.getIcon24("actions/2.png"), JIPipeDesktopDockPanel.PanelLocation.TopLeft, false, 0, new JTextArea("Panel 2"));
+        dockPanel.addDockPanel("P3", "Panel 3", JIPipe.RESOURCES.getIcon24("actions/3.png"), JIPipeDesktopDockPanel.PanelLocation.BottomLeft, false, 0, new JTextArea("Panel 3"));
+        dockPanel.addDockPanel("P4", "Panel 4", JIPipe.RESOURCES.getIcon24("actions/4.png"), JIPipeDesktopDockPanel.PanelLocation.TopRight, false, 0, new JTextArea("Panel 4"));
+        dockPanel.addDockPanel("P5", "Panel 5", JIPipe.RESOURCES.getIcon24("actions/5.png"), JIPipeDesktopDockPanel.PanelLocation.BottomRight, false, 0, new JTextArea("Panel 5"));
 
         frame.setVisible(true);
     }

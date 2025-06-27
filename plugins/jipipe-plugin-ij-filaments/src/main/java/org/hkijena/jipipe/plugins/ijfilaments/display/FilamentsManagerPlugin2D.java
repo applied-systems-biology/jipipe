@@ -339,7 +339,7 @@ public class FilamentsManagerPlugin2D extends JIPipeDesktopLegacyImageViewerPlug
 
     @Override
     public Icon getPanelIcon() {
-        return JIPipe.RESOURCES.getIcon32("actions/curve-connector.png");
+        return JIPipe.RESOURCES.getIcon24("actions/curve-connector.png");
     }
 
     private void initialize() {

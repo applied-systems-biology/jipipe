@@ -419,7 +419,7 @@ public class ROIManagerPlugin3D extends JIPipeDesktopLegacyImageViewerPlugin2D {
 
     @Override
     public Icon getPanelIcon() {
-        return JIPipe.RESOURCES.getIcon32("actions/cube.png");
+        return JIPipe.RESOURCES.getIcon24("actions/cube.png");
     }
 
     @Override

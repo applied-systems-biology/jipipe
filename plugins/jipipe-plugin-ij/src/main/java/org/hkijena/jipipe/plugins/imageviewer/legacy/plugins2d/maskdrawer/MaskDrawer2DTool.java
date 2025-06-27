@@ -98,7 +98,7 @@ public abstract class MaskDrawer2DTool extends JIPipeDesktopLegacyImageViewerPlu
 
     @Override
     public Icon getPanelIcon() {
-        return JIPipe.RESOURCES.getIcon32("actions/configure3.png");
+        return JIPipe.RESOURCES.getIcon24("actions/configure3.png");
     }
 
     @Override

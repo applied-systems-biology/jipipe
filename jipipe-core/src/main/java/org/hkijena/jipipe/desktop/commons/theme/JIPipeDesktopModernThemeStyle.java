@@ -14,13 +14,6 @@ public class JIPipeDesktopModernThemeStyle {
     @JsonProperty("brightness")
     private JIPipeDesktopUIThemeBrightness brightness = JIPipeDesktopUIThemeBrightness.Light;
 
-    @JsonProperty("icon-theme")
-    private JIPipeDesktopUIIconVariant iconTheme = JIPipeDesktopUIIconVariant.Light;
-    @JsonProperty("icon-theme-inactive")
-    private JIPipeDesktopUIIconVariant inactiveIconTheme = JIPipeDesktopUIIconVariant.LightInactive;
-    @JsonProperty("icon-theme-accent")
-    private JIPipeDesktopUIIconVariant accentIconTheme = JIPipeDesktopUIIconVariant.LightAccent;
-
     /*
      * Basic colors
      */
@@ -185,30 +178,6 @@ public class JIPipeDesktopModernThemeStyle {
 
     public void setBrightness(JIPipeDesktopUIThemeBrightness brightness) {
         this.brightness = brightness;
-    }
-
-    public JIPipeDesktopUIIconVariant getIconTheme() {
-        return iconTheme;
-    }
-
-    public void setIconTheme(JIPipeDesktopUIIconVariant iconTheme) {
-        this.iconTheme = iconTheme;
-    }
-
-    public JIPipeDesktopUIIconVariant getInactiveIconTheme() {
-        return inactiveIconTheme;
-    }
-
-    public void setInactiveIconTheme(JIPipeDesktopUIIconVariant inactiveIconTheme) {
-        this.inactiveIconTheme = inactiveIconTheme;
-    }
-
-    public JIPipeDesktopUIIconVariant getAccentIconTheme() {
-        return accentIconTheme;
-    }
-
-    public void setAccentIconTheme(JIPipeDesktopUIIconVariant accentIconTheme) {
-        this.accentIconTheme = accentIconTheme;
     }
 
     public Color getPrimaryColor() {
@@ -409,5 +378,14 @@ public class JIPipeDesktopModernThemeStyle {
 
     public void setFormDisabledBackground(Color formDisabledBackground) {
         this.formDisabledBackground = formDisabledBackground;
+    }
+
+    public Color getIconBaseColor() {
+        if(brightness == JIPipeDesktopUIThemeBrightness.Light) {
+            return new Color(0x6c707e);
+        }
+        else {
+            return new Color(0xced0d6);
+        }
     }
 }

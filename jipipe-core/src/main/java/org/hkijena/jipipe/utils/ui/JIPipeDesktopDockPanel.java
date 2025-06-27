@@ -482,7 +482,8 @@ public class JIPipeDesktopDockPanel extends JPanel implements JIPipeDesktopSplit
         JToggleButton button = new JToggleButton(panel.getIcon());
         button.setOpaque(false);
         button.setSelected(panel.isDisplayed());
-        button.setBorder(UIUtils.createEmptyBorder(4));
+        button.setBorder(BorderFactory.createEmptyBorder(8,8,8,8));
+        button.setForeground(UIUtils.CURRENT_STYLE.getIconBaseColor());
         button.setToolTipText(panel.getName());
         button.addActionListener(e -> {
             if (button.isSelected()) {
@@ -498,6 +499,7 @@ public class JIPipeDesktopDockPanel extends JPanel implements JIPipeDesktopSplit
             button.setFont(new Font(Font.DIALOG, Font.PLAIN, 10));
             button.setMaximumSize(new Dimension(Short.MAX_VALUE, 64));
         }
+
         JPopupMenu popupMenu = UIUtils.addRightClickPopupMenuToButton(button);
         popupMenu.add(UIUtils.createMenuItem("Top left", "Move the panel to the top left anchor", JIPipe.RESOURCES.getIcon16("actions/dock-top-left.png"), () -> {
             movePanelToLocation(panel, PanelLocation.TopLeft, true);

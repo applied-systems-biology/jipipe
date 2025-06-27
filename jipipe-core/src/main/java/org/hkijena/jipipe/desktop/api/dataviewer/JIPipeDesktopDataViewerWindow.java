@@ -296,7 +296,7 @@ public class JIPipeDesktopDataViewerWindow extends JFrame implements JIPipeDeskt
             if (!dockPanel.containsPanel("TEXT_ANNOTATIONS")) {
                 JIPipeDesktopDataViewerTextAnnotationsPanel panel = new JIPipeDesktopDataViewerTextAnnotationsPanel(getDesktopWorkbench());
                 dockPanel.addDockPanel("TEXT_ANNOTATIONS", "Annotations",
-                        JIPipe.RESOURCES.getIcon32("actions/tag.png"),
+                        JIPipe.RESOURCES.getIcon24("actions/tag.png"),
                         JIPipeDesktopDockPanel.PanelLocation.TopLeft,
                         false,
                         0,

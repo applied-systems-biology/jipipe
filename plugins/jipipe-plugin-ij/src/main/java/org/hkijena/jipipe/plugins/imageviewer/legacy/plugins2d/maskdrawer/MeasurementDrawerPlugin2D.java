@@ -189,7 +189,7 @@ public class MeasurementDrawerPlugin2D extends MaskDrawerPlugin2D implements Mas
 
     @Override
     public Icon getPanelIcon() {
-        return JIPipe.RESOURCES.getIcon32("actions/measure.png");
+        return JIPipe.RESOURCES.getIcon24("actions/measure.png");
     }
 
     @Override
