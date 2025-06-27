@@ -25,7 +25,7 @@ import java.util.Collection;
 /**
  * Parameter used for creating annotations
  */
-@StringParameterSettings(monospace = true, icon = ResourceUtils.RESOURCE_BASE_PATH + "/icons/data-types/data-annotation.png")
+@StringParameterSettings(monospace = true, icon = "data-types/data-annotation.png")
 public class OptionalDataAnnotationNameParameter extends OptionalStringParameter implements JIPipeValidatable {
     public OptionalDataAnnotationNameParameter() {
     }

@@ -105,7 +105,7 @@ public class ExplodeRoi3DListAlgorithm extends JIPipeSimpleIteratingAlgorithm {
 
     @SetJIPipeDocumentation(name = "ROI index annotation", description = "Optional. Annotation that is added to each individual ROI list. Contains the value index=[index];name=[name].")
     @JIPipeParameter("generated-annotation")
-    @StringParameterSettings(monospace = true, icon = ResourceUtils.RESOURCE_BASE_PATH + "/icons/data-types/annotation.png")
+    @StringParameterSettings(monospace = true, icon = "data-types/annotation.png")
     public OptionalStringParameter getGeneratedAnnotation() {
         return generatedAnnotation;
     }

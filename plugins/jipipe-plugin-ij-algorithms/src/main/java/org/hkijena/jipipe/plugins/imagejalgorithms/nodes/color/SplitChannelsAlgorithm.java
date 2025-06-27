@@ -292,7 +292,7 @@ public class SplitChannelsAlgorithm extends JIPipeSimpleIteratingAlgorithm {
 
     @SetJIPipeDocumentation(name = "Slot name annotation column", description = "The annotation name that is used if 'Annotate with slot names' is enabled")
     @JIPipeParameter("slot-name-annotation-column")
-    @StringParameterSettings(monospace = true, icon = ResourceUtils.RESOURCE_BASE_PATH + "/icons/data-types/annotation.png")
+    @StringParameterSettings(monospace = true, icon = "data-types/annotation.png")
     public String getAnnotationColumnSlotName() {
         return annotationColumnSlotName;
     }

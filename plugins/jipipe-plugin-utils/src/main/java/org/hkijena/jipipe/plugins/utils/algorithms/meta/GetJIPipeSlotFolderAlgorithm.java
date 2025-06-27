@@ -83,7 +83,7 @@ public class GetJIPipeSlotFolderAlgorithm extends JIPipeSimpleIteratingAlgorithm
     @SetJIPipeDocumentation(name = "Node alias ID", description = "The unique identifier of the node that contains the output. You can either use the 'Set output slot' button to auto-configure this value or look up the node ID in the help of the node. " +
             "Please note that this is not the node type ID.")
     @JIPipeParameter(value = "node-id", uiOrder = -100)
-    @StringParameterSettings(monospace = true, icon = ResourceUtils.RESOURCE_BASE_PATH + "/icons/data-types/node.png")
+    @StringParameterSettings(monospace = true, icon = "data-types/node.png")
     public String getNodeId() {
         return nodeId;
     }
@@ -96,7 +96,7 @@ public class GetJIPipeSlotFolderAlgorithm extends JIPipeSimpleIteratingAlgorithm
     @SetJIPipeDocumentation(name = "Slot name", description = "The name of the output slot within the targeted node. " +
             "You can use the 'Set output slot' button to auto-configure or just type in the name of the output slot.")
     @JIPipeParameter(value = "slot-name", uiOrder = -99)
-    @StringParameterSettings(monospace = true, icon = ResourceUtils.RESOURCE_BASE_PATH + "/icons/data-types/slot.png")
+    @StringParameterSettings(monospace = true, icon = "data-types/slot.png")
     public String getSlotName() {
         return slotName;
     }
@@ -109,7 +109,7 @@ public class GetJIPipeSlotFolderAlgorithm extends JIPipeSimpleIteratingAlgorithm
     @SetJIPipeDocumentation(name = "Compartment alias ID", description = "The ID of the compartment, where the data is located. " +
             "You can use the 'Set output slot' button to auto-configure or just type in the name of the output slot.")
     @JIPipeParameter("compartment-id")
-    @StringParameterSettings(monospace = true, icon = ResourceUtils.RESOURCE_BASE_PATH + "/icons/data-types/graph-compartment.png")
+    @StringParameterSettings(monospace = true, icon = "data-types/graph-compartment.png")
     public String getCompartmentId() {
         return compartmentId;
     }

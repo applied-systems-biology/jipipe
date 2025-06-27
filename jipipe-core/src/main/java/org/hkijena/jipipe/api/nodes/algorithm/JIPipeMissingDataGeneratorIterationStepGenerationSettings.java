@@ -83,7 +83,7 @@ public class JIPipeMissingDataGeneratorIterationStepGenerationSettings extends A
     @SetJIPipeDocumentation(name = "Custom grouping columns", description = "Only used if 'Grouping method' is set to 'Custom'. " +
             "Determines which annotation columns are referred to group data sets. ")
     @JIPipeParameter(value = "custom-matched-columns-expression", uiOrder = 999, pinned = true)
-    @StringParameterSettings(monospace = true, icon = ResourceUtils.RESOURCE_BASE_PATH + "/icons/data-types/annotation.png")
+    @StringParameterSettings(monospace = true, icon = "data-types/annotation.png")
     public StringQueryExpression getCustomColumns() {
         if (customColumns == null)
             customColumns = new StringQueryExpression();

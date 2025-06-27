@@ -55,6 +55,7 @@ import org.hkijena.jipipe.plugins.parameters.library.pairs.StringAndStringPairPa
 import org.hkijena.jipipe.plugins.settings.JIPipeGeneralUIApplicationSettings;
 import org.hkijena.jipipe.plugins.settings.JIPipeGraphEditorUIApplicationSettings;
 import org.hkijena.jipipe.utils.DocumentationUtils;
+import org.hkijena.jipipe.utils.JIPipeResourceManager;
 import org.hkijena.jipipe.utils.StringUtils;
 import org.hkijena.jipipe.utils.UIUtils;
 import org.hkijena.jipipe.JIPipe;
@@ -112,19 +113,7 @@ public class JIPipeDesktopPipelineGraphEditorUI extends AbstractJIPipeDesktopGra
                     if (documentationAnnotation == null) {
                         documentationAnnotation = new JIPipeDocumentation(method.getName(), "");
                     }
-                    URL iconURL;
-                    if (UIUtils.DARK_THEME && !StringUtils.isNullOrEmpty(actionAnnotation.iconDarkURL())) {
-                        iconURL = actionAnnotation.resourceClass().getResource(actionAnnotation.iconDarkURL());
-                    } else {
-                        if (!StringUtils.isNullOrEmpty(actionAnnotation.iconURL())) {
-                            iconURL = actionAnnotation.resourceClass().getResource(actionAnnotation.iconURL());
-                        } else {
-                            iconURL = JIPipe.RESOURCES.getIcon16URL("actions/configure.png");
-                        }
-                    }
-                    if (iconURL == null) {
-                        iconURL = JIPipe.RESOURCES.getIcon16URL("actions/configure.png");
-                    }
+                    URL iconURL = JIPipeResourceManager.safeResolveIcon16URL(actionAnnotation.iconURL(), actionAnnotation.iconDarkURL(), actionAnnotation.resourceClass(), "actions/configure.png");
                     Icon icon = new ImageIcon(iconURL);
 
                     NodeContextActionWrapperUIContextAction action = new NodeContextActionWrapperUIContextAction(info,

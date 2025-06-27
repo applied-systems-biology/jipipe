@@ -198,7 +198,7 @@ public class AnnotateOMEROScreenReferenceAlgorithm extends JIPipeSingleIteration
 
     @SetJIPipeDocumentation(name = "Annotate with screen name", description = "Optional annotation type where the screen title is written.")
     @JIPipeParameter("name-annotation")
-    @StringParameterSettings(monospace = true, icon = ResourceUtils.RESOURCE_BASE_PATH + "/icons/data-types/annotation.png")
+    @StringParameterSettings(monospace = true, icon = "data-types/annotation.png")
     public OptionalTextAnnotationNameParameter getNameAnnotation() {
         return nameAnnotation;
     }
@@ -210,7 +210,7 @@ public class AnnotateOMEROScreenReferenceAlgorithm extends JIPipeSingleIteration
 
     @SetJIPipeDocumentation(name = "Annotate with screen description", description = "Optional annotation type where the screen description is written.")
     @JIPipeParameter("description-annotation")
-    @StringParameterSettings(monospace = true, icon = ResourceUtils.RESOURCE_BASE_PATH + "/icons/data-types/annotation.png")
+    @StringParameterSettings(monospace = true, icon = "data-types/annotation.png")
     public OptionalTextAnnotationNameParameter getDescriptionAnnotation() {
         return descriptionAnnotation;
     }

@@ -81,7 +81,7 @@ public class DownloadFilesDataSource extends JIPipeSimpleIteratingAlgorithm {
 
     @JIPipeParameter("urls")
     @SetJIPipeDocumentation(name = "URLs", description = "List of URLs to download.")
-    @StringParameterSettings(monospace = true, prompt = "https://...", icon = ResourceUtils.RESOURCE_BASE_PATH + "/icons/actions/cloud-download.png")
+    @StringParameterSettings(monospace = true, prompt = "https://...", icon = "actions/cloud-download.png")
     public StringList getUrls() {
         return urls;
     }

@@ -196,7 +196,7 @@ public class Clij2ExecuteKernelIterating extends JIPipeIteratingAlgorithm {
 
     @SetJIPipeDocumentation(name = "Kernel program name", description = "The program that should be executed. Might be overwritten by the preprocessing script.")
     @JIPipeParameter("kernel-program-name")
-    @StringParameterSettings(monospace = true, icon = ResourceUtils.RESOURCE_BASE_PATH + "/icons/actions/insert-math-expression.png")
+    @StringParameterSettings(monospace = true, icon = "actions/insert-math-expression.png")
     public String getKernelFunction() {
         return kernelFunction;
     }

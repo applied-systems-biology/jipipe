@@ -13,7 +13,7 @@
 
 package org.hkijena.jipipe.desktop.commons.components.pickers;
 
-import org.hkijena.jipipe.desktop.commons.components.renderers.JIPipeDesktopPrefixedIconListCellRenderer;
+import org.hkijena.jipipe.desktop.commons.components.renderers.JIPipeDesktopIconNameListCellRenderer;
 import org.hkijena.jipipe.desktop.commons.components.search.JIPipeDesktopSearchTextField;
 import org.hkijena.jipipe.utils.UIUtils;
 import org.hkijena.jipipe.JIPipe;
@@ -80,7 +80,7 @@ public class JIPipeDesktopIconPickerDialog extends JDialog implements MouseListe
 
         iconList = new JList<>();
         iconList.setModel(new DefaultListModel<>());
-        iconList.setCellRenderer(new JIPipeDesktopPrefixedIconListCellRenderer(prefix));
+        iconList.setCellRenderer(new JIPipeDesktopIconNameListCellRenderer(prefix));
         iconList.setModel(new DefaultListModel<>());
         iconList.addListSelectionListener(e -> selectedIcon = iconList.getSelectedValue());
         iconList.addMouseListener(this);

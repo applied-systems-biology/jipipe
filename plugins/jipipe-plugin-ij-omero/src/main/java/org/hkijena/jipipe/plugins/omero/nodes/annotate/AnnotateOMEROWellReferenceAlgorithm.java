@@ -170,7 +170,7 @@ public class AnnotateOMEROWellReferenceAlgorithm extends JIPipeSingleIterationAl
 
     @SetJIPipeDocumentation(name = "Annotate with well row", description = "If enabled, annotate with the well row")
     @JIPipeParameter("row-annotation")
-    @StringParameterSettings(monospace = true, icon = ResourceUtils.RESOURCE_BASE_PATH + "/icons/data-types/annotation.png")
+    @StringParameterSettings(monospace = true, icon = "data-types/annotation.png")
     public OptionalTextAnnotationNameParameter getRowAnnotation() {
         return rowAnnotation;
     }
@@ -182,7 +182,7 @@ public class AnnotateOMEROWellReferenceAlgorithm extends JIPipeSingleIterationAl
 
     @SetJIPipeDocumentation(name = "Annotate with well column", description = "If enabled, annotate with the well column")
     @JIPipeParameter("column-annotation")
-    @StringParameterSettings(monospace = true, icon = ResourceUtils.RESOURCE_BASE_PATH + "/icons/data-types/annotation.png")
+    @StringParameterSettings(monospace = true, icon = "data-types/annotation.png")
     public OptionalTextAnnotationNameParameter getColumnAnnotation() {
         return columnAnnotation;
     }

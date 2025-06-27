@@ -19,6 +19,7 @@ import org.hkijena.jipipe.api.JIPipeDocumentation;
 import org.hkijena.jipipe.api.SetJIPipeDocumentation;
 import org.hkijena.jipipe.plugins.parameters.library.markup.HTMLText;
 import org.hkijena.jipipe.utils.DocumentationUtils;
+import org.hkijena.jipipe.utils.JIPipeResourceManager;
 import org.hkijena.jipipe.utils.StringUtils;
 import org.hkijena.jipipe.utils.UIUtils;
 import org.hkijena.jipipe.JIPipe;
@@ -263,14 +264,7 @@ public class JIPipeParameterTree extends AbstractJIPipeParameterCollection imple
             if (documentationAnnotation == null) {
                 documentationAnnotation = new JIPipeDocumentation(method.getName(), "");
             }
-            URL iconURL = null;
-            if (UIUtils.DARK_THEME && !StringUtils.isNullOrEmpty(actionAnnotation.iconDarkURL())) {
-                iconURL = actionAnnotation.resourceClass().getResource(actionAnnotation.iconDarkURL());
-            } else {
-                if (!StringUtils.isNullOrEmpty(actionAnnotation.iconURL())) {
-                    iconURL = actionAnnotation.resourceClass().getResource(actionAnnotation.iconURL());
-                }
-            }
+            URL iconURL = JIPipeResourceManager.safeResolveIconURL(actionAnnotation.iconURL(), actionAnnotation.iconDarkURL(), actionAnnotation.resourceClass(), null);
             target.actions.add(new JIPipeReflectionParameterCollectionContextAction(source, method, iconURL, documentationAnnotation));
         }
         target.actions.addAll(source.getContextActions());

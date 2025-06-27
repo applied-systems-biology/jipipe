@@ -13,7 +13,9 @@
 
 package org.hkijena.jipipe.desktop.commons.components.renderers;
 
+import org.hkijena.jipipe.JIPipe;
 import org.hkijena.jipipe.desktop.commons.components.pickers.JIPipeDesktopIconPickerDialog;
+import org.hkijena.jipipe.utils.JIPipeResourceManager;
 import org.hkijena.jipipe.utils.ResourceUtils;
 
 import javax.swing.*;
@@ -22,14 +24,14 @@ import java.awt.*;
 /**
  * Renders entries in {@link JIPipeDesktopIconPickerDialog}
  */
-public class JIPipeDesktopPrefixedIconListCellRenderer extends JLabel implements ListCellRenderer<String> {
+public class JIPipeDesktopIconNameListCellRenderer extends JLabel implements ListCellRenderer<String> {
 
-    private String prefix;
+    private final String prefix;
 
     /**
      * @param prefix the resource prefix to prepend to the icon names
      */
-    public JIPipeDesktopPrefixedIconListCellRenderer(String prefix) {
+    public JIPipeDesktopIconNameListCellRenderer(String prefix) {
         this.prefix = prefix;
         setOpaque(true);
         setBorder(BorderFactory.createEmptyBorder(4, 4, 4, 4));
@@ -43,7 +45,7 @@ public class JIPipeDesktopPrefixedIconListCellRenderer extends JLabel implements
             setText("<Null>");
         } else {
             setText(value);
-            setIcon(new ImageIcon(ResourceUtils.class.getResource(prefix + "/" + value)));
+            setIcon(JIPipe.RESOURCES.getIcon16(prefix + "/" + value));
         }
 
         if (isSelected) {

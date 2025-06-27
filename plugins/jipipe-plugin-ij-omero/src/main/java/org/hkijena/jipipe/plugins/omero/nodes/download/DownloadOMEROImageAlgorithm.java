@@ -232,7 +232,7 @@ public class DownloadOMEROImageAlgorithm extends JIPipeSimpleIteratingAlgorithm 
 
     @SetJIPipeDocumentation(name = "Annotate with image title", description = "Optional annotation type where the image title is written.")
     @JIPipeParameter("title-annotation")
-    @StringParameterSettings(monospace = true, icon = ResourceUtils.RESOURCE_BASE_PATH + "/icons/data-types/annotation.png")
+    @StringParameterSettings(monospace = true, icon = "data-types/annotation.png")
     public OptionalTextAnnotationNameParameter getTitleAnnotation() {
         return titleAnnotation;
     }

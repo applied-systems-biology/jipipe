@@ -211,7 +211,7 @@ public class MergingFormProcessorAlgorithm extends JIPipeAlgorithm implements JI
 
     @SetJIPipeDocumentation(name = "Form tab annotation", description = "The annotation that is used to group form elements into tabs.")
     @JIPipeParameter("tab-annotation")
-    @StringParameterSettings(monospace = true, icon = ResourceUtils.RESOURCE_BASE_PATH + "/icons/data-types/annotation.png")
+    @StringParameterSettings(monospace = true, icon = "data-types/annotation.png")
     public String getTabAnnotation() {
         return tabAnnotation;
     }

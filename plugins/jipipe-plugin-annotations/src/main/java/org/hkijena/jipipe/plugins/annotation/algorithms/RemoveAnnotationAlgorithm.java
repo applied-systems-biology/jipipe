@@ -72,7 +72,7 @@ public class RemoveAnnotationAlgorithm extends JIPipeSimpleIteratingAlgorithm {
 
     @SetJIPipeDocumentation(name = "Removed annotations", description = "Annotations that match any of the filters are removed.")
     @JIPipeParameter("annotation-type")
-    @StringParameterSettings(monospace = true, icon = ResourceUtils.RESOURCE_BASE_PATH + "/icons/data-types/annotation.png")
+    @StringParameterSettings(monospace = true, icon = "data-types/annotation.png")
     public AnnotationQueryExpression getAnnotationExpression() {
         return annotationExpression;
     }

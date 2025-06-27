@@ -17,6 +17,7 @@ import org.hkijena.jipipe.JIPipe;
 import org.hkijena.jipipe.desktop.api.JIPipeDesktopParameterEditorUI;
 import org.hkijena.jipipe.desktop.commons.components.JIPipeDesktopDocumentChangeListener;
 import org.hkijena.jipipe.desktop.commons.components.JIPipeDesktopFancyTextField;
+import org.hkijena.jipipe.utils.JIPipeResourceManager;
 import org.hkijena.jipipe.utils.StringUtils;
 import org.hkijena.jipipe.utils.UIUtils;
 import org.hkijena.jipipe.JIPipe;
@@ -45,14 +46,14 @@ public class StringDesktopParameterEditorUI extends JIPipeDesktopParameterEditor
 
         boolean monospaced = false;
         boolean multiline = false;
-        String iconURL = null;
+        String iconName = null;
         String prompt = "";
         boolean visible = true;
         StringParameterSettings settings = getParameterAccess().getAnnotationOfType(StringParameterSettings.class);
         if (settings != null) {
             monospaced = settings.monospace();
             multiline = settings.multiline();
-            iconURL = settings.icon();
+            iconName = settings.icon();
             prompt = settings.prompt();
             visible = settings.visible();
         }
@@ -71,9 +72,8 @@ public class StringDesktopParameterEditorUI extends JIPipeDesktopParameterEditor
                 add(textArea, BorderLayout.CENTER);
             } else {
                 JLabel iconLabel = null;
-                if (!StringUtils.isNullOrEmpty(iconURL)) {
-                    ImageIcon imageIcon = new ImageIcon(getClass().getResource(iconURL));
-                    iconLabel = new JLabel(imageIcon);
+                if (!StringUtils.isNullOrEmpty(iconName)) {
+                    iconLabel = new JLabel(JIPipe.RESOURCES.getIcon16(iconName));
                 }
 
                 JIPipeDesktopFancyTextField textField = new JIPipeDesktopFancyTextField(iconLabel, prompt, false);

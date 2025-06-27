@@ -153,6 +153,76 @@ public class JIPipeResourceManager {
         return result;
     }
 
+    /**
+     * Given a light URL, dark URL, and resource class, find the one matching the current theme mode (light/dark).
+     * Returns the default URL if no resolution is made
+     * @param urlLight light URL
+     * @param urlDark dark URL
+     * @param resourceClass the resource class
+     * @return the URL
+     */
+    public static URL safeResolveIconURL(String urlLight, String urlDark, Class<?> resourceClass, URL defaultValue) {
+        if(resourceClass == null) {
+            resourceClass = JIPipe.class;
+        }
+        if(UIUtils.DARK_THEME && !StringUtils.isNullOrEmpty(urlDark)) {
+            URL resource = resourceClass.getResource(urlDark);
+            if(resource != null) {
+                return resource;
+            }
+        }
+        if(!StringUtils.isNullOrEmpty(urlLight)) {
+            URL resource = resourceClass.getResource(urlLight);
+            if(resource != null) {
+                return resource;
+            }
+        }
+        return defaultValue;
+    }
+
+    /**
+     * Given a light URL, dark URL, and resource class, find the one matching the current theme mode (light/dark).
+     * Returns the URL for missing icons if the resolution fails
+     * @param urlLight light URL
+     * @param urlDark dark URL
+     * @param resourceClass the resource class
+     * @return the URL
+     */
+    public static URL safeResolveIcon16URL(String urlLight, String urlDark, Class<?> resourceClass) {
+        return safeResolveIconURL(urlLight, urlDark, resourceClass, getMissingIcon16URL());
+    }
+
+    /**
+     * Given a light URL, dark URL, and resource class, find the one matching the current theme mode (light/dark).
+     * Returns the URL for missing icons if the resolution fails
+     * @param urlLight light URL
+     * @param urlDark dark URL
+     * @param resourceClass the resource class
+     * @param defaultValue  the name of the default icon
+     * @return the URL
+     */
+    public static URL safeResolveIcon16URL(String urlLight, String urlDark, Class<?> resourceClass, String defaultValue) {
+        return safeResolveIconURL(urlLight, urlDark, resourceClass, JIPipe.RESOURCES.getIcon16URL(defaultValue));
+    }
+
+    /**
+     * Safely converts a URL to a 16x16 icon.
+     * Returns the missing icon if something goes wrong
+     * @param url the URL
+     * @return the icon
+     */
+    public static ImageIcon safeURLToIcon16(URL url) {
+        try {
+            if(url != null) {
+                return new ImageIcon(url);
+            }
+        }
+        catch (Exception ignored) {
+        }
+        url = getMissingIcon16URL();
+        return new ImageIcon(url);
+    }
+
     public Class<?> getResourceClass() {
         return resourceClass;
     }

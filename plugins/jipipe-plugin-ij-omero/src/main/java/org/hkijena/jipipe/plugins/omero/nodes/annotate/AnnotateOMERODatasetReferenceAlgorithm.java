@@ -135,7 +135,7 @@ public class AnnotateOMERODatasetReferenceAlgorithm extends JIPipeSimpleIteratin
 
     @SetJIPipeDocumentation(name = "Annotate with dataset name", description = "Optional annotation type where the dataset name is written.")
     @JIPipeParameter("name-annotation")
-    @StringParameterSettings(monospace = true, icon = ResourceUtils.RESOURCE_BASE_PATH + "/icons/data-types/annotation.png")
+    @StringParameterSettings(monospace = true, icon = "data-types/annotation.png")
     public OptionalTextAnnotationNameParameter getNameAnnotation() {
         return nameAnnotation;
     }
@@ -147,7 +147,7 @@ public class AnnotateOMERODatasetReferenceAlgorithm extends JIPipeSimpleIteratin
 
     @SetJIPipeDocumentation(name = "Annotate with dataset description", description = "Optional annotation type where the dataset description is written.")
     @JIPipeParameter("description-annotation")
-    @StringParameterSettings(monospace = true, icon = ResourceUtils.RESOURCE_BASE_PATH + "/icons/data-types/annotation.png")
+    @StringParameterSettings(monospace = true, icon = "data-types/annotation.png")
     public OptionalTextAnnotationNameParameter getDescriptionAnnotation() {
         return descriptionAnnotation;
     }

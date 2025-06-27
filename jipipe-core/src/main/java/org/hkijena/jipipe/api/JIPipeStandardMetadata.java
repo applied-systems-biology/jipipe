@@ -234,7 +234,7 @@ public class JIPipeStandardMetadata extends AbstractJIPipeParameterCollection im
      */
     @JIPipeParameter("website")
     @JsonSetter("website")
-    @StringParameterSettings(monospace = true, icon = ResourceUtils.RESOURCE_BASE_PATH + "/icons/actions/web-browser.png")
+    @StringParameterSettings(monospace = true, icon = "actions/web-browser.png")
     public void setWebsite(String website) {
         this.website = website;
 

@@ -400,6 +400,11 @@ public class JIPipeDesktopParameterFormPanel extends JIPipeDesktopFormPanel impl
 
         JIPipeParameterTree.Node node = tree.getSourceNode(parameterCollection);
 
+        if(node == null) {
+            System.err.println("AddToForm: Node of tree is null!");
+            return;
+        }
+
         CustomStateLessToggleButton collapseButton = new CustomStateLessToggleButton("Show content",
                 JIPipe.RESOURCES.getIcon16("actions/caret-right.png"),
                 "Hide content",
@@ -427,16 +432,7 @@ public class JIPipeDesktopParameterFormPanel extends JIPipeDesktopFormPanel impl
                 } else {
                     leftComponents = new Component[0];
                 }
-                Icon groupIcon;
-                if (UIUtils.DARK_THEME && node != null && node.getResourceClass() != null && !StringUtils.isNullOrEmpty(node.getDarkIconURL())) {
-                    groupIcon = new ImageIcon(node.getResourceClass().getResource(node.getDarkIconURL()));
-                } else {
-                    if (node != null && !StringUtils.isNullOrEmpty(node.getIconURL())) {
-                        groupIcon = new ImageIcon(node.getResourceClass().getResource(node.getIconURL()));
-                    } else {
-                        groupIcon = JIPipe.RESOURCES.getIcon16("actions/configure.png");
-                    }
-                }
+                Icon groupIcon = JIPipeResourceManager.safeURLToIcon16(JIPipeResourceManager.safeResolveIcon16URL(node.getIconURL(), node.getDarkIconURL(), node.getResourceClass(), "actions/configure.png"));
 
                 // Create panel
                 String headerTitle = StringUtils.orElse(tree.getSourceDocumentationName(parameterCollection), "General");

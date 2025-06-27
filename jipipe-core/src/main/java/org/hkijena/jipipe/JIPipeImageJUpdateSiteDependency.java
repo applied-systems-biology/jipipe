@@ -83,7 +83,7 @@ public class JIPipeImageJUpdateSiteDependency extends AbstractJIPipeParameterCol
             " ignore this property.")
     @JIPipeParameter(value = "url", uiOrder = 1)
     @JsonGetter("url")
-    @StringParameterSettings(monospace = true, icon = ResourceUtils.RESOURCE_BASE_PATH + "/icons/actions/web-browser.png")
+    @StringParameterSettings(monospace = true, icon = "actions/web-browser.png")
     public String getUrl() {
         return url;
     }

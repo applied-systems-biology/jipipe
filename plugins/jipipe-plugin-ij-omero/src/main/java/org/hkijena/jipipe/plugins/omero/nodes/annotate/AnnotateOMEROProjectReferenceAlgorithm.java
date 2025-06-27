@@ -134,7 +134,7 @@ public class AnnotateOMEROProjectReferenceAlgorithm extends JIPipeSingleIteratio
 
     @SetJIPipeDocumentation(name = "Annotate with project name", description = "Optional annotation type where the project name is written.")
     @JIPipeParameter("name-annotation")
-    @StringParameterSettings(monospace = true, icon = ResourceUtils.RESOURCE_BASE_PATH + "/icons/data-types/annotation.png")
+    @StringParameterSettings(monospace = true, icon = "data-types/annotation.png")
     public OptionalTextAnnotationNameParameter getNameAnnotation() {
         return nameAnnotation;
     }
@@ -146,7 +146,7 @@ public class AnnotateOMEROProjectReferenceAlgorithm extends JIPipeSingleIteratio
 
     @SetJIPipeDocumentation(name = "Annotate with project description", description = "Optional annotation type where the project description is written.")
     @JIPipeParameter("description-annotation")
-    @StringParameterSettings(monospace = true, icon = ResourceUtils.RESOURCE_BASE_PATH + "/icons/data-types/annotation.png")
+    @StringParameterSettings(monospace = true, icon = "data-types/annotation.png")
     public OptionalTextAnnotationNameParameter getDescriptionAnnotation() {
         return descriptionAnnotation;
     }

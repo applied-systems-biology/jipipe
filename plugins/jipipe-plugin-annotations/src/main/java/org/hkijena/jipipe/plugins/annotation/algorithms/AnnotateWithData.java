@@ -88,7 +88,7 @@ public class AnnotateWithData extends JIPipeIteratingAlgorithm {
     }
 
     @SetJIPipeDocumentation(name = "Generated annotation", description = "The name of the generated data annotation")
-    @StringParameterSettings(monospace = true, icon = ResourceUtils.RESOURCE_BASE_PATH + "/icons/data-types/data-annotation.png")
+    @StringParameterSettings(monospace = true, icon = "data-types/data-annotation.png")
     @JIPipeParameter("annotation-name")
     public String getAnnotationName() {
         return annotationName;
