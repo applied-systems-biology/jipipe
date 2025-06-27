@@ -65,8 +65,8 @@ public class JIPipeDesktopLogViewer extends JIPipeDesktopProjectWorkbenchPanel i
 
         // Split pane
         splitPane = new JIPipeDesktopSplitPane(JSplitPane.HORIZONTAL_SPLIT,
-                leftPanel,
-                new JPanel(),
+                UIUtils.wrapInIslandPanelIfNeeded(leftPanel),
+                UIUtils.wrapInIslandPanelIfNeeded(new JPanel()),
                 new JIPipeDesktopSplitPane.DynamicSidebarRatio(450, true));
         add(splitPane, BorderLayout.CENTER);
     }
@@ -98,7 +98,7 @@ public class JIPipeDesktopLogViewer extends JIPipeDesktopProjectWorkbenchPanel i
 
     public void showLog(JIPipeRunnableLogEntry entry) {
         currentlyDisplayedLog = entry;
-        splitPane.setRightComponent(new JIPipeDesktopLogViewLogUI(getDesktopWorkbench(), entry));
+        splitPane.setRightComponent(UIUtils.wrapInIslandPanelIfNeeded(new JIPipeDesktopLogViewLogUI(getDesktopWorkbench(), entry)));
         JIPipeDesktopRunnableLogsCollection.getInstance().markAsRead(entry);
         splitPane.applyRatio();
     }

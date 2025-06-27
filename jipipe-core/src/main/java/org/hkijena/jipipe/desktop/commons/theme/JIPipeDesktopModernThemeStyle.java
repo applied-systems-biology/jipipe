@@ -3,6 +3,7 @@ package org.hkijena.jipipe.desktop.commons.theme;
 import com.fasterxml.jackson.annotation.JsonProperty;
 
 import javax.swing.*;
+import javax.swing.border.Border;
 import java.awt.*;
 
 public class JIPipeDesktopModernThemeStyle {
@@ -47,6 +48,8 @@ public class JIPipeDesktopModernThemeStyle {
     private Color textForegroundInverted = new Color(0xFFFFFF);
     @JsonProperty("foreground-secondary-inverted")
     private Color textMutedInverted = new Color(0xebecf0);
+    @JsonProperty("caret")
+    private Color caret = new Color(0);
 
     /*
      * Panels/windows
@@ -96,6 +99,9 @@ public class JIPipeDesktopModernThemeStyle {
     @JsonProperty("button-background")
     private Color buttonBackground = Color.WHITE;
 
+    @JsonProperty("button-disabled-background")
+    private Color buttonDisabledBackground = new Color(0xF7F8FA);
+
     @JsonProperty("button-toggled")
     private Color buttonToggled = new Color(0xCFCCD5);
 
@@ -104,6 +110,8 @@ public class JIPipeDesktopModernThemeStyle {
      */
     @JsonProperty("form-background")
     private Color formBackground = Color.WHITE;
+    @JsonProperty("form-disabled-background")
+    private Color formDisabledBackground = new Color(0xF7F8FA);
     @JsonProperty("form-foreground")
     private Color formForeground = Color.BLACK;
 
@@ -121,6 +129,7 @@ public class JIPipeDesktopModernThemeStyle {
     private Color tooltipBackground = new Color(0xFFFFFF);
     @JsonProperty("tooltip-foreground")
     private Color tooltipForeground = Color.BLACK;
+
 
     public Color getViewportBackground() {
         return viewportBackground;
@@ -376,5 +385,29 @@ public class JIPipeDesktopModernThemeStyle {
 
     public void setListAlternateBackground(Color listAlternateBackground) {
         this.listAlternateBackground = listAlternateBackground;
+    }
+
+    public Color getButtonDisabledBackground() {
+        return buttonDisabledBackground;
+    }
+
+    public void setButtonDisabledBackground(Color buttonDisabledBackground) {
+        this.buttonDisabledBackground = buttonDisabledBackground;
+    }
+
+    public Color getCaret() {
+        return caret;
+    }
+
+    public void setCaret(Color caret) {
+        this.caret = caret;
+    }
+
+    public Color getFormDisabledBackground() {
+        return formDisabledBackground;
+    }
+
+    public void setFormDisabledBackground(Color formDisabledBackground) {
+        this.formDisabledBackground = formDisabledBackground;
     }
 }

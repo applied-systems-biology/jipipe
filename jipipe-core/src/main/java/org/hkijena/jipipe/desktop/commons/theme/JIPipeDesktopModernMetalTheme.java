@@ -122,6 +122,8 @@ public class JIPipeDesktopModernMetalTheme extends DefaultMetalTheme {
                 table.put(key, toResource(Color.RED));
             }
         }
+
+        table.put("window", style.getWindowBackground());
         
         configureLightAndShadows(table);
         configureForeground(table);
@@ -157,12 +159,19 @@ public class JIPipeDesktopModernMetalTheme extends DefaultMetalTheme {
         configureTable(table);
         configureTableHeader(table);
         configureTextField(table);
+        configurePasswordField(table);
         configureEditorPane(table);
+        configureFormattedTextField(table);
         configureTextPane(table);
         configureTextArea(table);
         configureToolBar(table);
         configureToolTip(table);
         configureTree(table);
+        configureColorChooser(table);
+        configureComboBox(table);
+        configureDesktop(table);
+        configureTitledBorder(table);
+        configureMisc(table);
 
         // Helper for colors (overwrite all colors with RED!)
         List<String> missingKeys = new ArrayList<>();
@@ -183,8 +192,64 @@ public class JIPipeDesktopModernMetalTheme extends DefaultMetalTheme {
 //        System.exit(0);
     }
 
+    private void configureMisc(UIDefaults table) {
+        table.put("activeCaption", toResource(style.getFormBackground()));
+        table.put("activeCaptionBorder", toResource(style.getBorderColor()));
+        table.put("activeCaptionText", toResource(style.getTextForeground()));
+        table.put("control", toResource(style.getPanelBackground()));
+        table.put("controlText", toResource(style.getTextForeground()));
+        table.put("desktop", toResource(style.getWindowBackground()));
+        table.put("inactiveCaption", toResource(style.getFormBackground()));
+        table.put("inactiveCaptionBorder", toResource(style.getBorderColor()));
+        table.put("inactiveCaptionText", toResource(style.getTextMuted()));
+        table.put("info", toResource(style.getPanelBackground()));
+        table.put("infoText", toResource(style.getTextForeground()));
+        table.put("menu", toResource(style.getMenuBackground()));
+        table.put("menuText", toResource(style.getTextForeground()));
+        table.put("scrollbar", toResource(style.getScrollBarThumb()));
+        table.put("text", toResource(style.getTextForeground()));
+        table.put("textHighlightText", toResource(style.getPrimaryColor()));
+        table.put("textText", toResource(style.getTextForeground()));
+        table.put("window", toResource(style.getWindowBackground()));
+        table.put("windowBorder", toResource(style.getBorderColor()));
+        table.put("windowText", toResource(style.getTextForeground()));
+    }
+
+    private void configureTitledBorder(UIDefaults table) {
+        table.put("TitledBorder.titleColor", toResource(style.getTextForeground()));
+    }
+
+    private void configurePasswordField(UIDefaults table) {
+        table.put("PasswordField.background", toResource(style.getFormBackground()));
+        table.put("PasswordField.caretForeground", toResource(style.getCaret()));
+        table.put("PasswordField.inactiveBackground", toResource(style.getFormDisabledBackground()));
+    }
+
+    private void configureFormattedTextField(UIDefaults table) {
+        table.put("FormattedTextField.background", toResource(style.getFormBackground()));
+        table.put("FormattedTextField.caretForeground", toResource(style.getCaret()));
+        table.put("FormattedTextField.inactiveBackground", toResource(style.getFormDisabledBackground()));
+    }
+
+    private void configureDesktop(UIDefaults table) {
+        table.put("Desktop.background", toResource(style.getWindowBackground()));
+        table.put("DesktopIcon.background", toResource(style.getWindowBackground()));
+    }
+
+    private void configureComboBox(UIDefaults table) {
+        table.put("ComboBox.background", toResource(style.getFormBackground()));
+        table.put("ComboBox.buttonBackground", toResource(style.getButtonBackground()));
+        table.put("ComboBox.disabledBackground", toResource(style.getButtonDisabledBackground()));
+        table.put("ComboBox.disabledForeground", toResource(style.getTextMuted()));
+    }
+
+    private void configureColorChooser(UIDefaults table) {
+        table.put("ColorChooser.background", toResource(style.getWindowBackground()));
+        table.put("ColorChooser.swatchesDefaultRecentColor", Color.WHITE);
+    }
 
     private void configureTableHeader(UIDefaults table) {
+        table.put("TableHeader.background", toResource(style.getFormBackground()));
         table.put("TableHeader.focusCellBackground", toResource(style.getSelectionHighlight()));
     }
 
@@ -197,6 +262,11 @@ public class JIPipeDesktopModernMetalTheme extends DefaultMetalTheme {
         table.put("Tree.selectionBorderColor", toResource(getPrimary1()));
         table.put("Tree.dropLineColor", toResource(getPrimary1()));
         table.put("Tree.dropCellBackground", toResource(style.getSelectionHighlight()));
+        table.put("Tree.background", toResource(style.getPanelBackground()));
+        table.put("Tree.hash", toResource(style.getBorderColor()));
+        table.put("Tree.line", toResource(style.getBorderColor()));
+        table.put("Tree.textBackground", toResource(style.getPanelBackground()));
+        table.put("Tree.textForeground", toResource(style.getTextForeground()));
     }
 
     private void configureToolTip(UIDefaults table) {
@@ -210,25 +280,35 @@ public class JIPipeDesktopModernMetalTheme extends DefaultMetalTheme {
 
     private void configureToolBar(UIDefaults table) {
         table.put("ToolBar.background", toResource(style.getPanelBackground()));
+        table.put("ToolBar.dockingBackground", toResource(style.getPanelBackground()));
+        table.put("ToolBar.dockingForeground", toResource(style.getTextForeground()));
+        table.put("ToolBar.floatingBackground", toResource(style.getPanelBackground()));
+        table.put("ToolBar.floatingForeground", toResource(style.getTextForeground()));
         table.put("ToolBar.border", toResource(BorderFactory.createMatteBorder(0, 0, 1, 0, style.getBorderColor())));
+        table.put("ToolBar.nonrolloverBorder", BorderFactory.createEmptyBorder());
         table.put("ToolBar.isRollover", Boolean.TRUE);
     }
 
     private void configureTextArea(UIDefaults table) {
         table.put("TextArea.background", toResource(style.getFormBackground()));
+        table.put("TextArea.caretForeground", toResource(style.getCaret()));
     }
 
     private void configureTextPane(UIDefaults table) {
         table.put("TextPane.background", toResource(style.getFormBackground()));
+        table.put("TextPane.caretForeground", toResource(style.getCaret()));
     }
 
     private void configureEditorPane(UIDefaults table) {
         table.put("EditorPane.background", toResource(style.getFormBackground()));
+        table.put("EditorPane.caretForeground", toResource(style.getCaret()));
     }
 
     private void configureTextField(UIDefaults table) {
         table.put("TextField.background", toResource(style.getFormBackground()));
         table.put("TextField.border", toResource(textFieldBorder));
+        table.put("TextField.caretForeground", toResource(style.getCaret()));
+        table.put("TextField.inactiveBackground", toResource(style.getFormDisabledBackground()));
     }
 
     private void configureTable(UIDefaults table) {
@@ -237,6 +317,10 @@ public class JIPipeDesktopModernMetalTheme extends DefaultMetalTheme {
         table.put("Table.dropLineColor", toResource(getPrimary1()));
         table.put("Table.dropLineShortColor", toResource(style.getTextForeground()));
         table.put("Table.dropCellBackground", toResource(style.getSelectionHighlight()));
+        table.put("Table.background", toResource(style.getFormBackground()));
+        table.put("Table.focusCellBackground", toResource(style.getSelectionHighlight()));
+        table.put("Table.focusCellForeground", toResource(style.getTextForeground()));
+        table.put("Table.sortIconColor", toResource(style.getTextForeground()));
     }
 
     private void configureSplitPane(UIDefaults table) {
@@ -246,6 +330,7 @@ public class JIPipeDesktopModernMetalTheme extends DefaultMetalTheme {
         table.put("SplitPane.background", toResource(style.getWindowBackground()));
 
         table.put("SplitPaneDivider.border", BorderFactory.createEmptyBorder());
+        table.put("SplitPaneDivider.draggingColor", toResource(style.getTextMuted()));
     }
 
     private void configureViewport(UIDefaults table) {
@@ -259,6 +344,7 @@ public class JIPipeDesktopModernMetalTheme extends DefaultMetalTheme {
         table.put("ScrollBar.trackHighlight", toResource(transparent));
         table.put("ScrollBar.thumb", toResource(style.getScrollBarThumb()));
         table.put("ScrollBar.width", 12);
+        table.put("ScrollBar.track", toResource(style.getWindowBackground()));
     }
 
     private void configureSpinner(UIDefaults table) {
@@ -272,16 +358,21 @@ public class JIPipeDesktopModernMetalTheme extends DefaultMetalTheme {
     private void configureRadioButton(UIDefaults table) {
         table.put("RadioButton.background", toResource(style.getPanelBackground()));
         table.put("RadioButton.rollover", Boolean.TRUE);
+        table.put("RadioButton.select", toResource(style.getButtonToggled()));
     }
 
     private void configureInternalFrame(UIDefaults table) {
-        table.put("InternalFrame.activeTitleBackground", toResource(style.getWindowBackground()));
+        table.put("InternalFrame.activeTitleBackground", toResource(style.getTabSelectedBackground()));
         table.put("InternalFrame.closeIcon", toResource(UIUtils.getIconFromResources("actions/close-tab.png")));
         table.put("InternalFrame.iconifyIcon", toResource(UIUtils.getIconFromResources("actions/xfce-wm-minimize.png")));
         table.put("InternalFrame.minimizeIcon", toResource(UIUtils.getIconFromResources("actions/xfce-wm-minimize.png")));
         table.put("InternalFrame.icon", toResource(UIUtils.getIconFromResources("actions/hamburger-menu.png")));
         table.put("InternalFrame.maximizeIcon", toResource(UIUtils.getIconFromResources("actions/xfce-wm-maximize.png")));
         table.put("InternalFrame.paletteCloseIcon", toResource(UIUtils.getIconFromResources("actions/close-tab.png")));
+        table.put("InternalFrame.activeTitleForeground", toResource(style.getTextForeground()));
+        table.put("InternalFrame.inactiveTitleBackground", toResource(style.getFormDisabledBackground()));
+        table.put("InternalFrame.borderColor", toResource(style.getBorderColor()));
+        table.put("InternalFrame.inactiveTitleForeground", toResource(style.getTextMuted()));
     }
 
     private void configureMenuBar(UIDefaults table) {
@@ -292,6 +383,9 @@ public class JIPipeDesktopModernMetalTheme extends DefaultMetalTheme {
 
     private void configureRadioButtonMenuItem(UIDefaults table) {
         table.put("RadioButtonMenuItem.background", toResource(style.getMenuBackground()));
+        table.put("RadioButtonMenuItem.acceleratorForeground", toResource(style.getTextMuted()));
+        table.put("RadioButtonMenuItem.acceleratorSelectionForeground", toResource(style.getTextMuted()));
+        table.put("RadioButtonMenuItem.disabledForeground", toResource(style.getTextMuted()));
     }
 
     private void configureCheckBoxMenuItem(UIDefaults table) {
@@ -301,6 +395,9 @@ public class JIPipeDesktopModernMetalTheme extends DefaultMetalTheme {
         table.put("CheckBoxMenuItem.selectionBackground", toResource(style.getSelectionBackground()));
         table.put("CheckBoxMenuItem.selectionForeground", toResource(style.getSelectionForeground()));
         table.put("CheckBoxMenuItem.checkIcon", toResource(new CheckBoxMenuItemIcon(style.getTextForegroundInverted())));
+        table.put("CheckBoxMenuItem.acceleratorForeground", toResource(style.getTextMuted()));
+        table.put("CheckBoxMenuItem.acceleratorSelectionForeground", toResource(style.getTextMuted()));
+        table.put("CheckBoxMenuItem.disabledForeground", toResource(style.getTextMuted()));
     }
 
     private void configureMenuItem(UIDefaults table) {
@@ -310,6 +407,8 @@ public class JIPipeDesktopModernMetalTheme extends DefaultMetalTheme {
         table.put("MenuItem.borderPainted", Boolean.FALSE);
         table.put("MenuItem.selectionBackground", toResource(style.getSelectionBackground()));
         table.put("MenuItem.selectionForeground", toResource(style.getSelectionForeground()));
+        table.put("MenuItem.acceleratorSelectionForeground",  toResource(style.getTextMuted()));
+        table.put("MenuItem.disabledForeground", toResource(style.getTextMuted()));
     }
 
     private void configurePopupMenu(UIDefaults table) {
@@ -324,6 +423,9 @@ public class JIPipeDesktopModernMetalTheme extends DefaultMetalTheme {
         table.put("Menu.borderPainted", Boolean.FALSE);
         table.put("Menu.selectionBackground", toResource(style.getSelectionBackground()));
         table.put("Menu.selectionForeground", toResource(style.getSelectionForeground()));
+        table.put("Menu.acceleratorForeground", toResource(style.getTextMuted()));
+        table.put("Menu.acceleratorSelectionForeground", toResource(style.getTextMuted()));
+        table.put("Menu.disabledForeground",  toResource(style.getTextMuted()));
     }
 
     private void configureSlider(UIDefaults table) {
@@ -331,6 +433,7 @@ public class JIPipeDesktopModernMetalTheme extends DefaultMetalTheme {
         table.put("Slider.altTrackColor", style.getSelectionHighlight());
         table.put("Slider.gradient", sliderGradient);
         table.put("Slider.focusGradient", sliderGradient);
+        table.put("Slider.background", toResource(style.getPanelBackground()));
     }
 
     private void configureOptionPane(UIDefaults table) {
@@ -338,6 +441,14 @@ public class JIPipeDesktopModernMetalTheme extends DefaultMetalTheme {
         table.put("OptionPane.informationIcon", toResource(UIUtils.getIcon32FromResources("dialog-info.png")));
         table.put("OptionPane.questionIcon", toResource(UIUtils.getIcon32FromResources("dialog-question.png")));
         table.put("OptionPane.warningIcon", toResource(UIUtils.getIcon32FromResources("dialog-warning.png")));
+        table.put("OptionPane.background", toResource(style.getFormBackground()));
+        table.put("OptionPane.errorDialog.border.background", toResource(style.getFormBackground()));
+        table.put("OptionPane.errorDialog.titlePane.background", toResource(style.getFormBackground()));
+        table.put("OptionPane.questionDialog.border.background", toResource(style.getFormBackground()));
+        table.put("OptionPane.questionDialog.titlePane.background", toResource(style.getFormBackground()));
+        table.put("OptionPane.warningDialog.border.background", toResource(style.getFormBackground()));
+        table.put("OptionPane.warningDialog.titlePane.background", toResource(style.getFormBackground()));
+        table.put("OptionPane.messageForeground", toResource(style.getTextForeground()));
     }
 
     private void configureFileView(UIDefaults table) {
@@ -376,6 +487,7 @@ public class JIPipeDesktopModernMetalTheme extends DefaultMetalTheme {
     private void configureScrollPane(UIDefaults table) {
         table.put("ScrollPane.font", toResource(defaultFont));
         table.put("ScrollPane.border", toResource(noBorder));
+        table.put("ScrollPane.background", toResource(style.getWindowBackground()));
     }
 
     private void configureList(UIDefaults table) {
@@ -390,12 +502,15 @@ public class JIPipeDesktopModernMetalTheme extends DefaultMetalTheme {
     private void configureLabel(UIDefaults table) {
         table.put("Label.font", toResource(defaultFont));
         table.put("Label.disabledForeground", getInactiveControlTextColor());
+        table.put("Label.background", toResource(style.getPanelBackground()));
     }
 
     private void configureCheckBox(UIDefaults table) {
         table.put("CheckBox.font", toResource(defaultFont));
         table.put("CheckBox.rollover", Boolean.TRUE);
         table.put("CheckBox.icon", toResource(new CheckBoxIcon(style.getTextForegroundInverted())));
+        table.put("CheckBox.background", toResource(style.getPanelBackground()));
+        table.put("CheckBox.select", toResource(style.getButtonToggled()));
     }
 
     private void configureLightAndShadows(UIDefaults table) {
@@ -461,7 +576,7 @@ public class JIPipeDesktopModernMetalTheme extends DefaultMetalTheme {
         table.put("Button.toolBarBorderBackground", toResource(style.getBorderColor()));
         table.put("Button.disabledToolBarBorderBackground", toResource(style.getBorderColor()));
         table.put("Button.rolloverIconType", "ocean");
-        table.put("Button.border", toResource(buttonBorder));
+        table.put("Button.border", buttonBorder);
         table.put("Button.borderColor", toResource(style.getBorderColor()));
         table.put("Button.focus", toResource(style.getButtonToggled()));
         table.put("Button.highlight", style.getSelectionHighlight());

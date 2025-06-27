@@ -93,7 +93,7 @@ public class JIPipeDesktopProjectOverviewUI extends JIPipeDesktopProjectWorkbenc
     private JTextField projectName;
     private JTextField projectStats;
     private JPanel projectAuthors;
-    private JIPipeDesktopImageFrameComponent headerPanel;
+    private JPanel headerPanel;
     private JButton openWebsiteButton;
     private JButton copyCitationButton;
     private JButton copyDependencyCitationsButton;
@@ -139,7 +139,6 @@ public class JIPipeDesktopProjectOverviewUI extends JIPipeDesktopProjectWorkbenc
     }
 
     private void refreshAll() {
-        renderBackgroundPanel();
         refreshCenterPanel();
         refreshHeaderText();
         refreshTechnicalInfo();
@@ -205,12 +204,6 @@ public class JIPipeDesktopProjectOverviewUI extends JIPipeDesktopProjectWorkbenc
     private void refreshTechnicalInfo() {
         licenseInfo.setText(StringUtils.orElse(getProject().getMetadata().getLicense(), "No license"));
         projectStats.setText(getProject().getGraph().getNodeCount() + " nodes in " + getProject().getCompartments().size() + " compartments");
-    }
-
-    private void renderBackgroundPanel() {
-        BufferedImage headerBackground;
-        headerBackground = UIUtils.getHeaderPanelBackground();
-        headerPanel.setBackgroundImage(headerBackground);
     }
 
     private void refreshCenterPanel() {
@@ -913,20 +906,20 @@ public class JIPipeDesktopProjectOverviewUI extends JIPipeDesktopProjectWorkbenc
     }
 
     private void initializeHeaderPanel() {
-        headerPanel = new JIPipeDesktopImageFrameComponent(null, false, SizeFitMode.FitHeight, false);
+        headerPanel = new JPanel();
+        headerPanel.setBackground(UIUtils.CURRENT_STYLE.getWindowBackground());
         headerPanel.setLayout(new BorderLayout());
-        headerPanel.setBorder(BorderFactory.createMatteBorder(0, 0, 1, 0, Color.DARK_GRAY));
-        headerPanel.setPreferredSize(new Dimension(headerPanel.getPreferredSize().width, 200));
+        headerPanel.setPreferredSize(new Dimension(headerPanel.getPreferredSize().width, 150));
 
         JIPipeDesktopFormPanel nameAndAuthorPanel = new JIPipeDesktopFormPanel(null, JIPipeDesktopFormPanel.TRANSPARENT_BACKGROUND);
         nameAndAuthorPanel.setLayout(new BoxLayout(nameAndAuthorPanel, BoxLayout.Y_AXIS));
 
         projectName = UIUtils.createReadonlyBorderlessTextField("Unnamed project");
         projectName.setOpaque(false);
-        projectName.setFont(new Font(Font.DIALOG, Font.PLAIN, 40));
+        projectName.setFont(new Font(Font.DIALOG, Font.PLAIN, 16));
         projectName.setBorder(BorderFactory.createEmptyBorder(8, 8, 8, 8));
         nameAndAuthorPanel.addWideToForm(UIUtils.boxHorizontal(projectName,
-                UIUtils.makeButtonTransparent(UIUtils.createButton("", UIUtils.getIcon32FromResources("actions/edit.png"), this::editProjectMetadata))), null);
+                UIUtils.makeButtonTransparent(UIUtils.createButton("", UIUtils.getIcon16FromResources("actions/edit.png"), this::editProjectMetadata))), null);
 
         projectAuthors = new JPanel();
         projectAuthors.setLayout(new BoxLayout(projectAuthors, BoxLayout.X_AXIS));
