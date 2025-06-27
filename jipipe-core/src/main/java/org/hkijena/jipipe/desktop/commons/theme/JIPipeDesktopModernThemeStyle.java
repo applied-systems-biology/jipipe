@@ -54,7 +54,7 @@ public class JIPipeDesktopModernThemeStyle {
     @JsonProperty("menu-background")
     private Color menuBackground = new Color(0xFFFFFF);
     @JsonProperty("border-color")
-    private Color borderColor = new Color(0xebecf0);
+    private Color borderColor = new Color(0xdedee2);
 
     /*
      * Scroll bar

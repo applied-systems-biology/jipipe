@@ -273,10 +273,14 @@ public class JIPipeDesktopModernMetalTheme extends DefaultMetalTheme {
     }
 
     private void configureToolTip(UIDefaults table) {
+        final Border border = BorderFactory.createCompoundBorder(
+                BorderFactory.createLineBorder(style.getBorderColor()),
+                UIUtils.createEmptyBorder(4)
+        );
         table.put("ToolTip.background", toResource(style.getTooltipBackground()));
         table.put("ToolTip.backgroundInactive", toResource(style.getTooltipBackground()));
-        table.put("ToolTip.border", toResource(BorderFactory.createLineBorder(style.getBorderColor())));
-        table.put("ToolTip.borderInactive", toResource(BorderFactory.createLineBorder(style.getBorderColor())));
+        table.put("ToolTip.border", toResource(border));
+        table.put("ToolTip.borderInactive", toResource(border));
         table.put("ToolTip.foreground", toResource(style.getTooltipForeground()));
         table.put("ToolTip.foregroundInactive", toResource(style.getTooltipForeground()));
     }
@@ -396,7 +400,7 @@ public class JIPipeDesktopModernMetalTheme extends DefaultMetalTheme {
         table.put("CheckBoxMenuItem.border", toResource(BorderFactory.createEmptyBorder(5, 5, 5, 5)));
         table.put("CheckBoxMenuItem.borderPainted", Boolean.FALSE);
         table.put("CheckBoxMenuItem.background", toResource(style.getMenuBackground()));
-        table.put("CheckBoxMenuItem.selectionBackground", toResource(style.getSelectionBackground()));
+        table.put("CheckBoxMenuItem.selectionBackground", toResource(style.getSelectionHighlight()));
         table.put("CheckBoxMenuItem.selectionForeground", toResource(style.getSelectionForeground()));
         table.put("CheckBoxMenuItem.checkIcon", toResource(new CheckBoxMenuItemIcon(style.getTextForegroundInverted())));
         table.put("CheckBoxMenuItem.acceleratorForeground", toResource(style.getTextMuted()));
@@ -409,14 +413,14 @@ public class JIPipeDesktopModernMetalTheme extends DefaultMetalTheme {
         table.put("MenuItem.acceleratorForeground", toResource(style.getTextMuted()));
         table.put("MenuItem.border", toResource(BorderFactory.createEmptyBorder(5, 5, 5, 5)));
         table.put("MenuItem.borderPainted", Boolean.FALSE);
-        table.put("MenuItem.selectionBackground", toResource(style.getSelectionBackground()));
+        table.put("MenuItem.selectionBackground", toResource(style.getSelectionHighlight()));
         table.put("MenuItem.selectionForeground", toResource(style.getSelectionForeground()));
         table.put("MenuItem.acceleratorSelectionForeground",  toResource(style.getTextMuted()));
         table.put("MenuItem.disabledForeground", toResource(style.getTextMuted()));
     }
 
     private void configurePopupMenu(UIDefaults table) {
-        table.put("PopupMenu.border", toResource(new RoundedLineBorder(style.getBorderColor(), 1, 5)));
+        table.put("PopupMenu.border", toResource(BorderFactory.createLineBorder(style.getBorderColor())));
         table.put("PopupMenu.background", toResource(style.getMenuBackground()));
     }
 
@@ -425,7 +429,7 @@ public class JIPipeDesktopModernMetalTheme extends DefaultMetalTheme {
         table.put("Menu.background", toResource(style.getMenuBackground()));
         table.put("Menu.border", toResource(BorderFactory.createEmptyBorder(5, 5, 5, 5)));
         table.put("Menu.borderPainted", Boolean.FALSE);
-        table.put("Menu.selectionBackground", toResource(style.getSelectionBackground()));
+        table.put("Menu.selectionBackground", toResource(style.getSelectionHighlight()));
         table.put("Menu.selectionForeground", toResource(style.getSelectionForeground()));
         table.put("Menu.acceleratorForeground", toResource(style.getTextMuted()));
         table.put("Menu.acceleratorSelectionForeground", toResource(style.getTextMuted()));

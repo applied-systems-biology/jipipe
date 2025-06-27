@@ -2365,7 +2365,11 @@ public class UIUtils {
         });
     }
 
-    public static void makeNonOpaque(Component component, boolean recursive) {
+    public static <T extends Component> T makeNonOpaque(T component) {
+        return makeNonOpaque(component, false);
+    }
+
+    public static <T extends Component> T makeNonOpaque(T component, boolean recursive) {
         if (recursive) {
             Stack<JComponent> stack = new Stack<>();
             if (component instanceof JComponent) {
@@ -2385,6 +2389,7 @@ public class UIUtils {
                 ((JComponent) component).setOpaque(false);
             }
         }
+        return component;
     }
 
     public static void invokeMuchLater(int timeout, Runnable run) {

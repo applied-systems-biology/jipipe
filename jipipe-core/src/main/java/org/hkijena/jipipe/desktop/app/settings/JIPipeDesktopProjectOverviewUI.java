@@ -235,6 +235,7 @@ public class JIPipeDesktopProjectOverviewUI extends JIPipeDesktopProjectWorkbenc
         if (tipsPanel.getComponentCount() > 0) {
             tipsPanel.add(Box.createHorizontalGlue());
             JScrollPane scrollPane = new JScrollPane(tipsPanel);
+            scrollPane.setOpaque(false);
             scrollPane.setMinimumSize(new Dimension(300, 300));
             scrollPane.setBorder(BorderFactory.createEmptyBorder(16, 16, 16, 16));
             centerPanel.addWideToForm(scrollPane);
@@ -918,12 +919,13 @@ public class JIPipeDesktopProjectOverviewUI extends JIPipeDesktopProjectWorkbenc
         projectName.setOpaque(false);
         projectName.setFont(new Font(Font.DIALOG, Font.PLAIN, 16));
         projectName.setBorder(BorderFactory.createEmptyBorder(8, 8, 8, 8));
-        nameAndAuthorPanel.addWideToForm(UIUtils.boxHorizontal(projectName,
-                UIUtils.makeButtonTransparent(UIUtils.createButton("", JIPipe.RESOURCES.getIcon16("actions/edit.png"), this::editProjectMetadata))), null);
+
+        nameAndAuthorPanel.addWideToForm(UIUtils.makeNonOpaque(UIUtils.boxHorizontal(projectName,
+                UIUtils.makeButtonTransparent(UIUtils.createButton("", JIPipe.RESOURCES.getIcon16("actions/edit.png"), this::editProjectMetadata)))), null);
 
         projectAuthors = new JPanel();
-        projectAuthors.setLayout(new BoxLayout(projectAuthors, BoxLayout.X_AXIS));
         projectAuthors.setOpaque(false);
+        projectAuthors.setLayout(new BoxLayout(projectAuthors, BoxLayout.X_AXIS));
         projectAuthors.setBorder(BorderFactory.createEmptyBorder(8, 8, 8, 8));
         nameAndAuthorPanel.addWideToForm(projectAuthors, null);
 

@@ -84,11 +84,7 @@ public class JIPipeDesktopFormPanelImageComponent extends JPanel {
         g2.setRenderingHint(RenderingHints.KEY_ALPHA_INTERPOLATION, RenderingHints.VALUE_ALPHA_INTERPOLATION_QUALITY);
         g2.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
         if (isOpaque()) {
-            if (UIUtils.DARK_THEME) {
-                g.setColor(Color.BLACK);
-            } else {
-                g.setColor(Color.WHITE);
-            }
+            g.setColor(UIUtils.CURRENT_STYLE.getWindowBackground());
             g.fillRect(0, 0, getWidth(), getHeight());
         }
         if (backgroundImage != null) {

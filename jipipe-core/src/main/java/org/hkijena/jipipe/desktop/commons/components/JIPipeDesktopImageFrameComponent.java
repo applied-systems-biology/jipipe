@@ -107,11 +107,7 @@ public class JIPipeDesktopImageFrameComponent extends JPanel {
 
 //        g2.setRenderingHint(RenderingHints.KEY_INTERPOLATION, RenderingHints.VALUE_INTERPOLATION_BICUBIC);
         if (isOpaque()) {
-            if (UIUtils.DARK_THEME) {
-                g.setColor(Color.BLACK);
-            } else {
-                g.setColor(Color.WHITE);
-            }
+            g.setColor(UIUtils.CURRENT_STYLE.getWindowBackground());
             g.fillRect(0, 0, getWidth(), getHeight());
         }
         if (backgroundImage != null) {
