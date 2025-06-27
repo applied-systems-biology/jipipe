@@ -253,6 +253,7 @@ public class JIPipeDesktopModernMetalTheme extends DefaultMetalTheme {
     private void configureTableHeader(UIDefaults table) {
         table.put("TableHeader.background", toResource(style.getFormBackground()));
         table.put("TableHeader.focusCellBackground", toResource(style.getSelectionHighlight()));
+        table.put("TableHeader.cellBorder", toResource(BorderFactory.createMatteBorder(0,0,1,1, style.getBorderColor())));
     }
 
     private void configureTree(UIDefaults table) {
@@ -323,6 +324,7 @@ public class JIPipeDesktopModernMetalTheme extends DefaultMetalTheme {
         table.put("Table.focusCellBackground", toResource(style.getSelectionHighlight()));
         table.put("Table.focusCellForeground", toResource(style.getTextForeground()));
         table.put("Table.sortIconColor", toResource(style.getTextForeground()));
+        table.put("Table.scrollPaneBorder", BorderFactory.createLineBorder(style.getBorderColor()));
     }
 
     private void configureSplitPane(UIDefaults table) {
@@ -562,7 +564,7 @@ public class JIPipeDesktopModernMetalTheme extends DefaultMetalTheme {
     private void configureToggleButton(UIDefaults table) {
         table.put("ToggleButton.font", toResource(defaultFont));
         table.put("ToggleButton.background", toResource(style.getButtonBackground()));
-        table.put("ToggleButton.border", toResource(buttonBorder));
+        table.put("ToggleButton.border", buttonBorder);
         table.put("ToggleButton.select", toResource(style.getButtonToggled()));
     }
 

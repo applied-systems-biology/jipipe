@@ -139,7 +139,9 @@ public class JIPipeDesktopDataViewerWindow extends JFrame implements JIPipeDeskt
         contentPane.add(dockPanel, BorderLayout.CENTER);
 
         JPanel statusBar = new JPanel(new BorderLayout());
-        statusBar.setBorder(BorderFactory.createMatteBorder(1, 0, 0, 0, UIManager.getColor("MenuBar.borderColor")));
+        statusBar.setOpaque(true);
+        statusBar.setBackground(UIUtils.CURRENT_STYLE.getWindowBackground());
+        statusBar.setBorder(null);
         statusBar.add(dynamicStatusBar, BorderLayout.WEST);
         statusBar.add(staticStatusBar, BorderLayout.CENTER);
         contentPane.add(statusBar, BorderLayout.SOUTH);
@@ -154,13 +156,16 @@ public class JIPipeDesktopDataViewerWindow extends JFrame implements JIPipeDeskt
 
         dynamicStatusBar.setFloatable(false);
         dynamicStatusBar.setBorder(null);
+        dynamicStatusBar.setOpaque(false);
 
         staticStatusBar.setFloatable(false);
+        staticStatusBar.setOpaque(false);
         staticStatusBar.putClientProperty(BasicStatusBarUI.AUTO_ADD_SEPARATOR, false);
         staticStatusBar.setBorder(null);
         staticStatusBar.add(Box.createHorizontalGlue(), new JXStatusBar.Constraint(JXStatusBar.Constraint.ResizeBehavior.FILL));
 
         dataTypeInfoButton.setBorder(UIUtils.createEmptyBorder(3));
+        dataTypeInfoButton.setOpaque(false);
         staticStatusBar.add(dataTypeInfoButton);
         staticStatusBar.addSeparator();
 
