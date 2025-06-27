@@ -67,7 +67,10 @@ public class JIPipeDesktopCacheBrowserUI extends JIPipeDesktopProjectWorkbenchPa
         setLayout(new BorderLayout());
         tree = new JIPipeDesktopCacheTreePanel(getDesktopProjectWorkbench());
 
-        splitPane = new JIPipeDesktopSplitPane(JSplitPane.HORIZONTAL_SPLIT, tree, new JPanel(), JIPipeDesktopSplitPane.RATIO_1_TO_3);
+        splitPane = new JIPipeDesktopSplitPane(JSplitPane.HORIZONTAL_SPLIT,
+                UIUtils.wrapInIslandPanelIfNeeded(tree),
+                UIUtils.wrapInIslandPanelIfNeeded(new JPanel()),
+                JIPipeDesktopSplitPane.RATIO_1_TO_3);
         add(splitPane, BorderLayout.CENTER);
 
         tree.getTree().addTreeSelectionListener(e -> {
@@ -136,25 +139,30 @@ public class JIPipeDesktopCacheBrowserUI extends JIPipeDesktopProjectWorkbenchPa
 
     private void showDataTables(List<JIPipeDataTable> dataTables) {
         JIPipeDesktopExtendedMultiDataTableUI ui = new JIPipeDesktopExtendedMultiDataTableUI(getDesktopProjectWorkbench(), dataTables.stream().map(WeakStore::new).collect(Collectors.toList()), true);
-        splitPane.setRightComponent(ui);
+        splitPane.setRightComponent(UIUtils.wrapInIslandPanelIfNeeded(ui));
         revalidate();
     }
 
     private void showDataTable(JIPipeDataTable dataTable) {
         JIPipeDesktopExtendedDataTableUI ui = new JIPipeDesktopExtendedDataTableUI(getDesktopProjectWorkbench(), new WeakStore<>(dataTable), true, false);
-        splitPane.setRightComponent(ui);
+        splitPane.setRightComponent(UIUtils.wrapInIslandPanelIfNeeded(ui));
         revalidate();
     }
 
     private void initializeToolbar() {
+        setBackground(UIUtils.CURRENT_STYLE.getWindowBackground());
+
         JToolBar toolBar = new JToolBar();
         toolBar.setFloatable(false);
+        toolBar.setOpaque(false);
 
         JButton clearOutdatedButton = new JButton("Clear outdated", JIPipe.RESOURCES.getIcon16("actions/clear-brush.png"));
+        UIUtils.makeButtonTransparent(clearOutdatedButton);
         clearOutdatedButton.addActionListener(e -> JIPipeRunnableQueue.getInstance().enqueue(new JIPipeCacheClearOutdatedRun(getProject().getCache())));
         toolBar.add(clearOutdatedButton);
 
         JButton clearAllButton = new JButton("Clear all", JIPipe.RESOURCES.getIcon16("actions/clear-brush.png"));
+        UIUtils.makeButtonTransparent(clearAllButton);
         clearAllButton.addActionListener(e -> JIPipeRunnableQueue.getInstance().enqueue(new JIPipeCacheClearAllRun(getProject().getCache())));
         toolBar.add(clearAllButton);
 
