@@ -67,7 +67,7 @@ public class JIPipeDesktopModernThemeStyle {
      */
     @JsonProperty("tab-selected-background")
     private Color tabSelectedBackground = new Color(0xE1EAFF);
-    @JsonProperty("tab-selected-background")
+    @JsonProperty("tab-selected-highlight")
     private Color tabSelectedHighlight = new Color(0xa0bdf8);
 
     /*
@@ -122,6 +122,15 @@ public class JIPipeDesktopModernThemeStyle {
     private Color tooltipBackground = new Color(0xFFFFFF);
     @JsonProperty("tooltip-foreground")
     private Color tooltipForeground = Color.BLACK;
+
+    /*
+     * Categories
+     */
+    @JsonProperty("category-background")
+    private Color categoryBackground = new Color(0xe8effe);
+
+    @JsonProperty("category-border")
+    private Color categoryBorder = new Color(0xe8effe);
 
 
     public Color getViewportBackground() {
@@ -387,5 +396,21 @@ public class JIPipeDesktopModernThemeStyle {
         else {
             return new Color(0xced0d6);
         }
+    }
+
+    public Color getCategoryBackground() {
+        return categoryBackground;
+    }
+
+    public void setCategoryBackground(Color categoryBackground) {
+        this.categoryBackground = categoryBackground;
+    }
+
+    public Color getCategoryBorder() {
+        return categoryBorder;
+    }
+
+    public void setCategoryBorder(Color categoryBorder) {
+        this.categoryBorder = categoryBorder;
     }
 }

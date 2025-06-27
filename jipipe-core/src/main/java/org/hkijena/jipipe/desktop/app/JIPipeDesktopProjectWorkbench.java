@@ -1148,9 +1148,11 @@ public class JIPipeDesktopProjectWorkbench extends JPanel implements JIPipeDeskt
 
         UIUtils.addEscapeListener(dialog);
         JPanel contentPanel = new JPanel(new BorderLayout(8, 8));
+        contentPanel.setBackground(UIUtils.CURRENT_STYLE.getWindowBackground());
         contentPanel.add(projectSettingsComponents, BorderLayout.CENTER);
 
         JPanel buttonPanel = new JPanel();
+        buttonPanel.setOpaque(false);
         buttonPanel.setLayout(new BoxLayout(buttonPanel, BoxLayout.X_AXIS));
         buttonPanel.add(new JLabel("Settings are applied automatically", JIPipe.RESOURCES.getIcon16("emblems/emblem-important-blue.png"), JLabel.LEFT));
         buttonPanel.add(Box.createHorizontalGlue());

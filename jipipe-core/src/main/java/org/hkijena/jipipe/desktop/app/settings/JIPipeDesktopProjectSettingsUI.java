@@ -118,7 +118,11 @@ public class JIPipeDesktopProjectSettingsUI extends JPanel {
         }
         UIUtils.expandAllTree(tree);
 
-        JSplitPane splitPane = new JIPipeDesktopSplitPane(JSplitPane.HORIZONTAL_SPLIT, treePanel, contentPanel, JIPipeDesktopSplitPane.RATIO_1_TO_3);
+        JSplitPane splitPane = new JIPipeDesktopSplitPane(JSplitPane.HORIZONTAL_SPLIT,
+                UIUtils.wrapInIslandPanelIfNeeded(treePanel),
+                UIUtils.wrapInIslandPanelIfNeeded(contentPanel),
+                JIPipeDesktopSplitPane.RATIO_1_TO_3);
+        splitPane.setBorder(UIUtils.createEmptyBorder(5));
         add(splitPane, BorderLayout.CENTER);
     }
 

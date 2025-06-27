@@ -738,8 +738,8 @@ public class JIPipeDesktopFormPanel extends JPanel {
         public GroupHeaderPanel(String text, Icon icon, int marginTop) {
             this.marginTop = marginTop;
 
-            this.backgroundColor = ColorUtils.mix(JIPipeDesktopLegacyModernMetalTheme.PRIMARY5, ColorUtils.scaleHSV(UIManager.getColor("Panel.background"), 1, 1, 0.98f), 0.92);
-            this.borderColor = backgroundColor;
+            this.backgroundColor = UIUtils.CURRENT_STYLE.getCategoryBackground();
+            this.borderColor = UIUtils.CURRENT_STYLE.getCategoryBorder();
 
             setBorder(BorderFactory.createEmptyBorder(marginTop, 0, 8, 0));
             setLayout(new BoxLayout(this, BoxLayout.Y_AXIS));
