@@ -83,7 +83,7 @@ public class JIPipeDesktopMarkdownReader extends JPanel {
 
     private void initializeDefaultCSSRules() {
         JIPipeDesktopModernThemeStyle style = ThemeUtils.getCurrentStyle();
-        cssRules.add("body { font-family: \"Dialog\"; font-size: " + style.getFontSizeNormal() + "pt }");
+        cssRules.add("body { font-family: \"Dialog\"; font-size: " + style.getFontSizeNormal() + "pt; color: " + ColorUtils.colorToHexString(style.getTextForeground()) + "; }");
         cssRules.add("pre { background-color: " + ColorUtils.colorToHexString(style.getSelectionBackground()) + "; border: 3px " + ColorUtils.colorToHexString(style.getBorderColor()) +" solid; }");
         cssRules.add("code { background-color: " + ColorUtils.colorToHexString(style.getFormBackground()) + "; border: none; }");
         cssRules.add("h1 { padding-top: 5px; font-weight bolder; font-size: " + style.getFontSizeHuge() + "pt }");

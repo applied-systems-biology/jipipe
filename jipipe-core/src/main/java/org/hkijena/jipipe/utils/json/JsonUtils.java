@@ -22,6 +22,10 @@ import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.core.json.JsonReadFeature;
 import com.fasterxml.jackson.databind.*;
 import com.fasterxml.jackson.databind.module.SimpleModule;
+import org.hkijena.jipipe.plugins.parameters.library.colors.ColorDeserializer;
+import org.hkijena.jipipe.plugins.parameters.library.colors.ColorSerializer;
+import org.hkijena.jipipe.plugins.parameters.library.roi.RectangleDeserializer;
+import org.hkijena.jipipe.plugins.parameters.library.roi.RectangleSerializer;
 import org.hkijena.jipipe.utils.StringUtils;
 
 import java.awt.*;
@@ -52,15 +56,36 @@ public class JsonUtils {
             objectMapper.setVisibility(PropertyAccessor.ALL, JsonAutoDetect.Visibility.NONE);
             objectMapper.configure(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES, false);
 
-            // Override standard behavior to serialize paths as URI
-            SimpleModule m = new SimpleModule("PathToString");
-            m.addSerializer(Path.class, new ToNormalizedPathStringSerializer());
-            m.addDeserializer(Path.class, new FromNormalizedPathStringDeserializer());
-            m.addSerializer(Dimension.class, new DimensionSerializer());
-            m.addDeserializer(Dimension.class, new DimensionDeserializer());
-            objectMapper.registerModule(m);
+            registerPathJsonSerializer();
+            registerColorJsonSerializer();
+            registerRectangleJsonSerializer();
         }
         return objectMapper;
+    }
+
+    private static void registerPathJsonSerializer() {
+        SimpleModule m = new SimpleModule("PathToString");
+        m.addSerializer(Path.class, new ToNormalizedPathStringSerializer());
+        m.addDeserializer(Path.class, new FromNormalizedPathStringDeserializer());
+        m.addSerializer(Dimension.class, new DimensionSerializer());
+        m.addDeserializer(Dimension.class, new DimensionDeserializer());
+        objectMapper.registerModule(m);
+    }
+
+    private static void registerColorJsonSerializer() {
+        // Serializer for color type
+        SimpleModule module = new SimpleModule();
+        module.addSerializer(Color.class, new ColorSerializer());
+        module.addDeserializer(Color.class, new ColorDeserializer());
+        JsonUtils.getObjectMapper().registerModule(module);
+    }
+
+    private static void registerRectangleJsonSerializer() {
+        // Serializer for color type
+        SimpleModule module = new SimpleModule();
+        module.addSerializer(Rectangle.class, new RectangleSerializer());
+        module.addDeserializer(Rectangle.class, new RectangleDeserializer());
+        JsonUtils.getObjectMapper().registerModule(module);
     }
 
     public static void saveToFile(Object obj, Path targetFile) {

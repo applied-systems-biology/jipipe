@@ -12,6 +12,7 @@ import org.hkijena.jipipe.utils.json.JsonUtils;
 import javax.swing.*;
 import javax.swing.plaf.metal.MetalLookAndFeel;
 import java.io.IOException;
+import java.net.URL;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.ArrayList;
@@ -70,7 +71,27 @@ public class ThemeUtils {
 
         // JIPipe light is the default style of the configuration
         if("JIPipe Light".equals(id)) {
-            return new  JIPipeDesktopModernThemeStyle();
+            return new JIPipeDesktopModernThemeStyle();
+        }
+
+        // Try loading from resources
+        try {
+            URL url = ResourceUtils.getPluginResource("styles/" + id + ".json");
+            if(url != null) {
+                return JsonUtils.getObjectMapper().readValue(url, JIPipeDesktopModernThemeStyle.class);
+            }
+        }catch (Exception ignored) {
+            ignored.printStackTrace();
+        }
+
+        // Try loading from user dir
+        try {
+            Path path = getUserStylesDirectory().resolve(id + ".json");
+            if(Files.exists(path)) {
+                return JsonUtils.getObjectMapper().readValue(path.toFile(), JIPipeDesktopModernThemeStyle.class);
+            }
+        }catch (Exception ignored) {
+            ignored.printStackTrace();
         }
 
         // Fall back to the default "JIPipe Light" style
@@ -108,9 +129,8 @@ public class ThemeUtils {
 
     private static void reapplyModernTheme() {
         try {
-            JIPipeDesktopModernThemeStyle style = new JIPipeDesktopModernThemeStyle();
-            MetalLookAndFeel.setCurrentTheme(new JIPipeDesktopModernMetalTheme(style));
-            UIManager.put("style", style);
+            MetalLookAndFeel.setCurrentTheme(new JIPipeDesktopModernMetalTheme(CURRENT_STYLE));
+            UIManager.put("style", CURRENT_STYLE);
 
             UIManager.setLookAndFeel(UIManager.getCrossPlatformLookAndFeelClassName());
             UIManager.put("swing.boldMetal", Boolean.FALSE);
@@ -188,6 +208,7 @@ public class ThemeUtils {
         if(AVAILABLE_STYLE_IDS == null) {
             AVAILABLE_STYLE_IDS = new ArrayList<>();
             AVAILABLE_STYLE_IDS.add("JIPipe Light");
+            AVAILABLE_STYLE_IDS.add("JIPipe Dark");
 
             // List styles in the profile directory
             try {

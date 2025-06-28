@@ -1,13 +1,15 @@
 package org.hkijena.jipipe.desktop.commons.theme;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
+import org.hkijena.jipipe.utils.json.JsonUtils;
 
 import java.awt.*;
+import java.nio.file.Paths;
 
 public class JIPipeDesktopModernThemeStyle {
 
     @JsonProperty("name")
-    private String name = "Light";
+    private String name = "JIPipe Light";
 
     @JsonProperty("brightness")
     private JIPipeDesktopUIThemeBrightness brightness = JIPipeDesktopUIThemeBrightness.Light;
@@ -506,5 +508,9 @@ public class JIPipeDesktopModernThemeStyle {
 
     public void setNodeHighlightBorder(Color nodeHighlightBorder) {
         this.nodeHighlightBorder = nodeHighlightBorder;
+    }
+
+    public static void main(String[] args) {
+        JsonUtils.saveToFile(new JIPipeDesktopModernThemeStyle(), Paths.get("/home/ruman/style.json"));
     }
 }
