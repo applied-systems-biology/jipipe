@@ -150,6 +150,16 @@ public class JIPipeDesktopModernThemeStyle {
     @JsonProperty("category-border")
     private Color categoryBorder = new Color(0xe8effe);
 
+    /*
+     * Graph/Nodes
+     */
+
+    @JsonProperty("node-highlight-border")
+    private Color nodeHighlightBorder = new Color(0xCFCCD5);
+
+    @JsonProperty("node-slot-background")
+    private Color nodeSlotBackground = new Color(0xFAFAFA);
+
     public JIPipeDesktopModernThemeStyle() {
     }
 
@@ -480,5 +490,21 @@ public class JIPipeDesktopModernThemeStyle {
 
     public void setTextLink(Color textLink) {
         this.textLink = textLink;
+    }
+
+    public Color getNodeSlotBackground() {
+        return nodeSlotBackground;
+    }
+
+    public void setNodeSlotBackground(Color nodeSlotBackground) {
+        this.nodeSlotBackground = nodeSlotBackground;
+    }
+
+    public Color getNodeHighlightBorder() {
+        return nodeHighlightBorder;
+    }
+
+    public void setNodeHighlightBorder(Color nodeHighlightBorder) {
+        this.nodeHighlightBorder = nodeHighlightBorder;
     }
 }
