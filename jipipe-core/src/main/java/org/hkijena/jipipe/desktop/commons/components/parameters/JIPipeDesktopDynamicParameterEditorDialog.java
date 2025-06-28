@@ -397,8 +397,8 @@ public class JIPipeDesktopDynamicParameterEditorDialog extends JDialog implement
             typeLabel = new JLabel();
             idLabel = new JLabel();
             typeLabel.setForeground(Color.GRAY);
-            idLabel.setFont(new Font(Font.MONOSPACED, Font.PLAIN, 11));
-            typeLabel.setFont(new Font(Font.DIALOG, Font.ITALIC, 11));
+            idLabel.setFont(new Font(Font.MONOSPACED, Font.PLAIN, UIUtils.CURRENT_STYLE.getFontSizeSmall()));
+            typeLabel.setFont(new Font(Font.DIALOG, Font.ITALIC, UIUtils.CURRENT_STYLE.getFontSizeSmall()));
 
             add(parameterIcon, new GridBagConstraints() {
                 {

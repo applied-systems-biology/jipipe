@@ -54,7 +54,7 @@ public class JIPipeDesktopRunSetListCellRenderer extends JPanel implements ListC
                 insets,
                 0,
                 0));
-        nameLabel.setFont(new Font(Font.DIALOG, Font.BOLD, 12));
+        nameLabel.setFont(new Font(Font.DIALOG, Font.BOLD, UIUtils.CURRENT_STYLE.getFontSizeNormal()));
         add(nameLabel, new GridBagConstraints(1,
                 0,
                 1,

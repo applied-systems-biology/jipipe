@@ -99,7 +99,7 @@ public class EnumDesktopParameterEditorUI extends JIPipeDesktopParameterEditorUI
         public Renderer(EnumItemInfo info) {
             this.info = info;
             setBorder(BorderFactory.createEmptyBorder(4, 4, 4, 4));
-            setFont(new Font(Font.DIALOG, Font.PLAIN, 12));
+            setFont(new Font(Font.DIALOG, Font.PLAIN, UIUtils.CURRENT_STYLE.getFontSizeNormal()));
             setOpaque(true);
         }
 

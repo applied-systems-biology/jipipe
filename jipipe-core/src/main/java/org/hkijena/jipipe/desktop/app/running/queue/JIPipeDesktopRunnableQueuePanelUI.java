@@ -49,7 +49,7 @@ public class JIPipeDesktopRunnableQueuePanelUI extends JPanel implements JIPipeR
         setLayout(new BorderLayout(8, 8));
 
         log = new JTextArea();
-        log.setFont(new Font(Font.MONOSPACED, Font.PLAIN, 12));
+        log.setFont(new Font(Font.MONOSPACED, Font.PLAIN, UIUtils.CURRENT_STYLE.getFontSizeNormal()));
         log.setEditable(false);
         logScrollPane = new JScrollPane(log);
         add(logScrollPane, BorderLayout.CENTER);

@@ -136,7 +136,7 @@ public class JIPipeDesktopDataViewerTextAnnotationsPanel extends JIPipeDesktopWo
         public Renderer() {
             setOpaque(true);
             setBorder(BorderFactory.createEmptyBorder(4, 4, 4, 4));
-            setFont(new Font(Font.DIALOG, Font.PLAIN, 12));
+            setFont(new Font(Font.DIALOG, Font.PLAIN, UIUtils.CURRENT_STYLE.getFontSizeNormal()));
         }
 
         @Override

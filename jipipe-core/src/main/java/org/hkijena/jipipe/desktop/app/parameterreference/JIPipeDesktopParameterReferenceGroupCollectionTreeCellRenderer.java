@@ -56,7 +56,7 @@ public class JIPipeDesktopParameterReferenceGroupCollectionTreeCellRenderer exte
         });
 
         infoLabel = new JLabel();
-        infoLabel.setFont(new Font(Font.DIALOG, Font.ITALIC, 11));
+        infoLabel.setFont(new Font(Font.DIALOG, Font.ITALIC, UIUtils.CURRENT_STYLE.getFontSizeSmall()));
         add(infoLabel, new GridBagConstraints() {
             {
                 gridx = 1;

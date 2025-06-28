@@ -221,7 +221,7 @@ public class ParameterTableEditorWindow extends JFrame {
                 }
 
                 JTextField keyInfo = UIUtils.createReadonlyBorderlessTextField(parameterTable.getColumnInfo(selectedColumns[0]).getKey());
-                keyInfo.setFont(new Font(Font.MONOSPACED, Font.PLAIN, 12));
+                keyInfo.setFont(new Font(Font.MONOSPACED, Font.PLAIN, UIUtils.CURRENT_STYLE.getFontSizeNormal()));
                 JLabel keyInfoLabel = new JLabel("Will be written into");
                 keyInfoLabel.setIcon(JIPipe.RESOURCES.getIcon16("actions/dialog-xml-editor.png"));
                 palettePanel.addToForm(keyInfo, keyInfoLabel, new MarkdownText(String.format("This column will have the unique ID <code>%s</code> " +

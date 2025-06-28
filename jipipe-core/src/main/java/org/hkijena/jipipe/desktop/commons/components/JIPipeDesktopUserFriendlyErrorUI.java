@@ -196,7 +196,7 @@ public class JIPipeDesktopUserFriendlyErrorUI extends JIPipeDesktopFormPanel imp
 
         JLabel titleLabel = new JLabel(entry.getTitle(), icon, JLabel.LEFT);
         titleLabel.setBorder(BorderFactory.createEmptyBorder(4, 0, 8, 4));
-        titleLabel.setFont(new Font(Font.DIALOG, Font.BOLD, 14));
+        titleLabel.setFont(new Font(Font.DIALOG, Font.BOLD, UIUtils.CURRENT_STYLE.getFontSizeLarge()));
         titleLabel.setOpaque(false);
         formPanel.addWideToForm(titleLabel);
 
@@ -232,7 +232,7 @@ public class JIPipeDesktopUserFriendlyErrorUI extends JIPipeDesktopFormPanel imp
 
             if (contexts.isEmpty()) {
                 JButton button = new JButton("Internal", JIPipe.RESOURCES.getIcon16("actions/system-run.png"));
-                button.setFont(new Font(Font.DIALOG, Font.PLAIN, 11));
+                button.setFont(new Font(Font.DIALOG, Font.PLAIN, UIUtils.CURRENT_STYLE.getFontSizeSmall()));
                 button.setOpaque(false);
                 button.setBorder(null);
                 breadcrumb.add(button);
@@ -244,7 +244,7 @@ public class JIPipeDesktopUserFriendlyErrorUI extends JIPipeDesktopFormPanel imp
                         button.setToolTipText(context.renderName());
                         button.setOpaque(false);
                         button.setBorder(null);
-                        button.setFont(new Font(Font.DIALOG, Font.PLAIN, 11));
+                        button.setFont(new Font(Font.DIALOG, Font.PLAIN, UIUtils.CURRENT_STYLE.getFontSizeSmall()));
                         breadcrumb.add(button);
                         breadcrumb.add(new JLabel(JIPipe.RESOURCES.getIcon16("actions/draw-triangle2.png")));
                     } else {

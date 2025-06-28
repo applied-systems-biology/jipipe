@@ -83,7 +83,7 @@ public class JIPipeDesktopSplashScreen extends JWindow implements LogListener, C
         poweredByContainer.add(poweredByContent, BorderLayout.EAST);
 
         JLabel poweredByLabel = new JLabel("Powered by");
-        poweredByLabel.setFont(new Font(Font.DIALOG, Font.PLAIN, 14));
+        poweredByLabel.setFont(new Font(Font.DIALOG, Font.PLAIN, UIUtils.CURRENT_STYLE.getFontSizeLarge()));
         poweredByContent.add(poweredByLabel, BorderLayout.NORTH);
 
         poweredByIconContainer = new JPanel(new FlowLayout(FlowLayout.LEFT));

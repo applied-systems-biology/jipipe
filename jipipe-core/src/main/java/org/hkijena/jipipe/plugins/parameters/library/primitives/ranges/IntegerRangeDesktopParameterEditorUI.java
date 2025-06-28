@@ -58,7 +58,7 @@ public class IntegerRangeDesktopParameterEditorUI extends JIPipeDesktopParameter
 //        expressionModeToggle.setBorder(BorderFactory.createMatteBorder(1, 1, 1, 0, UIManager.getColor("Button.borderColor")));
 
         rangeStringEditor = new JTextField();
-        rangeStringEditor.setFont(new Font(Font.MONOSPACED, Font.PLAIN, 12));
+        rangeStringEditor.setFont(new Font(Font.MONOSPACED, Font.PLAIN, UIUtils.CURRENT_STYLE.getFontSizeNormal()));
         rangeStringEditor.getDocument().addDocumentListener(new JIPipeDesktopDocumentChangeListener() {
             @Override
             public void changed(DocumentEvent documentEvent) {

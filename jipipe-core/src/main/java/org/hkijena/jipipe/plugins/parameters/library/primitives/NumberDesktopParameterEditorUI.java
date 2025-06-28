@@ -189,7 +189,7 @@ public class NumberDesktopParameterEditorUI extends JIPipeDesktopParameterEditor
         setBorder(UIUtils.createControlBorder());
         numberField = new JTextField();
         numberField.setBorder(BorderFactory.createEmptyBorder(0, 4, 0, 0));
-        numberField.setFont(new Font(Font.MONOSPACED, Font.PLAIN, 12));
+        numberField.setFont(new Font(Font.MONOSPACED, Font.PLAIN, UIUtils.CURRENT_STYLE.getFontSizeNormal()));
         numberField.getDocument().addDocumentListener(new JIPipeDesktopDocumentChangeListener() {
             @Override
             public void changed(DocumentEvent documentEvent) {

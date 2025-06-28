@@ -58,7 +58,7 @@ public class JIPipeDesktopDataBatchUI extends JIPipeDesktopProjectWorkbenchPanel
         setLayout(new BorderLayout());
         JLabel iterationStepName = new JLabel("Iteration step");
         iterationStepName.setBorder(BorderFactory.createEmptyBorder(4, 4, 4, 4));
-        iterationStepName.setFont(new Font(Font.DIALOG, Font.BOLD, 16));
+        iterationStepName.setFont(new Font(Font.DIALOG, Font.BOLD, UIUtils.CURRENT_STYLE.getFontSizeNormal()));
         add(iterationStepName, BorderLayout.NORTH);
 
         JIPipeDesktopFormPanel metaDataList = new JIPipeDesktopFormPanel(null, JIPipeDesktopFormPanel.NONE);

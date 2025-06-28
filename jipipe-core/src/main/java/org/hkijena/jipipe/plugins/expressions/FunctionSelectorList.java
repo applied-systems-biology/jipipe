@@ -104,7 +104,7 @@ public class FunctionSelectorList extends JList<JIPipeExpressionRegistry.Express
         private void initialize() {
             setLayout(new GridBagLayout());
             setOpaque(true);
-            setFont(new Font(Font.DIALOG, Font.PLAIN, 12));
+            setFont(new Font(Font.DIALOG, Font.PLAIN, UIUtils.CURRENT_STYLE.getFontSizeNormal()));
             setBorder(BorderFactory.createEmptyBorder(4, 4, 4, 4));
 
             Insets border = new Insets(2, 4, 2, 2);
@@ -120,7 +120,7 @@ public class FunctionSelectorList extends JList<JIPipeExpressionRegistry.Express
             });
 
             idLabel = new JLabel();
-            idLabel.setFont(new Font(Font.MONOSPACED, Font.BOLD, 12));
+            idLabel.setFont(new Font(Font.MONOSPACED, Font.BOLD, UIUtils.CURRENT_STYLE.getFontSizeNormal()));
             add(idLabel, new GridBagConstraints() {
                 {
                     gridx = 1;
@@ -141,7 +141,7 @@ public class FunctionSelectorList extends JList<JIPipeExpressionRegistry.Express
             });
 
             descriptionLabel = new JLabel();
-            descriptionLabel.setFont(new Font(Font.DIALOG, Font.ITALIC, 12));
+            descriptionLabel.setFont(new Font(Font.DIALOG, Font.ITALIC, UIUtils.CURRENT_STYLE.getFontSizeNormal()));
             add(descriptionLabel, new GridBagConstraints() {
                 {
                     gridx = 1;

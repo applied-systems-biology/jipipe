@@ -137,7 +137,7 @@ public class JIPipeDesktopWelcomePanel extends JIPipeDesktopProjectWorkbenchPane
         startNowButton.setBackground(colorSuccess);
         startNowButton.setForeground(Color.WHITE);
         startNowButton.setUI(new JIPipeDesktopRoundedButtonUI(8, colorHover, colorHover));
-        startNowButton.setFont(new Font(Font.DIALOG, Font.PLAIN, 28));
+        startNowButton.setFont(new Font(Font.DIALOG, Font.PLAIN, UIUtils.CURRENT_STYLE.getFontSizeHuge()));
         startNowButton.setBorder(BorderFactory.createCompoundBorder(BorderFactory.createEmptyBorder(4, 4, 4, 4), BorderFactory.createEmptyBorder(16, 16, 16, 16)));
         startNowButton.addActionListener(e -> doActionStartNow());
         actionPanel.add(startNowButton);
@@ -146,7 +146,7 @@ public class JIPipeDesktopWelcomePanel extends JIPipeDesktopProjectWorkbenchPane
 
         JButton openButton = new JButton("Open a project");
         openButton.setOpaque(false);
-        openButton.setFont(new Font(Font.DIALOG, Font.PLAIN, 28));
+        openButton.setFont(new Font(Font.DIALOG, Font.PLAIN, UIUtils.CURRENT_STYLE.getFontSizeHuge()));
         openButton.setBorder(BorderFactory.createCompoundBorder(new RoundedLineBorder(new Color(0xabb8c3), 1, 8), BorderFactory.createEmptyBorder(12, 12, 12, 12)));
         openButton.addActionListener(e -> doActionOpenProject());
         actionPanel.add(openButton);

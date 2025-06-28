@@ -302,7 +302,7 @@ public class ExpressionBuilderUI extends JIPipeDesktopWorkbenchPanel {
 
     private void insertCustomVariable() {
         JTextField textField = new JTextField();
-        textField.setFont(new Font(Font.MONOSPACED, Font.PLAIN, 12));
+        textField.setFont(new Font(Font.MONOSPACED, Font.PLAIN, UIUtils.CURRENT_STYLE.getFontSizeNormal()));
         int result = JOptionPane.showOptionDialog(
                 this,
                 new Object[]{"Please input the name of the variable:", textField},
@@ -545,13 +545,13 @@ public class ExpressionBuilderUI extends JIPipeDesktopWorkbenchPanel {
         private void initialize() {
             setLayout(new GridBagLayout());
             setOpaque(true);
-            setFont(new Font(Font.DIALOG, Font.PLAIN, 12));
+            setFont(new Font(Font.DIALOG, Font.PLAIN, UIUtils.CURRENT_STYLE.getFontSizeNormal()));
             setBorder(BorderFactory.createEmptyBorder(4, 4, 4, 4));
 
             Insets border = new Insets(2, 4, 2, 2);
 
             typeLabel = new JLabel();
-            typeLabel.setFont(new Font(Font.DIALOG, Font.ITALIC, 12));
+            typeLabel.setFont(new Font(Font.DIALOG, Font.ITALIC, UIUtils.CURRENT_STYLE.getFontSizeNormal()));
             add(typeLabel, new GridBagConstraints() {
                 {
                     gridx = 0;
@@ -562,7 +562,7 @@ public class ExpressionBuilderUI extends JIPipeDesktopWorkbenchPanel {
             });
 
             idLabel = new JLabel();
-            idLabel.setFont(new Font(Font.MONOSPACED, Font.BOLD, 12));
+            idLabel.setFont(new Font(Font.MONOSPACED, Font.BOLD, UIUtils.CURRENT_STYLE.getFontSizeNormal()));
             add(idLabel, new GridBagConstraints() {
                 {
                     gridx = 1;
@@ -583,7 +583,7 @@ public class ExpressionBuilderUI extends JIPipeDesktopWorkbenchPanel {
             });
 
             descriptionLabel = new JLabel();
-            descriptionLabel.setFont(new Font(Font.DIALOG, Font.ITALIC, 12));
+            descriptionLabel.setFont(new Font(Font.DIALOG, Font.ITALIC, UIUtils.CURRENT_STYLE.getFontSizeNormal()));
             add(descriptionLabel, new GridBagConstraints() {
                 {
                     gridx = 1;

@@ -117,7 +117,7 @@ public class JIPipeExpressionDesktopParameterEditorUI extends JIPipeDesktopParam
 
         JLabel expressionHintLabel = new JLabel("Expression");
         expressionHintLabel.setForeground(Color.GRAY);
-        expressionHintLabel.setFont(new Font(Font.DIALOG, Font.ITALIC, 10));
+        expressionHintLabel.setFont(new Font(Font.DIALOG, Font.ITALIC, UIUtils.CURRENT_STYLE.getFontSizeTiny()));
         expressionHintLabel.setBorder(BorderFactory.createEmptyBorder(0, 2, 4, 0));
         borderPanel.add(expressionHintLabel, BorderLayout.NORTH);
 

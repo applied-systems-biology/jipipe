@@ -81,7 +81,7 @@ public class StringDesktopParameterEditorUI extends JIPipeDesktopParameterEditor
                 add(textField, BorderLayout.CENTER);
             }
             if (monospaced)
-                textComponent.setFont(new Font(Font.MONOSPACED, Font.PLAIN, 12));
+                textComponent.setFont(new Font(Font.MONOSPACED, Font.PLAIN, UIUtils.CURRENT_STYLE.getFontSizeNormal()));
 
             textComponent.getDocument().addDocumentListener(new JIPipeDesktopDocumentChangeListener() {
                 @Override
@@ -131,7 +131,7 @@ public class StringDesktopParameterEditorUI extends JIPipeDesktopParameterEditor
             textComponent = textField.getTextField();
         }
         if (monospaced)
-            textComponent.setFont(new Font(Font.MONOSPACED, Font.PLAIN, 12));
+            textComponent.setFont(new Font(Font.MONOSPACED, Font.PLAIN, UIUtils.CURRENT_STYLE.getFontSizeNormal()));
 
         JPanel contentPanel = new JPanel(new BorderLayout());
         JDialog dialog = new JDialog(SwingUtilities.getWindowAncestor(getDesktopWorkbench().getWindow()));

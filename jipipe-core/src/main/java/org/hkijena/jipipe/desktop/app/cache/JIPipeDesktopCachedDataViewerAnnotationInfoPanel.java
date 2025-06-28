@@ -118,7 +118,7 @@ public class JIPipeDesktopCachedDataViewerAnnotationInfoPanel extends JIPipeDesk
         public Renderer() {
             setOpaque(true);
             setBorder(BorderFactory.createEmptyBorder(4, 4, 4, 4));
-            setFont(new Font(Font.DIALOG, Font.PLAIN, 12));
+            setFont(new Font(Font.DIALOG, Font.PLAIN, UIUtils.CURRENT_STYLE.getFontSizeNormal()));
         }
 
         @Override

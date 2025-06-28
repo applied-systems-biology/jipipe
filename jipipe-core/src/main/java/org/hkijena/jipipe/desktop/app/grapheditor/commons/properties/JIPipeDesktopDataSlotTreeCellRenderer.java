@@ -42,7 +42,7 @@ public class JIPipeDesktopDataSlotTreeCellRenderer extends JPanel implements Tre
         setOpaque(true);
         setLayout(new GridBagLayout());
         slotName = new JLabel();
-        slotName.setFont(new Font(Font.DIALOG, Font.BOLD, 12));
+        slotName.setFont(new Font(Font.DIALOG, Font.BOLD, UIUtils.CURRENT_STYLE.getFontSizeNormal()));
         add(slotName, new GridBagConstraints() {
             {
                 gridx = 0;
@@ -52,7 +52,7 @@ public class JIPipeDesktopDataSlotTreeCellRenderer extends JPanel implements Tre
         });
 
         slotLabel = new JLabel();
-        slotLabel.setFont(new Font(Font.DIALOG, Font.ITALIC, 12));
+        slotLabel.setFont(new Font(Font.DIALOG, Font.ITALIC, UIUtils.CURRENT_STYLE.getFontSizeNormal()));
         add(slotLabel, new GridBagConstraints() {
             {
                 gridx = 1;
@@ -62,7 +62,7 @@ public class JIPipeDesktopDataSlotTreeCellRenderer extends JPanel implements Tre
         });
 
         slotEdges = new JLabel();
-        slotEdges.setFont(new Font(Font.DIALOG, Font.PLAIN, 12));
+        slotEdges.setFont(new Font(Font.DIALOG, Font.PLAIN, UIUtils.CURRENT_STYLE.getFontSizeNormal()));
         add(slotEdges, new GridBagConstraints() {
             {
                 gridx = 0;

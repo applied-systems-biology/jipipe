@@ -102,10 +102,9 @@ public class JIPipeDesktopGraphNodeUI extends JIPipeDesktopWorkbenchPanel implem
     private final Map<String, JIPipeDesktopGraphNodeUISlotActiveArea> outputSlotMap = new HashMap<>();
     private final Color slotParametersFillColor;
     private final Image nodeIcon;
-    private final Font nativeMainFont = new Font(Font.DIALOG, Font.PLAIN, 12);
-    private final Font nativeSecondaryFont = new Font(Font.DIALOG, Font.PLAIN, 11);
-    private final Font nativeTertiaryFont = new Font(Font.DIALOG, Font.PLAIN, 10);
-    private final Font nativeSecondaryHighlightedFont = new Font(Font.DIALOG, Font.ITALIC, 11);
+    private final Font nativeMainFont = new Font(Font.DIALOG, Font.PLAIN, UIUtils.CURRENT_STYLE.getFontSizeNormal());
+    private final Font nativeSecondaryFont = new Font(Font.DIALOG, Font.PLAIN, UIUtils.CURRENT_STYLE.getFontSizeSmall());
+    private final Font nativeTertiaryFont = new Font(Font.DIALOG, Font.PLAIN, UIUtils.CURRENT_STYLE.getFontSizeTiny());
     private final Color mainTextColor;
     private final Color secondaryTextColor;
     private final boolean showInputs;

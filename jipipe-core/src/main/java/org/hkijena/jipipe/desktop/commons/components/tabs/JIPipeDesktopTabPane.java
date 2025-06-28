@@ -814,7 +814,7 @@ public class JIPipeDesktopTabPane extends JPanel implements Disposable {
             if (documentTabPane.style == Style.Right || documentTabPane.style == Style.Left) {
                 titleLabel.setHorizontalTextPosition(JLabel.CENTER);
                 titleLabel.setVerticalTextPosition(JLabel.BOTTOM);
-                titleLabel.setFont(new Font(Font.DIALOG, Font.PLAIN, 11));
+                titleLabel.setFont(new Font(Font.DIALOG, Font.PLAIN, UIUtils.CURRENT_STYLE.getFontSizeSmall()));
             }
             add(titleLabel);
             add(Box.createHorizontalGlue());

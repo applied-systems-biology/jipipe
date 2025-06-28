@@ -109,7 +109,7 @@ public class DynamicEnumDesktopParameterEditorUI extends JIPipeDesktopParameterE
         public Renderer(DynamicEnumParameter<Object> parameter) {
             this.parameter = parameter;
             setBorder(BorderFactory.createEmptyBorder(4, 4, 4, 4));
-            setFont(new Font(Font.DIALOG, Font.PLAIN, 12));
+            setFont(new Font(Font.DIALOG, Font.PLAIN, UIUtils.CURRENT_STYLE.getFontSizeNormal()));
             setOpaque(true);
         }
 

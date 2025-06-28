@@ -917,7 +917,7 @@ public class JIPipeDesktopProjectOverviewUI extends JIPipeDesktopProjectWorkbenc
 
         projectName = UIUtils.createReadonlyBorderlessTextField("Unnamed project");
         projectName.setOpaque(false);
-        projectName.setFont(new Font(Font.DIALOG, Font.PLAIN, 16));
+        projectName.setFont(new Font(Font.DIALOG, Font.PLAIN, UIUtils.CURRENT_STYLE.getFontSizeHuge()));
         projectName.setBorder(BorderFactory.createEmptyBorder(8, 8, 8, 8));
 
         nameAndAuthorPanel.addWideToForm(UIUtils.makeNonOpaque(UIUtils.boxHorizontal(projectName,

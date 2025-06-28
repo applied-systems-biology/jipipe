@@ -122,7 +122,7 @@ public class DynamicSetDesktopParameterEditorUI extends JIPipeDesktopParameterEd
         collapseInfoLabel = new JLabel("The available items are hidden. Click the 'Collapse' button to show it",
                 JIPipe.RESOURCES.getIcon16("actions/eye-slash.png"),
                 JLabel.LEFT);
-        collapseInfoLabel.setFont(new Font(Font.DIALOG, Font.PLAIN, 12));
+        collapseInfoLabel.setFont(new Font(Font.DIALOG, Font.PLAIN, UIUtils.CURRENT_STYLE.getFontSizeNormal()));
         contentPanel.add(collapseInfoLabel);
 
         JToolBar toolBar = new JToolBar();

@@ -57,7 +57,7 @@ public class JIPipeNodeInfoOrExamplesListCellRenderer extends JPanel implements 
         pathLabel.setForeground(Color.GRAY);
         alternativeLabel = new JLabel();
         alternativeLabel.setForeground(JIPipeDesktopLegacyModernMetalTheme.PRIMARY6);
-        alternativeLabel.setFont(new Font(Font.DIALOG, Font.ITALIC, 12));
+        alternativeLabel.setFont(new Font(Font.DIALOG, Font.ITALIC, UIUtils.CURRENT_STYLE.getFontSizeNormal()));
 
         add(new JLabel(nodeColor), new GridBagConstraints() {
             {

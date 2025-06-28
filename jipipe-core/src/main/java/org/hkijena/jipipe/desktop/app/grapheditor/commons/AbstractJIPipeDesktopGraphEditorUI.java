@@ -940,7 +940,7 @@ public abstract class AbstractJIPipeDesktopGraphEditorUI extends JIPipeDesktopWo
         public NavigationRenderer() {
             setLayout(new GridBagLayout());
             setOpaque(true);
-            setFont(new Font(Font.DIALOG, Font.PLAIN, 12));
+            setFont(new Font(Font.DIALOG, Font.PLAIN, UIUtils.CURRENT_STYLE.getFontSizeNormal()));
             setBorder(BorderFactory.createEmptyBorder(4, 4, 4, 4));
 
 
@@ -977,7 +977,7 @@ public abstract class AbstractJIPipeDesktopGraphEditorUI extends JIPipeDesktopWo
             });
             menuLabel = new JLabel();
             menuLabel.setForeground(Color.GRAY);
-            menuLabel.setFont(new Font(Font.DIALOG, Font.ITALIC, 12));
+            menuLabel.setFont(new Font(Font.DIALOG, Font.ITALIC, UIUtils.CURRENT_STYLE.getFontSizeNormal()));
             add(menuLabel, new GridBagConstraints() {
                 {
                     gridx = 2;
@@ -989,7 +989,7 @@ public abstract class AbstractJIPipeDesktopGraphEditorUI extends JIPipeDesktopWo
 
             alternativeLabel = new JLabel();
             alternativeLabel.setForeground(JIPipeDesktopLegacyModernMetalTheme.PRIMARY6);
-            alternativeLabel.setFont(new Font(Font.DIALOG, Font.ITALIC, 12));
+            alternativeLabel.setFont(new Font(Font.DIALOG, Font.ITALIC, UIUtils.CURRENT_STYLE.getFontSizeNormal()));
             add(alternativeLabel, new GridBagConstraints() {
                 {
                     gridx = 2;

@@ -83,7 +83,7 @@ public class StringPatternExtractionDesktopParameterEditorUI extends JIPipeDeskt
         add(new JLabel("Split by"));
 
         JXTextField splitChar = new JXTextField("Split character");
-        splitChar.setFont(new Font(Font.MONOSPACED, Font.PLAIN, 12));
+        splitChar.setFont(new Font(Font.MONOSPACED, Font.PLAIN, UIUtils.CURRENT_STYLE.getFontSizeNormal()));
         splitChar.setToolTipText("Splits the input string by this text");
         splitChar.setText(filter.getSplitCharacter());
         splitChar.getDocument().addDocumentListener(new JIPipeDesktopDocumentChangeListener() {
@@ -106,7 +106,7 @@ public class StringPatternExtractionDesktopParameterEditorUI extends JIPipeDeskt
         add(new JLabel("Split by"));
 
         JXTextField splitChar = new JXTextField("Split character");
-        splitChar.setFont(new Font(Font.MONOSPACED, Font.PLAIN, 12));
+        splitChar.setFont(new Font(Font.MONOSPACED, Font.PLAIN, UIUtils.CURRENT_STYLE.getFontSizeNormal()));
         splitChar.setToolTipText("Splits the input string by this text");
         splitChar.setText(filter.getSplitCharacter());
         splitChar.getDocument().addDocumentListener(new JIPipeDesktopDocumentChangeListener() {
@@ -119,7 +119,7 @@ public class StringPatternExtractionDesktopParameterEditorUI extends JIPipeDeskt
 
         add(new JLabel("then select by RegEx"));
         JXTextField regexString = new JXTextField("RegEx find");
-        regexString.setFont(new Font(Font.MONOSPACED, Font.PLAIN, 12));
+        regexString.setFont(new Font(Font.MONOSPACED, Font.PLAIN, UIUtils.CURRENT_STYLE.getFontSizeNormal()));
         regexString.setToolTipText("Selects the component that matches this regex string");
         regexString.setText(filter.getRegexString());
         regexString.getDocument().addDocumentListener(new JIPipeDesktopDocumentChangeListener() {
@@ -133,7 +133,7 @@ public class StringPatternExtractionDesktopParameterEditorUI extends JIPipeDeskt
 
     private void createRegexUI(StringPatternExtraction filter) {
         JXTextField regexString = new JXTextField("RegEx selector");
-        regexString.setFont(new Font(Font.MONOSPACED, Font.PLAIN, 12));
+        regexString.setFont(new Font(Font.MONOSPACED, Font.PLAIN, UIUtils.CURRENT_STYLE.getFontSizeNormal()));
         regexString.setToolTipText("A regular expression (RegEx) that contains a group. The group is selected.");
         regexString.setText(filter.getRegexString());
         regexString.getDocument().addDocumentListener(new JIPipeDesktopDocumentChangeListener() {

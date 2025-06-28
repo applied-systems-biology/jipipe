@@ -54,7 +54,7 @@ public class JIPipeNodeExampleListCellRenderer extends JPanel implements ListCel
         descriptionLabel.setForeground(Color.GRAY);
         sourceLabel = new JLabel();
         sourceLabel.setForeground(JIPipeDesktopLegacyModernMetalTheme.PRIMARY6);
-        sourceLabel.setFont(new Font(Font.DIALOG, Font.ITALIC, 12));
+        sourceLabel.setFont(new Font(Font.DIALOG, Font.ITALIC, UIUtils.CURRENT_STYLE.getFontSizeNormal()));
 
         add(new JLabel(nodeColor), new GridBagConstraints() {
             {

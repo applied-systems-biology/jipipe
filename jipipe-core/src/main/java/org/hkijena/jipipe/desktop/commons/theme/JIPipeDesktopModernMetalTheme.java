@@ -3,7 +3,6 @@ package org.hkijena.jipipe.desktop.commons.theme;
 import com.google.common.collect.ImmutableList;
 import org.hkijena.jipipe.JIPipe;
 import org.hkijena.jipipe.utils.UIUtils;
-import org.hkijena.jipipe.JIPipe;
 import org.hkijena.jipipe.utils.ui.CheckBoxIcon;
 import org.hkijena.jipipe.utils.ui.CheckBoxMenuItemIcon;
 import org.hkijena.jipipe.utils.ui.RoundedLineBorder;
@@ -22,7 +21,7 @@ import java.util.List;
 public class JIPipeDesktopModernMetalTheme extends DefaultMetalTheme {
 
     private final JIPipeDesktopModernThemeStyle style;
-    private final Font defaultFont;
+    private final Font fontNormal;
     private final Border buttonBorder;
     private final Border textFieldBorder;
     private final Border noBorder = BorderFactory.createEmptyBorder();
@@ -35,7 +34,7 @@ public class JIPipeDesktopModernMetalTheme extends DefaultMetalTheme {
         this.style = style;
         
         // Fonts
-        defaultFont = new Font(Font.DIALOG, Font.PLAIN, 12);
+        fontNormal = new Font(Font.DIALOG, Font.PLAIN, style.getFontSizeNormal());
         
         // Borders
         buttonBorder = BorderFactory.createCompoundBorder(BorderFactory.createEmptyBorder(1, 1, 1, 1),
@@ -480,7 +479,7 @@ public class JIPipeDesktopModernMetalTheme extends DefaultMetalTheme {
     }
 
     private void configureTabbedPane(UIDefaults table) {
-        table.put("TabbedPane.font", toResource(defaultFont));
+        table.put("TabbedPane.font", toResource(fontNormal));
         table.put("TabbedPane.background", toResource(style.getWindowBackground()));
         table.put("TabbedPane.borderHightlightColor", toResource(style.getWindowBackground()));
         table.put("TabbedPane.contentAreaColor", toResource(style.getWindowBackground()));
@@ -493,13 +492,13 @@ public class JIPipeDesktopModernMetalTheme extends DefaultMetalTheme {
     }
 
     private void configureScrollPane(UIDefaults table) {
-        table.put("ScrollPane.font", toResource(defaultFont));
+        table.put("ScrollPane.font", toResource(fontNormal));
         table.put("ScrollPane.border", toResource(noBorder));
         table.put("ScrollPane.background", toResource(style.getWindowBackground()));
     }
 
     private void configureList(UIDefaults table) {
-        table.put("List.font", toResource(defaultFont));
+        table.put("List.font", toResource(fontNormal));
         table.put("List.background", toResource(style.getFormBackground()));
         table.put("List.dropCellBackground", toResource(style.getSelectionHighlight()));
         table.put("List.dropLineColor", toResource(getPrimary1()));
@@ -508,13 +507,13 @@ public class JIPipeDesktopModernMetalTheme extends DefaultMetalTheme {
     }
 
     private void configureLabel(UIDefaults table) {
-        table.put("Label.font", toResource(defaultFont));
+        table.put("Label.font", toResource(fontNormal));
         table.put("Label.disabledForeground", getInactiveControlTextColor());
         table.put("Label.background", toResource(style.getPanelBackground()));
     }
 
     private void configureCheckBox(UIDefaults table) {
-        table.put("CheckBox.font", toResource(defaultFont));
+        table.put("CheckBox.font", toResource(fontNormal));
         table.put("CheckBox.rollover", Boolean.TRUE);
         table.put("CheckBox.icon", toResource(new CheckBoxIcon(style.getTextForegroundInverted())));
         table.put("CheckBox.background", toResource(style.getPanelBackground()));
@@ -566,19 +565,19 @@ public class JIPipeDesktopModernMetalTheme extends DefaultMetalTheme {
     }
 
     private void configureToggleButton(UIDefaults table) {
-        table.put("ToggleButton.font", toResource(defaultFont));
+        table.put("ToggleButton.font", toResource(fontNormal));
         table.put("ToggleButton.background", toResource(style.getButtonBackground()));
         table.put("ToggleButton.border", buttonBorder);
         table.put("ToggleButton.select", toResource(style.getButtonToggled()));
     }
 
     private void configurePanel(UIDefaults table) {
-        table.put("Panel.font", toResource(defaultFont));
+        table.put("Panel.font", toResource(fontNormal));
         table.put("Panel.background", toResource(style.getPanelBackground()));
     }
 
     private void configureButton(UIDefaults table) {
-        table.put("Button.font", toResource(defaultFont));
+        table.put("Button.font", toResource(fontNormal));
         table.put("Button.background", toResource(style.getButtonBackground()));
         table.put("Button.rollover", Boolean.TRUE);
         table.put("Button.toolBarBorderBackground", toResource(style.getBorderColor()));

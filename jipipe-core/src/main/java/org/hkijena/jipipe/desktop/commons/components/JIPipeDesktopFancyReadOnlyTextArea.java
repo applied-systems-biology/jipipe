@@ -44,7 +44,7 @@ public class JIPipeDesktopFancyReadOnlyTextArea extends JPanel {
         textArea.setWrapStyleWord(true);
         textArea.setBorder(BorderFactory.createEmptyBorder(3, 0, 0, 0));
         if (monospace) {
-            textArea.setFont(new Font(Font.MONOSPACED, Font.PLAIN, 12));
+            textArea.setFont(new Font(Font.MONOSPACED, Font.PLAIN, UIUtils.CURRENT_STYLE.getFontSizeNormal()));
         }
         add(textArea, BorderLayout.CENTER);
 
@@ -91,6 +91,6 @@ public class JIPipeDesktopFancyReadOnlyTextArea extends JPanel {
             style |= Font.ITALIC;
         if (bold)
             style |= Font.BOLD;
-        textArea.setFont(new Font(monospace ? Font.MONOSPACED : Font.DIALOG, style, 12));
+        textArea.setFont(new Font(monospace ? Font.MONOSPACED : Font.DIALOG, style, UIUtils.CURRENT_STYLE.getFontSizeNormal()));
     }
 }

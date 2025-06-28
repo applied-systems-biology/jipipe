@@ -62,12 +62,12 @@ public class ExpressionBuilderParameterUI extends JPanel {
 
         // Variable editor
         variableEditor = new JTextField();
-        variableEditor.setFont(new Font(Font.MONOSPACED, Font.PLAIN, 12));
+        variableEditor.setFont(new Font(Font.MONOSPACED, Font.PLAIN, UIUtils.CURRENT_STYLE.getFontSizeNormal()));
         variableEditor.setForeground(ExpressionBuilderUI.COLOR_VARIABLE);
 
         // Variable editor
         stringEditor = new JTextField();
-        stringEditor.setFont(new Font(Font.MONOSPACED, Font.PLAIN, 12));
+        stringEditor.setFont(new Font(Font.MONOSPACED, Font.PLAIN, UIUtils.CURRENT_STYLE.getFontSizeNormal()));
         stringEditor.setForeground(ExpressionBuilderUI.COLOR_STRING);
 
         // Number editor

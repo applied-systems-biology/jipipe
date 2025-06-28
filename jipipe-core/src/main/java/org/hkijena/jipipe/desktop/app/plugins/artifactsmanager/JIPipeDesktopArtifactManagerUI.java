@@ -416,7 +416,7 @@ public class JIPipeDesktopArtifactManagerUI extends JIPipeDesktopWorkbenchPanel 
                     insets,
                     0,
                     0));
-            detailsLabel.setFont(new Font(Font.MONOSPACED, Font.PLAIN, 11));
+            detailsLabel.setFont(new Font(Font.MONOSPACED, Font.PLAIN, UIUtils.CURRENT_STYLE.getFontSizeSmall()));
             add(infoLabel, new GridBagConstraints(2,
                     0,
                     1,

@@ -351,7 +351,7 @@ public class JIPipeDesktopDataBatchAssistantInputPreviewPanelTable extends JPane
 
             setForeground(defaultForeground);
             setBackground(defaultBackground);
-            setFont(new Font(Font.DIALOG, Font.PLAIN, 12));
+            setFont(new Font(Font.DIALOG, Font.PLAIN, UIUtils.CURRENT_STYLE.getFontSizeNormal()));
             setIcon(null);
 
             int iterationStepIndex = -1;
@@ -376,7 +376,7 @@ public class JIPipeDesktopDataBatchAssistantInputPreviewPanelTable extends JPane
                 String columnName = table.getColumnName(column);
                 if (previewPanelTable.iterationStepGenerationResult != null && previewPanelTable.iterationStepGenerationResult.getReferenceTextAnnotationColumns().contains(columnName)) {
                     setBackground(COLOR_HIGHLIGHT_CELL);
-                    setFont(new Font(Font.DIALOG, Font.BOLD, 12));
+                    setFont(new Font(Font.DIALOG, Font.BOLD, UIUtils.CURRENT_STYLE.getFontSizeNormal()));
                 }
                 setText(HtmlEscapers.htmlEscaper().escape(StringUtils.nullToEmpty(textAnnotation.getValue())));
 
@@ -418,7 +418,7 @@ public class JIPipeDesktopDataBatchAssistantInputPreviewPanelTable extends JPane
                 String columnName = table.getColumnName(column);
                 if (previewPanelTable.iterationStepGenerationResult != null && previewPanelTable.iterationStepGenerationResult.getReferenceTextAnnotationColumns().contains(columnName)) {
                     setBackground(COLOR_HIGHLIGHT_CELL);
-                    setFont(new Font(Font.DIALOG, Font.BOLD, 12));
+                    setFont(new Font(Font.DIALOG, Font.BOLD, UIUtils.CURRENT_STYLE.getFontSizeNormal()));
                 }
                 setText(StringUtils.nullToEmpty(value));
             }
@@ -463,10 +463,10 @@ public class JIPipeDesktopDataBatchAssistantInputPreviewPanelTable extends JPane
             if (previewPanelTable.iterationStepGenerationResult != null &&
                     previewPanelTable.iterationStepGenerationResult.getReferenceTextAnnotationColumns().contains(columnName)) {
                 component.setBackground(COLOR_HIGHLIGHT);
-                component.setFont(new Font(Font.DIALOG, Font.BOLD, 12));
+                component.setFont(new Font(Font.DIALOG, Font.BOLD, UIUtils.CURRENT_STYLE.getFontSizeNormal()));
             } else {
                 component.setBackground(UIManager.getColor("TableHeader.background"));
-                component.setFont(new Font(Font.DIALOG, Font.PLAIN, 12));
+                component.setFont(new Font(Font.DIALOG, Font.PLAIN, UIUtils.CURRENT_STYLE.getFontSizeNormal()));
             }
 
             return component;

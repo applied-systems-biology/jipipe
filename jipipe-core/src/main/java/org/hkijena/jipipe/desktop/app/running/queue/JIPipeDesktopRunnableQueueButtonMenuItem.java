@@ -53,8 +53,8 @@ public class JIPipeDesktopRunnableQueueButtonMenuItem extends JMenuItem implemen
         setLayout(new GridBagLayout());
 
         titleLabel.setText(worker.getRun().getTaskLabel());
-        titleLabel.setFont(new Font(Font.DIALOG, Font.BOLD, 12));
-        statusLabel.setFont(new Font(Font.DIALOG, Font.PLAIN, 10));
+        titleLabel.setFont(new Font(Font.DIALOG, Font.BOLD, UIUtils.CURRENT_STYLE.getFontSizeNormal()));
+        statusLabel.setFont(new Font(Font.DIALOG, Font.PLAIN, UIUtils.CURRENT_STYLE.getFontSizeTiny()));
         cancelButton.setBorder(null);
         progressBar.setMaximumSize(new Dimension(Short.MAX_VALUE, 8));
         progressBar.setBorder(null);

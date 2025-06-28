@@ -41,10 +41,10 @@ public class JIPipeDesktopTemplateProjectListCellRenderer extends JPanel impleme
         setLayout(new GridBagLayout());
         iconLabel = new JLabel(JIPipe.RESOURCES.getIcon32("jipipe-file.png"));
         nameLabel = new JLabel();
-        nameLabel.setFont(new Font(Font.DIALOG, Font.PLAIN, 12));
+        nameLabel.setFont(new Font(Font.DIALOG, Font.PLAIN, UIUtils.CURRENT_STYLE.getFontSizeNormal()));
         pathLabel = new JLabel();
         pathLabel.setForeground(Color.GRAY);
-        pathLabel.setFont(new Font(Font.DIALOG, Font.ITALIC, 12));
+        pathLabel.setFont(new Font(Font.DIALOG, Font.ITALIC, UIUtils.CURRENT_STYLE.getFontSizeNormal()));
         openButton = new JButton("New");
         UIUtils.setStandardButtonBorder(openButton);
         openButton.setBorder(UIUtils.createControlBorder());

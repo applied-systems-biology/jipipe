@@ -30,6 +30,24 @@ public class JIPipeDesktopModernThemeStyle {
     private Color warningColor = new Color(0xE58457);
 
     /*
+     * Font sizes
+     */
+    @JsonProperty("font-size-huge")
+    private int fontSizeHuge = 16;
+
+    @JsonProperty("font-size-large")
+    private int fontSizeLarge = 14;
+
+    @JsonProperty("font-size-normal")
+    private int fontSizeNormal = 12;
+
+    @JsonProperty("font-size-small")
+    private int fontSizeSmall = 11;
+
+    @JsonProperty("font-size-tiny")
+    private int fontSizeTiny = 10;
+
+    /*
      * Text colors
      */
 
@@ -132,6 +150,48 @@ public class JIPipeDesktopModernThemeStyle {
     @JsonProperty("category-border")
     private Color categoryBorder = new Color(0xe8effe);
 
+    public JIPipeDesktopModernThemeStyle() {
+    }
+
+    public int getFontSizeHuge() {
+        return fontSizeHuge;
+    }
+
+    public void setFontSizeHuge(int fontSizeHuge) {
+        this.fontSizeHuge = fontSizeHuge;
+    }
+
+    public int getFontSizeLarge() {
+        return fontSizeLarge;
+    }
+
+    public void setFontSizeLarge(int fontSizeLarge) {
+        this.fontSizeLarge = fontSizeLarge;
+    }
+
+    public int getFontSizeNormal() {
+        return fontSizeNormal;
+    }
+
+    public void setFontSizeNormal(int fontSizeNormal) {
+        this.fontSizeNormal = fontSizeNormal;
+    }
+
+    public int getFontSizeSmall() {
+        return fontSizeSmall;
+    }
+
+    public void setFontSizeSmall(int fontSizeSmall) {
+        this.fontSizeSmall = fontSizeSmall;
+    }
+
+    public int getFontSizeTiny() {
+        return fontSizeTiny;
+    }
+
+    public void setFontSizeTiny(int fontSizeTiny) {
+        this.fontSizeTiny = fontSizeTiny;
+    }
 
     public Color getViewportBackground() {
         return viewportBackground;

@@ -754,7 +754,7 @@ public class JIPipeDesktopFormPanel extends JPanel {
 
             // Create and add title
             JLabel titleLabel = new JLabel(text, icon, JLabel.LEFT);
-            titleLabel.setFont(new Font(Font.DIALOG, Font.BOLD, 12));
+            titleLabel.setFont(new Font(Font.DIALOG, Font.BOLD, UIUtils.CURRENT_STYLE.getFontSizeNormal()));
             titleLabel.setBorder(BorderFactory.createEmptyBorder(4, 8, 4, 4));
 
             titlePanel.add(titleLabel);

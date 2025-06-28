@@ -112,7 +112,7 @@ public class JIPipeDesktopRibbon extends JPanel {
 
                 // Add label
                 JLabel bandLabel = new JLabel(band.getLabel());
-                bandLabel.setFont(new Font(Font.DIALOG, Font.PLAIN, 11));
+                bandLabel.setFont(new Font(Font.DIALOG, Font.PLAIN, UIUtils.CURRENT_STYLE.getFontSizeSmall()));
                 bandLabel.setHorizontalAlignment(SwingConstants.CENTER);
                 taskPanel.add(bandLabel, new GridBagConstraints(startCol, numRows, endCol - startCol + 1, 1, 0, 0, GridBagConstraints.SOUTH, GridBagConstraints.HORIZONTAL, bandLabelInsets, 0, 0));
 

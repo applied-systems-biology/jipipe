@@ -41,7 +41,7 @@ public class TrackListCellRenderer extends JPanel implements ListCellRenderer<In
         setOpaque(true);
         setLayout(new GridBagLayout());
         iconLabel.setIcon(TrackMatePlugin.RESOURCES.getIcon16("trackscheme.png"));
-        infoLabel.setFont(new Font(Font.DIALOG, Font.PLAIN, 10));
+        infoLabel.setFont(new Font(Font.DIALOG, Font.PLAIN, UIUtils.CURRENT_STYLE.getFontSizeTiny()));
         add(iconLabel, new GridBagConstraints() {
             {
                 gridx = 0;

@@ -59,7 +59,7 @@ public class JIPipeDesktopWorkbenchNotificationUI extends JIPipeDesktopWorkbench
         // Add heading
         JLabel headingLabel = new JLabel(notification.getHeading());
         headingLabel.setBorder(BorderFactory.createEmptyBorder(4, 4, 4, 4));
-        headingLabel.setFont(new Font(Font.DIALOG, Font.BOLD, 16));
+        headingLabel.setFont(new Font(Font.DIALOG, Font.BOLD, UIUtils.CURRENT_STYLE.getFontSizeLarge()));
         headerPanel.add(headingLabel);
         headerPanel.add(Box.createHorizontalGlue());
         add(headerPanel, BorderLayout.NORTH);
@@ -100,7 +100,7 @@ public class JIPipeDesktopWorkbenchNotificationUI extends JIPipeDesktopWorkbench
         actionPanel.add(Box.createHorizontalGlue());
         for (JIPipeNotificationAction action : notification.getActions()) {
             JButton actionButton = new JButton(action.getLabel(), action.getIcon());
-            actionButton.setFont(new Font(Font.DIALOG, Font.PLAIN, 16));
+            actionButton.setFont(new Font(Font.DIALOG, Font.PLAIN, UIUtils.CURRENT_STYLE.getFontSizeLarge()));
             actionButton.setToolTipText(action.getTooltip());
             actionButton.setBorder(BorderFactory.createCompoundBorder(new RoundedLineBorder(new Color(0xabb8c3), 1, 4),
                     BorderFactory.createEmptyBorder(8, 8, 8, 8)));

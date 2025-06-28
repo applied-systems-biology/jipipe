@@ -72,10 +72,10 @@ public class JIPipeNodeTemplateListCellRenderer extends JPanel implements ListCe
         nameLabel = new JLabel();
         descriptionLabel = new JLabel();
         descriptionLabel.setForeground(Color.GRAY);
-        descriptionLabel.setFont(new Font(Font.DIALOG, Font.PLAIN, 10));
+        descriptionLabel.setFont(new Font(Font.DIALOG, Font.PLAIN, UIUtils.CURRENT_STYLE.getFontSizeTiny()));
         pathLabel = new JLabel();
         pathLabel.setForeground(Color.GRAY);
-        pathLabel.setFont(new Font(Font.DIALOG, Font.ITALIC, 10));
+        pathLabel.setFont(new Font(Font.DIALOG, Font.ITALIC, UIUtils.CURRENT_STYLE.getFontSizeTiny()));
         storageLabel = new JLabel();
 
         add(nodeIcon, new GridBagConstraints() {

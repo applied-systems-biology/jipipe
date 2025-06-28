@@ -308,7 +308,7 @@ public class JIPipeDesktopAddNodesPanel extends JIPipeDesktopWorkbenchPanel {
             if (category.isVisibleInPipeline()) {
                 JToggleButton categoryButton = new JToggleButton(category.getName(), category.getIcon());
                 categoryButton.setBorder(UIUtils.createControlBorder());
-                categoryButton.setFont(new Font(Font.DIALOG, Font.PLAIN, 11));
+                categoryButton.setFont(new Font(Font.DIALOG, Font.PLAIN, UIUtils.CURRENT_STYLE.getFontSizeSmall()));
 
                 // Add the old menu as popup menu to the categories
                 if (category instanceof TemplatesDummyNodeTypeCategory) {
@@ -429,7 +429,7 @@ public class JIPipeDesktopAddNodesPanel extends JIPipeDesktopWorkbenchPanel {
                 String fullComponent = String.join("\n", Arrays.asList(currentHierarchyPathComponents).subList(0, i + 1));
                 JButton navigateButton = new JButton(component);
                 navigateButton.setBorder(null);
-                navigateButton.setFont(new Font(Font.DIALOG, Font.PLAIN, 11));
+                navigateButton.setFont(new Font(Font.DIALOG, Font.PLAIN, UIUtils.CURRENT_STYLE.getFontSizeSmall()));
                 navigateButton.addActionListener(e -> {
                     if (mainCategoryHierarchy.containsVertex(fullComponent)) {
                         currentHierarchyVertex = fullComponent;
@@ -465,7 +465,7 @@ public class JIPipeDesktopAddNodesPanel extends JIPipeDesktopWorkbenchPanel {
                 JButton button = new JButton(successorPathComponents[successorPathComponents.length - 1]);
                 button.setBorder(BorderFactory.createCompoundBorder(BorderFactory.createLineBorder(UIUtils.getControlBorderColor()),
                         UIUtils.createEmptyBorder(1)));
-                button.setFont(new Font(Font.DIALOG, Font.PLAIN, 11));
+                button.setFont(new Font(Font.DIALOG, Font.PLAIN, UIUtils.CURRENT_STYLE.getFontSizeSmall()));
                 button.addActionListener(e -> {
                     if (mainCategoryHierarchy.containsVertex(successor)) {
                         currentHierarchyVertex = successor;

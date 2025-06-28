@@ -60,10 +60,10 @@ public class JIPipeDesktopAddNodePanelEntryListCellRenderer extends JPanel imple
         nameLabel = new JLabel();
         descriptionLabel = new JLabel();
         descriptionLabel.setForeground(UIUtils.CURRENT_STYLE.getTextMuted());
-        descriptionLabel.setFont(new Font(Font.DIALOG, Font.PLAIN, 10));
+        descriptionLabel.setFont(new Font(Font.DIALOG, Font.PLAIN, UIUtils.CURRENT_STYLE.getFontSizeTiny()));
         pathLabel = new JLabel();
         pathLabel.setForeground(UIUtils.CURRENT_STYLE.getTextMuted());
-        pathLabel.setFont(new Font(Font.DIALOG, Font.ITALIC, 10));
+        pathLabel.setFont(new Font(Font.DIALOG, Font.ITALIC, UIUtils.CURRENT_STYLE.getFontSizeTiny()));
         pinLabel = new JLabel();
 
         add(nodeIcon, new GridBagConstraints() {

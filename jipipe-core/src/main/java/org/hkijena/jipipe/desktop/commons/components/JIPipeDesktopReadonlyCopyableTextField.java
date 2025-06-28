@@ -39,7 +39,7 @@ public class JIPipeDesktopReadonlyCopyableTextField extends JPanel {
         textField.setEditable(false);
         textField.setBackground(UIManager.getColor("TextField.background"));
         if (monospace) {
-            textField.setFont(new Font(Font.MONOSPACED, Font.PLAIN, 12));
+            textField.setFont(new Font(Font.MONOSPACED, Font.PLAIN, UIUtils.CURRENT_STYLE.getFontSizeNormal()));
         }
 
         copyButton = new JButton(JIPipe.RESOURCES.getIcon16("actions/edit-copy.png"));

@@ -314,7 +314,7 @@ public class JIPipeDesktopParameterKeyPickerUI extends JPanel {
         public NodeListCellRenderer() {
             setOpaque(true);
             setBorder(BorderFactory.createEmptyBorder(4, 4, 4, 4));
-            secondaryLabel.setFont(new Font(Font.DIALOG, Font.PLAIN, 10));
+            secondaryLabel.setFont(new Font(Font.DIALOG, Font.PLAIN, UIUtils.CURRENT_STYLE.getFontSizeTiny()));
             setLayout(new GridBagLayout());
             Insets insets = new Insets(2, 2, 2, 2);
             add(iconLabel, new GridBagConstraints(0,

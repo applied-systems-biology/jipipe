@@ -48,12 +48,12 @@ public class JIPipeDesktopNodeFinderDatasetListCellRenderer extends JPanel imple
     private void initialize() {
         setLayout(new GridBagLayout());
 
-        nameLabel.setFont(new Font(Font.DIALOG, Font.PLAIN, 12));
+        nameLabel.setFont(new Font(Font.DIALOG, Font.PLAIN, UIUtils.CURRENT_STYLE.getFontSizeNormal()));
 
-        descriptionLabel.setFont(new Font(Font.DIALOG, Font.PLAIN, 10));
+        descriptionLabel.setFont(new Font(Font.DIALOG, Font.PLAIN, UIUtils.CURRENT_STYLE.getFontSizeTiny()));
         descriptionLabel.setForeground(Color.GRAY);
 
-        categoryLabel.setFont(new Font(Font.DIALOG, Font.ITALIC, 10));
+        categoryLabel.setFont(new Font(Font.DIALOG, Font.ITALIC, UIUtils.CURRENT_STYLE.getFontSizeTiny()));
         categoryLabel.setForeground(Color.GRAY);
 
         Insets insets = new Insets(2, 2, 2, 2);

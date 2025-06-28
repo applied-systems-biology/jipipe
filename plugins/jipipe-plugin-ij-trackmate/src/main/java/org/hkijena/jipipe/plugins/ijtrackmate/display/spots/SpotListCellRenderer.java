@@ -48,7 +48,7 @@ public class SpotListCellRenderer extends JPanel implements ListCellRenderer<Spo
         setOpaque(true);
         setLayout(new GridBagLayout());
         iconLabel.setIcon(strokeFillPreview);
-        infoLabel.setFont(new Font(Font.DIALOG, Font.PLAIN, 10));
+        infoLabel.setFont(new Font(Font.DIALOG, Font.PLAIN, UIUtils.CURRENT_STYLE.getFontSizeTiny()));
         add(iconLabel, new GridBagConstraints() {
             {
                 gridx = 0;

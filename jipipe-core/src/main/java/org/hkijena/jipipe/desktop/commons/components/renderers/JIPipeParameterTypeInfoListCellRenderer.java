@@ -36,8 +36,8 @@ public class JIPipeParameterTypeInfoListCellRenderer extends JPanel implements L
         setLayout(new GridBagLayout());
         setBorder(BorderFactory.createEmptyBorder(4, 4, 4, 4));
         iconLabel.setIcon(JIPipe.RESOURCES.getIcon16("data-types/parameters.png"));
-        descriptionLabel.setFont(new Font(Font.DIALOG, Font.ITALIC, 10));
-        infoLabel.setFont(new Font(Font.MONOSPACED, Font.PLAIN, 10));
+        descriptionLabel.setFont(new Font(Font.DIALOG, Font.ITALIC, UIUtils.CURRENT_STYLE.getFontSizeTiny()));
+        infoLabel.setFont(new Font(Font.MONOSPACED, Font.PLAIN, UIUtils.CURRENT_STYLE.getFontSizeTiny()));
         infoLabel.setForeground(Color.GRAY);
         add(iconLabel, new GridBagConstraints() {
             {

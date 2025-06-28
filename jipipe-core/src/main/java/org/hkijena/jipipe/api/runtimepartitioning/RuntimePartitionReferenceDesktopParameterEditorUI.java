@@ -43,7 +43,7 @@ public class RuntimePartitionReferenceDesktopParameterEditorUI extends JIPipeDes
 
     private void initialize() {
         setLayout(new BorderLayout(4, 0));
-        nameLabel.setFont(new Font(Font.DIALOG, Font.ITALIC, 12));
+        nameLabel.setFont(new Font(Font.DIALOG, Font.ITALIC, UIUtils.CURRENT_STYLE.getFontSizeNormal()));
         nameLabel.setBorder(BorderFactory.createEmptyBorder(0, 4, 0, 12));
         nameLabel.setOpaque(false);
         nameLabel.addActionListener(e -> editCurrentPartition());

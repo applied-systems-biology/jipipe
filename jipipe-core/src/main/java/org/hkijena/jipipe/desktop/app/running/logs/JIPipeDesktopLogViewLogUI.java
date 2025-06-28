@@ -77,7 +77,7 @@ public class JIPipeDesktopLogViewLogUI extends JIPipeDesktopWorkbenchPanel {
         add(tabPane, BorderLayout.CENTER);
 
         // Init reader
-        logReader.setFont(new Font(Font.MONOSPACED, Font.PLAIN, 12));
+        logReader.setFont(new Font(Font.MONOSPACED, Font.PLAIN, UIUtils.CURRENT_STYLE.getFontSizeNormal()));
         scrollPane = new JScrollPane(logReader);
         tabPane.addTab("Log", JIPipe.RESOURCES.getIcon32("actions/rabbitvcs-show_log.png"), scrollPane, JIPipeDesktopTabPane.CloseMode.withoutCloseButton);
 

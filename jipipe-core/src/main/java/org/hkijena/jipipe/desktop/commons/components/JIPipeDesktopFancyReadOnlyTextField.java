@@ -42,7 +42,7 @@ public class JIPipeDesktopFancyReadOnlyTextField extends JPanel {
         textField.setOpaque(false);
         textField.setBorder(null);
         if (monospace) {
-            textField.setFont(new Font(Font.MONOSPACED, Font.PLAIN, 12));
+            textField.setFont(new Font(Font.MONOSPACED, Font.PLAIN, UIUtils.CURRENT_STYLE.getFontSizeNormal()));
         }
         add(textField, BorderLayout.CENTER);
 
@@ -89,6 +89,6 @@ public class JIPipeDesktopFancyReadOnlyTextField extends JPanel {
             style |= Font.ITALIC;
         if (bold)
             style |= Font.BOLD;
-        textField.setFont(new Font(monospace ? Font.MONOSPACED : Font.DIALOG, style, 12));
+        textField.setFont(new Font(monospace ? Font.MONOSPACED : Font.DIALOG, style, UIUtils.CURRENT_STYLE.getFontSizeNormal()));
     }
 }

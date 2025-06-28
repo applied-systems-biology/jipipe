@@ -447,7 +447,7 @@ public class JIPipeDesktopPluginManagerUI extends JIPipeDesktopWorkbenchPanel im
                 0,
                 0));
         JLabel descriptionLabel = new JLabel(plugin.getMetadata().getDescription().getHtml());
-        descriptionLabel.setFont(new Font(Font.DIALOG, Font.PLAIN, 10));
+        descriptionLabel.setFont(new Font(Font.DIALOG, Font.PLAIN, UIUtils.CURRENT_STYLE.getFontSizeTiny()));
         pluginPanel.add(descriptionLabel, new GridBagConstraints(1,
                 1,
                 1,
@@ -581,7 +581,7 @@ public class JIPipeDesktopPluginManagerUI extends JIPipeDesktopWorkbenchPanel im
                     insets,
                     0,
                     0));
-            detailsLabel.setFont(new Font(Font.DIALOG, Font.PLAIN, 11));
+            detailsLabel.setFont(new Font(Font.DIALOG, Font.PLAIN, UIUtils.CURRENT_STYLE.getFontSizeSmall()));
             add(infoLabel, new GridBagConstraints(2,
                     0,
                     1,

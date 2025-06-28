@@ -92,12 +92,12 @@ public class JIPipeDesktopEasyInstallExternalEnvironmentInstallerDialog extends 
             urlText = availablePackage.getUrl();
         }
         JTextArea idField = UIUtils.createReadonlyBorderlessTextArea(urlText);
-        idField.setFont(new Font(Font.MONOSPACED, Font.PLAIN, 11));
+        idField.setFont(new Font(Font.MONOSPACED, Font.PLAIN, UIUtils.CURRENT_STYLE.getFontSizeSmall()));
         panel.add(idField, new GridBagConstraints(0, 2, 1, 1, 1, 0, GridBagConstraints.NORTHWEST, GridBagConstraints.HORIZONTAL, new Insets(4, 4, 4, 4), 0, 0));
         panel.add(UIUtils.createBorderlessReadonlyTextPane(availablePackage.getDescription(), false), new GridBagConstraints(0, 1, 1, 1, 1, 0, GridBagConstraints.NORTHWEST, GridBagConstraints.HORIZONTAL, new Insets(4, 4, 4, 4), 0, 0));
 
         JButton installButton = new JButton("Install now", JIPipe.RESOURCES.getIcon16("emblems/vcs-normal.png"));
-        installButton.setFont(new Font(Font.DIALOG, Font.PLAIN, 22));
+        installButton.setFont(new Font(Font.DIALOG, Font.PLAIN, UIUtils.CURRENT_STYLE.getFontSizeLarge()));
         installButton.addActionListener(e -> confirmInstallation(availablePackage));
         panel.add(installButton, new GridBagConstraints(1, 0, 1, 1, 0, 0, GridBagConstraints.NORTHWEST, GridBagConstraints.NONE, new Insets(4, 4, 4, 4), 0, 0));
 

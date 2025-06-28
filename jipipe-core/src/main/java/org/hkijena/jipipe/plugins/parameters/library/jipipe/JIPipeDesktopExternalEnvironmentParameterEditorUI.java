@@ -51,7 +51,7 @@ public class JIPipeDesktopExternalEnvironmentParameterEditorUI extends JIPipeDes
 
     private void initialize() {
         setLayout(new BorderLayout(4, 0));
-        nameLabel.setFont(new Font(Font.DIALOG, Font.ITALIC, 12));
+        nameLabel.setFont(new Font(Font.DIALOG, Font.ITALIC, UIUtils.CURRENT_STYLE.getFontSizeNormal()));
         nameLabel.setBorder(BorderFactory.createEmptyBorder(0, 4, 0, 12));
         setOpaque(true);
         setBackground(UIManager.getColor("TextField.background"));

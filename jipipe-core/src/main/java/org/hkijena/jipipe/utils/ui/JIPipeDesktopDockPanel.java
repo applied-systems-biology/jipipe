@@ -496,7 +496,7 @@ public class JIPipeDesktopDockPanel extends JPanel implements JIPipeDesktopSplit
             button.setText(panel.getName());
             button.setVerticalTextPosition(SwingConstants.BOTTOM);
             button.setHorizontalTextPosition(SwingConstants.CENTER);
-            button.setFont(new Font(Font.DIALOG, Font.PLAIN, 10));
+            button.setFont(new Font(Font.DIALOG, Font.PLAIN, UIUtils.CURRENT_STYLE.getFontSizeTiny()));
             button.setMaximumSize(new Dimension(Short.MAX_VALUE, 64));
         }
 

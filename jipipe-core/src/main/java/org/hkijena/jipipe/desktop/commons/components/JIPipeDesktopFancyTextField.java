@@ -96,6 +96,6 @@ public class JIPipeDesktopFancyTextField extends JPanel {
             style |= Font.ITALIC;
         if (bold)
             style |= Font.BOLD;
-        textField.setFont(new Font(monospace ? Font.MONOSPACED : Font.DIALOG, style, 12));
+        textField.setFont(new Font(monospace ? Font.MONOSPACED : Font.DIALOG, style, UIUtils.CURRENT_STYLE.getFontSizeNormal()));
     }
 }

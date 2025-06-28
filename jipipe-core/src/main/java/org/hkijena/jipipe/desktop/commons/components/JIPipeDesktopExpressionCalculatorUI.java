@@ -120,8 +120,8 @@ public class JIPipeDesktopExpressionCalculatorUI extends JIPipeDesktopWorkbenchP
     private void setVariableAssistant() {
         JTextField keyField = new JTextField();
         JTextField valueField = new JTextField();
-        keyField.setFont(new Font(Font.MONOSPACED, Font.PLAIN, 12));
-        valueField.setFont(new Font(Font.MONOSPACED, Font.PLAIN, 12));
+        keyField.setFont(new Font(Font.MONOSPACED, Font.PLAIN, UIUtils.CURRENT_STYLE.getFontSizeNormal()));
+        valueField.setFont(new Font(Font.MONOSPACED, Font.PLAIN, UIUtils.CURRENT_STYLE.getFontSizeNormal()));
 
         JIPipeDesktopFormPanel formPanel = new JIPipeDesktopFormPanel(JIPipeDesktopFormPanel.NONE);
         formPanel.addToForm(keyField, new JLabel("Key"));
@@ -181,7 +181,7 @@ public class JIPipeDesktopExpressionCalculatorUI extends JIPipeDesktopWorkbenchP
         resultPanel.clear();
         for (ResultItem resultItem : resultItems) {
             JTextField expressionField = UIUtils.createReadonlyBorderlessTextField(resultItem.expression);
-            expressionField.setFont(new Font(Font.MONOSPACED, Font.PLAIN, 12));
+            expressionField.setFont(new Font(Font.MONOSPACED, Font.PLAIN, UIUtils.CURRENT_STYLE.getFontSizeNormal()));
 
             String value;
 
@@ -202,7 +202,7 @@ public class JIPipeDesktopExpressionCalculatorUI extends JIPipeDesktopWorkbenchP
                 valueField.setForeground(Color.RED);
             }
 
-            valueField.setFont(new Font(Font.MONOSPACED, Font.BOLD, 12));
+            valueField.setFont(new Font(Font.MONOSPACED, Font.BOLD, UIUtils.CURRENT_STYLE.getFontSizeNormal()));
 
             JIPipeDesktopFormPanel itemPanel = new JIPipeDesktopFormPanel(JIPipeDesktopFormPanel.NONE);
             itemPanel.setBorder(UIUtils.createControlBorder());
