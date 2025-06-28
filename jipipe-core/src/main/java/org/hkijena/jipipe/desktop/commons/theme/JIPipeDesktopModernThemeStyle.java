@@ -17,7 +17,7 @@ public class JIPipeDesktopModernThemeStyle {
      */
 
     @JsonProperty("primary")
-    private Color primaryColor = new Color(0x8EBFEF);
+    private Color primaryColor = new Color(0xA0BDF8);
     @JsonProperty("secondary")
     private Color secondaryColor = new Color(0xaa87de);
     @JsonProperty("success")

@@ -117,6 +117,7 @@ public enum JIPipeDesktopUITheme {
         UIManager.put("SpinnerUI", JIPipeDesktopModernSpinnerUI.class.getName());
         UIManager.put("SplitPaneUI", JIPipeDesktopModernSplitPaneUI.class.getName());
         UIManager.put("ToggleButtonUI", JIPipeDesktopModernToggleButtonUI.class.getName());
+        UIManager.put("ProgressBarUI", JIPipeDesktopModernProgressBarUI.class.getName());
     }
 
     public boolean isModern() {

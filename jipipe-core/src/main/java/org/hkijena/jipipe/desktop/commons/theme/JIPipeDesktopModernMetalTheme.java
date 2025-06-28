@@ -475,7 +475,9 @@ public class JIPipeDesktopModernMetalTheme extends DefaultMetalTheme {
     private void configureProgressBar(UIDefaults table) {
         table.put("ProgressBar.background", toResource(style.getFormBackground()));
         table.put("ProgressBar.foreground", toResource(style.getPrimaryColor()));
-        table.put("ProgressBar.border", toResource(new RoundedLineBorder(style.getBorderColor(), 1, 2)));
+        table.put("ProgressBar.selectionBackground", toResource(style.getTextForeground()));
+        table.put("ProgressBar.selectionForeground", toResource(style.getTextForeground()));
+        table.put("ProgressBar.border", BorderFactory.createLineBorder(style.getBorderColor()));
     }
 
     private void configureTabbedPane(UIDefaults table) {
