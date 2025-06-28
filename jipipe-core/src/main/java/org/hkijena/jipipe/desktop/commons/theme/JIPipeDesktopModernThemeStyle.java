@@ -155,7 +155,7 @@ public class JIPipeDesktopModernThemeStyle {
      */
 
     @JsonProperty("node-highlight-border")
-    private Color nodeHighlightBorder = new Color(0xCFCCD5);
+    private Color nodeHighlightBorder = new Color(0x737880);
 
     @JsonProperty("node-slot-background")
     private Color nodeSlotBackground = new Color(0xFAFAFA);

@@ -21,6 +21,7 @@ import org.hkijena.jipipe.api.nodes.JIPipeGraphNode;
 import org.hkijena.jipipe.desktop.commons.components.renderers.JIPipeDesktopDataInfoListCellRenderer;
 import org.hkijena.jipipe.desktop.commons.components.search.JIPipeDesktopSearchTextField;
 import org.hkijena.jipipe.utils.StringUtils;
+import org.hkijena.jipipe.utils.ThemeUtils;
 import org.hkijena.jipipe.utils.UIUtils;
 import org.hkijena.jipipe.JIPipe;
 import org.jdesktop.swingx.JXTextField;
@@ -104,7 +105,9 @@ public class JIPipeDesktopEditAlgorithmSlotPanel extends JPanel {
     }
 
     private void initialize() {
-        setLayout(new BorderLayout());
+        setLayout(new BorderLayout(8,8));
+        setBorder(UIUtils.createEmptyBorder(5));
+        setBackground(ThemeUtils.getCurrentStyle().getWindowBackground());
 
         JPanel listPanel = new JPanel(new BorderLayout());
         initializeToolBar(listPanel);
@@ -118,7 +121,8 @@ public class JIPipeDesktopEditAlgorithmSlotPanel extends JPanel {
         });
         JScrollPane scrollPane = new JScrollPane(datatypeList);
         listPanel.add(scrollPane, BorderLayout.CENTER);
-        add(listPanel, BorderLayout.WEST);
+        listPanel.setBorder(UIUtils.createEmptyBorder(5));
+        add(UIUtils.wrapInIslandPanelIfNeeded(listPanel), BorderLayout.WEST);
 
         JIPipeDesktopFormPanel formPanel = new JIPipeDesktopFormPanel(null, JIPipeDesktopFormPanel.NONE);
         JIPipeDesktopFormPanel.GroupHeaderPanel header = formPanel.addGroupHeader("Edit slot '" + existingSlot.getName() + "' in '" + existingSlot.getNode().getName() + "'", JIPipe.getInstance().getNodeRegistry().getIconFor(existingSlot.getNode().getInfo()));
@@ -157,7 +161,8 @@ public class JIPipeDesktopEditAlgorithmSlotPanel extends JPanel {
             formPanel.addWideToForm(optionalInputEditor, null);
         }
         formPanel.addVerticalGlue();
-        add(formPanel, BorderLayout.CENTER);
+        formPanel.setBorder(UIUtils.createEmptyBorder(5));
+        add(UIUtils.wrapInIslandPanelIfNeeded(formPanel), BorderLayout.CENTER);
 
         JPanel bottomPanel = new JPanel();
         bottomPanel.setLayout(new BoxLayout(bottomPanel, BoxLayout.Y_AXIS));
@@ -175,6 +180,7 @@ public class JIPipeDesktopEditAlgorithmSlotPanel extends JPanel {
 
     private JPanel initializeButtonPanel() {
         JPanel buttonPanel = new JPanel();
+        buttonPanel.setBackground(ThemeUtils.getCurrentStyle().getWindowBackground());
         buttonPanel.setLayout(new BoxLayout(buttonPanel, BoxLayout.X_AXIS));
         buttonPanel.add(Box.createHorizontalGlue());
 
@@ -184,7 +190,7 @@ public class JIPipeDesktopEditAlgorithmSlotPanel extends JPanel {
                 dialog.setVisible(false);
             }
         });
-        buttonPanel.add(cancelButton);
+        buttonPanel.add(UIUtils.makeButtonTransparent(cancelButton));
 
         confirmButton = new JButton("Edit", JIPipe.RESOURCES.getIcon16("actions/edit.png"));
         confirmButton.addActionListener(e -> editSlot());
@@ -194,7 +200,7 @@ public class JIPipeDesktopEditAlgorithmSlotPanel extends JPanel {
                 editSlot();
             }
         });
-        buttonPanel.add(confirmButton);
+        buttonPanel.add(UIUtils.makeButtonTransparent(confirmButton));
 
         return buttonPanel;
     }

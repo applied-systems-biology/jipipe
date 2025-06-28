@@ -21,6 +21,7 @@ import org.hkijena.jipipe.api.nodes.JIPipeIOSlotConfiguration;
 import org.hkijena.jipipe.desktop.commons.components.renderers.JIPipeDesktopDataInfoListCellRenderer;
 import org.hkijena.jipipe.desktop.commons.components.search.JIPipeDesktopSearchTextField;
 import org.hkijena.jipipe.utils.StringUtils;
+import org.hkijena.jipipe.utils.ThemeUtils;
 import org.hkijena.jipipe.utils.UIUtils;
 import org.hkijena.jipipe.JIPipe;
 import org.jdesktop.swingx.JXTextField;
@@ -134,10 +135,11 @@ public class JIPipeDesktopAddAlgorithmSlotPanel extends JPanel {
     }
 
     private void initialize() {
-        setLayout(new BorderLayout());
+        setLayout(new BorderLayout(8,8));
+        setBorder(UIUtils.createEmptyBorder(5));
+        setBackground(ThemeUtils.getCurrentStyle().getWindowBackground());
 
         JPanel listPanel = new JPanel(new BorderLayout());
-
         initializeToolBar(listPanel);
 
         datatypeList = new JList<>();
@@ -149,7 +151,8 @@ public class JIPipeDesktopAddAlgorithmSlotPanel extends JPanel {
         });
         listScrollPane = new JScrollPane(datatypeList);
         listPanel.add(listScrollPane, BorderLayout.CENTER);
-        add(listPanel, BorderLayout.WEST);
+        listPanel.setBorder(UIUtils.createEmptyBorder(5));
+        add(UIUtils.wrapInIslandPanelIfNeeded(listPanel), BorderLayout.WEST);
 
         // Create form located at the bottom
         JIPipeDesktopFormPanel formPanel = new JIPipeDesktopFormPanel(null, JIPipeDesktopFormPanel.NONE);
@@ -182,10 +185,12 @@ public class JIPipeDesktopAddAlgorithmSlotPanel extends JPanel {
             formPanel.addWideToForm(optionalInputEditor, null);
         }
         formPanel.addVerticalGlue();
-        add(formPanel, BorderLayout.CENTER);
+        formPanel.setBorder(UIUtils.createEmptyBorder(5));
+        add(UIUtils.wrapInIslandPanelIfNeeded(formPanel), BorderLayout.CENTER);
 
 
         JPanel bottomPanel = new JPanel();
+        bottomPanel.setBackground(ThemeUtils.getCurrentStyle().getWindowBackground());
         bottomPanel.setLayout(new BoxLayout(bottomPanel, BoxLayout.Y_AXIS));
         bottomPanel.add(initializeButtonPanel());
         add(bottomPanel, BorderLayout.SOUTH);
@@ -201,6 +206,7 @@ public class JIPipeDesktopAddAlgorithmSlotPanel extends JPanel {
 
     private JPanel initializeButtonPanel() {
         JPanel buttonPanel = new JPanel();
+        buttonPanel.setBackground(ThemeUtils.getCurrentStyle().getWindowBackground());
         buttonPanel.setLayout(new BoxLayout(buttonPanel, BoxLayout.X_AXIS));
         buttonPanel.add(Box.createHorizontalGlue());
 
@@ -210,7 +216,7 @@ public class JIPipeDesktopAddAlgorithmSlotPanel extends JPanel {
                 dialog.setVisible(false);
             }
         });
-        buttonPanel.add(cancelButton);
+        buttonPanel.add(UIUtils.makeButtonTransparent(cancelButton));
 
         confirmButton = new JButton("Add", JIPipe.RESOURCES.getIcon16("actions/list-add.png"));
         confirmButton.addActionListener(e -> addSlot());
@@ -220,7 +226,7 @@ public class JIPipeDesktopAddAlgorithmSlotPanel extends JPanel {
                 addSlot();
             }
         });
-        buttonPanel.add(confirmButton);
+        buttonPanel.add(UIUtils.makeButtonTransparent(confirmButton));
 
         return buttonPanel;
     }
