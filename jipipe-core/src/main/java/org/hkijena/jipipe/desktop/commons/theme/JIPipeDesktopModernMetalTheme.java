@@ -496,7 +496,7 @@ public class JIPipeDesktopModernMetalTheme extends DefaultMetalTheme {
     private void configureScrollPane(UIDefaults table) {
         table.put("ScrollPane.font", toResource(fontNormal));
         table.put("ScrollPane.border", toResource(noBorder));
-        table.put("ScrollPane.background", toResource(style.getWindowBackground()));
+        table.put("ScrollPane.background", toResource(style.getPanelBackground()));
     }
 
     private void configureList(UIDefaults table) {
