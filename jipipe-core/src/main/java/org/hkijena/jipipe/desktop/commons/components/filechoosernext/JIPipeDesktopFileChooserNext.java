@@ -137,20 +137,6 @@ public class JIPipeDesktopFileChooserNext extends JPanel {
         return result;
     }
 
-    public static void main(String[] args) {
-
-        registerKnownFileType("SVG image", JIPipe.RESOURCES.getIcon16("mimetypes/svg.png"), ".svg");
-
-        JIPipeDesktopUITheme.ModernLight.install();
-        List<Path> paths = JIPipeDesktopFileChooserNext.showDialog(null, null, "Test dialog", HTMLText.EMPTY, Paths.get(""), PathIOMode.Open, PathType.FilesOnly, true, PathUtils.EXTENSION_FILTER_SVG);
-        if (paths.isEmpty()) {
-            System.out.println("No paths selected");
-        } else {
-            System.out.println(paths.stream().map(Object::toString).collect(Collectors.joining("; ")));
-        }
-        System.exit(0);
-    }
-
     /**
      * Registers a new path type
      *
@@ -349,7 +335,7 @@ public class JIPipeDesktopFileChooserNext extends JPanel {
     private void createSidePanelHeader(String title, JComponent... components) {
         JPanel panel = UIUtils.boxHorizontal(components);
         JLabel label = new JLabel(title);
-        label.setFont(label.getFont().deriveFont(Font.PLAIN, UIUtils.CURRENT_STYLE.getFontSizeSmall()));
+        label.setFont(label.getFont().deriveFont(Font.PLAIN, ThemeUtils.getCurrentStyle().getFontSizeSmall()));
         label.setForeground(UIUtils.getIconBaseColor());
         label.setBorder(BorderFactory.createEmptyBorder(5, 5, 5, 5));
         panel.add(UIUtils.createHorizontalFillingSeparator(), 0);

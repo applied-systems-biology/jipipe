@@ -21,8 +21,8 @@ import org.hkijena.jipipe.desktop.app.JIPipeDesktopWorkbenchPanel;
 import org.hkijena.jipipe.desktop.commons.components.JIPipeDesktopFormPanel;
 import org.hkijena.jipipe.desktop.commons.components.tabs.JIPipeDesktopTabPane;
 import org.hkijena.jipipe.plugins.settings.JIPipeNotificationUIApplicationSettings;
+import org.hkijena.jipipe.utils.ThemeUtils;
 import org.hkijena.jipipe.utils.UIUtils;
-import org.hkijena.jipipe.JIPipe;
 
 import javax.swing.*;
 import java.awt.*;
@@ -89,7 +89,7 @@ public class JIPipeDesktopGenericNotificationInboxUI extends JIPipeDesktopWorkbe
             noNotificationPanel.setBorder(UIUtils.createControlBorder());
 
             JLabel label = new JLabel("No notifications", JIPipe.RESOURCES.getIcon64("check-circle-green.png"), JLabel.LEFT);
-            label.setFont(label.getFont().deriveFont(UIUtils.CURRENT_STYLE.getFontSizeHuge() * 1f));
+            label.setFont(label.getFont().deriveFont(ThemeUtils.getCurrentStyle().getFontSizeHuge() * 1f));
             label.setBorder(BorderFactory.createEmptyBorder(4, 4, 4, 4));
             noNotificationPanel.add(label, BorderLayout.CENTER);
 

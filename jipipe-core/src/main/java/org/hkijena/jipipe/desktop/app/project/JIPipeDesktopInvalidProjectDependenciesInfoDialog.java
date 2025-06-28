@@ -23,8 +23,8 @@ import org.hkijena.jipipe.desktop.app.JIPipeDesktopWorkbenchAccess;
 import org.hkijena.jipipe.desktop.app.plugins.pluginsmanager.JIPipeDesktopPluginManagerUI;
 import org.hkijena.jipipe.desktop.commons.components.JIPipeDesktopFormPanel;
 import org.hkijena.jipipe.desktop.commons.components.JIPipeDesktopMessagePanel;
+import org.hkijena.jipipe.utils.ThemeUtils;
 import org.hkijena.jipipe.utils.UIUtils;
-import org.hkijena.jipipe.JIPipe;
 import org.hkijena.jipipe.utils.VersionUtils;
 import org.hkijena.jipipe.utils.ui.RoundedLineBorder;
 
@@ -100,7 +100,7 @@ public class JIPipeDesktopInvalidProjectDependenciesInfoDialog extends JDialog i
                 dependencyPanel.setBorder(BorderFactory.createCompoundBorder(new RoundedLineBorder(UIManager.getColor("Button.borderColor"), 1, 2), BorderFactory.createEmptyBorder(8, 8, 8, 8)));
                 dependencyPanel.add(UIUtils.createJLabel(dependency.getMetadata().getName(), JIPipe.RESOURCES.getIcon32("module-json.png"), 16), new GridBagConstraints(0, 0, 1, 1, 1, 0, GridBagConstraints.NORTHWEST, GridBagConstraints.HORIZONTAL, insets, 0, 0));
                 JTextField idField = UIUtils.createReadonlyBorderlessTextField("ID: " + dependency.getDependencyId() + ", version: " + dependency.getDependencyVersion());
-                idField.setFont(new Font(Font.MONOSPACED, Font.PLAIN, UIUtils.CURRENT_STYLE.getFontSizeSmall()));
+                idField.setFont(new Font(Font.MONOSPACED, Font.PLAIN, ThemeUtils.getCurrentStyle().getFontSizeSmall()));
                 dependencyPanel.add(idField, new GridBagConstraints(0, 1, 1, 1, 1, 0, GridBagConstraints.NORTHWEST, GridBagConstraints.HORIZONTAL, insets, 0, 0));
                 dependencyPanel.add(UIUtils.createBorderlessReadonlyTextPane(dependency.getMetadata().getDescription().getHtml(), false), new GridBagConstraints(0, 2, 1, 1, 1, 0, GridBagConstraints.NORTHWEST, GridBagConstraints.HORIZONTAL, insets, 0, 0));
 

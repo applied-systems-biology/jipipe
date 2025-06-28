@@ -16,7 +16,7 @@ package org.hkijena.jipipe.desktop.app.grapheditor.commons.properties;
 import org.hkijena.jipipe.JIPipe;
 import org.hkijena.jipipe.api.data.JIPipeData;
 import org.hkijena.jipipe.api.data.JIPipeDataSlot;
-import org.hkijena.jipipe.utils.UIUtils;
+import org.hkijena.jipipe.utils.ThemeUtils;
 
 import javax.swing.*;
 import java.awt.*;
@@ -37,13 +37,13 @@ public class JIPipeDesktopDataSlotListCellRenderer extends JPanel implements Lis
     private void initialize() {
         setLayout(new GridBagLayout());
         setOpaque(true);
-        setFont(new Font(Font.DIALOG, Font.PLAIN, UIUtils.CURRENT_STYLE.getFontSizeNormal()));
+        setFont(new Font(Font.DIALOG, Font.PLAIN, ThemeUtils.getCurrentStyle().getFontSizeNormal()));
         setBorder(BorderFactory.createEmptyBorder(4, 4, 4, 4));
 
         Insets border = new Insets(2, 4, 2, 2);
 
         dataTypeLabel.setForeground(Color.GRAY);
-        nodeLabel.setFont(new Font(Font.DIALOG, Font.PLAIN, UIUtils.CURRENT_STYLE.getFontSizeSmall()));
+        nodeLabel.setFont(new Font(Font.DIALOG, Font.PLAIN, ThemeUtils.getCurrentStyle().getFontSizeSmall()));
 
         add(slotNameLabel, new GridBagConstraints(0, 0, 1, 1, 1, 0, GridBagConstraints.WEST, GridBagConstraints.HORIZONTAL, border, 0, 0));
         add(dataTypeLabel, new GridBagConstraints(1, 0, 1, 1, 0, 0, GridBagConstraints.EAST, GridBagConstraints.NONE, border, 0, 0));

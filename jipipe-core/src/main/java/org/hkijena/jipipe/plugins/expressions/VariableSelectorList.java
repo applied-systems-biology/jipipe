@@ -13,6 +13,7 @@
 
 package org.hkijena.jipipe.plugins.expressions;
 
+import org.hkijena.jipipe.utils.ThemeUtils;
 import org.hkijena.jipipe.utils.UIUtils;
 import org.hkijena.jipipe.JIPipe;
 
@@ -99,7 +100,7 @@ public class VariableSelectorList extends JList<JIPipeExpressionParameterVariabl
         private void initialize() {
             setLayout(new GridBagLayout());
             setOpaque(true);
-            setFont(new Font(Font.DIALOG, Font.PLAIN, UIUtils.CURRENT_STYLE.getFontSizeNormal()));
+            setFont(new Font(Font.DIALOG, Font.PLAIN, ThemeUtils.getCurrentStyle().getFontSizeNormal()));
             setBorder(BorderFactory.createEmptyBorder(4, 4, 4, 4));
 
             Insets border = new Insets(2, 4, 2, 2);
@@ -115,7 +116,7 @@ public class VariableSelectorList extends JList<JIPipeExpressionParameterVariabl
             });
 
             idLabel = new JLabel();
-            idLabel.setFont(new Font(Font.MONOSPACED, Font.BOLD, UIUtils.CURRENT_STYLE.getFontSizeNormal()));
+            idLabel.setFont(new Font(Font.MONOSPACED, Font.BOLD, ThemeUtils.getCurrentStyle().getFontSizeNormal()));
             add(idLabel, new GridBagConstraints() {
                 {
                     gridx = 1;
@@ -136,7 +137,7 @@ public class VariableSelectorList extends JList<JIPipeExpressionParameterVariabl
             });
 
             descriptionLabel = new JLabel();
-            descriptionLabel.setFont(new Font(Font.DIALOG, Font.ITALIC, UIUtils.CURRENT_STYLE.getFontSizeNormal()));
+            descriptionLabel.setFont(new Font(Font.DIALOG, Font.ITALIC, ThemeUtils.getCurrentStyle().getFontSizeNormal()));
             add(descriptionLabel, new GridBagConstraints() {
                 {
                     gridx = 1;

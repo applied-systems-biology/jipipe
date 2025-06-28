@@ -13,9 +13,7 @@
 
 package org.hkijena.jipipe.desktop.commons.theme.ui;
 
-import org.hkijena.jipipe.desktop.commons.theme.JIPipeDesktopModernMetalTheme;
-import org.hkijena.jipipe.utils.UIUtils;
-import org.hkijena.jipipe.JIPipe;
+import org.hkijena.jipipe.utils.ThemeUtils;
 
 import javax.swing.*;
 import javax.swing.plaf.ComponentUI;
@@ -257,7 +255,7 @@ public class JIPipeDesktopModernTabbedPaneUI extends BasicTabbedPaneUI {
 //        }
 
         if (isSelected) {
-            g.setColor(UIUtils.CURRENT_STYLE.getTabSelectedHighlight());
+            g.setColor(ThemeUtils.getCurrentStyle().getTabSelectedHighlight());
             g.fillRect(0, bottom - 1, w, 2);
         }
 
@@ -435,7 +433,7 @@ public class JIPipeDesktopModernTabbedPaneUI extends BasicTabbedPaneUI {
 //        }
 
         if (tabPane.getSelectedIndex() == tabIndex) {
-            g.setColor(UIUtils.CURRENT_STYLE.getTabSelectedHighlight());
+            g.setColor(ThemeUtils.getCurrentStyle().getTabSelectedHighlight());
             g.fillRect(0, 1, 5, bottom);
         }
 
@@ -684,7 +682,7 @@ public class JIPipeDesktopModernTabbedPaneUI extends BasicTabbedPaneUI {
         g.drawLine(right, 0, right, bottom);
 
         if (tabPane.getSelectedIndex() == tabIndex) {
-            g.setColor(UIUtils.CURRENT_STYLE.getTabSelectedHighlight());
+            g.setColor(ThemeUtils.getCurrentStyle().getTabSelectedHighlight());
             g.fillRect(right - 4, 1, 5, bottom);
         }
 
@@ -838,7 +836,7 @@ public class JIPipeDesktopModernTabbedPaneUI extends BasicTabbedPaneUI {
             g.setColor(selectHighlight);
         }
 
-        g.setColor(UIUtils.CURRENT_STYLE.getBorderColor());
+        g.setColor(ThemeUtils.getCurrentStyle().getBorderColor());
 
         // Draw unbroken line if tabs are not on TOP, OR
         // selected tab is not in run adjacent to content, OR
@@ -863,10 +861,10 @@ public class JIPipeDesktopModernTabbedPaneUI extends BasicTabbedPaneUI {
             }
 
             // Draw in-between
-            g.setColor(UIUtils.CURRENT_STYLE.getTabSelectedHighlight());
+            g.setColor(ThemeUtils.getCurrentStyle().getTabSelectedHighlight());
             g.drawLine(selRect.x + 1, y, selRect.x + selRect.width - 1, y);
 
-            g.setColor(UIUtils.CURRENT_STYLE.getBorderColor());
+            g.setColor(ThemeUtils.getCurrentStyle().getBorderColor());
 
             if (selRect.x + selRect.width < right - 1) {
                 if (leftToRight && !lastInRun) {

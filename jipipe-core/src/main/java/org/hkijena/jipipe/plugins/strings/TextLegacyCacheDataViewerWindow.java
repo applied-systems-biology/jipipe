@@ -21,8 +21,7 @@ import org.hkijena.jipipe.api.data.JIPipeDataItemStore;
 import org.hkijena.jipipe.api.data.sources.JIPipeDataTableDataSource;
 import org.hkijena.jipipe.desktop.app.JIPipeDesktopWorkbench;
 import org.hkijena.jipipe.desktop.app.cache.JIPipeDesktopLegacyCacheDataViewerWindow;
-import org.hkijena.jipipe.utils.UIUtils;
-import org.hkijena.jipipe.JIPipe;
+import org.hkijena.jipipe.utils.ThemeUtils;
 import org.scijava.ui.swing.script.EditorPane;
 
 import javax.swing.*;
@@ -46,7 +45,7 @@ public class TextLegacyCacheDataViewerWindow extends JIPipeDesktopLegacyCacheDat
 
     private void initialize() {
         textArea = new EditorPane();
-        UIUtils.applyThemeToCodeEditor(textArea);
+        ThemeUtils.applyThemeToCodeEditor(textArea);
         textArea.setBackground(UIManager.getColor("TextArea.background"));
         textArea.setHighlightCurrentLine(false);
         textArea.setTabSize(4);

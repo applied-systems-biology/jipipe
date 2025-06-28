@@ -55,7 +55,11 @@ public class JIPipeDesktopApplicationSettingsUI extends JIPipeDesktopWorkbenchPa
     private void initialize() {
         setLayout(new BorderLayout());
         tree.setCellRenderer(new SettingsCategoryNodeRenderer());
-        JSplitPane splitPane = new JIPipeDesktopSplitPane(JSplitPane.HORIZONTAL_SPLIT, new JScrollPane(tree), new JPanel(), JIPipeDesktopSplitPane.RATIO_1_TO_3);
+        JSplitPane splitPane = new JIPipeDesktopSplitPane(JSplitPane.HORIZONTAL_SPLIT,
+                UIUtils.wrapInIslandPanelIfNeeded(new JScrollPane(tree)),
+                UIUtils.wrapInIslandPanelIfNeeded(new JPanel()),
+                JIPipeDesktopSplitPane.RATIO_1_TO_3);
+        splitPane.setBorder(UIUtils.createEmptyBorder(5));
         add(splitPane, BorderLayout.CENTER);
 
         Map<String, List<JIPipeApplicationSettingsSheet>> byCategory =
@@ -101,14 +105,14 @@ public class JIPipeDesktopApplicationSettingsUI extends JIPipeDesktopWorkbenchPa
             SettingsCategoryNode node = (SettingsCategoryNode) tree.getLastSelectedPathComponent();
 
             if (node.sheets.isEmpty()) {
-                splitPane.setRightComponent(UIUtils.createInfoLabel("No settings available", "There are no settings within the category '" + node.label + "'"));
+                splitPane.setRightComponent(UIUtils.wrapInIslandPanelIfNeeded(UIUtils.createInfoLabel("No settings available", "There are no settings within the category '" + node.label + "'")));
             } else if (node.sheets.size() == 1) {
                 JIPipeApplicationSettingsSheet sheet = node.sheets.get(0);
                 JIPipeDesktopParameterFormPanel parameterPanel = new JIPipeDesktopParameterFormPanel(getDesktopWorkbench(),
                         sheet,
                         MarkdownText.fromPluginResource("documentation/application-settings.md", new HashMap<>()),
                         JIPipeDesktopParameterFormPanel.WITH_SCROLLING | JIPipeDesktopParameterFormPanel.WITH_DOCUMENTATION | JIPipeDesktopParameterFormPanel.WITH_SEARCH_BAR);
-                splitPane.setRightComponent(parameterPanel);
+                splitPane.setRightComponent(UIUtils.wrapInIslandPanelIfNeeded(parameterPanel));
             } else {
                 JIPipeDesktopFormPanel formPanel = new JIPipeDesktopFormPanel(JIPipeDesktopFormPanel.WITH_SCROLLING);
                 formPanel.addWideToForm(new JLabel("<html><h1>" + node.label + "</h1></html>", JIPipe.RESOURCES.getIcon32("actions/configure.png"), SwingConstants.LEFT));
@@ -123,7 +127,7 @@ public class JIPipeDesktopApplicationSettingsUI extends JIPipeDesktopWorkbenchPa
                     formPanel.addWideToForm(goToCategoryButton);
                 });
                 formPanel.addVerticalGlue();
-                splitPane.setRightComponent(formPanel);
+                splitPane.setRightComponent(UIUtils.wrapInIslandPanelIfNeeded(formPanel));
             }
 
         }

@@ -18,6 +18,7 @@ import org.hkijena.jipipe.desktop.app.JIPipeDesktopProjectWorkbench;
 import org.hkijena.jipipe.desktop.app.JIPipeDesktopProjectWorkbenchPanel;
 import org.hkijena.jipipe.utils.JIPipeDesktopSplitPane;
 import org.hkijena.jipipe.utils.StringUtils;
+import org.hkijena.jipipe.utils.ThemeUtils;
 import org.hkijena.jipipe.utils.UIUtils;
 import org.hkijena.jipipe.JIPipe;
 
@@ -122,7 +123,7 @@ public class JIPipeDesktopLogViewer extends JIPipeDesktopProjectWorkbenchPanel i
         private void initialize() {
             setLayout(new GridBagLayout());
             setOpaque(true);
-            setFont(new Font(Font.DIALOG, Font.PLAIN, UIUtils.CURRENT_STYLE.getFontSizeNormal()));
+            setFont(new Font(Font.DIALOG, Font.PLAIN, ThemeUtils.getCurrentStyle().getFontSizeNormal()));
             setBorder(BorderFactory.createEmptyBorder(4, 4, 4, 4));
 
             Insets border = new Insets(2, 4, 2, 2);
@@ -138,7 +139,7 @@ public class JIPipeDesktopLogViewer extends JIPipeDesktopProjectWorkbenchPanel i
             });
 
             timeLabel = new JLabel();
-            timeLabel.setFont(new Font(Font.MONOSPACED, Font.BOLD, UIUtils.CURRENT_STYLE.getFontSizeNormal()));
+            timeLabel.setFont(new Font(Font.MONOSPACED, Font.BOLD, ThemeUtils.getCurrentStyle().getFontSizeNormal()));
             add(timeLabel, new GridBagConstraints() {
                 {
                     gridx = 0;

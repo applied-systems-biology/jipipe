@@ -22,7 +22,7 @@ import org.hkijena.jipipe.desktop.app.JIPipeDesktopWorkbench;
 import org.hkijena.jipipe.desktop.app.cache.JIPipeDesktopLegacyCacheDataViewerWindow;
 import org.hkijena.jipipe.plugins.ijtrackmate.datatypes.SpotDetectorData;
 import org.hkijena.jipipe.plugins.ijtrackmate.datatypes.SpotTrackerData;
-import org.hkijena.jipipe.utils.UIUtils;
+import org.hkijena.jipipe.utils.ThemeUtils;
 import org.hkijena.jipipe.JIPipe;
 import org.scijava.ui.swing.script.EditorPane;
 
@@ -47,7 +47,7 @@ public class TrackmateLegacyCacheDataViewerWindow extends JIPipeDesktopLegacyCac
 
     private void initialize() {
         textArea = new EditorPane();
-        UIUtils.applyThemeToCodeEditor(textArea);
+        ThemeUtils.applyThemeToCodeEditor(textArea);
         textArea.setBackground(UIManager.getColor("TextArea.background"));
         textArea.setHighlightCurrentLine(false);
         textArea.setTabSize(4);

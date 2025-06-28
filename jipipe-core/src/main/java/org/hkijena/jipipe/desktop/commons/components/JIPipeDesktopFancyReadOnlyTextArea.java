@@ -14,6 +14,7 @@
 package org.hkijena.jipipe.desktop.commons.components;
 
 import org.hkijena.jipipe.utils.StringUtils;
+import org.hkijena.jipipe.utils.ThemeUtils;
 import org.hkijena.jipipe.utils.UIUtils;
 import org.hkijena.jipipe.JIPipe;
 import org.jdesktop.swingx.JXTextArea;
@@ -44,7 +45,7 @@ public class JIPipeDesktopFancyReadOnlyTextArea extends JPanel {
         textArea.setWrapStyleWord(true);
         textArea.setBorder(BorderFactory.createEmptyBorder(3, 0, 0, 0));
         if (monospace) {
-            textArea.setFont(new Font(Font.MONOSPACED, Font.PLAIN, UIUtils.CURRENT_STYLE.getFontSizeNormal()));
+            textArea.setFont(new Font(Font.MONOSPACED, Font.PLAIN, ThemeUtils.getCurrentStyle().getFontSizeNormal()));
         }
         add(textArea, BorderLayout.CENTER);
 
@@ -91,6 +92,6 @@ public class JIPipeDesktopFancyReadOnlyTextArea extends JPanel {
             style |= Font.ITALIC;
         if (bold)
             style |= Font.BOLD;
-        textArea.setFont(new Font(monospace ? Font.MONOSPACED : Font.DIALOG, style, UIUtils.CURRENT_STYLE.getFontSizeNormal()));
+        textArea.setFont(new Font(monospace ? Font.MONOSPACED : Font.DIALOG, style, ThemeUtils.getCurrentStyle().getFontSizeNormal()));
     }
 }

@@ -33,6 +33,7 @@ import org.hkijena.jipipe.desktop.commons.components.JIPipeDesktopSplashScreen;
 import org.hkijena.jipipe.plugins.settings.JIPipeExtensionApplicationSettings;
 import org.hkijena.jipipe.utils.PathUtils;
 import org.hkijena.jipipe.utils.StringUtils;
+import org.hkijena.jipipe.utils.ThemeUtils;
 import org.hkijena.jipipe.utils.UIUtils;
 import org.hkijena.jipipe.JIPipe;
 import org.scijava.Initializable;
@@ -87,7 +88,7 @@ public class JIPipeRunAlgorithmCommand extends DynamicCommand implements Initial
         JIPipeRegistryIssues issues = new JIPipeRegistryIssues();
         JIPipeExtensionApplicationSettings extensionSettings = JIPipeExtensionApplicationSettings.getInstanceFromRaw();
         if (!JIPipe.isInstantiated()) {
-            UIUtils.loadLookAndFeelFromSettings();
+            ThemeUtils.applyThemeFromSettings();
             if (!JIPipe.isInstantiated() && withSplash) {
                 SwingUtilities.invokeLater(() -> JIPipeDesktopSplashScreen.getInstance().showSplash(getContext()));
             }
@@ -119,7 +120,7 @@ public class JIPipeRunAlgorithmCommand extends DynamicCommand implements Initial
         JIPipeGraphNode algorithm;
         SingleImageJAlgorithmRunConfiguration settings;
         if (StringUtils.isNullOrEmpty(nodeId) || StringUtils.isNullOrEmpty(parameters)) {
-            UIUtils.loadLookAndFeelFromSettings();
+            ThemeUtils.applyThemeFromSettings();
             initializeRegistry(true);
             JIPipeDesktopRunSingleAlgorithmWindow dialog = new JIPipeDesktopRunSingleAlgorithmWindow(getContext());
             dialog.setTitle("Run JIPipe node");

@@ -16,8 +16,8 @@ package org.hkijena.jipipe.plugins.parameters.api.enums;
 import org.hkijena.jipipe.JIPipe;
 import org.hkijena.jipipe.desktop.api.JIPipeDesktopParameterEditorUI;
 import org.hkijena.jipipe.utils.ReflectionUtils;
+import org.hkijena.jipipe.utils.ThemeUtils;
 import org.hkijena.jipipe.utils.UIUtils;
-import org.hkijena.jipipe.JIPipe;
 
 import javax.swing.*;
 import java.awt.*;
@@ -122,7 +122,7 @@ public class DynamicSetDesktopParameterEditorUI extends JIPipeDesktopParameterEd
         collapseInfoLabel = new JLabel("The available items are hidden. Click the 'Collapse' button to show it",
                 JIPipe.RESOURCES.getIcon16("actions/eye-slash.png"),
                 JLabel.LEFT);
-        collapseInfoLabel.setFont(new Font(Font.DIALOG, Font.PLAIN, UIUtils.CURRENT_STYLE.getFontSizeNormal()));
+        collapseInfoLabel.setFont(new Font(Font.DIALOG, Font.PLAIN, ThemeUtils.getCurrentStyle().getFontSizeNormal()));
         contentPanel.add(collapseInfoLabel);
 
         JToolBar toolBar = new JToolBar();

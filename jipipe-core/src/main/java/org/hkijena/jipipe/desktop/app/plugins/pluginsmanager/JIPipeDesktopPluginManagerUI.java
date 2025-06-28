@@ -30,11 +30,7 @@ import org.hkijena.jipipe.desktop.commons.components.JIPipeDesktopMessagePanel;
 import org.hkijena.jipipe.desktop.commons.components.markup.JIPipeDesktopMarkdownReader;
 import org.hkijena.jipipe.desktop.commons.components.search.JIPipeDesktopSearchTextField;
 import org.hkijena.jipipe.plugins.parameters.library.markup.MarkdownText;
-import org.hkijena.jipipe.utils.CoreImageJUtils;
-import org.hkijena.jipipe.utils.JIPipeDesktopSplitPane;
-import org.hkijena.jipipe.utils.StringUtils;
-import org.hkijena.jipipe.utils.UIUtils;
-import org.hkijena.jipipe.JIPipe;
+import org.hkijena.jipipe.utils.*;
 
 import javax.swing.*;
 import java.awt.*;
@@ -447,7 +443,7 @@ public class JIPipeDesktopPluginManagerUI extends JIPipeDesktopWorkbenchPanel im
                 0,
                 0));
         JLabel descriptionLabel = new JLabel(plugin.getMetadata().getDescription().getHtml());
-        descriptionLabel.setFont(new Font(Font.DIALOG, Font.PLAIN, UIUtils.CURRENT_STYLE.getFontSizeTiny()));
+        descriptionLabel.setFont(new Font(Font.DIALOG, Font.PLAIN, ThemeUtils.getCurrentStyle().getFontSizeTiny()));
         pluginPanel.add(descriptionLabel, new GridBagConstraints(1,
                 1,
                 1,
@@ -581,7 +577,7 @@ public class JIPipeDesktopPluginManagerUI extends JIPipeDesktopWorkbenchPanel im
                     insets,
                     0,
                     0));
-            detailsLabel.setFont(new Font(Font.DIALOG, Font.PLAIN, UIUtils.CURRENT_STYLE.getFontSizeSmall()));
+            detailsLabel.setFont(new Font(Font.DIALOG, Font.PLAIN, ThemeUtils.getCurrentStyle().getFontSizeSmall()));
             add(infoLabel, new GridBagConstraints(2,
                     0,
                     1,

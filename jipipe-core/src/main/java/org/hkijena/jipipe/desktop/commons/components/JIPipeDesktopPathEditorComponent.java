@@ -74,7 +74,7 @@ public class JIPipeDesktopPathEditorComponent extends JIPipeDesktopWorkbenchPane
         setLayout(new GridBagLayout());
 
         pathEdit = new JTextField();
-        pathEdit.setFont(new Font(Font.MONOSPACED, Font.PLAIN, UIUtils.CURRENT_STYLE.getFontSizeNormal()));
+        pathEdit.setFont(new Font(Font.MONOSPACED, Font.PLAIN, ThemeUtils.getCurrentStyle().getFontSizeNormal()));
         pathEdit.setBorder(null);
         add(pathEdit, new GridBagConstraints() {
             {

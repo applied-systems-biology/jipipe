@@ -17,8 +17,8 @@ import org.hkijena.jipipe.api.JIPipeNodeTemplate;
 import org.hkijena.jipipe.api.nodes.JIPipeGraphNode;
 import org.hkijena.jipipe.api.nodes.JIPipeNodeInfo;
 import org.hkijena.jipipe.utils.StringUtils;
+import org.hkijena.jipipe.utils.ThemeUtils;
 import org.hkijena.jipipe.utils.UIUtils;
-import org.hkijena.jipipe.JIPipe;
 
 import javax.swing.*;
 import javax.swing.border.Border;
@@ -72,10 +72,10 @@ public class JIPipeNodeTemplateListCellRenderer extends JPanel implements ListCe
         nameLabel = new JLabel();
         descriptionLabel = new JLabel();
         descriptionLabel.setForeground(Color.GRAY);
-        descriptionLabel.setFont(new Font(Font.DIALOG, Font.PLAIN, UIUtils.CURRENT_STYLE.getFontSizeTiny()));
+        descriptionLabel.setFont(new Font(Font.DIALOG, Font.PLAIN, ThemeUtils.getCurrentStyle().getFontSizeTiny()));
         pathLabel = new JLabel();
         pathLabel.setForeground(Color.GRAY);
-        pathLabel.setFont(new Font(Font.DIALOG, Font.ITALIC, UIUtils.CURRENT_STYLE.getFontSizeTiny()));
+        pathLabel.setFont(new Font(Font.DIALOG, Font.ITALIC, ThemeUtils.getCurrentStyle().getFontSizeTiny()));
         storageLabel = new JLabel();
 
         add(nodeIcon, new GridBagConstraints() {

@@ -36,8 +36,8 @@ import org.hkijena.jipipe.plugins.tables.ConvertingColumnOperation;
 import org.hkijena.jipipe.plugins.tables.datatypes.ResultsTableData;
 import org.hkijena.jipipe.utils.PathUtils;
 import org.hkijena.jipipe.utils.StringUtils;
+import org.hkijena.jipipe.utils.ThemeUtils;
 import org.hkijena.jipipe.utils.UIUtils;
-import org.hkijena.jipipe.JIPipe;
 import org.hkijena.jipipe.utils.ui.BusyCursor;
 import org.jdesktop.swingx.JXTable;
 
@@ -622,7 +622,7 @@ public class JIPipeDesktopTableEditor extends JIPipeDesktopWorkbenchPanel {
             this.tableEditor = tableEditor;
             setOpaque(true);
             setBorder(BorderFactory.createEmptyBorder(4, 4, 4, 4));
-            setFont(new Font(Font.DIALOG, Font.PLAIN, UIUtils.CURRENT_STYLE.getFontSizeNormal()));
+            setFont(new Font(Font.DIALOG, Font.PLAIN, ThemeUtils.getCurrentStyle().getFontSizeNormal()));
         }
 
         @Override

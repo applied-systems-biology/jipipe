@@ -17,10 +17,9 @@ import org.hkijena.jipipe.JIPipe;
 import org.hkijena.jipipe.desktop.api.JIPipeDesktopParameterEditorUI;
 import org.hkijena.jipipe.desktop.commons.components.JIPipeDesktopDocumentChangeListener;
 import org.hkijena.jipipe.desktop.commons.components.JIPipeDesktopFancyTextField;
-import org.hkijena.jipipe.utils.JIPipeResourceManager;
 import org.hkijena.jipipe.utils.StringUtils;
+import org.hkijena.jipipe.utils.ThemeUtils;
 import org.hkijena.jipipe.utils.UIUtils;
-import org.hkijena.jipipe.JIPipe;
 
 import javax.swing.*;
 import javax.swing.event.DocumentEvent;
@@ -81,7 +80,7 @@ public class StringDesktopParameterEditorUI extends JIPipeDesktopParameterEditor
                 add(textField, BorderLayout.CENTER);
             }
             if (monospaced)
-                textComponent.setFont(new Font(Font.MONOSPACED, Font.PLAIN, UIUtils.CURRENT_STYLE.getFontSizeNormal()));
+                textComponent.setFont(new Font(Font.MONOSPACED, Font.PLAIN, ThemeUtils.getCurrentStyle().getFontSizeNormal()));
 
             textComponent.getDocument().addDocumentListener(new JIPipeDesktopDocumentChangeListener() {
                 @Override
@@ -131,7 +130,7 @@ public class StringDesktopParameterEditorUI extends JIPipeDesktopParameterEditor
             textComponent = textField.getTextField();
         }
         if (monospaced)
-            textComponent.setFont(new Font(Font.MONOSPACED, Font.PLAIN, UIUtils.CURRENT_STYLE.getFontSizeNormal()));
+            textComponent.setFont(new Font(Font.MONOSPACED, Font.PLAIN, ThemeUtils.getCurrentStyle().getFontSizeNormal()));
 
         JPanel contentPanel = new JPanel(new BorderLayout());
         JDialog dialog = new JDialog(SwingUtilities.getWindowAncestor(getDesktopWorkbench().getWindow()));

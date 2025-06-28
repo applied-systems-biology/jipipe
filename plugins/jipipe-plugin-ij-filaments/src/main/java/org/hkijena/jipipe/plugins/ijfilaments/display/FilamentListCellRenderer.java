@@ -15,8 +15,8 @@ package org.hkijena.jipipe.plugins.ijfilaments.display;
 
 import org.hkijena.jipipe.desktop.commons.components.icons.SolidColorIcon;
 import org.hkijena.jipipe.plugins.ijfilaments.datatypes.Filaments3DGraphData;
+import org.hkijena.jipipe.utils.ThemeUtils;
 import org.hkijena.jipipe.utils.UIUtils;
-import org.hkijena.jipipe.JIPipe;
 
 import javax.swing.*;
 import java.awt.*;
@@ -36,7 +36,7 @@ public class FilamentListCellRenderer extends JPanel implements ListCellRenderer
         setOpaque(true);
         setLayout(new GridBagLayout());
         iconLabel.setIcon(strokeFillPreview);
-        infoLabel.setFont(new Font(Font.DIALOG, Font.PLAIN, UIUtils.CURRENT_STYLE.getFontSizeTiny()));
+        infoLabel.setFont(new Font(Font.DIALOG, Font.PLAIN, ThemeUtils.getCurrentStyle().getFontSizeTiny()));
         add(iconLabel, new GridBagConstraints() {
             {
                 gridx = 0;

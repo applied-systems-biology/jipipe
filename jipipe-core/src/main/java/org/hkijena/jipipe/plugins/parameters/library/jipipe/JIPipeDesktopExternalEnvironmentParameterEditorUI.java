@@ -27,8 +27,8 @@ import org.hkijena.jipipe.desktop.app.running.JIPipeDesktopRunExecuteUI;
 import org.hkijena.jipipe.desktop.commons.components.JIPipeDesktopParameterFormPanel;
 import org.hkijena.jipipe.utils.ReflectionUtils;
 import org.hkijena.jipipe.utils.StringUtils;
+import org.hkijena.jipipe.utils.ThemeUtils;
 import org.hkijena.jipipe.utils.UIUtils;
-import org.hkijena.jipipe.JIPipe;
 
 import javax.swing.*;
 import java.awt.*;
@@ -51,7 +51,7 @@ public class JIPipeDesktopExternalEnvironmentParameterEditorUI extends JIPipeDes
 
     private void initialize() {
         setLayout(new BorderLayout(4, 0));
-        nameLabel.setFont(new Font(Font.DIALOG, Font.ITALIC, UIUtils.CURRENT_STYLE.getFontSizeNormal()));
+        nameLabel.setFont(new Font(Font.DIALOG, Font.ITALIC, ThemeUtils.getCurrentStyle().getFontSizeNormal()));
         nameLabel.setBorder(BorderFactory.createEmptyBorder(0, 4, 0, 12));
         setOpaque(true);
         setBackground(UIManager.getColor("TextField.background"));

@@ -14,8 +14,8 @@
 package org.hkijena.jipipe.plugins.ijtrackmate.display.tracks;
 
 import org.hkijena.jipipe.plugins.ijtrackmate.TrackMatePlugin;
+import org.hkijena.jipipe.utils.ThemeUtils;
 import org.hkijena.jipipe.utils.UIUtils;
-import org.hkijena.jipipe.JIPipe;
 
 import javax.swing.*;
 import java.awt.*;
@@ -41,7 +41,7 @@ public class TrackListCellRenderer extends JPanel implements ListCellRenderer<In
         setOpaque(true);
         setLayout(new GridBagLayout());
         iconLabel.setIcon(TrackMatePlugin.RESOURCES.getIcon16("trackscheme.png"));
-        infoLabel.setFont(new Font(Font.DIALOG, Font.PLAIN, UIUtils.CURRENT_STYLE.getFontSizeTiny()));
+        infoLabel.setFont(new Font(Font.DIALOG, Font.PLAIN, ThemeUtils.getCurrentStyle().getFontSizeTiny()));
         add(iconLabel, new GridBagConstraints() {
             {
                 gridx = 0;

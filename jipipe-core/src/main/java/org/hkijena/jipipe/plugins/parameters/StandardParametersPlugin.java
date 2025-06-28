@@ -762,6 +762,13 @@ public class StandardParametersPlugin extends JIPipePrepackagedDefaultJavaPlugin
                 "Graph node reference",
                 "Reference to a graph node",
                 GraphNodeReferenceParameterEditorUI.class);
+
+        // Theming
+        registerParameterType("theme-style",
+                JIPipeModernThemeStyleParameter.class,
+                JIPipeParameterArchetype.SingleSelect,
+                "JIPipe modern theme style",
+                "A style for the modern theming system");
     }
 
     private void registerCommonJavaTypes() {

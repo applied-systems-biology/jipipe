@@ -68,9 +68,9 @@ public class ScriptDesktopParameterEditorUI extends JIPipeDesktopParameterEditor
         collapseInfoLabel = new JLabel("The code is hidden. Click the 'Collapse' button to show it",
                 JIPipe.RESOURCES.getIcon16("actions/eye-slash.png"),
                 JLabel.LEFT);
-        collapseInfoLabel.setFont(new Font(Font.DIALOG, Font.PLAIN, UIUtils.CURRENT_STYLE.getFontSizeNormal()));
+        collapseInfoLabel.setFont(new Font(Font.DIALOG, Font.PLAIN, ThemeUtils.getCurrentStyle().getFontSizeNormal()));
         textArea = new CustomEditorPane();
-        UIUtils.applyThemeToCodeEditor(textArea);
+        ThemeUtils.applyThemeToCodeEditor(textArea);
         textArea.setBackground(UIManager.getColor("TextArea.background"));
         textArea.setHighlightCurrentLine(false);
         if (code.getLanguage() != null) {

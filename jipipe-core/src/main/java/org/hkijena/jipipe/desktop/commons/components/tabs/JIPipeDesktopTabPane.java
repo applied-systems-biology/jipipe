@@ -26,8 +26,8 @@ import org.hkijena.jipipe.desktop.commons.theme.ui.JIPipeDesktopModernPillTabbed
 import org.hkijena.jipipe.desktop.commons.theme.ui.JIPipeDesktopModernTabbedPaneUI;
 import org.hkijena.jipipe.plugins.settings.JIPipeGeneralUIApplicationSettings;
 import org.hkijena.jipipe.utils.StringUtils;
+import org.hkijena.jipipe.utils.ThemeUtils;
 import org.hkijena.jipipe.utils.UIUtils;
-import org.hkijena.jipipe.JIPipe;
 import org.jdesktop.swingx.JXStatusBar;
 import org.jdesktop.swingx.plaf.basic.BasicStatusBarUI;
 import org.scijava.Disposable;
@@ -105,7 +105,7 @@ public class JIPipeDesktopTabPane extends JPanel implements Disposable {
                 }
             }
         });
-        if (UIUtils.currentThemeIsModern()) {
+        if (ThemeUtils.isUsingModernTheme()) {
             if(style == Style.TopPill) {
                 tabbedPane.setUI(new JIPipeDesktopModernPillTabbedPaneUI());
             }
@@ -814,7 +814,7 @@ public class JIPipeDesktopTabPane extends JPanel implements Disposable {
             if (documentTabPane.style == Style.Right || documentTabPane.style == Style.Left) {
                 titleLabel.setHorizontalTextPosition(JLabel.CENTER);
                 titleLabel.setVerticalTextPosition(JLabel.BOTTOM);
-                titleLabel.setFont(new Font(Font.DIALOG, Font.PLAIN, UIUtils.CURRENT_STYLE.getFontSizeSmall()));
+                titleLabel.setFont(new Font(Font.DIALOG, Font.PLAIN, ThemeUtils.getCurrentStyle().getFontSizeSmall()));
             }
             add(titleLabel);
             add(Box.createHorizontalGlue());

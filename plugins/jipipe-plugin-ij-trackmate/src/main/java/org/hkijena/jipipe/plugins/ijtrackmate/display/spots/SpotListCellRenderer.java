@@ -23,8 +23,8 @@ import org.hkijena.jipipe.desktop.commons.components.icons.SolidColorIcon;
 import org.hkijena.jipipe.plugins.ijtrackmate.utils.SpotDrawer;
 import org.hkijena.jipipe.plugins.ijtrackmate.utils.TrackMateUtils;
 import org.hkijena.jipipe.utils.StringUtils;
+import org.hkijena.jipipe.utils.ThemeUtils;
 import org.hkijena.jipipe.utils.UIUtils;
-import org.hkijena.jipipe.JIPipe;
 
 import javax.swing.*;
 import java.awt.*;
@@ -48,7 +48,7 @@ public class SpotListCellRenderer extends JPanel implements ListCellRenderer<Spo
         setOpaque(true);
         setLayout(new GridBagLayout());
         iconLabel.setIcon(strokeFillPreview);
-        infoLabel.setFont(new Font(Font.DIALOG, Font.PLAIN, UIUtils.CURRENT_STYLE.getFontSizeTiny()));
+        infoLabel.setFont(new Font(Font.DIALOG, Font.PLAIN, ThemeUtils.getCurrentStyle().getFontSizeTiny()));
         add(iconLabel, new GridBagConstraints() {
             {
                 gridx = 0;

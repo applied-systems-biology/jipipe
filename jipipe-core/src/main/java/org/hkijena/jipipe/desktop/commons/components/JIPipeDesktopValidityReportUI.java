@@ -20,8 +20,7 @@ import org.hkijena.jipipe.desktop.app.JIPipeDesktopWorkbenchPanel;
 import org.hkijena.jipipe.desktop.commons.components.markup.JIPipeDesktopMarkdownReader;
 import org.hkijena.jipipe.plugins.parameters.library.markup.MarkdownText;
 import org.hkijena.jipipe.utils.JIPipeDesktopSplitPane;
-import org.hkijena.jipipe.utils.UIUtils;
-import org.hkijena.jipipe.JIPipe;
+import org.hkijena.jipipe.utils.ThemeUtils;
 
 import javax.swing.*;
 import java.awt.*;
@@ -99,7 +98,7 @@ public class JIPipeDesktopValidityReportUI extends JIPipeDesktopWorkbenchPanel {
         everythingValidPanel = new JPanel(new BorderLayout());
         {
             JLabel label = new JLabel("No issues found", JIPipe.RESOURCES.getIcon64("check-circle-green.png"), JLabel.LEFT);
-            label.setFont(label.getFont().deriveFont(UIUtils.CURRENT_STYLE.getFontSizeHuge() * 1f));
+            label.setFont(label.getFont().deriveFont(ThemeUtils.getCurrentStyle().getFontSizeHuge() * 1f));
             everythingValidPanel.add(label, BorderLayout.CENTER);
         }
 

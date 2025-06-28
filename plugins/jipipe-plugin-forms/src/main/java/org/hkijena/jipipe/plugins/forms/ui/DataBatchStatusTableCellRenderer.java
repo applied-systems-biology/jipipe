@@ -14,6 +14,7 @@
 package org.hkijena.jipipe.plugins.forms.ui;
 
 import org.hkijena.jipipe.plugins.settings.JIPipeGeneralUIApplicationSettings;
+import org.hkijena.jipipe.utils.ThemeUtils;
 
 import javax.swing.*;
 import javax.swing.table.TableCellRenderer;
@@ -37,28 +38,28 @@ public class DataBatchStatusTableCellRenderer extends JLabel implements TableCel
     }
 
     public static Color getColorUnvisited() {
-        if (JIPipeGeneralUIApplicationSettings.getInstance().getTheme().isDark())
+        if (ThemeUtils.isUsingDarkTheme())
             return new Color(0x9A7E29);
         else
             return new Color(0xefd78e);
     }
 
     public static Color getColorVisited() {
-        if (JIPipeGeneralUIApplicationSettings.getInstance().getTheme().isDark())
+        if (ThemeUtils.isUsingDarkTheme())
             return new Color(0x4C7236);
         else
             return new Color(0xb3ef8e);
     }
 
     public static Color getColorInvalid() {
-        if (JIPipeGeneralUIApplicationSettings.getInstance().getTheme().isDark())
+        if (ThemeUtils.isUsingDarkTheme())
             return new Color(0x9A2929);
         else
             return new Color(0xef8e8e);
     }
 
     public static Color getColorInvalidSelected() {
-        if (JIPipeGeneralUIApplicationSettings.getInstance().getTheme().isDark())
+        if (ThemeUtils.isUsingDarkTheme())
             return new Color(0x753232);
         else
             return new Color(0xb57979);

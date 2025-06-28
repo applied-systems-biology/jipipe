@@ -24,8 +24,8 @@ import org.hkijena.jipipe.api.parameters.JIPipeParameterTypeInfo;
 import org.hkijena.jipipe.api.project.JIPipeProject;
 import org.hkijena.jipipe.desktop.commons.components.search.JIPipeDesktopSearchTextField;
 import org.hkijena.jipipe.utils.JIPipeDesktopSplitPane;
+import org.hkijena.jipipe.utils.ThemeUtils;
 import org.hkijena.jipipe.utils.UIUtils;
-import org.hkijena.jipipe.JIPipe;
 
 import javax.swing.*;
 import javax.swing.tree.DefaultMutableTreeNode;
@@ -314,7 +314,7 @@ public class JIPipeDesktopParameterKeyPickerUI extends JPanel {
         public NodeListCellRenderer() {
             setOpaque(true);
             setBorder(BorderFactory.createEmptyBorder(4, 4, 4, 4));
-            secondaryLabel.setFont(new Font(Font.DIALOG, Font.PLAIN, UIUtils.CURRENT_STYLE.getFontSizeTiny()));
+            secondaryLabel.setFont(new Font(Font.DIALOG, Font.PLAIN, ThemeUtils.getCurrentStyle().getFontSizeTiny()));
             setLayout(new GridBagLayout());
             Insets insets = new Insets(2, 2, 2, 2);
             add(iconLabel, new GridBagConstraints(0,

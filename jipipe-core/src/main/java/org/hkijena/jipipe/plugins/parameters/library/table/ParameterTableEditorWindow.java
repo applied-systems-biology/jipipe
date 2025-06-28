@@ -25,8 +25,8 @@ import org.hkijena.jipipe.desktop.commons.components.ribbon.JIPipeDesktopRibbon;
 import org.hkijena.jipipe.desktop.commons.components.ribbon.JIPipeDesktopSmallButtonRibbonAction;
 import org.hkijena.jipipe.desktop.commons.components.tabs.JIPipeDesktopTabPane;
 import org.hkijena.jipipe.plugins.parameters.library.markup.MarkdownText;
+import org.hkijena.jipipe.utils.ThemeUtils;
 import org.hkijena.jipipe.utils.UIUtils;
-import org.hkijena.jipipe.JIPipe;
 import org.jdesktop.swingx.JXTable;
 
 import javax.swing.*;
@@ -221,7 +221,7 @@ public class ParameterTableEditorWindow extends JFrame {
                 }
 
                 JTextField keyInfo = UIUtils.createReadonlyBorderlessTextField(parameterTable.getColumnInfo(selectedColumns[0]).getKey());
-                keyInfo.setFont(new Font(Font.MONOSPACED, Font.PLAIN, UIUtils.CURRENT_STYLE.getFontSizeNormal()));
+                keyInfo.setFont(new Font(Font.MONOSPACED, Font.PLAIN, ThemeUtils.getCurrentStyle().getFontSizeNormal()));
                 JLabel keyInfoLabel = new JLabel("Will be written into");
                 keyInfoLabel.setIcon(JIPipe.RESOURCES.getIcon16("actions/dialog-xml-editor.png"));
                 palettePanel.addToForm(keyInfo, keyInfoLabel, new MarkdownText(String.format("This column will have the unique ID <code>%s</code> " +

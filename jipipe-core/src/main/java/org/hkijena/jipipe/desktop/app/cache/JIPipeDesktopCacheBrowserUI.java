@@ -31,8 +31,8 @@ import org.hkijena.jipipe.desktop.app.cache.cachetree.JIPipeDesktopCacheTreePane
 import org.hkijena.jipipe.desktop.app.datatable.JIPipeDesktopExtendedDataTableUI;
 import org.hkijena.jipipe.desktop.app.datatable.JIPipeDesktopExtendedMultiDataTableUI;
 import org.hkijena.jipipe.utils.JIPipeDesktopSplitPane;
+import org.hkijena.jipipe.utils.ThemeUtils;
 import org.hkijena.jipipe.utils.UIUtils;
-import org.hkijena.jipipe.JIPipe;
 import org.hkijena.jipipe.utils.data.WeakStore;
 import org.hkijena.jipipe.utils.debounce.StaticDebouncer;
 
@@ -150,7 +150,7 @@ public class JIPipeDesktopCacheBrowserUI extends JIPipeDesktopProjectWorkbenchPa
     }
 
     private void initializeToolbar() {
-        setBackground(UIUtils.CURRENT_STYLE.getWindowBackground());
+        setBackground(ThemeUtils.getCurrentStyle().getWindowBackground());
 
         JToolBar toolBar = new JToolBar();
         toolBar.setFloatable(false);

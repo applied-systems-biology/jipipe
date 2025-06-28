@@ -14,6 +14,7 @@
 package org.hkijena.jipipe.desktop.commons.components;
 
 import org.hkijena.jipipe.utils.StringUtils;
+import org.hkijena.jipipe.utils.ThemeUtils;
 import org.hkijena.jipipe.utils.UIUtils;
 import org.hkijena.jipipe.JIPipe;
 import org.jdesktop.swingx.JXTextField;
@@ -42,7 +43,7 @@ public class JIPipeDesktopFancyReadOnlyTextField extends JPanel {
         textField.setOpaque(false);
         textField.setBorder(null);
         if (monospace) {
-            textField.setFont(new Font(Font.MONOSPACED, Font.PLAIN, UIUtils.CURRENT_STYLE.getFontSizeNormal()));
+            textField.setFont(new Font(Font.MONOSPACED, Font.PLAIN, ThemeUtils.getCurrentStyle().getFontSizeNormal()));
         }
         add(textField, BorderLayout.CENTER);
 
@@ -89,6 +90,6 @@ public class JIPipeDesktopFancyReadOnlyTextField extends JPanel {
             style |= Font.ITALIC;
         if (bold)
             style |= Font.BOLD;
-        textField.setFont(new Font(monospace ? Font.MONOSPACED : Font.DIALOG, style, UIUtils.CURRENT_STYLE.getFontSizeNormal()));
+        textField.setFont(new Font(monospace ? Font.MONOSPACED : Font.DIALOG, style, ThemeUtils.getCurrentStyle().getFontSizeNormal()));
     }
 }

@@ -27,8 +27,8 @@ import org.hkijena.jipipe.desktop.app.JIPipeDesktopProjectWorkbench;
 import org.hkijena.jipipe.desktop.app.JIPipeDesktopProjectWorkbenchPanel;
 import org.hkijena.jipipe.desktop.app.datatable.JIPipeDesktopExtendedDataTableUI;
 import org.hkijena.jipipe.desktop.commons.components.JIPipeDesktopFormPanel;
+import org.hkijena.jipipe.utils.ThemeUtils;
 import org.hkijena.jipipe.utils.UIUtils;
-import org.hkijena.jipipe.JIPipe;
 import org.hkijena.jipipe.utils.data.OwningStore;
 
 import javax.swing.*;
@@ -58,7 +58,7 @@ public class JIPipeDesktopDataBatchUI extends JIPipeDesktopProjectWorkbenchPanel
         setLayout(new BorderLayout());
         JLabel iterationStepName = new JLabel("Iteration step");
         iterationStepName.setBorder(BorderFactory.createEmptyBorder(4, 4, 4, 4));
-        iterationStepName.setFont(new Font(Font.DIALOG, Font.BOLD, UIUtils.CURRENT_STYLE.getFontSizeNormal()));
+        iterationStepName.setFont(new Font(Font.DIALOG, Font.BOLD, ThemeUtils.getCurrentStyle().getFontSizeNormal()));
         add(iterationStepName, BorderLayout.NORTH);
 
         JIPipeDesktopFormPanel metaDataList = new JIPipeDesktopFormPanel(null, JIPipeDesktopFormPanel.NONE);

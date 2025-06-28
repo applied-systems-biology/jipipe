@@ -14,8 +14,8 @@
 package org.hkijena.jipipe.desktop.app.grapheditor.addnodepanel;
 
 import org.hkijena.jipipe.api.nodes.database.JIPipeNodeDatabaseEntry;
-import org.hkijena.jipipe.desktop.commons.theme.JIPipeDesktopModernThemeStyle;
 import org.hkijena.jipipe.utils.StringUtils;
+import org.hkijena.jipipe.utils.ThemeUtils;
 import org.hkijena.jipipe.utils.UIUtils;
 import org.hkijena.jipipe.JIPipe;
 
@@ -48,7 +48,7 @@ public class JIPipeDesktopAddNodePanelEntryListCellRenderer extends JPanel imple
         this.defaultBorder = BorderFactory.createCompoundBorder(UIUtils.createEmptyBorder(4),
                 UIUtils.createControlBorder());
         this.selectedBorder = BorderFactory.createCompoundBorder(UIUtils.createEmptyBorder(4),
-                UIUtils.createControlBorder(UIUtils.CURRENT_STYLE.getSuccessColor()));
+                UIUtils.createControlBorder(ThemeUtils.getCurrentStyle().getSuccessColor()));
         setOpaque(true);
         setBorder(defaultBorder);
         initialize();
@@ -59,11 +59,11 @@ public class JIPipeDesktopAddNodePanelEntryListCellRenderer extends JPanel imple
         nodeIcon = new JLabel();
         nameLabel = new JLabel();
         descriptionLabel = new JLabel();
-        descriptionLabel.setForeground(UIUtils.CURRENT_STYLE.getTextMuted());
-        descriptionLabel.setFont(new Font(Font.DIALOG, Font.PLAIN, UIUtils.CURRENT_STYLE.getFontSizeTiny()));
+        descriptionLabel.setForeground(ThemeUtils.getCurrentStyle().getTextMuted());
+        descriptionLabel.setFont(new Font(Font.DIALOG, Font.PLAIN, ThemeUtils.getCurrentStyle().getFontSizeTiny()));
         pathLabel = new JLabel();
-        pathLabel.setForeground(UIUtils.CURRENT_STYLE.getTextMuted());
-        pathLabel.setFont(new Font(Font.DIALOG, Font.ITALIC, UIUtils.CURRENT_STYLE.getFontSizeTiny()));
+        pathLabel.setForeground(ThemeUtils.getCurrentStyle().getTextMuted());
+        pathLabel.setFont(new Font(Font.DIALOG, Font.ITALIC, ThemeUtils.getCurrentStyle().getFontSizeTiny()));
         pinLabel = new JLabel();
 
         add(nodeIcon, new GridBagConstraints() {

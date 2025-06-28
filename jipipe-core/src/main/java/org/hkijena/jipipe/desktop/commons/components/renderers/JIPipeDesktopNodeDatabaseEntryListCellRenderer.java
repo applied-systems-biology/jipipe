@@ -22,7 +22,7 @@ import org.hkijena.jipipe.api.nodes.database.JIPipeNodeDatabaseEntry;
 import org.hkijena.jipipe.desktop.commons.components.icons.SolidColorIcon;
 import org.hkijena.jipipe.desktop.commons.theme.JIPipeDesktopLegacyModernMetalTheme;
 import org.hkijena.jipipe.utils.StringUtils;
-import org.hkijena.jipipe.utils.UIUtils;
+import org.hkijena.jipipe.utils.ThemeUtils;
 
 import javax.swing.*;
 import java.awt.*;
@@ -58,7 +58,7 @@ public class JIPipeDesktopNodeDatabaseEntryListCellRenderer extends JPanel imple
         pathLabel.setForeground(Color.GRAY);
         alternativeLabel = new JLabel();
         alternativeLabel.setForeground(JIPipeDesktopLegacyModernMetalTheme.PRIMARY6);
-        alternativeLabel.setFont(new Font(Font.DIALOG, Font.ITALIC, UIUtils.CURRENT_STYLE.getFontSizeNormal()));
+        alternativeLabel.setFont(new Font(Font.DIALOG, Font.ITALIC, ThemeUtils.getCurrentStyle().getFontSizeNormal()));
 
         add(new JLabel(nodeColor), new GridBagConstraints() {
             {

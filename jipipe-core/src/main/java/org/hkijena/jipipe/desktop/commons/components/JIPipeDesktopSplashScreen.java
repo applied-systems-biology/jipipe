@@ -18,8 +18,8 @@ import org.hkijena.jipipe.JIPipeJavaPlugin;
 import org.hkijena.jipipe.JIPipeService;
 import org.hkijena.jipipe.desktop.commons.components.icons.SpinnerIcon;
 import org.hkijena.jipipe.utils.ResourceUtils;
+import org.hkijena.jipipe.utils.ThemeUtils;
 import org.hkijena.jipipe.utils.UIUtils;
-import org.hkijena.jipipe.JIPipe;
 import org.scijava.Context;
 import org.scijava.Contextual;
 import org.scijava.log.LogListener;
@@ -83,7 +83,7 @@ public class JIPipeDesktopSplashScreen extends JWindow implements LogListener, C
         poweredByContainer.add(poweredByContent, BorderLayout.EAST);
 
         JLabel poweredByLabel = new JLabel("Powered by");
-        poweredByLabel.setFont(new Font(Font.DIALOG, Font.PLAIN, UIUtils.CURRENT_STYLE.getFontSizeLarge()));
+        poweredByLabel.setFont(new Font(Font.DIALOG, Font.PLAIN, ThemeUtils.getCurrentStyle().getFontSizeLarge()));
         poweredByContent.add(poweredByLabel, BorderLayout.NORTH);
 
         poweredByIconContainer = new JPanel(new FlowLayout(FlowLayout.LEFT));
@@ -180,7 +180,7 @@ public class JIPipeDesktopSplashScreen extends JWindow implements LogListener, C
             setOpaque(false);
             setLayout(null);
             try {
-                if (UIUtils.getThemeFromRawSettings().isDark())
+                if (ThemeUtils.isUsingDarkTheme())
                     backgroundImage = ImageIO.read(ResourceUtils.getPluginResource("resources/dark/splash-screen.png"));
                 else
                     backgroundImage = ImageIO.read(ResourceUtils.getPluginResource("resources/light/splash-screen.png"));

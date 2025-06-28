@@ -13,8 +13,8 @@ import org.hkijena.jipipe.plugins.expressions.JIPipeExpressionParameterVariableI
 import org.hkijena.jipipe.plugins.expressions.JIPipeExpressionVariablesMap;
 import org.hkijena.jipipe.plugins.expressions.ui.ExpressionBuilderUI;
 import org.hkijena.jipipe.utils.StringUtils;
+import org.hkijena.jipipe.utils.ThemeUtils;
 import org.hkijena.jipipe.utils.UIUtils;
-import org.hkijena.jipipe.JIPipe;
 import org.hkijena.jipipe.utils.json.JsonUtils;
 import org.hkijena.jipipe.utils.scripting.MacroUtils;
 
@@ -62,7 +62,7 @@ public class JIPipeDesktopExpressionCalculatorUI extends JIPipeDesktopWorkbenchP
         };
         RSyntaxDocument document = new RSyntaxDocument(tokenMakerFactory, "text/expression");
         expressionEditor = new RSyntaxTextArea(document);
-        UIUtils.applyThemeToCodeEditor(expressionEditor);
+        ThemeUtils.applyThemeToCodeEditor(expressionEditor);
         expressionEditor.addFocusListener(new FocusListener() {
             @Override
             public void focusGained(FocusEvent e) {
@@ -120,8 +120,8 @@ public class JIPipeDesktopExpressionCalculatorUI extends JIPipeDesktopWorkbenchP
     private void setVariableAssistant() {
         JTextField keyField = new JTextField();
         JTextField valueField = new JTextField();
-        keyField.setFont(new Font(Font.MONOSPACED, Font.PLAIN, UIUtils.CURRENT_STYLE.getFontSizeNormal()));
-        valueField.setFont(new Font(Font.MONOSPACED, Font.PLAIN, UIUtils.CURRENT_STYLE.getFontSizeNormal()));
+        keyField.setFont(new Font(Font.MONOSPACED, Font.PLAIN, ThemeUtils.getCurrentStyle().getFontSizeNormal()));
+        valueField.setFont(new Font(Font.MONOSPACED, Font.PLAIN, ThemeUtils.getCurrentStyle().getFontSizeNormal()));
 
         JIPipeDesktopFormPanel formPanel = new JIPipeDesktopFormPanel(JIPipeDesktopFormPanel.NONE);
         formPanel.addToForm(keyField, new JLabel("Key"));
@@ -181,7 +181,7 @@ public class JIPipeDesktopExpressionCalculatorUI extends JIPipeDesktopWorkbenchP
         resultPanel.clear();
         for (ResultItem resultItem : resultItems) {
             JTextField expressionField = UIUtils.createReadonlyBorderlessTextField(resultItem.expression);
-            expressionField.setFont(new Font(Font.MONOSPACED, Font.PLAIN, UIUtils.CURRENT_STYLE.getFontSizeNormal()));
+            expressionField.setFont(new Font(Font.MONOSPACED, Font.PLAIN, ThemeUtils.getCurrentStyle().getFontSizeNormal()));
 
             String value;
 
@@ -202,7 +202,7 @@ public class JIPipeDesktopExpressionCalculatorUI extends JIPipeDesktopWorkbenchP
                 valueField.setForeground(Color.RED);
             }
 
-            valueField.setFont(new Font(Font.MONOSPACED, Font.BOLD, UIUtils.CURRENT_STYLE.getFontSizeNormal()));
+            valueField.setFont(new Font(Font.MONOSPACED, Font.BOLD, ThemeUtils.getCurrentStyle().getFontSizeNormal()));
 
             JIPipeDesktopFormPanel itemPanel = new JIPipeDesktopFormPanel(JIPipeDesktopFormPanel.NONE);
             itemPanel.setBorder(UIUtils.createControlBorder());

@@ -14,117 +14,32 @@
 package org.hkijena.jipipe.desktop.commons.theme;
 
 import org.hkijena.jipipe.desktop.commons.theme.ui.*;
+import org.hkijena.jipipe.utils.ThemeUtils;
 import org.hkijena.jipipe.utils.UIUtils;
-import org.hkijena.jipipe.JIPipe;
 
 import javax.swing.*;
 import javax.swing.plaf.metal.MetalLookAndFeel;
 
 public enum JIPipeDesktopUITheme {
-    Native("Native", false, false),
-    Metal("Metal", false, false),
-    ModernLight("Modern light", true, false),
-    ModernDark("Modern dark", true, true);
+    Native("Native", false),
+    Metal("Metal", false),
+    Modern("Modern", true);
 
-    private static boolean INSTALLED_LISTENER;
-    private static boolean IS_UPDATING_THEME;
     private final String name;
-    private final boolean isDark;
     private final boolean isModern;
 
-    JIPipeDesktopUITheme(String name, boolean isModern, boolean isDark) {
+    JIPipeDesktopUITheme(String name, boolean isModern) {
         this.name = name;
         this.isModern = isModern;
-        this.isDark = isDark;
     }
 
     public String getName() {
         return name;
     }
 
-    public boolean isDark() {
-        return isDark;
-    }
-
-    /**
-     * Activates the theme.
-     * Should be done before opening any UI elements
-     */
-    public void install() {
-        UIUtils.DARK_THEME = isDark;
-        UIUtils.CURRENT_THEME = this;
-        IS_UPDATING_THEME = true;
-        switch (this) {
-            case Metal:
-                try {
-                    UIManager.setLookAndFeel(UIManager.getCrossPlatformLookAndFeelClassName());
-                    UIManager.put("swing.boldMetal", Boolean.FALSE);
-                    UIManager.put("Button.borderColor", JIPipeDesktopLegacyModernMetalTheme.MEDIUM_GRAY);
-                } catch (ClassNotFoundException | InstantiationException | IllegalAccessException |
-                         UnsupportedLookAndFeelException e) {
-                    e.printStackTrace();
-                }
-                break;
-            case ModernLight:
-                try {
-//                    MetalLookAndFeel.setCurrentTheme(new JIPipeDesktopLegacyModernMetalTheme());
-                    JIPipeDesktopModernThemeStyle style = new JIPipeDesktopModernThemeStyle();
-                    MetalLookAndFeel.setCurrentTheme(new JIPipeDesktopModernMetalTheme(style));
-                    UIManager.put("style", style);
-                    UIUtils.CURRENT_STYLE = style;
-
-                    UIManager.setLookAndFeel(UIManager.getCrossPlatformLookAndFeelClassName());
-                    UIManager.put("swing.boldMetal", Boolean.FALSE);
-                    installModernUIs();
-                } catch (ClassNotFoundException | InstantiationException | IllegalAccessException |
-                         UnsupportedLookAndFeelException e) {
-                    e.printStackTrace();
-                }
-                break;
-            case ModernDark:
-                try {
-                    MetalLookAndFeel.setCurrentTheme(new JIPipeDesktopLegacyDarkModernMetalTheme());
-                    UIManager.setLookAndFeel(UIManager.getCrossPlatformLookAndFeelClassName());
-                    UIManager.put("swing.boldMetal", Boolean.FALSE);
-                    installModernUIs();
-                } catch (ClassNotFoundException | InstantiationException | IllegalAccessException |
-                         UnsupportedLookAndFeelException e) {
-                    e.printStackTrace();
-                }
-                break;
-            default:
-                UIManager.put("Button.borderColor", JIPipeDesktopLegacyModernMetalTheme.MEDIUM_GRAY);
-                break;
-        }
-        IS_UPDATING_THEME = false;
-
-        // Prevent external theme changes
-        if (!INSTALLED_LISTENER && this != Native) {
-            UIManager.addPropertyChangeListener(evt -> {
-                if ("lookAndFeel".equals(evt.getPropertyName())) {
-                    if (!IS_UPDATING_THEME) {
-                        install();
-                    }
-                }
-            });
-            INSTALLED_LISTENER = true;
-        }
-    }
-
-    private static void installModernUIs() {
-        UIManager.put("ScrollBarUI", JIPipeDesktopModernScrollBarUI.class.getName());
-        UIManager.put("SliderUI", JIPipeDesktopModernSliderUI.class.getName());
-        UIManager.put("SpinnerUI", JIPipeDesktopModernSpinnerUI.class.getName());
-        UIManager.put("SplitPaneUI", JIPipeDesktopModernSplitPaneUI.class.getName());
-        UIManager.put("ToggleButtonUI", JIPipeDesktopModernToggleButtonUI.class.getName());
-        UIManager.put("ProgressBarUI", JIPipeDesktopModernProgressBarUI.class.getName());
-    }
-
     public boolean isModern() {
         return isModern;
     }
-
-
     @Override
     public String toString() {
         return name;

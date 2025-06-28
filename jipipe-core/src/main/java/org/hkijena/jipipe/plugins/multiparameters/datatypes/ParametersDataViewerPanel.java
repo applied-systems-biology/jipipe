@@ -25,8 +25,7 @@ import org.hkijena.jipipe.desktop.commons.components.JIPipeDesktopParameterFormP
 import org.hkijena.jipipe.desktop.commons.components.tabs.JIPipeDesktopTabPane;
 import org.hkijena.jipipe.plugins.parameters.library.markup.MarkdownText;
 import org.hkijena.jipipe.plugins.tables.datatypes.ResultsTableData;
-import org.hkijena.jipipe.utils.UIUtils;
-import org.hkijena.jipipe.JIPipe;
+import org.hkijena.jipipe.utils.ThemeUtils;
 import org.hkijena.jipipe.utils.json.JsonUtils;
 import org.scijava.ui.swing.script.EditorPane;
 
@@ -91,7 +90,7 @@ public class ParametersDataViewerPanel extends JIPipeDesktopWorkbenchPanel {
     }
 
     private void initializeJsonViewer() {
-        UIUtils.applyThemeToCodeEditor(jsonViewer);
+        ThemeUtils.applyThemeToCodeEditor(jsonViewer);
         jsonViewer.setBackground(UIManager.getColor("TextArea.background"));
         jsonViewer.setHighlightCurrentLine(false);
         jsonViewer.setTabSize(4);

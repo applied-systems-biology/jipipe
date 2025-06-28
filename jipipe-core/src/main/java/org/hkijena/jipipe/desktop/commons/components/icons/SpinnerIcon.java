@@ -15,8 +15,7 @@ package org.hkijena.jipipe.desktop.commons.components.icons;
 
 import org.hkijena.jipipe.desktop.commons.theme.JIPipeDesktopLegacyModernMetalTheme;
 import org.hkijena.jipipe.utils.ColorUtils;
-import org.hkijena.jipipe.utils.UIUtils;
-import org.hkijena.jipipe.JIPipe;
+import org.hkijena.jipipe.utils.ThemeUtils;
 
 import javax.swing.*;
 import java.awt.*;
@@ -51,7 +50,7 @@ public class SpinnerIcon implements Icon {
             x2Locations[i] = (Math.cos(angle) * rOuter) + getIconWidth() / 2.0;
             y2Locations[i] = (Math.sin(angle) * rOuter) + getIconHeight() / 2.0;
         }
-        Color baseColor = UIUtils.DARK_THEME ? new Color(0xdfdfdf) : new Color(0x444444);
+        Color baseColor = ThemeUtils.isUsingDarkTheme() ? new Color(0xdfdfdf) : new Color(0x444444);
         colors = ColorUtils.renderGradient(Arrays.asList(
                 new ColorUtils.GradientStop(0.0f, baseColor),
                 new ColorUtils.GradientStop(0.75f, JIPipeDesktopLegacyModernMetalTheme.PRIMARY5),

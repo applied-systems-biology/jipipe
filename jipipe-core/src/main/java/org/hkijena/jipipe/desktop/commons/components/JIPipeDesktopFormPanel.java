@@ -19,13 +19,8 @@ import org.hkijena.jipipe.api.events.AbstractJIPipeEvent;
 import org.hkijena.jipipe.api.events.JIPipeEventEmitter;
 import org.hkijena.jipipe.desktop.commons.components.markup.JIPipeDesktopMarkdownReader;
 import org.hkijena.jipipe.desktop.commons.components.tabs.JIPipeDesktopTabPane;
-import org.hkijena.jipipe.desktop.commons.theme.JIPipeDesktopLegacyModernMetalTheme;
 import org.hkijena.jipipe.plugins.parameters.library.markup.MarkdownText;
-import org.hkijena.jipipe.utils.ColorUtils;
-import org.hkijena.jipipe.utils.JIPipeDesktopSplitPane;
-import org.hkijena.jipipe.utils.StringUtils;
-import org.hkijena.jipipe.utils.UIUtils;
-import org.hkijena.jipipe.JIPipe;
+import org.hkijena.jipipe.utils.*;
 import org.jdesktop.swingx.JXPanel;
 import org.jdesktop.swingx.ScrollableSizeHint;
 import org.scijava.Disposable;
@@ -738,8 +733,8 @@ public class JIPipeDesktopFormPanel extends JPanel {
         public GroupHeaderPanel(String text, Icon icon, int marginTop) {
             this.marginTop = marginTop;
 
-            this.backgroundColor = UIUtils.CURRENT_STYLE.getCategoryBackground();
-            this.borderColor = UIUtils.CURRENT_STYLE.getCategoryBorder();
+            this.backgroundColor = ThemeUtils.getCurrentStyle().getCategoryBackground();
+            this.borderColor = ThemeUtils.getCurrentStyle().getCategoryBorder();
 
             setBorder(BorderFactory.createEmptyBorder(marginTop, 0, 8, 0));
             setLayout(new BoxLayout(this, BoxLayout.Y_AXIS));
@@ -754,7 +749,7 @@ public class JIPipeDesktopFormPanel extends JPanel {
 
             // Create and add title
             JLabel titleLabel = new JLabel(text, icon, JLabel.LEFT);
-            titleLabel.setFont(new Font(Font.DIALOG, Font.BOLD, UIUtils.CURRENT_STYLE.getFontSizeNormal()));
+            titleLabel.setFont(new Font(Font.DIALOG, Font.BOLD, ThemeUtils.getCurrentStyle().getFontSizeNormal()));
             titleLabel.setBorder(BorderFactory.createEmptyBorder(4, 8, 4, 4));
 
             titlePanel.add(titleLabel);

@@ -23,8 +23,8 @@ import org.hkijena.jipipe.desktop.commons.components.markup.JIPipeDesktopMarkdow
 import org.hkijena.jipipe.plugins.parameters.library.markup.MarkdownText;
 import org.hkijena.jipipe.utils.ColorUtils;
 import org.hkijena.jipipe.utils.StringUtils;
+import org.hkijena.jipipe.utils.ThemeUtils;
 import org.hkijena.jipipe.utils.UIUtils;
-import org.hkijena.jipipe.JIPipe;
 import org.hkijena.jipipe.utils.ui.RoundedLineBorder;
 
 import javax.swing.*;
@@ -157,7 +157,7 @@ public class JIPipeDesktopUserFriendlyErrorUI extends JIPipeDesktopFormPanel imp
 
         switch (entry.getLevel()) {
             case Error:
-                if (UIUtils.DARK_THEME) {
+                if (ThemeUtils.isUsingDarkTheme()) {
                     fill = new Color(0x6F000B);
                 } else {
                     fill = new Color(0xFDCDD1);
@@ -166,7 +166,7 @@ public class JIPipeDesktopUserFriendlyErrorUI extends JIPipeDesktopFormPanel imp
                 border = ColorUtils.scaleHSV(fill, 1, 0.8f, 0.8f);
                 break;
             case Warning:
-                if (UIUtils.DARK_THEME) {
+                if (ThemeUtils.isUsingDarkTheme()) {
                     fill = new Color(0x734300);
                 } else {
                     fill = new Color(0xFFEBCF);
@@ -175,7 +175,7 @@ public class JIPipeDesktopUserFriendlyErrorUI extends JIPipeDesktopFormPanel imp
                 border = ColorUtils.scaleHSV(fill, 1, 0.8f, 0.8f);
                 break;
             case Info:
-                if (UIUtils.DARK_THEME) {
+                if (ThemeUtils.isUsingDarkTheme()) {
                     fill = new Color(0x05254B);
                 } else {
                     fill = new Color(0xBED0E6);
@@ -196,7 +196,7 @@ public class JIPipeDesktopUserFriendlyErrorUI extends JIPipeDesktopFormPanel imp
 
         JLabel titleLabel = new JLabel(entry.getTitle(), icon, JLabel.LEFT);
         titleLabel.setBorder(BorderFactory.createEmptyBorder(4, 0, 8, 4));
-        titleLabel.setFont(new Font(Font.DIALOG, Font.BOLD, UIUtils.CURRENT_STYLE.getFontSizeLarge()));
+        titleLabel.setFont(new Font(Font.DIALOG, Font.BOLD, ThemeUtils.getCurrentStyle().getFontSizeLarge()));
         titleLabel.setOpaque(false);
         formPanel.addWideToForm(titleLabel);
 
@@ -232,7 +232,7 @@ public class JIPipeDesktopUserFriendlyErrorUI extends JIPipeDesktopFormPanel imp
 
             if (contexts.isEmpty()) {
                 JButton button = new JButton("Internal", JIPipe.RESOURCES.getIcon16("actions/system-run.png"));
-                button.setFont(new Font(Font.DIALOG, Font.PLAIN, UIUtils.CURRENT_STYLE.getFontSizeSmall()));
+                button.setFont(new Font(Font.DIALOG, Font.PLAIN, ThemeUtils.getCurrentStyle().getFontSizeSmall()));
                 button.setOpaque(false);
                 button.setBorder(null);
                 breadcrumb.add(button);
@@ -244,7 +244,7 @@ public class JIPipeDesktopUserFriendlyErrorUI extends JIPipeDesktopFormPanel imp
                         button.setToolTipText(context.renderName());
                         button.setOpaque(false);
                         button.setBorder(null);
-                        button.setFont(new Font(Font.DIALOG, Font.PLAIN, UIUtils.CURRENT_STYLE.getFontSizeSmall()));
+                        button.setFont(new Font(Font.DIALOG, Font.PLAIN, ThemeUtils.getCurrentStyle().getFontSizeSmall()));
                         breadcrumb.add(button);
                         breadcrumb.add(new JLabel(JIPipe.RESOURCES.getIcon16("actions/draw-triangle2.png")));
                     } else {

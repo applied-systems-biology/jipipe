@@ -27,10 +27,7 @@ import org.hkijena.jipipe.desktop.commons.theme.JIPipeDesktopModernThemeStyle;
 import org.hkijena.jipipe.plugins.parameters.library.markup.HTMLText;
 import org.hkijena.jipipe.plugins.parameters.library.markup.MarkdownText;
 import org.hkijena.jipipe.plugins.settings.JIPipeFileChooserApplicationSettings;
-import org.hkijena.jipipe.utils.ColorUtils;
-import org.hkijena.jipipe.utils.PathUtils;
-import org.hkijena.jipipe.utils.StringUtils;
-import org.hkijena.jipipe.utils.UIUtils;
+import org.hkijena.jipipe.utils.*;
 
 import javax.swing.*;
 import javax.swing.event.HyperlinkEvent;
@@ -85,7 +82,7 @@ public class JIPipeDesktopMarkdownReader extends JPanel {
     }
 
     private void initializeDefaultCSSRules() {
-        JIPipeDesktopModernThemeStyle style = UIUtils.CURRENT_STYLE;
+        JIPipeDesktopModernThemeStyle style = ThemeUtils.getCurrentStyle();
         cssRules.add("body { font-family: \"Dialog\"; font-size: " + style.getFontSizeNormal() + "pt }");
         cssRules.add("pre { background-color: " + ColorUtils.colorToHexString(style.getSelectionBackground()) + "; border: 3px " + ColorUtils.colorToHexString(style.getBorderColor()) +" solid; }");
         cssRules.add("code { background-color: " + ColorUtils.colorToHexString(style.getFormBackground()) + "; border: none; }");

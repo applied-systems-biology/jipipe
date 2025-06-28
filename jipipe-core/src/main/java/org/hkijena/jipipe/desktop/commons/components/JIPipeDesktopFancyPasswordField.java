@@ -14,8 +14,8 @@
 package org.hkijena.jipipe.desktop.commons.components;
 
 import org.hkijena.jipipe.JIPipe;
+import org.hkijena.jipipe.utils.ThemeUtils;
 import org.hkijena.jipipe.utils.UIUtils;
-import org.hkijena.jipipe.JIPipe;
 import org.jdesktop.swingx.JXTextField;
 
 import javax.swing.*;
@@ -87,6 +87,6 @@ public class JIPipeDesktopFancyPasswordField extends JPanel {
             style |= Font.ITALIC;
         if (bold)
             style |= Font.BOLD;
-        textField.setFont(new Font(monospace ? Font.MONOSPACED : Font.DIALOG, style, UIUtils.CURRENT_STYLE.getFontSizeNormal()));
+        textField.setFont(new Font(monospace ? Font.MONOSPACED : Font.DIALOG, style, ThemeUtils.getCurrentStyle().getFontSizeNormal()));
     }
 }

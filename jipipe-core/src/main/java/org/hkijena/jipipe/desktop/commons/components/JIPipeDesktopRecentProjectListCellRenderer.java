@@ -13,6 +13,7 @@
 
 package org.hkijena.jipipe.desktop.commons.components;
 
+import org.hkijena.jipipe.utils.ThemeUtils;
 import org.hkijena.jipipe.utils.UIUtils;
 import org.hkijena.jipipe.JIPipe;
 
@@ -40,10 +41,10 @@ public class JIPipeDesktopRecentProjectListCellRenderer extends JPanel implement
         setLayout(new GridBagLayout());
         iconLabel = new JLabel(JIPipe.RESOURCES.getIcon32("jipipe-file.png"));
         nameLabel = new JLabel();
-        nameLabel.setFont(new Font(Font.DIALOG, Font.PLAIN, UIUtils.CURRENT_STYLE.getFontSizeNormal()));
+        nameLabel.setFont(new Font(Font.DIALOG, Font.PLAIN, ThemeUtils.getCurrentStyle().getFontSizeNormal()));
         pathLabel = new JLabel();
         pathLabel.setForeground(Color.GRAY);
-        pathLabel.setFont(new Font(Font.DIALOG, Font.ITALIC, UIUtils.CURRENT_STYLE.getFontSizeNormal()));
+        pathLabel.setFont(new Font(Font.DIALOG, Font.ITALIC, ThemeUtils.getCurrentStyle().getFontSizeNormal()));
         openButton = new JButton("Open");
         UIUtils.setStandardButtonBorder(openButton);
         openButton.setBorder(UIUtils.createControlBorder());

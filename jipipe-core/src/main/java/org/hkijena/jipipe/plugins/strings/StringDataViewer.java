@@ -19,6 +19,7 @@ import org.hkijena.jipipe.desktop.api.dataviewer.JIPipeDesktopDataViewerWindow;
 import org.hkijena.jipipe.desktop.commons.components.ribbon.JIPipeDesktopLargeButtonRibbonAction;
 import org.hkijena.jipipe.desktop.commons.components.ribbon.JIPipeDesktopRibbon;
 import org.hkijena.jipipe.plugins.settings.JIPipeRuntimeApplicationSettings;
+import org.hkijena.jipipe.utils.ThemeUtils;
 import org.hkijena.jipipe.utils.UIUtils;
 import org.hkijena.jipipe.JIPipe;
 import org.hkijena.jipipe.utils.xml.XmlUtils;
@@ -42,7 +43,7 @@ public class StringDataViewer extends JIPipeDesktopDataViewer {
     }
 
     private void initialize() {
-        UIUtils.applyThemeToCodeEditor(editorPane);
+        ThemeUtils.applyThemeToCodeEditor(editorPane);
         editorPane.setBackground(UIManager.getColor("TextArea.background"));
         editorPane.setHighlightCurrentLine(false);
         editorPane.setTabSize(4);

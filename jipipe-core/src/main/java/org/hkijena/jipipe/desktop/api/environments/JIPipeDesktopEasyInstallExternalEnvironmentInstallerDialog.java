@@ -14,6 +14,7 @@
 package org.hkijena.jipipe.desktop.api.environments;
 
 import org.hkijena.jipipe.desktop.commons.components.JIPipeDesktopFormPanel;
+import org.hkijena.jipipe.utils.ThemeUtils;
 import org.hkijena.jipipe.utils.UIUtils;
 import org.hkijena.jipipe.JIPipe;
 import org.hkijena.jipipe.utils.ui.RoundedLineBorder;
@@ -92,12 +93,12 @@ public class JIPipeDesktopEasyInstallExternalEnvironmentInstallerDialog extends 
             urlText = availablePackage.getUrl();
         }
         JTextArea idField = UIUtils.createReadonlyBorderlessTextArea(urlText);
-        idField.setFont(new Font(Font.MONOSPACED, Font.PLAIN, UIUtils.CURRENT_STYLE.getFontSizeSmall()));
+        idField.setFont(new Font(Font.MONOSPACED, Font.PLAIN, ThemeUtils.getCurrentStyle().getFontSizeSmall()));
         panel.add(idField, new GridBagConstraints(0, 2, 1, 1, 1, 0, GridBagConstraints.NORTHWEST, GridBagConstraints.HORIZONTAL, new Insets(4, 4, 4, 4), 0, 0));
         panel.add(UIUtils.createBorderlessReadonlyTextPane(availablePackage.getDescription(), false), new GridBagConstraints(0, 1, 1, 1, 1, 0, GridBagConstraints.NORTHWEST, GridBagConstraints.HORIZONTAL, new Insets(4, 4, 4, 4), 0, 0));
 
         JButton installButton = new JButton("Install now", JIPipe.RESOURCES.getIcon16("emblems/vcs-normal.png"));
-        installButton.setFont(new Font(Font.DIALOG, Font.PLAIN, UIUtils.CURRENT_STYLE.getFontSizeLarge()));
+        installButton.setFont(new Font(Font.DIALOG, Font.PLAIN, ThemeUtils.getCurrentStyle().getFontSizeLarge()));
         installButton.addActionListener(e -> confirmInstallation(availablePackage));
         panel.add(installButton, new GridBagConstraints(1, 0, 1, 1, 0, 0, GridBagConstraints.NORTHWEST, GridBagConstraints.NONE, new Insets(4, 4, 4, 4), 0, 0));
 

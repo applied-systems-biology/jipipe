@@ -24,6 +24,7 @@ import org.hkijena.jipipe.plugins.parameters.library.markup.HTMLText;
 import org.hkijena.jipipe.plugins.settings.JIPipeFileChooserApplicationSettings;
 import org.hkijena.jipipe.plugins.settings.JIPipeRuntimeApplicationSettings;
 import org.hkijena.jipipe.utils.PathUtils;
+import org.hkijena.jipipe.utils.ThemeUtils;
 import org.hkijena.jipipe.utils.UIUtils;
 import org.hkijena.jipipe.JIPipe;
 
@@ -77,7 +78,7 @@ public class JIPipeDesktopLogViewLogUI extends JIPipeDesktopWorkbenchPanel {
         add(tabPane, BorderLayout.CENTER);
 
         // Init reader
-        logReader.setFont(new Font(Font.MONOSPACED, Font.PLAIN, UIUtils.CURRENT_STYLE.getFontSizeNormal()));
+        logReader.setFont(new Font(Font.MONOSPACED, Font.PLAIN, ThemeUtils.getCurrentStyle().getFontSizeNormal()));
         scrollPane = new JScrollPane(logReader);
         tabPane.addTab("Log", JIPipe.RESOURCES.getIcon32("actions/rabbitvcs-show_log.png"), scrollPane, JIPipeDesktopTabPane.CloseMode.withoutCloseButton);
 

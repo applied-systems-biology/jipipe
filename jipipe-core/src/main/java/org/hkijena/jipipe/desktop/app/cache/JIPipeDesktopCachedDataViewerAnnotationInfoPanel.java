@@ -24,8 +24,8 @@ import org.hkijena.jipipe.plugins.parameters.library.markup.HTMLText;
 import org.hkijena.jipipe.plugins.settings.JIPipeFileChooserApplicationSettings;
 import org.hkijena.jipipe.plugins.tables.datatypes.ResultsTableData;
 import org.hkijena.jipipe.utils.PathUtils;
+import org.hkijena.jipipe.utils.ThemeUtils;
 import org.hkijena.jipipe.utils.UIUtils;
-import org.hkijena.jipipe.JIPipe;
 import org.jdesktop.swingx.JXTable;
 
 import javax.swing.*;
@@ -118,7 +118,7 @@ public class JIPipeDesktopCachedDataViewerAnnotationInfoPanel extends JIPipeDesk
         public Renderer() {
             setOpaque(true);
             setBorder(BorderFactory.createEmptyBorder(4, 4, 4, 4));
-            setFont(new Font(Font.DIALOG, Font.PLAIN, UIUtils.CURRENT_STYLE.getFontSizeNormal()));
+            setFont(new Font(Font.DIALOG, Font.PLAIN, ThemeUtils.getCurrentStyle().getFontSizeNormal()));
         }
 
         @Override

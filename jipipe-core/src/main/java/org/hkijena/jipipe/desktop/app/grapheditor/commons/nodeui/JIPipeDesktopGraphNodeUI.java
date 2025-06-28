@@ -102,9 +102,9 @@ public class JIPipeDesktopGraphNodeUI extends JIPipeDesktopWorkbenchPanel implem
     private final Map<String, JIPipeDesktopGraphNodeUISlotActiveArea> outputSlotMap = new HashMap<>();
     private final Color slotParametersFillColor;
     private final Image nodeIcon;
-    private final Font nativeMainFont = new Font(Font.DIALOG, Font.PLAIN, UIUtils.CURRENT_STYLE.getFontSizeNormal());
-    private final Font nativeSecondaryFont = new Font(Font.DIALOG, Font.PLAIN, UIUtils.CURRENT_STYLE.getFontSizeSmall());
-    private final Font nativeTertiaryFont = new Font(Font.DIALOG, Font.PLAIN, UIUtils.CURRENT_STYLE.getFontSizeTiny());
+    private final Font nativeMainFont = new Font(Font.DIALOG, Font.PLAIN, ThemeUtils.getCurrentStyle().getFontSizeNormal());
+    private final Font nativeSecondaryFont = new Font(Font.DIALOG, Font.PLAIN, ThemeUtils.getCurrentStyle().getFontSizeSmall());
+    private final Font nativeTertiaryFont = new Font(Font.DIALOG, Font.PLAIN, ThemeUtils.getCurrentStyle().getFontSizeTiny());
     private final Color mainTextColor;
     private final Color secondaryTextColor;
     private final boolean showInputs;
@@ -191,7 +191,7 @@ public class JIPipeDesktopGraphNodeUI extends JIPipeDesktopWorkbenchPanel implem
         this.nodeIcon = JIPipe.getNodes().getIconFor(node.getInfo()).getImage();
         this.nodeFillColor = UIUtils.getFillColorFor(node.getInfo());
         this.nodeBorderColor = UIUtils.getBorderColorFor(node.getInfo());
-        this.highlightedNodeBorderColor = UIUtils.DARK_THEME ? new Color(0xBBBBBF) : new Color(0x444444);
+        this.highlightedNodeBorderColor = ThemeUtils.isUsingDarkTheme() ? new Color(0xBBBBBF) : new Color(0x444444);
         this.slotFillColor = UIManager.getColor("Panel.background");
         this.slotParametersFillColor = ColorUtils.mix(slotFillColor, nodeFillColor, 0.5);
         this.mainTextColor = UIManager.getColor("Label.foreground");

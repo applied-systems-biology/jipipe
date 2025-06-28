@@ -31,8 +31,8 @@ import org.hkijena.jipipe.desktop.app.datatracer.JIPipeDesktopDataTracerUI;
 import org.hkijena.jipipe.desktop.commons.theme.JIPipeDesktopLegacyModernMetalTheme;
 import org.hkijena.jipipe.plugins.tables.datatypes.AnnotationTableData;
 import org.hkijena.jipipe.utils.StringUtils;
+import org.hkijena.jipipe.utils.ThemeUtils;
 import org.hkijena.jipipe.utils.UIUtils;
-import org.hkijena.jipipe.JIPipe;
 import org.hkijena.jipipe.utils.data.Store;
 import org.hkijena.jipipe.utils.ui.ViewOnlyMenuItem;
 import org.jdesktop.swingx.JXTable;
@@ -351,7 +351,7 @@ public class JIPipeDesktopDataBatchAssistantInputPreviewPanelTable extends JPane
 
             setForeground(defaultForeground);
             setBackground(defaultBackground);
-            setFont(new Font(Font.DIALOG, Font.PLAIN, UIUtils.CURRENT_STYLE.getFontSizeNormal()));
+            setFont(new Font(Font.DIALOG, Font.PLAIN, ThemeUtils.getCurrentStyle().getFontSizeNormal()));
             setIcon(null);
 
             int iterationStepIndex = -1;
@@ -376,7 +376,7 @@ public class JIPipeDesktopDataBatchAssistantInputPreviewPanelTable extends JPane
                 String columnName = table.getColumnName(column);
                 if (previewPanelTable.iterationStepGenerationResult != null && previewPanelTable.iterationStepGenerationResult.getReferenceTextAnnotationColumns().contains(columnName)) {
                     setBackground(COLOR_HIGHLIGHT_CELL);
-                    setFont(new Font(Font.DIALOG, Font.BOLD, UIUtils.CURRENT_STYLE.getFontSizeNormal()));
+                    setFont(new Font(Font.DIALOG, Font.BOLD, ThemeUtils.getCurrentStyle().getFontSizeNormal()));
                 }
                 setText(HtmlEscapers.htmlEscaper().escape(StringUtils.nullToEmpty(textAnnotation.getValue())));
 
@@ -418,7 +418,7 @@ public class JIPipeDesktopDataBatchAssistantInputPreviewPanelTable extends JPane
                 String columnName = table.getColumnName(column);
                 if (previewPanelTable.iterationStepGenerationResult != null && previewPanelTable.iterationStepGenerationResult.getReferenceTextAnnotationColumns().contains(columnName)) {
                     setBackground(COLOR_HIGHLIGHT_CELL);
-                    setFont(new Font(Font.DIALOG, Font.BOLD, UIUtils.CURRENT_STYLE.getFontSizeNormal()));
+                    setFont(new Font(Font.DIALOG, Font.BOLD, ThemeUtils.getCurrentStyle().getFontSizeNormal()));
                 }
                 setText(StringUtils.nullToEmpty(value));
             }
@@ -463,10 +463,10 @@ public class JIPipeDesktopDataBatchAssistantInputPreviewPanelTable extends JPane
             if (previewPanelTable.iterationStepGenerationResult != null &&
                     previewPanelTable.iterationStepGenerationResult.getReferenceTextAnnotationColumns().contains(columnName)) {
                 component.setBackground(COLOR_HIGHLIGHT);
-                component.setFont(new Font(Font.DIALOG, Font.BOLD, UIUtils.CURRENT_STYLE.getFontSizeNormal()));
+                component.setFont(new Font(Font.DIALOG, Font.BOLD, ThemeUtils.getCurrentStyle().getFontSizeNormal()));
             } else {
                 component.setBackground(UIManager.getColor("TableHeader.background"));
-                component.setFont(new Font(Font.DIALOG, Font.PLAIN, UIUtils.CURRENT_STYLE.getFontSizeNormal()));
+                component.setFont(new Font(Font.DIALOG, Font.PLAIN, ThemeUtils.getCurrentStyle().getFontSizeNormal()));
             }
 
             return component;

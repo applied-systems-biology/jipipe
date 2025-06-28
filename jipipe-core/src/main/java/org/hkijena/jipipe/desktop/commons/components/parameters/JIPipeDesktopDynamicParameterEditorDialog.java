@@ -29,8 +29,8 @@ import org.hkijena.jipipe.plugins.parameters.library.primitives.StringParameterS
 import org.hkijena.jipipe.plugins.parameters.library.references.JIPipeParameterTypeInfoRef;
 import org.hkijena.jipipe.utils.JIPipeDesktopSplitPane;
 import org.hkijena.jipipe.utils.StringUtils;
+import org.hkijena.jipipe.utils.ThemeUtils;
 import org.hkijena.jipipe.utils.UIUtils;
-import org.hkijena.jipipe.JIPipe;
 
 import javax.swing.*;
 import java.awt.*;
@@ -397,8 +397,8 @@ public class JIPipeDesktopDynamicParameterEditorDialog extends JDialog implement
             typeLabel = new JLabel();
             idLabel = new JLabel();
             typeLabel.setForeground(Color.GRAY);
-            idLabel.setFont(new Font(Font.MONOSPACED, Font.PLAIN, UIUtils.CURRENT_STYLE.getFontSizeSmall()));
-            typeLabel.setFont(new Font(Font.DIALOG, Font.ITALIC, UIUtils.CURRENT_STYLE.getFontSizeSmall()));
+            idLabel.setFont(new Font(Font.MONOSPACED, Font.PLAIN, ThemeUtils.getCurrentStyle().getFontSizeSmall()));
+            typeLabel.setFont(new Font(Font.DIALOG, Font.ITALIC, ThemeUtils.getCurrentStyle().getFontSizeSmall()));
 
             add(parameterIcon, new GridBagConstraints() {
                 {

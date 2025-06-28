@@ -17,7 +17,7 @@ import org.hkijena.jipipe.api.JIPipeProgressInfo;
 import org.hkijena.jipipe.api.run.JIPipeRunnable;
 import org.hkijena.jipipe.api.run.JIPipeRunnableQueue;
 import org.hkijena.jipipe.api.run.JIPipeRunnableWorker;
-import org.hkijena.jipipe.utils.UIUtils;
+import org.hkijena.jipipe.utils.ThemeUtils;
 import org.hkijena.jipipe.JIPipe;
 
 import javax.swing.*;
@@ -53,8 +53,8 @@ public class JIPipeDesktopRunnableQueueButtonMenuItem extends JMenuItem implemen
         setLayout(new GridBagLayout());
 
         titleLabel.setText(worker.getRun().getTaskLabel());
-        titleLabel.setFont(new Font(Font.DIALOG, Font.BOLD, UIUtils.CURRENT_STYLE.getFontSizeNormal()));
-        statusLabel.setFont(new Font(Font.DIALOG, Font.PLAIN, UIUtils.CURRENT_STYLE.getFontSizeTiny()));
+        titleLabel.setFont(new Font(Font.DIALOG, Font.BOLD, ThemeUtils.getCurrentStyle().getFontSizeNormal()));
+        statusLabel.setFont(new Font(Font.DIALOG, Font.PLAIN, ThemeUtils.getCurrentStyle().getFontSizeTiny()));
         cancelButton.setBorder(null);
         progressBar.setMaximumSize(new Dimension(Short.MAX_VALUE, 8));
         progressBar.setBorder(null);

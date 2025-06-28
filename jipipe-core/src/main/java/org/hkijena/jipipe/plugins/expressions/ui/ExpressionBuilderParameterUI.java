@@ -19,8 +19,8 @@ import org.fife.ui.rsyntaxtextarea.TokenMaker;
 import org.fife.ui.rsyntaxtextarea.TokenMakerFactory;
 import org.hkijena.jipipe.plugins.expressions.JIPipeExpressionEvaluator;
 import org.hkijena.jipipe.plugins.expressions.JIPipeExpressionEvaluatorSyntaxTokenMaker;
+import org.hkijena.jipipe.utils.ThemeUtils;
 import org.hkijena.jipipe.utils.UIUtils;
-import org.hkijena.jipipe.JIPipe;
 
 import javax.swing.*;
 import java.awt.*;
@@ -62,12 +62,12 @@ public class ExpressionBuilderParameterUI extends JPanel {
 
         // Variable editor
         variableEditor = new JTextField();
-        variableEditor.setFont(new Font(Font.MONOSPACED, Font.PLAIN, UIUtils.CURRENT_STYLE.getFontSizeNormal()));
+        variableEditor.setFont(new Font(Font.MONOSPACED, Font.PLAIN, ThemeUtils.getCurrentStyle().getFontSizeNormal()));
         variableEditor.setForeground(ExpressionBuilderUI.COLOR_VARIABLE);
 
         // Variable editor
         stringEditor = new JTextField();
-        stringEditor.setFont(new Font(Font.MONOSPACED, Font.PLAIN, UIUtils.CURRENT_STYLE.getFontSizeNormal()));
+        stringEditor.setFont(new Font(Font.MONOSPACED, Font.PLAIN, ThemeUtils.getCurrentStyle().getFontSizeNormal()));
         stringEditor.setForeground(ExpressionBuilderUI.COLOR_STRING);
 
         // Number editor
@@ -90,13 +90,13 @@ public class ExpressionBuilderParameterUI extends JPanel {
         };
 
         expressionEditor = new RSyntaxTextArea(new RSyntaxDocument(tokenMakerFactory, "text/expression"));
-        UIUtils.applyThemeToCodeEditor(expressionEditor);
+        ThemeUtils.applyThemeToCodeEditor(expressionEditor);
         expressionEditor.setBackground(UIManager.getColor("TextArea.background"));
         expressionEditor.setLineWrap(true);
         expressionEditor.setHighlightCurrentLine(false);
 
         rawExpressionEditor = new RSyntaxTextArea(new RSyntaxDocument(tokenMakerFactory, "text/expression"));
-        UIUtils.applyThemeToCodeEditor(rawExpressionEditor);
+        ThemeUtils.applyThemeToCodeEditor(rawExpressionEditor);
         rawExpressionEditor.setBackground(UIManager.getColor("TextArea.background"));
         rawExpressionEditor.setLineWrap(true);
         rawExpressionEditor.setHighlightCurrentLine(false);

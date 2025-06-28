@@ -16,8 +16,8 @@ package org.hkijena.jipipe.plugins.parameters.library.patterns;
 import org.hkijena.jipipe.JIPipe;
 import org.hkijena.jipipe.desktop.api.JIPipeDesktopParameterEditorUI;
 import org.hkijena.jipipe.desktop.commons.components.JIPipeDesktopDocumentChangeListener;
+import org.hkijena.jipipe.utils.ThemeUtils;
 import org.hkijena.jipipe.utils.UIUtils;
-import org.hkijena.jipipe.JIPipe;
 import org.jdesktop.swingx.JXTextField;
 
 import javax.swing.*;
@@ -83,7 +83,7 @@ public class StringPatternExtractionDesktopParameterEditorUI extends JIPipeDeskt
         add(new JLabel("Split by"));
 
         JXTextField splitChar = new JXTextField("Split character");
-        splitChar.setFont(new Font(Font.MONOSPACED, Font.PLAIN, UIUtils.CURRENT_STYLE.getFontSizeNormal()));
+        splitChar.setFont(new Font(Font.MONOSPACED, Font.PLAIN, ThemeUtils.getCurrentStyle().getFontSizeNormal()));
         splitChar.setToolTipText("Splits the input string by this text");
         splitChar.setText(filter.getSplitCharacter());
         splitChar.getDocument().addDocumentListener(new JIPipeDesktopDocumentChangeListener() {
@@ -106,7 +106,7 @@ public class StringPatternExtractionDesktopParameterEditorUI extends JIPipeDeskt
         add(new JLabel("Split by"));
 
         JXTextField splitChar = new JXTextField("Split character");
-        splitChar.setFont(new Font(Font.MONOSPACED, Font.PLAIN, UIUtils.CURRENT_STYLE.getFontSizeNormal()));
+        splitChar.setFont(new Font(Font.MONOSPACED, Font.PLAIN, ThemeUtils.getCurrentStyle().getFontSizeNormal()));
         splitChar.setToolTipText("Splits the input string by this text");
         splitChar.setText(filter.getSplitCharacter());
         splitChar.getDocument().addDocumentListener(new JIPipeDesktopDocumentChangeListener() {
@@ -119,7 +119,7 @@ public class StringPatternExtractionDesktopParameterEditorUI extends JIPipeDeskt
 
         add(new JLabel("then select by RegEx"));
         JXTextField regexString = new JXTextField("RegEx find");
-        regexString.setFont(new Font(Font.MONOSPACED, Font.PLAIN, UIUtils.CURRENT_STYLE.getFontSizeNormal()));
+        regexString.setFont(new Font(Font.MONOSPACED, Font.PLAIN, ThemeUtils.getCurrentStyle().getFontSizeNormal()));
         regexString.setToolTipText("Selects the component that matches this regex string");
         regexString.setText(filter.getRegexString());
         regexString.getDocument().addDocumentListener(new JIPipeDesktopDocumentChangeListener() {
@@ -133,7 +133,7 @@ public class StringPatternExtractionDesktopParameterEditorUI extends JIPipeDeskt
 
     private void createRegexUI(StringPatternExtraction filter) {
         JXTextField regexString = new JXTextField("RegEx selector");
-        regexString.setFont(new Font(Font.MONOSPACED, Font.PLAIN, UIUtils.CURRENT_STYLE.getFontSizeNormal()));
+        regexString.setFont(new Font(Font.MONOSPACED, Font.PLAIN, ThemeUtils.getCurrentStyle().getFontSizeNormal()));
         regexString.setToolTipText("A regular expression (RegEx) that contains a group. The group is selected.");
         regexString.setText(filter.getRegexString());
         regexString.getDocument().addDocumentListener(new JIPipeDesktopDocumentChangeListener() {

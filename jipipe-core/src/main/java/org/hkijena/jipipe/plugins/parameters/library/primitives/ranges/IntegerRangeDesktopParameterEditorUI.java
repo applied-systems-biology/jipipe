@@ -21,8 +21,8 @@ import org.hkijena.jipipe.api.parameters.JIPipeParameterTree;
 import org.hkijena.jipipe.desktop.api.JIPipeDesktopParameterEditorUI;
 import org.hkijena.jipipe.desktop.commons.components.JIPipeDesktopDocumentChangeListener;
 import org.hkijena.jipipe.plugins.expressions.*;
+import org.hkijena.jipipe.utils.ThemeUtils;
 import org.hkijena.jipipe.utils.UIUtils;
-import org.hkijena.jipipe.JIPipe;
 
 import javax.swing.*;
 import javax.swing.event.DocumentEvent;
@@ -58,7 +58,7 @@ public class IntegerRangeDesktopParameterEditorUI extends JIPipeDesktopParameter
 //        expressionModeToggle.setBorder(BorderFactory.createMatteBorder(1, 1, 1, 0, UIManager.getColor("Button.borderColor")));
 
         rangeStringEditor = new JTextField();
-        rangeStringEditor.setFont(new Font(Font.MONOSPACED, Font.PLAIN, UIUtils.CURRENT_STYLE.getFontSizeNormal()));
+        rangeStringEditor.setFont(new Font(Font.MONOSPACED, Font.PLAIN, ThemeUtils.getCurrentStyle().getFontSizeNormal()));
         rangeStringEditor.getDocument().addDocumentListener(new JIPipeDesktopDocumentChangeListener() {
             @Override
             public void changed(DocumentEvent documentEvent) {

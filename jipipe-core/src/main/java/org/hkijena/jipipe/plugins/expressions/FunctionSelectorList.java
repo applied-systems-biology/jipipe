@@ -15,8 +15,8 @@ package org.hkijena.jipipe.plugins.expressions;
 
 import org.hkijena.jipipe.JIPipe;
 import org.hkijena.jipipe.api.registries.JIPipeExpressionRegistry;
+import org.hkijena.jipipe.utils.ThemeUtils;
 import org.hkijena.jipipe.utils.UIUtils;
-import org.hkijena.jipipe.JIPipe;
 
 import javax.swing.*;
 import java.awt.*;
@@ -104,7 +104,7 @@ public class FunctionSelectorList extends JList<JIPipeExpressionRegistry.Express
         private void initialize() {
             setLayout(new GridBagLayout());
             setOpaque(true);
-            setFont(new Font(Font.DIALOG, Font.PLAIN, UIUtils.CURRENT_STYLE.getFontSizeNormal()));
+            setFont(new Font(Font.DIALOG, Font.PLAIN, ThemeUtils.getCurrentStyle().getFontSizeNormal()));
             setBorder(BorderFactory.createEmptyBorder(4, 4, 4, 4));
 
             Insets border = new Insets(2, 4, 2, 2);
@@ -120,7 +120,7 @@ public class FunctionSelectorList extends JList<JIPipeExpressionRegistry.Express
             });
 
             idLabel = new JLabel();
-            idLabel.setFont(new Font(Font.MONOSPACED, Font.BOLD, UIUtils.CURRENT_STYLE.getFontSizeNormal()));
+            idLabel.setFont(new Font(Font.MONOSPACED, Font.BOLD, ThemeUtils.getCurrentStyle().getFontSizeNormal()));
             add(idLabel, new GridBagConstraints() {
                 {
                     gridx = 1;
@@ -141,7 +141,7 @@ public class FunctionSelectorList extends JList<JIPipeExpressionRegistry.Express
             });
 
             descriptionLabel = new JLabel();
-            descriptionLabel.setFont(new Font(Font.DIALOG, Font.ITALIC, UIUtils.CURRENT_STYLE.getFontSizeNormal()));
+            descriptionLabel.setFont(new Font(Font.DIALOG, Font.ITALIC, ThemeUtils.getCurrentStyle().getFontSizeNormal()));
             add(descriptionLabel, new GridBagConstraints() {
                 {
                     gridx = 1;

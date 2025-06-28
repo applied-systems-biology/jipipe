@@ -29,8 +29,8 @@ import org.hkijena.jipipe.plugins.expressions.custom.JIPipeCustomExpressionVaria
 import org.hkijena.jipipe.plugins.expressions.variables.UndefinedExpressionParameterVariablesInfo;
 import org.hkijena.jipipe.utils.ReflectionUtils;
 import org.hkijena.jipipe.utils.StringUtils;
+import org.hkijena.jipipe.utils.ThemeUtils;
 import org.hkijena.jipipe.utils.UIUtils;
-import org.hkijena.jipipe.JIPipe;
 
 import javax.swing.*;
 import javax.swing.event.DocumentEvent;
@@ -93,7 +93,7 @@ public class JIPipeExpressionDesktopParameterEditorUI extends JIPipeDesktopParam
         RSyntaxDocument document = new RSyntaxDocument(tokenMakerFactory, "text/expression");
         expressionEditor = new JIPipeDesktopRSyntaxTextField(document);
         expressionEditor.setFocusTraversalKeysEnabled(true);
-        UIUtils.applyThemeToCodeEditor(expressionEditor);
+        ThemeUtils.applyThemeToCodeEditor(expressionEditor);
         expressionEditor.setBackground(UIManager.getColor("TextArea.background"));
         expressionEditor.setLineWrap(true);
         expressionEditor.setHighlightCurrentLine(false);
@@ -117,7 +117,7 @@ public class JIPipeExpressionDesktopParameterEditorUI extends JIPipeDesktopParam
 
         JLabel expressionHintLabel = new JLabel("Expression");
         expressionHintLabel.setForeground(Color.GRAY);
-        expressionHintLabel.setFont(new Font(Font.DIALOG, Font.ITALIC, UIUtils.CURRENT_STYLE.getFontSizeTiny()));
+        expressionHintLabel.setFont(new Font(Font.DIALOG, Font.ITALIC, ThemeUtils.getCurrentStyle().getFontSizeTiny()));
         expressionHintLabel.setBorder(BorderFactory.createEmptyBorder(0, 2, 4, 0));
         borderPanel.add(expressionHintLabel, BorderLayout.NORTH);
 

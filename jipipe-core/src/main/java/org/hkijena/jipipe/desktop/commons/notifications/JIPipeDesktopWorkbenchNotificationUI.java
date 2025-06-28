@@ -20,8 +20,8 @@ import org.hkijena.jipipe.desktop.app.JIPipeDesktopWorkbenchPanel;
 import org.hkijena.jipipe.desktop.commons.theme.ui.JIPipeDesktopRoundedButtonUI;
 import org.hkijena.jipipe.plugins.parameters.library.markup.MarkdownText;
 import org.hkijena.jipipe.plugins.settings.JIPipeNotificationUIApplicationSettings;
+import org.hkijena.jipipe.utils.ThemeUtils;
 import org.hkijena.jipipe.utils.UIUtils;
-import org.hkijena.jipipe.JIPipe;
 import org.hkijena.jipipe.utils.ui.RoundedLineBorder;
 
 import javax.swing.*;
@@ -59,7 +59,7 @@ public class JIPipeDesktopWorkbenchNotificationUI extends JIPipeDesktopWorkbench
         // Add heading
         JLabel headingLabel = new JLabel(notification.getHeading());
         headingLabel.setBorder(BorderFactory.createEmptyBorder(4, 4, 4, 4));
-        headingLabel.setFont(new Font(Font.DIALOG, Font.BOLD, UIUtils.CURRENT_STYLE.getFontSizeLarge()));
+        headingLabel.setFont(new Font(Font.DIALOG, Font.BOLD, ThemeUtils.getCurrentStyle().getFontSizeLarge()));
         headerPanel.add(headingLabel);
         headerPanel.add(Box.createHorizontalGlue());
         add(headerPanel, BorderLayout.NORTH);
@@ -100,7 +100,7 @@ public class JIPipeDesktopWorkbenchNotificationUI extends JIPipeDesktopWorkbench
         actionPanel.add(Box.createHorizontalGlue());
         for (JIPipeNotificationAction action : notification.getActions()) {
             JButton actionButton = new JButton(action.getLabel(), action.getIcon());
-            actionButton.setFont(new Font(Font.DIALOG, Font.PLAIN, UIUtils.CURRENT_STYLE.getFontSizeLarge()));
+            actionButton.setFont(new Font(Font.DIALOG, Font.PLAIN, ThemeUtils.getCurrentStyle().getFontSizeLarge()));
             actionButton.setToolTipText(action.getTooltip());
             actionButton.setBorder(BorderFactory.createCompoundBorder(new RoundedLineBorder(new Color(0xabb8c3), 1, 4),
                     BorderFactory.createEmptyBorder(8, 8, 8, 8)));

@@ -14,8 +14,7 @@
 package org.hkijena.jipipe.desktop.commons.components;
 
 import org.hkijena.jipipe.utils.SizeFitMode;
-import org.hkijena.jipipe.utils.UIUtils;
-import org.hkijena.jipipe.JIPipe;
+import org.hkijena.jipipe.utils.ThemeUtils;
 
 import javax.swing.*;
 import java.awt.*;
@@ -107,7 +106,7 @@ public class JIPipeDesktopImageFrameComponent extends JPanel {
 
 //        g2.setRenderingHint(RenderingHints.KEY_INTERPOLATION, RenderingHints.VALUE_INTERPOLATION_BICUBIC);
         if (isOpaque()) {
-            g.setColor(UIUtils.CURRENT_STYLE.getWindowBackground());
+            g.setColor(ThemeUtils.getCurrentStyle().getWindowBackground());
             g.fillRect(0, 0, getWidth(), getHeight());
         }
         if (backgroundImage != null) {

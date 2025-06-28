@@ -13,13 +13,10 @@
 
 package org.hkijena.jipipe.utils;
 
-import com.fasterxml.jackson.databind.JsonNode;
 import com.google.common.primitives.Ints;
 import net.java.balloontip.BalloonTip;
 import net.java.balloontip.styles.EdgedBalloonStyle;
 import org.apache.commons.lang3.SystemUtils;
-import org.fife.ui.rsyntaxtextarea.RSyntaxTextArea;
-import org.fife.ui.rsyntaxtextarea.Theme;
 import org.hkijena.jipipe.JIPipe;
 import org.hkijena.jipipe.api.JIPipeProgressInfo;
 import org.hkijena.jipipe.api.JIPipeWorkbench;
@@ -27,7 +24,6 @@ import org.hkijena.jipipe.api.data.JIPipeDataInfo;
 import org.hkijena.jipipe.api.data.JIPipeDataSlot;
 import org.hkijena.jipipe.api.nodes.JIPipeNodeInfo;
 import org.hkijena.jipipe.api.notifications.JIPipeNotificationInbox;
-import org.hkijena.jipipe.api.registries.JIPipeApplicationSettingsRegistry;
 import org.hkijena.jipipe.api.validation.JIPipeValidationReport;
 import org.hkijena.jipipe.desktop.api.JIPipeDesktopMenuExtension;
 import org.hkijena.jipipe.desktop.api.JIPipeMenuExtensionTarget;
@@ -41,14 +37,10 @@ import org.hkijena.jipipe.desktop.commons.components.markup.JIPipeDesktopMarkdow
 import org.hkijena.jipipe.desktop.commons.components.window.JIPipeDesktopAlwaysOnTopToggle;
 import org.hkijena.jipipe.desktop.commons.notifications.JIPipeDesktopGenericNotificationInboxUI;
 import org.hkijena.jipipe.desktop.commons.theme.JIPipeDesktopLegacyModernMetalTheme;
-import org.hkijena.jipipe.desktop.commons.theme.JIPipeDesktopModernThemeStyle;
-import org.hkijena.jipipe.desktop.commons.theme.JIPipeDesktopUITheme;
 import org.hkijena.jipipe.desktop.commons.theme.helpers.JIPipeDesktopIslandPanel;
 import org.hkijena.jipipe.plugins.parameters.library.markup.HTMLText;
 import org.hkijena.jipipe.plugins.parameters.library.markup.MarkdownText;
 import org.hkijena.jipipe.plugins.settings.JIPipeGeneralDataApplicationSettings;
-import org.hkijena.jipipe.plugins.settings.JIPipeGeneralUIApplicationSettings;
-import org.hkijena.jipipe.utils.json.JsonUtils;
 import org.hkijena.jipipe.utils.ui.ListSelectionMode;
 import org.hkijena.jipipe.utils.ui.RoundedLineBorder;
 import org.jdesktop.swingx.JXTable;
@@ -99,11 +91,6 @@ public class UIUtils {
     public static final JMenuItem MENU_ITEM_SEPARATOR = null;
     public static final Color COLOR_ERROR = new Color(0xa51d2d);
     public static final Color COLOR_SUCCESS = new Color(0x5CB85C);
-    public static boolean DARK_THEME = false;
-    public static JIPipeDesktopUITheme CURRENT_THEME = JIPipeDesktopUITheme.ModernLight;
-    public static JIPipeDesktopModernThemeStyle CURRENT_STYLE = new  JIPipeDesktopModernThemeStyle();
-    private static Theme RSYNTAX_THEME_DEFAULT;
-    private static Theme RSYNTAX_THEME_DARK;
     private static Border CONTROL_BORDER;
     private static Border PANEL_BORDER;
     private static Border CONTROL_ERROR_BORDER;
@@ -228,7 +215,7 @@ public class UIUtils {
     }
 
     public static Color getControlBorderColor() {
-        if (!DARK_THEME) {
+        if (!ThemeUtils.isUsingDarkTheme()) {
             return JIPipeDesktopLegacyModernMetalTheme.MEDIUM_GRAY;
         } else {
             return Color.DARK_GRAY;
@@ -237,7 +224,7 @@ public class UIUtils {
 
     public static Border createControlBorder() {
         if (CONTROL_BORDER == null) {
-            if (!DARK_THEME) {
+            if (!ThemeUtils.isUsingDarkTheme()) {
                 CONTROL_BORDER = BorderFactory.createCompoundBorder(BorderFactory.createEmptyBorder(1, 1, 1, 1),
                         new RoundedLineBorder(JIPipeDesktopLegacyModernMetalTheme.MEDIUM_GRAY, 1, 5));
             } else {
@@ -264,7 +251,7 @@ public class UIUtils {
 
     public static Border createPanelBorder() {
         if (PANEL_BORDER == null) {
-            if (!DARK_THEME) {
+            if (!ThemeUtils.isUsingDarkTheme()) {
                 PANEL_BORDER = BorderFactory.createCompoundBorder(BorderFactory.createLineBorder(JIPipeDesktopLegacyModernMetalTheme.MEDIUM_GRAY, 1),
                         BorderFactory.createEmptyBorder(1, 1, 1, 1));
             } else {
@@ -276,7 +263,7 @@ public class UIUtils {
     }
 
     public static Border createPanelBorder(int left, int top, int right, int bottom) {
-        if (!DARK_THEME) {
+        if (!ThemeUtils.isUsingDarkTheme()) {
             return BorderFactory.createCompoundBorder(BorderFactory.createLineBorder(JIPipeDesktopLegacyModernMetalTheme.MEDIUM_GRAY, 1),
                     BorderFactory.createEmptyBorder(top, left, bottom, right));
         } else {
@@ -392,7 +379,7 @@ public class UIUtils {
     }
 
     public static Color getIconBaseColor() {
-        if (DARK_THEME) {
+        if (ThemeUtils.isUsingDarkTheme()) {
             return new Color(0xDFDFDF);
         } else {
             return new Color(0x333333);
@@ -424,54 +411,6 @@ public class UIUtils {
                 e.printStackTrace();
             }
         }
-    }
-
-    /**
-     * Attempts to override the look and feel based on the JIPipe settings
-     */
-    public static void loadLookAndFeelFromSettings() {
-        JIPipeDesktopUITheme theme = getThemeFromRawSettings();
-        theme.install();
-    }
-
-    public static void applyThemeToCodeEditor(RSyntaxTextArea textArea) {
-        if (DARK_THEME) {
-            try {
-                if (RSYNTAX_THEME_DARK == null) {
-                    RSYNTAX_THEME_DARK = Theme.load(ResourceUtils.class.getResourceAsStream(
-                            "/org/hkijena/jipipe/rsyntaxtextarea/themes/dark.xml"));
-                }
-                RSYNTAX_THEME_DARK.apply(textArea);
-            } catch (IOException ioe) { // Never happens
-                ioe.printStackTrace();
-            }
-        } else {
-            try {
-                if (RSYNTAX_THEME_DEFAULT == null) {
-                    RSYNTAX_THEME_DEFAULT = Theme.load(ResourceUtils.class.getResourceAsStream(
-                            "/org/hkijena/jipipe/rsyntaxtextarea/themes/default.xml"));
-                }
-                RSYNTAX_THEME_DEFAULT.apply(textArea);
-            } catch (IOException ioe) { // Never happens
-                ioe.printStackTrace();
-            }
-        }
-    }
-
-    public static JIPipeDesktopUITheme getThemeFromRawSettings() {
-        Path propertyFile = JIPipeApplicationSettingsRegistry.getPropertyFile(true);
-        JIPipeDesktopUITheme theme = JIPipeDesktopUITheme.ModernLight;
-        if (Files.exists(propertyFile)) {
-            try {
-                JsonNode node = JsonUtils.getObjectMapper().readValue(propertyFile.toFile(), JsonNode.class);
-                JsonNode themeNode = node.path(JIPipeGeneralUIApplicationSettings.ID).path("theme");
-                if (!themeNode.isMissingNode())
-                    theme = JsonUtils.getObjectMapper().readerFor(JIPipeDesktopUITheme.class).readValue(themeNode);
-            } catch (Exception e) {
-                e.printStackTrace();
-            }
-        }
-        return theme;
     }
 
     /**
@@ -1559,7 +1498,7 @@ public class UIUtils {
      * @return the fill color
      */
     public static Color getFillColorFor(JIPipeNodeInfo info) {
-        if (DARK_THEME)
+        if (ThemeUtils.isUsingDarkTheme())
             return info.getCategory().getDarkFillColor();
         else
             return info.getCategory().getFillColor();
@@ -1572,7 +1511,7 @@ public class UIUtils {
      * @return the border color
      */
     public static Color getBorderColorFor(JIPipeNodeInfo info) {
-        if (DARK_THEME)
+        if (ThemeUtils.isUsingDarkTheme())
             return info.getCategory().getDarkBorderColor();
         else
             return info.getCategory().getBorderColor();
@@ -2308,13 +2247,13 @@ public class UIUtils {
 
     public static Border createSuccessBorder() {
         return BorderFactory.createCompoundBorder(BorderFactory.createEmptyBorder(1, 1, 1, 1),
-                BorderFactory.createCompoundBorder(new RoundedLineBorder(UIUtils.CURRENT_STYLE.getSuccessColor(), 1, 5),
+                BorderFactory.createCompoundBorder(new RoundedLineBorder(ThemeUtils.getCurrentStyle().getSuccessColor(), 1, 5),
                         BorderFactory.createEmptyBorder(3, 3, 3, 3)));
     }
 
     public static <T extends AbstractButton> T makeButtonHighlightedSuccess(T button) {
         button.setBorder(BorderFactory.createCompoundBorder(BorderFactory.createEmptyBorder(1, 1, 1, 1),
-                BorderFactory.createCompoundBorder(new RoundedLineBorder(UIUtils.CURRENT_STYLE.getSuccessColor(), 1, 5),
+                BorderFactory.createCompoundBorder(new RoundedLineBorder(ThemeUtils.getCurrentStyle().getSuccessColor(), 1, 5),
                         BorderFactory.createEmptyBorder(3, 3, 3, 3))));
         return button;
     }
@@ -2332,14 +2271,6 @@ public class UIUtils {
 
     public static Border createEmptyBorder(int i) {
         return BorderFactory.createEmptyBorder(i, i, i, i);
-    }
-
-    public static JIPipeDesktopUITheme getTheme() {
-        if (JIPipe.isInstantiated()) {
-            return JIPipeGeneralUIApplicationSettings.getInstance().getTheme();
-        } else {
-            return JIPipeDesktopUITheme.ModernLight;
-        }
     }
 
     public static void repaintLater(Component component) {
@@ -2449,10 +2380,6 @@ public class UIUtils {
         return panel;
     }
 
-    public static boolean currentThemeIsModern() {
-        return CURRENT_THEME.isModern();
-    }
-
     /**
      * If a modern theme is running, wrap the panel in a {@link org.hkijena.jipipe.desktop.commons.theme.helpers.JIPipeDesktopIslandPanel}.
      * Otherwise, return the panel.
@@ -2461,7 +2388,7 @@ public class UIUtils {
      * @return the wrapped panel
      */
     public static JComponent wrapInIslandPanelIfNeeded(JComponent panel) {
-        if(currentThemeIsModern()) {
+        if(ThemeUtils.isUsingModernTheme()) {
             if(panel instanceof JIPipeDesktopIslandPanel) {
                 return panel;
             }

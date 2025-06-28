@@ -27,11 +27,7 @@ import org.hkijena.jipipe.desktop.commons.components.JIPipeDesktopParameterFormP
 import org.hkijena.jipipe.desktop.commons.components.icons.OverlayJIPipeDesktopColorIcon;
 import org.hkijena.jipipe.plugins.parameters.library.markup.HTMLText;
 import org.hkijena.jipipe.plugins.settings.JIPipeFileChooserApplicationSettings;
-import org.hkijena.jipipe.utils.BufferedImageUtils;
-import org.hkijena.jipipe.utils.PathUtils;
-import org.hkijena.jipipe.utils.StringUtils;
-import org.hkijena.jipipe.utils.UIUtils;
-import org.hkijena.jipipe.JIPipe;
+import org.hkijena.jipipe.utils.*;
 import org.hkijena.jipipe.utils.scripting.MacroUtils;
 import org.scijava.ui.swing.script.EditorPane;
 
@@ -294,7 +290,7 @@ public class JIPipeDesktopHTMLEditor extends JIPipeDesktopWorkbenchPanel {
 
         // HTML code editor
         htmlEditorPane = new EditorPane();
-        UIUtils.applyThemeToCodeEditor(htmlEditorPane);
+        ThemeUtils.applyThemeToCodeEditor(htmlEditorPane);
         htmlEditorPane.setBackground(UIManager.getColor("TextArea.background"));
         htmlEditorPane.setHighlightCurrentLine(false);
         htmlEditorPane.setTabSize(4);

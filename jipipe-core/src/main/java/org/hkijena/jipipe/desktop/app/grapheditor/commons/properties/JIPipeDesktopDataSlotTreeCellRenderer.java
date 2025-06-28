@@ -17,8 +17,8 @@ import com.google.common.html.HtmlEscapers;
 import org.hkijena.jipipe.JIPipe;
 import org.hkijena.jipipe.api.data.JIPipeDataSlot;
 import org.hkijena.jipipe.utils.StringUtils;
+import org.hkijena.jipipe.utils.ThemeUtils;
 import org.hkijena.jipipe.utils.UIUtils;
-import org.hkijena.jipipe.JIPipe;
 
 import javax.swing.*;
 import javax.swing.tree.DefaultMutableTreeNode;
@@ -42,7 +42,7 @@ public class JIPipeDesktopDataSlotTreeCellRenderer extends JPanel implements Tre
         setOpaque(true);
         setLayout(new GridBagLayout());
         slotName = new JLabel();
-        slotName.setFont(new Font(Font.DIALOG, Font.BOLD, UIUtils.CURRENT_STYLE.getFontSizeNormal()));
+        slotName.setFont(new Font(Font.DIALOG, Font.BOLD, ThemeUtils.getCurrentStyle().getFontSizeNormal()));
         add(slotName, new GridBagConstraints() {
             {
                 gridx = 0;
@@ -52,7 +52,7 @@ public class JIPipeDesktopDataSlotTreeCellRenderer extends JPanel implements Tre
         });
 
         slotLabel = new JLabel();
-        slotLabel.setFont(new Font(Font.DIALOG, Font.ITALIC, UIUtils.CURRENT_STYLE.getFontSizeNormal()));
+        slotLabel.setFont(new Font(Font.DIALOG, Font.ITALIC, ThemeUtils.getCurrentStyle().getFontSizeNormal()));
         add(slotLabel, new GridBagConstraints() {
             {
                 gridx = 1;
@@ -62,7 +62,7 @@ public class JIPipeDesktopDataSlotTreeCellRenderer extends JPanel implements Tre
         });
 
         slotEdges = new JLabel();
-        slotEdges.setFont(new Font(Font.DIALOG, Font.PLAIN, UIUtils.CURRENT_STYLE.getFontSizeNormal()));
+        slotEdges.setFont(new Font(Font.DIALOG, Font.PLAIN, ThemeUtils.getCurrentStyle().getFontSizeNormal()));
         add(slotEdges, new GridBagConstraints() {
             {
                 gridx = 0;

@@ -13,8 +13,7 @@
 
 package org.hkijena.jipipe.desktop.commons.theme.ui;
 
-import org.hkijena.jipipe.utils.UIUtils;
-import org.hkijena.jipipe.JIPipe;
+import org.hkijena.jipipe.utils.ThemeUtils;
 
 import javax.swing.*;
 import javax.swing.plaf.ComponentUI;
@@ -29,7 +28,7 @@ public class JIPipeDesktopModernScrollBarUI extends BasicScrollBarUI {
     @Override
     protected JButton createDecreaseButton(int orientation) {
         try {
-            if (UIUtils.currentThemeIsModern())
+            if (ThemeUtils.isUsingModernTheme())
                 return createZeroButton();
             else
                 return super.createDecreaseButton(orientation);
@@ -41,7 +40,7 @@ public class JIPipeDesktopModernScrollBarUI extends BasicScrollBarUI {
     @Override
     protected JButton createIncreaseButton(int orientation) {
         try {
-            if (UIUtils.currentThemeIsModern())
+            if (ThemeUtils.isUsingModernTheme())
                 return createZeroButton();
             else
                 return super.createIncreaseButton(orientation);

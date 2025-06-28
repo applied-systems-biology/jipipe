@@ -18,7 +18,7 @@ import org.hkijena.jipipe.api.runtimepartitioning.JIPipeRuntimePartition;
 import org.hkijena.jipipe.api.runtimepartitioning.JIPipeRuntimePartitionConfiguration;
 import org.hkijena.jipipe.desktop.commons.components.icons.SolidColorIcon;
 import org.hkijena.jipipe.utils.StringUtils;
-import org.hkijena.jipipe.utils.UIUtils;
+import org.hkijena.jipipe.utils.ThemeUtils;
 import org.hkijena.jipipe.JIPipe;
 
 import javax.swing.*;
@@ -52,7 +52,7 @@ public class JIPipeDesktopRuntimePartitionListCellRenderer extends JPanel implem
                 insets,
                 0,
                 0));
-        nameLabel.setFont(new Font(Font.DIALOG, Font.BOLD, UIUtils.CURRENT_STYLE.getFontSizeNormal()));
+        nameLabel.setFont(new Font(Font.DIALOG, Font.BOLD, ThemeUtils.getCurrentStyle().getFontSizeNormal()));
         add(nameLabel, new GridBagConstraints(1,
                 0,
                 1,

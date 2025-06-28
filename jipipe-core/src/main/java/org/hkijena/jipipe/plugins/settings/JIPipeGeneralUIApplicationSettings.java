@@ -20,6 +20,7 @@ import org.hkijena.jipipe.api.settings.JIPipeDefaultApplicationSettingsSheetCate
 import org.hkijena.jipipe.api.settings.JIPipeDefaultApplicationsSettingsSheet;
 import org.hkijena.jipipe.desktop.app.grapheditor.commons.AbstractJIPipeDesktopGraphEditorUI;
 import org.hkijena.jipipe.desktop.commons.theme.JIPipeDesktopUITheme;
+import org.hkijena.jipipe.plugins.parameters.library.jipipe.JIPipeModernThemeStyleParameter;
 import org.hkijena.jipipe.utils.UIUtils;
 import org.hkijena.jipipe.JIPipe;
 
@@ -41,7 +42,8 @@ public class JIPipeGeneralUIApplicationSettings extends JIPipeDefaultApplication
     private boolean openDataWindowsAlwaysOnTop = true;
     private boolean openUtilityWindowsAlwaysOnTop = true;
     private boolean allowDefaultCollapsedParameters = true;
-    private JIPipeDesktopUITheme theme = JIPipeDesktopUITheme.ModernLight;
+    private JIPipeDesktopUITheme theme = JIPipeDesktopUITheme.Modern;
+    private JIPipeModernThemeStyleParameter themeStyle = new JIPipeModernThemeStyleParameter("JIPipe Light");
     private boolean switchToProjectInfoOnUnknownProject = true;
 
     public static JIPipeGeneralUIApplicationSettings getInstance() {
@@ -141,12 +143,12 @@ public class JIPipeGeneralUIApplicationSettings extends JIPipeDefaultApplication
     }
 
     @SetJIPipeDocumentation(name = "Theme", description = "The theme that is used for the user interface. Requires a restart to take effect.")
-    @JIPipeParameter("theme")
+    @JIPipeParameter("theme-v2")
     public JIPipeDesktopUITheme getTheme() {
         return theme;
     }
 
-    @JIPipeParameter("theme")
+    @JIPipeParameter("theme-v2")
     public void setTheme(JIPipeDesktopUITheme theme) {
         this.theme = theme;
     }
@@ -208,5 +210,16 @@ public class JIPipeGeneralUIApplicationSettings extends JIPipeDefaultApplication
     @Override
     public String getDescription() {
         return "General UI settings";
+    }
+
+    @SetJIPipeDocumentation(name = "Theme style", description = "The style that is applied to modern themes (Metal and Native are not affected).")
+    @JIPipeParameter("theme-style")
+    public JIPipeModernThemeStyleParameter getThemeStyle() {
+        return themeStyle;
+    }
+
+    @JIPipeParameter("theme-style")
+    public void setThemeStyle(JIPipeModernThemeStyleParameter themeStyle) {
+        this.themeStyle = themeStyle;
     }
 }

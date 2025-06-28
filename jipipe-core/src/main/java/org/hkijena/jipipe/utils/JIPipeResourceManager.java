@@ -165,7 +165,7 @@ public class JIPipeResourceManager {
         if(resourceClass == null) {
             resourceClass = JIPipe.class;
         }
-        if(UIUtils.DARK_THEME && !StringUtils.isNullOrEmpty(urlDark)) {
+        if(ThemeUtils.isUsingDarkTheme() && !StringUtils.isNullOrEmpty(urlDark)) {
             URL resource = resourceClass.getResource(urlDark);
             if(resource != null) {
                 return resource;
@@ -235,7 +235,7 @@ public class JIPipeResourceManager {
      */
     public URL getIcon12URL(String iconName) {
         URL resource = null;
-        if (UIUtils.DARK_THEME) {
+        if (ThemeUtils.isUsingDarkTheme()) {
             resource = resourceClass.getResource(icons12DarkBasePath + "/" + iconName);
             if (resource != null) {
                 return resource;
@@ -257,7 +257,7 @@ public class JIPipeResourceManager {
      */
     public URL getIcon8URL(String iconName) {
         URL resource = null;
-        if (UIUtils.DARK_THEME) {
+        if (ThemeUtils.isUsingDarkTheme()) {
             resource = resourceClass.getResource(icons8DarkBasePath + "/" + iconName);
             if (resource != null) {
                 return resource;
@@ -279,7 +279,7 @@ public class JIPipeResourceManager {
      */
     public URL getIcon8InvertedURL(String iconName) {
         URL resource = null;
-        if (!UIUtils.DARK_THEME) {
+        if (!ThemeUtils.isUsingDarkTheme()) {
             resource = resourceClass.getResource(icons8DarkBasePath + "/" + iconName);
             if (resource != null) {
                 return resource;
@@ -301,7 +301,7 @@ public class JIPipeResourceManager {
      */
     public URL getIcon12InvertedURL(String iconName) {
         URL resource = null;
-        if (!UIUtils.DARK_THEME) {
+        if (!ThemeUtils.isUsingDarkTheme()) {
             resource = resourceClass.getResource(icons12DarkBasePath + "/" + iconName);
             if (resource != null) {
                 return resource;
@@ -323,7 +323,7 @@ public class JIPipeResourceManager {
      */
     public URL getIcon16URL(String iconName) {
         URL resource = null;
-        if (UIUtils.DARK_THEME) {
+        if (ThemeUtils.isUsingDarkTheme()) {
             resource = resourceClass.getResource(icons16DarkBasePath + "/" + iconName);
             if (resource != null) {
                 return resource;
@@ -346,7 +346,7 @@ public class JIPipeResourceManager {
      */
     public URL getIcon16InvertedURL(String iconName) {
         URL resource = null;
-        if (!UIUtils.DARK_THEME) {
+        if (!ThemeUtils.isUsingDarkTheme()) {
             resource = resourceClass.getResource(icons16DarkBasePath + "/" + iconName);
             if (resource != null) {
                 return resource;
@@ -368,7 +368,7 @@ public class JIPipeResourceManager {
      */
     public URL getIcon24URL(String iconName) {
         URL resource = null;
-        if (UIUtils.DARK_THEME) {
+        if (ThemeUtils.isUsingDarkTheme()) {
             resource = resourceClass.getResource(icons24DarkBasePath + "/" + iconName);
             if (resource != null) {
                 return resource;
@@ -390,7 +390,7 @@ public class JIPipeResourceManager {
      */
     public URL getIcon24InvertedURL(String iconName) {
         URL resource = null;
-        if (!UIUtils.DARK_THEME) {
+        if (!ThemeUtils.isUsingDarkTheme()) {
             resource = resourceClass.getResource(icons24DarkBasePath + "/" + iconName);
             if (resource != null) {
                 return resource;
@@ -412,7 +412,7 @@ public class JIPipeResourceManager {
      */
     public URL getIcon32URL(String iconName) {
         URL resource = null;
-        if (UIUtils.DARK_THEME) {
+        if (ThemeUtils.isUsingDarkTheme()) {
             resource = resourceClass.getResource(icons32DarkBasePath + "/" + iconName);
             if (resource != null) {
                 return resource;
@@ -434,7 +434,7 @@ public class JIPipeResourceManager {
      */
     public URL getIcon32InvertedURL(String iconName) {
         URL resource = null;
-        if (!UIUtils.DARK_THEME) {
+        if (!ThemeUtils.isUsingDarkTheme()) {
             resource = resourceClass.getResource(icons32DarkBasePath + "/" + iconName);
             if (resource != null) {
                 return resource;
@@ -456,7 +456,7 @@ public class JIPipeResourceManager {
      */
     public URL getIcon64URL(String iconName) {
         URL resource = null;
-        if (UIUtils.DARK_THEME) {
+        if (ThemeUtils.isUsingDarkTheme()) {
             resource = resourceClass.getResource(icons64DarkBasePath + "/" + iconName);
             if (resource != null) {
                 return resource;
@@ -478,7 +478,7 @@ public class JIPipeResourceManager {
      */
     public URL getIcon64InvertedURL(String iconName) {
         URL resource = null;
-        if (!UIUtils.DARK_THEME) {
+        if (!ThemeUtils.isUsingDarkTheme()) {
             resource = resourceClass.getResource(icons64DarkBasePath + "/" + iconName);
             if (resource != null) {
                 return resource;
@@ -500,7 +500,7 @@ public class JIPipeResourceManager {
      */
     public URL getIcon128URL(String iconName) {
         URL resource = null;
-        if (UIUtils.DARK_THEME) {
+        if (ThemeUtils.isUsingDarkTheme()) {
             resource = resourceClass.getResource(icons128DarkBasePath + "/" + iconName);
             if (resource != null) {
                 return resource;
@@ -522,7 +522,7 @@ public class JIPipeResourceManager {
      */
     public URL getIcon128InvertedURL(String iconName) {
         URL resource = null;
-        if (!UIUtils.DARK_THEME) {
+        if (!ThemeUtils.isUsingDarkTheme()) {
             resource = resourceClass.getResource(icons128DarkBasePath + "/" + iconName);
             if (resource != null) {
                 return resource;
@@ -544,7 +544,7 @@ public class JIPipeResourceManager {
      */
     public URL getVariantResourceURL(String resourceName) {
         URL resource = null;
-        if (UIUtils.DARK_THEME) {
+        if (ThemeUtils.isUsingDarkTheme()) {
             resource = resourceClass.getResource(resourcesDarkBasePath + "/" + resourceName);
             if (resource != null) {
                 return resource;

@@ -17,8 +17,8 @@ import org.hkijena.jipipe.JIPipe;
 import org.hkijena.jipipe.desktop.api.JIPipeDesktopParameterEditorUI;
 import org.hkijena.jipipe.desktop.commons.components.JIPipeDesktopPickEnumValueDialog;
 import org.hkijena.jipipe.utils.ReflectionUtils;
+import org.hkijena.jipipe.utils.ThemeUtils;
 import org.hkijena.jipipe.utils.UIUtils;
-import org.hkijena.jipipe.JIPipe;
 
 import javax.swing.*;
 import java.awt.*;
@@ -99,7 +99,7 @@ public class EnumDesktopParameterEditorUI extends JIPipeDesktopParameterEditorUI
         public Renderer(EnumItemInfo info) {
             this.info = info;
             setBorder(BorderFactory.createEmptyBorder(4, 4, 4, 4));
-            setFont(new Font(Font.DIALOG, Font.PLAIN, UIUtils.CURRENT_STYLE.getFontSizeNormal()));
+            setFont(new Font(Font.DIALOG, Font.PLAIN, ThemeUtils.getCurrentStyle().getFontSizeNormal()));
             setOpaque(true);
         }
 

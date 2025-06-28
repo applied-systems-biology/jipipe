@@ -22,8 +22,8 @@ import org.hkijena.jipipe.desktop.app.JIPipeDesktopProjectWorkbench;
 import org.hkijena.jipipe.desktop.app.settings.JIPipeDesktopRuntimePartitionListEditor;
 import org.hkijena.jipipe.desktop.commons.components.icons.SolidColorIcon;
 import org.hkijena.jipipe.utils.StringUtils;
+import org.hkijena.jipipe.utils.ThemeUtils;
 import org.hkijena.jipipe.utils.UIUtils;
-import org.hkijena.jipipe.JIPipe;
 
 import javax.swing.*;
 import java.awt.*;
@@ -43,7 +43,7 @@ public class RuntimePartitionReferenceDesktopParameterEditorUI extends JIPipeDes
 
     private void initialize() {
         setLayout(new BorderLayout(4, 0));
-        nameLabel.setFont(new Font(Font.DIALOG, Font.ITALIC, UIUtils.CURRENT_STYLE.getFontSizeNormal()));
+        nameLabel.setFont(new Font(Font.DIALOG, Font.ITALIC, ThemeUtils.getCurrentStyle().getFontSizeNormal()));
         nameLabel.setBorder(BorderFactory.createEmptyBorder(0, 4, 0, 12));
         nameLabel.setOpaque(false);
         nameLabel.addActionListener(e -> editCurrentPartition());

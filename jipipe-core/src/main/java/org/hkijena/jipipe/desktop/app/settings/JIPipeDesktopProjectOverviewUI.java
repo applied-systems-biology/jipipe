@@ -46,7 +46,6 @@ import org.hkijena.jipipe.desktop.app.settings.project.JIPipeDesktopMergedProjec
 import org.hkijena.jipipe.desktop.app.settings.project.JIPipeDesktopProjectOverviewRunManager;
 import org.hkijena.jipipe.desktop.commons.components.JIPipeDesktopFormHelpPanel;
 import org.hkijena.jipipe.desktop.commons.components.JIPipeDesktopFormPanel;
-import org.hkijena.jipipe.desktop.commons.components.JIPipeDesktopImageFrameComponent;
 import org.hkijena.jipipe.desktop.commons.components.JIPipeDesktopParameterFormPanel;
 import org.hkijena.jipipe.desktop.commons.components.icons.SolidColorIcon;
 import org.hkijena.jipipe.desktop.commons.components.markup.JIPipeDesktopHTMLEditor;
@@ -68,7 +67,6 @@ import javax.swing.*;
 import java.awt.*;
 import java.awt.datatransfer.Clipboard;
 import java.awt.datatransfer.StringSelection;
-import java.awt.image.BufferedImage;
 import java.nio.file.Path;
 import java.util.*;
 import java.util.List;
@@ -693,7 +691,7 @@ public class JIPipeDesktopProjectOverviewUI extends JIPipeDesktopProjectWorkbenc
         ));
         JLabel titleLabel = new JLabel(title);
         titleLabel.setIcon(JIPipe.RESOURCES.getIcon32("status/starred.png"));
-        titleLabel.setFont(titleLabel.getFont().deriveFont(Font.BOLD, UIUtils.CURRENT_STYLE.getFontSizeLarge()));
+        titleLabel.setFont(titleLabel.getFont().deriveFont(Font.BOLD, ThemeUtils.getCurrentStyle().getFontSizeLarge()));
         titleLabel.setBorder(BorderFactory.createEmptyBorder(0, 0, 16, 0));
         panel.add(titleLabel, BorderLayout.NORTH);
         panel.add(UIUtils.createReadonlyBorderlessTextArea(text), BorderLayout.CENTER);
@@ -723,7 +721,7 @@ public class JIPipeDesktopProjectOverviewUI extends JIPipeDesktopProjectWorkbenc
 
         JLabel titleLabel = new JLabel(title, icon, JLabel.LEFT);
         titleLabel.setBorder(UIUtils.createEmptyBorder(8));
-        titleLabel.setFont(titleLabel.getFont().deriveFont(Font.BOLD, UIUtils.CURRENT_STYLE.getFontSizeLarge()));
+        titleLabel.setFont(titleLabel.getFont().deriveFont(Font.BOLD, ThemeUtils.getCurrentStyle().getFontSizeLarge()));
 
         JToolBar toolBar = new JToolBar();
         toolBar.setFloatable(false);
@@ -923,8 +921,8 @@ public class JIPipeDesktopProjectOverviewUI extends JIPipeDesktopProjectWorkbenc
         headerPanel = new JPanel();
         headerPanel.setBorder(BorderFactory.createCompoundBorder(
                 BorderFactory.createEmptyBorder(0,0,16,0),
-                BorderFactory.createMatteBorder(1,0,1,0, UIUtils.CURRENT_STYLE.getBorderColor())));
-        headerPanel.setBackground(UIUtils.CURRENT_STYLE.getWindowBackground());
+                BorderFactory.createMatteBorder(1,0,1,0, ThemeUtils.getCurrentStyle().getBorderColor())));
+        headerPanel.setBackground(ThemeUtils.getCurrentStyle().getWindowBackground());
         headerPanel.setLayout(new BorderLayout());
         headerPanel.setPreferredSize(new Dimension(headerPanel.getPreferredSize().width, 150));
 
@@ -933,7 +931,7 @@ public class JIPipeDesktopProjectOverviewUI extends JIPipeDesktopProjectWorkbenc
 
         projectName = UIUtils.createReadonlyBorderlessTextField("Unnamed project");
         projectName.setOpaque(false);
-        projectName.setFont(new Font(Font.DIALOG, Font.PLAIN, UIUtils.CURRENT_STYLE.getFontSizeHuge()));
+        projectName.setFont(new Font(Font.DIALOG, Font.PLAIN, ThemeUtils.getCurrentStyle().getFontSizeHuge()));
         projectName.setBorder(UIUtils.createEmptyBorder(4));
 
         nameAndAuthorPanel.addWideToForm(UIUtils.makeNonOpaque(UIUtils.boxHorizontal(projectName,

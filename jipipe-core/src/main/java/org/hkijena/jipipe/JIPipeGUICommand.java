@@ -24,6 +24,7 @@ import org.hkijena.jipipe.desktop.commons.components.JIPipeDesktopSplashScreen;
 import org.hkijena.jipipe.desktop.commons.notifications.JIPipeDesktopWorkbenchNotificationInboxUI;
 import org.hkijena.jipipe.plugins.settings.JIPipeExtensionApplicationSettings;
 import org.hkijena.jipipe.plugins.settings.JIPipeNotificationUIApplicationSettings;
+import org.hkijena.jipipe.utils.ThemeUtils;
 import org.hkijena.jipipe.utils.UIUtils;
 import org.hkijena.jipipe.JIPipe;
 import org.scijava.Context;
@@ -61,7 +62,7 @@ public class JIPipeGUICommand implements Command {
     @Override
     public void run() {
         // Update look & feel
-        UIUtils.loadLookAndFeelFromSettings();
+        ThemeUtils.applyThemeFromSettings();
         if (!JIPipe.isInstantiated()) {
             SwingUtilities.invokeLater(() -> JIPipeDesktopSplashScreen.getInstance().showSplash(context));
         }

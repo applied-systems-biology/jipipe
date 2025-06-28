@@ -15,6 +15,7 @@ package org.hkijena.jipipe.desktop.commons.components;
 
 import org.hkijena.jipipe.desktop.commons.theme.JIPipeDesktopLegacyDarkModernMetalTheme;
 import org.hkijena.jipipe.desktop.commons.theme.JIPipeDesktopLegacyModernMetalTheme;
+import org.hkijena.jipipe.utils.ThemeUtils;
 import org.hkijena.jipipe.utils.UIUtils;
 import org.hkijena.jipipe.JIPipe;
 
@@ -28,13 +29,8 @@ public class JIPipeDesktopVerticalToolBar extends JPanel {
 
     private void initialize() {
         setLayout(new BoxLayout(this, BoxLayout.Y_AXIS));
-        switch (UIUtils.getTheme()) {
-            case ModernLight:
-                setBorder(BorderFactory.createMatteBorder(0, 0, 0, 1, JIPipeDesktopLegacyModernMetalTheme.GRAY));
-                break;
-            case ModernDark:
-                setBorder(BorderFactory.createMatteBorder(0, 0, 0, 1, JIPipeDesktopLegacyDarkModernMetalTheme.GRAY));
-                break;
+        if (ThemeUtils.isUsingModernTheme()) {
+            setBorder(BorderFactory.createMatteBorder(0, 0, 0, 1, ThemeUtils.getCurrentStyle().getBorderColor()));
         }
     }
 

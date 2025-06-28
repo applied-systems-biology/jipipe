@@ -17,8 +17,8 @@ import org.apache.commons.lang3.math.NumberUtils;
 import org.hkijena.jipipe.desktop.api.JIPipeDesktopParameterEditorUI;
 import org.hkijena.jipipe.desktop.commons.components.JIPipeDesktopDocumentChangeListener;
 import org.hkijena.jipipe.utils.StringUtils;
+import org.hkijena.jipipe.utils.ThemeUtils;
 import org.hkijena.jipipe.utils.UIUtils;
-import org.hkijena.jipipe.JIPipe;
 import org.jdesktop.swingx.JXTextField;
 
 import javax.swing.*;
@@ -62,7 +62,7 @@ public class QuantityDesktopParameterEditorUI extends JIPipeDesktopParameterEdit
         unitEditor = new JComboBox<>();
         unitEditor.setPreferredSize(new Dimension(120, 25));
         unitEditor.setEditor(new Editor());
-        unitEditor.setFont(new Font(Font.DIALOG, Font.ITALIC, UIUtils.CURRENT_STYLE.getFontSizeNormal()));
+        unitEditor.setFont(new Font(Font.DIALOG, Font.ITALIC, ThemeUtils.getCurrentStyle().getFontSizeNormal()));
         unitEditor.setBackground(UIManager.getColor("TextField.background"));
         unitEditor.setBorder(BorderFactory.createCompoundBorder(BorderFactory.createMatteBorder(0, 1, 0, 0, Color.GRAY),
                 BorderFactory.createEmptyBorder(0, 16, 0, 4)));

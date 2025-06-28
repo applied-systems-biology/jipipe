@@ -14,9 +14,8 @@
 package org.hkijena.jipipe.desktop.app.grapheditor.nodefinder;
 
 import org.hkijena.jipipe.api.nodes.database.JIPipeNodeDatabaseEntry;
-import org.hkijena.jipipe.api.notifications.JIPipeNotificationAction;
-import org.hkijena.jipipe.desktop.commons.theme.JIPipeDesktopModernThemeStyle;
 import org.hkijena.jipipe.desktop.commons.theme.ui.JIPipeDesktopRoundedButtonUI;
+import org.hkijena.jipipe.utils.ThemeUtils;
 import org.hkijena.jipipe.utils.UIUtils;
 import org.hkijena.jipipe.JIPipe;
 import org.hkijena.jipipe.utils.ui.RoundedLineBorder;
@@ -48,12 +47,12 @@ public class JIPipeDesktopNodeFinderDatasetListCellRenderer extends JPanel imple
     private void initialize() {
         setLayout(new GridBagLayout());
 
-        nameLabel.setFont(new Font(Font.DIALOG, Font.PLAIN, UIUtils.CURRENT_STYLE.getFontSizeNormal()));
+        nameLabel.setFont(new Font(Font.DIALOG, Font.PLAIN, ThemeUtils.getCurrentStyle().getFontSizeNormal()));
 
-        descriptionLabel.setFont(new Font(Font.DIALOG, Font.PLAIN, UIUtils.CURRENT_STYLE.getFontSizeTiny()));
+        descriptionLabel.setFont(new Font(Font.DIALOG, Font.PLAIN, ThemeUtils.getCurrentStyle().getFontSizeTiny()));
         descriptionLabel.setForeground(Color.GRAY);
 
-        categoryLabel.setFont(new Font(Font.DIALOG, Font.ITALIC, UIUtils.CURRENT_STYLE.getFontSizeTiny()));
+        categoryLabel.setFont(new Font(Font.DIALOG, Font.ITALIC, ThemeUtils.getCurrentStyle().getFontSizeTiny()));
         categoryLabel.setForeground(Color.GRAY);
 
         Insets insets = new Insets(2, 2, 2, 2);
@@ -64,7 +63,7 @@ public class JIPipeDesktopNodeFinderDatasetListCellRenderer extends JPanel imple
         add(descriptionLabel, new GridBagConstraints(2, 2, 1, 1, 0, 0, GridBagConstraints.NORTHWEST, GridBagConstraints.HORIZONTAL, insets, 0, 0));
 
         addButton.setOpaque(false);
-        addButton.setUI(new JIPipeDesktopRoundedButtonUI(3, UIUtils.CURRENT_STYLE.getSuccessColor(), UIUtils.CURRENT_STYLE.getSuccessColor().darker()));
+        addButton.setUI(new JIPipeDesktopRoundedButtonUI(3, ThemeUtils.getCurrentStyle().getSuccessColor(), ThemeUtils.getCurrentStyle().getSuccessColor().darker()));
         addButton.setIcon(JIPipe.RESOURCES.getIcon16("actions/add.png"));
 //        addButton.setFont(new Font(Font.DIALOG, Font.PLAIN, 12));
 //        addButton.setBackground(JIPipeNotificationAction.Style.Success.getBackground());

@@ -65,8 +65,8 @@ import org.hkijena.jipipe.plugins.parameters.library.roi.Anchor;
 import org.hkijena.jipipe.plugins.settings.JIPipeGraphEditorUIApplicationSettings;
 import org.hkijena.jipipe.utils.PointRange;
 import org.hkijena.jipipe.utils.StringUtils;
+import org.hkijena.jipipe.utils.ThemeUtils;
 import org.hkijena.jipipe.utils.UIUtils;
-import org.hkijena.jipipe.JIPipe;
 import org.hkijena.jipipe.utils.json.JsonUtils;
 import org.hkijena.jipipe.utils.ui.ScreenImage;
 import org.hkijena.jipipe.utils.ui.ScreenImageSVG;
@@ -109,7 +109,7 @@ public class JIPipeDesktopGraphCanvasUI extends JLayeredPane implements JIPipeDe
             true,
             true);
 
-    public static final Font GRAPH_TOOL_CURSOR_FONT = new Font(Font.DIALOG, Font.PLAIN, UIUtils.CURRENT_STYLE.getFontSizeNormal());
+    public static final Font GRAPH_TOOL_CURSOR_FONT = new Font(Font.DIALOG, Font.PLAIN, ThemeUtils.getCurrentStyle().getFontSizeNormal());
     public static final Color COLOR_HIGHLIGHT_GREEN = new Color(0, 128, 0);
     public static final Stroke STROKE_UNIT = new BasicStroke(1);
     public static final Stroke STROKE_THICK = new BasicStroke(3);
@@ -124,7 +124,7 @@ public class JIPipeDesktopGraphCanvasUI extends JLayeredPane implements JIPipeDe
     private static final int RESIZE_HANDLE_DISTANCE = 12;
     private static final int RESIZE_HANDLE_SIZE = 10;
     private static final Color COMMENT_EDGE_COLOR = new Color(194, 141, 0);
-    private static final Color COLOR_EDGE_DEFAULT = UIUtils.DARK_THEME ? new Color(0x3E3E3E) : new Color(0x737880);
+    private static final Color COLOR_EDGE_DEFAULT = ThemeUtils.isUsingDarkTheme() ? new Color(0x3E3E3E) : new Color(0x737880);
     private static final Color COLOR_EDGE_CONVERT = new Color(0x2957C2);
     private final JIPipeDesktopWorkbench desktopWorkbench;
     private final AbstractJIPipeDesktopGraphEditorUI graphEditorUI;

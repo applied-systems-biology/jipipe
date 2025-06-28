@@ -70,8 +70,8 @@ import org.hkijena.jipipe.plugins.parameters.library.markup.MarkdownText;
 import org.hkijena.jipipe.plugins.settings.*;
 import org.hkijena.jipipe.utils.PathUtils;
 import org.hkijena.jipipe.utils.StringUtils;
+import org.hkijena.jipipe.utils.ThemeUtils;
 import org.hkijena.jipipe.utils.UIUtils;
-import org.hkijena.jipipe.JIPipe;
 import org.jdesktop.swingx.JXStatusBar;
 import org.jdesktop.swingx.plaf.basic.BasicStatusBarUI;
 import org.scijava.Context;
@@ -318,7 +318,7 @@ public class JIPipeDesktopProjectWorkbench extends JPanel implements JIPipeDeskt
 
     private void initialize(boolean showIntroduction, boolean isNewProject) {
         setLayout(new BorderLayout());
-        setBackground(UIUtils.CURRENT_STYLE.getWindowBackground());
+        setBackground(ThemeUtils.getCurrentStyle().getWindowBackground());
 
         // Initialize JIPipe logger
         JIPipeDesktopRunnableLogsCollection.getInstance();
@@ -845,6 +845,7 @@ public class JIPipeDesktopProjectWorkbench extends JPanel implements JIPipeDeskt
         }
         UIUtils.addEscapeListener(dialog);
         JPanel contentPanel = new JPanel(new BorderLayout(8, 8));
+        contentPanel.setBackground(ThemeUtils.getCurrentStyle().getWindowBackground());
         contentPanel.add(applicationSettingsUI, BorderLayout.CENTER);
 
         AtomicBoolean saved = new AtomicBoolean(false);
@@ -858,20 +859,21 @@ public class JIPipeDesktopProjectWorkbench extends JPanel implements JIPipeDeskt
         });
 
         JPanel buttonPanel = new JPanel();
+        buttonPanel.setBackground(ThemeUtils.getCurrentStyle().getWindowBackground());
         buttonPanel.setLayout(new BoxLayout(buttonPanel, BoxLayout.X_AXIS));
         JButton resetButton = new JButton("Reset", JIPipe.RESOURCES.getIcon16("actions/edit-reset.png"));
         resetButton.addActionListener(e -> {
             JIPipe.getSettings().reload();
             applicationSettingsUI.selectNode("/General");
         });
-        buttonPanel.add(resetButton);
+        buttonPanel.add(UIUtils.makeButtonTransparent(resetButton));
         buttonPanel.add(Box.createHorizontalGlue());
         JButton cancelButton = new JButton("Cancel", JIPipe.RESOURCES.getIcon16("actions/cancel.png"));
         cancelButton.addActionListener(e -> {
             JIPipe.getSettings().reload();
             dialog.setVisible(false);
         });
-        buttonPanel.add(cancelButton);
+        buttonPanel.add(UIUtils.makeButtonTransparent(cancelButton));
         JButton saveButton = new JButton("Save", JIPipe.RESOURCES.getIcon16("actions/filesave.png"));
         saveButton.addActionListener(e -> {
             if (!JIPipe.NO_SETTINGS_AUTOSAVE) {
@@ -880,7 +882,7 @@ public class JIPipeDesktopProjectWorkbench extends JPanel implements JIPipeDeskt
             saved.set(true);
             dialog.setVisible(false);
         });
-        buttonPanel.add(saveButton);
+        buttonPanel.add(UIUtils.makeButtonTransparent(saveButton));
         contentPanel.add(buttonPanel, BorderLayout.SOUTH);
         buttonPanel.setBorder(BorderFactory.createEmptyBorder(8, 8, 8, 8));
 
@@ -1148,7 +1150,7 @@ public class JIPipeDesktopProjectWorkbench extends JPanel implements JIPipeDeskt
 
         UIUtils.addEscapeListener(dialog);
         JPanel contentPanel = new JPanel(new BorderLayout(8, 8));
-        contentPanel.setBackground(UIUtils.CURRENT_STYLE.getWindowBackground());
+        contentPanel.setBackground(ThemeUtils.getCurrentStyle().getWindowBackground());
         contentPanel.add(projectSettingsComponents, BorderLayout.CENTER);
 
         JPanel buttonPanel = new JPanel();
@@ -1161,7 +1163,7 @@ public class JIPipeDesktopProjectWorkbench extends JPanel implements JIPipeDeskt
         closeButton.addActionListener(e -> {
             dialog.setVisible(false);
         });
-        buttonPanel.add(closeButton);
+        buttonPanel.add(UIUtils.makeButtonTransparent(closeButton));
 
         contentPanel.add(buttonPanel, BorderLayout.SOUTH);
         buttonPanel.setBorder(BorderFactory.createEmptyBorder(8, 8, 8, 8));

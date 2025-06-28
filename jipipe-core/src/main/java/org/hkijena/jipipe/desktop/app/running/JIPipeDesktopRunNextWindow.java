@@ -287,7 +287,7 @@ public class JIPipeDesktopRunNextWindow extends JFrame implements JIPipeDesktopP
 
         JLabel titleLabel = new JLabel(title, icon, JLabel.LEFT);
         titleLabel.setBorder(UIUtils.createEmptyBorder(8));
-        titleLabel.setFont(titleLabel.getFont().deriveFont(Font.BOLD, UIUtils.CURRENT_STYLE.getFontSizeLarge()));
+        titleLabel.setFont(titleLabel.getFont().deriveFont(Font.BOLD, ThemeUtils.getCurrentStyle().getFontSizeLarge()));
 
         JToolBar toolBar = new JToolBar();
         toolBar.setFloatable(false);

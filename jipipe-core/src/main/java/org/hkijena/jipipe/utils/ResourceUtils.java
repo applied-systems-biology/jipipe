@@ -60,7 +60,7 @@ public class ResourceUtils {
      * @return resource URL or null if the resource does not exist
      */
     public static URL getPluginResource(String internalResourcePath) {
-        if (UIUtils.DARK_THEME) {
+        if (ThemeUtils.isUsingDarkTheme()) {
             URL darkResource = ResourceUtils.class.getResource(getResourcePath("dark/" + internalResourcePath));
             if (darkResource != null)
                 return darkResource;
@@ -76,7 +76,7 @@ public class ResourceUtils {
      * @return resource URL or null if the resource does not exist
      */
     public static URL getPluginResourceInverted(String internalResourcePath) {
-        if (!UIUtils.DARK_THEME) {
+        if (!ThemeUtils.isUsingDarkTheme()) {
             URL darkResource = ResourceUtils.class.getResource(getResourcePath("dark/" + internalResourcePath));
             if (darkResource != null)
                 return darkResource;

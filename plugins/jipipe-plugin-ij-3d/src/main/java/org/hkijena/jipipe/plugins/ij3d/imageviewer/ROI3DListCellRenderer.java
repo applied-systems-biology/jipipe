@@ -17,8 +17,8 @@ import org.apache.commons.math3.util.Precision;
 import org.hkijena.jipipe.desktop.commons.components.icons.SolidColorIcon;
 import org.hkijena.jipipe.plugins.ij3d.datatypes.ROI3D;
 import org.hkijena.jipipe.utils.StringUtils;
+import org.hkijena.jipipe.utils.ThemeUtils;
 import org.hkijena.jipipe.utils.UIUtils;
-import org.hkijena.jipipe.JIPipe;
 
 import javax.swing.*;
 import java.awt.*;
@@ -38,7 +38,7 @@ public class ROI3DListCellRenderer extends JPanel implements ListCellRenderer<RO
         setOpaque(true);
         setLayout(new GridBagLayout());
         iconLabel.setIcon(strokeFillPreview);
-        infoLabel.setFont(new Font(Font.DIALOG, Font.PLAIN, UIUtils.CURRENT_STYLE.getFontSizeTiny()));
+        infoLabel.setFont(new Font(Font.DIALOG, Font.PLAIN, ThemeUtils.getCurrentStyle().getFontSizeTiny()));
         add(iconLabel, new GridBagConstraints() {
             {
                 gridx = 0;

@@ -15,8 +15,8 @@ package org.hkijena.jipipe.desktop.app.project.templatedownloader;
 
 import org.hkijena.jipipe.JIPipe;
 import org.hkijena.jipipe.desktop.commons.components.JIPipeDesktopFormPanel;
+import org.hkijena.jipipe.utils.ThemeUtils;
 import org.hkijena.jipipe.utils.UIUtils;
-import org.hkijena.jipipe.JIPipe;
 import org.hkijena.jipipe.utils.ui.RoundedLineBorder;
 
 import javax.swing.*;
@@ -94,12 +94,12 @@ public class JIPipeDesktopProjectTemplateDownloaderUI extends JDialog {
         panel.add(UIUtils.createBorderlessReadonlyTextPane(availablePackage.getSizeInfo(), false), new GridBagConstraints(0, 3, 1, 1, 1, 0, GridBagConstraints.NORTHWEST, GridBagConstraints.HORIZONTAL, new Insets(4, 4, 4, 4), 0, 0));
 
         JTextArea idField = UIUtils.createReadonlyBorderlessTextArea(availablePackage.getUrl());
-        idField.setFont(new Font(Font.MONOSPACED, Font.PLAIN, UIUtils.CURRENT_STYLE.getFontSizeSmall()));
+        idField.setFont(new Font(Font.MONOSPACED, Font.PLAIN, ThemeUtils.getCurrentStyle().getFontSizeSmall()));
         panel.add(idField, new GridBagConstraints(0, 4, 1, 1, 1, 0, GridBagConstraints.NORTHWEST, GridBagConstraints.HORIZONTAL, new Insets(4, 4, 4, 4), 0, 0));
 
 
         JCheckBox installToggle = new JCheckBox("Download this template");
-        installToggle.setFont(new Font(Font.DIALOG, Font.PLAIN, UIUtils.CURRENT_STYLE.getFontSizeLarge()));
+        installToggle.setFont(new Font(Font.DIALOG, Font.PLAIN, ThemeUtils.getCurrentStyle().getFontSizeLarge()));
         installToggle.addActionListener(e -> {
             if (installToggle.isSelected()) {
                 targetPackages.add(availablePackage);

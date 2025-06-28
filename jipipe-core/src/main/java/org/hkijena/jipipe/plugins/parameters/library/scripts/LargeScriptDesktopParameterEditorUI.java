@@ -19,8 +19,7 @@ import org.hkijena.jipipe.desktop.api.JIPipeDesktopParameterEditorUI;
 import org.hkijena.jipipe.desktop.commons.components.JIPipeDesktopDocumentChangeListener;
 import org.hkijena.jipipe.plugins.parameters.api.scripts.ScriptParameter;
 import org.hkijena.jipipe.utils.CustomEditorPane;
-import org.hkijena.jipipe.utils.UIUtils;
-import org.hkijena.jipipe.JIPipe;
+import org.hkijena.jipipe.utils.ThemeUtils;
 
 import javax.swing.*;
 import javax.swing.event.DocumentEvent;
@@ -43,7 +42,7 @@ public class LargeScriptDesktopParameterEditorUI extends JIPipeDesktopParameterE
         setLayout(new BorderLayout());
         ScriptParameter code = getParameter(ScriptParameter.class);
         textArea = new CustomEditorPane();
-        UIUtils.applyThemeToCodeEditor(textArea);
+        ThemeUtils.applyThemeToCodeEditor(textArea);
         textArea.setHighlightCurrentLine(false);
         textArea.setBackground(UIManager.getColor("TextArea.background"));
         textArea.setCodeFoldingEnabled(true);

@@ -38,11 +38,7 @@ import org.hkijena.jipipe.plugins.parameters.library.markup.HTMLText;
 import org.hkijena.jipipe.plugins.settings.JIPipeFileChooserApplicationSettings;
 import org.hkijena.jipipe.plugins.settings.JIPipeRuntimeApplicationSettings;
 import org.hkijena.jipipe.plugins.tables.datatypes.ResultsTableData;
-import org.hkijena.jipipe.utils.PathUtils;
-import org.hkijena.jipipe.utils.ReflectionUtils;
-import org.hkijena.jipipe.utils.StringUtils;
-import org.hkijena.jipipe.utils.UIUtils;
-import org.hkijena.jipipe.JIPipe;
+import org.hkijena.jipipe.utils.*;
 import org.hkijena.jipipe.utils.debounce.StaticDebouncer;
 import org.hkijena.jipipe.utils.ui.JIPipeDesktopDockPanel;
 import org.jdesktop.swingx.JXStatusBar;
@@ -140,7 +136,7 @@ public class JIPipeDesktopDataViewerWindow extends JFrame implements JIPipeDeskt
 
         JPanel statusBar = new JPanel(new BorderLayout());
         statusBar.setOpaque(true);
-        statusBar.setBackground(UIUtils.CURRENT_STYLE.getWindowBackground());
+        statusBar.setBackground(ThemeUtils.getCurrentStyle().getWindowBackground());
         statusBar.setBorder(null);
         statusBar.add(dynamicStatusBar, BorderLayout.WEST);
         statusBar.add(staticStatusBar, BorderLayout.CENTER);

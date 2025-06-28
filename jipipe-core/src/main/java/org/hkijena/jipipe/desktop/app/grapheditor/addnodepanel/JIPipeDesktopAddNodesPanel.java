@@ -35,11 +35,10 @@ import org.hkijena.jipipe.plugins.nodetemplate.NodeTemplatePopupMenu;
 import org.hkijena.jipipe.plugins.parameters.library.markup.MarkdownText;
 import org.hkijena.jipipe.plugins.settings.JIPipeGraphEditorUIApplicationSettings;
 import org.hkijena.jipipe.utils.StringUtils;
+import org.hkijena.jipipe.utils.ThemeUtils;
 import org.hkijena.jipipe.utils.TooltipUtils;
 import org.hkijena.jipipe.utils.UIUtils;
-import org.hkijena.jipipe.JIPipe;
 import org.hkijena.jipipe.utils.ui.JIPipeDesktopDockPanel;
-import org.jdesktop.swingx.JXTextField;
 import org.jgrapht.Graphs;
 import org.jgrapht.graph.DefaultDirectedGraph;
 import org.jgrapht.graph.DefaultEdge;
@@ -308,7 +307,7 @@ public class JIPipeDesktopAddNodesPanel extends JIPipeDesktopWorkbenchPanel {
             if (category.isVisibleInPipeline()) {
                 JToggleButton categoryButton = new JToggleButton(category.getName(), category.getIcon());
                 categoryButton.setBorder(UIUtils.createControlBorder());
-                categoryButton.setFont(new Font(Font.DIALOG, Font.PLAIN, UIUtils.CURRENT_STYLE.getFontSizeSmall()));
+                categoryButton.setFont(new Font(Font.DIALOG, Font.PLAIN, ThemeUtils.getCurrentStyle().getFontSizeSmall()));
 
                 // Add the old menu as popup menu to the categories
                 if (category instanceof TemplatesDummyNodeTypeCategory) {
@@ -429,7 +428,7 @@ public class JIPipeDesktopAddNodesPanel extends JIPipeDesktopWorkbenchPanel {
                 String fullComponent = String.join("\n", Arrays.asList(currentHierarchyPathComponents).subList(0, i + 1));
                 JButton navigateButton = new JButton(component);
                 navigateButton.setBorder(null);
-                navigateButton.setFont(new Font(Font.DIALOG, Font.PLAIN, UIUtils.CURRENT_STYLE.getFontSizeSmall()));
+                navigateButton.setFont(new Font(Font.DIALOG, Font.PLAIN, ThemeUtils.getCurrentStyle().getFontSizeSmall()));
                 navigateButton.addActionListener(e -> {
                     if (mainCategoryHierarchy.containsVertex(fullComponent)) {
                         currentHierarchyVertex = fullComponent;
@@ -465,7 +464,7 @@ public class JIPipeDesktopAddNodesPanel extends JIPipeDesktopWorkbenchPanel {
                 JButton button = new JButton(successorPathComponents[successorPathComponents.length - 1]);
                 button.setBorder(BorderFactory.createCompoundBorder(BorderFactory.createLineBorder(UIUtils.getControlBorderColor()),
                         UIUtils.createEmptyBorder(1)));
-                button.setFont(new Font(Font.DIALOG, Font.PLAIN, UIUtils.CURRENT_STYLE.getFontSizeSmall()));
+                button.setFont(new Font(Font.DIALOG, Font.PLAIN, ThemeUtils.getCurrentStyle().getFontSizeSmall()));
                 button.addActionListener(e -> {
                     if (mainCategoryHierarchy.containsVertex(successor)) {
                         currentHierarchyVertex = successor;

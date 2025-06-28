@@ -14,8 +14,8 @@
 package org.hkijena.jipipe.desktop.commons.components;
 
 import org.hkijena.jipipe.JIPipe;
+import org.hkijena.jipipe.utils.ThemeUtils;
 import org.hkijena.jipipe.utils.UIUtils;
-import org.hkijena.jipipe.JIPipe;
 
 import javax.swing.*;
 import java.awt.*;
@@ -39,7 +39,7 @@ public class JIPipeDesktopReadonlyCopyableTextField extends JPanel {
         textField.setEditable(false);
         textField.setBackground(UIManager.getColor("TextField.background"));
         if (monospace) {
-            textField.setFont(new Font(Font.MONOSPACED, Font.PLAIN, UIUtils.CURRENT_STYLE.getFontSizeNormal()));
+            textField.setFont(new Font(Font.MONOSPACED, Font.PLAIN, ThemeUtils.getCurrentStyle().getFontSizeNormal()));
         }
 
         copyButton = new JButton(JIPipe.RESOURCES.getIcon16("actions/edit-copy.png"));

@@ -1,10 +1,9 @@
 package org.hkijena.jipipe.desktop.commons.theme.helpers;
 
+import org.hkijena.jipipe.utils.ThemeUtils;
 import org.hkijena.jipipe.utils.UIUtils;
-import org.hkijena.jipipe.JIPipe;
 
 import javax.swing.*;
-import javax.swing.border.EmptyBorder;
 import java.awt.*;
 
 /**
@@ -17,7 +16,7 @@ public class JIPipeDesktopIslandPanel extends JPanel {
         setLayout(new BorderLayout());
         setOpaque(true);
         setBorder(UIUtils.createEmptyBorder(5));
-        setBackground(UIUtils.CURRENT_STYLE.getWindowBackground());
+        setBackground(ThemeUtils.getCurrentStyle().getWindowBackground());
         add(content, BorderLayout.CENTER);
     }
 
@@ -29,7 +28,7 @@ public class JIPipeDesktopIslandPanel extends JPanel {
         g2.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
 
         int arc = 20;
-        g2.setColor(UIUtils.CURRENT_STYLE.getPanelBackground());
+        g2.setColor(ThemeUtils.getCurrentStyle().getPanelBackground());
         g2.fillRoundRect(0, 0, getWidth(), getHeight(), arc, arc);
 
 //        g2.setColor(UIUtils.CURRENT_STYLE.getWindowBackground());

@@ -19,8 +19,8 @@ import org.hkijena.jipipe.desktop.api.JIPipeDesktopParameterEditorUI;
 import org.hkijena.jipipe.desktop.commons.components.JIPipeDesktopDocumentChangeListener;
 import org.hkijena.jipipe.plugins.expressions.JIPipeExpressionParameter;
 import org.hkijena.jipipe.utils.StringUtils;
+import org.hkijena.jipipe.utils.ThemeUtils;
 import org.hkijena.jipipe.utils.UIUtils;
-import org.hkijena.jipipe.JIPipe;
 
 import javax.swing.*;
 import javax.swing.event.DocumentEvent;
@@ -189,7 +189,7 @@ public class NumberDesktopParameterEditorUI extends JIPipeDesktopParameterEditor
         setBorder(UIUtils.createControlBorder());
         numberField = new JTextField();
         numberField.setBorder(BorderFactory.createEmptyBorder(0, 4, 0, 0));
-        numberField.setFont(new Font(Font.MONOSPACED, Font.PLAIN, UIUtils.CURRENT_STYLE.getFontSizeNormal()));
+        numberField.setFont(new Font(Font.MONOSPACED, Font.PLAIN, ThemeUtils.getCurrentStyle().getFontSizeNormal()));
         numberField.getDocument().addDocumentListener(new JIPipeDesktopDocumentChangeListener() {
             @Override
             public void changed(DocumentEvent documentEvent) {

@@ -19,8 +19,7 @@ import org.hkijena.jipipe.api.grouping.parameters.GraphNodeParameterReference;
 import org.hkijena.jipipe.api.grouping.parameters.GraphNodeParameterReferenceGroup;
 import org.hkijena.jipipe.api.parameters.JIPipeParameterAccess;
 import org.hkijena.jipipe.utils.StringUtils;
-import org.hkijena.jipipe.utils.UIUtils;
-import org.hkijena.jipipe.JIPipe;
+import org.hkijena.jipipe.utils.ThemeUtils;
 
 import javax.swing.*;
 import javax.swing.tree.DefaultMutableTreeNode;
@@ -56,7 +55,7 @@ public class JIPipeDesktopParameterReferenceGroupCollectionTreeCellRenderer exte
         });
 
         infoLabel = new JLabel();
-        infoLabel.setFont(new Font(Font.DIALOG, Font.ITALIC, UIUtils.CURRENT_STYLE.getFontSizeSmall()));
+        infoLabel.setFont(new Font(Font.DIALOG, Font.ITALIC, ThemeUtils.getCurrentStyle().getFontSizeSmall()));
         add(infoLabel, new GridBagConstraints() {
             {
                 gridx = 1;

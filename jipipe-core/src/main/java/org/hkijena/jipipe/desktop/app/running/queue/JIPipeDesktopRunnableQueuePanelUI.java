@@ -15,7 +15,7 @@ package org.hkijena.jipipe.desktop.app.running.queue;
 
 import org.hkijena.jipipe.api.run.JIPipeRunnable;
 import org.hkijena.jipipe.api.run.JIPipeRunnableQueue;
-import org.hkijena.jipipe.utils.UIUtils;
+import org.hkijena.jipipe.utils.ThemeUtils;
 import org.hkijena.jipipe.JIPipe;
 
 import javax.swing.*;
@@ -49,7 +49,7 @@ public class JIPipeDesktopRunnableQueuePanelUI extends JPanel implements JIPipeR
         setLayout(new BorderLayout(8, 8));
 
         log = new JTextArea();
-        log.setFont(new Font(Font.MONOSPACED, Font.PLAIN, UIUtils.CURRENT_STYLE.getFontSizeNormal()));
+        log.setFont(new Font(Font.MONOSPACED, Font.PLAIN, ThemeUtils.getCurrentStyle().getFontSizeNormal()));
         log.setEditable(false);
         logScrollPane = new JScrollPane(log);
         add(logScrollPane, BorderLayout.CENTER);

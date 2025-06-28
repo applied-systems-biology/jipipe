@@ -14,8 +14,8 @@
 package org.hkijena.jipipe.desktop.commons.components.ribbon;
 
 import org.hkijena.jipipe.desktop.commons.components.tabs.JIPipeDesktopTabPane;
+import org.hkijena.jipipe.utils.ThemeUtils;
 import org.hkijena.jipipe.utils.UIUtils;
-import org.hkijena.jipipe.JIPipe;
 
 import javax.swing.*;
 import javax.swing.border.Border;
@@ -112,7 +112,7 @@ public class JIPipeDesktopRibbon extends JPanel {
 
                 // Add label
                 JLabel bandLabel = new JLabel(band.getLabel());
-                bandLabel.setFont(new Font(Font.DIALOG, Font.PLAIN, UIUtils.CURRENT_STYLE.getFontSizeSmall()));
+                bandLabel.setFont(new Font(Font.DIALOG, Font.PLAIN, ThemeUtils.getCurrentStyle().getFontSizeSmall()));
                 bandLabel.setHorizontalAlignment(SwingConstants.CENTER);
                 taskPanel.add(bandLabel, new GridBagConstraints(startCol, numRows, endCol - startCol + 1, 1, 0, 0, GridBagConstraints.SOUTH, GridBagConstraints.HORIZONTAL, bandLabelInsets, 0, 0));
 

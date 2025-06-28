@@ -32,8 +32,8 @@ import org.hkijena.jipipe.plugins.parameters.library.markup.MarkdownText;
 import org.hkijena.jipipe.plugins.settings.JIPipeFileChooserApplicationSettings;
 import org.hkijena.jipipe.utils.JIPipeDesktopSplitPane;
 import org.hkijena.jipipe.utils.StringUtils;
+import org.hkijena.jipipe.utils.ThemeUtils;
 import org.hkijena.jipipe.utils.UIUtils;
-import org.hkijena.jipipe.JIPipe;
 import org.hkijena.jipipe.utils.search.RankedData;
 import org.hkijena.jipipe.utils.search.RankingFunction;
 
@@ -170,7 +170,7 @@ public class ExpressionBuilderUI extends JIPipeDesktopWorkbenchPanel {
         };
         RSyntaxDocument document = new RSyntaxDocument(tokenMakerFactory, "text/expression");
         expressionEditor = new RSyntaxTextArea(document);
-        UIUtils.applyThemeToCodeEditor(expressionEditor);
+        ThemeUtils.applyThemeToCodeEditor(expressionEditor);
         expressionEditor.addFocusListener(new FocusListener() {
             @Override
             public void focusGained(FocusEvent e) {
@@ -302,7 +302,7 @@ public class ExpressionBuilderUI extends JIPipeDesktopWorkbenchPanel {
 
     private void insertCustomVariable() {
         JTextField textField = new JTextField();
-        textField.setFont(new Font(Font.MONOSPACED, Font.PLAIN, UIUtils.CURRENT_STYLE.getFontSizeNormal()));
+        textField.setFont(new Font(Font.MONOSPACED, Font.PLAIN, ThemeUtils.getCurrentStyle().getFontSizeNormal()));
         int result = JOptionPane.showOptionDialog(
                 this,
                 new Object[]{"Please input the name of the variable:", textField},
@@ -545,13 +545,13 @@ public class ExpressionBuilderUI extends JIPipeDesktopWorkbenchPanel {
         private void initialize() {
             setLayout(new GridBagLayout());
             setOpaque(true);
-            setFont(new Font(Font.DIALOG, Font.PLAIN, UIUtils.CURRENT_STYLE.getFontSizeNormal()));
+            setFont(new Font(Font.DIALOG, Font.PLAIN, ThemeUtils.getCurrentStyle().getFontSizeNormal()));
             setBorder(BorderFactory.createEmptyBorder(4, 4, 4, 4));
 
             Insets border = new Insets(2, 4, 2, 2);
 
             typeLabel = new JLabel();
-            typeLabel.setFont(new Font(Font.DIALOG, Font.ITALIC, UIUtils.CURRENT_STYLE.getFontSizeNormal()));
+            typeLabel.setFont(new Font(Font.DIALOG, Font.ITALIC, ThemeUtils.getCurrentStyle().getFontSizeNormal()));
             add(typeLabel, new GridBagConstraints() {
                 {
                     gridx = 0;
@@ -562,7 +562,7 @@ public class ExpressionBuilderUI extends JIPipeDesktopWorkbenchPanel {
             });
 
             idLabel = new JLabel();
-            idLabel.setFont(new Font(Font.MONOSPACED, Font.BOLD, UIUtils.CURRENT_STYLE.getFontSizeNormal()));
+            idLabel.setFont(new Font(Font.MONOSPACED, Font.BOLD, ThemeUtils.getCurrentStyle().getFontSizeNormal()));
             add(idLabel, new GridBagConstraints() {
                 {
                     gridx = 1;
@@ -583,7 +583,7 @@ public class ExpressionBuilderUI extends JIPipeDesktopWorkbenchPanel {
             });
 
             descriptionLabel = new JLabel();
-            descriptionLabel.setFont(new Font(Font.DIALOG, Font.ITALIC, UIUtils.CURRENT_STYLE.getFontSizeNormal()));
+            descriptionLabel.setFont(new Font(Font.DIALOG, Font.ITALIC, ThemeUtils.getCurrentStyle().getFontSizeNormal()));
             add(descriptionLabel, new GridBagConstraints() {
                 {
                     gridx = 1;
