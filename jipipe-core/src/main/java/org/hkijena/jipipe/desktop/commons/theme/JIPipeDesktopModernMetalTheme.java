@@ -222,13 +222,13 @@ public class JIPipeDesktopModernMetalTheme extends DefaultMetalTheme {
 
     private void configurePasswordField(UIDefaults table) {
         table.put("PasswordField.background", toResource(style.getFormBackground()));
-        table.put("PasswordField.caretForeground", toResource(style.getCaret()));
+        table.put("PasswordField.caretForeground", toResource(style.getTextCaret()));
         table.put("PasswordField.inactiveBackground", toResource(style.getFormDisabledBackground()));
     }
 
     private void configureFormattedTextField(UIDefaults table) {
         table.put("FormattedTextField.background", toResource(style.getFormBackground()));
-        table.put("FormattedTextField.caretForeground", toResource(style.getCaret()));
+        table.put("FormattedTextField.caretForeground", toResource(style.getTextCaret()));
         table.put("FormattedTextField.inactiveBackground", toResource(style.getFormDisabledBackground()));
     }
 
@@ -297,23 +297,23 @@ public class JIPipeDesktopModernMetalTheme extends DefaultMetalTheme {
 
     private void configureTextArea(UIDefaults table) {
         table.put("TextArea.background", toResource(style.getFormBackground()));
-        table.put("TextArea.caretForeground", toResource(style.getCaret()));
+        table.put("TextArea.caretForeground", toResource(style.getTextCaret()));
     }
 
     private void configureTextPane(UIDefaults table) {
         table.put("TextPane.background", toResource(style.getFormBackground()));
-        table.put("TextPane.caretForeground", toResource(style.getCaret()));
+        table.put("TextPane.caretForeground", toResource(style.getTextCaret()));
     }
 
     private void configureEditorPane(UIDefaults table) {
         table.put("EditorPane.background", toResource(style.getFormBackground()));
-        table.put("EditorPane.caretForeground", toResource(style.getCaret()));
+        table.put("EditorPane.caretForeground", toResource(style.getTextCaret()));
     }
 
     private void configureTextField(UIDefaults table) {
         table.put("TextField.background", toResource(style.getFormBackground()));
         table.put("TextField.border", toResource(textFieldBorder));
-        table.put("TextField.caretForeground", toResource(style.getCaret()));
+        table.put("TextField.caretForeground", toResource(style.getTextCaret()));
         table.put("TextField.inactiveBackground", toResource(style.getFormDisabledBackground()));
     }
 

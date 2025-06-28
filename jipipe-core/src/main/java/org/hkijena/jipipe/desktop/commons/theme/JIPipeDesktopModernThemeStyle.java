@@ -2,8 +2,6 @@ package org.hkijena.jipipe.desktop.commons.theme;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
 
-import javax.swing.*;
-import javax.swing.border.Border;
 import java.awt.*;
 
 public class JIPipeDesktopModernThemeStyle {
@@ -51,16 +49,18 @@ public class JIPipeDesktopModernThemeStyle {
      * Text colors
      */
 
-    @JsonProperty("foreground")
+    @JsonProperty("text-foreground")
     private Color textForeground = new Color(0);
-    @JsonProperty("foreground-secondary")
+    @JsonProperty("text-foreground-secondary")
     private Color textMuted = new Color(0x6c707e);
-    @JsonProperty("foreground-inverted")
+    @JsonProperty("text-foreground-inverted")
     private Color textForegroundInverted = new Color(0xFFFFFF);
-    @JsonProperty("foreground-secondary-inverted")
+    @JsonProperty("text-foreground-secondary-inverted")
     private Color textMutedInverted = new Color(0xebecf0);
-    @JsonProperty("caret")
-    private Color caret = new Color(0);
+    @JsonProperty("text-foreground-link")
+    private Color textLink = new Color(0x67A5E0);
+    @JsonProperty("text-caret")
+    private Color textCaret = new Color(0);
 
     /*
      * Panels/windows
@@ -433,12 +433,12 @@ public class JIPipeDesktopModernThemeStyle {
         this.buttonDisabledBackground = buttonDisabledBackground;
     }
 
-    public Color getCaret() {
-        return caret;
+    public Color getTextCaret() {
+        return textCaret;
     }
 
-    public void setCaret(Color caret) {
-        this.caret = caret;
+    public void setTextCaret(Color textCaret) {
+        this.textCaret = textCaret;
     }
 
     public Color getFormDisabledBackground() {
@@ -472,5 +472,13 @@ public class JIPipeDesktopModernThemeStyle {
 
     public void setCategoryBorder(Color categoryBorder) {
         this.categoryBorder = categoryBorder;
+    }
+
+    public Color getTextLink() {
+        return textLink;
+    }
+
+    public void setTextLink(Color textLink) {
+        this.textLink = textLink;
     }
 }

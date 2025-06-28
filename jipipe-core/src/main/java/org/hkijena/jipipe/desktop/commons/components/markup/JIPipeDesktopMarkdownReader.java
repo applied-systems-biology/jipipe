@@ -23,13 +23,14 @@ import com.vladsch.flexmark.util.data.MutableDataHolder;
 import com.vladsch.flexmark.util.data.MutableDataSet;
 import org.hkijena.jipipe.JIPipe;
 import org.hkijena.jipipe.desktop.JIPipeDesktop;
+import org.hkijena.jipipe.desktop.commons.theme.JIPipeDesktopModernThemeStyle;
 import org.hkijena.jipipe.plugins.parameters.library.markup.HTMLText;
 import org.hkijena.jipipe.plugins.parameters.library.markup.MarkdownText;
 import org.hkijena.jipipe.plugins.settings.JIPipeFileChooserApplicationSettings;
-import org.hkijena.jipipe.plugins.settings.JIPipeGeneralUIApplicationSettings;
+import org.hkijena.jipipe.utils.ColorUtils;
 import org.hkijena.jipipe.utils.PathUtils;
+import org.hkijena.jipipe.utils.StringUtils;
 import org.hkijena.jipipe.utils.UIUtils;
-import org.hkijena.jipipe.JIPipe;
 
 import javax.swing.*;
 import javax.swing.event.HyperlinkEvent;
@@ -42,6 +43,7 @@ import java.awt.*;
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
@@ -50,25 +52,9 @@ import java.util.List;
  */
 public class JIPipeDesktopMarkdownReader extends JPanel {
 
-    public static final List<String> CSS_RULES = Arrays.asList("body { font-family: \"Sans-serif\"; }",
-            "pre { background-color: #f5f2f0; border: 3px #f5f2f0 solid; }",
-            "code { background-color: #ffffff; border: none; }",
-            "h2 { padding-top: 30px; }",
-            "h3 { padding-top: 30px; }",
-            "th { border-bottom: 1px solid #c8c8c8; }",
-            ".toc-list { list-style: none; }");
-    public static final List<String> CSS_RULES_DARK = Arrays.asList("body { font-family: \"Sans-serif\"; color: #eeeeee; }",
-            "pre { background-color: #333333; border: 3px #333333 solid; }",
-            "code { background-color: #121212; border: none; }",
-            "a { color: #65a4e3; }",
-            "h2 { padding-top: 30px; }",
-            "h3 { padding-top: 30px; }",
-            "th { border-bottom: 1px solid #c8c8c8; }",
-            ".toc-list { list-style: none; }");
     public static final MutableDataHolder OPTIONS = new MutableDataSet()
             .set(Parser.EXTENSIONS, Arrays.asList(TablesExtension.create(), AutolinkExtension.create(), TocExtension.create()));
-    private final List<String> cssRules;
-    private final List<String> cssRulesDark;
+    private final List<String> cssRules = new ArrayList<>();
     private final JToolBar toolBar = new JToolBar();
     private JScrollPane scrollPane;
     private JTextPane content;
@@ -76,14 +62,14 @@ public class JIPipeDesktopMarkdownReader extends JPanel {
     private MarkdownText temporaryDocument;
 
     public JIPipeDesktopMarkdownReader() {
-        this(true, null, CSS_RULES, CSS_RULES_DARK);
+        this(true, null);
     }
 
     /**
      * @param withToolbar if a toolbar should be shown
      */
     public JIPipeDesktopMarkdownReader(boolean withToolbar) {
-        this(withToolbar, null, CSS_RULES, CSS_RULES_DARK);
+        this(withToolbar, null);
     }
 
     /**
@@ -91,21 +77,28 @@ public class JIPipeDesktopMarkdownReader extends JPanel {
      * @param document    initialize with a document
      */
     public JIPipeDesktopMarkdownReader(boolean withToolbar, MarkdownText document) {
-        this(withToolbar, document, CSS_RULES, CSS_RULES_DARK);
-    }
-
-    /**
-     * @param withToolbar if a toolbar should be shown
-     * @param document    initialize with a document
-     */
-    public JIPipeDesktopMarkdownReader(boolean withToolbar, MarkdownText document, List<String> cssRules, List<String> cssRulesDark) {
-        this.cssRules = cssRules;
-        this.cssRulesDark = cssRulesDark;
+        initializeDefaultCSSRules();
         initialize(withToolbar);
         if (document != null) {
             this.setDocument(document);
         }
     }
+
+    private void initializeDefaultCSSRules() {
+        JIPipeDesktopModernThemeStyle style = UIUtils.CURRENT_STYLE;
+        cssRules.add("body { font-family: \"Dialog\"; font-size: " + style.getFontSizeNormal() + "pt }");
+        cssRules.add("pre { background-color: " + ColorUtils.colorToHexString(style.getSelectionBackground()) + "; border: 3px " + ColorUtils.colorToHexString(style.getBorderColor()) +" solid; }");
+        cssRules.add("code { background-color: " + ColorUtils.colorToHexString(style.getFormBackground()) + "; border: none; }");
+        cssRules.add("h1 { padding-top: 5px; font-weight bolder; font-size: " + style.getFontSizeHuge() + "pt }");
+        cssRules.add("h2 { padding-top: 20px; font-size: " + style.getFontSizeLarge() + "pt }");
+        cssRules.add("h3 { padding-top: 20px; font-size: " + style.getFontSizeLarge() + "pt }");
+        cssRules.add("h4 { padding-top: 20px; font-size: " + style.getFontSizeNormal() + "pt }");
+        cssRules.add("h5 { padding-top: 20px; font-size: " + style.getFontSizeNormal() + "pt }");
+        cssRules.add("th { border-bottom: 1px solid " + ColorUtils.colorToHexString(style.getBorderColor()) + "; }");
+        cssRules.add("a { color: " + ColorUtils.colorToHexString(style.getTextLink()) + "; }");
+        cssRules.add(".toc-list { list-style: none; }");
+    }
+
 
     public static JIPipeDesktopMarkdownReader showDialog(MarkdownText document, boolean withToolbar, String title, Component parent, boolean modal) {
         JIPipeDesktopMarkdownReader reader = new JIPipeDesktopMarkdownReader(withToolbar, document);
@@ -260,21 +253,8 @@ public class JIPipeDesktopMarkdownReader extends JPanel {
     }
 
     private void initializeStyleSheet(StyleSheet styleSheet) {
-        try {
-            if (JIPipe.getInstance() != null && JIPipeGeneralUIApplicationSettings.getInstance() != null && JIPipeGeneralUIApplicationSettings.getInstance().getTheme().isDark()) {
-                for (String rule : cssRulesDark) {
-                    styleSheet.addRule(rule);
-                }
-            } else {
-                for (String rule : cssRules) {
-                    styleSheet.addRule(rule);
-                }
-            }
-        } catch (NullPointerException e) {
-            e.printStackTrace();
-            for (String rule : cssRules) {
-                styleSheet.addRule(rule);
-            }
+        for (String rule : cssRules) {
+            styleSheet.addRule(rule);
         }
     }
 
