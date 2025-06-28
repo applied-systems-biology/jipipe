@@ -338,7 +338,7 @@ public class JIPipeDesktopProjectWorkbench extends JPanel implements JIPipeDeskt
         documentTabPane.registerSingletonTab(TAB_LICENSE,
                 "License",
                 JIPipe.RESOURCES.getIcon16("actions/license.png"),
-                () -> new JIPipeDesktopMarkdownReader(true, MarkdownText.fromPluginResource("documentation/license.md", new HashMap<>())),
+                () -> UIUtils.wrapInIslandPanelIfNeeded(new JIPipeDesktopMarkdownReader(true, MarkdownText.fromPluginResource("documentation/license.md", new HashMap<>()))),
                 JIPipeDesktopTabPane.SingletonTabMode.Hidden);
         documentTabPane.registerSingletonTab(TAB_COMPARTMENT_EDITOR,
                 "Compartments",

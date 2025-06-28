@@ -66,7 +66,10 @@ public abstract class JIPipeDesktopCompendiumUI<T> extends JPanel {
         JPanel listPanel = new JPanel(new BorderLayout());
         markdownReader = new JIPipeDesktopMarkdownReader(true);
 
-        splitPane = new JIPipeDesktopSplitPane(JSplitPane.HORIZONTAL_SPLIT, listPanel, markdownReader, JIPipeDesktopSplitPane.RATIO_1_TO_3);
+        splitPane = new JIPipeDesktopSplitPane(JSplitPane.HORIZONTAL_SPLIT,
+                UIUtils.wrapInIslandPanelIfNeeded(listPanel),
+                UIUtils.wrapInIslandPanelIfNeeded(markdownReader),
+                JIPipeDesktopSplitPane.RATIO_1_TO_3);
 
         initializeToolbar(listPanel);
         initializeList(listPanel);
