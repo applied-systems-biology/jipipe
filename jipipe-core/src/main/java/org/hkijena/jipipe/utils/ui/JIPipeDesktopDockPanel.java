@@ -31,6 +31,7 @@ public class JIPipeDesktopDockPanel extends JPanel implements JIPipeDesktopSplit
     public static final int UI_ORDER_PINNED = -100;
     public static final int UI_ORDER_DEFAULT = 0;
     private static final int RESIZE_HANDLE_SIZE = 6;
+    public static final int BUTTON_MAX_WIDTH = 64;
     private final JIPipeDesktopVerticalToolBar leftToolBar = new JIPipeDesktopVerticalToolBar();
     private final JIPipeDesktopVerticalToolBar rightToolBar = new JIPipeDesktopVerticalToolBar();
     private final JLayeredPane layeredPane = new JLayeredPane();
@@ -452,10 +453,10 @@ public class JIPipeDesktopDockPanel extends JPanel implements JIPipeDesktopSplit
         rightToolBar.removeAll();
 
         // Left toolbar
-        for (Panel panel : getPanelsAtLocation(PanelLocation.TopLeft).stream().sorted().collect(Collectors.toList())) {
+        for (Panel panel : getPanelsAtLocation(PanelLocation.TopLeft).stream().sorted().toList()) {
             leftToolBar.add(createToggleButton(panel));
         }
-        List<Panel> bottomLeftPanels = getPanelsAtLocation(PanelLocation.BottomLeft).stream().sorted().collect(Collectors.toList());
+        List<Panel> bottomLeftPanels = getPanelsAtLocation(PanelLocation.BottomLeft).stream().sorted().toList();
         if(!bottomLeftPanels.isEmpty()) {
             leftToolBar.add(Box.createVerticalStrut(32));
             for (Panel panel : bottomLeftPanels) {
@@ -463,17 +464,17 @@ public class JIPipeDesktopDockPanel extends JPanel implements JIPipeDesktopSplit
             }
         }
         leftToolBar.add(Box.createVerticalGlue());
-        for (Panel panel : getPanelsAtLocation(PanelLocation.BottomBottom).stream().sorted().collect(Collectors.toList())) {
+        for (Panel panel : getPanelsAtLocation(PanelLocation.BottomBottom).stream().sorted().toList()) {
             leftToolBar.add(createToggleButton(panel));
         }
 
 
         // Right toolbar
-        for (Panel panel : getPanelsAtLocation(PanelLocation.TopRight).stream().sorted().collect(Collectors.toList())) {
+        for (Panel panel : getPanelsAtLocation(PanelLocation.TopRight).stream().sorted().toList()) {
             rightToolBar.add(createToggleButton(panel));
         }
         rightToolBar.add(Box.createVerticalGlue());
-        for (Panel panel : getPanelsAtLocation(PanelLocation.BottomRight).stream().sorted().collect(Collectors.toList())) {
+        for (Panel panel : getPanelsAtLocation(PanelLocation.BottomRight).stream().sorted().toList()) {
             rightToolBar.add(createToggleButton(panel));
         }
     }
@@ -497,7 +498,7 @@ public class JIPipeDesktopDockPanel extends JPanel implements JIPipeDesktopSplit
             button.setVerticalTextPosition(SwingConstants.BOTTOM);
             button.setHorizontalTextPosition(SwingConstants.CENTER);
             button.setFont(new Font(Font.DIALOG, Font.PLAIN, UIUtils.CURRENT_STYLE.getFontSizeTiny()));
-            button.setMaximumSize(new Dimension(Short.MAX_VALUE, 64));
+            button.setMaximumSize(new Dimension(Short.MAX_VALUE, BUTTON_MAX_WIDTH));
         }
 
         JPopupMenu popupMenu = UIUtils.addRightClickPopupMenuToButton(button);

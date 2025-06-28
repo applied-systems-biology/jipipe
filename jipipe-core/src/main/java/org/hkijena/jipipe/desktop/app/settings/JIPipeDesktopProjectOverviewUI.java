@@ -159,16 +159,29 @@ public class JIPipeDesktopProjectOverviewUI extends JIPipeDesktopProjectWorkbenc
     private void refreshHeaderText() {
         projectName.setText(StringUtils.orElse(getProject().getMetadata().getName(), "Unnamed project"));
         projectAuthors.removeAll();
-        for (JIPipeAuthorMetadata author : getProject().getMetadata().getAuthors()) {
-            JButton authorButton = new JButton(author.toString(), JIPipe.RESOURCES.getIcon16("actions/im-user.png"));
-            authorButton.setToolTipText("Click to show more information");
+        if(getProject().getMetadata().getAuthors().isEmpty()) {
+            JButton authorButton = new JButton("No authors", JIPipe.RESOURCES.getIcon16("actions/im-invisible-user.png"));
+            authorButton.setToolTipText("Click to edit the authors");
             authorButton.addActionListener(e -> {
-                JIPipeAuthorMetadata.openAuthorInfoWindow(getDesktopWorkbench().getWindow(), getProject().getMetadata().getAuthors(), author);
+                 editProjectMetadata();
             });
             authorButton.setOpaque(false);
             authorButton.setBorder(BorderFactory.createEmptyBorder(4, 4, 4, 4));
             authorButton.setBackground(new Color(0, 0, 0, 0));
             projectAuthors.add(authorButton);
+        }
+        else {
+            for (JIPipeAuthorMetadata author : getProject().getMetadata().getAuthors()) {
+                JButton authorButton = new JButton(author.toString(), JIPipe.RESOURCES.getIcon16("actions/im-user.png"));
+                authorButton.setToolTipText("Click to show more information");
+                authorButton.addActionListener(e -> {
+                    JIPipeAuthorMetadata.openAuthorInfoWindow(getDesktopWorkbench().getWindow(), getProject().getMetadata().getAuthors(), author);
+                });
+                authorButton.setOpaque(false);
+                authorButton.setBorder(BorderFactory.createEmptyBorder(4, 4, 4, 4));
+                authorButton.setBackground(new Color(0, 0, 0, 0));
+                projectAuthors.add(authorButton);
+            }
         }
         projectAuthors.revalidate();
         projectAuthors.repaint();
@@ -908,6 +921,9 @@ public class JIPipeDesktopProjectOverviewUI extends JIPipeDesktopProjectWorkbenc
 
     private void initializeHeaderPanel() {
         headerPanel = new JPanel();
+        headerPanel.setBorder(BorderFactory.createCompoundBorder(
+                BorderFactory.createEmptyBorder(0,0,16,0),
+                BorderFactory.createMatteBorder(1,0,1,0, UIUtils.CURRENT_STYLE.getBorderColor())));
         headerPanel.setBackground(UIUtils.CURRENT_STYLE.getWindowBackground());
         headerPanel.setLayout(new BorderLayout());
         headerPanel.setPreferredSize(new Dimension(headerPanel.getPreferredSize().width, 150));
@@ -918,7 +934,7 @@ public class JIPipeDesktopProjectOverviewUI extends JIPipeDesktopProjectWorkbenc
         projectName = UIUtils.createReadonlyBorderlessTextField("Unnamed project");
         projectName.setOpaque(false);
         projectName.setFont(new Font(Font.DIALOG, Font.PLAIN, UIUtils.CURRENT_STYLE.getFontSizeHuge()));
-        projectName.setBorder(BorderFactory.createEmptyBorder(8, 8, 8, 8));
+        projectName.setBorder(UIUtils.createEmptyBorder(4));
 
         nameAndAuthorPanel.addWideToForm(UIUtils.makeNonOpaque(UIUtils.boxHorizontal(projectName,
                 UIUtils.makeButtonTransparent(UIUtils.createButton("", JIPipe.RESOURCES.getIcon16("actions/edit.png"), this::editProjectMetadata)))), null);
@@ -926,7 +942,7 @@ public class JIPipeDesktopProjectOverviewUI extends JIPipeDesktopProjectWorkbenc
         projectAuthors = new JPanel();
         projectAuthors.setOpaque(false);
         projectAuthors.setLayout(new BoxLayout(projectAuthors, BoxLayout.X_AXIS));
-        projectAuthors.setBorder(BorderFactory.createEmptyBorder(8, 8, 8, 8));
+        projectAuthors.setBorder(UIUtils.createEmptyBorder(4));
         nameAndAuthorPanel.addWideToForm(projectAuthors, null);
 
         nameAndAuthorPanel.addVerticalGlue();
@@ -954,7 +970,7 @@ public class JIPipeDesktopProjectOverviewUI extends JIPipeDesktopProjectWorkbenc
 
     private void initializeToolbar(JPanel topPanel) {
         JPanel toolBar = new JPanel();
-        toolBar.setBorder(BorderFactory.createEmptyBorder(0, 32, 8, 0));
+        toolBar.setBorder(UIUtils.createEmptyBorder(4));
         toolBar.setLayout(new BoxLayout(toolBar, BoxLayout.X_AXIS));
         toolBar.setOpaque(false);
 

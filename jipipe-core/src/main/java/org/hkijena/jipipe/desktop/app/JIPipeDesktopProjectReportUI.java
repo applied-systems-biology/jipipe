@@ -65,8 +65,8 @@ public class JIPipeDesktopProjectReportUI extends JIPipeDesktopProjectWorkbenchP
     private void initialize() {
         setLayout(new BorderLayout());
         JIPipeDesktopSplitPane splitPane = new JIPipeDesktopSplitPane(JIPipeDesktopSplitPane.LEFT_RIGHT,
-                new JIPipeDesktopParameterFormPanel(getDesktopWorkbench(), reportSettings, new MarkdownText(), JIPipeDesktopParameterFormPanel.WITH_SEARCH_BAR | JIPipeDesktopParameterFormPanel.NO_GROUP_HEADERS | JIPipeDesktopParameterFormPanel.DOCUMENTATION_BELOW),
-                markdownReader,
+                UIUtils.wrapInIslandPanelIfNeeded(new JIPipeDesktopParameterFormPanel(getDesktopWorkbench(), reportSettings, new MarkdownText(), JIPipeDesktopParameterFormPanel.WITH_SEARCH_BAR | JIPipeDesktopParameterFormPanel.NO_GROUP_HEADERS | JIPipeDesktopParameterFormPanel.DOCUMENTATION_BELOW)),
+                UIUtils.wrapInIslandPanelIfNeeded(markdownReader),
                 new JIPipeDesktopSplitPane.DynamicSidebarRatio(300, true));
         add(splitPane, BorderLayout.CENTER);
 
