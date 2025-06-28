@@ -693,7 +693,7 @@ public class JIPipeDesktopProjectOverviewUI extends JIPipeDesktopProjectWorkbenc
         ));
         JLabel titleLabel = new JLabel(title);
         titleLabel.setIcon(JIPipe.RESOURCES.getIcon32("status/starred.png"));
-        titleLabel.setFont(titleLabel.getFont().deriveFont(Font.BOLD, 14));
+        titleLabel.setFont(titleLabel.getFont().deriveFont(Font.BOLD, UIUtils.CURRENT_STYLE.getFontSizeLarge()));
         titleLabel.setBorder(BorderFactory.createEmptyBorder(0, 0, 16, 0));
         panel.add(titleLabel, BorderLayout.NORTH);
         panel.add(UIUtils.createReadonlyBorderlessTextArea(text), BorderLayout.CENTER);
@@ -723,7 +723,7 @@ public class JIPipeDesktopProjectOverviewUI extends JIPipeDesktopProjectWorkbenc
 
         JLabel titleLabel = new JLabel(title, icon, JLabel.LEFT);
         titleLabel.setBorder(UIUtils.createEmptyBorder(8));
-        titleLabel.setFont(titleLabel.getFont().deriveFont(Font.BOLD, 16));
+        titleLabel.setFont(titleLabel.getFont().deriveFont(Font.BOLD, UIUtils.CURRENT_STYLE.getFontSizeLarge()));
 
         JToolBar toolBar = new JToolBar();
         toolBar.setFloatable(false);

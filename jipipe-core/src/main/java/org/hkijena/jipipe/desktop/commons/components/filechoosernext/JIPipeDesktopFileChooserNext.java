@@ -349,7 +349,7 @@ public class JIPipeDesktopFileChooserNext extends JPanel {
     private void createSidePanelHeader(String title, JComponent... components) {
         JPanel panel = UIUtils.boxHorizontal(components);
         JLabel label = new JLabel(title);
-        label.setFont(label.getFont().deriveFont(Font.PLAIN, 11));
+        label.setFont(label.getFont().deriveFont(Font.PLAIN, UIUtils.CURRENT_STYLE.getFontSizeSmall()));
         label.setForeground(UIUtils.getIconBaseColor());
         label.setBorder(BorderFactory.createEmptyBorder(5, 5, 5, 5));
         panel.add(UIUtils.createHorizontalFillingSeparator(), 0);

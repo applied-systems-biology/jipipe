@@ -102,7 +102,7 @@ public class JIPipeDesktopWorkbenchNotificationInboxUI extends JIPipeDesktopWork
             noNotificationPanel.setBorder(UIUtils.createControlBorder());
 
             JLabel label = new JLabel("No notifications", JIPipe.RESOURCES.getIcon64("check-circle-green.png"), JLabel.LEFT);
-            label.setFont(label.getFont().deriveFont(26.0f));
+            label.setFont(label.getFont().deriveFont(UIUtils.CURRENT_STYLE.getFontSizeHuge() * 1f));
             label.setBorder(BorderFactory.createEmptyBorder(4, 4, 4, 4));
             noNotificationPanel.add(label, BorderLayout.CENTER);
 
