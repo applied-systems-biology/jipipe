@@ -2708,7 +2708,7 @@ public class JIPipeDesktopGraphCanvasUI extends JLayeredPane implements JIPipeDe
         if (edgeIds.isEmpty()) {
             return;
         }
-        g.setPaint(JIPipeDesktopLegacyModernMetalTheme.PRIMARY5);
+        g.setPaint(ThemeUtils.getCurrentStyle().getPrimaryColor());
         g.setStroke(new BasicStroke((int) Math.round(2 * zoom), BasicStroke.CAP_ROUND, BasicStroke.JOIN_ROUND));
 
         for (JIPipeDataSlot dataSlot : highlightedEdges.keySet()) {

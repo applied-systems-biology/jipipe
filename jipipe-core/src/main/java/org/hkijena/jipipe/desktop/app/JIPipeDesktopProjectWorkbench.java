@@ -230,7 +230,7 @@ public class JIPipeDesktopProjectWorkbench extends JPanel implements JIPipeDeskt
                 documentTabPane.selectSingletonTab(TAB_PROJECT_OVERVIEW);
 
                 // Display message popup for the user
-                EdgedBalloonStyle style = new EdgedBalloonStyle(UIManager.getColor("TextField.background"), JIPipeDesktopLegacyModernMetalTheme.PRIMARY5);
+                EdgedBalloonStyle style = new EdgedBalloonStyle(UIManager.getColor("TextField.background"), ThemeUtils.getCurrentStyle().getPrimaryColor());
                 JPanel content = new JPanel(new BorderLayout(8, 8));
                 content.setOpaque(false);
                 content.add(UIUtils.createJLabel("JIPipe switched you to the project overview", 16), BorderLayout.NORTH);

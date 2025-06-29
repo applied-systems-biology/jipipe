@@ -46,7 +46,7 @@ public class ConvertImpImageToImagePlusAlgorithm extends JIPipeSimpleIteratingAl
     private boolean createCheckerboard = true;
     private int checkerboardSize = 10;
     private Color checkerboardColor1 = Color.WHITE;
-    private Color checkerboardColor2 = JIPipeDesktopLegacyModernMetalTheme.GRAY;
+    private Color checkerboardColor2 = Color.LIGHT_GRAY;
 
     public ConvertImpImageToImagePlusAlgorithm(JIPipeNodeInfo info) {
         super(info);

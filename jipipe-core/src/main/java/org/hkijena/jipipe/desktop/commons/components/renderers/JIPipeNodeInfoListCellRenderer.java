@@ -55,7 +55,7 @@ public class JIPipeNodeInfoListCellRenderer extends JPanel implements ListCellRe
         pathLabel = new JLabel();
         pathLabel.setForeground(Color.GRAY);
         alternativeLabel = new JLabel();
-        alternativeLabel.setForeground(JIPipeDesktopLegacyModernMetalTheme.PRIMARY6);
+        alternativeLabel.setForeground(ThemeUtils.getCurrentStyle().getSecondaryColor());
         alternativeLabel.setFont(new Font(Font.DIALOG, Font.ITALIC, ThemeUtils.getCurrentStyle().getFontSizeNormal()));
 
         add(new JLabel(nodeColor), new GridBagConstraints() {

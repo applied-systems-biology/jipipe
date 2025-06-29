@@ -154,7 +154,7 @@ public class JIPipeDesktopGraphEditorMinimap extends JIPipeDesktopWorkbenchPanel
         // Draw current scroll position
         g.setColor(AREA_FILL_COLOR);
         g.fillRect(viewX + scrollX, viewY + scrollY, scrollWidth, scrollHeight);
-        g.setColor(JIPipeDesktopLegacyModernMetalTheme.PRIMARY5);
+        g.setColor(ThemeUtils.getCurrentStyle().getPrimaryColor());
         ((Graphics2D) g).setStroke(new BasicStroke(2));
         g.drawRect(viewX + scrollX, viewY + scrollY, scrollWidth, scrollHeight);
 

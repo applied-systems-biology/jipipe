@@ -5,6 +5,7 @@ import ij.process.ImageProcessor;
 import ij.process.ImageStatistics;
 import org.hkijena.jipipe.desktop.commons.theme.JIPipeDesktopLegacyModernMetalTheme;
 import org.hkijena.jipipe.plugins.imagejdatatypes.util.ImageJHistogram;
+import org.hkijena.jipipe.utils.ThemeUtils;
 import org.jdesktop.swingx.JXMultiThumbSlider;
 import org.jdesktop.swingx.multislider.Thumb;
 
@@ -14,7 +15,7 @@ import java.text.DecimalFormat;
 
 public class ImageViewer2DDisplayRangeControlTrackRenderer extends JComponent implements org.jdesktop.swingx.multislider.TrackRenderer {
 
-    public static final Color COLOR_SELECTED = JIPipeDesktopLegacyModernMetalTheme.PRIMARY5;
+    public static final Color COLOR_SELECTED = ThemeUtils.getCurrentStyle().getPrimaryColor();
     public static final Color COLOR_UNSELECTED = UIManager.getColor("Button.borderColor");
     private final ImageViewer2DDisplayRangeControl displayRangeControl;
     private JXMultiThumbSlider<ImageViewer2DDisplayRangeControl.DisplayRangeStop> slider;

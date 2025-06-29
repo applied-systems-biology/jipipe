@@ -81,7 +81,7 @@ public class JIPipeDesktopDataBatchAssistantInputPreviewPanelTable extends JPane
                 true,
                 true,
                 true,
-                true), BorderFactory.createLineBorder(JIPipeDesktopLegacyModernMetalTheme.MEDIUM_GRAY)));
+                true), BorderFactory.createLineBorder(ThemeUtils.getCurrentStyle().getBorderColor())));
 
 //        JToolBar toolBar = new JToolBar();
 //        toolBar.setFloatable(false);

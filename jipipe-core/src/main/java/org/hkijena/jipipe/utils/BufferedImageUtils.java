@@ -170,7 +170,7 @@ public class BufferedImageUtils {
     }
 
     public static BufferedImage convertAlphaToCheckerboard(Image originalImage, int checkerSize) {
-        return convertAlphaToCheckerboard(originalImage, checkerSize, Color.WHITE, JIPipeDesktopLegacyModernMetalTheme.GRAY);
+        return convertAlphaToCheckerboard(originalImage, checkerSize, ThemeUtils.getCurrentStyle().getFormBackground(), ThemeUtils.getCurrentStyle().getFormDisabledBackground());
     }
 
     public static BufferedImage convertAlphaToCheckerboard(Image originalImage, int checkerSize, Color checkerColor1, Color checkerColor2) {

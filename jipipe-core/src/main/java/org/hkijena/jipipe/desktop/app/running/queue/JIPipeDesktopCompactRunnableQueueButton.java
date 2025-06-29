@@ -20,6 +20,7 @@ import org.hkijena.jipipe.api.run.JIPipeRunnableWorker;
 import org.hkijena.jipipe.desktop.app.JIPipeDesktopWorkbench;
 import org.hkijena.jipipe.desktop.app.JIPipeDesktopWorkbenchAccess;
 import org.hkijena.jipipe.desktop.commons.theme.JIPipeDesktopLegacyModernMetalTheme;
+import org.hkijena.jipipe.utils.ThemeUtils;
 import org.hkijena.jipipe.utils.UIUtils;
 import org.hkijena.jipipe.JIPipe;
 
@@ -168,7 +169,7 @@ public class JIPipeDesktopCompactRunnableQueueButton extends JButton implements 
                     perc = 0;
                 if (perc > 1)
                     perc = 1;
-                g.setColor(JIPipeDesktopLegacyModernMetalTheme.PRIMARY5);
+                g.setColor(ThemeUtils.getCurrentStyle().getPrimaryColor());
                 g.fillRect(2, getHeight() - 4, (int) ((getWidth() - 4) * perc), 2);
             }
         }

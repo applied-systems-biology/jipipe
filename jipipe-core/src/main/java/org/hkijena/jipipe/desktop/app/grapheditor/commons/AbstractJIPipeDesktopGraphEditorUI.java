@@ -988,7 +988,7 @@ public abstract class AbstractJIPipeDesktopGraphEditorUI extends JIPipeDesktopWo
             });
 
             alternativeLabel = new JLabel();
-            alternativeLabel.setForeground(JIPipeDesktopLegacyModernMetalTheme.PRIMARY6);
+            alternativeLabel.setForeground(ThemeUtils.getCurrentStyle().getSecondaryColor());
             alternativeLabel.setFont(new Font(Font.DIALOG, Font.ITALIC, ThemeUtils.getCurrentStyle().getFontSizeNormal()));
             add(alternativeLabel, new GridBagConstraints() {
                 {
@@ -1027,7 +1027,7 @@ public abstract class AbstractJIPipeDesktopGraphEditorUI extends JIPipeDesktopWo
                 algorithmLabel.setIcon(JIPipe.getNodes().getIconFor(info));
                 menuLabel.setText(menuPath);
 
-                alternativeLabel.setForeground(JIPipeDesktopLegacyModernMetalTheme.PRIMARY6);
+                alternativeLabel.setForeground(ThemeUtils.getCurrentStyle().getSecondaryColor());
                 if (info.getAliases().isEmpty()) {
                     alternativeLabel.setText("");
                 } else {
@@ -1076,7 +1076,7 @@ public abstract class AbstractJIPipeDesktopGraphEditorUI extends JIPipeDesktopWo
                 algorithmLabel.setIcon(JIPipe.getNodes().getIconFor(info));
                 menuLabel.setText(menuPath);
 
-                alternativeLabel.setForeground(JIPipeDesktopLegacyModernMetalTheme.PRIMARY5);
+                alternativeLabel.setForeground(ThemeUtils.getCurrentStyle().getPrimaryColor());
                 alternativeLabel.setText("Example");
 
             }

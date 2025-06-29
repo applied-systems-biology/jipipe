@@ -53,8 +53,8 @@ public class SpinnerIcon implements Icon {
         Color baseColor = ThemeUtils.isUsingDarkTheme() ? new Color(0xdfdfdf) : new Color(0x444444);
         colors = ColorUtils.renderGradient(Arrays.asList(
                 new ColorUtils.GradientStop(0.0f, baseColor),
-                new ColorUtils.GradientStop(0.75f, JIPipeDesktopLegacyModernMetalTheme.PRIMARY5),
-                new ColorUtils.GradientStop(1.0f, JIPipeDesktopLegacyModernMetalTheme.PRIMARY6)), numLines);
+                new ColorUtils.GradientStop(0.75f, ThemeUtils.getCurrentStyle().getPrimaryColor()),
+                new ColorUtils.GradientStop(1.0f, ThemeUtils.getCurrentStyle().getSecondaryColor())), numLines);
     }
 
     public static void main(String[] args) {

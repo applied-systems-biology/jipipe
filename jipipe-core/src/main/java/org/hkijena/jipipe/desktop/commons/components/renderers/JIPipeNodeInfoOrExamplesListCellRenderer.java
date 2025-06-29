@@ -56,7 +56,7 @@ public class JIPipeNodeInfoOrExamplesListCellRenderer extends JPanel implements 
         pathLabel = new JLabel();
         pathLabel.setForeground(Color.GRAY);
         alternativeLabel = new JLabel();
-        alternativeLabel.setForeground(JIPipeDesktopLegacyModernMetalTheme.PRIMARY6);
+        alternativeLabel.setForeground(ThemeUtils.getCurrentStyle().getSecondaryColor());
         alternativeLabel.setFont(new Font(Font.DIALOG, Font.ITALIC, ThemeUtils.getCurrentStyle().getFontSizeNormal()));
 
         add(new JLabel(nodeColor), new GridBagConstraints() {
@@ -115,7 +115,7 @@ public class JIPipeNodeInfoOrExamplesListCellRenderer extends JPanel implements 
             nameLabel.setText(info.getName());
             nodeIcon.setIcon(JIPipe.getNodes().getIconFor(info));
 
-            alternativeLabel.setForeground(JIPipeDesktopLegacyModernMetalTheme.PRIMARY6);
+            alternativeLabel.setForeground(ThemeUtils.getCurrentStyle().getSecondaryColor());
             if (info.getAliases().isEmpty()) {
                 alternativeLabel.setText("");
             } else {
@@ -143,7 +143,7 @@ public class JIPipeNodeInfoOrExamplesListCellRenderer extends JPanel implements 
             nameLabel.setText(example.getNodeTemplate().getName() + ": " + info.getName());
             nodeIcon.setIcon(JIPipe.getNodes().getIconFor(info));
 
-            alternativeLabel.setForeground(JIPipeDesktopLegacyModernMetalTheme.PRIMARY5);
+            alternativeLabel.setForeground(ThemeUtils.getCurrentStyle().getPrimaryColor());
             alternativeLabel.setText("Example");
         } else {
             nameLabel.setText("<Null>");

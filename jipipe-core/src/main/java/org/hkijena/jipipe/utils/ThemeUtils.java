@@ -118,7 +118,7 @@ public class ThemeUtils {
                 reapplyModernTheme();
                 break;
             default:
-                UIManager.put("Button.borderColor", JIPipeDesktopLegacyModernMetalTheme.MEDIUM_GRAY);
+                UIManager.put("Button.borderColor", CURRENT_STYLE.getBorderColor());
                 break;
         }
         IS_UPDATING_THEME = false;
@@ -145,7 +145,7 @@ public class ThemeUtils {
         try {
             UIManager.setLookAndFeel(UIManager.getCrossPlatformLookAndFeelClassName());
             UIManager.put("swing.boldMetal", Boolean.FALSE);
-            UIManager.put("Button.borderColor", JIPipeDesktopLegacyModernMetalTheme.MEDIUM_GRAY);
+            UIManager.put("Button.borderColor", CURRENT_STYLE.getBorderColor());
         } catch (ClassNotFoundException | InstantiationException | IllegalAccessException |
                  UnsupportedLookAndFeelException e) {
             e.printStackTrace();

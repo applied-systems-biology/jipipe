@@ -14,6 +14,7 @@
 package org.hkijena.jipipe.desktop.commons.theme.ui;
 
 import org.hkijena.jipipe.desktop.commons.theme.JIPipeDesktopLegacyModernMetalTheme;
+import org.hkijena.jipipe.utils.ThemeUtils;
 
 import javax.swing.*;
 import javax.swing.plaf.ComponentUI;
@@ -389,7 +390,7 @@ public class JIPipeDesktopModernPillTabbedPaneUI extends BasicTabbedPaneUI {
 //        }
 
         if (tabPane.getSelectedIndex() == tabIndex) {
-            g.setColor(JIPipeDesktopLegacyModernMetalTheme.PRIMARY5);
+            g.setColor(ThemeUtils.getCurrentStyle().getPrimaryColor());
             g.fillRect(0, 1, 5, bottom);
         }
 
@@ -639,7 +640,7 @@ public class JIPipeDesktopModernPillTabbedPaneUI extends BasicTabbedPaneUI {
         g.drawLine(right, 0, right, bottom);
 
         if (tabPane.getSelectedIndex() == tabIndex) {
-            g.setColor(JIPipeDesktopLegacyModernMetalTheme.PRIMARY5);
+            g.setColor(ThemeUtils.getCurrentStyle().getPrimaryColor());
             g.fillRect(right - 4, 1, 5, bottom);
         }
 

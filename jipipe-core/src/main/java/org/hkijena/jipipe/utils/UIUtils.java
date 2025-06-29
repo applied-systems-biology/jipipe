@@ -91,9 +91,6 @@ public class UIUtils {
     public static final JMenuItem MENU_ITEM_SEPARATOR = null;
     public static final Color COLOR_ERROR = new Color(0xa51d2d);
     public static final Color COLOR_SUCCESS = new Color(0x5CB85C);
-    private static Border CONTROL_BORDER;
-    private static Border PANEL_BORDER;
-    private static Border CONTROL_ERROR_BORDER;
 
     public static void addPanningToScrollPane(JScrollPane scrollPane) {
         JViewport viewport = scrollPane.getViewport();
@@ -207,32 +204,17 @@ public class UIUtils {
     }
 
     public static Border createControlErrorBorder() {
-        if (CONTROL_ERROR_BORDER == null) {
-            CONTROL_ERROR_BORDER = BorderFactory.createCompoundBorder(BorderFactory.createEmptyBorder(1, 1, 1, 1),
-                    new RoundedLineBorder(COLOR_ERROR, 1, 5));
-        }
-        return CONTROL_ERROR_BORDER;
+        return BorderFactory.createCompoundBorder(BorderFactory.createEmptyBorder(1, 1, 1, 1),
+                new RoundedLineBorder(COLOR_ERROR, 1, 5));
     }
 
     public static Color getControlBorderColor() {
-        if (!ThemeUtils.isUsingDarkTheme()) {
-            return JIPipeDesktopLegacyModernMetalTheme.MEDIUM_GRAY;
-        } else {
-            return Color.DARK_GRAY;
-        }
+       return ThemeUtils.getCurrentStyle().getBorderColor();
     }
 
     public static Border createControlBorder() {
-        if (CONTROL_BORDER == null) {
-            if (!ThemeUtils.isUsingDarkTheme()) {
-                CONTROL_BORDER = BorderFactory.createCompoundBorder(BorderFactory.createEmptyBorder(1, 1, 1, 1),
-                        new RoundedLineBorder(JIPipeDesktopLegacyModernMetalTheme.MEDIUM_GRAY, 1, 5));
-            } else {
-                CONTROL_BORDER = BorderFactory.createCompoundBorder(BorderFactory.createEmptyBorder(1, 1, 1, 1),
-                        new RoundedLineBorder(Color.DARK_GRAY, 1, 5));
-            }
-        }
-        return CONTROL_BORDER;
+        return BorderFactory.createCompoundBorder(BorderFactory.createEmptyBorder(1, 1, 1, 1),
+                new RoundedLineBorder(ThemeUtils.getCurrentStyle().getBorderColor(), 1, 5));
     }
 
     public static Border createControlBorder(Color color) {
@@ -250,26 +232,13 @@ public class UIUtils {
     }
 
     public static Border createPanelBorder() {
-        if (PANEL_BORDER == null) {
-            if (!ThemeUtils.isUsingDarkTheme()) {
-                PANEL_BORDER = BorderFactory.createCompoundBorder(BorderFactory.createLineBorder(JIPipeDesktopLegacyModernMetalTheme.MEDIUM_GRAY, 1),
-                        BorderFactory.createEmptyBorder(1, 1, 1, 1));
-            } else {
-                PANEL_BORDER = BorderFactory.createCompoundBorder(BorderFactory.createLineBorder(Color.DARK_GRAY, 1),
-                        BorderFactory.createEmptyBorder(1, 1, 1, 1));
-            }
-        }
-        return PANEL_BORDER;
+        return BorderFactory.createCompoundBorder(BorderFactory.createLineBorder(ThemeUtils.getCurrentStyle().getBorderColor(), 1),
+                BorderFactory.createEmptyBorder(1, 1, 1, 1));
     }
 
     public static Border createPanelBorder(int left, int top, int right, int bottom) {
-        if (!ThemeUtils.isUsingDarkTheme()) {
-            return BorderFactory.createCompoundBorder(BorderFactory.createLineBorder(JIPipeDesktopLegacyModernMetalTheme.MEDIUM_GRAY, 1),
-                    BorderFactory.createEmptyBorder(top, left, bottom, right));
-        } else {
-            return BorderFactory.createCompoundBorder(BorderFactory.createLineBorder(Color.DARK_GRAY, 1),
-                    BorderFactory.createEmptyBorder(top, left, bottom, right));
-        }
+        return BorderFactory.createCompoundBorder(BorderFactory.createLineBorder(ThemeUtils.getCurrentStyle().getBorderColor(), 1),
+                BorderFactory.createEmptyBorder(top, left, bottom, right));
     }
 
     public static void registerHyperlinkHandler(JTextPane content) {
@@ -289,7 +258,7 @@ public class UIUtils {
     }
 
     public static void addBalloonToComponent(AbstractButton button, String text) {
-        EdgedBalloonStyle style = new EdgedBalloonStyle(UIManager.getColor("TextField.background"), JIPipeDesktopLegacyModernMetalTheme.PRIMARY5);
+        EdgedBalloonStyle style = new EdgedBalloonStyle(UIManager.getColor("TextField.background"), ThemeUtils.getCurrentStyle().getPrimaryColor());
         final BalloonTip balloonTip = new BalloonTip(
                 button,
                 new JLabel(text.startsWith("<html>") ? text : StringUtils.wordWrappedHTML(text, 100)),

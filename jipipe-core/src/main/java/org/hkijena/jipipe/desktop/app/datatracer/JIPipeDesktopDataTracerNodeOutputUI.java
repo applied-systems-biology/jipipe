@@ -21,6 +21,7 @@ import org.hkijena.jipipe.api.validation.contexts.GraphNodeValidationReportConte
 import org.hkijena.jipipe.desktop.app.JIPipeDesktopProjectWorkbench;
 import org.hkijena.jipipe.desktop.app.JIPipeDesktopProjectWorkbenchPanel;
 import org.hkijena.jipipe.desktop.commons.theme.JIPipeDesktopLegacyModernMetalTheme;
+import org.hkijena.jipipe.utils.ThemeUtils;
 import org.hkijena.jipipe.utils.UIUtils;
 import org.hkijena.jipipe.JIPipe;
 import org.hkijena.jipipe.utils.data.WeakStore;
@@ -57,7 +58,7 @@ public class JIPipeDesktopDataTracerNodeOutputUI extends JIPipeDesktopProjectWor
                 true,
                 true,
                 true,
-                true), BorderFactory.createLineBorder(JIPipeDesktopLegacyModernMetalTheme.MEDIUM_GRAY)));
+                true), BorderFactory.createLineBorder(ThemeUtils.getCurrentStyle().getBorderColor())));
 
         JIPipeGraphNode node = getDesktopProjectWorkbench().getProject().getGraph().getNodeByUUID(UUID.fromString(nodeUUID));
         JIPipeOutputDataSlot outputSlot = node.getOutputSlot(outputSlotName);

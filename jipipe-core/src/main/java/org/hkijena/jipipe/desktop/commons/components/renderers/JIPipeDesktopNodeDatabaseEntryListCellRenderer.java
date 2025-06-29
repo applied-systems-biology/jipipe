@@ -57,7 +57,7 @@ public class JIPipeDesktopNodeDatabaseEntryListCellRenderer extends JPanel imple
         pathLabel = new JLabel();
         pathLabel.setForeground(Color.GRAY);
         alternativeLabel = new JLabel();
-        alternativeLabel.setForeground(JIPipeDesktopLegacyModernMetalTheme.PRIMARY6);
+        alternativeLabel.setForeground(ThemeUtils.getCurrentStyle().getSecondaryColor());
         alternativeLabel.setFont(new Font(Font.DIALOG, Font.ITALIC, ThemeUtils.getCurrentStyle().getFontSizeNormal()));
 
         add(new JLabel(nodeColor), new GridBagConstraints() {
@@ -114,7 +114,7 @@ public class JIPipeDesktopNodeDatabaseEntryListCellRenderer extends JPanel imple
 
         if (obj instanceof CreateNewNodeByInfoDatabaseEntry) {
             JIPipeNodeInfo info = ((CreateNewNodeByInfoDatabaseEntry) obj).getNodeInfo();
-            alternativeLabel.setForeground(JIPipeDesktopLegacyModernMetalTheme.PRIMARY6);
+            alternativeLabel.setForeground(ThemeUtils.getCurrentStyle().getSecondaryColor());
             if (info.getAliases().isEmpty()) {
                 alternativeLabel.setText("");
             } else {
@@ -133,7 +133,7 @@ public class JIPipeDesktopNodeDatabaseEntryListCellRenderer extends JPanel imple
             }
         } else if (obj instanceof CreateNewNodeByInfoAliasDatabaseEntry) {
             JIPipeNodeInfo info = ((CreateNewNodeByInfoAliasDatabaseEntry) obj).getNodeInfo();
-            alternativeLabel.setForeground(JIPipeDesktopLegacyModernMetalTheme.PRIMARY6);
+            alternativeLabel.setForeground(ThemeUtils.getCurrentStyle().getSecondaryColor());
             if (info.getAliases().isEmpty()) {
                 alternativeLabel.setText("");
             } else {
@@ -150,7 +150,7 @@ public class JIPipeDesktopNodeDatabaseEntryListCellRenderer extends JPanel imple
                 alternativeLabel.setText(builder.toString());
             }
         } else if (obj instanceof CreateNewNodeByExampleDatabaseEntry) {
-            alternativeLabel.setForeground(JIPipeDesktopLegacyModernMetalTheme.PRIMARY5);
+            alternativeLabel.setForeground(ThemeUtils.getCurrentStyle().getPrimaryColor());
             alternativeLabel.setText("Example");
         }
 
