@@ -17,10 +17,8 @@ import org.hkijena.jipipe.JIPipe;
 import org.hkijena.jipipe.api.nodes.JIPipeNodeInfo;
 import org.hkijena.jipipe.api.nodes.JIPipeNodeMenuLocation;
 import org.hkijena.jipipe.desktop.commons.components.icons.SolidColorIcon;
-import org.hkijena.jipipe.desktop.commons.theme.JIPipeDesktopLegacyModernMetalTheme;
 import org.hkijena.jipipe.utils.StringUtils;
 import org.hkijena.jipipe.utils.ThemeUtils;
-import org.hkijena.jipipe.utils.UIUtils;
 
 import javax.swing.*;
 import java.awt.*;
@@ -104,7 +102,7 @@ public class JIPipeNodeInfoListCellRenderer extends JPanel implements ListCellRe
         setFont(list.getFont());
 
         if (info != null) {
-            nodeColor.setFillColor(UIUtils.getFillColorFor(info));
+            nodeColor.setFillColor(ThemeUtils.getNodeFillColor(info));
             String menuPath = info.getCategory().getName();
             menuPath += "\n" + info.getMenuPath();
             menuPath = StringUtils.getCleanedMenuPath(menuPath).replace("\n", " > ");

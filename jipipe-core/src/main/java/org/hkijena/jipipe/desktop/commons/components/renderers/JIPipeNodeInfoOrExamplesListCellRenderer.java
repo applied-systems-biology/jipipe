@@ -18,10 +18,8 @@ import org.hkijena.jipipe.api.nodes.JIPipeNodeExample;
 import org.hkijena.jipipe.api.nodes.JIPipeNodeInfo;
 import org.hkijena.jipipe.api.nodes.JIPipeNodeMenuLocation;
 import org.hkijena.jipipe.desktop.commons.components.icons.SolidColorIcon;
-import org.hkijena.jipipe.desktop.commons.theme.JIPipeDesktopLegacyModernMetalTheme;
 import org.hkijena.jipipe.utils.StringUtils;
 import org.hkijena.jipipe.utils.ThemeUtils;
-import org.hkijena.jipipe.utils.UIUtils;
 
 import javax.swing.*;
 import java.awt.*;
@@ -106,7 +104,7 @@ public class JIPipeNodeInfoOrExamplesListCellRenderer extends JPanel implements 
 
         if (obj instanceof JIPipeNodeInfo) {
             JIPipeNodeInfo info = (JIPipeNodeInfo) obj;
-            nodeColor.setFillColor(UIUtils.getFillColorFor(info));
+            nodeColor.setFillColor(ThemeUtils.getNodeFillColor(info));
             String menuPath = info.getCategory().getName();
             menuPath += "\n" + info.getMenuPath();
             menuPath = StringUtils.getCleanedMenuPath(menuPath).replace("\n", " > ");
@@ -134,7 +132,7 @@ public class JIPipeNodeInfoOrExamplesListCellRenderer extends JPanel implements 
         } else if (obj instanceof JIPipeNodeExample) {
             JIPipeNodeExample example = (JIPipeNodeExample) obj;
             JIPipeNodeInfo info = example.getNodeInfo();
-            nodeColor.setFillColor(UIUtils.getFillColorFor(info));
+            nodeColor.setFillColor(ThemeUtils.getNodeFillColor(info));
             String menuPath = info.getCategory().getName();
             menuPath += "\n" + info.getMenuPath();
             menuPath = StringUtils.getCleanedMenuPath(menuPath).replace("\n", " > ");

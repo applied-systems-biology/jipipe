@@ -29,7 +29,6 @@ import org.hkijena.jipipe.desktop.app.grapheditor.commons.contextmenu.NodeUICont
 import org.hkijena.jipipe.desktop.app.grapheditor.commons.nodeui.JIPipeDesktopGraphNodeUI;
 import org.hkijena.jipipe.desktop.commons.components.icons.SolidColorIcon;
 import org.hkijena.jipipe.desktop.commons.components.renderers.JIPipeDesktopGenericListCellRenderer;
-import org.hkijena.jipipe.desktop.commons.theme.JIPipeDesktopLegacyModernMetalTheme;
 import org.hkijena.jipipe.plugins.parameters.library.markup.HTMLText;
 import org.hkijena.jipipe.plugins.parameters.library.pairs.StringAndStringPairParameter;
 import org.hkijena.jipipe.plugins.settings.JIPipeFileChooserApplicationSettings;
@@ -1020,7 +1019,7 @@ public abstract class AbstractJIPipeDesktopGraphEditorUI extends JIPipeDesktopWo
                 }
 
                 icon.setFillColor(Color.WHITE);
-                icon.setBorderColor(UIUtils.getFillColorFor(info));
+                icon.setBorderColor(ThemeUtils.getNodeFillColor(info));
                 actionLabel.setText("Create");
                 actionLabel.setForeground(new Color(0, 128, 0));
                 algorithmLabel.setText(info.getName());
@@ -1052,8 +1051,8 @@ public abstract class AbstractJIPipeDesktopGraphEditorUI extends JIPipeDesktopWo
                     menuPath += " > " + String.join(" > ", info.getMenuPath().split("\n"));
                 }
 
-                icon.setFillColor(UIUtils.getFillColorFor(info));
-                icon.setBorderColor(UIUtils.getBorderColorFor(info));
+                icon.setFillColor(ThemeUtils.getNodeFillColor(info));
+                icon.setBorderColor(ThemeUtils.getNodeBorderColor(info));
                 actionLabel.setText("Navigate");
                 actionLabel.setForeground(Color.BLUE);
                 algorithmLabel.setText(node.getName());
@@ -1069,7 +1068,7 @@ public abstract class AbstractJIPipeDesktopGraphEditorUI extends JIPipeDesktopWo
                 }
 
                 icon.setFillColor(Color.WHITE);
-                icon.setBorderColor(UIUtils.getFillColorFor(info));
+                icon.setBorderColor(ThemeUtils.getNodeFillColor(info));
                 actionLabel.setText("Create");
                 actionLabel.setForeground(new Color(0, 128, 0));
                 algorithmLabel.setText(info.getName() + ": " + example.getNodeTemplate().getName());

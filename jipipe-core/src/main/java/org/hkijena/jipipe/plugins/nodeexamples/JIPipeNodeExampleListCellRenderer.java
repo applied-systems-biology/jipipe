@@ -99,7 +99,7 @@ public class JIPipeNodeExampleListCellRenderer extends JPanel implements ListCel
         setFont(list.getFont());
 
         if (info != null) {
-            nodeColor.setFillColor(info.getNodeTemplate().getFillColor());
+            nodeColor.setFillColor(ThemeUtils.getNodeFillColor(info.getNodeTemplate().getColorHue()));
             descriptionLabel.setText(info.getNodeTemplate().getDescription().getHtml());
             nameLabel.setText(info.getNodeTemplate().getName());
             nodeIcon.setIcon(JIPipe.RESOURCES.getIcon16(info.getNodeTemplate().getIcon().getIconName()));

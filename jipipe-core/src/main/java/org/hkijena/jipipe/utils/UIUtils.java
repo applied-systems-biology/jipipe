@@ -22,7 +22,6 @@ import org.hkijena.jipipe.api.JIPipeProgressInfo;
 import org.hkijena.jipipe.api.JIPipeWorkbench;
 import org.hkijena.jipipe.api.data.JIPipeDataInfo;
 import org.hkijena.jipipe.api.data.JIPipeDataSlot;
-import org.hkijena.jipipe.api.nodes.JIPipeNodeInfo;
 import org.hkijena.jipipe.api.notifications.JIPipeNotificationInbox;
 import org.hkijena.jipipe.api.validation.JIPipeValidationReport;
 import org.hkijena.jipipe.desktop.api.JIPipeDesktopMenuExtension;
@@ -36,7 +35,6 @@ import org.hkijena.jipipe.desktop.commons.components.markup.JIPipeDesktopHTMLEdi
 import org.hkijena.jipipe.desktop.commons.components.markup.JIPipeDesktopMarkdownReader;
 import org.hkijena.jipipe.desktop.commons.components.window.JIPipeDesktopAlwaysOnTopToggle;
 import org.hkijena.jipipe.desktop.commons.notifications.JIPipeDesktopGenericNotificationInboxUI;
-import org.hkijena.jipipe.desktop.commons.theme.JIPipeDesktopLegacyModernMetalTheme;
 import org.hkijena.jipipe.desktop.commons.theme.helpers.JIPipeDesktopIslandPanel;
 import org.hkijena.jipipe.plugins.parameters.library.markup.HTMLText;
 import org.hkijena.jipipe.plugins.parameters.library.markup.MarkdownText;
@@ -1458,32 +1456,6 @@ public class UIUtils {
             value = newValue;
         }
         return value;
-    }
-
-    /**
-     * Returns a fill color for {@link JIPipeNodeInfo}
-     *
-     * @param info the algorithm type
-     * @return the fill color
-     */
-    public static Color getFillColorFor(JIPipeNodeInfo info) {
-        if (ThemeUtils.isUsingDarkTheme())
-            return info.getCategory().getDarkFillColor();
-        else
-            return info.getCategory().getFillColor();
-    }
-
-    /**
-     * Returns a border color for {@link JIPipeNodeInfo}
-     *
-     * @param info the algorithm type
-     * @return the border color
-     */
-    public static Color getBorderColorFor(JIPipeNodeInfo info) {
-        if (ThemeUtils.isUsingDarkTheme())
-            return info.getCategory().getDarkBorderColor();
-        else
-            return info.getCategory().getBorderColor();
     }
 
     /**

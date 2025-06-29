@@ -1,5 +1,5 @@
 {
-  "name" : "JIPipe Dark",
+  "name" : "JIPipe Dark Neon",
   "brightness" : "Dark",
   "primary" : "#25324D",
   "secondary" : "#AA87DE",
@@ -39,10 +39,10 @@
   "tooltip-foreground" : "#CED0D6",
   "category-background" : "#1d1e21",
   "category-border" : "#1d1e21",
-  "node-highlight-border" : "#48494f",
+  "node-highlight-border" : "#CED0D6",
   "node-slot-background" : "#303030",
-  "node-fill-saturation": 0.4,
+  "node-fill-saturation": 0.5,
   "node-fill-brightness": 0.3,
-  "node-border-saturation": 0.05,
-  "node-border-brightness": 0.31
+  "node-border-saturation": 0.5,
+  "node-border-brightness": 0.9
 }

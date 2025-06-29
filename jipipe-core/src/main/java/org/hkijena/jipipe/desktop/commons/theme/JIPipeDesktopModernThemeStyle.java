@@ -162,6 +162,18 @@ public class JIPipeDesktopModernThemeStyle {
     @JsonProperty("node-slot-background")
     private Color nodeSlotBackground = new Color(0xFAFAFA);
 
+    @JsonProperty("node-fill-saturation")
+    private float nodeFillSaturation = 0.1f;
+
+    @JsonProperty("node-fill-brightness")
+    private float nodeFillBrightness = 0.9f;
+
+    @JsonProperty("node-border-saturation")
+    private float nodeBorderSaturation = 0.1f;
+
+    @JsonProperty("node-border-brightness")
+    private float nodeBorderBrightness = 0.5f;
+
     public JIPipeDesktopModernThemeStyle() {
     }
 
@@ -512,5 +524,37 @@ public class JIPipeDesktopModernThemeStyle {
 
     public static void main(String[] args) {
         JsonUtils.saveToFile(new JIPipeDesktopModernThemeStyle(), Paths.get("/home/ruman/style.json"));
+    }
+
+    public float getNodeFillSaturation() {
+        return nodeFillSaturation;
+    }
+
+    public void setNodeFillSaturation(float nodeFillSaturation) {
+        this.nodeFillSaturation = nodeFillSaturation;
+    }
+
+    public float getNodeFillBrightness() {
+        return nodeFillBrightness;
+    }
+
+    public void setNodeFillBrightness(float nodeFillBrightness) {
+        this.nodeFillBrightness = nodeFillBrightness;
+    }
+
+    public float getNodeBorderSaturation() {
+        return nodeBorderSaturation;
+    }
+
+    public void setNodeBorderSaturation(float nodeBorderSaturation) {
+        this.nodeBorderSaturation = nodeBorderSaturation;
+    }
+
+    public float getNodeBorderBrightness() {
+        return nodeBorderBrightness;
+    }
+
+    public void setNodeBorderBrightness(float nodeBorderBrightness) {
+        this.nodeBorderBrightness = nodeBorderBrightness;
     }
 }

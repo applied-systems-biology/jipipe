@@ -21,6 +21,7 @@ import org.hkijena.jipipe.desktop.app.grapheditor.commons.JIPipeDesktopGraphCanv
 import org.hkijena.jipipe.desktop.app.grapheditor.commons.nodeui.JIPipeDesktopGraphNodeUI;
 import org.hkijena.jipipe.plugins.parameters.library.markup.HTMLText;
 import org.hkijena.jipipe.utils.StringUtils;
+import org.hkijena.jipipe.utils.ThemeUtils;
 
 import javax.swing.*;
 import java.awt.*;
@@ -152,12 +153,12 @@ public class CreateNewNodeByInfoAliasDatabaseEntry implements JIPipeNodeDatabase
 
     @Override
     public Color getFillColor() {
-        return nodeInfo.getCategory().getFillColor();
+        return ThemeUtils.getNodeFillColor(nodeInfo);
     }
 
     @Override
     public Color getBorderColor() {
-        return nodeInfo.getCategory().getBorderColor();
+        return ThemeUtils.getNodeBorderColor(nodeInfo);
     }
 
     @Override

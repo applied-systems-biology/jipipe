@@ -24,6 +24,7 @@ import org.hkijena.jipipe.desktop.app.grapheditor.commons.JIPipeDesktopGraphCanv
 import org.hkijena.jipipe.desktop.app.grapheditor.commons.nodeui.JIPipeDesktopGraphNodeUI;
 import org.hkijena.jipipe.plugins.parameters.library.markup.HTMLText;
 import org.hkijena.jipipe.utils.StringUtils;
+import org.hkijena.jipipe.utils.ThemeUtils;
 
 import javax.swing.*;
 import java.awt.*;
@@ -131,12 +132,12 @@ public class ExistingPipelineNodeDatabaseEntry implements JIPipeNodeDatabaseEntr
 
     @Override
     public Color getFillColor() {
-        return graphNode.getInfo().getCategory().getFillColor();
+        return ThemeUtils.getNodeFillColor(graphNode.getInfo());
     }
 
     @Override
     public Color getBorderColor() {
-        return graphNode.getInfo().getCategory().getBorderColor();
+        return ThemeUtils.getNodeBorderColor(graphNode.getInfo());
     }
 
     @Override

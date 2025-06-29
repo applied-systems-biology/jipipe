@@ -189,8 +189,8 @@ public class JIPipeDesktopGraphNodeUI extends JIPipeDesktopWorkbenchPanel implem
 
         // Generate colors, icons
         this.nodeIcon = JIPipe.getNodes().getIconFor(node.getInfo()).getImage();
-        this.nodeFillColor = UIUtils.getFillColorFor(node.getInfo());
-        this.nodeBorderColor = UIUtils.getBorderColorFor(node.getInfo());
+        this.nodeFillColor = ThemeUtils.getNodeFillColor(node.getInfo());
+        this.nodeBorderColor = ThemeUtils.getNodeBorderColor(node.getInfo());
         this.highlightedNodeBorderColor = ThemeUtils.getCurrentStyle().getNodeHighlightBorder();
         this.slotFillColor = ThemeUtils.getCurrentStyle().getNodeSlotBackground();
         this.slotParametersFillColor = ColorUtils.mix(slotFillColor, nodeFillColor, 0.5);

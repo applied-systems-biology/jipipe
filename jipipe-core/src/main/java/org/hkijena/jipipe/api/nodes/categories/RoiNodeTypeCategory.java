@@ -23,11 +23,6 @@ import java.awt.*;
 
 public class RoiNodeTypeCategory implements JIPipeNodeTypeCategory {
 
-    public static final Color FILL_COLOR = Color.getHSBColor(0, 0.1f, 0.9f);
-    public static final Color BORDER_COLOR = Color.getHSBColor(0, 0.1f, 0.5f);
-    public static final Color FILL_COLOR_DARK = Color.getHSBColor(0, 0.5f, 0.3f);
-    public static final Color BORDER_COLOR_DARK = Color.getHSBColor(0, 0.5f, 0.9f);
-
     @Override
     public String getId() {
         return "org.hkijena.jipipe:roi";
@@ -54,23 +49,8 @@ public class RoiNodeTypeCategory implements JIPipeNodeTypeCategory {
     }
 
     @Override
-    public Color getFillColor() {
-        return FILL_COLOR;
-    }
-
-    @Override
-    public Color getBorderColor() {
-        return BORDER_COLOR;
-    }
-
-    @Override
-    public Color getDarkFillColor() {
-        return FILL_COLOR_DARK;
-    }
-
-    @Override
-    public Color getDarkBorderColor() {
-        return BORDER_COLOR_DARK;
+    public float getColorHue() {
+        return 0;
     }
 
     @Override

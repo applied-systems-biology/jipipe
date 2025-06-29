@@ -52,11 +52,10 @@ public class JIPipeNodeTemplate extends AbstractJIPipeParameterCollection {
     private String name = "Unnamed template";
     private HTMLText description = new HTMLText();
     private StringList menuPath = new StringList();
+    private float colorHue = 40.0f / 360.0f;
     private IconRef icon = new IconRef("actions/configure.png");
     private String data;
     private JIPipeGraph graph;
-    private Color fillColor = MiscellaneousNodeTypeCategory.FILL_COLOR;
-    private Color borderColor = MiscellaneousNodeTypeCategory.BORDER_COLOR;
     private String source = SOURCE_USER;
 
     public JIPipeNodeTemplate() {
@@ -86,8 +85,6 @@ public class JIPipeNodeTemplate extends AbstractJIPipeParameterCollection {
         if (algorithms.size() == 1) {
             JIPipeGraphNode node = algorithms.iterator().next();
             template.setName(node.getName());
-            template.setFillColor(node.getInfo().getCategory().getFillColor());
-            template.setBorderColor(node.getInfo().getCategory().getBorderColor());
             URL url = JIPipe.getNodes().getIconURLFor(node.getInfo());
             if (node.getInfo().getCategory() instanceof DataSourceNodeTypeCategory) {
                 if (!node.getOutputSlots().isEmpty()) {
@@ -149,9 +146,8 @@ public class JIPipeNodeTemplate extends AbstractJIPipeParameterCollection {
         this.graph = other.graph;
         this.icon = new IconRef(other.icon);
         this.menuPath = new StringList(other.menuPath);
-        this.fillColor = other.fillColor;
-        this.borderColor = other.borderColor;
         this.source = other.source;
+        this.colorHue = other.colorHue;
     }
 
     public boolean isFromExtension() {
@@ -210,30 +206,17 @@ public class JIPipeNodeTemplate extends AbstractJIPipeParameterCollection {
         this.icon = icon;
     }
 
-    @SetJIPipeDocumentation(name = "Fill color", description = "The fill color of the icon shown inside the template list")
-    @JIPipeParameter(value = "fill-color", uiOrder = -50)
-    @JsonGetter("fill-color")
-    public Color getFillColor() {
-        return fillColor;
+    @SetJIPipeDocumentation(name = "Color hue (0-1)", description = "The hue from 0 to 1 of the node")
+    @JsonGetter("color-hue")
+    @JIPipeParameter("color-hue")
+    public float getColorHue() {
+        return colorHue;
     }
 
-    @JIPipeParameter("fill-color")
-    @JsonSetter("fill-color")
-    public void setFillColor(Color fillColor) {
-        this.fillColor = fillColor;
-    }
-
-    @SetJIPipeDocumentation(name = "Border color", description = "The border color of the icon shown inside the template list")
-    @JIPipeParameter(value = "border-color", uiOrder = -40)
-    @JsonGetter("border-color")
-    public Color getBorderColor() {
-        return borderColor;
-    }
-
-    @JIPipeParameter("border-color")
-    @JsonSetter("border-color")
-    public void setBorderColor(Color borderColor) {
-        this.borderColor = borderColor;
+    @JsonSetter("color-hue")
+    @JIPipeParameter("color-hue")
+    public void setColorHue(float colorHue) {
+        this.colorHue = colorHue;
     }
 
     @SetJIPipeDocumentation(name = "Data", description = "The data contained inside the node template. Must be JSON representation of a graph.")

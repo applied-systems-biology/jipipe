@@ -7,6 +7,7 @@ import org.hkijena.jipipe.api.nodes.JIPipeGraphNode;
 import org.hkijena.jipipe.desktop.app.grapheditor.commons.JIPipeDesktopGraphCanvasUI;
 import org.hkijena.jipipe.desktop.app.grapheditor.commons.nodeui.JIPipeDesktopGraphNodeUI;
 import org.hkijena.jipipe.plugins.parameters.library.markup.HTMLText;
+import org.hkijena.jipipe.utils.ThemeUtils;
 import org.jsoup.Jsoup;
 
 import javax.swing.*;
@@ -114,12 +115,12 @@ public class CreateNewNodesByTemplateDatabaseEntry implements JIPipeNodeDatabase
 
     @Override
     public Color getFillColor() {
-        return template.getFillColor();
+        return ThemeUtils.getNodeFillColor(template.getColorHue());
     }
 
     @Override
     public Color getBorderColor() {
-        return template.getBorderColor();
+        return ThemeUtils.getNodeBorderColor(template.getColorHue());
     }
 
     @Override

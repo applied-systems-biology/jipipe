@@ -28,7 +28,7 @@ public interface JIPipeNodeTypeCategory {
     String getId();
 
     /**
-     * The name displayed in menus and other UI
+     * The name displayed in menus and other UIs
      *
      * @return the name
      */
@@ -56,32 +56,11 @@ public interface JIPipeNodeTypeCategory {
     Icon getIcon();
 
     /**
-     * The fill color for algorithm nodes
-     *
-     * @return fill color
+     * The hue of the node's color, ranging from 0-1.
+     * If the value is negative, the color is interpreted as transparent
+     * @return the fill color hue
      */
-    Color getFillColor();
-
-    /**
-     * The border color for algorithm nodes
-     *
-     * @return border color
-     */
-    Color getBorderColor();
-
-    /**
-     * The fill color for algorithm nodes (dark theme)
-     *
-     * @return fill color
-     */
-    Color getDarkFillColor();
-
-    /**
-     * The border color for algorithm nodes (dark theme)
-     *
-     * @return border color
-     */
-    Color getDarkBorderColor();
+    float getColorHue();
 
     /**
      * If the category should be available in the graph compartment editor
@@ -107,18 +86,18 @@ public interface JIPipeNodeTypeCategory {
     }
 
     /**
-     * Returns if nodes of this category can be created by users
+     * Returns if users can create nodes of this category
      *
-     * @return if nodes of this category can be created by users
+     * @return if users can create nodes of this category
      */
     default boolean userCanCreate() {
         return true;
     }
 
     /**
-     * Returns if nodes of this category can be deleted by users
+     * Returns if users can delete nodes of this category
      *
-     * @return if nodes of this category can be deleted by users
+     * @return if users can delete nodes of this category
      */
     default boolean userCanDelete() {
         return true;

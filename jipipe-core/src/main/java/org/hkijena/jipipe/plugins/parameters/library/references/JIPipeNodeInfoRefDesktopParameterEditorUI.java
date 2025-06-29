@@ -17,9 +17,9 @@ import org.hkijena.jipipe.JIPipe;
 import org.hkijena.jipipe.api.nodes.JIPipeNodeInfo;
 import org.hkijena.jipipe.desktop.api.JIPipeDesktopParameterEditorUI;
 import org.hkijena.jipipe.desktop.commons.components.pickers.JIPipeDesktopNodeInfoPicker;
+import org.hkijena.jipipe.utils.ThemeUtils;
 import org.hkijena.jipipe.utils.TooltipUtils;
 import org.hkijena.jipipe.utils.UIUtils;
-import org.hkijena.jipipe.JIPipe;
 
 import javax.swing.*;
 import java.awt.*;
@@ -73,7 +73,7 @@ public class JIPipeNodeInfoRefDesktopParameterEditorUI extends JIPipeDesktopPara
         if (info != null) {
             currentlyDisplayed.setText(info.getName());
             currentlyDisplayed.setToolTipText(TooltipUtils.getAlgorithmTooltip(info));
-            currentlyDisplayed.setIcon(UIUtils.getIconFromColor(UIUtils.getFillColorFor(info)));
+            currentlyDisplayed.setIcon(UIUtils.getIconFromColor(ThemeUtils.getNodeFillColor(info)));
             picker.setSelectedInfos(Collections.singleton(info));
         } else {
             currentlyDisplayed.setText("None selected");

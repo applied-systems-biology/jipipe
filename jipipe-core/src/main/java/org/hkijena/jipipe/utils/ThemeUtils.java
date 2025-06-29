@@ -3,6 +3,8 @@ package org.hkijena.jipipe.utils;
 import com.fasterxml.jackson.databind.JsonNode;
 import org.fife.ui.rsyntaxtextarea.RSyntaxTextArea;
 import org.fife.ui.rsyntaxtextarea.Theme;
+import org.hkijena.jipipe.api.nodes.JIPipeNodeInfo;
+import org.hkijena.jipipe.api.nodes.JIPipeNodeTypeCategory;
 import org.hkijena.jipipe.api.registries.JIPipeApplicationSettingsRegistry;
 import org.hkijena.jipipe.desktop.commons.theme.*;
 import org.hkijena.jipipe.desktop.commons.theme.ui.*;
@@ -11,6 +13,7 @@ import org.hkijena.jipipe.utils.json.JsonUtils;
 
 import javax.swing.*;
 import javax.swing.plaf.metal.MetalLookAndFeel;
+import java.awt.*;
 import java.io.IOException;
 import java.net.URL;
 import java.nio.file.Files;
@@ -209,6 +212,7 @@ public class ThemeUtils {
             AVAILABLE_STYLE_IDS = new ArrayList<>();
             AVAILABLE_STYLE_IDS.add("JIPipe Light");
             AVAILABLE_STYLE_IDS.add("JIPipe Dark");
+            AVAILABLE_STYLE_IDS.add("JIPipe Dark Neon");
 
             // List styles in the profile directory
             try {
@@ -233,5 +237,57 @@ public class ThemeUtils {
 
     public static boolean isUsingModernTheme() {
         return CURRENT_THEME.isModern();
+    }
+
+    /**
+     * Returns a fill color for {@link JIPipeNodeInfo}
+     *
+     * @param info the algorithm type
+     * @return the fill color
+     */
+    public static Color getNodeFillColor(JIPipeNodeInfo info) {
+        return getNodeFillColor(info.getCategory());
+    }
+
+    public static Color getNodeFillColor(JIPipeNodeTypeCategory category) {
+        float colorHue = category.getColorHue();
+        return getNodeFillColor(colorHue);
+    }
+
+    public static Color getNodeFillColor(float colorHue) {
+        if(colorHue < 0) {
+            return CURRENT_STYLE.getPanelBackground();
+        }
+        else {
+            return Color.getHSBColor(colorHue,
+                    CURRENT_STYLE.getNodeFillSaturation(),
+                    CURRENT_STYLE.getNodeFillBrightness());
+        }
+    }
+
+    /**
+     * Returns a border color for {@link JIPipeNodeInfo}
+     *
+     * @param info the algorithm type
+     * @return the border color
+     */
+    public static Color getNodeBorderColor(JIPipeNodeInfo info) {
+      return getNodeBorderColor(info.getCategory());
+    }
+
+    private static Color getNodeBorderColor(JIPipeNodeTypeCategory category) {
+        float colorHue = category.getColorHue();
+        return getNodeBorderColor(colorHue);
+    }
+
+    public static Color getNodeBorderColor(float colorHue) {
+        if(colorHue < 0) {
+            return CURRENT_STYLE.getNodeHighlightBorder();
+        }
+        else {
+            return Color.getHSBColor(colorHue,
+                    CURRENT_STYLE.getNodeBorderSaturation(),
+                    CURRENT_STYLE.getNodeBorderBrightness());
+        }
     }
 }
