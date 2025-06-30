@@ -21,6 +21,7 @@ public enum JIPipeMenuExtensionTarget {
     ProjectMainMenu,
     ProjectToolsMenu,
     ProjectHelpMenu,
+    ProjectPublishMenu,
     ExtensionBuilderMainMenu,
     ExtensionBuilderToolsMenu,
     ExtensionHelpMenu

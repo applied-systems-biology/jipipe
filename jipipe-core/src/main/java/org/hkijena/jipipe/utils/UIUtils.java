@@ -1979,6 +1979,31 @@ public class UIUtils {
     }
 
     /**
+     * Installs an extension menu
+     *
+     * @param workbench      the workbench
+     * @param targetMenu     the menu
+     * @param targetMenuType the menu type
+     * @param withSeparator  if a separator should be prepended if items are installed
+     */
+    public static void installMenuExtension(JIPipeWorkbench workbench, JPopupMenu targetMenu, JIPipeMenuExtensionTarget targetMenuType, boolean withSeparator) {
+        List<JIPipeDesktopMenuExtension> extensions = JIPipe.getCustomMenus()
+                .getMenuExtensionsTargeting(targetMenuType, workbench);
+        if (!extensions.isEmpty()) {
+            if (withSeparator)
+                targetMenu.addSeparator();
+            for (Map.Entry<String, JComponent> entry : createMenuTree(targetMenu, extensions.stream()
+                    .map(JIPipeDesktopMenuExtension::getMenuPath).collect(Collectors.toSet())).entrySet()) {
+                for (JIPipeDesktopMenuExtension extension : extensions) {
+                    if (StringUtils.getCleanedMenuPath(entry.getKey()).equals(StringUtils.getCleanedMenuPath(extension.getMenuPath()))) {
+                        entry.getValue().add(extension);
+                    }
+                }
+            }
+        }
+    }
+
+    /**
      * Copies the string to the clipboard
      *
      * @param string the string

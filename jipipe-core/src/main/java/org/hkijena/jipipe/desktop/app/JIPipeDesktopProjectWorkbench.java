@@ -31,6 +31,7 @@ import org.hkijena.jipipe.api.project.JIPipeArchiveProjectToZIPRun;
 import org.hkijena.jipipe.api.project.JIPipeProject;
 import org.hkijena.jipipe.api.run.JIPipeRunnableQueue;
 import org.hkijena.jipipe.desktop.JIPipeDesktop;
+import org.hkijena.jipipe.desktop.api.JIPipeDesktopMenuExtension;
 import org.hkijena.jipipe.desktop.api.JIPipeMenuExtensionTarget;
 import org.hkijena.jipipe.desktop.app.backups.JIPipeDesktopBackupManagerPanel;
 import org.hkijena.jipipe.desktop.app.cache.JIPipeDesktopCacheBrowserUI;
@@ -660,10 +661,13 @@ public class JIPipeDesktopProjectWorkbench extends JPanel implements JIPipeDeskt
         projectSettings.addActionListener(e -> openProjectSettings(null));
         projectMenu.add(projectSettings);
 
-        JMenuItem projectReport = new JMenuItem("Project report", JIPipe.RESOURCES.getIcon16("actions/document-preview.png"));
-        projectReport.setToolTipText("Opens the project report");
-        projectReport.addActionListener(e -> openProjectReport());
-        projectMenu.add(projectReport);
+        {
+            JMenu publishMenu = new JMenu("Publish");
+            UIUtils.installMenuExtension(this, publishMenu, JIPipeMenuExtensionTarget.ProjectPublishMenu, false);
+            if (publishMenu.getItemCount() > 0) {
+                projectMenu.add(publishMenu);
+            }
+        }
 
         JMenuItem openProjectFolderItem = new JMenuItem("Open project folder", JIPipe.RESOURCES.getIcon16("actions/document-open-folder.png"));
         openProjectFolderItem.setToolTipText("Opens the folder that contains the project file");
@@ -763,6 +767,21 @@ public class JIPipeDesktopProjectWorkbench extends JPanel implements JIPipeDeskt
 
         // Notification panel
         menu.add(notificationButton);
+
+        // Publish button
+        {
+            JPopupMenu publishMenu = new JPopupMenu("Publish");
+            UIUtils.installMenuExtension(this, publishMenu, JIPipeMenuExtensionTarget.ProjectPublishMenu, false);
+            if(publishMenu.getComponentCount()>0) {
+                JButton publishProjectButton = new JButton("Publish", JIPipe.RESOURCES.getIcon16("actions/share-nodes.png"));
+                publishProjectButton.setToolTipText("Publishes or shares the project");
+                UIUtils.setStandardButtonBorder(publishProjectButton);
+
+                UIUtils.addPopupMenuToButton(publishProjectButton, publishMenu);
+
+                menu.add(publishProjectButton);
+            }
+        }
 
         // "Help" entry
         JMenu helpMenu = new JMenu("Help");

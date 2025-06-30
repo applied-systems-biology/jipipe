@@ -14,6 +14,7 @@
 package org.hkijena.jipipe.desktop.api;
 
 import org.hkijena.jipipe.api.ConfigureJIPipeNode;
+import org.hkijena.jipipe.desktop.app.JIPipeDesktopProjectWorkbench;
 import org.hkijena.jipipe.desktop.app.JIPipeDesktopWorkbench;
 
 import javax.swing.*;
@@ -39,7 +40,18 @@ public abstract class JIPipeDesktopMenuExtension extends JMenuItem {
         return desktopWorkbench;
     }
 
+    public JIPipeDesktopProjectWorkbench getDesktopProjectWorkbench() {
+        if(desktopWorkbench instanceof JIPipeDesktopProjectWorkbench) {
+            return (JIPipeDesktopProjectWorkbench) desktopWorkbench;
+        }
+        return null;
+    }
+
     public abstract JIPipeMenuExtensionTarget getMenuTarget();
 
     public abstract String getMenuPath();
+
+    public String getFullMenuPath() {
+        return getMenuPath() + "/" + getText();
+    }
 }
