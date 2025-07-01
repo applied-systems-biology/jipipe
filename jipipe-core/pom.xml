@@ -68,7 +68,6 @@
         <system>GitHub CI</system>
         <url>https://github.com/applied-systems-biology/jipipe</url>
     </ciManagement>
-
     <dependencyManagement>
         <dependencies>
             <dependency>
@@ -290,11 +289,10 @@
             <artifactId>jcefmaven</artifactId>
             <version>135.0.20</version>
         </dependency>
-<!--        <dependency>-->
-<!--            <groupId>edu.kit.datamanager</groupId>-->
-<!--            <artifactId>ro-crate-java</artifactId>-->
-<!--            <version>2.0.2</version>-->
-<!--        </dependency>-->
+        <dependency>
+            <groupId>edu.kit.datamanager</groupId>
+            <artifactId>ro-crate-java</artifactId>
+        </dependency>
     </dependencies>
 
     <properties>

@@ -245,8 +245,5 @@ public class JIPipeCLIPipelineRun {
         JIPipeGraphRun run = new JIPipeGraphRun(project, settings);
         run.getProgressInfo().setLogToStdOut(true);
         run.run();
-
-//        System.exit(0); // unreliable due to bug in scijava
-        Runtime.getRuntime().halt(0);
     }
 }

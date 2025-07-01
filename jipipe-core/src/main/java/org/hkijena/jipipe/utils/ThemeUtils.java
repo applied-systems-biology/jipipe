@@ -217,7 +217,7 @@ public class ThemeUtils {
             // List styles in the profile directory
             try {
                 Path stylesDirectory = getUserStylesDirectory();
-                for (Path path : PathUtils.findFileByExtensionIn(stylesDirectory, ".json")) {
+                for (Path path : PathUtils.findFilesByExtensionIn(stylesDirectory, ".json")) {
                     String id = path.getFileName().toString();
                     id = id.substring(0, id.length() - 5);
                     if(!AVAILABLE_STYLE_IDS.contains(id)) {

@@ -13,6 +13,9 @@
 
 package org.hkijena.jipipe.cli;
 
+import org.apache.commons.lang3.exception.ExceptionUtils;
+import org.hkijena.jipipe.utils.StringUtils;
+
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
@@ -22,38 +25,46 @@ public class JIPipeCLIMain {
      * @param args ignored
      */
     public static void main(final String... args) {
-        if (args.length == 0) {
-            JIPipeCLIHelp.showHelp();
-            return;
-        }
-
-        List<String> argsList = new ArrayList<>(Arrays.asList(args));
-
-        if (argsList.contains("help")) {
-            JIPipeCLIHelp.showHelp();
-            return;
-        }
-        if (argsList.contains("run")) {
-            int runIndex = argsList.lastIndexOf("run");
-            while (runIndex > 0) {
-                argsList.remove(0);
-                --runIndex;
+        try {
+            if (args.length == 0) {
+                JIPipeCLIHelp.showHelp();
+                return;
             }
-            // remove run
-            argsList.remove(0);
-            JIPipeCLIPipelineRun.doRunPipeline(argsList);
-        } else if (argsList.contains("render")) {
-            int renderIndex = argsList.lastIndexOf("render");
-            while (renderIndex > 0) {
-                argsList.remove(0);
-                --renderIndex;
+
+            List<String> argsList = new ArrayList<>(Arrays.asList(args));
+
+            if (argsList.contains("help")) {
+                JIPipeCLIHelp.showHelp();
+                return;
             }
-            // remove run
-            argsList.remove(0);
-            JIPipeCLIPipelineRender.doRenderPipeline(argsList);
-        } else {
-            JIPipeCLIHelp.showHelp();
+            if (argsList.contains("run")) {
+                int runIndex = argsList.lastIndexOf("run");
+                while (runIndex > 0) {
+                    argsList.removeFirst();
+                    --runIndex;
+                }
+                // remove run
+                argsList.removeFirst();
+                JIPipeCLIPipelineRun.doRunPipeline(argsList);
+            } else if (argsList.contains("render")) {
+                int renderIndex = argsList.lastIndexOf("render");
+                while (renderIndex > 0) {
+                    argsList.removeFirst();
+                    --renderIndex;
+                }
+                // remove run
+                argsList.removeFirst();
+                JIPipeCLIPipelineRender.doRenderPipeline(argsList);
+            } else {
+                JIPipeCLIHelp.showHelp();
+            }
+        }
+        catch (Throwable t) {
+            System.err.println(t);
+            System.err.println(ExceptionUtils.getStackTrace(t));
+        }
+        finally {
+            Runtime.getRuntime().halt(0);
         }
     }
-
 }
