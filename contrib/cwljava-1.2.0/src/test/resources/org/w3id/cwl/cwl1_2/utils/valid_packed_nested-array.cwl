@@ -1,0 +1,14 @@
+baseCommand: echo
+class: CommandLineTool
+cwlVersion: v1.2
+inputs:
+- id: letters
+  inputBinding: {position: 1}
+  type:
+    items: {items: string, type: array}
+    type: array
+outputs:
+- {id: echo, type: stdout}
+requirements:
+- {class: InlineJavascriptRequirement}
+stdout: echo.txt

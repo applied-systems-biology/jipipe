@@ -1,0 +1,99 @@
+baseCommand: 'true'
+class: CommandLineTool
+cwlVersion: v1.2
+inputs:
+- default:
+    b az: 2
+    b"az: null
+    b'az: true
+    baz: zab1
+    buz: [a, b, c]
+  id: bar
+  type: Any
+outputs:
+- id: t1
+  outputBinding: {outputEval: $(inputs)}
+  type: Any
+- id: t2
+  outputBinding: {outputEval: $(inputs.bar)}
+  type: Any
+- id: t3
+  outputBinding: {outputEval: "$(inputs['bar'])"}
+  type: Any
+- id: t4
+  outputBinding: {outputEval: '$(inputs["bar"])'}
+  type: Any
+- id: t5
+  outputBinding: {outputEval: $(inputs.bar.baz)}
+  type: Any
+- id: t6
+  outputBinding: {outputEval: "$(inputs['bar'].baz)"}
+  type: Any
+- id: t7
+  outputBinding: {outputEval: "$(inputs['bar'][\"baz\"])"}
+  type: Any
+- id: t8
+  outputBinding: {outputEval: "$(inputs.bar['baz'])"}
+  type: Any
+- id: t9
+  outputBinding: {outputEval: "$(inputs.bar['b az'])"}
+  type: Any
+- id: t10
+  outputBinding: {outputEval: "$(inputs.bar['b\\'az'])"}
+  type: Any
+- id: t11
+  outputBinding: {outputEval: "$(inputs.bar[\"b'az\"])"}
+  type: Any
+- id: t12
+  outputBinding: {outputEval: "$(inputs.bar['b\"az'])"}
+  type: 'null'
+- id: t13
+  outputBinding: {outputEval: -$(inputs.bar.baz)}
+  type: Any
+- id: t14
+  outputBinding: {outputEval: "-$(inputs['bar'].baz)"}
+  type: Any
+- id: t15
+  outputBinding: {outputEval: "-$(inputs['bar'][\"baz\"])"}
+  type: Any
+- id: t16
+  outputBinding: {outputEval: "-$(inputs.bar['baz'])"}
+  type: Any
+- id: t17
+  outputBinding: {outputEval: $(inputs.bar.baz) $(inputs.bar.baz)}
+  type: Any
+- id: t18
+  outputBinding: {outputEval: "$(inputs['bar'].baz) $(inputs['bar'].baz)"}
+  type: Any
+- id: t19
+  outputBinding: {outputEval: "$(inputs['bar'][\"baz\"]) $(inputs['bar'][\"baz\"])"}
+  type: Any
+- id: t20
+  outputBinding: {outputEval: "$(inputs.bar['baz']) $(inputs.bar['baz'])"}
+  type: Any
+- id: t21
+  outputBinding: {outputEval: "$(inputs.bar['b az']) $(inputs.bar['b az'])"}
+  type: Any
+- id: t22
+  outputBinding: {outputEval: "$(inputs.bar['b\\'az']) $(inputs.bar['b\\'az'])"}
+  type: Any
+- id: t23
+  outputBinding: {outputEval: "$(inputs.bar[\"b'az\"]) $(inputs.bar[\"b'az\"])"}
+  type: Any
+- id: t24
+  outputBinding: {outputEval: "$(inputs.bar['b\"az']) $(inputs.bar['b\"az'])"}
+  type: Any
+- id: t25
+  outputBinding: {outputEval: '$(inputs.bar.buz[1])'}
+  type: Any
+- id: t26
+  outputBinding: {outputEval: '$(inputs.bar.buz[1]) $(inputs.bar.buz[1])'}
+  type: Any
+- id: t27
+  outputBinding: {outputEval: $(null)}
+  type: 'null'
+- id: t28
+  outputBinding: {outputEval: $(inputs.bar.buz.length)}
+  type: int
+requirements:
+- {class: InlineJavascriptRequirement}

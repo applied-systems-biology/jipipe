@@ -1,0 +1,14 @@
+arguments:
+- {shellQuote: false, valueFrom: echo foo 1>&2}
+class: CommandLineTool
+cwlVersion: v1.2
+doc: Test of capturing stderr output.
+inputs: []
+outputs:
+- id: output_file
+  outputBinding: {glob: error.txt}
+  type: File
+requirements:
+- {class: ShellCommandRequirement}
+- {class: InlineJavascriptRequirement}
+stderr: error.txt

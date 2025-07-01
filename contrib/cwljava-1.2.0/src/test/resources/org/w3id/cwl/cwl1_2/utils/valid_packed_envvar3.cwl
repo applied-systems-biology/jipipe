@@ -1,0 +1,16 @@
+arguments:
+- {shellQuote: false, valueFrom: "echo HOME=$HOME TMPDIR=$TMPDIR > log\nif [ \"$HOME\"\
+    \ = \"$(runtime.outdir)\" ] && [ \"$TMPDIR\" = \"$(runtime.tmpdir)\" ]\nthen\n\
+    \    echo success > results\nelse\n    echo failure > results\nfi\n"}
+class: CommandLineTool
+cwlVersion: v1.2
+hints:
+  DockerRequirement: {dockerPull: debian:stretch-slim}
+inputs: []
+outputs:
+- id: results
+  outputBinding: {glob: results}
+  type: File
+requirements:
+- {class: ShellCommandRequirement}
+- {class: InlineJavascriptRequirement}

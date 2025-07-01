@@ -1,0 +1,44 @@
+class: Workflow
+cwlVersion: v1.2
+inputs:
+- id: inp1
+  type: {items: string, type: array}
+- id: inp2
+  type: {items: string, type: array}
+outputs:
+- id: out
+  outputSource: step1/echo_out
+  type:
+    items: {items: string, type: array}
+    type: array
+requirements:
+- {class: ScatterFeatureRequirement}
+- {class: SubworkflowFeatureRequirement}
+- {class: InlineJavascriptRequirement}
+steps:
+- id: step1
+  in:
+  - {id: echo_in1, source: inp1}
+  - {id: echo_in2, source: inp2}
+  out: [echo_out]
+  run:
+    arguments: [-n, foo]
+    baseCommand: echo
+    class: CommandLineTool
+    id: step1command
+    inputs:
+    - id: echo_in1
+      inputBinding: {}
+      type: string
+    - id: echo_in2
+      inputBinding: {}
+      type: string
+    outputs:
+    - id: echo_out
+      outputBinding: {glob: step1_out, loadContents: true, outputEval: '$(self[0].contents)'}
+      type: string
+    requirements:
+    - {class: InlineJavascriptRequirement}
+    stdout: step1_out
+  scatter: [echo_in1, echo_in2]
+  scatterMethod: nested_crossproduct

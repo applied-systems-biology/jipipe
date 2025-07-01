@@ -1,0 +1,51 @@
+$graph:
+- arguments: [-n, foo]
+  baseCommand: echo
+  class: CommandLineTool
+  id: echo
+  inputs:
+    echo_in1:
+      inputBinding: {position: 2}
+      type: string
+    echo_in2:
+      inputBinding: {position: 3}
+      type: string
+    first:
+      inputBinding: {position: 1}
+      type: string
+  outputs:
+    echo_out:
+      outputBinding: {glob: step1_out, loadContents: true, outputEval: '$(self[0].contents)'}
+      type: string
+  stdout: step1_out
+- class: Workflow
+  id: main
+  inputs:
+    inp1:
+      type:
+        items:
+          fields:
+          - {name: instr, type: string}
+          name: instr
+          type: record
+        type: array
+    inp2:
+      type: {items: string, type: array}
+  outputs:
+    out:
+      outputSource: step1/echo_out
+      type: {items: string, type: array}
+  requirements:
+  - {class: ScatterFeatureRequirement}
+  - {class: StepInputExpressionRequirement}
+  steps:
+    step1:
+      in:
+        echo_in1: {source: inp1, valueFrom: $(self.instr)}
+        echo_in2: inp2
+        first: {source: inp1, valueFrom: '$(self[0].instr)'}
+      out: [echo_out]
+      run: '#echo'
+      scatter: [echo_in1, echo_in2]
+      scatterMethod: dotproduct
+cwlVersion: v1.2

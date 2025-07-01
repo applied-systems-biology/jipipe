@@ -1,0 +1,20 @@
+arguments:
+- {valueFrom: "${\n  var cmd = [\"echo\"];\n  if (inputs.input.length == 0) {\n  \
+    \   cmd.push('no_inputs');\n  }\n  else {\n    for (var i = 0; i < inputs.input.length;\
+    \ i++) {\n      var filesize = inputs.input[i].size;\n      if (filesize == 0)\
+    \ {\n        cmd.push(\"empty_file\");\n      } else if (filesize <= 16) {\n \
+    \       cmd.push(\"small_file\");\n      } else {\n        cmd.push(\"big_file\"\
+    )\n      }\n    }\n  }\n  return cmd;\n}\n"}
+baseCommand: []
+class: CommandLineTool
+cwlVersion: v1.2
+inputs:
+- id: input
+  type: {items: File, type: array}
+outputs:
+- id: output_file
+  outputBinding: {glob: output.txt}
+  type: File
+requirements:
+- {class: InlineJavascriptRequirement}
+stdout: output.txt

@@ -1,0 +1,13 @@
+baseCommand: [wc, -l]
+class: CommandLineTool
+cwlVersion: v1.2
+inputs:
+- {id: file1, type: File}
+outputs:
+- id: output
+  outputBinding: {glob: output}
+  type: File
+requirements:
+- {class: InlineJavascriptRequirement}
+stdin: $(inputs.file1.path)
+stdout: output

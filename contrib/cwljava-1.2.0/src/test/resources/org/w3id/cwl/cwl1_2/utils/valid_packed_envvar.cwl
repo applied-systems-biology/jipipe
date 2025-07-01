@@ -1,0 +1,20 @@
+arguments:
+- echo
+- {shellQuote: false, valueFrom: '"HOME=$HOME"'}
+- {shellQuote: false, valueFrom: '"TMPDIR=$TMPDIR"'}
+- {shellQuote: false, valueFrom: '&&'}
+- test
+- {shellQuote: false, valueFrom: '"$HOME"'}
+- '='
+- $(runtime.outdir)
+- -a
+- {shellQuote: false, valueFrom: '"$TMPDIR"'}
+- '='
+- $(runtime.tmpdir)
+class: CommandLineTool
+cwlVersion: v1.2
+inputs: []
+outputs: []
+requirements:
+- {class: ShellCommandRequirement}
+- {class: InlineJavascriptRequirement}

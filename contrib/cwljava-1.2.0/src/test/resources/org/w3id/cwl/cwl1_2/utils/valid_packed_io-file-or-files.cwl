@@ -1,0 +1,22 @@
+arguments:
+- {valueFrom: "${\n  var cmd = [];\n  if (inputs.input === null) {\n     cmd.push('echo');\n\
+    \     cmd.push('no_inputs');\n  } else {\n    cmd.push('cat');\n    if (Array.isArray(inputs.input))\
+    \ {\n        for (var i = 0; i < inputs.input.length; i++) {\n           cmd.push(inputs.input[i].path);\n\
+    \        }\n    } else {\n      cmd.push(inputs.input.path);\n    }\n  }\n  return\
+    \ cmd;\n}\n"}
+baseCommand: []
+class: CommandLineTool
+cwlVersion: v1.2
+inputs:
+- id: input
+  type:
+  - 'null'
+  - File
+  - {items: File, type: array}
+outputs:
+- id: output_file
+  outputBinding: {glob: output.txt}
+  type: File
+requirements:
+- {class: InlineJavascriptRequirement}
+stdout: output.txt

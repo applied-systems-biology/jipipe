@@ -1,0 +1,17 @@
+baseCommand: [ls]
+class: CommandLineTool
+cwlVersion: v1.2
+id: stage_array_dirs
+inputs:
+- id: input_list
+  type: {items: Directory, type: array}
+label: stage-array-dirs.cwl
+outputs:
+- id: output
+  outputBinding:
+    glob: [testdir/a, rec/B]
+  type: {items: File, type: array}
+requirements:
+- class: InitialWorkDirRequirement
+  listing: [$(inputs.input_list)]
+- {class: InlineJavascriptRequirement}

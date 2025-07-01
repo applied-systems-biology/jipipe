@@ -1,0 +1,30 @@
+arguments:
+- {position: 1, shellQuote: false, valueFrom: '${ var fai_list = ""; for (var i =
+    0; i < inputs.fasta_path.length; i ++) { fai_list += " cat " + inputs.fasta_path[i].path
+    +".fai" + " >> fai.list && " } return fai_list.slice(0,-3) }'}
+baseCommand: []
+class: CommandLineTool
+cwlVersion: v1.2
+inputs:
+- id: fasta_path
+  secondaryFiles:
+  - {pattern: .fai, required: true}
+  - {pattern: .crai, required: false}
+  - .bai?
+  - ${ if (inputs.require_dat) {return '.dat'} else {return null} }
+  - ${ return null; }
+  - {pattern: .dat2, required: $(inputs.require_dat)}
+  type: {items: File, type: array}
+- id: require_dat
+  type: ['null', boolean]
+outputs:
+- id: bai_list
+  outputBinding: {glob: fai.list}
+  secondaryFiles:
+  - .bai?
+  - {pattern: '${ return null }'}
+  type: File
+requirements:
+- {class: DockerRequirement, dockerPull: debian:stretch-slim}
+- {class: InlineJavascriptRequirement}
+- {class: ShellCommandRequirement}

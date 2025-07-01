@@ -1,0 +1,18 @@
+arguments: [ls]
+class: CommandLineTool
+cwlVersion: v1.2
+id: stage_file_array
+inputs:
+- id: input_list
+  secondaryFiles: [.sec]
+  type: {items: File, type: array}
+label: Stage File Array
+outputs:
+- id: output
+  outputBinding: {glob: input_dir/*}
+  type: {items: File, type: array}
+requirements:
+- {class: InlineJavascriptRequirement}
+- class: InitialWorkDirRequirement
+  listing:
+  - {entry: "${ return {class: 'Directory', listing: inputs.input_list} }", entryname: input_dir}

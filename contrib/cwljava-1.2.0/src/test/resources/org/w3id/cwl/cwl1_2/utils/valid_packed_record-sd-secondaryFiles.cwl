@@ -1,0 +1,19 @@
+arguments: [-f, $(inputs.record_input.f1.path).s2, -a, -f, '$(inputs.record_input.f2[0].path).s3',
+  -a, -f, '$(inputs.record_input.f2[1].path).s3']
+baseCommand: test
+class: CommandLineTool
+cwlVersion: v1.2
+inputs:
+- id: record_input
+  type:
+    doc: Type test record
+    fields:
+    - {name: f1, secondaryFiles: .s2, type: File}
+    - name: f2
+      secondaryFiles: .s3
+      type: {items: File, type: array}
+    name: user_type_2
+    type: record
+outputs: []
+requirements:
+- {class: InlineJavascriptRequirement}

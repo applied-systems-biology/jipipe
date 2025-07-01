@@ -1,0 +1,32 @@
+class: Workflow
+cwlVersion: v1.2
+inputs:
+- {id: val, type: int}
+- {default: Direct, id: def, type: string}
+outputs:
+- id: out1
+  outputSource: [step1/out1, def]
+  pickValue: the_only_non_null
+  type: string
+requirements:
+- {class: InlineJavascriptRequirement}
+- {class: MultipleInputFeatureRequirement}
+- {class: SubworkflowFeatureRequirement}
+steps:
+- id: step1
+  in:
+  - {id: in1, source: val}
+  - {id: a_new_var, source: val}
+  out: [out1]
+  run:
+    baseCommand: [echo]
+    class: CommandLineTool
+    inputs:
+    - {id: in1, type: int}
+    outputs:
+    - id: out1
+      outputBinding: {outputEval: foo $(inputs.in1)}
+      type: string
+    requirements:
+    - {class: InlineJavascriptRequirement}
+  when: $(inputs.a_new_var > 2)

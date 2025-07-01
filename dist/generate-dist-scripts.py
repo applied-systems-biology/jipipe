@@ -37,6 +37,13 @@ def write_generator(f):
     wl("cp -rv ./dependencies/* ./package/jars/")
     # wl("cp -rv $OPENCV_DIR/*.jar ./package/dependencies")
 
+    # Copy contrib dependencoes
+    wl("for component in " + " ".join(json_data["contrib-dependencies"]) + "; do")
+    wl("cp -v ../../contrib/$component/target/$component-SNAPSHOT.jar ./package/jars/$component.jar", tab=1)
+    wl("cp -v ../../contrib/$component/target/$component.jar ./package/jars/$component.jar", tab=1)
+    wl("done")
+    wl()
+
     # Copy other things
     wl("cp -v README.txt package")
     wl("cp -v ../../LICENSE package/LICENSE_JIPipe.txt")

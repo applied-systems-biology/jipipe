@@ -136,6 +136,11 @@
                 <artifactId>ro-crate-java</artifactId>
                 <version>2.1.0-rc3</version>
             </dependency>
+            <dependency>
+                <groupId>org.w3id.cwl.sdk</groupId>
+                <artifactId>cwljava</artifactId>
+                <version>1.2.0</version>
+            </dependency>
         </dependencies>
     </dependencyManagement>
 
@@ -292,6 +297,10 @@
         <dependency>
             <groupId>edu.kit.datamanager</groupId>
             <artifactId>ro-crate-java</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>org.w3id.cwl.sdk</groupId>
+            <artifactId>cwljava</artifactId>
         </dependency>
     </dependencies>
 

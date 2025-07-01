@@ -1,0 +1,12 @@
+# discover the valid CWL files from the conformance tests:
+
+cd ~/cwl-v1.1 # my local checkout of https://github.com/common-workflow-language/cwl-v1.1/
+git ls-files -- tests | grep cwl$ | xargs -I{} bash -c 'cwltool --relax-path-checks --validate {} >/dev/null 2>/dev/null && echo {}' > valid_examples.txt
+#git ls-files -- tests | grep cwl$ | xargs -I{} bash -c 'cwltool --relax-path-checks --validate {} >/dev/null 2>/dev/null || echo {}' > invalid_examples.txt
+mkdir valid-examples; for file in $(cat valid_examples.txt); do cp ${file} valid-examples/valid_$(basename ${file}) ; done
+
+# build the Java parser
+schema-salad-tool --codegen java --codegen-package org.w3id.cwl.cwl1_1 --codegen-examples ~/cwl-v1.1/valid-examples ~/cwl-v1.1/CommonWorkflowLanguage.yml
+
+mvn test
+# copy missing files into ./src/test/resources/org/w3id/cwl/cwl1_1/utils

@@ -1,0 +1,15 @@
+baseCommand: touch
+class: CommandLineTool
+cwlVersion: v1.2
+inputs:
+- id: src
+  inputBinding: {position: 1, valueFrom: $(self.nameroot).class}
+  type: File
+outputs:
+- id: classfile
+  outputBinding: {glob: '*.class'}
+  type: File
+requirements:
+- class: InitialWorkDirRequirement
+  listing: [$(inputs.src)]
+- {class: InlineJavascriptRequirement}

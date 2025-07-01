@@ -1,0 +1,36 @@
+class: Workflow
+cwlVersion: v1.2
+inputs:
+- id: scattered_messages
+  type: {items: string, type: array}
+outputs:
+- id: out_message
+  outputSource: step1/out_message
+  type: {items: File, type: array}
+requirements:
+- {class: ScatterFeatureRequirement}
+- {class: StepInputExpressionRequirement}
+- {class: SubworkflowFeatureRequirement}
+- {class: InlineJavascriptRequirement}
+steps:
+- id: step1
+  in:
+  - {id: scattered_message, source: scattered_messages}
+  - {id: message, valueFrom: Hello}
+  out: [out_message]
+  run:
+    baseCommand: echo
+    class: CommandLineTool
+    inputs:
+    - id: scattered_message
+      inputBinding: {position: 2}
+      type: string
+    - id: message
+      inputBinding: {position: 1}
+      type: string
+    outputs:
+    - {id: out_message, type: stdout}
+    requirements:
+    - {class: InlineJavascriptRequirement}
+  scatter: [scattered_message]
+  scatterMethod: dotproduct

@@ -1,0 +1,34 @@
+class: Workflow
+cwlVersion: v1.2
+inputs:
+- {id: a, type: int}
+- {id: b, type: int}
+outputs:
+- {id: val, outputSource: step1/echo_out, type: string}
+requirements:
+- {class: StepInputExpressionRequirement}
+- {class: InlineJavascriptRequirement}
+- {class: MultipleInputFeatureRequirement}
+- {class: SubworkflowFeatureRequirement}
+steps:
+- id: step1
+  in:
+  - id: c
+    source: [a, b]
+    valueFrom: $(self[0] + self[1])
+  out: [echo_out]
+  run:
+    baseCommand: echo
+    class: CommandLineTool
+    id: echo
+    inputs:
+    - id: c
+      inputBinding: {}
+      type: int
+    outputs:
+    - id: echo_out
+      outputBinding: {glob: step1_out, loadContents: true, outputEval: '$(self[0].contents)'}
+      type: string
+    requirements:
+    - {class: InlineJavascriptRequirement}
+    stdout: step1_out

@@ -1,0 +1,21 @@
+arguments: [A, A.s2, B, B.s3, C, C.s3]
+baseCommand: touch
+class: CommandLineTool
+cwlVersion: v1.2
+inputs: []
+outputs:
+- id: record_output
+  type:
+    fields:
+    - name: f1
+      outputBinding: {glob: A}
+      secondaryFiles: .s2
+      type: File
+    - name: f2
+      outputBinding:
+        glob: [B, C]
+      secondaryFiles: .s3
+      type: {items: File, type: array}
+    type: record
+requirements:
+- {class: InlineJavascriptRequirement}

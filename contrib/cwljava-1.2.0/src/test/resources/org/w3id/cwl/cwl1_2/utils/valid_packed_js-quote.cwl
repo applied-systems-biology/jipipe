@@ -1,0 +1,18 @@
+arguments: []
+baseCommand: [echo]
+class: CommandLineTool
+cwlVersion: v1.2
+inputs:
+- {default: Hello, id: quote, type: string}
+label: Check for a JS quoting bug
+outputs:
+- id: out
+  outputBinding: {glob: file.txt}
+  type: File
+requirements:
+- class: InitialWorkDirRequirement
+  listing:
+  - {entry: "${return 'quote \"' + inputs.quote + '\"'}\n", entryname: file.txt}
+  - {entry: "set -xe\ncat file.txt\n", entryname: script.sh}
+- {class: InlineJavascriptRequirement}
+- {class: ResourceRequirement, coresMin: 2, ramMin: 1000}

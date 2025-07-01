@@ -1,0 +1,12 @@
+arguments: [$(runtime.ram), $(runtime.tmpdirSize), $(runtime.outdirSize)]
+baseCommand: echo
+class: CommandLineTool
+cwlVersion: v1.2
+inputs: []
+outputs:
+- {id: output, type: stdout}
+requirements:
+- {class: ResourceRequirement, outdirMax: 256.9, outdirMin: 256.1, ramMax: 254.9,
+  ramMin: 254.1, tmpdirMax: 255.9, tmpdirMin: 255.1}
+- {class: InlineJavascriptRequirement}
+stdout: values.txt

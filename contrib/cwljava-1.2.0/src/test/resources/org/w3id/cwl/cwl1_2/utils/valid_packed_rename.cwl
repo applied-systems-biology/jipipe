@@ -1,0 +1,15 @@
+baseCommand: 'true'
+class: CommandLineTool
+cwlVersion: v1.2
+inputs:
+- {id: srcfile, type: File}
+- {id: newname, type: string}
+outputs:
+- id: outfile
+  outputBinding: {glob: $(inputs.newname)}
+  type: File
+requirements:
+- class: InitialWorkDirRequirement
+  listing:
+  - {entry: $(inputs.srcfile), entryname: $(inputs.newname)}
+- {class: InlineJavascriptRequirement}

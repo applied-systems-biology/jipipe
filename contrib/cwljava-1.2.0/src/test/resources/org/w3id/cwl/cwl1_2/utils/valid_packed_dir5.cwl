@@ -1,0 +1,22 @@
+arguments:
+- find
+- -L
+- .
+- '!'
+- -path
+- '*.txt'
+- {shellQuote: false, valueFrom: '|'}
+- sort
+class: CommandLineTool
+cwlVersion: v1.2
+inputs:
+- {id: indir, loadListing: shallow_listing, type: Directory}
+outputs:
+- id: outlist
+  outputBinding: {glob: output.txt}
+  type: File
+requirements:
+- {class: ShellCommandRequirement}
+- {class: InitialWorkDirRequirement, listing: $(inputs.indir.listing)}
+- {class: InlineJavascriptRequirement}
+stdout: output.txt

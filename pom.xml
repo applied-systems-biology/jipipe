@@ -422,6 +422,7 @@ See the LICENSE file provided with this code for the full license.
     </profiles>
 
     <modules>
+        <module>contrib/cwljava-1.2.0</module>
         <module>jipipe-core</module>
         <module>jipipe-desktop</module>
         <module>jipipe-cli</module>

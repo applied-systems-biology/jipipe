@@ -1,0 +1,63 @@
+class: Workflow
+cwlVersion: v1.2
+inputs:
+- id: forward_reads
+  type: ['null', File]
+- id: reverse_reads
+  type: ['null', File]
+- id: single_reads
+  type: ['null', File]
+outputs:
+- id: out_file
+  linkMerge: merge_flattened
+  outputSource: [step_paired/processed_file, step_single/processed_file]
+  pickValue: all_non_null
+  type: {items: File, type: array}
+requirements:
+- {class: MultipleInputFeatureRequirement}
+- {class: InlineJavascriptRequirement}
+- {class: StepInputExpressionRequirement}
+- {class: ScatterFeatureRequirement}
+- {class: SubworkflowFeatureRequirement}
+steps:
+- id: step_paired
+  in:
+  - {id: single, source: single_reads}
+  - default: ['1', '2']
+    id: suffix
+  - id: initial_file
+    source: [forward_reads, reverse_reads]
+  - {id: out_file_name, valueFrom: filename_paired$(inputs.suffix)}
+  out: [processed_file]
+  run:
+    arguments: [echo, $(inputs.initial_file.basename)]
+    class: CommandLineTool
+    inputs:
+    - {id: initial_file, type: File}
+    - {id: out_file_name, type: string}
+    outputs:
+    - {id: processed_file, type: stdout}
+    requirements:
+    - {class: InlineJavascriptRequirement}
+    stdout: $(inputs.out_file_name)
+  scatter: [initial_file, suffix]
+  scatterMethod: dotproduct
+  when: $(inputs.single === null)
+- id: step_single
+  in:
+  - {id: single, source: single_reads}
+  - {id: initial_file, source: single_reads}
+  - {default: filename_single, id: out_file_name}
+  out: [processed_file]
+  run:
+    arguments: [echo, $(inputs.initial_file.basename)]
+    class: CommandLineTool
+    inputs:
+    - {id: initial_file, type: File}
+    - {id: out_file_name, type: string}
+    outputs:
+    - {id: processed_file, type: stdout}
+    requirements:
+    - {class: InlineJavascriptRequirement}
+    stdout: $(inputs.out_file_name)
+  when: $(inputs.single !== null)

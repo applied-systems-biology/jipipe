@@ -1,0 +1,15 @@
+arguments: ['true']
+class: CommandLineTool
+cwlVersion: v1.2
+inputs: []
+outputs:
+- id: filelist
+  outputBinding: {glob: out-filelist.json}
+  type: File
+requirements:
+- {class: InlineJavascriptRequirement}
+- class: InitialWorkDirRequirement
+  listing:
+  - {entry: "${\n  var ls = [];\n  for (var i = 1; i < 10000; i++) {\n    ls.push(\"\
+      example_input_file\"+i+\".txt\");\n  }\n  return {\"filelist\": ls};\n}\n",
+    entryname: out-filelist.json}

@@ -1,0 +1,17 @@
+arguments:
+- {shellQuote: false, valueFrom: head -n10 ../input/stuff.txt > head.txt}
+class: CommandLineTool
+cwlVersion: v1.2
+doc: "Must fail if entryname starts with ../\n"
+inputs:
+- {id: filelist, type: File}
+outputs:
+- id: head
+  outputBinding: {glob: head.txt}
+  type: File
+requirements:
+- class: InitialWorkDirRequirement
+  listing:
+  - {entry: $(inputs.filelist), entryname: ../input/stuff.txt}
+- {class: ShellCommandRequirement}
+- {class: InlineJavascriptRequirement}
