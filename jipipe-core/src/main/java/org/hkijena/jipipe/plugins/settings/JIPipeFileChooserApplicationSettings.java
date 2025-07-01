@@ -101,9 +101,15 @@ public class JIPipeFileChooserApplicationSettings extends JIPipeDefaultApplicati
         if (workbench != null && workbench.getProject() != null && workbench.getProject().getWorkDirectory() != null && result.equals(Paths.get("").toAbsolutePath())) {
             result = workbench.getProject().getWorkDirectory();
         }
-        if(result.toString().isEmpty() || result.equals(Paths.get("").toAbsolutePath())) {
+        if (result.toString().isEmpty() || result.equals(Paths.get("").toAbsolutePath())) {
             // Go to user.home
             result = Paths.get(StringUtils.orElse(System.getProperty("user.home"), ""));
+        }
+        if (Files.exists(result) && !Files.isDirectory(result)) {
+            try {
+                result = Paths.get(result.toString()).getParent();
+            } catch (Exception ignored) {
+            }
         }
         return result;
     }
@@ -115,6 +121,12 @@ public class JIPipeFileChooserApplicationSettings extends JIPipeDefaultApplicati
      * @param lastDirectory directory or file
      */
     public void setLastDirectoryBy(LastDirectoryKey key, Path lastDirectory) {
+        if (Files.exists(lastDirectory) && !Files.isDirectory(lastDirectory)) {
+            try {
+                lastDirectory = Paths.get(lastDirectory.toString()).getParent();
+            } catch (Exception ignored) {
+            }
+        }
         if (Files.isRegularFile(lastDirectory))
             lastDirectory = lastDirectory.getParent();
         switch (key) {

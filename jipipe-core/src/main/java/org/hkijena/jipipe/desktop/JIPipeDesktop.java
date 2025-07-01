@@ -104,13 +104,17 @@ public class JIPipeDesktop {
                 return null;
             }
         } else {
-            return JIPipeDesktopFileChooserNext.showDialogSingle(parent,
+            Path result = JIPipeDesktopFileChooserNext.showDialogSingle(parent,
                     workbench,
                     title,
                     description, currentPath,
                     PathIOMode.Open,
                     PathType.FilesOnly,
                     extensionFilters);
+            if(result != null) {
+                instance.setLastDirectoryBy(key, result.getParent());
+            }
+            return result;
         }
     }
 
@@ -220,13 +224,17 @@ public class JIPipeDesktop {
                 return null;
             }
         } else {
-            return JIPipeDesktopFileChooserNext.showDialogSingle(parent,
+            Path path = JIPipeDesktopFileChooserNext.showDialogSingle(parent,
                     workbench,
                     title,
                     description, currentPath,
                     PathIOMode.Save,
                     PathType.FilesOnly,
                     extensionFilters);
+            if(path != null) {
+                instance.setLastDirectoryBy(key, path.getParent());
+            }
+            return path;
         }
     }
 
@@ -266,13 +274,17 @@ public class JIPipeDesktop {
                 return null;
             }
         } else {
-            return JIPipeDesktopFileChooserNext.showDialogSingle(parent,
+            Path result = JIPipeDesktopFileChooserNext.showDialogSingle(parent,
                     workbench,
                     title,
                     description, currentPath,
                     PathIOMode.Open,
                     PathType.FilesAndDirectories,
                     extensionFilters);
+            if(result != null) {
+                instance.setLastDirectoryBy(key, result);
+            }
+            return result;
         }
     }
 
@@ -312,13 +324,17 @@ public class JIPipeDesktop {
                 return null;
             }
         } else {
-            return JIPipeDesktopFileChooserNext.showDialogSingle(parent,
+            Path path = JIPipeDesktopFileChooserNext.showDialogSingle(parent,
                     workbench,
                     title,
                     description, currentPath,
                     PathIOMode.Save,
                     PathType.FilesAndDirectories,
                     extensionFilters);
+            if(path !=  null) {
+                instance.setLastDirectoryBy(key, path);
+            }
+            return path;
         }
     }
 
@@ -358,12 +374,16 @@ public class JIPipeDesktop {
                 return null;
             }
         } else {
-            return JIPipeDesktopFileChooserNext.showDialogSingle(parent,
+            Path path = JIPipeDesktopFileChooserNext.showDialogSingle(parent,
                     workbench,
                     title,
                     description, currentPath,
                     PathIOMode.Open,
                     PathType.DirectoriesOnly);
+            if(path != null) {
+                instance.setLastDirectoryBy(key, path);
+            }
+            return path;
         }
     }
 
@@ -403,12 +423,16 @@ public class JIPipeDesktop {
                 return null;
             }
         } else {
-            return JIPipeDesktopFileChooserNext.showDialogSingle(parent,
+            Path path = JIPipeDesktopFileChooserNext.showDialogSingle(parent,
                     workbench,
                     title,
                     description, currentPath,
                     PathIOMode.Open,
                     PathType.DirectoriesOnly);
+            if(path != null) {
+                instance.setLastDirectoryBy(key, path);
+            }
+            return path;
         }
     }
 
@@ -461,7 +485,7 @@ public class JIPipeDesktop {
                 return Collections.emptyList();
             }
         } else {
-            return JIPipeDesktopFileChooserNext.showDialog(parent,
+            List<Path> paths = JIPipeDesktopFileChooserNext.showDialog(parent,
                     workbench,
                     title,
                     description, currentPath,
@@ -469,6 +493,10 @@ public class JIPipeDesktop {
                     PathType.FilesOnly,
                     true,
                     extensionFilters);
+            if(!paths.isEmpty()) {
+                instance.setLastDirectoryBy(key,paths.getFirst().getParent());
+            }
+            return paths;
         }
     }
 
@@ -512,13 +540,17 @@ public class JIPipeDesktop {
                 return Collections.emptyList();
             }
         } else {
-            return JIPipeDesktopFileChooserNext.showDialog(parent,
+            List<Path> paths = JIPipeDesktopFileChooserNext.showDialog(parent,
                     workbench,
                     title,
                     description, currentPath,
                     PathIOMode.Open,
                     PathType.DirectoriesOnly,
                     true);
+            if(!paths.isEmpty()) {
+                instance.setLastDirectoryBy(key, paths.getFirst());
+            }
+            return paths;
         }
     }
 
@@ -562,7 +594,7 @@ public class JIPipeDesktop {
                 return Collections.emptyList();
             }
         } else {
-            return JIPipeDesktopFileChooserNext.showDialog(parent,
+            List<Path> paths = JIPipeDesktopFileChooserNext.showDialog(parent,
                     workbench,
                     title,
                     description, currentPath,
@@ -570,6 +602,10 @@ public class JIPipeDesktop {
                     PathType.FilesAndDirectories,
                     true,
                     extensionFilters);
+            if(!paths.isEmpty()) {
+                instance.setLastDirectoryBy(key, paths.getFirst());
+            }
+            return paths;
         }
     }
 
