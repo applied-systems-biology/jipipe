@@ -20,7 +20,7 @@ ARG XARGS=""
 ENV XVFB_ARGS="${XARGS}"
 
 # Set environment variables
-ENV JIPIPE_VERSION=5.3.0
+ENV JIPIPE_VERSION=4.1.0
 ENV JIPIPE_URL=https://github.com/applied-systems-biology/jipipe/releases/download/pom-jipipe-${JIPIPE_VERSION}/JIPipe-${JIPIPE_VERSION}-Prepackaged-Linux64.tar.gz
 ENV JIPIPE_HOME=/opt/jipipe
 

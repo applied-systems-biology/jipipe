@@ -12,7 +12,7 @@ RUN apt-get update && apt-get install -y \
 
 # XVFB setup
 
-COPY ../xvfb-startup.sh .
+COPY xvfb-startup.sh .
 RUN sed -i 's/\r$//' xvfb-startup.sh
 ARG RESOLUTION="1920x1080x24"
 ENV XVFB_RES="${RESOLUTION}"
@@ -20,22 +20,24 @@ ARG XARGS=""
 ENV XVFB_ARGS="${XARGS}"
 
 # Set environment variables
-ENV JIPIPE_VERSION=5.3.0
+ENV JIPIPE_VERSION=5.2.0
 ENV JIPIPE_URL=https://github.com/applied-systems-biology/jipipe/releases/download/pom-jipipe-${JIPIPE_VERSION}/JIPipe-${JIPIPE_VERSION}-Prepackaged-Linux64.tar.gz
 ENV JIPIPE_HOME=/opt/jipipe
 
-# Download and extract JIPipe
+# Download and extract JIPipe into a consistent folder structure
 RUN mkdir -p ${JIPIPE_HOME} \
-    && wget -qO- ${JIPIPE_URL} | tar xz -C ${JIPIPE_HOME}
+    && wget -qO- ${JIPIPE_URL} | tar xz -C ${JIPIPE_HOME} \
+    && mv ${JIPIPE_HOME}/JIPipe-${JIPIPE_VERSION}/* ${JIPIPE_HOME}/ \
+    && rmdir ${JIPIPE_HOME}/JIPipe-${JIPIPE_VERSION}
 
 # Ensure binaries are executable
-RUN chmod +x ${JIPIPE_HOME}/JIPipe-${JIPIPE_VERSION}/bin/ImageJ-linux64
+RUN chmod +x ${JIPIPE_HOME}/bin/ImageJ-linux64
 
 # Working directory where users can mount input/output
 WORKDIR /data
 
-# ENTRYPOINT wrapper using xvfb
-ENTRYPOINT ["/bin/bash", "xvfb-startup.sh", "/opt/jipipe/JIPipe-5.3.0/bin/ImageJ-linux64", "--pass-classpath", "--full-classpath", "--main-class", "org.hkijena.jipipe.cli.JIPipeCLIMain"]
+# ENTRYPOINT wrapper using xvfb + JIPipe CLI
+ENTRYPOINT ["/bin/bash", "/xvfb-startup.sh", "/opt/jipipe/bin/ImageJ-linux64", "--pass-classpath", "--full-classpath", "--main-class", "org.hkijena.jipipe.cli.JIPipeCLIMain"]
 
 # Default to showing help if no args are passed
 CMD []
