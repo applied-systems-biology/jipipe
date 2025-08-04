@@ -86,11 +86,6 @@ public class PublishPlugin extends JIPipePrepackagedDefaultJavaPlugin {
     }
 
     @Override
-    public List<ImageIcon> getSplashIcons() {
-        return Arrays.asList(JIPipe.RESOURCES.getIcon32("actions/share-nodes.png"));
-    }
-
-    @Override
     public StringList getDependencyCitations() {
         return new StringList();
     }
