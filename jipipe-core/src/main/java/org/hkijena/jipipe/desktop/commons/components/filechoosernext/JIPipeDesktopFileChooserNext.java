@@ -104,9 +104,12 @@ public class JIPipeDesktopFileChooserNext extends JPanel {
         dialog.setDefaultCloseOperation(WindowConstants.DISPOSE_ON_CLOSE);
         dialog.setIconImage(UIUtils.getJIPipeIcon128());
 
-        JPanel mainPanel = new JPanel(new BorderLayout());
+        JPanel mainPanel = new JPanel(new BorderLayout(8, 8));
+        mainPanel.setBackground(ThemeUtils.getCurrentStyle().getWindowBackground());
 
         JIPipeDesktopFileChooserNext panel = new JIPipeDesktopFileChooserNext(workbench, description, initialDirectory, ioMode, pathType, multiple, extensionFilters);
+        panel.setBackground(ThemeUtils.getCurrentStyle().getWindowBackground());
+        panel.setBorder(BorderFactory.createEmptyBorder(8, 8, 8, 8));
         mainPanel.add(panel, BorderLayout.CENTER);
 
         List<Path> result = new ArrayList<>();
@@ -461,8 +464,8 @@ public class JIPipeDesktopFileChooserNext extends JPanel {
         mainPanel.add(UIUtils.borderNorthSouth(topToolbar, breadcrumbToolBar), BorderLayout.NORTH);
 
         JIPipeDesktopSplitPane splitPane = new JIPipeDesktopSplitPane(JIPipeDesktopSplitPane.LEFT_RIGHT,
-                sidePanel,
-                mainPanel,
+                UIUtils.wrapInIslandPanelIfNeeded(sidePanel),
+                UIUtils.wrapInIslandPanelIfNeeded(mainPanel),
                 new JIPipeDesktopSplitPane.DynamicSidebarRatio(200, true));
         add(splitPane, BorderLayout.CENTER);
     }
