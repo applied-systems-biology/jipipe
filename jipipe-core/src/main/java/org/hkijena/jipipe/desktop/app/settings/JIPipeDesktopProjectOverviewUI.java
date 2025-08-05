@@ -214,7 +214,7 @@ public class JIPipeDesktopProjectOverviewUI extends JIPipeDesktopProjectWorkbenc
 
     private void refreshTechnicalInfo() {
         licenseInfo.setText(StringUtils.orElse(getProject().getMetadata().getLicense(), "No license"));
-        projectStats.setText(getProject().getGraph().getNodeCount() + " nodes in " + getProject().getCompartments().size() + " compartments");
+        projectStats.setText(StringUtils.formatPluralS(getProject().getGraph().getNodeCount(), "node") + " in " + StringUtils.formatPluralS(getProject().getCompartments().size(), "compartment"));
     }
 
     private void refreshCenterPanel() {
