@@ -3,24 +3,23 @@ package org.hkijena.jipipe.plugins.publish;
 import org.hkijena.jipipe.JIPipe;
 import org.hkijena.jipipe.desktop.api.JIPipeDesktopMenuExtension;
 import org.hkijena.jipipe.desktop.api.JIPipeMenuExtensionTarget;
-import org.hkijena.jipipe.desktop.app.JIPipeDesktopProjectWorkbench;
 import org.hkijena.jipipe.desktop.app.JIPipeDesktopWorkbench;
 
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 
-public class ProjectReportMenuExtension extends JIPipeDesktopMenuExtension implements ActionListener  {
+public class PublishLegacyArchiveMenuExtension extends JIPipeDesktopMenuExtension implements ActionListener  {
 
     /**
      * Creates a new instance
      *
      * @param desktopWorkbench workbench the extension is attached to
      */
-    public ProjectReportMenuExtension(JIPipeDesktopWorkbench desktopWorkbench) {
+    public PublishLegacyArchiveMenuExtension(JIPipeDesktopWorkbench desktopWorkbench) {
         super(desktopWorkbench);
-        setText("Generate project report");
-        setToolTipText("Creates a text description of the project.");
-        setIcon(JIPipe.RESOURCES.getIcon16("actions/document-preview.png"));
+        setText("Create project archive (legacy)");
+        setToolTipText("Creates a ZIP file or directory that contains all inputs of the current project. Please note that this is a legacy feature. We recommend to create a RO-Crate instead.");
+        setIcon(JIPipe.RESOURCES.getIcon16("actions/archive.png"));
         addActionListener(this);
     }
 
@@ -37,6 +36,6 @@ public class ProjectReportMenuExtension extends JIPipeDesktopMenuExtension imple
 
     @Override
     public void actionPerformed(ActionEvent e) {
-        getDesktopProjectWorkbench().openProjectReport();
+        getDesktopProjectWorkbench().archiveProjectLegacy();
     }
 }

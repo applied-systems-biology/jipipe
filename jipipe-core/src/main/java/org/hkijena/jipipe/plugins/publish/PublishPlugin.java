@@ -18,25 +18,12 @@ import org.hkijena.jipipe.JIPipeDependency;
 import org.hkijena.jipipe.JIPipeJavaPlugin;
 import org.hkijena.jipipe.JIPipeMutableDependency;
 import org.hkijena.jipipe.api.JIPipeProgressInfo;
-import org.hkijena.jipipe.api.parameters.JIPipeParameterArchetype;
-import org.hkijena.jipipe.api.project.JIPipeProject;
 import org.hkijena.jipipe.plugins.JIPipePrepackagedDefaultJavaPlugin;
 import org.hkijena.jipipe.plugins.parameters.library.jipipe.PluginCategoriesEnumParameter;
 import org.hkijena.jipipe.plugins.parameters.library.markup.HTMLText;
 import org.hkijena.jipipe.plugins.parameters.library.primitives.list.StringList;
-import org.hkijena.jipipe.plugins.python.*;
-import org.hkijena.jipipe.plugins.python.adapter.JIPipePythonAdapterLibraryEnvironment;
-import org.hkijena.jipipe.plugins.python.adapter.JIPipePythonPluginAdapterApplicationSettings;
-import org.hkijena.jipipe.plugins.python.adapter.OptionalJIPipePythonAdapterLibraryEnvironment;
-import org.hkijena.jipipe.plugins.python.installers.SelectCondaEnvPythonInstaller;
-import org.hkijena.jipipe.plugins.python.installers.SelectSystemPythonInstaller;
-import org.hkijena.jipipe.plugins.python.installers.SelectVirtualEnvPythonInstaller;
 import org.scijava.Context;
 import org.scijava.plugin.Plugin;
-
-import javax.swing.*;
-import java.util.Arrays;
-import java.util.List;
 
 /**
  * Python nodes
@@ -82,7 +69,9 @@ public class PublishPlugin extends JIPipePrepackagedDefaultJavaPlugin {
 
     @Override
     public void register(JIPipe jiPipe, Context context, JIPipeProgressInfo progressInfo) {
-        registerMenuExtension(ProjectReportMenuExtension.class);
+        registerMenuExtension(PublishProjectReportMenuExtension.class);
+        registerMenuExtension(PublishLegacyArchiveMenuExtension.class);
+        registerMenuExtension(PublishROCrateMenuExtension.class);
     }
 
     @Override

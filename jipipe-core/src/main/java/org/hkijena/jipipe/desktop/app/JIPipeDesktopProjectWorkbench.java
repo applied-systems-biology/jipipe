@@ -31,7 +31,6 @@ import org.hkijena.jipipe.api.project.JIPipeArchiveProjectToZIPRun;
 import org.hkijena.jipipe.api.project.JIPipeProject;
 import org.hkijena.jipipe.api.run.JIPipeRunnableQueue;
 import org.hkijena.jipipe.desktop.JIPipeDesktop;
-import org.hkijena.jipipe.desktop.api.JIPipeDesktopMenuExtension;
 import org.hkijena.jipipe.desktop.api.JIPipeMenuExtensionTarget;
 import org.hkijena.jipipe.desktop.app.backups.JIPipeDesktopBackupManagerPanel;
 import org.hkijena.jipipe.desktop.app.cache.JIPipeDesktopCacheBrowserUI;
@@ -65,7 +64,6 @@ import org.hkijena.jipipe.desktop.commons.components.markup.JIPipeDesktopMarkdow
 import org.hkijena.jipipe.desktop.commons.components.tabs.JIPipeDesktopTabPane;
 import org.hkijena.jipipe.desktop.commons.notifications.JIPipeDesktopNotificationButton;
 import org.hkijena.jipipe.desktop.commons.notifications.JIPipeDesktopWorkbenchNotificationInboxUI;
-import org.hkijena.jipipe.desktop.commons.theme.JIPipeDesktopLegacyModernMetalTheme;
 import org.hkijena.jipipe.plugins.parameters.library.markup.HTMLText;
 import org.hkijena.jipipe.plugins.parameters.library.markup.MarkdownText;
 import org.hkijena.jipipe.plugins.settings.*;
@@ -629,13 +627,6 @@ public class JIPipeDesktopProjectWorkbench extends JPanel implements JIPipeDeskt
         });
         projectMenu.add(restoreCache);
 
-        JMenuItem archiveProjectButton = new JMenuItem("Archive project ...", JIPipe.RESOURCES.getIcon16("actions/archive.png"));
-        archiveProjectButton.setToolTipText("Copies the project and all data into a ZIP file or directory");
-        archiveProjectButton.addActionListener(e -> {
-            archiveProject();
-        });
-        projectMenu.add(archiveProjectButton);
-
         projectMenu.addSeparator();
 
         JMenuItem editCompartmentsButton = new JMenuItem("Edit compartments", JIPipe.RESOURCES.getIcon16("actions/graph-compartments.png"));
@@ -925,7 +916,7 @@ public class JIPipeDesktopProjectWorkbench extends JPanel implements JIPipeDeskt
         UIUtils.desktopOpenURL(URI.create("https://www.jipipe.org/documentation"), true);
     }
 
-    private void archiveProject() {
+    public void archiveProjectLegacy() {
         if (getProject().getWorkDirectory() == null) {
             JOptionPane.showMessageDialog(this, "Please save the project once before using the archive function.", "Archive project", JOptionPane.ERROR_MESSAGE);
             return;
