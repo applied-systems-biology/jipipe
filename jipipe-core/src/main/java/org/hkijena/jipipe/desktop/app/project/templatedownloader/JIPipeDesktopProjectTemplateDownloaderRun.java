@@ -15,7 +15,7 @@ package org.hkijena.jipipe.desktop.app.project.templatedownloader;
 
 import org.apache.commons.io.FilenameUtils;
 import org.hkijena.jipipe.JIPipe;
-import org.hkijena.jipipe.api.AbstractJIPipeRunnable;
+import org.hkijena.jipipe.api.DefaultJIPipeRunnable;
 import org.hkijena.jipipe.api.JIPipeProgressInfo;
 import org.hkijena.jipipe.desktop.app.JIPipeDesktopWorkbench;
 import org.hkijena.jipipe.plugins.parameters.library.primitives.list.StringList;
@@ -36,7 +36,7 @@ import java.nio.file.Path;
 import java.util.*;
 import java.util.stream.Collectors;
 
-public class JIPipeDesktopProjectTemplateDownloaderRun extends AbstractJIPipeRunnable {
+public class JIPipeDesktopProjectTemplateDownloaderRun extends DefaultJIPipeRunnable {
 
     private final JIPipeDesktopWorkbench desktopWorkbench;
     private final List<JIPipeDesktopProjectTemplateDownloaderPackage> availablePackages = new ArrayList<>();

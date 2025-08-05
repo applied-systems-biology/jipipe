@@ -14,7 +14,7 @@
 package org.hkijena.jipipe.plugins.imagejdatatypes.resultanalysis;
 
 import ij.ImagePlus;
-import org.hkijena.jipipe.api.AbstractJIPipeRunnable;
+import org.hkijena.jipipe.api.DefaultJIPipeRunnable;
 import org.hkijena.jipipe.api.JIPipeProgressInfo;
 import org.hkijena.jipipe.api.JIPipeWorkbench;
 import org.hkijena.jipipe.api.data.JIPipeDataSlot;
@@ -24,7 +24,7 @@ import org.hkijena.jipipe.plugins.imagejdatatypes.datatypes.ImagePlusData;
 
 import java.nio.file.Path;
 
-public class ImagePlusResultImportRun extends AbstractJIPipeRunnable {
+public class ImagePlusResultImportRun extends DefaultJIPipeRunnable {
 
     private final JIPipeDataSlot slot;
     private final JIPipeDataTableRowInfo row;

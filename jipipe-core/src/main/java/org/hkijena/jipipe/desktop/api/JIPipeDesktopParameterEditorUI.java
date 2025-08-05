@@ -20,11 +20,10 @@ import org.hkijena.jipipe.api.parameters.JIPipeParameterTree;
 import org.hkijena.jipipe.api.parameters.JIPipeParameterTypeInfo;
 import org.hkijena.jipipe.desktop.app.JIPipeDesktopWorkbench;
 import org.hkijena.jipipe.desktop.app.JIPipeDesktopWorkbenchPanel;
-import org.hkijena.jipipe.desktop.app.grapheditor.commons.AbstractJIPipeDesktopGraphEditorUI;
+import org.hkijena.jipipe.desktop.app.grapheditor.commons.JIPipeDesktopGraphEditorUI;
 import org.hkijena.jipipe.desktop.app.grapheditor.commons.JIPipeDesktopGraphCanvasUI;
 import org.hkijena.jipipe.desktop.commons.components.JIPipeDesktopParameterFormPanel;
 import org.hkijena.jipipe.utils.UIUtils;
-import org.hkijena.jipipe.JIPipe;
 import org.scijava.Context;
 import org.scijava.Contextual;
 import org.scijava.Disposable;
@@ -121,9 +120,9 @@ public abstract class JIPipeDesktopParameterEditorUI extends JIPipeDesktopWorkbe
         if (ancestor instanceof JIPipeDesktopGraphCanvasUI) {
             return (JIPipeDesktopGraphCanvasUI) ancestor;
         }
-        ancestor = SwingUtilities.getAncestorOfClass(AbstractJIPipeDesktopGraphEditorUI.class, this);
-        if (ancestor instanceof AbstractJIPipeDesktopGraphEditorUI) {
-            return ((AbstractJIPipeDesktopGraphEditorUI) ancestor).getCanvasUI();
+        ancestor = SwingUtilities.getAncestorOfClass(JIPipeDesktopGraphEditorUI.class, this);
+        if (ancestor instanceof JIPipeDesktopGraphEditorUI) {
+            return ((JIPipeDesktopGraphEditorUI) ancestor).getCanvasUI();
         }
         return null;
     }

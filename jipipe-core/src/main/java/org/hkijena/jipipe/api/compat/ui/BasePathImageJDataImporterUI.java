@@ -26,12 +26,12 @@ import java.nio.file.Paths;
 /**
  * Importer UI that represents the name as path
  */
-public abstract class AbstractPathImageJDataImporterUI extends ImageJDataImporterUI {
+public abstract class BasePathImageJDataImporterUI extends ImageJDataImporterUI {
     /**
      * @param workbench the workbench
      * @param importer  the importer
      */
-    public AbstractPathImageJDataImporterUI(JIPipeDesktopWorkbench workbench, ImageJDataImportOperation importer) {
+    public BasePathImageJDataImporterUI(JIPipeDesktopWorkbench workbench, ImageJDataImportOperation importer) {
         super(workbench, importer);
         initialize();
     }

@@ -13,14 +13,14 @@
 
 package org.hkijena.jipipe.desktop.app.project;
 
-import org.hkijena.jipipe.api.AbstractJIPipeRunnable;
+import org.hkijena.jipipe.api.DefaultJIPipeRunnable;
 import org.hkijena.jipipe.api.project.JIPipeProjectTemplate;
 import org.hkijena.jipipe.utils.ArchiveUtils;
 
 import java.io.IOException;
 import java.nio.file.Path;
 
-public class JIPipeExtractTemplateZipFileRun extends AbstractJIPipeRunnable {
+public class JIPipeExtractTemplateZipFileRun extends DefaultJIPipeRunnable {
 
     private final JIPipeProjectTemplate template;
     private final Path targetDirectory;

@@ -20,7 +20,7 @@ import org.hkijena.jipipe.api.project.JIPipeProject;
 import org.hkijena.jipipe.desktop.app.JIPipeDesktopProjectWorkbench;
 import org.hkijena.jipipe.desktop.app.bookmarks.JIPipeDesktopBookmarkListPanel;
 import org.hkijena.jipipe.desktop.app.grapheditor.addnodepanel.JIPipeDesktopAddNodesPanel;
-import org.hkijena.jipipe.desktop.app.grapheditor.commons.AbstractJIPipeDesktopGraphEditorUI;
+import org.hkijena.jipipe.desktop.app.grapheditor.commons.JIPipeDesktopGraphEditorUI;
 import org.hkijena.jipipe.desktop.app.grapheditor.commons.JIPipeDesktopGraphEditorLogPanel;
 import org.hkijena.jipipe.desktop.app.grapheditor.commons.JIPipeDesktopGraphEditorMinimap;
 import org.hkijena.jipipe.desktop.app.grapheditor.commons.contextmenu.*;
@@ -42,8 +42,6 @@ import org.hkijena.jipipe.desktop.app.settings.JIPipeDesktopRunSetsListEditor;
 import org.hkijena.jipipe.desktop.commons.components.JIPipeDesktopExpressionCalculatorUI;
 import org.hkijena.jipipe.plugins.parameters.library.pairs.StringAndStringPairParameter;
 import org.hkijena.jipipe.plugins.settings.JIPipeGraphEditorUIApplicationSettings;
-import org.hkijena.jipipe.utils.UIUtils;
-import org.hkijena.jipipe.JIPipe;
 import org.hkijena.jipipe.utils.json.JsonUtils;
 import org.hkijena.jipipe.utils.ui.JIPipeDesktopDockPanel;
 
@@ -56,7 +54,7 @@ import java.util.stream.Collectors;
 /**
  * Graph editor UI for a project compartment graph
  */
-public class JIPipeDesktopCompartmentsGraphEditorUI extends AbstractJIPipeDesktopGraphEditorUI {
+public class JIPipeDesktopCompartmentsGraphEditorUI extends JIPipeDesktopGraphEditorUI {
 
     public static final String DOCK_ADD_NODES = "ADD_NODES";
     public static final String DOCK_NODE_CONTEXT_HELP = "_HELP";
@@ -120,13 +118,13 @@ public class JIPipeDesktopCompartmentsGraphEditorUI extends AbstractJIPipeDeskto
 
     private void initializeDefaultPanels() {
 
-        getDockPanel().addDockPanel(AbstractJIPipeDesktopGraphEditorUI.DOCK_CALCULATOR,
+        getDockPanel().addDockPanel(JIPipeDesktopGraphEditorUI.DOCK_CALCULATOR,
                 "Calculator",
                 JIPipe.RESOURCES.getIcon24("actions/insert-math-expression.png"),
                 JIPipeDesktopDockPanel.PanelLocation.TopLeft,
                 true,
                 0, new JIPipeDesktopExpressionCalculatorUI(getDesktopWorkbench()));
-        getDockPanel().addDockPanel(AbstractJIPipeDesktopGraphEditorUI.DOCK_MAP,
+        getDockPanel().addDockPanel(JIPipeDesktopGraphEditorUI.DOCK_MAP,
                 "Navigator",
                 JIPipe.RESOURCES.getIcon24("actions/compass.png"),
                 JIPipeDesktopDockPanel.PanelLocation.TopLeft,
@@ -138,19 +136,19 @@ public class JIPipeDesktopCompartmentsGraphEditorUI extends AbstractJIPipeDeskto
                 JIPipeDesktopDockPanel.PanelLocation.BottomLeft,
                 true,
                 0, new JIPipeDesktopCompartmentsQuickGuidePanel(getDesktopWorkbench(), this));
-        getDockPanel().addDockPanel(AbstractJIPipeDesktopGraphEditorUI.DOCK_BOOKMARKS,
+        getDockPanel().addDockPanel(JIPipeDesktopGraphEditorUI.DOCK_BOOKMARKS,
                 "Bookmarks",
                 JIPipe.RESOURCES.getIcon24("actions/bookmarks.png"),
                 JIPipeDesktopDockPanel.PanelLocation.BottomLeft,
                 false,
                 0, new JIPipeDesktopBookmarkListPanel(getDesktopWorkbench(), getGraph(), this, null));
-        getDockPanel().addDockPanel(AbstractJIPipeDesktopGraphEditorUI.DOCK_HISTORY,
+        getDockPanel().addDockPanel(JIPipeDesktopGraphEditorUI.DOCK_HISTORY,
                 "History",
                 JIPipe.RESOURCES.getIcon24("actions/edit-undo-history.png"),
                 JIPipeDesktopDockPanel.PanelLocation.BottomLeft,
                 false,
                 0, new JIPipeDesktopHistoryJournalUI(getHistoryJournal()));
-        getDockPanel().addDockPanel(AbstractJIPipeDesktopGraphEditorUI.DOCK_LOG,
+        getDockPanel().addDockPanel(JIPipeDesktopGraphEditorUI.DOCK_LOG,
                 "Log",
                 JIPipe.RESOURCES.getIcon24("actions/rabbitvcs-show_log.png"),
                 JIPipeDesktopDockPanel.PanelLocation.BottomBottom,

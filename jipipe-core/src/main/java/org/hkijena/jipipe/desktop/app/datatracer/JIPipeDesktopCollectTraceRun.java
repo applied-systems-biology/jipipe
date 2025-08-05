@@ -13,7 +13,7 @@
 
 package org.hkijena.jipipe.desktop.app.datatracer;
 
-import org.hkijena.jipipe.api.AbstractJIPipeRunnable;
+import org.hkijena.jipipe.api.DefaultJIPipeRunnable;
 import org.hkijena.jipipe.api.data.JIPipeDataTable;
 import org.hkijena.jipipe.api.data.context.JIPipeDataContext;
 import org.hkijena.jipipe.api.data.sources.JIPipeCachedDataSlotDataSource;
@@ -29,7 +29,7 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.UUID;
 
-public class JIPipeDesktopCollectTraceRun extends AbstractJIPipeRunnable {
+public class JIPipeDesktopCollectTraceRun extends DefaultJIPipeRunnable {
     private final JIPipeDesktopProjectWorkbench workbench;
     private final JIPipeGraphNode targetNode;
     private final String targetSlotName;

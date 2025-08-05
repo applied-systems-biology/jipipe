@@ -29,7 +29,7 @@ public class StringMapQueryExpression extends JIPipeExpressionParameter {
         super(expression);
     }
 
-    public StringMapQueryExpression(AbstractExpressionParameter other) {
+    public StringMapQueryExpression(DefaultExpressionParameter other) {
         super(other);
     }
 

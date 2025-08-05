@@ -13,7 +13,7 @@
 
 package org.hkijena.jipipe.desktop.app.project;
 
-import org.hkijena.jipipe.api.AbstractJIPipeRunnable;
+import org.hkijena.jipipe.api.DefaultJIPipeRunnable;
 import org.hkijena.jipipe.api.JIPipeProgressInfo;
 import org.hkijena.jipipe.api.JIPipeWorkbench;
 import org.hkijena.jipipe.api.data.storage.JIPipeZIPReadDataStorage;
@@ -22,7 +22,7 @@ import org.hkijena.jipipe.api.project.JIPipeProject;
 import java.io.IOException;
 import java.nio.file.Path;
 
-public class JIPipeDesktopLoadResultZipIntoCacheRun extends AbstractJIPipeRunnable {
+public class JIPipeDesktopLoadResultZipIntoCacheRun extends DefaultJIPipeRunnable {
     private final JIPipeWorkbench workbench;
     private final JIPipeProject project;
     private final Path resultPath;

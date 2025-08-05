@@ -13,7 +13,7 @@
 
 package org.hkijena.jipipe.desktop.app.quickrun;
 
-import org.hkijena.jipipe.api.AbstractJIPipeRunnable;
+import org.hkijena.jipipe.api.DefaultJIPipeRunnable;
 import org.hkijena.jipipe.api.JIPipeProgressInfo;
 import org.hkijena.jipipe.api.data.JIPipeDataSlot;
 import org.hkijena.jipipe.api.data.JIPipeDataTable;
@@ -34,7 +34,7 @@ import java.util.*;
 /**
  * Allows to test one algorithm with multiple parameters
  */
-public class JIPipeDesktopQuickRun extends AbstractJIPipeRunnable implements JIPipeValidatable {
+public class JIPipeDesktopQuickRun extends DefaultJIPipeRunnable implements JIPipeValidatable {
     private final JIPipeProject project;
     private final List<JIPipeGraphNode> targetNodes;
     private final JIPipeDesktopQuickRunSettings settings;

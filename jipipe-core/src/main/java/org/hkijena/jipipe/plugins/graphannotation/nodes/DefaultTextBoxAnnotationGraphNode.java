@@ -28,7 +28,7 @@ import org.hkijena.jipipe.utils.StringUtils;
 import java.awt.*;
 import java.util.Objects;
 
-public abstract class AbstractTextBoxAnnotationGraphNode extends JIPipeAnnotationGraphNode {
+public abstract class DefaultTextBoxAnnotationGraphNode extends JIPipeAnnotationGraphNode {
     private final TextRenderParameters titleStyle;
     private final TextRenderParameters contentStyle;
     private final TextLocationParameters textLocation;
@@ -48,7 +48,7 @@ public abstract class AbstractTextBoxAnnotationGraphNode extends JIPipeAnnotatio
     private int renderedGridWidth;
     private int renderedGridHeight;
 
-    public AbstractTextBoxAnnotationGraphNode(JIPipeNodeInfo info) {
+    public DefaultTextBoxAnnotationGraphNode(JIPipeNodeInfo info) {
         super(info);
 
         this.titleStyle = new TextRenderParameters();
@@ -61,7 +61,7 @@ public abstract class AbstractTextBoxAnnotationGraphNode extends JIPipeAnnotatio
         registerSubParameter(textLocation);
     }
 
-    public AbstractTextBoxAnnotationGraphNode(AbstractTextBoxAnnotationGraphNode other) {
+    public DefaultTextBoxAnnotationGraphNode(DefaultTextBoxAnnotationGraphNode other) {
         super(other);
 
         this.titleStyle = new TextRenderParameters(other.titleStyle);

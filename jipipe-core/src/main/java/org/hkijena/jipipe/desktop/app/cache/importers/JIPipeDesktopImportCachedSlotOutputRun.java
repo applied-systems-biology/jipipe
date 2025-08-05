@@ -14,7 +14,7 @@
 package org.hkijena.jipipe.desktop.app.cache.importers;
 
 import org.hkijena.jipipe.JIPipe;
-import org.hkijena.jipipe.api.AbstractJIPipeRunnable;
+import org.hkijena.jipipe.api.DefaultJIPipeRunnable;
 import org.hkijena.jipipe.api.JIPipeProgressInfo;
 import org.hkijena.jipipe.api.annotation.JIPipeTextAnnotation;
 import org.hkijena.jipipe.api.annotation.JIPipeTextAnnotationMergeMode;
@@ -39,7 +39,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-public class JIPipeDesktopImportCachedSlotOutputRun extends AbstractJIPipeRunnable {
+public class JIPipeDesktopImportCachedSlotOutputRun extends DefaultJIPipeRunnable {
 
     private final JIPipeProject project;
     private final JIPipeGraphNode graphNode;

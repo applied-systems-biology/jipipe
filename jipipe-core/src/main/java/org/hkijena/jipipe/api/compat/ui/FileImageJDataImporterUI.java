@@ -17,7 +17,7 @@ import org.hkijena.jipipe.api.compat.ImageJDataImportOperation;
 import org.hkijena.jipipe.desktop.app.JIPipeDesktopWorkbench;
 import org.hkijena.jipipe.utils.PathType;
 
-public class FileImageJDataImporterUI extends AbstractPathImageJDataImporterUI {
+public class FileImageJDataImporterUI extends BasePathImageJDataImporterUI {
     /**
      * @param workbench the workbench
      * @param importer  the importer

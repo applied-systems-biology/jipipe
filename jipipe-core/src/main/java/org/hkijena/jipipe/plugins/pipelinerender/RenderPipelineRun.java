@@ -16,7 +16,7 @@ package org.hkijena.jipipe.plugins.pipelinerender;
 import com.google.common.collect.ImmutableList;
 import gnu.trove.list.TIntList;
 import gnu.trove.list.array.TIntArrayList;
-import org.hkijena.jipipe.api.AbstractJIPipeRunnable;
+import org.hkijena.jipipe.api.DefaultJIPipeRunnable;
 import org.hkijena.jipipe.api.JIPipeProgressInfo;
 import org.hkijena.jipipe.api.data.JIPipeDataSlot;
 import org.hkijena.jipipe.api.history.JIPipeDummyGraphHistoryJournal;
@@ -44,7 +44,7 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.UUID;
 
-public class RenderPipelineRun extends AbstractJIPipeRunnable {
+public class RenderPipelineRun extends DefaultJIPipeRunnable {
     private final JIPipeProject project;
     private final Path outputPath;
     private final RenderPipelineRunSettings settings;

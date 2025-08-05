@@ -13,7 +13,7 @@
 
 package org.hkijena.jipipe.api.data.thumbnails;
 
-import org.hkijena.jipipe.api.AbstractJIPipeRunnable;
+import org.hkijena.jipipe.api.DefaultJIPipeRunnable;
 import org.hkijena.jipipe.api.data.JIPipeData;
 import org.hkijena.jipipe.api.data.JIPipeDataItemStore;
 import org.hkijena.jipipe.api.events.AbstractJIPipeEvent;
@@ -68,7 +68,7 @@ public class JIPipeThumbnailGenerationQueue {
         void onThumbnailGenerated(ThumbnailGeneratedEvent event);
     }
 
-    public static class ThumbnailGenerationRun extends AbstractJIPipeRunnable {
+    public static class ThumbnailGenerationRun extends DefaultJIPipeRunnable {
         private final JIPipeThumbnailGenerationQueue queue;
         private final WeakReference<JIPipeDataItemStore> dataStoreReference;
         private final int width;

@@ -20,7 +20,7 @@ import java.util.UUID;
 /**
  * Abstract base class for implementing {@link JIPipeRunnable}
  */
-public abstract class AbstractJIPipeRunnable implements JIPipeRunnable {
+public abstract class DefaultJIPipeRunnable implements JIPipeRunnable {
     private final UUID uuid = UUID.randomUUID();
 
     private JIPipeProgressInfo progressInfo = new JIPipeProgressInfo();

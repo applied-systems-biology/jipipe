@@ -38,7 +38,7 @@ import org.hkijena.jipipe.desktop.app.JIPipeDesktopProjectWorkbench;
 import org.hkijena.jipipe.desktop.app.JIPipeDesktopWorkbench;
 import org.hkijena.jipipe.desktop.app.JIPipeDesktopWorkbenchPanel;
 import org.hkijena.jipipe.desktop.app.grapheditor.JIPipeGraphViewMode;
-import org.hkijena.jipipe.desktop.app.grapheditor.commons.AbstractJIPipeDesktopGraphEditorUI;
+import org.hkijena.jipipe.desktop.app.grapheditor.commons.JIPipeDesktopGraphEditorUI;
 import org.hkijena.jipipe.desktop.app.grapheditor.commons.JIPipeDesktopGraphCanvasUI;
 import org.hkijena.jipipe.desktop.app.grapheditor.commons.actions.JIPipeDesktopNodeUIAction;
 import org.hkijena.jipipe.desktop.app.grapheditor.commons.contextmenu.*;
@@ -2332,7 +2332,7 @@ public class JIPipeDesktopGraphNodeUI extends JIPipeDesktopWorkbenchPanel implem
     }
 
     /**
-     * An action that is requested by an {@link JIPipeDesktopGraphNodeUI} and passed down to a {@link AbstractJIPipeDesktopGraphEditorUI}
+     * An action that is requested by an {@link JIPipeDesktopGraphNodeUI} and passed down to a {@link JIPipeDesktopGraphEditorUI}
      */
     public static class NodeUIActionRequestedEvent extends AbstractJIPipeEvent {
         private final JIPipeDesktopGraphNodeUI ui;

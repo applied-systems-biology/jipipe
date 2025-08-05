@@ -15,7 +15,7 @@ package org.hkijena.jipipe.plugins.imageviewer.legacy.runs;
 
 import ij.ImagePlus;
 import ij.process.ImageProcessor;
-import org.hkijena.jipipe.api.AbstractJIPipeRunnable;
+import org.hkijena.jipipe.api.DefaultJIPipeRunnable;
 import org.hkijena.jipipe.api.JIPipeProgressInfo;
 import org.hkijena.jipipe.plugins.imagejdatatypes.util.ImageJUtils;
 import org.hkijena.jipipe.plugins.imagejdatatypes.util.dimensions.ImageSliceIndex;
@@ -25,7 +25,7 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.function.Consumer;
 
-public class Stack2DRendererRun extends AbstractJIPipeRunnable {
+public class Stack2DRendererRun extends DefaultJIPipeRunnable {
     private final String name;
     private final JIPipeDesktopLegacyImageViewer viewerPanel;
     private final double magnification;

@@ -18,7 +18,7 @@ import java.util.function.Consumer;
 /**
  * Helper class
  */
-public class InlinedJIPipeRunnable extends AbstractJIPipeRunnable {
+public class InlinedJIPipeRunnable extends DefaultJIPipeRunnable {
 
     private final String taskLabel;
     private final Consumer<JIPipeProgressInfo> runnable;

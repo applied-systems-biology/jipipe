@@ -13,14 +13,14 @@
 
 package org.hkijena.jipipe.desktop.app.cache.exporters;
 
-import org.hkijena.jipipe.api.AbstractJIPipeRunnable;
+import org.hkijena.jipipe.api.DefaultJIPipeRunnable;
 import org.hkijena.jipipe.api.data.JIPipeData;
 import org.hkijena.jipipe.api.data.storage.JIPipeFileSystemWriteDataStorage;
 import org.hkijena.jipipe.utils.StringUtils;
 
 import java.nio.file.Path;
 
-public class JIPipeDesktopDataExporterRun extends AbstractJIPipeRunnable {
+public class JIPipeDesktopDataExporterRun extends DefaultJIPipeRunnable {
     private final Path outputDirectory;
     private JIPipeData data;
     private String name;

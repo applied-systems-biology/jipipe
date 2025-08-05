@@ -15,7 +15,7 @@ package org.hkijena.jipipe.desktop.app.grapheditor.addnodepanel;
 
 import com.google.common.html.HtmlEscapers;
 import org.hkijena.jipipe.JIPipe;
-import org.hkijena.jipipe.api.AbstractJIPipeRunnable;
+import org.hkijena.jipipe.api.DefaultJIPipeRunnable;
 import org.hkijena.jipipe.api.data.JIPipeDataInfo;
 import org.hkijena.jipipe.api.nodes.AddJIPipeInputSlot;
 import org.hkijena.jipipe.api.nodes.AddJIPipeOutputSlot;
@@ -34,7 +34,6 @@ import org.hkijena.jipipe.plugins.parameters.library.markup.MarkdownText;
 import org.hkijena.jipipe.utils.JIPipeDesktopSplitPane;
 import org.hkijena.jipipe.utils.StringUtils;
 import org.hkijena.jipipe.utils.UIUtils;
-import org.hkijena.jipipe.JIPipe;
 
 import javax.swing.*;
 import java.awt.*;
@@ -198,7 +197,7 @@ public class JIPipeDesktopLegacyAddNodePanel extends JIPipeDesktopWorkbenchPanel
         }
     }
 
-    public static class ReloadListRun extends AbstractJIPipeRunnable {
+    public static class ReloadListRun extends DefaultJIPipeRunnable {
 
         private final JIPipeDesktopLegacyAddNodePanel toolBox;
 

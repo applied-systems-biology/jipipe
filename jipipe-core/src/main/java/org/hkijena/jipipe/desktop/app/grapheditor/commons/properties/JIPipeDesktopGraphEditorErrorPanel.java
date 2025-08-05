@@ -16,7 +16,7 @@ package org.hkijena.jipipe.desktop.app.grapheditor.commons.properties;
 import org.hkijena.jipipe.api.validation.JIPipeValidationReport;
 import org.hkijena.jipipe.desktop.app.JIPipeDesktopWorkbench;
 import org.hkijena.jipipe.desktop.app.JIPipeDesktopWorkbenchPanel;
-import org.hkijena.jipipe.desktop.app.grapheditor.commons.AbstractJIPipeDesktopGraphEditorUI;
+import org.hkijena.jipipe.desktop.app.grapheditor.commons.JIPipeDesktopGraphEditorUI;
 import org.hkijena.jipipe.desktop.commons.components.JIPipeDesktopFormPanel;
 import org.hkijena.jipipe.desktop.commons.components.JIPipeDesktopUserFriendlyErrorUI;
 import org.hkijena.jipipe.utils.UIUtils;
@@ -26,10 +26,10 @@ import java.awt.*;
 
 public class JIPipeDesktopGraphEditorErrorPanel extends JIPipeDesktopWorkbenchPanel {
 
-    private final AbstractJIPipeDesktopGraphEditorUI graphEditorUI;
+    private final JIPipeDesktopGraphEditorUI graphEditorUI;
     private JIPipeDesktopUserFriendlyErrorUI errorUI;
 
-    public JIPipeDesktopGraphEditorErrorPanel(JIPipeDesktopWorkbench desktopWorkbench, AbstractJIPipeDesktopGraphEditorUI graphEditorUI) {
+    public JIPipeDesktopGraphEditorErrorPanel(JIPipeDesktopWorkbench desktopWorkbench, JIPipeDesktopGraphEditorUI graphEditorUI) {
         super(desktopWorkbench);
         this.graphEditorUI = graphEditorUI;
         initialize();
@@ -47,7 +47,7 @@ public class JIPipeDesktopGraphEditorErrorPanel extends JIPipeDesktopWorkbenchPa
         errorUI.clear();
     }
 
-    public AbstractJIPipeDesktopGraphEditorUI getGraphEditorUI() {
+    public JIPipeDesktopGraphEditorUI getGraphEditorUI() {
         return graphEditorUI;
     }
 

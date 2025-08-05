@@ -13,9 +13,9 @@
 
 package org.hkijena.jipipe.api.cache;
 
-import org.hkijena.jipipe.api.AbstractJIPipeRunnable;
+import org.hkijena.jipipe.api.DefaultJIPipeRunnable;
 
-public class JIPipeCacheClearAllRun extends AbstractJIPipeRunnable {
+public class JIPipeCacheClearAllRun extends DefaultJIPipeRunnable {
 
     private final JIPipeCache cache;
 

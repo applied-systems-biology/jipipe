@@ -15,7 +15,7 @@ package org.hkijena.jipipe.plugins.settings;
 
 import ij.IJ;
 import org.hkijena.jipipe.JIPipe;
-import org.hkijena.jipipe.api.AbstractJIPipeRunnable;
+import org.hkijena.jipipe.api.DefaultJIPipeRunnable;
 import org.hkijena.jipipe.api.SetJIPipeDocumentation;
 import org.hkijena.jipipe.api.backups.JIPipeProjectBackupSessionInfo;
 import org.hkijena.jipipe.api.parameters.JIPipeParameter;
@@ -26,8 +26,6 @@ import org.hkijena.jipipe.desktop.app.JIPipeDesktopProjectWindow;
 import org.hkijena.jipipe.plugins.parameters.library.primitives.optional.OptionalPathParameter;
 import org.hkijena.jipipe.utils.PathUtils;
 import org.hkijena.jipipe.utils.StringUtils;
-import org.hkijena.jipipe.utils.UIUtils;
-import org.hkijena.jipipe.JIPipe;
 import org.hkijena.jipipe.utils.json.JsonUtils;
 
 import javax.swing.*;
@@ -74,7 +72,7 @@ public class JIPipeBackupApplicationSettings extends JIPipeDefaultApplicationsSe
         }
         window.getProjectUI().getBackupQueue().cancelAll();
         String finalName = name;
-        JIPipeRunnable run = new AbstractJIPipeRunnable() {
+        JIPipeRunnable run = new DefaultJIPipeRunnable() {
             @Override
             public String getTaskLabel() {
                 return "Creating backup";

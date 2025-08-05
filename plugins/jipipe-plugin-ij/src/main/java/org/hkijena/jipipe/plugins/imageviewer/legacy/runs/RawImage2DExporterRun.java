@@ -15,12 +15,12 @@ package org.hkijena.jipipe.plugins.imageviewer.legacy.runs;
 
 import ij.IJ;
 import ij.ImagePlus;
-import org.hkijena.jipipe.api.AbstractJIPipeRunnable;
+import org.hkijena.jipipe.api.DefaultJIPipeRunnable;
 import org.hkijena.jipipe.api.JIPipeProgressInfo;
 
 import java.nio.file.Path;
 
-public class RawImage2DExporterRun extends AbstractJIPipeRunnable {
+public class RawImage2DExporterRun extends DefaultJIPipeRunnable {
     private final ImagePlus imagePlus;
     private final Path outputPath;
 

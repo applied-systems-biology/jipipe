@@ -58,15 +58,15 @@ public abstract class JIPipeDesktopGraphEditorRunManager implements JIPipeRunnab
         JIPipeValidationReport report = new JIPipeValidationReport();
         createValidationReport(report);
         if (!report.isEmpty()) {
-            dockPanel.getPanelComponent(AbstractJIPipeDesktopGraphEditorUI.DOCK_ERRORS, JIPipeDesktopGraphEditorErrorPanel.class).setItems(report);
-            dockPanel.activatePanel(AbstractJIPipeDesktopGraphEditorUI.DOCK_ERRORS, false);
+            dockPanel.getPanelComponent(JIPipeDesktopGraphEditorUI.DOCK_ERRORS, JIPipeDesktopGraphEditorErrorPanel.class).setItems(report);
+            dockPanel.activatePanel(JIPipeDesktopGraphEditorUI.DOCK_ERRORS, false);
             return;
         } else {
-            dockPanel.getPanelComponent(AbstractJIPipeDesktopGraphEditorUI.DOCK_ERRORS, JIPipeDesktopGraphEditorErrorPanel.class).clearItems();
+            dockPanel.getPanelComponent(JIPipeDesktopGraphEditorUI.DOCK_ERRORS, JIPipeDesktopGraphEditorErrorPanel.class).clearItems();
         }
 
         if (getLogPanel().isAutoShowProgress() && allowChangePanels) {
-            getDockPanel().activatePanel(AbstractJIPipeDesktopGraphEditorUI.DOCK_LOG, true);
+            getDockPanel().activatePanel(JIPipeDesktopGraphEditorUI.DOCK_LOG, true);
         }
 
         // Create an enqueue the run
@@ -108,7 +108,7 @@ public abstract class JIPipeDesktopGraphEditorRunManager implements JIPipeRunnab
     }
 
     protected JIPipeDesktopGraphEditorLogPanel getLogPanel() {
-        return getDockPanel().getPanelComponent(AbstractJIPipeDesktopGraphEditorUI.DOCK_LOG, JIPipeDesktopGraphEditorLogPanel.class);
+        return getDockPanel().getPanelComponent(JIPipeDesktopGraphEditorUI.DOCK_LOG, JIPipeDesktopGraphEditorLogPanel.class);
     }
 
     @Override
@@ -145,10 +145,10 @@ public abstract class JIPipeDesktopGraphEditorRunManager implements JIPipeRunnab
                     canvasUI.selectOnly(nodeUI);
 
                     if (event.getException() != null) {
-                        dockPanel.getPanelComponent(AbstractJIPipeDesktopGraphEditorUI.DOCK_ERRORS, JIPipeDesktopGraphEditorErrorPanel.class).setItems(event.getException());
-                        dockPanel.activatePanel(AbstractJIPipeDesktopGraphEditorUI.DOCK_ERRORS, false);
+                        dockPanel.getPanelComponent(JIPipeDesktopGraphEditorUI.DOCK_ERRORS, JIPipeDesktopGraphEditorErrorPanel.class).setItems(event.getException());
+                        dockPanel.activatePanel(JIPipeDesktopGraphEditorUI.DOCK_ERRORS, false);
                     } else {
-                        getDockPanel().activatePanel(AbstractJIPipeDesktopGraphEditorUI.DOCK_LOG, false);
+                        getDockPanel().activatePanel(JIPipeDesktopGraphEditorUI.DOCK_LOG, false);
                     }
                 }
             }

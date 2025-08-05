@@ -103,7 +103,7 @@ public interface JIPipeExpressionVariablesInfo {
      *
      * @param workbench       the workbench
      * @param parameterTree   the parameter tree that contains the access. can be null.
-     * @param parameterAccess the parameter access that holds the {@link AbstractExpressionParameter} instance. can be null.
+     * @param parameterAccess the parameter access that holds the {@link DefaultExpressionParameter} instance. can be null.
      * @return the set of variables
      */
     Set<JIPipeExpressionParameterVariableInfo> getVariables(JIPipeWorkbench workbench, JIPipeParameterTree parameterTree, JIPipeParameterAccess parameterAccess);

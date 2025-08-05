@@ -14,7 +14,7 @@
 package org.hkijena.jipipe.plugins.scene3d.utils;
 
 import com.google.common.primitives.Ints;
-import org.hkijena.jipipe.api.AbstractJIPipeRunnable;
+import org.hkijena.jipipe.api.DefaultJIPipeRunnable;
 import org.hkijena.jipipe.api.JIPipeProgressInfo;
 import org.hkijena.jipipe.plugins.scene3d.Scene3DPlugin;
 import org.hkijena.jipipe.plugins.scene3d.datatypes.Scene3DData;
@@ -42,7 +42,7 @@ import java.time.format.DateTimeFormatter;
 import java.util.HashSet;
 import java.util.Set;
 
-public class Scene3DToColladaExporter extends AbstractJIPipeRunnable {
+public class Scene3DToColladaExporter extends DefaultJIPipeRunnable {
 
     private final Scene3DData scene3DNodes;
 

@@ -30,7 +30,7 @@ public class TableCellValueQueryExpression extends JIPipeExpressionParameter {
         super(expression);
     }
 
-    public TableCellValueQueryExpression(AbstractExpressionParameter other) {
+    public TableCellValueQueryExpression(DefaultExpressionParameter other) {
         super(other);
     }
 

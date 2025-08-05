@@ -30,11 +30,11 @@ import java.util.Collection;
 import java.util.HashSet;
 
 /**
- * An {@link AbstractExpressionParameter} that utilizes the {@link JIPipeExpressionEvaluator} to generate results
+ * An {@link DefaultExpressionParameter} that utilizes the {@link JIPipeExpressionEvaluator} to generate results
  */
 @JsonSerialize(using = JIPipeExpressionParameter.Serializer.class)
 @JsonDeserialize(using = JIPipeExpressionParameter.Deserializer.class)
-public class JIPipeExpressionParameter extends AbstractExpressionParameter {
+public class JIPipeExpressionParameter extends DefaultExpressionParameter {
     private static JIPipeExpressionEvaluator EVALUATOR;
 
     private java.util.Set<JIPipeExpressionParameterVariableInfo> additionalUIVariables = new HashSet<>();
@@ -46,7 +46,7 @@ public class JIPipeExpressionParameter extends AbstractExpressionParameter {
         super(expression);
     }
 
-    public JIPipeExpressionParameter(AbstractExpressionParameter other) {
+    public JIPipeExpressionParameter(DefaultExpressionParameter other) {
         super(other);
     }
 

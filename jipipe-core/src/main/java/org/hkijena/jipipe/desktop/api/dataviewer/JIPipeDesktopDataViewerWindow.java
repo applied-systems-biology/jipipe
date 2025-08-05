@@ -1,7 +1,7 @@
 package org.hkijena.jipipe.desktop.api.dataviewer;
 
 import org.hkijena.jipipe.JIPipe;
-import org.hkijena.jipipe.api.AbstractJIPipeRunnable;
+import org.hkijena.jipipe.api.DefaultJIPipeRunnable;
 import org.hkijena.jipipe.api.JIPipeProgressInfo;
 import org.hkijena.jipipe.api.JIPipeWorkbench;
 import org.hkijena.jipipe.api.annotation.JIPipeTextAnnotation;
@@ -608,7 +608,7 @@ public class JIPipeDesktopDataViewerWindow extends JFrame implements JIPipeDeskt
         return getWorkbench().getProject() != null && dataTableBrowser != null && dataTableBrowser.getLocalDataTable() instanceof JIPipeDataSlot && ((JIPipeDataSlot) dataTableBrowser.getLocalDataTable()).getNode() != null;
     }
 
-    public static class DownloadFullDataRun extends AbstractJIPipeRunnable {
+    public static class DownloadFullDataRun extends DefaultJIPipeRunnable {
         private final JIPipeDataBrowser dataBrowser;
         private final int currentDataRow;
         private final int currentDataAnnotationColumn;
@@ -651,7 +651,7 @@ public class JIPipeDesktopDataViewerWindow extends JFrame implements JIPipeDeskt
         }
     }
 
-    private static class ExportDataIntoDirectoryRun extends AbstractJIPipeRunnable {
+    private static class ExportDataIntoDirectoryRun extends DefaultJIPipeRunnable {
         private final JIPipeDataBrowser dataBrowser;
         private final Path path;
 
@@ -677,7 +677,7 @@ public class JIPipeDesktopDataViewerWindow extends JFrame implements JIPipeDeskt
         }
     }
 
-    private static class ExportDataWithCustomNameRun extends AbstractJIPipeRunnable {
+    private static class ExportDataWithCustomNameRun extends DefaultJIPipeRunnable {
         private final JIPipeDataBrowser dataBrowser;
         private final Path path;
 
@@ -703,7 +703,7 @@ public class JIPipeDesktopDataViewerWindow extends JFrame implements JIPipeDeskt
         }
     }
 
-    private static class ExportDataTableIntoDirectoryRun extends AbstractJIPipeRunnable {
+    private static class ExportDataTableIntoDirectoryRun extends DefaultJIPipeRunnable {
         private final JIPipeDataTableBrowser dataTableBrowser;
         private final Path path;
 
@@ -729,7 +729,7 @@ public class JIPipeDesktopDataViewerWindow extends JFrame implements JIPipeDeskt
         }
     }
 
-    private static class ExportDataTableToZipRun extends AbstractJIPipeRunnable {
+    private static class ExportDataTableToZipRun extends DefaultJIPipeRunnable {
         private final JIPipeDataTableBrowser dataTableBrowser;
         private final Path path;
 

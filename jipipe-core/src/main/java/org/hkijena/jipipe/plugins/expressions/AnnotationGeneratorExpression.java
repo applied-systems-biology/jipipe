@@ -33,7 +33,7 @@ public class AnnotationGeneratorExpression extends JIPipeExpressionParameter {
         super(expression);
     }
 
-    public AnnotationGeneratorExpression(AbstractExpressionParameter other) {
+    public AnnotationGeneratorExpression(DefaultExpressionParameter other) {
         super(other);
     }
 

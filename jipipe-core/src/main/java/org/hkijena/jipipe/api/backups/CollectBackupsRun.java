@@ -13,7 +13,7 @@
 
 package org.hkijena.jipipe.api.backups;
 
-import org.hkijena.jipipe.api.AbstractJIPipeRunnable;
+import org.hkijena.jipipe.api.DefaultJIPipeRunnable;
 import org.hkijena.jipipe.plugins.settings.JIPipeBackupApplicationSettings;
 import org.hkijena.jipipe.utils.StringUtils;
 import org.hkijena.jipipe.utils.json.JsonUtils;
@@ -27,7 +27,7 @@ import java.util.*;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
-public class CollectBackupsRun extends AbstractJIPipeRunnable {
+public class CollectBackupsRun extends DefaultJIPipeRunnable {
 
     private final List<JIPipeProjectBackupItemCollection> output = new ArrayList<>();
 

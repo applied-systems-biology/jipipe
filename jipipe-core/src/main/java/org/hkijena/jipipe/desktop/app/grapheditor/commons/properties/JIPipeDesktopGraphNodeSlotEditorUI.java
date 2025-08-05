@@ -20,11 +20,10 @@ import org.hkijena.jipipe.api.data.JIPipeSlotType;
 import org.hkijena.jipipe.api.nodes.JIPipeGraphNode;
 import org.hkijena.jipipe.api.parameters.JIPipeParameterCollection;
 import org.hkijena.jipipe.desktop.app.JIPipeDesktopProjectWorkbench;
-import org.hkijena.jipipe.desktop.app.grapheditor.commons.AbstractJIPipeDesktopGraphEditorUI;
+import org.hkijena.jipipe.desktop.app.grapheditor.commons.JIPipeDesktopGraphEditorUI;
 import org.hkijena.jipipe.desktop.commons.components.JIPipeDesktopAddAlgorithmSlotPanel;
 import org.hkijena.jipipe.desktop.commons.components.JIPipeDesktopEditAlgorithmSlotPanel;
 import org.hkijena.jipipe.utils.UIUtils;
-import org.hkijena.jipipe.JIPipe;
 
 import javax.swing.*;
 import javax.swing.tree.DefaultMutableTreeNode;
@@ -38,7 +37,7 @@ import java.util.Set;
  * An extended slot editor that is more powerful than the "in-place" slot editor
  */
 public class JIPipeDesktopGraphNodeSlotEditorUI extends JPanel implements JIPipeGraphNode.NodeSlotsChangedEventListener, JIPipeParameterCollection.ParameterChangedEventListener {
-    private final AbstractJIPipeDesktopGraphEditorUI editorUI;
+    private final JIPipeDesktopGraphEditorUI editorUI;
     private final JIPipeGraphNode node;
     private JTree slotTree;
 
@@ -46,7 +45,7 @@ public class JIPipeDesktopGraphNodeSlotEditorUI extends JPanel implements JIPipe
      * @param editorUI the editor that shows the slot editor
      * @param node     The algorithm
      */
-    public JIPipeDesktopGraphNodeSlotEditorUI(AbstractJIPipeDesktopGraphEditorUI editorUI, JIPipeGraphNode node) {
+    public JIPipeDesktopGraphNodeSlotEditorUI(JIPipeDesktopGraphEditorUI editorUI, JIPipeGraphNode node) {
         this.editorUI = editorUI;
         this.node = node;
         initialize();

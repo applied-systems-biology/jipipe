@@ -17,7 +17,7 @@ import ij.ImagePlus;
 import ij.ImageStack;
 import ij.plugin.filter.AVI_Writer;
 import ij.process.ColorProcessor;
-import org.hkijena.jipipe.api.AbstractJIPipeRunnable;
+import org.hkijena.jipipe.api.DefaultJIPipeRunnable;
 import org.hkijena.jipipe.api.JIPipeProgressInfo;
 import org.hkijena.jipipe.plugins.imagejdatatypes.util.AVICompression;
 import org.hkijena.jipipe.plugins.imagejdatatypes.util.dimensions.HyperstackDimension;
@@ -28,7 +28,7 @@ import java.awt.image.BufferedImage;
 import java.io.IOException;
 import java.nio.file.Path;
 
-public class Video2DExporterRun extends AbstractJIPipeRunnable {
+public class Video2DExporterRun extends DefaultJIPipeRunnable {
     private final JIPipeDesktopLegacyImageViewer viewerPanel;
     private final Path outputFile;
     private final ImageSliceIndex referencePosition;

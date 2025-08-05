@@ -20,7 +20,7 @@ import org.apache.commons.math3.util.Precision;
 import org.hkijena.jipipe.JIPipe;
 import org.hkijena.jipipe.JIPipeDependency;
 import org.hkijena.jipipe.JIPipeImageJUpdateSiteDependency;
-import org.hkijena.jipipe.api.AbstractJIPipeRunnable;
+import org.hkijena.jipipe.api.DefaultJIPipeRunnable;
 import org.hkijena.jipipe.api.notifications.JIPipeNotificationInbox;
 import org.hkijena.jipipe.api.project.JIPipeProject;
 import org.hkijena.jipipe.api.project.JIPipeProjectMetadata;
@@ -48,7 +48,6 @@ import org.hkijena.jipipe.plugins.settings.JIPipeProjectDefaultsApplicationSetti
 import org.hkijena.jipipe.utils.PathUtils;
 import org.hkijena.jipipe.utils.StringUtils;
 import org.hkijena.jipipe.utils.UIUtils;
-import org.hkijena.jipipe.JIPipe;
 import org.hkijena.jipipe.utils.json.JsonUtils;
 import org.scijava.Context;
 
@@ -359,7 +358,7 @@ public class JIPipeDesktopProjectWindow extends JFrame {
 
                 JIPipeRunnableQueue localQueue = new JIPipeRunnableQueue("Project loading");
                 JIPipeDesktopProjectWindow currentWindow = this;
-                JIPipeRunnable run = new AbstractJIPipeRunnable() {
+                JIPipeRunnable run = new DefaultJIPipeRunnable() {
                     @Override
                     public String getTaskLabel() {
                         return "Load project " + path;

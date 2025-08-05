@@ -30,7 +30,7 @@ import java.awt.image.BufferedImage;
 
 @SetJIPipeDocumentation(name = "Image box", description = "An annotation that contains an image")
 @ConfigureJIPipeNode(nodeTypeCategory = GraphAnnotationsNodeTypeCategory.class)
-public class ImageBoxAnnotationGraphNode extends AbstractTextBoxAnnotationGraphNode {
+public class ImageBoxAnnotationGraphNode extends DefaultTextBoxAnnotationGraphNode {
     private final ImageParameters imageParameters;
 
     public ImageBoxAnnotationGraphNode(JIPipeNodeInfo info) {

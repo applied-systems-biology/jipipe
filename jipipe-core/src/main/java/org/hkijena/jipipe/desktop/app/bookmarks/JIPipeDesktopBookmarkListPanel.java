@@ -22,7 +22,7 @@ import org.hkijena.jipipe.api.project.JIPipeProject;
 import org.hkijena.jipipe.desktop.app.JIPipeDesktopProjectWorkbench;
 import org.hkijena.jipipe.desktop.app.JIPipeDesktopWorkbench;
 import org.hkijena.jipipe.desktop.app.JIPipeDesktopWorkbenchPanel;
-import org.hkijena.jipipe.desktop.app.grapheditor.commons.AbstractJIPipeDesktopGraphEditorUI;
+import org.hkijena.jipipe.desktop.app.grapheditor.commons.JIPipeDesktopGraphEditorUI;
 import org.hkijena.jipipe.desktop.app.grapheditor.commons.contextmenu.NodeUIContextAction;
 import org.hkijena.jipipe.desktop.app.grapheditor.commons.nodeui.JIPipeDesktopGraphNodeUI;
 import org.hkijena.jipipe.desktop.app.grapheditor.flavors.pipeline.JIPipeDesktopPipelineGraphEditorUI;
@@ -44,7 +44,7 @@ import static org.hkijena.jipipe.desktop.app.grapheditor.commons.nodeui.JIPipeDe
 public class JIPipeDesktopBookmarkListPanel extends JIPipeDesktopWorkbenchPanel implements JIPipeGraph.GraphChangedEventListener, JIPipeParameterCollection.ParameterChangedEventListener {
 
     private final JIPipeGraph graph;
-    private final AbstractJIPipeDesktopGraphEditorUI graphEditorUI;
+    private final JIPipeDesktopGraphEditorUI graphEditorUI;
     private final JList<JIPipeGraphNode> nodeJList = new JList<>();
     private final Timer reloadTimer;
     private final Set<JIPipeGraphNode> selectedNodes;
@@ -55,7 +55,7 @@ public class JIPipeDesktopBookmarkListPanel extends JIPipeDesktopWorkbenchPanel 
      * @param graph         the graph where bookmarks are tracked
      * @param graphEditorUI the canvas. can be null.
      */
-    public JIPipeDesktopBookmarkListPanel(JIPipeDesktopWorkbench workbench, JIPipeGraph graph, AbstractJIPipeDesktopGraphEditorUI graphEditorUI, Set<JIPipeGraphNode> selectedNodes) {
+    public JIPipeDesktopBookmarkListPanel(JIPipeDesktopWorkbench workbench, JIPipeGraph graph, JIPipeDesktopGraphEditorUI graphEditorUI, Set<JIPipeGraphNode> selectedNodes) {
         super(workbench);
         this.graph = graph;
         this.graphEditorUI = graphEditorUI;
@@ -202,7 +202,7 @@ public class JIPipeDesktopBookmarkListPanel extends JIPipeDesktopWorkbenchPanel 
         return graph;
     }
 
-    public AbstractJIPipeDesktopGraphEditorUI getGraphEditorUI() {
+    public JIPipeDesktopGraphEditorUI getGraphEditorUI() {
         return graphEditorUI;
     }
 

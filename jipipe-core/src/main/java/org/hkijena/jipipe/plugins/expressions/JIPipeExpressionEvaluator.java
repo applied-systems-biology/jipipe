@@ -28,7 +28,7 @@ import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.stream.Collectors;
 
 /**
- * Describes basic properties of a {@link AbstractExpressionParameter}
+ * Describes basic properties of a {@link DefaultExpressionParameter}
  */
 public class JIPipeExpressionEvaluator extends ExpressionEvaluator {
     public static final ExpressionConstant CONSTANT_NULL = new NullConstant();

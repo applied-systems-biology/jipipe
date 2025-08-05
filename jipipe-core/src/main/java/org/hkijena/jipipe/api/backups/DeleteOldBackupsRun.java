@@ -13,7 +13,7 @@
 
 package org.hkijena.jipipe.api.backups;
 
-import org.hkijena.jipipe.api.AbstractJIPipeRunnable;
+import org.hkijena.jipipe.api.DefaultJIPipeRunnable;
 import org.hkijena.jipipe.plugins.settings.JIPipeBackupApplicationSettings;
 
 import java.nio.file.Files;
@@ -23,7 +23,7 @@ import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
 
-public class DeleteOldBackupsRun extends AbstractJIPipeRunnable {
+public class DeleteOldBackupsRun extends DefaultJIPipeRunnable {
     private final Duration maxAge;
 
     public DeleteOldBackupsRun(Duration maxAge) {

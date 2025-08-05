@@ -14,7 +14,7 @@
 package org.hkijena.jipipe.api.data;
 
 import org.hkijena.jipipe.JIPipe;
-import org.hkijena.jipipe.api.AbstractJIPipeRunnable;
+import org.hkijena.jipipe.api.DefaultJIPipeRunnable;
 import org.hkijena.jipipe.api.JIPipeProgressInfo;
 import org.hkijena.jipipe.api.annotation.JIPipeTextAnnotationMergeMode;
 import org.hkijena.jipipe.api.data.browser.JIPipeLocalDataTableBrowser;
@@ -87,7 +87,7 @@ public class JIPipeDataDisplayWrapperImportOperation implements JIPipeLegacyData
         return displayOperation.getIcon();
     }
 
-    public static class ImportDataRun extends AbstractJIPipeRunnable implements Disposable {
+    public static class ImportDataRun extends DefaultJIPipeRunnable implements Disposable {
 
         private final Path rowStorageFolder;
         private final Class<? extends JIPipeData> dataType;

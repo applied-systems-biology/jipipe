@@ -20,7 +20,7 @@ import com.google.common.collect.ImmutableList;
 import ij.IJ;
 import org.apache.commons.lang3.SystemUtils;
 import org.hkijena.jipipe.JIPipe;
-import org.hkijena.jipipe.api.AbstractJIPipeRunnable;
+import org.hkijena.jipipe.api.DefaultJIPipeRunnable;
 import org.hkijena.jipipe.api.JIPipeFixedThreadPool;
 import org.hkijena.jipipe.api.JIPipeProgressInfo;
 import org.hkijena.jipipe.api.annotation.JIPipeTextAnnotation;
@@ -63,7 +63,7 @@ import java.util.List;
 import java.util.jar.Attributes;
 import java.util.stream.Collectors;
 
-public class JIPipeGraphRun extends AbstractJIPipeRunnable implements JIPipeGraphRunGCGraph.GCEventListener {
+public class JIPipeGraphRun extends DefaultJIPipeRunnable implements JIPipeGraphRunGCGraph.GCEventListener {
 
     private final JIPipeProject project;
     private final JIPipeGraph graph;

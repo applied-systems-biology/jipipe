@@ -13,7 +13,7 @@
 
 package org.hkijena.jipipe.api.backups;
 
-import org.hkijena.jipipe.api.AbstractJIPipeRunnable;
+import org.hkijena.jipipe.api.DefaultJIPipeRunnable;
 import org.hkijena.jipipe.api.JIPipeProgressInfo;
 import org.hkijena.jipipe.plugins.settings.JIPipeBackupApplicationSettings;
 import org.hkijena.jipipe.utils.PathUtils;
@@ -26,7 +26,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Stream;
 
-public class PruneBackupsRun extends AbstractJIPipeRunnable {
+public class PruneBackupsRun extends DefaultJIPipeRunnable {
     private final boolean deleteAllUnnamed;
     private final boolean deleteAllNamed;
 

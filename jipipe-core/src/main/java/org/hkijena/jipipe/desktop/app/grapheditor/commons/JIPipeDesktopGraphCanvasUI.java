@@ -59,7 +59,6 @@ import org.hkijena.jipipe.desktop.app.settings.JIPipeDesktopRuntimePartitionList
 import org.hkijena.jipipe.desktop.commons.components.JIPipeDesktopAddAlgorithmSlotPanel;
 import org.hkijena.jipipe.desktop.commons.components.JIPipeDesktopZoomViewPort;
 import org.hkijena.jipipe.desktop.commons.components.renderers.JIPipeDesktopDropShadowRenderer;
-import org.hkijena.jipipe.desktop.commons.theme.JIPipeDesktopLegacyModernMetalTheme;
 import org.hkijena.jipipe.plugins.core.nodes.JIPipeCommentNode;
 import org.hkijena.jipipe.plugins.parameters.library.roi.Anchor;
 import org.hkijena.jipipe.plugins.settings.JIPipeGraphEditorUIApplicationSettings;
@@ -127,7 +126,7 @@ public class JIPipeDesktopGraphCanvasUI extends JLayeredPane implements JIPipeDe
     private static final Color COLOR_EDGE_DEFAULT = ThemeUtils.isUsingDarkTheme() ? new Color(0x3E3E3E) : new Color(0x737880);
     private static final Color COLOR_EDGE_CONVERT = new Color(0x2957C2);
     private final JIPipeDesktopWorkbench desktopWorkbench;
-    private final AbstractJIPipeDesktopGraphEditorUI graphEditorUI;
+    private final JIPipeDesktopGraphEditorUI graphEditorUI;
     private final ImageIcon cursorImage = JIPipe.RESOURCES.getIcon16("actions/target.png");
     private final JIPipeGraph graph;
     private final BiMap<JIPipeGraphNode, JIPipeDesktopGraphNodeUI> nodeUIs = HashBiMap.create();
@@ -194,7 +193,7 @@ public class JIPipeDesktopGraphCanvasUI extends JLayeredPane implements JIPipeDe
      * @param compartmentUUID  The compartment to show
      * @param historyJournal   object that tracks the history of this graph. Set to null to disable the undo feature.
      */
-    public JIPipeDesktopGraphCanvasUI(JIPipeDesktopWorkbench desktopWorkbench, AbstractJIPipeDesktopGraphEditorUI graphEditorUI, JIPipeGraph graph, UUID compartmentUUID, JIPipeHistoryJournal historyJournal) {
+    public JIPipeDesktopGraphCanvasUI(JIPipeDesktopWorkbench desktopWorkbench, JIPipeDesktopGraphEditorUI graphEditorUI, JIPipeGraph graph, UUID compartmentUUID, JIPipeHistoryJournal historyJournal) {
         this.desktopWorkbench = desktopWorkbench;
         this.graphEditorUI = graphEditorUI;
         this.historyJournal = historyJournal;
@@ -374,7 +373,7 @@ public class JIPipeDesktopGraphCanvasUI extends JLayeredPane implements JIPipeDe
         return desktopWorkbench;
     }
 
-    public AbstractJIPipeDesktopGraphEditorUI getGraphEditorUI() {
+    public JIPipeDesktopGraphEditorUI getGraphEditorUI() {
         return graphEditorUI;
     }
 

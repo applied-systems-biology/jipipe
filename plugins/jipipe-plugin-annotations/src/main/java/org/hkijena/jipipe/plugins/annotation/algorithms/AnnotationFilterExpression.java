@@ -16,7 +16,7 @@ package org.hkijena.jipipe.plugins.annotation.algorithms;
 import org.hkijena.jipipe.api.AddJIPipeDocumentationDescription;
 import org.hkijena.jipipe.api.annotation.JIPipeTextAnnotation;
 import org.hkijena.jipipe.api.annotation.JIPipeTextAnnotationMergeMode;
-import org.hkijena.jipipe.plugins.expressions.AbstractExpressionParameter;
+import org.hkijena.jipipe.plugins.expressions.DefaultExpressionParameter;
 import org.hkijena.jipipe.plugins.expressions.AddJIPipeExpressionParameterVariable;
 import org.hkijena.jipipe.plugins.expressions.JIPipeExpressionParameter;
 import org.hkijena.jipipe.plugins.expressions.JIPipeExpressionVariablesMap;
@@ -39,7 +39,7 @@ public class AnnotationFilterExpression extends JIPipeExpressionParameter {
         super(expression);
     }
 
-    public AnnotationFilterExpression(AbstractExpressionParameter other) {
+    public AnnotationFilterExpression(DefaultExpressionParameter other) {
         super(other);
     }
 

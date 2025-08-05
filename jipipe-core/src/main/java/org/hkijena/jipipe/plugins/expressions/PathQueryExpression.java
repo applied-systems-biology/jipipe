@@ -33,7 +33,7 @@ public class PathQueryExpression extends JIPipeExpressionParameter implements Pr
         super(expression);
     }
 
-    public PathQueryExpression(AbstractExpressionParameter other) {
+    public PathQueryExpression(DefaultExpressionParameter other) {
         super(other);
     }
 

@@ -16,11 +16,11 @@ package org.hkijena.jipipe.desktop.app.plugins.artifactsmanager;
 import org.hkijena.jipipe.JIPipe;
 import org.hkijena.jipipe.JIPipeImageJUpdateSiteDependency;
 import org.hkijena.jipipe.JIPipePlugin;
-import org.hkijena.jipipe.api.AbstractJIPipeRunnable;
+import org.hkijena.jipipe.api.DefaultJIPipeRunnable;
 
 import java.util.Set;
 
-public class JIPipeDesktopApplyPluginManagerRun extends AbstractJIPipeRunnable {
+public class JIPipeDesktopApplyPluginManagerRun extends DefaultJIPipeRunnable {
 
     private final Set<JIPipePlugin> pluginsToActivate;
     private final Set<JIPipePlugin> pluginsToDeactivate;

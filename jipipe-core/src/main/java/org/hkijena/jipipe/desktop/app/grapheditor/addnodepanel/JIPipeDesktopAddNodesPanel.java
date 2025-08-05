@@ -14,7 +14,7 @@
 package org.hkijena.jipipe.desktop.app.grapheditor.addnodepanel;
 
 import org.hkijena.jipipe.JIPipe;
-import org.hkijena.jipipe.api.AbstractJIPipeRunnable;
+import org.hkijena.jipipe.api.DefaultJIPipeRunnable;
 import org.hkijena.jipipe.api.data.JIPipeData;
 import org.hkijena.jipipe.api.nodes.*;
 import org.hkijena.jipipe.api.nodes.categories.DataSourceNodeTypeCategory;
@@ -24,7 +24,7 @@ import org.hkijena.jipipe.api.run.JIPipeRunnableQueue;
 import org.hkijena.jipipe.desktop.app.JIPipeDesktopProjectWorkbench;
 import org.hkijena.jipipe.desktop.app.JIPipeDesktopWorkbench;
 import org.hkijena.jipipe.desktop.app.JIPipeDesktopWorkbenchPanel;
-import org.hkijena.jipipe.desktop.app.grapheditor.commons.AbstractJIPipeDesktopGraphEditorUI;
+import org.hkijena.jipipe.desktop.app.grapheditor.commons.JIPipeDesktopGraphEditorUI;
 import org.hkijena.jipipe.desktop.app.grapheditor.commons.nodeui.JIPipeDesktopGraphNodeUI;
 import org.hkijena.jipipe.desktop.app.grapheditor.flavors.compartments.JIPipeDesktopCompartmentsGraphEditorUI;
 import org.hkijena.jipipe.desktop.app.grapheditor.flavors.pipeline.JIPipeDesktopPipelineGraphEditorUI;
@@ -67,7 +67,7 @@ public class JIPipeDesktopAddNodesPanel extends JIPipeDesktopWorkbenchPanel {
     private final JPanel mainCategoriesPanel = new JPanel();
     private final JPanel subCategoryPathPanel = new JPanel();
     private final JPanel subCategorySelectionPanel = new JPanel();
-    private final AbstractJIPipeDesktopGraphEditorUI graphEditorUI;
+    private final JIPipeDesktopGraphEditorUI graphEditorUI;
     private final List<MainCategoryFilter> mainCategoryFilters = new ArrayList<>();
     private final JCheckBoxMenuItem showNodeDescriptionToggle = new JCheckBoxMenuItem("Show node descriptions");
     private final JCheckBoxMenuItem showHierarchySelectionToggle = new JCheckBoxMenuItem("Show category browser");
@@ -77,7 +77,7 @@ public class JIPipeDesktopAddNodesPanel extends JIPipeDesktopWorkbenchPanel {
     private JScrollPane scrollPane;
     private String currentHierarchyVertex;
 
-    public JIPipeDesktopAddNodesPanel(JIPipeDesktopWorkbench workbench, AbstractJIPipeDesktopGraphEditorUI graphEditorUI) {
+    public JIPipeDesktopAddNodesPanel(JIPipeDesktopWorkbench workbench, JIPipeDesktopGraphEditorUI graphEditorUI) {
         super(workbench);
         this.database = workbench instanceof JIPipeDesktopProjectWorkbench ?
                 ((JIPipeDesktopProjectWorkbench) workbench).getNodeDatabase() : JIPipeNodeDatabase.getInstance();
@@ -144,7 +144,7 @@ public class JIPipeDesktopAddNodesPanel extends JIPipeDesktopWorkbenchPanel {
      * @param category        The algorithm category
      * @param addedAlgorithms added algorithm types are added to this list
      */
-    public static void initializeMenuForCategory(AbstractJIPipeDesktopGraphEditorUI graphEditorUI, JPopupMenu menu, JIPipeNodeTypeCategory category, Set<JIPipeNodeInfo> addedAlgorithms) {
+    public static void initializeMenuForCategory(JIPipeDesktopGraphEditorUI graphEditorUI, JPopupMenu menu, JIPipeNodeTypeCategory category, Set<JIPipeNodeInfo> addedAlgorithms) {
         JIPipeGraph algorithmGraph = graphEditorUI.getGraph();
         JIPipe registryService = JIPipe.getInstance();
         Set<JIPipeNodeInfo> algorithmsOfCategory = registryService.getNodeRegistry().getNodesOfCategory(category, true);
@@ -220,7 +220,7 @@ public class JIPipeDesktopAddNodesPanel extends JIPipeDesktopWorkbenchPanel {
      * @param menu            the target menu
      * @param addedAlgorithms added algorithm types are added to this list
      */
-    public static void initializeAddDataSourceMenu(AbstractJIPipeDesktopGraphEditorUI graphEditorUI, JPopupMenu menu, Set<JIPipeNodeInfo> addedAlgorithms) {
+    public static void initializeAddDataSourceMenu(JIPipeDesktopGraphEditorUI graphEditorUI, JPopupMenu menu, Set<JIPipeNodeInfo> addedAlgorithms) {
         JIPipeGraph algorithmGraph = graphEditorUI.getGraph();
         JIPipe registryService = JIPipe.getInstance();
         Map<String, Set<Class<? extends JIPipeData>>> dataTypesByMenuPaths = JIPipe.getDataTypes().getDataTypesByMenuPaths();
@@ -771,7 +771,7 @@ public class JIPipeDesktopAddNodesPanel extends JIPipeDesktopWorkbenchPanel {
         }
     }
 
-    public static class ReloadListRun extends AbstractJIPipeRunnable {
+    public static class ReloadListRun extends DefaultJIPipeRunnable {
 
         private final JIPipeDesktopAddNodesPanel toolBox;
 

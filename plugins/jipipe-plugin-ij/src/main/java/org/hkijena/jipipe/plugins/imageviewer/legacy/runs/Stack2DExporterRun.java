@@ -14,7 +14,7 @@
 package org.hkijena.jipipe.plugins.imageviewer.legacy.runs;
 
 import ij.ImagePlus;
-import org.hkijena.jipipe.api.AbstractJIPipeRunnable;
+import org.hkijena.jipipe.api.DefaultJIPipeRunnable;
 import org.hkijena.jipipe.api.JIPipeProgressInfo;
 import org.hkijena.jipipe.plugins.imageviewer.legacy.JIPipeDesktopLegacyImageViewer;
 import org.hkijena.jipipe.utils.StringUtils;
@@ -26,7 +26,7 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.Locale;
 
-public class Stack2DExporterRun extends AbstractJIPipeRunnable {
+public class Stack2DExporterRun extends DefaultJIPipeRunnable {
     private final JIPipeDesktopLegacyImageViewer viewerPanel;
     private final Path outputFolder;
     private final String baseName;

@@ -14,7 +14,7 @@
 package org.hkijena.jipipe.api.nodes.database;
 
 import org.hkijena.jipipe.JIPipe;
-import org.hkijena.jipipe.api.AbstractJIPipeRunnable;
+import org.hkijena.jipipe.api.DefaultJIPipeRunnable;
 import org.hkijena.jipipe.api.JIPipeNodeTemplate;
 import org.hkijena.jipipe.api.compartments.algorithms.JIPipeProjectCompartment;
 import org.hkijena.jipipe.api.nodes.JIPipeGraphNode;
@@ -30,7 +30,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.UUID;
 
-public class JIPipeNodeDatabaseBuilderRun extends AbstractJIPipeRunnable {
+public class JIPipeNodeDatabaseBuilderRun extends DefaultJIPipeRunnable {
 
     private static List<JIPipeNodeDatabaseEntry> CACHED_GLOBAL_ENTRIES;
     private final JIPipeNodeDatabase database;

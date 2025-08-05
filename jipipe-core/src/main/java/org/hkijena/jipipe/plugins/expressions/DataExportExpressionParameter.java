@@ -67,7 +67,7 @@ public class DataExportExpressionParameter extends JIPipeExpressionParameter {
         super(expression);
     }
 
-    public DataExportExpressionParameter(AbstractExpressionParameter other) {
+    public DataExportExpressionParameter(DefaultExpressionParameter other) {
         super(other);
     }
 

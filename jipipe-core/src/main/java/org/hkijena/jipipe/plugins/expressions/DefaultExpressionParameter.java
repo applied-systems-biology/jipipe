@@ -28,17 +28,17 @@ import java.util.List;
  * This allows users to set up filters etc. from within the UI.
  * Use {@link JIPipeExpressionParameterSettings} to control the behavior of this parameter.
  */
-public abstract class AbstractExpressionParameter implements JIPipeCustomTextDescriptionParameter {
+public abstract class DefaultExpressionParameter implements JIPipeCustomTextDescriptionParameter {
     private String expression = "";
 
-    public AbstractExpressionParameter() {
+    public DefaultExpressionParameter() {
     }
 
-    public AbstractExpressionParameter(String expression) {
+    public DefaultExpressionParameter(String expression) {
         this.expression = expression;
     }
 
-    public AbstractExpressionParameter(AbstractExpressionParameter other) {
+    public DefaultExpressionParameter(DefaultExpressionParameter other) {
         this.expression = other.expression;
     }
 
@@ -227,7 +227,7 @@ public abstract class AbstractExpressionParameter implements JIPipeCustomTextDes
     public boolean equals(Object o) {
         if (this == o) return true;
         if (o == null || getClass() != o.getClass()) return false;
-        AbstractExpressionParameter that = (AbstractExpressionParameter) o;
+        DefaultExpressionParameter that = (DefaultExpressionParameter) o;
         return Objects.equals(expression, that.expression);
     }
 

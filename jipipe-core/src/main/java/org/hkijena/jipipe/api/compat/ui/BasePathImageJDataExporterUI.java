@@ -27,12 +27,12 @@ import java.nio.file.Paths;
 /**
  * Exporter UI that changes the activation state and the name (based on a path)
  */
-public abstract class AbstractPathImageJDataExporterUI extends ImageJDataExporterUI {
+public abstract class BasePathImageJDataExporterUI extends ImageJDataExporterUI {
     /**
      * @param workbench the workbench
      * @param exporter  the importer
      */
-    public AbstractPathImageJDataExporterUI(JIPipeDesktopWorkbench workbench, ImageJDataExportOperation exporter) {
+    public BasePathImageJDataExporterUI(JIPipeDesktopWorkbench workbench, ImageJDataExportOperation exporter) {
         super(workbench, exporter);
         initialize();
     }

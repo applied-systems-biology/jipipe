@@ -16,7 +16,7 @@ package org.hkijena.jipipe.plugins.nodetemplate.templatedownloader;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.google.common.collect.ImmutableList;
 import org.hkijena.jipipe.JIPipe;
-import org.hkijena.jipipe.api.AbstractJIPipeRunnable;
+import org.hkijena.jipipe.api.DefaultJIPipeRunnable;
 import org.hkijena.jipipe.api.JIPipeNodeTemplate;
 import org.hkijena.jipipe.api.JIPipeProgressInfo;
 import org.hkijena.jipipe.desktop.app.JIPipeDesktopProjectWorkbench;
@@ -36,7 +36,7 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.*;
 
-public class NodeTemplateDownloaderRun extends AbstractJIPipeRunnable {
+public class NodeTemplateDownloaderRun extends DefaultJIPipeRunnable {
 
     private final JIPipeDesktopWorkbench workbench;
     private final List<NodeTemplateDownloaderPackage> availablePackages = new ArrayList<>();

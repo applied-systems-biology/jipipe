@@ -14,13 +14,11 @@
 package org.hkijena.jipipe.api.history;
 
 import org.hkijena.jipipe.JIPipe;
-import org.hkijena.jipipe.api.AbstractJIPipeRunnable;
+import org.hkijena.jipipe.api.DefaultJIPipeRunnable;
 import org.hkijena.jipipe.api.nodes.JIPipeGraph;
 import org.hkijena.jipipe.api.project.JIPipeProject;
 import org.hkijena.jipipe.api.run.JIPipeRunnableQueue;
 import org.hkijena.jipipe.plugins.settings.JIPipeHistoryJournalApplicationSettings;
-import org.hkijena.jipipe.utils.UIUtils;
-import org.hkijena.jipipe.JIPipe;
 
 import javax.swing.*;
 import java.time.LocalDateTime;
@@ -254,7 +252,7 @@ public class JIPipeProjectHistoryJournal implements JIPipeHistoryJournal {
         }
     }
 
-    private static class CreateSnapshotRun extends AbstractJIPipeRunnable {
+    private static class CreateSnapshotRun extends DefaultJIPipeRunnable {
         private final JIPipeProjectHistoryJournal historyJournal;
         private final LocalDateTime dateTime;
         private final String name;

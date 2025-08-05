@@ -38,7 +38,7 @@ public class DataAnnotationQueryExpression extends JIPipeExpressionParameter {
         super(expression);
     }
 
-    public DataAnnotationQueryExpression(AbstractExpressionParameter other) {
+    public DataAnnotationQueryExpression(DefaultExpressionParameter other) {
         super(other);
     }
 

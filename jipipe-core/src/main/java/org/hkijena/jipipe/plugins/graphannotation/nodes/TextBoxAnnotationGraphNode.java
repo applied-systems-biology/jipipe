@@ -26,7 +26,7 @@ import java.awt.*;
 
 @SetJIPipeDocumentation(name = "Text box", description = "An annotation that contains text")
 @ConfigureJIPipeNode(nodeTypeCategory = GraphAnnotationsNodeTypeCategory.class)
-public class TextBoxAnnotationGraphNode extends AbstractTextBoxAnnotationGraphNode {
+public class TextBoxAnnotationGraphNode extends DefaultTextBoxAnnotationGraphNode {
     private final ShapeParameters shapeParameters;
 
     public TextBoxAnnotationGraphNode(JIPipeNodeInfo info) {

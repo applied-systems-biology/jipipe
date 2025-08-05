@@ -13,7 +13,7 @@
 
 package org.hkijena.jipipe.desktop.app.project;
 
-import org.hkijena.jipipe.api.AbstractJIPipeRunnable;
+import org.hkijena.jipipe.api.DefaultJIPipeRunnable;
 import org.hkijena.jipipe.api.JIPipeProgressInfo;
 import org.hkijena.jipipe.api.JIPipeWorkbench;
 import org.hkijena.jipipe.api.nodes.JIPipeGraphNode;
@@ -24,7 +24,7 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.ArrayList;
 
-public class JIPipeDesktopLoadResultDirectoryIntoCacheRun extends AbstractJIPipeRunnable {
+public class JIPipeDesktopLoadResultDirectoryIntoCacheRun extends DefaultJIPipeRunnable {
     private final JIPipeWorkbench workbench;
     private final JIPipeProject project;
     private final Path resultPath;

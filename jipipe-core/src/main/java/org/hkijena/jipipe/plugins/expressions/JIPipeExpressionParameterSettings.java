@@ -22,7 +22,7 @@ import java.lang.annotation.RetentionPolicy;
 import java.lang.annotation.Target;
 
 /**
- * Controls the behavior of an {@link AbstractExpressionParameter}.
+ * Controls the behavior of an {@link DefaultExpressionParameter}.
  * Attach it to the getter or setter within a {@link org.hkijena.jipipe.api.parameters.JIPipeParameterCollection}
  */
 @Target({ElementType.METHOD, ElementType.TYPE})

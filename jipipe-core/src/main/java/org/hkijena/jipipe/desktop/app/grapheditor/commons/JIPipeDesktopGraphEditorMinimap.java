@@ -14,8 +14,6 @@
 package org.hkijena.jipipe.desktop.app.grapheditor.commons;
 
 import org.hkijena.jipipe.desktop.app.JIPipeDesktopWorkbenchPanel;
-import org.hkijena.jipipe.desktop.commons.theme.JIPipeDesktopLegacyModernMetalTheme;
-import org.hkijena.jipipe.plugins.settings.JIPipeGeneralUIApplicationSettings;
 import org.hkijena.jipipe.utils.ThemeUtils;
 
 import javax.swing.*;
@@ -29,7 +27,7 @@ import java.awt.image.BufferedImage;
 public class JIPipeDesktopGraphEditorMinimap extends JIPipeDesktopWorkbenchPanel implements MouseListener, MouseMotionListener, AdjustmentListener, JIPipeDesktopGraphCanvasUI.GraphCanvasUpdatedEventListener {
 
     private static final Color AREA_FILL_COLOR = new Color(0x3365a4e3, true);
-    private final AbstractJIPipeDesktopGraphEditorUI graphEditorUI;
+    private final JIPipeDesktopGraphEditorUI graphEditorUI;
     private BufferedImage graphImage;
     private double scaleFactor;
     private int viewBaseWidth;
@@ -48,7 +46,7 @@ public class JIPipeDesktopGraphEditorMinimap extends JIPipeDesktopWorkbenchPanel
     /**
      * @param graphEditorUI the workbench
      */
-    public JIPipeDesktopGraphEditorMinimap(AbstractJIPipeDesktopGraphEditorUI graphEditorUI) {
+    public JIPipeDesktopGraphEditorMinimap(JIPipeDesktopGraphEditorUI graphEditorUI) {
         super(graphEditorUI.getDesktopWorkbench());
         this.graphEditorUI = graphEditorUI;
         this.minimapBackground = ThemeUtils.getCurrentStyle().getPanelBackground();

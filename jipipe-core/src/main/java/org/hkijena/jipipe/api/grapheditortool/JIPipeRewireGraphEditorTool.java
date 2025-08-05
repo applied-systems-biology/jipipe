@@ -19,13 +19,11 @@ import org.hkijena.jipipe.api.compartments.algorithms.JIPipeProjectCompartmentOu
 import org.hkijena.jipipe.api.data.JIPipeDataSlot;
 import org.hkijena.jipipe.api.nodes.JIPipeGraph;
 import org.hkijena.jipipe.api.nodes.JIPipeGraphEdge;
-import org.hkijena.jipipe.desktop.app.grapheditor.commons.AbstractJIPipeDesktopGraphEditorUI;
+import org.hkijena.jipipe.desktop.app.grapheditor.commons.JIPipeDesktopGraphEditorUI;
 import org.hkijena.jipipe.desktop.app.grapheditor.commons.JIPipeDesktopGraphCanvasUI;
 import org.hkijena.jipipe.desktop.app.grapheditor.commons.nodeui.JIPipeDesktopGraphNodeUI;
 import org.hkijena.jipipe.desktop.app.grapheditor.commons.nodeui.triggers.JIPipeDesktopGraphNodeUISlotActiveArea;
 import org.hkijena.jipipe.utils.PointRange;
-import org.hkijena.jipipe.utils.UIUtils;
-import org.hkijena.jipipe.JIPipe;
 
 import javax.swing.*;
 import java.awt.*;
@@ -37,7 +35,7 @@ import java.util.UUID;
 
 public class JIPipeRewireGraphEditorTool implements JIPipeToggleableGraphEditorTool {
 
-    private AbstractJIPipeDesktopGraphEditorUI graphEditorUI;
+    private JIPipeDesktopGraphEditorUI graphEditorUI;
     private JIPipeDesktopGraphNodeUISlotActiveArea currentRewireDragSource;
 
     private JIPipeDesktopGraphNodeUISlotActiveArea currentRewireDragTarget;
@@ -63,17 +61,17 @@ public class JIPipeRewireGraphEditorTool implements JIPipeToggleableGraphEditorT
     }
 
     @Override
-    public AbstractJIPipeDesktopGraphEditorUI getGraphEditor() {
+    public JIPipeDesktopGraphEditorUI getGraphEditor() {
         return graphEditorUI;
     }
 
     @Override
-    public void setGraphEditor(AbstractJIPipeDesktopGraphEditorUI graphEditorUI) {
+    public void setGraphEditor(JIPipeDesktopGraphEditorUI graphEditorUI) {
         this.graphEditorUI = graphEditorUI;
     }
 
     @Override
-    public boolean supports(AbstractJIPipeDesktopGraphEditorUI graphEditorUI) {
+    public boolean supports(JIPipeDesktopGraphEditorUI graphEditorUI) {
         return graphEditorUI.getGraph().getAttachment(JIPipeGraphType.class) != JIPipeGraphType.ProjectCompartments;
     }
 
