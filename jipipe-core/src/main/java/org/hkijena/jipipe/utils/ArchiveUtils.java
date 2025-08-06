@@ -39,22 +39,22 @@ public class ArchiveUtils {
 
     private static final int BUFFER_SIZE = 8192;
 
-    public static void zipFileOrDirectory(Path fileToZip, Path zipFile, JIPipeProgressInfo progressInfo) throws IOException {
+    public static void compressFileOrDirectoryToZip(Path fileToZip, Path zipFile, JIPipeProgressInfo progressInfo) throws IOException {
         try (ZipOutputStream zipOut = new ZipOutputStream(new FileOutputStream(zipFile.toFile()))) {
-            zipFile(fileToZip, fileToZip.getFileName().toString(), zipOut, progressInfo);
+            compressFileToZip(fileToZip, fileToZip.getFileName().toString(), zipOut, progressInfo);
         }
     }
 
-    public static void zipDirectory(Path rootPath, String rootPathName, Path zipFile, JIPipeProgressInfo progressInfo) throws IOException {
+    public static void compressDirectoryToZip(Path rootPath, String rootPathName, Path zipFile, JIPipeProgressInfo progressInfo) throws IOException {
         if (!Files.isDirectory(rootPath)) {
             throw new IOException("Path is not a directory");
         }
         try (ZipOutputStream zipOut = new ZipOutputStream(new FileOutputStream(zipFile.toFile()))) {
-            zipFile(rootPath, rootPathName, zipOut, progressInfo);
+            compressFileToZip(rootPath, rootPathName, zipOut, progressInfo);
         }
     }
 
-    private static void zipFile(Path fileToZip, String fileName, ZipOutputStream zipOut, JIPipeProgressInfo progressInfo) throws IOException {
+    private static void compressFileToZip(Path fileToZip, String fileName, ZipOutputStream zipOut, JIPipeProgressInfo progressInfo) throws IOException {
         if (Files.isHidden(fileToZip)) {
             return;
         }
@@ -68,7 +68,7 @@ public class ArchiveUtils {
             }
             List<Path> children = Files.list(fileToZip).collect(Collectors.toList());
             for (Path childFile : children) {
-                zipFile(childFile, fileName + "/" + childFile.getFileName(), zipOut, progressInfo);
+                compressFileToZip(childFile, fileName + "/" + childFile.getFileName(), zipOut, progressInfo);
             }
             return;
         }

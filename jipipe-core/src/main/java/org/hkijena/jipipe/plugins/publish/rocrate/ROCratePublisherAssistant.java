@@ -32,11 +32,13 @@ import java.util.List;
 public class ROCratePublisherAssistant extends JIPipeDesktopPublisherAssistant {
     public ROCratePublisherAssistant(JIPipeDesktopProjectWorkbench workbench) {
         super(workbench);
-        addAssistantCondition(new SavedProjectAssistantCondition(this));
+        addAssistantCondition(new TitleAssistantCondition(this));
         addAssistantCondition(new LicenseAssistantCondition(this));
         addAssistantCondition(new DescriptionAssistantCondition(this));
+        addAssistantCondition(new SummaryAssistantCondition(this));
         addAssistantCondition(new AuthorsAssistantCondition(this));
         addAssistantCondition(new SimpleParametersAssistantCondition(this));
+        addAssistantCondition(new SavedProjectAssistantCondition(this));
     }
 
     @Override
