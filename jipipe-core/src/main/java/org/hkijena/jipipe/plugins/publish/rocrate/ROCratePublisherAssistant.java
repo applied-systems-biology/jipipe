@@ -14,19 +14,27 @@
 package org.hkijena.jipipe.plugins.publish.rocrate;
 
 import org.hkijena.jipipe.JIPipe;
+import org.hkijena.jipipe.api.run.JIPipeRunnable;
+import org.hkijena.jipipe.desktop.JIPipeDesktop;
 import org.hkijena.jipipe.desktop.app.JIPipeDesktopProjectWorkbench;
 import org.hkijena.jipipe.desktop.app.publish.JIPipeDesktopPublisherAssistant;
 import org.hkijena.jipipe.plugins.parameters.library.markup.HTMLText;
+import org.hkijena.jipipe.plugins.publish.conditions.LicenseAssistantCondition;
 import org.hkijena.jipipe.plugins.publish.conditions.SavedProjectAssistantCondition;
+import org.hkijena.jipipe.plugins.settings.JIPipeFileChooserApplicationSettings;
+import org.hkijena.jipipe.utils.PathUtils;
+import org.hkijena.jipipe.utils.UIUtils;
 
-import java.awt.*;
+import javax.swing.*;
 import java.awt.image.BufferedImage;
+import java.nio.file.Path;
 import java.util.List;
 
 public class ROCratePublisherAssistant extends JIPipeDesktopPublisherAssistant {
     public ROCratePublisherAssistant(JIPipeDesktopProjectWorkbench workbench) {
         super(workbench);
         addAssistantCondition(new SavedProjectAssistantCondition(this));
+        addAssistantCondition(new LicenseAssistantCondition(this));
     }
 
     @Override
@@ -43,5 +51,24 @@ public class ROCratePublisherAssistant extends JIPipeDesktopPublisherAssistant {
     public List<BufferedImage> getAssistantLogos() {
         return List.of(JIPipe.RESOURCES.getVariantResourceAsImage("logos/ro-crate.png"),
                 JIPipe.RESOURCES.getVariantResourceAsImage("logos/cwl.png"));
+    }
+
+    @Override
+    public JIPipeRunnable createAssistantTask() {
+        Path crateFile = JIPipeDesktop.saveFile(this, getDesktopWorkbench(), JIPipeFileChooserApplicationSettings.LastDirectoryKey.External, "Export as RO-Crate", new HTMLText("Please choose where the RO-Crate will be saved"), PathUtils.EXTENSION_FILTER_WORKFLOW_RO_CRATE);
+        if(crateFile != null) {
+            return new CreateROCrateRun(getProject(), getDesktopProjectWorkbench().getProjectWindow().getProjectSavePath(),  crateFile);
+        }
+        return null;
+    }
+
+    @Override
+    public void onPublicationFinished(JIPipeRunnable runnable) {
+        if(runnable instanceof CreateROCrateRun run) {
+            if(JOptionPane.showConfirmDialog(this, "<html>The RO-Crate was successfully exported to " + run.getRoCrateFile() + ".<br/>Do you want to open the containing directory?</html>",
+                    "Export finished", JOptionPane.YES_NO_OPTION) ==  JOptionPane.YES_OPTION) {
+                UIUtils.desktopOpenFile(run.getRoCrateFile().getParent());
+            }
+        }
     }
 }

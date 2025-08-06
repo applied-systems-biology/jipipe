@@ -14,6 +14,7 @@
 package org.hkijena.jipipe.desktop.commons.components;
 
 import org.hkijena.jipipe.JIPipe;
+import org.hkijena.jipipe.utils.ThemeUtils;
 import org.hkijena.jipipe.utils.UIUtils;
 import org.hkijena.jipipe.JIPipe;
 import org.hkijena.jipipe.utils.ui.RoundedLineBorder;
@@ -70,7 +71,7 @@ public class JIPipeDesktopMessagePanel extends JIPipeDesktopFormPanel {
         Info(new Color(0x8EBFEF), Color.WHITE),
         InfoLight(new Color(0xC1DFF9), new Color(0x444444)),
         Gray(new Color(0xE6E6E6), new Color(0x444444)),
-        Success(new Color(0x5CB85C), Color.WHITE),
+        Success(ThemeUtils.getCurrentStyle().getSuccessColor(), Color.WHITE),
         Warning(new Color(0xffc155), new Color(0x444444)),
         Error(new Color(0xd7263b), Color.WHITE);
 

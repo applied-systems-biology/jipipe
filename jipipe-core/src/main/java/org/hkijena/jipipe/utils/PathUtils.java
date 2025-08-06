@@ -61,6 +61,7 @@ public class PathUtils {
     public static final FileNameExtensionFilter EXTENSION_FILTER_ROI_ZIP = new FileNameExtensionFilter("ImageJ ROIs (*.zip)", "zip");
     public static final FileNameExtensionFilter EXTENSION_FILTER_ROI = new FileNameExtensionFilter("ImageJ ROI (*.roi)", "roi");
     public static final FileNameExtensionFilter EXTENSION_FILTER_ROIS = new FileNameExtensionFilter("ImageJ ROI (*.roi, *.zip)", "roi", "zip");
+    public static final FileNameExtensionFilter EXTENSION_FILTER_WORKFLOW_RO_CRATE = new FileNameExtensionFilter("Workflow RO-Crate (*.crate.zip)", "crate.zip");
     public static final FileNameExtensionFilter EXTENSION_FILTER_AVI = new FileNameExtensionFilter("Video file (*.avi)", "avi");
     public static final FileNameExtensionFilter EXTENSION_FILTER_HDF5 = new FileNameExtensionFilter("HDF5 data (*.hdf5, *.h5)", "hdf5", "h5");
     public static final FileNameExtensionFilter EXTENSION_FILTER_ZARR_ZIP = new FileNameExtensionFilter("ZARR ZIP (*.zarr.zip)", "zarr.zip");

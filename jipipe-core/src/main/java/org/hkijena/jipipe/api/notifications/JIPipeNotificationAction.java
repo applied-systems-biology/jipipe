@@ -14,6 +14,7 @@
 package org.hkijena.jipipe.api.notifications;
 
 import org.hkijena.jipipe.api.JIPipeWorkbench;
+import org.hkijena.jipipe.utils.ThemeUtils;
 
 import javax.swing.*;
 import java.awt.*;
@@ -102,7 +103,7 @@ public class JIPipeNotificationAction implements Runnable {
 
     public enum Style {
         Normal(null, null),
-        Success(new Color(0x5CB85C), Color.WHITE);
+        Success(ThemeUtils.getCurrentStyle().getSuccessColor(), Color.WHITE);
 
         private final Color background;
         private final Color text;

@@ -44,7 +44,8 @@ public abstract class JIPipeDesktopPublisherAssistantCondition extends JIPipeDes
         setBorder(UIUtils.createControlBorder());
         titleLabel.setFont(titleLabel.getFont().deriveFont(Font.BOLD, ThemeUtils.getCurrentStyle().getFontSizeLarge()));
         buttonPanel.setBorder(BorderFactory.createCompoundBorder(UIUtils.createEmptyBorder(8),
-                BorderFactory.createMatteBorder(1,0,0,0, ThemeUtils.getCurrentStyle().getBorderColor())));
+                BorderFactory.createCompoundBorder(BorderFactory.createMatteBorder(1,0,0,0, ThemeUtils.getCurrentStyle().getBorderColor()),
+                        BorderFactory.createEmptyBorder(8,0,0,0))));
         buttonPanel.add(Box.createHorizontalGlue());
 
         add(titleLabel, BorderLayout.NORTH);
@@ -57,6 +58,10 @@ public abstract class JIPipeDesktopPublisherAssistantCondition extends JIPipeDes
     public abstract String getAssistantTitle(JIPipeDesktopPublisherAssistantConditionStatus  status);
 
     public abstract HTMLText getAssistantDescription(JIPipeDesktopPublisherAssistantConditionStatus status);
+
+    public JIPipeDesktopPublisherAssistant getAssistant() {
+        return assistant;
+    }
 
     public void updateAssistant() {
         JIPipeDesktopPublisherAssistantConditionStatus status = getStatus();

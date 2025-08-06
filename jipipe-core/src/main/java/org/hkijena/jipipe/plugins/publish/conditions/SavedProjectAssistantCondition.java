@@ -13,15 +13,23 @@
 
 package org.hkijena.jipipe.plugins.publish.conditions;
 
+import org.hkijena.jipipe.JIPipe;
 import org.hkijena.jipipe.desktop.app.JIPipeDesktopProjectWorkbench;
 import org.hkijena.jipipe.desktop.app.publish.JIPipeDesktopPublisherAssistant;
 import org.hkijena.jipipe.desktop.app.publish.JIPipeDesktopPublisherAssistantCondition;
 import org.hkijena.jipipe.desktop.app.publish.JIPipeDesktopPublisherAssistantConditionStatus;
 import org.hkijena.jipipe.plugins.parameters.library.markup.HTMLText;
+import org.hkijena.jipipe.utils.UIUtils;
 
 public class SavedProjectAssistantCondition extends JIPipeDesktopPublisherAssistantCondition {
     public SavedProjectAssistantCondition(JIPipeDesktopPublisherAssistant assistant) {
         super(assistant);
+        addButton(UIUtils.createButton("Save now", JIPipe.RESOURCES.getIcon16("actions/filesave.png"), this::saveProject));
+    }
+
+    private void saveProject() {
+        getDesktopProjectWorkbench().getProjectWindow().saveProjectAs(true, true);
+        getAssistant().updateAssistant();
     }
 
     @Override

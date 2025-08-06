@@ -129,7 +129,7 @@ public class JIPipeDesktopWelcomePanel extends JIPipeDesktopProjectWorkbenchPane
 
         actionPanel.add(Box.createHorizontalGlue());
 
-        Color colorSuccess = new Color(0x5CB85C);
+        Color colorSuccess = ThemeUtils.getCurrentStyle().getSuccessColor();
         Color colorHover = new Color(0x4f9f4f);
 
         JButton startNowButton = new JButton("Start building");

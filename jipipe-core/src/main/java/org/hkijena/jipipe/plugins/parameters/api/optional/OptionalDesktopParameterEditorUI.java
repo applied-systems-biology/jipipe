@@ -15,6 +15,7 @@ package org.hkijena.jipipe.plugins.parameters.api.optional;
 
 import org.hkijena.jipipe.JIPipe;
 import org.hkijena.jipipe.desktop.api.JIPipeDesktopParameterEditorUI;
+import org.hkijena.jipipe.utils.ThemeUtils;
 import org.hkijena.jipipe.utils.UIUtils;
 import org.hkijena.jipipe.JIPipe;
 import org.hkijena.jipipe.utils.ui.RoundedLineBorder;
@@ -60,7 +61,7 @@ public class OptionalDesktopParameterEditorUI extends JIPipeDesktopParameterEdit
             setParameter(parameter, true);
         });
         if (selected) {
-            setBorder(new RoundedLineBorder(new Color(0x5CB85C), 1, 3));
+            setBorder(new RoundedLineBorder(ThemeUtils.getCurrentStyle().getSuccessColor(), 1, 3));
         } else {
             setBorder(new RoundedLineBorder(UIManager.getColor("Button.borderColor"), 1, 3));
         }

@@ -88,7 +88,7 @@ public class UIUtils {
     public static final Insets UI_PADDING = new Insets(4, 4, 4, 4);
     public static final JMenuItem MENU_ITEM_SEPARATOR = null;
     public static final Color COLOR_ERROR = new Color(0xa51d2d);
-    public static final Color COLOR_SUCCESS = new Color(0x5CB85C);
+    public static final Color COLOR_SUCCESS = ThemeUtils.getCurrentStyle().getSuccessColor();
 
     public static void addPanningToScrollPane(JScrollPane scrollPane) {
         JViewport viewport = scrollPane.getViewport();

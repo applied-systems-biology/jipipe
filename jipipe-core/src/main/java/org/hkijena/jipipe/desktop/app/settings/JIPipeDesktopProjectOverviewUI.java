@@ -672,6 +672,13 @@ public class JIPipeDesktopProjectOverviewUI extends JIPipeDesktopProjectWorkbenc
                 refreshAll();
             }));
         }
+        popupMenu.add(UIUtils.createMenuItem("Custom ...", "Enter a custom ID", JIPipe.RESOURCES.getIcon16("actions/edit.png"), () -> {
+            String newLicense = JOptionPane.showInputDialog(this, "Please enter a valid license ID:", "Set license");
+            if(!StringUtils.isNullOrEmpty(newLicense)) {
+                getProject().getMetadata().setLicense(newLicense);
+                refreshAll();
+            }
+        }));
 
         popupMenu.addSeparator();
         popupMenu.add(UIUtils.createMenuItem("Learn more ...", "Open https://choosealicense.com/", JIPipe.RESOURCES.getIcon16("actions/web-browser.png"), () -> {
@@ -1051,7 +1058,7 @@ public class JIPipeDesktopProjectOverviewUI extends JIPipeDesktopProjectWorkbenc
         JButton runProjectButton = new JButton("Run project", JIPipe.RESOURCES.getIcon16("actions/play.png"));
         runProjectButton.setOpaque(false);
         runProjectButton.setBackground(new Color(0, 0, 0, 0));
-        runProjectButton.setBorder(UIUtils.createButtonBorder(new Color(0x5CB85C)));
+        runProjectButton.setBorder(UIUtils.createButtonBorder(ThemeUtils.getCurrentStyle().getSuccessColor()));
         runProjectButton.setToolTipText("Runs the whole project");
         runProjectButton.addActionListener(e -> getDesktopProjectWorkbench().runWholeProject());
         toolBar.add(runProjectButton);

@@ -68,7 +68,7 @@ public class JIPipeDesktopNodeFinderDatasetListCellRenderer extends JPanel imple
 //        addButton.setFont(new Font(Font.DIALOG, Font.PLAIN, 12));
 //        addButton.setBackground(JIPipeNotificationAction.Style.Success.getBackground());
 //        addButton.setForeground(JIPipeNotificationAction.Style.Success.getText());
-        addButton.setBorder(BorderFactory.createCompoundBorder(new RoundedLineBorder(new Color(0x5CB85C), 1, 3),
+        addButton.setBorder(BorderFactory.createCompoundBorder(new RoundedLineBorder(ThemeUtils.getCurrentStyle().getSuccessColor(), 1, 3),
                 BorderFactory.createEmptyBorder(3, 3, 3, 3)));
         add(addButton, new GridBagConstraints(3, 0, 1, 1, 0, 0, GridBagConstraints.NORTHWEST, GridBagConstraints.BOTH, new Insets(2, 16, 2, 2), 0, 0));
     }

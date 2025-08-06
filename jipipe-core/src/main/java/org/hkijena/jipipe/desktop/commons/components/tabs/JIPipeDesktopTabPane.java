@@ -645,6 +645,20 @@ public class JIPipeDesktopTabPane extends JPanel implements Disposable {
     }
 
     /**
+     * Finds the tab for the content
+     *
+     * @param component the tab content
+     * @return the tab or null
+     */
+    public DocumentTab findTabFor(Component component) {
+        for (DocumentTab tab : getTabs()) {
+            if (tab.getContent() == component)
+                return tab;
+        }
+        return null;
+    }
+
+    /**
      * Switches to the provided tab
      *
      * @param tab the tab
