@@ -67,19 +67,19 @@ public abstract class JIPipeDesktopPublisherAssistantCondition extends JIPipeDes
         JIPipeDesktopPublisherAssistantConditionStatus status = getStatus();
         switch (status) {
             case Valid -> {
-                buttonPanel.setVisible(false);
+//                buttonPanel.setVisible(false);
                 titleLabel.setIcon(JIPipe.RESOURCES.getIcon32("emblems/vcs-normal.png"));
             }
             case Invalid -> {
-                if(buttonPanel.getComponentCount() > 1) {
-                    buttonPanel.setVisible(true);
-                }
+//                if(buttonPanel.getComponentCount() > 1) {
+//                    buttonPanel.setVisible(true);
+//                }
                 titleLabel.setIcon(JIPipe.RESOURCES.getIcon32("emblems/vcs-conflicting.png"));
             }
             case Warning -> {
-                if(buttonPanel.getComponentCount() > 1) {
-                    buttonPanel.setVisible(true);
-                }
+//                if(buttonPanel.getComponentCount() > 1) {
+//                    buttonPanel.setVisible(true);
+//                }
                 titleLabel.setIcon(JIPipe.RESOURCES.getIcon32("emblems/emblem-warning-orange.png"));
             }
         }

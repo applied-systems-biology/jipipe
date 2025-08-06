@@ -19,8 +19,7 @@ import org.hkijena.jipipe.desktop.JIPipeDesktop;
 import org.hkijena.jipipe.desktop.app.JIPipeDesktopProjectWorkbench;
 import org.hkijena.jipipe.desktop.app.publish.JIPipeDesktopPublisherAssistant;
 import org.hkijena.jipipe.plugins.parameters.library.markup.HTMLText;
-import org.hkijena.jipipe.plugins.publish.conditions.LicenseAssistantCondition;
-import org.hkijena.jipipe.plugins.publish.conditions.SavedProjectAssistantCondition;
+import org.hkijena.jipipe.plugins.publish.conditions.*;
 import org.hkijena.jipipe.plugins.settings.JIPipeFileChooserApplicationSettings;
 import org.hkijena.jipipe.utils.PathUtils;
 import org.hkijena.jipipe.utils.UIUtils;
@@ -35,6 +34,9 @@ public class ROCratePublisherAssistant extends JIPipeDesktopPublisherAssistant {
         super(workbench);
         addAssistantCondition(new SavedProjectAssistantCondition(this));
         addAssistantCondition(new LicenseAssistantCondition(this));
+        addAssistantCondition(new DescriptionAssistantCondition(this));
+        addAssistantCondition(new AuthorsAssistantCondition(this));
+        addAssistantCondition(new SimpleParametersAssistantCondition(this));
     }
 
     @Override

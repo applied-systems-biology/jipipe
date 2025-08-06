@@ -253,4 +253,10 @@ public class ParameterUtils {
         }
         return false;
     }
+
+    public static boolean isSimpleType(Class<?> fieldClass) {
+        return fieldClass == boolean.class || fieldClass == Boolean.class || fieldClass == int.class || fieldClass == Integer.class || fieldClass == long.class || fieldClass == Long.class ||
+                fieldClass == short.class || fieldClass == Short.class || fieldClass == float.class || fieldClass == Float.class || fieldClass == double.class || fieldClass == Double.class || fieldClass == byte.class || fieldClass == Byte.class ||
+                fieldClass == String.class || fieldClass == char.class || fieldClass == Character.class;
+    }
 }
