@@ -138,7 +138,7 @@
             </dependency>
             <dependency>
                 <groupId>org.w3id.cwl.sdk</groupId>
-                <artifactId>cwljava</artifactId>
+                <artifactId>jipipe-cwljava</artifactId>
                 <version>1.2.0</version>
             </dependency>
         </dependencies>
@@ -295,12 +295,14 @@
             <version>135.0.20</version>
         </dependency>
         <dependency>
-            <groupId>org.hkijena.jipipe.contrib</groupId>
+            <groupId>org.hkijena</groupId>
             <artifactId>jipipe-ro-crate-java</artifactId>
+            <version>2.1.0</version>
         </dependency>
         <dependency>
-            <groupId>org.w3id.cwl.sdk</groupId>
-            <artifactId>cwljava</artifactId>
+            <groupId>org.hkijena</groupId>
+            <artifactId>jipipe-cwljava</artifactId>
+            <version>1.2.0</version>
         </dependency>
     </dependencies>
 

@@ -136,6 +136,7 @@ public class CreateROCrateRun extends DefaultJIPipeRunnable {
             for (JIPipeOrganizationMetadata affiliation : author.getAffiliations()) {
                 entityBuilder.addIdProperty("affiliation", affiliation.getUniqueId());
             }
+            builder.addContextualEntity(entityBuilder.build());
         }
 
         return builder;
