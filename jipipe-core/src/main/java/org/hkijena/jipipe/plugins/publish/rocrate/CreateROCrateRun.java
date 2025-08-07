@@ -13,12 +13,12 @@
 
 package org.hkijena.jipipe.plugins.publish.rocrate;
 
-import edu.kit.datamanager.ro_crate.RoCrate;
-import edu.kit.datamanager.ro_crate.entities.contextual.JsonDescriptor;
-import edu.kit.datamanager.ro_crate.entities.contextual.OrganizationEntity;
-import edu.kit.datamanager.ro_crate.entities.contextual.PersonEntity;
-import edu.kit.datamanager.ro_crate.entities.data.FileEntity;
-import edu.kit.datamanager.ro_crate.writer.Writers;
+import org.hkijena.jipipe.contrib.ro_crate.RoCrate;
+import org.hkijena.jipipe.contrib.ro_crate.entities.contextual.JsonDescriptor;
+import org.hkijena.jipipe.contrib.ro_crate.entities.contextual.OrganizationEntity;
+import org.hkijena.jipipe.contrib.ro_crate.entities.contextual.PersonEntity;
+import org.hkijena.jipipe.contrib.ro_crate.entities.data.FileEntity;
+import org.hkijena.jipipe.contrib.ro_crate.writer.Writers;
 import org.hkijena.jipipe.JIPipe;
 import org.hkijena.jipipe.api.DefaultJIPipeRunnable;
 import org.hkijena.jipipe.api.metadata.JIPipeAuthorMetadata;
@@ -133,15 +133,9 @@ public class CreateROCrateRun extends DefaultJIPipeRunnable {
             if(!StringUtils.isNullOrEmpty(author.getContact())) {
                 entityBuilder.setEmail(author.getContact());
             }
-
-            Set<String> affiliationIds = new TreeSet<>();
             for (JIPipeOrganizationMetadata affiliation : author.getAffiliations()) {
-                affiliationIds.add(affiliation.getUniqueId());
+                entityBuilder.addIdProperty("affiliation", affiliation.getUniqueId());
             }
-            if (!affiliationIds.isEmpty()) {
-                entityBuilder.a("affiliation", affiliationIds.toArray(new String[0]));
-            }
-
         }
 
         return builder;

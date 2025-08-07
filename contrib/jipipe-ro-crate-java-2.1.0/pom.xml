@@ -11,8 +11,8 @@
     </parent>
 
     <groupId>org.hkijena.jipipe.contrib</groupId>
-    <artifactId>jipipe-ro-crate-library</artifactId>
-    <version>1.0.0</version>
+    <artifactId>jipipe-ro-crate-java</artifactId>
+    <version>2.1.0</version>
     <name>RO-Crate Library (JIPipe)</name>
     <description>A library for easy creation and modification of valid RO-Crates. Variant distributed with JIPipe, ensuring compatibility.</description>
 
@@ -97,8 +97,8 @@
     </ciManagement>
 
     <properties>
-        <maven.compiler.source>17</maven.compiler.source>
-        <maven.compiler.target>17</maven.compiler.target>
+        <maven.compiler.source>21</maven.compiler.source>
+        <maven.compiler.target>21</maven.compiler.target>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
         <jacoco.version>0.8.13</jacoco.version>
     </properties>
@@ -258,14 +258,8 @@
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-compiler-plugin</artifactId>
-                <version>3.11.0</version>
                 <configuration>
-                    <source>${maven.compiler.source}</source>
-                    <target>${maven.compiler.target}</target>
-                    <encoding>${project.build.sourceEncoding}</encoding>
-                    <compilerArgs>
-                        <arg>-Xlint:deprecation</arg>
-                    </compilerArgs>
+                    <release>21</release>
                 </configuration>
             </plugin>
 

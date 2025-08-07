@@ -6606,6 +6606,11 @@ public class RTokenMaker extends AbstractJFlexCTokenMaker {
         zzMarkedPos -= number;
     }
 
+    @Override
+    public int yystate() {
+        return 0;
+    }
+
     /**
      * Resumes scanning until the next regular expression is matched,
      * the end of input is encountered or an I/O-Error occurs.

@@ -132,9 +132,9 @@
                 </exclusions>
             </dependency>
             <dependency>
-                <groupId>edu.kit.datamanager</groupId>
-                <artifactId>ro-crate-java</artifactId>
-                <version>2.1.0-rc3</version>
+                <groupId>org.hkijena.jipipe.contrib</groupId>
+                <artifactId>jipipe-ro-crate-java</artifactId>
+                <version>2.1.0</version>
             </dependency>
             <dependency>
                 <groupId>org.w3id.cwl.sdk</groupId>
@@ -295,8 +295,8 @@
             <version>135.0.20</version>
         </dependency>
         <dependency>
-            <groupId>edu.kit.datamanager</groupId>
-            <artifactId>ro-crate-java</artifactId>
+            <groupId>org.hkijena.jipipe.contrib</groupId>
+            <artifactId>jipipe-ro-crate-java</artifactId>
         </dependency>
         <dependency>
             <groupId>org.w3id.cwl.sdk</groupId>
