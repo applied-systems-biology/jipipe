@@ -100,6 +100,9 @@
         <maven.compiler.target>21</maven.compiler.target>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
         <jacoco.version>0.8.13</jacoco.version>
+        <license.licenseName>apache-2.0</license.licenseName>
+        <license.copyrightOwners>N/A</license.copyrightOwners>
+        <license.projectName>JIPipe-IJ</license.projectName>
     </properties>
 
     <dependencyManagement>
@@ -168,16 +171,6 @@
                 <groupId>org.freemarker</groupId>
                 <artifactId>freemarker</artifactId>
                 <version>2.3.34</version>
-            </dependency>
-            <dependency>
-                <groupId>org.junit.jupiter</groupId>
-                <artifactId>junit-jupiter</artifactId>
-                <version>5.13.0</version>
-            </dependency>
-            <dependency>
-                <groupId>org.junit.platform</groupId>
-                <artifactId>junit-platform-launcher</artifactId>
-                <version>1.13.0</version>
             </dependency>
         </dependencies>
     </dependencyManagement>
@@ -253,7 +246,6 @@
 
     <build>
         <plugins>
-            <!-- Java Compiler -->
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-compiler-plugin</artifactId>
@@ -261,58 +253,14 @@
                     <release>21</release>
                 </configuration>
             </plugin>
-
-            <!-- Testing with JUnit 5 -->
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
-                <artifactId>maven-surefire-plugin</artifactId>
-                <version>3.2.5</version>
+                <artifactId>maven-enforcer-plugin</artifactId>
                 <configuration>
-                    <useModulePath>false</useModulePath>
+                    <!-- Caused by OpenCV -->
+                    <fail>false</fail>
                 </configuration>
             </plugin>
-
-            <!-- JaCoCo -->
-            <plugin>
-                <groupId>org.jacoco</groupId>
-                <artifactId>jacoco-maven-plugin</artifactId>
-                <version>${jacoco.version}</version>
-                <executions>
-                    <execution>
-                        <goals><goal>prepare-agent</goal></goals>
-                    </execution>
-                    <execution>
-                        <id>report</id>
-                        <phase>verify</phase>
-                        <goals><goal>report</goal></goals>
-                        <configuration>
-                            <outputDirectory>${project.build.directory}/jacoco-report</outputDirectory>
-                        </configuration>
-                    </execution>
-                </executions>
-            </plugin>
-
-            <!-- Maven JAR Signing & Publishing -->
-            <plugin>
-                <groupId>org.apache.maven.plugins</groupId>
-                <artifactId>maven-gpg-plugin</artifactId>
-                <version>3.1.0</version>
-                <executions>
-                    <execution>
-                        <id>sign-artifacts</id>
-                        <phase>verify</phase>
-                        <goals><goal>sign</goal></goals>
-                    </execution>
-                </executions>
-            </plugin>
-
-            <plugin>
-                <groupId>org.apache.maven.plugins</groupId>
-                <artifactId>maven-deploy-plugin</artifactId>
-                <version>3.1.1</version>
-            </plugin>
-
-            <!-- Properties file generation -->
             <plugin>
                 <groupId>org.codehaus.mojo</groupId>
                 <artifactId>buildnumber-maven-plugin</artifactId>
@@ -324,8 +272,6 @@
                     </execution>
                 </executions>
             </plugin>
-
-            <!-- Coveralls plugin would be part of CI configuration, not POM -->
         </plugins>
     </build>
 

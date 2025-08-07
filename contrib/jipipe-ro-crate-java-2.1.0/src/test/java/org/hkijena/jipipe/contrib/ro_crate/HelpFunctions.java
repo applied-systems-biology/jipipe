@@ -32,6 +32,7 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.nio.file.Files;
 import java.nio.file.Path;
+import java.util.Comparator;
 import java.util.Map;
 import java.util.function.Function;
 import java.util.stream.Collectors;
@@ -151,6 +152,11 @@ public class HelpFunctions {
 
 
         if (compareWithMe.size() != testMe.size()) {
+            System.err.println("File map size difference " +  compareWithMe.size() + " and " + testMe.size());
+            System.err.println("CompareWithMe:");
+            compareWithMe.keySet().stream().sorted(Comparator.naturalOrder()).forEach(System.err::println);
+            System.err.println("testMe:");
+            testMe.keySet().stream().sorted(Comparator.naturalOrder()).forEach(System.err::println);
             return false;
         }
         for (String filename : testMe.keySet()) {
@@ -159,9 +165,11 @@ public class HelpFunctions {
             // the same holds for the html file
             if (filename.equals("ro-crate-preview.html") || filename.equals("ro-crate-metadata.json")) {
                 if (!compareWithMe.containsKey(filename)) {
+                    System.err.println("Missing file: " + filename);
                     return false;
                 }
             } else if (!FileUtils.contentEqualsIgnoreEOL(testMe.get(filename), compareWithMe.get(filename), null)) {
+                System.err.println("Unequal file: " + filename);
                 return false;
             }
         }

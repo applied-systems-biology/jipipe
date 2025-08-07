@@ -103,7 +103,7 @@ public class IdentifierUtilsTest {
      * @param exampleEncoded is guaranteed to be encoded
      */
     @ParameterizedTest(name = "testIsValidUriWithEncodingExamples {0} and {1}")
-    @MethodSource("edu.kit.datamanager.ro_crate.special.IdentifierUtilsTest#encodingExamplesProvider")
+    @MethodSource("org.hkijena.jipipe.contrib.ro_crate.special.IdentifierUtilsTest#encodingExamplesProvider")
     void testIsValidUriWithEncodingExamples(String exampleUnencoded, String exampleEncoded) {
         assertTrue(IdentifierUtils.isValidUri(exampleEncoded));
         if (exampleUnencoded != exampleEncoded) {
@@ -183,7 +183,7 @@ public class IdentifierUtilsTest {
      * handled correctly.
      */
     @ParameterizedTest(name = "testEncodeWith {0} and {1}")
-    @MethodSource("edu.kit.datamanager.ro_crate.special.IdentifierUtilsTest#encodingExamplesProvider")
+    @MethodSource("org.hkijena.jipipe.contrib.ro_crate.special.IdentifierUtilsTest#encodingExamplesProvider")
     void testEncode(String exampleUnencoded, String exampleEncoded) {
         Optional<String> encoded = IdentifierUtils.encode(exampleUnencoded);
         assertEquals(exampleEncoded, encoded.get());
@@ -196,7 +196,7 @@ public class IdentifierUtilsTest {
      * Uses the same input examples, but in the reverse direction.
      */
     @ParameterizedTest(name = "testDecodeWith {0} and {1}")
-    @MethodSource("edu.kit.datamanager.ro_crate.special.IdentifierUtilsTest#decodingExamplesProvider")
+    @MethodSource("org.hkijena.jipipe.contrib.ro_crate.special.IdentifierUtilsTest#decodingExamplesProvider")
     void testDecode(String exampleUnencoded, String exampleEncoded) {
         Optional<String> decoded = IdentifierUtils.decode(exampleEncoded);
         assertEquals(exampleUnencoded, decoded.get());
