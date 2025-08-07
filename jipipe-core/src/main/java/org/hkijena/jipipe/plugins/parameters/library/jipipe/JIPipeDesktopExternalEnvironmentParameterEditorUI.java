@@ -66,9 +66,6 @@ public class JIPipeDesktopExternalEnvironmentParameterEditorUI extends JIPipeDes
 
         JButton configureButton = new JButton("Configure ...", JIPipe.RESOURCES.getIcon16("actions/configure.png"));
         configureButton.setBackground(getBackground());
-        configureButton.setBorder(BorderFactory.createCompoundBorder(BorderFactory.createMatteBorder(0, 1, 0, 0,
-                        UIManager.getColor("Separator.foreground")),
-                BorderFactory.createEmptyBorder(4, 3, 4, 3)));
         configureButton.setOpaque(true);
         configureButton.setToolTipText("Edit/select/install environment");
         UIUtils.addReloadablePopupMenuToButton(configureButton, configureMenu, this::reloadInstallMenu);

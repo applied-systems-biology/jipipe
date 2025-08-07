@@ -18,10 +18,11 @@ import org.hkijena.jipipe.JIPipe;
 import org.hkijena.jipipe.JIPipeDependency;
 import org.hkijena.jipipe.JIPipeJavaPlugin;
 import org.hkijena.jipipe.JIPipeMutableDependency;
-import org.hkijena.jipipe.api.JIPipeAuthorMetadata;
+import org.hkijena.jipipe.api.metadata.JIPipeAuthorMetadata;
 import org.hkijena.jipipe.api.JIPipeProgressInfo;
 import org.hkijena.jipipe.api.compat.ui.FileImageJDataImporterUI;
 import org.hkijena.jipipe.api.compat.ui.FolderImageJDataExporterUI;
+import org.hkijena.jipipe.api.metadata.JIPipeOrganizationMetadata;
 import org.hkijena.jipipe.api.parameters.JIPipeParameterArchetype;
 import org.hkijena.jipipe.api.project.JIPipeProject;
 import org.hkijena.jipipe.plugins.JIPipePrepackagedDefaultJavaPlugin;
@@ -55,8 +56,6 @@ import org.hkijena.jipipe.plugins.python.OptionalPythonEnvironment;
 import org.hkijena.jipipe.plugins.python.PythonEnvironment;
 import org.hkijena.jipipe.plugins.python.PythonPlugin;
 import org.hkijena.jipipe.utils.JIPipeResourceManager;
-import org.hkijena.jipipe.utils.UIUtils;
-import org.hkijena.jipipe.JIPipe;
 import org.scijava.Context;
 import org.scijava.plugin.Plugin;
 
@@ -113,42 +112,41 @@ public class CellposePlugin extends JIPipePrepackagedDefaultJavaPlugin {
 
     @Override
     public JIPipeAuthorMetadata.List getAcknowledgements() {
-        return new JIPipeAuthorMetadata.List(new JIPipeAuthorMetadata("",
-                "Carsen",
-                "Stringer",
-                new StringList("HHMI Janelia Research Campus, Ashburn, VA, USA"),
-                "",
-                "",
-                "",
-                true,
-                false),
-                new JIPipeAuthorMetadata("",
-                        "Tim",
-                        "Wang",
-                        new StringList("HHMI Janelia Research Campus, Ashburn, VA, USA"),
-                        "",
-                        "",
-                        "",
-                        false,
-                        false),
-                new JIPipeAuthorMetadata("",
-                        "Michalis",
-                        "Michaelos",
-                        new StringList("HHMI Janelia Research Campus, Ashburn, VA, USA"),
-                        "",
-                        "",
-                        "",
-                        false,
-                        false),
-                new JIPipeAuthorMetadata("",
-                        "Marius",
-                        "Pachitariu",
-                        new StringList("HHMI Janelia Research Campus, Ashburn, VA, USA"),
-                        "",
-                        "",
-                        "",
-                        false,
-                        true));
+        // Shared affiliation
+        final JIPipeOrganizationMetadata janelia = new JIPipeOrganizationMetadata.Builder()
+                .name("HHMI Janelia Research Campus, Ashburn, VA, USA")
+                .ror("https://ror.org/013sk6x84")
+                .website("https://www.janelia.org")
+                .build();
+
+        return new JIPipeAuthorMetadata.List(
+                new JIPipeAuthorMetadata.Builder()
+                        .firstName("Carsen")
+                        .lastName("Stringer")
+                        .affiliations(List.of(janelia))
+                        .firstAuthor(true)
+                        .build(),
+
+                new JIPipeAuthorMetadata.Builder()
+                        .firstName("Tim")
+                        .lastName("Wang")
+                        .affiliations(List.of(janelia))
+                        .build(),
+
+                new JIPipeAuthorMetadata.Builder()
+                        .firstName("Michalis")
+                        .lastName("Michaelos")
+                        .affiliations(List.of(janelia))
+                        .build(),
+
+                new JIPipeAuthorMetadata.Builder()
+                        .firstName("Marius")
+                        .lastName("Pachitariu")
+                        .affiliations(List.of(janelia))
+                        .correspondingAuthor(true)
+                        .build()
+        );
+
     }
 
     @Override

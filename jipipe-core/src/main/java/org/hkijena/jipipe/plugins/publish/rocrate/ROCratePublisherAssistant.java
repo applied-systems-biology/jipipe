@@ -37,6 +37,7 @@ public class ROCratePublisherAssistant extends JIPipeDesktopPublisherAssistant {
         addAssistantCondition(new DescriptionAssistantCondition(this));
         addAssistantCondition(new SummaryAssistantCondition(this));
         addAssistantCondition(new AuthorsAssistantCondition(this));
+        addAssistantCondition(new AuthorAffiliationsAssistantCondition(this));
         addAssistantCondition(new SimpleParametersAssistantCondition(this));
         addAssistantCondition(new SavedProjectAssistantCondition(this));
     }

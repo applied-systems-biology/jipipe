@@ -18,8 +18,9 @@ import org.hkijena.jipipe.JIPipe;
 import org.hkijena.jipipe.JIPipeDependency;
 import org.hkijena.jipipe.JIPipeJavaPlugin;
 import org.hkijena.jipipe.JIPipeMutableDependency;
-import org.hkijena.jipipe.api.JIPipeAuthorMetadata;
+import org.hkijena.jipipe.api.metadata.JIPipeAuthorMetadata;
 import org.hkijena.jipipe.api.JIPipeProgressInfo;
+import org.hkijena.jipipe.api.metadata.JIPipeOrganizationMetadata;
 import org.hkijena.jipipe.api.parameters.JIPipeParameterArchetype;
 import org.hkijena.jipipe.api.project.JIPipeProject;
 import org.hkijena.jipipe.api.validation.JIPipeValidationReport;
@@ -44,8 +45,6 @@ import org.hkijena.jipipe.plugins.parameters.library.markup.HTMLText;
 import org.hkijena.jipipe.plugins.parameters.library.primitives.list.StringList;
 import org.hkijena.jipipe.utils.JIPipeResourceManager;
 import org.hkijena.jipipe.utils.ReflectionUtils;
-import org.hkijena.jipipe.utils.UIUtils;
-import org.hkijena.jipipe.JIPipe;
 import org.scijava.Context;
 import org.scijava.plugin.Plugin;
 
@@ -139,34 +138,64 @@ public class OMEROPlugin extends JIPipePrepackagedDefaultJavaPlugin {
 
     @Override
     public JIPipeAuthorMetadata.List getAcknowledgements() {
-        return new JIPipeAuthorMetadata.List(new JIPipeAuthorMetadata("", "Chris", "Allan", new StringList("Wellcome Trust Centre for Gene Regulation and Expression, College of Life Sciences, University of Dundee, Dundee, Scotland, UK",
-                "Glencoe Software, Inc., Seattle, Washington, USA"), "", "", "", true, false),
-                new JIPipeAuthorMetadata("", "Jean-Marie", "Burel", new StringList("Wellcome Trust Centre for Gene Regulation and Expression, College of Life Sciences, University of Dundee, Dundee, Scotland, UK",
-                        "Glencoe Software, Inc., Seattle, Washington, USA"), "","", "", false, false),
-                new JIPipeAuthorMetadata("", "Josh", "Moore", new StringList("Glencoe Software, Inc., Seattle, Washington, USA"), "","", "", false, false),
-                new JIPipeAuthorMetadata("", "Colin", "Blackburn", new StringList("Wellcome Trust Centre for Gene Regulation and Expression, College of Life Sciences, University of Dundee, Dundee, Scotland, UK",
-                        "Glencoe Software, Inc., Seattle, Washington, USA"), "","", "", false, false),
-                new JIPipeAuthorMetadata("", "Melissa", "Linkert", new StringList("Glencoe Software, Inc., Seattle, Washington, USA"), "", "","", false, false),
-                new JIPipeAuthorMetadata("", "Scott", "Loynton", new StringList("Wellcome Trust Centre for Gene Regulation and Expression, College of Life Sciences, University of Dundee, Dundee, Scotland, UK"), "", "","", false, false),
-                new JIPipeAuthorMetadata("", "Donald", "MacDonald", new StringList("Wellcome Trust Centre for Gene Regulation and Expression, College of Life Sciences, University of Dundee, Dundee, Scotland, UK"), "", "","", false, false),
-                new JIPipeAuthorMetadata("", "William J.", "Moore", new StringList("Wellcome Trust Centre for Gene Regulation and Expression, College of Life Sciences, University of Dundee, Dundee, Scotland, UK"), "", "","", false, false),
-                new JIPipeAuthorMetadata("", "Carlos", "Neves", new StringList("Glencoe Software, Inc., Seattle, Washington, USA"), "", "","", false, false),
-                new JIPipeAuthorMetadata("", "Andrew", "Patterson", new StringList("Wellcome Trust Centre for Gene Regulation and Expression, College of Life Sciences, University of Dundee, Dundee, Scotland, UK"), "", "","", false, false),
-                new JIPipeAuthorMetadata("", "Michael", "Porter", new StringList("Wellcome Trust Centre for Gene Regulation and Expression, College of Life Sciences, University of Dundee, Dundee, Scotland, UK"), "", "","", false, false),
-                new JIPipeAuthorMetadata("", "Aleksandra", "Tarkowska", new StringList("Wellcome Trust Centre for Gene Regulation and Expression, College of Life Sciences, University of Dundee, Dundee, Scotland, UK"), "", "","", false, false),
-                new JIPipeAuthorMetadata("", "Brian", "Loranger", new StringList("Wellcome Trust Centre for Gene Regulation and Expression, College of Life Sciences, University of Dundee, Dundee, Scotland, UK"), "", "","", false, false),
-                new JIPipeAuthorMetadata("", "Jerome", "Avondo", new StringList("John Innes Centre Norwich Research Park, Norwich, UK"), "", "","", false, false),
-                new JIPipeAuthorMetadata("", "Ingvar", "Lagerstedt", new StringList("European Molecular B iology Laboratory– European Bioinformatics Institute, Wellcome Trust Genome Campus, Hinxton, Cambridge, UK"), "", "","", false, false),
-                new JIPipeAuthorMetadata("", "Luca", "Lianas", new StringList("CRS4, Pula, Italy"), "", "","", false, false),
-                new JIPipeAuthorMetadata("", "Simone", "Leo", new StringList("CRS4, Pula, Italy"), "", "","", false, false),
-                new JIPipeAuthorMetadata("", "Katherine", "Hands", new StringList("Wellcome Trust Centre for Gene Regulation and Expression, College of Life Sciences, University of Dundee, Dundee, Scotland, UK"), "", "","", false, false),
-                new JIPipeAuthorMetadata("", "Ron T.", "Hay", new StringList("Wellcome Trust Centre for Gene Regulation and Expression, College of Life Sciences, University of Dundee, Dundee, Scotland, UK"), "", "","", false, false),
-                new JIPipeAuthorMetadata("", "Ardan", "Patwardhan", new StringList("European Molecular B iology Laboratory– European Bioinformatics Institute, Wellcome Trust Genome Campus, Hinxton, Cambridge, UK"), "", "","", false, false),
-                new JIPipeAuthorMetadata("", "Christoph", "Best", new StringList("European Molecular B iology Laboratory– European Bioinformatics Institute, Wellcome Trust Genome Campus, Hinxton, Cambridge, UK"), "", "","", false, false),
-                new JIPipeAuthorMetadata("", "Gerard J.", "Kleywegt", new StringList("European Molecular B iology Laboratory– European Bioinformatics Institute, Wellcome Trust Genome Campus, Hinxton, Cambridge, UK"), "", "","", false, false),
-                new JIPipeAuthorMetadata("", "Gianluigi", "Zanetti", new StringList("CRS4, Pula, Italy"), "", "","", false, false),
-                new JIPipeAuthorMetadata("", "Jason R.", "Swedlow", new StringList("Wellcome Trust Centre for Gene Regulation and Expression, College of Life Sciences, University of Dundee, Dundee, Scotland, UK",
-                        "Glencoe Software, Inc., Seattle, Washington, USA"), "", "","", false, false));
+        // Shared affiliations
+        final JIPipeOrganizationMetadata dundee = new JIPipeOrganizationMetadata.Builder()
+                .name("Wellcome Trust Centre for Gene Regulation and Expression, College of Life Sciences, University of Dundee, Dundee, Scotland, UK")
+                .ror("https://ror.org/03h2bxq36")
+                .website("https://www.dundee.ac.uk")
+                .build();
+
+        final JIPipeOrganizationMetadata glencoe = new JIPipeOrganizationMetadata.Builder()
+                .name("Glencoe Software, Inc., Seattle, Washington, USA")
+                .website("https://glencoesoftware.com")
+                .build();
+
+        final JIPipeOrganizationMetadata jic = new JIPipeOrganizationMetadata.Builder()
+                .name("John Innes Centre Norwich Research Park, Norwich, UK")
+                .ror("https://ror.org/055zmrh94")
+                .website("https://jic.ac.uk")
+                .build();
+
+        final JIPipeOrganizationMetadata emblEbi = new JIPipeOrganizationMetadata.Builder()
+                .name("European Molecular Biology Laboratory– European Bioinformatics Institute, Wellcome Trust Genome Campus, Hinxton, Cambridge, UK")
+                .ror("https://ror.org/03mstc592")
+                .website("https://www.ebi.ac.uk")
+                .build();
+
+        final JIPipeOrganizationMetadata crs4 = new JIPipeOrganizationMetadata.Builder()
+                .name("CRS4, Pula, Italy")
+                .ror("https://ror.org/03jdxdk20")
+                .website("https://www.crs4.it")
+                .build();
+
+        // Author list
+        return new JIPipeAuthorMetadata.List(
+                new JIPipeAuthorMetadata.Builder().firstName("Chris").lastName("Allan").affiliations(List.of(dundee, glencoe)).firstAuthor(true).build(),
+                new JIPipeAuthorMetadata.Builder().firstName("Jean-Marie").lastName("Burel").affiliations(List.of(dundee, glencoe)).build(),
+                new JIPipeAuthorMetadata.Builder().firstName("Josh").lastName("Moore").affiliations(List.of(glencoe)).build(),
+                new JIPipeAuthorMetadata.Builder().firstName("Colin").lastName("Blackburn").affiliations(List.of(dundee, glencoe)).build(),
+                new JIPipeAuthorMetadata.Builder().firstName("Melissa").lastName("Linkert").affiliations(List.of(glencoe)).build(),
+                new JIPipeAuthorMetadata.Builder().firstName("Scott").lastName("Loynton").affiliations(List.of(dundee)).build(),
+                new JIPipeAuthorMetadata.Builder().firstName("Donald").lastName("MacDonald").affiliations(List.of(dundee)).build(),
+                new JIPipeAuthorMetadata.Builder().firstName("William J.").lastName("Moore").affiliations(List.of(dundee)).build(),
+                new JIPipeAuthorMetadata.Builder().firstName("Carlos").lastName("Neves").affiliations(List.of(glencoe)).build(),
+                new JIPipeAuthorMetadata.Builder().firstName("Andrew").lastName("Patterson").affiliations(List.of(dundee)).build(),
+                new JIPipeAuthorMetadata.Builder().firstName("Michael").lastName("Porter").affiliations(List.of(dundee)).build(),
+                new JIPipeAuthorMetadata.Builder().firstName("Aleksandra").lastName("Tarkowska").affiliations(List.of(dundee)).build(),
+                new JIPipeAuthorMetadata.Builder().firstName("Brian").lastName("Loranger").affiliations(List.of(dundee)).build(),
+                new JIPipeAuthorMetadata.Builder().firstName("Jerome").lastName("Avondo").affiliations(List.of(jic)).build(),
+                new JIPipeAuthorMetadata.Builder().firstName("Ingvar").lastName("Lagerstedt").affiliations(List.of(emblEbi)).build(),
+                new JIPipeAuthorMetadata.Builder().firstName("Luca").lastName("Lianas").affiliations(List.of(crs4)).build(),
+                new JIPipeAuthorMetadata.Builder().firstName("Simone").lastName("Leo").affiliations(List.of(crs4)).build(),
+                new JIPipeAuthorMetadata.Builder().firstName("Katherine").lastName("Hands").affiliations(List.of(dundee)).build(),
+                new JIPipeAuthorMetadata.Builder().firstName("Ron T.").lastName("Hay").affiliations(List.of(dundee)).build(),
+                new JIPipeAuthorMetadata.Builder().firstName("Ardan").lastName("Patwardhan").affiliations(List.of(emblEbi)).build(),
+                new JIPipeAuthorMetadata.Builder().firstName("Christoph").lastName("Best").affiliations(List.of(emblEbi)).build(),
+                new JIPipeAuthorMetadata.Builder().firstName("Gerard J.").lastName("Kleywegt").affiliations(List.of(emblEbi)).build(),
+                new JIPipeAuthorMetadata.Builder().firstName("Gianluigi").lastName("Zanetti").affiliations(List.of(crs4)).build(),
+                new JIPipeAuthorMetadata.Builder().firstName("Jason R.").lastName("Swedlow").affiliations(List.of(dundee, glencoe)).build()
+        );
+
     }
 
     @Override

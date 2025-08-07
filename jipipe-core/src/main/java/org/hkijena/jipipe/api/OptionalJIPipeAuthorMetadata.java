@@ -13,6 +13,7 @@
 
 package org.hkijena.jipipe.api;
 
+import org.hkijena.jipipe.api.metadata.JIPipeAuthorMetadata;
 import org.hkijena.jipipe.plugins.parameters.api.collections.ListParameter;
 import org.hkijena.jipipe.plugins.parameters.api.optional.OptionalParameter;
 

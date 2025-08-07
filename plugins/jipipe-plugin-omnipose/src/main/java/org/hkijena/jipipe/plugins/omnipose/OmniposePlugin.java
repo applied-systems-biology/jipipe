@@ -18,8 +18,9 @@ import org.hkijena.jipipe.JIPipe;
 import org.hkijena.jipipe.JIPipeDependency;
 import org.hkijena.jipipe.JIPipeJavaPlugin;
 import org.hkijena.jipipe.JIPipeMutableDependency;
-import org.hkijena.jipipe.api.JIPipeAuthorMetadata;
+import org.hkijena.jipipe.api.metadata.JIPipeAuthorMetadata;
 import org.hkijena.jipipe.api.JIPipeProgressInfo;
+import org.hkijena.jipipe.api.metadata.JIPipeOrganizationMetadata;
 import org.hkijena.jipipe.api.parameters.JIPipeParameterArchetype;
 import org.hkijena.jipipe.api.project.JIPipeProject;
 import org.hkijena.jipipe.plugins.JIPipePrepackagedDefaultJavaPlugin;
@@ -98,44 +99,61 @@ public class OmniposePlugin extends JIPipePrepackagedDefaultJavaPlugin {
 
     @Override
     public JIPipeAuthorMetadata.List getAcknowledgements() {
-        return new JIPipeAuthorMetadata.List(new JIPipeAuthorMetadata("",
-                "Kevin J.",
-                "Cutler",
-                new StringList("Department of Physics, University of Washington, Seattle, WA 98195, USA"),
-                "",
-                "",
-                "",
-                true,
-                false),
-                new JIPipeAuthorMetadata("",
-                        "Carsen",
-                        "Stringer",
-                        new StringList("HHMI Janelia Research Campus, Ashburn, VA, USA"),
-                        "",
-                        "",
-                        "",
-                        false,
-                        false),
-                new JIPipeAuthorMetadata("",
-                        "Paul A.",
-                        "Wiggins",
-                        new StringList("Department of Physics, University of Washington, Seattle, WA 98195, USA",
-                                "Department of Bioengineering, University of Washington, Seattle, WA 98195, USA"),
-                        "",
-                        "",
-                        "",
-                        false,
-                        false),
-                new JIPipeAuthorMetadata("",
-                        "Joseph D.",
-                        "Mougous",
-                        new StringList("Department of Microbiology, University of Washington, Seattle, WA 98109, USA",
-                                "Howard Hughes Medical Institute, University of Washington, Seattle, WA 98195, USA"),
-                        "",
-                        "",
-                        "",
-                        false,
-                        true));
+        // Shared affiliations
+        final JIPipeOrganizationMetadata uwPhysics = new JIPipeOrganizationMetadata.Builder()
+                .name("Department of Physics, University of Washington, Seattle, WA 98195, USA")
+                .ror("https://ror.org/00cvxb145")
+                .website("https://phys.washington.edu")
+                .build();
+
+        final JIPipeOrganizationMetadata janelia = new JIPipeOrganizationMetadata.Builder()
+                .name("HHMI Janelia Research Campus, Ashburn, VA, USA")
+                .ror("https://ror.org/013sk6x84")
+                .website("https://www.janelia.org")
+                .build();
+
+        final JIPipeOrganizationMetadata uwBioeng = new JIPipeOrganizationMetadata.Builder()
+                .name("Department of Bioengineering, University of Washington, Seattle, WA 98195, USA")
+                .website("https://bioe.uw.edu")
+                .build();
+
+        final JIPipeOrganizationMetadata uwMicrobio = new JIPipeOrganizationMetadata.Builder()
+                .name("Department of Microbiology, University of Washington, Seattle, WA 98109, USA")
+                .website("https://microbiology.washington.edu")
+                .build();
+
+        final JIPipeOrganizationMetadata hhmiUw = new JIPipeOrganizationMetadata.Builder()
+                .name("Howard Hughes Medical Institute, University of Washington, Seattle, WA 98195, USA")
+                .website("https://www.hhmi.org")
+                .build();
+
+        return new JIPipeAuthorMetadata.List(
+                new JIPipeAuthorMetadata.Builder()
+                        .firstName("Kevin J.")
+                        .lastName("Cutler")
+                        .affiliations(List.of(uwPhysics))
+                        .firstAuthor(true)
+                        .build(),
+
+                new JIPipeAuthorMetadata.Builder()
+                        .firstName("Carsen")
+                        .lastName("Stringer")
+                        .affiliations(List.of(janelia))
+                        .build(),
+
+                new JIPipeAuthorMetadata.Builder()
+                        .firstName("Paul A.")
+                        .lastName("Wiggins")
+                        .affiliations(List.of(uwPhysics, uwBioeng))
+                        .build(),
+
+                new JIPipeAuthorMetadata.Builder()
+                        .firstName("Joseph D.")
+                        .lastName("Mougous")
+                        .affiliations(List.of(uwMicrobio, hhmiUw))
+                        .correspondingAuthor(true)
+                        .build()
+        );
     }
 
     @Override

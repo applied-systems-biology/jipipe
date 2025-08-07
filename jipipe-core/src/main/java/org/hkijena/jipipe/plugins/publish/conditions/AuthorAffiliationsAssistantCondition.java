@@ -15,6 +15,7 @@ package org.hkijena.jipipe.plugins.publish.conditions;
 
 import org.hkijena.jipipe.JIPipe;
 import org.hkijena.jipipe.api.metadata.JIPipeAuthorMetadata;
+import org.hkijena.jipipe.api.metadata.JIPipeOrganizationMetadata;
 import org.hkijena.jipipe.desktop.app.publish.JIPipeDesktopPublisherAssistant;
 import org.hkijena.jipipe.desktop.app.publish.JIPipeDesktopPublisherAssistantCondition;
 import org.hkijena.jipipe.desktop.app.publish.JIPipeDesktopPublisherAssistantConditionStatus;
@@ -22,8 +23,8 @@ import org.hkijena.jipipe.plugins.parameters.library.markup.HTMLText;
 import org.hkijena.jipipe.utils.StringUtils;
 import org.hkijena.jipipe.utils.UIUtils;
 
-public class AuthorsAssistantCondition extends JIPipeDesktopPublisherAssistantCondition {
-    public AuthorsAssistantCondition(JIPipeDesktopPublisherAssistant assistant) {
+public class AuthorAffiliationsAssistantCondition extends JIPipeDesktopPublisherAssistantCondition {
+    public AuthorAffiliationsAssistantCondition(JIPipeDesktopPublisherAssistant assistant) {
         super(assistant);
         initialize();
     }
@@ -39,12 +40,14 @@ public class AuthorsAssistantCondition extends JIPipeDesktopPublisherAssistantCo
 
     @Override
     public JIPipeDesktopPublisherAssistantConditionStatus getStatus() {
-        if(getProject().getMetadata().getAuthors().isEmpty()) {
-            return JIPipeDesktopPublisherAssistantConditionStatus.Invalid;
-        }
         for (JIPipeAuthorMetadata author : getProject().getMetadata().getAuthors()) {
-            if(StringUtils.isNullOrEmpty(author.getOrcidUrl())) {
-                return JIPipeDesktopPublisherAssistantConditionStatus.Invalid;
+            for (JIPipeOrganizationMetadata affiliation : author.getAffiliations()) {
+                if(StringUtils.isNullOrEmpty(affiliation.getRorUrl()) && StringUtils.isNullOrEmpty(affiliation.getWebsite())) {
+                    return JIPipeDesktopPublisherAssistantConditionStatus.Invalid;
+                }
+                else if(StringUtils.isNullOrEmpty(affiliation.getRorUrl())) {
+                    return JIPipeDesktopPublisherAssistantConditionStatus.Warning;
+                }
             }
         }
         return JIPipeDesktopPublisherAssistantConditionStatus.Valid;
@@ -53,24 +56,24 @@ public class AuthorsAssistantCondition extends JIPipeDesktopPublisherAssistantCo
     @Override
     public String getAssistantTitle(JIPipeDesktopPublisherAssistantConditionStatus status) {
         if (status == JIPipeDesktopPublisherAssistantConditionStatus.Valid) {
-            return "Authors are valid";
-        } else if(getProject().getMetadata().getAuthors().isEmpty()) {
-            return "No authors provided";
+            return "Author affiliations are valid";
+        } else if(status == JIPipeDesktopPublisherAssistantConditionStatus.Warning) {
+            return "Author affiliations should have a ROR";
         }
         else {
-            return "Authors require valid ORCID";
+            return "Author affiliations require a ROR or website";
         }
     }
 
     @Override
     public HTMLText getAssistantDescription(JIPipeDesktopPublisherAssistantConditionStatus status) {
         if (status == JIPipeDesktopPublisherAssistantConditionStatus.Valid) {
-            return new HTMLText("Project authors will be attached to the RO-Crate metadata");
+            return new HTMLText("Project authors and affiliated organizations will be attached to the RO-Crate metadata");
         } else if(getProject().getMetadata().getAuthors().isEmpty()) {
-            return new HTMLText("You have to at least provide one author with associated ORCID");
+            return new HTMLText("We recommend that affiliations are provided with a ROR identifier (see https://ror.org/)");
         }
         else {
-            return new HTMLText("Authors need to be uniquely identified by their ORCID. Please add the ORCID ID or URL into the author's metadata field.");
+            return new HTMLText("Affiliations should at least have an organization website or preferably a ROR (see https://ror.org/)");
         }
     }
 }

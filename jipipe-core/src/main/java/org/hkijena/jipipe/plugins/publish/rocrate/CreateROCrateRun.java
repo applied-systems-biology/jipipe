@@ -15,12 +15,14 @@ package org.hkijena.jipipe.plugins.publish.rocrate;
 
 import edu.kit.datamanager.ro_crate.RoCrate;
 import edu.kit.datamanager.ro_crate.entities.contextual.JsonDescriptor;
+import edu.kit.datamanager.ro_crate.entities.contextual.OrganizationEntity;
 import edu.kit.datamanager.ro_crate.entities.contextual.PersonEntity;
 import edu.kit.datamanager.ro_crate.entities.data.FileEntity;
 import edu.kit.datamanager.ro_crate.writer.Writers;
 import org.hkijena.jipipe.JIPipe;
 import org.hkijena.jipipe.api.DefaultJIPipeRunnable;
-import org.hkijena.jipipe.api.JIPipeAuthorMetadata;
+import org.hkijena.jipipe.api.metadata.JIPipeAuthorMetadata;
+import org.hkijena.jipipe.api.metadata.JIPipeOrganizationMetadata;
 import org.hkijena.jipipe.api.project.JIPipeProject;
 import org.hkijena.jipipe.plugins.pipelinerender.RenderPipelineRun;
 import org.hkijena.jipipe.plugins.pipelinerender.RenderPipelineRunSettings;
@@ -34,6 +36,9 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
+import java.util.HashSet;
+import java.util.Set;
+import java.util.TreeSet;
 
 public class CreateROCrateRun extends DefaultJIPipeRunnable {
 
@@ -64,19 +69,15 @@ public class CreateROCrateRun extends DefaultJIPipeRunnable {
         createReadme(tmpPath, builder);
         createDiagram(tmpPath, builder);
 
-        // Compress the directory
-//        try {
-////            ArchiveUtils.compressDirectoryToZip(tmpPath, "", roCrateFile, getProgressInfo().resolve("Compress"));
-//
-//        } catch (IOException e) {
-//            throw new RuntimeException(e);
-//        }
+        // Compress the container
         RoCrate crate = builder.build();
         try {
             Writers.newZipPathWriter().withAutomaticProvenance(null).save(crate, roCrateFile.toAbsolutePath().toString());
         } catch (IOException e) {
             throw new RuntimeException(e);
         }
+
+        // Remove tmp directory
         PathUtils.deleteDirectoryRecursively(tmpPath, getProgressInfo().resolve("Cleanup"));
     }
 
@@ -106,6 +107,16 @@ public class CreateROCrateRun extends DefaultJIPipeRunnable {
                 getProject().getMetadata().getLicense());
         builder.addContextualEntity(new JsonDescriptor.Builder().addConformsTo("https://w3id.org/workflowhub/workflow-ro-crate/1.0").build());
 
+        // Add organizations
+        for (JIPipeAuthorMetadata author : project.getMetadata().getAuthors()) {
+            for (JIPipeOrganizationMetadata affiliation : author.getAffiliations()) {
+                OrganizationEntity.OrganizationEntityBuilder organizationEntityBuilder = new OrganizationEntity.OrganizationEntityBuilder();
+                organizationEntityBuilder.setId(affiliation.getUniqueId());
+                organizationEntityBuilder.addProperty("name", affiliation.getName());
+                builder.addContextualEntity(organizationEntityBuilder.build());
+            }
+        }
+
         // Add authors
         for (JIPipeAuthorMetadata author : project.getMetadata().getAuthors()) {
             PersonEntity.PersonEntityBuilder entityBuilder = new PersonEntity.PersonEntityBuilder();
@@ -116,18 +127,20 @@ public class CreateROCrateRun extends DefaultJIPipeRunnable {
             if(!StringUtils.isNullOrEmpty(author.getLastName())) {
                 entityBuilder.setFamilyName(author.getLastName());
             }
-            if(!StringUtils.isNullOrEmpty(author.getContact())) {
-                if(author.getContact().contains("@")) {
-                    entityBuilder.setEmail(author.getContact());
-                }
-                else {
-                    entityBuilder.setContactPoint(author.getContact());
-                }
+            if(!StringUtils.isNullOrEmpty(author.getEmail())) {
+                entityBuilder.setEmail(author.getEmail());
             }
-            // TODO: Better author system
-//            for (String affiliation : author.getAffiliations()) {
-//                entityBuilder.addProperty()
-//            }
+            if(!StringUtils.isNullOrEmpty(author.getContact())) {
+                entityBuilder.setEmail(author.getContact());
+            }
+
+            Set<String> affiliationIds = new TreeSet<>();
+            for (JIPipeOrganizationMetadata affiliation : author.getAffiliations()) {
+                affiliationIds.add(affiliation.getUniqueId());
+            }
+            if (!affiliationIds.isEmpty()) {
+                entityBuilder.a("affiliation", affiliationIds.toArray(new String[0]));
+            }
 
         }
 

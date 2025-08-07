@@ -17,9 +17,10 @@ import net.haesleinhuepf.clij.macro.CLIJMacroPlugin;
 import net.imagej.updater.UpdateSite;
 import org.apache.commons.compress.utils.Sets;
 import org.hkijena.jipipe.*;
-import org.hkijena.jipipe.api.JIPipeAuthorMetadata;
+import org.hkijena.jipipe.api.metadata.JIPipeAuthorMetadata;
 import org.hkijena.jipipe.api.JIPipeProgressInfo;
 import org.hkijena.jipipe.api.compat.DefaultImageJDataExporterUI;
+import org.hkijena.jipipe.api.metadata.JIPipeOrganizationMetadata;
 import org.hkijena.jipipe.api.parameters.JIPipeParameterArchetype;
 import org.hkijena.jipipe.plugins.JIPipePrepackagedDefaultJavaPlugin;
 import org.hkijena.jipipe.plugins.clij2.algorithms.Clij2ExecuteKernelIterating;
@@ -42,7 +43,6 @@ import org.hkijena.jipipe.plugins.parameters.library.jipipe.PluginCategoriesEnum
 import org.hkijena.jipipe.plugins.parameters.library.markup.HTMLText;
 import org.hkijena.jipipe.plugins.parameters.library.primitives.list.StringList;
 import org.hkijena.jipipe.utils.JIPipeResourceManager;
-import org.hkijena.jipipe.utils.UIUtils;
 import org.hkijena.jipipe.JIPipe;
 import org.scijava.Context;
 import org.scijava.plugin.Plugin;
@@ -63,9 +63,7 @@ public class CLIJPlugin extends JIPipePrepackagedDefaultJavaPlugin {
     /**
      * Dependency instance to be used for creating the set of dependencies
      */
-    public static final JIPipeDependency AS_DEPENDENCY = new JIPipeMutableDependency("org.hkijena.jipipe:clij2-integration",
-            JIPipe.getJIPipeVersion(),
-            "CLIJ2 integration");
+    public static final JIPipeDependency AS_DEPENDENCY = new JIPipeMutableDependency("org.hkijena.jipipe:clij2-integration", JIPipe.getJIPipeVersion(), "CLIJ2 integration");
 
     public static final JIPipeResourceManager RESOURCES = new JIPipeResourceManager(CLIJPlugin.class, "org/hkijena/jipipe/plugins/clij2");
 
@@ -91,114 +89,46 @@ public class CLIJPlugin extends JIPipePrepackagedDefaultJavaPlugin {
 
     @Override
     public JIPipeAuthorMetadata.List getAcknowledgements() {
-        return new JIPipeAuthorMetadata.List(new JIPipeAuthorMetadata("",
-                "Robert",
-                "Haase",
-                new StringList("Max Planck Institute for Molecular Cell Biology and Genetics, Dresden, Germany", "Center for Systems Biology Dresden, Dresden, Germany"),
-                "",
-                "",
-                "",
-                true,
-                true),
-                new JIPipeAuthorMetadata("",
-                        "Loic A.",
-                        "Royer",
-                        new StringList("Chan Zuckerberg Biohub, San Francisco, CA, USA"),
-                        "",
-                        "",
-                        "",
-                        true,
-                        true),
-                new JIPipeAuthorMetadata("",
-                        "Peter",
-                        "Steinbach",
-                        new StringList("Helmholtz-Zentrum Dresden-Rossendorf, Dresden, Germany",
-                                "Max Planck Institute for Molecular Cell Biology and Genetics, Dresden, Germany", "Center for Systems Biology Dresden, Dresden, Germany"),
-                        "",
-                        "",
-                        "",
-                        false,
-                        false),
-                new JIPipeAuthorMetadata("",
-                        "Deborah",
-                        "Schmidt",
-                        new StringList("Max Planck Institute for Molecular Cell Biology and Genetics, Dresden, Germany", "Center for Systems Biology Dresden, Dresden, Germany"),
-                        "",
-                        "",
-                        "",
-                        false,
-                        false),
-                new JIPipeAuthorMetadata("",
-                        "Alexandr",
-                        "Dibrov",
-                        new StringList("Max Planck Institute for Molecular Cell Biology and Genetics, Dresden, Germany", "Center for Systems Biology Dresden, Dresden, Germany"),
-                        "",
-                        "",
-                        "",
-                        false,
-                        false),
-                new JIPipeAuthorMetadata("",
-                        "Uwe",
-                        "Schmidt",
-                        new StringList("Max Planck Institute for Molecular Cell Biology and Genetics, Dresden, Germany", "Center for Systems Biology Dresden, Dresden, Germany"),
-                        "",
-                        "",
-                        "",
-                        false,
-                        false),
-                new JIPipeAuthorMetadata("",
-                        "Martin",
-                        "Weigert",
-                        new StringList("Max Planck Institute for Molecular Cell Biology and Genetics, Dresden, Germany", "Center for Systems Biology Dresden, Dresden, Germany"),
-                        "",
-                        "",
-                        "",
-                        false,
-                        false),
-                new JIPipeAuthorMetadata("",
-                        "Nicola",
-                        "Maghelli",
-                        new StringList("Max Planck Institute for Molecular Cell Biology and Genetics, Dresden, Germany", "Center for Systems Biology Dresden, Dresden, Germany"),
-                        "",
-                        "",
-                        "",
-                        false,
-                        false),
-                new JIPipeAuthorMetadata("",
-                        "Pavel",
-                        "Tomancak",
-                        new StringList("Max Planck Institute for Molecular Cell Biology and Genetics, Dresden, Germany", "Center for Systems Biology Dresden, Dresden, Germany",
-                                "IT4Innovations, VŠB - Technical University of Ostrava, Ostrava-Poruba, Czech Republic"),
-                        "",
-                        "",
-                        "",
-                        false,
-                        false),
-                new JIPipeAuthorMetadata("",
-                        "Florian",
-                        "Jug",
-                        new StringList("Max Planck Institute for Molecular Cell Biology and Genetics, Dresden, Germany", "Center for Systems Biology Dresden, Dresden, Germany"),
-                        "",
-                        "",
-                        "",
-                        false,
-                        false),
-                new JIPipeAuthorMetadata("",
-                        "Eugene W.",
-                        "Myers",
-                        new StringList("Max Planck Institute for Molecular Cell Biology and Genetics, Dresden, Germany", "Center for Systems Biology Dresden, Dresden, Germany"),
-                        "",
-                        "",
-                        "",
-                        false,
-                        false));
+        // Shared affiliations
+        final JIPipeOrganizationMetadata mpiCbg = new JIPipeOrganizationMetadata.Builder().name("Max Planck Institute for Molecular Cell Biology and Genetics, Dresden, Germany").ror("https://ror.org/05b8d3w18").website("https://www.mpi-cbg.de").build();
+
+        final JIPipeOrganizationMetadata csbd = new JIPipeOrganizationMetadata.Builder().name("Center for Systems Biology Dresden, Dresden, Germany").ror("https://ror.org/05hrn3e05").website("https://www.csbdresden.de").build();
+
+        final JIPipeOrganizationMetadata czBiohub = new JIPipeOrganizationMetadata.Builder().name("Chan Zuckerberg Biohub, San Francisco, CA, USA").ror("https://ror.org/00knt4f32").website("https://www.czbiohub.org").build();
+
+        final JIPipeOrganizationMetadata hzdr = new JIPipeOrganizationMetadata.Builder().name("Helmholtz-Zentrum Dresden-Rossendorf, Dresden, Germany").ror("https://ror.org/01zy2cs03").website("https://www.hzdr.de").build();
+
+        final JIPipeOrganizationMetadata it4innovations = new JIPipeOrganizationMetadata.Builder().name("IT4Innovations, VŠB - Technical University of Ostrava, Ostrava-Poruba, Czech Republic").ror("https://ror.org/05x8mcb75").website("https://www.it4i.cz").build();
+
+        // Author list
+        return new JIPipeAuthorMetadata.List(new JIPipeAuthorMetadata.Builder().firstName("Robert").lastName("Haase").affiliations(List.of(mpiCbg, csbd)).firstAuthor(true).correspondingAuthor(true).build(),
+
+                new JIPipeAuthorMetadata.Builder().firstName("Loic A.").lastName("Royer").affiliations(List.of(czBiohub)).firstAuthor(true).correspondingAuthor(true).build(),
+
+                new JIPipeAuthorMetadata.Builder().firstName("Peter").lastName("Steinbach").affiliations(List.of(hzdr, mpiCbg, csbd)).build(),
+
+                new JIPipeAuthorMetadata.Builder().firstName("Deborah").lastName("Schmidt").affiliations(List.of(mpiCbg, csbd)).build(),
+
+                new JIPipeAuthorMetadata.Builder().firstName("Alexandr").lastName("Dibrov").affiliations(List.of(mpiCbg, csbd)).build(),
+
+                new JIPipeAuthorMetadata.Builder().firstName("Uwe").lastName("Schmidt").affiliations(List.of(mpiCbg, csbd)).build(),
+
+                new JIPipeAuthorMetadata.Builder().firstName("Martin").lastName("Weigert").affiliations(List.of(mpiCbg, csbd)).build(),
+
+                new JIPipeAuthorMetadata.Builder().firstName("Nicola").lastName("Maghelli").affiliations(List.of(mpiCbg, csbd)).build(),
+
+                new JIPipeAuthorMetadata.Builder().firstName("Pavel").lastName("Tomancak").affiliations(List.of(mpiCbg, csbd, it4innovations)).build(),
+
+                new JIPipeAuthorMetadata.Builder().firstName("Florian").lastName("Jug").affiliations(List.of(mpiCbg, csbd)).build(),
+
+                new JIPipeAuthorMetadata.Builder().firstName("Eugene W.").lastName("Myers").affiliations(List.of(mpiCbg, csbd)).build());
+
     }
 
     @Override
     public StringList getDependencyCitations() {
         StringList result = new StringList();
-        result.add("Robert Haase, Loic Alain Royer, Peter Steinbach, Deborah Schmidt, Alexandr Dibrov, Uwe Schmidt, Martin Weigert, " +
-                "Nicola Maghelli, Pavel Tomancak, Florian Jug, Eugene W Myers. CLIJ: GPU-accelerated image processing for everyone. Nat Methods 17, 5-6 (2020)");
+        result.add("Robert Haase, Loic Alain Royer, Peter Steinbach, Deborah Schmidt, Alexandr Dibrov, Uwe Schmidt, Martin Weigert, " + "Nicola Maghelli, Pavel Tomancak, Florian Jug, Eugene W Myers. CLIJ: GPU-accelerated image processing for everyone. Nat Methods 17, 5-6 (2020)");
         return result;
     }
 
@@ -214,10 +144,7 @@ public class CLIJPlugin extends JIPipePrepackagedDefaultJavaPlugin {
 
     @Override
     public List<JIPipeImageJUpdateSiteDependency> getImageJUpdateSiteDependencies() {
-        return Arrays.asList(
-                new JIPipeImageJUpdateSiteDependency(new UpdateSite("clij", "https://sites.imagej.net/clij/", "", "", "", "", 0)),
-                new JIPipeImageJUpdateSiteDependency(new UpdateSite("clij2", "https://sites.imagej.net/clij2/", "", "", "", "", 0))
-        );
+        return Arrays.asList(new JIPipeImageJUpdateSiteDependency(new UpdateSite("clij", "https://sites.imagej.net/clij/", "", "", "", "", 0)), new JIPipeImageJUpdateSiteDependency(new UpdateSite("clij2", "https://sites.imagej.net/clij2/", "", "", "", "", 0)));
     }
 
     @Override
@@ -227,16 +154,8 @@ public class CLIJPlugin extends JIPipePrepackagedDefaultJavaPlugin {
 
     @Override
     public void register(JIPipe jiPipe, Context context, JIPipeProgressInfo progressInfo) {
-        registerParameterType("clij2:opencl-kernel",
-                OpenCLKernelScript.class,
-                JIPipeParameterArchetype.Value, null,
-                null,
-                "OpenCL Kernel",
-                "A OpenCL kernel",
-                null);
-        registerDatatype("clij2-image",
-                CLIJImageData.class,
-                JIPipe.RESOURCES.getIcon16URL("data-types/clij2-image.png"));
+        registerParameterType("clij2:opencl-kernel", OpenCLKernelScript.class, JIPipeParameterArchetype.Value, null, null, "OpenCL Kernel", "A OpenCL kernel", null);
+        registerDatatype("clij2-image", CLIJImageData.class, JIPipe.RESOURCES.getIcon16URL("data-types/clij2-image.png"));
         registerDefaultDataTypeViewer(CLIJImageData.class, CLIJImageDataViewer.class);
         registerDatatypeConversion(new CLIJImageToImagePlusDataConverter(ImagePlusData.class));
         registerDatatypeConversion(new ImagePlusDataToCLIJImageDataConverter());

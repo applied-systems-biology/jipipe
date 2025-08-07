@@ -19,11 +19,12 @@ import org.hkijena.jipipe.JIPipe;
 import org.hkijena.jipipe.JIPipeDependency;
 import org.hkijena.jipipe.JIPipeJavaPlugin;
 import org.hkijena.jipipe.JIPipeMutableDependency;
-import org.hkijena.jipipe.api.JIPipeAuthorMetadata;
+import org.hkijena.jipipe.api.metadata.JIPipeAuthorMetadata;
 import org.hkijena.jipipe.api.JIPipeProgressInfo;
 import org.hkijena.jipipe.api.compat.DefaultImageJDataExporterUI;
 import org.hkijena.jipipe.api.compat.DefaultImageJDataImporterUI;
 import org.hkijena.jipipe.api.data.JIPipeData;
+import org.hkijena.jipipe.api.metadata.JIPipeOrganizationMetadata;
 import org.hkijena.jipipe.api.registries.JIPipeDatatypeRegistry;
 import org.hkijena.jipipe.plugins.JIPipePrepackagedDefaultJavaPlugin;
 import org.hkijena.jipipe.plugins.core.CorePlugin;
@@ -105,9 +106,6 @@ import org.hkijena.jipipe.plugins.tables.datatypes.ResultsTableData;
 import org.hkijena.jipipe.plugins.tables.display.CacheAwareOpenResultsTableInJIPipeDataDisplayOperation;
 import org.hkijena.jipipe.plugins.tables.display.OpenResultsTableInImageJDataDisplayOperation;
 import org.hkijena.jipipe.plugins.tables.display.OpenResultsTableInJIPipeTabDataDisplayOperation;
-import org.hkijena.jipipe.utils.ResourceUtils;
-import org.hkijena.jipipe.utils.UIUtils;
-import org.hkijena.jipipe.JIPipe;
 import org.scijava.Context;
 import org.scijava.plugin.Plugin;
 
@@ -157,222 +155,195 @@ public class ImageJDataTypesPlugin extends JIPipePrepackagedDefaultJavaPlugin {
 
     @Override
     public JIPipeAuthorMetadata.List getAcknowledgements() {
-        return new JIPipeAuthorMetadata.List(new JIPipeAuthorMetadata("",
-                "Curtis T.",
-                "Rueden",
-                new StringList("Laboratory for Optical and Computational Instrumentation, University of Wisconsin at Madison, Madison, Wisconsin, USA"),
-                "",
-                "",
-                "",
-                true,
-                false),
-                new JIPipeAuthorMetadata("",
-                        "Johannes",
-                        "Schindelin",
-                        new StringList("Laboratory for Optical and Computational Instrumentation, University of Wisconsin at Madison, Madison, Wisconsin, USA",
-                                "Morgridge Institute for Research, Madison, Wisconsin, USA"),
-                        "",
-                        "",
-                        "",
-                        false,
-                        false),
-                new JIPipeAuthorMetadata("",
-                        "Mark C.",
-                        "Hiner",
-                        new StringList("Laboratory for Optical and Computational Instrumentation, University of Wisconsin at Madison, Madison, Wisconsin, USA"),
-                        "",
-                        "",
-                        "",
-                        false,
-                        false),
-                new JIPipeAuthorMetadata("",
-                        "Barry E.",
-                        "DeZonia",
-                        new StringList("Laboratory for Optical and Computational Instrumentation, University of Wisconsin at Madison, Madison, Wisconsin, USA"),
-                        "",
-                        "",
-                        "",
-                        false,
-                        false),
-                new JIPipeAuthorMetadata("",
-                        "Alison E.",
-                        "Walter",
-                        new StringList("Laboratory for Optical and Computational Instrumentation, University of Wisconsin at Madison, Madison, Wisconsin, USA",
-                                "Morgridge Institute for Research, Madison, Wisconsin, USA"),
-                        "",
-                        "",
-                        "",
-                        false,
-                        false),
-                new JIPipeAuthorMetadata("",
-                        "Ellen T.",
-                        "Arena",
-                        new StringList("Laboratory for Optical and Computational Instrumentation, University of Wisconsin at Madison, Madison, Wisconsin, USA",
-                                "Morgridge Institute for Research, Madison, Wisconsin, USA"),
-                        "",
-                        "",
-                        "",
-                        false,
-                        false),
-                new JIPipeAuthorMetadata("",
-                        "Kevin W.",
-                        "Eliceiri",
-                        new StringList("Laboratory for Optical and Computational Instrumentation, University of Wisconsin at Madison, Madison, Wisconsin, USA",
-                                "Morgridge Institute for Research, Madison, Wisconsin, USA"),
-                        "",
-                        "",
-                        "",
-                        false,
-                        true),
-                new JIPipeAuthorMetadata("",
-                        "Caroline A.",
-                        "Schneider",
-                        new StringList("Laboratory for Optical and Computational Instrumentation, University of Wisconsin at Madison, Madison, Wisconsin, USA"),
-                        "",
-                        "",
-                        "",
-                        true,
-                        false),
-                new JIPipeAuthorMetadata("",
-                        "Wayne S.",
-                        "Rasband",
-                        new StringList("Section on Instrumentation, US National Institutes of Health, Bethesda, Maryland, USA"),
-                        "",
-                        "",
-                        "",
-                        false,
-                        false),
-                new JIPipeAuthorMetadata("",
-                        "Melissa",
-                        "Linkert",
-                        new StringList("Laboratory for Optical and Computational Instrumentation, Department of Molecular Biology",
-                                "Department of Biomedical Engineering, Graduate School, University of Wisconsin at Madison, Madison, WI 53711",
-                                "Glencoe Software, Inc., Seattle, WA 98101"),
-                        "",
-                        "",
-                        "",
-                        true,
-                        false),
-                new JIPipeAuthorMetadata("",
-                        "Chris",
-                        "Allan",
-                        new StringList("Wellcome Trust Centre for Gene Regulation and Expression, College of Life Sciences, University of Dundee, Dundee DD1 5EH, Scotland, UK",
-                                "Glencoe Software, Inc., Seattle, WA 98101"),
-                        "",
-                        "",
-                        "",
-                        false,
-                        false),
-                new JIPipeAuthorMetadata("",
-                        "Jean-Marie",
-                        "Burel",
-                        new StringList("Wellcome Trust Centre for Gene Regulation and Expression, College of Life Sciences, University of Dundee, Dundee DD1 5EH, Scotland, UK"),
-                        "",
-                        "",
-                        "",
-                        false,
-                        false),
-                new JIPipeAuthorMetadata("",
-                        "Will",
-                        "Moore",
-                        new StringList("Wellcome Trust Centre for Gene Regulation and Expression, College of Life Sciences, University of Dundee, Dundee DD1 5EH, Scotland, UK"),
-                        "",
-                        "",
-                        "",
-                        false,
-                        false),
-                new JIPipeAuthorMetadata("",
-                        "Andrew",
-                        "Patterson",
-                        new StringList("Wellcome Trust Centre for Gene Regulation and Expression, College of Life Sciences, University of Dundee, Dundee DD1 5EH, Scotland, UK"),
-                        "",
-                        "",
-                        "",
-                        false,
-                        false),
-                new JIPipeAuthorMetadata("",
-                        "Brian",
-                        "Loranger",
-                        new StringList("Wellcome Trust Centre for Gene Regulation and Expression, College of Life Sciences, University of Dundee, Dundee DD1 5EH, Scotland, UK"),
-                        "",
-                        "",
-                        "",
-                        false,
-                        false),
-                new JIPipeAuthorMetadata("",
-                        "Josh",
-                        "Moore",
-                        new StringList("Glencoe Software, Inc., Seattle, WA 98101"),
-                        "",
-                        "",
-                        "",
-                        false,
-                        false),
-                new JIPipeAuthorMetadata("",
-                        "Carlos",
-                        "Neves",
-                        new StringList("Glencoe Software, Inc., Seattle, WA 98101"),
-                        "",
-                        "",
-                        "",
-                        false,
-                        false),
-                new JIPipeAuthorMetadata("",
-                        "Donald",
-                        "MacDonald",
-                        new StringList("Wellcome Trust Centre for Gene Regulation and Expression, College of Life Sciences, University of Dundee, Dundee DD1 5EH, Scotland, UK"),
-                        "",
-                        "",
-                        "",
-                        false,
-                        false),
-                new JIPipeAuthorMetadata("",
-                        "Aleksandra",
-                        "Tarkowska",
-                        new StringList("Wellcome Trust Centre for Gene Regulation and Expression, College of Life Sciences, University of Dundee, Dundee DD1 5EH, Scotland, UK"),
-                        "",
-                        "",
-                        "",
-                        false,
-                        false),
-                new JIPipeAuthorMetadata("",
-                        "Caitlin",
-                        "Sticco",
-                        new StringList("Laboratory for Optical and Computational Instrumentation, Department of Molecular Biology",
-                                "Department of Biomedical Engineering, Graduate School, University of Wisconsin at Madison, Madison, WI 53711"),
-                        "",
-                        "",
-                        "",
-                        false,
-                        false),
-                new JIPipeAuthorMetadata("",
-                        "Emma",
-                        "Hill",
-                        new StringList("The Rockefeller University Press, New York, NY 10065"),
-                        "",
-                        "",
-                        "",
-                        false,
-                        false),
-                new JIPipeAuthorMetadata("",
-                        "Mike",
-                        "Rossner",
-                        new StringList("The Rockefeller University Press, New York, NY 10065"),
-                        "",
-                        "",
-                        "",
-                        false,
-                        false),
-                new JIPipeAuthorMetadata("",
-                        "Jason R.",
-                        "Swedlow",
-                        new StringList("Wellcome Trust Centre for Gene Regulation and Expression, College of Life Sciences, University of Dundee, Dundee DD1 5EH, Scotland, UK",
-                                "Glencoe Software, Inc., Seattle, WA 98101"),
-                        "",
-                        "",
-                        "",
-                        false,
-                        true));
+        // Affiliations (shared and reused where possible)
+        final JIPipeOrganizationMetadata loci = new JIPipeOrganizationMetadata.Builder()
+                .name("Laboratory for Optical and Computational Instrumentation, University of Wisconsin at Madison, Madison, Wisconsin, USA")
+                .ror("https://ror.org/01y2jtd41")
+                .website("https://loci.wisc.edu")
+                .build();
+
+        final JIPipeOrganizationMetadata morgridge = new JIPipeOrganizationMetadata.Builder()
+                .name("Morgridge Institute for Research, Madison, Wisconsin, USA")
+                .ror("https://ror.org/05cb4rb43")
+                .website("https://morgridge.org")
+                .build();
+
+        final JIPipeOrganizationMetadata glencoe = new JIPipeOrganizationMetadata.Builder()
+                .name("Glencoe Software, Inc., Seattle, WA 98101")
+                .website("https://glencoesoftware.com")
+                .build();
+
+        final JIPipeOrganizationMetadata dundee = new JIPipeOrganizationMetadata.Builder()
+                .name("Wellcome Trust Centre for Gene Regulation and Expression, College of Life Sciences, University of Dundee, Dundee, Scotland, UK")
+                .ror("https://ror.org/03h2bxq36")
+                .website("https://www.dundee.ac.uk/")
+                .build();
+
+        final JIPipeOrganizationMetadata nih = new JIPipeOrganizationMetadata.Builder()
+                .name("Section on Instrumentation, US National Institutes of Health, Bethesda, Maryland, USA")
+                .ror("https://ror.org/01cwqze88")
+                .website("https://www.nih.gov")
+                .build();
+
+        final JIPipeOrganizationMetadata rockefeller = new JIPipeOrganizationMetadata.Builder()
+                .name("The Rockefeller University Press, New York, NY 10065")
+                .website("https://rupress.org")
+                .build();
+
+        final JIPipeOrganizationMetadata lociMolBio = new JIPipeOrganizationMetadata.Builder()
+                .name("Laboratory for Optical and Computational Instrumentation, Department of Molecular Biology")
+                .build();
+
+        final JIPipeOrganizationMetadata uwMadisonBiomed = new JIPipeOrganizationMetadata.Builder()
+                .name("Department of Biomedical Engineering, Graduate School, University of Wisconsin at Madison, Madison, WI 53711")
+                .build();
+
+// Build author list
+        return new JIPipeAuthorMetadata.List(
+                new JIPipeAuthorMetadata.Builder()
+                        .firstName("Curtis T.")
+                        .lastName("Rueden")
+                        .affiliations(List.of(loci))
+                        .firstAuthor(true)
+                        .build(),
+
+                new JIPipeAuthorMetadata.Builder()
+                        .firstName("Johannes")
+                        .lastName("Schindelin")
+                        .affiliations(List.of(loci, morgridge))
+                        .build(),
+
+                new JIPipeAuthorMetadata.Builder()
+                        .firstName("Mark C.")
+                        .lastName("Hiner")
+                        .affiliations(List.of(loci))
+                        .build(),
+
+                new JIPipeAuthorMetadata.Builder()
+                        .firstName("Barry E.")
+                        .lastName("DeZonia")
+                        .affiliations(List.of(loci))
+                        .build(),
+
+                new JIPipeAuthorMetadata.Builder()
+                        .firstName("Alison E.")
+                        .lastName("Walter")
+                        .affiliations(List.of(loci, morgridge))
+                        .build(),
+
+                new JIPipeAuthorMetadata.Builder()
+                        .firstName("Ellen T.")
+                        .lastName("Arena")
+                        .affiliations(List.of(loci, morgridge))
+                        .build(),
+
+                new JIPipeAuthorMetadata.Builder()
+                        .firstName("Kevin W.")
+                        .lastName("Eliceiri")
+                        .affiliations(List.of(loci, morgridge))
+                        .correspondingAuthor(true)
+                        .build(),
+
+                new JIPipeAuthorMetadata.Builder()
+                        .firstName("Caroline A.")
+                        .lastName("Schneider")
+                        .affiliations(List.of(loci))
+                        .firstAuthor(true)
+                        .build(),
+
+                new JIPipeAuthorMetadata.Builder()
+                        .firstName("Wayne S.")
+                        .lastName("Rasband")
+                        .affiliations(List.of(nih))
+                        .build(),
+
+                new JIPipeAuthorMetadata.Builder()
+                        .firstName("Melissa")
+                        .lastName("Linkert")
+                        .affiliations(List.of(lociMolBio, uwMadisonBiomed, glencoe))
+                        .firstAuthor(true)
+                        .build(),
+
+                new JIPipeAuthorMetadata.Builder()
+                        .firstName("Chris")
+                        .lastName("Allan")
+                        .affiliations(List.of(dundee, glencoe))
+                        .build(),
+
+                new JIPipeAuthorMetadata.Builder()
+                        .firstName("Jean-Marie")
+                        .lastName("Burel")
+                        .affiliations(List.of(dundee))
+                        .build(),
+
+                new JIPipeAuthorMetadata.Builder()
+                        .firstName("Will")
+                        .lastName("Moore")
+                        .affiliations(List.of(dundee))
+                        .build(),
+
+                new JIPipeAuthorMetadata.Builder()
+                        .firstName("Andrew")
+                        .lastName("Patterson")
+                        .affiliations(List.of(dundee))
+                        .build(),
+
+                new JIPipeAuthorMetadata.Builder()
+                        .firstName("Brian")
+                        .lastName("Loranger")
+                        .affiliations(List.of(dundee))
+                        .build(),
+
+                new JIPipeAuthorMetadata.Builder()
+                        .firstName("Josh")
+                        .lastName("Moore")
+                        .affiliations(List.of(glencoe))
+                        .build(),
+
+                new JIPipeAuthorMetadata.Builder()
+                        .firstName("Carlos")
+                        .lastName("Neves")
+                        .affiliations(List.of(glencoe))
+                        .build(),
+
+                new JIPipeAuthorMetadata.Builder()
+                        .firstName("Donald")
+                        .lastName("MacDonald")
+                        .affiliations(List.of(dundee))
+                        .build(),
+
+                new JIPipeAuthorMetadata.Builder()
+                        .firstName("Aleksandra")
+                        .lastName("Tarkowska")
+                        .affiliations(List.of(dundee))
+                        .build(),
+
+                new JIPipeAuthorMetadata.Builder()
+                        .firstName("Caitlin")
+                        .lastName("Sticco")
+                        .affiliations(List.of(lociMolBio, uwMadisonBiomed))
+                        .build(),
+
+                new JIPipeAuthorMetadata.Builder()
+                        .firstName("Emma")
+                        .lastName("Hill")
+                        .affiliations(List.of(rockefeller))
+                        .build(),
+
+                new JIPipeAuthorMetadata.Builder()
+                        .firstName("Mike")
+                        .lastName("Rossner")
+                        .affiliations(List.of(rockefeller))
+                        .build(),
+
+                new JIPipeAuthorMetadata.Builder()
+                        .firstName("Jason R.")
+                        .lastName("Swedlow")
+                        .affiliations(List.of(dundee, glencoe))
+                        .correspondingAuthor(true)
+                        .build()
+        );
+
 
     }
 

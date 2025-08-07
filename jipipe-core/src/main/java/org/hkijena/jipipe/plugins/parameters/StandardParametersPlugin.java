@@ -19,11 +19,12 @@ import org.fife.ui.rsyntaxtextarea.TokenMakerFactory;
 import org.hkijena.jipipe.JIPipe;
 import org.hkijena.jipipe.JIPipeImageJUpdateSiteDependency;
 import org.hkijena.jipipe.JIPipeJavaPlugin;
-import org.hkijena.jipipe.api.JIPipeAuthorMetadata;
+import org.hkijena.jipipe.api.metadata.JIPipeAuthorMetadata;
 import org.hkijena.jipipe.api.JIPipeNodeTemplate;
 import org.hkijena.jipipe.api.JIPipeProgressInfo;
 import org.hkijena.jipipe.api.OptionalJIPipeAuthorMetadata;
 import org.hkijena.jipipe.api.grouping.JIPipeGraphWrapperAlgorithm;
+import org.hkijena.jipipe.api.metadata.JIPipeOrganizationMetadata;
 import org.hkijena.jipipe.api.nodes.JIPipeColumMatching;
 import org.hkijena.jipipe.api.parameters.JIPipeParameterArchetype;
 import org.hkijena.jipipe.api.parameters.JIPipeParameterCollection;
@@ -732,6 +733,14 @@ public class StandardParametersPlugin extends JIPipePrepackagedDefaultJavaPlugin
                 "Optional author",
                 "An author with affiliations",
                 null);
+        registerParameterType("organization",
+                JIPipeOrganizationMetadata.class,
+                JIPipeParameterArchetype.Value, JIPipeOrganizationMetadata.List.class,
+                null,
+                null,
+                "Organization",
+                "An organization/institute/university",
+                JIPipeOrganizationMetadataDesktopParameterEditorUI.class);
 
         // Node templates
         registerParameterType("node-template",

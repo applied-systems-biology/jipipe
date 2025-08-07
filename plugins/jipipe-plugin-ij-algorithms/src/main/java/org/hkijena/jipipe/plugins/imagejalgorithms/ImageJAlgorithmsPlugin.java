@@ -24,11 +24,12 @@ import inra.ijpb.morphology.Strel;
 import inra.ijpb.morphology.Strel3D;
 import inra.ijpb.morphology.directional.DirectionalFilter;
 import org.hkijena.jipipe.*;
-import org.hkijena.jipipe.api.JIPipeAuthorMetadata;
+import org.hkijena.jipipe.api.metadata.JIPipeAuthorMetadata;
 import org.hkijena.jipipe.api.JIPipeProgressInfo;
 import org.hkijena.jipipe.api.data.JIPipeDataSlotInfo;
 import org.hkijena.jipipe.api.data.JIPipeDefaultMutableSlotConfiguration;
 import org.hkijena.jipipe.api.data.JIPipeSlotType;
+import org.hkijena.jipipe.api.metadata.JIPipeOrganizationMetadata;
 import org.hkijena.jipipe.api.parameters.JIPipeParameterArchetype;
 import org.hkijena.jipipe.plugins.JIPipePrepackagedDefaultJavaPlugin;
 import org.hkijena.jipipe.plugins.core.CorePlugin;
@@ -170,7 +171,6 @@ import org.hkijena.jipipe.plugins.strings.StringsPlugin;
 import org.hkijena.jipipe.plugins.tables.TablesPlugin;
 import org.hkijena.jipipe.utils.ImageJCalibrationMode;
 import org.hkijena.jipipe.utils.JIPipeResourceManager;
-import org.hkijena.jipipe.utils.UIUtils;
 import org.hkijena.jipipe.JIPipe;
 import org.scijava.Context;
 import org.scijava.plugin.Plugin;
@@ -223,366 +223,183 @@ public class ImageJAlgorithmsPlugin extends JIPipePrepackagedDefaultJavaPlugin {
 
     @Override
     public JIPipeAuthorMetadata.List getAcknowledgements() {
-        return new JIPipeAuthorMetadata.List(new JIPipeAuthorMetadata("",
-                "Curtis T.",
-                "Rueden",
-                new StringList("Laboratory for Optical and Computational Instrumentation, University of Wisconsin at Madison, Madison, Wisconsin, USA"),
-                "",
-                "",
-                "",
-                true,
-                false),
-                new JIPipeAuthorMetadata("",
-                        "Johannes",
-                        "Schindelin",
-                        new StringList("Laboratory for Optical and Computational Instrumentation, University of Wisconsin at Madison, Madison, Wisconsin, USA",
-                                "Morgridge Institute for Research, Madison, Wisconsin, USA"),
-                        "",
-                        "",
-                        "",
-                        false,
-                        false),
-                new JIPipeAuthorMetadata("",
-                        "Mark C.",
-                        "Hiner",
-                        new StringList("Laboratory for Optical and Computational Instrumentation, University of Wisconsin at Madison, Madison, Wisconsin, USA"),
-                        "",
-                        "",
-                        "",
-                        false,
-                        false),
-                new JIPipeAuthorMetadata("",
-                        "Barry E.",
-                        "DeZonia",
-                        new StringList("Laboratory for Optical and Computational Instrumentation, University of Wisconsin at Madison, Madison, Wisconsin, USA"),
-                        "",
-                        "",
-                        "",
-                        false,
-                        false),
-                new JIPipeAuthorMetadata("",
-                        "Alison E.",
-                        "Walter",
-                        new StringList("Laboratory for Optical and Computational Instrumentation, University of Wisconsin at Madison, Madison, Wisconsin, USA",
-                                "Morgridge Institute for Research, Madison, Wisconsin, USA"),
-                        "",
-                        "",
-                        "",
-                        false,
-                        false),
-                new JIPipeAuthorMetadata("",
-                        "Ellen T.",
-                        "Arena",
-                        new StringList("Laboratory for Optical and Computational Instrumentation, University of Wisconsin at Madison, Madison, Wisconsin, USA",
-                                "Morgridge Institute for Research, Madison, Wisconsin, USA"),
-                        "",
-                        "",
-                        "",
-                        false,
-                        false),
-                new JIPipeAuthorMetadata("",
-                        "Kevin W.",
-                        "Eliceiri",
-                        new StringList("Laboratory for Optical and Computational Instrumentation, University of Wisconsin at Madison, Madison, Wisconsin, USA",
-                                "Morgridge Institute for Research, Madison, Wisconsin, USA"),
-                        "",
-                        "",
-                        "",
-                        true,
-                        true),
-                new JIPipeAuthorMetadata("",
-                        "Caroline A.",
-                        "Schneider",
-                        new StringList("Laboratory for Optical and Computational Instrumentation, University of Wisconsin at Madison, Madison, Wisconsin, USA"),
-                        "",
-                        "",
-                        "",
-                        true,
-                        false),
-                new JIPipeAuthorMetadata("",
-                        "Wayne S.",
-                        "Rasband",
-                        new StringList("Section on Instrumentation, US National Institutes of Health, Bethesda, Maryland, USA"),
-                        "",
-                        "",
-                        "",
-                        false,
-                        false),
-                new JIPipeAuthorMetadata("",
-                        "Melissa",
-                        "Linkert",
-                        new StringList("Laboratory for Optical and Computational Instrumentation, Department of Molecular Biology",
-                                "Department of Biomedical Engineering, Graduate School, University of Wisconsin at Madison, Madison, WI 53711",
-                                "Glencoe Software, Inc., Seattle, WA 98101"),
-                        "",
-                        "",
-                        "",
-                        true,
-                        false),
-                new JIPipeAuthorMetadata("",
-                        "Chris",
-                        "Allan",
-                        new StringList("Wellcome Trust Centre for Gene Regulation and Expression, College of Life Sciences, University of Dundee, Dundee DD1 5EH, Scotland, UK",
-                                "Glencoe Software, Inc., Seattle, WA 98101"),
-                        "",
-                        "",
-                        "",
-                        false,
-                        false),
-                new JIPipeAuthorMetadata("",
-                        "Jean-Marie",
-                        "Burel",
-                        new StringList("Wellcome Trust Centre for Gene Regulation and Expression, College of Life Sciences, University of Dundee, Dundee DD1 5EH, Scotland, UK"),
-                        "",
-                        "",
-                        "",
-                        false,
-                        false),
-                new JIPipeAuthorMetadata("",
-                        "Will",
-                        "Moore",
-                        new StringList("Wellcome Trust Centre for Gene Regulation and Expression, College of Life Sciences, University of Dundee, Dundee DD1 5EH, Scotland, UK"),
-                        "",
-                        "",
-                        "",
-                        false,
-                        false),
-                new JIPipeAuthorMetadata("",
-                        "Andrew",
-                        "Patterson",
-                        new StringList("Wellcome Trust Centre for Gene Regulation and Expression, College of Life Sciences, University of Dundee, Dundee DD1 5EH, Scotland, UK"),
-                        "",
-                        "",
-                        "",
-                        false,
-                        false),
-                new JIPipeAuthorMetadata("",
-                        "Brian",
-                        "Loranger",
-                        new StringList("Wellcome Trust Centre for Gene Regulation and Expression, College of Life Sciences, University of Dundee, Dundee DD1 5EH, Scotland, UK"),
-                        "",
-                        "",
-                        "",
-                        false,
-                        false),
-                new JIPipeAuthorMetadata("",
-                        "Josh",
-                        "Moore",
-                        new StringList("Glencoe Software, Inc., Seattle, WA 98101"),
-                        "",
-                        "",
-                        "",
-                        false,
-                        false),
-                new JIPipeAuthorMetadata("",
-                        "Carlos",
-                        "Neves",
-                        new StringList("Glencoe Software, Inc., Seattle, WA 98101"),
-                        "",
-                        "",
-                        "",
-                        false,
-                        false),
-                new JIPipeAuthorMetadata("",
-                        "Donald",
-                        "MacDonald",
-                        new StringList("Wellcome Trust Centre for Gene Regulation and Expression, College of Life Sciences, University of Dundee, Dundee DD1 5EH, Scotland, UK"),
-                        "",
-                        "",
-                        "",
-                        false,
-                        false),
-                new JIPipeAuthorMetadata("",
-                        "Aleksandra",
-                        "Tarkowska",
-                        new StringList("Wellcome Trust Centre for Gene Regulation and Expression, College of Life Sciences, University of Dundee, Dundee DD1 5EH, Scotland, UK"),
-                        "",
-                        "",
-                        "",
-                        false,
-                        false),
-                new JIPipeAuthorMetadata("",
-                        "Caitlin",
-                        "Sticco",
-                        new StringList("Laboratory for Optical and Computational Instrumentation, Department of Molecular Biology",
-                                "Department of Biomedical Engineering, Graduate School, University of Wisconsin at Madison, Madison, WI 53711"),
-                        "",
-                        "",
-                        "",
-                        false,
-                        false),
-                new JIPipeAuthorMetadata("",
-                        "Emma",
-                        "Hill",
-                        new StringList("The Rockefeller University Press, New York, NY 10065"),
-                        "",
-                        "",
-                        "",
-                        false,
-                        false),
-                new JIPipeAuthorMetadata("",
-                        "Mike",
-                        "Rossner",
-                        new StringList("The Rockefeller University Press, New York, NY 10065"),
-                        "",
-                        "",
-                        "",
-                        false,
-                        false),
-                new JIPipeAuthorMetadata("",
-                        "Jason R.",
-                        "Swedlow",
-                        new StringList("Wellcome Trust Centre for Gene Regulation and Expression, College of Life Sciences, University of Dundee, Dundee DD1 5EH, Scotland, UK",
-                                "Glencoe Software, Inc., Seattle, WA 98101"),
-                        "",
-                        "",
-                        "",
-                        false,
-                        true),
-                new JIPipeAuthorMetadata("",
-                        "David",
-                        "Legland",
-                        new StringList("UR1268 Biopolymers, Interactions and Assemblies, INRA, Nantes, France",
-                                "UR1268 Biopolymers, Interactions and Assemblies, INRA, Nantes, France",
-                                "UMR782 Food Process Engineering and Microbiology, INRA, AgroParisTech, Thiverval-Grignon, France"),
-                        "",
-                        "",
-                        "",
-                        true,
-                        true),
-                new JIPipeAuthorMetadata("",
-                        "Ignacio",
-                        "Arganda-Carreras",
-                        new StringList("Institut Jean-Pierre Bourgin, INRA, AgroParisTech, CNRS, Université Paris-Saclay, Versailles, Cedex, RD10, 78026, France",
-                                "Basque Foundation for Science, Ikerbasque, Bilbao, 48013, Spain",
-                                "Computer Science and Artificial Intelligence Department, Basque Country University (UPV/EHU), Donostia-San Sebastian, 20018, Spain",
-                                "Donostia International Physics Center (DIPC), Donostia-San Sebastian, 20018, Spain"),
-                        "",
-                        "",
-                        "",
-                        false,
-                        false),
-                new JIPipeAuthorMetadata("",
-                        "Philippe",
-                        "Andrey",
-                        new StringList("Institut Jean-Pierre Bourgin, INRA, AgroParisTech, CNRS, Université Paris-Saclay, Versailles, Cedex, RD10, 78026, France",
-                                "Sorbonne Universités, UPMC Univ Paris 06, UFR 927, Paris, France"),
-                        "",
-                        "",
-                        "",
-                        false,
-                        false),
-                new JIPipeAuthorMetadata("",
-                        "Michael R.",
-                        "Berthold",
-                        new StringList("Department of Computer and Information Science, Universität Konstanz, Konstanz, Germany"),
-                        "",
-                        "",
-                        "",
-                        false,
-                        false),
-                new JIPipeAuthorMetadata("",
-                        "Ilya G.",
-                        "Goldberg",
-                        new StringList("National Institute on Aging, National Institutes of Health, Baltimore, Maryland, USA"),
-                        "",
-                        "",
-                        "",
-                        false,
-                        false),
-                new JIPipeAuthorMetadata("",
-                        "Luis",
-                        "Ibáñez",
-                        new StringList("Kitware Inc., New York, New York, USA"),
-                        "",
-                        "",
-                        "",
-                        false,
-                        false),
-                new JIPipeAuthorMetadata("",
-                        "B S.",
-                        "Manjunath",
-                        new StringList("Department of Electrical and Computer Engineering, Center for Bio-image",
-                                "Informatics, University of California Santa Barbara, Santa Barbara, California, USA"),
-                        "",
-                        "",
-                        "",
-                        false,
-                        false),
-                new JIPipeAuthorMetadata("",
-                        "Maryann E.",
-                        "Martone",
-                        new StringList("National Center for Microscopy and Imaging Research, University of California San Diego, La Jolla, California, USA"),
-                        "",
-                        "",
-                        "",
-                        false,
-                        false),
-                new JIPipeAuthorMetadata("",
-                        "Robert F.",
-                        "Murphy",
-                        new StringList("Lane Center for Computational Biology, Carnegie Mellon University, Pittsburgh, Pennsylvania, USA"),
-                        "",
-                        "",
-                        "",
-                        false,
-                        false),
-                new JIPipeAuthorMetadata("",
-                        "Hanchuan",
-                        "Peng",
-                        new StringList("Janelia Farm Research Campus, Howard Hughes Medical Institute, Ashburn, Virginia, USA"),
-                        "",
-                        "",
-                        "",
-                        false,
-                        false),
-                new JIPipeAuthorMetadata("",
-                        "Anne L.",
-                        "Plant",
-                        new StringList("Biochemical Science Division, National Institute of Standards and Technology, Gaithersburg, Maryland, USA"),
-                        "",
-                        "",
-                        "",
-                        false,
-                        false),
-                new JIPipeAuthorMetadata("",
-                        "Badrinath",
-                        "Roysam",
-                        new StringList("Department of Electrical and Computer Engineering, University of Houston, Houston, Texas, USA"),
-                        "",
-                        "",
-                        "",
-                        false,
-                        false),
-                new JIPipeAuthorMetadata("",
-                        "Nico",
-                        "Stuurman",
-                        new StringList("Department of Cellular and Molecular Pharmacology, University of California, San Francisco, San Francisco, California, USA"),
-                        "",
-                        "",
-                        "",
-                        false,
-                        false),
-                new JIPipeAuthorMetadata("",
-                        "Anne E.",
-                        "Carpenter",
-                        new StringList("Imaging Platform, Broad Institute of Harvard and the Massachusetts Institute of Technology, Cambridge, Massachusetts, USA"),
-                        "", "","", false, true),
-                new JIPipeAuthorMetadata("",
-                        "Christian",
-                        "Steger",
-                        new StringList("Graz University of Technology Institute of Technical Informatics Graz,Austria"),
-                        "", "","", true, false),
-                new JIPipeAuthorMetadata("",
-                        "Erik",
-                        "Meijering",
-                        new StringList("School of Computer Science and Engineering & Graduate School of Biomedical Engineering, University of New South Wales, Sydney, Australia"),
-                        "", "","", true, true),
-                new JIPipeAuthorMetadata("",
-                        "Daniel",
-                        "Sage",
-                        new StringList("Biomedical Image Group (BIG), EPFL, Switzerland"),
-                        "", "","", true, true));
+        // --- Common Affiliations ---
+        final JIPipeOrganizationMetadata loci = new JIPipeOrganizationMetadata.Builder()
+                .name("Laboratory for Optical and Computational Instrumentation, University of Wisconsin at Madison, Madison, Wisconsin, USA")
+                .ror("https://ror.org/01y2jtd41")
+                .website("https://loci.wisc.edu")
+                .build();
+
+        final JIPipeOrganizationMetadata morgridge = new JIPipeOrganizationMetadata.Builder()
+                .name("Morgridge Institute for Research, Madison, Wisconsin, USA")
+                .ror("https://ror.org/05cb4rb43")
+                .website("https://morgridge.org")
+                .build();
+
+        final JIPipeOrganizationMetadata nihInstr = new JIPipeOrganizationMetadata.Builder()
+                .name("Section on Instrumentation, US National Institutes of Health, Bethesda, Maryland, USA")
+                .ror("https://ror.org/01cwqze88")
+                .website("https://www.nih.gov")
+                .build();
+
+        final JIPipeOrganizationMetadata lociMolBio = new JIPipeOrganizationMetadata.Builder()
+                .name("Laboratory for Optical and Computational Instrumentation, Department of Molecular Biology")
+                .build();
+
+        final JIPipeOrganizationMetadata uwBME = new JIPipeOrganizationMetadata.Builder()
+                .name("Department of Biomedical Engineering, Graduate School, University of Wisconsin at Madison, Madison, WI 53711")
+                .build();
+
+        final JIPipeOrganizationMetadata glencoe = new JIPipeOrganizationMetadata.Builder()
+                .name("Glencoe Software, Inc., Seattle, WA 98101")
+                .website("https://glencoesoftware.com")
+                .build();
+
+        final JIPipeOrganizationMetadata dundee = new JIPipeOrganizationMetadata.Builder()
+                .name("Wellcome Trust Centre for Gene Regulation and Expression, College of Life Sciences, University of Dundee, Dundee DD1 5EH, Scotland, UK")
+                .ror("https://ror.org/03h2bxq36")
+                .website("https://www.dundee.ac.uk/cells-and-development")
+                .build();
+
+        final JIPipeOrganizationMetadata rupress = new JIPipeOrganizationMetadata.Builder()
+                .name("The Rockefeller University Press, New York, NY 10065")
+                .website("https://rupress.org")
+                .build();
+
+        final JIPipeOrganizationMetadata inraBiopolymers = new JIPipeOrganizationMetadata.Builder()
+                .name("UR1268 Biopolymers, Interactions and Assemblies, INRA, Nantes, France")
+                .website("https://www.inrae.fr")
+                .build();
+
+        final JIPipeOrganizationMetadata inraFood = new JIPipeOrganizationMetadata.Builder()
+                .name("UMR782 Food Process Engineering and Microbiology, INRA, AgroParisTech, Thiverval-Grignon, France")
+                .build();
+
+        final JIPipeOrganizationMetadata jpb = new JIPipeOrganizationMetadata.Builder()
+                .name("Institut Jean-Pierre Bourgin, INRA, AgroParisTech, CNRS, Université Paris-Saclay, Versailles, France")
+                .build();
+
+        final JIPipeOrganizationMetadata ikerbasque = new JIPipeOrganizationMetadata.Builder()
+                .name("Basque Foundation for Science, Ikerbasque, Bilbao, Spain")
+                .ror("https://ror.org/01cc3fy72")
+                .website("https://www.ikerbasque.net")
+                .build();
+
+        final JIPipeOrganizationMetadata upv = new JIPipeOrganizationMetadata.Builder()
+                .name("Computer Science and Artificial Intelligence Department, Basque Country University (UPV/EHU), Donostia-San Sebastian, Spain")
+                .build();
+
+        final JIPipeOrganizationMetadata dipc = new JIPipeOrganizationMetadata.Builder()
+                .name("Donostia International Physics Center (DIPC), Donostia-San Sebastian, Spain")
+                .website("https://dipc.ehu.es")
+                .build();
+
+        final JIPipeOrganizationMetadata sorbonne = new JIPipeOrganizationMetadata.Builder()
+                .name("Sorbonne Universités, UPMC Univ Paris 06, UFR 927, Paris, France")
+                .build();
+
+        final JIPipeOrganizationMetadata uniKonstanz = new JIPipeOrganizationMetadata.Builder()
+                .name("Department of Computer and Information Science, Universität Konstanz, Konstanz, Germany")
+                .build();
+
+        final JIPipeOrganizationMetadata nihAging = new JIPipeOrganizationMetadata.Builder()
+                .name("National Institute on Aging, National Institutes of Health, Baltimore, Maryland, USA")
+                .build();
+
+        final JIPipeOrganizationMetadata kitware = new JIPipeOrganizationMetadata.Builder()
+                .name("Kitware Inc., New York, New York, USA")
+                .website("https://www.kitware.com")
+                .build();
+
+        final JIPipeOrganizationMetadata ucsbECE = new JIPipeOrganizationMetadata.Builder()
+                .name("Department of Electrical and Computer Engineering, University of California Santa Barbara, USA")
+                .build();
+
+        final JIPipeOrganizationMetadata ncmir = new JIPipeOrganizationMetadata.Builder()
+                .name("National Center for Microscopy and Imaging Research, University of California San Diego, USA")
+                .build();
+
+        final JIPipeOrganizationMetadata cmu = new JIPipeOrganizationMetadata.Builder()
+                .name("Lane Center for Computational Biology, Carnegie Mellon University, Pittsburgh, Pennsylvania, USA")
+                .build();
+
+        final JIPipeOrganizationMetadata janelia = new JIPipeOrganizationMetadata.Builder()
+                .name("Janelia Farm Research Campus, Howard Hughes Medical Institute, Ashburn, Virginia, USA")
+                .build();
+
+        final JIPipeOrganizationMetadata nist = new JIPipeOrganizationMetadata.Builder()
+                .name("Biochemical Science Division, National Institute of Standards and Technology, Gaithersburg, Maryland, USA")
+                .build();
+
+        final JIPipeOrganizationMetadata uh = new JIPipeOrganizationMetadata.Builder()
+                .name("Department of Electrical and Computer Engineering, University of Houston, Texas, USA")
+                .build();
+
+        final JIPipeOrganizationMetadata ucsf = new JIPipeOrganizationMetadata.Builder()
+                .name("Department of Cellular and Molecular Pharmacology, University of California, San Francisco, USA")
+                .build();
+
+        final JIPipeOrganizationMetadata broad = new JIPipeOrganizationMetadata.Builder()
+                .name("Imaging Platform, Broad Institute of Harvard and MIT, Cambridge, Massachusetts, USA")
+                .website("https://www.broadinstitute.org")
+                .build();
+
+        final JIPipeOrganizationMetadata tugraz = new JIPipeOrganizationMetadata.Builder()
+                .name("Graz University of Technology Institute of Technical Informatics, Graz, Austria")
+                .build();
+
+        final JIPipeOrganizationMetadata unsw = new JIPipeOrganizationMetadata.Builder()
+                .name("School of Computer Science and Engineering & Graduate School of Biomedical Engineering, University of New South Wales, Sydney, Australia")
+                .build();
+
+        final JIPipeOrganizationMetadata epfl = new JIPipeOrganizationMetadata.Builder()
+                .name("Biomedical Image Group (BIG), EPFL, Switzerland")
+                .website("https://bigwww.epfl.ch")
+                .build();
+
+        // Author list using builder style and shared affiliations
+        return new JIPipeAuthorMetadata.List(
+                new JIPipeAuthorMetadata.Builder().firstName("Curtis T.").lastName("Rueden").affiliations(List.of(loci)).firstAuthor(true).build(),
+                new JIPipeAuthorMetadata.Builder().firstName("Johannes").lastName("Schindelin").affiliations(List.of(loci, morgridge)).build(),
+                new JIPipeAuthorMetadata.Builder().firstName("Mark C.").lastName("Hiner").affiliations(List.of(loci)).build(),
+                new JIPipeAuthorMetadata.Builder().firstName("Barry E.").lastName("DeZonia").affiliations(List.of(loci)).build(),
+                new JIPipeAuthorMetadata.Builder().firstName("Alison E.").lastName("Walter").affiliations(List.of(loci, morgridge)).build(),
+                new JIPipeAuthorMetadata.Builder().firstName("Ellen T.").lastName("Arena").affiliations(List.of(loci, morgridge)).build(),
+                new JIPipeAuthorMetadata.Builder().firstName("Kevin W.").lastName("Eliceiri").affiliations(List.of(loci, morgridge)).firstAuthor(true).correspondingAuthor(true).build(),
+                new JIPipeAuthorMetadata.Builder().firstName("Caroline A.").lastName("Schneider").affiliations(List.of(loci)).firstAuthor(true).build(),
+                new JIPipeAuthorMetadata.Builder().firstName("Wayne S.").lastName("Rasband").affiliations(List.of(nihInstr)).build(),
+                new JIPipeAuthorMetadata.Builder().firstName("Melissa").lastName("Linkert").affiliations(List.of(lociMolBio, uwBME, glencoe)).firstAuthor(true).build(),
+                new JIPipeAuthorMetadata.Builder().firstName("Chris").lastName("Allan").affiliations(List.of(dundee, glencoe)).build(),
+                new JIPipeAuthorMetadata.Builder().firstName("Jean-Marie").lastName("Burel").affiliations(List.of(dundee)).build(),
+                new JIPipeAuthorMetadata.Builder().firstName("Will").lastName("Moore").affiliations(List.of(dundee)).build(),
+                new JIPipeAuthorMetadata.Builder().firstName("Andrew").lastName("Patterson").affiliations(List.of(dundee)).build(),
+                new JIPipeAuthorMetadata.Builder().firstName("Brian").lastName("Loranger").affiliations(List.of(dundee)).build(),
+                new JIPipeAuthorMetadata.Builder().firstName("Josh").lastName("Moore").affiliations(List.of(glencoe)).build(),
+                new JIPipeAuthorMetadata.Builder().firstName("Carlos").lastName("Neves").affiliations(List.of(glencoe)).build(),
+                new JIPipeAuthorMetadata.Builder().firstName("Donald").lastName("MacDonald").affiliations(List.of(dundee)).build(),
+                new JIPipeAuthorMetadata.Builder().firstName("Aleksandra").lastName("Tarkowska").affiliations(List.of(dundee)).build(),
+                new JIPipeAuthorMetadata.Builder().firstName("Caitlin").lastName("Sticco").affiliations(List.of(lociMolBio, uwBME)).build(),
+                new JIPipeAuthorMetadata.Builder().firstName("Emma").lastName("Hill").affiliations(List.of(rupress)).build(),
+                new JIPipeAuthorMetadata.Builder().firstName("Mike").lastName("Rossner").affiliations(List.of(rupress)).build(),
+                new JIPipeAuthorMetadata.Builder().firstName("Jason R.").lastName("Swedlow").affiliations(List.of(dundee, glencoe)).correspondingAuthor(true).build(),
+                new JIPipeAuthorMetadata.Builder().firstName("David").lastName("Legland").affiliations(List.of(inraBiopolymers, inraBiopolymers, inraFood)).firstAuthor(true).correspondingAuthor(true).build(),
+                new JIPipeAuthorMetadata.Builder().firstName("Ignacio").lastName("Arganda-Carreras").affiliations(List.of(jpb, ikerbasque, upv, dipc)).build(),
+                new JIPipeAuthorMetadata.Builder().firstName("Philippe").lastName("Andrey").affiliations(List.of(jpb, sorbonne)).build(),
+                new JIPipeAuthorMetadata.Builder().firstName("Michael R.").lastName("Berthold").affiliations(List.of(uniKonstanz)).build(),
+                new JIPipeAuthorMetadata.Builder().firstName("Ilya G.").lastName("Goldberg").affiliations(List.of(nihAging)).build(),
+                new JIPipeAuthorMetadata.Builder().firstName("Luis").lastName("Ibáñez").affiliations(List.of(kitware)).build(),
+                new JIPipeAuthorMetadata.Builder().firstName("B S.").lastName("Manjunath").affiliations(List.of(ucsbECE)).build(),
+                new JIPipeAuthorMetadata.Builder().firstName("Maryann E.").lastName("Martone").affiliations(List.of(ncmir)).build(),
+                new JIPipeAuthorMetadata.Builder().firstName("Robert F.").lastName("Murphy").affiliations(List.of(cmu)).build(),
+                new JIPipeAuthorMetadata.Builder().firstName("Hanchuan").lastName("Peng").affiliations(List.of(janelia)).build(),
+                new JIPipeAuthorMetadata.Builder().firstName("Anne L.").lastName("Plant").affiliations(List.of(nist)).build(),
+                new JIPipeAuthorMetadata.Builder().firstName("Badrinath").lastName("Roysam").affiliations(List.of(uh)).build(),
+                new JIPipeAuthorMetadata.Builder().firstName("Nico").lastName("Stuurman").affiliations(List.of(ucsf)).build(),
+                new JIPipeAuthorMetadata.Builder().firstName("Anne E.").lastName("Carpenter").affiliations(List.of(broad)).correspondingAuthor(true).build(),
+                new JIPipeAuthorMetadata.Builder().firstName("Christian").lastName("Steger").affiliations(List.of(tugraz)).firstAuthor(true).build(),
+                new JIPipeAuthorMetadata.Builder().firstName("Erik").lastName("Meijering").affiliations(List.of(unsw)).firstAuthor(true).correspondingAuthor(true).build(),
+                new JIPipeAuthorMetadata.Builder().firstName("Daniel").lastName("Sage").affiliations(List.of(epfl)).firstAuthor(true).correspondingAuthor(true).build()
+        );
     }
 
     @Override

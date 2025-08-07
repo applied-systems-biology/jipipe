@@ -11,12 +11,13 @@
  * See the LICENSE file provided with the code for the full license.
  */
 
-package org.hkijena.jipipe.api;
+package org.hkijena.jipipe.api.metadata;
 
 import com.fasterxml.jackson.annotation.JsonGetter;
 import com.fasterxml.jackson.annotation.JsonSetter;
 import com.google.common.html.HtmlEscapers;
 import org.hkijena.jipipe.JIPipe;
+import org.hkijena.jipipe.api.SetJIPipeDocumentation;
 import org.hkijena.jipipe.api.parameters.AbstractJIPipeParameterCollection;
 import org.hkijena.jipipe.api.parameters.JIPipeParameter;
 import org.hkijena.jipipe.desktop.commons.components.markup.JIPipeDesktopMarkdownReader;
@@ -42,6 +43,7 @@ public class JIPipeAuthorMetadata extends AbstractJIPipeParameterCollection {
     private String firstName;
     private String lastName;
     private StringList affiliationsLegacy = new StringList();
+    private JIPipeOrganizationMetadata.List affiliations = new JIPipeOrganizationMetadata.List();
     private String website;
     private String contact;
     private String email;
@@ -56,61 +58,13 @@ public class JIPipeAuthorMetadata extends AbstractJIPipeParameterCollection {
     public JIPipeAuthorMetadata() {
     }
 
-    /**
-     * Initializes the instance
-     *
-     * @param title               the title (can be empty)
-     * @param firstName           first name
-     * @param lastName            last name
-     * @param affiliationsLegacy        list of affiliations
-     * @param website             optional website link
-     * @param contact             contact information, e.g., an E-Mail address
-     * @param email
-     * @param firstAuthor         if the author is marked as first author
-     * @param correspondingAuthor if the author is marked as corresponding author
-     */
-    public JIPipeAuthorMetadata(String title, String firstName, String lastName, StringList affiliationsLegacy, String website, String contact, String email, String orcid, boolean firstAuthor, boolean correspondingAuthor) {
-        this.title = title;
-        this.firstName = firstName;
-        this.lastName = lastName;
-        this.affiliationsLegacy = affiliationsLegacy;
-        this.website = website;
-        this.contact = contact;
-        this.email = email;
-        this.firstAuthor = firstAuthor;
-        this.correspondingAuthor = correspondingAuthor;
-        this.orcid = StringUtils.nullToEmpty(orcid);
-    }
-
-    /**
-     * Initializes the instance
-     *
-     * @param title               the title (can be empty)
-     * @param firstName           first name
-     * @param lastName            last name
-     * @param affiliationsLegacy        list of affiliations
-     * @param website             optional website link
-     * @param contact             contact information, e.g., an E-Mail address
-     * @param firstAuthor         if the author is marked as first author
-     * @param correspondingAuthor if the author is marked as corresponding author
-     */
-    public JIPipeAuthorMetadata(String title, String firstName, String lastName, StringList affiliationsLegacy, String website, String contact, String email, boolean firstAuthor, boolean correspondingAuthor) {
-        this.title = title;
-        this.firstName = firstName;
-        this.lastName = lastName;
-        this.affiliationsLegacy = affiliationsLegacy;
-        this.website = website;
-        this.contact = contact;
-        this.email = email;
-        this.firstAuthor = firstAuthor;
-        this.correspondingAuthor = correspondingAuthor;
-        this.orcid = "";
-    }
-
     public JIPipeAuthorMetadata(JIPipeAuthorMetadata other) {
         this.firstName = other.firstName;
         this.lastName = other.lastName;
+        this.email = other.email;
+        this.title = other.title;
         this.affiliationsLegacy = new StringList(other.affiliationsLegacy);
+        this.affiliations = new JIPipeOrganizationMetadata.List(other.affiliations);
         this.website = other.website;
         this.contact = other.contact;
         this.correspondingAuthor = other.correspondingAuthor;
@@ -118,6 +72,7 @@ public class JIPipeAuthorMetadata extends AbstractJIPipeParameterCollection {
         this.customText = new HTMLText(other.customText);
         this.orcid = other.orcid;
     }
+
 
     /**
      * Opens a list of authors in a window that displays information about them.
@@ -155,11 +110,17 @@ public class JIPipeAuthorMetadata extends AbstractJIPipeParameterCollection {
             if (!StringUtils.isNullOrEmpty(author.getWebsite())) {
                 stringBuilder.append("<div><strong>Website:</strong> <a href=\"").append(author.getWebsite()).append("\">").append(author.getWebsite()).append("</a></div>");
             }
-            if (!author.getAffiliationsLegacy().isEmpty()) {
+            if (!author.getAffiliations().isEmpty()) {
                 stringBuilder.append("<h2>Affiliations</h2>");
                 stringBuilder.append("<ul>");
-                for (String affiliation : author.getAffiliationsLegacy()) {
-                    stringBuilder.append("<li>").append(HtmlEscapers.htmlEscaper().escape(affiliation)).append("</li>");
+                for (JIPipeOrganizationMetadata affiliation : author.getAffiliations()) {
+                    stringBuilder.append("<li>").append(HtmlEscapers.htmlEscaper().escape(affiliation.getName()));
+                    if (!StringUtils.isNullOrEmpty(affiliation.getRorUrl())) {
+                        stringBuilder.append(" (").append(HtmlEscapers.htmlEscaper().escape(affiliation.getRorUrl())).append(")");
+                    } else if (!StringUtils.isNullOrEmpty(affiliation.getWebsite())) {
+                        stringBuilder.append(" (").append(HtmlEscapers.htmlEscaper().escape(affiliation.getWebsite())).append(")");
+                    }
+                    stringBuilder.append("</li>");
                 }
                 stringBuilder.append("</ul>");
             }
@@ -265,7 +226,7 @@ public class JIPipeAuthorMetadata extends AbstractJIPipeParameterCollection {
     }
 
     @JIPipeParameter(value = "affiliations-list", uiOrder = 30, hidden = true)
-    @SetJIPipeDocumentation(name = "Affiliations", description = "Author affiliations")
+    @SetJIPipeDocumentation(name = "Affiliations (deprecated)", description = "Deprecated field kept for backwards compatibility")
     @StringParameterSettings(multiline = true, monospace = true)
     @JsonGetter("affiliations-list")
     @Deprecated
@@ -280,6 +241,26 @@ public class JIPipeAuthorMetadata extends AbstractJIPipeParameterCollection {
     @Deprecated
     public void setAffiliationsLegacy(StringList affiliationsLegacy) {
         this.affiliationsLegacy = affiliationsLegacy;
+    }
+
+    @JIPipeParameter(value = "affiliations-list-v2", uiOrder = 30)
+    @SetJIPipeDocumentation(name = "Affiliations", description = "Author affiliations")
+    @JsonGetter("affiliations-list-v2")
+    public JIPipeOrganizationMetadata.List getAffiliations() {
+        if (affiliations.isEmpty() && !affiliationsLegacy.isEmpty()) {
+            // Transfer legacy affiliations
+            for (String s : affiliationsLegacy) {
+                affiliations.add(new JIPipeOrganizationMetadata.Builder().name(s).build());
+            }
+            affiliationsLegacy.clear();
+        }
+        return affiliations;
+    }
+
+    @JIPipeParameter("affiliations-list-v2")
+    @JsonSetter("affiliations-list-v2")
+    public void setAffiliations(JIPipeOrganizationMetadata.List affiliations) {
+        this.affiliations = affiliations;
     }
 
     @JIPipeParameter(value = "email", uiOrder = 35)
@@ -368,6 +349,15 @@ public class JIPipeAuthorMetadata extends AbstractJIPipeParameterCollection {
         return (StringUtils.nullToEmpty(title) + " " + StringUtils.nullToEmpty(firstName) + " " + StringUtils.nullToEmpty(lastName) + (isFirstAuthor() ? "*" : "") + (isCorrespondingAuthor() ? "#" : "")).trim();
     }
 
+    public String getUniqueId() {
+        if(!StringUtils.isNullOrEmpty(getOrcidUrl())) {
+            return getOrcidUrl();
+        }
+        else {
+            return getEmail();
+        }
+    }
+
     public void mergeWith(JIPipeAuthorMetadata other) {
         if (StringUtils.isNullOrEmpty(orcid) && !StringUtils.isNullOrEmpty(other.getOrcid())) {
             orcid = other.getOrcid();
@@ -381,9 +371,13 @@ public class JIPipeAuthorMetadata extends AbstractJIPipeParameterCollection {
         if (!StringUtils.isNullOrEmpty(contact) && !StringUtils.isNullOrEmpty(other.getContact())) {
             contact = other.getContact();
         }
-        for (String affiliation : other.getAffiliationsLegacy()) {
-            if (!affiliationsLegacy.contains(affiliation)) {
-                affiliationsLegacy.add(affiliation);
+        for (JIPipeOrganizationMetadata affiliation : other.getAffiliations()) {
+            int i = affiliations.indexOf(affiliation);
+            if(i >= 0) {
+                affiliations.get(i).mergeWith(affiliation);
+            }
+            else {
+                affiliations.add(affiliation);
             }
         }
     }
@@ -419,6 +413,74 @@ public class JIPipeAuthorMetadata extends AbstractJIPipeParameterCollection {
         @Override
         public String toString() {
             return this.stream().map(JIPipeAuthorMetadata::toString).collect(Collectors.joining(", "));
+        }
+    }
+
+    public static class Builder {
+        private final JIPipeAuthorMetadata author = new JIPipeAuthorMetadata();
+
+        public Builder title(String title) {
+            author.setTitle(title);
+            return this;
+        }
+
+        public Builder firstName(String firstName) {
+            author.setFirstName(firstName);
+            return this;
+        }
+
+        public Builder lastName(String lastName) {
+            author.setLastName(lastName);
+            return this;
+        }
+
+        public Builder affiliation(JIPipeOrganizationMetadata affiliation) {
+            author.getAffiliations().add(affiliation);
+            return this;
+        }
+
+        public Builder affiliations(Collection<JIPipeOrganizationMetadata> affiliations) {
+            author.getAffiliations().addAll(affiliations);
+            return this;
+        }
+
+        public Builder website(String website) {
+            author.setWebsite(website);
+            return this;
+        }
+
+        public Builder contact(String contact) {
+            author.setContact(contact);
+            return this;
+        }
+
+        public Builder email(String email) {
+            author.setEmail(email);
+            return this;
+        }
+
+        public Builder firstAuthor(boolean firstAuthor) {
+            author.setFirstAuthor(firstAuthor);
+            return this;
+        }
+
+        public Builder correspondingAuthor(boolean correspondingAuthor) {
+            author.setCorrespondingAuthor(correspondingAuthor);
+            return this;
+        }
+
+        public Builder orcid(String orcid) {
+            author.setOrcid(orcid);
+            return this;
+        }
+
+        public Builder customText(HTMLText customText) {
+            author.setCustomText(customText);
+            return this;
+        }
+
+        public JIPipeAuthorMetadata build() {
+            return author;
         }
     }
 }

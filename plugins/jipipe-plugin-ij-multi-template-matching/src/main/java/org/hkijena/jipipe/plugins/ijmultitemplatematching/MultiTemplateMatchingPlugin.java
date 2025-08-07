@@ -15,8 +15,9 @@ package org.hkijena.jipipe.plugins.ijmultitemplatematching;
 
 import org.apache.commons.compress.utils.Sets;
 import org.hkijena.jipipe.*;
-import org.hkijena.jipipe.api.JIPipeAuthorMetadata;
+import org.hkijena.jipipe.api.metadata.JIPipeAuthorMetadata;
 import org.hkijena.jipipe.api.JIPipeProgressInfo;
+import org.hkijena.jipipe.api.metadata.JIPipeOrganizationMetadata;
 import org.hkijena.jipipe.plugins.JIPipePrepackagedDefaultJavaPlugin;
 import org.hkijena.jipipe.plugins.core.CorePlugin;
 import org.hkijena.jipipe.plugins.imagejdatatypes.ImageJDataTypesPlugin;
@@ -25,7 +26,6 @@ import org.hkijena.jipipe.plugins.parameters.library.markup.HTMLText;
 import org.hkijena.jipipe.plugins.parameters.library.primitives.list.StringList;
 import org.hkijena.jipipe.plugins.strings.StringsPlugin;
 import org.hkijena.jipipe.plugins.tables.TablesPlugin;
-import org.hkijena.jipipe.utils.UIUtils;
 import org.hkijena.jipipe.JIPipe;
 import org.scijava.Context;
 import org.scijava.plugin.Plugin;
@@ -67,9 +67,34 @@ public class MultiTemplateMatchingPlugin extends JIPipePrepackagedDefaultJavaPlu
 
     @Override
     public JIPipeAuthorMetadata.List getAcknowledgements() {
-        return new JIPipeAuthorMetadata.List(new JIPipeAuthorMetadata("", "Laurent S. V.", "Thomas", new StringList("Acquifer is a division of Ditabis, Digital Biomedical Imaging Systems AG, Pforzheim, Germany",
-                "Centre of Paediatrics and Adolescent Medicine, University Hospital Heidelberg, Heidelberg, Germany"), "", "", "", true, false),
-                new JIPipeAuthorMetadata("", "Jochen", "Gehrig", new StringList("Acquifer is a division of Ditabis, Digital Biomedical Imaging Systems AG, Pforzheim, Germany"), "", "", "", true, false));
+        // Affiliations
+        final JIPipeOrganizationMetadata acquifer = new JIPipeOrganizationMetadata.Builder()
+                .name("Acquifer is a division of Ditabis, Digital Biomedical Imaging Systems AG, Pforzheim, Germany")
+                .website("https://acquifer.de")
+                .build();
+
+        final JIPipeOrganizationMetadata heidelbergPeds = new JIPipeOrganizationMetadata.Builder()
+                .name("Centre of Paediatrics and Adolescent Medicine, University Hospital Heidelberg, Heidelberg, Germany")
+                .ror("https://ror.org/013czdx64")
+                .website("https://www.klinikum.uni-heidelberg.de")
+                .build();
+
+        return new JIPipeAuthorMetadata.List(
+                new JIPipeAuthorMetadata.Builder()
+                        .firstName("Laurent S. V.")
+                        .lastName("Thomas")
+                        .affiliations(List.of(acquifer, heidelbergPeds))
+                        .firstAuthor(true)
+                        .build(),
+
+                new JIPipeAuthorMetadata.Builder()
+                        .firstName("Jochen")
+                        .lastName("Gehrig")
+                        .affiliations(List.of(acquifer))
+                        .firstAuthor(true)
+                        .build()
+        );
+
     }
 
     @Override

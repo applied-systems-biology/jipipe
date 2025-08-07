@@ -18,12 +18,13 @@ import org.hkijena.jipipe.JIPipe;
 import org.hkijena.jipipe.JIPipeDependency;
 import org.hkijena.jipipe.JIPipeJavaPlugin;
 import org.hkijena.jipipe.JIPipeMutableDependency;
-import org.hkijena.jipipe.api.JIPipeAuthorMetadata;
+import org.hkijena.jipipe.api.metadata.JIPipeAuthorMetadata;
 import org.hkijena.jipipe.api.JIPipeProgressInfo;
 import org.hkijena.jipipe.api.artifacts.JIPipeArtifact;
 import org.hkijena.jipipe.api.artifacts.JIPipeArtifactRepositoryInstallArtifactRun;
 import org.hkijena.jipipe.api.artifacts.JIPipeLocalArtifact;
 import org.hkijena.jipipe.api.artifacts.JIPipeRemoteArtifact;
+import org.hkijena.jipipe.api.metadata.JIPipeOrganizationMetadata;
 import org.hkijena.jipipe.api.parameters.JIPipeParameterArchetype;
 import org.hkijena.jipipe.api.project.JIPipeProject;
 import org.hkijena.jipipe.api.validation.contexts.UnspecifiedValidationReportContext;
@@ -47,8 +48,6 @@ import org.hkijena.jipipe.plugins.parameters.library.jipipe.PluginCategoriesEnum
 import org.hkijena.jipipe.plugins.parameters.library.markup.HTMLText;
 import org.hkijena.jipipe.plugins.parameters.library.primitives.list.StringList;
 import org.hkijena.jipipe.utils.JIPipeResourceManager;
-import org.hkijena.jipipe.utils.UIUtils;
-import org.hkijena.jipipe.JIPipe;
 import org.scijava.Context;
 import org.scijava.plugin.Plugin;
 
@@ -159,161 +158,146 @@ public class IlastikPlugin extends JIPipePrepackagedDefaultJavaPlugin {
 
     @Override
     public JIPipeAuthorMetadata.List getAcknowledgements() {
-        return new JIPipeAuthorMetadata.List(new JIPipeAuthorMetadata("",
-                "Stuart",
-                "Berg",
-                new StringList("HHMI Janelia Research Campus, Ashburn, Virginia, USA"),
-                "",
-                "","",
-                true,
-                false),
-                new JIPipeAuthorMetadata("",
-                        "Dominik",
-                        "Kutra",
-                        new StringList("HCI/IWR, Heidelberg University, Heidelberg, Germany",
-                                "European Molecular Biology Laboratory, Heidelberg, Germany"),
-                        "",
-                        "","",
-                        false,
-                        false),
-                new JIPipeAuthorMetadata("",
-                        "Thorben",
-                        "Kroeger",
-                        new StringList("HCI/IWR, Heidelberg University, Heidelberg, Germany"),
-                        "",
-                        "","",
-                        false,
-                        false),
-                new JIPipeAuthorMetadata("",
-                        "Christoph N.",
-                        "Straehle",
-                        new StringList("HCI/IWR, Heidelberg University, Heidelberg, Germany"),
-                        "",
-                        "","",
-                        false,
-                        false),
-                new JIPipeAuthorMetadata("",
-                        "Bernhard X.",
-                        "Kausler",
-                        new StringList("HCI/IWR, Heidelberg University, Heidelberg, Germany"),
-                        "",
-                        "","",
-                        false,
-                        false),
-                new JIPipeAuthorMetadata("",
-                        "Carsten",
-                        "Haubold",
-                        new StringList("HCI/IWR, Heidelberg University, Heidelberg, Germany"),
-                        "",
-                        "","",
-                        false,
-                        false),
-                new JIPipeAuthorMetadata("",
-                        "Martin",
-                        "Schiegg",
-                        new StringList("HCI/IWR, Heidelberg University, Heidelberg, Germany"),
-                        "",
-                        "","",
-                        false,
-                        false),
-                new JIPipeAuthorMetadata("",
-                        "Janez",
-                        "Ales",
-                        new StringList("HCI/IWR, Heidelberg University, Heidelberg, Germany"),
-                        "",
-                        "","",
-                        false,
-                        false),
-                new JIPipeAuthorMetadata("",
-                        "Thorsten",
-                        "Beier",
-                        new StringList("HCI/IWR, Heidelberg University, Heidelberg, Germany"),
-                        "",
-                        "","",
-                        false,
-                        false),
-                new JIPipeAuthorMetadata("",
-                        "Markus",
-                        "Rudy",
-                        new StringList("HCI/IWR, Heidelberg University, Heidelberg, Germany"),
-                        "",
-                        "","",
-                        false,
-                        false),
-                new JIPipeAuthorMetadata("",
-                        "Kemal",
-                        "Eren",
-                        new StringList("HCI/IWR, Heidelberg University, Heidelberg, Germany"),
-                        "",
-                        "","",
-                        false,
-                        false),
-                new JIPipeAuthorMetadata("",
-                        "Jaime I",
-                        "Cervantes",
-                        new StringList("HCI/IWR, Heidelberg University, Heidelberg, Germany"),
-                        "",
-                        "","",
-                        false,
-                        false),
-                new JIPipeAuthorMetadata("",
-                        "Buote",
-                        "Xu",
-                        new StringList("HCI/IWR, Heidelberg University, Heidelberg, Germany"),
-                        "",
-                        "","",
-                        false,
-                        false),
-                new JIPipeAuthorMetadata("",
-                        "Fynn",
-                        "Beuttenmueller",
-                        new StringList("HCI/IWR, Heidelberg University, Heidelberg, Germany",
-                                "European Molecular Biology Laboratory, Heidelberg, Germany"),
-                        "",
-                        "","",
-                        false,
-                        false),
-                new JIPipeAuthorMetadata("",
-                        "Adrian",
-                        "Wolny",
-                        new StringList("HCI/IWR, Heidelberg University, Heidelberg, Germany"),
-                        "",
-                        "","",
-                        false,
-                        false),
-                new JIPipeAuthorMetadata("",
-                        "Chong",
-                        "Zhang",
-                        new StringList("HCI/IWR, Heidelberg University, Heidelberg, Germany"),
-                        "",
-                        "","",
-                        false,
-                        false),
-                new JIPipeAuthorMetadata("",
-                        "Ullrich",
-                        "Koethe",
-                        new StringList("HCI/IWR, Heidelberg University, Heidelberg, Germany"),
-                        "",
-                        "","",
-                        false,
-                        false),
-                new JIPipeAuthorMetadata("",
-                        "Fred A.",
-                        "Hamprecht",
-                        new StringList("HCI/IWR, Heidelberg University, Heidelberg, Germany"),
-                        "","",
-                        "fred.hamprecht@iwr.uni-heidelberg.de",
-                        false,
-                        true),
-                new JIPipeAuthorMetadata("",
-                        "Anna",
-                        "Kreshuk",
-                        new StringList("HCI/IWR, Heidelberg University, Heidelberg, Germany",
-                                "European Molecular Biology Laboratory, Heidelberg, Germany"),
-                        "","",
-                        "anna.kreshuk@embl.de",
-                        false,
-                        true));
+        // Shared affiliations
+        final JIPipeOrganizationMetadata janelia = new JIPipeOrganizationMetadata.Builder()
+                .name("HHMI Janelia Research Campus, Ashburn, Virginia, USA")
+                .ror("https://ror.org/013sk6x84")
+                .website("https://www.janelia.org")
+                .build();
+
+        final JIPipeOrganizationMetadata heidelbergHCI = new JIPipeOrganizationMetadata.Builder()
+                .name("HCI/IWR, Heidelberg University, Heidelberg, Germany")
+                .ror("https://ror.org/04rcqnp59")
+                .website("https://hci.iwr.uni-heidelberg.de")
+                .build();
+
+        final JIPipeOrganizationMetadata emblHeidelberg = new JIPipeOrganizationMetadata.Builder()
+                .name("European Molecular Biology Laboratory, Heidelberg, Germany")
+                .ror("https://ror.org/03mstc592")
+                .website("https://www.embl.org")
+                .build();
+
+        return new JIPipeAuthorMetadata.List(
+                new JIPipeAuthorMetadata.Builder()
+                        .firstName("Stuart")
+                        .lastName("Berg")
+                        .affiliations(List.of(janelia))
+                        .firstAuthor(true)
+                        .build(),
+
+                new JIPipeAuthorMetadata.Builder()
+                        .firstName("Dominik")
+                        .lastName("Kutra")
+                        .affiliations(List.of(heidelbergHCI, emblHeidelberg))
+                        .build(),
+
+                new JIPipeAuthorMetadata.Builder()
+                        .firstName("Thorben")
+                        .lastName("Kroeger")
+                        .affiliations(List.of(heidelbergHCI))
+                        .build(),
+
+                new JIPipeAuthorMetadata.Builder()
+                        .firstName("Christoph N.")
+                        .lastName("Straehle")
+                        .affiliations(List.of(heidelbergHCI))
+                        .build(),
+
+                new JIPipeAuthorMetadata.Builder()
+                        .firstName("Bernhard X.")
+                        .lastName("Kausler")
+                        .affiliations(List.of(heidelbergHCI))
+                        .build(),
+
+                new JIPipeAuthorMetadata.Builder()
+                        .firstName("Carsten")
+                        .lastName("Haubold")
+                        .affiliations(List.of(heidelbergHCI))
+                        .build(),
+
+                new JIPipeAuthorMetadata.Builder()
+                        .firstName("Martin")
+                        .lastName("Schiegg")
+                        .affiliations(List.of(heidelbergHCI))
+                        .build(),
+
+                new JIPipeAuthorMetadata.Builder()
+                        .firstName("Janez")
+                        .lastName("Ales")
+                        .affiliations(List.of(heidelbergHCI))
+                        .build(),
+
+                new JIPipeAuthorMetadata.Builder()
+                        .firstName("Thorsten")
+                        .lastName("Beier")
+                        .affiliations(List.of(heidelbergHCI))
+                        .build(),
+
+                new JIPipeAuthorMetadata.Builder()
+                        .firstName("Markus")
+                        .lastName("Rudy")
+                        .affiliations(List.of(heidelbergHCI))
+                        .build(),
+
+                new JIPipeAuthorMetadata.Builder()
+                        .firstName("Kemal")
+                        .lastName("Eren")
+                        .affiliations(List.of(heidelbergHCI))
+                        .build(),
+
+                new JIPipeAuthorMetadata.Builder()
+                        .firstName("Jaime I")
+                        .lastName("Cervantes")
+                        .affiliations(List.of(heidelbergHCI))
+                        .build(),
+
+                new JIPipeAuthorMetadata.Builder()
+                        .firstName("Buote")
+                        .lastName("Xu")
+                        .affiliations(List.of(heidelbergHCI))
+                        .build(),
+
+                new JIPipeAuthorMetadata.Builder()
+                        .firstName("Fynn")
+                        .lastName("Beuttenmueller")
+                        .affiliations(List.of(heidelbergHCI, emblHeidelberg))
+                        .build(),
+
+                new JIPipeAuthorMetadata.Builder()
+                        .firstName("Adrian")
+                        .lastName("Wolny")
+                        .affiliations(List.of(heidelbergHCI))
+                        .build(),
+
+                new JIPipeAuthorMetadata.Builder()
+                        .firstName("Chong")
+                        .lastName("Zhang")
+                        .affiliations(List.of(heidelbergHCI))
+                        .build(),
+
+                new JIPipeAuthorMetadata.Builder()
+                        .firstName("Ullrich")
+                        .lastName("Koethe")
+                        .affiliations(List.of(heidelbergHCI))
+                        .build(),
+
+                new JIPipeAuthorMetadata.Builder()
+                        .firstName("Fred A.")
+                        .lastName("Hamprecht")
+                        .affiliations(List.of(heidelbergHCI))
+                        .email("fred.hamprecht@iwr.uni-heidelberg.de")
+                        .correspondingAuthor(true)
+                        .build(),
+
+                new JIPipeAuthorMetadata.Builder()
+                        .firstName("Anna")
+                        .lastName("Kreshuk")
+                        .affiliations(List.of(heidelbergHCI, emblHeidelberg))
+                        .email("anna.kreshuk@embl.de")
+                        .correspondingAuthor(true)
+                        .build()
+        );
+
     }
 
     @Override

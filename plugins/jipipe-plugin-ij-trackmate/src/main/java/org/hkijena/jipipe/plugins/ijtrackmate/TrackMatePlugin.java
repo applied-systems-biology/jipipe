@@ -19,8 +19,9 @@ import org.hkijena.jipipe.JIPipe;
 import org.hkijena.jipipe.JIPipeDependency;
 import org.hkijena.jipipe.JIPipeJavaPlugin;
 import org.hkijena.jipipe.JIPipeMutableDependency;
-import org.hkijena.jipipe.api.JIPipeAuthorMetadata;
+import org.hkijena.jipipe.api.metadata.JIPipeAuthorMetadata;
 import org.hkijena.jipipe.api.JIPipeProgressInfo;
+import org.hkijena.jipipe.api.metadata.JIPipeOrganizationMetadata;
 import org.hkijena.jipipe.api.parameters.JIPipeParameterArchetype;
 import org.hkijena.jipipe.plugins.JIPipePrepackagedDefaultJavaPlugin;
 import org.hkijena.jipipe.plugins.core.CorePlugin;
@@ -44,8 +45,6 @@ import org.hkijena.jipipe.plugins.parameters.library.jipipe.PluginCategoriesEnum
 import org.hkijena.jipipe.plugins.parameters.library.markup.HTMLText;
 import org.hkijena.jipipe.plugins.parameters.library.primitives.list.StringList;
 import org.hkijena.jipipe.utils.JIPipeResourceManager;
-import org.hkijena.jipipe.utils.UIUtils;
-import org.hkijena.jipipe.JIPipe;
 import org.scijava.Context;
 import org.scijava.plugin.Plugin;
 import org.scijava.plugin.PluginService;
@@ -87,34 +86,108 @@ public class TrackMatePlugin extends JIPipePrepackagedDefaultJavaPlugin {
 
     @Override
     public JIPipeAuthorMetadata.List getAcknowledgements() {
+        // Shared affiliations
+        final JIPipeOrganizationMetadata pasteurImagopole = new JIPipeOrganizationMetadata.Builder()
+                .name("Imagopole, Citech, Institut Pasteur, 75724 Paris, France")
+                .ror("https://ror.org/0495fxg12")
+                .website("https://research.pasteur.fr/en/team/imagopole/")
+                .build();
+
+        final JIPipeOrganizationMetadata lociUwMadison = new JIPipeOrganizationMetadata.Builder()
+                .name("Laboratory for Optical and Computational Instrumentation, University of Wisconsin-Madison, Madison, WI 53706, USA")
+                .ror("https://ror.org/01y2jtd41")
+                .website("https://loci.wisc.edu")
+                .build();
+
+        final JIPipeOrganizationMetadata uwBiochem = new JIPipeOrganizationMetadata.Builder()
+                .name("Department of Biochemistry, University of Wisconsin-Madison, Madison, WI 53706, USA")
+                .website("https://biochem.wisc.edu")
+                .build();
+
+        final JIPipeOrganizationMetadata cnrsPasteur = new JIPipeOrganizationMetadata.Builder()
+                .name("Laboratory of Signaling and Pathogenesis, Centre National de la Recherche Scientifique, UMR 3691, Institut Pasteur, 75724 Paris, France")
+                .build();
+
+        final JIPipeOrganizationMetadata morgridge = new JIPipeOrganizationMetadata.Builder()
+                .name("Morgridge Institute for Research, Madison, WI 53719, USA")
+                .ror("https://ror.org/05cb4rb43")
+                .website("https://morgridge.org")
+                .build();
+
+        final JIPipeOrganizationMetadata pasteurImageHub = new JIPipeOrganizationMetadata.Builder()
+                .name("Image Analysis Hub, C2RT / DTPS, Institut Pasteur, Paris, FR")
+                .build();
+
+        final JIPipeOrganizationMetadata pasteurBiostatHub = new JIPipeOrganizationMetadata.Builder()
+                .name("Biostatistics and Bioinformatic Hub, Department of Computational Biology, Institut Pasteur, Paris, FR")
+                .build();
+
+        final JIPipeOrganizationMetadata turkuBiosci = new JIPipeOrganizationMetadata.Builder()
+                .name("Turku Bioscience Centre, University of Turku and Åbo Akademi University, Turku, FI")
+                .ror("https://ror.org/05vghhr25")
+                .website("https://www.bioscience.fi")
+                .build();
+
+        final JIPipeOrganizationMetadata aboAkaBiosci = new JIPipeOrganizationMetadata.Builder()
+                .name("Åbo Akademi University, Faculty of Science and Engineering, Biosciences, Turku, FI")
+                .website("https://www.abo.fi")
+                .build();
+
+        final JIPipeOrganizationMetadata turkuBioimaging = new JIPipeOrganizationMetadata.Builder()
+                .name("Turku Bioimaging, University of Turku and Åbo Akademi University, Turku, Finland")
+                .website("https://www.bioimaging.fi")
+                .build();
+
+        final JIPipeOrganizationMetadata pasteurInserm = new JIPipeOrganizationMetadata.Builder()
+                .name("Pathogenesis of Vascular Infections unit, INSERM, Institut Pasteur, Paris, FR")
+                .build();
+
+        final JIPipeOrganizationMetadata uParis = new JIPipeOrganizationMetadata.Builder()
+                .name("Université de Paris, 75006, Paris, FR")
+                .website("https://u-paris.fr")
+                .build();
+
+        final JIPipeOrganizationMetadata uclMrc = new JIPipeOrganizationMetadata.Builder()
+                .name("MRC Laboratory for Molecular Cell Biology, University College London, London, UK")
+                .ror("https://ror.org/00fv61j67")
+                .website("https://www.ucl.ac.uk/lmcb")
+                .build();
+
+        final JIPipeOrganizationMetadata crick = new JIPipeOrganizationMetadata.Builder()
+                .name("The Francis Crick Institute, London, UK")
+                .ror("https://ror.org/04tnbqb63")
+                .website("https://www.crick.ac.uk")
+                .build();
+
+        final JIPipeOrganizationMetadata sunyUpstate = new JIPipeOrganizationMetadata.Builder()
+                .name("Department of Microbiology and Immunology, SUNY Upstate Medical University, Syracuse NY, USA")
+                .website("https://www.upstate.edu")
+                .build();
+
         return new JIPipeAuthorMetadata.List(
-                new JIPipeAuthorMetadata("", "Jean-Yves", "Tinevez", new StringList("Imagopole, Citech, Institut Pasteur, 75724 Paris, France"), "", "","", true, true),
-                new JIPipeAuthorMetadata("", "Nick", "Perry", new StringList("Imagopole, Citech, Institut Pasteur, 75724 Paris, France"), "", "","", false, false),
-                new JIPipeAuthorMetadata("", "Johannes", "Schindelin", new StringList("Laboratory for Optical and Computational Instrumentation, University of Wisconsin-Madison, Madison, WI 53706, USA."), "", "","", false, false),
-                new JIPipeAuthorMetadata("", "Genevieve M.", "Hoopes", new StringList("Department of Biochemistry, University of Wisconsin-Madison, Madison, WI 53706, USA."), "", "","", false, false),
-                new JIPipeAuthorMetadata("", "Gregory D.", "Reynolds", new StringList("Department of Biochemistry, University of Wisconsin-Madison, Madison, WI 53706, USA."), "", "","", false, false),
-                new JIPipeAuthorMetadata("", "Emmanuel", "Laplantine", new StringList("Laboratory of Signaling and Pathogenesis, Centre National de la Recherche Scientifique, UMR 3691, Institut Pasteur, 75724 Paris, France."), "", "","", false, false),
-                new JIPipeAuthorMetadata("", "Sebastian Y.", "Bednarek", new StringList("Department of Biochemistry, University of Wisconsin-Madison, Madison, WI 53706, USA."), "", "","", false, false),
-                new JIPipeAuthorMetadata("", "Spencer L.", "Shorte", new StringList("Imagopole, Citech, Institut Pasteur, 75724 Paris, France."), "", "","", false, false),
-                new JIPipeAuthorMetadata("", "Kevin W.", "Eliceiri", new StringList("Laboratory for Optical and Computational Instrumentation, University of Wisconsin-Madison, Madison, WI 53706, USA; Morgridge Institute for Research, Madison, WI 53719, USA."), "", "","", false, false),
-                new JIPipeAuthorMetadata("", "Dmitry", "Ershov", new StringList("Image Analysis Hub, C2RT / DTPS, Institut Pasteur, Paris, FR", "Biostatistics and Bioinformatic Hub, Department of Computational Biology, Institut Pasteur, Paris, FR"), "", "","", true, false),
-                new JIPipeAuthorMetadata("", "Minh-Son", "Phan", new StringList("Image Analysis Hub, C2RT / DTPS, Institut Pasteur, Paris, FR"), "", "","", false, false),
-                new JIPipeAuthorMetadata("", "Joanna W.", "Pylvänäinen", new StringList("Turku Bioscience Centre, University of Turku and Åbo Akademi University, Turku, FI",
-                        "Åbo Akademi University, Faculty of Science and Engineering, Biosciences, Turku, FI",
-                        "Turku Bioimaging, University of Turku and Åbo Akademi University, Turku, Finland"), "", "","", false, false),
-                new JIPipeAuthorMetadata("", "Stéphane U.", "Rigaud", new StringList("Image Analysis Hub, C2RT / DTPS, Institut Pasteur, Paris, FR\", \"Biostatistics and Bioinformatic Hub, Department of Computational Biology, Institut Pasteur, Paris, FR"), "", "","", false, false),
-                new JIPipeAuthorMetadata("", "Laure", "Le Blanc", new StringList("Pathogenesis of Vascular Infections unit, INSERM, Institut Pasteur, Paris, FR",
-                        "Université de Paris, 75006, Paris, FR"), "", "","", false, false),
-                new JIPipeAuthorMetadata("", "Arthur", "Charles-Orszag", new StringList("Pathogenesis of Vascular Infections unit, INSERM, Institut Pasteur, Paris, FR"), "", "","", false, false),
-                new JIPipeAuthorMetadata("", "James R. W.", "Conway", new StringList("Turku Bioscience Centre, University of Turku and Åbo Akademi University, Turku, FI"), "", "","", false, false),
-                new JIPipeAuthorMetadata("", "Romain F.", "Laine", new StringList("MRC Laboratory for Molecular Cell Biology, University College London, London, UK",
-                        "The Francis Crick Institute, London, UK"), "", "","", false, false),
-                new JIPipeAuthorMetadata("", "Nathan H.", "Roy", new StringList("Department of Microbiology and Immunology, SUNY Upstate Medical University, Syracuse NY, USA"), "", "","", false, false),
-                new JIPipeAuthorMetadata("", "Daria", "Bonazzi", new StringList("Pathogenesis of Vascular Infections unit, INSERM, Institut Pasteur, Paris, FR"), "", "","", false, false),
-                new JIPipeAuthorMetadata("", "Guillaume", "Duménil", new StringList("Pathogenesis of Vascular Infections unit, INSERM, Institut Pasteur, Paris, FR"), "", "","", false, false),
-                new JIPipeAuthorMetadata("", "Guillaume", "Jacquemet", new StringList("Turku Bioscience Centre, University of Turku and Åbo Akademi University, Turku, FI",
-                        "Åbo Akademi University, Faculty of Science and Engineering, Biosciences, Turku, FI", "Turku Bioimaging, University of Turku and Åbo Akademi University, Turku, Finland"), "", "","", false, false)
+                new JIPipeAuthorMetadata.Builder().firstName("Jean-Yves").lastName("Tinevez").affiliations(List.of(pasteurImagopole)).firstAuthor(true).correspondingAuthor(true).build(),
+                new JIPipeAuthorMetadata.Builder().firstName("Nick").lastName("Perry").affiliations(List.of(pasteurImagopole)).build(),
+                new JIPipeAuthorMetadata.Builder().firstName("Johannes").lastName("Schindelin").affiliations(List.of(lociUwMadison)).build(),
+                new JIPipeAuthorMetadata.Builder().firstName("Genevieve M.").lastName("Hoopes").affiliations(List.of(uwBiochem)).build(),
+                new JIPipeAuthorMetadata.Builder().firstName("Gregory D.").lastName("Reynolds").affiliations(List.of(uwBiochem)).build(),
+                new JIPipeAuthorMetadata.Builder().firstName("Emmanuel").lastName("Laplantine").affiliations(List.of(cnrsPasteur)).build(),
+                new JIPipeAuthorMetadata.Builder().firstName("Sebastian Y.").lastName("Bednarek").affiliations(List.of(uwBiochem)).build(),
+                new JIPipeAuthorMetadata.Builder().firstName("Spencer L.").lastName("Shorte").affiliations(List.of(pasteurImagopole)).build(),
+                new JIPipeAuthorMetadata.Builder().firstName("Kevin W.").lastName("Eliceiri").affiliations(List.of(lociUwMadison, morgridge)).build(),
+                new JIPipeAuthorMetadata.Builder().firstName("Dmitry").lastName("Ershov").affiliations(List.of(pasteurImageHub, pasteurBiostatHub)).firstAuthor(true).build(),
+                new JIPipeAuthorMetadata.Builder().firstName("Minh-Son").lastName("Phan").affiliations(List.of(pasteurImageHub)).build(),
+                new JIPipeAuthorMetadata.Builder().firstName("Joanna W.").lastName("Pylvänäinen").affiliations(List.of(turkuBiosci, aboAkaBiosci, turkuBioimaging)).build(),
+                new JIPipeAuthorMetadata.Builder().firstName("Stéphane U.").lastName("Rigaud").affiliations(List.of(pasteurImageHub, pasteurBiostatHub)).build(),
+                new JIPipeAuthorMetadata.Builder().firstName("Laure").lastName("Le Blanc").affiliations(List.of(pasteurInserm, uParis)).build(),
+                new JIPipeAuthorMetadata.Builder().firstName("Arthur").lastName("Charles-Orszag").affiliations(List.of(pasteurInserm)).build(),
+                new JIPipeAuthorMetadata.Builder().firstName("James R. W.").lastName("Conway").affiliations(List.of(turkuBiosci)).build(),
+                new JIPipeAuthorMetadata.Builder().firstName("Romain F.").lastName("Laine").affiliations(List.of(uclMrc, crick)).build(),
+                new JIPipeAuthorMetadata.Builder().firstName("Nathan H.").lastName("Roy").affiliations(List.of(sunyUpstate)).build(),
+                new JIPipeAuthorMetadata.Builder().firstName("Daria").lastName("Bonazzi").affiliations(List.of(pasteurInserm)).build(),
+                new JIPipeAuthorMetadata.Builder().firstName("Guillaume").lastName("Duménil").affiliations(List.of(pasteurInserm)).build(),
+                new JIPipeAuthorMetadata.Builder().firstName("Guillaume").lastName("Jacquemet").affiliations(List.of(turkuBiosci, aboAkaBiosci, turkuBioimaging)).build()
         );
+
     }
 
     @Override

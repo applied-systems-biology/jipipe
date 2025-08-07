@@ -18,9 +18,10 @@ import net.imagej.ops.OpService;
 import net.imglib2.outofbounds.OutOfBoundsMirrorFactory;
 import org.apache.commons.compress.utils.Sets;
 import org.hkijena.jipipe.*;
-import org.hkijena.jipipe.api.JIPipeAuthorMetadata;
+import org.hkijena.jipipe.api.metadata.JIPipeAuthorMetadata;
 import org.hkijena.jipipe.api.JIPipeProgressInfo;
 import org.hkijena.jipipe.api.compat.DefaultImageJDataExporterUI;
+import org.hkijena.jipipe.api.metadata.JIPipeOrganizationMetadata;
 import org.hkijena.jipipe.plugins.JIPipePrepackagedDefaultJavaPlugin;
 import org.hkijena.jipipe.plugins.core.CorePlugin;
 import org.hkijena.jipipe.plugins.imagej2.algorithms.CreateIJ2OutOfBoundsFactoryAlgorithm;
@@ -39,7 +40,6 @@ import org.hkijena.jipipe.plugins.imagejdatatypes.compat.ImagePlusWindowImageJIm
 import org.hkijena.jipipe.plugins.parameters.library.jipipe.PluginCategoriesEnumParameter;
 import org.hkijena.jipipe.plugins.parameters.library.markup.HTMLText;
 import org.hkijena.jipipe.plugins.parameters.library.primitives.list.StringList;
-import org.hkijena.jipipe.utils.UIUtils;
 import org.hkijena.jipipe.JIPipe;
 import org.scijava.Context;
 import org.scijava.Priority;
@@ -83,73 +83,66 @@ public class ImageJ2Plugin extends JIPipePrepackagedDefaultJavaPlugin {
 
     @Override
     public JIPipeAuthorMetadata.List getAcknowledgements() {
-        return new JIPipeAuthorMetadata.List(new JIPipeAuthorMetadata("",
-                "Curtis T.",
-                "Rueden",
-                new StringList("Laboratory for Optical and Computational Instrumentation, University of Wisconsin at Madison, Madison, Wisconsin, USA"),
-                "",
-                "",
-                "",
-                true,
-                false),
-                new JIPipeAuthorMetadata("",
-                        "Johannes",
-                        "Schindelin",
-                        new StringList("Laboratory for Optical and Computational Instrumentation, University of Wisconsin at Madison, Madison, Wisconsin, USA",
-                                "Morgridge Institute for Research, Madison, Wisconsin, USA"),
-                        "",
-                        "",
-                        "",
-                        false,
-                        false),
-                new JIPipeAuthorMetadata("",
-                        "Mark C.",
-                        "Hiner",
-                        new StringList("Laboratory for Optical and Computational Instrumentation, University of Wisconsin at Madison, Madison, Wisconsin, USA"),
-                        "",
-                        "",
-                        "",
-                        false,
-                        false),
-                new JIPipeAuthorMetadata("",
-                        "Barry E.",
-                        "DeZonia",
-                        new StringList("Laboratory for Optical and Computational Instrumentation, University of Wisconsin at Madison, Madison, Wisconsin, USA"),
-                        "",
-                        "",
-                        "",
-                        false,
-                        false),
-                new JIPipeAuthorMetadata("",
-                        "Alison E.",
-                        "Walter",
-                        new StringList("Laboratory for Optical and Computational Instrumentation, University of Wisconsin at Madison, Madison, Wisconsin, USA",
-                                "Morgridge Institute for Research, Madison, Wisconsin, USA"),
-                        "",
-                        "",
-                        "",
-                        false,
-                        false),
-                new JIPipeAuthorMetadata("",
-                        "Ellen T.",
-                        "Arena",
-                        new StringList("Laboratory for Optical and Computational Instrumentation, University of Wisconsin at Madison, Madison, Wisconsin, USA",
-                                "Morgridge Institute for Research, Madison, Wisconsin, USA"),
-                        "",
-                        "",
-                        "",
-                        false,
-                        false),
-                new JIPipeAuthorMetadata("",
-                        "Kevin W.",
-                        "Eliceiri",
-                        new StringList("Laboratory for Optical and Computational Instrumentation, University of Wisconsin at Madison, Madison, Wisconsin, USA",
-                                "Morgridge Institute for Research, Madison, Wisconsin, USA"),
-                        "",
-                        "",
-                        "",
-                        false,
-                        true));
+        // Shared affiliations
+        final JIPipeOrganizationMetadata loci = new JIPipeOrganizationMetadata.Builder()
+                .name("Laboratory for Optical and Computational Instrumentation, University of Wisconsin at Madison, Madison, Wisconsin, USA")
+                .ror("https://ror.org/01y2jtd41")
+                .website("https://loci.wisc.edu")
+                .build();
+
+        final JIPipeOrganizationMetadata morgridge = new JIPipeOrganizationMetadata.Builder()
+                .name("Morgridge Institute for Research, Madison, Wisconsin, USA")
+                .ror("https://ror.org/05cb4rb43")
+                .website("https://morgridge.org")
+                .build();
+
+        // Author list
+        return new JIPipeAuthorMetadata.List(
+                new JIPipeAuthorMetadata.Builder()
+                        .firstName("Curtis T.")
+                        .lastName("Rueden")
+                        .affiliations(List.of(loci))
+                        .firstAuthor(true)
+                        .build(),
+
+                new JIPipeAuthorMetadata.Builder()
+                        .firstName("Johannes")
+                        .lastName("Schindelin")
+                        .affiliations(List.of(loci, morgridge))
+                        .build(),
+
+                new JIPipeAuthorMetadata.Builder()
+                        .firstName("Mark C.")
+                        .lastName("Hiner")
+                        .affiliations(List.of(loci))
+                        .build(),
+
+                new JIPipeAuthorMetadata.Builder()
+                        .firstName("Barry E.")
+                        .lastName("DeZonia")
+                        .affiliations(List.of(loci))
+                        .build(),
+
+                new JIPipeAuthorMetadata.Builder()
+                        .firstName("Alison E.")
+                        .lastName("Walter")
+                        .affiliations(List.of(loci, morgridge))
+                        .build(),
+
+                new JIPipeAuthorMetadata.Builder()
+                        .firstName("Ellen T.")
+                        .lastName("Arena")
+                        .affiliations(List.of(loci, morgridge))
+                        .build(),
+
+                new JIPipeAuthorMetadata.Builder()
+                        .firstName("Kevin W.")
+                        .lastName("Eliceiri")
+                        .affiliations(List.of(loci, morgridge))
+                        .correspondingAuthor(true)
+                        .build()
+        );
+
     }
 
     @Override

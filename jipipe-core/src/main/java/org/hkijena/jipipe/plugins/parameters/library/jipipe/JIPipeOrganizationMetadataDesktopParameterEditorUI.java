@@ -14,7 +14,7 @@
 package org.hkijena.jipipe.plugins.parameters.library.jipipe;
 
 import org.hkijena.jipipe.JIPipe;
-import org.hkijena.jipipe.api.metadata.JIPipeAuthorMetadata;
+import org.hkijena.jipipe.api.metadata.JIPipeOrganizationMetadata;
 import org.hkijena.jipipe.desktop.api.JIPipeDesktopParameterEditorUI;
 import org.hkijena.jipipe.desktop.commons.components.JIPipeDesktopParameterFormPanel;
 import org.hkijena.jipipe.plugins.parameters.library.markup.MarkdownText;
@@ -26,13 +26,13 @@ import org.hkijena.jipipe.utils.json.JsonUtils;
 import javax.swing.*;
 import java.awt.*;
 
-public class JIPipeAuthorMetadataDesktopParameterEditorUI extends JIPipeDesktopParameterEditorUI {
+public class JIPipeOrganizationMetadataDesktopParameterEditorUI extends JIPipeDesktopParameterEditorUI {
 
     private final JLabel nameLabel = new JLabel();
-    private final JLabel affiliationLabel = new JLabel();
-    private final JLabel orcidLabel = new JLabel();
+    private final JLabel websiteLabel = new JLabel();
+    private final JLabel rorLabel = new JLabel();
 
-    public JIPipeAuthorMetadataDesktopParameterEditorUI(InitializationParameters parameters) {
+    public JIPipeOrganizationMetadataDesktopParameterEditorUI(InitializationParameters parameters) {
         super(parameters);
         initialize();
         reload();
@@ -40,7 +40,7 @@ public class JIPipeAuthorMetadataDesktopParameterEditorUI extends JIPipeDesktopP
 
     private void initialize() {
         setLayout(new BorderLayout(4, 0));
-        JLabel iconLabel = new JLabel(JIPipe.RESOURCES.getIcon16("actions/user.png"));
+        JLabel iconLabel = new JLabel(JIPipe.RESOURCES.getIcon16("actions/view-bank.png"));
         iconLabel.setFont(new Font(Font.DIALOG, Font.ITALIC, ThemeUtils.getCurrentStyle().getFontSizeNormal()));
         iconLabel.setBorder(BorderFactory.createEmptyBorder(0, 4, 0, 12));
         setOpaque(true);
@@ -48,9 +48,9 @@ public class JIPipeAuthorMetadataDesktopParameterEditorUI extends JIPipeDesktopP
         setBorder(UIUtils.createControlBorder());
         add(iconLabel, BorderLayout.WEST);
 
-        affiliationLabel.setFont(new Font(Font.DIALOG, Font.PLAIN, ThemeUtils.getCurrentStyle().getFontSizeSmall()));
-        orcidLabel.setFont(new Font(Font.MONOSPACED, Font.PLAIN, ThemeUtils.getCurrentStyle().getFontSizeSmall()));
-        add(UIUtils.boxVertical(nameLabel, affiliationLabel, orcidLabel), BorderLayout.CENTER);
+        websiteLabel.setFont(new Font(Font.DIALOG, Font.PLAIN, ThemeUtils.getCurrentStyle().getFontSizeSmall()));
+        rorLabel.setFont(new Font(Font.MONOSPACED, Font.PLAIN, ThemeUtils.getCurrentStyle().getFontSizeSmall()));
+        add(UIUtils.boxVertical(nameLabel, websiteLabel, rorLabel), BorderLayout.CENTER);
 
         JPanel buttonPanel = new JPanel();
         buttonPanel.setOpaque(false);
@@ -60,37 +60,37 @@ public class JIPipeAuthorMetadataDesktopParameterEditorUI extends JIPipeDesktopP
         JButton configureButton = new JButton("Configure ...", JIPipe.RESOURCES.getIcon16("actions/configure.png"));
         configureButton.setBackground(getBackground());
         configureButton.setOpaque(true);
-        configureButton.setToolTipText("Edit/copy/paste author");
+        configureButton.setToolTipText("Edit/copy/paste organization");
         buttonPanel.add(configureButton);
 
         JPopupMenu configureMenu = UIUtils.addPopupMenuToButton(configureButton);
-        configureMenu.add(UIUtils.createMenuItem("Edit", "Edits the author", JIPipe.RESOURCES.getIcon16("actions/edit.png"), this::editAuthor));
+        configureMenu.add(UIUtils.createMenuItem("Edit", "Edits the organization", JIPipe.RESOURCES.getIcon16("actions/edit.png"), this::editOrganization));
         configureMenu.addSeparator();
-        configureMenu.add(UIUtils.createMenuItem("Copy", "Copies the author", JIPipe.RESOURCES.getIcon16("actions/edit-copy.png"), this::copyAuthor));
-        configureMenu.add(UIUtils.createMenuItem("Paste", "Pastes the author", JIPipe.RESOURCES.getIcon16("actions/edit-paste.png"), this::pasteAuthor));
+        configureMenu.add(UIUtils.createMenuItem("Copy", "Copies the organization", JIPipe.RESOURCES.getIcon16("actions/edit-copy.png"), this::copyOrganization));
+        configureMenu.add(UIUtils.createMenuItem("Paste", "Pastes the organization", JIPipe.RESOURCES.getIcon16("actions/edit-paste.png"), this::pasteOrganization));
     }
 
-    private void pasteAuthor() {
+    private void pasteOrganization() {
         try {
-            JIPipeAuthorMetadata authorMetadata = JsonUtils.readFromString(UIUtils.getStringFromClipboard(), JIPipeAuthorMetadata.class);
-            setParameter(authorMetadata, true);
+            JIPipeOrganizationMetadata organizationMetadata = JsonUtils.readFromString(UIUtils.getStringFromClipboard(), JIPipeOrganizationMetadata.class);
+            setParameter(organizationMetadata, true);
         }
         catch (Exception e) {
-            JOptionPane.showMessageDialog(this, e.getMessage(), "Error pasting author", JOptionPane.ERROR_MESSAGE);
+            JOptionPane.showMessageDialog(this, e.getMessage(), "Error pasting organization", JOptionPane.ERROR_MESSAGE);
         }
     }
 
-    private void copyAuthor() {
-        JIPipeAuthorMetadata parameter = getParameter(JIPipeAuthorMetadata.class);
+    private void copyOrganization() {
+        JIPipeOrganizationMetadata parameter = getParameter(JIPipeOrganizationMetadata.class);
         UIUtils.copyToClipboard(JsonUtils.toPrettyJsonString(parameter));
     }
 
-    private void editAuthor() {
-        JIPipeAuthorMetadata parameter = getParameter(JIPipeAuthorMetadata.class);
+    private void editOrganization() {
+        JIPipeOrganizationMetadata parameter = getParameter(JIPipeOrganizationMetadata.class);
         JIPipeDesktopParameterFormPanel.showDialog(getDesktopWorkbench(),
                 parameter,
-                new MarkdownText("# Edit author\n\nUse this editor to update additional author properties."),
-                "Edit author",
+                new MarkdownText("# Edit organization\n\nUse this editor to update organization metadata."),
+                "Edit organization",
                 JIPipeDesktopParameterFormPanel.WITH_DOCUMENTATION | JIPipeDesktopParameterFormPanel.DOCUMENTATION_NO_UI | JIPipeDesktopParameterFormPanel.WITH_SEARCH_BAR | JIPipeDesktopParameterFormPanel.WITH_SCROLLING);
         reload();
     }
@@ -102,9 +102,9 @@ public class JIPipeAuthorMetadataDesktopParameterEditorUI extends JIPipeDesktopP
 
     @Override
     public void reload() {
-        JIPipeAuthorMetadata author = getParameter(JIPipeAuthorMetadata.class);
-        if(!StringUtils.isNullOrEmpty(author.getFirstName()) || !StringUtils.isNullOrEmpty(author.getLastName())) {
-            nameLabel.setText(author.getFirstName() + " " + author.getLastName());
+        JIPipeOrganizationMetadata organization = getParameter(JIPipeOrganizationMetadata.class);
+        if(!StringUtils.isNullOrEmpty(organization.getName())) {
+            nameLabel.setText(organization.getName());
             nameLabel.setForeground(ThemeUtils.getCurrentStyle().getTextForeground());
         }
         else {
@@ -112,24 +112,22 @@ public class JIPipeAuthorMetadataDesktopParameterEditorUI extends JIPipeDesktopP
             nameLabel.setForeground(ThemeUtils.getCurrentStyle().getDangerColor());
         }
 
-        // TODO: Affiliations
-        if(author.getAffiliations().size() == 1) {
-            affiliationLabel.setText(author.getAffiliations().getFirst().getName());
-        }
-        else if(!author.getAffiliations().isEmpty()) {
-            affiliationLabel.setText(author.getAffiliations().getFirst().getName() + " (+" + (author.getAffiliations().size() - 1) + ")");
+        if(!StringUtils.isNullOrEmpty(organization.getWebsite())) {
+            websiteLabel.setText(organization.getWebsite());
+            websiteLabel.setForeground(ThemeUtils.getCurrentStyle().getTextMuted());
         }
         else {
-            affiliationLabel.setText("<No affiliations>");
+            websiteLabel.setText("No website set");
+            websiteLabel.setForeground(ThemeUtils.getCurrentStyle().getDangerColor());
         }
 
-        if(!StringUtils.isNullOrEmpty(author.getOrcidUrl())) {
-            orcidLabel.setText(author.getOrcidUrl());
-            orcidLabel.setForeground(ThemeUtils.getCurrentStyle().getTextMuted());
+        if(!StringUtils.isNullOrEmpty(organization.getRorUrl())) {
+            rorLabel.setText(organization.getRorUrl());
+            rorLabel.setForeground(ThemeUtils.getCurrentStyle().getTextMuted());
         }
         else {
-            orcidLabel.setText("No ORCID set");
-            orcidLabel.setForeground(ThemeUtils.getCurrentStyle().getDangerColor());
+            rorLabel.setText("No ROR set");
+            rorLabel.setForeground(ThemeUtils.getCurrentStyle().getDangerColor());
         }
     }
 }

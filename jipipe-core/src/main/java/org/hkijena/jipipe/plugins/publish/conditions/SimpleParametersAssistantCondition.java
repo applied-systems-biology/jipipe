@@ -14,7 +14,6 @@
 package org.hkijena.jipipe.plugins.publish.conditions;
 
 import org.hkijena.jipipe.JIPipe;
-import org.hkijena.jipipe.api.JIPipeAuthorMetadata;
 import org.hkijena.jipipe.api.grouping.parameters.GraphNodeParameterReference;
 import org.hkijena.jipipe.api.grouping.parameters.GraphNodeParameterReferenceGroup;
 import org.hkijena.jipipe.api.parameters.JIPipeParameterAccess;
@@ -25,7 +24,6 @@ import org.hkijena.jipipe.desktop.app.publish.JIPipeDesktopPublisherAssistantCon
 import org.hkijena.jipipe.desktop.app.publish.JIPipeDesktopPublisherAssistantConditionStatus;
 import org.hkijena.jipipe.plugins.parameters.library.markup.HTMLText;
 import org.hkijena.jipipe.utils.ParameterUtils;
-import org.hkijena.jipipe.utils.StringUtils;
 import org.hkijena.jipipe.utils.UIUtils;
 
 public class SimpleParametersAssistantCondition extends JIPipeDesktopPublisherAssistantCondition {
