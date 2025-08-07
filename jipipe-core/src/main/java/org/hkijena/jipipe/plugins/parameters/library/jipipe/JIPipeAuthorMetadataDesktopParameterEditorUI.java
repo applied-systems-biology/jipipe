@@ -19,18 +19,22 @@ import org.hkijena.jipipe.desktop.api.JIPipeDesktopParameterEditorUI;
 import org.hkijena.jipipe.desktop.commons.components.JIPipeDesktopDocumentChangeListener;
 import org.hkijena.jipipe.desktop.commons.components.JIPipeDesktopParameterFormPanel;
 import org.hkijena.jipipe.plugins.parameters.library.markup.MarkdownText;
+import org.hkijena.jipipe.utils.StringUtils;
+import org.hkijena.jipipe.utils.ThemeUtils;
 import org.hkijena.jipipe.utils.UIUtils;
 import org.hkijena.jipipe.JIPipe;
+import org.hkijena.jipipe.utils.json.JsonUtils;
 import org.jdesktop.swingx.JXTextField;
 
 import javax.swing.*;
 import javax.swing.event.DocumentEvent;
+import java.awt.*;
 
 public class JIPipeAuthorMetadataDesktopParameterEditorUI extends JIPipeDesktopParameterEditorUI {
 
-    private final JXTextField firstNameEditor = new JXTextField("First name");
-    private final JXTextField lastNameEditor = new JXTextField("Last name");
-    private boolean isReloading = false;
+    private final JLabel nameLabel = new JLabel();
+    private final JLabel affiliationLabel = new JLabel();
+    private final JLabel orcidLabel = new JLabel();
 
     public JIPipeAuthorMetadataDesktopParameterEditorUI(InitializationParameters parameters) {
         super(parameters);
@@ -39,49 +43,63 @@ public class JIPipeAuthorMetadataDesktopParameterEditorUI extends JIPipeDesktopP
     }
 
     private void initialize() {
-        setLayout(new BoxLayout(this, BoxLayout.X_AXIS));
+        setLayout(new BorderLayout(4, 0));
+        JLabel nameLabel = new JLabel(JIPipe.RESOURCES.getIcon16("actions/user.png"));
+        nameLabel.setFont(new Font(Font.DIALOG, Font.ITALIC, ThemeUtils.getCurrentStyle().getFontSizeNormal()));
+        nameLabel.setBorder(BorderFactory.createEmptyBorder(0, 4, 0, 12));
+        setOpaque(true);
+        setBackground(UIManager.getColor("TextField.background"));
+        setBorder(UIUtils.createControlBorder());
+        add(nameLabel, BorderLayout.WEST);
 
-        firstNameEditor.getDocument().addDocumentListener(new JIPipeDesktopDocumentChangeListener() {
-            @Override
-            public void changed(DocumentEvent documentEvent) {
-                if (!isReloading) {
-                    JIPipeAuthorMetadata parameter = getParameter(JIPipeAuthorMetadata.class);
-                    parameter.setFirstName(firstNameEditor.getText());
-                    setParameter(parameter, false);
-                }
-            }
-        });
-        add(firstNameEditor);
+        affiliationLabel.setFont(new Font(Font.DIALOG, Font.PLAIN, ThemeUtils.getCurrentStyle().getFontSizeSmall()));
+        orcidLabel.setFont(new Font(Font.MONOSPACED, Font.PLAIN, ThemeUtils.getCurrentStyle().getFontSizeSmall()));
+        add(UIUtils.boxVertical(nameLabel, affiliationLabel, orcidLabel), BorderLayout.CENTER);
 
-        add(Box.createHorizontalStrut(8));
+        JPanel buttonPanel = new JPanel();
+        buttonPanel.setOpaque(false);
+        buttonPanel.setLayout(new BoxLayout(buttonPanel, BoxLayout.X_AXIS));
+        add(buttonPanel, BorderLayout.EAST);
 
-        lastNameEditor.getDocument().addDocumentListener(new JIPipeDesktopDocumentChangeListener() {
-            @Override
-            public void changed(DocumentEvent documentEvent) {
-                if (!isReloading) {
-                    JIPipeAuthorMetadata parameter = getParameter(JIPipeAuthorMetadata.class);
-                    parameter.setLastName(lastNameEditor.getText());
-                    setParameter(parameter, false);
-                }
-            }
-        });
-        add(lastNameEditor);
+        JButton configureButton = new JButton("Configure ...", JIPipe.RESOURCES.getIcon16("actions/configure.png"));
+        configureButton.setBackground(getBackground());
+        configureButton.setBorder(BorderFactory.createCompoundBorder(BorderFactory.createMatteBorder(0, 1, 0, 0,
+                        UIManager.getColor("Separator.foreground")),
+                BorderFactory.createEmptyBorder(4, 3, 4, 3)));
+        configureButton.setOpaque(true);
+        configureButton.setToolTipText("Edit/copy/paste author");
+        buttonPanel.add(configureButton);
 
-        add(Box.createHorizontalStrut(8));
+        JPopupMenu configureMenu = UIUtils.addPopupMenuToButton(configureButton);
+        configureMenu.add(UIUtils.createMenuItem("Edit", "Edits the author", JIPipe.RESOURCES.getIcon16("actions/edit.png"), this::editAuthor));
+        configureMenu.addSeparator();
+        configureMenu.add(UIUtils.createMenuItem("Copy", "Copies the author", JIPipe.RESOURCES.getIcon16("actions/edit-copy.png"), this::copyAuthor));
+        configureMenu.add(UIUtils.createMenuItem("Paste", "Pastes the author", JIPipe.RESOURCES.getIcon16("actions/edit-paste.png"), this::pasteAuthor));
+    }
 
-        JButton editButton = new JButton("Edit", JIPipe.RESOURCES.getIcon16("actions/stock_edit.png"));
-        UIUtils.setStandardButtonBorder(editButton);
-        editButton.setToolTipText("Shows the full editor");
-        editButton.addActionListener(e -> {
-            JIPipeAuthorMetadata parameter = getParameter(JIPipeAuthorMetadata.class);
-            JIPipeDesktopParameterFormPanel.showDialog(getDesktopWorkbench(),
-                    parameter,
-                    new MarkdownText("# Edit author\n\nUse this editor to update additional author properties."),
-                    "Edit author",
-                    JIPipeDesktopParameterFormPanel.WITH_DOCUMENTATION | JIPipeDesktopParameterFormPanel.WITH_SEARCH_BAR | JIPipeDesktopParameterFormPanel.WITH_SCROLLING);
-            reload();
-        });
-        add(editButton);
+    private void pasteAuthor() {
+        try {
+            JIPipeAuthorMetadata authorMetadata = JsonUtils.readFromString(UIUtils.getStringFromClipboard(), JIPipeAuthorMetadata.class);
+            setParameter(authorMetadata, true);
+        }
+        catch (Exception e) {
+            JOptionPane.showMessageDialog(this, e.getMessage(), "Error pasting author", JOptionPane.ERROR_MESSAGE);
+        }
+    }
+
+    private void copyAuthor() {
+        JIPipeAuthorMetadata parameter = getParameter(JIPipeAuthorMetadata.class);
+        UIUtils.copyToClipboard(JsonUtils.toPrettyJsonString(parameter));
+    }
+
+    private void editAuthor() {
+        JIPipeAuthorMetadata parameter = getParameter(JIPipeAuthorMetadata.class);
+        JIPipeDesktopParameterFormPanel.showDialog(getDesktopWorkbench(),
+                parameter,
+                new MarkdownText("# Edit author\n\nUse this editor to update additional author properties."),
+                "Edit author",
+                JIPipeDesktopParameterFormPanel.WITH_DOCUMENTATION | JIPipeDesktopParameterFormPanel.DOCUMENTATION_NO_UI | JIPipeDesktopParameterFormPanel.WITH_SEARCH_BAR | JIPipeDesktopParameterFormPanel.WITH_SCROLLING);
+        reload();
     }
 
     @Override
@@ -91,13 +109,31 @@ public class JIPipeAuthorMetadataDesktopParameterEditorUI extends JIPipeDesktopP
 
     @Override
     public void reload() {
-        JIPipeAuthorMetadata parameter = getParameter(JIPipeAuthorMetadata.class);
-        try {
-            isReloading = true;
-            firstNameEditor.setText(parameter.getFirstName());
-            lastNameEditor.setText(parameter.getLastName());
-        } finally {
-            isReloading = false;
+        JIPipeAuthorMetadata author = getParameter(JIPipeAuthorMetadata.class);
+        if(!StringUtils.isNullOrEmpty(author.getFirstName()) || !StringUtils.isNullOrEmpty(author.getLastName())) {
+            nameLabel.setText(author.getFirstName() + " " + author.getLastName());
+            nameLabel.setForeground(ThemeUtils.getCurrentStyle().getTextForeground());
+        }
+        else {
+            nameLabel.setText("No name set. Please click Configure > Edit");
+            nameLabel.setForeground(ThemeUtils.getCurrentStyle().getDangerColor());
+        }
+
+        // TODO: Affiliations
+        if(false) {
+
+        }
+        else {
+            affiliationLabel.setText("-");
+        }
+
+        if(!StringUtils.isNullOrEmpty(author.getOrcidUrl())) {
+            orcidLabel.setText(author.getOrcidUrl());
+            orcidLabel.setForeground(ThemeUtils.getCurrentStyle().getTextMuted());
+        }
+        else {
+            orcidLabel.setText("No ORCID set");
+            orcidLabel.setForeground(ThemeUtils.getCurrentStyle().getDangerColor());
         }
     }
 }

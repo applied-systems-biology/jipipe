@@ -14,13 +14,19 @@
 package org.hkijena.jipipe.plugins.publish.rocrate;
 
 import edu.kit.datamanager.ro_crate.RoCrate;
+import edu.kit.datamanager.ro_crate.entities.contextual.JsonDescriptor;
+import edu.kit.datamanager.ro_crate.entities.contextual.PersonEntity;
 import edu.kit.datamanager.ro_crate.entities.data.FileEntity;
+import edu.kit.datamanager.ro_crate.writer.Writers;
 import org.hkijena.jipipe.JIPipe;
 import org.hkijena.jipipe.api.DefaultJIPipeRunnable;
+import org.hkijena.jipipe.api.JIPipeAuthorMetadata;
 import org.hkijena.jipipe.api.project.JIPipeProject;
+import org.hkijena.jipipe.plugins.pipelinerender.RenderPipelineRun;
+import org.hkijena.jipipe.plugins.pipelinerender.RenderPipelineRunSettings;
 import org.hkijena.jipipe.plugins.settings.JIPipeRuntimeApplicationSettings;
-import org.hkijena.jipipe.utils.ArchiveUtils;
 import org.hkijena.jipipe.utils.PathUtils;
+import org.hkijena.jipipe.utils.StringUtils;
 
 import java.io.IOException;
 import java.nio.charset.StandardCharsets;
@@ -51,30 +57,81 @@ public class CreateROCrateRun extends DefaultJIPipeRunnable {
         getProgressInfo().setLogToStdOut(true);
 
         Path tmpPath = JIPipeRuntimeApplicationSettings.getTemporaryDirectory("RO-Crate");
-        getProgressInfo().log("Creating RO-Crate for project " + project.getWorkDirectory() + " in temporary directory " + tmpPath);
+        getProgressInfo().log("Creating RO-Crate for project " + projectFile + " using temporary directory " + tmpPath + " to be saved to " + roCrateFile);
 
         // Create RO-Create metadata file
-        createROCrate(tmpPath);
+        RoCrate.RoCrateBuilder builder = createROCrateBuilder();
+        createReadme(tmpPath, builder);
+        createDiagram(tmpPath, builder);
 
         // Compress the directory
+//        try {
+////            ArchiveUtils.compressDirectoryToZip(tmpPath, "", roCrateFile, getProgressInfo().resolve("Compress"));
+//
+//        } catch (IOException e) {
+//            throw new RuntimeException(e);
+//        }
+        RoCrate crate = builder.build();
         try {
-            ArchiveUtils.compressDirectoryToZip(tmpPath, "", roCrateFile, getProgressInfo().resolve("Compress"));
-            PathUtils.deleteDirectoryRecursively(tmpPath, getProgressInfo().resolve("Cleanup"));
+            Writers.newZipPathWriter().withAutomaticProvenance(null).save(crate, roCrateFile.toAbsolutePath().toString());
         } catch (IOException e) {
             throw new RuntimeException(e);
         }
+        PathUtils.deleteDirectoryRecursively(tmpPath, getProgressInfo().resolve("Cleanup"));
     }
 
-    private void createROCrate(Path tmpPath) {
+    private void createDiagram(Path tmpPath, RoCrate.RoCrateBuilder builder) {
+        Path diagramPath = tmpPath.resolve("diagram.png");
+        RenderPipelineRun renderPipelineRun = new RenderPipelineRun(project, diagramPath, new RenderPipelineRunSettings());
+        renderPipelineRun.setProgressInfo(getProgressInfo().resolveAndLog("Creating diagram").detachProgress());
+        try {
+            renderPipelineRun.run();
+            builder.addDataEntity(new FileEntity.FileEntityBuilder()
+                    .setId("diagram.png")
+                    .setLocation(diagramPath)
+                    .addType("File")
+                    .addType("ImageObject")
+                    .addProperty("about", "./")
+                    .build());
+        } catch (Exception e) {
+            getProgressInfo().log(e);
+            getProgressInfo().log("Unable to create diagram!");
+        }
+    }
+
+    private RoCrate.RoCrateBuilder createROCrateBuilder() {
         RoCrate.RoCrateBuilder builder = new RoCrate.RoCrateBuilder(getProject().getMetadata().getName(),
                 getProject().getMetadata().getSummary().toPlainText(),
                 LocalDateTime.now().format(DateTimeFormatter.ISO_LOCAL_DATE),
                 getProject().getMetadata().getLicense());
+        builder.addContextualEntity(new JsonDescriptor.Builder().addConformsTo("https://w3id.org/workflowhub/workflow-ro-crate/1.0").build());
 
-        createReadme(tmpPath, builder);
+        // Add authors
+        for (JIPipeAuthorMetadata author : project.getMetadata().getAuthors()) {
+            PersonEntity.PersonEntityBuilder entityBuilder = new PersonEntity.PersonEntityBuilder();
+            entityBuilder.setId(author.getOrcidUrl());
+            if(!StringUtils.isNullOrEmpty(author.getFirstName())) {
+                entityBuilder.setGivenName(author.getFirstName());
+            }
+            if(!StringUtils.isNullOrEmpty(author.getLastName())) {
+                entityBuilder.setFamilyName(author.getLastName());
+            }
+            if(!StringUtils.isNullOrEmpty(author.getContact())) {
+                if(author.getContact().contains("@")) {
+                    entityBuilder.setEmail(author.getContact());
+                }
+                else {
+                    entityBuilder.setContactPoint(author.getContact());
+                }
+            }
+            // TODO: Better author system
+//            for (String affiliation : author.getAffiliations()) {
+//                entityBuilder.addProperty()
+//            }
 
-        RoCrate crate = builder.build();
-        System.out.println(crate.getJsonMetadata());
+        }
+
+        return builder;
     }
 
     private void createReadme(Path tmpPath, RoCrate.RoCrateBuilder builder) {

@@ -351,7 +351,7 @@ public class JIPipeDesktopProjectReportUI extends JIPipeDesktopProjectWorkbenchP
             final String NEW_LINE = "<br/>";
             List<String> affiliations = new ArrayList<>();
             for (JIPipeAuthorMetadata author : authorsList) {
-                for (String affiliation : author.getAffiliations()) {
+                for (String affiliation : author.getAffiliationsLegacy()) {
                     if (!affiliations.contains(affiliation)) {
                         affiliations.add(affiliation);
                     }
@@ -364,9 +364,9 @@ public class JIPipeDesktopProjectReportUI extends JIPipeDesktopProjectWorkbenchP
                 }
                 JIPipeAuthorMetadata author = authorsList.get(i);
                 stringBuilder.append(escaper.escape(author.toString()));
-                if (!author.getAffiliations().isEmpty()) {
+                if (!author.getAffiliationsLegacy().isEmpty()) {
                     stringBuilder.append(" [");
-                    StringList authorAffiliations = author.getAffiliations();
+                    StringList authorAffiliations = author.getAffiliationsLegacy();
                     for (int j = 0; j < authorAffiliations.size(); j++) {
                         String affiliation = authorAffiliations.get(j);
                         if (j > 0) {

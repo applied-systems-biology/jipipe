@@ -28,7 +28,6 @@ import org.hkijena.jipipe.plugins.parameters.library.primitives.StringParameterS
 import org.hkijena.jipipe.plugins.parameters.library.primitives.list.StringList;
 import org.hkijena.jipipe.utils.StringUtils;
 import org.hkijena.jipipe.utils.UIUtils;
-import org.hkijena.jipipe.JIPipe;
 
 import javax.swing.*;
 import java.awt.*;
@@ -42,9 +41,10 @@ public class JIPipeAuthorMetadata extends AbstractJIPipeParameterCollection {
     private String title;
     private String firstName;
     private String lastName;
-    private StringList affiliations = new StringList();
+    private StringList affiliationsLegacy = new StringList();
     private String website;
     private String contact;
+    private String email;
     private boolean firstAuthor;
     private boolean correspondingAuthor;
     private String orcid;
@@ -62,19 +62,21 @@ public class JIPipeAuthorMetadata extends AbstractJIPipeParameterCollection {
      * @param title               the title (can be empty)
      * @param firstName           first name
      * @param lastName            last name
-     * @param affiliations        list of affiliations
+     * @param affiliationsLegacy        list of affiliations
      * @param website             optional website link
      * @param contact             contact information, e.g., an E-Mail address
+     * @param email
      * @param firstAuthor         if the author is marked as first author
      * @param correspondingAuthor if the author is marked as corresponding author
      */
-    public JIPipeAuthorMetadata(String title, String firstName, String lastName, StringList affiliations, String website, String contact, String orcid, boolean firstAuthor, boolean correspondingAuthor) {
+    public JIPipeAuthorMetadata(String title, String firstName, String lastName, StringList affiliationsLegacy, String website, String contact, String email, String orcid, boolean firstAuthor, boolean correspondingAuthor) {
         this.title = title;
         this.firstName = firstName;
         this.lastName = lastName;
-        this.affiliations = affiliations;
+        this.affiliationsLegacy = affiliationsLegacy;
         this.website = website;
         this.contact = contact;
+        this.email = email;
         this.firstAuthor = firstAuthor;
         this.correspondingAuthor = correspondingAuthor;
         this.orcid = StringUtils.nullToEmpty(orcid);
@@ -86,19 +88,20 @@ public class JIPipeAuthorMetadata extends AbstractJIPipeParameterCollection {
      * @param title               the title (can be empty)
      * @param firstName           first name
      * @param lastName            last name
-     * @param affiliations        list of affiliations
+     * @param affiliationsLegacy        list of affiliations
      * @param website             optional website link
      * @param contact             contact information, e.g., an E-Mail address
      * @param firstAuthor         if the author is marked as first author
      * @param correspondingAuthor if the author is marked as corresponding author
      */
-    public JIPipeAuthorMetadata(String title, String firstName, String lastName, StringList affiliations, String website, String contact, boolean firstAuthor, boolean correspondingAuthor) {
+    public JIPipeAuthorMetadata(String title, String firstName, String lastName, StringList affiliationsLegacy, String website, String contact, String email, boolean firstAuthor, boolean correspondingAuthor) {
         this.title = title;
         this.firstName = firstName;
         this.lastName = lastName;
-        this.affiliations = affiliations;
+        this.affiliationsLegacy = affiliationsLegacy;
         this.website = website;
         this.contact = contact;
+        this.email = email;
         this.firstAuthor = firstAuthor;
         this.correspondingAuthor = correspondingAuthor;
         this.orcid = "";
@@ -107,7 +110,7 @@ public class JIPipeAuthorMetadata extends AbstractJIPipeParameterCollection {
     public JIPipeAuthorMetadata(JIPipeAuthorMetadata other) {
         this.firstName = other.firstName;
         this.lastName = other.lastName;
-        this.affiliations = new StringList(other.affiliations);
+        this.affiliationsLegacy = new StringList(other.affiliationsLegacy);
         this.website = other.website;
         this.contact = other.contact;
         this.correspondingAuthor = other.correspondingAuthor;
@@ -139,16 +142,23 @@ public class JIPipeAuthorMetadata extends AbstractJIPipeParameterCollection {
                     stringBuilder.append("<div><strong>Contact:</strong> ").append(HtmlEscapers.htmlEscaper().escape(author.getContact())).append("</div>");
                 }
             }
+            if (!StringUtils.isNullOrEmpty(author.getEmail())) {
+                if (author.getContact().contains("@")) {
+                    stringBuilder.append("<div><strong>E-Mail:</strong> <a href=\"mailto:").append(author.getContact()).append("\">").append(author.getContact()).append("</a></div>");
+                } else {
+                    stringBuilder.append("<div><strong>E-Mail:</strong> ").append(HtmlEscapers.htmlEscaper().escape(author.getContact())).append("</div>");
+                }
+            }
             if (!StringUtils.isNullOrEmpty(author.getOrcid())) {
                 stringBuilder.append("<div><strong>ORCID:</strong> <a href=\"").append(author.getOrcidUrl()).append("\">").append(author.getOrcidUrl()).append("</a></div>");
             }
             if (!StringUtils.isNullOrEmpty(author.getWebsite())) {
                 stringBuilder.append("<div><strong>Website:</strong> <a href=\"").append(author.getWebsite()).append("\">").append(author.getWebsite()).append("</a></div>");
             }
-            if (!author.getAffiliations().isEmpty()) {
+            if (!author.getAffiliationsLegacy().isEmpty()) {
                 stringBuilder.append("<h2>Affiliations</h2>");
                 stringBuilder.append("<ul>");
-                for (String affiliation : author.getAffiliations()) {
+                for (String affiliation : author.getAffiliationsLegacy()) {
                     stringBuilder.append("<li>").append(HtmlEscapers.htmlEscaper().escape(affiliation)).append("</li>");
                 }
                 stringBuilder.append("</ul>");
@@ -254,25 +264,41 @@ public class JIPipeAuthorMetadata extends AbstractJIPipeParameterCollection {
         this.lastName = lastName;
     }
 
-    @JIPipeParameter(value = "affiliations-list", uiOrder = 30)
+    @JIPipeParameter(value = "affiliations-list", uiOrder = 30, hidden = true)
     @SetJIPipeDocumentation(name = "Affiliations", description = "Author affiliations")
     @StringParameterSettings(multiline = true, monospace = true)
     @JsonGetter("affiliations-list")
-    public StringList getAffiliations() {
-        if (affiliations == null)
-            affiliations = new StringList();
-        return affiliations;
+    @Deprecated
+    public StringList getAffiliationsLegacy() {
+        if (affiliationsLegacy == null)
+            affiliationsLegacy = new StringList();
+        return affiliationsLegacy;
     }
 
     @JIPipeParameter("affiliations-list")
     @JsonSetter("affiliations-list")
-    public void setAffiliations(StringList affiliations) {
-        this.affiliations = affiliations;
+    @Deprecated
+    public void setAffiliationsLegacy(StringList affiliationsLegacy) {
+        this.affiliationsLegacy = affiliationsLegacy;
+    }
+
+    @JIPipeParameter(value = "email", uiOrder = 35)
+    @StringParameterSettings(monospace = true)
+    @SetJIPipeDocumentation(name = "E-Mail", description = "E-Mail")
+    @JsonGetter("email")
+    public String getEmail() {
+        return email;
+    }
+
+    @JIPipeParameter("email")
+    @JsonSetter("email")
+    public void setEmail(String email) {
+        this.email = email;
     }
 
     @JIPipeParameter(value = "contact", uiOrder = 40)
     @StringParameterSettings(monospace = true)
-    @SetJIPipeDocumentation(name = "Contact info", description = "Information on how to contact the author, for example an E-Mail address.")
+    @SetJIPipeDocumentation(name = "Contact info (misc)", description = "Additional contact info.")
     @JsonGetter("contact")
     public String getContact() {
         return contact;
@@ -355,9 +381,9 @@ public class JIPipeAuthorMetadata extends AbstractJIPipeParameterCollection {
         if (!StringUtils.isNullOrEmpty(contact) && !StringUtils.isNullOrEmpty(other.getContact())) {
             contact = other.getContact();
         }
-        for (String affiliation : other.getAffiliations()) {
-            if (!affiliations.contains(affiliation)) {
-                affiliations.add(affiliation);
+        for (String affiliation : other.getAffiliationsLegacy()) {
+            if (!affiliationsLegacy.contains(affiliation)) {
+                affiliationsLegacy.add(affiliation);
             }
         }
     }

@@ -68,8 +68,8 @@ public class MultiTemplateMatchingPlugin extends JIPipePrepackagedDefaultJavaPlu
     @Override
     public JIPipeAuthorMetadata.List getAcknowledgements() {
         return new JIPipeAuthorMetadata.List(new JIPipeAuthorMetadata("", "Laurent S. V.", "Thomas", new StringList("Acquifer is a division of Ditabis, Digital Biomedical Imaging Systems AG, Pforzheim, Germany",
-                "Centre of Paediatrics and Adolescent Medicine, University Hospital Heidelberg, Heidelberg, Germany"), "", "", true, false),
-                new JIPipeAuthorMetadata("", "Jochen", "Gehrig", new StringList("Acquifer is a division of Ditabis, Digital Biomedical Imaging Systems AG, Pforzheim, Germany"), "", "", true, false));
+                "Centre of Paediatrics and Adolescent Medicine, University Hospital Heidelberg, Heidelberg, Germany"), "", "", "", true, false),
+                new JIPipeAuthorMetadata("", "Jochen", "Gehrig", new StringList("Acquifer is a division of Ditabis, Digital Biomedical Imaging Systems AG, Pforzheim, Germany"), "", "", "", true, false));
     }
 
     @Override

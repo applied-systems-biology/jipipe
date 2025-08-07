@@ -81,25 +81,25 @@ public class WekaPlugin extends JIPipePrepackagedDefaultJavaPlugin {
                 "Ikerbasque, Basque Foundation for Science, Bilbao, Spain",
                 "Computer Science and Artificial Intelligence Department, Basque Country University, San Sebastian, Spain",
                 "Donostia International Physics Center, San Sebastian, Spain"
-        ), "", "", true, true),
+        ), "", "","", true, true),
                 new JIPipeAuthorMetadata("", "Verena", "Kaynig", new StringList(
                         "Harvard John A. Paulson School of Engineering and Applied Sciences, Harvard University, Cambridge, MA, USA"
-                ), "", "", false, false),
+                ), "", "","", false, false),
                 new JIPipeAuthorMetadata("", "Curtis", "Rueden", new StringList(
                         "Laboratory for Optical and Computational Instrumentation, University of Wisconsin, Madison, WI, USA"
-                ), "", "", false, false),
+                ), "", "","", false, false),
                 new JIPipeAuthorMetadata("", "Kevin W.", "Eliceiri", new StringList(
                         "Laboratory for Optical and Computational Instrumentation, University of Wisconsin, Madison, WI, USA"
-                ), "", "", false, false),
+                ), "", "","", false, false),
                 new JIPipeAuthorMetadata("", "Johannes", "Schindelin", new StringList(
                         "Laboratory for Optical and Computational Instrumentation, University of Wisconsin, Madison, WI, USA"
-                ), "", "", false, false),
+                ), "", "","", false, false),
                 new JIPipeAuthorMetadata("", "Albert", "Cardona", new StringList(
                         "Howard Hughes Medical Institute, Janelia Research Campus, Ashburn, VA, USA"
-                ), "", "", false, false),
+                ), "", "","", false, false),
                 new JIPipeAuthorMetadata("", "H Sebastian", "Seung", new StringList(
                         "Neuroscience Institute and Computer Science Department, Princeton University, NJ, USA"
-                ), "", "", false, false));
+                ), "", "","", false, false));
     }
 
     @Override

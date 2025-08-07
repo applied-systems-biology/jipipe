@@ -39,7 +39,7 @@ import org.hkijena.jipipe.plugins.pipelinerender.RenderPipelineRunSettings;
 import java.io.IOException;
 
 @SetJIPipeDocumentation(name = "Render JIPipe project pipeline", description = "Creates a single-image render of a whole JIPipe pipeline project. " +
-        "This node is equivalent to <code>Tools &gt; Project &gt; Export whole pipeline as *.png</code>. Please note that the pipelines should be arranged " +
+        "This node is equivalent to <code>Publish &gt; Whole-pipeline render</code>. Please note that the pipelines should be arranged " +
         "in a space-efficient way to reduce the file sizes.")
 @ConfigureJIPipeNode(menuPath = "Meta run", nodeTypeCategory = MiscellaneousNodeTypeCategory.class)
 @AddJIPipeInputSlot(value = FileData.class, name = "Project file", create = true)

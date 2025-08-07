@@ -41,38 +41,40 @@ public class PipelineRenderTool extends JIPipeDesktopMenuExtension {
      */
     public PipelineRenderTool(JIPipeDesktopWorkbench workbench) {
         super(workbench);
-        setText("Export whole pipeline as *.png");
+        setText("Whole pipeline render");
         setToolTipText("Rebuilds the node alias IDs for all nodes. This can help if the " +
                 "generated alias IDs are too long.");
         setIcon(JIPipe.RESOURCES.getIcon16("actions/camera.png"));
-        addActionListener(e -> runRenderTool());
+        addActionListener(e -> runRenderTool(getDesktopProjectWorkbench()));
     }
 
-    private void runRenderTool() {
-        JIPipeProject project = ((JIPipeDesktopProjectWorkbench) getDesktopWorkbench()).getProject();
-        MarkdownText document = new MarkdownText("# " + getText() + "\n\n" +
-                "Please check if you organized your compartments as compact as possible, to minimize computational load of generating a full resolution pipeline.");
+    public static void runRenderTool(JIPipeDesktopProjectWorkbench workbench) {
+        JIPipeProject project = workbench.getProject();
+        MarkdownText document = new MarkdownText("""
+                # Whole pipeline render
+                
+                Please check if you organized your compartments as compact as possible, to minimize computational load of generating a full resolution pipeline.""");
         RenderPipelineRunSettings settings = LAST_SETTINGS;
 
-        if (JIPipeDesktopParameterFormPanel.showDialog(getDesktopWorkbench(),
+        if (JIPipeDesktopParameterFormPanel.showDialog(workbench,
                 settings,
                 document,
-                getText(),
+                "Whole pipeline render",
                 JIPipeDesktopParameterFormPanel.WITH_SEARCH_BAR | JIPipeDesktopParameterFormPanel.WITH_SCROLLING | JIPipeDesktopParameterFormPanel.WITH_DOCUMENTATION)) {
-            Path path = JIPipeDesktop.saveFile(getDesktopWorkbench().getWindow(), getDesktopWorkbench(), JIPipeFileChooserApplicationSettings.LastDirectoryKey.External, getText(), HTMLText.EMPTY, PathUtils.EXTENSION_FILTER_PNG);
+            Path path = JIPipeDesktop.saveFile(workbench.getWindow(), workbench, JIPipeFileChooserApplicationSettings.LastDirectoryKey.External, "Whole pipeline render", HTMLText.EMPTY, PathUtils.EXTENSION_FILTER_PNG);
             if (path != null) {
-                JIPipeDesktopRunExecuteUI.runInDialog(getDesktopWorkbench(), getDesktopWorkbench().getWindow(), new RenderPipelineRun(project, path, settings));
+                JIPipeDesktopRunExecuteUI.runInDialog(workbench, workbench.getWindow(), new RenderPipelineRun(project, path, settings));
             }
         }
     }
 
     @Override
     public JIPipeMenuExtensionTarget getMenuTarget() {
-        return JIPipeMenuExtensionTarget.ProjectToolsMenu;
+        return JIPipeMenuExtensionTarget.ProjectPublishMenu;
     }
 
     @Override
     public String getMenuPath() {
-        return "Project";
+        return "";
     }
 }
