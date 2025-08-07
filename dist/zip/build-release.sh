@@ -198,7 +198,7 @@ for component in jipipe-core jipipe-desktop jipipe-cli jipipe-plugin-clij jipipe
 done
 
 cp -rv ./dependencies/* ./package/jars/
-for component in cwljava-1.2.0; do
+for component in jipipe-cwljava-1.2.0 jipipe-ro-crate-java-2.1.0; do
 	cp -v ../../contrib/$component/target/$component-SNAPSHOT.jar ./package/jars/$component.jar
 	cp -v ../../contrib/$component/target/$component.jar ./package/jars/$component.jar
 done

@@ -48,7 +48,8 @@
     "LICENSE_OrientationJ.txt": "https://raw.githubusercontent.com/Biomedical-Imaging-Group/OrientationJ/master/LICENSE"
   },
   "contrib-dependencies": [
-    "cwljava-1.2.0"
+    "jipipe-cwljava-1.2.0",
+    "jipipe-ro-crate-java-2.1.0"
   ],
   "jipipe-modules": [
     "jipipe-core",
