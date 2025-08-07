@@ -1,0 +1,23 @@
+{
+      "@id": "#DataCapture_wcc02",
+      "@type": "CreateAction",
+      "agent": {
+        "@id": "https://orcid.org/0000-0002-1672-552X"
+      },
+      "instrument": {
+        "@id": "https://confluence.csiro.au/display/ASL/Hovermap"
+      },
+      "result": [
+        {
+          "@id": "wcc02_arch.laz"
+        },
+        {
+          "@id": "wcc02_arch_traj.txt"
+        }
+      ],
+       "object": {
+        "@id": "#victoria_arch"
+      },
+        "startTime": "2017-06-10T12:56:14+10:00",
+        "endTime": "2017-06-11T12:56:14+10:00"
+}

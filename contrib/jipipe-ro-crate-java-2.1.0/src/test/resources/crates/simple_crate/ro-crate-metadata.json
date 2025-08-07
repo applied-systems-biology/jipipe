@@ -1,0 +1,16 @@
+{ "@context": "https://w3id.org/ro/crate/1.1/context",
+  "@graph": [
+    {
+      "@id": "./",
+      "@type": "Dataset",
+      "name" : "minimal",
+      "description" : "minimal RO_crate"
+    },
+    {
+      "@type": "CreativeWork",
+      "@id": "ro-crate-metadata.json",
+      "conformsTo": {"@id": "https://w3id.org/ro/crate/1.1"},
+      "about": {"@id": "./"}
+    }
+  ]
+}

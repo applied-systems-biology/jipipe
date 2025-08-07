@@ -1,0 +1,10 @@
+{
+    "@id": "#history-02",
+    "@type": "UpdateAction",
+    "object": { "@id": "https://doi.org/10.5281/zenodo.1009240" },
+    "name": "RO-Crate published",
+    "endTime": "2018-09-10",
+    "agent": { "@id": "https://orcid.org/0000-0001-5152-5307" },
+    "instrument": { "@id": "https://stash.research.uts.edu.au" },
+    "actionStatus":  {"@id":"http://schema.org/CompletedActionStatus" }
+}

@@ -1,0 +1,12 @@
+{
+  "@id" : "https://ror.org/03f0f6041",
+  "@type" : "Organization",
+  "address" : "set",
+  "email" : "Sydney@sy.kit",
+  "telephone" : "0665445",
+  "url" : "https://ror.org/03f0f6041",
+  "name" : "University of Technology Sydney",
+  "location" : {
+    "@id" : "#djfffff"
+  }
+}

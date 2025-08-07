@@ -1,0 +1,22 @@
+{
+  "@context" : "https://w3id.org/ro/crate/1.1/context",
+  "@graph" : [ {
+    "name" : "name",
+    "description" : "description",
+    "@id" : "./",
+    "@type" : "Dataset",
+    "license" : {
+      "@id" : "https://creativecommons.org/licenses/by-nc-sa/3.0/au/"
+    },
+    "datePublished" : "2024"
+  }, {
+    "about" : {
+      "@id" : "./"
+    },
+    "conformsTo" : {
+      "@id" : "https://w3id.org/ro/crate/1.1"
+    },
+    "@id" : "ro-crate-metadata.json",
+    "@type" : "CreativeWork"
+  } ]
+}

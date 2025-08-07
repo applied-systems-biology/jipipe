@@ -1,0 +1,218 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>sars-cov-2-variation-reporting/COVID-19-VARIATION-REPORTING</title>
+  <script type="application/ld+json">{
+  "@context": [
+    "https://w3id.org/ro/crate/1.1/context",
+    {
+      "GithubService": "https://w3id.org/ro/terms/test#GithubService",
+      "JenkinsService": "https://w3id.org/ro/terms/test#JenkinsService",
+      "PlanemoEngine": "https://w3id.org/ro/terms/test#PlanemoEngine",
+      "TestDefinition": "https://w3id.org/ro/terms/test#TestDefinition",
+      "TestInstance": "https://w3id.org/ro/terms/test#TestInstance",
+      "TestService": "https://w3id.org/ro/terms/test#TestService",
+      "TestSuite": "https://w3id.org/ro/terms/test#TestSuite",
+      "TravisService": "https://w3id.org/ro/terms/test#TravisService",
+      "definition": "https://w3id.org/ro/terms/test#definition",
+      "engineVersion": "https://w3id.org/ro/terms/test#engineVersion",
+      "instance": "https://w3id.org/ro/terms/test#instance",
+      "resource": "https://w3id.org/ro/terms/test#resource",
+      "runsOn": "https://w3id.org/ro/terms/test#runsOn"
+    }
+  ],
+  "@graph": [
+    {
+      "@id": "ro-crate-metadata.json",
+      "@type": "CreativeWork",
+      "about": {
+        "@id": "./"
+      },
+      "conformsTo": {
+        "@id": "https://w3id.org/ro/crate/1.1"
+      }
+    },
+    {
+      "@id": "ro-crate-preview.html",
+      "@type": "CreativeWork",
+      "about": {
+        "@id": "./"
+      }
+    },
+    {
+      "@id": "./",
+      "@type": "Dataset",
+      "datePublished": "2022-02-17T09:30:15.975078",
+      "hasPart": [
+        {
+          "@id": "variation-reporting.ga"
+        },
+        {
+          "@id": "README.md"
+        },
+        {
+          "@id": "variation-reporting-test.yml"
+        }
+      ],
+      "isBasedOn": "https://github.com/iwc-workflows/sars-cov-2-variation-reporting",
+      "license": "MIT",
+      "mainEntity": {
+        "@id": "variation-reporting.ga"
+      },
+      "mentions": [
+        {
+          "@id": "#test1"
+        }
+      ],
+      "name": "sars-cov-2-variation-reporting/COVID-19-VARIATION-REPORTING"
+    },
+    {
+      "@id": "variation-reporting.ga",
+      "@type": [
+        "File",
+        "SoftwareSourceCode",
+        "ComputationalWorkflow"
+      ],
+      "creator": [
+        {
+          "@id": "https://orcid.org/0000-0002-9464-6640"
+        }
+      ],
+      "name": "sars-cov-2-variation-reporting/COVID-19-VARIATION-REPORTING",
+      "programmingLanguage": {
+        "@id": "#galaxy"
+      },
+      "url": "https://github.com/iwc-workflows/sars-cov-2-variation-reporting",
+      "version": "0.2"
+    },
+    {
+      "@id": "README.md",
+      "@type": "File"
+    },
+    {
+      "@id": "variation-reporting-test.yml",
+      "@type": [
+        "File",
+        "TestDefinition"
+      ],
+      "conformsTo": {
+        "@id": "https://w3id.org/ro/terms/test#PlanemoEngine"
+      },
+      "engineVersion": ">=0.74.9"
+    },
+    {
+      "@id": "https://about.workflowhub.eu/Workflow-RO-Crate/",
+      "@type": "CreativeWork",
+      "name": "Workflow RO-Crate Profile",
+      "version": "0.2.0"
+    },
+    {
+      "@id": "#galaxy",
+      "@type": "ComputerLanguage",
+      "identifier": {
+        "@id": "https://galaxyproject.org/"
+      },
+      "name": "Galaxy",
+      "url": {
+        "@id": "https://galaxyproject.org/"
+      },
+      "version": "v19_09"
+    },
+    {
+      "@id": "https://orcid.org/0000-0002-9464-6640",
+      "@type": "Person",
+      "name": "Wolfgang Maier"
+    },
+    {
+      "@id": "#test1",
+      "@type": "TestSuite",
+      "definition": {
+        "@id": "variation-reporting-test.yml"
+      },
+      "instance": [
+        {
+          "@id": "#test1_1"
+        }
+      ],
+      "mainEntity": {
+        "@id": "variation-reporting.ga"
+      },
+      "name": "test1"
+    },
+    {
+      "@id": "#test1_1",
+      "@type": "TestInstance",
+      "name": "test1_1",
+      "resource": "repos/iwc-workflows/sars-cov-2-variation-reporting/actions/workflows/wftest.yml",
+      "runsOn": {
+        "@id": "https://w3id.org/ro/terms/test#GithubService"
+      },
+      "url": "https://api.github.com"
+    },
+    {
+      "@id": "https://w3id.org/ro/terms/test#GithubService",
+      "@type": "TestService",
+      "name": "Github Actions",
+      "url": {
+        "@id": "https://github.com"
+      }
+    },
+    {
+      "@id": "https://w3id.org/ro/terms/test#PlanemoEngine",
+      "@type": "SoftwareApplication",
+      "name": "Planemo",
+      "url": {
+        "@id": "https://github.com/galaxyproject/planemo"
+      }
+    }
+  ]
+}</script>
+  <meta name="generator" content="https://github.com/fbacall/ro-crate-ruby">
+  <meta name="keywords" content="RO-Crate">
+</head>
+<body>
+  <h1>sars-cov-2-variation-reporting/COVID-19-VARIATION-REPORTING</h1>
+  
+  <p>
+    
+  </p>
+  <dl>
+    
+    
+    
+    
+      <dt>License</dt>
+      <dd>MIT</dd>
+    
+  </dl>
+
+  <h2>Contents</h2>
+  <ul>
+    
+      <li id="__data_entity_variation-reporting.ga">
+        
+          <strong>sars-cov-2-variation-reporting/COVID-19-VARIATION-REPORTING</strong>
+        
+        
+        
+      </li>
+    
+      <li id="__data_entity_README.md">
+        
+          <strong>README.md</strong>
+        
+        
+        
+      </li>
+    
+      <li id="__data_entity_variation-reporting-test.yml">
+        
+          <strong>variation-reporting-test.yml</strong>
+        
+        
+        
+      </li>
+    
+  </ul>
+</body>
+</html>

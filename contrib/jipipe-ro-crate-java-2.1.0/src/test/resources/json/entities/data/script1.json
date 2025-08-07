@@ -1,0 +1,5 @@
+{
+  "@id": "scripts/analyse_csv.py",
+  "@type": [ "SoftwareSourceCode","File"],
+  "name": "Analyze CSV files"
+}

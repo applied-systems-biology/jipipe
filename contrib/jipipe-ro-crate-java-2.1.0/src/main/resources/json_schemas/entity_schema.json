@@ -1,0 +1,10 @@
+{
+  "$schema": "https://json-schema.org/draft/2019-09/schema",
+  "title": "Schema for the structure of the whole entity",
+  "type": "object",
+  "patternProperties": {
+    ".*": {
+      "$ref": "entity_field_structure_schema.json"
+    }
+  }
+}

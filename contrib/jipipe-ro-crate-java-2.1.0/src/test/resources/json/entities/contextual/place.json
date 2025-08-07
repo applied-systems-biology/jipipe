@@ -1,0 +1,11 @@
+{
+  "@id": "https://sws.geonames.org/8152662/",
+  "@type": "Place",
+  "description": "Catalina Park is a disused motor racing venue, located at Katoomba ...",
+  "geo": {
+    "@id": "#b4168a98-8534-4c6d-a568-64a55157b656"
+  },
+  "identifier": "https://sws.geonames.org/8152662/",
+  "uri": "https://www.geonames.org/8152662/catalina-park.html",
+  "name": "Catalina Park"
+}

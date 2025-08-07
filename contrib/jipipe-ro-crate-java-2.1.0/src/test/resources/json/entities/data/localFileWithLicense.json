@@ -1,0 +1,9 @@
+{
+  "@id": "example.json",
+  "@type": "File",
+  "name": "RO-Crate specification",
+  "license": {
+    "@id": "https://creativecommons.org/licenses/by/4.0/"
+  },
+  "encodingFormat": "application/json"
+}

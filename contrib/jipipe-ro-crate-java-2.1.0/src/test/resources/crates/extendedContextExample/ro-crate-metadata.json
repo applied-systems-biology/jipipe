@@ -1,0 +1,28 @@
+{
+  "@context": [
+    "https://w3id.org/ro/crate/1.1/context",
+    {
+      "owl": "https://www.w3.org/TR/owl-ref/#",
+      "datacite": "http://datacite.org/schema/kernel-4#",
+      "xsd": "http://www.w3.org/2001/XMLSchema#",
+      "rdfs": "https://www.w3.org/2000/01/rdf-schema#",
+      "custom": "_:"
+    }
+  ],
+  "@graph": [
+    {
+      "@id": "./",
+      "@type": "Dataset",
+      "name" : "minimal",
+      "description" : "minimal RO_crate",
+      "datePublished": "2024",
+      "license": {"@id": "https://creativecommons.org/licenses/by-nc-sa/3.0/au/"}
+    },
+    {
+      "@type": "CreativeWork",
+      "@id": "ro-crate-metadata.json",
+      "conformsTo": {"@id": "https://w3id.org/ro/crate/1.1"},
+      "about": {"@id": "./"}
+    }
+  ]
+}

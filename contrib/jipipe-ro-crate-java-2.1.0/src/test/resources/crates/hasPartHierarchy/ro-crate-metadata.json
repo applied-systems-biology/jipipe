@@ -1,0 +1,65 @@
+{
+    "@context": "https://w3id.org/ro/crate/1.1/context",
+    "@graph": [
+        {
+            "@type": "CreativeWork",
+            "@id": "ro-crate-metadata.json",
+            "conformsTo": {
+                "@id": "https://w3id.org/ro/crate/1.1"
+            },
+            "about": {
+                "@id": "./"
+            }
+        },
+        {
+            "@id": "./",
+            "@type": "Dataset",
+            "name": "Root element",
+            "description": "Description",
+            "license": {
+                "@id": "https://creativecommons.org/licenses/by-nc-sa/3.0/au/"
+            },
+            "hasPart": [
+                {"@id": "sub-a.file"},
+                {"@id": "sub-b.file"}
+            ]
+        },
+        {
+            "@id": "https://creativecommons.org/licenses/by-nc-sa/3.0/au/",
+            "@type": "CreativeWork",
+            "description": "Contextual entity (license)",
+            "identifier": "https://creativecommons.org/licenses/by-nc-sa/3.0/au/",
+            "name": "Attribution-NonCommercial-ShareAlike 3.0 Australia (CC BY-NC-SA 3.0 AU)"
+        },
+        {
+            "@id": "sub-a.file",
+            "@type": "File"
+        },
+        {
+            "@id": "sub-b.file",
+            "@type": "File",
+            "hasPart": {"@id": "sub-b-sub-a.file"}
+        },
+        {
+            "@id": "sub-b-sub-a.file",
+            "@type": "File",
+            "hasPart": {"@id": "looper.file"}
+        },
+        {
+            "@id": "sub-b-sub-b.file",
+            "@type": "File",
+            "isPartOf": { "@id": "sub-b.file" }
+        },
+        {
+            "@id": "looper.file",
+            "@type": "File",
+            "hasPart": {"@id": "sub-b.file"}
+        },
+        {
+            "@id": "looper-isPartOf.file",
+            "@type": "File",
+            "hasPart": {"@id": "sub-b.file"},
+            "isPartOf": {"@id": "sub-b.file"}
+        }
+    ]
+}

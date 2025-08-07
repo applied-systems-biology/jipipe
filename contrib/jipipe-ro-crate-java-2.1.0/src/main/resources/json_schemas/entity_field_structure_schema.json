@@ -1,0 +1,46 @@
+{
+  "$schema": "https://json-schema.org/draft/2019-09/schema",
+  "title": "Core schema meta-schema",
+  "anyOf": [
+    {
+      "type": "array",
+      "items": {
+        "anyOf": [
+          { "$ref": "#/$defs/idProperty"},
+          {"type": "string"},
+          {"type": "number"},
+          {"type": "boolean"},
+          {"type": "null"}
+        ]
+      }
+    },
+    {
+      "$ref": "#/$defs/idProperty"
+    },
+    {
+      "type": "string"
+    },
+    {
+      "type": "number"
+    },
+    {
+      "type": "boolean"
+    },
+    {
+      "type": "null"
+    }
+  ],
+  "$defs" : {
+    "idProperty": {
+      "type": ["object"],
+      "properties": {
+        "@id": {
+          "type": ["string"]
+        }
+      },
+      "required": ["@id"],
+      "additionalProperties": false
+    }
+
+    }
+}

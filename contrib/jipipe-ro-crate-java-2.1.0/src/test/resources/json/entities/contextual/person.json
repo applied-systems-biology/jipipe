@@ -1,0 +1,13 @@
+{
+  "@id": "https://orcid.org/0000-0001-6121-5409",
+  "@type": "Person",
+  "contactPoint": {
+    "@id": "mailto:tim.luckett@uts.edu.au"
+  },
+  "affiliation": {
+    "@id": "https://ror.org/03f0f6041"
+  },
+  "familyName": "Luckett",
+  "givenName": "Tim",
+  "name": "Tim Luckett"
+}

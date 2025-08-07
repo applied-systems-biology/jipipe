@@ -1,0 +1,339 @@
+<project xmlns="http://maven.apache.org/POM/4.0.0"
+         xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0
+                             https://maven.apache.org/xsd/maven-4.0.0.xsd">
+    <modelVersion>4.0.0</modelVersion>
+
+    <parent>
+        <artifactId>pom-jipipe</artifactId>
+        <groupId>org.hkijena</groupId>
+        <version>6.0.0-SNAPSHOT</version>
+    </parent>
+
+    <groupId>org.hkijena.jipipe.contrib</groupId>
+    <artifactId>jipipe-ro-crate-library</artifactId>
+    <version>1.0.0</version>
+    <name>RO-Crate Library (JIPipe)</name>
+    <description>A library for easy creation and modification of valid RO-Crates. Variant distributed with JIPipe, ensuring compatibility.</description>
+
+    <url>https://www.jipipe.org/</url>
+    <inceptionYear>2020</inceptionYear>
+    <organization>
+        <name>Leibniz Institute for Natural Product Research and Infection Biology - Hans Knöll Institute (HKI)</name>
+        <url>https://www.leibniz-hki.de/</url>
+    </organization>
+    <licenses>
+        <license>
+            <name>Apache-2.0</name>
+            <url>https://www.apache.org/licenses/LICENSE-2.0</url>
+            <distribution>repo</distribution>
+        </license>
+    </licenses>
+    <developers>
+        <developer>
+            <id>Pfeil</id>
+            <name>Andreas Pfeil</name>
+            <url>https://github.com/Pfeil</url>
+        </developer>
+        <developer>
+            <id>Zseresnyes</id>
+            <name>Nikola Tzotchev</name>
+            <url>https://github.com/nikolatzotchev</url>
+        </developer>
+        <developer>
+            <id>sabrineChe</id>
+            <name>Sabrine Chelbi</name>
+            <url>https://github.com/sabrineChe</url>
+        </developer>
+        <developer>
+            <id>ThomasJejkal</id>
+            <name>Thomas Jejkal</name>
+            <url>https://github.com/ThomasJejkal</url>
+        </developer>
+        <developer>
+            <id>Code42Cate</id>
+            <name>Jonas Scholz</name>
+            <url>https://github.com/Code42Cate</url>
+        </developer>
+        <developer>
+            <id>fpotier</id>
+            <name>fpotier</name>
+            <url>https://github.com/fpotier</url>
+        </developer>
+    </developers>
+    <contributors>
+        <contributor>
+            <name>Ruman Gerst</name>
+            <url>https://www.leibniz-hki.de/en/asb-staff-details.html?member=1027</url>
+        </contributor>
+        <contributor>
+            <name>Zoltán Cseresnyés</name>
+            <url>https://www.leibniz-hki.de/en/asb-staff-details.html?member=144</url>
+        </contributor>
+        <contributor>
+            <name>Marc Thilo Figge</name>
+            <url>https://www.leibniz-hki.de/en/staff-details.html?member=81</url>
+        </contributor>
+    </contributors>
+    <mailingLists>
+        <mailingList>
+            <name>HKI Jena</name>
+            <archive>https://www.leibniz-hki.de/de/angewandte-systembiologie.html</archive>
+        </mailingList>
+    </mailingLists>
+    <scm>
+        <connection>scm:git:https://github.com/applied-systems-biology/jipipe</connection>
+        <developerConnection>scm:git:https://github.com/applied-systems-biology/jipipe</developerConnection>
+        <tag>HEAD</tag>
+        <url>https://github.com/applied-systems-biology/jipipe</url>
+    </scm>
+    <issueManagement>
+        <system>GitHub Issues</system>
+        <url>https://github.com/applied-systems-biology/jipipe/issues</url>
+    </issueManagement>
+    <ciManagement>
+        <system>GitHub CI</system>
+        <url>https://github.com/applied-systems-biology/jipipe</url>
+    </ciManagement>
+
+    <properties>
+        <maven.compiler.source>17</maven.compiler.source>
+        <maven.compiler.target>17</maven.compiler.target>
+        <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
+        <jacoco.version>0.8.13</jacoco.version>
+    </properties>
+
+    <dependencyManagement>
+        <dependencies>
+            <dependency>
+                <groupId>com.fasterxml.jackson.core</groupId>
+                <artifactId>jackson-databind</artifactId>
+                <version>2.18.0</version>
+            </dependency>
+            <dependency>
+                <groupId>com.fasterxml.jackson.datatype</groupId>
+                <artifactId>jackson-datatype-jsr310</artifactId>
+                <version>2.18.0</version>
+            </dependency>
+            <dependency>
+                <groupId>org.apache.httpcomponents</groupId>
+                <artifactId>httpclient</artifactId>
+                <version>4.5.14</version>
+            </dependency>
+            <dependency>
+                <groupId>commons-io</groupId>
+                <artifactId>commons-io</artifactId>
+                <version>2.19.0</version>
+            </dependency>
+            <dependency>
+                <groupId>net.lingala.zip4j</groupId>
+                <artifactId>zip4j</artifactId>
+                <version>2.11.5</version>
+            </dependency>
+            <dependency>
+                <groupId>com.github.fslev</groupId>
+                <artifactId>json-compare</artifactId>
+                <version>7.0</version>
+            </dependency>
+            <dependency>
+                <groupId>commons-validator</groupId>
+                <artifactId>commons-validator</artifactId>
+                <version>1.9.0</version>
+            </dependency>
+            <dependency>
+                <groupId>org.slf4j</groupId>
+                <artifactId>slf4j-jdk14</artifactId>
+                <version>2.0.17</version>
+            </dependency>
+            <dependency>
+                <groupId>com.apicatalog</groupId>
+                <artifactId>titanium-json-ld</artifactId>
+                <version>1.6.0</version>
+            </dependency>
+            <dependency>
+                <groupId>com.networknt</groupId>
+                <artifactId>json-schema-validator</artifactId>
+                <version>1.5.7</version>
+            </dependency>
+            <dependency>
+                <groupId>org.glassfish</groupId>
+                <artifactId>jakarta.json</artifactId>
+                <version>2.0.1</version>
+            </dependency>
+            <dependency>
+                <groupId>gg.jte</groupId>
+                <artifactId>jte</artifactId>
+                <version>3.2.1</version>
+            </dependency>
+            <dependency>
+                <groupId>org.freemarker</groupId>
+                <artifactId>freemarker</artifactId>
+                <version>2.3.34</version>
+            </dependency>
+            <dependency>
+                <groupId>org.junit.jupiter</groupId>
+                <artifactId>junit-jupiter</artifactId>
+                <version>5.13.0</version>
+            </dependency>
+            <dependency>
+                <groupId>org.junit.platform</groupId>
+                <artifactId>junit-platform-launcher</artifactId>
+                <version>1.13.0</version>
+            </dependency>
+        </dependencies>
+    </dependencyManagement>
+
+    <dependencies>
+        <dependency>
+            <groupId>com.google.guava</groupId>
+            <artifactId>guava</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>com.fasterxml.jackson.core</groupId>
+            <artifactId>jackson-databind</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>com.fasterxml.jackson.datatype</groupId>
+            <artifactId>jackson-datatype-jsr310</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>org.apache.httpcomponents</groupId>
+            <artifactId>httpclient</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>commons-io</groupId>
+            <artifactId>commons-io</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>net.lingala.zip4j</groupId>
+            <artifactId>zip4j</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>com.github.fslev</groupId>
+            <artifactId>json-compare</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>commons-validator</groupId>
+            <artifactId>commons-validator</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>org.slf4j</groupId>
+            <artifactId>slf4j-jdk14</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>com.apicatalog</groupId>
+            <artifactId>titanium-json-ld</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>com.networknt</groupId>
+            <artifactId>json-schema-validator</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>org.glassfish</groupId>
+            <artifactId>jakarta.json</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>gg.jte</groupId>
+            <artifactId>jte</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>org.freemarker</groupId>
+            <artifactId>freemarker</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>org.junit.jupiter</groupId>
+            <artifactId>junit-jupiter</artifactId>
+            <scope>test</scope>
+        </dependency>
+        <dependency>
+            <groupId>org.junit.platform</groupId>
+            <artifactId>junit-platform-launcher</artifactId>
+            <scope>test</scope>
+        </dependency>
+    </dependencies>
+
+    <build>
+        <plugins>
+            <!-- Java Compiler -->
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-compiler-plugin</artifactId>
+                <version>3.11.0</version>
+                <configuration>
+                    <source>${maven.compiler.source}</source>
+                    <target>${maven.compiler.target}</target>
+                    <encoding>${project.build.sourceEncoding}</encoding>
+                    <compilerArgs>
+                        <arg>-Xlint:deprecation</arg>
+                    </compilerArgs>
+                </configuration>
+            </plugin>
+
+            <!-- Testing with JUnit 5 -->
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-surefire-plugin</artifactId>
+                <version>3.2.5</version>
+                <configuration>
+                    <useModulePath>false</useModulePath>
+                </configuration>
+            </plugin>
+
+            <!-- JaCoCo -->
+            <plugin>
+                <groupId>org.jacoco</groupId>
+                <artifactId>jacoco-maven-plugin</artifactId>
+                <version>${jacoco.version}</version>
+                <executions>
+                    <execution>
+                        <goals><goal>prepare-agent</goal></goals>
+                    </execution>
+                    <execution>
+                        <id>report</id>
+                        <phase>verify</phase>
+                        <goals><goal>report</goal></goals>
+                        <configuration>
+                            <outputDirectory>${project.build.directory}/jacoco-report</outputDirectory>
+                        </configuration>
+                    </execution>
+                </executions>
+            </plugin>
+
+            <!-- Maven JAR Signing & Publishing -->
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-gpg-plugin</artifactId>
+                <version>3.1.0</version>
+                <executions>
+                    <execution>
+                        <id>sign-artifacts</id>
+                        <phase>verify</phase>
+                        <goals><goal>sign</goal></goals>
+                    </execution>
+                </executions>
+            </plugin>
+
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-deploy-plugin</artifactId>
+                <version>3.1.1</version>
+            </plugin>
+
+            <!-- Properties file generation -->
+            <plugin>
+                <groupId>org.codehaus.mojo</groupId>
+                <artifactId>buildnumber-maven-plugin</artifactId>
+                <version>1.4</version>
+                <executions>
+                    <execution>
+                        <phase>initialize</phase>
+                        <goals><goal>create</goal></goals>
+                    </execution>
+                </executions>
+            </plugin>
+
+            <!-- Coveralls plugin would be part of CI configuration, not POM -->
+        </plugins>
+    </build>
+
+</project>

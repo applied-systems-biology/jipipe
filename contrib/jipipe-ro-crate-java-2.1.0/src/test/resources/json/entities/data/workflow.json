@@ -1,0 +1,38 @@
+{
+  "@id": "workflow/alignment.knime",
+  "@type": [
+    "SoftwareSourceCode",
+    "ComputationalWorkflow",
+    "File"
+  ],
+  "conformsTo": {
+    "@id": "https://bioschemas.org/profiles/ComputationalWorkflow/0.5-DRAFT-2020_07_21/"
+  },
+  "name": "Sequence alignment workflow",
+  "programmingLanguage": {
+    "@id": "#knime"
+  },
+  "author": {
+    "@id": "#alice"
+  },
+  "dateCreated": "2020-05-23",
+  "license": {
+    "@id": "https://spdx.org/licenses/CC-BY-NC-SA-4.0"
+  },
+  "input": {
+    "@id": "#36aadbd4-4a2d-4e33-83b4-0cbf6a6a8c5b"
+  },
+  "output": [
+    {
+      "@id": "#6c703fee-6af7-4fdb-a57d-9e8bc4486044"
+    },
+    {
+      "@id": "#2f32b861-e43c-401f-8c42-04fd84273bdf"
+    }
+  ],
+  "sdPublisher": {
+    "@id": "#workflow-hub"
+  },
+  "url": "http://example.com/workflows/alignment",
+  "version": "0.5.0"
+}

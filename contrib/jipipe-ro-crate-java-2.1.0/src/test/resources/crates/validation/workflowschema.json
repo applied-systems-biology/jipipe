@@ -1,0 +1,44 @@
+{
+  "required": [
+    "@context",
+    "@graph"
+  ],
+  "properties": {
+    "@graph": {
+      "type": "array",
+      "contains": {
+        "type": "object",
+        "properties": {
+          "@type": {
+            "type": "array",
+            "allOf": [
+              {
+                "contains": {
+                  "const": "File"
+                }
+              },
+              {
+                "contains": {
+                  "const": "ComputationalWorkflow"
+                }
+              },
+              {
+                "contains": {
+                  "const": "SoftwareSourceCode"
+                }
+              }
+            ]
+          }
+        }
+      },
+      "items": {
+        "type": "object",
+        "properties": {
+          "@id": {
+            "type": "string"
+          }
+        }
+      }
+    }
+  }
+}

@@ -1,0 +1,7 @@
+{
+      "@id": "https://www.imagemagick.org/",
+      "@type": "SoftwareApplication",
+      "url": "https://www.imagemagick.org/",
+      "name": "ImageMagick",
+      "version": "ImageMagick 6.9.7-4 Q16 x86_64 20170114 http://www.imagemagick.org"
+}

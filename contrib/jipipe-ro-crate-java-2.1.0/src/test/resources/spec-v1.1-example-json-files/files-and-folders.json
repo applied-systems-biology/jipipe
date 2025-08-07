@@ -1,0 +1,38 @@
+{ "@context": "https://w3id.org/ro/crate/1.1/context",
+  "@graph": [
+    {
+      "@type": "CreativeWork",
+      "@id": "ro-crate-metadata.json",
+      "conformsTo": {"@id": "https://w3id.org/ro/crate/1.1"},
+      "about": {"@id": "./"}
+    },
+    {
+      "@id": "./",
+      "@type": [
+        "Dataset"
+      ],
+      "hasPart": [
+        {
+          "@id": "cp7glop.ai"
+        },
+        {
+          "@id": "lots_of_little_files/"
+        }
+      ]
+    },
+    {
+      "@id": "cp7glop.ai",
+      "@type": "File",
+      "name": "Diagram showing trend to increase",
+      "contentSize": "383766",
+      "description": "Illustrator file for Glop Pot",
+      "encodingFormat": "application/pdf"
+    },
+    {
+      "@id": "lots_of_little_files/",
+      "@type": "Dataset",
+      "name": "Too many files",
+      "description": "This directory contains many small files, that we're not going to describe in detail."
+    }
+  ]
+}

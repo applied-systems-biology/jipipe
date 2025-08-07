@@ -1,0 +1,24 @@
+{
+  "@id": "./",
+  "identifier": "https://doi.org/10.4225/59/59672c09f4a4b",
+  "@type": "Dataset",
+  "datePublished": "2000-02-01T00:00:00Z",
+  "name": "Data files associated with the manuscript:Effects of facilitated family case conferencing for ...",
+  "description": "Palliative care planning for nursing home residents with advanced dementia ...",
+  "hasPart": [
+    {
+      "@id": "file1_id"
+    },
+    {
+      "@id": "file2_id"
+    }
+  ],
+  "author": [
+    {
+      "@id": "a1"
+    },
+    {
+      "@id": "a2"
+    }
+  ]
+}

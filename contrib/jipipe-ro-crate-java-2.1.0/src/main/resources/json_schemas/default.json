@@ -1,0 +1,20 @@
+{
+  "$schema": "https://json-schema.org/draft/2019-09/schema",
+  "required": [
+    "@context",
+    "@graph"
+  ],
+  "properties": {
+    "@graph": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "patternProperties": {
+          ".*": {
+            "$ref": "entity_field_structure_schema.json"
+          }
+        }
+      }
+    }
+  }
+}

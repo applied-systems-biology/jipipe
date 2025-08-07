@@ -1,0 +1,6 @@
+{
+  "@id": "example.json",
+  "@type": "File",
+  "name": "RO-Crate specification",
+  "encodingFormat": "application/json"
+}

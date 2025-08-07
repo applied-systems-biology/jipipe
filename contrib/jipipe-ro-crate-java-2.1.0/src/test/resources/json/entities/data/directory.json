@@ -1,0 +1,6 @@
+{
+  "@id": "lots_of_little_files/",
+  "@type": "Dataset",
+  "name": "Too many files",
+  "description": "This directory contains many small files, that we're not going to describe in detail."
+}

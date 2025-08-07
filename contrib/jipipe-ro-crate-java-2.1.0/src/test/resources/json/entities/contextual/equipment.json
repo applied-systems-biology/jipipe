@@ -1,0 +1,10 @@
+{
+  "@id": "https://confluence.csiro.au/display/ASL/Hovermap",
+  "@type": "IndividualProduct",
+  "description": "The CSIRO bentwing is an unmanned aerial vehicle (UAV, commonly known as a drone) with a LIDAR ... ",
+  "serialNumber": "1111122233321231",
+  "manufacturer": {
+    "@id": "https://www.atlassian.com/software/confluence"
+  },
+  "name": "Bentwing"
+}
