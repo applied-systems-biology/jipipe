@@ -154,6 +154,42 @@ if [ ! -e "./dependencies/jcef-api-jcef-ca49ada+cef-135.0.20+ge7de5c3+chromium-1
 	mkdir -p "./dependencies"
 	wget -O ./dependencies/jcef-api-jcef-ca49ada+cef-135.0.20+ge7de5c3+chromium-135.0.7049.85.jar https://repo1.maven.org/maven2/me/friwi/jcef-api/jcef-ca49ada+cef-135.0.20+ge7de5c3+chromium-135.0.7049.85/jcef-api-jcef-ca49ada+cef-135.0.20+ge7de5c3+chromium-135.0.7049.85.jar
 fi
+if [ ! -e "./dependencies/jackson-datatype-jsr310-2.18.0.jar" ]; then
+	mkdir -p "./dependencies"
+	wget -O ./dependencies/jackson-datatype-jsr310-2.18.0.jar https://repo1.maven.org/maven2/com/fasterxml/jackson/datatype/jackson-datatype-jsr310/2.18.0/jackson-datatype-jsr310-2.18.0.jar
+fi
+if [ ! -e "./dependencies/zip4j-2.11.5.jar" ]; then
+	mkdir -p "./dependencies"
+	wget -O ./dependencies/zip4j-2.11.5.jar https://repo1.maven.org/maven2/net/lingala/zip4j/zip4j/2.11.5/zip4j-2.11.5.jar
+fi
+if [ ! -e "./dependencies/json-compare-7.0.jar" ]; then
+	mkdir -p "./dependencies"
+	wget -O ./dependencies/json-compare-7.0.jar https://repo1.maven.org/maven2/com/github/fslev/json-compare/7.0/json-compare-7.0.jar
+fi
+if [ ! -e "./dependencies/commons-validator-1.9.0.jar" ]; then
+	mkdir -p "./dependencies"
+	wget -O ./dependencies/commons-validator-1.9.0.jar https://repo1.maven.org/maven2/commons-validator/commons-validator/1.9.0/commons-validator-1.9.0.jar
+fi
+if [ ! -e "./dependencies/titanium-json-ld-1.6.0.jar" ]; then
+	mkdir -p "./dependencies"
+	wget -O ./dependencies/titanium-json-ld-1.6.0.jar https://repo1.maven.org/maven2/com/apicatalog/titanium-json-ld/1.6.0/titanium-json-ld-1.6.0.jar
+fi
+if [ ! -e "./dependencies/json-schema-validator-1.5.7.jar" ]; then
+	mkdir -p "./dependencies"
+	wget -O ./dependencies/json-schema-validator-1.5.7.jar https://repo1.maven.org/maven2/com/networknt/json-schema-validator/1.5.7/json-schema-validator-1.5.7.jar
+fi
+if [ ! -e "./dependencies/jakarta.json-2.0.1.jar" ]; then
+	mkdir -p "./dependencies"
+	wget -O ./dependencies/jakarta.json-2.0.1.jar https://repo1.maven.org/maven2/org/glassfish/jakarta.json/2.0.1/jakarta.json-2.0.1.jar
+fi
+if [ ! -e "./dependencies/jte-3.2.1.jar" ]; then
+	mkdir -p "./dependencies"
+	wget -O ./dependencies/jte-3.2.1.jar https://repo1.maven.org/maven2/gg/jte/jte/3.2.1/jte-3.2.1.jar
+fi
+if [ ! -e "./dependencies/freemarker-2.3.34.jar" ]; then
+	mkdir -p "./dependencies"
+	wget -O ./dependencies/freemarker-2.3.34.jar https://repo1.maven.org/maven2/org/freemarker/freemarker/2.3.34/freemarker-2.3.34.jar
+fi
 if [ ! -e "./dependencies/LICENSE_Javaluator.html" ]; then
 	mkdir -p "./dependencies"
 	wget -O ./dependencies/LICENSE_Javaluator.html https://opensource.org/licenses/lgpl-3.0.html
