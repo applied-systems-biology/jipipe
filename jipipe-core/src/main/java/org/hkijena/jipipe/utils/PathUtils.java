@@ -634,7 +634,13 @@ public class PathUtils {
         try {
             Files.createDirectories(root);
             while (true) {
-                Path path = root.resolve(StringUtils.nullToEmpty(prefix) + StringUtils.generateRandomString(RANDOM_TMP_CHARACTERS, RANDOM_TMP_LENGTH));
+                Path path;
+                if(StringUtils.isNullOrEmpty(prefix)) {
+                    path = root.resolve(StringUtils.generateRandomString(RANDOM_TMP_CHARACTERS, RANDOM_TMP_LENGTH));
+                }
+                else {
+                    path = root.resolve(StringUtils.nullToEmpty(prefix) + "-" + StringUtils.generateRandomString(RANDOM_TMP_CHARACTERS, RANDOM_TMP_LENGTH));
+                }
                 if (!Files.exists(path)) {
                     Files.createDirectories(path);
                     return path;
