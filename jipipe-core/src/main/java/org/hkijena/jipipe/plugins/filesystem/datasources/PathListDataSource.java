@@ -150,7 +150,7 @@ public class PathListDataSource extends JIPipeAlgorithm {
     }
 
     @Override
-    public void archiveTo(JIPipeWriteDataStorage projectStorage, JIPipeWriteDataStorage wrappedExternalStorage, JIPipeProgressInfo progressInfo, Path originalBaseDirectory) {
+    public void archiveTo(JIPipeWriteDataStorage projectStorage, JIPipeWriteDataStorage wrappedExternalStorage, JIPipeProgressInfo progressInfo, Path originalBaseDirectory, Path relativeInputsPath) {
         PathList relativeFileNames = getRelativePaths();
         PathList absoluteFileNames = getAbsolutePaths();
         PathList newPaths = new PathList();
@@ -165,18 +165,18 @@ public class PathListDataSource extends JIPipeAlgorithm {
                 if (source.startsWith(originalBaseDirectory)) {
                     // The data is located in the project directory. We can directly copy the file.
                     Path relativePath = originalBaseDirectory.relativize(source);
-                    target = projectStorage.getFileSystemPath().resolve(relativePath);
+                    target = projectStorage.getFileSystemPath().resolve(relativeInputsPath).resolve(relativePath);
                 } else {
                     // The data is located outside the project directory. Needs to be copied into a unique directory.
                     String externalFileName = relativeFileNames.get(i).getFileName().toString();
                     if (!externalFileNames.contains(externalFileName)) {
                         // Not yet in external storage. Add it
-                        target = wrappedExternalStorage.resolve(getAliasIdInParentGraph()).getFileSystemPath().resolve(externalFileName);
+                        target = wrappedExternalStorage.resolve(relativeInputsPath).resolve(getAliasIdInParentGraph()).getFileSystemPath().resolve(externalFileName);
                         externalFileNames.add(externalFileName);
                     } else {
                         // We need to make a new target dir (UUID)
                         progressInfo.log("Warning: Duplicate path name in external storage (" + externalFileName + "). Creating new UUID sub-storage in " + getAliasIdInParentGraph());
-                        target = wrappedExternalStorage.resolve(getAliasIdInParentGraph()).resolve(UUID.randomUUID().toString()).getFileSystemPath().resolve(externalFileName);
+                        target = wrappedExternalStorage.resolve(relativeInputsPath).resolve(getAliasIdInParentGraph()).resolve(UUID.randomUUID().toString()).getFileSystemPath().resolve(externalFileName);
                         externalFileNames.add(externalFileName);
                     }
                 }
@@ -201,6 +201,24 @@ public class PathListDataSource extends JIPipeAlgorithm {
             }
         }
         setPaths(newPaths);
+    }
+
+    @Override
+    public void reportArchiveValidation(JIPipeValidationReportContext context, JIPipeValidationReport report, Path originalBaseDirectory) {
+        PathList relativeFileNames = getRelativePaths();
+        PathList absoluteFileNames = getAbsolutePaths();
+
+        for (int i = 0; i < relativeFileNames.size(); i++) {
+            Path source = absoluteFileNames.get(i);
+            if (source == null || !Files.exists(source)) {
+                report.report(new JIPipeValidationReportEntry(JIPipeValidationReportEntryLevel.Warning, context, "Unable to find path", "The path " + getPaths().get(i) + " does not exist"));
+            } else {
+                if (!source.startsWith(originalBaseDirectory)) {
+                    report.report(new JIPipeValidationReportEntry(JIPipeValidationReportEntryLevel.Warning, context, "Path not relative to project", "The path " + getPaths().get(i) + " is not located relative to the project file. " +
+                            "The resulting archive will contain directories with randomly generated names."));
+                }
+            }
+        }
     }
 
     @SetJIPipeDocumentation(name = "Paths to absolute", description = "Converts the stored paths to absolute paths.")

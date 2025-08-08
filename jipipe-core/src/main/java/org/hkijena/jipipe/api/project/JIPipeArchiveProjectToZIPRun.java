@@ -44,7 +44,7 @@ public class JIPipeArchiveProjectToZIPRun extends JIPipeArchiveProjectRun {
             }
         }
         try (JIPipeZIPWriteDataStorage projectStorage = new JIPipeZIPWriteDataStorage(getProgressInfo(), outputFile)) {
-            archive(projectStorage, projectStorage.resolve(UUID.randomUUID().toString()));
+            archive(projectStorage, projectStorage.resolve(UUID.randomUUID().toString()), Path.of("inputs"));
         } catch (IOException e) {
             throw new RuntimeException(e);
         }

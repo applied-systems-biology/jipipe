@@ -38,7 +38,7 @@ public abstract class JIPipeArchiveProjectRun extends DefaultJIPipeRunnable {
         return project;
     }
 
-    protected void archive(JIPipeWriteDataStorage projectStorage, JIPipeWriteDataStorage wrappedExternalStorage) throws IOException {
+    protected void archive(JIPipeWriteDataStorage projectStorage, JIPipeWriteDataStorage wrappedExternalStorage, Path inputsSubPath) throws IOException {
         JIPipeProgressInfo progressInfo = getProgressInfo();
         progressInfo.setProgress(0, 3);
         progressInfo.log("Copying project ...");
@@ -48,12 +48,13 @@ public abstract class JIPipeArchiveProjectRun extends DefaultJIPipeRunnable {
 
         // Load the project again
         JIPipeProject copyProject = JIPipeProject.loadProject(tempFile, new UnspecifiedValidationReportContext(), new JIPipeValidationReport(), new JIPipeNotificationInbox());
+        copyProject.setWorkDirectory(project.getWorkDirectory());
         ImmutableList<JIPipeGraphNode> graphNodes = ImmutableList.copyOf(copyProject.getGraph().getGraphNodes());
         progressInfo.setProgress(0, graphNodes.size());
         JIPipeProgressInfo archivingProgress = progressInfo.resolve("Archiving data");
         for (int i = 0; i < graphNodes.size(); i++) {
             JIPipeGraphNode graphNode = graphNodes.get(i);
-            graphNode.archiveTo(projectStorage, wrappedExternalStorage, archivingProgress.resolveAndLog(graphNode.getDisplayName(), i, graphNodes.size()), getProject().getWorkDirectory());
+            graphNode.archiveTo(projectStorage, wrappedExternalStorage, archivingProgress.resolveAndLog(graphNode.getDisplayName(), i, graphNodes.size()), getProject().getWorkDirectory(), inputsSubPath);
         }
 
         progressInfo.setProgress(2, 3);

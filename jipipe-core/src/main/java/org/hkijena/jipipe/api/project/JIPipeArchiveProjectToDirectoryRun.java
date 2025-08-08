@@ -47,7 +47,7 @@ public class JIPipeArchiveProjectToDirectoryRun extends JIPipeArchiveProjectRun 
             throw new RuntimeException(e);
         }
         try (JIPipeFileSystemWriteDataStorage projectStorage = new JIPipeFileSystemWriteDataStorage(getProgressInfo(), outputDirectory)) {
-            archive(projectStorage, projectStorage.resolve(UUID.randomUUID().toString()));
+            archive(projectStorage, projectStorage.resolve(UUID.randomUUID().toString()), Path.of("inputs"));
         } catch (IOException e) {
             throw new RuntimeException(e);
         }

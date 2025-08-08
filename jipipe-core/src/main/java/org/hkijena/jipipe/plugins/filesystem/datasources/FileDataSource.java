@@ -130,7 +130,7 @@ public class FileDataSource extends JIPipeAlgorithm {
     }
 
     @Override
-    public void archiveTo(JIPipeWriteDataStorage projectStorage, JIPipeWriteDataStorage wrappedExternalStorage, JIPipeProgressInfo progressInfo, Path originalBaseDirectory) {
+    public void archiveTo(JIPipeWriteDataStorage projectStorage, JIPipeWriteDataStorage wrappedExternalStorage, JIPipeProgressInfo progressInfo, Path originalBaseDirectory, Path relativeInputsPath) {
         Path source = getAbsoluteFileName();
         if (source == null || !Files.isRegularFile(source)) {
             if (isNeedsToExist()) {
@@ -142,10 +142,10 @@ public class FileDataSource extends JIPipeAlgorithm {
             if (source.startsWith(originalBaseDirectory)) {
                 // The data is located in the project directory. We can directly copy the file.
                 Path relativePath = originalBaseDirectory.relativize(source);
-                target = projectStorage.getFileSystemPath().resolve(relativePath);
+                target = projectStorage.getFileSystemPath().resolve(relativeInputsPath).resolve(relativePath);
             } else {
                 // The data is located outside the project directory. Needs to be copied into a unique directory.
-                target = wrappedExternalStorage.resolve(getAliasIdInParentGraph()).getFileSystemPath().resolve(getFileName().getFileName());
+                target = wrappedExternalStorage.resolve(relativeInputsPath).resolve(getAliasIdInParentGraph()).getFileSystemPath().resolve(getFileName().getFileName());
             }
 
             if (Files.exists(target)) {
@@ -161,6 +161,23 @@ public class FileDataSource extends JIPipeAlgorithm {
                 throw new RuntimeException(e);
             }
             setFileName(target);
+        }
+    }
+
+    @Override
+    public void reportArchiveValidation(JIPipeValidationReportContext context, JIPipeValidationReport report, Path originalBaseDirectory) {
+        super.reportArchiveValidation(context, report, originalBaseDirectory);
+
+        Path source = getAbsoluteFileName();
+        if (source == null || !Files.isRegularFile(source)) {
+            if (isNeedsToExist()) {
+                report.report(new JIPipeValidationReportEntry(JIPipeValidationReportEntryLevel.Error, context, "Unable to find file", "The file " + getFileName() + " does not exist"));
+            }
+        } else {
+            if (!source.startsWith(originalBaseDirectory)) {
+                report.report(new JIPipeValidationReportEntry(JIPipeValidationReportEntryLevel.Warning, context, "File not relative to project", "The file " + getFileName() + " is not located relative to the project file. " +
+                        "The resulting archive will contain directories with randomly generated names."));
+            }
         }
     }
 

@@ -119,7 +119,7 @@ public class FolderDataSource extends JIPipeAlgorithm {
     }
 
     @Override
-    public void archiveTo(JIPipeWriteDataStorage projectStorage, JIPipeWriteDataStorage wrappedExternalStorage, JIPipeProgressInfo progressInfo, Path originalBaseDirectory) {
+    public void archiveTo(JIPipeWriteDataStorage projectStorage, JIPipeWriteDataStorage wrappedExternalStorage, JIPipeProgressInfo progressInfo, Path originalBaseDirectory, Path relativeInputsPath) {
         Path source = getAbsoluteFolderPath();
         if (source == null || !Files.isDirectory(source)) {
             if (isNeedsToExist()) {
@@ -131,10 +131,10 @@ public class FolderDataSource extends JIPipeAlgorithm {
             if (source.startsWith(originalBaseDirectory)) {
                 // The data is located in the project directory. We can directly copy the file.
                 Path relativePath = originalBaseDirectory.relativize(source);
-                target = projectStorage.getFileSystemPath().resolve(relativePath);
+                target = projectStorage.getFileSystemPath().resolve(relativeInputsPath).resolve(relativePath);
             } else {
                 // The data is located outside the project directory. Needs to be copied into a unique directory.
-                target = wrappedExternalStorage.resolve(getAliasIdInParentGraph()).getFileSystemPath().resolve(source.getFileName());
+                target = wrappedExternalStorage.resolve(relativeInputsPath).resolve(getAliasIdInParentGraph()).getFileSystemPath().resolve(source.getFileName());
             }
 
             if (Files.exists(target)) {
@@ -150,6 +150,23 @@ public class FolderDataSource extends JIPipeAlgorithm {
                 throw new RuntimeException(e);
             }
             setFolderPath(target);
+        }
+    }
+
+    @Override
+    public void reportArchiveValidation(JIPipeValidationReportContext context, JIPipeValidationReport report, Path originalBaseDirectory) {
+        super.reportArchiveValidation(context, report, originalBaseDirectory);
+
+        Path source = getAbsoluteFolderPath();
+        if (source == null || !Files.isDirectory(source)) {
+            if (isNeedsToExist()) {
+                report.report(new JIPipeValidationReportEntry(JIPipeValidationReportEntryLevel.Error, context, "Unable to find directory", "The directory " + getFolderPath() + " does not exist"));
+            }
+        } else {
+            if (!source.startsWith(originalBaseDirectory)) {
+                report.report(new JIPipeValidationReportEntry(JIPipeValidationReportEntryLevel.Warning, context, "Directory not relative to project", "The directory " + getFolderPath() + " is not located relative to the project file. " +
+                        "The resulting archive will contain directories with randomly generated names."));
+            }
         }
     }
 
@@ -181,7 +198,7 @@ public class FolderDataSource extends JIPipeAlgorithm {
         super.setBaseDirectory(baseDirectory);
 
         if (folderPath != null) {
-            // Make absolute 
+            // Make absolute
             if (!folderPath.isAbsolute()) {
                 if (currentWorkingDirectory != null) {
                     setFolderPath(currentWorkingDirectory.resolve(folderPath));
