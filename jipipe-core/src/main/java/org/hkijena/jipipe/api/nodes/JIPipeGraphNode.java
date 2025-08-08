@@ -929,8 +929,12 @@ public abstract class JIPipeGraphNode extends AbstractJIPipeParameterCollection 
      * @param progressInfo           the progress info
      * @param originalBaseDirectory  current project directory
      */
-    public void archiveTo(JIPipeWriteDataStorage projectStorage, JIPipeWriteDataStorage wrappedExternalStorage, JIPipeProgressInfo progressInfo, Path originalBaseDirectory) {
+    public void archiveTo(JIPipeWriteDataStorage projectStorage, JIPipeWriteDataStorage wrappedExternalStorage, JIPipeProgressInfo progressInfo, Path originalBaseDirectory, Path relativeInputsPath) {
         // Do nothing
+    }
+
+    public void reportArchiveValidation(JIPipeValidationReportContext context, JIPipeValidationReport report, Path originalBaseDirectory) {
+
     }
 
     /**
