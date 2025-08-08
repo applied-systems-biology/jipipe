@@ -6606,7 +6606,6 @@ public class RTokenMaker extends AbstractJFlexCTokenMaker {
         zzMarkedPos -= number;
     }
 
-    @Override
     public int yystate() {
         return 0;
     }

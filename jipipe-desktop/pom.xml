@@ -334,10 +334,10 @@
                 </configuration>
             </plugin>
             <plugin>
+                <!-- Disable enforcer, triggered by JDK8 limits introduced by SciJava -->
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-enforcer-plugin</artifactId>
                 <configuration>
-                    <!-- Caused by OpenCV -->
                     <fail>false</fail>
                 </configuration>
             </plugin>

@@ -144,6 +144,14 @@
                     </descriptorRefs>
                 </configuration>
             </plugin>
+            <plugin>
+                <!-- Disable enforcer, triggered by JDK8 limits introduced by SciJava -->
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-enforcer-plugin</artifactId>
+                <configuration>
+                    <fail>false</fail>
+                </configuration>
+            </plugin>
         </plugins>
     </build>
     <dependencyManagement>
