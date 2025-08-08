@@ -301,7 +301,7 @@
         </dependency>
         <dependency>
             <groupId>org.hkijena</groupId>
-            <artifactId>jipipe-cwljava</artifactId>
+            <artifactId>jipipe-cwl-java</artifactId>
             <version>1.2.0</version>
         </dependency>
     </dependencies>
