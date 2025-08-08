@@ -56,7 +56,7 @@ public class JIPipeDesktopSaveProjectAndCacheToDirectoryRun extends DefaultJIPip
         }
         try {
             Files.createDirectories(outputPath);
-            project.saveProject(outputPath.resolve("project.jip"));
+            project.saveProject(outputPath.resolve("project.jip"), false);
             if (addAsRecentProject) {
                 JIPipe.getInstance().getRecentProjectsRegistry().add(outputPath);
             }

@@ -24,6 +24,7 @@ import com.google.common.collect.*;
 import org.apache.commons.lang3.exception.ExceptionUtils;
 import org.hkijena.jipipe.JIPipe;
 import org.hkijena.jipipe.JIPipeDependency;
+import org.hkijena.jipipe.JIPipeMutableDependency;
 import org.hkijena.jipipe.api.*;
 import org.hkijena.jipipe.api.cache.JIPipeLocalProjectMemoryCache;
 import org.hkijena.jipipe.api.compartments.algorithms.IOInterfaceAlgorithm;
@@ -100,6 +101,7 @@ public class JIPipeProject implements JIPipeValidatable {
     private Path temporaryBaseDirectory;
     private boolean isCleaningUp;
     private boolean isLoading;
+    private Path projectFile;
 
     /**
      * A JIPipe project
@@ -199,6 +201,7 @@ public class JIPipeProject implements JIPipeValidatable {
         project.fromJson(jsonData, context, report, notifications);
         project.setWorkDirectory(fileName.getParent());
         project.validateUserDirectories(notifications);
+        project.projectFile = fileName;
         return project;
     }
 
@@ -207,7 +210,7 @@ public class JIPipeProject implements JIPipeValidatable {
      * Does not require the dependencies to be actually registered.
      *
      * @param node JSON node
-     * @return The dependencies as {@link org.hkijena.jipipe.JIPipeMutableDependency}
+     * @return The dependencies as {@link JIPipeMutableDependency}
      */
     public static Set<JIPipeDependency> loadDependenciesFromJson(JsonNode node) {
         node = node.path("dependencies");
@@ -352,10 +355,11 @@ public class JIPipeProject implements JIPipeValidatable {
     /**
      * Saves the project
      *
-     * @param fileName Target file
+     * @param fileName          Target file
+     * @param updateSavePath if the internally tracked project file path should be updated to the new fileName
      * @throws IOException Triggered by {@link ObjectMapper}
      */
-    public void saveProject(Path fileName) throws IOException {
+    public void saveProject(Path fileName, boolean updateSavePath) throws IOException {
 
         // Add authors from global list
         if (metadata.isAutoAddAuthors()) {
@@ -364,6 +368,10 @@ public class JIPipeProject implements JIPipeValidatable {
 
         ObjectMapper mapper = JsonUtils.getObjectMapper();
         mapper.writerWithDefaultPrettyPrinter().writeValue(fileName.toFile(), this);
+
+        if(updateSavePath) {
+            projectFile = fileName;
+        }
     }
 
     private void addAuthorsFromGlobalList() {
@@ -1287,6 +1295,21 @@ public class JIPipeProject implements JIPipeValidatable {
 
             }
         }
+    }
+
+    public Path getProjectFile() {
+        return projectFile;
+    }
+
+    public void setProjectFile(Path projectFile) {
+        this.projectFile = projectFile;
+    }
+
+    /**
+     * Saves the project to the existing project file (if already set)
+     */
+    public void saveProject() throws IOException {
+        saveProject(projectFile, false);
     }
 
 

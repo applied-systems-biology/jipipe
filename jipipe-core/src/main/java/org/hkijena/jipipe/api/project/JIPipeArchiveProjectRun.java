@@ -23,7 +23,6 @@ import org.hkijena.jipipe.api.validation.JIPipeValidationReport;
 import org.hkijena.jipipe.api.validation.contexts.UnspecifiedValidationReportContext;
 
 import java.io.IOException;
-import java.nio.file.Files;
 import java.nio.file.Path;
 
 public abstract class JIPipeArchiveProjectRun extends DefaultJIPipeRunnable {
@@ -42,12 +41,10 @@ public abstract class JIPipeArchiveProjectRun extends DefaultJIPipeRunnable {
         JIPipeProgressInfo progressInfo = getProgressInfo();
         progressInfo.setProgress(0, 3);
         progressInfo.log("Copying project ...");
-        // Store the project into a temporary file
-        Path tempFile = getProject().newTemporaryFilePath("archive-project", ".jip");
-        project.saveProject(tempFile);
+        project.saveProject();
 
         // Load the project again
-        JIPipeProject copyProject = JIPipeProject.loadProject(tempFile, new UnspecifiedValidationReportContext(), new JIPipeValidationReport(), new JIPipeNotificationInbox());
+        JIPipeProject copyProject = JIPipeProject.loadProject(getProject().getProjectFile(), new UnspecifiedValidationReportContext(), new JIPipeValidationReport(), new JIPipeNotificationInbox());
         copyProject.setWorkDirectory(project.getWorkDirectory());
         ImmutableList<JIPipeGraphNode> graphNodes = ImmutableList.copyOf(copyProject.getGraph().getGraphNodes());
         progressInfo.setProgress(0, graphNodes.size());
@@ -61,9 +58,7 @@ public abstract class JIPipeArchiveProjectRun extends DefaultJIPipeRunnable {
         progressInfo.log("Writing project ...");
         Path fileSystemPath = projectStorage.getFileSystemPath();
         copyProject.setWorkDirectory(fileSystemPath);
-        copyProject.saveProject(fileSystemPath.resolve("project.jip"));
+        copyProject.saveProject(fileSystemPath.resolve("project.jip"), true);
         progressInfo.setProgress(3, 3);
-
-        Files.delete(tempFile);
     }
 }

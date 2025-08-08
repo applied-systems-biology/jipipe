@@ -364,7 +364,7 @@ public class JIPipeGraphRun extends DefaultJIPipeRunnable implements JIPipeGraph
 
                 try {
                     if (configuration.getOutputPath() != null && configuration.isStoreToDisk())
-                        project.saveProject(configuration.getOutputPath().resolve("project.jip"));
+                        project.saveProject(configuration.getOutputPath().resolve("project.jip"), false);
                 } catch (IOException e) {
                     throw new JIPipeValidationRuntimeException(e,
                             "Could not save project to '" + configuration.getOutputPath().resolve("project.jip") + "'!",

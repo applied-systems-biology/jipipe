@@ -90,7 +90,7 @@ public class JIPipeBackupApplicationSettings extends JIPipeDefaultApplicationsSe
                     String baseName = finalName + "_" + dateTimeFormatted.replace(':', '-');
                     baseName = StringUtils.makeFilesystemCompatible(baseName);
                     Path targetFile = directory.resolve(baseName + ".jip");
-                    window.getProject().saveProject(targetFile);
+                    window.getProject().saveProject(targetFile, false);
 
                     SwingUtilities.invokeLater(() -> window.getProjectUI().sendStatusBarText("Saved backup to " + targetFile));
 

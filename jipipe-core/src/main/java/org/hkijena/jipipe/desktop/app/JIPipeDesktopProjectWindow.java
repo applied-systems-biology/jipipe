@@ -540,7 +540,7 @@ public class JIPipeDesktopProjectWindow extends JFrame {
             Path tempFile = PathUtils.createSubTempFilePath(savePath.getParent(), savePath.getFileName().toString(), ".part");
             getProject().setWorkDirectory(savePath.getParent());
             getProject().getAdditionalMetadata().put(JIPipeDesktopJIPipeProjectTabMetadata.METADATA_KEY, new JIPipeDesktopJIPipeProjectTabMetadata(getProjectUI()));
-            getProject().saveProject(tempFile);
+            getProject().saveProject(tempFile, updateSavePath);
 
             // Check if the saved project can be loaded
             JIPipeProject.loadProject(tempFile, new UnspecifiedValidationReportContext(), new JIPipeValidationReport(), new JIPipeNotificationInbox());
