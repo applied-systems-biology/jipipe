@@ -376,6 +376,7 @@ public class JIPipeDesktopProjectWindow extends JFrame {
                             project.fromJson(jsonData, new UnspecifiedValidationReportContext(), report, notifications);
                             project.setWorkDirectory(path.getParent());
                             project.validateUserDirectories(notifications);
+                            project.setProjectFile(path);
 
                             if (getProgressInfo().isCancelled()) {
                                 return;
