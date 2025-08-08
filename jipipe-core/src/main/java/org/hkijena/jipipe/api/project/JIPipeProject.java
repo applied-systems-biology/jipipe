@@ -355,7 +355,7 @@ public class JIPipeProject implements JIPipeValidatable {
     /**
      * Saves the project
      *
-     * @param fileName          Target file
+     * @param fileName       Target file
      * @param updateSavePath if the internally tracked project file path should be updated to the new fileName
      * @throws IOException Triggered by {@link ObjectMapper}
      */
@@ -369,7 +369,7 @@ public class JIPipeProject implements JIPipeValidatable {
         ObjectMapper mapper = JsonUtils.getObjectMapper();
         mapper.writerWithDefaultPrettyPrinter().writeValue(fileName.toFile(), this);
 
-        if(updateSavePath) {
+        if (updateSavePath) {
             projectFile = fileName;
         }
     }
@@ -479,6 +479,22 @@ public class JIPipeProject implements JIPipeValidatable {
         compartmentGraph.connect(sourceSlot, target.getFirstInputSlot());
     }
 
+    /**
+     * Validates the ability to create a project archive
+     *
+     * @return the report
+     */
+    public JIPipeValidationReport validateArchivability() {
+        JIPipeValidationReport report = new JIPipeValidationReport();
+        if (getWorkDirectory() == null) {
+            report.report(new JIPipeValidationReportEntry(JIPipeValidationReportEntryLevel.Error, new UnspecifiedValidationReportContext(), "Project must be saved", "The project must be saved at least once"));
+        } else {
+            for (JIPipeGraphNode node : graph.getGraphNodes()) {
+                node.reportArchiveValidation(new GraphNodeValidationReportContext(node), report, getWorkDirectory());
+            }
+        }
+        return report;
+    }
 
     public void updateCompartmentOutputs(JIPipeProjectCompartment compartment) {
         compartment.setRuntimeProject(this);
@@ -858,7 +874,7 @@ public class JIPipeProject implements JIPipeValidatable {
             parameterAssignment.put(globalKey, typeId);
             Map<String, Object> documentation = new HashMap<>();
             createParameterInstanceDocumentation(access, documentation);
-            if(!documentation.isEmpty()) {
+            if (!documentation.isEmpty()) {
                 parameterDocumentation.put(globalKey, documentation);
             }
         }
@@ -866,7 +882,7 @@ public class JIPipeProject implements JIPipeValidatable {
         // Node parameters
         for (UUID uuid : graph.getGraphNodeUUIDs()) {
             JIPipeGraphNode node = graph.getNodeByUUID(uuid);
-            if(node.getInfo().isRunnable()) {
+            if (node.getInfo().isRunnable()) {
                 JIPipeParameterTree tree = new JIPipeParameterTree(node);
                 for (Map.Entry<String, JIPipeParameterAccess> entry : tree.getParameters().entrySet()) {
                     JIPipeParameterAccess access = entry.getValue();
@@ -877,7 +893,7 @@ public class JIPipeProject implements JIPipeValidatable {
 
                     Map<String, Object> documentation = new HashMap<>();
                     createParameterInstanceDocumentation(access, documentation);
-                    if(!documentation.isEmpty()) {
+                    if (!documentation.isEmpty()) {
                         parameterDocumentation.put(globalKey, documentation);
                     }
                 }
@@ -903,25 +919,26 @@ public class JIPipeProject implements JIPipeValidatable {
     }
 
     private void createParameterInstanceDocumentation(JIPipeParameterAccess access, Map<String, Object> documentation) {
-        if(!StringUtils.isNullOrEmpty(access.getName())) {
+        if (!StringUtils.isNullOrEmpty(access.getName())) {
             documentation.put("name", access.getName());
         }
-        if(!StringUtils.isNullOrEmpty(access.getDescription())) {
+        if (!StringUtils.isNullOrEmpty(access.getDescription())) {
             documentation.put("description", access.getDescription());
         }
-        if(access.isImportant()) {
+        if (access.isImportant()) {
             documentation.put("important", access.isImportant());
         }
-        if(access.isPinned()) {
+        if (access.isPinned()) {
             documentation.put("pinned", access.isPinned());
         }
-        if(access.isHidden()) {
+        if (access.isHidden()) {
             documentation.put("hidden", access.isHidden());
         }
     }
 
     /**
      * Writes the additional metadata into JSON format
+     *
      * @param generator the generator
      * @throws IOException the exception
      */
@@ -949,6 +966,7 @@ public class JIPipeProject implements JIPipeValidatable {
 
     /**
      * Write information about external environments into JSON
+     *
      * @param generator the generator
      * @throws IOException exceptions
      */
@@ -966,6 +984,7 @@ public class JIPipeProject implements JIPipeValidatable {
 
     /**
      * Write the project settings into JSON
+     *
      * @param generator the generator
      * @throws IOException exceptions
      */

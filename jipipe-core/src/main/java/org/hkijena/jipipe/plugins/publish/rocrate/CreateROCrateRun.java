@@ -13,6 +13,7 @@
 
 package org.hkijena.jipipe.plugins.publish.rocrate;
 
+import org.hkijena.jipipe.api.project.JIPipeArchiveProjectToDirectoryRun;
 import org.hkijena.jipipe.contrib.ro_crate.RoCrate;
 import org.hkijena.jipipe.contrib.ro_crate.entities.contextual.JsonDescriptor;
 import org.hkijena.jipipe.contrib.ro_crate.entities.contextual.OrganizationEntity;
@@ -64,6 +65,9 @@ public class CreateROCrateRun extends DefaultJIPipeRunnable {
         Path tmpPath = JIPipeRuntimeApplicationSettings.getTemporaryDirectory("RO-Crate");
         getProgressInfo().log("Creating RO-Crate for project " + projectFile + " using temporary directory " + tmpPath + " to be saved to " + roCrateFile);
 
+        // Create the project archive
+        createProjectArchive(tmpPath);
+
         // Create RO-Create metadata file
         RoCrate.RoCrateBuilder builder = createROCrateBuilder();
         createReadme(tmpPath, builder);
@@ -79,6 +83,12 @@ public class CreateROCrateRun extends DefaultJIPipeRunnable {
 
         // Remove tmp directory
         PathUtils.deleteDirectoryRecursively(tmpPath, getProgressInfo().resolve("Cleanup"));
+    }
+
+    private void createProjectArchive(Path tmpPath) {
+        JIPipeArchiveProjectToDirectoryRun archiveProjectToDirectoryRun = new JIPipeArchiveProjectToDirectoryRun(getProject(), tmpPath);
+        archiveProjectToDirectoryRun.setProgressInfo(getProgressInfo().resolveAndLog("Creating project archive").detachProgress());
+        archiveProjectToDirectoryRun.run();
     }
 
     private void createDiagram(Path tmpPath, RoCrate.RoCrateBuilder builder) {
