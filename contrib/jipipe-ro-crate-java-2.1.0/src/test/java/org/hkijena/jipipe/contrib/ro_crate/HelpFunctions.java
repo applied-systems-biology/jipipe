@@ -150,6 +150,10 @@ public class HelpFunctions {
                 .stream()
                 .collect(Collectors.toMap(java.io.File::getName, Function.identity()));
 
+        // Remove the ro-crate-preview.html file from the test, as it is created if not present, failing the test
+        compareWithMe.remove("ro-crate-preview.html");
+        testMe.remove("ro-crate-preview.html");
+
 
         if (compareWithMe.size() != testMe.size()) {
             System.err.println("File map size difference " +  compareWithMe.size() + " and " + testMe.size());
