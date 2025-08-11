@@ -36,6 +36,7 @@ import java.util.*;
  */
 public class MarkdownText {
 
+    public static final MarkdownText EMPTY = new MarkdownText("");
     static final MutableDataHolder OPTIONS = new MutableDataSet()
             .set(Parser.EXTENSIONS, Arrays.asList(TablesExtension.create(), AutolinkExtension.create(), TocExtension.create()));
     private static final Map<Path, MarkdownText> fromFileCache = new HashMap<>();

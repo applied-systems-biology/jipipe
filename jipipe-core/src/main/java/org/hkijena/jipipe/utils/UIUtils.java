@@ -1978,6 +1978,12 @@ public class UIUtils {
         }
     }
 
+    public static JPanel wrapInCenterPanel(Component component) {
+        JPanel panel = new JPanel(new BorderLayout());
+        panel.add(component, BorderLayout.CENTER);
+        return panel;
+    }
+
     /**
      * Installs an extension menu
      *

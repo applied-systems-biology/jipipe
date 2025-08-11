@@ -14,15 +14,20 @@
 package org.hkijena.jipipe.desktop.app.publish;
 
 import org.hkijena.jipipe.JIPipe;
+import org.hkijena.jipipe.api.parameters.JIPipeDummyParameterCollection;
+import org.hkijena.jipipe.api.parameters.JIPipeParameterCollection;
 import org.hkijena.jipipe.api.run.JIPipeRunnable;
 import org.hkijena.jipipe.api.run.JIPipeRunnableQueue;
 import org.hkijena.jipipe.desktop.app.JIPipeDesktopProjectWorkbench;
 import org.hkijena.jipipe.desktop.app.JIPipeDesktopProjectWorkbenchPanel;
 import org.hkijena.jipipe.desktop.app.running.JIPipeDesktopRunExecuteUI;
 import org.hkijena.jipipe.desktop.commons.components.JIPipeDesktopFormPanel;
+import org.hkijena.jipipe.desktop.commons.components.JIPipeDesktopParameterFormPanel;
 import org.hkijena.jipipe.desktop.commons.components.tabs.JIPipeDesktopTabPane;
 import org.hkijena.jipipe.plugins.parameters.library.markup.HTMLText;
+import org.hkijena.jipipe.plugins.parameters.library.markup.MarkdownText;
 import org.hkijena.jipipe.utils.BufferedImageUtils;
+import org.hkijena.jipipe.utils.JIPipeDesktopSplitPane;
 import org.hkijena.jipipe.utils.ThemeUtils;
 import org.hkijena.jipipe.utils.UIUtils;
 
@@ -40,18 +45,19 @@ public abstract class JIPipeDesktopPublisherAssistant extends JIPipeDesktopProje
 
     private final JIPipeDesktopFormPanel notificationList = new JIPipeDesktopFormPanel(JIPipeDesktopFormPanel.WITH_SCROLLING);
     private final JButton confirmButton = UIUtils.createButton("Publish now", JIPipe.RESOURCES.getIcon16("actions/share-nodes.png"), this::startPublish);
-    private final  JPanel mainPanel = new JPanel();
+    private final JIPipeDesktopSplitPane splitPane = new JIPipeDesktopSplitPane(JIPipeDesktopSplitPane.LEFT_RIGHT, new JIPipeDesktopSplitPane.DynamicSidebarRatio(350, false));
+    private final  JPanel setupPanel = new JPanel();
+    private final JIPipeDesktopParameterFormPanel parameterPanel = new JIPipeDesktopParameterFormPanel(getDesktopWorkbench(), new JIPipeDummyParameterCollection(), MarkdownText.EMPTY, JIPipeDesktopFormPanel.WITH_SCROLLING | JIPipeDesktopFormPanel.WITH_DOCUMENTATION | JIPipeDesktopParameterFormPanel.DOCUMENTATION_NO_UI);
     private final JIPipeRunnableQueue queue = new JIPipeRunnableQueue("Publish Local");
 
     private final JButton refreshButton = UIUtils.createButton("Refresh", JIPipe.RESOURCES.getIcon16("actions/view-refresh.png"), this::updateAssistant);
-    private final JLabel invalidMessage = new JLabel("Unable to publish. Please review the items below.", JIPipe.RESOURCES.getIcon16("emblems/warning.png"), JLabel.LEFT);
-    private final JLabel warningMessage = new JLabel("Some additional checks are recommended. Please review the items below.", JIPipe.RESOURCES.getIcon16("emblems/emblem-important-blue.png"), JLabel.LEFT);
+    private final JLabel invalidMessage = new JLabel("Unable to publish. Please review the items on the left.", JIPipe.RESOURCES.getIcon16("emblems/warning.png"), JLabel.LEFT);
+    private final JLabel warningMessage = new JLabel("Some additional checks are recommended. Please review the items on the left.", JIPipe.RESOURCES.getIcon16("emblems/emblem-important-blue.png"), JLabel.LEFT);
     private final List<JIPipeDesktopPublisherAssistantCondition>  conditions = new ArrayList<>();
 
     public JIPipeDesktopPublisherAssistant(JIPipeDesktopProjectWorkbench workbench) {
         super(workbench);
         initialize();
-        updateAssistant();
         queue.getFinishedEventEmitter().subscribe(this);
     }
 
@@ -60,21 +66,22 @@ public abstract class JIPipeDesktopPublisherAssistant extends JIPipeDesktopProje
         setBorder(BorderFactory.createEmptyBorder(8,8,8,8));
 
         setLayout(new BorderLayout(8,8));
+        add(splitPane, BorderLayout.CENTER);
 
+        initializeSetupPanel();
+    }
 
-        initializeMainPanel();
-
+    public void postInit() {
         switchToSetup();
     }
 
     private void switchToSetup() {
-        removeAll();
 
         confirmButton.setEnabled(false);
         refreshButton.setEnabled(true);
 
-        add(UIUtils.wrapInIslandPanelIfNeeded(mainPanel), BorderLayout.NORTH);
-        add(UIUtils.wrapInIslandPanelIfNeeded(notificationList), BorderLayout.CENTER);
+        splitPane.setLeftComponent(UIUtils.wrapInIslandPanelIfNeeded(notificationList));
+        splitPane.setRightComponent(UIUtils.wrapInIslandPanelIfNeeded(setupPanel));
 
         revalidate();
         repaint(50);
@@ -90,8 +97,8 @@ public abstract class JIPipeDesktopPublisherAssistant extends JIPipeDesktopProje
 
         JIPipeDesktopRunExecuteUI runExecuteUI = new JIPipeDesktopRunExecuteUI(getDesktopProjectWorkbench(), runnable, queue);
 
-        add(UIUtils.wrapInIslandPanelIfNeeded(mainPanel), BorderLayout.NORTH);
-        add(UIUtils.wrapInIslandPanelIfNeeded(runExecuteUI), BorderLayout.CENTER);
+        splitPane.setLeftComponent(UIUtils.wrapInIslandPanelIfNeeded(runExecuteUI));
+        splitPane.setRightComponent(UIUtils.wrapInIslandPanelIfNeeded(setupPanel));
 
         revalidate();
         repaint(50);
@@ -99,37 +106,41 @@ public abstract class JIPipeDesktopPublisherAssistant extends JIPipeDesktopProje
         runExecuteUI.startRun();
     }
 
-    private void initializeMainPanel() {
-        mainPanel.setLayout(new BorderLayout(8,8));
+    private void initializeSetupPanel() {
+        setupPanel.setLayout(new BorderLayout(8,8));
 
-        mainPanel.add(UIUtils.createJLabel(getAssistantTitle(), JIPipe.RESOURCES.getIcon32("actions/document-export.png"), ThemeUtils.getCurrentStyle().getFontSizeLarge()), BorderLayout.NORTH);
-        mainPanel.add(UIUtils.createBorderlessReadonlyTextPane(getAssistantDescription().getHtml(), false), BorderLayout.CENTER);
+        // Add title
+        JPanel titlePanel = new JPanel(new BorderLayout(8,8));
+        titlePanel.add(UIUtils.createJLabel(getAssistantTitle(), JIPipe.RESOURCES.getIcon32("actions/document-export.png"), ThemeUtils.getCurrentStyle().getFontSizeLarge()), BorderLayout.NORTH);
+        titlePanel.add(UIUtils.createBorderlessReadonlyTextPane(getAssistantDescription().getHtml(), false), BorderLayout.CENTER);
 
-        // Add logos into the button panel
-        JPanel buttonPanel = UIUtils.boxHorizontal();
         List<BufferedImage> logos = getAssistantLogos();
+        JPanel logoPanel = UIUtils.boxHorizontal();
         if(!logos.isEmpty()) {
-
             for (BufferedImage logo : logos) {
                 BufferedImage scaledLogo = BufferedImageUtils.scaleImageToFit(logo, 250, 42);
                 JLabel label = new JLabel(new ImageIcon(scaledLogo));
                 label.setBorder(BorderFactory.createEmptyBorder(8,8,0,8));
-                buttonPanel.add(label);
+                logoPanel.add(label);
             }
-
         }
+        titlePanel.add(logoPanel, BorderLayout.SOUTH);
+        setupPanel.add(titlePanel, BorderLayout.NORTH);
 
+        // Add settings
+        setupPanel.add(parameterPanel, BorderLayout.CENTER);
+
+        // Create button panel
+        JPanel buttonPanel = UIUtils.boxVertical();
         buttonPanel.setBorder(BorderFactory.createCompoundBorder(UIUtils.createEmptyBorder(8),
                 BorderFactory.createCompoundBorder(BorderFactory.createMatteBorder(1,0,0,0, ThemeUtils.getCurrentStyle().getBorderColor()),
                         BorderFactory.createEmptyBorder(8,0,0,0))));
-        buttonPanel.add(Box.createHorizontalGlue());
-        buttonPanel.add(warningMessage);
-        buttonPanel.add(invalidMessage);
-        buttonPanel.add(Box.createHorizontalStrut(16));
-        buttonPanel.add(refreshButton);
+        buttonPanel.add(UIUtils.wrapInCenterPanel(warningMessage));
+        buttonPanel.add(UIUtils.wrapInCenterPanel(invalidMessage));
+        buttonPanel.add(Box.createVerticalStrut(16));
+        buttonPanel.add(UIUtils.boxHorizontal(Box.createHorizontalGlue(), refreshButton, confirmButton));
         confirmButton.setBorder(UIUtils.createButtonBorder(ThemeUtils.getCurrentStyle().getSuccessColor()));
-        buttonPanel.add(confirmButton);
-        mainPanel.add(buttonPanel, BorderLayout.SOUTH);
+        setupPanel.add(buttonPanel, BorderLayout.SOUTH);
     }
 
     public void addAssistantCondition(JIPipeDesktopPublisherAssistantCondition condition) {
@@ -150,6 +161,7 @@ public abstract class JIPipeDesktopPublisherAssistant extends JIPipeDesktopProje
     public abstract List<BufferedImage> getAssistantLogos();
     public abstract JIPipeRunnable createAssistantTask();
     public abstract void onPublicationFinished(JIPipeRunnable runnable);
+    public abstract JIPipeParameterCollection getAssistantParameters();
 
     public void updateAssistant() {
         boolean valid = true;
@@ -168,6 +180,7 @@ public abstract class JIPipeDesktopPublisherAssistant extends JIPipeDesktopProje
         confirmButton.setEnabled(valid);
         warningMessage.setVisible(warning && valid);
         invalidMessage.setVisible(!valid);
+        parameterPanel.setDisplayedParameters(getAssistantParameters());
     }
 
     @Override

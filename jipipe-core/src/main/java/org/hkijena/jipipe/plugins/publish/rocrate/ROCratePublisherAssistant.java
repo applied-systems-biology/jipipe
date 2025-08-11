@@ -13,7 +13,12 @@
 
 package org.hkijena.jipipe.plugins.publish.rocrate;
 
+import com.google.common.collect.ImmutableList;
 import org.hkijena.jipipe.JIPipe;
+import org.hkijena.jipipe.api.parameters.JIPipeDynamicParameterCollection;
+import org.hkijena.jipipe.api.parameters.JIPipeMutableParameterAccess;
+import org.hkijena.jipipe.api.parameters.JIPipeParameterCollection;
+import org.hkijena.jipipe.api.project.JIPipeProjectDirectories;
 import org.hkijena.jipipe.api.run.JIPipeRunnable;
 import org.hkijena.jipipe.desktop.JIPipeDesktop;
 import org.hkijena.jipipe.desktop.app.JIPipeDesktopProjectWorkbench;
@@ -22,14 +27,20 @@ import org.hkijena.jipipe.plugins.parameters.library.markup.HTMLText;
 import org.hkijena.jipipe.plugins.publish.conditions.*;
 import org.hkijena.jipipe.plugins.settings.JIPipeFileChooserApplicationSettings;
 import org.hkijena.jipipe.utils.PathUtils;
+import org.hkijena.jipipe.utils.StringUtils;
 import org.hkijena.jipipe.utils.UIUtils;
 
 import javax.swing.*;
 import java.awt.image.BufferedImage;
 import java.nio.file.Path;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 
-public class ROCratePublisherAssistant extends JIPipeDesktopPublisherAssistant {
+public final class ROCratePublisherAssistant extends JIPipeDesktopPublisherAssistant {
+
+    private final JIPipeDynamicParameterCollection settings = new  JIPipeDynamicParameterCollection();
+
     public ROCratePublisherAssistant(JIPipeDesktopProjectWorkbench workbench) {
         super(workbench);
         addAssistantCondition(new TitleAssistantCondition(this));
@@ -41,6 +52,8 @@ public class ROCratePublisherAssistant extends JIPipeDesktopPublisherAssistant {
         addAssistantCondition(new SimpleParametersAssistantCondition(this));
         addAssistantCondition(new ArchiveAssistantCondition(this));
         addAssistantCondition(new SavedProjectAssistantCondition(this));
+
+        postInit();
     }
 
     @Override
@@ -76,5 +89,39 @@ public class ROCratePublisherAssistant extends JIPipeDesktopPublisherAssistant {
                 UIUtils.desktopOpenFile(run.getRoCrateFile().getParent());
             }
         }
+    }
+
+    @Override
+    public JIPipeParameterCollection getAssistantParameters() {
+
+        // Update settings for input parameters
+        updateUserDirectoryParameters();
+
+        return settings;
+    }
+
+    private void updateUserDirectoryParameters() {
+        List<JIPipeProjectDirectories.DirectoryEntry> directoryEntries = getProject().getMetadata().getDirectories().getDirectoriesAsInstance();
+        for (JIPipeProjectDirectories.DirectoryEntry directoryEntry : directoryEntries) {
+            if(!StringUtils.isNullOrEmpty(directoryEntry.getKey())) {
+                String parameterKey = "project-directory-" + directoryEntry.getKey();
+                if(!settings.containsKey(parameterKey)) {
+                    JIPipeMutableParameterAccess access = settings.addParameter(parameterKey, Boolean.class, "Add project directory '" + StringUtils.orElse(directoryEntry.getName(), directoryEntry.getKey()) + "' (" + directoryEntry.getKey() + ")",
+                            "If enabled, the directory " + directoryEntry.getPath() + " and all its content will be added into the RO-Crate.");
+                    if(directoryEntry.isMustExist()) {
+                        access.set(Boolean.TRUE);
+                    }
+                }
+            }
+        }
+        for (String key : ImmutableList.copyOf(settings.getParameters().keySet())) {
+            if(key.startsWith("project-directory-")) {
+                String directoryKey = key.substring("project-directory-".length());
+                if(directoryEntries.stream().noneMatch(directoryEntry -> directoryEntry.getKey().equals(directoryKey))) {
+                    settings.removeParameter(key);
+                }
+            }
+        }
+
     }
 }
