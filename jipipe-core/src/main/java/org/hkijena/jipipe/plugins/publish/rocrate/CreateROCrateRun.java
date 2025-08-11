@@ -84,6 +84,7 @@ public class CreateROCrateRun extends DefaultJIPipeRunnable {
 
         // Compress the container
         RoCrate crate = builder.build();
+        addROCrateMainEntity(crate);
         try {
             Writers.newZipPathWriter().withAutomaticProvenance(null).save(crate, roCrateFile.toAbsolutePath().toString());
         } catch (IOException e) {
@@ -94,6 +95,10 @@ public class CreateROCrateRun extends DefaultJIPipeRunnable {
         PathUtils.deleteDirectoryRecursively(tmpPath, getProgressInfo().resolve("Cleanup"));
     }
 
+    private void addROCrateMainEntity(RoCrate crate) {
+        crate.getRootDataEntity().addIdProperty("mainEntity", "workflow.cwl");
+    }
+
     private void addROCrateInputsDir(RoCrate.RoCrateBuilder builder, Path tmpPath) {
         var entityBuilder = new DataSetEntity.DataSetBuilder()
                 .setId("./inputs")
@@ -102,6 +107,7 @@ public class CreateROCrateRun extends DefaultJIPipeRunnable {
     }
 
     private void addROCrateCwlWorkflow(RoCrate.RoCrateBuilder builder, Path tmpPath) {
+        // Add the CWL itself
         var entityBuilder = new FileEntity.FileEntityBuilder()
                 .setId("workflow.cwl")
                 .setLocation(tmpPath.resolve("workflow.cwl"))
