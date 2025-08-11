@@ -942,7 +942,7 @@ public class JIPipeDesktopProjectWorkbench extends JPanel implements JIPipeDeskt
     private void archiveProjectAsDirectory() {
         Path directory = JIPipeDesktop.saveDirectory(this, this, JIPipeFileChooserApplicationSettings.LastDirectoryKey.Projects, "Archive project as directory", HTMLText.EMPTY);
         if (directory != null) {
-            JIPipeDesktopRunExecuteUI.runInDialog(this, this, new JIPipeArchiveProjectToDirectoryRun(getProject(), directory));
+            JIPipeDesktopRunExecuteUI.runInDialog(this, this, new JIPipeArchiveProjectToDirectoryRun(getProject(), directory, Path.of("inputs")));
         }
     }
 

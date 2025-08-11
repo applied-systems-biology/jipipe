@@ -123,7 +123,7 @@ public class CreateROCrateRun extends DefaultJIPipeRunnable {
     }
 
     private void createProjectArchive(Path tmpPath) {
-        JIPipeArchiveProjectToDirectoryRun archiveProjectToDirectoryRun = new JIPipeArchiveProjectToDirectoryRun(getProject(), tmpPath);
+        JIPipeArchiveProjectToDirectoryRun archiveProjectToDirectoryRun = new JIPipeArchiveProjectToDirectoryRun(getProject(), tmpPath, Path.of("inputs").resolve("__nd"));
         archiveProjectToDirectoryRun.setProgressInfo(getProgressInfo().resolveAndLog("Creating project archive").detachProgress());
         archiveProjectToDirectoryRun.run();
     }

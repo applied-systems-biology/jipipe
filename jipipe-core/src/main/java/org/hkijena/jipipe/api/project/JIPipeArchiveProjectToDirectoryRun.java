@@ -24,10 +24,12 @@ import java.util.UUID;
 public class JIPipeArchiveProjectToDirectoryRun extends JIPipeArchiveProjectRun {
 
     private final Path outputDirectory;
+    private final Path inputsDirectory;
 
-    public JIPipeArchiveProjectToDirectoryRun(JIPipeProject project, Path outputDirectory) {
+    public JIPipeArchiveProjectToDirectoryRun(JIPipeProject project, Path outputDirectory, Path inputsDirectory) {
         super(project);
         this.outputDirectory = outputDirectory;
+        this.inputsDirectory = inputsDirectory;
     }
 
     @Override
@@ -47,7 +49,7 @@ public class JIPipeArchiveProjectToDirectoryRun extends JIPipeArchiveProjectRun 
             throw new RuntimeException(e);
         }
         try (JIPipeFileSystemWriteDataStorage projectStorage = new JIPipeFileSystemWriteDataStorage(getProgressInfo(), outputDirectory)) {
-            archive(projectStorage, projectStorage.resolve(UUID.randomUUID().toString()), Path.of("inputs"));
+            archive(projectStorage, projectStorage.resolve(UUID.randomUUID().toString()), inputsDirectory);
         } catch (IOException e) {
             throw new RuntimeException(e);
         }
