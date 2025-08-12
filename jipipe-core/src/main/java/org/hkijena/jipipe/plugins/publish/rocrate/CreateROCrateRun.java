@@ -67,7 +67,7 @@ public class CreateROCrateRun extends DefaultJIPipeRunnable {
 
     @Override
     public void run() {
-        getProgressInfo().setLogToStdOut(true);
+//        getProgressInfo().setLogToStdOut(true);
 
         Path tmpPath = JIPipeRuntimeApplicationSettings.getTemporaryDirectory("RO-Crate");
         getProgressInfo().log("Creating RO-Crate for project " + projectFile + " using temporary directory " + tmpPath + " to be saved to " + roCrateFile);
@@ -262,7 +262,14 @@ public class CreateROCrateRun extends DefaultJIPipeRunnable {
             put("doc", "Single enforced export directory");
         }});
 
-        // TODO: Custom user directories
+        inputs.put("user_directories_config", new LinkedHashMap<String, Object>() {{
+            put("type", "string");
+            put("default", "project-directories.json");
+            put("inputBinding", new LinkedHashMap<String, Object>() {{
+                put("prefix", "--overwrite-user-directories");
+            }});
+            put("doc", "Configuration to override user directories");
+        }});
 
         // TODO: Parameters
 
