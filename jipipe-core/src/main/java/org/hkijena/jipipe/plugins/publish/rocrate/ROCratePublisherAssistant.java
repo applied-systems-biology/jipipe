@@ -17,6 +17,7 @@ import com.google.common.collect.ImmutableList;
 import org.hkijena.jipipe.JIPipe;
 import org.hkijena.jipipe.api.parameters.JIPipeDynamicParameterCollection;
 import org.hkijena.jipipe.api.parameters.JIPipeMutableParameterAccess;
+import org.hkijena.jipipe.api.parameters.JIPipeParameterAccess;
 import org.hkijena.jipipe.api.parameters.JIPipeParameterCollection;
 import org.hkijena.jipipe.api.project.JIPipeProjectDirectories;
 import org.hkijena.jipipe.api.run.JIPipeRunnable;
@@ -33,9 +34,7 @@ import org.hkijena.jipipe.utils.UIUtils;
 import javax.swing.*;
 import java.awt.image.BufferedImage;
 import java.nio.file.Path;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Set;
+import java.util.*;
 
 public final class ROCratePublisherAssistant extends JIPipeDesktopPublisherAssistant {
 
@@ -49,6 +48,7 @@ public final class ROCratePublisherAssistant extends JIPipeDesktopPublisherAssis
         addAssistantCondition(new SummaryAssistantCondition(this));
         addAssistantCondition(new AuthorsAssistantCondition(this));
         addAssistantCondition(new AuthorAffiliationsAssistantCondition(this));
+        addAssistantCondition(new ProjectDirectoriesAssistantCondition(this));
         addAssistantCondition(new SimpleParametersAssistantCondition(this));
         addAssistantCondition(new ArchiveAssistantCondition(this));
         addAssistantCondition(new SavedProjectAssistantCondition(this));
@@ -74,9 +74,30 @@ public final class ROCratePublisherAssistant extends JIPipeDesktopPublisherAssis
 
     @Override
     public JIPipeRunnable createAssistantTask() {
-        Path crateFile = JIPipeDesktop.saveFile(this, getDesktopWorkbench(), JIPipeFileChooserApplicationSettings.LastDirectoryKey.External, "Export as RO-Crate", new HTMLText("Please choose where the RO-Crate will be saved"), PathUtils.EXTENSION_FILTER_WORKFLOW_RO_CRATE);
+        Path crateFile = JIPipeDesktop.saveFile(this,
+                getDesktopWorkbench(),
+                JIPipeFileChooserApplicationSettings.LastDirectoryKey.External,
+                "Export as RO-Crate",
+                new HTMLText("Please choose where the RO-Crate will be saved"),
+                PathUtils.EXTENSION_FILTER_WORKFLOW_RO_CRATE);
         if(crateFile != null) {
-            return new CreateROCrateRun(getProject(), getDesktopProjectWorkbench().getProjectWindow().getProjectSavePath(),  crateFile);
+
+            // Collect settings for project directories
+            Map<String, JIPipeProjectDirectories.Role> projectDirectorySettings = new HashMap<>();
+            for (JIPipeProjectDirectories.DirectoryEntry directoryEntry : getProject().getMetadata().getDirectories().getDirectoriesAsInstance()) {
+                if(!StringUtils.isNullOrEmpty(directoryEntry.getKey())) {
+                    JIPipeParameterAccess access = settings.get("project-directory-" + directoryEntry.getKey());
+                    if(access != null) {
+                        projectDirectorySettings.put(directoryEntry.getKey(), access.get(JIPipeProjectDirectories.Role.class));
+                    }
+                }
+            }
+
+            // Create the run
+            return new CreateROCrateRun(getProject(),
+                    getDesktopProjectWorkbench().getProjectWindow().getProjectSavePath(),
+                    crateFile,
+                    projectDirectorySettings);
         }
         return null;
     }
@@ -106,11 +127,9 @@ public final class ROCratePublisherAssistant extends JIPipeDesktopPublisherAssis
             if(!StringUtils.isNullOrEmpty(directoryEntry.getKey())) {
                 String parameterKey = "project-directory-" + directoryEntry.getKey();
                 if(!settings.containsKey(parameterKey)) {
-                    JIPipeMutableParameterAccess access = settings.addParameter(parameterKey, Boolean.class, "Add project directory '" + StringUtils.orElse(directoryEntry.getName(), directoryEntry.getKey()) + "' (" + directoryEntry.getKey() + ")",
+                    JIPipeMutableParameterAccess access = settings.addParameter(parameterKey, JIPipeProjectDirectories.Role.class, "Project directory '" + StringUtils.orElse(directoryEntry.getName(), directoryEntry.getKey()) + "' (" + directoryEntry.getKey() + ")",
                             "If enabled, the directory " + directoryEntry.getPath() + " and all its content will be added into the RO-Crate.");
-                    if(directoryEntry.isMustExist()) {
-                        access.set(Boolean.TRUE);
-                    }
+                   access.set(directoryEntry.getRole());
                 }
             }
         }

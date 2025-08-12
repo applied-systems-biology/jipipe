@@ -84,7 +84,7 @@ public class JIPipeProjectDirectories extends AbstractJIPipeParameterCollection 
     public Map<String, Path> getMandatoryDirectoriesMap(Path projectDir) {
         Map<String, Path> result = new HashMap<>();
         for (DirectoryEntry directoryEntry : directories.mapToCollection(DirectoryEntry.class)) {
-            if (directoryEntry.isMustExist() && !StringUtils.isNullOrEmpty(directoryEntry.getKey())) {
+            if (directoryEntry.getRole() == Role.Input && !StringUtils.isNullOrEmpty(directoryEntry.getKey())) {
                 Path path = directoryEntry.path;
                 if (path != null && !StringUtils.isNullOrEmpty(path.toString())) {
                     if (projectDir != null && projectDir.isAbsolute() && !path.isAbsolute()) {
@@ -116,7 +116,7 @@ public class JIPipeProjectDirectories extends AbstractJIPipeParameterCollection 
         private String description;
         private String key;
         private Path path;
-        private boolean mustExist = true;
+        private Role role = Role.Unspecified;
 
         public DirectoryEntry() {
         }
@@ -124,7 +124,7 @@ public class JIPipeProjectDirectories extends AbstractJIPipeParameterCollection 
         public DirectoryEntry(DirectoryEntry other) {
             this.key = other.key;
             this.path = other.path;
-            this.mustExist = other.mustExist;
+            this.role = other.role;
             this.name = other.name;
             this.description = other.description;
         }
@@ -174,15 +174,22 @@ public class JIPipeProjectDirectories extends AbstractJIPipeParameterCollection 
             this.path = path;
         }
 
-        @SetJIPipeDocumentation(name = "Check if exists", description = "Indicates that the directory should exist")
-        @JIPipeParameter("must-exist")
-        public boolean isMustExist() {
-            return mustExist;
+        @SetJIPipeDocumentation(name = "Role", description = "The role of this directory (input/output/unspecified). If the role is set to 'Input', JIPipe will check if the directory exists.")
+        @JIPipeParameter("role")
+        public Role getRole() {
+            return role;
         }
 
-        @JIPipeParameter("must-exist")
-        public void setMustExist(boolean mustExist) {
-            this.mustExist = mustExist;
+        @JIPipeParameter("role")
+        public void setRole(Role role) {
+            this.role = role;
         }
+    }
+
+    public enum Role {
+        Input,
+        Output,
+        Unspecified,
+        Ignored
     }
 }

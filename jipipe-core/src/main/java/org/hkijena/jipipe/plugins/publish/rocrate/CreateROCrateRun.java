@@ -16,6 +16,7 @@ package org.hkijena.jipipe.plugins.publish.rocrate;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.dataformat.yaml.YAMLFactory;
 import org.hkijena.jipipe.api.project.JIPipeArchiveProjectToDirectoryRun;
+import org.hkijena.jipipe.api.project.JIPipeProjectDirectories;
 import org.hkijena.jipipe.contrib.ro_crate.RoCrate;
 import org.hkijena.jipipe.contrib.ro_crate.entities.contextual.JsonDescriptor;
 import org.hkijena.jipipe.contrib.ro_crate.entities.contextual.OrganizationEntity;
@@ -34,7 +35,9 @@ import org.hkijena.jipipe.plugins.settings.JIPipeRuntimeApplicationSettings;
 import org.hkijena.jipipe.utils.PathUtils;
 import org.hkijena.jipipe.utils.StringUtils;
 import org.hkijena.jipipe.utils.VersionUtils;
+import org.hkijena.jipipe.utils.json.JsonUtils;
 
+import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
@@ -48,11 +51,13 @@ public class CreateROCrateRun extends DefaultJIPipeRunnable {
     private final JIPipeProject project;
     private final Path projectFile;
     private final Path roCrateFile;
+    private final Map<String, JIPipeProjectDirectories.Role> archivedProjectDirectories;
 
-    public CreateROCrateRun(JIPipeProject project, Path projectFile, Path roCrateFile) {
+    public CreateROCrateRun(JIPipeProject project, Path projectFile, Path roCrateFile, Map<String, JIPipeProjectDirectories.Role> archivedProjectDirectories) {
         this.project = project;
         this.projectFile = projectFile;
         this.roCrateFile = roCrateFile;
+        this.archivedProjectDirectories = archivedProjectDirectories;
     }
 
     @Override
@@ -66,15 +71,16 @@ public class CreateROCrateRun extends DefaultJIPipeRunnable {
 
         Path tmpPath = JIPipeRuntimeApplicationSettings.getTemporaryDirectory("RO-Crate");
         getProgressInfo().log("Creating RO-Crate for project " + projectFile + " using temporary directory " + tmpPath + " to be saved to " + roCrateFile);
+        RoCrate.RoCrateBuilder builder = createROCrateBuilder();
 
         // Create the project archive
         createProjectArchive(tmpPath);
+        copyProjectDirectories(builder, tmpPath);
 
         // Create CWL file
         createWorkflowCwl(tmpPath);
 
-        // Create RO-Create metadata file
-        RoCrate.RoCrateBuilder builder = createROCrateBuilder();
+        // Create RO-Create metadata
         addROCrateOrganizations(builder);
         addROCrateAuthors(builder);
         addROCrateCwlWorkflow(builder, tmpPath);
@@ -93,6 +99,62 @@ public class CreateROCrateRun extends DefaultJIPipeRunnable {
 
         // Remove tmp directory
         PathUtils.deleteDirectoryRecursively(tmpPath, getProgressInfo().resolve("Cleanup"));
+    }
+
+    private void copyProjectDirectories(RoCrate.RoCrateBuilder builder, Path tmpPath) {
+        // Map that will be saved into project-directories.json
+        Map<String, String> projectDirectoriesRedirect = new HashMap<>();
+
+        // Archive project directories
+        Map<String, Path> directoryMap = getProject().getMetadata().getDirectories().getDirectoryMap(getProject().getWorkDirectory());
+        for (Map.Entry<String, Path> entry : directoryMap.entrySet()) {
+            JIPipeProjectDirectories.Role role = archivedProjectDirectories.getOrDefault(entry.getKey(), JIPipeProjectDirectories.Role.Ignored);
+            if (role == JIPipeProjectDirectories.Role.Unspecified) {
+                // Auto-detect
+                getProgressInfo().log("WARNING: Project directory " + entry.getKey() + " (" + entry.getValue() + ") is unspecified. Guessing type based on directory properties.");
+
+                if (Files.isDirectory(entry.getValue())) {
+                    getProgressInfo().log("INFO: directory exists. guessing type is 'Input'");
+                    role = JIPipeProjectDirectories.Role.Input;
+                } else {
+                    getProgressInfo().log("INFO: directory does not exist. guessing type is 'Output'");
+                    role = JIPipeProjectDirectories.Role.Output;
+                }
+            }
+            switch (role) {
+                case Ignored: {
+                    getProgressInfo().log("WARNING: Project directory " + entry.getKey() + " is ignored by Ro-Crate!!!");
+                }
+                break;
+                case Input: {
+                    getProgressInfo().log("Archiving project directory " + entry.getKey() + " (" + entry.getValue() + ")");
+                    if (Files.isDirectory(entry.getValue())) {
+                        String newKey = StringUtils.makeFilesystemCompatible(entry.getKey());
+                        Path relativeArchiveDirectory = Path.of("inputs", newKey);
+                        PathUtils.createDirectories(tmpPath.resolve(relativeArchiveDirectory));
+                        PathUtils.copyDirectory(entry.getValue(), tmpPath.resolve(relativeArchiveDirectory), getProgressInfo().resolve("Project directory " + entry.getKey()));
+                        projectDirectoriesRedirect.put(entry.getKey(), relativeArchiveDirectory.toString());
+                    } else {
+                        getProgressInfo().log(new FileNotFoundException("Unable to archive project directory " + entry.getKey() + ": directory " + entry.getValue() + " does not exist"));
+                    }
+                }
+                break;
+                case Output: {
+                    getProgressInfo().log("Project directory " + entry.getKey() + " (" + entry.getValue() + ") will be redirected into the output directory");
+
+                    // Outputs are stored into the outputs directory
+                    projectDirectoriesRedirect.put(entry.getKey(), Path.of("outputs", entry.getKey()).toString());
+                }
+                break;
+            }
+        }
+
+        // Create and add the project-directories.json
+        JsonUtils.saveToFile(projectDirectoriesRedirect, tmpPath.resolve("project-directories.json"));
+        builder.addDataEntity(new FileEntity.FileEntityBuilder()
+                .setId("project-directories.json")
+                .setLocation(tmpPath.resolve("project-directories.json"))
+                .build());
     }
 
     private void addROCrateMainEntity(RoCrate crate) {
@@ -123,7 +185,7 @@ public class CreateROCrateRun extends DefaultJIPipeRunnable {
     }
 
     private void createProjectArchive(Path tmpPath) {
-        JIPipeArchiveProjectToDirectoryRun archiveProjectToDirectoryRun = new JIPipeArchiveProjectToDirectoryRun(getProject(), tmpPath, Path.of("inputs").resolve("__nd"));
+        JIPipeArchiveProjectToDirectoryRun archiveProjectToDirectoryRun = new JIPipeArchiveProjectToDirectoryRun(getProject(), tmpPath, Path.of("inputs", "__nd"));
         archiveProjectToDirectoryRun.setProgressInfo(getProgressInfo().resolveAndLog("Creating project archive").detachProgress());
         archiveProjectToDirectoryRun.run();
     }

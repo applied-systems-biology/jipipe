@@ -211,14 +211,14 @@ public class JIPipeDesktopProjectReportUI extends JIPipeDesktopProjectWorkbenchP
             if (!directories.isEmpty()) {
                 stringBuilder.append("<h2>Project-wide directories</h2>");
                 stringBuilder.append("<table>");
-                stringBuilder.append("<tr><th>Key</th><th>Name</th><th>Description</th><th>Path</th><th>Must exist</th></tr>");
+                stringBuilder.append("<tr><th>Key</th><th>Name</th><th>Description</th><th>Path</th><th>Role</th></tr>");
                 for (JIPipeProjectDirectories.DirectoryEntry directoryEntry : directories) {
                     stringBuilder.append("<tr>");
                     stringBuilder.append("<td>").append(directoryEntry.getKey()).append("</td>");
                     stringBuilder.append("<td>").append(directoryEntry.getName()).append("</td>");
                     stringBuilder.append("<td>").append(directoryEntry.getDescription()).append("</td>");
                     stringBuilder.append("<td>").append(directoryEntry.getPath()).append("</td>");
-                    stringBuilder.append("<td>").append(directoryEntry.isMustExist() ? "Yes" : "No").append("</td>");
+                    stringBuilder.append("<td>").append(directoryEntry.getRole().toString()).append("</td>");
                     stringBuilder.append("</tr>");
                 }
                 stringBuilder.append("</table>");

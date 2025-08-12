@@ -90,7 +90,6 @@ public abstract class JIPipeDesktopPublisherAssistant extends JIPipeDesktopProje
     }
 
     private void switchToExecution(JIPipeRunnable runnable) {
-        removeAll();
 
         confirmButton.setEnabled(false);
         refreshButton.setEnabled(false);
