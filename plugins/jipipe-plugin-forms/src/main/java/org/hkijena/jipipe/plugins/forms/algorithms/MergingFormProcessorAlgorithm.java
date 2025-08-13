@@ -17,7 +17,7 @@ import com.google.common.primitives.Ints;
 import gnu.trove.set.TIntSet;
 import gnu.trove.set.hash.TIntHashSet;
 import org.hkijena.jipipe.api.ConfigureJIPipeNode;
-import org.hkijena.jipipe.api.JIPipeDataBatchGenerationResult;
+import org.hkijena.jipipe.api.JIPipeIterationStepGenerationResult;
 import org.hkijena.jipipe.api.JIPipeProgressInfo;
 import org.hkijena.jipipe.api.SetJIPipeDocumentation;
 import org.hkijena.jipipe.api.annotation.JIPipeDataAnnotationMergeMode;
@@ -50,7 +50,6 @@ import org.hkijena.jipipe.plugins.forms.ui.FormsDialog;
 import org.hkijena.jipipe.plugins.parameters.library.primitives.StringParameterSettings;
 import org.hkijena.jipipe.plugins.parameters.library.primitives.ranges.IntegerRange;
 import org.hkijena.jipipe.utils.ParameterUtils;
-import org.hkijena.jipipe.utils.ResourceUtils;
 
 import javax.swing.*;
 import java.awt.event.WindowAdapter;
@@ -98,7 +97,7 @@ public class MergingFormProcessorAlgorithm extends JIPipeAlgorithm implements JI
             outputDataSlot.addDataFromSlot(dataSlot, progressInfo);
         } else if (!dataSlot.isEmpty()) {
             // Generate iteration steps and show the user interface
-            List<JIPipeMultiIterationStep> iterationStepList = generateDataBatchesGenerationResult(getDataInputSlots(), progressInfo).getDataBatches();
+            List<JIPipeMultiIterationStep> iterationStepList = generateIterationSteps(getDataInputSlots(), progressInfo).getDataBatches();
 
             if (iterationStepList.isEmpty()) {
                 progressInfo.log("No iteration steps selected (according to limit). Skipping.");
@@ -237,7 +236,7 @@ public class MergingFormProcessorAlgorithm extends JIPipeAlgorithm implements JI
     }
 
     @Override
-    public JIPipeIterationStepGenerationSettings getGenerationSettingsInterface() {
+    public JIPipeIterationStepGenerationSettings getGenericIterationStepGenerationSettings() {
         return iterationStepGenerationSettings;
     }
 
@@ -247,7 +246,7 @@ public class MergingFormProcessorAlgorithm extends JIPipeAlgorithm implements JI
     }
 
     @Override
-    public JIPipeDataBatchGenerationResult generateDataBatchesGenerationResult(List<JIPipeInputDataSlot> slots, JIPipeProgressInfo progressInfo) {
+    public JIPipeIterationStepGenerationResult generateIterationSteps(List<JIPipeInputDataSlot> slots, JIPipeProgressInfo progressInfo) {
         JIPipeMultiIterationStepGenerator builder = new JIPipeMultiIterationStepGenerator();
         builder.setNode(this);
         builder.setSlots(slots);
@@ -287,7 +286,7 @@ public class MergingFormProcessorAlgorithm extends JIPipeAlgorithm implements JI
         }
 
         // Generate result object
-        JIPipeDataBatchGenerationResult result = new JIPipeDataBatchGenerationResult();
+        JIPipeIterationStepGenerationResult result = new JIPipeIterationStepGenerationResult();
         result.setDataBatches(iterationSteps);
         result.setReferenceTextAnnotationColumns(builder.getReferenceColumns());
 

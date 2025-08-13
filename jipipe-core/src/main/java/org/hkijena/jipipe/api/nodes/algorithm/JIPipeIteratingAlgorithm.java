@@ -42,7 +42,6 @@ import org.hkijena.jipipe.plugins.parameters.library.primitives.ranges.IntegerRa
 import org.hkijena.jipipe.utils.ParameterUtils;
 import org.hkijena.jipipe.utils.ResourceUtils;
 import org.hkijena.jipipe.utils.StringUtils;
-import org.hkijena.jipipe.utils.UIUtils;
 import org.hkijena.jipipe.JIPipe;
 import org.hkijena.jipipe.utils.json.JsonUtils;
 import org.hkijena.jipipe.utils.ui.ViewOnlyMenuItem;
@@ -107,12 +106,12 @@ public abstract class JIPipeIteratingAlgorithm extends JIPipeParameterSlotAlgori
     }
 
     @Override
-    public JIPipeIterationStepGenerationSettings getGenerationSettingsInterface() {
+    public JIPipeIterationStepGenerationSettings getGenericIterationStepGenerationSettings() {
         return iterationStepGenerationSettings;
     }
 
     @Override
-    public JIPipeDataBatchGenerationResult generateDataBatchesGenerationResult(List<JIPipeInputDataSlot> slots, JIPipeProgressInfo progressInfo) {
+    public JIPipeIterationStepGenerationResult generateIterationSteps(List<JIPipeInputDataSlot> slots, JIPipeProgressInfo progressInfo) {
         JIPipeMultiIterationStepGenerator builder = new JIPipeMultiIterationStepGenerator();
         builder.setNode(this);
         builder.setApplyMerging(false);
@@ -153,7 +152,7 @@ public abstract class JIPipeIteratingAlgorithm extends JIPipeParameterSlotAlgori
         }
 
         // Generate result object
-        JIPipeDataBatchGenerationResult result = new JIPipeDataBatchGenerationResult();
+        JIPipeIterationStepGenerationResult result = new JIPipeIterationStepGenerationResult();
         result.setDataBatches(iterationSteps);
         result.setReferenceTextAnnotationColumns(builder.getReferenceColumns());
 
@@ -258,7 +257,7 @@ public abstract class JIPipeIteratingAlgorithm extends JIPipeParameterSlotAlgori
             }
         } else {
             // First generate merging iteration steps
-            List<JIPipeMultiIterationStep> mergingDataBatches = generateDataBatchesGenerationResult(getNonParameterInputSlots(), progressInfo).getDataBatches();
+            List<JIPipeMultiIterationStep> mergingDataBatches = generateIterationSteps(getNonParameterInputSlots(), progressInfo).getDataBatches();
 
             // Check for incomplete batches
             List<JIPipeMultiIterationStep> incomplete = new ArrayList<>();

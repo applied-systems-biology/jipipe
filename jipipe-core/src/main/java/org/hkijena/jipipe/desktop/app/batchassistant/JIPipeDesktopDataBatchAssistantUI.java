@@ -17,7 +17,7 @@ import com.google.common.collect.HashMultimap;
 import com.google.common.collect.Multimap;
 import org.hkijena.jipipe.JIPipe;
 import org.hkijena.jipipe.api.DefaultJIPipeRunnable;
-import org.hkijena.jipipe.api.JIPipeDataBatchGenerationResult;
+import org.hkijena.jipipe.api.JIPipeIterationStepGenerationResult;
 import org.hkijena.jipipe.api.JIPipeProgressInfo;
 import org.hkijena.jipipe.api.annotation.JIPipeDataAnnotation;
 import org.hkijena.jipipe.api.annotation.JIPipeDataAnnotationMergeMode;
@@ -90,7 +90,7 @@ public class JIPipeDesktopDataBatchAssistantUI extends JIPipeDesktopProjectWorkb
     public JIPipeDesktopDataBatchAssistantUI(JIPipeDesktopProjectWorkbench workbenchUI, JIPipeGraphNode algorithm, Runnable runUpdatePredecessorCache) {
         super(workbenchUI);
         this.algorithm = (JIPipeAlgorithm) algorithm;
-        this.batchSettings = ((JIPipeIterationStepAlgorithm) algorithm).getGenerationSettingsInterface();
+        this.batchSettings = ((JIPipeIterationStepAlgorithm) algorithm).getGenericIterationStepGenerationSettings();
         this.runUpdatePredecessorCache = runUpdatePredecessorCache;
         this.batchPanel = new JIPipeDesktopDataBatchAssistantBatchPanel(workbenchUI, this);
         this.inputPreviewPanel = new JIPipeDesktopDataBatchAssistantInputPreviewPanel(workbenchUI, this);
@@ -182,7 +182,7 @@ public class JIPipeDesktopDataBatchAssistantUI extends JIPipeDesktopProjectWorkb
         calculatePreviewQueue.enqueue(run);
     }
 
-    private void displayBatches(JIPipeDataBatchGenerationResult iterationStepGenerationResult, JIPipeGraphNode algorithm) {
+    private void displayBatches(JIPipeIterationStepGenerationResult iterationStepGenerationResult, JIPipeGraphNode algorithm) {
         messagePanel.clear();
         batchPanel.setDataTable(new JIPipeDataTable(DataBatchStatusData.class));
         inputPreviewPanel.highlightResults(iterationStepGenerationResult);
@@ -287,7 +287,7 @@ public class JIPipeDesktopDataBatchAssistantUI extends JIPipeDesktopProjectWorkb
         JPanel panel = new JPanel(new BorderLayout());
 
         JIPipeDesktopParameterFormPanel parameterPanel = new JIPipeDesktopParameterFormPanel(getDesktopWorkbench(),
-                ((JIPipeIterationStepAlgorithm) algorithm).getGenerationSettingsInterface(),
+                ((JIPipeIterationStepAlgorithm) algorithm).getGenericIterationStepGenerationSettings(),
                 null,
                 JIPipeDesktopParameterFormPanel.WITH_SCROLLING | JIPipeDesktopParameterFormPanel.WITH_DOCUMENTATION | JIPipeDesktopParameterFormPanel.DOCUMENTATION_NO_UI | JIPipeDesktopParameterFormPanel.NO_EMPTY_GROUP_HEADERS);
         toggleParameterPanelAdvancedMode(parameterPanel, SHOW_ADVANCED_SETTINGS);
@@ -428,14 +428,14 @@ public class JIPipeDesktopDataBatchAssistantUI extends JIPipeDesktopProjectWorkb
     @Override
     public void onRunnableInterrupted(JIPipeRunnable.InterruptedEvent event) {
         if (event.getRun() instanceof DataBatchGeneratorRun) {
-            displayBatches(new JIPipeDataBatchGenerationResult(), ((DataBatchGeneratorRun) event.getRun()).algorithm);
+            displayBatches(new JIPipeIterationStepGenerationResult(), ((DataBatchGeneratorRun) event.getRun()).algorithm);
         }
     }
 
     private static class DataBatchGeneratorRun extends DefaultJIPipeRunnable {
 
         private final JIPipeGraphNode algorithm;
-        private JIPipeDataBatchGenerationResult result;
+        private JIPipeIterationStepGenerationResult result;
 
         private DataBatchGeneratorRun(JIPipeGraphNode algorithm) {
             this.algorithm = algorithm;
@@ -448,13 +448,13 @@ public class JIPipeDesktopDataBatchAssistantUI extends JIPipeDesktopProjectWorkb
 
         @Override
         public void run() {
-            result = ((JIPipeIterationStepAlgorithm) algorithm).generateDataBatchesGenerationResult(algorithm.getDataInputSlots(), getProgressInfo());
+            result = ((JIPipeIterationStepAlgorithm) algorithm).generateIterationSteps(algorithm.getDataInputSlots(), getProgressInfo());
             if (result == null) {
-                result = new JIPipeDataBatchGenerationResult();
+                result = new JIPipeIterationStepGenerationResult();
             }
         }
 
-        public JIPipeDataBatchGenerationResult getResult() {
+        public JIPipeIterationStepGenerationResult getResult() {
             return result;
         }
     }

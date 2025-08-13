@@ -16,4 +16,9 @@ package org.hkijena.jipipe.api.nodes.iterationstep;
 import org.hkijena.jipipe.api.parameters.JIPipeParameterCollection;
 
 public interface JIPipeIterationStepGenerationSettings extends JIPipeParameterCollection {
+    /**
+     * Creates an object that contains information for the {@link org.hkijena.jipipe.desktop.app.grapheditor.commons.nodeui.JIPipeDesktopGraphNodeUI} on the state of the current generation settings.
+     * @return the visualization
+     */
+    JIPipeIterationStepGenerationSettingsVisualization createVisualization();
 }

@@ -100,7 +100,7 @@ public class DrawMaskAlgorithm extends JIPipeIteratingMissingDataGeneratorAlgori
                 iterationSteps.add(iterationStep);
             }
         } else {
-            iterationSteps = generateDataBatchesGenerationResult(getNonParameterInputSlots(), progressInfo).getDataBatches();
+            iterationSteps = generateIterationSteps(getNonParameterInputSlots(), progressInfo).getDataBatches();
         }
 
         runForm(iterationSteps, progressInfo);

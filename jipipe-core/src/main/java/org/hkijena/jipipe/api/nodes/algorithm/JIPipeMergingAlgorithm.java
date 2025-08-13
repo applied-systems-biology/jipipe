@@ -19,7 +19,7 @@ import gnu.trove.set.TIntSet;
 import gnu.trove.set.hash.TIntHashSet;
 import org.hkijena.jipipe.JIPipe;
 import org.hkijena.jipipe.api.AddJIPipeDocumentationDescription;
-import org.hkijena.jipipe.api.JIPipeDataBatchGenerationResult;
+import org.hkijena.jipipe.api.JIPipeIterationStepGenerationResult;
 import org.hkijena.jipipe.api.JIPipeProgressInfo;
 import org.hkijena.jipipe.api.SetJIPipeDocumentation;
 import org.hkijena.jipipe.api.annotation.JIPipeTextAnnotation;
@@ -45,8 +45,6 @@ import org.hkijena.jipipe.plugins.parameters.library.primitives.ranges.IntegerRa
 import org.hkijena.jipipe.utils.ParameterUtils;
 import org.hkijena.jipipe.utils.ResourceUtils;
 import org.hkijena.jipipe.utils.StringUtils;
-import org.hkijena.jipipe.utils.UIUtils;
-import org.hkijena.jipipe.JIPipe;
 import org.hkijena.jipipe.utils.json.JsonUtils;
 import org.hkijena.jipipe.utils.ui.ViewOnlyMenuItem;
 
@@ -111,7 +109,7 @@ public abstract class JIPipeMergingAlgorithm extends JIPipeParameterSlotAlgorith
     }
 
     @Override
-    public JIPipeIterationStepGenerationSettings getGenerationSettingsInterface() {
+    public JIPipeIterationStepGenerationSettings getGenericIterationStepGenerationSettings() {
         return iterationStepGenerationSettings;
     }
 
@@ -126,7 +124,7 @@ public abstract class JIPipeMergingAlgorithm extends JIPipeParameterSlotAlgorith
     }
 
     @Override
-    public JIPipeDataBatchGenerationResult generateDataBatchesGenerationResult(List<JIPipeInputDataSlot> slots, JIPipeProgressInfo progressInfo) {
+    public JIPipeIterationStepGenerationResult generateIterationSteps(List<JIPipeInputDataSlot> slots, JIPipeProgressInfo progressInfo) {
         JIPipeMultiIterationStepGenerator builder = new JIPipeMultiIterationStepGenerator();
         builder.setNode(this);
         builder.setSlots(slots);
@@ -167,7 +165,7 @@ public abstract class JIPipeMergingAlgorithm extends JIPipeParameterSlotAlgorith
         }
 
         // Generate result object
-        JIPipeDataBatchGenerationResult result = new JIPipeDataBatchGenerationResult();
+        JIPipeIterationStepGenerationResult result = new JIPipeIterationStepGenerationResult();
         result.setDataBatches(iterationSteps);
         result.setReferenceTextAnnotationColumns(builder.getReferenceColumns());
 
@@ -218,7 +216,7 @@ public abstract class JIPipeMergingAlgorithm extends JIPipeParameterSlotAlgorith
             return;
         }
 
-        List<JIPipeMultiIterationStep> iterationSteps = generateDataBatchesGenerationResult(getNonParameterInputSlots(), progressInfo).getDataBatches();
+        List<JIPipeMultiIterationStep> iterationSteps = generateIterationSteps(getNonParameterInputSlots(), progressInfo).getDataBatches();
         for (JIPipeMultiIterationStep iterationStep : iterationSteps) {
             iterationStep.addMergedTextAnnotations(parameterAnnotations, iterationStepGenerationSettings.getAnnotationMergeStrategy());
         }

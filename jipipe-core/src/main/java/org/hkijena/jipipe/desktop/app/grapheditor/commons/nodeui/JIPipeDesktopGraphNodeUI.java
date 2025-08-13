@@ -31,6 +31,7 @@ import org.hkijena.jipipe.api.nodes.JIPipeGraph;
 import org.hkijena.jipipe.api.nodes.JIPipeGraphEdge;
 import org.hkijena.jipipe.api.nodes.JIPipeGraphNode;
 import org.hkijena.jipipe.api.nodes.algorithm.JIPipeParameterSlotAlgorithm;
+import org.hkijena.jipipe.api.nodes.iterationstep.JIPipeIterationStepAlgorithm;
 import org.hkijena.jipipe.api.parameters.JIPipeParameterCollection;
 import org.hkijena.jipipe.api.project.JIPipeProject;
 import org.hkijena.jipipe.api.runtimepartitioning.JIPipeRuntimePartition;
@@ -107,6 +108,7 @@ public class JIPipeDesktopGraphNodeUI extends JIPipeDesktopWorkbenchPanel implem
     private final Font nativeTertiaryFont = new Font(Font.DIALOG, Font.PLAIN, ThemeUtils.getCurrentStyle().getFontSizeTiny());
     private final Color mainTextColor;
     private final Color secondaryTextColor;
+    private final boolean nodeGeneratesIterationSteps;
     private final boolean showInputs;
     private final boolean showOutputs;
     private final NodeUIActionRequestedEventEmitter nodeUIActionRequestedEventEmitter = new NodeUIActionRequestedEventEmitter();
@@ -142,6 +144,7 @@ public class JIPipeDesktopGraphNodeUI extends JIPipeDesktopWorkbenchPanel implem
         this.graphCanvasUI = graphCanvasUI;
         this.node = node;
         this.zoom = graphCanvasUI.getZoom();
+        this.nodeGeneratesIterationSteps = node instanceof JIPipeIterationStepAlgorithm;
 
         this.updateViewOnCacheUpdatedDebouncer = new StaticDebouncer(500, () -> updateView(false, true, false));
 
@@ -239,6 +242,14 @@ public class JIPipeDesktopGraphNodeUI extends JIPipeDesktopWorkbenchPanel implem
         return node.getParentGraph().getAttachment(JIPipeGraphType.class) == JIPipeGraphType.Project;
     }
 
+    public boolean isDisplayInputConfigVisualization() {
+        return nodeGeneratesIterationSteps;
+    }
+
+    private int getBaseSlotXShift() {
+        return isDisplayInputConfigVisualization() ? 22 : 0;
+    }
+
     public double getZoom() {
         return zoom;
     }
@@ -285,8 +296,11 @@ public class JIPipeDesktopGraphNodeUI extends JIPipeDesktopWorkbenchPanel implem
     }
 
     protected void updateSlotActiveAreas() {
+
+        final int shift = getBaseSlotXShift();
+
         for (JIPipeDesktopGraphNodeUISlotActiveArea slotState : inputSlotMap.values()) {
-            Rectangle slotArea = new Rectangle((int) Math.round(slotState.getNativeLocation().x * zoom),
+            Rectangle slotArea = new Rectangle((int) Math.round(slotState.getNativeLocation().x * zoom + shift * zoom),
                     (int) Math.round(slotState.getNativeLocation().y * zoom),
                     (int) Math.round(slotState.getNativeWidth() * zoom),
                     (int) Math.round(viewMode.getGridHeight() * zoom));
@@ -295,7 +309,7 @@ public class JIPipeDesktopGraphNodeUI extends JIPipeDesktopWorkbenchPanel implem
 
             // Slot button
             double centerY = slotState.getZoomedHitArea().y + slotState.getZoomedHitArea().height / 2.0;
-            Rectangle slotButtonArea = new Rectangle((int) Math.round(slotState.getNativeLocation().x * zoom + 8 * zoom),
+            Rectangle slotButtonArea = new Rectangle((int) Math.round(slotState.getNativeLocation().x * zoom + 8 * zoom + shift * zoom),
                     (int) Math.round(centerY - 11 * zoom),
                     (int) Math.round(22 * zoom),
                     (int) Math.round(22 * zoom));
@@ -304,7 +318,7 @@ public class JIPipeDesktopGraphNodeUI extends JIPipeDesktopWorkbenchPanel implem
             activeAreas.add(slotButtonActiveArea);
         }
         if (addInputSlotArea != null) {
-            Rectangle slotArea = new Rectangle((int) Math.round(addInputSlotArea.getNativeLocation().x * zoom),
+            Rectangle slotArea = new Rectangle((int) Math.round(addInputSlotArea.getNativeLocation().x * zoom + shift * zoom),
                     (int) Math.round(addInputSlotArea.getNativeLocation().y * zoom),
                     (int) Math.round(addInputSlotArea.getNativeWidth() * zoom),
                     (int) Math.round(viewMode.getGridHeight() * zoom));
@@ -312,7 +326,7 @@ public class JIPipeDesktopGraphNodeUI extends JIPipeDesktopWorkbenchPanel implem
             activeAreas.add(addInputSlotArea);
         }
         for (JIPipeDesktopGraphNodeUISlotActiveArea slotState : outputSlotMap.values()) {
-            Rectangle slotArea = new Rectangle((int) Math.round(slotState.getNativeLocation().x * zoom),
+            Rectangle slotArea = new Rectangle((int) Math.round(slotState.getNativeLocation().x * zoom + shift * zoom),
                     (int) Math.round(slotState.getNativeLocation().y * zoom),
                     (int) Math.round(slotState.getNativeWidth() * zoom),
                     (int) Math.round(viewMode.getGridHeight() * zoom));
@@ -321,7 +335,7 @@ public class JIPipeDesktopGraphNodeUI extends JIPipeDesktopWorkbenchPanel implem
 
             // Slot button
             double centerY = slotState.getZoomedHitArea().y + slotState.getZoomedHitArea().height / 2.0;
-            Rectangle slotButtonArea = new Rectangle((int) Math.round(slotState.getNativeLocation().x * zoom + 8 * zoom),
+            Rectangle slotButtonArea = new Rectangle((int) Math.round(slotState.getNativeLocation().x * zoom + 8 * zoom + shift * zoom),
                     (int) Math.round(centerY - 11 * zoom),
                     (int) Math.round(22 * zoom),
                     (int) Math.round(22 * zoom));
@@ -330,7 +344,7 @@ public class JIPipeDesktopGraphNodeUI extends JIPipeDesktopWorkbenchPanel implem
             activeAreas.add(slotButtonActiveArea);
         }
         if (addOutputSlotArea != null) {
-            Rectangle slotArea = new Rectangle((int) Math.round(addOutputSlotArea.getNativeLocation().x * zoom),
+            Rectangle slotArea = new Rectangle((int) Math.round(addOutputSlotArea.getNativeLocation().x * zoom + shift * zoom),
                     (int) Math.round(addOutputSlotArea.getNativeLocation().y * zoom),
                     (int) Math.round(addOutputSlotArea.getNativeWidth() * zoom),
                     (int) Math.round(viewMode.getGridHeight() * zoom));
@@ -340,6 +354,7 @@ public class JIPipeDesktopGraphNodeUI extends JIPipeDesktopWorkbenchPanel implem
     }
 
     protected void updateWholeNodeActiveAreas() {
+        final int shift = getBaseSlotXShift();
         FontMetrics mainFontMetrics;
 
         if (getGraphics() != null) {
@@ -371,7 +386,7 @@ public class JIPipeDesktopGraphNodeUI extends JIPipeDesktopWorkbenchPanel implem
 
             double nameWidth = getNameWidth(mainFontMetrics);
             int centerNativeWidth = (int) Math.round(22 * zoom + 22 * zoom + nameWidth);
-            double startX = getWidth() / 2.0 - centerNativeWidth / 2.0;
+            double startX = getWidth() / 2.0 - centerNativeWidth / 2.0 + shift;
 
             JIPipeDesktopGraphNodeUIRunNodeActiveArea activeArea = new JIPipeDesktopGraphNodeUIRunNodeActiveArea(this);
             activeArea.setZoomedHitArea(new Rectangle((int) Math.round(startX), (int) Math.round(centerY - 11 * zoom), (int) Math.round(22 * zoom), (int) Math.round(22 * zoom)));
@@ -518,13 +533,14 @@ public class JIPipeDesktopGraphNodeUI extends JIPipeDesktopWorkbenchPanel implem
         } else {
             nameWidth = mainFontMetrics.stringWidth(node.getName());
         }
-        double mainWidth = (nodeIsRunnable ? 22 : 0) + 22 + nameWidth + 16;
+        double mainWidth = (nodeIsRunnable ? 22 : 0) + getBaseSlotXShift() + 22 + nameWidth + 16;
 
         // Slot widths
         double sumInputSlotWidths = 0;
         double sumOutputSlotWidths = 0;
 
         if (showInputs) {
+
             for (JIPipeInputDataSlot inputSlot : node.getInputSlots()) {
                 JIPipeDesktopGraphNodeUISlotActiveArea slotState = inputSlotMap.get(inputSlot.getName());
                 double nativeWidth = secondaryFontMetrics.stringWidth(slotState.getSlotLabel()) + 22 * 2 + 16;
@@ -543,6 +559,7 @@ public class JIPipeDesktopGraphNodeUI extends JIPipeDesktopWorkbenchPanel implem
             }
         }
         if (showOutputs) {
+
             for (JIPipeDataSlot outputSlots : node.getOutputSlots()) {
                 JIPipeDesktopGraphNodeUISlotActiveArea slotState = outputSlotMap.get(outputSlots.getName());
                 if (slotState == null)
@@ -565,6 +582,7 @@ public class JIPipeDesktopGraphNodeUI extends JIPipeDesktopWorkbenchPanel implem
 
         // Calculate the grid width
         double maxWidth = Math.max(mainWidth, Math.max(sumInputSlotWidths, sumOutputSlotWidths));
+        maxWidth += getBaseSlotXShift();
         int gridWidth = (int) Math.ceil(maxWidth / viewMode.getGridWidth());
 
         // Correct the slot width to fit the actual native width of the control
@@ -592,12 +610,21 @@ public class JIPipeDesktopGraphNodeUI extends JIPipeDesktopWorkbenchPanel implem
 //        if(slotStateMap.size() == 1 && hasButton) {
 //            return;
 //        }
+        ;
         boolean excludeButton = false;
         if (!slotStateMap.isEmpty() && hasButton) {
             nodeWidth -= 22;
             sumWidth -= 22;
             excludeButton = true;
         }
+
+        nodeWidth -= getBaseSlotXShift();
+
+//        if(displayInputConfigVisualization) {
+//            // Subtract from the calculations here
+//            nodeWidth -= 22;
+//            sumWidth -= 22;
+//        }
         double factor = nodeWidth / sumWidth;
         for (JIPipeDesktopGraphNodeUISlotActiveArea slotState : slotStateMap.values()) {
             slotState.getNativeLocation().x = (int) Math.round(slotState.getNativeLocation().x * factor);
@@ -818,10 +845,26 @@ public class JIPipeDesktopGraphNodeUI extends JIPipeDesktopWorkbenchPanel implem
             paintOutputSlots(g2, realSlotHeight);
         }
 
+        // Paint input config visualization
+        if(isDisplayInputConfigVisualization()) {
+            paintInputConfigVisualization(g2);
+        }
+
         // Paint outside border
         g2.setStroke(JIPipeDesktopGraphCanvasUI.STROKE_UNIT);
         g2.setColor(currentActiveArea instanceof JIPipeDesktopGraphNodeUIWholeNodeActiveArea ? highlightedNodeBorderColor : nodeBorderColor);
         g2.drawRect(0, 0, getWidth() - 1, getHeight() - 1);
+    }
+
+    private void paintInputConfigVisualization(Graphics2D g2) {
+        final int shift = getBaseSlotXShift();
+
+        g2.setPaint(nodeFillColor);
+        g2.fillRect(0, 0, (int) (zoom * shift), getHeight());
+
+        g2.setStroke(JIPipeDesktopGraphCanvasUI.STROKE_UNIT);
+        g2.setPaint(nodeBorderColor);
+        g2.drawLine((int) (zoom * shift), 0, (int) (zoom * shift), getHeight());
     }
 
 
@@ -832,7 +875,7 @@ public class JIPipeDesktopGraphNodeUI extends JIPipeDesktopWorkbenchPanel implem
         g2.setPaint(slotFillColor);
         g2.fillRect(0, getHeight() - realSlotHeight, getWidth(), realSlotHeight);
 
-        int startX = 0;
+        int startX = (int) (getBaseSlotXShift() * zoom);
 
         for (int i = 0; i < outputSlots.size(); i++) {
             JIPipeDataSlot outputSlot = outputSlots.get(i);
@@ -917,7 +960,7 @@ public class JIPipeDesktopGraphNodeUI extends JIPipeDesktopWorkbenchPanel implem
         g2.setPaint(slotFillColor);
         g2.fillRect(0, 0, getWidth(), realSlotHeight);
 
-        int startX = 0;
+        int startX = (int) (getBaseSlotXShift() * zoom);
 
         for (int i = 0; i < inputSlots.size(); i++) {
             JIPipeInputDataSlot inputSlot = inputSlots.get(i);
@@ -1067,6 +1110,7 @@ public class JIPipeDesktopGraphNodeUI extends JIPipeDesktopWorkbenchPanel implem
     }
 
     private void paintNodeControls(Graphics2D g2, FontMetrics fontMetrics, int realSlotHeight, boolean hasInputs, boolean hasOutputs) {
+        final int shift = getBaseSlotXShift();
         int centerY;
         if (hasInputs && !hasOutputs) {
             centerY = (getHeight() - realSlotHeight) / 2 + realSlotHeight;
@@ -1080,7 +1124,7 @@ public class JIPipeDesktopGraphNodeUI extends JIPipeDesktopWorkbenchPanel implem
             double nameWidth = getNameWidth(fontMetrics);
 
             int centerNativeWidth = (int) Math.round((nodeIsRunnable ? 22 : 0) * zoom + 22 * zoom + nameWidth);
-            double startX = getWidth() / 2.0 - centerNativeWidth / 2.0;
+            double startX = getWidth() / 2.0 - centerNativeWidth / 2.0 + shift;
 
             if (nodeIsRunnable) {
                 boolean isButtonHighlighted = currentActiveArea instanceof JIPipeDesktopGraphNodeUIRunNodeActiveArea;

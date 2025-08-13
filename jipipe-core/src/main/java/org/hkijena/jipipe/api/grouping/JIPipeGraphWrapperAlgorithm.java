@@ -20,7 +20,7 @@ import gnu.trove.set.TIntSet;
 import gnu.trove.set.hash.TIntHashSet;
 import org.hkijena.jipipe.JIPipe;
 import org.hkijena.jipipe.JIPipeDependency;
-import org.hkijena.jipipe.api.JIPipeDataBatchGenerationResult;
+import org.hkijena.jipipe.api.JIPipeIterationStepGenerationResult;
 import org.hkijena.jipipe.api.JIPipeProgressInfo;
 import org.hkijena.jipipe.api.JIPipeProgressInfoETA;
 import org.hkijena.jipipe.api.annotation.JIPipeDataAnnotationMergeMode;
@@ -44,8 +44,6 @@ import org.hkijena.jipipe.plugins.expressions.JIPipeExpressionVariablesMap;
 import org.hkijena.jipipe.plugins.parameters.api.enums.EnumItemInfo;
 import org.hkijena.jipipe.plugins.parameters.api.enums.EnumParameterSettings;
 import org.hkijena.jipipe.plugins.parameters.library.primitives.ranges.IntegerRange;
-import org.hkijena.jipipe.utils.UIUtils;
-import org.hkijena.jipipe.JIPipe;
 
 import javax.swing.*;
 import java.nio.file.Path;
@@ -241,7 +239,7 @@ public class JIPipeGraphWrapperAlgorithm extends JIPipeAlgorithm implements JIPi
             return;
         }
         try {
-            List<JIPipeMultiIterationStep> iterationSteps = generateDataBatchesGenerationResult(getDataInputSlots(), progressInfo).getDataBatches();
+            List<JIPipeMultiIterationStep> iterationSteps = generateIterationSteps(getDataInputSlots(), progressInfo).getDataBatches();
             JIPipeProgressInfoETA eta = new JIPipeProgressInfoETA();
             for (int i = 0; i < iterationSteps.size(); i++) {
                 JIPipeProgressInfo batchProgress = progressInfo.resolveAndLog("Iteration", i, iterationSteps.size());
@@ -435,12 +433,12 @@ public class JIPipeGraphWrapperAlgorithm extends JIPipeAlgorithm implements JIPi
     }
 
     @Override
-    public JIPipeIterationStepGenerationSettings getGenerationSettingsInterface() {
+    public JIPipeIterationStepGenerationSettings getGenericIterationStepGenerationSettings() {
         return batchGenerationSettings;
     }
 
     @Override
-    public JIPipeDataBatchGenerationResult generateDataBatchesGenerationResult(List<JIPipeInputDataSlot> slots, JIPipeProgressInfo progressInfo) {
+    public JIPipeIterationStepGenerationResult generateIterationSteps(List<JIPipeInputDataSlot> slots, JIPipeProgressInfo progressInfo) {
         if (iterationMode == IterationMode.PassThrough) {
             JIPipeMultiIterationStep iterationStep = new JIPipeMultiIterationStep(this);
             for (JIPipeDataSlot inputSlot : getDataInputSlots()) {
@@ -450,7 +448,7 @@ public class JIPipeGraphWrapperAlgorithm extends JIPipeAlgorithm implements JIPi
             }
 
             // Generate result object
-            JIPipeDataBatchGenerationResult result = new JIPipeDataBatchGenerationResult();
+            JIPipeIterationStepGenerationResult result = new JIPipeIterationStepGenerationResult();
             result.setDataBatches(iterationStep);
 
             return result;
@@ -493,7 +491,7 @@ public class JIPipeGraphWrapperAlgorithm extends JIPipeAlgorithm implements JIPi
             }
 
             // Generate result object
-            JIPipeDataBatchGenerationResult result = new JIPipeDataBatchGenerationResult();
+            JIPipeIterationStepGenerationResult result = new JIPipeIterationStepGenerationResult();
             result.setDataBatches(iterationSteps);
             result.setReferenceTextAnnotationColumns(builder.getReferenceColumns());
 

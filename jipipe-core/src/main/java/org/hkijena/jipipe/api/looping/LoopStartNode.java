@@ -91,12 +91,12 @@ public class LoopStartNode extends IOInterfaceAlgorithm implements JIPipeIterati
     }
 
     @Override
-    public JIPipeIterationStepGenerationSettings getGenerationSettingsInterface() {
+    public JIPipeIterationStepGenerationSettings getGenericIterationStepGenerationSettings() {
         return batchGenerationSettings;
     }
 
     @Override
-    public JIPipeDataBatchGenerationResult generateDataBatchesGenerationResult(List<JIPipeInputDataSlot> slots, JIPipeProgressInfo progressInfo) {
+    public JIPipeIterationStepGenerationResult generateIterationSteps(List<JIPipeInputDataSlot> slots, JIPipeProgressInfo progressInfo) {
         if (iterationMode == JIPipeGraphWrapperAlgorithm.IterationMode.PassThrough) {
             JIPipeMultiIterationStep iterationStep = new JIPipeMultiIterationStep(this);
             for (JIPipeDataSlot inputSlot : getDataInputSlots()) {
@@ -106,7 +106,7 @@ public class LoopStartNode extends IOInterfaceAlgorithm implements JIPipeIterati
             }
 
             // Generate result object
-            JIPipeDataBatchGenerationResult result = new JIPipeDataBatchGenerationResult();
+            JIPipeIterationStepGenerationResult result = new JIPipeIterationStepGenerationResult();
             result.setDataBatches(iterationStep);
 
             return result;
@@ -149,7 +149,7 @@ public class LoopStartNode extends IOInterfaceAlgorithm implements JIPipeIterati
             }
 
             // Generate result object
-            JIPipeDataBatchGenerationResult result = new JIPipeDataBatchGenerationResult();
+            JIPipeIterationStepGenerationResult result = new JIPipeIterationStepGenerationResult();
             result.setDataBatches(iterationSteps);
             result.setReferenceTextAnnotationColumns(builder.getReferenceColumns());
 

@@ -15,7 +15,7 @@ package org.hkijena.jipipe.api.nodes.algorithm;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 import org.hkijena.jipipe.api.AddJIPipeDocumentationDescription;
-import org.hkijena.jipipe.api.JIPipeDataBatchGenerationResult;
+import org.hkijena.jipipe.api.JIPipeIterationStepGenerationResult;
 import org.hkijena.jipipe.api.JIPipeProgressInfo;
 import org.hkijena.jipipe.api.SetJIPipeDocumentation;
 import org.hkijena.jipipe.api.annotation.JIPipeTextAnnotation;
@@ -101,7 +101,7 @@ public abstract class JIPipeSingleIterationAlgorithm extends JIPipeParameterSlot
     }
 
     @Override
-    public JIPipeIterationStepGenerationSettings getGenerationSettingsInterface() {
+    public JIPipeIterationStepGenerationSettings getGenericIterationStepGenerationSettings() {
         return iterationStepGenerationSettings;
     }
 
@@ -116,7 +116,7 @@ public abstract class JIPipeSingleIterationAlgorithm extends JIPipeParameterSlot
     }
 
     @Override
-    public JIPipeDataBatchGenerationResult generateDataBatchesGenerationResult(List<JIPipeInputDataSlot> slots, JIPipeProgressInfo progressInfo) {
+    public JIPipeIterationStepGenerationResult generateIterationSteps(List<JIPipeInputDataSlot> slots, JIPipeProgressInfo progressInfo) {
         JIPipeMultiIterationStepGenerator builder = new JIPipeMultiIterationStepGenerator();
         builder.setNode(this);
         builder.setSlots(slots);
@@ -128,7 +128,7 @@ public abstract class JIPipeSingleIterationAlgorithm extends JIPipeParameterSlot
         List<JIPipeMultiIterationStep> iterationSteps = builder.build(progressInfo);
 
         // Generate result object
-        JIPipeDataBatchGenerationResult result = new JIPipeDataBatchGenerationResult();
+        JIPipeIterationStepGenerationResult result = new JIPipeIterationStepGenerationResult();
         result.setDataBatches(iterationSteps);
         result.setReferenceTextAnnotationColumns(builder.getReferenceColumns());
 
@@ -187,7 +187,7 @@ public abstract class JIPipeSingleIterationAlgorithm extends JIPipeParameterSlot
             return;
         }
 
-        List<JIPipeMultiIterationStep> iterationSteps = generateDataBatchesGenerationResult(getNonParameterInputSlots(), progressInfo).getDataBatches();
+        List<JIPipeMultiIterationStep> iterationSteps = generateIterationSteps(getNonParameterInputSlots(), progressInfo).getDataBatches();
         for (JIPipeMultiIterationStep iterationStep : iterationSteps) {
             iterationStep.addMergedTextAnnotations(parameterAnnotations, iterationStepGenerationSettings.getAnnotationMergeStrategy());
         }

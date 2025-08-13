@@ -15,7 +15,7 @@ package org.hkijena.jipipe.api.nodes.algorithm;
 
 import gnu.trove.set.TIntSet;
 import gnu.trove.set.hash.TIntHashSet;
-import org.hkijena.jipipe.api.JIPipeDataBatchGenerationResult;
+import org.hkijena.jipipe.api.JIPipeIterationStepGenerationResult;
 import org.hkijena.jipipe.api.JIPipeProgressInfo;
 import org.hkijena.jipipe.api.SetJIPipeDocumentation;
 import org.hkijena.jipipe.api.annotation.JIPipeDataAnnotationMergeMode;
@@ -189,7 +189,7 @@ public abstract class JIPipeParameterlessSimpleIteratingAlgorithm extends JIPipe
     }
 
     @Override
-    public JIPipeIterationStepGenerationSettings getGenerationSettingsInterface() {
+    public JIPipeIterationStepGenerationSettings getGenericIterationStepGenerationSettings() {
         return iterationStepGenerationSettings;
     }
 
@@ -210,7 +210,7 @@ public abstract class JIPipeParameterlessSimpleIteratingAlgorithm extends JIPipe
     }
 
     @Override
-    public JIPipeDataBatchGenerationResult generateDataBatchesGenerationResult(List<JIPipeInputDataSlot> slots, JIPipeProgressInfo progressInfo) {
+    public JIPipeIterationStepGenerationResult generateIterationSteps(List<JIPipeInputDataSlot> slots, JIPipeProgressInfo progressInfo) {
         List<JIPipeMultiIterationStep> batches = new ArrayList<>();
         JIPipeDataSlot slot = slots.get(0);
         boolean withLimit = iterationStepGenerationSettings.getLimit().isEnabled();
@@ -227,7 +227,7 @@ public abstract class JIPipeParameterlessSimpleIteratingAlgorithm extends JIPipe
         }
 
         // Generate result object
-        JIPipeDataBatchGenerationResult result = new JIPipeDataBatchGenerationResult();
+        JIPipeIterationStepGenerationResult result = new JIPipeIterationStepGenerationResult();
         result.setDataBatches(batches);
 
         return result;

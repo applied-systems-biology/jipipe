@@ -13,7 +13,7 @@
 
 package org.hkijena.jipipe.api.nodes.iterationstep;
 
-import org.hkijena.jipipe.api.JIPipeDataBatchGenerationResult;
+import org.hkijena.jipipe.api.JIPipeIterationStepGenerationResult;
 import org.hkijena.jipipe.api.JIPipeProgressInfo;
 import org.hkijena.jipipe.api.data.JIPipeInputDataSlot;
 import org.hkijena.jipipe.api.nodes.JIPipeAlgorithm;
@@ -29,7 +29,7 @@ public interface JIPipeIterationStepAlgorithm {
      *
      * @return batch generation settings as interface
      */
-    JIPipeIterationStepGenerationSettings getGenerationSettingsInterface();
+    JIPipeIterationStepGenerationSettings getGenericIterationStepGenerationSettings();
 
     /**
      * Generates iteration steps.
@@ -39,19 +39,6 @@ public interface JIPipeIterationStepAlgorithm {
      * @param progressInfo the progress
      * @return the batches
      */
-    JIPipeDataBatchGenerationResult generateDataBatchesGenerationResult(List<JIPipeInputDataSlot> slots, JIPipeProgressInfo progressInfo);
+    JIPipeIterationStepGenerationResult generateIterationSteps(List<JIPipeInputDataSlot> slots, JIPipeProgressInfo progressInfo);
 
-    /**
-     * Generates iteration steps.
-     * This is a dry-run function that should never throw errors
-     *
-     * @param slots        the data slots
-     * @param progressInfo the progress
-     * @return the batches
-     * @deprecated use generateDataBatchesGenerationResult
-     */
-    @Deprecated
-    default List<JIPipeMultiIterationStep> generateDataBatchesDryRun(List<JIPipeInputDataSlot> slots, JIPipeProgressInfo progressInfo) {
-        return generateDataBatchesGenerationResult(slots, progressInfo).getDataBatches();
-    }
 }

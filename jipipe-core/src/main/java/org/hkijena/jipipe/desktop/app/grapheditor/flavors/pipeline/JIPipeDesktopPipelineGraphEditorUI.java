@@ -311,7 +311,7 @@ public class JIPipeDesktopPipelineGraphEditorUI extends JIPipeDesktopGraphEditor
                         JIPipe.RESOURCES.getIcon24("actions/input-management-2.png"),
                         JIPipeDesktopDockPanel.PanelLocation.TopRight,
                         false,
-                        -60, new JIPipeDesktopParameterFormPanel(getDesktopWorkbench(), ((JIPipeIterationStepAlgorithm) node).getGenerationSettingsInterface(),
+                        -60, new JIPipeDesktopParameterFormPanel(getDesktopWorkbench(), ((JIPipeIterationStepAlgorithm) node).getGenericIterationStepGenerationSettings(),
                                 null, JIPipeDesktopParameterFormPanel.WITH_SEARCH_BAR | JIPipeDesktopParameterFormPanel.WITH_SCROLLING));
             }
         }

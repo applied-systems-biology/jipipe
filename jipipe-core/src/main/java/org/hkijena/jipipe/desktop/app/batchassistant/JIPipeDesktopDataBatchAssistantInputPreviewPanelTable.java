@@ -17,7 +17,7 @@ import com.google.common.collect.HashMultimap;
 import com.google.common.collect.Multimap;
 import com.google.common.html.HtmlEscapers;
 import org.hkijena.jipipe.JIPipe;
-import org.hkijena.jipipe.api.JIPipeDataBatchGenerationResult;
+import org.hkijena.jipipe.api.JIPipeIterationStepGenerationResult;
 import org.hkijena.jipipe.api.JIPipeProgressInfo;
 import org.hkijena.jipipe.api.annotation.JIPipeTextAnnotation;
 import org.hkijena.jipipe.api.data.*;
@@ -28,7 +28,6 @@ import org.hkijena.jipipe.desktop.api.data.JIPipeDesktopDataDisplayOperation;
 import org.hkijena.jipipe.desktop.api.dataviewer.JIPipeDesktopDataViewerWindow;
 import org.hkijena.jipipe.desktop.app.cache.JIPipeDesktopDataTableRowDisplayUtil;
 import org.hkijena.jipipe.desktop.app.datatracer.JIPipeDesktopDataTracerUI;
-import org.hkijena.jipipe.desktop.commons.theme.JIPipeDesktopLegacyModernMetalTheme;
 import org.hkijena.jipipe.plugins.tables.datatypes.AnnotationTableData;
 import org.hkijena.jipipe.utils.StringUtils;
 import org.hkijena.jipipe.utils.ThemeUtils;
@@ -63,7 +62,7 @@ public class JIPipeDesktopDataBatchAssistantInputPreviewPanelTable extends JPane
     private final DefaultTableModel model = new DefaultTableModel();
     private final Multimap<Integer, Integer> iterationStepMapping = HashMultimap.create();
     private boolean hasLimitedData;
-    private JIPipeDataBatchGenerationResult iterationStepGenerationResult;
+    private JIPipeIterationStepGenerationResult iterationStepGenerationResult;
 
     public JIPipeDesktopDataBatchAssistantInputPreviewPanelTable(JIPipeDesktopDataBatchAssistantInputPreviewPanel previewPanel, JIPipeInputDataSlot inputSlot, boolean shouldLimitData) {
         this.previewPanel = previewPanel;
@@ -309,7 +308,7 @@ public class JIPipeDesktopDataBatchAssistantInputPreviewPanelTable extends JPane
         }
     }
 
-    public void highlightResults(JIPipeDataBatchGenerationResult iterationStepGenerationResult) {
+    public void highlightResults(JIPipeIterationStepGenerationResult iterationStepGenerationResult) {
 
         this.iterationStepGenerationResult = iterationStepGenerationResult;
 

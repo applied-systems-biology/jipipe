@@ -23,7 +23,7 @@ import java.util.Set;
 /**
  * Result of a iteration step generation run
  */
-public class JIPipeDataBatchGenerationResult {
+public class JIPipeIterationStepGenerationResult {
     private List<JIPipeMultiIterationStep> iterationSteps = new ArrayList<>();
     private Set<String> referenceTextAnnotationColumns = new HashSet<>();
 

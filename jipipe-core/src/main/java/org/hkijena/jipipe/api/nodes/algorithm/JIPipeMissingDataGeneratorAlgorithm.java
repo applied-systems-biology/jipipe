@@ -17,7 +17,7 @@ import com.google.common.primitives.Ints;
 import gnu.trove.set.TIntSet;
 import gnu.trove.set.hash.TIntHashSet;
 import org.hkijena.jipipe.api.AddJIPipeDocumentationDescription;
-import org.hkijena.jipipe.api.JIPipeDataBatchGenerationResult;
+import org.hkijena.jipipe.api.JIPipeIterationStepGenerationResult;
 import org.hkijena.jipipe.api.JIPipeProgressInfo;
 import org.hkijena.jipipe.api.SetJIPipeDocumentation;
 import org.hkijena.jipipe.api.annotation.JIPipeDataAnnotationMergeMode;
@@ -95,12 +95,12 @@ public abstract class JIPipeMissingDataGeneratorAlgorithm extends JIPipeParamete
     }
 
     @Override
-    public JIPipeIterationStepGenerationSettings getGenerationSettingsInterface() {
+    public JIPipeIterationStepGenerationSettings getGenericIterationStepGenerationSettings() {
         return iterationStepGenerationSettings;
     }
 
     @Override
-    public JIPipeDataBatchGenerationResult generateDataBatchesGenerationResult(List<JIPipeInputDataSlot> slots, JIPipeProgressInfo progressInfo) {
+    public JIPipeIterationStepGenerationResult generateIterationSteps(List<JIPipeInputDataSlot> slots, JIPipeProgressInfo progressInfo) {
         JIPipeMultiIterationStepGenerator builder = new JIPipeMultiIterationStepGenerator();
         builder.setNode(this);
         builder.setApplyMerging(iterationStepGenerationSettings.isAllowMerging());
@@ -125,7 +125,7 @@ public abstract class JIPipeMissingDataGeneratorAlgorithm extends JIPipeParamete
         }
 
         // Generate result object
-        JIPipeDataBatchGenerationResult result = new JIPipeDataBatchGenerationResult();
+        JIPipeIterationStepGenerationResult result = new JIPipeIterationStepGenerationResult();
         result.setDataBatches(iterationSteps);
         result.setReferenceTextAnnotationColumns(builder.getReferenceColumns());
 
@@ -158,7 +158,7 @@ public abstract class JIPipeMissingDataGeneratorAlgorithm extends JIPipeParamete
                 iterationSteps.add(iterationStep);
             }
         } else {
-            iterationSteps = generateDataBatchesGenerationResult(getNonParameterInputSlots(), progressInfo).getDataBatches();
+            iterationSteps = generateIterationSteps(getNonParameterInputSlots(), progressInfo).getDataBatches();
         }
 
         if (iterationSteps == null) {

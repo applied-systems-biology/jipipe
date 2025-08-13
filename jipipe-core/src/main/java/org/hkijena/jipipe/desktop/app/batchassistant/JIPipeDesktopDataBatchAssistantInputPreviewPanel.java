@@ -15,13 +15,12 @@ package org.hkijena.jipipe.desktop.app.batchassistant;
 
 import com.google.common.collect.ImmutableList;
 import org.hkijena.jipipe.JIPipe;
-import org.hkijena.jipipe.api.JIPipeDataBatchGenerationResult;
+import org.hkijena.jipipe.api.JIPipeIterationStepGenerationResult;
 import org.hkijena.jipipe.api.data.JIPipeInputDataSlot;
 import org.hkijena.jipipe.desktop.app.JIPipeDesktopWorkbench;
 import org.hkijena.jipipe.desktop.app.JIPipeDesktopWorkbenchPanel;
 import org.hkijena.jipipe.desktop.commons.components.JIPipeDesktopFormPanel;
 import org.hkijena.jipipe.utils.UIUtils;
-import org.hkijena.jipipe.JIPipe;
 
 import javax.swing.*;
 import java.awt.*;
@@ -33,7 +32,7 @@ public class JIPipeDesktopDataBatchAssistantInputPreviewPanel extends JIPipeDesk
     private final JIPipeDesktopDataBatchAssistantUI iterationStepAssistantUI;
     private final JCheckBox showAllInputsCheck = new JCheckBox("Show all");
     private final JIPipeDesktopFormPanel contentPanel = new JIPipeDesktopFormPanel(JIPipeDesktopFormPanel.WITH_SCROLLING);
-    private JIPipeDataBatchGenerationResult lastResults;
+    private JIPipeIterationStepGenerationResult lastResults;
 
     public JIPipeDesktopDataBatchAssistantInputPreviewPanel(JIPipeDesktopWorkbench workbench, JIPipeDesktopDataBatchAssistantUI iterationStepAssistantUI) {
         super(workbench);
@@ -77,7 +76,7 @@ public class JIPipeDesktopDataBatchAssistantInputPreviewPanel extends JIPipeDesk
         return iterationStepAssistantUI;
     }
 
-    public void highlightResults(JIPipeDataBatchGenerationResult iterationStepGenerationResult) {
+    public void highlightResults(JIPipeIterationStepGenerationResult iterationStepGenerationResult) {
         lastResults = iterationStepGenerationResult;
         applyHighlight();
     }

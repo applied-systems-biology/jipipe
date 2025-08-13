@@ -16,7 +16,7 @@ package org.hkijena.jipipe.plugins.forms.algorithms;
 import gnu.trove.set.TIntSet;
 import gnu.trove.set.hash.TIntHashSet;
 import org.hkijena.jipipe.api.ConfigureJIPipeNode;
-import org.hkijena.jipipe.api.JIPipeDataBatchGenerationResult;
+import org.hkijena.jipipe.api.JIPipeIterationStepGenerationResult;
 import org.hkijena.jipipe.api.JIPipeProgressInfo;
 import org.hkijena.jipipe.api.SetJIPipeDocumentation;
 import org.hkijena.jipipe.api.annotation.JIPipeDataAnnotationMergeMode;
@@ -47,7 +47,6 @@ import org.hkijena.jipipe.plugins.forms.ui.FormsDialog;
 import org.hkijena.jipipe.plugins.parameters.library.primitives.StringParameterSettings;
 import org.hkijena.jipipe.plugins.parameters.library.primitives.ranges.IntegerRange;
 import org.hkijena.jipipe.utils.ParameterUtils;
-import org.hkijena.jipipe.utils.ResourceUtils;
 
 import javax.swing.*;
 import java.awt.event.WindowAdapter;
@@ -243,7 +242,7 @@ public class SimpleIteratingFormProcessorAlgorithm extends JIPipeAlgorithm imple
     }
 
     @Override
-    public JIPipeIterationStepGenerationSettings getGenerationSettingsInterface() {
+    public JIPipeIterationStepGenerationSettings getGenericIterationStepGenerationSettings() {
         return iterationStepGenerationSettings;
     }
 
@@ -253,7 +252,7 @@ public class SimpleIteratingFormProcessorAlgorithm extends JIPipeAlgorithm imple
     }
 
     @Override
-    public JIPipeDataBatchGenerationResult generateDataBatchesGenerationResult(List<JIPipeInputDataSlot> slots, JIPipeProgressInfo progressInfo) {
+    public JIPipeIterationStepGenerationResult generateIterationSteps(List<JIPipeInputDataSlot> slots, JIPipeProgressInfo progressInfo) {
         List<JIPipeMultiIterationStep> batches = new ArrayList<>();
         JIPipeDataSlot slot = slots.stream().filter(s -> "Data".equals(s.getName())).findFirst().get();
         boolean withLimit = iterationStepGenerationSettings.getLimit().isEnabled();
@@ -269,7 +268,7 @@ public class SimpleIteratingFormProcessorAlgorithm extends JIPipeAlgorithm imple
         }
 
         // Generate result object
-        JIPipeDataBatchGenerationResult result = new JIPipeDataBatchGenerationResult();
+        JIPipeIterationStepGenerationResult result = new JIPipeIterationStepGenerationResult();
         result.setDataBatches(batches);
 
         return result;
