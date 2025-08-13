@@ -16,6 +16,7 @@ package org.hkijena.jipipe.api.nodes.iterationstep;
 import org.hkijena.jipipe.api.nodes.JIPipeColumMatching;
 import org.hkijena.jipipe.plugins.expressions.StringQueryExpression;
 import org.hkijena.jipipe.plugins.parameters.library.primitives.optional.OptionalIntegerRange;
+import org.hkijena.jipipe.utils.StringUtils;
 
 public class JIPipeIterationStepGenerationSettingsVisualization {
     private boolean showVisualization;
@@ -80,8 +81,11 @@ public class JIPipeIterationStepGenerationSettingsVisualization {
             return this;
         }
 
-        public Builder addStandardParameters(JIPipeColumMatching value, StringQueryExpression customColumns, OptionalIntegerRange limit, boolean skipIncompleteDataSets) {
-            return this;
+        public Builder addStandardParameters(JIPipeColumMatching columMatching, StringQueryExpression customColumns, OptionalIntegerRange limit, boolean skipIncompleteDataSets) {
+            return addParameter("column-matching", columMatching, JIPipeColumMatching.PrefixHashUnion)
+                    .addOptionalParameter("custom-column-matching", customColumns != null && !StringUtils.isNullOrEmpty(customColumns.getExpression()) && columMatching == JIPipeColumMatching.Custom, customColumns != null ? customColumns.getExpression() : "")
+                    .addOptionalParameter("limit", limit != null && limit.isEnabled(), limit != null ? limit.toString() : "")
+                    .addParameter("skip-incomplete", skipIncompleteDataSets, false);
         }
 
         public JIPipeIterationStepGenerationSettingsVisualization build() {
