@@ -23,10 +23,7 @@ import org.hkijena.jipipe.api.annotation.JIPipeTextAnnotationMergeMode;
 import org.hkijena.jipipe.api.data.JIPipeDataSlot;
 import org.hkijena.jipipe.api.data.JIPipeInputDataSlot;
 import org.hkijena.jipipe.api.data.JIPipeSlotConfiguration;
-import org.hkijena.jipipe.api.nodes.JIPipeAlgorithm;
-import org.hkijena.jipipe.api.nodes.JIPipeGraphNodeRunContext;
-import org.hkijena.jipipe.api.nodes.JIPipeNodeInfo;
-import org.hkijena.jipipe.api.nodes.JIPipeParallelizedAlgorithm;
+import org.hkijena.jipipe.api.nodes.*;
 import org.hkijena.jipipe.api.nodes.iterationstep.*;
 import org.hkijena.jipipe.api.parameters.*;
 import org.hkijena.jipipe.api.runtimepartitioning.JIPipeRuntimePartition;
@@ -252,6 +249,13 @@ public abstract class JIPipeParameterlessSimpleIteratingAlgorithm extends JIPipe
         @JIPipeParameter("limit")
         public void setLimit(OptionalIntegerRange limit) {
             this.limit = limit;
+        }
+
+        @Override
+        public JIPipeIterationStepGenerationSettingsVisualization createVisualization() {
+            return new JIPipeIterationStepGenerationSettingsVisualization.Builder()
+                    .addStandardParameters(JIPipeColumMatching.None, null, getLimit(), false)
+                    .build();
         }
     }
 }

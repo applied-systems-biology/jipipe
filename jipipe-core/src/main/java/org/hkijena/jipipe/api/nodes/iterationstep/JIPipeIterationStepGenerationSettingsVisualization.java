@@ -13,6 +13,10 @@
 
 package org.hkijena.jipipe.api.nodes.iterationstep;
 
+import org.hkijena.jipipe.api.nodes.JIPipeColumMatching;
+import org.hkijena.jipipe.plugins.expressions.StringQueryExpression;
+import org.hkijena.jipipe.plugins.parameters.library.primitives.optional.OptionalIntegerRange;
+
 public class JIPipeIterationStepGenerationSettingsVisualization {
     private boolean showVisualization;
     private float fillColorHue;
@@ -65,52 +69,28 @@ public class JIPipeIterationStepGenerationSettingsVisualization {
 
 
     public static final class Builder {
-        private boolean showVisualization;
-        private float fillColorHue;
-        private String iconInput;
-        private String iconCenter;
-        private String iconOutput;
-
-        private Builder() {
+        public Builder() {
         }
 
-        public static Builder aJIPipeIterationStepGenerationSettingsVisualization() {
-            return new Builder();
-        }
-
-        public Builder withShowVisualization(boolean showVisualization) {
-            this.showVisualization = showVisualization;
+        public Builder addOptionalParameter(String key, boolean enabled, Object value) {
             return this;
         }
 
-        public Builder withFillColorHue(float fillColorHue) {
-            this.fillColorHue = fillColorHue;
+        public <T> Builder addParameter(String key, T value, T defaultValue) {
             return this;
         }
 
-        public Builder withIconInput(String iconInput) {
-            this.iconInput = iconInput;
-            return this;
-        }
-
-        public Builder withIconCenter(String iconCenter) {
-            this.iconCenter = iconCenter;
-            return this;
-        }
-
-        public Builder withIconOutput(String iconOutput) {
-            this.iconOutput = iconOutput;
+        public Builder addStandardParameters(JIPipeColumMatching value, StringQueryExpression customColumns, OptionalIntegerRange limit, boolean skipIncompleteDataSets) {
             return this;
         }
 
         public JIPipeIterationStepGenerationSettingsVisualization build() {
-            JIPipeIterationStepGenerationSettingsVisualization jIPipeIterationStepGenerationSettingsVisualization = new JIPipeIterationStepGenerationSettingsVisualization();
-            jIPipeIterationStepGenerationSettingsVisualization.setShowVisualization(showVisualization);
-            jIPipeIterationStepGenerationSettingsVisualization.setFillColorHue(fillColorHue);
-            jIPipeIterationStepGenerationSettingsVisualization.setIconInput(iconInput);
-            jIPipeIterationStepGenerationSettingsVisualization.setIconCenter(iconCenter);
-            jIPipeIterationStepGenerationSettingsVisualization.setIconOutput(iconOutput);
-            return jIPipeIterationStepGenerationSettingsVisualization;
+            JIPipeIterationStepGenerationSettingsVisualization result = new JIPipeIterationStepGenerationSettingsVisualization();
+            return result;
+        }
+
+        public Builder setCenterIcon(String icon) {
+            return this;
         }
     }
 }

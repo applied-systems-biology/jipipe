@@ -17,6 +17,7 @@ import org.hkijena.jipipe.api.SetJIPipeDocumentation;
 import org.hkijena.jipipe.api.annotation.JIPipeDataAnnotationMergeMode;
 import org.hkijena.jipipe.api.annotation.JIPipeTextAnnotationMergeMode;
 import org.hkijena.jipipe.api.nodes.iterationstep.JIPipeIterationStepGenerationSettings;
+import org.hkijena.jipipe.api.nodes.iterationstep.JIPipeIterationStepGenerationSettingsVisualization;
 import org.hkijena.jipipe.api.parameters.AbstractJIPipeParameterCollection;
 import org.hkijena.jipipe.api.parameters.JIPipeParameter;
 
@@ -53,5 +54,14 @@ public class JIPipeSingleIterationAlgorithmIterationStepGenerationSettings exten
     @JIPipeParameter("data-annotation-merge-strategy")
     public void setDataAnnotationMergeStrategy(JIPipeDataAnnotationMergeMode dataAnnotationMergeStrategy) {
         this.dataAnnotationMergeStrategy = dataAnnotationMergeStrategy;
+    }
+
+    @Override
+    public JIPipeIterationStepGenerationSettingsVisualization createVisualization() {
+        return new JIPipeIterationStepGenerationSettingsVisualization.Builder()
+                .addParameter("annotation-merge-strategy", getAnnotationMergeStrategy(), JIPipeTextAnnotationMergeMode.Merge)
+                .addParameter("data-annotation-merge-strategy", getDataAnnotationMergeStrategy(), JIPipeDataAnnotationMergeMode.MergeTables)
+                .setCenterIcon("actions/data-flow-merge.png")
+                .build();
     }
 }

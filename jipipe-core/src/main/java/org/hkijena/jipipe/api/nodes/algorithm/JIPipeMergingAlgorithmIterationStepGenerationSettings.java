@@ -22,6 +22,7 @@ import org.hkijena.jipipe.api.nodes.JIPipeColumMatching;
 import org.hkijena.jipipe.api.nodes.JIPipeCustomAnnotationMatchingExpressionVariables;
 import org.hkijena.jipipe.api.nodes.JIPipeTextAnnotationMatchingMethod;
 import org.hkijena.jipipe.api.nodes.iterationstep.JIPipeIterationStepGenerationSettings;
+import org.hkijena.jipipe.api.nodes.iterationstep.JIPipeIterationStepGenerationSettingsVisualization;
 import org.hkijena.jipipe.api.parameters.AbstractJIPipeParameterCollection;
 import org.hkijena.jipipe.api.parameters.JIPipeParameter;
 import org.hkijena.jipipe.api.parameters.JIPipeParameterAccess;
@@ -233,5 +234,14 @@ public class JIPipeMergingAlgorithmIterationStepGenerationSettings extends Abstr
     @JsonSetter("limit")
     public void setLimit(OptionalIntegerRange limit) {
         this.limit = limit;
+    }
+
+    @Override
+    public JIPipeIterationStepGenerationSettingsVisualization createVisualization() {
+        return new JIPipeIterationStepGenerationSettingsVisualization.Builder()
+                .addStandardParameters(getColumnMatching(), getCustomColumns(), getLimit(), isSkipIncompleteDataSets())
+                .addParameter("annotation-merge-strategy", getAnnotationMergeStrategy(), JIPipeTextAnnotationMergeMode.Merge)
+                .addParameter("data-annotation-merge-strategy", getDataAnnotationMergeStrategy(), JIPipeDataAnnotationMergeMode.MergeTables)
+                .build();
     }
 }

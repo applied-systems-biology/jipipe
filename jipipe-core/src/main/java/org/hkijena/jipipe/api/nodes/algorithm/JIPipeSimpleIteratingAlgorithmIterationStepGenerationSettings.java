@@ -14,7 +14,9 @@
 package org.hkijena.jipipe.api.nodes.algorithm;
 
 import org.hkijena.jipipe.api.SetJIPipeDocumentation;
+import org.hkijena.jipipe.api.nodes.JIPipeColumMatching;
 import org.hkijena.jipipe.api.nodes.iterationstep.JIPipeIterationStepGenerationSettings;
+import org.hkijena.jipipe.api.nodes.iterationstep.JIPipeIterationStepGenerationSettingsVisualization;
 import org.hkijena.jipipe.api.parameters.AbstractJIPipeParameterCollection;
 import org.hkijena.jipipe.api.parameters.JIPipeParameter;
 import org.hkijena.jipipe.plugins.parameters.library.primitives.optional.OptionalIntegerRange;
@@ -39,5 +41,12 @@ public class JIPipeSimpleIteratingAlgorithmIterationStepGenerationSettings exten
     @JIPipeParameter("limit")
     public void setLimit(OptionalIntegerRange limit) {
         this.limit = limit;
+    }
+
+    @Override
+    public JIPipeIterationStepGenerationSettingsVisualization createVisualization() {
+        return new JIPipeIterationStepGenerationSettingsVisualization.Builder()
+                .addStandardParameters(JIPipeColumMatching.None, null, getLimit(), false)
+                .build();
     }
 }

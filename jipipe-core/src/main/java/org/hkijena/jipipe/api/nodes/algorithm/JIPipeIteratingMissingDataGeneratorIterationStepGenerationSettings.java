@@ -20,6 +20,7 @@ import org.hkijena.jipipe.api.nodes.JIPipeColumMatching;
 import org.hkijena.jipipe.api.nodes.JIPipeCustomAnnotationMatchingExpressionVariables;
 import org.hkijena.jipipe.api.nodes.JIPipeTextAnnotationMatchingMethod;
 import org.hkijena.jipipe.api.nodes.iterationstep.JIPipeIterationStepGenerationSettings;
+import org.hkijena.jipipe.api.nodes.iterationstep.JIPipeIterationStepGenerationSettingsVisualization;
 import org.hkijena.jipipe.api.parameters.AbstractJIPipeParameterCollection;
 import org.hkijena.jipipe.api.parameters.JIPipeParameter;
 import org.hkijena.jipipe.api.parameters.JIPipeParameterAccess;
@@ -173,5 +174,14 @@ public class JIPipeIteratingMissingDataGeneratorIterationStepGenerationSettings 
     @JIPipeParameter("data-annotation-merge-strategy")
     public void setDataAnnotationMergeStrategy(JIPipeDataAnnotationMergeMode dataAnnotationMergeStrategy) {
         this.dataAnnotationMergeStrategy = dataAnnotationMergeStrategy;
+    }
+
+    @Override
+    public JIPipeIterationStepGenerationSettingsVisualization createVisualization() {
+        return new JIPipeIterationStepGenerationSettingsVisualization.Builder()
+                .addStandardParameters(getColumnMatching(), getCustomColumns(), getLimit(), false)
+                .addParameter("annotation-merge-strategy", getAnnotationMergeStrategy(), JIPipeTextAnnotationMergeMode.Merge)
+                .addParameter("data-annotation-merge-strategy", getDataAnnotationMergeStrategy(), JIPipeDataAnnotationMergeMode.MergeTables)
+                .build();
     }
 }
