@@ -13,10 +13,12 @@
 
 package org.hkijena.jipipe.api.nodes.iterationstep;
 
-import org.hkijena.jipipe.api.nodes.JIPipeColumMatching;
+import org.hkijena.jipipe.api.nodes.JIPipeIterationStepTextAnnotationColumMatching;
 import org.hkijena.jipipe.plugins.expressions.StringQueryExpression;
 import org.hkijena.jipipe.plugins.parameters.library.primitives.optional.OptionalIntegerRange;
 import org.hkijena.jipipe.utils.StringUtils;
+
+import java.util.*;
 
 public class JIPipeIterationStepGenerationSettingsVisualization {
     private boolean showVisualization;
@@ -70,26 +72,67 @@ public class JIPipeIterationStepGenerationSettingsVisualization {
 
 
     public static final class Builder {
+
+        private final Map<String, String> trackedValues = new HashMap<>();
+        private boolean showVisualization;
+        private boolean isFiltering;
+        private boolean isSkipIncomplete;
+        private JIPipeIterationStepTextAnnotationColumMatching columMatching = JIPipeIterationStepTextAnnotationColumMatching.PrefixHashUnion;
+
+
         public Builder() {
         }
 
         public Builder addOptionalParameter(String key, boolean enabled, Object value) {
+            trackedValues.put(key, StringUtils.nullToEmpty(value));
+            if (enabled) {
+                showVisualization = true;
+                tryExtractSpecialParameter(key, value);
+            }
             return this;
         }
 
         public <T> Builder addParameter(String key, T value, T defaultValue) {
+            trackedValues.put(key, StringUtils.nullToEmpty(value));
+            if(!Objects.equals(value, defaultValue)) {
+                showVisualization = true;
+            }
+            tryExtractSpecialParameter(key, value);
             return this;
         }
 
-        public Builder addStandardParameters(JIPipeColumMatching columMatching, StringQueryExpression customColumns, OptionalIntegerRange limit, boolean skipIncompleteDataSets) {
-            return addParameter("column-matching", columMatching, JIPipeColumMatching.PrefixHashUnion)
-                    .addOptionalParameter("custom-column-matching", customColumns != null && !StringUtils.isNullOrEmpty(customColumns.getExpression()) && columMatching == JIPipeColumMatching.Custom, customColumns != null ? customColumns.getExpression() : "")
+        private <T> void tryExtractSpecialParameter(String key, T value) {
+            switch (key) {
+                case "column-matching" -> {
+                    if (value instanceof JIPipeIterationStepTextAnnotationColumMatching) {
+                        columMatching = (JIPipeIterationStepTextAnnotationColumMatching) value;
+                    }
+                }
+                case "skip-incomplete" -> {
+                    if (value instanceof Boolean) {
+                        isSkipIncomplete = (Boolean) value;
+                    }
+                }
+                case "limit" -> {
+                    if(value instanceof Boolean) {
+                        isFiltering = (Boolean) value;
+                    }
+                }
+            }
+
+        }
+
+        public Builder addStandardParameters(JIPipeIterationStepTextAnnotationColumMatching columMatching, StringQueryExpression customColumns, OptionalIntegerRange limit, boolean skipIncompleteDataSets) {
+            return addParameter("column-matching", columMatching, JIPipeIterationStepTextAnnotationColumMatching.PrefixHashUnion)
+                    .addOptionalParameter("custom-column-matching", customColumns != null && !StringUtils.isNullOrEmpty(customColumns.getExpression()) && columMatching == JIPipeIterationStepTextAnnotationColumMatching.Custom, customColumns != null ? customColumns.getExpression() : "")
                     .addOptionalParameter("limit", limit != null && limit.isEnabled(), limit != null ? limit.toString() : "")
                     .addParameter("skip-incomplete", skipIncompleteDataSets, false);
         }
 
         public JIPipeIterationStepGenerationSettingsVisualization build() {
             JIPipeIterationStepGenerationSettingsVisualization result = new JIPipeIterationStepGenerationSettingsVisualization();
+            result.showVisualization = showVisualization;
+
             return result;
         }
 

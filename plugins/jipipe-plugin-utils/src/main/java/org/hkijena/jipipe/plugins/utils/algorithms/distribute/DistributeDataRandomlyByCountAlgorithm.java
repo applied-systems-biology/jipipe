@@ -44,7 +44,7 @@ public class DistributeDataRandomlyByCountAlgorithm extends JIPipeMergingAlgorit
                 .addInputSlot("Input", "", JIPipeData.class)
                 .sealInput()
                 .build());
-        getDataBatchGenerationSettings().setColumnMatching(JIPipeColumMatching.MergeAll);
+        getDataBatchGenerationSettings().setColumnMatching(JIPipeIterationStepTextAnnotationColumMatching.MergeAll);
         counts = new OutputSlotMapParameterCollection(Integer.class, this, (slotInfo) -> 1, false);
         counts.updateSlots();
         registerSubParameter(counts);

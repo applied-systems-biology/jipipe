@@ -19,7 +19,7 @@ import org.hkijena.jipipe.plugins.parameters.api.enums.EnumParameterSettings;
  * Strategies that determine how to detect the columns that should be used for matching
  */
 @EnumParameterSettings(itemInfo = JIPipeColumnMatchingEnumInfo.class)
-public enum JIPipeColumMatching {
+public enum JIPipeIterationStepTextAnnotationColumMatching {
     Union,
     Intersection,
     PrefixHashUnion,

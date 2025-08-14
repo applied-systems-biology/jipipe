@@ -16,15 +16,13 @@ package org.hkijena.jipipe.api.nodes;
 import org.hkijena.jipipe.JIPipe;
 import org.hkijena.jipipe.plugins.parameters.api.enums.EnumItemInfo;
 import org.hkijena.jipipe.utils.StringUtils;
-import org.hkijena.jipipe.utils.UIUtils;
-import org.hkijena.jipipe.JIPipe;
 
 import javax.swing.*;
 
 public class JIPipeColumnMatchingEnumInfo implements EnumItemInfo {
     @Override
     public Icon getIcon(Object value) {
-        JIPipeColumMatching columMatching = (JIPipeColumMatching) value;
+        JIPipeIterationStepTextAnnotationColumMatching columMatching = (JIPipeIterationStepTextAnnotationColumMatching) value;
         switch (columMatching) {
             case Custom:
                 return JIPipe.RESOURCES.getIcon16("actions/insert-math-expression.png");
@@ -44,7 +42,7 @@ public class JIPipeColumnMatchingEnumInfo implements EnumItemInfo {
 
     @Override
     public String getTooltip(Object value) {
-        JIPipeColumMatching columMatching = (JIPipeColumMatching) value;
+        JIPipeIterationStepTextAnnotationColumMatching columMatching = (JIPipeIterationStepTextAnnotationColumMatching) value;
         switch (columMatching) {
             case Custom:
                 return "Determine columns via a custom expression";

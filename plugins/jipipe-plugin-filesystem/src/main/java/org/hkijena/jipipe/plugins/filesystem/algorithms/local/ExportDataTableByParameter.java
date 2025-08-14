@@ -49,7 +49,7 @@ public class ExportDataTableByParameter extends JIPipeMergingAlgorithm {
 
     public ExportDataTableByParameter(JIPipeNodeInfo info) {
         super(info);
-        getDataBatchGenerationSettings().setColumnMatching(JIPipeColumMatching.MergeAll);
+        getDataBatchGenerationSettings().setColumnMatching(JIPipeIterationStepTextAnnotationColumMatching.MergeAll);
     }
 
     public ExportDataTableByParameter(ExportDataTableByParameter other) {

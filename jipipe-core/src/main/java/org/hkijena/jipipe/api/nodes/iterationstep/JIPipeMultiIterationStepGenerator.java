@@ -23,7 +23,7 @@ import org.hkijena.jipipe.api.annotation.JIPipeTextAnnotation;
 import org.hkijena.jipipe.api.annotation.JIPipeTextAnnotationMergeMode;
 import org.hkijena.jipipe.api.data.JIPipeDataSlot;
 import org.hkijena.jipipe.api.data.JIPipeInputDataSlot;
-import org.hkijena.jipipe.api.nodes.JIPipeColumMatching;
+import org.hkijena.jipipe.api.nodes.JIPipeIterationStepTextAnnotationColumMatching;
 import org.hkijena.jipipe.api.nodes.JIPipeGraphNode;
 import org.hkijena.jipipe.api.nodes.JIPipeTextAnnotationMatchingMethod;
 import org.hkijena.jipipe.plugins.expressions.JIPipeExpressionParameter;
@@ -116,7 +116,7 @@ public class JIPipeMultiIterationStepGenerator {
         this.referenceColumns = referenceColumns;
     }
 
-    public void setReferenceColumns(JIPipeColumMatching columnGrouping, StringQueryExpression customColumns) {
+    public void setReferenceColumns(JIPipeIterationStepTextAnnotationColumMatching columnGrouping, StringQueryExpression customColumns) {
         if (slots.isEmpty())
             System.err.println("Warning: Trying to calculate reference columns with empty slot list!");
         switch (columnGrouping) {

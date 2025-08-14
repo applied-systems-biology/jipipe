@@ -16,7 +16,7 @@ package org.hkijena.jipipe.api.nodes.algorithm;
 import org.hkijena.jipipe.api.SetJIPipeDocumentation;
 import org.hkijena.jipipe.api.annotation.JIPipeDataAnnotationMergeMode;
 import org.hkijena.jipipe.api.annotation.JIPipeTextAnnotationMergeMode;
-import org.hkijena.jipipe.api.nodes.JIPipeColumMatching;
+import org.hkijena.jipipe.api.nodes.JIPipeIterationStepTextAnnotationColumMatching;
 import org.hkijena.jipipe.api.nodes.iterationstep.JIPipeIterationStepGenerationSettings;
 import org.hkijena.jipipe.api.nodes.iterationstep.JIPipeIterationStepGenerationSettingsVisualization;
 import org.hkijena.jipipe.api.parameters.AbstractJIPipeParameterCollection;
@@ -30,7 +30,7 @@ import org.hkijena.jipipe.plugins.parameters.library.primitives.ranges.IntegerRa
  * Groups iteration step generation settings
  */
 public class JIPipeMissingDataGeneratorIterationStepGenerationSettings extends AbstractJIPipeParameterCollection implements JIPipeIterationStepGenerationSettings {
-    private JIPipeColumMatching dataSetMatching = JIPipeColumMatching.PrefixHashUnion;
+    private JIPipeIterationStepTextAnnotationColumMatching dataSetMatching = JIPipeIterationStepTextAnnotationColumMatching.PrefixHashUnion;
     private StringQueryExpression customColumns = new StringQueryExpression();
     private OptionalIntegerRange limit = new OptionalIntegerRange(new IntegerRange("0-9"), false);
     private boolean allowMerging = false;
@@ -70,12 +70,12 @@ public class JIPipeMissingDataGeneratorIterationStepGenerationSettings extends A
             "Union matches using the union of annotation columns. Intersection intersects the sets of available columns. You can also" +
             " customize which columns should be included or excluded.")
     @JIPipeParameter(value = "column-matching", uiOrder = -100, important = true, pinned = true)
-    public JIPipeColumMatching getDataSetMatching() {
+    public JIPipeIterationStepTextAnnotationColumMatching getDataSetMatching() {
         return dataSetMatching;
     }
 
     @JIPipeParameter("column-matching")
-    public void setDataSetMatching(JIPipeColumMatching dataSetMatching) {
+    public void setDataSetMatching(JIPipeIterationStepTextAnnotationColumMatching dataSetMatching) {
         this.dataSetMatching = dataSetMatching;
 
     }

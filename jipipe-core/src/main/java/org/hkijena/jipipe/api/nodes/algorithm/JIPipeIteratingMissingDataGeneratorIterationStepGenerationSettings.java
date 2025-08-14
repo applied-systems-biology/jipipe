@@ -16,7 +16,7 @@ package org.hkijena.jipipe.api.nodes.algorithm;
 import org.hkijena.jipipe.api.SetJIPipeDocumentation;
 import org.hkijena.jipipe.api.annotation.JIPipeDataAnnotationMergeMode;
 import org.hkijena.jipipe.api.annotation.JIPipeTextAnnotationMergeMode;
-import org.hkijena.jipipe.api.nodes.JIPipeColumMatching;
+import org.hkijena.jipipe.api.nodes.JIPipeIterationStepTextAnnotationColumMatching;
 import org.hkijena.jipipe.api.nodes.JIPipeCustomAnnotationMatchingExpressionVariables;
 import org.hkijena.jipipe.api.nodes.JIPipeTextAnnotationMatchingMethod;
 import org.hkijena.jipipe.api.nodes.iterationstep.JIPipeIterationStepGenerationSettings;
@@ -31,13 +31,12 @@ import org.hkijena.jipipe.plugins.expressions.StringQueryExpression;
 import org.hkijena.jipipe.plugins.parameters.library.primitives.StringParameterSettings;
 import org.hkijena.jipipe.plugins.parameters.library.primitives.optional.OptionalIntegerRange;
 import org.hkijena.jipipe.plugins.parameters.library.primitives.ranges.IntegerRange;
-import org.hkijena.jipipe.utils.ResourceUtils;
 
 /**
  * Groups iteration step generation settings
  */
 public class JIPipeIteratingMissingDataGeneratorIterationStepGenerationSettings extends AbstractJIPipeParameterCollection implements JIPipeIterationStepGenerationSettings {
-    private JIPipeColumMatching columnMatching = JIPipeColumMatching.PrefixHashUnion;
+    private JIPipeIterationStepTextAnnotationColumMatching columnMatching = JIPipeIterationStepTextAnnotationColumMatching.PrefixHashUnion;
     private StringQueryExpression customColumns = new StringQueryExpression();
     private OptionalIntegerRange limit = new OptionalIntegerRange(new IntegerRange("0-9"), false);
     private JIPipeTextAnnotationMergeMode annotationMergeStrategy = JIPipeTextAnnotationMergeMode.Merge;
@@ -102,13 +101,13 @@ public class JIPipeIteratingMissingDataGeneratorIterationStepGenerationSettings 
             "Union matches using the union of annotation columns. Intersection intersects the sets of available columns. You can also" +
             " customize which columns should be included or excluded.")
     @JIPipeParameter(value = "column-matching", uiOrder = -100, important = true, pinned = true)
-    public JIPipeColumMatching getColumnMatching() {
+    public JIPipeIterationStepTextAnnotationColumMatching getColumnMatching() {
         return columnMatching;
     }
 
     @JIPipeParameter("column-matching")
-    public void setColumnMatching(JIPipeColumMatching columnMatching) {
-        boolean needsTriggerStructureChange = columnMatching == JIPipeColumMatching.Custom || this.columnMatching == JIPipeColumMatching.Custom;
+    public void setColumnMatching(JIPipeIterationStepTextAnnotationColumMatching columnMatching) {
+        boolean needsTriggerStructureChange = columnMatching == JIPipeIterationStepTextAnnotationColumMatching.Custom || this.columnMatching == JIPipeIterationStepTextAnnotationColumMatching.Custom;
         this.columnMatching = columnMatching;
         if (needsTriggerStructureChange)
             emitParameterUIChangedEvent();
@@ -117,7 +116,7 @@ public class JIPipeIteratingMissingDataGeneratorIterationStepGenerationSettings 
     @Override
     public boolean isParameterUIVisible(JIPipeParameterTree tree, JIPipeParameterAccess access) {
         if (access.getSource() == this && "custom-matched-columns-expression".equals(access.getKey())) {
-            if (getColumnMatching() != JIPipeColumMatching.Custom)
+            if (getColumnMatching() != JIPipeIterationStepTextAnnotationColumMatching.Custom)
                 return false;
         }
         if (access.getSource() == this && "custom-annotation-matching".equals(access.getKey())) {

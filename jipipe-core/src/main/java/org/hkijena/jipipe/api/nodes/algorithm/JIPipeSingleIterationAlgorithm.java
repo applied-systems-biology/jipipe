@@ -123,7 +123,7 @@ public abstract class JIPipeSingleIterationAlgorithm extends JIPipeParameterSlot
         builder.setApplyMerging(true);
         builder.setAnnotationMergeStrategy(iterationStepGenerationSettings.getAnnotationMergeStrategy());
         builder.setDataAnnotationMergeStrategy(iterationStepGenerationSettings.getDataAnnotationMergeStrategy());
-        builder.setReferenceColumns(JIPipeColumMatching.MergeAll, new StringQueryExpression());
+        builder.setReferenceColumns(JIPipeIterationStepTextAnnotationColumMatching.MergeAll, new StringQueryExpression());
 
         List<JIPipeMultiIterationStep> iterationSteps = builder.build(progressInfo);
 

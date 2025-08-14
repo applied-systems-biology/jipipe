@@ -25,7 +25,7 @@ import org.hkijena.jipipe.api.JIPipeProgressInfo;
 import org.hkijena.jipipe.api.OptionalJIPipeAuthorMetadata;
 import org.hkijena.jipipe.api.grouping.JIPipeGraphWrapperAlgorithm;
 import org.hkijena.jipipe.api.metadata.JIPipeOrganizationMetadata;
-import org.hkijena.jipipe.api.nodes.JIPipeColumMatching;
+import org.hkijena.jipipe.api.nodes.JIPipeIterationStepTextAnnotationColumMatching;
 import org.hkijena.jipipe.api.parameters.JIPipeParameterArchetype;
 import org.hkijena.jipipe.api.parameters.JIPipeParameterCollection;
 import org.hkijena.jipipe.api.parameters.JIPipeParameterCollectionVisibilities;
@@ -517,7 +517,7 @@ public class StandardParametersPlugin extends JIPipePrepackagedDefaultJavaPlugin
                 "Color map",
                 "Available color maps that convert a scalar to a color");
         registerEnumParameterType("column-matching",
-                JIPipeColumMatching.class,
+                JIPipeIterationStepTextAnnotationColumMatching.class,
                 "Column matching strategy",
                 "Determines how columns for dataset matching are selected");
         registerEnumParameterType("jipipe:ui:graph-editor-view-mode",

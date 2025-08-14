@@ -46,7 +46,7 @@ public class MultiplyParametersAlgorithm extends JIPipeAlgorithm {
     @Override
     public void run(JIPipeGraphNodeRunContext runContext, JIPipeProgressInfo progressInfo) {
         MergeParametersAlgorithm algorithm = JIPipe.createNode(MergeParametersAlgorithm.class);
-        algorithm.getDataBatchGenerationSettings().setColumnMatching(JIPipeColumMatching.None);
+        algorithm.getDataBatchGenerationSettings().setColumnMatching(JIPipeIterationStepTextAnnotationColumMatching.None);
         JIPipeMutableSlotConfiguration configuration = (JIPipeMutableSlotConfiguration) algorithm.getSlotConfiguration();
         for (String slotName : ImmutableList.copyOf(algorithm.getInputSlotMap().keySet())) {
             configuration.removeInputSlot(slotName, false);
