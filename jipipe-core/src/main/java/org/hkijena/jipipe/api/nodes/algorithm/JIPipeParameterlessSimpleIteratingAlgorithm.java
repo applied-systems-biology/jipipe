@@ -254,7 +254,7 @@ public abstract class JIPipeParameterlessSimpleIteratingAlgorithm extends JIPipe
         @Override
         public JIPipeIterationStepGenerationSettingsVisualization createVisualization() {
             return new JIPipeIterationStepGenerationSettingsVisualization.Builder()
-                    .addStandardParameters(JIPipeIterationStepTextAnnotationColumMatching.None, null, getLimit(), false)
+                    .addOptionalParameter("limit", limit != null && limit.isEnabled(), limit != null ? limit.toString() : "")
                     .build();
         }
     }

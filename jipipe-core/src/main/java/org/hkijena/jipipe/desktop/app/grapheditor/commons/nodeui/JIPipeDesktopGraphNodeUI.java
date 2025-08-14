@@ -32,6 +32,7 @@ import org.hkijena.jipipe.api.nodes.JIPipeGraphEdge;
 import org.hkijena.jipipe.api.nodes.JIPipeGraphNode;
 import org.hkijena.jipipe.api.nodes.algorithm.JIPipeParameterSlotAlgorithm;
 import org.hkijena.jipipe.api.nodes.iterationstep.JIPipeIterationStepAlgorithm;
+import org.hkijena.jipipe.api.nodes.iterationstep.JIPipeIterationStepGenerationSettingsVisualization;
 import org.hkijena.jipipe.api.parameters.JIPipeParameterCollection;
 import org.hkijena.jipipe.api.project.JIPipeProject;
 import org.hkijena.jipipe.api.runtimepartitioning.JIPipeRuntimePartition;
@@ -131,6 +132,7 @@ public class JIPipeDesktopGraphNodeUI extends JIPipeDesktopWorkbenchPanel implem
     private boolean nodeBufferInvalid = true;
     private boolean buffered = true;
     private Color partitionColor;
+    private JIPipeIterationStepGenerationSettingsVisualization iterationStepGenerationSettingsVisualization;
 
     /**
      * Creates a new UI
@@ -145,7 +147,6 @@ public class JIPipeDesktopGraphNodeUI extends JIPipeDesktopWorkbenchPanel implem
         this.node = node;
         this.zoom = graphCanvasUI.getZoom();
         this.nodeGeneratesIterationSteps = node instanceof JIPipeIterationStepAlgorithm;
-
         this.updateViewOnCacheUpdatedDebouncer = new StaticDebouncer(500, () -> updateView(false, true, false));
 
         this.node.getParameterChangedEventEmitter().subscribeWeak(this);
@@ -162,23 +163,28 @@ public class JIPipeDesktopGraphNodeUI extends JIPipeDesktopWorkbenchPanel implem
         // Node information
         nodeIsRunnable = node.getInfo().isRunnable() || node instanceof JIPipeAlgorithm || node instanceof JIPipeProjectCompartment;
 
-        if (node instanceof JIPipeProjectCompartmentOutput) {
-            if (isDisplayedInForeignCompartment()) {
+        switch (node) {
+            case JIPipeProjectCompartmentOutput jiPipeProjectCompartmentOutput -> {
+                if (isDisplayedInForeignCompartment()) {
+                    showInputs = false;
+                    showOutputs = true;
+                } else {
+                    showInputs = true;
+                    showOutputs = true;
+                }
+            }
+            case GraphWrapperAlgorithmInput graphWrapperAlgorithmInput -> {
                 showInputs = false;
                 showOutputs = true;
-            } else {
+            }
+            case GraphWrapperAlgorithmOutput graphWrapperAlgorithmOutput -> {
+                showInputs = true;
+                showOutputs = false;
+            }
+            default -> {
                 showInputs = true;
                 showOutputs = true;
             }
-        } else if (node instanceof GraphWrapperAlgorithmInput) {
-            showInputs = false;
-            showOutputs = true;
-        } else if (node instanceof GraphWrapperAlgorithmOutput) {
-            showInputs = true;
-            showOutputs = false;
-        } else {
-            showInputs = true;
-            showOutputs = true;
         }
 
         // Slot information
@@ -243,7 +249,7 @@ public class JIPipeDesktopGraphNodeUI extends JIPipeDesktopWorkbenchPanel implem
     }
 
     public boolean isDisplayInputConfigVisualization() {
-        return nodeGeneratesIterationSteps;
+        return nodeGeneratesIterationSteps && iterationStepGenerationSettingsVisualization != null && iterationStepGenerationSettingsVisualization.isShowVisualization();
     }
 
     private int getBaseSlotXShift() {
@@ -260,6 +266,7 @@ public class JIPipeDesktopGraphNodeUI extends JIPipeDesktopWorkbenchPanel implem
     }
 
     public void updateView(boolean assets, boolean slots, boolean size) {
+        updateIterationStepVisualization();
         updateColors();
         if (assets) {
             updateAssets();
@@ -272,6 +279,10 @@ public class JIPipeDesktopGraphNodeUI extends JIPipeDesktopWorkbenchPanel implem
             invalidateAndRepaint(true, true);
         }
         updateActiveAreas();
+    }
+
+    private void updateIterationStepVisualization() {
+        this.iterationStepGenerationSettingsVisualization = node instanceof JIPipeIterationStepAlgorithm ? ((JIPipeIterationStepAlgorithm) node).getGenericIterationStepGenerationSettings().createVisualization() : null;
     }
 
     protected void updateActiveAreas() {
@@ -497,6 +508,8 @@ public class JIPipeDesktopGraphNodeUI extends JIPipeDesktopWorkbenchPanel implem
         } else if (event.getSource() == node && "jipipe:algorithm:runtime-partition".equals(event.getKey())) {
             updateColors();
             invalidateAndRepaint(true, false);
+        } else if (nodeGeneratesIterationSteps && node instanceof JIPipeIterationStepAlgorithm && ((JIPipeIterationStepAlgorithm) node).getGenericIterationStepGenerationSettings() == event.getSource()) {
+            updateView(false, false, true);
         }
     }
 
@@ -846,7 +859,7 @@ public class JIPipeDesktopGraphNodeUI extends JIPipeDesktopWorkbenchPanel implem
         }
 
         // Paint input config visualization
-        if(isDisplayInputConfigVisualization()) {
+        if (isDisplayInputConfigVisualization()) {
             paintInputConfigVisualization(g2);
         }
 
@@ -859,8 +872,40 @@ public class JIPipeDesktopGraphNodeUI extends JIPipeDesktopWorkbenchPanel implem
     private void paintInputConfigVisualization(Graphics2D g2) {
         final int shift = getBaseSlotXShift();
 
-        g2.setPaint(nodeFillColor);
+        g2.setPaint(Color.getHSBColor(iterationStepGenerationSettingsVisualization.getFillColorHue(),
+                ThemeUtils.getCurrentStyle().getNodeFillSaturation() * 0.5f,
+                ThemeUtils.getCurrentStyle().getNodeFillBrightness()));
         g2.fillRect(0, 0, (int) (zoom * shift), getHeight());
+
+        // Draw icons
+        Dimension realSize = viewMode.gridToRealSize(new Dimension(1, 1), zoom);
+        int zoomedIconSize = (int) Math.round(16 * zoom);
+        int startX = (int) Math.round(zoom * 3);
+        int startY = (int) Math.round(realSize.height / 2f - (zoom * 16) / 2f);
+        if(iterationStepGenerationSettingsVisualization.getIconInput() != null) {
+            g2.drawImage(JIPipe.RESOURCES.getIcon16(iterationStepGenerationSettingsVisualization.getIconInput()).getImage(),
+                    startX,
+                    startY,
+                    zoomedIconSize,
+                    zoomedIconSize,
+                    null);
+        }
+        if(iterationStepGenerationSettingsVisualization.getIconCenter() != null) {
+            g2.drawImage(JIPipe.RESOURCES.getIcon16(iterationStepGenerationSettingsVisualization.getIconCenter()).getImage(),
+                    startX,
+                    startY + realSize.height,
+                    zoomedIconSize,
+                    zoomedIconSize,
+                    null);
+        }
+        if(iterationStepGenerationSettingsVisualization.getIconOutput() != null) {
+            g2.drawImage(JIPipe.RESOURCES.getIcon16(iterationStepGenerationSettingsVisualization.getIconOutput()).getImage(),
+                    startX,
+                    startY + 2 * realSize.height,
+                    zoomedIconSize,
+                    zoomedIconSize,
+                    null);
+        }
 
         g2.setStroke(JIPipeDesktopGraphCanvasUI.STROKE_UNIT);
         g2.setPaint(nodeBorderColor);

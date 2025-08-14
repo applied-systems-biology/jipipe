@@ -16,6 +16,7 @@ package org.hkijena.jipipe.api.nodes.iterationstep;
 import org.hkijena.jipipe.api.nodes.JIPipeIterationStepTextAnnotationColumMatching;
 import org.hkijena.jipipe.plugins.expressions.StringQueryExpression;
 import org.hkijena.jipipe.plugins.parameters.library.primitives.optional.OptionalIntegerRange;
+import org.hkijena.jipipe.utils.HashUtils;
 import org.hkijena.jipipe.utils.StringUtils;
 
 import java.util.*;
@@ -78,6 +79,7 @@ public class JIPipeIterationStepGenerationSettingsVisualization {
         private boolean isFiltering;
         private boolean isSkipIncomplete;
         private JIPipeIterationStepTextAnnotationColumMatching columMatching = JIPipeIterationStepTextAnnotationColumMatching.PrefixHashUnion;
+        private final JIPipeIterationStepGenerationSettingsVisualization result = new JIPipeIterationStepGenerationSettingsVisualization();
 
 
         public Builder() {
@@ -87,21 +89,21 @@ public class JIPipeIterationStepGenerationSettingsVisualization {
             trackedValues.put(key, StringUtils.nullToEmpty(value));
             if (enabled) {
                 showVisualization = true;
-                tryExtractSpecialParameter(key, value);
+                tryExtractSpecialParameter(key, enabled, value);
             }
             return this;
         }
 
         public <T> Builder addParameter(String key, T value, T defaultValue) {
             trackedValues.put(key, StringUtils.nullToEmpty(value));
-            if(!Objects.equals(value, defaultValue)) {
+            if (!Objects.equals(value, defaultValue)) {
                 showVisualization = true;
             }
-            tryExtractSpecialParameter(key, value);
+            tryExtractSpecialParameter(key, true, value);
             return this;
         }
 
-        private <T> void tryExtractSpecialParameter(String key, T value) {
+        private <T> void tryExtractSpecialParameter(String key, boolean enabled, T value) {
             switch (key) {
                 case "column-matching" -> {
                     if (value instanceof JIPipeIterationStepTextAnnotationColumMatching) {
@@ -114,9 +116,7 @@ public class JIPipeIterationStepGenerationSettingsVisualization {
                     }
                 }
                 case "limit" -> {
-                    if(value instanceof Boolean) {
-                        isFiltering = (Boolean) value;
-                    }
+                    isFiltering = enabled;
                 }
             }
 
@@ -130,13 +130,46 @@ public class JIPipeIterationStepGenerationSettingsVisualization {
         }
 
         public JIPipeIterationStepGenerationSettingsVisualization build() {
-            JIPipeIterationStepGenerationSettingsVisualization result = new JIPipeIterationStepGenerationSettingsVisualization();
             result.showVisualization = showVisualization;
+
+            // Top icon
+            result.iconInput = switch (columMatching) {
+                case PrefixHashUnion -> "actions/hashtag.png";
+                case Custom -> "actions/insert-math-expression.png";
+                case MergeAll -> "actions/data-flow-iteration-steps-n.png";
+                default -> "actions/configure.png";
+            };
+
+            // Center icon
+            if(StringUtils.isNullOrEmpty(result.iconCenter)) {
+                if (isFiltering) {
+                    result.iconCenter = "actions/data-flow-filter.png";
+                } else if (columMatching == JIPipeIterationStepTextAnnotationColumMatching.MergeAll) {
+                    result.iconCenter = "actions/data-flow-merge.png";
+                } else {
+                    result.iconCenter = "actions/data-flow-iterate.png";
+                }
+            }
+
+            // Bottom icon
+            if(columMatching == JIPipeIterationStepTextAnnotationColumMatching.MergeAll) {
+                result.iconOutput = "actions/data-flow-iteration-steps-single.png";
+            }
+            else if(isSkipIncomplete) {
+                result.iconOutput = "actions/view-filter.png";
+            }
+            else {
+                result.iconOutput = "actions/data-flow-iteration-steps-m.png";
+            }
+
+            // Calculate hue
+            result.fillColorHue = HashUtils.toUnitFloat(trackedValues);
 
             return result;
         }
 
         public Builder setCenterIcon(String icon) {
+            result.iconCenter =  icon;
             return this;
         }
     }
