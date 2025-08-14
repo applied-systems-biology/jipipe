@@ -179,8 +179,8 @@ public class JIPipeIteratingMissingDataGeneratorIterationStepGenerationSettings 
     public JIPipeIterationStepGenerationSettingsVisualization createVisualization() {
         return new JIPipeIterationStepGenerationSettingsVisualization.Builder()
                 .addStandardParameters(getColumnMatching(), getCustomColumns(), getLimit(), false)
-                .addParameter("annotation-merge-strategy", getAnnotationMergeStrategy(), JIPipeTextAnnotationMergeMode.Merge)
-                .addParameter("data-annotation-merge-strategy", getDataAnnotationMergeStrategy(), JIPipeDataAnnotationMergeMode.MergeTables)
+                .addParameter("Merge same annotation values", "annotation-merge-strategy", getAnnotationMergeStrategy(), JIPipeTextAnnotationMergeMode.Merge)
+                .addParameter("Merge same data annotation values", "data-annotation-merge-strategy", getDataAnnotationMergeStrategy(), JIPipeDataAnnotationMergeMode.MergeTables)
                 .build();
     }
 }

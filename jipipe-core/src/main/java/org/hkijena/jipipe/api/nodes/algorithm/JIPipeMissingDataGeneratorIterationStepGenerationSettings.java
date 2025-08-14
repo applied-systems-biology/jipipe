@@ -145,8 +145,8 @@ public class JIPipeMissingDataGeneratorIterationStepGenerationSettings extends A
     public JIPipeIterationStepGenerationSettingsVisualization createVisualization() {
         return new JIPipeIterationStepGenerationSettingsVisualization.Builder()
                 .addStandardParameters(getDataSetMatching(), getCustomColumns(), getLimit(), false)
-                .addParameter("annotation-merge-strategy", getAnnotationMergeStrategy(), JIPipeTextAnnotationMergeMode.Merge)
-                .addParameter("data-annotation-merge-strategy", getDataAnnotationMergeStrategy(), JIPipeDataAnnotationMergeMode.MergeTables)
+                .addParameter("Merge same annotation values", "annotation-merge-strategy", getAnnotationMergeStrategy(), JIPipeTextAnnotationMergeMode.Merge)
+                .addParameter("Merge same data annotation values", "data-annotation-merge-strategy", getDataAnnotationMergeStrategy(), JIPipeDataAnnotationMergeMode.MergeTables)
                 .build();
     }
 }

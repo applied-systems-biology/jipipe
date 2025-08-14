@@ -45,6 +45,7 @@ import org.hkijena.jipipe.desktop.app.grapheditor.commons.JIPipeDesktopGraphCanv
 import org.hkijena.jipipe.desktop.app.grapheditor.commons.actions.JIPipeDesktopNodeUIAction;
 import org.hkijena.jipipe.desktop.app.grapheditor.commons.contextmenu.*;
 import org.hkijena.jipipe.desktop.app.grapheditor.commons.nodeui.triggers.*;
+import org.hkijena.jipipe.desktop.app.grapheditor.flavors.pipeline.JIPipeDesktopPipelineGraphEditorUI;
 import org.hkijena.jipipe.desktop.app.grapheditor.nodefinder.JIPipeDesktopNodeFinderDialogUI;
 import org.hkijena.jipipe.desktop.commons.components.JIPipeDesktopAddAlgorithmSlotPanel;
 import org.hkijena.jipipe.desktop.commons.components.JIPipeDesktopEditAlgorithmSlotPanel;
@@ -380,6 +381,14 @@ public class JIPipeDesktopGraphNodeUI extends JIPipeDesktopWorkbenchPanel implem
         JIPipeDesktopGraphNodeUIWholeNodeActiveArea wholeNodeActiveArea = new JIPipeDesktopGraphNodeUIWholeNodeActiveArea(this);
         wholeNodeActiveArea.setZoomedHitArea(new Rectangle(0, 0, getWidth(), getHeight()));
         activeAreas.add(wholeNodeActiveArea);
+
+        // Input management visualization
+        if(isDisplayInputConfigVisualization()) {
+            JIPipeDesktopGraphNodeUIInputConfigActiveArea configActiveArea = new  JIPipeDesktopGraphNodeUIInputConfigActiveArea(this);
+            configActiveArea.setZoomedHitArea(new Rectangle(0, 0, shift, getHeight()));
+
+            activeAreas.add(configActiveArea);
+        }
 
         // Node button
         if (nodeIsRunnable) {
@@ -873,9 +882,16 @@ public class JIPipeDesktopGraphNodeUI extends JIPipeDesktopWorkbenchPanel implem
     private void paintInputConfigVisualization(Graphics2D g2) {
         final int shift = getBaseSlotXShift();
 
-        g2.setPaint(Color.getHSBColor(iterationStepGenerationSettingsVisualization.getFillColorHue(),
-                ThemeUtils.getCurrentStyle().getNodeFillSaturation() * 0.5f,
-                ThemeUtils.getCurrentStyle().getNodeFillBrightness()));
+        if(getCurrentActiveArea() instanceof JIPipeDesktopGraphNodeUIInputConfigActiveArea) {
+            g2.setPaint(Color.getHSBColor(iterationStepGenerationSettingsVisualization.getFillColorHue(),
+                    ThemeUtils.getCurrentStyle().getNodeFillSaturation() * 0.8f,
+                    ThemeUtils.getCurrentStyle().getNodeFillBrightness()));
+        }
+        else {
+            g2.setPaint(Color.getHSBColor(iterationStepGenerationSettingsVisualization.getFillColorHue(),
+                    ThemeUtils.getCurrentStyle().getNodeFillSaturation() * 0.5f,
+                    ThemeUtils.getCurrentStyle().getNodeFillBrightness()));
+        }
         g2.fillRect(0, 0, (int) (zoom * shift), getHeight());
 
         // Draw icons
@@ -1400,6 +1416,10 @@ public class JIPipeDesktopGraphNodeUI extends JIPipeDesktopWorkbenchPanel implem
                 openRunNodeMenu(e);
                 e.consume();
             }
+            else if(currentActiveArea instanceof JIPipeDesktopGraphNodeUIInputConfigActiveArea){
+                openInputConfigMenu(e);
+                e.consume();
+            }
         } else {
             if (currentActiveArea instanceof JIPipeDesktopGraphNodeUISlotButtonActiveArea || currentActiveArea instanceof JIPipeDesktopGraphNodeUISlotActiveArea && SwingUtilities.isLeftMouseButton(e)) {
                 JIPipeDesktopGraphNodeUISlotActiveArea slotState;
@@ -1419,6 +1439,28 @@ public class JIPipeDesktopGraphNodeUI extends JIPipeDesktopWorkbenchPanel implem
                 }
             }
         }
+    }
+
+    private void openInputConfigMenu(MouseEvent event) {
+        JPopupMenu menu = new JPopupMenu();
+
+        menu.add(UIUtils.createMenuItem("Configure ...", "Opens the input manager", JIPipe.RESOURCES.getIcon16("actions/configure.png"), () -> {
+            graphCanvasUI.selectOnly(this);
+            graphCanvasUI.getGraphEditorUI().getDockPanel().activatePanel(JIPipeDesktopPipelineGraphEditorUI.DOCK_NODE_CONTEXT_INPUT_MANAGER, true);
+        }));
+
+        if(!iterationStepGenerationSettingsVisualization.getReportEntries().isEmpty()) {
+            menu.addSeparator();
+        }
+
+        for (JIPipeIterationStepGenerationSettingsVisualization.ReportEntry reportEntry : iterationStepGenerationSettingsVisualization.getReportEntries()) {
+            ViewOnlyMenuItem infoItem = new ViewOnlyMenuItem("<html>" + reportEntry.name() + "<br><small>" + reportEntry.message() + "</small></html>", JIPipe.RESOURCES.getIcon16("actions/configure_toolbars.png"));
+            menu.add(infoItem);
+        }
+
+        MouseEvent convertMouseEvent = SwingUtilities.convertMouseEvent(graphCanvasUI, event, this);
+        Point mousePosition = convertMouseEvent.getPoint();
+        menu.show(this, mousePosition.x, mousePosition.y);
     }
 
     private void openRunNodeMenu(MouseEvent event) {

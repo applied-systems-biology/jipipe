@@ -27,8 +27,17 @@ public class JIPipeIterationStepGenerationSettingsVisualization {
     private String iconInput;
     private String iconCenter;
     private String iconOutput;
+    private List<ReportEntry> reportEntries = new ArrayList<>();
 
     public JIPipeIterationStepGenerationSettingsVisualization() {
+    }
+
+    public List<ReportEntry> getReportEntries() {
+        return reportEntries;
+    }
+
+    public void setReportEntries(List<ReportEntry> reportEntries) {
+        this.reportEntries = reportEntries;
     }
 
     public boolean isShowVisualization() {
@@ -71,6 +80,8 @@ public class JIPipeIterationStepGenerationSettingsVisualization {
         this.iconOutput = iconOutput;
     }
 
+    public record ReportEntry(String key, String name, String message) {
+    }
 
     public static final class Builder {
 
@@ -85,18 +96,20 @@ public class JIPipeIterationStepGenerationSettingsVisualization {
         public Builder() {
         }
 
-        public Builder addOptionalParameter(String key, boolean enabled, Object value) {
+        public Builder addOptionalParameter(String name, String key, boolean enabled, Object value) {
             trackedValues.put(key, StringUtils.nullToEmpty(value));
             if (enabled) {
                 showVisualization = true;
+                result.reportEntries.add(new ReportEntry(key, name, "Optional parameter is enabled (value set to " + value + ")"));
                 tryExtractSpecialParameter(key, enabled, value);
             }
             return this;
         }
 
-        public <T> Builder addParameter(String key, T value, T defaultValue) {
+        public <T> Builder addParameter(String name, String key, T value, T defaultValue) {
             trackedValues.put(key, StringUtils.nullToEmpty(value));
             if (!Objects.equals(value, defaultValue)) {
+                result.reportEntries.add(new ReportEntry(key, name, "Current value '" + value + "' different from default value '" + defaultValue + "'"));
                 showVisualization = true;
             }
             tryExtractSpecialParameter(key, true, value);
@@ -123,10 +136,10 @@ public class JIPipeIterationStepGenerationSettingsVisualization {
         }
 
         public Builder addStandardParameters(JIPipeIterationStepTextAnnotationColumMatching columMatching, StringQueryExpression customColumns, OptionalIntegerRange limit, boolean skipIncompleteDataSets) {
-            return addParameter("column-matching", columMatching, JIPipeIterationStepTextAnnotationColumMatching.PrefixHashUnion)
-                    .addOptionalParameter("custom-column-matching", customColumns != null && !StringUtils.isNullOrEmpty(customColumns.getExpression()) && columMatching == JIPipeIterationStepTextAnnotationColumMatching.Custom, customColumns != null ? customColumns.getExpression() : "")
-                    .addOptionalParameter("limit", limit != null && limit.isEnabled(), limit != null ? limit.toString() : "")
-                    .addParameter("skip-incomplete", skipIncompleteDataSets, false);
+            return addParameter("Grouping method", "column-matching", columMatching, JIPipeIterationStepTextAnnotationColumMatching.PrefixHashUnion)
+                    .addOptionalParameter("Custom grouping columns", "custom-column-matching", customColumns != null && !StringUtils.isNullOrEmpty(customColumns.getExpression()) && columMatching == JIPipeIterationStepTextAnnotationColumMatching.Custom, customColumns != null ? customColumns.getExpression() : "")
+                    .addOptionalParameter("Limit", "limit", limit != null && limit.isEnabled(), limit != null ? limit.toString() : "")
+                    .addParameter("Skip incomplete data sets", "skip-incomplete", skipIncompleteDataSets, false);
         }
 
         public JIPipeIterationStepGenerationSettingsVisualization build() {

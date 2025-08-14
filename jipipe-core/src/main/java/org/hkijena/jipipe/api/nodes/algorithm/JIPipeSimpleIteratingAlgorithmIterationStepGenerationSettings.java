@@ -14,7 +14,6 @@
 package org.hkijena.jipipe.api.nodes.algorithm;
 
 import org.hkijena.jipipe.api.SetJIPipeDocumentation;
-import org.hkijena.jipipe.api.nodes.JIPipeIterationStepTextAnnotationColumMatching;
 import org.hkijena.jipipe.api.nodes.iterationstep.JIPipeIterationStepGenerationSettings;
 import org.hkijena.jipipe.api.nodes.iterationstep.JIPipeIterationStepGenerationSettingsVisualization;
 import org.hkijena.jipipe.api.parameters.AbstractJIPipeParameterCollection;
@@ -46,7 +45,7 @@ public class JIPipeSimpleIteratingAlgorithmIterationStepGenerationSettings exten
     @Override
     public JIPipeIterationStepGenerationSettingsVisualization createVisualization() {
         return new JIPipeIterationStepGenerationSettingsVisualization.Builder()
-                .addOptionalParameter("limit", limit != null && limit.isEnabled(), limit != null ? limit.toString() : "")
+                .addOptionalParameter("Limit", "limit", limit != null && limit.isEnabled(), limit != null ? limit.toString() : "")
                 .build();
     }
 }
