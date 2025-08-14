@@ -34,6 +34,78 @@ import java.util.Base64;
 
 public class BufferedImageUtils {
 
+    public static BufferedImage extendUp(BufferedImage src, int extraRows) {
+        if (extraRows < 0) {
+            throw new IllegalArgumentException("extraRows must be >= 0");
+        }
+        if (extraRows == 0) {
+            // Just return a deep copy
+            return new BufferedImage(src.getColorModel(),
+                    src.copyData(null),
+                    src.isAlphaPremultiplied(),
+                    null);
+        }
+
+        int w = src.getWidth();
+        int h = src.getHeight();
+        int newHeight = h + extraRows;
+
+        // Create new image with same type and color model
+        BufferedImage out = new BufferedImage(src.getColorModel(),
+                src.getRaster().createCompatibleWritableRaster(w, newHeight),
+                src.isAlphaPremultiplied(),
+                null);
+
+        WritableRaster raster = out.getRaster();
+
+        // Row from y=0 in source
+        Object row0 = src.getRaster().getDataElements(0, 0, w, 1, (Object) null);
+
+        // Fill new top rows with row0
+        for (int r = 0; r < extraRows; r++) {
+            raster.setDataElements(0, r, w, 1, row0);
+        }
+
+        // Copy original image data starting at offset extraRows
+        raster.setRect(0, extraRows, src.getRaster());
+
+        return out;
+    }
+
+    public static BufferedImage extendUp(Image img, int extraRows) {
+        return extendUp(toBufferedImage(img, BufferedImage.TYPE_INT_ARGB), extraRows);
+    }
+
+    public static BufferedImage copyRowUpToTop(BufferedImage src, int y) {
+        final int w = src.getWidth();
+        final int h = src.getHeight();
+        if (y < 0 || y >= h) {
+            throw new IllegalArgumentException("y out of range: " + y + " (height=" + h + ")");
+        }
+
+        // Make a deep copy preserving ColorModel & premultiplication
+        BufferedImage out = new BufferedImage(src.getColorModel(),
+                src.copyData(null),
+                src.isAlphaPremultiplied(),
+                null);
+
+        WritableRaster raster = out.getRaster();
+        // Grab the scanline at y as a single row of pixels (in native data format)
+        Object row = raster.getDataElements(0, y, w, 1, (Object) null);
+
+        // Write that row into every row from 0..y
+        for (int r = 0; r <= y; r++) {
+            raster.setDataElements(0, r, w, 1, row);
+        }
+
+        return out;
+    }
+
+    public static BufferedImage copyRowUpToTop(Image img, int y) {
+        BufferedImage src = toBufferedImage(img, BufferedImage.TYPE_INT_ARGB);
+        return copyRowUpToTop(src, y);
+    }
+
     public static BufferedImage read(Path filePath, boolean greyscaleCorrection) {
         try {
             BufferedImage image = ImageIO.read(filePath.toFile());

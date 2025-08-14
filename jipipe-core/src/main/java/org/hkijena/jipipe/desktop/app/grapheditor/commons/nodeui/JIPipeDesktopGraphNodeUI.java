@@ -79,6 +79,7 @@ public class JIPipeDesktopGraphNodeUI extends JIPipeDesktopWorkbenchPanel implem
     public static final Color COLOR_SLOT_CACHED = new Color(0x95c2a8);
     public static final Color COLOR_SLOT_DISCONNECTED = new Color(0xc36262);
     public static final Color COLOR_RUN_BUTTON_ICON = new Color(0x22A02D);
+    private static final Map<String, BufferedImage> VISUALIZATION_ICON_CACHE = new HashMap<>();
 
     public static final NodeUIContextAction[] RUN_NODE_CONTEXT_MENU_ENTRIES = new NodeUIContextAction[]{
             new UpdateCacheNodeUIContextAction(),
@@ -891,11 +892,15 @@ public class JIPipeDesktopGraphNodeUI extends JIPipeDesktopWorkbenchPanel implem
                     null);
         }
         if(iterationStepGenerationSettingsVisualization.getIconCenter() != null) {
-            g2.drawImage(JIPipe.RESOURCES.getIcon16(iterationStepGenerationSettingsVisualization.getIconCenter()).getImage(),
+            Image image = JIPipe.RESOURCES.getVariantResourceAsImage(iterationStepGenerationSettingsVisualization.getIconCenter());
+            if(image == null) {
+                image = JIPipe.RESOURCES.getIcon16(iterationStepGenerationSettingsVisualization.getIconCenter()).getImage();
+            }
+            g2.drawImage(image,
                     startX,
-                    startY + realSize.height,
+                    (int) Math.round((realSize.height * 3 / 2.0f) - (image.getHeight(null) * zoom / 2f)),
                     zoomedIconSize,
-                    zoomedIconSize,
+                    (int) (image.getHeight(null) * zoom),
                     null);
         }
         if(iterationStepGenerationSettingsVisualization.getIconOutput() != null) {

@@ -143,11 +143,11 @@ public class JIPipeIterationStepGenerationSettingsVisualization {
             // Center icon
             if(StringUtils.isNullOrEmpty(result.iconCenter)) {
                 if (isFiltering) {
-                    result.iconCenter = "actions/data-flow-filter.png";
+                    result.iconCenter = "nodeui/data-flow-filter-16x32.png";
                 } else if (columMatching == JIPipeIterationStepTextAnnotationColumMatching.MergeAll) {
-                    result.iconCenter = "actions/data-flow-merge.png";
+                    result.iconCenter = "nodeui/data-flow-merge-16x32.png";
                 } else {
-                    result.iconCenter = "actions/data-flow-iterate.png";
+                    result.iconCenter = "nodeui/data-flow-iterate-16x32.png";
                 }
             }
 
