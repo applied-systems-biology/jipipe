@@ -130,7 +130,7 @@ public class OpenCvPlugin extends JIPipePrepackagedDefaultJavaPlugin {
             progressInfo.log("ERROR: OPENCV IS CURRENTLY NOT AVAILABLE! THIS IS AN EXPECTED ISSUE WITH MACOS");
             progressInfo.getNotifications().push(new JIPipeNotification(AS_DEPENDENCY.getDependencyId() + ":not-available",
                     "OpenCV initialization failed",
-                    "OpenCV will not be available due to missing libraries in the IJ-OpenCV plugin."));
+                    "OpenCV will not be available due to missing libraries in the IJ-OpenCV plugin. THIS IS CURRENTLY EXPECTED ON MACOS."));
         }
     }
 
