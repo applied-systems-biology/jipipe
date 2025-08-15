@@ -140,7 +140,7 @@ if [ ! -e "./dependencies/log4j-api-2.17.1.jar" ]; then
 fi
 if [ ! -e "./dependencies/balloontip-1.2.4.1.jar" ]; then
 	mkdir -p "./dependencies"
-	wget -O ./dependencies/balloontip-1.2.4.1.jar https://maven.scijava.org/service/local/repositories/bedatadriven/content/net/java/balloontip/balloontip/1.2.4.1/balloontip-1.2.4.1.jar
+	wget -O ./dependencies/balloontip-1.2.4.1.jar https://repo1.maven.org/maven2/net/java/balloontip/balloontip/1.2.4.1/balloontip-1.2.4.1.jar
 fi
 if [ ! -e "./dependencies/OrientationJ_.jar" ]; then
 	mkdir -p "./dependencies"
