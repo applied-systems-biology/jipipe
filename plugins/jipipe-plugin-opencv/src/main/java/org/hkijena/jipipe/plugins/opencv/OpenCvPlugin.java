@@ -16,6 +16,7 @@ package org.hkijena.jipipe.plugins.opencv;
 import com.google.common.collect.Sets;
 import org.hkijena.jipipe.*;
 import org.hkijena.jipipe.api.JIPipeProgressInfo;
+import org.hkijena.jipipe.api.notifications.JIPipeNotification;
 import org.hkijena.jipipe.plugins.JIPipePrepackagedDefaultJavaPlugin;
 import org.hkijena.jipipe.plugins.imagejdatatypes.ImageJDataTypesPlugin;
 import org.hkijena.jipipe.plugins.opencv.datatypes.ImageJToOpenCvDataTypeConverter;
@@ -102,26 +103,35 @@ public class OpenCvPlugin extends JIPipePrepackagedDefaultJavaPlugin {
 
     @Override
     public void register(JIPipe jiPipe, Context context, JIPipeProgressInfo progressInfo) {
-        registerDatatype("opencv-image", OpenCvImageData.class, RESOURCES.getIcon16URL("opencv-image.png"));
-        registerDatatypeConversion(new ImageJToOpenCvDataTypeConverter());
-        registerDatatypeConversion(new OpenCvToImageJDataTypeConverter());
+        try {
+            registerDatatype("opencv-image", OpenCvImageData.class, RESOURCES.getIcon16URL("opencv-image.png"));
+            registerDatatypeConversion(new ImageJToOpenCvDataTypeConverter());
+            registerDatatypeConversion(new OpenCvToImageJDataTypeConverter());
 
-        registerDefaultDataTypeViewer(OpenCvImageData.class, OpenCvImageDataViewer.class);
+            registerDefaultDataTypeViewer(OpenCvImageData.class, OpenCvImageDataViewer.class);
 
-        registerEnumParameterType("opencv-type", OpenCvType.class, "OpenCV Type", "An OpenCV data type (CV_[bit depth][data type Signed/Unsigned/Float]C[number of channels])");
-        registerEnumParameterType("opencv-depth", OpenCvDepth.class, "OpenCV Depth", "An OpenCV depth (CV_[bit depth][data type Signed/Unsigned/Float])");
-        registerEnumParameterType("opencv-border-type", OpenCvBorderType.class, "OpenCV Border Type", "An OpenCV border type");
+            registerEnumParameterType("opencv-type", OpenCvType.class, "OpenCV Type", "An OpenCV data type (CV_[bit depth][data type Signed/Unsigned/Float]C[number of channels])");
+            registerEnumParameterType("opencv-depth", OpenCvDepth.class, "OpenCV Depth", "An OpenCV depth (CV_[bit depth][data type Signed/Unsigned/Float])");
+            registerEnumParameterType("opencv-border-type", OpenCvBorderType.class, "OpenCV Border Type", "An OpenCV border type");
 
-        registerNodeType("opencv-convert-depth", ConvertDepthAlgorithm.class, JIPipe.RESOURCES.getIcon16URL("actions/gtk-convert.png"));
-        registerNodeType("opencv-convert-type", ConvertTypeAlgorithm.class, JIPipe.RESOURCES.getIcon16URL("actions/gtk-convert.png"));
+            registerNodeType("opencv-convert-depth", ConvertDepthAlgorithm.class, JIPipe.RESOURCES.getIcon16URL("actions/gtk-convert.png"));
+            registerNodeType("opencv-convert-type", ConvertTypeAlgorithm.class, JIPipe.RESOURCES.getIcon16URL("actions/gtk-convert.png"));
 
-        registerNodeType("opencv-generate-gabor", GaborKernelGenerator.class);
-        registerNodeType("opencv-generate-gaussian", GaussianKernelGenerator.class);
+            registerNodeType("opencv-generate-gabor", GaborKernelGenerator.class);
+            registerNodeType("opencv-generate-gaussian", GaussianKernelGenerator.class);
 
-        registerNodeType("opencv-filter-bilateral", BilateralFilterAlgorithm.class, JIPipe.RESOURCES.getIcon16URL("actions/insert-math-expression.png"));
+            registerNodeType("opencv-filter-bilateral", BilateralFilterAlgorithm.class, JIPipe.RESOURCES.getIcon16URL("actions/insert-math-expression.png"));
 
-        registerNodeType("opencv-photo-inpainting", InpaintingAlgorithm.class, JIPipe.RESOURCES.getIcon16URL("actions/bandage.png"));
-        registerEnumParameterType("opencv-photo-inpainting:method", InpaintingAlgorithm.Method.class, "Inpainting method", "An inpainting method");
+            registerNodeType("opencv-photo-inpainting", InpaintingAlgorithm.class, JIPipe.RESOURCES.getIcon16URL("actions/bandage.png"));
+            registerEnumParameterType("opencv-photo-inpainting:method", InpaintingAlgorithm.Method.class, "Inpainting method", "An inpainting method");
+        }
+        catch (UnsatisfiedLinkError e) {
+            progressInfo.log(e);
+            progressInfo.log("ERROR: OPENCV IS CURRENTLY NOT AVAILABLE! THIS IS AN EXPECTED ISSUE WITH MACOS");
+            progressInfo.getNotifications().push(new JIPipeNotification(AS_DEPENDENCY.getDependencyId() + ":not-available",
+                    "OpenCV initialization failed",
+                    "OpenCV will not be available due to missing libraries in the IJ-OpenCV plugin."));
+        }
     }
 
     @Override
