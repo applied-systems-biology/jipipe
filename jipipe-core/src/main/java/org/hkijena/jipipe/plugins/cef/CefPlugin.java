@@ -25,10 +25,13 @@ import org.hkijena.jipipe.api.JIPipeProgressInfo;
 import org.hkijena.jipipe.plugins.JIPipePrepackagedDefaultJavaPlugin;
 import org.hkijena.jipipe.plugins.parameters.library.markup.HTMLText;
 import org.hkijena.jipipe.plugins.parameters.library.primitives.list.StringList;
+import org.hkijena.jipipe.utils.PathUtils;
 import org.scijava.Context;
 import org.scijava.plugin.Plugin;
 
 import java.io.IOException;
+import java.nio.file.Files;
+import java.nio.file.Path;
 
 @Plugin(type = JIPipeJavaPlugin.class)
 public class CefPlugin extends JIPipePrepackagedDefaultJavaPlugin {
@@ -60,6 +63,15 @@ public class CefPlugin extends JIPipePrepackagedDefaultJavaPlugin {
         progressInfo.log("Initializing CEF ... (this may take some time)");
 
         CefAppBuilder builder = new CefAppBuilder();
+        Path bundleDir = PathUtils.getImageJDir().resolve("jcef-bundle");
+        try {
+            progressInfo.log("JCEF bundle will be rerouted to " + bundleDir.toAbsolutePath());
+            Files.createDirectories(bundleDir);
+        }catch (Throwable ignored) {
+            progressInfo.log("JCEF bundle directory not writable. Redirecting to JIPipe user directory.");
+            bundleDir = PathUtils.resolveAndMakeSubDirectory(PathUtils.getJIPipeUserDir(), "jcef-bundle");
+        }
+        builder.setInstallDir(bundleDir.toFile());
         builder.addJcefArgs("--no-sandbox");
 //        builder.addJcefArgs("--disable-gpu");
 
