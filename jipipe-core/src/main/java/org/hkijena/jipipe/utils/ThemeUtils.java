@@ -65,9 +65,10 @@ public class ThemeUtils {
             } catch (Exception e) {
                 e.printStackTrace();
             }
-
-            reapplyCurrentTheme();
         }
+
+        // Must always be run
+        reapplyCurrentTheme();
     }
 
     public static JIPipeDesktopModernThemeStyle getStyleFromId(String id) {
