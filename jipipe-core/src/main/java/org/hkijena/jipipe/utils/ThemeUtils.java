@@ -39,6 +39,10 @@ public class ThemeUtils {
     }
 
     public static void applyThemeFromSettings() {
+
+        // Fix for macOS
+        System.setProperty("apple.laf.useScreenMenuBar", "false");
+
         Path propertyFile = JIPipeApplicationSettingsRegistry.getPropertyFile(true);
         if (Files.exists(propertyFile)) {
             try {
