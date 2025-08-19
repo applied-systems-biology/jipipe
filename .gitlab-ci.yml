@@ -29,7 +29,7 @@ distribution_package:
   needs: ["maven_build"]
   before_script:
     - apt-get update
-    - apt-get install -y git git-lfs rsync zip unzip
+    - apt-get install -y git git-lfs zip unzip
     - git lfs install
   script:
     - git clone --depth 1 https://asb-git.hki-jena.de/RGerst/jipipe-distribution-files.git
@@ -46,4 +46,5 @@ distribution_package:
     expire_in: 2 weeks
     paths:
       - jipipe-distribution-files/*-snapshot${CI_PIPELINE_IID}/*
+
 
