@@ -1,36 +1,28 @@
 image: maven:3-eclipse-temurin-21-jammy
 
-stages:
-  - build
-  - package
+stages: [package]
 
 variables:
   MAVEN_OPTS: "-Dmaven.repo.local=.m2/repository"
   GIT_STRATEGY: fetch
+  GIT_DEPTH: "1"
 
 cache:
+  key: "maven-cache"
+  policy: pull-push
   paths:
     - .m2/repository
 
-maven_build:
-  stage: build
-  before_script:
-    - apt-get update
-    - apt-get install -y git git-lfs zip unzip
-    - git lfs install
-  script:
-    - mvn -B -V -DskipTests=true -Dmaven.javadoc.skip=true clean install
-  artifacts:
-    paths:
-      - .m2/repository
-
 distribution_package:
   stage: package
-  needs: ["maven_build"]
+  interruptible: true
+  retry: 1
   before_script:
     - apt-get update
     - apt-get install -y git git-lfs zip unzip
     - git lfs install
+    # avoid potential 'dubious ownership' errors when step1 uses the checked-out repo
+    - git config --global --add safe.directory "$CI_PROJECT_DIR"
   script:
     - git clone --depth 1 https://asb-git.hki-jena.de/RGerst/jipipe-distribution-files.git
     - cd jipipe-distribution-files/scripts
@@ -38,13 +30,16 @@ distribution_package:
     - ./step2-create-zip.sh
     - ./step3-build-packages.sh
     - cd ..
-    - export OUTDIR="$(ls -d *-snapshot${CI_PIPELINE_IID} | head -n 1)"
+    - OUTDIR="$(ls -d *-snapshot${CI_PIPELINE_IID} | head -n 1)"
     - test -n "$OUTDIR" || { echo "Snapshot output dir not found"; ls -lah; exit 1; }
+    - ls -lah "$OUTDIR"
   artifacts:
     name: "jipipe-distribution-snapshot-${CI_PIPELINE_IID}"
     when: always
-    expire_in: 2 weeks
     paths:
       - jipipe-distribution-files/*-snapshot${CI_PIPELINE_IID}/*
-
-
+  after_script:
+    # keep the runner host clean (especially helpful on shared runners)
+    - rm -rf "$CI_PROJECT_DIR/jipipe-distribution-files"
+    - rm -rf "$CI_PROJECT_DIR/.m2/repository/org/jipipe" || true  # optional: trim project-local artifacts
+    - rm -rf /var/lib/apt/lists/*
