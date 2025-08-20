@@ -3,15 +3,8 @@ image: maven:3-eclipse-temurin-21-jammy
 stages: [package]
 
 variables:
-  MAVEN_OPTS: "-Dmaven.repo.local=.m2/repository"
   GIT_STRATEGY: fetch
   GIT_DEPTH: "1"
-
-cache:
-  key: "maven-cache"
-  policy: pull-push
-  paths:
-    - .m2/repository
 
 distribution_package:
   stage: package
