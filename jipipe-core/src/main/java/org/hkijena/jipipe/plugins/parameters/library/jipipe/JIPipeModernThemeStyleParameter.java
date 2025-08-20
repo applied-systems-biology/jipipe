@@ -43,6 +43,10 @@ public class JIPipeModernThemeStyleParameter extends DynamicEnumParameter<String
         initializeAllowedValues();
     }
 
+    private void initializeAllowedValues() {
+        setAllowedValues(ThemeUtils.getAvailableStyleIds());
+    }
+
     /**
      * Serializes {@link JIPipeModernThemeStyleParameter}
      */
@@ -61,9 +65,5 @@ public class JIPipeModernThemeStyleParameter extends DynamicEnumParameter<String
         public JIPipeModernThemeStyleParameter deserialize(JsonParser p, DeserializationContext ctxt) throws IOException, JsonProcessingException {
             return new JIPipeModernThemeStyleParameter(((JsonNode) p.readValueAsTree()).textValue());
         }
-    }
-
-    private void initializeAllowedValues() {
-        setAllowedValues(ThemeUtils.getAvailableStyleIds());
     }
 }

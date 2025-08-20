@@ -21,8 +21,6 @@ import org.hkijena.jipipe.JIPipe;
 import org.hkijena.jipipe.api.registries.JIPipeExpressionRegistry;
 import org.hkijena.jipipe.plugins.parameters.api.enums.DynamicEnumParameter;
 import org.hkijena.jipipe.plugins.tables.SummarizingColumnOperation;
-import org.hkijena.jipipe.utils.UIUtils;
-import org.hkijena.jipipe.JIPipe;
 
 import javax.swing.*;
 import java.util.Comparator;

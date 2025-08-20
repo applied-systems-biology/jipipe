@@ -2,23 +2,19 @@ package org.hkijena.jipipe.contrib.ro_crate.reader;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.node.ObjectNode;
-import org.hkijena.jipipe.contrib.ro_crate.entities.contextual.JsonDescriptor;
-import org.hkijena.jipipe.contrib.ro_crate.objectmapper.MyObjectMapper;
-import java.io.File;
-import java.io.FileOutputStream;
-import java.io.IOException;
-import java.io.InputStream;
-import java.io.OutputStream;
-import java.nio.file.Path;
-import java.util.UUID;
-
-import org.hkijena.jipipe.contrib.ro_crate.util.FileSystemUtil;
 import net.lingala.zip4j.io.inputstream.ZipInputStream;
 import net.lingala.zip4j.model.LocalFileHeader;
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.io.filefilter.FileFilterUtils;
+import org.hkijena.jipipe.contrib.ro_crate.entities.contextual.JsonDescriptor;
+import org.hkijena.jipipe.contrib.ro_crate.objectmapper.MyObjectMapper;
+import org.hkijena.jipipe.contrib.ro_crate.util.FileSystemUtil;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+
+import java.io.*;
+import java.nio.file.Path;
+import java.util.UUID;
 
 /**
  * Reads a crate from a streamed ZIP archive.
@@ -60,17 +56,18 @@ public class ReadZipStreamStrategy implements GenericReaderStrategy<InputStream>
      * The default configuration is to extract the ZipFile to
      * `./.tmp/ro-crate-java/zipStreamReader/%UUID/`.
      */
-    public ReadZipStreamStrategy() {}
+    public ReadZipStreamStrategy() {
+    }
 
     /**
      * Creates a ZipStreamReader which will extract the contents temporary to
      * the given location instead of the default location.
      *
-     * @param folderPath the custom directory to extract content to for
-     * temporary access.
+     * @param folderPath            the custom directory to extract content to for
+     *                              temporary access.
      * @param shallAddUuidSubfolder if true, the reader will extract into
-     * subdirectories of the given directory. These subdirectories will have
-     * UUIDs as their names.
+     *                              subdirectories of the given directory. These subdirectories will have
+     *                              UUIDs as their names.
      */
     public ReadZipStreamStrategy(Path folderPath, boolean shallAddUuidSubfolder) {
         if (shallAddUuidSubfolder) {
@@ -104,8 +101,9 @@ public class ReadZipStreamStrategy implements GenericReaderStrategy<InputStream>
         return isExtracted;
     }
 
-    /**Read the crate metadata and content from the provided input stream.
-     * 
+    /**
+     * Read the crate metadata and content from the provided input stream.
+     *
      * @param stream The input stream.
      */
     private void readCrate(InputStream stream) throws IOException {

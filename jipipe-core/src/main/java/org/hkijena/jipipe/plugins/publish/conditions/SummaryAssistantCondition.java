@@ -22,7 +22,6 @@ import org.hkijena.jipipe.plugins.parameters.library.markup.HTMLText;
 import org.hkijena.jipipe.utils.StringUtils;
 import org.hkijena.jipipe.utils.UIUtils;
 
-import javax.swing.*;
 import java.awt.*;
 
 public class SummaryAssistantCondition extends JIPipeDesktopPublisherAssistantCondition {

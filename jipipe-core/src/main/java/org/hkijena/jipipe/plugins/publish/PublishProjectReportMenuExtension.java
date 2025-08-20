@@ -8,7 +8,7 @@ import org.hkijena.jipipe.desktop.app.JIPipeDesktopWorkbench;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 
-public class PublishProjectReportMenuExtension extends JIPipeDesktopMenuExtension implements ActionListener  {
+public class PublishProjectReportMenuExtension extends JIPipeDesktopMenuExtension implements ActionListener {
 
     /**
      * Creates a new instance

@@ -35,7 +35,6 @@ import org.hkijena.jipipe.desktop.commons.components.JIPipeDesktopValidityReport
 import org.hkijena.jipipe.desktop.commons.components.tabs.JIPipeDesktopTabPane;
 import org.hkijena.jipipe.desktop.commons.components.window.JIPipeDesktopAlwaysOnTopToggle;
 import org.hkijena.jipipe.utils.UIUtils;
-import org.hkijena.jipipe.JIPipe;
 import org.hkijena.jipipe.utils.data.OwningStore;
 import org.scijava.Disposable;
 

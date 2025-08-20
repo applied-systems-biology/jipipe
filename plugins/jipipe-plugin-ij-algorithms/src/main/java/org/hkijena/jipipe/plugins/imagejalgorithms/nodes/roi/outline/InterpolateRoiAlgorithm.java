@@ -63,22 +63,19 @@ public class InterpolateRoiAlgorithm extends JIPipeSimpleIteratingAlgorithm {
         for (Roi roi : inputData) {
             Roi outlined = null;
             try {
-                outlined =  ImageJROIUtils.interpolateRoi(roi, interval, smooth, adjust);
+                outlined = ImageJROIUtils.interpolateRoi(roi, interval, smooth, adjust);
             } catch (Exception e) {
-                if(errorBehavior == InvalidRoiOutlineBehavior.Error) {
+                if (errorBehavior == InvalidRoiOutlineBehavior.Error) {
                     throw new RuntimeException(e);
                 }
             }
-            if(outlined != null) {
+            if (outlined != null) {
                 outputData.add(outlined);
-            }
-            else if(errorBehavior == InvalidRoiOutlineBehavior.Skip) {
+            } else if (errorBehavior == InvalidRoiOutlineBehavior.Skip) {
                 // Do nothing
-            }
-            else if(errorBehavior == InvalidRoiOutlineBehavior.KeepOriginal) {
+            } else if (errorBehavior == InvalidRoiOutlineBehavior.KeepOriginal) {
                 outputData.add(roi);
-            }
-            else {
+            } else {
                 throw new NullPointerException("Unable to interpolate ROI " + roi);
             }
         }
@@ -96,8 +93,8 @@ public class InterpolateRoiAlgorithm extends JIPipeSimpleIteratingAlgorithm {
         this.adjust = adjust;
     }
 
-     @SetJIPipeDocumentation(name = "Interval (px)", description = "Interval between sub-pixel resolution coordinates")
-     @JIPipeParameter("interval")
+    @SetJIPipeDocumentation(name = "Interval (px)", description = "Interval between sub-pixel resolution coordinates")
+    @JIPipeParameter("interval")
     public double getInterval() {
         return interval;
     }

@@ -1,16 +1,15 @@
 package org.hkijena.jipipe.contrib.ro_crate.crate;
 
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertNotNull;
-
-import org.junit.jupiter.api.Test;
-
 import com.fasterxml.jackson.core.JsonProcessingException;
-
 import org.hkijena.jipipe.contrib.ro_crate.HelpFunctions;
 import org.hkijena.jipipe.contrib.ro_crate.RoCrate;
 import org.hkijena.jipipe.contrib.ro_crate.entities.contextual.ContextualEntity;
+import org.junit.jupiter.api.Test;
+
 import java.io.IOException;
+
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
 
 class BuilderTest {
     @Test
@@ -44,17 +43,17 @@ class BuilderTest {
                 .build();
         assertNotNull(license);
         RoCrate crate = new RoCrate.RoCrateBuilder(
-            "Data files",
-            "Palliative care planning...",
-            "2024-02-09T08:21:41Z",
-            license
+                "Data files",
+                "Palliative care planning...",
+                "2024-02-09T08:21:41Z",
+                license
         ).build();
         assertNotNull(crate);
 
         HelpFunctions.compareEntityWithFile(crate.getRootDataEntity(), "/json/entities/data/rootMinimalExample.json");
         HelpFunctions.compareEntityWithFile(crate.getContextualEntityById("https://creativecommons.org/licenses/by-nc-sa/3.0/au/"), "/json/entities/data/license.json");
     }
-    
+
     @Test
     void testEmptyCrates() throws JsonProcessingException {
         RoCrate built = new RoCrate.RoCrateBuilder().build();

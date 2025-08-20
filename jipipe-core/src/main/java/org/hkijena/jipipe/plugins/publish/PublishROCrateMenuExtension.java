@@ -10,7 +10,7 @@ import org.hkijena.jipipe.plugins.publish.rocrate.ROCratePublisherAssistant;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 
-public class PublishROCrateMenuExtension extends JIPipeDesktopMenuExtension implements ActionListener  {
+public class PublishROCrateMenuExtension extends JIPipeDesktopMenuExtension implements ActionListener {
 
     /**
      * Creates a new instance

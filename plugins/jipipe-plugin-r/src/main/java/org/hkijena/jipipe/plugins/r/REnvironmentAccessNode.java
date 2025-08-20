@@ -13,6 +13,7 @@
 
 package org.hkijena.jipipe.plugins.r;
 
+import org.hkijena.jipipe.api.environments.JIPipeEnvironmentReference;
 import org.hkijena.jipipe.api.nodes.JIPipeGraphNode;
 import org.hkijena.jipipe.api.project.JIPipeProject;
 import org.hkijena.jipipe.api.validation.JIPipeValidationReport;
@@ -32,13 +33,13 @@ public interface REnvironmentAccessNode {
      *
      * @return the environment
      */
-    default REnvironment getConfiguredREnvironment() {
+    default JIPipeEnvironmentReference<REnvironment> getConfiguredREnvironment() {
         JIPipeGraphNode node = (JIPipeGraphNode) this;
         JIPipeProject project = node.getRuntimeProject();
         if (project == null) {
             project = node.getParentGraph().getProject();
         }
-        return RPlugin.getEnvironment(project, getOverrideEnvironment());
+        return RPlugin.getEnvironment(project, getOverrideEnvironment(), node);
     }
 
     /**
@@ -48,7 +49,7 @@ public interface REnvironmentAccessNode {
      * @param report  the report
      */
     default void reportConfiguredREnvironmentValidity(JIPipeValidationReportContext context, JIPipeValidationReport report) {
-        if (!getConfiguredREnvironment().generateValidityReport(context).isValid()) {
+        if (!getConfiguredREnvironment().getEnvironment().generateValidityReport(context).isValid()) {
             report.report(new JIPipeValidationReportEntry(JIPipeValidationReportEntryLevel.Error,
                     context,
                     "R not configured",

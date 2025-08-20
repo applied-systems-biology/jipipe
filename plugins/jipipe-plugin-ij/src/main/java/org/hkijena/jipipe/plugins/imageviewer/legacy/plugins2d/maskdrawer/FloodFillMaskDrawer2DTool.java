@@ -15,9 +15,8 @@ package org.hkijena.jipipe.plugins.imageviewer.legacy.plugins2d.maskdrawer;
 
 import ij.process.FloodFiller;
 import ij.process.ImageProcessor;
-import org.hkijena.jipipe.plugins.imageviewer.utils.viewer2d.ImageViewerPanelCanvas2D;
-import org.hkijena.jipipe.utils.UIUtils;
 import org.hkijena.jipipe.JIPipe;
+import org.hkijena.jipipe.plugins.imageviewer.utils.viewer2d.ImageViewerPanelCanvas2D;
 import org.hkijena.jipipe.utils.ui.BusyCursor;
 import org.hkijena.jipipe.utils.ui.events.MouseClickedEvent;
 import org.hkijena.jipipe.utils.ui.events.MouseClickedEventListener;

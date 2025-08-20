@@ -14,10 +14,7 @@
 package org.hkijena.jipipe.plugins.imagejalgorithms.nodes.color;
 
 import ij.CompositeImage;
-import ij.IJ;
 import ij.ImagePlus;
-import ij.ImageStack;
-import ij.plugin.RGBStackMerge;
 import ij.process.ImageProcessor;
 import ij.process.LUT;
 import org.hkijena.jipipe.api.ConfigureJIPipeNode;
@@ -40,7 +37,6 @@ import org.hkijena.jipipe.plugins.imagejdatatypes.util.ImageJUtils;
 import org.hkijena.jipipe.plugins.imagejdatatypes.util.dimensions.ImageSliceIndex;
 import org.hkijena.jipipe.plugins.parameters.library.graph.InputSlotMapParameterCollection;
 import org.hkijena.jipipe.plugins.parameters.library.primitives.vectors.Vector2dParameter;
-import org.hkijena.jipipe.plugins.parameters.library.primitives.vectors.Vector2iParameter;
 import org.hkijena.jipipe.plugins.parameters.library.primitives.vectors.VectorParameterSettings;
 import org.hkijena.jipipe.utils.ImageJCalibrationMode;
 
@@ -107,7 +103,7 @@ public class MergeChannelsCompositeAlgorithm extends JIPipeIteratingAlgorithm {
         List<ImagePlus> images = new ArrayList<>();
         for (JIPipeInputDataSlot inputSlot : getDataInputSlots()) {
             ImagePlus image = iterationStep.getInputData(inputSlot, ImagePlusGreyscaleData.class, progressInfo).getImage();
-            if(image.getNChannels() > 1) {
+            if (image.getNChannels() > 1) {
                 throw new IllegalArgumentException("All images should have exactly one channel");
             }
             images.add(image);
@@ -123,7 +119,7 @@ public class MergeChannelsCompositeAlgorithm extends JIPipeIteratingAlgorithm {
         }
 
         ImagePlus imp2 = ImageJUtils.mergeMappedSlices(sliceMap);
-        if(!imp2.isComposite()) {
+        if (!imp2.isComposite()) {
             imp2 = new CompositeImage(imp2);
         }
 
@@ -131,11 +127,11 @@ public class MergeChannelsCompositeAlgorithm extends JIPipeIteratingAlgorithm {
         for (int c = 0; c < dataInputSlots.size(); c++) {
             JIPipeInputDataSlot inputSlot = dataInputSlots.get(c);
             Color color = channelColorAssignment.get(inputSlot.getName()).get(Color.class);
-            LUT lut = ImageJUtils.createGradientLUT(Color.BLACK,color);
+            LUT lut = ImageJUtils.createGradientLUT(Color.BLACK, color);
             ImageJUtils.setLut(imp2, lut, Collections.singleton(c));
         }
 
-        if(autoCalibrate) {
+        if (autoCalibrate) {
             for (int c = 0; c < imp2.getNChannels(); c++) {
                 ImageJUtils.calibrate(imp2, calibrationMode, customRange.getX(), customRange.getY(), Collections.singleton(c));
             }

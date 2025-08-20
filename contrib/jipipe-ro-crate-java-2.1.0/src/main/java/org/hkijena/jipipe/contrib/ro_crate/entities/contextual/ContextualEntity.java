@@ -10,32 +10,32 @@ import org.hkijena.jipipe.contrib.ro_crate.entities.AbstractEntity;
  */
 public class ContextualEntity extends AbstractEntity {
 
-  public ContextualEntity(AbstractContextualEntityBuilder<?> entityBuilder) {
-    super(entityBuilder);
-  }
-
-  abstract static class AbstractContextualEntityBuilder
-      <T extends AbstractContextualEntityBuilder<T>> extends AbstractEntityBuilder<T> {
-
-    @Override
-    public abstract ContextualEntity build();
-  }
-
-  /**
-   * This is the Contextual entity builder base class,
-   * as of right now it does not contain any methods.
-   */
-  public static final class ContextualEntityBuilder extends
-      AbstractContextualEntityBuilder<ContextualEntityBuilder> {
-
-    @Override
-    public ContextualEntityBuilder self() {
-      return this;
+    public ContextualEntity(AbstractContextualEntityBuilder<?> entityBuilder) {
+        super(entityBuilder);
     }
 
-    @Override
-    public ContextualEntity build() {
-      return new ContextualEntity(this);
+    abstract static class AbstractContextualEntityBuilder
+            <T extends AbstractContextualEntityBuilder<T>> extends AbstractEntityBuilder<T> {
+
+        @Override
+        public abstract ContextualEntity build();
     }
-  }
+
+    /**
+     * This is the Contextual entity builder base class,
+     * as of right now it does not contain any methods.
+     */
+    public static final class ContextualEntityBuilder extends
+            AbstractContextualEntityBuilder<ContextualEntityBuilder> {
+
+        @Override
+        public ContextualEntityBuilder self() {
+            return this;
+        }
+
+        @Override
+        public ContextualEntity build() {
+            return new ContextualEntity(this);
+        }
+    }
 }

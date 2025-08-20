@@ -13,6 +13,7 @@
 
 package org.hkijena.jipipe.plugins.cellpose.algorithms.cp2;
 
+import org.hkijena.jipipe.api.environments.JIPipeEnvironmentReference;
 import org.hkijena.jipipe.api.nodes.JIPipeGraphNode;
 import org.hkijena.jipipe.api.project.JIPipeProject;
 import org.hkijena.jipipe.api.validation.JIPipeValidationReport;
@@ -35,13 +36,13 @@ public interface Cellpose2EnvironmentAccessNode {
      *
      * @return the environment
      */
-    default PythonEnvironment getConfiguredCellposeEnvironment() {
+    default JIPipeEnvironmentReference<PythonEnvironment> getConfiguredCellposeEnvironment() {
         JIPipeGraphNode node = (JIPipeGraphNode) this;
         JIPipeProject project = node.getRuntimeProject();
         if (project == null) {
             project = node.getParentGraph().getProject();
         }
-        return CellposePlugin.getCP2Environment(project, getOverrideEnvironment());
+        return CellposePlugin.getCP2Environment(project, getOverrideEnvironment(), node);
     }
 
     /**
@@ -51,7 +52,7 @@ public interface Cellpose2EnvironmentAccessNode {
      * @param report  the report
      */
     default void reportConfiguredCellposeEnvironmentValidity(JIPipeValidationReportContext context, JIPipeValidationReport report) {
-        if (!getConfiguredCellposeEnvironment().generateValidityReport(context).isValid()) {
+        if (!getConfiguredCellposeEnvironment().getEnvironment().generateValidityReport(context).isValid()) {
             report.report(new JIPipeValidationReportEntry(JIPipeValidationReportEntryLevel.Error,
                     context,
                     "Cellpose 2.x not configured",

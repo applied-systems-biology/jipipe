@@ -18,6 +18,8 @@ import org.hkijena.jipipe.JIPipeDependency;
 import org.hkijena.jipipe.JIPipeJavaPlugin;
 import org.hkijena.jipipe.JIPipeMutableDependency;
 import org.hkijena.jipipe.api.JIPipeProgressInfo;
+import org.hkijena.jipipe.api.environments.JIPipeEnvironmentReference;
+import org.hkijena.jipipe.api.nodes.JIPipeGraphNode;
 import org.hkijena.jipipe.api.parameters.JIPipeParameterArchetype;
 import org.hkijena.jipipe.api.project.JIPipeProject;
 import org.hkijena.jipipe.plugins.JIPipePrepackagedDefaultJavaPlugin;
@@ -30,8 +32,6 @@ import org.hkijena.jipipe.plugins.python.adapter.OptionalJIPipePythonAdapterLibr
 import org.hkijena.jipipe.plugins.python.installers.SelectCondaEnvPythonInstaller;
 import org.hkijena.jipipe.plugins.python.installers.SelectSystemPythonInstaller;
 import org.hkijena.jipipe.plugins.python.installers.SelectVirtualEnvPythonInstaller;
-import org.hkijena.jipipe.utils.UIUtils;
-import org.hkijena.jipipe.JIPipe;
 import org.scijava.Context;
 import org.scijava.plugin.Plugin;
 
@@ -56,21 +56,25 @@ public class CorePythonPlugin extends JIPipePrepackagedDefaultJavaPlugin {
         getMetadata().addCategories(PluginCategoriesEnumParameter.CATEGORY_SCRIPTING);
     }
 
-    public static PythonEnvironment getEnvironment(JIPipeProject project, OptionalPythonEnvironment nodeEnvironment) {
-        if (nodeEnvironment.isEnabled()) {
-            return nodeEnvironment.getContent();
+    public static JIPipeEnvironmentReference<PythonEnvironment> getEnvironment(JIPipeProject project, OptionalPythonEnvironment nodeEnvironment, JIPipeGraphNode node) {
+        var selector = JIPipeEnvironmentReference.defaultOptions(PythonEnvironment.class)
+                .application(PythonPluginApplicationSettings.getInstance().getReadOnlyDefaultEnvironment());
+        if (nodeEnvironment != null) {
+            selector.node(nodeEnvironment, node);
         }
-        if (project != null && project.getSettingsSheet(PythonPluginProjectSettings.class).getProjectDefaultEnvironment().isEnabled()) {
-            return project.getSettingsSheet(PythonPluginProjectSettings.class).getProjectDefaultEnvironment().getContent();
+        if (project != null) {
+            selector.project(project.getSettingsSheet(PythonPluginProjectSettings.class).getProjectDefaultEnvironment(), project);
         }
-        return PythonPluginApplicationSettings.getInstance().getReadOnlyDefaultEnvironment();
+        return selector.select();
     }
 
-    public static JIPipePythonAdapterLibraryEnvironment getAdapterEnvironment(JIPipeProject project) {
-        if (project != null && project.getSettingsSheet(PythonPluginProjectSettings.class).getProjectPythonAdapterLibraryEnvironment().isEnabled()) {
-            return project.getSettingsSheet(PythonPluginProjectSettings.class).getProjectPythonAdapterLibraryEnvironment().getContent();
+    public static JIPipeEnvironmentReference<JIPipePythonAdapterLibraryEnvironment> getAdapterEnvironment(JIPipeProject project) {
+        var selector = JIPipeEnvironmentReference.defaultOptions(JIPipePythonAdapterLibraryEnvironment.class)
+                .application(JIPipePythonPluginAdapterApplicationSettings.getInstance().getReadOnlyDefaultEnvironment());
+        if (project != null) {
+            selector.project(project.getSettingsSheet(PythonPluginProjectSettings.class).getProjectPythonAdapterLibraryEnvironment(), project);
         }
-        return JIPipePythonPluginAdapterApplicationSettings.getInstance().getReadOnlyDefaultEnvironment();
+        return selector.select();
     }
 
     @Override

@@ -10,6 +10,11 @@
         <option value="$PROJECT_DIR$/plugins/jipipe-plugin-cellpose/pom.xml" />
       </list>
     </option>
+    <option name="ignoredFiles">
+      <set>
+        <option value="$PROJECT_DIR$/contrib/jipipe-cwl-java-1.2.0/pom.xml" />
+      </set>
+    </option>
   </component>
   <component name="ProjectRootManager" version="2" languageLevel="JDK_21" project-jdk-name="21" project-jdk-type="JavaSDK" />
   <component name="ProjectType">

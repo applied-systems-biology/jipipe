@@ -24,6 +24,7 @@ import ij.process.Blitter;
 import ij.process.ByteProcessor;
 import ij.process.ImageConverter;
 import ij.process.ImageProcessor;
+import org.hkijena.jipipe.JIPipe;
 import org.hkijena.jipipe.api.JIPipeProgressInfo;
 import org.hkijena.jipipe.api.events.AbstractJIPipeEvent;
 import org.hkijena.jipipe.api.events.JIPipeEventEmitter;
@@ -52,7 +53,6 @@ import org.hkijena.jipipe.utils.BufferedImageUtils;
 import org.hkijena.jipipe.utils.ColorUtils;
 import org.hkijena.jipipe.utils.PathUtils;
 import org.hkijena.jipipe.utils.UIUtils;
-import org.hkijena.jipipe.JIPipe;
 import org.hkijena.jipipe.utils.ui.BusyCursor;
 import org.hkijena.jipipe.utils.ui.JIPipeDesktopDockPanel;
 import org.hkijena.jipipe.utils.ui.RoundedLineBorder;
@@ -303,7 +303,7 @@ public class MaskDrawerPlugin2D extends JIPipeDesktopLegacyImageViewerPlugin2D i
     }
 
     private void ensureMaskPreview() {
-        if(getCurrentImagePlus() != null) {
+        if (getCurrentImagePlus() != null) {
             currentMaskSlicePreview = new BufferedImage(getCurrentImagePlus().getWidth(),
                     getCurrentImagePlus().getHeight(),
                     BufferedImage.TYPE_INT_ARGB);

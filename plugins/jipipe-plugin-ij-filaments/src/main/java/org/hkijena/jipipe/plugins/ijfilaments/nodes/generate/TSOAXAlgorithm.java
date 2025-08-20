@@ -14,7 +14,7 @@
 package org.hkijena.jipipe.plugins.ijfilaments.nodes.generate;
 
 import org.hkijena.jipipe.api.SetJIPipeDocumentation;
-import org.hkijena.jipipe.api.environments.JIPipeEnvironment;
+import org.hkijena.jipipe.api.environments.JIPipeEnvironmentReference;
 import org.hkijena.jipipe.api.nodes.JIPipeGraphNode;
 import org.hkijena.jipipe.api.nodes.JIPipeNodeInfo;
 import org.hkijena.jipipe.api.nodes.algorithm.JIPipeSimpleIteratingAlgorithm;
@@ -183,7 +183,7 @@ public abstract class TSOAXAlgorithm extends JIPipeSimpleIteratingAlgorithm {
     }
 
     @Override
-    public void getEnvironmentDependencies(List<JIPipeEnvironment> target) {
+    public void getEnvironmentDependencies(List<JIPipeEnvironmentReference<?>> target) {
         super.getEnvironmentDependencies(target);
         target.add(getConfiguredTSOAXEnvironment());
     }
@@ -194,19 +194,19 @@ public abstract class TSOAXAlgorithm extends JIPipeSimpleIteratingAlgorithm {
      *
      * @return the environment
      */
-    public TSOAXEnvironment getConfiguredTSOAXEnvironment() {
+    public JIPipeEnvironmentReference<TSOAXEnvironment> getConfiguredTSOAXEnvironment() {
         JIPipeGraphNode node = this;
         JIPipeProject project = node.getRuntimeProject();
         if (project == null) {
             project = node.getParentGraph().getProject();
         }
-        return FilamentsPlugin.getTSOAXEnvironment(project, getOverrideEnvironment());
+        return FilamentsPlugin.getTSOAXEnvironment(project, getOverrideEnvironment(), node);
     }
 
     @Override
     public void reportValidity(JIPipeValidationReportContext reportContext, JIPipeValidationReport report) {
         super.reportValidity(reportContext, report);
-        if (!getConfiguredTSOAXEnvironment().generateValidityReport(reportContext).isValid()) {
+        if (!getConfiguredTSOAXEnvironment().getEnvironment().generateValidityReport(reportContext).isValid()) {
             report.report(new JIPipeValidationReportEntry(JIPipeValidationReportEntryLevel.Error,
                     reportContext,
                     "TSOAX not configured",

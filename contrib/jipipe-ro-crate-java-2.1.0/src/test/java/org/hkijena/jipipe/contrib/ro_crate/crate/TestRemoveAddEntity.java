@@ -1,18 +1,16 @@
 package org.hkijena.jipipe.contrib.ro_crate.crate;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
-
 import org.hkijena.jipipe.contrib.ro_crate.HelpFunctions;
 import org.hkijena.jipipe.contrib.ro_crate.RoCrate;
 import org.hkijena.jipipe.contrib.ro_crate.entities.contextual.PersonEntity;
 import org.hkijena.jipipe.contrib.ro_crate.entities.contextual.PlaceEntity;
 import org.hkijena.jipipe.contrib.ro_crate.entities.data.FileEntity;
-
 import org.junit.jupiter.api.Test;
 
-import static org.junit.jupiter.api.Assertions.assertEquals;
-
 import java.io.IOException;
+
+import static org.junit.jupiter.api.Assertions.assertEquals;
 
 public class TestRemoveAddEntity {
     @Test
@@ -157,7 +155,7 @@ public class TestRemoveAddEntity {
                 "The RO-Crate Root Data Entity", "2023", "https://creativecommons.org/licenses/by-nc-sa/3.0/au/")
                 .addContextualEntity(person)
                 .build();
-        
+
         assertEquals(1, roCrate.getAllContextualEntities().size());
         assertEquals(1, roCrateNew.getAllContextualEntities().size());
 
@@ -166,12 +164,12 @@ public class TestRemoveAddEntity {
                 .addProperty("name", "Peter Sefton")
                 .addProperty("email", "peter.sefton@uts.edu.au")
                 .build();
-        
+
         roCrateNew.addContextualEntity(personNew);
-        
+
         assertEquals(1, roCrate.getAllContextualEntities().size());
         assertEquals(1, roCrateNew.getAllContextualEntities().size());
-        
+
         assertEquals(roCrate.getContextualEntityById("person"), person);
         assertEquals(roCrateNew.getContextualEntityById("person"), personNew);
     }

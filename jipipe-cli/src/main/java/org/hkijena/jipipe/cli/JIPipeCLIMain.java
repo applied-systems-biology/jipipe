@@ -14,7 +14,6 @@
 package org.hkijena.jipipe.cli;
 
 import org.apache.commons.lang3.exception.ExceptionUtils;
-import org.hkijena.jipipe.utils.StringUtils;
 
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -58,12 +57,10 @@ public class JIPipeCLIMain {
             } else {
                 JIPipeCLIHelp.showHelp();
             }
-        }
-        catch (Throwable t) {
+        } catch (Throwable t) {
             System.err.println(t);
             System.err.println(ExceptionUtils.getStackTrace(t));
-        }
-        finally {
+        } finally {
             Runtime.getRuntime().halt(0);
         }
     }

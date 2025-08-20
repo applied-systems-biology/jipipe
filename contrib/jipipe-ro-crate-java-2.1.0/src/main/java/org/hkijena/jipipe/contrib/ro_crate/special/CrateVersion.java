@@ -6,7 +6,7 @@ import java.util.Optional;
 
 /**
  * Represents a crate version and has information for each version available.
- * 
+ * <p>
  * It offers also convenience functionality like version comparison similar to
  * numbers.
  */
@@ -32,15 +32,26 @@ public enum CrateVersion {
 
     /**
      * The String representation of the version.
-     * 
+     * <p>
      * Example: assertEquals("1.2-DRAFT", CrateVersion.V1P2_DRAFT);
      */
     public final String version;
 
     /**
+     * Private constructor which is being used for the internally given information
+     * above.
+     *
+     * @param spec the specification URI / conformsTo value
+     */
+    private CrateVersion(String spec) {
+        this.conformsTo = spec;
+        this.version = getVersionFromConformsToString(spec);
+    }
+
+    /**
      * Basically a constructor of a version, if it needs to be created from the spec
      * URI.
-     * 
+     *
      * @param conformsTo the specification URI. Example:
      *                   https://w3id.org/ro/crate/1.1
      * @return the matching CrateVersion enum, if the URI matches any. Empty if not.
@@ -50,32 +61,8 @@ public enum CrateVersion {
     }
 
     /**
-     * Private constructor which is being used for the internally given information
-     * above.
-     * 
-     * @param spec the specification URI / conformsTo value
-     */
-    private CrateVersion(String spec) {
-        this.conformsTo = spec;
-        this.version = getVersionFromConformsToString(spec);
-    }
-
-    public boolean isStable() {
-        return !this.version.endsWith("-DRAFT");
-    }
-
-    public URI getConformsToUri() {
-        try {
-            return new URI(this.conformsTo);
-        } catch (URISyntaxException e) {
-            // can not happen as the user can not set this string
-            return null;
-        }
-    }
-
-    /**
      * Extracts the version from the spec uri.
-     * 
+     *
      * @param specUri the uri of the spec
      * @return the version of the spec
      */
@@ -91,6 +78,19 @@ public enum CrateVersion {
             }
         }
         return null;
+    }
+
+    public boolean isStable() {
+        return !this.version.endsWith("-DRAFT");
+    }
+
+    public URI getConformsToUri() {
+        try {
+            return new URI(this.conformsTo);
+        } catch (URISyntaxException e) {
+            // can not happen as the user can not set this string
+            return null;
+        }
     }
 
     public boolean isGreaterThan(CrateVersion other) {

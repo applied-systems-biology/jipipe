@@ -1,20 +1,19 @@
 package org.hkijena.jipipe.contrib.ro_crate.entities.contextual;
 
-import java.net.URI;
-import java.util.HashSet;
-import java.util.Set;
-
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.node.ArrayNode;
-
 import org.hkijena.jipipe.contrib.ro_crate.Crate;
 import org.hkijena.jipipe.contrib.ro_crate.objectmapper.MyObjectMapper;
 import org.hkijena.jipipe.contrib.ro_crate.special.CrateVersion;
 
+import java.net.URI;
+import java.util.HashSet;
+import java.util.Set;
+
 public class JsonDescriptor extends ContextualEntity {
 
-    protected static final String CONFORMS_TO = "conformsTo";
     public static final String ID = "ro-crate-metadata.json";
+    protected static final String CONFORMS_TO = "conformsTo";
 
     /**
      * Returns a JsonDescriptor with the conformsTo value set to the latest stable
@@ -26,15 +25,15 @@ public class JsonDescriptor extends ContextualEntity {
                         .addIdProperty(CONFORMS_TO, CrateVersion.LATEST_STABLE.conformsTo));
     }
 
+    private JsonDescriptor(ContextualEntityBuilder builder) {
+        super(builder);
+    }
+
     protected static ContextualEntityBuilder staticPropertiesPrefilledBuilder() {
         return new ContextualEntity.ContextualEntityBuilder()
                 .setId(ID)
                 .addType("CreativeWork")
                 .addIdProperty("about", "./");
-    }
-
-    private JsonDescriptor(ContextualEntityBuilder builder) {
-        super(builder);
     }
 
     /**

@@ -9,10 +9,9 @@ import static org.junit.jupiter.api.Assertions.*;
 
 class ProvenanceManagerTest {
     public final String OLD_VERSION = "1.0.0";
+    public final String NEW_VERSION = "2.5.3";
     private final ProvenanceManager OLD_PROV_MANAGER = new ProvenanceManager(() -> OLD_VERSION);
     private final String OLD_LIBRARY_ID = OLD_PROV_MANAGER.getLibraryId();
-
-    public final String NEW_VERSION = "2.5.3";
     private final ProvenanceManager NEW_PROV_MANAGER = new ProvenanceManager(() -> NEW_VERSION);
     private final String NEW_LIBRARY_ID = NEW_PROV_MANAGER.getLibraryId();
 
@@ -175,8 +174,8 @@ class ProvenanceManagerTest {
         assertEquals(2, updateActions.size(), "Should have two update actions");
 
         assertTrue(updateActions.stream()
-                .map(e -> e.getIdProperty("agent"))
-                .allMatch(id -> id.equals(OLD_LIBRARY_ID) || id.equals(NEW_LIBRARY_ID)),
+                        .map(e -> e.getIdProperty("agent"))
+                        .allMatch(id -> id.equals(OLD_LIBRARY_ID) || id.equals(NEW_LIBRARY_ID)),
                 "Update actions should point to either old or new version");
     }
 }

@@ -1,25 +1,21 @@
 package org.hkijena.jipipe.contrib.ro_crate.crate;
 
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertFalse;
-import static org.junit.jupiter.api.Assertions.assertTrue;
+import com.fasterxml.jackson.databind.JsonNode;
+import org.hkijena.jipipe.contrib.ro_crate.Crate;
+import org.hkijena.jipipe.contrib.ro_crate.RoCrate;
+import org.hkijena.jipipe.contrib.ro_crate.entities.contextual.ContextualEntity;
+import org.hkijena.jipipe.contrib.ro_crate.reader.Readers;
+import org.hkijena.jipipe.contrib.ro_crate.special.CrateVersion;
+import org.hkijena.jipipe.contrib.ro_crate.validation.JsonSchemaValidation;
+import org.hkijena.jipipe.contrib.ro_crate.validation.Validator;
+import org.junit.jupiter.api.Test;
 
 import java.io.IOException;
 import java.net.URI;
 import java.net.URISyntaxException;
 import java.util.Collection;
 
-import org.hkijena.jipipe.contrib.ro_crate.reader.Readers;
-import org.junit.jupiter.api.Test;
-
-import com.fasterxml.jackson.databind.JsonNode;
-
-import org.hkijena.jipipe.contrib.ro_crate.Crate;
-import org.hkijena.jipipe.contrib.ro_crate.RoCrate;
-import org.hkijena.jipipe.contrib.ro_crate.entities.contextual.ContextualEntity;
-import org.hkijena.jipipe.contrib.ro_crate.special.CrateVersion;
-import org.hkijena.jipipe.contrib.ro_crate.validation.JsonSchemaValidation;
-import org.hkijena.jipipe.contrib.ro_crate.validation.Validator;
+import static org.junit.jupiter.api.Assertions.*;
 
 class BuilderSpec12Test {
     private URI profile1;
@@ -58,13 +54,13 @@ class BuilderSpec12Test {
                         .addType("CreativeWork")
                         .build())
                 .build();
-        
+
         // sanity checks
         Validator defaultValidation = new Validator(new JsonSchemaValidation());
         assertTrue(defaultValidation.validate(modifiedCrate));
         assertEquals(CrateVersion.LATEST_UNSTABLE, crate.getVersion().get());
         assertEquals(CrateVersion.LATEST_UNSTABLE, modifiedCrate.getVersion().get());
-        
+
         // number of profiles increased by 2
         Collection<String> newProfileState = modifiedCrate.getProfiles();
         assertEquals(existingProfiles.size() + 2, newProfileState.size());
@@ -73,10 +69,10 @@ class BuilderSpec12Test {
         assertTrue(newProfileState.contains(profile2.toString()));
         // old profiles are present
         assertEquals(
-            0,
-            existingProfiles.stream()
-                .filter(txt -> !newProfileState.contains(txt))
-                .count()
+                0,
+                existingProfiles.stream()
+                        .filter(txt -> !newProfileState.contains(txt))
+                        .count()
         );
     }
 }

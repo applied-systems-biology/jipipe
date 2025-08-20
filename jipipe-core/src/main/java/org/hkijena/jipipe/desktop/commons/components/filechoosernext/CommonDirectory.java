@@ -6,6 +6,7 @@ public class CommonDirectory {
 
     private final Path path;
     private final DirectoryType type;
+
     public CommonDirectory(Path path, DirectoryType type) {
         this.path = path;
         this.type = type;

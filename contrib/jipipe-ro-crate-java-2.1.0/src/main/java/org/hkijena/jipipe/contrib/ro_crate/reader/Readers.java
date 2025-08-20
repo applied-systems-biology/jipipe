@@ -12,13 +12,13 @@ public class Readers {
     /**
      * Private constructor to prevent instantiation of this utility class.
      */
-    private Readers() {}
+    private Readers() {
+    }
 
     /**
      * Creates a reader that reads from ZIP files using input streams.
      *
      * @return A reader configured for ZIP files
-     *
      * @see ReadZipStreamStrategy#ReadZipStreamStrategy()
      */
     public static CrateReader<InputStream> newZipStreamReader() {
@@ -29,10 +29,9 @@ public class Readers {
      * Creates a reader that reads from ZIP files using input streams,
      * extracting to a custom temporary location.
      *
-     * @param extractPath Path where ZIP contents should be extracted
+     * @param extractPath      Path where ZIP contents should be extracted
      * @param useUuidSubfolder Whether to create a UUID subfolder under extractPath
      * @return A reader configured for ZIP files with custom extraction
-     *
      * @see ReadZipStreamStrategy#ReadZipStreamStrategy(Path, boolean)
      */
     public static CrateReader<InputStream> newZipStreamReader(Path extractPath, boolean useUuidSubfolder) {
@@ -43,7 +42,6 @@ public class Readers {
      * Creates a reader that reads from a folder using a string path.
      *
      * @return A reader configured for folders
-     *
      * @see ReadFolderStrategy
      */
     public static CrateReader<String> newFolderReader() {
@@ -54,7 +52,6 @@ public class Readers {
      * Creates a reader that reads from a ZIP file using a string path.
      *
      * @return A reader configured for ZIP files
-     *
      * @see ReadZipStrategy#ReadZipStrategy()
      */
     public static CrateReader<String> newZipPathReader() {
@@ -65,10 +62,9 @@ public class Readers {
      * Creates a reader that reads from a ZIP file using a string path,
      * extracting to a custom temporary location.
      *
-     * @param extractPath Path where ZIP contents should be extracted
+     * @param extractPath      Path where ZIP contents should be extracted
      * @param useUuidSubfolder Whether to create a UUID subfolder under extractPath
      * @return A reader configured for ZIP files with custom extraction
-     *
      * @see ReadZipStrategy#ReadZipStrategy(Path, boolean)
      */
     public static CrateReader<String> newZipPathReader(Path extractPath, boolean useUuidSubfolder) {

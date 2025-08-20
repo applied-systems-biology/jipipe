@@ -29,8 +29,8 @@ public class JIPipeDesktopDockPanel extends JPanel implements JIPipeDesktopSplit
 
     public static final int UI_ORDER_PINNED = -100;
     public static final int UI_ORDER_DEFAULT = 0;
-    private static final int RESIZE_HANDLE_SIZE = 6;
     public static final int BUTTON_MAX_WIDTH = 64;
+    private static final int RESIZE_HANDLE_SIZE = 6;
     private final JIPipeDesktopVerticalToolBar leftToolBar = new JIPipeDesktopVerticalToolBar();
     private final JIPipeDesktopVerticalToolBar rightToolBar = new JIPipeDesktopVerticalToolBar();
     private final JLayeredPane layeredPane = new JLayeredPane();
@@ -48,6 +48,7 @@ public class JIPipeDesktopDockPanel extends JPanel implements JIPipeDesktopSplit
     private final PanelSideVisibilityChangedEventEmitter panelSideVisibilityChangedEventEmitter = new PanelSideVisibilityChangedEventEmitter();
     private final JIPipeParameterCollection.ParameterChangedEventEmitter parameterChangedEventEmitter = new JIPipeParameterCollection.ParameterChangedEventEmitter();
     private final JCheckBoxMenuItem showToolbarLabelsMenuItem = new JCheckBoxMenuItem("Show Toolbar Labels");
+    private final boolean usingModernTheme = ThemeUtils.isUsingModernTheme();
     private int leftPanelWidth = 350;
     private int rightPanelWidth = 500;
     private int minimumPanelWidth = 150;
@@ -63,7 +64,6 @@ public class JIPipeDesktopDockPanel extends JPanel implements JIPipeDesktopSplit
     private boolean alwaysShowLeftPanel = false;
     private boolean alwaysShowRightPanel = false;
     private JComponent mainComponent;
-    private final boolean usingModernTheme = ThemeUtils.isUsingModernTheme();
 
     public JIPipeDesktopDockPanel() {
         super(new BorderLayout());
@@ -75,15 +75,14 @@ public class JIPipeDesktopDockPanel extends JPanel implements JIPipeDesktopSplit
         add(leftToolBar, BorderLayout.WEST);
         add(rightToolBar, BorderLayout.EAST);
 
-        if(usingModernTheme) {
+        if (usingModernTheme) {
             setBackground(ThemeUtils.getCurrentStyle().getWindowBackground());
 
             rightToolBar.setOpaque(false);
             rightToolBar.setBorder(BorderFactory.createEmptyBorder());
             leftToolBar.setOpaque(false);
             leftToolBar.setBorder(BorderFactory.createEmptyBorder());
-        }
-        else {
+        } else {
             rightToolBar.setBorder(UIUtils.createPanelBorder(0, 0, 1, 0));
             leftToolBar.setBorder(UIUtils.createPanelBorder(1, 0, 0, 0));
         }
@@ -127,7 +126,7 @@ public class JIPipeDesktopDockPanel extends JPanel implements JIPipeDesktopSplit
     private void reloadContextMenu(JPopupMenu menu, boolean right) {
         menu.removeAll();
         menu.add(showToolbarLabelsMenuItem);
-        if(right) {
+        if (right) {
             JCheckBoxMenuItem pin = new JCheckBoxMenuItem("Always show right panel");
             pin.setState(alwaysShowRightPanel);
             pin.addActionListener(e -> {
@@ -135,8 +134,7 @@ public class JIPipeDesktopDockPanel extends JPanel implements JIPipeDesktopSplit
                 saveState();
             });
             menu.add(pin);
-        }
-        else {
+        } else {
             JCheckBoxMenuItem pin = new JCheckBoxMenuItem("Always show left panel");
             pin.setState(alwaysShowLeftPanel);
             pin.addActionListener(e -> {
@@ -386,10 +384,10 @@ public class JIPipeDesktopDockPanel extends JPanel implements JIPipeDesktopSplit
 
         // Rebuild the central panel if needed
         layeredPaneMain.removeAll();
-        if(mainComponent != null) {
+        if (mainComponent != null) {
             Panel bottomPanel = null;
             for (Panel panel : getPanelsAtLocation(PanelLocation.BottomBottom)) {
-                if(panel.isVisible()) {
+                if (panel.isVisible()) {
                     bottomPanel = panel;
                     break;
                 }
@@ -456,7 +454,7 @@ public class JIPipeDesktopDockPanel extends JPanel implements JIPipeDesktopSplit
             leftToolBar.add(createToggleButton(panel));
         }
         List<Panel> bottomLeftPanels = getPanelsAtLocation(PanelLocation.BottomLeft).stream().sorted().toList();
-        if(!bottomLeftPanels.isEmpty()) {
+        if (!bottomLeftPanels.isEmpty()) {
             leftToolBar.add(Box.createVerticalStrut(32));
             for (Panel panel : bottomLeftPanels) {
                 leftToolBar.add(createToggleButton(panel));
@@ -482,7 +480,7 @@ public class JIPipeDesktopDockPanel extends JPanel implements JIPipeDesktopSplit
         JToggleButton button = new JToggleButton(panel.getIcon());
         button.setOpaque(false);
         button.setSelected(panel.isDisplayed());
-        button.setBorder(BorderFactory.createEmptyBorder(8,8,8,8));
+        button.setBorder(BorderFactory.createEmptyBorder(8, 8, 8, 8));
         button.setForeground(ThemeUtils.getCurrentStyle().getIconBaseColor());
         button.setToolTipText(panel.getName());
         button.addActionListener(e -> {

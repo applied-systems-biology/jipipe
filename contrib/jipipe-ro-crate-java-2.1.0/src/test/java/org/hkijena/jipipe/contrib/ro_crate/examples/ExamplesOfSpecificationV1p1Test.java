@@ -7,7 +7,6 @@ import org.hkijena.jipipe.contrib.ro_crate.entities.contextual.OrganizationEntit
 import org.hkijena.jipipe.contrib.ro_crate.entities.contextual.PersonEntity;
 import org.hkijena.jipipe.contrib.ro_crate.entities.contextual.PlaceEntity;
 import org.hkijena.jipipe.contrib.ro_crate.entities.data.*;
-
 import org.hkijena.jipipe.contrib.ro_crate.writer.CrateWriter;
 import org.junit.jupiter.api.Test;
 
@@ -26,7 +25,7 @@ public class ExamplesOfSpecificationV1p1Test {
 
     /**
      * From: <a href="https://www.researchobject.org/ro-crate/specification/1.1/root-data-entity.html#minimal-example-of-ro-crate">
-     *     Minimal Example
+     * Minimal Example
      * </a> (<a href="src/test/resources/spec-v1.1-example-json-files/minimal.json">location in repo</a>)
      * <p>
      * This example produces a minimal crate with a
@@ -46,7 +45,7 @@ public class ExamplesOfSpecificationV1p1Test {
         )
                 // We already had to set the license ID in the builder,
                 // but we can override it with more details to fit the example:
-                .setLicense( new ContextualEntity.ContextualEntityBuilder()
+                .setLicense(new ContextualEntity.ContextualEntityBuilder()
                         .addType("CreativeWork")
                         .setId(licenseID)
                         .addProperty("description", "This work is licensed under the Creative Commons Attribution-NonCommercial-ShareAlike 3.0 Australia License. To view a copy of this license, visit http://creativecommons.org/licenses/by-nc-sa/3.0/au/ or send a letter to Creative Commons, PO Box 1866, Mountain View, CA 94042, USA.")
@@ -62,7 +61,7 @@ public class ExamplesOfSpecificationV1p1Test {
 
     /**
      * From: <a href="https://www.researchobject.org/ro-crate/specification/1.1/root-data-entity.html#minimal-example-of-ro-crate">
-     *     Minimal Example
+     * Minimal Example
      * </a> (<a href="src/test/resources/spec-v1.1-example-json-files/minimal.json">location in repo</a>)
      * <p>
      * In this example, the minimal crate is created without the builder.
@@ -107,7 +106,7 @@ public class ExamplesOfSpecificationV1p1Test {
 
     /**
      * From: <a href="https://www.researchobject.org/ro-crate/specification/1.1/data-entities.html#example-linking-to-a-file-and-folders">
-     *     "Example linking to a file and folders"
+     * "Example linking to a file and folders"
      * </a> (<a href="src/test/resources/spec-v1.1-example-json-files/files-and-folders.json.json">location in repo</a>)
      * <p>
      * This example adds a File(Entity) and a DataSet(Entity) to the crate.
@@ -152,7 +151,7 @@ public class ExamplesOfSpecificationV1p1Test {
 
     /**
      * From: <a href="https://www.researchobject.org/ro-crate/specification/1.1/data-entities.html#web-based-data-entities">
-     *     Example with web-based data entities
+     * Example with web-based data entities
      * </a> (<a href="src/test/resources/spec-v1.1-example-json-files/web-based-data-entities.json">location in repo</a>)
      * <p>
      * This example adds twp FileEntities to the crate.
@@ -187,7 +186,7 @@ public class ExamplesOfSpecificationV1p1Test {
 
     /**
      * From: <a href="https://www.researchobject.org/ro-crate/specification/1.1/appendix/jsonld.html">
-     *     Example with file, author, and location
+     * Example with file, author, and location
      * </a> (<a href="src/test/resources/spec-v1.1-example-json-files/file-author-location.json">location in repo</a>)
      * <p>
      * This example shows how to connect entities. If there is no specific method like
@@ -263,7 +262,7 @@ public class ExamplesOfSpecificationV1p1Test {
 
     /**
      * From: <a href="https://www.researchobject.org/ro-crate/specification/1.1/workflows.html#complete-workflow-example">
-     *     Example with complete workflow
+     * Example with complete workflow
      * </a> (<a href="src/test/resources/spec-v1.1-example-json-files/complete-workflow-example.json">location in repo</a>)
      * <p>
      * This example shows how to connect entities. If there is no specific method like

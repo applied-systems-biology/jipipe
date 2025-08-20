@@ -1,13 +1,13 @@
 package org.hkijena.jipipe.contrib.ro_crate.preview;
 
-import org.hkijena.jipipe.contrib.ro_crate.util.ZipStreamUtil;
-import java.io.File;
-import java.io.IOException;
-
 import net.lingala.zip4j.ZipFile;
 import net.lingala.zip4j.io.outputstream.ZipOutputStream;
 import net.lingala.zip4j.model.ZipParameters;
 import org.apache.commons.io.FileUtils;
+import org.hkijena.jipipe.contrib.ro_crate.util.ZipStreamUtil;
+
+import java.io.File;
+import java.io.IOException;
 
 /**
  * This class adds a static preview to the crate, which consists of a
@@ -51,7 +51,7 @@ public class StaticPreview implements CratePreview {
         if (folder == null || !folder.exists()) {
             throw new IOException("Preview target folder " + folder + " does not exist.");
         }
-        
+
         if (this.metadataHtml != null) {
             File fileInCrate = folder.toPath().resolve("ro-crate-preview.html").toFile();
             FileUtils.copyFile(this.metadataHtml, fileInCrate);

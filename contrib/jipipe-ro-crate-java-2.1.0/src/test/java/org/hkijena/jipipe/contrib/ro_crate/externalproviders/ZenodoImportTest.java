@@ -1,16 +1,5 @@
 package org.hkijena.jipipe.contrib.ro_crate.externalproviders;
 
-import org.junit.jupiter.api.Test;
-
-import org.hkijena.jipipe.contrib.ro_crate.RoCrate;
-import org.hkijena.jipipe.contrib.ro_crate.externalproviders.dataentities.ImportFromZenodo;
-import org.hkijena.jipipe.contrib.ro_crate.validation.JsonSchemaValidation;
-import org.hkijena.jipipe.contrib.ro_crate.validation.Validator;
-
-import static org.junit.jupiter.api.Assertions.assertTrue;
-
-import java.util.Optional;
-
 class ZenodoImportTest {
 
 //  @Test

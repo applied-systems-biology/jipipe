@@ -40,8 +40,8 @@ import org.hkijena.jipipe.desktop.app.JIPipeDesktopProjectWorkbench;
 import org.hkijena.jipipe.desktop.app.JIPipeDesktopWorkbench;
 import org.hkijena.jipipe.desktop.app.JIPipeDesktopWorkbenchPanel;
 import org.hkijena.jipipe.desktop.app.grapheditor.JIPipeGraphViewMode;
-import org.hkijena.jipipe.desktop.app.grapheditor.commons.JIPipeDesktopGraphEditorUI;
 import org.hkijena.jipipe.desktop.app.grapheditor.commons.JIPipeDesktopGraphCanvasUI;
+import org.hkijena.jipipe.desktop.app.grapheditor.commons.JIPipeDesktopGraphEditorUI;
 import org.hkijena.jipipe.desktop.app.grapheditor.commons.actions.JIPipeDesktopNodeUIAction;
 import org.hkijena.jipipe.desktop.app.grapheditor.commons.contextmenu.*;
 import org.hkijena.jipipe.desktop.app.grapheditor.commons.nodeui.triggers.*;
@@ -80,8 +80,6 @@ public class JIPipeDesktopGraphNodeUI extends JIPipeDesktopWorkbenchPanel implem
     public static final Color COLOR_SLOT_CACHED = new Color(0x95c2a8);
     public static final Color COLOR_SLOT_DISCONNECTED = new Color(0xc36262);
     public static final Color COLOR_RUN_BUTTON_ICON = new Color(0x22A02D);
-    private static final Map<String, BufferedImage> VISUALIZATION_ICON_CACHE = new HashMap<>();
-
     public static final NodeUIContextAction[] RUN_NODE_CONTEXT_MENU_ENTRIES = new NodeUIContextAction[]{
             new UpdateCacheNodeUIContextAction(),
             new UpdateCacheShowIntermediateNodeUIContextAction(),
@@ -92,6 +90,7 @@ public class JIPipeDesktopGraphNodeUI extends JIPipeDesktopWorkbenchPanel implem
             NodeUIContextAction.SEPARATOR,
             new ClearCacheNodeUIContextAction()
     };
+    private static final Map<String, BufferedImage> VISUALIZATION_ICON_CACHE = new HashMap<>();
     protected final List<JIPipeDesktopGraphNodeUIActiveArea> activeAreas = new ArrayList<>();
     private final JIPipeGraphViewMode viewMode = JIPipeGraphViewMode.VerticalCompact;
     private final JIPipeDesktopGraphCanvasUI graphCanvasUI;
@@ -383,8 +382,8 @@ public class JIPipeDesktopGraphNodeUI extends JIPipeDesktopWorkbenchPanel implem
         activeAreas.add(wholeNodeActiveArea);
 
         // Input management visualization
-        if(isDisplayInputConfigVisualization()) {
-            JIPipeDesktopGraphNodeUIInputConfigActiveArea configActiveArea = new  JIPipeDesktopGraphNodeUIInputConfigActiveArea(this);
+        if (isDisplayInputConfigVisualization()) {
+            JIPipeDesktopGraphNodeUIInputConfigActiveArea configActiveArea = new JIPipeDesktopGraphNodeUIInputConfigActiveArea(this);
             configActiveArea.setZoomedHitArea(new Rectangle(0, 0, shift, getHeight()));
 
             activeAreas.add(configActiveArea);
@@ -882,12 +881,11 @@ public class JIPipeDesktopGraphNodeUI extends JIPipeDesktopWorkbenchPanel implem
     private void paintInputConfigVisualization(Graphics2D g2) {
         final int shift = getBaseSlotXShift();
 
-        if(getCurrentActiveArea() instanceof JIPipeDesktopGraphNodeUIInputConfigActiveArea) {
+        if (getCurrentActiveArea() instanceof JIPipeDesktopGraphNodeUIInputConfigActiveArea) {
             g2.setPaint(Color.getHSBColor(iterationStepGenerationSettingsVisualization.getFillColorHue(),
                     ThemeUtils.getCurrentStyle().getNodeFillSaturation() * 0.8f,
                     ThemeUtils.getCurrentStyle().getNodeFillBrightness()));
-        }
-        else {
+        } else {
             g2.setPaint(Color.getHSBColor(iterationStepGenerationSettingsVisualization.getFillColorHue(),
                     ThemeUtils.getCurrentStyle().getNodeFillSaturation() * 0.5f,
                     ThemeUtils.getCurrentStyle().getNodeFillBrightness()));
@@ -899,7 +897,7 @@ public class JIPipeDesktopGraphNodeUI extends JIPipeDesktopWorkbenchPanel implem
         int zoomedIconSize = (int) Math.round(16 * zoom);
         int startX = (int) Math.round(zoom * 3);
         int startY = (int) Math.round(realSize.height / 2f - (zoom * 16) / 2f);
-        if(iterationStepGenerationSettingsVisualization.getIconInput() != null) {
+        if (iterationStepGenerationSettingsVisualization.getIconInput() != null) {
             g2.drawImage(JIPipe.RESOURCES.getIcon16(iterationStepGenerationSettingsVisualization.getIconInput()).getImage(),
                     startX,
                     startY,
@@ -907,9 +905,9 @@ public class JIPipeDesktopGraphNodeUI extends JIPipeDesktopWorkbenchPanel implem
                     zoomedIconSize,
                     null);
         }
-        if(iterationStepGenerationSettingsVisualization.getIconCenter() != null) {
+        if (iterationStepGenerationSettingsVisualization.getIconCenter() != null) {
             Image image = JIPipe.RESOURCES.getVariantResourceAsImage(iterationStepGenerationSettingsVisualization.getIconCenter());
-            if(image == null) {
+            if (image == null) {
                 image = JIPipe.RESOURCES.getIcon16(iterationStepGenerationSettingsVisualization.getIconCenter()).getImage();
             }
             g2.drawImage(image,
@@ -919,7 +917,7 @@ public class JIPipeDesktopGraphNodeUI extends JIPipeDesktopWorkbenchPanel implem
                     (int) (image.getHeight(null) * zoom),
                     null);
         }
-        if(iterationStepGenerationSettingsVisualization.getIconOutput() != null) {
+        if (iterationStepGenerationSettingsVisualization.getIconOutput() != null) {
             g2.drawImage(JIPipe.RESOURCES.getIcon16(iterationStepGenerationSettingsVisualization.getIconOutput()).getImage(),
                     startX,
                     startY + 2 * realSize.height,
@@ -1415,8 +1413,7 @@ public class JIPipeDesktopGraphNodeUI extends JIPipeDesktopWorkbenchPanel implem
             } else if (currentActiveArea instanceof JIPipeDesktopGraphNodeUIRunNodeActiveArea) {
                 openRunNodeMenu(e);
                 e.consume();
-            }
-            else if(currentActiveArea instanceof JIPipeDesktopGraphNodeUIInputConfigActiveArea){
+            } else if (currentActiveArea instanceof JIPipeDesktopGraphNodeUIInputConfigActiveArea) {
                 openInputConfigMenu(e);
                 e.consume();
             }
@@ -1449,7 +1446,7 @@ public class JIPipeDesktopGraphNodeUI extends JIPipeDesktopWorkbenchPanel implem
             graphCanvasUI.getGraphEditorUI().getDockPanel().activatePanel(JIPipeDesktopPipelineGraphEditorUI.DOCK_NODE_CONTEXT_INPUT_MANAGER, true);
         }));
 
-        if(!iterationStepGenerationSettingsVisualization.getReportEntries().isEmpty()) {
+        if (!iterationStepGenerationSettingsVisualization.getReportEntries().isEmpty()) {
             menu.addSeparator();
         }
 

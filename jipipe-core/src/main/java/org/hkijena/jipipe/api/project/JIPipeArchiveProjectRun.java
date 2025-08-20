@@ -39,7 +39,7 @@ public abstract class JIPipeArchiveProjectRun extends DefaultJIPipeRunnable {
 
     protected void archive(JIPipeWriteDataStorage projectStorage, JIPipeWriteDataStorage wrappedExternalStorage, Path inputsSubPath) throws IOException {
 
-        if(project.getProjectFile() == null) {
+        if (project.getProjectFile() == null) {
             throw new RuntimeException("The project must be saved at least once!");
         }
 

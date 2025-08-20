@@ -44,9 +44,6 @@ import org.hkijena.jipipe.plugins.core.data.OpenContainingFolderDataImportOperat
 import org.hkijena.jipipe.plugins.core.viewers.JIPipeDataTableDataViewer;
 import org.hkijena.jipipe.plugins.parameters.library.markup.HTMLText;
 import org.hkijena.jipipe.plugins.parameters.library.primitives.list.StringList;
-import org.hkijena.jipipe.utils.ResourceUtils;
-import org.hkijena.jipipe.utils.UIUtils;
-import org.hkijena.jipipe.JIPipe;
 import org.scijava.Context;
 import org.scijava.plugin.Plugin;
 

@@ -42,10 +42,9 @@ public class AuthorAffiliationsAssistantCondition extends JIPipeDesktopPublisher
     public JIPipeDesktopPublisherAssistantConditionStatus getStatus() {
         for (JIPipeAuthorMetadata author : getProject().getMetadata().getAuthors()) {
             for (JIPipeOrganizationMetadata affiliation : author.getAffiliations()) {
-                if(StringUtils.isNullOrEmpty(affiliation.getRorUrl()) && StringUtils.isNullOrEmpty(affiliation.getWebsite())) {
+                if (StringUtils.isNullOrEmpty(affiliation.getRorUrl()) && StringUtils.isNullOrEmpty(affiliation.getWebsite())) {
                     return JIPipeDesktopPublisherAssistantConditionStatus.Invalid;
-                }
-                else if(StringUtils.isNullOrEmpty(affiliation.getRorUrl())) {
+                } else if (StringUtils.isNullOrEmpty(affiliation.getRorUrl())) {
                     return JIPipeDesktopPublisherAssistantConditionStatus.Warning;
                 }
             }
@@ -57,10 +56,9 @@ public class AuthorAffiliationsAssistantCondition extends JIPipeDesktopPublisher
     public String getAssistantTitle(JIPipeDesktopPublisherAssistantConditionStatus status) {
         if (status == JIPipeDesktopPublisherAssistantConditionStatus.Valid) {
             return "Author affiliations are valid";
-        } else if(status == JIPipeDesktopPublisherAssistantConditionStatus.Warning) {
+        } else if (status == JIPipeDesktopPublisherAssistantConditionStatus.Warning) {
             return "Author affiliations should have a ROR";
-        }
-        else {
+        } else {
             return "Author affiliations require a ROR or website";
         }
     }
@@ -69,10 +67,9 @@ public class AuthorAffiliationsAssistantCondition extends JIPipeDesktopPublisher
     public HTMLText getAssistantDescription(JIPipeDesktopPublisherAssistantConditionStatus status) {
         if (status == JIPipeDesktopPublisherAssistantConditionStatus.Valid) {
             return new HTMLText("Project authors and affiliated organizations will be attached to the RO-Crate metadata");
-        } else if(getProject().getMetadata().getAuthors().isEmpty()) {
+        } else if (getProject().getMetadata().getAuthors().isEmpty()) {
             return new HTMLText("We recommend that affiliations are provided with a ROR identifier (see https://ror.org/)");
-        }
-        else {
+        } else {
             return new HTMLText("Affiliations should at least have an organization website or preferably a ROR (see https://ror.org/)");
         }
     }

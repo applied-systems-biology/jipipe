@@ -54,7 +54,7 @@ public class IntParameterTypeInfo implements JIPipeParameterTypeInfo {
         return "An integral number (maximum allowed range is " + Integer.MIN_VALUE + " to " + Integer.MAX_VALUE + ")";
     }
 
-     @Override
+    @Override
     public List<JIPipeParameterTypeAllowedValueInfo> getAllowedValues() {
         return Collections.emptyList();
     }

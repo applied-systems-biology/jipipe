@@ -50,8 +50,6 @@ import org.hkijena.jipipe.plugins.utils.datatypes.JIPipeOutputData;
 import org.hkijena.jipipe.plugins.utils.datatypes.PathDataToJIPipeOutputConverter;
 import org.hkijena.jipipe.plugins.utils.display.ImportJIPipeProjectDataDisplayOperation;
 import org.hkijena.jipipe.utils.JIPipeResourceManager;
-import org.hkijena.jipipe.utils.UIUtils;
-import org.hkijena.jipipe.JIPipe;
 import org.scijava.Context;
 import org.scijava.plugin.Plugin;
 

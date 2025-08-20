@@ -37,7 +37,6 @@ import org.hkijena.jipipe.desktop.commons.components.JIPipeDesktopPathEditorComp
 import org.hkijena.jipipe.desktop.commons.components.JIPipeDesktopToggleButtonPanel;
 import org.hkijena.jipipe.desktop.commons.components.icons.SolidColorIcon;
 import org.hkijena.jipipe.desktop.commons.components.markup.JIPipeDesktopHTMLEditorKit;
-import org.hkijena.jipipe.desktop.commons.theme.JIPipeDesktopLegacyModernMetalTheme;
 import org.hkijena.jipipe.plugins.settings.JIPipeRuntimeApplicationSettings;
 import org.hkijena.jipipe.utils.*;
 import org.hkijena.jipipe.utils.ui.RoundedLineBorder;
@@ -361,15 +360,14 @@ public class JIPipeDesktopRunNextWindow extends JFrame implements JIPipeDesktopP
 
     @Override
     public void onRunnableFinished(JIPipeRunnable.FinishedEvent event) {
-        if(event.getRun() == run) {
-            if(run.getSettings().isSaveToDisk()) {
+        if (event.getRun() == run) {
+            if (run.getSettings().isSaveToDisk()) {
                 // Ensure ask on close
                 shouldAskOnClose = true;
 
                 JIPipeDesktopResultUI resultUI = new JIPipeDesktopResultUI(getDesktopProjectWorkbench(), run.getProject(), run.getSettings().getOutputPath());
                 activatePage(resultUI);
-            }
-            else {
+            } else {
                 // Can close safely
                 shouldAskOnClose = false;
 

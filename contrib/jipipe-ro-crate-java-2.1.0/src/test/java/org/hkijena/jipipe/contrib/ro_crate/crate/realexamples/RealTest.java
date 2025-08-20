@@ -1,31 +1,25 @@
 package org.hkijena.jipipe.contrib.ro_crate.crate.realexamples;
 
+import org.apache.commons.io.FileUtils;
 import org.hkijena.jipipe.contrib.ro_crate.Crate;
 import org.hkijena.jipipe.contrib.ro_crate.HelpFunctions;
 import org.hkijena.jipipe.contrib.ro_crate.RoCrate;
-import org.hkijena.jipipe.contrib.ro_crate.entities.contextual.ActionEntity;
-import org.hkijena.jipipe.contrib.ro_crate.entities.contextual.ActionType;
-import org.hkijena.jipipe.contrib.ro_crate.entities.contextual.ContextualEntity;
-import org.hkijena.jipipe.contrib.ro_crate.entities.contextual.OrganizationEntity;
-import org.hkijena.jipipe.contrib.ro_crate.entities.contextual.PersonEntity;
-import org.hkijena.jipipe.contrib.ro_crate.entities.contextual.PlaceEntity;
+import org.hkijena.jipipe.contrib.ro_crate.entities.contextual.*;
 import org.hkijena.jipipe.contrib.ro_crate.entities.data.DataSetEntity;
 import org.hkijena.jipipe.contrib.ro_crate.entities.data.FileEntity;
 import org.hkijena.jipipe.contrib.ro_crate.externalproviders.personprovider.OrcidProvider;
 import org.hkijena.jipipe.contrib.ro_crate.reader.Readers;
-
-import org.apache.commons.io.FileUtils;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.io.TempDir;
 
 import java.io.IOException;
 import java.nio.charset.Charset;
 import java.nio.file.Path;
+
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 
-class RealTest
-{
+class RealTest {
     @Test
     void testWithIDRCProject(@TempDir Path temp) throws IOException {
         final String locationMetadataFile = "/crates/other/idrc_project/ro-crate-metadata.json";
@@ -117,8 +111,8 @@ class RealTest
                 .addProperty("latitude", "49.00944")
                 .addProperty("longitude", "8.41167")
                 .build();
-        
-         OrganizationEntity organization = new OrganizationEntity.OrganizationEntityBuilder()
+
+        OrganizationEntity organization = new OrganizationEntity.OrganizationEntityBuilder()
                 .setId("https://www.geonames.org/7288147")
                 .addProperty("name", "Karlsruher Institut fuer Technologie")
                 .addProperty("url", "https://www.kit.edu/")

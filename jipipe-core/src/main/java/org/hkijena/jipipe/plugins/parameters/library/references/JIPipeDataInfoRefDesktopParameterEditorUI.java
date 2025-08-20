@@ -21,7 +21,6 @@ import org.hkijena.jipipe.desktop.commons.components.pickers.JIPipeDesktopDataTy
 import org.hkijena.jipipe.utils.ReflectionUtils;
 import org.hkijena.jipipe.utils.TooltipUtils;
 import org.hkijena.jipipe.utils.UIUtils;
-import org.hkijena.jipipe.JIPipe;
 import org.hkijena.jipipe.utils.classfilters.AnyClassFilter;
 import org.hkijena.jipipe.utils.classfilters.ClassFilter;
 

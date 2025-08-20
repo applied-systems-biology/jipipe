@@ -12,16 +12,16 @@ import com.fasterxml.jackson.databind.SerializationFeature;
  */
 public class MyObjectMapper {
 
-  private static final ObjectMapper mapper = new ObjectMapper()
-      .enable(SerializationFeature.WRITE_SINGLE_ELEM_ARRAYS_UNWRAPPED)
-      .enable(DeserializationFeature.ACCEPT_SINGLE_VALUE_AS_ARRAY)
-      .enable(DeserializationFeature.UNWRAP_SINGLE_VALUE_ARRAYS);
+    private static final ObjectMapper mapper = new ObjectMapper()
+            .enable(SerializationFeature.WRITE_SINGLE_ELEM_ARRAYS_UNWRAPPED)
+            .enable(DeserializationFeature.ACCEPT_SINGLE_VALUE_AS_ARRAY)
+            .enable(DeserializationFeature.UNWRAP_SINGLE_VALUE_ARRAYS);
 
-  private MyObjectMapper() {
+    private MyObjectMapper() {
 
-  }
+    }
 
-  public static ObjectMapper getMapper() {
-    return mapper;
-  }
+    public static ObjectMapper getMapper() {
+        return mapper;
+    }
 }

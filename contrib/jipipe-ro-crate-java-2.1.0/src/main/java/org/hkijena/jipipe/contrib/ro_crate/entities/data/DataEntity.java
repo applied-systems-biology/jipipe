@@ -1,15 +1,15 @@
 package org.hkijena.jipipe.contrib.ro_crate.entities.data;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
-
 import org.hkijena.jipipe.contrib.ro_crate.entities.AbstractEntity;
 import org.hkijena.jipipe.contrib.ro_crate.entities.contextual.ContextualEntity;
-import static org.hkijena.jipipe.contrib.ro_crate.special.IdentifierUtils.isUrl;
 
 import java.net.URI;
 import java.nio.file.Path;
 import java.util.ArrayList;
 import java.util.List;
+
+import static org.hkijena.jipipe.contrib.ro_crate.special.IdentifierUtils.isUrl;
 
 /**
  * The base class of every data entity.
@@ -72,7 +72,7 @@ public class DataEntity extends AbstractEntity {
          * not override the ID as it has been set by the previous call!
          *
          * @param path the location of the data. May be null, in which case
-         * nothing happens.
+         *             nothing happens.
          * @return this builder
          */
         public T setLocation(Path path) {
@@ -107,7 +107,7 @@ public class DataEntity extends AbstractEntity {
          * call is therefore equivalent to {@link #setId(String)}.
          *
          * @param uri the URI, should point at the data reachable on the
-         * internet.
+         *            internet.
          * @return this builder
          */
         public T setLocation(URI uri) {

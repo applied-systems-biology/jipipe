@@ -15,34 +15,10 @@ import static org.hkijena.jipipe.contrib.ro_crate.entities.contextual.Contextual
  */
 public class ProvenanceManager {
     /**
-     * A record to hold the prefix for the ro-crate-java ID.
-     * This is used to ensure that the ID is consistent across different versions of the library.
-     * Having a type for the prefix avoids using it by accident as a full ID.
-     */
-    protected record IdPrefix(String prefix) {
-        /**
-         * Constructs a String with the given suffix.
-         *
-         * @param suffix The suffix to append to the prefix.
-         * @return A String combining the prefix and suffix, separated by a hyphen.
-         *         Like this: "$prefix-$suffix".
-         */
-        public String withSuffix(String suffix) {
-            return prefix + "-" + suffix;
-        }
-
-        @Override
-        public String toString() {
-            return prefix;
-        }
-    }
-
-    /**
      * The prefix for the ro-crate-java ID.
      * This is used to identify the ro-crate-java entity in the crate.
      */
     protected static final IdPrefix RO_CRATE_JAVA_ID_PREFIX = new IdPrefix("#ro-crate-java");
-
     /**
      * The VersionProvider used to retrieve the version of ro-crate-java.
      * This allows for flexibility in how the version is determined, e.g., from a properties file.
@@ -134,5 +110,28 @@ public class ProvenanceManager {
                 );
         self.addIdProperty("Action", newActionId);
         return self;
+    }
+
+    /**
+     * A record to hold the prefix for the ro-crate-java ID.
+     * This is used to ensure that the ID is consistent across different versions of the library.
+     * Having a type for the prefix avoids using it by accident as a full ID.
+     */
+    protected record IdPrefix(String prefix) {
+        /**
+         * Constructs a String with the given suffix.
+         *
+         * @param suffix The suffix to append to the prefix.
+         * @return A String combining the prefix and suffix, separated by a hyphen.
+         * Like this: "$prefix-$suffix".
+         */
+        public String withSuffix(String suffix) {
+            return prefix + "-" + suffix;
+        }
+
+        @Override
+        public String toString() {
+            return prefix;
+        }
     }
 }

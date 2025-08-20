@@ -13,7 +13,6 @@
 
 package org.hkijena.jipipe.plugins.imagejalgorithms.nodes.roi.outline;
 
-import ij.gui.Roi;
 import org.hkijena.jipipe.api.ConfigureJIPipeNode;
 import org.hkijena.jipipe.api.JIPipeProgressInfo;
 import org.hkijena.jipipe.api.SetJIPipeDocumentation;
@@ -27,7 +26,6 @@ import org.hkijena.jipipe.api.nodes.iterationstep.JIPipeIterationContext;
 import org.hkijena.jipipe.api.nodes.iterationstep.JIPipeSingleIterationStep;
 import org.hkijena.jipipe.api.parameters.JIPipeParameter;
 import org.hkijena.jipipe.plugins.imagejdatatypes.datatypes.ROI2DListData;
-import org.hkijena.jipipe.plugins.imagejdatatypes.util.ImageJUtils;
 import org.hkijena.jipipe.plugins.imagejdatatypes.util.InvalidRoiOutlineBehavior;
 
 @SetJIPipeDocumentation(name = "Create band around 2D ROI", description = "Create a band-shaped selection around an existing polygon, freehand, or composite ROI")
@@ -36,8 +34,8 @@ import org.hkijena.jipipe.plugins.imagejdatatypes.util.InvalidRoiOutlineBehavior
 @AddJIPipeOutputSlot(value = ROI2DListData.class, name = "Output", create = true)
 public class RoiMakeBandAlgorithm extends JIPipeSimpleIteratingAlgorithm {
 
-  private int iterations = 1;
-  private double size = 15;
+    private int iterations = 1;
+    private double size = 15;
     private InvalidRoiOutlineBehavior errorBehavior = InvalidRoiOutlineBehavior.Error;
 
     public RoiMakeBandAlgorithm(JIPipeNodeInfo info) {

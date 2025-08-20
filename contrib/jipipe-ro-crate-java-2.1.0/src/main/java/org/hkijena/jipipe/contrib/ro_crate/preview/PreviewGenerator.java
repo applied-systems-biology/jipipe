@@ -1,11 +1,11 @@
 package org.hkijena.jipipe.contrib.ro_crate.preview;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
-
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 /**
  * Class responsible for the generation of the human-readable representation of
@@ -15,8 +15,8 @@ import org.slf4j.LoggerFactory;
  */
 public class PreviewGenerator {
 
-    private static Logger LOG = LoggerFactory.getLogger(PreviewGenerator.class);
     private static final String command = "rochtml";
+    private static Logger LOG = LoggerFactory.getLogger(PreviewGenerator.class);
 
     public static boolean isRochtmlAvailable() {
         ProcessBuilder builder = new ProcessBuilder();

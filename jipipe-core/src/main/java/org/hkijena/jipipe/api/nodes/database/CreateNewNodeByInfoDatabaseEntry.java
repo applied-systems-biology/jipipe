@@ -160,7 +160,7 @@ public class CreateNewNodeByInfoDatabaseEntry implements JIPipeNodeDatabaseEntry
 
     @Override
     public Color getFillColor() {
-       return ThemeUtils.getNodeFillColor(nodeInfo);
+        return ThemeUtils.getNodeFillColor(nodeInfo);
     }
 
     @Override

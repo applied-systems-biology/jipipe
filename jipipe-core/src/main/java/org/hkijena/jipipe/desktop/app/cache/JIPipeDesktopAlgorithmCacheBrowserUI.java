@@ -44,7 +44,6 @@ import org.hkijena.jipipe.desktop.commons.components.ribbon.JIPipeDesktopSmallBu
 import org.hkijena.jipipe.plugins.parameters.library.markup.HTMLText;
 import org.hkijena.jipipe.plugins.settings.JIPipeFileChooserApplicationSettings;
 import org.hkijena.jipipe.utils.UIUtils;
-import org.hkijena.jipipe.JIPipe;
 import org.hkijena.jipipe.utils.data.WeakStore;
 import org.hkijena.jipipe.utils.debounce.StaticDebouncer;
 import org.hkijena.jipipe.utils.json.JsonUtils;

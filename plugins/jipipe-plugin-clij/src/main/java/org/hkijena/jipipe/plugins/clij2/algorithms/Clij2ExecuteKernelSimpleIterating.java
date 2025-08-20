@@ -45,7 +45,6 @@ import org.hkijena.jipipe.plugins.clij2.parameters.OpenCLKernelScript;
 import org.hkijena.jipipe.plugins.parameters.library.pairs.StringAndStringPairParameter;
 import org.hkijena.jipipe.plugins.parameters.library.primitives.StringParameterSettings;
 import org.hkijena.jipipe.plugins.parameters.library.scripts.PythonScript;
-import org.hkijena.jipipe.utils.ResourceUtils;
 import org.python.core.PyArray;
 import org.python.core.PyDictionary;
 import org.python.util.PythonInterpreter;

@@ -5,7 +5,6 @@ import org.hkijena.jipipe.api.data.JIPipeData;
 import org.hkijena.jipipe.api.data.JIPipeDataConverter;
 import org.hkijena.jipipe.plugins.imagejdatatypes.datatypes.OMEImageData;
 import org.hkijena.jipipe.plugins.imagejdatatypes.datatypes.OMEXMLData;
-import org.hkijena.jipipe.plugins.strings.XMLData;
 
 public class OMEImageToOMEXMLTypeConverter implements JIPipeDataConverter {
     @Override

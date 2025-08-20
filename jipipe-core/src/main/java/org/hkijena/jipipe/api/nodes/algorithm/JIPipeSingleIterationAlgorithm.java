@@ -164,10 +164,9 @@ public abstract class JIPipeSingleIterationAlgorithm extends JIPipeParameterSlot
 
         // Special case: No input slots
         boolean doEmptyIterationStep = false;
-        if(getDataInputSlotCount() == 0) {
+        if (getDataInputSlotCount() == 0) {
             doEmptyIterationStep = true;
-        }
-        else if(isAllowEmptyIterationStep() && getDataInputSlots().stream().allMatch(slot -> slot.getInfo().isOptional() && slot.isEmpty())) {
+        } else if (isAllowEmptyIterationStep() && getDataInputSlots().stream().allMatch(slot -> slot.getInfo().isOptional() && slot.isEmpty())) {
             doEmptyIterationStep = true;
         }
 

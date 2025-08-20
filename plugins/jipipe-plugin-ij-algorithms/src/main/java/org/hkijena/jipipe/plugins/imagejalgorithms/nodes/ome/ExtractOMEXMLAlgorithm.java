@@ -26,7 +26,6 @@ import org.hkijena.jipipe.api.nodes.iterationstep.JIPipeIterationContext;
 import org.hkijena.jipipe.api.nodes.iterationstep.JIPipeSingleIterationStep;
 import org.hkijena.jipipe.plugins.imagejdatatypes.datatypes.OMEImageData;
 import org.hkijena.jipipe.plugins.imagejdatatypes.datatypes.OMEXMLData;
-import org.hkijena.jipipe.plugins.strings.XMLData;
 
 @SetJIPipeDocumentation(name = "Extract OME XML", description = "Extracts the OME metadata XML from an OME image")
 @ConfigureJIPipeNode(nodeTypeCategory = ImagesNodeTypeCategory.class, menuPath = "Convert")

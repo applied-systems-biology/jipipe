@@ -1,17 +1,15 @@
 package org.hkijena.jipipe.contrib.ro_crate.special;
 
-import static org.junit.jupiter.api.Assertions.assertFalse;
-import static org.junit.jupiter.api.Assertions.assertTrue;
-
-import java.util.Optional;
-import java.util.stream.Stream;
-import static org.junit.jupiter.api.Assertions.assertEquals;
-
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.Arguments;
 import org.junit.jupiter.params.provider.MethodSource;
 import org.junit.jupiter.params.provider.ValueSource;
+
+import java.util.Optional;
+import java.util.stream.Stream;
+
+import static org.junit.jupiter.api.Assertions.*;
 
 public class IdentifierUtilsTest {
 
@@ -54,8 +52,8 @@ public class IdentifierUtilsTest {
                 Arguments.of(ENTITY_BLANK_NODE_ID, ENTITY_BLANK_NODE_ID)
         );
     }
-    
-    
+
+
     public static Stream<Arguments> decodingExamplesProvider() {
         return Stream.of(
                 // after decoding , before decoding
@@ -98,9 +96,9 @@ public class IdentifierUtilsTest {
 
     /**
      * The examples contains a list of encoded identifiers we should test.
-     * 
+     *
      * @param exampleUnencoded is maybe not encoded, but maybe it already is.
-     * @param exampleEncoded is guaranteed to be encoded
+     * @param exampleEncoded   is guaranteed to be encoded
      */
     @ParameterizedTest(name = "testIsValidUriWithEncodingExamples {0} and {1}")
     @MethodSource("org.hkijena.jipipe.contrib.ro_crate.special.IdentifierUtilsTest#encodingExamplesProvider")
@@ -176,7 +174,7 @@ public class IdentifierUtilsTest {
 
     /**
      * Tests the encoding function for several "before-after" pairs.
-     * 
+     * <p>
      * This includes normal tests,
      * checks that double-encoding does not happen,
      * and makes sure that some examples and exceptions of the specification are
@@ -192,7 +190,7 @@ public class IdentifierUtilsTest {
 
     /**
      * Same as testEncode, but with the decode function.
-     * 
+     * <p>
      * Uses the same input examples, but in the reverse direction.
      */
     @ParameterizedTest(name = "testDecodeWith {0} and {1}")

@@ -1,6 +1,5 @@
 package org.hkijena.jipipe.plugins.imagejdatatypes.util;
 
-import com.google.common.primitives.Ints;
 import com.google.common.primitives.Longs;
 
 public class ImageJHistogram {

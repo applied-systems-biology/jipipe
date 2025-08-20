@@ -10,8 +10,7 @@ import static org.junit.jupiter.api.Assertions.*;
 
 class ZipReaderTest implements
         CommonReaderTest<String, ReadZipStrategy>,
-        ElnFileFormatTest<String, ReadZipStrategy>
-{
+        ElnFileFormatTest<String, ReadZipStrategy> {
     @Override
     public void saveCrate(Crate crate, Path target) throws IOException {
         Writers.newZipPathWriter()

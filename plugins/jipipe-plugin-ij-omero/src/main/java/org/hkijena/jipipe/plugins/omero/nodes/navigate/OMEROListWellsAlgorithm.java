@@ -18,14 +18,13 @@ import omero.gateway.SecurityContext;
 import omero.gateway.exception.DSAccessException;
 import omero.gateway.exception.DSOutOfServiceException;
 import omero.gateway.model.PlateData;
-import omero.gateway.model.ScreenData;
 import omero.gateway.model.WellData;
 import org.hkijena.jipipe.api.ConfigureJIPipeNode;
 import org.hkijena.jipipe.api.JIPipeProgressInfo;
 import org.hkijena.jipipe.api.SetJIPipeDocumentation;
 import org.hkijena.jipipe.api.annotation.JIPipeDataAnnotationMergeMode;
 import org.hkijena.jipipe.api.annotation.JIPipeTextAnnotationMergeMode;
-import org.hkijena.jipipe.api.environments.JIPipeEnvironment;
+import org.hkijena.jipipe.api.environments.JIPipeEnvironmentReference;
 import org.hkijena.jipipe.api.nodes.AddJIPipeInputSlot;
 import org.hkijena.jipipe.api.nodes.AddJIPipeOutputSlot;
 import org.hkijena.jipipe.api.nodes.JIPipeGraphNodeRunContext;
@@ -46,7 +45,6 @@ import org.hkijena.jipipe.plugins.omero.OMEROCredentialAccessNode;
 import org.hkijena.jipipe.plugins.omero.OMEROCredentialsEnvironment;
 import org.hkijena.jipipe.plugins.omero.OptionalOMEROCredentialsEnvironment;
 import org.hkijena.jipipe.plugins.omero.datatypes.OMEROPlateReferenceData;
-import org.hkijena.jipipe.plugins.omero.datatypes.OMEROScreenReferenceData;
 import org.hkijena.jipipe.plugins.omero.datatypes.OMEROWellReferenceData;
 import org.hkijena.jipipe.plugins.omero.util.OMEROGateway;
 import org.hkijena.jipipe.plugins.omero.util.OMEROUtils;
@@ -75,7 +73,7 @@ public class OMEROListWellsAlgorithm extends JIPipeSingleIterationAlgorithm impl
 
     @Override
     protected void runIteration(JIPipeMultiIterationStep iterationStep, JIPipeIterationContext iterationContext, JIPipeGraphNodeRunContext runContext, JIPipeProgressInfo progressInfo) {
-        OMEROCredentialsEnvironment environment = getConfiguredOMEROCredentialsEnvironment();
+        OMEROCredentialsEnvironment environment = getConfiguredOMEROCredentialsEnvironment().getEnvironment();
         LoginCredentials credentials = environment.toLoginCredentials();
         progressInfo.log("Connecting to " + credentials.getUser().getUsername() + "@" + credentials.getServer().getHost());
         try (OMEROGateway gateway = new OMEROGateway(credentials, progressInfo)) {
@@ -87,7 +85,7 @@ public class OMEROListWellsAlgorithm extends JIPipeSingleIterationAlgorithm impl
                 progressInfo.log("Listing wells in plate ID=" + plateData1.getId());
 
                 for (WellData wellData : gateway.getBrowseFacility().getWells(context, plateId)) {
-                    if(wellData != null) {
+                    if (wellData != null) {
                         JIPipeExpressionVariablesMap variables = new JIPipeExpressionVariablesMap(iterationStep);
                         variables.putAnnotations(getFirstInputSlot().getTextAnnotations(row));
 
@@ -164,7 +162,7 @@ public class OMEROListWellsAlgorithm extends JIPipeSingleIterationAlgorithm impl
     }
 
     @Override
-    public void getEnvironmentDependencies(List<JIPipeEnvironment> target) {
+    public void getEnvironmentDependencies(List<JIPipeEnvironmentReference<?>> target) {
         super.getEnvironmentDependencies(target);
         target.add(getConfiguredOMEROCredentialsEnvironment());
     }

@@ -34,11 +34,13 @@ import org.hkijena.jipipe.utils.UIUtils;
 import javax.swing.*;
 import java.awt.image.BufferedImage;
 import java.nio.file.Path;
-import java.util.*;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 
 public final class ROCratePublisherAssistant extends JIPipeDesktopPublisherAssistant {
 
-    private final JIPipeDynamicParameterCollection settings = new  JIPipeDynamicParameterCollection();
+    private final JIPipeDynamicParameterCollection settings = new JIPipeDynamicParameterCollection();
 
     public ROCratePublisherAssistant(JIPipeDesktopProjectWorkbench workbench) {
         super(workbench);
@@ -80,14 +82,14 @@ public final class ROCratePublisherAssistant extends JIPipeDesktopPublisherAssis
                 "Export as RO-Crate",
                 new HTMLText("Please choose where the RO-Crate will be saved"),
                 PathUtils.EXTENSION_FILTER_WORKFLOW_RO_CRATE);
-        if(crateFile != null) {
+        if (crateFile != null) {
 
             // Collect settings for project directories
             Map<String, JIPipeProjectDirectories.Role> projectDirectorySettings = new HashMap<>();
             for (JIPipeProjectDirectories.DirectoryEntry directoryEntry : getProject().getMetadata().getDirectories().getDirectoriesAsInstance()) {
-                if(!StringUtils.isNullOrEmpty(directoryEntry.getKey())) {
+                if (!StringUtils.isNullOrEmpty(directoryEntry.getKey())) {
                     JIPipeParameterAccess access = settings.get("project-directory-" + directoryEntry.getKey());
-                    if(access != null) {
+                    if (access != null) {
                         projectDirectorySettings.put(directoryEntry.getKey(), access.get(JIPipeProjectDirectories.Role.class));
                     }
                 }
@@ -104,9 +106,9 @@ public final class ROCratePublisherAssistant extends JIPipeDesktopPublisherAssis
 
     @Override
     public void onPublicationFinished(JIPipeRunnable runnable) {
-        if(runnable instanceof CreateROCrateRun run) {
-            if(JOptionPane.showConfirmDialog(this, "<html>The RO-Crate was successfully exported to " + run.getRoCrateFile() + ".<br/>Do you want to open the containing directory?</html>",
-                    "Export finished", JOptionPane.YES_NO_OPTION) ==  JOptionPane.YES_OPTION) {
+        if (runnable instanceof CreateROCrateRun run) {
+            if (JOptionPane.showConfirmDialog(this, "<html>The RO-Crate was successfully exported to " + run.getRoCrateFile() + ".<br/>Do you want to open the containing directory?</html>",
+                    "Export finished", JOptionPane.YES_NO_OPTION) == JOptionPane.YES_OPTION) {
                 UIUtils.desktopOpenFile(run.getRoCrateFile().getParent());
             }
         }
@@ -124,19 +126,19 @@ public final class ROCratePublisherAssistant extends JIPipeDesktopPublisherAssis
     private void updateUserDirectoryParameters() {
         List<JIPipeProjectDirectories.DirectoryEntry> directoryEntries = getProject().getMetadata().getDirectories().getDirectoriesAsInstance();
         for (JIPipeProjectDirectories.DirectoryEntry directoryEntry : directoryEntries) {
-            if(!StringUtils.isNullOrEmpty(directoryEntry.getKey())) {
+            if (!StringUtils.isNullOrEmpty(directoryEntry.getKey())) {
                 String parameterKey = "project-directory-" + directoryEntry.getKey();
-                if(!settings.containsKey(parameterKey)) {
+                if (!settings.containsKey(parameterKey)) {
                     JIPipeMutableParameterAccess access = settings.addParameter(parameterKey, JIPipeProjectDirectories.Role.class, "Project directory '" + StringUtils.orElse(directoryEntry.getName(), directoryEntry.getKey()) + "' (" + directoryEntry.getKey() + ")",
                             "If enabled, the directory " + directoryEntry.getPath() + " and all its content will be added into the RO-Crate.");
-                   access.set(directoryEntry.getRole());
+                    access.set(directoryEntry.getRole());
                 }
             }
         }
         for (String key : ImmutableList.copyOf(settings.getParameters().keySet())) {
-            if(key.startsWith("project-directory-")) {
+            if (key.startsWith("project-directory-")) {
                 String directoryKey = key.substring("project-directory-".length());
-                if(directoryEntries.stream().noneMatch(directoryEntry -> directoryEntry.getKey().equals(directoryKey))) {
+                if (directoryEntries.stream().noneMatch(directoryEntry -> directoryEntry.getKey().equals(directoryKey))) {
                     settings.removeParameter(key);
                 }
             }

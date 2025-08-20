@@ -24,6 +24,7 @@ import java.util.List;
 public interface EnumParameter {
     /**
      * Gets the allowed values of this parameter
+     *
      * @return the allowed values
      */
     List<JIPipeParameterTypeAllowedValueInfo> getAllowedValueInfos();

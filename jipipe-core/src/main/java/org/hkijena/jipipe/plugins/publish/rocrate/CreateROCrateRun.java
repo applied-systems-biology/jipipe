@@ -15,7 +15,12 @@ package org.hkijena.jipipe.plugins.publish.rocrate;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.dataformat.yaml.YAMLFactory;
+import org.hkijena.jipipe.JIPipe;
+import org.hkijena.jipipe.api.DefaultJIPipeRunnable;
+import org.hkijena.jipipe.api.metadata.JIPipeAuthorMetadata;
+import org.hkijena.jipipe.api.metadata.JIPipeOrganizationMetadata;
 import org.hkijena.jipipe.api.project.JIPipeArchiveProjectToDirectoryRun;
+import org.hkijena.jipipe.api.project.JIPipeProject;
 import org.hkijena.jipipe.api.project.JIPipeProjectDirectories;
 import org.hkijena.jipipe.contrib.ro_crate.RoCrate;
 import org.hkijena.jipipe.contrib.ro_crate.entities.contextual.JsonDescriptor;
@@ -24,11 +29,6 @@ import org.hkijena.jipipe.contrib.ro_crate.entities.contextual.PersonEntity;
 import org.hkijena.jipipe.contrib.ro_crate.entities.data.DataSetEntity;
 import org.hkijena.jipipe.contrib.ro_crate.entities.data.FileEntity;
 import org.hkijena.jipipe.contrib.ro_crate.writer.Writers;
-import org.hkijena.jipipe.JIPipe;
-import org.hkijena.jipipe.api.DefaultJIPipeRunnable;
-import org.hkijena.jipipe.api.metadata.JIPipeAuthorMetadata;
-import org.hkijena.jipipe.api.metadata.JIPipeOrganizationMetadata;
-import org.hkijena.jipipe.api.project.JIPipeProject;
 import org.hkijena.jipipe.plugins.pipelinerender.RenderPipelineRun;
 import org.hkijena.jipipe.plugins.pipelinerender.RenderPipelineRunSettings;
 import org.hkijena.jipipe.plugins.settings.JIPipeRuntimeApplicationSettings;
@@ -288,7 +288,7 @@ public class CreateROCrateRun extends DefaultJIPipeRunnable {
         outputs.put("results", new LinkedHashMap<String, Object>() {{
             put("type", "Directory");
             put("outputBinding", new LinkedHashMap<String, Object>() {{
-                put("glob", "output");
+                put("glob", "outputs");
             }});
         }});
         root.put("outputs", outputs);

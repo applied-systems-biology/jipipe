@@ -17,7 +17,7 @@ import org.hkijena.jipipe.api.ConfigureJIPipeNode;
 import org.hkijena.jipipe.api.JIPipeProgressInfo;
 import org.hkijena.jipipe.api.SetJIPipeDocumentation;
 import org.hkijena.jipipe.api.environments.ExternalEnvironmentParameterSettings;
-import org.hkijena.jipipe.api.environments.JIPipeEnvironment;
+import org.hkijena.jipipe.api.environments.JIPipeEnvironmentReference;
 import org.hkijena.jipipe.api.nodes.AddJIPipeOutputSlot;
 import org.hkijena.jipipe.api.nodes.JIPipeGraphNodeRunContext;
 import org.hkijena.jipipe.api.nodes.JIPipeNodeInfo;
@@ -69,7 +69,7 @@ public class ImportRDatasetAlgorithm extends JIPipeSimpleIteratingAlgorithm impl
     }
 
     @Override
-    public void getEnvironmentDependencies(List<JIPipeEnvironment> target) {
+    public void getEnvironmentDependencies(List<JIPipeEnvironmentReference<?>> target) {
         super.getEnvironmentDependencies(target);
         target.add(getConfiguredREnvironment());
     }
@@ -92,7 +92,7 @@ public class ImportRDatasetAlgorithm extends JIPipeSimpleIteratingAlgorithm impl
         String code = "library(datasets)\n" +
                 "write.csv(" + dataset.variableName + ", row.names = FALSE, file=\"" + MacroUtils.escapeString(tempFile.toAbsolutePath().toString()) + "\")\n";
         RUtils.runR(code,
-                getConfiguredREnvironment(),
+                getConfiguredREnvironment().getEnvironment(),
                 progressInfo);
         ResultsTableData resultsTableData = ResultsTableData.fromCSV(tempFile);
         iterationStep.addOutputData(getFirstOutputSlot(), resultsTableData, progressInfo);

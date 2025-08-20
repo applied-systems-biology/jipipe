@@ -1,7 +1,6 @@
 package org.hkijena.jipipe.contrib.ro_crate.writer;
 
 import org.hkijena.jipipe.contrib.ro_crate.Crate;
-
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -15,8 +14,7 @@ import java.io.OutputStream;
  */
 public class WriteZipStrategy implements
         GenericWriterStrategy<String>,
-        ElnFormatWriter<String>
-{
+        ElnFormatWriter<String> {
     private static final Logger logger = LoggerFactory.getLogger(WriteZipStrategy.class);
     protected ElnFormatWriter<OutputStream> delegate = new WriteZipStreamStrategy();
 

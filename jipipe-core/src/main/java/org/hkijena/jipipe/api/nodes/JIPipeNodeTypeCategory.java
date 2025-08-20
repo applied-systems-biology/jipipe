@@ -14,7 +14,6 @@
 package org.hkijena.jipipe.api.nodes;
 
 import javax.swing.*;
-import java.awt.*;
 
 /**
  * Describes a node category
@@ -58,6 +57,7 @@ public interface JIPipeNodeTypeCategory {
     /**
      * The hue of the node's color, ranging from 0-1.
      * If the value is negative, the color is interpreted as transparent
+     *
      * @return the fill color hue
      */
     float getColorHue();

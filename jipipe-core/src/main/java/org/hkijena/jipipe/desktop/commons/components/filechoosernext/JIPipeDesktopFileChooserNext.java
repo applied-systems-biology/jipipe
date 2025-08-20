@@ -8,7 +8,6 @@ import org.hkijena.jipipe.api.project.JIPipeProject;
 import org.hkijena.jipipe.desktop.commons.components.JIPipeDesktopFancyTextField;
 import org.hkijena.jipipe.desktop.commons.components.JIPipeDesktopFormPanel;
 import org.hkijena.jipipe.desktop.commons.components.JIPipeDesktopMessagePanel;
-import org.hkijena.jipipe.desktop.commons.theme.JIPipeDesktopUITheme;
 import org.hkijena.jipipe.plugins.parameters.library.filesystem.FileChooserBookmark;
 import org.hkijena.jipipe.plugins.parameters.library.markup.HTMLText;
 import org.hkijena.jipipe.plugins.settings.JIPipeFileChooserApplicationSettings;
@@ -31,7 +30,6 @@ import java.time.LocalDateTime;
 import java.util.*;
 import java.util.List;
 import java.util.function.Consumer;
-import java.util.stream.Collectors;
 
 public class JIPipeDesktopFileChooserNext extends JPanel {
 

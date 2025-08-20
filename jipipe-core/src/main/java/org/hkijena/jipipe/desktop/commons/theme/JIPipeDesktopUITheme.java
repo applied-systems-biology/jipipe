@@ -13,13 +13,6 @@
 
 package org.hkijena.jipipe.desktop.commons.theme;
 
-import org.hkijena.jipipe.desktop.commons.theme.ui.*;
-import org.hkijena.jipipe.utils.ThemeUtils;
-import org.hkijena.jipipe.utils.UIUtils;
-
-import javax.swing.*;
-import javax.swing.plaf.metal.MetalLookAndFeel;
-
 public enum JIPipeDesktopUITheme {
     Native("Native", false),
     Metal("Metal", false),
@@ -40,6 +33,7 @@ public enum JIPipeDesktopUITheme {
     public boolean isModern() {
         return isModern;
     }
+
     @Override
     public String toString() {
         return name;

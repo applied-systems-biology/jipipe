@@ -23,7 +23,6 @@ import org.hkijena.jipipe.desktop.commons.components.search.JIPipeDesktopSearchT
 import org.hkijena.jipipe.utils.StringUtils;
 import org.hkijena.jipipe.utils.ThemeUtils;
 import org.hkijena.jipipe.utils.UIUtils;
-import org.hkijena.jipipe.JIPipe;
 import org.jdesktop.swingx.JXTextField;
 
 import javax.swing.*;
@@ -105,7 +104,7 @@ public class JIPipeDesktopEditAlgorithmSlotPanel extends JPanel {
     }
 
     private void initialize() {
-        setLayout(new BorderLayout(8,8));
+        setLayout(new BorderLayout(8, 8));
         setBorder(UIUtils.createEmptyBorder(5));
         setBackground(ThemeUtils.getCurrentStyle().getWindowBackground());
 

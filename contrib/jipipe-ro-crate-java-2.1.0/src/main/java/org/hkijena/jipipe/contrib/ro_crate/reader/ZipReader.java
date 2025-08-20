@@ -23,25 +23,25 @@ import java.nio.file.Path;
 @Deprecated(since = "2.1.0", forRemoval = true)
 public class ZipReader extends ReadZipStrategy {
 
-  /**
-   * Crates a ZipReader with the default configuration as described in the class documentation.
-   */
-  public ZipReader() {
-    super();
-  }
+    /**
+     * Crates a ZipReader with the default configuration as described in the class documentation.
+     */
+    public ZipReader() {
+        super();
+    }
 
-  /**
-   * Creates a ZipReader which will extract the contents temporary
-   * to the given location instead of the default location.
-   *
-   * @param folderPath            the custom directory to extract
-   *                              content to for temporary access.
-   * @param shallAddUuidSubfolder if true, the reader will extract
-   *                              into subdirectories of the given
-   *                              directory. These subdirectories
-   *                              will have UUIDs as their names.
-   */
-  public ZipReader(Path folderPath, boolean shallAddUuidSubfolder) {
-    super(folderPath, shallAddUuidSubfolder);
-  }
+    /**
+     * Creates a ZipReader which will extract the contents temporary
+     * to the given location instead of the default location.
+     *
+     * @param folderPath            the custom directory to extract
+     *                              content to for temporary access.
+     * @param shallAddUuidSubfolder if true, the reader will extract
+     *                              into subdirectories of the given
+     *                              directory. These subdirectories
+     *                              will have UUIDs as their names.
+     */
+    public ZipReader(Path folderPath, boolean shallAddUuidSubfolder) {
+        super(folderPath, shallAddUuidSubfolder);
+    }
 }

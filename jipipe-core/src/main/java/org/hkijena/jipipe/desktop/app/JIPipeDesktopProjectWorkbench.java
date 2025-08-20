@@ -49,7 +49,8 @@ import org.hkijena.jipipe.desktop.app.project.JIPipeDesktopLoadResultDirectoryIn
 import org.hkijena.jipipe.desktop.app.project.JIPipeDesktopLoadResultZipIntoCacheRun;
 import org.hkijena.jipipe.desktop.app.quickrun.JIPipeDesktopQuickRun;
 import org.hkijena.jipipe.desktop.app.quickrun.JIPipeDesktopQuickRunSettings;
-import org.hkijena.jipipe.desktop.app.running.*;
+import org.hkijena.jipipe.desktop.app.running.JIPipeDesktopRunExecuteUI;
+import org.hkijena.jipipe.desktop.app.running.JIPipeDesktopRunNextWindow;
 import org.hkijena.jipipe.desktop.app.running.logs.JIPipeDesktopLogViewer;
 import org.hkijena.jipipe.desktop.app.running.logs.JIPipeDesktopRunnableLogsButton;
 import org.hkijena.jipipe.desktop.app.running.logs.JIPipeDesktopRunnableLogsCollection;
@@ -763,7 +764,7 @@ public class JIPipeDesktopProjectWorkbench extends JPanel implements JIPipeDeskt
         {
             JPopupMenu publishMenu = new JPopupMenu("Publish");
             UIUtils.installMenuExtension(this, publishMenu, JIPipeMenuExtensionTarget.ProjectPublishMenu, false);
-            if(publishMenu.getComponentCount()>0) {
+            if (publishMenu.getComponentCount() > 0) {
                 JButton publishProjectButton = new JButton("Publish", JIPipe.RESOURCES.getIcon16("actions/share-nodes.png"));
                 publishProjectButton.setToolTipText("Publishes or shares the project");
                 UIUtils.setStandardButtonBorder(publishProjectButton);

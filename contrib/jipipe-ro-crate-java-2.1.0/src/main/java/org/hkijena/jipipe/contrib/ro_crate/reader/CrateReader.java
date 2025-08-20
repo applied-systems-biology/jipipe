@@ -37,40 +37,22 @@ import java.util.stream.StreamSupport;
  */
 public class CrateReader<T> {
 
-    private static final Logger logger = LoggerFactory.getLogger(CrateReader.class);
-
-    /**
-     * This is a private inner class that shall not be exposed. **Do not make it
-     * public or protected.** It serves only the purpose of unsafe operations
-     * while reading a crate and may be specific to this implementation.
-     */
-    private static class RoCrateUnsafe extends RoCrate {
-
-        public void addDataEntityWithoutRootHasPart(DataEntity entity) {
-            this.metadataContext.checkEntity(entity);
-            this.roCratePayload.addDataEntity(entity);
-        }
-    }
-
-    /**
-     * If the number of JSON entities in the crate is larger than this number,
-     * parallelization will be used.
-     */
-    private static final int PARALLELIZATION_THRESHOLD = 100;
-
-    private static final String FILE_PREVIEW_FILES = "ro-crate-preview_files";
-    private static final String FILE_PREVIEW_HTML = "ro-crate-preview.html";
-    private static final String FILE_METADATA_JSON = "ro-crate-metadata.json";
-
     protected static final String SPECIFICATION_PREFIX = "https://w3id.org/ro/crate/";
-
     protected static final String PROP_ABOUT = "about";
     protected static final String PROP_CONTEXT = "@context";
     protected static final String PROP_CONFORMS_TO = "conformsTo";
     protected static final String PROP_GRAPH = "@graph";
     protected static final String PROP_HAS_PART = "hasPart";
     protected static final String PROP_ID = "@id";
-
+    private static final Logger logger = LoggerFactory.getLogger(CrateReader.class);
+    /**
+     * If the number of JSON entities in the crate is larger than this number,
+     * parallelization will be used.
+     */
+    private static final int PARALLELIZATION_THRESHOLD = 100;
+    private static final String FILE_PREVIEW_FILES = "ro-crate-preview_files";
+    private static final String FILE_PREVIEW_HTML = "ro-crate-preview.html";
+    private static final String FILE_METADATA_JSON = "ro-crate-metadata.json";
     private final GenericReaderStrategy<T> strategy;
 
     public CrateReader(GenericReaderStrategy<T> strategy) {
@@ -83,7 +65,6 @@ public class CrateReader<T> {
      *
      * @param location the location of the ro-crate to be read
      * @return the read RO-crate
-     *
      * @throws IOException if the crate cannot be read
      */
     public RoCrate readCrate(T location) throws IOException {
@@ -144,7 +125,7 @@ public class CrateReader<T> {
         }
 
         Collection<File> untrackedFiles = Arrays.stream(
-                Optional.ofNullable(files.listFiles()).orElse(new File[0]))
+                        Optional.ofNullable(files.listFiles()).orElse(new File[0]))
                 .filter(f -> !usedFiles.contains(f.getPath()))
                 .collect(Collectors.toSet());
 
@@ -176,13 +157,13 @@ public class CrateReader<T> {
                     .map(s -> idToNodes.getOrDefault(s, null))
                     .filter(Objects::nonNull)
                     .forEach(child -> connections.computeIfAbsent(currentId, key -> new HashSet<>())
-                    .add(unpackId(child)));
+                            .add(unpackId(child)));
             StreamSupport.stream(entityNode.path("isPartOf").spliterator(), false)
                     .map(this::unpackId)
                     .map(s -> idToNodes.getOrDefault(s, null))
                     .filter(Objects::nonNull)
                     .forEach(parent -> connections.computeIfAbsent(unpackId(parent), key -> new HashSet<>())
-                    .add(currentId));
+                            .add(currentId));
         }
         return connections;
     }
@@ -240,9 +221,9 @@ public class CrateReader<T> {
      * and contextual entities.
      *
      * @param crate the crate, which will receive the entities, if available in
-     * the graph.
+     *              the graph.
      * @param graph the graph of the Metadata JSON file, where the entities are
-     * extracted and removed from.
+     *              extracted and removed from.
      */
     protected void moveRootEntitiesFromGraphToCrate(RoCrate crate, ArrayNode graph) {
         Optional<JsonNode> maybeDescriptor = getMetadataDescriptor(graph);
@@ -305,7 +286,7 @@ public class CrateReader<T> {
      * https://www.researchobject.org/ro-crate/1.1/root-data-entity.html#finding-the-root-data-entity
      * </a>
      *
-     * @param graph the graph from the metadata JSON-LD file
+     * @param graph      the graph from the metadata JSON-LD file
      * @param descriptor the RO-Crate descriptor
      * @return the root entity, if found
      */
@@ -339,5 +320,18 @@ public class CrateReader<T> {
                 .setAllUnsafe(descriptor.deepCopy())
                 .build();
         crate.setJsonDescriptor(descriptorEntity);
+    }
+
+    /**
+     * This is a private inner class that shall not be exposed. **Do not make it
+     * public or protected.** It serves only the purpose of unsafe operations
+     * while reading a crate and may be specific to this implementation.
+     */
+    private static class RoCrateUnsafe extends RoCrate {
+
+        public void addDataEntityWithoutRootHasPart(DataEntity entity) {
+            this.metadataContext.checkEntity(entity);
+            this.roCratePayload.addDataEntity(entity);
+        }
     }
 }

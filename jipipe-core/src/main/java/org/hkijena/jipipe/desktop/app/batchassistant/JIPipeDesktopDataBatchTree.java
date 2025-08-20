@@ -20,7 +20,6 @@ import org.hkijena.jipipe.desktop.app.JIPipeDesktopWorkbenchPanel;
 import org.hkijena.jipipe.desktop.app.cache.cachetree.JIPipeDesktopCacheStateTreeCellRenderer;
 import org.hkijena.jipipe.desktop.commons.theme.ui.JIPipeDesktopModernScrollBarUI;
 import org.hkijena.jipipe.utils.UIUtils;
-import org.hkijena.jipipe.JIPipe;
 
 import javax.swing.*;
 import javax.swing.tree.DefaultMutableTreeNode;

@@ -117,7 +117,7 @@ public class JIPipeDesktopParameterKeyPickerUI extends JPanel {
         UUID dummy = UUID.randomUUID();
         Map<UUID, List<JIPipeGraphNode>> byCompartment = nodeInstances.stream().collect(Collectors.groupingBy(jiPipeGraphNode -> {
             UUID uuid = jiPipeGraphNode.getCompartmentUUIDInParentGraph();
-            if(uuid == null) {
+            if (uuid == null) {
                 uuid = dummy;
             }
             return uuid;

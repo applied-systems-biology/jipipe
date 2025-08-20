@@ -6,7 +6,10 @@ import org.fife.ui.rsyntaxtextarea.Theme;
 import org.hkijena.jipipe.api.nodes.JIPipeNodeInfo;
 import org.hkijena.jipipe.api.nodes.JIPipeNodeTypeCategory;
 import org.hkijena.jipipe.api.registries.JIPipeApplicationSettingsRegistry;
-import org.hkijena.jipipe.desktop.commons.theme.*;
+import org.hkijena.jipipe.desktop.commons.theme.JIPipeDesktopModernMetalTheme;
+import org.hkijena.jipipe.desktop.commons.theme.JIPipeDesktopModernThemeStyle;
+import org.hkijena.jipipe.desktop.commons.theme.JIPipeDesktopUITheme;
+import org.hkijena.jipipe.desktop.commons.theme.JIPipeDesktopUIThemeBrightness;
 import org.hkijena.jipipe.desktop.commons.theme.ui.*;
 import org.hkijena.jipipe.plugins.settings.JIPipeGeneralUIApplicationSettings;
 import org.hkijena.jipipe.utils.json.JsonUtils;
@@ -22,12 +25,12 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class ThemeUtils {
+    public static Theme RSYNTAX_THEME_LIGHT;
+    public static Theme RSYNTAX_THEME_DARK;
     private static boolean INSTALLED_LISTENER;
     private static boolean IS_UPDATING_THEME;
     private static JIPipeDesktopUITheme CURRENT_THEME = JIPipeDesktopUITheme.Modern;
-    private static JIPipeDesktopModernThemeStyle CURRENT_STYLE = new  JIPipeDesktopModernThemeStyle();
-    public static Theme RSYNTAX_THEME_LIGHT;
-    public static Theme RSYNTAX_THEME_DARK;
+    private static JIPipeDesktopModernThemeStyle CURRENT_STYLE = new JIPipeDesktopModernThemeStyle();
     private static List<String> AVAILABLE_STYLE_IDS;
 
     public static boolean isUsingDarkTheme() {
@@ -53,15 +56,14 @@ public class ThemeUtils {
                     // Read the theme
                     try {
                         CURRENT_THEME = JsonUtils.getObjectMapper().readerFor(JIPipeDesktopUITheme.class).readValue(themeNode);
+                    } catch (Exception ignored) {
                     }
-                    catch (Exception ignored) {}
                 }
-                if(!styleNode.isMissingNode()) {
+                if (!styleNode.isMissingNode()) {
                     // Read the style
-                    if(CURRENT_THEME == JIPipeDesktopUITheme.Modern){
+                    if (CURRENT_THEME == JIPipeDesktopUITheme.Modern) {
                         CURRENT_STYLE = getStyleFromId(styleNode.asText());
-                    }
-                    else {
+                    } else {
                         // We automatically load the "Metal" colors
                         CURRENT_STYLE = getStyleFromId("Metal");
                     }
@@ -78,27 +80,27 @@ public class ThemeUtils {
     public static JIPipeDesktopModernThemeStyle getStyleFromId(String id) {
 
         // JIPipe light is the default style of the configuration
-        if("JIPipe Light".equals(id)) {
+        if ("JIPipe Light".equals(id)) {
             return new JIPipeDesktopModernThemeStyle();
         }
 
         // Try loading from resources
         try {
             URL url = ResourceUtils.getPluginResource("styles/" + id + ".json");
-            if(url != null) {
+            if (url != null) {
                 return JsonUtils.getObjectMapper().readValue(url, JIPipeDesktopModernThemeStyle.class);
             }
-        }catch (Exception ignored) {
+        } catch (Exception ignored) {
             ignored.printStackTrace();
         }
 
         // Try loading from user dir
         try {
             Path path = getUserStylesDirectory().resolve(id + ".json");
-            if(Files.exists(path)) {
+            if (Files.exists(path)) {
                 return JsonUtils.getObjectMapper().readValue(path.toFile(), JIPipeDesktopModernThemeStyle.class);
             }
-        }catch (Exception ignored) {
+        } catch (Exception ignored) {
             ignored.printStackTrace();
         }
 
@@ -107,10 +109,10 @@ public class ThemeUtils {
     }
 
     public static void switchTheme(JIPipeDesktopUITheme theme, JIPipeDesktopModernThemeStyle style) {
-        if(theme != null) {
+        if (theme != null) {
             CURRENT_THEME = theme;
         }
-        if(style != null) {
+        if (style != null) {
             CURRENT_STYLE = style;
         }
         reapplyCurrentTheme();
@@ -213,7 +215,7 @@ public class ThemeUtils {
     }
 
     public static List<String> getAvailableStyleIds() {
-        if(AVAILABLE_STYLE_IDS == null) {
+        if (AVAILABLE_STYLE_IDS == null) {
             AVAILABLE_STYLE_IDS = new ArrayList<>();
             AVAILABLE_STYLE_IDS.add("JIPipe Light");
             AVAILABLE_STYLE_IDS.add("JIPipe Dark");
@@ -225,7 +227,7 @@ public class ThemeUtils {
                 for (Path path : PathUtils.findFilesByExtensionIn(stylesDirectory, ".json")) {
                     String id = path.getFileName().toString();
                     id = id.substring(0, id.length() - 5);
-                    if(!AVAILABLE_STYLE_IDS.contains(id)) {
+                    if (!AVAILABLE_STYLE_IDS.contains(id)) {
                         AVAILABLE_STYLE_IDS.add(id);
                     }
                 }
@@ -260,10 +262,9 @@ public class ThemeUtils {
     }
 
     public static Color getNodeFillColor(float colorHue) {
-        if(colorHue < 0) {
+        if (colorHue < 0) {
             return CURRENT_STYLE.getPanelBackground();
-        }
-        else {
+        } else {
             return Color.getHSBColor(colorHue,
                     CURRENT_STYLE.getNodeFillSaturation(),
                     CURRENT_STYLE.getNodeFillBrightness());
@@ -277,7 +278,7 @@ public class ThemeUtils {
      * @return the border color
      */
     public static Color getNodeBorderColor(JIPipeNodeInfo info) {
-      return getNodeBorderColor(info.getCategory());
+        return getNodeBorderColor(info.getCategory());
     }
 
     private static Color getNodeBorderColor(JIPipeNodeTypeCategory category) {
@@ -286,10 +287,9 @@ public class ThemeUtils {
     }
 
     public static Color getNodeBorderColor(float colorHue) {
-        if(colorHue < 0) {
+        if (colorHue < 0) {
             return CURRENT_STYLE.getNodeHighlightBorder();
-        }
-        else {
+        } else {
             return Color.getHSBColor(colorHue,
                     CURRENT_STYLE.getNodeBorderSaturation(),
                     CURRENT_STYLE.getNodeBorderBrightness());

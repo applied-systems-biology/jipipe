@@ -38,7 +38,7 @@ public class HashUtils {
 
             // Use the first 24 bits for a uniform float bucket in [0,1]
             int n = ((h[0] & 0xFF) << 16) | ((h[1] & 0xFF) << 8) | (h[2] & 0xFF);
-            return (float)(n / 16777215.0); // 2^24 - 1  -> allows 1.0f occasionally
+            return (float) (n / 16777215.0); // 2^24 - 1  -> allows 1.0f occasionally
         } catch (Exception e) {
             throw new RuntimeException(e);
         }

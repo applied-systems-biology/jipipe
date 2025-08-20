@@ -21,7 +21,10 @@ import ij.process.ImageProcessor;
 import org.hkijena.jipipe.api.ConfigureJIPipeNode;
 import org.hkijena.jipipe.api.JIPipeProgressInfo;
 import org.hkijena.jipipe.api.SetJIPipeDocumentation;
-import org.hkijena.jipipe.api.nodes.*;
+import org.hkijena.jipipe.api.nodes.AddJIPipeInputSlot;
+import org.hkijena.jipipe.api.nodes.AddJIPipeOutputSlot;
+import org.hkijena.jipipe.api.nodes.JIPipeGraphNodeRunContext;
+import org.hkijena.jipipe.api.nodes.JIPipeNodeInfo;
 import org.hkijena.jipipe.api.nodes.algorithm.JIPipeIteratingAlgorithm;
 import org.hkijena.jipipe.api.nodes.categories.ImagesNodeTypeCategory;
 import org.hkijena.jipipe.api.nodes.iterationstep.JIPipeIterationContext;
@@ -78,7 +81,7 @@ public class ExtendedDepthOfFocusProjectorAlgorithm extends JIPipeIteratingAlgor
         ImagePlus score = ImageJUtils.unwrap(iterationStep.getInputData("Score", ImagePlusGreyscaleData.class, progressInfo));
         ImagePlus img = iterationStep.getInputData("Input", ImagePlusData.class, progressInfo).getImage();
 
-        if(score == null) {
+        if (score == null) {
             switch (fallbackScoringMethod) {
                 case Tenengrad: {
                     progressInfo.log("Applying Tenengrad scoring ...");
@@ -86,7 +89,7 @@ public class ExtendedDepthOfFocusProjectorAlgorithm extends JIPipeIteratingAlgor
                     GaussianBlur gaussianBlur = new GaussianBlur();
                     ImageJIterationUtils.forEachSlice(score, ip -> {
                         ip.findEdges();
-                        if(sigma > 0) {
+                        if (sigma > 0) {
                             gaussianBlur.blurGaussian(ip, sigma);
                         }
                     }, progressInfo);
@@ -99,7 +102,7 @@ public class ExtendedDepthOfFocusProjectorAlgorithm extends JIPipeIteratingAlgor
                     GaussianBlur gaussianBlur = new GaussianBlur();
                     ImageJIterationUtils.forEachSlice(score, ip -> {
                         rankFilters.rank(ip, radius, RankFilters.VARIANCE);
-                        if(sigma > 0) {
+                        if (sigma > 0) {
                             gaussianBlur.blurGaussian(ip, sigma);
                         }
                     }, progressInfo);
@@ -114,7 +117,7 @@ public class ExtendedDepthOfFocusProjectorAlgorithm extends JIPipeIteratingAlgor
             }
         }
 
-        if(!ImageJUtils.imagesHaveSameSize(score, img)) {
+        if (!ImageJUtils.imagesHaveSameSize(score, img)) {
             throw new RuntimeException("The input and score images do not have the same size.");
         }
 
@@ -155,7 +158,7 @@ public class ExtendedDepthOfFocusProjectorAlgorithm extends JIPipeIteratingAlgor
         for (int c = 0; c < img.getNChannels(); c++) {
             for (int z = 0; z < img.getNSlices(); z++) {
                 progressInfo.log("c=" + c + ", z=" + z);
-                if(progressInfo.isCancelled()) {
+                if (progressInfo.isCancelled()) {
                     return null;
                 }
                 resetScore(bestScoreIp);
@@ -170,14 +173,13 @@ public class ExtendedDepthOfFocusProjectorAlgorithm extends JIPipeIteratingAlgor
                         float currentScore = scoreIp.getf(i);
                         float bestScore = bestScoreIp.getf(i);
 
-                        if(selectionMethod == SelectionMethod.Maximum) {
-                            if(currentScore > bestScore) {
+                        if (selectionMethod == SelectionMethod.Maximum) {
+                            if (currentScore > bestScore) {
                                 bestScoreIp.setf(i, currentScore);
                                 resultIp.set(i, inputIp.get(i));
                             }
-                        }
-                        else {
-                            if(currentScore < bestScore) {
+                        } else {
+                            if (currentScore < bestScore) {
                                 bestScoreIp.setf(i, currentScore);
                                 resultIp.set(i, inputIp.get(i));
                             }
@@ -185,7 +187,7 @@ public class ExtendedDepthOfFocusProjectorAlgorithm extends JIPipeIteratingAlgor
                     }
                 }
 
-                resultSlices.put(new ImageSliceIndex(c,z,0), resultIp);
+                resultSlices.put(new ImageSliceIndex(c, z, 0), resultIp);
             }
         }
 
@@ -199,7 +201,7 @@ public class ExtendedDepthOfFocusProjectorAlgorithm extends JIPipeIteratingAlgor
         for (int c = 0; c < img.getNChannels(); c++) {
             for (int t = 0; t < img.getNFrames(); t++) {
                 progressInfo.log("c=" + c + ", t=" + t);
-                if(progressInfo.isCancelled()) {
+                if (progressInfo.isCancelled()) {
                     return null;
                 }
                 resetScore(bestScoreIp);
@@ -214,14 +216,13 @@ public class ExtendedDepthOfFocusProjectorAlgorithm extends JIPipeIteratingAlgor
                         float currentScore = scoreIp.getf(i);
                         float bestScore = bestScoreIp.getf(i);
 
-                        if(selectionMethod == SelectionMethod.Maximum) {
-                            if(currentScore > bestScore) {
+                        if (selectionMethod == SelectionMethod.Maximum) {
+                            if (currentScore > bestScore) {
                                 bestScoreIp.setf(i, currentScore);
                                 resultIp.set(i, inputIp.get(i));
                             }
-                        }
-                        else {
-                            if(currentScore < bestScore) {
+                        } else {
+                            if (currentScore < bestScore) {
                                 bestScoreIp.setf(i, currentScore);
                                 resultIp.set(i, inputIp.get(i));
                             }
@@ -229,7 +230,7 @@ public class ExtendedDepthOfFocusProjectorAlgorithm extends JIPipeIteratingAlgor
                     }
                 }
 
-                resultSlices.put(new ImageSliceIndex(c,0,t), resultIp);
+                resultSlices.put(new ImageSliceIndex(c, 0, t), resultIp);
             }
         }
 
@@ -237,10 +238,9 @@ public class ExtendedDepthOfFocusProjectorAlgorithm extends JIPipeIteratingAlgor
     }
 
     private void resetScore(FloatProcessor bestScore) {
-        if(selectionMethod == SelectionMethod.Maximum) {
+        if (selectionMethod == SelectionMethod.Maximum) {
             Arrays.fill((float[]) bestScore.getPixels(), Float.NEGATIVE_INFINITY);
-        }
-        else {
+        } else {
             Arrays.fill((float[]) bestScore.getPixels(), Float.POSITIVE_INFINITY);
         }
     }
@@ -252,7 +252,7 @@ public class ExtendedDepthOfFocusProjectorAlgorithm extends JIPipeIteratingAlgor
         for (int z = 0; z < img.getNSlices(); z++) {
             for (int t = 0; t < img.getNFrames(); t++) {
                 progressInfo.log("z=" + z + ", t=" + t);
-                if(progressInfo.isCancelled()) {
+                if (progressInfo.isCancelled()) {
                     return null;
                 }
                 resetScore(bestScoreIp);
@@ -267,14 +267,13 @@ public class ExtendedDepthOfFocusProjectorAlgorithm extends JIPipeIteratingAlgor
                         float currentScore = scoreIp.getf(i);
                         float bestScore = bestScoreIp.getf(i);
 
-                        if(selectionMethod == SelectionMethod.Maximum) {
-                            if(currentScore > bestScore) {
+                        if (selectionMethod == SelectionMethod.Maximum) {
+                            if (currentScore > bestScore) {
                                 bestScoreIp.setf(i, currentScore);
                                 resultIp.set(i, inputIp.get(i));
                             }
-                        }
-                        else {
-                            if(currentScore < bestScore) {
+                        } else {
+                            if (currentScore < bestScore) {
                                 bestScoreIp.setf(i, currentScore);
                                 resultIp.set(i, inputIp.get(i));
                             }
@@ -282,7 +281,7 @@ public class ExtendedDepthOfFocusProjectorAlgorithm extends JIPipeIteratingAlgor
                     }
                 }
 
-                resultSlices.put(new ImageSliceIndex(0,z,t), resultIp);
+                resultSlices.put(new ImageSliceIndex(0, z, t), resultIp);
             }
         }
 
@@ -291,7 +290,7 @@ public class ExtendedDepthOfFocusProjectorAlgorithm extends JIPipeIteratingAlgor
 
     @SetJIPipeDocumentation(name = "Default scoring sigma", description = "Determines the sigma if the Gaussian blur that is applied to the generated scoring images (if applicable). " +
             "If set to zero or a negative value, no blurring is applied")
-     @JIPipeParameter("default-scoring-sigma")
+    @JIPipeParameter("default-scoring-sigma")
     public double getSigma() {
         return sigma;
     }

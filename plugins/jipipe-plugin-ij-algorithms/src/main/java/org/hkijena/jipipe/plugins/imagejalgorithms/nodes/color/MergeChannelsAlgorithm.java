@@ -108,7 +108,7 @@ public class MergeChannelsAlgorithm extends JIPipeIteratingAlgorithm {
     @Override
     protected void runIteration(JIPipeSingleIterationStep iterationStep, JIPipeIterationContext iterationContext, JIPipeGraphNodeRunContext runContext, JIPipeProgressInfo progressInfo) {
         RGBStackMerge rgbStackMerge = new RGBStackMerge();
-        
+
         ImagePlus[] images = new ImagePlus[ChannelColor.values().length];
         ImagePlus firstImage = null;
         for (int i = 0; i < ChannelColor.values().length; ++i) {

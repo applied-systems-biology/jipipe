@@ -1,11 +1,12 @@
 package org.hkijena.jipipe.contrib.ro_crate.util;
 
+import net.lingala.zip4j.io.outputstream.ZipOutputStream;
+import net.lingala.zip4j.model.ZipParameters;
+
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.InputStream;
-import net.lingala.zip4j.io.outputstream.ZipOutputStream;
-import net.lingala.zip4j.model.ZipParameters;
 
 /**
  *
@@ -17,8 +18,8 @@ public class ZipStreamUtil {
      * Adds a folder and its contents to a ZipOutputStream.
      *
      * @param zipOutputStream The ZipOutputStream to which the folder will be added.
-     * @param folder The folder to be added.
-     * @param parentPath The path in the zip file where the folder will be added.
+     * @param folder          The folder to be added.
+     * @param parentPath      The path in the zip file where the folder will be added.
      * @throws IOException If an I/O error occurs.
      */
     public static void addFolderToZipStream(
@@ -50,9 +51,10 @@ public class ZipStreamUtil {
 
     /**
      * Adds a folder and its contents to a ZipOutputStream.
+     *
      * @param zipOutputStream The ZipOutputStream to which the folder will be added.
-     * @param folderPath The path of the folder to be added.
-     * @param parentPath The path in the zip file where the folder will be added.
+     * @param folderPath      The path of the folder to be added.
+     * @param parentPath      The path in the zip file where the folder will be added.
      * @throws IOException If an I/O error occurs.
      */
     public static void addFolderToZipStream(
@@ -67,8 +69,8 @@ public class ZipStreamUtil {
      * Adds a file to a ZipOutputStream.
      *
      * @param zipOutputStream The ZipOutputStream to which the file will be added.
-     * @param file The file to be added.
-     * @param zipEntryPath The path in the zip file where the file will be added.
+     * @param file            The file to be added.
+     * @param zipEntryPath    The path in the zip file where the file will be added.
      * @throws IOException If an I/O error occurs.
      */
     public static void addFileToZipStream(

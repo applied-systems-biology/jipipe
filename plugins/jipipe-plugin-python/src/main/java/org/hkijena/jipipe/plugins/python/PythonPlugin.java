@@ -30,8 +30,6 @@ import org.hkijena.jipipe.plugins.python.algorithms.python.IteratingPythonScript
 import org.hkijena.jipipe.plugins.python.algorithms.python.MergingPythonScriptAlgorithm;
 import org.hkijena.jipipe.plugins.python.algorithms.python.PythonScriptAlgorithm;
 import org.hkijena.jipipe.utils.JIPipeResourceManager;
-import org.hkijena.jipipe.utils.UIUtils;
-import org.hkijena.jipipe.JIPipe;
 import org.scijava.Context;
 import org.scijava.plugin.Plugin;
 

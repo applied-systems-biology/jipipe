@@ -79,7 +79,7 @@ public class JIPipeDesktopWelcomePanel extends JIPipeDesktopProjectWorkbenchPane
 
     private void initialize() {
         setLayout(new BorderLayout());
-        JIPipeDesktopDockPanel dockPanel = new  JIPipeDesktopDockPanel();
+        JIPipeDesktopDockPanel dockPanel = new JIPipeDesktopDockPanel();
 
         initRecentProjects(dockPanel);
         initTemplateList(dockPanel);

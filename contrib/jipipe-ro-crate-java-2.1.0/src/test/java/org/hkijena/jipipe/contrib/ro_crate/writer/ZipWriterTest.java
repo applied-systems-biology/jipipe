@@ -1,15 +1,14 @@
 package org.hkijena.jipipe.contrib.ro_crate.writer;
 
-import java.io.IOException;
-import java.nio.file.Path;
-
 import org.hkijena.jipipe.contrib.ro_crate.Crate;
 import org.hkijena.jipipe.contrib.ro_crate.RoCrate;
 
+import java.io.IOException;
+import java.nio.file.Path;
+
 class ZipWriterTest implements
         CommonWriterTest,
-        ElnFileWriterTest
-{
+        ElnFileWriterTest {
     @Override
     public void saveCrate(Crate crate, Path target) throws IOException {
         Writers.newZipPathWriter()

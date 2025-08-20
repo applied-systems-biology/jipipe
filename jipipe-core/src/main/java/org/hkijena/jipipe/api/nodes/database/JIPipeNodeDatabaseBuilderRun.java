@@ -74,7 +74,7 @@ public class JIPipeNodeDatabaseBuilderRun extends DefaultJIPipeRunnable {
                 List<JIPipeNodeMenuLocation> aliases = nodeInfo.getAliases();
                 for (int i = 0; i < aliases.size(); i++) {
                     JIPipeNodeMenuLocation alias = aliases.get(i);
-                    if(!StringUtils.isNullOrEmpty(alias.getAlternativeName())) {
+                    if (!StringUtils.isNullOrEmpty(alias.getAlternativeName())) {
                         // Add as alias if name is different
                         CreateNewNodeByInfoAliasDatabaseEntry newEntry = new CreateNewNodeByInfoAliasDatabaseEntry("create-node-by-info:" + entry.getKey() + ":alias-" + i, nodeInfo, alias);
                         newEntries.add(newEntry);

@@ -30,7 +30,6 @@ import org.hkijena.jipipe.plugins.expressions.PathQueryExpression;
 import org.hkijena.jipipe.plugins.filesystem.dataypes.FileData;
 import org.hkijena.jipipe.plugins.filesystem.dataypes.FolderData;
 import org.hkijena.jipipe.plugins.parameters.library.primitives.StringParameterSettings;
-import org.hkijena.jipipe.utils.ResourceUtils;
 import org.hkijena.jipipe.utils.StringUtils;
 
 import java.io.IOException;
@@ -105,7 +104,7 @@ public class ListSubfolders extends JIPipeSimpleIteratingAlgorithm {
                 stream = Files.list(inputPath).filter(Files::isDirectory);
             }
             for (Path file : stream.collect(Collectors.toSet())) {
-                if(progressInfo.isCanceled()) {
+                if (progressInfo.isCanceled()) {
                     return;
                 }
                 if (filters.test(file, expressionVariables)) {
@@ -114,9 +113,8 @@ public class ListSubfolders extends JIPipeSimpleIteratingAlgorithm {
             }
         } catch (IOException e) {
             throw new RuntimeException(e);
-        }
-        finally {
-            if(stream != null) {
+        } finally {
+            if (stream != null) {
                 stream.close();
             }
         }

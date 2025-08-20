@@ -102,7 +102,7 @@ public class TSOAX3DAlgorithm extends TSOAXAlgorithm {
         args.add(parameterFile.toString());
 
         // Run TSOAX
-        TSOAXEnvironment environment = getConfiguredTSOAXEnvironment();
+        TSOAXEnvironment environment = getConfiguredTSOAXEnvironment().getEnvironment();
         Map<String, String> environmentVariables = new HashMap<>();
         environmentVariables.put("LANG", "en_US.UTF-8");
         environmentVariables.put("LC_ALL", "en_US.UTF-8");

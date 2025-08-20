@@ -14,7 +14,6 @@
 package org.hkijena.jipipe.desktop.app.settings;
 
 import org.hkijena.jipipe.JIPipe;
-import org.hkijena.jipipe.api.metadata.JIPipeAuthorMetadata;
 import org.hkijena.jipipe.api.JIPipeProgressInfo;
 import org.hkijena.jipipe.api.artifacts.JIPipeArtifact;
 import org.hkijena.jipipe.api.compartments.algorithms.JIPipeProjectCompartment;
@@ -22,6 +21,7 @@ import org.hkijena.jipipe.api.compartments.algorithms.JIPipeProjectCompartmentOu
 import org.hkijena.jipipe.api.data.JIPipeDataTable;
 import org.hkijena.jipipe.api.environments.JIPipeArtifactEnvironment;
 import org.hkijena.jipipe.api.grouping.parameters.GraphNodeParameterReferenceGroupCollection;
+import org.hkijena.jipipe.api.metadata.JIPipeAuthorMetadata;
 import org.hkijena.jipipe.api.nodes.JIPipeAlgorithm;
 import org.hkijena.jipipe.api.nodes.JIPipeGraphNode;
 import org.hkijena.jipipe.api.parameters.JIPipeParameterAccess;
@@ -38,8 +38,8 @@ import org.hkijena.jipipe.desktop.app.JIPipeDesktopProjectWorkbench;
 import org.hkijena.jipipe.desktop.app.JIPipeDesktopProjectWorkbenchPanel;
 import org.hkijena.jipipe.desktop.app.bookmarks.JIPipeDesktopBookmarkListPanel;
 import org.hkijena.jipipe.desktop.app.cache.JIPipeDesktopMultiAlgorithmCacheBrowserUI;
-import org.hkijena.jipipe.desktop.app.grapheditor.commons.JIPipeDesktopGraphEditorUI;
 import org.hkijena.jipipe.desktop.app.grapheditor.commons.JIPipeDesktopGraphEditorLogPanel;
+import org.hkijena.jipipe.desktop.app.grapheditor.commons.JIPipeDesktopGraphEditorUI;
 import org.hkijena.jipipe.desktop.app.grapheditor.commons.properties.JIPipeDesktopGraphEditorErrorPanel;
 import org.hkijena.jipipe.desktop.app.parameterreference.JIPipeDesktopGraphNodeParameterReferenceGroupCollectionEditorUI;
 import org.hkijena.jipipe.desktop.app.settings.project.JIPipeDesktopMergedProjectSettings;
@@ -156,18 +156,17 @@ public class JIPipeDesktopProjectOverviewUI extends JIPipeDesktopProjectWorkbenc
     private void refreshHeaderText() {
         projectName.setText(StringUtils.orElse(getProject().getMetadata().getName(), "Unnamed project"));
         projectAuthors.removeAll();
-        if(getProject().getMetadata().getAuthors().isEmpty()) {
+        if (getProject().getMetadata().getAuthors().isEmpty()) {
             JButton authorButton = new JButton("No authors", JIPipe.RESOURCES.getIcon16("actions/im-invisible-user.png"));
             authorButton.setToolTipText("Click to edit the authors");
             authorButton.addActionListener(e -> {
-                 editProjectMetadata();
+                editProjectMetadata();
             });
             authorButton.setOpaque(false);
             authorButton.setBorder(BorderFactory.createEmptyBorder(4, 4, 4, 4));
             authorButton.setBackground(new Color(0, 0, 0, 0));
             projectAuthors.add(authorButton);
-        }
-        else {
+        } else {
             for (JIPipeAuthorMetadata author : getProject().getMetadata().getAuthors()) {
                 JButton authorButton = new JButton(author.toString(), JIPipe.RESOURCES.getIcon16("actions/im-user.png"));
                 authorButton.setToolTipText("Click to show more information");
@@ -674,7 +673,7 @@ public class JIPipeDesktopProjectOverviewUI extends JIPipeDesktopProjectWorkbenc
         }
         popupMenu.add(UIUtils.createMenuItem("Custom ...", "Enter a custom ID", JIPipe.RESOURCES.getIcon16("actions/edit.png"), () -> {
             String newLicense = JOptionPane.showInputDialog(this, "Please enter a valid license ID:", "Set license");
-            if(!StringUtils.isNullOrEmpty(newLicense)) {
+            if (!StringUtils.isNullOrEmpty(newLicense)) {
                 getProject().getMetadata().setLicense(newLicense);
                 refreshAll();
             }
@@ -861,8 +860,7 @@ public class JIPipeDesktopProjectOverviewUI extends JIPipeDesktopProjectWorkbenc
                     getProject().getMetadata().getDirectories().getDirectories().addFromTemplate(entry);
                     refreshParameters();
                     break;
-                }
-                else {
+                } else {
                     break;
                 }
             }
@@ -926,8 +924,8 @@ public class JIPipeDesktopProjectOverviewUI extends JIPipeDesktopProjectWorkbenc
     private void initializeHeaderPanel() {
         headerPanel = new JPanel();
         headerPanel.setBorder(BorderFactory.createCompoundBorder(
-                BorderFactory.createEmptyBorder(0,0,16,0),
-                BorderFactory.createMatteBorder(1,0,1,0, ThemeUtils.getCurrentStyle().getBorderColor())));
+                BorderFactory.createEmptyBorder(0, 0, 16, 0),
+                BorderFactory.createMatteBorder(1, 0, 1, 0, ThemeUtils.getCurrentStyle().getBorderColor())));
         headerPanel.setBackground(ThemeUtils.getCurrentStyle().getWindowBackground());
         headerPanel.setLayout(new BorderLayout());
         headerPanel.setPreferredSize(new Dimension(headerPanel.getPreferredSize().width, 150));

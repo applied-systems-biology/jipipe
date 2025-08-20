@@ -24,7 +24,7 @@ import org.hkijena.jipipe.api.ConfigureJIPipeNode;
 import org.hkijena.jipipe.api.JIPipeProgressInfo;
 import org.hkijena.jipipe.api.SetJIPipeDocumentation;
 import org.hkijena.jipipe.api.data.storage.JIPipeFileSystemWriteDataStorage;
-import org.hkijena.jipipe.api.environments.JIPipeEnvironment;
+import org.hkijena.jipipe.api.environments.JIPipeEnvironmentReference;
 import org.hkijena.jipipe.api.nodes.AddJIPipeInputSlot;
 import org.hkijena.jipipe.api.nodes.AddJIPipeOutputSlot;
 import org.hkijena.jipipe.api.nodes.JIPipeGraphNodeRunContext;
@@ -113,7 +113,7 @@ public class UploadOMEROImageToDatasetAlgorithm extends JIPipeIteratingAlgorithm
         tagExporter.createTags(tags, iterationStep.getMergedTextAnnotations().values());
 
         // Upload to OMERO
-        OMEROCredentialsEnvironment environment = getConfiguredOMEROCredentialsEnvironment();
+        OMEROCredentialsEnvironment environment = getConfiguredOMEROCredentialsEnvironment().getEnvironment();
         LoginCredentials credentials = environment.toLoginCredentials();
 
         try (OMEROGateway gateway = new OMEROGateway(credentials, progressInfo)) {
@@ -186,7 +186,7 @@ public class UploadOMEROImageToDatasetAlgorithm extends JIPipeIteratingAlgorithm
     }
 
     @Override
-    public void getEnvironmentDependencies(List<JIPipeEnvironment> target) {
+    public void getEnvironmentDependencies(List<JIPipeEnvironmentReference<?>> target) {
         super.getEnvironmentDependencies(target);
         target.add(getConfiguredOMEROCredentialsEnvironment());
     }

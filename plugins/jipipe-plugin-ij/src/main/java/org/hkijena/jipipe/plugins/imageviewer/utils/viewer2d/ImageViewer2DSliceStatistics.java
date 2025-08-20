@@ -1,6 +1,5 @@
 package org.hkijena.jipipe.plugins.imageviewer.utils.viewer2d;
 
-import ij.ImagePlus;
 import ij.process.ImageProcessor;
 import ij.process.ImageStatistics;
 import org.hkijena.jipipe.plugins.imagejdatatypes.util.ImageJHistogram;

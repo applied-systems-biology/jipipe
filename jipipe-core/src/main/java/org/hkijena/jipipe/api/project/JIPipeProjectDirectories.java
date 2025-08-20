@@ -111,6 +111,13 @@ public class JIPipeProjectDirectories extends AbstractJIPipeParameterCollection 
         parameterCollection.setParameter("path", value);
     }
 
+    public enum Role {
+        Input,
+        Output,
+        Unspecified,
+        Ignored
+    }
+
     public static class DirectoryEntry extends AbstractJIPipeParameterCollection {
         private String name;
         private String description;
@@ -184,12 +191,5 @@ public class JIPipeProjectDirectories extends AbstractJIPipeParameterCollection 
         public void setRole(Role role) {
             this.role = role;
         }
-    }
-
-    public enum Role {
-        Input,
-        Output,
-        Unspecified,
-        Ignored
     }
 }

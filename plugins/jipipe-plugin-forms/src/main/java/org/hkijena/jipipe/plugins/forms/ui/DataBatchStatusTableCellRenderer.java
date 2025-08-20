@@ -13,7 +13,6 @@
 
 package org.hkijena.jipipe.plugins.forms.ui;
 
-import org.hkijena.jipipe.plugins.settings.JIPipeGeneralUIApplicationSettings;
 import org.hkijena.jipipe.utils.ThemeUtils;
 
 import javax.swing.*;

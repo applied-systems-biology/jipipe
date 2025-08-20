@@ -1,16 +1,16 @@
 package org.hkijena.jipipe.contrib.ro_crate.preview;
 
-import java.io.File;
-import java.io.IOException;
-import java.nio.file.Files;
-
-import org.hkijena.jipipe.contrib.ro_crate.Crate;
-import org.hkijena.jipipe.contrib.ro_crate.writer.CrateWriter;
-import org.hkijena.jipipe.contrib.ro_crate.writer.WriteFolderStrategy;
 import net.lingala.zip4j.ZipFile;
 import net.lingala.zip4j.io.outputstream.ZipOutputStream;
 import org.apache.commons.io.FileUtils;
+import org.hkijena.jipipe.contrib.ro_crate.Crate;
+import org.hkijena.jipipe.contrib.ro_crate.writer.CrateWriter;
+import org.hkijena.jipipe.contrib.ro_crate.writer.WriteFolderStrategy;
 import org.slf4j.LoggerFactory;
+
+import java.io.File;
+import java.io.IOException;
+import java.nio.file.Files;
 
 /**
  * Interface for the ROCrate preview. This manages the human-readable
@@ -30,9 +30,9 @@ public interface CratePreview {
      * <b>IMPORTANT NOTE:</b> This method currently has a default implementation that relies
      * on deprecated methods. In future, you will have to implement this method directly.
      *
-     * @param crate the crate to generate a preview for.
+     * @param crate     the crate to generate a preview for.
      * @param targetDir the target directory to store the preview in,
-     *                 owned by the caller.
+     *                  owned by the caller.
      * @throws IOException if an error occurs while generating the preview.
      */
     default void generate(Crate crate, File targetDir) throws IOException {
@@ -70,7 +70,6 @@ public interface CratePreview {
      *
      * @param zipFile the zip file with the crate, which should receive a preview.
      * @throws IOException if an error occurs while saving the preview
-     *
      * @deprecated Use {@link #generate(Crate, File)} instead.
      */
     @Deprecated(since = "2.1.0", forRemoval = true)
@@ -81,7 +80,6 @@ public interface CratePreview {
      *
      * @param folder the folder (containing a crate) to save the preview in.
      * @throws IOException if an error occurs while saving the preview.
-     *
      * @deprecated Use {@link #generate(Crate, File)} instead.
      */
     @Deprecated(since = "2.1.0", forRemoval = true)
@@ -91,9 +89,8 @@ public interface CratePreview {
      * Saves the preview, given by the metadata, into the given stream.
      *
      * @param metadata the metadata of the crate to save the preview in.
-     * @param stream the stream to save the preview in.
+     * @param stream   the stream to save the preview in.
      * @throws IOException if an error occurs while saving the preview.
-     *
      * @deprecated Use {@link #generate(Crate, File)} instead.
      */
     @Deprecated(since = "2.1.0", forRemoval = true)

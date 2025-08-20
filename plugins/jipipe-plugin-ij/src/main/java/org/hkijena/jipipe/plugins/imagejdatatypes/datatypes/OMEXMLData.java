@@ -47,6 +47,7 @@ public class OMEXMLData extends XMLData {
 
     /**
      * Reads OME XML metadata from a string
+     *
      * @param metadataString the metadata string
      * @return the metadata
      */
@@ -61,7 +62,7 @@ public class OMEXMLData extends XMLData {
     }
 
     public OMEXMLMetadata getMetadata() {
-        if(metadata == null) {
+        if (metadata == null) {
             metadata = readMetadataFromString(getData());
         }
         return metadata;

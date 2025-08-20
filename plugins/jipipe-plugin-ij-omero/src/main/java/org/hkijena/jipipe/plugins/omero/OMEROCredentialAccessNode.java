@@ -13,6 +13,7 @@
 
 package org.hkijena.jipipe.plugins.omero;
 
+import org.hkijena.jipipe.api.environments.JIPipeEnvironmentReference;
 import org.hkijena.jipipe.api.nodes.JIPipeGraphNode;
 import org.hkijena.jipipe.api.project.JIPipeProject;
 import org.hkijena.jipipe.api.validation.JIPipeValidationReport;
@@ -32,13 +33,13 @@ public interface OMEROCredentialAccessNode {
      *
      * @return the environment
      */
-    default OMEROCredentialsEnvironment getConfiguredOMEROCredentialsEnvironment() {
+    default JIPipeEnvironmentReference<OMEROCredentialsEnvironment> getConfiguredOMEROCredentialsEnvironment() {
         JIPipeGraphNode node = (JIPipeGraphNode) this;
         JIPipeProject project = node.getRuntimeProject();
         if (project == null) {
             project = node.getParentGraph().getProject();
         }
-        return OMEROPlugin.getEnvironment(project, getOverrideCredentials());
+        return OMEROPlugin.getEnvironment(project, getOverrideCredentials(), node);
     }
 
     /**
@@ -48,7 +49,7 @@ public interface OMEROCredentialAccessNode {
      * @param report  the report
      */
     default void reportConfiguredOMEROEnvironmentValidity(JIPipeValidationReportContext context, JIPipeValidationReport report) {
-        if (!getConfiguredOMEROCredentialsEnvironment().generateValidityReport(context).isValid()) {
+        if (!getConfiguredOMEROCredentialsEnvironment().getEnvironment().generateValidityReport(context).isValid()) {
             report.report(new JIPipeValidationReportEntry(JIPipeValidationReportEntryLevel.Error,
                     context,
                     "OMERO credentials not configured",

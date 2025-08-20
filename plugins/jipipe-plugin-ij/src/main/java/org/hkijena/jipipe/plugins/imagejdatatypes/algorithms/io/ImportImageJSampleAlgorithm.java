@@ -17,7 +17,7 @@ import ij.ImagePlus;
 import org.hkijena.jipipe.api.ConfigureJIPipeNode;
 import org.hkijena.jipipe.api.JIPipeProgressInfo;
 import org.hkijena.jipipe.api.SetJIPipeDocumentation;
-import org.hkijena.jipipe.api.environments.JIPipeEnvironment;
+import org.hkijena.jipipe.api.environments.JIPipeEnvironmentReference;
 import org.hkijena.jipipe.api.nodes.AddJIPipeOutputSlot;
 import org.hkijena.jipipe.api.nodes.JIPipeGraphNodeRunContext;
 import org.hkijena.jipipe.api.nodes.JIPipeNodeInfo;
@@ -69,9 +69,9 @@ public class ImportImageJSampleAlgorithm extends JIPipeSimpleIteratingAlgorithm 
 
     @Override
     protected void runIteration(JIPipeSingleIterationStep iterationStep, JIPipeIterationContext iterationContext, JIPipeGraphNodeRunContext runContext, JIPipeProgressInfo progressInfo) {
-        JIPipeDataDirectoryEnvironment environment = getDataDirectoryEnvironment();
+        JIPipeDataDirectoryEnvironment environment = getDataDirectoryEnvironment().getEnvironment();
         Path fileName = environment.getDirectory().resolve(sample.getFileName());
-        if(!Files.isRegularFile(fileName)) {
+        if (!Files.isRegularFile(fileName)) {
             throw new RuntimeException(new FileNotFoundException(fileName.toString()));
         }
 
@@ -80,27 +80,20 @@ public class ImportImageJSampleAlgorithm extends JIPipeSimpleIteratingAlgorithm 
     }
 
     @Override
-    public void getEnvironmentDependencies(List<JIPipeEnvironment> target) {
+    public void getEnvironmentDependencies(List<JIPipeEnvironmentReference<?>> target) {
         super.getEnvironmentDependencies(target);
-        JIPipeDataDirectoryEnvironment dataDirectory = getDataDirectoryEnvironment();
-        if(dataDirectory != null) {
-            target.add(dataDirectory);
-        }
+        target.add(getDataDirectoryEnvironment());
     }
 
-    public JIPipeDataDirectoryEnvironment getDataDirectoryEnvironment() {
-        if(dataDirectoryEnvironment.isEnabled()) {
-            return dataDirectoryEnvironment.getContent();
-        }
-        ImageSamplesProjectSettings settingsSheet = getProject().getSettingsSheet(ImageSamplesProjectSettings.class);
-        if(settingsSheet.getProjectDefaultEnvironment().isEnabled()) {
-            return settingsSheet.getProjectDefaultEnvironment().getContent();
-        }
+    public JIPipeEnvironmentReference<JIPipeDataDirectoryEnvironment> getDataDirectoryEnvironment() {
         ImageSamplesApplicationSettings applicationSettings = ImageSamplesApplicationSettings.getInstance();
-        if(applicationSettings.getDefaultEnvironment().isEnabled()) {
-            return applicationSettings.getDefaultEnvironment().getContent();
-        }
-        return applicationSettings.getReadOnlyDefaultEnvironment();
+        ImageSamplesProjectSettings settingsSheet = getProject().getSettingsSheet(ImageSamplesProjectSettings.class);
+
+        return JIPipeEnvironmentReference.defaultOptions(JIPipeDataDirectoryEnvironment.class)
+                .application(applicationSettings.getReadOnlyDefaultEnvironment())
+                .project(settingsSheet.getProjectDefaultEnvironment(), getProject())
+                .node(dataDirectoryEnvironment, this)
+                .select();
     }
 
     public enum Sample {

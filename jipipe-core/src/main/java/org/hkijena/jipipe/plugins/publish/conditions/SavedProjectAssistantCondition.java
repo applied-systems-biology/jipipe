@@ -14,7 +14,6 @@
 package org.hkijena.jipipe.plugins.publish.conditions;
 
 import org.hkijena.jipipe.JIPipe;
-import org.hkijena.jipipe.desktop.app.JIPipeDesktopProjectWorkbench;
 import org.hkijena.jipipe.desktop.app.publish.JIPipeDesktopPublisherAssistant;
 import org.hkijena.jipipe.desktop.app.publish.JIPipeDesktopPublisherAssistantCondition;
 import org.hkijena.jipipe.desktop.app.publish.JIPipeDesktopPublisherAssistantConditionStatus;
@@ -34,10 +33,9 @@ public class SavedProjectAssistantCondition extends JIPipeDesktopPublisherAssist
 
     @Override
     public JIPipeDesktopPublisherAssistantConditionStatus getStatus() {
-        if(getProject().getWorkDirectory() == null) {
+        if (getProject().getWorkDirectory() == null) {
             return JIPipeDesktopPublisherAssistantConditionStatus.Invalid;
-        }
-        else if(getDesktopProjectWorkbench().isProjectModified()) {
+        } else if (getDesktopProjectWorkbench().isProjectModified()) {
             return JIPipeDesktopPublisherAssistantConditionStatus.Warning;
         }
         return JIPipeDesktopPublisherAssistantConditionStatus.Valid;
@@ -56,8 +54,10 @@ public class SavedProjectAssistantCondition extends JIPipeDesktopPublisherAssist
     public HTMLText getAssistantDescription(JIPipeDesktopPublisherAssistantConditionStatus status) {
         return switch (status) {
             case Valid -> new HTMLText("The current project is saved and no modifications were detected");
-            case Invalid -> new HTMLText("Please save your project somewhere. Otherwise the export will not be able to work.");
-            case Warning -> new HTMLText("The project was modified. It is recommended to save the project prior to the export.");
+            case Invalid ->
+                    new HTMLText("Please save your project somewhere. Otherwise the export will not be able to work.");
+            case Warning ->
+                    new HTMLText("The project was modified. It is recommended to save the project prior to the export.");
         };
     }
 }

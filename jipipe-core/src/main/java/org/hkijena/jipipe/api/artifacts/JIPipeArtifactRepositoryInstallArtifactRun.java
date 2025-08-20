@@ -75,8 +75,7 @@ public class JIPipeArtifactRepositoryInstallArtifactRun extends JIPipeArtifactRe
             } catch (IOException e) {
                 throw new RuntimeException(e);
             }
-        }
-        else {
+        } else {
             Path tmpFile = JIPipeRuntimeApplicationSettings.getTemporaryFile("artifact", suffix);
             try {
                 //Download

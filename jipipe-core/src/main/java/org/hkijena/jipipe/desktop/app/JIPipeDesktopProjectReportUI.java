@@ -13,7 +13,6 @@
 
 package org.hkijena.jipipe.desktop.app;
 
-import com.google.common.collect.Sets;
 import com.google.common.escape.Escaper;
 import com.google.common.html.HtmlEscapers;
 import org.hkijena.jipipe.JIPipe;
@@ -21,10 +20,11 @@ import org.hkijena.jipipe.JIPipeDependency;
 import org.hkijena.jipipe.JIPipeImageJUpdateSiteDependency;
 import org.hkijena.jipipe.JIPipePlugin;
 import org.hkijena.jipipe.api.DefaultJIPipeRunnable;
-import org.hkijena.jipipe.api.metadata.JIPipeAuthorMetadata;
 import org.hkijena.jipipe.api.SetJIPipeDocumentation;
 import org.hkijena.jipipe.api.data.JIPipeDataInfo;
 import org.hkijena.jipipe.api.environments.JIPipeEnvironment;
+import org.hkijena.jipipe.api.environments.JIPipeEnvironmentReference;
+import org.hkijena.jipipe.api.metadata.JIPipeAuthorMetadata;
 import org.hkijena.jipipe.api.nodes.JIPipeGraphNode;
 import org.hkijena.jipipe.api.nodes.JIPipeNodeInfo;
 import org.hkijena.jipipe.api.parameters.*;
@@ -295,15 +295,16 @@ public class JIPipeDesktopProjectReportUI extends JIPipeDesktopProjectWorkbenchP
             }
             stringBuilder.append("</table>");
 
-            List<JIPipeEnvironment> externalEnvironments = new ArrayList<>();
+            List<JIPipeEnvironmentReference<?>> externalEnvironments = new ArrayList<>();
             for (JIPipeGraphNode graphNode : project.getGraph().getGraphNodes()) {
                 graphNode.getEnvironmentDependencies(externalEnvironments);
             }
+            externalEnvironments.removeIf(Objects::isNull);
             if (!externalEnvironments.isEmpty()) {
                 stringBuilder.append("<h3>External environments</h3>");
                 stringBuilder.append("<table>");
                 stringBuilder.append("<tr><th>Type</th><th>Name</th><th>Version</th><th>Source/URL</th></tr>");
-                for (JIPipeEnvironment externalEnvironment : Sets.newHashSet(externalEnvironments)) {
+                for (JIPipeEnvironment externalEnvironment : externalEnvironments.stream().map(JIPipeEnvironmentReference::getEnvironment).collect(Collectors.toSet())) {
                     stringBuilder.append("<tr>");
                     stringBuilder.append("<td>").append(escaper.escape(externalEnvironment.getClass().getSimpleName())).append("</td>");
                     stringBuilder.append("<td><strong>").append(escaper.escape(externalEnvironment.getName())).append("</strong></td>");

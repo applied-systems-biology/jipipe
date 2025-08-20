@@ -17,8 +17,6 @@ import org.hkijena.jipipe.JIPipe;
 import org.hkijena.jipipe.desktop.commons.components.JIPipeDesktopDocumentChangeListener;
 import org.hkijena.jipipe.utils.ColorUtils;
 import org.hkijena.jipipe.utils.UIUtils;
-import org.hkijena.jipipe.JIPipe;
-import org.jdesktop.swingx.JXTextField;
 
 import javax.swing.*;
 import javax.swing.event.DocumentEvent;
@@ -73,7 +71,10 @@ public class JIPipeDesktopSearchTextField extends JPanel implements Predicate<St
 
 
         JButton searchButton = new JButton(JIPipe.RESOURCES.getIcon16Inverted("actions/search.png"));
-        searchButton.addActionListener(e -> { textField.requestFocusInWindow(); textField.selectAll(); });
+        searchButton.addActionListener(e -> {
+            textField.requestFocusInWindow();
+            textField.selectAll();
+        });
         UIUtils.makeButtonFlat25x25(searchButton);
         searchButton.setRequestFocusEnabled(false);
         searchButton.setFocusable(false);

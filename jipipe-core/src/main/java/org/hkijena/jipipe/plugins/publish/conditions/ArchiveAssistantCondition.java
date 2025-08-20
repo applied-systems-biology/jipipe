@@ -20,10 +20,7 @@ import org.hkijena.jipipe.desktop.app.publish.JIPipeDesktopPublisherAssistant;
 import org.hkijena.jipipe.desktop.app.publish.JIPipeDesktopPublisherAssistantCondition;
 import org.hkijena.jipipe.desktop.app.publish.JIPipeDesktopPublisherAssistantConditionStatus;
 import org.hkijena.jipipe.plugins.parameters.library.markup.HTMLText;
-import org.hkijena.jipipe.utils.StringUtils;
 import org.hkijena.jipipe.utils.UIUtils;
-
-import javax.swing.*;
 
 public class ArchiveAssistantCondition extends JIPipeDesktopPublisherAssistantCondition {
     private JIPipeValidationReport lastReport;
@@ -49,15 +46,13 @@ public class ArchiveAssistantCondition extends JIPipeDesktopPublisherAssistantCo
     @Override
     public JIPipeDesktopPublisherAssistantConditionStatus getStatus() {
         this.lastReport = getProject().validateArchivability();
-        if(lastReport.isValid()) {
-            if(lastReport.getNumberOf(JIPipeValidationReportEntryLevel.Warning) > 0) {
+        if (lastReport.isValid()) {
+            if (lastReport.getNumberOf(JIPipeValidationReportEntryLevel.Warning) > 0) {
                 return JIPipeDesktopPublisherAssistantConditionStatus.Warning;
-            }
-            else {
+            } else {
                 return JIPipeDesktopPublisherAssistantConditionStatus.Valid;
             }
-        }
-        else {
+        } else {
             return JIPipeDesktopPublisherAssistantConditionStatus.Invalid;
         }
     }
@@ -75,8 +70,10 @@ public class ArchiveAssistantCondition extends JIPipeDesktopPublisherAssistantCo
     public HTMLText getAssistantDescription(JIPipeDesktopPublisherAssistantConditionStatus status) {
         return switch (status) {
             case Valid -> new HTMLText("The project and all input files will be automatically added");
-            case Warning -> new HTMLText(lastReport.getNumberOf(JIPipeValidationReportEntryLevel.Warning) + " warnings were generated. Please click the 'Show report' button to review them.");
-            case Invalid -> new HTMLText("Inputs cannot be archived. Please click the 'Show report' button to review the cause behind the issues.");
+            case Warning ->
+                    new HTMLText(lastReport.getNumberOf(JIPipeValidationReportEntryLevel.Warning) + " warnings were generated. Please click the 'Show report' button to review them.");
+            case Invalid ->
+                    new HTMLText("Inputs cannot be archived. Please click the 'Show report' button to review the cause behind the issues.");
         };
     }
 }

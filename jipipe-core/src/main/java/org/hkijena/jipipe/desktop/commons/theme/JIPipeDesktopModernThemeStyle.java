@@ -177,6 +177,10 @@ public class JIPipeDesktopModernThemeStyle {
     public JIPipeDesktopModernThemeStyle() {
     }
 
+    public static void main(String[] args) {
+        JsonUtils.saveToFile(new JIPipeDesktopModernThemeStyle(), Paths.get("/home/ruman/style.json"));
+    }
+
     public int getFontSizeHuge() {
         return fontSizeHuge;
     }
@@ -474,10 +478,9 @@ public class JIPipeDesktopModernThemeStyle {
     }
 
     public Color getIconBaseColor() {
-        if(brightness == JIPipeDesktopUIThemeBrightness.Light) {
+        if (brightness == JIPipeDesktopUIThemeBrightness.Light) {
             return new Color(0x6c707e);
-        }
-        else {
+        } else {
             return new Color(0xced0d6);
         }
     }
@@ -520,10 +523,6 @@ public class JIPipeDesktopModernThemeStyle {
 
     public void setNodeHighlightBorder(Color nodeHighlightBorder) {
         this.nodeHighlightBorder = nodeHighlightBorder;
-    }
-
-    public static void main(String[] args) {
-        JsonUtils.saveToFile(new JIPipeDesktopModernThemeStyle(), Paths.get("/home/ruman/style.json"));
     }
 
     public float getNodeFillSaturation() {

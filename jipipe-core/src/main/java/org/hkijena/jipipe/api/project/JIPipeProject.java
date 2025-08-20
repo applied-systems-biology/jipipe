@@ -34,6 +34,7 @@ import org.hkijena.jipipe.api.data.JIPipeData;
 import org.hkijena.jipipe.api.data.JIPipeDataSlot;
 import org.hkijena.jipipe.api.data.JIPipeOutputDataSlot;
 import org.hkijena.jipipe.api.environments.JIPipeEnvironment;
+import org.hkijena.jipipe.api.environments.JIPipeEnvironmentReference;
 import org.hkijena.jipipe.api.events.AbstractJIPipeEvent;
 import org.hkijena.jipipe.api.events.JIPipeEventEmitter;
 import org.hkijena.jipipe.api.history.JIPipeProjectHistoryJournal;
@@ -68,6 +69,7 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.*;
 import java.util.List;
+import java.util.stream.Collectors;
 
 /**
  * A JIPipe project.
@@ -661,6 +663,14 @@ public class JIPipeProject implements JIPipeValidatable {
     @Override
     public void reportValidity(JIPipeValidationReportContext reportContext, JIPipeValidationReport report) {
         graph.reportValidity(reportContext, report);
+
+        // TODO: validate environments
+//        // Validate environments
+//        List<JIPipeEnvironmentReference<?>> allEnvironments = new ArrayList<>();
+//        // Gather all environments from all active nodes
+//        for (JIPipeGraphNode graphNode : graph.getGraphNodes()) {
+//            graphNode.getEnvironmentDependencies(allEnvironments);
+//        }
     }
 
     /**
@@ -971,12 +981,13 @@ public class JIPipeProject implements JIPipeValidatable {
      * @throws IOException exceptions
      */
     private void writeExternalEnvironmentsJson(JsonGenerator generator) throws IOException {
-        List<JIPipeEnvironment> externalEnvironments = new ArrayList<>();
+        List<JIPipeEnvironmentReference<?>> externalEnvironments = new ArrayList<>();
         for (JIPipeGraphNode graphNode : getGraph().getGraphNodes()) {
             graphNode.getEnvironmentDependencies(externalEnvironments);
         }
+        externalEnvironments.removeIf(Objects::isNull);
         generator.writeArrayFieldStart("external-environments");
-        for (JIPipeEnvironment environment : Sets.newHashSet(externalEnvironments)) {
+        for (JIPipeEnvironment environment : externalEnvironments.stream().map(JIPipeEnvironmentReference::getEnvironment).collect(Collectors.toSet())) {
             generator.writeObject(environment);
         }
         generator.writeEndArray();

@@ -13,10 +13,9 @@
 
 package org.hkijena.jipipe.plugins.cellpose.parameters;
 
+import org.hkijena.jipipe.JIPipe;
 import org.hkijena.jipipe.plugins.parameters.api.enums.EnumItemInfo;
 import org.hkijena.jipipe.utils.StringUtils;
-import org.hkijena.jipipe.utils.UIUtils;
-import org.hkijena.jipipe.JIPipe;
 
 import javax.swing.*;
 

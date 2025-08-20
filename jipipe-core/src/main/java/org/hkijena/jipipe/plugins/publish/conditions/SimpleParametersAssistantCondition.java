@@ -47,8 +47,8 @@ public class SimpleParametersAssistantCondition extends JIPipeDesktopPublisherAs
         for (GraphNodeParameterReferenceGroup group : getProject().getPipelineParameters().getExportedParameters().getParameterReferenceGroups()) {
             for (GraphNodeParameterReference reference : group.getContent()) {
                 JIPipeParameterAccess access = reference.resolve(tree);
-                if(access != null) {
-                    if(!ParameterUtils.isSimpleType(access.getFieldClass())) {
+                if (access != null) {
+                    if (!ParameterUtils.isSimpleType(access.getFieldClass())) {
                         return JIPipeDesktopPublisherAssistantConditionStatus.Warning;
                     }
                 }
@@ -56,7 +56,7 @@ public class SimpleParametersAssistantCondition extends JIPipeDesktopPublisherAs
         }
 
         for (JIPipeParameterAccess access : getProject().getMetadata().getGlobalParameters().getParameters().values()) {
-            if(!ParameterUtils.isSimpleType(access.getFieldClass())) {
+            if (!ParameterUtils.isSimpleType(access.getFieldClass())) {
                 return JIPipeDesktopPublisherAssistantConditionStatus.Warning;
             }
         }
@@ -76,8 +76,7 @@ public class SimpleParametersAssistantCondition extends JIPipeDesktopPublisherAs
     public HTMLText getAssistantDescription(JIPipeDesktopPublisherAssistantConditionStatus status) {
         if (status == JIPipeDesktopPublisherAssistantConditionStatus.Valid) {
             return new HTMLText("No issues with any parameters that might be exported into the RO-Crate were detected");
-        }
-        else {
+        } else {
             return new HTMLText("Not all parameters can be exported into the RO-Crate, as only simple (boolean/numeric/text) parameters are supported. This will not change the behavior of the pipeline.");
         }
     }

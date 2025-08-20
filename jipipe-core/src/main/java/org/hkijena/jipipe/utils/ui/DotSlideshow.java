@@ -15,8 +15,8 @@ package org.hkijena.jipipe.utils.ui;
 
 import com.google.common.collect.BiMap;
 import com.google.common.collect.HashBiMap;
-import org.hkijena.jipipe.utils.UIUtils;
 import org.hkijena.jipipe.JIPipe;
+import org.hkijena.jipipe.utils.UIUtils;
 
 import javax.swing.*;
 import java.awt.*;

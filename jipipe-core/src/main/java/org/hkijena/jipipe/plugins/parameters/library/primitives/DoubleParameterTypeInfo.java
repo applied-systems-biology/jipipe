@@ -54,7 +54,7 @@ public class DoubleParameterTypeInfo implements JIPipeParameterTypeInfo {
         return "A 64-bit floating point number";
     }
 
-     @Override
+    @Override
     public List<JIPipeParameterTypeAllowedValueInfo> getAllowedValues() {
         return Collections.emptyList();
     }

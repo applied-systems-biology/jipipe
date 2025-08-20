@@ -14,9 +14,8 @@
 package org.hkijena.jipipe.plugins.imageviewer.legacy.plugins2d.roimanager;
 
 import ij.gui.Roi;
-import org.hkijena.jipipe.plugins.imagejdatatypes.datatypes.ROI2DListData;
-import org.hkijena.jipipe.utils.UIUtils;
 import org.hkijena.jipipe.JIPipe;
+import org.hkijena.jipipe.plugins.imagejdatatypes.datatypes.ROI2DListData;
 
 import javax.swing.*;
 import java.util.List;

@@ -16,15 +16,13 @@ package org.hkijena.jipipe.contrib.ro_crate;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
-
 import com.fasterxml.jackson.databind.SerializationFeature;
+import io.json.compare.JSONCompare;
+import io.json.compare.JsonComparator;
+import org.apache.commons.io.FileUtils;
 import org.hkijena.jipipe.contrib.ro_crate.entities.AbstractEntity;
 import org.hkijena.jipipe.contrib.ro_crate.objectmapper.MyObjectMapper;
 import org.hkijena.jipipe.contrib.ro_crate.special.JsonUtilFunctions;
-
-import org.apache.commons.io.FileUtils;
-import io.json.compare.JSONCompare;
-import io.json.compare.JsonComparator;
 import org.opentest4j.AssertionFailedError;
 
 import java.io.File;
@@ -36,6 +34,7 @@ import java.util.Comparator;
 import java.util.Map;
 import java.util.function.Function;
 import java.util.stream.Collectors;
+
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
 public class HelpFunctions {
@@ -49,7 +48,7 @@ public class HelpFunctions {
         assertEquals(expectedJson.size(), node.size());
         compare(expectedJson, node, true);
     }
-    
+
     public static void compare(JsonNode node1, JsonNode node2, Boolean equals) {
         var comparator = new JsonComparator() {
             public boolean compareValues(Object expected, Object actual) {
@@ -127,7 +126,7 @@ public class HelpFunctions {
     /**
      * Compares the JSON metadata of a Crate object with a JSON file in the resources directory.
      *
-     * @param crate1        The Crate object to compare.
+     * @param crate1         The Crate object to compare.
      * @param jsonFileString The path to the JSON file in the resources directory.
      * @throws IOException If an error occurs while reading the JSON file.
      */
@@ -156,7 +155,7 @@ public class HelpFunctions {
 
 
         if (compareWithMe.size() != testMe.size()) {
-            System.err.println("File map size difference " +  compareWithMe.size() + " and " + testMe.size());
+            System.err.println("File map size difference " + compareWithMe.size() + " and " + testMe.size());
             System.err.println("CompareWithMe:");
             compareWithMe.keySet().stream().sorted(Comparator.naturalOrder()).forEach(System.err::println);
             System.err.println("testMe:");

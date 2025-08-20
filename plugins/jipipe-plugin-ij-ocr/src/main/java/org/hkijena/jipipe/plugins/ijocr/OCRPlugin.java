@@ -19,6 +19,8 @@ import org.hkijena.jipipe.JIPipeDependency;
 import org.hkijena.jipipe.JIPipeJavaPlugin;
 import org.hkijena.jipipe.JIPipeMutableDependency;
 import org.hkijena.jipipe.api.JIPipeProgressInfo;
+import org.hkijena.jipipe.api.environments.JIPipeEnvironmentReference;
+import org.hkijena.jipipe.api.nodes.JIPipeGraphNode;
 import org.hkijena.jipipe.api.parameters.JIPipeParameterArchetype;
 import org.hkijena.jipipe.api.project.JIPipeProject;
 import org.hkijena.jipipe.plugins.JIPipePrepackagedDefaultJavaPlugin;
@@ -36,8 +38,6 @@ import org.hkijena.jipipe.plugins.parameters.library.markup.HTMLText;
 import org.hkijena.jipipe.plugins.parameters.library.primitives.list.StringList;
 import org.hkijena.jipipe.plugins.strings.StringsPlugin;
 import org.hkijena.jipipe.plugins.tables.TablesPlugin;
-import org.hkijena.jipipe.utils.UIUtils;
-import org.hkijena.jipipe.JIPipe;
 import org.scijava.Context;
 import org.scijava.plugin.Plugin;
 
@@ -59,14 +59,16 @@ public class OCRPlugin extends JIPipePrepackagedDefaultJavaPlugin {
     public OCRPlugin() {
     }
 
-    public static TesseractOCREnvironment getTesseractOCREnvironment(JIPipeProject project, OptionalTesseractOCREnvironment nodeEnvironment) {
-        if (nodeEnvironment != null && nodeEnvironment.isEnabled()) {
-            return nodeEnvironment.getContent();
+    public static JIPipeEnvironmentReference<TesseractOCREnvironment> getTesseractOCREnvironment(JIPipeProject project, OptionalTesseractOCREnvironment nodeEnvironment, JIPipeGraphNode node) {
+        var selector = JIPipeEnvironmentReference.defaultOptions(TesseractOCREnvironment.class)
+                .application(TesseractOCRApplicationSettings.getInstance().getReadOnlyDefaultEnvironment());
+        if (project != null) {
+            selector.project(project.getSettingsSheet(OCRPluginProjectSettings.class).getProjectDefaultEnvironment(), project);
         }
-        if (project != null && project.getSettingsSheet(OCRPluginProjectSettings.class).getProjectDefaultEnvironment().isEnabled()) {
-            return project.getSettingsSheet(OCRPluginProjectSettings.class).getProjectDefaultEnvironment().getContent();
+        if (nodeEnvironment != null) {
+            selector.node(nodeEnvironment, node);
         }
-        return TesseractOCRApplicationSettings.getInstance().getReadOnlyDefaultEnvironment();
+        return selector.select();
     }
 
     @Override

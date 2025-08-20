@@ -311,7 +311,7 @@ public class JIPipe extends AbstractService implements JIPipeService {
      * Helper to create JIPipe from a context.
      * Will create a new JIPipe instance, so be careful.
      * We recommend using the ensureInstance() method.
-     *
+     * <p>
      * Initializes JIPipe with GUI mode.
      *
      * @param context the context
@@ -326,7 +326,7 @@ public class JIPipe extends AbstractService implements JIPipeService {
      * We recommend using the ensureInstance() method.
      *
      * @param context the context
-     * @param mode the mode
+     * @param mode    the mode
      */
     public static JIPipe createInstance(Context context, JIPipeMode mode) {
         PluginService pluginService = context.getService(PluginService.class);

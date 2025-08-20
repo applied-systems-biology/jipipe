@@ -17,8 +17,6 @@ import org.hkijena.jipipe.JIPipe;
 import org.hkijena.jipipe.plugins.tables.datatypes.DoubleArrayTableColumnData;
 import org.hkijena.jipipe.plugins.tables.datatypes.StringArrayTableColumnData;
 import org.hkijena.jipipe.plugins.tables.datatypes.TableColumnData;
-import org.hkijena.jipipe.utils.UIUtils;
-import org.hkijena.jipipe.JIPipe;
 
 import javax.swing.*;
 import java.awt.*;

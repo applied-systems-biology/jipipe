@@ -1,16 +1,13 @@
 package org.hkijena.jipipe.contrib.ro_crate.externalproviders;
 
-import java.io.IOException;
-
 import org.hkijena.jipipe.contrib.ro_crate.entities.contextual.OrganizationEntity;
 import org.hkijena.jipipe.contrib.ro_crate.externalproviders.organizationprovider.RorProvider;
 import org.junit.jupiter.api.Assertions;
-
 import org.junit.jupiter.api.Test;
 
-import static org.junit.jupiter.api.Assertions.assertNotNull;
-import static org.junit.jupiter.api.Assertions.assertNull;
-import static org.junit.jupiter.api.Assertions.assertThrows;
+import java.io.IOException;
+
+import static org.junit.jupiter.api.Assertions.*;
 
 /**
  * @author Nikola Tzotchev on 11.2.2022 г.

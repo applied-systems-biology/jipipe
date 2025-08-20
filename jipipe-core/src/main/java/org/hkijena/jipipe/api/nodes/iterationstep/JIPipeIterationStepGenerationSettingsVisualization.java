@@ -86,11 +86,11 @@ public class JIPipeIterationStepGenerationSettingsVisualization {
     public static final class Builder {
 
         private final Map<String, String> trackedValues = new HashMap<>();
+        private final JIPipeIterationStepGenerationSettingsVisualization result = new JIPipeIterationStepGenerationSettingsVisualization();
         private boolean showVisualization;
         private boolean isFiltering;
         private boolean isSkipIncomplete;
         private JIPipeIterationStepTextAnnotationColumMatching columMatching = JIPipeIterationStepTextAnnotationColumMatching.PrefixHashUnion;
-        private final JIPipeIterationStepGenerationSettingsVisualization result = new JIPipeIterationStepGenerationSettingsVisualization();
 
 
         public Builder() {
@@ -154,7 +154,7 @@ public class JIPipeIterationStepGenerationSettingsVisualization {
             };
 
             // Center icon
-            if(StringUtils.isNullOrEmpty(result.iconCenter)) {
+            if (StringUtils.isNullOrEmpty(result.iconCenter)) {
                 if (isFiltering) {
                     result.iconCenter = "nodeui/data-flow-filter-16x32.png";
                 } else if (columMatching == JIPipeIterationStepTextAnnotationColumMatching.MergeAll) {
@@ -165,13 +165,11 @@ public class JIPipeIterationStepGenerationSettingsVisualization {
             }
 
             // Bottom icon
-            if(columMatching == JIPipeIterationStepTextAnnotationColumMatching.MergeAll) {
+            if (columMatching == JIPipeIterationStepTextAnnotationColumMatching.MergeAll) {
                 result.iconOutput = "actions/data-flow-iteration-steps-single.png";
-            }
-            else if(isSkipIncomplete) {
+            } else if (isSkipIncomplete) {
                 result.iconOutput = "actions/view-filter.png";
-            }
-            else {
+            } else {
                 result.iconOutput = "actions/data-flow-iteration-steps-m.png";
             }
 
@@ -182,7 +180,7 @@ public class JIPipeIterationStepGenerationSettingsVisualization {
         }
 
         public Builder setCenterIcon(String icon) {
-            result.iconCenter =  icon;
+            result.iconCenter = icon;
             return this;
         }
     }

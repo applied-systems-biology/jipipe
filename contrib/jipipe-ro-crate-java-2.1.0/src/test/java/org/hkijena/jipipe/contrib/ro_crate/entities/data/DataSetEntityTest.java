@@ -2,15 +2,13 @@ package org.hkijena.jipipe.contrib.ro_crate.entities.data;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.node.ObjectNode;
-
-import java.io.IOException;
-
 import org.hkijena.jipipe.contrib.ro_crate.HelpFunctions;
 import org.hkijena.jipipe.contrib.ro_crate.objectmapper.MyObjectMapper;
+import org.junit.jupiter.api.Test;
+
+import java.io.IOException;
 import java.net.URI;
 import java.nio.file.Paths;
-
-import org.junit.jupiter.api.Test;
 
 import static org.junit.jupiter.api.Assertions.*;
 
@@ -97,7 +95,7 @@ public class DataSetEntityTest {
                 .addProperty("encodingFormat", "application/zip")
                 .addProperty("contentSize", "82818928")
                 .build();
-        
+
         assertNotNull(webDir);
     }
 }

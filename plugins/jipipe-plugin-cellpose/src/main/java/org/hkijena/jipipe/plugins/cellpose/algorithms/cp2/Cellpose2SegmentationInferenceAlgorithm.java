@@ -25,7 +25,7 @@ import org.hkijena.jipipe.api.data.JIPipeDataSlotRole;
 import org.hkijena.jipipe.api.data.JIPipeInputDataSlot;
 import org.hkijena.jipipe.api.data.JIPipeSlotType;
 import org.hkijena.jipipe.api.environments.ExternalEnvironmentParameterSettings;
-import org.hkijena.jipipe.api.environments.JIPipeEnvironment;
+import org.hkijena.jipipe.api.environments.JIPipeEnvironmentReference;
 import org.hkijena.jipipe.api.nodes.AddJIPipeInputSlot;
 import org.hkijena.jipipe.api.nodes.AddJIPipeOutputSlot;
 import org.hkijena.jipipe.api.nodes.JIPipeGraphNodeRunContext;
@@ -155,7 +155,7 @@ public class Cellpose2SegmentationInferenceAlgorithm extends JIPipeSingleIterati
     }
 
     @Override
-    public void getEnvironmentDependencies(List<JIPipeEnvironment> target) {
+    public void getEnvironmentDependencies(List<JIPipeEnvironmentReference<?>> target) {
         super.getEnvironmentDependencies(target);
         target.add(getConfiguredCellposeEnvironment());
     }
@@ -294,7 +294,7 @@ public class Cellpose2SegmentationInferenceAlgorithm extends JIPipeSingleIterati
             arguments.add(io2DPath.toString());
             arguments.add(io2DPath.toString());
             PythonUtils.runPython(arguments.toArray(new String[0]),
-                    getConfiguredCellposeEnvironment(),
+                    getConfiguredCellposeEnvironment().getEnvironment(),
                     Collections.emptyList(),
                     Collections.emptyMap(),
                     suppressLogs,
@@ -309,7 +309,7 @@ public class Cellpose2SegmentationInferenceAlgorithm extends JIPipeSingleIterati
             arguments.add(io3DPath.toString());
             arguments.add(io3DPath.toString());
             PythonUtils.runPython(arguments.toArray(new String[0]),
-                    getConfiguredCellposeEnvironment(),
+                    getConfiguredCellposeEnvironment().getEnvironment(),
                     Collections.emptyList(),
                     Collections.emptyMap(),
                     suppressLogs,
@@ -459,7 +459,7 @@ public class Cellpose2SegmentationInferenceAlgorithm extends JIPipeSingleIterati
         arguments.add(ioPath.toString());
 
         // Run the module
-        CellposeUtils.runCellpose(getConfiguredCellposeEnvironment(),
+        CellposeUtils.runCellpose(getConfiguredCellposeEnvironment().getEnvironment(),
                 arguments,
                 suppressLogs,
                 progressInfo);

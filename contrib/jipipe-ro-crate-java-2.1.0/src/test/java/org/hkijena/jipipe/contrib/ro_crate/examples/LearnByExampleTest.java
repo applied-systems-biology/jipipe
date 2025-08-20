@@ -1,5 +1,6 @@
 package org.hkijena.jipipe.contrib.ro_crate.examples;
 
+import org.apache.commons.io.FileUtils;
 import org.hkijena.jipipe.contrib.ro_crate.HelpFunctions;
 import org.hkijena.jipipe.contrib.ro_crate.RoCrate;
 import org.hkijena.jipipe.contrib.ro_crate.entities.contextual.ContextualEntity;
@@ -17,10 +18,9 @@ import org.hkijena.jipipe.contrib.ro_crate.reader.Readers;
 import org.hkijena.jipipe.contrib.ro_crate.validation.JsonSchemaValidation;
 import org.hkijena.jipipe.contrib.ro_crate.validation.Validator;
 import org.hkijena.jipipe.contrib.ro_crate.writer.CrateWriter;
-import org.hkijena.jipipe.contrib.ro_crate.writer.WriteFolderStrategy;
 import org.hkijena.jipipe.contrib.ro_crate.writer.GenericWriterStrategy;
+import org.hkijena.jipipe.contrib.ro_crate.writer.WriteFolderStrategy;
 import org.hkijena.jipipe.contrib.ro_crate.writer.Writers;
-import org.apache.commons.io.FileUtils;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.io.TempDir;
 
@@ -355,15 +355,15 @@ public class LearnByExampleTest {
      * ro-crate-java offers three different ways to create this file:
      * <p>
      * - AutomaticPreview: Uses third-party library
-     *   <a href="https://www.npmjs.com/package/ro-crate-html-js">ro-crate-html-js</a>,
-     *   which must be installed separately via `npm install --global ro-crate-html-js`.
-     *   <p>
+     * <a href="https://www.npmjs.com/package/ro-crate-html-js">ro-crate-html-js</a>,
+     * which must be installed separately via `npm install --global ro-crate-html-js`.
+     * <p>
      * - CustomPreview: Pure Java-based preview using an included template processed by
-     *   the FreeMarker template engine. At the same time, CustomPreview is the fallback
-     *   for AutomaticPreview if ro-crate-html-js is not installed.
-     *   <p>
+     * the FreeMarker template engine. At the same time, CustomPreview is the fallback
+     * for AutomaticPreview if ro-crate-html-js is not installed.
+     * <p>
      * - StaticPreview: Allows to provide a static HTML page (including additional
-     *   dependencies, e.g., CSS, JS) which is then shipped with the RO-Crate.
+     * dependencies, e.g., CSS, JS) which is then shipped with the RO-Crate.
      * <p>
      * When creating a new RO-Crate using the builder, the default setting is to use
      * CustomPreview. This example shows you how to change it.

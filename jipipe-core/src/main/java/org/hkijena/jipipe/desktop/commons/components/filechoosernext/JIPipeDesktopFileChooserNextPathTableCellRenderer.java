@@ -1,6 +1,5 @@
 package org.hkijena.jipipe.desktop.commons.components.filechoosernext;
 
-import org.hkijena.jipipe.utils.UIUtils;
 import org.hkijena.jipipe.JIPipe;
 
 import javax.swing.*;

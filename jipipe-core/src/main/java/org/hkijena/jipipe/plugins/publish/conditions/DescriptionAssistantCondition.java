@@ -19,13 +19,10 @@ import org.hkijena.jipipe.desktop.app.publish.JIPipeDesktopPublisherAssistantCon
 import org.hkijena.jipipe.desktop.app.publish.JIPipeDesktopPublisherAssistantConditionStatus;
 import org.hkijena.jipipe.desktop.commons.components.markup.JIPipeDesktopHTMLEditor;
 import org.hkijena.jipipe.plugins.parameters.library.markup.HTMLText;
-import org.hkijena.jipipe.utils.LicenseUtils;
 import org.hkijena.jipipe.utils.StringUtils;
 import org.hkijena.jipipe.utils.UIUtils;
 
-import javax.swing.*;
 import java.awt.*;
-import java.util.Arrays;
 
 public class DescriptionAssistantCondition extends JIPipeDesktopPublisherAssistantCondition {
     public DescriptionAssistantCondition(JIPipeDesktopPublisherAssistant assistant) {

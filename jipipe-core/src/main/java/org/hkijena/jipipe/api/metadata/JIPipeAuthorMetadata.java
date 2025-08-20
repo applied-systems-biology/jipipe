@@ -350,10 +350,9 @@ public class JIPipeAuthorMetadata extends AbstractJIPipeParameterCollection {
     }
 
     public String getUniqueId() {
-        if(!StringUtils.isNullOrEmpty(getOrcidUrl())) {
+        if (!StringUtils.isNullOrEmpty(getOrcidUrl())) {
             return getOrcidUrl();
-        }
-        else {
+        } else {
             return getEmail();
         }
     }
@@ -373,10 +372,9 @@ public class JIPipeAuthorMetadata extends AbstractJIPipeParameterCollection {
         }
         for (JIPipeOrganizationMetadata affiliation : other.getAffiliations()) {
             int i = affiliations.indexOf(affiliation);
-            if(i >= 0) {
+            if (i >= 0) {
                 affiliations.get(i).mergeWith(affiliation);
-            }
-            else {
+            } else {
                 affiliations.add(affiliation);
             }
         }

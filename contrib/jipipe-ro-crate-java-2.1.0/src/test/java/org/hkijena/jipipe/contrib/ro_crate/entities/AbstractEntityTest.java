@@ -11,7 +11,8 @@ import org.junit.jupiter.params.provider.ValueSource;
 
 import java.util.Optional;
 
-import static org.junit.jupiter.api.Assertions.*;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
 class AbstractEntityTest {
 
@@ -34,7 +35,7 @@ class AbstractEntityTest {
         String id = "test-id";
         Optional<JsonNode> result = AbstractEntity.mergeIdIntoValue(id, null);
 
-         // Should return a value for valid ID
+        // Should return a value for valid ID
         JsonNode node = result.orElseThrow();
         assertTrue(node.isObject(), "Should return an object");
         assertEquals(id, node.get("@id").asText(), "Should contain the ID");

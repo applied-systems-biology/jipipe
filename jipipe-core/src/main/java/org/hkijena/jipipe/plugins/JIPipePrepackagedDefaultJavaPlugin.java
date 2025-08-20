@@ -16,7 +16,6 @@ package org.hkijena.jipipe.plugins;
 import org.hkijena.jipipe.JIPipeDefaultJavaPlugin;
 import org.hkijena.jipipe.api.metadata.JIPipeAuthorMetadata;
 import org.hkijena.jipipe.api.metadata.JIPipeOrganizationMetadata;
-import org.hkijena.jipipe.plugins.parameters.library.primitives.list.StringList;
 import org.hkijena.jipipe.utils.ResourceUtils;
 import org.hkijena.jipipe.utils.VersionUtils;
 

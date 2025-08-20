@@ -63,9 +63,6 @@ import org.hkijena.jipipe.plugins.tables.parameters.enums.TableColumnGeneratorPa
 import org.hkijena.jipipe.plugins.tables.parameters.enums.TableColumnIntegrationParameter;
 import org.hkijena.jipipe.plugins.tables.parameters.processors.*;
 import org.hkijena.jipipe.utils.JIPipeResourceManager;
-import org.hkijena.jipipe.utils.ResourceUtils;
-import org.hkijena.jipipe.utils.UIUtils;
-import org.hkijena.jipipe.JIPipe;
 import org.scijava.Context;
 import org.scijava.plugin.Plugin;
 

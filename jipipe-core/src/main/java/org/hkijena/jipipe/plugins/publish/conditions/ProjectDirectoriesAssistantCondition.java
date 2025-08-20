@@ -14,17 +14,12 @@
 package org.hkijena.jipipe.plugins.publish.conditions;
 
 import org.hkijena.jipipe.JIPipe;
-import org.hkijena.jipipe.api.grouping.parameters.GraphNodeParameterReference;
-import org.hkijena.jipipe.api.grouping.parameters.GraphNodeParameterReferenceGroup;
-import org.hkijena.jipipe.api.parameters.JIPipeParameterAccess;
-import org.hkijena.jipipe.api.parameters.JIPipeParameterTree;
 import org.hkijena.jipipe.api.project.JIPipeProjectDirectories;
 import org.hkijena.jipipe.desktop.app.JIPipeDesktopProjectWorkbench;
 import org.hkijena.jipipe.desktop.app.publish.JIPipeDesktopPublisherAssistant;
 import org.hkijena.jipipe.desktop.app.publish.JIPipeDesktopPublisherAssistantCondition;
 import org.hkijena.jipipe.desktop.app.publish.JIPipeDesktopPublisherAssistantConditionStatus;
 import org.hkijena.jipipe.plugins.parameters.library.markup.HTMLText;
-import org.hkijena.jipipe.utils.ParameterUtils;
 import org.hkijena.jipipe.utils.StringUtils;
 import org.hkijena.jipipe.utils.UIUtils;
 
@@ -50,18 +45,16 @@ public class ProjectDirectoriesAssistantCondition extends JIPipeDesktopPublisher
         Set<String> knownKeys = new HashSet<>();
         JIPipeDesktopPublisherAssistantConditionStatus result = JIPipeDesktopPublisherAssistantConditionStatus.Valid;
         for (JIPipeProjectDirectories.DirectoryEntry directoryEntry : getProject().getMetadata().getDirectories().getDirectoriesAsInstance()) {
-            if(StringUtils.isNullOrEmpty(directoryEntry.getKey())) {
+            if (StringUtils.isNullOrEmpty(directoryEntry.getKey())) {
                 return JIPipeDesktopPublisherAssistantConditionStatus.Invalid;
-            }
-            else if(knownKeys.contains(directoryEntry.getKey())) {
+            } else if (knownKeys.contains(directoryEntry.getKey())) {
                 return JIPipeDesktopPublisherAssistantConditionStatus.Invalid;
-            }
-            else {
+            } else {
                 knownKeys.add(directoryEntry.getKey());
             }
 
             // We want well-defined roles!
-            if(directoryEntry.getRole() != JIPipeProjectDirectories.Role.Input && directoryEntry.getRole() != JIPipeProjectDirectories.Role.Output) {
+            if (directoryEntry.getRole() != JIPipeProjectDirectories.Role.Input && directoryEntry.getRole() != JIPipeProjectDirectories.Role.Output) {
                 result = JIPipeDesktopPublisherAssistantConditionStatus.Warning;
             }
         }
@@ -82,7 +75,7 @@ public class ProjectDirectoriesAssistantCondition extends JIPipeDesktopPublisher
         return switch (status) {
             case Valid -> new HTMLText("Project directories will be archived");
             case Warning -> new HTMLText("We recommend to specify the role of each project directory (input/output)");
-            case Invalid ->  new HTMLText("There are duplicate or empty project directory keys");
+            case Invalid -> new HTMLText("There are duplicate or empty project directory keys");
         };
     }
 }

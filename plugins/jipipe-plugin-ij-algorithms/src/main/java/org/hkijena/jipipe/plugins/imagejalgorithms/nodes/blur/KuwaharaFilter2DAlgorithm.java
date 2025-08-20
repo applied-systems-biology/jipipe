@@ -85,7 +85,7 @@ public class KuwaharaFilter2DAlgorithm extends JIPipeSimpleIteratingAlgorithm {
         ImagePlus outputImg;
         ImageStack kernel;
 
-        if(linearKuwahara) {
+        if (linearKuwahara) {
             progressInfo.log("Using linear Kuwahara implementation");
 
             Kuwahara_LinearStructure_Filter_v3 kuwahara = new Kuwahara_LinearStructure_Filter_v3();
@@ -100,8 +100,7 @@ public class KuwaharaFilter2DAlgorithm extends JIPipeSimpleIteratingAlgorithm {
                 kuwahara.filter(copy, kernel);
                 return copy;
             }, progressInfo);
-        }
-        else {
+        } else {
             progressInfo.log("Using regular Kuwahara implementation");
             Kuwahara kuwahara = new Kuwahara();
             kuwahara.setSize(lineLength);
@@ -118,9 +117,8 @@ public class KuwaharaFilter2DAlgorithm extends JIPipeSimpleIteratingAlgorithm {
         }
 
 
-
         List<JIPipeDataAnnotation> dataAnnotations = new ArrayList<>();
-        if(kernelDataAnnotation.isEnabled()) {
+        if (kernelDataAnnotation.isEnabled()) {
             dataAnnotations.add(new JIPipeDataAnnotation(kernelDataAnnotation.getContent(), new ImagePlusData(new ImagePlus("Kernels", kernel))));
         }
 

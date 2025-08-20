@@ -18,13 +18,15 @@ import org.hkijena.jipipe.JIPipe;
 import org.hkijena.jipipe.JIPipeDependency;
 import org.hkijena.jipipe.JIPipeJavaPlugin;
 import org.hkijena.jipipe.JIPipeMutableDependency;
-import org.hkijena.jipipe.api.metadata.JIPipeAuthorMetadata;
 import org.hkijena.jipipe.api.JIPipeProgressInfo;
 import org.hkijena.jipipe.api.artifacts.JIPipeArtifact;
 import org.hkijena.jipipe.api.artifacts.JIPipeArtifactRepositoryInstallArtifactRun;
 import org.hkijena.jipipe.api.artifacts.JIPipeLocalArtifact;
 import org.hkijena.jipipe.api.artifacts.JIPipeRemoteArtifact;
+import org.hkijena.jipipe.api.environments.JIPipeEnvironmentReference;
+import org.hkijena.jipipe.api.metadata.JIPipeAuthorMetadata;
 import org.hkijena.jipipe.api.metadata.JIPipeOrganizationMetadata;
+import org.hkijena.jipipe.api.nodes.JIPipeGraphNode;
 import org.hkijena.jipipe.api.parameters.JIPipeParameterArchetype;
 import org.hkijena.jipipe.api.project.JIPipeProject;
 import org.hkijena.jipipe.api.validation.contexts.UnspecifiedValidationReportContext;
@@ -96,18 +98,20 @@ public class IlastikPlugin extends JIPipePrepackagedDefaultJavaPlugin {
         environment.runExecutable(parameters, environmentVariables, detached, progressInfo);
     }
 
-    public static IlastikEnvironment getEnvironment(JIPipeProject project, OptionalIlastikEnvironment nodeEnvironment) {
-        if (nodeEnvironment != null && nodeEnvironment.isEnabled()) {
-            return nodeEnvironment.getContent();
+    public static JIPipeEnvironmentReference<IlastikEnvironment> getEnvironment(JIPipeProject project, OptionalIlastikEnvironment nodeEnvironment, JIPipeGraphNode node) {
+        var selector = JIPipeEnvironmentReference.defaultOptions(IlastikEnvironment.class)
+                .application(IlastikPluginApplicationSettings.getInstance().getReadOnlyDefaultEnvironment());
+        if (nodeEnvironment != null) {
+            selector.node(nodeEnvironment, node);
         }
-        if (project != null && project.getSettingsSheet(IlastikPluginProjectSettings.class).getProjectDefaultEnvironment().isEnabled()) {
-            return project.getSettingsSheet(IlastikPluginProjectSettings.class).getProjectDefaultEnvironment().getContent();
+        if (project != null) {
+            selector.project(project.getSettingsSheet(IlastikPluginProjectSettings.class).getProjectDefaultEnvironment(), project);
         }
-        return IlastikPluginApplicationSettings.getInstance().getReadOnlyDefaultEnvironment();
+        return selector.select();
     }
 
     public static void launchIlastik(JIPipeDesktopWorkbench workbench, List<String> arguments) {
-        IlastikEnvironment environment = IlastikPlugin.getEnvironment(workbench.getProject(), null);
+        IlastikEnvironment environment = IlastikPlugin.getEnvironment(workbench.getProject(), null, null).getEnvironment();
         if (!environment.generateValidityReport(new UnspecifiedValidationReportContext()).isValid()) {
             JOptionPane.showMessageDialog(workbench.getWindow(),
                     "Ilastik is currently not correctly installed. Please check the project/application settings and ensure that Ilastik is setup correctly.",

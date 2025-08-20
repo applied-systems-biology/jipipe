@@ -26,6 +26,7 @@ import org.hkijena.jipipe.api.data.JIPipeDataSlotInfo;
 import org.hkijena.jipipe.api.data.JIPipeDefaultMutableSlotConfiguration;
 import org.hkijena.jipipe.api.data.JIPipeSlotType;
 import org.hkijena.jipipe.api.environments.JIPipeEnvironment;
+import org.hkijena.jipipe.api.environments.JIPipeEnvironmentReference;
 import org.hkijena.jipipe.api.nodes.AddJIPipeInputSlot;
 import org.hkijena.jipipe.api.nodes.AddJIPipeOutputSlot;
 import org.hkijena.jipipe.api.nodes.JIPipeGraphNodeRunContext;
@@ -227,12 +228,12 @@ public class Cellpose1InferenceAlgorithm extends JIPipeSingleIterationAlgorithm 
     }
 
     @Override
-    public void getEnvironmentDependencies(List<JIPipeEnvironment> target) {
+    public void getEnvironmentDependencies(List<JIPipeEnvironmentReference<?>> target) {
         super.getEnvironmentDependencies(target);
         if (overrideEnvironment.isEnabled()) {
-            target.add(overrideEnvironment.getContent());
+            target.add(new JIPipeEnvironmentReference<JIPipeEnvironment>(overrideEnvironment.getContent(), JIPipeEnvironmentReference.SourceType.Node, this));
         } else {
-            target.add(Cellpose2PluginApplicationSettings.getInstance().getReadOnlyDefaultEnvironment());
+            target.add(new JIPipeEnvironmentReference<JIPipeEnvironment>(Cellpose2PluginApplicationSettings.getInstance().getReadOnlyDefaultEnvironment(), JIPipeEnvironmentReference.SourceType.Application, null));
         }
     }
 

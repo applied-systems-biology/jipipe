@@ -38,8 +38,6 @@ import org.hkijena.jipipe.plugins.strings.nodes.xml.AnnotateWithXPathDataAlgorit
 import org.hkijena.jipipe.plugins.strings.nodes.xml.ExtractTextFromXMLAlgorithm;
 import org.hkijena.jipipe.plugins.strings.nodes.xml.ExtractXPathDataAsTableAlgorithm;
 import org.hkijena.jipipe.plugins.strings.nodes.xml.PrettifyXMLAlgorithm;
-import org.hkijena.jipipe.utils.UIUtils;
-import org.hkijena.jipipe.JIPipe;
 import org.scijava.Context;
 import org.scijava.plugin.Plugin;
 

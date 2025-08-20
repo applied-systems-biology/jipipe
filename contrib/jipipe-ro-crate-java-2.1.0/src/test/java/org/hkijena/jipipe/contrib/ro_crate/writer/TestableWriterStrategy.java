@@ -1,13 +1,13 @@
 package org.hkijena.jipipe.contrib.ro_crate.writer;
 
+import net.lingala.zip4j.ZipFile;
+import org.apache.commons.io.FileUtils;
 import org.hkijena.jipipe.contrib.ro_crate.Crate;
 import org.hkijena.jipipe.contrib.ro_crate.RoCrate;
 import org.hkijena.jipipe.contrib.ro_crate.entities.data.DataSetEntity;
 import org.hkijena.jipipe.contrib.ro_crate.entities.data.FileEntity;
 import org.hkijena.jipipe.contrib.ro_crate.preview.AutomaticPreview;
 import org.hkijena.jipipe.contrib.ro_crate.preview.PreviewGenerator;
-import net.lingala.zip4j.ZipFile;
-import org.apache.commons.io.FileUtils;
 import org.junit.jupiter.api.Assertions;
 
 import java.io.IOException;
@@ -22,7 +22,7 @@ interface TestableWriterStrategy {
     /**
      * Saves the crate with the writer fitting to this test class.
      *
-     * @param crate the crate to save
+     * @param crate  the crate to save
      * @param target the target path to the save location
      * @throws IOException if an error occurs while saving the crate
      */
@@ -31,8 +31,8 @@ interface TestableWriterStrategy {
     /**
      * Ensures the crate is in extracted form in the given path.
      *
-     * @param pathToCrate       the path to the crate, may not be a folder yet
-     * @param expectedPath      the path where the crate should be in extracted form
+     * @param pathToCrate  the path to the crate, may not be a folder yet
+     * @param expectedPath the path where the crate should be in extracted form
      * @throws IOException if an error occurs while extracting the crate
      */
     default void ensureCrateIsExtractedIn(Path pathToCrate, Path expectedPath) throws IOException {
@@ -86,7 +86,7 @@ interface TestableWriterStrategy {
     /**
      * Creates a crate resembling the one we manually create in these tests.
      *
-     * @param pathToFile      the file to add
+     * @param pathToFile   the file to add
      * @param pathToSubdir the directory to add
      * @return the crate builder
      */

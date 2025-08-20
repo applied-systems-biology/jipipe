@@ -13,9 +13,8 @@
 
 package org.hkijena.jipipe.desktop.app.resultanalysis.renderers;
 
-import org.hkijena.jipipe.api.data.serialization.JIPipeDataTableInfo;
-import org.hkijena.jipipe.utils.UIUtils;
 import org.hkijena.jipipe.JIPipe;
+import org.hkijena.jipipe.api.data.serialization.JIPipeDataTableInfo;
 
 import javax.swing.*;
 import javax.swing.table.TableCellRenderer;

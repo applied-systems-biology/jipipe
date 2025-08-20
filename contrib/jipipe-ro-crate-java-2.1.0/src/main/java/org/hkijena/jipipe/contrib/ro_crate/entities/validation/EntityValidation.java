@@ -8,17 +8,17 @@ import com.fasterxml.jackson.databind.JsonNode;
  */
 public class EntityValidation {
 
-  private final EntityValidationStrategy strategy;
+    private final EntityValidationStrategy strategy;
 
-  public EntityValidation(EntityValidationStrategy strategy) {
-    this.strategy = strategy;
-  }
+    public EntityValidation(EntityValidationStrategy strategy) {
+        this.strategy = strategy;
+    }
 
-  public boolean entityValidation(JsonNode entity) {
-    return strategy.validateEntity(entity);
-  }
+    public boolean entityValidation(JsonNode entity) {
+        return strategy.validateEntity(entity);
+    }
 
-  public boolean fieldValidation(JsonNode entity) {
-    return strategy.validateFieldOfEntity(entity);
-  }
+    public boolean fieldValidation(JsonNode entity) {
+        return strategy.validateFieldOfEntity(entity);
+    }
 }

@@ -29,7 +29,8 @@ public enum RoiOutline {
     DeleteFitSpline("Remove spline fit"),
     FitSplineStraighten("Fit spline (straightening)"),
     AreaToLine("Area to line"),
-    LineToArea("Line to area"),;
+    LineToArea("Line to area"),
+    ;
 
     private final String label;
 

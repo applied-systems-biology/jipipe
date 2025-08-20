@@ -13,7 +13,6 @@
 
 package org.hkijena.jipipe.desktop.commons.theme.ui;
 
-import org.hkijena.jipipe.utils.UIUtils;
 import org.hkijena.jipipe.JIPipe;
 
 import javax.swing.*;

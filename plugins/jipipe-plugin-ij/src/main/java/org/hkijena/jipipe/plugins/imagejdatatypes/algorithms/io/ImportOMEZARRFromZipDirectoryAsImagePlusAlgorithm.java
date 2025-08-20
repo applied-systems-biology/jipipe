@@ -136,10 +136,9 @@ public class ImportOMEZARRFromZipDirectoryAsImagePlusAlgorithm extends JIPipeSim
                 variablesMap.put("metadata_class", StringUtils.nullToEmpty(metadataClass));
 
                 boolean result = !datasetFilter.getContent().evaluateToBoolean(variablesMap);
-                if(result) {
+                if (result) {
                     progressInfo.log("Node " + fullPath + " -> will not be imported");
-                }
-                else {
+                } else {
                     progressInfo.log("Node " + fullPath + " -> will imported");
                 }
                 return result;

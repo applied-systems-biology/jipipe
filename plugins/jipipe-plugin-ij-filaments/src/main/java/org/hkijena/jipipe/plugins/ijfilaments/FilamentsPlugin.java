@@ -19,6 +19,8 @@ import org.hkijena.jipipe.JIPipeDependency;
 import org.hkijena.jipipe.JIPipeJavaPlugin;
 import org.hkijena.jipipe.JIPipeMutableDependency;
 import org.hkijena.jipipe.api.JIPipeProgressInfo;
+import org.hkijena.jipipe.api.environments.JIPipeEnvironmentReference;
+import org.hkijena.jipipe.api.nodes.JIPipeGraphNode;
 import org.hkijena.jipipe.api.parameters.JIPipeParameterArchetype;
 import org.hkijena.jipipe.api.project.JIPipeProject;
 import org.hkijena.jipipe.plugins.JIPipePrepackagedDefaultJavaPlugin;
@@ -58,8 +60,6 @@ import org.hkijena.jipipe.plugins.scene3d.Scene3DPlugin;
 import org.hkijena.jipipe.plugins.strings.StringsPlugin;
 import org.hkijena.jipipe.plugins.tables.TablesPlugin;
 import org.hkijena.jipipe.utils.JIPipeResourceManager;
-import org.hkijena.jipipe.utils.UIUtils;
-import org.hkijena.jipipe.JIPipe;
 import org.scijava.Context;
 import org.scijava.plugin.Plugin;
 
@@ -83,14 +83,16 @@ public class FilamentsPlugin extends JIPipePrepackagedDefaultJavaPlugin {
     public FilamentsPlugin() {
     }
 
-    public static TSOAXEnvironment getTSOAXEnvironment(JIPipeProject project, OptionalTSOAXEnvironment nodeEnvironment) {
-        if (nodeEnvironment != null && nodeEnvironment.isEnabled()) {
-            return nodeEnvironment.getContent();
+    public static JIPipeEnvironmentReference<TSOAXEnvironment> getTSOAXEnvironment(JIPipeProject project, OptionalTSOAXEnvironment nodeEnvironment, JIPipeGraphNode node) {
+        var selector = JIPipeEnvironmentReference.defaultOptions(TSOAXEnvironment.class)
+                .application(TSOAXApplicationSettings.getInstance().getReadOnlyDefaultEnvironment());
+        if (nodeEnvironment != null) {
+            selector.node(nodeEnvironment, node);
         }
-        if (project != null && project.getSettingsSheet(FilamentsPluginProjectSettings.class).getProjectDefaultTSOAXEnvironment().isEnabled()) {
-            return project.getSettingsSheet(FilamentsPluginProjectSettings.class).getProjectDefaultTSOAXEnvironment().getContent();
+        if (project != null) {
+            selector.project(project.getSettingsSheet(FilamentsPluginProjectSettings.class).getProjectDefaultTSOAXEnvironment(), project);
         }
-        return TSOAXApplicationSettings.getInstance().getReadOnlyDefaultEnvironment();
+        return selector.select();
     }
 
     @Override

@@ -17,8 +17,6 @@ import org.hkijena.jipipe.JIPipe;
 import org.hkijena.jipipe.api.backups.JIPipeProjectBackupItem;
 import org.hkijena.jipipe.api.backups.JIPipeProjectBackupItemCollection;
 import org.hkijena.jipipe.desktop.app.resultanalysis.JIPipeDesktopResultAlgorithmTree;
-import org.hkijena.jipipe.utils.UIUtils;
-import org.hkijena.jipipe.JIPipe;
 
 import javax.swing.*;
 import javax.swing.tree.DefaultMutableTreeNode;

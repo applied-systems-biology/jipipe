@@ -20,7 +20,7 @@ public class FileSystemUtil {
      * Example:
      * filterExtensionsFromFileName("test.eln", Set.of("ELN")) -> "test"
      *
-     * @param filename the file name to filter (must not be null)
+     * @param filename           the file name to filter (must not be null)
      * @param extensionsToRemove the extensions to remove (must not be null)
      * @return the filtered file name
      * @throws NullPointerException if any parameter is null

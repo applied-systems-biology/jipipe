@@ -43,6 +43,14 @@ public class CefPlugin extends JIPipePrepackagedDefaultJavaPlugin {
 
     private static CefApp app;
 
+    public static CefApp getApp() {
+        return app;
+    }
+
+    public static boolean hasCef() {
+        return app != null;
+    }
+
     @Override
     public StringList getDependencyCitations() {
         return new StringList();
@@ -67,7 +75,7 @@ public class CefPlugin extends JIPipePrepackagedDefaultJavaPlugin {
         try {
             progressInfo.log("JCEF bundle will be rerouted to " + bundleDir.toAbsolutePath());
             Files.createDirectories(bundleDir);
-        }catch (Throwable ignored) {
+        } catch (Throwable ignored) {
             progressInfo.log("JCEF bundle directory not writable. Redirecting to JIPipe user directory.");
             bundleDir = PathUtils.resolveAndMakeSubDirectory(PathUtils.getJIPipeUserDir(), "jcef-bundle");
         }
@@ -91,13 +99,5 @@ public class CefPlugin extends JIPipePrepackagedDefaultJavaPlugin {
     @Override
     public StringList getDependencyProvides() {
         return new StringList();
-    }
-
-    public static CefApp getApp() {
-        return app;
-    }
-
-    public static boolean hasCef() {
-        return app != null;
     }
 }

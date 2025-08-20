@@ -28,6 +28,7 @@ public class JIPipeDesktopGraphEditorMinimap extends JIPipeDesktopWorkbenchPanel
 
     private static final Color AREA_FILL_COLOR = new Color(0x3365a4e3, true);
     private final JIPipeDesktopGraphEditorUI graphEditorUI;
+    private final Color minimapBackground;
     private BufferedImage graphImage;
     private double scaleFactor;
     private int viewBaseWidth;
@@ -40,7 +41,6 @@ public class JIPipeDesktopGraphEditorMinimap extends JIPipeDesktopWorkbenchPanel
     private int scrollHeight;
     private int scrollX;
     private int scrollY;
-    private final Color minimapBackground;
 
 
     /**

@@ -41,7 +41,7 @@ public class CrateWriter<DESTINATION_TYPE> {
     /**
      * This method saves the crate to a destination provided.
      *
-     * @param crate the crate to write.
+     * @param crate       the crate to write.
      * @param destination the location where the crate should be written.
      */
     public void save(Crate crate, DESTINATION_TYPE destination) throws IOException {

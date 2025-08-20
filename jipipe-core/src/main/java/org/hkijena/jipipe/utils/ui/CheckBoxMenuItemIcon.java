@@ -13,7 +13,6 @@
 
 package org.hkijena.jipipe.utils.ui;
 
-import org.hkijena.jipipe.desktop.commons.theme.JIPipeDesktopLegacyModernMetalTheme;
 import org.hkijena.jipipe.utils.ThemeUtils;
 
 import javax.swing.*;

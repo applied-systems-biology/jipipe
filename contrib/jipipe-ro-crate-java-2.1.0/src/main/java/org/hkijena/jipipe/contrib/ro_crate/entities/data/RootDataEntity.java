@@ -9,30 +9,30 @@ import java.nio.file.Paths;
  */
 public class RootDataEntity extends DataSetEntity {
 
-  public static final String ID = "./";
+    public static final String ID = "./";
 
-  public RootDataEntity(AbstractDataSetBuilder<?> entityBuilder) {
-    super(entityBuilder);
-    this.setId(ID);
-  }
-
-  /**
-   * Builder class for easier creation of root data entities.
-   */
-  public static final class RootDataEntityBuilder
-      extends AbstractDataSetBuilder<RootDataEntityBuilder> {
-
-    @Override
-    public RootDataEntityBuilder self() {
-      return this;
+    public RootDataEntity(AbstractDataSetBuilder<?> entityBuilder) {
+        super(entityBuilder);
+        this.setId(ID);
     }
 
-    @Override
-    public RootDataEntity build() {
-      // small hack not to get the command line message
-      this.setLocation(Paths.get("./"))
-          .setId("./");
-      return new RootDataEntity(this);
+    /**
+     * Builder class for easier creation of root data entities.
+     */
+    public static final class RootDataEntityBuilder
+            extends AbstractDataSetBuilder<RootDataEntityBuilder> {
+
+        @Override
+        public RootDataEntityBuilder self() {
+            return this;
+        }
+
+        @Override
+        public RootDataEntity build() {
+            // small hack not to get the command line message
+            this.setLocation(Paths.get("./"))
+                    .setId("./");
+            return new RootDataEntity(this);
+        }
     }
-  }
 }

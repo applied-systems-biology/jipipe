@@ -400,7 +400,7 @@ public class JIPipeDesktopParameterFormPanel extends JIPipeDesktopFormPanel impl
 
         JIPipeParameterTree.Node node = tree.getSourceNode(parameterCollection);
 
-        if(node == null) {
+        if (node == null) {
             System.err.println("AddToForm: Node of tree is null!");
             return;
         }

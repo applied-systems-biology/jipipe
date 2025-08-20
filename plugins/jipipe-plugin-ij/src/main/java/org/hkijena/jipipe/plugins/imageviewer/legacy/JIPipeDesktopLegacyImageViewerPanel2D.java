@@ -25,8 +25,8 @@ import org.hkijena.jipipe.api.run.JIPipeRunnableQueue;
 import org.hkijena.jipipe.desktop.JIPipeDesktop;
 import org.hkijena.jipipe.desktop.app.JIPipeDesktopWorkbench;
 import org.hkijena.jipipe.desktop.app.JIPipeDesktopWorkbenchAccess;
-import org.hkijena.jipipe.desktop.app.running.queue.JIPipeDesktopCompactRunnableQueueButton;
 import org.hkijena.jipipe.desktop.app.running.JIPipeDesktopRunExecuteUI;
+import org.hkijena.jipipe.desktop.app.running.queue.JIPipeDesktopCompactRunnableQueueButton;
 import org.hkijena.jipipe.desktop.commons.components.JIPipeDesktopFormPanel;
 import org.hkijena.jipipe.desktop.commons.components.JIPipeDesktopPathEditorComponent;
 import org.hkijena.jipipe.desktop.commons.components.ribbon.JIPipeDesktopCheckBoxRibbonAction;
@@ -36,7 +36,8 @@ import org.hkijena.jipipe.plugins.imagejdatatypes.datatypes.ImagePlusData;
 import org.hkijena.jipipe.plugins.imagejdatatypes.display.OpenInImageJ3DViewerDataDisplayOperation;
 import org.hkijena.jipipe.plugins.imagejdatatypes.display.OpenInImageJDataDisplayOperation;
 import org.hkijena.jipipe.plugins.imagejdatatypes.display.OpenInNapariDataDisplayOperation;
-import org.hkijena.jipipe.plugins.imagejdatatypes.util.*;
+import org.hkijena.jipipe.plugins.imagejdatatypes.util.AVICompression;
+import org.hkijena.jipipe.plugins.imagejdatatypes.util.ImageJUtils;
 import org.hkijena.jipipe.plugins.imagejdatatypes.util.blending.ImageBlendLayer;
 import org.hkijena.jipipe.plugins.imagejdatatypes.util.dimensions.HyperstackDimension;
 import org.hkijena.jipipe.plugins.imagejdatatypes.util.dimensions.ImageSliceIndex;
@@ -151,7 +152,7 @@ public class JIPipeDesktopLegacyImageViewerPanel2D extends JPanel implements JIP
 
     public Map<Integer, CompositeLayer> getCompositeBlendLayers() {
         return Collections.unmodifiableMap(compositeBlendLayers);
-    }    private final Timer animationTimer = new Timer(250, e -> animateNextSlice());
+    }
 
     public void dispose() {
         animationTimer.stop();
@@ -165,7 +166,7 @@ public class JIPipeDesktopLegacyImageViewerPanel2D extends JPanel implements JIP
         } catch (Exception | Error e) {
             e.printStackTrace();
         }
-    }
+    }    private final Timer animationTimer = new Timer(250, e -> animateNextSlice());
 
     public JIPipeRunnableQueue getViewerRunnerQueue() {
         return viewerRunnerQueue;
@@ -365,17 +366,6 @@ public class JIPipeDesktopLegacyImageViewerPanel2D extends JPanel implements JIP
         bottomPanel.addToForm(contentPanel, descriptionPanel, null);
     }
 
-
-//    public void setRotationEnabled(boolean enabled) {
-//        rotateLeftButton.setVisible(enabled);
-//        rotateRightButton.setVisible(enabled);
-//        if (!enabled) {
-//            rotation = 0;
-//            refreshImageInfo();
-//            refreshSlice();
-//        }
-//    }
-
     public void buildRibbon(JIPipeDesktopRibbon ribbon) {
         buildViewRibbon(ribbon);
         buildExportRibbon(ribbon);
@@ -386,6 +376,17 @@ public class JIPipeDesktopLegacyImageViewerPanel2D extends JPanel implements JIP
             plugin.buildRibbon(ribbon);
         }
     }
+
+
+//    public void setRotationEnabled(boolean enabled) {
+//        rotateLeftButton.setVisible(enabled);
+//        rotateRightButton.setVisible(enabled);
+//        if (!enabled) {
+//            rotation = 0;
+//            refreshImageInfo();
+//            refreshSlice();
+//        }
+//    }
 
     private void buildAnimationRibbon(JIPipeDesktopRibbon ribbon) {
         JIPipeDesktopRibbon.Task animationTask = ribbon.getOrCreateTask("Animation");

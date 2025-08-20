@@ -1,12 +1,12 @@
 package org.hkijena.jipipe.contrib.ro_crate.entities.contextual;
 
-import java.io.IOException;
-
 import org.hkijena.jipipe.contrib.ro_crate.HelpFunctions;
-
 import org.junit.jupiter.api.Test;
 
-import static org.junit.jupiter.api.Assertions.*;
+import java.io.IOException;
+
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertFalse;
 
 /**
  * @author Nikola Tzotchev on 5.2.2022 г.
@@ -39,7 +39,7 @@ public class PersonEntityTest {
                 .setGivenName("Tim")
                 .addProperty("name", "Tim Luckett")
                 .build();
-        
+
         assertFalse(person.getId().isEmpty());
     }
 }

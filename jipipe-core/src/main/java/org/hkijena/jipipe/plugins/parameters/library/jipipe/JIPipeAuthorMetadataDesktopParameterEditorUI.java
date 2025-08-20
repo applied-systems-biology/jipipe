@@ -74,8 +74,7 @@ public class JIPipeAuthorMetadataDesktopParameterEditorUI extends JIPipeDesktopP
         try {
             JIPipeAuthorMetadata authorMetadata = JsonUtils.readFromString(UIUtils.getStringFromClipboard(), JIPipeAuthorMetadata.class);
             setParameter(authorMetadata, true);
-        }
-        catch (Exception e) {
+        } catch (Exception e) {
             JOptionPane.showMessageDialog(this, e.getMessage(), "Error pasting author", JOptionPane.ERROR_MESSAGE);
         }
     }
@@ -103,31 +102,27 @@ public class JIPipeAuthorMetadataDesktopParameterEditorUI extends JIPipeDesktopP
     @Override
     public void reload() {
         JIPipeAuthorMetadata author = getParameter(JIPipeAuthorMetadata.class);
-        if(!StringUtils.isNullOrEmpty(author.getFirstName()) || !StringUtils.isNullOrEmpty(author.getLastName())) {
+        if (!StringUtils.isNullOrEmpty(author.getFirstName()) || !StringUtils.isNullOrEmpty(author.getLastName())) {
             nameLabel.setText(author.getFirstName() + " " + author.getLastName());
             nameLabel.setForeground(ThemeUtils.getCurrentStyle().getTextForeground());
-        }
-        else {
+        } else {
             nameLabel.setText("No name set. Please click Configure > Edit");
             nameLabel.setForeground(ThemeUtils.getCurrentStyle().getDangerColor());
         }
 
         // TODO: Affiliations
-        if(author.getAffiliations().size() == 1) {
+        if (author.getAffiliations().size() == 1) {
             affiliationLabel.setText(author.getAffiliations().getFirst().getName());
-        }
-        else if(!author.getAffiliations().isEmpty()) {
+        } else if (!author.getAffiliations().isEmpty()) {
             affiliationLabel.setText(author.getAffiliations().getFirst().getName() + " (+" + (author.getAffiliations().size() - 1) + ")");
-        }
-        else {
+        } else {
             affiliationLabel.setText("<No affiliations>");
         }
 
-        if(!StringUtils.isNullOrEmpty(author.getOrcidUrl())) {
+        if (!StringUtils.isNullOrEmpty(author.getOrcidUrl())) {
             orcidLabel.setText(author.getOrcidUrl());
             orcidLabel.setForeground(ThemeUtils.getCurrentStyle().getTextMuted());
-        }
-        else {
+        } else {
             orcidLabel.setText("No ORCID set");
             orcidLabel.setForeground(ThemeUtils.getCurrentStyle().getDangerColor());
         }

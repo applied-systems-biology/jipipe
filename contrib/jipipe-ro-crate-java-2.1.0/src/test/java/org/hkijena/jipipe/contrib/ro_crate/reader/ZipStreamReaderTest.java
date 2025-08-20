@@ -12,18 +12,17 @@ import static org.junit.jupiter.api.Assertions.*;
 
 class ZipStreamReaderTest implements
         CommonReaderTest<InputStream, ReadZipStreamStrategy>,
-        ElnFileFormatTest<InputStream, ReadZipStreamStrategy>
-{
+        ElnFileFormatTest<InputStream, ReadZipStreamStrategy> {
     /**
      * At the point of writing this test,
-     *  these files are in a zip format which cannot be read in streaming mode
+     * these files are in a zip format which cannot be read in streaming mode
      */
     @Override
     public boolean isInBlacklist(String input) {
         return Set.of(
-                "https://github.com/TheELNConsortium/TheELNFileFormat/raw/refs/heads/master/examples/kadi4mat/records-example.eln",
-                "https://github.com/TheELNConsortium/TheELNFileFormat/raw/refs/heads/master/examples/kadi4mat/collections-example.eln"
-        )
+                        "https://github.com/TheELNConsortium/TheELNFileFormat/raw/refs/heads/master/examples/kadi4mat/records-example.eln",
+                        "https://github.com/TheELNConsortium/TheELNFileFormat/raw/refs/heads/master/examples/kadi4mat/collections-example.eln"
+                )
                 .contains(input);
     }
 

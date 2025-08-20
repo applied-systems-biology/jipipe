@@ -41,7 +41,7 @@ public abstract class JIPipeDesktopMenuExtension extends JMenuItem {
     }
 
     public JIPipeDesktopProjectWorkbench getDesktopProjectWorkbench() {
-        if(desktopWorkbench instanceof JIPipeDesktopProjectWorkbench) {
+        if (desktopWorkbench instanceof JIPipeDesktopProjectWorkbench) {
             return (JIPipeDesktopProjectWorkbench) desktopWorkbench;
         }
         return null;

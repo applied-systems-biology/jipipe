@@ -64,7 +64,6 @@ import java.lang.reflect.Field;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.*;
-import java.util.List;
 import java.util.stream.Collectors;
 
 import static ij.measure.ResultsTable.COLUMN_NOT_FOUND;

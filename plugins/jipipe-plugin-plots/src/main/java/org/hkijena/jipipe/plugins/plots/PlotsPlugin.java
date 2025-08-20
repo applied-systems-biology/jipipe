@@ -38,9 +38,6 @@ import org.hkijena.jipipe.plugins.plots.ui.resultanalysis.PlotDataSlotPreview;
 import org.hkijena.jipipe.plugins.plots.utils.ColorMap;
 import org.hkijena.jipipe.plugins.plots.viewers.JFreeChartPlotDataViewer;
 import org.hkijena.jipipe.plugins.tables.TablesPlugin;
-import org.hkijena.jipipe.utils.ResourceUtils;
-import org.hkijena.jipipe.utils.UIUtils;
-import org.hkijena.jipipe.JIPipe;
 import org.scijava.Context;
 import org.scijava.plugin.Plugin;
 

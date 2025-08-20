@@ -1,17 +1,12 @@
 package org.hkijena.jipipe.contrib.ro_crate.special;
 
-import java.net.MalformedURLException;
-import java.net.URL;
-import java.net.URLDecoder;
-import java.net.URLEncoder;
+import com.apicatalog.jsonld.uri.UriUtils;
+
+import java.net.*;
 import java.nio.charset.StandardCharsets;
 import java.nio.file.InvalidPathException;
 import java.nio.file.Path;
 import java.util.Optional;
-
-import com.apicatalog.jsonld.uri.UriUtils;
-import java.net.URI;
-import java.net.URISyntaxException;
 
 /**
  * This class defines methods regarding URIs in general, which in RO-Crate
@@ -22,8 +17,11 @@ import java.net.URISyntaxException;
  */
 public class IdentifierUtils {
 
-    /** Static class */
-    private IdentifierUtils() {}
+    /**
+     * Static class
+     */
+    private IdentifierUtils() {
+    }
 
     /**
      * Returns true, if the given String is encoded and can be used as an

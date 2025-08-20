@@ -1,5 +1,6 @@
 package org.hkijena.jipipe.contrib.ro_crate.reader;
 
+import org.apache.commons.io.FileUtils;
 import org.hkijena.jipipe.contrib.ro_crate.Crate;
 import org.hkijena.jipipe.contrib.ro_crate.HelpFunctions;
 import org.hkijena.jipipe.contrib.ro_crate.RoCrate;
@@ -7,11 +8,10 @@ import org.hkijena.jipipe.contrib.ro_crate.entities.data.DataEntity;
 import org.hkijena.jipipe.contrib.ro_crate.entities.data.FileEntity;
 import org.hkijena.jipipe.contrib.ro_crate.writer.CrateWriter;
 import org.hkijena.jipipe.contrib.ro_crate.writer.Writers;
-import org.apache.commons.io.FileUtils;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.io.TempDir;
 
-import java.io.*;
+import java.io.IOException;
 import java.nio.charset.Charset;
 import java.nio.file.Path;
 
@@ -20,19 +20,18 @@ import static org.junit.jupiter.api.Assertions.*;
 /**
  * Abstract class for testing crate readers.
  *
- * @param <SOURCE_T> the source type of the reader strategy. Even though each implementation knows this T,
- *           we can't use it everywhere we'd like to as the code here needs to be generic.
- *           We therefore rely on methods to take a path (as we always assume local testing).
- *           Streams, for example, will therefore need to stream from/to a file.
- *           This parameter is only required to satisfy the generic reader strategy.
+ * @param <SOURCE_T>        the source type of the reader strategy. Even though each implementation knows this T,
+ *                          we can't use it everywhere we'd like to as the code here needs to be generic.
+ *                          We therefore rely on methods to take a path (as we always assume local testing).
+ *                          Streams, for example, will therefore need to stream from/to a file.
+ *                          This parameter is only required to satisfy the generic reader strategy.
  * @param <READER_STRATEGY> the type of the reader strategy
  */
 public interface CommonReaderTest<
         SOURCE_T,
         READER_STRATEGY extends GenericReaderStrategy<SOURCE_T>
         >
-        extends TestableReaderStrategy<SOURCE_T, READER_STRATEGY>
-{
+        extends TestableReaderStrategy<SOURCE_T, READER_STRATEGY> {
     static RoCrate.RoCrateBuilder newBaseCrate() {
         return new RoCrate.RoCrateBuilder(
                 "minimal",

@@ -63,11 +63,10 @@ public class JIPipeDesktopModernScrollBarUI extends BasicScrollBarUI {
     }
 
     @Override
-    protected void paintThumb(Graphics g, JComponent c, Rectangle thumbBounds)
-    {
+    protected void paintThumb(Graphics g, JComponent c, Rectangle thumbBounds) {
         Graphics2D g2d = (Graphics2D) g;
 
-        if(thumbBounds.isEmpty() || !scrollbar.isEnabled())     {
+        if (thumbBounds.isEmpty() || !scrollbar.isEnabled()) {
             return;
         }
 

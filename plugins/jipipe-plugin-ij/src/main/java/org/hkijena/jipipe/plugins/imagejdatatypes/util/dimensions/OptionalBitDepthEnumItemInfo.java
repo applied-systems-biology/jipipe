@@ -13,9 +13,8 @@
 
 package org.hkijena.jipipe.plugins.imagejdatatypes.util.dimensions;
 
-import org.hkijena.jipipe.plugins.parameters.api.enums.EnumItemInfo;
-import org.hkijena.jipipe.utils.UIUtils;
 import org.hkijena.jipipe.JIPipe;
+import org.hkijena.jipipe.plugins.parameters.api.enums.EnumItemInfo;
 
 import javax.swing.*;
 

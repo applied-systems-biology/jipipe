@@ -19,7 +19,7 @@ import org.hkijena.jipipe.api.SetJIPipeDocumentation;
 import org.hkijena.jipipe.api.annotation.JIPipeTextAnnotationMergeMode;
 import org.hkijena.jipipe.api.data.JIPipeDefaultMutableSlotConfiguration;
 import org.hkijena.jipipe.api.environments.ExternalEnvironmentParameterSettings;
-import org.hkijena.jipipe.api.environments.JIPipeEnvironment;
+import org.hkijena.jipipe.api.environments.JIPipeEnvironmentReference;
 import org.hkijena.jipipe.api.nodes.JIPipeGraphNodeRunContext;
 import org.hkijena.jipipe.api.nodes.JIPipeNodeInfo;
 import org.hkijena.jipipe.api.nodes.algorithm.JIPipeIteratingAlgorithm;
@@ -34,7 +34,9 @@ import org.hkijena.jipipe.api.validation.JIPipeValidationReportContext;
 import org.hkijena.jipipe.api.validation.contexts.ParameterValidationReportContext;
 import org.hkijena.jipipe.plugins.parameters.library.scripts.PythonScript;
 import org.hkijena.jipipe.plugins.python.OptionalPythonEnvironment;
+import org.hkijena.jipipe.plugins.python.PythonEnvironment;
 import org.hkijena.jipipe.plugins.python.PythonUtils;
+import org.hkijena.jipipe.plugins.python.adapter.JIPipePythonAdapterLibraryEnvironment;
 import org.hkijena.jipipe.utils.scripting.JythonUtils;
 
 import java.nio.file.Path;
@@ -130,7 +132,7 @@ public class IteratingPythonScriptAlgorithm extends JIPipeIteratingAlgorithm imp
     }
 
     @Override
-    public void getEnvironmentDependencies(List<JIPipeEnvironment> target) {
+    public void getEnvironmentDependencies(List<JIPipeEnvironmentReference<?>> target) {
         super.getEnvironmentDependencies(target);
         target.add(getConfiguredPythonEnvironment());
         target.add(getConfiguredPythonAdapterEnvironment());
@@ -141,7 +143,7 @@ public class IteratingPythonScriptAlgorithm extends JIPipeIteratingAlgorithm imp
         StringBuilder code = new StringBuilder();
 
         // Install the adapter that provides the JIPipe API
-        PythonUtils.installAdapterCodeIfNeeded(getConfiguredPythonAdapterEnvironment(), code);
+        PythonUtils.installAdapterCodeIfNeeded((JIPipePythonAdapterLibraryEnvironment) getConfiguredPythonAdapterEnvironment().getEnvironment(), code);
 
         // Add user variables
         PythonUtils.parametersToPython(code, scriptParameters);
@@ -165,7 +167,7 @@ public class IteratingPythonScriptAlgorithm extends JIPipeIteratingAlgorithm imp
 
         // Run Python
         PythonUtils.runPython(code.toString(),
-                getConfiguredPythonEnvironment(),
+                (PythonEnvironment) getConfiguredPythonEnvironment().getEnvironment(),
                 Collections.emptyList(), suppressLogs, progressInfo);
 
         // Extract outputs

@@ -23,7 +23,7 @@ import org.hkijena.jipipe.api.annotation.JIPipeTextAnnotationMergeMode;
 import org.hkijena.jipipe.api.data.JIPipeDataSlotRole;
 import org.hkijena.jipipe.api.data.JIPipeInputDataSlot;
 import org.hkijena.jipipe.api.environments.ExternalEnvironmentParameterSettings;
-import org.hkijena.jipipe.api.environments.JIPipeEnvironment;
+import org.hkijena.jipipe.api.environments.JIPipeEnvironmentReference;
 import org.hkijena.jipipe.api.nodes.AddJIPipeInputSlot;
 import org.hkijena.jipipe.api.nodes.AddJIPipeOutputSlot;
 import org.hkijena.jipipe.api.nodes.JIPipeGraphNodeRunContext;
@@ -112,7 +112,7 @@ public class Cellpose3DenoiseInferenceAlgorithm extends JIPipeSingleIterationAlg
     }
 
     @Override
-    public void getEnvironmentDependencies(List<JIPipeEnvironment> target) {
+    public void getEnvironmentDependencies(List<JIPipeEnvironmentReference<?>> target) {
         super.getEnvironmentDependencies(target);
         target.add(getConfiguredCellposeEnvironment());
     }
@@ -224,7 +224,7 @@ public class Cellpose3DenoiseInferenceAlgorithm extends JIPipeSingleIterationAlg
             arguments.add(io2DPath.toString());
             arguments.add(io2DPath.toString());
             PythonUtils.runPython(arguments.toArray(new String[0]),
-                    getConfiguredCellposeEnvironment(),
+                    getConfiguredCellposeEnvironment().getEnvironment(),
                     Collections.emptyList(),
                     Collections.emptyMap(),
                     suppressLogs,
@@ -236,7 +236,7 @@ public class Cellpose3DenoiseInferenceAlgorithm extends JIPipeSingleIterationAlg
             arguments.add(io3DPath.toString());
             arguments.add(io3DPath.toString());
             PythonUtils.runPython(arguments.toArray(new String[0]),
-                    getConfiguredCellposeEnvironment(),
+                    getConfiguredCellposeEnvironment().getEnvironment(),
                     Collections.emptyList(),
                     Collections.emptyMap(),
                     suppressLogs,
@@ -332,7 +332,7 @@ public class Cellpose3DenoiseInferenceAlgorithm extends JIPipeSingleIterationAlg
         arguments.add(ioPath.toString());
 
         // Run the module
-        CellposeUtils.runCellpose(getConfiguredCellposeEnvironment(),
+        CellposeUtils.runCellpose(getConfiguredCellposeEnvironment().getEnvironment(),
                 arguments,
                 suppressLogs,
                 progressInfo);

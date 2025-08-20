@@ -44,17 +44,13 @@ import java.util.List;
 public abstract class JIPipeDesktopPublisherAssistant extends JIPipeDesktopProjectWorkbenchPanel implements JIPipeRunnable.FinishedEventListener {
 
     private final JIPipeDesktopFormPanel notificationList = new JIPipeDesktopFormPanel(JIPipeDesktopFormPanel.WITH_SCROLLING);
-    private final JButton confirmButton = UIUtils.createButton("Publish now", JIPipe.RESOURCES.getIcon16("actions/share-nodes.png"), this::startPublish);
-    private final JIPipeDesktopSplitPane splitPane = new JIPipeDesktopSplitPane(JIPipeDesktopSplitPane.LEFT_RIGHT, new JIPipeDesktopSplitPane.DynamicSidebarRatio(350, false));
-    private final  JPanel setupPanel = new JPanel();
+    private final JIPipeDesktopSplitPane splitPane = new JIPipeDesktopSplitPane(JIPipeDesktopSplitPane.LEFT_RIGHT, new JIPipeDesktopSplitPane.DynamicSidebarRatio(350, false));    private final JButton confirmButton = UIUtils.createButton("Publish now", JIPipe.RESOURCES.getIcon16("actions/share-nodes.png"), this::startPublish);
+    private final JPanel setupPanel = new JPanel();
     private final JIPipeDesktopParameterFormPanel parameterPanel = new JIPipeDesktopParameterFormPanel(getDesktopWorkbench(), new JIPipeDummyParameterCollection(), MarkdownText.EMPTY, JIPipeDesktopFormPanel.WITH_SCROLLING | JIPipeDesktopFormPanel.WITH_DOCUMENTATION | JIPipeDesktopParameterFormPanel.DOCUMENTATION_NO_UI);
     private final JIPipeRunnableQueue queue = new JIPipeRunnableQueue("Publish Local");
-
-    private final JButton refreshButton = UIUtils.createButton("Refresh", JIPipe.RESOURCES.getIcon16("actions/view-refresh.png"), this::updateAssistant);
     private final JLabel invalidMessage = new JLabel("Unable to publish. Please review the items on the left.", JIPipe.RESOURCES.getIcon16("emblems/warning.png"), JLabel.LEFT);
-    private final JLabel warningMessage = new JLabel("Some additional checks are recommended. Please review the items on the left.", JIPipe.RESOURCES.getIcon16("emblems/emblem-important-blue.png"), JLabel.LEFT);
-    private final List<JIPipeDesktopPublisherAssistantCondition>  conditions = new ArrayList<>();
-
+    private final JLabel warningMessage = new JLabel("Some additional checks are recommended. Please review the items on the left.", JIPipe.RESOURCES.getIcon16("emblems/emblem-important-blue.png"), JLabel.LEFT);    private final JButton refreshButton = UIUtils.createButton("Refresh", JIPipe.RESOURCES.getIcon16("actions/view-refresh.png"), this::updateAssistant);
+    private final List<JIPipeDesktopPublisherAssistantCondition> conditions = new ArrayList<>();
     public JIPipeDesktopPublisherAssistant(JIPipeDesktopProjectWorkbench workbench) {
         super(workbench);
         initialize();
@@ -63,9 +59,9 @@ public abstract class JIPipeDesktopPublisherAssistant extends JIPipeDesktopProje
 
     private void initialize() {
         setBackground(ThemeUtils.getCurrentStyle().getWindowBackground());
-        setBorder(BorderFactory.createEmptyBorder(8,8,8,8));
+        setBorder(BorderFactory.createEmptyBorder(8, 8, 8, 8));
 
-        setLayout(new BorderLayout(8,8));
+        setLayout(new BorderLayout(8, 8));
         add(splitPane, BorderLayout.CENTER);
 
         initializeSetupPanel();
@@ -106,20 +102,20 @@ public abstract class JIPipeDesktopPublisherAssistant extends JIPipeDesktopProje
     }
 
     private void initializeSetupPanel() {
-        setupPanel.setLayout(new BorderLayout(8,8));
+        setupPanel.setLayout(new BorderLayout(8, 8));
 
         // Add title
-        JPanel titlePanel = new JPanel(new BorderLayout(8,8));
+        JPanel titlePanel = new JPanel(new BorderLayout(8, 8));
         titlePanel.add(UIUtils.createJLabel(getAssistantTitle(), JIPipe.RESOURCES.getIcon32("actions/document-export.png"), ThemeUtils.getCurrentStyle().getFontSizeLarge()), BorderLayout.NORTH);
         titlePanel.add(UIUtils.createBorderlessReadonlyTextPane(getAssistantDescription().getHtml(), false), BorderLayout.CENTER);
 
         List<BufferedImage> logos = getAssistantLogos();
         JPanel logoPanel = UIUtils.boxHorizontal();
-        if(!logos.isEmpty()) {
+        if (!logos.isEmpty()) {
             for (BufferedImage logo : logos) {
                 BufferedImage scaledLogo = BufferedImageUtils.scaleImageToFit(logo, 250, 42);
                 JLabel label = new JLabel(new ImageIcon(scaledLogo));
-                label.setBorder(BorderFactory.createEmptyBorder(8,8,0,8));
+                label.setBorder(BorderFactory.createEmptyBorder(8, 8, 0, 8));
                 logoPanel.add(label);
             }
         }
@@ -132,8 +128,8 @@ public abstract class JIPipeDesktopPublisherAssistant extends JIPipeDesktopProje
         // Create button panel
         JPanel buttonPanel = UIUtils.boxVertical();
         buttonPanel.setBorder(BorderFactory.createCompoundBorder(UIUtils.createEmptyBorder(8),
-                BorderFactory.createCompoundBorder(BorderFactory.createMatteBorder(1,0,0,0, ThemeUtils.getCurrentStyle().getBorderColor()),
-                        BorderFactory.createEmptyBorder(8,0,0,0))));
+                BorderFactory.createCompoundBorder(BorderFactory.createMatteBorder(1, 0, 0, 0, ThemeUtils.getCurrentStyle().getBorderColor()),
+                        BorderFactory.createEmptyBorder(8, 0, 0, 0))));
         buttonPanel.add(UIUtils.wrapInCenterPanel(warningMessage));
         buttonPanel.add(UIUtils.wrapInCenterPanel(invalidMessage));
         buttonPanel.add(Box.createVerticalStrut(16));
@@ -150,16 +146,21 @@ public abstract class JIPipeDesktopPublisherAssistant extends JIPipeDesktopProje
 
     private void startPublish() {
         JIPipeRunnable assistantTask = createAssistantTask();
-        if(assistantTask != null) {
+        if (assistantTask != null) {
             switchToExecution(assistantTask);
         }
     }
 
     public abstract String getAssistantTitle();
+
     public abstract HTMLText getAssistantDescription();
+
     public abstract List<BufferedImage> getAssistantLogos();
+
     public abstract JIPipeRunnable createAssistantTask();
+
     public abstract void onPublicationFinished(JIPipeRunnable runnable);
+
     public abstract JIPipeParameterCollection getAssistantParameters();
 
     public void updateAssistant() {
@@ -168,10 +169,9 @@ public abstract class JIPipeDesktopPublisherAssistant extends JIPipeDesktopProje
         for (JIPipeDesktopPublisherAssistantCondition condition : conditions) {
             condition.updateAssistant();
             JIPipeDesktopPublisherAssistantConditionStatus status = condition.getStatus();
-            if(status == JIPipeDesktopPublisherAssistantConditionStatus.Invalid) {
+            if (status == JIPipeDesktopPublisherAssistantConditionStatus.Invalid) {
                 valid = false;
-            }
-            else if(status == JIPipeDesktopPublisherAssistantConditionStatus.Warning) {
+            } else if (status == JIPipeDesktopPublisherAssistantConditionStatus.Warning) {
                 warning = true;
             }
         }
@@ -190,11 +190,15 @@ public abstract class JIPipeDesktopPublisherAssistant extends JIPipeDesktopProje
 
     private void closePublisher() {
         Container tabPane = SwingUtilities.getAncestorOfClass(JIPipeDesktopTabPane.class, this);
-        if(tabPane instanceof JIPipeDesktopTabPane) {
+        if (tabPane instanceof JIPipeDesktopTabPane) {
             JIPipeDesktopTabPane.DocumentTab tab = ((JIPipeDesktopTabPane) tabPane).findTabFor(this);
-            if(tab != null) {
+            if (tab != null) {
                 ((JIPipeDesktopTabPane) tabPane).forceCloseTab(tab);
             }
         }
     }
+
+
+
+
 }

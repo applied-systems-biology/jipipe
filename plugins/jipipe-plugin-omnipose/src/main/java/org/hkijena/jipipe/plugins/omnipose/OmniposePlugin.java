@@ -18,9 +18,11 @@ import org.hkijena.jipipe.JIPipe;
 import org.hkijena.jipipe.JIPipeDependency;
 import org.hkijena.jipipe.JIPipeJavaPlugin;
 import org.hkijena.jipipe.JIPipeMutableDependency;
-import org.hkijena.jipipe.api.metadata.JIPipeAuthorMetadata;
 import org.hkijena.jipipe.api.JIPipeProgressInfo;
+import org.hkijena.jipipe.api.environments.JIPipeEnvironmentReference;
+import org.hkijena.jipipe.api.metadata.JIPipeAuthorMetadata;
 import org.hkijena.jipipe.api.metadata.JIPipeOrganizationMetadata;
+import org.hkijena.jipipe.api.nodes.JIPipeGraphNode;
 import org.hkijena.jipipe.api.parameters.JIPipeParameterArchetype;
 import org.hkijena.jipipe.api.project.JIPipeProject;
 import org.hkijena.jipipe.plugins.JIPipePrepackagedDefaultJavaPlugin;
@@ -68,14 +70,16 @@ public class OmniposePlugin extends JIPipePrepackagedDefaultJavaPlugin {
         getMetadata().addCategories(PluginCategoriesEnumParameter.CATEGORY_DEEP_LEARNING, PluginCategoriesEnumParameter.CATEGORY_SEGMENTATION, PluginCategoriesEnumParameter.CATEGORY_MACHINE_LEARNING);
     }
 
-    public static PythonEnvironment getEnvironment(JIPipeProject project, OptionalPythonEnvironment nodeEnvironment) {
-        if (nodeEnvironment.isEnabled()) {
-            return nodeEnvironment.getContent();
+    public static JIPipeEnvironmentReference<PythonEnvironment> getEnvironment(JIPipeProject project, OptionalPythonEnvironment nodeEnvironment, JIPipeGraphNode node) {
+        var selector = JIPipeEnvironmentReference.defaultOptions(PythonEnvironment.class)
+                .application(OmniposePluginApplicationSettings.getInstance().getReadOnlyDefaultEnvironment());
+        if (nodeEnvironment != null) {
+            selector.node(nodeEnvironment, node);
         }
-        if (project != null && project.getSettingsSheet(OmniposePluginProjectSettings.class).getOmnipose0Environment().isEnabled()) {
-            return project.getSettingsSheet(OmniposePluginProjectSettings.class).getOmnipose0Environment().getContent();
+        if (project != null) {
+            selector.project(project.getSettingsSheet(OmniposePluginProjectSettings.class).getOmnipose0Environment(), project);
         }
-        return OmniposePluginApplicationSettings.getInstance().getReadOnlyDefaultEnvironment();
+        return selector.select();
     }
 
     @Override

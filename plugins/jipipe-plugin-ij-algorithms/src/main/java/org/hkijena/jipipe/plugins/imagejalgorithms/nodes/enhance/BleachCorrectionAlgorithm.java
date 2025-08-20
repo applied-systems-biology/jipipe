@@ -1,7 +1,6 @@
 package org.hkijena.jipipe.plugins.imagejalgorithms.nodes.enhance;
 
 import histogram2.HistogramMatcher;
-import ij.IJ;
 import ij.ImagePlus;
 import ij.ImageStack;
 import ij.gui.Roi;
@@ -58,115 +57,12 @@ public class BleachCorrectionAlgorithm extends JIPipeIteratingAlgorithm {
         this.method = other.method;
     }
 
-    @Override
-    protected void runIteration(JIPipeSingleIterationStep iterationStep, JIPipeIterationContext iterationContext, JIPipeGraphNodeRunContext runContext, JIPipeProgressInfo progressInfo) {
-        ImagePlus originalImage = iterationStep.getInputData("Input", ImagePlusGreyscaleData.class, progressInfo).getImage();
-        ROI2DListData inputRoi = iterationStep.getInputData("ROI", ROI2DListData.class, progressInfo);
-        Roi curROI = null;
-        if (inputRoi != null) {
-            ROI2DListData tmp = new ROI2DListData();
-            tmp.addAll(inputRoi);
-            if (tmp.size() > 1) {
-                tmp.logicalOr();
-            }
-            curROI = tmp.get(0);
-        }
-
-        // Convert image
-        ImagePlus greyscaleImage;
-        if (originalImage.getType() == ImagePlus.GRAY32) {
-            progressInfo.log("Converting image from 32-bit to 16-bit ...");
-            greyscaleImage = ImageJUtils.convertToGrayscale16UIfNeeded(originalImage);
-        } else {
-            greyscaleImage = ImageJUtils.duplicate(originalImage);
-        }
-
-        JIPipeExpressionVariablesMap variablesMap = new JIPipeExpressionVariablesMap();
-        Image5DExpressionParameterVariablesInfo2.writeToVariables(originalImage, variablesMap);
-
-        Map<ImageSliceIndex, ImageProcessor> resultMap = new HashMap<>();
-        Roi finalCurROI = curROI;
-        ImageJIterationUtils.forEachIndexedCHyperStack(greyscaleImage, (imp, index, channelProgress) -> {
-            if (!channelFilter.isEnabled() || channelFilter.getContent().test(variablesMap)) {
-                switch (method) {
-                    case SimpleRatio:
-                        copyChannelToResultsMap(correctBleachSimpleRatio(imp, finalCurROI, simpleRatioBaseLine, channelProgress), index, resultMap);
-                        break;
-                    case ExponentialFit:
-                        copyChannelToResultsMap(correctBleachExponentialFit(imp, finalCurROI, channelProgress), index, resultMap);
-                        break;
-                    case HistogramMatching:
-                        copyChannelToResultsMap(correctBleachHistogramMatching(imp, finalCurROI, channelProgress), index, resultMap);
-                        break;
-                    default:
-                        throw new UnsupportedOperationException("Unknown method " + method);
-                }
-            } else {
-                channelProgress.log("Channel will not be processed.");
-                copyChannelToResultsMap(imp, index, resultMap);
-            }
-        }, progressInfo);
-
-        ImagePlus resultImg = ImageJUtils.mergeMappedSlices(resultMap);
-        ImageJUtils.copyAttributes(originalImage, resultImg);
-        ImageJUtils.copyLUTs(originalImage, resultImg);
-
-        iterationStep.addOutputData(getFirstOutputSlot(), new ImagePlusData(resultImg), progressInfo);
-    }
-
     private static void copyChannelToResultsMap(ImagePlus imp, ImageSliceIndex index, Map<ImageSliceIndex, ImageProcessor> resultMap) {
         for (int t = 0; t < imp.getNFrames(); t++) {
             for (int z = 0; z < imp.getNSlices(); z++) {
                 resultMap.put(new ImageSliceIndex(index.getC(), z, t), ImageJUtils.getSliceZero(imp, 0, z, t));
             }
         }
-    }
-
-    @SetJIPipeDocumentation(name = "Background intensity", description = "The background intensity for the simple ratio correction method")
-    @JIPipeParameter("simple-ratio-baseline")
-    public double getSimpleRatioBaseLine() {
-        return simpleRatioBaseLine;
-    }
-
-    @JIPipeParameter("simple-ratio-baseline")
-    public void setSimpleRatioBaseLine(double simpleRatioBaseLine) {
-        this.simpleRatioBaseLine = simpleRatioBaseLine;
-    }
-
-    @SetJIPipeDocumentation(name = "Method", description = "The correction method that should be used. " +
-            "<ul>" +
-            "<li>SimpleRatio: </li>" +
-            "<li>HistogramMatching: Samples the histogram of initial frame, and for the successive frames, histograms are matched to the first frame. This avoids the increase in noise in the latter part of the sequence.</li>" +
-            "<li>ExponentialFit: Fit the mean intensity time series of given image in this class. fit equation is 11, parameter from http://rsb.info.nih.gov/ij/developer/api/constant-values.html#ij.measure.CurveFitter.STRAIGHT_LINE</li>" +
-            "</ul>")
-    @JIPipeParameter("method")
-    public Method getMethod() {
-        return method;
-    }
-
-    @JIPipeParameter("method")
-    public void setMethod(Method method) {
-        this.method = method;
-    }
-
-    @SetJIPipeDocumentation(name = "Filter channels", description = "If enabled, allows to limit the bleach correction to specific channels")
-    @JIPipeParameter("channel-filter")
-    @AddJIPipeExpressionParameterVariable(fromClass = Image5DExpressionParameterVariablesInfo2.class)
-    @AddJIPipeExpressionParameterVariable(key = "channel", name = "Current channel", description = "The currently processed channel")
-    @JIPipeExpressionParameterSettings(hint = "per channel")
-    public OptionalJIPipeExpressionParameter getChannelFilter() {
-        return channelFilter;
-    }
-
-    @JIPipeParameter("channel-filter")
-    public void setChannelFilter(OptionalJIPipeExpressionParameter channelFilter) {
-        this.channelFilter = channelFilter;
-    }
-
-    public enum Method {
-        SimpleRatio,
-        ExponentialFit,
-        HistogramMatching
     }
 
     /**
@@ -509,5 +405,108 @@ public class BleachCorrectionAlgorithm extends JIPipeIteratingAlgorithm {
             }
         }
         return imp;
+    }
+
+    @Override
+    protected void runIteration(JIPipeSingleIterationStep iterationStep, JIPipeIterationContext iterationContext, JIPipeGraphNodeRunContext runContext, JIPipeProgressInfo progressInfo) {
+        ImagePlus originalImage = iterationStep.getInputData("Input", ImagePlusGreyscaleData.class, progressInfo).getImage();
+        ROI2DListData inputRoi = iterationStep.getInputData("ROI", ROI2DListData.class, progressInfo);
+        Roi curROI = null;
+        if (inputRoi != null) {
+            ROI2DListData tmp = new ROI2DListData();
+            tmp.addAll(inputRoi);
+            if (tmp.size() > 1) {
+                tmp.logicalOr();
+            }
+            curROI = tmp.get(0);
+        }
+
+        // Convert image
+        ImagePlus greyscaleImage;
+        if (originalImage.getType() == ImagePlus.GRAY32) {
+            progressInfo.log("Converting image from 32-bit to 16-bit ...");
+            greyscaleImage = ImageJUtils.convertToGrayscale16UIfNeeded(originalImage);
+        } else {
+            greyscaleImage = ImageJUtils.duplicate(originalImage);
+        }
+
+        JIPipeExpressionVariablesMap variablesMap = new JIPipeExpressionVariablesMap();
+        Image5DExpressionParameterVariablesInfo2.writeToVariables(originalImage, variablesMap);
+
+        Map<ImageSliceIndex, ImageProcessor> resultMap = new HashMap<>();
+        Roi finalCurROI = curROI;
+        ImageJIterationUtils.forEachIndexedCHyperStack(greyscaleImage, (imp, index, channelProgress) -> {
+            if (!channelFilter.isEnabled() || channelFilter.getContent().test(variablesMap)) {
+                switch (method) {
+                    case SimpleRatio:
+                        copyChannelToResultsMap(correctBleachSimpleRatio(imp, finalCurROI, simpleRatioBaseLine, channelProgress), index, resultMap);
+                        break;
+                    case ExponentialFit:
+                        copyChannelToResultsMap(correctBleachExponentialFit(imp, finalCurROI, channelProgress), index, resultMap);
+                        break;
+                    case HistogramMatching:
+                        copyChannelToResultsMap(correctBleachHistogramMatching(imp, finalCurROI, channelProgress), index, resultMap);
+                        break;
+                    default:
+                        throw new UnsupportedOperationException("Unknown method " + method);
+                }
+            } else {
+                channelProgress.log("Channel will not be processed.");
+                copyChannelToResultsMap(imp, index, resultMap);
+            }
+        }, progressInfo);
+
+        ImagePlus resultImg = ImageJUtils.mergeMappedSlices(resultMap);
+        ImageJUtils.copyAttributes(originalImage, resultImg);
+        ImageJUtils.copyLUTs(originalImage, resultImg);
+
+        iterationStep.addOutputData(getFirstOutputSlot(), new ImagePlusData(resultImg), progressInfo);
+    }
+
+    @SetJIPipeDocumentation(name = "Background intensity", description = "The background intensity for the simple ratio correction method")
+    @JIPipeParameter("simple-ratio-baseline")
+    public double getSimpleRatioBaseLine() {
+        return simpleRatioBaseLine;
+    }
+
+    @JIPipeParameter("simple-ratio-baseline")
+    public void setSimpleRatioBaseLine(double simpleRatioBaseLine) {
+        this.simpleRatioBaseLine = simpleRatioBaseLine;
+    }
+
+    @SetJIPipeDocumentation(name = "Method", description = "The correction method that should be used. " +
+            "<ul>" +
+            "<li>SimpleRatio: </li>" +
+            "<li>HistogramMatching: Samples the histogram of initial frame, and for the successive frames, histograms are matched to the first frame. This avoids the increase in noise in the latter part of the sequence.</li>" +
+            "<li>ExponentialFit: Fit the mean intensity time series of given image in this class. fit equation is 11, parameter from http://rsb.info.nih.gov/ij/developer/api/constant-values.html#ij.measure.CurveFitter.STRAIGHT_LINE</li>" +
+            "</ul>")
+    @JIPipeParameter("method")
+    public Method getMethod() {
+        return method;
+    }
+
+    @JIPipeParameter("method")
+    public void setMethod(Method method) {
+        this.method = method;
+    }
+
+    @SetJIPipeDocumentation(name = "Filter channels", description = "If enabled, allows to limit the bleach correction to specific channels")
+    @JIPipeParameter("channel-filter")
+    @AddJIPipeExpressionParameterVariable(fromClass = Image5DExpressionParameterVariablesInfo2.class)
+    @AddJIPipeExpressionParameterVariable(key = "channel", name = "Current channel", description = "The currently processed channel")
+    @JIPipeExpressionParameterSettings(hint = "per channel")
+    public OptionalJIPipeExpressionParameter getChannelFilter() {
+        return channelFilter;
+    }
+
+    @JIPipeParameter("channel-filter")
+    public void setChannelFilter(OptionalJIPipeExpressionParameter channelFilter) {
+        this.channelFilter = channelFilter;
+    }
+
+    public enum Method {
+        SimpleRatio,
+        ExponentialFit,
+        HistogramMatching
     }
 }

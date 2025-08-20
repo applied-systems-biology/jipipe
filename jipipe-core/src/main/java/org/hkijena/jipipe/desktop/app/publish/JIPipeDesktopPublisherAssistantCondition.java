@@ -14,7 +14,6 @@
 package org.hkijena.jipipe.desktop.app.publish;
 
 import org.hkijena.jipipe.JIPipe;
-import org.hkijena.jipipe.desktop.app.JIPipeDesktopProjectWorkbench;
 import org.hkijena.jipipe.desktop.app.JIPipeDesktopProjectWorkbenchPanel;
 import org.hkijena.jipipe.plugins.parameters.library.markup.HTMLText;
 import org.hkijena.jipipe.utils.ThemeUtils;
@@ -28,7 +27,7 @@ import java.awt.*;
  */
 public abstract class JIPipeDesktopPublisherAssistantCondition extends JIPipeDesktopProjectWorkbenchPanel {
 
-    private final JLabel titleLabel = new  JLabel();
+    private final JLabel titleLabel = new JLabel();
     private final JTextPane descriptionLabel = UIUtils.createBorderlessReadonlyTextPane("", false);
     private final JPanel buttonPanel = UIUtils.boxHorizontal();
     private final JIPipeDesktopPublisherAssistant assistant;
@@ -40,12 +39,12 @@ public abstract class JIPipeDesktopPublisherAssistantCondition extends JIPipeDes
     }
 
     private void initialize() {
-        setLayout(new BorderLayout(8,8));
+        setLayout(new BorderLayout(8, 8));
         setBorder(UIUtils.createControlBorder());
         titleLabel.setFont(titleLabel.getFont().deriveFont(Font.BOLD, ThemeUtils.getCurrentStyle().getFontSizeLarge()));
         buttonPanel.setBorder(BorderFactory.createCompoundBorder(UIUtils.createEmptyBorder(8),
-                BorderFactory.createCompoundBorder(BorderFactory.createMatteBorder(1,0,0,0, ThemeUtils.getCurrentStyle().getBorderColor()),
-                        BorderFactory.createEmptyBorder(8,0,0,0))));
+                BorderFactory.createCompoundBorder(BorderFactory.createMatteBorder(1, 0, 0, 0, ThemeUtils.getCurrentStyle().getBorderColor()),
+                        BorderFactory.createEmptyBorder(8, 0, 0, 0))));
         buttonPanel.add(Box.createHorizontalGlue());
 
         add(titleLabel, BorderLayout.NORTH);
@@ -55,7 +54,7 @@ public abstract class JIPipeDesktopPublisherAssistantCondition extends JIPipeDes
 
     public abstract JIPipeDesktopPublisherAssistantConditionStatus getStatus();
 
-    public abstract String getAssistantTitle(JIPipeDesktopPublisherAssistantConditionStatus  status);
+    public abstract String getAssistantTitle(JIPipeDesktopPublisherAssistantConditionStatus status);
 
     public abstract HTMLText getAssistantDescription(JIPipeDesktopPublisherAssistantConditionStatus status);
 

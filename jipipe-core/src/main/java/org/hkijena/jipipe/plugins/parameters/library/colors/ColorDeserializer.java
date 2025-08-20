@@ -65,7 +65,7 @@ public class ColorDeserializer extends JsonDeserializer<Color> {
                 }
                 return new Color(hsv.getRed(), hsv.getGreen(), hsv.getBlue(), alpha);
             } else {
-                throw new RuntimeException("Invalid color format for string \"" + JsonUtils.toJsonString(node) +" \"! Allowed are RGB or RGBA hex strings, or objects that define 'r', 'g', 'b' or 'h', 's', 'b'/'v' and optionally alpha 'a'");
+                throw new RuntimeException("Invalid color format for string \"" + JsonUtils.toJsonString(node) + " \"! Allowed are RGB or RGBA hex strings, or objects that define 'r', 'g', 'b' or 'h', 's', 'b'/'v' and optionally alpha 'a'");
             }
         }
     }

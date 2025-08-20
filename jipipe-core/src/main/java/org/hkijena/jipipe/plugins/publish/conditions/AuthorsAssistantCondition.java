@@ -39,11 +39,11 @@ public class AuthorsAssistantCondition extends JIPipeDesktopPublisherAssistantCo
 
     @Override
     public JIPipeDesktopPublisherAssistantConditionStatus getStatus() {
-        if(getProject().getMetadata().getAuthors().isEmpty()) {
+        if (getProject().getMetadata().getAuthors().isEmpty()) {
             return JIPipeDesktopPublisherAssistantConditionStatus.Invalid;
         }
         for (JIPipeAuthorMetadata author : getProject().getMetadata().getAuthors()) {
-            if(StringUtils.isNullOrEmpty(author.getOrcidUrl())) {
+            if (StringUtils.isNullOrEmpty(author.getOrcidUrl())) {
                 return JIPipeDesktopPublisherAssistantConditionStatus.Invalid;
             }
         }
@@ -54,10 +54,9 @@ public class AuthorsAssistantCondition extends JIPipeDesktopPublisherAssistantCo
     public String getAssistantTitle(JIPipeDesktopPublisherAssistantConditionStatus status) {
         if (status == JIPipeDesktopPublisherAssistantConditionStatus.Valid) {
             return "Authors are valid";
-        } else if(getProject().getMetadata().getAuthors().isEmpty()) {
+        } else if (getProject().getMetadata().getAuthors().isEmpty()) {
             return "No authors provided";
-        }
-        else {
+        } else {
             return "Authors require valid ORCID";
         }
     }
@@ -66,10 +65,9 @@ public class AuthorsAssistantCondition extends JIPipeDesktopPublisherAssistantCo
     public HTMLText getAssistantDescription(JIPipeDesktopPublisherAssistantConditionStatus status) {
         if (status == JIPipeDesktopPublisherAssistantConditionStatus.Valid) {
             return new HTMLText("Project authors will be attached to the RO-Crate metadata");
-        } else if(getProject().getMetadata().getAuthors().isEmpty()) {
+        } else if (getProject().getMetadata().getAuthors().isEmpty()) {
             return new HTMLText("You have to at least provide one author with associated ORCID");
-        }
-        else {
+        } else {
             return new HTMLText("Authors need to be uniquely identified by their ORCID. Please add the ORCID ID or URL into the author's metadata field.");
         }
     }

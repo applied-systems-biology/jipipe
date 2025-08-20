@@ -19,11 +19,9 @@ import org.hkijena.jipipe.desktop.commons.components.pickers.JIPipeDesktopIconPi
 import org.hkijena.jipipe.utils.ResourceUtils;
 import org.hkijena.jipipe.utils.StringUtils;
 import org.hkijena.jipipe.utils.UIUtils;
-import org.hkijena.jipipe.JIPipe;
 
 import javax.swing.*;
 import java.awt.*;
-import java.net.URL;
 import java.util.HashSet;
 import java.util.Set;
 

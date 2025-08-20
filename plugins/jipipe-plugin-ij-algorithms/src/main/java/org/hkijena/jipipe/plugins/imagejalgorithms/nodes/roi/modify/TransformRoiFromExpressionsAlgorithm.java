@@ -114,10 +114,9 @@ public class TransformRoiFromExpressionsAlgorithm extends JIPipeIteratingAlgorit
 
         // Add image info
         ImagePlus referenceImg;
-        if(inputReference != null) {
+        if (inputReference != null) {
             referenceImg = inputReference.getImage();
-        }
-        else {
+        } else {
             referenceImg = inputRois.createDummyImage();
         }
 
@@ -177,10 +176,10 @@ public class TransformRoiFromExpressionsAlgorithm extends JIPipeIteratingAlgorit
             if (this.scaleY.isEnabled()) {
                 scaleY = this.scaleY.getContent().evaluateToNumber(variables);
             }
-            if(this.angle.isEnabled()) {
+            if (this.angle.isEnabled()) {
                 angle = this.angle.getContent().evaluateToNumber(variables);
             }
-            if(angle != 0) {
+            if (angle != 0) {
                 roi = RoiRotator.rotate(roi, angle, centerX, centerY);
                 inputRois.set(i, roi);
             }

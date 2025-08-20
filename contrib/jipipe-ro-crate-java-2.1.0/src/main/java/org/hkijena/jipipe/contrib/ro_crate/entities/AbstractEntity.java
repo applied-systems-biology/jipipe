@@ -7,7 +7,6 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.annotation.JsonSerialize;
 import com.fasterxml.jackson.databind.node.ArrayNode;
 import com.fasterxml.jackson.databind.node.ObjectNode;
-
 import com.google.common.collect.ImmutableList;
 import org.hkijena.jipipe.contrib.ro_crate.entities.data.RootDataEntity;
 import org.hkijena.jipipe.contrib.ro_crate.entities.serializers.ObjectNodeSerializer;
@@ -15,8 +14,8 @@ import org.hkijena.jipipe.contrib.ro_crate.entities.validation.EntityValidation;
 import org.hkijena.jipipe.contrib.ro_crate.entities.validation.JsonSchemaValidation;
 import org.hkijena.jipipe.contrib.ro_crate.objectmapper.MyObjectMapper;
 import org.hkijena.jipipe.contrib.ro_crate.payload.Observer;
-import org.hkijena.jipipe.contrib.ro_crate.special.JsonUtilFunctions;
 import org.hkijena.jipipe.contrib.ro_crate.special.IdentifierUtils;
+import org.hkijena.jipipe.contrib.ro_crate.special.JsonUtilFunctions;
 
 import java.util.*;
 import java.util.regex.Matcher;
@@ -30,13 +29,18 @@ import java.util.regex.Pattern;
  */
 public class AbstractEntity {
 
+    private static final EntityValidation entityValidation
+            = new EntityValidation(new JsonSchemaValidation());
+    @JsonIgnore
+    private final Set<String> linkedTo;
+    @JsonIgnore
+    private final Set<Observer> observers;
     /**
      * This set contains the types of an entity (ex. File, Dataset, ect.) It is
      * a set because it does not make sense to have duplicates
      */
     @JsonIgnore
     private Set<String> types;
-
     /**
      * Contains the whole list of properties of the entity It uses a custom
      * serializer because of cases where a single array element should be
@@ -46,23 +50,6 @@ public class AbstractEntity {
     @JsonUnwrapped
     @JsonSerialize(using = ObjectNodeSerializer.class)
     private ObjectNode properties;
-
-    private static final EntityValidation entityValidation
-            = new EntityValidation(new JsonSchemaValidation());
-
-    @JsonIgnore
-    private final Set<String> linkedTo;
-
-    @JsonIgnore
-    private final Set<Observer> observers;
-
-    public void addObserver(Observer observer) {
-        this.observers.add(observer);
-    }
-
-    private void notifyObservers() {
-        this.observers.forEach(observer -> observer.update(this.getId()));
-    }
 
     /**
      * Constructor that takes a builder and instantiates all the fields from it.
@@ -83,159 +70,6 @@ public class AbstractEntity {
         }
     }
 
-    public Set<String> getLinkedTo() {
-        return linkedTo;
-    }
-
-    /**
-     * Returns the types of this entity.
-     *
-     * @return a set of type strings.
-     */
-    public Set<String> getTypes() {
-        return types;
-    }
-
-    /**
-     * Returns a Json object containing the properties of the entity.
-     *
-     * @return ObjectNode representing the properties.
-     */
-    public ObjectNode getProperties() {
-        if (this.types != null) {
-            JsonNode node = MyObjectMapper.getMapper().valueToTree(this.types);
-            this.properties.set("@type", node);
-        }
-        return properties;
-    }
-
-    public JsonNode getProperty(String propertyKey) {
-        return this.properties.get(propertyKey);
-    }
-
-    /**
-     * Returns the value of the property with the given key as a String.
-     * If the property is not found, it returns null.
-     *
-     * @param propertyKey the key of the property.
-     * @return the value of the property as a String or null if not found.
-     */
-    public String getIdProperty(String propertyKey) {
-        return Optional.ofNullable(this.properties.get(propertyKey))
-                .map(jsonNode -> jsonNode.path("@id").asText(null))
-                .orElse(null);
-    }
-
-    @JsonIgnore
-    public String getId() {
-        JsonNode id = this.properties.get("@id");
-        return id == null ? null : id.asText();
-    }
-
-    /**
-     * Set all the properties from a Json object to the Entity. The entities are
-     * first validated to filter any invalid entity properties.
-     *
-     * @param obj the object that contains all the json properties that should
-     * be added.
-     */
-    public void setProperties(JsonNode obj) {
-        // validate whole entity
-        if (entityValidation.entityValidation(obj)) {
-            this.properties = obj.deepCopy();
-            this.notifyObservers();
-        }
-    }
-
-    protected void setId(String id) {
-        this.properties.put("@id", id);
-    }
-
-    /**
-     * removes one property from an entity.
-     *
-     * @param key the key of the entity, which will be removed.
-     */
-    public void removeProperty(String key) {
-        this.getProperties().remove(key);
-        this.notifyObservers();
-    }
-
-    /**
-     * Removes a collection of properties from an entity.
-     *
-     * @param keys collection of keys, which will be removed.
-     */
-    public void removeProperties(Collection<String> keys) {
-        this.getProperties().remove(keys);
-        this.notifyObservers();
-    }
-
-    /**
-     * Adds a property to the entity.
-     * <p>
-     * It may override values, if the key already exists.
-     *
-     * @param key the key of the property.
-     * @param value value of the property.
-     */
-    public void addProperty(String key, String value) {
-        if (key != null && value != null) {
-            this.properties.put(key, value);
-            this.notifyObservers();
-        }
-    }
-
-    /**
-     * Adds a property to the entity.
-     * <p>
-     * It may override values, if the key already exists.
-     *
-     * @param key the key of the property.
-     * @param value value of the property.
-     */
-    public void addProperty(String key, long value) {
-        if (key != null) {
-            this.properties.put(key, value);
-            this.notifyObservers();
-        }
-    }
-
-    /**
-     * Adds a property to the entity.
-     * <p>
-     * It may override values, if the key already exists.
-     *
-     * @param key the key of the property.
-     * @param value value of the property.
-     */
-    public void addProperty(String key, double value) {
-        if (key != null) {
-            this.properties.put(key, value);
-            this.notifyObservers();
-        }
-    }
-
-    /**
-     * Adds a generic property to the entity.
-     * <p>
-     * It may fail with an error message on stdout, in which case the
-     * value is not added.
-     * It may override values, if the key already exists.
-     * This is the most generic way to add a property. The value is a
-     * JsonNode that could contain anything possible. It is limited to
-     * objects allowed to flattened documents, which means any literal,
-     * an array of literals, or an object with an @id property.
-     *
-     * @param key   String key of the property.
-     * @param value The JsonNode representing the value.
-     */
-    public void addProperty(String key, JsonNode value) {
-        if (addProperty(this.properties, key, value)) {
-            notifyObservers();
-        }
-    }
-
     private static boolean addProperty(ObjectNode whereToAdd, String key, JsonNode value) {
         boolean validInput = key != null && value != null;
         if (validInput && entityValidation.fieldValidation(value)) {
@@ -243,21 +77,6 @@ public class AbstractEntity {
             return true;
         }
         return false;
-    }
-
-    /**
-     * Add a property that looks like this: "name" : {"@id" : "id"} If the
-     * name property already exists add a second @id to it.
-     *
-     * @param name the "key" of the property.
-     * @param id the "id" of the property.
-     */
-    public void addIdProperty(String name, String id) {
-        if (id == null || id.isBlank()) { return; }
-        mergeIdIntoValue(id, this.properties.get(name))
-                .ifPresent(newValue -> this.properties.set(name, newValue));
-        this.linkedTo.add(id);
-        this.notifyObservers();
     }
 
     /**
@@ -271,13 +90,15 @@ public class AbstractEntity {
      * If the id is already present, nothing will be done.
      * If it is not an array and the id is not present, an array will be applied.
      *
-     * @param id the id to add.
+     * @param id           the id to add.
      * @param currentValue the current value of the property.
      * @return The updated value of the property.
-     *               Empty if value does not change!
+     * Empty if value does not change!
      */
     protected static Optional<JsonNode> mergeIdIntoValue(String id, JsonNode currentValue) {
-        if (id == null || id.isBlank()) { return Optional.empty(); }
+        if (id == null || id.isBlank()) {
+            return Optional.empty();
+        }
 
         ObjectMapper jsonBuilder = MyObjectMapper.getMapper();
         ObjectNode newIdObject = jsonBuilder.createObjectNode().put("@id", id);
@@ -309,9 +130,202 @@ public class AbstractEntity {
     }
 
     /**
+     * Checks if the date matches the ISO 8601 date format.
+     *
+     * @param date the date as a string
+     * @throws IllegalArgumentException if format does not match
+     */
+    private static void checkFormatISO8601(String date) throws IllegalArgumentException {
+        String regex = "^([\\+-]?\\d{4}(?!\\d{2}\\b))((-?)((0[1-9]|1[0-2])(\\3([12]\\d|0[1-9]|3[01]))?|W([0-4]\\d|5[0-2])(-?[1-7])?|(00[1-9]|0[1-9]\\d|[12]\\d{2}|3([0-5]\\d|6[1-6])))([T\\s]((([01]\\d|2[0-3])((:?)[0-5]\\d)?|24\\:?00)([\\.,]\\d+(?!:))?)?(\\17[0-5]\\d([\\.,]\\d+)?)?([zZ]|([\\+-])([01]\\d|2[0-3]):?([0-5]\\d)?)?)?)?$";
+        Pattern pattern = Pattern.compile(regex);
+        Matcher matcher = pattern.matcher(date);
+        if (!matcher.matches()) {
+            throw new IllegalArgumentException("Date MUST be a string in ISO 8601 format");
+        }
+    }
+
+    public void addObserver(Observer observer) {
+        this.observers.add(observer);
+    }
+
+    private void notifyObservers() {
+        this.observers.forEach(observer -> observer.update(this.getId()));
+    }
+
+    public Set<String> getLinkedTo() {
+        return linkedTo;
+    }
+
+    /**
+     * Returns the types of this entity.
+     *
+     * @return a set of type strings.
+     */
+    public Set<String> getTypes() {
+        return types;
+    }
+
+    /**
+     * Returns a Json object containing the properties of the entity.
+     *
+     * @return ObjectNode representing the properties.
+     */
+    public ObjectNode getProperties() {
+        if (this.types != null) {
+            JsonNode node = MyObjectMapper.getMapper().valueToTree(this.types);
+            this.properties.set("@type", node);
+        }
+        return properties;
+    }
+
+    /**
+     * Set all the properties from a Json object to the Entity. The entities are
+     * first validated to filter any invalid entity properties.
+     *
+     * @param obj the object that contains all the json properties that should
+     *            be added.
+     */
+    public void setProperties(JsonNode obj) {
+        // validate whole entity
+        if (entityValidation.entityValidation(obj)) {
+            this.properties = obj.deepCopy();
+            this.notifyObservers();
+        }
+    }
+
+    public JsonNode getProperty(String propertyKey) {
+        return this.properties.get(propertyKey);
+    }
+
+    /**
+     * Returns the value of the property with the given key as a String.
+     * If the property is not found, it returns null.
+     *
+     * @param propertyKey the key of the property.
+     * @return the value of the property as a String or null if not found.
+     */
+    public String getIdProperty(String propertyKey) {
+        return Optional.ofNullable(this.properties.get(propertyKey))
+                .map(jsonNode -> jsonNode.path("@id").asText(null))
+                .orElse(null);
+    }
+
+    @JsonIgnore
+    public String getId() {
+        JsonNode id = this.properties.get("@id");
+        return id == null ? null : id.asText();
+    }
+
+    protected void setId(String id) {
+        this.properties.put("@id", id);
+    }
+
+    /**
+     * removes one property from an entity.
+     *
+     * @param key the key of the entity, which will be removed.
+     */
+    public void removeProperty(String key) {
+        this.getProperties().remove(key);
+        this.notifyObservers();
+    }
+
+    /**
+     * Removes a collection of properties from an entity.
+     *
+     * @param keys collection of keys, which will be removed.
+     */
+    public void removeProperties(Collection<String> keys) {
+        this.getProperties().remove(keys);
+        this.notifyObservers();
+    }
+
+    /**
+     * Adds a property to the entity.
+     * <p>
+     * It may override values, if the key already exists.
+     *
+     * @param key   the key of the property.
+     * @param value value of the property.
+     */
+    public void addProperty(String key, String value) {
+        if (key != null && value != null) {
+            this.properties.put(key, value);
+            this.notifyObservers();
+        }
+    }
+
+    /**
+     * Adds a property to the entity.
+     * <p>
+     * It may override values, if the key already exists.
+     *
+     * @param key   the key of the property.
+     * @param value value of the property.
+     */
+    public void addProperty(String key, long value) {
+        if (key != null) {
+            this.properties.put(key, value);
+            this.notifyObservers();
+        }
+    }
+
+    /**
+     * Adds a property to the entity.
+     * <p>
+     * It may override values, if the key already exists.
+     *
+     * @param key   the key of the property.
+     * @param value value of the property.
+     */
+    public void addProperty(String key, double value) {
+        if (key != null) {
+            this.properties.put(key, value);
+            this.notifyObservers();
+        }
+    }
+
+    /**
+     * Adds a generic property to the entity.
+     * <p>
+     * It may fail with an error message on stdout, in which case the
+     * value is not added.
+     * It may override values, if the key already exists.
+     * This is the most generic way to add a property. The value is a
+     * JsonNode that could contain anything possible. It is limited to
+     * objects allowed to flattened documents, which means any literal,
+     * an array of literals, or an object with an @id property.
+     *
+     * @param key   String key of the property.
+     * @param value The JsonNode representing the value.
+     */
+    public void addProperty(String key, JsonNode value) {
+        if (addProperty(this.properties, key, value)) {
+            notifyObservers();
+        }
+    }
+
+    /**
+     * Add a property that looks like this: "name" : {"@id" : "id"} If the
+     * name property already exists add a second @id to it.
+     *
+     * @param name the "key" of the property.
+     * @param id   the "id" of the property.
+     */
+    public void addIdProperty(String name, String id) {
+        if (id == null || id.isBlank()) {
+            return;
+        }
+        mergeIdIntoValue(id, this.properties.get(name))
+                .ifPresent(newValue -> this.properties.set(name, newValue));
+        this.linkedTo.add(id);
+        this.notifyObservers();
+    }
+
+    /**
      * Adds everything from the properties to the property "name" as id.
      *
-     * @param name the key of the property.
+     * @param name       the key of the property.
      * @param properties a collection containing all the id as String.
      */
     public void addIdListProperties(String name, Collection<String> properties) {
@@ -351,21 +365,6 @@ public class AbstractEntity {
     }
 
     /**
-     * Checks if the date matches the ISO 8601 date format.
-     *
-     * @param date the date as a string
-     * @throws IllegalArgumentException if format does not match
-     */
-    private static void checkFormatISO8601(String date) throws IllegalArgumentException {
-        String regex = "^([\\+-]?\\d{4}(?!\\d{2}\\b))((-?)((0[1-9]|1[0-2])(\\3([12]\\d|0[1-9]|3[01]))?|W([0-4]\\d|5[0-2])(-?[1-7])?|(00[1-9]|0[1-9]\\d|[12]\\d{2}|3([0-5]\\d|6[1-6])))([T\\s]((([01]\\d|2[0-3])((:?)[0-5]\\d)?|24\\:?00)([\\.,]\\d+(?!:))?)?(\\17[0-5]\\d([\\.,]\\d+)?)?([zZ]|([\\+-])([01]\\d|2[0-3]):?([0-5]\\d)?)?)?)?$";
-        Pattern pattern = Pattern.compile(regex);
-        Matcher matcher = pattern.matcher(date);
-        if (!matcher.matches()) {
-            throw new IllegalArgumentException("Date MUST be a string in ISO 8601 format");
-        }
-    }
-
-    /**
      * Adds a property with date time format. The property should match the ISO 8601
      * date format.
      * <p>
@@ -388,12 +387,12 @@ public class AbstractEntity {
      * entities.
      *
      * @param <T> The type of the child builders so that they to can use the
-     * methods provided here.
+     *            methods provided here.
      */
     public abstract static class AbstractEntityBuilder<T extends AbstractEntityBuilder<T>> {
 
-        private Set<String> types;
         protected Set<String> relatedItems;
+        private Set<String> types;
         private ObjectNode properties;
         private String id;
 
@@ -479,7 +478,7 @@ public class AbstractEntity {
         /**
          * Adding a property to the builder.
          *
-         * @param key the key of the property in a string.
+         * @param key   the key of the property in a string.
          * @param value the JsonNode value of te property.
          * @return the generic builder.
          */
@@ -493,7 +492,7 @@ public class AbstractEntity {
         /**
          * Adding a property to the builder.
          *
-         * @param key the key of the property as a string.
+         * @param key   the key of the property as a string.
          * @param value the value of the property as a string.
          * @return the generic builder.
          */
@@ -523,11 +522,11 @@ public class AbstractEntity {
          * <p>
          * Instead of {@code "name": "id" }
          * this will add {@code "name" : {"@id": "id"} }
-         * 
+         * <p>
          * Does nothing if name or id are null.
          *
          * @param name the name of the ID property.
-         * @param id the ID.
+         * @param id   the ID.
          * @return the generic builder
          */
         public T addIdProperty(String name, String id) {
@@ -543,7 +542,7 @@ public class AbstractEntity {
          * This is another way of adding the ID property, this time the whole
          * other Entity is provided.
          *
-         * @param name the name of the property.
+         * @param name   the name of the property.
          * @param entity the other entity that is referenced.
          * @return the generic builder.
          */
@@ -557,7 +556,7 @@ public class AbstractEntity {
         /**
          * This adds multiple id entities to a single key.
          *
-         * @param name the name of the property.
+         * @param name     the name of the property.
          * @param entities the Collection containing the multiple entities.
          * @return the generic builder.
          */
@@ -575,13 +574,12 @@ public class AbstractEntity {
          *
          * @param properties the Json representing all the properties.
          * @return the generic builder, either including all given properties
-         *          * or unchanged.
-         *
-         * @deprecated To enforce the user know what this method does,
-         *   we want the user to use one of the more explicitly named
-         *   methods {@link #setAllIfValid(ObjectNode)} or
-         *   {@link #setAllIfValid(ObjectNode)}.
+         * * or unchanged.
          * @see #setAllIfValid(ObjectNode)
+         * @deprecated To enforce the user know what this method does,
+         * we want the user to use one of the more explicitly named
+         * methods {@link #setAllIfValid(ObjectNode)} or
+         * {@link #setAllIfValid(ObjectNode)}.
          */
         @Deprecated(since = "2.1.0", forRemoval = true)
         public T setAll(ObjectNode properties) {

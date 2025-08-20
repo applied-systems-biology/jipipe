@@ -299,11 +299,6 @@
             <artifactId>jipipe-ro-crate-java</artifactId>
             <version>2.1.0</version>
         </dependency>
-        <dependency>
-            <groupId>org.hkijena</groupId>
-            <artifactId>jipipe-cwl-java</artifactId>
-            <version>1.2.0</version>
-        </dependency>
     </dependencies>
 
     <properties>

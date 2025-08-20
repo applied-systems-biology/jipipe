@@ -25,8 +25,6 @@ import org.hkijena.jipipe.api.settings.JIPipeDefaultProjectSettingsSheetCategory
 import org.hkijena.jipipe.plugins.ijocr.environments.OptionalTesseractOCREnvironment;
 import org.hkijena.jipipe.plugins.ijocr.environments.TesseractOCREnvironment;
 import org.hkijena.jipipe.plugins.parameters.library.jipipe.JIPipeArtifactQueryParameter;
-import org.hkijena.jipipe.utils.UIUtils;
-import org.hkijena.jipipe.JIPipe;
 
 import javax.swing.*;
 import java.util.List;

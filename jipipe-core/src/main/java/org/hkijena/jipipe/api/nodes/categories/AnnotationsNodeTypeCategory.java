@@ -15,11 +15,8 @@ package org.hkijena.jipipe.api.nodes.categories;
 
 import org.hkijena.jipipe.JIPipe;
 import org.hkijena.jipipe.api.nodes.JIPipeNodeTypeCategory;
-import org.hkijena.jipipe.utils.UIUtils;
-import org.hkijena.jipipe.JIPipe;
 
 import javax.swing.*;
-import java.awt.*;
 
 public class AnnotationsNodeTypeCategory implements JIPipeNodeTypeCategory {
 

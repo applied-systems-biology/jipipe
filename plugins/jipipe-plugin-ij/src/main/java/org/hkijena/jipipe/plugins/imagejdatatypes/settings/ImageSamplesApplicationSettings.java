@@ -21,10 +21,7 @@ import org.hkijena.jipipe.api.settings.JIPipeDefaultApplicationSettingsSheetCate
 import org.hkijena.jipipe.api.settings.JIPipeDefaultApplicationsSettingsSheet;
 import org.hkijena.jipipe.plugins.dataenvironment.JIPipeDataDirectoryEnvironment;
 import org.hkijena.jipipe.plugins.dataenvironment.OptionalJIPipeDataDirectoryEnvironment;
-import org.hkijena.jipipe.plugins.expressions.JIPipeExpressionParameter;
 import org.hkijena.jipipe.plugins.parameters.library.jipipe.JIPipeArtifactQueryParameter;
-import org.hkijena.jipipe.utils.UIUtils;
-import org.hkijena.jipipe.JIPipe;
 
 import javax.swing.*;
 
@@ -38,6 +35,10 @@ public class ImageSamplesApplicationSettings extends JIPipeDefaultApplicationsSe
     public ImageSamplesApplicationSettings() {
         preconfigureEnvironment(standardEnvironment);
         preconfigureEnvironment(defaultEnvironment.getContent());
+    }
+
+    public static ImageSamplesApplicationSettings getInstance() {
+        return JIPipe.getSettings().getById(ID, ImageSamplesApplicationSettings.class);
     }
 
     private void preconfigureEnvironment(JIPipeDataDirectoryEnvironment environment) {
@@ -88,9 +89,5 @@ public class ImageSamplesApplicationSettings extends JIPipeDefaultApplicationsSe
     @JIPipeParameter("default-environment")
     public void setDefaultEnvironment(OptionalJIPipeDataDirectoryEnvironment defaultEnvironment) {
         this.defaultEnvironment = defaultEnvironment;
-    }
-
-    public static ImageSamplesApplicationSettings getInstance() {
-        return JIPipe.getSettings().getById(ID, ImageSamplesApplicationSettings.class);
     }
 }

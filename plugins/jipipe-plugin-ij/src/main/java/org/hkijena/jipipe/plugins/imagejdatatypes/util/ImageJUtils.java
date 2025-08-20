@@ -23,7 +23,10 @@ import gnu.trove.list.array.TShortArrayList;
 import gnu.trove.map.TIntIntMap;
 import gnu.trove.map.hash.TIntIntHashMap;
 import ij.*;
-import ij.gui.*;
+import ij.gui.ImageCanvas;
+import ij.gui.Overlay;
+import ij.gui.PolygonRoi;
+import ij.gui.Roi;
 import ij.plugin.PlugIn;
 import ij.plugin.filter.AVI_Writer;
 import ij.plugin.filter.Convolver;
@@ -44,14 +47,15 @@ import org.hkijena.jipipe.plugins.parameters.library.colors.ColorMap;
 import org.hkijena.jipipe.plugins.parameters.library.primitives.vectors.Vector2dParameter;
 import org.hkijena.jipipe.plugins.parameters.library.quantities.Quantity;
 import org.hkijena.jipipe.plugins.parameters.library.roi.Anchor;
-import org.hkijena.jipipe.utils.*;
+import org.hkijena.jipipe.utils.ColorUtils;
+import org.hkijena.jipipe.utils.ImageJCalibrationMode;
+import org.hkijena.jipipe.utils.StringUtils;
 
 import javax.swing.*;
 import java.awt.*;
 import java.awt.geom.AffineTransform;
 import java.awt.geom.PathIterator;
 import java.awt.image.BufferedImage;
-import java.awt.image.DataBufferByte;
 import java.awt.image.DataBufferInt;
 import java.io.IOException;
 import java.nio.file.Path;
@@ -2212,8 +2216,9 @@ public class ImageJUtils {
 
     /**
      * Sets the lut of the specified channels
-     * @param image the image
-     * @param lut the LUT
+     *
+     * @param image    the image
+     * @param lut      the LUT
      * @param channels the channels (zero-based). If empty or null, all channels will be modified.
      */
     public static void setLut(ImagePlus image, LUT lut, Set<Integer> channels) {
@@ -2460,13 +2465,12 @@ public class ImageJUtils {
     }
 
     public static ImagePlus copyLUTsIfNeeded(ImagePlus img, ImagePlus projected) {
-        if(img.isComposite()) {
-            if(!projected.isComposite()) {
+        if (img.isComposite()) {
+            if (!projected.isComposite()) {
                 projected = new CompositeImage(projected);
             }
             copyLUTs(img, projected);
-        }
-        else {
+        } else {
             copyLUTs(img, projected);
         }
         return projected;

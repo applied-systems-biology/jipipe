@@ -18,9 +18,11 @@ import org.hkijena.jipipe.JIPipe;
 import org.hkijena.jipipe.JIPipeDependency;
 import org.hkijena.jipipe.JIPipeJavaPlugin;
 import org.hkijena.jipipe.JIPipeMutableDependency;
-import org.hkijena.jipipe.api.metadata.JIPipeAuthorMetadata;
 import org.hkijena.jipipe.api.JIPipeProgressInfo;
+import org.hkijena.jipipe.api.environments.JIPipeEnvironmentReference;
+import org.hkijena.jipipe.api.metadata.JIPipeAuthorMetadata;
 import org.hkijena.jipipe.api.metadata.JIPipeOrganizationMetadata;
+import org.hkijena.jipipe.api.nodes.JIPipeGraphNode;
 import org.hkijena.jipipe.api.parameters.JIPipeParameterArchetype;
 import org.hkijena.jipipe.api.project.JIPipeProject;
 import org.hkijena.jipipe.api.validation.JIPipeValidationReport;
@@ -71,14 +73,16 @@ public class OMEROPlugin extends JIPipePrepackagedDefaultJavaPlugin {
     public OMEROPlugin() {
     }
 
-    public static OMEROCredentialsEnvironment getEnvironment(JIPipeProject project, OptionalOMEROCredentialsEnvironment nodeEnvironment) {
-        if (nodeEnvironment.isEnabled()) {
-            return nodeEnvironment.getContent();
+    public static JIPipeEnvironmentReference<OMEROCredentialsEnvironment> getEnvironment(JIPipeProject project, OptionalOMEROCredentialsEnvironment nodeEnvironment, JIPipeGraphNode node) {
+        var selector = JIPipeEnvironmentReference.defaultOptions(OMEROCredentialsEnvironment.class)
+                .application(OMEROPluginApplicationSettings.getInstance().getDefaultCredentials());
+        if (nodeEnvironment != null) {
+            selector.node(nodeEnvironment, node);
         }
-        if (project != null && project.getSettingsSheet(OMEROPluginProjectSettings.class).getProjectDefaultEnvironment().isEnabled()) {
-            return project.getSettingsSheet(OMEROPluginProjectSettings.class).getProjectDefaultEnvironment().getContent();
+        if (project != null) {
+            selector.project(project.getSettingsSheet(OMEROPluginProjectSettings.class).getProjectDefaultEnvironment(), project);
         }
-        return OMEROPluginApplicationSettings.getInstance().getDefaultCredentials();
+        return selector.select();
     }
 
     @Override

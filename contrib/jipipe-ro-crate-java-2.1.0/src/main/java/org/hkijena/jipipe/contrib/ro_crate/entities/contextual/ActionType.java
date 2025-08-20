@@ -2,6 +2,7 @@ package org.hkijena.jipipe.contrib.ro_crate.entities.contextual;
 
 /**
  * Enumeration class representing action types.
+ *
  * @author sabrinechelbi
  */
 public enum ActionType {
@@ -14,8 +15,8 @@ public enum ActionType {
     ActionType(String name) {
         this.name = name;
     }
-    
-    public String getName(){
+
+    public String getName() {
         return name;
     }
 }

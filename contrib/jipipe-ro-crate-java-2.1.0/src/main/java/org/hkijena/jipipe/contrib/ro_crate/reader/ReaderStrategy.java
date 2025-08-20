@@ -7,8 +7,8 @@ package org.hkijena.jipipe.contrib.ro_crate.reader;
  *
  * @author Nikola Tzotchev on 9.2.2022 г.
  * @version 1
- *
  * @deprecated Use {@link GenericReaderStrategy} instead.
  */
 @Deprecated(since = "2.1.0", forRemoval = true)
-public interface ReaderStrategy extends GenericReaderStrategy<String> {}
+public interface ReaderStrategy extends GenericReaderStrategy<String> {
+}

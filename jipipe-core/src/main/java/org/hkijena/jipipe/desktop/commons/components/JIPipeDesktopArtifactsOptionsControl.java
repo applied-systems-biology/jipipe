@@ -22,13 +22,11 @@ import org.hkijena.jipipe.api.registries.JIPipeArtifactsRegistry;
 import org.hkijena.jipipe.desktop.JIPipeDesktop;
 import org.hkijena.jipipe.desktop.app.JIPipeDesktopProjectWorkbench;
 import org.hkijena.jipipe.desktop.app.plugins.artifactsmanager.JIPipeDesktopArtifactManagerUI;
-import org.hkijena.jipipe.desktop.commons.theme.JIPipeDesktopLegacyModernMetalTheme;
 import org.hkijena.jipipe.plugins.artifacts.JIPipeArtifactApplicationSettings;
 import org.hkijena.jipipe.plugins.parameters.library.markup.HTMLText;
 import org.hkijena.jipipe.plugins.settings.JIPipeFileChooserApplicationSettings;
 import org.hkijena.jipipe.utils.ThemeUtils;
 import org.hkijena.jipipe.utils.UIUtils;
-import org.hkijena.jipipe.JIPipe;
 
 import javax.swing.*;
 import java.awt.*;
@@ -36,11 +34,11 @@ import java.nio.file.Path;
 
 public class JIPipeDesktopArtifactsOptionsControl extends JButton implements JIPipeArtifactsRegistry.UpdatedEventListener {
 
+    private static boolean balloonTipDismissed;
     private final JIPipeDesktopProjectWorkbench workbench;
     private final JPopupMenu popupMenu = new JPopupMenu();
     private final JIPipeArtifactApplicationSettings settings = JIPipeArtifactApplicationSettings.getInstance();
     private BalloonTip balloonTip;
-    private static boolean balloonTipDismissed;
 
     public JIPipeDesktopArtifactsOptionsControl(JIPipeDesktopProjectWorkbench workbench) {
         this.workbench = workbench;
@@ -150,14 +148,13 @@ public class JIPipeDesktopArtifactsOptionsControl extends JButton implements JIP
 
     private void updateText() {
         setToolTipText("Artifacts (" + JIPipe.getArtifacts().getCachedRemoteArtifacts().size() + " available, " + JIPipe.getArtifacts().getCachedLocalArtifacts().size() + " installed)");
-       if(JIPipe.getArtifacts().getCachedRemoteArtifacts().isEmpty()) {
-           setIcon(JIPipe.RESOURCES.getIcon16("actions/gtk-disconnect.png"));
-           setText("Artifacts unavailable");
-       }
-       else {
-           setIcon(JIPipe.RESOURCES.getIcon16("actions/run-install.png"));
-           setText("Artifacts");
-       }
+        if (JIPipe.getArtifacts().getCachedRemoteArtifacts().isEmpty()) {
+            setIcon(JIPipe.RESOURCES.getIcon16("actions/gtk-disconnect.png"));
+            setText("Artifacts unavailable");
+        } else {
+            setIcon(JIPipe.RESOURCES.getIcon16("actions/run-install.png"));
+            setText("Artifacts");
+        }
     }
 
     @Override
@@ -166,13 +163,13 @@ public class JIPipeDesktopArtifactsOptionsControl extends JButton implements JIP
         showBalloonIfNeeded();
 
         // Hide the balloon tip
-        if(!JIPipe.getArtifacts().getCachedRemoteArtifacts().isEmpty()) {
+        if (!JIPipe.getArtifacts().getCachedRemoteArtifacts().isEmpty()) {
             balloonTip.setVisible(false);
         }
     }
 
     private void showBalloonIfNeeded() {
-        if(!balloonTipDismissed && settings.isShowConnectionIssueBallon() && JIPipe.getArtifacts().getCachedRemoteArtifacts().isEmpty()) {
+        if (!balloonTipDismissed && settings.isShowConnectionIssueBallon() && JIPipe.getArtifacts().getCachedRemoteArtifacts().isEmpty()) {
             UIUtils.invokeMuchLater(1000, () -> balloonTip.setVisible(true));
         }
     }

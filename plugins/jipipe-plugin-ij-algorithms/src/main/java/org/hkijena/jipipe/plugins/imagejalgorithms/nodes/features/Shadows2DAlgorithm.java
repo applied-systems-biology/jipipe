@@ -43,36 +43,36 @@ public class Shadows2DAlgorithm extends JIPipeSimpleIteratingAlgorithm {
         ImagePlus inputImage = iterationStep.getInputData(getFirstInputSlot(), ImagePlusData.class, progressInfo).getImage();
         Shadows shadows = new Shadows();
         ImagePlus outputImage = ImageJIterationUtils.generateForEachIndexedZCTSlice(inputImage, (ip, index) -> {
-            ImageProcessor outputIp =  ip.duplicate();
+            ImageProcessor outputIp = ip.duplicate();
             for (int i = 0; i < iterations; i++) {
-               switch (direction) {
-                   case N:
-                       shadows.north(outputIp);
-                       break;
-                   case NE:
-                       shadows.northeast(outputIp);
-                       break;
-                   case E:
-                       shadows.east(outputIp);
-                       break;
-                   case SE:
-                       shadows.southeast(outputIp);
-                       break;
-                   case S:
-                       shadows.south(outputIp);
-                       break;
-                   case SW:
-                       shadows.southwest(outputIp);
-                       break;
-                   case W:
-                       shadows.west(outputIp);
-                       break;
-                   case NW:
-                       shadows.northwest(outputIp);
-                       break;
-                   default:
-                       throw new IllegalArgumentException("Unknown direction " + direction);
-               }
+                switch (direction) {
+                    case N:
+                        shadows.north(outputIp);
+                        break;
+                    case NE:
+                        shadows.northeast(outputIp);
+                        break;
+                    case E:
+                        shadows.east(outputIp);
+                        break;
+                    case SE:
+                        shadows.southeast(outputIp);
+                        break;
+                    case S:
+                        shadows.south(outputIp);
+                        break;
+                    case SW:
+                        shadows.southwest(outputIp);
+                        break;
+                    case W:
+                        shadows.west(outputIp);
+                        break;
+                    case NW:
+                        shadows.northwest(outputIp);
+                        break;
+                    default:
+                        throw new IllegalArgumentException("Unknown direction " + direction);
+                }
             }
             return outputIp;
         }, progressInfo);

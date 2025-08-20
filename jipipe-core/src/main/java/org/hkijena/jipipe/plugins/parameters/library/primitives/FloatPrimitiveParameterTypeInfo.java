@@ -54,7 +54,7 @@ public class FloatPrimitiveParameterTypeInfo implements JIPipeParameterTypeInfo 
         return "A 32-bit floating point number";
     }
 
-     @Override
+    @Override
     public List<JIPipeParameterTypeAllowedValueInfo> getAllowedValues() {
         return Collections.emptyList();
     }

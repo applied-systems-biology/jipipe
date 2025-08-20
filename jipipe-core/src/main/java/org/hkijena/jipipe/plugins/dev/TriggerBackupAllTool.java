@@ -13,12 +13,11 @@
 
 package org.hkijena.jipipe.plugins.dev;
 
+import org.hkijena.jipipe.JIPipe;
 import org.hkijena.jipipe.desktop.api.JIPipeDesktopMenuExtension;
 import org.hkijena.jipipe.desktop.api.JIPipeMenuExtensionTarget;
 import org.hkijena.jipipe.desktop.app.JIPipeDesktopWorkbench;
 import org.hkijena.jipipe.plugins.settings.JIPipeBackupApplicationSettings;
-import org.hkijena.jipipe.utils.UIUtils;
-import org.hkijena.jipipe.JIPipe;
 
 public class TriggerBackupAllTool extends JIPipeDesktopMenuExtension {
     /**

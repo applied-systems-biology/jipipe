@@ -13,9 +13,8 @@
 
 package org.hkijena.jipipe.api.validation.contexts;
 
-import org.hkijena.jipipe.api.validation.JIPipeValidationReportContext;
-import org.hkijena.jipipe.utils.UIUtils;
 import org.hkijena.jipipe.JIPipe;
+import org.hkijena.jipipe.api.validation.JIPipeValidationReportContext;
 
 import javax.swing.*;
 

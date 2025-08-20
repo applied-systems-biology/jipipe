@@ -82,11 +82,11 @@ public abstract class DynamicSetParameter<T> implements EnumParameter {
 
     @Override
     public List<JIPipeParameterTypeAllowedValueInfo> getAllowedValueInfos() {
-        List<JIPipeParameterTypeAllowedValueInfo> result = new  ArrayList<>();
+        List<JIPipeParameterTypeAllowedValueInfo> result = new ArrayList<>();
         for (T allowedValue : allowedValues) {
             result.add(new JIPipeParameterTypeAllowedValueInfo(StringUtils.orElse(allowedValue, "")));
         }
-        return  result;
+        return result;
     }
 
     /**

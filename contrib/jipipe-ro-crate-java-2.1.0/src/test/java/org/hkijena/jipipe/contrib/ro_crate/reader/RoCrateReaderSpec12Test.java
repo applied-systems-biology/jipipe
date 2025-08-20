@@ -1,24 +1,22 @@
 package org.hkijena.jipipe.contrib.ro_crate.reader;
 
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertTrue;
+import com.fasterxml.jackson.databind.JsonNode;
+import org.hkijena.jipipe.contrib.ro_crate.Crate;
+import org.junit.jupiter.api.Test;
 
 import java.io.IOException;
 import java.util.stream.StreamSupport;
 
-import org.junit.jupiter.api.Test;
-
-import com.fasterxml.jackson.databind.JsonNode;
-
-import org.hkijena.jipipe.contrib.ro_crate.Crate;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
 /**
  * These reading tests are specific for reading 1.2 compliant crates.
- * 
+ * <p>
  * They will refer to 1.2-DRAFT as long as the specification is not final.
  * Base for these tests are usually examples from the specification, but may
  * contain modifications if no example for a certain property is given.
- * 
+ * <p>
  * Current specification: https://www.researchobject.org/ro-crate/1.2-DRAFT/
  */
 public class RoCrateReaderSpec12Test {

@@ -2,10 +2,10 @@ package org.hkijena.jipipe.contrib.ro_crate.writer;
 
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import org.apache.commons.io.FileUtils;
 import org.hkijena.jipipe.contrib.ro_crate.Crate;
 import org.hkijena.jipipe.contrib.ro_crate.entities.data.DataEntity;
 import org.hkijena.jipipe.contrib.ro_crate.objectmapper.MyObjectMapper;
-import org.apache.commons.io.FileUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -31,7 +31,6 @@ public class WriteFolderStrategy implements GenericWriterStrategy<String> {
      * For internal use. Skips the preview generation when writing the crate.
      *
      * @return this instance of WriteFolderStrategy
-     *
      * @deprecated May be removed in future versions. Not intended for public use.
      */
     @Deprecated(since = "2.1.0", forRemoval = true)

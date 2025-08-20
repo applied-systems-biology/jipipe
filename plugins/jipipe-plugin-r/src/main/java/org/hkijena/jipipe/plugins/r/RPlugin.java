@@ -21,6 +21,8 @@ import org.hkijena.jipipe.JIPipeDependency;
 import org.hkijena.jipipe.JIPipeJavaPlugin;
 import org.hkijena.jipipe.JIPipeMutableDependency;
 import org.hkijena.jipipe.api.JIPipeProgressInfo;
+import org.hkijena.jipipe.api.environments.JIPipeEnvironmentReference;
+import org.hkijena.jipipe.api.nodes.JIPipeGraphNode;
 import org.hkijena.jipipe.api.parameters.JIPipeParameterArchetype;
 import org.hkijena.jipipe.api.project.JIPipeProject;
 import org.hkijena.jipipe.plugins.JIPipePrepackagedDefaultJavaPlugin;
@@ -35,8 +37,6 @@ import org.hkijena.jipipe.plugins.r.algorithms.MergingRScriptAlgorithm;
 import org.hkijena.jipipe.plugins.r.parameters.RScriptParameter;
 import org.hkijena.jipipe.plugins.r.ui.RTokenMaker;
 import org.hkijena.jipipe.utils.JIPipeResourceManager;
-import org.hkijena.jipipe.utils.UIUtils;
-import org.hkijena.jipipe.JIPipe;
 import org.scijava.Context;
 import org.scijava.plugin.Plugin;
 
@@ -61,14 +61,18 @@ public class RPlugin extends JIPipePrepackagedDefaultJavaPlugin {
         getMetadata().addCategories(PluginCategoriesEnumParameter.CATEGORY_SCRIPTING);
     }
 
-    public static REnvironment getEnvironment(JIPipeProject project, OptionalREnvironment nodeEnvironment) {
-        if (nodeEnvironment.isEnabled()) {
-            return nodeEnvironment.getContent();
+    public static JIPipeEnvironmentReference<REnvironment> getEnvironment(JIPipeProject project, OptionalREnvironment nodeEnvironment, JIPipeGraphNode node) {
+        var selector = JIPipeEnvironmentReference.defaultOptions(REnvironment.class)
+                .application(RPluginApplicationSettings.getInstance().getReadOnlyEnvironment());
+
+        if (project != null) {
+            selector.project(project.getSettingsSheet(RPluginProjectSettings.class).getProjectDefaultEnvironment(), project);
         }
-        if (project != null && project.getSettingsSheet(RPluginProjectSettings.class).getProjectDefaultEnvironment().isEnabled()) {
-            return project.getSettingsSheet(RPluginProjectSettings.class).getProjectDefaultEnvironment().getContent();
+        if (nodeEnvironment != null) {
+            selector.node(nodeEnvironment, node);
         }
-        return RPluginApplicationSettings.getInstance().getReadOnlyEnvironment();
+
+        return selector.select();
     }
 
     @Override

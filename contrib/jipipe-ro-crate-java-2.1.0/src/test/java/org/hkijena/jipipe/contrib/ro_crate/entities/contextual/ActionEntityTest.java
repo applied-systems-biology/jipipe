@@ -1,13 +1,12 @@
 package org.hkijena.jipipe.contrib.ro_crate.entities.contextual;
 
 import org.hkijena.jipipe.contrib.ro_crate.HelpFunctions;
-
-import static org.junit.jupiter.api.Assertions.assertNotNull;
+import org.junit.jupiter.api.Test;
 
 import java.io.IOException;
 import java.util.Arrays;
 
-import org.junit.jupiter.api.Test;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
 
 /**
  *
@@ -17,7 +16,7 @@ class ActionEntityTest {
 
     @Test
     void testAddCreateActionMinimalExample() throws IOException {
-        
+
         ContextualEntity equipment = new ContextualEntity.ContextualEntityBuilder()
                 .setId("https://confluence.csiro.au/display/ASL/Hovermap")
                 .addType("IndividualProduct")
@@ -26,7 +25,7 @@ class ActionEntityTest {
                 .addIdProperty("manufacturer", "https://www.atlassian.com/software/confluence")
                 .addProperty("serialNumber", "1111122233321231")
                 .build();
-        
+
         assertNotNull(equipment);
         HelpFunctions.compareEntityWithFile(equipment, "/json/entities/contextual/equipment.json");
 
@@ -37,7 +36,7 @@ class ActionEntityTest {
                 .addInstrument("https://confluence.csiro.au/display/ASL/Hovermap")
                 // or (duplications will be ignored):
                 .addInstruments(Arrays.asList("https://confluence.csiro.au/display/ASL/Hovermap"))
-                
+
                 .addObject("#victoria_arch")
                 // or (duplications will be ignored):
                 .addObjects(Arrays.asList("#victoria_arch"))
@@ -50,14 +49,14 @@ class ActionEntityTest {
                 .setStartTime("2017-06-10T12:56:14+10:00")
                 .setEndTime("2017-06-11T12:56:14+10:00")
                 .build();
-        
+
         assertNotNull(createAction);
         HelpFunctions.compareEntityWithFile(createAction, "/json/entities/contextual/createActionExample.json");
     }
 
     @Test
     void testCreateActionGeneric() throws IOException {
-        
+
         ContextualEntity equipment = new ContextualEntity.ContextualEntityBuilder()
                 .setId("https://confluence.csiro.au/display/ASL/Hovermap")
                 .addType("IndividualProduct")
@@ -66,7 +65,7 @@ class ActionEntityTest {
                 .addIdProperty("manufacturer", "https://www.atlassian.com/software/confluence")
                 .addProperty("serialNumber", "1111122233321231")
                 .build();
-        
+
         assertNotNull(equipment);
         HelpFunctions.compareEntityWithFile(equipment, "/json/entities/contextual/equipment.json");
 
@@ -78,14 +77,14 @@ class ActionEntityTest {
                 .addObject("#victoria_arch")
                 .addResult("wcc02_arch.laz")
                 .addResult("wcc02_arch_traj.txt")
-                .addDateTimePropertyWithExceptions("startTime","2017-06-10T12:56:14+10:00")
-                .addDateTimePropertyWithExceptions("endTime","2017-06-11T12:56:14+10:00")
+                .addDateTimePropertyWithExceptions("startTime", "2017-06-10T12:56:14+10:00")
+                .addDateTimePropertyWithExceptions("endTime", "2017-06-11T12:56:14+10:00")
                 .build();
-        
+
         assertNotNull(createAction);
         HelpFunctions.compareEntityWithFile(createAction, "/json/entities/contextual/createActionExample.json");
     }
-    
+
     @Test
     void testAddCreateActionUsingSoftware() throws IOException {
         ContextualEntity software = new ContextualEntity.ContextualEntityBuilder()
@@ -110,7 +109,7 @@ class ActionEntityTest {
         assertNotNull(createAction);
         HelpFunctions.compareEntityWithFile(createAction, "/json/entities/contextual/createActionExampleSoftware.json");
     }
-    
+
     @Test
     void testAddUpdateAction() throws IOException {
         ActionEntity createAction = new ActionEntity.ActionEntityBuilder(ActionType.UPDATE)

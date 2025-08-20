@@ -13,10 +13,9 @@
 
 package org.hkijena.jipipe.plugins.ij3d.imageviewer;
 
+import org.hkijena.jipipe.JIPipe;
 import org.hkijena.jipipe.plugins.ij3d.datatypes.ROI3D;
 import org.hkijena.jipipe.plugins.ij3d.datatypes.ROI3DListData;
-import org.hkijena.jipipe.utils.UIUtils;
-import org.hkijena.jipipe.JIPipe;
 
 import javax.swing.*;
 import java.util.List;

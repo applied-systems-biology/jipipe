@@ -27,7 +27,10 @@ import org.hkijena.jipipe.desktop.commons.theme.JIPipeDesktopModernThemeStyle;
 import org.hkijena.jipipe.plugins.parameters.library.markup.HTMLText;
 import org.hkijena.jipipe.plugins.parameters.library.markup.MarkdownText;
 import org.hkijena.jipipe.plugins.settings.JIPipeFileChooserApplicationSettings;
-import org.hkijena.jipipe.utils.*;
+import org.hkijena.jipipe.utils.ColorUtils;
+import org.hkijena.jipipe.utils.PathUtils;
+import org.hkijena.jipipe.utils.ThemeUtils;
+import org.hkijena.jipipe.utils.UIUtils;
 
 import javax.swing.*;
 import javax.swing.event.HyperlinkEvent;
@@ -81,22 +84,6 @@ public class JIPipeDesktopMarkdownReader extends JPanel {
         }
     }
 
-    private void initializeDefaultCSSRules() {
-        JIPipeDesktopModernThemeStyle style = ThemeUtils.getCurrentStyle();
-        cssRules.add("body { font-family: \"Dialog\"; font-size: " + style.getFontSizeNormal() + "pt; color: " + ColorUtils.colorToHexString(style.getTextForeground()) + "; }");
-        cssRules.add("pre { background-color: " + ColorUtils.colorToHexString(style.getSelectionBackground()) + "; border: 3px " + ColorUtils.colorToHexString(style.getBorderColor()) +" solid; }");
-        cssRules.add("code { background-color: " + ColorUtils.colorToHexString(style.getFormBackground()) + "; border: none; }");
-        cssRules.add("h1 { padding-top: 5px; font-weight bolder; font-size: " + style.getFontSizeHuge() + "pt }");
-        cssRules.add("h2 { padding-top: 20px; font-size: " + style.getFontSizeLarge() + "pt }");
-        cssRules.add("h3 { padding-top: 20px; font-size: " + style.getFontSizeLarge() + "pt }");
-        cssRules.add("h4 { padding-top: 20px; font-size: " + style.getFontSizeNormal() + "pt }");
-        cssRules.add("h5 { padding-top: 20px; font-size: " + style.getFontSizeNormal() + "pt }");
-        cssRules.add("th { border-bottom: 1px solid " + ColorUtils.colorToHexString(style.getBorderColor()) + "; }");
-        cssRules.add("a { color: " + ColorUtils.colorToHexString(style.getTextLink()) + "; }");
-        cssRules.add(".toc-list { list-style: none; }");
-    }
-
-
     public static JIPipeDesktopMarkdownReader showDialog(MarkdownText document, boolean withToolbar, String title, Component parent, boolean modal) {
         JIPipeDesktopMarkdownReader reader = new JIPipeDesktopMarkdownReader(withToolbar, document);
         Window owner = parent != null ? SwingUtilities.getWindowAncestor(parent) : null;
@@ -115,6 +102,21 @@ public class JIPipeDesktopMarkdownReader extends JPanel {
         UIUtils.addEscapeListener(dialog);
         dialog.setVisible(true);
         return reader;
+    }
+
+    private void initializeDefaultCSSRules() {
+        JIPipeDesktopModernThemeStyle style = ThemeUtils.getCurrentStyle();
+        cssRules.add("body { font-family: \"Dialog\"; font-size: " + style.getFontSizeNormal() + "pt; color: " + ColorUtils.colorToHexString(style.getTextForeground()) + "; }");
+        cssRules.add("pre { background-color: " + ColorUtils.colorToHexString(style.getSelectionBackground()) + "; border: 3px " + ColorUtils.colorToHexString(style.getBorderColor()) + " solid; }");
+        cssRules.add("code { background-color: " + ColorUtils.colorToHexString(style.getFormBackground()) + "; border: none; }");
+        cssRules.add("h1 { padding-top: 5px; font-weight bolder; font-size: " + style.getFontSizeHuge() + "pt }");
+        cssRules.add("h2 { padding-top: 20px; font-size: " + style.getFontSizeLarge() + "pt }");
+        cssRules.add("h3 { padding-top: 20px; font-size: " + style.getFontSizeLarge() + "pt }");
+        cssRules.add("h4 { padding-top: 20px; font-size: " + style.getFontSizeNormal() + "pt }");
+        cssRules.add("h5 { padding-top: 20px; font-size: " + style.getFontSizeNormal() + "pt }");
+        cssRules.add("th { border-bottom: 1px solid " + ColorUtils.colorToHexString(style.getBorderColor()) + "; }");
+        cssRules.add("a { color: " + ColorUtils.colorToHexString(style.getTextLink()) + "; }");
+        cssRules.add(".toc-list { list-style: none; }");
     }
 
     private void initialize(boolean withToolbar) {

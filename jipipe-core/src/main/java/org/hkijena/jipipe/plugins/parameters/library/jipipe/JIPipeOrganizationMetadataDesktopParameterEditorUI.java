@@ -74,8 +74,7 @@ public class JIPipeOrganizationMetadataDesktopParameterEditorUI extends JIPipeDe
         try {
             JIPipeOrganizationMetadata organizationMetadata = JsonUtils.readFromString(UIUtils.getStringFromClipboard(), JIPipeOrganizationMetadata.class);
             setParameter(organizationMetadata, true);
-        }
-        catch (Exception e) {
+        } catch (Exception e) {
             JOptionPane.showMessageDialog(this, e.getMessage(), "Error pasting organization", JOptionPane.ERROR_MESSAGE);
         }
     }
@@ -103,29 +102,26 @@ public class JIPipeOrganizationMetadataDesktopParameterEditorUI extends JIPipeDe
     @Override
     public void reload() {
         JIPipeOrganizationMetadata organization = getParameter(JIPipeOrganizationMetadata.class);
-        if(!StringUtils.isNullOrEmpty(organization.getName())) {
+        if (!StringUtils.isNullOrEmpty(organization.getName())) {
             nameLabel.setText(organization.getName());
             nameLabel.setForeground(ThemeUtils.getCurrentStyle().getTextForeground());
-        }
-        else {
+        } else {
             nameLabel.setText("No name set. Please click Configure > Edit");
             nameLabel.setForeground(ThemeUtils.getCurrentStyle().getDangerColor());
         }
 
-        if(!StringUtils.isNullOrEmpty(organization.getWebsite())) {
+        if (!StringUtils.isNullOrEmpty(organization.getWebsite())) {
             websiteLabel.setText(organization.getWebsite());
             websiteLabel.setForeground(ThemeUtils.getCurrentStyle().getTextMuted());
-        }
-        else {
+        } else {
             websiteLabel.setText("No website set");
             websiteLabel.setForeground(ThemeUtils.getCurrentStyle().getDangerColor());
         }
 
-        if(!StringUtils.isNullOrEmpty(organization.getRorUrl())) {
+        if (!StringUtils.isNullOrEmpty(organization.getRorUrl())) {
             rorLabel.setText(organization.getRorUrl());
             rorLabel.setForeground(ThemeUtils.getCurrentStyle().getTextMuted());
-        }
-        else {
+        } else {
             rorLabel.setText("No ROR set");
             rorLabel.setForeground(ThemeUtils.getCurrentStyle().getDangerColor());
         }

@@ -13,6 +13,7 @@
 
 package org.hkijena.jipipe.plugins.omnipose;
 
+import org.hkijena.jipipe.api.environments.JIPipeEnvironmentReference;
 import org.hkijena.jipipe.api.nodes.JIPipeGraphNode;
 import org.hkijena.jipipe.api.project.JIPipeProject;
 import org.hkijena.jipipe.api.validation.JIPipeValidationReport;
@@ -34,13 +35,13 @@ public interface OmniposeEnvironmentAccessNode {
      *
      * @return the environment
      */
-    default PythonEnvironment getConfiguredOmniposeEnvironment() {
+    default JIPipeEnvironmentReference<PythonEnvironment> getConfiguredOmniposeEnvironment() {
         JIPipeGraphNode node = (JIPipeGraphNode) this;
         JIPipeProject project = node.getRuntimeProject();
         if (project == null) {
             project = node.getParentGraph().getProject();
         }
-        return OmniposePlugin.getEnvironment(project, getOverrideEnvironment());
+        return OmniposePlugin.getEnvironment(project, getOverrideEnvironment(), node);
     }
 
     /**
@@ -50,7 +51,7 @@ public interface OmniposeEnvironmentAccessNode {
      * @param report  the report
      */
     default void reportConfiguredOmniposeEnvironmentValidity(JIPipeValidationReportContext context, JIPipeValidationReport report) {
-        if (!getConfiguredOmniposeEnvironment().generateValidityReport(context).isValid()) {
+        if (!getConfiguredOmniposeEnvironment().getEnvironment().generateValidityReport(context).isValid()) {
             report.report(new JIPipeValidationReportEntry(JIPipeValidationReportEntryLevel.Error,
                     context,
                     "Omnipose not configured",

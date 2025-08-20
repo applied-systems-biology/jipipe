@@ -13,7 +13,6 @@
 
 package org.hkijena.jipipe.desktop.commons.theme.ui;
 
-import org.hkijena.jipipe.desktop.commons.theme.JIPipeDesktopLegacyModernMetalTheme;
 import org.hkijena.jipipe.utils.ThemeUtils;
 
 import javax.swing.*;
@@ -96,7 +95,7 @@ public class JIPipeDesktopModernPillTabbedPaneUI extends BasicTabbedPaneUI {
                                      int btm, int rght,
                                      boolean isSelected) {
 
-        if(true) {
+        if (true) {
             return;
         }
 
@@ -686,7 +685,7 @@ public class JIPipeDesktopModernPillTabbedPaneUI extends BasicTabbedPaneUI {
                 case TOP:
                 default:
                     g.fillRoundRect(x, y + 5, w, h - 10, 10, 10);
-                    if(isSelected) {
+                    if (isSelected) {
                         g2d.setColor(selectHighlight);
                         g.drawRoundRect(x, y + 5, w, h - 10, 10, 10);
                     }

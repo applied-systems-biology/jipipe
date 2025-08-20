@@ -11,7 +11,8 @@ public class Writers {
     /**
      * Prevents instantiation of this utility class.
      */
-    private Writers() {}
+    private Writers() {
+    }
 
     /**
      * Creates a new instance of a crate writer that writes to a folder.

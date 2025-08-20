@@ -164,13 +164,12 @@ public class OMEROCredentialsEnvironment extends JIPipeEnvironment {
         String secretPassword, secretUserName, secretHost;
         int secretPort;
 
-        if(secretCredentials != null) {
+        if (secretCredentials != null) {
             secretPassword = StringUtils.orElse(secretCredentials.getPassword().getPassword(), password.getPassword());
             secretUserName = StringUtils.orElse(secretCredentials.getUserName(), userName);
             secretHost = StringUtils.orElse(secretCredentials.getHost(), host);
             secretPort = secretCredentials.getPort() > 0 ? secretCredentials.getPort() : port;
-        }
-        else {
+        } else {
             secretPassword = password.getPassword();
             secretUserName = userName;
             secretHost = host;
@@ -182,7 +181,7 @@ public class OMEROCredentialsEnvironment extends JIPipeEnvironment {
 
     @Override
     public void reportValidity(JIPipeValidationReportContext reportContext, JIPipeValidationReport report) {
-        if(JIPipe.getInstance().getMode() == JIPipeMode.Headless) {
+        if (JIPipe.getInstance().getMode() == JIPipeMode.Headless) {
             if (StringUtils.isNullOrEmpty(userName) || StringUtils.isNullOrEmpty(host) || StringUtils.isNullOrEmpty(email)) {
                 report.add(new JIPipeValidationReportEntry(JIPipeValidationReportEntryLevel.Error,
                         reportContext,
@@ -196,12 +195,12 @@ public class OMEROCredentialsEnvironment extends JIPipeEnvironment {
     public void runPreconfigure(JIPipeGraphRun run, JIPipeProgressInfo progressInfo) {
         super.runPreconfigure(run, progressInfo);
 
-        if(secretCredentials != null) {
+        if (secretCredentials != null) {
             return;
         }
 
-        if(StringUtils.isNullOrEmpty(host) || StringUtils.isNullOrEmpty(userName) || password == null || StringUtils.isNullOrEmpty(password.getPassword())) {
-            if(JIPipe.getInstance().getMode() == JIPipeMode.GUI) {
+        if (StringUtils.isNullOrEmpty(host) || StringUtils.isNullOrEmpty(userName) || password == null || StringUtils.isNullOrEmpty(password.getPassword())) {
+            if (JIPipe.getInstance().getMode() == JIPipeMode.GUI) {
                 progressInfo.log("-> OMERO connection to " + host + " has missing credentials. Asking for password interactively.");
                 progressInfo.log("OMERO: Waiting for user input ...");
 
@@ -214,14 +213,13 @@ public class OMEROCredentialsEnvironment extends JIPipeEnvironment {
                     SwingUtilities.invokeLater(() -> {
                         try {
                             JIPipeDesktopWorkbench workbench = JIPipeDesktopProjectWorkbench.tryFindProjectWorkbench(run.getProject().getGraph(), new JIPipeDummyWorkbench());
-                            if(JIPipeDesktopParameterFormPanel.showDialog(workbench,
+                            if (JIPipeDesktopParameterFormPanel.showDialog(workbench,
                                     newSecrets,
                                     new MarkdownText("# OMERO login\n\nPlease fill out all the fields to supply the required OMERO login credentials."),
                                     "OMERO login",
                                     JIPipeDesktopParameterFormPanel.WITH_DOCUMENTATION | JIPipeDesktopParameterFormPanel.WITH_SCROLLING)) {
                                 cancelled.set(false);
-                            }
-                            else {
+                            } else {
                                 cancelled.set(true);
                             }
 
@@ -252,13 +250,11 @@ public class OMEROCredentialsEnvironment extends JIPipeEnvironment {
                             new UnspecifiedValidationReportContext(),
                             "Operation cancelled by user",
                             "You clicked 'Cancel'"));
-                }
-                else {
+                } else {
                     // Confirm secrets
                     this.secretCredentials = newSecrets;
                 }
-            }
-            else {
+            } else {
                 progressInfo.log("-> OMERO connection to " + host + " has missing credentials, but JIPipe is in non-GUI mode. CONTINUING WITH EMPTY VALUES WHERE NONE ARE PROVIDED!");
             }
         }
@@ -268,7 +264,7 @@ public class OMEROCredentialsEnvironment extends JIPipeEnvironment {
     public void runPostprocessing(JIPipeGraphRun run, JIPipeProgressInfo progressInfo) {
         super.runPostprocessing(run, progressInfo);
 
-        if(secretCredentials != null) {
+        if (secretCredentials != null) {
             progressInfo.log("Clearing OMERO secrets ...");
             this.secretCredentials = null;
         }

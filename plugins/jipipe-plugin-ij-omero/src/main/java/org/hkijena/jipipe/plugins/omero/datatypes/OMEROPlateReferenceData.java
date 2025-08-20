@@ -16,7 +16,6 @@ package org.hkijena.jipipe.plugins.omero.datatypes;
 import com.fasterxml.jackson.annotation.JsonGetter;
 import com.fasterxml.jackson.annotation.JsonSetter;
 import omero.gateway.model.PlateData;
-import omero.gateway.model.ProjectData;
 import org.hkijena.jipipe.api.JIPipeProgressInfo;
 import org.hkijena.jipipe.api.SetJIPipeDocumentation;
 import org.hkijena.jipipe.api.data.JIPipeData;

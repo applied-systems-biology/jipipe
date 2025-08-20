@@ -31,8 +31,8 @@ import org.hkijena.jipipe.plugins.imagejalgorithms.parameters.Neighborhood2D;
 import org.hkijena.jipipe.plugins.imagejdatatypes.datatypes.greyscale.ImagePlusGreyscaleData;
 import org.hkijena.jipipe.plugins.imagejdatatypes.datatypes.greyscale.ImagePlusGreyscaleMaskData;
 import org.hkijena.jipipe.plugins.imagejdatatypes.util.ImageJIterationUtils;
-import org.hkijena.jipipe.plugins.imagejdatatypes.util.dimensions.BitDepth;
 import org.hkijena.jipipe.plugins.imagejdatatypes.util.ImageJUtils;
+import org.hkijena.jipipe.plugins.imagejdatatypes.util.dimensions.BitDepth;
 
 @SetJIPipeDocumentation(name = "Separate touching labels", description = "Finds pixels that border two different label values and sets them to the background value. " +
         "Background pixels (value 0) are ignored.")

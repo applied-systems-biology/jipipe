@@ -1,6 +1,7 @@
 package org.hkijena.jipipe.plugins.omero.viewers;
 
 import com.formdev.flatlaf.util.StringUtils;
+import org.hkijena.jipipe.JIPipe;
 import org.hkijena.jipipe.api.data.JIPipeData;
 import org.hkijena.jipipe.desktop.api.dataviewer.JIPipeDesktopDataViewer;
 import org.hkijena.jipipe.desktop.api.dataviewer.JIPipeDesktopDataViewerWindow;
@@ -9,11 +10,9 @@ import org.hkijena.jipipe.desktop.commons.components.JIPipeDesktopReadonlyCopyab
 import org.hkijena.jipipe.desktop.commons.components.ribbon.JIPipeDesktopRibbon;
 import org.hkijena.jipipe.plugins.omero.datatypes.*;
 import org.hkijena.jipipe.utils.UIUtils;
-import org.hkijena.jipipe.JIPipe;
 
 import javax.swing.*;
 import java.awt.*;
-import java.net.URI;
 
 public class OMERODataViewer extends JIPipeDesktopDataViewer {
 
@@ -66,14 +65,12 @@ public class OMERODataViewer extends JIPipeDesktopDataViewer {
             formPanel.addToForm(UIUtils.createReadonlyTextPane(((OMEROProjectReferenceData) data).getDescription()), new JLabel("Description"));
             formPanel.addToForm(new JIPipeDesktopReadonlyCopyableTextField(((OMEROProjectReferenceData) data).getProjectId() + "", true), new JLabel("Project ID"));
             formPanel.addToForm(new JIPipeDesktopReadonlyCopyableTextField(((OMEROProjectReferenceData) data).getUrl(), true), new JLabel("URL"));
-        }
-        else if (data instanceof OMEROPlateReferenceData) {
+        } else if (data instanceof OMEROPlateReferenceData) {
             this.currentUrl = ((OMEROPlateReferenceData) data).getUrl();
             formPanel.addToForm(new JIPipeDesktopReadonlyCopyableTextField(((OMEROPlateReferenceData) data).getName(), true), new JLabel("Name"));
             formPanel.addToForm(new JIPipeDesktopReadonlyCopyableTextField(((OMEROPlateReferenceData) data).getPlateId() + "", true), new JLabel("Plate ID"));
             formPanel.addToForm(new JIPipeDesktopReadonlyCopyableTextField(((OMEROPlateReferenceData) data).getUrl(), true), new JLabel("URL"));
-        }
-        else if (data instanceof OMEROScreenReferenceData) {
+        } else if (data instanceof OMEROScreenReferenceData) {
             this.currentUrl = ((OMEROScreenReferenceData) data).getUrl();
             formPanel.addToForm(new JIPipeDesktopReadonlyCopyableTextField(((OMEROScreenReferenceData) data).getName(), true), new JLabel("Name"));
             formPanel.addToForm(UIUtils.createReadonlyTextPane(((OMEROScreenReferenceData) data).getDescription()), new JLabel("Description"));
@@ -83,8 +80,7 @@ public class OMERODataViewer extends JIPipeDesktopDataViewer {
             formPanel.addToForm(UIUtils.createReadonlyTextPane(((OMEROScreenReferenceData) data).getReagentSetDescription()), new JLabel("Reagent set description"));
             formPanel.addToForm(new JIPipeDesktopReadonlyCopyableTextField(((OMEROScreenReferenceData) data).getScreenId() + "", true), new JLabel("Screen ID"));
             formPanel.addToForm(new JIPipeDesktopReadonlyCopyableTextField(((OMEROScreenReferenceData) data).getUrl(), true), new JLabel("URL"));
-        }
-        else if (data instanceof OMEROWellReferenceData) {
+        } else if (data instanceof OMEROWellReferenceData) {
             this.currentUrl = ((OMEROWellReferenceData) data).getUrl();
             formPanel.addToForm(new JIPipeDesktopReadonlyCopyableTextField(((OMEROWellReferenceData) data).getName(), true), new JLabel("Name"));
             formPanel.addToForm(new JIPipeDesktopReadonlyCopyableTextField(((OMEROWellReferenceData) data).getWellId() + "", true), new JLabel("Well ID"));

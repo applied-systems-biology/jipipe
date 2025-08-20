@@ -207,7 +207,7 @@ public class UIUtils {
     }
 
     public static Color getControlBorderColor() {
-       return ThemeUtils.getCurrentStyle().getBorderColor();
+        return ThemeUtils.getCurrentStyle().getBorderColor();
     }
 
     public static Border createControlBorder() {
@@ -847,9 +847,9 @@ public class UIUtils {
     /**
      * Installs an event to the window that asks the user before the window is closes
      *
-     * @param window  the window
-     * @param message the close message
-     * @param title   the close message title
+     * @param window     the window
+     * @param message    the close message
+     * @param title      the close message title
      * @param askOnClose only ask if condition is true
      */
     public static void setToAskOnClose(JFrame window, String message, String title, Supplier<Boolean> askOnClose) {
@@ -857,10 +857,9 @@ public class UIUtils {
         window.addWindowListener(new WindowAdapter() {
             @Override
             public void windowClosing(WindowEvent windowEvent) {
-                if(!askOnClose.get()) {
+                if (!askOnClose.get()) {
                     windowEvent.getWindow().dispose();
-                }
-                else if (JOptionPane.showConfirmDialog(windowEvent.getComponent(), message, title,
+                } else if (JOptionPane.showConfirmDialog(windowEvent.getComponent(), message, title,
                         JOptionPane.YES_NO_OPTION, JOptionPane.QUESTION_MESSAGE) == JOptionPane.YES_OPTION) {
                     windowEvent.getWindow().dispose();
                 }
@@ -2356,19 +2355,18 @@ public class UIUtils {
      * If a modern theme is running, wrap the panel in a {@link org.hkijena.jipipe.desktop.commons.theme.helpers.JIPipeDesktopIslandPanel}.
      * Otherwise, return the panel.
      * Will check if the panel is already an island panel.
+     *
      * @param panel the panel
      * @return the wrapped panel
      */
     public static JComponent wrapInIslandPanelIfNeeded(JComponent panel) {
-        if(ThemeUtils.isUsingModernTheme()) {
-            if(panel instanceof JIPipeDesktopIslandPanel) {
+        if (ThemeUtils.isUsingModernTheme()) {
+            if (panel instanceof JIPipeDesktopIslandPanel) {
                 return panel;
-            }
-            else {
+            } else {
                 return new JIPipeDesktopIslandPanel(panel);
             }
-        }
-        else {
+        } else {
             return panel;
         }
     }

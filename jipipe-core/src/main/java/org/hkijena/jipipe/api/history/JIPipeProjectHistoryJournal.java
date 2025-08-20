@@ -289,8 +289,8 @@ public class JIPipeProjectHistoryJournal implements JIPipeHistoryJournal {
                     });
 
                     break;
+                } catch (Exception ignored) {
                 }
-                catch (Exception ignored) {}
 
                 try {
                     Thread.sleep(50);

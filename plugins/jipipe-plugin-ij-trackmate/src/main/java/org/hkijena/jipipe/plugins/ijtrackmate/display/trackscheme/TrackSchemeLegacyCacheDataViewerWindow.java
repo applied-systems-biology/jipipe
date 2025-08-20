@@ -16,6 +16,7 @@ package org.hkijena.jipipe.plugins.ijtrackmate.display.trackscheme;
 import fiji.plugin.trackmate.SelectionModel;
 import fiji.plugin.trackmate.gui.displaysettings.DisplaySettings;
 import fiji.plugin.trackmate.visualization.trackscheme.TrackScheme;
+import org.hkijena.jipipe.JIPipe;
 import org.hkijena.jipipe.api.JIPipeProgressInfo;
 import org.hkijena.jipipe.api.data.JIPipeDataItemStore;
 import org.hkijena.jipipe.api.data.sources.JIPipeDataTableDataSource;
@@ -25,8 +26,6 @@ import org.hkijena.jipipe.desktop.app.cache.JIPipeDesktopLegacyCacheDataViewerWi
 import org.hkijena.jipipe.desktop.commons.components.JIPipeDesktopFlexContentPanel;
 import org.hkijena.jipipe.desktop.commons.components.tabs.JIPipeDesktopTabPane;
 import org.hkijena.jipipe.plugins.ijtrackmate.datatypes.TrackCollectionData;
-import org.hkijena.jipipe.utils.UIUtils;
-import org.hkijena.jipipe.JIPipe;
 
 import javax.swing.*;
 import java.awt.*;

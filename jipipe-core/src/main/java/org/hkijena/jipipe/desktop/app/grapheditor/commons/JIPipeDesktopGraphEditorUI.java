@@ -872,6 +872,7 @@ public abstract class JIPipeDesktopGraphEditorUI extends JIPipeDesktopWorkbenchP
 
     /**
      * Triggered by the canvas if an empty region is double-clicked
+     *
      * @param mouseEvent the mouse event
      */
     public abstract void onCanvasEmptyDoubleClick(MouseEvent mouseEvent);

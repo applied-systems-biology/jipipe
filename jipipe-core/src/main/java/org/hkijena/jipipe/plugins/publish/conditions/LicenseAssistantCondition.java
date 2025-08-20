@@ -57,7 +57,7 @@ public class LicenseAssistantCondition extends JIPipeDesktopPublisherAssistantCo
         }
         popupMenu.add(UIUtils.createMenuItem("Custom ...", "Enter a custom ID", JIPipe.RESOURCES.getIcon16("actions/edit.png"), () -> {
             String newLicense = JOptionPane.showInputDialog(this, "Please enter a valid license ID:", "Set license");
-            if(!StringUtils.isNullOrEmpty(newLicense)) {
+            if (!StringUtils.isNullOrEmpty(newLicense)) {
                 getProject().getMetadata().setLicense(newLicense);
                 getAssistant().updateAssistant();
             }
@@ -78,10 +78,9 @@ public class LicenseAssistantCondition extends JIPipeDesktopPublisherAssistantCo
     @Override
     public JIPipeDesktopPublisherAssistantConditionStatus getStatus() {
         String currentId = StringUtils.nullToEmpty(getProject().getMetadata().getLicense()).trim();
-        if(StringUtils.isNullOrEmpty(currentId)) {
+        if (StringUtils.isNullOrEmpty(currentId)) {
             return JIPipeDesktopPublisherAssistantConditionStatus.Invalid;
-        }
-        else if(!LicenseUtils.KNOWN_SPDX_LICENSES.contains(currentId)) {
+        } else if (!LicenseUtils.KNOWN_SPDX_LICENSES.contains(currentId)) {
             return JIPipeDesktopPublisherAssistantConditionStatus.Warning;
         }
         return JIPipeDesktopPublisherAssistantConditionStatus.Valid;
@@ -99,8 +98,10 @@ public class LicenseAssistantCondition extends JIPipeDesktopPublisherAssistantCo
     public HTMLText getAssistantDescription(JIPipeDesktopPublisherAssistantConditionStatus status) {
         return switch (status) {
             case Valid -> new HTMLText("The project has a valid license");
-            case Invalid -> new HTMLText("Please setup a license for your project and the resulting RO-Crate. We recommend CC-BY-4.0.");
-            case Warning -> new HTMLText("The license ID '" + getProject().getMetadata().getLicense() + "' is not a known SPDX license ID. See https://spdx.org/licenses/ for a list. We recommend CC-BY-4.0.");
+            case Invalid ->
+                    new HTMLText("Please setup a license for your project and the resulting RO-Crate. We recommend CC-BY-4.0.");
+            case Warning ->
+                    new HTMLText("The license ID '" + getProject().getMetadata().getLicense() + "' is not a known SPDX license ID. See https://spdx.org/licenses/ for a list. We recommend CC-BY-4.0.");
         };
     }
 }

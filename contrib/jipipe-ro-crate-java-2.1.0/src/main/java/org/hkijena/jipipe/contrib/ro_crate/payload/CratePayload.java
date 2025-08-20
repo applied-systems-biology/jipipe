@@ -1,7 +1,6 @@
 package org.hkijena.jipipe.contrib.ro_crate.payload;
 
 import com.fasterxml.jackson.databind.node.ArrayNode;
-
 import org.hkijena.jipipe.contrib.ro_crate.entities.AbstractEntity;
 import org.hkijena.jipipe.contrib.ro_crate.entities.contextual.ContextualEntity;
 import org.hkijena.jipipe.contrib.ro_crate.entities.data.DataEntity;
@@ -18,27 +17,27 @@ import java.util.Set;
  * @version 1
  */
 public interface CratePayload {
-  DataEntity getDataEntityById(String id);
+    DataEntity getDataEntityById(String id);
 
-  ContextualEntity getContextualEntityById(String id);
+    ContextualEntity getContextualEntityById(String id);
 
-  AbstractEntity getEntityById(String id);
+    AbstractEntity getEntityById(String id);
 
-  void addDataEntity(DataEntity dataEntity);
+    void addDataEntity(DataEntity dataEntity);
 
-  void addContextualEntity(ContextualEntity contextualEntity);
+    void addContextualEntity(ContextualEntity contextualEntity);
 
-  void addEntity(AbstractEntity entity);
+    void addEntity(AbstractEntity entity);
 
-  void addEntities(Collection<? extends AbstractEntity> entity);
+    void addEntities(Collection<? extends AbstractEntity> entity);
 
-  Set<AbstractEntity> getAllEntities();
+    Set<AbstractEntity> getAllEntities();
 
-  Set<DataEntity> getAllDataEntities();
+    Set<DataEntity> getAllDataEntities();
 
-  Set<ContextualEntity> getAllContextualEntities();
+    Set<ContextualEntity> getAllContextualEntities();
 
-  ArrayNode getEntitiesMetadata();
+    ArrayNode getEntitiesMetadata();
 
-  void removeEntityById(String id);
+    void removeEntityById(String id);
 }

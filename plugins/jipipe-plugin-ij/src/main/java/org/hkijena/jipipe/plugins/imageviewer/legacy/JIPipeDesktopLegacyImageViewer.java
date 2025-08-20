@@ -18,6 +18,7 @@ import ij.ImagePlus;
 import ij.gui.ImageWindow;
 import ij.measure.Calibration;
 import ij.util.Tools;
+import org.hkijena.jipipe.JIPipe;
 import org.hkijena.jipipe.api.JIPipeWorkbench;
 import org.hkijena.jipipe.api.data.JIPipeData;
 import org.hkijena.jipipe.api.data.JIPipeDataSource;
@@ -38,8 +39,6 @@ import org.hkijena.jipipe.plugins.imageviewer.legacy.plugins2d.PixelInfoPlugin2D
 import org.hkijena.jipipe.plugins.imageviewer.legacy.plugins2d.maskdrawer.MeasurementDrawerPlugin2D;
 import org.hkijena.jipipe.plugins.imageviewer.legacy.plugins2d.roimanager.ROIManagerPlugin2D;
 import org.hkijena.jipipe.utils.ReflectionUtils;
-import org.hkijena.jipipe.utils.UIUtils;
-import org.hkijena.jipipe.JIPipe;
 import org.hkijena.jipipe.utils.ui.JIPipeDesktopDockPanel;
 import org.scijava.Disposable;
 

@@ -2,10 +2,17 @@ package org.hkijena.jipipe.contrib.ro_crate.writer;
 
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
-
+import net.lingala.zip4j.io.outputstream.ZipOutputStream;
+import net.lingala.zip4j.model.ZipParameters;
+import org.apache.commons.io.FileUtils;
 import org.hkijena.jipipe.contrib.ro_crate.Crate;
 import org.hkijena.jipipe.contrib.ro_crate.entities.data.DataEntity;
 import org.hkijena.jipipe.contrib.ro_crate.objectmapper.MyObjectMapper;
+import org.hkijena.jipipe.contrib.ro_crate.preview.CratePreview;
+import org.hkijena.jipipe.contrib.ro_crate.util.FileSystemUtil;
+import org.hkijena.jipipe.contrib.ro_crate.util.ZipStreamUtil;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import java.io.*;
 import java.nio.charset.StandardCharsets;
@@ -13,15 +20,6 @@ import java.nio.file.Path;
 import java.util.Optional;
 import java.util.Set;
 import java.util.UUID;
-
-import org.hkijena.jipipe.contrib.ro_crate.preview.CratePreview;
-import org.hkijena.jipipe.contrib.ro_crate.util.FileSystemUtil;
-import org.hkijena.jipipe.contrib.ro_crate.util.ZipStreamUtil;
-import net.lingala.zip4j.io.outputstream.ZipOutputStream;
-import net.lingala.zip4j.model.ZipParameters;
-import org.apache.commons.io.FileUtils;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 /**
  * Implementation of the writing strategy to provide a way of writing crates to
@@ -31,9 +29,8 @@ public class WriteZipStreamStrategy implements
         GenericWriterStrategy<OutputStream>,
         ElnFormatWriter<OutputStream> {
 
-    private static final Logger logger = LoggerFactory.getLogger(WriteZipStreamStrategy.class);
     public static final String TMP_DIR = "./.tmp/ro-crate-java/writer-zip-stream-strategy/";
-
+    private static final Logger logger = LoggerFactory.getLogger(WriteZipStreamStrategy.class);
     /**
      * Defines if the zip file will directly contain the crate,
      * or if it will contain a subdirectory with the crate.

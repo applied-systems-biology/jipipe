@@ -23,7 +23,7 @@ import org.hkijena.jipipe.api.LabelAsJIPipeHidden;
 import org.hkijena.jipipe.api.SetJIPipeDocumentation;
 import org.hkijena.jipipe.api.data.JIPipeDataSlotInfo;
 import org.hkijena.jipipe.api.data.JIPipeSlotType;
-import org.hkijena.jipipe.api.environments.JIPipeEnvironment;
+import org.hkijena.jipipe.api.environments.JIPipeEnvironmentReference;
 import org.hkijena.jipipe.api.nodes.AddJIPipeInputSlot;
 import org.hkijena.jipipe.api.nodes.AddJIPipeOutputSlot;
 import org.hkijena.jipipe.api.nodes.JIPipeGraphNodeRunContext;
@@ -149,7 +149,7 @@ public class LegacyCellpose2TrainingAlgorithm extends JIPipeSingleIterationAlgor
     }
 
     @Override
-    public void getEnvironmentDependencies(List<JIPipeEnvironment> target) {
+    public void getEnvironmentDependencies(List<JIPipeEnvironmentReference<?>> target) {
         super.getEnvironmentDependencies(target);
         target.add(getConfiguredCellposeEnvironment());
     }
@@ -440,7 +440,7 @@ public class LegacyCellpose2TrainingAlgorithm extends JIPipeSingleIterationAlgor
         arguments.add(tweaksSettings.getMinTrainMasks() + "");
 
         // Run the module
-        CellposeUtils.runCellpose(getConfiguredCellposeEnvironment(),
+        CellposeUtils.runCellpose(getConfiguredCellposeEnvironment().getEnvironment(),
                 arguments,
                 suppressLogs,
                 progressInfo);

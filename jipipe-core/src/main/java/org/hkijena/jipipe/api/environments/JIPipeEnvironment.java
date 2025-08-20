@@ -98,7 +98,8 @@ public abstract class JIPipeEnvironment extends AbstractJIPipeParameterCollectio
 
     /**
      * Executed at the start of the run and after artifacts are configured
-     * @param run the run that executes the step
+     *
+     * @param run          the run that executes the step
      * @param progressInfo the progress info
      */
     public void runPreconfigure(JIPipeGraphRun run, JIPipeProgressInfo progressInfo) {
@@ -107,7 +108,8 @@ public abstract class JIPipeEnvironment extends AbstractJIPipeParameterCollectio
 
     /**
      * Executed after the end of the run (regardless if it failed or was successful)
-     * @param run the run that executes the step
+     *
+     * @param run          the run that executes the step
      * @param progressInfo the progress info
      */
     public void runPostprocessing(JIPipeGraphRun run, JIPipeProgressInfo progressInfo) {

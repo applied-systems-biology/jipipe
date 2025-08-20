@@ -29,7 +29,7 @@ import java.util.Objects;
  * items. Alternatively, use allowedValues to supply items.
  * allowedValues is preferred. If allowedValues is null, you have to use {@link DynamicEnumParameterSettings}.
  */
-public abstract class DynamicEnumParameter<T>  implements EnumParameter {
+public abstract class DynamicEnumParameter<T> implements EnumParameter {
     private T value;
     private List<T> allowedValues = new ArrayList<>();
 
@@ -75,11 +75,11 @@ public abstract class DynamicEnumParameter<T>  implements EnumParameter {
 
     @Override
     public List<JIPipeParameterTypeAllowedValueInfo> getAllowedValueInfos() {
-        List<JIPipeParameterTypeAllowedValueInfo> result = new  ArrayList<>();
+        List<JIPipeParameterTypeAllowedValueInfo> result = new ArrayList<>();
         for (T allowedValue : allowedValues) {
             result.add(new JIPipeParameterTypeAllowedValueInfo(StringUtils.orElse(allowedValue, "")));
         }
-        return  result;
+        return result;
     }
 
     /**

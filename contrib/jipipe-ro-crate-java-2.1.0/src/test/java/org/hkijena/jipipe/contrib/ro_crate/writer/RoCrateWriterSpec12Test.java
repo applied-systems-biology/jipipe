@@ -1,7 +1,10 @@
 package org.hkijena.jipipe.contrib.ro_crate.writer;
 
-import static org.junit.jupiter.api.Assertions.assertNotNull;
-import static org.junit.jupiter.api.Assertions.assertTrue;
+import org.hkijena.jipipe.contrib.ro_crate.Crate;
+import org.hkijena.jipipe.contrib.ro_crate.HelpFunctions;
+import org.hkijena.jipipe.contrib.ro_crate.reader.Readers;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.io.TempDir;
 
 import java.io.File;
 import java.io.IOException;
@@ -10,12 +13,8 @@ import java.net.URL;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 
-import org.hkijena.jipipe.contrib.ro_crate.reader.Readers;
-import org.junit.jupiter.api.Test;
-import org.junit.jupiter.api.io.TempDir;
-
-import org.hkijena.jipipe.contrib.ro_crate.Crate;
-import org.hkijena.jipipe.contrib.ro_crate.HelpFunctions;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
 class RoCrateWriterSpec12Test {
 

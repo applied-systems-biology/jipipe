@@ -8,13 +8,13 @@ import org.hkijena.jipipe.contrib.ro_crate.Crate;
  */
 public class Validator {
 
-  private ValidatorStrategy strategy;
+    private ValidatorStrategy strategy;
 
-  public Validator(ValidatorStrategy strategy) {
-    this.strategy = strategy;
-  }
+    public Validator(ValidatorStrategy strategy) {
+        this.strategy = strategy;
+    }
 
-  public boolean validate(Crate crate) {
-    return this.strategy.validate(crate);
-  }
+    public boolean validate(Crate crate) {
+        return this.strategy.validate(crate);
+    }
 }

@@ -1278,27 +1278,23 @@ public class ROI2DListData extends ArrayList<Roi> implements JIPipeData, NapariO
                     default:
                         throw new UnsupportedOperationException("Unsupported: " + outline);
                 }
-            }
-            catch (Exception e) {
-                if(errorBehavior == InvalidRoiOutlineBehavior.Error) {
+            } catch (Exception e) {
+                if (errorBehavior == InvalidRoiOutlineBehavior.Error) {
                     throw e;
                 }
             }
 
-            if(outlined != null) {
+            if (outlined != null) {
                 // Restore information
                 ImageJROIUtils.copyRoiAttributesAndLocation(roi, outlined);
 
                 // Add to list
                 add(outlined);
-            }
-            else if( errorBehavior == InvalidRoiOutlineBehavior.KeepOriginal) {
+            } else if (errorBehavior == InvalidRoiOutlineBehavior.KeepOriginal) {
                 add(roi);
-            }
-            else if(errorBehavior == InvalidRoiOutlineBehavior.Skip) {
+            } else if (errorBehavior == InvalidRoiOutlineBehavior.Skip) {
                 // Do nothing
-            }
-            else {
+            } else {
                 throw new NullPointerException("Unable to outline ROI " + roi);
             }
         }

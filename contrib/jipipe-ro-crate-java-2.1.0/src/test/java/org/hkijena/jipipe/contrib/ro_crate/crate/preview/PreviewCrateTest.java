@@ -1,15 +1,14 @@
 package org.hkijena.jipipe.contrib.ro_crate.crate.preview;
 
-import org.hkijena.jipipe.contrib.ro_crate.writer.CrateWriter;
-import org.hkijena.jipipe.contrib.ro_crate.writer.Writers;
 import org.apache.commons.io.FileUtils;
-import org.junit.jupiter.api.Test;
-import org.junit.jupiter.api.io.TempDir;
-
 import org.hkijena.jipipe.contrib.ro_crate.RoCrate;
 import org.hkijena.jipipe.contrib.ro_crate.preview.AutomaticPreview;
 import org.hkijena.jipipe.contrib.ro_crate.preview.CustomPreview;
 import org.hkijena.jipipe.contrib.ro_crate.preview.StaticPreview;
+import org.hkijena.jipipe.contrib.ro_crate.writer.CrateWriter;
+import org.hkijena.jipipe.contrib.ro_crate.writer.Writers;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.io.TempDir;
 
 import java.io.IOException;
 import java.nio.charset.Charset;

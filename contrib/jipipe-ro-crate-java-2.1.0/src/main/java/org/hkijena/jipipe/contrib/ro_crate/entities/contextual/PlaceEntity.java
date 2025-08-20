@@ -8,52 +8,52 @@ package org.hkijena.jipipe.contrib.ro_crate.entities.contextual;
  */
 public class PlaceEntity extends ContextualEntity {
 
-  private static final String TYPE = "Place";
+    private static final String TYPE = "Place";
 
-  /**
-   * Constructor for creating a place entity from a builder.
-   *
-   * @param entityBuilder the builder from which to create the entity.
-   */
-  public PlaceEntity(AbstractPlaceEntityBuilder<?> entityBuilder) {
-    super(entityBuilder);
-    this.addIdProperty("geo", entityBuilder.geo);
-    this.addType(TYPE);
-  }
-
-  abstract static class AbstractPlaceEntityBuilder<T extends AbstractPlaceEntityBuilder<T>> extends
-      AbstractContextualEntityBuilder<T> {
-
-    String geo;
-
-    // that is the geolocation property
-    public T setGeo(String geo) {
-      this.geo = geo;
-      return self();
+    /**
+     * Constructor for creating a place entity from a builder.
+     *
+     * @param entityBuilder the builder from which to create the entity.
+     */
+    public PlaceEntity(AbstractPlaceEntityBuilder<?> entityBuilder) {
+        super(entityBuilder);
+        this.addIdProperty("geo", entityBuilder.geo);
+        this.addType(TYPE);
     }
 
-    public T setGeo(ContextualEntity geo) {
-      this.geo = geo.getId();
-      return self();
+    abstract static class AbstractPlaceEntityBuilder<T extends AbstractPlaceEntityBuilder<T>> extends
+            AbstractContextualEntityBuilder<T> {
+
+        String geo;
+
+        // that is the geolocation property
+        public T setGeo(String geo) {
+            this.geo = geo;
+            return self();
+        }
+
+        public T setGeo(ContextualEntity geo) {
+            this.geo = geo.getId();
+            return self();
+        }
+
+        public abstract PlaceEntity build();
     }
 
-    public abstract PlaceEntity build();
-  }
+    /**
+     * A builder class for the easier Place entity construction.
+     */
+    public static final class PlaceEntityBuilder
+            extends AbstractPlaceEntityBuilder<PlaceEntityBuilder> {
 
-  /**
-   * A builder class for the easier Place entity construction.
-   */
-  public static final class PlaceEntityBuilder
-      extends AbstractPlaceEntityBuilder<PlaceEntityBuilder> {
+        @Override
+        public PlaceEntityBuilder self() {
+            return this;
+        }
 
-    @Override
-    public PlaceEntityBuilder self() {
-      return this;
+        @Override
+        public PlaceEntity build() {
+            return new PlaceEntity(this);
+        }
     }
-
-    @Override
-    public PlaceEntity build() {
-      return new PlaceEntity(this);
-    }
-  }
 }

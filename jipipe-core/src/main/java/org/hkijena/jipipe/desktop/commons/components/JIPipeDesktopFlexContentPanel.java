@@ -14,11 +14,11 @@
 package org.hkijena.jipipe.desktop.commons.components;
 
 import org.apache.commons.lang3.ArrayUtils;
+import org.hkijena.jipipe.JIPipe;
 import org.hkijena.jipipe.desktop.commons.components.ribbon.JIPipeDesktopRibbon;
 import org.hkijena.jipipe.desktop.commons.components.tabs.JIPipeDesktopTabPane;
 import org.hkijena.jipipe.utils.JIPipeDesktopSplitPane;
 import org.hkijena.jipipe.utils.UIUtils;
-import org.hkijena.jipipe.JIPipe;
 
 import javax.swing.*;
 import java.awt.*;

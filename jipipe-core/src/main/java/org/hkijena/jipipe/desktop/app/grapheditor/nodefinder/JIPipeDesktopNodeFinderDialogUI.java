@@ -169,7 +169,7 @@ public class JIPipeDesktopNodeFinderDialogUI extends JDialog {
 
         menu.show(nodeList, location.x, location.y);
 
-        if(fromKeyboard) {
+        if (fromKeyboard) {
             JMenuItem firstItem = (JMenuItem) menu.getComponent(0);
 
             SwingUtilities.invokeLater(() -> {

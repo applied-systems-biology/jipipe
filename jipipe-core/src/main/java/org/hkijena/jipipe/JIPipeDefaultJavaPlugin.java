@@ -100,9 +100,9 @@ import java.util.stream.Collectors;
 public abstract class JIPipeDefaultJavaPlugin extends AbstractService implements JIPipeJavaPlugin {
 
     private final JIPipeStandardMetadata metadata;
+    private final List<Runnable> postprocessingTasks = new ArrayList<>();
     private JIPipe registry;
     private boolean reachedPostprocessing;
-    private final List<Runnable> postprocessingTasks = new ArrayList<>();
 
     /**
      * Creates a new instance
@@ -442,7 +442,7 @@ public abstract class JIPipeDefaultJavaPlugin extends AbstractService implements
      *
      * @param id                   Unique ID of this parameter type
      * @param parameterClass       Parameter class
-     * @param archetype the archetype
+     * @param archetype            the archetype
      * @param newInstanceGenerator Function that creates a new instance
      * @param duplicateFunction    Function that copies an existing instance
      * @param name                 Parameter class name
@@ -457,12 +457,11 @@ public abstract class JIPipeDefaultJavaPlugin extends AbstractService implements
                 name,
                 description,
                 archetype);
-        if(EnumParameter.class.isAssignableFrom(parameterClass)) {
+        if (EnumParameter.class.isAssignableFrom(parameterClass)) {
             try {
                 EnumParameter parameter = (EnumParameter) parameterClass.newInstance();
                 info.setAllowedValues(parameter.getAllowedValueInfos());
-            }
-            catch (Exception e) {
+            } catch (Exception e) {
                 JIPipe.getInstance().getProgressInfo().log(e);
             }
         }
@@ -475,7 +474,7 @@ public abstract class JIPipeDefaultJavaPlugin extends AbstractService implements
      *
      * @param id             Unique ID of this parameter type
      * @param parameterClass Parameter class
-     * @param archetype the archetype
+     * @param archetype      the archetype
      * @param name           Parameter class name
      * @param description    Description for the parameter type
      */
@@ -489,7 +488,7 @@ public abstract class JIPipeDefaultJavaPlugin extends AbstractService implements
      *
      * @param id             Unique ID of this parameter type
      * @param parameterClass Parameter class
-     * @param archetype the archetype
+     * @param archetype      the archetype
      * @param name           Parameter class name
      * @param description    Description for the parameter type
      * @param uiClass        Parameter editor UI. Can be null if the editor is already provided.
@@ -504,7 +503,7 @@ public abstract class JIPipeDefaultJavaPlugin extends AbstractService implements
      * @param <T>                  parameter class
      * @param id                   Unique ID of this parameter type
      * @param parameterClass       Parameter class
-     * @param archetype the archetype
+     * @param archetype            the archetype
      * @param listClass            Optional list class. If not null this creates a registration entry for the equivalent list entry
      * @param newInstanceGenerator Function that creates a new instance. If null, the function calls the default constructor
      * @param duplicateFunction    Function that copies an existing instance. If null, the function calls the copy constructor
@@ -519,12 +518,11 @@ public abstract class JIPipeDefaultJavaPlugin extends AbstractService implements
                 duplicateFunction != null ? duplicateFunction : o -> ReflectionUtils.newInstance(parameterClass, o),
                 name,
                 description, archetype);
-        if(EnumParameter.class.isAssignableFrom(parameterClass)) {
+        if (EnumParameter.class.isAssignableFrom(parameterClass)) {
             try {
                 EnumParameter parameter = (EnumParameter) parameterClass.newInstance();
                 info.setAllowedValues(parameter.getAllowedValueInfos());
-            }
-            catch (Exception e) {
+            } catch (Exception e) {
                 JIPipe.getInstance().getProgressInfo().log(e);
             }
         }
@@ -778,10 +776,9 @@ public abstract class JIPipeDefaultJavaPlugin extends AbstractService implements
             template.setData(JsonUtils.toJsonString(graph));
             registerNodeExample(template);
         };
-        if(reachedPostprocessing) {
+        if (reachedPostprocessing) {
             task.run();
-        }
-        else {
+        } else {
             postprocessingTasks.add(task);
         }
     }
@@ -1043,7 +1040,7 @@ public abstract class JIPipeDefaultJavaPlugin extends AbstractService implements
         this.reachedPostprocessing = true;
         JIPipeJavaPlugin.super.postprocess(progressInfo);
 
-        if(!postprocessingTasks.isEmpty()) {
+        if (!postprocessingTasks.isEmpty()) {
             progressInfo.log("Running " + postprocessingTasks.size() + " scheduled postprocessing tasks ...");
             for (Runnable task : postprocessingTasks) {
                 task.run();

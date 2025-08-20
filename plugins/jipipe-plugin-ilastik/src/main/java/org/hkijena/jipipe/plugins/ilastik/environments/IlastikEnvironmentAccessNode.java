@@ -13,6 +13,7 @@
 
 package org.hkijena.jipipe.plugins.ilastik.environments;
 
+import org.hkijena.jipipe.api.environments.JIPipeEnvironmentReference;
 import org.hkijena.jipipe.api.nodes.JIPipeGraphNode;
 import org.hkijena.jipipe.api.project.JIPipeProject;
 import org.hkijena.jipipe.api.validation.JIPipeValidationReport;
@@ -33,13 +34,13 @@ public interface IlastikEnvironmentAccessNode {
      *
      * @return the environment
      */
-    default IlastikEnvironment getConfiguredIlastikEnvironment() {
+    default JIPipeEnvironmentReference<IlastikEnvironment> getConfiguredIlastikEnvironment() {
         JIPipeGraphNode node = (JIPipeGraphNode) this;
         JIPipeProject project = node.getRuntimeProject();
         if (project == null) {
             project = node.getParentGraph().getProject();
         }
-        return IlastikPlugin.getEnvironment(project, getOverrideEnvironment());
+        return IlastikPlugin.getEnvironment(project, getOverrideEnvironment(), node);
     }
 
     /**
@@ -49,7 +50,7 @@ public interface IlastikEnvironmentAccessNode {
      * @param report  the report
      */
     default void reportConfiguredIlastikEnvironmentValidity(JIPipeValidationReportContext context, JIPipeValidationReport report) {
-        if (!getConfiguredIlastikEnvironment().generateValidityReport(context).isValid()) {
+        if (!getConfiguredIlastikEnvironment().getEnvironment().generateValidityReport(context).isValid()) {
             report.report(new JIPipeValidationReportEntry(JIPipeValidationReportEntryLevel.Error,
                     context,
                     "Ilastik not configured",

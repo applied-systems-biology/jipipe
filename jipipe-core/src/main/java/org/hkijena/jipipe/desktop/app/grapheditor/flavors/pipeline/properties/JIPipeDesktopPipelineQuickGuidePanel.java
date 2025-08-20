@@ -20,7 +20,6 @@ import org.hkijena.jipipe.desktop.app.grapheditor.flavors.pipeline.JIPipeDesktop
 import org.hkijena.jipipe.desktop.commons.components.JIPipeDesktopFormPanel;
 import org.hkijena.jipipe.desktop.commons.components.JIPipeDesktopFormPanelImageComponent;
 import org.hkijena.jipipe.utils.UIUtils;
-import org.hkijena.jipipe.JIPipe;
 
 import javax.swing.*;
 import java.awt.*;

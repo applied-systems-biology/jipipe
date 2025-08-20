@@ -21,7 +21,6 @@ import org.hkijena.jipipe.api.parameters.JIPipeParameter;
 import org.hkijena.jipipe.plugins.parameters.api.collections.ListParameter;
 import org.hkijena.jipipe.plugins.parameters.library.primitives.StringParameterSettings;
 import org.hkijena.jipipe.utils.StringUtils;
-import org.jetbrains.annotations.NotNull;
 
 import java.util.Objects;
 
@@ -98,10 +97,9 @@ public class JIPipeOrganizationMetadata extends AbstractJIPipeParameterCollectio
     }
 
     public String getUniqueId() {
-        if(!StringUtils.isNullOrEmpty(getRorUrl())) {
+        if (!StringUtils.isNullOrEmpty(getRorUrl())) {
             return getRorUrl();
-        }
-        else {
+        } else {
             return getWebsite();
         }
     }
@@ -134,10 +132,10 @@ public class JIPipeOrganizationMetadata extends AbstractJIPipeParameterCollectio
     }
 
     public void mergeWith(JIPipeOrganizationMetadata affiliation) {
-        if(StringUtils.isNullOrEmpty(website) && !StringUtils.isNullOrEmpty(affiliation.website))  {
+        if (StringUtils.isNullOrEmpty(website) && !StringUtils.isNullOrEmpty(affiliation.website)) {
             website = affiliation.website;
         }
-        if(StringUtils.isNullOrEmpty(ror) && !StringUtils.isNullOrEmpty(affiliation.ror))  {
+        if (StringUtils.isNullOrEmpty(ror) && !StringUtils.isNullOrEmpty(affiliation.ror)) {
             ror = affiliation.ror;
         }
     }

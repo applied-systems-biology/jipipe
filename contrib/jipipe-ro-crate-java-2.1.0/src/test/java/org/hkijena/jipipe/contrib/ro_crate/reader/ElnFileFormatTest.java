@@ -1,7 +1,7 @@
 package org.hkijena.jipipe.contrib.ro_crate.reader;
 
-import org.hkijena.jipipe.contrib.ro_crate.Crate;
 import org.apache.commons.io.FileUtils;
+import org.hkijena.jipipe.contrib.ro_crate.Crate;
 import org.junit.jupiter.api.io.TempDir;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.ValueSource;
@@ -17,8 +17,7 @@ public interface ElnFileFormatTest<
         SOURCE_T,
         READER_STRATEGY extends GenericReaderStrategy<SOURCE_T>
         >
-        extends TestableReaderStrategy<SOURCE_T, READER_STRATEGY>
-{
+        extends TestableReaderStrategy<SOURCE_T, READER_STRATEGY> {
     /**
      * Some readers may not be able to read a subset of eln files,
      * e.g. because a zip file may not be readable in streaming mode.

@@ -1,13 +1,14 @@
 package org.hkijena.jipipe.contrib.ro_crate.preview;
 
-import org.hkijena.jipipe.contrib.ro_crate.util.ZipStreamUtil;
-import java.io.File;
-import java.io.FileWriter;
-import java.io.IOException;
 import net.lingala.zip4j.ZipFile;
 import net.lingala.zip4j.exception.ZipException;
 import net.lingala.zip4j.io.outputstream.ZipOutputStream;
 import org.apache.commons.io.FileUtils;
+import org.hkijena.jipipe.contrib.ro_crate.util.ZipStreamUtil;
+
+import java.io.File;
+import java.io.FileWriter;
+import java.io.IOException;
 
 /**
  * The default preview should use the

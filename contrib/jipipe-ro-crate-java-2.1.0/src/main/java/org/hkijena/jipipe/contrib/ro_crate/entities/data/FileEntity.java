@@ -8,38 +8,38 @@ package org.hkijena.jipipe.contrib.ro_crate.entities.data;
  */
 public class FileEntity extends DataEntity {
 
-  private static final String TYPE = "File";
+    private static final String TYPE = "File";
 
-  public FileEntity(AbstractFileEntityBuilder<?> entityBuilder) {
-    super(entityBuilder);
-    this.addType(TYPE);
-  }
-
-  abstract static class AbstractFileEntityBuilder<T extends AbstractFileEntityBuilder<T>> extends
-      AbstractDataEntityBuilder<T> {
-
-    public T setEncodingFormat(String encodingFormat) {
-      this.addProperty("encodingFormat", encodingFormat);
-      return self();
+    public FileEntity(AbstractFileEntityBuilder<?> entityBuilder) {
+        super(entityBuilder);
+        this.addType(TYPE);
     }
 
-    @Override
-    public abstract FileEntity build();
-  }
+    abstract static class AbstractFileEntityBuilder<T extends AbstractFileEntityBuilder<T>> extends
+            AbstractDataEntityBuilder<T> {
 
-  /**
-   * Builder class for the easier creation of the File entities.
-   */
-  public static final class FileEntityBuilder extends AbstractFileEntityBuilder<FileEntityBuilder> {
+        public T setEncodingFormat(String encodingFormat) {
+            this.addProperty("encodingFormat", encodingFormat);
+            return self();
+        }
 
-    @Override
-    public FileEntityBuilder self() {
-      return this;
+        @Override
+        public abstract FileEntity build();
     }
 
-    @Override
-    public FileEntity build() {
-      return new FileEntity(this);
+    /**
+     * Builder class for the easier creation of the File entities.
+     */
+    public static final class FileEntityBuilder extends AbstractFileEntityBuilder<FileEntityBuilder> {
+
+        @Override
+        public FileEntityBuilder self() {
+            return this;
+        }
+
+        @Override
+        public FileEntity build() {
+            return new FileEntity(this);
+        }
     }
-  }
 }

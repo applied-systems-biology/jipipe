@@ -2,7 +2,6 @@ package org.hkijena.jipipe.contrib.ro_crate.entities.data;
 
 import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.databind.annotation.JsonSerialize;
-
 import org.hkijena.jipipe.contrib.ro_crate.entities.serializers.HasPartSerializer;
 
 import java.util.HashSet;

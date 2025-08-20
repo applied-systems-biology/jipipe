@@ -7,4 +7,5 @@ package org.hkijena.jipipe.contrib.ro_crate.writer;
  * @deprecated Use {@link WriteZipStrategy} instead.
  */
 @Deprecated(since = "2.1.0", forRemoval = true)
-public class ZipWriter extends WriteZipStrategy {}
+public class ZipWriter extends WriteZipStrategy {
+}

@@ -106,10 +106,9 @@ public class JIPipeDesktopTabPane extends JPanel implements Disposable {
             }
         });
         if (ThemeUtils.isUsingModernTheme()) {
-            if(style == Style.TopPill) {
+            if (style == Style.TopPill) {
                 tabbedPane.setUI(new JIPipeDesktopModernPillTabbedPaneUI());
-            }
-            else {
+            } else {
                 tabbedPane.setUI(new JIPipeDesktopModernTabbedPaneUI());
             }
         }

@@ -10,6 +10,10 @@ public class JIPipeDesktopModernToggleButtonUI extends BasicToggleButtonUI {
     private static final int ARC = 10;
     private static final int SPACING = 2;
 
+    public static ComponentUI createUI(JComponent c) {
+        return new JIPipeDesktopModernToggleButtonUI();
+    }
+
     @Override
     protected void paintButtonPressed(Graphics g, AbstractButton b) {
         Graphics2D g2 = (Graphics2D) g.create();
@@ -26,9 +30,5 @@ public class JIPipeDesktopModernToggleButtonUI extends BasicToggleButtonUI {
         b.setOpaque(false);
         b.setFocusPainted(false);
         b.setBorderPainted(true);
-    }
-
-    public static ComponentUI createUI(JComponent c) {
-        return new JIPipeDesktopModernToggleButtonUI();
     }
 }

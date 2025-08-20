@@ -6,11 +6,11 @@ import java.util.Optional;
 
 /**
  * This class represents a detailing provenance of entities.
- * 
+ * <p>
  * Relevant specification link: <a href=
  * "https://www.researchobject.org/ro-crate/specification/1.1/provenance.html">Provenance
  * of entities</a>
- * 
+ *
  * @author sabrinechelbi
  */
 public class ActionEntity extends ContextualEntity {
@@ -83,11 +83,11 @@ public class ActionEntity extends ContextualEntity {
         /**
          * Same as calling {@link #addObject(String)} with each element of the
          * collection.
-         * 
+         * <p>
          * From the specification: "A curation Action MUST have at least one object
          * which associates it with either the root data entity Dataset or one of its
          * components."
-         * 
+         *
          * @param objects see {@link #addObject(String)}
          * @return this builder
          */
@@ -98,11 +98,11 @@ public class ActionEntity extends ContextualEntity {
 
         /**
          * Adds a object to the collection of objects of this ActionEntity.
-         * 
+         * <p>
          * From the specification: "A curation Action MUST have at least one object
          * which associates it with either the root data entity Dataset or one of its
          * components."
-         * 
+         *
          * @param object the object to add to this ActionEntity. Duplicates will be
          *               ignored/removed. "The object upon which the action is carried
          *               out, whose state is kept intact or changed. Also known as the
@@ -119,7 +119,7 @@ public class ActionEntity extends ContextualEntity {
         /**
          * Same as calling {@link #addResult(String)} with each element of the
          * collection.
-         * 
+         *
          * @param results see {@link #addResult(String)}
          * @return this builder
          */
@@ -130,7 +130,7 @@ public class ActionEntity extends ContextualEntity {
 
         /**
          * Adds a result to the collection of results of this ActionEntity.
-         * 
+         *
          * @param result the result to add to this ActionEntity. Duplicates will be
          *               ignored/removed. "The result produced in the action. E.g. John
          *               wrote a book." (Schema.org definition)
@@ -144,7 +144,7 @@ public class ActionEntity extends ContextualEntity {
         /**
          * Same as calling {@link #addInstrument(String)} with each element of the
          * collection.
-         * 
+         *
          * @param instruments see {@link #addInstrument(String)}
          * @return this builder
          */
@@ -155,7 +155,7 @@ public class ActionEntity extends ContextualEntity {
 
         /**
          * Adds a instrument to the collection of instruments of this ActionEntity.
-         * 
+         *
          * @param instrument the instrument to add to this ActionEntity. Duplicates will
          *                   be ignored/removed. "The object that helped the agent
          *                   perform the action. E.g. John wrote a book with a pen."

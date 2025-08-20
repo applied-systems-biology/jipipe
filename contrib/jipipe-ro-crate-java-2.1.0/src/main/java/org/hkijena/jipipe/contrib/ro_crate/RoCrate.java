@@ -17,14 +17,12 @@ import com.fasterxml.jackson.core.TreeNode;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.node.ObjectNode;
-
 import org.hkijena.jipipe.contrib.ro_crate.context.CrateMetadataContext;
 import org.hkijena.jipipe.contrib.ro_crate.context.RoCrateMetadataContext;
 import org.hkijena.jipipe.contrib.ro_crate.entities.AbstractEntity;
 import org.hkijena.jipipe.contrib.ro_crate.entities.contextual.ContextualEntity;
 import org.hkijena.jipipe.contrib.ro_crate.entities.contextual.JsonDescriptor;
 import org.hkijena.jipipe.contrib.ro_crate.entities.data.DataEntity;
-
 import org.hkijena.jipipe.contrib.ro_crate.entities.data.RootDataEntity;
 import org.hkijena.jipipe.contrib.ro_crate.externalproviders.dataentities.ImportFromDataCite;
 import org.hkijena.jipipe.contrib.ro_crate.objectmapper.MyObjectMapper;
@@ -69,6 +67,35 @@ public class RoCrate implements Crate {
      * or an UpdateAction in the provenance on export.
      */
     protected boolean isImported = false;
+
+    /**
+     * Default constructor for creation of an empty crate.
+     */
+    public RoCrate() {
+        this.roCratePayload = new RoCratePayload();
+        this.untrackedFiles = new HashSet<>();
+        this.metadataContext = new RoCrateMetadataContext();
+        rootDataEntity = new RootDataEntity.RootDataEntityBuilder()
+                .build();
+        jsonDescriptor = new JsonDescriptor();
+    }
+
+    /**
+     * A constructor for creating the crate using a Crate builder for easier
+     * creation.
+     *
+     * @param roCrateBuilder the builder to use.
+     */
+    public RoCrate(RoCrateBuilder roCrateBuilder) {
+        this.roCratePayload = roCrateBuilder.payload;
+        this.metadataContext = roCrateBuilder.metadataContext;
+        this.roCratePreview = roCrateBuilder.preview;
+        this.rootDataEntity = roCrateBuilder.rootDataEntity;
+        this.jsonDescriptor = roCrateBuilder.descriptorBuilder.build();
+        this.untrackedFiles = roCrateBuilder.untrackedFiles;
+        Validator defaultValidation = new Validator(new JsonSchemaValidation());
+        defaultValidation.validate(this);
+    }
 
     @Override
     public RoCrate markAsImported() {
@@ -118,44 +145,15 @@ public class RoCrate implements Crate {
     public void setJsonDescriptor(ContextualEntity jsonDescriptor) {
         this.jsonDescriptor = jsonDescriptor;
     }
-    
+
     @Override
     public RootDataEntity getRootDataEntity() {
         return rootDataEntity;
     }
-    
+
     @Override
     public void setRootDataEntity(RootDataEntity rootDataEntity) {
         this.rootDataEntity = rootDataEntity;
-    }
-
-    /**
-     * Default constructor for creation of an empty crate.
-     */
-    public RoCrate() {
-        this.roCratePayload = new RoCratePayload();
-        this.untrackedFiles = new HashSet<>();
-        this.metadataContext = new RoCrateMetadataContext();
-        rootDataEntity = new RootDataEntity.RootDataEntityBuilder()
-                .build();
-        jsonDescriptor = new JsonDescriptor();
-    }
-
-    /**
-     * A constructor for creating the crate using a Crate builder for easier
-     * creation.
-     *
-     * @param roCrateBuilder the builder to use.
-     */
-    public RoCrate(RoCrateBuilder roCrateBuilder) {
-        this.roCratePayload = roCrateBuilder.payload;
-        this.metadataContext = roCrateBuilder.metadataContext;
-        this.roCratePreview = roCrateBuilder.preview;
-        this.rootDataEntity = roCrateBuilder.rootDataEntity;
-        this.jsonDescriptor = roCrateBuilder.descriptorBuilder.build();
-        this.untrackedFiles = roCrateBuilder.untrackedFiles;
-        Validator defaultValidation = new Validator(new JsonSchemaValidation());
-        defaultValidation.validate(this);
     }
 
     @Override
@@ -266,11 +264,6 @@ public class RoCrate implements Crate {
     }
 
     @Override
-    public void setUntrackedFiles(Collection<File> files) {
-        this.untrackedFiles = files;
-    }
-
-    @Override
     public void deleteValuePairFromContext(String key) {
         this.metadataContext.deleteValuePairFromContext(key);
     }
@@ -295,6 +288,11 @@ public class RoCrate implements Crate {
         return this.untrackedFiles;
     }
 
+    @Override
+    public void setUntrackedFiles(Collection<File> files) {
+        this.untrackedFiles = files;
+    }
+
     /**
      * The inner class builder for the easier creation of a ROCrate.
      */
@@ -314,10 +312,10 @@ public class RoCrate implements Crate {
         /**
          * The default constructor of a builder.
          *
-         * @param name the name of the crate.
-         * @param description the description of the crate.
+         * @param name          the name of the crate.
+         * @param description   the description of the crate.
          * @param datePublished the published date of the crate.
-         * @param licenseId the license identifier of the crate.
+         * @param licenseId     the license identifier of the crate.
          */
         public RoCrateBuilder(String name, String description, String datePublished, String licenseId) {
             this.payload = new RoCratePayload();
@@ -333,10 +331,10 @@ public class RoCrate implements Crate {
         /**
          * The default constructor of a builder.
          *
-         * @param name the name of the crate.
-         * @param description the description of the crate.
+         * @param name          the name of the crate.
+         * @param description   the description of the crate.
          * @param datePublished the published date of the crate.
-         * @param license the license entity of the crate.
+         * @param license       the license entity of the crate.
          */
         public RoCrateBuilder(String name, String description, String datePublished, ContextualEntity license) {
             this.payload = new RoCratePayload();
@@ -383,6 +381,7 @@ public class RoCrate implements Crate {
          * Adds an "identifier" property to the root data entity.
          * <p>
          * This is useful e.g. to assign e.g. a DOI to this crate.
+         *
          * @param identifier the identifier to add.
          * @return this builder.
          */
@@ -439,7 +438,7 @@ public class RoCrate implements Crate {
          * Setting the license of the crate using only a license identifier.
          *
          * @param licenseId the licenses identifier. Should be a resolveable
-         * URI.
+         *                  URI.
          * @return the builder
          */
         public RoCrateBuilder setLicense(String licenseId) {
@@ -548,7 +547,7 @@ public class RoCrate implements Crate {
          * conforms to. Can be called multiple times to add more specifications.
          *
          * @param specification a specification or profile this crate conforms
-         * to.
+         *                      to.
          * @return the builder
          */
         public BuilderWithDraftFeatures alsoConformsTo(URI specification) {

@@ -16,8 +16,9 @@ package org.hkijena.jipipe.api.nodes.algorithm;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import gnu.trove.set.TIntSet;
 import gnu.trove.set.hash.TIntHashSet;
-import org.hkijena.jipipe.api.JIPipeIterationStepGenerationResult;
+import org.hkijena.jipipe.JIPipe;
 import org.hkijena.jipipe.api.JIPipeFixedThreadPool;
+import org.hkijena.jipipe.api.JIPipeIterationStepGenerationResult;
 import org.hkijena.jipipe.api.JIPipeProgressInfo;
 import org.hkijena.jipipe.api.SetJIPipeDocumentation;
 import org.hkijena.jipipe.api.annotation.JIPipeDataAnnotationMergeMode;
@@ -40,7 +41,6 @@ import org.hkijena.jipipe.plugins.parameters.library.primitives.ranges.IntegerRa
 import org.hkijena.jipipe.utils.ParameterUtils;
 import org.hkijena.jipipe.utils.ResourceUtils;
 import org.hkijena.jipipe.utils.StringUtils;
-import org.hkijena.jipipe.JIPipe;
 import org.hkijena.jipipe.utils.json.JsonUtils;
 import org.hkijena.jipipe.utils.ui.ViewOnlyMenuItem;
 
@@ -244,7 +244,7 @@ public abstract class JIPipeSimpleIteratingAlgorithm extends JIPipeParameterSlot
 
             JIPipeFixedThreadPool threadPool = runContext.getThreadPool();
             boolean isCustomThreadPool = false;
-            if(threadPool == null) {
+            if (threadPool == null) {
                 int numThreads = Math.max(1, getLocalParallelizationNumThreads().getContent());
                 progressInfo.log("Creating new thread pool with " + numThreads + " threads");
                 threadPool = new JIPipeFixedThreadPool(numThreads);
@@ -266,9 +266,8 @@ public abstract class JIPipeSimpleIteratingAlgorithm extends JIPipeParameterSlot
                         throw new RuntimeException(e);
                     }
                 }
-            }
-            finally {
-                if(isCustomThreadPool) {
+            } finally {
+                if (isCustomThreadPool) {
                     threadPool.shutdown();
                 }
             }
@@ -278,21 +277,19 @@ public abstract class JIPipeSimpleIteratingAlgorithm extends JIPipeParameterSlot
 
     private boolean shouldDoParallelization(JIPipeGraphNodeRunContext runContext, JIPipeProgressInfo progressInfo, List<JIPipeSingleIterationStep> iterationSteps, boolean hasAdaptiveParameters, JIPipeRuntimePartition partition) {
         boolean doParallelization = iterationSteps.size() > 1 && supportsParallelization();
-        if(doParallelization && hasAdaptiveParameters) {
+        if (doParallelization && hasAdaptiveParameters) {
             doParallelization = false;
             progressInfo.log("[INFO] Parallelization was DISABLED due to usage of adaptive parameters");
         }
-        if(doParallelization) {
-            if(localParallelizationNumThreads.isEnabled()) {
-                if(localParallelizationNumThreads.getContent() > 1) {
+        if (doParallelization) {
+            if (localParallelizationNumThreads.isEnabled()) {
+                if (localParallelizationNumThreads.getContent() > 1) {
                     progressInfo.log("[INFO] Local node-wide parallelization enabled via parameter");
-                }
-                else {
+                } else {
                     doParallelization = false;
                     progressInfo.log("[INFO] Local node-wide parallelization DISABLED, as number of threads is " + localParallelizationNumThreads.getContent());
                 }
-            }
-            else if(!partition.isEnableParallelization() || runContext.getThreadPool() == null
+            } else if (!partition.isEnableParallelization() || runContext.getThreadPool() == null
                     || runContext.getThreadPool().getMaxThreads() <= 1) {
                 doParallelization = false;
                 progressInfo.log("[INFO] Parallelization was DISABLED due to run or partition settings");
@@ -443,7 +440,7 @@ public abstract class JIPipeSimpleIteratingAlgorithm extends JIPipeParameterSlot
         if (ParameterUtils.isHiddenLocalParameter(tree, access, "jipipe:parallelization:enabled")) {
             return false;
         }
-        if("jipipe:local-parallelization-num-threads".equals(access.getKey()) && !supportsParallelization()) {
+        if ("jipipe:local-parallelization-num-threads".equals(access.getKey()) && !supportsParallelization()) {
             return false;
         }
         return super.isParameterUIVisible(tree, access);

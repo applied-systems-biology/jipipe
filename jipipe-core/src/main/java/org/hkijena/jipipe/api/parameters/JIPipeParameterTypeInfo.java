@@ -13,7 +13,6 @@
 
 package org.hkijena.jipipe.api.parameters;
 
-import java.util.Collections;
 import java.util.List;
 
 /**
@@ -64,12 +63,14 @@ public interface JIPipeParameterTypeInfo extends Comparable<JIPipeParameterTypeI
 
     /**
      * Returns the list of allowed values for enum-like parameters
+     *
      * @return the list of allowed values
      */
     List<JIPipeParameterTypeAllowedValueInfo> getAllowedValues();
 
     /**
      * Returns the archetype of the parameter type
+     *
      * @return the archetype
      */
     JIPipeParameterArchetype getArchetype();

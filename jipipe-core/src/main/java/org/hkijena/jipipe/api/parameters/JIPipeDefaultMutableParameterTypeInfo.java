@@ -40,7 +40,7 @@ public class JIPipeDefaultMutableParameterTypeInfo implements JIPipeParameterTyp
      * @param duplicateFunction    a function that creates a deep copy
      * @param name                 the name
      * @param description          the description
-     * @param archetype the archetype
+     * @param archetype            the archetype
      */
     public JIPipeDefaultMutableParameterTypeInfo(String id, Class<?> fieldClass, Supplier<Object> newInstanceGenerator, Function<Object, Object> duplicateFunction, String name, String description, JIPipeParameterArchetype archetype) {
         this.id = id;
@@ -69,9 +69,17 @@ public class JIPipeDefaultMutableParameterTypeInfo implements JIPipeParameterTyp
         return id;
     }
 
+    public void setId(String id) {
+        this.id = id;
+    }
+
     @Override
     public Class<?> getFieldClass() {
         return fieldClass;
+    }
+
+    public void setFieldClass(Class<?> fieldClass) {
+        this.fieldClass = fieldClass;
     }
 
     @Override
@@ -79,17 +87,17 @@ public class JIPipeDefaultMutableParameterTypeInfo implements JIPipeParameterTyp
         return name;
     }
 
+    public void setName(String name) {
+        this.name = name;
+    }
+
     @Override
     public String getDescription() {
         return description;
     }
 
-    public void setId(String id) {
-        this.id = id;
-    }
-
-    public void setFieldClass(Class<?> fieldClass) {
-        this.fieldClass = fieldClass;
+    public void setDescription(String description) {
+        this.description = description;
     }
 
     public Supplier<Object> getNewInstanceGenerator() {
@@ -106,14 +114,6 @@ public class JIPipeDefaultMutableParameterTypeInfo implements JIPipeParameterTyp
 
     public void setDuplicateFunction(Function<Object, Object> duplicateFunction) {
         this.duplicateFunction = duplicateFunction;
-    }
-
-    public void setName(String name) {
-        this.name = name;
-    }
-
-    public void setDescription(String description) {
-        this.description = description;
     }
 
     @Override

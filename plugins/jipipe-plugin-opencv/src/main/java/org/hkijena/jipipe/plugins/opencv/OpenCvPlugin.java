@@ -36,8 +36,6 @@ import org.hkijena.jipipe.plugins.parameters.library.jipipe.PluginCategoriesEnum
 import org.hkijena.jipipe.plugins.parameters.library.markup.HTMLText;
 import org.hkijena.jipipe.plugins.parameters.library.primitives.list.StringList;
 import org.hkijena.jipipe.utils.JIPipeResourceManager;
-import org.hkijena.jipipe.utils.UIUtils;
-import org.hkijena.jipipe.JIPipe;
 import org.scijava.Context;
 import org.scijava.plugin.Plugin;
 
@@ -124,8 +122,7 @@ public class OpenCvPlugin extends JIPipePrepackagedDefaultJavaPlugin {
 
             registerNodeType("opencv-photo-inpainting", InpaintingAlgorithm.class, JIPipe.RESOURCES.getIcon16URL("actions/bandage.png"));
             registerEnumParameterType("opencv-photo-inpainting:method", InpaintingAlgorithm.Method.class, "Inpainting method", "An inpainting method");
-        }
-        catch (UnsatisfiedLinkError e) {
+        } catch (UnsatisfiedLinkError e) {
             progressInfo.log(e);
             progressInfo.log("ERROR: OPENCV IS CURRENTLY NOT AVAILABLE! THIS IS AN EXPECTED ISSUE WITH MACOS");
             progressInfo.getNotifications().push(new JIPipeNotification(AS_DEPENDENCY.getDependencyId() + ":not-available",

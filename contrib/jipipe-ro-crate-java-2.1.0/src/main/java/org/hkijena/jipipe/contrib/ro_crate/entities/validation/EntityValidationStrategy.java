@@ -7,7 +7,7 @@ import com.fasterxml.jackson.databind.JsonNode;
  */
 public interface EntityValidationStrategy {
 
-  boolean validateEntity(JsonNode entity);
+    boolean validateEntity(JsonNode entity);
 
-  boolean validateFieldOfEntity(JsonNode field);
+    boolean validateFieldOfEntity(JsonNode field);
 }

@@ -1,10 +1,9 @@
 package org.hkijena.jipipe.contrib.ro_crate.writer;
 
+import org.apache.commons.io.FileUtils;
 import org.hkijena.jipipe.contrib.ro_crate.HelpFunctions;
 import org.hkijena.jipipe.contrib.ro_crate.RoCrate;
 import org.hkijena.jipipe.contrib.ro_crate.entities.data.DataSetEntity;
-
-import org.apache.commons.io.FileUtils;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.io.TempDir;
 
@@ -165,8 +164,8 @@ interface CommonWriterTest extends TestableWriterStrategy {
         HelpFunctions.printFileTree(extractionPath);
 
         assertFalse(HelpFunctions.compareTwoDir(
-                correctCrate.toFile(),
-                extractionPath.toFile()),
+                        correctCrate.toFile(),
+                        extractionPath.toFile()),
                 "The crate should not contain the file that was not part of the metadata");
         HelpFunctions.compareCrateJsonToFileInResources(
                 roCrate,

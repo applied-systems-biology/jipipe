@@ -32,10 +32,10 @@ public class JIPipeDesktopModernMetalTheme extends DefaultMetalTheme {
 
     public JIPipeDesktopModernMetalTheme(JIPipeDesktopModernThemeStyle style) {
         this.style = style;
-        
+
         // Fonts
         fontNormal = new Font(Font.DIALOG, Font.PLAIN, style.getFontSizeNormal());
-        
+
         // Borders
         buttonBorder = BorderFactory.createCompoundBorder(BorderFactory.createEmptyBorder(1, 1, 1, 1),
                 BorderFactory.createCompoundBorder(new RoundedLineBorder(style.getBorderColor(), 1, 5),
@@ -47,7 +47,23 @@ public class JIPipeDesktopModernMetalTheme extends DefaultMetalTheme {
         // TODO: Icon init
         directoryIcon = JIPipe.RESOURCES.getIcon16("places/folder-blue.png");
         fileIcon = JIPipe.RESOURCES.getIcon16("mimetypes/gtk-file.png");
-        
+
+    }
+
+    private static IconUIResource toResource(Icon icon) {
+        return new IconUIResource(icon);
+    }
+
+    private static BorderUIResource toResource(Border border) {
+        return new BorderUIResource(border);
+    }
+
+    private static FontUIResource toResource(Font font) {
+        return new FontUIResource(font);
+    }
+
+    private static ColorUIResource toResource(Color color) {
+        return new ColorUIResource(color);
     }
 
     // Core LAF overrides
@@ -119,13 +135,13 @@ public class JIPipeDesktopModernMetalTheme extends DefaultMetalTheme {
         // Helper for colors (overwrite all colors with RED!)
         for (Object key : ImmutableList.copyOf(table.keySet())) {
             Object value = table.get(key);
-            if(value instanceof ColorUIResource) {
+            if (value instanceof ColorUIResource) {
                 table.put(key, toResource(Color.RED));
             }
         }
 
         table.put("window", style.getWindowBackground());
-        
+
         configureLightAndShadows(table);
         configureForeground(table);
         configureSelection(table);
@@ -178,10 +194,10 @@ public class JIPipeDesktopModernMetalTheme extends DefaultMetalTheme {
         List<String> missingKeys = new ArrayList<>();
         for (Object key : ImmutableList.copyOf(table.keySet())) {
             Object value = table.get(key);
-            if(value instanceof ColorUIResource) {
-               if(((ColorUIResource) value).getRed() == 255 && ((ColorUIResource) value).getGreen() == 0 && ((ColorUIResource) value).getBlue() == 0) {
-                   missingKeys.add(key.toString());
-               }
+            if (value instanceof ColorUIResource) {
+                if (((ColorUIResource) value).getRed() == 255 && ((ColorUIResource) value).getGreen() == 0 && ((ColorUIResource) value).getBlue() == 0) {
+                    missingKeys.add(key.toString());
+                }
             }
         }
         missingKeys.sort(Comparator.naturalOrder());
@@ -252,7 +268,7 @@ public class JIPipeDesktopModernMetalTheme extends DefaultMetalTheme {
     private void configureTableHeader(UIDefaults table) {
         table.put("TableHeader.background", toResource(style.getFormBackground()));
         table.put("TableHeader.focusCellBackground", toResource(style.getSelectionHighlight()));
-        table.put("TableHeader.cellBorder", toResource(BorderFactory.createMatteBorder(0,0,1,1, style.getBorderColor())));
+        table.put("TableHeader.cellBorder", toResource(BorderFactory.createMatteBorder(0, 0, 1, 1, style.getBorderColor())));
     }
 
     private void configureTree(UIDefaults table) {
@@ -414,7 +430,7 @@ public class JIPipeDesktopModernMetalTheme extends DefaultMetalTheme {
         table.put("MenuItem.borderPainted", Boolean.FALSE);
         table.put("MenuItem.selectionBackground", toResource(style.getSelectionHighlight()));
         table.put("MenuItem.selectionForeground", toResource(style.getSelectionForeground()));
-        table.put("MenuItem.acceleratorSelectionForeground",  toResource(style.getTextMuted()));
+        table.put("MenuItem.acceleratorSelectionForeground", toResource(style.getTextMuted()));
         table.put("MenuItem.disabledForeground", toResource(style.getTextMuted()));
     }
 
@@ -432,7 +448,7 @@ public class JIPipeDesktopModernMetalTheme extends DefaultMetalTheme {
         table.put("Menu.selectionForeground", toResource(style.getSelectionForeground()));
         table.put("Menu.acceleratorForeground", toResource(style.getTextMuted()));
         table.put("Menu.acceleratorSelectionForeground", toResource(style.getTextMuted()));
-        table.put("Menu.disabledForeground",  toResource(style.getTextMuted()));
+        table.put("Menu.disabledForeground", toResource(style.getTextMuted()));
     }
 
     private void configureSlider(UIDefaults table) {
@@ -524,7 +540,7 @@ public class JIPipeDesktopModernMetalTheme extends DefaultMetalTheme {
 
     private void configureLightAndShadows(UIDefaults table) {
         for (Object o : ImmutableList.copyOf(table.keySet())) {
-            if(o.toString().toLowerCase(Locale.ROOT).endsWith("shadow") || o.toString().toLowerCase(Locale.ROOT).endsWith("light")) {
+            if (o.toString().toLowerCase(Locale.ROOT).endsWith("shadow") || o.toString().toLowerCase(Locale.ROOT).endsWith("light")) {
                 table.put(o, null);
             }
         }
@@ -532,7 +548,7 @@ public class JIPipeDesktopModernMetalTheme extends DefaultMetalTheme {
 
     private void configureFocus(UIDefaults table) {
         for (Object o : ImmutableList.copyOf(table.keySet())) {
-            if(o.toString().endsWith(".focus")) {
+            if (o.toString().endsWith(".focus")) {
                 table.put(o, style.getPrimaryColor());
             }
         }
@@ -540,10 +556,9 @@ public class JIPipeDesktopModernMetalTheme extends DefaultMetalTheme {
 
     private void configureSelection(UIDefaults table) {
         for (Object o : ImmutableList.copyOf(table.keySet())) {
-            if(o.toString().endsWith(".selectionBackground")) {
+            if (o.toString().endsWith(".selectionBackground")) {
                 table.put(o, toResource(style.getSelectionBackground()));
-            }
-            else if (o.toString().endsWith(".selectionForeground")) {
+            } else if (o.toString().endsWith(".selectionForeground")) {
                 table.put(o, toResource(style.getTextForeground()));
             }
         }
@@ -551,10 +566,9 @@ public class JIPipeDesktopModernMetalTheme extends DefaultMetalTheme {
 
     private void configureForeground(UIDefaults table) {
         for (Object o : ImmutableList.copyOf(table.keySet())) {
-            if(o.toString().endsWith(".foreground")) {
+            if (o.toString().endsWith(".foreground")) {
                 table.put(o, toResource(style.getTextForeground()));
-            }
-            else if (o.toString().endsWith(".inactiveForeground") || o.toString().endsWith(".disabledText")) {
+            } else if (o.toString().endsWith(".inactiveForeground") || o.toString().endsWith(".disabledText")) {
                 table.put(o, toResource(style.getTextMuted()));
             }
         }
@@ -591,22 +605,6 @@ public class JIPipeDesktopModernMetalTheme extends DefaultMetalTheme {
         table.put("Button.highlight", style.getSelectionHighlight());
         table.put("Button.disabledText", toResource(style.getTextMuted()));
         table.put("Button.select", toResource(style.getButtonToggled()));
-    }
-
-    private static IconUIResource toResource(Icon icon) {
-        return new IconUIResource(icon);
-    }
-
-    private static BorderUIResource toResource(Border border) {
-        return new BorderUIResource(border);
-    }
-
-    private static FontUIResource toResource(Font font) {
-        return new FontUIResource(font);
-    }
-
-    private static ColorUIResource toResource(Color color) {
-        return new ColorUIResource(color);
     }
 }
 

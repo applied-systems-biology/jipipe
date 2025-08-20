@@ -14,8 +14,6 @@
 package org.hkijena.jipipe.api.settings;
 
 import org.hkijena.jipipe.JIPipe;
-import org.hkijena.jipipe.utils.UIUtils;
-import org.hkijena.jipipe.JIPipe;
 
 import javax.swing.*;
 

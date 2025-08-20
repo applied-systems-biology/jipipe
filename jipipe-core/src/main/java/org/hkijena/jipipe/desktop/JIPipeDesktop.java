@@ -111,7 +111,7 @@ public class JIPipeDesktop {
                     PathIOMode.Open,
                     PathType.FilesOnly,
                     extensionFilters);
-            if(result != null) {
+            if (result != null) {
                 instance.setLastDirectoryBy(key, result.getParent());
             }
             return result;
@@ -231,7 +231,7 @@ public class JIPipeDesktop {
                     PathIOMode.Save,
                     PathType.FilesOnly,
                     extensionFilters);
-            if(path != null) {
+            if (path != null) {
                 instance.setLastDirectoryBy(key, path.getParent());
             }
             return path;
@@ -281,7 +281,7 @@ public class JIPipeDesktop {
                     PathIOMode.Open,
                     PathType.FilesAndDirectories,
                     extensionFilters);
-            if(result != null) {
+            if (result != null) {
                 instance.setLastDirectoryBy(key, result);
             }
             return result;
@@ -331,7 +331,7 @@ public class JIPipeDesktop {
                     PathIOMode.Save,
                     PathType.FilesAndDirectories,
                     extensionFilters);
-            if(path !=  null) {
+            if (path != null) {
                 instance.setLastDirectoryBy(key, path);
             }
             return path;
@@ -380,7 +380,7 @@ public class JIPipeDesktop {
                     description, currentPath,
                     PathIOMode.Open,
                     PathType.DirectoriesOnly);
-            if(path != null) {
+            if (path != null) {
                 instance.setLastDirectoryBy(key, path);
             }
             return path;
@@ -429,7 +429,7 @@ public class JIPipeDesktop {
                     description, currentPath,
                     PathIOMode.Open,
                     PathType.DirectoriesOnly);
-            if(path != null) {
+            if (path != null) {
                 instance.setLastDirectoryBy(key, path);
             }
             return path;
@@ -493,8 +493,8 @@ public class JIPipeDesktop {
                     PathType.FilesOnly,
                     true,
                     extensionFilters);
-            if(!paths.isEmpty()) {
-                instance.setLastDirectoryBy(key,paths.getFirst().getParent());
+            if (!paths.isEmpty()) {
+                instance.setLastDirectoryBy(key, paths.getFirst().getParent());
             }
             return paths;
         }
@@ -547,7 +547,7 @@ public class JIPipeDesktop {
                     PathIOMode.Open,
                     PathType.DirectoriesOnly,
                     true);
-            if(!paths.isEmpty()) {
+            if (!paths.isEmpty()) {
                 instance.setLastDirectoryBy(key, paths.getFirst());
             }
             return paths;
@@ -602,7 +602,7 @@ public class JIPipeDesktop {
                     PathType.FilesAndDirectories,
                     true,
                     extensionFilters);
-            if(!paths.isEmpty()) {
+            if (!paths.isEmpty()) {
                 instance.setLastDirectoryBy(key, paths.getFirst());
             }
             return paths;

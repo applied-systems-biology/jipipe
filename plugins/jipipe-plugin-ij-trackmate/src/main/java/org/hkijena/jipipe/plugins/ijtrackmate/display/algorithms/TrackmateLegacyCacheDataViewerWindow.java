@@ -14,6 +14,7 @@
 package org.hkijena.jipipe.plugins.ijtrackmate.display.algorithms;
 
 import org.fife.ui.rtextarea.RTextScrollPane;
+import org.hkijena.jipipe.JIPipe;
 import org.hkijena.jipipe.api.JIPipeProgressInfo;
 import org.hkijena.jipipe.api.data.JIPipeData;
 import org.hkijena.jipipe.api.data.JIPipeDataItemStore;
@@ -23,7 +24,6 @@ import org.hkijena.jipipe.desktop.app.cache.JIPipeDesktopLegacyCacheDataViewerWi
 import org.hkijena.jipipe.plugins.ijtrackmate.datatypes.SpotDetectorData;
 import org.hkijena.jipipe.plugins.ijtrackmate.datatypes.SpotTrackerData;
 import org.hkijena.jipipe.utils.ThemeUtils;
-import org.hkijena.jipipe.JIPipe;
 import org.scijava.ui.swing.script.EditorPane;
 
 import javax.swing.*;

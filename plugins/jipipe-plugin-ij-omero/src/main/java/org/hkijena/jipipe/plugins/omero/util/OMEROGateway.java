@@ -302,5 +302,4 @@ public class OMEROGateway implements AutoCloseable {
     }
 
 
-
 }

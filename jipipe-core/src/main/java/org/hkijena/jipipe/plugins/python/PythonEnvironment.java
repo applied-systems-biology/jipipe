@@ -39,8 +39,6 @@ import org.hkijena.jipipe.plugins.parameters.library.pairs.StringQueryExpression
 import org.hkijena.jipipe.utils.EnvironmentVariablesSource;
 import org.hkijena.jipipe.utils.PathUtils;
 import org.hkijena.jipipe.utils.StringUtils;
-import org.hkijena.jipipe.utils.UIUtils;
-import org.hkijena.jipipe.JIPipe;
 
 import javax.swing.*;
 import java.nio.file.Files;

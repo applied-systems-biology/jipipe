@@ -1,10 +1,5 @@
 package org.hkijena.jipipe.contrib.ro_crate.util;
 
-import java.io.IOException;
-import java.io.InputStream;
-import java.net.URL;
-import java.util.Properties;
-
 public class ClasspathPropertiesVersionProvider implements VersionProvider {
     public static final String VERSION_PROPERTIES = "version.properties";
 

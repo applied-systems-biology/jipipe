@@ -2,8 +2,8 @@ package org.hkijena.jipipe.contrib.ro_crate.writer;
 
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import org.hkijena.jipipe.contrib.ro_crate.RoCrate;
 import org.hkijena.jipipe.contrib.ro_crate.HelpFunctions;
+import org.hkijena.jipipe.contrib.ro_crate.RoCrate;
 import org.hkijena.jipipe.contrib.ro_crate.reader.Readers;
 import org.hkijena.jipipe.contrib.ro_crate.validation.JsonSchemaValidation;
 import org.hkijena.jipipe.contrib.ro_crate.validation.Validator;
@@ -32,7 +32,7 @@ class RoCrateMetadataGenerationTest {
 
     private void validateCrate(RoCrate crate) {
         assertTrue(validator.validate(crate),
-            "Crate should validate against the JSON schema");
+                "Crate should validate against the JSON schema");
     }
 
     @Test
@@ -60,14 +60,14 @@ class RoCrateMetadataGenerationTest {
         JsonNode roCrateJavaEntity = findEntityById(graph, this.currentVersionId);
         assertNotNull(roCrateJavaEntity, "ro-crate-java entity should exist");
         assertEquals("SoftwareApplication", roCrateJavaEntity.get("@type").asText(),
-            "ro-crate-java should be of type SoftwareApplication");
+                "ro-crate-java should be of type SoftwareApplication");
 
         // Find CreateAction entity
         JsonNode createActionEntity = findEntityByType(graph, "CreateAction");
         assertNotNull(createActionEntity, "CreateAction entity should exist");
         assertNotNull(createActionEntity.get("startTime"), "CreateAction should have startTime");
         assertEquals(this.currentVersionId, createActionEntity.get("agent").get("@id").asText(),
-            "CreateAction should reference ro-crate-java as agent");
+                "CreateAction should reference ro-crate-java as agent");
     }
 
     @Test
@@ -92,12 +92,12 @@ class RoCrateMetadataGenerationTest {
 
         assertNotNull(roCrateJavaEntity, "ro-crate-java entity should exist");
         assertEquals("ro-crate-java", roCrateJavaEntity.get("name").asText(),
-            "should have correct name");
+                "should have correct name");
         assertEquals("https://github.com/kit-data-manager/ro-crate-java",
-            roCrateJavaEntity.get("url").asText(),
-            "should have correct repository URL");
+                roCrateJavaEntity.get("url").asText(),
+                "should have correct repository URL");
         assertNotNull(roCrateJavaEntity.get("version"),
-            "should have version property");
+                "should have version property");
     }
 
     @Test
@@ -131,13 +131,13 @@ class RoCrateMetadataGenerationTest {
         JsonNode agentRef = createActionEntity.get("agent");
         assertNotNull(agentRef, "CreateAction should have agent property");
         assertEquals(this.currentVersionId, agentRef.get("@id").asText(),
-            "CreateAction's agent should reference ro-crate-java");
+                "CreateAction's agent should reference ro-crate-java");
 
         // Test ro-crate-java -> CreateAction reference
         JsonNode actionRef = roCrateJavaEntity.get("Action");
         assertNotNull(actionRef, "ro-crate-java should have action property");
         assertEquals(createActionEntity.get("@id").asText(), actionRef.get("@id").asText(),
-            "ro-crate-java's action should reference the CreateAction");
+                "ro-crate-java's action should reference the CreateAction");
     }
 
     @Test
@@ -172,9 +172,9 @@ class RoCrateMetadataGenerationTest {
 
         // Verify actions array exists and has three entries
         assertTrue(roCrateJavaEntity.get("Action").isArray(),
-            "ro-crate-java should have an array of actions");
+                "ro-crate-java should have an array of actions");
         assertEquals(3, roCrateJavaEntity.get("Action").size(),
-            "should have three actions after three writes");
+                "should have three actions after three writes");
 
         // Find all action entities
         JsonNode createAction = findEntityByType(graph, "CreateAction");
@@ -189,14 +189,14 @@ class RoCrateMetadataGenerationTest {
         // Verify CreateAction properties
         assertNotNull(createAction.get("startTime"), "CreateAction should have startTime");
         assertEquals(this.currentVersionId, createAction.get("agent").get("@id").asText(),
-            "CreateAction should reference ro-crate-java as agent");
+                "CreateAction should reference ro-crate-java as agent");
 
         // Verify UpdateAction properties
         for (JsonNode updateAction : updateActions) {
             assertNotNull(updateAction.get("startTime"),
-                "UpdateAction should have startTime");
+                    "UpdateAction should have startTime");
             assertEquals(this.currentVersionId, updateAction.get("agent").get("@id").asText(),
-                "UpdateAction should reference ro-crate-java as agent");
+                    "UpdateAction should reference ro-crate-java as agent");
         }
 
         // Verify chronological order of timestamps
@@ -206,9 +206,9 @@ class RoCrateMetadataGenerationTest {
         // The order of updates is not the order in the graph.
         // But we can check that creation happened before the updates:
         assertTrue(createTime.compareTo(updateTime1) < 0,
-            "First update should be after creation");
+                "First update should be after creation");
         assertTrue(createTime.compareTo(updateTime2) < 0,
-            "Second update should be after creation");
+                "Second update should be after creation");
     }
 
     @Test
@@ -240,7 +240,7 @@ class RoCrateMetadataGenerationTest {
         String semverPattern = "(?i)^\\d+\\.\\d+\\.\\d+(?:-(?:rc\\d+|alpha|beta|snapshot)(?:\\.\\d+)?)?(?:\\+[0-9a-zA-Z-]+(?:\\.[0-9a-zA-Z-]+)*)?$";
 
         assertTrue(version.matches(semverPattern),
-            String.format("Version '%s' should match semantic versioning format: major.minor.patch[-prerelease][+build]%n" +
+                String.format("Version '%s' should match semantic versioning format: major.minor.patch[-prerelease][+build]%n" +
                         "Examples: 1.2.3, 1.2.3-rc1, 1.2.3-SNAPSHOT, 1.2.3-beta.1, 1.2.3+build.123", version));
     }
 
@@ -265,26 +265,26 @@ class RoCrateMetadataGenerationTest {
 
         // Required properties with specific values
         assertEquals("ro-crate-java", roCrateJavaEntity.get("name").asText(),
-            "should have correct name");
+                "should have correct name");
         assertEquals("https://github.com/kit-data-manager/ro-crate-java",
-            roCrateJavaEntity.get("url").asText(),
-            "should have correct repository URL");
+                roCrateJavaEntity.get("url").asText(),
+                "should have correct repository URL");
         assertEquals("SoftwareApplication", roCrateJavaEntity.get("@type").asText(),
-            "should have correct type");
+                "should have correct type");
 
         // Optional but recommended properties
         assertNotNull(roCrateJavaEntity.get("description"),
-            "should have a description");
+                "should have a description");
         assertFalse(roCrateJavaEntity.get("description").asText().isEmpty(),
                 "description should not be empty");
 
         assertNotNull(roCrateJavaEntity.get("license"),
-            "should have a license");
+                "should have a license");
         assertTrue(roCrateJavaEntity.has("softwareVersion"),
-            "should have softwareVersion as an alias for version");
+                "should have softwareVersion as an alias for version");
         assertEquals(roCrateJavaEntity.get("version").asText(),
-            roCrateJavaEntity.get("softwareVersion").asText(),
-            "version and softwareVersion should match");
+                roCrateJavaEntity.get("softwareVersion").asText(),
+                "version and softwareVersion should match");
     }
 
     @Test
@@ -307,11 +307,11 @@ class RoCrateMetadataGenerationTest {
         JsonNode originalRoot = objectMapper.readTree(originalMetadata);
         JsonNode originalGraph = originalRoot.get("@graph");
         assertNull(findEntityById(originalGraph, this.currentVersionId),
-            "Original crate should not have ro-crate-java entity");
+                "Original crate should not have ro-crate-java entity");
         assertNull(findEntityByType(originalGraph, "CreateAction"),
-            "Original crate should not have CreateAction");
+                "Original crate should not have CreateAction");
         assertNull(findEntityByType(originalGraph, "UpdateAction"),
-            "Original crate should not have UpdateAction");
+                "Original crate should not have UpdateAction");
 
         // Now read and modify the crate
         RoCrate modifiedCrate = Readers.newFolderReader().readCrate(outputPath.toString());
@@ -336,24 +336,24 @@ class RoCrateMetadataGenerationTest {
 
         // Should only have UpdateAction, no CreateAction
         assertNull(findEntityByType(modifiedGraph, "CreateAction"),
-            "Modified crate should not have CreateAction");
+                "Modified crate should not have CreateAction");
 
         JsonNode updateAction = findEntityByType(modifiedGraph, "UpdateAction");
         assertNotNull(updateAction, "Should have UpdateAction");
 
         // Verify update action properties
         assertNotNull(updateAction.get("startTime"),
-            "UpdateAction should have startTime");
+                "UpdateAction should have startTime");
         assertEquals(this.currentVersionId,
-            updateAction.get("agent").get("@id").asText(),
-            "UpdateAction should reference ro-crate-java as agent");
+                updateAction.get("agent").get("@id").asText(),
+                "UpdateAction should reference ro-crate-java as agent");
 
         // Verify ro-crate-java references the action
         assertTrue(roCrateJavaEntity.get("Action").isObject(),
-            "ro-crate-java should have a single reference to an UpdateAction");
+                "ro-crate-java should have a single reference to an UpdateAction");
         assertEquals(updateAction.get("@id").asText(),
-            roCrateJavaEntity.get("Action").get("@id").asText(),
-            "ro-crate-java should reference the UpdateAction");
+                roCrateJavaEntity.get("Action").get("@id").asText(),
+                "ro-crate-java should reference the UpdateAction");
     }
 
     @Test
@@ -393,14 +393,14 @@ class RoCrateMetadataGenerationTest {
         String createTime = createAction.get("startTime").asText();
         String updateTime = updateActions[0].get("startTime").asText();
         assertTrue(createTime.compareTo(updateTime) < 0,
-            "Update should be after creation");
+                "Update should be after creation");
 
         // Verify ro-crate-java entity references both actions
         JsonNode roCrateJavaEntity = findEntityById(graph, this.currentVersionId);
         //noinspection DataFlowIssue
         assertTrue(roCrateJavaEntity.get("Action").isArray(),
-            "ro-crate-java should have an array of actions");
+                "ro-crate-java should have an array of actions");
         assertEquals(2, roCrateJavaEntity.get("Action").size(),
-            "should have both actions");
+                "should have both actions");
     }
 }

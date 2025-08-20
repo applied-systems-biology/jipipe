@@ -3,7 +3,6 @@ package org.hkijena.jipipe.contrib.ro_crate.writer;
 import org.hkijena.jipipe.contrib.ro_crate.Crate;
 import org.hkijena.jipipe.contrib.ro_crate.HelpFunctions;
 import org.hkijena.jipipe.contrib.ro_crate.RoCrate;
-
 import org.hkijena.jipipe.contrib.ro_crate.reader.CommonReaderTest;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.io.TempDir;
@@ -11,7 +10,7 @@ import org.junit.jupiter.api.io.TempDir;
 import java.io.IOException;
 import java.nio.file.Path;
 
-import static org.junit.jupiter.api.Assertions.*;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
 public interface ElnFileWriterTest extends TestableWriterStrategy {
 
@@ -19,7 +18,7 @@ public interface ElnFileWriterTest extends TestableWriterStrategy {
      * Write in ELN format style, meaning with a subfolder in the zip file.
      * Must use {@link ElnFormatWriter#usingElnStyle()}.
      *
-     * @param crate the crate to write
+     * @param crate  the crate to write
      * @param target the target path to the save location
      * @throws IOException if an error occurs
      */
@@ -28,7 +27,8 @@ public interface ElnFileWriterTest extends TestableWriterStrategy {
     /**
      * Same as {@link #saveCrateElnStyle(Crate, Path)} but with the alias
      * {@link  ElnFormatWriter#withRootSubdirectory()}.
-     * @param crate the crate to write
+     *
+     * @param crate  the crate to write
      * @param target the target path to the save location
      */
     void saveCrateSubdirectoryStyle(RoCrate crate, Path target) throws IOException;

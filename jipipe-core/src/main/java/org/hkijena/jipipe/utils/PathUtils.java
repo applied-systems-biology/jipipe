@@ -635,10 +635,9 @@ public class PathUtils {
             Files.createDirectories(root);
             while (true) {
                 Path path;
-                if(StringUtils.isNullOrEmpty(prefix)) {
+                if (StringUtils.isNullOrEmpty(prefix)) {
                     path = root.resolve(StringUtils.generateRandomString(RANDOM_TMP_CHARACTERS, RANDOM_TMP_LENGTH));
-                }
-                else {
+                } else {
                     path = root.resolve(StringUtils.nullToEmpty(prefix) + "-" + StringUtils.generateRandomString(RANDOM_TMP_CHARACTERS, RANDOM_TMP_LENGTH));
                 }
                 if (!Files.exists(path)) {
@@ -739,10 +738,9 @@ public class PathUtils {
     }
 
     public static String getName(Path path, int i) {
-        if(i >= 0) {
+        if (i >= 0) {
             return path.getName(i).toString();
-        }
-        else {
+        } else {
             return path.getName(path.getNameCount() + i).toString();
         }
     }

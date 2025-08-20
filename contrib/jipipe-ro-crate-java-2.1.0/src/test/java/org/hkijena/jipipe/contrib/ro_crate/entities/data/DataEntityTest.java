@@ -4,38 +4,40 @@ import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.node.ArrayNode;
 import com.fasterxml.jackson.databind.node.ObjectNode;
-
-import java.io.IOException;
-import java.net.URL;
-
 import org.hkijena.jipipe.contrib.ro_crate.HelpFunctions;
 import org.hkijena.jipipe.contrib.ro_crate.entities.data.DataEntity.DataEntityBuilder;
 import org.hkijena.jipipe.contrib.ro_crate.objectmapper.MyObjectMapper;
-import java.net.URI;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.MethodSource;
 
+import java.io.IOException;
+import java.net.URI;
 import java.net.URISyntaxException;
+import java.net.URL;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.Arrays;
 import java.util.List;
 import java.util.stream.Stream;
 
-import org.junit.jupiter.api.Test;
-import org.junit.jupiter.params.ParameterizedTest;
-import org.junit.jupiter.params.provider.MethodSource;
-
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertNotEquals;
-import static org.junit.jupiter.api.Assertions.assertNotNull;
-import static org.junit.jupiter.api.Assertions.assertNull;
-import static org.junit.jupiter.api.Assertions.assertThrows;
-import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.junit.jupiter.api.Assertions.*;
 
 /**
  * @author Nikola Tzotchev on 4.2.2022 г.
  * @version 1
  */
 class DataEntityTest {
+
+    private static Stream<ArrayNode> provideInvalidPropertyValues() {
+        ObjectMapper mapper = new ObjectMapper();
+        ArrayNode withSubArray = mapper.createArrayNode().add(1).add("2");
+        withSubArray.addArray();
+        ArrayNode withSubObject = mapper.createArrayNode().add(1).add("2");
+        withSubObject.addObject();
+
+        return Stream.of(withSubArray, withSubObject);
+    }
 
     @Test
     void testSerialization() throws IOException {
@@ -225,15 +227,5 @@ class DataEntityTest {
                 .addProperty(propertyName, propertyValue)
                 .build();
         assertNull(entity.getProperty(propertyName));
-    }
-
-    private static Stream<ArrayNode> provideInvalidPropertyValues() {
-        ObjectMapper mapper = new ObjectMapper();
-        ArrayNode withSubArray = mapper.createArrayNode().add(1).add("2");
-        withSubArray.addArray();
-        ArrayNode withSubObject = mapper.createArrayNode().add(1).add("2");
-        withSubObject.addObject();
-
-        return Stream.of(withSubArray, withSubObject);
     }
 }

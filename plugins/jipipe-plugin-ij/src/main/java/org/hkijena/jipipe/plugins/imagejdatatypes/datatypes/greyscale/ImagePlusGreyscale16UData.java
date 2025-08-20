@@ -26,8 +26,8 @@ import org.hkijena.jipipe.plugins.imagejdatatypes.colorspace.GreyscaleColorSpace
 import org.hkijena.jipipe.plugins.imagejdatatypes.converters.ImplicitImageTypeConverter;
 import org.hkijena.jipipe.plugins.imagejdatatypes.datatypes.ImagePlusData;
 import org.hkijena.jipipe.plugins.imagejdatatypes.datatypes.ImageTypeInfo;
-import org.hkijena.jipipe.plugins.imagejdatatypes.util.dimensions.ImageDimensions;
 import org.hkijena.jipipe.plugins.imagejdatatypes.util.ImageJUtils;
+import org.hkijena.jipipe.plugins.imagejdatatypes.util.dimensions.ImageDimensions;
 
 /**
  * 16-bit greyscale image without dimension.

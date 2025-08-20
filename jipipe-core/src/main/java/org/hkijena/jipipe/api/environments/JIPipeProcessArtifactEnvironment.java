@@ -33,7 +33,10 @@ import org.hkijena.jipipe.plugins.expressions.JIPipeExpressionVariablesMap;
 import org.hkijena.jipipe.plugins.parameters.api.pairs.PairParameterSettings;
 import org.hkijena.jipipe.plugins.parameters.library.pairs.StringQueryExpressionAndStringPairParameter;
 import org.hkijena.jipipe.plugins.processes.ProcessEnvironment;
-import org.hkijena.jipipe.utils.*;
+import org.hkijena.jipipe.utils.EnvironmentVariablesSource;
+import org.hkijena.jipipe.utils.PathUtils;
+import org.hkijena.jipipe.utils.ProcessUtils;
+import org.hkijena.jipipe.utils.StringUtils;
 
 import javax.swing.*;
 import java.nio.file.Files;

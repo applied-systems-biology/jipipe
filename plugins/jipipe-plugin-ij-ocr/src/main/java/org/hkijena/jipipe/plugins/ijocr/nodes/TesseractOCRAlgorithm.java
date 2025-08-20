@@ -19,7 +19,7 @@ import org.hkijena.jipipe.api.AddJIPipeCitation;
 import org.hkijena.jipipe.api.ConfigureJIPipeNode;
 import org.hkijena.jipipe.api.JIPipeProgressInfo;
 import org.hkijena.jipipe.api.SetJIPipeDocumentation;
-import org.hkijena.jipipe.api.environments.JIPipeEnvironment;
+import org.hkijena.jipipe.api.environments.JIPipeEnvironmentReference;
 import org.hkijena.jipipe.api.nodes.*;
 import org.hkijena.jipipe.api.nodes.algorithm.JIPipeSimpleIteratingAlgorithm;
 import org.hkijena.jipipe.api.nodes.categories.ImagesNodeTypeCategory;
@@ -95,7 +95,7 @@ public class TesseractOCRAlgorithm extends JIPipeSimpleIteratingAlgorithm {
 
         int dpi = overrideDPI.isEnabled() ? overrideDPI.getContent().evaluateToInteger(variablesMap) : 0;
         String allowedChars = overrideCharAllowList.isEnabled() ? overrideCharAllowList.getContent().evaluateToString(variablesMap) : null;
-        TesseractOCREnvironment tesseractOCREnvironment = getConfiguredTesseractOCREnvironment();
+        TesseractOCREnvironment tesseractOCREnvironment = getConfiguredTesseractOCREnvironment().getEnvironment();
         String languagesString = String.join("+", languages.getValues());
         if (StringUtils.isNullOrEmpty(languagesString)) {
             progressInfo.log("INFO: no language selected. Defaulting to eng");
@@ -161,17 +161,17 @@ public class TesseractOCRAlgorithm extends JIPipeSimpleIteratingAlgorithm {
         iterationStep.addOutputData(getFirstOutputSlot(), output, progressInfo);
     }
 
-    public TesseractOCREnvironment getConfiguredTesseractOCREnvironment() {
+    public JIPipeEnvironmentReference<TesseractOCREnvironment> getConfiguredTesseractOCREnvironment() {
         JIPipeGraphNode node = this;
         JIPipeProject project = node.getRuntimeProject();
         if (project == null) {
             project = node.getParentGraph().getProject();
         }
-        return OCRPlugin.getTesseractOCREnvironment(project, getOverrideTesseractOCREnvironment());
+        return OCRPlugin.getTesseractOCREnvironment(project, getOverrideTesseractOCREnvironment(), this);
     }
 
     @Override
-    public void getEnvironmentDependencies(List<JIPipeEnvironment> target) {
+    public void getEnvironmentDependencies(List<JIPipeEnvironmentReference<?>> target) {
         super.getEnvironmentDependencies(target);
         target.add(getConfiguredTesseractOCREnvironment());
     }

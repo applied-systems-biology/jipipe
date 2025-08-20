@@ -21,7 +21,6 @@ import org.hkijena.jipipe.plugins.settings.JIPipeFileChooserApplicationSettings;
 import org.hkijena.jipipe.utils.PathIOMode;
 import org.hkijena.jipipe.utils.PathType;
 import org.hkijena.jipipe.utils.StringUtils;
-import org.python.antlr.op.In;
 
 import java.lang.annotation.Annotation;
 import java.nio.file.Path;

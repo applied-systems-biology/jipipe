@@ -3,7 +3,6 @@ package org.hkijena.jipipe.plugins.imageviewer.utils.viewer2d;
 import ij.ImagePlus;
 import ij.process.ImageProcessor;
 import ij.process.ImageStatistics;
-import org.hkijena.jipipe.desktop.commons.theme.JIPipeDesktopLegacyModernMetalTheme;
 import org.hkijena.jipipe.plugins.imagejdatatypes.util.ImageJHistogram;
 import org.hkijena.jipipe.utils.ThemeUtils;
 import org.jdesktop.swingx.JXMultiThumbSlider;
@@ -44,7 +43,7 @@ public class ImageViewer2DDisplayRangeControlTrackRenderer extends JComponent im
         g.setColor(COLOR_SELECTED);
         ImageProcessor slice = displayRangeControl.getCalibrationPlugin().getViewerPanel2D().getCurrentSlice();
         ImageViewer2DSliceStatistics currentSliceStats = displayRangeControl.getCalibrationPlugin().getViewerPanel2D().getCurrentSliceStats();
-        if(currentSliceStats != null) {
+        if (currentSliceStats != null) {
 
 
             ImageJHistogram histogram = currentSliceStats.getHistogram();
@@ -103,7 +102,7 @@ public class ImageViewer2DDisplayRangeControlTrackRenderer extends JComponent im
         }
 
         // Draw the label text (requires statistics)
-        if(currentSliceStats != null) {
+        if (currentSliceStats != null) {
 
             ImageStatistics statistics = currentSliceStats.getFastImageStatistics();
             if (statistics != null) {
