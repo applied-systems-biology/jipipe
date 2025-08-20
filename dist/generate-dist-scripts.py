@@ -15,7 +15,7 @@ def write_generator(f):
         rel_path = "./dependencies/" + name
         re_dir = os.path.dirname(rel_path)
         wl("mkdir -p " + '"' + re_dir + '"', tab=1)
-        wl("wget -O ./dependencies/" + name + " " + url, tab=1)
+        wl("wget -O ./dependencies/" + name + " " + url + " || exit 1", tab=1)
         wl("fi")
 
     # Cleaning up old package
