@@ -31,8 +31,4 @@ distribution_package:
     when: always
     paths:
       - jipipe-distribution-files/*-snapshot${CI_PIPELINE_IID}/*
-  after_script:
-    # keep the runner host clean (especially helpful on shared runners)
-    - rm -rf "$CI_PROJECT_DIR/jipipe-distribution-files"
-    - rm -rf "$CI_PROJECT_DIR/.m2/repository/org/jipipe" || true  # optional: trim project-local artifacts
-    - rm -rf /var/lib/apt/lists/*
+
