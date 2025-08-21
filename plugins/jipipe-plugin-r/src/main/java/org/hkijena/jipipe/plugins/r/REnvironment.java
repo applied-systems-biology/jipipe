@@ -72,6 +72,7 @@ public class REnvironment extends JIPipeArtifactEnvironment {
 
     @Override
     public void reportValidity(JIPipeValidationReportContext reportContext, JIPipeValidationReport report) {
+        super.reportValidity(reportContext, report);
         if (!isLoadFromArtifact()) {
             if (StringUtils.isNullOrEmpty(getRExecutablePath()) || !Files.isRegularFile(getRExecutablePath())) {
                 report.add(new JIPipeValidationReportEntry(JIPipeValidationReportEntryLevel.Error,

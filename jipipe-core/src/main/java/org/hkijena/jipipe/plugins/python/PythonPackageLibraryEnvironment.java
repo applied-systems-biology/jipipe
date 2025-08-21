@@ -95,6 +95,7 @@ public abstract class PythonPackageLibraryEnvironment extends JIPipeArtifactEnvi
     @Override
     public void reportValidity(JIPipeValidationReportContext reportContext, JIPipeValidationReport report) {
         if (!isProvidedByEnvironment()) {
+            super.reportValidity(reportContext, report);
             if (!isLoadFromArtifact()) {
                 if (!Files.isDirectory(getAbsoluteLibraryDirectory())) {
                     report.add(new JIPipeValidationReportEntry(JIPipeValidationReportEntryLevel.Error,

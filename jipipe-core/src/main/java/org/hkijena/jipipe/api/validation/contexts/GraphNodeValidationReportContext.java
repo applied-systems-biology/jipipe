@@ -26,7 +26,7 @@ import org.hkijena.jipipe.desktop.commons.components.tabs.JIPipeDesktopTabPane;
 import javax.swing.*;
 import java.util.UUID;
 
-public class GraphNodeValidationReportContext extends NavigableJIPipeValidationReportContext {
+public class GraphNodeValidationReportContext extends JIPipeValidationReportContext implements NavigableJIPipeValidationReportContext {
 
     private final JIPipeGraphNode graphNode;
 

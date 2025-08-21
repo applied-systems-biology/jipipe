@@ -33,6 +33,7 @@ import org.hkijena.jipipe.api.compartments.algorithms.JIPipeProjectCompartmentOu
 import org.hkijena.jipipe.api.data.JIPipeData;
 import org.hkijena.jipipe.api.data.JIPipeDataSlot;
 import org.hkijena.jipipe.api.data.JIPipeOutputDataSlot;
+import org.hkijena.jipipe.api.environments.JIPipeArtifactEnvironment;
 import org.hkijena.jipipe.api.environments.JIPipeEnvironment;
 import org.hkijena.jipipe.api.environments.JIPipeEnvironmentReference;
 import org.hkijena.jipipe.api.events.AbstractJIPipeEvent;
@@ -664,13 +665,18 @@ public class JIPipeProject implements JIPipeValidatable {
     public void reportValidity(JIPipeValidationReportContext reportContext, JIPipeValidationReport report) {
         graph.reportValidity(reportContext, report);
 
-        // TODO: validate environments
-//        // Validate environments
-//        List<JIPipeEnvironmentReference<?>> allEnvironments = new ArrayList<>();
-//        // Gather all environments from all active nodes
-//        for (JIPipeGraphNode graphNode : graph.getGraphNodes()) {
-//            graphNode.getEnvironmentDependencies(allEnvironments);
-//        }
+        // Check environments
+        Set<JIPipeArtifactEnvironment> checkedEnvironments = new HashSet<>();
+        List<JIPipeEnvironmentReference<?>> allEnvironmentReferences = new ArrayList<>();
+        for (JIPipeGraphNode node : graph.getGraphNodes()) {
+            node.getEnvironmentDependencies(allEnvironmentReferences);
+        }
+        for (JIPipeEnvironmentReference<?> environmentReference : allEnvironmentReferences) {
+            if (!checkedEnvironments.contains(environmentReference.getEnvironment())) {
+                environmentReference.reportValidity(reportContext, report);
+                checkedEnvironments.add((JIPipeArtifactEnvironment) environmentReference.getEnvironment());
+            }
+        }
     }
 
     /**
@@ -981,16 +987,26 @@ public class JIPipeProject implements JIPipeValidatable {
      * @throws IOException exceptions
      */
     private void writeExternalEnvironmentsJson(JsonGenerator generator) throws IOException {
-        List<JIPipeEnvironmentReference<?>> externalEnvironments = new ArrayList<>();
-        for (JIPipeGraphNode graphNode : getGraph().getGraphNodes()) {
-            graphNode.getEnvironmentDependencies(externalEnvironments);
-        }
-        externalEnvironments.removeIf(Objects::isNull);
+        List<JIPipeEnvironmentReference<?>> externalEnvironments = getAllEnvironments();
         generator.writeArrayFieldStart("external-environments");
         for (JIPipeEnvironment environment : externalEnvironments.stream().map(JIPipeEnvironmentReference::getEnvironment).collect(Collectors.toSet())) {
             generator.writeObject(environment);
         }
         generator.writeEndArray();
+    }
+
+    /**
+     * Gets all utilized environments in this project
+     *
+     * @return the list of environment references
+     */
+    public List<JIPipeEnvironmentReference<?>> getAllEnvironments() {
+        List<JIPipeEnvironmentReference<?>> externalEnvironments = new ArrayList<>();
+        for (JIPipeGraphNode graphNode : getGraph().getGraphNodes()) {
+            graphNode.getEnvironmentDependencies(externalEnvironments);
+        }
+        externalEnvironments.removeIf(Objects::isNull);
+        return externalEnvironments;
     }
 
     /**

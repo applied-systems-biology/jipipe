@@ -15,19 +15,18 @@ package org.hkijena.jipipe.api.validation;
 
 import org.hkijena.jipipe.api.JIPipeWorkbench;
 
+import javax.swing.*;
+
 /**
- * A {@link JIPipeValidationReportContext} that can navigate to an UI element
+ * A {@link JIPipeValidationReportContext} that can navigate to a UI element
  */
-public abstract class NavigableJIPipeValidationReportContext extends JIPipeValidationReportContext {
+public interface NavigableJIPipeValidationReportContext {
 
-    public NavigableJIPipeValidationReportContext() {
-    }
+    boolean canNavigate(JIPipeWorkbench workbench);
 
-    public NavigableJIPipeValidationReportContext(JIPipeValidationReportContext parent) {
-        super(parent);
-    }
+    void navigate(JIPipeWorkbench workbench);
 
-    public abstract boolean canNavigate(JIPipeWorkbench workbench);
+    String renderName();
 
-    public abstract void navigate(JIPipeWorkbench workbench);
+    Icon renderIcon();
 }

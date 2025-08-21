@@ -13,6 +13,9 @@
 
 package org.hkijena.jipipe.desktop.app.grapheditor.flavors.pipeline.actions;
 
+import org.hkijena.jipipe.api.environments.JIPipeArtifactEnvironment;
+import org.hkijena.jipipe.api.environments.JIPipeEnvironmentReference;
+import org.hkijena.jipipe.api.nodes.JIPipeGraphNode;
 import org.hkijena.jipipe.api.project.JIPipeProject;
 import org.hkijena.jipipe.api.validation.JIPipeValidationReport;
 import org.hkijena.jipipe.api.validation.contexts.UnspecifiedValidationReportContext;
@@ -26,6 +29,11 @@ import org.hkijena.jipipe.desktop.app.quickrun.JIPipeDesktopQuickRunSettings;
 import org.hkijena.jipipe.plugins.settings.JIPipeRuntimeApplicationSettings;
 import org.hkijena.jipipe.utils.ui.JIPipeDesktopDockPanel;
 
+import java.util.ArrayList;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Set;
+
 public class JIPipeDesktopPipelineGraphEditorRunManager extends JIPipeDesktopGraphEditorRunManager {
 
     public JIPipeDesktopPipelineGraphEditorRunManager(JIPipeProject project, JIPipeDesktopGraphCanvasUI canvasUI, JIPipeDesktopGraphNodeUI nodeUI, JIPipeDesktopDockPanel dockPanel, boolean allowChangePanels) {
@@ -35,6 +43,19 @@ public class JIPipeDesktopPipelineGraphEditorRunManager extends JIPipeDesktopGra
     @Override
     protected void createValidationReport(JIPipeValidationReport report) {
         getProject().reportValidity(new UnspecifiedValidationReportContext(), report, getNodeUI().getNode());
+
+        // Check environments
+        Set<JIPipeArtifactEnvironment> checkedEnvironments = new HashSet<>();
+        List<JIPipeEnvironmentReference<?>> allEnvironmentReferences = new ArrayList<>();
+        for (JIPipeGraphNode node : getProject().getGraph().getGraphNodes()) {
+            node.getEnvironmentDependencies(allEnvironmentReferences);
+        }
+        for (JIPipeEnvironmentReference<?> environmentReference : allEnvironmentReferences) {
+            if (!checkedEnvironments.contains(environmentReference.getEnvironment())) {
+                environmentReference.reportValidity(new UnspecifiedValidationReportContext(), report);
+                checkedEnvironments.add((JIPipeArtifactEnvironment) environmentReference.getEnvironment());
+            }
+        }
     }
 
     @Override

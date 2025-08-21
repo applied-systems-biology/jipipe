@@ -13,14 +13,20 @@
 
 package org.hkijena.jipipe.api.environments;
 
+import org.hkijena.jipipe.JIPipe;
 import org.hkijena.jipipe.api.nodes.JIPipeGraphNode;
+import org.hkijena.jipipe.api.parameters.JIPipeParameterTypeInfo;
 import org.hkijena.jipipe.api.project.JIPipeProject;
+import org.hkijena.jipipe.api.validation.*;
+import org.hkijena.jipipe.api.validation.contexts.GraphNodeValidationReportContext;
+import org.hkijena.jipipe.api.validation.contexts.ProjectSettingsValidationReportContext;
+import org.hkijena.jipipe.api.validation.contexts.UnspecifiedValidationReportContext;
 import org.hkijena.jipipe.plugins.parameters.api.optional.OptionalParameter;
 
 /**
  * Helper class that contains a JIPipeEnvironment together with information about its source
  */
-public class JIPipeEnvironmentReference<T extends JIPipeEnvironment> {
+public class JIPipeEnvironmentReference<T extends JIPipeEnvironment> implements JIPipeValidatable {
     private final T environment;
     private final SourceType sourceType;
     private final Object source;
@@ -50,6 +56,38 @@ public class JIPipeEnvironmentReference<T extends JIPipeEnvironment> {
 
     public Object getSource() {
         return source;
+    }
+
+    @Override
+    public void reportValidity(JIPipeValidationReportContext reportContext, JIPipeValidationReport report) {
+         if(!getEnvironment().generateValidityReport(new UnspecifiedValidationReportContext()).isValid()) {
+                JIPipeParameterTypeInfo info = JIPipe.getParameterTypes().getInfoByFieldClass(getEnvironment().getClass());
+                switch (getSourceType()){
+                    case SourceType.Application -> {
+                        report.add(new JIPipeValidationReportEntry(JIPipeValidationReportEntryLevel.Error,
+                                new UnspecifiedValidationReportContext(),
+                                "Misconfigured environment",
+                                "An application-wide environment of the type '" + info.getName() + "' is invalid. The project cannot to be run.",
+                                "Please go into the JIPipe application settings and find the configuration for '" + info.getName() + "'. Ensure that the environment is correctly configured."));
+                    }
+                    case SourceType.Project -> {
+                        var context = getSource() instanceof JIPipeProject ? new ProjectSettingsValidationReportContext((JIPipeProject)getSource()) : new UnspecifiedValidationReportContext();
+                        report.add(new JIPipeValidationReportEntry(JIPipeValidationReportEntryLevel.Error,
+                                context,
+                                "Misconfigured environment",
+                                "A project environment of the type '" + info.getName() + "' is invalid. The project cannot to be run.",
+                                "Please go to Project > Project settings and find the configuration for '" + info.getName() + "'. Ensure that the environment is correctly configured."));
+                    }
+                    case SourceType.Node -> {
+                        var context = getSource() instanceof JIPipeGraphNode ? new GraphNodeValidationReportContext((JIPipeGraphNode)getSource()) : new UnspecifiedValidationReportContext();
+                        report.add(new JIPipeValidationReportEntry(JIPipeValidationReportEntryLevel.Error,
+                                context,
+                                "Misconfigured environment",
+                                "A project environment of the type '" + info.getName() + "' is invalid. The project cannot to be run.",
+                                "Please go to Project > Project settings and find the configuration for '" + info.getName() + "'. Ensure that the environment is correctly configured."));
+                    }
+                }
+            }
     }
 
     public enum SourceType {

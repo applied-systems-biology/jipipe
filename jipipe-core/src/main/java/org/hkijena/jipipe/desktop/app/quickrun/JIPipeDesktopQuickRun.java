@@ -17,6 +17,8 @@ import org.hkijena.jipipe.api.DefaultJIPipeRunnable;
 import org.hkijena.jipipe.api.JIPipeProgressInfo;
 import org.hkijena.jipipe.api.data.JIPipeDataSlot;
 import org.hkijena.jipipe.api.data.JIPipeDataTable;
+import org.hkijena.jipipe.api.environments.JIPipeArtifactEnvironment;
+import org.hkijena.jipipe.api.environments.JIPipeEnvironmentReference;
 import org.hkijena.jipipe.api.grouping.JIPipeGraphWrapperAlgorithm;
 import org.hkijena.jipipe.api.nodes.JIPipeAlgorithm;
 import org.hkijena.jipipe.api.nodes.JIPipeGraphNode;
@@ -253,6 +255,21 @@ public class JIPipeDesktopQuickRun extends DefaultJIPipeRunnable implements JIPi
         for (JIPipeGraphNode targetNodeCopy : targetNodeCopies) {
             targetNodeCopy.reportValidity(reportContext, report);
         }
+
+        // Check environments
+        Set<JIPipeArtifactEnvironment> checkedEnvironments = new HashSet<>();
+        List<JIPipeEnvironmentReference<?>> allEnvironmentReferences = new ArrayList<>();
+        for (JIPipeGraphNode node : targetNodeCopies) {
+            node.getEnvironmentDependencies(allEnvironmentReferences);
+        }
+        for (JIPipeEnvironmentReference<?> environmentReference : allEnvironmentReferences) {
+            if(!checkedEnvironments.contains(environmentReference.getEnvironment())) {
+                environmentReference.reportValidity(reportContext, report);
+                checkedEnvironments.add((JIPipeArtifactEnvironment) environmentReference.getEnvironment());
+            }
+        }
+
+
     }
 
     @Override

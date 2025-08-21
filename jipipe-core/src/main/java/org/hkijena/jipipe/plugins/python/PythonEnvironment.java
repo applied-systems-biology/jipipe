@@ -145,6 +145,7 @@ public class PythonEnvironment extends JIPipeArtifactEnvironment {
 
     @Override
     public void reportValidity(JIPipeValidationReportContext reportContext, JIPipeValidationReport report) {
+        super.reportValidity(reportContext, report);
         if (!isLoadFromArtifact()) {
             if (StringUtils.isNullOrEmpty(getExecutablePath()) || !Files.isRegularFile(getAbsoluteExecutablePath())) {
                 report.add(new JIPipeValidationReportEntry(JIPipeValidationReportEntryLevel.Error, reportContext,
