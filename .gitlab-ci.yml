@@ -44,7 +44,8 @@ upload_to_package_registry:
     # Locate the snapshot output dir restored from artifacts
     - OUTDIR="$(ls -d jipipe-distribution-files/*-snapshot${CI_PIPELINE_IID} | head -n 1)"
     - test -n "$OUTDIR" || { echo "Snapshot outdir not found"; ls -lah jipipe-distribution-files || true; exit 1; }
-    # Find a filename that contains "...-snapshot${IID}..."
+
+    # Infer version from a file like JIPipe-6.0.0-snapshot${IID}.zip
     - ONE="$(ls "$OUTDIR"/JIPipe-*-snapshot${CI_PIPELINE_IID}.zip 2>/dev/null | head -n1 || true)"
     - |
       if [ -z "$ONE" ]; then
@@ -52,20 +53,27 @@ upload_to_package_registry:
         ls -lah "$OUTDIR"
         exit 1
       fi
-    # Extract base version (e.g., 6.0.0) from "JIPipe-6.0.0-snapshot${IID}.zip"
     - BASE="$(basename "$ONE")"
     - BASE="${BASE#JIPipe-}"
     - VERSION_BASE="${BASE%-snapshot${CI_PIPELINE_IID}.zip}"
     - VERSION="${VERSION_BASE}-snapshot${CI_PIPELINE_IID}"
     - PKG="jipipe"
     - echo "Publishing $OUTDIR as $PKG/$VERSION"
-    # Optional: write a URL manifest
     - echo "# JIPipe $VERSION download URLs" > "urls-${VERSION}.txt"
-    # Upload every artifact file in the snapshot folder
+
+    # Build list of files (POSIX trick: if no match, the literal pattern remains)
+    - set -- "$OUTDIR"/JIPipe-*
+    - |
+      if [ "$1" = "$OUTDIR"/JIPipe-* ]; then
+        echo "No JIPipe-* files found in $OUTDIR"
+        ls -lah "$OUTDIR"
+        exit 1
+      fi
+
+    # Upload each file to the Generic Package Registry
     - BASE_API="$CI_API_V4_URL/projects/$CI_PROJECT_ID/packages/generic/$PKG/$VERSION"
     - |
-      shopt -s nullglob
-      for f in "$OUTDIR"/JIPipe-*; do
+      for f in "$@"; do
         name="$(basename "$f")"
         echo "Uploading $name …"
         curl --retry 3 --fail -sS \
@@ -74,8 +82,10 @@ upload_to_package_registry:
           "$BASE_API/$name"
         echo "$BASE_API/$name" >> "urls-${VERSION}.txt"
       done
+    - echo "Done. URLs written to urls-${VERSION}.txt"
   artifacts:
     when: always
     expire_in: 3 months
     paths:
       - urls-*.txt
+
