@@ -17,6 +17,12 @@ See the LICENSE file provided with the code for the full license.
 
 [![](https://github.com/applied-systems-biology/jipipe/actions/workflows/build-main.yml/badge.svg)](https://github.com/applied-systems-biology/jipipe/actions/workflows/build-main.yml)
 
+## Downloading JIPipe
+
+You can find the latest release of JIPipe by visiting https://jipipe.hki-jena.de/download/
+
+We also provide snapshot builds that are created directly on the master branch: https://asb-git.hki-jena.de/RGerst/jipipe/-/packages
+
 ## Project structure
 
 The project consists of following parts:
