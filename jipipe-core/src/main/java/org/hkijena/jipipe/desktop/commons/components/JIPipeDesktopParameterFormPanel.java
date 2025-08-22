@@ -241,6 +241,10 @@ public class JIPipeDesktopParameterFormPanel extends JIPipeDesktopFormPanel impl
         return new MarkdownText(markdownString.toString());
     }
 
+    public static boolean showDialog(JIPipeDesktopWorkbench desktopWorkbench, JIPipeParameterCollection parameterCollection, MarkdownText documentation, String title) {
+        return showDialog(desktopWorkbench, parameterCollection, documentation, title, JIPipeDesktopParameterFormPanel.DEFAULT_DIALOG_FLAGS);
+    }
+
     @Override
     public void dispose() {
         clear();

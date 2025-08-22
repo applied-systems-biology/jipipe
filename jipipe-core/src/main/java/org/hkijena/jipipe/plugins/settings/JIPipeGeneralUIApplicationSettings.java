@@ -140,7 +140,7 @@ public class JIPipeGeneralUIApplicationSettings extends JIPipeDefaultApplication
         this.maximizeWindows = maximizeWindows;
     }
 
-    @SetJIPipeDocumentation(name = "Theme", description = "The theme that is used for the user interface. Requires a restart to take effect.")
+    @SetJIPipeDocumentation(name = "Theme (requires restart)", description = "The theme that is used for the user interface. Requires a restart to take effect.")
     @JIPipeParameter("theme-v2")
     public JIPipeDesktopUITheme getTheme() {
         return theme;
@@ -210,7 +210,7 @@ public class JIPipeGeneralUIApplicationSettings extends JIPipeDefaultApplication
         return "General UI settings";
     }
 
-    @SetJIPipeDocumentation(name = "Theme style", description = "The style that is applied to modern themes (Metal and Native are not affected).")
+    @SetJIPipeDocumentation(name = "Theme style (requires restart)", description = "The style that is applied to modern themes (Metal and Native are not affected).")
     @JIPipeParameter("theme-style")
     public JIPipeModernThemeStyleParameter getThemeStyle() {
         return themeStyle;

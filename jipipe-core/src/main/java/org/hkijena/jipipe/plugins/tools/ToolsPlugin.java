@@ -52,6 +52,7 @@ public class ToolsPlugin extends JIPipePrepackagedDefaultJavaPlugin {
         registerMenuExtension(OpenImageJConsoleTool.class);
         registerMenuExtension(RestartJIPipeDesktopTool.class);
         registerMenuExtension(OpenImageJUpdateManagerTool.class);
+        registerMenuExtension(SetWindowSizeTool.class);
     }
 
     @Override
