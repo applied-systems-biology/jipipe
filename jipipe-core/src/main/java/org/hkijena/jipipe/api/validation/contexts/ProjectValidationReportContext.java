@@ -27,6 +27,11 @@ public class ProjectValidationReportContext extends JIPipeValidationReportContex
         this.project = project;
     }
 
+    public ProjectValidationReportContext(JIPipeValidationReportContext parent, JIPipeProject project) {
+        super(parent);
+        this.project = project;
+    }
+
     @Override
     public String renderName() {
         return "Project";
