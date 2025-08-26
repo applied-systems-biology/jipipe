@@ -65,7 +65,7 @@ public class JIPipeDesktopRecentProjectsMenu extends JMenu implements JIPipeRece
     private void openProjectSearch() {
         JDialog dialog = new JDialog(workbenchWindow);
         dialog.setTitle("Open project");
-        JIPipeDesktopRecentProjectsListPanel panel = new JIPipeDesktopRecentProjectsListPanel(workbenchWindow.getProjectUI());
+        JIPipeDesktopRecentProjectsListPanel panel = new JIPipeDesktopRecentProjectsListPanel(workbenchWindow.getProjectWorkbench());
         panel.getProjectOpenedEventEmitter().subscribeLambda((emitter, lambda) -> {
             dialog.setVisible(false);
         });

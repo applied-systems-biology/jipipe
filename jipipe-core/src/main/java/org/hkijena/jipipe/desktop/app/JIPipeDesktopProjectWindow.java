@@ -45,6 +45,7 @@ import org.hkijena.jipipe.plugins.parameters.library.markup.HTMLText;
 import org.hkijena.jipipe.plugins.settings.JIPipeFileChooserApplicationSettings;
 import org.hkijena.jipipe.plugins.settings.JIPipeGeneralUIApplicationSettings;
 import org.hkijena.jipipe.plugins.settings.JIPipeProjectDefaultsApplicationSettings;
+import org.hkijena.jipipe.utils.ArchiveUtils;
 import org.hkijena.jipipe.utils.PathUtils;
 import org.hkijena.jipipe.utils.StringUtils;
 import org.hkijena.jipipe.utils.UIUtils;
@@ -68,7 +69,7 @@ public class JIPipeDesktopProjectWindow extends JFrame {
     private static final Set<JIPipeDesktopProjectWindow> OPEN_WINDOWS = new HashSet<>();
     private final Context context;
     private JIPipeProject project;
-    private JIPipeDesktopProjectWorkbench projectUI;
+    private JIPipeDesktopProjectWorkbench projectWorkbench;
     private Path projectSavePath;
     private UUID sessionId = UUID.randomUUID();
     private List<BalloonTip> registeredBalloons = new ArrayList<>();
@@ -164,7 +165,7 @@ public class JIPipeDesktopProjectWindow extends JFrame {
         updateTitle();
         setIconImage(UIUtils.getJIPipeIcon128());
         UIUtils.setToAskOnClose(this, () -> {
-            if (projectUI != null && projectUI.isProjectModified()) {
+            if (projectWorkbench != null && projectWorkbench.isProjectModified()) {
                 return "Do you really want to close JIPipe?\nThere are some unsaved changes.";
             } else {
                 return "Do you really want to close JIPipe?";
@@ -176,7 +177,7 @@ public class JIPipeDesktopProjectWindow extends JFrame {
     }
 
     private void unloadProject() {
-        projectUI.unload();
+        projectWorkbench.unload();
     }
 
     @Override
@@ -196,9 +197,9 @@ public class JIPipeDesktopProjectWindow extends JFrame {
      */
     public void loadProject(JIPipeProject project, boolean showIntroduction, boolean isNewProject) {
         this.project = project;
-        this.projectUI = new JIPipeDesktopProjectWorkbench(this, context, project, showIntroduction, isNewProject);
+        this.projectWorkbench = new JIPipeDesktopProjectWorkbench(this, context, project, showIntroduction, isNewProject);
         this.sessionId = UUID.randomUUID();
-        setContentPane(projectUI);
+        setContentPane(projectWorkbench);
     }
 
     /**
@@ -212,14 +213,14 @@ public class JIPipeDesktopProjectWindow extends JFrame {
             return;
         window.projectSavePath = null;
         window.updateTitle();
-        window.getProjectUI().sendStatusBarText("Created new project");
+        window.getProjectWorkbench().sendStatusBarText("Created new project");
     }
 
     /**
      * Creates a new project from template
      */
     public void newProjectFromTemplate() {
-        JIPipeDesktopJIPipeTemplateSelectionUI dialog = new JIPipeDesktopJIPipeTemplateSelectionUI(projectUI, this);
+        JIPipeDesktopJIPipeTemplateSelectionUI dialog = new JIPipeDesktopJIPipeTemplateSelectionUI(projectWorkbench, this);
         dialog.setLocationRelativeTo(this);
         dialog.setVisible(true);
         if (dialog.getSelectedTemplate() != null) {
@@ -251,7 +252,7 @@ public class JIPipeDesktopProjectWindow extends JFrame {
                         break;
                     case JOptionPane.YES_OPTION:
                         loadZipTarget = JIPipeDesktop.saveDirectory(this,
-                                getProjectUI(),
+                                getProjectWorkbench(),
                                 JIPipeFileChooserApplicationSettings.LastDirectoryKey.Projects,
                                 "Load template: Choose an empty directory", HTMLText.EMPTY);
                         break;
@@ -278,7 +279,7 @@ public class JIPipeDesktopProjectWindow extends JFrame {
                     });
                 }
             });
-            JIPipeDesktopRunExecuteUI.runInDialog(projectUI, this, run);
+            JIPipeDesktopRunExecuteUI.runInDialog(projectWorkbench, this, run);
         } else {
             try {
                 JIPipeValidationReport report = new JIPipeValidationReport();
@@ -289,9 +290,9 @@ public class JIPipeDesktopProjectWindow extends JFrame {
                     return;
                 window.projectSavePath = null;
                 window.updateTitle();
-                window.getProjectUI().sendStatusBarText("Created new project");
+                window.getProjectWorkbench().sendStatusBarText("Created new project");
                 if (!notifications.isEmpty()) {
-                    UIUtils.openNotificationsDialog(window.getProjectUI(), this, notifications, "Potential issues found", "There seem to be potential issues that might prevent the successful execution of the pipeline. Please review the following entries and resolve the issues if possible.", true);
+                    UIUtils.openNotificationsDialog(window.getProjectWorkbench(), this, notifications, "Potential issues found", "There seem to be potential issues that might prevent the successful execution of the pipeline. Please review the following entries and resolve the issues if possible.", true);
                 }
                 if (!report.isValid()) {
                     UIUtils.showValidityReportDialog(new JIPipeDesktopDummyWorkbench(), this, report, "Errors while loading the project", "It seems that not all parameters/nodes/connections could be restored from the project file. The cause might be that you are using a version of JIPipe that changed the affected features. " +
@@ -307,14 +308,14 @@ public class JIPipeDesktopProjectWindow extends JFrame {
      * Updates the title based on the current state
      */
     public void updateTitle() {
-        if (projectUI == null) {
+        if (projectWorkbench == null) {
             setTitle("JIPipe");
             return;
         }
         if (projectSavePath == null) {
-            setTitle("JIPipe - New project" + (projectUI.isProjectModified() ? "*" : ""));
+            setTitle("JIPipe - New project" + (projectWorkbench.isProjectModified() ? "*" : ""));
         } else {
-            setTitle("JIPipe - " + projectSavePath + (projectUI.isProjectModified() ? "*" : ""));
+            setTitle("JIPipe - " + projectSavePath + (projectWorkbench.isProjectModified() ? "*" : ""));
         }
     }
 
@@ -352,7 +353,7 @@ public class JIPipeDesktopProjectWindow extends JFrame {
                 }
                 Set<JIPipeDependency> missingDependencies = JIPipePluginRegistry.findUnsatisfiedDependencies(dependencySet);
                 if (!missingDependencies.isEmpty() || !missingUpdateSites.isEmpty()) {
-                    if (!JIPipeDesktopInvalidProjectDependenciesInfoDialog.showDialog(getProjectUI(), path, missingDependencies))
+                    if (!JIPipeDesktopInvalidProjectDependenciesInfoDialog.showDialog(getProjectWorkbench(), path, missingDependencies))
                         return;
                 }
 
@@ -393,11 +394,11 @@ public class JIPipeDesktopProjectWindow extends JFrame {
                                 if (window == null)
                                     return;
                                 window.projectSavePath = path;
-                                window.getProjectUI().sendStatusBarText("Opened project from " + window.projectSavePath);
+                                window.getProjectWorkbench().sendStatusBarText("Opened project from " + window.projectSavePath);
                                 window.updateTitle();
                                 JIPipe.getInstance().getRecentProjectsRegistry().add(path);
                                 if (!notifications.isEmpty()) {
-                                    UIUtils.openNotificationsDialog(window.getProjectUI(),
+                                    UIUtils.openNotificationsDialog(window.getProjectWorkbench(),
                                             currentWindow,
                                             notifications,
                                             "Potential issues found",
@@ -411,7 +412,7 @@ public class JIPipeDesktopProjectWindow extends JFrame {
                         }
                     }
                 };
-                JIPipeDesktopRunExecuteUI.runInDialog(projectUI, this, run, localQueue);
+                JIPipeDesktopRunExecuteUI.runInDialog(projectWorkbench, this, run, localQueue);
 
                 JIPipeFileChooserApplicationSettings.getInstance().setLastDirectoryBy(JIPipeFileChooserApplicationSettings.LastDirectoryKey.Projects, path.getParent());
             } catch (IOException e) {
@@ -431,7 +432,7 @@ public class JIPipeDesktopProjectWindow extends JFrame {
                 Set<JIPipeDependency> dependencySet = JIPipeProject.loadDependenciesFromJson(jsonData);
                 Set<JIPipeDependency> missingDependencies = JIPipePluginRegistry.findUnsatisfiedDependencies(dependencySet);
                 if (!missingDependencies.isEmpty()) {
-                    if (!JIPipeDesktopInvalidProjectDependenciesInfoDialog.showDialog(getProjectUI(), path, missingDependencies))
+                    if (!JIPipeDesktopInvalidProjectDependenciesInfoDialog.showDialog(getProjectWorkbench(), path, missingDependencies))
                         return;
                 }
 
@@ -443,7 +444,7 @@ public class JIPipeDesktopProjectWindow extends JFrame {
                 JIPipeFileChooserApplicationSettings.getInstance().setLastDirectoryBy(JIPipeFileChooserApplicationSettings.LastDirectoryKey.Projects, path);
 
                 window.projectSavePath = path.resolve("project.jip");
-                window.getProjectUI().sendStatusBarText("Opened project from " + window.projectSavePath);
+                window.getProjectWorkbench().sendStatusBarText("Opened project from " + window.projectSavePath);
                 window.updateTitle();
 
                 JIPipe.getInstance().getRecentProjectsRegistry().add(path);
@@ -461,18 +462,18 @@ public class JIPipeDesktopProjectWindow extends JFrame {
 
                 if (selectedOption == JOptionPane.YES_OPTION) {
                     // Create a new tab
-                    window.getProjectUI().getDocumentTabPane().addTab("Results",
+                    window.getProjectWorkbench().getDocumentTabPane().addTab("Results",
                             JIPipe.RESOURCES.getIcon16("actions/document-open-folder.png"),
-                            new JIPipeDesktopResultUI(window.projectUI, project, path),
+                            new JIPipeDesktopResultUI(window.projectWorkbench, project, path),
                             JIPipeDesktopTabPane.CloseMode.withAskOnCloseButton,
                             true);
-                    window.getProjectUI().getDocumentTabPane().switchToLastTab();
+                    window.getProjectWorkbench().getDocumentTabPane().switchToLastTab();
                 } else if (selectedOption == JOptionPane.NO_OPTION) {
                     // Load into cache with a run
-                    JIPipeDesktopRunExecuteUI.runInDialog(projectUI, this, new JIPipeDesktopLoadResultDirectoryIntoCacheRun(projectUI, project, path, true));
+                    JIPipeDesktopRunExecuteUI.runInDialog(projectWorkbench, this, new JIPipeDesktopLoadResultDirectoryIntoCacheRun(projectWorkbench, project, path, true));
                 }
                 if (!notifications.isEmpty()) {
-                    UIUtils.openNotificationsDialog(window.getProjectUI(), this, notifications, "Potential issues found", "There seem to be potential issues that might prevent the successful execution of the pipeline. Please review the following entries and resolve the issues if possible.", true);
+                    UIUtils.openNotificationsDialog(window.getProjectWorkbench(), this, notifications, "Potential issues found", "There seem to be potential issues that might prevent the successful execution of the pipeline. Please review the following entries and resolve the issues if possible.", true);
                 }
             } catch (IOException e) {
                 throw new RuntimeException(e);
@@ -495,7 +496,7 @@ public class JIPipeDesktopProjectWindow extends JFrame {
      */
     public void openProject() {
         Path file = JIPipeDesktop.openFile(this,
-                getProjectUI(),
+                getProjectWorkbench(),
                 JIPipeFileChooserApplicationSettings.LastDirectoryKey.Projects,
                 "Open JIPipe project (*.jip)",
                 HTMLText.EMPTY, PathUtils.EXTENSION_FILTER_JIP);
@@ -509,7 +510,7 @@ public class JIPipeDesktopProjectWindow extends JFrame {
      */
     public void openProjectAndOutput() {
         Path file = JIPipeDesktop.openDirectory(this,
-                getProjectUI(),
+                getProjectWorkbench(),
                 JIPipeFileChooserApplicationSettings.LastDirectoryKey.Projects,
                 "Open JIPipe output folder", HTMLText.EMPTY);
         if (file != null) {
@@ -529,7 +530,7 @@ public class JIPipeDesktopProjectWindow extends JFrame {
             savePath = projectSavePath;
         if (savePath == null) {
             savePath = JIPipeDesktop.saveFile(this,
-                    getProjectUI(),
+                    getProjectWorkbench(),
                     JIPipeFileChooserApplicationSettings.LastDirectoryKey.Projects,
                     "Save JIPipe project (*.jip)",
                     HTMLText.EMPTY, PathUtils.EXTENSION_FILTER_JIP);
@@ -540,7 +541,7 @@ public class JIPipeDesktopProjectWindow extends JFrame {
         try {
             Path tempFile = PathUtils.createSubTempFilePath(savePath.getParent(), savePath.getFileName().toString(), ".part");
             getProject().setWorkDirectory(savePath.getParent());
-            getProject().getAdditionalMetadata().put(JIPipeDesktopJIPipeProjectTabMetadata.METADATA_KEY, new JIPipeDesktopJIPipeProjectTabMetadata(getProjectUI()));
+            getProject().getAdditionalMetadata().put(JIPipeDesktopJIPipeProjectTabMetadata.METADATA_KEY, new JIPipeDesktopJIPipeProjectTabMetadata(getProjectWorkbench()));
             getProject().saveProject(tempFile, updateSavePath);
 
             // Check if the saved project can be loaded
@@ -556,14 +557,14 @@ public class JIPipeDesktopProjectWindow extends JFrame {
                 projectSavePath = savePath;
             }
             updateTitle();
-            projectUI.setProjectModified(false);
-            projectUI.sendStatusBarText("Saved project to " + savePath);
+            projectWorkbench.setProjectModified(false);
+            projectWorkbench.sendStatusBarText("Saved project to " + savePath);
             JIPipe.getInstance().getRecentProjectsRegistry().add(savePath);
 
             // Remove tmp file
             Files.delete(tempFile);
         } catch (IOException e) {
-            UIUtils.showErrorDialog(getProjectUI(), this, new JIPipeValidationRuntimeException(e,
+            UIUtils.showErrorDialog(getProjectWorkbench(), this, new JIPipeValidationRuntimeException(e,
                     "Error during saving!",
                     "While saving the project into '" + savePath + "'. Any existing file was not changed or overwritten." + " The issue cannot be determined. Please contact the JIPipe authors.",
                     "Please check if you have write access to the temporary directory and the target directory. " +
@@ -614,8 +615,8 @@ public class JIPipeDesktopProjectWindow extends JFrame {
     /**
      * @return The current project UI
      */
-    public JIPipeDesktopProjectWorkbench getProjectUI() {
-        return projectUI;
+    public JIPipeDesktopProjectWorkbench getProjectWorkbench() {
+        return projectWorkbench;
     }
 
     /**
@@ -629,7 +630,7 @@ public class JIPipeDesktopProjectWindow extends JFrame {
      * Saves the project and cache
      */
     public void saveProjectAndCacheToDirectory(String title, boolean addAsRecentProject) {
-        Path directory = JIPipeDesktop.saveDirectory(this, getProjectUI(), JIPipeFileChooserApplicationSettings.LastDirectoryKey.Projects, title, HTMLText.EMPTY);
+        Path directory = JIPipeDesktop.saveDirectory(this, getProjectWorkbench(), JIPipeFileChooserApplicationSettings.LastDirectoryKey.Projects, title, HTMLText.EMPTY);
         if (directory == null)
             return;
         try {
@@ -646,15 +647,15 @@ public class JIPipeDesktopProjectWindow extends JFrame {
         } catch (Exception e) {
             e.printStackTrace();
         }
-        JIPipeDesktopSaveProjectAndCacheToDirectoryRun run = new JIPipeDesktopSaveProjectAndCacheToDirectoryRun(projectUI, project, directory, addAsRecentProject);
-        JIPipeDesktopRunExecuteUI.runInDialog(projectUI, this, run);
+        JIPipeDesktopSaveProjectAndCacheToDirectoryRun run = new JIPipeDesktopSaveProjectAndCacheToDirectoryRun(projectWorkbench, project, directory, addAsRecentProject);
+        JIPipeDesktopRunExecuteUI.runInDialog(projectWorkbench, this, run);
     }
 
     /**
      * Saves the project and cache
      */
     public void saveProjectAndCacheToZIP(String title) {
-        Path file = JIPipeDesktop.saveFile(this, getProjectUI(), JIPipeFileChooserApplicationSettings.LastDirectoryKey.Projects, title, HTMLText.EMPTY, PathUtils.EXTENSION_FILTER_ZIP);
+        Path file = JIPipeDesktop.saveFile(this, getProjectWorkbench(), JIPipeFileChooserApplicationSettings.LastDirectoryKey.Projects, title, HTMLText.EMPTY, PathUtils.EXTENSION_FILTER_ZIP);
         if (file == null)
             return;
         if (Files.exists(file)) {
@@ -664,8 +665,8 @@ public class JIPipeDesktopProjectWindow extends JFrame {
                 e.printStackTrace();
             }
         }
-        JIPipeDesktopSaveProjectAndCacheToZipRun run = new JIPipeDesktopSaveProjectAndCacheToZipRun(projectUI, project, file);
-        JIPipeDesktopRunExecuteUI.runInDialog(projectUI, this, run);
+        JIPipeDesktopSaveProjectAndCacheToZipRun run = new JIPipeDesktopSaveProjectAndCacheToZipRun(projectWorkbench, project, file);
+        JIPipeDesktopRunExecuteUI.runInDialog(projectWorkbench, this, run);
     }
 
     public UUID getSessionId() {
@@ -674,5 +675,84 @@ public class JIPipeDesktopProjectWindow extends JFrame {
 
     public void registerBalloon(BalloonTip balloonTip) {
         this.registeredBalloons.add(balloonTip);
+    }
+
+    public JIPipeDesktopProjectWindow newProjectWindow() {
+        JIPipeProject project = getDefaultTemplateProject();
+        JIPipeDesktopProjectWindow window = newWindow(context, project, false, true);
+        window.projectSavePath = null;
+        window.updateTitle();
+        window.getProjectWorkbench().sendStatusBarText("Created new project");
+        return window;
+    }
+
+    public void importROCrate() {
+        var window = this;
+        Path projectPath = JIPipeDesktop.openFile(this, getProjectWorkbench(), JIPipeFileChooserApplicationSettings.LastDirectoryKey.Projects, "Import JIPipe Workflow RO-Crate",
+                new HTMLText("Please select a *.crate.zip file that was generated using JIPipe."),
+                PathUtils.EXTENSION_FILTER_WORKFLOW_RO_CRATE);
+        if(projectPath != null) {
+            String fileName = projectPath.getFileName().toString();
+            Path extractPath;
+
+            // Ask for a non-existing extract path
+            while(true) {
+                extractPath = JIPipeDesktop.saveDirectory(this, getProjectWorkbench(), projectPath.getParent().resolve(fileName.substring(0, fileName.length() - 4)), "Import JIPipe Workflow RO-Crate - Target directory",
+                        new HTMLText("Please confirm where the RO-Crate contents will be extracted."));
+                if(extractPath != null) {
+                    if(! PathUtils.isEmptyOrNonExistingDirectory(extractPath)) {
+                        JOptionPane.showMessageDialog(window,
+                                "The directory " + extractPath + " already exists or is non-empty. Please choose a different directory.",
+                                "Import JIPipe Workflow RO-Crate",
+                                JOptionPane.ERROR_MESSAGE);
+                    }
+                    else {
+                        break;
+                    }
+                }
+                else {
+                    break;
+                }
+            }
+
+            if(extractPath != null) {
+                Path finalExtractPath = extractPath;
+                JIPipeRunnableQueue localQueue = new JIPipeRunnableQueue("Project loading");
+                var run = new DefaultJIPipeRunnable() {
+                    @Override
+                    public void run() {
+                        getProgressInfo().log("Extracting to " + finalExtractPath);
+                        PathUtils.createDirectories(finalExtractPath);
+                        try {
+                            ArchiveUtils.decompressZipFile(projectPath, finalExtractPath, getProgressInfo().resolve("Extract archive"));
+                        } catch (IOException e) {
+                            throw new RuntimeException(e);
+                        }
+
+                        Path projectFile = finalExtractPath.resolve("project.jip");
+                        if(!Files.isRegularFile(projectFile)) {
+                            SwingUtilities.invokeLater(() -> {
+                                JOptionPane.showMessageDialog(window,
+                                        "Unable to find project.jip file inside the extracted files!",
+                                        "Import JIPipe Workflow RO-Crate",
+                                        JOptionPane.ERROR_MESSAGE);
+                            });
+                        }
+                        else {
+                            SwingUtilities.invokeLater(() -> {
+                                openProject(projectFile, false);
+                            });
+                        }
+                    }
+
+                    @Override
+                    public String getTaskLabel() {
+                        return "Extract RO-Crate";
+                    }
+                };
+
+                JIPipeDesktopRunExecuteUI.runInDialog(projectWorkbench, this, run, localQueue);
+            }
+        }
     }
 }

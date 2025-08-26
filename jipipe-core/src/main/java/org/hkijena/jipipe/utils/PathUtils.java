@@ -744,4 +744,24 @@ public class PathUtils {
             return path.getName(path.getNameCount() + i).toString();
         }
     }
+
+    public static boolean isEmptyOrNonExistingDirectory(Path path) {
+        // If it doesn't exist → "non-existing directory"
+        if (!Files.exists(path)) {
+            return true;
+        }
+
+        // If it exists but is not a directory → not considered "empty/non-existing"
+        if (!Files.isDirectory(path)) {
+            return false;
+        }
+
+        // If it’s a directory, check if it contains entries
+        try (DirectoryStream<Path> dirStream = Files.newDirectoryStream(path)) {
+            return !dirStream.iterator().hasNext(); // true if no entries
+        } catch (IOException e) {
+            // If we can’t read it, be conservative: assume it's not empty
+            return false;
+        }
+    }
 }

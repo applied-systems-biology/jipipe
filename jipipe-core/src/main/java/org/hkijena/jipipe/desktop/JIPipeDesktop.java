@@ -437,6 +437,46 @@ public class JIPipeDesktop {
     }
 
     /**
+     * Lets the user choose a directory
+     *
+     * @param parent      parent component
+     * @param workbench   the workbench
+     * @param currentPath         starting location/default value
+     * @param title       dialog title
+     * @param description optional description (only supported by specific file chooser types)
+     * @return selected directory or null if dialog was cancelled
+     */
+    public static Path saveDirectory(Component parent, JIPipeWorkbench workbench, Path currentPath, String title, HTMLText description) {
+        JIPipeFileChooserApplicationSettings instance = JIPipeFileChooserApplicationSettings.getInstance();
+        if (instance.getFileChooserType() == JIPipeFileChooserApplicationSettings.FileChooserType.Standard) {
+            JFileChooser fileChooser = new JFileChooser(currentPath.toFile());
+            fileChooser.setDialogTitle(title);
+            fileChooser.setFileSelectionMode(JFileChooser.DIRECTORIES_ONLY);
+            if (fileChooser.showSaveDialog(parent) == JFileChooser.APPROVE_OPTION) {
+                return fileChooser.getSelectedFile().toPath();
+            } else {
+                return null;
+            }
+        } else if (instance.getFileChooserType() == JIPipeFileChooserApplicationSettings.FileChooserType.AdvancedLegacy) {
+            JIPipeDesktopAdvancedFileChooser fileChooser = new JIPipeDesktopAdvancedFileChooser(currentPath.toFile());
+            fileChooser.setDialogTitle(title);
+            fileChooser.setFileSelectionMode(JFileChooser.DIRECTORIES_ONLY);
+            if (fileChooser.showSaveDialog(parent) == JFileChooser.APPROVE_OPTION) {
+                return fileChooser.getSelectedFile().toPath();
+            } else {
+                return null;
+            }
+        } else {
+            return JIPipeDesktopFileChooserNext.showDialogSingle(parent,
+                    workbench,
+                    title,
+                    description, currentPath,
+                    PathIOMode.Open,
+                    PathType.DirectoriesOnly);
+        }
+    }
+
+    /**
      * Lets the user choose multiple files
      *
      * @param parent      parent component

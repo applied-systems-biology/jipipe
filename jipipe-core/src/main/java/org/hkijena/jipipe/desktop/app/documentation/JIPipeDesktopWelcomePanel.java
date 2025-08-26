@@ -132,23 +132,35 @@ public class JIPipeDesktopWelcomePanel extends JIPipeDesktopProjectWorkbenchPane
         Color colorSuccess = ThemeUtils.getCurrentStyle().getSuccessColor();
         Color colorHover = new Color(0x4f9f4f);
 
-        JButton startNowButton = new JButton("Start building");
+        JButton startNowButton = new JButton("New project");
+        startNowButton.setToolTipText("Switches to an empty project");
         startNowButton.setBackground(colorSuccess);
         startNowButton.setForeground(Color.WHITE);
         startNowButton.setUI(new JIPipeDesktopRoundedButtonUI(8, colorHover, colorHover));
         startNowButton.setFont(new Font(Font.DIALOG, Font.PLAIN, ThemeUtils.getCurrentStyle().getFontSizeHuge()));
         startNowButton.setBorder(BorderFactory.createCompoundBorder(BorderFactory.createEmptyBorder(4, 4, 4, 4), BorderFactory.createEmptyBorder(16, 16, 16, 16)));
-        startNowButton.addActionListener(e -> doActionStartNow());
+        startNowButton.addActionListener(e -> doActionNewProject());
         actionPanel.add(startNowButton);
 
         actionPanel.add(Box.createHorizontalStrut(8));
 
-        JButton openButton = new JButton("Open a project");
-        openButton.setOpaque(false);
-        openButton.setFont(new Font(Font.DIALOG, Font.PLAIN, ThemeUtils.getCurrentStyle().getFontSizeHuge()));
-        openButton.setBorder(BorderFactory.createCompoundBorder(new RoundedLineBorder(new Color(0xabb8c3), 1, 8), BorderFactory.createEmptyBorder(12, 12, 12, 12)));
-        openButton.addActionListener(e -> doActionOpenProject());
-        actionPanel.add(openButton);
+        JButton openProjectButton = new JButton("Open project");
+        openProjectButton.setToolTipText("Opens a *.jip project file");
+        openProjectButton.setOpaque(false);
+        openProjectButton.setFont(new Font(Font.DIALOG, Font.PLAIN, ThemeUtils.getCurrentStyle().getFontSizeHuge()));
+        openProjectButton.setBorder(BorderFactory.createCompoundBorder(new RoundedLineBorder(new Color(0xabb8c3), 1, 8), BorderFactory.createEmptyBorder(12, 12, 12, 12)));
+        openProjectButton.addActionListener(e -> doActionOpenProject());
+        actionPanel.add(openProjectButton);
+
+        actionPanel.add(Box.createHorizontalStrut(8));
+
+        JButton openROCrateButton = new JButton("Import RO-Crate");
+        openROCrateButton.setToolTipText("Opens a *.crate.zip that contains a JIPipe workflow");
+        openROCrateButton.setOpaque(false);
+        openROCrateButton.setFont(new Font(Font.DIALOG, Font.PLAIN, ThemeUtils.getCurrentStyle().getFontSizeHuge()));
+        openROCrateButton.setBorder(BorderFactory.createCompoundBorder(new RoundedLineBorder(new Color(0xabb8c3), 1, 8), BorderFactory.createEmptyBorder(12, 12, 12, 12)));
+        openROCrateButton.addActionListener(e -> doActionImportROCrate());
+        actionPanel.add(openROCrateButton);
 
         actionPanel.setMaximumSize(new Dimension(Short.MAX_VALUE, 120));
 
@@ -156,12 +168,25 @@ public class JIPipeDesktopWelcomePanel extends JIPipeDesktopProjectWorkbenchPane
         heroPanel.add(actionPanel);
     }
 
+    private void doActionImportROCrate() {
+        getDesktopProjectWorkbench().getProjectWindow().importROCrate();
+    }
+
     private void doActionOpenProject() {
         getDesktopProjectWorkbench().getProjectWindow().openProject();
     }
 
-    private void doActionStartNow() {
-        JIPipeDesktopTabPane documentTabPane = getDesktopProjectWorkbench().getDocumentTabPane();
+    private void doActionNewProject() {
+
+        JIPipeDesktopProjectWorkbench workbench = getDesktopProjectWorkbench();
+
+        // Create a new window if our project already has something inside
+        if(!getProject().getGraph().getGraphNodes().isEmpty()) {
+            JIPipeDesktopProjectWindow window = getDesktopProjectWorkbench().getProjectWindow().newProjectWindow();
+            workbench = window.getProjectWorkbench();
+        }
+
+        JIPipeDesktopTabPane documentTabPane = workbench.getDocumentTabPane();
         documentTabPane.closeTab(documentTabPane.getSingletonTabInstances().get(JIPipeDesktopProjectWorkbench.TAB_INTRODUCTION));
 
         // Search for a compartment tab
@@ -173,7 +198,7 @@ public class JIPipeDesktopWelcomePanel extends JIPipeDesktopProjectWorkbenchPane
         }
 
         // No compartment found! Open a new one
-        JIPipeProject project = getDesktopProjectWorkbench().getProject();
+        JIPipeProject project = workbench.getProject();
         JIPipeProjectCompartment compartment;
         if (project.getCompartments().isEmpty()) {
             // Create a new one
@@ -181,7 +206,8 @@ public class JIPipeDesktopWelcomePanel extends JIPipeDesktopProjectWorkbenchPane
         } else {
             compartment = project.getCompartments().values().iterator().next();
         }
-        getDesktopProjectWorkbench().getOrOpenPipelineEditorTab(compartment, true);
+        workbench.getOrOpenPipelineEditorTab(compartment, true);
+
     }
 
     private void initializeHeroBottomPanel(JPanel heroPanel) {

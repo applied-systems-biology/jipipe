@@ -13,15 +13,20 @@
 
 package org.hkijena.jipipe.plugins.publish.rocrate;
 
+import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.dataformat.yaml.YAMLFactory;
 import org.hkijena.jipipe.JIPipe;
 import org.hkijena.jipipe.api.DefaultJIPipeRunnable;
 import org.hkijena.jipipe.api.metadata.JIPipeAuthorMetadata;
 import org.hkijena.jipipe.api.metadata.JIPipeOrganizationMetadata;
+import org.hkijena.jipipe.api.notifications.JIPipeNotificationInbox;
+import org.hkijena.jipipe.api.parameters.JIPipeDynamicParameterCollection;
 import org.hkijena.jipipe.api.project.JIPipeArchiveProjectToDirectoryRun;
 import org.hkijena.jipipe.api.project.JIPipeProject;
 import org.hkijena.jipipe.api.project.JIPipeProjectDirectories;
+import org.hkijena.jipipe.api.validation.JIPipeValidationReport;
+import org.hkijena.jipipe.api.validation.contexts.UnspecifiedValidationReportContext;
 import org.hkijena.jipipe.contrib.ro_crate.RoCrate;
 import org.hkijena.jipipe.contrib.ro_crate.entities.contextual.JsonDescriptor;
 import org.hkijena.jipipe.contrib.ro_crate.entities.contextual.OrganizationEntity;
@@ -75,7 +80,8 @@ public class CreateROCrateRun extends DefaultJIPipeRunnable {
 
         // Create the project archive
         createProjectArchive(tmpPath);
-        copyProjectDirectories(builder, tmpPath);
+        Map<String, String> projectDirectories = copyProjectDirectories(builder, tmpPath);
+        addProjectToROCrate(builder, tmpPath, projectDirectories);
 
         // Create CWL file
         createWorkflowCwl(tmpPath);
@@ -101,7 +107,37 @@ public class CreateROCrateRun extends DefaultJIPipeRunnable {
         PathUtils.deleteDirectoryRecursively(tmpPath, getProgressInfo().resolve("Cleanup"));
     }
 
-    private void copyProjectDirectories(RoCrate.RoCrateBuilder builder, Path tmpPath) {
+    private void addProjectToROCrate(RoCrate.RoCrateBuilder builder, Path tmpPath, Map<String, String> projectDirectories) {
+        try {
+            project.saveProject(tmpPath.resolve("project_.jip"), false);
+            JIPipeProject copyProject = new JIPipeProject();
+            copyProject.fromJson(JsonUtils.readFromFile(tmpPath.resolve("project_.jip"), JsonNode.class),
+                    new UnspecifiedValidationReportContext(),
+                    new JIPipeValidationReport(),
+                    new JIPipeNotificationInbox());
+
+            // Modify user directories
+            for (JIPipeDynamicParameterCollection parameterCollection : copyProject.getMetadata().getDirectories().getDirectories()) {
+                String key = StringUtils.nullToEmpty(parameterCollection.get("key").get(String.class));
+                String newValue = projectDirectories.getOrDefault(key, null);
+                if(newValue != null) {
+                    parameterCollection.setParameter("path", Path.of(newValue));
+                }
+            }
+
+            // Re-save project
+            copyProject.saveProject(tmpPath.resolve("project.jip"), false);
+            builder.addDataEntity(new FileEntity.FileEntityBuilder()
+                    .setId("./project.jip")
+                    .setLocation(tmpPath.resolve("project.jip"))
+                    .build());
+
+        } catch (IOException e) {
+            throw new RuntimeException(e);
+        }
+    }
+
+    private Map<String, String> copyProjectDirectories(RoCrate.RoCrateBuilder builder, Path tmpPath) {
         // Map that will be saved into project-directories.json
         Map<String, String> projectDirectoriesRedirect = new HashMap<>();
 
@@ -155,6 +191,8 @@ public class CreateROCrateRun extends DefaultJIPipeRunnable {
                 .setId("project-directories.json")
                 .setLocation(tmpPath.resolve("project-directories.json"))
                 .build());
+
+        return projectDirectoriesRedirect;
     }
 
     private void addROCrateMainEntity(RoCrate crate) {

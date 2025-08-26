@@ -168,7 +168,7 @@ public class JIPipeDesktopProjectWorkbench extends JPanel implements JIPipeDeskt
         if (project != null) {
             JIPipeDesktopProjectWindow window = JIPipeDesktopProjectWindow.getWindowFor(project);
             if (window != null) {
-                return window.getProjectUI();
+                return window.getProjectWorkbench();
             }
         }
         if (orElse instanceof JIPipeDesktopProjectWorkbench) {

@@ -124,7 +124,7 @@ public class JIPipeGUICommand implements Command {
                             JIPipe.getInstance().getProgressInfo().log("Notification was triggered: " + notification.toString());
                         }
 
-                        JIPipeDesktopWorkbenchNotificationInboxUI inboxUI = new JIPipeDesktopWorkbenchNotificationInboxUI(window.getProjectUI());
+                        JIPipeDesktopWorkbenchNotificationInboxUI inboxUI = new JIPipeDesktopWorkbenchNotificationInboxUI(window.getProjectWorkbench());
 
                         if (!inboxUI.isHasNotifications()) {
                             return;

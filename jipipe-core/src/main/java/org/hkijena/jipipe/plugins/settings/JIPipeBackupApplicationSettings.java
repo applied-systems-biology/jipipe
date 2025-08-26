@@ -70,7 +70,7 @@ public class JIPipeBackupApplicationSettings extends JIPipeDefaultApplicationsSe
         if (window.getProjectSavePath() != null) {
             name = window.getProjectSavePath().getFileName().toString();
         }
-        window.getProjectUI().getBackupQueue().cancelAll();
+        window.getProjectWorkbench().getBackupQueue().cancelAll();
         String finalName = name;
         JIPipeRunnable run = new DefaultJIPipeRunnable() {
             @Override
@@ -92,7 +92,7 @@ public class JIPipeBackupApplicationSettings extends JIPipeDefaultApplicationsSe
                     Path targetFile = directory.resolve(baseName + ".jip");
                     window.getProject().saveProject(targetFile, false);
 
-                    SwingUtilities.invokeLater(() -> window.getProjectUI().sendStatusBarText("Saved backup to " + targetFile));
+                    SwingUtilities.invokeLater(() -> window.getProjectWorkbench().sendStatusBarText("Saved backup to " + targetFile));
 
                     // Write storage info
                     JIPipeProjectBackupSessionInfo info = new JIPipeProjectBackupSessionInfo();
@@ -102,13 +102,13 @@ public class JIPipeBackupApplicationSettings extends JIPipeDefaultApplicationsSe
                     JsonUtils.saveToFile(info, directory.resolve("backup-info.json"));
 
                 } catch (IOException e) {
-                    SwingUtilities.invokeLater(() -> window.getProjectUI().sendStatusBarText("Failed to save backup: " + e.getMessage()));
+                    SwingUtilities.invokeLater(() -> window.getProjectWorkbench().sendStatusBarText("Failed to save backup: " + e.getMessage()));
                     IJ.handleException(e);
                     e.printStackTrace();
                 }
             }
         };
-        window.getProjectUI().getBackupQueue().enqueue(run);
+        window.getProjectWorkbench().getBackupQueue().enqueue(run);
     }
 
     public Path getCurrentBackupPath() {
