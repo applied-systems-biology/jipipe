@@ -29,6 +29,7 @@ import org.hkijena.jipipe.api.metadata.JIPipeOrganizationMetadata;
 import org.hkijena.jipipe.api.nodes.JIPipeGraphNode;
 import org.hkijena.jipipe.api.parameters.JIPipeParameterArchetype;
 import org.hkijena.jipipe.api.project.JIPipeProject;
+import org.hkijena.jipipe.api.validation.JIPipeValidationReportSettings;
 import org.hkijena.jipipe.api.validation.contexts.UnspecifiedValidationReportContext;
 import org.hkijena.jipipe.desktop.app.JIPipeDesktopWorkbench;
 import org.hkijena.jipipe.desktop.app.running.JIPipeDesktopRunExecuteUI;
@@ -112,7 +113,7 @@ public class IlastikPlugin extends JIPipePrepackagedDefaultJavaPlugin {
 
     public static void launchIlastik(JIPipeDesktopWorkbench workbench, List<String> arguments) {
         IlastikEnvironment environment = IlastikPlugin.getEnvironment(workbench.getProject(), null, null).getEnvironment();
-        if (!environment.generateValidityReport(new UnspecifiedValidationReportContext()).isValid()) {
+        if (!environment.generateValidityReport(new UnspecifiedValidationReportContext(), JIPipeValidationReportSettings.DEFAULT).isValid()) {
             JOptionPane.showMessageDialog(workbench.getWindow(),
                     "Ilastik is currently not correctly installed. Please check the project/application settings and ensure that Ilastik is setup correctly.",
                     "Launch Ilastik",

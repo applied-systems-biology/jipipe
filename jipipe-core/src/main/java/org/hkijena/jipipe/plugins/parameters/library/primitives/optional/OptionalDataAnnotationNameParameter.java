@@ -38,7 +38,7 @@ public class OptionalDataAnnotationNameParameter extends OptionalStringParameter
     }
 
     @Override
-    public void reportValidity(JIPipeValidationReportContext reportContext, JIPipeValidationReport report) {
+    public void reportValidity(JIPipeValidationReportContext reportContext, JIPipeValidationReportSettings reportSettings, JIPipeValidationReport report) {
         if (isEnabled()) {
             if (!StringUtils.isNullOrEmpty(getContent())) {
                 report.add(new JIPipeValidationReportEntry(JIPipeValidationReportEntryLevel.Warning,

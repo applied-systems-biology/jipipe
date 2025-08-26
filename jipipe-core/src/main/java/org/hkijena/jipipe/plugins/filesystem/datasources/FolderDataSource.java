@@ -25,10 +25,7 @@ import org.hkijena.jipipe.api.nodes.JIPipeGraphNodeRunContext;
 import org.hkijena.jipipe.api.nodes.JIPipeNodeInfo;
 import org.hkijena.jipipe.api.nodes.categories.DataSourceNodeTypeCategory;
 import org.hkijena.jipipe.api.parameters.JIPipeParameter;
-import org.hkijena.jipipe.api.validation.JIPipeValidationReport;
-import org.hkijena.jipipe.api.validation.JIPipeValidationReportContext;
-import org.hkijena.jipipe.api.validation.JIPipeValidationReportEntry;
-import org.hkijena.jipipe.api.validation.JIPipeValidationReportEntryLevel;
+import org.hkijena.jipipe.api.validation.*;
 import org.hkijena.jipipe.plugins.filesystem.JIPipeFilesystemPluginApplicationSettings;
 import org.hkijena.jipipe.plugins.filesystem.dataypes.FolderData;
 import org.hkijena.jipipe.plugins.parameters.library.filesystem.PathParameterSettings;
@@ -183,7 +180,7 @@ public class FolderDataSource extends JIPipeAlgorithm {
     }
 
     @Override
-    public void reportValidity(JIPipeValidationReportContext reportContext, JIPipeValidationReport report) {
+    public void reportValidity(JIPipeValidationReportContext reportContext, JIPipeValidationReportSettings reportSettings, JIPipeValidationReport report) {
         if (needsToExist && (folderPath == null || !Files.isDirectory(getAbsoluteFolderPath()))) {
             report.add(new JIPipeValidationReportEntry(JIPipeValidationReportEntryLevel.Warning,
                     reportContext,

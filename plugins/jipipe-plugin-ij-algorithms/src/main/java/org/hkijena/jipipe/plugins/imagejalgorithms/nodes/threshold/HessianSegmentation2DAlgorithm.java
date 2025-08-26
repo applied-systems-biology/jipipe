@@ -38,6 +38,7 @@ import org.hkijena.jipipe.api.parameters.JIPipeParameterAccess;
 import org.hkijena.jipipe.api.parameters.JIPipeParameterTree;
 import org.hkijena.jipipe.api.validation.JIPipeValidationReport;
 import org.hkijena.jipipe.api.validation.JIPipeValidationReportContext;
+import org.hkijena.jipipe.api.validation.JIPipeValidationReportSettings;
 import org.hkijena.jipipe.api.validation.contexts.ParameterValidationReportContext;
 import org.hkijena.jipipe.plugins.imagejalgorithms.parameters.EigenvalueSelection2D;
 import org.hkijena.jipipe.plugins.imagejdatatypes.datatypes.ImagePlusData;
@@ -210,8 +211,8 @@ public class HessianSegmentation2DAlgorithm extends JIPipeSimpleIteratingAlgorit
     }
 
     @Override
-    public void reportValidity(JIPipeValidationReportContext reportContext, JIPipeValidationReport report) {
-        super.reportValidity(reportContext, report);
+    public void reportValidity(JIPipeValidationReportContext reportContext, JIPipeValidationReportSettings reportSettings, JIPipeValidationReport report) {
+        super.reportValidity(reportContext, reportSettings, report);
         report.report(new ParameterValidationReportContext(this, "Auto thresholding", "auto-thresholding"), autoThresholding);
     }
 

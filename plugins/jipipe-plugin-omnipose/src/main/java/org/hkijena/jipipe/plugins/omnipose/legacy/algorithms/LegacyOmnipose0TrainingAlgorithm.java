@@ -542,8 +542,8 @@ public class LegacyOmnipose0TrainingAlgorithm extends JIPipeSingleIterationAlgor
     }
 
     @Override
-    public void reportValidity(JIPipeValidationReportContext reportContext, JIPipeValidationReport report) {
-        super.reportValidity(reportContext, report);
+    public void reportValidity(JIPipeValidationReportContext reportContext, JIPipeValidationReportSettings reportSettings, JIPipeValidationReport report) {
+        super.reportValidity(reportContext, reportSettings, report);
         if (!isPassThrough()) {
             reportConfiguredOmniposeEnvironmentValidity(reportContext, report);
         }

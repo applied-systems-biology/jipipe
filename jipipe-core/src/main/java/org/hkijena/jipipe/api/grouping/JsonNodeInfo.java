@@ -339,7 +339,7 @@ public class JsonNodeInfo extends AbstractJIPipeParameterCollection implements J
     }
 
     @Override
-    public void reportValidity(JIPipeValidationReportContext reportContext, JIPipeValidationReport report) {
+    public void reportValidity(JIPipeValidationReportContext reportContext, JIPipeValidationReportSettings reportSettings, JIPipeValidationReport report) {
         if (id == null || id.isEmpty()) {
             report.add(new JIPipeValidationReportEntry(JIPipeValidationReportEntryLevel.Error,
                     new JsonNodeInfoValidationReportContext(this),

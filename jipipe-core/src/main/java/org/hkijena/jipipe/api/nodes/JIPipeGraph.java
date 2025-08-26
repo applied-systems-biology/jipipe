@@ -1476,17 +1476,17 @@ public class JIPipeGraph implements JIPipeValidatable, JIPipeFunctionallyCompara
     }
 
     @Override
-    public void reportValidity(JIPipeValidationReportContext reportContext, JIPipeValidationReport report) {
+    public void reportValidity(JIPipeValidationReportContext reportContext, JIPipeValidationReportSettings reportSettings, JIPipeValidationReport report) {
         for (Map.Entry<UUID, JIPipeGraphNode> entry : nodeUUIDs.entrySet()) {
             JIPipeGraphNode node = entry.getValue();
-            if (node instanceof JIPipeAlgorithm) {
-                JIPipeAlgorithm algorithm = (JIPipeAlgorithm) node;
-                if (!algorithm.isEnabled() || (algorithm.canPassThrough() && algorithm.isPassThrough()) || algorithm.isSkipped())
+            if (node instanceof JIPipeAlgorithm algorithm) {
+                if (!algorithm.isEnabled() || (algorithm.canPassThrough() && algorithm.isPassThrough()) || algorithm.isSkipped()) {
                     continue;
+                }
             }
             report.report(new GraphNodeValidationReportContext(reportContext, node), node);
         }
-        if (!JIPipeRuntimeApplicationSettings.getInstance().isAllowSkipAlgorithmsWithoutInput()) {
+        if (reportSettings.isStrict() || !JIPipeRuntimeApplicationSettings.getInstance().isAllowSkipAlgorithmsWithoutInput()) {
             for (JIPipeDataSlot slot : graph.vertexSet()) {
                 if (!slot.getNode().getInfo().isRunnable())
                     continue;

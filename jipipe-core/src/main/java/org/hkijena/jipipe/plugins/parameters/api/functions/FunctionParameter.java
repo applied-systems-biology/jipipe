@@ -23,6 +23,7 @@ import com.fasterxml.jackson.databind.deser.ContextualDeserializer;
 import org.hkijena.jipipe.api.validation.JIPipeValidatable;
 import org.hkijena.jipipe.api.validation.JIPipeValidationReport;
 import org.hkijena.jipipe.api.validation.JIPipeValidationReportContext;
+import org.hkijena.jipipe.api.validation.JIPipeValidationReportSettings;
 import org.hkijena.jipipe.api.validation.contexts.CustomValidationReportContext;
 import org.hkijena.jipipe.plugins.parameters.api.pairs.PairParameter;
 import org.hkijena.jipipe.utils.json.JsonUtils;
@@ -70,7 +71,7 @@ public abstract class FunctionParameter<I, P, O> implements JIPipeValidatable {
 
 
     @Override
-    public void reportValidity(JIPipeValidationReportContext reportContext, JIPipeValidationReport report) {
+    public void reportValidity(JIPipeValidationReportContext reportContext, JIPipeValidationReportSettings reportSettings, JIPipeValidationReport report) {
         if (input instanceof JIPipeValidatable) {
             report.report(new CustomValidationReportContext(reportContext, "Input"), (JIPipeValidatable) input);
         }

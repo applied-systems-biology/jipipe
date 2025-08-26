@@ -104,8 +104,8 @@ public class TableToRectangularROIAlgorithm extends JIPipeSimpleIteratingAlgorit
     }
 
     @Override
-    public void reportValidity(JIPipeValidationReportContext reportContext, JIPipeValidationReport report) {
-        super.reportValidity(reportContext, report);
+    public void reportValidity(JIPipeValidationReportContext reportContext, JIPipeValidationReportSettings reportSettings, JIPipeValidationReport report) {
+        super.reportValidity(reportContext, reportSettings, report);
         report.report(new ParameterValidationReportContext(reportContext, this, "Column 'X1'", "column-x1"), columnX1);
         report.report(new ParameterValidationReportContext(reportContext, this, "Column 'Y1'", "column-y1"), columnY1);
 

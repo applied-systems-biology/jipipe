@@ -24,6 +24,7 @@ import org.hkijena.jipipe.api.run.JIPipeProjectRunSet;
 import org.hkijena.jipipe.api.run.JIPipeRunnable;
 import org.hkijena.jipipe.api.run.JIPipeRunnableQueue;
 import org.hkijena.jipipe.api.validation.JIPipeValidationReport;
+import org.hkijena.jipipe.api.validation.JIPipeValidationReportSettings;
 import org.hkijena.jipipe.api.validation.contexts.UnspecifiedValidationReportContext;
 import org.hkijena.jipipe.desktop.app.JIPipeDesktopProjectWorkbench;
 import org.hkijena.jipipe.desktop.app.JIPipeDesktopProjectWorkbenchAccess;
@@ -354,7 +355,7 @@ public class JIPipeDesktopRunNextWindow extends JFrame implements JIPipeDesktopP
 
     private void createValidationReport(JIPipeValidationReport report) {
         for (JIPipeAlgorithm node : nodes) {
-            node.reportValidity(new UnspecifiedValidationReportContext(), report);
+            node.reportValidity(new UnspecifiedValidationReportContext(), JIPipeValidationReportSettings.DEFAULT, report);
         }
     }
 

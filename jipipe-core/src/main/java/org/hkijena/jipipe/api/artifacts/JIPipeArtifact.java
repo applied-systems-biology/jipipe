@@ -282,7 +282,7 @@ public class JIPipeArtifact extends AbstractJIPipeParameterCollection implements
     }
 
     @Override
-    public void reportValidity(JIPipeValidationReportContext reportContext, JIPipeValidationReport report) {
+    public void reportValidity(JIPipeValidationReportContext reportContext, JIPipeValidationReportSettings reportSettings, JIPipeValidationReport report) {
         if (StringUtils.isNullOrEmpty(artifactId)) {
             report.report(new JIPipeValidationReportEntry(JIPipeValidationReportEntryLevel.Error, reportContext, "Invalid artifact ID", "The artifact ID cannot be empty!"));
         } else {

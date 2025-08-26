@@ -63,7 +63,7 @@ public class JsonExtensionRegistrationTask implements JIPipeValidatable {
     }
 
     @Override
-    public void reportValidity(JIPipeValidationReportContext reportContext, JIPipeValidationReport report) {
+    public void reportValidity(JIPipeValidationReportContext reportContext, JIPipeValidationReportSettings reportSettings, JIPipeValidationReport report) {
         for (String dependencyId : dependencyIds) {
             if (!registry.getRegisteredExtensionIds().contains(dependencyId)) {
                 report.add(new JIPipeValidationReportEntry(JIPipeValidationReportEntryLevel.Error,

@@ -144,7 +144,7 @@ public class JIPipeDesktopPlotSeriesEditor extends AbstractJIPipeParameterCollec
     }
 
     @Override
-    public void reportValidity(JIPipeValidationReportContext reportContext, JIPipeValidationReport report) {
+    public void reportValidity(JIPipeValidationReportContext reportContext, JIPipeValidationReportSettings reportSettings, JIPipeValidationReport report) {
         for (Map.Entry<String, JIPipeParameterAccess> entry : columnAssignments.getParameters().entrySet()) {
             JIPipeMutableParameterAccess parameterAccess = (JIPipeMutableParameterAccess) entry.getValue();
             UIPlotDataSeriesColumnEnum parameter = parameterAccess.get(UIPlotDataSeriesColumnEnum.class);

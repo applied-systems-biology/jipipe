@@ -37,7 +37,7 @@ public class JIPipeRegistryIssues implements JIPipeValidatable {
     private Map<String, JIPipeValidationReport> preActivationIssues = new HashMap<>();
 
     @Override
-    public void reportValidity(JIPipeValidationReportContext reportContext, JIPipeValidationReport report) {
+    public void reportValidity(JIPipeValidationReportContext reportContext, JIPipeValidationReportSettings reportSettings, JIPipeValidationReport report) {
         for (Map.Entry<String, JIPipeValidationReport> entry : preActivationIssues.entrySet()) {
             report.addAll(entry.getValue());
         }

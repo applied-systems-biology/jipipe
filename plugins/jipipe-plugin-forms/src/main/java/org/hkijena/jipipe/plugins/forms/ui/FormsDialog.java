@@ -21,6 +21,7 @@ import org.hkijena.jipipe.api.annotation.JIPipeTextAnnotationMergeMode;
 import org.hkijena.jipipe.api.data.JIPipeDataSlot;
 import org.hkijena.jipipe.api.nodes.iterationstep.JIPipeMultiIterationStep;
 import org.hkijena.jipipe.api.validation.JIPipeValidationReport;
+import org.hkijena.jipipe.api.validation.JIPipeValidationReportSettings;
 import org.hkijena.jipipe.api.validation.contexts.CustomValidationReportContext;
 import org.hkijena.jipipe.desktop.app.JIPipeDesktopWorkbench;
 import org.hkijena.jipipe.desktop.app.batchassistant.JIPipeDesktopDataBatchBrowserUI;
@@ -317,7 +318,7 @@ public class FormsDialog extends JFrame {
             if (formData instanceof ParameterFormData) {
                 name = ((ParameterFormData) formData).getName();
             }
-            formData.reportValidity(new CustomValidationReportContext(tab + " -> " + name + " (#" + row + ")"), report);
+            formData.reportValidity(new CustomValidationReportContext(tab + " -> " + name + " (#" + row + ")"), JIPipeValidationReportSettings.DEFAULT, report);
         }
         return report;
     }
@@ -329,7 +330,7 @@ public class FormsDialog extends JFrame {
                 JIPipeValidationReport report = new JIPipeValidationReport();
                 for (int row = 0; row < iterationStepForms.get(i).getRowCount(); row++) {
                     FormData formData = iterationStepForms.get(i).getData(row, FormData.class, progressInfo);
-                    formData.reportValidity(new CustomValidationReportContext("Form " + row), report);
+                    formData.reportValidity(new CustomValidationReportContext("Form " + row), JIPipeValidationReportSettings.DEFAULT, report);
                     if (!report.isValid()) {
                         iterationStepStatuses.set(i, DataBatchStatus.Invalid);
                         break;

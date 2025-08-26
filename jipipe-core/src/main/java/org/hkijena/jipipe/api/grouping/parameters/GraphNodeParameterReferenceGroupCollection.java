@@ -130,7 +130,7 @@ public class GraphNodeParameterReferenceGroupCollection extends AbstractJIPipePa
     }
 
     @Override
-    public void reportValidity(JIPipeValidationReportContext reportContext, JIPipeValidationReport report) {
+    public void reportValidity(JIPipeValidationReportContext reportContext, JIPipeValidationReportSettings reportSettings, JIPipeValidationReport report) {
         if (graph != null) {
             JIPipeParameterTree tree = graph.getParameterTree(false, null);
             for (GraphNodeParameterReferenceGroup parameterReferenceGroup : parameterReferenceGroups) {

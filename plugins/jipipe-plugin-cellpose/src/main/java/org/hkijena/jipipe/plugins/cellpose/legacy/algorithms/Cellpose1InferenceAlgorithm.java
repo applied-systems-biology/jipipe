@@ -216,8 +216,8 @@ public class Cellpose1InferenceAlgorithm extends JIPipeSingleIterationAlgorithm 
     }
 
     @Override
-    public void reportValidity(JIPipeValidationReportContext reportContext, JIPipeValidationReport report) {
-        super.reportValidity(reportContext, report);
+    public void reportValidity(JIPipeValidationReportContext reportContext, JIPipeValidationReportSettings reportSettings, JIPipeValidationReport report) {
+        super.reportValidity(reportContext, reportSettings, report);
         if (!isPassThrough()) {
             if (overrideEnvironment.isEnabled()) {
                 report.report(reportContext, overrideEnvironment.getContent());

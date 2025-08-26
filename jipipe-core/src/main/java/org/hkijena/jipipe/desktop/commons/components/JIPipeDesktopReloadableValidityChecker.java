@@ -16,6 +16,7 @@ package org.hkijena.jipipe.desktop.commons.components;
 import org.hkijena.jipipe.JIPipe;
 import org.hkijena.jipipe.api.validation.JIPipeValidatable;
 import org.hkijena.jipipe.api.validation.JIPipeValidationReport;
+import org.hkijena.jipipe.api.validation.JIPipeValidationReportSettings;
 import org.hkijena.jipipe.api.validation.contexts.UnspecifiedValidationReportContext;
 import org.hkijena.jipipe.desktop.app.JIPipeDesktopWorkbench;
 import org.hkijena.jipipe.desktop.app.JIPipeDesktopWorkbenchPanel;
@@ -76,7 +77,7 @@ public class JIPipeDesktopReloadableValidityChecker extends JIPipeDesktopWorkben
      */
     public void recheckValidity() {
         report.clear();
-        validatable.reportValidity(new UnspecifiedValidationReportContext(), report);
+        validatable.reportValidity(new UnspecifiedValidationReportContext(), JIPipeValidationReportSettings.DEFAULT, report);
         reportUI.setReport(report);
     }
 

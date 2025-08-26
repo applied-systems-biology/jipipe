@@ -15,6 +15,7 @@ package org.hkijena.jipipe.utils;
 
 import org.hkijena.jipipe.JIPipe;
 import org.hkijena.jipipe.api.JIPipeProgressInfo;
+import org.hkijena.jipipe.api.validation.JIPipeValidationReportSettings;
 import org.hkijena.jipipe.api.validation.JIPipeValidationRuntimeException;
 import org.hkijena.jipipe.api.validation.contexts.UnspecifiedValidationReportContext;
 import org.hkijena.jipipe.plugins.expressions.JIPipeExpressionVariablesMap;
@@ -56,7 +57,7 @@ public class WebUtils {
                 ex.printStackTrace();
             }
             if (settings != null) {
-                useExternalDownloader = settings.isPreferCustomDownloader() && settings.getExternalDownloaderProcess().generateValidityReport(new UnspecifiedValidationReportContext()).isValid();
+                useExternalDownloader = settings.isPreferCustomDownloader() && settings.getExternalDownloaderProcess().generateValidityReport(new UnspecifiedValidationReportContext(), JIPipeValidationReportSettings.DEFAULT).isValid();
                 try {
                     if (!useExternalDownloader) {
                         downloadNative(url, outputFile, label, progressInfo);

@@ -205,7 +205,7 @@ public class JFreeChartPlotEditor extends JIPipeDesktopWorkbenchPanel implements
     }
 
     @Override
-    public void reportValidity(JIPipeValidationReportContext reportContext, JIPipeValidationReport report) {
+    public void reportValidity(JIPipeValidationReportContext reportContext, JIPipeValidationReportSettings reportSettings, JIPipeValidationReport report) {
         if (getPlotType().getInfo() == null) {
             report.add(new JIPipeValidationReportEntry(JIPipeValidationReportEntryLevel.Error,
                     reportContext,
@@ -329,7 +329,7 @@ public class JFreeChartPlotEditor extends JIPipeDesktopWorkbenchPanel implements
             removeAll();
 
             JIPipeValidationReport report = new JIPipeValidationReport();
-            this.reportValidity(new UnspecifiedValidationReportContext(), report);
+            this.reportValidity(new UnspecifiedValidationReportContext(), JIPipeValidationReportSettings.DEFAULT, report);
             if (!report.isValid()) {
                 JIPipeDesktopUserFriendlyErrorUI errorUI = new JIPipeDesktopUserFriendlyErrorUI(getDesktopWorkbench(), null, JIPipeDesktopUserFriendlyErrorUI.WITH_SCROLLING);
                 errorUI.displayErrors(report);

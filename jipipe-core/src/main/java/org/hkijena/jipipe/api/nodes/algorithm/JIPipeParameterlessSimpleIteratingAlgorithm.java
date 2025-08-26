@@ -153,7 +153,7 @@ public abstract class JIPipeParameterlessSimpleIteratingAlgorithm extends JIPipe
     }
 
     @Override
-    public void reportValidity(JIPipeValidationReportContext reportContext, JIPipeValidationReport report) {
+    public void reportValidity(JIPipeValidationReportContext reportContext, JIPipeValidationReportSettings reportSettings, JIPipeValidationReport report) {
         if (getDataInputSlots().size() > 1) {
             report.add(new JIPipeValidationReportEntry(JIPipeValidationReportEntryLevel.Error, reportContext,
                     "Error in source code detected!",

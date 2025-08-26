@@ -13,6 +13,7 @@
 
 package org.hkijena.jipipe.plugins.omero;
 
+import org.hkijena.jipipe.api.validation.JIPipeValidationReportSettings;
 import org.hkijena.jipipe.api.validation.contexts.UnspecifiedValidationReportContext;
 import org.hkijena.jipipe.plugins.parameters.api.optional.OptionalParameter;
 
@@ -28,7 +29,7 @@ public class OptionalOMEROCredentialsEnvironment extends OptionalParameter<OMERO
 
     @Override
     public OMEROCredentialsEnvironment getContentOrDefault(OMEROCredentialsEnvironment defaultValue) {
-        if (getContent() != null && getContent().generateValidityReport(new UnspecifiedValidationReportContext()).isValid()) {
+        if (getContent() != null && getContent().generateValidityReport(new UnspecifiedValidationReportContext(), JIPipeValidationReportSettings.DEFAULT).isValid()) {
             return getContent();
         } else {
             return defaultValue;

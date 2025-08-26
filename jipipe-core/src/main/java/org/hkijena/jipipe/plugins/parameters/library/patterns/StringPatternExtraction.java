@@ -124,7 +124,7 @@ public class StringPatternExtraction implements Function<String, String>, JIPipe
     }
 
     @Override
-    public void reportValidity(JIPipeValidationReportContext reportContext, JIPipeValidationReport report) {
+    public void reportValidity(JIPipeValidationReportContext reportContext, JIPipeValidationReportSettings reportSettings, JIPipeValidationReport report) {
         switch (mode) {
             case SplitAndPick:
                 if (StringUtils.isNullOrEmpty(splitCharacter)) {

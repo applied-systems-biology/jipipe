@@ -59,8 +59,8 @@ public class JIPipeEnvironmentReference<T extends JIPipeEnvironment> implements 
     }
 
     @Override
-    public void reportValidity(JIPipeValidationReportContext reportContext, JIPipeValidationReport report) {
-         if(!getEnvironment().generateValidityReport(new UnspecifiedValidationReportContext()).isValid()) {
+    public void reportValidity(JIPipeValidationReportContext reportContext, JIPipeValidationReportSettings reportSettings, JIPipeValidationReport report) {
+         if(!getEnvironment().generateValidityReport(new UnspecifiedValidationReportContext(), reportSettings).isValid()) {
                 JIPipeParameterTypeInfo info = JIPipe.getParameterTypes().getInfoByFieldClass(getEnvironment().getClass());
                 switch (getSourceType()){
                     case SourceType.Application -> {

@@ -27,6 +27,7 @@ import org.hkijena.jipipe.api.parameters.JIPipeParameterTypeInfo;
 import org.hkijena.jipipe.api.validation.JIPipeValidatable;
 import org.hkijena.jipipe.api.validation.JIPipeValidationReport;
 import org.hkijena.jipipe.api.validation.JIPipeValidationReportContext;
+import org.hkijena.jipipe.api.validation.JIPipeValidationReportSettings;
 import org.hkijena.jipipe.api.validation.contexts.CustomValidationReportContext;
 import org.hkijena.jipipe.utils.json.JsonUtils;
 
@@ -83,7 +84,7 @@ public abstract class ListParameter<T> extends ArrayList<T> implements JIPipeVal
     }
 
     @Override
-    public void reportValidity(JIPipeValidationReportContext reportContext, JIPipeValidationReport report) {
+    public void reportValidity(JIPipeValidationReportContext reportContext, JIPipeValidationReportSettings reportSettings, JIPipeValidationReport report) {
         if (JIPipeValidatable.class.isAssignableFrom(contentClass)) {
             for (int i = 0; i < size(); i++) {
                 JIPipeValidatable validatable = (JIPipeValidatable) get(i);

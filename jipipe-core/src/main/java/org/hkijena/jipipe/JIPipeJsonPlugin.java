@@ -323,7 +323,7 @@ public class JIPipeJsonPlugin extends AbstractJIPipeParameterCollection implemen
     }
 
     @Override
-    public void reportValidity(JIPipeValidationReportContext reportContext, JIPipeValidationReport report) {
+    public void reportValidity(JIPipeValidationReportContext reportContext, JIPipeValidationReportSettings reportSettings, JIPipeValidationReport report) {
         if (StringUtils.isNullOrEmpty(getDependencyId())) {
             report.add(new JIPipeValidationReportEntry(JIPipeValidationReportEntryLevel.Error,
                     new ParameterValidationReportContext(reportContext, this, "Extension ID", "dependency-id"),

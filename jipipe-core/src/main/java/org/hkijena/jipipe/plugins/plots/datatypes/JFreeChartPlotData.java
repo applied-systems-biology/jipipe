@@ -457,7 +457,7 @@ public abstract class JFreeChartPlotData extends AbstractJIPipeParameterCollecti
     }
 
     @Override
-    public void reportValidity(JIPipeValidationReportContext reportContext, JIPipeValidationReport report) {
+    public void reportValidity(JIPipeValidationReportContext reportContext, JIPipeValidationReportSettings reportSettings, JIPipeValidationReport report) {
         if (exportWidth <= 0) {
             report.add(new JIPipeValidationReportEntry(JIPipeValidationReportEntryLevel.Error, reportContext, "Export width is too small!", "The export width must be at least 1"));
         }

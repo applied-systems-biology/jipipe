@@ -662,8 +662,8 @@ public class JIPipeProject implements JIPipeValidatable {
     }
 
     @Override
-    public void reportValidity(JIPipeValidationReportContext reportContext, JIPipeValidationReport report) {
-        graph.reportValidity(reportContext, report);
+    public void reportValidity(JIPipeValidationReportContext reportContext, JIPipeValidationReportSettings reportSettings, JIPipeValidationReport report) {
+        graph.reportValidity(reportContext, reportSettings, report);
 
         // Check environments
         Set<JIPipeArtifactEnvironment> checkedEnvironments = new HashSet<>();
@@ -673,7 +673,7 @@ public class JIPipeProject implements JIPipeValidatable {
         }
         for (JIPipeEnvironmentReference<?> environmentReference : allEnvironmentReferences) {
             if (!checkedEnvironments.contains(environmentReference.getEnvironment())) {
-                environmentReference.reportValidity(reportContext, report);
+                environmentReference.reportValidity(reportContext, reportSettings, report);
                 checkedEnvironments.add((JIPipeArtifactEnvironment) environmentReference.getEnvironment());
             }
         }

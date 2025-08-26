@@ -22,10 +22,7 @@ import org.hkijena.jipipe.api.environments.JIPipeArtifactEnvironment;
 import org.hkijena.jipipe.api.parameters.JIPipeParameter;
 import org.hkijena.jipipe.api.parameters.JIPipeParameterAccess;
 import org.hkijena.jipipe.api.parameters.JIPipeParameterTree;
-import org.hkijena.jipipe.api.validation.JIPipeValidationReport;
-import org.hkijena.jipipe.api.validation.JIPipeValidationReportContext;
-import org.hkijena.jipipe.api.validation.JIPipeValidationReportEntry;
-import org.hkijena.jipipe.api.validation.JIPipeValidationReportEntryLevel;
+import org.hkijena.jipipe.api.validation.*;
 import org.hkijena.jipipe.plugins.parameters.library.filesystem.PathParameterSettings;
 import org.hkijena.jipipe.plugins.settings.JIPipeFileChooserApplicationSettings;
 import org.hkijena.jipipe.utils.PathIOMode;
@@ -93,9 +90,9 @@ public abstract class PythonPackageLibraryEnvironment extends JIPipeArtifactEnvi
     }
 
     @Override
-    public void reportValidity(JIPipeValidationReportContext reportContext, JIPipeValidationReport report) {
+    public void reportValidity(JIPipeValidationReportContext reportContext, JIPipeValidationReportSettings reportSettings, JIPipeValidationReport report) {
         if (!isProvidedByEnvironment()) {
-            super.reportValidity(reportContext, report);
+            super.reportValidity(reportContext, reportSettings, report);
             if (!isLoadFromArtifact()) {
                 if (!Files.isDirectory(getAbsoluteLibraryDirectory())) {
                     report.add(new JIPipeValidationReportEntry(JIPipeValidationReportEntryLevel.Error,

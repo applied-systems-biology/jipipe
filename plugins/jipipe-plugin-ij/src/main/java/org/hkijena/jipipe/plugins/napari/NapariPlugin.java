@@ -22,6 +22,7 @@ import org.hkijena.jipipe.api.artifacts.JIPipeArtifact;
 import org.hkijena.jipipe.api.artifacts.JIPipeArtifactRepositoryInstallArtifactRun;
 import org.hkijena.jipipe.api.artifacts.JIPipeLocalArtifact;
 import org.hkijena.jipipe.api.artifacts.JIPipeRemoteArtifact;
+import org.hkijena.jipipe.api.validation.JIPipeValidationReportSettings;
 import org.hkijena.jipipe.api.validation.contexts.UnspecifiedValidationReportContext;
 import org.hkijena.jipipe.desktop.app.JIPipeDesktopWorkbench;
 import org.hkijena.jipipe.desktop.app.running.JIPipeDesktopRunExecuteUI;
@@ -58,7 +59,7 @@ public class NapariPlugin extends JIPipePrepackagedDefaultJavaPlugin {
 
     public static void launchNapari(JIPipeDesktopWorkbench workbench, List<String> arguments, JIPipeProgressInfo progressInfo, boolean interactive) {
         PythonEnvironment environment = getEnvironment();
-        if (!environment.generateValidityReport(new UnspecifiedValidationReportContext()).isValid()) {
+        if (!environment.generateValidityReport(new UnspecifiedValidationReportContext(), JIPipeValidationReportSettings.DEFAULT).isValid()) {
             if (interactive) {
                 JOptionPane.showMessageDialog(workbench.getWindow(),
                         "Napari is currently not correctly installed. Please check the project/application settings and ensure that Napari is setup correctly.",

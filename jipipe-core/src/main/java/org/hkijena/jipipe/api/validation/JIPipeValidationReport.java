@@ -46,7 +46,7 @@ public class JIPipeValidationReport extends ArrayList<JIPipeValidationReportEntr
      * @param validatable the validatable
      */
     public void report(JIPipeValidationReportContext context, JIPipeValidatable validatable) {
-        validatable.reportValidity(context, this);
+        validatable.reportValidity(context, JIPipeValidationReportSettings.DEFAULT, this);
     }
 
     /**

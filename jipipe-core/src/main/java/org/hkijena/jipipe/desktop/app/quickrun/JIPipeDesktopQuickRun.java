@@ -29,6 +29,7 @@ import org.hkijena.jipipe.api.runtimepartitioning.JIPipeRuntimePartition;
 import org.hkijena.jipipe.api.validation.JIPipeValidatable;
 import org.hkijena.jipipe.api.validation.JIPipeValidationReport;
 import org.hkijena.jipipe.api.validation.JIPipeValidationReportContext;
+import org.hkijena.jipipe.api.validation.JIPipeValidationReportSettings;
 import org.hkijena.jipipe.plugins.settings.JIPipeGeneralDataApplicationSettings;
 
 import java.util.*;
@@ -251,9 +252,9 @@ public class JIPipeDesktopQuickRun extends DefaultJIPipeRunnable implements JIPi
     }
 
     @Override
-    public void reportValidity(JIPipeValidationReportContext reportContext, JIPipeValidationReport report) {
+    public void reportValidity(JIPipeValidationReportContext reportContext, JIPipeValidationReportSettings reportSettings, JIPipeValidationReport report) {
         for (JIPipeGraphNode targetNodeCopy : targetNodeCopies) {
-            targetNodeCopy.reportValidity(reportContext, report);
+            targetNodeCopy.reportValidity(reportContext, reportSettings, report);
         }
 
         // Check environments
@@ -264,7 +265,7 @@ public class JIPipeDesktopQuickRun extends DefaultJIPipeRunnable implements JIPi
         }
         for (JIPipeEnvironmentReference<?> environmentReference : allEnvironmentReferences) {
             if(!checkedEnvironments.contains(environmentReference.getEnvironment())) {
-                environmentReference.reportValidity(reportContext, report);
+                environmentReference.reportValidity(reportContext, reportSettings, report);
                 checkedEnvironments.add((JIPipeArtifactEnvironment) environmentReference.getEnvironment());
             }
         }

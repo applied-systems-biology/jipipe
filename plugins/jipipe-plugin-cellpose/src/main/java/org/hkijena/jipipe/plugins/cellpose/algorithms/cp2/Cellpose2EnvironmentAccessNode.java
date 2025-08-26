@@ -16,10 +16,7 @@ package org.hkijena.jipipe.plugins.cellpose.algorithms.cp2;
 import org.hkijena.jipipe.api.environments.JIPipeEnvironmentReference;
 import org.hkijena.jipipe.api.nodes.JIPipeGraphNode;
 import org.hkijena.jipipe.api.project.JIPipeProject;
-import org.hkijena.jipipe.api.validation.JIPipeValidationReport;
-import org.hkijena.jipipe.api.validation.JIPipeValidationReportContext;
-import org.hkijena.jipipe.api.validation.JIPipeValidationReportEntry;
-import org.hkijena.jipipe.api.validation.JIPipeValidationReportEntryLevel;
+import org.hkijena.jipipe.api.validation.*;
 import org.hkijena.jipipe.plugins.cellpose.CellposePlugin;
 import org.hkijena.jipipe.plugins.python.OptionalPythonEnvironment;
 import org.hkijena.jipipe.plugins.python.PythonEnvironment;
@@ -52,7 +49,7 @@ public interface Cellpose2EnvironmentAccessNode {
      * @param report  the report
      */
     default void reportConfiguredCellposeEnvironmentValidity(JIPipeValidationReportContext context, JIPipeValidationReport report) {
-        if (!getConfiguredCellposeEnvironment().getEnvironment().generateValidityReport(context).isValid()) {
+        if (!getConfiguredCellposeEnvironment().getEnvironment().generateValidityReport(context, JIPipeValidationReportSettings.DEFAULT).isValid()) {
             report.report(new JIPipeValidationReportEntry(JIPipeValidationReportEntryLevel.Error,
                     context,
                     "Cellpose 2.x not configured",

@@ -89,8 +89,8 @@ public class TableToPointROIAlgorithm extends JIPipeSimpleIteratingAlgorithm {
     }
 
     @Override
-    public void reportValidity(JIPipeValidationReportContext reportContext, JIPipeValidationReport report) {
-        super.reportValidity(reportContext, report);
+    public void reportValidity(JIPipeValidationReportContext reportContext, JIPipeValidationReportSettings reportSettings, JIPipeValidationReport report) {
+        super.reportValidity(reportContext, reportSettings, report);
         report.report(new ParameterValidationReportContext(reportContext, this, "Column 'X'", "column-x1"), columnX1);
         report.report(new ParameterValidationReportContext(reportContext, this, "Column 'Y'", "column-y1"), columnY1);
     }

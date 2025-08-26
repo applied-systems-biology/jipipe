@@ -17,6 +17,7 @@ import net.imagej.ImageJ;
 import org.hkijena.jipipe.api.notifications.JIPipeNotification;
 import org.hkijena.jipipe.api.notifications.JIPipeNotificationInbox;
 import org.hkijena.jipipe.api.validation.JIPipeValidationReport;
+import org.hkijena.jipipe.api.validation.JIPipeValidationReportSettings;
 import org.hkijena.jipipe.api.validation.contexts.UnspecifiedValidationReportContext;
 import org.hkijena.jipipe.desktop.app.JIPipeDesktopDummyWorkbench;
 import org.hkijena.jipipe.desktop.app.JIPipeDesktopProjectWindow;
@@ -98,7 +99,7 @@ public class JIPipeGUICommand implements Command {
         if (!extensionSettings.isSilent()) {
             SwingUtilities.invokeLater(() -> {
                 JIPipeValidationReport report = new JIPipeValidationReport();
-                issues.reportValidity(new UnspecifiedValidationReportContext(), report);
+                issues.reportValidity(new UnspecifiedValidationReportContext(), JIPipeValidationReportSettings.DEFAULT, report);
                 if (!report.isValid()) {
                     UIUtils.showValidityReportDialog(new JIPipeDesktopDummyWorkbench(), null, report, "JIPipe plugins registry", "Issues were detected during the initialization of certain extensions. " +
                             "Please review the following items. Close the window to ignore the messages and load JIPipe. " +

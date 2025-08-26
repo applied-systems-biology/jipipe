@@ -39,6 +39,7 @@ import org.hkijena.jipipe.api.run.JIPipeGraphRunPartitionInheritedBoolean;
 import org.hkijena.jipipe.api.runtimepartitioning.JIPipeRuntimePartition;
 import org.hkijena.jipipe.api.validation.JIPipeValidationReport;
 import org.hkijena.jipipe.api.validation.JIPipeValidationReportContext;
+import org.hkijena.jipipe.api.validation.JIPipeValidationReportSettings;
 import org.hkijena.jipipe.api.validation.contexts.ParameterValidationReportContext;
 import org.hkijena.jipipe.plugins.expressions.JIPipeExpressionVariablesMap;
 import org.hkijena.jipipe.plugins.parameters.api.enums.EnumItemInfo;
@@ -402,8 +403,8 @@ public class JIPipeGraphWrapperAlgorithm extends JIPipeAlgorithm implements JIPi
     }
 
     @Override
-    public void reportValidity(JIPipeValidationReportContext reportContext, JIPipeValidationReport report) {
-        super.reportValidity(reportContext, report);
+    public void reportValidity(JIPipeValidationReportContext reportContext, JIPipeValidationReportSettings reportSettings, JIPipeValidationReport report) {
+        super.reportValidity(reportContext, reportSettings, report);
 
         report.report(new ParameterValidationReportContext(reportContext, this, "Wrapped graph", "wrapped-graph"), wrappedGraph);
     }

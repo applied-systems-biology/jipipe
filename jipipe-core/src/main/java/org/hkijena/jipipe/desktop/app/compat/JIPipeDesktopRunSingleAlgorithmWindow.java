@@ -21,6 +21,7 @@ import org.hkijena.jipipe.api.nodes.JIPipeNodeInfo;
 import org.hkijena.jipipe.api.notifications.JIPipeNotificationInbox;
 import org.hkijena.jipipe.api.project.JIPipeProject;
 import org.hkijena.jipipe.api.validation.JIPipeValidationReport;
+import org.hkijena.jipipe.api.validation.JIPipeValidationReportSettings;
 import org.hkijena.jipipe.api.validation.contexts.UnspecifiedValidationReportContext;
 import org.hkijena.jipipe.desktop.app.JIPipeDesktopDummyWorkbench;
 import org.hkijena.jipipe.desktop.app.JIPipeDesktopWorkbench;
@@ -386,7 +387,7 @@ public class JIPipeDesktopRunSingleAlgorithmWindow extends JFrame implements JIP
 
     private void copyCommand() {
         JIPipeValidationReport report = new JIPipeValidationReport();
-        currentRunSettingsPanel.getRun().reportValidity(new UnspecifiedValidationReportContext(), report);
+        currentRunSettingsPanel.getRun().reportValidity(new UnspecifiedValidationReportContext(), JIPipeValidationReportSettings.DEFAULT, report);
         if (!report.isEmpty()) {
             UIUtils.showValidityReportDialog(new JIPipeDesktopDummyWorkbench(),
                     this,
@@ -412,7 +413,7 @@ public class JIPipeDesktopRunSingleAlgorithmWindow extends JFrame implements JIP
 
     private void runNow() {
         JIPipeValidationReport report = new JIPipeValidationReport();
-        currentRunSettingsPanel.getRun().reportValidity(new UnspecifiedValidationReportContext(), report);
+        currentRunSettingsPanel.getRun().reportValidity(new UnspecifiedValidationReportContext(), JIPipeValidationReportSettings.DEFAULT, report);
         if (!report.isEmpty()) {
             UIUtils.showValidityReportDialog(new JIPipeDesktopDummyWorkbench(),
                     this,

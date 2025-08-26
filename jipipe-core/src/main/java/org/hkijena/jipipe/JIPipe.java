@@ -1598,7 +1598,7 @@ public class JIPipe extends AbstractService implements JIPipeService {
     }
 
     @Override
-    public void reportValidity(JIPipeValidationReportContext reportContext, JIPipeValidationReport report) {
+    public void reportValidity(JIPipeValidationReportContext reportContext, JIPipeValidationReportSettings reportSettings, JIPipeValidationReport report) {
         report.report(reportContext, nodeRegistry);
         for (JIPipeDependency extension : failedExtensions) {
             if (extension != null) {

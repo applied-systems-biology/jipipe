@@ -21,6 +21,7 @@ import org.hkijena.jipipe.api.SetJIPipeDocumentation;
 import org.hkijena.jipipe.api.parameters.JIPipeParameter;
 import org.hkijena.jipipe.api.settings.JIPipeDefaultApplicationSettingsSheetCategory;
 import org.hkijena.jipipe.api.settings.JIPipeDefaultApplicationsSettingsSheet;
+import org.hkijena.jipipe.api.validation.JIPipeValidationReportSettings;
 import org.hkijena.jipipe.api.validation.contexts.UnspecifiedValidationReportContext;
 import org.hkijena.jipipe.plugins.expressions.AddJIPipeExpressionParameterVariable;
 import org.hkijena.jipipe.plugins.expressions.JIPipeExpressionParameter;
@@ -56,7 +57,7 @@ public class JIPipeDownloadsApplicationSettings extends JIPipeDefaultApplication
 
     private void autoDetectEnvironments() {
 
-        if (!externalDownloaderProcess.generateValidityReport(new UnspecifiedValidationReportContext()).isValid()) {
+        if (!externalDownloaderProcess.generateValidityReport(new UnspecifiedValidationReportContext(), JIPipeValidationReportSettings.DEFAULT).isValid()) {
             if (SystemUtils.IS_OS_LINUX || SystemUtils.IS_OS_MAC_OSX) {
                 // Attempt to get wget
                 Path wgetPath = PathUtils.findAnyOf(Paths.get("/bin/wget"), Paths.get("/usr/local/bin/wget"), Paths.get("/usr/bin/wget"));
@@ -69,7 +70,7 @@ public class JIPipeDownloadsApplicationSettings extends JIPipeDefaultApplication
                     externalDownloaderProcess.setArguments(new JIPipeExpressionParameter("ARRAY(\"-O\", output_file, url)"));
                 }
                 // Attempt to get cURL
-                if (!externalDownloaderProcess.generateValidityReport(new UnspecifiedValidationReportContext()).isValid()) {
+                if (!externalDownloaderProcess.generateValidityReport(new UnspecifiedValidationReportContext(), JIPipeValidationReportSettings.DEFAULT).isValid()) {
                     Path curlPath = PathUtils.findAnyOf(Paths.get("/bin/curl"), Paths.get("/usr/local/bin/curl"), Paths.get("/usr/bin/curl"));
                     if (curlPath != null && Files.isRegularFile(curlPath)) {
                         if (SystemUtils.IS_OS_LINUX) {

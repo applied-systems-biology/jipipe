@@ -24,6 +24,7 @@ import org.hkijena.jipipe.api.parameters.JIPipeCustomTextDescriptionParameter;
 import org.hkijena.jipipe.api.validation.JIPipeValidatable;
 import org.hkijena.jipipe.api.validation.JIPipeValidationReport;
 import org.hkijena.jipipe.api.validation.JIPipeValidationReportContext;
+import org.hkijena.jipipe.api.validation.JIPipeValidationReportSettings;
 import org.hkijena.jipipe.api.validation.contexts.CustomValidationReportContext;
 import org.hkijena.jipipe.utils.json.JsonUtils;
 
@@ -71,7 +72,7 @@ public abstract class PairParameter<K, V> implements JIPipeValidatable, Map.Entr
     }
 
     @Override
-    public void reportValidity(JIPipeValidationReportContext reportContext, JIPipeValidationReport report) {
+    public void reportValidity(JIPipeValidationReportContext reportContext, JIPipeValidationReportSettings reportSettings, JIPipeValidationReport report) {
         if (key instanceof JIPipeValidatable) {
             report.report(new CustomValidationReportContext(reportContext, "Key"), (JIPipeValidatable) key);
         }

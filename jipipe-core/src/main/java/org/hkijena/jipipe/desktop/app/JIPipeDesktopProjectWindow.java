@@ -72,7 +72,7 @@ public class JIPipeDesktopProjectWindow extends JFrame {
     private JIPipeDesktopProjectWorkbench projectWorkbench;
     private Path projectSavePath;
     private UUID sessionId = UUID.randomUUID();
-    private List<BalloonTip> registeredBalloons = new ArrayList<>();
+    private final List<BalloonTip> registeredBalloons = new ArrayList<>();
 
     /**
      * @param context          context

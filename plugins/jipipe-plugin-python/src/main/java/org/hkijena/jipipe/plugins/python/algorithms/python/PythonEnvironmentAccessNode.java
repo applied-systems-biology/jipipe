@@ -16,10 +16,7 @@ package org.hkijena.jipipe.plugins.python.algorithms.python;
 import org.hkijena.jipipe.api.environments.JIPipeEnvironmentReference;
 import org.hkijena.jipipe.api.nodes.JIPipeGraphNode;
 import org.hkijena.jipipe.api.project.JIPipeProject;
-import org.hkijena.jipipe.api.validation.JIPipeValidationReport;
-import org.hkijena.jipipe.api.validation.JIPipeValidationReportContext;
-import org.hkijena.jipipe.api.validation.JIPipeValidationReportEntry;
-import org.hkijena.jipipe.api.validation.JIPipeValidationReportEntryLevel;
+import org.hkijena.jipipe.api.validation.*;
 import org.hkijena.jipipe.plugins.python.CorePythonPlugin;
 import org.hkijena.jipipe.plugins.python.OptionalPythonEnvironment;
 import org.hkijena.jipipe.plugins.python.PythonEnvironment;
@@ -68,14 +65,14 @@ public interface PythonEnvironmentAccessNode {
      * @param report  the report
      */
     default void reportConfiguredPythonEnvironmentValidity(JIPipeValidationReportContext context, JIPipeValidationReport report) {
-        if (!getConfiguredPythonEnvironment().getEnvironment().generateValidityReport(context).isValid()) {
+        if (!getConfiguredPythonEnvironment().getEnvironment().generateValidityReport(context, JIPipeValidationReportSettings.DEFAULT).isValid()) {
             report.report(new JIPipeValidationReportEntry(JIPipeValidationReportEntryLevel.Error,
                     context,
                     "Python not configured",
                     "The Python integration is not configured correctly.",
                     "Go to the Project > Project settings/overview > Settings > Plugins > Python and setup an appropriate default Python environment."));
         }
-        if (!getConfiguredPythonAdapterEnvironment().getEnvironment().generateValidityReport(context).isValid()) {
+        if (!getConfiguredPythonAdapterEnvironment().getEnvironment().generateValidityReport(context, JIPipeValidationReportSettings.DEFAULT).isValid()) {
             report.report(new JIPipeValidationReportEntry(JIPipeValidationReportEntryLevel.Error,
                     context,
                     "Python adapter not configured",

@@ -30,6 +30,7 @@ import org.hkijena.jipipe.api.project.JIPipeArchiveProjectToDirectoryRun;
 import org.hkijena.jipipe.api.project.JIPipeArchiveProjectToZIPRun;
 import org.hkijena.jipipe.api.project.JIPipeProject;
 import org.hkijena.jipipe.api.run.JIPipeRunnableQueue;
+import org.hkijena.jipipe.api.validation.JIPipeValidationReport;
 import org.hkijena.jipipe.desktop.JIPipeDesktop;
 import org.hkijena.jipipe.desktop.api.JIPipeMenuExtensionTarget;
 import org.hkijena.jipipe.desktop.app.backups.JIPipeDesktopBackupManagerPanel;
@@ -558,6 +559,12 @@ public class JIPipeDesktopProjectWorkbench extends JPanel implements JIPipeDeskt
         openProjectButton.addActionListener(e -> window.openProject());
         projectMenu.add(openProjectButton);
 
+        // "Open project" entry
+        JMenuItem importROCrateButton = new JMenuItem("Import RO-Crate ...", JIPipe.RESOURCES.getIcon16("actions/document-open-folder.png"));
+        importROCrateButton.setToolTipText("Imports a project from a RO-Crate");
+        importROCrateButton.addActionListener(e -> window.importROCrate());
+        projectMenu.add(importROCrateButton);
+
         // "Open output" entry
         JMenuItem openProjectOutputButton = new JMenuItem("Open analysis output ...", JIPipe.RESOURCES.getIcon16("actions/document-open-folder.png"));
         openProjectOutputButton.setToolTipText("<html>Opens a project and its analysis output from an output folder.<br/>" +
@@ -584,7 +591,7 @@ public class JIPipeDesktopProjectWorkbench extends JPanel implements JIPipeDeskt
         saveProjectButton.addActionListener(e -> {
             window.saveProjectAs(true, true);
             if (JIPipeGeneralUIApplicationSettings.getInstance().isValidateOnSave()) {
-                validateProject(true);
+                validateAndOpenReport(true);
             }
         });
         projectMenu.add(saveProjectButton);
@@ -596,7 +603,7 @@ public class JIPipeDesktopProjectWorkbench extends JPanel implements JIPipeDeskt
         saveProjectAsButton.addActionListener(e -> {
             window.saveProjectAs(false, true);
             if (JIPipeGeneralUIApplicationSettings.getInstance().isValidateOnSave()) {
-                validateProject(true);
+                validateAndOpenReport(true);
             }
         });
         projectMenu.add(saveProjectAsButton);
@@ -607,7 +614,7 @@ public class JIPipeDesktopProjectWorkbench extends JPanel implements JIPipeDeskt
         saveProjectCopyAsButton.addActionListener(e -> {
             window.saveProjectAs(false, false);
             if (JIPipeGeneralUIApplicationSettings.getInstance().isValidateOnSave()) {
-                validateProject(true);
+                validateAndOpenReport(true);
             }
         });
         projectMenu.add(saveProjectCopyAsButton);
@@ -668,7 +675,7 @@ public class JIPipeDesktopProjectWorkbench extends JPanel implements JIPipeDeskt
 
         JMenuItem validateProjectItem = new JMenuItem("Validate project", JIPipe.RESOURCES.getIcon16("actions/checkmark.png"));
         validateProjectItem.setToolTipText("Checks if the project and the parameters are valid");
-        validateProjectItem.addActionListener(e -> validateProject(false));
+        validateProjectItem.addActionListener(e -> validateAndOpenReport(false));
         projectMenu.add(validateProjectItem);
 
         projectMenu.addSeparator();
@@ -1019,10 +1026,20 @@ public class JIPipeDesktopProjectWorkbench extends JPanel implements JIPipeDeskt
      *
      * @param avoidSwitching Do not switch to the validity checker tab if the project is OK
      */
-    public void validateProject(boolean avoidSwitching) {
+    public JIPipeValidationReport validateAndOpenReport(boolean avoidSwitching) {
         validityCheckerPanel.recheckValidity();
-        if (!avoidSwitching || !validityCheckerPanel.getReport().isValid())
+        if (!avoidSwitching || !validityCheckerPanel.getReport().isValid()) {
             documentTabPane.selectSingletonTab(TAB_VALIDITY_CHECK);
+        }
+        return validityCheckerPanel.getReport();
+    }
+
+    /**
+     * Validates the project
+     */
+    public JIPipeValidationReport validateProject() {
+        validityCheckerPanel.recheckValidity();
+        return validityCheckerPanel.getReport();
     }
 
     /**

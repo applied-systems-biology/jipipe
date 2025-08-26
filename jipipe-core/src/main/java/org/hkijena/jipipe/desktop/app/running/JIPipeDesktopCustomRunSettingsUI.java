@@ -25,6 +25,7 @@ import org.hkijena.jipipe.api.run.JIPipeGraphRunConfiguration;
 import org.hkijena.jipipe.api.run.JIPipeRunnable;
 import org.hkijena.jipipe.api.run.JIPipeRunnableQueue;
 import org.hkijena.jipipe.api.validation.JIPipeValidationReport;
+import org.hkijena.jipipe.api.validation.JIPipeValidationReportSettings;
 import org.hkijena.jipipe.api.validation.contexts.UnspecifiedValidationReportContext;
 import org.hkijena.jipipe.desktop.app.JIPipeDesktopProjectWorkbench;
 import org.hkijena.jipipe.desktop.app.JIPipeDesktopProjectWorkbenchPanel;
@@ -68,7 +69,7 @@ public class JIPipeDesktopCustomRunSettingsUI extends JIPipeDesktopProjectWorkbe
         setLayout(new BorderLayout(8, 8));
 
         JIPipeValidationReport report = new JIPipeValidationReport();
-        getDesktopProjectWorkbench().getProject().reportValidity(new UnspecifiedValidationReportContext(), report);
+        getDesktopProjectWorkbench().getProject().reportValidity(new UnspecifiedValidationReportContext(), JIPipeValidationReportSettings.DEFAULT, report);
         if (report.isValid()) {
             initializeSetupGUI();
         } else {
@@ -95,7 +96,7 @@ public class JIPipeDesktopCustomRunSettingsUI extends JIPipeDesktopProjectWorkbe
         runButton.setFont(new Font(Font.DIALOG, Font.PLAIN, 16));
         runButton.addActionListener(e -> {
             report.clear();
-            getDesktopProjectWorkbench().getProject().reportValidity(new UnspecifiedValidationReportContext(), report);
+            getDesktopProjectWorkbench().getProject().reportValidity(new UnspecifiedValidationReportContext(), JIPipeValidationReportSettings.DEFAULT, report);
             getDesktopProjectWorkbench().sendStatusBarText("Re-validated JIPipe project");
             if (report.isValid())
                 initializeSetupGUI();

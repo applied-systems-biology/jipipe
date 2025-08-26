@@ -19,6 +19,7 @@ import org.hkijena.jipipe.api.JIPipeStandardMetadata;
 import org.hkijena.jipipe.api.validation.JIPipeValidatable;
 import org.hkijena.jipipe.api.validation.JIPipeValidationReport;
 import org.hkijena.jipipe.api.validation.JIPipeValidationReportContext;
+import org.hkijena.jipipe.api.validation.JIPipeValidationReportSettings;
 import org.hkijena.jipipe.plugins.parameters.library.primitives.list.StringList;
 
 import java.nio.file.Path;
@@ -183,5 +184,5 @@ public interface JIPipeDependency extends JIPipeValidatable {
     }
 
     @Override
-    void reportValidity(JIPipeValidationReportContext reportContext, JIPipeValidationReport report);
+    void reportValidity(JIPipeValidationReportContext reportContext, JIPipeValidationReportSettings reportSettings, JIPipeValidationReport report);
 }

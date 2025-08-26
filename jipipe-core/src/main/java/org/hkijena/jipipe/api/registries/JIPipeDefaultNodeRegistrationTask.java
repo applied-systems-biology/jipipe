@@ -15,10 +15,7 @@ package org.hkijena.jipipe.api.registries;
 
 import org.hkijena.jipipe.JIPipe;
 import org.hkijena.jipipe.api.data.JIPipeData;
-import org.hkijena.jipipe.api.validation.JIPipeValidationReport;
-import org.hkijena.jipipe.api.validation.JIPipeValidationReportContext;
-import org.hkijena.jipipe.api.validation.JIPipeValidationReportEntry;
-import org.hkijena.jipipe.api.validation.JIPipeValidationReportEntryLevel;
+import org.hkijena.jipipe.api.validation.*;
 import org.hkijena.jipipe.api.validation.contexts.CustomValidationReportContext;
 
 import java.util.HashSet;
@@ -101,7 +98,7 @@ public abstract class JIPipeDefaultNodeRegistrationTask implements JIPipeNodeReg
     }
 
     @Override
-    public void reportValidity(JIPipeValidationReportContext reportContext, JIPipeValidationReport report) {
+    public void reportValidity(JIPipeValidationReportContext reportContext, JIPipeValidationReportSettings reportSettings, JIPipeValidationReport report) {
         for (String id : dependencyAlgorithmIds) {
             if (!JIPipe.getNodes().hasNodeInfoWithId(id))
                 report.add(new JIPipeValidationReportEntry(JIPipeValidationReportEntryLevel.Error, new CustomValidationReportContext(reportContext, "Dependency algorithms"),

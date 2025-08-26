@@ -42,6 +42,7 @@ public final class ROCratePublisherAssistant extends JIPipeDesktopPublisherAssis
 
     public ROCratePublisherAssistant(JIPipeDesktopProjectWorkbench workbench) {
         super(workbench);
+        addAssistantCondition(new ProjectValidationAssistantCondition(this));
         addAssistantCondition(new TitleAssistantCondition(this));
         addAssistantCondition(new LicenseAssistantCondition(this));
         addAssistantCondition(new DescriptionAssistantCondition(this));

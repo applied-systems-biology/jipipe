@@ -145,7 +145,7 @@ public class LegacyImageCalculator2DAlgorithm extends JIPipeIteratingAlgorithm {
 
 
     @Override
-    public void reportValidity(JIPipeValidationReportContext reportContext, JIPipeValidationReport report) {
+    public void reportValidity(JIPipeValidationReportContext reportContext, JIPipeValidationReportSettings reportSettings, JIPipeValidationReport report) {
         Set<Operand> existing = new HashSet<>();
         for (Map.Entry<String, JIPipeParameterAccess> entry : operands.getParameters().entrySet()) {
             Operand operand = entry.getValue().get(Operand.class);

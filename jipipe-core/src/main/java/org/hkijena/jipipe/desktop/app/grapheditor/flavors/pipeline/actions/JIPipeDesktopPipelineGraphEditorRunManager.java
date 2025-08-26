@@ -18,6 +18,7 @@ import org.hkijena.jipipe.api.environments.JIPipeEnvironmentReference;
 import org.hkijena.jipipe.api.nodes.JIPipeGraphNode;
 import org.hkijena.jipipe.api.project.JIPipeProject;
 import org.hkijena.jipipe.api.validation.JIPipeValidationReport;
+import org.hkijena.jipipe.api.validation.JIPipeValidationReportSettings;
 import org.hkijena.jipipe.api.validation.contexts.UnspecifiedValidationReportContext;
 import org.hkijena.jipipe.desktop.app.cache.JIPipeDesktopAlgorithmCacheBrowserUI;
 import org.hkijena.jipipe.desktop.app.grapheditor.commons.JIPipeDesktopGraphCanvasUI;
@@ -52,7 +53,7 @@ public class JIPipeDesktopPipelineGraphEditorRunManager extends JIPipeDesktopGra
         }
         for (JIPipeEnvironmentReference<?> environmentReference : allEnvironmentReferences) {
             if (!checkedEnvironments.contains(environmentReference.getEnvironment())) {
-                environmentReference.reportValidity(new UnspecifiedValidationReportContext(), report);
+                environmentReference.reportValidity(new UnspecifiedValidationReportContext(), JIPipeValidationReportSettings.DEFAULT, report);
                 checkedEnvironments.add((JIPipeArtifactEnvironment) environmentReference.getEnvironment());
             }
         }

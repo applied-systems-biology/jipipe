@@ -16,10 +16,7 @@ package org.hkijena.jipipe.plugins.omero;
 import org.hkijena.jipipe.api.environments.JIPipeEnvironmentReference;
 import org.hkijena.jipipe.api.nodes.JIPipeGraphNode;
 import org.hkijena.jipipe.api.project.JIPipeProject;
-import org.hkijena.jipipe.api.validation.JIPipeValidationReport;
-import org.hkijena.jipipe.api.validation.JIPipeValidationReportContext;
-import org.hkijena.jipipe.api.validation.JIPipeValidationReportEntry;
-import org.hkijena.jipipe.api.validation.JIPipeValidationReportEntryLevel;
+import org.hkijena.jipipe.api.validation.*;
 
 /**
  * Interface that should be used by nodes that access the OMERO credentials environments
@@ -49,7 +46,7 @@ public interface OMEROCredentialAccessNode {
      * @param report  the report
      */
     default void reportConfiguredOMEROEnvironmentValidity(JIPipeValidationReportContext context, JIPipeValidationReport report) {
-        if (!getConfiguredOMEROCredentialsEnvironment().getEnvironment().generateValidityReport(context).isValid()) {
+        if (!getConfiguredOMEROCredentialsEnvironment().getEnvironment().generateValidityReport(context, JIPipeValidationReportSettings.DEFAULT).isValid()) {
             report.report(new JIPipeValidationReportEntry(JIPipeValidationReportEntryLevel.Error,
                     context,
                     "OMERO credentials not configured",

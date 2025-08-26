@@ -19,10 +19,7 @@ import org.hkijena.jipipe.api.environments.ExternalEnvironmentParameterSettings;
 import org.hkijena.jipipe.api.parameters.JIPipeParameter;
 import org.hkijena.jipipe.api.settings.JIPipeDefaultApplicationSettingsSheetCategory;
 import org.hkijena.jipipe.api.settings.JIPipeDefaultApplicationsSettingsSheet;
-import org.hkijena.jipipe.api.validation.JIPipeValidationReport;
-import org.hkijena.jipipe.api.validation.JIPipeValidationReportContext;
-import org.hkijena.jipipe.api.validation.JIPipeValidationReportEntry;
-import org.hkijena.jipipe.api.validation.JIPipeValidationReportEntryLevel;
+import org.hkijena.jipipe.api.validation.*;
 import org.hkijena.jipipe.api.validation.contexts.UnspecifiedValidationReportContext;
 import org.hkijena.jipipe.plugins.parameters.library.jipipe.JIPipeArtifactQueryParameter;
 import org.hkijena.jipipe.plugins.python.OptionalPythonEnvironment;
@@ -55,7 +52,7 @@ public class Cellpose3PluginApplicationSettings extends JIPipeDefaultApplication
         if (JIPipe.getInstance() != null) {
             Cellpose3PluginApplicationSettings instance = getInstance();
             JIPipeValidationReport report = new JIPipeValidationReport();
-            instance.getReadOnlyDefaultEnvironment().reportValidity(new UnspecifiedValidationReportContext(), report);
+            instance.getReadOnlyDefaultEnvironment().reportValidity(new UnspecifiedValidationReportContext(), JIPipeValidationReportSettings.DEFAULT, report);
             return report.isValid();
         }
         return false;

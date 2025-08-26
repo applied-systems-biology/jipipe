@@ -17,6 +17,7 @@ import org.hkijena.jipipe.api.project.JIPipeProject;
 import org.hkijena.jipipe.api.run.JIPipeGraphRun;
 import org.hkijena.jipipe.api.run.JIPipeGraphRunConfiguration;
 import org.hkijena.jipipe.api.validation.JIPipeValidationReport;
+import org.hkijena.jipipe.api.validation.JIPipeValidationReportSettings;
 import org.hkijena.jipipe.api.validation.contexts.UnspecifiedValidationReportContext;
 import org.hkijena.jipipe.plugins.settings.JIPipeExtensionApplicationSettings;
 import org.hkijena.jipipe.utils.PathUtils;
@@ -209,7 +210,7 @@ public class JIPipeCLIPipelineRun {
             project.getMetadata().getDirectories().setUserDirectory(entry.getKey(), entry.getValue());
         }
 
-        project.reportValidity(new UnspecifiedValidationReportContext(), projectIssues);
+        project.reportValidity(new UnspecifiedValidationReportContext(), JIPipeValidationReportSettings.DEFAULT, projectIssues);
         projectIssues.print();
 
         if (!notifications.isEmpty()) {

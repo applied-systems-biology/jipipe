@@ -221,8 +221,8 @@ public class LegacyCellpose2InferenceAlgorithm extends JIPipeSingleIterationAlgo
     }
 
     @Override
-    public void reportValidity(JIPipeValidationReportContext reportContext, JIPipeValidationReport report) {
-        super.reportValidity(reportContext, report);
+    public void reportValidity(JIPipeValidationReportContext reportContext, JIPipeValidationReportSettings reportSettings, JIPipeValidationReport report) {
+        super.reportValidity(reportContext, reportSettings, report);
         if (!isPassThrough()) {
             reportConfiguredCellposeEnvironmentValidity(reportContext, report);
         }
