@@ -549,10 +549,7 @@ public class LegacyOmnipose0InferenceAlgorithm extends JIPipeSingleIterationAlgo
 
             ImagePlus img = getInputSlot("Input").getData(row, ImagePlusData.class, rowProgress).getImage();
             if (img.getNFrames() > 1) {
-                throw new JIPipeValidationRuntimeException(new JIPipeValidationReportEntry(JIPipeValidationReportEntryLevel.Error, new GraphNodeValidationReportContext(this),
-                        "Omnipose does not support time series!",
-                        "Please ensure that the image dimensions are correctly assigned.",
-                        "Remove the frames or reorder the dimensions before applying Cellpose"));
+                throw new JIPipeValidationRuntimeException(new GraphNodeValidationReportContext(this).error().title("Omnipose does not support time series!").explanation("Please ensure that the image dimensions are correctly assigned.").solution("Remove the frames or reorder the dimensions before applying Cellpose").build());
             }
             if (img.getNSlices() == 1) {
                 // Output the image as-is
@@ -568,10 +565,7 @@ public class LegacyOmnipose0InferenceAlgorithm extends JIPipeSingleIterationAlgo
                 if (enable3DSegmentation) {
                     // Cannot have channels AND RGB
                     if (img.getNChannels() > 1 && img.getType() == ImagePlus.COLOR_RGB) {
-                        throw new JIPipeValidationRuntimeException(new JIPipeValidationReportEntry(JIPipeValidationReportEntryLevel.Error, new GraphNodeValidationReportContext(this),
-                                "Omnipose does not support 3D multichannel images with RGB!",
-                                "Python will convert the RGB channels into greyscale slices, thus conflicting with the channel slices defined in the input image",
-                                "Convert the image from RGB to greyscale or remove the additional channel slices."));
+                        throw new JIPipeValidationRuntimeException(new GraphNodeValidationReportContext(this).error().title("Omnipose does not support 3D multichannel images with RGB!").explanation("Python will convert the RGB channels into greyscale slices, thus conflicting with the channel slices defined in the input image").solution("Convert the image from RGB to greyscale or remove the additional channel slices.").build());
                     }
 
                     // Output the image as-is

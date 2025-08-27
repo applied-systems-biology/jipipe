@@ -49,11 +49,7 @@ public interface OmniposeEnvironmentAccessNode {
      */
     default void reportConfiguredOmniposeEnvironmentValidity(JIPipeValidationReportContext context, JIPipeValidationReport report) {
         if (!getConfiguredOmniposeEnvironment().getEnvironment().generateValidityReport(context, JIPipeValidationReportSettings.DEFAULT).isValid()) {
-            report.report(new JIPipeValidationReportEntry(JIPipeValidationReportEntryLevel.Error,
-                    context,
-                    "Omnipose not configured",
-                    "The Omnipose integration is not configured correctly.",
-                    "Go to the Project > Project settings/overview > Settings > Plugins > Omnipose and setup an appropriate default Omnipose environment."));
+            context.error().title("Omnipose not configured").explanation("The Omnipose integration is not configured correctly.").solution("Go to the Project > Project settings/overview > Settings > Plugins > Omnipose and setup an appropriate default Omnipose environment.").report(report);
         }
     }
 }

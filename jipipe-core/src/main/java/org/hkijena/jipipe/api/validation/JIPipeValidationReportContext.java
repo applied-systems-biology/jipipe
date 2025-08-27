@@ -322,9 +322,11 @@ public abstract class JIPipeValidationReportContext {
          * Creates and adds a validation report entry to the provided report
          * @param report the report to add the entry to
          */
-        public void report(JIPipeValidationReport report) {
+        public JIPipeValidationReportEntry report(JIPipeValidationReport report) {
             // The entry is created and added by the builder pattern
-            report.add(new JIPipeValidationReportEntry(level, context, title, explanation, solution, details));
+            JIPipeValidationReportEntry entry = new JIPipeValidationReportEntry(level, context, title, explanation, solution, details);
+            report.add(entry);
+            return entry;
         }
         
         /**

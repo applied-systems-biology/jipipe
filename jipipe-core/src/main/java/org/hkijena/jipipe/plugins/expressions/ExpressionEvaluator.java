@@ -44,11 +44,12 @@ public abstract class ExpressionEvaluator extends AbstractEvaluator<Object> {
         if (result instanceof Boolean) {
             return (boolean) result;
         } else {
-            throw new JIPipeValidationRuntimeException(new JIPipeValidationReportEntry(JIPipeValidationReportEntryLevel.Error, new UnspecifiedValidationReportContext(),
-                    "Expression does not return a boolean value: " + expression,
-                    "Expression does not return a boolean!",
-                    "You tried to evaluate the expression '" + expression + "', which did not return a boolean value (TRUE or FALSE).",
-                    "Please check if you apply testing like for equality or if a value matches another value."));
+            throw new JIPipeValidationRuntimeException(new UnspecifiedValidationReportContext().error()
+                    .title("Expression does not return a boolean value: " + expression)
+                    .explanation("Expression does not return a boolean!")
+                    .solution("You tried to evaluate the expression '" + expression + "', which did not return a boolean value (TRUE or FALSE).")
+                    .details("Please check if you apply testing like for equality or if a value matches another value.")
+                    .build());
         }
     }
 }
