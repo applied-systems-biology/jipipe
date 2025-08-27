@@ -103,9 +103,7 @@ public class IntegerFormData extends ParameterFormData {
         JIPipeExpressionVariablesMap variableSet = new JIPipeExpressionVariablesMap();
         variableSet.set("value", value);
         if (!validationExpression.test(variableSet)) {
-            report.add(new JIPipeValidationReportEntry(JIPipeValidationReportEntryLevel.Error, reportContext, "Invalid value!",
-                    String.format("The provided value '%s' does not comply to the test '%s'", value, validationExpression.getExpression()),
-                    "Please correct your input"));
+            reportContext.error().title("Invalid value!").explanation(String.format("The provided value '%s' does not comply to the test '%s'", value, validationExpression.getExpression())).solution("Please correct your input").report(report);
         }
     }
 

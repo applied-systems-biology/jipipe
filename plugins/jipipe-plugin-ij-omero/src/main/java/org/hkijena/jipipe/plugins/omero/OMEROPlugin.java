@@ -124,12 +124,7 @@ public class OMEROPlugin extends JIPipePrepackagedDefaultJavaPlugin {
         }
 
         if (!result) {
-            report.add(new JIPipeValidationReportEntry(JIPipeValidationReportEntryLevel.Error,
-                    new UnspecifiedValidationReportContext(),
-                    "No working OMERO detected!",
-                    "The JIPipe OMERO extension requires a working OMERO installation. Preliminary checks determined that there is none.",
-                    "Please install OMERO from the official OMERO website or install the appropriate OMERO plugins via the ImageJ updater.",
-                    "At least one of the following classes were not found: " + String.join(", ", classes)));
+            new UnspecifiedValidationReportContext().error().title("No working OMERO detected!").explanation("The JIPipe OMERO extension requires a working OMERO installation. Preliminary checks determined that there is none.").solution("Please install OMERO from the official OMERO website or install the appropriate OMERO plugins via the ImageJ updater.").details("At least one of the following classes were not found: " + String.join(", ", classes)).report(report);
         }
 
         return result;

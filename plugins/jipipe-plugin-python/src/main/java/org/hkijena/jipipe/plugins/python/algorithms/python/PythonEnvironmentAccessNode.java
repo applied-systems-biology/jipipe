@@ -66,18 +66,10 @@ public interface PythonEnvironmentAccessNode {
      */
     default void reportConfiguredPythonEnvironmentValidity(JIPipeValidationReportContext context, JIPipeValidationReport report) {
         if (!getConfiguredPythonEnvironment().getEnvironment().generateValidityReport(context, JIPipeValidationReportSettings.DEFAULT).isValid()) {
-            report.report(new JIPipeValidationReportEntry(JIPipeValidationReportEntryLevel.Error,
-                    context,
-                    "Python not configured",
-                    "The Python integration is not configured correctly.",
-                    "Go to the Project > Project settings/overview > Settings > Plugins > Python and setup an appropriate default Python environment."));
+            context.error().title("Python not configured").explanation("The Python integration is not configured correctly.").solution("Go to the Project > Project settings/overview > Settings > Plugins > Python and setup an appropriate default Python environment.").report(report);
         }
         if (!getConfiguredPythonAdapterEnvironment().getEnvironment().generateValidityReport(context, JIPipeValidationReportSettings.DEFAULT).isValid()) {
-            report.report(new JIPipeValidationReportEntry(JIPipeValidationReportEntryLevel.Error,
-                    context,
-                    "Python adapter not configured",
-                    "The JIPipe Python adapter is not configured correctly.",
-                    "Go to the Project > Project settings/overview > Settings > Plugins > Python and setup the Python adapter."));
+            context.error().title("Python adapter not configured").explanation("The JIPipe Python adapter is not configured correctly.").solution("Go to the Project > Project settings/overview > Settings > Plugins > Python and setup the Python adapter.").report(report);
         }
     }
 }

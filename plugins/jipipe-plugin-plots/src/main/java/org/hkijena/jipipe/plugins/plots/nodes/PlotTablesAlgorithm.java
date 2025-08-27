@@ -136,10 +136,7 @@ public class PlotTablesAlgorithm extends JIPipeMergingAlgorithm {
     @Override
     public void reportValidity(JIPipeValidationReportContext reportContext, JIPipeValidationReportSettings reportSettings, JIPipeValidationReport report) {
         if (getPlotType().getInfo() == null) {
-            report.add(new JIPipeValidationReportEntry(JIPipeValidationReportEntryLevel.Error,
-                    new ParameterValidationReportContext(reportContext, this, "Plot type", "plot-type"),
-                    "Plot type not set!",
-                    "Please choose a plot type"));
+            new ParameterValidationReportContext(reportContext, this, "Plot type", "plot-type").error().title("Plot type not set!").explanation("Please choose a plot type").report(report);
         }
         if (plotTypeParameters != null) {
             report.report(new ParameterValidationReportContext(reportContext, this, "Plot parameters", "plot-parameters"), plotTypeParameters);

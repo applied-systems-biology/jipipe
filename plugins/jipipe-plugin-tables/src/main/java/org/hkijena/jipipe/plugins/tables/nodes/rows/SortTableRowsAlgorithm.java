@@ -133,13 +133,9 @@ public class SortTableRowsAlgorithm extends JIPipeSimpleIteratingAlgorithm {
             }
         }
         if (result == null) {
-            throw new JIPipeValidationRuntimeException(new JIPipeValidationReportEntry(JIPipeValidationReportEntryLevel.Error,
-                    new GraphNodeValidationReportContext(this),
-                    "Could not find column that matches '" + expression.toString() + "'!",
-                    "A plot generator algorithm was instructed to extract a column matching the rule '" + expression + "' for plotting. The column could note be found. " +
-                            "The table contains only following columns: " + String.join(", ", input.getColumnNames()),
-                    "Please check if your input columns are set up with valid filters. Please check the input of the plot generator " +
-                            "via the quick run to see if the input data is correct. You can also select a generator instead of picking a column."));
+            throw new JIPipeValidationRuntimeException(new GraphNodeValidationReportContext(this).error().title("Could not find column that matches '" + expression.toString() + "'!").explanation("A plot generator algorithm was instructed to extract a column matching the rule '" + expression + "' for plotting. The column could note be found. " +
+                    "The table contains only following columns: " + String.join(", ", input.getColumnNames())).solution("Please check if your input columns are set up with valid filters. Please check the input of the plot generator " +
+                    "via the quick run to see if the input data is correct. You can also select a generator instead of picking a column.").build());
         }
         return result;
     }

@@ -166,10 +166,7 @@ public class WekaTrainingROI3DAlgorithm extends JIPipeIteratingAlgorithm {
     public void reportValidity(JIPipeValidationReportContext reportContext, JIPipeValidationReportSettings reportSettings, JIPipeValidationReport report) {
         super.reportValidity(reportContext, reportSettings, report);
         if (getInputSlots().stream().filter(slot -> slot.getAcceptedDataType() == ROI2DListData.class).count() < 2) {
-            report.add(new JIPipeValidationReportEntry(JIPipeValidationReportEntryLevel.Error,
-                    reportContext,
-                    "Weka requires at least two classes!", "The Weka algorithm cannot be trained if you do not have at least two classes",
-                    "Add at least two ROI List inputs"));
+            reportContext.error().title("Weka requires at least two classes!").explanation("The Weka algorithm cannot be trained if you do not have at least two classes").solution("Add at least two ROI List inputs").report(report);
         }
     }
 

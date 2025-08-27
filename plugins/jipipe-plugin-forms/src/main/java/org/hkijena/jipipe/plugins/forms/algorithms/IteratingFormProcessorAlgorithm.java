@@ -214,10 +214,7 @@ public class IteratingFormProcessorAlgorithm extends JIPipeAlgorithm implements 
 
             if (cancelled.get()) {
                 progressInfo.log("User input was cancelled!");
-                throw new JIPipeValidationRuntimeException(new JIPipeValidationReportEntry(JIPipeValidationReportEntryLevel.Error,
-                        new GraphNodeValidationReportContext(this),
-                        "Operation cancelled by user",
-                        "You clicked 'Cancel'"));
+                throw new JIPipeValidationRuntimeException(new GraphNodeValidationReportContext(this).error().title("Operation cancelled by user").explanation("You clicked 'Cancel'").build());
             }
 
             // Apply the form workloads

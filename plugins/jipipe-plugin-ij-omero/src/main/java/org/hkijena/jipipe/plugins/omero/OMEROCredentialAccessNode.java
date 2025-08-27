@@ -47,11 +47,7 @@ public interface OMEROCredentialAccessNode {
      */
     default void reportConfiguredOMEROEnvironmentValidity(JIPipeValidationReportContext context, JIPipeValidationReport report) {
         if (!getConfiguredOMEROCredentialsEnvironment().getEnvironment().generateValidityReport(context, JIPipeValidationReportSettings.DEFAULT).isValid()) {
-            report.report(new JIPipeValidationReportEntry(JIPipeValidationReportEntryLevel.Error,
-                    context,
-                    "OMERO credentials not configured",
-                    "The OMERO integration is not configured correctly.",
-                    "Go to the Project > Project settings/overview > Settings > Plugins > OMERO and setup appropriate default OMERO credentials."));
+            context.error().title("OMERO credentials not configured").explanation("The OMERO integration is not configured correctly.").solution("Go to the Project > Project settings/overview > Settings > Plugins > OMERO and setup appropriate default OMERO credentials.").report(report);
         }
     }
 }

@@ -75,10 +75,7 @@ public class TableColumnGeneratorParameter implements JIPipeValidatable {
     @Override
     public void reportValidity(JIPipeValidationReportContext reportContext, JIPipeValidationReportSettings reportSettings, JIPipeValidationReport report) {
         if (getGeneratorType().getInfo() == null) {
-            report.add(new JIPipeValidationReportEntry(JIPipeValidationReportEntryLevel.Error,
-                    reportContext,
-                    "Generator not selected!",
-                    "Please select a generator"));
+            reportContext.error().title("Generator not selected!").explanation("Please select a generator").report(report);
         }
     }
 }

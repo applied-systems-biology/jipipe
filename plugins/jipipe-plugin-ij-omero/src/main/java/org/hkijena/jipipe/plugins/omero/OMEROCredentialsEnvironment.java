@@ -183,10 +183,7 @@ public class OMEROCredentialsEnvironment extends JIPipeEnvironment {
     public void reportValidity(JIPipeValidationReportContext reportContext, JIPipeValidationReportSettings reportSettings, JIPipeValidationReport report) {
         if (JIPipe.getInstance().getMode() == JIPipeMode.Headless) {
             if (StringUtils.isNullOrEmpty(userName) || StringUtils.isNullOrEmpty(host) || StringUtils.isNullOrEmpty(email)) {
-                report.add(new JIPipeValidationReportEntry(JIPipeValidationReportEntryLevel.Error,
-                        reportContext,
-                        "Invalid OMERO credentials",
-                        "Please ensure to always provide a user name, host, and email address."));
+                reportContext.error().title("Invalid OMERO credentials").explanation("Please ensure to always provide a user name, host, and email address.").report(report);
             }
         }
     }
@@ -246,10 +243,7 @@ public class OMEROCredentialsEnvironment extends JIPipeEnvironment {
 
                 if (cancelled.get()) {
                     progressInfo.log("No login credentials provided (cancelled)!");
-                    throw new JIPipeValidationRuntimeException(new JIPipeValidationReportEntry(JIPipeValidationReportEntryLevel.Error,
-                            new UnspecifiedValidationReportContext(),
-                            "Operation cancelled by user",
-                            "You clicked 'Cancel'"));
+                    throw new JIPipeValidationRuntimeException(new UnspecifiedValidationReportContext().error().title("Operation cancelled by user").explanation("You clicked 'Cancel'").build());
                 } else {
                     // Confirm secrets
                     this.secretCredentials = newSecrets;
