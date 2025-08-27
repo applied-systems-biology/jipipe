@@ -337,6 +337,13 @@ public abstract class JIPipeValidationReportContext {
             // The entry is created using the builder pattern
             return new JIPipeValidationReportEntry(level, context, title, explanation, solution, details);
         }
+
+        /**
+         * Throws the entry as {@link JIPipeValidationRuntimeException}
+         */
+        public void buildAndThrow() {
+            throw new JIPipeValidationRuntimeException(build());
+        }
     }
 
 }
