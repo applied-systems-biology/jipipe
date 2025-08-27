@@ -168,12 +168,11 @@ public class FileDataSource extends JIPipeAlgorithm {
         Path source = getAbsoluteFileName();
         if (source == null || !Files.isRegularFile(source)) {
             if (isNeedsToExist()) {
-                report.report(new JIPipeValidationReportEntry(JIPipeValidationReportEntryLevel.Error, context, "Unable to find file", "The file " + getFileName() + " does not exist"));
+                context.error().title("Unable to find file").explanation("The file " + getFileName() + " does not exist").report(report);
             }
         } else {
             if (!source.startsWith(originalBaseDirectory)) {
-                report.report(new JIPipeValidationReportEntry(JIPipeValidationReportEntryLevel.Warning, context, "File not relative to project", "The file " + getFileName() + " is not located relative to the project file. " +
-                        "The resulting archive will contain directories with randomly generated names."));
+                context.warning().title("File not relative to project").explanation("The file " + getFileName() + " is not located relative to the project file. The resulting archive will contain directories with randomly generated names.").report(report);
             }
         }
     }

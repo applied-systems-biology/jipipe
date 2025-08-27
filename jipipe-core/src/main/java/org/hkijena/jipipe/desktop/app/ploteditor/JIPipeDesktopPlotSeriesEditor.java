@@ -17,8 +17,10 @@ import ij.measure.ResultsTable;
 import org.hkijena.jipipe.api.SetJIPipeDocumentation;
 import org.hkijena.jipipe.api.data.JIPipeDataInfo;
 import org.hkijena.jipipe.api.parameters.*;
-import org.hkijena.jipipe.api.validation.*;
-import org.hkijena.jipipe.api.validation.contexts.CustomValidationReportContext;
+import org.hkijena.jipipe.api.validation.JIPipeValidatable;
+import org.hkijena.jipipe.api.validation.JIPipeValidationReport;
+import org.hkijena.jipipe.api.validation.JIPipeValidationReportContext;
+import org.hkijena.jipipe.api.validation.JIPipeValidationReportSettings;
 import org.hkijena.jipipe.plugins.plots.datatypes.JFreeChartPlotColumn;
 import org.hkijena.jipipe.plugins.plots.datatypes.JFreeChartPlotDataSeries;
 import org.hkijena.jipipe.plugins.plots.datatypes.JFreeChartPlotMetadata;
@@ -149,11 +151,7 @@ public class JIPipeDesktopPlotSeriesEditor extends AbstractJIPipeParameterCollec
             JIPipeMutableParameterAccess parameterAccess = (JIPipeMutableParameterAccess) entry.getValue();
             UIPlotDataSeriesColumnEnum parameter = parameterAccess.get(UIPlotDataSeriesColumnEnum.class);
             if (parameter.getValue() == null) {
-                report.add(new JIPipeValidationReportEntry(JIPipeValidationReportEntryLevel.Error,
-                        reportContext.custom("Data assignments: " + entry.getKey()),
-                        "No data selected!",
-                        "The plot requires that you select a data source.",
-                        "Please select a data source."));
+                reportContext.error().title("No data selected!").explanation("The plot requires that you select a data source.").solution("Please select a data source.").details("Data assignments: " + entry.getKey()).report(report);
             }
         }
 
@@ -164,11 +162,7 @@ public class JIPipeDesktopPlotSeriesEditor extends AbstractJIPipeParameterCollec
                 rows = Math.max(rows, source.getRows());
         }
         if (rows == 0) {
-            report.add(new JIPipeValidationReportEntry(JIPipeValidationReportEntryLevel.Error,
-                    reportContext.custom("Data integrity"),
-                    "Selected data is empty!",
-                    "The plot requires that you select a data source.",
-                    "Please select at least one data source with a known row count."));
+            reportContext.error().title("Selected data is empty!").explanation("The plot requires that you select a data source.").solution("Please select at least one data source with a known row count.").details("Data integrity").report(report);
         }
     }
 

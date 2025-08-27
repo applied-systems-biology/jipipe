@@ -23,8 +23,6 @@ import org.hkijena.jipipe.desktop.app.JIPipeDesktopWorkbench;
 import org.hkijena.jipipe.desktop.commons.components.JIPipeDesktopParameterFormPanel;
 import org.hkijena.jipipe.plugins.parameters.library.markup.MarkdownText;
 
-import javax.swing.*;
-
 public class SetWindowSizeTool extends JIPipeDesktopMenuExtension {
     /**
      * Creates a new instance
@@ -36,13 +34,13 @@ public class SetWindowSizeTool extends JIPipeDesktopMenuExtension {
         setText("Set window size");
         setIcon(JIPipe.RESOURCES.getIcon16("actions/itmages-resize.png"));
         addActionListener(e -> {
-          doChangeWindowSize();
+            doChangeWindowSize();
         });
     }
 
     private void doChangeWindowSize() {
         Settings settings = new Settings();
-        if(JIPipeDesktopParameterFormPanel.showDialog(getDesktopWorkbench(), settings, MarkdownText.EMPTY, "Set window size")) {
+        if (JIPipeDesktopParameterFormPanel.showDialog(getDesktopWorkbench(), settings, MarkdownText.EMPTY, "Set window size")) {
             getDesktopWorkbench().getWindow().setSize(settings.getWidth(), settings.getHeight());
         }
     }

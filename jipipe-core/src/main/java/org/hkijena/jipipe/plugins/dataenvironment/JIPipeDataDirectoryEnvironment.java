@@ -21,7 +21,9 @@ import org.hkijena.jipipe.api.SetJIPipeDocumentation;
 import org.hkijena.jipipe.api.artifacts.JIPipeLocalArtifact;
 import org.hkijena.jipipe.api.environments.JIPipeArtifactEnvironment;
 import org.hkijena.jipipe.api.parameters.JIPipeParameter;
-import org.hkijena.jipipe.api.validation.*;
+import org.hkijena.jipipe.api.validation.JIPipeValidationReport;
+import org.hkijena.jipipe.api.validation.JIPipeValidationReportContext;
+import org.hkijena.jipipe.api.validation.JIPipeValidationReportSettings;
 import org.hkijena.jipipe.plugins.parameters.api.collections.ListParameter;
 import org.hkijena.jipipe.utils.StringUtils;
 
@@ -83,10 +85,7 @@ public class JIPipeDataDirectoryEnvironment extends JIPipeArtifactEnvironment {
         super.reportValidity(reportContext, reportSettings, report);
         if (!isLoadFromArtifact()) {
             if (isDirectoryValid()) {
-                report.add(new JIPipeValidationReportEntry(JIPipeValidationReportEntryLevel.Error, reportContext,
-                        "Directory does not exist",
-                        "You need to provide an directory",
-                        "Provide an directory"));
+                reportContext.error().title("Directory does not exist").explanation("You need to provide an directory").solution("Provide an directory").report(report);
             }
         }
     }

@@ -13,14 +13,10 @@
 
 package org.hkijena.jipipe.api.validation.contexts;
 
-import org.hkijena.jipipe.JIPipe;
 import org.hkijena.jipipe.api.JIPipeWorkbench;
 import org.hkijena.jipipe.api.project.JIPipeProject;
-import org.hkijena.jipipe.api.validation.JIPipeValidationReportContext;
 import org.hkijena.jipipe.api.validation.NavigableJIPipeValidationReportContext;
 import org.hkijena.jipipe.desktop.app.JIPipeDesktopProjectWorkbench;
-
-import javax.swing.*;
 
 public class ProjectSettingsValidationReportContext extends ProjectValidationReportContext implements NavigableJIPipeValidationReportContext {
 
@@ -28,14 +24,14 @@ public class ProjectSettingsValidationReportContext extends ProjectValidationRep
         super(project);
     }
 
-      @Override
+    @Override
     public boolean canNavigate(JIPipeWorkbench workbench) {
         return workbench.getProject() == getProject();
     }
 
     @Override
     public void navigate(JIPipeWorkbench workbench) {
-        ((JIPipeDesktopProjectWorkbench)workbench).openProjectSettings("/Plugins");
+        ((JIPipeDesktopProjectWorkbench) workbench).openProjectSettings("/Plugins");
     }
 
 }

@@ -205,11 +205,10 @@ public class FolderListDataSource extends JIPipeAlgorithm {
         for (int i = 0; i < relativeFileNames.size(); i++) {
             Path source = absoluteFileNames.get(i);
             if (source == null || !Files.isDirectory(source)) {
-                report.report(new JIPipeValidationReportEntry(JIPipeValidationReportEntryLevel.Warning, context, "Unable to find directory", "The directory " + getFolderPaths().get(i) + " does not exist"));
+                context.warning().title("Unable to find directory").explanation("The directory " + getFolderPaths().get(i) + " does not exist").report(report);
             } else {
                 if (!source.startsWith(originalBaseDirectory)) {
-                    report.report(new JIPipeValidationReportEntry(JIPipeValidationReportEntryLevel.Warning, context, "Directory not relative to project", "The directory " + getFolderPaths().get(i) + " is not located relative to the project file. " +
-                            "The resulting archive will contain directories with randomly generated names."));
+                    context.warning().title("Directory not relative to project").explanation("The directory " + getFolderPaths().get(i) + " is not located relative to the project file. The resulting archive will contain directories with randomly generated names.").report(report);
                 }
             }
         }

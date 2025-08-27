@@ -441,7 +441,7 @@ public class JIPipeDesktop {
      *
      * @param parent      parent component
      * @param workbench   the workbench
-     * @param currentPath         starting location/default value
+     * @param currentPath starting location/default value
      * @param title       dialog title
      * @param description optional description (only supported by specific file chooser types)
      * @return selected directory or null if dialog was cancelled

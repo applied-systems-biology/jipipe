@@ -16,8 +16,10 @@ package org.hkijena.jipipe;
 import org.hkijena.jipipe.api.data.JIPipeData;
 import org.hkijena.jipipe.api.nodes.JIPipeNodeInfo;
 import org.hkijena.jipipe.api.parameters.JIPipeParameterTypeInfo;
-import org.hkijena.jipipe.api.validation.*;
-import org.hkijena.jipipe.api.validation.contexts.CustomValidationReportContext;
+import org.hkijena.jipipe.api.validation.JIPipeValidatable;
+import org.hkijena.jipipe.api.validation.JIPipeValidationReport;
+import org.hkijena.jipipe.api.validation.JIPipeValidationReportContext;
+import org.hkijena.jipipe.api.validation.JIPipeValidationReportSettings;
 import org.scijava.plugin.PluginInfo;
 
 import java.util.HashMap;
@@ -42,43 +44,19 @@ public class JIPipeRegistryIssues implements JIPipeValidatable {
             report.addAll(entry.getValue());
         }
         for (JIPipeImageJUpdateSiteDependency site : missingImageJSites) {
-            report.add(new JIPipeValidationReportEntry(JIPipeValidationReportEntryLevel.Error,
-                    reportContext.custom("ImageJ update site checker"),
-                    "Missing ImageJ site: " + site.getName(),
-                    String.format("An extension requests following ImageJ site to be activated: '%s' (%s)", site.getName(), site.getUrl()),
-                    "Please activate the site in the update manager."));
+            reportContext.custom("ImageJ update site checker").error().title("Missing ImageJ site: " + site.getName()).explanation(String.format("An extension requests following ImageJ site to be activated: '%s' (%s)", site.getName(), site.getUrl())).solution("Please activate the site in the update manager.").report(report);
         }
         for (PluginInfo<JIPipeJavaPlugin> plugin : erroneousPlugins) {
-            report.add(new JIPipeValidationReportEntry(JIPipeValidationReportEntryLevel.Error,
-                    reportContext.custom("Extension initialization"),
-                    "Could not load extension '" + plugin.getIdentifier() + "'",
-                    "There was an error while loading an extension.",
-                    "Please install necessary dependencies via ImageJ. Then restart  ImageJ.",
-                    plugin.toString()));
+            reportContext.custom("Extension initialization").error().title("Could not load extension '" + plugin.getIdentifier() + "'").explanation("There was an error while loading an extension.").solution("Please install necessary dependencies via ImageJ. Then restart  ImageJ.").details(plugin.toString()).report(report);
         }
         for (JIPipeNodeInfo info : erroneousNodes) {
-            report.add(new JIPipeValidationReportEntry(JIPipeValidationReportEntryLevel.Error,
-                    reportContext.custom("Node initialization"),
-                    "Invalid node type '" + info.getName() + "'",
-                    "There was an error while loading a node type.",
-                    "Please install necessary dependencies via ImageJ. Then restart ImageJ.",
-                    info.toString()));
+            reportContext.custom("Node initialization").error().title("Invalid node type '" + info.getName() + "'").explanation("There was an error while loading a node type.").solution("Please install necessary dependencies via ImageJ. Then restart ImageJ.").details(info.toString()).report(report);
         }
         for (Class<? extends JIPipeData> dataType : erroneousDataTypes) {
-            report.add(new JIPipeValidationReportEntry(JIPipeValidationReportEntryLevel.Error,
-                    reportContext.custom("Data type initialization"),
-                    "Invalid data type '" + dataType + "'",
-                    "There was an error while loading a data type.",
-                    "Please install necessary dependencies via ImageJ. Then restart ImageJ.",
-                    dataType.getCanonicalName()));
+            reportContext.custom("Data type initialization").error().title("Invalid data type '" + dataType + "'").explanation("There was an error while loading a data type.").solution("Please install necessary dependencies via ImageJ. Then restart ImageJ.").details(dataType.getCanonicalName()).report(report);
         }
         for (JIPipeParameterTypeInfo parameterType : erroneousParameterTypes) {
-            report.add(new JIPipeValidationReportEntry(JIPipeValidationReportEntryLevel.Error,
-                    reportContext.custom("Parameter type initialization"),
-                    "Invalid parameter type '" + parameterType.getId() + "'",
-                    "There was an error while loading a parameter type.",
-                    "Please install necessary dependencies via ImageJ. Then restart ImageJ.",
-                    parameterType.getFieldClass().getCanonicalName()));
+            reportContext.custom("Parameter type initialization").error().title("Invalid parameter type '" + parameterType.getId() + "'").explanation("There was an error while loading a parameter type.").solution("Please install necessary dependencies via ImageJ. Then restart ImageJ.").details(parameterType.getFieldClass().getCanonicalName()).report(report);
         }
     }
 

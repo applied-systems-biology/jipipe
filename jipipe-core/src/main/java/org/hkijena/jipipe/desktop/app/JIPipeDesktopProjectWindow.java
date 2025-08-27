@@ -68,11 +68,11 @@ public class JIPipeDesktopProjectWindow extends JFrame {
     public static final WindowClosedEventEmitter WINDOW_CLOSED_EVENT_EMITTER = new WindowClosedEventEmitter();
     private static final Set<JIPipeDesktopProjectWindow> OPEN_WINDOWS = new HashSet<>();
     private final Context context;
+    private final List<BalloonTip> registeredBalloons = new ArrayList<>();
     private JIPipeProject project;
     private JIPipeDesktopProjectWorkbench projectWorkbench;
     private Path projectSavePath;
     private UUID sessionId = UUID.randomUUID();
-    private final List<BalloonTip> registeredBalloons = new ArrayList<>();
 
     /**
      * @param context          context
@@ -691,31 +691,29 @@ public class JIPipeDesktopProjectWindow extends JFrame {
         Path projectPath = JIPipeDesktop.openFile(this, getProjectWorkbench(), JIPipeFileChooserApplicationSettings.LastDirectoryKey.Projects, "Import JIPipe Workflow RO-Crate",
                 new HTMLText("Please select a *.crate.zip file that was generated using JIPipe."),
                 PathUtils.EXTENSION_FILTER_WORKFLOW_RO_CRATE);
-        if(projectPath != null) {
+        if (projectPath != null) {
             String fileName = projectPath.getFileName().toString();
             Path extractPath;
 
             // Ask for a non-existing extract path
-            while(true) {
+            while (true) {
                 extractPath = JIPipeDesktop.saveDirectory(this, getProjectWorkbench(), projectPath.getParent().resolve(fileName.substring(0, fileName.length() - 4)), "Import JIPipe Workflow RO-Crate - Target directory",
                         new HTMLText("Please confirm where the RO-Crate contents will be extracted."));
-                if(extractPath != null) {
-                    if(! PathUtils.isEmptyOrNonExistingDirectory(extractPath)) {
+                if (extractPath != null) {
+                    if (!PathUtils.isEmptyOrNonExistingDirectory(extractPath)) {
                         JOptionPane.showMessageDialog(window,
                                 "The directory " + extractPath + " already exists or is non-empty. Please choose a different directory.",
                                 "Import JIPipe Workflow RO-Crate",
                                 JOptionPane.ERROR_MESSAGE);
-                    }
-                    else {
+                    } else {
                         break;
                     }
-                }
-                else {
+                } else {
                     break;
                 }
             }
 
-            if(extractPath != null) {
+            if (extractPath != null) {
                 Path finalExtractPath = extractPath;
                 JIPipeRunnableQueue localQueue = new JIPipeRunnableQueue("Project loading");
                 var run = new DefaultJIPipeRunnable() {
@@ -730,15 +728,14 @@ public class JIPipeDesktopProjectWindow extends JFrame {
                         }
 
                         Path projectFile = finalExtractPath.resolve("project.jip");
-                        if(!Files.isRegularFile(projectFile)) {
+                        if (!Files.isRegularFile(projectFile)) {
                             SwingUtilities.invokeLater(() -> {
                                 JOptionPane.showMessageDialog(window,
                                         "Unable to find project.jip file inside the extracted files!",
                                         "Import JIPipe Workflow RO-Crate",
                                         JOptionPane.ERROR_MESSAGE);
                             });
-                        }
-                        else {
+                        } else {
                             SwingUtilities.invokeLater(() -> {
                                 openProject(projectFile, false);
                             });

@@ -31,8 +31,6 @@ import org.hkijena.jipipe.api.nodes.JIPipeNodeInfo;
 import org.hkijena.jipipe.api.parameters.AbstractJIPipeParameterCollection;
 import org.hkijena.jipipe.api.parameters.JIPipeParameter;
 import org.hkijena.jipipe.api.validation.*;
-import org.hkijena.jipipe.api.validation.contexts.JsonNodeInfoValidationReportContext;
-import org.hkijena.jipipe.api.validation.contexts.ParameterValidationReportContext;
 import org.hkijena.jipipe.plugins.parameters.library.primitives.StringParameterSettings;
 import org.hkijena.jipipe.plugins.parameters.library.primitives.list.StringList;
 import org.hkijena.jipipe.utils.StringUtils;
@@ -325,35 +323,35 @@ public class JIPipeJsonPlugin extends AbstractJIPipeParameterCollection implemen
     @Override
     public void reportValidity(JIPipeValidationReportContext reportContext, JIPipeValidationReportSettings reportSettings, JIPipeValidationReport report) {
         if (StringUtils.isNullOrEmpty(getDependencyId())) {
-            report.add(new JIPipeValidationReportEntry(JIPipeValidationReportEntryLevel.Error,
-                    reportContext.parameter(this, "Extension ID", "dependency-id"),
-                    "The ID is empty!",
-                    "A JSON extension must be identified with a unique ID to allow JIPipe to find dependencies.",
-                    "Please provide a valid ID.",
-                    JsonUtils.toPrettyJsonString(this)));
+            reportContext.parameter(this, "Extension ID", "dependency-id").error()
+                    .title("The ID is empty!")
+                    .explanation("A JSON extension must be identified with a unique ID to allow JIPipe to find dependencies.")
+                    .solution("Please provide a valid ID.")
+                    .details(JsonUtils.toPrettyJsonString(this))
+                    .report(report);
         } else if (!getDependencyId().contains(":")) {
-            report.add(new JIPipeValidationReportEntry(JIPipeValidationReportEntryLevel.Error,
-                    reportContext.parameter(this, "Extension ID", "dependency-id"),
-                    "Malformed ID!",
-                    "The ID should contain some information about the plugin author (organization, ...) to prevent future collisions.",
-                    "The ID must have following structure: <Organization>:<Name> e.g. org.hkijena.jipipe:my-plugin",
-                    JsonUtils.toPrettyJsonString(this)));
+            reportContext.parameter(this, "Extension ID", "dependency-id").error()
+                    .title("Malformed ID!")
+                    .explanation("The ID should contain some information about the plugin author (organization, ...) to prevent future collisions.")
+                    .solution("The ID must have following structure: <Organization>:<Name> e.g. org.hkijena.jipipe:my-plugin")
+                    .details(JsonUtils.toPrettyJsonString(this))
+                    .report(report);
         }
         if (StringUtils.isNullOrEmpty(getDependencyVersion())) {
-            report.add(new JIPipeValidationReportEntry(JIPipeValidationReportEntryLevel.Error,
-                    reportContext.parameter(this, "Extension version", "version"),
-                    "The version is empty!",
-                    "This allows users of your extension to better get help if issues arise.",
-                    "Please provide a valid version number. It has usually following format x.y.z.w",
-                    JsonUtils.toPrettyJsonString(this)));
+            reportContext.parameter(this, "Extension version", "version").error()
+                    .title("The version is empty!")
+                    .explanation("This allows users of your extension to better get help if issues arise.")
+                    .solution("Please provide a valid version number. It has usually following format x.y.z.w")
+                    .details(JsonUtils.toPrettyJsonString(this))
+                    .report(report);
         }
         if (StringUtils.isNullOrEmpty(getMetadata().getName()) || "New project".equals(getMetadata().getName())) {
-            report.add(new JIPipeValidationReportEntry(JIPipeValidationReportEntryLevel.Error,
-                    reportContext.parameter(this, "Name", "name"),
-                    "Invalid name!",
-                    "Your plugin should have a short and meaningful name.",
-                    "Please provide a meaningful name for your plugin.",
-                    JsonUtils.toPrettyJsonString(this)));
+            reportContext.parameter(this, "Name", "name").error()
+                    .title("Invalid name!")
+                    .explanation("Your plugin should have a short and meaningful name.")
+                    .solution("Please provide a meaningful name for your plugin.")
+                    .details(JsonUtils.toPrettyJsonString(this))
+                    .report(report);
         }
         if (nodeInfos == null)
             deserializeNodeInfos();
@@ -361,12 +359,12 @@ public class JIPipeJsonPlugin extends AbstractJIPipeParameterCollection implemen
             report.report(reportContext.jsonNode(info), info);
         }
         if (nodeInfos.size() != nodeInfos.stream().map(JsonNodeInfo::getId).collect(Collectors.toSet()).size()) {
-            report.add(new JIPipeValidationReportEntry(JIPipeValidationReportEntryLevel.Error,
-                    reportContext,
-                    "Duplicate IDs found!",
-                    "Algorithm IDs must be unique",
-                    "Please make sure that IDs are unique.",
-                    JsonUtils.toPrettyJsonString(this)));
+            reportContext.error()
+                    .title("Duplicate IDs found!")
+                    .explanation("Algorithm IDs must be unique")
+                    .solution("Please make sure that IDs are unique.")
+                    .details(JsonUtils.toPrettyJsonString(this))
+                    .report(report);
         }
     }
 

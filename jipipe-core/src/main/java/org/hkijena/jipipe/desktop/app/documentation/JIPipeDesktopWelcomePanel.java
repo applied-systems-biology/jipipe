@@ -181,7 +181,7 @@ public class JIPipeDesktopWelcomePanel extends JIPipeDesktopProjectWorkbenchPane
         JIPipeDesktopProjectWorkbench workbench = getDesktopProjectWorkbench();
 
         // Create a new window if our project already has something inside
-        if(!getProject().getGraph().getGraphNodes().isEmpty()) {
+        if (!getProject().getGraph().getGraphNodes().isEmpty()) {
             JIPipeDesktopProjectWindow window = getDesktopProjectWorkbench().getProjectWindow().newProjectWindow();
             workbench = window.getProjectWorkbench();
         }

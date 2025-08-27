@@ -22,8 +22,6 @@ import org.hkijena.jipipe.api.nodes.JIPipeGraphNode;
 import org.hkijena.jipipe.api.run.JIPipeRunnable;
 import org.hkijena.jipipe.api.run.JIPipeRunnableQueue;
 import org.hkijena.jipipe.api.validation.JIPipeValidationReport;
-import org.hkijena.jipipe.api.validation.JIPipeValidationReportEntry;
-import org.hkijena.jipipe.api.validation.JIPipeValidationReportEntryLevel;
 import org.hkijena.jipipe.api.validation.contexts.InternalErrorValidationReportContext;
 import org.hkijena.jipipe.api.validation.contexts.UnspecifiedValidationReportContext;
 import org.hkijena.jipipe.desktop.app.JIPipeDesktopProjectWorkbench;
@@ -117,10 +115,12 @@ public class JIPipeDesktopDataTracerUI extends JIPipeDesktopProjectWorkbenchPane
             frame.setContentPane(tracerUI);
         } else {
             JIPipeValidationReport report = new JIPipeValidationReport();
-            report.add(new JIPipeValidationReportEntry(JIPipeValidationReportEntryLevel.Error, new UnspecifiedValidationReportContext(), "Unable to find data!",
-                    "The cache does not contain the specified data. Data tracing is not available.",
-                    "Please update the cache",
-                    "Requested ID: " + targetId));
+            new UnspecifiedValidationReportContext().error()
+                    .title("Unable to find data!")
+                    .explanation("The cache does not contain the specified data. Data tracing is not available.")
+                    .solution("Please update the cache")
+                    .details("Requested ID: " + targetId)
+                    .report(report);
             JIPipeDesktopValidityReportUI reportUI = new JIPipeDesktopValidityReportUI(workbench, false);
             reportUI.setReport(report);
             frame.setContentPane(reportUI);
@@ -311,12 +311,12 @@ public class JIPipeDesktopDataTracerUI extends JIPipeDesktopProjectWorkbenchPane
         graphContentPanel.removeAll();
         JIPipeDesktopValidityReportUI reportUI = new JIPipeDesktopValidityReportUI(getDesktopWorkbench(), false);
         JIPipeValidationReport report = new JIPipeValidationReport();
-        report.add(new JIPipeValidationReportEntry(JIPipeValidationReportEntryLevel.Error,
-                new InternalErrorValidationReportContext(),
-                "Error while tracing data",
-                "The data tracing process was interrupted",
-                "See details",
-                event.getException().toString()));
+        new InternalErrorValidationReportContext().error()
+                .title("Error while tracing data")
+                .explanation("The data tracing process was interrupted")
+                .solution("See details")
+                .details(event.getException().toString())
+                .report(report);
         reportUI.setReport(report);
         graphContentPanel.add(reportUI);
     }

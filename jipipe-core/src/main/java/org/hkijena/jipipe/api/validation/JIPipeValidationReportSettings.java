@@ -23,12 +23,15 @@ public class JIPipeValidationReportSettings {
 
     public static final JIPipeValidationReportSettings DEFAULT = new JIPipeValidationReportSettings();
     public static final JIPipeValidationReportSettings STRICT = builder().withStrict(true).build();
-
-    private boolean strict;
     private final Map<String, Boolean> additionalFlags = new HashMap<>();
+    private boolean strict;
 
     private JIPipeValidationReportSettings() {
 
+    }
+
+    public static JIPipeValidationReportSettingsBuilder builder() {
+        return new JIPipeValidationReportSettingsBuilder();
     }
 
     public boolean isStrict() {
@@ -41,10 +44,6 @@ public class JIPipeValidationReportSettings {
 
     public boolean getAdditionalFlag(String key, boolean defaultValue) {
         return additionalFlags.getOrDefault(key, defaultValue);
-    }
-
-    public static JIPipeValidationReportSettingsBuilder builder() {
-        return new JIPipeValidationReportSettingsBuilder();
     }
 
     public static final class JIPipeValidationReportSettingsBuilder {

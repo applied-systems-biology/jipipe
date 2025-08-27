@@ -18,7 +18,10 @@ import org.hkijena.jipipe.JIPipe;
 import org.hkijena.jipipe.JIPipeDependency;
 import org.hkijena.jipipe.JIPipeJsonPlugin;
 import org.hkijena.jipipe.api.project.JIPipeProject;
-import org.hkijena.jipipe.api.validation.*;
+import org.hkijena.jipipe.api.validation.JIPipeValidatable;
+import org.hkijena.jipipe.api.validation.JIPipeValidationReport;
+import org.hkijena.jipipe.api.validation.JIPipeValidationReportContext;
+import org.hkijena.jipipe.api.validation.JIPipeValidationReportSettings;
 
 import java.nio.file.Path;
 import java.util.Set;
@@ -66,12 +69,7 @@ public class JsonExtensionRegistrationTask implements JIPipeValidatable {
     public void reportValidity(JIPipeValidationReportContext reportContext, JIPipeValidationReportSettings reportSettings, JIPipeValidationReport report) {
         for (String dependencyId : dependencyIds) {
             if (!registry.getRegisteredExtensionIds().contains(dependencyId)) {
-                report.add(new JIPipeValidationReportEntry(JIPipeValidationReportEntryLevel.Error,
-                        reportContext,
-                        "A dependency is missing!",
-                        "Dependency '" + dependencyId + "' is missing!",
-                        "Please ensure that the matching extension is installed. Otherwise you can try to open the extension" +
-                                " '" + filePath + "' in the extension builder and save it to update dependencies."));
+                reportContext.error().title("A dependency is missing!").explanation("Dependency '" + dependencyId + "' is missing!").solution("Please ensure that the matching extension is installed. Otherwise you can try to open the extension '" + filePath + "' in the extension builder and save it to update dependencies.").report(report);
             }
         }
 

@@ -120,7 +120,7 @@ public class CreateROCrateRun extends DefaultJIPipeRunnable {
             for (JIPipeDynamicParameterCollection parameterCollection : copyProject.getMetadata().getDirectories().getDirectories()) {
                 String key = StringUtils.nullToEmpty(parameterCollection.get("key").get(String.class));
                 String newValue = projectDirectories.getOrDefault(key, null);
-                if(newValue != null) {
+                if (newValue != null) {
                     parameterCollection.setParameter("path", Path.of(newValue));
                 }
             }

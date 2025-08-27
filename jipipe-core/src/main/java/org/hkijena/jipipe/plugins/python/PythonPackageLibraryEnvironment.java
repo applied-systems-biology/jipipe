@@ -22,7 +22,9 @@ import org.hkijena.jipipe.api.environments.JIPipeArtifactEnvironment;
 import org.hkijena.jipipe.api.parameters.JIPipeParameter;
 import org.hkijena.jipipe.api.parameters.JIPipeParameterAccess;
 import org.hkijena.jipipe.api.parameters.JIPipeParameterTree;
-import org.hkijena.jipipe.api.validation.*;
+import org.hkijena.jipipe.api.validation.JIPipeValidationReport;
+import org.hkijena.jipipe.api.validation.JIPipeValidationReportContext;
+import org.hkijena.jipipe.api.validation.JIPipeValidationReportSettings;
 import org.hkijena.jipipe.plugins.parameters.library.filesystem.PathParameterSettings;
 import org.hkijena.jipipe.plugins.settings.JIPipeFileChooserApplicationSettings;
 import org.hkijena.jipipe.utils.PathIOMode;
@@ -95,11 +97,7 @@ public abstract class PythonPackageLibraryEnvironment extends JIPipeArtifactEnvi
             super.reportValidity(reportContext, reportSettings, report);
             if (!isLoadFromArtifact()) {
                 if (!Files.isDirectory(getAbsoluteLibraryDirectory())) {
-                    report.add(new JIPipeValidationReportEntry(JIPipeValidationReportEntryLevel.Error,
-                            reportContext,
-                            "Missing Python adapter library!",
-                            "The Python integration requires an adapter library. It was not found at " + getAbsoluteLibraryDirectory(),
-                            "Install the Python adapter library by navigating to Project > Application settings > Extensions > Python integration (adapter) or configure the adapter to be provided by the Python environment if applicable."));
+                    reportContext.error().title("Missing Python adapter library!").explanation("The Python integration requires an adapter library. It was not found at " + getAbsoluteLibraryDirectory()).solution("Install the Python adapter library by navigating to Project > Application settings > Extensions > Python integration (adapter) or configure the adapter to be provided by the Python environment if applicable.").report(report);
                 }
             }
         }

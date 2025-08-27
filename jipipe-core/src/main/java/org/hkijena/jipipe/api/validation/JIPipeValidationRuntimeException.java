@@ -15,7 +15,6 @@ package org.hkijena.jipipe.api.validation;
 
 import org.apache.commons.lang3.exception.ExceptionUtils;
 import org.hkijena.jipipe.api.validation.contexts.CustomValidationReportContext;
-import org.hkijena.jipipe.api.validation.contexts.InternalErrorValidationReportContext;
 
 public class JIPipeValidationRuntimeException extends RuntimeException {
     private final JIPipeValidationReport report;
@@ -57,8 +56,10 @@ public class JIPipeValidationRuntimeException extends RuntimeException {
         for (JIPipeValidationReportEntry entry : otherReport) {
             if (applicableAlternative && entry.getContext().traverseNavigable().isEmpty()) {
                 switch (entry.getLevel()) {
-                    case Error -> alternativeContext.error().title(entry.getTitle()).explanation(entry.getExplanation()).solution(entry.getSolution()).details(entry.getDetails()).report(report);
-                    case Warning -> alternativeContext.warning().title(entry.getTitle()).explanation(entry.getExplanation()).solution(entry.getSolution()).details(entry.getDetails()).report(report);
+                    case Error ->
+                            alternativeContext.error().title(entry.getTitle()).explanation(entry.getExplanation()).solution(entry.getSolution()).details(entry.getDetails()).report(report);
+                    case Warning ->
+                            alternativeContext.warning().title(entry.getTitle()).explanation(entry.getExplanation()).solution(entry.getSolution()).details(entry.getDetails()).report(report);
                 }
             } else {
                 report.add(entry);

@@ -184,7 +184,7 @@ public class PathDataSource extends JIPipeAlgorithm {
         Path source = getAbsolutePath();
         if (source == null || !Files.exists(source)) {
             if (isNeedsToExist()) {
-                report.report(new JIPipeValidationReportEntry(JIPipeValidationReportEntryLevel.Error, context, "Unable to find path", "The path " + getPath() + " does not exist"));
+                context.error().title("Unable to find path").explanation("The path " + getPath() + " does not exist").report(report);
             }
         } else {
             if (!source.startsWith(originalBaseDirectory)) {

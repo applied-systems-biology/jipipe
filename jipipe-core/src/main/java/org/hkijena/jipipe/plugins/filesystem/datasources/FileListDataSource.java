@@ -204,11 +204,10 @@ public class FileListDataSource extends JIPipeAlgorithm {
         for (int i = 0; i < relativeFileNames.size(); i++) {
             Path source = absoluteFileNames.get(i);
             if (source == null || !Files.isRegularFile(source)) {
-                report.report(new JIPipeValidationReportEntry(JIPipeValidationReportEntryLevel.Warning, context, "Unable to find file", "The file " + getFiles().get(i) + " does not exist"));
+                context.warning().title("Unable to find file").explanation("The file " + getFiles().get(i) + " does not exist").report(report);
             } else {
                 if (!source.startsWith(originalBaseDirectory)) {
-                    report.report(new JIPipeValidationReportEntry(JIPipeValidationReportEntryLevel.Warning, context, "File not relative to project", "The file " + getFiles().get(i) + " is not located relative to the project file. " +
-                            "The resulting archive will contain directories with randomly generated names."));
+                    context.warning().title("File not relative to project").explanation("The file " + getFiles().get(i) + " is not located relative to the project file. The resulting archive will contain directories with randomly generated names.").report(report);
                 }
             }
         }

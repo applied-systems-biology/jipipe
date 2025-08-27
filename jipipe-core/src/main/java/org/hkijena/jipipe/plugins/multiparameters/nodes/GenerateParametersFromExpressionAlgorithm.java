@@ -28,7 +28,9 @@ import org.hkijena.jipipe.api.nodes.iterationstep.JIPipeIterationContext;
 import org.hkijena.jipipe.api.nodes.iterationstep.JIPipeSingleIterationStep;
 import org.hkijena.jipipe.api.parameters.AbstractJIPipeParameterCollection;
 import org.hkijena.jipipe.api.parameters.JIPipeParameter;
-import org.hkijena.jipipe.api.validation.*;
+import org.hkijena.jipipe.api.validation.JIPipeValidationReport;
+import org.hkijena.jipipe.api.validation.JIPipeValidationReportContext;
+import org.hkijena.jipipe.api.validation.JIPipeValidationReportSettings;
 import org.hkijena.jipipe.plugins.expressions.AddJIPipeExpressionParameterVariable;
 import org.hkijena.jipipe.plugins.expressions.JIPipeExpressionParameter;
 import org.hkijena.jipipe.plugins.expressions.JIPipeExpressionVariablesMap;
@@ -72,18 +74,10 @@ public class GenerateParametersFromExpressionAlgorithm extends JIPipeSimpleItera
         super.reportValidity(reportContext, reportSettings, report);
         for (Column column : columns.mapToCollection(Column.class)) {
             if (StringUtils.isNullOrEmpty(column.key)) {
-                report.add(new JIPipeValidationReportEntry(JIPipeValidationReportEntryLevel.Error,
-                        reportContext,
-                        "Column key cannot be empty!",
-                        "You cannot have empty parameter keys!",
-                        "Provide an appropriate parameter key."));
+                reportContext.error().title("Column key cannot be empty!").explanation("You cannot have empty parameter keys!").solution("Provide an appropriate parameter key.").report(report);
             }
             if (column.type.getInfo() == null) {
-                report.add(new JIPipeValidationReportEntry(JIPipeValidationReportEntryLevel.Error,
-                        reportContext,
-                        "Column type cannot be empty!",
-                        "You cannot have empty parameter type!",
-                        "Provide an appropriate parameter type."));
+                reportContext.error().title("Column type cannot be empty!").explanation("You cannot have empty parameter type!").solution("Provide an appropriate parameter type.").report(report);
             }
         }
     }

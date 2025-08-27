@@ -264,7 +264,7 @@ public class JIPipeDesktopQuickRun extends DefaultJIPipeRunnable implements JIPi
             node.getEnvironmentDependencies(allEnvironmentReferences);
         }
         for (JIPipeEnvironmentReference<?> environmentReference : allEnvironmentReferences) {
-            if(!checkedEnvironments.contains(environmentReference.getEnvironment())) {
+            if (!checkedEnvironments.contains(environmentReference.getEnvironment())) {
                 environmentReference.reportValidity(reportContext, reportSettings, report);
                 checkedEnvironments.add((JIPipeArtifactEnvironment) environmentReference.getEnvironment());
             }

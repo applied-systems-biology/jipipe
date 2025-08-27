@@ -15,8 +15,9 @@ package org.hkijena.jipipe.api.registries;
 
 import org.hkijena.jipipe.JIPipe;
 import org.hkijena.jipipe.api.data.JIPipeData;
-import org.hkijena.jipipe.api.validation.*;
-import org.hkijena.jipipe.api.validation.contexts.CustomValidationReportContext;
+import org.hkijena.jipipe.api.validation.JIPipeValidationReport;
+import org.hkijena.jipipe.api.validation.JIPipeValidationReportContext;
+import org.hkijena.jipipe.api.validation.JIPipeValidationReportSettings;
 
 import java.util.HashSet;
 import java.util.Set;

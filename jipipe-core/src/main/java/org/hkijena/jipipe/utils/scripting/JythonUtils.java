@@ -17,8 +17,6 @@ import org.hkijena.jipipe.api.parameters.JIPipeCustomParameterCollection;
 import org.hkijena.jipipe.api.parameters.JIPipeParameterAccess;
 import org.hkijena.jipipe.api.validation.JIPipeValidationReport;
 import org.hkijena.jipipe.api.validation.JIPipeValidationReportContext;
-import org.hkijena.jipipe.api.validation.JIPipeValidationReportEntry;
-import org.hkijena.jipipe.api.validation.JIPipeValidationReportEntryLevel;
 import org.hkijena.jipipe.plugins.parameters.library.pairs.IntegerAndIntegerPairParameter;
 import org.hkijena.jipipe.plugins.parameters.library.pairs.StringAndStringPairParameter;
 import org.python.core.PyCode;
@@ -62,31 +60,17 @@ public class JythonUtils {
             JythonUtils.passParametersToPython(pythonInterpreter, scriptParameters);
             PyCode compile = pythonInterpreter.compile(code);
             if (compile == null) {
-                report.add(new JIPipeValidationReportEntry(JIPipeValidationReportEntryLevel.Error,
-                        context,
-                        "The script is invalid!",
-                        "The script could not be compiled.",
-                        "Please check if your Python script is correct.",
-                        code));
+                context.error().title("The script is invalid!").explanation("The script could not be compiled.").solution("Please check if your Python script is correct.").details(code).report(report);
             }
         } catch (Exception e) {
-            report.add(new JIPipeValidationReportEntry(JIPipeValidationReportEntryLevel.Error,
-                    context,
-                    "The script is invalid!",
-                    "The script could not be compiled.",
-                    "Please check if your Python script is correct.",
-                    code + "\n\n" + e));
+            context.error().title("The script is invalid!").explanation("The script could not be compiled.").solution("Please check if your Python script is correct.").details(code + "\n\n" + e).report(report);
         }
     }
 
     public static void checkScriptParametersValidity(JIPipeCustomParameterCollection scriptParameters, JIPipeValidationReportContext context, JIPipeValidationReport report) {
         for (String key : scriptParameters.getParameters().keySet()) {
             if (!MacroUtils.isValidVariableName(key)) {
-                report.add(new JIPipeValidationReportEntry(JIPipeValidationReportEntryLevel.Error,
-                        context,
-                        "Invalid name!",
-                        "'" + key + "' is an invalid Python variable name!",
-                        "Please ensure that script variables are compatible with the Python language."));
+                context.error().title("Invalid name!").explanation("'" + key + "' is an invalid Python variable name!").solution("Please ensure that script variables are compatible with the Python language.").report(report);
             }
         }
     }

@@ -25,7 +25,9 @@ import org.hkijena.jipipe.api.environments.JIPipeArtifactEnvironment;
 import org.hkijena.jipipe.api.parameters.JIPipeParameter;
 import org.hkijena.jipipe.api.parameters.JIPipeParameterAccess;
 import org.hkijena.jipipe.api.parameters.JIPipeParameterTree;
-import org.hkijena.jipipe.api.validation.*;
+import org.hkijena.jipipe.api.validation.JIPipeValidationReport;
+import org.hkijena.jipipe.api.validation.JIPipeValidationReportContext;
+import org.hkijena.jipipe.api.validation.JIPipeValidationReportSettings;
 import org.hkijena.jipipe.plugins.expressions.JIPipeExpressionParameter;
 import org.hkijena.jipipe.plugins.expressions.JIPipeExpressionParameterSettings;
 import org.hkijena.jipipe.plugins.expressions.JIPipeExpressionParameterVariableInfo;
@@ -145,10 +147,7 @@ public class PythonEnvironment extends JIPipeArtifactEnvironment {
         super.reportValidity(reportContext, reportSettings, report);
         if (!isLoadFromArtifact()) {
             if (StringUtils.isNullOrEmpty(getExecutablePath()) || !Files.isRegularFile(getAbsoluteExecutablePath())) {
-                report.add(new JIPipeValidationReportEntry(JIPipeValidationReportEntryLevel.Error, reportContext,
-                        "Executable does not exist",
-                        "You need to provide a Python executable",
-                        "Provide a Python executable"));
+                reportContext.error().title("Executable does not exist").explanation("You need to provide a Python executable").solution("Provide a Python executable").report(report);
             }
         }
     }

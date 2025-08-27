@@ -166,11 +166,11 @@ public class JIPipeDesktopLegacyImageViewerPanel2D extends JPanel implements JIP
         } catch (Exception | Error e) {
             e.printStackTrace();
         }
-    }    private final Timer animationTimer = new Timer(250, e -> animateNextSlice());
+    }
 
     public JIPipeRunnableQueue getViewerRunnerQueue() {
         return viewerRunnerQueue;
-    }
+    }    private final Timer animationTimer = new Timer(250, e -> animateNextSlice());
 
     private void initialize() {
 
@@ -377,6 +377,13 @@ public class JIPipeDesktopLegacyImageViewerPanel2D extends JPanel implements JIP
         }
     }
 
+    private void buildAnimationRibbon(JIPipeDesktopRibbon ribbon) {
+        JIPipeDesktopRibbon.Task animationTask = ribbon.getOrCreateTask("Animation");
+        JIPipeDesktopRibbon.Band exportBand = animationTask.getOrCreateBand("Export");
+        exportBand.addLargeButton("To movie", "Exports the all slices as image file", JIPipe.RESOURCES.getIcon32("actions/filmgrain.png"), this::exportVideo);
+        exportBand.addComponent(UIUtils.boxHorizontal(new JLabel("FPS"), Box.createHorizontalStrut(8), animationFPSControl), 1, new Insets(2, 2, 2, 2));
+    }
+
 
 //    public void setRotationEnabled(boolean enabled) {
 //        rotateLeftButton.setVisible(enabled);
@@ -387,13 +394,6 @@ public class JIPipeDesktopLegacyImageViewerPanel2D extends JPanel implements JIP
 //            refreshSlice();
 //        }
 //    }
-
-    private void buildAnimationRibbon(JIPipeDesktopRibbon ribbon) {
-        JIPipeDesktopRibbon.Task animationTask = ribbon.getOrCreateTask("Animation");
-        JIPipeDesktopRibbon.Band exportBand = animationTask.getOrCreateBand("Export");
-        exportBand.addLargeButton("To movie", "Exports the all slices as image file", JIPipe.RESOURCES.getIcon32("actions/filmgrain.png"), this::exportVideo);
-        exportBand.addComponent(UIUtils.boxHorizontal(new JLabel("FPS"), Box.createHorizontalStrut(8), animationFPSControl), 1, new Insets(2, 2, 2, 2));
-    }
 
     private void buildViewRibbon(JIPipeDesktopRibbon ribbon) {
         JIPipeDesktopRibbon.Task generalTask = ribbon.getOrCreateTask("General");

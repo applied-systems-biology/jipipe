@@ -45,16 +45,13 @@ public abstract class JIPipeDesktopPublisherAssistant extends JIPipeDesktopProje
 
     private final JIPipeDesktopFormPanel notificationList = new JIPipeDesktopFormPanel(JIPipeDesktopFormPanel.WITH_SCROLLING);
     private final JIPipeDesktopSplitPane splitPane = new JIPipeDesktopSplitPane(JIPipeDesktopSplitPane.LEFT_RIGHT, new JIPipeDesktopSplitPane.DynamicSidebarRatio(350, false));
-    private final JButton confirmButton = UIUtils.createButton("Publish now", JIPipe.RESOURCES.getIcon16("actions/share-nodes.png"), this::startPublish);
-    private final JPanel setupPanel = new JPanel();
+    private final JPanel setupPanel = new JPanel();    private final JButton confirmButton = UIUtils.createButton("Publish now", JIPipe.RESOURCES.getIcon16("actions/share-nodes.png"), this::startPublish);
     private final JIPipeDesktopParameterFormPanel parameterPanel = new JIPipeDesktopParameterFormPanel(getDesktopWorkbench(), new JIPipeDummyParameterCollection(), MarkdownText.EMPTY, JIPipeDesktopFormPanel.WITH_SCROLLING | JIPipeDesktopFormPanel.WITH_DOCUMENTATION | JIPipeDesktopParameterFormPanel.DOCUMENTATION_NO_UI);
     private final JIPipeRunnableQueue queue = new JIPipeRunnableQueue("Publish Local");
     private final JLabel invalidMessage = new JLabel("Unable to publish. Please review the items on the left.", JIPipe.RESOURCES.getIcon16("emblems/warning.png"), JLabel.LEFT);
     private final JLabel warningMessage = new JLabel("Some additional checks are recommended. Please review the items on the left.", JIPipe.RESOURCES.getIcon16("emblems/emblem-important-blue.png"), JLabel.LEFT);
-    private final JButton refreshButton = UIUtils.createButton("Refresh", JIPipe.RESOURCES.getIcon16("actions/view-refresh.png"), this::updateAssistant);
     private final List<JIPipeDesktopPublisherAssistantCondition> conditions = new ArrayList<>();
-    private JIPipeDesktopPublisherAssistantConditionStatus currentStatus = JIPipeDesktopPublisherAssistantConditionStatus.Invalid;
-
+    private JIPipeDesktopPublisherAssistantConditionStatus currentStatus = JIPipeDesktopPublisherAssistantConditionStatus.Invalid;    private final JButton refreshButton = UIUtils.createButton("Refresh", JIPipe.RESOURCES.getIcon16("actions/view-refresh.png"), this::updateAssistant);
     public JIPipeDesktopPublisherAssistant(JIPipeDesktopProjectWorkbench workbench) {
         super(workbench);
         initialize();
@@ -150,13 +147,13 @@ public abstract class JIPipeDesktopPublisherAssistant extends JIPipeDesktopProje
 
     private void startPublish() {
         updateAssistant();
-        if(currentStatus == JIPipeDesktopPublisherAssistantConditionStatus.Warning) {
-            if(JOptionPane.showConfirmDialog(this, "Potential issues with were detected. Do you still want to continue?",
-                    getAssistantTitle(), JOptionPane.YES_NO_OPTION, JOptionPane.WARNING_MESSAGE) == JOptionPane.NO_OPTION)  {
+        if (currentStatus == JIPipeDesktopPublisherAssistantConditionStatus.Warning) {
+            if (JOptionPane.showConfirmDialog(this, "Potential issues with were detected. Do you still want to continue?",
+                    getAssistantTitle(), JOptionPane.YES_NO_OPTION, JOptionPane.WARNING_MESSAGE) == JOptionPane.NO_OPTION) {
                 return;
             }
         }
-        if(currentStatus == JIPipeDesktopPublisherAssistantConditionStatus.Invalid) {
+        if (currentStatus == JIPipeDesktopPublisherAssistantConditionStatus.Invalid) {
             JOptionPane.showMessageDialog(this, "The project cannot be published in the current state.",
                     getAssistantTitle(), JOptionPane.ERROR_MESSAGE);
             return;
@@ -192,13 +189,11 @@ public abstract class JIPipeDesktopPublisherAssistant extends JIPipeDesktopProje
             }
         }
 
-        if(valid && warning) {
+        if (valid && warning) {
             this.currentStatus = JIPipeDesktopPublisherAssistantConditionStatus.Warning;
-        }
-        else if(valid) {
+        } else if (valid) {
             this.currentStatus = JIPipeDesktopPublisherAssistantConditionStatus.Valid;
-        }
-        else {
+        } else {
             this.currentStatus = JIPipeDesktopPublisherAssistantConditionStatus.Invalid;
         }
         confirmButton.setEnabled(valid);
@@ -223,8 +218,12 @@ public abstract class JIPipeDesktopPublisherAssistant extends JIPipeDesktopProje
         }
     }
 
-
     public JIPipeDesktopPublisherAssistantConditionStatus getCurrentStatus() {
         return currentStatus;
     }
+
+
+
+
+
 }
