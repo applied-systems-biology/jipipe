@@ -990,22 +990,24 @@ public class JIPipeGraph implements JIPipeValidatable, JIPipeFunctionallyCompara
             JIPipeGraphNode sourceAlgorithm = findNode(sourceAlgorithmName);
             JIPipeGraphNode targetAlgorithm = findNode(targetAlgorithmName);
             if (sourceAlgorithm == null) {
-                issues.add(new JIPipeValidationReportEntry(JIPipeValidationReportEntryLevel.Error, context,
-                        "Unable to find node '" + sourceAlgorithmName + "'!",
-                        "The JSON data requested to create an edge between the nodes '" + sourceAlgorithmName + "' and '" + targetAlgorithmName + "', but the source does not exist. " +
-                                "This might have been caused by a previous error.",
-                        "Please check if all extensions are are correctly loaded.",
-                        JsonUtils.toPrettyJsonString(jsonNode)));
+                context.error()
+                    .title("Unable to find node '" + sourceAlgorithmName + "'!")
+                    .explanation("The JSON data requested to create an edge between the nodes '" + sourceAlgorithmName + "' and '" + targetAlgorithmName + "', but the source does not exist. " +
+                                "This might have been caused by a previous error.")
+                    .solution("Please check if all extensions are are correctly loaded.")
+                    .details(JsonUtils.toPrettyJsonString(jsonNode))
+                    .report(issues);
                 System.err.println("Unable to find node with ID '" + sourceAlgorithmName + "'. Skipping this instruction.");
                 continue;
             }
             if (targetAlgorithm == null) {
-                issues.add(new JIPipeValidationReportEntry(JIPipeValidationReportEntryLevel.Error, context,
-                        "Unable to find node '" + targetAlgorithmName + "'!",
-                        "The JSON data requested to create an edge between the nodes '" + sourceAlgorithmName + "' and '" + targetAlgorithmName + "', but the source does not exist. " +
-                                "This might have been caused by a previous error.",
-                        "Please check if all extensions are are correctly loaded.",
-                        JsonUtils.toPrettyJsonString(jsonNode)));
+                context.error()
+                    .title("Unable to find node '" + targetAlgorithmName + "'!")
+                    .explanation("The JSON data requested to create an edge between the nodes '" + sourceAlgorithmName + "' and '" + targetAlgorithmName + "', but the source does not exist. " +
+                                "This might have been caused by a previous error.")
+                    .solution("Please check if all extensions are are correctly loaded.")
+                    .details(JsonUtils.toPrettyJsonString(jsonNode))
+                    .report(issues);
                 System.err.println("Unable to find node with ID '" + targetAlgorithmName + "'. Skipping this instruction.");
                 continue;
             }
@@ -1014,24 +1016,24 @@ public class JIPipeGraph implements JIPipeValidatable, JIPipeFunctionallyCompara
             JIPipeDataSlot source = sourceAlgorithm.getOutputSlotMap().get(sourceSlotName);
             JIPipeDataSlot target = targetAlgorithm.getInputSlotMap().get(targetSlotName);
             if (source == null) {
-                issues.add(new JIPipeValidationReportEntry(JIPipeValidationReportEntryLevel.Error,
-                        context,
-                        "Unable to find output slot '" + sourceSlotName + "' in node '" + sourceAlgorithmName + "'!",
-                        "The JSON data requested to create an edge between the nodes '" + sourceAlgorithmName + "' and '" + targetAlgorithmName + "', but the source slot does not exist. " +
-                                "This might have been caused by a previous error.",
-                        "Please check if all extensions are are correctly loaded.",
-                        JsonUtils.toPrettyJsonString(jsonNode)));
+                context.error()
+                    .title("Unable to find output slot '" + sourceSlotName + "' in node '" + sourceAlgorithmName + "'!")
+                    .explanation("The JSON data requested to create an edge between the nodes '" + sourceAlgorithmName + "' and '" + targetAlgorithmName + "', but the source slot does not exist. " +
+                                "This might have been caused by a previous error.")
+                    .solution("Please check if all extensions are are correctly loaded.")
+                    .details(JsonUtils.toPrettyJsonString(jsonNode))
+                    .report(issues);
                 System.err.println("Unable to find data slot '" + sourceSlotName + "' in algorithm '" + sourceAlgorithmName + "'. Skipping this instruction.");
                 continue;
             }
             if (target == null) {
-                issues.add(new JIPipeValidationReportEntry(JIPipeValidationReportEntryLevel.Error,
-                        context,
-                        "Unable to find input slot '" + targetSlotName + "' in node '" + targetAlgorithmName + "'!",
-                        "The JSON data requested to create an edge between the nodes '" + sourceAlgorithmName + "' and '" + targetAlgorithmName + "', but the target slot does not exist. " +
-                                "This might have been caused by a previous error.",
-                        "Please check if all extensions are are correctly loaded.",
-                        JsonUtils.toPrettyJsonString(jsonNode)));
+                context.error()
+                    .title("Unable to find input slot '" + targetSlotName + "' in node '" + targetAlgorithmName + "'!")
+                    .explanation("The JSON data requested to create an edge between the nodes '" + sourceAlgorithmName + "' and '" + targetAlgorithmName + "', but the target slot does not exist. " +
+                                "This might have been caused by a previous error.")
+                    .solution("Please check if all extensions are are correctly loaded.")
+                    .details(JsonUtils.toPrettyJsonString(jsonNode))
+                    .report(issues);
                 System.err.println("Unable to find data slot '" + targetSlotName + "' in algorithm '" + targetAlgorithmName + "'. Skipping this instruction.");
                 continue;
             }
@@ -1052,12 +1054,12 @@ public class JIPipeGraph implements JIPipeValidatable, JIPipeFunctionallyCompara
                 try {
                     JsonUtils.getObjectMapper().readerForUpdating(edgeInstance).readValue(metadataNode);
                 } catch (IOException e) {
-                    issues.add(new JIPipeValidationReportEntry(JIPipeValidationReportEntryLevel.Warning,
-                            context,
-                            "Unable to deserialize graph metadata!",
-                            "The JSON data contains some metadata, but it could not be recovered.",
-                            "Metadata does not contain critical information. You can ignore this message.",
-                            JsonUtils.toPrettyJsonString(jsonNode)));
+                    context.warning()
+                        .title("Unable to deserialize graph metadata!")
+                        .explanation("The JSON data contains some metadata, but it could not be recovered.")
+                        .solution("Metadata does not contain critical information. You can ignore this message.")
+                        .details(JsonUtils.toPrettyJsonString(jsonNode))
+                        .report(issues);
                     System.err.println("Cannot deserialize edge metadata!");
                     e.printStackTrace();
                 }
@@ -1083,12 +1085,12 @@ public class JIPipeGraph implements JIPipeValidatable, JIPipeFunctionallyCompara
                 String id = currentNodeJson.get("jipipe:node-info-id").asText();
                 if (!JIPipe.getNodes().hasNodeInfoWithId(id)) {
                     System.err.println("Unable to find node type with ID '" + id + "'. Skipping.");
-                    issues.add(new JIPipeValidationReportEntry(JIPipeValidationReportEntryLevel.Error,
-                            context,
-                            "Unable to find node type '" + id + "'!",
-                            "The JSON data requested to load a node of type '" + id + "', but it is not known to JIPipe.",
-                            "Please check if all extensions are are correctly loaded.",
-                            JsonUtils.toPrettyJsonString(jsonNode)));
+                    context.error()
+                        .title("Unable to find node type '" + id + "'!")
+                        .explanation("The JSON data requested to load a node of type '" + id + "', but it is not known to JIPipe.")
+                        .solution("Please check if all extensions are are correctly loaded.")
+                        .details(JsonUtils.toPrettyJsonString(jsonNode))
+                        .report(issues);
                     continue;
                 }
 
@@ -1492,11 +1494,12 @@ public class JIPipeGraph implements JIPipeValidatable, JIPipeFunctionallyCompara
                     continue;
                 if (slot.isInput()) {
                     if (!slot.getInfo().isOptional() && graph.incomingEdgesOf(slot).isEmpty()) {
-                        report.add(new JIPipeValidationReportEntry(JIPipeValidationReportEntryLevel.Error,
-                                reportContext.slot(slot.getNode(), slot.getName(), slot.getSlotType()),
-                                "An input slot has no incoming data!",
-                                "Input slots must always be provided with input data.",
-                                "Please connect the slot to an output of another algorithm."));
+                        reportContext.slot(slot.getNode(), slot.getName(), slot.getSlotType())
+                            .error()
+                            .title("An input slot has no incoming data!")
+                            .explanation("Input slots must always be provided with input data.")
+                            .solution("Please connect the slot to an output of another algorithm.")
+                            .report(report);
                     }
                 }
             }
@@ -1548,11 +1551,12 @@ public class JIPipeGraph implements JIPipeValidatable, JIPipeFunctionallyCompara
                     continue;
                 }
                 if (!algorithm.isEnabled()) {
-                    report.add(new JIPipeValidationReportEntry(JIPipeValidationReportEntryLevel.Error,
-                            context.node(algorithm),
-                            "Dependency algorithm is deactivated!",
-                            "A dependency algorithm is not enabled. It blocks the execution of all following algorithms.",
-                            "Check if all dependency algorithms are enabled. If you just want to skip the processing, try 'Pass through'."));
+                    context.node(algorithm)
+                        .error()
+                        .title("Dependency algorithm is deactivated!")
+                        .explanation("A dependency algorithm is not enabled. It blocks the execution of all following algorithms.")
+                        .solution("Check if all dependency algorithms are enabled. If you just want to skip the processing, try 'Pass through'.")
+                        .report(report);
                     return;
                 }
             }
@@ -1560,11 +1564,12 @@ public class JIPipeGraph implements JIPipeValidatable, JIPipeFunctionallyCompara
                 if (!slot.getNode().getInfo().isRunnable())
                     continue;
                 if (!slot.getInfo().isOptional() && graph.incomingEdgesOf(slot).isEmpty()) {
-                    report.add(new JIPipeValidationReportEntry(JIPipeValidationReportEntryLevel.Error,
-                            context.slot(slot.getNode(), slot.getName(), slot.getSlotType()),
-                            "An input slot has no incoming data!",
-                            "Input slots must always be provided with input data.",
-                            "Please connect the slot to an output of another algorithm."));
+                    context.slot(slot.getNode(), slot.getName(), slot.getSlotType())
+                        .error()
+                        .title("An input slot has no incoming data!")
+                        .explanation("Input slots must always be provided with input data.")
+                        .solution("Please connect the slot to an output of another algorithm.")
+                        .report(report);
                     return;
                 }
             }
