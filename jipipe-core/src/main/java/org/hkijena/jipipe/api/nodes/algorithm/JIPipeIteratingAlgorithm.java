@@ -277,12 +277,12 @@ public abstract class JIPipeIteratingAlgorithm extends JIPipeParameterSlotAlgori
                     if (progressInfo.isCancelled())
                         break;
                     if (batch.isIncomplete()) {
-                        throw new JIPipeValidationRuntimeException(new JIPipeValidationReportEntry(JIPipeValidationReportEntryLevel.Error, new GraphNodeValidationReportContext(this),
-                                "Incomplete data set found!",
-                                "The algorithm needs to assign input a unique data set via annotations, but there is " +
-                                        "not a data set for each input slot.",
-                                "Please check the input of the algorithm by running the quick run on each input algorithm. " +
-                                        "You can also choose to skip incomplete data sets, although you might lose data in those cases."));
+                        throw new JIPipeValidationRuntimeException(new GraphNodeValidationReportContext(this).error()
+                                .title("Incomplete data set found!")
+                                .explanation("The algorithm needs to assign input a unique data set via annotations, but there is " +
+                                        "not a data set for each input slot.")
+                                .solution("Please check the input of the algorithm by running the quick run on each input algorithm. " +
+                                        "You can also choose to skip incomplete data sets, although you might lose data in those cases.").build());
                     }
                 }
             }
@@ -326,11 +326,11 @@ public abstract class JIPipeIteratingAlgorithm extends JIPipeParameterSlotAlgori
         }
 
         if (iterationSteps == null) {
-            throw new JIPipeValidationRuntimeException(new JIPipeValidationReportEntry(JIPipeValidationReportEntryLevel.Error, new GraphNodeValidationReportContext(this),
-                    "Unable to split data into batches!",
-                    "The algorithm needs to assign input a unique data set via annotations, but there are either missing elements or multiple data per slot.",
-                    "Please check the input of the algorithm by running the quick run on each input algorithm. " +
-                            "Try to switch to the 'Iteration stepes' tab to preview how data is split into batches."));
+            throw new JIPipeValidationRuntimeException(new GraphNodeValidationReportContext(this).error()
+                    .title("Unable to split data into batches!")
+                    .explanation("The algorithm needs to assign input a unique data set via annotations, but there are either missing elements or multiple data per slot.")
+                    .solution("Please check the input of the algorithm by running the quick run on each input algorithm. " +
+                            "Try to switch to the 'Iteration stepes' tab to preview how data is split into batches.").build());
         }
 
         // Execute the workload

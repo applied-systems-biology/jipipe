@@ -64,27 +64,27 @@ public class JIPipeEnvironmentReference<T extends JIPipeEnvironment> implements 
                 JIPipeParameterTypeInfo info = JIPipe.getParameterTypes().getInfoByFieldClass(getEnvironment().getClass());
                 switch (getSourceType()){
                     case SourceType.Application -> {
-                        report.add(new JIPipeValidationReportEntry(JIPipeValidationReportEntryLevel.Error,
-                                new UnspecifiedValidationReportContext(),
-                                "Misconfigured environment",
-                                "An application-wide environment of the type '" + info.getName() + "' is invalid. The project cannot to be run.",
-                                "Please go into the JIPipe application settings and find the configuration for '" + info.getName() + "'. Ensure that the environment is correctly configured."));
+                        new UnspecifiedValidationReportContext().error()
+                                .title("Misconfigured environment")
+                                .explanation("An application-wide environment of the type '" + info.getName() + "' is invalid. The project cannot to be run.")
+                                .solution("Please go into the JIPipe application settings and find the configuration for '" + info.getName() + "'. Ensure that the environment is correctly configured.")
+                                .report(report);
                     }
                     case SourceType.Project -> {
                         var context = getSource() instanceof JIPipeProject ? reportContext.projectSettings((JIPipeProject)getSource()) : JIPipeValidationReportContext.UNSPECIFIED;
-                        report.add(new JIPipeValidationReportEntry(JIPipeValidationReportEntryLevel.Error,
-                                context,
-                                "Misconfigured environment",
-                                "A project environment of the type '" + info.getName() + "' is invalid. The project cannot to be run.",
-                                "Please go to Project > Project settings and find the configuration for '" + info.getName() + "'. Ensure that the environment is correctly configured."));
+                        context.error()
+                                .title("Misconfigured environment")
+                                .explanation("A project environment of the type '" + info.getName() + "' is invalid. The project cannot to be run.")
+                                .solution("Please go to Project > Project settings and find the configuration for '" + info.getName() + "'. Ensure that the environment is correctly configured.")
+                                .report(report);
                     }
                     case SourceType.Node -> {
                         var context = getSource() instanceof JIPipeGraphNode ? reportContext.node((JIPipeGraphNode)getSource()) : JIPipeValidationReportContext.UNSPECIFIED;
-                        report.add(new JIPipeValidationReportEntry(JIPipeValidationReportEntryLevel.Error,
-                                context,
-                                "Misconfigured environment",
-                                "A project environment of the type '" + info.getName() + "' is invalid. The project cannot to be run.",
-                                "Please go to Project > Project settings and find the configuration for '" + info.getName() + "'. Ensure that the environment is correctly configured."));
+                        context.error()
+                                .title("Misconfigured environment")
+                                .explanation("A project environment of the type '" + info.getName() + "' is invalid. The project cannot to be run.")
+                                .solution("Please go to Project > Project settings and find the configuration for '" + info.getName() + "'. Ensure that the environment is correctly configured.")
+                                .report(report);
                     }
                 }
             }

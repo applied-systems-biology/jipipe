@@ -490,7 +490,10 @@ public class JIPipeProject implements JIPipeValidatable {
     public JIPipeValidationReport validateArchivability() {
         JIPipeValidationReport report = new JIPipeValidationReport();
         if (getWorkDirectory() == null) {
-            report.report(new JIPipeValidationReportEntry(JIPipeValidationReportEntryLevel.Error, new UnspecifiedValidationReportContext(), "Project must be saved", "The project must be saved at least once"));
+            new UnspecifiedValidationReportContext().error()
+                    .title("Project must be saved")
+                    .explanation("The project must be saved at least once")
+                    .report(report);
         } else {
             for (JIPipeGraphNode node : graph.getGraphNodes()) {
                 node.reportArchiveValidation(JIPipeValidationReportContext.UNSPECIFIED.node(node), report, getWorkDirectory());
@@ -1064,21 +1067,21 @@ public class JIPipeProject implements JIPipeValidatable {
                             settingsSheets.get(entry.getKey()).deserializeFromJsonNode(entry.getValue());
                         } else {
                             unloadedSettingsSheets.put(entry.getKey(), entry.getValue());
-                            report.report(new JIPipeValidationReportEntry(JIPipeValidationReportEntryLevel.Warning,
-                                    new UnspecifiedValidationReportContext(),
-                                    "Unable to load settings",
-                                    "The project settings for the sheet with the ID '" + entry.getKey() + "' are not known to JIPipe. " +
-                                            "The data will be backed up, so ",
-                                    "Please check if all required plugins are up-to-date and activated."));
+                            new UnspecifiedValidationReportContext().warning()
+                                    .title("Unable to load settings")
+                                    .explanation("The project settings for the sheet with the ID '" + entry.getKey() + "' are not known to JIPipe. " +
+                                            "The data will be backed up, so ")
+                                    .solution("Please check if all required plugins are up-to-date and activated.")
+                                    .report(report);
                         }
                     } catch (Throwable e) {
                         e.printStackTrace();
-                        report.report(new JIPipeValidationReportEntry(JIPipeValidationReportEntryLevel.Error,
-                                new UnspecifiedValidationReportContext(),
-                                "Unable to load settings",
-                                "The project settings for the sheet with the ID '" + entry.getKey() + "' could not be loaded.",
-                                "Please check if you are using an up-to-date JIPipe version.",
-                                ExceptionUtils.getStackTrace(e)));
+                        new UnspecifiedValidationReportContext().error()
+                                .title("Unable to load settings")
+                                .explanation("The project settings for the sheet with the ID '" + entry.getKey() + "' could not be loaded.")
+                                .solution("Please check if you are using an up-to-date JIPipe version.")
+                                .details(ExceptionUtils.getStackTrace(e))
+                                .report(report);
                     }
                 }
             }
@@ -1163,22 +1166,22 @@ public class JIPipeProject implements JIPipeValidatable {
             for (JIPipeGraphNode graphNode : ImmutableList.copyOf(graph.getGraphNodes())) {
                 UUID compartmentUUIDInGraph = graphNode.getCompartmentUUIDInParentGraph();
                 if (compartmentUUIDInGraph == null || !compartments.containsKey(compartmentUUIDInGraph)) {
-                    report.add(new JIPipeValidationReportEntry(JIPipeValidationReportEntryLevel.Warning,
-                            JIPipeValidationReportContext.UNSPECIFIED.node(graphNode),
-                            "Node has no compartment!",
-                            "The node '" + graphNode.getDisplayName() + "' has no compartment assigned!",
-                            "This was repaired automatically by deleting the node. Please inform the JIPipe developers about this issue.",
-                            JsonUtils.toPrettyJsonString(graphNode)));
+                    new GraphNodeValidationReportContext(graphNode).warning()
+                            .title("Node has no compartment!")
+                            .explanation("The node '" + graphNode.getDisplayName() + "' has no compartment assigned!")
+                            .solution("This was repaired automatically by deleting the node. Please inform the JIPipe developers about this issue.")
+                            .details(JsonUtils.toPrettyJsonString(graphNode))
+                            .report(report);
                     graph.removeNode(graphNode, false);
                 } else {
                     JIPipeGraphNode compartmentNode = compartmentGraph.getNodeByUUID(compartmentUUIDInGraph);
                     if (compartmentNode == null) {
-                        report.add(new JIPipeValidationReportEntry(JIPipeValidationReportEntryLevel.Warning,
-                                JIPipeValidationReportContext.UNSPECIFIED.node(compartmentNode),
-                                "Node has invalid compartment!",
-                                "The node '" + graphNode.getDisplayName() + "' is assigned to compartment '" + compartmentUUIDInGraph + "', but it does not exist!",
-                                "This was repaired automatically by deleting the node. Please inform the JIPipe developers about this issue.",
-                                JsonUtils.toPrettyJsonString(graphNode)));
+                        new GraphNodeValidationReportContext(compartmentNode).warning()
+                                .title("Node has invalid compartment!")
+                                .explanation("The node '" + graphNode.getDisplayName() + "' is assigned to compartment '" + compartmentUUIDInGraph + "', but it does not exist!")
+                                .solution("This was repaired automatically by deleting the node. Please inform the JIPipe developers about this issue.")
+                                .details(JsonUtils.toPrettyJsonString(graphNode))
+                                .report(report);
                         graph.removeNode(graphNode, false);
                     }
                 }

@@ -323,8 +323,8 @@ public abstract class JIPipeValidationReportContext {
          * @param report the report to add the entry to
          */
         public void report(JIPipeValidationReport report) {
-            JIPipeValidationReportEntry entry = new JIPipeValidationReportEntry(level, context, title, explanation, solution, details);
-            report.add(entry);
+            // The entry is created and added by the builder pattern
+            report.add(new JIPipeValidationReportEntry(level, context, title, explanation, solution, details));
         }
         
         /**
@@ -332,6 +332,7 @@ public abstract class JIPipeValidationReportContext {
          * @return the created validation report entry
          */
         public JIPipeValidationReportEntry build() {
+            // The entry is created using the builder pattern
             return new JIPipeValidationReportEntry(level, context, title, explanation, solution, details);
         }
     }

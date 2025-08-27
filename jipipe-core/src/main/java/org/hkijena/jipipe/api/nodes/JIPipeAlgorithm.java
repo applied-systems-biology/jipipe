@@ -224,12 +224,9 @@ public abstract class JIPipeAlgorithm extends JIPipeGraphNode {
                 deserializeLegacyCustomExpressionVariables(node, "custom-filter-variables");
                 deserializeLegacyCustomExpressionVariables(node, "custom-variables");
             } catch (Throwable e) {
-                issues.report(new JIPipeValidationReportEntry(JIPipeValidationReportEntryLevel.Error,
-                        new GraphNodeValidationReportContext(this),
-                        "Error while reading parameters",
-                        "A parameter could not be upgraded to the JIPipe 3.x format. Please report this to the JIPipe developer.",
-                        "Please report this to the JIPipe developer",
-                        e.toString()));
+                new GraphNodeValidationReportContext(this).error().title("Error while reading parameters")
+                        .explanation("A parameter could not be upgraded to the JIPipe 3.x format. Please report this to the JIPipe developer.")
+                        .solution("Please report this to the JIPipe developer").details(e.toString()).report(issues);
                 e.printStackTrace();
             }
         }

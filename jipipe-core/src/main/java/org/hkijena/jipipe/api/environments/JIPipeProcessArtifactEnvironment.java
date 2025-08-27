@@ -112,10 +112,11 @@ public abstract class JIPipeProcessArtifactEnvironment extends JIPipeArtifactEnv
         super.reportValidity(reportContext, reportSettings, report);
         if (!isLoadFromArtifact()) {
             if (StringUtils.isNullOrEmpty(getExecutablePath()) || !Files.isRegularFile(getAbsoluteExecutablePath())) {
-                report.add(new JIPipeValidationReportEntry(JIPipeValidationReportEntryLevel.Error, reportContext,
-                        "Executable does not exist",
-                        "You need to provide an executable",
-                        "Provide an executable"));
+                reportContext.error()
+                        .title("Executable does not exist")
+                        .explanation("You need to provide an executable")
+                        .solution("Provide an executable")
+                        .report(report);
             }
         }
     }

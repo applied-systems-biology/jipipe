@@ -32,37 +32,23 @@ public class JIPipeValidationRuntimeException extends RuntimeException {
     public JIPipeValidationRuntimeException(Throwable e, String title, String explanation, String solution) {
         super(e);
         this.report = new JIPipeValidationReport();
-        report.add(new JIPipeValidationReportEntry(JIPipeValidationReportEntryLevel.Error,
-                new CustomValidationReportContext(e.toString()),
-                title,
-                explanation,
-                solution,
-                ExceptionUtils.getStackTrace(e)));
+        JIPipeValidationReportContext context = new CustomValidationReportContext(e.toString());
+        context.error().title(title).explanation(explanation).solution(solution).details(ExceptionUtils.getStackTrace(e)).report(report);
         if (e instanceof JIPipeValidationRuntimeException) {
             mergeReport(((JIPipeValidationRuntimeException) e).report, null);
         } else {
-            report.add(new JIPipeValidationReportEntry(JIPipeValidationReportEntryLevel.Error,
-                    new InternalErrorValidationReportContext(),
-                    e.toString(),
-                    e.getMessage(),
-                    null,
-                    ExceptionUtils.getStackTrace(e)));
+            context.error().title(e.toString()).explanation(e.getMessage()).solution(null).details(ExceptionUtils.getStackTrace(e)).report(report);
         }
     }
 
     public JIPipeValidationRuntimeException(JIPipeValidationReportContext context, Throwable e, String title, String explanation, String solution) {
         super(e);
         this.report = new JIPipeValidationReport();
-        report.add(new JIPipeValidationReportEntry(JIPipeValidationReportEntryLevel.Error, context, title, explanation, solution, ExceptionUtils.getStackTrace(e)));
+        context.error().title(title).explanation(explanation).solution(solution).details(ExceptionUtils.getStackTrace(e)).report(report);
         if (e instanceof JIPipeValidationRuntimeException) {
             mergeReport(((JIPipeValidationRuntimeException) e).report, context);
         } else {
-            report.add(new JIPipeValidationReportEntry(JIPipeValidationReportEntryLevel.Error,
-                    context,
-                    e.toString(),
-                    e.getMessage(),
-                    null,
-                    ExceptionUtils.getStackTrace(e)));
+            context.error().title(e.toString()).explanation(e.getMessage()).solution(null).details(ExceptionUtils.getStackTrace(e)).report(report);
         }
     }
 
@@ -70,12 +56,10 @@ public class JIPipeValidationRuntimeException extends RuntimeException {
         boolean applicableAlternative = alternativeContext != null && !alternativeContext.traverseNavigable().isEmpty();
         for (JIPipeValidationReportEntry entry : otherReport) {
             if (applicableAlternative && entry.getContext().traverseNavigable().isEmpty()) {
-                report.add(new JIPipeValidationReportEntry(entry.getLevel(),
-                        alternativeContext,
-                        entry.getTitle(),
-                        entry.getExplanation(),
-                        entry.getSolution(),
-                        entry.getDetails()));
+                switch (entry.getLevel()) {
+                    case Error -> alternativeContext.error().title(entry.getTitle()).explanation(entry.getExplanation()).solution(entry.getSolution()).details(entry.getDetails()).report(report);
+                    case Warning -> alternativeContext.warning().title(entry.getTitle()).explanation(entry.getExplanation()).solution(entry.getSolution()).details(entry.getDetails()).report(report);
+                }
             } else {
                 report.add(entry);
             }

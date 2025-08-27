@@ -237,12 +237,12 @@ public abstract class JIPipeMergingAlgorithm extends JIPipeParameterSlotAlgorith
         } else {
             for (JIPipeMultiIterationStep batch : iterationSteps) {
                 if (batch.isIncomplete()) {
-                    throw new JIPipeValidationRuntimeException(new JIPipeValidationReportEntry(JIPipeValidationReportEntryLevel.Error, new GraphNodeValidationReportContext(this),
-                            "Incomplete data set found!",
-                            "The algorithm needs to assign input a unique data set via annotations, but there is " +
-                                    "not a data set for each input slot.",
-                            "Please check the input of the algorithm by running the quick run on each input algorithm. " +
-                                    "You can also choose to skip incomplete data sets, although you might lose data in those cases."));
+                    throw new JIPipeValidationRuntimeException(new GraphNodeValidationReportContext(this).error()
+                            .title("Incomplete data set found!")
+                            .explanation("The algorithm needs to assign input a unique data set via annotations, but there is " +
+                                    "not a data set for each input slot.")
+                            .solution("Please check the input of the algorithm by running the quick run on each input algorithm. " +
+                                    "You can also choose to skip incomplete data sets, although you might lose data in those cases.").build());
                 }
             }
         }

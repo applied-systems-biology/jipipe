@@ -122,10 +122,10 @@ public abstract class JIPipeSimpleIteratingAlgorithm extends JIPipeParameterSlot
     @Override
     public void runParameterSet(JIPipeGraphNodeRunContext runContext, JIPipeProgressInfo progressInfo, List<JIPipeTextAnnotation> parameterAnnotations) {
         if (getDataInputSlotCount() > 1)
-            throw new JIPipeValidationRuntimeException(new JIPipeValidationReportEntry(JIPipeValidationReportEntryLevel.Error, new GraphNodeValidationReportContext(this),
-                    "Too many input slots for JIPipeSimpleIteratingAlgorithm!",
-                    "The developer of this algorithm chose the wrong node type. The one that was selected only supports at most one input.",
-                    "Please contact the plugin developers and tell them to let algorithm '" + getInfo().getId() + "' inherit from 'JIPipeIteratingAlgorithm' instead."));
+            throw new JIPipeValidationRuntimeException(new GraphNodeValidationReportContext(this).error()
+                    .title("Too many input slots for JIPipeSimpleIteratingAlgorithm!")
+                    .explanation("The developer of this algorithm chose the wrong node type. The one that was selected only supports at most one input.")
+                    .solution("Please contact the plugin developers and tell them to let algorithm '" + getInfo().getId() + "' inherit from 'JIPipeIteratingAlgorithm' instead.").build());
         if (isPassThrough() && canPassThrough()) {
             progressInfo.log("Data passed through to output");
             runPassThrough(runContext, progressInfo);
@@ -380,10 +380,9 @@ public abstract class JIPipeSimpleIteratingAlgorithm extends JIPipeParameterSlot
     @Override
     public void reportValidity(JIPipeValidationReportContext reportContext, JIPipeValidationReportSettings reportSettings, JIPipeValidationReport report) {
         if (getDataInputSlots().size() > 1) {
-            report.add(new JIPipeValidationReportEntry(JIPipeValidationReportEntryLevel.Error, reportContext,
-                    "Error in source code detected!",
-                    "The developer of this algorithm chose the wrong node type. The one that was selected only supports at most one input.",
-                    "Please contact the plugin developers and tell them to let algorithm '" + getInfo().getId() + "' inherit from 'JIPipeIteratingAlgorithm' instead."));
+            reportContext.error().title("Error in source code detected!")
+                    .explanation("The developer of this algorithm chose the wrong node type. The one that was selected only supports at most one input.")
+                    .solution("Please contact the plugin developers and tell them to let algorithm '" + getInfo().getId() + "' inherit from 'JIPipeIteratingAlgorithm' instead.").report(report);
         }
     }
 

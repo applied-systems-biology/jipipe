@@ -136,12 +136,13 @@ public class GraphNodeParameterReferenceGroupCollection extends AbstractJIPipePa
             for (GraphNodeParameterReferenceGroup parameterReferenceGroup : parameterReferenceGroups) {
                 for (GraphNodeParameterReference reference : parameterReferenceGroup.getContent()) {
                     if (reference.resolve(tree) == null) {
-                        report.add(new JIPipeValidationReportEntry(JIPipeValidationReportEntryLevel.Error, reportContext,
-                                "Could not find parameter!",
-                                "There is a an exported parameter referencing the internal ID '" + reference.getPath() + "'. " +
-                                        "It could not be found.",
-                                "Please check if you did not delete the node that contains the referenced parameter.",
-                                JsonUtils.toPrettyJsonString(this)));
+                        reportContext.error()
+                                .title("Could not find parameter!")
+                                .explanation("There is a an exported parameter referencing the internal ID '" + reference.getPath() + "'. " +
+                                        "It could not be found.")
+                                .solution("Please check if you did not delete the node that contains the referenced parameter.")
+                                .details(JsonUtils.toPrettyJsonString(this))
+                                .report(report);
                     }
                 }
             }

@@ -284,17 +284,29 @@ public class JIPipeArtifact extends AbstractJIPipeParameterCollection implements
     @Override
     public void reportValidity(JIPipeValidationReportContext reportContext, JIPipeValidationReportSettings reportSettings, JIPipeValidationReport report) {
         if (StringUtils.isNullOrEmpty(artifactId)) {
-            report.report(new JIPipeValidationReportEntry(JIPipeValidationReportEntryLevel.Error, reportContext, "Invalid artifact ID", "The artifact ID cannot be empty!"));
+            reportContext.error()
+                    .title("Invalid artifact ID")
+                    .explanation("The artifact ID cannot be empty!")
+                    .report(report);
         } else {
             if (!artifactId.matches("[a-z]+[a-z0-9_]*")) {
-                report.report(new JIPipeValidationReportEntry(JIPipeValidationReportEntryLevel.Error, reportContext, "Invalid artifact ID", "The artifact ID must be lowercase and can only contain alphanumeric characters and underscores!"));
+                reportContext.error()
+                        .title("Invalid artifact ID")
+                        .explanation("The artifact ID must be lowercase and can only contain alphanumeric characters and underscores!")
+                        .report(report);
             }
         }
         if (StringUtils.isNullOrEmpty(version)) {
-            report.report(new JIPipeValidationReportEntry(JIPipeValidationReportEntryLevel.Error, reportContext, "Invalid version", "The version cannot be empty!"));
+            reportContext.error()
+                    .title("Invalid version")
+                    .explanation("The version cannot be empty!")
+                    .report(report);
         } else {
             if (!StringUtils.isValidVersion(version)) {
-                report.report(new JIPipeValidationReportEntry(JIPipeValidationReportEntryLevel.Error, reportContext, "Invalid version", "The version is not valid!"));
+                reportContext.error()
+                        .title("Invalid version")
+                        .explanation("The version is not valid!")
+                        .report(report);
             }
         }
     }

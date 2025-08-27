@@ -82,7 +82,10 @@ public abstract class JIPipeArtifactEnvironment extends JIPipeEnvironment {
     @Override
     public void reportValidity(JIPipeValidationReportContext reportContext, JIPipeValidationReportSettings reportSettings, JIPipeValidationReport report) {
         if (isLoadFromArtifact() && StringUtils.isNullOrEmpty(getArtifactQuery().getQuery())) {
-            report.add(new JIPipeValidationReportEntry(JIPipeValidationReportEntryLevel.Error, reportContext, "Invalid artifact query", "The artifact query cannot be empty!"));
+            reportContext.error()
+                    .title("Invalid artifact query")
+                    .explanation("The artifact query cannot be empty!")
+                    .report(report);
         }
     }
 

@@ -341,18 +341,18 @@ public class JsonNodeInfo extends AbstractJIPipeParameterCollection implements J
     @Override
     public void reportValidity(JIPipeValidationReportContext reportContext, JIPipeValidationReportSettings reportSettings, JIPipeValidationReport report) {
         if (id == null || id.isEmpty()) {
-            report.add(new JIPipeValidationReportEntry(JIPipeValidationReportEntryLevel.Error,
-                    reportContext.jsonNode(this),
-                    "ID is null or empty!",
-                    "Algorithms must have a unique and non-empty ID.",
-                    "Please provide a valid algorithm ID."));
+            new JsonNodeInfoValidationReportContext(this).error()
+                    .title("ID is null or empty!")
+                    .explanation("Algorithms must have a unique and non-empty ID.")
+                    .solution("Please provide a valid algorithm ID.")
+                    .report(report);
         }
         if (!getCategory().userCanCreate() || !getCategory().userCanDelete()) {
-            report.add(new JIPipeValidationReportEntry(JIPipeValidationReportEntryLevel.Error,
-                    reportContext.jsonNode(this),
-                    "The selected category is reserved for internal usage!",
-                    "This is reserved for algorithm nodes used by JIPipe to control program flow.",
-                    "Please choose another algorithm category."));
+            new JsonNodeInfoValidationReportContext(this).error()
+                    .title("The selected category is reserved for internal usage!")
+                    .explanation("This is reserved for algorithm nodes used by JIPipe to control program flow.")
+                    .solution("Please choose another algorithm category.")
+                    .report(report);
         }
         report.report(reportContext.parameter(this, "Exported parameters", "exported-parameters"), exportedParameters);
 
