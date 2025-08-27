@@ -153,7 +153,7 @@ public class SingleImageJAlgorithmRunConfiguration implements JIPipeValidatable,
     public void reportValidity(JIPipeValidationReportContext reportContext, JIPipeValidationReportSettings reportSettings, JIPipeValidationReport report) {
         if (algorithm == null) {
             report.add(new JIPipeValidationReportEntry(JIPipeValidationReportEntryLevel.Error,
-                    new APIErrorValidationReportContext(),
+                    reportContext.apiError(),
                     "No algorithm was provided!",
                     "This is an programming error. Please contact the JIPipe author.",
                     null,

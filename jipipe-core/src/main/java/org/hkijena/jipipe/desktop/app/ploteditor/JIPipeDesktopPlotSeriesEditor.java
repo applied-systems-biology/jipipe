@@ -150,7 +150,7 @@ public class JIPipeDesktopPlotSeriesEditor extends AbstractJIPipeParameterCollec
             UIPlotDataSeriesColumnEnum parameter = parameterAccess.get(UIPlotDataSeriesColumnEnum.class);
             if (parameter.getValue() == null) {
                 report.add(new JIPipeValidationReportEntry(JIPipeValidationReportEntryLevel.Error,
-                        new CustomValidationReportContext("Data assignments: " + entry.getKey()),
+                        reportContext.custom("Data assignments: " + entry.getKey()),
                         "No data selected!",
                         "The plot requires that you select a data source.",
                         "Please select a data source."));
@@ -165,7 +165,7 @@ public class JIPipeDesktopPlotSeriesEditor extends AbstractJIPipeParameterCollec
         }
         if (rows == 0) {
             report.add(new JIPipeValidationReportEntry(JIPipeValidationReportEntryLevel.Error,
-                    new CustomValidationReportContext("Data integrity"),
+                    reportContext.custom("Data integrity"),
                     "Selected data is empty!",
                     "The plot requires that you select a data source.",
                     "Please select at least one data source with a known row count."));

@@ -493,7 +493,7 @@ public class JIPipeProject implements JIPipeValidatable {
             report.report(new JIPipeValidationReportEntry(JIPipeValidationReportEntryLevel.Error, new UnspecifiedValidationReportContext(), "Project must be saved", "The project must be saved at least once"));
         } else {
             for (JIPipeGraphNode node : graph.getGraphNodes()) {
-                node.reportArchiveValidation(new GraphNodeValidationReportContext(node), report, getWorkDirectory());
+                node.reportArchiveValidation(JIPipeValidationReportContext.UNSPECIFIED.node(node), report, getWorkDirectory());
             }
         }
         return report;
@@ -1164,7 +1164,7 @@ public class JIPipeProject implements JIPipeValidatable {
                 UUID compartmentUUIDInGraph = graphNode.getCompartmentUUIDInParentGraph();
                 if (compartmentUUIDInGraph == null || !compartments.containsKey(compartmentUUIDInGraph)) {
                     report.add(new JIPipeValidationReportEntry(JIPipeValidationReportEntryLevel.Warning,
-                            new GraphNodeValidationReportContext(graphNode),
+                            JIPipeValidationReportContext.UNSPECIFIED.node(graphNode),
                             "Node has no compartment!",
                             "The node '" + graphNode.getDisplayName() + "' has no compartment assigned!",
                             "This was repaired automatically by deleting the node. Please inform the JIPipe developers about this issue.",
@@ -1174,7 +1174,7 @@ public class JIPipeProject implements JIPipeValidatable {
                     JIPipeGraphNode compartmentNode = compartmentGraph.getNodeByUUID(compartmentUUIDInGraph);
                     if (compartmentNode == null) {
                         report.add(new JIPipeValidationReportEntry(JIPipeValidationReportEntryLevel.Warning,
-                                new GraphNodeValidationReportContext(compartmentNode),
+                                JIPipeValidationReportContext.UNSPECIFIED.node(compartmentNode),
                                 "Node has invalid compartment!",
                                 "The node '" + graphNode.getDisplayName() + "' is assigned to compartment '" + compartmentUUIDInGraph + "', but it does not exist!",
                                 "This was repaired automatically by deleting the node. Please inform the JIPipe developers about this issue.",

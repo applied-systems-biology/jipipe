@@ -362,7 +362,7 @@ public class JIPipeDynamicParameterCollection implements JIPipeCustomParameterCo
         for (Map.Entry<String, JIPipeMutableParameterAccess> entry : dynamicParameters.entrySet()) {
             Object o = entry.getValue().get(Object.class);
             if (o instanceof JIPipeValidatable) {
-                report.report(new ParameterValidationReportContext(reportContext, this, entry.getValue().getName(), entry.getKey()), (JIPipeValidatable) o);
+                report.report(reportContext.parameter(this, entry.getValue().getName(), entry.getKey()), (JIPipeValidatable) o);
             }
         }
     }

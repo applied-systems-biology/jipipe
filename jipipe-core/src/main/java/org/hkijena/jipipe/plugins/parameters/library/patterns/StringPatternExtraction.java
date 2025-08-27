@@ -129,7 +129,7 @@ public class StringPatternExtraction implements Function<String, String>, JIPipe
             case SplitAndPick:
                 if (StringUtils.isNullOrEmpty(splitCharacter)) {
                     report.add(new JIPipeValidationReportEntry(JIPipeValidationReportEntryLevel.Error,
-                            new CustomValidationReportContext(reportContext, "Split character"),
+                            reportContext.custom("Split character"),
                             "Empty split character!",
                             "The split character cannot be empty!"));
                 }
@@ -137,13 +137,13 @@ public class StringPatternExtraction implements Function<String, String>, JIPipe
             case SplitAndFind:
                 if (StringUtils.isNullOrEmpty(splitCharacter)) {
                     report.add(new JIPipeValidationReportEntry(JIPipeValidationReportEntryLevel.Error,
-                            new CustomValidationReportContext(reportContext, "Split character"),
+                            reportContext.custom("Split character"),
                             "Empty split character!",
                             "The split character cannot be empty!"));
                 }
                 if (splitPickedIndex < 0) {
                     report.add(new JIPipeValidationReportEntry(JIPipeValidationReportEntryLevel.Error,
-                            new CustomValidationReportContext(reportContext, "Selected index"),
+                            reportContext.custom("Selected index"),
                             "Negative selected index!",
                             "The selected index cannot be negative!"));
                 }
@@ -153,7 +153,7 @@ public class StringPatternExtraction implements Function<String, String>, JIPipe
                     Pattern.compile(regexString);
                 } catch (PatternSyntaxException e) {
                     report.add(new JIPipeValidationReportEntry(JIPipeValidationReportEntryLevel.Error,
-                            new CustomValidationReportContext(reportContext, "RegEx"),
+                            reportContext.custom("RegEx"),
                             "RegEx syntax is wrong!",
                             "The regular expression string is wrong.",
                             "Please check the syntax. If you are not familiar with it, you can find plenty of resources online."));

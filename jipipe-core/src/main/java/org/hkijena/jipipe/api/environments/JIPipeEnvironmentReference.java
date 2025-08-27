@@ -71,7 +71,7 @@ public class JIPipeEnvironmentReference<T extends JIPipeEnvironment> implements 
                                 "Please go into the JIPipe application settings and find the configuration for '" + info.getName() + "'. Ensure that the environment is correctly configured."));
                     }
                     case SourceType.Project -> {
-                        var context = getSource() instanceof JIPipeProject ? new ProjectSettingsValidationReportContext((JIPipeProject)getSource()) : new UnspecifiedValidationReportContext();
+                        var context = getSource() instanceof JIPipeProject ? reportContext.projectSettings((JIPipeProject)getSource()) : JIPipeValidationReportContext.UNSPECIFIED;
                         report.add(new JIPipeValidationReportEntry(JIPipeValidationReportEntryLevel.Error,
                                 context,
                                 "Misconfigured environment",
@@ -79,7 +79,7 @@ public class JIPipeEnvironmentReference<T extends JIPipeEnvironment> implements 
                                 "Please go to Project > Project settings and find the configuration for '" + info.getName() + "'. Ensure that the environment is correctly configured."));
                     }
                     case SourceType.Node -> {
-                        var context = getSource() instanceof JIPipeGraphNode ? new GraphNodeValidationReportContext((JIPipeGraphNode)getSource()) : new UnspecifiedValidationReportContext();
+                        var context = getSource() instanceof JIPipeGraphNode ? reportContext.node((JIPipeGraphNode)getSource()) : JIPipeValidationReportContext.UNSPECIFIED;
                         report.add(new JIPipeValidationReportEntry(JIPipeValidationReportEntryLevel.Error,
                                 context,
                                 "Misconfigured environment",

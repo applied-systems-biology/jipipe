@@ -342,22 +342,22 @@ public class JsonNodeInfo extends AbstractJIPipeParameterCollection implements J
     public void reportValidity(JIPipeValidationReportContext reportContext, JIPipeValidationReportSettings reportSettings, JIPipeValidationReport report) {
         if (id == null || id.isEmpty()) {
             report.add(new JIPipeValidationReportEntry(JIPipeValidationReportEntryLevel.Error,
-                    new JsonNodeInfoValidationReportContext(this),
+                    reportContext.jsonNode(this),
                     "ID is null or empty!",
                     "Algorithms must have a unique and non-empty ID.",
                     "Please provide a valid algorithm ID."));
         }
         if (!getCategory().userCanCreate() || !getCategory().userCanDelete()) {
             report.add(new JIPipeValidationReportEntry(JIPipeValidationReportEntryLevel.Error,
-                    new JsonNodeInfoValidationReportContext(this),
+                    reportContext.jsonNode(this),
                     "The selected category is reserved for internal usage!",
                     "This is reserved for algorithm nodes used by JIPipe to control program flow.",
                     "Please choose another algorithm category."));
         }
-        report.report(new ParameterValidationReportContext(this, "Exported parameters", "exported-parameters"), exportedParameters);
+        report.report(reportContext.parameter(this, "Exported parameters", "exported-parameters"), exportedParameters);
 
         // Only check if the graph creates a valid group output
-        report.report(new ParameterValidationReportContext(this, "Wrapped graph", "wrapped-graph"), getGraph());
+        report.report(reportContext.parameter(this, "Wrapped graph", "wrapped-graph"), getGraph());
     }
 
     @Override

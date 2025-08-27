@@ -74,10 +74,10 @@ public abstract class PairParameter<K, V> implements JIPipeValidatable, Map.Entr
     @Override
     public void reportValidity(JIPipeValidationReportContext reportContext, JIPipeValidationReportSettings reportSettings, JIPipeValidationReport report) {
         if (key instanceof JIPipeValidatable) {
-            report.report(new CustomValidationReportContext(reportContext, "Key"), (JIPipeValidatable) key);
+            report.report(reportContext.custom("Key"), (JIPipeValidatable) key);
         }
         if (value instanceof JIPipeValidatable) {
-            report.report(new CustomValidationReportContext(reportContext, "Value"), (JIPipeValidatable) value);
+            report.report(reportContext.custom("Value"), (JIPipeValidatable) value);
         }
     }
 

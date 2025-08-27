@@ -1484,7 +1484,7 @@ public class JIPipeGraph implements JIPipeValidatable, JIPipeFunctionallyCompara
                     continue;
                 }
             }
-            report.report(new GraphNodeValidationReportContext(reportContext, node), node);
+            report.report(reportContext.node(node), node);
         }
         if (reportSettings.isStrict() || !JIPipeRuntimeApplicationSettings.getInstance().isAllowSkipAlgorithmsWithoutInput()) {
             for (JIPipeDataSlot slot : graph.vertexSet()) {
@@ -1493,7 +1493,7 @@ public class JIPipeGraph implements JIPipeValidatable, JIPipeFunctionallyCompara
                 if (slot.isInput()) {
                     if (!slot.getInfo().isOptional() && graph.incomingEdgesOf(slot).isEmpty()) {
                         report.add(new JIPipeValidationReportEntry(JIPipeValidationReportEntryLevel.Error,
-                                new GraphNodeSlotValidationReportContext(reportContext, slot.getNode(), slot.getName(), slot.getSlotType()),
+                                reportContext.slot(slot.getNode(), slot.getName(), slot.getSlotType()),
                                 "An input slot has no incoming data!",
                                 "Input slots must always be provided with input data.",
                                 "Please connect the slot to an output of another algorithm."));
@@ -1549,7 +1549,7 @@ public class JIPipeGraph implements JIPipeValidatable, JIPipeFunctionallyCompara
                 }
                 if (!algorithm.isEnabled()) {
                     report.add(new JIPipeValidationReportEntry(JIPipeValidationReportEntryLevel.Error,
-                            new GraphNodeValidationReportContext(context, algorithm),
+                            context.node(algorithm),
                             "Dependency algorithm is deactivated!",
                             "A dependency algorithm is not enabled. It blocks the execution of all following algorithms.",
                             "Check if all dependency algorithms are enabled. If you just want to skip the processing, try 'Pass through'."));
@@ -1561,7 +1561,7 @@ public class JIPipeGraph implements JIPipeValidatable, JIPipeFunctionallyCompara
                     continue;
                 if (!slot.getInfo().isOptional() && graph.incomingEdgesOf(slot).isEmpty()) {
                     report.add(new JIPipeValidationReportEntry(JIPipeValidationReportEntryLevel.Error,
-                            new GraphNodeSlotValidationReportContext(context, slot.getNode(), slot.getName(), slot.getSlotType()),
+                            context.slot(slot.getNode(), slot.getName(), slot.getSlotType()),
                             "An input slot has no incoming data!",
                             "Input slots must always be provided with input data.",
                             "Please connect the slot to an output of another algorithm."));
@@ -1569,7 +1569,7 @@ public class JIPipeGraph implements JIPipeValidatable, JIPipeFunctionallyCompara
                 }
             }
 
-            report.report(new GraphNodeValidationReportContext(context, node), node);
+            report.report(context.node(node), node);
         }
     }
 

@@ -213,10 +213,10 @@ public class JFreeChartPlotEditor extends JIPipeDesktopWorkbenchPanel implements
                     "Please select a plot type!"));
         }
         if (currentPlot != null) {
-            report.report(new CustomValidationReportContext("Plot parameters"), currentPlot);
+            report.report(reportContext.custom("Plot parameters"), currentPlot);
         }
         for (int i = 0; i < seriesBuilders.size(); ++i) {
-            report.report(new CustomValidationReportContext("Series #" + (i + 1)), seriesBuilders.get(i));
+            report.report(reportContext.custom("Series #" + (i + 1)), seriesBuilders.get(i));
         }
 
     }

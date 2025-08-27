@@ -93,7 +93,7 @@ public class ParameterUtils {
                                 } catch (Exception | Error e) {
                                     e.printStackTrace();
                                     issues.add(new JIPipeValidationReportEntry(JIPipeValidationReportEntryLevel.Error,
-                                            new ParameterValidationReportContext(context, parameterCollection, parameterAccess.getName(), key),
+                                            context.parameter(parameterCollection, parameterAccess.getName(), key),
                                             "Could not load parameter '" + key + "'!",
                                             "The data might be not compatible with your operating system or from an older or newer JIPipe version.",
                                             "Please check the value of the parameter.",

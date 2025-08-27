@@ -326,14 +326,14 @@ public class JIPipeJsonPlugin extends AbstractJIPipeParameterCollection implemen
     public void reportValidity(JIPipeValidationReportContext reportContext, JIPipeValidationReportSettings reportSettings, JIPipeValidationReport report) {
         if (StringUtils.isNullOrEmpty(getDependencyId())) {
             report.add(new JIPipeValidationReportEntry(JIPipeValidationReportEntryLevel.Error,
-                    new ParameterValidationReportContext(reportContext, this, "Extension ID", "dependency-id"),
+                    reportContext.parameter(this, "Extension ID", "dependency-id"),
                     "The ID is empty!",
                     "A JSON extension must be identified with a unique ID to allow JIPipe to find dependencies.",
                     "Please provide a valid ID.",
                     JsonUtils.toPrettyJsonString(this)));
         } else if (!getDependencyId().contains(":")) {
             report.add(new JIPipeValidationReportEntry(JIPipeValidationReportEntryLevel.Error,
-                    new ParameterValidationReportContext(reportContext, this, "Extension ID", "dependency-id"),
+                    reportContext.parameter(this, "Extension ID", "dependency-id"),
                     "Malformed ID!",
                     "The ID should contain some information about the plugin author (organization, ...) to prevent future collisions.",
                     "The ID must have following structure: <Organization>:<Name> e.g. org.hkijena.jipipe:my-plugin",
@@ -341,7 +341,7 @@ public class JIPipeJsonPlugin extends AbstractJIPipeParameterCollection implemen
         }
         if (StringUtils.isNullOrEmpty(getDependencyVersion())) {
             report.add(new JIPipeValidationReportEntry(JIPipeValidationReportEntryLevel.Error,
-                    new ParameterValidationReportContext(reportContext, this, "Extension version", "version"),
+                    reportContext.parameter(this, "Extension version", "version"),
                     "The version is empty!",
                     "This allows users of your extension to better get help if issues arise.",
                     "Please provide a valid version number. It has usually following format x.y.z.w",
@@ -349,7 +349,7 @@ public class JIPipeJsonPlugin extends AbstractJIPipeParameterCollection implemen
         }
         if (StringUtils.isNullOrEmpty(getMetadata().getName()) || "New project".equals(getMetadata().getName())) {
             report.add(new JIPipeValidationReportEntry(JIPipeValidationReportEntryLevel.Error,
-                    new ParameterValidationReportContext(reportContext, this, "Name", "name"),
+                    reportContext.parameter(this, "Name", "name"),
                     "Invalid name!",
                     "Your plugin should have a short and meaningful name.",
                     "Please provide a meaningful name for your plugin.",
@@ -358,7 +358,7 @@ public class JIPipeJsonPlugin extends AbstractJIPipeParameterCollection implemen
         if (nodeInfos == null)
             deserializeNodeInfos();
         for (JsonNodeInfo info : nodeInfos) {
-            report.report(new JsonNodeInfoValidationReportContext(reportContext, info), info);
+            report.report(reportContext.jsonNode(info), info);
         }
         if (nodeInfos.size() != nodeInfos.stream().map(JsonNodeInfo::getId).collect(Collectors.toSet()).size()) {
             report.add(new JIPipeValidationReportEntry(JIPipeValidationReportEntryLevel.Error,

@@ -277,7 +277,7 @@ public class JIPipeNodeGroup extends JIPipeGraphWrapperAlgorithm implements JIPi
     @Override
     public void reportValidity(JIPipeValidationReportContext reportContext, JIPipeValidationReportSettings reportSettings, JIPipeValidationReport report) {
         super.reportValidity(reportContext, reportSettings, report);
-        report.report(new ParameterValidationReportContext(reportContext, this, "Exported parameters", "exported-parameters"), exportedParameters);
+        report.report(reportContext.parameter(this, "Exported parameters", "exported-parameters"), exportedParameters);
 
         // Only check if the graph creates a valid group output
         report.report(reportContext, getGroupOutput());

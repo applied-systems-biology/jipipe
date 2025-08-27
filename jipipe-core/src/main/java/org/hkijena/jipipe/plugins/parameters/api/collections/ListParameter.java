@@ -88,7 +88,7 @@ public abstract class ListParameter<T> extends ArrayList<T> implements JIPipeVal
         if (JIPipeValidatable.class.isAssignableFrom(contentClass)) {
             for (int i = 0; i < size(); i++) {
                 JIPipeValidatable validatable = (JIPipeValidatable) get(i);
-                report.report(new CustomValidationReportContext("Item #" + (i + 1)), validatable);
+                report.report(reportContext.custom("Item #" + (i + 1)), validatable);
             }
         }
     }
