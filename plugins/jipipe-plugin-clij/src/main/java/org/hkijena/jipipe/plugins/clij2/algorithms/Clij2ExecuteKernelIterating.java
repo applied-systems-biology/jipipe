@@ -209,11 +209,7 @@ public class Clij2ExecuteKernelIterating extends JIPipeIteratingAlgorithm {
         parameterNames.addAll(getOutputSlotMap().keySet());
         parameterNames.addAll(scriptParameters.getParameters().keySet());
         if (parameterNames.size() != (getInputSlotMap().size() + getOutputSlotMap().size() + scriptParameters.getParameters().size())) {
-            report.add(new JIPipeValidationReportEntry(JIPipeValidationReportEntryLevel.Error,
-                    new ParameterValidationReportContext(reportContext, this, "Kernel", "kernel"),
-                    "All slots and script parameters must have unique names!",
-                    "Input and output slots are passed to OpenCL, meaning that you cannot have duplicate input and output parameter and slot names.",
-                    "Rename the slots, so they are unique within the whole algorithm. Define new parameters that have a different unique key"));
+            reportContext.error().title("All slots and script parameters must have unique names!").explanation("Input and output slots are passed to OpenCL, meaning that you cannot have duplicate input and output parameter and slot names.").solution("Rename the slots, so they are unique within the whole algorithm. Define new parameters that have a different unique key.").report(report);
         }
     }
 }

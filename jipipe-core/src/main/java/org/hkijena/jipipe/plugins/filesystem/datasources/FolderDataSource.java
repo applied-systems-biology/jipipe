@@ -157,12 +157,12 @@ public class FolderDataSource extends JIPipeAlgorithm {
         Path source = getAbsoluteFolderPath();
         if (source == null || !Files.isDirectory(source)) {
             if (isNeedsToExist()) {
-                report.report(new JIPipeValidationReportEntry(JIPipeValidationReportEntryLevel.Error, context, "Unable to find directory", "The directory " + getFolderPath() + " does not exist"));
+                context.error().title("Unable to find directory").explanation("The directory " + getFolderPath() + " does not exist").report(report);
             }
         } else {
             if (!source.startsWith(originalBaseDirectory)) {
-                report.report(new JIPipeValidationReportEntry(JIPipeValidationReportEntryLevel.Warning, context, "Directory not relative to project", "The directory " + getFolderPath() + " is not located relative to the project file. " +
-                        "The resulting archive will contain directories with randomly generated names."));
+                context.warning().title("Directory not relative to project").explanation("The directory " + getFolderPath() + " is not located relative to the project file. " +
+                        "The resulting archive will contain directories with randomly generated names.").report(report);
             }
         }
     }
@@ -182,11 +182,7 @@ public class FolderDataSource extends JIPipeAlgorithm {
     @Override
     public void reportValidity(JIPipeValidationReportContext reportContext, JIPipeValidationReportSettings reportSettings, JIPipeValidationReport report) {
         if (needsToExist && (folderPath == null || !Files.isDirectory(getAbsoluteFolderPath()))) {
-            report.add(new JIPipeValidationReportEntry(JIPipeValidationReportEntryLevel.Warning,
-                    reportContext,
-                    "Input folder does not exist!",
-                    "The folder '" + getAbsoluteFolderPath() + "' does not exist.",
-                    "Please provide a valid input folder."));
+            reportContext.warning().title("Input folder does not exist!").explanation("The folder '" + getAbsoluteFolderPath() + "' does not exist.").solution("Please provide a valid input folder.").report(report);
         }
     }
 

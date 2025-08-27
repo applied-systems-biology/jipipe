@@ -101,24 +101,15 @@ public abstract class JIPipeDefaultNodeRegistrationTask implements JIPipeNodeReg
     public void reportValidity(JIPipeValidationReportContext reportContext, JIPipeValidationReportSettings reportSettings, JIPipeValidationReport report) {
         for (String id : dependencyAlgorithmIds) {
             if (!JIPipe.getNodes().hasNodeInfoWithId(id))
-                report.add(new JIPipeValidationReportEntry(JIPipeValidationReportEntryLevel.Error, reportContext.custom("Dependency algorithms"),
-                        "A dependency is missing!",
-                        "Dependency algorithm '" + id + "' is missing!",
-                        "Please make sure to install dependency plugins."));
+                reportContext.error().title("A dependency is missing!").explanation("Dependency algorithm '" + id + "' is missing!").solution("Please make sure to install dependency plugins.").report(report);
         }
         for (String id : dependencyDatatypeIds) {
             if (!JIPipe.getDataTypes().hasDatatypeWithId(id))
-                report.add(new JIPipeValidationReportEntry(JIPipeValidationReportEntryLevel.Error, reportContext.custom("Dependency data types"),
-                        "A dependency is missing!",
-                        "Dependency data type '" + id + "' is missing!",
-                        "Please make sure to install dependency plugins."));
+                reportContext.error().title("A dependency is missing!").explanation("Dependency data type '" + id + "' is missing!").solution("Please make sure to install dependency plugins.").report(report);
         }
         for (Class<? extends JIPipeData> dataClass : dependencyDatatypeClasses) {
             if (!JIPipe.getDataTypes().hasDataType(dataClass))
-                report.add(new JIPipeValidationReportEntry(JIPipeValidationReportEntryLevel.Error, reportContext.custom("Dependency data types"),
-                        "A dependency is missing!",
-                        "Dependency data type '" + dataClass.getCanonicalName() + "' is missing!",
-                        "Please make sure to install dependency plugins."));
+                reportContext.error().title("A dependency is missing!").explanation("Dependency data type '" + dataClass.getCanonicalName() + "' is missing!").solution("Please make sure to install dependency plugins.").report(report);
         }
     }
 }
