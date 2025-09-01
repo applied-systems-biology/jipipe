@@ -739,14 +739,14 @@ public class JIPipeDesktopGraphNodeUI extends JIPipeDesktopWorkbenchPanel implem
         }
         if (slot.isInput()) {
             int y = (int) (zoom * slotState.getNativeLocation().y);
-            return new PointRange(new Point((int) (zoom * (slotState.getNativeLocation().x + slotState.getNativeWidth() / 2)), y),
-                    new Point((int) (zoom * slotState.getNativeLocation().x) + 8, y),
-                    new Point((int) (zoom * (slotState.getNativeLocation().x + slotState.getNativeWidth())) - 8, y));
+            return new PointRange(new Point((int) (zoom * (slotState.getNativeLocation().x + slotState.getNativeWidth() / 2)) + getBaseSlotXShift(), y),
+                    new Point((int) (zoom * slotState.getNativeLocation().x) + 8 + getBaseSlotXShift(), y),
+                    new Point((int) (zoom * (slotState.getNativeLocation().x + slotState.getNativeWidth())) - 8 + getBaseSlotXShift(), y));
         } else {
             int y = (int) (zoom * (slotState.getNativeLocation().y + viewMode.getGridHeight()));
-            return new PointRange(new Point((int) (zoom * (slotState.getNativeLocation().x + slotState.getNativeWidth() / 2)), y),
-                    new Point((int) (zoom * slotState.getNativeLocation().x) + 8, y),
-                    new Point((int) (zoom * (slotState.getNativeLocation().x + slotState.getNativeWidth())) - 8, y));
+            return new PointRange(new Point((int) (zoom * (slotState.getNativeLocation().x + slotState.getNativeWidth() / 2)) + getBaseSlotXShift(), y),
+                    new Point((int) (zoom * slotState.getNativeLocation().x) + 8 + getBaseSlotXShift(), y),
+                    new Point((int) (zoom * (slotState.getNativeLocation().x + slotState.getNativeWidth())) - 8 + getBaseSlotXShift(), y));
         }
     }
 

@@ -487,11 +487,11 @@ public class JIPipeDesktopGraphCanvasUI extends JLayeredPane implements JIPipeDe
             if (algorithm instanceof JIPipeAnnotationGraphNode) {
                 ui = new JIPipeDesktopAnnotationGraphNodeUI(getDesktopWorkbench(), this, (JIPipeAnnotationGraphNode) algorithm);
                 registerNodeUIEvents(ui);
-                add(ui, new Integer(Integer.MIN_VALUE)); // Layered pane (initial value)
+                add(ui, Integer.valueOf(Integer.MIN_VALUE)); // Layered pane (initial value)
             } else {
                 ui = new JIPipeDesktopGraphNodeUI(getDesktopWorkbench(), this, algorithm);
                 registerNodeUIEvents(ui);
-                add(ui, new Integer(currentNodeLayer++)); // Layered pane
+                add(ui, Integer.valueOf(currentNodeLayer++)); // Layered pane
             }
 
             nodeUIs.put(algorithm, ui);
