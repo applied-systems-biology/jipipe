@@ -84,6 +84,11 @@ public abstract class JIPipeAnnotationGraphNode extends JIPipeGraphNode {
     }
 
     @Override
+    public Class<? extends JIPipeDesktopGraphNodeUI> getNodeUiClass() {
+        return JIPipeDesktopAnnotationGraphNodeUI.class;
+    }
+
+    @Override
     public void reportValidity(JIPipeValidationReportContext reportContext, JIPipeValidationReportSettings reportSettings, JIPipeValidationReport report) {
 
     }

@@ -80,6 +80,7 @@ import java.awt.dnd.DropTarget;
 import java.awt.event.*;
 import java.awt.geom.AffineTransform;
 import java.awt.image.BufferedImage;
+import java.lang.reflect.InvocationTargetException;
 import java.util.*;
 import java.util.List;
 import java.util.concurrent.locks.StampedLock;
@@ -484,15 +485,25 @@ public class JIPipeDesktopGraphCanvasUI extends JLayeredPane implements JIPipeDe
             if (nodeUIs.containsKey(algorithm))
                 continue;
 
-            if (algorithm instanceof JIPipeAnnotationGraphNode) {
-                ui = new JIPipeDesktopAnnotationGraphNodeUI(getDesktopWorkbench(), this, (JIPipeAnnotationGraphNode) algorithm);
-                registerNodeUIEvents(ui);
-                add(ui, Integer.valueOf(Integer.MIN_VALUE)); // Layered pane (initial value)
-            } else {
-                ui = new JIPipeDesktopGraphNodeUI(getDesktopWorkbench(), this, algorithm);
-                registerNodeUIEvents(ui);
-                add(ui, Integer.valueOf(currentNodeLayer++)); // Layered pane
+            try {
+                ui = algorithm.getNodeUiClass().getConstructor(JIPipeDesktopWorkbench.class, JIPipeDesktopGraphCanvasUI.class, JIPipeGraphNode.class).newInstance(
+                        getDesktopWorkbench(), this, algorithm
+                );
+            } catch (InstantiationException | IllegalAccessException | InvocationTargetException |
+                     NoSuchMethodException e) {
+                throw new RuntimeException(e);
             }
+
+            Integer layer;
+            registerNodeUIEvents(ui);
+
+            if (algorithm instanceof JIPipeAnnotationGraphNode) {
+                layer = Integer.MIN_VALUE;
+            } else {
+                layer = currentNodeLayer++;
+            }
+
+            add(ui, layer); // Layered pane
 
             nodeUIs.put(algorithm, ui);
             if (!ui.moveToStoredGridLocation(force)) {

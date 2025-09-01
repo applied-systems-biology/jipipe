@@ -1120,13 +1120,7 @@ public class JIPipeDesktopGraphNodeUI extends JIPipeDesktopWorkbenchPanel implem
             g2.fillRoundRect(x, indicatorY, width, height, arc, arc);
         }
         startX += 8 * zoom;
-        Image icon;
-
-        if (hasMouseOver) {
-            icon = JIPipe.RESOURCES.getIcon16("actions/configure.png").getImage();
-        } else {
-            icon = slotState.getIcon();
-        }
+        Image icon = slotState.getIcon();
         if (hasButtonHover) {
             g2.setPaint(buttonFillColorDarker);
             g2.fillRoundRect((int) Math.round(startX + 2 * zoom), (int) Math.round(centerY - 9 * zoom), (int) Math.round(18 * zoom), (int) Math.round(18 * zoom), 1, 1);

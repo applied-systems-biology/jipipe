@@ -42,6 +42,7 @@ import org.hkijena.jipipe.api.run.JIPipeGraphRun;
 import org.hkijena.jipipe.api.validation.JIPipeValidatable;
 import org.hkijena.jipipe.api.validation.JIPipeValidationReport;
 import org.hkijena.jipipe.api.validation.JIPipeValidationReportContext;
+import org.hkijena.jipipe.desktop.app.grapheditor.commons.nodeui.JIPipeDesktopGraphNodeUI;
 import org.hkijena.jipipe.plugins.parameters.api.collections.ListParameter;
 import org.hkijena.jipipe.plugins.parameters.library.markup.HTMLText;
 import org.hkijena.jipipe.plugins.parameters.library.primitives.StringParameterSettings;
@@ -465,6 +466,14 @@ public abstract class JIPipeGraphNode extends AbstractJIPipeParameterCollection 
             return getInfo() == ((JIPipeGraphNode) other).getInfo();
         }
         return false;
+    }
+
+    /**
+     * Returns the UI class that is responsible for rendering this node
+     * @return the node UI class
+     */
+    public Class<? extends JIPipeDesktopGraphNodeUI> getNodeUiClass() {
+        return JIPipeDesktopGraphNodeUI.class;
     }
 
     /**

@@ -13,6 +13,7 @@
 
 package org.hkijena.jipipe.desktop.app.grapheditor.commons.nodeui;
 
+import org.hkijena.jipipe.api.nodes.JIPipeGraphNode;
 import org.hkijena.jipipe.api.nodes.annotation.JIPipeAnnotationGraphNode;
 import org.hkijena.jipipe.api.parameters.JIPipeParameterCollection;
 import org.hkijena.jipipe.desktop.app.JIPipeDesktopWorkbench;
@@ -26,12 +27,15 @@ public class JIPipeDesktopAnnotationGraphNodeUI extends JIPipeDesktopGraphNodeUI
     /**
      * Creates a new UI
      *
-     * @param workbench     thr workbench
+     * @param workbench     the workbench
      * @param graphCanvasUI The graph UI that contains this UI
      * @param node          The algorithm
      */
-    public JIPipeDesktopAnnotationGraphNodeUI(JIPipeDesktopWorkbench workbench, JIPipeDesktopGraphCanvasUI graphCanvasUI, JIPipeAnnotationGraphNode node) {
+    public JIPipeDesktopAnnotationGraphNodeUI(JIPipeDesktopWorkbench workbench, JIPipeDesktopGraphCanvasUI graphCanvasUI, JIPipeGraphNode node) {
         super(workbench, graphCanvasUI, node);
+        if(!JIPipeAnnotationGraphNode.class.isAssignableFrom(node.getClass())) {
+            throw new IllegalArgumentException("Node must be a JIPipeAnnotationGraphNode");
+        }
         setBuffered(false);
         setOpaque(false);
     }
@@ -60,7 +64,7 @@ public class JIPipeDesktopAnnotationGraphNodeUI extends JIPipeDesktopGraphNodeUI
     protected void updateActiveAreas() {
         activeAreas.clear();
 
-        // Add whole node
+        // Add the whole node
         updateWholeNodeActiveAreas();
     }
 
