@@ -17,7 +17,10 @@ import com.fasterxml.jackson.annotation.JsonGetter;
 import com.fasterxml.jackson.annotation.JsonSetter;
 import org.hkijena.jipipe.JIPipe;
 import org.hkijena.jipipe.plugins.settings.JIPipeGraphEditorUIApplicationSettings;
+import org.hkijena.jipipe.utils.StringUtils;
 import org.jgrapht.graph.DefaultEdge;
+
+import java.util.UUID;
 
 /**
  * A custom graph edge
@@ -26,6 +29,7 @@ public class JIPipeGraphEdge extends DefaultEdge {
 
     private boolean userCanDisconnect;
 
+    private String uuid;
     private Visibility uiVisibility = Visibility.Smart;
     private Shape uiShape = Shape.Elbow;
 
@@ -80,6 +84,19 @@ public class JIPipeGraphEdge extends DefaultEdge {
     public void setMetadataFrom(JIPipeGraphEdge other) {
         this.uiShape = other.uiShape;
         this.uiVisibility = other.uiVisibility;
+    }
+
+    @JsonGetter("uuid")
+    public String getUuid() {
+        if(StringUtils.isNullOrEmpty(uuid)) {
+            uuid = UUID.randomUUID().toString();
+        }
+        return uuid;
+    }
+
+    @JsonSetter("uuid")
+    public void setUuid(String uuid) {
+        this.uuid = uuid;
     }
 
     /**

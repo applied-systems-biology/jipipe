@@ -15,15 +15,19 @@ package org.hkijena.jipipe.desktop.app.grapheditor.commons.edgeui;
 
 import org.hkijena.jipipe.api.data.JIPipeDataSlot;
 import org.hkijena.jipipe.api.nodes.JIPipeGraphEdge;
+import org.hkijena.jipipe.api.nodes.JIPipeGraphNode;
 import org.hkijena.jipipe.desktop.app.grapheditor.commons.JIPipeDesktopGraphCanvasUI;
+import org.hkijena.jipipe.desktop.app.grapheditor.commons.JIPipeDesktopGraphInteractiveObjectUI;
+import org.hkijena.jipipe.desktop.app.grapheditor.commons.JIPipeDesktopGraphInteractiveObjectUIUpdateViewCommand;
 import org.hkijena.jipipe.desktop.app.grapheditor.commons.nodeui.JIPipeDesktopGraphNodeUI;
 import org.hkijena.jipipe.plugins.core.nodes.JIPipeCommentNode;
 import org.hkijena.jipipe.utils.PointRange;
 import org.jetbrains.annotations.NotNull;
 
 import java.awt.*;
+import java.util.Set;
 
-public class JIPipeDesktopGraphEdgeUI implements Comparable<JIPipeDesktopGraphEdgeUI> {
+public class JIPipeDesktopGraphEdgeUI implements JIPipeDesktopGraphInteractiveObjectUI, Comparable<JIPipeDesktopGraphEdgeUI> {
     private final JIPipeDataSlot source;
     private final JIPipeDataSlot target;
     private final JIPipeGraphEdge edge;
@@ -151,5 +155,15 @@ public class JIPipeDesktopGraphEdgeUI implements Comparable<JIPipeDesktopGraphEd
     @Override
     public int compareTo(@NotNull JIPipeDesktopGraphEdgeUI o) {
         return Integer.compare(getUIManhattanDistance(), o.getUIManhattanDistance());
+    }
+
+    @Override
+    public Set<JIPipeGraphNode> getNodes() {
+        return Set.of(sourceUI.getNode(), targetUI.getNode());
+    }
+
+    @Override
+    public void updateView(JIPipeDesktopGraphInteractiveObjectUIUpdateViewCommand command) {
+
     }
 }

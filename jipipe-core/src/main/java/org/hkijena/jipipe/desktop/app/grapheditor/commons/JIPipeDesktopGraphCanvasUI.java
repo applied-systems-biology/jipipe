@@ -2489,7 +2489,7 @@ public class JIPipeDesktopGraphCanvasUI extends JLayeredPane implements JIPipeDe
 
     private List<JIPipeDesktopGraphEdgeUI> paintEdges(Graphics2D g, Stroke stroke, Stroke strokeBorder, Stroke strokeComment, boolean onlySelected, boolean multicolor, double scale, int viewX, int viewY, boolean enableArrows, boolean enableAutoHide, EdgeMuteMode muteMode) {
         Set<Map.Entry<JIPipeDataSlot, JIPipeDataSlot>> slotEdges = graph.getSlotEdges();
-        List<JIPipeDesktopGraphEdgeUI> displayedSlotEdges = new ArrayList<>();
+        List<JIPipeDesktopGraphEdgeUI> edgeUIs = new ArrayList<>();
 
         int multiColorMax = findMultiColorMax(slotEdges, multicolor, onlySelected);
         int multiColorIndex = 0;
@@ -2532,18 +2532,18 @@ public class JIPipeDesktopGraphCanvasUI extends JLayeredPane implements JIPipeDe
             displayedSlotEdge.setTargetCenter(new Point(targetPoint.center));
             displayedSlotEdge.setSourceUI(sourceUI);
             displayedSlotEdge.setTargetUI(targetUI);
-            displayedSlotEdges.add(displayedSlotEdge);
+            edgeUIs.add(displayedSlotEdge);
 
             ++multiColorIndex;
         }
 
         if (enableAutoHide) {
-            displayedSlotEdges.sort(Comparator.naturalOrder());
+            edgeUIs.sort(Comparator.naturalOrder());
         }
 
         Set<Rectangle> existingDrawnSlots = new HashSet<>();
 
-        for (JIPipeDesktopGraphEdgeUI displayedSlotEdge : displayedSlotEdges) {
+        for (JIPipeDesktopGraphEdgeUI displayedSlotEdge : edgeUIs) {
 
             Rectangle rectangle = null;
             if (enableAutoHide) {
@@ -2634,7 +2634,7 @@ public class JIPipeDesktopGraphCanvasUI extends JLayeredPane implements JIPipeDe
             }
         }
 
-        return displayedSlotEdges;
+        return edgeUIs;
     }
 
     private int findMultiColorMax(Set<Map.Entry<JIPipeDataSlot, JIPipeDataSlot>> slotEdges, boolean multicolor, boolean onlySelected) {
