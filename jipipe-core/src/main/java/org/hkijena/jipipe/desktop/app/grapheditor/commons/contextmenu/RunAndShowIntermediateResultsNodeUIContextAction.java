@@ -25,9 +25,9 @@ import org.hkijena.jipipe.desktop.app.grapheditor.flavors.pipeline.actions.JIPip
 import javax.swing.*;
 import java.util.Set;
 
-public class RunAndShowIntermediateResultsNodeUIContextAction implements GraphInteractiveObjectUIContextAction {
+public class RunAndShowIntermediateResultsNodeUIContextAction implements NodeUIContextAction {
     @Override
-    public boolean matches(Set<JIPipeDesktopGraphInteractiveObjectUI> selection) {
+    public boolean matchesNodes(Set<JIPipeDesktopGraphNodeUI> selection) {
         if (selection.size() == 1) {
             JIPipeGraphNode node = selection.iterator().next().getNode();
             if (node instanceof JIPipeProjectCompartment)
@@ -42,7 +42,7 @@ public class RunAndShowIntermediateResultsNodeUIContextAction implements GraphIn
     }
 
     @Override
-    public void run(JIPipeDesktopGraphCanvasUI canvasUI, Set<JIPipeDesktopGraphInteractiveObjectUI> selection) {
+    public void runNodes(JIPipeDesktopGraphCanvasUI canvasUI, Set<JIPipeDesktopGraphNodeUI> selection) {
         JIPipeDesktopGraphNodeUI ui = selection.iterator().next();
         ui.getNodeUIActionRequestedEventEmitter().emit(new JIPipeDesktopGraphNodeUI.NodeUIActionRequestedEvent(ui, new JIPipeDesktopRunAndShowResultsAction(true)));
     }

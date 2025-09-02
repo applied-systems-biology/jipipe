@@ -34,7 +34,7 @@ import java.awt.event.InputEvent;
 import java.awt.event.KeyEvent;
 import java.util.Set;
 
-public class UpdateCacheNodeUIContextAction implements GraphInteractiveObjectUIContextAction {
+public class UpdateCacheNodeUIContextAction implements NodeUIContextAction {
     private static void enqueue(JIPipeGraphNode node, JIPipeProject project) {
         JIPipeDesktopQuickRunSettings settings = new JIPipeDesktopQuickRunSettings(project);
         settings.setSaveToDisk(false);
@@ -46,7 +46,7 @@ public class UpdateCacheNodeUIContextAction implements GraphInteractiveObjectUIC
     }
 
     @Override
-    public boolean matches(Set<JIPipeDesktopGraphInteractiveObjectUI> selection) {
+    public boolean matchesNodes(Set<JIPipeDesktopGraphNodeUI> selection) {
         for (JIPipeDesktopGraphNodeUI nodeUI : selection) {
             JIPipeGraphNode node = nodeUI.getNode();
             if (node instanceof JIPipeProjectCompartment)
@@ -62,7 +62,7 @@ public class UpdateCacheNodeUIContextAction implements GraphInteractiveObjectUIC
     }
 
     @Override
-    public void run(JIPipeDesktopGraphCanvasUI canvasUI, Set<JIPipeDesktopGraphInteractiveObjectUI> selection) {
+    public void runNodes(JIPipeDesktopGraphCanvasUI canvasUI, Set<JIPipeDesktopGraphNodeUI> selection) {
         ImmutableList<JIPipeDesktopGraphNodeUI> list = ImmutableList.copyOf(selection);
         if (list.isEmpty()) {
             return;

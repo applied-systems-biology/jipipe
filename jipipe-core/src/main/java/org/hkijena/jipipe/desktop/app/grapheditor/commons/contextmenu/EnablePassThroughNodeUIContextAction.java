@@ -24,9 +24,9 @@ import java.awt.event.InputEvent;
 import java.awt.event.KeyEvent;
 import java.util.Set;
 
-public class EnablePassThroughNodeUIContextAction implements GraphInteractiveObjectUIContextAction {
+public class EnablePassThroughNodeUIContextAction implements NodeUIContextAction {
     @Override
-    public boolean matches(Set<JIPipeDesktopGraphInteractiveObjectUI> selection) {
+    public boolean matchesNodes(Set<JIPipeDesktopGraphNodeUI> selection) {
         for (JIPipeDesktopGraphNodeUI ui : selection) {
             if (ui.getNode() instanceof JIPipeAlgorithm) {
                 JIPipeAlgorithm algorithm = (JIPipeAlgorithm) ui.getNode();
@@ -38,7 +38,7 @@ public class EnablePassThroughNodeUIContextAction implements GraphInteractiveObj
     }
 
     @Override
-    public void run(JIPipeDesktopGraphCanvasUI canvasUI, Set<JIPipeDesktopGraphInteractiveObjectUI> selection) {
+    public void runNodes(JIPipeDesktopGraphCanvasUI canvasUI, Set<JIPipeDesktopGraphNodeUI> selection) {
         for (JIPipeDesktopGraphNodeUI ui : selection) {
             if (ui.getNode() instanceof JIPipeAlgorithm) {
                 JIPipeAlgorithm algorithm = (JIPipeAlgorithm) ui.getNode();

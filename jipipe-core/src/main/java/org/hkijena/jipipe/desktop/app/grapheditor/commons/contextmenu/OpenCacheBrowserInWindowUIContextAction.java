@@ -27,16 +27,16 @@ import org.hkijena.jipipe.utils.UIUtils;
 import javax.swing.*;
 import java.util.Set;
 
-public class OpenCacheBrowserInWindowUIContextAction implements GraphInteractiveObjectUIContextAction {
+public class OpenCacheBrowserInWindowUIContextAction implements NodeUIContextAction {
     @Override
-    public boolean matches(Set<JIPipeDesktopGraphInteractiveObjectUI> selection) {
+    public boolean matchesNodes(Set<JIPipeDesktopGraphNodeUI> selection) {
         return !selection.isEmpty() && selection.stream().allMatch(ui -> ui.getNode().getInfo().isRunnable() &&
                 ui.getNode() instanceof JIPipeAlgorithm &&
                 ui.getNode().getParentGraph().getAttachment(JIPipeGraphType.class) == JIPipeGraphType.Project);
     }
 
     @Override
-    public void run(JIPipeDesktopGraphCanvasUI canvasUI, Set<JIPipeDesktopGraphInteractiveObjectUI> selection) {
+    public void runNodes(JIPipeDesktopGraphCanvasUI canvasUI, Set<JIPipeDesktopGraphNodeUI> selection) {
         for (JIPipeDesktopGraphNodeUI ui : selection) {
             JIPipeDesktopAlgorithmCacheBrowserUI browserUI =
                     new JIPipeDesktopAlgorithmCacheBrowserUI((JIPipeDesktopProjectWorkbench) ui.getDesktopWorkbench(), ui.getNode(), canvasUI);

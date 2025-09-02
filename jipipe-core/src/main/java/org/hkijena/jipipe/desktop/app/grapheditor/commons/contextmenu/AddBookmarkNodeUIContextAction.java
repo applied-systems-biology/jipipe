@@ -21,9 +21,9 @@ import org.hkijena.jipipe.desktop.app.grapheditor.commons.nodeui.JIPipeDesktopGr
 import javax.swing.*;
 import java.util.Set;
 
-public class AddBookmarkNodeUIContextAction implements GraphInteractiveObjectUIContextAction {
+public class AddBookmarkNodeUIContextAction implements NodeUIContextAction {
     @Override
-    public boolean matches(Set<JIPipeDesktopGraphInteractiveObjectUI> selection) {
+    public boolean matchesNodes(Set<JIPipeDesktopGraphNodeUI> selection) {
         for (JIPipeDesktopGraphNodeUI ui : selection) {
             if (!ui.getNode().isBookmarked()) {
                 return true;
@@ -33,7 +33,7 @@ public class AddBookmarkNodeUIContextAction implements GraphInteractiveObjectUIC
     }
 
     @Override
-    public void run(JIPipeDesktopGraphCanvasUI canvasUI, Set<JIPipeDesktopGraphInteractiveObjectUI> selection) {
+    public void runNodes(JIPipeDesktopGraphCanvasUI canvasUI, Set<JIPipeDesktopGraphNodeUI> selection) {
         for (JIPipeDesktopGraphNodeUI ui : selection) {
             ui.getNode().setBookmarked(true);
             ui.getNode().emitParameterChangedEvent("jipipe:node:bookmarked");

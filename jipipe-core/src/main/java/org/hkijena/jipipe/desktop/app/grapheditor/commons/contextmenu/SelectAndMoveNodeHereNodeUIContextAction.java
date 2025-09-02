@@ -26,14 +26,14 @@ import java.awt.event.KeyEvent;
 import java.util.Collections;
 import java.util.Set;
 
-public class SelectAndMoveNodeHereNodeUIContextAction implements GraphInteractiveObjectUIContextAction {
+public class SelectAndMoveNodeHereNodeUIContextAction implements NodeUIContextAction {
     @Override
-    public boolean matches(Set<JIPipeDesktopGraphInteractiveObjectUI> selection) {
+    public boolean matchesNodes(Set<JIPipeDesktopGraphNodeUI> selection) {
         return selection.size() <= 1;
     }
 
     @Override
-    public void run(JIPipeDesktopGraphCanvasUI canvasUI, Set<JIPipeDesktopGraphInteractiveObjectUI> selection) {
+    public void runNodes(JIPipeDesktopGraphCanvasUI canvasUI, Set<JIPipeDesktopGraphNodeUI> selection) {
         JIPipeGraphNode preSelected = selection.isEmpty() ? null : selection.iterator().next().getNode();
         JIPipeGraphNode algorithm = JIPipeDesktopPickNodeDialog.showDialog(canvasUI.getDesktopWorkbench().getWindow(),
                 canvasUI.getNodeUIs().keySet(),

@@ -520,8 +520,12 @@ public abstract class JIPipeDesktopGraphEditorUI extends JIPipeDesktopWorkbenchP
         return currentTool;
     }
 
-    public Set<JIPipeDesktopGraphNodeUI> getSelection() {
+    public Set<JIPipeDesktopGraphInteractiveObjectUI> getSelection() {
         return canvasUI.getSelection();
+    }
+
+    public <T extends JIPipeDesktopGraphInteractiveObjectUI> Set<T> getSelectionByType(Class<T> klass) {
+        return canvasUI.getSelectionByType(klass);
     }
 
     public void createScreenshotClipboard() {
@@ -605,7 +609,7 @@ public abstract class JIPipeDesktopGraphEditorUI extends JIPipeDesktopWorkbenchP
             toolBar.remove(button);
         }
 
-        Set<JIPipeDesktopGraphNodeUI> selection = getSelection();
+        Set<JIPipeDesktopGraphInteractiveObjectUI> selection = getSelection();
         for (GraphInteractiveObjectUIContextAction contextAction : canvasUI.getContextActions()) {
             if (contextAction != null && contextAction.isDisplayedInToolbar() && contextAction.matches(selection)) {
                 JButton button = new JButton(contextAction.getIcon());

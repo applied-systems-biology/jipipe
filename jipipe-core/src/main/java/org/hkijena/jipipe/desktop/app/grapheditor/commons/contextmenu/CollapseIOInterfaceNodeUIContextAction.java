@@ -22,14 +22,14 @@ import org.hkijena.jipipe.desktop.app.grapheditor.commons.nodeui.JIPipeDesktopGr
 import javax.swing.*;
 import java.util.Set;
 
-public class CollapseIOInterfaceNodeUIContextAction implements GraphInteractiveObjectUIContextAction {
+public class CollapseIOInterfaceNodeUIContextAction implements NodeUIContextAction {
     @Override
-    public boolean matches(Set<JIPipeDesktopGraphInteractiveObjectUI> selection) {
+    public boolean matchesNodes(Set<JIPipeDesktopGraphNodeUI> selection) {
         return selection.stream().map(JIPipeDesktopGraphNodeUI::getNode).anyMatch(a -> a instanceof IOInterfaceAlgorithm && a.canUserDelete());
     }
 
     @Override
-    public void run(JIPipeDesktopGraphCanvasUI canvasUI, Set<JIPipeDesktopGraphInteractiveObjectUI> selection) {
+    public void runNodes(JIPipeDesktopGraphCanvasUI canvasUI, Set<JIPipeDesktopGraphNodeUI> selection) {
         for (JIPipeDesktopGraphNodeUI ui : selection) {
             if (ui.getNode() instanceof IOInterfaceAlgorithm) {
                 IOInterfaceAlgorithm.collapse((IOInterfaceAlgorithm) ui.getNode());

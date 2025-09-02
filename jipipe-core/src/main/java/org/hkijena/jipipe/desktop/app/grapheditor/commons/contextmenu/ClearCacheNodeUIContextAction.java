@@ -28,9 +28,9 @@ import org.hkijena.jipipe.desktop.app.grapheditor.commons.nodeui.JIPipeDesktopGr
 import javax.swing.*;
 import java.util.Set;
 
-public class ClearCacheNodeUIContextAction implements GraphInteractiveObjectUIContextAction {
+public class ClearCacheNodeUIContextAction implements NodeUIContextAction {
     @Override
-    public boolean matches(Set<JIPipeDesktopGraphInteractiveObjectUI> selection) {
+    public boolean matchesNodes(Set<JIPipeDesktopGraphNodeUI> selection) {
         for (JIPipeDesktopGraphNodeUI nodeUI : selection) {
             JIPipeGraphNode node = nodeUI.getNode();
             if (node.getParentGraph().getAttachment(JIPipeGraphType.class) != JIPipeGraphType.Project)
@@ -49,7 +49,7 @@ public class ClearCacheNodeUIContextAction implements GraphInteractiveObjectUICo
     }
 
     @Override
-    public void run(JIPipeDesktopGraphCanvasUI canvasUI, Set<JIPipeDesktopGraphInteractiveObjectUI> selection) {
+    public void runNodes(JIPipeDesktopGraphCanvasUI canvasUI, Set<JIPipeDesktopGraphNodeUI> selection) {
         for (JIPipeDesktopGraphNodeUI nodeUI : selection) {
             JIPipeGraphNode node = nodeUI.getNode();
             JIPipeProject project = nodeUI.getGraphCanvasUI().getGraph().getProject();

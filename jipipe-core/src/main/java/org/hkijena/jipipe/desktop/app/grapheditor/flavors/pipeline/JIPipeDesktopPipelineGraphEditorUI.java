@@ -33,6 +33,7 @@ import org.hkijena.jipipe.desktop.app.grapheditor.addnodepanel.JIPipeDesktopAddN
 import org.hkijena.jipipe.desktop.app.grapheditor.commons.JIPipeDesktopGraphEditorLogPanel;
 import org.hkijena.jipipe.desktop.app.grapheditor.commons.JIPipeDesktopGraphEditorMinimap;
 import org.hkijena.jipipe.desktop.app.grapheditor.commons.JIPipeDesktopGraphEditorUI;
+import org.hkijena.jipipe.desktop.app.grapheditor.commons.JIPipeDesktopGraphInteractiveObjectUI;
 import org.hkijena.jipipe.desktop.app.grapheditor.commons.contextmenu.*;
 import org.hkijena.jipipe.desktop.app.grapheditor.commons.nodeui.JIPipeDesktopGraphNodeUI;
 import org.hkijena.jipipe.desktop.app.grapheditor.commons.properties.JIPipeDesktopGraphEditorErrorPanel;
@@ -261,8 +262,10 @@ public class JIPipeDesktopPipelineGraphEditorUI extends JIPipeDesktopGraphEditor
         getDockPanel().removeDockPanelsIf(p -> p.getId().startsWith("_"));
 
         if (getSelection().size() == 1) {
-            JIPipeDesktopGraphNodeUI nodeUI = getSelection().iterator().next();
-            showSelectedNodeDocks(nodeUI);
+            JIPipeDesktopGraphInteractiveObjectUI interactiveObjectUI = getSelection().iterator().next();
+            if(interactiveObjectUI instanceof JIPipeDesktopGraphNodeUI) {
+                showSelectedNodeDocks((JIPipeDesktopGraphNodeUI) interactiveObjectUI);
+            }
         }
     }
 
@@ -410,15 +413,20 @@ public class JIPipeDesktopPipelineGraphEditorUI extends JIPipeDesktopGraphEditor
 
     @Override
     public void beforeOpenContextMenu(JPopupMenu menu) {
-        if (getGraph().isProjectGraph() && getSelection().stream().anyMatch(ui -> ui.getNode().getInfo().isRunnable())) {
-            menu.addSeparator();
-            JMenu runSetsMenu = new JMenu("Run sets ...");
-            menu.add(runSetsMenu);
+        if(getGraph().isProjectGraph()) {
+            Set<JIPipeDesktopGraphNodeUI> selectedNodes = getSelectionByType(JIPipeDesktopGraphNodeUI.class);
+            if (selectedNodes.stream().anyMatch(ui -> ui != null
+                    && ((JIPipeDesktopGraphNodeUI) ui).getNode().getInfo().isRunnable())) {
+                menu.addSeparator();
+                JMenu runSetsMenu = new JMenu("Run sets ...");
+                menu.add(runSetsMenu);
 
-            JIPipeDesktopRunSetsListEditor.createRunSetsManagementContextMenu(runSetsMenu,
-                    getSelection().stream().map(JIPipeDesktopGraphNodeUI::getNode).filter(node -> node.getInfo().isRunnable()).collect(Collectors.toSet()),
-                    getDesktopWorkbench());
+                JIPipeDesktopRunSetsListEditor.createRunSetsManagementContextMenu(runSetsMenu,
+                        selectedNodes.stream().map(JIPipeDesktopGraphNodeUI::getNode).filter(node -> node.getInfo().isRunnable()).collect(Collectors.toSet()),
+                        getDesktopWorkbench());
+            }
         }
+
     }
 
     @Override

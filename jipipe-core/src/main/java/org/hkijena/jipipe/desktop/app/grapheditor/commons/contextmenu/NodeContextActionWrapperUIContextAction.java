@@ -23,7 +23,7 @@ import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.util.Set;
 
-public class NodeContextActionWrapperUIContextAction implements GraphInteractiveObjectUIContextAction {
+public class NodeContextActionWrapperUIContextAction implements NodeUIContextAction {
 
     private final JIPipeNodeInfo nodeInfo;
     private final String name;
@@ -40,7 +40,7 @@ public class NodeContextActionWrapperUIContextAction implements GraphInteractive
     }
 
     @Override
-    public boolean matches(Set<JIPipeDesktopGraphInteractiveObjectUI> selection) {
+    public boolean matchesNodes(Set<JIPipeDesktopGraphNodeUI> selection) {
         if (selection.isEmpty())
             return false;
         for (JIPipeDesktopGraphNodeUI ui : selection) {
@@ -51,7 +51,7 @@ public class NodeContextActionWrapperUIContextAction implements GraphInteractive
     }
 
     @Override
-    public void run(JIPipeDesktopGraphCanvasUI canvasUI, Set<JIPipeDesktopGraphInteractiveObjectUI> selection) {
+    public void runNodes(JIPipeDesktopGraphCanvasUI canvasUI, Set<JIPipeDesktopGraphNodeUI> selection) {
         try {
             for (JIPipeDesktopGraphNodeUI ui : selection) {
                 method.invoke(ui.getNode(), canvasUI.getDesktopWorkbench());

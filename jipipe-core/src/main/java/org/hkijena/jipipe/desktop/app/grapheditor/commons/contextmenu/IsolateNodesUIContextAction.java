@@ -28,16 +28,14 @@ import java.util.Set;
 import java.util.UUID;
 import java.util.stream.Collectors;
 
-public class IsolateNodesUIContextAction implements GraphInteractiveObjectUIContextAction {
+public class IsolateNodesUIContextAction implements NodeUIContextAction {
     @Override
-    public boolean matches(Set<JIPipeDesktopGraphInteractiveObjectUI> selection) {
-        if (selection.isEmpty())
-            return false;
-        return true;
+    public boolean matchesNodes(Set<JIPipeDesktopGraphNodeUI> selection) {
+        return !selection.isEmpty();
     }
 
     @Override
-    public void run(JIPipeDesktopGraphCanvasUI canvasUI, Set<JIPipeDesktopGraphInteractiveObjectUI> selection) {
+    public void runNodes(JIPipeDesktopGraphCanvasUI canvasUI, Set<JIPipeDesktopGraphNodeUI> selection) {
         if (canvasUI.getHistoryJournal() != null) {
             Set<JIPipeGraphNode> nodes = selection.stream().map(JIPipeDesktopGraphNodeUI::getNode).collect(Collectors.toSet());
             UUID compartment = nodes.stream().map(JIPipeGraphNode::getUUIDInParentGraph).findFirst().orElse(null);

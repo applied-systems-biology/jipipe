@@ -32,7 +32,7 @@ import org.hkijena.jipipe.desktop.app.quickrun.JIPipeDesktopQuickRunSettings;
 import javax.swing.*;
 import java.util.Set;
 
-public class UpdateCacheOnlyPredecessorsNodeUIContextAction implements GraphInteractiveObjectUIContextAction {
+public class UpdateCacheOnlyPredecessorsNodeUIContextAction implements NodeUIContextAction {
     private static void enqueue(JIPipeGraphNode node, JIPipeProject project) {
         JIPipeDesktopQuickRunSettings settings = new JIPipeDesktopQuickRunSettings(project);
         settings.setSaveToDisk(false);
@@ -44,7 +44,7 @@ public class UpdateCacheOnlyPredecessorsNodeUIContextAction implements GraphInte
     }
 
     @Override
-    public boolean matches(Set<JIPipeDesktopGraphInteractiveObjectUI> selection) {
+    public boolean matchesNodes(Set<JIPipeDesktopGraphNodeUI> selection) {
         for (JIPipeDesktopGraphNodeUI nodeUI : selection) {
             JIPipeGraphNode node = nodeUI.getNode();
             if (node instanceof JIPipeProjectCompartment)
@@ -60,7 +60,7 @@ public class UpdateCacheOnlyPredecessorsNodeUIContextAction implements GraphInte
     }
 
     @Override
-    public void run(JIPipeDesktopGraphCanvasUI canvasUI, Set<JIPipeDesktopGraphInteractiveObjectUI> selection) {
+    public void runNodes(JIPipeDesktopGraphCanvasUI canvasUI, Set<JIPipeDesktopGraphNodeUI> selection) {
         ImmutableList<JIPipeDesktopGraphNodeUI> list = ImmutableList.copyOf(selection);
         if (list.isEmpty()) {
             return;

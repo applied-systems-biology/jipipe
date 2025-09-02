@@ -29,11 +29,11 @@ import java.util.Set;
 public class JIPipeDesktopCompartmentsCutNodeUIContextAction extends JIPipeDesktopCompartmentsCopyNodeUIContextAction {
 
     @Override
-    public void run(JIPipeDesktopGraphCanvasUI canvasUI, Set<JIPipeDesktopGraphInteractiveObjectUI> selection) {
-        super.run(canvasUI, selection);
+    public void runNodes(JIPipeDesktopGraphCanvasUI canvasUI, Set<JIPipeDesktopGraphNodeUI> selection) {
+        super.runNodes(canvasUI, selection);
         if (!JIPipeDesktopProjectWorkbench.canAddOrDeleteNodes(canvasUI.getDesktopWorkbench()))
             return;
-        JIPipeProject project = ((JIPipeDesktopProjectWorkbench) canvasUI.getDesktopWorkbench()).getProject();
+        JIPipeProject project = canvasUI.getDesktopWorkbench().getProject();
         for (JIPipeDesktopGraphNodeUI ui : selection) {
             if (ui.getNode().isUiLocked())
                 continue;

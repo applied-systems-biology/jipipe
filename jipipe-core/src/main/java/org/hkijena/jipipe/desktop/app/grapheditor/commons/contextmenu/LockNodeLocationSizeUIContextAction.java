@@ -22,14 +22,14 @@ import javax.swing.*;
 import java.awt.event.KeyEvent;
 import java.util.Set;
 
-public class LockNodeLocationSizeUIContextAction implements GraphInteractiveObjectUIContextAction {
+public class LockNodeLocationSizeUIContextAction implements NodeUIContextAction {
     @Override
-    public boolean matches(Set<JIPipeDesktopGraphInteractiveObjectUI> selection) {
+    public boolean matchesNodes(Set<JIPipeDesktopGraphNodeUI> selection) {
         return selection.stream().anyMatch(ui -> !ui.getNode().isUiLocked());
     }
 
     @Override
-    public void run(JIPipeDesktopGraphCanvasUI canvasUI, Set<JIPipeDesktopGraphInteractiveObjectUI> selection) {
+    public void runNodes(JIPipeDesktopGraphCanvasUI canvasUI, Set<JIPipeDesktopGraphNodeUI> selection) {
         for (JIPipeDesktopGraphNodeUI nodeUI : selection) {
             nodeUI.getNode().setUiLocked(true);
         }

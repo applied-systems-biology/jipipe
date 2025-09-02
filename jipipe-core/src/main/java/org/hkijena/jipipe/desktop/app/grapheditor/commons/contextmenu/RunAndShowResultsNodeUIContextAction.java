@@ -27,9 +27,9 @@ import java.awt.event.InputEvent;
 import java.awt.event.KeyEvent;
 import java.util.Set;
 
-public class RunAndShowResultsNodeUIContextAction implements GraphInteractiveObjectUIContextAction {
+public class RunAndShowResultsNodeUIContextAction implements NodeUIContextAction {
     @Override
-    public boolean matches(Set<JIPipeDesktopGraphInteractiveObjectUI> selection) {
+    public boolean matchesNodes(Set<JIPipeDesktopGraphNodeUI> selection) {
         if (selection.size() == 1) {
             JIPipeGraphNode node = selection.iterator().next().getNode();
             if (node instanceof JIPipeProjectCompartment)
@@ -44,7 +44,7 @@ public class RunAndShowResultsNodeUIContextAction implements GraphInteractiveObj
     }
 
     @Override
-    public void run(JIPipeDesktopGraphCanvasUI canvasUI, Set<JIPipeDesktopGraphInteractiveObjectUI> selection) {
+    public void runNodes(JIPipeDesktopGraphCanvasUI canvasUI, Set<JIPipeDesktopGraphNodeUI> selection) {
         JIPipeDesktopGraphNodeUI ui = selection.iterator().next();
         ui.getNodeUIActionRequestedEventEmitter().emit(new JIPipeDesktopGraphNodeUI.NodeUIActionRequestedEvent(ui, new JIPipeDesktopRunAndShowResultsAction(false)));
     }

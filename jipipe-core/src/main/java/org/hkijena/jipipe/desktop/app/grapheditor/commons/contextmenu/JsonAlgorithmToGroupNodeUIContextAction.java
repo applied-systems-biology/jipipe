@@ -26,14 +26,14 @@ import java.util.Set;
 import java.util.UUID;
 import java.util.stream.Collectors;
 
-public class JsonAlgorithmToGroupNodeUIContextAction implements GraphInteractiveObjectUIContextAction {
+public class JsonAlgorithmToGroupNodeUIContextAction implements NodeUIContextAction {
     @Override
-    public boolean matches(Set<JIPipeDesktopGraphInteractiveObjectUI> selection) {
+    public boolean matchesNodes(Set<JIPipeDesktopGraphNodeUI> selection) {
         return JIPipe.getNodes().hasNodeInfoWithId("node-group") && selection.stream().map(JIPipeDesktopGraphNodeUI::getNode).anyMatch(a -> a instanceof JsonAlgorithm);
     }
 
     @Override
-    public void run(JIPipeDesktopGraphCanvasUI canvasUI, Set<JIPipeDesktopGraphInteractiveObjectUI> selection) {
+    public void runNodes(JIPipeDesktopGraphCanvasUI canvasUI, Set<JIPipeDesktopGraphNodeUI> selection) {
         if (!JIPipeDesktopProjectWorkbench.canAddOrDeleteNodes(canvasUI.getDesktopWorkbench()))
             return;
         if (canvasUI.getHistoryJournal() != null) {
