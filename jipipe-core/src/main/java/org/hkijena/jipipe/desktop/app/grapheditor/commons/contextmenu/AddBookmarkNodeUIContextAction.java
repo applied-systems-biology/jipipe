@@ -15,14 +15,15 @@ package org.hkijena.jipipe.desktop.app.grapheditor.commons.contextmenu;
 
 import org.hkijena.jipipe.JIPipe;
 import org.hkijena.jipipe.desktop.app.grapheditor.commons.JIPipeDesktopGraphCanvasUI;
+import org.hkijena.jipipe.desktop.app.grapheditor.commons.JIPipeDesktopGraphInteractiveObjectUI;
 import org.hkijena.jipipe.desktop.app.grapheditor.commons.nodeui.JIPipeDesktopGraphNodeUI;
 
 import javax.swing.*;
 import java.util.Set;
 
-public class AddBookmarkNodeUIContextAction implements NodeUIContextAction {
+public class AddBookmarkNodeUIContextAction implements GraphInteractiveObjectUIContextAction {
     @Override
-    public boolean matches(Set<JIPipeDesktopGraphNodeUI> selection) {
+    public boolean matches(Set<JIPipeDesktopGraphInteractiveObjectUI> selection) {
         for (JIPipeDesktopGraphNodeUI ui : selection) {
             if (!ui.getNode().isBookmarked()) {
                 return true;
@@ -32,7 +33,7 @@ public class AddBookmarkNodeUIContextAction implements NodeUIContextAction {
     }
 
     @Override
-    public void run(JIPipeDesktopGraphCanvasUI canvasUI, Set<JIPipeDesktopGraphNodeUI> selection) {
+    public void run(JIPipeDesktopGraphCanvasUI canvasUI, Set<JIPipeDesktopGraphInteractiveObjectUI> selection) {
         for (JIPipeDesktopGraphNodeUI ui : selection) {
             ui.getNode().setBookmarked(true);
             ui.getNode().emitParameterChangedEvent("jipipe:node:bookmarked");

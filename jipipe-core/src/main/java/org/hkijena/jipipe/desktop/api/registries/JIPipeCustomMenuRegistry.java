@@ -20,7 +20,7 @@ import org.hkijena.jipipe.desktop.api.JIPipeDesktopMenuExtension;
 import org.hkijena.jipipe.desktop.api.JIPipeMenuExtensionTarget;
 import org.hkijena.jipipe.desktop.app.JIPipeDesktopWorkbench;
 import org.hkijena.jipipe.desktop.app.grapheditor.commons.JIPipeDesktopGraphEditorUI;
-import org.hkijena.jipipe.desktop.app.grapheditor.commons.contextmenu.NodeUIContextAction;
+import org.hkijena.jipipe.desktop.app.grapheditor.commons.contextmenu.GraphInteractiveObjectUIContextAction;
 import org.hkijena.jipipe.utils.ReflectionUtils;
 import org.hkijena.jipipe.utils.StringUtils;
 
@@ -34,7 +34,7 @@ import java.util.*;
 public class JIPipeCustomMenuRegistry {
     private final Map<JIPipeMenuExtensionTarget, List<Class<? extends JIPipeDesktopMenuExtension>>> registeredMenuExtensions = new HashMap<>();
     private final List<Class<? extends JIPipeDesktopGraphEditorToolBarButtonExtension>> registeredGraphEditorToolBarExtensions = new ArrayList<>();
-    private final List<NodeUIContextAction> registeredContextMenuActions = new ArrayList<>();
+    private final List<GraphInteractiveObjectUIContextAction> registeredContextMenuActions = new ArrayList<>();
     private final JIPipe jiPipe;
 
     public JIPipeCustomMenuRegistry(JIPipe jiPipe) {
@@ -110,7 +110,7 @@ public class JIPipeCustomMenuRegistry {
      *
      * @param action the action
      */
-    public void registerContextMenuAction(NodeUIContextAction action) {
+    public void registerContextMenuAction(GraphInteractiveObjectUIContextAction action) {
         registeredContextMenuActions.add(action);
     }
 
@@ -119,7 +119,7 @@ public class JIPipeCustomMenuRegistry {
      *
      * @return the actions
      */
-    public List<NodeUIContextAction> getRegisteredContextMenuActions() {
+    public List<GraphInteractiveObjectUIContextAction> getRegisteredContextMenuActions() {
         return registeredContextMenuActions;
     }
 

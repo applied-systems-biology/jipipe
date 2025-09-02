@@ -19,6 +19,7 @@ import org.hkijena.jipipe.api.nodes.JIPipeAlgorithm;
 import org.hkijena.jipipe.desktop.app.JIPipeDesktopProjectWorkbench;
 import org.hkijena.jipipe.desktop.app.cache.JIPipeDesktopAlgorithmCacheBrowserUI;
 import org.hkijena.jipipe.desktop.app.grapheditor.commons.JIPipeDesktopGraphCanvasUI;
+import org.hkijena.jipipe.desktop.app.grapheditor.commons.JIPipeDesktopGraphInteractiveObjectUI;
 import org.hkijena.jipipe.desktop.app.grapheditor.commons.nodeui.JIPipeDesktopGraphNodeUI;
 import org.hkijena.jipipe.plugins.settings.JIPipeGeneralUIApplicationSettings;
 import org.hkijena.jipipe.utils.UIUtils;
@@ -26,16 +27,16 @@ import org.hkijena.jipipe.utils.UIUtils;
 import javax.swing.*;
 import java.util.Set;
 
-public class OpenCacheBrowserInWindowUIContextAction implements NodeUIContextAction {
+public class OpenCacheBrowserInWindowUIContextAction implements GraphInteractiveObjectUIContextAction {
     @Override
-    public boolean matches(Set<JIPipeDesktopGraphNodeUI> selection) {
+    public boolean matches(Set<JIPipeDesktopGraphInteractiveObjectUI> selection) {
         return !selection.isEmpty() && selection.stream().allMatch(ui -> ui.getNode().getInfo().isRunnable() &&
                 ui.getNode() instanceof JIPipeAlgorithm &&
                 ui.getNode().getParentGraph().getAttachment(JIPipeGraphType.class) == JIPipeGraphType.Project);
     }
 
     @Override
-    public void run(JIPipeDesktopGraphCanvasUI canvasUI, Set<JIPipeDesktopGraphNodeUI> selection) {
+    public void run(JIPipeDesktopGraphCanvasUI canvasUI, Set<JIPipeDesktopGraphInteractiveObjectUI> selection) {
         for (JIPipeDesktopGraphNodeUI ui : selection) {
             JIPipeDesktopAlgorithmCacheBrowserUI browserUI =
                     new JIPipeDesktopAlgorithmCacheBrowserUI((JIPipeDesktopProjectWorkbench) ui.getDesktopWorkbench(), ui.getNode(), canvasUI);

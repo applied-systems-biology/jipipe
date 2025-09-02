@@ -20,7 +20,8 @@ import org.hkijena.jipipe.api.compartments.algorithms.JIPipeProjectCompartment;
 import org.hkijena.jipipe.api.project.JIPipeProject;
 import org.hkijena.jipipe.desktop.app.JIPipeDesktopProjectWorkbench;
 import org.hkijena.jipipe.desktop.app.grapheditor.commons.JIPipeDesktopGraphCanvasUI;
-import org.hkijena.jipipe.desktop.app.grapheditor.commons.contextmenu.NodeUIContextAction;
+import org.hkijena.jipipe.desktop.app.grapheditor.commons.JIPipeDesktopGraphInteractiveObjectUI;
+import org.hkijena.jipipe.desktop.app.grapheditor.commons.contextmenu.GraphInteractiveObjectUIContextAction;
 import org.hkijena.jipipe.desktop.app.grapheditor.commons.nodeui.JIPipeDesktopGraphNodeUI;
 import org.hkijena.jipipe.utils.json.JsonUtils;
 
@@ -32,14 +33,14 @@ import java.util.Set;
 
 import static org.hkijena.jipipe.utils.UIUtils.getStringFromClipboard;
 
-public class JIPipeDesktopCompartmentsPasteNodeUIContextAction implements NodeUIContextAction {
+public class JIPipeDesktopCompartmentsPasteNodeUIContextAction implements GraphInteractiveObjectUIContextAction {
     @Override
-    public boolean matches(Set<JIPipeDesktopGraphNodeUI> selection) {
+    public boolean matches(Set<JIPipeDesktopGraphInteractiveObjectUI> selection) {
         return true;
     }
 
     @Override
-    public void run(JIPipeDesktopGraphCanvasUI canvasUI, Set<JIPipeDesktopGraphNodeUI> selection) {
+    public void run(JIPipeDesktopGraphCanvasUI canvasUI, Set<JIPipeDesktopGraphInteractiveObjectUI> selection) {
         if (!JIPipeDesktopProjectWorkbench.canAddOrDeleteNodes(canvasUI.getDesktopWorkbench()))
             return;
         try {

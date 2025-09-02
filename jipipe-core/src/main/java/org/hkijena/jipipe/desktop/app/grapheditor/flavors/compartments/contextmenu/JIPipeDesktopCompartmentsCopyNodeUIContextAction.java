@@ -18,7 +18,8 @@ import org.hkijena.jipipe.JIPipe;
 import org.hkijena.jipipe.api.compartments.JIPipeExportedCompartment;
 import org.hkijena.jipipe.api.compartments.algorithms.JIPipeProjectCompartment;
 import org.hkijena.jipipe.desktop.app.grapheditor.commons.JIPipeDesktopGraphCanvasUI;
-import org.hkijena.jipipe.desktop.app.grapheditor.commons.contextmenu.NodeUIContextAction;
+import org.hkijena.jipipe.desktop.app.grapheditor.commons.JIPipeDesktopGraphInteractiveObjectUI;
+import org.hkijena.jipipe.desktop.app.grapheditor.commons.contextmenu.GraphInteractiveObjectUIContextAction;
 import org.hkijena.jipipe.desktop.app.grapheditor.commons.nodeui.JIPipeDesktopGraphNodeUI;
 import org.hkijena.jipipe.utils.json.JsonUtils;
 
@@ -32,14 +33,14 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Set;
 
-public class JIPipeDesktopCompartmentsCopyNodeUIContextAction implements NodeUIContextAction {
+public class JIPipeDesktopCompartmentsCopyNodeUIContextAction implements GraphInteractiveObjectUIContextAction {
     @Override
-    public boolean matches(Set<JIPipeDesktopGraphNodeUI> selection) {
+    public boolean matches(Set<JIPipeDesktopGraphInteractiveObjectUI> selection) {
         return !selection.isEmpty() && selection.stream().allMatch(s -> s.getNode() instanceof JIPipeProjectCompartment);
     }
 
     @Override
-    public void run(JIPipeDesktopGraphCanvasUI canvasUI, Set<JIPipeDesktopGraphNodeUI> selection) {
+    public void run(JIPipeDesktopGraphCanvasUI canvasUI, Set<JIPipeDesktopGraphInteractiveObjectUI> selection) {
         List<JIPipeExportedCompartment> compartments = new ArrayList<>();
         for (JIPipeDesktopGraphNodeUI ui : selection) {
             if (!(ui.getNode() instanceof JIPipeProjectCompartment))

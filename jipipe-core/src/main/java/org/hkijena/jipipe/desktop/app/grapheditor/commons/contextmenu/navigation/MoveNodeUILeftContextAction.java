@@ -15,7 +15,8 @@ package org.hkijena.jipipe.desktop.app.grapheditor.commons.contextmenu.navigatio
 
 import org.hkijena.jipipe.JIPipe;
 import org.hkijena.jipipe.desktop.app.grapheditor.commons.JIPipeDesktopGraphCanvasUI;
-import org.hkijena.jipipe.desktop.app.grapheditor.commons.contextmenu.NodeUIContextAction;
+import org.hkijena.jipipe.desktop.app.grapheditor.commons.JIPipeDesktopGraphInteractiveObjectUI;
+import org.hkijena.jipipe.desktop.app.grapheditor.commons.contextmenu.GraphInteractiveObjectUIContextAction;
 import org.hkijena.jipipe.desktop.app.grapheditor.commons.nodeui.JIPipeDesktopGraphNodeUI;
 
 import javax.swing.*;
@@ -24,14 +25,14 @@ import java.awt.event.InputEvent;
 import java.awt.event.KeyEvent;
 import java.util.Set;
 
-public class MoveNodeUILeftContextAction implements NodeUIContextAction {
+public class MoveNodeUILeftContextAction implements GraphInteractiveObjectUIContextAction {
     @Override
-    public boolean matches(Set<JIPipeDesktopGraphNodeUI> selection) {
+    public boolean matches(Set<JIPipeDesktopGraphInteractiveObjectUI> selection) {
         return !selection.isEmpty();
     }
 
     @Override
-    public void run(JIPipeDesktopGraphCanvasUI canvasUI, Set<JIPipeDesktopGraphNodeUI> selection) {
+    public void run(JIPipeDesktopGraphCanvasUI canvasUI, Set<JIPipeDesktopGraphInteractiveObjectUI> selection) {
         int minX = Integer.MAX_VALUE;
         int minY = Integer.MAX_VALUE;
         for (JIPipeDesktopGraphNodeUI ui : selection) {

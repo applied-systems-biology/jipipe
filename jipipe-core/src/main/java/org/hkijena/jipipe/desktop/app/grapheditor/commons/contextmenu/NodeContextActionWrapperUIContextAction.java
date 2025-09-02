@@ -15,6 +15,7 @@ package org.hkijena.jipipe.desktop.app.grapheditor.commons.contextmenu;
 
 import org.hkijena.jipipe.api.nodes.JIPipeNodeInfo;
 import org.hkijena.jipipe.desktop.app.grapheditor.commons.JIPipeDesktopGraphCanvasUI;
+import org.hkijena.jipipe.desktop.app.grapheditor.commons.JIPipeDesktopGraphInteractiveObjectUI;
 import org.hkijena.jipipe.desktop.app.grapheditor.commons.nodeui.JIPipeDesktopGraphNodeUI;
 
 import javax.swing.*;
@@ -22,7 +23,7 @@ import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.util.Set;
 
-public class NodeContextActionWrapperUIContextAction implements NodeUIContextAction {
+public class NodeContextActionWrapperUIContextAction implements GraphInteractiveObjectUIContextAction {
 
     private final JIPipeNodeInfo nodeInfo;
     private final String name;
@@ -39,7 +40,7 @@ public class NodeContextActionWrapperUIContextAction implements NodeUIContextAct
     }
 
     @Override
-    public boolean matches(Set<JIPipeDesktopGraphNodeUI> selection) {
+    public boolean matches(Set<JIPipeDesktopGraphInteractiveObjectUI> selection) {
         if (selection.isEmpty())
             return false;
         for (JIPipeDesktopGraphNodeUI ui : selection) {
@@ -50,7 +51,7 @@ public class NodeContextActionWrapperUIContextAction implements NodeUIContextAct
     }
 
     @Override
-    public void run(JIPipeDesktopGraphCanvasUI canvasUI, Set<JIPipeDesktopGraphNodeUI> selection) {
+    public void run(JIPipeDesktopGraphCanvasUI canvasUI, Set<JIPipeDesktopGraphInteractiveObjectUI> selection) {
         try {
             for (JIPipeDesktopGraphNodeUI ui : selection) {
                 method.invoke(ui.getNode(), canvasUI.getDesktopWorkbench());

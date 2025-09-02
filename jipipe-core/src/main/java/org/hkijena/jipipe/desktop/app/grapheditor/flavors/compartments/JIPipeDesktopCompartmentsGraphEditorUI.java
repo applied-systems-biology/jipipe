@@ -71,46 +71,46 @@ public class JIPipeDesktopCompartmentsGraphEditorUI extends JIPipeDesktopGraphEd
         initializeDefaultPanels();
 
         getCanvasUI().setDragAndDropBehavior(new JIPipeCreateCompartmentNodesFromDraggedDataDragAndDropBehavior());
-        List<NodeUIContextAction> actions = Arrays.asList(
+        List<GraphInteractiveObjectUIContextAction> actions = Arrays.asList(
                 new AddNewCompartmentUIContextAction(),
-                NodeUIContextAction.SEPARATOR,
+                GraphInteractiveObjectUIContextAction.SEPARATOR,
                 new SelectAllNodeUIContextAction(),
                 new InvertSelectionNodeUIContextAction(),
                 new AddBookmarkNodeUIContextAction(),
                 new RemoveBookmarkNodeUIContextAction(),
-                NodeUIContextAction.SEPARATOR,
+                GraphInteractiveObjectUIContextAction.SEPARATOR,
                 new JIPipeDesktopCompartmentsCutNodeUIContextAction(),
                 new JIPipeDesktopCompartmentsCopyNodeUIContextAction(),
                 new JIPipeDesktopCompartmentsPasteNodeUIContextAction(),
-                NodeUIContextAction.SEPARATOR,
+                GraphInteractiveObjectUIContextAction.SEPARATOR,
                 new RunAndShowResultsNodeUIContextAction(),
                 new UpdateCacheNodeUIContextAction(),
-                NodeUIContextAction.SEPARATOR,
+                GraphInteractiveObjectUIContextAction.SEPARATOR,
                 new RunAndShowIntermediateResultsNodeUIContextAction(),
                 new UpdateCacheShowIntermediateNodeUIContextAction(),
-                NodeUIContextAction.SEPARATOR,
+                GraphInteractiveObjectUIContextAction.SEPARATOR,
                 new ClearCacheNodeUIContextAction(),
-                NodeUIContextAction.SEPARATOR,
+                GraphInteractiveObjectUIContextAction.SEPARATOR,
                 new ExportCompartmentAsJsonNodeUIContextAction(),
-                NodeUIContextAction.SEPARATOR,
+                GraphInteractiveObjectUIContextAction.SEPARATOR,
                 new DeleteCompartmentUIContextAction(),
-                NodeUIContextAction.SEPARATOR,
+                GraphInteractiveObjectUIContextAction.SEPARATOR,
                 new SendToForegroundUIContextAction(),
                 new RaiseUIContextAction(),
                 new LowerUIContextAction(),
                 new SendToBackgroundUIContextAction(),
-                NodeUIContextAction.SEPARATOR,
+                GraphInteractiveObjectUIContextAction.SEPARATOR,
                 new SelectAndMoveNodeHereNodeUIContextAction(),
                 new LockNodeLocationSizeUIContextAction(),
                 new UnlockNodeLocationSizeUIContextAction()
         );
         // Custom entries (from registry)
-        List<NodeUIContextAction> registeredEntries = JIPipe.getCustomMenus().getRegisteredContextMenuActions().stream()
-                .filter(NodeUIContextAction::showInCompartmentGraph)
-                .sorted(Comparator.comparing(NodeUIContextAction::getName))
+        List<GraphInteractiveObjectUIContextAction> registeredEntries = JIPipe.getCustomMenus().getRegisteredContextMenuActions().stream()
+                .filter(GraphInteractiveObjectUIContextAction::showInCompartmentGraph)
+                .sorted(Comparator.comparing(GraphInteractiveObjectUIContextAction::getName))
                 .collect(Collectors.toList());
         if (!registeredEntries.isEmpty()) {
-            actions.add(NodeUIContextAction.SEPARATOR);
+            actions.add(GraphInteractiveObjectUIContextAction.SEPARATOR);
             actions.addAll(registeredEntries);
         }
         getCanvasUI().setContextActions(actions);

@@ -23,6 +23,7 @@ import org.hkijena.jipipe.api.nodes.JIPipeGraphNode;
 import org.hkijena.jipipe.api.project.JIPipeProject;
 import org.hkijena.jipipe.api.run.JIPipeRunnableQueue;
 import org.hkijena.jipipe.desktop.app.grapheditor.commons.JIPipeDesktopGraphCanvasUI;
+import org.hkijena.jipipe.desktop.app.grapheditor.commons.JIPipeDesktopGraphInteractiveObjectUI;
 import org.hkijena.jipipe.desktop.app.grapheditor.commons.nodeui.JIPipeDesktopGraphNodeUI;
 import org.hkijena.jipipe.desktop.app.grapheditor.flavors.pipeline.actions.JIPipeDesktopUpdateCacheAction;
 import org.hkijena.jipipe.desktop.app.quickrun.JIPipeDesktopQuickRun;
@@ -31,7 +32,7 @@ import org.hkijena.jipipe.desktop.app.quickrun.JIPipeDesktopQuickRunSettings;
 import javax.swing.*;
 import java.util.Set;
 
-public class UpdateCacheOnlyPredecessorsNodeUIContextAction implements NodeUIContextAction {
+public class UpdateCacheOnlyPredecessorsNodeUIContextAction implements GraphInteractiveObjectUIContextAction {
     private static void enqueue(JIPipeGraphNode node, JIPipeProject project) {
         JIPipeDesktopQuickRunSettings settings = new JIPipeDesktopQuickRunSettings(project);
         settings.setSaveToDisk(false);
@@ -43,7 +44,7 @@ public class UpdateCacheOnlyPredecessorsNodeUIContextAction implements NodeUICon
     }
 
     @Override
-    public boolean matches(Set<JIPipeDesktopGraphNodeUI> selection) {
+    public boolean matches(Set<JIPipeDesktopGraphInteractiveObjectUI> selection) {
         for (JIPipeDesktopGraphNodeUI nodeUI : selection) {
             JIPipeGraphNode node = nodeUI.getNode();
             if (node instanceof JIPipeProjectCompartment)
@@ -59,7 +60,7 @@ public class UpdateCacheOnlyPredecessorsNodeUIContextAction implements NodeUICon
     }
 
     @Override
-    public void run(JIPipeDesktopGraphCanvasUI canvasUI, Set<JIPipeDesktopGraphNodeUI> selection) {
+    public void run(JIPipeDesktopGraphCanvasUI canvasUI, Set<JIPipeDesktopGraphInteractiveObjectUI> selection) {
         ImmutableList<JIPipeDesktopGraphNodeUI> list = ImmutableList.copyOf(selection);
         if (list.isEmpty()) {
             return;

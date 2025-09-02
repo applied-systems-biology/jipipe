@@ -14,7 +14,7 @@
 package org.hkijena.jipipe.desktop.app.grapheditor.commons.contextmenu;
 
 import org.hkijena.jipipe.desktop.app.grapheditor.commons.JIPipeDesktopGraphCanvasUI;
-import org.hkijena.jipipe.desktop.app.grapheditor.commons.nodeui.JIPipeDesktopGraphNodeUI;
+import org.hkijena.jipipe.desktop.app.grapheditor.commons.JIPipeDesktopGraphInteractiveObjectUI;
 
 import javax.swing.*;
 import java.util.Set;
@@ -22,12 +22,12 @@ import java.util.Set;
 /**
  * An action that is applied one or multiple algorithms
  */
-public interface NodeUIContextAction {
+public interface GraphInteractiveObjectUIContextAction {
 
     /**
      * Indicates that a separator is created
      */
-    NodeUIContextAction SEPARATOR = null;
+    GraphInteractiveObjectUIContextAction SEPARATOR = null;
 
     /**
      * Returns if the action shows up
@@ -35,7 +35,7 @@ public interface NodeUIContextAction {
      * @param selection the list of algorithm UIs
      * @return if the action shows up
      */
-    boolean matches(Set<JIPipeDesktopGraphNodeUI> selection);
+    boolean matches(Set<JIPipeDesktopGraphInteractiveObjectUI> selection);
 
     /**
      * Runs the workload
@@ -43,7 +43,7 @@ public interface NodeUIContextAction {
      * @param canvasUI  the canvas that contains all algorithm UIs
      * @param selection the current selection of algorithms
      */
-    void run(JIPipeDesktopGraphCanvasUI canvasUI, Set<JIPipeDesktopGraphNodeUI> selection);
+    void run(JIPipeDesktopGraphCanvasUI canvasUI, Set<JIPipeDesktopGraphInteractiveObjectUI> selection);
 
     /**
      * @return the name

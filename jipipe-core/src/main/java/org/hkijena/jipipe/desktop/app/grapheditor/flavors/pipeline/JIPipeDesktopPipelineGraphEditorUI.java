@@ -98,7 +98,7 @@ public class JIPipeDesktopPipelineGraphEditorUI extends JIPipeDesktopGraphEditor
 
     private void initializeContextActions() {
         getCanvasUI().setDragAndDropBehavior(new JIPipeCreatePipelineNodesFromDraggedDataDragAndDropBehavior());
-        List<NodeUIContextAction> nodeSpecificContextActions = new ArrayList<>();
+        List<GraphInteractiveObjectUIContextAction> nodeSpecificContextActions = new ArrayList<>();
         if (JIPipeGeneralUIApplicationSettings.getInstance().isAddContextActionsToContextMenu()) {
             for (JIPipeNodeInfo info : JIPipe.getNodes().getRegisteredNodeInfos().values()) {
                 for (Method method : info.getInstanceClass().getMethods()) {
@@ -124,36 +124,36 @@ public class JIPipeDesktopPipelineGraphEditorUI extends JIPipeDesktopGraphEditor
             }
         }
 
-        List<NodeUIContextAction> actions = new ArrayList<>(Arrays.asList(
+        List<GraphInteractiveObjectUIContextAction> actions = new ArrayList<>(Arrays.asList(
                 new AddNewNodeUIContextAction(),
                 new AddNewParameterSetNodeUIContextAction(),
-                NodeUIContextAction.SEPARATOR,
+                GraphInteractiveObjectUIContextAction.SEPARATOR,
                 new SelectAllNodeUIContextAction(),
                 new InvertSelectionNodeUIContextAction(),
                 new AddBookmarkNodeUIContextAction(),
                 new RemoveBookmarkNodeUIContextAction(),
-                NodeUIContextAction.SEPARATOR,
+                GraphInteractiveObjectUIContextAction.SEPARATOR,
                 new AlgorithmGraphCutNodeUIContextAction(),
                 new AlgorithmGraphCopyNodeUIContextAction(),
                 new AlgorithmGraphPasteNodeUIContextAction(),
                 new AlgorithmGraphDuplicateNodeUIContextAction(),
                 new AlgorithmGraphDuplicateWithInputConnectionsNodeUIContextAction(),
-                NodeUIContextAction.SEPARATOR,
+                GraphInteractiveObjectUIContextAction.SEPARATOR,
                 new RunAndShowResultsNodeUIContextAction(),
                 new UpdateCacheNodeUIContextAction(),
                 new OpenCacheBrowserInWindowUIContextAction(),
-                NodeUIContextAction.SEPARATOR,
+                GraphInteractiveObjectUIContextAction.SEPARATOR,
                 new RunAndShowIntermediateResultsNodeUIContextAction(),
                 new UpdateCacheShowIntermediateNodeUIContextAction(),
                 new UpdateCacheOnlyPredecessorsNodeUIContextAction(),
-                NodeUIContextAction.SEPARATOR,
+                GraphInteractiveObjectUIContextAction.SEPARATOR,
                 new ClearCacheNodeUIContextAction(),
-                NodeUIContextAction.SEPARATOR,
+                GraphInteractiveObjectUIContextAction.SEPARATOR,
                 new IsolateNodesUIContextAction(),
                 new JsonAlgorithmToGroupNodeUIContextAction(),
                 new GroupNodeUIContextAction(),
                 new CollapseIOInterfaceNodeUIContextAction(),
-                NodeUIContextAction.SEPARATOR,
+                GraphInteractiveObjectUIContextAction.SEPARATOR,
                 new EnableNodeUIContextAction(),
                 new DisableNodeUIContextAction(),
                 new EnablePassThroughNodeUIContextAction(),
@@ -161,32 +161,32 @@ public class JIPipeDesktopPipelineGraphEditorUI extends JIPipeDesktopGraphEditor
                 new EnableSaveOutputsNodeUIContextAction(),
                 new DisableSaveOutputsNodeUIContextAction(),
                 new DeleteNodeUIContextAction(),
-                NodeUIContextAction.SEPARATOR,
+                GraphInteractiveObjectUIContextAction.SEPARATOR,
                 new SendToForegroundUIContextAction(),
                 new RaiseUIContextAction(),
                 new LowerUIContextAction(),
                 new SendToBackgroundUIContextAction(),
-                NodeUIContextAction.SEPARATOR,
+                GraphInteractiveObjectUIContextAction.SEPARATOR,
                 new SelectAndMoveNodeHereNodeUIContextAction(),
                 new LockNodeLocationSizeUIContextAction(),
                 new UnlockNodeLocationSizeUIContextAction()
         ));
 
         // Custom entries (from registry)
-        List<NodeUIContextAction> registeredEntries = JIPipe.getCustomMenus().getRegisteredContextMenuActions().stream()
-                .filter(NodeUIContextAction::showInGraphCompartment)
-                .sorted(Comparator.comparing(NodeUIContextAction::getName))
+        List<GraphInteractiveObjectUIContextAction> registeredEntries = JIPipe.getCustomMenus().getRegisteredContextMenuActions().stream()
+                .filter(GraphInteractiveObjectUIContextAction::showInGraphCompartment)
+                .sorted(Comparator.comparing(GraphInteractiveObjectUIContextAction::getName))
                 .collect(Collectors.toList());
         if (!registeredEntries.isEmpty()) {
-            actions.add(NodeUIContextAction.SEPARATOR);
+            actions.add(GraphInteractiveObjectUIContextAction.SEPARATOR);
             actions.addAll(registeredEntries);
         }
 
         // Node context actions
         if (!nodeSpecificContextActions.isEmpty()) {
             actions = new ArrayList<>(actions);
-            actions.add(NodeUIContextAction.SEPARATOR);
-            nodeSpecificContextActions.sort(Comparator.comparing(NodeUIContextAction::getName));
+            actions.add(GraphInteractiveObjectUIContextAction.SEPARATOR);
+            nodeSpecificContextActions.sort(Comparator.comparing(GraphInteractiveObjectUIContextAction::getName));
             actions.addAll(nodeSpecificContextActions);
         }
 

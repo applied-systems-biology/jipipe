@@ -15,8 +15,8 @@ package org.hkijena.jipipe.desktop.app.grapheditor.flavors.pipeline.contextmenu;
 
 import org.hkijena.jipipe.JIPipe;
 import org.hkijena.jipipe.desktop.app.grapheditor.commons.JIPipeDesktopGraphCanvasUI;
-import org.hkijena.jipipe.desktop.app.grapheditor.commons.contextmenu.NodeUIContextAction;
-import org.hkijena.jipipe.desktop.app.grapheditor.commons.nodeui.JIPipeDesktopGraphNodeUI;
+import org.hkijena.jipipe.desktop.app.grapheditor.commons.JIPipeDesktopGraphInteractiveObjectUI;
+import org.hkijena.jipipe.desktop.app.grapheditor.commons.contextmenu.GraphInteractiveObjectUIContextAction;
 import org.hkijena.jipipe.utils.UIUtils;
 
 import javax.swing.*;
@@ -24,15 +24,15 @@ import java.awt.event.InputEvent;
 import java.awt.event.KeyEvent;
 import java.util.Set;
 
-public class AlgorithmGraphPasteNodeUIContextAction implements NodeUIContextAction {
+public class AlgorithmGraphPasteNodeUIContextAction implements GraphInteractiveObjectUIContextAction {
 
     @Override
-    public boolean matches(Set<JIPipeDesktopGraphNodeUI> selection) {
+    public boolean matches(Set<JIPipeDesktopGraphInteractiveObjectUI> selection) {
         return true;
     }
 
     @Override
-    public void run(JIPipeDesktopGraphCanvasUI canvasUI, Set<JIPipeDesktopGraphNodeUI> selection) {
+    public void run(JIPipeDesktopGraphCanvasUI canvasUI, Set<JIPipeDesktopGraphInteractiveObjectUI> selection) {
         try {
             String json = UIUtils.getStringFromClipboard();
             if (json != null) {

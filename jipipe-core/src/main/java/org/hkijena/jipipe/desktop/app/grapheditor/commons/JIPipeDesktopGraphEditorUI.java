@@ -25,7 +25,7 @@ import org.hkijena.jipipe.api.nodes.*;
 import org.hkijena.jipipe.desktop.JIPipeDesktop;
 import org.hkijena.jipipe.desktop.app.JIPipeDesktopWorkbench;
 import org.hkijena.jipipe.desktop.app.JIPipeDesktopWorkbenchPanel;
-import org.hkijena.jipipe.desktop.app.grapheditor.commons.contextmenu.NodeUIContextAction;
+import org.hkijena.jipipe.desktop.app.grapheditor.commons.contextmenu.GraphInteractiveObjectUIContextAction;
 import org.hkijena.jipipe.desktop.app.grapheditor.commons.nodeui.JIPipeDesktopGraphNodeUI;
 import org.hkijena.jipipe.desktop.commons.components.icons.SolidColorIcon;
 import org.hkijena.jipipe.desktop.commons.components.renderers.JIPipeDesktopGenericListCellRenderer;
@@ -606,7 +606,7 @@ public abstract class JIPipeDesktopGraphEditorUI extends JIPipeDesktopWorkbenchP
         }
 
         Set<JIPipeDesktopGraphNodeUI> selection = getSelection();
-        for (NodeUIContextAction contextAction : canvasUI.getContextActions()) {
+        for (GraphInteractiveObjectUIContextAction contextAction : canvasUI.getContextActions()) {
             if (contextAction != null && contextAction.isDisplayedInToolbar() && contextAction.matches(selection)) {
                 JButton button = new JButton(contextAction.getIcon());
                 button.setToolTipText(TooltipUtils.createTooltipWithShortcut(contextAction.getName(), contextAction.getDescription(), contextAction.getKeyboardShortcut()));

@@ -18,6 +18,7 @@ import org.hkijena.jipipe.api.grouping.JsonAlgorithm;
 import org.hkijena.jipipe.api.nodes.JIPipeGraphNode;
 import org.hkijena.jipipe.desktop.app.JIPipeDesktopProjectWorkbench;
 import org.hkijena.jipipe.desktop.app.grapheditor.commons.JIPipeDesktopGraphCanvasUI;
+import org.hkijena.jipipe.desktop.app.grapheditor.commons.JIPipeDesktopGraphInteractiveObjectUI;
 import org.hkijena.jipipe.desktop.app.grapheditor.commons.nodeui.JIPipeDesktopGraphNodeUI;
 
 import javax.swing.*;
@@ -25,14 +26,14 @@ import java.util.Set;
 import java.util.UUID;
 import java.util.stream.Collectors;
 
-public class JsonAlgorithmToGroupNodeUIContextAction implements NodeUIContextAction {
+public class JsonAlgorithmToGroupNodeUIContextAction implements GraphInteractiveObjectUIContextAction {
     @Override
-    public boolean matches(Set<JIPipeDesktopGraphNodeUI> selection) {
+    public boolean matches(Set<JIPipeDesktopGraphInteractiveObjectUI> selection) {
         return JIPipe.getNodes().hasNodeInfoWithId("node-group") && selection.stream().map(JIPipeDesktopGraphNodeUI::getNode).anyMatch(a -> a instanceof JsonAlgorithm);
     }
 
     @Override
-    public void run(JIPipeDesktopGraphCanvasUI canvasUI, Set<JIPipeDesktopGraphNodeUI> selection) {
+    public void run(JIPipeDesktopGraphCanvasUI canvasUI, Set<JIPipeDesktopGraphInteractiveObjectUI> selection) {
         if (!JIPipeDesktopProjectWorkbench.canAddOrDeleteNodes(canvasUI.getDesktopWorkbench()))
             return;
         if (canvasUI.getHistoryJournal() != null) {

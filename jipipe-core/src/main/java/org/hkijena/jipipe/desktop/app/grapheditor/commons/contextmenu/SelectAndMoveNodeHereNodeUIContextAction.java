@@ -16,6 +16,7 @@ package org.hkijena.jipipe.desktop.app.grapheditor.commons.contextmenu;
 import org.hkijena.jipipe.JIPipe;
 import org.hkijena.jipipe.api.nodes.JIPipeGraphNode;
 import org.hkijena.jipipe.desktop.app.grapheditor.commons.JIPipeDesktopGraphCanvasUI;
+import org.hkijena.jipipe.desktop.app.grapheditor.commons.JIPipeDesktopGraphInteractiveObjectUI;
 import org.hkijena.jipipe.desktop.app.grapheditor.commons.nodeui.JIPipeDesktopGraphNodeUI;
 import org.hkijena.jipipe.desktop.commons.components.pickers.JIPipeDesktopPickNodeDialog;
 
@@ -25,14 +26,14 @@ import java.awt.event.KeyEvent;
 import java.util.Collections;
 import java.util.Set;
 
-public class SelectAndMoveNodeHereNodeUIContextAction implements NodeUIContextAction {
+public class SelectAndMoveNodeHereNodeUIContextAction implements GraphInteractiveObjectUIContextAction {
     @Override
-    public boolean matches(Set<JIPipeDesktopGraphNodeUI> selection) {
+    public boolean matches(Set<JIPipeDesktopGraphInteractiveObjectUI> selection) {
         return selection.size() <= 1;
     }
 
     @Override
-    public void run(JIPipeDesktopGraphCanvasUI canvasUI, Set<JIPipeDesktopGraphNodeUI> selection) {
+    public void run(JIPipeDesktopGraphCanvasUI canvasUI, Set<JIPipeDesktopGraphInteractiveObjectUI> selection) {
         JIPipeGraphNode preSelected = selection.isEmpty() ? null : selection.iterator().next().getNode();
         JIPipeGraphNode algorithm = JIPipeDesktopPickNodeDialog.showDialog(canvasUI.getDesktopWorkbench().getWindow(),
                 canvasUI.getNodeUIs().keySet(),

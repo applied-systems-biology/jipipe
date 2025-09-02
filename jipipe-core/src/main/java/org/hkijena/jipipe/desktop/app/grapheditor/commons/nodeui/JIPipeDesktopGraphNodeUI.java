@@ -42,6 +42,8 @@ import org.hkijena.jipipe.desktop.app.JIPipeDesktopWorkbenchPanel;
 import org.hkijena.jipipe.desktop.app.grapheditor.JIPipeGraphViewMode;
 import org.hkijena.jipipe.desktop.app.grapheditor.commons.JIPipeDesktopGraphCanvasUI;
 import org.hkijena.jipipe.desktop.app.grapheditor.commons.JIPipeDesktopGraphEditorUI;
+import org.hkijena.jipipe.desktop.app.grapheditor.commons.JIPipeDesktopGraphInteractiveObjectUI;
+import org.hkijena.jipipe.desktop.app.grapheditor.commons.JIPipeDesktopGraphInteractiveObjectUIUpdateViewCommand;
 import org.hkijena.jipipe.desktop.app.grapheditor.commons.actions.JIPipeDesktopNodeUIAction;
 import org.hkijena.jipipe.desktop.app.grapheditor.commons.contextmenu.*;
 import org.hkijena.jipipe.desktop.app.grapheditor.commons.nodeui.triggers.*;
@@ -72,7 +74,7 @@ import java.util.stream.Collectors;
 /**
  * UI around an {@link JIPipeGraphNode} instance
  */
-public class JIPipeDesktopGraphNodeUI extends JIPipeDesktopWorkbenchPanel implements MouseListener, MouseMotionListener,
+public class JIPipeDesktopGraphNodeUI extends JIPipeDesktopWorkbenchPanel implements JIPipeDesktopGraphInteractiveObjectUI, MouseListener, MouseMotionListener,
         JIPipeCache.ModifiedEventListener, JIPipeGraphNode.NodeSlotsChangedEventListener, JIPipeGraph.NodeConnectedEventListener,
         JIPipeGraph.NodeDisconnectedEventListener, JIPipeParameterCollection.ParameterChangedEventListener {
     public static final Color COLOR_DISABLED_1 = new Color(227, 86, 86);
@@ -80,14 +82,14 @@ public class JIPipeDesktopGraphNodeUI extends JIPipeDesktopWorkbenchPanel implem
     public static final Color COLOR_SLOT_CACHED = new Color(0x95c2a8);
     public static final Color COLOR_SLOT_DISCONNECTED = new Color(0xc36262);
     public static final Color COLOR_RUN_BUTTON_ICON = new Color(0x22A02D);
-    public static final NodeUIContextAction[] RUN_NODE_CONTEXT_MENU_ENTRIES = new NodeUIContextAction[]{
+    public static final GraphInteractiveObjectUIContextAction[] RUN_NODE_CONTEXT_MENU_ENTRIES = new GraphInteractiveObjectUIContextAction[]{
             new UpdateCacheNodeUIContextAction(),
             new UpdateCacheShowIntermediateNodeUIContextAction(),
             new UpdateCacheOnlyPredecessorsNodeUIContextAction(),
-            NodeUIContextAction.SEPARATOR,
+            GraphInteractiveObjectUIContextAction.SEPARATOR,
             new RunAndShowResultsNodeUIContextAction(),
             new RunAndShowIntermediateResultsNodeUIContextAction(),
-            NodeUIContextAction.SEPARATOR,
+            GraphInteractiveObjectUIContextAction.SEPARATOR,
             new ClearCacheNodeUIContextAction()
     };
     private static final Map<String, BufferedImage> VISUALIZATION_ICON_CACHE = new HashMap<>();
@@ -1456,7 +1458,7 @@ public class JIPipeDesktopGraphNodeUI extends JIPipeDesktopWorkbenchPanel implem
 
     private void openRunNodeMenu(MouseEvent event) {
         JPopupMenu menu = new JPopupMenu();
-        for (NodeUIContextAction entry : RUN_NODE_CONTEXT_MENU_ENTRIES) {
+        for (GraphInteractiveObjectUIContextAction entry : RUN_NODE_CONTEXT_MENU_ENTRIES) {
             if (entry == null)
                 UIUtils.addSeparatorIfNeeded(menu);
             else {
@@ -2400,7 +2402,7 @@ public class JIPipeDesktopGraphNodeUI extends JIPipeDesktopWorkbenchPanel implem
         }
     }
 
-    public void paintMinimap(Graphics2D graphics2D, int x, int y, int width, int height, BasicStroke defaultStroke, BasicStroke selectedStroke, Set<JIPipeDesktopGraphNodeUI> selection) {
+    public void paintMinimap(Graphics2D graphics2D, int x, int y, int width, int height, BasicStroke defaultStroke, BasicStroke selectedStroke, Set<JIPipeDesktopGraphInteractiveObjectUI> selection) {
         // Fill
         graphics2D.setColor(getFillColor());
         graphics2D.fillRect(x, y, width, height);
@@ -2442,6 +2444,21 @@ public class JIPipeDesktopGraphNodeUI extends JIPipeDesktopWorkbenchPanel implem
 
     public JIPipeDesktopGraphNodeUIActiveArea getCurrentActiveArea() {
         return currentActiveArea;
+    }
+
+    @Override
+    public Set<JIPipeGraphNode> getNodes() {
+        return Set.of(node);
+    }
+
+    @Override
+    public void updateView(JIPipeDesktopGraphInteractiveObjectUIUpdateViewCommand command) {
+        if(command instanceof JIPipeDesktopGraphNodeUIUpdateViewCommand nodeUIUpdateViewCommand) {
+            updateView(nodeUIUpdateViewCommand.isUpdateAssets(), nodeUIUpdateViewCommand.isUpdateSlots(), nodeUIUpdateViewCommand.isUpdateSize());
+        }
+        else {
+            updateView(false, false, false);
+        }
     }
 
     public enum SlotStatus {

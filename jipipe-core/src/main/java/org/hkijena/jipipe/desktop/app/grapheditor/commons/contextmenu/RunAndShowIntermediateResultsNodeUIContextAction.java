@@ -18,15 +18,16 @@ import org.hkijena.jipipe.api.JIPipeGraphType;
 import org.hkijena.jipipe.api.compartments.algorithms.JIPipeProjectCompartment;
 import org.hkijena.jipipe.api.nodes.JIPipeGraphNode;
 import org.hkijena.jipipe.desktop.app.grapheditor.commons.JIPipeDesktopGraphCanvasUI;
+import org.hkijena.jipipe.desktop.app.grapheditor.commons.JIPipeDesktopGraphInteractiveObjectUI;
 import org.hkijena.jipipe.desktop.app.grapheditor.commons.nodeui.JIPipeDesktopGraphNodeUI;
 import org.hkijena.jipipe.desktop.app.grapheditor.flavors.pipeline.actions.JIPipeDesktopRunAndShowResultsAction;
 
 import javax.swing.*;
 import java.util.Set;
 
-public class RunAndShowIntermediateResultsNodeUIContextAction implements NodeUIContextAction {
+public class RunAndShowIntermediateResultsNodeUIContextAction implements GraphInteractiveObjectUIContextAction {
     @Override
-    public boolean matches(Set<JIPipeDesktopGraphNodeUI> selection) {
+    public boolean matches(Set<JIPipeDesktopGraphInteractiveObjectUI> selection) {
         if (selection.size() == 1) {
             JIPipeGraphNode node = selection.iterator().next().getNode();
             if (node instanceof JIPipeProjectCompartment)
@@ -41,7 +42,7 @@ public class RunAndShowIntermediateResultsNodeUIContextAction implements NodeUIC
     }
 
     @Override
-    public void run(JIPipeDesktopGraphCanvasUI canvasUI, Set<JIPipeDesktopGraphNodeUI> selection) {
+    public void run(JIPipeDesktopGraphCanvasUI canvasUI, Set<JIPipeDesktopGraphInteractiveObjectUI> selection) {
         JIPipeDesktopGraphNodeUI ui = selection.iterator().next();
         ui.getNodeUIActionRequestedEventEmitter().emit(new JIPipeDesktopGraphNodeUI.NodeUIActionRequestedEvent(ui, new JIPipeDesktopRunAndShowResultsAction(true)));
     }
