@@ -25,6 +25,10 @@ import org.hkijena.jipipe.api.nodes.*;
 import org.hkijena.jipipe.desktop.JIPipeDesktop;
 import org.hkijena.jipipe.desktop.app.JIPipeDesktopWorkbench;
 import org.hkijena.jipipe.desktop.app.JIPipeDesktopWorkbenchPanel;
+import org.hkijena.jipipe.desktop.app.grapheditor.commons.canvas.events.JIPipeDesktopGraphCanvasUINodeSelectedEvent;
+import org.hkijena.jipipe.desktop.app.grapheditor.commons.canvas.events.JIPipeDesktopGraphCanvasUINodeSelectedEventListener;
+import org.hkijena.jipipe.desktop.app.grapheditor.commons.canvas.events.JIPipeDesktopGraphCanvasUINodeSelectionChangedEvent;
+import org.hkijena.jipipe.desktop.app.grapheditor.commons.canvas.events.JIPipeDesktopGraphCanvasUINodeSelectionChangedEventListener;
 import org.hkijena.jipipe.desktop.app.grapheditor.commons.contextmenu.GraphInteractiveObjectUIContextAction;
 import org.hkijena.jipipe.desktop.app.grapheditor.commons.nodeui.JIPipeDesktopGraphNodeUI;
 import org.hkijena.jipipe.desktop.commons.components.icons.SolidColorIcon;
@@ -57,8 +61,8 @@ import java.util.List;
  * and a menu bar
  */
 public abstract class JIPipeDesktopGraphEditorUI extends JIPipeDesktopWorkbenchPanel implements MouseListener, MouseMotionListener, Disposable, JIPipeGraph.GraphChangedEventListener,
-        JIPipeDesktopGraphCanvasUI.NodeSelectionChangedEventListener,
-        JIPipeDesktopGraphCanvasUI.NodeUISelectedEventListener,
+        JIPipeDesktopGraphCanvasUINodeSelectionChangedEventListener,
+        JIPipeDesktopGraphCanvasUINodeSelectedEventListener,
         JIPipeDesktopGraphNodeUI.DefaultNodeUIActionRequestedEventListener,
         JIPipeDesktopGraphNodeUI.NodeUIActionRequestedEventListener,
         JIPipeDesktopDockPanel.StateSavedEventListener, JIPipeDesktopDockPanel.PanelSideVisibilityChangedEventListener {
@@ -809,12 +813,12 @@ public abstract class JIPipeDesktopGraphEditorUI extends JIPipeDesktopWorkbenchP
     }
 
     @Override
-    public void onGraphCanvasNodeSelectionChanged(JIPipeDesktopGraphCanvasUI.NodeSelectionChangedEvent event) {
+    public void onGraphCanvasNodeSelectionChanged(JIPipeDesktopGraphCanvasUINodeSelectionChangedEvent event) {
         updateSelection();
     }
 
     @Override
-    public void onNodeUISelected(JIPipeDesktopGraphCanvasUI.NodeUISelectedEvent event) {
+    public void onNodeUISelected(JIPipeDesktopGraphCanvasUINodeSelectedEvent event) {
         if (event.getNodeUI() != null) {
             if (event.isAddToSelection()) {
                 if (canvasUI.getSelection().contains(event.getNodeUI())) {

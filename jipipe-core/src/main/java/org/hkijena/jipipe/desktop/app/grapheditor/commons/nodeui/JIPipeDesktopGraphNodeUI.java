@@ -45,6 +45,8 @@ import org.hkijena.jipipe.desktop.app.grapheditor.commons.JIPipeDesktopGraphEdit
 import org.hkijena.jipipe.desktop.app.grapheditor.commons.JIPipeDesktopGraphInteractiveObjectUI;
 import org.hkijena.jipipe.desktop.app.grapheditor.commons.JIPipeDesktopGraphInteractiveObjectUIUpdateViewCommand;
 import org.hkijena.jipipe.desktop.app.grapheditor.commons.actions.JIPipeDesktopNodeUIAction;
+import org.hkijena.jipipe.desktop.app.grapheditor.commons.canvas.JIPipeDesktopGraphCanvasUIConnectHighlight;
+import org.hkijena.jipipe.desktop.app.grapheditor.commons.canvas.JIPipeDesktopGraphCanvasUIDisconnectHighlight;
 import org.hkijena.jipipe.desktop.app.grapheditor.commons.contextmenu.*;
 import org.hkijena.jipipe.desktop.app.grapheditor.commons.nodeui.triggers.*;
 import org.hkijena.jipipe.desktop.app.grapheditor.flavors.pipeline.JIPipeDesktopPipelineGraphEditorUI;
@@ -2120,12 +2122,12 @@ public class JIPipeDesktopGraphNodeUI extends JIPipeDesktopWorkbenchPanel implem
                     if (source.isOutput()) {
                         JIPipeDesktopGraphNodeUISlotActiveArea sourceUI = sourceNodeUI.getOutputSlotMap().getOrDefault(source.getName(), null);
                         if (sourceUI != null) {
-                            getGraphCanvasUI().setConnectHighlight(new JIPipeDesktopGraphCanvasUI.ConnectHighlight(sourceUI, current));
+                            getGraphCanvasUI().setConnectHighlight(new JIPipeDesktopGraphCanvasUIConnectHighlight(sourceUI, current));
                         }
                     } else {
                         JIPipeDesktopGraphNodeUISlotActiveArea sourceUI = sourceNodeUI.getInputSlotMap().getOrDefault(source.getName(), null);
                         if (sourceUI != null) {
-                            getGraphCanvasUI().setConnectHighlight(new JIPipeDesktopGraphCanvasUI.ConnectHighlight(current, sourceUI));
+                            getGraphCanvasUI().setConnectHighlight(new JIPipeDesktopGraphCanvasUIConnectHighlight(current, sourceUI));
                         }
                     }
                 }
@@ -2142,7 +2144,7 @@ public class JIPipeDesktopGraphNodeUI extends JIPipeDesktopWorkbenchPanel implem
         disconnectButton.addMouseListener(new MouseAdapter() {
             @Override
             public void mouseEntered(MouseEvent e) {
-                getGraphCanvasUI().setDisconnectHighlight(new JIPipeDesktopGraphCanvasUI.DisconnectHighlight(slotActiveArea, sourceSlots));
+                getGraphCanvasUI().setDisconnectHighlight(new JIPipeDesktopGraphCanvasUIDisconnectHighlight(slotActiveArea, sourceSlots));
             }
 
             @Override

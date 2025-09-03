@@ -25,8 +25,6 @@ import org.hkijena.jipipe.api.JIPipeWorkbench;
 import org.hkijena.jipipe.api.compartments.algorithms.IOInterfaceAlgorithm;
 import org.hkijena.jipipe.api.compartments.algorithms.JIPipeProjectCompartment;
 import org.hkijena.jipipe.api.data.*;
-import org.hkijena.jipipe.api.events.AbstractJIPipeEvent;
-import org.hkijena.jipipe.api.events.JIPipeEventEmitter;
 import org.hkijena.jipipe.api.grapheditortool.JIPipeDefaultGraphEditorTool;
 import org.hkijena.jipipe.api.grapheditortool.JIPipeToggleableGraphEditorTool;
 import org.hkijena.jipipe.api.history.JIPipeHistoryJournal;
@@ -47,6 +45,10 @@ import org.hkijena.jipipe.desktop.app.JIPipeDesktopWorkbench;
 import org.hkijena.jipipe.desktop.app.JIPipeDesktopWorkbenchAccess;
 import org.hkijena.jipipe.desktop.app.grapheditor.JIPipeGraphViewMode;
 import org.hkijena.jipipe.desktop.app.grapheditor.commons.actions.JIPipeDesktopOpenContextMenuAction;
+import org.hkijena.jipipe.desktop.app.grapheditor.commons.canvas.JIPipeDesktopGraphCanvasUIConnectHighlight;
+import org.hkijena.jipipe.desktop.app.grapheditor.commons.canvas.JIPipeDesktopGraphCanvasUIDisconnectHighlight;
+import org.hkijena.jipipe.desktop.app.grapheditor.commons.canvas.JIPipeDesktopGraphCanvasUIEdgeMuteMode;
+import org.hkijena.jipipe.desktop.app.grapheditor.commons.canvas.events.*;
 import org.hkijena.jipipe.desktop.app.grapheditor.commons.contextmenu.GraphInteractiveObjectUIContextAction;
 import org.hkijena.jipipe.desktop.app.grapheditor.commons.edgeui.JIPipeDesktopGraphEdgeUI;
 import org.hkijena.jipipe.desktop.app.grapheditor.commons.layout.MSTGraphAutoLayoutImplementation;
@@ -144,9 +146,9 @@ public class JIPipeDesktopGraphCanvasUI extends JLayeredPane implements JIPipeDe
     private final JIPipeGraphViewMode viewMode = JIPipeGraphViewMode.VerticalCompact;
     private final Map<?, ?> desktopRenderingHints = UIUtils.getDesktopRenderingHints();
     private final ZoomChangedEventEmitter zoomChangedEventEmitter = new ZoomChangedEventEmitter();
-    private final GraphCanvasUpdatedEventEmitter graphCanvasUpdatedEventEmitter = new GraphCanvasUpdatedEventEmitter();
-    private final NodeSelectionChangedEventEmitter nodeSelectionChangedEventEmitter = new NodeSelectionChangedEventEmitter();
-    private final NodeUISelectedEventEmitter nodeUISelectedEventEmitter = new NodeUISelectedEventEmitter();
+    private final JIPipeDesktopGraphCanvasUIUpdatedEventEmitter graphCanvasUpdatedEventEmitter = new JIPipeDesktopGraphCanvasUIUpdatedEventEmitter();
+    private final JIPipeDesktopGraphCanvasUINodeSelectionChangedEventEmitter nodeSelectionChangedEventEmitter = new JIPipeDesktopGraphCanvasUINodeSelectionChangedEventEmitter();
+    private final JIPipeDesktopGraphCanvasUINodeSelectedEventEmitter nodeUISelectedEventEmitter = new JIPipeDesktopGraphCanvasUINodeSelectedEventEmitter();
     private final JIPipeDesktopGraphNodeUI.DefaultNodeUIActionRequestedEventEmitter defaultNodeUIActionRequestedEventEmitter = new JIPipeDesktopGraphNodeUI.DefaultNodeUIActionRequestedEventEmitter();
     private final JIPipeDesktopGraphNodeUI.NodeUIActionRequestedEventEmitter nodeUIActionRequestedEventEmitter = new JIPipeDesktopGraphNodeUI.NodeUIActionRequestedEventEmitter();
     private final StampedLock stampedLock = new StampedLock();
@@ -171,8 +173,8 @@ public class JIPipeDesktopGraphCanvasUI extends JLayeredPane implements JIPipeDe
     private Dimension minDimensions = null;
     private JIPipeDesktopGraphNodeUI currentlyMouseEnteredNode;
     private JIPipeDesktopGraphNodeUIActiveArea currentlyMouseEnteredNodeActiveArea;
-    private DisconnectHighlight disconnectHighlight;
-    private ConnectHighlight connectHighlight;
+    private JIPipeDesktopGraphCanvasUIDisconnectHighlight disconnectHighlight;
+    private JIPipeDesktopGraphCanvasUIConnectHighlight connectHighlight;
     private Font smartEdgeTooltipSlotFont;
     private Font smartEdgeTooltipNodeFont;
     private List<JIPipeDesktopGraphEdgeUI> lastDisplayedMainEdges;
@@ -314,11 +316,11 @@ public class JIPipeDesktopGraphCanvasUI extends JLayeredPane implements JIPipeDe
         return lastMousePosition;
     }
 
-    public NodeSelectionChangedEventEmitter getNodeSelectionChangedEventEmitter() {
+    public JIPipeDesktopGraphCanvasUINodeSelectionChangedEventEmitter getNodeSelectionChangedEventEmitter() {
         return nodeSelectionChangedEventEmitter;
     }
 
-    public NodeUISelectedEventEmitter getNodeUISelectedEventEmitter() {
+    public JIPipeDesktopGraphCanvasUINodeSelectedEventEmitter getNodeUISelectedEventEmitter() {
         return nodeUISelectedEventEmitter;
     }
 
@@ -468,7 +470,7 @@ public class JIPipeDesktopGraphCanvasUI extends JLayeredPane implements JIPipeDe
             updateSelection();
             revalidate();
             repaint();
-            graphCanvasUpdatedEventEmitter.emit(new GraphCanvasUpdatedEvent(this));
+            graphCanvasUpdatedEventEmitter.emit(new JIPipeDesktopGraphCanvasUIUpdatedEvent(this));
         }
     }
 
@@ -522,7 +524,7 @@ public class JIPipeDesktopGraphCanvasUI extends JLayeredPane implements JIPipeDe
             autoLayoutAll();
         }
         if (newlyPlacedAlgorithms.size() > 0) {
-            graphCanvasUpdatedEventEmitter.emit(new GraphCanvasUpdatedEvent(this));
+            graphCanvasUpdatedEventEmitter.emit(new JIPipeDesktopGraphCanvasUIUpdatedEvent(this));
         }
         if (scheduledSelection != null && !scheduledSelection.isEmpty()) {
             if (scheduledSelection.equals(getSelectedNodes()))
@@ -764,7 +766,7 @@ public class JIPipeDesktopGraphCanvasUI extends JLayeredPane implements JIPipeDe
                 break;
         }
         repaint();
-        graphCanvasUpdatedEventEmitter.emit(new GraphCanvasUpdatedEvent(this));
+        graphCanvasUpdatedEventEmitter.emit(new JIPipeDesktopGraphCanvasUIUpdatedEvent(this));
     }
 
     /**
@@ -1155,7 +1157,7 @@ public class JIPipeDesktopGraphCanvasUI extends JLayeredPane implements JIPipeDe
         repaintLowLag();
         if (getParent() != null)
             getParent().revalidate();
-        graphCanvasUpdatedEventEmitter.emit(new GraphCanvasUpdatedEvent(this));
+        graphCanvasUpdatedEventEmitter.emit(new JIPipeDesktopGraphCanvasUIUpdatedEvent(this));
     }
 
     public void repaintLowLag() {
@@ -2045,7 +2047,7 @@ public class JIPipeDesktopGraphCanvasUI extends JLayeredPane implements JIPipeDe
                 viewY,
                 false,
                 false,
-                EdgeMuteMode.Auto);
+                JIPipeDesktopGraphCanvasUIEdgeMuteMode.Auto);
     }
 
     @Override
@@ -2132,7 +2134,7 @@ public class JIPipeDesktopGraphCanvasUI extends JLayeredPane implements JIPipeDe
                 0,
                 true,
                 isAutoMuteEdges(),
-                (selection.isEmpty() || !settings.isAutoMuteBySelection()) ? EdgeMuteMode.Auto : EdgeMuteMode.ForceMuted);
+                (selection.isEmpty() || !settings.isAutoMuteBySelection()) ? JIPipeDesktopGraphCanvasUIEdgeMuteMode.Auto : JIPipeDesktopGraphCanvasUIEdgeMuteMode.ForceMuted);
 
         // Outside edges drawing
         if (renderOutsideEdges && getCompartmentUUID() != null && settings.isDrawOutsideEdges()) {
@@ -2152,7 +2154,7 @@ public class JIPipeDesktopGraphCanvasUI extends JLayeredPane implements JIPipeDe
                     0,
                     true,
                     false,
-                    EdgeMuteMode.ForceVisible);
+                    JIPipeDesktopGraphCanvasUIEdgeMuteMode.ForceVisible);
         }
 
         // Draw highlights
@@ -2487,7 +2489,7 @@ public class JIPipeDesktopGraphCanvasUI extends JLayeredPane implements JIPipeDe
         }
     }
 
-    private List<JIPipeDesktopGraphEdgeUI> paintEdges(Graphics2D g, Stroke stroke, Stroke strokeBorder, Stroke strokeComment, boolean onlySelected, boolean multicolor, double scale, int viewX, int viewY, boolean enableArrows, boolean enableAutoHide, EdgeMuteMode muteMode) {
+    private List<JIPipeDesktopGraphEdgeUI> paintEdges(Graphics2D g, Stroke stroke, Stroke strokeBorder, Stroke strokeComment, boolean onlySelected, boolean multicolor, double scale, int viewX, int viewY, boolean enableArrows, boolean enableAutoHide, JIPipeDesktopGraphCanvasUIEdgeMuteMode muteMode) {
         Set<Map.Entry<JIPipeDataSlot, JIPipeDataSlot>> slotEdges = graph.getSlotEdges();
         List<JIPipeDesktopGraphEdgeUI> edgeUIs = new ArrayList<>();
 
@@ -2567,9 +2569,9 @@ public class JIPipeDesktopGraphCanvasUI extends JLayeredPane implements JIPipeDe
 
                 boolean hidden;
 
-                if (muteMode == EdgeMuteMode.ForceVisible) {
+                if (muteMode == JIPipeDesktopGraphCanvasUIEdgeMuteMode.ForceVisible) {
                     hidden = false;
-                } else if (muteMode == EdgeMuteMode.ForceMuted) {
+                } else if (muteMode == JIPipeDesktopGraphCanvasUIEdgeMuteMode.ForceMuted) {
                     hidden = true;
                 } else {
                     switch (displayedSlotEdge.getEdge().getUiVisibility()) {
@@ -3168,7 +3170,7 @@ public class JIPipeDesktopGraphCanvasUI extends JLayeredPane implements JIPipeDe
         updateAnnotationNodeLayers();
         repaint();
         requestFocusInWindow();
-        nodeSelectionChangedEventEmitter.emit(new NodeSelectionChangedEvent(this));
+        nodeSelectionChangedEventEmitter.emit(new JIPipeDesktopGraphCanvasUINodeSelectionChangedEvent(this));
 
         // Update resize handles
         if (selection.size() == 1) {
@@ -3316,20 +3318,20 @@ public class JIPipeDesktopGraphCanvasUI extends JLayeredPane implements JIPipeDe
         this.currentConnectionDragTarget = currentConnectionDragTarget;
     }
 
-    public DisconnectHighlight getDisconnectHighlight() {
+    public JIPipeDesktopGraphCanvasUIDisconnectHighlight getDisconnectHighlight() {
         return disconnectHighlight;
     }
 
-    public void setDisconnectHighlight(DisconnectHighlight disconnectHighlight) {
+    public void setDisconnectHighlight(JIPipeDesktopGraphCanvasUIDisconnectHighlight disconnectHighlight) {
         this.disconnectHighlight = disconnectHighlight;
         repaint(50);
     }
 
-    public ConnectHighlight getConnectHighlight() {
+    public JIPipeDesktopGraphCanvasUIConnectHighlight getConnectHighlight() {
         return connectHighlight;
     }
 
-    public void setConnectHighlight(ConnectHighlight connectHighlight) {
+    public void setConnectHighlight(JIPipeDesktopGraphCanvasUIConnectHighlight connectHighlight) {
         this.connectHighlight = connectHighlight;
         repaint(50);
     }
@@ -3383,10 +3385,10 @@ public class JIPipeDesktopGraphCanvasUI extends JLayeredPane implements JIPipeDe
             ui.moveToStoredGridLocation(true);
             ui.setZoom(zoom);
         }
-        graphCanvasUpdatedEventEmitter.emit(new GraphCanvasUpdatedEvent(this));
+        graphCanvasUpdatedEventEmitter.emit(new JIPipeDesktopGraphCanvasUIUpdatedEvent(this));
     }
 
-    public GraphCanvasUpdatedEventEmitter getGraphCanvasUpdatedEventEmitter() {
+    public JIPipeDesktopGraphCanvasUIUpdatedEventEmitter getGraphCanvasUpdatedEventEmitter() {
         return graphCanvasUpdatedEventEmitter;
     }
 
@@ -3506,7 +3508,7 @@ public class JIPipeDesktopGraphCanvasUI extends JLayeredPane implements JIPipeDe
         }
 
         requestFocusInWindow();
-        graphCanvasUpdatedEventEmitter.emit(new GraphCanvasUpdatedEvent(this));
+        graphCanvasUpdatedEventEmitter.emit(new JIPipeDesktopGraphCanvasUIUpdatedEvent(this));
     }
 
     @Override
@@ -3575,7 +3577,7 @@ public class JIPipeDesktopGraphCanvasUI extends JLayeredPane implements JIPipeDe
         repaintLowLag();
         if (getParent() != null)
             getParent().revalidate();
-        graphCanvasUpdatedEventEmitter.emit(new GraphCanvasUpdatedEvent(this));
+        graphCanvasUpdatedEventEmitter.emit(new JIPipeDesktopGraphCanvasUIUpdatedEvent(this));
     }
 
     public Map<UUID, JIPipeGraphNode> pasteNodes(JIPipeGraph graph) throws JsonProcessingException {
@@ -3616,141 +3618,4 @@ public class JIPipeDesktopGraphCanvasUI extends JLayeredPane implements JIPipeDe
         }
     }
 
-    public enum EdgeMuteMode {
-        ForceMuted,
-        ForceVisible,
-        Auto
-    }
-
-    public interface NodeUISelectedEventListener {
-        void onNodeUISelected(NodeUISelectedEvent event);
-    }
-
-    public interface NodeSelectionChangedEventListener {
-        void onGraphCanvasNodeSelectionChanged(NodeSelectionChangedEvent event);
-    }
-
-    public interface GraphCanvasUpdatedEventListener {
-        void onGraphCanvasUpdated(GraphCanvasUpdatedEvent event);
-    }
-
-    /**
-     * Generated when an algorithm is selected
-     */
-    public static class NodeUISelectedEvent extends AbstractJIPipeEvent {
-
-        private final JIPipeDesktopGraphNodeUI nodeUI;
-        private boolean addToSelection;
-
-        /**
-         * @param nodeUI         the algorithm UI
-         * @param addToSelection if the algorithm should be added to the selection
-         */
-        public NodeUISelectedEvent(JIPipeDesktopGraphNodeUI nodeUI, boolean addToSelection) {
-            super(nodeUI);
-            this.nodeUI = nodeUI;
-            this.addToSelection = addToSelection;
-        }
-
-        public JIPipeDesktopGraphNodeUI getNodeUI() {
-            return nodeUI;
-        }
-
-        public boolean isAddToSelection() {
-            return addToSelection;
-        }
-    }
-
-    public static class NodeUISelectedEventEmitter extends JIPipeEventEmitter<NodeUISelectedEvent, NodeUISelectedEventListener> {
-        @Override
-        protected void call(NodeUISelectedEventListener nodeUISelectedEventListener, NodeUISelectedEvent event) {
-            nodeUISelectedEventListener.onNodeUISelected(event);
-        }
-    }
-
-    /**
-     * Triggered when An {@link JIPipeDesktopGraphCanvasUI} selection was changed
-     */
-    public static class NodeSelectionChangedEvent extends AbstractJIPipeEvent {
-        private JIPipeDesktopGraphCanvasUI canvasUI;
-
-        /**
-         * @param canvasUI the canvas that triggered the event
-         */
-        public NodeSelectionChangedEvent(JIPipeDesktopGraphCanvasUI canvasUI) {
-            super(canvasUI);
-            this.canvasUI = canvasUI;
-        }
-
-        public JIPipeDesktopGraphCanvasUI getCanvasUI() {
-            return canvasUI;
-        }
-    }
-
-    public static class NodeSelectionChangedEventEmitter extends JIPipeEventEmitter<NodeSelectionChangedEvent, NodeSelectionChangedEventListener> {
-
-        @Override
-        protected void call(NodeSelectionChangedEventListener nodeSelectionChangedEventListener, NodeSelectionChangedEvent event) {
-            nodeSelectionChangedEventListener.onGraphCanvasNodeSelectionChanged(event);
-        }
-    }
-
-    /**
-     * Triggered when a graph canvas was updated
-     */
-    public static class GraphCanvasUpdatedEvent extends AbstractJIPipeEvent {
-        private final JIPipeDesktopGraphCanvasUI graphCanvasUI;
-
-        public GraphCanvasUpdatedEvent(JIPipeDesktopGraphCanvasUI graphCanvasUI) {
-            super(graphCanvasUI);
-            this.graphCanvasUI = graphCanvasUI;
-        }
-
-        public JIPipeDesktopGraphCanvasUI getGraphCanvasUI() {
-            return graphCanvasUI;
-        }
-    }
-
-    public static class GraphCanvasUpdatedEventEmitter extends JIPipeEventEmitter<GraphCanvasUpdatedEvent, GraphCanvasUpdatedEventListener> {
-        @Override
-        protected void call(GraphCanvasUpdatedEventListener graphCanvasUpdatedEventListener, GraphCanvasUpdatedEvent event) {
-            graphCanvasUpdatedEventListener.onGraphCanvasUpdated(event);
-        }
-    }
-
-    public static class DisconnectHighlight {
-        private final JIPipeDesktopGraphNodeUISlotActiveArea target;
-        private final Set<JIPipeDataSlot> sources;
-
-        public DisconnectHighlight(JIPipeDesktopGraphNodeUISlotActiveArea target, Set<JIPipeDataSlot> sources) {
-            this.target = target;
-            this.sources = sources;
-        }
-
-        public JIPipeDesktopGraphNodeUISlotActiveArea getTarget() {
-            return target;
-        }
-
-        public Set<JIPipeDataSlot> getSources() {
-            return sources;
-        }
-    }
-
-    public static class ConnectHighlight {
-        private final JIPipeDesktopGraphNodeUISlotActiveArea source;
-        private final JIPipeDesktopGraphNodeUISlotActiveArea target;
-
-        public ConnectHighlight(JIPipeDesktopGraphNodeUISlotActiveArea source, JIPipeDesktopGraphNodeUISlotActiveArea target) {
-            this.source = source;
-            this.target = target;
-        }
-
-        public JIPipeDesktopGraphNodeUISlotActiveArea getSource() {
-            return source;
-        }
-
-        public JIPipeDesktopGraphNodeUISlotActiveArea getTarget() {
-            return target;
-        }
-    }
 }

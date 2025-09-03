@@ -14,6 +14,8 @@
 package org.hkijena.jipipe.desktop.app.grapheditor.commons;
 
 import org.hkijena.jipipe.desktop.app.JIPipeDesktopWorkbenchPanel;
+import org.hkijena.jipipe.desktop.app.grapheditor.commons.canvas.events.JIPipeDesktopGraphCanvasUIUpdatedEvent;
+import org.hkijena.jipipe.desktop.app.grapheditor.commons.canvas.events.JIPipeDesktopGraphCanvasUIUpdatedEventListener;
 import org.hkijena.jipipe.utils.ThemeUtils;
 
 import javax.swing.*;
@@ -24,7 +26,7 @@ import java.awt.image.BufferedImage;
 /**
  * Renders a overview of the graph
  */
-public class JIPipeDesktopGraphEditorMinimap extends JIPipeDesktopWorkbenchPanel implements MouseListener, MouseMotionListener, AdjustmentListener, JIPipeDesktopGraphCanvasUI.GraphCanvasUpdatedEventListener {
+public class JIPipeDesktopGraphEditorMinimap extends JIPipeDesktopWorkbenchPanel implements MouseListener, MouseMotionListener, AdjustmentListener, JIPipeDesktopGraphCanvasUIUpdatedEventListener {
 
     private static final Color AREA_FILL_COLOR = new Color(0x3365a4e3, true);
     private final JIPipeDesktopGraphEditorUI graphEditorUI;
@@ -200,7 +202,7 @@ public class JIPipeDesktopGraphEditorMinimap extends JIPipeDesktopWorkbenchPanel
     }
 
     @Override
-    public void onGraphCanvasUpdated(JIPipeDesktopGraphCanvasUI.GraphCanvasUpdatedEvent event) {
+    public void onGraphCanvasUpdated(JIPipeDesktopGraphCanvasUIUpdatedEvent event) {
         if (isDisplayable()) {
             refreshGraphImage();
             repaint();
