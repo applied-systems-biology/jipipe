@@ -20,6 +20,7 @@ import org.hkijena.jipipe.desktop.app.JIPipeDesktopWorkbench;
 import org.hkijena.jipipe.desktop.app.JIPipeDesktopWorkbenchAccess;
 import org.hkijena.jipipe.desktop.app.grapheditor.commons.JIPipeDesktopGraphCanvasUI;
 import org.hkijena.jipipe.desktop.app.grapheditor.commons.JIPipeDesktopGraphEditorUI;
+import org.hkijena.jipipe.desktop.app.grapheditor.commons.canvas.JIPipeDesktopGraphCanvasUIConstants;
 
 import javax.swing.*;
 import java.awt.*;
@@ -179,8 +180,8 @@ public class JIPipeAnnotationGraphNodeTool<T extends JIPipeAnnotationGraphNode> 
             int gridWidth = getGraphCanvas().getViewMode().getGridWidth();
             int gridHeight = getGraphCanvas().getViewMode().getGridHeight();
             double zoom = getGraphCanvas().getZoom();
-            graphics2D.setStroke(JIPipeDesktopGraphCanvasUI.STROKE_COMMENT);
-            graphics2D.setColor(JIPipeDesktopGraphCanvasUI.COLOR_HIGHLIGHT_GREEN);
+            graphics2D.setStroke(JIPipeDesktopGraphCanvasUIConstants.STROKE_COMMENT);
+            graphics2D.setColor(JIPipeDesktopGraphCanvasUIConstants.COLOR_HIGHLIGHT_GREEN);
             int x0 = (int) ((firstPoint.x * gridWidth) * zoom);
             int y0 = (int) ((firstPoint.y * gridHeight) * zoom);
             int x1 = (int) ((secondPoint.x * gridWidth) * zoom);

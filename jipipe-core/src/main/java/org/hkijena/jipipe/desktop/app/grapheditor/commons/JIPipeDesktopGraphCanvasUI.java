@@ -48,6 +48,7 @@ import org.hkijena.jipipe.desktop.app.grapheditor.commons.actions.JIPipeDesktopO
 import org.hkijena.jipipe.desktop.app.grapheditor.commons.canvas.JIPipeDesktopGraphCanvasUIConnectHighlight;
 import org.hkijena.jipipe.desktop.app.grapheditor.commons.canvas.JIPipeDesktopGraphCanvasUIDisconnectHighlight;
 import org.hkijena.jipipe.desktop.app.grapheditor.commons.canvas.JIPipeDesktopGraphCanvasUIEdgeMuteMode;
+import org.hkijena.jipipe.desktop.app.grapheditor.commons.canvas.JIPipeDesktopGraphCanvasUIConstants;
 import org.hkijena.jipipe.desktop.app.grapheditor.commons.canvas.events.*;
 import org.hkijena.jipipe.desktop.app.grapheditor.commons.contextmenu.GraphInteractiveObjectUIContextAction;
 import org.hkijena.jipipe.desktop.app.grapheditor.commons.edgeui.JIPipeDesktopGraphEdgeUI;
@@ -95,40 +96,6 @@ import java.util.stream.Collectors;
 public class JIPipeDesktopGraphCanvasUI extends JLayeredPane implements JIPipeDesktopWorkbenchAccess, MouseMotionListener, MouseListener, MouseWheelListener, JIPipeDesktopZoomViewPort, Disposable,
         JIPipeGraph.GraphChangedEventListener, JIPipeGraph.NodeConnectedEventListener, JIPipeDesktopGraphNodeUI.NodeUIActionRequestedEventListener {
 
-    public static final JIPipeDesktopDropShadowRenderer DROP_SHADOW_BORDER = new JIPipeDesktopDropShadowRenderer(Color.BLACK,
-            5,
-            0.3f,
-            12,
-            true,
-            true,
-            true,
-            true);
-    public static final JIPipeDesktopDropShadowRenderer BOOKMARK_SHADOW_BORDER = new JIPipeDesktopDropShadowRenderer(new Color(0x33cc33),
-            12,
-            0.3f,
-            12,
-            true,
-            true,
-            true,
-            true);
-
-    public static final Font GRAPH_TOOL_CURSOR_FONT = new Font(Font.DIALOG, Font.PLAIN, ThemeUtils.getCurrentStyle().getFontSizeNormal());
-    public static final Color COLOR_HIGHLIGHT_GREEN = new Color(0, 128, 0);
-    public static final Stroke STROKE_UNIT = new BasicStroke(1);
-    public static final Stroke STROKE_THICK = new BasicStroke(3);
-    public static final Stroke STROKE_UNIT_COMMENT = new BasicStroke(1, BasicStroke.CAP_ROUND, BasicStroke.JOIN_BEVEL, 0, new float[]{1}, 0);
-    public static final Stroke STROKE_SELECTION = new BasicStroke(3, BasicStroke.CAP_SQUARE, BasicStroke.JOIN_ROUND, 0, new float[]{5}, 0);
-    public static final Stroke STROKE_MARQUEE = new BasicStroke(1, BasicStroke.CAP_ROUND, BasicStroke.JOIN_BEVEL, 0, new float[]{2}, 0);
-    public static final Stroke STROKE_COMMENT = new BasicStroke(2, BasicStroke.CAP_ROUND, BasicStroke.JOIN_BEVEL, 0, new float[]{2}, 0);
-    public static final Stroke STROKE_COMMENT_HIGHLIGHT = new BasicStroke(4, BasicStroke.CAP_ROUND, BasicStroke.JOIN_BEVEL, 0, new float[]{8}, 0);
-    public static final Stroke STROKE_SMART_EDGE = new BasicStroke(1, BasicStroke.CAP_SQUARE, BasicStroke.JOIN_BEVEL, 0, new float[]{2}, 0);
-    public static final Color COLOR_RESIZE_HANDLE_FILL = new Color(0x22A02D);
-    public static final Color COLOR_RESIZE_HANDLE_BORDER = new Color(0x22A02D).darker();
-    private static final int RESIZE_HANDLE_DISTANCE = 12;
-    private static final int RESIZE_HANDLE_SIZE = 10;
-    private static final Color COMMENT_EDGE_COLOR = new Color(194, 141, 0);
-    private static final Color COLOR_EDGE_DEFAULT = ThemeUtils.isUsingDarkTheme() ? new Color(0x3E3E3E) : new Color(0x737880);
-    private static final Color COLOR_EDGE_CONVERT = new Color(0x2957C2);
     private final JIPipeDesktopWorkbench desktopWorkbench;
     private final JIPipeDesktopGraphEditorUI graphEditorUI;
     private final ImageIcon cursorImage = JIPipe.RESOURCES.getIcon16("actions/target.png");
@@ -2019,8 +1986,8 @@ public class JIPipeDesktopGraphCanvasUI extends JLayeredPane implements JIPipeDe
 
         paintMinimapEdges(graphics2D, scale, viewX, viewY);
 
-        BasicStroke defaultStroke = new BasicStroke(1);
-        BasicStroke selectedStroke = new BasicStroke(3);
+        Stroke defaultStroke = JIPipeDesktopGraphCanvasUIConstants.STROKE_UNIT;
+        Stroke selectedStroke = JIPipeDesktopGraphCanvasUIConstants.STROKE_SELECTION;
 
         for (JIPipeDesktopGraphNodeUI nodeUI : nodeUIs.values()) {
             int x = (int) (nodeUI.getX() * scale) + viewX;
@@ -2028,7 +1995,7 @@ public class JIPipeDesktopGraphCanvasUI extends JLayeredPane implements JIPipeDe
             int width = (int) (nodeUI.getWidth() * scale);
             int height = (int) (nodeUI.getHeight() * scale);
 
-            nodeUI.paintMinimap(graphics2D, x, y, width, height, defaultStroke, selectedStroke, selection);
+            nodeUI.paintMinimap(graphics2D, x, y, width, height, (BasicStroke)defaultStroke, (BasicStroke)selectedStroke, selection);
         }
     }
 
@@ -2037,9 +2004,9 @@ public class JIPipeDesktopGraphCanvasUI extends JLayeredPane implements JIPipeDe
         graphics2D.setRenderingHint(RenderingHints.KEY_INTERPOLATION, RenderingHints.VALUE_INTERPOLATION_BILINEAR);
         graphics2D.setColor(Color.LIGHT_GRAY);
         paintEdges(graphics2D,
-                STROKE_UNIT,
+                JIPipeDesktopGraphCanvasUIConstants.STROKE_UNIT,
                 null,
-                STROKE_UNIT_COMMENT,
+                JIPipeDesktopGraphCanvasUIConstants.STROKE_UNIT_COMMENT,
                 false,
                 false,
                 scale,
@@ -2077,10 +2044,10 @@ public class JIPipeDesktopGraphCanvasUI extends JLayeredPane implements JIPipeDe
                     g.setRenderingHint(RenderingHints.KEY_INTERPOLATION, RenderingHints.VALUE_INTERPOLATION_NEAREST_NEIGHBOR);
 
                     if (ui.isDrawShadow()) {
-                        DROP_SHADOW_BORDER.paint(g, ui.getX() - 3, ui.getY() - 3, ui.getWidth() + 8, ui.getHeight() + 8);
+                        JIPipeDesktopGraphCanvasUIConstants.DROP_SHADOW_BORDER.paint(g, ui.getX() - 3, ui.getY() - 3, ui.getWidth() + 8, ui.getHeight() + 8);
                     }
                     if (ui.getNode().isBookmarked()) {
-                        BOOKMARK_SHADOW_BORDER.paint(g, ui.getX() - 12, ui.getY() - 12, ui.getWidth() + 24, ui.getHeight() + 24);
+                        JIPipeDesktopGraphCanvasUIConstants.BOOKMARK_SHADOW_BORDER.paint(g, ui.getX() - 12, ui.getY() - 12, ui.getWidth() + 24, ui.getHeight() + 24);
                     }
                 }
 
@@ -2126,7 +2093,7 @@ public class JIPipeDesktopGraphCanvasUI extends JLayeredPane implements JIPipeDe
         lastDisplayedMainEdges = paintEdges(g,
                 strokeDefault,
                 strokeDefaultBorder,
-                STROKE_COMMENT,
+                JIPipeDesktopGraphCanvasUIConstants.STROKE_COMMENT,
                 false,
                 false,
                 1,
@@ -2146,7 +2113,7 @@ public class JIPipeDesktopGraphCanvasUI extends JLayeredPane implements JIPipeDe
             paintEdges(g,
                     strokeHighlight,
                     null,
-                    STROKE_COMMENT_HIGHLIGHT,
+                    JIPipeDesktopGraphCanvasUIConstants.STROKE_COMMENT_HIGHLIGHT,
                     true,
                     settings.isColorSelectedNodeEdges(),
                     1,
@@ -2166,7 +2133,7 @@ public class JIPipeDesktopGraphCanvasUI extends JLayeredPane implements JIPipeDe
             currentTool.paintBelowNodesAfterEdges(g);
         }
 
-        g.setStroke(STROKE_UNIT);
+        g.setStroke(JIPipeDesktopGraphCanvasUIConstants.STROKE_UNIT);
     }
 
     private void paintDisconnectHighlight(Graphics2D g) {
@@ -2225,7 +2192,7 @@ public class JIPipeDesktopGraphCanvasUI extends JLayeredPane implements JIPipeDe
     private void paintConnectHighlight(Graphics2D g) {
         if (connectHighlight != null) {
             g.setStroke(getStrokeHighlight());
-            g.setColor(COLOR_HIGHLIGHT_GREEN);
+            g.setColor(JIPipeDesktopGraphCanvasUIConstants.COLOR_HIGHLIGHT_GREEN);
             if (connectHighlight.getTarget().getSlot().isInput()) {
                 JIPipeDataSlot source = connectHighlight.getSource().getSlot();
                 JIPipeDataSlot target = connectHighlight.getTarget().getSlot();
@@ -2302,12 +2269,12 @@ public class JIPipeDesktopGraphCanvasUI extends JLayeredPane implements JIPipeDe
                     JIPipeDesktopGraphNodeUISlotActiveArea currentConnectionDragTarget_ = (JIPipeDesktopGraphNodeUISlotActiveArea) currentConnectionDragTarget;
                     if (currentConnectionDragTarget == null || (!graph.getGraph().containsEdge(currentConnectionDragSource_.getSlot(), currentConnectionDragTarget_.getSlot())
                             && !graph.getGraph().containsEdge(currentConnectionDragTarget_.getSlot(), currentConnectionDragSource_.getSlot()))) {
-                        g.setColor(COLOR_HIGHLIGHT_GREEN);
+                        g.setColor(JIPipeDesktopGraphCanvasUIConstants.COLOR_HIGHLIGHT_GREEN);
                     } else {
                         g.setColor(Color.RED);
                     }
                 } else {
-                    g.setColor(COLOR_HIGHLIGHT_GREEN);
+                    g.setColor(JIPipeDesktopGraphCanvasUIConstants.COLOR_HIGHLIGHT_GREEN);
                 }
             } else {
                 g.setColor(Color.DARK_GRAY);
@@ -2359,7 +2326,7 @@ public class JIPipeDesktopGraphCanvasUI extends JLayeredPane implements JIPipeDe
         graphics2D.setRenderingHint(RenderingHints.KEY_INTERPOLATION, RenderingHints.VALUE_INTERPOLATION_BICUBIC);
 
         // Draw node selections & lock
-        graphics2D.setStroke(STROKE_SELECTION);
+        graphics2D.setStroke(JIPipeDesktopGraphCanvasUIConstants.STROKE_SELECTION);
         for (JIPipeDesktopGraphInteractiveObjectUI ui : selection) {
             if(ui instanceof JIPipeDesktopGraphNodeUI nodeUI) {
                 Rectangle bounds = nodeUI.getBounds();
@@ -2379,7 +2346,7 @@ public class JIPipeDesktopGraphCanvasUI extends JLayeredPane implements JIPipeDe
                 // Layer Z (annotations)
                 if (nodeUI.getNode() instanceof JIPipeAnnotationGraphNode) {
                     int zLayer = ((JIPipeAnnotationGraphNode) nodeUI.getNode()).getzOrder();
-                    g.setFont(GRAPH_TOOL_CURSOR_FONT);
+                    g.setFont(JIPipeDesktopGraphCanvasUIConstants.GRAPH_TOOL_CURSOR_FONT);
                     FontMetrics fontMetrics = g.getFontMetrics();
                     String text = "z " + zLayer;
                     int rawStringWidth = fontMetrics.stringWidth(text);
@@ -2397,7 +2364,7 @@ public class JIPipeDesktopGraphCanvasUI extends JLayeredPane implements JIPipeDe
 
         // Draw marquee rectangle
         if (selectionFirst != null && selectionSecond != null) {
-            graphics2D.setStroke(STROKE_MARQUEE);
+            graphics2D.setStroke(JIPipeDesktopGraphCanvasUIConstants.STROKE_MARQUEE);
             graphics2D.setColor(Color.GRAY);
             int x0 = selectionFirst.x;
             int y0 = selectionFirst.y;
@@ -2441,16 +2408,16 @@ public class JIPipeDesktopGraphCanvasUI extends JLayeredPane implements JIPipeDe
         // Draw resize handles
         if (currentResizeTarget != null && !currentResizeTarget.getNode().isUiLocked()) {
             g.setColor(Color.GRAY);
-            graphics2D.setStroke(STROKE_MARQUEE);
-            g.drawRect(currentResizeTarget.getX() - RESIZE_HANDLE_DISTANCE, currentResizeTarget.getY() - RESIZE_HANDLE_DISTANCE, currentResizeTarget.getWidth() + RESIZE_HANDLE_DISTANCE * 2, currentResizeTarget.getHeight() + RESIZE_HANDLE_DISTANCE * 2);
-            graphics2D.setStroke(STROKE_UNIT);
+            graphics2D.setStroke(JIPipeDesktopGraphCanvasUIConstants.STROKE_MARQUEE);
+            g.drawRect(currentResizeTarget.getX() - JIPipeDesktopGraphCanvasUIConstants.RESIZE_HANDLE_DISTANCE, currentResizeTarget.getY() - JIPipeDesktopGraphCanvasUIConstants.RESIZE_HANDLE_DISTANCE, currentResizeTarget.getWidth() + JIPipeDesktopGraphCanvasUIConstants.RESIZE_HANDLE_DISTANCE * 2, currentResizeTarget.getHeight() + JIPipeDesktopGraphCanvasUIConstants.RESIZE_HANDLE_DISTANCE * 2);
+            graphics2D.setStroke(JIPipeDesktopGraphCanvasUIConstants.STROKE_UNIT);
 
             for (Anchor anchor : Anchor.values()) {
                 Rectangle rectangle = getCurrentResizeTargetAnchorArea(anchor);
                 if (rectangle != null) {
-                    g.setColor(COLOR_RESIZE_HANDLE_FILL);
+                    g.setColor(JIPipeDesktopGraphCanvasUIConstants.COLOR_RESIZE_HANDLE_FILL);
                     g.fillOval(rectangle.x, rectangle.y, rectangle.width, rectangle.height);
-                    g.setColor(COLOR_RESIZE_HANDLE_BORDER);
+                    g.setColor(JIPipeDesktopGraphCanvasUIConstants.COLOR_RESIZE_HANDLE_BORDER);
                     g.drawOval(rectangle.x, rectangle.y, rectangle.width, rectangle.height);
                 }
             }
@@ -2466,21 +2433,21 @@ public class JIPipeDesktopGraphCanvasUI extends JLayeredPane implements JIPipeDe
         if (currentResizeTarget != null) {
             switch (anchor) {
                 case TopLeft:
-                    return new Rectangle(currentResizeTarget.getX() - RESIZE_HANDLE_DISTANCE - RESIZE_HANDLE_SIZE / 2, currentResizeTarget.getY() - RESIZE_HANDLE_DISTANCE - RESIZE_HANDLE_SIZE / 2, RESIZE_HANDLE_SIZE, RESIZE_HANDLE_SIZE);
+                    return new Rectangle(currentResizeTarget.getX() - JIPipeDesktopGraphCanvasUIConstants.RESIZE_HANDLE_DISTANCE - JIPipeDesktopGraphCanvasUIConstants.RESIZE_HANDLE_SIZE / 2, currentResizeTarget.getY() - JIPipeDesktopGraphCanvasUIConstants.RESIZE_HANDLE_DISTANCE - JIPipeDesktopGraphCanvasUIConstants.RESIZE_HANDLE_SIZE / 2, JIPipeDesktopGraphCanvasUIConstants.RESIZE_HANDLE_SIZE, JIPipeDesktopGraphCanvasUIConstants.RESIZE_HANDLE_SIZE);
                 case TopCenter:
-                    return new Rectangle(currentResizeTarget.getX() + currentResizeTarget.getWidth() / 2 - RESIZE_HANDLE_SIZE / 2, currentResizeTarget.getY() - RESIZE_HANDLE_DISTANCE - RESIZE_HANDLE_SIZE / 2, RESIZE_HANDLE_SIZE, RESIZE_HANDLE_SIZE);
+                    return new Rectangle(currentResizeTarget.getX() + currentResizeTarget.getWidth() / 2 - JIPipeDesktopGraphCanvasUIConstants.RESIZE_HANDLE_SIZE / 2, currentResizeTarget.getY() - JIPipeDesktopGraphCanvasUIConstants.RESIZE_HANDLE_DISTANCE - JIPipeDesktopGraphCanvasUIConstants.RESIZE_HANDLE_SIZE / 2, JIPipeDesktopGraphCanvasUIConstants.RESIZE_HANDLE_SIZE, JIPipeDesktopGraphCanvasUIConstants.RESIZE_HANDLE_SIZE);
                 case TopRight:
-                    return new Rectangle(currentResizeTarget.getRightX() + RESIZE_HANDLE_DISTANCE - RESIZE_HANDLE_SIZE / 2, currentResizeTarget.getY() - RESIZE_HANDLE_DISTANCE - RESIZE_HANDLE_SIZE / 2, RESIZE_HANDLE_SIZE, RESIZE_HANDLE_SIZE);
+                    return new Rectangle(currentResizeTarget.getRightX() + JIPipeDesktopGraphCanvasUIConstants.RESIZE_HANDLE_DISTANCE - JIPipeDesktopGraphCanvasUIConstants.RESIZE_HANDLE_SIZE / 2, currentResizeTarget.getY() - JIPipeDesktopGraphCanvasUIConstants.RESIZE_HANDLE_DISTANCE - JIPipeDesktopGraphCanvasUIConstants.RESIZE_HANDLE_SIZE / 2, JIPipeDesktopGraphCanvasUIConstants.RESIZE_HANDLE_SIZE, JIPipeDesktopGraphCanvasUIConstants.RESIZE_HANDLE_SIZE);
                 case CenterLeft:
-                    return new Rectangle(currentResizeTarget.getX() - RESIZE_HANDLE_DISTANCE - RESIZE_HANDLE_SIZE / 2, currentResizeTarget.getY() + currentResizeTarget.getHeight() / 2 - RESIZE_HANDLE_SIZE / 2, RESIZE_HANDLE_SIZE, RESIZE_HANDLE_SIZE);
+                    return new Rectangle(currentResizeTarget.getX() - JIPipeDesktopGraphCanvasUIConstants.RESIZE_HANDLE_DISTANCE - JIPipeDesktopGraphCanvasUIConstants.RESIZE_HANDLE_SIZE / 2, currentResizeTarget.getY() + currentResizeTarget.getHeight() / 2 - JIPipeDesktopGraphCanvasUIConstants.RESIZE_HANDLE_SIZE / 2, JIPipeDesktopGraphCanvasUIConstants.RESIZE_HANDLE_SIZE, JIPipeDesktopGraphCanvasUIConstants.RESIZE_HANDLE_SIZE);
                 case CenterRight:
-                    return new Rectangle(currentResizeTarget.getRightX() + RESIZE_HANDLE_DISTANCE - RESIZE_HANDLE_SIZE / 2, currentResizeTarget.getY() + currentResizeTarget.getHeight() / 2 - RESIZE_HANDLE_SIZE / 2, RESIZE_HANDLE_SIZE, RESIZE_HANDLE_SIZE);
+                    return new Rectangle(currentResizeTarget.getRightX() + JIPipeDesktopGraphCanvasUIConstants.RESIZE_HANDLE_DISTANCE - JIPipeDesktopGraphCanvasUIConstants.RESIZE_HANDLE_SIZE / 2, currentResizeTarget.getY() + currentResizeTarget.getHeight() / 2 - JIPipeDesktopGraphCanvasUIConstants.RESIZE_HANDLE_SIZE / 2, JIPipeDesktopGraphCanvasUIConstants.RESIZE_HANDLE_SIZE, JIPipeDesktopGraphCanvasUIConstants.RESIZE_HANDLE_SIZE);
                 case BottomLeft:
-                    return new Rectangle(currentResizeTarget.getX() - RESIZE_HANDLE_DISTANCE - RESIZE_HANDLE_SIZE / 2, currentResizeTarget.getBottomY() + RESIZE_HANDLE_DISTANCE - RESIZE_HANDLE_SIZE / 2, RESIZE_HANDLE_SIZE, RESIZE_HANDLE_SIZE);
+                    return new Rectangle(currentResizeTarget.getX() - JIPipeDesktopGraphCanvasUIConstants.RESIZE_HANDLE_DISTANCE - JIPipeDesktopGraphCanvasUIConstants.RESIZE_HANDLE_SIZE / 2, currentResizeTarget.getBottomY() + JIPipeDesktopGraphCanvasUIConstants.RESIZE_HANDLE_DISTANCE - JIPipeDesktopGraphCanvasUIConstants.RESIZE_HANDLE_SIZE / 2, JIPipeDesktopGraphCanvasUIConstants.RESIZE_HANDLE_SIZE, JIPipeDesktopGraphCanvasUIConstants.RESIZE_HANDLE_SIZE);
                 case BottomCenter:
-                    return new Rectangle(currentResizeTarget.getX() + currentResizeTarget.getWidth() / 2 - RESIZE_HANDLE_SIZE / 2, currentResizeTarget.getBottomY() + RESIZE_HANDLE_DISTANCE - RESIZE_HANDLE_SIZE / 2, RESIZE_HANDLE_SIZE, RESIZE_HANDLE_SIZE);
+                    return new Rectangle(currentResizeTarget.getX() + currentResizeTarget.getWidth() / 2 - JIPipeDesktopGraphCanvasUIConstants.RESIZE_HANDLE_SIZE / 2, currentResizeTarget.getBottomY() + JIPipeDesktopGraphCanvasUIConstants.RESIZE_HANDLE_DISTANCE - JIPipeDesktopGraphCanvasUIConstants.RESIZE_HANDLE_SIZE / 2, JIPipeDesktopGraphCanvasUIConstants.RESIZE_HANDLE_SIZE, JIPipeDesktopGraphCanvasUIConstants.RESIZE_HANDLE_SIZE);
                 case BottomRight:
-                    return new Rectangle(currentResizeTarget.getRightX() + RESIZE_HANDLE_DISTANCE - RESIZE_HANDLE_SIZE / 2, currentResizeTarget.getBottomY() + RESIZE_HANDLE_DISTANCE - RESIZE_HANDLE_SIZE / 2, RESIZE_HANDLE_SIZE, RESIZE_HANDLE_SIZE);
+                    return new Rectangle(currentResizeTarget.getRightX() + JIPipeDesktopGraphCanvasUIConstants.RESIZE_HANDLE_DISTANCE - JIPipeDesktopGraphCanvasUIConstants.RESIZE_HANDLE_SIZE / 2, currentResizeTarget.getBottomY() + JIPipeDesktopGraphCanvasUIConstants.RESIZE_HANDLE_DISTANCE - JIPipeDesktopGraphCanvasUIConstants.RESIZE_HANDLE_SIZE / 2, JIPipeDesktopGraphCanvasUIConstants.RESIZE_HANDLE_SIZE, JIPipeDesktopGraphCanvasUIConstants.RESIZE_HANDLE_SIZE);
                 default:
                     return null;
             }
@@ -2777,14 +2744,14 @@ public class JIPipeDesktopGraphCanvasUI extends JLayeredPane implements JIPipeDe
     private Color getEdgeColor(JIPipeDataSlot source, JIPipeDataSlot target, boolean multicolor, int multiColorIndex, int multiColorMax) {
         Color result;
         if (source.getNode() instanceof JIPipeCommentNode || target.getNode() instanceof JIPipeCommentNode) {
-            result = COMMENT_EDGE_COLOR;
+            result = JIPipeDesktopGraphCanvasUIConstants.COMMENT_EDGE_COLOR;
         } else if (multicolor) {
             result = Color.getHSBColor(1.0f * multiColorIndex / multiColorMax, 0.45f, 0.65f);
         } else {
             if (JIPipeDatatypeRegistry.isTriviallyConvertible(source.getAcceptedDataType(), target.getAcceptedDataType()))
-                result = COLOR_EDGE_DEFAULT;
+                result = JIPipeDesktopGraphCanvasUIConstants.COLOR_EDGE_DEFAULT;
             else if (JIPipe.getDataTypes().isConvertible(source.getAcceptedDataType(), target.getAcceptedDataType()))
-                result = COLOR_EDGE_CONVERT;
+                result = JIPipeDesktopGraphCanvasUIConstants.COLOR_EDGE_CONVERT;
             else
                 result = Color.RED;
         }
@@ -2814,7 +2781,7 @@ public class JIPipeDesktopGraphCanvasUI extends JLayeredPane implements JIPipeDe
             // Tighten the point ranges: Bringing the centers together
             PointRange.tighten(sourcePoint, targetPoint);
 
-            g.setStroke(STROKE_SMART_EDGE);
+            g.setStroke(JIPipeDesktopGraphCanvasUIConstants.STROKE_SMART_EDGE);
             g.setPaint(getEdgeBackgroundPaint(source, target, sourcePoint, targetPoint, Color.LIGHT_GRAY));
             paintEdge(g, sourcePoint.center, sourceUI.getBounds(), targetPoint.center, uiShape, scale, viewX, viewY, false);
             return;
