@@ -116,7 +116,7 @@ public class JIPipeCreateCompartmentNodesFromDraggedDataDragAndDropBehavior impl
             if (text != null) {
                 boolean droppedEmptyGraph = false;
                 try {
-                    canvas.pasteNodes(text);
+                    canvas.nodeManager.pasteNodes(text);
                 } catch (NullPointerException ignored) {
                     droppedEmptyGraph = true;
                 }

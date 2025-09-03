@@ -70,7 +70,7 @@ public class NodeTemplatePopupMenu extends JPopupMenu implements JIPipeDesktopWo
 
     private void addTemplateIntoGraph(JIPipeNodeTemplate template) {
         try {
-            graphEditorUI.getCanvasUI().pasteNodes(template.getData());
+            graphEditorUI.getCanvasUI().nodeManager.pasteNodes(template.getData());
         } catch (JsonProcessingException e) {
             IJ.handleException(e);
         }

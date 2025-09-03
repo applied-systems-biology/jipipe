@@ -121,7 +121,7 @@ public class JIPipeCreatePipelineNodesFromDraggedDataDragAndDropBehavior impleme
     private void processDrop(String text) {
         try {
             if (text != null) {
-                canvas.pasteNodes(text);
+                canvas.nodeManager.pasteNodes(text);
             }
         } catch (Exception e) {
             if (JIPipeGraphEditorUIApplicationSettings.getInstance().isNotifyInvalidDragAndDrop()) {

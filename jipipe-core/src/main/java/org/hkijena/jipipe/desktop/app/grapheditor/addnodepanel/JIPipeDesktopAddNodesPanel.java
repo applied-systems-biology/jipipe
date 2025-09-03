@@ -203,8 +203,8 @@ public class JIPipeDesktopAddNodesPanel extends JIPipeDesktopWorkbenchPanel {
                         node.setCustomName(finalName);
                     }
                     graphEditorUI.getCanvasUI().getHistoryJournal().snapshotBeforeAddNode(node, graphEditorUI.getCompartment());
-                    graphEditorUI.getCanvasUI().getScheduledSelection().clear();
-                    graphEditorUI.getCanvasUI().getScheduledSelection().add(node);
+                    graphEditorUI.getCanvasUI().getSelectionManager().getScheduledSelection().clear();
+                    graphEditorUI.getCanvasUI().getSelectionManager().getScheduledSelection().add(node);
                     algorithmGraph.insertNode(node, graphEditorUI.getCompartment());
                 });
                 addedAlgorithms.add(info);
@@ -729,7 +729,7 @@ public class JIPipeDesktopAddNodesPanel extends JIPipeDesktopWorkbenchPanel {
 
     private void insertAtCursor(JIPipeNodeDatabaseEntry entry) {
         Set<JIPipeDesktopGraphNodeUI> nodeUIs = entry.addToGraph(graphEditorUI.getCanvasUI());
-        graphEditorUI.getCanvasUI().setSelection(nodeUIs);
+        graphEditorUI.getCanvasUI().getSelectionManager().setSelection(nodeUIs);
     }
 
     public void focusSearchBar() {

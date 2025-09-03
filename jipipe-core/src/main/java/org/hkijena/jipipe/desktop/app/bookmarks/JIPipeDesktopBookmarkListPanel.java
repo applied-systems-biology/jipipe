@@ -182,7 +182,7 @@ public class JIPipeDesktopBookmarkListPanel extends JIPipeDesktopWorkbenchPanel 
                     JIPipeDesktopPipelineGraphEditorUI editorUI = (JIPipeDesktopPipelineGraphEditorUI) tab.getContent();
                     JIPipeDesktopGraphNodeUI ui = editorUI.getCanvasUI().getNodeUIs().getOrDefault(node, null);
                     if (ui != null) {
-                        editorUI.selectOnly(ui);
+                        editorUI.getSelectionManager().selectOnly(ui);
                     } else {
                         getDesktopWorkbench().sendStatusBarText("Unable to navigate to bookmark");
                     }
@@ -191,7 +191,7 @@ public class JIPipeDesktopBookmarkListPanel extends JIPipeDesktopWorkbenchPanel 
         } else if (graphEditorUI != null) {
             JIPipeDesktopGraphNodeUI ui = graphEditorUI.getCanvasUI().getNodeUIs().getOrDefault(node, null);
             if (ui != null) {
-                graphEditorUI.selectOnly(ui);
+                graphEditorUI.getSelectionManager().selectOnly(ui);
             } else {
                 getDesktopWorkbench().sendStatusBarText("Unable to navigate to bookmark");
             }

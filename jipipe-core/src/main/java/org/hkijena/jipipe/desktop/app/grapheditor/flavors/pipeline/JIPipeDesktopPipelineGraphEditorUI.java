@@ -261,8 +261,8 @@ public class JIPipeDesktopPipelineGraphEditorUI extends JIPipeDesktopGraphEditor
 
         getDockPanel().removeDockPanelsIf(p -> p.getId().startsWith("_"));
 
-        if (getSelection().size() == 1) {
-            JIPipeDesktopGraphInteractiveObjectUI interactiveObjectUI = getSelection().iterator().next();
+        if (getSelectionManager().getSelection().size() == 1) {
+            JIPipeDesktopGraphInteractiveObjectUI interactiveObjectUI = getSelectionManager().getSelection().iterator().next();
             if(interactiveObjectUI instanceof JIPipeDesktopGraphNodeUI) {
                 showSelectedNodeDocks((JIPipeDesktopGraphNodeUI) interactiveObjectUI);
             }
@@ -393,13 +393,13 @@ public class JIPipeDesktopPipelineGraphEditorUI extends JIPipeDesktopGraphEditor
     @Override
     public void onNodeUIActionRequested(JIPipeDesktopGraphNodeUI.NodeUIActionRequestedEvent event) {
         if (event.getAction() instanceof JIPipeDesktopRunAndShowResultsAction) {
-            selectOnly(event.getUi());
+            getSelectionManager().selectOnly(event.getUi());
             JIPipeDesktopPipelineGraphEditorRunManager runManager = new JIPipeDesktopPipelineGraphEditorRunManager(getWorkbench().getProject(), getCanvasUI(), event.getUi(), getDockPanel(), true);
             runManager.run(true,
                     ((JIPipeDesktopRunAndShowResultsAction) event.getAction()).isStoreIntermediateResults(),
                     false);
         } else if (event.getAction() instanceof JIPipeDesktopUpdateCacheAction) {
-            selectOnly(event.getUi());
+            getSelectionManager().selectOnly(event.getUi());
             JIPipeDesktopPipelineGraphEditorRunManager runManager = new JIPipeDesktopPipelineGraphEditorRunManager(getWorkbench().getProject(),
                     getCanvasUI(),
                     event.getUi(),
@@ -414,7 +414,7 @@ public class JIPipeDesktopPipelineGraphEditorUI extends JIPipeDesktopGraphEditor
     @Override
     public void beforeOpenContextMenu(JPopupMenu menu) {
         if(getGraph().isProjectGraph()) {
-            Set<JIPipeDesktopGraphNodeUI> selectedNodes = getSelectionByType(JIPipeDesktopGraphNodeUI.class);
+            Set<JIPipeDesktopGraphNodeUI> selectedNodes = getSelectionManager().getSelectionByType(JIPipeDesktopGraphNodeUI.class);
             if (selectedNodes.stream().anyMatch(ui -> ui != null
                     && ((JIPipeDesktopGraphNodeUI) ui).getNode().getInfo().isRunnable())) {
                 menu.addSeparator();

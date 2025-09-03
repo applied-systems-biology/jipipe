@@ -186,8 +186,8 @@ public class JIPipeDesktopCompartmentsGraphEditorUI extends JIPipeDesktopGraphEd
         super.updateSelection();
 
         getDockPanel().removeDockPanelsIf(panel -> panel.getId().startsWith("_"));
-        if (getSelection().size() == 1) {
-            JIPipeDesktopGraphInteractiveObjectUI interactiveObjectUI = getSelection().iterator().next();
+        if (getSelectionManager().getSelection().size() == 1) {
+            JIPipeDesktopGraphInteractiveObjectUI interactiveObjectUI = getSelectionManager().getSelection().iterator().next();
             if(interactiveObjectUI instanceof JIPipeDesktopGraphNodeUI) {
                 showSelectedNodeDocks((JIPipeDesktopGraphNodeUI) interactiveObjectUI);
             }
@@ -271,13 +271,13 @@ public class JIPipeDesktopCompartmentsGraphEditorUI extends JIPipeDesktopGraphEd
     @Override
     public void onNodeUIActionRequested(JIPipeDesktopGraphNodeUI.NodeUIActionRequestedEvent event) {
         if (event.getAction() instanceof JIPipeDesktopRunAndShowResultsAction) {
-            selectOnly(event.getUi());
+            getSelectionManager().selectOnly(event.getUi());
             JIPipeDesktopCompartmentsGraphEditorRunManager runManager = new JIPipeDesktopCompartmentsGraphEditorRunManager(getWorkbench().getProject(), getCanvasUI(), event.getUi(), getDockPanel(), true);
             runManager.run(true,
                     ((JIPipeDesktopRunAndShowResultsAction) event.getAction()).isStoreIntermediateResults(),
                     false);
         } else if (event.getAction() instanceof JIPipeDesktopUpdateCacheAction) {
-            selectOnly(event.getUi());
+            getSelectionManager().selectOnly(event.getUi());
             JIPipeDesktopCompartmentsGraphEditorRunManager runManager = new JIPipeDesktopCompartmentsGraphEditorRunManager(getWorkbench().getProject(),
                     getCanvasUI(),
                     event.getUi(),
@@ -291,7 +291,7 @@ public class JIPipeDesktopCompartmentsGraphEditorUI extends JIPipeDesktopGraphEd
 
     @Override
     public void beforeOpenContextMenu(JPopupMenu menu) {
-        Set<JIPipeDesktopGraphNodeUI> selectedNodes = getSelectionByType(JIPipeDesktopGraphNodeUI.class);
+        Set<JIPipeDesktopGraphNodeUI> selectedNodes = getSelectionManager().getSelectionByType(JIPipeDesktopGraphNodeUI.class);
         if (getGraph().isProjectCompartmentGraph() && selectedNodes.stream().anyMatch(ui -> ui.getNode() instanceof JIPipeProjectCompartment)) {
             menu.addSeparator();
             JMenu runSetsMenu = new JMenu("Run sets ...");

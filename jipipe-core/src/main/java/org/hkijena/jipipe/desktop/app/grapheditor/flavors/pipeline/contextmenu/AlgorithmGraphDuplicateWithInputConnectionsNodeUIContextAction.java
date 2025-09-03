@@ -21,8 +21,6 @@ import org.hkijena.jipipe.api.data.JIPipeInputDataSlot;
 import org.hkijena.jipipe.api.nodes.JIPipeGraph;
 import org.hkijena.jipipe.api.nodes.JIPipeGraphNode;
 import org.hkijena.jipipe.desktop.app.grapheditor.commons.JIPipeDesktopGraphCanvasUI;
-import org.hkijena.jipipe.desktop.app.grapheditor.commons.JIPipeDesktopGraphInteractiveObjectUI;
-import org.hkijena.jipipe.desktop.app.grapheditor.commons.contextmenu.GraphInteractiveObjectUIContextAction;
 import org.hkijena.jipipe.desktop.app.grapheditor.commons.contextmenu.NodeUIContextAction;
 import org.hkijena.jipipe.desktop.app.grapheditor.commons.nodeui.JIPipeDesktopGraphNodeUI;
 import org.hkijena.jipipe.utils.json.JsonUtils;
@@ -47,7 +45,7 @@ public class AlgorithmGraphDuplicateWithInputConnectionsNodeUIContextAction impl
                 .extract(selection.stream().map(JIPipeDesktopGraphNodeUI::getNode).collect(Collectors.toSet()), true, true);
         try {
             String json = JsonUtils.getObjectMapper().writerWithDefaultPrettyPrinter().writeValueAsString(copyGraph);
-            Map<UUID, JIPipeGraphNode> pastedNodes = canvasUI.pasteNodes(json);
+            Map<UUID, JIPipeGraphNode> pastedNodes = canvasUI.nodeManager.pasteNodes(json);
 
             // Reconnect to inputs
             for (Map.Entry<UUID, JIPipeGraphNode> entry : pastedNodes.entrySet()) {

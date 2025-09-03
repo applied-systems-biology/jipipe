@@ -122,7 +122,7 @@ public abstract class JIPipeDesktopGraphEditorRunManager implements JIPipeRunnab
                 }
 
                 if (getLogPanel().isAutoShowResults() && allowChangePanels) {
-                    canvasUI.selectOnly(nodeUI);
+                    canvasUI.getSelectionManager().selectOnly(nodeUI);
                     showResults();
                 }
             }
@@ -142,7 +142,7 @@ public abstract class JIPipeDesktopGraphEditorRunManager implements JIPipeRunnab
                 }
 
                 if (getLogPanel().isAutoShowResults()) {
-                    canvasUI.selectOnly(nodeUI);
+                    canvasUI.getSelectionManager().selectOnly(nodeUI);
 
                     if (event.getException() != null) {
                         dockPanel.getPanelComponent(JIPipeDesktopGraphEditorUI.DOCK_ERRORS, JIPipeDesktopGraphEditorErrorPanel.class).setItems(event.getException());

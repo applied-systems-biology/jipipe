@@ -28,7 +28,7 @@ public class InvertSelectionNodeUIContextAction implements GraphInteractiveObjec
 
     @Override
     public void run(JIPipeDesktopGraphCanvasUI canvasUI, Set<JIPipeDesktopGraphInteractiveObjectUI> selection) {
-        canvasUI.invertSelection();
+        canvasUI.getSelectionManager().invertSelection();
     }
 
     @Override

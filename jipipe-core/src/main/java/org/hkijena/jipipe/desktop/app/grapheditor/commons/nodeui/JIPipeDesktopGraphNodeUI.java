@@ -1441,7 +1441,7 @@ public class JIPipeDesktopGraphNodeUI extends JIPipeDesktopWorkbenchPanel implem
         JPopupMenu menu = new JPopupMenu();
 
         menu.add(UIUtils.createMenuItem("Configure ...", "Opens the input manager", JIPipe.RESOURCES.getIcon16("actions/configure.png"), () -> {
-            graphCanvasUI.selectOnly(this);
+            graphCanvasUI.getSelectionManager().selectOnly(this);
             graphCanvasUI.getGraphEditorUI().getDockPanel().activatePanel(JIPipeDesktopPipelineGraphEditorUI.DOCK_NODE_CONTEXT_INPUT_MANAGER, true);
         }));
 

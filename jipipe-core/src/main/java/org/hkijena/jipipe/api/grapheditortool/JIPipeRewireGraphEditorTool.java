@@ -297,7 +297,7 @@ public class JIPipeRewireGraphEditorTool implements JIPipeToggleableGraphEditorT
         }
 
         // Select the targeted node
-        graphCanvasUI.selectOnly(graphCanvasUI.getNodeUIs().get(selectedAlternative.getNode()));
+        graphCanvasUI.getSelectionManager().selectOnly(graphCanvasUI.getNodeUIs().get(selectedAlternative.getNode()));
 
         setCurrentRewireDragSource(null);
     }

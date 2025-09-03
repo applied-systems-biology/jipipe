@@ -30,7 +30,7 @@ public class SelectAllNodeUIContextAction implements GraphInteractiveObjectUICon
 
     @Override
     public void run(JIPipeDesktopGraphCanvasUI canvasUI, Set<JIPipeDesktopGraphInteractiveObjectUI> selection) {
-        canvasUI.selectAll();
+        canvasUI.getSelectionManager().selectAll();
     }
 
     @Override

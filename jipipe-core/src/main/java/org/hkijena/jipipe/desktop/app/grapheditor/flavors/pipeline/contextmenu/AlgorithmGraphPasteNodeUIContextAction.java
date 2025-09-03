@@ -36,7 +36,7 @@ public class AlgorithmGraphPasteNodeUIContextAction implements GraphInteractiveO
         try {
             String json = UIUtils.getStringFromClipboard();
             if (json != null) {
-                canvasUI.pasteNodes(json);
+                canvasUI.nodeManager.pasteNodes(json);
             }
         } catch (Exception e) {
             JOptionPane.showMessageDialog(canvasUI.getDesktopWorkbench().getWindow(), "The current clipboard contents are no valid nodes/graph.", "Paste nodes", JOptionPane.ERROR_MESSAGE);

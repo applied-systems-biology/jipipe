@@ -25,6 +25,7 @@ import org.hkijena.jipipe.api.nodes.*;
 import org.hkijena.jipipe.desktop.JIPipeDesktop;
 import org.hkijena.jipipe.desktop.app.JIPipeDesktopWorkbench;
 import org.hkijena.jipipe.desktop.app.JIPipeDesktopWorkbenchPanel;
+import org.hkijena.jipipe.desktop.app.grapheditor.commons.canvas.JIPipeDesktopGraphCanvasSelectionManager;
 import org.hkijena.jipipe.desktop.app.grapheditor.commons.canvas.events.JIPipeDesktopGraphCanvasUINodeSelectedEvent;
 import org.hkijena.jipipe.desktop.app.grapheditor.commons.canvas.events.JIPipeDesktopGraphCanvasUINodeSelectedEventListener;
 import org.hkijena.jipipe.desktop.app.grapheditor.commons.canvas.events.JIPipeDesktopGraphCanvasUINodeSelectionChangedEvent;
@@ -186,8 +187,8 @@ public abstract class JIPipeDesktopGraphEditorUI extends JIPipeDesktopWorkbenchP
         toolBar.setFloatable(false);
 
         canvasUI.fullRedraw();
-        canvasUI.getNodeUISelectedEventEmitter().subscribe(this);
-        canvasUI.getNodeSelectionChangedEventEmitter().subscribe(this);
+        canvasUI.getSelectionManager().getNodeUISelectedEventEmitter().subscribe(this);
+        canvasUI.getSelectionManager().getNodeSelectionChangedEventEmitter().subscribe(this);
         canvasUI.getDefaultAlgorithmUIActionRequestedEventEmitter().subscribe(this);
         canvasUI.getNodeUIActionRequestedEventEmitter().subscribe(this);
         canvasUI.addMouseListener(this);
@@ -524,12 +525,8 @@ public abstract class JIPipeDesktopGraphEditorUI extends JIPipeDesktopWorkbenchP
         return currentTool;
     }
 
-    public Set<JIPipeDesktopGraphInteractiveObjectUI> getSelection() {
-        return canvasUI.getSelection();
-    }
-
-    public <T extends JIPipeDesktopGraphInteractiveObjectUI> Set<T> getSelectionByType(Class<T> klass) {
-        return canvasUI.getSelectionByType(klass);
+    public JIPipeDesktopGraphCanvasSelectionManager getSelectionManager() {
+        return canvasUI.getSelectionManager();
     }
 
     public void createScreenshotClipboard() {
@@ -613,7 +610,7 @@ public abstract class JIPipeDesktopGraphEditorUI extends JIPipeDesktopWorkbenchP
             toolBar.remove(button);
         }
 
-        Set<JIPipeDesktopGraphInteractiveObjectUI> selection = getSelection();
+        Set<JIPipeDesktopGraphInteractiveObjectUI> selection = getSelectionManager().getSelection();
         for (GraphInteractiveObjectUIContextAction contextAction : canvasUI.getContextActions()) {
             if (contextAction != null && contextAction.isDisplayedInToolbar() && contextAction.matches(selection)) {
                 JButton button = new JButton(contextAction.getIcon());
@@ -656,42 +653,6 @@ public abstract class JIPipeDesktopGraphEditorUI extends JIPipeDesktopWorkbenchP
             scrollPane.getVerticalScrollBar().setValue(ui.getY());
         }
     }
-
-    /**
-     * Clears the algorithm selection
-     */
-    public void clearSelection() {
-        canvasUI.clearSelection();
-    }
-
-    /**
-     * Selects only the specified algorithm
-     *
-     * @param ui The algorithm UI
-     */
-    public void selectOnly(JIPipeDesktopGraphNodeUI ui) {
-        canvasUI.selectOnly(ui);
-        scrollToAlgorithm(ui);
-    }
-
-    /**
-     * Removes an algorithm from the selection
-     *
-     * @param ui The algorithm UI
-     */
-    public void removeFromSelection(JIPipeDesktopGraphNodeUI ui) {
-        canvasUI.removeFromSelection(ui);
-    }
-
-    /**
-     * Adds an algorithm to the selection
-     *
-     * @param ui The algorithm UI
-     */
-    public void addToSelection(JIPipeDesktopGraphNodeUI ui) {
-        canvasUI.addToSelection(ui);
-    }
-
 
     @Override
     public void mouseClicked(MouseEvent e) {
@@ -821,16 +782,16 @@ public abstract class JIPipeDesktopGraphEditorUI extends JIPipeDesktopWorkbenchP
     public void onNodeUISelected(JIPipeDesktopGraphCanvasUINodeSelectedEvent event) {
         if (event.getNodeUI() != null) {
             if (event.isAddToSelection()) {
-                if (canvasUI.getSelection().contains(event.getNodeUI())) {
-                    removeFromSelection(event.getNodeUI());
+                if (getSelectionManager().getSelection().contains(event.getNodeUI())) {
+                    getSelectionManager().removeFromSelection(event.getNodeUI());
                 } else {
-                    addToSelection(event.getNodeUI());
+                    getSelectionManager().addToSelection(event.getNodeUI());
                 }
             } else {
-                selectOnly(event.getNodeUI());
+                getSelectionManager().selectOnly(event.getNodeUI());
             }
         } else {
-            clearSelection();
+            getSelectionManager().clearSelection();
         }
     }
 

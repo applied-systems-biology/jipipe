@@ -176,7 +176,7 @@ public class JIPipeDesktopRewireConnectionsToolUI extends JDialog {
         }
 
         // Select the targeted node
-        graphCanvasUI.selectOnly(graphCanvasUI.getNodeUIs().get(selectedAlternative.getNode()));
+        graphCanvasUI.getSelectionManager().selectOnly(graphCanvasUI.getNodeUIs().get(selectedAlternative.getNode()));
 
         setVisible(false);
     }
@@ -203,10 +203,10 @@ public class JIPipeDesktopRewireConnectionsToolUI extends JDialog {
         alternativesList.addListSelectionListener(e -> {
             if (alternativesList.getSelectedValue() != null) {
                 // Select the alternative node
-                graphCanvasUI.selectOnly(graphCanvasUI.getNodeUIs().get(alternativesList.getSelectedValue().getNode()));
+                graphCanvasUI.getSelectionManager().selectOnly(graphCanvasUI.getNodeUIs().get(alternativesList.getSelectedValue().getNode()));
             } else {
                 // Select the source node
-                graphCanvasUI.selectOnly(graphCanvasUI.getNodeUIs().get(currentSlot.getNode()));
+                graphCanvasUI.getSelectionManager().selectOnly(graphCanvasUI.getNodeUIs().get(currentSlot.getNode()));
             }
         });
     }
