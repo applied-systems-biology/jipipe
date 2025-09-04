@@ -64,7 +64,7 @@ public class JsonAlgorithm extends JIPipeGraphWrapperAlgorithm implements JIPipe
         group.setEnabled(algorithm.isEnabled());
         group.setPassThrough(algorithm.isPassThrough());
         group.setWrappedGraph(new JIPipeGraph(algorithm.getWrappedGraph()));
-        group.setNodeUILocationPerViewModePerCompartment(algorithm.getNodeUILocationPerViewModePerCompartment());
+        group.getMetadata().putAll(algorithm.getMetadata());
 
         List<Map.Entry<JIPipeDataSlot, JIPipeDataSlot>> edges = new ArrayList<>();
         for (Map.Entry<JIPipeDataSlot, JIPipeDataSlot> edge : graph.getSlotEdges()) {
