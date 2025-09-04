@@ -959,7 +959,7 @@ public class JIPipeDesktopGraphNodeUI extends JIPipeDesktopWorkbenchPanel implem
             slotState.setLastFillRect(new Rectangle(startX, getHeight() - realSlotHeight, slotWidth, realSlotHeight));
 
             // Draw highlight
-            if (slotState == currentActiveArea && graphCanvasUI.currentToolAllowsConnectionDragging()) {
+            if (slotState == currentActiveArea && graphCanvasUI.getToolManager().currentToolAllowsConnectionDragging()) {
                 g2.setPaint(buttonFillColor);
                 g2.fillRect(startX, getHeight() - realSlotHeight, slotWidth, realSlotHeight);
             }
@@ -1051,7 +1051,7 @@ public class JIPipeDesktopGraphNodeUI extends JIPipeDesktopWorkbenchPanel implem
             slotState.setLastFillRect(new Rectangle(startX, 0, slotWidth, realSlotHeight));
 
             // Draw highlight
-            if (slotState == currentActiveArea && graphCanvasUI.currentToolAllowsConnectionDragging()) {
+            if (slotState == currentActiveArea && graphCanvasUI.getToolManager().currentToolAllowsConnectionDragging()) {
                 g2.setPaint(buttonFillColor);
                 g2.fillRect(startX, 0, slotWidth, realSlotHeight);
             }

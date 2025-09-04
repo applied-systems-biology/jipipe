@@ -506,13 +506,13 @@ public abstract class JIPipeDesktopGraphEditorUI extends JIPipeDesktopWorkbenchP
                 toggleButton.setSelected(false);
                 currentTool.deactivate();
                 currentTool = null;
-                canvasUI.setCurrentTool(null);
+                canvasUI.getToolManager().setToDefaultTool();
             }
 
             JToggleButton toggleButton = toolToggles.get(tool);
             toggleButton.setSelected(true);
             currentTool = (JIPipeToggleableGraphEditorTool) tool;
-            canvasUI.setCurrentTool(currentTool);
+            canvasUI.getToolManager().setCurrentTool(currentTool);
             tool.activate();
             getDesktopWorkbench().sendStatusBarText("Activated tool '" + tool.getName() + "'");
         } else {
