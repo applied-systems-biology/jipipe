@@ -38,7 +38,6 @@ import org.hkijena.jipipe.api.run.JIPipeGraphRunPartitionInheritedBoolean;
 import org.hkijena.jipipe.api.validation.JIPipeValidationReport;
 import org.hkijena.jipipe.api.validation.JIPipeValidationReportContext;
 import org.hkijena.jipipe.api.validation.JIPipeValidationReportSettings;
-import org.hkijena.jipipe.desktop.app.grapheditor.commons.canvas.JIPipeDesktopGraphCanvasGrid;
 import org.hkijena.jipipe.utils.ParameterUtils;
 import org.hkijena.jipipe.utils.StringUtils;
 
@@ -106,7 +105,7 @@ public class JIPipeNodeGroup extends JIPipeGraphWrapperAlgorithm implements JIPi
         // Clear locations
         if (clearLocations) {
             for (JIPipeGraphNode node : graph.getGraphNodes()) {
-                node.clearUILocations();
+                node.clearAllNodeUILocations();
             }
         }
 

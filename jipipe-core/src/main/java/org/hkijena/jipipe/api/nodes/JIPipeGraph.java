@@ -1118,9 +1118,9 @@ public class JIPipeGraph implements JIPipeValidatable, JIPipeFunctionallyCompara
                 }
 
                 // Move DEFAULT location to empty string (UUID-based)
-                if (node.getNodeUILocationPerViewModePerCompartment().containsKey("DEFAULT")) {
-                    node.getNodeUILocationPerViewModePerCompartment().put("", node.getNodeUILocationPerViewModePerCompartment().get("DEFAULT"));
-                    node.getNodeUILocationPerViewModePerCompartment().remove("DEFAULT");
+                Map<String, Point> allNodeUILocations = node.getAllNodeUILocations();
+                if(allNodeUILocations.containsKey("DEFAULT")) {
+                    node.setNodeUILocationWithin("", allNodeUILocations.get("DEFAULT"));
                 }
             }
         }
@@ -1183,9 +1183,11 @@ public class JIPipeGraph implements JIPipeValidatable, JIPipeFunctionallyCompara
                 continue;
             String compartment = StringUtils.nullToEmpty(getCompartmentUUIDOf(node));
             JIPipeGraphNode copy = node.getInfo().duplicate(node);
-            Map<String, Point> map = copy.getNodeUILocationPerViewModePerCompartment().getOrDefault(compartment, new HashMap<>());
-            copy.getNodeUILocationPerViewModePerCompartment().clear();
-            copy.getNodeUILocationPerViewModePerCompartment().put("", map);
+            Point point = copy.getNodeUILocationWithin(compartment);
+            copy.clearAllNodeUILocations();
+            if(point != null) {
+                copy.setNodeUILocationWithin(compartment, point);
+            }
             graph.insertNode(node.getUUIDInParentGraph(), copy, null);
         }
         for (Map.Entry<JIPipeDataSlot, JIPipeDataSlot> edge : getSlotEdges()) {
@@ -1542,8 +1544,7 @@ public class JIPipeGraph implements JIPipeValidatable, JIPipeFunctionallyCompara
         for (JIPipeGraphNode node : predecessorAlgorithms) {
             if (satisfied.contains(node))
                 continue;
-            if (node instanceof JIPipeAlgorithm) {
-                JIPipeAlgorithm algorithm = (JIPipeAlgorithm) node;
+            if (node instanceof JIPipeAlgorithm algorithm) {
                 if (algorithm.canPassThrough() && algorithm.isPassThrough()) {
                     continue;
                 }
@@ -1620,7 +1621,7 @@ public class JIPipeGraph implements JIPipeValidatable, JIPipeFunctionallyCompara
                 connect(replacementOutput, slot);
             }
         }
-        replacement.setNodeUILocationPerViewModePerCompartment(target.getNodeUILocationPerViewModePerCompartment());
+        replacement.getNodeMetadata().putAll(target.getNodeMetadata());
         removeNode(target, false);
     }
 

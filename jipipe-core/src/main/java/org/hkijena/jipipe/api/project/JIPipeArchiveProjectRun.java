@@ -49,7 +49,7 @@ public abstract class JIPipeArchiveProjectRun extends DefaultJIPipeRunnable {
         project.saveProject();
 
         // Load the project again
-        JIPipeProject copyProject = JIPipeProject.loadProject(getProject().getProjectFile(), new UnspecifiedValidationReportContext(), new JIPipeValidationReport(), new JIPipeNotificationInbox());
+        JIPipeProject copyProject = JIPipeProject.loadProject(getProject().getProjectFile(), new UnspecifiedValidationReportContext(), new JIPipeValidationReport(), new JIPipeNotificationInbox(), progressInfo);
         copyProject.setWorkDirectory(project.getWorkDirectory());
         ImmutableList<JIPipeGraphNode> graphNodes = ImmutableList.copyOf(copyProject.getGraph().getGraphNodes());
         progressInfo.setProgress(0, graphNodes.size());

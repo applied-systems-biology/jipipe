@@ -178,14 +178,15 @@ public class JIPipeProject implements JIPipeValidatable {
     /**
      * Loads a project from a file
      *
-     * @param fileName JSON file
-     * @param context  the context
-     * @param report   issue report
+     * @param fileName     JSON file
+     * @param context      the context
+     * @param report       issue report
+     * @param progressInfo the progress info
      * @return Loaded project
      * @throws IOException Triggered by {@link ObjectMapper}
      */
-    public static JIPipeProject loadProject(Path fileName, JIPipeValidationReportContext context, JIPipeValidationReport report) throws IOException {
-        return loadProject(fileName, context, report, new JIPipeNotificationInbox());
+    public static JIPipeProject loadProject(Path fileName, JIPipeValidationReportContext context, JIPipeValidationReport report, JIPipeProgressInfo progressInfo) throws IOException {
+        return loadProject(fileName, context, report, new JIPipeNotificationInbox(), progressInfo);
     }
 
     /**
@@ -195,10 +196,11 @@ public class JIPipeProject implements JIPipeValidatable {
      * @param context       the context
      * @param report        issue report
      * @param notifications notifications for the user
+     * @param progressInfo the progress info
      * @return Loaded project
      * @throws IOException Triggered by {@link ObjectMapper}
      */
-    public static JIPipeProject loadProject(Path fileName, JIPipeValidationReportContext context, JIPipeValidationReport report, JIPipeNotificationInbox notifications) throws IOException {
+    public static JIPipeProject loadProject(Path fileName, JIPipeValidationReportContext context, JIPipeValidationReport report, JIPipeNotificationInbox notifications, JIPipeProgressInfo progressInfo) throws IOException {
         JsonNode jsonData = JsonUtils.getObjectMapper().readValue(fileName.toFile(), JsonNode.class);
         JIPipeProject project = new JIPipeProject();
         project.fromJson(jsonData, context, report, notifications, progressInfo);
@@ -636,7 +638,7 @@ public class JIPipeProject implements JIPipeValidatable {
                     // Place IOInterface at the same location as the compartment output
                     IOInterfaceAlgorithm ioInterfaceAlgorithm = JIPipe.createNode(IOInterfaceAlgorithm.class);
                     ioInterfaceAlgorithm.getSlotConfiguration().setTo(source.getNode().getSlotConfiguration());
-                    ioInterfaceAlgorithm.getMetadata().putAll(source.getNode().getMetadata());
+                    ioInterfaceAlgorithm.getNodeMetadata().putAll(source.getNode().getNodeMetadata());
                     graph.insertNode(ioInterfaceAlgorithm, target.getNode().getCompartmentUUIDInParentGraph());
 
                     for (JIPipeOutputDataSlot outputSlot : source.getNode().getOutputSlots()) {
@@ -748,7 +750,7 @@ public class JIPipeProject implements JIPipeValidatable {
                     IOInterfaceAlgorithm ioInterfaceAlgorithm = JIPipe.createNode(IOInterfaceAlgorithm.class);
                     ioInterfaceAlgorithm.setCustomName(outputNode.getName());
                     ioInterfaceAlgorithm.getSlotConfiguration().setTo(outputNode.getSlotConfiguration());
-                    ioInterfaceAlgorithm.getMetadata().putAll(outputNode.getMetadata());
+                    ioInterfaceAlgorithm.getNodeMetadata().putAll(outputNode.getNodeMetadata());
                     graph.insertNode(ioInterfaceAlgorithm, targetCompartment.getProjectCompartmentUUID());
 
                     for (JIPipeOutputDataSlot outputSlot : outputNode.getOutputSlots()) {
@@ -1133,16 +1135,15 @@ public class JIPipeProject implements JIPipeValidatable {
                 }
 
                 // Fix legacy node location information
-                for (Map.Entry<String, Map<String, Point>> locationEntry : ImmutableList.copyOf(node.getNodeUILocationPerViewModePerCompartment().entrySet())) {
-                    Map<String, Point> location = locationEntry.getValue();
+                Map<String, Point> allNodeUILocations = node.getAllNodeUILocations();
+                for (Map.Entry<String, Point> locationEntry : allNodeUILocations.entrySet()) {
                     String compartmentUUIDString;
                     if ("DEFAULT".equals(locationEntry.getKey())) {
                         compartmentUUIDString = "";
                     } else {
                         compartmentUUIDString = StringUtils.nullToEmpty(compartmentGraph.findNodeUUID(locationEntry.getKey()));
                     }
-                    node.getNodeUILocationPerViewModePerCompartment().remove(locationEntry.getKey());
-                    node.getNodeUILocationPerViewModePerCompartment().put(compartmentUUIDString, location);
+                    node.setNodeUILocationWithin(compartmentUUIDString, locationEntry.getValue());
                     progressInfo.log("[Project format conversion] Move location within " + locationEntry.getKey() + " to " + compartmentUUIDString);
                 }
             }

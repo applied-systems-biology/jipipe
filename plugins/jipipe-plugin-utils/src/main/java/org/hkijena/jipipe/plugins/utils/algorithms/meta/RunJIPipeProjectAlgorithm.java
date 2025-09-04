@@ -77,7 +77,7 @@ public class RunJIPipeProjectAlgorithm extends JIPipeSimpleIteratingAlgorithm {
         JIPipeValidationReport report = new JIPipeValidationReport();
         JIPipeProject project;
         try {
-            project = JIPipeProject.loadProject(projectFile, new UnspecifiedValidationReportContext(), report, new JIPipeNotificationInbox());
+            project = JIPipeProject.loadProject(projectFile, new UnspecifiedValidationReportContext(), report, new JIPipeNotificationInbox(), progressInfo);
         } catch (IOException e) {
             throw new JIPipeValidationRuntimeException(
                     e,

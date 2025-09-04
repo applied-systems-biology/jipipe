@@ -125,7 +125,7 @@ public class GetJIPipeSlotFolderAlgorithm extends JIPipeSimpleIteratingAlgorithm
         Path projectFile = JIPipeDesktop.openFile(window, workbench, JIPipeFileChooserApplicationSettings.LastDirectoryKey.Projects, "Import JIPipe project", HTMLText.EMPTY, PathUtils.EXTENSION_FILTER_JIP);
         if (projectFile != null) {
             try {
-                JIPipeProject project = JIPipeProject.loadProject(projectFile, new UnspecifiedValidationReportContext(), new JIPipeValidationReport(), new JIPipeNotificationInbox());
+                JIPipeProject project = JIPipeProject.loadProject(projectFile, new UnspecifiedValidationReportContext(), new JIPipeValidationReport(), new JIPipeNotificationInbox(), JIPipeProgressInfo.STDOUT);
                 JIPipeDesktopProjectOutputTreePanel panel = new JIPipeDesktopProjectOutputTreePanel(project);
                 panel.setBorder(UIUtils.createControlBorder());
                 int result = JOptionPane.showOptionDialog(
@@ -138,10 +138,8 @@ public class GetJIPipeSlotFolderAlgorithm extends JIPipeSimpleIteratingAlgorithm
 
                 if (result == JOptionPane.OK_OPTION) {
                     Object component = panel.getTree().getLastSelectedPathComponent();
-                    if (component instanceof DefaultMutableTreeNode) {
-                        DefaultMutableTreeNode node = (DefaultMutableTreeNode) component;
-                        if (node.getUserObject() instanceof JIPipeDataSlot) {
-                            JIPipeDataSlot slot = (JIPipeDataSlot) node.getUserObject();
+                    if (component instanceof DefaultMutableTreeNode node) {
+                        if (node.getUserObject() instanceof JIPipeDataSlot slot) {
                             ParameterUtils.setParameter(this, "node-id", slot.getNode().getAliasIdInParentGraph());
                             ParameterUtils.setParameter(this, "slot-name", slot.getName());
                             ParameterUtils.setParameter(this, "compartment-id",

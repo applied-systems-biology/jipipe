@@ -83,7 +83,7 @@ public abstract class JIPipeGraphNode extends AbstractJIPipeParameterCollection 
     private final BiMap<String, JIPipeOutputDataSlot> outputSlotMap = HashBiMap.create();
     private JIPipeNodeInfo info;
     private JIPipeSlotConfiguration slotConfiguration;
-    private PathMetadataStore metadata = new PathMetadataStore();
+    private PathMetadataStore nodeMetadata = new PathMetadataStore();
     private Path internalStoragePath;
     private Path storagePath;
     private String customName;
@@ -164,7 +164,7 @@ public abstract class JIPipeGraphNode extends AbstractJIPipeParameterCollection 
         this.info = other.info;
         this.bookmarked = other.bookmarked;
         this.slotConfiguration = copySlotConfiguration(other);
-        this.metadata = new PathMetadataStore(other.metadata);
+        this.nodeMetadata = new PathMetadataStore(other.nodeMetadata);
         this.customName = other.customName;
         this.customDescription = other.customDescription;
         this.baseDirectory = other.baseDirectory;
@@ -475,12 +475,12 @@ public abstract class JIPipeGraphNode extends AbstractJIPipeParameterCollection 
         return JIPipeDesktopGraphNodeUI.class;
     }
 
-    public PathMetadataStore getMetadata() {
-        return metadata;
+    public PathMetadataStore getNodeMetadata() {
+        return nodeMetadata;
     }
 
-    public void setMetadata(PathMetadataStore metadata) {
-        this.metadata = metadata;
+    public void setNodeMetadata(PathMetadataStore nodeMetadata) {
+        this.nodeMetadata = nodeMetadata;
     }
 
     /**
@@ -491,8 +491,8 @@ public abstract class JIPipeGraphNode extends AbstractJIPipeParameterCollection 
      */
     public Point getNodeUILocationWithin(String compartment) {
         compartment = StringUtils.orElse(compartment, "_");
-        Integer x = metadata.getInteger(Path.of("location", compartment, "x"), null);
-        Integer y = metadata.getInteger(Path.of("location", compartment, "y"), null);
+        Integer x = nodeMetadata.getInteger(Path.of("location", compartment, "x"), null);
+        Integer y = nodeMetadata.getInteger(Path.of("location", compartment, "y"), null);
         if(x==null || y==null) {
             return null;
         }
@@ -509,8 +509,8 @@ public abstract class JIPipeGraphNode extends AbstractJIPipeParameterCollection 
      */
     public void setNodeUILocationWithin(String compartment, Point location) {
         compartment = StringUtils.orElse(compartment, "_");
-        metadata.put(Path.of("location", compartment, "x"), location.x);
-        metadata.put(Path.of("location", compartment, "y"), location.y);
+        nodeMetadata.put(Path.of("location", compartment, "x"), location.x);
+        nodeMetadata.put(Path.of("location", compartment, "y"), location.y);
     }
 
     /**
@@ -535,7 +535,7 @@ public abstract class JIPipeGraphNode extends AbstractJIPipeParameterCollection 
         jsonGenerator.writeStringField("jipipe:graph-compartment", StringUtils.nullToEmpty(getCompartmentUUIDInParentGraph()));
         jsonGenerator.writeStringField("jipipe:alias-id", StringUtils.nullToEmpty(getAliasIdInParentGraph()));
         jsonGenerator.writeObjectField("jipipe:slot-configuration", slotConfiguration);
-        jsonGenerator.writeObjectField("jipipe:metadata-v1", metadata);
+        jsonGenerator.writeObjectField("jipipe:metadata-v1", nodeMetadata);
         jsonGenerator.writeStringField("jipipe:node-info-id", getInfo().getId());
 
         ParameterUtils.serializeParametersToJson(this, jsonGenerator);
@@ -558,7 +558,7 @@ public abstract class JIPipeGraphNode extends AbstractJIPipeParameterCollection 
         }
         if (node.has("jipipe:metadata-v1")) {
             try {
-                metadata = JsonUtils.getObjectMapper().readerFor(PathMetadataStore.class).readValue(node.get("jipipe:metadata-v1"));
+                nodeMetadata = JsonUtils.getObjectMapper().readerFor(PathMetadataStore.class).readValue(node.get("jipipe:metadata-v1"));
             } catch (IOException e) {
                 context.error().title("Unable to load metadata").details(e.toString()).report(issues);
             }
@@ -816,8 +816,8 @@ public abstract class JIPipeGraphNode extends AbstractJIPipeParameterCollection 
     /**
      * Removes all location information added via setLocationWithin()
      */
-    public void clearUILocations() {
-        metadata.clearEntriesWithPathPrefix(Path.of("location"));
+    public void clearAllNodeUILocations() {
+        nodeMetadata.clearEntriesWithPathPrefix(Path.of("location"));
     }
 
     /**
@@ -1289,14 +1289,14 @@ public abstract class JIPipeGraphNode extends AbstractJIPipeParameterCollection 
      */
     public Map<String, Point> getAllNodeUILocations() {
         Map<String, Point> result = new HashMap<>();
-        for (Map.Entry<Path, Object> entry : metadata.getEntriesUnderPath("location").entrySet()) {
+        for (Map.Entry<Path, Object> entry : nodeMetadata.getEntriesUnderPath("location").entrySet()) {
             if(entry.getKey().getNameCount() == 3) {
                 String compartmentName = entry.getKey().getName(1).toString();
                 String locationName = entry.getKey().getName(2).toString();
                 String standardCompartmentName = "_".equals(compartmentName) ? "" : compartmentName;
                 if(locationName.equals("x")) {
-                    result.put(standardCompartmentName, new Point(metadata.getInteger(Path.of("location", compartmentName, "x"), 0),
-                            metadata.getInteger(Path.of("location", compartmentName, "y"), 0)));
+                    result.put(standardCompartmentName, new Point(nodeMetadata.getInteger(Path.of("location", compartmentName, "x"), 0),
+                            nodeMetadata.getInteger(Path.of("location", compartmentName, "y"), 0)));
                 }
             }
         }
