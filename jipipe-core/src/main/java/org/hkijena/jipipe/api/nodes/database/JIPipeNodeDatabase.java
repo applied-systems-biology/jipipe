@@ -13,16 +13,21 @@
 
 package org.hkijena.jipipe.api.nodes.database;
 
+import org.hkijena.jipipe.JIPipe;
+import org.hkijena.jipipe.api.data.JIPipeData;
+import org.hkijena.jipipe.api.data.JIPipeSlotType;
 import org.hkijena.jipipe.api.project.JIPipeProject;
 import org.hkijena.jipipe.api.run.JIPipeRunnableQueue;
+import org.hkijena.jipipe.plugins.settings.JIPipeGeneralUIApplicationSettings;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Set;
 
 /**
  * Allows to query nodes
  */
-public class JIPipeNodeDatabase {
+public class JIPipeNodeDatabase implements JIPipeNodeDatabaseSearch{
 
     private static JIPipeNodeDatabase INSTANCE;
     private final JIPipeRunnableQueue queue = new JIPipeRunnableQueue("Node database");
@@ -76,13 +81,38 @@ public class JIPipeNodeDatabase {
     public JIPipeNodeDatabaseUpdater getUpdater() {
         return updater;
     }
-//
-//
-//    public JIPipeLuceneNodeDatabaseSearch getLuceneSearch() {
-//        return luceneSearch;
-//    }
 
-    public JIPipeLegacyNodeDatabaseSearch getLegacySearch() {
+    public JIPipeNodeDatabaseSearchImplementation getSearchImplementation() {
+        if(JIPipe.isInstantiated()) {
+            return JIPipeGeneralUIApplicationSettings.getInstance().getSearchImplementation();
+        }
+        return JIPipeNodeDatabaseSearchImplementation.Legacy;
+    }
+
+    public JIPipeNodeDatabaseSearch getSearch() {
+        if(getSearchImplementation() == JIPipeNodeDatabaseSearchImplementation.Legacy) {
+            return legacySearch;
+        }
         return legacySearch;
+    }
+
+    @Override
+    public void confirmQuery(String text, JIPipeNodeDatabasePipelineVisibility role, boolean allowExisting, boolean allowNew, Set<String> pinnedIds, JIPipeNodeDatabaseEntry userSelected) {
+        getSearch().confirmQuery(text, role, allowExisting, allowNew, pinnedIds, userSelected);
+    }
+
+    @Override
+    public List<JIPipeNodeDatabaseEntry> query(String text, JIPipeNodeDatabasePipelineVisibility role, boolean allowExisting, boolean allowNew, Set<String> pinnedIds) {
+        return getSearch().query(text, role, allowExisting, allowNew, pinnedIds);
+    }
+
+    @Override
+    public void confirmQuery(String text, JIPipeNodeDatabasePipelineVisibility role, boolean allowExisting, boolean allowNew, JIPipeSlotType targetSlotType, Class<? extends JIPipeData> targetDataType, JIPipeNodeDatabaseEntry userSelected) {
+        getSearch().confirmQuery(text, role, allowExisting, allowNew, targetSlotType, targetDataType, userSelected);
+    }
+
+    @Override
+    public List<JIPipeNodeDatabaseEntry> query(String text, JIPipeNodeDatabasePipelineVisibility role, boolean allowExisting, boolean allowNew, JIPipeSlotType targetSlotType, Class<? extends JIPipeData> targetDataType) {
+        return getSearch().query(text, role, allowExisting, allowNew, targetSlotType, targetDataType);
     }
 }

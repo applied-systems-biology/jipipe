@@ -26,6 +26,7 @@ import org.hkijena.jipipe.api.grouping.JIPipeGraphWrapperAlgorithm;
 import org.hkijena.jipipe.api.metadata.JIPipeAuthorMetadata;
 import org.hkijena.jipipe.api.metadata.JIPipeOrganizationMetadata;
 import org.hkijena.jipipe.api.nodes.JIPipeIterationStepTextAnnotationColumMatching;
+import org.hkijena.jipipe.api.nodes.database.JIPipeNodeDatabaseSearchImplementation;
 import org.hkijena.jipipe.api.parameters.JIPipeParameterArchetype;
 import org.hkijena.jipipe.api.parameters.JIPipeParameterCollection;
 import org.hkijena.jipipe.api.parameters.JIPipeParameterCollectionVisibilities;
@@ -779,6 +780,12 @@ public class StandardParametersPlugin extends JIPipePrepackagedDefaultJavaPlugin
                 JIPipeParameterArchetype.SingleSelect,
                 "JIPipe modern theme style",
                 "A style for the modern theming system");
+
+        // Search
+        registerEnumParameterType("search-implementation",
+                JIPipeNodeDatabaseSearchImplementation.class,
+                "Node database search implementation",
+                "Method that implements the node search");
     }
 
     private void registerCommonJavaTypes() {

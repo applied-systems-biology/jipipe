@@ -25,7 +25,7 @@ import org.hkijena.jipipe.utils.StringUtils;
 
 import java.util.*;
 
-public class JIPipeLegacyNodeDatabaseSearch {
+public class JIPipeLegacyNodeDatabaseSearch implements JIPipeNodeDatabaseSearch {
     private final JIPipeNodeDatabase nodeDatabase;
 
     public JIPipeLegacyNodeDatabaseSearch(JIPipeNodeDatabase nodeDatabase) {
@@ -114,6 +114,12 @@ public class JIPipeLegacyNodeDatabaseSearch {
         return rank;
     }
 
+    @Override
+    public void confirmQuery(String text, JIPipeNodeDatabasePipelineVisibility role, boolean allowExisting, boolean allowNew, Set<String> pinnedIds, JIPipeNodeDatabaseEntry userSelected) {
+
+    }
+
+    @Override
     public List<JIPipeNodeDatabaseEntry> query(String text, JIPipeNodeDatabasePipelineVisibility role, boolean allowExisting, boolean allowNew, Set<String> pinnedIds) {
         List<String> textTokens = buildTokens(Collections.singletonList(text));
         List<JIPipeNodeDatabaseEntry> result = new ArrayList<>();
@@ -146,6 +152,12 @@ public class JIPipeLegacyNodeDatabaseSearch {
         return result;
     }
 
+    @Override
+    public void confirmQuery(String text, JIPipeNodeDatabasePipelineVisibility role, boolean allowExisting, boolean allowNew, JIPipeSlotType targetSlotType, Class<? extends JIPipeData> targetDataType, JIPipeNodeDatabaseEntry userSelected) {
+
+    }
+
+    @Override
     public List<JIPipeNodeDatabaseEntry> query(String text, JIPipeNodeDatabasePipelineVisibility role, boolean allowExisting, boolean allowNew, JIPipeSlotType targetSlotType, Class<? extends JIPipeData> targetDataType) {
         Set<String> pinnedIds = new HashSet<>(); // TODO: implement pinned Ids
         List<String> textTokens = buildTokens(Collections.singletonList(text));

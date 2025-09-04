@@ -15,6 +15,7 @@ package org.hkijena.jipipe.plugins.settings;
 
 import org.hkijena.jipipe.JIPipe;
 import org.hkijena.jipipe.api.SetJIPipeDocumentation;
+import org.hkijena.jipipe.api.nodes.database.JIPipeNodeDatabaseSearchImplementation;
 import org.hkijena.jipipe.api.parameters.JIPipeParameter;
 import org.hkijena.jipipe.api.settings.JIPipeDefaultApplicationSettingsSheetCategory;
 import org.hkijena.jipipe.api.settings.JIPipeDefaultApplicationsSettingsSheet;
@@ -43,9 +44,21 @@ public class JIPipeGeneralUIApplicationSettings extends JIPipeDefaultApplication
     private JIPipeDesktopUITheme theme = JIPipeDesktopUITheme.Modern;
     private JIPipeModernThemeStyleParameter themeStyle = new JIPipeModernThemeStyleParameter("JIPipe Light");
     private boolean switchToProjectInfoOnUnknownProject = true;
+    private JIPipeNodeDatabaseSearchImplementation searchImplementation =  JIPipeNodeDatabaseSearchImplementation.Legacy;
 
     public static JIPipeGeneralUIApplicationSettings getInstance() {
         return JIPipe.getSettings().getById(ID, JIPipeGeneralUIApplicationSettings.class);
+    }
+
+    @SetJIPipeDocumentation(name = "Node search implementation", description = "The method responsible for handling the node search")
+    @JIPipeParameter("search-implementation")
+    public JIPipeNodeDatabaseSearchImplementation getSearchImplementation() {
+        return searchImplementation;
+    }
+
+    @JIPipeParameter("search-implementation")
+    public void setSearchImplementation(JIPipeNodeDatabaseSearchImplementation searchImplementation) {
+        this.searchImplementation = searchImplementation;
     }
 
     @SetJIPipeDocumentation(name = "Switch to project overview if not author", description = "If enabled, switches to the project overview instead of restoring tabs in the case if a project doesn't have the current user as author.")
