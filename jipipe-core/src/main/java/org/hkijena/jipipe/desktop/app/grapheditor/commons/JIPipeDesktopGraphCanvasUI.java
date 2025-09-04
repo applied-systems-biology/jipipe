@@ -25,7 +25,6 @@ import org.hkijena.jipipe.api.JIPipeWorkbench;
 import org.hkijena.jipipe.api.compartments.algorithms.JIPipeProjectCompartment;
 import org.hkijena.jipipe.api.data.*;
 import org.hkijena.jipipe.api.grapheditortool.JIPipeDefaultGraphEditorTool;
-import org.hkijena.jipipe.api.grapheditortool.JIPipeToggleableGraphEditorTool;
 import org.hkijena.jipipe.api.history.JIPipeHistoryJournal;
 import org.hkijena.jipipe.api.nodes.JIPipeAlgorithm;
 import org.hkijena.jipipe.api.nodes.JIPipeGraph;
@@ -41,7 +40,7 @@ import org.hkijena.jipipe.api.runtimepartitioning.JIPipeRuntimePartitionConfigur
 import org.hkijena.jipipe.desktop.app.JIPipeDesktopProjectWorkbench;
 import org.hkijena.jipipe.desktop.app.JIPipeDesktopWorkbench;
 import org.hkijena.jipipe.desktop.app.JIPipeDesktopWorkbenchAccess;
-import org.hkijena.jipipe.desktop.app.grapheditor.JIPipeGraphViewMode;
+import org.hkijena.jipipe.desktop.app.grapheditor.commons.canvas.JIPipeDesktopGraphCanvasGrid;
 import org.hkijena.jipipe.desktop.app.grapheditor.commons.actions.JIPipeDesktopOpenContextMenuAction;
 import org.hkijena.jipipe.desktop.app.grapheditor.commons.canvas.*;
 import org.hkijena.jipipe.desktop.app.grapheditor.commons.canvas.events.*;
@@ -59,10 +58,8 @@ import org.hkijena.jipipe.desktop.app.settings.JIPipeDesktopRuntimePartitionList
 import org.hkijena.jipipe.desktop.commons.components.JIPipeDesktopAddAlgorithmSlotPanel;
 import org.hkijena.jipipe.desktop.commons.components.JIPipeDesktopZoomViewPort;
 import org.hkijena.jipipe.plugins.core.nodes.JIPipeCommentNode;
-import org.hkijena.jipipe.plugins.parameters.library.roi.Anchor;
 import org.hkijena.jipipe.plugins.settings.JIPipeGraphEditorUIApplicationSettings;
 import org.hkijena.jipipe.utils.PointRange;
-import org.hkijena.jipipe.utils.StringUtils;
 import org.hkijena.jipipe.utils.ThemeUtils;
 import org.hkijena.jipipe.utils.UIUtils;
 import org.hkijena.jipipe.utils.json.JsonUtils;
@@ -109,7 +106,6 @@ public class JIPipeDesktopGraphCanvasUI extends JLayeredPane implements JIPipeDe
     private final Color smartEdgeSlotBackground = UIManager.getColor("EditorPane.background");
     private final Color smartEdgeSlotForeground = UIManager.getColor("Label.foreground");
     private final ImageIcon lockIcon = JIPipe.RESOURCES.getIcon16Inverted("actions/lock.png");
-    private final JIPipeGraphViewMode viewMode = JIPipeGraphViewMode.VerticalCompact;
     private final Map<?, ?> desktopRenderingHints = UIUtils.getDesktopRenderingHints();
     private final ZoomChangedEventEmitter zoomChangedEventEmitter = new ZoomChangedEventEmitter();
     private final JIPipeDesktopGraphCanvasUIUpdatedEventEmitter graphCanvasUpdatedEventEmitter = new JIPipeDesktopGraphCanvasUIUpdatedEventEmitter();
@@ -167,7 +163,7 @@ public class JIPipeDesktopGraphCanvasUI extends JLayeredPane implements JIPipeDe
 
         this.autoMuteEdges = settings.isAutoMuteEdgesEnabled();
 
-//        graph.attachAdditionalMetadata("jipipe:graph:view-mode", JIPipeGraphViewMode.VerticalCompact);
+//        graph.attachAdditionalMetadata("jipipe:graph:view-mode", JIPipeGraphJIPipeDesktopGraphCanvasGrid.VerticalCompact);
         initialize();
         addNewNodes(true);
 
@@ -695,7 +691,7 @@ public class JIPipeDesktopGraphCanvasUI extends JLayeredPane implements JIPipeDe
             int x = Math.max(0, currentlyDraggedOffset.x + mouseEvent.getX());
             int y = Math.max(0, currentlyDraggedOffset.y + mouseEvent.getY());
 
-            Point targetGridPoint = getViewMode().realLocationToGrid(new Point(x, y), getZoom());
+            Point targetGridPoint = JIPipeDesktopGraphCanvasGrid.realLocationToGrid(new Point(x, y), getZoom());
             int dx = targetGridPoint.x - entry.getKey().getStoredGridLocation().x;
             int dy = targetGridPoint.y - entry.getKey().getStoredGridLocation().y;
 
@@ -861,7 +857,7 @@ public class JIPipeDesktopGraphCanvasUI extends JLayeredPane implements JIPipeDe
         minY = -minY;
         minX = Math.max(0, minX);
         minY = Math.max(0, minY);
-        Point nextGridPoint = viewMode.realLocationToGrid(new Point(minX, minY), zoom);
+        Point nextGridPoint = JIPipeDesktopGraphCanvasGrid.realLocationToGrid(new Point(minX, minY), zoom);
         int ex = nextGridPoint.x;
         int ey = nextGridPoint.y;
         for (JIPipeDesktopGraphNodeUI value : nodeUIs.values()) {
@@ -892,7 +888,7 @@ public class JIPipeDesktopGraphCanvasUI extends JLayeredPane implements JIPipeDe
         }
         for (JIPipeDesktopGraphNodeUI value : nodeUIs.values()) {
             if (!currentlyDraggedOffsets.containsKey(value)) {
-                Point gridLocation = viewMode.realLocationToGrid(value.getLocation(), zoom);
+                Point gridLocation = JIPipeDesktopGraphCanvasGrid.realLocationToGrid(value.getLocation(), zoom);
                 gridLocation.x += gridLeft;
                 gridLocation.y += gridTop;
                 value.moveToGridLocation(gridLocation, true, true);
@@ -900,7 +896,7 @@ public class JIPipeDesktopGraphCanvasUI extends JLayeredPane implements JIPipeDe
         }
         Point cursor = getGraphEditorCursor();
         if (cursor != null) {
-            Point realLeftTop = viewMode.gridToRealLocation(new Point(gridLeft, gridTop), zoom);
+            Point realLeftTop = JIPipeDesktopGraphCanvasGrid.gridToRealLocation(new Point(gridLeft, gridTop), zoom);
             cursor.x = Math.round(cursor.x + realLeftTop.x);
             cursor.y = Math.round(cursor.y + realLeftTop.y);
         }
@@ -1534,8 +1530,8 @@ public class JIPipeDesktopGraphCanvasUI extends JLayeredPane implements JIPipeDe
         int height = 0;
         for (int i = 0; i < getComponentCount(); ++i) {
             Component component = getComponent(i);
-            width = Math.max(width, component.getX() + component.getWidth() + 2 * viewMode.getGridWidth());
-            height = Math.max(height, component.getY() + component.getHeight() + 2 * viewMode.getGridHeight());
+            width = Math.max(width, component.getX() + component.getWidth() + 2 * JIPipeDesktopGraphCanvasGrid.GRID_WIDTH);
+            height = Math.max(height, component.getY() + component.getHeight() + 2 * JIPipeDesktopGraphCanvasGrid.GRID_HEIGHT);
         }
         if (minDimensions != null) {
             width = Math.max(minDimensions.width, width);
@@ -2485,7 +2481,7 @@ public class JIPipeDesktopGraphCanvasUI extends JLayeredPane implements JIPipeDe
         int componentStartB;
         int componentEndB;
 
-        buffer = viewMode.getGridHeight() / 2;
+        buffer = JIPipeDesktopGraphCanvasGrid.GRID_HEIGHT / 2;
         sourceA = sourcePoint.y;
         targetA = targetPoint.y;
         if (enableArrows) {
@@ -2578,10 +2574,6 @@ public class JIPipeDesktopGraphCanvasUI extends JLayeredPane implements JIPipeDe
         return ScreenImageSVG.createImage(this);
     }
 
-    public JIPipeGraphViewMode getViewMode() {
-        return viewMode;
-    }
-
     public BiMap<JIPipeGraphNode, JIPipeDesktopGraphNodeUI> getNodeUIs() {
         return ImmutableBiMap.copyOf(nodeUIs);
     }
@@ -2611,11 +2603,11 @@ public class JIPipeDesktopGraphCanvasUI extends JLayeredPane implements JIPipeDe
         }
         boolean oldModified = getDesktopWorkbench().isProjectModified();
         for (JIPipeDesktopGraphNodeUI ui : nodeUIs.values()) {
-            ui.moveToClosestGridPoint(new Point(ui.getX() - minX + viewMode.getGridWidth(),
-                    ui.getY() - minY + viewMode.getGridHeight()), true, save);
+            ui.moveToClosestGridPoint(new Point(ui.getX() - minX + JIPipeDesktopGraphCanvasGrid.GRID_WIDTH,
+                    ui.getY() - minY + JIPipeDesktopGraphCanvasGrid.GRID_HEIGHT), true, save);
         }
         getDesktopWorkbench().setProjectModified(oldModified);
-        setGraphEditCursor(viewMode.gridToRealLocation(new Point(1, 1), zoom));
+        setGraphEditCursor(JIPipeDesktopGraphCanvasGrid.gridToRealLocation(new Point(1, 1), zoom));
         minDimensions = null;
         if (getParent() != null)
             getParent().revalidate();
@@ -2826,7 +2818,7 @@ public class JIPipeDesktopGraphCanvasUI extends JLayeredPane implements JIPipeDe
         JIPipeDesktopGraphNodeUI targetNode = nodeUIs.getOrDefault(event.getTarget().getNode(), null);
 
         // Check if we actually need to auto-place
-        if (sourceNode != null && targetNode != null && targetNode.getY() >= sourceNode.getBottomY() + viewMode.getGridHeight()) {
+        if (sourceNode != null && targetNode != null && targetNode.getY() >= sourceNode.getBottomY() + JIPipeDesktopGraphCanvasGrid.GRID_HEIGHT) {
             return;
         }
 
@@ -2840,7 +2832,7 @@ public class JIPipeDesktopGraphCanvasUI extends JLayeredPane implements JIPipeDe
 
             Point cursorBackup = getGraphEditorCursor();
             try {
-                setGraphEditCursor(new Point(targetNode.getX(), targetNode.getBottomY() + 4 * viewMode.getGridHeight()));
+                setGraphEditCursor(new Point(targetNode.getX(), targetNode.getBottomY() + 4 * JIPipeDesktopGraphCanvasGrid.GRID_HEIGHT));
                 nodeManager.autoPlaceTargetAdjacent(sourceNode, event.getSource(), targetNode, event.getTarget());
                 autoExpandLeftTop();
             } finally {

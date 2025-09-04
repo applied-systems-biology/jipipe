@@ -19,6 +19,7 @@ import org.hkijena.jipipe.api.parameters.JIPipeParameterCollection;
 import org.hkijena.jipipe.desktop.app.JIPipeDesktopWorkbench;
 import org.hkijena.jipipe.desktop.app.grapheditor.commons.JIPipeDesktopGraphCanvasUI;
 import org.hkijena.jipipe.desktop.app.grapheditor.commons.JIPipeDesktopGraphInteractiveObjectUI;
+import org.hkijena.jipipe.desktop.app.grapheditor.commons.canvas.JIPipeDesktopGraphCanvasGrid;
 
 import java.awt.*;
 import java.util.Set;
@@ -53,7 +54,7 @@ public class JIPipeDesktopAnnotationGraphNodeUI extends JIPipeDesktopGraphNodeUI
 
         // Update the real size of the control
         Dimension gridSize = new Dimension(Math.max(1, annotationGraphNode.getGridWidth()), Math.max(1, annotationGraphNode.getGridHeight()));
-        Dimension realSize = getViewMode().gridToRealSize(gridSize, getGraphCanvasUI().getZoom());
+        Dimension realSize = JIPipeDesktopGraphCanvasGrid.gridToRealSize(gridSize, getGraphCanvasUI().getZoom());
         setSize(realSize);
         revalidate();
 

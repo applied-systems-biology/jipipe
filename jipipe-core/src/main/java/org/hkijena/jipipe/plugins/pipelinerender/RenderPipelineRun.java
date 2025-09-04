@@ -25,7 +25,7 @@ import org.hkijena.jipipe.api.nodes.JIPipeGraphEdge;
 import org.hkijena.jipipe.api.nodes.JIPipeGraphNode;
 import org.hkijena.jipipe.api.project.JIPipeProject;
 import org.hkijena.jipipe.desktop.app.JIPipeDesktopDummyWorkbench;
-import org.hkijena.jipipe.desktop.app.grapheditor.JIPipeGraphViewMode;
+import org.hkijena.jipipe.desktop.app.grapheditor.commons.canvas.JIPipeDesktopGraphCanvasGrid;
 import org.hkijena.jipipe.desktop.app.grapheditor.commons.JIPipeDesktopGraphCanvasUI;
 import org.hkijena.jipipe.desktop.app.grapheditor.commons.nodeui.JIPipeDesktopGraphNodeUI;
 import org.hkijena.jipipe.desktop.commons.components.renderers.JIPipeDesktopDropShadowRenderer;
@@ -102,15 +102,14 @@ public class RenderPipelineRun extends DefaultJIPipeRunnable {
         progressInfo.log("If this causes issues, arrange your nodes and compartments in a space-efficient way!");
 
         // Calculate final image dimensions
-        final JIPipeGraphViewMode compartmentGraphViewMode = JIPipeGraphViewMode.VerticalCompact;
         int outputWidth = 0;
         int outputHeight = 0;
         for (Rectangle bounds : compartmentBounds.values()) {
             outputWidth = Math.max(outputWidth, bounds.x + bounds.width);
             outputHeight = Math.max(outputHeight, bounds.y + bounds.height);
         }
-        outputWidth = outputWidth * scaleFactor + compartmentGraphViewMode.getGridWidth() * scaleFactor;
-        outputHeight = outputHeight * scaleFactor + compartmentGraphViewMode.getGridHeight() * scaleFactor;
+        outputWidth = outputWidth * scaleFactor + JIPipeDesktopGraphCanvasGrid.GRID_WIDTH * scaleFactor;
+        outputHeight = outputHeight * scaleFactor + JIPipeDesktopGraphCanvasGrid.GRID_HEIGHT * scaleFactor;
         progressInfo.log("The generated image will have a size of " + outputWidth + "x" + outputHeight + " pixels");
 
         // Create image
@@ -169,7 +168,7 @@ public class RenderPipelineRun extends DefaultJIPipeRunnable {
                     sourceBounds,
                     targetRange.center,
                     graphEdge.getUiShape(),
-                    compartmentGraphViewMode, scaleFactor);
+                    scaleFactor);
             graphics2D.setStroke(defaultStroke);
             graphics2D.setColor(improvedStrokeBackgroundColor);
             drawEdge(graphics2D,
@@ -177,7 +176,7 @@ public class RenderPipelineRun extends DefaultJIPipeRunnable {
                     sourceBounds,
                     targetRange.center,
                     graphEdge.getUiShape(),
-                    compartmentGraphViewMode, scaleFactor);
+                    scaleFactor);
         }
 
         // Generate compartment images
@@ -277,10 +276,10 @@ public class RenderPipelineRun extends DefaultJIPipeRunnable {
         return outputImage;
     }
 
-    private void drawEdge(Graphics2D g, Point sourcePoint, Rectangle sourceBounds, Point targetPoint, JIPipeGraphEdge.Shape shape, JIPipeGraphViewMode viewMode, int scaleFactor) {
+    private void drawEdge(Graphics2D g, Point sourcePoint, Rectangle sourceBounds, Point targetPoint, JIPipeGraphEdge.Shape shape, int scaleFactor) {
         switch (shape) {
             case Elbow:
-                drawElbowEdge(g, sourcePoint, sourceBounds, targetPoint, viewMode, scaleFactor);
+                drawElbowEdge(g, sourcePoint, sourceBounds, targetPoint, scaleFactor);
                 break;
             case Line:
                 g.drawLine((int) (1.0 * sourcePoint.x),
@@ -291,7 +290,7 @@ public class RenderPipelineRun extends DefaultJIPipeRunnable {
         }
     }
 
-    private void drawElbowEdge(Graphics2D g, Point sourcePoint, Rectangle sourceBounds, Point targetPoint, JIPipeGraphViewMode viewMode, int scaleFactor) {
+    private void drawElbowEdge(Graphics2D g, Point sourcePoint, Rectangle sourceBounds, Point targetPoint, int scaleFactor) {
         int buffer;
         int sourceA;
         int targetA;
@@ -300,7 +299,7 @@ public class RenderPipelineRun extends DefaultJIPipeRunnable {
         int componentStartB;
         int componentEndB;
 
-        buffer = (viewMode.getGridHeight() / 2) * scaleFactor;
+        buffer = (JIPipeDesktopGraphCanvasGrid.GRID_HEIGHT / 2) * scaleFactor;
         sourceA = sourcePoint.y;
         targetA = targetPoint.y;
         sourceB = sourcePoint.x;

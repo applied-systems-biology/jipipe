@@ -16,7 +16,7 @@ package org.hkijena.jipipe.desktop.app.grapheditor.commons.layout;
 import com.google.common.collect.ImmutableList;
 import org.hkijena.jipipe.api.data.JIPipeDataSlot;
 import org.hkijena.jipipe.api.nodes.JIPipeGraph;
-import org.hkijena.jipipe.desktop.app.grapheditor.JIPipeGraphViewMode;
+import org.hkijena.jipipe.desktop.app.grapheditor.commons.canvas.JIPipeDesktopGraphCanvasGrid;
 import org.hkijena.jipipe.desktop.app.grapheditor.commons.JIPipeDesktopGraphCanvasUI;
 import org.hkijena.jipipe.desktop.app.grapheditor.commons.nodeui.JIPipeDesktopGraphNodeUI;
 import org.jgrapht.alg.spanning.KruskalMinimumSpanningTree;
@@ -56,7 +56,7 @@ public class MSTGraphAutoLayoutImplementation implements JIPipeGraphAutoLayoutIm
 //            e.printStackTrace();
 //        }
 
-        autoLayoutVertical(graph, canvasUI.getZoom(), canvasUI.getViewMode());
+        autoLayoutVertical(graph, canvasUI.getZoom());
     }
 
     private int generateTracks(JIPipeGraph projectGraph, DefaultDirectedGraph<Node, Edge> graph) {
@@ -141,7 +141,7 @@ public class MSTGraphAutoLayoutImplementation implements JIPipeGraphAutoLayoutIm
         }
     }
 
-    private void autoLayoutVertical(DefaultDirectedGraph<Node, Edge> graph, double zoom, JIPipeGraphViewMode viewMode) {
+    private void autoLayoutVertical(DefaultDirectedGraph<Node, Edge> graph, double zoom) {
         Map<Integer, Integer> trackWidths = new HashMap<>();
         int minTrack = Integer.MAX_VALUE;
         int maxTrack = Integer.MIN_VALUE;
@@ -152,15 +152,15 @@ public class MSTGraphAutoLayoutImplementation implements JIPipeGraphAutoLayoutIm
             maxDepth = Math.max(maxDepth, node.depth);
             trackWidths.put(node.track, Math.max(trackWidths.getOrDefault(node.track, 0), node.ui.getWidth()));
         }
-        int x = viewMode.getGridWidth() * 4;
+        int x = JIPipeDesktopGraphCanvasGrid.GRID_WIDTH * 4;
         for (int track = minTrack; track <= maxTrack; track++) {
             int finalTrack = track;
             for (Node node : graph.vertexSet().stream().filter(node -> node.track == finalTrack).collect(Collectors.toList())) {
-                int y = (maxDepth - node.depth) * 4 * viewMode.getGridHeight() + viewMode.getGridHeight();
+                int y = (maxDepth - node.depth) * 4 * JIPipeDesktopGraphCanvasGrid.GRID_HEIGHT + JIPipeDesktopGraphCanvasGrid.GRID_HEIGHT;
                 y = (int) (Math.round(y * zoom));
                 node.getUi().moveToClosestGridPoint(new Point(x, y), true, true);
             }
-            x += trackWidths.get(track) + viewMode.getGridWidth() * 4;
+            x += trackWidths.get(track) + JIPipeDesktopGraphCanvasGrid.GRID_WIDTH * 4;
         }
     }
 

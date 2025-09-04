@@ -16,7 +16,7 @@ package org.hkijena.jipipe.plugins.graphannotation.tools;
 import ij.IJ;
 import org.hkijena.jipipe.api.nodes.annotation.JIPipeAnnotationGraphNodeTool;
 import org.hkijena.jipipe.desktop.JIPipeDesktop;
-import org.hkijena.jipipe.desktop.app.grapheditor.JIPipeGraphViewMode;
+import org.hkijena.jipipe.desktop.app.grapheditor.commons.canvas.JIPipeDesktopGraphCanvasGrid;
 import org.hkijena.jipipe.plugins.graphannotation.nodes.ImageBoxAnnotationGraphNode;
 import org.hkijena.jipipe.plugins.parameters.library.images.ImageParameter;
 import org.hkijena.jipipe.plugins.parameters.library.markup.HTMLText;
@@ -49,8 +49,8 @@ public class ImageBoxAnnotationGraphNodeTool extends JIPipeAnnotationGraphNodeTo
                 BufferedImage image = ImageIO.read(path.toFile());
                 int w = Math.abs(firstPoint.x - secondPoint.x);
                 int h = Math.abs(firstPoint.y - secondPoint.y);
-                double maxNodeWidth = JIPipeGraphViewMode.VerticalCompact.getGridWidth() * 2 * w;
-                double maxNodeHeight = JIPipeGraphViewMode.VerticalCompact.getGridHeight() * 2 * h;
+                double maxNodeWidth = JIPipeDesktopGraphCanvasGrid.GRID_WIDTH * 2 * w;
+                double maxNodeHeight = JIPipeDesktopGraphCanvasGrid.GRID_HEIGHT * 2 * h;
                 double scaleFactor = Math.min(1, Math.max(maxNodeWidth / image.getWidth(), maxNodeHeight / image.getHeight()));
                 if (scaleFactor != 1) {
                     image = BufferedImageUtils.toBufferedImage(image.getScaledInstance((int) (scaleFactor * image.getWidth()), (int) (scaleFactor * image.getHeight()), Image.SCALE_SMOOTH), BufferedImage.TYPE_INT_RGB);

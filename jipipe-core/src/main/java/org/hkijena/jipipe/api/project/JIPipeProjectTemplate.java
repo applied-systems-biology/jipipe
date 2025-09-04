@@ -58,8 +58,8 @@ public class JIPipeProjectTemplate {
         JIPipeProject project = new JIPipeProject();
         project.fromJson(node, new UnspecifiedValidationReportContext(), issueReport, inbox);
         // Apply selected default style
-//        project.getGraph().attachAdditionalMetadata("jipipe:graph:view-mode", JIPipeGraphViewMode.VerticalCompact);
-//        project.getCompartmentGraph().attachAdditionalMetadata("jipipe:graph:view-mode", JIPipeGraphViewMode.VerticalCompact);
+//        project.getGraph().attachAdditionalMetadata("jipipe:graph:view-mode", JIPipeGraphJIPipeDesktopGraphCanvasGrid.VerticalCompact);
+//        project.getCompartmentGraph().attachAdditionalMetadata("jipipe:graph:view-mode", JIPipeGraphJIPipeDesktopGraphCanvasGrid.VerticalCompact);
         return project;
     }
 

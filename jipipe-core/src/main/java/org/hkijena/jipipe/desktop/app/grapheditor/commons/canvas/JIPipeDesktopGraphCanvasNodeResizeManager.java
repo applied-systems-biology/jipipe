@@ -69,7 +69,7 @@ public class JIPipeDesktopGraphCanvasNodeResizeManager {
 
     public void mouseDragged(MouseEvent e) {
         if (currentResizeTarget != null && currentResizeOperationAnchor != null && currentResizeOperationStartProperties != null) {
-            Point mouseInGrid = canvasUI.getViewMode().realLocationToGrid(canvasUI.getLastMousePosition(), canvasUI.getZoom());
+            Point mouseInGrid = JIPipeDesktopGraphCanvasGrid.realLocationToGrid(canvasUI.getLastMousePosition(), canvasUI.getZoom());
             int startGridX = currentResizeOperationStartProperties.x;
             int startGridY = currentResizeOperationStartProperties.y;
             int endGridX = currentResizeOperationStartProperties.x + currentResizeOperationStartProperties.width;
@@ -239,7 +239,7 @@ public class JIPipeDesktopGraphCanvasNodeResizeManager {
                 if (rectangle != null) {
                     if (rectangle.contains(mouseEvent.getPoint())) {
                         JIPipeAnnotationGraphNode node = (JIPipeAnnotationGraphNode) currentResizeTarget.getNode();
-                        Point gridLocation = node.getNodeUILocationWithin(StringUtils.nullToEmpty(canvasUI.getCompartmentUUID()), canvasUI.getViewMode().name());
+                        Point gridLocation = node.getNodeUILocationWithin(StringUtils.nullToEmpty(canvasUI.getCompartmentUUID()));
                         currentResizeOperationStartProperties = new Rectangle(gridLocation.x, gridLocation.y, node.getGridWidth(), node.getGridHeight());
                         currentResizeOperationAnchor = anchor;
                         return true;

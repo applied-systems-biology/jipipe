@@ -32,7 +32,7 @@ import org.hkijena.jipipe.api.parameters.JIPipeParameterCollectionVisibilities;
 import org.hkijena.jipipe.api.project.JIPipeProjectDirectories;
 import org.hkijena.jipipe.api.runtimepartitioning.RuntimePartitionReferenceDesktopParameterEditorUI;
 import org.hkijena.jipipe.api.runtimepartitioning.RuntimePartitionReferenceParameter;
-import org.hkijena.jipipe.desktop.app.grapheditor.JIPipeGraphViewMode;
+import org.hkijena.jipipe.desktop.app.grapheditor.commons.canvas.JIPipeDesktopGraphCanvasGrid;
 import org.hkijena.jipipe.desktop.app.grapheditor.commons.layout.JIPipepGraphAutoLayoutMethod;
 import org.hkijena.jipipe.plugins.JIPipePrepackagedDefaultJavaPlugin;
 import org.hkijena.jipipe.plugins.expressions.NumericFunctionExpression;
@@ -520,10 +520,6 @@ public class StandardParametersPlugin extends JIPipePrepackagedDefaultJavaPlugin
                 JIPipeIterationStepTextAnnotationColumMatching.class,
                 "Column matching strategy",
                 "Determines how columns for dataset matching are selected");
-        registerEnumParameterType("jipipe:ui:graph-editor-view-mode",
-                JIPipeGraphViewMode.class,
-                "Graph editor view mode",
-                "Determines how the graphs are displayed");
         registerEnumParameterType("jipipe:ui:graph-editor-auto-layout",
                 JIPipepGraphAutoLayoutMethod.class,
                 "Graph auto layout",

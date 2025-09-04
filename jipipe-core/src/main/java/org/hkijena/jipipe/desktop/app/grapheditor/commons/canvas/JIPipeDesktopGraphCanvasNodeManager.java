@@ -22,19 +22,13 @@ import org.hkijena.jipipe.api.nodes.JIPipeGraph;
 import org.hkijena.jipipe.api.nodes.JIPipeGraphNode;
 import org.hkijena.jipipe.api.nodes.categories.InternalNodeTypeCategory;
 import org.hkijena.jipipe.desktop.app.JIPipeDesktopProjectWorkbench;
-import org.hkijena.jipipe.desktop.app.grapheditor.JIPipeGraphViewMode;
 import org.hkijena.jipipe.desktop.app.grapheditor.commons.JIPipeDesktopGraphCanvasUI;
 import org.hkijena.jipipe.desktop.app.grapheditor.commons.nodeui.JIPipeDesktopGraphNodeUI;
 import org.hkijena.jipipe.plugins.settings.JIPipeGraphEditorUIApplicationSettings;
 import org.hkijena.jipipe.utils.json.JsonUtils;
-import org.hkijena.jipipe.utils.ui.events.MouseDraggedEvent;
-import org.hkijena.jipipe.utils.ui.events.MouseDraggedEventListener;
 
 import javax.swing.*;
 import java.awt.*;
-import java.awt.event.MouseEvent;
-import java.awt.event.MouseListener;
-import java.awt.event.MouseMotionListener;
 import java.util.*;
 
 public class JIPipeDesktopGraphCanvasNodeManager {
@@ -78,7 +72,7 @@ public class JIPipeDesktopGraphCanvasNodeManager {
         Set<JIPipeDesktopGraphNodeUI> nodesAfter = getNodesAfter(sourceAlgorithmUI.getRightX(), sourceAlgorithmUI.getBottomY());
         int x = sourceAlgorithmUI.getSlotLocation(source).center.x + sourceAlgorithmUI.getX();
         x -= targetAlgorithmUI.getSlotLocation(target).center.x;
-        int y = (int) Math.round(sourceAlgorithmUI.getBottomY() + canvasUI.getViewMode().getGridHeight() * canvasUI.getZoom());
+        int y = (int) Math.round(sourceAlgorithmUI.getBottomY() + JIPipeDesktopGraphCanvasGrid.GRID_HEIGHT * canvasUI.getZoom());
         Point targetPoint = new Point(x, y);
         if (JIPipeGraphEditorUIApplicationSettings.getInstance().isAutoLayoutMovesOtherNodes()) {
             if (!targetAlgorithmUI.moveToClosestGridPoint(targetPoint, false, true)) {
@@ -91,7 +85,7 @@ public class JIPipeDesktopGraphCanvasNodeManager {
                         continue;
                     minDistance = Math.min(minDistance, ui.getY() - sourceAlgorithmUI.getBottomY());
                 }
-                int translateY = (int) Math.round(targetAlgorithmUI.getHeight() + canvasUI.getViewMode().getGridHeight() * canvasUI.getZoom() * 2 - minDistance);
+                int translateY = (int) Math.round(targetAlgorithmUI.getHeight() + JIPipeDesktopGraphCanvasGrid.GRID_HEIGHT * canvasUI.getZoom() * 2 - minDistance);
                 for (JIPipeDesktopGraphNodeUI ui : nodesAfter) {
                     if (ui == targetAlgorithmUI || ui == sourceAlgorithmUI)
                         continue;
@@ -134,8 +128,8 @@ public class JIPipeDesktopGraphCanvasNodeManager {
             int vHeight = scrollPane.getVerticalScrollBar().getVisibleAmount();
             viewRectangle = new Rectangle(hValue, vValue, hWidth, vHeight);
 
-            viewRectangle.width -= canvasUI.getViewMode().getGridWidth() / 4;
-            viewRectangle.height -= canvasUI.getViewMode().getGridHeight() / 4;
+            viewRectangle.width -= JIPipeDesktopGraphCanvasGrid.GRID_WIDTH / 4;
+            viewRectangle.height -= JIPipeDesktopGraphCanvasGrid.GRID_HEIGHT / 4;
         }
 
 //        System.out.println("Loc: " + location);
@@ -143,8 +137,8 @@ public class JIPipeDesktopGraphCanvasNodeManager {
         Rectangle currentShape = new Rectangle(minX, minY, ui.getWidth(), ui.getHeight());
 
         if (viewRectangle != null && !viewRectangle.contains(location)) {
-            minX = viewRectangle.x + canvasUI.getViewMode().getGridWidth();
-            minY = viewRectangle.y + canvasUI.getViewMode().getGridHeight();
+            minX = viewRectangle.x + JIPipeDesktopGraphCanvasGrid.GRID_WIDTH;
+            minY = viewRectangle.y + JIPipeDesktopGraphCanvasGrid.GRID_HEIGHT;
         }
 
         boolean found;
@@ -157,7 +151,7 @@ public class JIPipeDesktopGraphCanvasNodeManager {
                 }
             }
             if (!found) {
-                currentShape.x += canvasUI.getViewMode().getGridWidth();
+                currentShape.x += JIPipeDesktopGraphCanvasGrid.GRID_WIDTH;
             }
             /*
              * Check if we are still within the visible rectangle.
@@ -172,12 +166,7 @@ public class JIPipeDesktopGraphCanvasNodeManager {
              * Check if we are too far away
              * The user expects the new node to be close to the cursor
              */
-            double relativeDistanceToOriginalPoint;
-            if (canvasUI.getViewMode() == JIPipeGraphViewMode.Vertical) {
-                relativeDistanceToOriginalPoint = Math.abs(1.0 * minX - currentShape.x) / currentShape.width;
-            } else {
-                relativeDistanceToOriginalPoint = Math.abs(1.0 * minY - currentShape.y) / currentShape.height;
-            }
+            double relativeDistanceToOriginalPoint = Math.abs(1.0 * minY - currentShape.y) / currentShape.height;
             if (relativeDistanceToOriginalPoint > 2) {
                 currentShape.x = minX;
                 currentShape.y = minY;
@@ -217,7 +206,7 @@ public class JIPipeDesktopGraphCanvasNodeManager {
         Map<JIPipeGraphNode, Point> originalLocations = new HashMap<>();
         for (JIPipeGraphNode algorithm : graph.getGraphNodes()) {
             String compartmentUUIDInGraphAsString = algorithm.getCompartmentUUIDInGraphAsString();
-            Point point = algorithm.getNodeUILocationWithin(compartmentUUIDInGraphAsString, canvasUI.getViewMode().name());
+            Point point = algorithm.getNodeUILocationWithin(compartmentUUIDInGraphAsString);
             if (point != null) {
                 originalLocations.put(algorithm, point);
                 minX = Math.min(minX, point.x);
@@ -240,9 +229,9 @@ public class JIPipeDesktopGraphCanvasNodeManager {
         for (JIPipeGraphNode algorithm : graph.getGraphNodes()) {
             Point original = originalLocations.getOrDefault(algorithm, null);
             if (original != null) {
-                original.x = (int) (original.x - minX + (cursor.x / canvasUI.getZoom()) / canvasUI.getViewMode().getGridWidth());
-                original.y = (int) (original.y - minY + (cursor.y / canvasUI.getZoom()) / canvasUI.getViewMode().getGridHeight());
-                algorithm.setNodeUILocationWithin(compartment, original, canvasUI.getViewMode().name());
+                original.x = (int) (original.x - minX + (cursor.x / canvasUI.getZoom()) / JIPipeDesktopGraphCanvasGrid.GRID_WIDTH);
+                original.y = (int) (original.y - minY + (cursor.y / canvasUI.getZoom()) / JIPipeDesktopGraphCanvasGrid.GRID_HEIGHT);
+                algorithm.setNodeUILocationWithin(compartment, original);
             }
         }
 

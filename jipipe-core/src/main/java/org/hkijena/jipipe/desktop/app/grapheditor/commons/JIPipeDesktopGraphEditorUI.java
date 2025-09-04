@@ -25,6 +25,7 @@ import org.hkijena.jipipe.api.nodes.*;
 import org.hkijena.jipipe.desktop.JIPipeDesktop;
 import org.hkijena.jipipe.desktop.app.JIPipeDesktopWorkbench;
 import org.hkijena.jipipe.desktop.app.JIPipeDesktopWorkbenchPanel;
+import org.hkijena.jipipe.desktop.app.grapheditor.commons.canvas.JIPipeDesktopGraphCanvasGrid;
 import org.hkijena.jipipe.desktop.app.grapheditor.commons.canvas.JIPipeDesktopGraphCanvasSelectionManager;
 import org.hkijena.jipipe.desktop.app.grapheditor.commons.canvas.events.JIPipeDesktopGraphCanvasUINodeSelectedEvent;
 import org.hkijena.jipipe.desktop.app.grapheditor.commons.canvas.events.JIPipeDesktopGraphCanvasUINodeSelectedEventListener;
@@ -708,20 +709,20 @@ public abstract class JIPipeDesktopGraphEditorUI extends JIPipeDesktopWorkbenchP
                 int ex = 0;
                 int ey = 0;
                 if (nx < 0) {
-                    ex = (int) Math.ceil(1.0 * -nx / (canvasUI.getViewMode().getGridWidth() * canvasUI.getZoom()));
+                    ex = (int) Math.ceil(1.0 * -nx / (JIPipeDesktopGraphCanvasGrid.GRID_WIDTH * canvasUI.getZoom()));
                 }
                 if (ny < 0) {
-                    ey = (int) Math.ceil(1.0 * -ny / (canvasUI.getViewMode().getGridHeight() * canvasUI.getZoom()));
+                    ey = (int) Math.ceil(1.0 * -ny / (JIPipeDesktopGraphCanvasGrid.GRID_HEIGHT * canvasUI.getZoom()));
                 }
                 if (ex > 0 || ey > 0) {
                     canvasUI.expandLeftTop(ex, ey);
                     if (ex > 0) {
-                        nx = canvasUI.getViewMode().getGridWidth();
-                        panningOffset.x += canvasUI.getViewMode().getGridWidth();
+                        nx = JIPipeDesktopGraphCanvasGrid.GRID_WIDTH;
+                        panningOffset.x += JIPipeDesktopGraphCanvasGrid.GRID_WIDTH;
                     }
                     if (ey > 0) {
-                        ny = canvasUI.getViewMode().getGridHeight();
-                        panningOffset.y += canvasUI.getViewMode().getGridHeight();
+                        ny = JIPipeDesktopGraphCanvasGrid.GRID_HEIGHT;
+                        panningOffset.y += JIPipeDesktopGraphCanvasGrid.GRID_HEIGHT;
                     }
                 }
             }

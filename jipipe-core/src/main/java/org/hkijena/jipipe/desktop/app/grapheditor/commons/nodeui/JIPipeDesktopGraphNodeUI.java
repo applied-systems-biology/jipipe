@@ -39,7 +39,7 @@ import org.hkijena.jipipe.api.runtimepartitioning.JIPipeRuntimePartition;
 import org.hkijena.jipipe.desktop.app.JIPipeDesktopProjectWorkbench;
 import org.hkijena.jipipe.desktop.app.JIPipeDesktopWorkbench;
 import org.hkijena.jipipe.desktop.app.JIPipeDesktopWorkbenchPanel;
-import org.hkijena.jipipe.desktop.app.grapheditor.JIPipeGraphViewMode;
+import org.hkijena.jipipe.desktop.app.grapheditor.commons.canvas.JIPipeDesktopGraphCanvasGrid;
 import org.hkijena.jipipe.desktop.app.grapheditor.commons.JIPipeDesktopGraphCanvasUI;
 import org.hkijena.jipipe.desktop.app.grapheditor.commons.JIPipeDesktopGraphEditorUI;
 import org.hkijena.jipipe.desktop.app.grapheditor.commons.JIPipeDesktopGraphInteractiveObjectUI;
@@ -97,7 +97,6 @@ public class JIPipeDesktopGraphNodeUI extends JIPipeDesktopWorkbenchPanel implem
     };
     private static final Map<String, BufferedImage> VISUALIZATION_ICON_CACHE = new HashMap<>();
     protected final List<JIPipeDesktopGraphNodeUIActiveArea> activeAreas = new ArrayList<>();
-    private final JIPipeGraphViewMode viewMode = JIPipeGraphViewMode.VerticalCompact;
     private final JIPipeDesktopGraphCanvasUI graphCanvasUI;
     private final JIPipeGraphNode node;
     private final Color nodeFillColor;
@@ -320,7 +319,7 @@ public class JIPipeDesktopGraphNodeUI extends JIPipeDesktopWorkbenchPanel implem
             Rectangle slotArea = new Rectangle((int) Math.round(slotState.getNativeLocation().x * zoom + shift * zoom),
                     (int) Math.round(slotState.getNativeLocation().y * zoom),
                     (int) Math.round(slotState.getNativeWidth() * zoom),
-                    (int) Math.round(viewMode.getGridHeight() * zoom));
+                    (int) Math.round(JIPipeDesktopGraphCanvasGrid.GRID_HEIGHT * zoom));
             slotState.setZoomedHitArea(slotArea);
             activeAreas.add(slotState);
 
@@ -338,7 +337,7 @@ public class JIPipeDesktopGraphNodeUI extends JIPipeDesktopWorkbenchPanel implem
             Rectangle slotArea = new Rectangle((int) Math.round(addInputSlotArea.getNativeLocation().x * zoom + shift * zoom),
                     (int) Math.round(addInputSlotArea.getNativeLocation().y * zoom),
                     (int) Math.round(addInputSlotArea.getNativeWidth() * zoom),
-                    (int) Math.round(viewMode.getGridHeight() * zoom));
+                    (int) Math.round(JIPipeDesktopGraphCanvasGrid.GRID_HEIGHT * zoom));
             addInputSlotArea.setZoomedHitArea(slotArea);
             activeAreas.add(addInputSlotArea);
         }
@@ -346,7 +345,7 @@ public class JIPipeDesktopGraphNodeUI extends JIPipeDesktopWorkbenchPanel implem
             Rectangle slotArea = new Rectangle((int) Math.round(slotState.getNativeLocation().x * zoom + shift * zoom),
                     (int) Math.round(slotState.getNativeLocation().y * zoom),
                     (int) Math.round(slotState.getNativeWidth() * zoom),
-                    (int) Math.round(viewMode.getGridHeight() * zoom));
+                    (int) Math.round(JIPipeDesktopGraphCanvasGrid.GRID_HEIGHT * zoom));
             slotState.setZoomedHitArea(slotArea);
             activeAreas.add(slotState);
 
@@ -364,7 +363,7 @@ public class JIPipeDesktopGraphNodeUI extends JIPipeDesktopWorkbenchPanel implem
             Rectangle slotArea = new Rectangle((int) Math.round(addOutputSlotArea.getNativeLocation().x * zoom + shift * zoom),
                     (int) Math.round(addOutputSlotArea.getNativeLocation().y * zoom),
                     (int) Math.round(addOutputSlotArea.getNativeWidth() * zoom),
-                    (int) Math.round(viewMode.getGridHeight() * zoom));
+                    (int) Math.round(JIPipeDesktopGraphCanvasGrid.GRID_HEIGHT * zoom));
             addOutputSlotArea.setZoomedHitArea(slotArea);
             activeAreas.add(addOutputSlotArea);
         }
@@ -396,7 +395,7 @@ public class JIPipeDesktopGraphNodeUI extends JIPipeDesktopWorkbenchPanel implem
 
         // Node button
         if (nodeIsRunnable) {
-            int realSlotHeight = viewMode.gridToRealSize(new Dimension(1, 1), zoom).height;
+            int realSlotHeight = JIPipeDesktopGraphCanvasGrid.gridToRealSize(new Dimension(1, 1), zoom).height;
             boolean hasInputs = (!node.getInputSlots().isEmpty() || slotsInputsEditable) && showInputs;
             boolean hasOutputs = (!node.getOutputSlots().isEmpty() || slotsOutputsEditable) && showOutputs;
 
@@ -593,14 +592,14 @@ public class JIPipeDesktopGraphNodeUI extends JIPipeDesktopWorkbenchPanel implem
                     continue;
                 double nativeWidth = secondaryFontMetrics.stringWidth(slotState.getSlotLabel()) + 22 * 2 + 16;
                 slotState.setNativeWidth(nativeWidth);
-                slotState.setNativeLocation(new Point((int) sumOutputSlotWidths, viewMode.getGridHeight() * 2));
+                slotState.setNativeLocation(new Point((int) sumOutputSlotWidths, JIPipeDesktopGraphCanvasGrid.GRID_HEIGHT * 2));
                 sumOutputSlotWidths += nativeWidth;
             }
             if (slotsOutputsEditable) {
                 addOutputSlotArea = new JIPipeDesktopGraphNodeUIAddSlotButtonActiveArea(this, JIPipeSlotType.Output);
                 double nativeWidth = 22;
                 addOutputSlotArea.setNativeWidth(nativeWidth);
-                addOutputSlotArea.setNativeLocation(new Point((int) sumOutputSlotWidths, viewMode.getGridHeight() * 2));
+                addOutputSlotArea.setNativeLocation(new Point((int) sumOutputSlotWidths, JIPipeDesktopGraphCanvasGrid.GRID_HEIGHT * 2));
                 sumOutputSlotWidths += nativeWidth;
             } else {
                 addOutputSlotArea = null;
@@ -610,28 +609,23 @@ public class JIPipeDesktopGraphNodeUI extends JIPipeDesktopWorkbenchPanel implem
         // Calculate the grid width
         double maxWidth = Math.max(mainWidth, Math.max(sumInputSlotWidths, sumOutputSlotWidths));
         maxWidth += getBaseSlotXShift();
-        int gridWidth = (int) Math.ceil(maxWidth / viewMode.getGridWidth());
+        int gridWidth = (int) Math.ceil(maxWidth / JIPipeDesktopGraphCanvasGrid.GRID_WIDTH);
 
         // Correct the slot width to fit the actual native width of the control
-        int nativeWidth = viewMode.getGridWidth() * gridWidth;
+        int nativeWidth = JIPipeDesktopGraphCanvasGrid.GRID_WIDTH * gridWidth;
 
         scaleSlotsNativeWidth(inputSlotMap, addInputSlotArea, nativeWidth, sumInputSlotWidths, slotsInputsEditable);
         scaleSlotsNativeWidth(outputSlotMap, addOutputSlotArea, nativeWidth, sumOutputSlotWidths, slotsOutputsEditable);
 
         // Update the real size of the control
         Dimension gridSize = new Dimension(gridWidth, 3);
-        Dimension realSize = viewMode.gridToRealSize(gridSize, zoom);
+        Dimension realSize = JIPipeDesktopGraphCanvasGrid.gridToRealSize(gridSize, zoom);
         setSize(realSize);
         revalidate();
 
         // Update the active areas
         updateActiveAreas();
     }
-
-    public JIPipeGraphViewMode getViewMode() {
-        return viewMode;
-    }
-
 
     private void scaleSlotsNativeWidth(Map<String, JIPipeDesktopGraphNodeUISlotActiveArea> slotStateMap, JIPipeDesktopGraphNodeUIAddSlotButtonActiveArea addSlotActiveArea, double nodeWidth, double sumWidth, boolean hasButton) {
 //        if(slotStateMap.size() == 1 && hasButton) {
@@ -675,7 +669,7 @@ public class JIPipeDesktopGraphNodeUI extends JIPipeDesktopWorkbenchPanel implem
      * @return if setting the location was successful
      */
     public boolean moveToGridLocation(Point gridLocation, boolean force, boolean save) {
-        Point location = graphCanvasUI.getViewMode().gridToRealLocation(gridLocation, graphCanvasUI.getZoom());
+        Point location = JIPipeDesktopGraphCanvasGrid.gridToRealLocation(gridLocation, graphCanvasUI.getZoom());
         if (!force) {
             Rectangle futureBounds = new Rectangle(location.x, location.y, getWidth(), getHeight());
             for (int i = 0; i < graphCanvasUI.getComponentCount(); ++i) {
@@ -694,14 +688,14 @@ public class JIPipeDesktopGraphNodeUI extends JIPipeDesktopWorkbenchPanel implem
             setLocation(location);
         }
         if (save) {
-            node.setNodeUILocationWithin(graphCanvasUI.getCompartmentUUID(), gridLocation, graphCanvasUI.getViewMode().name());
+            node.setNodeUILocationWithin(graphCanvasUI.getCompartmentUUID(), gridLocation);
             getGraphCanvasUI().getDesktopWorkbench().setProjectModified(true);
         }
         return true;
     }
 
     public Point getStoredGridLocation() {
-        return node.getNodeUILocationWithin(StringUtils.nullToEmpty(graphCanvasUI.getCompartmentUUID()), graphCanvasUI.getViewMode().name());
+        return node.getNodeUILocationWithin(StringUtils.nullToEmpty(graphCanvasUI.getCompartmentUUID()));
     }
 
     /**
@@ -712,11 +706,7 @@ public class JIPipeDesktopGraphNodeUI extends JIPipeDesktopWorkbenchPanel implem
      */
     @SuppressWarnings("deprecation")
     public boolean moveToStoredGridLocation(boolean force) {
-        Point point = node.getNodeUILocationWithin(StringUtils.nullToEmpty(graphCanvasUI.getCompartmentUUID()), graphCanvasUI.getViewMode().name());
-        if (point == null) {
-            // Try to get the point from vertical layout (migrate to compact)
-            point = node.getNodeUILocationWithin(StringUtils.nullToEmpty(graphCanvasUI.getCompartmentUUID()), JIPipeGraphViewMode.Vertical.name());
-        }
+        Point point = node.getNodeUILocationWithin(StringUtils.nullToEmpty(graphCanvasUI.getCompartmentUUID()));
         if (point != null) {
             return moveToGridLocation(point, force, false);
         } else {
@@ -748,7 +738,7 @@ public class JIPipeDesktopGraphNodeUI extends JIPipeDesktopWorkbenchPanel implem
                     new Point((int) (zoom * slotState.getNativeLocation().x) + 8 + getBaseSlotXShift(), y),
                     new Point((int) (zoom * (slotState.getNativeLocation().x + slotState.getNativeWidth())) - 8 + getBaseSlotXShift(), y));
         } else {
-            int y = (int) (zoom * (slotState.getNativeLocation().y + viewMode.getGridHeight()));
+            int y = (int) (zoom * (slotState.getNativeLocation().y + JIPipeDesktopGraphCanvasGrid.GRID_HEIGHT));
             return new PointRange(new Point((int) (zoom * (slotState.getNativeLocation().x + slotState.getNativeWidth() / 2)) + getBaseSlotXShift(), y),
                     new Point((int) (zoom * slotState.getNativeLocation().x) + 8 + getBaseSlotXShift(), y),
                     new Point((int) (zoom * (slotState.getNativeLocation().x + slotState.getNativeWidth())) - 8 + getBaseSlotXShift(), y));
@@ -855,7 +845,7 @@ public class JIPipeDesktopGraphNodeUI extends JIPipeDesktopWorkbenchPanel implem
 
         FontMetrics fontMetrics = g2.getFontMetrics();
 
-        int realSlotHeight = viewMode.gridToRealSize(new Dimension(1, 1), zoom).height;
+        int realSlotHeight = JIPipeDesktopGraphCanvasGrid.gridToRealSize(new Dimension(1, 1), zoom).height;
         boolean hasInputs = !node.getInputSlots().isEmpty() || slotsInputsEditable;
         boolean hasOutputs = !node.getOutputSlots().isEmpty() || slotsOutputsEditable;
 
@@ -898,7 +888,7 @@ public class JIPipeDesktopGraphNodeUI extends JIPipeDesktopWorkbenchPanel implem
         g2.fillRect(0, 0, (int) (zoom * shift), getHeight());
 
         // Draw icons
-        Dimension realSize = viewMode.gridToRealSize(new Dimension(1, 1), zoom);
+        Dimension realSize = JIPipeDesktopGraphCanvasGrid.gridToRealSize(new Dimension(1, 1), zoom);
         int zoomedIconSize = (int) Math.round(16 * zoom);
         int startX = (int) Math.round(zoom * 3);
         int startY = (int) Math.round(realSize.height / 2f - (zoom * 16) / 2f);
@@ -1264,7 +1254,7 @@ public class JIPipeDesktopGraphNodeUI extends JIPipeDesktopWorkbenchPanel implem
      * @return if setting the location was successful
      */
     public boolean moveToClosestGridPoint(Point location, boolean force, boolean save) {
-        Point gridPoint = graphCanvasUI.getViewMode().realLocationToGrid(location, graphCanvasUI.getZoom());
+        Point gridPoint = JIPipeDesktopGraphCanvasGrid.realLocationToGrid(location, graphCanvasUI.getZoom());
         return moveToGridLocation(gridPoint, force, save);
     }
 
@@ -2289,7 +2279,7 @@ public class JIPipeDesktopGraphNodeUI extends JIPipeDesktopWorkbenchPanel implem
         Point cursorLocation = new Point();
         Point slotLocation = getSlotLocation(slot).min;
         cursorLocation.x = getX() + slotLocation.x;
-        cursorLocation.y = getBottomY() + getGraphCanvasUI().getViewMode().getGridHeight();
+        cursorLocation.y = getBottomY() + JIPipeDesktopGraphCanvasGrid.GRID_HEIGHT;
         getGraphCanvasUI().setGraphEditCursor(cursorLocation);
         invalidateAndRepaint(false, true);
     }
@@ -2321,7 +2311,7 @@ public class JIPipeDesktopGraphNodeUI extends JIPipeDesktopWorkbenchPanel implem
         Point cursorLocation = new Point();
         Point slotLocation = getSlotLocation(slot).min;
         cursorLocation.x = getX() + slotLocation.x;
-        cursorLocation.y = getY() - getGraphCanvasUI().getViewMode().getGridHeight() * 4;
+        cursorLocation.y = getY() - JIPipeDesktopGraphCanvasGrid.GRID_HEIGHT * 4;
         getGraphCanvasUI().setGraphEditCursor(cursorLocation);
         invalidateAndRepaint(false, true);
     }

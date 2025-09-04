@@ -17,6 +17,7 @@ import org.hkijena.jipipe.api.compartments.algorithms.JIPipeProjectCompartment;
 import org.hkijena.jipipe.api.nodes.JIPipeGraph;
 import org.hkijena.jipipe.desktop.app.grapheditor.commons.JIPipeDesktopGraphCanvasUI;
 import org.hkijena.jipipe.desktop.app.grapheditor.commons.JIPipeDesktopGraphDragAndDropBehavior;
+import org.hkijena.jipipe.desktop.app.grapheditor.commons.canvas.JIPipeDesktopGraphCanvasGrid;
 import org.hkijena.jipipe.desktop.app.grapheditor.flavors.compartments.JIPipeDesktopCompartmentsGraphEditorUI;
 import org.hkijena.jipipe.plugins.settings.JIPipeGraphEditorUIApplicationSettings;
 import org.hkijena.jipipe.utils.json.JsonUtils;
@@ -46,8 +47,8 @@ public class JIPipeCreateCompartmentNodesFromDraggedDataDragAndDropBehavior impl
         Point mousePosition = dtde.getLocation();
         if (mousePosition == null)
             return;
-        Point gridLocation = canvas.getViewMode().realLocationToGrid(mousePosition, canvas.getZoom());
-        Point realLocation = canvas.getViewMode().gridToRealLocation(gridLocation, canvas.getZoom());
+        Point gridLocation = JIPipeDesktopGraphCanvasGrid.realLocationToGrid(mousePosition, canvas.getZoom());
+        Point realLocation = JIPipeDesktopGraphCanvasGrid.gridToRealLocation(gridLocation, canvas.getZoom());
         canvas.setGraphEditCursor(realLocation);
         canvas.repaintLowLag();
     }

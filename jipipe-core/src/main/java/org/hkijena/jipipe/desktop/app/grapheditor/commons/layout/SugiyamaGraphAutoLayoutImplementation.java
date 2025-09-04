@@ -18,6 +18,7 @@ import org.hkijena.jipipe.api.data.JIPipeDataSlot;
 import org.hkijena.jipipe.api.nodes.JIPipeGraph;
 import org.hkijena.jipipe.api.nodes.JIPipeGraphEdge;
 import org.hkijena.jipipe.desktop.app.grapheditor.commons.JIPipeDesktopGraphCanvasUI;
+import org.hkijena.jipipe.desktop.app.grapheditor.commons.canvas.JIPipeDesktopGraphCanvasGrid;
 import org.hkijena.jipipe.desktop.app.grapheditor.commons.nodeui.JIPipeDesktopGraphNodeUI;
 import org.jgrapht.graph.DefaultDirectedGraph;
 import org.jgrapht.graph.DefaultEdge;
@@ -141,16 +142,16 @@ public class SugiyamaGraphAutoLayoutImplementation implements JIPipeGraphAutoLay
 
         // Add free-floating algorithms back into the graph
         if (!freeFloating.isEmpty()) {
-            int minX = canvasUI.getViewMode().getGridWidth() * 4;
+            int minX = JIPipeDesktopGraphCanvasGrid.GRID_WIDTH * 4;
             for (JIPipeDesktopGraphNodeUI ui : canvasUI.getNodeUIs().values()) {
                 if (!freeFloating.contains(ui)) {
                     minX = Math.max(ui.getRightX(), minX);
                 }
             }
-            int y = canvasUI.getViewMode().getGridHeight();
+            int y = JIPipeDesktopGraphCanvasGrid.GRID_HEIGHT;
             for (JIPipeDesktopGraphNodeUI ui : freeFloating) {
                 ui.moveToClosestGridPoint(new Point(minX, y), true, true);
-                y += ui.getHeight() + canvasUI.getViewMode().getGridHeight();
+                y += ui.getHeight() + JIPipeDesktopGraphCanvasGrid.GRID_HEIGHT;
             }
         }
     }
@@ -188,17 +189,17 @@ public class SugiyamaGraphAutoLayoutImplementation implements JIPipeGraphAutoLay
             }
         }
         for (int column : columnWidths.keySet()) {
-            columnWidths.put(column, (int) Math.round(columnWidths.get(column) + 2 * canvasUI.getViewMode().getGridWidth() * canvasUI.getZoom()));
+            columnWidths.put(column, (int) Math.round(columnWidths.get(column) + 2 * JIPipeDesktopGraphCanvasGrid.GRID_WIDTH * canvasUI.getZoom()));
         }
         for (int row : rowHeights.keySet()) {
-            rowHeights.put(row, (int) Math.round(rowHeights.get(row) + canvasUI.getViewMode().getGridHeight() * canvasUI.getZoom()));
+            rowHeights.put(row, (int) Math.round(rowHeights.get(row) + JIPipeDesktopGraphCanvasGrid.GRID_HEIGHT * canvasUI.getZoom()));
         }
 
         // Rearrange algorithms
-        int x = canvasUI.getViewMode().getGridWidth();
+        int x = JIPipeDesktopGraphCanvasGrid.GRID_WIDTH;
         for (int column = 0; column <= maxColumn; ++column) {
             Map<Integer, SugiyamaVertex> columnMap = vertexTable.get(column);
-            int y = canvasUI.getViewMode().getGridHeight();
+            int y = JIPipeDesktopGraphCanvasGrid.GRID_HEIGHT;
             for (int row = 0; row <= maxRow; ++row) {
                 SugiyamaVertex vertex = columnMap.getOrDefault(row, null);
                 if (vertex != null && !vertex.virtual) {
@@ -245,17 +246,17 @@ public class SugiyamaGraphAutoLayoutImplementation implements JIPipeGraphAutoLay
             }
         }
         for (int column : columnWidths.keySet()) {
-            columnWidths.put(column, (int) Math.round(columnWidths.get(column) + 2 * canvasUI.getViewMode().getGridWidth() * canvasUI.getZoom()));
+            columnWidths.put(column, (int) Math.round(columnWidths.get(column) + 2 * JIPipeDesktopGraphCanvasGrid.GRID_WIDTH * canvasUI.getZoom()));
         }
         for (int row : rowHeights.keySet()) {
-            rowHeights.put(row, (int) Math.round(rowHeights.get(row) + canvasUI.getViewMode().getGridHeight() * canvasUI.getZoom()));
+            rowHeights.put(row, (int) Math.round(rowHeights.get(row) + JIPipeDesktopGraphCanvasGrid.GRID_HEIGHT * canvasUI.getZoom()));
         }
 
         // Rearrange algorithms
-        int x = canvasUI.getViewMode().getGridWidth();
+        int x = JIPipeDesktopGraphCanvasGrid.GRID_WIDTH;
         for (int column = 0; column <= maxColumn; ++column) {
             Map<Integer, SugiyamaVertex> columnMap = vertexTable.get(column);
-            int y = canvasUI.getViewMode().getGridHeight();
+            int y = JIPipeDesktopGraphCanvasGrid.GRID_HEIGHT;
             for (int row = 0; row <= maxRow; ++row) {
                 SugiyamaVertex vertex = columnMap.getOrDefault(row, null);
                 if (vertex != null && !vertex.virtual) {
