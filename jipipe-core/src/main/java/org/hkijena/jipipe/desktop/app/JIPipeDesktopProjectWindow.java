@@ -374,7 +374,7 @@ public class JIPipeDesktopProjectWindow extends JFrame {
                                 getProgressInfo().log("INFO: File size is " + (Files.size(path) / 1024 / 1024) + " MB. Loading this project may take long.");
                                 getProgressInfo().log("INFO: Consider down-sizing your projects if you experience performance issues.");
                             }
-                            project.fromJson(jsonData, new UnspecifiedValidationReportContext(), report, notifications);
+                            project.fromJson(jsonData, new UnspecifiedValidationReportContext(), report, notifications, progressInfo);
                             project.setWorkDirectory(path.getParent());
                             project.validateUserDirectories(notifications);
                             project.setProjectFile(path);

@@ -114,7 +114,7 @@ public class CreateROCrateRun extends DefaultJIPipeRunnable {
             copyProject.fromJson(JsonUtils.readFromFile(tmpPath.resolve("project_.jip"), JsonNode.class),
                     new UnspecifiedValidationReportContext(),
                     new JIPipeValidationReport(),
-                    new JIPipeNotificationInbox());
+                    new JIPipeNotificationInbox(), progressInfo);
 
             // Modify user directories
             for (JIPipeDynamicParameterCollection parameterCollection : copyProject.getMetadata().getDirectories().getDirectories()) {

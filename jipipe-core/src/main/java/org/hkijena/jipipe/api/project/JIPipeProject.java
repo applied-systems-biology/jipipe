@@ -201,7 +201,7 @@ public class JIPipeProject implements JIPipeValidatable {
     public static JIPipeProject loadProject(Path fileName, JIPipeValidationReportContext context, JIPipeValidationReport report, JIPipeNotificationInbox notifications) throws IOException {
         JsonNode jsonData = JsonUtils.getObjectMapper().readValue(fileName.toFile(), JsonNode.class);
         JIPipeProject project = new JIPipeProject();
-        project.fromJson(jsonData, context, report, notifications);
+        project.fromJson(jsonData, context, report, notifications, progressInfo);
         project.setWorkDirectory(fileName.getParent());
         project.validateUserDirectories(notifications);
         project.projectFile = fileName;
@@ -636,7 +636,7 @@ public class JIPipeProject implements JIPipeValidatable {
                     // Place IOInterface at the same location as the compartment output
                     IOInterfaceAlgorithm ioInterfaceAlgorithm = JIPipe.createNode(IOInterfaceAlgorithm.class);
                     ioInterfaceAlgorithm.getSlotConfiguration().setTo(source.getNode().getSlotConfiguration());
-                    ioInterfaceAlgorithm.setNodeUILocationPerViewModePerCompartment(source.getNode().getNodeUILocationPerViewModePerCompartment());
+                    ioInterfaceAlgorithm.getMetadata().putAll(source.getNode().getMetadata());
                     graph.insertNode(ioInterfaceAlgorithm, target.getNode().getCompartmentUUIDInParentGraph());
 
                     for (JIPipeOutputDataSlot outputSlot : source.getNode().getOutputSlots()) {
@@ -748,7 +748,7 @@ public class JIPipeProject implements JIPipeValidatable {
                     IOInterfaceAlgorithm ioInterfaceAlgorithm = JIPipe.createNode(IOInterfaceAlgorithm.class);
                     ioInterfaceAlgorithm.setCustomName(outputNode.getName());
                     ioInterfaceAlgorithm.getSlotConfiguration().setTo(outputNode.getSlotConfiguration());
-                    ioInterfaceAlgorithm.setNodeUILocationPerViewModePerCompartment(outputNode.getNodeUILocationPerViewModePerCompartment());
+                    ioInterfaceAlgorithm.getMetadata().putAll(outputNode.getMetadata());
                     graph.insertNode(ioInterfaceAlgorithm, targetCompartment.getProjectCompartmentUUID());
 
                     for (JIPipeOutputDataSlot outputSlot : outputNode.getOutputSlots()) {
@@ -1037,8 +1037,9 @@ public class JIPipeProject implements JIPipeValidatable {
      * @param jsonNode      the node
      * @param context       the context
      * @param notifications notifications for the user
+     * @param progressInfo the progress info
      */
-    public void fromJson(JsonNode jsonNode, JIPipeValidationReportContext context, JIPipeValidationReport report, JIPipeNotificationInbox notifications) throws IOException {
+    public void fromJson(JsonNode jsonNode, JIPipeValidationReportContext context, JIPipeValidationReport report, JIPipeNotificationInbox notifications, JIPipeProgressInfo progressInfo) throws IOException {
         try {
             isLoading = true;
 
@@ -1123,7 +1124,7 @@ public class JIPipeProject implements JIPipeValidatable {
                 JIPipeGraphNode compartmentNode = compartmentGraph.findNode(entry.getValue());
                 JIPipeGraphNode node = graph.getNodeByUUID(entry.getKey());
                 if (compartmentNode != null) {
-                    JIPipe.getInstance().getLogService().info("[Project format conversion] Fix legacy compartment '" + entry.getValue() + "' --> " + compartmentNode.getUUIDInParentGraph());
+                    progressInfo.log("[Project format conversion] Fix legacy compartment '" + entry.getValue() + "' --> " + compartmentNode.getUUIDInParentGraph());
                     graph.setCompartment(entry.getKey(), compartmentNode.getUUIDInParentGraph());
                 } else {
                     // Ghost node -> delete
@@ -1142,14 +1143,13 @@ public class JIPipeProject implements JIPipeValidatable {
                     }
                     node.getNodeUILocationPerViewModePerCompartment().remove(locationEntry.getKey());
                     node.getNodeUILocationPerViewModePerCompartment().put(compartmentUUIDString, location);
-                    JIPipe.getInstance().getLogService().info("[Project format conversion] Move location within " + locationEntry.getKey() + " to " + compartmentUUIDString);
+                    progressInfo.log("[Project format conversion] Move location within " + locationEntry.getKey() + " to " + compartmentUUIDString);
                 }
             }
 
             // Initialize compartments
             for (JIPipeGraphNode node : compartmentGraph.getGraphNodes()) {
-                if (node instanceof JIPipeProjectCompartment) {
-                    JIPipeProjectCompartment compartment = (JIPipeProjectCompartment) node;
+                if (node instanceof JIPipeProjectCompartment compartment) {
                     compartment.setRuntimeProject(this);
                     compartments.put(compartment.getProjectCompartmentUUID(), compartment);
                     updateCompartmentOutputs(compartment);
@@ -1389,7 +1389,7 @@ public class JIPipeProject implements JIPipeValidatable {
         public JIPipeProject deserialize(JsonParser jsonParser, DeserializationContext deserializationContext) throws IOException, JsonProcessingException {
             JIPipeProject project = new JIPipeProject();
             JsonNode node = jsonParser.getCodec().readTree(jsonParser);
-            project.fromJson(node, new UnspecifiedValidationReportContext(), new JIPipeValidationReport(), new JIPipeNotificationInbox());
+            project.fromJson(node, new UnspecifiedValidationReportContext(), new JIPipeValidationReport(), new JIPipeNotificationInbox(), JIPipeProgressInfo.STDOUT);
             return project;
         }
     }

@@ -56,7 +56,7 @@ public class JIPipeProjectTemplate {
      */
     public JIPipeProject loadAsProject(JIPipeValidationReport issueReport, JIPipeNotificationInbox inbox) throws IOException {
         JIPipeProject project = new JIPipeProject();
-        project.fromJson(node, new UnspecifiedValidationReportContext(), issueReport, inbox);
+        project.fromJson(node, new UnspecifiedValidationReportContext(), issueReport, inbox, progressInfo);
         // Apply selected default style
 //        project.getGraph().attachAdditionalMetadata("jipipe:graph:view-mode", JIPipeGraphJIPipeDesktopGraphCanvasGrid.VerticalCompact);
 //        project.getCompartmentGraph().attachAdditionalMetadata("jipipe:graph:view-mode", JIPipeGraphJIPipeDesktopGraphCanvasGrid.VerticalCompact);
