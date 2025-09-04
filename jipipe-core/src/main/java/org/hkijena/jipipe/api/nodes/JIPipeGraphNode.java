@@ -1283,6 +1283,26 @@ public abstract class JIPipeGraphNode extends AbstractJIPipeParameterCollection 
         }
     }
 
+    /**
+     * Returns all node UI locations from the metadata map
+     * @return all UI locations
+     */
+    public Map<String, Point> getAllNodeUILocations() {
+        Map<String, Point> result = new HashMap<>();
+        for (Map.Entry<Path, Object> entry : metadata.getEntriesUnderPath("location").entrySet()) {
+            if(entry.getKey().getNameCount() == 3) {
+                String compartmentName = entry.getKey().getName(1).toString();
+                String locationName = entry.getKey().getName(2).toString();
+                String standardCompartmentName = "_".equals(compartmentName) ? "" : compartmentName;
+                if(locationName.equals("x")) {
+                    result.put(standardCompartmentName, new Point(metadata.getInteger(Path.of("location", compartmentName, "x"), 0),
+                            metadata.getInteger(Path.of("location", compartmentName, "y"), 0)));
+                }
+            }
+        }
+        return result;
+    }
+
     public interface NodeSlotsChangedEventListener {
         void onNodeSlotsChanged(NodeSlotsChangedEvent event);
     }

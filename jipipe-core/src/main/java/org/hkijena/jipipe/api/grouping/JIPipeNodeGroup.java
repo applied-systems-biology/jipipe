@@ -129,29 +129,27 @@ public class JIPipeNodeGroup extends JIPipeGraphWrapperAlgorithm implements JIPi
 
         if (!clearLocations && fixLocations) {
             // Assign locations of input and output accordingly
-            for (JIPipeDesktopGraphCanvasGrid viewMode : JIPipeDesktopGraphCanvasGrid.values()) {
-                int minX = Integer.MAX_VALUE;
-                int maxX = Integer.MIN_VALUE;
-                int minY = Integer.MAX_VALUE;
-                int maxY = Integer.MIN_VALUE;
-                for (JIPipeGraphNode graphNode : graph.getGraphNodes()) {
-                    Map<String, Point> locations = graphNode.getNodeUILocationPerViewModePerCompartment().getOrDefault("", null);
-                    if (locations != null) {
-                        Point point = locations.getOrDefault(JIPipeDesktopGraphCanvasGrid.name(), null);
-                        if (point != null) {
-                            minX = Math.min(minX, point.x);
-                            minY = Math.min(minY, point.y);
-                            maxX = Math.max(maxX, point.x);
-                            maxY = Math.max(maxY, point.y);
-                        }
+            int minX = Integer.MAX_VALUE;
+            int maxX = Integer.MIN_VALUE;
+            int minY = Integer.MAX_VALUE;
+            int maxY = Integer.MIN_VALUE;
+            for (JIPipeGraphNode graphNode : graph.getGraphNodes()) {
+                Map<String, Point> locations = graphNode.getAllNodeUILocations();
+                if (locations != null) {
+                    Point point = locations.getOrDefault("", null);
+                    if (point != null) {
+                        minX = Math.min(minX, point.x);
+                        minY = Math.min(minY, point.y);
+                        maxX = Math.max(maxX, point.x);
+                        maxY = Math.max(maxY, point.y);
                     }
                 }
+            }
 
-                // Set group input/output
-                if (minX != Integer.MAX_VALUE && minY != Integer.MAX_VALUE && maxX != Integer.MIN_VALUE && maxY != Integer.MIN_VALUE) {
-                    getGroupInput().setNodeUILocationWithin("", new Point(minX, minY - 5));
-                    getGroupOutput().setNodeUILocationWithin("", new Point(maxX, maxY + 5));
-                }
+            // Set group input/output
+            if (minX != Integer.MAX_VALUE && minY != Integer.MAX_VALUE && maxX != Integer.MIN_VALUE && maxY != Integer.MIN_VALUE) {
+                getGroupInput().setNodeUILocationWithin("", new Point(minX, minY - 5));
+                getGroupOutput().setNodeUILocationWithin("", new Point(maxX, maxY + 5));
             }
         }
     }
