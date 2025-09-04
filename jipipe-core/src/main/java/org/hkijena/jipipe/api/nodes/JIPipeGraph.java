@@ -1186,7 +1186,7 @@ public class JIPipeGraph implements JIPipeValidatable, JIPipeFunctionallyCompara
             Point point = copy.getNodeUILocationWithin(compartment);
             copy.clearAllNodeUILocations();
             if(point != null) {
-                copy.setNodeUILocationWithin(compartment, point);
+                copy.setNodeUILocationWithin("", point);
             }
             graph.insertNode(node.getUUIDInParentGraph(), copy, null);
         }
