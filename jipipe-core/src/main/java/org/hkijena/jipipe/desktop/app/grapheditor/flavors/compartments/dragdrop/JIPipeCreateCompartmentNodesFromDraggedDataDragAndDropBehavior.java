@@ -65,7 +65,7 @@ public class JIPipeCreateCompartmentNodesFromDraggedDataDragAndDropBehavior impl
 
     @Override
     public synchronized void drop(DropTargetDropEvent dtde) {
-        if (canvas.getCurrentConnectionDragSource() != null || canvas.getCurrentConnectionDragTarget() != null) {
+        if (canvas.getDragManagerConnect().getCurrentConnectionDragSource() != null || canvas.getDragManagerConnect().getCurrentConnectionDragTarget() != null) {
             dtde.rejectDrop();
             return;
         }
@@ -99,7 +99,7 @@ public class JIPipeCreateCompartmentNodesFromDraggedDataDragAndDropBehavior impl
     }
 
     private void showErrorMessage() {
-        if (canvas.getCurrentConnectionDragSource() == null && JIPipeGraphEditorUIApplicationSettings.getInstance().isNotifyInvalidDragAndDrop()) {
+        if (canvas.getDragManagerConnect().getCurrentConnectionDragSource() == null && JIPipeGraphEditorUIApplicationSettings.getInstance().isNotifyInvalidDragAndDrop()) {
             String message = "<html>You probably wanted to drop some data into this graph.<br/>" +
                     "This is not possible, as the <strong>Compartment Graph</strong> only organizes your project into " +
                     "multiple sections.<br/><br/>Please double-click a node inside this graph to edit the pipeline.</html>";
@@ -108,7 +108,7 @@ public class JIPipeCreateCompartmentNodesFromDraggedDataDragAndDropBehavior impl
     }
 
     /**
-     * Processes the drop as serializable (nodes)
+     * Processes drop as serializable (nodes)
      *
      * @param text json
      */

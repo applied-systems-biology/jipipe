@@ -109,7 +109,7 @@ public class JIPipeRewireGraphEditorTool implements JIPipeToggleableGraphEditorT
                 return;
             }
 
-            g.setStroke(getGraphCanvas().getStrokeHighlight());
+            g.setStroke(getGraphCanvas().getResources().getStrokeHighlight());
             g.setColor(Color.ORANGE);
 
             JIPipeGraph graph = graphEditorUI.getCanvasUI().getGraph();

@@ -72,7 +72,7 @@ public class JIPipeCreatePipelineNodesFromDraggedDataDragAndDropBehavior impleme
 
     @Override
     public synchronized void drop(DropTargetDropEvent dtde) {
-        if (canvas.getCurrentConnectionDragSource() != null || canvas.getCurrentConnectionDragTarget() != null) {
+        if (canvas.getDragManagerConnect().getCurrentConnectionDragSource() != null || canvas.getDragManagerConnect().getCurrentConnectionDragTarget() != null) {
             dtde.rejectDrop();
             return;
         }

@@ -58,9 +58,9 @@ public interface JIPipeToggleableGraphEditorTool extends JIPipeGraphEditorTool {
         int nameWidth = fontMetrics.stringWidth(getName());
 
         graphics2D.setStroke(JIPipeDesktopGraphCanvasUIConstants.STROKE_UNIT);
-        graphics2D.setColor(canvasUI.getSmartEdgeSlotBackground());
+        graphics2D.setColor(canvasUI.getResources().getSmartEdgeSlotBackground());
         graphics2D.fillRoundRect(x, y, nameWidth + 22 + 3, 22, 5, 5);
-        graphics2D.setColor(canvasUI.getSmartEdgeSlotForeground());
+        graphics2D.setColor(canvasUI.getResources().getSmartEdgeSlotForeground());
         graphics2D.drawRoundRect(x, y, nameWidth + 22 + 3, 22, 5, 5);
 
         getIcon().paintIcon(canvasUI, graphics2D, x + 3, y + 3);

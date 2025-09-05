@@ -1529,19 +1529,19 @@ public class JIPipeDesktopGraphNodeUI extends JIPipeDesktopWorkbenchPanel implem
 
             @Override
             public void popupMenuWillBecomeInvisible(PopupMenuEvent e) {
-                getGraphCanvasUI().setCurrentConnectionDragSource(null);
-                getGraphCanvasUI().setCurrentConnectionDragTarget(null);
-                getGraphCanvasUI().setDisconnectHighlight(null);
-                getGraphCanvasUI().setConnectHighlight(null);
+                getGraphCanvasUI().getDragManagerConnect().setCurrentConnectionDragSource(null);
+                getGraphCanvasUI().getDragManagerConnect().setCurrentConnectionDragTarget(null);
+                getGraphCanvasUI().getConnectionHighlightManager().setDisconnectHighlight(null);
+                getGraphCanvasUI().getConnectionHighlightManager().setConnectHighlight(null);
                 invalidateAndRepaint(false, true);
             }
 
             @Override
             public void popupMenuCanceled(PopupMenuEvent e) {
-                getGraphCanvasUI().setCurrentConnectionDragSource(null);
-                getGraphCanvasUI().setCurrentConnectionDragTarget(null);
-                getGraphCanvasUI().setDisconnectHighlight(null);
-                getGraphCanvasUI().setConnectHighlight(null);
+                getGraphCanvasUI().getDragManagerConnect().setCurrentConnectionDragSource(null);
+                getGraphCanvasUI().getDragManagerConnect().setCurrentConnectionDragTarget(null);
+                getGraphCanvasUI().getConnectionHighlightManager().setDisconnectHighlight(null);
+                getGraphCanvasUI().getConnectionHighlightManager().setConnectHighlight(null);
                 invalidateAndRepaint(false, true);
             }
         });
@@ -2113,12 +2113,12 @@ public class JIPipeDesktopGraphNodeUI extends JIPipeDesktopWorkbenchPanel implem
                     if (source.isOutput()) {
                         JIPipeDesktopGraphNodeUISlotActiveArea sourceUI = sourceNodeUI.getOutputSlotMap().getOrDefault(source.getName(), null);
                         if (sourceUI != null) {
-                            getGraphCanvasUI().setConnectHighlight(new JIPipeDesktopGraphCanvasUIConnectHighlight(sourceUI, current));
+                            getGraphCanvasUI().getConnectionHighlightManager().setConnectHighlight(new JIPipeDesktopGraphCanvasUIConnectHighlight(sourceUI, current));
                         }
                     } else {
                         JIPipeDesktopGraphNodeUISlotActiveArea sourceUI = sourceNodeUI.getInputSlotMap().getOrDefault(source.getName(), null);
                         if (sourceUI != null) {
-                            getGraphCanvasUI().setConnectHighlight(new JIPipeDesktopGraphCanvasUIConnectHighlight(current, sourceUI));
+                            getGraphCanvasUI().getConnectionHighlightManager().setConnectHighlight(new JIPipeDesktopGraphCanvasUIConnectHighlight(current, sourceUI));
                         }
                     }
                 }
@@ -2126,7 +2126,7 @@ public class JIPipeDesktopGraphNodeUI extends JIPipeDesktopWorkbenchPanel implem
 
             @Override
             public void mouseExited(MouseEvent e) {
-                getGraphCanvasUI().setConnectHighlight(null);
+                getGraphCanvasUI().getConnectionHighlightManager().setConnectHighlight(null);
             }
         });
     }
@@ -2135,12 +2135,12 @@ public class JIPipeDesktopGraphNodeUI extends JIPipeDesktopWorkbenchPanel implem
         disconnectButton.addMouseListener(new MouseAdapter() {
             @Override
             public void mouseEntered(MouseEvent e) {
-                getGraphCanvasUI().setDisconnectHighlight(new JIPipeDesktopGraphCanvasUIDisconnectHighlight(slotActiveArea, sourceSlots));
+                getGraphCanvasUI().getConnectionHighlightManager().setDisconnectHighlight(new JIPipeDesktopGraphCanvasUIDisconnectHighlight(slotActiveArea, sourceSlots));
             }
 
             @Override
             public void mouseExited(MouseEvent e) {
-                getGraphCanvasUI().setDisconnectHighlight(null);
+                getGraphCanvasUI().getConnectionHighlightManager().setDisconnectHighlight(null);
             }
         });
     }
