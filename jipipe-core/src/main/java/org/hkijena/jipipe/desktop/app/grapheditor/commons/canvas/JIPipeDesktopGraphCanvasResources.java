@@ -21,6 +21,7 @@ public class JIPipeDesktopGraphCanvasResources {
     private final Color smartEdgeSlotBackground = UIManager.getColor("EditorPane.background");
     private final Color smartEdgeSlotForeground = UIManager.getColor("Label.foreground");
     private final ImageIcon lockIcon = JIPipe.RESOURCES.getIcon16Inverted("actions/lock.png");
+    private final ImageIcon cursorImage = JIPipe.RESOURCES.getIcon16("actions/target.png");
 
     private Font smartEdgeTooltipSlotFont;
     private Font smartEdgeTooltipNodeFont;
@@ -122,5 +123,9 @@ public class JIPipeDesktopGraphCanvasResources {
     public void updateAssets() {
         smartEdgeTooltipSlotFont = new Font(Font.DIALOG, Font.BOLD, Math.max(1, (int) Math.round(14 * canvasUI.getZoom())));
         smartEdgeTooltipNodeFont = new Font(Font.DIALOG, Font.PLAIN, Math.max(1, (int) Math.round(9 * canvasUI.getZoom())));
+    }
+
+    public ImageIcon getCursorImage() {
+        return cursorImage;
     }
 }

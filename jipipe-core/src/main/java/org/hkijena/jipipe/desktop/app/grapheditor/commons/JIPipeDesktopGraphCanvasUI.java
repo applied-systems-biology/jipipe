@@ -89,7 +89,7 @@ public class JIPipeDesktopGraphCanvasUI extends JLayeredPane implements JIPipeDe
 
     private final JIPipeDesktopWorkbench desktopWorkbench;
     private final JIPipeDesktopGraphEditorUI graphEditorUI;
-    private final ImageIcon cursorImage = JIPipe.RESOURCES.getIcon16("actions/target.png");
+
     private final JIPipeGraph graph;
 
     public final JIPipeDesktopGraphCanvasNodeManager nodeManager = new JIPipeDesktopGraphCanvasNodeManager(this);
@@ -1489,9 +1489,9 @@ public class JIPipeDesktopGraphCanvasUI extends JLayeredPane implements JIPipeDe
         // Draw cursor over the components
         Point cursor = getGraphEditorCursor();
         if (cursor != null && renderCursor) {
-            g.drawImage(cursorImage.getImage(),
-                    cursor.x - cursorImage.getIconWidth() / 2,
-                    cursor.y - cursorImage.getIconHeight() / 2,
+            g.drawImage(resources.getCursorImage().getImage(),
+                    cursor.x - resources.getCursorImage().getIconWidth() / 2,
+                    cursor.y - resources.getCursorImage().getIconHeight() / 2,
                     null);
         }
 
