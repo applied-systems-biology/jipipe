@@ -44,8 +44,7 @@ import org.hkijena.jipipe.desktop.app.grapheditor.commons.canvas.JIPipeDesktopGr
 import org.hkijena.jipipe.desktop.app.grapheditor.commons.actions.JIPipeDesktopOpenContextMenuAction;
 import org.hkijena.jipipe.desktop.app.grapheditor.commons.canvas.*;
 import org.hkijena.jipipe.desktop.app.grapheditor.commons.canvas.events.*;
-import org.hkijena.jipipe.desktop.app.grapheditor.commons.canvas.overlays.JIPipeDesktopGraphCanvasIOOverlay;
-import org.hkijena.jipipe.desktop.app.grapheditor.commons.canvas.overlays.JIPipeDesktopGraphCanvasOverlay;
+import org.hkijena.jipipe.desktop.app.grapheditor.commons.canvas.overlays.*;
 import org.hkijena.jipipe.desktop.app.grapheditor.commons.contextmenu.GraphInteractiveObjectUIContextAction;
 import org.hkijena.jipipe.desktop.app.grapheditor.commons.edgeui.JIPipeDesktopGraphEdgeUI;
 import org.hkijena.jipipe.desktop.app.grapheditor.commons.layout.MSTGraphAutoLayoutImplementation;
@@ -184,7 +183,10 @@ public class JIPipeDesktopGraphCanvasUI extends JLayeredPane implements JIPipeDe
     }
 
     private void initializeOverlays() {
+        overlays.add(new JIPipeDesktopGraphCanvasNodeShadowOverlay(this));
+        overlays.add(new JIPipeDesktopGraphCanvasAnnotationNodesOverlay(this));
         overlays.add(new JIPipeDesktopGraphCanvasIOOverlay(this));
+        overlays.add(new JIPipeDesktopGraphCanvasConnectionHighlightsOverlay(this));
     }
 
     public JIPipeDesktopGraphCanvasSelectionManager getSelectionManager() {
@@ -1275,8 +1277,8 @@ public class JIPipeDesktopGraphCanvasUI extends JLayeredPane implements JIPipeDe
 
         paintMinimapEdges(graphics2D, scale, viewX, viewY);
 
-        Stroke defaultStroke = JIPipeDesktopGraphCanvasUIConstants.STROKE_UNIT;
-        Stroke selectedStroke = JIPipeDesktopGraphCanvasUIConstants.STROKE_SELECTION;
+        Stroke defaultStroke = JIPipeDesktopGraphCanvasResources.STROKE_UNIT;
+        Stroke selectedStroke = JIPipeDesktopGraphCanvasResources.STROKE_SELECTION;
 
         for (JIPipeDesktopGraphNodeUI nodeUI : nodeUIs.values()) {
             int x = (int) (nodeUI.getX() * scale) + viewX;
@@ -1293,9 +1295,9 @@ public class JIPipeDesktopGraphCanvasUI extends JLayeredPane implements JIPipeDe
         graphics2D.setRenderingHint(RenderingHints.KEY_INTERPOLATION, RenderingHints.VALUE_INTERPOLATION_BILINEAR);
         graphics2D.setColor(Color.LIGHT_GRAY);
         paintEdges(graphics2D,
-                JIPipeDesktopGraphCanvasUIConstants.STROKE_UNIT,
+                JIPipeDesktopGraphCanvasResources.STROKE_UNIT,
                 null,
-                JIPipeDesktopGraphCanvasUIConstants.STROKE_UNIT_COMMENT,
+                JIPipeDesktopGraphCanvasResources.STROKE_UNIT_COMMENT,
                 false,
                 false,
                 scale,
@@ -1316,55 +1318,6 @@ public class JIPipeDesktopGraphCanvasUI extends JLayeredPane implements JIPipeDe
         final Stroke strokeDefaultBorder = resources.getStrokeDefaultBorder();
         final Stroke strokeHighlight = resources.getStrokeHighlight();
 
-        // Draw the annotations and shadows
-        boolean finalDrawShadows = settings.isDrawNodeShadows();
-        AffineTransform originalTransform = g.getTransform();
-        for (int i = getComponentCount() - 1; i >= 0; i--) {
-            Component component = getComponent(i);
-
-            if (component instanceof JIPipeDesktopGraphNodeUI) {
-                JIPipeDesktopGraphNodeUI ui = (JIPipeDesktopGraphNodeUI) component;
-
-                // Draw shadow
-                if (finalDrawShadows) {
-
-                    // Set render settings (LQ)
-                    g.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_OFF);
-                    g.setRenderingHint(RenderingHints.KEY_INTERPOLATION, RenderingHints.VALUE_INTERPOLATION_NEAREST_NEIGHBOR);
-
-                    if (ui.isDrawShadow()) {
-                        JIPipeDesktopGraphCanvasUIConstants.DROP_SHADOW_BORDER.paint(g, ui.getX() - 3, ui.getY() - 3, ui.getWidth() + 8, ui.getHeight() + 8);
-                    }
-                    if (ui.getNode().isBookmarked()) {
-                        JIPipeDesktopGraphCanvasUIConstants.BOOKMARK_SHADOW_BORDER.paint(g, ui.getX() - 12, ui.getY() - 12, ui.getWidth() + 24, ui.getHeight() + 24);
-                    }
-                }
-
-                // Draw annotation
-                if (component instanceof JIPipeDesktopAnnotationGraphNodeUI) {
-
-                    // Set render settings (HQ)
-                    g.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_OFF);
-                    g.setRenderingHint(RenderingHints.KEY_INTERPOLATION, RenderingHints.VALUE_INTERPOLATION_BICUBIC);
-
-                    JIPipeDesktopAnnotationGraphNodeUI annotationGraphNodeUI = (JIPipeDesktopAnnotationGraphNodeUI) component;
-                    g.translate(annotationGraphNodeUI.getX(), annotationGraphNodeUI.getY());
-                    JIPipeAnnotationGraphNode node = (JIPipeAnnotationGraphNode) (annotationGraphNodeUI).getNode();
-                    if (node.isDrawWithAntialiasing()) {
-                        try {
-                            g.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
-                            node.paintNode(g, annotationGraphNodeUI, zoom);
-                        } finally {
-                            g.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_OFF);
-                        }
-                    } else {
-                        node.paintNode(g, annotationGraphNodeUI, zoom);
-                    }
-                    g.setTransform(originalTransform);
-                }
-            }
-        }
-
         // Set render settings (HQ)
         g.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_OFF);
         g.setRenderingHint(RenderingHints.KEY_INTERPOLATION, RenderingHints.VALUE_INTERPOLATION_BICUBIC);
@@ -1382,7 +1335,7 @@ public class JIPipeDesktopGraphCanvasUI extends JLayeredPane implements JIPipeDe
         lastDisplayedMainEdges = paintEdges(g,
                 strokeDefault,
                 strokeDefaultBorder,
-                JIPipeDesktopGraphCanvasUIConstants.STROKE_COMMENT,
+                JIPipeDesktopGraphCanvasResources.STROKE_COMMENT,
                 false,
                 false,
                 1,
@@ -1402,7 +1355,7 @@ public class JIPipeDesktopGraphCanvasUI extends JLayeredPane implements JIPipeDe
             paintEdges(g,
                     strokeHighlight,
                     null,
-                    JIPipeDesktopGraphCanvasUIConstants.STROKE_COMMENT_HIGHLIGHT,
+                    JIPipeDesktopGraphCanvasResources.STROKE_COMMENT_HIGHLIGHT,
                     true,
                     settings.isColorSelectedNodeEdges(),
                     1,
@@ -1418,16 +1371,13 @@ public class JIPipeDesktopGraphCanvasUI extends JLayeredPane implements JIPipeDe
             overlay.paintComponent(g);
         }
 
-        // Draw highlights
-        dragManagerConnect.paintCurrentlyDraggedConnection(g);
-        connectionHighlightManager.paintDisconnectHighlight(g);
-        connectionHighlightManager.paintConnectHighlight(g);
-
+        // Tool-specific painting operations
         if (!toolManager.hasDefaultTool()) {
             toolManager.getCurrentTool().paintBelowNodesAfterEdges(g);
         }
 
-        g.setStroke(JIPipeDesktopGraphCanvasUIConstants.STROKE_UNIT);
+        // Reset stroke
+        g.setStroke(JIPipeDesktopGraphCanvasResources.STROKE_UNIT);
     }
 
 
@@ -1449,7 +1399,7 @@ public class JIPipeDesktopGraphCanvasUI extends JLayeredPane implements JIPipeDe
         graphics2D.setRenderingHint(RenderingHints.KEY_INTERPOLATION, RenderingHints.VALUE_INTERPOLATION_BICUBIC);
 
         // Draw node selections & lock
-        graphics2D.setStroke(JIPipeDesktopGraphCanvasUIConstants.STROKE_SELECTION);
+        graphics2D.setStroke(JIPipeDesktopGraphCanvasResources.STROKE_SELECTION);
         for (JIPipeDesktopGraphInteractiveObjectUI ui : selectionManager.getSelection()) {
             if (ui instanceof JIPipeDesktopGraphNodeUI nodeUI) {
                 Rectangle bounds = nodeUI.getBounds();
@@ -1469,7 +1419,7 @@ public class JIPipeDesktopGraphCanvasUI extends JLayeredPane implements JIPipeDe
                 // Layer Z (annotations)
                 if (nodeUI.getNode() instanceof JIPipeAnnotationGraphNode) {
                     int zLayer = ((JIPipeAnnotationGraphNode) nodeUI.getNode()).getzOrder();
-                    g.setFont(JIPipeDesktopGraphCanvasUIConstants.GRAPH_TOOL_CURSOR_FONT);
+                    g.setFont(JIPipeDesktopGraphCanvasResources.GRAPH_TOOL_CURSOR_FONT);
                     FontMetrics fontMetrics = g.getFontMetrics();
                     String text = "z " + zLayer;
                     int rawStringWidth = fontMetrics.stringWidth(text);
@@ -1846,7 +1796,7 @@ public class JIPipeDesktopGraphCanvasUI extends JLayeredPane implements JIPipeDe
             // Tighten the point ranges: Bringing the centers together
             PointRange.tighten(sourcePoint, targetPoint);
 
-            g.setStroke(JIPipeDesktopGraphCanvasUIConstants.STROKE_SMART_EDGE);
+            g.setStroke(JIPipeDesktopGraphCanvasResources.STROKE_SMART_EDGE);
             g.setPaint(resources.getEdgeBackgroundPaint(source, target, sourcePoint, targetPoint, Color.LIGHT_GRAY));
             paintEdge(g, sourcePoint.center, sourceUI.getBounds(), targetPoint.center, uiShape, scale, viewX, viewY, false);
             return;
@@ -2288,8 +2238,6 @@ public class JIPipeDesktopGraphCanvasUI extends JLayeredPane implements JIPipeDe
         // Update edge UIs
         removeOldEdges();
         addNewEdges();
-
-        System.out.println(edgeUIs.size() + " edges");
 
         requestFocusInWindow();
     }

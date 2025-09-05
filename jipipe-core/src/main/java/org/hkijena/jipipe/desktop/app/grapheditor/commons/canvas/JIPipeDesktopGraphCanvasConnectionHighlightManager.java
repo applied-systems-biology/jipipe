@@ -92,7 +92,7 @@ public class JIPipeDesktopGraphCanvasConnectionHighlightManager {
     public void paintConnectHighlight(Graphics2D g) {
         if (connectHighlight != null) {
             g.setStroke(canvasUI.getResources().getStrokeHighlight());
-            g.setColor(JIPipeDesktopGraphCanvasUIConstants.COLOR_HIGHLIGHT_GREEN);
+            g.setColor(JIPipeDesktopGraphCanvasResources.COLOR_HIGHLIGHT_GREEN);
             if (connectHighlight.getTarget().getSlot().isInput()) {
                 JIPipeDataSlot source = connectHighlight.getSource().getSlot();
                 JIPipeDataSlot target = connectHighlight.getTarget().getSlot();

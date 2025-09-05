@@ -39,15 +39,12 @@ import org.hkijena.jipipe.api.runtimepartitioning.JIPipeRuntimePartition;
 import org.hkijena.jipipe.desktop.app.JIPipeDesktopProjectWorkbench;
 import org.hkijena.jipipe.desktop.app.JIPipeDesktopWorkbench;
 import org.hkijena.jipipe.desktop.app.JIPipeDesktopWorkbenchPanel;
-import org.hkijena.jipipe.desktop.app.grapheditor.commons.canvas.JIPipeDesktopGraphCanvasGrid;
+import org.hkijena.jipipe.desktop.app.grapheditor.commons.canvas.*;
 import org.hkijena.jipipe.desktop.app.grapheditor.commons.JIPipeDesktopGraphCanvasUI;
 import org.hkijena.jipipe.desktop.app.grapheditor.commons.JIPipeDesktopGraphEditorUI;
 import org.hkijena.jipipe.desktop.app.grapheditor.commons.JIPipeDesktopGraphInteractiveObjectUI;
 import org.hkijena.jipipe.desktop.app.grapheditor.commons.JIPipeDesktopGraphInteractiveObjectUIUpdateViewCommand;
 import org.hkijena.jipipe.desktop.app.grapheditor.commons.actions.JIPipeDesktopNodeUIAction;
-import org.hkijena.jipipe.desktop.app.grapheditor.commons.canvas.JIPipeDesktopGraphCanvasUIConnectHighlight;
-import org.hkijena.jipipe.desktop.app.grapheditor.commons.canvas.JIPipeDesktopGraphCanvasUIConstants;
-import org.hkijena.jipipe.desktop.app.grapheditor.commons.canvas.JIPipeDesktopGraphCanvasUIDisconnectHighlight;
 import org.hkijena.jipipe.desktop.app.grapheditor.commons.contextmenu.*;
 import org.hkijena.jipipe.desktop.app.grapheditor.commons.nodeui.triggers.*;
 import org.hkijena.jipipe.desktop.app.grapheditor.flavors.pipeline.JIPipeDesktopPipelineGraphEditorUI;
@@ -791,7 +788,7 @@ public class JIPipeDesktopGraphNodeUI extends JIPipeDesktopWorkbenchPanel implem
             if (getWorkbench().getProject() != null) {
                 boolean highlight = getWorkbench().getProject().getRunSetsConfiguration().getUuidCache().contains(getNode().getUUIDInParentGraph().toString());
                 if (highlight) {
-                    g2.setStroke(JIPipeDesktopGraphCanvasUIConstants.STROKE_THICK);
+                    g2.setStroke(JIPipeDesktopGraphCanvasResources.STROKE_THICK);
                     g2.setColor(COLOR_SLOT_CACHED);
                     g2.drawRect(0, 0, getWidth() - 1, getHeight() - 1);
                 }
@@ -853,7 +850,7 @@ public class JIPipeDesktopGraphNodeUI extends JIPipeDesktopWorkbenchPanel implem
         paintNodeControls(g2, fontMetrics, realSlotHeight, hasInputs && showInputs, hasOutputs && showOutputs);
 
         // Paint slots
-        g2.setStroke(JIPipeDesktopGraphCanvasUIConstants.STROKE_UNIT);
+        g2.setStroke(JIPipeDesktopGraphCanvasResources.STROKE_UNIT);
 
         if (hasInputs && showInputs) {
             paintInputSlots(g2, realSlotHeight);
@@ -868,7 +865,7 @@ public class JIPipeDesktopGraphNodeUI extends JIPipeDesktopWorkbenchPanel implem
         }
 
         // Paint outside border
-        g2.setStroke(JIPipeDesktopGraphCanvasUIConstants.STROKE_UNIT);
+        g2.setStroke(JIPipeDesktopGraphCanvasResources.STROKE_UNIT);
         g2.setColor(currentActiveArea instanceof JIPipeDesktopGraphNodeUIWholeNodeActiveArea ? highlightedNodeBorderColor : nodeBorderColor);
         g2.drawRect(0, 0, getWidth() - 1, getHeight() - 1);
     }
@@ -921,7 +918,7 @@ public class JIPipeDesktopGraphNodeUI extends JIPipeDesktopWorkbenchPanel implem
                     null);
         }
 
-        g2.setStroke(JIPipeDesktopGraphCanvasUIConstants.STROKE_UNIT);
+        g2.setStroke(JIPipeDesktopGraphCanvasResources.STROKE_UNIT);
         g2.setPaint(nodeBorderColor);
         g2.drawLine((int) (zoom * shift), 0, (int) (zoom * shift), getHeight());
     }
@@ -956,7 +953,7 @@ public class JIPipeDesktopGraphNodeUI extends JIPipeDesktopWorkbenchPanel implem
 
             // Draw separator
             if (i > 0) {
-                g2.setStroke(JIPipeDesktopGraphCanvasUIConstants.STROKE_UNIT);
+                g2.setStroke(JIPipeDesktopGraphCanvasResources.STROKE_UNIT);
                 g2.setPaint(nodeBorderColor);
                 g2.drawLine(startX, getHeight() - realSlotHeight, startX, getHeight());
             }
@@ -979,7 +976,7 @@ public class JIPipeDesktopGraphNodeUI extends JIPipeDesktopWorkbenchPanel implem
 
             // Draw separator
             if (outputSlots.size() > 1) {
-                g2.setStroke(JIPipeDesktopGraphCanvasUIConstants.STROKE_UNIT);
+                g2.setStroke(JIPipeDesktopGraphCanvasResources.STROKE_UNIT);
                 g2.setPaint(nodeBorderColor);
                 g2.drawLine(startX, getHeight() - realSlotHeight, startX, getHeight());
             }
@@ -992,7 +989,7 @@ public class JIPipeDesktopGraphNodeUI extends JIPipeDesktopWorkbenchPanel implem
         }
 
         // Line above the slots
-        g2.setStroke(JIPipeDesktopGraphCanvasUIConstants.STROKE_UNIT);
+        g2.setStroke(JIPipeDesktopGraphCanvasResources.STROKE_UNIT);
         g2.setPaint(nodeBorderColor);
         g2.drawLine(0, getHeight() - realSlotHeight, getWidth(), getHeight() - realSlotHeight);
     }
@@ -1001,7 +998,7 @@ public class JIPipeDesktopGraphNodeUI extends JIPipeDesktopWorkbenchPanel implem
 
         boolean isHighlighted = currentActiveArea instanceof JIPipeDesktopGraphNodeUIAddSlotButtonActiveArea && ((JIPipeDesktopGraphNodeUIAddSlotButtonActiveArea) currentActiveArea).getSlotType() == activeArea.getSlotType();
 
-        g2.setStroke(JIPipeDesktopGraphCanvasUIConstants.STROKE_UNIT);
+        g2.setStroke(JIPipeDesktopGraphCanvasResources.STROKE_UNIT);
         g2.setPaint(isHighlighted ? buttonFillColorDarker : buttonFillColor);
         g2.fillRect(startX, y, slotWidth, realSlotHeight);
         g2.setPaint(nodeBorderColor);
@@ -1048,7 +1045,7 @@ public class JIPipeDesktopGraphNodeUI extends JIPipeDesktopWorkbenchPanel implem
 
             // Draw separator
             if (i > 0) {
-                g2.setStroke(JIPipeDesktopGraphCanvasUIConstants.STROKE_UNIT);
+                g2.setStroke(JIPipeDesktopGraphCanvasResources.STROKE_UNIT);
                 g2.setPaint(nodeBorderColor);
                 g2.drawLine(startX, 0, startX, realSlotHeight);
             }
@@ -1071,7 +1068,7 @@ public class JIPipeDesktopGraphNodeUI extends JIPipeDesktopWorkbenchPanel implem
 
             // Draw separator
             if (inputSlots.size() > 1) {
-                g2.setStroke(JIPipeDesktopGraphCanvasUIConstants.STROKE_UNIT);
+                g2.setStroke(JIPipeDesktopGraphCanvasResources.STROKE_UNIT);
                 g2.setPaint(nodeBorderColor);
                 g2.drawLine(startX, 0, startX, realSlotHeight);
             }
@@ -1084,7 +1081,7 @@ public class JIPipeDesktopGraphNodeUI extends JIPipeDesktopWorkbenchPanel implem
         }
 
         // Line below the slots
-        g2.setStroke(JIPipeDesktopGraphCanvasUIConstants.STROKE_UNIT);
+        g2.setStroke(JIPipeDesktopGraphCanvasResources.STROKE_UNIT);
         g2.setPaint(nodeBorderColor);
         g2.drawLine(0, realSlotHeight, getWidth(), realSlotHeight);
     }

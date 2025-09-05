@@ -33,7 +33,7 @@ public class JIPipeDesktopGraphCanvasSelectionBoxManager {
     public void paint(Graphics2D graphics2D) {
         // Draw marquee rectangle
         if (selectionFirst != null && selectionSecond != null) {
-            graphics2D.setStroke(JIPipeDesktopGraphCanvasUIConstants.STROKE_MARQUEE);
+            graphics2D.setStroke(JIPipeDesktopGraphCanvasResources.STROKE_MARQUEE);
             graphics2D.setColor(Color.GRAY);
             int x0 = selectionFirst.x;
             int y0 = selectionFirst.y;

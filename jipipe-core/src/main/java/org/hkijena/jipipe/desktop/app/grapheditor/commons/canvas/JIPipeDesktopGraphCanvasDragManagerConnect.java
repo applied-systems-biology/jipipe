@@ -1,9 +1,7 @@
 package org.hkijena.jipipe.desktop.app.grapheditor.commons.canvas;
 
-import org.hkijena.jipipe.JIPipe;
 import org.hkijena.jipipe.api.nodes.JIPipeGraphEdge;
 import org.hkijena.jipipe.desktop.app.grapheditor.commons.JIPipeDesktopGraphCanvasUI;
-import org.hkijena.jipipe.desktop.app.grapheditor.commons.JIPipeDesktopGraphInteractiveObjectUI;
 import org.hkijena.jipipe.desktop.app.grapheditor.commons.nodeui.JIPipeDesktopGraphNodeUI;
 import org.hkijena.jipipe.desktop.app.grapheditor.commons.nodeui.JIPipeDesktopGraphNodeUIActiveArea;
 import org.hkijena.jipipe.desktop.app.grapheditor.commons.nodeui.triggers.JIPipeDesktopGraphNodeUIAddSlotButtonActiveArea;
@@ -12,7 +10,6 @@ import org.hkijena.jipipe.utils.PointRange;
 
 import java.awt.*;
 import java.awt.event.MouseEvent;
-import java.util.Map;
 
 public class JIPipeDesktopGraphCanvasDragManagerConnect {
     private final JIPipeDesktopGraphCanvasUI canvasUI;
@@ -180,12 +177,12 @@ public class JIPipeDesktopGraphCanvasDragManagerConnect {
                     JIPipeDesktopGraphNodeUISlotActiveArea currentConnectionDragTarget_ = (JIPipeDesktopGraphNodeUISlotActiveArea) currentConnectionDragTarget;
                     if (currentConnectionDragTarget == null || (!canvasUI.getGraph().getGraph().containsEdge(currentConnectionDragSource_.getSlot(), currentConnectionDragTarget_.getSlot())
                             && !canvasUI.getGraph().getGraph().containsEdge(currentConnectionDragTarget_.getSlot(), currentConnectionDragSource_.getSlot()))) {
-                        g.setColor(JIPipeDesktopGraphCanvasUIConstants.COLOR_HIGHLIGHT_GREEN);
+                        g.setColor(JIPipeDesktopGraphCanvasResources.COLOR_HIGHLIGHT_GREEN);
                     } else {
                         g.setColor(Color.RED);
                     }
                 } else {
-                    g.setColor(JIPipeDesktopGraphCanvasUIConstants.COLOR_HIGHLIGHT_GREEN);
+                    g.setColor(JIPipeDesktopGraphCanvasResources.COLOR_HIGHLIGHT_GREEN);
                 }
             } else {
                 g.setColor(Color.DARK_GRAY);

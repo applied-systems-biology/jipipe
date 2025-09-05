@@ -16,7 +16,7 @@ package org.hkijena.jipipe.api.grapheditortool;
 import org.hkijena.jipipe.api.data.JIPipeDataSlot;
 import org.hkijena.jipipe.api.nodes.JIPipeGraphEdge;
 import org.hkijena.jipipe.desktop.app.grapheditor.commons.JIPipeDesktopGraphCanvasUI;
-import org.hkijena.jipipe.desktop.app.grapheditor.commons.canvas.JIPipeDesktopGraphCanvasUIConstants;
+import org.hkijena.jipipe.desktop.app.grapheditor.commons.canvas.JIPipeDesktopGraphCanvasResources;
 
 import java.awt.*;
 
@@ -52,12 +52,12 @@ public interface JIPipeToggleableGraphEditorTool extends JIPipeGraphEditorTool {
         int x = lastMousePosition.x + toolInfoDistance;
         int y = lastMousePosition.y + toolInfoDistance;
 
-        graphics2D.setFont(JIPipeDesktopGraphCanvasUIConstants.GRAPH_TOOL_CURSOR_FONT);
+        graphics2D.setFont(JIPipeDesktopGraphCanvasResources.GRAPH_TOOL_CURSOR_FONT);
         FontMetrics fontMetrics = graphics2D.getFontMetrics();
 
         int nameWidth = fontMetrics.stringWidth(getName());
 
-        graphics2D.setStroke(JIPipeDesktopGraphCanvasUIConstants.STROKE_UNIT);
+        graphics2D.setStroke(JIPipeDesktopGraphCanvasResources.STROKE_UNIT);
         graphics2D.setColor(canvasUI.getResources().getSmartEdgeSlotBackground());
         graphics2D.fillRoundRect(x, y, nameWidth + 22 + 3, 22, 5, 5);
         graphics2D.setColor(canvasUI.getResources().getSmartEdgeSlotForeground());

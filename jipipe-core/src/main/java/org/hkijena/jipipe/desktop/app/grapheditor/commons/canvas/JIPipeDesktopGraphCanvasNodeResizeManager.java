@@ -21,7 +21,6 @@ import org.hkijena.jipipe.utils.StringUtils;
 
 import java.awt.*;
 import java.awt.event.MouseEvent;
-import java.awt.event.MouseMotionListener;
 
 public class JIPipeDesktopGraphCanvasNodeResizeManager {
     private final JIPipeDesktopGraphCanvasUI canvasUI;
@@ -45,21 +44,21 @@ public class JIPipeDesktopGraphCanvasNodeResizeManager {
         if (currentResizeTarget != null) {
             return switch (anchor) {
                 case TopLeft ->
-                        new Rectangle(currentResizeTarget.getX() - JIPipeDesktopGraphCanvasUIConstants.RESIZE_HANDLE_DISTANCE - JIPipeDesktopGraphCanvasUIConstants.RESIZE_HANDLE_SIZE / 2, currentResizeTarget.getY() - JIPipeDesktopGraphCanvasUIConstants.RESIZE_HANDLE_DISTANCE - JIPipeDesktopGraphCanvasUIConstants.RESIZE_HANDLE_SIZE / 2, JIPipeDesktopGraphCanvasUIConstants.RESIZE_HANDLE_SIZE, JIPipeDesktopGraphCanvasUIConstants.RESIZE_HANDLE_SIZE);
+                        new Rectangle(currentResizeTarget.getX() - JIPipeDesktopGraphCanvasResources.RESIZE_HANDLE_DISTANCE - JIPipeDesktopGraphCanvasResources.RESIZE_HANDLE_SIZE / 2, currentResizeTarget.getY() - JIPipeDesktopGraphCanvasResources.RESIZE_HANDLE_DISTANCE - JIPipeDesktopGraphCanvasResources.RESIZE_HANDLE_SIZE / 2, JIPipeDesktopGraphCanvasResources.RESIZE_HANDLE_SIZE, JIPipeDesktopGraphCanvasResources.RESIZE_HANDLE_SIZE);
                 case TopCenter ->
-                        new Rectangle(currentResizeTarget.getX() + currentResizeTarget.getWidth() / 2 - JIPipeDesktopGraphCanvasUIConstants.RESIZE_HANDLE_SIZE / 2, currentResizeTarget.getY() - JIPipeDesktopGraphCanvasUIConstants.RESIZE_HANDLE_DISTANCE - JIPipeDesktopGraphCanvasUIConstants.RESIZE_HANDLE_SIZE / 2, JIPipeDesktopGraphCanvasUIConstants.RESIZE_HANDLE_SIZE, JIPipeDesktopGraphCanvasUIConstants.RESIZE_HANDLE_SIZE);
+                        new Rectangle(currentResizeTarget.getX() + currentResizeTarget.getWidth() / 2 - JIPipeDesktopGraphCanvasResources.RESIZE_HANDLE_SIZE / 2, currentResizeTarget.getY() - JIPipeDesktopGraphCanvasResources.RESIZE_HANDLE_DISTANCE - JIPipeDesktopGraphCanvasResources.RESIZE_HANDLE_SIZE / 2, JIPipeDesktopGraphCanvasResources.RESIZE_HANDLE_SIZE, JIPipeDesktopGraphCanvasResources.RESIZE_HANDLE_SIZE);
                 case TopRight ->
-                        new Rectangle(currentResizeTarget.getRightX() + JIPipeDesktopGraphCanvasUIConstants.RESIZE_HANDLE_DISTANCE - JIPipeDesktopGraphCanvasUIConstants.RESIZE_HANDLE_SIZE / 2, currentResizeTarget.getY() - JIPipeDesktopGraphCanvasUIConstants.RESIZE_HANDLE_DISTANCE - JIPipeDesktopGraphCanvasUIConstants.RESIZE_HANDLE_SIZE / 2, JIPipeDesktopGraphCanvasUIConstants.RESIZE_HANDLE_SIZE, JIPipeDesktopGraphCanvasUIConstants.RESIZE_HANDLE_SIZE);
+                        new Rectangle(currentResizeTarget.getRightX() + JIPipeDesktopGraphCanvasResources.RESIZE_HANDLE_DISTANCE - JIPipeDesktopGraphCanvasResources.RESIZE_HANDLE_SIZE / 2, currentResizeTarget.getY() - JIPipeDesktopGraphCanvasResources.RESIZE_HANDLE_DISTANCE - JIPipeDesktopGraphCanvasResources.RESIZE_HANDLE_SIZE / 2, JIPipeDesktopGraphCanvasResources.RESIZE_HANDLE_SIZE, JIPipeDesktopGraphCanvasResources.RESIZE_HANDLE_SIZE);
                 case CenterLeft ->
-                        new Rectangle(currentResizeTarget.getX() - JIPipeDesktopGraphCanvasUIConstants.RESIZE_HANDLE_DISTANCE - JIPipeDesktopGraphCanvasUIConstants.RESIZE_HANDLE_SIZE / 2, currentResizeTarget.getY() + currentResizeTarget.getHeight() / 2 - JIPipeDesktopGraphCanvasUIConstants.RESIZE_HANDLE_SIZE / 2, JIPipeDesktopGraphCanvasUIConstants.RESIZE_HANDLE_SIZE, JIPipeDesktopGraphCanvasUIConstants.RESIZE_HANDLE_SIZE);
+                        new Rectangle(currentResizeTarget.getX() - JIPipeDesktopGraphCanvasResources.RESIZE_HANDLE_DISTANCE - JIPipeDesktopGraphCanvasResources.RESIZE_HANDLE_SIZE / 2, currentResizeTarget.getY() + currentResizeTarget.getHeight() / 2 - JIPipeDesktopGraphCanvasResources.RESIZE_HANDLE_SIZE / 2, JIPipeDesktopGraphCanvasResources.RESIZE_HANDLE_SIZE, JIPipeDesktopGraphCanvasResources.RESIZE_HANDLE_SIZE);
                 case CenterRight ->
-                        new Rectangle(currentResizeTarget.getRightX() + JIPipeDesktopGraphCanvasUIConstants.RESIZE_HANDLE_DISTANCE - JIPipeDesktopGraphCanvasUIConstants.RESIZE_HANDLE_SIZE / 2, currentResizeTarget.getY() + currentResizeTarget.getHeight() / 2 - JIPipeDesktopGraphCanvasUIConstants.RESIZE_HANDLE_SIZE / 2, JIPipeDesktopGraphCanvasUIConstants.RESIZE_HANDLE_SIZE, JIPipeDesktopGraphCanvasUIConstants.RESIZE_HANDLE_SIZE);
+                        new Rectangle(currentResizeTarget.getRightX() + JIPipeDesktopGraphCanvasResources.RESIZE_HANDLE_DISTANCE - JIPipeDesktopGraphCanvasResources.RESIZE_HANDLE_SIZE / 2, currentResizeTarget.getY() + currentResizeTarget.getHeight() / 2 - JIPipeDesktopGraphCanvasResources.RESIZE_HANDLE_SIZE / 2, JIPipeDesktopGraphCanvasResources.RESIZE_HANDLE_SIZE, JIPipeDesktopGraphCanvasResources.RESIZE_HANDLE_SIZE);
                 case BottomLeft ->
-                        new Rectangle(currentResizeTarget.getX() - JIPipeDesktopGraphCanvasUIConstants.RESIZE_HANDLE_DISTANCE - JIPipeDesktopGraphCanvasUIConstants.RESIZE_HANDLE_SIZE / 2, currentResizeTarget.getBottomY() + JIPipeDesktopGraphCanvasUIConstants.RESIZE_HANDLE_DISTANCE - JIPipeDesktopGraphCanvasUIConstants.RESIZE_HANDLE_SIZE / 2, JIPipeDesktopGraphCanvasUIConstants.RESIZE_HANDLE_SIZE, JIPipeDesktopGraphCanvasUIConstants.RESIZE_HANDLE_SIZE);
+                        new Rectangle(currentResizeTarget.getX() - JIPipeDesktopGraphCanvasResources.RESIZE_HANDLE_DISTANCE - JIPipeDesktopGraphCanvasResources.RESIZE_HANDLE_SIZE / 2, currentResizeTarget.getBottomY() + JIPipeDesktopGraphCanvasResources.RESIZE_HANDLE_DISTANCE - JIPipeDesktopGraphCanvasResources.RESIZE_HANDLE_SIZE / 2, JIPipeDesktopGraphCanvasResources.RESIZE_HANDLE_SIZE, JIPipeDesktopGraphCanvasResources.RESIZE_HANDLE_SIZE);
                 case BottomCenter ->
-                        new Rectangle(currentResizeTarget.getX() + currentResizeTarget.getWidth() / 2 - JIPipeDesktopGraphCanvasUIConstants.RESIZE_HANDLE_SIZE / 2, currentResizeTarget.getBottomY() + JIPipeDesktopGraphCanvasUIConstants.RESIZE_HANDLE_DISTANCE - JIPipeDesktopGraphCanvasUIConstants.RESIZE_HANDLE_SIZE / 2, JIPipeDesktopGraphCanvasUIConstants.RESIZE_HANDLE_SIZE, JIPipeDesktopGraphCanvasUIConstants.RESIZE_HANDLE_SIZE);
+                        new Rectangle(currentResizeTarget.getX() + currentResizeTarget.getWidth() / 2 - JIPipeDesktopGraphCanvasResources.RESIZE_HANDLE_SIZE / 2, currentResizeTarget.getBottomY() + JIPipeDesktopGraphCanvasResources.RESIZE_HANDLE_DISTANCE - JIPipeDesktopGraphCanvasResources.RESIZE_HANDLE_SIZE / 2, JIPipeDesktopGraphCanvasResources.RESIZE_HANDLE_SIZE, JIPipeDesktopGraphCanvasResources.RESIZE_HANDLE_SIZE);
                 case BottomRight ->
-                        new Rectangle(currentResizeTarget.getRightX() + JIPipeDesktopGraphCanvasUIConstants.RESIZE_HANDLE_DISTANCE - JIPipeDesktopGraphCanvasUIConstants.RESIZE_HANDLE_SIZE / 2, currentResizeTarget.getBottomY() + JIPipeDesktopGraphCanvasUIConstants.RESIZE_HANDLE_DISTANCE - JIPipeDesktopGraphCanvasUIConstants.RESIZE_HANDLE_SIZE / 2, JIPipeDesktopGraphCanvasUIConstants.RESIZE_HANDLE_SIZE, JIPipeDesktopGraphCanvasUIConstants.RESIZE_HANDLE_SIZE);
+                        new Rectangle(currentResizeTarget.getRightX() + JIPipeDesktopGraphCanvasResources.RESIZE_HANDLE_DISTANCE - JIPipeDesktopGraphCanvasResources.RESIZE_HANDLE_SIZE / 2, currentResizeTarget.getBottomY() + JIPipeDesktopGraphCanvasResources.RESIZE_HANDLE_DISTANCE - JIPipeDesktopGraphCanvasResources.RESIZE_HANDLE_SIZE / 2, JIPipeDesktopGraphCanvasResources.RESIZE_HANDLE_SIZE, JIPipeDesktopGraphCanvasResources.RESIZE_HANDLE_SIZE);
                 default -> null;
             };
         } else {
@@ -212,16 +211,16 @@ public class JIPipeDesktopGraphCanvasNodeResizeManager {
     public void paint(Graphics2D g) {
         if (currentResizeTarget != null && !currentResizeTarget.getNode().isUiLocked()) {
             g.setColor(Color.GRAY);
-            g.setStroke(JIPipeDesktopGraphCanvasUIConstants.STROKE_MARQUEE);
-            g.drawRect(currentResizeTarget.getX() - JIPipeDesktopGraphCanvasUIConstants.RESIZE_HANDLE_DISTANCE, currentResizeTarget.getY() - JIPipeDesktopGraphCanvasUIConstants.RESIZE_HANDLE_DISTANCE, currentResizeTarget.getWidth() + JIPipeDesktopGraphCanvasUIConstants.RESIZE_HANDLE_DISTANCE * 2, currentResizeTarget.getHeight() + JIPipeDesktopGraphCanvasUIConstants.RESIZE_HANDLE_DISTANCE * 2);
-            g.setStroke(JIPipeDesktopGraphCanvasUIConstants.STROKE_UNIT);
+            g.setStroke(JIPipeDesktopGraphCanvasResources.STROKE_MARQUEE);
+            g.drawRect(currentResizeTarget.getX() - JIPipeDesktopGraphCanvasResources.RESIZE_HANDLE_DISTANCE, currentResizeTarget.getY() - JIPipeDesktopGraphCanvasResources.RESIZE_HANDLE_DISTANCE, currentResizeTarget.getWidth() + JIPipeDesktopGraphCanvasResources.RESIZE_HANDLE_DISTANCE * 2, currentResizeTarget.getHeight() + JIPipeDesktopGraphCanvasResources.RESIZE_HANDLE_DISTANCE * 2);
+            g.setStroke(JIPipeDesktopGraphCanvasResources.STROKE_UNIT);
 
             for (Anchor anchor : Anchor.values()) {
                 Rectangle rectangle = getCurrentResizeTargetAnchorArea(anchor);
                 if (rectangle != null) {
-                    g.setColor(JIPipeDesktopGraphCanvasUIConstants.COLOR_RESIZE_HANDLE_FILL);
+                    g.setColor(JIPipeDesktopGraphCanvasResources.COLOR_RESIZE_HANDLE_FILL);
                     g.fillOval(rectangle.x, rectangle.y, rectangle.width, rectangle.height);
-                    g.setColor(JIPipeDesktopGraphCanvasUIConstants.COLOR_RESIZE_HANDLE_BORDER);
+                    g.setColor(JIPipeDesktopGraphCanvasResources.COLOR_RESIZE_HANDLE_BORDER);
                     g.drawOval(rectangle.x, rectangle.y, rectangle.width, rectangle.height);
                 }
             }

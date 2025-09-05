@@ -18,10 +18,9 @@ import org.hkijena.jipipe.api.JIPipeWorkbench;
 import org.hkijena.jipipe.api.grapheditortool.JIPipeToggleableGraphEditorTool;
 import org.hkijena.jipipe.desktop.app.JIPipeDesktopWorkbench;
 import org.hkijena.jipipe.desktop.app.JIPipeDesktopWorkbenchAccess;
-import org.hkijena.jipipe.desktop.app.grapheditor.commons.JIPipeDesktopGraphCanvasUI;
 import org.hkijena.jipipe.desktop.app.grapheditor.commons.JIPipeDesktopGraphEditorUI;
 import org.hkijena.jipipe.desktop.app.grapheditor.commons.canvas.JIPipeDesktopGraphCanvasGrid;
-import org.hkijena.jipipe.desktop.app.grapheditor.commons.canvas.JIPipeDesktopGraphCanvasUIConstants;
+import org.hkijena.jipipe.desktop.app.grapheditor.commons.canvas.JIPipeDesktopGraphCanvasResources;
 
 import javax.swing.*;
 import java.awt.*;
@@ -179,8 +178,8 @@ public class JIPipeAnnotationGraphNodeTool<T extends JIPipeAnnotationGraphNode> 
     public void paintAfterNodesAndEdges(Graphics2D graphics2D) {
         if (firstPoint != null && secondPoint != null && !Objects.equals(firstPoint, secondPoint)) {
             double zoom = getGraphCanvas().getZoom();
-            graphics2D.setStroke(JIPipeDesktopGraphCanvasUIConstants.STROKE_COMMENT);
-            graphics2D.setColor(JIPipeDesktopGraphCanvasUIConstants.COLOR_HIGHLIGHT_GREEN);
+            graphics2D.setStroke(JIPipeDesktopGraphCanvasResources.STROKE_COMMENT);
+            graphics2D.setColor(JIPipeDesktopGraphCanvasResources.COLOR_HIGHLIGHT_GREEN);
             int x0 = (int) ((firstPoint.x * JIPipeDesktopGraphCanvasGrid.GRID_WIDTH) * zoom);
             int y0 = (int) ((firstPoint.y * JIPipeDesktopGraphCanvasGrid.GRID_HEIGHT) * zoom);
             int x1 = (int) ((secondPoint.x * JIPipeDesktopGraphCanvasGrid.GRID_WIDTH) * zoom);
