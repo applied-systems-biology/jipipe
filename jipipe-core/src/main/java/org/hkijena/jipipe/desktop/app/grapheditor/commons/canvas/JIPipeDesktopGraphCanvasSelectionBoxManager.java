@@ -65,10 +65,7 @@ public class JIPipeDesktopGraphCanvasSelectionBoxManager {
             Rectangle selectionRectangle = new Rectangle(x, y, w, h);
             Set<JIPipeDesktopGraphInteractiveObjectUI> newSelection = new HashSet<>();
             for (JIPipeDesktopGraphNodeUI ui : canvasUI.getNodeUIs().values()) {
-                if (canvasUI.isGraphAnnotationsLocked() && ui.getNode() instanceof JIPipeAnnotationGraphNode) {
-                    continue;
-                }
-                if (selectionRectangle.intersects(ui.getBounds())) {
+                if (canvasUI.getToolLayerMask().test(ui) && selectionRectangle.intersects(ui.getBounds())) {
                     newSelection.add(ui);
                 }
             }

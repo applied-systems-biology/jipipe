@@ -823,8 +823,7 @@ public class JIPipeDesktopGraphNodeUI extends JIPipeDesktopWorkbenchPanel implem
         g2.fillRect(0, 0, getWidth(), getHeight());
 
         // Paint disabled/pass-through
-        if (node instanceof JIPipeAlgorithm) {
-            JIPipeAlgorithm algorithm = (JIPipeAlgorithm) node;
+        if (node instanceof JIPipeAlgorithm algorithm) {
             if (!algorithm.isEnabled()) {
                 g2.setPaint(nodeDisabledPaint);
                 g2.fillRect(0, 0, getWidth(), getHeight());

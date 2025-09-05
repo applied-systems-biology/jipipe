@@ -30,8 +30,9 @@ public class JIPipeDesktopGraphCanvasToolManager {
 
     public void setCurrentTool(JIPipeToggleableGraphEditorTool currentTool) {
         this.currentTool = currentTool;
+        canvasUI.getSelectionManager().enforceToolMasking(currentTool);
         canvasUI.resetCursor();
-        canvasUI.repaint(50);
+        canvasUI.repaintLowLag();
     }
 
     public boolean currentToolAllowsNodeDragging() {

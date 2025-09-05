@@ -14,6 +14,8 @@
 package org.hkijena.jipipe.desktop.app.grapheditor.commons.canvas;
 
 import com.google.common.collect.ImmutableSet;
+import org.hkijena.jipipe.api.grapheditortool.JIPipeToggleableGraphEditorTool;
+import org.hkijena.jipipe.api.grapheditortool.JIPipeToggleableGraphEditorToolNodeLayerMask;
 import org.hkijena.jipipe.api.nodes.JIPipeGraphNode;
 import org.hkijena.jipipe.desktop.app.grapheditor.commons.JIPipeDesktopGraphCanvasUI;
 import org.hkijena.jipipe.desktop.app.grapheditor.commons.JIPipeDesktopGraphInteractiveObjectUI;
@@ -61,7 +63,7 @@ public class JIPipeDesktopGraphCanvasSelectionManager {
     public Set<JIPipeGraphNode> getSelectedNodes() {
         Set<JIPipeGraphNode> selected = new HashSet<>();
         for (JIPipeDesktopGraphInteractiveObjectUI interactiveObjectUI : selection) {
-            if(interactiveObjectUI instanceof JIPipeDesktopGraphNodeUI) {
+            if (interactiveObjectUI instanceof JIPipeDesktopGraphNodeUI) {
                 selected.add(((JIPipeDesktopGraphNodeUI) interactiveObjectUI).getNode());
             }
         }
@@ -71,7 +73,7 @@ public class JIPipeDesktopGraphCanvasSelectionManager {
     public <T extends JIPipeDesktopGraphInteractiveObjectUI> Set<T> getSelectionByType(Class<T> klass) {
         Set<T> result = new HashSet<>();
         for (JIPipeDesktopGraphInteractiveObjectUI interactiveObjectUI : selection) {
-            if(klass.isInstance(interactiveObjectUI)) {
+            if (klass.isInstance(interactiveObjectUI)) {
                 result.add((T) interactiveObjectUI);
             }
         }
@@ -99,14 +101,14 @@ public class JIPipeDesktopGraphCanvasSelectionManager {
      */
     public void clearSelection(boolean update) {
         selection.clear();
-        if(update) {
+        if (update) {
             updateSelection();
         }
     }
 
     public void addAllToSelection(Set<JIPipeDesktopGraphInteractiveObjectUI> newSelection, boolean update) {
         selection.addAll(newSelection);
-        if(update) {
+        if (update) {
             updateSelection();
         }
     }
@@ -168,7 +170,7 @@ public class JIPipeDesktopGraphCanvasSelectionManager {
     public void removeFromSelection(JIPipeDesktopGraphInteractiveObjectUI ui, boolean update) {
         if (selection.contains(ui)) {
             selection.remove(ui);
-            if(update) {
+            if (update) {
                 updateSelection();
             }
         }
@@ -221,5 +223,17 @@ public class JIPipeDesktopGraphCanvasSelectionManager {
         }
     }
 
-
+    public void enforceToolMasking(JIPipeToggleableGraphEditorTool currentTool) {
+        JIPipeToggleableGraphEditorToolNodeLayerMask mask;
+        if (currentTool != null) {
+            mask = currentTool.getNodeLayerMask();
+        } else {
+            mask = JIPipeToggleableGraphEditorToolNodeLayerMask.WorkflowOnly;
+        }
+        if(mask != JIPipeToggleableGraphEditorToolNodeLayerMask.None) {
+            if (selection.removeIf(ui -> !mask.test(ui))) {
+                updateSelection();
+            }
+        }
+    }
 }

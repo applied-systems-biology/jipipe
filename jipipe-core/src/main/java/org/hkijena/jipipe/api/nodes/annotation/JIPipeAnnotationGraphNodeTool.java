@@ -16,6 +16,7 @@ package org.hkijena.jipipe.api.nodes.annotation;
 import org.hkijena.jipipe.JIPipe;
 import org.hkijena.jipipe.api.JIPipeWorkbench;
 import org.hkijena.jipipe.api.grapheditortool.JIPipeToggleableGraphEditorTool;
+import org.hkijena.jipipe.api.grapheditortool.JIPipeToggleableGraphEditorToolNodeLayerMask;
 import org.hkijena.jipipe.desktop.app.JIPipeDesktopWorkbench;
 import org.hkijena.jipipe.desktop.app.JIPipeDesktopWorkbenchAccess;
 import org.hkijena.jipipe.desktop.app.grapheditor.commons.JIPipeDesktopGraphEditorUI;
@@ -88,6 +89,11 @@ public class JIPipeAnnotationGraphNodeTool<T extends JIPipeAnnotationGraphNode> 
     @Override
     public void mouseClicked(MouseEvent e) {
 
+    }
+
+    @Override
+    public JIPipeToggleableGraphEditorToolNodeLayerMask getNodeLayerMask() {
+        return JIPipeToggleableGraphEditorToolNodeLayerMask.AnnotationsOnly;
     }
 
     @Override

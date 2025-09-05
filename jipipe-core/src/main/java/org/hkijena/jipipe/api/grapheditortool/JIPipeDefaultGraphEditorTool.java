@@ -60,6 +60,11 @@ public class JIPipeDefaultGraphEditorTool implements JIPipeToggleableGraphEditor
     }
 
     @Override
+    public JIPipeToggleableGraphEditorToolNodeLayerMask getNodeLayerMask() {
+        return JIPipeToggleableGraphEditorToolNodeLayerMask.WorkflowOnly;
+    }
+
+    @Override
     public int getCategory() {
         return -10000;
     }

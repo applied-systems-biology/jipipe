@@ -36,6 +36,10 @@ public interface JIPipeToggleableGraphEditorTool extends JIPipeGraphEditorTool {
         return true;
     }
 
+    default JIPipeToggleableGraphEditorToolNodeLayerMask  getNodeLayerMask() {
+        return JIPipeToggleableGraphEditorToolNodeLayerMask.None;
+    }
+
     default void paintBelowNodesAfterEdges(Graphics2D g) {
 
     }
@@ -48,7 +52,7 @@ public interface JIPipeToggleableGraphEditorTool extends JIPipeGraphEditorTool {
 
     }
 
-    default void paintMouse(JIPipeDesktopGraphCanvasUI canvasUI, Point lastMousePosition, int toolInfoDistance, Graphics2D graphics2D) {
+    default void paintTooltip(JIPipeDesktopGraphCanvasUI canvasUI, Point lastMousePosition, int toolInfoDistance, boolean withBorder, Graphics2D graphics2D) {
         int x = lastMousePosition.x + toolInfoDistance;
         int y = lastMousePosition.y + toolInfoDistance;
 
@@ -61,10 +65,16 @@ public interface JIPipeToggleableGraphEditorTool extends JIPipeGraphEditorTool {
         graphics2D.setColor(canvasUI.getResources().getSmartEdgeSlotBackground());
         graphics2D.fillRoundRect(x, y, nameWidth + 22 + 3, 22, 5, 5);
         graphics2D.setColor(canvasUI.getResources().getSmartEdgeSlotForeground());
-        graphics2D.drawRoundRect(x, y, nameWidth + 22 + 3, 22, 5, 5);
+        if(withBorder) {
+            graphics2D.drawRoundRect(x, y, nameWidth + 22 + 3, 22, 5, 5);
+        }
 
         getIcon().paintIcon(canvasUI, graphics2D, x + 3, y + 3);
         graphics2D.drawString(getName(), x + 22, y + (fontMetrics.getAscent() - fontMetrics.getLeading()) + 22 / 2 - fontMetrics.getHeight() / 2);
 
+    }
+
+    default boolean isDeactivateOnRightClick() {
+        return true;
     }
 }

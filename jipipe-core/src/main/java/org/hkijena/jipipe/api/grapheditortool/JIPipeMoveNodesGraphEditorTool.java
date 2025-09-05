@@ -45,6 +45,11 @@ public class JIPipeMoveNodesGraphEditorTool implements JIPipeToggleableGraphEdit
     }
 
     @Override
+    public JIPipeToggleableGraphEditorToolNodeLayerMask getNodeLayerMask() {
+        return JIPipeToggleableGraphEditorToolNodeLayerMask.WorkflowOnly;
+    }
+
+    @Override
     public JIPipeDesktopGraphEditorUI getGraphEditor() {
         return graphEditorUI;
     }

@@ -115,12 +115,8 @@ public class JIPipeDesktopGraphCanvasResources {
     }
 
     public int getArrowHeadShift() {
-        if (canvasUI.getSettings().isDrawArrowHeads()) {
-            int sz = 1;
-            return -2 * sz - 6;
-        } else {
-            return 0;
-        }
+        int sz = 1;
+        return -2 * sz - 6;
     }
 
     public Stroke getStrokeHighlight() {
@@ -128,13 +124,18 @@ public class JIPipeDesktopGraphCanvasResources {
         return new BasicStroke(width, BasicStroke.CAP_SQUARE, BasicStroke.JOIN_MITER);
     }
 
-    public Stroke getStrokeDefault() {
+    public Stroke getEdgeStrokeInside() {
         int width = (int) Math.max(1, canvasUI.getZoom() * 4);
         return new BasicStroke(width, BasicStroke.CAP_SQUARE, BasicStroke.JOIN_MITER);
     }
 
-    public Stroke getStrokeDefaultBorder() {
+    public Stroke getEdgeStrokeBorder() {
         int width = (int) Math.max(1, canvasUI.getZoom() * 4) + 2;
+        return new BasicStroke(width, BasicStroke.CAP_SQUARE, BasicStroke.JOIN_MITER);
+    }
+
+    public Stroke getSelectedEdgeStrokeBorder() {
+        int width = (int) Math.max(1, canvasUI.getZoom() * 4) + 6;
         return new BasicStroke(width, BasicStroke.CAP_SQUARE, BasicStroke.JOIN_MITER);
     }
 

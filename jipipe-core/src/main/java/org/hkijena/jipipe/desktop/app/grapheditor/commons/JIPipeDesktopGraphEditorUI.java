@@ -244,15 +244,6 @@ public abstract class JIPipeDesktopGraphEditorUI extends JIPipeDesktopWorkbenchP
 
             toolBar.addSeparator();
         }
-        {
-            JToggleButton lockAnnotationsToggle = new JToggleButton(JIPipe.RESOURCES.getIcon16("actions/lock-comments.png"));
-            UIUtils.makeButtonFlatWithSize(lockAnnotationsToggle, 32, 32);
-            lockAnnotationsToggle.setToolTipText("If enabled, you will not be able to accidentally select or modify graph annotations");
-            lockAnnotationsToggle.addActionListener(e -> {
-                canvasUI.setGraphAnnotationsLocked(lockAnnotationsToggle.isSelected());
-            });
-            toolBar.add(lockAnnotationsToggle);
-        }
         initializeCommonToolbarLayout();
         initializeCommonToolbarExport();
         toolBar.addSeparator();
@@ -520,6 +511,7 @@ public abstract class JIPipeDesktopGraphEditorUI extends JIPipeDesktopWorkbenchP
             tool.activate();
             getDesktopWorkbench().sendStatusBarText("Activated tool '" + tool.getName() + "'");
         }
+        canvasUI.repaintLowLag();
     }
 
     public JIPipeToggleableGraphEditorTool getCurrentTool() {

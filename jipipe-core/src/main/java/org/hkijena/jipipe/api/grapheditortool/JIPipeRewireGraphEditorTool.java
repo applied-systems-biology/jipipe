@@ -176,6 +176,11 @@ public class JIPipeRewireGraphEditorTool implements JIPipeToggleableGraphEditorT
     }
 
     @Override
+    public JIPipeToggleableGraphEditorToolNodeLayerMask getNodeLayerMask() {
+        return JIPipeToggleableGraphEditorToolNodeLayerMask.WorkflowOnly;
+    }
+
+    @Override
     public void mouseReleased(MouseEvent e) {
         if (SwingUtilities.isLeftMouseButton(e) && currentRewireDragSource != null) {
             JIPipeDesktopGraphNodeUI nodeUI = graphEditorUI.getCanvasUI().pickNodeUI(e);
