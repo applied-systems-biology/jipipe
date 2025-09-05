@@ -70,6 +70,7 @@ import org.scijava.Disposable;
 
 import javax.swing.*;
 import javax.swing.FocusManager;
+import javax.tools.Tool;
 import java.awt.*;
 import java.awt.dnd.DropTarget;
 import java.awt.event.*;
@@ -187,6 +188,11 @@ public class JIPipeDesktopGraphCanvasUI extends JLayeredPane implements JIPipeDe
         overlays.add(new JIPipeDesktopGraphCanvasAnnotationNodesOverlay(this));
         overlays.add(new JIPipeDesktopGraphCanvasIOOverlay(this));
         overlays.add(new JIPipeDesktopGraphCanvasConnectionHighlightsOverlay(this));
+        overlays.add(new JIPipeDesktopGraphCanvasObjectSelectionOverlay(this));
+        overlays.add(new JIPipeDesktopGraphCanvasCursorOverlay(this));
+        overlays.add(new JIPipeDesktopGraphCanvasResizeHandlesOverlay(this));
+        overlays.add(new JIPipeDesktopGraphCanvasSelectionBoxOverlay(this));
+        overlays.add(new JIPipeDesktopGraphCanvasToolInfoOverlay(this));
     }
 
     public JIPipeDesktopGraphCanvasSelectionManager getSelectionManager() {
@@ -1398,46 +1404,6 @@ public class JIPipeDesktopGraphCanvasUI extends JLayeredPane implements JIPipeDe
         graphics2D.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_OFF);
         graphics2D.setRenderingHint(RenderingHints.KEY_INTERPOLATION, RenderingHints.VALUE_INTERPOLATION_BICUBIC);
 
-        // Draw node selections & lock
-        graphics2D.setStroke(JIPipeDesktopGraphCanvasResources.STROKE_SELECTION);
-        for (JIPipeDesktopGraphInteractiveObjectUI ui : selectionManager.getSelection()) {
-            if (ui instanceof JIPipeDesktopGraphNodeUI nodeUI) {
-                Rectangle bounds = nodeUI.getBounds();
-                bounds.x -= 4;
-                bounds.y -= 4;
-                bounds.width += 8;
-                bounds.height += 8;
-                g.setColor(nodeUI.getBorderColor());
-                g.drawRect(bounds.x, bounds.y, bounds.width, bounds.height);
-
-                // Lock icon
-                if (nodeUI.getNode().isUiLocked()) {
-                    g.fillRect(bounds.x - 1, bounds.y - 1, 22, 22);
-                    graphics2D.drawImage(resources.getLockIcon().getImage(), bounds.x + 2, bounds.y + 2, 16, 16, null);
-                }
-
-                // Layer Z (annotations)
-                if (nodeUI.getNode() instanceof JIPipeAnnotationGraphNode) {
-                    int zLayer = ((JIPipeAnnotationGraphNode) nodeUI.getNode()).getzOrder();
-                    g.setFont(JIPipeDesktopGraphCanvasResources.GRAPH_TOOL_CURSOR_FONT);
-                    FontMetrics fontMetrics = g.getFontMetrics();
-                    String text = "z " + zLayer;
-                    int rawStringWidth = fontMetrics.stringWidth(text);
-                    int indicatorWidth = rawStringWidth + 8;
-                    int xStart = bounds.x + bounds.width + 4 - indicatorWidth - 1 - 8 - 4;
-                    int yStart = bounds.y + bounds.height - 22 - 8;
-
-                    g.fillRoundRect(xStart, yStart, indicatorWidth, 22, 4, 4);
-                    g.setColor(Color.WHITE);
-
-                    g.drawString(text, xStart + indicatorWidth / 2 - rawStringWidth / 2, yStart + (fontMetrics.getAscent() - fontMetrics.getLeading()) + 22 / 2 - fontMetrics.getHeight() / 2);
-                }
-            }
-        }
-
-        // Paint selection box
-        selectionBoxManager.paint(graphics2D);
-
         // Above node paint
         if (!toolManager.hasDefaultTool()) {
             if (toolManager.getCurrentTool() instanceof JIPipeAnnotationGraphNodeTool && ((JIPipeAnnotationGraphNodeTool<?>) toolManager.getCurrentTool()).isDrawWithAntialiasing()) {
@@ -1455,23 +1421,6 @@ public class JIPipeDesktopGraphCanvasUI extends JLayeredPane implements JIPipeDe
         // Paint overlays that follow the standard overlay API
         for (JIPipeDesktopGraphCanvasOverlay overlay : overlays) {
             overlay.paint(graphics2D);
-        }
-
-        // Draw cursor over the components
-        Point cursor = getGraphEditorCursor();
-        if (cursor != null && renderCursor) {
-            g.drawImage(resources.getCursorImage().getImage(),
-                    cursor.x - resources.getCursorImage().getIconWidth() / 2,
-                    cursor.y - resources.getCursorImage().getIconHeight() / 2,
-                    null);
-        }
-
-        // Draw resize handles
-        resizeManager.paint(graphics2D);
-
-        // Draw cursor info
-        if (mouseIsEntered && lastMousePosition != null && !toolManager.hasDefaultTool() && settings.isShowToolInfo() && !(toolManager.getCurrentTool() instanceof JIPipeDefaultGraphEditorTool)) {
-            toolManager.getCurrentTool().paintMouse(this, lastMousePosition, settings.getToolInfoDistance(), graphics2D);
         }
     }
 

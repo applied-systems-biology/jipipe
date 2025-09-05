@@ -65,7 +65,7 @@ public class JIPipeDesktopGraphCanvasIOOverlay implements JIPipeDesktopGraphCanv
             return;
         }
         g.setPaint(ThemeUtils.getCurrentStyle().getPrimaryColor());
-        final int thickness = 8;
+        final int thickness = 6;
         g.setStroke(new BasicStroke((int) Math.round(thickness * canvasUI.getZoom()), BasicStroke.CAP_ROUND, BasicStroke.JOIN_ROUND));
 
         for (JIPipeDataSlot dataSlot : highlightedEdges.keySet()) {
