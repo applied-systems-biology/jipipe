@@ -15,6 +15,7 @@ package org.hkijena.jipipe.desktop.app.grapheditor.commons;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.google.common.collect.*;
+import com.google.common.collect.Sets;
 import gnu.trove.list.TIntList;
 import gnu.trove.list.array.TIntArrayList;
 import gnu.trove.map.TIntObjectMap;
@@ -104,6 +105,7 @@ public class JIPipeDesktopGraphCanvasUI extends JLayeredPane implements JIPipeDe
     private final JIPipeDesktopGraphCanvasResources resources = new JIPipeDesktopGraphCanvasResources(this);
 
     private final BiMap<JIPipeGraphNode, JIPipeDesktopGraphNodeUI> nodeUIs = HashBiMap.create();
+    private final BiMap<JIPipeGraphEdge, JIPipeDesktopGraphEdgeUI> edgeUIs = HashBiMap.create();
     private final JIPipeGraphEditorUIApplicationSettings settings;
     private final JIPipeHistoryJournal historyJournal;
     private final UUID compartmentUUID;
@@ -163,6 +165,7 @@ public class JIPipeDesktopGraphCanvasUI extends JLayeredPane implements JIPipeDe
 //        graph.attachAdditionalMetadata("jipipe:graph:view-mode", JIPipeGraphJIPipeDesktopGraphCanvasGrid.VerticalCompact);
         initialize();
         addNewNodes(true);
+        addNewEdges();
 
         graph.getGraphChangedEventEmitter().subscribeWeak(this);
         graph.getNodeConnectedEventEmitter().subscribeWeak(this);
@@ -1655,6 +1658,46 @@ public class JIPipeDesktopGraphCanvasUI extends JLayeredPane implements JIPipeDe
         return edgeUIs;
     }
 
+    /**
+     * Gets the edgeUIs collection
+     * @return Immutable copy of edgeUIs map
+     */
+    public BiMap<JIPipeGraphEdge, JIPipeDesktopGraphEdgeUI> getEdgeUIs() {
+        return ImmutableBiMap.copyOf(edgeUIs);
+    }
+    
+    /**
+     * Removes edge UIs that no longer exist in the graph
+     */
+    private void removeOldEdges() {
+        Set<JIPipeGraphEdge> currentEdges = new HashSet<>();
+        for (Map.Entry<JIPipeDataSlot, JIPipeDataSlot> slotEdge : graph.getSlotEdges()) {
+            JIPipeGraphEdge edge = graph.getGraph().getEdge(slotEdge.getKey(), slotEdge.getValue());
+            if (edge != null) {
+                currentEdges.add(edge);
+            }
+        }
+        
+        // Remove edges that are no longer in the graph
+        Set<JIPipeGraphEdge> removedEdges = Sets.difference(edgeUIs.keySet(), currentEdges);
+        for (JIPipeGraphEdge removedEdge : removedEdges) {
+            edgeUIs.remove(removedEdge);
+        }
+    }
+    
+    /**
+     * Adds edge UIs for new edges in the graph
+     */
+    private void addNewEdges() {
+        for (Map.Entry<JIPipeDataSlot, JIPipeDataSlot> slotEdge : graph.getSlotEdges()) {
+            JIPipeGraphEdge edge = graph.getGraph().getEdge(slotEdge.getKey(), slotEdge.getValue());
+            if (edge != null && !edgeUIs.containsKey(edge)) {
+                JIPipeDesktopGraphEdgeUI edgeUI = new JIPipeDesktopGraphEdgeUI(slotEdge.getKey(), slotEdge.getValue(), edge);
+                edgeUIs.put(edge, edgeUI);
+            }
+        }
+    }
+
     private int findMultiColorMax(Set<Map.Entry<JIPipeDataSlot, JIPipeDataSlot>> slotEdges, boolean multicolor, boolean onlySelected) {
         int multiColorMax = 1;
         if (multicolor) {
@@ -2227,12 +2270,19 @@ public class JIPipeDesktopGraphCanvasUI extends JLayeredPane implements JIPipeDe
             return;
         }
 
-        // Update the location of existing nodes
+        // Updates existing nodes positions
         for (JIPipeDesktopGraphNodeUI ui : nodeUIs.values()) {
             ui.moveToStoredGridLocation(true);
         }
-        removeOldNodes();
-        addNewNodes(true);
+        removeOldNodes();     // Remove invalid UIs
+        addNewNodes(true);   // Add missing UIs
+        
+        // Update edge UIs
+        removeOldEdges();
+        addNewEdges();
+
+        System.out.println(edgeUIs.size() + " edges");
+
         requestFocusInWindow();
     }
 
