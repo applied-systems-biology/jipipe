@@ -200,17 +200,59 @@ public class JIPipeDesktopGraphCanvasDragManagerConnect {
 
                 // Draw arrow
                 if (currentConnectionDragSource instanceof JIPipeDesktopGraphNodeUISlotActiveArea) {
-                    if (((JIPipeDesktopGraphNodeUISlotActiveArea) currentConnectionDragSource).getSlot().isOutput())
-                        canvasUI.paintEdge(g, sourcePoint.center, currentConnectionDragSource.getNodeUI().getBounds(), targetPoint.center, JIPipeGraphEdge.Shape.Elbow, 1, 0, 0, true);
-                    else
-                        canvasUI.paintEdge(g, targetPoint.center, currentConnectionDragSource.getNodeUI().getBounds(), sourcePoint.center, JIPipeGraphEdge.Shape.Elbow, 1, 0, 0, true);
+                    if (((JIPipeDesktopGraphNodeUISlotActiveArea) currentConnectionDragSource).getSlot().isOutput()) {
+                        canvasUI.getPaintManager().paintEdge(g,
+                                sourcePoint.center,
+                                currentConnectionDragSource.getNodeUI().getBounds(),
+                                targetPoint.center,
+                                JIPipeGraphEdge.Shape.Elbow,
+                                1,
+                                0,
+                                0,
+                                true);
+                    } else {
+                        canvasUI.getPaintManager().paintEdge(g,
+                                targetPoint.center,
+                                currentConnectionDragSource.getNodeUI().getBounds(),
+                                sourcePoint.center,
+                                JIPipeGraphEdge.Shape.Elbow,
+                                1,
+                                0,
+                                0,
+                                true);
+                    }
                 } else if (currentConnectionDragTarget instanceof JIPipeDesktopGraphNodeUISlotActiveArea) {
-                    if (((JIPipeDesktopGraphNodeUISlotActiveArea) currentConnectionDragTarget).getSlot().isInput())
-                        canvasUI.paintEdge(g, sourcePoint.center, currentConnectionDragSource.getNodeUI().getBounds(), targetPoint.center, JIPipeGraphEdge.Shape.Elbow, 1, 0, 0, true);
-                    else
-                        canvasUI.paintEdge(g, targetPoint.center, currentConnectionDragSource.getNodeUI().getBounds(), sourcePoint.center, JIPipeGraphEdge.Shape.Elbow, 1, 0, 0, true);
+                    if (((JIPipeDesktopGraphNodeUISlotActiveArea) currentConnectionDragTarget).getSlot().isInput()) {
+                        canvasUI.getPaintManager().paintEdge(g,
+                                sourcePoint.center,
+                                currentConnectionDragSource.getNodeUI().getBounds(),
+                                targetPoint.center,
+                                JIPipeGraphEdge.Shape.Elbow,
+                                1,
+                                0,
+                                0,
+                                true);
+                    } else {
+                        canvasUI.getPaintManager().paintEdge(g,
+                                targetPoint.center,
+                                currentConnectionDragSource.getNodeUI().getBounds(),
+                                sourcePoint.center,
+                                JIPipeGraphEdge.Shape.Elbow,
+                                1,
+                                0,
+                                0,
+                                true);
+                    }
                 } else {
-                    canvasUI.paintEdge(g, targetPoint.center, currentConnectionDragSource.getNodeUI().getBounds(), sourcePoint.center, JIPipeGraphEdge.Shape.Elbow, 1, 0, 0, false);
+                    canvasUI.getPaintManager().paintEdge(g,
+                            targetPoint.center,
+                            currentConnectionDragSource.getNodeUI().getBounds(),
+                            sourcePoint.center,
+                            JIPipeGraphEdge.Shape.Elbow,
+                            1,
+                            0,
+                            0,
+                            false);
                 }
             }
         }

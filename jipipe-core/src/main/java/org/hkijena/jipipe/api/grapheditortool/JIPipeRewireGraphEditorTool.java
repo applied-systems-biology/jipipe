@@ -152,10 +152,27 @@ public class JIPipeRewireGraphEditorTool implements JIPipeToggleableGraphEditorT
         PointRange.tighten(sourcePoint, targetPoint);
 
         // Draw arrow
-        if (currentRewireDragSource.isInput())
-            graphEditorUI.getCanvasUI().paintEdge(g, sourcePoint.center, currentRewireDragSource.getNodeUI().getBounds(), targetPoint.center, JIPipeGraphEdge.Shape.Elbow, 1, 0, 0, true);
-        else
-            graphEditorUI.getCanvasUI().paintEdge(g, targetPoint.center, currentRewireDragSource.getNodeUI().getBounds(), sourcePoint.center, JIPipeGraphEdge.Shape.Elbow, 1, 0, 0, true);
+        if (currentRewireDragSource.isInput()) {
+            graphEditorUI.getCanvasUI().getPaintManager().paintEdge(g,
+                    sourcePoint.center,
+                    currentRewireDragSource.getNodeUI().getBounds(),
+                    targetPoint.center,
+                    JIPipeGraphEdge.Shape.Elbow,
+                    1,
+                    0,
+                    0,
+                    true);
+        } else {
+            graphEditorUI.getCanvasUI().getPaintManager().paintEdge(g,
+                    targetPoint.center,
+                    currentRewireDragSource.getNodeUI().getBounds(),
+                    sourcePoint.center,
+                    JIPipeGraphEdge.Shape.Elbow,
+                    1,
+                    0,
+                    0,
+                    true);
+        }
     }
 
     @Override

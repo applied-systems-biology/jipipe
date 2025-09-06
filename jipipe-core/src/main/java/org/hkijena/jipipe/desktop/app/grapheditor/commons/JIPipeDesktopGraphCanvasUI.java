@@ -16,8 +16,6 @@ package org.hkijena.jipipe.desktop.app.grapheditor.commons;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.google.common.collect.*;
 import com.google.common.collect.Sets;
-import gnu.trove.list.TIntList;
-import gnu.trove.list.array.TIntArrayList;
 import gnu.trove.map.TIntObjectMap;
 import gnu.trove.map.hash.TIntObjectHashMap;
 import org.apache.commons.lang3.SystemUtils;
@@ -89,7 +87,8 @@ public class JIPipeDesktopGraphCanvasUI extends JLayeredPane implements JIPipeDe
 
     private final JIPipeGraph graph;
 
-    public final JIPipeDesktopGraphCanvasNodeManager nodeManager = new JIPipeDesktopGraphCanvasNodeManager(this);
+    private final JIPipeDesktopGraphCanvasPaintManager paintManager = new JIPipeDesktopGraphCanvasPaintManager(this);
+    private final JIPipeDesktopGraphCanvasNodeManager nodeManager = new JIPipeDesktopGraphCanvasNodeManager(this);
     private final JIPipeDesktopGraphCanvasEdgeManager edgeManager = new JIPipeDesktopGraphCanvasEdgeManager(this);
     private final JIPipeDesktopGraphCanvasDragManagerConnect dragManagerConnect = new JIPipeDesktopGraphCanvasDragManagerConnect(this);
     private final JIPipeDesktopGraphCanvasDragManagerMove dragManagerMove = new JIPipeDesktopGraphCanvasDragManagerMove(this);
@@ -129,7 +128,6 @@ public class JIPipeDesktopGraphCanvasUI extends JLayeredPane implements JIPipeDe
     private JIPipeDesktopGraphNodeUI currentlyMouseEnteredNode;
     private JIPipeDesktopGraphNodeUIActiveArea currentlyMouseEnteredNodeActiveArea;
 
-    private List<JIPipeDesktopGraphEdgeUI> lastDisplayedMainEdges;
     private boolean autoMuteEdges;
     private Point lastMousePosition;
     private boolean mouseIsEntered;
@@ -181,6 +179,7 @@ public class JIPipeDesktopGraphCanvasUI extends JLayeredPane implements JIPipeDe
     private void initializeOverlays() {
         overlays.add(new JIPipeDesktopGraphCanvasNodeShadowOverlay(this));
         overlays.add(new JIPipeDesktopGraphCanvasOutsideEdgesOverlay(this));
+        overlays.add(new JIPipeDesktopGraphCanvasEdgesOverlay(this));
         overlays.add(new JIPipeDesktopGraphCanvasAnnotationNodesOverlay(this));
         overlays.add(new JIPipeDesktopGraphCanvasConnectionHighlightsOverlay(this));
         overlays.add(new JIPipeDesktopGraphCanvasObjectSelectionOverlay(this));
@@ -1276,47 +1275,7 @@ public class JIPipeDesktopGraphCanvasUI extends JLayeredPane implements JIPipeDe
         return new Dimension(width, height);
     }
 
-    /**
-     * Draws a minimap of this canvas.
-     *
-     * @param graphics2D the graphics
-     * @param scale      the scale
-     * @param viewX      move the locations by this value
-     * @param viewY      move the locations by this value
-     */
-    public void paintMiniMap(Graphics2D graphics2D, double scale, int viewX, int viewY) {
 
-        paintMinimapEdges(graphics2D, scale, viewX, viewY);
-
-        Stroke defaultStroke = JIPipeDesktopGraphCanvasResources.STROKE_UNIT;
-        Stroke selectedStroke = JIPipeDesktopGraphCanvasResources.STROKE_SELECTION;
-
-        for (JIPipeDesktopGraphNodeUI nodeUI : nodeUIs.values()) {
-            int x = (int) (nodeUI.getX() * scale) + viewX;
-            int y = (int) (nodeUI.getY() * scale) + viewY;
-            int width = (int) (nodeUI.getWidth() * scale);
-            int height = (int) (nodeUI.getHeight() * scale);
-
-            nodeUI.paintMinimap(graphics2D, x, y, width, height, (BasicStroke) defaultStroke, (BasicStroke) selectedStroke, selectionManager.getSelection());
-        }
-    }
-
-    private void paintMinimapEdges(Graphics2D graphics2D, double scale, int viewX, int viewY) {
-        graphics2D.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_OFF);
-        graphics2D.setRenderingHint(RenderingHints.KEY_INTERPOLATION, RenderingHints.VALUE_INTERPOLATION_BILINEAR);
-        graphics2D.setColor(Color.LIGHT_GRAY);
-        paintEdges(graphics2D,
-                JIPipeDesktopGraphCanvasResources.STROKE_UNIT,
-                null,
-                JIPipeDesktopGraphCanvasResources.STROKE_UNIT_COMMENT,
-                false,
-                false,
-                scale,
-                viewX,
-                viewY,
-                false,
-                JIPipeDesktopGraphCanvasUIEdgeMuteMode.Auto);
-    }
 
     @Override
     protected void paintComponent(Graphics graphics) {
@@ -1335,34 +1294,6 @@ public class JIPipeDesktopGraphCanvasUI extends JLayeredPane implements JIPipeDe
         // Below node paint
         if (!toolManager.hasDefaultTool()) {
             toolManager.getCurrentTool().paintBelowNodesAndEdges(g);
-        }
-
-        // Main edge drawing
-        lastDisplayedMainEdges = paintEdges(g,
-                strokeDefault,
-                strokeDefaultBorder,
-                JIPipeDesktopGraphCanvasResources.STROKE_COMMENT,
-                false,
-                false,
-                1,
-                0,
-                0,
-                true,
-                (selectionManager.getSelection().isEmpty() || !settings.isAutoMuteBySelection()) ? JIPipeDesktopGraphCanvasUIEdgeMuteMode.Auto : JIPipeDesktopGraphCanvasUIEdgeMuteMode.ForceMuted);
-
-        // Selected edges drawing
-        if (!selectionManager.getSelection().isEmpty()) {
-            paintEdges(g,
-                    strokeHighlight,
-                    null,
-                    JIPipeDesktopGraphCanvasResources.STROKE_COMMENT_HIGHLIGHT,
-                    true,
-                    settings.isColorSelectedNodeEdges(),
-                    1,
-                    0,
-                    0,
-                    true,
-                    JIPipeDesktopGraphCanvasUIEdgeMuteMode.ForceVisible);
         }
 
         // Paint overlays that follow the standard overlay API
@@ -1425,87 +1356,6 @@ public class JIPipeDesktopGraphCanvasUI extends JLayeredPane implements JIPipeDe
         return currentlyMouseEnteredNodeActiveArea;
     }
 
-    private List<JIPipeDesktopGraphEdgeUI> paintEdges(Graphics2D g, Stroke stroke, Stroke strokeBorder, Stroke strokeComment, boolean onlySelected, boolean multicolor, double scale, int viewX, int viewY, boolean enableArrows, JIPipeDesktopGraphCanvasUIEdgeMuteMode muteMode) {
-        Set<Map.Entry<JIPipeDataSlot, JIPipeDataSlot>> slotEdges = graph.getSlotEdges();
-        List<JIPipeDesktopGraphEdgeUI> edgeUIs = new ArrayList<>();
-
-        int multiColorMax = findMultiColorMax(slotEdges, multicolor, onlySelected);
-        int multiColorIndex = 0;
-
-        for (Map.Entry<JIPipeDataSlot, JIPipeDataSlot> kv : slotEdges) {
-            JIPipeDataSlot source = kv.getKey();
-            JIPipeDataSlot target = kv.getValue();
-            JIPipeGraphEdge edge = graph.getGraph().getEdge(kv.getKey(), kv.getValue());
-
-            if (!toolManager.hasDefaultTool()) {
-                if (!toolManager.getCurrentTool().canRenderEdge(source, target, edge)) {
-                    continue;
-                }
-            }
-
-            // Check for only showing selected nodes
-            JIPipeDesktopGraphNodeUI sourceUI = nodeUIs.getOrDefault(source.getNode(), null);
-            JIPipeDesktopGraphNodeUI targetUI = nodeUIs.getOrDefault(target.getNode(), null);
-
-            if (sourceUI == null || targetUI == null) {
-                continue;
-            }
-            if (onlySelected && !selectionManager.getSelection().contains(sourceUI) && !selectionManager.getSelection().contains(targetUI)) {
-                continue;
-            }
-
-            // Get the locations
-            PointRange sourcePoint = sourceUI.getSlotLocation(source);
-            PointRange targetPoint = targetUI.getSlotLocation(target);
-            sourcePoint.add(sourceUI.getLocation());
-            targetPoint.add(targetUI.getLocation());
-
-            // Save into the slot edges list
-            JIPipeDesktopGraphEdgeUI displayedSlotEdge = new JIPipeDesktopGraphEdgeUI(source, target, edge);
-            displayedSlotEdge.setMultiColorMax(multiColorMax);
-            displayedSlotEdge.setMultiColorIndex(multiColorIndex);
-            displayedSlotEdge.setSourcePoint(sourcePoint);
-            displayedSlotEdge.setTargetPoint(targetPoint);
-            displayedSlotEdge.setSourceCenter(new Point(sourcePoint.center));
-            displayedSlotEdge.setTargetCenter(new Point(targetPoint.center));
-            displayedSlotEdge.setSourceUI(sourceUI);
-            displayedSlotEdge.setTargetUI(targetUI);
-            edgeUIs.add(displayedSlotEdge);
-
-            ++multiColorIndex;
-        }
-
-        for (JIPipeDesktopGraphEdgeUI displayedSlotEdge : edgeUIs) {
-
-            // Hidden edges
-            if (displayedSlotEdge.isCommentEdge()) {
-                paintSlotEdge(g,
-                        strokeComment,
-                        null,
-                        displayedSlotEdge,
-                        multicolor,
-                        scale,
-                        viewX,
-                        viewY,
-                        enableArrows
-                );
-            } else {
-                paintSlotEdge(g,
-                        stroke,
-                        strokeBorder,
-                        displayedSlotEdge,
-                        multicolor,
-                        scale,
-                        viewX,
-                        viewY,
-                        enableArrows
-                );
-            }
-        }
-
-        return edgeUIs;
-    }
-
     /**
      * Gets the edgeUIs collection
      * @return Immutable copy of edgeUIs map
@@ -1540,74 +1390,11 @@ public class JIPipeDesktopGraphCanvasUI extends JLayeredPane implements JIPipeDe
         for (Map.Entry<JIPipeDataSlot, JIPipeDataSlot> slotEdge : graph.getSlotEdges()) {
             JIPipeGraphEdge edge = graph.getGraph().getEdge(slotEdge.getKey(), slotEdge.getValue());
             if (edge != null && !edgeUIs.containsKey(edge)) {
-                JIPipeDesktopGraphEdgeUI edgeUI = new JIPipeDesktopGraphEdgeUI(slotEdge.getKey(), slotEdge.getValue(), edge);
+                JIPipeDesktopGraphEdgeUI edgeUI = new JIPipeDesktopGraphEdgeUI(this, slotEdge.getKey(), slotEdge.getValue(), edge);
                 edgeUIs.put(edge, edgeUI);
             }
         }
     }
-
-    private int findMultiColorMax(Set<Map.Entry<JIPipeDataSlot, JIPipeDataSlot>> slotEdges, boolean multicolor, boolean onlySelected) {
-        int multiColorMax = 1;
-        if (multicolor) {
-            if (onlySelected) {
-                multiColorMax = 0;
-                for (Map.Entry<JIPipeDataSlot, JIPipeDataSlot> kv : slotEdges) {
-                    JIPipeDataSlot source = kv.getKey();
-                    JIPipeDataSlot target = kv.getValue();
-                    JIPipeDesktopGraphNodeUI sourceUI = nodeUIs.getOrDefault(source.getNode(), null);
-                    JIPipeDesktopGraphNodeUI targetUI = nodeUIs.getOrDefault(target.getNode(), null);
-
-                    if (sourceUI == null || targetUI == null)
-                        continue;
-                    if (selectionManager.getSelection().contains(sourceUI) || selectionManager.getSelection().contains(targetUI)) {
-                        ++multiColorMax;
-                    }
-                }
-            } else {
-                multiColorMax = slotEdges.size();
-            }
-        }
-        return multiColorMax;
-    }
-
-    private void paintSlotEdge(Graphics2D g,
-                               Stroke stroke,
-                               Stroke strokeBorder,
-                               JIPipeDesktopGraphEdgeUI displayedSlotEdge,
-                               boolean multicolor,
-                               double scale,
-                               int viewX,
-                               int viewY,
-                               boolean enableArrows) {
-
-        PointRange sourcePoint = displayedSlotEdge.getSourcePoint();
-        PointRange targetPoint = displayedSlotEdge.getTargetPoint();
-        JIPipeDesktopGraphNodeUI sourceUI = displayedSlotEdge.getSourceUI();
-        JIPipeDataSlot source = displayedSlotEdge.getSource();
-        JIPipeDataSlot target = displayedSlotEdge.getTarget();
-        JIPipeGraphEdge.Shape uiShape = displayedSlotEdge.getEdge().getUiShape();
-        int multiColorMax = displayedSlotEdge.getMultiColorMax();
-        int multiColorIndex = displayedSlotEdge.getMultiColorIndex();
-
-        // Tighten the point ranges: Bringing the centers together
-        PointRange.tighten(sourcePoint, targetPoint);
-
-        // Draw arrow
-        if (strokeBorder != null) {
-            g.setStroke(strokeBorder);
-            g.setColor(resources.getEdgeColor(source, target, multicolor, multiColorIndex, multiColorMax));
-            paintEdge(g, sourcePoint.center, sourceUI.getBounds(), targetPoint.center, uiShape, scale, viewX, viewY, enableArrows);
-            g.setStroke(stroke);
-
-            g.setPaint(resources.getEdgeBackgroundPaint(source, target, sourcePoint, targetPoint, resources.getImprovedStrokeBackgroundColor()));
-            paintEdge(g, sourcePoint.center, sourceUI.getBounds(), targetPoint.center, uiShape, scale, viewX, viewY, enableArrows);
-        } else {
-            g.setStroke(stroke);
-            g.setColor(resources.getEdgeColor(source, target, multicolor, multiColorIndex, multiColorMax));
-            paintEdge(g, sourcePoint.center, sourceUI.getBounds(), targetPoint.center, uiShape, scale, viewX, viewY, enableArrows);
-        }
-    }
-
 
     /**
      * Returns the UI location of a data slot that is located in the graph
@@ -1624,127 +1411,6 @@ public class JIPipeDesktopGraphCanvasUI extends JLayeredPane implements JIPipeDe
             }
         }
         return null;
-    }
-
-
-
-    /**
-     * Draws an edge between source point and the target point
-     *
-     * @param g            the graphics
-     * @param sourcePoint  the source point
-     * @param sourceBounds bounds of the source
-     * @param targetPoint  the target point
-     * @param shape        the line shape
-     * @param scale        the scale
-     * @param viewX        the view x
-     * @param viewY        the view y
-     * @param enableArrows enable arrows
-     */
-    public void paintEdge(Graphics2D g, Point sourcePoint, Rectangle sourceBounds, Point targetPoint, JIPipeGraphEdge.Shape shape, double scale, int viewX, int viewY, boolean enableArrows) {
-        switch (shape) {
-            case Elbow:
-                paintElbowEdge(g, sourcePoint, sourceBounds, targetPoint, scale, viewX, viewY, enableArrows);
-                break;
-            case Line: {
-                int arrowHeadShift = enableArrows ? resources.getArrowHeadShift() : 0;
-                int dx;
-                int dy;
-                dx = 0;
-                dy = arrowHeadShift;
-                g.drawLine((int) (scale * sourcePoint.x) + viewX,
-                        (int) (scale * sourcePoint.y) + viewY,
-                        (int) (scale * targetPoint.x) + viewX + dx,
-                        (int) (scale * targetPoint.y) + viewY + dy);
-            }
-            break;
-        }
-        if (enableArrows) {
-            paintArrowHead(g, targetPoint.x, targetPoint.y);
-        }
-    }
-
-    public void paintArrowHead(Graphics2D g, int x, int y) {
-        int sz = 1;
-        int dy = -2 * sz - 4;
-        g.drawPolygon(new int[]{x - sz, x + sz, x}, new int[]{y - sz + dy, y - sz + dy, y + dy}, 3);
-    }
-
-    private void paintElbowEdge(Graphics2D g, Point sourcePoint, Rectangle sourceBounds, Point targetPoint, double scale, int viewX, int viewY, boolean enableArrows) {
-        int buffer;
-        int sourceA;
-        int targetA;
-        int sourceB;
-        int targetB;
-        int componentStartB;
-        int componentEndB;
-
-        buffer = JIPipeDesktopGraphCanvasGrid.GRID_HEIGHT / 2;
-        sourceA = sourcePoint.y;
-        targetA = targetPoint.y;
-        if (enableArrows) {
-            targetA += resources.getArrowHeadShift();
-        }
-        sourceB = sourcePoint.x;
-        targetB = targetPoint.x;
-        componentStartB = sourceBounds.x;
-        componentEndB = sourceBounds.x + sourceBounds.width;
-
-        int a0 = sourceA;
-        int b0 = sourceB;
-        int a1 = sourceA;
-        int b1 = sourceB;
-
-        TIntArrayList xCoords = new TIntArrayList(8);
-        TIntArrayList yCoords = new TIntArrayList(8);
-
-        addElbowPolygonCoordinate(a0, b0, scale, viewX, viewY, xCoords, yCoords);
-
-        // Target point is above the source. We have to navigate around it
-        if (sourceA > targetA) {
-            // Add some space in major direction
-            a1 += buffer;
-            addElbowPolygonCoordinate(a1, b1, scale, viewX, viewY, xCoords, yCoords);
-
-            // Go left or right
-            if (targetB <= b1) {
-                b1 = Math.max(0, componentStartB - buffer);
-            } else {
-                b1 = componentEndB + buffer;
-            }
-            addElbowPolygonCoordinate(a1, b1, scale, viewX, viewY, xCoords, yCoords);
-
-            // Go to target height
-            a1 = Math.max(0, targetA - buffer);
-            addElbowPolygonCoordinate(a1, b1, scale, viewX, viewY, xCoords, yCoords);
-        } else if (sourceB != targetB) {
-            // Add some space in major direction
-            int dA = targetA - sourceA;
-            a1 = Math.min(sourceA + buffer, sourceA + dA / 2);
-            addElbowPolygonCoordinate(a1, b1, scale, viewX, viewY, xCoords, yCoords);
-        }
-
-        // Target point X is shifted
-        if (b1 != targetB) {
-            b1 = targetB;
-            addElbowPolygonCoordinate(a1, b1, scale, viewX, viewY, xCoords, yCoords);
-        }
-
-        // Go to end point
-        a1 = targetA;
-        addElbowPolygonCoordinate(a1, b1, scale, viewX, viewY, xCoords, yCoords);
-
-        // Draw the polygon
-        g.drawPolyline(xCoords.toArray(), yCoords.toArray(), xCoords.size());
-
-    }
-
-    private void addElbowPolygonCoordinate(int a1, int b1, double scale, int viewX, int viewY, TIntList xCoords, TIntList yCoords) {
-        int x2, y2;
-        x2 = (int) (b1 * scale) + viewX;
-        y2 = (int) (a1 * scale) + viewY;
-        xCoords.add(x2);
-        yCoords.add(y2);
     }
 
     /**
@@ -2143,5 +1809,9 @@ public class JIPipeDesktopGraphCanvasUI extends JLayeredPane implements JIPipeDe
 
     public JIPipeDesktopGraphCanvasResources getResources() {
         return resources;
+    }
+
+    public JIPipeDesktopGraphCanvasPaintManager getPaintManager() {
+        return paintManager;
     }
 }

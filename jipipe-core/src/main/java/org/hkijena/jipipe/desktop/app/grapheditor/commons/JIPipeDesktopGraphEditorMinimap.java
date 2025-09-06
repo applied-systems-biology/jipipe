@@ -149,7 +149,7 @@ public class JIPipeDesktopGraphEditorMinimap extends JIPipeDesktopWorkbenchPanel
 
         graphics2D.setColor(minimapBackground);
         graphics2D.fillRect(viewX, viewY, viewWidth, viewHeight);
-        graphEditorUI.getCanvasUI().paintMiniMap(graphics2D, scaleFactor, viewX, viewY);
+        graphEditorUI.getCanvasUI().getPaintManager().paintMiniMap(graphics2D, scaleFactor, viewX, viewY);
 
         // Draw current scroll position
         g.setColor(AREA_FILL_COLOR);

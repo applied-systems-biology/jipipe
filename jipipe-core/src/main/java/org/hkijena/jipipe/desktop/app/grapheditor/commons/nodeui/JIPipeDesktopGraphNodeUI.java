@@ -671,8 +671,7 @@ public class JIPipeDesktopGraphNodeUI extends JIPipeDesktopWorkbenchPanel implem
             Rectangle futureBounds = new Rectangle(location.x, location.y, getWidth(), getHeight());
             for (int i = 0; i < graphCanvasUI.getComponentCount(); ++i) {
                 Component component = graphCanvasUI.getComponent(i);
-                if (component instanceof JIPipeDesktopGraphNodeUI) {
-                    JIPipeDesktopGraphNodeUI ui = (JIPipeDesktopGraphNodeUI) component;
+                if (component instanceof JIPipeDesktopGraphNodeUI ui) {
                     if (ui != this) {
                         if (ui.getBounds().intersects(futureBounds)) {
                             return false;

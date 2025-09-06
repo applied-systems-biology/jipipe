@@ -60,7 +60,15 @@ public class JIPipeDesktopGraphCanvasConnectionHighlightManager {
                         PointRange.tighten(sourcePoint, targetPoint);
 
                         // Draw arrow
-                        canvasUI.paintEdge(g, sourcePoint.center, sourceUI.getBounds(), targetPoint.center, JIPipeGraphEdge.Shape.Elbow, 1, 0, 0, true);
+                        canvasUI.getPaintManager().paintEdge(g,
+                                sourcePoint.center,
+                                sourceUI.getBounds(),
+                                targetPoint.center,
+                                JIPipeGraphEdge.Shape.Elbow,
+                                1,
+                                0,
+                                0,
+                                true);
                     }
                 }
             } else if (disconnectHighlight.getTarget().getSlot().isOutput()) {
@@ -82,7 +90,15 @@ public class JIPipeDesktopGraphCanvasConnectionHighlightManager {
                         PointRange.tighten(sourcePoint, targetPoint);
 
                         // Draw arrow
-                        canvasUI.paintEdge(g, sourcePoint.center, sourceUI.getBounds(), targetPoint.center, JIPipeGraphEdge.Shape.Elbow, 1, 0, 0, true);
+                        canvasUI.getPaintManager().paintEdge(g,
+                                sourcePoint.center,
+                                sourceUI.getBounds(),
+                                targetPoint.center,
+                                JIPipeGraphEdge.Shape.Elbow,
+                                1,
+                                0,
+                                0,
+                                true);
                     }
                 }
             }
@@ -112,7 +128,15 @@ public class JIPipeDesktopGraphCanvasConnectionHighlightManager {
                     PointRange.tighten(sourcePoint, targetPoint);
 
                     // Draw arrow
-                    canvasUI.paintEdge(g, sourcePoint.center, sourceUI.getBounds(), targetPoint.center, JIPipeGraphEdge.Shape.Elbow, 1, 0, 0, true);
+                    canvasUI.getPaintManager().paintEdge(g,
+                            sourcePoint.center,
+                            sourceUI.getBounds(),
+                            targetPoint.center,
+                            JIPipeGraphEdge.Shape.Elbow,
+                            1,
+                            0,
+                            0,
+                            true);
                 }
             } else if (disconnectHighlight.getTarget().getSlot().isOutput()) {
                 JIPipeDataSlot target = connectHighlight.getSource().getSlot();
@@ -132,7 +156,15 @@ public class JIPipeDesktopGraphCanvasConnectionHighlightManager {
                     PointRange.tighten(sourcePoint, targetPoint);
 
                     // Draw arrow
-                    canvasUI.paintEdge(g, sourcePoint.center, sourceUI.getBounds(), targetPoint.center, JIPipeGraphEdge.Shape.Elbow, 1, 0, 0, true);
+                    canvasUI.getPaintManager().paintEdge(g,
+                            sourcePoint.center,
+                            sourceUI.getBounds(),
+                            targetPoint.center,
+                            JIPipeGraphEdge.Shape.Elbow,
+                            1,
+                            0,
+                            0,
+                            true);
                 }
             }
         }

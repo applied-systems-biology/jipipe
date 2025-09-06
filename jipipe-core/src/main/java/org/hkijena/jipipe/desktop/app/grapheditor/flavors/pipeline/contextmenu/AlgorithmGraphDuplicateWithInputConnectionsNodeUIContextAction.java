@@ -45,7 +45,7 @@ public class AlgorithmGraphDuplicateWithInputConnectionsNodeUIContextAction impl
                 .extract(selection.stream().map(JIPipeDesktopGraphNodeUI::getNode).collect(Collectors.toSet()), true, true);
         try {
             String json = JsonUtils.getObjectMapper().writerWithDefaultPrettyPrinter().writeValueAsString(copyGraph);
-            Map<UUID, JIPipeGraphNode> pastedNodes = canvasUI.nodeManager.pasteNodes(json);
+            Map<UUID, JIPipeGraphNode> pastedNodes = canvasUI.getNodeManager().pasteNodes(json);
 
             // Reconnect to inputs
             for (Map.Entry<UUID, JIPipeGraphNode> entry : pastedNodes.entrySet()) {

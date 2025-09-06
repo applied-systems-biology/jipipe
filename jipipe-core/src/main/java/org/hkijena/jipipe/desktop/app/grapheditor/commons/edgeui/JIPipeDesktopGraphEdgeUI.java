@@ -28,54 +28,16 @@ import java.awt.*;
 import java.util.Set;
 
 public class JIPipeDesktopGraphEdgeUI implements JIPipeDesktopGraphInteractiveObjectUI, Comparable<JIPipeDesktopGraphEdgeUI> {
+    private final JIPipeDesktopGraphCanvasUI canvasUI;
     private final JIPipeDataSlot source;
     private final JIPipeDataSlot target;
     private final JIPipeGraphEdge edge;
 
-    private int multiColorIndex;
-
-    private int multiColorMax;
-
-    private JIPipeDesktopGraphNodeUI sourceUI;
-
-    private JIPipeDesktopGraphNodeUI targetUI;
-
-    private Point sourceCenter;
-
-    private Point targetCenter;
-
-    private PointRange sourcePoint;
-
-    private PointRange targetPoint;
-
-    public JIPipeDesktopGraphEdgeUI(JIPipeDataSlot source, JIPipeDataSlot target, JIPipeGraphEdge edge) {
+    public JIPipeDesktopGraphEdgeUI(JIPipeDesktopGraphCanvasUI canvasUI, JIPipeDataSlot source, JIPipeDataSlot target, JIPipeGraphEdge edge) {
+        this.canvasUI = canvasUI;
         this.source = source;
         this.target = target;
         this.edge = edge;
-    }
-
-    public int getMultiColorMax() {
-        return multiColorMax;
-    }
-
-    public void setMultiColorMax(int multiColorMax) {
-        this.multiColorMax = multiColorMax;
-    }
-
-    public Point getSourceCenter() {
-        return sourceCenter;
-    }
-
-    public void setSourceCenter(Point sourceCenter) {
-        this.sourceCenter = sourceCenter;
-    }
-
-    public Point getTargetCenter() {
-        return targetCenter;
-    }
-
-    public void setTargetCenter(Point targetCenter) {
-        this.targetCenter = targetCenter;
     }
 
     public JIPipeGraphEdge getEdge() {
@@ -90,52 +52,43 @@ public class JIPipeDesktopGraphEdgeUI implements JIPipeDesktopGraphInteractiveOb
         return target;
     }
 
-    public int getMultiColorIndex() {
-        return multiColorIndex;
-    }
-
-    public void setMultiColorIndex(int multiColorIndex) {
-        this.multiColorIndex = multiColorIndex;
-    }
-
-    public PointRange getSourcePoint() {
-        return sourcePoint;
-    }
-
-    public void setSourcePoint(PointRange sourcePoint) {
-        this.sourcePoint = sourcePoint;
-    }
-
-    public PointRange getTargetPoint() {
-        return targetPoint;
-    }
-
-    public void setTargetPoint(PointRange targetPoint) {
-        this.targetPoint = targetPoint;
-    }
-
     public boolean isCommentEdge() {
         return source.getNode() instanceof JIPipeCommentNode || target.getNode() instanceof JIPipeCommentNode;
     }
 
-    public JIPipeDesktopGraphNodeUI getSourceUI() {
-        return sourceUI;
+    public JIPipeDesktopGraphNodeUI getSourceNodeUI() {
+        return canvasUI.getNodeUIs().getOrDefault(source.getNode(), null);
     }
 
-    public void setSourceUI(JIPipeDesktopGraphNodeUI sourceUI) {
-        this.sourceUI = sourceUI;
+    public JIPipeDesktopGraphNodeUI getTargetNodeUI() {
+        return canvasUI.getNodeUIs().getOrDefault(target.getNode(), null);
     }
 
-    public JIPipeDesktopGraphNodeUI getTargetUI() {
-        return targetUI;
+    public PointRange getSourcePointRange() {
+        JIPipeDesktopGraphNodeUI sourceNodeUI = getSourceNodeUI();
+        if (sourceNodeUI != null) {
+            return sourceNodeUI.getSlotLocation(source);
+        }
+        return null;
     }
 
-    public void setTargetUI(JIPipeDesktopGraphNodeUI targetUI) {
-        this.targetUI = targetUI;
+    public PointRange getTargetPointRange() {
+        JIPipeDesktopGraphNodeUI targetNodeUI = getTargetNodeUI();
+        if (targetNodeUI != null) {
+            return targetNodeUI.getSlotLocation(target);
+        }
+        return null;
     }
 
     public int getUIManhattanDistance() {
+        PointRange sourcePoint = getSourcePointRange();
+        PointRange targetPoint = getTargetPointRange();
+
         if (sourcePoint != null && targetPoint != null) {
+
+            // Tighten the point ranges: Bringing the centers together
+            PointRange.tighten(sourcePoint, targetPoint);
+
             return Math.abs(sourcePoint.center.x - targetPoint.center.x) + Math.abs(sourcePoint.center.y - targetPoint.center.y);
         } else {
             return -1;
@@ -149,11 +102,47 @@ public class JIPipeDesktopGraphEdgeUI implements JIPipeDesktopGraphInteractiveOb
 
     @Override
     public Set<JIPipeGraphNode> getNodes() {
-        return Set.of(sourceUI.getNode(), targetUI.getNode());
+        return Set.of(source.getNode(), target.getNode());
     }
 
     @Override
     public void updateView(JIPipeDesktopGraphInteractiveObjectUIUpdateViewCommand command) {
 
+    }
+
+    public void paint(Graphics2D g,
+                      Stroke stroke,
+                      Stroke strokeBorder,
+                      double scale,
+                      int viewX,
+                      int viewY,
+                      boolean enableArrows) {
+
+        JIPipeDesktopGraphNodeUI sourceNodeUI = getSourceNodeUI();
+        JIPipeDesktopGraphNodeUI targetNodeUI = getTargetNodeUI();
+        PointRange sourcePoint = getSourcePointRange();
+        PointRange targetPoint = getTargetPointRange();
+        sourcePoint.add(sourceNodeUI.getLocation());
+        targetPoint.add(targetNodeUI.getLocation());
+        JIPipeGraphEdge.Shape uiShape = edge.getUiShape();
+
+        // Tighten the point ranges: Bringing the centers together
+        PointRange.tighten(sourcePoint, targetPoint);
+
+        if (strokeBorder != null) {
+            // Fully outlined stroke
+            g.setStroke(strokeBorder);
+            g.setColor(canvasUI.getResources().getEdgeColor(source, target, false, 0, 0));
+            canvasUI.getPaintManager().paintEdge(g, sourcePoint.center, sourceNodeUI.getBounds(), targetPoint.center, uiShape, scale, viewX, viewY, enableArrows);
+            g.setStroke(stroke);
+
+            g.setPaint(canvasUI.getResources().getEdgeBackgroundPaint(source, target, sourcePoint, targetPoint, canvasUI.getResources().getImprovedStrokeBackgroundColor()));
+            canvasUI.getPaintManager().paintEdge(g, sourcePoint.center, sourceNodeUI.getBounds(), targetPoint.center, uiShape, scale, viewX, viewY, enableArrows);
+        } else {
+            // Just a single stroke
+            g.setStroke(stroke);
+            g.setColor(canvasUI.getResources().getEdgeColor(source, target, false, 0, 0));
+            canvasUI.getPaintManager().paintEdge(g, sourcePoint.center, sourceNodeUI.getBounds(), targetPoint.center, uiShape, scale, viewX, viewY, enableArrows);
+        }
     }
 }

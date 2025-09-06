@@ -1,5 +1,6 @@
 package org.hkijena.jipipe.desktop.app.grapheditor.commons.canvas.overlays;
 
+import org.hkijena.jipipe.api.grapheditortool.JIPipeToggleableGraphEditorTool;
 import org.hkijena.jipipe.desktop.app.grapheditor.commons.JIPipeDesktopGraphCanvasUI;
 import org.hkijena.jipipe.desktop.app.grapheditor.commons.nodeui.JIPipeDesktopGraphNodeUI;
 import org.hkijena.jipipe.utils.ThemeUtils;
@@ -73,7 +74,7 @@ public class JIPipeDesktopGraphCanvasOutsideEdgesOverlay implements  JIPipeDeskt
         }
         g.drawLine(sourcePoint.x, sourcePoint.y, targetPoint.x + dx, targetPoint.y + dy);
         if (drawArrowHead) {
-            canvasUI.paintArrowHead(g, targetPoint.x, targetPoint.y);
+            canvasUI.getPaintManager().paintArrowHead(g, targetPoint.x, targetPoint.y);
         }
     }
 }
