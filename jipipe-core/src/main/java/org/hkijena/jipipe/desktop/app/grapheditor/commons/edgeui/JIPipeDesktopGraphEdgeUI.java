@@ -120,6 +120,11 @@ public class JIPipeDesktopGraphEdgeUI implements JIPipeDesktopGraphInteractiveOb
 
         JIPipeDesktopGraphNodeUI sourceNodeUI = getSourceNodeUI();
         JIPipeDesktopGraphNodeUI targetNodeUI = getTargetNodeUI();
+
+        if(sourceNodeUI == null || targetNodeUI == null) {
+            return;
+        }
+
         PointRange sourcePoint = getSourcePointRange();
         PointRange targetPoint = getTargetPointRange();
         sourcePoint.add(sourceNodeUI.getLocation());
