@@ -48,20 +48,10 @@ public class JIPipeDesktopGraphEdgeUI implements JIPipeDesktopGraphInteractiveOb
 
     private PointRange targetPoint;
 
-    private boolean hidden;
-
     public JIPipeDesktopGraphEdgeUI(JIPipeDataSlot source, JIPipeDataSlot target, JIPipeGraphEdge edge) {
         this.source = source;
         this.target = target;
         this.edge = edge;
-    }
-
-    public boolean isHidden() {
-        return hidden;
-    }
-
-    public void setHidden(boolean hidden) {
-        this.hidden = hidden;
     }
 
     public int getMultiColorMax() {
