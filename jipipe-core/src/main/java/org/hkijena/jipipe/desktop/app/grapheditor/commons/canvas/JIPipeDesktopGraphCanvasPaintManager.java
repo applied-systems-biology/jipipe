@@ -4,6 +4,7 @@ import gnu.trove.list.TIntList;
 import gnu.trove.list.array.TIntArrayList;
 import org.hkijena.jipipe.api.nodes.JIPipeGraphEdge;
 import org.hkijena.jipipe.desktop.app.grapheditor.commons.JIPipeDesktopGraphCanvasUI;
+import org.hkijena.jipipe.desktop.app.grapheditor.commons.edgeui.JIPipeDesktopGraphEdgeUI;
 import org.hkijena.jipipe.desktop.app.grapheditor.commons.nodeui.JIPipeDesktopGraphNodeUI;
 
 import java.awt.*;
@@ -165,17 +166,14 @@ public class JIPipeDesktopGraphCanvasPaintManager {
         graphics2D.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_OFF);
         graphics2D.setRenderingHint(RenderingHints.KEY_INTERPOLATION, RenderingHints.VALUE_INTERPOLATION_BILINEAR);
         graphics2D.setColor(Color.LIGHT_GRAY);
-//        paintEdges(graphics2D,
-//                JIPipeDesktopGraphCanvasResources.STROKE_UNIT,
-//                null,
-//                JIPipeDesktopGraphCanvasResources.STROKE_UNIT_COMMENT,
-//                false,
-//                false,
-//                scale,
-//                viewX,
-//                viewY,
-//                false,
-//                JIPipeDesktopGraphCanvasUIEdgeMuteMode.Auto);
-        System.err.println("Minimap edges: not implemented yet");
+        for (JIPipeDesktopGraphEdgeUI edgeUI : canvasUI.getEdgeUIs().values()) {
+            edgeUI.paint(graphics2D,
+                    JIPipeDesktopGraphCanvasResources.STROKE_UNIT,
+                    null,
+                    scale,
+                    viewX,
+                    viewY,
+                    false);
+        }
     }
 }
