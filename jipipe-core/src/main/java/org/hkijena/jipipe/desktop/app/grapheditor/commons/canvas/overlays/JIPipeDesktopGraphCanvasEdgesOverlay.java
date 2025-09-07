@@ -2,12 +2,15 @@ package org.hkijena.jipipe.desktop.app.grapheditor.commons.canvas.overlays;
 
 import org.hkijena.jipipe.api.data.JIPipeDataSlot;
 import org.hkijena.jipipe.desktop.app.grapheditor.commons.JIPipeDesktopGraphCanvasUI;
+import org.hkijena.jipipe.desktop.app.grapheditor.commons.JIPipeDesktopGraphInteractiveObjectUI;
 import org.hkijena.jipipe.desktop.app.grapheditor.commons.canvas.JIPipeDesktopGraphCanvasResources;
 import org.hkijena.jipipe.desktop.app.grapheditor.commons.edgeui.JIPipeDesktopGraphEdgeUI;
 import org.hkijena.jipipe.desktop.app.grapheditor.commons.nodeui.JIPipeDesktopGraphNodeUI;
 import org.hkijena.jipipe.utils.PointRange;
 
+import javax.swing.border.Border;
 import java.awt.*;
+import java.util.Set;
 
 public class JIPipeDesktopGraphCanvasEdgesOverlay implements JIPipeDesktopGraphCanvasOverlay{
 
@@ -25,8 +28,10 @@ public class JIPipeDesktopGraphCanvasEdgesOverlay implements JIPipeDesktopGraphC
     @Override
     public void paintComponent(Graphics2D g) {
 
+        Set<JIPipeDesktopGraphInteractiveObjectUI> selection = canvasUI.getSelectionManager().getSelection();
         Stroke strokeBorder = canvasUI.getResources().getEdgeStrokeBorder();
         Stroke strokeBorderSelected = canvasUI.getResources().getSelectedEdgeStrokeBorder();
+        Stroke strokeBorderAdjacent = canvasUI.getResources().getAdjacentEdgeStrokeBorder();
         Stroke strokeInside = canvasUI.getResources().getEdgeStrokeInside();
 
         for (JIPipeDesktopGraphEdgeUI edgeUI : canvasUI.getEdgeUIs().values()) {
@@ -47,9 +52,14 @@ public class JIPipeDesktopGraphCanvasEdgesOverlay implements JIPipeDesktopGraphC
                 continue;
             }
 
-            boolean isSelected = canvasUI.getSelectionManager().getSelection().contains(edgeUI) ||
-                    canvasUI.getSelectionManager().getSelection().contains(sourceUI) ||
-                    canvasUI.getSelectionManager().getSelection().contains(targetUI);
+            Stroke stroke = strokeBorder;
+            if(selection.contains(edgeUI)) {
+                stroke = strokeBorderSelected;
+            }
+            else if(  selection.contains(sourceUI) ||
+                    selection.contains(targetUI)) {
+                stroke = strokeBorderAdjacent;
+            }
 
             // Hidden edges
             if (edgeUI.isCommentEdge()) {
@@ -64,7 +74,7 @@ public class JIPipeDesktopGraphCanvasEdgesOverlay implements JIPipeDesktopGraphC
             } else {
                 edgeUI.paint(g,
                         strokeInside,
-                       isSelected ? strokeBorderSelected : strokeBorder,
+                        stroke,
                         1,
                         0,
                         0,

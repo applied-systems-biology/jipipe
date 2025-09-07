@@ -336,13 +336,18 @@ public class JIPipeDesktopGraphCanvasEdgeManager {
      * @return true if the line intersects with the rectangle, false otherwise
      */
     private boolean isLineRectangleIntersecting(Point sourcePoint, Point targetPoint, Rectangle2D rectangle, int hitThreshold) {
-        // Calculate the bounding rectangle of the line
+        // Calculate the bounding rectangle of the line with hit threshold expansion
         Rectangle lineRectangle = new Rectangle(
                 Math.min(sourcePoint.x, targetPoint.x),
                 Math.min(sourcePoint.y, targetPoint.y),
                 Math.abs(targetPoint.x - sourcePoint.x),
                 Math.abs(targetPoint.y - sourcePoint.y)
         );
+
+        // Expand the rectangle by the hit threshold on all sides to handle zero-area rectangles
+        if (hitThreshold > 0) {
+            lineRectangle.grow(hitThreshold, hitThreshold);
+        }
 
         // Test for rectangle intersection
         return lineRectangle.intersects(rectangle);

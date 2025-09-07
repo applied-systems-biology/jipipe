@@ -1027,7 +1027,7 @@ public class JIPipeDesktopGraphCanvasUI extends JLayeredPane implements JIPipeDe
                     selectionManager.selectOnly(nodeUI);
                 }
             }
-            else {
+            else if(!mouseEvent.isShiftDown()) {
                 selectionManager.clearSelection();
             }
 

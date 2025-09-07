@@ -134,6 +134,11 @@ public class JIPipeDesktopGraphCanvasResources {
         return new BasicStroke(width, BasicStroke.CAP_SQUARE, BasicStroke.JOIN_MITER);
     }
 
+    public Stroke getAdjacentEdgeStrokeBorder() {
+        int width = (int) Math.max(1, canvasUI.getZoom() * 4) + 4;
+        return new BasicStroke(width, BasicStroke.CAP_SQUARE, BasicStroke.JOIN_MITER);
+    }
+
     public Stroke getSelectedEdgeStrokeBorder() {
         int width = (int) Math.max(1, canvasUI.getZoom() * 4) + 6;
         return new BasicStroke(width, BasicStroke.CAP_SQUARE, BasicStroke.JOIN_MITER);
