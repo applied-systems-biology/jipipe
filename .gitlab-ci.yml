@@ -133,7 +133,7 @@ build_feature_branch:
     - mvn clean compile
     - mvn clean package
     - cd dist/zip
-    - ./build.sh
+    - ./build-no-dependencies.sh
     - echo "Build completed. Finding generated ZIP files..."
     - find . -name "JIPipe-*.zip" -type f | head -5
   artifacts:

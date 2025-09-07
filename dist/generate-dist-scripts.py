@@ -8,15 +8,18 @@ with open("dist-info.json", "r") as f:
 
 jipipe_version = json_data["jipipe-version"]
 
-def write_generator(f):
+def write_generator(f, no_dependencies=False):
     # Download dependencies
-    for (name, url) in json_data["dependencies"].items():
-        wl('if [ ! -e "./dependencies/' + name + '" ]; then')
-        rel_path = "./dependencies/" + name
-        re_dir = os.path.dirname(rel_path)
-        wl("mkdir -p " + '"' + re_dir + '"', tab=1)
-        wl("wget -O ./dependencies/" + name + " " + url + " || exit 1", tab=1)
-        wl("fi")
+    if not no_dependencies:
+        for (name, url) in json_data["dependencies"].items():
+            wl('if [ ! -e "./dependencies/' + name + '" ]; then')
+            rel_path = "./dependencies/" + name
+            re_dir = os.path.dirname(rel_path)
+            wl("mkdir -p " + '"' + re_dir + '"', tab=1)
+            wl("wget -O ./dependencies/" + name + " " + url + " || exit 1", tab=1)
+            wl("fi")
+    else:
+        print("Skipping generation of dependency downloads")
 
     # Cleaning up old package
     wl()
@@ -34,7 +37,8 @@ def write_generator(f):
     wl()
 
     # Copy dependencies
-    wl("cp -rv ./dependencies/* ./package/jars/")
+    if not no_dependencies:
+        wl("cp -rv ./dependencies/* ./package/jars/")
     # wl("cp -rv $OPENCV_DIR/*.jar ./package/dependencies")
 
     # Copy contrib dependencoes
@@ -73,6 +77,23 @@ with open("zip/build.sh", "w") as f:
     wl('popd || exit')
     wl()
     write_generator(f)
+
+print("Generating ZIP script (dev, no dependencies)")
+with open("zip/build-no-dependencies.sh", "w") as f:
+    def wl(text="", tab=0):
+        f.write(tab * "\t" + text + "\n")
+    wl("#!/bin/bash")
+    wl()
+    wl('JIPIPE_VERSION="Development"')
+    wl("PROJECT_DIR=../..")
+    wl()
+    wl('pushd $PROJECT_DIR || exit')
+    wl('JIPIPE_VERSION=$(mvn help:evaluate -Dexpression=project.version -q -DforceStdout | grep -Po "\\d\\.\\d+\\.\\d+")')
+    # wl('OPENCV_DOWNLOAD="' + opencv_download + '"')
+    # wl('OPENCV_DIR=' + opencv_dir)
+    wl('popd || exit')
+    wl()
+    write_generator(f, no_dependencies=True)
 
 print("Generating ZIP script (release)")
 with open("zip/build-release.sh", "w") as f:
