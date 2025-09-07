@@ -25,6 +25,18 @@ public class JIPipeDesktopGraphCanvasPaintManager {
 
 
     private void paintElbowEdge(Graphics2D g, Point sourcePoint, Rectangle sourceBounds, Point targetPoint, double scale, int viewX, int viewY, boolean enableArrows) {
+
+        TIntArrayList xCoords = new TIntArrayList(8);
+        TIntArrayList yCoords = new TIntArrayList(8);
+
+        createElbowEdgeCoordinates(sourcePoint, sourceBounds, targetPoint, scale, viewX, viewY, enableArrows, xCoords, yCoords);
+
+        // Draw the polygon
+        g.drawPolyline(xCoords.toArray(), yCoords.toArray(), xCoords.size());
+
+    }
+
+    public void createElbowEdgeCoordinates(Point sourcePoint, Rectangle sourceBounds, Point targetPoint, double scale, int viewX, int viewY, boolean enableArrows, TIntArrayList xCoords, TIntArrayList yCoords) {
         int buffer;
         int sourceA;
         int targetA;
@@ -48,9 +60,6 @@ public class JIPipeDesktopGraphCanvasPaintManager {
         int b0 = sourceB;
         int a1 = sourceA;
         int b1 = sourceB;
-
-        TIntArrayList xCoords = new TIntArrayList(8);
-        TIntArrayList yCoords = new TIntArrayList(8);
 
         addElbowPolygonCoordinate(a0, b0, scale, viewX, viewY, xCoords, yCoords);
 
@@ -87,10 +96,6 @@ public class JIPipeDesktopGraphCanvasPaintManager {
         // Go to end point
         a1 = targetA;
         addElbowPolygonCoordinate(a1, b1, scale, viewX, viewY, xCoords, yCoords);
-
-        // Draw the polygon
-        g.drawPolyline(xCoords.toArray(), yCoords.toArray(), xCoords.size());
-
     }
 
     private void addElbowPolygonCoordinate(int a1, int b1, double scale, int viewX, int viewY, TIntList xCoords, TIntList yCoords) {

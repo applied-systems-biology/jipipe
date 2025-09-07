@@ -113,10 +113,10 @@ public class JIPipeDesktopGraphCanvasSelectionManager {
         }
     }
 
-    public void setSelection(Set<JIPipeDesktopGraphNodeUI> nodeUIs) {
+    public void setSelection(Set<? extends JIPipeDesktopGraphInteractiveObjectUI> nodeUIs) {
         clearSelection();
         if (nodeUIs != null) {
-            for (JIPipeDesktopGraphNodeUI ui : nodeUIs) {
+            for (JIPipeDesktopGraphInteractiveObjectUI ui : nodeUIs) {
                 selection.add(ui);
                 if (!(ui instanceof JIPipeDesktopAnnotationGraphNodeUI)) {
                     canvasUI.moveToFrontLayer(ui);
@@ -140,7 +140,7 @@ public class JIPipeDesktopGraphCanvasSelectionManager {
      *
      * @param ui The algorithm UI
      */
-    public void selectOnly(JIPipeDesktopGraphNodeUI ui) {
+    public void selectOnly(JIPipeDesktopGraphInteractiveObjectUI ui) {
         if (ui == null) {
             clearSelection();
             return;

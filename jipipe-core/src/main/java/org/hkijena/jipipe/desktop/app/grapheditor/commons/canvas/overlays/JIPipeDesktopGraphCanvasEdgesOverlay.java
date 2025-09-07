@@ -26,6 +26,7 @@ public class JIPipeDesktopGraphCanvasEdgesOverlay implements JIPipeDesktopGraphC
     public void paintComponent(Graphics2D g) {
 
         Stroke strokeBorder = canvasUI.getResources().getEdgeStrokeBorder();
+        Stroke strokeBorderSelected = canvasUI.getResources().getSelectedEdgeStrokeBorder();
         Stroke strokeInside = canvasUI.getResources().getEdgeStrokeInside();
 
         for (JIPipeDesktopGraphEdgeUI edgeUI : canvasUI.getEdgeUIs().values()) {
@@ -59,7 +60,7 @@ public class JIPipeDesktopGraphCanvasEdgesOverlay implements JIPipeDesktopGraphC
             } else {
                 edgeUI.paint(g,
                         strokeInside,
-                        strokeBorder,
+                        canvasUI.getSelectionManager().getSelection().contains(edgeUI) ? strokeBorderSelected : strokeBorder,
                         1,
                         0,
                         0,

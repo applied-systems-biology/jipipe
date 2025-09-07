@@ -816,28 +816,45 @@ public class JIPipeDesktopGraphCanvasUI extends JLayeredPane implements JIPipeDe
             }
         }
 
-        JIPipeDesktopGraphNodeUI ui = pickNodeUI(mouseEvent);
+        // Try to pick a node UI
+        JIPipeDesktopGraphNodeUI nodeUI = pickNodeUI(mouseEvent);
+        JIPipeDesktopGraphEdgeUI edgeUI = null;
 
-        if (ui != null) {
-            ui.mouseClicked(mouseEvent);
+        if (nodeUI != null) {
+            nodeUI.mouseClicked(mouseEvent);
             if (mouseEvent.isConsumed()) {
                 return;
             }
         }
+        else {
+            edgeUI = pickEdgeUI(mouseEvent);
+        }
 
         if (SwingUtilities.isLeftMouseButton(mouseEvent) && mouseEvent.getClickCount() == 2) {
-            if (ui != null) {
-                defaultNodeUIActionRequestedEventEmitter.emit(new JIPipeDesktopGraphNodeUI.DefaultNodeUIActionRequestedEvent(ui));
+            if (nodeUI != null) {
+                defaultNodeUIActionRequestedEventEmitter.emit(new JIPipeDesktopGraphNodeUI.DefaultNodeUIActionRequestedEvent(nodeUI));
             } else if (graphEditorUI != null) {
-                graphEditorUI.onCanvasEmptyDoubleClick(mouseEvent);
+                if(edgeUI == null) {
+                    graphEditorUI.onCanvasEmptyDoubleClick(mouseEvent);
+                }
             }
         } else if (SwingUtilities.isLeftMouseButton(mouseEvent)) {
+
+            if(nodeUI == null && edgeUI != null) {
+                selectionManager.selectOnly(edgeUI);
+            }
+
             setGraphEditCursor(new Point(mouseEvent.getX(), mouseEvent.getY()));
             requestFocusInWindow();
             repaint();
         } else if (SwingUtilities.isRightMouseButton(mouseEvent)) {
             if (selectionManager.getSelection().size() <= 1) {
-                selectionManager.selectOnly(ui);
+                if(nodeUI != null) {
+                    selectionManager.selectOnly(nodeUI);
+                }
+                else {
+                    selectionManager.selectOnly(edgeUI);
+                }
             }
             if (graphEditorUI != null && graphEditorUI.getCurrentTool() != graphEditorUI.getDefaultTool()) {
                 if(graphEditorUI.getCurrentTool() != null && graphEditorUI.getCurrentTool().isDeactivateOnRightClick()) {
@@ -848,13 +865,7 @@ public class JIPipeDesktopGraphCanvasUI extends JLayeredPane implements JIPipeDe
             openContextMenu(new Point(mouseEvent.getX(), mouseEvent.getY()));
         }
 
-//        {
-//            int hValue = scrollPane.getHorizontalScrollBar().getValue();
-//            int vValue = scrollPane.getVerticalScrollBar().getValue();
-//            int hWidth = scrollPane.getHorizontalScrollBar().getVisibleAmount();
-//            int vHeight = scrollPane.getVerticalScrollBar().getVisibleAmount();
-//            System.out.println(new Rectangle(hValue, vValue, hWidth, vHeight));
-//        }
+
     }
 
     /**
@@ -1033,6 +1044,223 @@ public class JIPipeDesktopGraphCanvasUI extends JLayeredPane implements JIPipeDe
             }
         }
         return null;
+    }
+
+    /**
+     * Picks an edge UI at the given mouse event location.
+     * This method checks if the mouse is over any edge by testing proximity to the edge path.
+     * For performance, it first checks bounding rectangles and only performs line hit testing
+     * when the mouse is within a reasonable distance of the edge.
+     *
+     * @param mouseEvent the mouse event containing the coordinates
+     * @return the edge UI if found, null otherwise
+     */
+    public JIPipeDesktopGraphEdgeUI pickEdgeUI(MouseEvent mouseEvent) {
+        // Create translated point accounting for zoom and view
+        int mouseX = mouseEvent.getX();
+        int mouseY = mouseEvent.getY();
+        
+        // Define hit detection threshold (distance from mouse to edge centerline)
+        int hitThreshold = Math.max(8, (int) (6 * zoom));
+        
+        // Iterate through edges in reverse order (top to bottom)
+        // Use streams for better performance when there are many edges
+        return edgeUIs.values().stream()
+                .filter(edgeUI -> isMouseOverEdge(mouseX, mouseY, edgeUI, hitThreshold))
+                .findFirst()
+                .orElse(null);
+    }
+    
+    /**
+     * Checks if the mouse coordinates are over a specific edge UI.
+     * This method implements both bounding box and precise line detection.
+     *
+     * @param mouseX the mouse x coordinate
+     * @param mouseY the mouse y coordinate
+     * @param edgeUI the edge UI to test
+     * @param hitThreshold the distance threshold for hit detection
+     * @return true if mouse is over the edge, false otherwise
+     */
+    private boolean isMouseOverEdge(int mouseX, int mouseY, JIPipeDesktopGraphEdgeUI edgeUI, int hitThreshold) {
+        // Source and target node boundaries
+        Rectangle sourceBounds = null;
+        Rectangle targetBounds = null;
+        Point sourcePoint = null;
+        Point targetPoint = null;
+        
+        JIPipeDesktopGraphNodeUI sourceNodeUI = edgeUI.getSourceNodeUI();
+        JIPipeDesktopGraphNodeUI targetNodeUI = edgeUI.getTargetNodeUI();
+        
+        // Skip edge if nodes don't exist
+        if (sourceNodeUI == null || targetNodeUI == null) {
+            return false;
+        }
+        
+        // Get source and target bounds and points
+        sourceBounds = sourceNodeUI.getBounds();
+        targetBounds = targetNodeUI.getBounds();
+        
+        PointRange sourcePointRange = edgeUI.getSourcePointRange();
+        PointRange targetPointRange = edgeUI.getTargetPointRange();
+        
+        if (sourcePointRange == null || targetPointRange == null) {
+            return false;
+        }
+        
+        sourcePoint = new Point(
+            sourceNodeUI.getX() + sourcePointRange.center.x,
+            sourceNodeUI.getY() + sourcePointRange.center.y
+        );
+        
+        targetPoint = new Point(
+            targetNodeUI.getX() + targetPointRange.center.x,
+            targetNodeUI.getY() + targetPointRange.center.y
+        );
+        
+        // Tighten the point ranges: Bringing the centers together
+        PointRange.tighten(sourcePointRange, targetPointRange);
+        
+        // Check bounding box first for fast rejection
+        Rectangle edgeBounds = new Rectangle(
+            Math.min(sourcePoint.x, targetPoint.x),
+            Math.min(sourcePoint.y, targetPoint.y),
+            Math.abs(targetPoint.x - sourcePoint.x),
+            Math.abs(targetPoint.y - sourcePoint.y)
+        );
+        
+        // Expand bounding box by hit threshold with some margin
+        edgeBounds.grow(hitThreshold + 5, hitThreshold + 5);
+        
+        if (!edgeBounds.contains(mouseX, mouseY)) {
+            return false;
+        }
+        
+        // Perform precise hit detection based on edge shape
+        JIPipeGraphEdge.Shape edgeShape = edgeUI.getEdge().getUiShape();
+        
+        switch (edgeShape) {
+            case Line:
+                return isMouseOverLineEdge(mouseX, mouseY, sourcePoint, targetPoint, hitThreshold);
+            case Elbow:
+                return isMouseOverElbowEdge(mouseX, mouseY, sourcePoint, targetBounds, targetPoint, hitThreshold);
+            default:
+                return false;
+        }
+    }
+    
+    /**
+     * Checks if mouse is over a straight line edge.
+     * Uses distance from point to line segment algorithm.
+     *
+     * @param mouseX the mouse x coordinate
+     * @param mouseY the mouse y coordinate
+     * @param sourcePoint the source point of the edge
+     * @param targetPoint the target point of the edge
+     * @param hitThreshold the distance threshold for hit detection
+     * @return true if mouse is over the line edge
+     */
+    private boolean isMouseOverLineEdge(int mouseX, int mouseY, Point sourcePoint, Point targetPoint, int hitThreshold) {
+        // Calculate arrow head shift adjustment
+        int arrowHeadShift = resources.getArrowHeadShift();
+        int adjustedTargetY = targetPoint.y + arrowHeadShift;
+        
+        // Calculate distance from point to line segment
+        // This implements the algorithm for finding the perpendicular distance from a point to a line segment
+        double lineLengthSq = (targetPoint.x - sourcePoint.x) * (targetPoint.x - sourcePoint.x) +
+                            (adjustedTargetY - sourcePoint.y) * (adjustedTargetY - sourcePoint.y);
+        
+        if (lineLengthSq == 0) {
+            // Source and target are the same point, just check distance to source
+            int distanceToSource = (mouseX - sourcePoint.x) * (mouseX - sourcePoint.x) +
+                                 (mouseY - sourcePoint.y) * (mouseY - sourcePoint.y);
+            return distanceToSource <= hitThreshold * hitThreshold;
+        }
+        
+        // Calculate parameter t for projection onto line segment
+        double t = ((mouseX - sourcePoint.x) * (targetPoint.x - sourcePoint.x) +
+                   (mouseY - sourcePoint.y) * (adjustedTargetY - sourcePoint.y)) / lineLengthSq;
+        
+        // Clamp t to [0, 1] to ensure projection is on the line segment
+        t = Math.max(0, Math.min(1, t));
+        
+        // Calculate closest point on line segment
+        int closestX = sourcePoint.x + (int) (t * (targetPoint.x - sourcePoint.x));
+        int closestY = sourcePoint.y + (int) (t * (adjustedTargetY - sourcePoint.y));
+        
+        // Calculate squared distance from mouse to closest point
+        int distanceSq = (mouseX - closestX) * (mouseX - closestX) +
+                        (mouseY - closestY) * (mouseY - closestY);
+        
+        return distanceSq <= hitThreshold * hitThreshold;
+    }
+    
+    /**
+     * Checks if mouse is over an elbow edge (L-shaped edge).
+     * Calculates the path and performs distance testing.
+     *
+     * @param mouseX the mouse x coordinate
+     * @param mouseY the mouse y coordinate
+     * @param sourcePoint the source point of the edge
+     * @param targetBounds the bounds of the target node
+     * @param targetPoint the target point of the edge
+     * @param hitThreshold the distance threshold for hit detection
+     * @return true if mouse is over the elbow edge
+     */
+    private boolean isMouseOverElbowEdge(int mouseX, int mouseY, Point sourcePoint, Rectangle targetBounds, Point targetPoint, int hitThreshold) {
+        // Buffer for elbow edge spacing
+        int buffer = JIPipeDesktopGraphCanvasGrid.GRID_HEIGHT / 2;
+        
+        int sourceA = sourcePoint.y;
+        int targetA = targetPoint.y;
+        int sourceB = sourcePoint.x;
+        int targetB = targetPoint.x;
+        int componentStartB = targetBounds.x;
+        int componentEndB = targetBounds.x + targetBounds.width;
+        
+        // Create the elbow path points
+        List<Point> elbowPoints = new ArrayList<>();
+        elbowPoints.add(new Point(sourceB, sourceA)); // Start
+        
+        // Target point is above the source. We have to navigate around it
+        if (sourceA > targetA) {
+            // Add intermediate point for elbow
+            int midA = sourceA + buffer;
+            elbowPoints.add(new Point(sourceB, midA));
+            
+            // Go left or right around component
+            if (targetB <= sourceB) {
+                int midB = Math.max(0, componentStartB - buffer);
+                elbowPoints.add(new Point(midB, midA));
+            } else {
+                int midB = componentEndB + buffer;
+                elbowPoints.add(new Point(midB, midA));
+            }
+            
+            // Go to target height
+            int finalA = Math.max(0, targetA - buffer);
+            elbowPoints.add(new Point(elbowPoints.get(elbowPoints.size() - 1).x, finalA));
+        } else if (sourceB != targetB) {
+            // Horizontal elbow case
+            int dA = targetA - sourceA;
+            int midA = Math.min(sourceA + buffer, sourceA + dA / 2);
+            elbowPoints.add(new Point(sourceB, midA));
+            elbowPoints.add(new Point(targetB, midA));
+        }
+        
+        // Add final target point
+        elbowPoints.add(new Point(targetB, targetA));
+        
+        // Check distance to each line segment of the elbow path
+        for (int i = 0; i < elbowPoints.size() - 1; i++) {
+            Point segmentStart = elbowPoints.get(i);
+            Point segmentEnd = elbowPoints.get(i + 1);
+            
+            if (isMouseOverLineEdge(mouseX, mouseY, segmentStart, segmentEnd, hitThreshold)) {
+                return true;
+            }
+        }
+        
+        return false;
     }
 
     @Override
