@@ -99,6 +99,7 @@ public class JIPipeDesktopGraphCanvasUI extends JLayeredPane implements JIPipeDe
     private final JIPipeDesktopGraphCanvasNodeResizeManager resizeManager = new JIPipeDesktopGraphCanvasNodeResizeManager(this);
     private final JIPipeDesktopGraphCanvasToolManager toolManager = new JIPipeDesktopGraphCanvasToolManager(this);
     private final JIPipeDesktopGraphCanvasResources resources = new JIPipeDesktopGraphCanvasResources(this);
+    private final JIPipeDesktopGraphCanvasNotificationsManager notificationsManager = new JIPipeDesktopGraphCanvasNotificationsManager(this);
 
     private final List<JIPipeDesktopGraphCanvasOverlay> overlays = new ArrayList<>();
 
@@ -189,6 +190,7 @@ public class JIPipeDesktopGraphCanvasUI extends JLayeredPane implements JIPipeDe
         overlays.add(new JIPipeDesktopGraphCanvasResizeHandlesOverlay(this));
         overlays.add(new JIPipeDesktopGraphCanvasSelectionBoxOverlay(this));
         overlays.add(new JIPipeDesktopGraphCanvasToolInfoOverlay(this));
+        overlays.add(new JIPipeDesktopGraphCanvasNotificationsOverlay(this));
     }
 
     public JIPipeDesktopGraphCanvasSelectionManager getSelectionManager() {
@@ -1845,5 +1847,9 @@ public class JIPipeDesktopGraphCanvasUI extends JLayeredPane implements JIPipeDe
 
     public JIPipeDesktopGraphCanvasPaintManager getPaintManager() {
         return paintManager;
+    }
+
+    public JIPipeDesktopGraphCanvasNotificationsManager getNotificationsManager() {
+        return notificationsManager;
     }
 }
