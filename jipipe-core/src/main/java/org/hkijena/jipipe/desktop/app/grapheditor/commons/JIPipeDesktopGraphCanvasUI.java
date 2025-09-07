@@ -845,6 +845,9 @@ public class JIPipeDesktopGraphCanvasUI extends JLayeredPane implements JIPipeDe
             if (nodeUI == null && edgeUI != null) {
                 selectionManager.selectOnly(edgeUI);
             }
+            else if (nodeUI != null) {
+                selectionManager.selectOnly(nodeUI);
+            }
 
             setGraphEditCursor(new Point(mouseEvent.getX(), mouseEvent.getY()));
             requestFocusInWindow();
