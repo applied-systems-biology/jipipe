@@ -8,6 +8,10 @@ import org.hkijena.jipipe.desktop.app.grapheditor.commons.nodeui.JIPipeDesktopGr
 import org.hkijena.jipipe.utils.PointRange;
 
 import java.awt.*;
+import java.awt.geom.Rectangle2D;
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.List;
 
 public class JIPipeDesktopGraphCanvasEdgeManager {
     private final JIPipeDesktopGraphCanvasUI canvasUI;
@@ -98,17 +102,6 @@ public class JIPipeDesktopGraphCanvasEdgeManager {
         }
     }
 
-    /**
-     * Determines if a line is straight (horizontal or vertical).
-     * This is used to decide between rectangle-based and distance-based hit testing.
-     *
-     * @param sourcePoint the source point of the edge
-     * @param targetPoint the target point of the edge
-     * @return true if the line is horizontal or vertical, false for diagonal lines
-     */
-    private boolean isStraightLine(Point sourcePoint, Point targetPoint) {
-        return sourcePoint.x == targetPoint.x || sourcePoint.y == targetPoint.y;
-    }
 
     /**
      * Checks if mouse is over a line using rectangle-based hit testing.
@@ -210,6 +203,220 @@ public class JIPipeDesktopGraphCanvasEdgeManager {
             Point segmentEnd = new Point(xCoords.get(i + 1), yCoords.get(i + 1));
 
             if (isMouseOverLineEdge(mouseX, mouseY, segmentStart, segmentEnd, hitThreshold)) {
+                return true;
+            }
+        }
+
+        return false;
+    }
+
+    /**
+     * Returns all edges that intersect with the specified rectangle.
+     * This method efficiently finds edges by using bounding box culling and precise geometric testing.
+     * It supports both straight line and elbow edge shapes, working with zoom-aware coordinates.
+     *
+     * @param rectangle the rectangle to test against (in screen coordinates)
+     * @return collection of edges that intersect with the rectangle
+     */
+    public Collection<JIPipeDesktopGraphEdgeUI> getEdgesIntersectingRectangle(Rectangle rectangle) {
+        return getEdgesIntersectingRectangle((int) rectangle.getX(), (int) rectangle.getY(),
+                (int) rectangle.getWidth(), (int) rectangle.getHeight());
+    }
+
+    /**
+     * Returns all edges that intersect with the specified rectangle.
+     * This method efficiently finds edges by using bounding box culling and precise geometric testing.
+     * It supports both straight line and elbow edge shapes, working with zoom-aware coordinates.
+     *
+     * @param x the x coordinate of the rectangle (in screen coordinates)
+     * @param y the y coordinate of the rectangle (in screen coordinates)
+     * @param width the width of the rectangle (in screen coordinates)
+     * @param height the height of the rectangle (in screen coordinates)
+     * @return collection of edges that intersect with the rectangle
+     */
+    public List<JIPipeDesktopGraphEdgeUI> getEdgesIntersectingRectangle(int x, int y, int width, int height) {
+        Rectangle queryRect = new Rectangle(x, y, width, height);
+        List<JIPipeDesktopGraphEdgeUI> result = new ArrayList<>();
+
+        // Get all edge UIs from the canvas
+        for (JIPipeDesktopGraphEdgeUI edgeUI : canvasUI.getEdgeUIs().values()) {
+            if (doesEdgeIntersectRectangle(edgeUI, queryRect)) {
+                result.add(edgeUI);
+            }
+        }
+
+        return result;
+    }
+
+    /**
+     * Checks if a specific edge intersects with the given rectangle.
+     * Uses bounding box culling for efficiency, then performs precise geometric testing.
+     *
+     * @param edgeUI the edge to test
+     * @param rectangle the rectangle to test against (in screen coordinates)
+     * @return true if the edge intersects with the rectangle, false otherwise
+     */
+    public boolean doesEdgeIntersectRectangle(JIPipeDesktopGraphEdgeUI edgeUI, Rectangle rectangle) {
+        // Skip edge if nodes don't exist
+        JIPipeDesktopGraphNodeUI sourceNodeUI = edgeUI.getSourceNodeUI();
+        JIPipeDesktopGraphNodeUI targetNodeUI = edgeUI.getTargetNodeUI();
+        if (sourceNodeUI == null || targetNodeUI == null) {
+            return false;
+        }
+
+        PointRange sourcePointRange = edgeUI.getSourcePointRange();
+        PointRange targetPointRange = edgeUI.getTargetPointRange();
+        if (sourcePointRange == null || targetPointRange == null) {
+            return false;
+        }
+
+        // Tighten the point ranges: Bringing the centers together
+        sourcePointRange.add(sourceNodeUI.getLocation());
+        targetPointRange.add(targetNodeUI.getLocation());
+        PointRange.tighten(sourcePointRange, targetPointRange);
+
+        // Perform precise intersection testing based on edge shape
+        JIPipeGraphEdge.Shape edgeShape = edgeUI.getEdge().getUiShape();
+        return switch (edgeShape) {
+            case Line -> isLineIntersectingRectangle(sourcePointRange.center, targetPointRange.center, rectangle);
+            case Elbow -> isElbowIntersectingRectangle(sourcePointRange.center, sourceNodeUI.getBounds(),
+                    targetPointRange.center, rectangle);
+            default -> false;
+        };
+    }
+
+    /**
+     * Tests if a straight line intersects with a rectangle.
+     * Uses line-rectangle intersection algorithm.
+     *
+     * @param sourcePoint the source point of the line
+     * @param targetPoint the target point of the line
+     * @param rectangle the rectangle to test against
+     * @return true if the line intersects with the rectangle, false otherwise
+     */
+    private boolean isLineIntersectingRectangle(Point sourcePoint, Point targetPoint, Rectangle2D rectangle) {
+        // Check if either endpoint is inside the rectangle
+        if (rectangle.contains(sourcePoint.x, sourcePoint.y) || rectangle.contains(targetPoint.x, targetPoint.y)) {
+            return true;
+        }
+
+        // For straight lines (horizontal or vertical), use rectangle-based hit testing
+        if (isStraightLine(sourcePoint, targetPoint)) {
+            return isLineRectangleIntersecting(sourcePoint, targetPoint, rectangle);
+        } else {
+            return isLineSegmentIntersectingRectangle(sourcePoint, targetPoint, rectangle);
+        }
+    }
+
+    /**
+     * Determines if a line is straight (horizontal or vertical).
+     *
+     * @param sourcePoint the source point of the edge
+     * @param targetPoint the target point of the edge
+     * @return true if the line is horizontal or vertical, false for diagonal lines
+     */
+    private boolean isStraightLine(Point sourcePoint, Point targetPoint) {
+        return sourcePoint.x == targetPoint.x || sourcePoint.y == targetPoint.y;
+    }
+
+    /**
+     * Tests if a straight line (horizontal or vertical) intersects with a rectangle.
+     * More efficient for axis-aligned lines.
+     *
+     * @param sourcePoint the source point of the line
+     * @param targetPoint the target point of the line
+     * @param rectangle the rectangle to test against
+     * @return true if the line intersects with the rectangle, false otherwise
+     */
+    private boolean isLineRectangleIntersecting(Point sourcePoint, Point targetPoint, Rectangle2D rectangle) {
+        // Calculate the bounding rectangle of the line
+        Rectangle lineRectangle = new Rectangle(
+                Math.min(sourcePoint.x, targetPoint.x),
+                Math.min(sourcePoint.y, targetPoint.y),
+                Math.abs(targetPoint.x - sourcePoint.x),
+                Math.abs(targetPoint.y - sourcePoint.y)
+        );
+
+        // Test for rectangle intersection
+        return lineRectangle.intersects(rectangle);
+    }
+
+    /**
+     * Tests if a line segment intersects with a rectangle using proper line-rectangle intersection.
+     * Uses the Liang-Barsky algorithm for clipping line segments against a rectangle.
+     *
+     * @param sourcePoint the source point of the line segment
+     * @param targetPoint the target point of the line segment
+     * @param rectangle the rectangle to test against
+     * @return true if the line segment intersects with the rectangle, false otherwise
+     */
+    private boolean isLineSegmentIntersectingRectangle(Point sourcePoint, Point targetPoint, Rectangle2D rectangle) {
+        // Use Liang-Barsky line clipping algorithm
+        double x1 = sourcePoint.x;
+        double y1 = sourcePoint.y;
+        double x2 = targetPoint.x;
+        double y2 = targetPoint.y;
+
+        double xmin = rectangle.getX();
+        double ymin = rectangle.getY();
+        double xmax = rectangle.getX() + rectangle.getWidth();
+        double ymax = rectangle.getY() + rectangle.getHeight();
+
+        double dx = x2 - x1;
+        double dy = y2 - y1;
+
+        double[] p = {-dx, dx, -dy, dy};
+        double[] q = {x1 - xmin, xmax - x1, y1 - ymin, ymax - y1};
+
+        double u1 = 0.0;
+        double u2 = 1.0;
+
+        for (int i = 0; i < 4; i++) {
+            if (p[i] == 0) {
+                // Line is parallel to the clipping boundary
+                if (q[i] < 0) {
+                    return false; // Line is outside the boundary
+                }
+            } else {
+                double r = q[i] / p[i];
+                if (p[i] < 0) {
+                    if (r > u2) return false;
+                    if (r > u1) u1 = r;
+                } else {
+                    if (r < u1) return false;
+                    if (r < u2) u2 = r;
+                }
+            }
+        }
+
+        return true; // Line intersects the rectangle
+    }
+
+    /**
+     * Tests if an elbow (L-shaped) edge intersects with a rectangle.
+     * Generates elbow coordinates and tests each segment for intersection.
+     *
+     * @param sourcePoint the source point of the elbow edge
+     * @param targetBounds the bounds of the target node
+     * @param targetPoint the target point of the elbow edge
+     * @param rectangle the rectangle to test against
+     * @return true if the elbow edge intersects with the rectangle, false otherwise
+     */
+    private boolean isElbowIntersectingRectangle(Point sourcePoint, Rectangle targetBounds,
+            Point targetPoint, Rectangle2D rectangle) {
+        // Generate elbow edge coordinates using the same method as rendering
+        TIntArrayList xCoords = new TIntArrayList(8);
+        TIntArrayList yCoords = new TIntArrayList(8);
+
+        canvasUI.getPaintManager().createElbowEdgeCoordinates(sourcePoint, targetBounds, targetPoint,
+                1, 0, 0, true, xCoords, yCoords);
+
+        // Test each segment of the elbow against the rectangle
+        for (int i = 0; i < xCoords.size() - 1; i++) {
+            Point segmentStart = new Point(xCoords.get(i), yCoords.get(i));
+            Point segmentEnd = new Point(xCoords.get(i + 1), yCoords.get(i + 1));
+
+            if (isLineIntersectingRectangle(segmentStart, segmentEnd, rectangle)) {
                 return true;
             }
         }
