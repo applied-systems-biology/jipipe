@@ -43,7 +43,6 @@ public class JIPipeGraphEditorUIApplicationSettings extends JIPipeDefaultApplica
     private boolean askOnDeleteCompartment = true;
     private boolean askOnDeleteParameter = true;
     private boolean drawOutsideEdges = true;
-    private boolean notifyInvalidDragAndDrop = true;
     private boolean colorSelectedNodeEdges = true;
     private boolean autoLayoutMovesOtherNodes = false;
     private boolean drawNodeShadows = true;
@@ -266,17 +265,6 @@ public class JIPipeGraphEditorUIApplicationSettings extends JIPipeDefaultApplica
     @JIPipeParameter("draw-outside-edges")
     public void setDrawOutsideEdges(boolean drawOutsideEdges) {
         this.drawOutsideEdges = drawOutsideEdges;
-    }
-
-    @SetJIPipeDocumentation(name = "Notify users about invalid drops", description = "If enabled, a message box will be displayed if invalid data is dropped into a graph.")
-    @JIPipeParameter("notify-invalid-drag-and-drop")
-    public boolean isNotifyInvalidDragAndDrop() {
-        return notifyInvalidDragAndDrop;
-    }
-
-    @JIPipeParameter("notify-invalid-drag-and-drop")
-    public void setNotifyInvalidDragAndDrop(boolean notifyInvalidDragAndDrop) {
-        this.notifyInvalidDragAndDrop = notifyInvalidDragAndDrop;
     }
 
     @SetJIPipeDocumentation(name = "Color selected node edges", description = "If enabled, node edges are assigned a unique color while a connected node is selected. " +

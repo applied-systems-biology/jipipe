@@ -14,10 +14,7 @@
 package org.hkijena.jipipe.api.notifications;
 
 import java.time.LocalDateTime;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.List;
-import java.util.Objects;
+import java.util.*;
 
 /**
  * A notification that is shown to the user
@@ -37,6 +34,13 @@ public class JIPipeNotification implements Comparable<JIPipeNotification> {
 
     public JIPipeNotification(String id, String heading, String description, JIPipeNotificationAction... actions) {
         this.id = id;
+        this.heading = heading;
+        this.description = description;
+        this.actions = new ArrayList<>(Arrays.asList(actions));
+    }
+
+    public JIPipeNotification(String heading, String description, JIPipeNotificationAction... actions) {
+        this.id = UUID.randomUUID().toString();
         this.heading = heading;
         this.description = description;
         this.actions = new ArrayList<>(Arrays.asList(actions));

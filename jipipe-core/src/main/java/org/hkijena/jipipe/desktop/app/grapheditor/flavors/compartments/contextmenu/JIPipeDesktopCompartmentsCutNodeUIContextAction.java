@@ -18,7 +18,7 @@ import org.hkijena.jipipe.api.compartments.algorithms.JIPipeProjectCompartment;
 import org.hkijena.jipipe.api.project.JIPipeProject;
 import org.hkijena.jipipe.desktop.app.JIPipeDesktopProjectWorkbench;
 import org.hkijena.jipipe.desktop.app.grapheditor.commons.JIPipeDesktopGraphCanvasUI;
-import org.hkijena.jipipe.desktop.app.grapheditor.commons.JIPipeDesktopGraphInteractiveObjectUI;
+import org.hkijena.jipipe.desktop.app.grapheditor.commons.canvas.managers.JIPipeDesktopGraphCanvasNotificationsManager;
 import org.hkijena.jipipe.desktop.app.grapheditor.commons.nodeui.JIPipeDesktopGraphNodeUI;
 
 import javax.swing.*;
@@ -43,6 +43,9 @@ public class JIPipeDesktopCompartmentsCutNodeUIContextAction extends JIPipeDeskt
             }
             project.removeCompartment(compartment);
         }
+
+        canvasUI.getNotificationsManager().addNotification("Cut " + selection.size() + " compartments",
+               getIcon(), JIPipeDesktopGraphCanvasNotificationsManager.NotificationType.Info);
     }
 
     @Override

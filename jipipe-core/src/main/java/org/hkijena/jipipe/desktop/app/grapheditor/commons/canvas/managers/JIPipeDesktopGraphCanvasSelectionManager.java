@@ -11,7 +11,7 @@
  * See the LICENSE file provided with the code for the full license.
  */
 
-package org.hkijena.jipipe.desktop.app.grapheditor.commons.canvas;
+package org.hkijena.jipipe.desktop.app.grapheditor.commons.canvas.managers;
 
 import com.google.common.collect.ImmutableSet;
 import org.hkijena.jipipe.api.grapheditortool.JIPipeToggleableGraphEditorTool;
@@ -25,7 +25,6 @@ import org.hkijena.jipipe.desktop.app.grapheditor.commons.canvas.events.JIPipeDe
 import org.hkijena.jipipe.desktop.app.grapheditor.commons.nodeui.JIPipeDesktopAnnotationGraphNodeUI;
 import org.hkijena.jipipe.desktop.app.grapheditor.commons.nodeui.JIPipeDesktopGraphNodeUI;
 
-import java.awt.*;
 import java.util.Collections;
 import java.util.HashSet;
 import java.util.LinkedHashSet;

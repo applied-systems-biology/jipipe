@@ -14,15 +14,19 @@
 package org.hkijena.jipipe.desktop.app.grapheditor.flavors.pipeline.contextmenu;
 
 import org.hkijena.jipipe.JIPipe;
+import org.hkijena.jipipe.api.nodes.JIPipeGraphNode;
 import org.hkijena.jipipe.desktop.app.grapheditor.commons.JIPipeDesktopGraphCanvasUI;
 import org.hkijena.jipipe.desktop.app.grapheditor.commons.JIPipeDesktopGraphInteractiveObjectUI;
+import org.hkijena.jipipe.desktop.app.grapheditor.commons.canvas.managers.JIPipeDesktopGraphCanvasNotificationsManager;
 import org.hkijena.jipipe.desktop.app.grapheditor.commons.contextmenu.GraphInteractiveObjectUIContextAction;
 import org.hkijena.jipipe.utils.UIUtils;
 
 import javax.swing.*;
 import java.awt.event.InputEvent;
 import java.awt.event.KeyEvent;
+import java.util.Map;
 import java.util.Set;
+import java.util.UUID;
 
 public class AlgorithmGraphPasteNodeUIContextAction implements GraphInteractiveObjectUIContextAction {
 
@@ -36,10 +40,15 @@ public class AlgorithmGraphPasteNodeUIContextAction implements GraphInteractiveO
         try {
             String json = UIUtils.getStringFromClipboard();
             if (json != null) {
-                canvasUI.getNodeManager().pasteNodes(json);
+                Map<UUID, JIPipeGraphNode> nodeMap = canvasUI.getNodeManager().pasteNodes(json);
+
+                canvasUI.getNotificationsManager().addNotification("Pasted " + nodeMap.size() + " nodes",
+                        getIcon(), JIPipeDesktopGraphCanvasNotificationsManager.NotificationType.Info);
             }
         } catch (Exception e) {
-            JOptionPane.showMessageDialog(canvasUI.getDesktopWorkbench().getWindow(), "The current clipboard contents are no valid nodes/graph.", "Paste nodes", JOptionPane.ERROR_MESSAGE);
+            canvasUI.getNotificationsManager().addNotification("The current clipboard contents are no valid nodes/graph.",
+                    getIcon(),
+                    JIPipeDesktopGraphCanvasNotificationsManager.NotificationType.Error);
             e.printStackTrace();
         }
     }

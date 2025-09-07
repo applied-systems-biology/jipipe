@@ -17,7 +17,7 @@ import org.hkijena.jipipe.JIPipe;
 import org.hkijena.jipipe.api.nodes.JIPipeGraphNode;
 import org.hkijena.jipipe.desktop.app.JIPipeDesktopProjectWorkbench;
 import org.hkijena.jipipe.desktop.app.grapheditor.commons.JIPipeDesktopGraphCanvasUI;
-import org.hkijena.jipipe.desktop.app.grapheditor.commons.JIPipeDesktopGraphInteractiveObjectUI;
+import org.hkijena.jipipe.desktop.app.grapheditor.commons.canvas.managers.JIPipeDesktopGraphCanvasNotificationsManager;
 import org.hkijena.jipipe.desktop.app.grapheditor.commons.nodeui.JIPipeDesktopGraphNodeUI;
 
 import javax.swing.*;
@@ -38,6 +38,9 @@ public class AlgorithmGraphCutNodeUIContextAction extends AlgorithmGraphCopyNode
             canvasUI.getHistoryJournal().snapshotBeforeCutNodes(nodes, nodes.stream().map(JIPipeGraphNode::getCompartmentUUIDInParentGraph).findFirst().orElse(null));
         }
         canvasUI.getGraph().removeNodes(nodes, true);
+
+        canvasUI.getNotificationsManager().addNotification("Cut " + selection.size() + " nodes (locked nodes were skipped)",
+                getIcon(), JIPipeDesktopGraphCanvasNotificationsManager.NotificationType.Info);
     }
 
     @Override

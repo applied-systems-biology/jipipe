@@ -13,11 +13,13 @@
 
 package org.hkijena.jipipe.desktop.app.grapheditor.flavors.compartments.dragdrop;
 
+import org.hkijena.jipipe.JIPipe;
 import org.hkijena.jipipe.api.compartments.algorithms.JIPipeProjectCompartment;
 import org.hkijena.jipipe.api.nodes.JIPipeGraph;
 import org.hkijena.jipipe.desktop.app.grapheditor.commons.JIPipeDesktopGraphCanvasUI;
 import org.hkijena.jipipe.desktop.app.grapheditor.commons.JIPipeDesktopGraphDragAndDropBehavior;
 import org.hkijena.jipipe.desktop.app.grapheditor.commons.canvas.JIPipeDesktopGraphCanvasGrid;
+import org.hkijena.jipipe.desktop.app.grapheditor.commons.canvas.managers.JIPipeDesktopGraphCanvasNotificationsManager;
 import org.hkijena.jipipe.desktop.app.grapheditor.flavors.compartments.JIPipeDesktopCompartmentsGraphEditorUI;
 import org.hkijena.jipipe.plugins.settings.JIPipeGraphEditorUIApplicationSettings;
 import org.hkijena.jipipe.utils.json.JsonUtils;
@@ -84,11 +86,16 @@ public class JIPipeCreateCompartmentNodesFromDraggedDataDragAndDropBehavior impl
             if (accept) {
                 dtde.acceptDrop(dtde.getDropAction());
                 Object transferData = tr.getTransferData(acceptedFlavor);
-                if (transferData instanceof String) {
-                    String text = (String) transferData;
+                if (transferData instanceof String text) {
                     processDrop(text);
                     dtde.dropComplete(true);
                 }
+                else {
+                    accept = false;
+                }
+            }
+            if(!accept) {
+                showErrorMessage();
             }
             return;
         } catch (Throwable t) {
@@ -99,13 +106,13 @@ public class JIPipeCreateCompartmentNodesFromDraggedDataDragAndDropBehavior impl
     }
 
     private void showErrorMessage() {
-        if (canvas.getDragManagerConnect().getCurrentConnectionDragSource() == null && JIPipeGraphEditorUIApplicationSettings.getInstance().isNotifyInvalidDragAndDrop()) {
-            String message = "<html>You probably wanted to drop some data into this graph.<br/>" +
-                    "This is not possible, as the <strong>Compartment Graph</strong> only organizes your project into " +
-                    "multiple sections.<br/><br/>Please double-click a node inside this graph to edit the pipeline.</html>";
-            JOptionPane.showMessageDialog(canvas, new JLabel(message), "Drag & drop not supported", JOptionPane.ERROR_MESSAGE);
-        }
+        canvas.getNotificationsManager().addNotification(
+                "Only compartments can be dropped into this graph",
+                JIPipe.RESOURCES.getIcon16("actions/insert-object.png"),
+                JIPipeDesktopGraphCanvasNotificationsManager.NotificationType.Error
+        );
     }
+
 
     /**
      * Processes drop as serializable (nodes)
@@ -131,13 +138,12 @@ public class JIPipeCreateCompartmentNodesFromDraggedDataDragAndDropBehavior impl
                 }
             }
         } catch (Exception e) {
-            if (JIPipeGraphEditorUIApplicationSettings.getInstance().isNotifyInvalidDragAndDrop()) {
-                JOptionPane.showMessageDialog(canvas.getDesktopWorkbench().getWindow(),
-                        "The dropped string is no valid node/graph.",
-                        "Drop nodes",
-                        JOptionPane.ERROR_MESSAGE);
-                e.printStackTrace();
-            }
+            canvas.getNotificationsManager().addNotification(
+                    "The dropped item is no valid node/graph.",
+                    JIPipe.RESOURCES.getIcon16("actions/insert-object.png"),
+                    JIPipeDesktopGraphCanvasNotificationsManager.NotificationType.Error
+            );
+            e.printStackTrace();
         }
     }
 

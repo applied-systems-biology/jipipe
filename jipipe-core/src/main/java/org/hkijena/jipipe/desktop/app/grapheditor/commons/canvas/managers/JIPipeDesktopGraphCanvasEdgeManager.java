@@ -1,4 +1,4 @@
-package org.hkijena.jipipe.desktop.app.grapheditor.commons.canvas;
+package org.hkijena.jipipe.desktop.app.grapheditor.commons.canvas.managers;
 
 import gnu.trove.list.array.TIntArrayList;
 import org.hkijena.jipipe.api.nodes.JIPipeGraphEdge;

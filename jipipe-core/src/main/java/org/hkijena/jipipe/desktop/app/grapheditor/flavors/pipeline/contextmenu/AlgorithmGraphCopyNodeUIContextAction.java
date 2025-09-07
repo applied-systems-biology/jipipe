@@ -17,8 +17,7 @@ import com.fasterxml.jackson.core.JsonProcessingException;
 import org.hkijena.jipipe.JIPipe;
 import org.hkijena.jipipe.api.nodes.JIPipeGraph;
 import org.hkijena.jipipe.desktop.app.grapheditor.commons.JIPipeDesktopGraphCanvasUI;
-import org.hkijena.jipipe.desktop.app.grapheditor.commons.JIPipeDesktopGraphInteractiveObjectUI;
-import org.hkijena.jipipe.desktop.app.grapheditor.commons.contextmenu.GraphInteractiveObjectUIContextAction;
+import org.hkijena.jipipe.desktop.app.grapheditor.commons.canvas.managers.JIPipeDesktopGraphCanvasNotificationsManager;
 import org.hkijena.jipipe.desktop.app.grapheditor.commons.contextmenu.NodeUIContextAction;
 import org.hkijena.jipipe.desktop.app.grapheditor.commons.nodeui.JIPipeDesktopGraphNodeUI;
 import org.hkijena.jipipe.utils.json.JsonUtils;
@@ -47,7 +46,8 @@ public class AlgorithmGraphCopyNodeUIContextAction implements NodeUIContextActio
             StringSelection stringSelection = new StringSelection(json);
             Clipboard clipboard = Toolkit.getDefaultToolkit().getSystemClipboard();
             clipboard.setContents(stringSelection, stringSelection);
-            canvasUI.getDesktopWorkbench().sendStatusBarText("Copied " + selection.size() + " nodes (locked nodes were skipped)");
+            canvasUI.getNotificationsManager().addNotification("Copied " + selection.size() + " nodes (locked nodes were skipped)",
+                   getIcon(), JIPipeDesktopGraphCanvasNotificationsManager.NotificationType.Info);
         } catch (JsonProcessingException e) {
             e.printStackTrace();
         }

@@ -21,6 +21,7 @@ import org.hkijena.jipipe.api.project.JIPipeProject;
 import org.hkijena.jipipe.desktop.app.JIPipeDesktopProjectWorkbench;
 import org.hkijena.jipipe.desktop.app.grapheditor.commons.JIPipeDesktopGraphCanvasUI;
 import org.hkijena.jipipe.desktop.app.grapheditor.commons.JIPipeDesktopGraphInteractiveObjectUI;
+import org.hkijena.jipipe.desktop.app.grapheditor.commons.canvas.managers.JIPipeDesktopGraphCanvasNotificationsManager;
 import org.hkijena.jipipe.desktop.app.grapheditor.commons.contextmenu.GraphInteractiveObjectUIContextAction;
 import org.hkijena.jipipe.desktop.app.grapheditor.commons.nodeui.JIPipeDesktopGraphNodeUI;
 import org.hkijena.jipipe.utils.json.JsonUtils;
@@ -61,9 +62,14 @@ public class JIPipeDesktopCompartmentsPasteNodeUIContextAction implements GraphI
                         canvasUI.getNodeManager().autoPlaceCloseToCursor(ui, true);
                     }
                 }
+
+                canvasUI.getNotificationsManager().addNotification("Pasted " + compartments.size() + " compartments",
+                        getIcon(), JIPipeDesktopGraphCanvasNotificationsManager.NotificationType.Info);
             }
         } catch (Exception e) {
-            JOptionPane.showMessageDialog(canvasUI.getDesktopWorkbench().getWindow(), "The current clipboard contents are no valid compartments.", "Paste compartment", JOptionPane.ERROR_MESSAGE);
+            canvasUI.getNotificationsManager().addNotification("The current clipboard contents are no valid compartments.",
+                    getIcon(),
+                    JIPipeDesktopGraphCanvasNotificationsManager.NotificationType.Error);
             e.printStackTrace();
         }
     }
