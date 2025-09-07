@@ -21,6 +21,7 @@ import org.hkijena.jipipe.JIPipe;
 import org.hkijena.jipipe.JIPipeDependency;
 import org.hkijena.jipipe.JIPipeImageJUpdateSiteDependency;
 import org.hkijena.jipipe.api.DefaultJIPipeRunnable;
+import org.hkijena.jipipe.api.JIPipeProgressInfo;
 import org.hkijena.jipipe.api.notifications.JIPipeNotificationInbox;
 import org.hkijena.jipipe.api.project.JIPipeProject;
 import org.hkijena.jipipe.api.project.JIPipeProjectMetadata;
@@ -123,7 +124,7 @@ public class JIPipeDesktopProjectWindow extends JFrame {
                 JIPipeProjectTemplate template = JIPipe.getInstance().getProjectTemplateRegistry().getRegisteredTemplates().get(id);
                 JIPipeValidationReport report = new JIPipeValidationReport();
                 JIPipeNotificationInbox notifications = new JIPipeNotificationInbox();
-                project = template.loadAsProject(report, notifications);
+                project = template.loadAsProject(report, notifications, JIPipeProgressInfo.STDOUT);
             } catch (Exception e) {
                 e.printStackTrace();
             }
@@ -284,7 +285,7 @@ public class JIPipeDesktopProjectWindow extends JFrame {
             try {
                 JIPipeValidationReport report = new JIPipeValidationReport();
                 JIPipeNotificationInbox notifications = new JIPipeNotificationInbox();
-                JIPipeProject project = template.loadAsProject(report, notifications);
+                JIPipeProject project = template.loadAsProject(report, notifications, JIPipeProgressInfo.STDOUT);
                 JIPipeDesktopProjectWindow window = openProjectInThisOrNewWindow("New project", project, true, true);
                 if (window == null)
                     return;
@@ -374,7 +375,7 @@ public class JIPipeDesktopProjectWindow extends JFrame {
                                 getProgressInfo().log("INFO: File size is " + (Files.size(path) / 1024 / 1024) + " MB. Loading this project may take long.");
                                 getProgressInfo().log("INFO: Consider down-sizing your projects if you experience performance issues.");
                             }
-                            project.fromJson(jsonData, new UnspecifiedValidationReportContext(), report, notifications);
+                            project.fromJson(jsonData, new UnspecifiedValidationReportContext(), report, notifications, getProgressInfo());
                             project.setWorkDirectory(path.getParent());
                             project.validateUserDirectories(notifications);
                             project.setProjectFile(path);
@@ -436,7 +437,11 @@ public class JIPipeDesktopProjectWindow extends JFrame {
                         return;
                 }
 
-                JIPipeProject newProject = JIPipeProject.loadProject(projectPath, new UnspecifiedValidationReportContext(), report, notifications);
+                JIPipeProject newProject = JIPipeProject.loadProject(projectPath,
+                        new UnspecifiedValidationReportContext(),
+                        report,
+                        notifications,
+                        JIPipeProgressInfo.STDOUT);
                 JIPipeDesktopProjectWindow window = openProjectInThisOrNewWindow("Open JIPipe output", newProject, false, false);
                 if (window == null)
                     return;
@@ -545,7 +550,11 @@ public class JIPipeDesktopProjectWindow extends JFrame {
             getProject().saveProject(tempFile, updateSavePath);
 
             // Check if the saved project can be loaded
-            JIPipeProject.loadProject(tempFile, new UnspecifiedValidationReportContext(), new JIPipeValidationReport(), new JIPipeNotificationInbox());
+            JIPipeProject.loadProject(tempFile,
+                    new UnspecifiedValidationReportContext(),
+                    new JIPipeValidationReport(),
+                    new JIPipeNotificationInbox(),
+                    JIPipeProgressInfo.STDOUT);
 
             // Overwrite the target file
             if (Files.exists(savePath))

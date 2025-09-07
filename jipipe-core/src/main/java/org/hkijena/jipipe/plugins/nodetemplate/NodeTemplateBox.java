@@ -208,7 +208,7 @@ public class NodeTemplateBox extends JIPipeDesktopWorkbenchPanel implements Node
             for (JIPipeNodeTemplate nodeTemplate : templateJList.getSelectedValuesList()) {
                 try {
                     Map<UUID, JIPipeGraphNode> nodeMap = canvasUI.pasteNodes(nodeTemplate.getGraph());
-                    canvasUI.setSelection(nodeMap.values().stream().map(node -> canvasUI.getNodeUIs().get(node)).collect(Collectors.toSet()));
+                    canvasUI.getSelectionManager().setSelection(nodeMap.values().stream().map(node -> canvasUI.getNodeUIs().get(node)).collect(Collectors.toSet()));
                 } catch (JsonProcessingException e) {
                     IJ.handleException(e);
                 }

@@ -21,10 +21,7 @@ import org.hkijena.jipipe.plugins.graphannotation.nodes.ArrowAnnotationGraphNode
 import org.hkijena.jipipe.plugins.graphannotation.nodes.GroupBoxAnnotationGraphNode;
 import org.hkijena.jipipe.plugins.graphannotation.nodes.ImageBoxAnnotationGraphNode;
 import org.hkijena.jipipe.plugins.graphannotation.nodes.TextBoxAnnotationGraphNode;
-import org.hkijena.jipipe.plugins.graphannotation.tools.ArrowAnnotationGraphNodeTool;
-import org.hkijena.jipipe.plugins.graphannotation.tools.GroupBoxAnnotationGraphNodeTool;
-import org.hkijena.jipipe.plugins.graphannotation.tools.ImageBoxAnnotationGraphNodeTool;
-import org.hkijena.jipipe.plugins.graphannotation.tools.TextBoxAnnotationGraphNodeTool;
+import org.hkijena.jipipe.plugins.graphannotation.tools.*;
 import org.hkijena.jipipe.plugins.parameters.library.markup.HTMLText;
 import org.hkijena.jipipe.plugins.parameters.library.primitives.list.StringList;
 import org.scijava.Context;
@@ -54,6 +51,7 @@ public class GraphAnnotationPlugin extends JIPipePrepackagedDefaultJavaPlugin {
         registerAnnotationNodeType("graph-annotation-group-box", GroupBoxAnnotationGraphNode.class, GroupBoxAnnotationGraphNodeTool.class, JIPipe.RESOURCES.getIcon16URL("actions/object-group.png"));
         registerAnnotationNodeType("graph-annotation-arrow", ArrowAnnotationGraphNode.class, ArrowAnnotationGraphNodeTool.class, JIPipe.RESOURCES.getIcon16URL("actions/draw-arrow.png"));
         registerAnnotationNodeType("graph-annotation-image", ImageBoxAnnotationGraphNode.class, ImageBoxAnnotationGraphNodeTool.class, JIPipe.RESOURCES.getIcon16URL("actions/insert-image.png"));
+        registerGraphEditorTool(EditAnnotationGraphNodeTool.class);
     }
 
     @Override

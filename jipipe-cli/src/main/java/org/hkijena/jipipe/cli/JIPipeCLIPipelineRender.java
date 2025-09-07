@@ -4,6 +4,7 @@ import net.imagej.ImageJ;
 import org.hkijena.jipipe.JIPipe;
 import org.hkijena.jipipe.JIPipeMode;
 import org.hkijena.jipipe.JIPipeRegistryIssues;
+import org.hkijena.jipipe.api.JIPipeProgressInfo;
 import org.hkijena.jipipe.api.compartments.algorithms.JIPipeProjectCompartment;
 import org.hkijena.jipipe.api.history.JIPipeDedicatedGraphHistoryJournal;
 import org.hkijena.jipipe.api.notifications.JIPipeNotificationInbox;
@@ -94,7 +95,7 @@ public class JIPipeCLIPipelineRender {
         JIPipeNotificationInbox notifications = new JIPipeNotificationInbox();
         JIPipeProject project;
         try {
-            project = JIPipeProject.loadProject(projectFile, new UnspecifiedValidationReportContext(), projectIssues, notifications);
+            project = JIPipeProject.loadProject(projectFile, new UnspecifiedValidationReportContext(), projectIssues, notifications, JIPipeProgressInfo.STDOUT);
         } catch (IOException e) {
             throw new RuntimeException(e);
         }

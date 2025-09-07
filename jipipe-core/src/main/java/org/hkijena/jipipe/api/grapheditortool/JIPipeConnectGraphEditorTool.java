@@ -61,6 +61,11 @@ public class JIPipeConnectGraphEditorTool implements JIPipeToggleableGraphEditor
     }
 
     @Override
+    public JIPipeToggleableGraphEditorToolNodeLayerMask getNodeLayerMask() {
+        return JIPipeToggleableGraphEditorToolNodeLayerMask.WorkflowOnly;
+    }
+
+    @Override
     public void activate() {
     }
 

@@ -66,7 +66,7 @@ public class GraphNodeValidationReportContext extends JIPipeValidationReportCont
                 JIPipeDesktopTabPane.DocumentTab pipelineEditorTab = ((JIPipeDesktopProjectWorkbench) workbench).getOrOpenPipelineEditorTab(equivalentNode.getProjectCompartment(), true);
                 SwingUtilities.invokeLater(() -> {
                     JIPipeDesktopPipelineGraphEditorUI ui = (JIPipeDesktopPipelineGraphEditorUI) pipelineEditorTab.getContent();
-                    ui.selectOnly(ui.getCanvasUI().getNodeUIs().get(targetNode));
+                    ui.getSelectionManager().selectOnly(ui.getCanvasUI().getNodeUIs().get(targetNode));
                 });
             });
         }

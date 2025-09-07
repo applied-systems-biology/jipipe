@@ -18,6 +18,7 @@ import org.hkijena.jipipe.api.compartments.algorithms.JIPipeProjectCompartment;
 import org.hkijena.jipipe.api.project.JIPipeProject;
 import org.hkijena.jipipe.desktop.app.JIPipeDesktopProjectWorkbench;
 import org.hkijena.jipipe.desktop.app.grapheditor.commons.JIPipeDesktopGraphCanvasUI;
+import org.hkijena.jipipe.desktop.app.grapheditor.commons.canvas.managers.JIPipeDesktopGraphCanvasNotificationsManager;
 import org.hkijena.jipipe.desktop.app.grapheditor.commons.nodeui.JIPipeDesktopGraphNodeUI;
 
 import javax.swing.*;
@@ -28,11 +29,11 @@ import java.util.Set;
 public class JIPipeDesktopCompartmentsCutNodeUIContextAction extends JIPipeDesktopCompartmentsCopyNodeUIContextAction {
 
     @Override
-    public void run(JIPipeDesktopGraphCanvasUI canvasUI, Set<JIPipeDesktopGraphNodeUI> selection) {
-        super.run(canvasUI, selection);
+    public void runNodes(JIPipeDesktopGraphCanvasUI canvasUI, Set<JIPipeDesktopGraphNodeUI> selection) {
+        super.runNodes(canvasUI, selection);
         if (!JIPipeDesktopProjectWorkbench.canAddOrDeleteNodes(canvasUI.getDesktopWorkbench()))
             return;
-        JIPipeProject project = ((JIPipeDesktopProjectWorkbench) canvasUI.getDesktopWorkbench()).getProject();
+        JIPipeProject project = canvasUI.getDesktopWorkbench().getProject();
         for (JIPipeDesktopGraphNodeUI ui : selection) {
             if (ui.getNode().isUiLocked())
                 continue;
@@ -42,6 +43,9 @@ public class JIPipeDesktopCompartmentsCutNodeUIContextAction extends JIPipeDeskt
             }
             project.removeCompartment(compartment);
         }
+
+        canvasUI.getNotificationsManager().addNotification("Cut " + selection.size() + " compartments",
+               getIcon(), JIPipeDesktopGraphCanvasNotificationsManager.NotificationType.Info);
     }
 
     @Override

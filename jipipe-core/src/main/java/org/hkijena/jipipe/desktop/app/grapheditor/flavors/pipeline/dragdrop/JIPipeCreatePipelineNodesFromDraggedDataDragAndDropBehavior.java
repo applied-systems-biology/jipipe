@@ -18,6 +18,8 @@ import org.hkijena.jipipe.api.nodes.JIPipeGraph;
 import org.hkijena.jipipe.desktop.app.JIPipeDesktopProjectWorkbench;
 import org.hkijena.jipipe.desktop.app.grapheditor.commons.JIPipeDesktopGraphCanvasUI;
 import org.hkijena.jipipe.desktop.app.grapheditor.commons.JIPipeDesktopGraphDragAndDropBehavior;
+import org.hkijena.jipipe.desktop.app.grapheditor.commons.canvas.JIPipeDesktopGraphCanvasGrid;
+import org.hkijena.jipipe.desktop.app.grapheditor.commons.canvas.managers.JIPipeDesktopGraphCanvasNotificationsManager;
 import org.hkijena.jipipe.plugins.filesystem.datasources.FileListDataSource;
 import org.hkijena.jipipe.plugins.filesystem.datasources.FolderListDataSource;
 import org.hkijena.jipipe.plugins.filesystem.datasources.PathListDataSource;
@@ -53,8 +55,8 @@ public class JIPipeCreatePipelineNodesFromDraggedDataDragAndDropBehavior impleme
         Point mousePosition = dtde.getLocation();
         if (mousePosition == null)
             return;
-        Point gridLocation = canvas.getViewMode().realLocationToGrid(mousePosition, canvas.getZoom());
-        Point realLocation = canvas.getViewMode().gridToRealLocation(gridLocation, canvas.getZoom());
+        Point gridLocation = JIPipeDesktopGraphCanvasGrid.realLocationToGrid(mousePosition, canvas.getZoom());
+        Point realLocation = JIPipeDesktopGraphCanvasGrid.gridToRealLocation(gridLocation, canvas.getZoom());
         canvas.setGraphEditCursor(realLocation);
         canvas.repaintLowLag();
     }
@@ -71,7 +73,7 @@ public class JIPipeCreatePipelineNodesFromDraggedDataDragAndDropBehavior impleme
 
     @Override
     public synchronized void drop(DropTargetDropEvent dtde) {
-        if (canvas.getCurrentConnectionDragSource() != null || canvas.getCurrentConnectionDragTarget() != null) {
+        if (canvas.getDragManagerConnect().getCurrentConnectionDragSource() != null || canvas.getDragManagerConnect().getCurrentConnectionDragTarget() != null) {
             dtde.rejectDrop();
             return;
         }
@@ -102,15 +104,27 @@ public class JIPipeCreatePipelineNodesFromDraggedDataDragAndDropBehavior impleme
                     processDrop(text);
                     dtde.dropComplete(true);
                 }
+                else {
+                    accept = false;
+                }
+            }
+            if(!accept) {
+                showErrorMessage();
             }
             return;
         } catch (Throwable t) {
             t.printStackTrace();
-            if (JIPipeGraphEditorUIApplicationSettings.getInstance().isNotifyInvalidDragAndDrop()) {
-                JOptionPane.showMessageDialog(canvas, new JLabel("The dropped data is invalid. You can drop files/folders or JSON data that describes JIPipe nodes."), "Invalid drop", JOptionPane.ERROR_MESSAGE);
-            }
+            showErrorMessage();
         }
         dtde.rejectDrop();
+    }
+
+    private void showErrorMessage() {
+        canvas.getNotificationsManager().addNotification(
+                "Only files/directories and nodes can be dropped into this graph",
+                JIPipe.RESOURCES.getIcon16("actions/insert-object.png"),
+                JIPipeDesktopGraphCanvasNotificationsManager.NotificationType.Error
+        );
     }
 
     /**
@@ -121,16 +135,15 @@ public class JIPipeCreatePipelineNodesFromDraggedDataDragAndDropBehavior impleme
     private void processDrop(String text) {
         try {
             if (text != null) {
-                canvas.pasteNodes(text);
+                canvas.getNodeManager().pasteNodes(text);
             }
         } catch (Exception e) {
-            if (JIPipeGraphEditorUIApplicationSettings.getInstance().isNotifyInvalidDragAndDrop()) {
-                JOptionPane.showMessageDialog(canvas.getDesktopWorkbench().getWindow(),
-                        "The dropped string is no valid node/graph.",
-                        "Drop nodes",
-                        JOptionPane.ERROR_MESSAGE);
-                e.printStackTrace();
-            }
+            canvas.getNotificationsManager().addNotification(
+                    "The dropped item is no valid node/graph.",
+                    JIPipe.RESOURCES.getIcon16("actions/insert-object.png"),
+                    JIPipeDesktopGraphCanvasNotificationsManager.NotificationType.Error
+            );
+            e.printStackTrace();
         }
     }
 

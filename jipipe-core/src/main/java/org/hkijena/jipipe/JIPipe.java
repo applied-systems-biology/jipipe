@@ -375,12 +375,13 @@ public class JIPipe extends AbstractService implements JIPipeService {
     /**
      * Loads a project
      *
-     * @param fileName Project file
+     * @param fileName     Project file
+     * @param progressInfo the progress info
      * @return the project
      * @throws IOException thrown if the file could not be read or the file is corrupt
      */
-    public static JIPipeProject loadProject(Path fileName) throws IOException {
-        return loadProject(fileName, new JIPipeValidationReport(), new JIPipeNotificationInbox());
+    public static JIPipeProject loadProject(Path fileName, JIPipeProgressInfo progressInfo) throws IOException {
+        return loadProject(fileName, new JIPipeValidationReport(), new JIPipeNotificationInbox(), progressInfo);
     }
 
     /**
@@ -388,11 +389,12 @@ public class JIPipe extends AbstractService implements JIPipeService {
      *
      * @param fileName      Project file
      * @param notifications notifications for the user
+     * @param progressInfo the progress info
      * @return the project
      * @throws IOException thrown if the file could not be read or the file is corrupt
      */
-    public static JIPipeProject loadProject(Path fileName, JIPipeNotificationInbox notifications) throws IOException {
-        return loadProject(fileName, new JIPipeValidationReport(), notifications);
+    public static JIPipeProject loadProject(Path fileName, JIPipeNotificationInbox notifications, JIPipeProgressInfo progressInfo) throws IOException {
+        return loadProject(fileName, new JIPipeValidationReport(), notifications, progressInfo);
     }
 
     /**
@@ -401,23 +403,25 @@ public class JIPipe extends AbstractService implements JIPipeService {
      * @param fileName      Project file
      * @param report        Report whether the project is valid
      * @param notifications notifications for the user
+     * @param progressInfo the progress info
      * @return the project
      * @throws IOException thrown if the file could not be read or the file is corrupt
      */
-    public static JIPipeProject loadProject(Path fileName, JIPipeValidationReport report, JIPipeNotificationInbox notifications) throws IOException {
-        return JIPipeProject.loadProject(fileName, new UnspecifiedValidationReportContext(), report, notifications);
+    public static JIPipeProject loadProject(Path fileName, JIPipeValidationReport report, JIPipeNotificationInbox notifications, JIPipeProgressInfo progressInfo) throws IOException {
+        return JIPipeProject.loadProject(fileName, new UnspecifiedValidationReportContext(), report, notifications, progressInfo);
     }
 
     /**
      * Loads a project
      *
-     * @param fileName Project file
-     * @param report   Report whether the project is valid
+     * @param fileName     Project file
+     * @param report       Report whether the project is valid
+     * @param progressInfo the progress info
      * @return the project
      * @throws IOException thrown if the file could not be read or the file is corrupt
      */
-    public static JIPipeProject loadProject(Path fileName, JIPipeValidationReport report) throws IOException {
-        return JIPipeProject.loadProject(fileName, new UnspecifiedValidationReportContext(), report, new JIPipeNotificationInbox());
+    public static JIPipeProject loadProject(Path fileName, JIPipeValidationReport report, JIPipeProgressInfo progressInfo) throws IOException {
+        return JIPipeProject.loadProject(fileName, new UnspecifiedValidationReportContext(), report, new JIPipeNotificationInbox(), progressInfo);
     }
 
     /**

@@ -24,7 +24,7 @@ import org.hkijena.jipipe.desktop.app.JIPipeDesktopProjectWorkbench;
 import org.hkijena.jipipe.desktop.app.JIPipeDesktopWorkbench;
 import org.hkijena.jipipe.desktop.app.JIPipeDesktopWorkbenchPanel;
 import org.hkijena.jipipe.desktop.app.grapheditor.commons.JIPipeDesktopGraphEditorUI;
-import org.hkijena.jipipe.desktop.app.grapheditor.commons.contextmenu.NodeUIContextAction;
+import org.hkijena.jipipe.desktop.app.grapheditor.commons.contextmenu.GraphInteractiveObjectUIContextAction;
 import org.hkijena.jipipe.desktop.app.grapheditor.commons.nodeui.JIPipeDesktopGraphNodeUI;
 import org.hkijena.jipipe.desktop.app.grapheditor.flavors.pipeline.JIPipeDesktopPipelineGraphEditorUI;
 import org.hkijena.jipipe.desktop.commons.components.tabs.JIPipeDesktopTabPane;
@@ -94,7 +94,7 @@ public class JIPipeDesktopBookmarkListPanel extends JIPipeDesktopWorkbenchPanel 
 
         runButton = new JButton("Run", JIPipe.RESOURCES.getIcon16("actions/run-play.png"));
         JPopupMenu runMenu = UIUtils.addPopupMenuToButton(runButton);
-        for (NodeUIContextAction entry : RUN_NODE_CONTEXT_MENU_ENTRIES) {
+        for (GraphInteractiveObjectUIContextAction entry : RUN_NODE_CONTEXT_MENU_ENTRIES) {
             if (entry == null)
                 runMenu.addSeparator();
             else {
@@ -136,7 +136,7 @@ public class JIPipeDesktopBookmarkListPanel extends JIPipeDesktopWorkbenchPanel 
         reloadList();
     }
 
-    private void runSelectedNode(NodeUIContextAction entry) {
+    private void runSelectedNode(GraphInteractiveObjectUIContextAction entry) {
         JIPipeGraphNode node = nodeJList.getSelectedValue();
         if (node instanceof JIPipeAlgorithm) {
             goToBookmark(node);
@@ -182,7 +182,7 @@ public class JIPipeDesktopBookmarkListPanel extends JIPipeDesktopWorkbenchPanel 
                     JIPipeDesktopPipelineGraphEditorUI editorUI = (JIPipeDesktopPipelineGraphEditorUI) tab.getContent();
                     JIPipeDesktopGraphNodeUI ui = editorUI.getCanvasUI().getNodeUIs().getOrDefault(node, null);
                     if (ui != null) {
-                        editorUI.selectOnly(ui);
+                        editorUI.getSelectionManager().selectOnly(ui);
                     } else {
                         getDesktopWorkbench().sendStatusBarText("Unable to navigate to bookmark");
                     }
@@ -191,7 +191,7 @@ public class JIPipeDesktopBookmarkListPanel extends JIPipeDesktopWorkbenchPanel 
         } else if (graphEditorUI != null) {
             JIPipeDesktopGraphNodeUI ui = graphEditorUI.getCanvasUI().getNodeUIs().getOrDefault(node, null);
             if (ui != null) {
-                graphEditorUI.selectOnly(ui);
+                graphEditorUI.getSelectionManager().selectOnly(ui);
             } else {
                 getDesktopWorkbench().sendStatusBarText("Unable to navigate to bookmark");
             }

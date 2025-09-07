@@ -35,17 +35,17 @@ import java.util.stream.Collectors;
 
 public class AlgorithmGraphDuplicateWithInputConnectionsNodeUIContextAction implements NodeUIContextAction {
     @Override
-    public boolean matches(Set<JIPipeDesktopGraphNodeUI> selection) {
+    public boolean matchesNodes(Set<JIPipeDesktopGraphNodeUI> selection) {
         return !selection.isEmpty();
     }
 
     @Override
-    public void run(JIPipeDesktopGraphCanvasUI canvasUI, Set<JIPipeDesktopGraphNodeUI> selection) {
+    public void runNodes(JIPipeDesktopGraphCanvasUI canvasUI, Set<JIPipeDesktopGraphNodeUI> selection) {
         JIPipeGraph copyGraph = canvasUI.getGraph()
                 .extract(selection.stream().map(JIPipeDesktopGraphNodeUI::getNode).collect(Collectors.toSet()), true, true);
         try {
             String json = JsonUtils.getObjectMapper().writerWithDefaultPrettyPrinter().writeValueAsString(copyGraph);
-            Map<UUID, JIPipeGraphNode> pastedNodes = canvasUI.pasteNodes(json);
+            Map<UUID, JIPipeGraphNode> pastedNodes = canvasUI.getNodeManager().pasteNodes(json);
 
             // Reconnect to inputs
             for (Map.Entry<UUID, JIPipeGraphNode> entry : pastedNodes.entrySet()) {

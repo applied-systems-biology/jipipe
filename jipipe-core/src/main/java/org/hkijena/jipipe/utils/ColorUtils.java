@@ -171,6 +171,26 @@ public class ColorUtils {
     }
 
     /**
+     * Linearly interpolates between two colors.
+     *
+     * @param c1   The first color (used when t = 0).
+     * @param c2   The second color (used when t = 1).
+     * @param t    Interpolation factor (0.0 to 1.0).
+     * @return     Interpolated color.
+     */
+    public static Color interpolate(Color c1, Color c2, double t) {
+        // Clamp t to [0, 1]
+        t = Math.max(0.0, Math.min(1.0, t));
+
+        int r = (int) Math.round(c1.getRed()   + t * (c2.getRed()   - c1.getRed()));
+        int g = (int) Math.round(c1.getGreen() + t * (c2.getGreen() - c1.getGreen()));
+        int b = (int) Math.round(c1.getBlue()  + t * (c2.getBlue()  - c1.getBlue()));
+        int a = (int) Math.round(c1.getAlpha() + t * (c2.getAlpha() - c1.getAlpha()));
+
+        return new Color(r, g, b, a);
+    }
+
+    /**
      * Applies scaling in HSV space
      *
      * @param color   the color

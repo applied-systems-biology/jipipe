@@ -55,7 +55,7 @@ import org.hkijena.jipipe.desktop.api.JIPipeDesktopMenuExtension;
 import org.hkijena.jipipe.desktop.api.JIPipeDesktopParameterEditorUI;
 import org.hkijena.jipipe.desktop.api.data.JIPipeDesktopDataDisplayOperation;
 import org.hkijena.jipipe.desktop.api.dataviewer.JIPipeDesktopDataViewer;
-import org.hkijena.jipipe.desktop.app.grapheditor.commons.contextmenu.NodeUIContextAction;
+import org.hkijena.jipipe.desktop.app.grapheditor.commons.contextmenu.GraphInteractiveObjectUIContextAction;
 import org.hkijena.jipipe.desktop.app.resultanalysis.JIPipeDesktopResultDataSlotPreview;
 import org.hkijena.jipipe.desktop.app.resultanalysis.JIPipeDesktopResultDataSlotRowUI;
 import org.hkijena.jipipe.desktop.commons.components.filechoosernext.JIPipeDesktopFileChooserNext;
@@ -245,7 +245,7 @@ public abstract class JIPipeDefaultJavaPlugin extends AbstractService implements
      *
      * @param action the action
      */
-    public void registerContextMenuAction(NodeUIContextAction action) {
+    public void registerContextMenuAction(GraphInteractiveObjectUIContextAction action) {
         registry.getCustomMenuRegistry().registerContextMenuAction(action);
     }
 

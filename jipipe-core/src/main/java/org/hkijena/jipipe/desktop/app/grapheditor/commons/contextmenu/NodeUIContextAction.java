@@ -14,115 +14,27 @@
 package org.hkijena.jipipe.desktop.app.grapheditor.commons.contextmenu;
 
 import org.hkijena.jipipe.desktop.app.grapheditor.commons.JIPipeDesktopGraphCanvasUI;
+import org.hkijena.jipipe.desktop.app.grapheditor.commons.JIPipeDesktopGraphInteractiveObjectUI;
 import org.hkijena.jipipe.desktop.app.grapheditor.commons.nodeui.JIPipeDesktopGraphNodeUI;
 
-import javax.swing.*;
 import java.util.Set;
+import java.util.stream.Collectors;
 
 /**
- * An action that is applied one or multiple algorithms
+ * Wrapper around {@link GraphInteractiveObjectUIContextAction} that simplifies handling of node-specific actions
  */
-public interface NodeUIContextAction {
-
-    /**
-     * Indicates that a separator is created
-     */
-    NodeUIContextAction SEPARATOR = null;
-
-    /**
-     * Returns if the action shows up
-     *
-     * @param selection the list of algorithm UIs
-     * @return if the action shows up
-     */
-    boolean matches(Set<JIPipeDesktopGraphNodeUI> selection);
-
-    /**
-     * Runs the workload
-     *
-     * @param canvasUI  the canvas that contains all algorithm UIs
-     * @param selection the current selection of algorithms
-     */
-    void run(JIPipeDesktopGraphCanvasUI canvasUI, Set<JIPipeDesktopGraphNodeUI> selection);
-
-    /**
-     * @return the name
-     */
-    String getName();
-
-    /**
-     * @return the description
-     */
-    String getDescription();
-
-    /**
-     * @return the icon
-     */
-    Icon getIcon();
-
-    /**
-     * Determines if the item is never shown (even if it applies)
-     * Keyboard shortcuts still work
-     *
-     * @return if the item is hidden
-     */
-    default boolean isHidden() {
-        return false;
+public interface NodeUIContextAction extends GraphInteractiveObjectUIContextAction {
+    @Override
+    default boolean matches(Set<JIPipeDesktopGraphInteractiveObjectUI> selection) {
+        return matchesNodes(selection.stream().filter(ui -> ui instanceof JIPipeDesktopGraphNodeUI).map(ui -> (JIPipeDesktopGraphNodeUI)ui).collect(Collectors.toSet()));
     }
 
-    /**
-     * Determines if an item should be disabled or removed if it does not match
-     *
-     * @return if an item should be disabled or removed if it does not match
-     */
-    default boolean disableOnNonMatch() {
-        return false;
+    @Override
+    default void run(JIPipeDesktopGraphCanvasUI canvasUI, Set<JIPipeDesktopGraphInteractiveObjectUI> selection) {
+        runNodes(canvasUI, selection.stream().filter(ui -> ui instanceof JIPipeDesktopGraphNodeUI).map(ui -> (JIPipeDesktopGraphNodeUI)ui).collect(Collectors.toSet()));
     }
 
-    /**
-     * Determines if the item should be shown in the multi-node selection panel
-     *
-     * @return if the item should be shown in the multi-node selection panel
-     * @deprecated the multi selection panel was removed
-     */
-    @Deprecated
-    default boolean showInMultiSelectionPanel() {
-        return true;
-    }
+    boolean matchesNodes(Set<JIPipeDesktopGraphNodeUI> selection);
 
-    /**
-     * Determines if the item should be displayed in the context toolbar
-     *
-     * @return if the item should be displayed in the context toolbar
-     */
-    default boolean isDisplayedInToolbar() {
-        return false;
-    }
-
-    /**
-     * Returns an optional keyboard shortcut. Can be null
-     *
-     * @return Keyboard shortcut or null
-     */
-    default KeyStroke getKeyboardShortcut() {
-        return null;
-    }
-
-    /**
-     * Determines if the item is displayed in the compartment graph.
-     *
-     * @return if the item is displayed
-     */
-    default boolean showInCompartmentGraph() {
-        return false;
-    }
-
-    /**
-     * Determines if the item is displayed in the graph compartment (project/group/extension editor).
-     *
-     * @return if the item is displayed
-     */
-    default boolean showInGraphCompartment() {
-        return true;
-    }
+    void runNodes(JIPipeDesktopGraphCanvasUI canvasUI, Set<JIPipeDesktopGraphNodeUI> selection);
 }

@@ -50,6 +50,8 @@ import org.hkijena.jipipe.plugins.settings.JIPipeRuntimeApplicationSettings;
 import org.hkijena.jipipe.utils.ParameterUtils;
 import org.hkijena.jipipe.utils.PathUtils;
 import org.hkijena.jipipe.utils.StringUtils;
+import org.hkijena.jipipe.utils.json.JsonUtils;
+import org.hkijena.jipipe.utils.json.PathMetadataStore;
 import org.hkijena.jipipe.utils.ui.ViewOnlyMenuItem;
 
 import javax.swing.*;
@@ -81,7 +83,7 @@ public abstract class JIPipeGraphNode extends AbstractJIPipeParameterCollection 
     private final BiMap<String, JIPipeOutputDataSlot> outputSlotMap = HashBiMap.create();
     private JIPipeNodeInfo info;
     private JIPipeSlotConfiguration slotConfiguration;
-    private Map<String, Map<String, Point>> nodeUILocationPerViewModePerCompartment = new HashMap<>();
+    private PathMetadataStore nodeMetadata = new PathMetadataStore();
     private Path internalStoragePath;
     private Path storagePath;
     private String customName;
@@ -162,10 +164,7 @@ public abstract class JIPipeGraphNode extends AbstractJIPipeParameterCollection 
         this.info = other.info;
         this.bookmarked = other.bookmarked;
         this.slotConfiguration = copySlotConfiguration(other);
-        this.nodeUILocationPerViewModePerCompartment = new HashMap<>();
-        for (Map.Entry<String, Map<String, Point>> entry : other.nodeUILocationPerViewModePerCompartment.entrySet()) {
-            nodeUILocationPerViewModePerCompartment.put(entry.getKey(), new HashMap<>(entry.getValue()));
-        }
+        this.nodeMetadata = new PathMetadataStore(other.nodeMetadata);
         this.customName = other.customName;
         this.customDescription = other.customDescription;
         this.baseDirectory = other.baseDirectory;
@@ -476,44 +475,30 @@ public abstract class JIPipeGraphNode extends AbstractJIPipeParameterCollection 
         return JIPipeDesktopGraphNodeUI.class;
     }
 
-    /**
-     * Gets the location map (writable) as map from compartment UUID to visual mode to location
-     *
-     * @return map from compartment UUID to visual mode to location
-     */
-    public Map<String, Map<String, Point>> getNodeUILocationPerViewModePerCompartment() {
-        return nodeUILocationPerViewModePerCompartment;
+    public PathMetadataStore getNodeMetadata() {
+        return nodeMetadata;
     }
 
-    /**
-     * Sets the location map.
-     *
-     * @param nodeUILocationPerViewModePerCompartment map from compartment UUID to visual mode to location
-     */
-    public void setNodeUILocationPerViewModePerCompartment(Map<String, Map<String, Point>> nodeUILocationPerViewModePerCompartment) {
-        this.nodeUILocationPerViewModePerCompartment.clear();
-        for (Map.Entry<String, Map<String, Point>> entry : nodeUILocationPerViewModePerCompartment.entrySet()) {
-            Map<String, Point> pointMap = new HashMap<>();
-            for (Map.Entry<String, Point> stringPointEntry : entry.getValue().entrySet()) {
-                pointMap.put(stringPointEntry.getKey(), new Point(stringPointEntry.getValue()));
-            }
-            this.nodeUILocationPerViewModePerCompartment.put(entry.getKey(), pointMap);
-        }
+    public void setNodeMetadata(PathMetadataStore nodeMetadata) {
+        this.nodeMetadata = nodeMetadata;
     }
 
     /**
      * Returns the location within the specified compartment or null if none is set
      *
      * @param compartment The compartment ID. Set to empty string for no compartment.
-     * @param visualMode  Used to differentiate between different visual modes
      * @return The UI location or null if unset
      */
-    public Point getNodeUILocationWithin(String compartment, String visualMode) {
-        Map<String, Point> visualModeMap = nodeUILocationPerViewModePerCompartment.getOrDefault(compartment, null);
-        if (visualModeMap != null) {
-            return visualModeMap.getOrDefault(visualMode, null);
+    public Point getNodeUILocationWithin(String compartment) {
+        compartment = StringUtils.orElse(compartment, "_");
+        Integer x = nodeMetadata.getInteger(Path.of("location", compartment, "x"), null);
+        Integer y = nodeMetadata.getInteger(Path.of("location", compartment, "y"), null);
+        if(x==null || y==null) {
+            return null;
         }
-        return null;
+        else {
+            return new Point(x, y);
+        }
     }
 
     /**
@@ -521,15 +506,11 @@ public abstract class JIPipeGraphNode extends AbstractJIPipeParameterCollection 
      *
      * @param compartment The compartment ID. Set to empty string for no compartment.
      * @param location    The UI location. Can be null to reset the location
-     * @param visualMode  Used to differentiate between different visual modes
      */
-    public void setNodeUILocationWithin(String compartment, Point location, String visualMode) {
-        Map<String, Point> visualModeMap = nodeUILocationPerViewModePerCompartment.getOrDefault(compartment, null);
-        if (visualModeMap == null) {
-            visualModeMap = new HashMap<>();
-            nodeUILocationPerViewModePerCompartment.put(compartment, visualModeMap);
-        }
-        visualModeMap.put(visualMode, location);
+    public void setNodeUILocationWithin(String compartment, Point location) {
+        compartment = StringUtils.orElse(compartment, "_");
+        nodeMetadata.put(Path.of("location", compartment, "x"), location.x);
+        nodeMetadata.put(Path.of("location", compartment, "y"), location.y);
     }
 
     /**
@@ -537,10 +518,9 @@ public abstract class JIPipeGraphNode extends AbstractJIPipeParameterCollection 
      *
      * @param compartment The compartment ID
      * @param location    The UI location. Can be null to reset the location
-     * @param visualMode  Used to differentiate between different visual modes
      */
-    public void setNodeUILocationWithin(UUID compartment, Point location, String visualMode) {
-        setNodeUILocationWithin(StringUtils.nullToEmpty(compartment), location, visualMode);
+    public void setNodeUILocationWithin(UUID compartment, Point location) {
+        setNodeUILocationWithin(StringUtils.nullToEmpty(compartment), location);
     }
 
     /**
@@ -555,25 +535,7 @@ public abstract class JIPipeGraphNode extends AbstractJIPipeParameterCollection 
         jsonGenerator.writeStringField("jipipe:graph-compartment", StringUtils.nullToEmpty(getCompartmentUUIDInParentGraph()));
         jsonGenerator.writeStringField("jipipe:alias-id", StringUtils.nullToEmpty(getAliasIdInParentGraph()));
         jsonGenerator.writeObjectField("jipipe:slot-configuration", slotConfiguration);
-        jsonGenerator.writeFieldName("jipipe:ui-grid-location");
-        jsonGenerator.writeStartObject();
-        for (Map.Entry<String, Map<String, Point>> visualModeEntry : nodeUILocationPerViewModePerCompartment.entrySet()) {
-            if (visualModeEntry.getKey() == null)
-                continue;
-            jsonGenerator.writeFieldName(visualModeEntry.getKey());
-            jsonGenerator.writeStartObject();
-            for (Map.Entry<String, Point> entry : visualModeEntry.getValue().entrySet()) {
-                if (entry.getKey() == null)
-                    continue;
-                jsonGenerator.writeFieldName(entry.getKey());
-                jsonGenerator.writeStartObject();
-                jsonGenerator.writeNumberField("x", entry.getValue().x);
-                jsonGenerator.writeNumberField("y", entry.getValue().y);
-                jsonGenerator.writeEndObject();
-            }
-            jsonGenerator.writeEndObject();
-        }
-        jsonGenerator.writeEndObject();
+        jsonGenerator.writeObjectField("jipipe:metadata-v1", nodeMetadata);
         jsonGenerator.writeStringField("jipipe:node-info-id", getInfo().getId());
 
         ParameterUtils.serializeParametersToJson(this, jsonGenerator);
@@ -591,16 +553,27 @@ public abstract class JIPipeGraphNode extends AbstractJIPipeParameterCollection 
      * @param notifications additional notifications for the user. these can be acted upon
      */
     public void fromJson(JsonNode node, JIPipeValidationReportContext context, JIPipeValidationReport issues, JIPipeNotificationInbox notifications) {
-        if (node.has("jipipe:slot-configuration"))
+        if (node.has("jipipe:slot-configuration")) {
             slotConfiguration.fromJson(node.get("jipipe:slot-configuration"));
+        }
+        if (node.has("jipipe:metadata-v1")) {
+            try {
+                nodeMetadata = JsonUtils.getObjectMapper().readerFor(PathMetadataStore.class).readValue(node.get("jipipe:metadata-v1"));
+            } catch (IOException e) {
+                context.error().title("Unable to load metadata").details(e.toString()).report(issues);
+            }
+        }
+
+        // Migrate legacy grid location
         if (node.has("jipipe:ui-grid-location")) {
             for (Map.Entry<String, JsonNode> visualModeEntry : ImmutableList.copyOf(node.get("jipipe:ui-grid-location").fields())) {
                 String compartment = visualModeEntry.getKey();
                 for (Map.Entry<String, JsonNode> entry : ImmutableList.copyOf(visualModeEntry.getValue().fields())) {
+                    String visualMode = entry.getKey();
                     JsonNode xValue = entry.getValue().path("x");
                     JsonNode yValue = entry.getValue().path("y");
-                    if (!xValue.isMissingNode() && !yValue.isMissingNode()) {
-                        setNodeUILocationWithin(compartment, new Point(xValue.asInt(), yValue.asInt()), entry.getKey());
+                    if ("VerticalCompact".equals(visualMode) && !xValue.isMissingNode() && !yValue.isMissingNode()) {
+                        setNodeUILocationWithin(compartment, new Point(xValue.asInt(), yValue.asInt()));
                     }
                 }
             }
@@ -843,8 +816,8 @@ public abstract class JIPipeGraphNode extends AbstractJIPipeParameterCollection 
     /**
      * Removes all location information added via setLocationWithin()
      */
-    public void clearLocations() {
-        nodeUILocationPerViewModePerCompartment.clear();
+    public void clearAllNodeUILocations() {
+        nodeMetadata.clearEntriesWithPathPrefix(Path.of("location"));
     }
 
     /**
@@ -1308,6 +1281,26 @@ public abstract class JIPipeGraphNode extends AbstractJIPipeParameterCollection 
         } else {
             return getRuntimeProject();
         }
+    }
+
+    /**
+     * Returns all node UI locations from the metadata map
+     * @return all UI locations
+     */
+    public Map<String, Point> getAllNodeUILocations() {
+        Map<String, Point> result = new HashMap<>();
+        for (Map.Entry<Path, Object> entry : nodeMetadata.getEntriesUnderPath("location").entrySet()) {
+            if(entry.getKey().getNameCount() == 3) {
+                String compartmentName = entry.getKey().getName(1).toString();
+                String locationName = entry.getKey().getName(2).toString();
+                String standardCompartmentName = "_".equals(compartmentName) ? "" : compartmentName;
+                if(locationName.equals("x")) {
+                    result.put(standardCompartmentName, new Point(nodeMetadata.getInteger(Path.of("location", compartmentName, "x"), 0),
+                            nodeMetadata.getInteger(Path.of("location", compartmentName, "y"), 0)));
+                }
+            }
+        }
+        return result;
     }
 
     public interface NodeSlotsChangedEventListener {

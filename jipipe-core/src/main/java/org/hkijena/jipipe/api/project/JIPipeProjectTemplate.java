@@ -15,6 +15,7 @@ package org.hkijena.jipipe.api.project;
 
 import com.fasterxml.jackson.databind.JsonNode;
 import org.hkijena.jipipe.JIPipe;
+import org.hkijena.jipipe.api.JIPipeProgressInfo;
 import org.hkijena.jipipe.api.notifications.JIPipeNotificationInbox;
 import org.hkijena.jipipe.api.validation.JIPipeValidationReport;
 import org.hkijena.jipipe.api.validation.contexts.UnspecifiedValidationReportContext;
@@ -54,12 +55,12 @@ public class JIPipeProjectTemplate {
      * @return the project
      * @throws IOException thrown by project loading
      */
-    public JIPipeProject loadAsProject(JIPipeValidationReport issueReport, JIPipeNotificationInbox inbox) throws IOException {
+    public JIPipeProject loadAsProject(JIPipeValidationReport issueReport, JIPipeNotificationInbox inbox, JIPipeProgressInfo progressInfo) throws IOException {
         JIPipeProject project = new JIPipeProject();
-        project.fromJson(node, new UnspecifiedValidationReportContext(), issueReport, inbox);
+        project.fromJson(node, new UnspecifiedValidationReportContext(), issueReport, inbox, progressInfo);
         // Apply selected default style
-//        project.getGraph().attachAdditionalMetadata("jipipe:graph:view-mode", JIPipeGraphViewMode.VerticalCompact);
-//        project.getCompartmentGraph().attachAdditionalMetadata("jipipe:graph:view-mode", JIPipeGraphViewMode.VerticalCompact);
+//        project.getGraph().attachAdditionalMetadata("jipipe:graph:view-mode", JIPipeGraphJIPipeDesktopGraphCanvasGrid.VerticalCompact);
+//        project.getCompartmentGraph().attachAdditionalMetadata("jipipe:graph:view-mode", JIPipeGraphJIPipeDesktopGraphCanvasGrid.VerticalCompact);
         return project;
     }
 

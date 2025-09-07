@@ -109,7 +109,7 @@ public class JIPipeRewireGraphEditorTool implements JIPipeToggleableGraphEditorT
                 return;
             }
 
-            g.setStroke(getGraphCanvas().getStrokeHighlight());
+            g.setStroke(getGraphCanvas().getResources().getStrokeHighlight());
             g.setColor(Color.ORANGE);
 
             JIPipeGraph graph = graphEditorUI.getCanvasUI().getGraph();
@@ -152,10 +152,27 @@ public class JIPipeRewireGraphEditorTool implements JIPipeToggleableGraphEditorT
         PointRange.tighten(sourcePoint, targetPoint);
 
         // Draw arrow
-        if (currentRewireDragSource.isInput())
-            graphEditorUI.getCanvasUI().paintEdge(g, sourcePoint.center, currentRewireDragSource.getNodeUI().getBounds(), targetPoint.center, JIPipeGraphEdge.Shape.Elbow, 1, 0, 0, true);
-        else
-            graphEditorUI.getCanvasUI().paintEdge(g, targetPoint.center, currentRewireDragSource.getNodeUI().getBounds(), sourcePoint.center, JIPipeGraphEdge.Shape.Elbow, 1, 0, 0, true);
+        if (currentRewireDragSource.isInput()) {
+            graphEditorUI.getCanvasUI().getPaintManager().paintEdge(g,
+                    sourcePoint.center,
+                    currentRewireDragSource.getNodeUI().getBounds(),
+                    targetPoint.center,
+                    JIPipeGraphEdge.Shape.Elbow,
+                    1,
+                    0,
+                    0,
+                    true);
+        } else {
+            graphEditorUI.getCanvasUI().getPaintManager().paintEdge(g,
+                    targetPoint.center,
+                    currentRewireDragSource.getNodeUI().getBounds(),
+                    sourcePoint.center,
+                    JIPipeGraphEdge.Shape.Elbow,
+                    1,
+                    0,
+                    0,
+                    true);
+        }
     }
 
     @Override
@@ -173,6 +190,11 @@ public class JIPipeRewireGraphEditorTool implements JIPipeToggleableGraphEditorT
                 e.consume();
             }
         }
+    }
+
+    @Override
+    public JIPipeToggleableGraphEditorToolNodeLayerMask getNodeLayerMask() {
+        return JIPipeToggleableGraphEditorToolNodeLayerMask.WorkflowOnly;
     }
 
     @Override
@@ -297,7 +319,7 @@ public class JIPipeRewireGraphEditorTool implements JIPipeToggleableGraphEditorT
         }
 
         // Select the targeted node
-        graphCanvasUI.selectOnly(graphCanvasUI.getNodeUIs().get(selectedAlternative.getNode()));
+        graphCanvasUI.getSelectionManager().selectOnly(graphCanvasUI.getNodeUIs().get(selectedAlternative.getNode()));
 
         setCurrentRewireDragSource(null);
     }

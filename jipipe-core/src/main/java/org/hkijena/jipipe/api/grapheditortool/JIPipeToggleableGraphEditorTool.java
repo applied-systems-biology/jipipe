@@ -16,6 +16,7 @@ package org.hkijena.jipipe.api.grapheditortool;
 import org.hkijena.jipipe.api.data.JIPipeDataSlot;
 import org.hkijena.jipipe.api.nodes.JIPipeGraphEdge;
 import org.hkijena.jipipe.desktop.app.grapheditor.commons.JIPipeDesktopGraphCanvasUI;
+import org.hkijena.jipipe.desktop.app.grapheditor.commons.canvas.JIPipeDesktopGraphCanvasResources;
 
 import java.awt.*;
 
@@ -35,6 +36,10 @@ public interface JIPipeToggleableGraphEditorTool extends JIPipeGraphEditorTool {
         return true;
     }
 
+    default JIPipeToggleableGraphEditorToolNodeLayerMask  getNodeLayerMask() {
+        return JIPipeToggleableGraphEditorToolNodeLayerMask.None;
+    }
+
     default void paintBelowNodesAfterEdges(Graphics2D g) {
 
     }
@@ -47,23 +52,29 @@ public interface JIPipeToggleableGraphEditorTool extends JIPipeGraphEditorTool {
 
     }
 
-    default void paintMouse(JIPipeDesktopGraphCanvasUI canvasUI, Point lastMousePosition, int toolInfoDistance, Graphics2D graphics2D) {
+    default void paintTooltip(JIPipeDesktopGraphCanvasUI canvasUI, Point lastMousePosition, int toolInfoDistance, boolean withBorder, Graphics2D graphics2D) {
         int x = lastMousePosition.x + toolInfoDistance;
         int y = lastMousePosition.y + toolInfoDistance;
 
-        graphics2D.setFont(JIPipeDesktopGraphCanvasUI.GRAPH_TOOL_CURSOR_FONT);
+        graphics2D.setFont(JIPipeDesktopGraphCanvasResources.GRAPH_TOOL_CURSOR_FONT);
         FontMetrics fontMetrics = graphics2D.getFontMetrics();
 
         int nameWidth = fontMetrics.stringWidth(getName());
 
-        graphics2D.setStroke(JIPipeDesktopGraphCanvasUI.STROKE_UNIT);
-        graphics2D.setColor(canvasUI.getSmartEdgeSlotBackground());
+        graphics2D.setStroke(JIPipeDesktopGraphCanvasResources.STROKE_UNIT);
+        graphics2D.setColor(canvasUI.getResources().getSmartEdgeSlotBackground());
         graphics2D.fillRoundRect(x, y, nameWidth + 22 + 3, 22, 5, 5);
-        graphics2D.setColor(canvasUI.getSmartEdgeSlotForeground());
-        graphics2D.drawRoundRect(x, y, nameWidth + 22 + 3, 22, 5, 5);
+        graphics2D.setColor(canvasUI.getResources().getSmartEdgeSlotForeground());
+        if(withBorder) {
+            graphics2D.drawRoundRect(x, y, nameWidth + 22 + 3, 22, 5, 5);
+        }
 
         getIcon().paintIcon(canvasUI, graphics2D, x + 3, y + 3);
         graphics2D.drawString(getName(), x + 22, y + (fontMetrics.getAscent() - fontMetrics.getLeading()) + 22 / 2 - fontMetrics.getHeight() / 2);
 
+    }
+
+    default boolean isDeactivateOnRightClick() {
+        return true;
     }
 }

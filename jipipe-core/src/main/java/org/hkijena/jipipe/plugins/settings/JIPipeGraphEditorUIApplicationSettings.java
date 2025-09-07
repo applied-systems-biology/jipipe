@@ -43,12 +43,9 @@ public class JIPipeGraphEditorUIApplicationSettings extends JIPipeDefaultApplica
     private boolean askOnDeleteCompartment = true;
     private boolean askOnDeleteParameter = true;
     private boolean drawOutsideEdges = true;
-    private boolean notifyInvalidDragAndDrop = true;
     private boolean colorSelectedNodeEdges = true;
     private boolean autoLayoutMovesOtherNodes = false;
     private boolean drawNodeShadows = true;
-    private boolean drawImprovedEdges = true;
-    private boolean drawArrowHeads = true;
     private boolean layoutAfterAlgorithmFinder = true;
     private boolean layoutAfterConnect = false;
     private int autoHideEdgeDistanceThreshold = 512;
@@ -167,18 +164,6 @@ public class JIPipeGraphEditorUIApplicationSettings extends JIPipeDefaultApplica
         return nodeSearchSettings;
     }
 
-    @SetJIPipeDocumentation(name = "Improve edge drawing", description = "If enabled, edges are drawn with outlines to make them easier distinguishable. " +
-            "If you have issues with the performance, you should disable this setting.")
-    @JIPipeParameter("draw-improved-edges")
-    public boolean isDrawImprovedEdges() {
-        return drawImprovedEdges;
-    }
-
-    @JIPipeParameter("draw-improved-edges")
-    public void setDrawImprovedEdges(boolean drawImprovedEdges) {
-        this.drawImprovedEdges = drawImprovedEdges;
-    }
-
     @SetJIPipeDocumentation(name = "Draw node shadows", description = "If enabled, shadows are drawn for nodes as visual guide. " +
             "If you have issues with the performance, you should disable this setting.")
     @JIPipeParameter("draw-node-shadows")
@@ -189,17 +174,6 @@ public class JIPipeGraphEditorUIApplicationSettings extends JIPipeDefaultApplica
     @JIPipeParameter("draw-node-shadows")
     public void setDrawNodeShadows(boolean drawNodeShadows) {
         this.drawNodeShadows = drawNodeShadows;
-    }
-
-    @SetJIPipeDocumentation(name = "Draw arrow heads", description = "If enabled, draw arrow heads on connection targets")
-    @JIPipeParameter("draw-arrow-heads")
-    public boolean isDrawArrowHeads() {
-        return drawArrowHeads;
-    }
-
-    @JIPipeParameter("draw-arrow-heads")
-    public void setDrawArrowHeads(boolean drawArrowHeads) {
-        this.drawArrowHeads = drawArrowHeads;
     }
 
     @SetJIPipeDocumentation(name = "Switch panning direction",
@@ -291,17 +265,6 @@ public class JIPipeGraphEditorUIApplicationSettings extends JIPipeDefaultApplica
     @JIPipeParameter("draw-outside-edges")
     public void setDrawOutsideEdges(boolean drawOutsideEdges) {
         this.drawOutsideEdges = drawOutsideEdges;
-    }
-
-    @SetJIPipeDocumentation(name = "Notify users about invalid drops", description = "If enabled, a message box will be displayed if invalid data is dropped into a graph.")
-    @JIPipeParameter("notify-invalid-drag-and-drop")
-    public boolean isNotifyInvalidDragAndDrop() {
-        return notifyInvalidDragAndDrop;
-    }
-
-    @JIPipeParameter("notify-invalid-drag-and-drop")
-    public void setNotifyInvalidDragAndDrop(boolean notifyInvalidDragAndDrop) {
-        this.notifyInvalidDragAndDrop = notifyInvalidDragAndDrop;
     }
 
     @SetJIPipeDocumentation(name = "Color selected node edges", description = "If enabled, node edges are assigned a unique color while a connected node is selected. " +

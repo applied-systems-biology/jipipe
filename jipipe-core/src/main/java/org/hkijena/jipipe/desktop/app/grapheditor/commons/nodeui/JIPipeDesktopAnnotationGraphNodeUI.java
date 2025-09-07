@@ -18,6 +18,8 @@ import org.hkijena.jipipe.api.nodes.annotation.JIPipeAnnotationGraphNode;
 import org.hkijena.jipipe.api.parameters.JIPipeParameterCollection;
 import org.hkijena.jipipe.desktop.app.JIPipeDesktopWorkbench;
 import org.hkijena.jipipe.desktop.app.grapheditor.commons.JIPipeDesktopGraphCanvasUI;
+import org.hkijena.jipipe.desktop.app.grapheditor.commons.JIPipeDesktopGraphInteractiveObjectUI;
+import org.hkijena.jipipe.desktop.app.grapheditor.commons.canvas.JIPipeDesktopGraphCanvasGrid;
 
 import java.awt.*;
 import java.util.Set;
@@ -52,7 +54,7 @@ public class JIPipeDesktopAnnotationGraphNodeUI extends JIPipeDesktopGraphNodeUI
 
         // Update the real size of the control
         Dimension gridSize = new Dimension(Math.max(1, annotationGraphNode.getGridWidth()), Math.max(1, annotationGraphNode.getGridHeight()));
-        Dimension realSize = getViewMode().gridToRealSize(gridSize, getGraphCanvasUI().getZoom());
+        Dimension realSize = JIPipeDesktopGraphCanvasGrid.gridToRealSize(gridSize, getGraphCanvasUI().getZoom());
         setSize(realSize);
         revalidate();
 
@@ -91,7 +93,7 @@ public class JIPipeDesktopAnnotationGraphNodeUI extends JIPipeDesktopGraphNodeUI
     }
 
     @Override
-    public void paintMinimap(Graphics2D graphics2D, int x, int y, int width, int height, BasicStroke defaultStroke, BasicStroke selectedStroke, Set<JIPipeDesktopGraphNodeUI> selection) {
+    public void paintMinimap(Graphics2D graphics2D, int x, int y, int width, int height, BasicStroke defaultStroke, BasicStroke selectedStroke, Set<JIPipeDesktopGraphInteractiveObjectUI> selection) {
         JIPipeAnnotationGraphNode annotationGraphNode = (JIPipeAnnotationGraphNode) getNode();
         annotationGraphNode.paintMinimap(graphics2D, x, y, width, height, defaultStroke, selectedStroke, selection);
     }

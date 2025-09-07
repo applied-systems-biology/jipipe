@@ -203,8 +203,8 @@ public class JIPipeDesktopAddNodesPanel extends JIPipeDesktopWorkbenchPanel {
                         node.setCustomName(finalName);
                     }
                     graphEditorUI.getCanvasUI().getHistoryJournal().snapshotBeforeAddNode(node, graphEditorUI.getCompartment());
-                    graphEditorUI.getCanvasUI().getScheduledSelection().clear();
-                    graphEditorUI.getCanvasUI().getScheduledSelection().add(node);
+                    graphEditorUI.getCanvasUI().getSelectionManager().getScheduledSelection().clear();
+                    graphEditorUI.getCanvasUI().getSelectionManager().getScheduledSelection().add(node);
                     algorithmGraph.insertNode(node, graphEditorUI.getCompartment());
                 });
                 addedAlgorithms.add(info);
@@ -350,7 +350,7 @@ public class JIPipeDesktopAddNodesPanel extends JIPipeDesktopWorkbenchPanel {
 
     private void initializeMenuForPinned(JPopupMenu popupMenu) {
         Set<String> pinnedNodeDatabaseEntries = getPinnedNodeDatabaseEntries();
-        for (JIPipeNodeDatabaseEntry entry : database.getLegacySearch().query("", isCompartmentsEditor ? JIPipeNodeDatabasePipelineVisibility.Compartments : JIPipeNodeDatabasePipelineVisibility.Pipeline,
+        for (JIPipeNodeDatabaseEntry entry : database.query("", isCompartmentsEditor ? JIPipeNodeDatabasePipelineVisibility.Compartments : JIPipeNodeDatabasePipelineVisibility.Pipeline,
                 false, true, new HashSet<>(settings.getNodeSearchSettings().getPinnedNodes()))) {
             if (pinnedNodeDatabaseEntries.contains(entry.getId())) {
                 if (entry instanceof CreateNewNodeByInfoDatabaseEntry) {
@@ -729,7 +729,7 @@ public class JIPipeDesktopAddNodesPanel extends JIPipeDesktopWorkbenchPanel {
 
     private void insertAtCursor(JIPipeNodeDatabaseEntry entry) {
         Set<JIPipeDesktopGraphNodeUI> nodeUIs = entry.addToGraph(graphEditorUI.getCanvasUI());
-        graphEditorUI.getCanvasUI().setSelection(nodeUIs);
+        graphEditorUI.getCanvasUI().getSelectionManager().setSelection(nodeUIs);
     }
 
     public void focusSearchBar() {
@@ -793,7 +793,7 @@ public class JIPipeDesktopAddNodesPanel extends JIPipeDesktopWorkbenchPanel {
             Set<String> pinnedNodeDatabaseEntries = toolBox.getPinnedNodeDatabaseEntries();
             DefaultListModel<JIPipeNodeDatabaseEntry> model = new DefaultListModel<>();
             JIPipeNodeDatabasePipelineVisibility role = toolBox.isCompartmentsEditor ? JIPipeNodeDatabasePipelineVisibility.Compartments : JIPipeNodeDatabasePipelineVisibility.Pipeline;
-            List<JIPipeNodeDatabaseEntry> queryResult = toolBox.database.getLegacySearch().query(toolBox.searchField.getText(),
+            List<JIPipeNodeDatabaseEntry> queryResult = toolBox.database.query(toolBox.searchField.getText(),
                     role,
                     false,
                     true,

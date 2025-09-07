@@ -16,10 +16,12 @@ package org.hkijena.jipipe.api.nodes.annotation;
 import org.hkijena.jipipe.JIPipe;
 import org.hkijena.jipipe.api.JIPipeWorkbench;
 import org.hkijena.jipipe.api.grapheditortool.JIPipeToggleableGraphEditorTool;
+import org.hkijena.jipipe.api.grapheditortool.JIPipeToggleableGraphEditorToolNodeLayerMask;
 import org.hkijena.jipipe.desktop.app.JIPipeDesktopWorkbench;
 import org.hkijena.jipipe.desktop.app.JIPipeDesktopWorkbenchAccess;
-import org.hkijena.jipipe.desktop.app.grapheditor.commons.JIPipeDesktopGraphCanvasUI;
 import org.hkijena.jipipe.desktop.app.grapheditor.commons.JIPipeDesktopGraphEditorUI;
+import org.hkijena.jipipe.desktop.app.grapheditor.commons.canvas.JIPipeDesktopGraphCanvasGrid;
+import org.hkijena.jipipe.desktop.app.grapheditor.commons.canvas.JIPipeDesktopGraphCanvasResources;
 
 import javax.swing.*;
 import java.awt.*;
@@ -90,9 +92,14 @@ public class JIPipeAnnotationGraphNodeTool<T extends JIPipeAnnotationGraphNode> 
     }
 
     @Override
+    public JIPipeToggleableGraphEditorToolNodeLayerMask getNodeLayerMask() {
+        return JIPipeToggleableGraphEditorToolNodeLayerMask.AnnotationsOnly;
+    }
+
+    @Override
     public void mousePressed(MouseEvent e) {
         if (e.getButton() == MouseEvent.BUTTON1) {
-            firstPoint = getGraphCanvas().getViewMode().realLocationToGrid(e.getPoint(), getGraphCanvas().getZoom());
+            firstPoint = JIPipeDesktopGraphCanvasGrid.realLocationToGrid(e.getPoint(), getGraphCanvas().getZoom());
             e.consume();
         }
     }
@@ -123,7 +130,7 @@ public class JIPipeAnnotationGraphNodeTool<T extends JIPipeAnnotationGraphNode> 
         T newNode = JIPipe.createNode(nodeClass);
         newNode.setGridWidth(w);
         newNode.setGridHeight(h);
-        newNode.setNodeUILocationWithin(getGraphEditor().getCompartment(), new Point(x, y), getGraphEditor().getCanvasUI().getViewMode().name());
+        newNode.setNodeUILocationWithin(getGraphEditor().getCompartment(), new Point(x, y));
         return newNode;
     }
 
@@ -146,7 +153,7 @@ public class JIPipeAnnotationGraphNodeTool<T extends JIPipeAnnotationGraphNode> 
     @Override
     public void mouseDragged(MouseEvent e) {
         if (firstPoint != null) {
-            secondPoint = getGraphCanvas().getViewMode().realLocationToGrid(e.getPoint(), getGraphCanvas().getZoom());
+            secondPoint = JIPipeDesktopGraphCanvasGrid.realLocationToGrid(e.getPoint(), getGraphCanvas().getZoom());
             getGraphCanvas().repaintLowLag();
             e.consume();
         }
@@ -176,15 +183,13 @@ public class JIPipeAnnotationGraphNodeTool<T extends JIPipeAnnotationGraphNode> 
     @Override
     public void paintAfterNodesAndEdges(Graphics2D graphics2D) {
         if (firstPoint != null && secondPoint != null && !Objects.equals(firstPoint, secondPoint)) {
-            int gridWidth = getGraphCanvas().getViewMode().getGridWidth();
-            int gridHeight = getGraphCanvas().getViewMode().getGridHeight();
             double zoom = getGraphCanvas().getZoom();
-            graphics2D.setStroke(JIPipeDesktopGraphCanvasUI.STROKE_COMMENT);
-            graphics2D.setColor(JIPipeDesktopGraphCanvasUI.COLOR_HIGHLIGHT_GREEN);
-            int x0 = (int) ((firstPoint.x * gridWidth) * zoom);
-            int y0 = (int) ((firstPoint.y * gridHeight) * zoom);
-            int x1 = (int) ((secondPoint.x * gridWidth) * zoom);
-            int y1 = (int) ((secondPoint.y * gridHeight) * zoom);
+            graphics2D.setStroke(JIPipeDesktopGraphCanvasResources.STROKE_COMMENT);
+            graphics2D.setColor(JIPipeDesktopGraphCanvasResources.COLOR_HIGHLIGHT_GREEN);
+            int x0 = (int) ((firstPoint.x * JIPipeDesktopGraphCanvasGrid.GRID_WIDTH) * zoom);
+            int y0 = (int) ((firstPoint.y * JIPipeDesktopGraphCanvasGrid.GRID_HEIGHT) * zoom);
+            int x1 = (int) ((secondPoint.x * JIPipeDesktopGraphCanvasGrid.GRID_WIDTH) * zoom);
+            int y1 = (int) ((secondPoint.y * JIPipeDesktopGraphCanvasGrid.GRID_HEIGHT) * zoom);
             paintDragOverlay(graphics2D, x0, y0, x1, y1);
         }
     }

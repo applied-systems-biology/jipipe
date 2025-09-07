@@ -70,7 +70,7 @@ public class RenderJIPipeProjectAlgorithm extends JIPipeSimpleIteratingAlgorithm
             JIPipeProject project = JIPipeProject.loadProject(iterationStep.getInputData(getFirstInputSlot(), FileData.class, progressInfo).toPath(),
                     new UnspecifiedValidationReportContext(),
                     new JIPipeValidationReport(),
-                    new JIPipeNotificationInbox());
+                    new JIPipeNotificationInbox(), progressInfo);
             RenderPipelineRun run = new RenderPipelineRun(project, null, settings);
             run.setProgressInfo(progressInfo.detachProgress().resolve("Render"));
             run.run();

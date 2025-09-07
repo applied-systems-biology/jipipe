@@ -349,7 +349,7 @@ public class JIPipeDesktopNodeFinderDialogUI extends JDialog {
                 allowNew = true;
             }
             if (querySlot != null) {
-                for (JIPipeNodeDatabaseEntry entry : nodeDatabase.getLegacySearch().query(dialogUI.searchField.getText(),
+                for (JIPipeNodeDatabaseEntry entry : nodeDatabase.query(dialogUI.searchField.getText(),
                         role,
                         allowExisting,
                         allowNew,
@@ -368,7 +368,7 @@ public class JIPipeDesktopNodeFinderDialogUI extends JDialog {
                     model.addElement(entry);
                 }
             } else {
-                for (JIPipeNodeDatabaseEntry entry : nodeDatabase.getLegacySearch().query(dialogUI.searchField.getText(), role, allowExisting, allowNew, pinnedNodeDatabaseEntries)) {
+                for (JIPipeNodeDatabaseEntry entry : nodeDatabase.query(dialogUI.searchField.getText(), role, allowExisting, allowNew, pinnedNodeDatabaseEntries)) {
                     model.addElement(entry);
                 }
             }

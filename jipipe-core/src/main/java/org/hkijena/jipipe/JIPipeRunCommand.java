@@ -13,6 +13,7 @@
 
 package org.hkijena.jipipe;
 
+import org.hkijena.jipipe.api.JIPipeProgressInfo;
 import org.hkijena.jipipe.api.notifications.JIPipeNotificationInbox;
 import org.hkijena.jipipe.api.project.JIPipeProject;
 import org.hkijena.jipipe.api.run.JIPipeGraphRun;
@@ -91,7 +92,11 @@ public class JIPipeRunCommand implements Command {
         }
         JIPipeProject project;
         try {
-            project = JIPipeProject.loadProject(projectFile.toPath(), new UnspecifiedValidationReportContext(), new JIPipeValidationReport(), new JIPipeNotificationInbox());
+            project = JIPipeProject.loadProject(projectFile.toPath(),
+                    new UnspecifiedValidationReportContext(),
+                    new JIPipeValidationReport(),
+                    new JIPipeNotificationInbox(),
+                    JIPipeProgressInfo.STDOUT);
             project.setWorkDirectory(projectFile.toPath().getParent());
 
         } catch (IOException e) {

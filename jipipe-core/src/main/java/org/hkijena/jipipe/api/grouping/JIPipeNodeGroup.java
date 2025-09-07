@@ -38,7 +38,6 @@ import org.hkijena.jipipe.api.run.JIPipeGraphRunPartitionInheritedBoolean;
 import org.hkijena.jipipe.api.validation.JIPipeValidationReport;
 import org.hkijena.jipipe.api.validation.JIPipeValidationReportContext;
 import org.hkijena.jipipe.api.validation.JIPipeValidationReportSettings;
-import org.hkijena.jipipe.desktop.app.grapheditor.JIPipeGraphViewMode;
 import org.hkijena.jipipe.utils.ParameterUtils;
 import org.hkijena.jipipe.utils.StringUtils;
 
@@ -106,7 +105,7 @@ public class JIPipeNodeGroup extends JIPipeGraphWrapperAlgorithm implements JIPi
         // Clear locations
         if (clearLocations) {
             for (JIPipeGraphNode node : graph.getGraphNodes()) {
-                node.clearLocations();
+                node.clearAllNodeUILocations();
             }
         }
 
@@ -129,29 +128,27 @@ public class JIPipeNodeGroup extends JIPipeGraphWrapperAlgorithm implements JIPi
 
         if (!clearLocations && fixLocations) {
             // Assign locations of input and output accordingly
-            for (JIPipeGraphViewMode viewMode : JIPipeGraphViewMode.values()) {
-                int minX = Integer.MAX_VALUE;
-                int maxX = Integer.MIN_VALUE;
-                int minY = Integer.MAX_VALUE;
-                int maxY = Integer.MIN_VALUE;
-                for (JIPipeGraphNode graphNode : graph.getGraphNodes()) {
-                    Map<String, Point> locations = graphNode.getNodeUILocationPerViewModePerCompartment().getOrDefault("", null);
-                    if (locations != null) {
-                        Point point = locations.getOrDefault(viewMode.name(), null);
-                        if (point != null) {
-                            minX = Math.min(minX, point.x);
-                            minY = Math.min(minY, point.y);
-                            maxX = Math.max(maxX, point.x);
-                            maxY = Math.max(maxY, point.y);
-                        }
+            int minX = Integer.MAX_VALUE;
+            int maxX = Integer.MIN_VALUE;
+            int minY = Integer.MAX_VALUE;
+            int maxY = Integer.MIN_VALUE;
+            for (JIPipeGraphNode graphNode : graph.getGraphNodes()) {
+                Map<String, Point> locations = graphNode.getAllNodeUILocations();
+                if (locations != null) {
+                    Point point = locations.getOrDefault("", null);
+                    if (point != null) {
+                        minX = Math.min(minX, point.x);
+                        minY = Math.min(minY, point.y);
+                        maxX = Math.max(maxX, point.x);
+                        maxY = Math.max(maxY, point.y);
                     }
                 }
+            }
 
-                // Set group input/output
-                if (minX != Integer.MAX_VALUE && minY != Integer.MAX_VALUE && maxX != Integer.MIN_VALUE && maxY != Integer.MIN_VALUE) {
-                    getGroupInput().setNodeUILocationWithin("", new Point(minX, minY - 5), viewMode.name());
-                    getGroupOutput().setNodeUILocationWithin("", new Point(maxX, maxY + 5), viewMode.name());
-                }
+            // Set group input/output
+            if (minX != Integer.MAX_VALUE && minY != Integer.MAX_VALUE && maxX != Integer.MIN_VALUE && maxY != Integer.MIN_VALUE) {
+                getGroupInput().setNodeUILocationWithin("", new Point(minX, minY - 5));
+                getGroupOutput().setNodeUILocationWithin("", new Point(maxX, maxY + 5));
             }
         }
     }
