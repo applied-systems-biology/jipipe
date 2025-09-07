@@ -12,6 +12,7 @@ variables:
 .default_build_template: &default_build
   interruptible: true
   retry: 1
+  image: maven:3-eclipse-temurin-21-jammy
   before_script:
     - apt-get update
     - apt-get install -y nsis git git-lfs zip unzip
@@ -24,6 +25,7 @@ distribution_package:
   stage: package
   interruptible: true
   retry: 1
+  image: maven:3-eclipse-temurin-21-jammy
   before_script:
     - apt-get update
     - apt-get install -y nsis git git-lfs zip unzip
@@ -52,9 +54,11 @@ upload_to_package_registry:
   needs:
     - job: distribution_package
       artifacts: true
-  image: alpine:3.20
+  image: maven:3-eclipse-temurin-21-jammy
   before_script:
-    - apk add --no-cache curl jq
+    - apt-get update
+    - apt-get install -y git
+    - apt-get install -y curl jq  # Install curl and jq with apt instead of apk
   script:
     - set -euo pipefail
     # Locate snapshot output dir from artifacts
@@ -116,9 +120,17 @@ upload_to_package_registry:
 # Feature branch jobs - Simplified build
 build_feature_branch:
   stage: build
-  <<: *default_build
+  interruptible: true
+  retry: 1
+  image: maven:3-eclipse-temurin-21-jammy
+  before_script:
+    - apt-get update
+    - apt-get install -y zip wget
+    - git config --global --add safe.directory "$CI_PROJECT_DIR"
+    - mkdir -p $CI_PROJECT_DIR/.m2/repository
   script:
     - echo "Building JIPipe for feature branch"
+    - mvn clean compile
     - mvn clean package
     - cd dist/zip
     - ./build.sh
