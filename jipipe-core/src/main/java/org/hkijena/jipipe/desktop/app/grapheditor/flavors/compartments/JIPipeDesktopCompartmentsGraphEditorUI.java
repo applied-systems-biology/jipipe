@@ -94,7 +94,7 @@ public class JIPipeDesktopCompartmentsGraphEditorUI extends JIPipeDesktopGraphEd
                 GraphInteractiveObjectUIContextAction.SEPARATOR,
                 new ExportCompartmentAsJsonNodeUIContextAction(),
                 GraphInteractiveObjectUIContextAction.SEPARATOR,
-                new DeleteCompartmentUIContextAction(),
+                new DeleteCompartmentNodesAndEdgesContextAction(),
                 GraphInteractiveObjectUIContextAction.SEPARATOR,
                 new SendToForegroundUIContextAction(),
                 new RaiseUIContextAction(),

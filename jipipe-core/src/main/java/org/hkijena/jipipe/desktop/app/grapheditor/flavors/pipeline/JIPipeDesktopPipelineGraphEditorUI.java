@@ -161,7 +161,7 @@ public class JIPipeDesktopPipelineGraphEditorUI extends JIPipeDesktopGraphEditor
                 new DisablePassThroughNodeUIContextAction(),
                 new EnableSaveOutputsNodeUIContextAction(),
                 new DisableSaveOutputsNodeUIContextAction(),
-                new DeleteNodeUIContextAction(),
+                new DeleteWorkflowNodesAndEdgesContextAction(),
                 GraphInteractiveObjectUIContextAction.SEPARATOR,
                 new SendToForegroundUIContextAction(),
                 new RaiseUIContextAction(),

@@ -19,7 +19,6 @@ import org.hkijena.jipipe.api.compartments.algorithms.JIPipeProjectCompartment;
 import org.hkijena.jipipe.api.nodes.JIPipeGraphNode;
 import org.hkijena.jipipe.desktop.app.JIPipeDesktopProjectWorkbench;
 import org.hkijena.jipipe.desktop.app.grapheditor.commons.JIPipeDesktopGraphCanvasUI;
-import org.hkijena.jipipe.desktop.app.grapheditor.commons.JIPipeDesktopGraphInteractiveObjectUI;
 import org.hkijena.jipipe.desktop.app.grapheditor.commons.nodeui.JIPipeDesktopGraphNodeUI;
 import org.hkijena.jipipe.plugins.settings.JIPipeGraphEditorUIApplicationSettings;
 
@@ -28,7 +27,7 @@ import java.awt.event.KeyEvent;
 import java.util.Set;
 import java.util.stream.Collectors;
 
-public class DeleteCompartmentUIContextAction implements NodeUIContextAction {
+public class DeleteCompartmentNodesAndEdgesContextAction implements NodeUIContextAction {
     @Override
     public boolean matchesNodes(Set<JIPipeDesktopGraphNodeUI> selection) {
         return !selection.isEmpty();
@@ -45,8 +44,7 @@ public class DeleteCompartmentUIContextAction implements NodeUIContextAction {
             for (JIPipeDesktopGraphNodeUI ui : ImmutableList.copyOf(selection)) {
                 if (ui.getNode().isUiLocked())
                     continue;
-                if (ui.getNode() instanceof JIPipeProjectCompartment) {
-                    JIPipeProjectCompartment compartment = (JIPipeProjectCompartment) ui.getNode();
+                if (ui.getNode() instanceof JIPipeProjectCompartment compartment) {
                     if (canvasUI.getHistoryJournal() != null) {
                         canvasUI.getHistoryJournal().snapshotBeforeRemoveCompartment(compartment);
                     }

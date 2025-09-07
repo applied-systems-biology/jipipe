@@ -17,7 +17,7 @@ import org.hkijena.jipipe.JIPipe;
 import org.hkijena.jipipe.api.nodes.JIPipeGraphNode;
 import org.hkijena.jipipe.desktop.app.JIPipeDesktopProjectWorkbench;
 import org.hkijena.jipipe.desktop.app.grapheditor.commons.JIPipeDesktopGraphCanvasUI;
-import org.hkijena.jipipe.desktop.app.grapheditor.commons.JIPipeDesktopGraphInteractiveObjectUI;
+import org.hkijena.jipipe.desktop.app.grapheditor.commons.edgeui.JIPipeDesktopGraphEdgeUI;
 import org.hkijena.jipipe.desktop.app.grapheditor.commons.nodeui.JIPipeDesktopGraphNodeUI;
 import org.hkijena.jipipe.plugins.settings.JIPipeGraphEditorUIApplicationSettings;
 
@@ -27,7 +27,7 @@ import java.util.Set;
 import java.util.UUID;
 import java.util.stream.Collectors;
 
-public class DeleteNodeUIContextAction implements NodeUIContextAction {
+public class DeleteWorkflowNodesAndEdgesContextAction implements NodeAndEdgesUIContextAction {
     @Override
     public boolean matchesNodes(Set<JIPipeDesktopGraphNodeUI> selection) {
         if (selection.isEmpty())
@@ -40,18 +40,46 @@ public class DeleteNodeUIContextAction implements NodeUIContextAction {
     }
 
     @Override
-    public void runNodes(JIPipeDesktopGraphCanvasUI canvasUI, Set<JIPipeDesktopGraphNodeUI> selection) {
-        if (!JIPipeDesktopProjectWorkbench.canAddOrDeleteNodes(canvasUI.getDesktopWorkbench()))
-            return;
-        if (!JIPipeGraphEditorUIApplicationSettings.getInstance().isAskOnDeleteNode() || JOptionPane.showConfirmDialog(canvasUI.getDesktopWorkbench().getWindow(),
-                "Do you really want to remove the selected nodes?", "Delete algorithms",
-                JOptionPane.YES_NO_OPTION) == JOptionPane.YES_OPTION) {
-            Set<JIPipeGraphNode> nodes = selection.stream().map(JIPipeDesktopGraphNodeUI::getNode).filter(node -> !node.isUiLocked()).collect(Collectors.toSet());
-            UUID compartment = nodes.stream().map(JIPipeGraphNode::getUUIDInParentGraph).findFirst().orElse(null);
-            if (canvasUI.getHistoryJournal() != null) {
-                canvasUI.getHistoryJournal().snapshotBeforeRemoveNodes(nodes, compartment);
+    public boolean matchesEdges(Set<JIPipeDesktopGraphEdgeUI> selection) {
+        return !selection.isEmpty();
+    }
+
+    @Override
+    public void runNodesAndEdges(JIPipeDesktopGraphCanvasUI canvasUI, Set<JIPipeDesktopGraphNodeUI> nodeSelection, Set<JIPipeDesktopGraphEdgeUI> edgeSelection) {
+        boolean allowDeleteNodes = true;
+        if(!nodeSelection.isEmpty()) {
+            if (!JIPipeDesktopProjectWorkbench.canAddOrDeleteNodes(canvasUI.getDesktopWorkbench())) {
+                allowDeleteNodes = false;
             }
-            canvasUI.getGraph().removeNodes(nodes, true);
+        }
+
+        String subject = "";
+        if(allowDeleteNodes && !nodeSelection.isEmpty()) {
+            subject = "nodes";
+        }
+        if(!edgeSelection.isEmpty()) {
+            if(!subject.isEmpty()) {
+                subject += "/";
+            }
+            subject += "edges";
+        }
+
+        if (!JIPipeGraphEditorUIApplicationSettings.getInstance().isAskOnDeleteNode() || JOptionPane.showConfirmDialog(canvasUI.getDesktopWorkbench().getWindow(),
+                "Do you really want to remove the selected " + subject + "?", "Delete " + subject,
+                JOptionPane.YES_NO_OPTION) == JOptionPane.YES_OPTION) {
+            if(!edgeSelection.isEmpty()) {
+                for (JIPipeDesktopGraphEdgeUI edgeUI : edgeSelection) {
+                    canvasUI.getGraph().disconnect(edgeUI.getSource(), edgeUI.getTarget(), true);
+                }
+            }
+            if(!nodeSelection.isEmpty()) {
+                Set<JIPipeGraphNode> nodes = nodeSelection.stream().map(JIPipeDesktopGraphNodeUI::getNode).filter(node -> !node.isUiLocked()).collect(Collectors.toSet());
+                UUID compartment = nodes.stream().map(JIPipeGraphNode::getUUIDInParentGraph).findFirst().orElse(null);
+                if (canvasUI.getHistoryJournal() != null) {
+                    canvasUI.getHistoryJournal().snapshotBeforeRemoveNodes(nodes, compartment);
+                }
+                canvasUI.getGraph().removeNodes(nodes, true);
+            }
         }
     }
 
@@ -67,7 +95,7 @@ public class DeleteNodeUIContextAction implements NodeUIContextAction {
 
     @Override
     public String getDescription() {
-        return "Deletes the selected nodes";
+        return "Deletes the selected nodes/edges";
     }
 
     @Override
