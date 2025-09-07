@@ -3,15 +3,22 @@ stages:
   - package
   - publish
 
+# Share the Maven repo across jobs & pipelines; refresh when POMs change
 cache:
-  key: "$CI_JOB_NAME-dependencies"
+  key:
+    files:
+      - pom.xml
+      - "**/pom.xml"
   paths:
     - .m2/repository/
   policy: pull-push
 
 variables:
+  # Keep repo fast to fetch but DO NOT wipe .m2/ (Option A)
   GIT_STRATEGY: fetch
   GIT_DEPTH: "1"
+  GIT_CLEAN_FLAGS: "-ffdx -e .m2/"
+  # Store Maven local repo inside the project dir (and cache it)
   MAVEN_OPTS: "-Dmaven.repo.local=$CI_PROJECT_DIR/.m2/repository"
 
 # Job template for shared configuration
@@ -24,7 +31,7 @@ variables:
     - apt-get install -y nsis git git-lfs zip unzip
     - git lfs install
     - git config --global --add safe.directory "$CI_PROJECT_DIR"
-    
+
 # Master branch jobs - Full pipeline with distribution
 distribution_package:
   stage: package
@@ -32,6 +39,8 @@ distribution_package:
   retry: 1
   <<: *default_build
   script:
+    # Pre-warm Maven dependencies to leverage cache and speed up subsequent steps
+    - mvn -B -ntp -DskipTests dependency:go-offline
     - git clone --depth 1 https://asb-git.hki-jena.de/RGerst/jipipe-distribution-files.git
     - cd jipipe-distribution-files/scripts
     - ./step1-publish-snapshot-ci.sh "" "${CI_PIPELINE_IID}"
@@ -58,7 +67,7 @@ upload_to_package_registry:
   before_script:
     - apt-get update
     - apt-get install -y git
-    - apt-get install -y curl jq  # Install curl and jq with apt instead of apk
+    - apt-get install -y curl jq
   script:
     - set -euo pipefail
     # Locate snapshot output dir from artifacts
@@ -127,9 +136,11 @@ build_feature_branch:
     - apt-get update
     - apt-get install -y zip wget
   script:
+    - echo "Pre-warming dependencies…"
+    - mvn -B -ntp -DskipTests dependency:go-offline
     - echo "Building JIPipe for feature branch"
-    - mvn clean compile
-    - mvn clean package
+    - mvn -B -ntp clean compile
+    - mvn -B -ntp clean package
     - cd dist/zip
     - ./build-no-dependencies.sh
     - echo "Build completed. Finding generated ZIP files..."
