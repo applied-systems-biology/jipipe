@@ -27,7 +27,8 @@ import java.util.stream.Collectors;
 public interface NodeAndEdgesUIContextAction extends GraphInteractiveObjectUIContextAction {
     @Override
     default boolean matches(Set<JIPipeDesktopGraphInteractiveObjectUI> selection) {
-        return matchesNodes(selection.stream().filter(ui -> ui instanceof JIPipeDesktopGraphNodeUI).map(ui -> (JIPipeDesktopGraphNodeUI)ui).collect(Collectors.toSet()));
+        return matchesNodes(selection.stream().filter(ui -> ui instanceof JIPipeDesktopGraphNodeUI).map(ui -> (JIPipeDesktopGraphNodeUI)ui).collect(Collectors.toSet())) ||
+                matchesEdges(selection.stream().filter(ui -> ui instanceof JIPipeDesktopGraphEdgeUI).map(ui -> (JIPipeDesktopGraphEdgeUI)ui).collect(Collectors.toSet()));
     }
 
     @Override

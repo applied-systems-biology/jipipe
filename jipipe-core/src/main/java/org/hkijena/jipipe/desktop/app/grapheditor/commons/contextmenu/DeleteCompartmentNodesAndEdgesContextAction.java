@@ -19,6 +19,7 @@ import org.hkijena.jipipe.api.compartments.algorithms.JIPipeProjectCompartment;
 import org.hkijena.jipipe.api.nodes.JIPipeGraphNode;
 import org.hkijena.jipipe.desktop.app.JIPipeDesktopProjectWorkbench;
 import org.hkijena.jipipe.desktop.app.grapheditor.commons.JIPipeDesktopGraphCanvasUI;
+import org.hkijena.jipipe.desktop.app.grapheditor.commons.edgeui.JIPipeDesktopGraphEdgeUI;
 import org.hkijena.jipipe.desktop.app.grapheditor.commons.nodeui.JIPipeDesktopGraphNodeUI;
 import org.hkijena.jipipe.plugins.settings.JIPipeGraphEditorUIApplicationSettings;
 
@@ -27,34 +28,12 @@ import java.awt.event.KeyEvent;
 import java.util.Set;
 import java.util.stream.Collectors;
 
-public class DeleteCompartmentNodesAndEdgesContextAction implements NodeUIContextAction {
+public class DeleteCompartmentNodesAndEdgesContextAction implements NodeAndEdgesUIContextAction {
     @Override
     public boolean matchesNodes(Set<JIPipeDesktopGraphNodeUI> selection) {
         return !selection.isEmpty();
     }
 
-    @Override
-    public void runNodes(JIPipeDesktopGraphCanvasUI canvasUI, Set<JIPipeDesktopGraphNodeUI> selection) {
-        if (!JIPipeDesktopProjectWorkbench.canAddOrDeleteNodes(canvasUI.getDesktopWorkbench()))
-            return;
-        if (!JIPipeGraphEditorUIApplicationSettings.getInstance().isAskOnDeleteCompartment() || JOptionPane.showConfirmDialog(canvasUI.getDesktopWorkbench().getWindow(),
-                "Do you really want to remove the following compartments/annotations: " +
-                        selection.stream().map(JIPipeDesktopGraphNodeUI::getNode).filter(node -> !node.isUiLocked()).map(JIPipeGraphNode::getName).collect(Collectors.joining(", ")), "Delete compartments",
-                JOptionPane.YES_NO_OPTION) == JOptionPane.YES_OPTION) {
-            for (JIPipeDesktopGraphNodeUI ui : ImmutableList.copyOf(selection)) {
-                if (ui.getNode().isUiLocked())
-                    continue;
-                if (ui.getNode() instanceof JIPipeProjectCompartment compartment) {
-                    if (canvasUI.getHistoryJournal() != null) {
-                        canvasUI.getHistoryJournal().snapshotBeforeRemoveCompartment(compartment);
-                    }
-                    compartment.getRuntimeProject().removeCompartment(compartment);
-                } else {
-                    canvasUI.getGraph().removeNode(ui.getNode(), true);
-                }
-            }
-        }
-    }
 
     @Override
     public String getName() {
@@ -62,8 +41,58 @@ public class DeleteCompartmentNodesAndEdgesContextAction implements NodeUIContex
     }
 
     @Override
+    public boolean matchesEdges(Set<JIPipeDesktopGraphEdgeUI> selection) {
+        return !selection.isEmpty();
+    }
+
+    @Override
+    public void runNodesAndEdges(JIPipeDesktopGraphCanvasUI canvasUI, Set<JIPipeDesktopGraphNodeUI> nodeSelection, Set<JIPipeDesktopGraphEdgeUI> edgeSelection) {
+        boolean allowDeleteNodes = true;
+        if(!nodeSelection.isEmpty()) {
+            if (!JIPipeDesktopProjectWorkbench.canAddOrDeleteNodes(canvasUI.getDesktopWorkbench())) {
+                allowDeleteNodes = false;
+            }
+        }
+
+        String subject = "";
+        if(allowDeleteNodes && !nodeSelection.isEmpty()) {
+            subject = "compartments/nodes";
+        }
+        if(!edgeSelection.isEmpty()) {
+            if(!subject.isEmpty()) {
+                subject += "/";
+            }
+            subject += "edges";
+        }
+
+        if (!JIPipeGraphEditorUIApplicationSettings.getInstance().isAskOnDeleteCompartment() || JOptionPane.showConfirmDialog(canvasUI.getDesktopWorkbench().getWindow(),
+                "Do you really want to remove the selected " + subject + "?", "Delete " + subject,
+                JOptionPane.YES_NO_OPTION) == JOptionPane.YES_OPTION) {
+            if(!edgeSelection.isEmpty()) {
+                for (JIPipeDesktopGraphEdgeUI edgeUI : edgeSelection) {
+                    canvasUI.getGraph().disconnect(edgeUI.getSource(), edgeUI.getTarget(), true);
+                }
+            }
+            if(!nodeSelection.isEmpty()) {
+                for (JIPipeDesktopGraphNodeUI ui : ImmutableList.copyOf(nodeSelection)) {
+                    if (ui.getNode().isUiLocked())
+                        continue;
+                    if (ui.getNode() instanceof JIPipeProjectCompartment compartment) {
+                        if (canvasUI.getHistoryJournal() != null) {
+                            canvasUI.getHistoryJournal().snapshotBeforeRemoveCompartment(compartment);
+                        }
+                        compartment.getRuntimeProject().removeCompartment(compartment);
+                    } else {
+                        canvasUI.getGraph().removeNode(ui.getNode(), true);
+                    }
+                }
+            }
+        }
+    }
+
+    @Override
     public String getDescription() {
-        return "Deletes the selected compartments";
+        return "Deletes the selected compartments/edges";
     }
 
     @Override
