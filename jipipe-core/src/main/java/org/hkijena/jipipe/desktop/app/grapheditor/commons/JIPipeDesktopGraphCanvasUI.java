@@ -841,14 +841,6 @@ public class JIPipeDesktopGraphCanvasUI extends JLayeredPane implements JIPipeDe
                 }
             }
         } else if (SwingUtilities.isLeftMouseButton(mouseEvent)) {
-
-            if (nodeUI == null && edgeUI != null) {
-                selectionManager.selectOnly(edgeUI);
-            }
-            else if (nodeUI != null) {
-                selectionManager.selectOnly(nodeUI);
-            }
-
             setGraphEditCursor(new Point(mouseEvent.getX(), mouseEvent.getY()));
             requestFocusInWindow();
             repaint();
@@ -1003,7 +995,41 @@ public class JIPipeDesktopGraphCanvasUI extends JLayeredPane implements JIPipeDe
             }
         }
 
+        // Try to pick a node UI
+        JIPipeDesktopGraphNodeUI nodeUI = pickNodeUI(mouseEvent);
+        JIPipeDesktopGraphEdgeUI edgeUI = null;
+
+        if (nodeUI != null) {
+            nodeUI.mouseClicked(mouseEvent);
+            if (mouseEvent.isConsumed()) {
+                return;
+            }
+        } else {
+            edgeUI = pickEdgeUI(mouseEvent);
+        }
+
         if (SwingUtilities.isLeftMouseButton(mouseEvent)) {
+
+            // Selection handling
+            if (nodeUI == null && edgeUI != null) {
+                if(mouseEvent.isShiftDown()) {
+                    selectionManager.toggleSelection(edgeUI);
+                }
+                else {
+                    selectionManager.selectOnly(edgeUI);
+                }
+            }
+            else if (nodeUI != null) {
+                if(mouseEvent.isShiftDown()) {
+                    selectionManager.toggleSelection(nodeUI);
+                }
+                else {
+                    selectionManager.selectOnly(nodeUI);
+                }
+            }
+            else {
+                selectionManager.clearSelection();
+            }
 
             // Resize handling
             if (resizeManager.mousePressed(mouseEvent)) {
@@ -1105,12 +1131,12 @@ public class JIPipeDesktopGraphCanvasUI extends JLayeredPane implements JIPipeDe
                 return;
             }
 
-            // Fallback: pick the node at the mouse location
-            JIPipeDesktopGraphNodeUI ui = pickNodeUI(mouseEvent);
-            if (ui == null) {
-                selectionManager.selectOnly(null);
-            }
-            selectionBoxManager.clear();
+//            // Fallback: pick the node at the mouse location
+//            JIPipeDesktopGraphNodeUI ui = pickNodeUI(mouseEvent);
+//            if (ui == null) {
+//                selectionManager.selectOnly(null);
+//            }
+//            selectionBoxManager.clear();
         }
     }
 

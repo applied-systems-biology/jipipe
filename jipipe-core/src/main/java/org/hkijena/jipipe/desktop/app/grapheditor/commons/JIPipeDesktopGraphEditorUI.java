@@ -921,19 +921,19 @@ public abstract class JIPipeDesktopGraphEditorUI extends JIPipeDesktopWorkbenchP
 
     @Override
     public void onNodeUISelected(JIPipeDesktopGraphCanvasUINodeSelectedEvent event) {
-        if (event.getNodeUI() != null) {
-            if (event.isAddToSelection()) {
-                if (getSelectionManager().getSelection().contains(event.getNodeUI())) {
-                    getSelectionManager().removeFromSelection(event.getNodeUI());
-                } else {
-                    getSelectionManager().addToSelection(event.getNodeUI());
-                }
-            } else {
-                getSelectionManager().selectOnly(event.getNodeUI());
-            }
-        } else {
-            getSelectionManager().clearSelection();
-        }
+//        if (event.getNodeUI() != null) {
+//            if (event.isAddToSelection()) {
+//                if (getSelectionManager().getSelection().contains(event.getNodeUI())) {
+//                    getSelectionManager().removeFromSelection(event.getNodeUI());
+//                } else {
+//                    getSelectionManager().addToSelection(event.getNodeUI());
+//                }
+//            } else {
+//                getSelectionManager().selectOnly(event.getNodeUI());
+//            }
+//        } else {
+//            getSelectionManager().clearSelection();
+//        }
     }
 
     @Override

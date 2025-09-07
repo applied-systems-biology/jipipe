@@ -397,18 +397,18 @@ public class JIPipeDesktopGraphCanvasEdgeManager {
      * Generates elbow coordinates and tests each segment for intersection.
      *
      * @param sourcePoint the source point of the elbow edge
-     * @param targetBounds the bounds of the target node
+     * @param sourceBounds the bounds of the source node
      * @param targetPoint the target point of the elbow edge
      * @param rectangle the rectangle to test against
      * @return true if the elbow edge intersects with the rectangle, false otherwise
      */
-    private boolean isElbowIntersectingRectangle(Point sourcePoint, Rectangle targetBounds,
+    private boolean isElbowIntersectingRectangle(Point sourcePoint, Rectangle sourceBounds,
             Point targetPoint, Rectangle2D rectangle) {
         // Generate elbow edge coordinates using the same method as rendering
         TIntArrayList xCoords = new TIntArrayList(8);
         TIntArrayList yCoords = new TIntArrayList(8);
 
-        canvasUI.getPaintManager().createElbowEdgeCoordinates(sourcePoint, targetBounds, targetPoint,
+        canvasUI.getPaintManager().createElbowEdgeCoordinates(sourcePoint, sourceBounds, targetPoint,
                 1, 0, 0, true, xCoords, yCoords);
 
         // Test each segment of the elbow against the rectangle

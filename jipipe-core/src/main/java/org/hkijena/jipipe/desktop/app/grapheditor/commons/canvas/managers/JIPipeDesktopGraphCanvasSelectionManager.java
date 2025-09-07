@@ -22,6 +22,7 @@ import org.hkijena.jipipe.desktop.app.grapheditor.commons.JIPipeDesktopGraphInte
 import org.hkijena.jipipe.desktop.app.grapheditor.commons.canvas.events.JIPipeDesktopGraphCanvasUINodeSelectedEventEmitter;
 import org.hkijena.jipipe.desktop.app.grapheditor.commons.canvas.events.JIPipeDesktopGraphCanvasUINodeSelectionChangedEvent;
 import org.hkijena.jipipe.desktop.app.grapheditor.commons.canvas.events.JIPipeDesktopGraphCanvasUINodeSelectionChangedEventEmitter;
+import org.hkijena.jipipe.desktop.app.grapheditor.commons.edgeui.JIPipeDesktopGraphEdgeUI;
 import org.hkijena.jipipe.desktop.app.grapheditor.commons.nodeui.JIPipeDesktopAnnotationGraphNodeUI;
 import org.hkijena.jipipe.desktop.app.grapheditor.commons.nodeui.JIPipeDesktopGraphNodeUI;
 
@@ -234,5 +235,17 @@ public class JIPipeDesktopGraphCanvasSelectionManager {
                 updateSelection();
             }
         }
+    }
+
+    public void toggleSelection(JIPipeDesktopGraphInteractiveObjectUI ui) {
+        if(selection.contains(ui)) {
+            selection.remove(ui);
+//            System.out.println("removed " + ui);
+        }
+        else {
+//            System.out.println("added " + ui);
+            selection.add(ui);
+        }
+        updateSelection();
     }
 }

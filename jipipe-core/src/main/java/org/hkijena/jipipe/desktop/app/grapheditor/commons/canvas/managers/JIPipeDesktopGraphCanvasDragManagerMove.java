@@ -158,20 +158,20 @@ public class JIPipeDesktopGraphCanvasDragManagerMove {
         if (currentlyDraggedOffsets.isEmpty()) {
             JIPipeDesktopGraphNodeUI ui = canvasUI.pickNodeUI(mouseEvent);
             if (ui != null) {
-                if (mouseEvent.isShiftDown()) {
-                    if (canvasUI.getSelectionManager().getSelection().contains(ui))
-                        canvasUI.getSelectionManager().removeFromSelection(ui);
-                    else
-                        canvasUI.getSelectionManager().addToSelection(ui);
-                } else {
-                    if (canvasUI.getSelectionManager().getSelection().isEmpty() || canvasUI.getSelectionManager().getSelection().size() == 1) {
-                        canvasUI.getSelectionManager().selectOnly(ui);
-                    } else {
-                        if (!canvasUI.getSelectionManager().getSelection().contains(ui)) {
-                            canvasUI.getSelectionManager().selectOnly(ui);
-                        }
-                    }
-                }
+//                if (mouseEvent.isShiftDown()) {
+//                    if (canvasUI.getSelectionManager().getSelection().contains(ui))
+//                        canvasUI.getSelectionManager().removeFromSelection(ui);
+//                    else
+//                        canvasUI.getSelectionManager().addToSelection(ui);
+//                } else {
+//                    if (canvasUI.getSelectionManager().getSelection().isEmpty() || canvasUI.getSelectionManager().getSelection().size() == 1) {
+//                        canvasUI.getSelectionManager().selectOnly(ui);
+//                    } else {
+//                        if (!canvasUI.getSelectionManager().getSelection().contains(ui)) {
+//                            canvasUI.getSelectionManager().selectOnly(ui);
+//                        }
+//                    }
+//                }
                 this.hasDragSnapshot = false;
             } else {
                 return false;
