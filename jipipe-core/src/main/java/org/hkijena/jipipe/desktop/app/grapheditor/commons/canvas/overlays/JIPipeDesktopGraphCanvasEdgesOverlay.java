@@ -47,6 +47,10 @@ public class JIPipeDesktopGraphCanvasEdgesOverlay implements JIPipeDesktopGraphC
                 continue;
             }
 
+            boolean isSelected = canvasUI.getSelectionManager().getSelection().contains(edgeUI) ||
+                    canvasUI.getSelectionManager().getSelection().contains(sourceUI) ||
+                    canvasUI.getSelectionManager().getSelection().contains(targetUI);
+
             // Hidden edges
             if (edgeUI.isCommentEdge()) {
                 edgeUI.paint(g,
@@ -60,7 +64,7 @@ public class JIPipeDesktopGraphCanvasEdgesOverlay implements JIPipeDesktopGraphC
             } else {
                 edgeUI.paint(g,
                         strokeInside,
-                        canvasUI.getSelectionManager().getSelection().contains(edgeUI) ? strokeBorderSelected : strokeBorder,
+                       isSelected ? strokeBorderSelected : strokeBorder,
                         1,
                         0,
                         0,
