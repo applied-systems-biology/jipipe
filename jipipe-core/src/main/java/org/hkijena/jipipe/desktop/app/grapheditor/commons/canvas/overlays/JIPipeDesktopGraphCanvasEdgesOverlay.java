@@ -6,9 +6,7 @@ import org.hkijena.jipipe.desktop.app.grapheditor.commons.JIPipeDesktopGraphInte
 import org.hkijena.jipipe.desktop.app.grapheditor.commons.canvas.JIPipeDesktopGraphCanvasResources;
 import org.hkijena.jipipe.desktop.app.grapheditor.commons.edgeui.JIPipeDesktopGraphEdgeUI;
 import org.hkijena.jipipe.desktop.app.grapheditor.commons.nodeui.JIPipeDesktopGraphNodeUI;
-import org.hkijena.jipipe.utils.PointRange;
 
-import javax.swing.border.Border;
 import java.awt.*;
 import java.util.Set;
 
@@ -33,7 +31,30 @@ public class JIPipeDesktopGraphCanvasEdgesOverlay implements JIPipeDesktopGraphC
         Stroke strokeBorderSelected = canvasUI.getResources().getSelectedEdgeStrokeBorder();
         Stroke strokeBorderAdjacent = canvasUI.getResources().getAdjacentEdgeStrokeBorder();
         Stroke strokeInside = canvasUI.getResources().getEdgeStrokeInside();
+        Stroke strokeMuted = JIPipeDesktopGraphCanvasResources.STROKE_SMART_EDGE;
 
+        // We enable multicolor display depending on whether nodes are selected
+        int multiColorIndex = 0;
+        int multiColorMax = 0;
+
+        if(!selection.isEmpty()) {
+            for (JIPipeDesktopGraphEdgeUI edgeUI : canvasUI.getEdgeUIs().values()) {
+                JIPipeDesktopGraphNodeUI sourceNodeUI = edgeUI.getSourceNodeUI();
+                JIPipeDesktopGraphNodeUI targetNodeUI = edgeUI.getTargetNodeUI();
+
+                if(sourceNodeUI == null || targetNodeUI == null) {
+                    continue;
+                }
+
+                if(selection.contains(sourceNodeUI) || selection.contains(targetNodeUI)) {
+                    ++multiColorMax;
+                }
+            }
+        }
+
+        final boolean multiColor = multiColorMax > 0;
+
+        // Paint edges
         for (JIPipeDesktopGraphEdgeUI edgeUI : canvasUI.getEdgeUIs().values()) {
             JIPipeDataSlot source = edgeUI.getSource();
             JIPipeDataSlot target = edgeUI.getTarget();
@@ -52,6 +73,8 @@ public class JIPipeDesktopGraphCanvasEdgesOverlay implements JIPipeDesktopGraphC
                 continue;
             }
 
+            boolean edgeHasMultiColor = multiColorMax >  0 && (selection.contains(sourceUI) || selection.contains(targetUI));
+
             Stroke stroke = strokeBorder;
             if(selection.contains(edgeUI)) {
                 stroke = strokeBorderSelected;
@@ -61,7 +84,6 @@ public class JIPipeDesktopGraphCanvasEdgesOverlay implements JIPipeDesktopGraphC
                 stroke = strokeBorderAdjacent;
             }
 
-            // Hidden edges
             if (edgeUI.isCommentEdge()) {
                 edgeUI.paint(g,
                         JIPipeDesktopGraphCanvasResources.STROKE_COMMENT,
@@ -69,17 +91,43 @@ public class JIPipeDesktopGraphCanvasEdgesOverlay implements JIPipeDesktopGraphC
                         1,
                         0,
                         0,
-                        true
-                );
+                        true,
+                        edgeHasMultiColor, multiColorIndex, multiColorMax);
             } else {
-                edgeUI.paint(g,
-                        strokeInside,
-                        stroke,
-                        1,
-                        0,
-                        0,
-                        true
-                );
+                if(multiColor) {
+                    if(edgeHasMultiColor) {
+                        edgeUI.paint(g,
+                                strokeInside,
+                                stroke,
+                                1,
+                                0,
+                                0,
+                                true,
+                                true, multiColorIndex, multiColorMax);
+                        ++multiColorIndex;
+                    }
+                    else {
+                        // Mute the edge
+                        edgeUI.paint(g,
+                                strokeMuted,
+                                null,
+                                1,
+                                0,
+                                0,
+                                false,
+                                false, 0, 0);
+                    }
+                }
+                else {
+                    edgeUI.paint(g,
+                            strokeInside,
+                            stroke,
+                            1,
+                            0,
+                            0,
+                            true,
+                            false, 0, 0);
+                }
             }
         }
     }

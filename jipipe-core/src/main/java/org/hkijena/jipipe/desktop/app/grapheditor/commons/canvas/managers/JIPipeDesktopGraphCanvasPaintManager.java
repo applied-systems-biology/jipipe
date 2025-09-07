@@ -180,7 +180,7 @@ public class JIPipeDesktopGraphCanvasPaintManager {
                     scale,
                     viewX,
                     viewY,
-                    false);
+                    false, false, 0, 0);
         }
     }
 }
