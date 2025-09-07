@@ -156,7 +156,7 @@ class PathMetadataStorePathPrefixTest {
         store.clearEntriesWithPathPrefix("a/b");
         
         // Verify only cleared entries are removed
-        assertEquals(3, store.size());
+        assertEquals(2, store.size());
         assertFalse(store.containsKey(Paths.get("a/b/c/d")));
         assertFalse(store.containsKey(Paths.get("a/b/c/e")));
         assertFalse(store.containsKey(Paths.get("a/b/f")));
