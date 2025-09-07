@@ -3,6 +3,12 @@ stages:
   - package
   - publish
 
+cache:
+  key: "$CI_JOB_NAME-dependencies"
+  paths:
+    - .m2/repository/
+  policy: pull-push
+
 variables:
   GIT_STRATEGY: fetch
   GIT_DEPTH: "1"
@@ -18,19 +24,13 @@ variables:
     - apt-get install -y nsis git git-lfs zip unzip
     - git lfs install
     - git config --global --add safe.directory "$CI_PROJECT_DIR"
-    - mkdir -p $CI_PROJECT_DIR/.m2/repository
     
 # Master branch jobs - Full pipeline with distribution
 distribution_package:
   stage: package
   interruptible: true
   retry: 1
-  image: maven:3-eclipse-temurin-21-jammy
-  before_script:
-    - apt-get update
-    - apt-get install -y nsis git git-lfs zip unzip
-    - git lfs install
-    - git config --global --add safe.directory "$CI_PROJECT_DIR"
+  <<: *default_build
   script:
     - git clone --depth 1 https://asb-git.hki-jena.de/RGerst/jipipe-distribution-files.git
     - cd jipipe-distribution-files/scripts
@@ -122,12 +122,10 @@ build_feature_branch:
   stage: build
   interruptible: true
   retry: 1
-  image: maven:3-eclipse-temurin-21-jammy
+  <<: *default_build
   before_script:
     - apt-get update
     - apt-get install -y zip wget
-    - git config --global --add safe.directory "$CI_PROJECT_DIR"
-    - mkdir -p $CI_PROJECT_DIR/.m2/repository
   script:
     - echo "Building JIPipe for feature branch"
     - mvn clean compile
