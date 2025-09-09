@@ -38,8 +38,11 @@ public class JIPipeCLIHelp {
         System.out.println("--profile-dir                                                                      Sets the directory for the JIPipe profile (location of settings, artifacts, etc.)");
         System.out.println("--fast-init                                                                        Skips the validation steps to make the JIPipe initialization faster");
         System.out.println();
-        System.out.println("To run this tool, execute following command:");
+        System.out.println("To run this tool using the Fiji CLI, execute following command:");
         System.out.println("<ImageJ executable> --debug --pass-classpath --full-classpath --main-class org.hkijena.jipipe.cli.JIPipeCLIMain");
+        System.out.println();
+        System.out.println("To run this tool using the JIPipe CLI, execute following command:");
+        System.out.println("<JIPipe executable> --main-class org.hkijena.jipipe.cli.JIPipeCLIMain");
         System.out.println();
         System.out.println("Environment variables:");
         System.out.println("JIPIPE_OVERRIDE_USER_DIR_BASE                                                      Overrides the base directory where JIPipe looks for profiles (the directory itself will contain sub-directories for the JIPipe version)");
