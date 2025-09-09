@@ -6,6 +6,7 @@ import org.hkijena.jipipe.desktop.app.grapheditor.commons.canvas.JIPipeDesktopGr
 import org.hkijena.jipipe.desktop.app.grapheditor.commons.edgeui.JIPipeDesktopGraphEdgeUI;
 import org.hkijena.jipipe.desktop.app.grapheditor.commons.nodeui.JIPipeDesktopGraphNodeUI;
 
+import javax.swing.*;
 import java.awt.*;
 import java.awt.event.MouseEvent;
 import java.util.HashSet;
@@ -23,10 +24,14 @@ public class JIPipeDesktopGraphCanvasSelectionBoxManager {
     }
 
     public boolean mouseDragged(MouseEvent mouseEvent) {
-        if (selectionFirst != null) {
+        if (selectionFirst != null && SwingUtilities.isLeftMouseButton(mouseEvent)) {
             selectionSecond = mouseEvent.getPoint();
             canvasUI.repaintLowLag();
             return true;
+        }
+        else {
+            selectionFirst = null;
+            selectionSecond = null;
         }
         return false;
     }
@@ -92,7 +97,14 @@ public class JIPipeDesktopGraphCanvasSelectionBoxManager {
     }
 
     public boolean mousePressed(MouseEvent mouseEvent) {
-        selectionFirst = mouseEvent.getPoint();
+        if(SwingUtilities.isLeftMouseButton(mouseEvent)) {
+            selectionFirst = mouseEvent.getPoint();
+            selectionSecond = null;
+        }
+        else {
+            selectionFirst = null;
+            selectionSecond = null;
+        }
         return false;
     }
 }
