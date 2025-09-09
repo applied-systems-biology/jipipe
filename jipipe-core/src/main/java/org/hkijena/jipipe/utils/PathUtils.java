@@ -434,9 +434,9 @@ public class PathUtils {
             }
 
             // Find the newest version
-            List<String> sortedAllVersions = allProfileDirectories.keySet().stream().sorted(StringUtils::compareVersions).collect(Collectors.toList());
+            List<String> sortedAllVersions = allProfileDirectories.keySet().stream().sorted(StringUtils::compareVersions).toList();
             if (!sortedAllVersions.isEmpty()) {
-                String previousVersion = sortedAllVersions.get(sortedAllVersions.size() - 1);
+                String previousVersion = sortedAllVersions.getLast();
                 result = profileBasePath.resolve(previousVersion);
             }
         }

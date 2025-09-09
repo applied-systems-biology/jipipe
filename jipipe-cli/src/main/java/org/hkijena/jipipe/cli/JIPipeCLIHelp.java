@@ -43,5 +43,6 @@ public class JIPipeCLIHelp {
         System.out.println();
         System.out.println("Environment variables:");
         System.out.println("JIPIPE_OVERRIDE_USER_DIR_BASE                                                      Overrides the base directory where JIPipe looks for profiles (the directory itself will contain sub-directories for the JIPipe version)");
+        System.out.println("JIPIPE_OVERRIDE_ARTIFACTS_DIR                                                      Overrides the base directory where JIPipe looks for artifacts (if read-only, all utilized artifacts must be pre-installed!)");
     }
 }

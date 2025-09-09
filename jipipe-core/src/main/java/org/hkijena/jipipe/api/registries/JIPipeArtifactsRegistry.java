@@ -464,6 +464,12 @@ public class JIPipeArtifactsRegistry {
      * @return the user's repository path
      */
     public Path getLocalUserRepositoryPath() {
+        if (System.getenv().containsKey("JIPIPE_OVERRIDE_ARTIFACTS_DIR")) {
+            return Paths.get(System.getenv().get("JIPIPE_OVERRIDE_ARTIFACTS_DIR"));
+        }
+        if (JIPipe.JIPIPE_OVERRIDE_ARTIFACTS_DIR != null) {
+            return JIPipe.JIPIPE_OVERRIDE_ARTIFACTS_DIR;
+        }
         if (JIPipeArtifactApplicationSettings.getInstance().getOverrideInstallationPath().isEnabled() && !JIPipeArtifactApplicationSettings.getInstance().getOverrideInstallationPath().getContent().toString().isEmpty()) {
             if (JIPipeArtifactApplicationSettings.getInstance().getOverrideInstallationPath().getContent().isAbsolute()) {
                 return JIPipeArtifactApplicationSettings.getInstance().getOverrideInstallationPath().getContent();
