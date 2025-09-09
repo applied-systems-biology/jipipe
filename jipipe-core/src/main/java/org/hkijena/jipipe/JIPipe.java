@@ -125,6 +125,12 @@ public class JIPipe extends AbstractService implements JIPipeService {
      */
     public static Path OVERRIDE_USER_DIR_BASE = null;
 
+    /**
+     * Allows overriding the directory where artifacts are installed
+     * Overridden by the JIPIPE_OVERRIDE_ARTIFACTS_DIR environment variable
+     */
+    public static Path JIPIPE_OVERRIDE_ARTIFACTS_DIR = null;
+
 
     private static JIPipe instance;
     private static boolean IS_RESTARTING = false;
