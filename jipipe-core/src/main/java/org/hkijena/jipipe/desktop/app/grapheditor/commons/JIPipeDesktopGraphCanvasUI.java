@@ -1015,7 +1015,7 @@ public class JIPipeDesktopGraphCanvasUI extends JLayeredPane implements JIPipeDe
                 if(mouseEvent.isShiftDown()) {
                     selectionManager.toggleSelection(edgeUI);
                 }
-                else {
+                else if(selectionManager.getSelection().isEmpty()) {
                     selectionManager.selectOnly(edgeUI);
                 }
             }
@@ -1023,7 +1023,7 @@ public class JIPipeDesktopGraphCanvasUI extends JLayeredPane implements JIPipeDe
                 if(mouseEvent.isShiftDown()) {
                     selectionManager.toggleSelection(nodeUI);
                 }
-                else {
+                else if(selectionManager.getSelection().isEmpty()) {
                     selectionManager.selectOnly(nodeUI);
                 }
             }
