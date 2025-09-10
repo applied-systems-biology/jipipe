@@ -55,7 +55,7 @@ public class AlgorithmGraphCopyNodeUIContextAction implements NodeUIContextActio
 
     @Override
     public String getName() {
-        return "Copy";
+        return "Copy nodes";
     }
 
     @Override

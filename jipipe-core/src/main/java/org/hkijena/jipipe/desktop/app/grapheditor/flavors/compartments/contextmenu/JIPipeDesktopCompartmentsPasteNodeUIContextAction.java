@@ -76,7 +76,7 @@ public class JIPipeDesktopCompartmentsPasteNodeUIContextAction implements GraphI
 
     @Override
     public String getName() {
-        return "Paste";
+        return "Paste nodes";
     }
 
     @Override

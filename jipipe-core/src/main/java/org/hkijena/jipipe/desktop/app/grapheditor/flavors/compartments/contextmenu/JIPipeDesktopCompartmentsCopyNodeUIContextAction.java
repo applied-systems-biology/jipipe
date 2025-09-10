@@ -65,7 +65,7 @@ public class JIPipeDesktopCompartmentsCopyNodeUIContextAction implements NodeUIC
 
     @Override
     public String getName() {
-        return "Copy";
+        return "Copy nodes";
     }
 
     @Override

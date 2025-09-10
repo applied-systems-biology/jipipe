@@ -47,7 +47,7 @@ public class AlgorithmGraphDuplicateNodeUIContextAction implements NodeUIContext
 
     @Override
     public String getName() {
-        return "Duplicate";
+        return "Duplicate nodes";
     }
 
     @Override
