@@ -13,9 +13,7 @@ import org.hkijena.jipipe.utils.UIUtils;
 import javax.swing.*;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
-import java.util.Collections;
-import java.util.Set;
-import java.util.UUID;
+import java.util.*;
 
 public class JIPipeDesktopGraphNodeUIConnectSlotContextMenu {
     private final JIPipeDesktopGraphNodeUI nodeUI;
@@ -75,7 +73,7 @@ public class JIPipeDesktopGraphNodeUIConnectSlotContextMenu {
             JIPipeDesktopGraphNodeUI targetNodeUI = nodeUI.getGraphCanvasUI().getNodeUIs().getOrDefault(target.getNode(), null);
 
             if (targetNodeUI != null) {
-                openSlotMenuInstallHighlightForConnect(slotActiveArea, target, connectButton);
+                openSlotMenuInstallHighlightForConnect(slotActiveArea, Collections.singletonList(target), connectButton);
             }
 
             if (currentMenu instanceof JMenu) {
@@ -110,7 +108,7 @@ public class JIPipeDesktopGraphNodeUIConnectSlotContextMenu {
                     JIPipe.getDataTypes().getIconFor(source.getAcceptedDataType()));
             connectButton.addActionListener(e -> nodeUI.getGraphCanvasUI().connectSlot(source, slot));
             if (slotActiveArea != null) {
-                openSlotMenuInstallHighlightForConnect(slotActiveArea, source, connectButton);
+                openSlotMenuInstallHighlightForConnect(slotActiveArea, Collections.singletonList(source), connectButton);
             }
             if (currentMenu instanceof JMenu) {
                 ((JMenu) currentMenu).add(connectButton);
@@ -121,23 +119,35 @@ public class JIPipeDesktopGraphNodeUIConnectSlotContextMenu {
         }
     }
 
-    private void openSlotMenuInstallHighlightForConnect(JIPipeDesktopGraphNodeUISlotActiveArea current, JIPipeDataSlot source, JMenuItem connectButton) {
+    public void openSlotMenuInstallHighlightForConnect(JIPipeDesktopGraphNodeUISlotActiveArea currentSlotArea, List<JIPipeDataSlot> otherSlots, JMenuItem connectButton) {
         connectButton.addMouseListener(new MouseAdapter() {
             @Override
             public void mouseEntered(MouseEvent e) {
-                JIPipeDesktopGraphNodeUI sourceNodeUI = nodeUI.getGraphCanvasUI().getNodeUIs().getOrDefault(source.getNode(), null);
-                if (sourceNodeUI != null) {
-                    if (source.isOutput()) {
-                        JIPipeDesktopGraphNodeUISlotActiveArea sourceUI = sourceNodeUI.getOutputSlotMap().getOrDefault(source.getName(), null);
-                        if (sourceUI != null) {
-                            nodeUI.getGraphCanvasUI().getConnectionHighlightManager().setConnectHighlights(Collections.singletonList(new JIPipeDesktopGraphCanvasUIConnectHighlight(sourceUI, current)));
-                        }
-                    } else {
-                        JIPipeDesktopGraphNodeUISlotActiveArea sourceUI = sourceNodeUI.getInputSlotMap().getOrDefault(source.getName(), null);
-                        if (sourceUI != null) {
-                            nodeUI.getGraphCanvasUI().getConnectionHighlightManager().setConnectHighlights(Collections.singletonList(new JIPipeDesktopGraphCanvasUIConnectHighlight(current, sourceUI)));
+                JIPipeDataSlot currentSlot = currentSlotArea.getSlot();
+
+                // Find compatible other UIs
+                Map<JIPipeDataSlot, JIPipeDesktopGraphNodeUISlotActiveArea> otherUIs = new HashMap<>();
+                for (JIPipeDataSlot otherSlot : otherSlots) {
+                    JIPipeDesktopGraphNodeUI otherNodeUI = nodeUI.getGraphCanvasUI().getNodeUIs().getOrDefault(otherSlot.getNode(), null);
+                    if (otherNodeUI != null) {
+                        JIPipeDesktopGraphNodeUISlotActiveArea otherSlotArea = otherNodeUI.getSlotActiveArea(otherSlot);
+                        if (otherSlotArea != null && currentSlot.isCompatibleTo(otherSlot)) {
+                            otherUIs.put(otherSlot, otherSlotArea);
                         }
                     }
+                }
+
+                // Generate highlights
+                if (!otherUIs.isEmpty()) {
+                    List<JIPipeDesktopGraphCanvasUIConnectHighlight> highlights = new ArrayList<>();
+                    for (Map.Entry<JIPipeDataSlot, JIPipeDesktopGraphNodeUISlotActiveArea> entry : otherUIs.entrySet()) {
+                        if (currentSlotArea.isInput()) {
+                            highlights.add(new JIPipeDesktopGraphCanvasUIConnectHighlight(entry.getValue(), currentSlotArea));
+                        } else if (currentSlotArea.isOutput()) {
+                            highlights.add(new JIPipeDesktopGraphCanvasUIConnectHighlight(currentSlotArea, entry.getValue()));
+                        }
+                    }
+                    nodeUI.getGraphCanvasUI().getConnectionHighlightManager().setConnectHighlights(highlights);
                 }
             }
 

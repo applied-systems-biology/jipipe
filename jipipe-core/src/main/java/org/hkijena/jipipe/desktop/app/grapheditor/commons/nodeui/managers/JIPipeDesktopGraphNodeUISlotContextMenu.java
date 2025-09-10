@@ -6,11 +6,15 @@ import org.hkijena.jipipe.api.compartments.algorithms.JIPipeProjectCompartment;
 import org.hkijena.jipipe.api.data.*;
 import org.hkijena.jipipe.api.nodes.JIPipeGraph;
 import org.hkijena.jipipe.api.nodes.JIPipeGraphEdge;
+import org.hkijena.jipipe.api.nodes.JIPipeSerializedGraphConnection;
 import org.hkijena.jipipe.api.nodes.algorithm.JIPipeParameterSlotAlgorithm;
+import org.hkijena.jipipe.desktop.app.grapheditor.commons.JIPipeDesktopGraphCanvasUI;
+import org.hkijena.jipipe.desktop.app.grapheditor.commons.canvas.managers.JIPipeDesktopGraphCanvasNotificationsManager;
 import org.hkijena.jipipe.desktop.app.grapheditor.commons.nodeui.JIPipeDesktopGraphNodeUI;
 import org.hkijena.jipipe.desktop.app.grapheditor.commons.nodeui.triggers.JIPipeDesktopGraphNodeUISlotActiveArea;
 import org.hkijena.jipipe.utils.StringUtils;
 import org.hkijena.jipipe.utils.UIUtils;
+import org.hkijena.jipipe.utils.json.JsonUtils;
 import org.hkijena.jipipe.utils.ui.ViewOnlyMenuItem;
 
 import javax.swing.*;
@@ -26,6 +30,10 @@ public class JIPipeDesktopGraphNodeUISlotContextMenu {
 
     public JIPipeDesktopGraphNodeUISlotContextMenu(JIPipeDesktopGraphNodeUI nodeUI) {
         this.nodeUI = nodeUI;
+    }
+    
+    public JIPipeDesktopGraphCanvasUI getGraphCanvasUI() {
+        return nodeUI.getGraphCanvasUI();
     }
 
     public void openSlotMenu(JIPipeDesktopGraphNodeUISlotActiveArea slotState, MouseEvent mouseEvent) {
@@ -70,7 +78,7 @@ public class JIPipeDesktopGraphNodeUISlotContextMenu {
             menu.add(moveDownButton);
         }
 
-        MouseEvent convertMouseEvent = SwingUtilities.convertMouseEvent(nodeUI.getGraphCanvasUI(), mouseEvent, nodeUI);
+        MouseEvent convertMouseEvent = SwingUtilities.convertMouseEvent(getGraphCanvasUI(), mouseEvent, nodeUI);
         Point mousePosition = convertMouseEvent.getPoint();
 
         menu.addPopupMenuListener(new PopupMenuListener() {
@@ -81,19 +89,19 @@ public class JIPipeDesktopGraphNodeUISlotContextMenu {
 
             @Override
             public void popupMenuWillBecomeInvisible(PopupMenuEvent e) {
-                nodeUI.getGraphCanvasUI().getDragManagerConnect().setCurrentConnectionDragSource(null);
-                nodeUI.getGraphCanvasUI().getDragManagerConnect().setCurrentConnectionDragTarget(null);
-                nodeUI.getGraphCanvasUI().getConnectionHighlightManager().setDisconnectHighlight(null);
-                nodeUI.getGraphCanvasUI().getConnectionHighlightManager().setConnectHighlights(null);
+                getGraphCanvasUI().getDragManagerConnect().setCurrentConnectionDragSource(null);
+                getGraphCanvasUI().getDragManagerConnect().setCurrentConnectionDragTarget(null);
+                getGraphCanvasUI().getConnectionHighlightManager().setDisconnectHighlight(null);
+                getGraphCanvasUI().getConnectionHighlightManager().setConnectHighlights(null);
                 nodeUI.invalidateAndRepaint(false, true);
             }
 
             @Override
             public void popupMenuCanceled(PopupMenuEvent e) {
-                nodeUI.getGraphCanvasUI().getDragManagerConnect().setCurrentConnectionDragSource(null);
-                nodeUI.getGraphCanvasUI().getDragManagerConnect().setCurrentConnectionDragTarget(null);
-                nodeUI.getGraphCanvasUI().getConnectionHighlightManager().setDisconnectHighlight(null);
-                nodeUI.getGraphCanvasUI().getConnectionHighlightManager().setConnectHighlights(null);
+                getGraphCanvasUI().getDragManagerConnect().setCurrentConnectionDragSource(null);
+                getGraphCanvasUI().getDragManagerConnect().setCurrentConnectionDragTarget(null);
+                getGraphCanvasUI().getConnectionHighlightManager().setDisconnectHighlight(null);
+                getGraphCanvasUI().getConnectionHighlightManager().setConnectHighlights(null);
                 nodeUI.invalidateAndRepaint(false, true);
             }
         });
@@ -102,12 +110,12 @@ public class JIPipeDesktopGraphNodeUISlotContextMenu {
     }
 
     private void openSlotMenuAddOutputSlotMenuItems(JIPipeDataSlot slot, JPopupMenu menu) {
-        Set<JIPipeDataSlot> targetSlots = nodeUI.getGraphCanvasUI().getGraph().getOutputOutgoingTargetSlots(slot);
+        Set<JIPipeDataSlot> targetSlots = getGraphCanvasUI().getGraph().getOutputOutgoingTargetSlots(slot);
         if (!targetSlots.isEmpty()) {
 
             boolean allowDisconnect = false;
             for (JIPipeDataSlot targetSlot : targetSlots) {
-                if (nodeUI.getGraphCanvasUI().getGraph().canUserDisconnect(slot, targetSlot)) {
+                if (getGraphCanvasUI().getGraph().canUserDisconnect(slot, targetSlot)) {
                     allowDisconnect = true;
                     break;
                 }
@@ -115,7 +123,7 @@ public class JIPipeDesktopGraphNodeUISlotContextMenu {
 
             if (allowDisconnect) {
                 JMenuItem disconnectButton = new JMenuItem("Disconnect all", JIPipe.RESOURCES.getIcon16("actions/cancel.png"));
-                disconnectButton.addActionListener(e -> nodeUI.getGraphCanvasUI().disconnectAll(slot, targetSlots));
+                disconnectButton.addActionListener(e -> getGraphCanvasUI().disconnectAll(slot, targetSlots));
                 JIPipeDesktopGraphNodeUISlotActiveArea slotActiveArea = nodeUI.getSlotActiveArea(slot);
                 if (slotActiveArea != null) {
                     nodeUI.getConnectSlotContextMenu().openSlotMenuInstallHighlightForDisconnect(slotActiveArea, disconnectButton, targetSlots);
@@ -126,8 +134,8 @@ public class JIPipeDesktopGraphNodeUISlotContextMenu {
             }
         }
 
-        UUID compartment = nodeUI.getGraphCanvasUI().getCompartmentUUID();
-        Set<JIPipeDataSlot> availableTargets = nodeUI.getGraphCanvasUI().getGraph().getAvailableTargets(slot, true, true);
+        UUID compartment = getGraphCanvasUI().getCompartmentUUID();
+        Set<JIPipeDataSlot> availableTargets = getGraphCanvasUI().getGraph().getAvailableTargets(slot, true, true);
         availableTargets.removeIf(s -> !s.getNode().isVisibleIn(compartment));
 
         JMenuItem findAlgorithmButton = new JMenuItem("Find matching node ...", JIPipe.RESOURCES.getIcon16("actions/find.png"));
@@ -283,14 +291,14 @@ public class JIPipeDesktopGraphNodeUISlotContextMenu {
             targetSlotMenu.setIcon(JIPipe.getDataTypes().getIconFor(targetSlot.getAcceptedDataType()));
 
             JMenuItem disconnectButton = new JMenuItem("Disconnect", JIPipe.RESOURCES.getIcon16("actions/cancel.png"));
-            disconnectButton.addActionListener(e -> nodeUI.getGraphCanvasUI().disconnectAll(slot, Collections.singleton(targetSlot)));
+            disconnectButton.addActionListener(e -> getGraphCanvasUI().disconnectAll(slot, Collections.singleton(targetSlot)));
             JIPipeDesktopGraphNodeUISlotActiveArea slotActiveArea = nodeUI.getSlotActiveArea(slot);
             if (slotActiveArea != null) {
                 nodeUI.getConnectSlotContextMenu().openSlotMenuInstallHighlightForDisconnect(slotActiveArea, disconnectButton, Collections.singleton(targetSlot));
             }
             targetSlotMenu.add(disconnectButton);
 
-            JIPipeGraphEdge edge = nodeUI.getGraphCanvasUI().getGraph().getGraph().getEdge(slot, targetSlot);
+            JIPipeGraphEdge edge = getGraphCanvasUI().getGraph().getGraph().getEdge(slot, targetSlot);
 
             // Shape menu
             openSlotMenuAddShapeToggle(slot, targetSlotMenu, edge);
@@ -304,8 +312,8 @@ public class JIPipeDesktopGraphNodeUISlotContextMenu {
         if (edge.getUiShape() != JIPipeGraphEdge.Shape.Elbow) {
             JMenuItem setShapeItem = new JMenuItem("Draw as elbow", JIPipe.RESOURCES.getIcon16("actions/standard-connector.png"));
             setShapeItem.addActionListener(e -> {
-                if (nodeUI.getGraphCanvasUI().getHistoryJournal() != null) {
-                    nodeUI.getGraphCanvasUI().getHistoryJournal().snapshot("Draw edge as elbow",
+                if (getGraphCanvasUI().getHistoryJournal() != null) {
+                    getGraphCanvasUI().getHistoryJournal().snapshot("Draw edge as elbow",
                             slot.getDisplayName(),
                             nodeUI.getNode().getCompartmentUUIDInParentGraph(),
                             JIPipe.RESOURCES.getIcon16("actions/standard-connector.png"));
@@ -318,8 +326,8 @@ public class JIPipeDesktopGraphNodeUISlotContextMenu {
         if (edge.getUiShape() != JIPipeGraphEdge.Shape.Line) {
             JMenuItem setShapeItem = new JMenuItem("Draw as line", JIPipe.RESOURCES.getIcon16("actions/draw-line.png"));
             setShapeItem.addActionListener(e -> {
-                if (nodeUI.getGraphCanvasUI().getHistoryJournal() != null) {
-                    nodeUI.getGraphCanvasUI().getHistoryJournal().snapshot("Draw edge as line",
+                if (getGraphCanvasUI().getHistoryJournal() != null) {
+                    getGraphCanvasUI().getHistoryJournal().snapshot("Draw edge as line",
                             slot.getDisplayName(),
                             nodeUI.getNode().getCompartmentUUIDInParentGraph(),
                             JIPipe.RESOURCES.getIcon16("actions/draw-line.png"));
@@ -333,12 +341,13 @@ public class JIPipeDesktopGraphNodeUISlotContextMenu {
 
     private void openSlotMenuAddInputSlotMenuItems(JIPipeDataSlot slot, JPopupMenu menu) {
 
-        Set<JIPipeDataSlot> sourceSlots = nodeUI.getGraphCanvasUI().getGraph().getInputIncomingSourceSlots(slot);
+        Set<JIPipeDataSlot> sourceSlots = getGraphCanvasUI().getGraph().getInputIncomingSourceSlots(slot);
+        JIPipeDesktopGraphNodeUISlotActiveArea slotActiveArea = nodeUI.getSlotActiveArea(slot);
 
         if (!sourceSlots.isEmpty()) {
             JMenuItem disconnectButton = new JMenuItem("Disconnect all", JIPipe.RESOURCES.getIcon16("actions/cancel.png"));
-            disconnectButton.addActionListener(e -> nodeUI.getGraphCanvasUI().disconnectAll(slot, sourceSlots));
-            JIPipeDesktopGraphNodeUISlotActiveArea slotActiveArea = nodeUI.getSlotActiveArea(slot);
+            disconnectButton.addActionListener(e -> getGraphCanvasUI().disconnectAll(slot, sourceSlots));
+
             if (slotActiveArea != null) {
                 nodeUI.getConnectSlotContextMenu().openSlotMenuInstallHighlightForDisconnect(slotActiveArea, disconnectButton, sourceSlots);
             }
@@ -358,7 +367,50 @@ public class JIPipeDesktopGraphNodeUISlotContextMenu {
                     JIPipe.RESOURCES.getIcon16("data-types/parameters.png"), () -> nodeUI.getSlotManager().createParameterSetsNode(slot)));
         }
 
-        Set<JIPipeDataSlot> availableSources = nodeUI.getGraphCanvasUI().getGraph().getAvailableSources(slot, true, false);
+        // Paste connection
+        try {
+            String clipboard = UIUtils.getStringFromClipboard();
+            if (!StringUtils.isNullOrEmpty(clipboard)) {
+                List<JIPipeSerializedGraphConnection> connections = JsonUtils.readListFromString(clipboard, JIPipeSerializedGraphConnection.class);
+                if (connections != null) {
+                    connections.removeIf(conn -> !connectionIsValid(conn, slot));
+                    if (!connections.isEmpty()) {
+                        JMenuItem menuItem = UIUtils.createMenuItem("Paste " + connections.size() + " edges", "Connects the outputs from the clipboard to this current slot",
+                                JIPipe.RESOURCES.getIcon16("actions/edit-paste.png"), () -> {
+                                    pasteConnections(slot, connections);
+                                });
+                        if (slotActiveArea != null) {
+                            List<JIPipeDataSlot> otherSlots = new ArrayList<>();
+                            if(slot.isInput()) {
+                                for (JIPipeSerializedGraphConnection connection : connections) {
+                                    JIPipeDataSlot sourceSlot = connection.findSourceSlot(nodeUI.getGraphCanvasUI().getGraph());
+                                    if(sourceSlot != null) {
+                                        otherSlots.add(sourceSlot);
+                                    }
+                                }
+                            }
+                            else if(slot.isOutput()) {
+                                for (JIPipeSerializedGraphConnection connection : connections) {
+                                    JIPipeDataSlot targetSlot = connection.findTargetSlot(nodeUI.getGraphCanvasUI().getGraph());
+                                    if(targetSlot != null) {
+                                        otherSlots.add(targetSlot);
+                                    }
+                                }
+                            }
+                            if(!otherSlots.isEmpty()) {
+                                nodeUI.getConnectSlotContextMenu().openSlotMenuInstallHighlightForConnect(slotActiveArea, otherSlots, menuItem);
+                            }
+
+                        }
+                        menu.add(menuItem);
+                    }
+                }
+            }
+        } catch (Exception ignored) {
+        }
+
+        // Connect menu
+        Set<JIPipeDataSlot> availableSources = getGraphCanvasUI().getGraph().getAvailableSources(slot, true, false);
         if (!availableSources.isEmpty()) {
             JMenu connectMenu = new JMenu("Connect to ...");
             connectMenu.setIcon(JIPipe.RESOURCES.getIcon16("actions/plug.png"));
@@ -366,6 +418,7 @@ public class JIPipeDesktopGraphNodeUISlotContextMenu {
             menu.add(connectMenu);
         }
 
+        // Connection management
         if (!sourceSlots.isEmpty()) {
             JMenu manageMenu = new JMenu("Manage existing connections ...");
             manageMenu.setIcon(JIPipe.RESOURCES.getIcon16("actions/lines-connector.png"));
@@ -390,5 +443,47 @@ public class JIPipeDesktopGraphNodeUISlotContextMenu {
         UIUtils.addSeparatorIfNeeded(menu);
 
         openSlotMenuAddInputSlotEditItems(slot, sourceSlots, menu);
+    }
+
+    
+    
+    private void pasteConnections(JIPipeDataSlot slot, List<JIPipeSerializedGraphConnection> connections) {
+        for (JIPipeSerializedGraphConnection connection : connections) {
+            if(slot.isInput())  {
+                // Connect to the output (source)
+                JIPipeDataSlot sourceSlot = connection.findSourceSlot(getGraphCanvasUI().getGraph());
+                getGraphCanvasUI().getGraph().connect(sourceSlot, slot);
+            }
+            else if(slot.isOutput())  {
+                // Connect to the input (target)
+                JIPipeDataSlot targetSlot = connection.findTargetSlot(getGraphCanvasUI().getGraph());
+                getGraphCanvasUI().getGraph().connect(slot, targetSlot);
+            }
+        }
+        getGraphCanvasUI().getNotificationsManager().addNotification("Pasted " + connections.size() + " edges",
+                JIPipe.RESOURCES.getIcon16("actions/edit-paste.png"),
+                JIPipeDesktopGraphCanvasNotificationsManager.NotificationType.Success);
+    }
+
+    /**
+     * Check if a connection from/to the slot can be created
+     *
+     * @param connection the connection
+     * @param slot       the slot
+     * @return if a connection is possible
+     */
+    private boolean connectionIsValid(JIPipeSerializedGraphConnection connection, JIPipeDataSlot slot) {
+        JIPipeGraph graph = getGraphCanvasUI().getGraph();
+        if (slot.isInput()) {
+            // The current node is input -> look if the output is valid
+            JIPipeDataSlot sourceSlot = connection.findSourceSlot(graph);
+            return graph.canConnect(sourceSlot, slot, true);
+        } else if (slot.isOutput()) {
+            // The current node is output -> look if input is valid
+            JIPipeDataSlot targetSlot = connection.findTargetSlot(graph);
+            return graph.canConnect(slot, targetSlot, true);
+        }
+
+        return false;
     }
 }
