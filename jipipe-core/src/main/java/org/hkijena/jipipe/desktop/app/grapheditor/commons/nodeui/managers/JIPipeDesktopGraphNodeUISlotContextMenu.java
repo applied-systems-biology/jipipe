@@ -31,7 +31,7 @@ public class JIPipeDesktopGraphNodeUISlotContextMenu {
     public JIPipeDesktopGraphNodeUISlotContextMenu(JIPipeDesktopGraphNodeUI nodeUI) {
         this.nodeUI = nodeUI;
     }
-    
+
     public JIPipeDesktopGraphCanvasUI getGraphCanvasUI() {
         return nodeUI.getGraphCanvasUI();
     }
@@ -111,6 +111,8 @@ public class JIPipeDesktopGraphNodeUISlotContextMenu {
 
     private void openSlotMenuAddOutputSlotMenuItems(JIPipeDataSlot slot, JPopupMenu menu) {
         Set<JIPipeDataSlot> targetSlots = getGraphCanvasUI().getGraph().getOutputOutgoingTargetSlots(slot);
+        JIPipeDesktopGraphNodeUISlotActiveArea slotActiveArea = nodeUI.getSlotActiveArea(slot);
+
         if (!targetSlots.isEmpty()) {
 
             boolean allowDisconnect = false;
@@ -124,7 +126,7 @@ public class JIPipeDesktopGraphNodeUISlotContextMenu {
             if (allowDisconnect) {
                 JMenuItem disconnectButton = new JMenuItem("Disconnect all", JIPipe.RESOURCES.getIcon16("actions/cancel.png"));
                 disconnectButton.addActionListener(e -> getGraphCanvasUI().disconnectAll(slot, targetSlots));
-                JIPipeDesktopGraphNodeUISlotActiveArea slotActiveArea = nodeUI.getSlotActiveArea(slot);
+
                 if (slotActiveArea != null) {
                     nodeUI.getConnectSlotContextMenu().openSlotMenuInstallHighlightForDisconnect(slotActiveArea, disconnectButton, targetSlots);
                 }
@@ -142,6 +144,9 @@ public class JIPipeDesktopGraphNodeUISlotContextMenu {
         findAlgorithmButton.setToolTipText("Opens a tool to find a matching algorithm based on the data");
         findAlgorithmButton.addActionListener(e -> nodeUI.getSlotManager().openOutputAlgorithmFinder(slot));
         menu.add(findAlgorithmButton);
+
+        // Paste connection
+        openSlotMenuAddPasteEdgesMenuItems(slot, menu, slotActiveArea);
 
         if (!availableTargets.isEmpty()) {
             JMenu connectMenu = new JMenu("Connect to ...");
@@ -368,46 +373,7 @@ public class JIPipeDesktopGraphNodeUISlotContextMenu {
         }
 
         // Paste connection
-        try {
-            String clipboard = UIUtils.getStringFromClipboard();
-            if (!StringUtils.isNullOrEmpty(clipboard)) {
-                List<JIPipeSerializedGraphConnection> connections = JsonUtils.readListFromString(clipboard, JIPipeSerializedGraphConnection.class);
-                if (connections != null) {
-                    connections.removeIf(conn -> !connectionIsValid(conn, slot));
-                    if (!connections.isEmpty()) {
-                        JMenuItem menuItem = UIUtils.createMenuItem("Paste " + connections.size() + " edges", "Connects the outputs from the clipboard to this current slot",
-                                JIPipe.RESOURCES.getIcon16("actions/edit-paste.png"), () -> {
-                                    pasteConnections(slot, connections);
-                                });
-                        if (slotActiveArea != null) {
-                            List<JIPipeDataSlot> otherSlots = new ArrayList<>();
-                            if(slot.isInput()) {
-                                for (JIPipeSerializedGraphConnection connection : connections) {
-                                    JIPipeDataSlot sourceSlot = connection.findSourceSlot(nodeUI.getGraphCanvasUI().getGraph());
-                                    if(sourceSlot != null) {
-                                        otherSlots.add(sourceSlot);
-                                    }
-                                }
-                            }
-                            else if(slot.isOutput()) {
-                                for (JIPipeSerializedGraphConnection connection : connections) {
-                                    JIPipeDataSlot targetSlot = connection.findTargetSlot(nodeUI.getGraphCanvasUI().getGraph());
-                                    if(targetSlot != null) {
-                                        otherSlots.add(targetSlot);
-                                    }
-                                }
-                            }
-                            if(!otherSlots.isEmpty()) {
-                                nodeUI.getConnectSlotContextMenu().openSlotMenuInstallHighlightForConnect(slotActiveArea, otherSlots, menuItem);
-                            }
-
-                        }
-                        menu.add(menuItem);
-                    }
-                }
-            }
-        } catch (Exception ignored) {
-        }
+        openSlotMenuAddPasteEdgesMenuItems(slot, menu, slotActiveArea);
 
         // Connect menu
         Set<JIPipeDataSlot> availableSources = getGraphCanvasUI().getGraph().getAvailableSources(slot, true, false);
@@ -445,16 +411,57 @@ public class JIPipeDesktopGraphNodeUISlotContextMenu {
         openSlotMenuAddInputSlotEditItems(slot, sourceSlots, menu);
     }
 
-    
-    
+    private void openSlotMenuAddPasteEdgesMenuItems(JIPipeDataSlot slot, JPopupMenu menu, JIPipeDesktopGraphNodeUISlotActiveArea slotActiveArea) {
+        try {
+            String clipboard = UIUtils.getStringFromClipboard();
+            if (!StringUtils.isNullOrEmpty(clipboard)) {
+                List<JIPipeSerializedGraphConnection> connections = JsonUtils.readListFromString(clipboard, JIPipeSerializedGraphConnection.class);
+                if (connections != null) {
+                    connections.removeIf(conn -> !connectionIsValid(conn, slot));
+                    if (!connections.isEmpty()) {
+                        JMenuItem menuItem = UIUtils.createMenuItem("Paste " + connections.size() + " edges", "Connects the " +
+                                        (slot.isInput() ? "outputs" : "inputs") + " from the clipboard to this slot",
+                                JIPipe.RESOURCES.getIcon16("actions/edit-paste.png"), () -> {
+                                    pasteConnections(slot, connections);
+                                });
+                        if (slotActiveArea != null) {
+                            List<JIPipeDataSlot> otherSlots = new ArrayList<>();
+                            if (slot.isInput()) {
+                                for (JIPipeSerializedGraphConnection connection : connections) {
+                                    JIPipeDataSlot sourceSlot = connection.findSourceSlot(nodeUI.getGraphCanvasUI().getGraph());
+                                    if (sourceSlot != null) {
+                                        otherSlots.add(sourceSlot);
+                                    }
+                                }
+                            } else if (slot.isOutput()) {
+                                for (JIPipeSerializedGraphConnection connection : connections) {
+                                    JIPipeDataSlot targetSlot = connection.findTargetSlot(nodeUI.getGraphCanvasUI().getGraph());
+                                    if (targetSlot != null) {
+                                        otherSlots.add(targetSlot);
+                                    }
+                                }
+                            }
+                            if (!otherSlots.isEmpty()) {
+                                nodeUI.getConnectSlotContextMenu().openSlotMenuInstallHighlightForConnect(slotActiveArea, otherSlots, menuItem);
+                            }
+
+                        }
+                        menu.add(menuItem);
+                    }
+                }
+            }
+        } catch (Exception ignored) {
+        }
+    }
+
+
     private void pasteConnections(JIPipeDataSlot slot, List<JIPipeSerializedGraphConnection> connections) {
         for (JIPipeSerializedGraphConnection connection : connections) {
-            if(slot.isInput())  {
+            if (slot.isInput()) {
                 // Connect to the output (source)
                 JIPipeDataSlot sourceSlot = connection.findSourceSlot(getGraphCanvasUI().getGraph());
                 getGraphCanvasUI().getGraph().connect(sourceSlot, slot);
-            }
-            else if(slot.isOutput())  {
+            } else if (slot.isOutput()) {
                 // Connect to the input (target)
                 JIPipeDataSlot targetSlot = connection.findTargetSlot(getGraphCanvasUI().getGraph());
                 getGraphCanvasUI().getGraph().connect(slot, targetSlot);
