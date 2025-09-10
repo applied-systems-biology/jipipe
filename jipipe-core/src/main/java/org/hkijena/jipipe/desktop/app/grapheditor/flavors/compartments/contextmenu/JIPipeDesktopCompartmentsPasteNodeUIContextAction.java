@@ -47,8 +47,8 @@ public class JIPipeDesktopCompartmentsPasteNodeUIContextAction implements GraphI
         try {
             String json = getStringFromClipboard();
             if (json != null) {
-                JIPipeProject project = ((JIPipeDesktopProjectWorkbench) canvasUI.getDesktopWorkbench()).getProject();
-                TypeReference<List<JIPipeExportedCompartment>> typeReference = new TypeReference<List<JIPipeExportedCompartment>>() {
+                JIPipeProject project = canvasUI.getDesktopWorkbench().getProject();
+                TypeReference<List<JIPipeExportedCompartment>> typeReference = new TypeReference<>() {
                 };
                 List<JIPipeExportedCompartment> compartments = JsonUtils.getObjectMapper().readValue(json, typeReference);
                 if (compartments.isEmpty()) {

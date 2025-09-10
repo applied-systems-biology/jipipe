@@ -25,6 +25,25 @@ import org.hkijena.jipipe.desktop.app.grapheditor.commons.JIPipeDesktopGraphEdit
 import org.hkijena.jipipe.desktop.app.grapheditor.commons.JIPipeDesktopGraphEditorUI;
 import org.hkijena.jipipe.desktop.app.grapheditor.commons.JIPipeDesktopGraphInteractiveObjectUI;
 import org.hkijena.jipipe.desktop.app.grapheditor.commons.contextmenu.*;
+import org.hkijena.jipipe.desktop.app.grapheditor.commons.contextmenu.actions.*;
+import org.hkijena.jipipe.desktop.app.grapheditor.commons.contextmenu.add.AddNewCompartmentUIContextAction;
+import org.hkijena.jipipe.desktop.app.grapheditor.commons.contextmenu.bookmarks.AddBookmarkNodeUIContextAction;
+import org.hkijena.jipipe.desktop.app.grapheditor.commons.contextmenu.bookmarks.RemoveBookmarkNodeUIContextAction;
+import org.hkijena.jipipe.desktop.app.grapheditor.commons.contextmenu.cache.ClearCacheNodeUIContextAction;
+import org.hkijena.jipipe.desktop.app.grapheditor.commons.contextmenu.layers.LowerUIContextAction;
+import org.hkijena.jipipe.desktop.app.grapheditor.commons.contextmenu.layers.RaiseUIContextAction;
+import org.hkijena.jipipe.desktop.app.grapheditor.commons.contextmenu.layers.SendToBackgroundUIContextAction;
+import org.hkijena.jipipe.desktop.app.grapheditor.commons.contextmenu.layers.SendToForegroundUIContextAction;
+import org.hkijena.jipipe.desktop.app.grapheditor.commons.contextmenu.locking.LockNodeLocationSizeUIContextAction;
+import org.hkijena.jipipe.desktop.app.grapheditor.commons.contextmenu.locking.UnlockNodeLocationSizeUIContextAction;
+import org.hkijena.jipipe.desktop.app.grapheditor.commons.contextmenu.misc.ExportCompartmentAsJsonNodeUIContextAction;
+import org.hkijena.jipipe.desktop.app.grapheditor.commons.contextmenu.running.RunAndShowIntermediateResultsNodeUIContextAction;
+import org.hkijena.jipipe.desktop.app.grapheditor.commons.contextmenu.running.RunAndShowResultsNodeUIContextAction;
+import org.hkijena.jipipe.desktop.app.grapheditor.commons.contextmenu.running.UpdateCacheNodeUIContextAction;
+import org.hkijena.jipipe.desktop.app.grapheditor.commons.contextmenu.running.UpdateCacheShowIntermediateNodeUIContextAction;
+import org.hkijena.jipipe.desktop.app.grapheditor.commons.contextmenu.select.InvertSelectionNodeUIContextAction;
+import org.hkijena.jipipe.desktop.app.grapheditor.commons.contextmenu.select.SelectAllNodeUIContextAction;
+import org.hkijena.jipipe.desktop.app.grapheditor.commons.contextmenu.select.SelectAndMoveNodeHereNodeUIContextAction;
 import org.hkijena.jipipe.desktop.app.grapheditor.commons.nodeui.JIPipeDesktopGraphNodeUI;
 import org.hkijena.jipipe.desktop.app.grapheditor.commons.properties.JIPipeDesktopGraphEditorErrorPanel;
 import org.hkijena.jipipe.desktop.app.grapheditor.commons.properties.JIPipeDesktopGraphNodeSlotEditorUI;
@@ -82,6 +101,7 @@ public class JIPipeDesktopCompartmentsGraphEditorUI extends JIPipeDesktopGraphEd
                 GraphInteractiveObjectUIContextAction.SEPARATOR,
                 new JIPipeDesktopCompartmentsCutNodeUIContextAction(),
                 new JIPipeDesktopCompartmentsCopyNodeUIContextAction(),
+                new CopyEdgeUIContextAction(),
                 new JIPipeDesktopCompartmentsPasteNodeUIContextAction(),
                 GraphInteractiveObjectUIContextAction.SEPARATOR,
                 new RunAndShowResultsNodeUIContextAction(),

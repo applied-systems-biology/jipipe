@@ -14,8 +14,10 @@
 package org.hkijena.jipipe.desktop.app.grapheditor.commons.edgeui;
 
 import org.hkijena.jipipe.api.data.JIPipeDataSlot;
+import org.hkijena.jipipe.api.nodes.JIPipeGraphConnection;
 import org.hkijena.jipipe.api.nodes.JIPipeGraphEdge;
 import org.hkijena.jipipe.api.nodes.JIPipeGraphNode;
+import org.hkijena.jipipe.api.nodes.JIPipeSerializedGraphConnection;
 import org.hkijena.jipipe.desktop.app.grapheditor.commons.JIPipeDesktopGraphCanvasUI;
 import org.hkijena.jipipe.desktop.app.grapheditor.commons.JIPipeDesktopGraphInteractiveObjectUI;
 import org.hkijena.jipipe.desktop.app.grapheditor.commons.JIPipeDesktopGraphInteractiveObjectUIUpdateViewCommand;
@@ -40,6 +42,10 @@ public class JIPipeDesktopGraphEdgeUI implements JIPipeDesktopGraphInteractiveOb
         this.source = source;
         this.target = target;
         this.edge = edge;
+    }
+
+    public JIPipeSerializedGraphConnection toConnection() {
+         return new JIPipeSerializedGraphConnection(source, target, edge);
     }
 
     public JIPipeGraphEdge getEdge() {
