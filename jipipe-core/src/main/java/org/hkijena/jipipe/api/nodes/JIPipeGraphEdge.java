@@ -30,19 +30,12 @@ public class JIPipeGraphEdge extends DefaultEdge {
     private boolean userCanDisconnect;
 
     private String uuid;
-    private Visibility uiVisibility = Visibility.Smart;
     private Shape uiShape = Shape.Elbow;
 
     /**
      * Initializes a new graph edge that cannot be disconnected by users
      */
     public JIPipeGraphEdge() {
-        if (JIPipe.isInstantiated()) {
-            JIPipeGraphEditorUIApplicationSettings settings = JIPipe.getSettings().getById(JIPipeGraphEditorUIApplicationSettings.ID, JIPipeGraphEditorUIApplicationSettings.class);
-            if (settings != null) {
-                uiVisibility = settings.getDefaultEdgeVisibility();
-            }
-        }
     }
 
     /**
@@ -71,19 +64,8 @@ public class JIPipeGraphEdge extends DefaultEdge {
         this.uiShape = uiShape;
     }
 
-    @JsonGetter("ui-visibility")
-    public Visibility getUiVisibility() {
-        return uiVisibility;
-    }
-
-    @JsonSetter("ui-visibility")
-    public void setUiVisibility(Visibility uiVisibility) {
-        this.uiVisibility = uiVisibility;
-    }
-
     public void setMetadataFrom(JIPipeGraphEdge other) {
         this.uiShape = other.uiShape;
-        this.uiVisibility = other.uiVisibility;
     }
 
     @JsonGetter("uuid")
@@ -105,39 +87,5 @@ public class JIPipeGraphEdge extends DefaultEdge {
     public enum Shape {
         Elbow,
         Line
-    }
-
-    public enum Visibility {
-        /**
-         * The edge is always visible
-         */
-        AlwaysVisible,
-        /**
-         * The edge will auto-hide if it is too far away
-         * No label is always displayed next to input
-         */
-        Smart,
-        /**
-         * The edge will auto-hide if it is too far away
-         * No label is shown
-         *
-         * @deprecated not supported and will behave the same as Smart (no label shown)
-         */
-        @Deprecated
-        SmartSilent,
-        /**
-         * The edge is always hidden.
-         * No label is shown
-         */
-        AlwaysHidden,
-        /**
-         * The edge is always hidden
-         * A label is shown
-         * (currently does the same as "AlwaysHidden")
-         *
-         * @deprecated not supported and will behave as AlwaysHidden
-         */
-        @Deprecated
-        AlwaysHiddenWithLabel
     }
 }
