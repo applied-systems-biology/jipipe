@@ -84,7 +84,7 @@ public class JIPipeDesktopGraphNodeUISlotContextMenu {
                 nodeUI.getGraphCanvasUI().getDragManagerConnect().setCurrentConnectionDragSource(null);
                 nodeUI.getGraphCanvasUI().getDragManagerConnect().setCurrentConnectionDragTarget(null);
                 nodeUI.getGraphCanvasUI().getConnectionHighlightManager().setDisconnectHighlight(null);
-                nodeUI.getGraphCanvasUI().getConnectionHighlightManager().setConnectHighlight(null);
+                nodeUI.getGraphCanvasUI().getConnectionHighlightManager().setConnectHighlights(null);
                 nodeUI.invalidateAndRepaint(false, true);
             }
 
@@ -93,7 +93,7 @@ public class JIPipeDesktopGraphNodeUISlotContextMenu {
                 nodeUI.getGraphCanvasUI().getDragManagerConnect().setCurrentConnectionDragSource(null);
                 nodeUI.getGraphCanvasUI().getDragManagerConnect().setCurrentConnectionDragTarget(null);
                 nodeUI.getGraphCanvasUI().getConnectionHighlightManager().setDisconnectHighlight(null);
-                nodeUI.getGraphCanvasUI().getConnectionHighlightManager().setConnectHighlight(null);
+                nodeUI.getGraphCanvasUI().getConnectionHighlightManager().setConnectHighlights(null);
                 nodeUI.invalidateAndRepaint(false, true);
             }
         });

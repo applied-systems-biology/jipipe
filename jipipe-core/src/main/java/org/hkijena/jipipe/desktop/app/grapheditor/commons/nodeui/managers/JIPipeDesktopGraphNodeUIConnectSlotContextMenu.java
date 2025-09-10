@@ -130,12 +130,12 @@ public class JIPipeDesktopGraphNodeUIConnectSlotContextMenu {
                     if (source.isOutput()) {
                         JIPipeDesktopGraphNodeUISlotActiveArea sourceUI = sourceNodeUI.getOutputSlotMap().getOrDefault(source.getName(), null);
                         if (sourceUI != null) {
-                            nodeUI.getGraphCanvasUI().getConnectionHighlightManager().setConnectHighlight(new JIPipeDesktopGraphCanvasUIConnectHighlight(sourceUI, current));
+                            nodeUI.getGraphCanvasUI().getConnectionHighlightManager().setConnectHighlights(Collections.singletonList(new JIPipeDesktopGraphCanvasUIConnectHighlight(sourceUI, current)));
                         }
                     } else {
                         JIPipeDesktopGraphNodeUISlotActiveArea sourceUI = sourceNodeUI.getInputSlotMap().getOrDefault(source.getName(), null);
                         if (sourceUI != null) {
-                            nodeUI.getGraphCanvasUI().getConnectionHighlightManager().setConnectHighlight(new JIPipeDesktopGraphCanvasUIConnectHighlight(current, sourceUI));
+                            nodeUI.getGraphCanvasUI().getConnectionHighlightManager().setConnectHighlights(Collections.singletonList(new JIPipeDesktopGraphCanvasUIConnectHighlight(current, sourceUI)));
                         }
                     }
                 }
@@ -143,7 +143,7 @@ public class JIPipeDesktopGraphNodeUIConnectSlotContextMenu {
 
             @Override
             public void mouseExited(MouseEvent e) {
-                nodeUI.getGraphCanvasUI().getConnectionHighlightManager().setConnectHighlight(null);
+                nodeUI.getGraphCanvasUI().getConnectionHighlightManager().setConnectHighlights(Collections.emptyList());
             }
         });
     }

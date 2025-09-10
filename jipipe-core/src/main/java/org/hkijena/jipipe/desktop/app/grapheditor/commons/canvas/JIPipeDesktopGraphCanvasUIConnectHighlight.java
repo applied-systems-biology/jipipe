@@ -31,4 +31,22 @@ public class JIPipeDesktopGraphCanvasUIConnectHighlight {
     public JIPipeDesktopGraphNodeUISlotActiveArea getTarget() {
         return target;
     }
+
+    public static class Entry {
+        private final JIPipeDesktopGraphNodeUISlotActiveArea source;
+        private final JIPipeDesktopGraphNodeUISlotActiveArea target;
+
+        public Entry(JIPipeDesktopGraphNodeUISlotActiveArea source, JIPipeDesktopGraphNodeUISlotActiveArea target) {
+            this.source = source;
+            this.target = target;
+        }
+
+        public JIPipeDesktopGraphNodeUISlotActiveArea getSource() {
+            return source;
+        }
+
+        public JIPipeDesktopGraphNodeUISlotActiveArea getTarget() {
+            return target;
+        }
+    }
 }
