@@ -33,6 +33,7 @@ import java.io.IOException;
 import java.nio.file.InvalidPathException;
 import java.nio.file.Path;
 import java.nio.file.Paths;
+import java.util.List;
 
 /**
  * Global utilities for JSON data
@@ -111,6 +112,23 @@ public class JsonUtils {
             throw new RuntimeException(e);
         }
     }
+
+    public static <T> List<T> readListFromString(String json, Class<T> klass) {
+        try {
+            return getObjectMapper().readerForListOf(klass).readValue(json);
+        } catch (IOException e) {
+            throw new RuntimeException(e);
+        }
+    }
+
+    public static <T> List<T> readListFromFile(Path file, Class<T> klass) {
+        try {
+            return getObjectMapper().readerForListOf(klass).readValue(file.toFile());
+        } catch (IOException e) {
+            throw new RuntimeException(e);
+        }
+    }
+
 
     public static String toJsonString(Object data) {
         try {

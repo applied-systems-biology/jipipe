@@ -1015,7 +1015,7 @@ public class JIPipeDesktopGraphCanvasUI extends JLayeredPane implements JIPipeDe
                 if(mouseEvent.isShiftDown()) {
                     selectionManager.toggleSelection(edgeUI);
                 }
-                else if(selectionManager.getSelection().isEmpty()) {
+                else if(!selectionManager.getSelection().contains(edgeUI)) {
                     selectionManager.selectOnly(edgeUI);
                 }
             }
@@ -1023,7 +1023,7 @@ public class JIPipeDesktopGraphCanvasUI extends JLayeredPane implements JIPipeDe
                 if(mouseEvent.isShiftDown()) {
                     selectionManager.toggleSelection(nodeUI);
                 }
-                else if(selectionManager.getSelection().isEmpty()) {
+                else if(!selectionManager.getSelection().contains(nodeUI)) {
                     selectionManager.selectOnly(nodeUI);
                 }
             }
@@ -1440,7 +1440,7 @@ public class JIPipeDesktopGraphCanvasUI extends JLayeredPane implements JIPipeDe
         }
 
         // Remove edges that are no longer in the graph
-        Set<JIPipeGraphEdge> removedEdges = Sets.difference(edgeUIs.keySet(), currentEdges);
+        Set<JIPipeGraphEdge> removedEdges = ImmutableSet.copyOf(Sets.difference(edgeUIs.keySet(), currentEdges));
         for (JIPipeGraphEdge removedEdge : removedEdges) {
             edgeUIs.remove(removedEdge);
         }
@@ -1686,16 +1686,24 @@ public class JIPipeDesktopGraphCanvasUI extends JLayeredPane implements JIPipeDe
             return;
         }
 
-        // Updates existing nodes positions
-        for (JIPipeDesktopGraphNodeUI ui : nodeUIs.values()) {
-            ui.moveToStoredGridLocation(true);
-        }
-        removeOldNodes();     // Remove invalid UIs
-        addNewNodes(true);   // Add missing UIs
+        // Lock with stamped lock
+        long stamp = stampedLock.writeLock();
+        try {
 
-        // Update edge UIs
-        removeOldEdges();
-        addNewEdges();
+            // Updates existing nodes positions
+            for (JIPipeDesktopGraphNodeUI ui : nodeUIs.values()) {
+                ui.moveToStoredGridLocation(true);
+            }
+            removeOldNodes();     // Remove invalid UIs
+            addNewNodes(true);   // Add missing UIs
+
+            // Update edge UIs
+            removeOldEdges();
+            addNewEdges();
+        }
+        finally {
+            stampedLock.unlock(stamp);
+        }
 
         requestFocusInWindow();
     }

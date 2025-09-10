@@ -50,7 +50,7 @@ public class JIPipeDesktopCompartmentsCutNodeUIContextAction extends JIPipeDeskt
 
     @Override
     public String getName() {
-        return "Cut";
+        return "Cut nodes";
     }
 
     @Override

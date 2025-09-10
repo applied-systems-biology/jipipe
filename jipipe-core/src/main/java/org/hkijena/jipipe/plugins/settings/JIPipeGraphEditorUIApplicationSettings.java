@@ -58,8 +58,6 @@ public class JIPipeGraphEditorUIApplicationSettings extends JIPipeDefaultApplica
 
     private int toolInfoDistance = 16;
 
-    private JIPipeGraphEdge.Visibility defaultEdgeVisibility = JIPipeGraphEdge.Visibility.Smart;
-
     public static JIPipeGraphEditorUIApplicationSettings getInstance() {
         return JIPipe.getSettings().getById(ID, JIPipeGraphEditorUIApplicationSettings.class);
     }
@@ -145,17 +143,6 @@ public class JIPipeGraphEditorUIApplicationSettings extends JIPipeDefaultApplica
     @JIPipeParameter("auto-hide-edge-distance-threshold")
     public void setAutoHideEdgeDistanceThreshold(int longDistanceEdgeThreshold) {
         this.autoHideEdgeDistanceThreshold = longDistanceEdgeThreshold;
-    }
-
-    @SetJIPipeDocumentation(name = "Default edge visibility", description = "Determines the default visibility of all newly created edges.")
-    @JIPipeParameter("default-edge-visibility")
-    public JIPipeGraphEdge.Visibility getDefaultEdgeVisibility() {
-        return defaultEdgeVisibility;
-    }
-
-    @JIPipeParameter("default-edge-visibility")
-    public void setDefaultEdgeVisibility(JIPipeGraphEdge.Visibility defaultEdgeVisibility) {
-        this.defaultEdgeVisibility = defaultEdgeVisibility;
     }
 
     @SetJIPipeDocumentation(name = "Node search settings", description = "Settings related to the node search")

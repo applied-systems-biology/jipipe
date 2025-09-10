@@ -71,7 +71,7 @@ public class AlgorithmGraphDuplicateWithInputConnectionsNodeUIContextAction impl
 
     @Override
     public String getName() {
-        return "Duplicate (+ inputs)";
+        return "Duplicate nodes (+ inputs)";
     }
 
     @Override

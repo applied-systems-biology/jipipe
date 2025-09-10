@@ -55,7 +55,7 @@ public class AlgorithmGraphPasteNodeUIContextAction implements GraphInteractiveO
 
     @Override
     public String getName() {
-        return "Paste";
+        return "Paste nodes";
     }
 
     @Override
