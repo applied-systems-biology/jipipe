@@ -19,6 +19,7 @@ import org.hkijena.jipipe.api.nodes.JIPipeGraphNode;
 import org.hkijena.jipipe.desktop.app.grapheditor.commons.JIPipeDesktopGraphCanvasUI;
 import org.hkijena.jipipe.desktop.app.grapheditor.commons.JIPipeDesktopGraphInteractiveObjectUI;
 import org.hkijena.jipipe.desktop.app.grapheditor.commons.JIPipeDesktopGraphInteractiveObjectUIUpdateViewCommand;
+import org.hkijena.jipipe.desktop.app.grapheditor.commons.canvas.managers.JIPipeDesktopGraphCanvasPaintManager;
 import org.hkijena.jipipe.desktop.app.grapheditor.commons.nodeui.JIPipeDesktopGraphNodeUI;
 import org.hkijena.jipipe.plugins.core.nodes.JIPipeCommentNode;
 import org.hkijena.jipipe.utils.PointRange;
@@ -140,32 +141,48 @@ public class JIPipeDesktopGraphEdgeUI implements JIPipeDesktopGraphInteractiveOb
 
         if (strokeBorder != null) {
             // Fully outlined stroke
+            JIPipeDesktopGraphCanvasPaintManager.ArrowHeadMode arrowHeadMode = enableArrows ? JIPipeDesktopGraphCanvasPaintManager.ArrowHeadMode.Filled : JIPipeDesktopGraphCanvasPaintManager.ArrowHeadMode.None;
+
             if(multiColor) {
-                g.setStroke(strokeBorder);
-                Color edgeColor = canvasUI.getResources().getEdgeColor(source, target, multiColor, multiColorIndex, multiColorMax);
-                Color edgeOutlineColor = ThemeUtils.isUsingDarkTheme() ? edgeColor.brighter() : edgeColor.darker();
-
-                g.setColor(edgeOutlineColor);
-                canvasUI.getPaintManager().paintEdge(g, sourcePoint.center, sourceNodeUI.getBounds(), targetPoint.center, uiShape, scale, viewX, viewY, enableArrows);
-                g.setStroke(stroke);
-
-                g.setPaint(edgeColor);
-                canvasUI.getPaintManager().paintEdge(g, sourcePoint.center, sourceNodeUI.getBounds(), targetPoint.center, uiShape, scale, viewX, viewY, enableArrows);
+                paintMultiColor(g, stroke, strokeBorder, scale, viewX, viewY, multiColor, multiColorIndex, multiColorMax, sourcePoint, sourceNodeUI, targetPoint, uiShape, arrowHeadMode);
             }
             else {
-                g.setStroke(strokeBorder);
-                g.setColor(canvasUI.getResources().getEdgeColor(source, target, false, 0, 0));
-                canvasUI.getPaintManager().paintEdge(g, sourcePoint.center, sourceNodeUI.getBounds(), targetPoint.center, uiShape, scale, viewX, viewY, enableArrows);
-                g.setStroke(stroke);
-
-                g.setPaint(canvasUI.getResources().getEdgeBackgroundPaint(source, target, sourcePoint, targetPoint, canvasUI.getResources().getImprovedStrokeBackgroundColor()));
-                canvasUI.getPaintManager().paintEdge(g, sourcePoint.center, sourceNodeUI.getBounds(), targetPoint.center, uiShape, scale, viewX, viewY, enableArrows);
+                paintRegular(g, stroke, strokeBorder, scale, viewX, viewY, sourcePoint, sourceNodeUI, targetPoint, uiShape, arrowHeadMode);
             }
         } else {
             // Just a single stroke
-            g.setStroke(stroke);
-            g.setColor(canvasUI.getResources().getEdgeColor(source, target, multiColor, multiColorIndex, multiColorMax));
-            canvasUI.getPaintManager().paintEdge(g, sourcePoint.center, sourceNodeUI.getBounds(), targetPoint.center, uiShape, scale, viewX, viewY, enableArrows);
+            paintThin(g, stroke, scale, viewX, viewY, enableArrows, multiColor, multiColorIndex, multiColorMax, sourcePoint, sourceNodeUI, targetPoint, uiShape);
         }
+    }
+
+    private void paintThin(Graphics2D g, Stroke stroke, double scale, int viewX, int viewY, boolean enableArrows, boolean multiColor, int multiColorIndex, int multiColorMax, PointRange sourcePoint, JIPipeDesktopGraphNodeUI sourceNodeUI, PointRange targetPoint, JIPipeGraphEdge.Shape uiShape) {
+        JIPipeDesktopGraphCanvasPaintManager.ArrowHeadMode arrowHeadMode = enableArrows ? JIPipeDesktopGraphCanvasPaintManager.ArrowHeadMode.Thin : JIPipeDesktopGraphCanvasPaintManager.ArrowHeadMode.None;
+
+        g.setStroke(stroke);
+        g.setColor(canvasUI.getResources().getEdgeColor(source, target, multiColor, multiColorIndex, multiColorMax));
+        canvasUI.getPaintManager().paintEdge(g, sourcePoint.center, sourceNodeUI.getBounds(), targetPoint.center, uiShape, scale, viewX, viewY, arrowHeadMode);
+    }
+
+    private void paintRegular(Graphics2D g, Stroke stroke, Stroke strokeBorder, double scale, int viewX, int viewY, PointRange sourcePoint, JIPipeDesktopGraphNodeUI sourceNodeUI, PointRange targetPoint, JIPipeGraphEdge.Shape uiShape, JIPipeDesktopGraphCanvasPaintManager.ArrowHeadMode arrowHeadMode) {
+        g.setStroke(strokeBorder);
+        g.setColor(canvasUI.getResources().getEdgeColor(source, target, false, 0, 0));
+        canvasUI.getPaintManager().paintEdge(g, sourcePoint.center, sourceNodeUI.getBounds(), targetPoint.center, uiShape, scale, viewX, viewY, arrowHeadMode);
+        g.setStroke(stroke);
+
+        g.setPaint(canvasUI.getResources().getEdgeBackgroundPaint(source, target, sourcePoint, targetPoint, canvasUI.getResources().getImprovedStrokeBackgroundColor()));
+        canvasUI.getPaintManager().paintEdge(g, sourcePoint.center, sourceNodeUI.getBounds(), targetPoint.center, uiShape, scale, viewX, viewY, arrowHeadMode);
+    }
+
+    private void paintMultiColor(Graphics2D g, Stroke stroke, Stroke strokeBorder, double scale, int viewX, int viewY, boolean multiColor, int multiColorIndex, int multiColorMax, PointRange sourcePoint, JIPipeDesktopGraphNodeUI sourceNodeUI, PointRange targetPoint, JIPipeGraphEdge.Shape uiShape, JIPipeDesktopGraphCanvasPaintManager.ArrowHeadMode arrowHeadMode) {
+        g.setStroke(strokeBorder);
+        Color edgeColor = canvasUI.getResources().getEdgeColor(source, target, multiColor, multiColorIndex, multiColorMax);
+        Color edgeOutlineColor = ThemeUtils.isUsingDarkTheme() ? edgeColor.brighter() : edgeColor.darker();
+
+        g.setColor(edgeOutlineColor);
+        canvasUI.getPaintManager().paintEdge(g, sourcePoint.center, sourceNodeUI.getBounds(), targetPoint.center, uiShape, scale, viewX, viewY, arrowHeadMode);
+        g.setStroke(stroke);
+
+        g.setPaint(edgeColor);
+        canvasUI.getPaintManager().paintEdge(g, sourcePoint.center, sourceNodeUI.getBounds(), targetPoint.center, uiShape, scale, viewX, viewY, arrowHeadMode);
     }
 }

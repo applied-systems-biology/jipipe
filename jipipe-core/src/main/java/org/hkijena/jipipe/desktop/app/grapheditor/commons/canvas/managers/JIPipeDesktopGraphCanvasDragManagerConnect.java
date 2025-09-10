@@ -210,7 +210,7 @@ public class JIPipeDesktopGraphCanvasDragManagerConnect {
                                 1,
                                 0,
                                 0,
-                                true);
+                                JIPipeDesktopGraphCanvasPaintManager.ArrowHeadMode.Filled);
                     } else {
                         canvasUI.getPaintManager().paintEdge(g,
                                 targetPoint.center,
@@ -220,7 +220,7 @@ public class JIPipeDesktopGraphCanvasDragManagerConnect {
                                 1,
                                 0,
                                 0,
-                                true);
+                                JIPipeDesktopGraphCanvasPaintManager.ArrowHeadMode.Filled);
                     }
                 } else if (currentConnectionDragTarget instanceof JIPipeDesktopGraphNodeUISlotActiveArea) {
                     if (((JIPipeDesktopGraphNodeUISlotActiveArea) currentConnectionDragTarget).getSlot().isInput()) {
@@ -232,7 +232,7 @@ public class JIPipeDesktopGraphCanvasDragManagerConnect {
                                 1,
                                 0,
                                 0,
-                                true);
+                                JIPipeDesktopGraphCanvasPaintManager.ArrowHeadMode.Filled);
                     } else {
                         canvasUI.getPaintManager().paintEdge(g,
                                 targetPoint.center,
@@ -242,7 +242,7 @@ public class JIPipeDesktopGraphCanvasDragManagerConnect {
                                 1,
                                 0,
                                 0,
-                                true);
+                                JIPipeDesktopGraphCanvasPaintManager.ArrowHeadMode.Filled);
                     }
                 } else {
                     canvasUI.getPaintManager().paintEdge(g,
@@ -253,7 +253,7 @@ public class JIPipeDesktopGraphCanvasDragManagerConnect {
                             1,
                             0,
                             0,
-                            false);
+                            JIPipeDesktopGraphCanvasPaintManager.ArrowHeadMode.None);
                 }
             }
         }

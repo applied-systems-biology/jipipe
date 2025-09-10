@@ -18,27 +18,33 @@ public class JIPipeDesktopGraphCanvasPaintManager {
         this.canvasUI = canvasUI;
     }
 
-    public void paintArrowHead(Graphics2D g, int x, int y) {
-        int sz = 1;
-        int dy = -2 * sz - 4;
-        g.drawPolygon(new int[]{x - sz, x + sz, x}, new int[]{y - sz + dy, y - sz + dy, y + dy}, 3);
+    public void paintArrowHead(Graphics2D g, int x, int y, ArrowHeadMode arrowHeadMode) {
+        if(arrowHeadMode == ArrowHeadMode.Filled) {
+            int sz = 1;
+            int dy = -2 * sz - 4;
+            g.drawPolygon(new int[]{x - sz, x + sz, x}, new int[]{y - sz + dy, y - sz + dy, y + dy}, 3);
+        }
+        else {
+            g.drawLine(x - 6, y - 6, x, y);
+            g.drawLine(x + 6, y - 6, x, y);
+        }
     }
 
 
 
-    private void paintElbowEdge(Graphics2D g, Point sourcePoint, Rectangle sourceBounds, Point targetPoint, double scale, int viewX, int viewY, boolean enableArrows) {
+    private void paintElbowEdge(Graphics2D g, Point sourcePoint, Rectangle sourceBounds, Point targetPoint, double scale, int viewX, int viewY, ArrowHeadMode arrowHeadMode) {
 
         TIntArrayList xCoords = new TIntArrayList(8);
         TIntArrayList yCoords = new TIntArrayList(8);
 
-        createElbowEdgeCoordinates(sourcePoint, sourceBounds, targetPoint, scale, viewX, viewY, enableArrows, xCoords, yCoords);
+        createElbowEdgeCoordinates(sourcePoint, sourceBounds, targetPoint, scale, viewX, viewY, arrowHeadMode, xCoords, yCoords);
 
         // Draw the polygon
         g.drawPolyline(xCoords.toArray(), yCoords.toArray(), xCoords.size());
 
     }
 
-    public void createElbowEdgeCoordinates(Point sourcePoint, Rectangle sourceBounds, Point targetPoint, double scale, int viewX, int viewY, boolean enableArrows, TIntArrayList xCoords, TIntArrayList yCoords) {
+    public void createElbowEdgeCoordinates(Point sourcePoint, Rectangle sourceBounds, Point targetPoint, double scale, int viewX, int viewY, ArrowHeadMode arrowHeadMode, TIntArrayList xCoords, TIntArrayList yCoords) {
         int buffer;
         int sourceA;
         int targetA;
@@ -50,7 +56,7 @@ public class JIPipeDesktopGraphCanvasPaintManager {
         buffer = JIPipeDesktopGraphCanvasGrid.GRID_HEIGHT / 2;
         sourceA = sourcePoint.y;
         targetA = targetPoint.y;
-        if (enableArrows) {
+        if (arrowHeadMode == ArrowHeadMode.Filled) {
             targetA += canvasUI.getResources().getArrowHeadShift();
         }
         sourceB = sourcePoint.x;
@@ -119,15 +125,15 @@ public class JIPipeDesktopGraphCanvasPaintManager {
      * @param scale        the scale
      * @param viewX        the view x
      * @param viewY        the view y
-     * @param enableArrows enable arrows
+     * @param arrowHeadMode How arrow heads should be displayed
      */
-    public void paintEdge(Graphics2D g, Point sourcePoint, Rectangle sourceBounds, Point targetPoint, JIPipeGraphEdge.Shape shape, double scale, int viewX, int viewY, boolean enableArrows) {
+    public void paintEdge(Graphics2D g, Point sourcePoint, Rectangle sourceBounds, Point targetPoint, JIPipeGraphEdge.Shape shape, double scale, int viewX, int viewY, ArrowHeadMode arrowHeadMode) {
         switch (shape) {
             case Elbow:
-                paintElbowEdge(g, sourcePoint, sourceBounds, targetPoint, scale, viewX, viewY, enableArrows);
+                paintElbowEdge(g, sourcePoint, sourceBounds, targetPoint, scale, viewX, viewY, arrowHeadMode);
                 break;
             case Line: {
-                int arrowHeadShift = enableArrows ? canvasUI.getResources().getArrowHeadShift() : 0;
+                int arrowHeadShift = arrowHeadMode != ArrowHeadMode.None ? canvasUI.getResources().getArrowHeadShift() : 0;
                 int dx;
                 int dy;
                 dx = 0;
@@ -139,8 +145,8 @@ public class JIPipeDesktopGraphCanvasPaintManager {
             }
             break;
         }
-        if (enableArrows) {
-            paintArrowHead(g, targetPoint.x, targetPoint.y);
+        if (arrowHeadMode != ArrowHeadMode.None) {
+            paintArrowHead(g, targetPoint.x, targetPoint.y, arrowHeadMode);
         }
     }
 
@@ -182,5 +188,11 @@ public class JIPipeDesktopGraphCanvasPaintManager {
                     viewY,
                     false, false, 0, 0);
         }
+    }
+
+    public enum ArrowHeadMode {
+        None,
+        Filled,
+        Thin
     }
 }
