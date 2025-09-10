@@ -21,6 +21,7 @@ import org.hkijena.jipipe.api.nodes.JIPipeGraph;
 import org.hkijena.jipipe.api.nodes.JIPipeGraphEdge;
 import org.hkijena.jipipe.desktop.app.grapheditor.commons.JIPipeDesktopGraphCanvasUI;
 import org.hkijena.jipipe.desktop.app.grapheditor.commons.JIPipeDesktopGraphEditorUI;
+import org.hkijena.jipipe.desktop.app.grapheditor.commons.canvas.managers.JIPipeDesktopGraphCanvasPaintManager;
 import org.hkijena.jipipe.desktop.app.grapheditor.commons.nodeui.JIPipeDesktopGraphNodeUI;
 import org.hkijena.jipipe.desktop.app.grapheditor.commons.nodeui.triggers.JIPipeDesktopGraphNodeUISlotActiveArea;
 import org.hkijena.jipipe.utils.PointRange;
@@ -161,7 +162,7 @@ public class JIPipeRewireGraphEditorTool implements JIPipeToggleableGraphEditorT
                     1,
                     0,
                     0,
-                    true);
+                    JIPipeDesktopGraphCanvasPaintManager.ArrowHeadMode.Filled);
         } else {
             graphEditorUI.getCanvasUI().getPaintManager().paintEdge(g,
                     targetPoint.center,
@@ -171,7 +172,7 @@ public class JIPipeRewireGraphEditorTool implements JIPipeToggleableGraphEditorT
                     1,
                     0,
                     0,
-                    true);
+                    JIPipeDesktopGraphCanvasPaintManager.ArrowHeadMode.Filled);
         }
     }
 

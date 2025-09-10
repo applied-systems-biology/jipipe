@@ -1,7 +1,7 @@
 package org.hkijena.jipipe.desktop.app.grapheditor.commons.canvas.overlays;
 
-import org.hkijena.jipipe.api.grapheditortool.JIPipeToggleableGraphEditorTool;
 import org.hkijena.jipipe.desktop.app.grapheditor.commons.JIPipeDesktopGraphCanvasUI;
+import org.hkijena.jipipe.desktop.app.grapheditor.commons.canvas.managers.JIPipeDesktopGraphCanvasPaintManager;
 import org.hkijena.jipipe.desktop.app.grapheditor.commons.nodeui.JIPipeDesktopGraphNodeUI;
 import org.hkijena.jipipe.utils.ThemeUtils;
 
@@ -53,19 +53,19 @@ public class JIPipeDesktopGraphCanvasOutsideEdgesOverlay implements  JIPipeDeskt
                 }
                 g.setStroke(uiIsSelected ? strokeBorderSelected : strokeBorder);
                 g.setColor(ThemeUtils.getCurrentStyle().getNodeHighlightBorder());
-                paintOutsideEdge(g, sourcePoint, targetPoint, !uiIsOutput);
+                paintOutsideEdge(g, sourcePoint, targetPoint, JIPipeDesktopGraphCanvasPaintManager.ArrowHeadMode.Filled);
                 g.setStroke(strokeInside);
                 g.setColor(canvasUI.getResources().getImprovedStrokeBackgroundColor());
-                paintOutsideEdge(g, sourcePoint, targetPoint, !uiIsOutput);
+                paintOutsideEdge(g, sourcePoint, targetPoint, JIPipeDesktopGraphCanvasPaintManager.ArrowHeadMode.Filled);
             }
         }
     }
 
-    private void paintOutsideEdge(Graphics2D g, Point sourcePoint, Point targetPoint, boolean drawArrowHead) {
+    private void paintOutsideEdge(Graphics2D g, Point sourcePoint, Point targetPoint, JIPipeDesktopGraphCanvasPaintManager.ArrowHeadMode arrowHeadMode) {
         int arrowHeadShift = canvasUI.getResources().getArrowHeadShift();
         int dx;
         int dy;
-        if (drawArrowHead) {
+        if (arrowHeadMode == JIPipeDesktopGraphCanvasPaintManager.ArrowHeadMode.Filled) {
             dx = 0;
             dy = arrowHeadShift;
         } else {
@@ -73,8 +73,8 @@ public class JIPipeDesktopGraphCanvasOutsideEdgesOverlay implements  JIPipeDeskt
             dy = 0;
         }
         g.drawLine(sourcePoint.x, sourcePoint.y, targetPoint.x + dx, targetPoint.y + dy);
-        if (drawArrowHead) {
-            canvasUI.getPaintManager().paintArrowHead(g, targetPoint.x, targetPoint.y);
+        if (arrowHeadMode != JIPipeDesktopGraphCanvasPaintManager.ArrowHeadMode.None) {
+            canvasUI.getPaintManager().paintArrowHead(g, targetPoint.x, targetPoint.y, arrowHeadMode);
         }
     }
 }

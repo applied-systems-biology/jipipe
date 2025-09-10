@@ -27,7 +27,7 @@ public class JIPipeDesktopGraphCanvasEdgesOverlay implements JIPipeDesktopGraphC
     public void paintComponent(Graphics2D g) {
 
         Set<JIPipeDesktopGraphInteractiveObjectUI> selection = canvasUI.getSelectionManager().getSelection();
-        Stroke strokeBorder = canvasUI.getResources().getEdgeStrokeBorder();
+        Stroke strokeBorderDefault = canvasUI.getResources().getEdgeStrokeBorder();
         Stroke strokeBorderSelected = canvasUI.getResources().getSelectedEdgeStrokeBorder();
         Stroke strokeBorderAdjacent = canvasUI.getResources().getAdjacentEdgeStrokeBorder();
         Stroke strokeInside = canvasUI.getResources().getEdgeStrokeInside();
@@ -75,78 +75,82 @@ public class JIPipeDesktopGraphCanvasEdgesOverlay implements JIPipeDesktopGraphC
 
             boolean edgeHasMultiColor = multiColorMax > 0 && (selection.contains(sourceUI) || selection.contains(targetUI));
 
-            Stroke stroke = strokeBorder;
+            Stroke strokeBorder = strokeBorderDefault;
             if (selection.contains(edgeUI)) {
-                stroke = strokeBorderSelected;
+                strokeBorder = strokeBorderSelected;
             } else if (selection.contains(sourceUI) ||
                     selection.contains(targetUI)) {
-                stroke = strokeBorderAdjacent;
+                strokeBorder = strokeBorderAdjacent;
             }
 
             if (edgeUI.isCommentEdge()) {
-                edgeUI.paint(g,
-                        JIPipeDesktopGraphCanvasResources.STROKE_COMMENT,
-                        null,
-                        1,
-                        0,
-                        0,
-                        true,
-                        edgeHasMultiColor, multiColorIndex, multiColorMax);
+                paintCommentEdge(g, edgeUI, edgeHasMultiColor, multiColorIndex, multiColorMax);
             } else if (selection.contains(edgeUI)) {
                 if (edgeHasMultiColor) {
-                    edgeUI.paint(g,
-                            strokeInside,
-                            stroke,
-                            1,
-                            0,
-                            0,
-                            true,
-                            true, multiColorIndex, multiColorMax);
+                    paintMultiColorEdge(g, edgeUI, strokeInside, strokeBorder, multiColorIndex, multiColorMax);
                     ++multiColorIndex;
                 } else {
-                    edgeUI.paint(g,
-                            strokeInside,
-                            stroke,
-                            1,
-                            0,
-                            0,
-                            true,
-                            false, 0, 0);
+                    paintRegularEdge(g, edgeUI, strokeInside, strokeBorder);
                 }
             } else {
                 if (multiColor) {
                     if (edgeHasMultiColor) {
-                        edgeUI.paint(g,
-                                strokeInside,
-                                stroke,
-                                1,
-                                0,
-                                0,
-                                true,
-                                true, multiColorIndex, multiColorMax);
+                        paintMultiColorEdge(g, edgeUI, strokeInside, strokeBorder, multiColorIndex, multiColorMax);
                         ++multiColorIndex;
                     } else {
                         // Mute the edge
-                        edgeUI.paint(g,
-                                strokeMuted,
-                                null,
-                                1,
-                                0,
-                                0,
-                                false,
-                                false, 0, 0);
+                        paintMutedEdge(g, edgeUI, strokeMuted);
                     }
                 } else {
-                    edgeUI.paint(g,
-                            strokeInside,
-                            stroke,
-                            1,
-                            0,
-                            0,
-                            true,
-                            false, 0, 0);
+                    paintRegularEdge(g, edgeUI, strokeInside, strokeBorder);
                 }
             }
         }
+    }
+
+    private static void paintMutedEdge(Graphics2D g, JIPipeDesktopGraphEdgeUI edgeUI, Stroke strokeMuted) {
+        edgeUI.paint(g,
+                strokeMuted,
+                null,
+                1,
+                0,
+                0,
+                true,
+                false,
+                0,
+                0);
+    }
+
+    private static void paintRegularEdge(Graphics2D g, JIPipeDesktopGraphEdgeUI edgeUI, Stroke strokeInside, Stroke strokeBorder) {
+        edgeUI.paint(g,
+                strokeInside,
+                strokeBorder,
+                1,
+                0,
+                0,
+                true,
+                false, 0, 0);
+    }
+
+    private static void paintMultiColorEdge(Graphics2D g, JIPipeDesktopGraphEdgeUI edgeUI, Stroke strokeInside, Stroke strokeBorder, int multiColorIndex, int multiColorMax) {
+        edgeUI.paint(g,
+                strokeInside,
+                strokeBorder,
+                1,
+                0,
+                0,
+                true,
+                true, multiColorIndex, multiColorMax);
+    }
+
+    private static void paintCommentEdge(Graphics2D g, JIPipeDesktopGraphEdgeUI edgeUI, boolean edgeHasMultiColor, int multiColorIndex, int multiColorMax) {
+        edgeUI.paint(g,
+                JIPipeDesktopGraphCanvasResources.STROKE_COMMENT,
+                null,
+                1,
+                0,
+                0,
+                true,
+                edgeHasMultiColor, multiColorIndex, multiColorMax);
     }
 }

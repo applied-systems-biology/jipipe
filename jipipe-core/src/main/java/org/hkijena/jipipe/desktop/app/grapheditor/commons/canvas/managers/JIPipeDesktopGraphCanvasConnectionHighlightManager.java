@@ -71,7 +71,7 @@ public class JIPipeDesktopGraphCanvasConnectionHighlightManager {
                                 1,
                                 0,
                                 0,
-                                true);
+                                JIPipeDesktopGraphCanvasPaintManager.ArrowHeadMode.Filled);
                     }
                 }
             } else if (disconnectHighlight.getTarget().getSlot().isOutput()) {
@@ -101,7 +101,7 @@ public class JIPipeDesktopGraphCanvasConnectionHighlightManager {
                                 1,
                                 0,
                                 0,
-                                true);
+                                JIPipeDesktopGraphCanvasPaintManager.ArrowHeadMode.Filled);
                     }
                 }
             }
@@ -139,7 +139,7 @@ public class JIPipeDesktopGraphCanvasConnectionHighlightManager {
                             1,
                             0,
                             0,
-                            true);
+                            JIPipeDesktopGraphCanvasPaintManager.ArrowHeadMode.Filled);
                 }
             } else if (disconnectHighlight.getTarget().getSlot().isOutput()) {
                 JIPipeDataSlot target = connectHighlight.getSource().getSlot();
@@ -167,7 +167,7 @@ public class JIPipeDesktopGraphCanvasConnectionHighlightManager {
                             1,
                             0,
                             0,
-                            true);
+                            JIPipeDesktopGraphCanvasPaintManager.ArrowHeadMode.Filled);
                 }
             }
         }

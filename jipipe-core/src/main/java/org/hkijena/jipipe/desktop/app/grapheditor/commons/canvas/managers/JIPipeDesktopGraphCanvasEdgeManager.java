@@ -195,7 +195,7 @@ public class JIPipeDesktopGraphCanvasEdgeManager {
         TIntArrayList yCoords = new TIntArrayList(8);
 
         // Generate coordinates using the same method as rendering
-        canvasUI.getPaintManager().createElbowEdgeCoordinates(sourcePoint, targetBounds, targetPoint, 1, 0, 0, true, xCoords, yCoords);
+        canvasUI.getPaintManager().createElbowEdgeCoordinates(sourcePoint, targetBounds, targetPoint, 1, 0, 0, JIPipeDesktopGraphCanvasPaintManager.ArrowHeadMode.None, xCoords, yCoords);
 
         // Process the coordinate arrays returned by createElbowEdgeCoordinates
         for (int i = 0; i < xCoords.size() - 1; i++) {
@@ -423,7 +423,7 @@ public class JIPipeDesktopGraphCanvasEdgeManager {
         TIntArrayList yCoords = new TIntArrayList(8);
 
         canvasUI.getPaintManager().createElbowEdgeCoordinates(sourcePoint, sourceBounds, targetPoint,
-                1, 0, 0, true, xCoords, yCoords);
+                1, 0, 0, JIPipeDesktopGraphCanvasPaintManager.ArrowHeadMode.None, xCoords, yCoords);
 
         // Test each segment of the elbow against the rectangle
         for (int i = 0; i < xCoords.size() - 1; i++) {
