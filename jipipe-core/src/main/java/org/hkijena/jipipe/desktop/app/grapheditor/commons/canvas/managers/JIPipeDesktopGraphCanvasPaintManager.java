@@ -19,9 +19,15 @@ public class JIPipeDesktopGraphCanvasPaintManager {
     }
 
     public void paintArrowHead(Graphics2D g, int x, int y, ArrowHeadMode arrowHeadMode) {
-        int sz = 1;
-        int dy = -2 * sz - 4;
-        g.drawPolygon(new int[]{x - sz, x + sz, x}, new int[]{y - sz + dy, y - sz + dy, y + dy}, 3);
+        if(arrowHeadMode == ArrowHeadMode.Filled) {
+            int sz = 1;
+            int dy = -2 * sz - 4;
+            g.drawPolygon(new int[]{x - sz, x + sz, x}, new int[]{y - sz + dy, y - sz + dy, y + dy}, 3);
+        }
+        else {
+            g.drawLine(x - 6, y - 6, x, y);
+            g.drawLine(x + 6, y - 6, x, y);
+        }
     }
 
 
