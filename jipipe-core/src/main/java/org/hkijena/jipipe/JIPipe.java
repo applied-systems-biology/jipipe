@@ -131,6 +131,12 @@ public class JIPipe extends AbstractService implements JIPipeService {
      */
     public static Path JIPIPE_OVERRIDE_ARTIFACTS_DIR = null;
 
+    /**
+     * Allows overriding the directory where shared data that is not profile-specific can be stored
+     * Overridden by the JIPIPE_OVERRIDE_SHARED_DIR environment variable
+     */
+    public static Path JIPIPE_OVERRIDE_SHARED_DIR = null;
+
 
     private static JIPipe instance;
     private static boolean IS_RESTARTING = false;

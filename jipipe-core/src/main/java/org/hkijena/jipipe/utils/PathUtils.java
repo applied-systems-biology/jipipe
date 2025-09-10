@@ -373,6 +373,39 @@ public class PathUtils {
     }
 
     /**
+     * Returns the directory that contains unspecified shared data
+     *
+     * @return the base directory
+     */
+    public static Path getJIPipeSharedDir() {
+        if (System.getenv().containsKey("JIPIPE_OVERRIDE_SHARED_DIR")) {
+            return Paths.get(System.getenv().get("JIPIPE_OVERRIDE_SHARED_DIR"));
+        }
+        if (JIPipe.JIPIPE_OVERRIDE_SHARED_DIR != null) {
+            return JIPipe.JIPIPE_OVERRIDE_SHARED_DIR;
+        }
+        if (SystemUtils.IS_OS_WINDOWS) {
+            return Paths.get(System.getenv("APPDATA")).resolve("JIPipe")
+                    .resolve("shared");
+        } else if (SystemUtils.IS_OS_LINUX) {
+            if (System.getenv().containsKey("XDG_DATA_HOME") && !StringUtils.isNullOrEmpty(System.getProperty("XDG_DATA_HOME"))) {
+                return Paths.get(System.getProperty("XDG_DATA_HOME"))
+                        .resolve("JIPipe")
+                        .resolve("shared");
+            } else {
+                return Paths.get(System.getProperty("user.home")).resolve(".local")
+                        .resolve("share").resolve("JIPipe")
+                        .resolve("shared");
+            }
+        } else if (SystemUtils.IS_OS_MAC_OSX) {
+            return Paths.get(System.getProperty("user.home")).resolve("Library").resolve("Application Support")
+                    .resolve("JIPipe").resolve("shared");
+        } else {
+            return getLegacyJIPipeUserDir().resolve("shared");
+        }
+    }
+
+    /**
      * Returns the base directory that contains all profiles
      *
      * @return the base directory

@@ -72,6 +72,16 @@ public class CefPlugin extends JIPipePrepackagedDefaultJavaPlugin {
 
         CefAppBuilder builder = new CefAppBuilder();
         Path bundleDir = PathUtils.getImageJDir().resolve("jcef-bundle");
+
+        if(Files.isDirectory(bundleDir)) {
+            progressInfo.log("Existing bundle directory found in " + bundleDir.toAbsolutePath());
+        }
+        else {
+            bundleDir = PathUtils.getJIPipeSharedDir().resolve("jcef-bundle");
+            progressInfo.log("CEF bundle will be stored in shared directory");
+            PathUtils.createDirectories(bundleDir);
+        }
+
         try {
             progressInfo.log("JCEF bundle will be rerouted to " + bundleDir.toAbsolutePath());
             Files.createDirectories(bundleDir);
