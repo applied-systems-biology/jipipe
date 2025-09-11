@@ -34,7 +34,6 @@ public class JIPipeDesktopGraphCanvasDragManagerConnect {
     }
 
 
-
     public boolean isCurrentlyDraggingConnection() {
         return currentConnectionDragSource != null && currentConnectionDragTarget != null;
     }
@@ -281,7 +280,7 @@ public class JIPipeDesktopGraphCanvasDragManagerConnect {
         if (canvasUI.getToolManager().currentToolAllowsConnectionDragging()) {
             // Attempt to drag a slot
             JIPipeDesktopGraphNodeUI ui = canvasUI.pickNodeUI(mouseEvent);
-            if(ui != null) {
+            if (ui != null) {
                 JIPipeDesktopGraphNodeUISlotActiveArea slotState = ui.pickSlotAtMousePosition(mouseEvent);
                 if (slotState != null) {
                     startDragSlot(slotState);

@@ -38,19 +38,19 @@ public abstract class JIPipeDataFlowTunnelEntrance extends JIPipeDataFlowTunnel 
         Set<String> result = new HashSet<>();
 
         JIPipeGraph graph = getParentGraph();
-        if(graph != null) {
+        if (graph != null) {
             Set<JIPipeGraphNode> nodesWithinCompartment = graph.getNodesWithinCompartment(getCompartmentUUIDInParentGraph());
 
             // Collect from all outputs
             for (JIPipeGraphNode node : nodesWithinCompartment) {
-                if(node instanceof JIPipeDataFlowTunnelExit tunnelExit && tunnelExit.isInSameGroup(this) && tunnelExit.hasValidTunnelKey()) {
+                if (node instanceof JIPipeDataFlowTunnelExit tunnelExit && tunnelExit.isInSameGroup(this) && tunnelExit.hasValidTunnelKey()) {
                     result.add(tunnelExit.getTunnelKey());
                 }
             }
 
             // Remove from existing inputs
             for (JIPipeGraphNode node : nodesWithinCompartment) {
-                if(node instanceof JIPipeDataFlowTunnelEntrance tunnelEntrance && tunnelEntrance.isInSameGroup(this) && tunnelEntrance.hasValidTunnelKey()) {
+                if (node instanceof JIPipeDataFlowTunnelEntrance tunnelEntrance && tunnelEntrance.isInSameGroup(this) && tunnelEntrance.hasValidTunnelKey()) {
                     result.remove(tunnelEntrance.getTunnelKey());
                 }
             }

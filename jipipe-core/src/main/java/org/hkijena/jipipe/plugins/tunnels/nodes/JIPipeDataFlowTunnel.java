@@ -22,8 +22,10 @@ import javax.swing.*;
 import java.awt.*;
 import java.awt.event.KeyAdapter;
 import java.awt.event.KeyEvent;
-import java.util.*;
 import java.util.List;
+import java.util.Objects;
+import java.util.Set;
+import java.util.UUID;
 import java.util.concurrent.atomic.AtomicBoolean;
 
 public abstract class JIPipeDataFlowTunnel extends JIPipeGraphNode implements JIPipeDesktopInteractiveDefaultActionGraphNode {
@@ -75,10 +77,9 @@ public abstract class JIPipeDataFlowTunnel extends JIPipeGraphNode implements JI
         buttonPanel.add(Box.createHorizontalStrut(32));
 
         Set<String> compatibleTunnelKeys = getCompatibleTunnelKeys();
-        if(compatibleTunnelKeys.isEmpty()) {
-            formPanel.addWideToForm(UIUtils.createInfoLabel("No compatible existing keys found", "Input a key of your choice in the text field below." ));
-        }
-        else {
+        if (compatibleTunnelKeys.isEmpty()) {
+            formPanel.addWideToForm(UIUtils.createInfoLabel("No compatible existing keys found", "Input a key of your choice in the text field below."));
+        } else {
             List<String> sortedKeys = compatibleTunnelKeys.stream().sorted(NaturalOrderComparator.INSTANCE).toList();
             for (String sortedKey : sortedKeys) {
                 JButton button = new JButton(sortedKey);
@@ -111,7 +112,8 @@ public abstract class JIPipeDataFlowTunnel extends JIPipeGraphNode implements JI
         nameField.getTextField().addKeyListener(new KeyAdapter() {
             @Override
             public void keyReleased(KeyEvent e) {
-                super.keyReleased(e);if (e.getKeyCode() == KeyEvent.VK_ENTER) {
+                super.keyReleased(e);
+                if (e.getKeyCode() == KeyEvent.VK_ENTER) {
                     okPressed.set(true);
                     dialog.setVisible(false);
                 }
@@ -129,7 +131,7 @@ public abstract class JIPipeDataFlowTunnel extends JIPipeGraphNode implements JI
         UIUtils.addEscapeListener(dialog);
         dialog.setVisible(true);
 
-        if(okPressed.get()) {
+        if (okPressed.get()) {
             setCustomName(nameField.getText().trim());
             emitParameterChangedEvent("jipipe:node:name");
         }

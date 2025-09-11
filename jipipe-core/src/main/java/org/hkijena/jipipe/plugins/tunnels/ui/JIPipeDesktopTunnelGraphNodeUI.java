@@ -10,15 +10,12 @@ import org.hkijena.jipipe.desktop.app.grapheditor.commons.nodeui.JIPipeDesktopGr
 import org.hkijena.jipipe.desktop.app.grapheditor.commons.nodeui.triggers.JIPipeDesktopGraphNodeUISlotActiveArea;
 import org.hkijena.jipipe.plugins.tunnels.JIPipeDataFlowTunnelUtils;
 import org.hkijena.jipipe.plugins.tunnels.nodes.JIPipeDataFlowTunnel;
-import org.hkijena.jipipe.plugins.tunnels.nodes.JIPipeDataFlowTunnelEntrance;
-import org.hkijena.jipipe.plugins.tunnels.nodes.JIPipeDataFlowTunnelExit;
 import org.hkijena.jipipe.utils.StringUtils;
 import org.hkijena.jipipe.utils.ThemeUtils;
-import org.hkijena.jipipe.utils.debounce.StaticDebouncer;
 
 import java.awt.*;
-import java.util.*;
-import java.util.List;
+import java.util.HashMap;
+import java.util.Map;
 
 public class JIPipeDesktopTunnelGraphNodeUI extends JIPipeDesktopGraphNodeUI {
 
@@ -38,11 +35,11 @@ public class JIPipeDesktopTunnelGraphNodeUI extends JIPipeDesktopGraphNodeUI {
     }
 
     public String getTunnelKey() {
-        return ((JIPipeDataFlowTunnel)getNode()).getTunnelKey();
+        return ((JIPipeDataFlowTunnel) getNode()).getTunnelKey();
     }
 
     public String getTunnelKeyGroup() {
-        return ((JIPipeDataFlowTunnel)getNode()).getTunnelKeyGroup();
+        return ((JIPipeDataFlowTunnel) getNode()).getTunnelKeyGroup();
     }
 
     @Override
@@ -63,7 +60,7 @@ public class JIPipeDesktopTunnelGraphNodeUI extends JIPipeDesktopGraphNodeUI {
 
     private Map<String, JIPipeDataInfo> getLastDataTypes() {
         long currentTime = System.currentTimeMillis();
-        if(currentTime - lastDataTypesRecalculated > 60) {
+        if (currentTime - lastDataTypesRecalculated > 60) {
             lastDataTypes = JIPipeDataFlowTunnelUtils.findTunnelDataTypes(getGraphCanvasUI().getGraph(),
                     getGraphCanvasUI().getCompartmentUUID(),
                     getTunnelKeyGroup(),
@@ -110,16 +107,14 @@ public class JIPipeDesktopTunnelGraphNodeUI extends JIPipeDesktopGraphNodeUI {
 
     @Override
     protected Image getDisplayedSlotIcon(JIPipeDesktopGraphNodeUISlotActiveArea slotState) {
-        if(slotState.isInput()) {
+        if (slotState.isInput()) {
             return JIPipe.RESOURCES.getIcon16("actions/xfce-wm-unstick.png").getImage();
-        }
-        else {
+        } else {
             Map<String, JIPipeDataInfo> updatedDataTypes = getLastDataTypes();
             JIPipeDataInfo dataType = updatedDataTypes.getOrDefault(slotState.getSlotName(), null);
-            if(dataType == null || dataType.getDataClass() == JIPipeData.class) {
+            if (dataType == null || dataType.getDataClass() == JIPipeData.class) {
                 return JIPipe.RESOURCES.getIcon16("actions/xfce-wm-stick.png").getImage();
-            }
-            else {
+            } else {
                 return JIPipe.getDataTypes().getIconFor(dataType.getDataClass()).getImage();
             }
         }

@@ -239,10 +239,9 @@ public abstract class JIPipeDataSlot extends JIPipeDataTable {
     }
 
     public boolean isCompatibleTo(JIPipeDataSlot otherSlot) {
-        if(isInput()) {
+        if (isInput()) {
             return otherSlot.isOutput() && JIPipe.getInstance().getDatatypeRegistry().isConvertible(otherSlot.getAcceptedDataType(), getAcceptedDataType());
-        }
-        else if(isOutput()) {
+        } else if (isOutput()) {
             return otherSlot.isInput() && JIPipe.getInstance().getDatatypeRegistry().isConvertible(getAcceptedDataType(), otherSlot.getAcceptedDataType());
         }
         return false;

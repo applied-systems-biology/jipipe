@@ -40,7 +40,7 @@ public class JIPipeDesktopGraphCanvasDragManagerMove {
             this.hasDragSnapshot = false;
             canvasUI.getDragManagerConnect().cancelDragging();
             for (JIPipeDesktopGraphInteractiveObjectUI interactiveObjectUI : canvasUI.getSelectionManager().getSelection()) {
-                if(interactiveObjectUI instanceof JIPipeDesktopGraphNodeUI nodeUI) {
+                if (interactiveObjectUI instanceof JIPipeDesktopGraphNodeUI nodeUI) {
                     if (nodeUI.getNode().isUiLocked())
                         continue;
                     Point offset = new Point();
@@ -57,14 +57,14 @@ public class JIPipeDesktopGraphCanvasDragManagerMove {
     }
 
     public boolean mouseDragged(MouseEvent mouseEvent) {
-        if(!getCurrentlyDraggedOffsets().isEmpty()) {
+        if (!getCurrentlyDraggedOffsets().isEmpty()) {
             // Calculate final movement for all nodes
             int gridDx = 0;
             int gridDy = 0;
 
             for (Map.Entry<JIPipeDesktopGraphInteractiveObjectUI, Point> entry : currentlyDraggedOffsets.entrySet()) {
                 Point currentlyDraggedOffset = entry.getValue();
-                if(entry.getKey() instanceof JIPipeDesktopGraphNodeUI nodeUI) {
+                if (entry.getKey() instanceof JIPipeDesktopGraphNodeUI nodeUI) {
 
                     int x = Math.max(0, currentlyDraggedOffset.x + mouseEvent.getX());
                     int y = Math.max(0, currentlyDraggedOffset.y + mouseEvent.getY());
@@ -86,7 +86,7 @@ public class JIPipeDesktopGraphCanvasDragManagerMove {
             long currentTimeMillis = System.currentTimeMillis();
             if (currentTimeMillis - lastTimeExpandedNegative > 100) {
                 for (Map.Entry<JIPipeDesktopGraphInteractiveObjectUI, Point> entry : currentlyDraggedOffsets.entrySet()) {
-                    if(entry.getKey() instanceof JIPipeDesktopGraphNodeUI currentlyDragged) {
+                    if (entry.getKey() instanceof JIPipeDesktopGraphNodeUI currentlyDragged) {
 
                         Point newGridLocation = new Point(currentlyDragged.getStoredGridLocation().x + gridDx, currentlyDragged.getStoredGridLocation().y + gridDy);
                         if (newGridLocation.x <= 0) {
@@ -112,7 +112,7 @@ public class JIPipeDesktopGraphCanvasDragManagerMove {
             }
 
             for (Map.Entry<JIPipeDesktopGraphInteractiveObjectUI, Point> entry : currentlyDraggedOffsets.entrySet()) {
-                if(entry.getKey() instanceof JIPipeDesktopGraphNodeUI currentlyDragged) {
+                if (entry.getKey() instanceof JIPipeDesktopGraphNodeUI currentlyDragged) {
                     Point newGridLocation = new Point(currentlyDragged.getStoredGridLocation().x + gridDx, currentlyDragged.getStoredGridLocation().y + gridDy);
 
                     if (!hasDragSnapshot) {
@@ -177,7 +177,7 @@ public class JIPipeDesktopGraphCanvasDragManagerMove {
                 return false;
             }
         }
-        if(!canvasUI.getSelectionManager().getSelection().isEmpty()) {
+        if (!canvasUI.getSelectionManager().getSelection().isEmpty()) {
             return startDragCurrentNodeSelection(mouseEvent);
         }
         return false;

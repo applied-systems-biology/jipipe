@@ -16,7 +16,6 @@ package org.hkijena.jipipe.desktop.app.grapheditor.commons.contextmenu.actions;
 import com.google.common.collect.ImmutableList;
 import org.hkijena.jipipe.JIPipe;
 import org.hkijena.jipipe.api.compartments.algorithms.JIPipeProjectCompartment;
-import org.hkijena.jipipe.api.nodes.JIPipeGraphNode;
 import org.hkijena.jipipe.desktop.app.JIPipeDesktopProjectWorkbench;
 import org.hkijena.jipipe.desktop.app.grapheditor.commons.JIPipeDesktopGraphCanvasUI;
 import org.hkijena.jipipe.desktop.app.grapheditor.commons.contextmenu.NodeAndEdgesUIContextAction;
@@ -27,7 +26,6 @@ import org.hkijena.jipipe.plugins.settings.JIPipeGraphEditorUIApplicationSetting
 import javax.swing.*;
 import java.awt.event.KeyEvent;
 import java.util.Set;
-import java.util.stream.Collectors;
 
 public class DeleteCompartmentNodesAndEdgesContextAction implements NodeAndEdgesUIContextAction {
     @Override
@@ -49,18 +47,18 @@ public class DeleteCompartmentNodesAndEdgesContextAction implements NodeAndEdges
     @Override
     public void runNodesAndEdges(JIPipeDesktopGraphCanvasUI canvasUI, Set<JIPipeDesktopGraphNodeUI> nodeSelection, Set<JIPipeDesktopGraphEdgeUI> edgeSelection) {
         boolean allowDeleteNodes = true;
-        if(!nodeSelection.isEmpty()) {
+        if (!nodeSelection.isEmpty()) {
             if (!JIPipeDesktopProjectWorkbench.canAddOrDeleteNodes(canvasUI.getDesktopWorkbench())) {
                 allowDeleteNodes = false;
             }
         }
 
         String subject = "";
-        if(allowDeleteNodes && !nodeSelection.isEmpty()) {
+        if (allowDeleteNodes && !nodeSelection.isEmpty()) {
             subject = "compartments/nodes";
         }
-        if(!edgeSelection.isEmpty()) {
-            if(!subject.isEmpty()) {
+        if (!edgeSelection.isEmpty()) {
+            if (!subject.isEmpty()) {
                 subject += "/";
             }
             subject += "edges";
@@ -69,12 +67,12 @@ public class DeleteCompartmentNodesAndEdgesContextAction implements NodeAndEdges
         if (!JIPipeGraphEditorUIApplicationSettings.getInstance().isAskOnDeleteCompartment() || JOptionPane.showConfirmDialog(canvasUI.getDesktopWorkbench().getWindow(),
                 "Do you really want to remove the selected " + subject + "?", "Delete " + subject,
                 JOptionPane.YES_NO_OPTION) == JOptionPane.YES_OPTION) {
-            if(!edgeSelection.isEmpty()) {
+            if (!edgeSelection.isEmpty()) {
                 for (JIPipeDesktopGraphEdgeUI edgeUI : edgeSelection) {
                     canvasUI.getGraph().disconnect(edgeUI.getSource(), edgeUI.getTarget(), true);
                 }
             }
-            if(!nodeSelection.isEmpty()) {
+            if (!nodeSelection.isEmpty()) {
                 for (JIPipeDesktopGraphNodeUI ui : ImmutableList.copyOf(nodeSelection)) {
                     if (ui.getNode().isUiLocked())
                         continue;

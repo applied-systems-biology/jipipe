@@ -15,8 +15,6 @@ package org.hkijena.jipipe.api.nodes;
 
 import com.fasterxml.jackson.annotation.JsonGetter;
 import com.fasterxml.jackson.annotation.JsonSetter;
-import org.hkijena.jipipe.JIPipe;
-import org.hkijena.jipipe.plugins.settings.JIPipeGraphEditorUIApplicationSettings;
 import org.hkijena.jipipe.utils.StringUtils;
 import org.jgrapht.graph.DefaultEdge;
 
@@ -70,7 +68,7 @@ public class JIPipeGraphEdge extends DefaultEdge {
 
     @JsonGetter("uuid")
     public String getUuid() {
-        if(StringUtils.isNullOrEmpty(uuid)) {
+        if (StringUtils.isNullOrEmpty(uuid)) {
             uuid = UUID.randomUUID().toString();
         }
         return uuid;

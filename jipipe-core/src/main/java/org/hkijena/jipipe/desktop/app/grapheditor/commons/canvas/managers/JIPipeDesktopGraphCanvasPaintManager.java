@@ -19,17 +19,15 @@ public class JIPipeDesktopGraphCanvasPaintManager {
     }
 
     public void paintArrowHead(Graphics2D g, int x, int y, ArrowHeadMode arrowHeadMode) {
-        if(arrowHeadMode == ArrowHeadMode.Filled) {
+        if (arrowHeadMode == ArrowHeadMode.Filled) {
             int sz = 1;
             int dy = -2 * sz - 4;
             g.drawPolygon(new int[]{x - sz, x + sz, x}, new int[]{y - sz + dy, y - sz + dy, y + dy}, 3);
-        }
-        else {
+        } else {
             g.drawLine(x - 6, y - 6, x, y);
             g.drawLine(x + 6, y - 6, x, y);
         }
     }
-
 
 
     private void paintElbowEdge(Graphics2D g, Point sourcePoint, Rectangle sourceBounds, Point targetPoint, double scale, int viewX, int viewY, ArrowHeadMode arrowHeadMode) {
@@ -117,14 +115,14 @@ public class JIPipeDesktopGraphCanvasPaintManager {
     /**
      * Draws an edge between source point and the target point
      *
-     * @param g            the graphics
-     * @param sourcePoint  the source point
-     * @param sourceBounds bounds of the source
-     * @param targetPoint  the target point
-     * @param shape        the line shape
-     * @param scale        the scale
-     * @param viewX        the view x
-     * @param viewY        the view y
+     * @param g             the graphics
+     * @param sourcePoint   the source point
+     * @param sourceBounds  bounds of the source
+     * @param targetPoint   the target point
+     * @param shape         the line shape
+     * @param scale         the scale
+     * @param viewX         the view x
+     * @param viewY         the view y
      * @param arrowHeadMode How arrow heads should be displayed
      */
     public void paintEdge(Graphics2D g, Point sourcePoint, Rectangle sourceBounds, Point targetPoint, JIPipeGraphEdge.Shape shape, double scale, int viewX, int viewY, ArrowHeadMode arrowHeadMode) {

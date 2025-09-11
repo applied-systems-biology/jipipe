@@ -416,17 +416,16 @@ public class JIPipeGraphRun extends DefaultJIPipeRunnable implements JIPipeGraph
 
     private void dissolveTunnels(JIPipeGraph graph, JIPipeProgressInfo progressInfo) {
         for (JIPipeGraphNode graphNode : graph.getGraphNodes()) {
-            if(graphNode instanceof JIPipeDataFlowTunnelExit tunnelExit) {
+            if (graphNode instanceof JIPipeDataFlowTunnelExit tunnelExit) {
                 JIPipeProgressInfo nodeProgress = progressInfo.resolveAndLog("Tunnel exit " + graphNode.getUUIDInParentGraph() + " (TUN " + tunnelExit.getTunnelKeyGroup() + "/" + tunnelExit.getTunnelKey() + ")");
                 List<JIPipeDataFlowTunnelEntrance> tunnelEntrances = JIPipeDataFlowTunnelUtils.findTunnelEntrances(graph, tunnelExit.getCompartmentUUIDInParentGraph(), tunnelExit.getTunnelKeyGroup(), tunnelExit.getTunnelKey());
-                if(tunnelEntrances.size() > 1) {
+                if (tunnelEntrances.size() > 1) {
                     JIPipeValidationReportContext.UNSPECIFIED.graph(graph)
                             .node(graphNode).error().title("Duplicate tunnel entrance '" + tunnelExit.getTunnelKey() + "'")
                             .explanation("A tunnel with duplicate entrances within a compartment was detected. Unable to continue.")
-                            .details(tunnelExit.getTunnelKeyGroup()  + "/" + tunnelExit.getTunnelKey()  + " in compartment " + tunnelExit.getCompartmentUUIDInParentGraph() + " @ node " + tunnelExit.getUUIDInParentGraph())
+                            .details(tunnelExit.getTunnelKeyGroup() + "/" + tunnelExit.getTunnelKey() + " in compartment " + tunnelExit.getCompartmentUUIDInParentGraph() + " @ node " + tunnelExit.getUUIDInParentGraph())
                             .buildAndThrow();
-                }
-                else if(tunnelEntrances.size() == 1) {
+                } else if (tunnelEntrances.size() == 1) {
                     JIPipeDataFlowTunnelEntrance tunnelEntrance = tunnelEntrances.getFirst();
 
                     for (JIPipeOutputDataSlot outputSlot : tunnelExit.getOutputSlots()) {
@@ -442,9 +441,8 @@ public class JIPipeGraphRun extends DefaultJIPipeRunnable implements JIPipeGraph
                             }
                         }
                     }
-                }
-                else {
-                    progressInfo.log("[WARN] No tunnel entrance found for " + tunnelExit.getTunnelKeyGroup()  + "/" + tunnelExit.getTunnelKey()  + " in compartment " + tunnelExit.getCompartmentUUIDInParentGraph() + ": ignoring");
+                } else {
+                    progressInfo.log("[WARN] No tunnel entrance found for " + tunnelExit.getTunnelKeyGroup() + "/" + tunnelExit.getTunnelKey() + " in compartment " + tunnelExit.getCompartmentUUIDInParentGraph() + ": ignoring");
                 }
             }
         }
@@ -452,7 +450,7 @@ public class JIPipeGraphRun extends DefaultJIPipeRunnable implements JIPipeGraph
         // Delete all tunnel nodes
         progressInfo.log("Deleting all tunnel nodes ...");
         for (JIPipeGraphNode graphNode : ImmutableList.copyOf(graph.getGraphNodes())) {
-            if(graphNode instanceof JIPipeDataFlowTunnel) {
+            if (graphNode instanceof JIPipeDataFlowTunnel) {
                 progressInfo.log("- " + graphNode.getDisplayName() + " (" + graphNode.getUUIDInParentGraph() + ") of " + graphNode.getInfo().getId());
                 graph.removeNode(graphNode, false);
             }

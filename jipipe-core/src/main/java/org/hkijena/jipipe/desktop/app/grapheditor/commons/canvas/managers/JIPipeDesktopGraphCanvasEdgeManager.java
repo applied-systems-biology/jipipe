@@ -74,8 +74,10 @@ public class JIPipeDesktopGraphCanvasEdgeManager {
         JIPipeGraphEdge.Shape edgeShape = edgeUI.getEdge().getUiShape();
 
         return switch (edgeShape) {
-            case Line -> isMouseOverLineEdge(mouseX, mouseY, sourcePointRange.center, targetPointRange.center, hitThreshold);
-            case Elbow -> isMouseOverElbowEdge(mouseX, mouseY, sourcePointRange.center, sourceNodeUI.getBounds(), targetPointRange.center, hitThreshold);
+            case Line ->
+                    isMouseOverLineEdge(mouseX, mouseY, sourcePointRange.center, targetPointRange.center, hitThreshold);
+            case Elbow ->
+                    isMouseOverElbowEdge(mouseX, mouseY, sourcePointRange.center, sourceNodeUI.getBounds(), targetPointRange.center, hitThreshold);
             default -> false;
         };
     }
@@ -85,10 +87,10 @@ public class JIPipeDesktopGraphCanvasEdgeManager {
      * For straight lines (horizontal or vertical), uses rectangle-based hit testing.
      * For diagonal lines, uses precise point-to-line distance calculation.
      *
-     * @param mouseX the mouse x coordinate
-     * @param mouseY the mouse y coordinate
-     * @param sourcePoint the source point of the edge
-     * @param targetPoint the target point of the edge
+     * @param mouseX       the mouse x coordinate
+     * @param mouseY       the mouse y coordinate
+     * @param sourcePoint  the source point of the edge
+     * @param targetPoint  the target point of the edge
      * @param hitThreshold the distance threshold for hit detection
      * @return true if mouse is over the line edge
      */
@@ -108,10 +110,10 @@ public class JIPipeDesktopGraphCanvasEdgeManager {
      * This method creates a rectangle around the line and tests if the mouse point is inside it.
      * This is more user-friendly for straight line segments (horizontal or vertical).
      *
-     * @param mouseX the mouse x coordinate
-     * @param mouseY the mouse y coordinate
-     * @param sourcePoint the source point of the edge
-     * @param targetPoint the target point of the edge
+     * @param mouseX       the mouse x coordinate
+     * @param mouseY       the mouse y coordinate
+     * @param sourcePoint  the source point of the edge
+     * @param targetPoint  the target point of the edge
      * @param hitThreshold the distance threshold for hit detection
      * @return true if mouse is over the line rectangle
      */
@@ -137,10 +139,10 @@ public class JIPipeDesktopGraphCanvasEdgeManager {
      * This method calculates the perpendicular distance from the mouse to the line segment.
      * This is used for diagonal lines for precise hit detection.
      *
-     * @param mouseX the mouse x coordinate
-     * @param mouseY the mouse y coordinate
-     * @param sourcePoint the source point of the edge
-     * @param targetPoint the target point of the edge
+     * @param mouseX       the mouse x coordinate
+     * @param mouseY       the mouse y coordinate
+     * @param sourcePoint  the source point of the edge
+     * @param targetPoint  the target point of the edge
      * @param hitThreshold the distance threshold for hit detection
      * @return true if mouse is over the line based on distance calculation
      */
@@ -181,11 +183,11 @@ public class JIPipeDesktopGraphCanvasEdgeManager {
      * Checks if mouse is over an elbow edge (L-shaped edge).
      * Uses the shared createElbowEdgeCoordinates method for consistent rendering and hit detection.
      *
-     * @param mouseX the mouse x coordinate
-     * @param mouseY the mouse y coordinate
-     * @param sourcePoint the source point of the edge
+     * @param mouseX       the mouse x coordinate
+     * @param mouseY       the mouse y coordinate
+     * @param sourcePoint  the source point of the edge
      * @param targetBounds the bounds of the target node
-     * @param targetPoint the target point of the edge
+     * @param targetPoint  the target point of the edge
      * @param hitThreshold the distance threshold for hit detection
      * @return true if mouse is over the elbow edge
      */
@@ -228,9 +230,9 @@ public class JIPipeDesktopGraphCanvasEdgeManager {
      * This method efficiently finds edges by using bounding box culling and precise geometric testing.
      * It supports both straight line and elbow edge shapes, working with zoom-aware coordinates.
      *
-     * @param x the x coordinate of the rectangle (in screen coordinates)
-     * @param y the y coordinate of the rectangle (in screen coordinates)
-     * @param width the width of the rectangle (in screen coordinates)
+     * @param x      the x coordinate of the rectangle (in screen coordinates)
+     * @param y      the y coordinate of the rectangle (in screen coordinates)
+     * @param width  the width of the rectangle (in screen coordinates)
      * @param height the height of the rectangle (in screen coordinates)
      * @return collection of edges that intersect with the rectangle
      */
@@ -252,7 +254,7 @@ public class JIPipeDesktopGraphCanvasEdgeManager {
      * Checks if a specific edge intersects with the given rectangle.
      * Uses bounding box culling for efficiency, then performs precise geometric testing.
      *
-     * @param edgeUI the edge to test
+     * @param edgeUI    the edge to test
      * @param rectangle the rectangle to test against (in screen coordinates)
      * @return true if the edge intersects with the rectangle, false otherwise
      */
@@ -281,7 +283,8 @@ public class JIPipeDesktopGraphCanvasEdgeManager {
         // Perform precise intersection testing based on edge shape
         JIPipeGraphEdge.Shape edgeShape = edgeUI.getEdge().getUiShape();
         return switch (edgeShape) {
-            case Line -> isLineIntersectingRectangle(sourcePointRange.center, targetPointRange.center, rectangle, hitThreshold);
+            case Line ->
+                    isLineIntersectingRectangle(sourcePointRange.center, targetPointRange.center, rectangle, hitThreshold);
             case Elbow -> isElbowIntersectingRectangle(sourcePointRange.center, sourceNodeUI.getBounds(),
                     targetPointRange.center, rectangle, hitThreshold);
             default -> false;

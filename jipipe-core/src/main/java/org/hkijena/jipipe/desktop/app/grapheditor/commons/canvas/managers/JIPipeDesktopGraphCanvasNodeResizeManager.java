@@ -34,12 +34,12 @@ public class JIPipeDesktopGraphCanvasNodeResizeManager {
         this.canvasUI = canvasUI;
     }
 
-    public void setCurrentResizeTarget(JIPipeDesktopAnnotationGraphNodeUI currentResizeTarget) {
-        this.currentResizeTarget = currentResizeTarget;
-    }
-
     public JIPipeDesktopAnnotationGraphNodeUI getCurrentResizeTarget() {
         return currentResizeTarget;
+    }
+
+    public void setCurrentResizeTarget(JIPipeDesktopAnnotationGraphNodeUI currentResizeTarget) {
+        this.currentResizeTarget = currentResizeTarget;
     }
 
     private Rectangle getCurrentResizeTargetAnchorArea(Anchor anchor) {

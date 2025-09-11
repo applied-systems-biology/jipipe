@@ -437,8 +437,7 @@ public class JIPipeDesktopPipelineGraphEditorUI extends JIPipeDesktopGraphEditor
             handleRunAndShowResultsAction(event);
         } else if (event.getAction() instanceof JIPipeDesktopUpdateCacheAction) {
             handleUpdateCacheAction(event);
-        }
-        else {
+        } else {
             super.onNodeUIActionRequested(event);
         }
     }

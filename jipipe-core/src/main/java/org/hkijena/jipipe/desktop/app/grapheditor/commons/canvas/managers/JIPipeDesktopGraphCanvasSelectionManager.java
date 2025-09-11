@@ -22,7 +22,6 @@ import org.hkijena.jipipe.desktop.app.grapheditor.commons.JIPipeDesktopGraphInte
 import org.hkijena.jipipe.desktop.app.grapheditor.commons.canvas.events.JIPipeDesktopGraphCanvasUINodeSelectedEventEmitter;
 import org.hkijena.jipipe.desktop.app.grapheditor.commons.canvas.events.JIPipeDesktopGraphCanvasUINodeSelectionChangedEvent;
 import org.hkijena.jipipe.desktop.app.grapheditor.commons.canvas.events.JIPipeDesktopGraphCanvasUINodeSelectionChangedEventEmitter;
-import org.hkijena.jipipe.desktop.app.grapheditor.commons.edgeui.JIPipeDesktopGraphEdgeUI;
 import org.hkijena.jipipe.desktop.app.grapheditor.commons.nodeui.JIPipeDesktopAnnotationGraphNodeUI;
 import org.hkijena.jipipe.desktop.app.grapheditor.commons.nodeui.JIPipeDesktopGraphNodeUI;
 
@@ -92,6 +91,19 @@ public class JIPipeDesktopGraphCanvasSelectionManager {
         return Collections.unmodifiableSet(selection);
     }
 
+    public void setSelection(Set<? extends JIPipeDesktopGraphInteractiveObjectUI> nodeUIs) {
+        clearSelection();
+        if (nodeUIs != null) {
+            for (JIPipeDesktopGraphInteractiveObjectUI ui : nodeUIs) {
+                selection.add(ui);
+                if (!(ui instanceof JIPipeDesktopAnnotationGraphNodeUI)) {
+                    canvasUI.moveToFrontLayer(ui);
+                }
+            }
+            updateSelection();
+        }
+    }
+
     public void clearSelection() {
         clearSelection(true);
     }
@@ -109,19 +121,6 @@ public class JIPipeDesktopGraphCanvasSelectionManager {
     public void addAllToSelection(Set<JIPipeDesktopGraphInteractiveObjectUI> newSelection, boolean update) {
         selection.addAll(newSelection);
         if (update) {
-            updateSelection();
-        }
-    }
-
-    public void setSelection(Set<? extends JIPipeDesktopGraphInteractiveObjectUI> nodeUIs) {
-        clearSelection();
-        if (nodeUIs != null) {
-            for (JIPipeDesktopGraphInteractiveObjectUI ui : nodeUIs) {
-                selection.add(ui);
-                if (!(ui instanceof JIPipeDesktopAnnotationGraphNodeUI)) {
-                    canvasUI.moveToFrontLayer(ui);
-                }
-            }
             updateSelection();
         }
     }
@@ -230,7 +229,7 @@ public class JIPipeDesktopGraphCanvasSelectionManager {
         } else {
             mask = JIPipeToggleableGraphEditorToolNodeLayerMask.WorkflowOnly;
         }
-        if(mask != JIPipeToggleableGraphEditorToolNodeLayerMask.None) {
+        if (mask != JIPipeToggleableGraphEditorToolNodeLayerMask.None) {
             if (selection.removeIf(ui -> !mask.test(ui))) {
                 updateSelection();
             }
@@ -238,11 +237,10 @@ public class JIPipeDesktopGraphCanvasSelectionManager {
     }
 
     public void toggleSelection(JIPipeDesktopGraphInteractiveObjectUI ui) {
-        if(selection.contains(ui)) {
+        if (selection.contains(ui)) {
             selection.remove(ui);
 //            System.out.println("removed " + ui);
-        }
-        else {
+        } else {
 //            System.out.println("added " + ui);
             selection.add(ui);
         }

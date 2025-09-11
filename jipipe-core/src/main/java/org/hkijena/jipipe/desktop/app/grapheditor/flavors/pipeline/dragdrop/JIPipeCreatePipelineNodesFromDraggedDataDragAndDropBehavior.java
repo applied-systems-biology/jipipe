@@ -24,9 +24,7 @@ import org.hkijena.jipipe.plugins.filesystem.datasources.FileListDataSource;
 import org.hkijena.jipipe.plugins.filesystem.datasources.FolderListDataSource;
 import org.hkijena.jipipe.plugins.filesystem.datasources.PathListDataSource;
 import org.hkijena.jipipe.plugins.parameters.library.filesystem.PathList;
-import org.hkijena.jipipe.plugins.settings.JIPipeGraphEditorUIApplicationSettings;
 
-import javax.swing.*;
 import java.awt.*;
 import java.awt.datatransfer.DataFlavor;
 import java.awt.datatransfer.Transferable;
@@ -103,12 +101,11 @@ public class JIPipeCreatePipelineNodesFromDraggedDataDragAndDropBehavior impleme
                     String text = (String) transferData;
                     processDrop(text);
                     dtde.dropComplete(true);
-                }
-                else {
+                } else {
                     accept = false;
                 }
             }
-            if(!accept) {
+            if (!accept) {
                 showErrorMessage();
             }
             return;

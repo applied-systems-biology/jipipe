@@ -18,6 +18,52 @@ public class JIPipeDesktopGraphCanvasEdgesOverlay implements JIPipeDesktopGraphC
         this.canvasUI = canvasUI;
     }
 
+    private static void paintMutedEdge(Graphics2D g, JIPipeDesktopGraphEdgeUI edgeUI, Stroke strokeMuted) {
+        edgeUI.paint(g,
+                strokeMuted,
+                null,
+                1,
+                0,
+                0,
+                true,
+                false,
+                0,
+                0);
+    }
+
+    private static void paintRegularEdge(Graphics2D g, JIPipeDesktopGraphEdgeUI edgeUI, Stroke strokeInside, Stroke strokeBorder) {
+        edgeUI.paint(g,
+                strokeInside,
+                strokeBorder,
+                1,
+                0,
+                0,
+                true,
+                false, 0, 0);
+    }
+
+    private static void paintMultiColorEdge(Graphics2D g, JIPipeDesktopGraphEdgeUI edgeUI, Stroke strokeInside, Stroke strokeBorder, int multiColorIndex, int multiColorMax) {
+        edgeUI.paint(g,
+                strokeInside,
+                strokeBorder,
+                1,
+                0,
+                0,
+                true,
+                true, multiColorIndex, multiColorMax);
+    }
+
+    private static void paintCommentEdge(Graphics2D g, JIPipeDesktopGraphEdgeUI edgeUI, boolean edgeHasMultiColor, int multiColorIndex, int multiColorMax) {
+        edgeUI.paint(g,
+                JIPipeDesktopGraphCanvasResources.STROKE_COMMENT,
+                null,
+                1,
+                0,
+                0,
+                true,
+                edgeHasMultiColor, multiColorIndex, multiColorMax);
+    }
+
     @Override
     public void paint(Graphics2D g) {
 
@@ -106,51 +152,5 @@ public class JIPipeDesktopGraphCanvasEdgesOverlay implements JIPipeDesktopGraphC
                 }
             }
         }
-    }
-
-    private static void paintMutedEdge(Graphics2D g, JIPipeDesktopGraphEdgeUI edgeUI, Stroke strokeMuted) {
-        edgeUI.paint(g,
-                strokeMuted,
-                null,
-                1,
-                0,
-                0,
-                true,
-                false,
-                0,
-                0);
-    }
-
-    private static void paintRegularEdge(Graphics2D g, JIPipeDesktopGraphEdgeUI edgeUI, Stroke strokeInside, Stroke strokeBorder) {
-        edgeUI.paint(g,
-                strokeInside,
-                strokeBorder,
-                1,
-                0,
-                0,
-                true,
-                false, 0, 0);
-    }
-
-    private static void paintMultiColorEdge(Graphics2D g, JIPipeDesktopGraphEdgeUI edgeUI, Stroke strokeInside, Stroke strokeBorder, int multiColorIndex, int multiColorMax) {
-        edgeUI.paint(g,
-                strokeInside,
-                strokeBorder,
-                1,
-                0,
-                0,
-                true,
-                true, multiColorIndex, multiColorMax);
-    }
-
-    private static void paintCommentEdge(Graphics2D g, JIPipeDesktopGraphEdgeUI edgeUI, boolean edgeHasMultiColor, int multiColorIndex, int multiColorMax) {
-        edgeUI.paint(g,
-                JIPipeDesktopGraphCanvasResources.STROKE_COMMENT,
-                null,
-                1,
-                0,
-                0,
-                true,
-                edgeHasMultiColor, multiColorIndex, multiColorMax);
     }
 }

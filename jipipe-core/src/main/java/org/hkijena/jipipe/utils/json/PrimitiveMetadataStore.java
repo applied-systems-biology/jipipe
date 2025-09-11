@@ -30,7 +30,7 @@ import java.util.function.Function;
 /**
  * A JSON-serializable map-like class that stores string keys with primitive values (String, Integer, Double, Boolean).
  * This class provides convenient methods for storing and retrieving primitive values with type-safe defaults.
- * 
+ *
  * <h3>Usage Examples:</h3>
  * <pre>
  * // Create and populate a store
@@ -39,13 +39,13 @@ import java.util.function.Function;
  * store.put("age", 25);
  * store.put("price", 19.99);
  * store.put("enabled", true);
- * 
+ *
  * // Retrieve values with defaults
  * String name = store.getString("name", "Default Name");
  * int age = store.getInteger("age", 0);
  * double price = store.getDouble("price", 0.0);
  * boolean enabled = store.getBoolean("enabled", false);
- * 
+ *
  * // JSON serialization
  * String jsonString = store.toJsonString();
  * PrimitiveMetadataStore fromJson = PrimitiveMetadataStore.fromJsonString(jsonString);
@@ -64,6 +64,7 @@ public class PrimitiveMetadataStore {
 
     /**
      * Creates a copy of an existing PrimitiveMetadataStore
+     *
      * @param other the store to copy
      */
     public PrimitiveMetadataStore(PrimitiveMetadataStore other) {
@@ -71,8 +72,24 @@ public class PrimitiveMetadataStore {
     }
 
     /**
+     * Creates a PrimitiveMetadataStore from a JSON string.
+     *
+     * @param json the JSON string to parse
+     * @return a new PrimitiveMetadataStore instance
+     */
+    public static PrimitiveMetadataStore fromJsonString(String json) {
+        try {
+            return JsonUtils.readFromString(json, PrimitiveMetadataStore.class);
+        } catch (Exception e) {
+            // Return empty store on error
+            return new PrimitiveMetadataStore();
+        }
+    }
+
+    /**
      * Adds or updates a string value.
-     * @param key the key (must not be null)
+     *
+     * @param key   the key (must not be null)
      * @param value the string value
      */
     public void put(String key, String value) {
@@ -83,7 +100,8 @@ public class PrimitiveMetadataStore {
 
     /**
      * Adds or updates an integer value.
-     * @param key the key (must not be null)
+     *
+     * @param key   the key (must not be null)
      * @param value the integer value
      */
     public void put(String key, Integer value) {
@@ -94,7 +112,8 @@ public class PrimitiveMetadataStore {
 
     /**
      * Adds or updates a double value.
-     * @param key the key (must not be null)
+     *
+     * @param key   the key (must not be null)
      * @param value the double value
      */
     public void put(String key, Double value) {
@@ -105,7 +124,8 @@ public class PrimitiveMetadataStore {
 
     /**
      * Adds or updates a boolean value.
-     * @param key the key (must not be null)
+     *
+     * @param key   the key (must not be null)
      * @param value the boolean value
      */
     public void put(String key, Boolean value) {
@@ -116,6 +136,7 @@ public class PrimitiveMetadataStore {
 
     /**
      * Checks if the store contains the specified key.
+     *
      * @param key the key to check
      * @return true if the key exists, false otherwise
      */
@@ -125,6 +146,7 @@ public class PrimitiveMetadataStore {
 
     /**
      * Returns the set of all keys in the store.
+     *
      * @return an unmodifiable set of keys
      */
     public Set<String> keySet() {
@@ -133,6 +155,7 @@ public class PrimitiveMetadataStore {
 
     /**
      * Returns the number of entries in the store.
+     *
      * @return the size of the store
      */
     public int size() {
@@ -148,7 +171,8 @@ public class PrimitiveMetadataStore {
 
     /**
      * Retrieves a string value with a default if not found or type mismatched.
-     * @param key the key to look up
+     *
+     * @param key          the key to look up
      * @param defaultValue the default value to return if key doesn't exist or type differs
      * @return the string value or default
      */
@@ -158,7 +182,8 @@ public class PrimitiveMetadataStore {
 
     /**
      * Retrieves an integer value with a default if not found or type mismatched.
-     * @param key the key to look up
+     *
+     * @param key          the key to look up
      * @param defaultValue the default value to return if key doesn't exist or type differs
      * @return the integer value or default
      */
@@ -168,7 +193,8 @@ public class PrimitiveMetadataStore {
 
     /**
      * Retrieves a double value with a default if not found or type mismatched.
-     * @param key the key to look up
+     *
+     * @param key          the key to look up
      * @param defaultValue the default value to return if key doesn't exist or type differs
      * @return the double value or default
      */
@@ -178,7 +204,8 @@ public class PrimitiveMetadataStore {
 
     /**
      * Retrieves a boolean value with a default if not found or type mismatched.
-     * @param key the key to look up
+     *
+     * @param key          the key to look up
      * @param defaultValue the default value to return if key doesn't exist or type differs
      * @return the boolean value or default
      */
@@ -196,11 +223,12 @@ public class PrimitiveMetadataStore {
 
     /**
      * Generic method to retrieve typed values with safe conversion.
-     * @param key the key to retrieve
+     *
+     * @param key          the key to retrieve
      * @param defaultValue the default value
      * @param expectedType the expected type
-     * @param converter conversion function from stored value to expected type
-     * @param <T> the type
+     * @param converter    conversion function from stored value to expected type
+     * @param <T>          the type
      * @return the typed value or default
      */
     @SuppressWarnings("unchecked")
@@ -227,6 +255,7 @@ public class PrimitiveMetadataStore {
 
     /**
      * Converts this store to a JSON string using JsonUtils.
+     *
      * @return JSON string representation of this store
      */
     public String toJsonString() {
@@ -234,21 +263,8 @@ public class PrimitiveMetadataStore {
     }
 
     /**
-     * Creates a PrimitiveMetadataStore from a JSON string.
-     * @param json the JSON string to parse
-     * @return a new PrimitiveMetadataStore instance
-     */
-    public static PrimitiveMetadataStore fromJsonString(String json) {
-        try {
-            return JsonUtils.readFromString(json, PrimitiveMetadataStore.class);
-        } catch (Exception e) {
-            // Return empty store on error
-            return new PrimitiveMetadataStore();
-        }
-    }
-
-    /**
      * Returns an unmodifiable copy of the internal data map.
+     *
      * @return the data map
      */
     public Map<String, Object> getData() {
@@ -292,16 +308,16 @@ public class PrimitiveMetadataStore {
         @Override
         public PrimitiveMetadataStore deserialize(JsonParser jsonParser, DeserializationContext deserializationContext) throws IOException, JsonProcessingException {
             PrimitiveMetadataStore store = new PrimitiveMetadataStore();
-            
+
             if (jsonParser.isExpectedStartObjectToken()) {
                 com.fasterxml.jackson.databind.node.ObjectNode node = jsonParser.readValueAsTree();
                 Iterator<Map.Entry<String, com.fasterxml.jackson.databind.JsonNode>> fields = node.fields();
-                
+
                 while (fields.hasNext()) {
                     Map.Entry<String, com.fasterxml.jackson.databind.JsonNode> field = fields.next();
                     String key = field.getKey();
                     com.fasterxml.jackson.databind.JsonNode valueNode = field.getValue();
-                    
+
                     if (key != null && !key.isEmpty() && valueNode != null && !valueNode.isNull()) {
                         try {
                             if (valueNode.isTextual()) {
@@ -319,7 +335,7 @@ public class PrimitiveMetadataStore {
                     }
                 }
             }
-            
+
             return store;
         }
     }

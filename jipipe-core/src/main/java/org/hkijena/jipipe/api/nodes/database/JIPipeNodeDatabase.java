@@ -27,7 +27,7 @@ import java.util.Set;
 /**
  * Allows to query nodes
  */
-public class JIPipeNodeDatabase implements JIPipeNodeDatabaseSearch{
+public class JIPipeNodeDatabase implements JIPipeNodeDatabaseSearch {
 
     private static JIPipeNodeDatabase INSTANCE;
     private final JIPipeRunnableQueue queue = new JIPipeRunnableQueue("Node database");
@@ -83,14 +83,14 @@ public class JIPipeNodeDatabase implements JIPipeNodeDatabaseSearch{
     }
 
     public JIPipeNodeDatabaseSearchImplementation getSearchImplementation() {
-        if(JIPipe.isInstantiated()) {
+        if (JIPipe.isInstantiated()) {
             return JIPipeGeneralUIApplicationSettings.getInstance().getSearchImplementation();
         }
         return JIPipeNodeDatabaseSearchImplementation.Legacy;
     }
 
     public JIPipeNodeDatabaseSearch getSearch() {
-        if(getSearchImplementation() == JIPipeNodeDatabaseSearchImplementation.Legacy) {
+        if (getSearchImplementation() == JIPipeNodeDatabaseSearchImplementation.Legacy) {
             return legacySearch;
         }
         return legacySearch;

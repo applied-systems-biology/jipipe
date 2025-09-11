@@ -465,14 +465,14 @@ public class JIPipeDesktopGraphNodeUISlotContextMenu {
             if (slot.isInput()) {
                 // Connect to the output (source)
                 JIPipeDataSlot sourceSlot = connection.findSourceSlot(getGraphCanvasUI().getGraph());
-                if(historyJournal != null) {
+                if (historyJournal != null) {
                     historyJournal.snapshotBeforeConnect(sourceSlot, slot, getGraphCanvasUI().getCompartmentUUID());
                 }
                 getGraphCanvasUI().getGraph().connect(sourceSlot, slot);
             } else if (slot.isOutput()) {
                 // Connect to the input (target)
                 JIPipeDataSlot targetSlot = connection.findTargetSlot(getGraphCanvasUI().getGraph());
-                if(historyJournal != null) {
+                if (historyJournal != null) {
                     historyJournal.snapshotBeforeConnect(slot, targetSlot, getGraphCanvasUI().getCompartmentUUID());
                 }
                 getGraphCanvasUI().getGraph().connect(slot, targetSlot);

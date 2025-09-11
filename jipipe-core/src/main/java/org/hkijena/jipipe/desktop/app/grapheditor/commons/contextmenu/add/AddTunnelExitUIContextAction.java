@@ -18,7 +18,6 @@ import org.hkijena.jipipe.desktop.app.grapheditor.commons.JIPipeDesktopGraphCanv
 import org.hkijena.jipipe.desktop.app.grapheditor.commons.JIPipeDesktopGraphInteractiveObjectUI;
 import org.hkijena.jipipe.desktop.app.grapheditor.commons.contextmenu.GraphInteractiveObjectUIContextAction;
 import org.hkijena.jipipe.desktop.app.grapheditor.commons.nodeui.events.DefaultNodeUIActionRequestedEvent;
-import org.hkijena.jipipe.plugins.tunnels.nodes.tunnel1.JIPipeDataFlowTunnel1Entrance;
 import org.hkijena.jipipe.plugins.tunnels.nodes.tunnel1.JIPipeDataFlowTunnel1Exit;
 
 import javax.swing.*;

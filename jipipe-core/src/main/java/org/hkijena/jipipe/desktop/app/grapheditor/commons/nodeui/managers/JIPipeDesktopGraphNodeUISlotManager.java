@@ -88,7 +88,6 @@ public class JIPipeDesktopGraphNodeUISlotManager {
     }
 
 
-
     private void placeCursorAboveInput(JIPipeDataSlot slot) {
         Point cursorLocation = new Point();
         Point slotLocation = nodeUI.getSlotLocation(slot).min;
@@ -198,11 +197,9 @@ public class JIPipeDesktopGraphNodeUISlotManager {
     }
 
 
-
     public void setSaveOutputs(JIPipeDataSlot slot, boolean saveOutputs) {
         slot.getInfo().setStoreToDisk(saveOutputs);
     }
-
 
 
     public void moveSlotRight(JIPipeDataSlot slot) {

@@ -45,7 +45,7 @@ public class JIPipeDesktopCompartmentsCutNodeUIContextAction extends JIPipeDeskt
         }
 
         canvasUI.getNotificationsManager().addNotification("Cut " + selection.size() + " compartments",
-               getIcon(), JIPipeDesktopGraphCanvasNotificationsManager.NotificationType.Info);
+                getIcon(), JIPipeDesktopGraphCanvasNotificationsManager.NotificationType.Info);
     }
 
     @Override

@@ -44,7 +44,7 @@ public class JIPipeGeneralUIApplicationSettings extends JIPipeDefaultApplication
     private JIPipeDesktopUITheme theme = JIPipeDesktopUITheme.Modern;
     private JIPipeModernThemeStyleParameter themeStyle = new JIPipeModernThemeStyleParameter("JIPipe Light");
     private boolean switchToProjectInfoOnUnknownProject = true;
-    private JIPipeNodeDatabaseSearchImplementation searchImplementation =  JIPipeNodeDatabaseSearchImplementation.Legacy;
+    private JIPipeNodeDatabaseSearchImplementation searchImplementation = JIPipeNodeDatabaseSearchImplementation.Legacy;
 
     public static JIPipeGeneralUIApplicationSettings getInstance() {
         return JIPipe.getSettings().getById(ID, JIPipeGeneralUIApplicationSettings.class);

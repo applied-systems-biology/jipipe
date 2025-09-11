@@ -84,7 +84,7 @@ public class JIPipeSerializedGraphConnection {
 
     public JIPipeDataSlot findSourceSlot(JIPipeGraph graph) {
         JIPipeGraphNode sourceNode = graph.getNodeByUUID(UUID.fromString(sourceNodeUUID));
-        if(sourceNode != null) {
+        if (sourceNode != null) {
             return sourceNode.getOutputSlot(sourceSlotName);
         }
         return null;
@@ -92,7 +92,7 @@ public class JIPipeSerializedGraphConnection {
 
     public JIPipeDataSlot findTargetSlot(JIPipeGraph graph) {
         JIPipeGraphNode targetNode = graph.getNodeByUUID(UUID.fromString(targetNodeUUID));
-        if(targetNode != null) {
+        if (targetNode != null) {
             return targetNode.getInputSlot(targetSlotName);
         }
         return null;

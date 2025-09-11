@@ -26,12 +26,12 @@ import java.util.stream.Collectors;
 public interface NodeUIContextAction extends GraphInteractiveObjectUIContextAction {
     @Override
     default boolean matches(Set<JIPipeDesktopGraphInteractiveObjectUI> selection) {
-        return matchesNodes(selection.stream().filter(ui -> ui instanceof JIPipeDesktopGraphNodeUI).map(ui -> (JIPipeDesktopGraphNodeUI)ui).collect(Collectors.toSet()));
+        return matchesNodes(selection.stream().filter(ui -> ui instanceof JIPipeDesktopGraphNodeUI).map(ui -> (JIPipeDesktopGraphNodeUI) ui).collect(Collectors.toSet()));
     }
 
     @Override
     default void run(JIPipeDesktopGraphCanvasUI canvasUI, Set<JIPipeDesktopGraphInteractiveObjectUI> selection) {
-        runNodes(canvasUI, selection.stream().filter(ui -> ui instanceof JIPipeDesktopGraphNodeUI).map(ui -> (JIPipeDesktopGraphNodeUI)ui).collect(Collectors.toSet()));
+        runNodes(canvasUI, selection.stream().filter(ui -> ui instanceof JIPipeDesktopGraphNodeUI).map(ui -> (JIPipeDesktopGraphNodeUI) ui).collect(Collectors.toSet()));
     }
 
     boolean matchesNodes(Set<JIPipeDesktopGraphNodeUI> selection);
