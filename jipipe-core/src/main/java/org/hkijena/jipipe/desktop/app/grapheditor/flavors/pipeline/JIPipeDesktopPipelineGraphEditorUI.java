@@ -42,6 +42,8 @@ import org.hkijena.jipipe.desktop.app.grapheditor.commons.contextmenu.actions.Gr
 import org.hkijena.jipipe.desktop.app.grapheditor.commons.contextmenu.actions.IsolateNodesUIContextAction;
 import org.hkijena.jipipe.desktop.app.grapheditor.commons.contextmenu.add.AddNewNodeUIContextAction;
 import org.hkijena.jipipe.desktop.app.grapheditor.commons.contextmenu.add.AddNewParameterSetNodeUIContextAction;
+import org.hkijena.jipipe.desktop.app.grapheditor.commons.contextmenu.add.AddTunnelEntranceUIContextAction;
+import org.hkijena.jipipe.desktop.app.grapheditor.commons.contextmenu.add.AddTunnelExitUIContextAction;
 import org.hkijena.jipipe.desktop.app.grapheditor.commons.contextmenu.bookmarks.AddBookmarkNodeUIContextAction;
 import org.hkijena.jipipe.desktop.app.grapheditor.commons.contextmenu.bookmarks.RemoveBookmarkNodeUIContextAction;
 import org.hkijena.jipipe.desktop.app.grapheditor.commons.contextmenu.cache.ClearCacheNodeUIContextAction;
@@ -154,6 +156,8 @@ public class JIPipeDesktopPipelineGraphEditorUI extends JIPipeDesktopGraphEditor
         List<GraphInteractiveObjectUIContextAction> actions = new ArrayList<>(Arrays.asList(
                 new AddNewNodeUIContextAction(),
                 new AddNewParameterSetNodeUIContextAction(),
+                new AddTunnelEntranceUIContextAction(),
+                new AddTunnelExitUIContextAction(),
                 GraphInteractiveObjectUIContextAction.SEPARATOR,
                 new SelectAllNodeUIContextAction(),
                 new InvertSelectionNodeUIContextAction(),

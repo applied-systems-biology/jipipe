@@ -1,8 +1,10 @@
 package org.hkijena.jipipe.plugins.tunnels.nodes;
 
 import org.hkijena.jipipe.JIPipe;
+import org.hkijena.jipipe.api.data.JIPipeDataInfo;
 import org.hkijena.jipipe.api.data.JIPipeSlotConfiguration;
 import org.hkijena.jipipe.api.nodes.JIPipeDesktopInteractiveDefaultActionGraphNode;
+import org.hkijena.jipipe.api.nodes.JIPipeGraph;
 import org.hkijena.jipipe.api.nodes.JIPipeGraphNode;
 import org.hkijena.jipipe.api.nodes.JIPipeNodeInfo;
 import org.hkijena.jipipe.desktop.app.grapheditor.commons.JIPipeDesktopGraphCanvasUI;
@@ -10,6 +12,7 @@ import org.hkijena.jipipe.desktop.app.grapheditor.commons.JIPipeDesktopGraphEdit
 import org.hkijena.jipipe.desktop.app.grapheditor.commons.nodeui.events.DefaultNodeUIActionRequestedEvent;
 import org.hkijena.jipipe.desktop.commons.components.JIPipeDesktopFancyTextField;
 import org.hkijena.jipipe.desktop.commons.components.JIPipeDesktopFormPanel;
+import org.hkijena.jipipe.plugins.tunnels.JIPipeDataFlowTunnelUtils;
 import org.hkijena.jipipe.utils.NaturalOrderComparator;
 import org.hkijena.jipipe.utils.StringUtils;
 import org.hkijena.jipipe.utils.ThemeUtils;
@@ -19,10 +22,8 @@ import javax.swing.*;
 import java.awt.*;
 import java.awt.event.KeyAdapter;
 import java.awt.event.KeyEvent;
-import java.util.Comparator;
+import java.util.*;
 import java.util.List;
-import java.util.Objects;
-import java.util.Set;
 import java.util.concurrent.atomic.AtomicBoolean;
 
 public abstract class JIPipeDataFlowTunnel extends JIPipeGraphNode implements JIPipeDesktopInteractiveDefaultActionGraphNode {
@@ -45,6 +46,9 @@ public abstract class JIPipeDataFlowTunnel extends JIPipeGraphNode implements JI
     @Override
     public void onDefaultNodeUIActionRequested(JIPipeDesktopGraphEditorUI graphEditorUI, DefaultNodeUIActionRequestedEvent event) {
         JIPipeDesktopGraphCanvasUI canvasUI = graphEditorUI.getCanvasUI();
+        JIPipeGraph graph = canvasUI.getGraph();
+        UUID compartmentUUID = canvasUI.getCompartmentUUID();
+
         JDialog dialog = new JDialog(SwingUtilities.getWindowAncestor(canvasUI));
         dialog.setIconImage(UIUtils.getJIPipeIcon128());
         JIPipeDesktopFormPanel formPanel = new JIPipeDesktopFormPanel(JIPipeDesktopFormPanel.WITH_SCROLLING);
@@ -78,6 +82,10 @@ public abstract class JIPipeDataFlowTunnel extends JIPipeGraphNode implements JI
             List<String> sortedKeys = compatibleTunnelKeys.stream().sorted(NaturalOrderComparator.INSTANCE).toList();
             for (String sortedKey : sortedKeys) {
                 JButton button = new JButton(sortedKey);
+                JIPipeDataInfo tunnelDataType = JIPipeDataFlowTunnelUtils.findTunnelDataType(graph, compartmentUUID, getTunnelKeyGroup(), sortedKey);
+                button.setIcon(JIPipe.getDataTypes().getIconFor(tunnelDataType.getDataClass()));
+
+                button.setHorizontalAlignment(SwingConstants.LEFT);
                 button.addActionListener(e -> {
                     nameField.setText(sortedKey);
                     okPressed.set(true);

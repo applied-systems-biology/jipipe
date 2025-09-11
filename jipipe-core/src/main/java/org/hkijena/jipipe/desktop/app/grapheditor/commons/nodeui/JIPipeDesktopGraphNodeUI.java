@@ -567,7 +567,7 @@ public class JIPipeDesktopGraphNodeUI extends JIPipeDesktopWorkbenchPanel implem
 
             for (JIPipeInputDataSlot inputSlot : getNode().getInputSlots()) {
                 JIPipeDesktopGraphNodeUISlotActiveArea slotState = inputSlotMap.get(inputSlot.getName());
-                double nativeWidth = secondaryFontMetrics.stringWidth(getDisplayedSlotLabel(slotState)) + 22 * 2 + 16;
+                double nativeWidth = secondaryFontMetrics.stringWidth(getDisplayedSlotLabel(slotState)) + 22 + (isDrawSlotIndicators() ? 22 : 0) + 16;
                 slotState.setNativeWidth(nativeWidth);
                 slotState.setNativeLocation(new Point((int) sumInputSlotWidths, 0));
                 sumInputSlotWidths += nativeWidth;
@@ -588,7 +588,7 @@ public class JIPipeDesktopGraphNodeUI extends JIPipeDesktopWorkbenchPanel implem
                 JIPipeDesktopGraphNodeUISlotActiveArea slotState = outputSlotMap.get(outputSlots.getName());
                 if (slotState == null)
                     continue;
-                double nativeWidth = secondaryFontMetrics.stringWidth(getDisplayedSlotLabel(slotState)) + 22 * 2 + 16;
+                double nativeWidth = secondaryFontMetrics.stringWidth(getDisplayedSlotLabel(slotState)) + 22 + (isDrawSlotIndicators() ? 22 : 0) + 16;
                 slotState.setNativeWidth(nativeWidth);
                 slotState.setNativeLocation(new Point((int) sumOutputSlotWidths, getOutputSlotYLocation()));
                 sumOutputSlotWidths += nativeWidth;
@@ -1143,27 +1143,33 @@ public class JIPipeDesktopGraphNodeUI extends JIPipeDesktopWorkbenchPanel implem
         FontMetrics fontMetrics = g2.getFontMetrics();
         UIUtils.drawStringVerticallyCentered(g2, getDisplayedSlotLabel(slotState), (int) Math.round(startX + 3 * zoom), (int) Math.round(centerY - 1 * zoom), fontMetrics);
 
-        if (slotState.getSlotStatus() == JIPipeDesktopGraphNodeUISlotStatus.Cached) {
-            startX = originalStartX + slotWidth - 8 * zoom - 12 * zoom;
-            g2.drawImage(JIPipe.RESOURCES.getIcon12Inverted("actions/database.png").getImage(),
-                    (int) Math.round(startX),
-                    (int) Math.round(centerY - 6 * zoom),
-                    (int) Math.round(12 * zoom),
-                    (int) Math.round(12 * zoom),
-                    null);
-        } else if (slotState.getSlot().isInput()) {
-            ImageIcon uiInputSlotIcon = getNode().getUIInputSlotIcon(slotState.getSlotName());
-            if (uiInputSlotIcon != null) {
-                Dimension dimension = getNode().getUIInputSlotIconBaseDimensions(slotState.getSlotName());
-                startX = originalStartX + slotWidth - 8 * zoom - dimension.width * zoom;
-                g2.drawImage(uiInputSlotIcon.getImage(),
+        if(isDrawSlotIndicators()) {
+            if (slotState.getSlotStatus() == JIPipeDesktopGraphNodeUISlotStatus.Cached) {
+                startX = originalStartX + slotWidth - 8 * zoom - 12 * zoom;
+                g2.drawImage(JIPipe.RESOURCES.getIcon12Inverted("actions/database.png").getImage(),
                         (int) Math.round(startX),
-                        (int) Math.round(centerY - dimension.height / 2.0 * zoom),
-                        (int) Math.round(dimension.width * zoom),
-                        (int) Math.round(dimension.width * zoom),
+                        (int) Math.round(centerY - 6 * zoom),
+                        (int) Math.round(12 * zoom),
+                        (int) Math.round(12 * zoom),
                         null);
+            } else if (slotState.getSlot().isInput()) {
+                ImageIcon uiInputSlotIcon = getNode().getUIInputSlotIcon(slotState.getSlotName());
+                if (uiInputSlotIcon != null) {
+                    Dimension dimension = getNode().getUIInputSlotIconBaseDimensions(slotState.getSlotName());
+                    startX = originalStartX + slotWidth - 8 * zoom - dimension.width * zoom;
+                    g2.drawImage(uiInputSlotIcon.getImage(),
+                            (int) Math.round(startX),
+                            (int) Math.round(centerY - dimension.height / 2.0 * zoom),
+                            (int) Math.round(dimension.width * zoom),
+                            (int) Math.round(dimension.width * zoom),
+                            null);
+                }
             }
         }
+    }
+
+    protected boolean isDrawSlotIndicators() {
+        return true;
     }
 
     protected boolean isDrawNodeIcon() {

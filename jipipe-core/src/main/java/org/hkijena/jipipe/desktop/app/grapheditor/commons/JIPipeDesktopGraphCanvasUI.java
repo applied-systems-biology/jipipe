@@ -1891,4 +1891,13 @@ public class JIPipeDesktopGraphCanvasUI extends JLayeredPane implements JIPipeDe
     public JIPipeDesktopGraphCanvasNotificationsManager getNotificationsManager() {
         return notificationsManager;
     }
+
+    public JIPipeDesktopGraphNodeUI getNodeUI(UUID uuid) {
+        JIPipeGraphNode node = graph.getNodeByUUID(uuid);
+        return getNodeUI(node);
+    }
+
+    public JIPipeDesktopGraphNodeUI getNodeUI(JIPipeGraphNode node) {
+        return nodeUIs.get(node);
+    }
 }

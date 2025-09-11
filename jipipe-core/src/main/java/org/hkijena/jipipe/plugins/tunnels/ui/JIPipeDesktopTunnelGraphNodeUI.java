@@ -1,21 +1,30 @@
 package org.hkijena.jipipe.plugins.tunnels.ui;
 
 import org.hkijena.jipipe.JIPipe;
+import org.hkijena.jipipe.api.data.JIPipeData;
+import org.hkijena.jipipe.api.data.JIPipeDataInfo;
 import org.hkijena.jipipe.api.nodes.JIPipeGraphNode;
 import org.hkijena.jipipe.desktop.app.JIPipeDesktopWorkbench;
 import org.hkijena.jipipe.desktop.app.grapheditor.commons.JIPipeDesktopGraphCanvasUI;
 import org.hkijena.jipipe.desktop.app.grapheditor.commons.nodeui.JIPipeDesktopGraphNodeUI;
 import org.hkijena.jipipe.desktop.app.grapheditor.commons.nodeui.triggers.JIPipeDesktopGraphNodeUISlotActiveArea;
+import org.hkijena.jipipe.plugins.tunnels.JIPipeDataFlowTunnelUtils;
+import org.hkijena.jipipe.plugins.tunnels.nodes.JIPipeDataFlowTunnel;
 import org.hkijena.jipipe.plugins.tunnels.nodes.JIPipeDataFlowTunnelEntrance;
 import org.hkijena.jipipe.plugins.tunnels.nodes.JIPipeDataFlowTunnelExit;
 import org.hkijena.jipipe.utils.StringUtils;
 import org.hkijena.jipipe.utils.ThemeUtils;
+import org.hkijena.jipipe.utils.debounce.StaticDebouncer;
 
 import java.awt.*;
 import java.util.*;
 import java.util.List;
 
 public class JIPipeDesktopTunnelGraphNodeUI extends JIPipeDesktopGraphNodeUI {
+
+    private Map<String, JIPipeDataInfo> lastDataTypes = new HashMap<>();
+    private long lastDataTypesRecalculated = 0;
+
     /**
      * Creates a new UI
      *
@@ -28,41 +37,51 @@ public class JIPipeDesktopTunnelGraphNodeUI extends JIPipeDesktopGraphNodeUI {
         setBuffered(false);
     }
 
-    public float getTunnelColorHue() {
-        Set<JIPipeGraphNode> nodesWithinCompartment = getGraphCanvasUI().getGraph().getNodesWithinCompartment(getGraphCanvasUI().getCompartmentUUID());
-        List<String> tunnelKeys = new ArrayList<>();
-        for (JIPipeGraphNode node : nodesWithinCompartment) {
-            if(node instanceof JIPipeDataFlowTunnelEntrance || node instanceof JIPipeDataFlowTunnelExit) {
-                String name = StringUtils.nullToEmpty(node.getCustomName());
-                if(!tunnelKeys.contains(name)) {
-                    tunnelKeys.add(name);
-                }
-            }
-        }
-        Collections.sort(tunnelKeys);
-        if(tunnelKeys.isEmpty()) {
-            return 0;
-        }
-        return tunnelKeys.indexOf(StringUtils.nullToEmpty(getNode().getCustomName())) * 1.0f / tunnelKeys.size();
+    public String getTunnelKey() {
+        return ((JIPipeDataFlowTunnel)getNode()).getTunnelKey();
+    }
+
+    public String getTunnelKeyGroup() {
+        return ((JIPipeDataFlowTunnel)getNode()).getTunnelKeyGroup();
     }
 
     @Override
     public Color getNodeFillColor() {
-        return Color.getHSBColor(getTunnelColorHue(), Math.min(1, ThemeUtils.getCurrentStyle().getNodeFillSaturation() * 3f), ThemeUtils.getCurrentStyle().getNodeFillBrightness());
+        float hue = getTunnelColorHue();
+        return Color.getHSBColor(hue, Math.min(1, ThemeUtils.getCurrentStyle().getNodeFillSaturation() * 3f), ThemeUtils.getCurrentStyle().getNodeFillBrightness());
     }
 
     @Override
     public Color getNodeBorderColor() {
-        return ThemeUtils.getNodeBorderColor(getTunnelColorHue());
+        float hue = getTunnelColorHue();
+        return ThemeUtils.getNodeBorderColor(hue);
+    }
+
+    private float getTunnelColorHue() {
+        return JIPipeDataFlowTunnelUtils.getTunnelColorHue(getGraphCanvasUI(), getTunnelKeyGroup(), getTunnelKey());
+    }
+
+    private Map<String, JIPipeDataInfo> getLastDataTypes() {
+        long currentTime = System.currentTimeMillis();
+        if(currentTime - lastDataTypesRecalculated > 60) {
+            lastDataTypes = JIPipeDataFlowTunnelUtils.findTunnelDataTypes(getGraphCanvasUI().getGraph(),
+                    getGraphCanvasUI().getCompartmentUUID(),
+                    getTunnelKeyGroup(),
+                    getTunnelKey());
+            lastDataTypesRecalculated = currentTime;
+        }
+        return lastDataTypes;
     }
 
     @Override
     public Color getSlotFillColor() {
-        return Color.getHSBColor(getTunnelColorHue(), ThemeUtils.getCurrentStyle().getNodeFillSaturation(), ThemeUtils.getCurrentStyle().getNodeFillBrightness());
+        float hue = getTunnelColorHue();
+        return Color.getHSBColor(hue, ThemeUtils.getCurrentStyle().getNodeFillSaturation(), ThemeUtils.getCurrentStyle().getNodeFillBrightness());
     }
 
-    public boolean tunnelIsValid() {
-        return true;
+    @Override
+    protected boolean isDrawSlotIndicators() {
+        return false;
     }
 
     @Override
@@ -91,7 +110,14 @@ public class JIPipeDesktopTunnelGraphNodeUI extends JIPipeDesktopGraphNodeUI {
             return JIPipe.RESOURCES.getIcon16("actions/xfce-wm-unstick.png").getImage();
         }
         else {
-            return JIPipe.RESOURCES.getIcon16("actions/xfce-wm-stick.png").getImage();
+            Map<String, JIPipeDataInfo> updatedDataTypes = getLastDataTypes();
+            JIPipeDataInfo dataType = updatedDataTypes.getOrDefault(slotState.getSlotName(), null);
+            if(dataType == null || dataType.getDataClass() == JIPipeData.class) {
+                return JIPipe.RESOURCES.getIcon16("actions/xfce-wm-stick.png").getImage();
+            }
+            else {
+                return JIPipe.getDataTypes().getIconFor(dataType.getDataClass()).getImage();
+            }
         }
     }
 }
