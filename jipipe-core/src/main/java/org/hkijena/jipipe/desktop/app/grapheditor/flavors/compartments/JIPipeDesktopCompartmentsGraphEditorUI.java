@@ -24,8 +24,9 @@ import org.hkijena.jipipe.desktop.app.grapheditor.commons.JIPipeDesktopGraphEdit
 import org.hkijena.jipipe.desktop.app.grapheditor.commons.JIPipeDesktopGraphEditorMinimap;
 import org.hkijena.jipipe.desktop.app.grapheditor.commons.JIPipeDesktopGraphEditorUI;
 import org.hkijena.jipipe.desktop.app.grapheditor.commons.JIPipeDesktopGraphInteractiveObjectUI;
-import org.hkijena.jipipe.desktop.app.grapheditor.commons.contextmenu.*;
-import org.hkijena.jipipe.desktop.app.grapheditor.commons.contextmenu.actions.*;
+import org.hkijena.jipipe.desktop.app.grapheditor.commons.contextmenu.GraphInteractiveObjectUIContextAction;
+import org.hkijena.jipipe.desktop.app.grapheditor.commons.contextmenu.actions.CopyEdgeUIContextAction;
+import org.hkijena.jipipe.desktop.app.grapheditor.commons.contextmenu.actions.DeleteCompartmentNodesAndEdgesContextAction;
 import org.hkijena.jipipe.desktop.app.grapheditor.commons.contextmenu.add.AddNewCompartmentUIContextAction;
 import org.hkijena.jipipe.desktop.app.grapheditor.commons.contextmenu.bookmarks.AddBookmarkNodeUIContextAction;
 import org.hkijena.jipipe.desktop.app.grapheditor.commons.contextmenu.bookmarks.RemoveBookmarkNodeUIContextAction;
@@ -210,7 +211,7 @@ public class JIPipeDesktopCompartmentsGraphEditorUI extends JIPipeDesktopGraphEd
         getDockPanel().removeDockPanelsIf(panel -> panel.getId().startsWith("_"));
         if (getSelectionManager().getSelection().size() == 1) {
             JIPipeDesktopGraphInteractiveObjectUI interactiveObjectUI = getSelectionManager().getSelection().iterator().next();
-            if(interactiveObjectUI instanceof JIPipeDesktopGraphNodeUI) {
+            if (interactiveObjectUI instanceof JIPipeDesktopGraphNodeUI) {
                 showSelectedNodeDocks((JIPipeDesktopGraphNodeUI) interactiveObjectUI);
             }
         }
@@ -282,8 +283,7 @@ public class JIPipeDesktopCompartmentsGraphEditorUI extends JIPipeDesktopGraphEd
     public void onDefaultNodeUIActionRequested(DefaultNodeUIActionRequestedEvent event) {
         if (event.getUi() != null && event.getUi().getNode() instanceof JIPipeProjectCompartment) {
             handleOpenCompartmentPipelineEditorAction(event);
-        }
-        else {
+        } else {
             super.onDefaultNodeUIActionRequested(event);
         }
     }
@@ -303,8 +303,7 @@ public class JIPipeDesktopCompartmentsGraphEditorUI extends JIPipeDesktopGraphEd
             handleRunAndShowResultsAction(event);
         } else if (event.getAction() instanceof JIPipeDesktopUpdateCacheAction) {
             handleUpdateCacheAction(event);
-        }
-        else {
+        } else {
             super.onNodeUIActionRequested(event);
         }
     }

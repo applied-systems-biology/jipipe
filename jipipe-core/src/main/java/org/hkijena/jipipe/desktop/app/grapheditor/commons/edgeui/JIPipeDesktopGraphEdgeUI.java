@@ -14,7 +14,6 @@
 package org.hkijena.jipipe.desktop.app.grapheditor.commons.edgeui;
 
 import org.hkijena.jipipe.api.data.JIPipeDataSlot;
-import org.hkijena.jipipe.api.nodes.JIPipeGraphConnection;
 import org.hkijena.jipipe.api.nodes.JIPipeGraphEdge;
 import org.hkijena.jipipe.api.nodes.JIPipeGraphNode;
 import org.hkijena.jipipe.api.nodes.JIPipeSerializedGraphConnection;
@@ -45,7 +44,7 @@ public class JIPipeDesktopGraphEdgeUI implements JIPipeDesktopGraphInteractiveOb
     }
 
     public JIPipeSerializedGraphConnection toConnection() {
-         return new JIPipeSerializedGraphConnection(source, target, edge);
+        return new JIPipeSerializedGraphConnection(source, target, edge);
     }
 
     public JIPipeGraphEdge getEdge() {
@@ -132,7 +131,7 @@ public class JIPipeDesktopGraphEdgeUI implements JIPipeDesktopGraphInteractiveOb
         JIPipeDesktopGraphNodeUI sourceNodeUI = getSourceNodeUI();
         JIPipeDesktopGraphNodeUI targetNodeUI = getTargetNodeUI();
 
-        if(sourceNodeUI == null || targetNodeUI == null) {
+        if (sourceNodeUI == null || targetNodeUI == null) {
             return;
         }
 
@@ -149,10 +148,9 @@ public class JIPipeDesktopGraphEdgeUI implements JIPipeDesktopGraphInteractiveOb
             // Fully outlined stroke
             JIPipeDesktopGraphCanvasPaintManager.ArrowHeadMode arrowHeadMode = enableArrows ? JIPipeDesktopGraphCanvasPaintManager.ArrowHeadMode.Filled : JIPipeDesktopGraphCanvasPaintManager.ArrowHeadMode.None;
 
-            if(multiColor) {
+            if (multiColor) {
                 paintMultiColor(g, stroke, strokeBorder, scale, viewX, viewY, multiColor, multiColorIndex, multiColorMax, sourcePoint, sourceNodeUI, targetPoint, uiShape, arrowHeadMode);
-            }
-            else {
+            } else {
                 paintRegular(g, stroke, strokeBorder, scale, viewX, viewY, sourcePoint, sourceNodeUI, targetPoint, uiShape, arrowHeadMode);
             }
         } else {

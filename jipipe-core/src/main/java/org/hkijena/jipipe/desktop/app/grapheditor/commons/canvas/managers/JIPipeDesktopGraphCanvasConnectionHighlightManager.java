@@ -10,8 +10,8 @@ import org.hkijena.jipipe.desktop.app.grapheditor.commons.nodeui.JIPipeDesktopGr
 import org.hkijena.jipipe.utils.PointRange;
 
 import java.awt.*;
-import java.util.Set;
 import java.util.List;
+import java.util.Set;
 
 public class JIPipeDesktopGraphCanvasConnectionHighlightManager {
     private final JIPipeDesktopGraphCanvasUI canvasUI;

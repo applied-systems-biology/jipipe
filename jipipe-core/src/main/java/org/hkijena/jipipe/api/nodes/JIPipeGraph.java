@@ -1119,7 +1119,7 @@ public class JIPipeGraph implements JIPipeValidatable, JIPipeFunctionallyCompara
 
                 // Move DEFAULT location to empty string (UUID-based)
                 Map<String, Point> allNodeUILocations = node.getAllNodeUILocations();
-                if(allNodeUILocations.containsKey("DEFAULT")) {
+                if (allNodeUILocations.containsKey("DEFAULT")) {
                     node.setNodeUILocationWithin("", allNodeUILocations.get("DEFAULT"));
                 }
             }
@@ -1185,7 +1185,7 @@ public class JIPipeGraph implements JIPipeValidatable, JIPipeFunctionallyCompara
             JIPipeGraphNode copy = node.getInfo().duplicate(node);
             Point point = copy.getNodeUILocationWithin(compartment);
             copy.clearAllNodeUILocations();
-            if(point != null) {
+            if (point != null) {
                 copy.setNodeUILocationWithin("", point);
             }
             graph.insertNode(node.getUUIDInParentGraph(), copy, null);

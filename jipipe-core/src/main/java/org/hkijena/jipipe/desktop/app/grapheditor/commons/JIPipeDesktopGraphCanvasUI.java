@@ -15,7 +15,6 @@ package org.hkijena.jipipe.desktop.app.grapheditor.commons;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.google.common.collect.*;
-import com.google.common.collect.Sets;
 import gnu.trove.map.TIntObjectMap;
 import gnu.trove.map.hash.TIntObjectHashMap;
 import org.apache.commons.lang3.SystemUtils;
@@ -39,10 +38,11 @@ import org.hkijena.jipipe.api.runtimepartitioning.JIPipeRuntimePartitionConfigur
 import org.hkijena.jipipe.desktop.app.JIPipeDesktopProjectWorkbench;
 import org.hkijena.jipipe.desktop.app.JIPipeDesktopWorkbench;
 import org.hkijena.jipipe.desktop.app.JIPipeDesktopWorkbenchAccess;
-import org.hkijena.jipipe.desktop.app.grapheditor.commons.canvas.JIPipeDesktopGraphCanvasGrid;
 import org.hkijena.jipipe.desktop.app.grapheditor.commons.actions.JIPipeDesktopOpenContextMenuAction;
-import org.hkijena.jipipe.desktop.app.grapheditor.commons.canvas.*;
-import org.hkijena.jipipe.desktop.app.grapheditor.commons.canvas.events.*;
+import org.hkijena.jipipe.desktop.app.grapheditor.commons.canvas.JIPipeDesktopGraphCanvasGrid;
+import org.hkijena.jipipe.desktop.app.grapheditor.commons.canvas.JIPipeDesktopGraphCanvasResources;
+import org.hkijena.jipipe.desktop.app.grapheditor.commons.canvas.events.JIPipeDesktopGraphCanvasUIUpdatedEvent;
+import org.hkijena.jipipe.desktop.app.grapheditor.commons.canvas.events.JIPipeDesktopGraphCanvasUIUpdatedEventEmitter;
 import org.hkijena.jipipe.desktop.app.grapheditor.commons.canvas.managers.*;
 import org.hkijena.jipipe.desktop.app.grapheditor.commons.canvas.overlays.*;
 import org.hkijena.jipipe.desktop.app.grapheditor.commons.contextmenu.GraphInteractiveObjectUIContextAction;
@@ -1014,22 +1014,18 @@ public class JIPipeDesktopGraphCanvasUI extends JLayeredPane implements JIPipeDe
 
             // Selection handling
             if (nodeUI == null && edgeUI != null) {
-                if(mouseEvent.isShiftDown()) {
+                if (mouseEvent.isShiftDown()) {
                     selectionManager.toggleSelection(edgeUI);
-                }
-                else if(!selectionManager.getSelection().contains(edgeUI)) {
+                } else if (!selectionManager.getSelection().contains(edgeUI)) {
                     selectionManager.selectOnly(edgeUI);
                 }
-            }
-            else if (nodeUI != null) {
-                if(mouseEvent.isShiftDown()) {
+            } else if (nodeUI != null) {
+                if (mouseEvent.isShiftDown()) {
                     selectionManager.toggleSelection(nodeUI);
-                }
-                else if(!selectionManager.getSelection().contains(nodeUI)) {
+                } else if (!selectionManager.getSelection().contains(nodeUI)) {
                     selectionManager.selectOnly(nodeUI);
                 }
-            }
-            else if(!mouseEvent.isShiftDown()) {
+            } else if (!mouseEvent.isShiftDown()) {
                 selectionManager.clearSelection();
             }
 
@@ -1702,8 +1698,7 @@ public class JIPipeDesktopGraphCanvasUI extends JLayeredPane implements JIPipeDe
             // Update edge UIs
             removeOldEdges();
             addNewEdges();
-        }
-        finally {
+        } finally {
             updateCanvasLock.unlock(stamp);
         }
 

@@ -23,12 +23,14 @@ import java.util.Set;
 public interface JIPipeDesktopGraphInteractiveObjectUI {
     /**
      * Gets all associated nodes
+     *
      * @return the associated nodes
      */
     Set<JIPipeGraphNode> getNodes();
 
     /**
      * Instructs the UI to update its display
+     *
      * @param command the command
      */
     void updateView(JIPipeDesktopGraphInteractiveObjectUIUpdateViewCommand command);

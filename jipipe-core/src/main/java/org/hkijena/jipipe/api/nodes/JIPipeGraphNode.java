@@ -470,6 +470,7 @@ public abstract class JIPipeGraphNode extends AbstractJIPipeParameterCollection 
 
     /**
      * Returns the UI class that is responsible for rendering this node
+     *
      * @return the node UI class
      */
     public Class<? extends JIPipeDesktopGraphNodeUI> getNodeUiClass() {
@@ -494,10 +495,9 @@ public abstract class JIPipeGraphNode extends AbstractJIPipeParameterCollection 
         compartment = StringUtils.orElse(compartment, "_");
         Integer x = nodeMetadata.getInteger(Path.of("location", compartment, "x"), null);
         Integer y = nodeMetadata.getInteger(Path.of("location", compartment, "y"), null);
-        if(x==null || y==null) {
+        if (x == null || y == null) {
             return null;
-        }
-        else {
+        } else {
             return new Point(x, y);
         }
     }
@@ -1286,16 +1286,17 @@ public abstract class JIPipeGraphNode extends AbstractJIPipeParameterCollection 
 
     /**
      * Returns all node UI locations from the metadata map
+     *
      * @return all UI locations
      */
     public Map<String, Point> getAllNodeUILocations() {
         Map<String, Point> result = new HashMap<>();
         for (Map.Entry<Path, Object> entry : nodeMetadata.getEntriesUnderPath("location").entrySet()) {
-            if(entry.getKey().getNameCount() == 3) {
+            if (entry.getKey().getNameCount() == 3) {
                 String compartmentName = entry.getKey().getName(1).toString();
                 String locationName = entry.getKey().getName(2).toString();
                 String standardCompartmentName = "_".equals(compartmentName) ? "" : compartmentName;
-                if(locationName.equals("x")) {
+                if (locationName.equals("x")) {
                     result.put(standardCompartmentName, new Point(nodeMetadata.getInteger(Path.of("location", compartmentName, "x"), 0),
                             nodeMetadata.getInteger(Path.of("location", compartmentName, "y"), 0)));
                 }
@@ -1307,6 +1308,7 @@ public abstract class JIPipeGraphNode extends AbstractJIPipeParameterCollection 
     /**
      * Executed by various functions that handle the addition of nodes into a pipeline
      * Allows for UI feedback (dialogs etc.)
+     *
      * @param canvasUI the canvas where the node will be added. At this point the node is not yet inside the graph or canvas and does not have a UUID!
      * @return whether the node should be added into the canvas
      */
@@ -1317,6 +1319,7 @@ public abstract class JIPipeGraphNode extends AbstractJIPipeParameterCollection 
     /**
      * Executed by various functions that handle the addition of nodes into a pipeline
      * Allows for UI feedback (dialogs etc.)
+     *
      * @param canvasUI the canvas where the node was added.
      */
     public void uiAfterAddToCanvas(JIPipeDesktopGraphCanvasUI canvasUI) {

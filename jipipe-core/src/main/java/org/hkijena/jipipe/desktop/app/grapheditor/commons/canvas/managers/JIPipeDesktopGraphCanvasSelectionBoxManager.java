@@ -28,8 +28,7 @@ public class JIPipeDesktopGraphCanvasSelectionBoxManager {
             selectionSecond = mouseEvent.getPoint();
             canvasUI.repaintLowLag();
             return true;
-        }
-        else {
+        } else {
             selectionFirst = null;
             selectionSecond = null;
         }
@@ -97,11 +96,10 @@ public class JIPipeDesktopGraphCanvasSelectionBoxManager {
     }
 
     public boolean mousePressed(MouseEvent mouseEvent) {
-        if(SwingUtilities.isLeftMouseButton(mouseEvent)) {
+        if (SwingUtilities.isLeftMouseButton(mouseEvent)) {
             selectionFirst = mouseEvent.getPoint();
             selectionSecond = null;
-        }
-        else {
+        } else {
             selectionFirst = null;
             selectionSecond = null;
         }

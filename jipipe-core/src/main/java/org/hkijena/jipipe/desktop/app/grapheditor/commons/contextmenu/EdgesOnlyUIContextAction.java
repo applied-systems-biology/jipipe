@@ -16,7 +16,6 @@ package org.hkijena.jipipe.desktop.app.grapheditor.commons.contextmenu;
 import org.hkijena.jipipe.desktop.app.grapheditor.commons.JIPipeDesktopGraphCanvasUI;
 import org.hkijena.jipipe.desktop.app.grapheditor.commons.JIPipeDesktopGraphInteractiveObjectUI;
 import org.hkijena.jipipe.desktop.app.grapheditor.commons.edgeui.JIPipeDesktopGraphEdgeUI;
-import org.hkijena.jipipe.desktop.app.grapheditor.commons.nodeui.JIPipeDesktopGraphNodeUI;
 
 import java.util.Set;
 import java.util.stream.Collectors;
@@ -28,12 +27,12 @@ public interface EdgesOnlyUIContextAction extends GraphInteractiveObjectUIContex
     @Override
     default boolean matches(Set<JIPipeDesktopGraphInteractiveObjectUI> selection) {
         return selection.stream().allMatch(ui -> ui instanceof JIPipeDesktopGraphEdgeUI) &&
-                matchesEdges(selection.stream().filter(ui -> ui instanceof JIPipeDesktopGraphEdgeUI).map(ui -> (JIPipeDesktopGraphEdgeUI)ui).collect(Collectors.toSet()));
+                matchesEdges(selection.stream().filter(ui -> ui instanceof JIPipeDesktopGraphEdgeUI).map(ui -> (JIPipeDesktopGraphEdgeUI) ui).collect(Collectors.toSet()));
     }
 
     @Override
     default void run(JIPipeDesktopGraphCanvasUI canvasUI, Set<JIPipeDesktopGraphInteractiveObjectUI> selection) {
-        runEdges(canvasUI, selection.stream().filter(ui -> ui instanceof JIPipeDesktopGraphEdgeUI).map(ui -> (JIPipeDesktopGraphEdgeUI)ui).collect(Collectors.toSet()));
+        runEdges(canvasUI, selection.stream().filter(ui -> ui instanceof JIPipeDesktopGraphEdgeUI).map(ui -> (JIPipeDesktopGraphEdgeUI) ui).collect(Collectors.toSet()));
     }
 
     boolean matchesEdges(Set<JIPipeDesktopGraphEdgeUI> selection);

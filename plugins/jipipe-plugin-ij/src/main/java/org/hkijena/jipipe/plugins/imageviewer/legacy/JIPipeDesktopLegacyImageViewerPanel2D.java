@@ -170,7 +170,7 @@ public class JIPipeDesktopLegacyImageViewerPanel2D extends JPanel implements JIP
 
     public JIPipeRunnableQueue getViewerRunnerQueue() {
         return viewerRunnerQueue;
-    }    private final Timer animationTimer = new Timer(250, e -> animateNextSlice());
+    }
 
     private void initialize() {
 
@@ -234,7 +234,7 @@ public class JIPipeDesktopLegacyImageViewerPanel2D extends JPanel implements JIP
         add(viewerPanel, BorderLayout.CENTER);
 
         createZoomMenu(zoomStatusButton.getButton());
-    }
+    }    private final Timer animationTimer = new Timer(250, e -> animateNextSlice());
 
     public boolean isComposite() {
         return composite;
@@ -384,17 +384,6 @@ public class JIPipeDesktopLegacyImageViewerPanel2D extends JPanel implements JIP
         exportBand.addComponent(UIUtils.boxHorizontal(new JLabel("FPS"), Box.createHorizontalStrut(8), animationFPSControl), 1, new Insets(2, 2, 2, 2));
     }
 
-
-//    public void setRotationEnabled(boolean enabled) {
-//        rotateLeftButton.setVisible(enabled);
-//        rotateRightButton.setVisible(enabled);
-//        if (!enabled) {
-//            rotation = 0;
-//            refreshImageInfo();
-//            refreshSlice();
-//        }
-//    }
-
     private void buildViewRibbon(JIPipeDesktopRibbon ribbon) {
         JIPipeDesktopRibbon.Task generalTask = ribbon.getOrCreateTask("General");
         JIPipeDesktopRibbon.Band viewBand = generalTask.getOrCreateBand("View");
@@ -406,6 +395,17 @@ public class JIPipeDesktopLegacyImageViewerPanel2D extends JPanel implements JIP
         viewBand.add(zoomStatusButton);
         viewBand.addSmallButton("Zoom out", "Decreases the zoom", JIPipe.RESOURCES.getIcon16("actions/magnifying-glass-minus.png"), this::decreaseZoom);
     }
+
+
+//    public void setRotationEnabled(boolean enabled) {
+//        rotateLeftButton.setVisible(enabled);
+//        rotateRightButton.setVisible(enabled);
+//        if (!enabled) {
+//            rotation = 0;
+//            refreshImageInfo();
+//            refreshSlice();
+//        }
+//    }
 
     private void createZoomMenu(JButton button) {
         JPopupMenu zoomMenu = UIUtils.addPopupMenuToButton(button);

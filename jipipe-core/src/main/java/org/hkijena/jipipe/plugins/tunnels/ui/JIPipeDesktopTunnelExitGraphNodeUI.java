@@ -18,7 +18,6 @@ import org.hkijena.jipipe.desktop.app.JIPipeDesktopWorkbench;
 import org.hkijena.jipipe.desktop.app.grapheditor.commons.JIPipeDesktopGraphCanvasUI;
 import org.hkijena.jipipe.desktop.app.grapheditor.commons.canvas.JIPipeDesktopGraphCanvasGrid;
 import org.hkijena.jipipe.desktop.app.grapheditor.commons.nodeui.triggers.JIPipeDesktopGraphNodeUISlotActiveArea;
-import org.hkijena.jipipe.plugins.tunnels.nodes.JIPipeDataFlowTunnelEntrance;
 import org.hkijena.jipipe.plugins.tunnels.nodes.JIPipeDataFlowTunnelExit;
 
 public class JIPipeDesktopTunnelExitGraphNodeUI extends JIPipeDesktopTunnelGraphNodeUI {
@@ -32,7 +31,7 @@ public class JIPipeDesktopTunnelExitGraphNodeUI extends JIPipeDesktopTunnelGraph
      */
     public JIPipeDesktopTunnelExitGraphNodeUI(JIPipeDesktopWorkbench workbench, JIPipeDesktopGraphCanvasUI graphCanvasUI, JIPipeGraphNode node) {
         super(workbench, graphCanvasUI, node);
-        if(!JIPipeDataFlowTunnelExit.class.isAssignableFrom(node.getClass())) {
+        if (!JIPipeDataFlowTunnelExit.class.isAssignableFrom(node.getClass())) {
             throw new IllegalArgumentException("Node must be a JIPipeDataFlowTunnelExit");
         }
     }

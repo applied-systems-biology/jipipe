@@ -401,7 +401,7 @@ public final class JIPipe extends AbstractService implements JIPipeService {
      *
      * @param fileName      Project file
      * @param notifications notifications for the user
-     * @param progressInfo the progress info
+     * @param progressInfo  the progress info
      * @return the project
      * @throws IOException thrown if the file could not be read or the file is corrupt
      */
@@ -415,7 +415,7 @@ public final class JIPipe extends AbstractService implements JIPipeService {
      * @param fileName      Project file
      * @param report        Report whether the project is valid
      * @param notifications notifications for the user
-     * @param progressInfo the progress info
+     * @param progressInfo  the progress info
      * @return the project
      * @throws IOException thrown if the file could not be read or the file is corrupt
      */

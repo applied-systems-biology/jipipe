@@ -26,11 +26,11 @@ import org.hkijena.jipipe.desktop.JIPipeDesktop;
 import org.hkijena.jipipe.desktop.app.JIPipeDesktopWorkbench;
 import org.hkijena.jipipe.desktop.app.JIPipeDesktopWorkbenchPanel;
 import org.hkijena.jipipe.desktop.app.grapheditor.commons.canvas.JIPipeDesktopGraphCanvasGrid;
-import org.hkijena.jipipe.desktop.app.grapheditor.commons.canvas.managers.JIPipeDesktopGraphCanvasSelectionManager;
 import org.hkijena.jipipe.desktop.app.grapheditor.commons.canvas.events.JIPipeDesktopGraphCanvasUINodeSelectedEvent;
 import org.hkijena.jipipe.desktop.app.grapheditor.commons.canvas.events.JIPipeDesktopGraphCanvasUINodeSelectedEventListener;
 import org.hkijena.jipipe.desktop.app.grapheditor.commons.canvas.events.JIPipeDesktopGraphCanvasUINodeSelectionChangedEvent;
 import org.hkijena.jipipe.desktop.app.grapheditor.commons.canvas.events.JIPipeDesktopGraphCanvasUINodeSelectionChangedEventListener;
+import org.hkijena.jipipe.desktop.app.grapheditor.commons.canvas.managers.JIPipeDesktopGraphCanvasSelectionManager;
 import org.hkijena.jipipe.desktop.app.grapheditor.commons.contextmenu.GraphInteractiveObjectUIContextAction;
 import org.hkijena.jipipe.desktop.app.grapheditor.commons.nodeui.JIPipeDesktopGraphNodeUI;
 import org.hkijena.jipipe.desktop.app.grapheditor.commons.nodeui.events.DefaultNodeUIActionRequestedEvent;
@@ -430,7 +430,7 @@ public abstract class JIPipeDesktopGraphEditorUI extends JIPipeDesktopWorkbenchP
     /**
      * Finds the next tool in sorted order for a given keybinding
      *
-     * @param keyBinding The keybinding
+     * @param keyBinding  The keybinding
      * @param currentTool The currently selected tool
      * @return The next tool to select
      */
@@ -460,7 +460,7 @@ public abstract class JIPipeDesktopGraphEditorUI extends JIPipeDesktopWorkbenchP
     /**
      * Finds the previous tool in sorted order for a given keybinding
      *
-     * @param keyBinding The keybinding
+     * @param keyBinding  The keybinding
      * @param currentTool The currently selected tool
      * @return The previous tool to select
      */
@@ -497,7 +497,7 @@ public abstract class JIPipeDesktopGraphEditorUI extends JIPipeDesktopWorkbenchP
         if (toolsForKeyBinding == null || toolsForKeyBinding.size() <= 1) {
             // If there's only one tool or none, use the standard behavior
             JIPipeToggleableGraphEditorTool singleTool = null;
-            if(toolsForKeyBinding != null) {
+            if (toolsForKeyBinding != null) {
                 singleTool = !toolsForKeyBinding.isEmpty() ? toolsForKeyBinding.getFirst() : null;
             }
             if (singleTool != null) {
@@ -535,17 +535,17 @@ public abstract class JIPipeDesktopGraphEditorUI extends JIPipeDesktopWorkbenchP
         }
         newTools.sort(Comparator.comparing(JIPipeGraphEditorTool::getCategory).thenComparing(JIPipeGraphEditorTool::getPriority));
         tools.addAll(newTools);
-        
+
         // Group tools by keybinding and build maps (only for JIPipeToggleableGraphEditorTool for cycling)
         for (JIPipeGraphEditorTool tool : newTools) {
-            if(tool instanceof  JIPipeToggleableGraphEditorTool) {
+            if (tool instanceof JIPipeToggleableGraphEditorTool) {
                 KeyStroke keyBinding = tool.getKeyBinding();
                 if (keyBinding != null) {
                     toolToKeyBinding.put((JIPipeToggleableGraphEditorTool) tool, keyBinding);
                 }
             }
         }
-        
+
         // Build map of keybinding to tools (only for JIPipeToggleableGraphEditorTool)
         for (JIPipeGraphEditorTool tool : newTools) {
             if (tool instanceof JIPipeToggleableGraphEditorTool toggleableTool) {
@@ -555,7 +555,7 @@ public abstract class JIPipeDesktopGraphEditorUI extends JIPipeDesktopWorkbenchP
                 }
             }
         }
-        
+
         for (int i = 0; i < newTools.size(); i++) {
             JIPipeGraphEditorTool tool = newTools.get(i);
             if (i > 0 && !Objects.equals(tool.getCategory(), newTools.get(i - 1).getCategory())) {
@@ -641,13 +641,13 @@ public abstract class JIPipeDesktopGraphEditorUI extends JIPipeDesktopWorkbenchP
             JToggleButton toggleButton = toolToggles.get(toggleableTool);
             toggleButton.setSelected(true);
             currentTool = toggleableTool;
-            
+
             // Update cycling state - store last selected tool for this keybinding
             if (toolToKeyBinding.containsKey(toggleableTool)) {
                 KeyStroke keyBinding = toolToKeyBinding.get(toggleableTool);
                 keyBindingToLastSelectedTool.put(keyBinding, toggleableTool);
             }
-            
+
             canvasUI.getToolManager().setCurrentTool(currentTool);
             tool.activate();
             getDesktopWorkbench().sendStatusBarText("Activated tool '" + tool.getName() + "'");
@@ -942,7 +942,7 @@ public abstract class JIPipeDesktopGraphEditorUI extends JIPipeDesktopWorkbenchP
 
     @Override
     public void onDefaultNodeUIActionRequested(DefaultNodeUIActionRequestedEvent event) {
-        if(event.getUi() != null && event.getUi().getNode() instanceof JIPipeDesktopInteractiveDefaultActionGraphNode node) {
+        if (event.getUi() != null && event.getUi().getNode() instanceof JIPipeDesktopInteractiveDefaultActionGraphNode node) {
             node.onDefaultNodeUIActionRequested(this, event);
         }
     }

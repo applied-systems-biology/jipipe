@@ -9,7 +9,7 @@ import java.awt.*;
 import java.util.Set;
 import java.util.UUID;
 
-public class JIPipeDesktopGraphCanvasOutsideEdgesOverlay implements  JIPipeDesktopGraphCanvasOverlay {
+public class JIPipeDesktopGraphCanvasOutsideEdgesOverlay implements JIPipeDesktopGraphCanvasOverlay {
 
     private final JIPipeDesktopGraphCanvasUI canvasUI;
 

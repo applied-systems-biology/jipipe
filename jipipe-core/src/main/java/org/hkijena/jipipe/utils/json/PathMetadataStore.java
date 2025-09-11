@@ -16,14 +16,10 @@ package org.hkijena.jipipe.utils.json;
 import com.fasterxml.jackson.core.JsonGenerator;
 import com.fasterxml.jackson.core.JsonParser;
 import com.fasterxml.jackson.core.JsonProcessingException;
-import com.fasterxml.jackson.databind.DeserializationContext;
-import com.fasterxml.jackson.databind.JsonDeserializer;
-import com.fasterxml.jackson.databind.JsonSerializer;
-import com.fasterxml.jackson.databind.SerializerProvider;
+import com.fasterxml.jackson.databind.*;
 import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
 import com.fasterxml.jackson.databind.annotation.JsonSerialize;
 import com.fasterxml.jackson.databind.node.ObjectNode;
-import com.fasterxml.jackson.databind.JsonNode;
 
 import java.io.IOException;
 import java.nio.file.Path;
@@ -87,6 +83,7 @@ public class PathMetadataStore {
 
     /**
      * Creates a copy of an existing PathMetadataStore
+     *
      * @param other the store to copy
      */
     public PathMetadataStore(PathMetadataStore other) {
@@ -95,6 +92,7 @@ public class PathMetadataStore {
 
     /**
      * Creates a PathMetadataStore from a PrimitiveMetadataStore by converting string keys to paths
+     *
      * @param primitiveStore the store to convert
      */
     public PathMetadataStore(PrimitiveMetadataStore primitiveStore) {
@@ -110,6 +108,7 @@ public class PathMetadataStore {
     /**
      * Puts all entries from another PathMetadataStore into this store.
      * Entries from the other store will override existing entries with the same keys.
+     *
      * @param other the store to put all entries from
      */
     public void putAll(PathMetadataStore other) {
@@ -122,7 +121,8 @@ public class PathMetadataStore {
 
     /**
      * Adds or updates a string value using a Path key.
-     * @param key the path key (must not be null)
+     *
+     * @param key   the path key (must not be null)
      * @param value the string value
      */
     public void put(Path key, String value) {
@@ -133,7 +133,8 @@ public class PathMetadataStore {
 
     /**
      * Adds or updates an integer value using a Path key.
-     * @param key the path key (must not be null)
+     *
+     * @param key   the path key (must not be null)
      * @param value the integer value
      */
     public void put(Path key, Integer value) {
@@ -144,7 +145,8 @@ public class PathMetadataStore {
 
     /**
      * Adds or updates a double value using a Path key.
-     * @param key the path key (must not be null)
+     *
+     * @param key   the path key (must not be null)
      * @param value the double value
      */
     public void put(Path key, Double value) {
@@ -155,7 +157,8 @@ public class PathMetadataStore {
 
     /**
      * Adds or updates a boolean value using a Path key.
-     * @param key the path key (must not be null)
+     *
+     * @param key   the path key (must not be null)
      * @param value the boolean value
      */
     public void put(Path key, Boolean value) {
@@ -168,8 +171,9 @@ public class PathMetadataStore {
 
     /**
      * Adds or updates a string value using a string path (converted to Path internally).
+     *
      * @param pathString the path string (must not be null)
-     * @param value the string value
+     * @param value      the string value
      */
     public void putString(String pathString, String value) {
         if (pathString != null && value != null) {
@@ -179,8 +183,9 @@ public class PathMetadataStore {
 
     /**
      * Adds or updates an integer value using a string path (converted to Path internally).
+     *
      * @param pathString the path string (must not be null)
-     * @param value the integer value
+     * @param value      the integer value
      */
     public void putString(String pathString, Integer value) {
         if (pathString != null && value != null) {
@@ -190,8 +195,9 @@ public class PathMetadataStore {
 
     /**
      * Adds or updates a double value using a string path (converted to Path internally).
+     *
      * @param pathString the path string (must not be null)
-     * @param value the double value
+     * @param value      the double value
      */
     public void putString(String pathString, Double value) {
         if (pathString != null && value != null) {
@@ -201,8 +207,9 @@ public class PathMetadataStore {
 
     /**
      * Adds or updates a boolean value using a string path (converted to Path internally).
+     *
      * @param pathString the path string (must not be null)
-     * @param value the boolean value
+     * @param value      the boolean value
      */
     public void putString(String pathString, Boolean value) {
         if (pathString != null && value != null) {
@@ -214,6 +221,7 @@ public class PathMetadataStore {
 
     /**
      * Checks if the store contains the specified path key.
+     *
      * @param key the path key to check
      * @return true if the key exists, false otherwise
      */
@@ -223,7 +231,8 @@ public class PathMetadataStore {
 
     /**
      * Retrieves a string value with a default if not found or type mismatched.
-     * @param key the path key to look up
+     *
+     * @param key          the path key to look up
      * @param defaultValue the default value to return if key doesn't exist or type differs
      * @return the string value or default
      */
@@ -233,7 +242,8 @@ public class PathMetadataStore {
 
     /**
      * Retrieves an integer value with a default if not found or type mismatched.
-     * @param key the path key to look up
+     *
+     * @param key          the path key to look up
      * @param defaultValue the default value to return if key doesn't exist or type differs
      * @return the integer value or default
      */
@@ -243,7 +253,8 @@ public class PathMetadataStore {
 
     /**
      * Retrieves a double value with a default if not found or type mismatched.
-     * @param key the path key to look up
+     *
+     * @param key          the path key to look up
      * @param defaultValue the default value to return if key doesn't exist or type differs
      * @return the double value or default
      */
@@ -253,7 +264,8 @@ public class PathMetadataStore {
 
     /**
      * Retrieves a boolean value with a default if not found or type mismatched.
-     * @param key the path key to look up
+     *
+     * @param key          the path key to look up
      * @param defaultValue the default value to return if key doesn't exist or type differs
      * @return the boolean value or default
      */
@@ -273,7 +285,8 @@ public class PathMetadataStore {
 
     /**
      * Retrieves a string value using a string path with a default if not found or type mismatched.
-     * @param pathString the path string to look up
+     *
+     * @param pathString   the path string to look up
      * @param defaultValue the default value to return if key doesn't exist or type differs
      * @return the string value or default
      */
@@ -283,7 +296,8 @@ public class PathMetadataStore {
 
     /**
      * Retrieves an integer value using a string path with a default if not found or type mismatched.
-     * @param pathString the path string to look up
+     *
+     * @param pathString   the path string to look up
      * @param defaultValue the default value to return if key doesn't exist or type differs
      * @return the integer value or default
      */
@@ -293,7 +307,8 @@ public class PathMetadataStore {
 
     /**
      * Retrieves a double value using a string path with a default if not found or type mismatched.
-     * @param pathString the path string to look up
+     *
+     * @param pathString   the path string to look up
      * @param defaultValue the default value to return if key doesn't exist or type differs
      * @return the double value or default
      */
@@ -303,7 +318,8 @@ public class PathMetadataStore {
 
     /**
      * Retrieves a boolean value using a string path with a default if not found or type mismatched.
-     * @param pathString the path string to look up
+     *
+     * @param pathString   the path string to look up
      * @param defaultValue the default value to return if key doesn't exist or type differs
      * @return the boolean value or default
      */
@@ -315,6 +331,7 @@ public class PathMetadataStore {
 
     /**
      * Returns a map of all entries where the path starts with the given prefix.
+     *
      * @param prefixPath the path prefix to filter by
      * @return an unmodifiable map of entries matching the prefix
      */
@@ -335,6 +352,7 @@ public class PathMetadataStore {
 
     /**
      * Returns a map of all entries where the path starts with the given prefix string.
+     *
      * @param prefixString the path prefix string to filter by
      * @return an unmodifiable map of entries matching the prefix
      */
@@ -346,22 +364,23 @@ public class PathMetadataStore {
     /**
      * Converts this store to a nested map structure that corresponds to the path hierarchy.
      * For example, a key "settings/general/name" would result in: {settings={general={name="value"}}}
+     *
      * @return a nested map structure
      */
     public Map<String, Object> toNestedMap() {
         Map<String, Object> result = new LinkedHashMap<>();
-        
+
         for (Map.Entry<Path, Object> entry : data.entrySet()) {
             Path path = entry.getKey();
             Object value = entry.getValue();
-            
+
             String[] parts = path.toString().split("/");
             Map<String, Object> current = result;
-            
+
             for (int i = 0; i < parts.length - 1; i++) {
                 String part = parts[i];
                 Object next = current.get(part);
-                
+
                 if (next instanceof Map) {
                     current = (Map<String, Object>) next;
                 } else {
@@ -370,15 +389,16 @@ public class PathMetadataStore {
                     current = newMap;
                 }
             }
-            
+
             current.put(parts[parts.length - 1], value);
         }
-        
+
         return result;
     }
 
     /**
      * Returns the set of all keys in the store.
+     *
      * @return an unmodifiable set of path keys
      */
     public Set<Path> keySet() {
@@ -387,6 +407,7 @@ public class PathMetadataStore {
 
     /**
      * Returns the number of entries in the store.
+     *
      * @return the size of the store
      */
     public int size() {
@@ -435,7 +456,7 @@ public class PathMetadataStore {
 
         // Convert string prefixes to Path objects
         Path prefixPath = Paths.get(pathPrefix);
-        
+
         // Handle trailing separator normalization by creating both versions
         Path normalizedPrefixPath = Paths.get(pathPrefix);
         if (!pathPrefix.endsWith("/")) {
@@ -515,6 +536,7 @@ public class PathMetadataStore {
 
     /**
      * Returns an unmodifiable copy of the internal data map.
+     *
      * @return the data map
      */
     public Map<Path, Object> getData() {
@@ -527,14 +549,14 @@ public class PathMetadataStore {
         if (path == null || prefix == null) {
             return false;
         }
-        
+
         String pathStr = path.toString();
         String prefixStr = prefix.toString();
-        
+
         if (pathStr.length() < prefixStr.length()) {
             return false;
         }
-        
+
         if (pathStr.startsWith(prefixStr)) {
             // Check if the next character is either end of string or a path separator
             if (pathStr.length() == prefixStr.length()) {
@@ -543,7 +565,7 @@ public class PathMetadataStore {
             char nextChar = pathStr.charAt(prefixStr.length());
             return nextChar == '/';
         }
-        
+
         return false;
     }
 
@@ -611,19 +633,19 @@ public class PathMetadataStore {
         @Override
         public PathMetadataStore deserialize(JsonParser jsonParser, DeserializationContext deserializationContext) throws IOException, JsonProcessingException {
             PathMetadataStore store = new PathMetadataStore();
-            
+
             if (jsonParser.isExpectedStartObjectToken()) {
                 ObjectNode node = jsonParser.readValueAsTree();
                 Iterator<Map.Entry<String, JsonNode>> fields = node.fields();
-                
+
                 while (fields.hasNext()) {
                     Map.Entry<String, JsonNode> field = fields.next();
                     String keyStr = field.getKey();
                     JsonNode valueNode = field.getValue();
-                    
+
                     if (keyStr != null && !keyStr.isEmpty() && valueNode != null && !valueNode.isNull()) {
                         Path key = Paths.get(keyStr);
-                        
+
                         try {
                             if (valueNode.isTextual()) {
                                 store.put(key, valueNode.asText());
@@ -640,7 +662,7 @@ public class PathMetadataStore {
                     }
                 }
             }
-            
+
             return store;
         }
     }

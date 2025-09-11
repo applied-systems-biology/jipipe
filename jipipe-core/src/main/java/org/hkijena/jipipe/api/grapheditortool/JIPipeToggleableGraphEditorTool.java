@@ -36,7 +36,7 @@ public interface JIPipeToggleableGraphEditorTool extends JIPipeGraphEditorTool {
         return true;
     }
 
-    default JIPipeToggleableGraphEditorToolNodeLayerMask  getNodeLayerMask() {
+    default JIPipeToggleableGraphEditorToolNodeLayerMask getNodeLayerMask() {
         return JIPipeToggleableGraphEditorToolNodeLayerMask.None;
     }
 
@@ -65,7 +65,7 @@ public interface JIPipeToggleableGraphEditorTool extends JIPipeGraphEditorTool {
         graphics2D.setColor(canvasUI.getResources().getSmartEdgeSlotBackground());
         graphics2D.fillRoundRect(x, y, nameWidth + 22 + 3, 22, 5, 5);
         graphics2D.setColor(canvasUI.getResources().getSmartEdgeSlotForeground());
-        if(withBorder) {
+        if (withBorder) {
             graphics2D.drawRoundRect(x, y, nameWidth + 22 + 3, 22, 5, 5);
         }
 

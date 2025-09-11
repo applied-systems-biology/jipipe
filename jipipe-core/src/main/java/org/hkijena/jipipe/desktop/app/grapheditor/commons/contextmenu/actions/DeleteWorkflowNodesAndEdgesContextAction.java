@@ -48,18 +48,18 @@ public class DeleteWorkflowNodesAndEdgesContextAction implements NodeAndEdgesUIC
     @Override
     public void runNodesAndEdges(JIPipeDesktopGraphCanvasUI canvasUI, Set<JIPipeDesktopGraphNodeUI> nodeSelection, Set<JIPipeDesktopGraphEdgeUI> edgeSelection) {
         boolean allowDeleteNodes = true;
-        if(!nodeSelection.isEmpty()) {
+        if (!nodeSelection.isEmpty()) {
             if (!JIPipeDesktopProjectWorkbench.canAddOrDeleteNodes(canvasUI.getDesktopWorkbench())) {
                 allowDeleteNodes = false;
             }
         }
 
         String subject = "";
-        if(allowDeleteNodes && !nodeSelection.isEmpty()) {
+        if (allowDeleteNodes && !nodeSelection.isEmpty()) {
             subject = "nodes";
         }
-        if(!edgeSelection.isEmpty()) {
-            if(!subject.isEmpty()) {
+        if (!edgeSelection.isEmpty()) {
+            if (!subject.isEmpty()) {
                 subject += "/";
             }
             subject += "edges";
@@ -68,7 +68,7 @@ public class DeleteWorkflowNodesAndEdgesContextAction implements NodeAndEdgesUIC
         if (!JIPipeGraphEditorUIApplicationSettings.getInstance().isAskOnDeleteNode() || JOptionPane.showConfirmDialog(canvasUI.getDesktopWorkbench().getWindow(),
                 "Do you really want to remove the selected " + subject + "?", "Delete " + subject,
                 JOptionPane.YES_NO_OPTION) == JOptionPane.YES_OPTION) {
-            if(!edgeSelection.isEmpty()) {
+            if (!edgeSelection.isEmpty()) {
                 for (JIPipeDesktopGraphEdgeUI edgeUI : edgeSelection) {
                     if (canvasUI.getHistoryJournal() != null) {
                         canvasUI.getHistoryJournal().snapshotBeforeDisconnect(edgeUI.getSource(), edgeUI.getTarget(), canvasUI.getCompartmentUUID());
@@ -76,7 +76,7 @@ public class DeleteWorkflowNodesAndEdgesContextAction implements NodeAndEdgesUIC
                     canvasUI.getGraph().disconnect(edgeUI.getSource(), edgeUI.getTarget(), true);
                 }
             }
-            if(!nodeSelection.isEmpty()) {
+            if (!nodeSelection.isEmpty()) {
                 Set<JIPipeGraphNode> nodes = nodeSelection.stream().map(JIPipeDesktopGraphNodeUI::getNode).filter(node -> !node.isUiLocked()).collect(Collectors.toSet());
                 UUID compartment = nodes.stream().map(JIPipeGraphNode::getUUIDInParentGraph).findFirst().orElse(null);
                 if (canvasUI.getHistoryJournal() != null) {

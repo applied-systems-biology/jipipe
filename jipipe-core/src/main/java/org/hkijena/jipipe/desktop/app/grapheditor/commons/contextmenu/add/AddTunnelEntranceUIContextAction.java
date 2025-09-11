@@ -18,14 +18,9 @@ import org.hkijena.jipipe.desktop.app.grapheditor.commons.JIPipeDesktopGraphCanv
 import org.hkijena.jipipe.desktop.app.grapheditor.commons.JIPipeDesktopGraphInteractiveObjectUI;
 import org.hkijena.jipipe.desktop.app.grapheditor.commons.contextmenu.GraphInteractiveObjectUIContextAction;
 import org.hkijena.jipipe.desktop.app.grapheditor.commons.nodeui.events.DefaultNodeUIActionRequestedEvent;
-import org.hkijena.jipipe.desktop.commons.components.JIPipeDesktopParameterKeyPickerUI;
-import org.hkijena.jipipe.plugins.multiparameters.nodes.DefineParametersTableAlgorithm;
-import org.hkijena.jipipe.plugins.parameters.library.table.ParameterTable;
 import org.hkijena.jipipe.plugins.tunnels.nodes.tunnel1.JIPipeDataFlowTunnel1Entrance;
 
 import javax.swing.*;
-import java.awt.event.KeyEvent;
-import java.util.List;
 import java.util.Set;
 import java.util.UUID;
 

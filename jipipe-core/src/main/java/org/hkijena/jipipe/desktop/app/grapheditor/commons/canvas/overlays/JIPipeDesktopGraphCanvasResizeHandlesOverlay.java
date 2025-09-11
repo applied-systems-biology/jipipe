@@ -2,7 +2,6 @@ package org.hkijena.jipipe.desktop.app.grapheditor.commons.canvas.overlays;
 
 import org.hkijena.jipipe.desktop.app.grapheditor.commons.JIPipeDesktopGraphCanvasUI;
 
-import javax.swing.*;
 import java.awt.*;
 
 public class JIPipeDesktopGraphCanvasResizeHandlesOverlay implements JIPipeDesktopGraphCanvasOverlay {

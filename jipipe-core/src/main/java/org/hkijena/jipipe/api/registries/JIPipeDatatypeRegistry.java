@@ -644,7 +644,7 @@ public class JIPipeDatatypeRegistry {
 
         // Convert to list for easier processing
         List<Class<? extends JIPipeData>> typeList = new ArrayList<>(dataTypes);
-        
+
         // If there's only one type, return it directly
         if (typeList.size() == 1) {
             return typeList.getFirst();
@@ -664,18 +664,18 @@ public class JIPipeDatatypeRegistry {
     private Class<? extends JIPipeData> findCommonAncestor(List<Class<? extends JIPipeData>> typeList) {
         // Start with the first type as the initial consensus
         Class<? extends JIPipeData> consensus = typeList.getFirst();
-        
+
         // Check each subsequent type
         for (int i = 1; i < typeList.size(); i++) {
             Class<? extends JIPipeData> currentType = typeList.get(i);
             consensus = findCommonAncestorBetweenTwoTypes(consensus, currentType);
-            
+
             // If at any point there's no common ancestor, return null
             if (consensus == null) {
                 return null;
             }
         }
-        
+
         return consensus;
     }
 
@@ -697,7 +697,7 @@ public class JIPipeDatatypeRegistry {
 
         // Traverse the class hierarchy of type1 to find a common ancestor with type2
         Class<?> current = type1.getSuperclass();
-        
+
         // Ensure we stay within JIPipeData hierarchy
         while (current != null && JIPipeData.class.isAssignableFrom(current)) {
             if (current.isAssignableFrom(type2)) {
@@ -705,12 +705,12 @@ public class JIPipeDatatypeRegistry {
             }
             current = current.getSuperclass();
         }
-        
+
         // Check if JIPipeData itself is the common ancestor
         if (JIPipeData.class.isAssignableFrom(type2)) {
             return JIPipeData.class;
         }
-        
+
         // No common ancestor found
         return null;
     }

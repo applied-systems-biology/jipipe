@@ -36,11 +36,12 @@ import org.hkijena.jipipe.api.runtimepartitioning.JIPipeRuntimePartition;
 import org.hkijena.jipipe.desktop.app.JIPipeDesktopProjectWorkbench;
 import org.hkijena.jipipe.desktop.app.JIPipeDesktopWorkbench;
 import org.hkijena.jipipe.desktop.app.JIPipeDesktopWorkbenchPanel;
-import org.hkijena.jipipe.desktop.app.grapheditor.commons.canvas.*;
 import org.hkijena.jipipe.desktop.app.grapheditor.commons.JIPipeDesktopGraphCanvasUI;
 import org.hkijena.jipipe.desktop.app.grapheditor.commons.JIPipeDesktopGraphInteractiveObjectUI;
 import org.hkijena.jipipe.desktop.app.grapheditor.commons.JIPipeDesktopGraphInteractiveObjectUIUpdateViewCommand;
-import org.hkijena.jipipe.desktop.app.grapheditor.commons.contextmenu.*;
+import org.hkijena.jipipe.desktop.app.grapheditor.commons.canvas.JIPipeDesktopGraphCanvasGrid;
+import org.hkijena.jipipe.desktop.app.grapheditor.commons.canvas.JIPipeDesktopGraphCanvasResources;
+import org.hkijena.jipipe.desktop.app.grapheditor.commons.contextmenu.GraphInteractiveObjectUIContextAction;
 import org.hkijena.jipipe.desktop.app.grapheditor.commons.contextmenu.cache.ClearCacheNodeUIContextAction;
 import org.hkijena.jipipe.desktop.app.grapheditor.commons.contextmenu.running.*;
 import org.hkijena.jipipe.desktop.app.grapheditor.commons.nodeui.events.NodeUIActionRequestedEventEmitter;
@@ -79,15 +80,13 @@ public class JIPipeDesktopGraphNodeUI extends JIPipeDesktopWorkbenchPanel implem
             GraphInteractiveObjectUIContextAction.SEPARATOR,
             new ClearCacheNodeUIContextAction()
     };
-
-    private final JIPipeDesktopGraphNodeUINodeContextMenu nodeContextMenu = new  JIPipeDesktopGraphNodeUINodeContextMenu(this);
-    private final JIPipeDesktopGraphNodeUIInputConfigContextMenu inputConfigMenu = new  JIPipeDesktopGraphNodeUIInputConfigContextMenu(this);
+    protected final List<JIPipeDesktopGraphNodeUIActiveArea> activeAreas = new ArrayList<>();
+    private final JIPipeDesktopGraphNodeUINodeContextMenu nodeContextMenu = new JIPipeDesktopGraphNodeUINodeContextMenu(this);
+    private final JIPipeDesktopGraphNodeUIInputConfigContextMenu inputConfigMenu = new JIPipeDesktopGraphNodeUIInputConfigContextMenu(this);
     private final JIPipeDesktopGraphNodeUISlotContextMenu slotContextMenu = new JIPipeDesktopGraphNodeUISlotContextMenu(this);
     private final JIPipeDesktopGraphNodeUIEdgeManager edgeManager = new JIPipeDesktopGraphNodeUIEdgeManager(this);
     private final JIPipeDesktopGraphNodeUISlotManager slotManager = new JIPipeDesktopGraphNodeUISlotManager(this);
     private final JIPipeDesktopGraphNodeUIConnectSlotContextMenu connectSlotContextMenu = new JIPipeDesktopGraphNodeUIConnectSlotContextMenu(this);
-
-    protected final List<JIPipeDesktopGraphNodeUIActiveArea> activeAreas = new ArrayList<>();
     private final JIPipeDesktopGraphCanvasUI graphCanvasUI;
     private final JIPipeGraphNode node;
     private final Color nodeFillColor;
@@ -213,7 +212,6 @@ public class JIPipeDesktopGraphNodeUI extends JIPipeDesktopWorkbenchPanel implem
         initialize();
         updateView(true, true, true);
     }
-
 
 
     public JIPipeIterationStepGenerationSettingsVisualization getIterationStepGenerationSettingsVisualization() {
@@ -1143,7 +1141,7 @@ public class JIPipeDesktopGraphNodeUI extends JIPipeDesktopWorkbenchPanel implem
         FontMetrics fontMetrics = g2.getFontMetrics();
         UIUtils.drawStringVerticallyCentered(g2, getDisplayedSlotLabel(slotState), (int) Math.round(startX + 3 * zoom), (int) Math.round(centerY - 1 * zoom), fontMetrics);
 
-        if(isDrawSlotIndicators()) {
+        if (isDrawSlotIndicators()) {
             if (slotState.getSlotStatus() == JIPipeDesktopGraphNodeUISlotStatus.Cached) {
                 startX = originalStartX + slotWidth - 8 * zoom - 12 * zoom;
                 g2.drawImage(JIPipe.RESOURCES.getIcon12Inverted("actions/database.png").getImage(),
@@ -1228,7 +1226,7 @@ public class JIPipeDesktopGraphNodeUI extends JIPipeDesktopWorkbenchPanel implem
             }
 
             // Draw icon
-            if(isDrawNodeIcon()) {
+            if (isDrawNodeIcon()) {
                 g2.drawImage(getNodeIcon(), (int) Math.round(startX + 3 * zoom), (int) Math.round(centerY - 8 * zoom), (int) Math.round(16 * zoom), (int) Math.round(16 * zoom), null);
                 startX += 22 * zoom;
             }

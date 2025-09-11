@@ -196,7 +196,7 @@ public class JIPipeProject implements JIPipeValidatable {
      * @param context       the context
      * @param report        issue report
      * @param notifications notifications for the user
-     * @param progressInfo the progress info
+     * @param progressInfo  the progress info
      * @return Loaded project
      * @throws IOException Triggered by {@link ObjectMapper}
      */
@@ -1039,7 +1039,7 @@ public class JIPipeProject implements JIPipeValidatable {
      * @param jsonNode      the node
      * @param context       the context
      * @param notifications notifications for the user
-     * @param progressInfo the progress info
+     * @param progressInfo  the progress info
      */
     public void fromJson(JsonNode jsonNode, JIPipeValidationReportContext context, JIPipeValidationReport report, JIPipeNotificationInbox notifications, JIPipeProgressInfo progressInfo) throws IOException {
         try {

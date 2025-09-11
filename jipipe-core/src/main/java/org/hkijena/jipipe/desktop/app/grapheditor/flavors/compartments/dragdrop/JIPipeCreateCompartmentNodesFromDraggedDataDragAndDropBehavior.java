@@ -21,10 +21,8 @@ import org.hkijena.jipipe.desktop.app.grapheditor.commons.JIPipeDesktopGraphDrag
 import org.hkijena.jipipe.desktop.app.grapheditor.commons.canvas.JIPipeDesktopGraphCanvasGrid;
 import org.hkijena.jipipe.desktop.app.grapheditor.commons.canvas.managers.JIPipeDesktopGraphCanvasNotificationsManager;
 import org.hkijena.jipipe.desktop.app.grapheditor.flavors.compartments.JIPipeDesktopCompartmentsGraphEditorUI;
-import org.hkijena.jipipe.plugins.settings.JIPipeGraphEditorUIApplicationSettings;
 import org.hkijena.jipipe.utils.json.JsonUtils;
 
-import javax.swing.*;
 import java.awt.*;
 import java.awt.datatransfer.DataFlavor;
 import java.awt.datatransfer.Transferable;
@@ -89,12 +87,11 @@ public class JIPipeCreateCompartmentNodesFromDraggedDataDragAndDropBehavior impl
                 if (transferData instanceof String text) {
                     processDrop(text);
                     dtde.dropComplete(true);
-                }
-                else {
+                } else {
                     accept = false;
                 }
             }
-            if(!accept) {
+            if (!accept) {
                 showErrorMessage();
             }
             return;

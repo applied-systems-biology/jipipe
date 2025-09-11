@@ -35,7 +35,7 @@ public class JIPipeDesktopAnnotationGraphNodeUI extends JIPipeDesktopGraphNodeUI
      */
     public JIPipeDesktopAnnotationGraphNodeUI(JIPipeDesktopWorkbench workbench, JIPipeDesktopGraphCanvasUI graphCanvasUI, JIPipeGraphNode node) {
         super(workbench, graphCanvasUI, node);
-        if(!JIPipeAnnotationGraphNode.class.isAssignableFrom(node.getClass())) {
+        if (!JIPipeAnnotationGraphNode.class.isAssignableFrom(node.getClass())) {
             throw new IllegalArgumentException("Node must be a JIPipeAnnotationGraphNode");
         }
         setBuffered(false);

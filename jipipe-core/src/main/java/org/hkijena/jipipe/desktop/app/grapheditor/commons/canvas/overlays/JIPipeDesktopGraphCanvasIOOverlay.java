@@ -77,8 +77,8 @@ public class JIPipeDesktopGraphCanvasIOOverlay implements JIPipeDesktopGraphCanv
                 if (slotActiveArea != null && slotActiveArea.getLastFillRect() != null) {
                     Rectangle lastFillRect = slotActiveArea.getLastFillRect();
                     int x = (int) Math.round(lastFillRect.x - ((double) thickness / 2) * canvasUI.getZoom());
-                    int y = (int) Math.round(lastFillRect.y -  ((double) thickness / 2) * canvasUI.getZoom());
-                    int width = lastFillRect.width + (int) Math.round( thickness * canvasUI.getZoom());
+                    int y = (int) Math.round(lastFillRect.y - ((double) thickness / 2) * canvasUI.getZoom());
+                    int width = lastFillRect.width + (int) Math.round(thickness * canvasUI.getZoom());
                     int height = (int) Math.round(lastFillRect.height + thickness * canvasUI.getZoom());
 
                     g.drawRect(nodeX + x + 1, nodeY + y + 1, width - 2, height - 2);

@@ -13,16 +13,14 @@ public enum JIPipeToggleableGraphEditorToolNodeLayerMask {
     None;
 
     public boolean test(JIPipeDesktopGraphInteractiveObjectUI ui) {
-        if(this == WorkflowOnly) {
-            if(ui instanceof JIPipeDesktopAnnotationGraphNodeUI) {
+        if (this == WorkflowOnly) {
+            if (ui instanceof JIPipeDesktopAnnotationGraphNodeUI) {
                 return !(ui instanceof JIPipeDesktopAnnotationGraphNodeUI);
             }
             return true;
-        }
-        else if(this == AnnotationsOnly) {
+        } else if (this == AnnotationsOnly) {
             return (ui instanceof JIPipeDesktopAnnotationGraphNodeUI);
-        }
-        else {
+        } else {
             return true;
         }
     }

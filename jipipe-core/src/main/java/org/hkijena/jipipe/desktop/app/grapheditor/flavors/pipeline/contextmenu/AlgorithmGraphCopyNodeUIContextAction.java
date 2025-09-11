@@ -47,7 +47,7 @@ public class AlgorithmGraphCopyNodeUIContextAction implements NodeUIContextActio
             Clipboard clipboard = Toolkit.getDefaultToolkit().getSystemClipboard();
             clipboard.setContents(stringSelection, stringSelection);
             canvasUI.getNotificationsManager().addNotification("Copied " + selection.size() + " nodes (locked nodes were skipped)",
-                   getIcon(), JIPipeDesktopGraphCanvasNotificationsManager.NotificationType.Info);
+                    getIcon(), JIPipeDesktopGraphCanvasNotificationsManager.NotificationType.Info);
         } catch (JsonProcessingException e) {
             e.printStackTrace();
         }

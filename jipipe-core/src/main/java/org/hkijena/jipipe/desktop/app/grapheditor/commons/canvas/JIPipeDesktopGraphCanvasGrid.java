@@ -22,7 +22,7 @@ public class JIPipeDesktopGraphCanvasGrid {
     public static final int GRID_WIDTH = 25;
     public static final int GRID_HEIGHT = 25;
 
-    private  JIPipeDesktopGraphCanvasGrid() {
+    private JIPipeDesktopGraphCanvasGrid() {
 
     }
 

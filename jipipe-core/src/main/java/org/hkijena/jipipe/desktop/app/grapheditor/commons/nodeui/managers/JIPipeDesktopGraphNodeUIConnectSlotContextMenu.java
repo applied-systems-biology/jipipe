@@ -8,7 +8,6 @@ import org.hkijena.jipipe.desktop.app.grapheditor.commons.canvas.JIPipeDesktopGr
 import org.hkijena.jipipe.desktop.app.grapheditor.commons.nodeui.JIPipeDesktopGraphNodeUI;
 import org.hkijena.jipipe.desktop.app.grapheditor.commons.nodeui.triggers.JIPipeDesktopGraphNodeUISlotActiveArea;
 import org.hkijena.jipipe.utils.TooltipUtils;
-import org.hkijena.jipipe.utils.UIUtils;
 
 import javax.swing.*;
 import java.awt.event.MouseAdapter;
