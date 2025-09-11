@@ -114,7 +114,8 @@ public class JIPipeDesktopGraphCanvasUI extends JLayeredPane implements JIPipeDe
     private final JIPipeDesktopGraphCanvasUIUpdatedEventEmitter graphCanvasUpdatedEventEmitter = new JIPipeDesktopGraphCanvasUIUpdatedEventEmitter();
     private final JIPipeDesktopGraphNodeUI.DefaultNodeUIActionRequestedEventEmitter defaultNodeUIActionRequestedEventEmitter = new JIPipeDesktopGraphNodeUI.DefaultNodeUIActionRequestedEventEmitter();
     private final JIPipeDesktopGraphNodeUI.NodeUIActionRequestedEventEmitter nodeUIActionRequestedEventEmitter = new JIPipeDesktopGraphNodeUI.NodeUIActionRequestedEventEmitter();
-    private final StampedLock stampedLock = new StampedLock();
+    private final StampedLock graphEditCursorLock = new StampedLock();
+    private final StampedLock updateCanvasLock = new StampedLock();
     private JIPipeDesktopGraphDragAndDropBehavior dragAndDropBehavior;
     private Point graphEditCursor;
 
@@ -1545,14 +1546,14 @@ public class JIPipeDesktopGraphCanvasUI extends JLayeredPane implements JIPipeDe
 //        if(System.identityHashCode(this) == 1274726433) {
 //            System.out.println("wtdf");
 //        }
-        long stamp = stampedLock.readLock();
+        long stamp = graphEditCursorLock.readLock();
 //        System.out.println("is: " + graphEditCursor + " in " + System.identityHashCode(this));
         try {
             if (graphEditCursor == null)
                 return new Point(0, 0);
             return new Point(graphEditCursor.x, graphEditCursor.y);
         } finally {
-            stampedLock.unlock(stamp);
+            graphEditCursorLock.unlock(stamp);
         }
     }
 
@@ -1584,11 +1585,11 @@ public class JIPipeDesktopGraphCanvasUI extends JLayeredPane implements JIPipeDe
     }
 
     public void setGraphEditCursor(Point graphEditCursor) {
-        long stamp = stampedLock.writeLock();
+        long stamp = graphEditCursorLock.writeLock();
         try {
             this.graphEditCursor = graphEditCursor != null ? new Point(graphEditCursor.x, graphEditCursor.y) : new Point();
         } finally {
-            stampedLock.unlock(stamp);
+            graphEditCursorLock.unlock(stamp);
         }
     }
 
@@ -1687,7 +1688,7 @@ public class JIPipeDesktopGraphCanvasUI extends JLayeredPane implements JIPipeDe
         }
 
         // Lock with stamped lock
-        long stamp = stampedLock.writeLock();
+        long stamp = updateCanvasLock.writeLock();
         try {
 
             // Updates existing nodes positions
@@ -1702,7 +1703,7 @@ public class JIPipeDesktopGraphCanvasUI extends JLayeredPane implements JIPipeDe
             addNewEdges();
         }
         finally {
-            stampedLock.unlock(stamp);
+            updateCanvasLock.unlock(stamp);
         }
 
         requestFocusInWindow();
