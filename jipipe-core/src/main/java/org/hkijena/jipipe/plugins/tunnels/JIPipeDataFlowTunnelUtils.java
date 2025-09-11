@@ -31,6 +31,17 @@ public class JIPipeDataFlowTunnelUtils {
         return true;
     }
 
+    public static List<JIPipeDataFlowTunnelEntrance> findTunnelEntrances(JIPipeGraph graph, UUID compartmentUUID, String tunnelKeyGroup, String tunnelKey) {
+        List<JIPipeDataFlowTunnelEntrance> result = new ArrayList<>();
+        Set<JIPipeGraphNode> nodesWithinCompartment = graph.getNodesWithinCompartment(compartmentUUID);
+        for (JIPipeGraphNode node : nodesWithinCompartment) {
+            if (node instanceof JIPipeDataFlowTunnelEntrance tunnelEntrance && Objects.equals(tunnelEntrance.getTunnelKeyGroup(), tunnelKeyGroup) && Objects.equals(tunnelEntrance.getTunnelKey(), tunnelKey)) {
+                result.add(tunnelEntrance);
+            }
+        }
+        return result;
+    }
+
     public static JIPipeDataFlowTunnelEntrance findTunnelEntrance(JIPipeGraph graph, UUID compartmentUUID, String tunnelKeyGroup, String tunnelKey) {
         Set<JIPipeGraphNode> nodesWithinCompartment = graph.getNodesWithinCompartment(compartmentUUID);
         for (JIPipeGraphNode node : nodesWithinCompartment) {

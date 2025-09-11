@@ -10,7 +10,7 @@ import org.hkijena.jipipe.plugins.tunnels.nodes.JIPipeDataFlowTunnelEntrance;
 
 @SetJIPipeDocumentation(name = "Tunnel entrance", description = "")
 @ConfigureJIPipeNode(nodeTypeCategory = MiscellaneousNodeTypeCategory.class, menuPath = "Organization")
-@AddJIPipeInputSlot(name = "A", value = JIPipeData.class, create = true, optional = true)
+@AddJIPipeInputSlot(name = "T1", value = JIPipeData.class, create = true, optional = true)
 public class JIPipeDataFlowTunnel1Entrance extends JIPipeDataFlowTunnelEntrance {
 
     public JIPipeDataFlowTunnel1Entrance(JIPipeNodeInfo info) {

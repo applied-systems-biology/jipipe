@@ -10,7 +10,7 @@ import org.hkijena.jipipe.plugins.tunnels.nodes.JIPipeDataFlowTunnelExit;
 
 @SetJIPipeDocumentation(name = "Tunnel exit", description = "")
 @ConfigureJIPipeNode(nodeTypeCategory = MiscellaneousNodeTypeCategory.class, menuPath = "Organization")
-@AddJIPipeOutputSlot(name = "A", value = JIPipeData.class, create = true)
+@AddJIPipeOutputSlot(name = "T1", value = JIPipeData.class, create = true)
 public class JIPipeDataFlowTunnel1Exit extends JIPipeDataFlowTunnelExit {
     public JIPipeDataFlowTunnel1Exit(JIPipeNodeInfo info) {
         super(info);
