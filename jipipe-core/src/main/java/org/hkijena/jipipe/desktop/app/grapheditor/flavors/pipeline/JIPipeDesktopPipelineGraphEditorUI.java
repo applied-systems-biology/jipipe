@@ -34,8 +34,12 @@ import org.hkijena.jipipe.desktop.app.grapheditor.commons.JIPipeDesktopGraphEdit
 import org.hkijena.jipipe.desktop.app.grapheditor.commons.JIPipeDesktopGraphEditorMinimap;
 import org.hkijena.jipipe.desktop.app.grapheditor.commons.JIPipeDesktopGraphEditorUI;
 import org.hkijena.jipipe.desktop.app.grapheditor.commons.JIPipeDesktopGraphInteractiveObjectUI;
-import org.hkijena.jipipe.desktop.app.grapheditor.commons.contextmenu.*;
-import org.hkijena.jipipe.desktop.app.grapheditor.commons.contextmenu.actions.*;
+import org.hkijena.jipipe.desktop.app.grapheditor.commons.contextmenu.GraphInteractiveObjectUIContextAction;
+import org.hkijena.jipipe.desktop.app.grapheditor.commons.contextmenu.NodeContextActionWrapperUIContextAction;
+import org.hkijena.jipipe.desktop.app.grapheditor.commons.contextmenu.actions.CopyEdgeUIContextAction;
+import org.hkijena.jipipe.desktop.app.grapheditor.commons.contextmenu.actions.DeleteWorkflowNodesAndEdgesContextAction;
+import org.hkijena.jipipe.desktop.app.grapheditor.commons.contextmenu.actions.GroupNodeUIContextAction;
+import org.hkijena.jipipe.desktop.app.grapheditor.commons.contextmenu.actions.IsolateNodesUIContextAction;
 import org.hkijena.jipipe.desktop.app.grapheditor.commons.contextmenu.add.AddNewNodeUIContextAction;
 import org.hkijena.jipipe.desktop.app.grapheditor.commons.contextmenu.add.AddNewParameterSetNodeUIContextAction;
 import org.hkijena.jipipe.desktop.app.grapheditor.commons.contextmenu.bookmarks.AddBookmarkNodeUIContextAction;
@@ -286,7 +290,7 @@ public class JIPipeDesktopPipelineGraphEditorUI extends JIPipeDesktopGraphEditor
 
         if (getSelectionManager().getSelection().size() == 1) {
             JIPipeDesktopGraphInteractiveObjectUI interactiveObjectUI = getSelectionManager().getSelection().iterator().next();
-            if(interactiveObjectUI instanceof JIPipeDesktopGraphNodeUI) {
+            if (interactiveObjectUI instanceof JIPipeDesktopGraphNodeUI) {
                 showSelectedNodeDocks((JIPipeDesktopGraphNodeUI) interactiveObjectUI);
             }
         }
@@ -367,44 +371,54 @@ public class JIPipeDesktopPipelineGraphEditorUI extends JIPipeDesktopGraphEditor
     public void onDefaultNodeUIActionRequested(DefaultNodeUIActionRequestedEvent event) {
         JIPipeGraphNode node = event.getUi().getNode();
         if (node instanceof JIPipeNodeGroup) {
-            if (getDesktopWorkbench() instanceof JIPipeDesktopProjectWorkbench) {
-                JIPipeDesktopNodeGroupUI.openGroupNodeGraph(getDesktopWorkbench(), (JIPipeNodeGroup) node, true);
-            }
+            handleOpenNodeGroupAction((JIPipeNodeGroup) node);
         } else if (node instanceof JIPipeProjectCompartmentOutput) {
-            // Open the compartment
-            if (!Objects.equals(getCompartment(), node.getCompartmentUUIDInParentGraph()) && getDesktopWorkbench() instanceof JIPipeDesktopProjectWorkbench) {
-                // This is an input
-                JIPipeDesktopProjectWorkbench projectWorkbench = (JIPipeDesktopProjectWorkbench) getDesktopWorkbench();
-                UUID uuid = node.getCompartmentUUIDInParentGraph();
-                JIPipeProjectCompartment projectCompartment = projectWorkbench.getProject().getCompartments().get(uuid);
-                projectWorkbench.getOrOpenPipelineEditorTab(projectCompartment, true);
-            } else if (getDesktopWorkbench() instanceof JIPipeDesktopProjectWorkbench) {
-                JIPipeDesktopProjectWorkbench projectWorkbench = (JIPipeDesktopProjectWorkbench) getDesktopWorkbench();
-                UUID uuid = node.getCompartmentUUIDInParentGraph();
-                JIPipeProjectCompartment projectCompartment = projectWorkbench.getProject().getCompartments().get(uuid);
-                JIPipeOutputDataSlot outputSlot = projectCompartment.getFirstOutputSlot();
-                JIPipeGraph compartmentGraph = projectWorkbench.getProject().getCompartmentGraph();
-                List<JIPipeProjectCompartment> targets = new ArrayList<>();
-                for (JIPipeGraphEdge edge : compartmentGraph.getGraph().edgesOf(outputSlot)) {
-                    JIPipeGraphNode edgeTarget = compartmentGraph.getGraph().getEdgeTarget(edge).getNode();
-                    if (edgeTarget instanceof JIPipeProjectCompartment && edgeTarget != projectCompartment) {
-                        targets.add((JIPipeProjectCompartment) edgeTarget);
-                    }
-                }
-                if (targets.size() > 1) {
-                    JPopupMenu popupMenu = new JPopupMenu();
-                    for (JIPipeProjectCompartment target : targets) {
-                        popupMenu.add(UIUtils.createMenuItem("Go to '" + target.getName() + "'", "Open the '" + target.getName() + "' compartment", JIPipe.RESOURCES.getIcon16("actions/graph-compartment.png"), () -> {
-                            projectWorkbench.getOrOpenPipelineEditorTab(target, true);
-                        }));
-                    }
-                    popupMenu.show(event.getUi().getGraphCanvasUI(),
-                            event.getUi().getGraphCanvasUI().getLastMousePosition().x,
-                            event.getUi().getGraphCanvasUI().getLastMousePosition().y);
-                } else if (targets.size() == 1) {
-                    projectWorkbench.getOrOpenPipelineEditorTab(targets.get(0), true);
+            handleNavigateToCompartmentAction(event, node);
+        } else {
+            super.onDefaultNodeUIActionRequested(event);
+        }
+    }
+
+    private void handleNavigateToCompartmentAction(DefaultNodeUIActionRequestedEvent event, JIPipeGraphNode node) {
+        // Open the compartment
+        if (!Objects.equals(getCompartment(), node.getCompartmentUUIDInParentGraph()) && getDesktopWorkbench() instanceof JIPipeDesktopProjectWorkbench) {
+            // This is an input
+            JIPipeDesktopProjectWorkbench projectWorkbench = (JIPipeDesktopProjectWorkbench) getDesktopWorkbench();
+            UUID uuid = node.getCompartmentUUIDInParentGraph();
+            JIPipeProjectCompartment projectCompartment = projectWorkbench.getProject().getCompartments().get(uuid);
+            projectWorkbench.getOrOpenPipelineEditorTab(projectCompartment, true);
+        } else if (getDesktopWorkbench() instanceof JIPipeDesktopProjectWorkbench) {
+            JIPipeDesktopProjectWorkbench projectWorkbench = (JIPipeDesktopProjectWorkbench) getDesktopWorkbench();
+            UUID uuid = node.getCompartmentUUIDInParentGraph();
+            JIPipeProjectCompartment projectCompartment = projectWorkbench.getProject().getCompartments().get(uuid);
+            JIPipeOutputDataSlot outputSlot = projectCompartment.getFirstOutputSlot();
+            JIPipeGraph compartmentGraph = projectWorkbench.getProject().getCompartmentGraph();
+            List<JIPipeProjectCompartment> targets = new ArrayList<>();
+            for (JIPipeGraphEdge edge : compartmentGraph.getGraph().edgesOf(outputSlot)) {
+                JIPipeGraphNode edgeTarget = compartmentGraph.getGraph().getEdgeTarget(edge).getNode();
+                if (edgeTarget instanceof JIPipeProjectCompartment && edgeTarget != projectCompartment) {
+                    targets.add((JIPipeProjectCompartment) edgeTarget);
                 }
             }
+            if (targets.size() > 1) {
+                JPopupMenu popupMenu = new JPopupMenu();
+                for (JIPipeProjectCompartment target : targets) {
+                    popupMenu.add(UIUtils.createMenuItem("Go to '" + target.getName() + "'", "Open the '" + target.getName() + "' compartment", JIPipe.RESOURCES.getIcon16("actions/graph-compartment.png"), () -> {
+                        projectWorkbench.getOrOpenPipelineEditorTab(target, true);
+                    }));
+                }
+                popupMenu.show(event.getUi().getGraphCanvasUI(),
+                        event.getUi().getGraphCanvasUI().getLastMousePosition().x,
+                        event.getUi().getGraphCanvasUI().getLastMousePosition().y);
+            } else if (targets.size() == 1) {
+                projectWorkbench.getOrOpenPipelineEditorTab(targets.get(0), true);
+            }
+        }
+    }
+
+    private void handleOpenNodeGroupAction(JIPipeNodeGroup node) {
+        if (getDesktopWorkbench() instanceof JIPipeDesktopProjectWorkbench) {
+            JIPipeDesktopNodeGroupUI.openGroupNodeGraph(getDesktopWorkbench(), node, true);
         }
     }
 
@@ -416,27 +430,38 @@ public class JIPipeDesktopPipelineGraphEditorUI extends JIPipeDesktopGraphEditor
     @Override
     public void onNodeUIActionRequested(NodeUIActionRequestedEvent event) {
         if (event.getAction() instanceof JIPipeDesktopRunAndShowResultsAction) {
-            getSelectionManager().selectOnly(event.getUi());
-            JIPipeDesktopPipelineGraphEditorRunManager runManager = new JIPipeDesktopPipelineGraphEditorRunManager(getWorkbench().getProject(), getCanvasUI(), event.getUi(), getDockPanel(), true);
-            runManager.run(true,
-                    ((JIPipeDesktopRunAndShowResultsAction) event.getAction()).isStoreIntermediateResults(),
-                    false);
+            handleRunAndShowResultsAction(event);
         } else if (event.getAction() instanceof JIPipeDesktopUpdateCacheAction) {
-            getSelectionManager().selectOnly(event.getUi());
-            JIPipeDesktopPipelineGraphEditorRunManager runManager = new JIPipeDesktopPipelineGraphEditorRunManager(getWorkbench().getProject(),
-                    getCanvasUI(),
-                    event.getUi(),
-                    getDockPanel(),
-                    ((JIPipeDesktopUpdateCacheAction) event.getAction()).isAllowChangePanels());
-            runManager.run(false,
-                    ((JIPipeDesktopUpdateCacheAction) event.getAction()).isStoreIntermediateResults(),
-                    ((JIPipeDesktopUpdateCacheAction) event.getAction()).isOnlyPredecessors());
+            handleUpdateCacheAction(event);
         }
+        else {
+            super.onNodeUIActionRequested(event);
+        }
+    }
+
+    private void handleUpdateCacheAction(NodeUIActionRequestedEvent event) {
+        getSelectionManager().selectOnly(event.getUi());
+        JIPipeDesktopPipelineGraphEditorRunManager runManager = new JIPipeDesktopPipelineGraphEditorRunManager(getWorkbench().getProject(),
+                getCanvasUI(),
+                event.getUi(),
+                getDockPanel(),
+                ((JIPipeDesktopUpdateCacheAction) event.getAction()).isAllowChangePanels());
+        runManager.run(false,
+                ((JIPipeDesktopUpdateCacheAction) event.getAction()).isStoreIntermediateResults(),
+                ((JIPipeDesktopUpdateCacheAction) event.getAction()).isOnlyPredecessors());
+    }
+
+    private void handleRunAndShowResultsAction(NodeUIActionRequestedEvent event) {
+        getSelectionManager().selectOnly(event.getUi());
+        JIPipeDesktopPipelineGraphEditorRunManager runManager = new JIPipeDesktopPipelineGraphEditorRunManager(getWorkbench().getProject(), getCanvasUI(), event.getUi(), getDockPanel(), true);
+        runManager.run(true,
+                ((JIPipeDesktopRunAndShowResultsAction) event.getAction()).isStoreIntermediateResults(),
+                false);
     }
 
     @Override
     public void beforeOpenContextMenu(JPopupMenu menu) {
-        if(getGraph().isProjectGraph()) {
+        if (getGraph().isProjectGraph()) {
             Set<JIPipeDesktopGraphNodeUI> selectedNodes = getSelectionManager().getSelectionByType(JIPipeDesktopGraphNodeUI.class);
             if (selectedNodes.stream().anyMatch(ui -> ui != null
                     && ((JIPipeDesktopGraphNodeUI) ui).getNode().getInfo().isRunnable())) {

@@ -164,10 +164,14 @@ public class CreateNewNodeByInfoAliasDatabaseEntry implements JIPipeNodeDatabase
     @Override
     public Set<JIPipeDesktopGraphNodeUI> addToGraph(JIPipeDesktopGraphCanvasUI canvasUI) {
         JIPipeGraphNode node = nodeInfo.newInstance();
+        if(!node.uiBeforeAddToCanvas(canvasUI)) {
+            return Collections.emptySet();
+        }
         if (canvasUI.getHistoryJournal() != null) {
             canvasUI.getHistoryJournal().snapshotBeforeAddNode(node, canvasUI.getCompartmentUUID());
         }
         canvasUI.getGraph().insertNode(node, canvasUI.getCompartmentUUID());
+        node.uiAfterAddToCanvas(canvasUI);
         return Collections.singleton(canvasUI.getNodeUIs().get(node));
     }
 

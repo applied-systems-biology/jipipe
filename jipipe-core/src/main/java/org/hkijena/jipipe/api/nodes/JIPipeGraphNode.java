@@ -42,6 +42,7 @@ import org.hkijena.jipipe.api.run.JIPipeGraphRun;
 import org.hkijena.jipipe.api.validation.JIPipeValidatable;
 import org.hkijena.jipipe.api.validation.JIPipeValidationReport;
 import org.hkijena.jipipe.api.validation.JIPipeValidationReportContext;
+import org.hkijena.jipipe.desktop.app.grapheditor.commons.JIPipeDesktopGraphCanvasUI;
 import org.hkijena.jipipe.desktop.app.grapheditor.commons.nodeui.JIPipeDesktopGraphNodeUI;
 import org.hkijena.jipipe.plugins.parameters.api.collections.ListParameter;
 import org.hkijena.jipipe.plugins.parameters.library.markup.HTMLText;
@@ -1301,6 +1302,24 @@ public abstract class JIPipeGraphNode extends AbstractJIPipeParameterCollection 
             }
         }
         return result;
+    }
+
+    /**
+     * Executed by various functions that handle the addition of nodes into a pipeline
+     * Allows for UI feedback (dialogs etc.)
+     * @param canvasUI the canvas where the node will be added. At this point the node is not yet inside the graph or canvas and does not have a UUID!
+     * @return whether the node should be added into the canvas
+     */
+    public boolean uiBeforeAddToCanvas(JIPipeDesktopGraphCanvasUI canvasUI) {
+        return true;
+    }
+
+    /**
+     * Executed by various functions that handle the addition of nodes into a pipeline
+     * Allows for UI feedback (dialogs etc.)
+     * @param canvasUI the canvas where the node was added.
+     */
+    public void uiAfterAddToCanvas(JIPipeDesktopGraphCanvasUI canvasUI) {
     }
 
     public interface NodeSlotsChangedEventListener {

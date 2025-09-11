@@ -942,7 +942,9 @@ public abstract class JIPipeDesktopGraphEditorUI extends JIPipeDesktopWorkbenchP
 
     @Override
     public void onDefaultNodeUIActionRequested(DefaultNodeUIActionRequestedEvent event) {
-
+        if(event.getUi() != null && event.getUi().getNode() instanceof JIPipeDesktopInteractiveDefaultActionGraphNode node) {
+            node.onDefaultNodeUIActionRequested(this, event);
+        }
     }
 
     @Override

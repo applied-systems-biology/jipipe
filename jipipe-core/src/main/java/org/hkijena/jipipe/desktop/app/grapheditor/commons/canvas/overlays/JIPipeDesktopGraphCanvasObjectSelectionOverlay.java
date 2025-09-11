@@ -28,7 +28,7 @@ public class JIPipeDesktopGraphCanvasObjectSelectionOverlay implements JIPipeDes
                 bounds.y -= 4;
                 bounds.width += 8;
                 bounds.height += 8;
-                g.setColor(nodeUI.getBorderColor());
+                g.setColor(nodeUI.getNodeBorderColor());
                 g.drawRect(bounds.x, bounds.y, bounds.width, bounds.height);
 
                 // Lock icon

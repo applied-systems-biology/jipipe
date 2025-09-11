@@ -22,7 +22,6 @@ import org.hkijena.jipipe.api.cache.JIPipeCache;
 import org.hkijena.jipipe.api.compartments.algorithms.JIPipeProjectCompartment;
 import org.hkijena.jipipe.api.compartments.algorithms.JIPipeProjectCompartmentOutput;
 import org.hkijena.jipipe.api.data.*;
-import org.hkijena.jipipe.api.events.JIPipeEventEmitter;
 import org.hkijena.jipipe.api.grouping.GraphWrapperAlgorithmInput;
 import org.hkijena.jipipe.api.grouping.GraphWrapperAlgorithmOutput;
 import org.hkijena.jipipe.api.nodes.JIPipeAlgorithm;
@@ -44,8 +43,6 @@ import org.hkijena.jipipe.desktop.app.grapheditor.commons.JIPipeDesktopGraphInte
 import org.hkijena.jipipe.desktop.app.grapheditor.commons.contextmenu.*;
 import org.hkijena.jipipe.desktop.app.grapheditor.commons.contextmenu.cache.ClearCacheNodeUIContextAction;
 import org.hkijena.jipipe.desktop.app.grapheditor.commons.contextmenu.running.*;
-import org.hkijena.jipipe.desktop.app.grapheditor.commons.nodeui.events.DefaultNodeUIActionRequestedEvent;
-import org.hkijena.jipipe.desktop.app.grapheditor.commons.nodeui.events.DefaultNodeUIActionRequestedEventListener;
 import org.hkijena.jipipe.desktop.app.grapheditor.commons.nodeui.events.NodeUIActionRequestedEventEmitter;
 import org.hkijena.jipipe.desktop.app.grapheditor.commons.nodeui.managers.*;
 import org.hkijena.jipipe.desktop.app.grapheditor.commons.nodeui.triggers.*;
@@ -147,8 +144,8 @@ public class JIPipeDesktopGraphNodeUI extends JIPipeDesktopWorkbenchPanel implem
         this.nodeGeneratesIterationSteps = node instanceof JIPipeIterationStepAlgorithm;
         this.updateViewOnCacheUpdatedDebouncer = new StaticDebouncer(500, () -> updateView(false, true, false));
 
-        this.node.getParameterChangedEventEmitter().subscribeWeak(this);
-        this.node.getNodeSlotsChangedEventEmitter().subscribeWeak(this);
+        this.getNode().getParameterChangedEventEmitter().subscribeWeak(this);
+        this.getNode().getNodeSlotsChangedEventEmitter().subscribeWeak(this);
 
         JIPipeGraph graph = this.graphCanvasUI.getGraph();
         graph.getNodeConnectedEventEmitter().subscribeWeak(this);
@@ -200,22 +197,24 @@ public class JIPipeDesktopGraphNodeUI extends JIPipeDesktopWorkbenchPanel implem
         this.nodeBorderColor = ThemeUtils.getNodeBorderColor(node.getInfo());
         this.highlightedNodeBorderColor = ThemeUtils.getCurrentStyle().getNodeHighlightBorder();
         this.slotFillColor = ThemeUtils.getCurrentStyle().getNodeSlotBackground();
-        this.slotParametersFillColor = ColorUtils.mix(slotFillColor, nodeFillColor, 0.5);
+        this.slotParametersFillColor = ColorUtils.mix(getSlotFillColor(), getNodeFillColor(), 0.5);
         this.mainTextColor = UIManager.getColor("Label.foreground");
         this.nodeDisabledPaint = new LinearGradientPaint(
                 (float) 0, (float) 0, (float) (8), (float) (8),
                 new float[]{0, 0.5f, 0.5001f, 1}, new Color[]{COLOR_DISABLED_1, COLOR_DISABLED_1, COLOR_DISABLED_2, COLOR_DISABLED_2}, MultipleGradientPaint.CycleMethod.REPEAT);
-        Color desaturatedFillColor = ColorUtils.multiplyHSB(nodeFillColor, 1f, 0.25f, 0.8f);
+        Color desaturatedFillColor = ColorUtils.multiplyHSB(getNodeFillColor(), 1f, 0.25f, 0.8f);
         this.nodePassThroughPaint = new LinearGradientPaint(
                 (float) 0, (float) 0, (float) (8), (float) (8),
-                new float[]{0, 0.5f, 0.5001f, 1}, new Color[]{desaturatedFillColor, desaturatedFillColor, nodeFillColor, nodeFillColor}, MultipleGradientPaint.CycleMethod.REPEAT);
-        this.buttonFillColor = ColorUtils.multiplyHSB(slotFillColor, 1, 1, 0.95f);
-        this.buttonFillColorDarker = ColorUtils.multiplyHSB(slotFillColor, 1, 1, 0.85f);
+                new float[]{0, 0.5f, 0.5001f, 1}, new Color[]{desaturatedFillColor, desaturatedFillColor, getNodeFillColor(), getNodeFillColor()}, MultipleGradientPaint.CycleMethod.REPEAT);
+        this.buttonFillColor = ColorUtils.multiplyHSB(getSlotFillColor(), 1, 1, 0.95f);
+        this.buttonFillColorDarker = ColorUtils.multiplyHSB(getSlotFillColor(), 1, 1, 0.85f);
 
         // Initialization
         initialize();
         updateView(true, true, true);
     }
+
+
 
     public JIPipeIterationStepGenerationSettingsVisualization getIterationStepGenerationSettingsVisualization() {
         return iterationStepGenerationSettingsVisualization;
@@ -234,7 +233,7 @@ public class JIPipeDesktopGraphNodeUI extends JIPipeDesktopWorkbenchPanel implem
     }
 
     private void initialize() {
-        setBackground(getFillColor());
+        setBackground(getNodeFillColor());
         setBorder(null);
 //        setBorder(BorderFactory.createLineBorder(getBorderColor()));
         setLayout(new GridBagLayout());
@@ -242,11 +241,11 @@ public class JIPipeDesktopGraphNodeUI extends JIPipeDesktopWorkbenchPanel implem
     }
 
     public boolean isNodeRunnable() {
-        if (!node.getInfo().isRunnable())
+        if (!getNode().getInfo().isRunnable())
             return false;
-        if (!(node instanceof JIPipeAlgorithm))
+        if (!(getNode() instanceof JIPipeAlgorithm))
             return false;
-        return node.getParentGraph().getAttachment(JIPipeGraphType.class) == JIPipeGraphType.Project;
+        return getNode().getParentGraph().getAttachment(JIPipeGraphType.class) == JIPipeGraphType.Project;
     }
 
     public boolean isDisplayInputConfigVisualization() {
@@ -283,7 +282,7 @@ public class JIPipeDesktopGraphNodeUI extends JIPipeDesktopWorkbenchPanel implem
     }
 
     private void updateIterationStepVisualization() {
-        this.iterationStepGenerationSettingsVisualization = node instanceof JIPipeIterationStepAlgorithm ? ((JIPipeIterationStepAlgorithm) node).getGenericIterationStepGenerationSettings().createVisualization() : null;
+        this.iterationStepGenerationSettingsVisualization = getNode() instanceof JIPipeIterationStepAlgorithm ? ((JIPipeIterationStepAlgorithm) getNode()).getGenericIterationStepGenerationSettings().createVisualization() : null;
     }
 
     protected void updateActiveAreas() {
@@ -311,6 +310,7 @@ public class JIPipeDesktopGraphNodeUI extends JIPipeDesktopWorkbenchPanel implem
 
         final int shift = getBaseSlotXShift();
 
+        // Input slots
         for (JIPipeDesktopGraphNodeUISlotActiveArea slotState : inputSlotMap.values()) {
             Rectangle slotArea = new Rectangle((int) Math.round(slotState.getNativeLocation().x * zoom + shift * zoom),
                     (int) Math.round(slotState.getNativeLocation().y * zoom),
@@ -337,6 +337,8 @@ public class JIPipeDesktopGraphNodeUI extends JIPipeDesktopWorkbenchPanel implem
             addInputSlotArea.setZoomedHitArea(slotArea);
             activeAreas.add(addInputSlotArea);
         }
+
+        // Output slots
         for (JIPipeDesktopGraphNodeUISlotActiveArea slotState : outputSlotMap.values()) {
             Rectangle slotArea = new Rectangle((int) Math.round(slotState.getNativeLocation().x * zoom + shift * zoom),
                     (int) Math.round(slotState.getNativeLocation().y * zoom),
@@ -392,8 +394,8 @@ public class JIPipeDesktopGraphNodeUI extends JIPipeDesktopWorkbenchPanel implem
         // Node button
         if (nodeIsRunnable) {
             int realSlotHeight = JIPipeDesktopGraphCanvasGrid.gridToRealSize(new Dimension(1, 1), zoom).height;
-            boolean hasInputs = (!node.getInputSlots().isEmpty() || slotsInputsEditable) && showInputs;
-            boolean hasOutputs = (!node.getOutputSlots().isEmpty() || slotsOutputsEditable) && showOutputs;
+            boolean hasInputs = (!getNode().getInputSlots().isEmpty() || isSlotsInputsEditable()) && isShowInputs();
+            boolean hasOutputs = (!getNode().getOutputSlots().isEmpty() || isSlotsOutputsEditable()) && isShowOutputs();
 
             int centerY;
             if (hasInputs && !hasOutputs) {
@@ -419,9 +421,9 @@ public class JIPipeDesktopGraphNodeUI extends JIPipeDesktopWorkbenchPanel implem
         // Border colors (partitioning)
         int partition = 0;
         if (getDesktopWorkbench() instanceof JIPipeDesktopProjectWorkbench) {
-            if (node instanceof JIPipeAlgorithm) {
-                partition = ((JIPipeAlgorithm) node).getRuntimePartition().getIndex();
-            } else if (node instanceof JIPipeProjectCompartment) {
+            if (getNode() instanceof JIPipeAlgorithm) {
+                partition = ((JIPipeAlgorithm) getNode()).getRuntimePartition().getIndex();
+            } else if (getNode() instanceof JIPipeProjectCompartment) {
 //                // Color after output
 //                JIPipeCompartmentOutput outputNode = ((JIPipeProjectCompartment) node).getOutputNodes();
 //                partition = outputNode.getRuntimePartition().getIndex();
@@ -437,8 +439,8 @@ public class JIPipeDesktopGraphNodeUI extends JIPipeDesktopWorkbenchPanel implem
             this.partitionColor = null;
         }
 
-        this.buttonFillColor = ColorUtils.multiplyHSB(slotFillColor, 1, 1, 0.95f);
-        this.buttonFillColorDarker = ColorUtils.multiplyHSB(slotFillColor, 1, 1, 0.85f);
+        this.buttonFillColor = ColorUtils.multiplyHSB(getSlotFillColor(), 1, 1, 0.95f);
+        this.buttonFillColorDarker = ColorUtils.multiplyHSB(getSlotFillColor(), 1, 1, 0.85f);
 
         nodeBufferInvalid = true;
         repaint(50);
@@ -449,10 +451,10 @@ public class JIPipeDesktopGraphNodeUI extends JIPipeDesktopWorkbenchPanel implem
 
     protected void updateAssets() {
         // Update fonts
-        zoomedMainFont = new Font(Font.DIALOG, Font.PLAIN, (int) Math.round(12 * zoom));
-        zoomedSecondaryFont = new Font(Font.DIALOG, Font.PLAIN, (int) Math.round(11 * zoom));
-        zoomedTertiaryFont = new Font(Font.DIALOG, Font.PLAIN, (int) Math.round(10 * zoom));
-        zoomedHighlightedSecondaryFont = new Font(Font.DIALOG, Font.ITALIC, (int) Math.round(11 * zoom));
+        zoomedMainFont = getNativeMainFont().deriveFont((float) (getNativeMainFont().getSize() * zoom));
+        zoomedSecondaryFont = getNativeSecondaryFont().deriveFont((float) (getNativeSecondaryFont().getSize() * zoom));
+        zoomedTertiaryFont = getNativeTertiaryFont().deriveFont((float) (getNativeTertiaryFont().getSize() * zoom));
+        zoomedHighlightedSecondaryFont = new Font(getNativeSecondaryFont().getFontName(), Font.ITALIC, (int) Math.round(getNativeSecondaryFont().getSize() * zoom));
     }
 
     /**
@@ -478,21 +480,21 @@ public class JIPipeDesktopGraphNodeUI extends JIPipeDesktopWorkbenchPanel implem
 
     @Override
     public void onNodeSlotsChanged(JIPipeGraphNode.NodeSlotsChangedEvent event) {
-        if (event.getNode() == node) {
+        if (event.getNode() == getNode()) {
             updateView(false, true, true);
         }
     }
 
     @Override
     public void onNodeConnected(JIPipeGraph.NodeConnectedEvent event) {
-        if (event.getSource().getNode() == node || event.getTarget().getNode() == node) {
+        if (event.getSource().getNode() == getNode() || event.getTarget().getNode() == getNode()) {
             updateView(false, true, true);
         }
     }
 
     @Override
     public void onNodeDisconnected(JIPipeGraph.NodeDisconnectedEvent event) {
-        if (event.getSource().getNode() == node || event.getTarget().getNode() == node) {
+        if (event.getSource().getNode() == getNode() || event.getTarget().getNode() == getNode()) {
             updateView(false, true, true);
         }
     }
@@ -504,20 +506,20 @@ public class JIPipeDesktopGraphNodeUI extends JIPipeDesktopWorkbenchPanel implem
      */
     @Override
     public void onParameterChanged(JIPipeParameterCollection.ParameterChangedEvent event) {
-        if (event.getSource() == node && "jipipe:node:name".equals(event.getKey())) {
+        if (event.getSource() == getNode() && "jipipe:node:name".equals(event.getKey())) {
             updateView(false, false, true);
-        } else if (event.getSource() == node && "jipipe:algorithm:enabled".equals(event.getKey())) {
+        } else if (event.getSource() == getNode() && "jipipe:algorithm:enabled".equals(event.getKey())) {
             invalidateAndRepaint(true, false);
-        } else if (event.getSource() == node && "jipipe:algorithm:pass-through".equals(event.getKey())) {
+        } else if (event.getSource() == getNode() && "jipipe:algorithm:pass-through".equals(event.getKey())) {
             invalidateAndRepaint(true, false);
-        } else if (event.getSource() == node && "jipipe:node:bookmarked".equals(event.getKey())) {
+        } else if (event.getSource() == getNode() && "jipipe:node:bookmarked".equals(event.getKey())) {
             invalidateAndRepaint(false, true);
         } else if (event.getSource() instanceof JIPipeDataSlotInfo) {
             updateView(false, true, true);
-        } else if (event.getSource() == node && "jipipe:algorithm:runtime-partition".equals(event.getKey())) {
+        } else if (event.getSource() == getNode() && "jipipe:algorithm:runtime-partition".equals(event.getKey())) {
             updateColors();
             invalidateAndRepaint(true, false);
-        } else if (nodeGeneratesIterationSteps && node instanceof JIPipeIterationStepAlgorithm && ((JIPipeIterationStepAlgorithm) node).getGenericIterationStepGenerationSettings() == event.getSource()) {
+        } else if (nodeGeneratesIterationSteps && getNode() instanceof JIPipeIterationStepAlgorithm && ((JIPipeIterationStepAlgorithm) getNode()).getGenericIterationStepGenerationSettings() == event.getSource()) {
             updateView(false, false, true);
         }
     }
@@ -532,45 +534,45 @@ public class JIPipeDesktopGraphNodeUI extends JIPipeDesktopWorkbenchPanel implem
         FontMetrics tertiaryFontMetrics;
 
         if (getGraphics() != null) {
-            mainFontMetrics = getGraphics().getFontMetrics(nativeMainFont);
-            secondaryFontMetrics = getGraphics().getFontMetrics(nativeSecondaryFont);
-            tertiaryFontMetrics = getGraphics().getFontMetrics(nativeTertiaryFont);
+            mainFontMetrics = getGraphics().getFontMetrics(getNativeMainFont());
+            secondaryFontMetrics = getGraphics().getFontMetrics(getNativeSecondaryFont());
+            tertiaryFontMetrics = getGraphics().getFontMetrics(getNativeTertiaryFont());
         } else {
             Canvas c = new Canvas();
-            mainFontMetrics = c.getFontMetrics(nativeMainFont);
-            secondaryFontMetrics = c.getFontMetrics(nativeSecondaryFont);
-            tertiaryFontMetrics = c.getFontMetrics(nativeTertiaryFont);
+            mainFontMetrics = c.getFontMetrics(getNativeMainFont());
+            secondaryFontMetrics = c.getFontMetrics(getNativeSecondaryFont());
+            tertiaryFontMetrics = c.getFontMetrics(getNativeTertiaryFont());
         }
 
         double nameWidth;
         if (isDisplayedInForeignCompartment()) {
             JIPipeProject project = getGraphCanvasUI().getWorkbench().getProject();
-            JIPipeProjectCompartment projectCompartment = project.getCompartments().get(node.getCompartmentUUIDInParentGraph());
+            JIPipeProjectCompartment projectCompartment = project.getCompartments().get(getNode().getCompartmentUUIDInParentGraph());
             if (projectCompartment != null) {
-                nameWidth = Math.max(tertiaryFontMetrics.stringWidth(node.getName()),
+                nameWidth = Math.max(tertiaryFontMetrics.stringWidth(getDisplayedNodeName()),
                         tertiaryFontMetrics.stringWidth("⮤ " + projectCompartment.getName()));
             } else {
-                nameWidth = mainFontMetrics.stringWidth(node.getName());
+                nameWidth = mainFontMetrics.stringWidth(getDisplayedNodeName());
             }
         } else {
-            nameWidth = mainFontMetrics.stringWidth(node.getName());
+            nameWidth = mainFontMetrics.stringWidth(getDisplayedNodeName());
         }
-        double mainWidth = (nodeIsRunnable ? 22 : 0) + getBaseSlotXShift() + 22 + nameWidth + 16;
+        double mainWidth = (nodeIsRunnable ? 22 : 0) + getBaseSlotXShift() + (isDrawNodeIcon() ? 22 : 0) + nameWidth + 16;
 
         // Slot widths
         double sumInputSlotWidths = 0;
         double sumOutputSlotWidths = 0;
 
-        if (showInputs) {
+        if (isShowInputs()) {
 
-            for (JIPipeInputDataSlot inputSlot : node.getInputSlots()) {
+            for (JIPipeInputDataSlot inputSlot : getNode().getInputSlots()) {
                 JIPipeDesktopGraphNodeUISlotActiveArea slotState = inputSlotMap.get(inputSlot.getName());
-                double nativeWidth = secondaryFontMetrics.stringWidth(slotState.getSlotLabel()) + 22 * 2 + 16;
+                double nativeWidth = secondaryFontMetrics.stringWidth(getDisplayedSlotLabel(slotState)) + 22 * 2 + 16;
                 slotState.setNativeWidth(nativeWidth);
                 slotState.setNativeLocation(new Point((int) sumInputSlotWidths, 0));
                 sumInputSlotWidths += nativeWidth;
             }
-            if (slotsInputsEditable) {
+            if (isSlotsInputsEditable()) {
                 addInputSlotArea = new JIPipeDesktopGraphNodeUIAddSlotButtonActiveArea(this, JIPipeSlotType.Input);
                 double nativeWidth = 22;
                 addInputSlotArea.setNativeWidth(nativeWidth);
@@ -580,22 +582,22 @@ public class JIPipeDesktopGraphNodeUI extends JIPipeDesktopWorkbenchPanel implem
                 addInputSlotArea = null;
             }
         }
-        if (showOutputs) {
+        if (isShowOutputs()) {
 
-            for (JIPipeDataSlot outputSlots : node.getOutputSlots()) {
+            for (JIPipeDataSlot outputSlots : getNode().getOutputSlots()) {
                 JIPipeDesktopGraphNodeUISlotActiveArea slotState = outputSlotMap.get(outputSlots.getName());
                 if (slotState == null)
                     continue;
-                double nativeWidth = secondaryFontMetrics.stringWidth(slotState.getSlotLabel()) + 22 * 2 + 16;
+                double nativeWidth = secondaryFontMetrics.stringWidth(getDisplayedSlotLabel(slotState)) + 22 * 2 + 16;
                 slotState.setNativeWidth(nativeWidth);
-                slotState.setNativeLocation(new Point((int) sumOutputSlotWidths, JIPipeDesktopGraphCanvasGrid.GRID_HEIGHT * 2));
+                slotState.setNativeLocation(new Point((int) sumOutputSlotWidths, getOutputSlotYLocation()));
                 sumOutputSlotWidths += nativeWidth;
             }
-            if (slotsOutputsEditable) {
+            if (isSlotsOutputsEditable()) {
                 addOutputSlotArea = new JIPipeDesktopGraphNodeUIAddSlotButtonActiveArea(this, JIPipeSlotType.Output);
                 double nativeWidth = 22;
                 addOutputSlotArea.setNativeWidth(nativeWidth);
-                addOutputSlotArea.setNativeLocation(new Point((int) sumOutputSlotWidths, JIPipeDesktopGraphCanvasGrid.GRID_HEIGHT * 2));
+                addOutputSlotArea.setNativeLocation(new Point((int) sumOutputSlotWidths, getOutputSlotYLocation()));
                 sumOutputSlotWidths += nativeWidth;
             } else {
                 addOutputSlotArea = null;
@@ -610,17 +612,29 @@ public class JIPipeDesktopGraphNodeUI extends JIPipeDesktopWorkbenchPanel implem
         // Correct the slot width to fit the actual native width of the control
         int nativeWidth = JIPipeDesktopGraphCanvasGrid.GRID_WIDTH * gridWidth;
 
-        scaleSlotsNativeWidth(inputSlotMap, addInputSlotArea, nativeWidth, sumInputSlotWidths, slotsInputsEditable);
-        scaleSlotsNativeWidth(outputSlotMap, addOutputSlotArea, nativeWidth, sumOutputSlotWidths, slotsOutputsEditable);
+        scaleSlotsNativeWidth(inputSlotMap, addInputSlotArea, nativeWidth, sumInputSlotWidths, isSlotsInputsEditable());
+        scaleSlotsNativeWidth(outputSlotMap, addOutputSlotArea, nativeWidth, sumOutputSlotWidths, isSlotsOutputsEditable());
 
         // Update the real size of the control
-        Dimension gridSize = new Dimension(gridWidth, 3);
+        Dimension gridSize = new Dimension(gridWidth, getGridHeight());
         Dimension realSize = JIPipeDesktopGraphCanvasGrid.gridToRealSize(gridSize, zoom);
         setSize(realSize);
         revalidate();
 
         // Update the active areas
         updateActiveAreas();
+    }
+
+    protected int getOutputSlotYLocation() {
+        return JIPipeDesktopGraphCanvasGrid.GRID_HEIGHT * 2;
+    }
+
+    protected String getDisplayedNodeName() {
+        return getNode().getName();
+    }
+
+    protected int getGridHeight() {
+        return 3;
     }
 
     private void scaleSlotsNativeWidth(Map<String, JIPipeDesktopGraphNodeUISlotActiveArea> slotStateMap, JIPipeDesktopGraphNodeUIAddSlotButtonActiveArea addSlotActiveArea, double nodeWidth, double sumWidth, boolean hasButton) {
@@ -683,14 +697,14 @@ public class JIPipeDesktopGraphNodeUI extends JIPipeDesktopWorkbenchPanel implem
             setLocation(location);
         }
         if (save) {
-            node.setNodeUILocationWithin(graphCanvasUI.getCompartmentUUID(), gridLocation);
+            getNode().setNodeUILocationWithin(graphCanvasUI.getCompartmentUUID(), gridLocation);
             getGraphCanvasUI().getDesktopWorkbench().setProjectModified(true);
         }
         return true;
     }
 
     public Point getStoredGridLocation() {
-        return node.getNodeUILocationWithin(StringUtils.nullToEmpty(graphCanvasUI.getCompartmentUUID()));
+        return getNode().getNodeUILocationWithin(StringUtils.nullToEmpty(graphCanvasUI.getCompartmentUUID()));
     }
 
     /**
@@ -701,7 +715,7 @@ public class JIPipeDesktopGraphNodeUI extends JIPipeDesktopWorkbenchPanel implem
      */
     @SuppressWarnings("deprecation")
     public boolean moveToStoredGridLocation(boolean force) {
-        Point point = node.getNodeUILocationWithin(StringUtils.nullToEmpty(graphCanvasUI.getCompartmentUUID()));
+        Point point = getNode().getNodeUILocationWithin(StringUtils.nullToEmpty(graphCanvasUI.getCompartmentUUID()));
         if (point != null) {
             return moveToGridLocation(point, force, false);
         } else {
@@ -740,14 +754,6 @@ public class JIPipeDesktopGraphNodeUI extends JIPipeDesktopWorkbenchPanel implem
         }
     }
 
-    public Color getFillColor() {
-        return nodeFillColor;
-    }
-
-    public Color getBorderColor() {
-        return nodeBorderColor;
-    }
-
     public JIPipeDesktopGraphCanvasUI getGraphCanvasUI() {
         return graphCanvasUI;
     }
@@ -779,7 +785,11 @@ public class JIPipeDesktopGraphNodeUI extends JIPipeDesktopWorkbenchPanel implem
 
             g2.drawImage(nodeBuffer, 0, 0, getWidth(), getHeight(), null);
         } else {
+            g2.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
+            g2.setRenderingHint(RenderingHints.KEY_TEXT_ANTIALIASING, RenderingHints.VALUE_TEXT_ANTIALIAS_ON);
             paintNode(g2);
+            g2.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_OFF);
+            g2.setRenderingHint(RenderingHints.KEY_TEXT_ANTIALIASING, RenderingHints.VALUE_TEXT_ANTIALIAS_OFF);
         }
 
         try {
@@ -808,8 +818,8 @@ public class JIPipeDesktopGraphNodeUI extends JIPipeDesktopWorkbenchPanel implem
     public boolean isDisplayedInForeignCompartment() {
         if (graphCanvasUI.getDesktopWorkbench().getProject() == null)
             return false;
-        if (node.getCompartmentUUIDInParentGraph() != null && graphCanvasUI.getCompartmentUUID() != null) {
-            return !Objects.equals(node.getCompartmentUUIDInParentGraph(), graphCanvasUI.getCompartmentUUID());
+        if (getNode().getCompartmentUUIDInParentGraph() != null && graphCanvasUI.getCompartmentUUID() != null) {
+            return !Objects.equals(getNode().getCompartmentUUIDInParentGraph(), graphCanvasUI.getCompartmentUUID());
         } else {
             return false;
         }
@@ -817,11 +827,11 @@ public class JIPipeDesktopGraphNodeUI extends JIPipeDesktopWorkbenchPanel implem
 
     protected void paintNode(Graphics2D g2) {
 
-        g2.setPaint(nodeFillColor);
+        g2.setPaint(getNodeFillColor());
         g2.fillRect(0, 0, getWidth(), getHeight());
 
         // Paint disabled/pass-through
-        if (node instanceof JIPipeAlgorithm algorithm) {
+        if (getNode() instanceof JIPipeAlgorithm algorithm) {
             if (!algorithm.isEnabled()) {
                 g2.setPaint(nodeDisabledPaint);
                 g2.fillRect(0, 0, getWidth(), getHeight());
@@ -840,19 +850,19 @@ public class JIPipeDesktopGraphNodeUI extends JIPipeDesktopWorkbenchPanel implem
         FontMetrics fontMetrics = g2.getFontMetrics();
 
         int realSlotHeight = JIPipeDesktopGraphCanvasGrid.gridToRealSize(new Dimension(1, 1), zoom).height;
-        boolean hasInputs = !node.getInputSlots().isEmpty() || slotsInputsEditable;
-        boolean hasOutputs = !node.getOutputSlots().isEmpty() || slotsOutputsEditable;
+        boolean hasInputs = !getNode().getInputSlots().isEmpty() || isSlotsInputsEditable();
+        boolean hasOutputs = !getNode().getOutputSlots().isEmpty() || isSlotsOutputsEditable();
 
         // Paint controls
-        paintNodeControls(g2, fontMetrics, realSlotHeight, hasInputs && showInputs, hasOutputs && showOutputs);
+        paintNodeControls(g2, fontMetrics, realSlotHeight, hasInputs && isShowInputs(), hasOutputs && isShowOutputs());
 
         // Paint slots
         g2.setStroke(JIPipeDesktopGraphCanvasResources.STROKE_UNIT);
 
-        if (hasInputs && showInputs) {
+        if (hasInputs && isShowInputs()) {
             paintInputSlots(g2, realSlotHeight);
         }
-        if (hasOutputs && showOutputs) {
+        if (hasOutputs && isShowOutputs()) {
             paintOutputSlots(g2, realSlotHeight);
         }
 
@@ -863,7 +873,7 @@ public class JIPipeDesktopGraphNodeUI extends JIPipeDesktopWorkbenchPanel implem
 
         // Paint outside border
         g2.setStroke(JIPipeDesktopGraphCanvasResources.STROKE_UNIT);
-        g2.setColor(currentActiveArea instanceof JIPipeDesktopGraphNodeUIWholeNodeActiveArea ? highlightedNodeBorderColor : nodeBorderColor);
+        g2.setColor(currentActiveArea instanceof JIPipeDesktopGraphNodeUIWholeNodeActiveArea ? getHighlightedNodeBorderColor() : getNodeBorderColor());
         g2.drawRect(0, 0, getWidth() - 1, getHeight() - 1);
     }
 
@@ -916,16 +926,16 @@ public class JIPipeDesktopGraphNodeUI extends JIPipeDesktopWorkbenchPanel implem
         }
 
         g2.setStroke(JIPipeDesktopGraphCanvasResources.STROKE_UNIT);
-        g2.setPaint(nodeBorderColor);
+        g2.setPaint(getNodeBorderColor());
         g2.drawLine((int) (zoom * shift), 0, (int) (zoom * shift), getHeight());
     }
 
 
     private void paintOutputSlots(Graphics2D g2, int realSlotHeight) {
-        List<JIPipeOutputDataSlot> outputSlots = node.getOutputSlots();
+        List<JIPipeOutputDataSlot> outputSlots = getNode().getOutputSlots();
 
         // Slot main filling
-        g2.setPaint(slotFillColor);
+        g2.setPaint(getSlotFillColor());
         g2.fillRect(0, getHeight() - realSlotHeight, getWidth(), realSlotHeight);
 
         int startX = (int) (getBaseSlotXShift() * zoom);
@@ -944,14 +954,14 @@ public class JIPipeDesktopGraphNodeUI extends JIPipeDesktopWorkbenchPanel implem
 
             // Draw highlight
             if (slotState == currentActiveArea && graphCanvasUI.getToolManager().currentToolAllowsConnectionDragging()) {
-                g2.setPaint(buttonFillColor);
+                g2.setPaint(getButtonFillColor());
                 g2.fillRect(startX, getHeight() - realSlotHeight, slotWidth, realSlotHeight);
             }
 
             // Draw separator
             if (i > 0) {
                 g2.setStroke(JIPipeDesktopGraphCanvasResources.STROKE_UNIT);
-                g2.setPaint(nodeBorderColor);
+                g2.setPaint(getNodeBorderColor());
                 g2.drawLine(startX, getHeight() - realSlotHeight, startX, getHeight());
             }
 
@@ -969,12 +979,12 @@ public class JIPipeDesktopGraphNodeUI extends JIPipeDesktopWorkbenchPanel implem
 
             startX += slotWidth;
         }
-        if (slotsOutputsEditable) {
+        if (isSlotsOutputsEditable()) {
 
             // Draw separator
             if (outputSlots.size() > 1) {
                 g2.setStroke(JIPipeDesktopGraphCanvasResources.STROKE_UNIT);
-                g2.setPaint(nodeBorderColor);
+                g2.setPaint(getNodeBorderColor());
                 g2.drawLine(startX, getHeight() - realSlotHeight, startX, getHeight());
             }
 
@@ -987,7 +997,7 @@ public class JIPipeDesktopGraphNodeUI extends JIPipeDesktopWorkbenchPanel implem
 
         // Line above the slots
         g2.setStroke(JIPipeDesktopGraphCanvasResources.STROKE_UNIT);
-        g2.setPaint(nodeBorderColor);
+        g2.setPaint(getNodeBorderColor());
         g2.drawLine(0, getHeight() - realSlotHeight, getWidth(), getHeight() - realSlotHeight);
     }
 
@@ -996,9 +1006,9 @@ public class JIPipeDesktopGraphNodeUI extends JIPipeDesktopWorkbenchPanel implem
         boolean isHighlighted = currentActiveArea instanceof JIPipeDesktopGraphNodeUIAddSlotButtonActiveArea && ((JIPipeDesktopGraphNodeUIAddSlotButtonActiveArea) currentActiveArea).getSlotType() == activeArea.getSlotType();
 
         g2.setStroke(JIPipeDesktopGraphCanvasResources.STROKE_UNIT);
-        g2.setPaint(isHighlighted ? buttonFillColorDarker : buttonFillColor);
+        g2.setPaint(isHighlighted ? getButtonFillColorDarker() : getButtonFillColor());
         g2.fillRect(startX, y, slotWidth, realSlotHeight);
-        g2.setPaint(nodeBorderColor);
+        g2.setPaint(getNodeBorderColor());
         g2.drawRect(startX, y, slotWidth, realSlotHeight);
 
         int zoomedSize = (int) Math.round(16 * zoom);
@@ -1007,10 +1017,10 @@ public class JIPipeDesktopGraphNodeUI extends JIPipeDesktopWorkbenchPanel implem
     }
 
     private void paintInputSlots(Graphics2D g2, int realSlotHeight) {
-        List<JIPipeInputDataSlot> inputSlots = node.getInputSlots();
+        List<JIPipeInputDataSlot> inputSlots = getNode().getInputSlots();
 
         // Slot main filling
-        g2.setPaint(slotFillColor);
+        g2.setPaint(getSlotFillColor());
         g2.fillRect(0, 0, getWidth(), realSlotHeight);
 
         int startX = (int) (getBaseSlotXShift() * zoom);
@@ -1027,7 +1037,7 @@ public class JIPipeDesktopGraphNodeUI extends JIPipeDesktopWorkbenchPanel implem
             // Draw parameter slots differently
             JIPipeDataSlotRole slotRole = slotState.getSlot().getInfo().getRole();
             if (slotRole == JIPipeDataSlotRole.Parameters || slotRole == JIPipeDataSlotRole.ParametersLooping) {
-                g2.setPaint(slotParametersFillColor);
+                g2.setPaint(getSlotParametersFillColor());
                 g2.fillRect(startX, 0, slotWidth, realSlotHeight);
             }
 
@@ -1036,14 +1046,14 @@ public class JIPipeDesktopGraphNodeUI extends JIPipeDesktopWorkbenchPanel implem
 
             // Draw highlight
             if (slotState == currentActiveArea && graphCanvasUI.getToolManager().currentToolAllowsConnectionDragging()) {
-                g2.setPaint(buttonFillColor);
+                g2.setPaint(getButtonFillColor());
                 g2.fillRect(startX, 0, slotWidth, realSlotHeight);
             }
 
             // Draw separator
             if (i > 0) {
                 g2.setStroke(JIPipeDesktopGraphCanvasResources.STROKE_UNIT);
-                g2.setPaint(nodeBorderColor);
+                g2.setPaint(getNodeBorderColor());
                 g2.drawLine(startX, 0, startX, realSlotHeight);
             }
 
@@ -1061,12 +1071,12 @@ public class JIPipeDesktopGraphNodeUI extends JIPipeDesktopWorkbenchPanel implem
 
             startX += slotWidth;
         }
-        if (slotsInputsEditable) {
+        if (isSlotsInputsEditable()) {
 
             // Draw separator
             if (inputSlots.size() > 1) {
                 g2.setStroke(JIPipeDesktopGraphCanvasResources.STROKE_UNIT);
-                g2.setPaint(nodeBorderColor);
+                g2.setPaint(getNodeBorderColor());
                 g2.drawLine(startX, 0, startX, realSlotHeight);
             }
 
@@ -1079,7 +1089,7 @@ public class JIPipeDesktopGraphNodeUI extends JIPipeDesktopWorkbenchPanel implem
 
         // Line below the slots
         g2.setStroke(JIPipeDesktopGraphCanvasResources.STROKE_UNIT);
-        g2.setPaint(nodeBorderColor);
+        g2.setPaint(getNodeBorderColor());
         g2.drawLine(0, realSlotHeight, getWidth(), realSlotHeight);
     }
 
@@ -1109,14 +1119,14 @@ public class JIPipeDesktopGraphNodeUI extends JIPipeDesktopWorkbenchPanel implem
             g2.fillRoundRect(x, indicatorY, width, height, arc, arc);
         }
         startX += 8 * zoom;
-        Image icon = slotState.getIcon();
+        Image icon = getDisplayedSlotIcon(slotState);
         if (hasButtonHover) {
-            g2.setPaint(buttonFillColorDarker);
+            g2.setPaint(getButtonFillColorDarker());
             g2.fillRoundRect((int) Math.round(startX + 2 * zoom), (int) Math.round(centerY - 9 * zoom), (int) Math.round(18 * zoom), (int) Math.round(18 * zoom), 1, 1);
         }
         g2.drawImage(icon, (int) Math.round(startX + 3 * zoom), (int) Math.round(centerY - 8 * zoom), (int) Math.round(16 * zoom), (int) Math.round(16 * zoom), null);
         if (hasMouseOver) {
-            g2.setPaint(nodeBorderColor);
+            g2.setPaint(getNodeBorderColor());
             g2.drawRoundRect((int) Math.round(startX + 2 * zoom), (int) Math.round(centerY - 9 * zoom), (int) Math.round(18 * zoom), (int) Math.round(18 * zoom), 1, 1);
         }
 
@@ -1128,10 +1138,10 @@ public class JIPipeDesktopGraphNodeUI extends JIPipeDesktopWorkbenchPanel implem
         } else if (slotState.getSlot().getInfo().isOptional()) {
             g2.setPaint(Color.GRAY);
         } else {
-            g2.setPaint(mainTextColor);
+            g2.setPaint(getMainTextColor());
         }
         FontMetrics fontMetrics = g2.getFontMetrics();
-        UIUtils.drawStringVerticallyCentered(g2, slotState.getSlotLabel(), (int) Math.round(startX + 3 * zoom), (int) Math.round(centerY - 1 * zoom), fontMetrics);
+        UIUtils.drawStringVerticallyCentered(g2, getDisplayedSlotLabel(slotState), (int) Math.round(startX + 3 * zoom), (int) Math.round(centerY - 1 * zoom), fontMetrics);
 
         if (slotState.getSlotStatus() == JIPipeDesktopGraphNodeUISlotStatus.Cached) {
             startX = originalStartX + slotWidth - 8 * zoom - 12 * zoom;
@@ -1142,9 +1152,9 @@ public class JIPipeDesktopGraphNodeUI extends JIPipeDesktopWorkbenchPanel implem
                     (int) Math.round(12 * zoom),
                     null);
         } else if (slotState.getSlot().isInput()) {
-            ImageIcon uiInputSlotIcon = node.getUIInputSlotIcon(slotState.getSlotName());
+            ImageIcon uiInputSlotIcon = getNode().getUIInputSlotIcon(slotState.getSlotName());
             if (uiInputSlotIcon != null) {
-                Dimension dimension = node.getUIInputSlotIconBaseDimensions(slotState.getSlotName());
+                Dimension dimension = getNode().getUIInputSlotIconBaseDimensions(slotState.getSlotName());
                 startX = originalStartX + slotWidth - 8 * zoom - dimension.width * zoom;
                 g2.drawImage(uiInputSlotIcon.getImage(),
                         (int) Math.round(startX),
@@ -1154,6 +1164,18 @@ public class JIPipeDesktopGraphNodeUI extends JIPipeDesktopWorkbenchPanel implem
                         null);
             }
         }
+    }
+
+    protected boolean isDrawNodeIcon() {
+        return true;
+    }
+
+    protected String getDisplayedSlotLabel(JIPipeDesktopGraphNodeUISlotActiveArea slotState) {
+        return slotState.getSlotLabel();
+    }
+
+    protected Image getDisplayedSlotIcon(JIPipeDesktopGraphNodeUISlotActiveArea slotState) {
+        return slotState.getIcon();
     }
 
     private void paintNodeControls(Graphics2D g2, FontMetrics fontMetrics, int realSlotHeight, boolean hasInputs, boolean hasOutputs) {
@@ -1167,7 +1189,7 @@ public class JIPipeDesktopGraphNodeUI extends JIPipeDesktopWorkbenchPanel implem
             centerY = getHeight() / 2;
         }
         {
-            String nameLabel = node.getName();
+            String nameLabel = getDisplayedNodeName();
             double nameWidth = getNameWidth(fontMetrics);
 
             int centerNativeWidth = (int) Math.round((nodeIsRunnable ? 22 : 0) * zoom + 22 * zoom + nameWidth);
@@ -1177,9 +1199,9 @@ public class JIPipeDesktopGraphNodeUI extends JIPipeDesktopWorkbenchPanel implem
                 boolean isButtonHighlighted = currentActiveArea instanceof JIPipeDesktopGraphNodeUIRunNodeActiveArea;
 
                 // Draw button
-                g2.setPaint(isButtonHighlighted ? buttonFillColorDarker : buttonFillColor);
+                g2.setPaint(isButtonHighlighted ? getButtonFillColorDarker() : getButtonFillColor());
                 g2.fillOval((int) Math.round(startX + 3 * zoom), (int) Math.round(centerY - 8 * zoom), (int) Math.round(16 * zoom), (int) Math.round(16 * zoom));
-                g2.setPaint(nodeBorderColor);
+                g2.setPaint(getNodeBorderColor());
                 g2.drawOval((int) Math.round(startX + 3 * zoom), (int) Math.round(centerY - 8 * zoom), (int) Math.round(16 * zoom), (int) Math.round(16 * zoom));
 
                 // Draw play button
@@ -1192,23 +1214,25 @@ public class JIPipeDesktopGraphNodeUI extends JIPipeDesktopWorkbenchPanel implem
             }
 
             // Draw partition
-            if (partitionColor != null) {
-                g2.setPaint(partitionColor);
+            if (getPartitionColor() != null) {
+                g2.setPaint(getPartitionColor());
                 g2.fillRoundRect((int) Math.round(startX + 1 * zoom), (int) Math.round(centerY - 9 * zoom), (int) Math.round(20 * zoom), (int) Math.round(18 * zoom), 4, 4);
-                g2.setPaint(nodeBorderColor);
+                g2.setPaint(getNodeBorderColor());
                 g2.drawRoundRect((int) Math.round(startX + 1 * zoom), (int) Math.round(centerY - 9 * zoom), (int) Math.round(20 * zoom), (int) Math.round(18 * zoom), 4, 4);
             }
 
             // Draw icon
-            g2.drawImage(nodeIcon, (int) Math.round(startX + 3 * zoom), (int) Math.round(centerY - 8 * zoom), (int) Math.round(16 * zoom), (int) Math.round(16 * zoom), null);
-            startX += 22 * zoom;
+            if(isDrawNodeIcon()) {
+                g2.drawImage(getNodeIcon(), (int) Math.round(startX + 3 * zoom), (int) Math.round(centerY - 8 * zoom), (int) Math.round(16 * zoom), (int) Math.round(16 * zoom), null);
+                startX += 22 * zoom;
+            }
 
             // Draw name
-            g2.setPaint(mainTextColor);
+            g2.setPaint(getMainTextColor());
             if (isDisplayedInForeignCompartment()) {
                 UIUtils.drawStringVerticallyCentered(g2, nameLabel, (int) Math.round(startX + 3 * zoom), centerY - (fontMetrics.getAscent() + fontMetrics.getLeading()) / 2, fontMetrics);
                 JIPipeProject project = getGraphCanvasUI().getWorkbench().getProject();
-                JIPipeProjectCompartment projectCompartment = project.getCompartments().get(node.getCompartmentUUIDInParentGraph());
+                JIPipeProjectCompartment projectCompartment = project.getCompartments().get(getNode().getCompartmentUUIDInParentGraph());
                 if (projectCompartment != null) {
                     UIUtils.drawStringVerticallyCentered(g2, "* " + projectCompartment.getName(), (int) Math.round(startX + 3 * zoom), centerY + (fontMetrics.getAscent() + fontMetrics.getLeading()) / 2, fontMetrics);
                 } else {
@@ -1222,11 +1246,11 @@ public class JIPipeDesktopGraphNodeUI extends JIPipeDesktopWorkbenchPanel implem
 
     private double getNameWidth(FontMetrics fontMetrics) {
         double nameWidth;
-        String nameLabel = node.getName();
+        String nameLabel = getDisplayedNodeName();
 
         if (isDisplayedInForeignCompartment()) {
             JIPipeProject project = getGraphCanvasUI().getWorkbench().getProject();
-            JIPipeProjectCompartment projectCompartment = project.getCompartments().get(node.getCompartmentUUIDInParentGraph());
+            JIPipeProjectCompartment projectCompartment = project.getCompartments().get(getNode().getCompartmentUUIDInParentGraph());
             if (projectCompartment != null) {
                 nameWidth = Math.max(fontMetrics.stringWidth(nameLabel),
                         fontMetrics.stringWidth("* " + projectCompartment.getName()));
@@ -1300,13 +1324,13 @@ public class JIPipeDesktopGraphNodeUI extends JIPipeDesktopWorkbenchPanel implem
     }
 
     protected void updateSlots() {
-        JIPipeGraph graph = node.getParentGraph();
+        JIPipeGraph graph = getNode().getParentGraph();
 
         inputSlotMap.clear();
         outputSlotMap.clear();
 
-        if (showInputs) {
-            for (JIPipeInputDataSlot inputSlot : node.getInputSlots()) {
+        if (isShowInputs()) {
+            for (JIPipeInputDataSlot inputSlot : getNode().getInputSlots()) {
                 inputSlot.getInfo().getParameterChangedEventEmitter().subscribeWeak(this);
 
                 JIPipeDesktopGraphNodeUISlotActiveArea slotState = new JIPipeDesktopGraphNodeUISlotActiveArea(this, JIPipeSlotType.Input, inputSlot.getName(), inputSlot);
@@ -1334,11 +1358,11 @@ public class JIPipeDesktopGraphNodeUI extends JIPipeDesktopWorkbenchPanel implem
 
         Map<String, JIPipeDataTable> cachedData = null;
         if (graph != null && graph.getProject() != null) {
-            cachedData = graph.getProject().getCache().query(node, node.getUUIDInParentGraph(), new JIPipeProgressInfo());
+            cachedData = graph.getProject().getCache().query(getNode(), getNode().getUUIDInParentGraph(), new JIPipeProgressInfo());
         }
 
-        if (showOutputs) {
-            for (JIPipeDataSlot outputSlot : node.getOutputSlots()) {
+        if (isShowOutputs()) {
+            for (JIPipeDataSlot outputSlot : getNode().getOutputSlots()) {
                 outputSlot.getInfo().getParameterChangedEventEmitter().subscribeWeak(this);
 
                 JIPipeDesktopGraphNodeUISlotActiveArea slotState = new JIPipeDesktopGraphNodeUISlotActiveArea(this, JIPipeSlotType.Output, outputSlot.getName(), outputSlot);
@@ -1361,9 +1385,9 @@ public class JIPipeDesktopGraphNodeUI extends JIPipeDesktopWorkbenchPanel implem
         }
 
         // Special case for project compartments
-        if (graph != null && graph.getProject() != null && node instanceof JIPipeProjectCompartment) {
+        if (graph != null && graph.getProject() != null && getNode() instanceof JIPipeProjectCompartment) {
             for (Map.Entry<String, JIPipeDesktopGraphNodeUISlotActiveArea> entry : outputSlotMap.entrySet()) {
-                JIPipeProjectCompartmentOutput outputNode = ((JIPipeProjectCompartment) node).getOutputNode(entry.getKey());
+                JIPipeProjectCompartmentOutput outputNode = ((JIPipeProjectCompartment) getNode()).getOutputNode(entry.getKey());
                 if (outputNode != null) {
                     cachedData = graph.getProject().getCache().query(outputNode, outputNode.getUUIDInParentGraph(), new JIPipeProgressInfo());
                     if (cachedData != null && !cachedData.isEmpty()) {
@@ -1500,7 +1524,7 @@ public class JIPipeDesktopGraphNodeUI extends JIPipeDesktopWorkbenchPanel implem
 
     public void paintMinimap(Graphics2D graphics2D, int x, int y, int width, int height, BasicStroke defaultStroke, BasicStroke selectedStroke, Set<JIPipeDesktopGraphInteractiveObjectUI> selection) {
         // Fill
-        graphics2D.setColor(getFillColor());
+        graphics2D.setColor(getNodeFillColor());
         graphics2D.fillRect(x, y, width, height);
 
         // Runtime partition color
@@ -1520,7 +1544,7 @@ public class JIPipeDesktopGraphNodeUI extends JIPipeDesktopWorkbenchPanel implem
         if (getNode().isBookmarked()) {
             graphics2D.setColor(new Color(0x33cc33));
         } else {
-            graphics2D.setColor(getBorderColor());
+            graphics2D.setColor(getNodeBorderColor());
         }
 
         graphics2D.drawRect(x, y, width, height);
@@ -1544,7 +1568,7 @@ public class JIPipeDesktopGraphNodeUI extends JIPipeDesktopWorkbenchPanel implem
 
     @Override
     public Set<JIPipeGraphNode> getNodes() {
-        return Set.of(node);
+        return Set.of(getNode());
     }
 
     @Override
@@ -1580,4 +1604,63 @@ public class JIPipeDesktopGraphNodeUI extends JIPipeDesktopWorkbenchPanel implem
         return inputConfigMenu;
     }
 
+    public Image getNodeIcon() {
+        return nodeIcon;
+    }
+
+    public Color getNodeFillColor() {
+        return nodeFillColor;
+    }
+
+    public Color getHighlightedNodeBorderColor() {
+        return highlightedNodeBorderColor;
+    }
+
+    public Color getSlotParametersFillColor() {
+        return slotParametersFillColor;
+    }
+
+    public boolean isShowInputs() {
+        return showInputs;
+    }
+
+    public boolean isShowOutputs() {
+        return showOutputs;
+    }
+
+    public Color getNodeBorderColor() {
+        return nodeBorderColor;
+    }
+
+    public Color getSlotFillColor() {
+        return slotFillColor;
+    }
+
+    public Color getButtonFillColor() {
+        return buttonFillColor;
+    }
+
+    public Color getButtonFillColorDarker() {
+        return buttonFillColorDarker;
+    }
+
+    public Color getPartitionColor() {
+        return partitionColor;
+    }
+
+    public Font getNativeMainFont() {
+        return nativeMainFont;
+    }
+
+    public Font getNativeSecondaryFont() {
+        return nativeSecondaryFont;
+    }
+
+    public Font getNativeTertiaryFont() {
+        return nativeTertiaryFont;
+    }
+
+    public Color getMainTextColor() {
+        return mainTextColor;
+    }
 }
