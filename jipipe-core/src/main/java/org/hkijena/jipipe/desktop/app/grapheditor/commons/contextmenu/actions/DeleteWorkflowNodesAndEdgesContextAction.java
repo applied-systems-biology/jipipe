@@ -70,6 +70,9 @@ public class DeleteWorkflowNodesAndEdgesContextAction implements NodeAndEdgesUIC
                 JOptionPane.YES_NO_OPTION) == JOptionPane.YES_OPTION) {
             if(!edgeSelection.isEmpty()) {
                 for (JIPipeDesktopGraphEdgeUI edgeUI : edgeSelection) {
+                    if (canvasUI.getHistoryJournal() != null) {
+                        canvasUI.getHistoryJournal().snapshotBeforeDisconnect(edgeUI.getSource(), edgeUI.getTarget(), canvasUI.getCompartmentUUID());
+                    }
                     canvasUI.getGraph().disconnect(edgeUI.getSource(), edgeUI.getTarget(), true);
                 }
             }

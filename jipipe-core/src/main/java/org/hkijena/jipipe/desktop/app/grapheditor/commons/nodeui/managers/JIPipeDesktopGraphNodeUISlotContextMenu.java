@@ -4,6 +4,7 @@ import org.hkijena.jipipe.JIPipe;
 import org.hkijena.jipipe.api.JIPipeProgressInfo;
 import org.hkijena.jipipe.api.compartments.algorithms.JIPipeProjectCompartment;
 import org.hkijena.jipipe.api.data.*;
+import org.hkijena.jipipe.api.history.JIPipeHistoryJournal;
 import org.hkijena.jipipe.api.nodes.JIPipeGraph;
 import org.hkijena.jipipe.api.nodes.JIPipeGraphEdge;
 import org.hkijena.jipipe.api.nodes.JIPipeSerializedGraphConnection;
@@ -456,14 +457,23 @@ public class JIPipeDesktopGraphNodeUISlotContextMenu {
 
 
     private void pasteConnections(JIPipeDataSlot slot, List<JIPipeSerializedGraphConnection> connections) {
+
+        JIPipeHistoryJournal historyJournal = getGraphCanvasUI().getHistoryJournal();
+
         for (JIPipeSerializedGraphConnection connection : connections) {
             if (slot.isInput()) {
                 // Connect to the output (source)
                 JIPipeDataSlot sourceSlot = connection.findSourceSlot(getGraphCanvasUI().getGraph());
+                if(historyJournal != null) {
+                    historyJournal.snapshotBeforeConnect(sourceSlot, slot, getGraphCanvasUI().getCompartmentUUID());
+                }
                 getGraphCanvasUI().getGraph().connect(sourceSlot, slot);
             } else if (slot.isOutput()) {
                 // Connect to the input (target)
                 JIPipeDataSlot targetSlot = connection.findTargetSlot(getGraphCanvasUI().getGraph());
+                if(historyJournal != null) {
+                    historyJournal.snapshotBeforeConnect(slot, targetSlot, getGraphCanvasUI().getCompartmentUUID());
+                }
                 getGraphCanvasUI().getGraph().connect(slot, targetSlot);
             }
         }
