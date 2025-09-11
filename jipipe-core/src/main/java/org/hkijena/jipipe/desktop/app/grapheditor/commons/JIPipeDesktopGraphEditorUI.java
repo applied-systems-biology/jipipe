@@ -33,6 +33,10 @@ import org.hkijena.jipipe.desktop.app.grapheditor.commons.canvas.events.JIPipeDe
 import org.hkijena.jipipe.desktop.app.grapheditor.commons.canvas.events.JIPipeDesktopGraphCanvasUINodeSelectionChangedEventListener;
 import org.hkijena.jipipe.desktop.app.grapheditor.commons.contextmenu.GraphInteractiveObjectUIContextAction;
 import org.hkijena.jipipe.desktop.app.grapheditor.commons.nodeui.JIPipeDesktopGraphNodeUI;
+import org.hkijena.jipipe.desktop.app.grapheditor.commons.nodeui.events.DefaultNodeUIActionRequestedEvent;
+import org.hkijena.jipipe.desktop.app.grapheditor.commons.nodeui.events.DefaultNodeUIActionRequestedEventListener;
+import org.hkijena.jipipe.desktop.app.grapheditor.commons.nodeui.events.NodeUIActionRequestedEvent;
+import org.hkijena.jipipe.desktop.app.grapheditor.commons.nodeui.events.NodeUIActionRequestedEventListener;
 import org.hkijena.jipipe.desktop.commons.components.icons.SolidColorIcon;
 import org.hkijena.jipipe.desktop.commons.components.renderers.JIPipeDesktopGenericListCellRenderer;
 import org.hkijena.jipipe.plugins.parameters.library.markup.HTMLText;
@@ -65,8 +69,8 @@ import java.util.List;
 public abstract class JIPipeDesktopGraphEditorUI extends JIPipeDesktopWorkbenchPanel implements MouseListener, MouseMotionListener, Disposable, JIPipeGraph.GraphChangedEventListener,
         JIPipeDesktopGraphCanvasUINodeSelectionChangedEventListener,
         JIPipeDesktopGraphCanvasUINodeSelectedEventListener,
-        JIPipeDesktopGraphNodeUI.DefaultNodeUIActionRequestedEventListener,
-        JIPipeDesktopGraphNodeUI.NodeUIActionRequestedEventListener,
+        DefaultNodeUIActionRequestedEventListener,
+        NodeUIActionRequestedEventListener,
         JIPipeDesktopDockPanel.StateSavedEventListener, JIPipeDesktopDockPanel.PanelSideVisibilityChangedEventListener {
 
     public static final String DOCK_LOG = "LOG_v2";
@@ -937,12 +941,12 @@ public abstract class JIPipeDesktopGraphEditorUI extends JIPipeDesktopWorkbenchP
     }
 
     @Override
-    public void onDefaultNodeUIActionRequested(JIPipeDesktopGraphNodeUI.DefaultNodeUIActionRequestedEvent event) {
+    public void onDefaultNodeUIActionRequested(DefaultNodeUIActionRequestedEvent event) {
 
     }
 
     @Override
-    public void onNodeUIActionRequested(JIPipeDesktopGraphNodeUI.NodeUIActionRequestedEvent event) {
+    public void onNodeUIActionRequested(NodeUIActionRequestedEvent event) {
 
     }
 

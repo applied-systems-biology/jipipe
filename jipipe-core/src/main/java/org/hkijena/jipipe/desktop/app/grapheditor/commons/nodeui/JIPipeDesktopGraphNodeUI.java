@@ -22,13 +22,11 @@ import org.hkijena.jipipe.api.cache.JIPipeCache;
 import org.hkijena.jipipe.api.compartments.algorithms.JIPipeProjectCompartment;
 import org.hkijena.jipipe.api.compartments.algorithms.JIPipeProjectCompartmentOutput;
 import org.hkijena.jipipe.api.data.*;
-import org.hkijena.jipipe.api.events.AbstractJIPipeEvent;
 import org.hkijena.jipipe.api.events.JIPipeEventEmitter;
 import org.hkijena.jipipe.api.grouping.GraphWrapperAlgorithmInput;
 import org.hkijena.jipipe.api.grouping.GraphWrapperAlgorithmOutput;
 import org.hkijena.jipipe.api.nodes.JIPipeAlgorithm;
 import org.hkijena.jipipe.api.nodes.JIPipeGraph;
-import org.hkijena.jipipe.api.nodes.JIPipeGraphEdge;
 import org.hkijena.jipipe.api.nodes.JIPipeGraphNode;
 import org.hkijena.jipipe.api.nodes.algorithm.JIPipeParameterSlotAlgorithm;
 import org.hkijena.jipipe.api.nodes.iterationstep.JIPipeIterationStepAlgorithm;
@@ -41,38 +39,27 @@ import org.hkijena.jipipe.desktop.app.JIPipeDesktopWorkbench;
 import org.hkijena.jipipe.desktop.app.JIPipeDesktopWorkbenchPanel;
 import org.hkijena.jipipe.desktop.app.grapheditor.commons.canvas.*;
 import org.hkijena.jipipe.desktop.app.grapheditor.commons.JIPipeDesktopGraphCanvasUI;
-import org.hkijena.jipipe.desktop.app.grapheditor.commons.JIPipeDesktopGraphEditorUI;
 import org.hkijena.jipipe.desktop.app.grapheditor.commons.JIPipeDesktopGraphInteractiveObjectUI;
 import org.hkijena.jipipe.desktop.app.grapheditor.commons.JIPipeDesktopGraphInteractiveObjectUIUpdateViewCommand;
-import org.hkijena.jipipe.desktop.app.grapheditor.commons.actions.JIPipeDesktopNodeUIAction;
 import org.hkijena.jipipe.desktop.app.grapheditor.commons.contextmenu.*;
 import org.hkijena.jipipe.desktop.app.grapheditor.commons.contextmenu.cache.ClearCacheNodeUIContextAction;
 import org.hkijena.jipipe.desktop.app.grapheditor.commons.contextmenu.running.*;
+import org.hkijena.jipipe.desktop.app.grapheditor.commons.nodeui.events.DefaultNodeUIActionRequestedEvent;
+import org.hkijena.jipipe.desktop.app.grapheditor.commons.nodeui.events.DefaultNodeUIActionRequestedEventListener;
+import org.hkijena.jipipe.desktop.app.grapheditor.commons.nodeui.events.NodeUIActionRequestedEventEmitter;
 import org.hkijena.jipipe.desktop.app.grapheditor.commons.nodeui.managers.*;
 import org.hkijena.jipipe.desktop.app.grapheditor.commons.nodeui.triggers.*;
-import org.hkijena.jipipe.desktop.app.grapheditor.flavors.pipeline.JIPipeDesktopPipelineGraphEditorUI;
-import org.hkijena.jipipe.desktop.app.grapheditor.nodefinder.JIPipeDesktopNodeFinderDialogUI;
-import org.hkijena.jipipe.desktop.commons.components.JIPipeDesktopAddAlgorithmSlotPanel;
-import org.hkijena.jipipe.desktop.commons.components.JIPipeDesktopEditAlgorithmSlotPanel;
-import org.hkijena.jipipe.desktop.commons.components.JIPipeDesktopParameterKeyPickerUI;
-import org.hkijena.jipipe.plugins.multiparameters.nodes.DefineParametersTableAlgorithm;
-import org.hkijena.jipipe.plugins.parameters.library.table.ParameterTable;
 import org.hkijena.jipipe.utils.*;
 import org.hkijena.jipipe.utils.debounce.StaticDebouncer;
-import org.hkijena.jipipe.utils.ui.ViewOnlyMenuItem;
 
 import javax.swing.*;
-import javax.swing.event.PopupMenuEvent;
-import javax.swing.event.PopupMenuListener;
 import java.awt.*;
-import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 import java.awt.event.MouseListener;
 import java.awt.event.MouseMotionListener;
 import java.awt.image.BufferedImage;
 import java.util.*;
 import java.util.List;
-import java.util.stream.Collectors;
 
 /**
  * UI around an {@link JIPipeGraphNode} instance
@@ -120,15 +107,14 @@ public class JIPipeDesktopGraphNodeUI extends JIPipeDesktopWorkbenchPanel implem
     private final Font nativeSecondaryFont = new Font(Font.DIALOG, Font.PLAIN, ThemeUtils.getCurrentStyle().getFontSizeSmall());
     private final Font nativeTertiaryFont = new Font(Font.DIALOG, Font.PLAIN, ThemeUtils.getCurrentStyle().getFontSizeTiny());
     private final Color mainTextColor;
-    private final Color secondaryTextColor;
     private final boolean nodeGeneratesIterationSteps;
     private final boolean showInputs;
     private final boolean showOutputs;
     private final NodeUIActionRequestedEventEmitter nodeUIActionRequestedEventEmitter = new NodeUIActionRequestedEventEmitter();
     private final boolean nodeIsRunnable;
     private final StaticDebouncer updateViewOnCacheUpdatedDebouncer;
-    private Color nodeBorderColor;
-    private Color slotFillColor;
+    private final Color nodeBorderColor;
+    private final Color slotFillColor;
     private Color buttonFillColor;
     private Color buttonFillColorDarker;
     private JIPipeDesktopGraphNodeUIAddSlotButtonActiveArea addInputSlotArea;
@@ -176,7 +162,7 @@ public class JIPipeDesktopGraphNodeUI extends JIPipeDesktopWorkbenchPanel implem
         nodeIsRunnable = node.getInfo().isRunnable() || node instanceof JIPipeAlgorithm || node instanceof JIPipeProjectCompartment;
 
         switch (node) {
-            case JIPipeProjectCompartmentOutput jiPipeProjectCompartmentOutput -> {
+            case JIPipeProjectCompartmentOutput ignored -> {
                 if (isDisplayedInForeignCompartment()) {
                     showInputs = false;
                     showOutputs = true;
@@ -185,11 +171,11 @@ public class JIPipeDesktopGraphNodeUI extends JIPipeDesktopWorkbenchPanel implem
                     showOutputs = true;
                 }
             }
-            case GraphWrapperAlgorithmInput graphWrapperAlgorithmInput -> {
+            case GraphWrapperAlgorithmInput ignored -> {
                 showInputs = false;
                 showOutputs = true;
             }
-            case GraphWrapperAlgorithmOutput graphWrapperAlgorithmOutput -> {
+            case GraphWrapperAlgorithmOutput ignored -> {
                 showInputs = true;
                 showOutputs = false;
             }
@@ -216,7 +202,6 @@ public class JIPipeDesktopGraphNodeUI extends JIPipeDesktopWorkbenchPanel implem
         this.slotFillColor = ThemeUtils.getCurrentStyle().getNodeSlotBackground();
         this.slotParametersFillColor = ColorUtils.mix(slotFillColor, nodeFillColor, 0.5);
         this.mainTextColor = UIManager.getColor("Label.foreground");
-        this.secondaryTextColor = nodeBorderColor;
         this.nodeDisabledPaint = new LinearGradientPaint(
                 (float) 0, (float) 0, (float) (8), (float) (8),
                 new float[]{0, 0.5f, 0.5001f, 1}, new Color[]{COLOR_DISABLED_1, COLOR_DISABLED_1, COLOR_DISABLED_2, COLOR_DISABLED_2}, MultipleGradientPaint.CycleMethod.REPEAT);
@@ -976,7 +961,7 @@ public class JIPipeDesktopGraphNodeUI extends JIPipeDesktopWorkbenchPanel implem
                     realSlotHeight,
                     startX,
                     slotWidth,
-                    slotState.getSlotStatus() == SlotStatus.Cached ? COLOR_SLOT_CACHED : null,
+                    slotState.getSlotStatus() == JIPipeDesktopGraphNodeUISlotStatus.Cached ? COLOR_SLOT_CACHED : null,
                     null,
                     getHeight() - realSlotHeight - 1,
                     (int) Math.round(getHeight() - 4 * zoom),
@@ -1068,8 +1053,8 @@ public class JIPipeDesktopGraphNodeUI extends JIPipeDesktopWorkbenchPanel implem
                     realSlotHeight,
                     startX,
                     slotWidth,
-                    slotState.getSlotStatus() == SlotStatus.Unconnected ? COLOR_SLOT_DISCONNECTED : null,
-                    slotState.getSlotStatus() == SlotStatus.Unconnected ? COLOR_SLOT_DISCONNECTED : null,
+                    slotState.getSlotStatus() == JIPipeDesktopGraphNodeUISlotStatus.Unconnected ? COLOR_SLOT_DISCONNECTED : null,
+                    slotState.getSlotStatus() == JIPipeDesktopGraphNodeUISlotStatus.Unconnected ? COLOR_SLOT_DISCONNECTED : null,
                     0,
                     (int) Math.round(2 * zoom),
                     (int) Math.round(realSlotHeight / 2.0));
@@ -1148,7 +1133,7 @@ public class JIPipeDesktopGraphNodeUI extends JIPipeDesktopWorkbenchPanel implem
         FontMetrics fontMetrics = g2.getFontMetrics();
         UIUtils.drawStringVerticallyCentered(g2, slotState.getSlotLabel(), (int) Math.round(startX + 3 * zoom), (int) Math.round(centerY - 1 * zoom), fontMetrics);
 
-        if (slotState.getSlotStatus() == SlotStatus.Cached) {
+        if (slotState.getSlotStatus() == JIPipeDesktopGraphNodeUISlotStatus.Cached) {
             startX = originalStartX + slotWidth - 8 * zoom - 12 * zoom;
             g2.drawImage(JIPipe.RESOURCES.getIcon12Inverted("actions/database.png").getImage(),
                     (int) Math.round(startX),
@@ -1339,9 +1324,9 @@ public class JIPipeDesktopGraphNodeUI extends JIPipeDesktopWorkbenchPanel implem
                 }
                 if (graph != null && graph.containsNode(inputSlot)) {
                     if (!inputSlot.getInfo().isOptional() && graph.getGraph().inDegreeOf(inputSlot) <= 0 && !(inputSlot.getNode() instanceof GraphWrapperAlgorithmInput)) {
-                        slotState.setSlotStatus(SlotStatus.Unconnected);
+                        slotState.setSlotStatus(JIPipeDesktopGraphNodeUISlotStatus.Unconnected);
                     } else {
-                        slotState.setSlotStatus(SlotStatus.Default);
+                        slotState.setSlotStatus(JIPipeDesktopGraphNodeUISlotStatus.Default);
                     }
                 }
             }
@@ -1368,9 +1353,9 @@ public class JIPipeDesktopGraphNodeUI extends JIPipeDesktopWorkbenchPanel implem
                 }
 
                 if (cachedData != null && cachedData.containsKey(outputSlot.getName())) {
-                    slotState.setSlotStatus(SlotStatus.Cached);
+                    slotState.setSlotStatus(JIPipeDesktopGraphNodeUISlotStatus.Cached);
                 } else {
-                    slotState.setSlotStatus(SlotStatus.Default);
+                    slotState.setSlotStatus(JIPipeDesktopGraphNodeUISlotStatus.Default);
                 }
             }
         }
@@ -1382,7 +1367,7 @@ public class JIPipeDesktopGraphNodeUI extends JIPipeDesktopWorkbenchPanel implem
                 if (outputNode != null) {
                     cachedData = graph.getProject().getCache().query(outputNode, outputNode.getUUIDInParentGraph(), new JIPipeProgressInfo());
                     if (cachedData != null && !cachedData.isEmpty()) {
-                        entry.getValue().setSlotStatus(SlotStatus.Cached);
+                        entry.getValue().setSlotStatus(JIPipeDesktopGraphNodeUISlotStatus.Cached);
                     }
                 }
             }
@@ -1571,8 +1556,6 @@ public class JIPipeDesktopGraphNodeUI extends JIPipeDesktopWorkbenchPanel implem
         }
     }
 
-
-
     public JIPipeDesktopGraphNodeUISlotContextMenu getSlotContextMenu() {
         return slotContextMenu;
     }
@@ -1597,81 +1580,4 @@ public class JIPipeDesktopGraphNodeUI extends JIPipeDesktopWorkbenchPanel implem
         return inputConfigMenu;
     }
 
-    public enum SlotStatus {
-        Default,
-        Unconnected,
-        Cached
-    }
-
-    public interface NodeUIActionRequestedEventListener {
-        void onNodeUIActionRequested(NodeUIActionRequestedEvent event);
-    }
-
-    public interface DefaultNodeUIActionRequestedEventListener {
-        void onDefaultNodeUIActionRequested(DefaultNodeUIActionRequestedEvent event);
-    }
-
-    /**
-     * An action that is requested by an {@link JIPipeDesktopGraphNodeUI} and passed down to a {@link JIPipeDesktopGraphEditorUI}
-     */
-    public static class NodeUIActionRequestedEvent extends AbstractJIPipeEvent {
-        private final JIPipeDesktopGraphNodeUI ui;
-        private final JIPipeDesktopNodeUIAction action;
-
-        /**
-         * Initializes a new instance
-         *
-         * @param ui     the requesting UI
-         * @param action the action parameter
-         */
-        public NodeUIActionRequestedEvent(JIPipeDesktopGraphNodeUI ui, JIPipeDesktopNodeUIAction action) {
-            super(ui);
-            this.ui = ui;
-            this.action = action;
-        }
-
-        public JIPipeDesktopGraphNodeUI getUi() {
-            return ui;
-        }
-
-        public JIPipeDesktopNodeUIAction getAction() {
-            return action;
-        }
-    }
-
-    public static class NodeUIActionRequestedEventEmitter extends JIPipeEventEmitter<NodeUIActionRequestedEvent, NodeUIActionRequestedEventListener> {
-
-        @Override
-        protected void call(NodeUIActionRequestedEventListener nodeUIActionRequestedEventListener, NodeUIActionRequestedEvent event) {
-            nodeUIActionRequestedEventListener.onNodeUIActionRequested(event);
-        }
-    }
-
-    /**
-     * Triggered when an {@link JIPipeDesktopGraphNodeUI} requests a default action (double click)
-     */
-    public static class DefaultNodeUIActionRequestedEvent extends AbstractJIPipeEvent {
-
-        private final JIPipeDesktopGraphNodeUI ui;
-
-        /**
-         * @param ui event source
-         */
-        public DefaultNodeUIActionRequestedEvent(JIPipeDesktopGraphNodeUI ui) {
-            super(ui);
-            this.ui = ui;
-        }
-
-        public JIPipeDesktopGraphNodeUI getUi() {
-            return ui;
-        }
-    }
-
-    public static class DefaultNodeUIActionRequestedEventEmitter extends JIPipeEventEmitter<DefaultNodeUIActionRequestedEvent, DefaultNodeUIActionRequestedEventListener> {
-
-        @Override
-        protected void call(DefaultNodeUIActionRequestedEventListener defaultNodeUIActionRequestedEventListener, DefaultNodeUIActionRequestedEvent event) {
-            defaultNodeUIActionRequestedEventListener.onDefaultNodeUIActionRequested(event);
-        }
-    }
 }

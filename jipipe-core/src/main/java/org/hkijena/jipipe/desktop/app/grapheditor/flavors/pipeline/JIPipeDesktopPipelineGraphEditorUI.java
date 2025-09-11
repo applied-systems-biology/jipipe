@@ -56,6 +56,8 @@ import org.hkijena.jipipe.desktop.app.grapheditor.commons.contextmenu.select.Inv
 import org.hkijena.jipipe.desktop.app.grapheditor.commons.contextmenu.select.SelectAllNodeUIContextAction;
 import org.hkijena.jipipe.desktop.app.grapheditor.commons.contextmenu.select.SelectAndMoveNodeHereNodeUIContextAction;
 import org.hkijena.jipipe.desktop.app.grapheditor.commons.nodeui.JIPipeDesktopGraphNodeUI;
+import org.hkijena.jipipe.desktop.app.grapheditor.commons.nodeui.events.DefaultNodeUIActionRequestedEvent;
+import org.hkijena.jipipe.desktop.app.grapheditor.commons.nodeui.events.NodeUIActionRequestedEvent;
 import org.hkijena.jipipe.desktop.app.grapheditor.commons.properties.JIPipeDesktopGraphEditorErrorPanel;
 import org.hkijena.jipipe.desktop.app.grapheditor.commons.properties.JIPipeDesktopGraphNodeSlotEditorUI;
 import org.hkijena.jipipe.desktop.app.grapheditor.flavors.groups.JIPipeDesktopNodeGroupUI;
@@ -325,7 +327,7 @@ public class JIPipeDesktopPipelineGraphEditorUI extends JIPipeDesktopGraphEditor
                         JIPipeDesktopDockPanel.PanelLocation.TopRight,
                         false,
                         -60, () -> new JIPipeDesktopDataBatchAssistantUI((JIPipeDesktopProjectWorkbench) getDesktopWorkbench(), node, () -> {
-                            nodeUI.getNodeUIActionRequestedEventEmitter().emit(new JIPipeDesktopGraphNodeUI.NodeUIActionRequestedEvent(nodeUI,
+                            nodeUI.getNodeUIActionRequestedEventEmitter().emit(new NodeUIActionRequestedEvent(nodeUI,
                                     new JIPipeDesktopUpdateCacheAction(false, true, false)));
                         }));
             } else {
@@ -362,7 +364,7 @@ public class JIPipeDesktopPipelineGraphEditorUI extends JIPipeDesktopGraphEditor
 
 
     @Override
-    public void onDefaultNodeUIActionRequested(JIPipeDesktopGraphNodeUI.DefaultNodeUIActionRequestedEvent event) {
+    public void onDefaultNodeUIActionRequested(DefaultNodeUIActionRequestedEvent event) {
         JIPipeGraphNode node = event.getUi().getNode();
         if (node instanceof JIPipeNodeGroup) {
             if (getDesktopWorkbench() instanceof JIPipeDesktopProjectWorkbench) {
@@ -412,7 +414,7 @@ public class JIPipeDesktopPipelineGraphEditorUI extends JIPipeDesktopGraphEditor
      * @param event the event
      */
     @Override
-    public void onNodeUIActionRequested(JIPipeDesktopGraphNodeUI.NodeUIActionRequestedEvent event) {
+    public void onNodeUIActionRequested(NodeUIActionRequestedEvent event) {
         if (event.getAction() instanceof JIPipeDesktopRunAndShowResultsAction) {
             getSelectionManager().selectOnly(event.getUi());
             JIPipeDesktopPipelineGraphEditorRunManager runManager = new JIPipeDesktopPipelineGraphEditorRunManager(getWorkbench().getProject(), getCanvasUI(), event.getUi(), getDockPanel(), true);

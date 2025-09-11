@@ -17,6 +17,7 @@ import org.hkijena.jipipe.api.data.JIPipeDataSlot;
 import org.hkijena.jipipe.api.data.JIPipeSlotType;
 import org.hkijena.jipipe.desktop.app.grapheditor.commons.nodeui.JIPipeDesktopGraphNodeUI;
 import org.hkijena.jipipe.desktop.app.grapheditor.commons.nodeui.JIPipeDesktopGraphNodeUIActiveArea;
+import org.hkijena.jipipe.desktop.app.grapheditor.commons.nodeui.JIPipeDesktopGraphNodeUISlotStatus;
 
 import java.awt.*;
 
@@ -33,7 +34,7 @@ public class JIPipeDesktopGraphNodeUISlotActiveArea extends JIPipeDesktopGraphNo
     private String slotLabel;
 
     private boolean slotLabelIsCustom;
-    private JIPipeDesktopGraphNodeUI.SlotStatus slotStatus = JIPipeDesktopGraphNodeUI.SlotStatus.Default;
+    private JIPipeDesktopGraphNodeUISlotStatus slotStatus = JIPipeDesktopGraphNodeUISlotStatus.Default;
 
     private Point nativeLocation;
 
@@ -65,11 +66,11 @@ public class JIPipeDesktopGraphNodeUISlotActiveArea extends JIPipeDesktopGraphNo
         return slotName;
     }
 
-    public JIPipeDesktopGraphNodeUI.SlotStatus getSlotStatus() {
+    public JIPipeDesktopGraphNodeUISlotStatus getSlotStatus() {
         return slotStatus;
     }
 
-    public void setSlotStatus(JIPipeDesktopGraphNodeUI.SlotStatus slotStatus) {
+    public void setSlotStatus(JIPipeDesktopGraphNodeUISlotStatus slotStatus) {
         this.slotStatus = slotStatus;
     }
 
