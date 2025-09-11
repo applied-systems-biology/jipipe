@@ -174,6 +174,8 @@ public class JIPipeGraphRun extends DefaultJIPipeRunnable implements JIPipeGraph
             progressInfo.log("");
         }
 
+        progressInfo.log("Dissolving tunnels ...");
+        dissolveTunnels(graph, progressInfo.resolve("Preprocessing/Tunnels"));
         progressInfo.log("Erasing skipped/disabled algorithms (except direct predecessors) ...");
         cleanGraph(graph, progressInfo.resolve("Preprocessing/Cleanup"));
         progressInfo.log("Repairing partition assignments ...");
@@ -404,6 +406,10 @@ public class JIPipeGraphRun extends DefaultJIPipeRunnable implements JIPipeGraph
             }
         }
 
+
+    }
+
+    private void dissolveTunnels(JIPipeGraph graph, JIPipeProgressInfo progressInfo) {
 
     }
 
