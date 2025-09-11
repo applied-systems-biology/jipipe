@@ -29,7 +29,7 @@ variables:
   before_script:
     - apt-get update
     - apt-get install -y nsis git git-lfs zip unzip
-    - git lfs install
+    - git lfs install --force
     - git config --global --add safe.directory "$CI_PROJECT_DIR"
 
 # Master branch jobs - Full pipeline with distribution
