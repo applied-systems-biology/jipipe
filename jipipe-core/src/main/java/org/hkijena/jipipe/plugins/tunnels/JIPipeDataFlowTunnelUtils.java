@@ -16,6 +16,21 @@ import org.hkijena.jipipe.utils.StringUtils;
 import java.util.*;
 
 public class JIPipeDataFlowTunnelUtils {
+
+    public static boolean tunnelEntranceIsUnique(JIPipeGraph graph, UUID compartmentUUID, String tunnelKeyGroup, String tunnelKey) {
+        boolean found = false;
+        Set<JIPipeGraphNode> nodesWithinCompartment = graph.getNodesWithinCompartment(compartmentUUID);
+        for (JIPipeGraphNode node : nodesWithinCompartment) {
+            if (node instanceof JIPipeDataFlowTunnelEntrance tunnelEntrance && Objects.equals(tunnelEntrance.getTunnelKeyGroup(), tunnelKeyGroup) && Objects.equals(tunnelEntrance.getTunnelKey(), tunnelKey)) {
+                if (found) {
+                    return false;
+                }
+                found = true;
+            }
+        }
+        return true;
+    }
+
     public static JIPipeDataFlowTunnelEntrance findTunnelEntrance(JIPipeGraph graph, UUID compartmentUUID, String tunnelKeyGroup, String tunnelKey) {
         Set<JIPipeGraphNode> nodesWithinCompartment = graph.getNodesWithinCompartment(compartmentUUID);
         for (JIPipeGraphNode node : nodesWithinCompartment) {
@@ -39,7 +54,7 @@ public class JIPipeDataFlowTunnelUtils {
 
     public static JIPipeDataInfo findTunnelDataType(JIPipeGraph graph, UUID compartmentUUID, String tunnelKeyGroup, String tunnelKey) {
         JIPipeDataFlowTunnelEntrance tunnelEntrance = findTunnelEntrance(graph, compartmentUUID, tunnelKeyGroup, tunnelKey);
-        if(tunnelEntrance != null) {
+        if (tunnelEntrance != null) {
             // Find connected inputs
             Set<Class<? extends JIPipeData>> sourceClasses = new HashSet<>();
             for (JIPipeInputDataSlot inputSlot : tunnelEntrance.getDataInputSlots()) {
@@ -49,7 +64,7 @@ public class JIPipeDataFlowTunnelUtils {
             }
 
             Class<? extends JIPipeData> consensusDataType = JIPipe.getDataTypes().getConsensusDataType(sourceClasses);
-            if(consensusDataType == null) {
+            if (consensusDataType == null) {
                 consensusDataType = JIPipeData.class;
             }
             return JIPipeDataInfo.getInstance(consensusDataType);
@@ -58,10 +73,10 @@ public class JIPipeDataFlowTunnelUtils {
         return JIPipeDataInfo.getInstance(JIPipeData.class);
     }
 
-    public static Map<String,JIPipeDataInfo> findTunnelDataTypes(JIPipeGraph graph, UUID compartmentUUID, String tunnelKeyGroup, String tunnelKey) {
-        Map<String,JIPipeDataInfo> result = new HashMap<>();
+    public static Map<String, JIPipeDataInfo> findTunnelDataTypes(JIPipeGraph graph, UUID compartmentUUID, String tunnelKeyGroup, String tunnelKey) {
+        Map<String, JIPipeDataInfo> result = new HashMap<>();
         JIPipeDataFlowTunnelEntrance tunnelEntrance = findTunnelEntrance(graph, compartmentUUID, tunnelKeyGroup, tunnelKey);
-        if(tunnelEntrance != null) {
+        if (tunnelEntrance != null) {
             // Find connected inputs
             for (JIPipeInputDataSlot inputSlot : tunnelEntrance.getDataInputSlots()) {
                 Set<Class<? extends JIPipeData>> sourceClasses = new HashSet<>();
@@ -69,7 +84,7 @@ public class JIPipeDataFlowTunnelUtils {
                     sourceClasses.add(outputSlot.getAcceptedDataType());
                 }
                 Class<? extends JIPipeData> consensusDataType = JIPipe.getDataTypes().getConsensusDataType(sourceClasses);
-                if(consensusDataType == null) {
+                if (consensusDataType == null) {
                     consensusDataType = JIPipeData.class;
                 }
                 JIPipeDataInfo consensus = JIPipeDataInfo.getInstance(consensusDataType);
@@ -80,21 +95,21 @@ public class JIPipeDataFlowTunnelUtils {
     }
 
     public static float getTunnelColorHue(JIPipeDesktopGraphCanvasUI canvasUI, String tunnelKeyGroup, String tunnelKey) {
-        if(StringUtils.isNullOrEmpty(tunnelKey)) {
+        if (StringUtils.isNullOrEmpty(tunnelKey)) {
             return 0;
         }
         Set<JIPipeGraphNode> nodesWithinCompartment = canvasUI.getGraph().getNodesWithinCompartment(canvasUI.getCompartmentUUID());
         List<String> tunnelKeys = new ArrayList<>();
         for (JIPipeGraphNode node : nodesWithinCompartment) {
-            if(node instanceof JIPipeDataFlowTunnel tunnel && Objects.equals(tunnelKeyGroup, tunnel.getTunnelKeyGroup()) && tunnel.hasValidTunnelKey()) {
+            if (node instanceof JIPipeDataFlowTunnel tunnel && Objects.equals(tunnelKeyGroup, tunnel.getTunnelKeyGroup()) && tunnel.hasValidTunnelKey()) {
                 String name = StringUtils.nullToEmpty(node.getCustomName());
-                if(!tunnelKeys.contains(name)) {
+                if (!tunnelKeys.contains(name)) {
                     tunnelKeys.add(name);
                 }
             }
         }
         Collections.sort(tunnelKeys);
-        if(tunnelKeys.isEmpty()) {
+        if (tunnelKeys.isEmpty()) {
             return 0;
         }
 

@@ -91,7 +91,11 @@ public class JIPipeDesktopTunnelGraphNodeUI extends JIPipeDesktopGraphNodeUI {
 
     @Override
     public Image getNodeIcon() {
-        return !StringUtils.isNullOrEmpty(getNode().getCustomName()) ? JIPipe.RESOURCES.getIcon16("actions/key.png").getImage() : JIPipe.RESOURCES.getIcon16("emblems/warning.png").getImage();
+        return tunnelIsValid() ? JIPipe.RESOURCES.getIcon16("actions/key.png").getImage() : JIPipe.RESOURCES.getIcon16("emblems/warning.png").getImage();
+    }
+
+    public boolean tunnelIsValid() {
+        return !StringUtils.isNullOrEmpty(getNode().getCustomName());
     }
 
     @Override

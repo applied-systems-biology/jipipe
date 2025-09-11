@@ -13,16 +13,12 @@
 
 package org.hkijena.jipipe.plugins.tunnels.ui;
 
-import org.hkijena.jipipe.JIPipe;
 import org.hkijena.jipipe.api.nodes.JIPipeGraphNode;
 import org.hkijena.jipipe.desktop.app.JIPipeDesktopWorkbench;
 import org.hkijena.jipipe.desktop.app.grapheditor.commons.JIPipeDesktopGraphCanvasUI;
-import org.hkijena.jipipe.desktop.app.grapheditor.commons.nodeui.JIPipeDesktopGraphNodeUI;
 import org.hkijena.jipipe.desktop.app.grapheditor.commons.nodeui.triggers.JIPipeDesktopGraphNodeUISlotActiveArea;
+import org.hkijena.jipipe.plugins.tunnels.JIPipeDataFlowTunnelUtils;
 import org.hkijena.jipipe.plugins.tunnels.nodes.JIPipeDataFlowTunnelEntrance;
-import org.hkijena.jipipe.utils.ThemeUtils;
-
-import java.awt.*;
 
 public class JIPipeDesktopTunnelEntranceGraphNodeUI extends JIPipeDesktopTunnelGraphNodeUI {
 
@@ -35,9 +31,17 @@ public class JIPipeDesktopTunnelEntranceGraphNodeUI extends JIPipeDesktopTunnelG
      */
     public JIPipeDesktopTunnelEntranceGraphNodeUI(JIPipeDesktopWorkbench workbench, JIPipeDesktopGraphCanvasUI graphCanvasUI, JIPipeGraphNode node) {
         super(workbench, graphCanvasUI, node);
-        if(!JIPipeDataFlowTunnelEntrance.class.isAssignableFrom(node.getClass())) {
+        if (!JIPipeDataFlowTunnelEntrance.class.isAssignableFrom(node.getClass())) {
             throw new IllegalArgumentException("Node must be a JIPipeDataFlowTunnelEntrance");
         }
+    }
+
+    @Override
+    public boolean tunnelIsValid() {
+        if (super.tunnelIsValid()) {
+            return JIPipeDataFlowTunnelUtils.tunnelEntranceIsUnique(getGraphCanvasUI().getGraph(), getGraphCanvasUI().getCompartmentUUID(), getTunnelKeyGroup(), getTunnelKey());
+        }
+        return false;
     }
 
     @Override
