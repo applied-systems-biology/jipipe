@@ -630,6 +630,92 @@ public class JIPipeDatatypeRegistry {
     }
 
     /**
+     * Returns the highest Class<? extends JIPipeData> where objects of the given data types can be assigned to.
+     * In other words, finds the most general common ancestor type that all the given data types can be cast to.
+     *
+     * @param dataTypes the collection of data types to find the consensus for
+     * @return the most general common ancestor type, or null if no common ancestor exists or the collection is empty
+     */
+    public Class<? extends JIPipeData> getConsensusDataType(Collection<Class<? extends JIPipeData>> dataTypes) {
+        // Handle edge cases
+        if (dataTypes == null || dataTypes.isEmpty()) {
+            return null;
+        }
+
+        // Convert to list for easier processing
+        List<Class<? extends JIPipeData>> typeList = new ArrayList<>(dataTypes);
+        
+        // If there's only one type, return it directly
+        if (typeList.size() == 1) {
+            return typeList.getFirst();
+        }
+
+        // Find the common ancestor
+
+        return findCommonAncestor(typeList);
+    }
+
+    /**
+     * Helper method to find the most general common ancestor for a list of JIPipeData types
+     *
+     * @param typeList the list of data types
+     * @return the most general common ancestor, or null if no common ancestor exists
+     */
+    private Class<? extends JIPipeData> findCommonAncestor(List<Class<? extends JIPipeData>> typeList) {
+        // Start with the first type as the initial consensus
+        Class<? extends JIPipeData> consensus = typeList.getFirst();
+        
+        // Check each subsequent type
+        for (int i = 1; i < typeList.size(); i++) {
+            Class<? extends JIPipeData> currentType = typeList.get(i);
+            consensus = findCommonAncestorBetweenTwoTypes(consensus, currentType);
+            
+            // If at any point there's no common ancestor, return null
+            if (consensus == null) {
+                return null;
+            }
+        }
+        
+        return consensus;
+    }
+
+    /**
+     * Helper method to find the most general common ancestor between two JIPipeData types
+     *
+     * @param type1 the first data type
+     * @param type2 the second data type
+     * @return the most general common ancestor, or null if no common ancestor exists
+     */
+    private Class<? extends JIPipeData> findCommonAncestorBetweenTwoTypes(Class<? extends JIPipeData> type1, Class<? extends JIPipeData> type2) {
+        // If one type is assignable from the other, return the more general type
+        if (type1.isAssignableFrom(type2)) {
+            return type1;
+        }
+        if (type2.isAssignableFrom(type1)) {
+            return type2;
+        }
+
+        // Traverse the class hierarchy of type1 to find a common ancestor with type2
+        Class<?> current = type1.getSuperclass();
+        
+        // Ensure we stay within JIPipeData hierarchy
+        while (current != null && JIPipeData.class.isAssignableFrom(current)) {
+            if (current.isAssignableFrom(type2)) {
+                return (Class<? extends JIPipeData>) current;
+            }
+            current = current.getSuperclass();
+        }
+        
+        // Check if JIPipeData itself is the common ancestor
+        if (JIPipeData.class.isAssignableFrom(type2)) {
+            return JIPipeData.class;
+        }
+        
+        // No common ancestor found
+        return null;
+    }
+
+    /**
      * Edge between {@link JIPipeDataInfo} instances that indicate a conversion
      */
     public static class DataConverterEdge extends DefaultWeightedEdge {

@@ -102,7 +102,7 @@ import java.util.zip.GZIPInputStream;
  * A scijava service that discovers JIPipe plugins in the classpath
  */
 @Plugin(type = JIPipeService.class)
-public class JIPipe extends AbstractService implements JIPipeService {
+public final class JIPipe extends AbstractService implements JIPipeService {
 
     /**
      * Resource manager for core JIPipe

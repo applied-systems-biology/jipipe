@@ -52,6 +52,7 @@ import org.hkijena.jipipe.desktop.app.grapheditor.commons.layout.SugiyamaGraphAu
 import org.hkijena.jipipe.desktop.app.grapheditor.commons.nodeui.JIPipeDesktopGraphNodeUI;
 import org.hkijena.jipipe.desktop.app.grapheditor.commons.nodeui.JIPipeDesktopGraphNodeUIActiveArea;
 import org.hkijena.jipipe.desktop.app.grapheditor.commons.nodeui.JIPipeDesktopGraphNodeUIUpdateViewCommand;
+import org.hkijena.jipipe.desktop.app.grapheditor.commons.nodeui.events.*;
 import org.hkijena.jipipe.desktop.app.settings.JIPipeDesktopRuntimePartitionListEditor;
 import org.hkijena.jipipe.desktop.commons.components.JIPipeDesktopAddAlgorithmSlotPanel;
 import org.hkijena.jipipe.desktop.commons.components.JIPipeDesktopZoomViewPort;
@@ -81,7 +82,7 @@ import java.util.stream.Collectors;
  * UI that displays an {@link JIPipeGraph}
  */
 public class JIPipeDesktopGraphCanvasUI extends JLayeredPane implements JIPipeDesktopWorkbenchAccess, MouseMotionListener, MouseListener, MouseWheelListener, JIPipeDesktopZoomViewPort, Disposable,
-        JIPipeGraph.GraphChangedEventListener, JIPipeGraph.NodeConnectedEventListener, JIPipeDesktopGraphNodeUI.NodeUIActionRequestedEventListener {
+        JIPipeGraph.GraphChangedEventListener, JIPipeGraph.NodeConnectedEventListener, NodeUIActionRequestedEventListener {
 
     private final JIPipeDesktopWorkbench desktopWorkbench;
     private final JIPipeDesktopGraphEditorUI graphEditorUI;
@@ -112,8 +113,8 @@ public class JIPipeDesktopGraphCanvasUI extends JLayeredPane implements JIPipeDe
     private final Map<?, ?> desktopRenderingHints = UIUtils.getDesktopRenderingHints();
     private final ZoomChangedEventEmitter zoomChangedEventEmitter = new ZoomChangedEventEmitter();
     private final JIPipeDesktopGraphCanvasUIUpdatedEventEmitter graphCanvasUpdatedEventEmitter = new JIPipeDesktopGraphCanvasUIUpdatedEventEmitter();
-    private final JIPipeDesktopGraphNodeUI.DefaultNodeUIActionRequestedEventEmitter defaultNodeUIActionRequestedEventEmitter = new JIPipeDesktopGraphNodeUI.DefaultNodeUIActionRequestedEventEmitter();
-    private final JIPipeDesktopGraphNodeUI.NodeUIActionRequestedEventEmitter nodeUIActionRequestedEventEmitter = new JIPipeDesktopGraphNodeUI.NodeUIActionRequestedEventEmitter();
+    private final DefaultNodeUIActionRequestedEventEmitter defaultNodeUIActionRequestedEventEmitter = new DefaultNodeUIActionRequestedEventEmitter();
+    private final NodeUIActionRequestedEventEmitter nodeUIActionRequestedEventEmitter = new NodeUIActionRequestedEventEmitter();
     private final StampedLock graphEditCursorLock = new StampedLock();
     private final StampedLock updateCanvasLock = new StampedLock();
     private JIPipeDesktopGraphDragAndDropBehavior dragAndDropBehavior;
@@ -211,11 +212,11 @@ public class JIPipeDesktopGraphCanvasUI extends JLayeredPane implements JIPipeDe
         return lastMousePosition;
     }
 
-    public JIPipeDesktopGraphNodeUI.DefaultNodeUIActionRequestedEventEmitter getDefaultAlgorithmUIActionRequestedEventEmitter() {
+    public DefaultNodeUIActionRequestedEventEmitter getDefaultAlgorithmUIActionRequestedEventEmitter() {
         return defaultNodeUIActionRequestedEventEmitter;
     }
 
-    public JIPipeDesktopGraphNodeUI.NodeUIActionRequestedEventEmitter getNodeUIActionRequestedEventEmitter() {
+    public NodeUIActionRequestedEventEmitter getNodeUIActionRequestedEventEmitter() {
         return nodeUIActionRequestedEventEmitter;
     }
 
@@ -835,7 +836,7 @@ public class JIPipeDesktopGraphCanvasUI extends JLayeredPane implements JIPipeDe
 
         if (SwingUtilities.isLeftMouseButton(mouseEvent) && mouseEvent.getClickCount() == 2) {
             if (nodeUI != null) {
-                defaultNodeUIActionRequestedEventEmitter.emit(new JIPipeDesktopGraphNodeUI.DefaultNodeUIActionRequestedEvent(nodeUI));
+                defaultNodeUIActionRequestedEventEmitter.emit(new DefaultNodeUIActionRequestedEvent(nodeUI));
             } else if (graphEditorUI != null) {
                 if (edgeUI == null) {
                     graphEditorUI.onCanvasEmptyDoubleClick(mouseEvent);
@@ -1747,7 +1748,7 @@ public class JIPipeDesktopGraphCanvasUI extends JLayeredPane implements JIPipeDe
     }
 
     @Override
-    public void onNodeUIActionRequested(JIPipeDesktopGraphNodeUI.NodeUIActionRequestedEvent event) {
+    public void onNodeUIActionRequested(NodeUIActionRequestedEvent event) {
 
         if (disposed) {
             return;
@@ -1889,5 +1890,14 @@ public class JIPipeDesktopGraphCanvasUI extends JLayeredPane implements JIPipeDe
 
     public JIPipeDesktopGraphCanvasNotificationsManager getNotificationsManager() {
         return notificationsManager;
+    }
+
+    public JIPipeDesktopGraphNodeUI getNodeUI(UUID uuid) {
+        JIPipeGraphNode node = graph.getNodeByUUID(uuid);
+        return getNodeUI(node);
+    }
+
+    public JIPipeDesktopGraphNodeUI getNodeUI(JIPipeGraphNode node) {
+        return nodeUIs.get(node);
     }
 }

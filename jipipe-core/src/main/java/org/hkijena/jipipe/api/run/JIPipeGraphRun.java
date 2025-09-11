@@ -44,10 +44,15 @@ import org.hkijena.jipipe.api.notifications.JIPipeNotificationAction;
 import org.hkijena.jipipe.api.project.JIPipeProject;
 import org.hkijena.jipipe.api.runtimepartitioning.JIPipeRuntimePartition;
 import org.hkijena.jipipe.api.runtimepartitioning.RuntimePartitionReferenceParameter;
+import org.hkijena.jipipe.api.validation.JIPipeValidationReportContext;
 import org.hkijena.jipipe.api.validation.JIPipeValidationRuntimeException;
 import org.hkijena.jipipe.api.validation.contexts.GraphNodeValidationReportContext;
 import org.hkijena.jipipe.api.validation.contexts.UnspecifiedValidationReportContext;
 import org.hkijena.jipipe.plugins.artifacts.JIPipeArtifactApplicationSettings;
+import org.hkijena.jipipe.plugins.tunnels.JIPipeDataFlowTunnelUtils;
+import org.hkijena.jipipe.plugins.tunnels.nodes.JIPipeDataFlowTunnel;
+import org.hkijena.jipipe.plugins.tunnels.nodes.JIPipeDataFlowTunnelEntrance;
+import org.hkijena.jipipe.plugins.tunnels.nodes.JIPipeDataFlowTunnelExit;
 import org.hkijena.jipipe.utils.*;
 import org.hkijena.jipipe.utils.json.JsonUtils;
 import org.jgrapht.graph.DefaultEdge;
@@ -174,6 +179,8 @@ public class JIPipeGraphRun extends DefaultJIPipeRunnable implements JIPipeGraph
             progressInfo.log("");
         }
 
+        progressInfo.log("Dissolving tunnels ...");
+        dissolveTunnels(graph, progressInfo.resolve("Preprocessing/Tunnels"));
         progressInfo.log("Erasing skipped/disabled algorithms (except direct predecessors) ...");
         cleanGraph(graph, progressInfo.resolve("Preprocessing/Cleanup"));
         progressInfo.log("Repairing partition assignments ...");
@@ -404,6 +411,52 @@ public class JIPipeGraphRun extends DefaultJIPipeRunnable implements JIPipeGraph
             }
         }
 
+
+    }
+
+    private void dissolveTunnels(JIPipeGraph graph, JIPipeProgressInfo progressInfo) {
+        for (JIPipeGraphNode graphNode : graph.getGraphNodes()) {
+            if(graphNode instanceof JIPipeDataFlowTunnelExit tunnelExit) {
+                JIPipeProgressInfo nodeProgress = progressInfo.resolveAndLog("Tunnel exit " + graphNode.getUUIDInParentGraph() + " (TUN " + tunnelExit.getTunnelKeyGroup() + "/" + tunnelExit.getTunnelKey() + ")");
+                List<JIPipeDataFlowTunnelEntrance> tunnelEntrances = JIPipeDataFlowTunnelUtils.findTunnelEntrances(graph, tunnelExit.getCompartmentUUIDInParentGraph(), tunnelExit.getTunnelKeyGroup(), tunnelExit.getTunnelKey());
+                if(tunnelEntrances.size() > 1) {
+                    JIPipeValidationReportContext.UNSPECIFIED.graph(graph)
+                            .node(graphNode).error().title("Duplicate tunnel entrance '" + tunnelExit.getTunnelKey() + "'")
+                            .explanation("A tunnel with duplicate entrances within a compartment was detected. Unable to continue.")
+                            .details(tunnelExit.getTunnelKeyGroup()  + "/" + tunnelExit.getTunnelKey()  + " in compartment " + tunnelExit.getCompartmentUUIDInParentGraph() + " @ node " + tunnelExit.getUUIDInParentGraph())
+                            .buildAndThrow();
+                }
+                else if(tunnelEntrances.size() == 1) {
+                    JIPipeDataFlowTunnelEntrance tunnelEntrance = tunnelEntrances.getFirst();
+
+                    for (JIPipeOutputDataSlot outputSlot : tunnelExit.getOutputSlots()) {
+                        nodeProgress.log("Processing slot " + outputSlot.getName() + " ...");
+                        Set<JIPipeDataSlot> newInputSlots = graph.getOutputOutgoingTargetSlots(outputSlot);
+                        Set<JIPipeDataSlot> newOutputSlots = graph.getInputIncomingSourceSlots(tunnelEntrance.getInputSlot(outputSlot.getName()));
+
+                        // Connect the corresponding output of the tunnel entrance to the new inputs
+                        for (JIPipeDataSlot newInputSlot : newInputSlots) {
+                            for (JIPipeDataSlot newOutputSlot : newOutputSlots) {
+                                nodeProgress.log("Connect " + newOutputSlot.getDisplayName() + " -> " + newInputSlot.getDisplayName());
+                                graph.connect(newOutputSlot, newInputSlot);
+                            }
+                        }
+                    }
+                }
+                else {
+                    progressInfo.log("[WARN] No tunnel entrance found for " + tunnelExit.getTunnelKeyGroup()  + "/" + tunnelExit.getTunnelKey()  + " in compartment " + tunnelExit.getCompartmentUUIDInParentGraph() + ": ignoring");
+                }
+            }
+        }
+
+        // Delete all tunnel nodes
+        progressInfo.log("Deleting all tunnel nodes ...");
+        for (JIPipeGraphNode graphNode : ImmutableList.copyOf(graph.getGraphNodes())) {
+            if(graphNode instanceof JIPipeDataFlowTunnel) {
+                progressInfo.log("- " + graphNode.getDisplayName() + " (" + graphNode.getUUIDInParentGraph() + ") of " + graphNode.getInfo().getId());
+                graph.removeNode(graphNode, false);
+            }
+        }
 
     }
 
