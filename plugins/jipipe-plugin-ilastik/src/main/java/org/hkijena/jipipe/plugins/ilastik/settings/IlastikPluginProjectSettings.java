@@ -49,7 +49,7 @@ public class IlastikPluginProjectSettings extends JIPipeDefaultProjectSettingsSh
                 IlastikEnvironment environment = new IlastikEnvironment();
                 environment.setName("");
                 environment.setLoadFromArtifact(true);
-                environment.setArtifactQuery(new JIPipeArtifactQueryParameter(target.getFullId()));
+                environment.setArtifactQuery(new JIPipeArtifactQueryParameter(target.getFullId(JIPipeArtifact.ResolutionStatus.GroupNameVersion)));
 
                 projectDefaultEnvironment.setEnabled(true);
                 projectDefaultEnvironment.setContent(environment);

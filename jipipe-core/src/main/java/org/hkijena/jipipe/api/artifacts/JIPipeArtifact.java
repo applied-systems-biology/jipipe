@@ -125,6 +125,49 @@ public class JIPipeArtifact extends AbstractJIPipeParameterCollection implements
         return getGroupId() + "." + getArtifactId() + ":" + getVersion() + "-" + getClassifier();
     }
 
+    /**
+     * Returns a string GroupId.ArtifactId:Version-*
+     *
+     * @return the version-specific identifier string for this artifact
+     */
+    public String getFullId(ResolutionStatus status) {
+        return switch (status) {
+            case Full -> getFullId();
+            case GroupNameVersion -> getGroupId() + "." + getArtifactId() + ":" + getVersion() + "-*";
+            case GroupName -> getGroupId() + "." + getArtifactId() + ":*";
+            default -> throw new IllegalStateException("Unexpected value: " + status);
+        };
+    }
+
+    /**
+     * Returns true if this artifact is fully resolved
+     * @return if the artifact is fully resolved
+     */
+    public boolean isFullyResolved() {
+        return getResolutionStatus() == ResolutionStatus.Full;
+    }
+
+    /**
+     * Returns the resolution status (in order)
+     * Cannot handle intermediate globs
+     * @return the resolution status
+     */
+    public ResolutionStatus getResolutionStatus() {
+        if(!"*".equals(getClassifier())) {
+            return ResolutionStatus.Full;
+        }
+        else if(!"*".equals(getVersion())) {
+            return ResolutionStatus.GroupNameVersion;
+        }
+        else {
+            return ResolutionStatus.GroupName;
+        }
+    }
+
+    /**
+     * Fills values from a full ID
+     * @param fullId the ID
+     */
     public void setFullId(String fullId) {
         JIPipeArtifact artifact = new JIPipeArtifact(fullId);
         this.setArtifactId(artifact.getArtifactId());
@@ -140,7 +183,7 @@ public class JIPipeArtifact extends AbstractJIPipeParameterCollection implements
      * @return if the artifact is compatible
      */
     public boolean isCompatible() {
-        if ("any".equalsIgnoreCase(getClassifier())) {
+        if ("*".equals(getClassifier()) || "any".equalsIgnoreCase(getClassifier())) {
             return true;
         } else if (SystemUtils.IS_OS_WINDOWS) {
             if (!getClassifier().contains("windows") && !getClassifier().contains("win32") && !getClassifier().contains("win64")) {
@@ -344,4 +387,14 @@ public class JIPipeArtifact extends AbstractJIPipeParameterCollection implements
         }
         return 0;
     }
+
+    /**
+     * The current resolution status of this artifact
+     */
+    public enum ResolutionStatus {
+        GroupName,
+        GroupNameVersion,
+        Full
+    }
+
 }

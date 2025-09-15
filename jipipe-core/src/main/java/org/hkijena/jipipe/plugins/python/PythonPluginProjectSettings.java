@@ -51,7 +51,7 @@ public class PythonPluginProjectSettings extends JIPipeDefaultProjectSettingsShe
                 JIPipePythonAdapterLibraryEnvironment environment = new JIPipePythonAdapterLibraryEnvironment();
                 environment.setName("");
                 environment.setLoadFromArtifact(true);
-                environment.setArtifactQuery(new JIPipeArtifactQueryParameter(target.getFullId()));
+                environment.setArtifactQuery(new JIPipeArtifactQueryParameter(target.getFullId(JIPipeArtifact.ResolutionStatus.GroupNameVersion)));
 
                 projectPythonAdapterLibraryEnvironment.setEnabled(true);
                 projectPythonAdapterLibraryEnvironment.setContent(environment);
@@ -67,7 +67,7 @@ public class PythonPluginProjectSettings extends JIPipeDefaultProjectSettingsShe
                 JIPipeArtifact target = JIPipeArtifactsRegistry.selectPreferredArtifactByClassifier(artifacts);
                 PythonEnvironment environment = new PythonEnvironment();
                 environment.setLoadFromArtifact(true);
-                environment.setArtifactQuery(new JIPipeArtifactQueryParameter(target.getFullId()));
+                environment.setArtifactQuery(new JIPipeArtifactQueryParameter(target.getFullId(JIPipeArtifact.ResolutionStatus.GroupNameVersion)));
 
                 projectDefaultEnvironment.setEnabled(true);
                 projectDefaultEnvironment.setContent(environment);

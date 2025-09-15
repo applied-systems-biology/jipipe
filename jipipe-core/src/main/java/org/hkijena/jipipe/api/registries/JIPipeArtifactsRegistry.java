@@ -512,6 +512,21 @@ public class JIPipeArtifactsRegistry {
         }
     }
 
+    public List<JIPipeArtifact> queryCachedVersionPinnedArtifacts(String... filters) {
+        List<JIPipeArtifact> result = new ArrayList<>();
+        Set<String> alreadyAdded = new HashSet<>();
+        for (JIPipeArtifact artifact : queryCachedArtifacts(filters)) {
+            String versionPinnedId = artifact.getFullId(JIPipeArtifact.ResolutionStatus.GroupNameVersion);
+            if (!alreadyAdded.contains(versionPinnedId)) {
+                JIPipeArtifact copy = new JIPipeArtifact(artifact);
+                copy.setClassifier("*");
+                result.add(copy);
+                alreadyAdded.add(versionPinnedId);
+            }
+        }
+        return result;
+    }
+
     public static interface UpdatedEventListener {
         void onArtifactsRegistryUpdated(UpdatedEvent event);
     }

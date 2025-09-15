@@ -256,9 +256,9 @@ public class JIPipeGraphRun extends DefaultJIPipeRunnable implements JIPipeGraph
                         }
                     } else if (artifacts.size() > 1) {
                         artifactProgress.log("Warning: found " + artifacts.size() + " matching artifacts. Selecting first available one!");
-                        targetArtifact = artifacts.get(0);
+                        targetArtifact = artifacts.getFirst();
                     } else {
-                        targetArtifact = artifacts.get(0);
+                        targetArtifact = artifacts.getFirst();
                     }
 
                     if (targetArtifact == null) {

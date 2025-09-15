@@ -80,7 +80,7 @@ public class NapariPlugin extends JIPipePrepackagedDefaultJavaPlugin {
                             "Download it now?", "Run Napari", JOptionPane.YES_NO_OPTION) == JOptionPane.YES_OPTION) {
                         JIPipeArtifactRepositoryInstallArtifactRun run = new JIPipeArtifactRepositoryInstallArtifactRun((JIPipeRemoteArtifact) artifact);
                         JIPipeDesktopRunExecuteUI.runInDialog(workbench, workbench.getWindow(), run);
-                        artifact = JIPipe.getArtifacts().queryCachedArtifact(artifact.getFullId());
+                        artifact = JIPipe.getArtifacts().queryCachedArtifact(artifact.getFullId(JIPipeArtifact.ResolutionStatus.GroupNameVersion));
                         if (artifact instanceof JIPipeLocalArtifact) {
                             environment.applyConfigurationFromArtifact((JIPipeLocalArtifact) artifact, new JIPipeProgressInfo());
                         } else {
@@ -97,7 +97,7 @@ public class NapariPlugin extends JIPipePrepackagedDefaultJavaPlugin {
                     if (progressInfo.isCancelled()) {
                         return;
                     }
-                    artifact = JIPipe.getArtifacts().queryCachedArtifact(artifact.getFullId());
+                    artifact = JIPipe.getArtifacts().queryCachedArtifact(artifact.getFullId(JIPipeArtifact.ResolutionStatus.GroupNameVersion));
                     if (artifact instanceof JIPipeLocalArtifact) {
                         environment.applyConfigurationFromArtifact((JIPipeLocalArtifact) artifact, new JIPipeProgressInfo());
                     } else {
