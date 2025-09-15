@@ -503,10 +503,10 @@ public class JIPipeArtifactsRegistry {
         JIPipeRunnableQueue.getInstance().enqueue(new JIPipeArtifactRepositoryUpdateCachedArtifactsRun());
     }
 
-    public JIPipeArtifact queryCachedArtifact(String filter) {
+    public JIPipeArtifact queryPreferredCachedArtifact(String filter) {
         List<JIPipeArtifact> artifacts = queryCachedArtifacts(filter);
         if (!artifacts.isEmpty()) {
-            return artifacts.get(0);
+            return selectPreferredArtifactByClassifier(artifacts);
         } else {
             return null;
         }

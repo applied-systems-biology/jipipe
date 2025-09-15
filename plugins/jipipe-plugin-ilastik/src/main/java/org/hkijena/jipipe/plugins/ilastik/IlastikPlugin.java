@@ -129,7 +129,7 @@ public class IlastikPlugin extends JIPipePrepackagedDefaultJavaPlugin {
                         "Download it now?", "Run Ilastik", JOptionPane.YES_NO_OPTION) == JOptionPane.YES_OPTION) {
                     JIPipeArtifactRepositoryInstallArtifactRun run = new JIPipeArtifactRepositoryInstallArtifactRun((JIPipeRemoteArtifact) artifact);
                     JIPipeDesktopRunExecuteUI.runInDialog(workbench, workbench.getWindow(), run);
-                    artifact = JIPipe.getArtifacts().queryCachedArtifact(artifact.getFullId(JIPipeArtifact.ResolutionStatus.GroupNameVersion));
+                    artifact = JIPipe.getArtifacts().queryPreferredCachedArtifact(artifact.getFullId(JIPipeArtifact.ResolutionStatus.GroupNameVersion));
                     if (artifact instanceof JIPipeLocalArtifact) {
                         environment.applyConfigurationFromArtifact((JIPipeLocalArtifact) artifact, new JIPipeProgressInfo());
                     } else {

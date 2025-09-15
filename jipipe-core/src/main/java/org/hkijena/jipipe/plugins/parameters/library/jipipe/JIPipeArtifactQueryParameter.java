@@ -21,6 +21,7 @@ import com.fasterxml.jackson.databind.DeserializationContext;
 import com.fasterxml.jackson.databind.JsonDeserializer;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
+import org.hkijena.jipipe.api.artifacts.JIPipeArtifact;
 
 import java.io.IOException;
 
@@ -55,6 +56,10 @@ public class JIPipeArtifactQueryParameter {
     @Override
     public String toString() {
         return query;
+    }
+
+    public JIPipeArtifact toArtifact() {
+        return new JIPipeArtifact(query);
     }
 
     public static class Deserializer extends JsonDeserializer<JIPipeArtifactQueryParameter> {
