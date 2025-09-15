@@ -48,7 +48,7 @@ public class OCRPluginProjectSettings extends JIPipeDefaultProjectSettingsSheet 
                 TesseractOCREnvironment environment = new TesseractOCREnvironment();
                 environment.setName("");
                 environment.setLoadFromArtifact(true);
-                environment.setArtifactQuery(new JIPipeArtifactQueryParameter(target.getFullId()));
+                environment.setArtifactQuery(new JIPipeArtifactQueryParameter(target.getFullId(JIPipeArtifact.ResolutionStatus.GroupNameVersion)));
 
                 projectDefaultEnvironment.setEnabled(true);
                 projectDefaultEnvironment.setContent(environment);

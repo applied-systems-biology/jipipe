@@ -33,7 +33,7 @@ public class OmniposePluginProjectSettings extends JIPipeDefaultProjectSettingsS
                 JIPipeArtifact target = JIPipeArtifactsRegistry.selectPreferredArtifactByClassifier(artifacts);
                 PythonEnvironment environment = new PythonEnvironment();
                 environment.setLoadFromArtifact(true);
-                environment.setArtifactQuery(new JIPipeArtifactQueryParameter(target.getFullId()));
+                environment.setArtifactQuery(new JIPipeArtifactQueryParameter(target.getFullId(JIPipeArtifact.ResolutionStatus.GroupNameVersion)));
 
                 omnipose0Environment.setEnabled(true);
                 omnipose0Environment.setContent(environment);

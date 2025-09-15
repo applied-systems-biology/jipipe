@@ -503,13 +503,28 @@ public class JIPipeArtifactsRegistry {
         JIPipeRunnableQueue.getInstance().enqueue(new JIPipeArtifactRepositoryUpdateCachedArtifactsRun());
     }
 
-    public JIPipeArtifact queryCachedArtifact(String filter) {
+    public JIPipeArtifact queryPreferredCachedArtifact(String filter) {
         List<JIPipeArtifact> artifacts = queryCachedArtifacts(filter);
         if (!artifacts.isEmpty()) {
-            return artifacts.get(0);
+            return selectPreferredArtifactByClassifier(artifacts);
         } else {
             return null;
         }
+    }
+
+    public List<JIPipeArtifact> queryCachedVersionPinnedArtifacts(String... filters) {
+        List<JIPipeArtifact> result = new ArrayList<>();
+        Set<String> alreadyAdded = new HashSet<>();
+        for (JIPipeArtifact artifact : queryCachedArtifacts(filters)) {
+            String versionPinnedId = artifact.getFullId(JIPipeArtifact.ResolutionStatus.GroupNameVersion);
+            if (!alreadyAdded.contains(versionPinnedId)) {
+                JIPipeArtifact copy = new JIPipeArtifact(artifact);
+                copy.setClassifier("*");
+                result.add(copy);
+                alreadyAdded.add(versionPinnedId);
+            }
+        }
+        return result;
     }
 
     public static interface UpdatedEventListener {

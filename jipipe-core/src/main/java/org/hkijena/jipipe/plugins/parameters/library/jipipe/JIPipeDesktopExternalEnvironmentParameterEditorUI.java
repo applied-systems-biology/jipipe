@@ -115,7 +115,8 @@ public class JIPipeDesktopExternalEnvironmentParameterEditorUI extends JIPipeDes
         }
         menuItems.add(UIUtils.MENU_ITEM_SEPARATOR);
         if (settings != null && settings.allowArtifact() && JIPipeArtifactEnvironment.class.isAssignableFrom(getParameterAccess().getFieldClass())) {
-            for (JIPipeArtifact artifact : JIPipe.getArtifacts().queryCachedArtifacts(settings.artifactFilters())) {
+            // Only show version-pinned artifacts here (users can still select specific versions through "Edit")
+            for (JIPipeArtifact artifact : JIPipe.getArtifacts().queryCachedVersionPinnedArtifacts(settings.artifactFilters())) {
                 if (artifact.isCompatible()) {
                     menuItems.add(UIUtils.createMenuItem("Artifact " + artifact.getFullId(), "Uses the predefined artifact " + artifact.getFullId(),
                             JIPipe.RESOURCES.getIcon16("actions/run-install.png"), () -> {

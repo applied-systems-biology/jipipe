@@ -49,7 +49,7 @@ public class FilamentsPluginProjectSettings extends JIPipeDefaultProjectSettings
                 TSOAXEnvironment environment = new TSOAXEnvironment();
                 environment.setName("");
                 environment.setLoadFromArtifact(true);
-                environment.setArtifactQuery(new JIPipeArtifactQueryParameter(target.getFullId()));
+                environment.setArtifactQuery(new JIPipeArtifactQueryParameter(target.getFullId(JIPipeArtifact.ResolutionStatus.GroupNameVersion)));
 
                 projectDefaultTSOAXEnvironment.setEnabled(true);
                 projectDefaultTSOAXEnvironment.setContent(environment);

@@ -263,6 +263,7 @@ public class JIPipeDesktopProjectOverviewUI extends JIPipeDesktopProjectWorkbenc
     }
 
     private void createArtifactUpgradeTipsIfNeeded(JPanel tipsPanel) {
+        // Collect all environments
         List<JIPipeArtifactEnvironment> environments = new ArrayList<>();
         for (JIPipeProjectSettingsSheet settingsSheet : getProject().getSettingsSheets().values()) {
             JIPipeParameterTree parameterTree = new JIPipeParameterTree(settingsSheet);
@@ -279,46 +280,44 @@ public class JIPipeDesktopProjectOverviewUI extends JIPipeDesktopProjectWorkbenc
         }
         List<ArtifactUpgrade> upgrades = new ArrayList<>();
         for (JIPipeArtifactEnvironment environment : environments) {
-            if (environment.isLoadFromArtifact() && !StringUtils.isNullOrEmpty(environment.getArtifactQuery().getQuery()) && environment.getArtifactQuery().isStatic()) {
-                try {
-                    JIPipeArtifact current = JIPipe.getArtifacts().queryCachedArtifact(environment.getArtifactQuery().getQuery());
-                    List<JIPipeArtifact> candidates = JIPipe.getArtifacts().queryCachedArtifacts(environment.getArtifactQuery().getBaseQuery());
-                    List<JIPipeArtifact> revisionUpgrades = new ArrayList<>();
-                    List<JIPipeArtifact> accelerationUpgrades = new ArrayList<>();
-                    if (current != null) {
-                        int revisionVersion = current.getVersionRevision();
-                        String baseVersion = current.getVersionWithoutRevision();
+            if (environment.isLoadFromArtifact() && !StringUtils.isNullOrEmpty(environment.getArtifactQuery().getQuery())) {
+                JIPipeArtifact queriedArtifact = environment.getArtifactQuery().toArtifact();
+                if (queriedArtifact.getResolutionStatus() == JIPipeArtifact.ResolutionStatus.GroupNameVersion || queriedArtifact.getResolutionStatus() == JIPipeArtifact.ResolutionStatus.Full) {
+                    try {
+                        JIPipeArtifact current = JIPipe.getArtifacts().queryPreferredCachedArtifact(environment.getArtifactQuery().getQuery());
+                        List<JIPipeArtifact> candidates = JIPipe.getArtifacts().queryCachedArtifacts(queriedArtifact.getFullId(JIPipeArtifact.ResolutionStatus.GroupName));
+                        List<JIPipeArtifact> revisionUpgrades = new ArrayList<>();
+                        if (current != null) {
+                            int revisionVersion = current.getVersionRevision();
+                            String baseVersion = current.getVersionWithoutRevision();
 
-                        for (JIPipeArtifact candidate : candidates) {
-                            if (candidate.isCompatible()) {
-                                String candidateBaseVersion = candidate.getVersionWithoutRevision();
-                                int candidateRevision = candidate.getVersionRevision();
-                                if (StringUtils.compareVersions(candidateBaseVersion, baseVersion) == 0) {
+                            Set<String> alreadyAdded = new HashSet<>();
+                            for (JIPipeArtifact candidate : candidates) {
+                                if (candidate.isCompatible()) {
+                                    String candidateBaseVersion = candidate.getVersionWithoutRevision();
+                                    int candidateRevision = candidate.getVersionRevision();
+                                    if (StringUtils.compareVersions(candidateBaseVersion, baseVersion) == 0) {
 //                                    System.out.println("Found upgrade from " + current.getFullId() + " to " + candidate.getFullId());
-                                    if (candidateRevision > revisionVersion && !candidate.getFullId().equals(current.getFullId())) {
-                                        revisionUpgrades.add(candidate);
-                                    }
-                                    if (candidateRevision >= revisionVersion) {
-                                        accelerationUpgrades.add(candidate);
+                                        if (candidateRevision > revisionVersion && !candidate.getFullId().equals(current.getFullId())) {
+                                            JIPipeArtifact candidate1 = new JIPipeArtifact(candidate);
+                                            candidate1.setClassifier("*");
+                                            String candidate1Query = candidate1.getFullId(JIPipeArtifact.ResolutionStatus.GroupNameVersion);
+                                            if(!alreadyAdded.contains(candidate1Query)) {
+                                                revisionUpgrades.add(candidate1);
+                                                alreadyAdded.add(candidate1Query);
+                                            }
+                                        }
                                     }
                                 }
                             }
                         }
-                    }
-
-                    if (!accelerationUpgrades.isEmpty()) {
-                        accelerationUpgrades = Collections.singletonList(JIPipeArtifactsRegistry.selectPreferredArtifactByClassifier(accelerationUpgrades));
-                        if (accelerationUpgrades.get(0).getFullId().equals(current.getFullId())) {
-                            accelerationUpgrades = Collections.emptyList();
+                        if (!revisionUpgrades.isEmpty()) {
+                            upgrades.add(new ArtifactUpgrade(environment, current, revisionUpgrades, Collections.emptyList()));
                         }
+
+                    } catch (Throwable ignored) {
+
                     }
-
-                    if (!accelerationUpgrades.isEmpty() || !revisionUpgrades.isEmpty()) {
-                        upgrades.add(new ArtifactUpgrade(environment, current, revisionUpgrades, accelerationUpgrades));
-                    }
-
-                } catch (Throwable ignored) {
-
                 }
             }
         }

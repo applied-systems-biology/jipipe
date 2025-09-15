@@ -31,7 +31,7 @@ public class RPluginProjectSettings extends JIPipeDefaultProjectSettingsSheet {
                 JIPipeArtifact target = JIPipeArtifactsRegistry.selectPreferredArtifactByClassifier(artifacts);
                 REnvironment environment = new REnvironment();
                 environment.setLoadFromArtifact(true);
-                environment.setArtifactQuery(new JIPipeArtifactQueryParameter(target.getFullId()));
+                environment.setArtifactQuery(new JIPipeArtifactQueryParameter(target.getFullId(JIPipeArtifact.ResolutionStatus.GroupNameVersion)));
 
                 projectDefaultEnvironment.setEnabled(true);
                 projectDefaultEnvironment.setContent(environment);

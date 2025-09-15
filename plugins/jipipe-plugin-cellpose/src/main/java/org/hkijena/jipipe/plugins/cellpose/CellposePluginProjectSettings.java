@@ -33,7 +33,7 @@ public class CellposePluginProjectSettings extends JIPipeDefaultProjectSettingsS
                 JIPipeArtifact target = JIPipeArtifactsRegistry.selectPreferredArtifactByClassifier(artifacts);
                 PythonEnvironment environment = new PythonEnvironment();
                 environment.setLoadFromArtifact(true);
-                environment.setArtifactQuery(new JIPipeArtifactQueryParameter(target.getFullId()));
+                environment.setArtifactQuery(new JIPipeArtifactQueryParameter(target.getFullId(JIPipeArtifact.ResolutionStatus.GroupNameVersion)));
 
                 cellpose2Environment.setEnabled(true);
                 cellpose2Environment.setContent(environment);
@@ -46,7 +46,7 @@ public class CellposePluginProjectSettings extends JIPipeDefaultProjectSettingsS
                 JIPipeArtifact target = JIPipeArtifactsRegistry.selectPreferredArtifactByClassifier(artifacts);
                 PythonEnvironment environment = new PythonEnvironment();
                 environment.setLoadFromArtifact(true);
-                environment.setArtifactQuery(new JIPipeArtifactQueryParameter(target.getFullId()));
+                environment.setArtifactQuery(new JIPipeArtifactQueryParameter(target.getFullId(JIPipeArtifact.ResolutionStatus.GroupNameVersion)));
 
                 cellpose3Environment.setEnabled(true);
                 cellpose3Environment.setContent(environment);

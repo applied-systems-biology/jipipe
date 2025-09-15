@@ -23,7 +23,9 @@ import org.hkijena.jipipe.utils.StringUtils;
 import javax.swing.*;
 import java.awt.*;
 import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 
 public class JIPipeDesktopArtifactQueryParameterEditorUI extends JIPipeDesktopParameterEditorUI {
 
@@ -44,7 +46,18 @@ public class JIPipeDesktopArtifactQueryParameterEditorUI extends JIPipeDesktopPa
             filters = annotation.getFilters();
         }
         availableArtifacts.clear();
-        availableArtifacts.addAll(JIPipe.getArtifacts().queryCachedArtifacts(filters));
+        List<JIPipeArtifact> cachedArtifacts = JIPipe.getArtifacts().queryCachedArtifacts(filters);
+        Set<String> alreadyAdded = new HashSet<>();
+        for (JIPipeArtifact artifact : cachedArtifacts) {
+            String versionPinId = artifact.getFullId(JIPipeArtifact.ResolutionStatus.GroupNameVersion);
+            if(!alreadyAdded.contains(versionPinId)) {
+                JIPipeArtifact artifact1 = new JIPipeArtifact(artifact);
+                artifact1.setClassifier("*");
+                availableArtifacts.add(artifact1);
+                alreadyAdded.add(versionPinId);
+            }
+        }
+        availableArtifacts.addAll(cachedArtifacts);
     }
 
     private void initialize() {

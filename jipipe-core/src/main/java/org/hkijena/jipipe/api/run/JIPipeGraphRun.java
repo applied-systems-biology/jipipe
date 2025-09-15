@@ -42,6 +42,7 @@ import org.hkijena.jipipe.api.nodes.infos.JIPipeEmptyNodeInfo;
 import org.hkijena.jipipe.api.notifications.JIPipeNotification;
 import org.hkijena.jipipe.api.notifications.JIPipeNotificationAction;
 import org.hkijena.jipipe.api.project.JIPipeProject;
+import org.hkijena.jipipe.api.registries.JIPipeArtifactsRegistry;
 import org.hkijena.jipipe.api.runtimepartitioning.JIPipeRuntimePartition;
 import org.hkijena.jipipe.api.runtimepartitioning.RuntimePartitionReferenceParameter;
 import org.hkijena.jipipe.api.validation.JIPipeValidationReportContext;
@@ -255,10 +256,14 @@ public class JIPipeGraphRun extends DefaultJIPipeRunnable implements JIPipeGraph
                             }
                         }
                     } else if (artifacts.size() > 1) {
-                        artifactProgress.log("Warning: found " + artifacts.size() + " matching artifacts. Selecting first available one!");
-                        targetArtifact = artifacts.get(0);
+                        artifactProgress.log("Warning: found " + artifacts.size() + " matching artifacts:");
+                        for (JIPipeArtifact artifact : artifacts) {
+                            artifactProgress.log("- " + artifact.getFullId());
+                        }
+                        targetArtifact = JIPipeArtifactsRegistry.selectPreferredArtifactByClassifier(artifacts);
+                        artifactProgress.log("Based on current preferences, selecting -> " + targetArtifact.getFullId());
                     } else {
-                        targetArtifact = artifacts.get(0);
+                        targetArtifact = artifacts.getFirst();
                     }
 
                     if (targetArtifact == null) {
