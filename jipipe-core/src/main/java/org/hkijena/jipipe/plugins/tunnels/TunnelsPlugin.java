@@ -47,7 +47,7 @@ public class TunnelsPlugin extends JIPipePrepackagedDefaultJavaPlugin {
     @Override
     public void register(JIPipe jiPipe, Context context, JIPipeProgressInfo progressInfo) {
         registerNodeType("data-flow-tunnel-1-entrance", JIPipeDataFlowTunnel1Entrance.class, JIPipe.RESOURCES.getIcon16URL("actions/xfce-wm-unstick.png"));
-        registerNodeType("data-flow-tunnel-1-exit", JIPipeDataFlowTunnel1Exit.class, JIPipe.RESOURCES.getIcon16URL("actions/file-zoom-in.png"));
+        registerNodeType("data-flow-tunnel-1-exit", JIPipeDataFlowTunnel1Exit.class, JIPipe.RESOURCES.getIcon16URL("actions/xfce-wm-stick.png"));
     }
 
     @Override
