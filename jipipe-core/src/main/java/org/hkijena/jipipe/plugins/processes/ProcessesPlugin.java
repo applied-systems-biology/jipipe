@@ -52,23 +52,12 @@ public class ProcessesPlugin extends JIPipePrepackagedDefaultJavaPlugin {
 
     @Override
     public void register(JIPipe jiPipe, Context context, JIPipeProgressInfo progressInfo) {
-        JIPipeProcessesPluginApplicationSettings extensionSettings = new JIPipeProcessesPluginApplicationSettings();
-
-        registerEnvironment(ProcessEnvironment.class,
+        registerEnvironment("process", ProcessEnvironment.class,
+                OptionalProcessEnvironment.class,
                 ProcessEnvironment.List.class,
-                extensionSettings,
-                "process",
                 "Process environment",
                 "A process environment",
                 JIPipe.RESOURCES.getIcon16("apps/utilities-terminal.png"));
-        registerParameterType("optional-process-environment",
-                OptionalProcessEnvironment.class,
-                JIPipeParameterArchetype.OptionalValue, null,
-                null,
-                "Optional process environment",
-                "An optional process environment",
-                null);
-        registerApplicationSettingsSheet(extensionSettings);
     }
 
     @Override

@@ -118,10 +118,9 @@ public class OCRPlugin extends JIPipePrepackagedDefaultJavaPlugin {
     public void register(JIPipe jiPipe, Context context, JIPipeProgressInfo progressInfo) {
 
         TesseractOCRApplicationSettings tesseractOCRApplicationSettings = new TesseractOCRApplicationSettings();
-        registerEnvironment(TesseractOCREnvironment.class,
+        registerEnvironment("tesseract-ocr-environment", TesseractOCREnvironment.class,
                 TesseractOCREnvironment.List.class,
                 tesseractOCRApplicationSettings,
-                "tesseract-ocr-environment",
                 "Tesseract OCR Environment",
                 "Installation of Tesseract OCR",
                 JIPipe.RESOURCES.getIcon16("actions/text_outer_style.png"));

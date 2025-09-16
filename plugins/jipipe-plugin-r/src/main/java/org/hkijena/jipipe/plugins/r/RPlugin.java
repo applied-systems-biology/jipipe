@@ -121,10 +121,9 @@ public class RPlugin extends JIPipePrepackagedDefaultJavaPlugin {
     public void register(JIPipe jiPipe, Context context, JIPipeProgressInfo progressInfo) {
         RPluginApplicationSettings extensionSettings = new RPluginApplicationSettings();
 
-        registerEnvironment(REnvironment.class,
+        registerEnvironment(REnvironment.ENVIRONMENT_ID, REnvironment.class,
                 REnvironment.List.class,
                 extensionSettings,
-                REnvironment.ENVIRONMENT_ID,
                 "R environment",
                 "A R environment",
                 JIPipe.RESOURCES.getIcon16("apps/rlogo_icon.png"));

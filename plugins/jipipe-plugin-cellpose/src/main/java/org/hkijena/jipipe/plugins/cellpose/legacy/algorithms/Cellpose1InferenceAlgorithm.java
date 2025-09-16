@@ -228,16 +228,6 @@ public class Cellpose1InferenceAlgorithm extends JIPipeSingleIterationAlgorithm 
     }
 
     @Override
-    public void getEnvironmentDependencies(List<JIPipeEnvironmentReference<?>> target) {
-        super.getEnvironmentDependencies(target);
-        if (overrideEnvironment.isEnabled()) {
-            target.add(new JIPipeEnvironmentReference<JIPipeEnvironment>(overrideEnvironment.getContent(), JIPipeEnvironmentReference.SourceType.Node, this));
-        } else {
-            target.add(new JIPipeEnvironmentReference<JIPipeEnvironment>(Cellpose2PluginApplicationSettings.getInstance().getReadOnlyDefaultEnvironment(), JIPipeEnvironmentReference.SourceType.Application, null));
-        }
-    }
-
-    @Override
     protected void runIteration(JIPipeMultiIterationStep iterationStep, JIPipeIterationContext iterationContext, JIPipeGraphNodeRunContext runContext, JIPipeProgressInfo progressInfo) {
 
         ImmutableList<Integer> inputRowList = ImmutableList.copyOf(iterationStep.getInputRows("Input"));

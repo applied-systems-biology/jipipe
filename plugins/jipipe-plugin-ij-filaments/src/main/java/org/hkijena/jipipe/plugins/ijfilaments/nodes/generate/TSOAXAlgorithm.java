@@ -179,12 +179,6 @@ public abstract class TSOAXAlgorithm extends JIPipeSimpleIteratingAlgorithm {
         return initializationParameters;
     }
 
-    @Override
-    public void getEnvironmentDependencies(List<JIPipeEnvironmentReference<?>> target) {
-        super.getEnvironmentDependencies(target);
-        target.add(getConfiguredTSOAXEnvironment());
-    }
-
     /**
      * Gets the correct OMERO environment.
      * Adheres to the chain of overrides.

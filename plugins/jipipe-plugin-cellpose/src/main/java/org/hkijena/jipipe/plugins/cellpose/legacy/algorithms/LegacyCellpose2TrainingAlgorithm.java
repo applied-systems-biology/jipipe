@@ -148,12 +148,6 @@ public class LegacyCellpose2TrainingAlgorithm extends JIPipeSingleIterationAlgor
         this.suppressLogs = suppressLogs;
     }
 
-    @Override
-    public void getEnvironmentDependencies(List<JIPipeEnvironmentReference<?>> target) {
-        super.getEnvironmentDependencies(target);
-        target.add(getConfiguredCellposeEnvironment());
-    }
-
     private void updateSlots() {
         toggleSlot(INPUT_PRETRAINED_MODEL, pretrainedModel == PretrainedLegacyCellpose2TrainingModel.Custom);
         toggleSlot(OUTPUT_SIZE_MODEL, trainSizeModel);

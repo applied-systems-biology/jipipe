@@ -168,16 +168,6 @@ public class Cellpose1TrainingAlgorithm extends JIPipeSingleIterationAlgorithm {
         }
     }
 
-    @Override
-    public void getEnvironmentDependencies(List<JIPipeEnvironmentReference<?>> target) {
-        super.getEnvironmentDependencies(target);
-        if (overrideEnvironment.isEnabled()) {
-            target.add(new JIPipeEnvironmentReference<JIPipeEnvironment>(overrideEnvironment.getContent(), JIPipeEnvironmentReference.SourceType.Node, this));
-        } else {
-            target.add(new JIPipeEnvironmentReference<JIPipeEnvironment>(Cellpose2PluginApplicationSettings.getInstance().getReadOnlyDefaultEnvironment(), JIPipeEnvironmentReference.SourceType.Application, null));
-        }
-    }
-
     @SetJIPipeDocumentation(name = "Segmented channel", description = "Channel to segment; 0: GRAY, 1: RED, 2: GREEN, 3: BLUE. Default: 0")
     @JIPipeParameter("segmented-channel")
     public OptionalIntegerParameter getSegmentedChannel() {

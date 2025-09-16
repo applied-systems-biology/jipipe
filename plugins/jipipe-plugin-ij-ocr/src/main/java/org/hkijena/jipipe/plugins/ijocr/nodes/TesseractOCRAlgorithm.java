@@ -170,12 +170,6 @@ public class TesseractOCRAlgorithm extends JIPipeSimpleIteratingAlgorithm {
         return OCRPlugin.getTesseractOCREnvironment(project, getOverrideTesseractOCREnvironment(), this);
     }
 
-    @Override
-    public void getEnvironmentDependencies(List<JIPipeEnvironmentReference<?>> target) {
-        super.getEnvironmentDependencies(target);
-        target.add(getConfiguredTesseractOCREnvironment());
-    }
-
     @SetJIPipeDocumentation(name = "Override Tesseract OCR environment", description = "Allows to override the Tesseract OCR environment")
     @JIPipeParameter("override-environment")
     public OptionalTesseractOCREnvironment getOverrideTesseractOCREnvironment() {

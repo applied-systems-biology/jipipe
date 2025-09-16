@@ -146,12 +146,6 @@ public class Cellpose2TrainingAlgorithm extends JIPipeSingleIterationAlgorithm i
         this.suppressLogs = suppressLogs;
     }
 
-    @Override
-    public void getEnvironmentDependencies(List<JIPipeEnvironmentReference<?>> target) {
-        super.getEnvironmentDependencies(target);
-        target.add(getConfiguredCellposeEnvironment());
-    }
-
     private void updateSlots() {
         toggleSlot(OUTPUT_SIZE_MODEL, trainSizeModel);
     }

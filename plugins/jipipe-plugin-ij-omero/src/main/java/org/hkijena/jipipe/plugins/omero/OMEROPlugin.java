@@ -215,10 +215,9 @@ public class OMEROPlugin extends JIPipePrepackagedDefaultJavaPlugin {
     public void register(JIPipe jiPipe, Context context, JIPipeProgressInfo progressInfo) {
         OMEROPluginApplicationSettings omeroSettings = new OMEROPluginApplicationSettings();
         registerApplicationSettingsSheet(omeroSettings);
-        registerEnvironment(OMEROCredentialsEnvironment.class,
+        registerEnvironment("omero-credentials", OMEROCredentialsEnvironment.class,
                 OMEROCredentialsEnvironment.List.class,
                 omeroSettings,
-                "omero-credentials",
                 "OMERO Credentials",
                 "Credentials for an OMERO server",
                 RESOURCES.getIcon16("omero.png"));

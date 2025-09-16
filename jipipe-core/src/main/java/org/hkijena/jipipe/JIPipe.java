@@ -153,7 +153,7 @@ public final class JIPipe extends AbstractService implements JIPipeService {
     private final JIPipeProjectSettingsRegistry projectSettingsRegistry;
     private final JIPipeExpressionRegistry tableOperationRegistry;
     private final JIPipeUtilityRegistry utilityRegistry;
-    private final JIPipeExternalEnvironmentRegistry externalEnvironmentRegistry;
+    private final JIPipeExternalEnvironmentRegistry environmentRegistry;
     private final JIPipePluginRegistry pluginRegistry;
     private final JIPipeGraphEditorToolRegistry graphEditorToolRegistry;
     private final JIPipeProjectTemplateRegistry projectTemplateRegistry;
@@ -187,7 +187,7 @@ public final class JIPipe extends AbstractService implements JIPipeService {
         projectSettingsRegistry = new JIPipeProjectSettingsRegistry(this);
         tableOperationRegistry = new JIPipeExpressionRegistry(this);
         utilityRegistry = new JIPipeUtilityRegistry(this);
-        externalEnvironmentRegistry = new JIPipeExternalEnvironmentRegistry(this);
+        environmentRegistry = new JIPipeExternalEnvironmentRegistry(this);
         pluginRegistry = new JIPipePluginRegistry(this);
         projectTemplateRegistry = new JIPipeProjectTemplateRegistry(this);
         graphEditorToolRegistry = new JIPipeGraphEditorToolRegistry(this);
@@ -652,6 +652,10 @@ public final class JIPipe extends AbstractService implements JIPipeService {
             Runtime.getRuntime().halt(exitCode);
         });
         timer.start();
+    }
+
+    public static JIPipeExternalEnvironmentRegistry getEnvironments() {
+        return getInstance().getEnvironmentRegistry();
     }
 
 
@@ -1672,8 +1676,8 @@ public final class JIPipe extends AbstractService implements JIPipeService {
     }
 
     @Override
-    public JIPipeExternalEnvironmentRegistry getExternalEnvironmentRegistry() {
-        return externalEnvironmentRegistry;
+    public JIPipeExternalEnvironmentRegistry getEnvironmentRegistry() {
+        return environmentRegistry;
     }
 
     @Override

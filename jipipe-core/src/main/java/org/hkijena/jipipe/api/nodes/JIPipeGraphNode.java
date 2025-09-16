@@ -32,16 +32,19 @@ import org.hkijena.jipipe.api.compartments.algorithms.JIPipeProjectCompartment;
 import org.hkijena.jipipe.api.compartments.algorithms.JIPipeProjectCompartmentOutput;
 import org.hkijena.jipipe.api.data.*;
 import org.hkijena.jipipe.api.data.storage.JIPipeWriteDataStorage;
+import org.hkijena.jipipe.api.environments.JIPipeEnvironment;
 import org.hkijena.jipipe.api.environments.JIPipeEnvironmentReference;
 import org.hkijena.jipipe.api.events.AbstractJIPipeEvent;
 import org.hkijena.jipipe.api.events.JIPipeEventEmitter;
 import org.hkijena.jipipe.api.notifications.JIPipeNotificationInbox;
 import org.hkijena.jipipe.api.parameters.*;
 import org.hkijena.jipipe.api.project.JIPipeProject;
+import org.hkijena.jipipe.api.registries.JIPipeExternalEnvironmentRegistry;
 import org.hkijena.jipipe.api.run.JIPipeGraphRun;
 import org.hkijena.jipipe.api.validation.JIPipeValidatable;
 import org.hkijena.jipipe.api.validation.JIPipeValidationReport;
 import org.hkijena.jipipe.api.validation.JIPipeValidationReportContext;
+import org.hkijena.jipipe.api.validation.JIPipeValidationReportSettings;
 import org.hkijena.jipipe.desktop.app.grapheditor.commons.JIPipeDesktopGraphCanvasUI;
 import org.hkijena.jipipe.desktop.app.grapheditor.commons.nodeui.JIPipeDesktopGraphNodeUI;
 import org.hkijena.jipipe.plugins.parameters.api.collections.ListParameter;
@@ -75,7 +78,6 @@ public abstract class JIPipeGraphNode extends AbstractJIPipeParameterCollection 
         JIPipeParameterCollection.ParameterUIChangedEventListener, JIPipeParameterCollection.ParameterStructureChangedEventListener, JIPipeSlotConfiguration.SlotConfigurationChangedEventListener {
 
     private final NodeSlotsChangedEventEmitter nodeSlotsChangedEventEmitter = new NodeSlotsChangedEventEmitter();
-
     private final BaseDirectoryChangedEventEmitter baseDirectoryChangedEventEmitter = new BaseDirectoryChangedEventEmitter();
 
     private final List<JIPipeInputDataSlot> inputSlots = new ArrayList<>();
@@ -95,8 +97,11 @@ public abstract class JIPipeGraphNode extends AbstractJIPipeParameterCollection 
     private Path projectDirectory;
     private Path scratchBaseDirectory;
     private boolean bookmarked;
-
     private boolean uiLocked;
+
+    private final Set<Class<? extends JIPipeEnvironment>> utilizedEnvironmentTypes = new HashSet<>();
+    private final JIPipeDynamicParameterCollection environmentOverrides;
+
 
     /**
      * Initializes this algorithm with a custom provided slot configuration
@@ -106,6 +111,8 @@ public abstract class JIPipeGraphNode extends AbstractJIPipeParameterCollection 
      */
     public JIPipeGraphNode(JIPipeNodeInfo info, JIPipeSlotConfiguration slotConfiguration) {
         this.info = info;
+        this.environmentOverrides = new JIPipeDynamicParameterCollection();
+        registerSubParameter(environmentOverrides);
         if (slotConfiguration == null) {
             JIPipeDefaultMutableSlotConfiguration.Builder builder = JIPipeDefaultMutableSlotConfiguration.builder();
 
@@ -170,6 +177,8 @@ public abstract class JIPipeGraphNode extends AbstractJIPipeParameterCollection 
         this.customDescription = other.customDescription;
         this.baseDirectory = other.baseDirectory;
         this.projectDirectory = other.projectDirectory;
+        this.environmentOverrides = new JIPipeDynamicParameterCollection();
+        registerSubParameter(environmentOverrides);
         updateGraphNodeSlots();
         slotConfiguration.getSlotConfigurationChangedEventEmitter().subscribe(this);
     }
@@ -1117,7 +1126,12 @@ public abstract class JIPipeGraphNode extends AbstractJIPipeParameterCollection 
      * @param target the list where the external environments will be gathered
      */
     public void getEnvironmentDependencies(List<JIPipeEnvironmentReference<?>> target) {
-
+        for (Class<? extends JIPipeEnvironment> environmentType : getUtilizedEnvironmentTypes()) {
+            JIPipeEnvironmentReference<? extends JIPipeEnvironment> reference = getEnvironmentReference(environmentType);
+            if(reference != null) {
+                target.add(reference);
+            }
+        }
     }
 
     /**
@@ -1323,6 +1337,81 @@ public abstract class JIPipeGraphNode extends AbstractJIPipeParameterCollection 
      * @param canvasUI the canvas where the node was added.
      */
     public void uiAfterAddToCanvas(JIPipeDesktopGraphCanvasUI canvasUI) {
+    }
+
+    /**
+     * Registers an environment class to be used within this node.
+     * The node will apply automated checks for environment availability
+     * Required prior to usage of getEnvironment()
+     * @param klass the environment class
+     */
+    protected void registerUtilizedEnvironment(Class<? extends JIPipeEnvironment> klass) {
+        // Add to global set
+        utilizedEnvironmentTypes.add(Objects.requireNonNull(klass));
+
+        // Register parameter
+        JIPipeExternalEnvironmentRegistry.EnvironmentInfo environmentInfo = JIPipe.getEnvironments().getInfoByClass(klass);
+        if(!environmentOverrides.containsKey(environmentInfo.getId())) {
+            environmentOverrides.addParameter(environmentInfo.getId(),
+                    environmentInfo.getOptionalEnvironmentClass(),
+                    environmentInfo.getName(),
+                    "Allows to override the " + environmentInfo.getName() + " environment. " +
+                            environmentInfo.getDescription());
+        }
+    }
+
+    @Override
+    public void reportValidity(JIPipeValidationReportContext reportContext, JIPipeValidationReportSettings reportSettings, JIPipeValidationReport report) {
+        reportEnvironmentValidity(reportContext, reportSettings, report);
+    }
+
+    /**
+     * Checks if all registered environments are available
+     * @param reportContext the report context
+     * @param reportSettings report settings
+     * @param report the report
+     */
+    public void reportEnvironmentValidity(JIPipeValidationReportContext reportContext, JIPipeValidationReportSettings reportSettings, JIPipeValidationReport report) {
+        for (Class<? extends JIPipeEnvironment> environmentType : getUtilizedEnvironmentTypes()) {
+            if(!getEnvironment(environmentType).generateValidityReport(reportContext, reportSettings).isValid()) {
+                JIPipeExternalEnvironmentRegistry.EnvironmentInfo environmentInfo = JIPipe.getEnvironments().getInfoByClass(environmentType);
+                reportContext.error().title(environmentInfo.getName() + " environment not configured").explanation("The environment '" + environmentInfo.getId() + "' is not properly configured for the current node.")
+                        .solution("Check if the node's environment overrides ")
+            }
+        }
+    }
+
+    /**
+     * Returns the set of utilized environment types within this node
+     * @return the unmodifiable set
+     */
+    public Set<Class<? extends JIPipeEnvironment>> getUtilizedEnvironmentTypes() {
+        return Collections.unmodifiableSet(utilizedEnvironmentTypes);
+    }
+
+    /**
+     * Returns the environment reference for the environment class
+     * @param klass the environment class
+     * @return the environment reference
+     * @param <T> the environment type
+     */
+    public <T extends JIPipeEnvironment> JIPipeEnvironmentReference<T> getEnvironmentReference(Class<T> klass) {
+        return null; // TODO: handle getting the environment
+    }
+
+    /**
+     * Resolves an environment to be used within this node
+     * @param klass the environment class
+     * @return the environment
+     * @param <T> the environment type
+     */
+    public <T extends JIPipeEnvironment> T getEnvironment(Class<T> klass) {
+        return getEnvironmentReference(klass).getEnvironment();
+    }
+
+    @JIPipeParameter("jipipe:environment-overrides")
+    public JIPipeDynamicParameterCollection getEnvironmentOverrides() {
+        return environmentOverrides;
     }
 
     public interface NodeSlotsChangedEventListener {

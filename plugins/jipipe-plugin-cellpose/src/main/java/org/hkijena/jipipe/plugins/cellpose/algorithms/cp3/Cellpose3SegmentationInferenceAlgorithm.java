@@ -160,12 +160,6 @@ public class Cellpose3SegmentationInferenceAlgorithm extends JIPipeSingleIterati
         registerSubParameter(channelSettings);
     }
 
-    @Override
-    public void getEnvironmentDependencies(List<JIPipeEnvironmentReference<?>> target) {
-        super.getEnvironmentDependencies(target);
-        target.add(getConfiguredCellposeEnvironment());
-    }
-
     @SetJIPipeDocumentation(name = "Suppress logs", description = "If enabled, the node will not log the status of the Cellpose operation. " +
             "Can be used to limit memory consumption of JIPipe if larger data sets are used.")
     @JIPipeParameter("suppress-logs")

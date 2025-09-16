@@ -95,7 +95,7 @@ public class JIPipeDesktopExternalEnvironmentParameterEditorUI extends JIPipeDes
 
         if (settings == null || settings.allowManagePreset()) {
             JMenu presetMenu = new JMenu("Load preset");
-            List<JIPipeEnvironment> presets = JIPipe.getInstance().getExternalEnvironmentRegistry().getPresets(fieldClass);
+            List<JIPipeEnvironment> presets = JIPipe.getInstance().getEnvironmentRegistry().getPresets(fieldClass);
 
             for (JIPipeEnvironment preset : presets) {
                 JMenuItem presetItem = new JMenuItem(preset.getName(), preset.getIcon());
@@ -130,7 +130,7 @@ public class JIPipeDesktopExternalEnvironmentParameterEditorUI extends JIPipeDes
             String menuCategory = settings != null ? settings.showCategory() : "";
             boolean foundAdditionalEnvironments = false;
             for (JIPipeExternalEnvironmentRegistry.InstallerEntry installer : JIPipe.getInstance()
-                    .getExternalEnvironmentRegistry().getInstallers((Class<? extends JIPipeEnvironment>) fieldClass)) {
+                    .getEnvironmentRegistry().getInstallers((Class<? extends JIPipeEnvironment>) fieldClass)) {
 
                 if (!StringUtils.isNullOrEmpty(menuCategory)) {
                     // Check if the category matches
@@ -154,7 +154,7 @@ public class JIPipeDesktopExternalEnvironmentParameterEditorUI extends JIPipeDes
             if (foundAdditionalEnvironments) {
                 JMenu additionalEnvironmentsMenu = new JMenu("Additional compatible installers");
                 for (JIPipeExternalEnvironmentRegistry.InstallerEntry installer : JIPipe.getInstance()
-                        .getExternalEnvironmentRegistry().getInstallers((Class<? extends JIPipeEnvironment>) fieldClass)) {
+                        .getEnvironmentRegistry().getInstallers((Class<? extends JIPipeEnvironment>) fieldClass)) {
                     if (!StringUtils.isNullOrEmpty(menuCategory)) {
                         // Check if the category matches
                         ExternalEnvironmentInfo installerInfo = installer.getInstallerClass().getAnnotation(ExternalEnvironmentInfo.class);
@@ -220,7 +220,7 @@ public class JIPipeDesktopExternalEnvironmentParameterEditorUI extends JIPipeDes
             return;
         duplicate.setName(newName);
 
-        JIPipe.getInstance().getExternalEnvironmentRegistry().addPreset(fieldClass, duplicate);
+        JIPipe.getInstance().getEnvironmentRegistry().addPreset(fieldClass, duplicate);
     }
 
     private void editEnvironment() {

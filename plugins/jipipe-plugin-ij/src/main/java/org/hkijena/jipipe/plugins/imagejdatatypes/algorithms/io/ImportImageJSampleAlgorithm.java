@@ -79,12 +79,6 @@ public class ImportImageJSampleAlgorithm extends JIPipeSimpleIteratingAlgorithm 
         iterationStep.addOutputData(getFirstOutputSlot(), new ImagePlusData(imagePlus), progressInfo);
     }
 
-    @Override
-    public void getEnvironmentDependencies(List<JIPipeEnvironmentReference<?>> target) {
-        super.getEnvironmentDependencies(target);
-        target.add(getDataDirectoryEnvironment());
-    }
-
     public JIPipeEnvironmentReference<JIPipeDataDirectoryEnvironment> getDataDirectoryEnvironment() {
         ImageSamplesApplicationSettings applicationSettings = ImageSamplesApplicationSettings.getInstance();
         ImageSamplesProjectSettings settingsSheet = getProject().getSettingsSheet(ImageSamplesProjectSettings.class);

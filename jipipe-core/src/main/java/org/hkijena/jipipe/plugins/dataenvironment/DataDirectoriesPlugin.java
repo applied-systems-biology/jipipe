@@ -42,19 +42,12 @@ public class DataDirectoriesPlugin extends JIPipePrepackagedDefaultJavaPlugin {
 
     @Override
     public void register(JIPipe jiPipe, Context context, JIPipeProgressInfo progressInfo) {
-        JIPipeDataDirectoryEnvironmentApplicationSettings settings = new JIPipeDataDirectoryEnvironmentApplicationSettings();
-        registerApplicationSettingsSheet(settings);
-        registerEnvironment(JIPipeDataDirectoryEnvironment.class,
+        registerEnvironment("data-directory", JIPipeDataDirectoryEnvironment.class,
+                OptionalJIPipeDataDirectoryEnvironment.class,
                 JIPipeDataDirectoryEnvironment.List.class,
-                settings,
-                "data-directory",
                 "Data directory",
                 "Directory containing data",
                 JIPipe.RESOURCES.getIcon16("actions/vcs-update-cvs-cervisia.png"));
-        registerParameterType("optional-data-directory",
-                OptionalJIPipeDataDirectoryEnvironment.class,
-                JIPipeParameterArchetype.OptionalValue, "Optional data directory",
-                "Directory containing data");
     }
 
     @Override

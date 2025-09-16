@@ -145,10 +145,9 @@ public class FilamentsPlugin extends JIPipePrepackagedDefaultJavaPlugin {
     public void register(JIPipe jiPipe, Context context, JIPipeProgressInfo progressInfo) {
 
         TSOAXApplicationSettings tsoaxApplicationSettings = new TSOAXApplicationSettings();
-        registerEnvironment(TSOAXEnvironment.class,
+        registerEnvironment("tsoax-environment", TSOAXEnvironment.class,
                 TSOAXEnvironment.List.class,
                 tsoaxApplicationSettings,
-                "tsoax-environment",
                 "TSOAX Environment",
                 "Installation of TSOAX",
                 RESOURCES.getIcon16("tsoax.png"));

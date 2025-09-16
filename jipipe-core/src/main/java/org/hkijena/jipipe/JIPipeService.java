@@ -55,7 +55,7 @@ public interface JIPipeService extends Service, JIPipeValidatable {
 
     JIPipeUtilityRegistry getUtilityRegistry();
 
-    JIPipeExternalEnvironmentRegistry getExternalEnvironmentRegistry();
+    JIPipeExternalEnvironmentRegistry getEnvironmentRegistry();
 
     JIPipePluginRegistry getPluginRegistry();
 
