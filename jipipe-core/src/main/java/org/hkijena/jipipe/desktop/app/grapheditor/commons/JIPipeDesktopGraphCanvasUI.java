@@ -181,10 +181,10 @@ public class JIPipeDesktopGraphCanvasUI extends JLayeredPane implements JIPipeDe
     }
 
     private void initializeOverlays() {
+        overlays.add(new JIPipeDesktopGraphCanvasAnnotationNodesOverlay(this));
         overlays.add(new JIPipeDesktopGraphCanvasNodeShadowOverlay(this));
         overlays.add(new JIPipeDesktopGraphCanvasOutsideEdgesOverlay(this));
         overlays.add(new JIPipeDesktopGraphCanvasEdgesOverlay(this));
-        overlays.add(new JIPipeDesktopGraphCanvasAnnotationNodesOverlay(this));
         overlays.add(new JIPipeDesktopGraphCanvasConnectionHighlightsOverlay(this));
         overlays.add(new JIPipeDesktopGraphCanvasObjectSelectionOverlay(this));
         overlays.add(new JIPipeDesktopGraphCanvasIOOverlay(this));
