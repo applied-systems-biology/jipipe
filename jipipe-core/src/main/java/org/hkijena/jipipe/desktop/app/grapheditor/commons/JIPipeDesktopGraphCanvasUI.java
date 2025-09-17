@@ -1012,6 +1012,11 @@ public class JIPipeDesktopGraphCanvasUI extends JLayeredPane implements JIPipeDe
 
         if (SwingUtilities.isLeftMouseButton(mouseEvent)) {
 
+            // Resize handling
+            if (resizeManager.mousePressed(mouseEvent)) {
+                return;
+            }
+
             // Selection handling
             if (nodeUI == null && edgeUI != null) {
                 if (mouseEvent.isShiftDown()) {
@@ -1027,11 +1032,6 @@ public class JIPipeDesktopGraphCanvasUI extends JLayeredPane implements JIPipeDe
                 }
             } else if (!mouseEvent.isShiftDown()) {
                 selectionManager.clearSelection();
-            }
-
-            // Resize handling
-            if (resizeManager.mousePressed(mouseEvent)) {
-                return;
             }
 
             // Slot dragging
