@@ -51,7 +51,7 @@ import java.util.Map;
 @SetJIPipeDocumentation(name = "Python script (iterating)", description = "Runs a Python script that iterates through each iteration step in the input slots. " +
         "This node uses an existing dedicated Python interpreter that must be set up in the application settings.\n\nTo learn more about the JIPipe Python API, visit https://jipipe.hki-jena.de/apidocs/python-current/index.html")
 @ConfigureJIPipeNode(nodeTypeCategory = MiscellaneousNodeTypeCategory.class, menuPath = "Python script")
-public class IteratingPythonScriptAlgorithm extends JIPipeIteratingAlgorithm implements PythonEnvironmentAccessNode {
+public class IteratingPythonScriptAlgorithm extends JIPipeIteratingAlgorithm {
 
     private PythonScript code = new PythonScript();
     private JIPipeDynamicParameterCollection scriptParameters = new JIPipeDynamicParameterCollection(true,
@@ -85,6 +85,12 @@ public class IteratingPythonScriptAlgorithm extends JIPipeIteratingAlgorithm imp
         this.overrideEnvironment = new OptionalPythonEnvironment(other.overrideEnvironment);
         this.suppressLogs = other.suppressLogs;
         registerSubParameter(scriptParameters);
+    }
+
+    @Override
+    protected void registerEnvironments() {
+        super.registerEnvironments();
+        registerEnvironment(PythonEnvironment.class);
     }
 
     @SetJIPipeDocumentation(name = "Clean up data after processing", description = "If enabled, data is deleted from temporary directories after " +

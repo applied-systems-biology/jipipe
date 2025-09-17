@@ -35,6 +35,7 @@ import org.hkijena.jipipe.api.validation.JIPipeValidationReportSettings;
 import org.hkijena.jipipe.api.validation.contexts.ParameterValidationReportContext;
 import org.hkijena.jipipe.plugins.parameters.library.scripts.PythonScript;
 import org.hkijena.jipipe.plugins.python.OptionalPythonEnvironment;
+import org.hkijena.jipipe.plugins.python.PythonEnvironment;
 import org.hkijena.jipipe.plugins.python.PythonUtils;
 import org.hkijena.jipipe.plugins.python.adapter.JIPipePythonAdapterLibraryEnvironment;
 import org.hkijena.jipipe.utils.scripting.JythonUtils;
@@ -50,7 +51,7 @@ import java.util.Map;
 @SetJIPipeDocumentation(name = "Python script (merging)", description = "Runs a Python script that iterates through each iteration step in the input slots. " +
         "This node uses an existing dedicated Python interpreter that must be set up in the application settings.\n\nTo learn more about the JIPipe Python API, visit https://jipipe.hki-jena.de/apidocs/python-current/index.html")
 @ConfigureJIPipeNode(nodeTypeCategory = MiscellaneousNodeTypeCategory.class, menuPath = "Python script")
-public class MergingPythonScriptAlgorithm extends JIPipeMergingAlgorithm implements PythonEnvironmentAccessNode {
+public class MergingPythonScriptAlgorithm extends JIPipeMergingAlgorithm {
 
     private PythonScript code = new PythonScript();
     private JIPipeDynamicParameterCollection scriptParameters = new JIPipeDynamicParameterCollection(true,
@@ -84,6 +85,12 @@ public class MergingPythonScriptAlgorithm extends JIPipeMergingAlgorithm impleme
         this.overrideEnvironment = new OptionalPythonEnvironment(other.overrideEnvironment);
         this.suppressLogs = other.suppressLogs;
         registerSubParameter(scriptParameters);
+    }
+
+    @Override
+    protected void registerEnvironments() {
+        super.registerEnvironments();
+        registerEnvironment(PythonEnvironment.class);
     }
 
     @SetJIPipeDocumentation(name = "Clean up data after processing", description = "If enabled, data is deleted from temporary directories after " +

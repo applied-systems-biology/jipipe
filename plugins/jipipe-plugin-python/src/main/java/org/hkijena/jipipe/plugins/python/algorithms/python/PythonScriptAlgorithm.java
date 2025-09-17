@@ -50,7 +50,7 @@ import java.util.Map;
 @SetJIPipeDocumentation(name = "Python script (multi-parameter capable, custom)", description = "Runs a Python script that is executed once and has access to all incoming data. " +
         "This node uses an existing dedicated Python interpreter that must be set up in the application settings.\n\nTo learn more about the JIPipe Python API, visit https://jipipe.hki-jena.de/apidocs/python-current/index.html")
 @ConfigureJIPipeNode(nodeTypeCategory = MiscellaneousNodeTypeCategory.class, menuPath = "Python script")
-public class PythonScriptAlgorithm extends JIPipeParameterSlotAlgorithm implements PythonEnvironmentAccessNode {
+public class PythonScriptAlgorithm extends JIPipeParameterSlotAlgorithm {
 
     private PythonScript code = new PythonScript();
     private JIPipeDynamicParameterCollection scriptParameters = new JIPipeDynamicParameterCollection(true,
@@ -84,6 +84,12 @@ public class PythonScriptAlgorithm extends JIPipeParameterSlotAlgorithm implemen
         this.overrideEnvironment = new OptionalPythonEnvironment(other.overrideEnvironment);
         this.suppressLogs = other.suppressLogs;
         registerSubParameter(scriptParameters);
+    }
+
+    @Override
+    protected void registerEnvironments() {
+        super.registerEnvironments();
+        registerEnvironment(PythonEnvironment.class);
     }
 
     @SetJIPipeDocumentation(name = "Suppress logs", description = "If enabled, the node will not log the status of the Python operation. " +

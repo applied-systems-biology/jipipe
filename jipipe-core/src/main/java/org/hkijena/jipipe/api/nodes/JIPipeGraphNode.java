@@ -112,6 +112,7 @@ public abstract class JIPipeGraphNode extends AbstractJIPipeParameterCollection 
     public JIPipeGraphNode(JIPipeNodeInfo info, JIPipeSlotConfiguration slotConfiguration) {
         this.info = info;
         this.environmentOverrides = new JIPipeDynamicParameterCollection();
+        registerEnvironments();
         registerSubParameter(environmentOverrides);
         if (slotConfiguration == null) {
             JIPipeDefaultMutableSlotConfiguration.Builder builder = JIPipeDefaultMutableSlotConfiguration.builder();
@@ -177,10 +178,19 @@ public abstract class JIPipeGraphNode extends AbstractJIPipeParameterCollection 
         this.customDescription = other.customDescription;
         this.baseDirectory = other.baseDirectory;
         this.projectDirectory = other.projectDirectory;
-        this.environmentOverrides = new JIPipeDynamicParameterCollection();
+        this.environmentOverrides = new JIPipeDynamicParameterCollection(other.environmentOverrides);
         registerSubParameter(environmentOverrides);
+        registerEnvironments();
         updateGraphNodeSlots();
         slotConfiguration.getSlotConfigurationChangedEventEmitter().subscribe(this);
+    }
+
+    /**
+     * Executed during the node construction
+     * Override for registering environments
+     */
+    protected void registerEnvironments() {
+
     }
 
     public NodeSlotsChangedEventEmitter getNodeSlotsChangedEventEmitter() {
@@ -1345,7 +1355,7 @@ public abstract class JIPipeGraphNode extends AbstractJIPipeParameterCollection 
      * Required prior to usage of getEnvironment()
      * @param klass the environment class
      */
-    protected void registerUtilizedEnvironment(Class<? extends JIPipeEnvironment> klass) {
+    protected void registerEnvironment(Class<? extends JIPipeEnvironment> klass) {
         // Add to global set
         utilizedEnvironmentTypes.add(Objects.requireNonNull(klass));
 
@@ -1376,7 +1386,7 @@ public abstract class JIPipeGraphNode extends AbstractJIPipeParameterCollection 
             if(!getEnvironment(environmentType).generateValidityReport(reportContext, reportSettings).isValid()) {
                 JIPipeExternalEnvironmentRegistry.EnvironmentInfo environmentInfo = JIPipe.getEnvironments().getInfoByClass(environmentType);
                 reportContext.error().title(environmentInfo.getName() + " environment not configured").explanation("The environment '" + environmentInfo.getId() + "' is not properly configured for the current node.")
-                        .solution("Check if the node's environment overrides ")
+                        .solution("Check if the node's environment overrides the " + environmentInfo.getName() + " environment and is correctly configured. Otherwise, check the project and application settings for the respective environment configuration.").report(report);
             }
         }
     }
