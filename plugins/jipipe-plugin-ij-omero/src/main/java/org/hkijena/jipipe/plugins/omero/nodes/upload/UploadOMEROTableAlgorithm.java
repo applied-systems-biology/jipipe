@@ -138,10 +138,4 @@ public class UploadOMEROTableAlgorithm extends JIPipeIteratingAlgorithm implemen
         OMEROCredentialsEnvironment environment = getConfiguredOMEROCredentialsEnvironment().getEnvironment();
         report.report(new GraphNodeValidationReportContext(reportContext, this), environment);
     }
-
-    @Override
-    public void getEnvironmentDependencies(List<JIPipeEnvironmentReference<?>> target) {
-        super.getEnvironmentDependencies(target);
-        target.add(getConfiguredOMEROCredentialsEnvironment());
-    }
 }

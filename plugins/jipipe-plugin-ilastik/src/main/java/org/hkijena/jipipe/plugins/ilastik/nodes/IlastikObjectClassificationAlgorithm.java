@@ -344,12 +344,6 @@ public class IlastikObjectClassificationAlgorithm extends JIPipeSingleIterationA
         }
     }
 
-    @Override
-    public void getEnvironmentDependencies(List<JIPipeEnvironmentReference<?>> target) {
-        super.getEnvironmentDependencies(target);
-        target.add(getConfiguredIlastikEnvironment());
-    }
-
     private void updateSlots() {
         toggleSlot(OUTPUT_SLOT_OBJECT_PREDICTIONS, outputParameters.outputObjectPredictions);
         toggleSlot(OUTPUT_SLOT_OBJECT_PROBABILITIES, outputParameters.outputPixelProbabilities);

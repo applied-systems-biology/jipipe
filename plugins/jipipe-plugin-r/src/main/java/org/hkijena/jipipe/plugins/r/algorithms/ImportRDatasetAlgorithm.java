@@ -69,12 +69,6 @@ public class ImportRDatasetAlgorithm extends JIPipeSimpleIteratingAlgorithm impl
         }
     }
 
-    @Override
-    public void getEnvironmentDependencies(List<JIPipeEnvironmentReference<?>> target) {
-        super.getEnvironmentDependencies(target);
-        target.add(getConfiguredREnvironment());
-    }
-
     @SetJIPipeDocumentation(name = "Override R environment", description = "If enabled, a different R environment is used for this Node.")
     @JIPipeParameter("override-environment")
     @ExternalEnvironmentParameterSettings(allowArtifact = true, artifactFilters = {"org.r.*"})

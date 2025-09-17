@@ -133,13 +133,6 @@ public class IteratingPythonScriptAlgorithm extends JIPipeIteratingAlgorithm imp
     }
 
     @Override
-    public void getEnvironmentDependencies(List<JIPipeEnvironmentReference<?>> target) {
-        super.getEnvironmentDependencies(target);
-        target.add(getConfiguredPythonEnvironment());
-        target.add(getConfiguredPythonAdapterEnvironment());
-    }
-
-    @Override
     protected void runIteration(JIPipeSingleIterationStep iterationStep, JIPipeIterationContext iterationContext, JIPipeGraphNodeRunContext runContext, JIPipeProgressInfo progressInfo) {
         StringBuilder code = new StringBuilder();
 

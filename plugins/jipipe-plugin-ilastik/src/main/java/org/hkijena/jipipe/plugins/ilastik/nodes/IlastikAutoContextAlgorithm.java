@@ -370,12 +370,6 @@ public class IlastikAutoContextAlgorithm extends JIPipeSingleIterationAlgorithm 
         }
     }
 
-    @Override
-    public void getEnvironmentDependencies(List<JIPipeEnvironmentReference<?>> target) {
-        super.getEnvironmentDependencies(target);
-        target.add(getConfiguredIlastikEnvironment());
-    }
-
     private void updateSlots() {
         toggleSlot(OUTPUT_SLOT_FEATURES_STAGE_1, outputParameters.outputFeaturesStage1);
         toggleSlot(OUTPUT_SLOT_FEATURES_STAGE_2, outputParameters.outputFeaturesStage2);

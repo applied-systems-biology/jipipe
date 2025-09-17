@@ -123,13 +123,6 @@ public class MergingPythonScriptAlgorithm extends JIPipeMergingAlgorithm impleme
     }
 
     @Override
-    public void getEnvironmentDependencies(List<JIPipeEnvironmentReference<?>> target) {
-        super.getEnvironmentDependencies(target);
-        target.add(getConfiguredPythonEnvironment());
-        target.add(getConfiguredPythonAdapterEnvironment());
-    }
-
-    @Override
     public void reportValidity(JIPipeValidationReportContext reportContext, JIPipeValidationReportSettings reportSettings, JIPipeValidationReport report) {
         super.reportValidity(reportContext, reportSettings, report);
         JythonUtils.checkScriptParametersValidity(scriptParameters, new ParameterValidationReportContext(reportContext, this, "Script parameters", "script-parameters"), report);

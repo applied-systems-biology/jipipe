@@ -148,10 +148,4 @@ public class OMEROListWellImagesAlgorithm extends JIPipeSingleIterationAlgorithm
             reportConfiguredOMEROEnvironmentValidity(reportContext, report);
         }
     }
-
-    @Override
-    public void getEnvironmentDependencies(List<JIPipeEnvironmentReference<?>> target) {
-        super.getEnvironmentDependencies(target);
-        target.add(getConfiguredOMEROCredentialsEnvironment());
-    }
 }

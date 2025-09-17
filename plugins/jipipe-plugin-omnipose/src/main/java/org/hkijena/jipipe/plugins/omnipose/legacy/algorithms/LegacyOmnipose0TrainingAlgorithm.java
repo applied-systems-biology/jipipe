@@ -138,12 +138,6 @@ public class LegacyOmnipose0TrainingAlgorithm extends JIPipeSingleIterationAlgor
         toggleSlot(OUTPUT_SIZE_MODEL, trainSizeModel);
     }
 
-    @Override
-    public void getEnvironmentDependencies(List<JIPipeEnvironmentReference<?>> target) {
-        super.getEnvironmentDependencies(target);
-        target.add(getConfiguredOmniposeEnvironment());
-    }
-
     @SetJIPipeDocumentation(name = "Train size model", description = "If enabled, also train a size model")
     @JIPipeParameter("train-size-model")
     public boolean isTrainSizeModel() {

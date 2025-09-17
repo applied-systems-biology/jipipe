@@ -314,12 +314,6 @@ public class IlastikSegmentationImageObjectClassificationAlgorithm extends JIPip
         }
     }
 
-    @Override
-    public void getEnvironmentDependencies(List<JIPipeEnvironmentReference<?>> target) {
-        super.getEnvironmentDependencies(target);
-        target.add(getConfiguredIlastikEnvironment());
-    }
-
     @SetJIPipeDocumentation(name = "Segmentation image data annotation", description = "The name of the data annotation that contains the segmentation image.")
     @JIPipeParameter(value = "segmentation-image-data-annotation", important = true)
     public DataAnnotationQueryExpression getSegmentationImageDataAnnotation() {

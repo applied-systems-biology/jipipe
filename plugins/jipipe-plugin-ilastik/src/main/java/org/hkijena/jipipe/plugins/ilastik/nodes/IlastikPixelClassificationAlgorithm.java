@@ -258,12 +258,6 @@ public class IlastikPixelClassificationAlgorithm extends JIPipeSingleIterationAl
         }
     }
 
-    @Override
-    public void getEnvironmentDependencies(List<JIPipeEnvironmentReference<?>> target) {
-        super.getEnvironmentDependencies(target);
-        target.add(getConfiguredIlastikEnvironment());
-    }
-
     @SetJIPipeDocumentation(name = "Validate Ilastik project", description = "Determines how/if the node validates the input projects. This is done to check if the project is supported by this node.")
     @JIPipeParameter("project-validation-mode")
     public IlastikProjectValidationMode getProjectValidationMode() {
