@@ -21,7 +21,7 @@ import org.hkijena.jipipe.JIPipeMutableDependency;
 import org.hkijena.jipipe.api.JIPipeProgressInfo;
 import org.hkijena.jipipe.api.compat.ui.FileImageJDataImporterUI;
 import org.hkijena.jipipe.api.compat.ui.FolderImageJDataExporterUI;
-import org.hkijena.jipipe.api.environments.JIPipeEnvironmentReference;
+import org.hkijena.jipipe.api.environments.JIPipeEnvironmentConfigurator;
 import org.hkijena.jipipe.api.metadata.JIPipeAuthorMetadata;
 import org.hkijena.jipipe.api.metadata.JIPipeOrganizationMetadata;
 import org.hkijena.jipipe.api.nodes.JIPipeGraphNode;
@@ -82,8 +82,8 @@ public class CellposePlugin extends JIPipePrepackagedDefaultJavaPlugin {
         getMetadata().addCategories(PluginCategoriesEnumParameter.CATEGORY_DEEP_LEARNING, PluginCategoriesEnumParameter.CATEGORY_SEGMENTATION, PluginCategoriesEnumParameter.CATEGORY_MACHINE_LEARNING);
     }
 
-    public static JIPipeEnvironmentReference<PythonEnvironment> getCP2Environment(JIPipeProject project, OptionalPythonEnvironment nodeEnvironment, JIPipeGraphNode node) {
-        var selector = JIPipeEnvironmentReference.defaultOptions(PythonEnvironment.class)
+    public static JIPipeEnvironmentConfigurator<PythonEnvironment> getCP2Environment(JIPipeProject project, OptionalPythonEnvironment nodeEnvironment, JIPipeGraphNode node) {
+        var selector = JIPipeEnvironmentConfigurator.defaultOptions(PythonEnvironment.class)
                 .application(Cellpose2PluginApplicationSettings.getInstance().getReadOnlyDefaultEnvironment());
         if (nodeEnvironment != null) {
             selector.node(nodeEnvironment, node);
@@ -94,8 +94,8 @@ public class CellposePlugin extends JIPipePrepackagedDefaultJavaPlugin {
         return selector.select();
     }
 
-    public static JIPipeEnvironmentReference<PythonEnvironment> getCP3Environment(JIPipeProject project, OptionalPythonEnvironment nodeEnvironment, JIPipeGraphNode node) {
-        var selector = JIPipeEnvironmentReference.defaultOptions(PythonEnvironment.class)
+    public static JIPipeEnvironmentConfigurator<PythonEnvironment> getCP3Environment(JIPipeProject project, OptionalPythonEnvironment nodeEnvironment, JIPipeGraphNode node) {
+        var selector = JIPipeEnvironmentConfigurator.defaultOptions(PythonEnvironment.class)
                 .application(Cellpose3PluginApplicationSettings.getInstance().getReadOnlyDefaultEnvironment());
         if (nodeEnvironment != null) {
             selector.node(nodeEnvironment, node);

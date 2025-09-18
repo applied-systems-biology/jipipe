@@ -26,7 +26,6 @@ import org.hkijena.jipipe.api.annotation.JIPipeTextAnnotationMergeMode;
 import org.hkijena.jipipe.api.data.*;
 import org.hkijena.jipipe.api.data.context.JIPipeDataContext;
 import org.hkijena.jipipe.api.environments.ExternalEnvironmentParameterSettings;
-import org.hkijena.jipipe.api.environments.JIPipeEnvironmentReference;
 import org.hkijena.jipipe.api.nodes.AddJIPipeInputSlot;
 import org.hkijena.jipipe.api.nodes.AddJIPipeOutputSlot;
 import org.hkijena.jipipe.api.nodes.JIPipeGraphNodeRunContext;
@@ -229,7 +228,7 @@ public class IlastikObjectClassificationAlgorithm extends JIPipeSingleIterationA
                 args.add("--raw_data=" + workDirectory.toAbsolutePath() + "/*.h5");
 
                 // Run ilastik
-                IlastikEnvironment environment = getConfiguredIlastikEnvironment().getEnvironment();
+                IlastikEnvironment environment = getConfiguredIlastikEnvironment().get(progressInfo);
                 IlastikPlugin.runIlastik(environment,
                         args,
                         false, exportSourceProgress.resolve("Run Ilastik")

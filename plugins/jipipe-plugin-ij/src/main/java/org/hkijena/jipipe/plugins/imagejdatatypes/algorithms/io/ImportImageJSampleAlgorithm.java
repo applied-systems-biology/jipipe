@@ -17,7 +17,7 @@ import ij.ImagePlus;
 import org.hkijena.jipipe.api.ConfigureJIPipeNode;
 import org.hkijena.jipipe.api.JIPipeProgressInfo;
 import org.hkijena.jipipe.api.SetJIPipeDocumentation;
-import org.hkijena.jipipe.api.environments.JIPipeEnvironmentReference;
+import org.hkijena.jipipe.api.environments.JIPipeEnvironmentConfigurator;
 import org.hkijena.jipipe.api.nodes.AddJIPipeOutputSlot;
 import org.hkijena.jipipe.api.nodes.JIPipeGraphNodeRunContext;
 import org.hkijena.jipipe.api.nodes.JIPipeNodeInfo;
@@ -36,7 +36,6 @@ import org.hkijena.jipipe.plugins.parameters.api.enums.EnumParameterSettings;
 import java.io.FileNotFoundException;
 import java.nio.file.Files;
 import java.nio.file.Path;
-import java.util.List;
 
 @SetJIPipeDocumentation(name = "Import ImageJ sample image", description = "Imports a sample image from the standard set of sample images provided by ImageJ")
 @ConfigureJIPipeNode(nodeTypeCategory = DataSourceNodeTypeCategory.class)
@@ -69,7 +68,7 @@ public class ImportImageJSampleAlgorithm extends JIPipeSimpleIteratingAlgorithm 
 
     @Override
     protected void runIteration(JIPipeSingleIterationStep iterationStep, JIPipeIterationContext iterationContext, JIPipeGraphNodeRunContext runContext, JIPipeProgressInfo progressInfo) {
-        JIPipeDataDirectoryEnvironment environment = getDataDirectoryEnvironment().getEnvironment();
+        JIPipeDataDirectoryEnvironment environment = getDataDirectoryEnvironment().get(progressInfo);
         Path fileName = environment.getDirectory().resolve(sample.getFileName());
         if (!Files.isRegularFile(fileName)) {
             throw new RuntimeException(new FileNotFoundException(fileName.toString()));
@@ -79,11 +78,11 @@ public class ImportImageJSampleAlgorithm extends JIPipeSimpleIteratingAlgorithm 
         iterationStep.addOutputData(getFirstOutputSlot(), new ImagePlusData(imagePlus), progressInfo);
     }
 
-    public JIPipeEnvironmentReference<JIPipeDataDirectoryEnvironment> getDataDirectoryEnvironment() {
+    public JIPipeEnvironmentConfigurator<JIPipeDataDirectoryEnvironment> getDataDirectoryEnvironment() {
         ImageSamplesApplicationSettings applicationSettings = ImageSamplesApplicationSettings.getInstance();
         ImageSamplesProjectSettings settingsSheet = getProject().getSettingsSheet(ImageSamplesProjectSettings.class);
 
-        return JIPipeEnvironmentReference.defaultOptions(JIPipeDataDirectoryEnvironment.class)
+        return JIPipeEnvironmentConfigurator.defaultOptions(JIPipeDataDirectoryEnvironment.class)
                 .application(applicationSettings.getReadOnlyDefaultEnvironment())
                 .project(settingsSheet.getProjectDefaultEnvironment(), getProject())
                 .node(dataDirectoryEnvironment, this)

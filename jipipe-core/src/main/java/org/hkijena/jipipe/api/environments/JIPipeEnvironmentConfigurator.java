@@ -14,6 +14,7 @@
 package org.hkijena.jipipe.api.environments;
 
 import org.hkijena.jipipe.JIPipe;
+import org.hkijena.jipipe.api.JIPipeProgressInfo;
 import org.hkijena.jipipe.api.nodes.JIPipeGraphNode;
 import org.hkijena.jipipe.api.parameters.JIPipeParameterTypeInfo;
 import org.hkijena.jipipe.api.project.JIPipeProject;
@@ -22,47 +23,64 @@ import org.hkijena.jipipe.api.validation.JIPipeValidationReport;
 import org.hkijena.jipipe.api.validation.JIPipeValidationReportContext;
 import org.hkijena.jipipe.api.validation.JIPipeValidationReportSettings;
 import org.hkijena.jipipe.api.validation.contexts.UnspecifiedValidationReportContext;
-import org.hkijena.jipipe.plugins.parameters.api.optional.OptionalParameter;
 
 /**
- * Helper class that contains a JIPipeEnvironment together with information about its source
+ * Class that helps with keeping track where environments are sourced from and resolve full environments
  */
-public class JIPipeEnvironmentReference<T extends JIPipeEnvironment> implements JIPipeValidatable {
-    private final T environment;
-    private final SourceType sourceType;
-    private final Object source;
+public class JIPipeEnvironmentConfigurator<T extends JIPipeEnvironment> implements JIPipeValidatable {
+    private final Class<T> environmentClass;
+    private final JIPipeProject project;
+    private final JIPipeEnvironmentConfigurationCache configurationCache;
+    private T baseEnvironment;
+    private SourceType sourceType;
+    private Object source;
 
-    public JIPipeEnvironmentReference(T environment, SourceType sourceType, Object source) {
-        this.environment = environment;
-        this.sourceType = sourceType;
-        this.source = source;
+    public JIPipeEnvironmentConfigurator(Class<T> environmentClass, JIPipeProject project, JIPipeEnvironmentConfigurationCache configurationCache) {
+        this.environmentClass = environmentClass;
+        this.project = project;
+        this.configurationCache = configurationCache;
+    }
+
+    public T get(JIPipeProgressInfo progressInfo) {
+        resolveBaseEnvironment();
+        return null; // TODO
     }
 
     /**
-     * Selects a reference based on the default chain (node, project, application)
-     *
-     * @return the selector
+     * Ensures that the base (unconfigured) environment is selected
      */
-    public static <T extends JIPipeEnvironment> DefaultSelector<T> defaultOptions(Class<T> environmentClass) {
-        return new DefaultSelector<T>();
-    }
+    public void resolveBaseEnvironment() {
 
-    public T getEnvironment() {
-        return environment;
     }
 
     public SourceType getSourceType() {
+        resolveBaseEnvironment();
         return sourceType;
     }
 
     public Object getSource() {
+        resolveBaseEnvironment();
         return source;
+    }
+
+    public JIPipeProject getProject() {
+        return project;
+    }
+
+    public JIPipeEnvironmentConfigurationCache getConfigurationCache() {
+        return configurationCache;
+    }
+
+    public T getBaseEnvironment() {
+        resolveBaseEnvironment();
+        return baseEnvironment;
     }
 
     @Override
     public void reportValidity(JIPipeValidationReportContext reportContext, JIPipeValidationReportSettings reportSettings, JIPipeValidationReport report) {
-        if (!getEnvironment().generateValidityReport(new UnspecifiedValidationReportContext(), reportSettings).isValid()) {
-            JIPipeParameterTypeInfo info = JIPipe.getParameterTypes().getInfoByFieldClass(getEnvironment().getClass());
+        resolveBaseEnvironment();
+        if (!get(progressInfo).generateValidityReport(new UnspecifiedValidationReportContext(), reportSettings).isValid()) {
+            JIPipeParameterTypeInfo info = JIPipe.getParameterTypes().getInfoByFieldClass(get(progressInfo).getClass());
             switch (getSourceType()) {
                 case SourceType.Application -> {
                     new UnspecifiedValidationReportContext().error()
@@ -91,67 +109,13 @@ public class JIPipeEnvironmentReference<T extends JIPipeEnvironment> implements 
         }
     }
 
+    public Class<T> getEnvironmentClass() {
+        return environmentClass;
+    }
+
     public enum SourceType {
         Node,
         Project,
         Application
-    }
-
-    public static final class DefaultSelector<T extends JIPipeEnvironment> {
-        private final JIPipeEnvironmentReference<T>[] chain = new JIPipeEnvironmentReference[4];
-
-        public DefaultSelector<T> applicationDefault(T environment) {
-            chain[3] = new JIPipeEnvironmentReference<>(environment, SourceType.Application, null);
-            return this;
-        }
-
-        public DefaultSelector<T> application(T environment) {
-            chain[2] = new JIPipeEnvironmentReference<>(environment, SourceType.Application, null);
-            return this;
-        }
-
-        public DefaultSelector<T> application(OptionalParameter<T> environment) {
-            if (environment.isEnabled()) {
-                chain[2] = new JIPipeEnvironmentReference<>(environment.getContent(), SourceType.Application, null);
-            }
-            return this;
-        }
-
-        public DefaultSelector<T> project(T environment, JIPipeProject project) {
-            if (environment != null) {
-                chain[1] = new JIPipeEnvironmentReference<>(environment, SourceType.Project, project);
-            }
-            return this;
-        }
-
-        public DefaultSelector<T> project(OptionalParameter<T> environment, JIPipeProject project) {
-            if (environment != null && environment.isEnabled()) {
-                chain[1] = new JIPipeEnvironmentReference<>(environment.getContent(), SourceType.Project, project);
-            }
-            return this;
-        }
-
-        public DefaultSelector<T> node(T environment, JIPipeGraphNode node) {
-            if (environment != null) {
-                chain[0] = new JIPipeEnvironmentReference<>(environment, SourceType.Node, node);
-            }
-            return this;
-        }
-
-        public DefaultSelector<T> node(OptionalParameter<T> environment, JIPipeGraphNode node) {
-            if (environment != null && environment.isEnabled()) {
-                chain[0] = new JIPipeEnvironmentReference<>(environment.getContent(), SourceType.Node, node);
-            }
-            return this;
-        }
-
-        public JIPipeEnvironmentReference<T> select() {
-            for (JIPipeEnvironmentReference<T> reference : chain) {
-                if (reference != null) {
-                    return reference;
-                }
-            }
-            return null;
-        }
     }
 }

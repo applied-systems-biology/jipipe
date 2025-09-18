@@ -21,7 +21,7 @@ import org.hkijena.jipipe.JIPipeDependency;
 import org.hkijena.jipipe.JIPipeJavaPlugin;
 import org.hkijena.jipipe.JIPipeMutableDependency;
 import org.hkijena.jipipe.api.JIPipeProgressInfo;
-import org.hkijena.jipipe.api.environments.JIPipeEnvironmentReference;
+import org.hkijena.jipipe.api.environments.JIPipeEnvironmentConfigurator;
 import org.hkijena.jipipe.api.nodes.JIPipeGraphNode;
 import org.hkijena.jipipe.api.parameters.JIPipeParameterArchetype;
 import org.hkijena.jipipe.api.project.JIPipeProject;
@@ -61,8 +61,8 @@ public class RPlugin extends JIPipePrepackagedDefaultJavaPlugin {
         getMetadata().addCategories(PluginCategoriesEnumParameter.CATEGORY_SCRIPTING);
     }
 
-    public static JIPipeEnvironmentReference<REnvironment> getEnvironment(JIPipeProject project, OptionalREnvironment nodeEnvironment, JIPipeGraphNode node) {
-        var selector = JIPipeEnvironmentReference.defaultOptions(REnvironment.class)
+    public static JIPipeEnvironmentConfigurator<REnvironment> getEnvironment(JIPipeProject project, OptionalREnvironment nodeEnvironment, JIPipeGraphNode node) {
+        var selector = JIPipeEnvironmentConfigurator.defaultOptions(REnvironment.class)
                 .application(RPluginApplicationSettings.getInstance().getReadOnlyEnvironment());
 
         if (project != null) {

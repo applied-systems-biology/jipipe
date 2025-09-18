@@ -13,7 +13,7 @@
 
 package org.hkijena.jipipe.plugins.omnipose;
 
-import org.hkijena.jipipe.api.environments.JIPipeEnvironmentReference;
+import org.hkijena.jipipe.api.environments.JIPipeEnvironmentConfigurator;
 import org.hkijena.jipipe.api.nodes.JIPipeGraphNode;
 import org.hkijena.jipipe.api.project.JIPipeProject;
 import org.hkijena.jipipe.api.validation.JIPipeValidationReport;
@@ -34,7 +34,7 @@ public interface OmniposeEnvironmentAccessNode {
      *
      * @return the environment
      */
-    default JIPipeEnvironmentReference<PythonEnvironment> getConfiguredOmniposeEnvironment() {
+    default JIPipeEnvironmentConfigurator<PythonEnvironment> getConfiguredOmniposeEnvironment() {
         JIPipeGraphNode node = (JIPipeGraphNode) this;
         JIPipeProject project = node.getRuntimeProject();
         if (project == null) {
@@ -50,7 +50,7 @@ public interface OmniposeEnvironmentAccessNode {
      * @param report  the report
      */
     default void reportConfiguredOmniposeEnvironmentValidity(JIPipeValidationReportContext context, JIPipeValidationReport report) {
-        if (!getConfiguredOmniposeEnvironment().getEnvironment().generateValidityReport(context, JIPipeValidationReportSettings.DEFAULT).isValid()) {
+        if (!getConfiguredOmniposeEnvironment().get(progressInfo).generateValidityReport(context, JIPipeValidationReportSettings.DEFAULT).isValid()) {
             context.error().title("Omnipose not configured").explanation("The Omnipose integration is not configured correctly.").solution("Go to the Project > Project settings/overview > Settings > Plugins > Omnipose and setup an appropriate default Omnipose environment.").report(report);
         }
     }

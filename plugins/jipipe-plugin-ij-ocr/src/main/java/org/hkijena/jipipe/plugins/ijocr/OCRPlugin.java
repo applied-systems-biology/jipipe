@@ -19,7 +19,7 @@ import org.hkijena.jipipe.JIPipeDependency;
 import org.hkijena.jipipe.JIPipeJavaPlugin;
 import org.hkijena.jipipe.JIPipeMutableDependency;
 import org.hkijena.jipipe.api.JIPipeProgressInfo;
-import org.hkijena.jipipe.api.environments.JIPipeEnvironmentReference;
+import org.hkijena.jipipe.api.environments.JIPipeEnvironmentConfigurator;
 import org.hkijena.jipipe.api.nodes.JIPipeGraphNode;
 import org.hkijena.jipipe.api.parameters.JIPipeParameterArchetype;
 import org.hkijena.jipipe.api.project.JIPipeProject;
@@ -59,8 +59,8 @@ public class OCRPlugin extends JIPipePrepackagedDefaultJavaPlugin {
     public OCRPlugin() {
     }
 
-    public static JIPipeEnvironmentReference<TesseractOCREnvironment> getTesseractOCREnvironment(JIPipeProject project, OptionalTesseractOCREnvironment nodeEnvironment, JIPipeGraphNode node) {
-        var selector = JIPipeEnvironmentReference.defaultOptions(TesseractOCREnvironment.class)
+    public static JIPipeEnvironmentConfigurator<TesseractOCREnvironment> getTesseractOCREnvironment(JIPipeProject project, OptionalTesseractOCREnvironment nodeEnvironment, JIPipeGraphNode node) {
+        var selector = JIPipeEnvironmentConfigurator.defaultOptions(TesseractOCREnvironment.class)
                 .application(TesseractOCRApplicationSettings.getInstance().getReadOnlyDefaultEnvironment());
         if (project != null) {
             selector.project(project.getSettingsSheet(OCRPluginProjectSettings.class).getProjectDefaultEnvironment(), project);

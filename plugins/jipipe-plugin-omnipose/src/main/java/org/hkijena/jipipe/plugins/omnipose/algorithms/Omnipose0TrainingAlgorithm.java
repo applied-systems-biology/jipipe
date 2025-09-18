@@ -28,7 +28,6 @@ import org.hkijena.jipipe.api.data.JIPipeInputDataSlot;
 import org.hkijena.jipipe.api.data.JIPipeSlotType;
 import org.hkijena.jipipe.api.data.storage.JIPipeFileSystemWriteDataStorage;
 import org.hkijena.jipipe.api.environments.ExternalEnvironmentParameterSettings;
-import org.hkijena.jipipe.api.environments.JIPipeEnvironmentReference;
 import org.hkijena.jipipe.api.nodes.AddJIPipeInputSlot;
 import org.hkijena.jipipe.api.nodes.AddJIPipeOutputSlot;
 import org.hkijena.jipipe.api.nodes.JIPipeGraphNodeRunContext;
@@ -439,7 +438,7 @@ public class Omnipose0TrainingAlgorithm extends JIPipeSingleIterationAlgorithm i
         arguments.add(tweaksSettings.getMinTrainMasks() + "");
 
         // Run the module
-        CellposeUtils.runCellpose(getConfiguredOmniposeEnvironment().getEnvironment(),
+        CellposeUtils.runCellpose(getConfiguredOmniposeEnvironment().get(progressInfo),
                 arguments,
                 suppressLogs,
                 progressInfo);

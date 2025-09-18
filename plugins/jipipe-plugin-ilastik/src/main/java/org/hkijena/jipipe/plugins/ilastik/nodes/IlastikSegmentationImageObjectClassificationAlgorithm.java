@@ -26,7 +26,6 @@ import org.hkijena.jipipe.api.annotation.JIPipeTextAnnotationMergeMode;
 import org.hkijena.jipipe.api.data.*;
 import org.hkijena.jipipe.api.data.context.JIPipeDataContext;
 import org.hkijena.jipipe.api.environments.ExternalEnvironmentParameterSettings;
-import org.hkijena.jipipe.api.environments.JIPipeEnvironmentReference;
 import org.hkijena.jipipe.api.nodes.AddJIPipeInputSlot;
 import org.hkijena.jipipe.api.nodes.AddJIPipeOutputSlot;
 import org.hkijena.jipipe.api.nodes.JIPipeGraphNodeRunContext;
@@ -252,7 +251,7 @@ public class IlastikSegmentationImageObjectClassificationAlgorithm extends JIPip
                     args.add("--segmentation_image=" + segmentedImagePath);
 
                     // Run ilastik
-                    IlastikEnvironment environment = getConfiguredIlastikEnvironment().getEnvironment();
+                    IlastikEnvironment environment = getConfiguredIlastikEnvironment().get(progressInfo);
                     IlastikPlugin.runIlastik(environment,
                             args,
                             false, imageProgress.resolve("Run Ilastik")

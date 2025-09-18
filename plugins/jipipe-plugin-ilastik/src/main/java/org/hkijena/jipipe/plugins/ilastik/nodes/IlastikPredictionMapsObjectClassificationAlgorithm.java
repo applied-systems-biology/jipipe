@@ -26,7 +26,6 @@ import org.hkijena.jipipe.api.annotation.JIPipeTextAnnotationMergeMode;
 import org.hkijena.jipipe.api.data.*;
 import org.hkijena.jipipe.api.data.context.JIPipeDataContext;
 import org.hkijena.jipipe.api.environments.ExternalEnvironmentParameterSettings;
-import org.hkijena.jipipe.api.environments.JIPipeEnvironmentReference;
 import org.hkijena.jipipe.api.nodes.AddJIPipeInputSlot;
 import org.hkijena.jipipe.api.nodes.AddJIPipeOutputSlot;
 import org.hkijena.jipipe.api.nodes.JIPipeGraphNodeRunContext;
@@ -251,7 +250,7 @@ public class IlastikPredictionMapsObjectClassificationAlgorithm extends JIPipeSi
                     args.add("--segmentation_image=" + segmentedImagePath);
 
                     // Run ilastik
-                    IlastikPlugin.runIlastik(getConfiguredIlastikEnvironment().getEnvironment(),
+                    IlastikPlugin.runIlastik(getConfiguredIlastikEnvironment().get(progressInfo),
                             args,
                             false, imageProgress.resolve("Run Ilastik")
                     );
@@ -308,7 +307,7 @@ public class IlastikPredictionMapsObjectClassificationAlgorithm extends JIPipeSi
     public void reportValidity(JIPipeValidationReportContext reportContext, JIPipeValidationReportSettings reportSettings, JIPipeValidationReport report) {
         super.reportValidity(reportContext, reportSettings, report);
         if (!isPassThrough()) {
-            report.report(reportContext, getConfiguredIlastikEnvironment().getEnvironment());
+            report.report(reportContext, getConfiguredIlastikEnvironment().get(progressInfo));
         }
     }
 

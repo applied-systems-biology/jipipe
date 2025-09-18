@@ -34,7 +34,8 @@ import org.hkijena.jipipe.api.compartments.algorithms.JIPipeProjectCompartmentOu
 import org.hkijena.jipipe.api.data.*;
 import org.hkijena.jipipe.api.data.storage.JIPipeFileSystemWriteDataStorage;
 import org.hkijena.jipipe.api.environments.JIPipeArtifactEnvironment;
-import org.hkijena.jipipe.api.environments.JIPipeEnvironmentReference;
+import org.hkijena.jipipe.api.environments.JIPipeEnvironmentConfigurationCache;
+import org.hkijena.jipipe.api.environments.JIPipeEnvironmentConfigurator;
 import org.hkijena.jipipe.api.grouping.JIPipeGraphWrapperAlgorithm;
 import org.hkijena.jipipe.api.nodes.*;
 import org.hkijena.jipipe.api.nodes.algorithm.JIPipeMergingAlgorithmIterationStepGenerationSettings;
@@ -201,8 +202,11 @@ public class JIPipeGraphRun extends DefaultJIPipeRunnable implements JIPipeGraph
             progressInfo.log("Outputs will be written to " + configuration.getOutputPath());
         }
 
-        // List of all environments
-        List<JIPipeEnvironmentReference<?>> allEnvironments = new ArrayList<>();
+        // Pre-build environment configuration cache
+        JIPipeEnvironmentConfigurationCache environmentConfigurationCache = new JIPipeEnvironmentConfigurationCache();
+
+        // List of all environments TODO
+        List<JIPipeEnvironmentConfigurator<?>> allEnvironments = new ArrayList<>();
 
         if (parent == null) {
             progressInfo.log("Preparing artifacts and environments ...");
@@ -218,8 +222,8 @@ public class JIPipeGraphRun extends DefaultJIPipeRunnable implements JIPipeGraph
             Map<String, String> requestedToTargetArtifactIds = new HashMap<>();
             Map<JIPipeArtifactEnvironment, String> environmentTargetArtifactIds = new HashMap<>();
 
-            for (JIPipeEnvironmentReference<?> reference : allEnvironments) {
-                if (reference.getEnvironment() instanceof JIPipeArtifactEnvironment artifactEnvironment) {
+            for (JIPipeEnvironmentConfigurator<?> reference : allEnvironments) {
+                if (reference.get(progressInfo) instanceof JIPipeArtifactEnvironment artifactEnvironment) {
                     if (artifactEnvironment.isLoadFromArtifact()) {
                         String query = artifactEnvironment.getArtifactQuery().getQuery();
                         allRequestedArtifactIds.add(query);
@@ -317,8 +321,8 @@ public class JIPipeGraphRun extends DefaultJIPipeRunnable implements JIPipeGraph
             }
 
             // Apply additional configuration steps
-            for (JIPipeEnvironmentReference<?> reference : allEnvironments) {
-                reference.getEnvironment().runPreconfigure(this, progressInfo);
+            for (JIPipeEnvironmentConfigurator<?> reference : allEnvironments) {
+                reference.get(progressInfo).runPreconfigure(this, progressInfo);
             }
 
         }
@@ -331,6 +335,7 @@ public class JIPipeGraphRun extends DefaultJIPipeRunnable implements JIPipeGraph
             runContext = new JIPipeGraphNodeRunContext();
             runContext.setGraphRun(this);
             runContext.setThreadPool(threadPool);
+            runContext.setEnvironmentConfigurationCache(environmentConfigurationCache);
 
             // Start iteration on initial graph
             progressInfo.log("--> Starting first iteration ...");
@@ -364,9 +369,9 @@ public class JIPipeGraphRun extends DefaultJIPipeRunnable implements JIPipeGraph
                 progressInfo.log("Postprocessing steps ...");
 
                 // Postprocess environments
-                for (JIPipeEnvironmentReference<?> reference : allEnvironments) {
+                for (JIPipeEnvironmentConfigurator<?> reference : allEnvironments) {
                     try {
-                        reference.getEnvironment().runPostprocessing(this, progressInfo);
+                        reference.get(progressInfo).runPostprocessing(this, progressInfo);
                     } catch (Throwable e) {
                         progressInfo.log(e);
                     }

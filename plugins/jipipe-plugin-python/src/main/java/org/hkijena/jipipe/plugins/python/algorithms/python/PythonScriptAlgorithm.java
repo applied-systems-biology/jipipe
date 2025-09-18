@@ -20,7 +20,6 @@ import org.hkijena.jipipe.api.annotation.JIPipeTextAnnotation;
 import org.hkijena.jipipe.api.annotation.JIPipeTextAnnotationMergeMode;
 import org.hkijena.jipipe.api.data.JIPipeDefaultMutableSlotConfiguration;
 import org.hkijena.jipipe.api.environments.ExternalEnvironmentParameterSettings;
-import org.hkijena.jipipe.api.environments.JIPipeEnvironmentReference;
 import org.hkijena.jipipe.api.nodes.JIPipeGraphNodeRunContext;
 import org.hkijena.jipipe.api.nodes.JIPipeNodeInfo;
 import org.hkijena.jipipe.api.nodes.algorithm.JIPipeParameterSlotAlgorithm;
@@ -133,17 +132,18 @@ public class PythonScriptAlgorithm extends JIPipeParameterSlotAlgorithm {
     public void reportValidity(JIPipeValidationReportContext reportContext, JIPipeValidationReportSettings reportSettings, JIPipeValidationReport report) {
         super.reportValidity(reportContext, reportSettings, report);
         JythonUtils.checkScriptParametersValidity(scriptParameters, new ParameterValidationReportContext(reportContext, this, "Script parameters", "script-parameters"), report);
-        if (!isPassThrough()) {
-            reportConfiguredPythonEnvironmentValidity(reportContext, report);
-        }
     }
 
     @Override
     public void runParameterSet(JIPipeGraphNodeRunContext runContext, JIPipeProgressInfo progressInfo, List<JIPipeTextAnnotation> parameterAnnotations) {
+
+        JIPipePythonAdapterLibraryEnvironment adapterLibraryEnvironment = getEnvironment(JIPipePythonAdapterLibraryEnvironment.class, runContext, progressInfo);
+        PythonEnvironment pythonEnvironment = getEnvironment(PythonEnvironment.class, runContext, progressInfo);
+
         StringBuilder code = new StringBuilder();
 
         // Install the adapter that provides the JIPipe API
-        PythonUtils.installAdapterCodeIfNeeded((JIPipePythonAdapterLibraryEnvironment) getConfiguredPythonAdapterEnvironment().getEnvironment(), code);
+        PythonUtils.installAdapterCodeIfNeeded(adapterLibraryEnvironment, code);
 
         // Add user variables
         PythonUtils.parametersToPython(code, scriptParameters);
@@ -164,7 +164,7 @@ public class PythonScriptAlgorithm extends JIPipeParameterSlotAlgorithm {
 
         // Run Python
         PythonUtils.runPython(code.toString(),
-                (PythonEnvironment) getConfiguredPythonEnvironment().getEnvironment(),
+                pythonEnvironment,
                 Collections.emptyList(), suppressLogs, progressInfo);
 
         // Extract outputs

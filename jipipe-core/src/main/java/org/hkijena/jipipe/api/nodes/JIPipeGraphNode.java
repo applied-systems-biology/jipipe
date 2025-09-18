@@ -33,7 +33,8 @@ import org.hkijena.jipipe.api.compartments.algorithms.JIPipeProjectCompartmentOu
 import org.hkijena.jipipe.api.data.*;
 import org.hkijena.jipipe.api.data.storage.JIPipeWriteDataStorage;
 import org.hkijena.jipipe.api.environments.JIPipeEnvironment;
-import org.hkijena.jipipe.api.environments.JIPipeEnvironmentReference;
+import org.hkijena.jipipe.api.environments.JIPipeEnvironmentConfigurationCache;
+import org.hkijena.jipipe.api.environments.JIPipeEnvironmentConfigurator;
 import org.hkijena.jipipe.api.events.AbstractJIPipeEvent;
 import org.hkijena.jipipe.api.events.JIPipeEventEmitter;
 import org.hkijena.jipipe.api.notifications.JIPipeNotificationInbox;
@@ -1135,9 +1136,9 @@ public abstract class JIPipeGraphNode extends AbstractJIPipeParameterCollection 
      *
      * @param target the list where the external environments will be gathered
      */
-    public void getEnvironmentDependencies(List<JIPipeEnvironmentReference<?>> target) {
+    public void getEnvironmentDependencies(List<JIPipeEnvironmentConfigurator<?>> target) {
         for (Class<? extends JIPipeEnvironment> environmentType : getUtilizedEnvironmentTypes()) {
-            JIPipeEnvironmentReference<? extends JIPipeEnvironment> reference = getEnvironmentReference(environmentType);
+            JIPipeEnvironmentConfigurator<? extends JIPipeEnvironment> reference = getEnvironmentConfigurator(environmentType);
             if(reference != null) {
                 target.add(reference);
             }
@@ -1383,7 +1384,7 @@ public abstract class JIPipeGraphNode extends AbstractJIPipeParameterCollection 
      */
     public void reportEnvironmentValidity(JIPipeValidationReportContext reportContext, JIPipeValidationReportSettings reportSettings, JIPipeValidationReport report) {
         for (Class<? extends JIPipeEnvironment> environmentType : getUtilizedEnvironmentTypes()) {
-            if(!getEnvironment(environmentType).generateValidityReport(reportContext, reportSettings).isValid()) {
+            if(!getEnvironmentConfigurator(environmentType).generateValidityReport(reportContext, reportSettings).isValid()) {
                 JIPipeExternalEnvironmentRegistry.EnvironmentInfo environmentInfo = JIPipe.getEnvironments().getInfoByClass(environmentType);
                 reportContext.error().title(environmentInfo.getName() + " environment not configured").explanation("The environment '" + environmentInfo.getId() + "' is not properly configured for the current node.")
                         .solution("Check if the node's environment overrides the " + environmentInfo.getName() + " environment and is correctly configured. Otherwise, check the project and application settings for the respective environment configuration.").report(report);
@@ -1405,18 +1406,32 @@ public abstract class JIPipeGraphNode extends AbstractJIPipeParameterCollection 
      * @return the environment reference
      * @param <T> the environment type
      */
-    public <T extends JIPipeEnvironment> JIPipeEnvironmentReference<T> getEnvironmentReference(Class<T> klass) {
-        return null; // TODO: handle getting the environment
+    public <T extends JIPipeEnvironment> JIPipeEnvironmentConfigurator<T> getEnvironmentConfigurator(Class<T> klass, JIPipeEnvironmentConfigurationCache configurationCache) {
+        return new JIPipeEnvironmentConfigurator<>(klass, getProject(), configurationCache);
     }
 
     /**
-     * Resolves an environment to be used within this node
+     * Gets a fully configured environment
      * @param klass the environment class
+     * @param configurationCache the environment cache
+     * @param progressInfo the progress info
      * @return the environment
-     * @param <T> the environment type
+     * @param <T> the environment class
      */
-    public <T extends JIPipeEnvironment> T getEnvironment(Class<T> klass) {
-        return getEnvironmentReference(klass).getEnvironment();
+    public <T extends JIPipeEnvironment> T getEnvironment(Class<T> klass, JIPipeEnvironmentConfigurationCache configurationCache, JIPipeProgressInfo progressInfo) {
+        return getEnvironmentConfigurator(klass, configurationCache).get(progressInfo);
+    }
+
+    /**
+     * Gets a fully configured environment
+     * @param klass the environment class
+     * @param runContext the run context (contains an environment cache)
+     * @param progressInfo the progress info
+     * @return the environment
+     * @param <T> the environment class
+     */
+    public <T extends JIPipeEnvironment> T getEnvironment(Class<T> klass, JIPipeGraphNodeRunContext runContext, JIPipeProgressInfo progressInfo) {
+        return getEnvironmentConfigurator(klass, runContext.getEnvironmentConfigurationCache()).get(progressInfo);
     }
 
     @JIPipeParameter("jipipe:environment-overrides")

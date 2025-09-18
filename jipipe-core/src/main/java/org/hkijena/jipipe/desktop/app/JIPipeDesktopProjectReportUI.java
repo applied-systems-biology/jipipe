@@ -23,7 +23,7 @@ import org.hkijena.jipipe.api.DefaultJIPipeRunnable;
 import org.hkijena.jipipe.api.SetJIPipeDocumentation;
 import org.hkijena.jipipe.api.data.JIPipeDataInfo;
 import org.hkijena.jipipe.api.environments.JIPipeEnvironment;
-import org.hkijena.jipipe.api.environments.JIPipeEnvironmentReference;
+import org.hkijena.jipipe.api.environments.JIPipeEnvironmentConfigurator;
 import org.hkijena.jipipe.api.metadata.JIPipeAuthorMetadata;
 import org.hkijena.jipipe.api.nodes.JIPipeGraphNode;
 import org.hkijena.jipipe.api.nodes.JIPipeNodeInfo;
@@ -295,7 +295,7 @@ public class JIPipeDesktopProjectReportUI extends JIPipeDesktopProjectWorkbenchP
             }
             stringBuilder.append("</table>");
 
-            List<JIPipeEnvironmentReference<?>> externalEnvironments = new ArrayList<>();
+            List<JIPipeEnvironmentConfigurator<?>> externalEnvironments = new ArrayList<>();
             for (JIPipeGraphNode graphNode : project.getGraph().getGraphNodes()) {
                 graphNode.getEnvironmentDependencies(externalEnvironments);
             }
@@ -304,7 +304,7 @@ public class JIPipeDesktopProjectReportUI extends JIPipeDesktopProjectWorkbenchP
                 stringBuilder.append("<h3>External environments</h3>");
                 stringBuilder.append("<table>");
                 stringBuilder.append("<tr><th>Type</th><th>Name</th><th>Version</th><th>Source/URL</th></tr>");
-                for (JIPipeEnvironment externalEnvironment : externalEnvironments.stream().map(JIPipeEnvironmentReference::getEnvironment).collect(Collectors.toSet())) {
+                for (JIPipeEnvironment externalEnvironment : externalEnvironments.stream().map((JIPipeEnvironmentConfigurator<?> jiPipeEnvironmentConfigurator) -> jiPipeEnvironmentConfigurator.get(progressInfo)).collect(Collectors.toSet())) {
                     stringBuilder.append("<tr>");
                     stringBuilder.append("<td>").append(escaper.escape(externalEnvironment.getClass().getSimpleName())).append("</td>");
                     stringBuilder.append("<td><strong>").append(escaper.escape(externalEnvironment.getName())).append("</strong></td>");

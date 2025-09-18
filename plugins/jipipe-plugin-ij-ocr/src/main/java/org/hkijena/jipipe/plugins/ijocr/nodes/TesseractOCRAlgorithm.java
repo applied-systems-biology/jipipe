@@ -19,7 +19,7 @@ import org.hkijena.jipipe.api.AddJIPipeCitation;
 import org.hkijena.jipipe.api.ConfigureJIPipeNode;
 import org.hkijena.jipipe.api.JIPipeProgressInfo;
 import org.hkijena.jipipe.api.SetJIPipeDocumentation;
-import org.hkijena.jipipe.api.environments.JIPipeEnvironmentReference;
+import org.hkijena.jipipe.api.environments.JIPipeEnvironmentConfigurator;
 import org.hkijena.jipipe.api.nodes.*;
 import org.hkijena.jipipe.api.nodes.algorithm.JIPipeSimpleIteratingAlgorithm;
 import org.hkijena.jipipe.api.nodes.categories.ImagesNodeTypeCategory;
@@ -95,7 +95,7 @@ public class TesseractOCRAlgorithm extends JIPipeSimpleIteratingAlgorithm {
 
         int dpi = overrideDPI.isEnabled() ? overrideDPI.getContent().evaluateToInteger(variablesMap) : 0;
         String allowedChars = overrideCharAllowList.isEnabled() ? overrideCharAllowList.getContent().evaluateToString(variablesMap) : null;
-        TesseractOCREnvironment tesseractOCREnvironment = getConfiguredTesseractOCREnvironment().getEnvironment();
+        TesseractOCREnvironment tesseractOCREnvironment = getConfiguredTesseractOCREnvironment().get(progressInfo);
         String languagesString = String.join("+", languages.getValues());
         if (StringUtils.isNullOrEmpty(languagesString)) {
             progressInfo.log("INFO: no language selected. Defaulting to eng");
@@ -161,7 +161,7 @@ public class TesseractOCRAlgorithm extends JIPipeSimpleIteratingAlgorithm {
         iterationStep.addOutputData(getFirstOutputSlot(), output, progressInfo);
     }
 
-    public JIPipeEnvironmentReference<TesseractOCREnvironment> getConfiguredTesseractOCREnvironment() {
+    public JIPipeEnvironmentConfigurator<TesseractOCREnvironment> getConfiguredTesseractOCREnvironment() {
         JIPipeGraphNode node = this;
         JIPipeProject project = node.getRuntimeProject();
         if (project == null) {

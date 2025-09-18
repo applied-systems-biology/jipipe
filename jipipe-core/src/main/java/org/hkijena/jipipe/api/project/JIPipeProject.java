@@ -35,7 +35,7 @@ import org.hkijena.jipipe.api.data.JIPipeDataSlot;
 import org.hkijena.jipipe.api.data.JIPipeOutputDataSlot;
 import org.hkijena.jipipe.api.environments.JIPipeArtifactEnvironment;
 import org.hkijena.jipipe.api.environments.JIPipeEnvironment;
-import org.hkijena.jipipe.api.environments.JIPipeEnvironmentReference;
+import org.hkijena.jipipe.api.environments.JIPipeEnvironmentConfigurator;
 import org.hkijena.jipipe.api.events.AbstractJIPipeEvent;
 import org.hkijena.jipipe.api.events.JIPipeEventEmitter;
 import org.hkijena.jipipe.api.history.JIPipeProjectHistoryJournal;
@@ -672,14 +672,14 @@ public class JIPipeProject implements JIPipeValidatable {
 
         // Check environments
         Set<JIPipeArtifactEnvironment> checkedEnvironments = new HashSet<>();
-        List<JIPipeEnvironmentReference<?>> allEnvironmentReferences = new ArrayList<>();
+        List<JIPipeEnvironmentConfigurator<?>> allEnvironmentReferences = new ArrayList<>();
         for (JIPipeGraphNode node : graph.getGraphNodes()) {
             node.getEnvironmentDependencies(allEnvironmentReferences);
         }
-        for (JIPipeEnvironmentReference<?> environmentReference : allEnvironmentReferences) {
-            if (!checkedEnvironments.contains(environmentReference.getEnvironment())) {
+        for (JIPipeEnvironmentConfigurator<?> environmentReference : allEnvironmentReferences) {
+            if (!checkedEnvironments.contains(environmentReference.get(progressInfo))) {
                 environmentReference.reportValidity(reportContext, reportSettings, report);
-                checkedEnvironments.add((JIPipeArtifactEnvironment) environmentReference.getEnvironment());
+                checkedEnvironments.add((JIPipeArtifactEnvironment) environmentReference.get(progressInfo));
             }
         }
     }
@@ -992,9 +992,9 @@ public class JIPipeProject implements JIPipeValidatable {
      * @throws IOException exceptions
      */
     private void writeExternalEnvironmentsJson(JsonGenerator generator) throws IOException {
-        List<JIPipeEnvironmentReference<?>> externalEnvironments = getAllEnvironments();
+        List<JIPipeEnvironmentConfigurator<?>> externalEnvironments = getAllEnvironments();
         generator.writeArrayFieldStart("external-environments");
-        for (JIPipeEnvironment environment : externalEnvironments.stream().map(JIPipeEnvironmentReference::getEnvironment).collect(Collectors.toSet())) {
+        for (JIPipeEnvironment environment : externalEnvironments.stream().map((JIPipeEnvironmentConfigurator<?> jiPipeEnvironmentConfigurator) -> jiPipeEnvironmentConfigurator.get(progressInfo)).collect(Collectors.toSet())) {
             generator.writeObject(environment);
         }
         generator.writeEndArray();
@@ -1005,8 +1005,8 @@ public class JIPipeProject implements JIPipeValidatable {
      *
      * @return the list of environment references
      */
-    public List<JIPipeEnvironmentReference<?>> getAllEnvironments() {
-        List<JIPipeEnvironmentReference<?>> externalEnvironments = new ArrayList<>();
+    public List<JIPipeEnvironmentConfigurator<?>> getAllEnvironments() {
+        List<JIPipeEnvironmentConfigurator<?>> externalEnvironments = new ArrayList<>();
         for (JIPipeGraphNode graphNode : getGraph().getGraphNodes()) {
             graphNode.getEnvironmentDependencies(externalEnvironments);
         }

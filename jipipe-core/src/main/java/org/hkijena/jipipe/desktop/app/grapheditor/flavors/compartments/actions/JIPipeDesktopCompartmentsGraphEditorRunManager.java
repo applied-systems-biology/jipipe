@@ -16,7 +16,7 @@ package org.hkijena.jipipe.desktop.app.grapheditor.flavors.compartments.actions;
 import org.hkijena.jipipe.api.compartments.algorithms.JIPipeProjectCompartment;
 import org.hkijena.jipipe.api.compartments.algorithms.JIPipeProjectCompartmentOutput;
 import org.hkijena.jipipe.api.environments.JIPipeArtifactEnvironment;
-import org.hkijena.jipipe.api.environments.JIPipeEnvironmentReference;
+import org.hkijena.jipipe.api.environments.JIPipeEnvironmentConfigurator;
 import org.hkijena.jipipe.api.nodes.JIPipeGraphNode;
 import org.hkijena.jipipe.api.project.JIPipeProject;
 import org.hkijena.jipipe.api.validation.JIPipeValidationReport;
@@ -52,14 +52,14 @@ public class JIPipeDesktopCompartmentsGraphEditorRunManager extends JIPipeDeskto
 
         // Check environments
         Set<JIPipeArtifactEnvironment> checkedEnvironments = new HashSet<>();
-        List<JIPipeEnvironmentReference<?>> allEnvironmentReferences = new ArrayList<>();
+        List<JIPipeEnvironmentConfigurator<?>> allEnvironmentReferences = new ArrayList<>();
         for (JIPipeGraphNode node : getProject().getGraph().getGraphNodes()) {
             node.getEnvironmentDependencies(allEnvironmentReferences);
         }
-        for (JIPipeEnvironmentReference<?> environmentReference : allEnvironmentReferences) {
-            if (!checkedEnvironments.contains(environmentReference.getEnvironment())) {
+        for (JIPipeEnvironmentConfigurator<?> environmentReference : allEnvironmentReferences) {
+            if (!checkedEnvironments.contains(environmentReference.get(progressInfo))) {
                 environmentReference.reportValidity(new UnspecifiedValidationReportContext(), JIPipeValidationReportSettings.DEFAULT, report);
-                checkedEnvironments.add((JIPipeArtifactEnvironment) environmentReference.getEnvironment());
+                checkedEnvironments.add((JIPipeArtifactEnvironment) environmentReference.get(progressInfo));
             }
         }
     }

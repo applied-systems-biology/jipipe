@@ -14,11 +14,13 @@
 package org.hkijena.jipipe.api.nodes;
 
 import org.hkijena.jipipe.api.JIPipeFixedThreadPool;
+import org.hkijena.jipipe.api.environments.JIPipeEnvironmentConfigurationCache;
 import org.hkijena.jipipe.api.run.JIPipeGraphRun;
 
 public class JIPipeGraphNodeRunContext {
     private JIPipeFixedThreadPool threadPool;
     private JIPipeGraphRun graphRun;
+    private JIPipeEnvironmentConfigurationCache environmentConfigurationCache;
 
     /**
      * Gets the thread pool for parallelization
@@ -54,5 +56,13 @@ public class JIPipeGraphNodeRunContext {
      */
     public void setGraphRun(JIPipeGraphRun graphRun) {
         this.graphRun = graphRun;
+    }
+
+    public JIPipeEnvironmentConfigurationCache getEnvironmentConfigurationCache() {
+        return environmentConfigurationCache;
+    }
+
+    public void setEnvironmentConfigurationCache(JIPipeEnvironmentConfigurationCache environmentConfigurationCache) {
+        this.environmentConfigurationCache = environmentConfigurationCache;
     }
 }

@@ -27,7 +27,6 @@ import org.hkijena.jipipe.api.annotation.JIPipeTextAnnotation;
 import org.hkijena.jipipe.api.annotation.JIPipeTextAnnotationMergeMode;
 import org.hkijena.jipipe.api.data.JIPipeDataSlotInfo;
 import org.hkijena.jipipe.api.data.JIPipeSlotType;
-import org.hkijena.jipipe.api.environments.JIPipeEnvironmentReference;
 import org.hkijena.jipipe.api.nodes.AddJIPipeInputSlot;
 import org.hkijena.jipipe.api.nodes.AddJIPipeOutputSlot;
 import org.hkijena.jipipe.api.nodes.JIPipeGraphNodeRunContext;
@@ -289,7 +288,7 @@ public class LegacyOmnipose0InferenceAlgorithm extends JIPipeSingleIterationAlgo
             arguments.add(io2DPath.toString());
             arguments.add(io2DPath.toString());
             PythonUtils.runPython(arguments.toArray(new String[0]),
-                    getConfiguredOmniposeEnvironment().getEnvironment(),
+                    getConfiguredOmniposeEnvironment().get(progressInfo),
                     Collections.emptyList(),
                     Collections.emptyMap(),
                     suppressLogs,
@@ -303,7 +302,7 @@ public class LegacyOmnipose0InferenceAlgorithm extends JIPipeSingleIterationAlgo
             arguments.add(io3DPath.toString());
             arguments.add(io3DPath.toString());
             PythonUtils.runPython(arguments.toArray(new String[0]),
-                    getConfiguredOmniposeEnvironment().getEnvironment(),
+                    getConfiguredOmniposeEnvironment().get(progressInfo),
                     Collections.emptyList(),
                     Collections.emptyMap(),
                     suppressLogs,
@@ -534,7 +533,7 @@ public class LegacyOmnipose0InferenceAlgorithm extends JIPipeSingleIterationAlgo
         arguments.add(ioPath.toString());
 
         // Run the module
-        CellposeUtils.runCellpose(getConfiguredOmniposeEnvironment().getEnvironment(),
+        CellposeUtils.runCellpose(getConfiguredOmniposeEnvironment().get(progressInfo),
                 arguments,
                 suppressLogs,
                 progressInfo);

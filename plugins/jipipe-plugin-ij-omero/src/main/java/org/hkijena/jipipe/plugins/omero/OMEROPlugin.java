@@ -19,7 +19,7 @@ import org.hkijena.jipipe.JIPipeDependency;
 import org.hkijena.jipipe.JIPipeJavaPlugin;
 import org.hkijena.jipipe.JIPipeMutableDependency;
 import org.hkijena.jipipe.api.JIPipeProgressInfo;
-import org.hkijena.jipipe.api.environments.JIPipeEnvironmentReference;
+import org.hkijena.jipipe.api.environments.JIPipeEnvironmentConfigurator;
 import org.hkijena.jipipe.api.metadata.JIPipeAuthorMetadata;
 import org.hkijena.jipipe.api.metadata.JIPipeOrganizationMetadata;
 import org.hkijena.jipipe.api.nodes.JIPipeGraphNode;
@@ -71,8 +71,8 @@ public class OMEROPlugin extends JIPipePrepackagedDefaultJavaPlugin {
     public OMEROPlugin() {
     }
 
-    public static JIPipeEnvironmentReference<OMEROCredentialsEnvironment> getEnvironment(JIPipeProject project, OptionalOMEROCredentialsEnvironment nodeEnvironment, JIPipeGraphNode node) {
-        var selector = JIPipeEnvironmentReference.defaultOptions(OMEROCredentialsEnvironment.class)
+    public static JIPipeEnvironmentConfigurator<OMEROCredentialsEnvironment> getEnvironment(JIPipeProject project, OptionalOMEROCredentialsEnvironment nodeEnvironment, JIPipeGraphNode node) {
+        var selector = JIPipeEnvironmentConfigurator.defaultOptions(OMEROCredentialsEnvironment.class)
                 .application(OMEROPluginApplicationSettings.getInstance().getDefaultCredentials());
         if (nodeEnvironment != null) {
             selector.node(nodeEnvironment, node);

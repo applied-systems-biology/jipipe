@@ -19,7 +19,7 @@ import org.hkijena.jipipe.JIPipeDependency;
 import org.hkijena.jipipe.JIPipeJavaPlugin;
 import org.hkijena.jipipe.JIPipeMutableDependency;
 import org.hkijena.jipipe.api.JIPipeProgressInfo;
-import org.hkijena.jipipe.api.environments.JIPipeEnvironmentReference;
+import org.hkijena.jipipe.api.environments.JIPipeEnvironmentConfigurator;
 import org.hkijena.jipipe.api.nodes.JIPipeGraphNode;
 import org.hkijena.jipipe.api.parameters.JIPipeParameterArchetype;
 import org.hkijena.jipipe.api.project.JIPipeProject;
@@ -83,8 +83,8 @@ public class FilamentsPlugin extends JIPipePrepackagedDefaultJavaPlugin {
     public FilamentsPlugin() {
     }
 
-    public static JIPipeEnvironmentReference<TSOAXEnvironment> getTSOAXEnvironment(JIPipeProject project, OptionalTSOAXEnvironment nodeEnvironment, JIPipeGraphNode node) {
-        var selector = JIPipeEnvironmentReference.defaultOptions(TSOAXEnvironment.class)
+    public static JIPipeEnvironmentConfigurator<TSOAXEnvironment> getTSOAXEnvironment(JIPipeProject project, OptionalTSOAXEnvironment nodeEnvironment, JIPipeGraphNode node) {
+        var selector = JIPipeEnvironmentConfigurator.defaultOptions(TSOAXEnvironment.class)
                 .application(TSOAXApplicationSettings.getInstance().getReadOnlyDefaultEnvironment());
         if (nodeEnvironment != null) {
             selector.node(nodeEnvironment, node);

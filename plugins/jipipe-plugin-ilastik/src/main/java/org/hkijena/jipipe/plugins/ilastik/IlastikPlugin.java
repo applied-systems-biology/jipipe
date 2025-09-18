@@ -23,7 +23,7 @@ import org.hkijena.jipipe.api.artifacts.JIPipeArtifact;
 import org.hkijena.jipipe.api.artifacts.JIPipeArtifactRepositoryInstallArtifactRun;
 import org.hkijena.jipipe.api.artifacts.JIPipeLocalArtifact;
 import org.hkijena.jipipe.api.artifacts.JIPipeRemoteArtifact;
-import org.hkijena.jipipe.api.environments.JIPipeEnvironmentReference;
+import org.hkijena.jipipe.api.environments.JIPipeEnvironmentConfigurator;
 import org.hkijena.jipipe.api.metadata.JIPipeAuthorMetadata;
 import org.hkijena.jipipe.api.metadata.JIPipeOrganizationMetadata;
 import org.hkijena.jipipe.api.nodes.JIPipeGraphNode;
@@ -99,8 +99,8 @@ public class IlastikPlugin extends JIPipePrepackagedDefaultJavaPlugin {
         environment.runExecutable(parameters, environmentVariables, detached, progressInfo);
     }
 
-    public static JIPipeEnvironmentReference<IlastikEnvironment> getEnvironment(JIPipeProject project, OptionalIlastikEnvironment nodeEnvironment, JIPipeGraphNode node) {
-        var selector = JIPipeEnvironmentReference.defaultOptions(IlastikEnvironment.class)
+    public static JIPipeEnvironmentConfigurator<IlastikEnvironment> getEnvironment(JIPipeProject project, OptionalIlastikEnvironment nodeEnvironment, JIPipeGraphNode node) {
+        var selector = JIPipeEnvironmentConfigurator.defaultOptions(IlastikEnvironment.class)
                 .application(IlastikPluginApplicationSettings.getInstance().getReadOnlyDefaultEnvironment());
         if (nodeEnvironment != null) {
             selector.node(nodeEnvironment, node);
@@ -112,7 +112,7 @@ public class IlastikPlugin extends JIPipePrepackagedDefaultJavaPlugin {
     }
 
     public static void launchIlastik(JIPipeDesktopWorkbench workbench, List<String> arguments) {
-        IlastikEnvironment environment = IlastikPlugin.getEnvironment(workbench.getProject(), null, null).getEnvironment();
+        IlastikEnvironment environment = IlastikPlugin.getEnvironment(workbench.getProject(), null, null).get(progressInfo);
         if (!environment.generateValidityReport(new UnspecifiedValidationReportContext(), JIPipeValidationReportSettings.DEFAULT).isValid()) {
             JOptionPane.showMessageDialog(workbench.getWindow(),
                     "Ilastik is currently not correctly installed. Please check the project/application settings and ensure that Ilastik is setup correctly.",
