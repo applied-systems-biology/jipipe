@@ -21,7 +21,7 @@ import org.hkijena.jipipe.api.compat.ImageJDataExporter;
 import org.hkijena.jipipe.api.compat.ImageJDataImporter;
 import org.hkijena.jipipe.api.data.JIPipeDataInfo;
 import org.hkijena.jipipe.api.metadata.JIPipeAuthorMetadata;
-import org.hkijena.jipipe.api.registries.JIPipeDatatypeRegistry;
+import org.hkijena.jipipe.api.service.components.JIPipeDatatypesServiceComponent;
 import org.hkijena.jipipe.desktop.commons.components.renderers.JIPipeDesktopDataInfoListCellRenderer;
 import org.hkijena.jipipe.plugins.parameters.library.markup.MarkdownText;
 
@@ -73,7 +73,7 @@ public class JIPipeDataTypeCompendiumUI extends JIPipeDesktopCompendiumUI<JIPipe
                 int column = 0;
                 for (JIPipeDataInfo dataInfo : dataInfos) {
                     if (dataInfo != info) {
-                        if (JIPipeDatatypeRegistry.isTriviallyConvertible(info.getDataClass(), dataInfo.getDataClass())) {
+                        if (JIPipeDatatypesServiceComponent.isTriviallyConvertible(info.getDataClass(), dataInfo.getDataClass())) {
                             builder.append("<td><img src=\"").append(JIPipe.getDataTypes().getIconURLFor(dataInfo)).append("\"/></td><td>").append(dataInfo.getName()).append("</td>");
                             ++column;
                             if (column % 5 == 0) {
@@ -94,7 +94,7 @@ public class JIPipeDataTypeCompendiumUI extends JIPipeDesktopCompendiumUI<JIPipe
                 int column = 0;
                 for (JIPipeDataInfo dataInfo : dataInfos) {
                     if (dataInfo != info) {
-                        if (JIPipeDatatypeRegistry.isTriviallyConvertible(info.getDataClass(), dataInfo.getDataClass())) {
+                        if (JIPipeDatatypesServiceComponent.isTriviallyConvertible(info.getDataClass(), dataInfo.getDataClass())) {
                             builder.append("<li>");
                             builder.append("<img src=\"").append(JIPipe.getDataTypes().getIconURLFor(dataInfo)).append("\"/><span>").append(dataInfo.getName()).append("</span>");
                             builder.append("</li>\n");
@@ -117,7 +117,7 @@ public class JIPipeDataTypeCompendiumUI extends JIPipeDesktopCompendiumUI<JIPipe
                 int column = 0;
                 for (JIPipeDataInfo dataInfo : dataInfos) {
                     if (dataInfo != info) {
-                        if (JIPipeDatatypeRegistry.isTriviallyConvertible(dataInfo.getDataClass(), info.getDataClass())) {
+                        if (JIPipeDatatypesServiceComponent.isTriviallyConvertible(dataInfo.getDataClass(), info.getDataClass())) {
                             builder.append("<td><img src=\"").append(JIPipe.getDataTypes().getIconURLFor(dataInfo)).append("\"/></td><td>").append(dataInfo.getName()).append("</td>");
                             ++column;
                             if (column % 5 == 0) {
@@ -138,7 +138,7 @@ public class JIPipeDataTypeCompendiumUI extends JIPipeDesktopCompendiumUI<JIPipe
                 int column = 0;
                 for (JIPipeDataInfo dataInfo : dataInfos) {
                     if (dataInfo != info) {
-                        if (JIPipeDatatypeRegistry.isTriviallyConvertible(dataInfo.getDataClass(), info.getDataClass())) {
+                        if (JIPipeDatatypesServiceComponent.isTriviallyConvertible(dataInfo.getDataClass(), info.getDataClass())) {
                             builder.append("<li>");
                             builder.append("<img src=\"").append(JIPipe.getDataTypes().getIconURLFor(dataInfo)).append("\"/><span>").append(dataInfo.getName()).append("</span>");
                             builder.append("</li>\n");
@@ -164,7 +164,7 @@ public class JIPipeDataTypeCompendiumUI extends JIPipeDesktopCompendiumUI<JIPipe
                 int column = 0;
                 for (JIPipeDataInfo dataInfo : dataInfos) {
                     if (dataInfo != info) {
-                        if (!JIPipeDatatypeRegistry.isTriviallyConvertible(info.getDataClass(), dataInfo.getDataClass()) && JIPipe.getDataTypes().isConvertible(info.getDataClass(), dataInfo.getDataClass())) {
+                        if (!JIPipeDatatypesServiceComponent.isTriviallyConvertible(info.getDataClass(), dataInfo.getDataClass()) && JIPipe.getDataTypes().isConvertible(info.getDataClass(), dataInfo.getDataClass())) {
                             builder.append("<td><img src=\"").append(JIPipe.getDataTypes().getIconURLFor(dataInfo)).append("\"/></td><td>").append(dataInfo.getName()).append("</td>");
                             ++column;
                             if (column % 5 == 0) {
@@ -186,7 +186,7 @@ public class JIPipeDataTypeCompendiumUI extends JIPipeDesktopCompendiumUI<JIPipe
                 int column = 0;
                 for (JIPipeDataInfo dataInfo : dataInfos) {
                     if (dataInfo != info) {
-                        if (!JIPipeDatatypeRegistry.isTriviallyConvertible(info.getDataClass(), dataInfo.getDataClass()) && JIPipe.getDataTypes().isConvertible(info.getDataClass(), dataInfo.getDataClass())) {
+                        if (!JIPipeDatatypesServiceComponent.isTriviallyConvertible(info.getDataClass(), dataInfo.getDataClass()) && JIPipe.getDataTypes().isConvertible(info.getDataClass(), dataInfo.getDataClass())) {
                             builder.append("<li>");
                             builder.append("<img src=\"").append(JIPipe.getDataTypes().getIconURLFor(dataInfo)).append("\"/><span>").append(dataInfo.getName()).append("</span>");
                             builder.append("</li>\n");
@@ -209,7 +209,7 @@ public class JIPipeDataTypeCompendiumUI extends JIPipeDesktopCompendiumUI<JIPipe
                 int column = 0;
                 for (JIPipeDataInfo dataInfo : dataInfos) {
                     if (dataInfo != info) {
-                        if (!JIPipeDatatypeRegistry.isTriviallyConvertible(dataInfo.getDataClass(), info.getDataClass()) && JIPipe.getDataTypes().isConvertible(dataInfo.getDataClass(), info.getDataClass())) {
+                        if (!JIPipeDatatypesServiceComponent.isTriviallyConvertible(dataInfo.getDataClass(), info.getDataClass()) && JIPipe.getDataTypes().isConvertible(dataInfo.getDataClass(), info.getDataClass())) {
                             builder.append("<td><img src=\"").append(JIPipe.getDataTypes().getIconURLFor(dataInfo)).append("\"/></td><td>").append(dataInfo.getName()).append("</td>");
                             ++column;
                             if (column % 5 == 0) {
@@ -230,7 +230,7 @@ public class JIPipeDataTypeCompendiumUI extends JIPipeDesktopCompendiumUI<JIPipe
                 int column = 0;
                 for (JIPipeDataInfo dataInfo : dataInfos) {
                     if (dataInfo != info) {
-                        if (!JIPipeDatatypeRegistry.isTriviallyConvertible(dataInfo.getDataClass(), info.getDataClass()) && JIPipe.getDataTypes().isConvertible(dataInfo.getDataClass(), info.getDataClass())) {
+                        if (!JIPipeDatatypesServiceComponent.isTriviallyConvertible(dataInfo.getDataClass(), info.getDataClass()) && JIPipe.getDataTypes().isConvertible(dataInfo.getDataClass(), info.getDataClass())) {
                             builder.append("<li>");
                             builder.append("<img src=\"").append(JIPipe.getDataTypes().getIconURLFor(dataInfo)).append("\"/><span>").append(dataInfo.getName()).append("</span>");
                             builder.append("</li>\n");

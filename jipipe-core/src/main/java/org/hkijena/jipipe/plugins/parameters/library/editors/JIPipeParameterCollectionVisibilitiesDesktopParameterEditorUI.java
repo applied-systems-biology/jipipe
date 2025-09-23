@@ -77,7 +77,7 @@ public class JIPipeParameterCollectionVisibilitiesDesktopParameterEditorUI exten
                 JIPipeParameterAccess parameterAccess = parameters.get(key);
 
                 JIPipeDesktopParameterEditorUI ui = JIPipe.getInstance()
-                        .getParameterTypeRegistry().createEditorInstance(parameterAccess, getDesktopWorkbench(), new JIPipeParameterTree(parameterAccess), null);
+                        .getParameterTypes().createEditorInstance(parameterAccess, getDesktopWorkbench(), new JIPipeParameterTree(parameterAccess), null);
 
                 JPanel labelPanel = new JPanel(new BorderLayout(8, 8));
                 JToggleButton exportParameterToggle = new JToggleButton(JIPipe.RESOURCES.getIcon16("actions/eye.png"));

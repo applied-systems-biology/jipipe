@@ -23,6 +23,7 @@ import org.hkijena.jipipe.api.JIPipeProgressInfo;
 import org.hkijena.jipipe.api.metadata.JIPipeAuthorMetadata;
 import org.hkijena.jipipe.api.metadata.JIPipeOrganizationMetadata;
 import org.hkijena.jipipe.api.parameters.JIPipeParameterArchetype;
+import org.hkijena.jipipe.api.service.JIPipeService;
 import org.hkijena.jipipe.plugins.JIPipePrepackagedDefaultJavaPlugin;
 import org.hkijena.jipipe.plugins.core.CorePlugin;
 import org.hkijena.jipipe.plugins.filesystem.FilesystemPlugin;
@@ -219,8 +220,8 @@ public class TrackMatePlugin extends JIPipePrepackagedDefaultJavaPlugin {
     }
 
     @Override
-    public void register(JIPipe jiPipe, Context context, JIPipeProgressInfo progressInfo) {
-        PluginService service = context.getService(PluginService.class);
+    public void register(JIPipeService service, Context context, JIPipeProgressInfo progressInfo) {
+        PluginService pluginService = context.getService(PluginService.class);
 
         // Moved to different class to prevent crash if TrackMate is not available
         TrackMateUtils.registerSpotFeatures(progressInfo);
@@ -231,8 +232,8 @@ public class TrackMatePlugin extends JIPipePrepackagedDefaultJavaPlugin {
         registerDataTypes();
 
         // Moved to different class to prevent crash if TrackMate is not available
-        TrackMateUtils.registerSpotDetectors(this, progressInfo, service);
-        TrackMateUtils.registerSpotTrackers(this, progressInfo, service);
+        TrackMateUtils.registerSpotDetectors(this, progressInfo, pluginService);
+        TrackMateUtils.registerSpotTrackers(this, progressInfo, pluginService);
 
         registerNodes();
         registerSettings();

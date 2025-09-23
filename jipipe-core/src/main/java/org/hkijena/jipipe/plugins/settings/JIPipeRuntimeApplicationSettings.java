@@ -53,7 +53,7 @@ public class JIPipeRuntimeApplicationSettings extends JIPipeDefaultApplicationsS
     }
 
     public static Path getTemporaryBaseDirectory() {
-        if (JIPipe.getInstance() == null || !JIPipe.getInstance().getApplicationSettingsRegistry().getRegisteredSheets().containsKey(ID)) {
+        if (JIPipe.getInstance() == null || !JIPipe.getInstance().getApplicationSettings().getRegisteredSheets().containsKey(ID)) {
             return PathUtils.createGlobalTempDirectory("JIPipe");
         }
         OptionalPathParameter tempDirectory = getInstance().getTempDirectory();

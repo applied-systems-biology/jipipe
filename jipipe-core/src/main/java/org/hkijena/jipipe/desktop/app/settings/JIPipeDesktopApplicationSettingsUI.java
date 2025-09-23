@@ -14,7 +14,7 @@
 package org.hkijena.jipipe.desktop.app.settings;
 
 import org.hkijena.jipipe.JIPipe;
-import org.hkijena.jipipe.api.registries.JIPipeApplicationSettingsRegistry;
+import org.hkijena.jipipe.api.service.components.JIPipeApplicationSettingsServiceComponent;
 import org.hkijena.jipipe.api.settings.JIPipeApplicationSettingsSheet;
 import org.hkijena.jipipe.desktop.app.JIPipeDesktopWorkbench;
 import org.hkijena.jipipe.desktop.app.JIPipeDesktopWorkbenchPanel;
@@ -32,7 +32,7 @@ import java.util.List;
 import java.util.stream.Collectors;
 
 /**
- * UI for {@link JIPipeApplicationSettingsRegistry}
+ * UI for {@link JIPipeApplicationSettingsServiceComponent}
  */
 public class JIPipeDesktopApplicationSettingsUI extends JIPipeDesktopWorkbenchPanel {
 

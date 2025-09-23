@@ -14,7 +14,7 @@
 package org.hkijena.jipipe.plugins.expressions;
 
 import org.hkijena.jipipe.JIPipe;
-import org.hkijena.jipipe.api.registries.JIPipeExpressionRegistry;
+import org.hkijena.jipipe.api.service.components.JIPipeExpressionFunctionsServiceComponent;
 import org.hkijena.jipipe.utils.ThemeUtils;
 import org.hkijena.jipipe.utils.UIUtils;
 
@@ -29,13 +29,13 @@ import java.util.stream.Collectors;
 /**
  * Panel that allows the user to select an {@link ExpressionFunction}
  */
-public class FunctionSelectorList extends JList<JIPipeExpressionRegistry.ExpressionFunctionEntry> {
+public class FunctionSelectorList extends JList<JIPipeExpressionFunctionsServiceComponent.ExpressionFunctionEntry> {
 
     public FunctionSelectorList() {
         initialize();
     }
 
-    public static JIPipeExpressionRegistry.ExpressionFunctionEntry showDialog(Component parent) {
+    public static JIPipeExpressionFunctionsServiceComponent.ExpressionFunctionEntry showDialog(Component parent) {
         JDialog dialog = new JDialog(SwingUtilities.getWindowAncestor(parent));
 
         FunctionSelectorList functionSelectorList = new FunctionSelectorList();
@@ -81,9 +81,9 @@ public class FunctionSelectorList extends JList<JIPipeExpressionRegistry.Express
     }
 
     private void initialize() {
-        DefaultListModel<JIPipeExpressionRegistry.ExpressionFunctionEntry> model = new DefaultListModel<>();
-        for (JIPipeExpressionRegistry.ExpressionFunctionEntry functionEntry : JIPipe.getInstance().getExpressionRegistry().getRegisteredExpressionFunctions().values().stream()
-                .sorted(Comparator.comparing(JIPipeExpressionRegistry.ExpressionFunctionEntry::getName)).collect(Collectors.toList())) {
+        DefaultListModel<JIPipeExpressionFunctionsServiceComponent.ExpressionFunctionEntry> model = new DefaultListModel<>();
+        for (JIPipeExpressionFunctionsServiceComponent.ExpressionFunctionEntry functionEntry : JIPipe.getInstance().getExpressionFunctions().getRegisteredExpressionFunctions().values().stream()
+                .sorted(Comparator.comparing(JIPipeExpressionFunctionsServiceComponent.ExpressionFunctionEntry::getName)).toList()) {
             model.addElement(functionEntry);
         }
         setCellRenderer(new ExpressionFunctionRenderer());
@@ -91,7 +91,7 @@ public class FunctionSelectorList extends JList<JIPipeExpressionRegistry.Express
         setSelectedIndex(0);
     }
 
-    public static class ExpressionFunctionRenderer extends JPanel implements ListCellRenderer<JIPipeExpressionRegistry.ExpressionFunctionEntry> {
+    public static class ExpressionFunctionRenderer extends JPanel implements ListCellRenderer<JIPipeExpressionFunctionsServiceComponent.ExpressionFunctionEntry> {
 
         private JLabel idLabel;
         private JLabel nameLabel;
@@ -161,7 +161,7 @@ public class FunctionSelectorList extends JList<JIPipeExpressionRegistry.Express
         }
 
         @Override
-        public Component getListCellRendererComponent(JList<? extends JIPipeExpressionRegistry.ExpressionFunctionEntry> list, JIPipeExpressionRegistry.ExpressionFunctionEntry value, int index, boolean isSelected, boolean cellHasFocus) {
+        public Component getListCellRendererComponent(JList<? extends JIPipeExpressionFunctionsServiceComponent.ExpressionFunctionEntry> list, JIPipeExpressionFunctionsServiceComponent.ExpressionFunctionEntry value, int index, boolean isSelected, boolean cellHasFocus) {
             idLabel.setText(value.getFunction().getSignature());
             nameLabel.setText(value.getName());
             descriptionLabel.setText(value.getDescription());

@@ -14,7 +14,8 @@
 package org.hkijena.jipipe.desktop.app.plugins;
 
 import org.hkijena.jipipe.JIPipe;
-import org.hkijena.jipipe.JIPipeService;
+import org.hkijena.jipipe.api.service.events.JIPipePluginRegisteredEvent;
+import org.hkijena.jipipe.api.service.events.JIPipePluginRegisteredEventListener;
 import org.hkijena.jipipe.desktop.app.JIPipeDesktopWorkbench;
 import org.hkijena.jipipe.desktop.commons.components.JIPipeDesktopReloadableValidityChecker;
 import org.hkijena.jipipe.plugins.parameters.library.markup.MarkdownText;
@@ -24,7 +25,7 @@ import java.util.HashMap;
 /**
  * Panel that checks plugin validity
  */
-public class JIPipeDesktopPluginValidityCheckerPanel extends JIPipeDesktopReloadableValidityChecker implements JIPipeService.PluginRegisteredEventListener {
+public class JIPipeDesktopPluginValidityCheckerPanel extends JIPipeDesktopReloadableValidityChecker implements JIPipePluginRegisteredEventListener {
 
     public JIPipeDesktopPluginValidityCheckerPanel(JIPipeDesktopWorkbench workbench) {
         super(workbench, JIPipe.getInstance(),
@@ -33,7 +34,7 @@ public class JIPipeDesktopPluginValidityCheckerPanel extends JIPipeDesktopReload
     }
 
     @Override
-    public void onJIPipePluginRegistered(JIPipeService.ExtensionRegisteredEvent event) {
+    public void onJIPipePluginRegistered(JIPipePluginRegisteredEvent event) {
         recheckValidity();
     }
 }

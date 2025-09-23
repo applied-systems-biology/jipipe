@@ -23,6 +23,7 @@ import org.hkijena.jipipe.api.environments.JIPipeEnvironmentConfigurator;
 import org.hkijena.jipipe.api.nodes.JIPipeGraphNode;
 import org.hkijena.jipipe.api.parameters.JIPipeParameterArchetype;
 import org.hkijena.jipipe.api.project.JIPipeProject;
+import org.hkijena.jipipe.api.service.JIPipeService;
 import org.hkijena.jipipe.plugins.JIPipePrepackagedDefaultJavaPlugin;
 import org.hkijena.jipipe.plugins.core.CorePlugin;
 import org.hkijena.jipipe.plugins.ijocr.environments.OptionalTesseractOCREnvironment;
@@ -115,7 +116,7 @@ public class OCRPlugin extends JIPipePrepackagedDefaultJavaPlugin {
     }
 
     @Override
-    public void register(JIPipe jiPipe, Context context, JIPipeProgressInfo progressInfo) {
+    public void register(JIPipeService service, Context context, JIPipeProgressInfo progressInfo) {
 
         TesseractOCRApplicationSettings tesseractOCRApplicationSettings = new TesseractOCRApplicationSettings();
         registerEnvironment("tesseract-ocr-environment", TesseractOCREnvironment.class,

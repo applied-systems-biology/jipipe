@@ -45,7 +45,7 @@ public class JIPipeDesktopMain {
             int windowsOpen = 0;
             windowsOpen += JIPipeDesktopProjectWindow.getOpenWindows().size();
 
-            if (windowsOpen == 0 && !JIPipe.isRestarting()) {
+            if (windowsOpen == 0) {
                 JIPipe.exitLater(0);
             }
         }

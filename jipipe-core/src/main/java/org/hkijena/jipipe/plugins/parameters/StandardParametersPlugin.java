@@ -16,7 +16,6 @@ package org.hkijena.jipipe.plugins.parameters;
 import com.fasterxml.jackson.databind.module.SimpleModule;
 import org.fife.ui.rsyntaxtextarea.AbstractTokenMakerFactory;
 import org.fife.ui.rsyntaxtextarea.TokenMakerFactory;
-import org.hkijena.jipipe.JIPipe;
 import org.hkijena.jipipe.JIPipeImageJUpdateSiteDependency;
 import org.hkijena.jipipe.JIPipeJavaPlugin;
 import org.hkijena.jipipe.api.JIPipeNodeTemplate;
@@ -33,6 +32,7 @@ import org.hkijena.jipipe.api.parameters.JIPipeParameterCollectionVisibilities;
 import org.hkijena.jipipe.api.project.JIPipeProjectDirectories;
 import org.hkijena.jipipe.api.runtimepartitioning.RuntimePartitionReferenceDesktopParameterEditorUI;
 import org.hkijena.jipipe.api.runtimepartitioning.RuntimePartitionReferenceParameter;
+import org.hkijena.jipipe.api.service.JIPipeService;
 import org.hkijena.jipipe.desktop.app.grapheditor.commons.layout.JIPipepGraphAutoLayoutMethod;
 import org.hkijena.jipipe.plugins.JIPipePrepackagedDefaultJavaPlugin;
 import org.hkijena.jipipe.plugins.expressions.NumericFunctionExpression;
@@ -135,7 +135,7 @@ public class StandardParametersPlugin extends JIPipePrepackagedDefaultJavaPlugin
     }
 
     @Override
-    public void register(JIPipe jiPipe, Context context, JIPipeProgressInfo progressInfo) {
+    public void register(JIPipeService service, Context context, JIPipeProgressInfo progressInfo) {
         // Fallback editor for any parameter collection
         registerParameterEditor(JIPipeParameterCollection.class, JIPipeParameterCollectionDesktopParameterEditorUI.class);
         registerParameterType("jipipe:imagej-update-site",

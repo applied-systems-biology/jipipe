@@ -381,8 +381,8 @@ public class PathUtils {
         if (System.getenv().containsKey("JIPIPE_OVERRIDE_SHARED_DIR")) {
             return Paths.get(System.getenv().get("JIPIPE_OVERRIDE_SHARED_DIR"));
         }
-        if (JIPipe.JIPIPE_OVERRIDE_SHARED_DIR != null) {
-            return JIPipe.JIPIPE_OVERRIDE_SHARED_DIR;
+        if(JIPipe.getInstance() != null && JIPipe.getInstance().getInitializationSettings().getOverrideSharedDir() != null) {
+            return JIPipe.getInstance().getInitializationSettings().getOverrideSharedDir();
         }
         if (SystemUtils.IS_OS_WINDOWS) {
             return Paths.get(System.getenv("APPDATA")).resolve("JIPipe")
@@ -414,8 +414,8 @@ public class PathUtils {
         if (System.getenv().containsKey("JIPIPE_OVERRIDE_USER_DIR_BASE")) {
             return Paths.get(System.getenv().get("JIPIPE_OVERRIDE_USER_DIR_BASE"));
         }
-        if (JIPipe.OVERRIDE_USER_DIR_BASE != null) {
-            return JIPipe.OVERRIDE_USER_DIR_BASE;
+        if(JIPipe.getInstance() != null && JIPipe.getInstance().getInitializationSettings().getOverrideUserDirBase() != null) {
+            return JIPipe.getInstance().getInitializationSettings().getOverrideUserDirBase();
         }
         if (SystemUtils.IS_OS_WINDOWS) {
             return Paths.get(System.getenv("APPDATA")).resolve("JIPipe")

@@ -15,7 +15,9 @@ package org.hkijena.jipipe.desktop.commons.components;
 
 import org.hkijena.jipipe.JIPipe;
 import org.hkijena.jipipe.JIPipeJavaPlugin;
-import org.hkijena.jipipe.JIPipeService;
+import org.hkijena.jipipe.api.service.JIPipeService;
+import org.hkijena.jipipe.api.service.events.JIPipePluginDiscoveredEvent;
+import org.hkijena.jipipe.api.service.events.JIPipePluginDiscoveredEventListener;
 import org.hkijena.jipipe.desktop.commons.components.icons.SpinnerIcon;
 import org.hkijena.jipipe.utils.ResourceUtils;
 import org.hkijena.jipipe.utils.ThemeUtils;
@@ -33,7 +35,7 @@ import java.awt.event.WindowEvent;
 import java.awt.image.BufferedImage;
 import java.io.IOException;
 
-public class JIPipeDesktopSplashScreen extends JWindow implements LogListener, Contextual, JIPipeService.PluginDiscoveredEventListener {
+public class JIPipeDesktopSplashScreen extends JWindow implements LogListener, Contextual, JIPipePluginDiscoveredEventListener {
 
     private static final Object instanceLock = new Object();
     private static volatile JIPipeDesktopSplashScreen instance;
@@ -42,7 +44,7 @@ public class JIPipeDesktopSplashScreen extends JWindow implements LogListener, C
     private Context context;
     private JPanel poweredByContainer;
     private JPanel poweredByIconContainer;
-    private JIPipe jiPipe;
+    private JIPipeService service;
 
     public JIPipeDesktopSplashScreen() {
         this.spinnerIcon = new SpinnerIcon(this);
@@ -122,19 +124,8 @@ public class JIPipeDesktopSplashScreen extends JWindow implements LogListener, C
         SwingUtilities.invokeLater(() -> this.dispatchEvent(new WindowEvent(this, WindowEvent.WINDOW_CLOSING)));
     }
 
-    public JIPipe getJIPipe() {
-        return jiPipe;
-    }
-
-    public void setJIPipe(JIPipe registry) {
-        this.jiPipe = registry;
-        if (registry != null) {
-            registry.getExtensionDiscoveredEventEmitter().subscribeWeak(this);
-        }
-    }
-
     @Override
-    public void onJIPipePluginDiscovered(JIPipe.ExtensionDiscoveredEvent event) {
+    public void onJIPipePluginDiscovered(JIPipePluginDiscoveredEvent event) {
         if (event.getExtension() instanceof JIPipeJavaPlugin) {
             SwingUtilities.invokeLater(() -> {
                 for (ImageIcon icon : ((JIPipeJavaPlugin) event.getExtension()).getSplashIcons()) {
@@ -170,6 +161,17 @@ public class JIPipeDesktopSplashScreen extends JWindow implements LogListener, C
     @Override
     public void setContext(Context context) {
         this.context = context;
+    }
+
+    public JIPipeService getService() {
+        return service;
+    }
+
+    public void setService(JIPipeService service) {
+        this.service = service;
+        if(service != null) {
+            service.getExtensionDiscoveredEventEmitter().subscribeWeak(this);
+        }
     }
 
     private static class ContentPanel extends JPanel {

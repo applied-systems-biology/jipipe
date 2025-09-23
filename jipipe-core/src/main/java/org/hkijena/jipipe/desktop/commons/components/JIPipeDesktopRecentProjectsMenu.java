@@ -15,7 +15,7 @@ package org.hkijena.jipipe.desktop.commons.components;
 
 import org.hkijena.jipipe.JIPipe;
 import org.hkijena.jipipe.api.project.JIPipeProject;
-import org.hkijena.jipipe.api.registries.JIPipeRecentProjectsRegistry;
+import org.hkijena.jipipe.api.service.components.JIPipeRecentProjectsRegistry;
 import org.hkijena.jipipe.desktop.app.JIPipeDesktopProjectWindow;
 import org.hkijena.jipipe.desktop.app.documentation.JIPipeDesktopRecentProjectsListPanel;
 import org.hkijena.jipipe.utils.UIUtils;
@@ -40,12 +40,12 @@ public class JIPipeDesktopRecentProjectsMenu extends JMenu implements JIPipeRece
         this.setIcon(icon);
         this.workbenchWindow = workbenchWindow;
         reload();
-        JIPipe.getInstance().getRecentProjectsRegistry().getChangedEventEmitter().subscribeWeak(this);
+        JIPipe.getInstance().getRecentProjects().getChangedEventEmitter().subscribeWeak(this);
     }
 
     private void reload() {
         removeAll();
-        if (JIPipe.getInstance().getRecentProjectsRegistry().getRecentProjects().isEmpty()) {
+        if (JIPipe.getInstance().getRecentProjects().getRecentProjects().isEmpty()) {
             JMenuItem noProject = new JMenuItem("No recent projects");
             noProject.setEnabled(false);
             add(noProject);
@@ -54,7 +54,7 @@ public class JIPipeDesktopRecentProjectsMenu extends JMenu implements JIPipeRece
             searchItem.addActionListener(e -> openProjectSearch());
             add(searchItem);
 
-            for (Path path : JIPipe.getInstance().getRecentProjectsRegistry().getRecentProjects()) {
+            for (Path path : JIPipe.getInstance().getRecentProjects().getRecentProjects()) {
                 JMenuItem openProjectItem = new JMenuItem(path.toString());
                 openProjectItem.addActionListener(e -> openProject(path));
                 add(openProjectItem);

@@ -13,9 +13,9 @@
 
 package org.hkijena.jipipe.plugins.nodetemplate;
 
-import org.hkijena.jipipe.JIPipe;
 import org.hkijena.jipipe.JIPipeJavaPlugin;
 import org.hkijena.jipipe.api.JIPipeProgressInfo;
+import org.hkijena.jipipe.api.service.JIPipeService;
 import org.hkijena.jipipe.plugins.JIPipePrepackagedDefaultJavaPlugin;
 import org.hkijena.jipipe.plugins.nodeexamples.LoadExampleContextMenuAction;
 import org.hkijena.jipipe.plugins.parameters.library.markup.HTMLText;
@@ -46,7 +46,7 @@ public class NodeTemplateBoxToolPlugin extends JIPipePrepackagedDefaultJavaPlugi
     }
 
     @Override
-    public void register(JIPipe jiPipe, Context context, JIPipeProgressInfo progressInfo) {
+    public void register(JIPipeService service, Context context, JIPipeProgressInfo progressInfo) {
         registerContextMenuAction(new AddTemplateContextMenuAction());
         registerContextMenuAction(new LoadExampleContextMenuAction());
     }

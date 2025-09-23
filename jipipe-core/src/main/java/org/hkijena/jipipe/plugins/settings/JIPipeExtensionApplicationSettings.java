@@ -19,7 +19,7 @@ import org.hkijena.jipipe.api.SetJIPipeDocumentation;
 import org.hkijena.jipipe.api.parameters.JIPipeParameter;
 import org.hkijena.jipipe.api.parameters.JIPipeParameterAccess;
 import org.hkijena.jipipe.api.parameters.JIPipeParameterTree;
-import org.hkijena.jipipe.api.registries.JIPipeApplicationSettingsRegistry;
+import org.hkijena.jipipe.api.service.components.JIPipeApplicationSettingsServiceComponent;
 import org.hkijena.jipipe.api.settings.JIPipeDefaultApplicationSettingsSheetCategory;
 import org.hkijena.jipipe.api.settings.JIPipeDefaultApplicationsSettingsSheet;
 import org.hkijena.jipipe.utils.json.JsonUtils;
@@ -56,7 +56,7 @@ public class JIPipeExtensionApplicationSettings extends JIPipeDefaultApplication
     public static JIPipeExtensionApplicationSettings getInstanceFromRaw() {
         JIPipeExtensionApplicationSettings result = new JIPipeExtensionApplicationSettings();
         try {
-            JsonNode node = JIPipeApplicationSettingsRegistry.getRawNode();
+            JsonNode node = JIPipeApplicationSettingsServiceComponent.getRawNode();
             if (node != null && !node.isMissingNode()) {
                 JIPipeParameterTree tree = new JIPipeParameterTree(result);
                 for (Map.Entry<String, JIPipeParameterAccess> entry : tree.getParameters().entrySet()) {

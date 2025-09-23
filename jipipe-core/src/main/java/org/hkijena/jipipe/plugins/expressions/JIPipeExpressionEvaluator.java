@@ -18,7 +18,7 @@ import com.google.common.collect.ImmutableList;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.lang3.math.NumberUtils;
 import org.hkijena.jipipe.JIPipe;
-import org.hkijena.jipipe.api.registries.JIPipeExpressionRegistry;
+import org.hkijena.jipipe.api.service.components.JIPipeExpressionFunctionsServiceComponent;
 import org.hkijena.jipipe.api.validation.JIPipeValidationRuntimeException;
 import org.hkijena.jipipe.plugins.expressions.constants.*;
 import org.hkijena.jipipe.plugins.expressions.operators.*;
@@ -145,7 +145,7 @@ public class JIPipeExpressionEvaluator extends ExpressionEvaluator {
 
         // Add operators from JIPipe (if available)
         if (JIPipe.getInstance() != null) {
-            for (JIPipeExpressionRegistry.ExpressionFunctionEntry functionEntry : JIPipe.getInstance().getExpressionRegistry().getRegisteredExpressionFunctions().values()) {
+            for (JIPipeExpressionFunctionsServiceComponent.ExpressionFunctionEntry functionEntry : JIPipe.getInstance().getExpressionFunctions().getRegisteredExpressionFunctions().values()) {
                 parameters.add(functionEntry.getFunction());
             }
         }

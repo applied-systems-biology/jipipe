@@ -181,10 +181,10 @@ public class JIPipeDesktopGraphCanvasUI extends JLayeredPane implements JIPipeDe
     }
 
     private void initializeOverlays() {
+        overlays.add(new JIPipeDesktopGraphCanvasAnnotationNodesOverlay(this));
         overlays.add(new JIPipeDesktopGraphCanvasNodeShadowOverlay(this));
         overlays.add(new JIPipeDesktopGraphCanvasOutsideEdgesOverlay(this));
         overlays.add(new JIPipeDesktopGraphCanvasEdgesOverlay(this));
-        overlays.add(new JIPipeDesktopGraphCanvasAnnotationNodesOverlay(this));
         overlays.add(new JIPipeDesktopGraphCanvasConnectionHighlightsOverlay(this));
         overlays.add(new JIPipeDesktopGraphCanvasObjectSelectionOverlay(this));
         overlays.add(new JIPipeDesktopGraphCanvasIOOverlay(this));
@@ -246,9 +246,7 @@ public class JIPipeDesktopGraphCanvasUI extends JLayeredPane implements JIPipeDe
     public void setAutoMuteEdges(boolean autoMuteEdges) {
         this.autoMuteEdges = autoMuteEdges;
         settings.setAutoMuteEdgesEnabled(autoMuteEdges);
-        if (!JIPipe.NO_SETTINGS_AUTOSAVE) {
-            JIPipe.getSettings().save();
-        }
+        JIPipe.autoSaveSettings();
         repaint(50);
     }
 
@@ -1012,6 +1010,11 @@ public class JIPipeDesktopGraphCanvasUI extends JLayeredPane implements JIPipeDe
 
         if (SwingUtilities.isLeftMouseButton(mouseEvent)) {
 
+            // Resize handling
+            if (resizeManager.mousePressed(mouseEvent)) {
+                return;
+            }
+
             // Selection handling
             if (nodeUI == null && edgeUI != null) {
                 if (mouseEvent.isShiftDown()) {
@@ -1027,11 +1030,6 @@ public class JIPipeDesktopGraphCanvasUI extends JLayeredPane implements JIPipeDe
                 }
             } else if (!mouseEvent.isShiftDown()) {
                 selectionManager.clearSelection();
-            }
-
-            // Resize handling
-            if (resizeManager.mousePressed(mouseEvent)) {
-                return;
             }
 
             // Slot dragging

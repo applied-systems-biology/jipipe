@@ -68,13 +68,13 @@ public class JIPipeDesktopDefaultResultDataSlotRowUI extends JIPipeDesktopResult
     public JIPipeDesktopDefaultResultDataSlotRowUI(JIPipeDesktopProjectWorkbench workbenchUI, JIPipeDataSlot slot, JIPipeDataTableRowInfo row) {
         super(workbenchUI, slot, row);
         String datatypeId = row.getTrueDataType();
-        importOperations = JIPipe.getInstance().getDatatypeRegistry().getSortedImportOperationsFor(datatypeId);
+        importOperations = JIPipe.getInstance().getDataTypes().getSortedImportOperationsFor(datatypeId);
         initialize();
     }
 
     public static JIPipeLegacyDataImportOperation getMainOperation(Class<? extends JIPipeData> dataClass) {
         String dataTypeId = JIPipe.getDataTypes().getIdOf(dataClass);
-        List<JIPipeLegacyDataImportOperation> importOperations = JIPipe.getInstance().getDatatypeRegistry().getSortedImportOperationsFor(dataTypeId);
+        List<JIPipeLegacyDataImportOperation> importOperations = JIPipe.getInstance().getDataTypes().getSortedImportOperationsFor(dataTypeId);
         if (!importOperations.isEmpty()) {
             JIPipeLegacyDataImportOperation result = importOperations.get(0);
             DynamicDataImportOperationIdEnumParameter parameter = JIPipeDefaultResultImporterApplicationSettings.getInstance().getValue(dataTypeId, DynamicDataImportOperationIdEnumParameter.class);
@@ -107,7 +107,7 @@ public class JIPipeDesktopDefaultResultDataSlotRowUI extends JIPipeDesktopResult
                 JIPipeDataInfo dataInfo = JIPipeDataInfo.getInstance(dataAnnotation.getTrueDataType());
                 JMenu subMenu = new JMenu(dataAnnotation.getName());
                 subMenu.setIcon(JIPipe.getDataTypes().getIconFor(dataInfo.getDataClass()));
-                List<JIPipeLegacyDataImportOperation> importOperations = JIPipe.getInstance().getDatatypeRegistry().getSortedImportOperationsFor(dataInfo.getId());
+                List<JIPipeLegacyDataImportOperation> importOperations = JIPipe.getInstance().getDataTypes().getSortedImportOperationsFor(dataInfo.getId());
                 for (JIPipeLegacyDataImportOperation importOperation : importOperations) {
                     JMenuItem item = new JMenuItem(importOperation.getName(), importOperation.getIcon());
                     item.setToolTipText(importOperation.getDescription());
@@ -327,9 +327,7 @@ public class JIPipeDesktopDefaultResultDataSlotRowUI extends JIPipeDesktopResult
                 if (parameter != null && !Objects.equals(operation.getId(), parameter.getValue())) {
                     parameter.setValue(operation.getId());
                     JIPipeDefaultResultImporterApplicationSettings.getInstance().setValue(dataTypeId, parameter);
-                    if (!JIPipe.NO_SETTINGS_AUTOSAVE) {
-                        JIPipe.getSettings().save();
-                    }
+                    JIPipe.autoSaveSettings();
                 }
             }
         }

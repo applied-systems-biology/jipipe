@@ -378,9 +378,7 @@ public class ROIManagerPlugin3D extends JIPipeDesktopLegacyImageViewerPlugin2D {
                 JOptionPane.YES_NO_OPTION) == JOptionPane.YES_OPTION) {
             ImageViewerUIROI3DDisplayApplicationSettings settings = ImageViewerUIROI3DDisplayApplicationSettings.getInstance();
             settings.setShowROI(displayROIViewMenuItem.getState());
-            if (!JIPipe.NO_SETTINGS_AUTOSAVE) {
-                JIPipe.getSettings().save();
-            }
+            JIPipe.autoSaveSettings();
         }
     }
 

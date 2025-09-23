@@ -88,9 +88,7 @@ public interface JIPipeDesktopDataDisplayOperation extends JIPipeLegacyDataOpera
             if (parameter != null && !Objects.equals(getId(), parameter.getValue())) {
                 parameter.setValue(getId());
                 JIPipeDefaultResultImporterApplicationSettings.getInstance().setValue(dataTypeId, parameter);
-                if (!JIPipe.NO_SETTINGS_AUTOSAVE) {
-                    JIPipe.getSettings().save();
-                }
+                JIPipe.autoSaveSettings();
             }
         }
     }

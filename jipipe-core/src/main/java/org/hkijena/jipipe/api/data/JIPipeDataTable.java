@@ -33,7 +33,7 @@ import org.hkijena.jipipe.api.data.storage.JIPipeWriteDataStorage;
 import org.hkijena.jipipe.api.data.thumbnails.JIPipeGridThumbnailData;
 import org.hkijena.jipipe.api.data.thumbnails.JIPipeThumbnailData;
 import org.hkijena.jipipe.api.data.utils.JIPipeWeakDataReferenceData;
-import org.hkijena.jipipe.api.registries.JIPipeDatatypeRegistry;
+import org.hkijena.jipipe.api.service.components.JIPipeDatatypesServiceComponent;
 import org.hkijena.jipipe.api.validation.JIPipeValidationRuntimeException;
 import org.hkijena.jipipe.plugins.parameters.library.pairs.IntegerAndIntegerPairParameter;
 import org.hkijena.jipipe.plugins.settings.JIPipeGeneralDataApplicationSettings;
@@ -452,7 +452,7 @@ public class JIPipeDataTable implements JIPipeData, TableModel {
     public boolean acceptsTrivially(JIPipeData data) {
         if (data == null)
             throw new NullPointerException("Data slots cannot accept null data!");
-        return JIPipeDatatypeRegistry.isTriviallyConvertible(data.getClass(), getAcceptedDataType());
+        return JIPipeDatatypesServiceComponent.isTriviallyConvertible(data.getClass(), getAcceptedDataType());
     }
 
     /**
@@ -465,7 +465,7 @@ public class JIPipeDataTable implements JIPipeData, TableModel {
     public boolean acceptsTrivially(Class<? extends JIPipeData> klass) {
         if (dataArray == null)
             throw new NullPointerException("Data slots cannot accept null data!");
-        return JIPipeDatatypeRegistry.isTriviallyConvertible(klass, getAcceptedDataType());
+        return JIPipeDatatypesServiceComponent.isTriviallyConvertible(klass, getAcceptedDataType());
     }
 
     /**

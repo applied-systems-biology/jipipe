@@ -16,6 +16,7 @@ package org.hkijena.jipipe.plugins.forms;
 import org.apache.commons.compress.utils.Sets;
 import org.hkijena.jipipe.*;
 import org.hkijena.jipipe.api.JIPipeProgressInfo;
+import org.hkijena.jipipe.api.service.JIPipeService;
 import org.hkijena.jipipe.plugins.JIPipePrepackagedDefaultJavaPlugin;
 import org.hkijena.jipipe.plugins.core.CorePlugin;
 import org.hkijena.jipipe.plugins.forms.algorithms.IteratingFormProcessorAlgorithm;
@@ -92,7 +93,7 @@ public class FormsPlugin extends JIPipePrepackagedDefaultJavaPlugin {
     }
 
     @Override
-    public void register(JIPipe jiPipe, Context context, JIPipeProgressInfo progressInfo) {
+    public void register(JIPipeService service, Context context, JIPipeProgressInfo progressInfo) {
         registerDatatype("form", FormData.class, JIPipe.RESOURCES.getIcon16URL("data-types/form.png"));
 
         registerDatatype("group-header-form", GroupHeaderFormData.class, JIPipe.RESOURCES.getIcon16URL("data-types/form.png"));

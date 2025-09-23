@@ -15,7 +15,7 @@ package org.hkijena.jipipe.desktop.app.project;
 
 import org.hkijena.jipipe.JIPipe;
 import org.hkijena.jipipe.api.project.JIPipeProjectTemplate;
-import org.hkijena.jipipe.api.registries.JIPipeProjectTemplateRegistry;
+import org.hkijena.jipipe.api.service.components.JIPipeProjectTemplatesServiceComponent;
 import org.hkijena.jipipe.desktop.app.JIPipeDesktopWorkbench;
 import org.hkijena.jipipe.desktop.app.project.templatedownloader.JIPipeDesktopProjectTemplateDownloaderRun;
 import org.hkijena.jipipe.desktop.app.running.JIPipeDesktopRunExecuteUI;
@@ -31,7 +31,7 @@ import java.awt.event.MouseEvent;
 /**
  * Dialog for selecting templates
  */
-public class JIPipeDesktopJIPipeTemplateSelectionUI extends JDialog implements JIPipeProjectTemplateRegistry.TemplatesUpdatedEventListener {
+public class JIPipeDesktopJIPipeTemplateSelectionUI extends JDialog implements JIPipeProjectTemplatesServiceComponent.TemplatesUpdatedEventListener {
 
     private final JIPipeDesktopWorkbench workbench;
     private final JIPipeDesktopSearchTextField templateSearch = new JIPipeDesktopSearchTextField();
@@ -44,7 +44,7 @@ public class JIPipeDesktopJIPipeTemplateSelectionUI extends JDialog implements J
         initialize();
         refreshTemplateProjects();
         templateJList.setSelectedIndex(0);
-        JIPipe.getInstance().getProjectTemplateRegistry().getTemplatesUpdatedEventEmitter().subscribeWeak(this);
+        JIPipe.getInstance().getProjectTemplates().getTemplatesUpdatedEventEmitter().subscribeWeak(this);
     }
 
     private void initialize() {
@@ -116,7 +116,7 @@ public class JIPipeDesktopJIPipeTemplateSelectionUI extends JDialog implements J
 
     private void refreshTemplateProjects() {
         DefaultListModel<JIPipeProjectTemplate> model = new DefaultListModel<>();
-        for (JIPipeProjectTemplate template : JIPipe.getInstance().getProjectTemplateRegistry().getSortedRegisteredTemplates()) {
+        for (JIPipeProjectTemplate template : JIPipe.getInstance().getProjectTemplates().getSortedRegisteredTemplates()) {
             if (templateSearch.test(template.getMetadata().getName() + " " + template.getMetadata().getTemplateDescription())) {
                 model.addElement(template);
             }
@@ -132,7 +132,7 @@ public class JIPipeDesktopJIPipeTemplateSelectionUI extends JDialog implements J
     }
 
     @Override
-    public void onJIPipeTemplatesUpdated(JIPipeProjectTemplateRegistry.TemplatesUpdatedEvent event) {
+    public void onJIPipeTemplatesUpdated(JIPipeProjectTemplatesServiceComponent.TemplatesUpdatedEvent event) {
         refreshTemplateProjects();
     }
 }

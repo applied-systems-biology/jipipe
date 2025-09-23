@@ -25,7 +25,8 @@ import org.hkijena.jipipe.api.compat.DefaultImageJDataImporterUI;
 import org.hkijena.jipipe.api.data.JIPipeData;
 import org.hkijena.jipipe.api.metadata.JIPipeAuthorMetadata;
 import org.hkijena.jipipe.api.metadata.JIPipeOrganizationMetadata;
-import org.hkijena.jipipe.api.registries.JIPipeDatatypeRegistry;
+import org.hkijena.jipipe.api.service.JIPipeService;
+import org.hkijena.jipipe.api.service.components.JIPipeDatatypesServiceComponent;
 import org.hkijena.jipipe.plugins.JIPipePrepackagedDefaultJavaPlugin;
 import org.hkijena.jipipe.plugins.core.CorePlugin;
 import org.hkijena.jipipe.plugins.core.data.OpenInNativeApplicationDataImportOperation;
@@ -382,7 +383,7 @@ public class ImageJDataTypesPlugin extends JIPipePrepackagedDefaultJavaPlugin {
 
 
     @Override
-    public void register(JIPipe jiPipe, Context context, JIPipeProgressInfo progressInfo) {
+    public void register(JIPipeService service, Context context, JIPipeProgressInfo progressInfo) {
         registerApplicationSettingsSheet(new ImageJDataTypesApplicationSettings());
         registerEnumParameterType("ome-tiff-compression",
                 OMETIFFCompression.class,
@@ -604,7 +605,7 @@ public class ImageJDataTypesPlugin extends JIPipePrepackagedDefaultJavaPlugin {
         registerDatatypeConversion(new OMEImageToOMEXMLTypeConverter());
         registerDatatypeConversion(new XMLToOMEXMLTypeConverter());
 
-        Set<Class<? extends JIPipeData>> dataTypes = getRegistry().getDatatypeRegistry().getRegisteredDataTypes().values()
+        Set<Class<? extends JIPipeData>> dataTypes = getService().getDataTypes().getRegisteredDataTypes().values()
                 .stream().filter(ImagePlusData.class::isAssignableFrom).collect(Collectors.toSet());
         Map<Integer, List<Class<? extends JIPipeData>>> groupedByDimensionality =
                 dataTypes.stream().collect(Collectors.groupingBy(d -> ImagePlusData.getDimensionalityOf((Class<? extends ImagePlusData>) d)));
@@ -617,7 +618,7 @@ public class ImageJDataTypesPlugin extends JIPipePrepackagedDefaultJavaPlugin {
                 if (otherEntry.getKey() >= dimensionalityHere || otherEntry.getKey() == -1) {
                     for (Class<? extends JIPipeData> inputClass : typesHere) {
                         for (Class<? extends JIPipeData> outputClass : otherEntry.getValue()) {
-                            if (!JIPipeDatatypeRegistry.isTriviallyConvertible(inputClass, outputClass)) {
+                            if (!JIPipeDatatypesServiceComponent.isTriviallyConvertible(inputClass, outputClass)) {
                                 ImplicitImageTypeConverter converter = new ImplicitImageTypeConverter(inputClass, outputClass);
                                 registerDatatypeConversion(converter);
                             }

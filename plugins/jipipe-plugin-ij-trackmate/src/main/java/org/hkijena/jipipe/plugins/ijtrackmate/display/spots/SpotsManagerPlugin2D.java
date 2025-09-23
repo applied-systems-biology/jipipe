@@ -292,9 +292,7 @@ public class SpotsManagerPlugin2D extends JIPipeDesktopLegacyImageViewerPlugin2D
             ImageViewerUISpotsDisplayApplicationSettings settings = ImageViewerUISpotsDisplayApplicationSettings.getInstance();
             settings.getSpotDrawer().copyFrom(spotDrawer);
             settings.setShowSpots(displaySpotsViewMenuItem.getState());
-            if (!JIPipe.NO_SETTINGS_AUTOSAVE) {
-                JIPipe.getSettings().save();
-            }
+            JIPipe.autoSaveSettings();
         }
     }
 

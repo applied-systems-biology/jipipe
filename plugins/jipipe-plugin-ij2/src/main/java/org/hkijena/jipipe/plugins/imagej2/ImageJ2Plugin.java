@@ -22,6 +22,7 @@ import org.hkijena.jipipe.api.JIPipeProgressInfo;
 import org.hkijena.jipipe.api.compat.DefaultImageJDataExporterUI;
 import org.hkijena.jipipe.api.metadata.JIPipeAuthorMetadata;
 import org.hkijena.jipipe.api.metadata.JIPipeOrganizationMetadata;
+import org.hkijena.jipipe.api.service.JIPipeService;
 import org.hkijena.jipipe.plugins.JIPipePrepackagedDefaultJavaPlugin;
 import org.hkijena.jipipe.plugins.core.CorePlugin;
 import org.hkijena.jipipe.plugins.imagej2.algorithms.CreateIJ2OutOfBoundsFactoryAlgorithm;
@@ -168,7 +169,7 @@ public class ImageJ2Plugin extends JIPipePrepackagedDefaultJavaPlugin {
     }
 
     @Override
-    public void register(JIPipe jiPipe, Context context, JIPipeProgressInfo progressInfo) {
+    public void register(JIPipeService service, Context context, JIPipeProgressInfo progressInfo) {
         // Images
         registerDatatype("ij2-dataset", ImageJ2DatasetData.class, JIPipe.RESOURCES.getIcon16URL("data-types/ij2-image.png"));
         registerDatatypeConversion(new ImageJ1ToImageJ2Converter());
